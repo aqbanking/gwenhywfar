@@ -234,26 +234,48 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
                                 unsigned int i);
+
+#ifdef GWEN_EXTEND_CRYPTKEY
+/**
+ * This function is only available if you define <i>GWEN_EXTEND_CRYPTKEY</i>
+ * to protect it against careless calls by the application.
+ * You should only define <i>GWEN_EXTEND_CRYPTKEY</i> if you actually are
+ * extending this "class".
+ * This makes this function kinda like <i>protected</i> in C++.
+ */
 GWENHYWFAR_API
   void *GWEN_CryptKey_GetKeyData(const GWEN_CRYPTKEY *key);
+
+/**
+ * This function is only available if you define <i>GWEN_EXTEND_CRYPTKEY</i>
+ * to protect it against careless calls by the application.
+ * You should only define <i>GWEN_EXTEND_CRYPTKEY</i> if you actually are
+ * extending this "class".
+ * This makes this function kinda like <i>protected</i> in C++.
+ */
 GWENHYWFAR_API
   void GWEN_CryptKey_SetKeyData(GWEN_CRYPTKEY *key,
                                 void *kd);
+#endif
+
 GWENHYWFAR_API
   int GWEN_CryptKey_GetOpenCount(const GWEN_CRYPTKEY *key);
+
+#ifdef GWEN_EXTEND_CRYPTKEY
 GWENHYWFAR_API
   void GWEN_CryptKey_IncrementOpenCount(GWEN_CRYPTKEY *key);
 GWENHYWFAR_API
   void GWEN_CryptKey_DecrementOpenCount(GWEN_CRYPTKEY *key);
+#endif
 
-
-  /** @name Function Setter
-   *
-   */
-  /*@{*/
+/** @name Function Setter
+ *
+ */
+/*@{*/
+#ifdef GWEN_EXTEND_CRYPTKEY
 GWENHYWFAR_API
   void GWEN_CryptKey_SetEncryptFn(GWEN_CRYPTKEY *key,
-                                  GWEN_CRYPTKEY_ENCRYPT_FN encryptFn);
+				  GWEN_CRYPTKEY_ENCRYPT_FN encryptFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetDecryptFn(GWEN_CRYPTKEY *key,
                                   GWEN_CRYPTKEY_DECRYPT_FN decryptFn);
@@ -288,7 +310,8 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   void GWEN_CryptKey_SetDupFn(GWEN_CRYPTKEY *key,
                               GWEN_CRYPTKEY_DUP_FN dupFn);
-  /*@}*/
+#endif
+/*@}*/
 
 
 

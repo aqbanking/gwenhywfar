@@ -31,18 +31,18 @@
 #endif
 
 
-#include "cryptssl_rmd160_p.h"
+#include "cryptssl_md5_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
 
-GWEN_ERRORCODE GWEN_MdRmd160_Register(){
+GWEN_ERRORCODE GWEN_MdMd5_Register(){
   GWEN_MD_PROVIDER *pr;
   GWEN_ERRORCODE err;
 
   pr=GWEN_MdProvider_new();
-  GWEN_MdProvider_SetNewMdFn(pr, GWEN_MdRmd160_new);
-  GWEN_MdProvider_SetName(pr, GWEN_MD_RMD160_NAME);
+  GWEN_MdProvider_SetNewMdFn(pr, GWEN_MdMd5_new);
+  GWEN_MdProvider_SetName(pr, GWEN_MD_MD5_NAME);
   err=GWEN_MD_RegisterProvider(pr);
   if (!GWEN_Error_IsOk(err)) {
     GWEN_MdProvider_free(pr);
@@ -54,27 +54,27 @@ GWEN_ERRORCODE GWEN_MdRmd160_Register(){
 
 
 
-GWEN_MD *GWEN_MdRmd160_new(){
+GWEN_MD *GWEN_MdMd5_new(){
   GWEN_MD *md;
-  RIPEMD160_CTX *ctx;
+  MD5_CTX *ctx;
 
-  md=GWEN_MD_new(RIPEMD160_DIGEST_LENGTH);
-  ctx=(RIPEMD160_CTX*)malloc(sizeof(RIPEMD160_CTX));
+  md=GWEN_MD_new(MD5_DIGEST_LENGTH);
+  ctx=(MD5_CTX*)malloc(sizeof(MD5_CTX));
   GWEN_MD_SetData(md, ctx);
-  GWEN_MD_SetBeginFn(md, GWEN_MdRmd160_Begin);
-  GWEN_MD_SetUpdateFn(md, GWEN_MdRmd160_Update);
-  GWEN_MD_SetEndFn(md, GWEN_MdRmd160_End);
-  GWEN_MD_SetFreeDataFn(md, GWEN_MdRmd160_FreeData);
+  GWEN_MD_SetBeginFn(md, GWEN_MdMd5_Begin);
+  GWEN_MD_SetUpdateFn(md, GWEN_MdMd5_Update);
+  GWEN_MD_SetEndFn(md, GWEN_MdMd5_End);
+  GWEN_MD_SetFreeDataFn(md, GWEN_MdMd5_FreeData);
   return md;
 }
 
 
 
-void GWEN_MdRmd160_FreeData(GWEN_MD *md){
-  RIPEMD160_CTX *ctx;
+void GWEN_MdMd5_FreeData(GWEN_MD *md){
+  MD5_CTX *ctx;
 
   if (md) {
-    ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+    ctx=(MD5_CTX*)GWEN_MD_GetData(md);
     assert(ctx);
     free(ctx);
   }
@@ -82,39 +82,39 @@ void GWEN_MdRmd160_FreeData(GWEN_MD *md){
 
 
 
-int GWEN_MdRmd160_Begin(GWEN_MD *md){
-  RIPEMD160_CTX *ctx;
+int GWEN_MdMd5_Begin(GWEN_MD *md){
+  MD5_CTX *ctx;
 
   assert(md);
-  ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+  ctx=(MD5_CTX*)GWEN_MD_GetData(md);
   assert(ctx);
-  RIPEMD160_Init(ctx);
+  MD5_Init(ctx);
   return 0;
 }
 
 
 
-int GWEN_MdRmd160_End(GWEN_MD *md){
-  RIPEMD160_CTX *ctx;
+int GWEN_MdMd5_End(GWEN_MD *md){
+  MD5_CTX *ctx;
 
   assert(md);
-  ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+  ctx=(MD5_CTX*)GWEN_MD_GetData(md);
   assert(ctx);
-  RIPEMD160_Final(GWEN_MD_GetDigestPtr(md), ctx);
+  MD5_Final(GWEN_MD_GetDigestPtr(md), ctx);
   return 0;
 }
 
 
 
-int GWEN_MdRmd160_Update(GWEN_MD *md,
+int GWEN_MdMd5_Update(GWEN_MD *md,
                          const char *buf,
                          unsigned int l){
-  RIPEMD160_CTX *ctx;
+  MD5_CTX *ctx;
 
   assert(md);
-  ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+  ctx=(MD5_CTX*)GWEN_MD_GetData(md);
   assert(ctx);
-  RIPEMD160_Update(ctx, buf, l);
+  MD5_Update(ctx, buf, l);
   return 0;
 }
 

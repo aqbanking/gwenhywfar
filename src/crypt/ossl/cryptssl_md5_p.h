@@ -2,7 +2,7 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
+ begin       : Thu Dec 18 2003
  copyright   : (C) 2003 by Martin Preuss
  email       : martin@libchipcard.de
 
@@ -26,79 +26,38 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+#ifndef GWENHYWFAR_CRYPTSSL_MD5_P_H
+#define GWENHYWFAR_CRYPTSSL_MD5_P_H
+
+
+#define GWEN_MD_MD5_NAME "MD5"
+
+#include <gwenhywfar/md.h>
+#include <openssl/md5.h>
+#include <openssl/objects.h>
+
+
+GWEN_ERRORCODE GWEN_MdMd5_Register();
+
+GWEN_MD *GWEN_MdMd5_new();
+void GWEN_MdMd5_FreeData(GWEN_MD *md);
+
+int GWEN_MdMd5_Begin(GWEN_MD *md);
+int GWEN_MdMd5_End(GWEN_MD *md);
+int GWEN_MdMd5_Update(GWEN_MD *md,
+                      const char *buf,
+                      unsigned int l);
+
+
+
+
+
+
+
+
+
+
+
 #endif
-
-
-#include "cryptssl_p.h"
-#include "cryptssl_des_p.h"
-#include "cryptssl_rsa_p.h"
-#include "cryptssl_md5_p.h"
-#include "cryptssl_rmd160_p.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
-#include <gwenhywfar/text.h>
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  GWEN_ERRORCODE err;
-  GWEN_ERRORCODE lerr;
-
-  err=0;
-
-  /* register the various cryptkey types */
-  DBG_INFO(0, "Registering RSA");
-  lerr=GWEN_CryptKeyRSA_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  DBG_INFO(0, "Registering DES");
-  lerr=GWEN_CryptKeyDES_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  /* register the various MD types */
-  DBG_INFO(0, "Registering RMD160");
-  lerr=GWEN_MdRmd160_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  DBG_INFO(0, "Registering MD5");
-  lerr=GWEN_MdMd5_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  return err;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
-
-
-
-void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent) {
-  unsigned char *bnbuf;
-
-  bnbuf=(unsigned char*)malloc(BN_num_bytes(bn));
-  BN_bn2bin(bn, bnbuf);
-  GWEN_Text_DumpString((char*)bnbuf, BN_num_bytes(bn), f, indent);
-  free(bnbuf);
-}
-
-
-
 
 

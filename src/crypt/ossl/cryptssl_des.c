@@ -30,6 +30,9 @@
 # include <config.h>
 #endif
 
+/* Define this if you are extending the "class" CryptKey */
+#define GWEN_EXTEND_CRYPTKEY
+
 
 #include "cryptssl_des_p.h"
 #include <gwenhywfar/misc.h>
