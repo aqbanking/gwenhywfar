@@ -1,4 +1,15 @@
 
+2005/01/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added GWEN_NetTransportSSL_SetAskAddCertFn2() which allows setting a
+  callback function which takes a user data pointer.
+- fixed a bug which caused HTTP connections not to return the last message
+  received
+- now the HTTP protocol version plus the HTTP header "connection:" is
+  inspected to find out whether a connection is to be auto-terminated after
+  a message has been received
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.5.0 (2005/01/14)
 ===========================================================================

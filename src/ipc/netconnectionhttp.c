@@ -439,6 +439,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
   GWEN_BUFFER *mbuf;
   GWEN_RINGBUFFER *rbuf;
   GWEN_NETCONNECTIONHTTP *chttp;
+  int goDown=0;
+  const char *hdrConn;
 
   assert(conn);
   chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
@@ -581,6 +583,24 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     /* append message to connection's queue */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
     GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
+
+    /* check whether the connection is to be disconnected */
+    if (chttp->pmajor==1 && chttp->pminor==0)
+      goDown=1;
+
+    hdrConn=GWEN_DB_GetCharValue(GWEN_NetMsg_GetDB(chttp->currentInMsg),
+                                 "header/connection",
+                                 0,
+                                 goDown?"close":"keep-alive");
+    if (strcasecmp(hdrConn, "close")==0) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Closing connection after receiving a message");
+      if (GWEN_NetConnection_StartDisconnect(conn)) {
+        DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
+      }
+    }
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
+
     chttp->currentInMsg=0;
     return GWEN_NetConnectionWorkResult_Change;
   } /* if in body mode */
@@ -652,7 +672,25 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
               /* no body, message complete */
               DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
-	      chttp->currentInMsg=0;
+
+              /* check whether the connection is to be disconnected */
+              if (chttp->pmajor==1 && chttp->pminor==0)
+                goDown=1;
+
+              hdrConn=GWEN_DB_GetCharValue(GWEN_NetMsg_GetDB(chttp->currentInMsg),
+                                           "header/connection",
+                                           0,
+                                           goDown?"close":"keep-alive");
+              if (strcasecmp(hdrConn, "close")==0) {
+                DBG_INFO(GWEN_LOGDOMAIN,
+                         "Closing connection after receiving a message");
+                if (GWEN_NetConnection_StartDisconnect(conn)) {
+                  DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
+                }
+              }
+              DBG_INFO(GWEN_LOGDOMAIN, "Added incoming message");
+
+              chttp->currentInMsg=0;
 	      return GWEN_NetConnectionWorkResult_Change;
 	    }
 	  }
@@ -748,6 +786,24 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
                   /* no body, message complete */
                   DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
                   GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
+
+                  /* check whether the connection is to be disconnected */
+                  if (chttp->pmajor==1 && chttp->pminor==0)
+                    goDown=1;
+              
+                  hdrConn=GWEN_DB_GetCharValue(GWEN_NetMsg_GetDB(chttp->currentInMsg),
+                                               "header/connection",
+                                               0,
+                                               goDown?"close":"keep-alive");
+                  if (strcasecmp(hdrConn, "close")==0) {
+                    DBG_INFO(GWEN_LOGDOMAIN,
+                             "Closing connection after receiving a message");
+                    if (GWEN_NetConnection_StartDisconnect(conn)) {
+                      DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
+                    }
+                  }
+                  DBG_INFO(GWEN_LOGDOMAIN, "Added incoming message");
+
                   chttp->currentInMsg=0;
                   return GWEN_NetConnectionWorkResult_Change;
                 }
@@ -763,6 +819,24 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
               /* no body, message complete */
               DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
+
+              /* check whether the connection is to be disconnected */
+              if (chttp->pmajor==1 && chttp->pminor==0)
+                goDown=1;
+
+              hdrConn=GWEN_DB_GetCharValue(GWEN_NetMsg_GetDB(chttp->currentInMsg),
+                                           "header/connection",
+                                           0,
+                                           goDown?"close":"keep-alive");
+              if (strcasecmp(hdrConn, "close")==0) {
+                DBG_INFO(GWEN_LOGDOMAIN,
+                         "Closing connection after receiving a message");
+                if (GWEN_NetConnection_StartDisconnect(conn)) {
+                  DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
+                }
+              }
+              DBG_INFO(GWEN_LOGDOMAIN, "Added incoming message");
+
 	      chttp->currentInMsg=0;
 	      return GWEN_NetConnectionWorkResult_Change;
 	    }
@@ -932,7 +1006,6 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
 
     changesBak=changes;
 
-#if 0
     rv2=GWEN_NetConnection_WorkIO(conn);
     if (rv2==GWEN_NetConnectionWorkResult_Change) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Change on WorkIO");
@@ -942,7 +1015,6 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on WorkIO");
       return rv2;
     }
-#endif
 
     /* do all write work */
     while(1) {
@@ -991,7 +1063,9 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
         }
         else {
           DBG_ERROR(GWEN_LOGDOMAIN,
-                    "Connection is down, no changes, aborting");
+                    "Connection %p (%p) is down, no changes, aborting",
+                    conn,
+                    GWEN_NetConnection_GetTransportLayer(conn));
           return GWEN_NetConnectionWorkResult_Error;
         }
       }

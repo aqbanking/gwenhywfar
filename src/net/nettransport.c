@@ -187,6 +187,12 @@ GWEN_NetTransport_GetStatus(const GWEN_NETTRANSPORT *tr){
 void GWEN_NetTransport_SetStatus(GWEN_NETTRANSPORT *tr,
                                  GWEN_NETTRANSPORT_STATUS st){
   assert(tr);
+  if (tr->status!=st) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Changing status of %p from %s to %s",
+              tr,
+              GWEN_NetTransport_StatusName(tr->status),
+              GWEN_NetTransport_StatusName(st));
+  }
   tr->status=st;
 }
 

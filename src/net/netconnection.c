@@ -630,27 +630,25 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
   }
 
   /* check for inactive connection */
-  if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
-      GWEN_NetTransportStatusPDisconnected ||
-      GWEN_NetTransport_GetStatus(conn->transportLayer)==
+  if (GWEN_NetTransport_GetStatus(conn->transportLayer)!=
+      GWEN_NetTransportStatusPDisconnected &&
+      GWEN_NetTransport_GetStatus(conn->transportLayer)!=
       GWEN_NetTransportStatusUnconnected){
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Inactive connection");
-    return GWEN_NetConnectionWorkResult_Error;
-  }
 
-  /* ask the next lower level to work */
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Letting transport layer work");
-  rv=GWEN_NetTransport_Work(conn->transportLayer);
-  if (rv==GWEN_NetTransportWorkResult_Error) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error in transport layer (%d)", rv);
-    return GWEN_NetConnectionWorkResult_Error;
+    /* ask the next lower level to work */
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Letting transport layer work");
+    rv=GWEN_NetTransport_Work(conn->transportLayer);
+    if (rv==GWEN_NetTransportWorkResult_Error) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error in transport layer (%d)", rv);
+      return GWEN_NetConnectionWorkResult_Error;
+    }
+    else if (rv==GWEN_NetTransportWorkResult_NoChange) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "No change in transport layer");
+      /* return GWEN_NetConnectionWorkResult_NoChange; */
+    }
+    else
+      doneSomething=1;
   }
-  else if (rv==GWEN_NetTransportWorkResult_NoChange) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "No change in transport layer");
-    /* return GWEN_NetConnectionWorkResult_NoChange; */
-  }
-  else
-    doneSomething=1;
 
   /* check for important status changes */
   if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
@@ -664,10 +662,12 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
     GWEN_NetConnection_Down(conn);
   }
 
-  /* do some IO */
+  if (doneSomething)
+    return GWEN_NetConnectionWorkResult_Change;
+
+  /* do some IO (only if logically connected) */
   if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
       GWEN_NetTransportStatusLConnected) {
-    /* only read/write if logically connected */
     psize=GWEN_RingBuffer_GetMaxUnsegmentedRead(conn->writeBuffer);
     if (psize) {
       const char *ptr;
@@ -735,7 +735,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
         }
       }
     } /* if not EOF met */
-  } /* if logically connected */
+  }
 
   if (doneSomething)
     return GWEN_NetConnectionWorkResult_Change;
@@ -1036,15 +1036,23 @@ GWEN_NetConnection_GetPeerAddr(const GWEN_NETCONNECTION *conn){
 }
 
 
-
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETCONNECTION_WORKRESULT
 GWEN_NetConnection_Work(GWEN_NETCONNECTION *conn){
+  GWEN_NETCONNECTION_WORKRESULT res;
+
   assert(conn);
   if (conn->workFn)
-    return conn->workFn(conn);
+    res=conn->workFn(conn);
   else
-    return GWEN_NetConnection_WorkIO(conn);
+    res=GWEN_NetConnection_WorkIO(conn);
+  if (res==GWEN_NetConnectionWorkResult_Change) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Change on connection.");
+  }
+  else if (res==GWEN_NetConnectionWorkResult_Error) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on connection.");
+  }
+  return res;
 }
 
 
@@ -1053,7 +1061,10 @@ GWEN_NetConnection_Work(GWEN_NETCONNECTION *conn){
 void GWEN_NetConnection_Up(GWEN_NETCONNECTION *conn){
   assert(conn);
   if (!(conn->notified & GWEN_NETCONNECTION_NOTIFIED_UP)) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Connection is up");
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Connection %p (%p) is up",
+             conn,
+             GWEN_NetConnection_GetTransportLayer(conn));
     if (conn->upFn) {
       conn->upFn(conn);
       /* set UP notified flag, remove DOWN notify flag */
@@ -1074,7 +1085,10 @@ void GWEN_NetConnection_Down(GWEN_NETCONNECTION *conn){
       !(conn->notified & GWEN_NETCONNECTION_NOTIFIED_DOWN)) {
     /* only inform about DOWN connection if the application already knows
      * about that connection */
-    DBG_INFO(GWEN_LOGDOMAIN, "Connection is down");
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Connection %p (%p) is down",
+             conn,
+             GWEN_NetConnection_GetTransportLayer(conn));
     if (conn->downFn) {
       conn->downFn(conn);
       /* set DOWN notified flag, remove UP notify flag */
@@ -1309,6 +1323,45 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
   errors=0;
   rset=GWEN_SocketSet_new();
   wset=GWEN_SocketSet_new();
+
+#if 1 /* FIXME: set to 0 to debug job-error in AqBanking */
+  /* -------------------------------------------- let all connections work */
+  curr=GWEN_NetConnection_List_First(connList);
+  while(curr) {
+    GWEN_NETTRANSPORT_STATUS st;
+
+    st=GWEN_NetTransport_GetStatus(curr->transportLayer);
+    if (st!=GWEN_NetTransportStatusDisabled &&
+        st!=GWEN_NetTransportStatusUnconnected) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Working on connection...");
+      rv=GWEN_NetConnection_Work(curr);
+      if (rv==GWEN_NetConnectionWorkResult_Error) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error working (result was %d)", rv);
+        errors++;
+      }
+      else if (rv==GWEN_NetConnectionWorkResult_Change) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Change in connection");
+        changes++;
+      }
+    }
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Skipping inactive connection");
+    }
+    curr=GWEN_NetConnection_List_Next(curr);
+  } /* while */
+
+  if (changes) {
+    GWEN_SocketSet_free(rset);
+    GWEN_SocketSet_free(wset);
+    return GWEN_NetConnectionWorkResult_Change;
+  }
+  if (errors==GWEN_NetConnection_List_GetCount(connList)) {
+    GWEN_SocketSet_free(rset);
+    GWEN_SocketSet_free(wset);
+    DBG_ERROR( GWEN_LOGDOMAIN, "Not a single connection succeeded");
+    return GWEN_NetConnectionWorkResult_Error;
+  }
+#endif
 
   /* ------------------------------------------------------ sample sockets */
   curr=GWEN_NetConnection_List_First(connList);

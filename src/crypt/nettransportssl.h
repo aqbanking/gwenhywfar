@@ -98,6 +98,11 @@ typedef GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
   (*GWEN_NETTRANSPORTSSL_ASKADDCERT_FN)(GWEN_NETTRANSPORT *tr,
                                         GWEN_DB_NODE *cert);
 
+typedef GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+  (*GWEN_NETTRANSPORTSSL_ASKADDCERT_FN2)(GWEN_NETTRANSPORT *tr,
+                                         GWEN_DB_NODE *cert,
+                                         void *user_data);
+
 /**
  * Sets the callback function for asking the user whether to accept a given
  * certificate.
@@ -112,6 +117,12 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   GWEN_NETTRANSPORTSSL_ASKADDCERT_FN
   GWEN_NetTransportSSL_GetAskAddCertFn();
+
+
+GWENHYWFAR_API
+  void
+  GWEN_NetTransportSSL_SetAskAddCertFn2(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN2 fn,
+                                       void *user_data);
 
 /*@}*/
 

@@ -75,6 +75,11 @@ static GWEN_NETTRANSPORTSSL_ASKADDCERT_FN
   gwen_netransportssl_askAddCertFn=0;
 
 
+static GWEN_NETTRANSPORTSSL_ASKADDCERT_FN2
+  gwen_netransportssl_askAddCertFn2=0;
+
+static void *gwen_netransportssl_askAddCertUserData=0;
+
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORTSSL *GWEN_NetTransportSSLData_new(){
@@ -641,12 +646,16 @@ int GWEN_NetTransportSSL_PasswordCB(char *buffer, int num,
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
 GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
-                                 GWEN_DB_NODE *cert){
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Would ask user about this:");
-  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+				 GWEN_DB_NODE *cert){
+  DBG_NOTICE(GWEN_LOGDOMAIN, "Would ask user about this:");
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelNotice)
     GWEN_DB_Dump(cert, stderr, 2);
 
-  if (gwen_netransportssl_askAddCertFn)
+  if (gwen_netransportssl_askAddCertFn2)
+    return gwen_netransportssl_askAddCertFn2(tr,
+					     cert,
+					     gwen_netransportssl_askAddCertUserData);
+  else if (gwen_netransportssl_askAddCertFn)
     return gwen_netransportssl_askAddCertFn(tr, cert);
   else {
     DBG_WARN(GWEN_LOGDOMAIN, "No askAddCert function set");
@@ -667,6 +676,16 @@ GWEN_NetTransportSSL_SetAskAddCertFn(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN fn){
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORTSSL_ASKADDCERT_FN GWEN_NetTransportSSL_GetAskAddCertFn(){
   return gwen_netransportssl_askAddCertFn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void
+GWEN_NetTransportSSL_SetAskAddCertFn2(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN2 fn,
+				      void *user_data){
+  gwen_netransportssl_askAddCertFn2=fn;
+  gwen_netransportssl_askAddCertUserData=user_data;
 }
 
 
@@ -729,7 +748,10 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
   X509_NAME_get_text_by_NID(nm,
                             NID_commonName, cn, sizeof(cn));
 
-  if (skd->CAdir) {
+  if (!dir)
+    dir=skd->CAdir;
+  /*if (skd->CAdir) { */
+  if (dir) {
     GWEN_BUFFER *nbuf;
     unsigned long hash;
     char numbuf[32];
@@ -1345,8 +1367,15 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 	int isErr;
         GWEN_DB_NODE *dbCert;
         const char *s;
+	X509_NAME *nm;
+	unsigned long hash;
+	char numbuf[16];
+	int isNew;
+        GWEN_INETADDRESS *peerAddr;
+	GWEN_ERRORCODE err;
 
-        if (skd->secure) {
+        isNew=0;
+	if (skd->secure) {
           DBG_ERROR(GWEN_LOGDOMAIN,
                     "Invalid peer certificate in secure mode, aborting");
           GWEN_Socket_Close(skd->socket);
@@ -1367,10 +1396,30 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         /* setup certificate */
         dbCert=GWEN_NetTransportSSL__Cert2Db(cert);
 
+	err=GWEN_Socket_GetPeerAddr(skd->socket, &peerAddr);
+	if (!GWEN_Error_IsOk(err)) {
+	  DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+	}
+	else {
+	  char addrBuffer[256];
+
+	  err=GWEN_InetAddr_GetAddress(peerAddr, addrBuffer,
+				       sizeof(addrBuffer)-1);
+	  if (!GWEN_Error_IsOk(err)) {
+	    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+	  }
+	  else {
+	    GWEN_DB_SetCharValue(dbCert, GWEN_DB_FLAGS_DEFAULT,
+				 "ipaddr", addrBuffer);
+	  }
+          GWEN_InetAddr_free(peerAddr);
+	}
+
         /* setup statusText and statusCode */
         switch(vr) {
         case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-          s=I18N("New certificate");
+	  s=I18N("New certificate");
+	  isNew=1;
           break;
         case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
           s=I18N("Unable to get issuer certificate");
@@ -1447,6 +1496,15 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         }
         GWEN_DB_SetCharValue(dbCert, GWEN_DB_FLAGS_DEFAULT,
                              "statusText", s);
+	nm=X509_get_subject_name(cert);
+	if (nm) {
+	  hash=X509_NAME_hash(nm);
+	  snprintf(numbuf, sizeof(numbuf), "%08lx", hash);
+	  GWEN_DB_SetCharValue(dbCert, GWEN_DB_FLAGS_DEFAULT,
+			       "hashValue", numbuf);
+	}
+	GWEN_DB_SetIntValue(dbCert, GWEN_DB_FLAGS_DEFAULT,
+			    "isNew", isNew);
 
         /* ask user */
         isErr=0;
