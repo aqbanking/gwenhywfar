@@ -7,6 +7,10 @@ $Id$
 - added padding with ISO 9796-1 (taken from OpenHBCI, the functions introduced
   have originally been written by Fabian Kaiser and adapted for Gwen by me)
 
+2003-11-12  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac: Fix -L argument in gwenhyfwar_libs; it was missing
+	the /lib suffix.
 
 2003/11/12 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

@@ -117,7 +117,7 @@ AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
-        gwenhyfwar_libs="-L`eval echo $prefix` -lgwenhyfwar"
+        gwenhyfwar_libs="-L`eval echo $prefix/lib` -lgwenhyfwar"
         gwenhyfwar_includes="-I`eval echo $prefix/include`"
         gwenhyfwar_os_lib="os/posix/libos.la"
         IPCDATA_DIR="`eval echo $prefix`/share/gwenhywfar/ipc"
