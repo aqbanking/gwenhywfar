@@ -44,6 +44,7 @@ struct GWEN_IDTABLE {
   GWEN_LIST_ELEMENT(GWEN_IDTABLE);
   GWEN_TYPE_UINT32 freeEntries;
   GWEN_TYPE_UINT32 entries[GWEN_IDTABLE_MAXENTRIES];
+  GWEN_TYPE_UINT32 current;
 };
 
 GWEN_IDTABLE *GWEN_IdTable_new();
@@ -54,12 +55,14 @@ int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
 int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
 int GWEN_IdTable_IsEmpty(const GWEN_IDTABLE *idt);
 int GWEN_IdTable_IsFull(const GWEN_IDTABLE *idt);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(const GWEN_IDTABLE *idt);
+GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt);
+GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt);
 
 
 struct GWEN_IDLIST {
   GWEN_IDTABLE_LIST *idTables;
   GWEN_TYPE_UINT32 entryCount;
+  GWEN_IDTABLE *current;
 };
 
 void GWEN_IdList_Clean(GWEN_IDLIST *idl);

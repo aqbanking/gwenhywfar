@@ -130,13 +130,30 @@ int GWEN_IdTable_IsFull(const GWEN_IDTABLE *idt){
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(const GWEN_IDTABLE *idt){
+GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt){
   unsigned int i;
 
   assert(idt);
 
   for (i=0; i<GWEN_IDTABLE_MAXENTRIES; i++) {
     if (idt->entries[i]!=0) {
+      idt->current=i;
+      return idt->entries[i];
+    }
+  } /* for */
+  return 0;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt){
+  unsigned int i;
+
+  assert(idt);
+
+  for (i=idt->current+1; i<GWEN_IDTABLE_MAXENTRIES; i++) {
+    if (idt->entries[i]!=0) {
+      idt->current=i;
       return idt->entries[i];
     }
   } /* for */
@@ -172,6 +189,7 @@ int GWEN_IdList_AddId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
 
   assert(idl);
 
+  idl->current=0;
   idt=GWEN_IdTable_List_First(idl->idTables);
   /* find free table */
   while(idt) {
@@ -196,6 +214,7 @@ int GWEN_IdList_DelId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
 
   assert(idl);
 
+  idl->current=0;
   idt=GWEN_IdTable_List_First(idl->idTables);
   /* find table */
   while(idt) {
@@ -232,7 +251,7 @@ void GWEN_IdList_Clean(GWEN_IDLIST *idl) {
   GWEN_IDTABLE *idt;
 
   assert(idl);
-
+  idl->current=0;
   idt=GWEN_IdTable_List_First(idl->idTables);
   /* find free table */
   while(idt) {
@@ -249,7 +268,7 @@ void GWEN_IdList_Clean(GWEN_IDLIST *idl) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(const GWEN_IDLIST *idl){
+GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl){
   GWEN_IDTABLE *idt;
 
   assert(idl);
@@ -262,8 +281,35 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(const GWEN_IDLIST *idl){
 
     next=GWEN_IdTable_List_Next(idt);
     id=GWEN_IdTable_GetFirstId(idt);
-    if (id)
+    if (id) {
+      idl->current=idt;
       return id;
+    }
+    idt=next;
+  } /* while */
+
+  return 0;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl){
+  GWEN_IDTABLE *idt;
+
+  assert(idl);
+
+  idt=idl->current;
+  /* find free table */
+  while(idt) {
+    GWEN_IDTABLE *next;
+    GWEN_TYPE_UINT32 id;
+
+    next=GWEN_IdTable_List_Next(idt);
+    id=GWEN_IdTable_GetNextId(idt);
+    if (id) {
+      idl->current=idt;
+      return id;
+    }
     idt=next;
   } /* while */
 

@@ -88,7 +88,9 @@ int GWEN_IdList_HasId(const GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
 /**
  * Returns the first id from the list.
  */
-GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(const GWEN_IDLIST *idl);
+GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl);
+
+GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
 /*@}*/
 
 
