@@ -5,6 +5,7 @@
 - base: added misc2.h
   This file now contains wrappers around a GWEN_LIST which allow typesafe
   use of a GWEN_LIST.
+- base/misc2.h: added *List2_ForEach functions
 
 
 2004/07/27: Martin Preuss<martin@libchipcard.de>

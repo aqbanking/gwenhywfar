@@ -44,10 +44,10 @@
 #include <string.h>
 #include <assert.h>
 
-
 #define GWEN_LIST2_FUNCTION_DEFS(t, pr) \
   typedef struct t##_LIST2 t##_LIST2; \
   typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
+  typedef t* (t##_LIST2_FOREACH)(t *element); \
   \
   t##_LIST2 *pr##_List2_new(); \
   void pr##_List2_free(t##_LIST2 *l); \
@@ -67,7 +67,8 @@
   void pr##_List2Iterator_free(t##_LIST2_ITERATOR *li); \
   t *pr##_List2Iterator_Previous(t##_LIST2_ITERATOR *li); \
   t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
-  t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li);
+  t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
+  t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH);
 
 
 #define GWEN_LIST2_FUNCTIONS(t, pr) \
@@ -146,8 +147,27 @@
   \
   t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li) { \
     return (t*) GWEN_ListIterator_Data((GWEN_LIST_ITERATOR*)li); \
+  } \
+  \
+  t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH fn){ \
+    t##_LIST2_ITERATOR *it; \
+    t *el; \
+    \
+    it=pr##_List2_First(l); \
+    if (!it) \
+      return 0; \
+    el=pr##_List2Iterator_Data(it); \
+    while(el) { \
+      el=fn(el); \
+      if (el) { \
+        pr##_List2Iterator_free(it); \
+        return el; \
+      } \
+      el=pr##_List2Iterator_Next(it); \
+      } \
+    pr##_List2Iterator_free(it); \
+    return 0; \
   }
-
 
 
 
@@ -155,6 +175,7 @@
 #define GWEN_CONSTLIST2_FUNCTION_DEFS(t, pr) \
   typedef struct t##_CONSTLIST2 t##_CONSTLIST2; \
   typedef struct t##_CONSTLIST2_ITERATOR t##_CONSTLIST2_ITERATOR; \
+  typedef const t* (t##_CONSTLIST2_FOREACH)(const t *element); \
   \
   t##_CONSTLIST2 *pr##_ConstList2_new(); \
   void pr##_ConstList2_free(t##_CONSTLIST2 *l); \
@@ -172,7 +193,8 @@
   void pr##_ConstList2Iterator_free(t##_CONSTLIST2_ITERATOR *li); \
   const t *pr##_ConstList2Iterator_Previous(t##_CONSTLIST2_ITERATOR *li); \
   const t *pr##_ConstList2Iterator_Next(t##_CONSTLIST2_ITERATOR *li); \
-  const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li);
+  const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li); \
+  const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH);
 
 
 #define GWEN_CONSTLIST2_FUNCTIONS(t, pr) \
@@ -244,6 +266,26 @@
   \
   const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li) { \
     return (t*) GWEN_ConstListIterator_Data((GWEN_CONSTLIST_ITERATOR*)li); \
+  } \
+  \
+  const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH fn){ \
+    t##_CONSTLIST2_ITERATOR *it; \
+    const t *el; \
+    \
+    it=pr##_ConstList2_First(l); \
+    if (!it) \
+      return 0; \
+    el=pr##_ConstList2Iterator_Data(it); \
+    while(el) { \
+      el=fn(el); \
+      if (el) { \
+        pr##_ConstList2Iterator_free(it); \
+        return el; \
+      } \
+      el=pr##_ConstList2Iterator_Next(it); \
+      } \
+    pr##_ConstList2Iterator_free(it); \
+    return 0; \
   }
 
 
