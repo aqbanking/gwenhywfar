@@ -1401,7 +1401,6 @@ GWEN_SECCTX_MANAGER *GWEN_IPCXMLSecCtxMgr_new(const char *serviceCode,
                                               const char *dir){
   GWEN_SECCTX_MANAGER *scm;
   GWEN_IPCXMLSECCTXMGRDATA *scmd;
-  GWEN_DB_NODE *db;
 
   assert(serviceCode);
   assert(dir);

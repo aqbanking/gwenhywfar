@@ -504,6 +504,26 @@ int testServer(int argc, char **argv) {
   GWEN_IPCXMLSERVICE *service;
   unsigned int serverId;
   GWEN_DB_NODE *gr;
+  char mgrpath[256];
+  char keypath[256];
+
+  if (argc<3) {
+    fprintf(stderr,
+            "  Please give the name of the directory \n"
+            "  containing test data files (usually \"./tmp/gwentest\")\n"
+            "  You will have to copy the content of \"testdata\" "
+            "into that folder first...\n"
+            "  Oh, and the name of the folder must be relative to the\n"
+            "  current working directory, absolute folders are not allowed.\n"
+            "  A simple \"cp testdata tmp\" should do the trick.\n"
+            "  Please do NOT use \"testdata\" directly,\n"
+            "  because it would modify your CVS directory.\n");
+    return 1;
+  }
+  strcpy(mgrpath, argv[2]);
+  strcat(mgrpath, "/serverdir/");
+  strcpy(keypath, argv[2]);
+  strcat(keypath, "/server.key");
 
   e=GWEN_MsgEngine_new();
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
@@ -519,10 +539,10 @@ int testServer(int argc, char **argv) {
   GWEN_MsgEngine_SetProtocolVersion(e, 1);
   GWEN_MsgEngine_SetMode(e, "RDH");
 
-  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", "./testdata/serverdir");
+  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", mgrpath);
 
   keydb=GWEN_DB_Group_new("keys");
-  if (GWEN_DB_ReadFile(keydb, "testdata/server.key",
+  if (GWEN_DB_ReadFile(keydb, keypath,
 		       GWEN_DB_FLAGS_DEFAULT |
 		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     fprintf(stderr, "Error reading key file");
@@ -637,6 +657,26 @@ int testClient(int argc, char **argv) {
   unsigned int serverId;
   GWEN_DB_NODE *gr;
   int j;
+  char mgrpath[256];
+  char keypath[256];
+
+  if (argc<3) {
+    fprintf(stderr,
+            "  Please give the name of the directory \n"
+            "  containing test data files (usually \"./tmp/gwentest\")\n"
+            "  You will have to copy the content of \"testdata\" "
+            "into that folder first...\n"
+            "  Oh, and the name of the folder must be relative to the\n"
+            "  current working directory, absolute folders are not allowed.\n"
+            "  A simple \"cp testdata tmp\" should do the trick.\n"
+            "  Please do NOT use \"testdata\" directly,\n"
+            "  because it would modify your CVS directory.\n");
+    return 1;
+  }
+  strcpy(mgrpath, argv[2]);
+  strcat(mgrpath, "/clientdir/");
+  strcpy(keypath, argv[2]);
+  strcat(keypath, "/client.key");
 
   e=GWEN_MsgEngine_new();
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
@@ -652,10 +692,10 @@ int testClient(int argc, char **argv) {
   GWEN_MsgEngine_SetProtocolVersion(e, 1);
   GWEN_MsgEngine_SetMode(e, "RDH");
 
-  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", "testdata/clientdir");
+  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", mgrpath);
 
   keydb=GWEN_DB_Group_new("keys");
-  if (GWEN_DB_ReadFile(keydb, "testdata/client.key",
+  if (GWEN_DB_ReadFile(keydb, keypath,
 		       GWEN_DB_FLAGS_DEFAULT |
 		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     fprintf(stderr, "Error reading key file");
