@@ -35,7 +35,8 @@ if test "$enable_gwenhywfar" != "no"; then
   AC_ARG_WITH(gwen-dir, [  --with-gwen-dir=DIR
                             uses gwenhywfar from given dir],
     [lcc_dir="$withval"],
-    [lcc_dir="/usr/local \
+    [lcc_dir="${prefix} \
+	     /usr/local \
              /usr \
              /"])
 
