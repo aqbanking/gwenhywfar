@@ -140,6 +140,8 @@ GWEN_REFPTR*
 GWEN_StringList2Iterator_DataRefPtr(GWEN_STRINGLIST2_ITERATOR *li);
 
 
+GWENHYWFAR_API void GWEN_StringList2_Dump(const GWEN_STRINGLIST2 *sl2);
+
 
 
 #ifdef __cplusplus

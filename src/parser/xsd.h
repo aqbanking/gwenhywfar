@@ -99,5 +99,8 @@ int GWEN_XSD_ProfileToXml(GWEN_XSD_ENGINE *e,
 int GWEN_XSD_ProfileFromXml(GWEN_XSD_ENGINE *e,
                             GWEN_XMLNODE *nRoot);
 
+int GWEN_XSD_GlobalizeNode(GWEN_XSD_ENGINE *e,
+                           GWEN_XMLNODE *node);
+
 
 #endif

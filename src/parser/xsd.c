@@ -83,6 +83,27 @@ GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_new(const char *id,
 
 
 
+GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_dup(const GWEN_XSD_NAMESPACE *ons){
+  GWEN_XSD_NAMESPACE *ns;
+
+  GWEN_NEW_OBJECT(GWEN_XSD_NAMESPACE, ns);
+  GWEN_LIST_INIT(GWEN_XSD_NAMESPACE, ns);
+
+  if (ons->id)
+    ns->id=strdup(ons->id);
+  if (ons->outId)
+    ns->outId=strdup(ons->outId);
+  if (ons->name)
+    ns->name=strdup(ons->name);
+  if (ons->url)
+    ns->url=strdup(ons->url);
+  if (ons->localUrl)
+    ns->localUrl=strdup(ons->localUrl);
+  return ns;
+}
+
+
+
 void GWEN_XSD_NameSpace_free(GWEN_XSD_NAMESPACE *ns){
   if (ns) {
     free(ns->outId);
@@ -181,11 +202,11 @@ void GWEN_XSD_free(GWEN_XSD_ENGINE *e){
 
 
 
-GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceById(GWEN_XSD_ENGINE *e,
+GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceById(GWEN_XSD_NAMESPACE_LIST *l,
 						const char *name) {
   GWEN_XSD_NAMESPACE *ns;
 
-  ns=GWEN_XSD_NameSpace_List_First(e->nameSpaces);
+  ns=GWEN_XSD_NameSpace_List_First(l);
   while(ns) {
     if (strcasecmp(name, ns->id)==0)
       break;
@@ -197,11 +218,11 @@ GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceById(GWEN_XSD_ENGINE *e,
 
 
 
-GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceByName(GWEN_XSD_ENGINE *e,
-						 const char *name) {
+GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceByName(GWEN_XSD_NAMESPACE_LIST *l,
+                                                  const char *name) {
   GWEN_XSD_NAMESPACE *ns;
 
-  ns=GWEN_XSD_NameSpace_List_First(e->nameSpaces);
+  ns=GWEN_XSD_NameSpace_List_First(l);
   while(ns) {
     if (strcasecmp(name, ns->name)==0)
       break;
@@ -454,7 +475,7 @@ int GWEN_XSD__ImportSchema(GWEN_XSD_ENGINE *e,
   }
 
   /* find or create namespace object for this document */
-  docNs=GWEN_XSD__FindNameSpaceByName(e, nameSpace);
+  docNs=GWEN_XSD__FindNameSpaceByName(e->nameSpaces, nameSpace);
   if (!docNs) {
     char idbuf[32];
 
@@ -467,7 +488,7 @@ int GWEN_XSD__ImportSchema(GWEN_XSD_ENGINE *e,
   if (p) {
     GWEN_XSD_NAMESPACE *ns;
 
-    ns=GWEN_XSD__FindNameSpaceByName(e, p);
+    ns=GWEN_XSD__FindNameSpaceByName(e->nameSpaces, p);
     assert(ns);
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Converting namespace for global references to \"%s\"",
@@ -508,7 +529,7 @@ int GWEN_XSD__ImportSchema(GWEN_XSD_ENGINE *e,
       newPrefix=name+6;
       oldPrefix=0;
       pname=GWEN_XMLProperty_GetValue(pr);
-      ns=GWEN_XSD__FindNameSpaceByName(e, pname);
+      ns=GWEN_XSD__FindNameSpaceByName(e->nameSpaces, pname);
       if (ns)
 	oldPrefix=ns->id;
       else {
@@ -1089,7 +1110,7 @@ int GWEN_XSD_SetCurrentTargetNameSpace(GWEN_XSD_ENGINE *e, const char *s){
   GWEN_XSD_NAMESPACE *ns;
 
   assert(e);
-  ns=GWEN_XSD__FindNameSpaceByName(e, s);
+  ns=GWEN_XSD__FindNameSpaceByName(e->nameSpaces, s);
   if (!ns) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unknown namespace \"%s\"", s);
     return -1;
@@ -1161,7 +1182,7 @@ int GWEN_XSD_SetNamespace(GWEN_XSD_ENGINE *e,
   assert(prefix || name);
 
   if (prefix) {
-    ns=GWEN_XSD__FindNameSpaceById(e, prefix);
+    ns=GWEN_XSD__FindNameSpaceById(e->nameSpaces, prefix);
     if (ns) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "A namespace with prefix \"%s\" already exists",
@@ -1170,7 +1191,7 @@ int GWEN_XSD_SetNamespace(GWEN_XSD_ENGINE *e,
     }
   }
   if (name) {
-    ns=GWEN_XSD__FindNameSpaceByName(e, name);
+    ns=GWEN_XSD__FindNameSpaceByName(e->nameSpaces, name);
     if (ns) {
       /* namespace already exists, modify it */
       if (prefix) {
@@ -1300,6 +1321,227 @@ int GWEN_XSD_ProfileFromXml(GWEN_XSD_ENGINE *e,
 
   return 0;
 }
+
+
+
+
+
+
+int GWEN_XSD__GlobalizeNode(GWEN_XSD_ENGINE *e,
+                            GWEN_XMLNODE *node,
+                            GWEN_STRINGLIST2 *nodeNameSpaces,
+                            GWEN_XSD_NAMESPACE_LIST *docNameSpaces,
+                            int *lastNameSpaceId) {
+  GWEN_STRINGLIST2 *localnsl;
+  GWEN_XMLPROPERTY *pr;
+  const char *p;
+  const char *s;
+  GWEN_XMLNODE *nn;
+
+  /* create a local copy of the nodes namespace list
+   * This function only creates a shallow copy. If the list is modified it
+   * will really be copied. So this call here only has minor effects if the
+   * current node does not contain any namespace definition.
+   */
+  localnsl=GWEN_StringList2_dup(nodeNameSpaces);
+
+  /* get default namespace of the node */
+  p=GWEN_XMLNode_GetProperty(node, "xmlns", 0);
+  if (p) {
+    GWEN_XSD_NAMESPACE *nodeNs;
+    const char *tmpS;
+
+    DBG_ERROR(GWEN_LOGDOMAIN, "Property \"xmlns\" found in node \"%s\"",
+              GWEN_XMLNode_GetData(node));
+    /* find or create namespace object for this document */
+    nodeNs=GWEN_XSD__FindNameSpaceByName(docNameSpaces, p);
+    if (!nodeNs) {
+      char idbuf[32];
+
+      snprintf(idbuf, sizeof(idbuf), "_ns%d", ++(*lastNameSpaceId));
+      nodeNs=GWEN_XSD_NameSpace_new(idbuf, p, 0, 0);
+      GWEN_XSD_NameSpace_List_Add(nodeNs, docNameSpaces);
+    }
+    /* add to local list of namespaces (replace existing) */
+    tmpS=GWEN_XML_FindNameSpaceByPrefix(localnsl, 0);
+    if (tmpS)
+      GWEN_StringList2_RemoveString(localnsl, tmpS);
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Adding default namespace \"%s\"", p);
+    GWEN_XML_AddNameSpace(localnsl, 0, p);
+  }
+
+  /* extract local namespaces */
+  pr=GWEN_XMLNode_GetFirstProperty(node);
+  while(pr) {
+    const char *name;
+
+    name=GWEN_XMLProperty_GetName(pr);
+    assert(name);
+    if (strncasecmp(name, "xmlns:", 6)==0) {
+      GWEN_XSD_NAMESPACE *ns;
+      const char *pname;
+      const char *newPrefix;
+      const char *oldPrefix;
+      const char *tmpS;
+
+      newPrefix=name+6;
+      oldPrefix=0;
+      pname=GWEN_XMLProperty_GetValue(pr);
+      ns=GWEN_XSD__FindNameSpaceByName(docNameSpaces, pname);
+      if (ns)
+	oldPrefix=ns->id;
+      else {
+	char idbuf[32];
+
+        snprintf(idbuf, sizeof(idbuf), "_ns%d", ++(*lastNameSpaceId));
+	ns=GWEN_XSD_NameSpace_new(idbuf, pname, 0, 0);
+        GWEN_XSD_NameSpace_List_Add(ns, docNameSpaces);
+        oldPrefix=ns->id;
+      }
+      assert(oldPrefix);
+
+      /* add to local list of namespaces (replace existing) */
+      tmpS=GWEN_XML_FindNameSpaceByPrefix(localnsl, newPrefix);
+      if (tmpS)
+        GWEN_StringList2_RemoveString(localnsl, tmpS);
+      DBG_INFO(GWEN_LOGDOMAIN, "Adding namespace \"%s:%s\"",
+               newPrefix, pname);
+      GWEN_XML_AddNameSpace(localnsl, newPrefix, pname);
+    } /* if namespace */
+
+    pr=GWEN_XMLNode_GetNextProperty(node, pr);
+  } /* while property */
+
+
+  /* now rename the current node if necessary */
+  s=GWEN_XMLNode_GetData(node);
+  assert(s);
+  p=strchr(s, ':');
+  if (p) {
+    char *prefix;
+    const char *tmpS;
+    GWEN_XSD_NAMESPACE *tns;
+    GWEN_BUFFER *nbuf;
+
+    /* current node has a prefix, search for it */
+    prefix=(char*)malloc(p-s+1);
+    assert(prefix);
+    memmove(prefix, s, p-s);
+    prefix[p-s]=0;
+
+    tmpS=GWEN_XML_FindNameSpaceByPrefix(localnsl, prefix);
+    if (!tmpS) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Namespace \"%s\" not declared", prefix);
+      GWEN_StringList2_Dump(localnsl);
+      free(prefix);
+      GWEN_StringList2_free(localnsl);
+      return -1;
+    }
+    free(prefix);
+
+    tmpS=strchr(tmpS, ':');
+    assert(tmpS);
+    tmpS++;
+    tns=GWEN_XSD__FindNameSpaceByName(docNameSpaces, tmpS);
+    assert(tns);
+    /* create new name */
+    nbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(nbuf, tns->id);
+    GWEN_Buffer_AppendByte(nbuf, ':');
+    GWEN_Buffer_AppendString(nbuf, p+1);
+    DBG_INFO(GWEN_LOGDOMAIN, "Renaming node \"%s\" to \"%s\"",
+             s, GWEN_Buffer_GetStart(nbuf));
+    GWEN_XMLNode_SetData(node, GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+  }
+  else {
+    const char *tmpS;
+    GWEN_XSD_NAMESPACE *tns;
+    GWEN_BUFFER *nbuf;
+
+    /* current node has no prefix, apply default prefix */
+    tmpS=GWEN_XML_FindNameSpaceByPrefix(localnsl, 0);
+    if (!tmpS) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Default namespace not declared");
+      GWEN_StringList2_free(localnsl);
+      return -1;
+    }
+
+    tmpS=strchr(tmpS, ':');
+    assert(tmpS);
+    tmpS++;
+    tns=GWEN_XSD__FindNameSpaceByName(docNameSpaces, tmpS);
+    assert(tns);
+    /* create new name */
+    nbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendString(nbuf, tns->id);
+    GWEN_Buffer_AppendByte(nbuf, ':');
+    GWEN_Buffer_AppendString(nbuf, s);
+    DBG_INFO(GWEN_LOGDOMAIN, "Renaming node \"%s\" to \"%s\"",
+             s, GWEN_Buffer_GetStart(nbuf));
+    GWEN_XMLNode_SetData(node, GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+  }
+
+
+  /* do the same with all child elements */
+  nn=GWEN_XMLNode_GetFirstTag(node);
+  while(nn) {
+    int rv;
+
+    rv=GWEN_XSD__GlobalizeNode(e, nn, localnsl,
+                               docNameSpaces, lastNameSpaceId);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      GWEN_StringList2_free(localnsl);
+      return rv;
+    }
+    nn=GWEN_XMLNode_GetNextTag(nn);
+  }
+
+  GWEN_StringList2_free(localnsl);
+  return 0;
+}
+
+
+
+int GWEN_XSD_GlobalizeNode(GWEN_XSD_ENGINE *e,
+                           GWEN_XMLNODE *node) {
+  GWEN_STRINGLIST2 *nodeNameSpaces;
+  GWEN_XSD_NAMESPACE_LIST *docNameSpaces;
+  GWEN_XSD_NAMESPACE *ons;
+  int lastNameSpaceId;
+  int rv;
+
+  /* copy namespace list */
+  docNameSpaces=GWEN_XSD_NameSpace_List_new();
+  ons=GWEN_XSD_NameSpace_List_First(e->nameSpaces);
+  while(ons) {
+    GWEN_XSD_NAMESPACE *ns;
+
+    ns=GWEN_XSD_NameSpace_dup(ons);
+    GWEN_XSD_NameSpace_List_Add(ns, docNameSpaces);
+    ons=GWEN_XSD_NameSpace_List_Next(ons);
+  } /* while */
+
+  lastNameSpaceId=e->nextNameSpaceId;
+
+  /* prepare empty local namespace list */
+  nodeNameSpaces=GWEN_StringList2_new();
+
+  rv=GWEN_XSD__GlobalizeNode(e, node, nodeNameSpaces,
+                             docNameSpaces,
+                             &lastNameSpaceId);
+  /* clean up */
+  GWEN_StringList2_free(nodeNameSpaces);
+  GWEN_XSD_NameSpace_List_free(docNameSpaces);
+
+  return rv;
+}
+
+
+
+
 
 
 

@@ -31,7 +31,7 @@
 #include <gwenhywfar/xsd.h>
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/bufferedio.h>
-#include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/stringlist2.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
@@ -271,6 +271,7 @@ GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_new(const char *id,
                                            const char *name,
                                            const char *url,
                                            const char *localUrl);
+GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_dup(const GWEN_XSD_NAMESPACE *ons);
 void GWEN_XSD_NameSpace_free(GWEN_XSD_NAMESPACE *ns);
 int GWEN_XSD_NameSpace_toXml(GWEN_XSD_NAMESPACE *ns, GWEN_XMLNODE *n);
 GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_fromXml(GWEN_XMLNODE *n);
@@ -291,9 +292,9 @@ int GWEN_XSD__GetBooleanValue(GWEN_XSD_ENGINE *e,
                               GWEN_BUFFER *vbuf);
 
 
-GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceById(GWEN_XSD_ENGINE *e,
+GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceById(GWEN_XSD_NAMESPACE_LIST *l,
                                                 const char *name);
-GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceByName(GWEN_XSD_ENGINE *e,
+GWEN_XSD_NAMESPACE *GWEN_XSD__FindNameSpaceByName(GWEN_XSD_NAMESPACE_LIST *l,
                                                   const char *name);
 
 
@@ -460,6 +461,12 @@ const char *GWEN_XSD__QualifyNameIfNecessary(GWEN_XSD_ENGINE *e,
 
 int GWEN_XSD__ImportDerivedTypes(GWEN_XSD_ENGINE *e);
 
+
+int GWEN_XSD__GlobalizeNode(GWEN_XSD_ENGINE *e,
+                            GWEN_XMLNODE *node,
+                            GWEN_STRINGLIST2 *nodeNameSpaces,
+                            GWEN_XSD_NAMESPACE_LIST *docNameSpaces,
+                            int *lastNameSpaceId);
 
 
 #endif

@@ -29,6 +29,7 @@
 #define GWENHYWFAR_XML_L_H
 
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/stringlist2.h>
 
 
 /** The type of a property of a tag (in XML notation this would be
@@ -42,6 +43,19 @@ GWEN_XMLPROPERTY *GWEN_XMLNode_GetNextProperty(const GWEN_XMLNODE *n,
 
 const char *GWEN_XMLProperty_GetName(const GWEN_XMLPROPERTY *pr);
 const char *GWEN_XMLProperty_GetValue(const GWEN_XMLPROPERTY *pr);
+
+
+int GWEN_XML_AddNameSpace(GWEN_STRINGLIST2 *sl,
+                           const char *prefix,
+                           const char *name);
+const char *GWEN_XML_FindNameSpaceByPrefix(GWEN_STRINGLIST2 *sl,
+                                           const char *s);
+const char *GWEN_XML_FindNameSpaceByName(GWEN_STRINGLIST2 *sl,
+                                         const char *s);
+const char *GWEN_XML_FindNameSpace(GWEN_STRINGLIST2 *sl,
+                                   const char *prefix,
+                                   const char *name);
+
 
 #endif
 

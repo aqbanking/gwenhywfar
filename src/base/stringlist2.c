@@ -115,9 +115,11 @@ int GWEN_StringList2_AppendString(GWEN_STRINGLIST2 *sl2,
     }
   }
 
-  rp=GWEN_RefPtr_new((void*)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
   if (take)
-    GWEN_RefPtr_AddFlags(rp, GWEN_REFPTR_FLAGS_AUTODELETE);
+    rp=GWEN_RefPtr_new((void*)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
+  else
+    rp=GWEN_RefPtr_new(strdup(s), GWEN_List_GetRefPtrInfo(sl2->listPtr));
+  GWEN_RefPtr_AddFlags(rp, GWEN_REFPTR_FLAGS_AUTODELETE);
   GWEN_List_PushBackRefPtr(sl2->listPtr, rp);
   return 1;
 }
@@ -128,6 +130,8 @@ int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
                                   const char *s,
                                   int take,
                                   GWEN_STRINGLIST2_INSERTMODE m) {
+  GWEN_REFPTR *rp;
+
   assert(sl2);
   assert(s);
 
@@ -154,9 +158,11 @@ int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
   }
 
   if (take)
-    GWEN_List_PushFront(sl2->listPtr, (void*)s);
+    rp=GWEN_RefPtr_new((void*)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
   else
-    GWEN_List_PushFront(sl2->listPtr, strdup(s));
+    rp=GWEN_RefPtr_new(strdup(s), GWEN_List_GetRefPtrInfo(sl2->listPtr));
+  GWEN_RefPtr_AddFlags(rp, GWEN_REFPTR_FLAGS_AUTODELETE);
+  GWEN_List_PushFrontRefPtr(sl2->listPtr, rp);
   return 1;
 }
 
@@ -322,6 +328,30 @@ unsigned int
 GWEN_StringList2Iterator_GetLinkCount(const GWEN_STRINGLIST2_ITERATOR *li){
   assert(li);
   return GWEN_ListIterator_GetLinkCount((const GWEN_LIST_ITERATOR*)li);
+}
+
+
+
+void GWEN_StringList2_Dump(const GWEN_STRINGLIST2 *sl2){
+  GWEN_STRINGLIST2_ITERATOR *it;
+
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: \"%s\" [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+  else {
+    fprintf(stderr, "Empty string list.\n");
+  }
 }
 
 

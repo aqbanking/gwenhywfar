@@ -30,7 +30,6 @@
 
 #include "xml_l.h"
 
-#include <gwenhywfar/stringlist.h>
 
 #define GWEN_XML_FLAGS__INTERNAL 0xf0000000
 #define GWEN_XML_FLAGS__DATA     0x10000000
@@ -123,24 +122,12 @@ GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
                                    const char *pvalue);
 
 
-int GWEN_XML__AddNameSpace(GWEN_STRINGLIST *sl,
-                           const char *prefix,
-                           const char *name);
-const char *GWEN_XML__FindNameSpaceByPrefix(GWEN_STRINGLIST *sl,
-                                            const char *s);
-const char *GWEN_XML__FindNameSpaceByName(GWEN_STRINGLIST *sl,
-                                          const char *s);
-const char *GWEN_XML__FindNameSpace(GWEN_STRINGLIST *sl,
-                                    const char *prefix,
-                                    const char *name);
-
-
 /**
  * Removes all namespace declarations which have been declared in a higher
  * level.
  */
 int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
-                                       GWEN_STRINGLIST *sl,
+                                       GWEN_STRINGLIST2 *sl,
                                        const char *currentNameSpace);
 
 /**

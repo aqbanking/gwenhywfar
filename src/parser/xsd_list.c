@@ -788,7 +788,7 @@ int GWEN_XSD_ListTypes(GWEN_XSD_ENGINE *e,
   GWEN_BUFFER *nbuf;
   int rv;
 
-  ns=GWEN_XSD__FindNameSpaceByName(e, nameSpace);
+  ns=GWEN_XSD__FindNameSpaceByName(e->nameSpaces, nameSpace);
   if (!ns) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Namespace \"%s\" not found", nameSpace);
     return -1;

@@ -2529,9 +2529,9 @@ void GWEN_XMLNode_ClearHeaders(GWEN_XMLNODE *n){
 
 
 
-int GWEN_XML__AddNameSpace(GWEN_STRINGLIST *sl,
-                           const char *prefix,
-                           const char *name){
+int GWEN_XML_AddNameSpace(GWEN_STRINGLIST2 *sl,
+                          const char *prefix,
+                          const char *name){
   GWEN_BUFFER *nbuf;
   int rv;
 
@@ -2540,63 +2540,74 @@ int GWEN_XML__AddNameSpace(GWEN_STRINGLIST *sl,
     GWEN_Buffer_AppendString(nbuf, prefix);
   GWEN_Buffer_AppendByte(nbuf, ':');
   GWEN_Buffer_AppendString(nbuf, name);
-  rv=GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(nbuf), 0, 1);
+  rv=GWEN_StringList2_AppendString(sl, GWEN_Buffer_GetStart(nbuf), 0,
+                                   GWEN_StringList2_IntertModeNoDouble);
   GWEN_Buffer_free(nbuf);
   return rv;
 }
 
 
 
-const char *GWEN_XML__FindNameSpaceByPrefix(GWEN_STRINGLIST *sl,
-                                            const char *s){
-  GWEN_STRINGLISTENTRY *se;
+const char *GWEN_XML_FindNameSpaceByPrefix(GWEN_STRINGLIST2 *sl,
+                                           const char *s){
+  GWEN_STRINGLIST2_ITERATOR *it;
 
-  se=GWEN_StringList_FirstEntry(sl);
-  while(se) {
+  it=GWEN_StringList2_First(sl);
+  if (it) {
     const char *t;
-    const char *p;
 
-    t=GWEN_StringListEntry_Data(se);
+    t=GWEN_StringList2Iterator_Data(it);
     assert(t);
-    p=strchr(t, ':');
-    assert(p);
-    if (strncasecmp(t, s, p-t)==0)
-      return t;
-    se=GWEN_StringListEntry_Next(se);
-  } /* while */
+    while(t) {
+      const char *p;
+
+      p=strchr(t, ':');
+      assert(p);
+      if ((s==0 && p==t) || (s && strncasecmp(t, s, p-t)==0))
+        return t;
+      t=GWEN_StringList2Iterator_Next(it);
+    } /* while */
+    GWEN_StringList2Iterator_free(it);
+  }
   return 0;
 }
 
 
 
-const char *GWEN_XML__FindNameSpaceByName(GWEN_STRINGLIST *sl,
-                                          const char *s){
-  GWEN_STRINGLISTENTRY *se;
+const char *GWEN_XML_FindNameSpaceByName(GWEN_STRINGLIST2 *sl,
+                                         const char *s){
+  GWEN_STRINGLIST2_ITERATOR *it;
 
-  se=GWEN_StringList_FirstEntry(sl);
-  while(se) {
+  it=GWEN_StringList2_First(sl);
+  if (it) {
     const char *t;
-    const char *p;
 
-    t=GWEN_StringListEntry_Data(se);
+    t=GWEN_StringList2Iterator_Data(it);
     assert(t);
-    p=strchr(t, ':');
-    assert(p);
-    p++;
-    if (strcasecmp(p, s)==0)
-      return t;
-    se=GWEN_StringListEntry_Next(se);
-  } /* while */
+    while(t) {
+      const char *p;
+
+      p=strchr(t, ':');
+      assert(p);
+      p++;
+      if (strcasecmp(p, s)==0) {
+	GWEN_StringList2Iterator_free(it);
+	return t;
+      }
+      t=GWEN_StringList2Iterator_Next(it);
+    } /* while */
+    GWEN_StringList2Iterator_free(it);
+  }
   return 0;
 }
 
 
 
-const char *GWEN_XML__FindNameSpace(GWEN_STRINGLIST *sl,
-                                    const char *prefix,
-                                    const char *name){
+const char *GWEN_XML_FindNameSpace(GWEN_STRINGLIST2 *sl,
+                                   const char *prefix,
+                                   const char *name){
   GWEN_BUFFER *nbuf;
-  GWEN_STRINGLISTENTRY *se;
+  GWEN_STRINGLIST2_ITERATOR *it;
 
   nbuf=GWEN_Buffer_new(0, 32, 0, 1);
   if (prefix)
@@ -2604,22 +2615,27 @@ const char *GWEN_XML__FindNameSpace(GWEN_STRINGLIST *sl,
   GWEN_Buffer_AppendByte(nbuf, ':');
   GWEN_Buffer_AppendString(nbuf, name);
 
-  se=GWEN_StringList_FirstEntry(sl);
-  while(se) {
+  it=GWEN_StringList2_First(sl);
+  if (it) {
     const char *t;
-    const char *p;
 
-    t=GWEN_StringListEntry_Data(se);
+    t=GWEN_StringList2Iterator_Data(it);
     assert(t);
-    p=strchr(t, ':');
-    assert(p);
-    p++;
-    if (strcasecmp(p, GWEN_Buffer_GetStart(nbuf))==0) {
-      GWEN_Buffer_free(nbuf);
-      return t;
-    }
-    se=GWEN_StringListEntry_Next(se);
-  } /* while */
+    while(t) {
+      const char *p;
+
+      p=strchr(t, ':');
+      assert(p);
+      p++;
+      if (strcasecmp(p, GWEN_Buffer_GetStart(nbuf))==0) {
+	GWEN_StringList2Iterator_free(it);
+	GWEN_Buffer_free(nbuf);
+	return t;
+      }
+      t=GWEN_StringList2Iterator_Next(it);
+    } /* while */
+    GWEN_StringList2Iterator_free(it);
+  }
 
   GWEN_Buffer_free(nbuf);
   return 0;
@@ -2628,7 +2644,7 @@ const char *GWEN_XML__FindNameSpace(GWEN_STRINGLIST *sl,
 
 
 int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
-                                       GWEN_STRINGLIST *sl,
+                                       GWEN_STRINGLIST2 *sl,
                                        const char *currentNameSpace) {
   GWEN_XMLPROPERTY *pr;
   GWEN_XMLNODE *nn;
@@ -2682,7 +2698,7 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
       prefix++;
 
       /* check for redefinition */
-      x=GWEN_XML__FindNameSpaceByName(sl, prefix);
+      x=GWEN_XML_FindNameSpaceByName(sl, prefix);
       if (x) {
         const char *p;
 
@@ -2709,7 +2725,7 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
         }
       }
       else {
-        GWEN_XML__AddNameSpace(sl, prefix, pr->value);
+        GWEN_XML_AddNameSpace(sl, prefix, pr->value);
       }
     }
     pr=prNext;
@@ -2896,12 +2912,12 @@ int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n) {
 int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n) {
   const char *ns;
   int rv;
-  GWEN_STRINGLIST *sl;
+  GWEN_STRINGLIST2 *sl;
 
   ns=GWEN_XMLNode_GetProperty(n, "xmlns", 0);
-  sl=GWEN_StringList_new();
+  sl=GWEN_StringList2_new();
   rv=GWEN_XMLNode__CheckNameSpaceDecls1(n, sl, ns);
-  GWEN_StringList_free(sl);
+  GWEN_StringList2_free(sl);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return rv;

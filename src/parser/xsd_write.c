@@ -397,7 +397,7 @@ int GWEN_XSD__GetElementData(GWEN_XSD_ENGINE *e,
   assert(nsName);
   memmove(nsName, typeName, p-typeName);
   nsName[p-typeName]=0;
-  ns=GWEN_XSD__FindNameSpaceById(e, nsName);
+  ns=GWEN_XSD__FindNameSpaceById(e->nameSpaces, nsName);
   if (!ns) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Namespace \"%s\" not found", nsName);
     free(nsName);
@@ -648,7 +648,7 @@ GWEN_XMLNODE *GWEN_XSD__CreateXmlNodeInNameSpace(GWEN_XSD_ENGINE *e,
   
     nbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendBytes(nbuf, name, sName-name);
-    ns=GWEN_XSD__FindNameSpaceById(e, GWEN_Buffer_GetStart(nbuf));
+    ns=GWEN_XSD__FindNameSpaceById(e->nameSpaces, GWEN_Buffer_GetStart(nbuf));
     assert(ns);
     GWEN_Buffer_Reset(nbuf);
     GWEN_Buffer_AppendString(nbuf, ns->outId);
@@ -1234,7 +1234,7 @@ int GWEN_XSD_WriteElement(GWEN_XSD_ENGINE *e,
   GWEN_XMLNODE *nLocalStore;
   int rv;
 
-  ns=GWEN_XSD__FindNameSpaceByName(e, nameSpace);
+  ns=GWEN_XSD__FindNameSpaceByName(e->nameSpaces, nameSpace);
   if (!ns) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Namespace \"%s\" not found", nameSpace);
     return -1;
@@ -1276,7 +1276,8 @@ int GWEN_XSD_WriteElement(GWEN_XSD_ENGINE *e,
 
       if (whistlesAndBells) {
         if (e->currentTargetNameSpace) {
-          ns=GWEN_XSD__FindNameSpaceById(e, e->currentTargetNameSpace);
+          ns=GWEN_XSD__FindNameSpaceById(e->nameSpaces,
+                                         e->currentTargetNameSpace);
           if (ns) {
             GWEN_XMLNode_SetProperty(nNew, "xmlns", ns->name);
           }

@@ -3669,6 +3669,104 @@ int testXSD3(int argc, char **argv) {
 
 
 
+int testXSD4(int argc, char **argv) {
+  GWEN_XSD_ENGINE *e;
+  GWEN_XSD_NAMESPACE *ns;
+  int rv;
+  int i; /* , j; */
+  GWEN_XMLNODE *nStore;
+  GWEN_XMLNODE *nProfile;
+  GWEN_XMLNODE *node;
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelDebug);
+
+  e=GWEN_XSD_new();
+
+  nProfile=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  if (GWEN_XML_ReadFile(nProfile, "testprofile1.xml",
+                        GWEN_XML_FLAGS_DEFAULT |
+                        GWEN_XML_FLAGS_HANDLE_HEADERS /* |
+                        GWEN_XML_FLAGS_IGNORE_INCLUDE |
+                        GWEN_XML_FLAGS_NO_CONDENSE |
+                        GWEN_XML_FLAGS_KEEP_BLANKS*/)) {
+    fprintf(stderr, "Could not read file \"%s\"\n", "testprofile1.xml");
+    return 2;
+  }
+
+  node=GWEN_XMLNode_FindFirstTag(nProfile, "profile", 0, 0);
+  if (!node) {
+    fprintf(stderr, "No profile inside the XML file.\n");
+    return 2;
+  }
+  if (GWEN_XSD_ProfileFromXml(e, node)) {
+    fprintf(stderr, "Could not setup profile.\n");
+    return 2;
+  }
+
+  ns=GWEN_XSD_NameSpace_List_First(e->nameSpaces);
+  i=1;
+  while(ns) {
+    fprintf(stderr, "Namespace %d: %s: %s (%s)\n",
+            i, ns->id, ns->name, ns->url);
+    ns=GWEN_XSD_NameSpace_List_Next(ns);
+    i++;
+  }
+
+  nStore=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  if (GWEN_XML_ReadFile(nStore, "xsd-result-norm.xml",
+                        GWEN_XML_FLAGS_DEFAULT |
+                        GWEN_XML_FLAGS_HANDLE_HEADERS /* |
+                        GWEN_XML_FLAGS_IGNORE_INCLUDE |
+                        GWEN_XML_FLAGS_NO_CONDENSE |
+                        GWEN_XML_FLAGS_KEEP_BLANKS*/)) {
+    fprintf(stderr, "Could not read file \"%s\"\n", "xsd-result-norm.xml");
+    return 2;
+  }
+
+  node=GWEN_XMLNode_GetFirstTag(nStore);
+  assert(node);
+  rv=GWEN_XSD_GlobalizeNode(e, node);
+  if (rv) {
+    fprintf(stderr, "Could not globalize node (%d).\n", rv);
+  }
+  else {
+    node=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "?xml");
+    GWEN_XMLNode_AddHeader(nStore, node);
+    GWEN_XMLNode_SetProperty(node, "version", "1.0");
+    GWEN_XMLNode_SetProperty(node, "encoding", "utf-8");
+    fprintf(stderr, "Type written\n");
+    GWEN_XMLNode_Dump(nStore, stderr, 2);
+    if (GWEN_XMLNode_WriteFile(nStore, "xsd-result-globalized.xml",
+                               GWEN_XML_FLAGS_DEFAULT |
+                               GWEN_XML_FLAGS_SIMPLE |
+                               GWEN_XML_FLAGS_HANDLE_HEADERS)){
+      fprintf(stderr, "Could not write file xsd-result.xml\n");
+      return 2;
+    }
+    rv=GWEN_XMLNode_NormalizeNameSpaces(nStore);
+    if (rv) {
+      fprintf(stderr, "Could not normalize XML tree (%d)\n", rv);
+      return 2;
+    }
+    else {
+      fprintf(stderr, "XML tree normalized.\n");
+    }
+    if (GWEN_XMLNode_WriteFile(nStore, "xsd-result-globalized-norm.xml",
+                               GWEN_XML_FLAGS_DEFAULT |
+                               GWEN_XML_FLAGS_SIMPLE|
+                               GWEN_XML_FLAGS_HANDLE_HEADERS)){
+      fprintf(stderr,
+              "Could not write file xsd-result-globalized-norm.xml\n");
+      return 2;
+    }
+  }
+
+  GWEN_XSD_free(e);
+  return 0;
+}
+
+
+
 int testPtr(int argc, char **argv) {
   GWEN_REFPTR *rp;
   GWEN_REFPTR *rp2;
@@ -3994,6 +4092,8 @@ int main(int argc, char **argv) {
     rv=testXSD2(argc, argv);
   else if (strcasecmp(argv[1], "xsd3")==0)
     rv=testXSD3(argc, argv);
+  else if (strcasecmp(argv[1], "xsd4")==0)
+    rv=testXSD4(argc, argv);
   else if (strcasecmp(argv[1], "ptr")==0)
     rv=testPtr(argc, argv);
   else if (strcasecmp(argv[1], "sl2")==0)
