@@ -2,8 +2,8 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Wed May 05 2004
+ copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,45 +26,66 @@
  ***************************************************************************/
 
 
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#ifndef GWEN_NETTRANSPORTSSL_P_H
+#define GWEN_NETTRANSPORTSSL_P_H
 
 
-#include "cryptnone_p.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
+#include <gwenhywfar/nettransportssl.h>
+#include <openssl/ssl.h>
 
 
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  return 0;
-}
+typedef struct GWEN_NETTRANSPORTSSL {
+  GWEN_SOCKET *socket;
+  int ownSocket;
+
+  char *CAfile;
+  char *CAdir;
+  SSL_CTX *ssl_ctx;
+  SSL *ssl;
+  int secure;
+  int isSecure;
+  int active;
+} GWEN_NETTRANSPORTSSL;
 
 
+GWEN_NETTRANSPORTSSL *GWEN_NetTransportSSLData_new();
 
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
-
+void GWEN_NetTransportSSL_FreeData(void *bp, void *p);
 
 
-int GWEN_SSLConn_IsAvailable(){
-  return 0;
-}
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr);
 
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSSL_StartAccept(GWEN_NETTRANSPORT *tr);
 
-
-GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
-                                            const char *cafile,
-                                            const char *capath,
-                                            int secure,
-                                            int relinquish){
-  DBG_ERROR(0, "SSL not available");
-  return 0;
-}
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSSL_StartDisconnect(GWEN_NETTRANSPORT *tr);
 
 
 
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
+                               char *buffer,
+                               int *bsize);
 
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
+                                const char *buffer,
+                                int *bsize);
+
+
+
+int GWEN_NetTransportSSL_AddSockets(GWEN_NETTRANSPORT *tr,
+                                       GWEN_SOCKETSET *sset,
+                                       int forReading);
+
+GWEN_NETTRANSPORT_WORKRESULT
+  GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr);
+
+
+const char *GWEN_NetTransportSSL_ErrorString(unsigned int e);
+
+
+#endif /* GWEN_NETTRANSPORTSSL_P_H */
 

@@ -25,6 +25,7 @@
 - removed some trailing semicolons from macros in inherit.h and misc.h
 - renamed DLL to gwenhywfar32_EFFECTIVE_SO_VERSION to imitate the very
   useful SO features of the GNU linker on windows
+- started working on a NetTransport module for SSL connections
 
 
 2004/05/04: Martin Preuss<martin@libchipcard.de>

@@ -2,8 +2,8 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Wed May 05 2004
+ copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,45 +26,19 @@
  ***************************************************************************/
 
 
+#ifndef GWEN_NETTRANSPORTSSL_H
+#define GWEN_NETTRANSPORTSSL_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-
-#include "cryptnone_p.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
+#include <gwenhywfar/nettransport.h>
 
 
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  return 0;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
-
-
-
-int GWEN_SSLConn_IsAvailable(){
-  return 0;
-}
-
-
-
+GWENHYWFAR_API
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             const char *cafile,
                                             const char *capath,
                                             int secure,
-                                            int relinquish){
-  DBG_ERROR(0, "SSL not available");
-  return 0;
-}
+                                            int relinquish);
 
 
 
-
-
+#endif /* GWEN_NETTRANSPORTSSL_H */

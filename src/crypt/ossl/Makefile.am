@@ -9,7 +9,8 @@ noinst_HEADERS=\
  cryptssl_md5_p.h \
  cryptssl_rmd160_p.h \
  cryptssl_rsa_p.h \
- cryptssl_sslconn_p.h
+ cryptssl_sslconn_p.h \
+ nettransportssl_p.h
  
 
 libcryptimpl_la_SOURCES=\
@@ -18,5 +19,6 @@ libcryptimpl_la_SOURCES=\
  cryptssl_rmd160.c \
  cryptssl_rsa.c \
  cryptssl_sslconn.c \
- cryptssl.c
+ cryptssl.c \
+ nettransportssl.c
  
