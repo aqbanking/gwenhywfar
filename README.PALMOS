@@ -50,4 +50,4 @@ So in order to compile Gwenhywfar you should do this:
 "make -fMakefile.cvs"       (only for CVS versions)
 "make -fMakefile.cvs palm"  (calles the configure script with appropriate
                              arguments and flags)
-"make"                      (builds Gwenhywfar for PalmOS)
+"make -f Makefile.palm"     (builds Gwenhywfar for PalmOS)

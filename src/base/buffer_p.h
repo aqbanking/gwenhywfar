@@ -46,15 +46,15 @@
 struct GWEN_BUFFER {
   char *realPtr;
   char *ptr;
-  unsigned int pos;
-  unsigned int bufferSize;
-  unsigned int realBufferSize;
-  unsigned bytesUsed;
-  unsigned int flags;
-  unsigned int mode;
-  unsigned int hardLimit;
-  unsigned int step;
-  unsigned int bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
+  GWEN_TYPE_UINT32 pos;
+  GWEN_TYPE_UINT32 bufferSize;
+  GWEN_TYPE_UINT32 realBufferSize;
+  GWEN_TYPE_UINT32 bytesUsed;
+  GWEN_TYPE_UINT32 flags;
+  GWEN_TYPE_UINT32 mode;
+  GWEN_TYPE_UINT32 hardLimit;
+  GWEN_TYPE_UINT32 step;
+  GWEN_TYPE_UINT32 bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
 };
 
 

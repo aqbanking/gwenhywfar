@@ -30,6 +30,8 @@
 #define GWENHYWFAR_BUFFER_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
+
 
 #include <stdio.h>
 /* This is needed for PalmOS, because it define some functions needed */
@@ -71,8 +73,8 @@ typedef struct GWEN_BUFFER GWEN_BUFFER;
  */
 GWENHYWFAR_API
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
-                             unsigned int size,
-                             unsigned int used,
+                             GWEN_TYPE_UINT32 size,
+                             GWEN_TYPE_UINT32 used,
                              int take);
 
 GWENHYWFAR_API
@@ -87,27 +89,27 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf);
  * Returns the current mode of the buffer (such as GWEN_BUFFER_MODE_DYNAMIC).
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_GetMode(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_GetMode(GWEN_BUFFER *bf);
 
 /**
  * Changes the current mode of the buffer (such as GWEN_BUFFER_MODE_DYNAMIC).
  */
 GWENHYWFAR_API
-void GWEN_Buffer_SetMode(GWEN_BUFFER *bf, unsigned int mode);
+void GWEN_Buffer_SetMode(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 mode);
 
 /**
  * Returns the hard limit. This is the maximum size of a GWEN_BUFFER in
  * dynamic mode.
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_GetHardLimit(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_GetHardLimit(GWEN_BUFFER *bf);
 
 /**
  * Changes the hard limit. This is the maximum size of a GWEN_BUFFER in
  * dynamic mode.
  */
 GWENHYWFAR_API
-void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, unsigned int l);
+void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 l);
 
 
 /**
@@ -116,7 +118,7 @@ void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, unsigned int l);
  * The allocated data in total for this buffer will be aligned to this value.
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_GetStep(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_GetStep(GWEN_BUFFER *bf);
 
 /**
  * In dynamic mode, whenever there is new data to allocate then this value
@@ -126,7 +128,7 @@ unsigned int GWEN_Buffer_GetStep(GWEN_BUFFER *bf);
  * only ONE bit must be set !)
  */
 GWENHYWFAR_API
-void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, unsigned int step);
+void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 step);
 
 
 /**
@@ -138,7 +140,7 @@ void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, unsigned int step);
  * inserting bytes at the beginning of the buffer.
  */
 GWENHYWFAR_API
-int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, unsigned int res);
+int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 res);
 
 
 /**
@@ -153,7 +155,7 @@ char *GWEN_Buffer_GetStart(GWEN_BUFFER *bf);
  * Returns the size of the buffer (i.e. the number of bytes allocated).
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_GetSize(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_GetSize(GWEN_BUFFER *bf);
 
 
 /**
@@ -161,25 +163,25 @@ unsigned int GWEN_Buffer_GetSize(GWEN_BUFFER *bf);
  * by the various read and write functions.
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_GetPos(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_GetPos(GWEN_BUFFER *bf);
 
 /**
  * @return 0 if ok, !=0 on error
  */
 GWENHYWFAR_API
-int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, unsigned int i);
+int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i);
 
 /**
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf);
 
 
 /**
  * Returns the given bookmark
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx);
+GWEN_TYPE_UINT32 GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx);
 
 
 /**
@@ -188,14 +190,14 @@ unsigned int GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx);
  */
 GWENHYWFAR_API
 void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
-                             unsigned int v);
+                             GWEN_TYPE_UINT32 v);
 
 
 /**
  * @return 0 if ok, !=0 on error
  */
 GWENHYWFAR_API
-int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, unsigned int i);
+int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i);
 
 /**
  * Copies the contents of the given buffer to this GWEN_BUFFER, if there is
@@ -206,7 +208,7 @@ int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, unsigned int i);
 GWENHYWFAR_API
 int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
                             const char *buffer,
-                            unsigned int size);
+                            GWEN_TYPE_UINT32 size);
 
 /**
  * Appends a string to the buffer (without the trailing null char!)
@@ -239,7 +241,7 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c);
 GWENHYWFAR_API
 int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
                             const char *buffer,
-                            unsigned int size);
+                            GWEN_TYPE_UINT32 size);
 
 
 /**
@@ -279,7 +281,7 @@ int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf);
 GWENHYWFAR_API
 int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
                           char *buffer,
-                          unsigned int *size);
+                          GWEN_TYPE_UINT32 *size);
 
 
 /**
@@ -293,10 +295,10 @@ int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf);
 
 
 GWENHYWFAR_API
-int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, unsigned int i);
+int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i);
 
 GWENHYWFAR_API
-int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, unsigned int i);
+int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i);
 
 GWENHYWFAR_API
 int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf);
@@ -314,14 +316,14 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
  * Returns the number of unused bytes within the buffer.
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf);
 
 
 /**
  * Returns the number of bytes from pos to the end of the used area.
  */
 GWENHYWFAR_API
-unsigned int GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf);
+GWEN_TYPE_UINT32 GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf);
 
 
 /**
@@ -348,14 +350,14 @@ void GWEN_Buffer_Rewind(GWEN_BUFFER *bf);
  * Make sure that the buffer has enough room for the given bytes.
  */
 GWENHYWFAR_API
-int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size);
+int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size);
 
 
 /* crops the buffer to the specified bytes */
 GWENHYWFAR_API
 int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
-                     unsigned int pos,
-                     unsigned int l);
+                     GWEN_TYPE_UINT32 pos,
+                     GWEN_TYPE_UINT32 l);
 
 
 GWENHYWFAR_API
