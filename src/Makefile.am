@@ -112,7 +112,7 @@ if IS_WINDOWS
 dll: $(DLL_NAME)
 
 dll-install: dll
-	$(INSTALL) -D $(DLL_NAME) $(DESTDIR)/c/windows/$(DLL_NAME)
+	$(INSTALL) -D $(DLL_NAME) $(DESTDIR)$(WIN_PATH_SYSTEM_MINGW)/$(DLL_NAME)
 
 ressource.o: ressource.rc
 	$(WINDRES) -i $< -o $@
@@ -121,3 +121,5 @@ exports.o: libgwenhywfar.la $(DLL_OBJS)
 	$(DLLTOOL) -e exports.o $(DLL_OBJS)
 
 endif
+
+CLEANFILES = $(DLL_NAME) $(DLL_EXP_LIB) $(DLL_EXP_DEF)
