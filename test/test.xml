@@ -40,6 +40,32 @@
    </VALUES>
  </SEGdef>
 
+
+ <SEGdef id="Open" code="OPEN" version="1"
+         delimiter="+" terminator="'" encrypt="0" >
+   <GROUP type="SegHead" name="head" />
+    <ELEM name="name" type="AN" maxsize="32"/>
+    <ELEM name="version" type="ascii" maxsize="16"/>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="Close" code="CLOSE" version="1"
+         delimiter="+" terminator="'"  encrypt="0" >
+   <GROUP type="SegHead" name="head" />
+    <ELEM name="reason" type="ascii" maxsize="64"/>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
  <SEGdef code="PING" version="1"
          delimiter="+" terminator="'" >
    <GROUP type="SegHead" name="head" />

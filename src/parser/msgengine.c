@@ -2471,6 +2471,203 @@ int GWEN_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_MsgEngine_SkipSegment(GWEN_MSGENGINE *e,
+                               GWEN_BUFFER *msgbuf,
+                               unsigned char escapeChar,
+                               unsigned char delimiter) {
+  int esc;
+
+  esc=0;
+  while(GWEN_Buffer_BytesLeft(msgbuf)) {
+    if (esc) {
+      esc=0;
+    }
+    else {
+      int i;
+      unsigned char c;
+
+      i=GWEN_Buffer_ReadByte(msgbuf);
+      if (i==-1) {
+        DBG_INFO(0, "called from here");
+        return 0;
+      }
+      c=(unsigned int)i;
+      if (c==escapeChar) { /* escape */
+        esc=1;
+      }
+      else if (c=='@') {
+      /* skip binary data */
+        char lbuffer[16];
+        char *p;
+        int l;
+        int nc;
+
+        p=lbuffer;
+        while(1) {
+          nc=GWEN_Buffer_ReadByte(msgbuf);
+          if (nc==-1) {
+            DBG_ERROR(0, "\"@num@\" expected");
+            return -1;
+          }
+          if (nc=='@')
+            break;
+          *p=nc;
+          p++;
+        } /* while */
+        *p=0;
+        if (sscanf(lbuffer, "%d", &l)!=1) {
+          DBG_ERROR(0, "Bad number format");
+          return -1;
+        }
+        if (GWEN_Buffer_GetUsedBytes(msgbuf)-GWEN_Buffer_GetPos(msgbuf)<l) {
+          DBG_ERROR(0, "Premature end of message (binary beyond end)");
+          return -1;
+        }
+        GWEN_Buffer_IncrementPos(msgbuf, l);
+      }
+      else if (c==delimiter) {/* segment-end */
+        return 0;
+        break;
+      }
+    }
+  } /* while */
+
+  DBG_ERROR(0, "End of segment not found");
+  return -1;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
+                               const char *gtype,
+                               GWEN_BUFFER *mbuf,
+                               GWEN_DB_NODE *gr) {
+  unsigned int segments;
+
+  segments=0;
+
+  while(GWEN_Buffer_BytesLeft(mbuf)) {
+    GWEN_XMLNODE *node;
+    unsigned int posBak;
+    const char *p;
+    GWEN_DB_NODE *tmpdb;
+
+    /* find head segment description */
+    tmpdb=GWEN_DB_Group_new("tmpdb");
+    node=GWEN_MsgEngine_FindGroupByProperty(e,
+                                            "id",
+                                            0,
+                                            "SegHead");
+    if (node==0) {
+      DBG_ERROR(0, "Segment description not found");
+      GWEN_DB_Group_free(tmpdb);
+      return -1;
+    }
+
+    /* parse head segment */
+    posBak=GWEN_Buffer_GetPos(mbuf);
+    if (GWEN_MsgEngine_ParseMessage(e,
+                                    node,
+                                    mbuf,
+                                    tmpdb)) {
+      DBG_ERROR(0, "Error parsing segment head");
+      GWEN_DB_Group_free(tmpdb);
+      return -1;
+    }
+
+    /* get segment code */
+    p=GWEN_DB_GetCharValue(tmpdb,
+                           "code",
+                           0,
+                           0);
+    if (!p) {
+      DBG_ERROR(0, "No segment code ? This seems to be a bad msg...");
+      GWEN_Buffer_SetPos(mbuf, posBak);
+      GWEN_DB_Group_free(tmpdb);
+      return -1;
+    }
+
+    /* try to find corresponding XML node */
+    node=GWEN_MsgEngine_FindNodeByProperty(e,
+                                           gtype,
+                                           "code",
+                                           0,
+                                           p);
+    if (node==0) {
+      /* node not found, skip it */
+      DBG_WARN(0,
+               "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
+               p,
+               GWEN_DB_GetIntValue(tmpdb, "seq", 0, -1),
+               GWEN_DB_GetIntValue(tmpdb, "version", 0, -1),
+               GWEN_DB_GetIntValue(tmpdb, "ref", 0, -1));
+      if (GWEN_MsgEngine_SkipSegment(e, mbuf, '?', '\'')) {
+        DBG_ERROR(0, "Error skipping segment \"%s\"", p);
+        GWEN_DB_Group_free(tmpdb);
+        return -1;
+      }
+    }
+    else {
+      /* ok, node available, get the corresponding description and parse
+       * the segment */
+      const char *id;
+      GWEN_DB_NODE *storegrp;
+      unsigned int startPos;
+
+      /* restore start position, since the segment head is part of a full
+       * description, so we need to restart reading from the very begin */
+      GWEN_Buffer_SetPos(mbuf, posBak);
+
+      /* create group in DB for this segment */
+      id=GWEN_XMLNode_GetProperty(node, "id", p);
+      storegrp=GWEN_DB_GetGroup(gr,
+                                GWEN_PATH_FLAGS_NAMECREATE,
+                                id);
+      assert(storegrp);
+
+      /* store the start position of this segment within the DB */
+      startPos=GWEN_Buffer_GetPos(mbuf);
+      GWEN_DB_SetIntValue(storegrp,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "segment/pos",
+                          startPos);
+
+      /* parse the segment */
+      if (GWEN_MsgEngine_ParseMessage(e,
+                                      node,
+                                      mbuf,
+                                      storegrp)) {
+        DBG_ERROR(0, "Error parsing segment \"%s\"",p);
+        GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
+                             GWEN_Buffer_GetUsedBytes(mbuf)-startPos);
+        GWEN_DB_Group_free(tmpdb);
+        return -1;
+      }
+
+      /* store segment size within DB */
+      GWEN_DB_SetIntValue(storegrp,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "segment/pos",
+                          GWEN_Buffer_GetPos(mbuf)-startPos);
+      segments++;
+    }
+    GWEN_DB_Group_free(tmpdb);
+  } /* while */
+
+  /* done */
+  if (segments) {
+    DBG_INFO(0, "Parsed %d segments", segments);
+    return 0;
+  }
+  else {
+    DBG_INFO(0, "No segments parsed.");
+    return 1;
+  }
+}
+
+
 
 
 

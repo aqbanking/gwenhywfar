@@ -1,6 +1,12 @@
 $Id$
 
 
+2003/09/21 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- worked on MsgEngine, IPC-CmdLayer
+- will start to combine both of them tomorrow
+
+
 2003/09/20 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - started debugging several modules (mostly IPC and msgEngine)

@@ -466,16 +466,16 @@ GWEN_ERRORCODE GWEN_ConnectionLayerCmd_Work(GWEN_IPCCONNLAYER *cl, int rd){
   switch(cst) {
 
   case GWEN_IPCConnectionLayerStateOpening:
-    switch(ccd->securityState) {
-    case GWEN_IPCCONNLAYERCMD_SECSTATE_CLOSED:
+    if (ccd->securityState==GWEN_IPCCONNLAYERCMD_SECSTATE_CLOSED) {
       err=GWEN_IPCTransportLayer_StartConnect(tl);
       if (!GWEN_Error_IsOk(err)) {
         DBG_INFO(0, "called from here");
         return err;
       }
       ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTING;
-      /* no break, we simply continue here to save work-calls */
-    case GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTING:
+    }
+
+    if (ccd->securityState==GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTING) {
       err=GWEN_IPCTransportLayer_FinishConnect(tl);
       if (!GWEN_Error_IsOk(err)) {
         if (GWEN_Error_GetType(err)!=
@@ -492,42 +492,66 @@ GWEN_ERRORCODE GWEN_ConnectionLayerCmd_Work(GWEN_IPCCONNLAYER *cl, int rd){
       }
       /* goto next state */
       ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTED;
-      /* no break, we simply continue here to save work-calls */
-    case GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTED:
+    }
+
+    if (ccd->securityState==GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTED) {
+      /* if passive: await greeting, otherwise send it */
+      ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_GREETING;
+    }
+
+    if (ccd->securityState==GWEN_IPCCONNLAYERCMD_SECSTATE_GREETING) {
+      /* send/receive greeting message */
+      if (GWEN_ConnectionLayer_GetFlags(cl) &
+          GWEN_IPCCONNLAYER_FLAGS_PASSIVE) {
+        /* passive, so await greeting message */
+        GWEN_IPCMSG *msg;
+
+        msg=GWEN_MsgLayer_GetIncomingMsg(ml);
+        if (msg) {
+          /* we have a message, parse it */
+          // xxx
+        }
+      }
+      else {
+        /* active connection, send greeting */
+
+      }
+
       if (!(ccd->flags & GWEN_IPCCONNLAYERCMD_FLAGS_MUST_CRYPT)) {
         /* no encryption needed, so go directly to connected state */
         GWEN_ConnectionLayer_SetState(cl, GWEN_IPCConnectionLayerStateOpen);
-        ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTED;
-        break;
+        ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_ESTABLISHED;
       }
-      ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_PUBLIC_KEY_EXCHG;
-      /* no break, simple fall-through to save work-calls */
-    case GWEN_IPCCONNLAYERCMD_SECSTATE_PUBLIC_KEY_EXCHG:
+      else {
+        /* encryption needed, go to public key exchange */
+        ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_PUBLIC_KEY_EXCHG;
+      }
+    }
+
+    if (ccd->securityState==
+        GWEN_IPCCONNLAYERCMD_SECSTATE_PUBLIC_KEY_EXCHG) {
       DBG_WARN(0, "No public key exchange, encryption not implemented.");
       ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_SESSION_KEY_EXCHG;
-      /* no break, simple fall-through to save work-calls */
-    case GWEN_IPCCONNLAYERCMD_SECSTATE_SESSION_KEY_EXCHG:
+    }
+
+    if (ccd->securityState==
+        GWEN_IPCCONNLAYERCMD_SECSTATE_SESSION_KEY_EXCHG){
       DBG_WARN(0, "No session key exchange, encryption not implemented.");
       ccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_ESTABLISHED;
-      /* no break, simple fall-through to save work-calls */
-    case GWEN_IPCCONNLAYERCMD_SECSTATE_ESTABLISHED:
+    }
+
+    if (ccd->securityState==GWEN_IPCCONNLAYERCMD_SECSTATE_ESTABLISHED) {
       GWEN_ConnectionLayer_SetState(cl, GWEN_IPCConnectionLayerStateOpen);
       DBG_NOTICE(0, "Connection established");
-      break;
+    }
 
-    case GWEN_IPCCONNLAYERCMD_SECSTATE_CLOSING:
+    if (ccd->securityState==GWEN_IPCCONNLAYERCMD_SECSTATE_CLOSING) {
       DBG_ERROR(0, "Unexpected state \"CLOSING\"");
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
                             GWEN_IPC_ERROR_BAD_STATE);
-    default:
-      DBG_ERROR(0, "Unexpected state %d", ccd->securityState);
-      return GWEN_Error_new(0,
-                            GWEN_ERROR_SEVERITY_ERR,
-                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
-                            GWEN_IPC_ERROR_BAD_STATE);
-    } /* switch securityState */
+    }
     break;
 
   case GWEN_IPCConnectionLayerStateOpen:
@@ -647,7 +671,6 @@ GWEN_IPCMSG *GWEN_IPCCMD_CreateMsg(GWEN_SERVICELAYER *sl,
   GWEN_BUFFER *gbuf;
   GWEN_IPCMSG *msg;
   GWEN_IPCCONNLAYER *cl;
-  GWEN_ERRORCODE err;
   unsigned int msgId;
 
   assert(sl);
@@ -722,6 +745,47 @@ GWEN_IPCMSG *GWEN_IPCCMD_CreateMsg(GWEN_SERVICELAYER *sl,
 
   /* return msg */
   return msg;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_DB_NODE *GWEN_IPCServiceCmd_ParseMsg(GWEN_SERVICELAYER *sl,
+                                          GWEN_IPCMSG *msg) {
+  GWEN_DB_NODE *db;
+  int rv;
+  GWEN_IPCCONNLAYER *cl;
+  GWEN_IPCCONNLAYERCMDDATA *ccd;
+  unsigned int connId;
+  GWEN_BUFFER *buffer;
+
+  assert(sl);
+  connId=GWEN_Msg_GetMsgLayerId(msg);
+  buffer=GWEN_Msg_GetBuffer(msg);
+  assert(buffer);
+  cl=GWEN_ServiceLayer_FindConnection(sl, connId, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection %d not found", connId);
+    return 0;
+  }
+  ccd=(GWEN_IPCCONNLAYERCMDDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+
+  db=GWEN_DB_Group_new("msgdata");
+  rv=GWEN_MsgEngine_ReadMessage(ccd->msgEngine,
+                                "SEG",
+                                buffer,
+                                db);
+  if (rv==-1) {
+    DBG_INFO(0, "called from here");
+    GWEN_DB_Group_free(db);
+    return 0;
+  }
+
+  /* TODO: Decrypt message */
+
+  /* return data */
+  return db;
 }
 
 
@@ -886,8 +950,6 @@ unsigned int GWEN_IPCServiceCmd_AddPeer(GWEN_IPCSERVICECMD *s,
 
   return cid;
 }
-
-
 
 
 

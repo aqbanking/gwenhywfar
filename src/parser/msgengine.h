@@ -191,10 +191,72 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
                                int msgVersion,
                                unsigned int flags);
 
+/**
+ * This function parses a single entity specified by a single
+ * XML node (which may of course consist of multiple XML nodes).
+ * This function makes no assumptions about the format of used variables
+ * whatsoever. All data parsed from the given message is stored within the
+ * given database.
+ */
 int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *group,
                                 GWEN_BUFFER *msgbuf,
                                 GWEN_DB_NODE *gr);
+
+/**
+ * This function skips all bytes from the given buffer until the given
+ * delimiter is found or the buffer ends. It also takes care of escape
+ * characters (to not accidentally take an escaped delimiter for a real one)
+ * and is able to identify and correctly skip binary data. For the latter
+ * to work it takes into account that binary data is preceeded by a
+ * "@123@" sequence, where "123" is the length of the binary data.
+ * This sequence has been taken from the HBCI specs (German homebanking
+ * protocol) and has proven to be very effective ;-)
+ */
+int GWEN_MsgEngine_SkipSegment(GWEN_MSGENGINE *e,
+                               GWEN_BUFFER *msgbuf,
+                               unsigned char escapeChar,
+                               unsigned char delimiter);
+
+/**
+ * This function reads all segments found within the given buffer.
+ * This is used to read a full message containing multiple segments.
+ * It assumes that each segment starts with a group with the id of
+ * "SegHead" which defines the variable "code" to determine each segment
+ * type. Please note that this function makes no further assumptions about
+ * the format of a segment, group or element of a message. This is totally
+ * based on the settings specified in the XML file.
+ * Unknown segments are simply skipped.
+ * For each segment found inside the message a group is created within the
+ * given database. The name of that group is derived from the property
+ * "id" within the XML description of each segment (or "code" if "id" does
+ * not exist).
+ * One special group is created below every segment group: "segment". This
+ * group contains some variables:
+ * <ul>
+ *   <li>
+ *     <i>pos</i> holding the start position of the segment inside the
+ *     buffer
+ *   </li>
+ *   <li>
+ *     <i>length</i> holding the length of the area occupied by the segment
+ *   </li>
+ * </ul>
+ * The data of every segment is simply added to the database, so there may
+ * be multiple groups with the same name if a given segment type occurs more
+ * often than once.
+ * @return 0 if ok, -1 on error and 1 if no segment was available
+ * @param gtype typename for segments (most callers use "SEG")
+ * @param mbuf GWEN_BUFFER containing the message. Parsing is started at
+ * the current position within the buffer, so please make sure that this
+ * pos is set to the beginning of the message before calling this function.
+ * @param gr database to store information parsed from the given message
+ */
+int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
+                               const char *gtype,
+                               GWEN_BUFFER *mbuf,
+                               GWEN_DB_NODE *gr);
+
 
 #ifdef __cplusplus
 }
