@@ -195,6 +195,22 @@ GWENHYWFAR_API
                                                   GWEN_DB_NODE *db);
 
 /**
+ * <p>
+ * Generates parameters for the Diffie-Hellman key agreement protocol.
+ * See "man dh" for details.
+ * </p>
+ * <p>
+ * This function may use whatever format it sees fit when storing the
+ * DH params.
+ * </p>
+ * @return 0 if ok, != 0 otherwise
+ * @param fname name of the file to store the params in
+ * @param bits length in bits of the safe prime to be generated
+ */
+GWENHYWFAR_API
+int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits);
+
+/**
  * Returns a DB containing the certificate of the current peer (or 0 if
  * none).
  * The caller MUST NOT free the DB returned (if any).

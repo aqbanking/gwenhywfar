@@ -1,4 +1,13 @@
 
+2004/06/17: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- crypt/nettransportssl, net/netransportsock: be more verbous about the reason
+  why a connection could not be established
+- crypt/nettransportssl: added function GWEN_NetTransportSSL_GenerateDhFile
+  So now there finally is no need to access OpenSSL from outside Gwen just
+  to make parts of Gwen (namely the SSL stuff) work.
+
+
 2004/06/16: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/db: added function GWEN_DB_InsertGroup

@@ -30,6 +30,9 @@
 #define GWEN_NETTRANSPORTSSL_P_H
 
 
+#define GWEN_RANDOM_DEVICE "/dev/urandom"
+
+
 #include <gwenhywfar/nettransportssl.h>
 #include <openssl/ssl.h>
 

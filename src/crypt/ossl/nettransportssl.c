@@ -39,9 +39,12 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/inetsocket_l.h>
+#include <gwenhywfar/waitcallback.h>
 
 #include <openssl/pem.h>
 #include <openssl/err.h>
+#include <openssl/dh.h>
+#include <openssl/rand.h>
 
 #include <openssl/conf.h>
 #include <openssl/x509v3.h>
@@ -732,9 +735,9 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 
   if (skd->ownCertFile) {
     /* load own certificate file */
-    DBG_NOTICE(0, "Loading certificate and keys");
+    DBG_DEBUG(0, "Loading certificate and keys");
     if (!(SSL_CTX_use_certificate_chain_file(skd->ssl_ctx,
-                                             skd->ownCertFile))){
+					     skd->ownCertFile))){
       int sslerr;
 
       sslerr=SSL_get_error(skd->ssl, rv);
@@ -764,7 +767,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 
   /* setup locations of certificates */
   if (skd->CAdir) {
-    DBG_NOTICE(0, "Loading certificate locations");
+    DBG_DEBUG(0, "Loading certificate locations");
     rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
     if (rv==0) {
       DBG_ERROR(0, "SSL: Could not load certificate location");
@@ -780,7 +783,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
       GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusListening) {
     FILE *f;
 
-    DBG_NOTICE(0, "Loading DH params");
+    DBG_DEBUG(0, "Loading DH params");
 
     f=fopen(skd->dhfile, "r");
     if (!f) {
@@ -789,6 +792,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
     }
     else {
       DH *dh_tmp;
+      int codes;
 
       dh_tmp=PEM_read_DHparams(f, NULL, NULL, NULL);
       fclose(f);
@@ -796,6 +800,33 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 	DBG_ERROR(0, "SSL: Error reading DH params");
         return -1;
       }
+
+      /* check for usability */
+      if (DH_check(dh_tmp, &codes)){
+	int sslerr;
+
+	sslerr=SSL_get_error(skd->ssl, rv);
+	DBG_ERROR(0, "SSL DH_check error: %s (%d)",
+		  GWEN_NetTransportSSL_ErrorString(sslerr),
+		  sslerr);
+	DH_free(dh_tmp);
+	return -1;
+      }
+
+      if (codes & DH_CHECK_P_NOT_PRIME){
+	DBG_ERROR(0, "SSL DH error: p is not prime");
+	DH_free(dh_tmp);
+	return -1;
+      }
+      if ((codes & DH_NOT_SUITABLE_GENERATOR) &&
+	  (codes & DH_CHECK_P_NOT_SAFE_PRIME)){
+	DBG_ERROR(0, "SSL DH error : "
+		  "neither suitable generator or safe prime");
+	DH_free(dh_tmp);
+	return -1;
+      }
+
+      /* DH params seem to be ok */
       if (SSL_CTX_set_tmp_dh(skd->ssl_ctx, dh_tmp)<0) {
 	DBG_ERROR(0, "SSL: Could not set DH params");
 	DH_free(dh_tmp);
@@ -838,13 +869,14 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 
     sslerr=SSL_get_error(skd->ssl, rv);
     DBG_ERROR(0, "SSL error setting socket: %s (%d)",
-              GWEN_NetTransportSSL_ErrorString(sslerr),
+	      GWEN_NetTransportSSL_ErrorString(sslerr),
               sslerr);
     return -1;
   }
 
   return 0;
 }
+
 
 
 /* -------------------------------------------------------------- FUNCTION */
@@ -1049,7 +1081,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
           (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
            GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
-        DBG_INFO_ERR(0, err);
+        DBG_ERROR_ERR(0, err);
         return GWEN_NetTransportWorkResult_Error;
       }
       DBG_VERBOUS(0, "Still not connected");
@@ -1503,6 +1535,7 @@ GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList(){
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
                                                 int bits,
                                                 int serial,
@@ -1655,6 +1688,81 @@ int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
   return 0;
 }
 
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetTransportSSL__GenerateDhFile_Callback(int i, int j, void *p) {
+  GWEN_WAITCALLBACK_RESULT res;
+  static const char chars[]="_-+x*x+-";
+
+  switch(i) {
+  case 0:
+    DBG_DEBUG(0, "Generated %d. potential prime number", j);
+    break;
+  case 1:
+    DBG_DEBUG(0, "Testing %d. prime number", j);
+    break;
+  case 2:
+    DBG_DEBUG(0, "Prime found in %d. try", j);
+    break;
+  } /* switch */
+
+  res=GWEN_WaitCallback();
+  if (res!=GWEN_WaitCallbackResult_Continue) {
+    DBG_WARN(0, "User wants to abort, but this function can not be aborted");
+  }
+
+  fprintf(stderr, "%c\r", chars[i%strlen(chars)]);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits) {
+  DH *dh;
+  FILE *f;
+
+#ifdef GWEN_RANDOM_DEVICE
+  if (!RAND_load_file(GWEN_RANDOM_DEVICE
+		      "/dev/urandom", 40)) {
+    DBG_ERROR(0, "Could not seed random (maybe \"%s\" is missing?)",
+	      GWEN_RANDOM_DEVICE);
+    return -1;
+  }
+#endif
+  dh=DH_generate_parameters(bits,
+			    2,
+			    GWEN_NetTransportSSL__GenerateDhFile_Callback,
+			    0);
+  if (!dh) {
+    DBG_ERROR(0, "Could not generate DH parameters");
+    return -1;
+  }
+
+  f=fopen(fname, "w+");
+  if (!f) {
+    DBG_ERROR(0, "fopen(%s): %s", fname, strerror(errno));
+    DH_free(dh);
+    return -1;
+  }
+
+  if (!PEM_write_DHparams(f, dh)) {
+    DBG_ERROR(0, "Could not write DH params");
+    fclose(f);
+    DH_free(dh);
+    return -1;
+  }
+
+  if (fclose(f)) {
+    DBG_ERROR(0, "fclose(%s): %s", fname, strerror(errno));
+    DH_free(dh);
+    return -1;
+  }
+
+  DBG_INFO(0, "DH params generated and written");
+  DH_free(dh);
+  return 0;
+}
 
 
 

@@ -400,7 +400,7 @@ GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
           (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
            GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
-        DBG_INFO_ERR(0, err);
+        DBG_ERROR_ERR(0, err);
         return GWEN_NetTransportWorkResult_Error;
       }
       DBG_VERBOUS(0, "Still not connected");
