@@ -4,6 +4,7 @@
 - added "system.h", which defines some system dependant macros on some
   platforms
 - process.c: less verbous signal handler
+- aborted PalmOS port
 
 
 2004/01/04 Martin Preuss <martin@libchipcard.de>

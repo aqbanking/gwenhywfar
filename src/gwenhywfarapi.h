@@ -39,6 +39,7 @@
 
 /* This is needed for PalmOS, because it define some functions needed */
 #include <string.h>
+#include <gwenhywfar/system.h>
 
 
 #endif

@@ -13,19 +13,19 @@ APID=TEST
 ICONTEXT='GwenTest'
 PRC=palmtest.prc
 PRG=palmtest
-DEF=gwen.def
+DEF=palmtest.def
 palmtest_SOURCES=palmtest.c
 palmtest_OBJECTS=palmtest.o
 
-$(PRC): $(palmtest_OBJECTS) gwen_sections.o
-	$(CC) -o $(PRG) $(palmtest_OBJECTS) -L../src/ -lgwenhywfar; \
-	$(BUILDPRC) $(PRC) $(ICONTEXT) $(APID) $(DEF)$(palmtest_OBJECTS) gwen_sections.o
+$(PRC): $(palmtest_OBJECTS) palmtest_sections.o palmtest_sections.ld
+	$(CC) -o $(PRG) $(palmtest_OBJECTS) -L../src/ -lgwenhywfar -T palmtest_sections.ld
+	$(BUILDPRC) $(PRC) $(ICONTEXT) $(APID) $(DEF) $(palmtest_OBJECTS) palmtest_sections.o
 
-gwen_sections.o: gwen_sections.s
-	$(CC) -c gwen_sections.s
+palmtest_sections.o: palmtest_sections.s
+	$(CC) -c palmtest_sections.s
 
-gwen_sections.s gwen_sections.ld: $(DEF)
-	$(MULTIGEN) $(DEF) --base gwen_sections
+palmtest_sections.s palmtest_sections.ld: $(DEF)
+	$(MULTIGEN) $(DEF) --base palmtest_sections
 
 #config.h: os/palmos/palmconfig.h
 #	echo "/* Created by Makefile.palm */" >config.h ; \
@@ -36,7 +36,7 @@ clean::
 	for f in $$objs; do \
 	  rm -f $$f ;  \
 	done; \
-	rm -f palmtest *.grc *.bin *.prc *.o
+	rm -f palmtest *.grc *.bin *.prc *.o *_sections.*
 
 
 .c.o:

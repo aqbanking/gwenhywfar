@@ -12,6 +12,7 @@ dnl   $4: build version minimum
 dnl Returns: gwenhywfar_dir
 dnl          gwenhywfar_libs
 dnl          gwenhywfar_includes
+dnl          gwenhywfar_sections
 dnl          have_gwenhywfar
 
 if test -z "$1"; then vma="0"; else vma="$1"; fi
@@ -30,6 +31,7 @@ have_gwenhywfar="no"
 gwenhywfar_dir=""
 gwenhywfar_libs=""
 gwenhywfar_includes=""
+gwenhywfar_sections=""
 if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_CHECKING(for gwenhywfar)
   AC_ARG_WITH(gwen-dir, [  --with-gwen-dir=DIR
@@ -62,6 +64,9 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_CHECKING(for gwen includes)
       gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
       AC_MSG_RESULT($gwenhywfar_includes)
+      AC_MSG_CHECKING(for gwen sections)
+      gwenhywfar_sections="$gwenhywfar_dir/bin/gwenhywfar-config --sections`"
+      AC_MSG_RESULT($gwenhywfar_sections)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)
   AC_ARG_ENABLE(gwenhywfar,
@@ -105,4 +110,5 @@ fi
 AC_SUBST(gwenhywfar_dir)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_includes)
+AC_SUBST(gwenhywfar_sections)
 ])

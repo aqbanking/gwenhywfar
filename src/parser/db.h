@@ -208,7 +208,7 @@ typedef enum {
  * using @ref GWEN_DB_Group_free() in order to avoid memory leaks.
  * @param name name of the group to create
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_Group_new(const char *name);
 
 /**
@@ -216,7 +216,7 @@ GWEN_DB_NODE *GWEN_DB_Group_new(const char *name);
  * avoid memory leaks.
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 void GWEN_DB_Group_free(GWEN_DB_NODE *n);
 
 /**
@@ -225,7 +225,7 @@ void GWEN_DB_Group_free(GWEN_DB_NODE *n);
  * GWEN_DB_Group_free().
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
 
 /*@}*/
@@ -245,7 +245,7 @@ GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
  *
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n);
 
 /**
@@ -270,7 +270,7 @@ GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n);
  *
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n);
 
 /** Callback function type for GWEN_DB_Groups_Foreach(),
@@ -283,7 +283,6 @@ GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n);
  * @return NULL if the iteration should continue, or non-NULL if the
  * iteration should stop and that value be returned.
  */
-GWENHYWFAR_API
 typedef void *(*GWEN_DB_NODES_CB)(GWEN_DB_NODE *node, void *user_data);
 
 /** Iterates through all group nodes that are @e direct children
@@ -302,14 +301,14 @@ typedef void *(*GWEN_DB_NODES_CB)(GWEN_DB_NODE *node, void *user_data);
  * returns one. Otherwise (i.e. 'func' always returns NULL)
  * returns NULL.
  * @author Christian Stimming <stimming@tuhh.de> */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 void *GWEN_DB_Groups_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 			     void *user_data);
 
 /** Returns the number of group nodes that are @e direct children of
  * the given node. In other words, this is the number of group nodes
  * that will be reached in the GWEN_DB_Groups_foreach() function. */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node);
 /*@}*/
 
@@ -368,7 +367,7 @@ unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node);
  * @param idx index number of the value to return
  * @param defVal default value to return in case there is no real value
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
                                  const char *path,
                                  int idx,
@@ -381,7 +380,7 @@ const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
  * @param path path and name of the variable
  * @param val The string value that is copied into the DB
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          GWEN_TYPE_UINT32 flags,
                          const char *path,
@@ -395,7 +394,7 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
  * @param idx index number of the value to return
  * @param defVal default value to return in case there is no real value
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
                         const char *path,
                         int idx,
@@ -409,7 +408,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
  * @param path path and name of the variable
  * @param val new value
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
                         GWEN_TYPE_UINT32 flags,
                         const char *path,
@@ -427,7 +426,7 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
  * @param returnValueSize pointer to a variable to receive the length
  * of the data returned
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
                                 const char *path,
                                 int idx,
@@ -445,7 +444,7 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
  *
  * @return 0 on success, nonzero on error
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 			GWEN_TYPE_UINT32 flags,
 			const char *path,
@@ -469,7 +468,7 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
  * can all be OR-combined to form the flags to use.
  * @param path path and name of the group to be created/located
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
                                GWEN_TYPE_UINT32 flags,
                                const char *path);
@@ -477,7 +476,7 @@ GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
 /**
  * Returns the name of the given group.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);
 
 /**
@@ -485,7 +484,7 @@ const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);
  * @param n db node
  * @param newname new name for the group
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname);
 
 /**
@@ -502,7 +501,7 @@ void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname);
  * @param parent Some group node that will be the parent of the added node
  * @param node Group node to add
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_AddGroup(GWEN_DB_NODE *parent, GWEN_DB_NODE *node);
 
 /**
@@ -514,7 +513,7 @@ int GWEN_DB_AddGroup(GWEN_DB_NODE *parent, GWEN_DB_NODE *node);
  * @param n db node
  * @param nn node whose children are to be added (makes deep copies)
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
 
 /**
@@ -526,7 +525,7 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
  * other position of even in other DBs.
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n);
 
 /**
@@ -535,7 +534,7 @@ void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n);
  * @param n db node
  * @param path path to the group to delete
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
                         const char *path);
 /**
@@ -545,7 +544,7 @@ int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
  * @param path path to the group under the given node to clear
  * (if 0 then clear the given node)
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
                        const char *path);
 
@@ -555,7 +554,7 @@ int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
  *
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
 
 /*@}*/
@@ -579,7 +578,7 @@ int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
  * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
  * can all be OR-combined to form the flags to use.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                            GWEN_BUFFEREDIO *bio,
                            GWEN_TYPE_UINT32 dbflags);
@@ -591,7 +590,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
  * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
  * can all be OR-combined to form the flags to use.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      const char *fname,
                      GWEN_TYPE_UINT32 dbflags);
@@ -603,7 +602,7 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
  * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
  * can all be OR-combined to form the flags to use.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_WriteToStream(GWEN_DB_NODE *n,
                           GWEN_BUFFEREDIO *bio,
                           GWEN_TYPE_UINT32 dbflags);
@@ -616,7 +615,7 @@ int GWEN_DB_WriteToStream(GWEN_DB_NODE *n,
  * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
  * can all be OR-combined to form the flags to use.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
                       GWEN_TYPE_UINT32 dbflags);
@@ -632,7 +631,7 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
  * If there is no variable then NULL is returned.
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n);
 
 
@@ -657,7 +656,7 @@ GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n);
  *
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
 
 /** Iterates through all variable nodes that are @e direct children
@@ -676,7 +675,7 @@ GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
  * returns one. Otherwise (i.e. 'func' always returns NULL)
  * returns NULL.
  * @author Christian Stimming <stimming@tuhh.de> */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 void *GWEN_DB_Variables_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
                                 void *user_data);
 
@@ -684,7 +683,7 @@ void *GWEN_DB_Variables_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
  * of the given node. In other words, this is the number of variable
  * nodes that will be reached in the GWEN_DB_Variables_Foreach()
  * function. */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node);
     
 /**
@@ -692,7 +691,7 @@ unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node);
  * @param n root node of the DB
  * @param p path of the variable to inspect
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
                                           const char *p);
 
@@ -702,7 +701,7 @@ GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
  * @param path path to the variable to remove
  * @return Zero on success, nonzero on error
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
                       const char *path);
 
@@ -712,7 +711,7 @@ int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
  * @param n root of the DB
  * @param path path to the variable to check for
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
                            const char *path);
 
@@ -722,7 +721,7 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
  *
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_IsVariable(const GWEN_DB_NODE *n);
 /*@}*/
 
@@ -736,7 +735,7 @@ int GWEN_DB_IsVariable(const GWEN_DB_NODE *n);
  * If there is no value then NULL is returned.
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
 
 /**
@@ -763,7 +762,7 @@ GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
  *
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n);
 
 /** Iterates through all value nodes that are @e direct children
@@ -782,21 +781,21 @@ GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n);
  * returns one. Otherwise (i.e. 'func' always returns NULL)
  * returns NULL.
  * @author Christian Stimming <stimming@tuhh.de> */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 void *GWEN_DB_Values_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
                              void *user_data);
 
 /** Returns the number of value nodes that are @e direct children of
  * the given node. In other words, this is the number of value nodes
  * that will be reached in the GWEN_DB_Values_foreach() function. */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node);
 
 /**
  * Returns the type of the given value.
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
 
 /** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
@@ -805,7 +804,7 @@ GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
  *
  * @param n db node
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
 /*@}*/
 
@@ -827,7 +826,7 @@ int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
  * @param f destination file (e.g. stderr)
  * @param insert number of blanks to insert at every line
  */
-GWENHYWFAR_API
+GWENHYWFAR_API 
 void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
 /*@}*/
 

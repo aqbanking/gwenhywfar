@@ -11,6 +11,9 @@ for d in $*; do
 	--libraries)
 	    result="$result @gwenhywfar_libs@"
 	    ;;
+	--sections)
+	    result="$result @gwenhywfar_sections@"
+	    ;;
 	--vmajor)
 	    result="$result @GWENHYWFAR_VERSION_MAJOR@"
 	    ;;
@@ -33,6 +36,7 @@ for d in $*; do
 	    echo "Usage:"
 	    echo "$0 --includes gives you the include flags"
 	    echo "$0 --libraries gives you the library flags"
+	    echo "$0 --sections returns a string containing all sections of gwen"
 	    echo "$0 --vmajor gives the major version of LibGwenhywfar"
 	    echo "$0 --vminor gives the minor version of LibGwenhywfar"
 	    echo "$0 --vpatchlevel gives the patchlevel of LibGwenhywfar"
