@@ -1,4 +1,4 @@
-SUBDIRS=doc src m4 plugins tools test
+SUBDIRS=doc src gwenpp m4 plugins tools test
 #DIST_SUBDIRS=test
 
 
@@ -46,7 +46,6 @@ rpm:    $(PACKAGE).spec dist
 win_buildroot=distribution
 win_develdir=$(PACKAGE)-$(VERSION)-win32-devel
 win_bindir=$(PACKAGE)-$(VERSION)-win32-bin
-win_LIBRARY_NAME = $(PACKAGE)32_$(GWENHYWFAR_SO_EFFECTIVE)
 EXTRA_WIN_DIST=AUTHORS ChangeLog README README.W32 COPYING
 win32:
 	mkdir -p distribution
@@ -84,8 +83,8 @@ win32-cs: dist
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) check \
 	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && cp src/$(win_LIBRARY_NAME).dll ../../$(win_buildroot)/$(win_bindir) \
-	  && cp src/$(win_LIBRARY_NAME).lib ../../$(win_buildroot)/$(win_develdir) \
+	  && cp src/$(PACKAGE)32_$(GWENHYWFAR_SO_EFFECTIVE).dll ../../$(win_buildroot)/$(win_bindir) \
+	  && cp src/$(PACKAGE)32.lib ../../$(win_buildroot)/$(win_develdir) \
 	  && cd ../../$(win_buildroot) \
 	  && cp -r "$$dc_install_base"/bin $(win_develdir) \
 	  && cp -r "$$dc_install_base"/include $(win_develdir) \

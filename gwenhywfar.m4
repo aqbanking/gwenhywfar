@@ -11,6 +11,7 @@ dnl   $3: patchlevel version minimum
 dnl   $4: build version minimum
 dnl Returns: gwenhywfar_dir
 dnl          gwenhywfar_libs
+dnl          gwenhywfar_libspp
 dnl          gwenhywfar_plugins
 dnl          gwenhywfar_includes
 dnl          gwenhywfar_headers
@@ -34,6 +35,7 @@ have_gwenhywfar="no"
 gwenhywfar_dir=""
 gwenhywfar_plugins=""
 gwenhywfar_libs=""
+gwenhywfar_libspp=""
 gwenhywfar_includes=""
 gwenhywfar_has_ui="no"
 gwenhywfar_has_crypt="no"
@@ -68,6 +70,9 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_CHECKING(for gwen libs)
       gwenhywfar_libs="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries`"
       AC_MSG_RESULT($gwenhywfar_libs)
+      AC_MSG_CHECKING(for gwen C++ libs)
+      gwenhywfar_libs="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries++`"
+      AC_MSG_RESULT($gwenhywfar_libspp)
       AC_MSG_CHECKING(for gwen includes)
       gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
       AC_MSG_RESULT($gwenhywfar_includes)
@@ -126,6 +131,7 @@ fi
 AC_SUBST(gwenhywfar_dir)
 AC_SUBST(gwenhywfar_plugins)
 AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_libspp)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_headers)
 AC_SUBST(gwenhywfar_has_ui)

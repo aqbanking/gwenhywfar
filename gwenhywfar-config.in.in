@@ -11,6 +11,9 @@ for d in $*; do
 	--libraries)
 	    result="$result @gwenhywfar_libs@"
 	    ;;
+	--libraries++)
+	    result="$result @gwenhywfar_libspp@"
+	    ;;
 	--headers)
 	    result="$result @gwenhywfar_headers@"
 	    ;;

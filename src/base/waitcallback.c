@@ -303,6 +303,23 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
 
 
 /* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK *GWEN_WaitCallback_Instantiate(GWEN_WAITCALLBACK *ctx) {
+  GWEN_WAITCALLBACK *nctx;
+
+  if (ctx->instantiateFn) {
+    nctx=ctx->instantiateFn(ctx);
+  }
+  else {
+    nctx=GWEN_WaitCallback_new(ctx->id);
+  }
+  nctx->instantiatedFrom=ctx;
+  GWEN_WaitCallback_Attach(nctx->instantiatedFrom);
+  return nctx;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos){
   GWEN_WAITCALLBACK *ctx;
 
@@ -350,11 +367,8 @@ void GWEN_WaitCallback_Enter(const char *id){
   else {
     /* ctx found, select it */
     DBG_DEBUG(0, "Callback \"%s\" found", id);
-    assert(ctx->instantiateFn);
-    nctx=ctx->instantiateFn(ctx);
+    nctx=GWEN_WaitCallback_Instantiate(ctx);
     assert(nctx);
-    nctx->instantiatedFrom=ctx;
-    GWEN_WaitCallback_Attach(ctx);
     nctx->previousCtx=gwen_waitcallback__current;
     gwen_waitcallback__current=nctx;
     nctx->lastEntered=time(0);

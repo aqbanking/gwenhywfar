@@ -70,6 +70,8 @@ void *GWEN_WaitCallback__HandlePathElement(const char *entry,
                                            unsigned int flags);
 GWEN_WAITCALLBACK *GWEN_WaitCallback__FindCallback(const char *s);
 
+GWEN_WAITCALLBACK *GWEN_WaitCallback_Instantiate(GWEN_WAITCALLBACK *ctx);
+
 
 #endif
 

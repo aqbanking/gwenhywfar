@@ -1,6 +1,6 @@
 INCLUDES=@all_includes@
 
-EXTRA_DIST=README
+EXTRA_DIST=README 
 
 noinst_LTLIBRARIES=libui.la
 

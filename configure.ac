@@ -17,8 +17,8 @@ AC_CONFIG_HEADER([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
-GWENHYWFAR_VERSION_PATCHLEVEL=12
-GWENHYWFAR_VERSION_BUILD=2
+GWENHYWFAR_VERSION_PATCHLEVEL=14
+GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -153,6 +153,7 @@ AQ_CHECK_OS
 case "$OS_TYPE" in
     posix)
         gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
+        gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
@@ -176,6 +177,7 @@ case "$OS_TYPE" in
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
         gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
@@ -401,6 +403,7 @@ ACX_COMPILE_WARN()
 AS_SCRUB_INCLUDE(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_libspp)
 AC_SUBST(gwenhywfar_plugins)
 AC_SUBST(gwenhywfar_headers)
 AC_SUBST(gwenhywfar_sections)
@@ -426,6 +429,7 @@ AC_CONFIG_FILES([Doxyfile
                  gwenhywfar-config.in
 		 gwenhywfar.spec
                  doc/Makefile
+                 gwenpp/Makefile
                  src/Makefile
                  src/types.h
                  src/ressource.rc

@@ -1,4 +1,20 @@
 
+2004/07/20: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- reverted latest changes to toplevel Makefile.am (contained ugly CR 
+  characters. To Christian: Could you please reintroduce your  changes ? 
+  Sorry for being rude but I needed Gwen to work and since I did not find a 
+  ChangeLog entry I was unable to figure out the difference at a first
+  glance...).
+- started working on a C++ binding. This will only include function groups
+  which are a bit complicated to use from C++ (like GWEN_WaitCallback).
+
+
+===========================================================================
+MARK: released gwenhywfar-0.9.13 (2004/07/05)
+===========================================================================
+
+
 2004/07/04: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - base/args: GWEN_Args_Check is now able to return a new code which flags
@@ -14,6 +30,7 @@
 - parser/text:
   - added function GWEN_Text_DoubleToBuffer()
   - GWEN_Text_StringToDouble()
+- event_l.h was missing, but someone seems to have added in meanwhile.
 
 
 ===========================================================================
