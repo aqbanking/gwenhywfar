@@ -19,7 +19,7 @@ Gwenhywfar includes the following features:
 - Macros for typesafe list management
 
 - OS abstraction functions for directory and Internet address handling
-  (src/os/)
+  and library loading (src/os/)
 
 - Networking functions which allow to manage many connections to be used
   economically even in single threaded applications

@@ -138,7 +138,7 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
           DBG_INFO(0, "Called from here");
           return -1;
         }
-        DBG_INFO(0, "No colums left, line finished");
+        DBG_VERBOUS(0, "No colums left, line finished");
         break;
       }
       /* break down to name and index */
@@ -217,7 +217,7 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
             DBG_INFO(0, "Called from here");
             return -1;
           }
-          DBG_INFO(0, "No colums left, line finished");
+          DBG_VERBOUS(0, "No colums left, line finished");
           break;
         }
         /* break down to name and index */
@@ -282,7 +282,12 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO *csv_factory() {
-  return GWEN_DBIO_new("csv", "Imports and exports CSV data");
+  GWEN_DBIO *dbio;
+
+  dbio=GWEN_DBIO_new("csv", "Imports and exports CSV data");
+  GWEN_DBIO_SetImportFn(dbio, GWEN_DBIO_CSV_Import);
+  GWEN_DBIO_SetExportFn(dbio, GWEN_DBIO_CSV_Export);
+  return dbio;
 }
 
 

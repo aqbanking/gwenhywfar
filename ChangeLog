@@ -1,7 +1,14 @@
+2004/04/02: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- plugin/dbio/csv: fixed factory function
+- base/buffer: changed hardlimit from 64kb to 2mb
+
+
 2004-04-01  Christian Stimming <stimming@tuhh.de>
 
 	* src/parser/db.c: Fix errornous function argument to
 	GWEN_DBIO_GetPlugin.
+
 
 2004/04/01: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

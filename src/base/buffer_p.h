@@ -32,7 +32,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/buffer.h>
 
-#define GWEN_BUFFER_DEFAULT_HARDLIMIT 65535
+#define GWEN_BUFFER_DEFAULT_HARDLIMIT (4*1024*1024)
 
 /**
  * When reallocating the buffer a multiple of this value is used.
