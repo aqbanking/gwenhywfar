@@ -380,7 +380,7 @@ void GWEN_List_PopFront(GWEN_LIST *l){
 
 
 void GWEN_List_Clear(GWEN_LIST *l){
-  GWEN__LISTPTR *lp;
+  /* GWEN__LISTPTR *lp; */
 
   assert(l);
   if (l->listPtr->refCount>1) {
@@ -392,7 +392,7 @@ void GWEN_List_Clear(GWEN_LIST *l){
     l->listPtr=nlp;
   }
   else
-    GWEN__ListPtr_Clear(lp);
+    GWEN__ListPtr_Clear(l->listPtr);
 }
 
 
