@@ -1058,7 +1058,7 @@ int GWEN_XSD__WriteChoice(GWEN_XSD_ENGINE *e,
                           GWEN_XMLNODE *nStore) {
   GWEN_XMLNODE *nn;
 
-  nn=GWEN_XMLNode_GetFirstTag(nn);
+  nn=GWEN_XMLNode_GetFirstTag(n);
   while(nn) {
     int rv;
 
@@ -1068,7 +1068,7 @@ int GWEN_XSD__WriteChoice(GWEN_XSD_ENGINE *e,
       /* either an error or successfully written, so the choice is done */
       return rv;
     /* try next one */
-    nn=GWEN_XMLNode_GetNextTag(nn);
+    nn=GWEN_XMLNode_GetNextTag(nn); /* FIXME: nn or n here? */
   } /* while nn */
 
   return 0;

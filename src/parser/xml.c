@@ -344,7 +344,7 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
                           const char *delims,
                           GWEN_BUFFER *buf) {
   int inQuote;
-  int lastQuoteChar;
+  int lastQuoteChar = '\0';
   int lastWasSpace;
 
   inQuote=0;
