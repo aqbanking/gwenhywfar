@@ -3,6 +3,7 @@ SUBDIRS=src test
 bin_SCRIPTS=gwenhywfar-config
 M4dir=@prefix@/share/aclocal
 M4_DATA=gwenhywfar.m4
+ACLOCAL_AMFLAGS = -I m4
 
 
 gwenhywfar-config: gwenhywfar-config.in
