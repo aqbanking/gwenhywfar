@@ -118,7 +118,7 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
                            GWEN_DB_NODE *gr,
                            unsigned int flags);
 
-void GWEN_HBCIMsg_Dump(const GWEN_HBCIMSG *hmsg, FILE *f, int indent);
+void GWEN_HBCIMsg_Dump(const GWEN_HBCIMSG *hmsg, FILE *f, unsigned int indent);
 
 
 #ifdef __cplusplus

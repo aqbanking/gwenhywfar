@@ -14,3 +14,4 @@ gwenhywfar.spec
 distribution
 *.tar.gz
 apidoc
+Doxyfile

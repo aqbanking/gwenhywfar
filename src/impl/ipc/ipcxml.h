@@ -468,7 +468,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_Work(GWEN_IPCXMLSERVICE *xs,
  */
 GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int userMark,
-                                             int maxmsgs);
+                                             unsigned int maxmsgs);
 /*@}*/ /* name */
 
 /*@}*/ /* defgroup */

@@ -1862,7 +1862,8 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWEN_HBCIMsg_Dump(const GWEN_HBCIMSG *hmsg, FILE *f, int indent) {
+void GWEN_HBCIMsg_Dump(const GWEN_HBCIMSG *hmsg, 
+		       FILE *f, unsigned int indent) {
   unsigned int i;
   GWEN_KEYSPEC *ks;
 

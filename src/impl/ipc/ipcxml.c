@@ -393,7 +393,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_Work(GWEN_IPCXMLSERVICE *xs,
 
 GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int userMark,
-                                             int maxmsgs){
+                                             unsigned int maxmsgs){
   GWEN_IPCCONNLAYER *cl;
   GWEN_ERRORCODE err;
   GWEN_IPCMSG *imsg;

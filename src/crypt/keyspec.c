@@ -218,7 +218,7 @@ void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
 
 
 
-void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, int indent){
+void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent){
   unsigned int i;
 
   assert(ks);
