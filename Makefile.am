@@ -1,6 +1,6 @@
 SUBDIRS=doc src test m4
 
-EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
+EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README README.W32 \
  gwenhywfar.m4 \
  gwenhywfar.spec.in Doxyfile.in
 

@@ -1,5 +1,11 @@
 $Id$
 
+
+===========================================================================
+MARK: released gwenhywfar-0.9beta9 (2003/12/15)
+===========================================================================
+
+
 2003/12/13 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added string functions to base/buffer module
@@ -7,6 +13,11 @@ $Id$
 - added code for DLL init
 - Gwen now initializes itself upon loading
 - added README.W32 for people who want to compile Gwenhywfar on Windoze
+
+
+===========================================================================
+MARK: released gwenhywfar-0.9beta8 (2003/12/10)
+===========================================================================
 
 
 2003/12/10 Martin Preuss <martin@libchipcard.de>
