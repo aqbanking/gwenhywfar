@@ -52,7 +52,7 @@ GWEN_IPCXMLCONNLAYERDATA *GWEN_IPCXMLConnLayerData_new(){
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd){
   if (ccd) {
-    GWEN_IPCXML_MSG *m, *mn;
+    GWEN_HBCIMSG *m, *mn;
 
     GWEN_CryptKey_free(ccd->localKey);
     GWEN_CryptKey_free(ccd->remoteKey);
@@ -64,17 +64,17 @@ void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd){
 
     m=ccd->incomingMsgs;
     while(m) {
-      mn=GWEN_IPCXML_Msg_Next(m);
-      GWEN_IPCXML_Msg_Del(m, &(ccd->incomingMsgs));
-      GWEN_IPCXML_Msg_free(m);
+      mn=GWEN_HBCIMsg_Next(m);
+      GWEN_HBCIMsg_Del(m, &(ccd->incomingMsgs));
+      GWEN_HBCIMsg_free(m);
       m=mn;
     } /*while */
 
     m=ccd->outgoingMsgs;
     while(m) {
-      mn=GWEN_IPCXML_Msg_Next(m);
-      GWEN_IPCXML_Msg_Del(m, &(ccd->outgoingMsgs));
-      GWEN_IPCXML_Msg_free(m);
+      mn=GWEN_HBCIMsg_Next(m);
+      GWEN_HBCIMsg_Del(m, &(ccd->outgoingMsgs));
+      GWEN_HBCIMsg_free(m);
       m=mn;
     } /*while */
 
@@ -515,7 +515,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Close(GWEN_IPCCONNLAYER *cl,
 
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCXMLConnLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                         GWEN_IPCXML_MSG *m){
+                                         GWEN_HBCIMSG *m){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
   assert(cl);
@@ -524,14 +524,14 @@ void GWEN_IPCXMLConnLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
   assert(ccd);
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
-  GWEN_IPCXML_Msg_Add(m, &(ccd->incomingMsgs));
+  GWEN_HBCIMsg_Add(m, &(ccd->incomingMsgs));
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCXMLConnLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
-                                         GWEN_IPCXML_MSG *m){
+                                         GWEN_HBCIMSG *m){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
   assert(cl);
@@ -540,16 +540,16 @@ void GWEN_IPCXMLConnLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
   assert(ccd);
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
-  GWEN_IPCXML_Msg_Del(m, &(ccd->incomingMsgs));
+  GWEN_HBCIMsg_Del(m, &(ccd->incomingMsgs));
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCXML_MSG *GWEN_IPCXMLConnLayer_FindIncomingMsg(GWEN_IPCCONNLAYER *cl,
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_FindIncomingMsg(GWEN_IPCCONNLAYER *cl,
                                                       unsigned int refid){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
-  GWEN_IPCXML_MSG *m;
+  GWEN_HBCIMSG *m;
 
   assert(cl);
   ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
@@ -558,9 +558,9 @@ GWEN_IPCXML_MSG *GWEN_IPCXMLConnLayer_FindIncomingMsg(GWEN_IPCCONNLAYER *cl,
 
   m=ccd->incomingMsgs;
   while(m) {
-    if (GWEN_IPCXML_Msg_GetRefId(m)==refid)
+    if (GWEN_HBCIMsg_GetMsgRef(m)==refid)
       return m;
-    m=GWEN_IPCXML_Msg_Next(m);
+    m=GWEN_HBCIMsg_Next(m);
   } /* while */
   return 0;
 }
@@ -568,7 +568,7 @@ GWEN_IPCXML_MSG *GWEN_IPCXMLConnLayer_FindIncomingMsg(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCXML_MSG *GWEN_IPCXMLConnLayer_NextIncomingMsg(GWEN_IPCCONNLAYER *cl){
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_NextIncomingMsg(GWEN_IPCCONNLAYER *cl){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
   assert(cl);
@@ -583,7 +583,7 @@ GWEN_IPCXML_MSG *GWEN_IPCXMLConnLayer_NextIncomingMsg(GWEN_IPCCONNLAYER *cl){
 
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCXMLConnLayer_UnlinkIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                            GWEN_IPCXML_MSG *m){
+                                            GWEN_HBCIMSG *m){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
   assert(cl);
@@ -592,7 +592,7 @@ void GWEN_IPCXMLConnLayer_UnlinkIncomingMsg(GWEN_IPCCONNLAYER *cl,
   assert(ccd);
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
-  GWEN_IPCXML_Msg_Del(m, &(ccd->incomingMsgs));
+  GWEN_HBCIMsg_Del(m, &(ccd->incomingMsgs));
 }
 
 

@@ -61,8 +61,11 @@ unsigned int GWEN_HBCIMsg_GetFlags(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetFlags(GWEN_HBCIMSG *hmsg,
                            unsigned int f);
 
+unsigned int GWEN_HBCIMsg_GetMsgRef(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetMsgRef(GWEN_HBCIMSG *hmsg,
                             unsigned int i);
+
+unsigned int GWEN_HBCIMsg_GetMsgNumber(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetMsgNumber(GWEN_HBCIMSG *hmsg,
                                unsigned int i);
 
@@ -71,6 +74,9 @@ void GWEN_HBCIMsg_SetMsgNumber(GWEN_HBCIMSG *hmsg,
 GWEN_HBCIMSG *GWEN_HBCIMsg_new(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIMsg_free(GWEN_HBCIMSG *hmsg);
 
+GWEN_HBCIMSG *GWEN_HBCIMsg_Next(GWEN_HBCIMSG *hmsg);
+void GWEN_HBCIMsg_Add(GWEN_HBCIMSG *hmsg, GWEN_HBCIMSG **head);
+void GWEN_HBCIMsg_Del(GWEN_HBCIMSG *hmsg, GWEN_HBCIMSG **head);
 
 int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
                          GWEN_XMLNODE *node,

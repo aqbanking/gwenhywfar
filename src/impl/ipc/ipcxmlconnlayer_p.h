@@ -47,7 +47,7 @@
 #define GWEN_IPCXMLCONNLAYER_MSGSIZE 1024
 #define GWEN_IPCXMLCONNLAYER_TYPE 0xbeef
 
-#include <gwenhyfwar/ipcxmlmsg.h>
+#include <gwenhyfwar/hbcimsg.h>
 
 
 struct GWEN_IPCXMLCONNLAYERDATA {
@@ -62,8 +62,8 @@ struct GWEN_IPCXMLCONNLAYERDATA {
   char *ownName;
   char *ownVersion;
   unsigned int msgNumber;
-  GWEN_IPCXML_MSG *incomingMsgs;
-  GWEN_IPCXML_MSG *outgoingMsgs;
+  GWEN_HBCIMSG *incomingMsgs;
+  GWEN_HBCIMSG *outgoingMsgs;
   GWEN_IPCXMLCONNLAYER_ENCODE_FN encodeFn;
   GWEN_IPCXMLCONNLAYER_DECODE_FN decodeFn;
 };
@@ -79,16 +79,16 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Close(GWEN_IPCCONNLAYER *cl,
                                           int force);
 
 void GWEN_IPCXMLConnLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                         GWEN_IPCXML_MSG *m);
+                                         GWEN_HBCIMSG *m);
 void GWEN_IPCXMLConnLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
-                                         GWEN_IPCXML_MSG *m);
+                                         GWEN_HBCIMSG *m);
 
 
-GWEN_IPCXML_MSG *GWEN_IPCXMLConnLayer_NextIncomingMsg(GWEN_IPCCONNLAYER *cl);
-GWEN_IPCXML_MSG *GWEN_IPCXMLConnLayer_FindIncomingMsg(GWEN_IPCCONNLAYER *cl,
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_NextIncomingMsg(GWEN_IPCCONNLAYER *cl);
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_FindIncomingMsg(GWEN_IPCCONNLAYER *cl,
                                                       unsigned int refid);
 void GWEN_IPCXMLConnLayer_UnlinkIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                            GWEN_IPCXML_MSG *m);
+                                            GWEN_HBCIMSG *m);
 
 
 #endif /* GWEN_IPCXMLCONNLAYER_P_H */

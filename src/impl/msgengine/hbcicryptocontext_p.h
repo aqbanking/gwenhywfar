@@ -44,6 +44,8 @@ struct GWEN_HBCICRYPTOCONTEXT {
   char *serviceCode; /* bank code for HBCI */
   char *pSecurityId;
   unsigned int lSecurityId;
+  char *pCryptKey;
+  unsigned int lCryptKey;
   unsigned int seq;
   GWEN_KEYSPEC *key;
 };

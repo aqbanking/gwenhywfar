@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/11/12 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- CVS version now compiles again ;-}
+
+
 2003/11/11 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - started working on IPC stuff

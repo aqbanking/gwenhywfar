@@ -61,5 +61,17 @@ GWEN_KEYSPEC *GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx);
 void GWEN_HBCICryptoContext_SetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx,
                                        GWEN_KEYSPEC *ks);
 
+void GWEN_HBCICryptoContext_SetCryptKey(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                        const char *p,
+                                        unsigned int size);
+const char *
+  GWEN_HBCICryptoContext_GetCryptKeyPtr(GWEN_HBCICRYPTOCONTEXT *ctx);
+
+unsigned int
+  GWEN_HBCICryptoContext_GetCryptKeySize(GWEN_HBCICRYPTOCONTEXT *ctx);
+
+
+
+
 #endif
 

@@ -30,7 +30,6 @@
 #define GWENHYFWAR_IPCXMLMSG_H
 
 #include <gwenhyfwar/db.h>
-#include <gwenhyfwar/ipcxmlkeyspec.h>
 
 
 
@@ -78,22 +77,6 @@ void GWEN_IPCXML_Msg_Del(GWEN_IPCXML_MSG *m,
                          GWEN_IPCXML_MSG **head);
 
 GWEN_IPCXML_MSG *GWEN_IPCXML_Msg_Next(GWEN_IPCXML_MSG *m);
-
-
-GWEN_IPCXMLKEYSPEC *GWEN_IPCXML_Msg_GetSigners(GWEN_IPCXML_MSG *m);
-void GWEN_IPCXML_Msg_AddSigner(GWEN_IPCXML_MSG *m,
-                               GWEN_IPCXMLKEYSPEC *ks);
-GWEN_IPCXMLKEYSPEC *GWEN_IPCXML_Msg_GetCrypter(GWEN_IPCXML_MSG *m);
-void GWEN_IPCXML_Msg_SetCrypter(GWEN_IPCXML_MSG *m,
-                                GWEN_IPCXMLKEYSPEC *ks);
-
-unsigned int GWEN_IPCXML_Msg_GetFirstSegment(GWEN_IPCXML_MSG *m);
-void GWEN_IPCXML_Msg_SetFirstSegment(GWEN_IPCXML_MSG *m,
-                                     unsigned int i);
-unsigned int GWEN_IPCXML_Msg_GetLastSegment(GWEN_IPCXML_MSG *m);
-void GWEN_IPCXML_Msg_SetLastSegment(GWEN_IPCXML_MSG *m,
-                                    unsigned int i);
-
 
 
 #endif

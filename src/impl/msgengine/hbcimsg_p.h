@@ -38,6 +38,7 @@
 
 
 struct GWEN_HBCIMSG {
+  GWEN_HBCIMSG *next;
   GWEN_HBCIDIALOG *dialog;
   GWEN_BUFFER *buffer;
 

@@ -134,6 +134,7 @@ GWEN_HBCICRYPTOCONTEXT *GWEN_HBCICryptoContext_new(){
   GWEN_HBCICRYPTOCONTEXT *ctx;
 
   GWEN_NEW_OBJECT(GWEN_HBCICRYPTOCONTEXT, ctx);
+  return ctx;
 }
 
 
@@ -142,6 +143,7 @@ GWEN_HBCICRYPTOCONTEXT *GWEN_HBCICryptoContext_new(){
 void GWEN_HBCICryptoContext_free(GWEN_HBCICRYPTOCONTEXT *ctx){
   if (ctx) {
     free(ctx->pSecurityId);
+    free(ctx->pCryptKey);
     GWEN_KeySpec_free(ctx->key);
     free(ctx);
   }
@@ -149,6 +151,38 @@ void GWEN_HBCICryptoContext_free(GWEN_HBCICRYPTOCONTEXT *ctx){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_HBCICryptoContext_SetCryptKey(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                        const char *p,
+                                        unsigned int l){
+  assert(ctx);
+  if (ctx->pCryptKey)
+    free(ctx->pCryptKey);
+  ctx->pCryptKey=0;
+  if (l) {
+    ctx->pCryptKey=(char*)malloc(l);
+    ctx->lCryptKey=l;
+    memmove(ctx->pCryptKey, p, l);
+  }
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const char *
+GWEN_HBCICryptoContext_GetCryptKeyPtr(GWEN_HBCICRYPTOCONTEXT *ctx){
+  assert(ctx);
+  return ctx->pCryptKey;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+unsigned int
+GWEN_HBCICryptoContext_GetCryptKeySize(GWEN_HBCICRYPTOCONTEXT *ctx){
+  assert(ctx);
+  return ctx->lCryptKey;
+}
 
 
 

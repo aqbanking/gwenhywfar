@@ -22,7 +22,8 @@ libgwenhyfwar_la_LIBADD=\
   ipc/libipc.la \
   @gwenhyfwar_os_lib@ \
   parser/libparser.la \
-  impl/ipc/libimplipc.la @all_libraries@
+  impl/ipc/libimplipc.la \
+  impl/msgengine/libimplmsg.la  @all_libraries@
 libgwenhyfwar_la_LDFLAGS= \
   -version-info \
    @GWENHYFWAR_SO_CURRENT@:@GWENHYFWAR_SO_REVISION@:@GWENHYFWAR_SO_AGE@

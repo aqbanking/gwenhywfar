@@ -681,6 +681,42 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
 
 
 
+GWEN_HBCIMSG *GWEN_HBCIMsg_Next(GWEN_HBCIMSG *hmsg){
+  assert(hmsg);
+  return hmsg->next;
+}
+
+
+
+void GWEN_HBCIMsg_Add(GWEN_HBCIMSG *hmsg,
+                      GWEN_HBCIMSG **head){
+  assert(hmsg);
+  GWEN_LIST_ADD(GWEN_HBCIMSG, hmsg, head);
+}
+
+
+
+void GWEN_HBCIMsg_Del(GWEN_HBCIMSG *hmsg,
+                      GWEN_HBCIMSG **head){
+  assert(hmsg);
+  GWEN_LIST_DEL(GWEN_HBCIMSG, hmsg, head);
+}
+
+
+
+unsigned int GWEN_HBCIMsg_GetMsgRef(GWEN_HBCIMSG *hmsg){
+  assert(hmsg);
+  return hmsg->refMsgNum;
+}
+
+
+
+unsigned int GWEN_HBCIMsg_GetMsgNumber(GWEN_HBCIMSG *hmsg){
+  assert(hmsg);
+  return hmsg->msgNum;
+}
+
+
 
 
 
