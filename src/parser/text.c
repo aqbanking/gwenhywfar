@@ -753,6 +753,93 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 
+int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char x;
+
+    x=(unsigned char)*src;
+    if (!(
+          (x>='A' && x<='Z') ||
+          (x>='a' && x<='z') ||
+          (x>='0' && x<='9') ||
+          x==' ' ||
+          x=='.' ||
+          x==',' ||
+          x=='.' ||
+          x=='*' ||
+          x=='?'
+         )) {
+      unsigned char c;
+
+      GWEN_Buffer_AppendByte(buf, '%');
+      c=(((unsigned char)(*src))>>4)&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+      c=((unsigned char)(*src))&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    else
+      GWEN_Buffer_AppendByte(buf, *src);
+
+    src++;
+  } /* while */
+
+  return 0;
+}
+
+
+
+int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    const char *srcBak;
+    int charHandled;
+
+    srcBak=src;
+    charHandled=0;
+    if (*src=='%') {
+      if (strlen(src)>2) {
+        unsigned char d1, d2;
+        unsigned char c;
+
+        if (isxdigit(src[1]) && isxdigit(src[2])) {
+          /* skip '%' */
+          src++;
+          /* read first digit */
+          d1=(unsigned char)(toupper(*src));
+
+          /* get second digit */
+          src++;
+          d2=(unsigned char)(toupper(*src));
+          /* compute character */
+          d1-='0';
+          if (d1>9)
+            d1-=7;
+          c=(d1<<4)&0xf0;
+          d2-='0';
+          if (d2>9)
+            d2-=7;
+          c+=(d2&0xf);
+          /* store character */
+          GWEN_Buffer_AppendByte(buf, (char)c);
+          charHandled=1;
+        }
+      }
+    }
+    if (!charHandled)
+      GWEN_Buffer_AppendByte(buf, *src);
+    src++;
+  } /* while */
+
+  return 0;
+}
+
+
+
 
 
 

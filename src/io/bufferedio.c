@@ -765,6 +765,9 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm){
   assert(dm);
   bft=(GWEN_BUFFEREDIO_FILE_TABLE *)(dm->privateData);
   assert(bft);
+  if (bft->fd<3)
+    /* one of the console IO sockets, do not close */
+    return 0;
   if (close(bft->fd)) {
     DBG_ERROR(0, "Could not close (%s)",
 	      strerror(errno));

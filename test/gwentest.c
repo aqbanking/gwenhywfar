@@ -152,14 +152,17 @@ int testDBfile2(int argc, char **argv) {
   db=GWEN_DB_Group_new("Config");
 
   fprintf(stderr,"Reading file\n");
-  if (GWEN_DB_ReadFile(db, argv[2], 0)) {
+  if (GWEN_DB_ReadFile(db, argv[2], GWEN_DB_FLAGS_DEFAULT)) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }
-  fprintf(stderr, "DB is:\n");
-  GWEN_DB_Dump(db, stderr, 2);
+  //fprintf(stderr, "DB is:\n");
+  //GWEN_DB_Dump(db, stderr, 2);
 
-  if (GWEN_DB_WriteFile(db, argv[3], GWEN_DB_FLAGS_DEFAULT)) {
+  if (GWEN_DB_WriteFile(db, argv[3],
+                        GWEN_DB_FLAGS_DEFAULT
+                        &~GWEN_DB_FLAGS_ESCAPE_CHARVALUES
+                       )) {
     fprintf(stderr,"Error writing file.\n");
     return 1;
   }

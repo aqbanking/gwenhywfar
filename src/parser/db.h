@@ -146,28 +146,43 @@ extern "C" {
 #define GWEN_DB_FLAGS_OMIT_TYPES             0x04000000
 /** appends data to an existing file instead of overwriting it */
 #define GWEN_DB_FLAGS_APPEND_FILE            0x08000000
+/** Char values are escaped when writing them to a file. */
+#define GWEN_DB_FLAGS_ESCAPE_CHARVALUES      0x10000000
+/** Char values are escaped when reading them from a file (uses the same
+ * bit @ref GWEN_DB_FLAGS_ESCAPE_CHARVALUES uses) */
+#define GWEN_DB_FLAGS_UNESCAPE_CHARVALUES    0x10000000
 
 /** These are the default flags which you use in most cases */
 #define GWEN_DB_FLAGS_DEFAULT \
+  (\
   GWEN_DB_FLAGS_QUOTE_VALUES | \
   GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
   GWEN_DB_FLAGS_DETAILED_GROUPS | \
   GWEN_DB_FLAGS_INDEND | \
-  GWEN_DB_FLAGS_ADD_GROUP_NEWLINES
+  GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
+  GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+  GWEN_DB_FLAGS_UNESCAPE_CHARVALUES\
+  )
 
 
 /** same like @ref GWEN_DB_FLAGS_DEFAULT except that the produced file
  * (when writing to a stream) is more compact (but less readable)*/
 #define GWEN_DB_FLAGS_COMPACT \
+  (\
   GWEN_DB_FLAGS_QUOTE_VALUES | \
-  GWEN_DB_FLAGS_WRITE_SUBGROUPS
+  GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+  GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+  GWEN_DB_FLAGS_UNESCAPE_CHARVALUES\
+  )
 
 /** These flags can be used to read a DB from a HTTP header. It uses a
  * colon instead of the equation mark with variable definitions and stops
  * when encountering an empty line.*/
 #define GWEN_DB_FLAGS_HTTP \
+  (\
   GWEN_DB_FLAGS_USE_COLON |\
-  GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE
+  GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE\
+  )
 /*@}*/
 
 

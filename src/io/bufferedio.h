@@ -300,7 +300,8 @@ GWENHYWFAR_API
 
 /**
  * Create a buffered IO context using an already open file.
- * This file will automatically be closed upon @ref GWEN_BufferedIO_Close.
+ * This file will automatically be closed upon @ref GWEN_BufferedIO_Close
+ * (unless it is stdin, stdout or stderr).
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
 GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);

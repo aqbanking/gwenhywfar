@@ -77,9 +77,25 @@ extern "C" {
 #define GWEN_XML_FLAGS_IGNORE_INCLUDE      0x0008
 
 /**
+ * Also write comments when writing a node.
+ */
+#define GWEN_XML_FLAGS_WRITE_COMMENTS      0x0010
+
+/**
+ * Indent lines according to node level when writing nodes. This increases
+ * the readability of the resulting file.
+ */
+#define GWEN_XML_FLAGS_INDENT              0x0020
+
+/**
  * combination of other flags resembling the default flags
  */
-#define GWEN_XML_FLAGS_DEFAULT 0
+#define GWEN_XML_FLAGS_DEFAULT \
+  (\
+  GWEN_XML_FLAGS_INDENT | \
+  GWEN_XML_FLAGS_WRITE_COMMENTS\
+  )
+
 /*@}*/
 
 /** The type of a property of a tag (in XML notation this would be
@@ -436,6 +452,20 @@ GWENHYWFAR_API
                               GWEN_TYPE_UINT32 flags,
                               GWEN_STRINGLIST *searchPath);
 
+
+/**
+ * Writes a tag and all its subnodes to the given bufferedio.
+ */
+int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
+                               GWEN_BUFFEREDIO *bio,
+                               GWEN_TYPE_UINT32 flags);
+
+/**
+ * Writes a tag and all its subnodes to the given file.
+ */
+int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
+                           const char *fname,
+                           GWEN_TYPE_UINT32 flags);
 
 /*@}*/
 

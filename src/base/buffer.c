@@ -64,6 +64,7 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
       bf->bufferSize=size;
       bf->flags=GWEN_BUFFER_FLAGS_OWNED;
       bf->bytesUsed=used;
+      bf->ptr[0]=0;
     }
   }
   else {

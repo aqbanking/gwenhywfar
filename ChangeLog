@@ -1,4 +1,34 @@
 
+2004/04/04: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- bufferedio: GWEN_BufferedIO_File__Close() no longer closes one of the
+  console files (like stdin, stdout, stderr).
+- base/buffer:
+  - when creating a new buffer with a NULL pointer the first character of the
+    allocated memory is preset with a 0
+- parser/text:
+  - added new functions GWEN_Text_EscapeToBufferTolerant and
+    GWEN_Text_UnescapeToBufferTolerant which are more tolerant when escaping/
+    unescaping strings
+- parser/db:
+  - added parenthesis around composed flag definitions
+  - added flags GWEN_DB_FLAGS_ESCAPE_CHARVALUES and 
+    GWEN_DB_FLAGS_UNESCAPE_CHARVALUES. These are now used to escape/unescape
+    char values when reading/writing a DB. These flags are now on by default,
+    so newly compiled programs will automatically use these flags while
+    not recompiled programs still use the old default flags. This allows
+    easy migration from the old behaviour to the new one.
+    This should now allow AqMoney to handled any institute message received
+    from a bank (whatever control character they might include).
+- parser/xml:
+  - added functions for writing an XML tree to a bufferedio
+- added new "tools" folder which contains as the first tool "xmlmerge".
+  This tool allows merging multiple XML files into one. This will be used
+  by my new project AqHBCI to create job definitions in single files per
+  supported job. All job-XML files are then merged into one working file
+  before installation.
+
+
 2004/04/03: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - moved plugins to toplevel (grr, didn't think about the fact that the

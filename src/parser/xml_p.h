@@ -96,6 +96,11 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
                          GWEN_STRINGLIST *sl,
                          GWEN_TYPE_UINT32 flags);
 
+int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
+                                GWEN_BUFFEREDIO *bio,
+                                GWEN_TYPE_UINT32 flags,
+                                unsigned int ind);
+
 
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(GWEN_XMLNODE *n,
                                           GWEN_XMLNODE_TYPE t);

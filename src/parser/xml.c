@@ -267,8 +267,10 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
                           const char *delims,
                           GWEN_BUFFER *buf) {
   int inQuote;
+  int lastWasSpace;
 
   inQuote=0;
+  lastWasSpace=0;
 
   while(1) {
     /* get character, if needed */
@@ -290,11 +292,13 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
         break;
       }
       else {
+        lastWasSpace=0;
         GWEN_Buffer_AppendByte(buf, chr);
       }
     }
     else {
       if (chr=='"') {
+        lastWasSpace=0;
 	inQuote=1;
       }
       else if (strchr(delims, chr)) {
@@ -305,7 +309,22 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
         return -1;
       }
       else {
-        GWEN_Buffer_AppendByte(buf, chr);
+        if (!inQuote) {
+          if (isspace(chr)) {
+            if (!lastWasSpace) {
+              lastWasSpace=1;
+              GWEN_Buffer_AppendByte(buf, chr);
+            }
+          }
+          else {
+            lastWasSpace=0;
+            GWEN_Buffer_AppendByte(buf, chr);
+          }
+        }
+        else {
+          lastWasSpace=0;
+          GWEN_Buffer_AppendByte(buf, chr);
+        }
       }
     }
     chr=0;
@@ -313,6 +332,13 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
 
   if (chr=='"')
     return 0;
+  if (lastWasSpace) {
+    GWEN_TYPE_UINT32 s;
+
+    s=GWEN_Buffer_GetUsedBytes(buf);
+    GWEN_Buffer_SetUsedBytes(buf, s-1);
+    GWEN_Buffer_SetPos(buf, s);
+  }
   return chr;
 }
 
@@ -616,11 +642,6 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             return 0;
           }
         }
-
-
-
-
-
         else {
 	  /* this is a start tag */
           GWEN_XMLNODE *newNode;
@@ -1457,6 +1478,268 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np){
 
 
 
+int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
+                                GWEN_BUFFEREDIO *bio,
+                                GWEN_TYPE_UINT32 flags,
+                                unsigned int ind) {
+  GWEN_XMLPROPERTY *p;
+  GWEN_XMLNODE *c;
+  int i;
+  int simpleTag;
+  GWEN_ERRORCODE err;
+
+  assert(n);
+
+  if (flags & GWEN_XML_FLAGS_INDENT) {
+    for(i=0; i<ind; i++) {
+      err=GWEN_BufferedIO_WriteChar(bio, ' ');
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(0, err);
+        return -1;
+      }
+    }
+  }
+
+  simpleTag=0;
+  if (n->type==GWEN_XMLNodeTypeTag) {
+    err=GWEN_BufferedIO_WriteChar(bio, '<');
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
+    if (n->data)
+      err=GWEN_BufferedIO_Write(bio, n->data);
+    else
+      err=GWEN_BufferedIO_Write(bio, "UNKNOWN");
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
+    p=n->properties;
+    if (p) {
+      while (p) {
+        if (!(flags & GWEN_XML_FLAGS_INDENT)) {
+          err=GWEN_BufferedIO_WriteChar(bio, ' ');
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+            return -1;
+          }
+        }
+        else {
+          err=GWEN_BufferedIO_WriteLine(bio, "");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+            return -1;
+          }
+          for(i=0; i<ind+3; i++) {
+            err=GWEN_BufferedIO_WriteChar(bio, ' ');
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_ERROR_ERR(0, err);
+              return -1;
+            }
+          }
+        }
+
+        err=GWEN_BufferedIO_Write(bio, p->name);
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(0, err);
+          return -1;
+        }
+  
+        if (p->value) {
+          err=GWEN_BufferedIO_Write(bio, "=\"");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+            return -1;
+          }
+          err=GWEN_BufferedIO_Write(bio, p->value);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+            return -1;
+          }
+          err=GWEN_BufferedIO_Write(bio, "\"");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+            return -1;
+          }
+        }
+        p=p->next;
+      } /* while */
+
+      if (flags & GWEN_XML_FLAGS_INDENT) {
+        err=GWEN_BufferedIO_WriteLine(bio, "");
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(0, err);
+          return -1;
+        }
+        for(i=0; i<ind; i++) {
+          err=GWEN_BufferedIO_WriteChar(bio, ' ');
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+            return -1;
+          }
+        }
+      }
+    } /* if there are properties */
+
+    if (n->data) {
+      if (n->data[0]=='?') {
+        simpleTag=1;
+        err=GWEN_BufferedIO_WriteChar(bio, '?');
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(0, err);
+          return -1;
+        }
+      }
+      else if (n->data[0]=='!') {
+        simpleTag=1;
+      }
+    }
+
+    if (n->child==0) {
+      err=GWEN_BufferedIO_WriteLine(bio, "/>");
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(0, err);
+        return -1;
+      }
+    }
+    else {
+      err=GWEN_BufferedIO_WriteLine(bio, ">");
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(0, err);
+        return -1;
+      }
+      if (!simpleTag) {
+        c=n->child;
+        while(c) {
+          if (GWEN_XMLNode__WriteToStream(c, bio, flags, ind+2)) {
+            DBG_INFO(0, "Error writing tag \"%s\"", n->data);
+            return -1;
+          }
+          c=c->next;
+        }
+        if (flags & GWEN_XML_FLAGS_INDENT) {
+          for(i=0; i<ind; i++) {
+            err=GWEN_BufferedIO_WriteChar(bio, ' ');
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_ERROR_ERR(0, err);
+              return -1;
+            }
+          }
+        }
+        err=GWEN_BufferedIO_Write(bio, "</");
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(0, err);
+          return -1;
+        }
+        if (n->data)
+          err=GWEN_BufferedIO_Write(bio, n->data);
+        else
+          err=GWEN_BufferedIO_Write(bio, "UNKNOWN");
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(0, err);
+          return -1;
+        }
+  
+        err=GWEN_BufferedIO_WriteLine(bio, ">");
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(0, err);
+          return -1;
+        }
+        if (flags & GWEN_XML_FLAGS_INDENT) {
+          err=GWEN_BufferedIO_WriteLine(bio, "");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+            return -1;
+          }
+        }
+      } /* if no simply tag */
+    } /* if tag has children */
+  } /* if tag */
+  else if (n->type==GWEN_XMLNodeTypeData) {
+    if (n->data) {
+      err=GWEN_BufferedIO_WriteLine(bio, n->data);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(0, err);
+        return -1;
+      }
+    }
+  }
+  else if (n->type==GWEN_XMLNodeTypeComment) {
+    err=GWEN_BufferedIO_Write(bio, "<!--");
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
+
+    if (n->data) {
+      err=GWEN_BufferedIO_Write(bio, n->data);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(0, err);
+        return -1;
+      }
+    }
+    err=GWEN_BufferedIO_WriteLine(bio, "-->");
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
+  }
+  else {
+    DBG_ERROR(0, "Unknown tag type (%d)", n->type);
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
+                               GWEN_BUFFEREDIO *bio,
+                               GWEN_TYPE_UINT32 flags){
+  const GWEN_XMLNODE *nn;
+
+  nn=n->child;
+  while(nn) {
+    if (GWEN_XMLNode__WriteToStream(nn, bio, flags, 0))
+      return -1;
+
+    nn=nn->next;
+  } /* while */
+
+  return 0;
+}
+
+
+
+int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
+                           const char *fname,
+                           GWEN_TYPE_UINT32 flags){
+  GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
+  int fd;
+  int rv;
+
+  fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  if (fd==-1) {
+    DBG_ERROR(0, "Error opening file \"%s\": %s",
+              fname,
+              strerror(errno));
+    return -1;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
+  rv=GWEN_XMLNode_WriteToStream(n, bio, flags);
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "called from here");
+    GWEN_BufferedIO_free(bio);
+    return -1;
+  }
+  GWEN_BufferedIO_free(bio);
+  return rv;
+}
 
 
 

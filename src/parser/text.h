@@ -95,6 +95,22 @@ int GWEN_Text_EscapeToBuffer(const char *src, GWEN_BUFFER *buf);
 GWENHYWFAR_API
 int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf);
 
+/**
+ * Does the same as @ref GWEN_Text_EscapeToBuffer does, but this version
+ * here does not escape some characters generally accepted within strings
+ * (such as space, comma, decimal point etc).
+ */
+GWENHYWFAR_API
+int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf);
+
+
+/**
+ * This function does the same as @ref GWEN_Text_UnescapeToBuffer but it
+ * doesn't complain about unescaped characters in the source string.
+ */
+GWENHYWFAR_API
+int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf);
+
 
 GWENHYWFAR_API
 char *GWEN_Text_ToHex(const char *src, unsigned l, char *buffer,
