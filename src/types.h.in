@@ -31,9 +31,13 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 
 GWENHYWFAR_API typedef @GWEN_TYPE_UINT32@ GWEN_TYPE_UINT32;
-GWENHYWFAR_API typedef @GWEN_TYPE_UINT64@ GWEN_TYPE_UINT64;
 
-
+#ifdef __GNUC__
+  GWENHYWFAR_API typedef @GWEN_TYPE_UINT64@ GWEN_TYPE_UINT64;
+#else
+  /* workaround for MSVC which does not have "long long" */
+  GWENHYWFAR_API typedef ULONG64 GWEN_TYPE_UINT64;
+#endif
 
 #endif
 
