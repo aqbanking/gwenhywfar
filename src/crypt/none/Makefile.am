@@ -4,8 +4,8 @@ noinst_LTLIBRARIES=libcryptimpl.la
 
 
 noinst_HEADERS=\
- cryptssl_p.h
+ cryptnone_p.h
 
 libcryptimpl_la_SOURCES=\
- cryptssl.c
+ cryptnone.c
  

@@ -17,9 +17,10 @@ libgwenhyfwar_la_SOURCES=\
 
 libgwenhyfwar_la_LIBADD=\
   base/libbase.la \
+  crypt/libcrypt.la \
   io/libio.la \
   ipc/libipc.la \
-  os/@GWEN_OS@/libos.la \
+  @gwenhyfwar_os_lib@ \
   parser/libparser.la \
   impl/ipc/libimplipc.la
 libgwenhyfwar_la_LDFLAGS= \

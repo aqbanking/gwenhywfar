@@ -20,8 +20,8 @@ AC_CONFIG_HEADER([config.h])
 #
 GWENHYFWAR_VERSION_MAJOR=0
 GWENHYFWAR_VERSION_MINOR=9
-GWENHYFWAR_VERSION_PATCHLEVEL=1
-GWENHYFWAR_VERSION_BUILD=8
+GWENHYFWAR_VERSION_PATCHLEVEL=2
+GWENHYFWAR_VERSION_BUILD=0
 GWENHYFWAR_VERSION_TAG="cvs"
 GWENHYFWAR_VERSION_FULL_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL.$GWENHYFWAR_VERSION_BUILD($GWENHYFWAR_VERSION_TAG)"
 GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
@@ -50,9 +50,9 @@ AC_DEFINE_UNQUOTED(GWENHYFWAR_VERSION_TAG,$GWENHYFWAR_VERSION_TAG, [tag])
 #
 # SO version
 #
-GWENHYFWAR_SO_CURRENT=2
+GWENHYFWAR_SO_CURRENT=3
 GWENHYFWAR_SO_REVISION=0
-GWENHYFWAR_SO_AGE=0
+GWENHYFWAR_SO_AGE=1
 AC_SUBST(GWENHYFWAR_SO_CURRENT)
 AC_SUBST(GWENHYFWAR_SO_REVISION)
 AC_SUBST(GWENHYFWAR_SO_AGE)
@@ -140,8 +140,9 @@ if test "$ssl_available" = "yes"; then
   all_libraries="${all_libraries} ${ssl_libraries} ${ssl_lib}"
   all_includes="$all_includes $ssl_includes"
   gwenhyfwar_includes="$gwenhyfwar_includes $ssl_includes"
-  gwenhyfwar_crypt_lib="crypt/ossl/libcrypt.la"
   GWEN_CRYPTO="ossl"
+else
+  GWEN_CRYPTO="none"
 fi
 
 
@@ -199,6 +200,7 @@ AC_CONFIG_FILES([Makefile
                  src/base/Makefile
                  src/crypt/Makefile
                  src/crypt/ossl/Makefile
+                 src/crypt/none/Makefile
                  src/io/Makefile
                  src/ipc/Makefile
                  src/os/Makefile
