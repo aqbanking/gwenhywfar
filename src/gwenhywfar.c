@@ -66,39 +66,39 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_Memory_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing InetAddr module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing InetAddr module");
     err=GWEN_InetAddr_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing Socket module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Socket module");
     err=GWEN_Socket_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing Libloader module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Libloader module");
     err=GWEN_LibLoader_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing BufferedIO module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing BufferedIO module");
     err=GWEN_BufferedIO_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing Crypt module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Crypt module");
     err=GWEN_Crypt_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing Process module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Process module");
     err=GWEN_Process_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing Network module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Network module");
     err=GWEN_Net_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing DataBase IO module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing DataBase IO module");
     err=GWEN_DBIO_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing WaitCallback module");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing WaitCallback module");
     err=GWEN_WaitCallback_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
@@ -129,7 +129,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module WaitCallback");
     }
     if (!GWEN_Error_IsOk(GWEN_DBIO_ModuleFini())) {
@@ -137,7 +137,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module DBIO");
     }
     if (!GWEN_Error_IsOk(GWEN_Net_ModuleFini())) {
@@ -145,7 +145,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Net");
     }
     if (!GWEN_Error_IsOk(GWEN_Process_ModuleFini())) {
@@ -153,7 +153,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Process");
     }
     if (!GWEN_Error_IsOk(GWEN_Crypt_ModuleFini())) {
@@ -161,7 +161,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Crypt");
     }
     if (!GWEN_Error_IsOk(GWEN_BufferedIO_ModuleFini())) {
@@ -169,7 +169,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module BufferedIO");
     }
     if (!GWEN_Error_IsOk(GWEN_LibLoader_ModuleFini())) {
@@ -177,7 +177,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
 	      "Could not deinitialze module LibLoader");
     }
     if (!GWEN_Error_IsOk(GWEN_Socket_ModuleFini())) {
@@ -185,7 +185,7 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Socket");
     }
     if (!GWEN_Error_IsOk(GWEN_InetAddr_ModuleFini())) {
@@ -193,28 +193,28 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                        GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module InetAddr");
     }
-    if (!GWEN_Error_IsOk(GWEN_Logger_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                       GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
-                "Could not deinitialze module Logger");
-    }
 
-    /* must be deinitialized at last */
     if (!GWEN_Error_IsOk(GWEN_Memory_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,
                          0,
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Memory");
     }
     GWEN_Error_ModuleFini();
+    /* must be deinitialized at last */
+    if (!GWEN_Error_IsOk(GWEN_Logger_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                       GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
+                "Could not deinitialze module Logger");
+    }
   }
   return err;
 }

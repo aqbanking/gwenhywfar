@@ -103,7 +103,7 @@ void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger);
  * function.
  */
 GWENHYWFAR_API
-void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg);
+void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) __attribute__((deprecated));
 
 
 /**

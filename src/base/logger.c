@@ -49,15 +49,11 @@
 #include <unistd.h>
 
 
-static GWEN_LOGGER *gwen_logger=0;
 static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
 
 
 
 GWEN_ERRORCODE GWEN_Logger_ModuleInit(){
-  gwen_loggerdomains=GWEN_LoggerDomain_new(GWEN_LOGDOMAIN);
-  gwen_logger=GWEN_Logger_new();
-  gwen_loggerdomains->logger=gwen_logger;
   GWEN_Logger_Open(GWEN_LOGDOMAIN,
                    "gwen",
                    0,
@@ -70,9 +66,11 @@ GWEN_ERRORCODE GWEN_Logger_ModuleInit(){
 
 
 GWEN_ERRORCODE GWEN_Logger_ModuleFini(){
-  while(gwen_loggerdomains) {
-    GWEN_LoggerDomain_Del(gwen_loggerdomains);
-    GWEN_LoggerDomain_free(gwen_loggerdomains);
+  GWEN_LOGGER_DOMAIN *ld;
+
+  while((ld=gwen_loggerdomains)) {
+    GWEN_LoggerDomain_Del(ld);
+    GWEN_LoggerDomain_free(ld);
   }
   return 0;
 }
@@ -130,20 +128,19 @@ void GWEN_LoggerDomain_Del(GWEN_LOGGER_DOMAIN *ld){
 
 
 GWEN_LOGGER *GWEN_LoggerDomain_GetLogger(const char *name) {
-  if (name) {
-    GWEN_LOGGER_DOMAIN *ld;
+  GWEN_LOGGER_DOMAIN *ld;
 
-    ld=GWEN_LoggerDomain_Find(name);
-    if (ld)
-      return ld->logger;
-    assert(gwen_logger);
-    ld=GWEN_LoggerDomain_new(name);
-    ld->logger=gwen_logger;
-    GWEN_Logger_Attach(ld->logger);
+  if (!name)
+    name="default";
+
+  ld=GWEN_LoggerDomain_Find(name);
+  if (ld) {
     return ld->logger;
   }
-  assert(gwen_logger);
-  return gwen_logger;
+  ld=GWEN_LoggerDomain_new(name);
+  ld->logger=GWEN_Logger_new();
+  GWEN_LoggerDomain_Add(ld);
+  return ld->logger;
 }
 
 
@@ -184,22 +181,14 @@ void GWEN_Logger_Attach(GWEN_LOGGER *lg){
 void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger){
   assert(newLogger);
 
-  if (oldLogger==0)
-    oldLogger=gwen_logger;
-
-  if (!oldLogger) {
-    gwen_logger=newLogger;
-  }
-  else {
-    GWEN_LIST_ADD(GWEN_LOGGER, newLogger, &(oldLogger->next));
-  }
+  assert(oldLogger);
+  GWEN_LIST_ADD(GWEN_LOGGER, newLogger, &(oldLogger->next));
 }
 
 
 
 void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg){
-  if (gwen_logger==0 || lg==0)
-    gwen_logger=lg;
+  fprintf(stderr, "GWEN_Logger_SetDefaultLogger: Deprecated function\n");
 }
 
 
