@@ -1117,7 +1117,8 @@ int GWEN_XSD__ImportDerivedTypes(GWEN_XSD_ENGINE *e) {
   GWEN_XMLNODE *tNode;
 
   assert(e);
-  tNode=GWEN_XML_fromString(gwen_xml__vsdtypes, 0, GWEN_XML_FLAGS_DEFAULT);
+  tNode=GWEN_XMLNode_fromString(gwen_xml__vsdtypes, 0,
+                                GWEN_XML_FLAGS_DEFAULT);
   if (!tNode) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Could not parse internal derived types node");

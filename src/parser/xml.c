@@ -190,9 +190,9 @@ void GWEN_XMLNode_del(GWEN_XMLNODE *n, GWEN_XMLNODE **head){
 
 
 
-GWEN_XMLNODE *GWEN_XML_fromString(const char *s,
-                                  int len,
-                                  GWEN_TYPE_UINT32 flags){
+GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s,
+                                      int len,
+                                      GWEN_TYPE_UINT32 flags){
   GWEN_BUFFEREDIO *bio;
   GWEN_XMLNODE *tNode;
 

@@ -186,9 +186,9 @@ GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n);
 
 GWENHYWFAR_API
-  GWEN_XMLNODE *GWEN_XML_fromString(const char *s,
-                                    int len,
-                                    GWEN_TYPE_UINT32 flags);
+  GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s,
+                                        int len,
+                                        GWEN_TYPE_UINT32 flags);
 
 /*@}*/
 
