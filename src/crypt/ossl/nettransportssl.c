@@ -388,6 +388,11 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
   }
 
   /* try to read */
+  DBG_NOTICE(0, "Reading up to %d bytes while status \"%s\"",
+             *bsize,
+             SSL_state_string_long(skd->ssl));
+
+  ERR_clear_error();
   rv=SSL_read(skd->ssl, buffer, *bsize);
   if (rv<1) {
     int sslerr;
@@ -404,10 +409,13 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
                  GWEN_NetTransportSSL_ErrorString(sslerr));
       }
       else {
+        DBG_ERROR(0, "List of pending SSL errors:");
+        ERR_print_errors_fp(stderr); /* DEBUG */
         DBG_ERROR(0, "SSL error: %s (%d)",
                   GWEN_NetTransportSSL_ErrorString(sslerr),
                   sslerr);
       }
+
       GWEN_Socket_Close(skd->socket);
       SSL_free(skd->ssl);
       skd->ssl=0;
@@ -447,6 +455,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
   }
 
   /* try to read */
+  ERR_clear_error();
   rv=SSL_write(skd->ssl, buffer, *bsize);
   if (rv<1) {
     int sslerr;
@@ -484,7 +493,27 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
 
   DBG_DEBUG(0, "Written %d bytes:", rv);
   GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
+  if (1) {
+    FILE *f;
+
+    DBG_NOTICE(0, "Saving...");
+    f=fopen("/tmp/written.bin", "a+");
+    if (!f) {
+      DBG_ERROR(0, "fopen: %s", strerror(errno));
+    }
+    else {
+      if (fwrite(buffer, rv, 1, f)!=1) {
+        DBG_ERROR(0, "fwrite: %s", strerror(errno));
+      }
+      if (fclose(f)) {
+        DBG_ERROR(0, "fclose: %s", strerror(errno));
+      }
+    }
+    return 0;
+  }
+
   *bsize=rv;
+
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
 }
@@ -601,6 +630,45 @@ GWEN_NetTransportSSL_SetAskAddCertFn(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN fn){
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORTSSL_ASKADDCERT_FN GWEN_NetTransportSSL_GetAskAddCertFn(){
   return gwen_netransportssl_askAddCertFn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetTransportSSL__InfoCallBack(SSL *s, int where, int ret){
+  const char *str;
+  int w;
+
+  w=where& ~SSL_ST_MASK;
+  if (w & SSL_ST_CONNECT)
+    str="SSL_connect";
+  else if (w & SSL_ST_ACCEPT)
+    str="SSL_accept";
+  else
+    str="undefined";
+
+  if (where & SSL_CB_LOOP){
+    DBG_INFO(0,"%s: %s",str,SSL_state_string_long(s));
+  }
+  else if (where & SSL_CB_ALERT){
+    str=(where & SSL_CB_READ)?"read":"write";
+    DBG_NOTICE(0, "SSL3 alert %s: %s: %s",
+               str,
+               SSL_alert_type_string_long(ret),
+               SSL_alert_desc_string_long(ret));
+  }
+  else if (where & SSL_CB_EXIT){
+    if (ret==0) {
+      DBG_INFO(0, "%s: failed in \"%s\"",
+               str,
+               SSL_state_string_long(s));
+    }
+    else if (ret<0){
+      DBG_DEBUG(0, "%s: error in \"%s\"",
+                str,
+                SSL_state_string_long(s));
+    }
+  }
 }
 
 
@@ -728,6 +796,10 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
   skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
   assert(skd);
 
+  /* enable all workarounds for bugs in other SSL implementation for
+   * maximum compatibility */
+  SSL_CTX_set_options(skd->ssl_ctx, SSL_OP_ALL);
+
   /* set default password handler and data */
   SSL_CTX_set_default_passwd_cb(skd->ssl_ctx,
                                 GWEN_NetTransportSSL_PasswordCB);
@@ -776,77 +848,78 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
     }
   }
 
-
   //SSL_CTX_set_verify_depth(skd->ssl_ctx, 1);
 
   /* setup server stuff */
-  if (!skd->active &&
-      GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusListening) {
-    FILE *f;
+  if (!skd->active) {
+    if (GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusListening) {
+      FILE *f;
 
-    DBG_DEBUG(0, "Loading DH params");
+      DBG_DEBUG(0, "Loading DH params");
 
-    f=fopen(skd->dhfile, "r");
-    if (!f) {
-      DBG_ERROR(0, "SSL: fopen(%s): %s", skd->dhfile, strerror(errno));
-      return -1;
-    }
-    else {
-      DH *dh_tmp;
-      int codes;
-
-      dh_tmp=PEM_read_DHparams(f, NULL, NULL, NULL);
-      fclose(f);
-      if (dh_tmp==0) {
-	DBG_ERROR(0, "SSL: Error reading DH params");
+      f=fopen(skd->dhfile, "r");
+      if (!f) {
+        DBG_ERROR(0, "SSL: fopen(%s): %s", skd->dhfile, strerror(errno));
         return -1;
       }
+      else {
+        DH *dh_tmp;
+        int codes;
 
-      /* check for usability */
-      if (!DH_check(dh_tmp, &codes)){
-	int sslerr;
+        dh_tmp=PEM_read_DHparams(f, NULL, NULL, NULL);
+        fclose(f);
+        if (dh_tmp==0) {
+          DBG_ERROR(0, "SSL: Error reading DH params");
+          return -1;
+        }
 
-	sslerr=SSL_get_error(skd->ssl, rv);
-	DBG_ERROR(0, "SSL DH_check error: %s (%d)",
-		  GWEN_NetTransportSSL_ErrorString(sslerr),
-		  sslerr);
-	DH_free(dh_tmp);
-	return -1;
+        /* check for usability */
+        if (!DH_check(dh_tmp, &codes)){
+          int sslerr;
+
+          sslerr=SSL_get_error(skd->ssl, rv);
+          DBG_ERROR(0, "SSL DH_check error: %s (%d)",
+                    GWEN_NetTransportSSL_ErrorString(sslerr),
+                    sslerr);
+          DH_free(dh_tmp);
+          return -1;
+        }
+
+        if (codes & DH_CHECK_P_NOT_PRIME){
+          DBG_ERROR(0, "SSL DH error: p is not prime");
+          DH_free(dh_tmp);
+          return -1;
+        }
+        if ((codes & DH_NOT_SUITABLE_GENERATOR) &&
+            (codes & DH_CHECK_P_NOT_SAFE_PRIME)){
+          DBG_ERROR(0, "SSL DH error : "
+                    "neither suitable generator or safe prime");
+          DH_free(dh_tmp);
+          return -1;
+        }
+
+        /* DH params seem to be ok */
+        if (SSL_CTX_set_tmp_dh(skd->ssl_ctx, dh_tmp)<0) {
+          DBG_ERROR(0, "SSL: Could not set DH params");
+          DH_free(dh_tmp);
+          return -1;
+        }
+
+        /* always expect peer certificate */
+        if (skd->secure)
+          SSL_CTX_set_verify(skd->ssl_ctx,
+                             SSL_VERIFY_PEER |
+                             SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+                             GWEN_NetTransportSSL__VerifyCallBack);
+        else
+          SSL_CTX_set_verify(skd->ssl_ctx,
+                             SSL_VERIFY_PEER,
+                             GWEN_NetTransportSSL__VerifyCallBack);
       }
-
-      if (codes & DH_CHECK_P_NOT_PRIME){
-	DBG_ERROR(0, "SSL DH error: p is not prime");
-	DH_free(dh_tmp);
-	return -1;
-      }
-      if ((codes & DH_NOT_SUITABLE_GENERATOR) &&
-	  (codes & DH_CHECK_P_NOT_SAFE_PRIME)){
-	DBG_ERROR(0, "SSL DH error : "
-		  "neither suitable generator or safe prime");
-	DH_free(dh_tmp);
-	return -1;
-      }
-
-      /* DH params seem to be ok */
-      if (SSL_CTX_set_tmp_dh(skd->ssl_ctx, dh_tmp)<0) {
-	DBG_ERROR(0, "SSL: Could not set DH params");
-	DH_free(dh_tmp);
-	return -1;
-      }
-
-      /* always expect peer certificate */
-      if (skd->secure)
-        SSL_CTX_set_verify(skd->ssl_ctx,
-                           SSL_VERIFY_PEER |
-                           SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
-                           GWEN_NetTransportSSL__VerifyCallBack);
-      else
-        SSL_CTX_set_verify(skd->ssl_ctx,
-                           SSL_VERIFY_PEER,
-                           GWEN_NetTransportSSL__VerifyCallBack);
     }
   }
   else {
+    /* active connection */
     if (skd->secure)
       SSL_CTX_set_verify(skd->ssl_ctx,
                          SSL_VERIFY_PEER,
@@ -857,11 +930,15 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
                          GWEN_NetTransportSSL__VerifyCallBack);
   }
 
-  /* enable all workarounds for bugs in other SSL implementation for
-   * maximum compatibility */
-  SSL_CTX_set_options(skd->ssl_ctx, SSL_OP_ALL);
-
   skd->ssl=SSL_new(skd->ssl_ctx);
+  if (skd->active)
+    SSL_set_connect_state(skd->ssl);
+  else
+    SSL_set_accept_state(skd->ssl);
+
+  /* set info callback */
+  SSL_set_info_callback(skd->ssl,
+                        (void (*)()) GWEN_NetTransportSSL__InfoCallBack);
 
   /* tell SSL to use our socket */
   rv=SSL_set_fd(skd->ssl, fd);
@@ -1145,6 +1222,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     X509 *cert;
 
     /* check for established SSL */
+    ERR_clear_error();
     if (skd->active) {
       DBG_VERBOUS(0, "Calling connect");
       rv=SSL_connect(skd->ssl);
@@ -1154,7 +1232,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       rv=SSL_accept(skd->ssl);
     }
 
-    if (rv<1) {
+    if (rv!=1) {
       int sslerr;
 
       sslerr=SSL_get_error(skd->ssl, rv);
@@ -1186,6 +1264,19 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     /* now logically connected */
     GWEN_DB_Group_free(skd->peerCertificate);
     skd->peerCertificate=0;
+
+    /* show info about used cipher */
+    if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelNotice) {
+      SSL_CIPHER *ci;
+      char buffer[256];
+      const char *p;
+
+      ci=SSL_get_current_cipher(skd->ssl);
+      assert(ci);
+
+      p=SSL_CIPHER_description(ci, buffer, sizeof(buffer));
+      DBG_NOTICE(0, "Connected using \"%s\"", p);
+    }
 
     cert=SSL_get_peer_certificate(skd->ssl);
     if (!cert) {
@@ -1281,6 +1372,74 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         GWEN_DB_Group_free(dbCert);
       }
       else if (vr!=X509_V_OK) {
+        switch(vr) {
+        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+          DBG_ERROR(0, "Unable to get issuer cert");
+          break;
+        case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
+          DBG_ERROR(0, "Unable to decrypt cert signature");
+          break;
+        case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
+          DBG_ERROR(0, "Unable to decode issuer public key");
+          break;
+        case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+          DBG_ERROR(0, "Cert signature failure");
+          break;
+        case X509_V_ERR_CERT_NOT_YET_VALID:
+          DBG_ERROR(0, "Cert not yet valid");
+          break;
+        case X509_V_ERR_CERT_HAS_EXPIRED:
+          DBG_ERROR(0, "Cert has expired");
+          break;
+        case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+          DBG_ERROR(0, "Self-signed root cert");
+          break;
+        case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+          DBG_ERROR(0, "Self-signed cert");
+          break;
+        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+          DBG_ERROR(0, "Unable to get issuer cert locally");
+          break;
+        case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+          DBG_ERROR(0, "Unable to verify leaf signature");
+          break;
+        case X509_V_ERR_CERT_CHAIN_TOO_LONG:
+          DBG_ERROR(0, "Cert chain too long");
+          break;
+        case X509_V_ERR_CERT_REVOKED:
+          DBG_ERROR(0, "Cert revoked");
+          break;
+        case X509_V_ERR_INVALID_CA:
+          DBG_ERROR(0, "Invalid CA");
+          break;
+        case X509_V_ERR_CERT_UNTRUSTED:
+          DBG_ERROR(0, "Cert untrusted");
+          break;
+        case X509_V_ERR_CERT_REJECTED:
+          DBG_ERROR(0, "Cert rejected");
+          break;
+
+        case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+        case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+        case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
+        case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
+        case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+        case X509_V_ERR_INVALID_PURPOSE:
+          DBG_ERROR(0, "Formal error in cert");
+          break;
+
+        case X509_V_ERR_OUT_OF_MEM:
+        case X509_V_ERR_UNABLE_TO_GET_CRL:
+        case X509_V_ERR_UNABLE_TO_DECRYPT_CRL_SIGNATURE:
+        case X509_V_ERR_CRL_SIGNATURE_FAILURE:
+        case X509_V_ERR_CRL_NOT_YET_VALID:
+        case X509_V_ERR_CRL_HAS_EXPIRED:
+        default:
+          DBG_ERROR(0, "X509 error (%ld)", vr);
+          break;
+        } /* switch */
+
+        DBG_WARN(0, "Invalid peer certificate");
         if (skd->secure) {
           DBG_ERROR(0, "Invalid peer certificate, aborting");
           GWEN_Socket_Close(skd->socket);

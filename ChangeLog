@@ -1,4 +1,11 @@
 
+2004/07/27: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/base64: fixed a bug in GWEN_Base64_Decode
+- crypt/ossl/nettransportssl.c: fixed some bugs, added verbosity while
+  testing AqHBCI's PIN/TAN support which extensively uses it
+
+
 2004/07/22: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ipc/netconnectionhttp: added defaultUrl. This is used when no URL is given

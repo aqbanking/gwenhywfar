@@ -126,6 +126,7 @@ GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert);
 static int GWEN_NetTransportSSL__VerifyCallBack(int preverify_ok,
                                                 X509_STORE_CTX *ctx);
 
+void GWEN_NetTransportSSL__InfoCallBack(SSL *s, int where, int ret);
 
 
 

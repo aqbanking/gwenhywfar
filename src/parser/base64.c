@@ -141,6 +141,11 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
     if ((sizeGiven && size==0) || lastWasEq || !*src)
       break;
     v=0;
+
+    while (*src && ((p=strchr(GWEN_Base64_Alphabet, *src))==0))
+      src++;
+    if (!*src)
+      break;
     for (i=0; i<4; i++) {
       /* get next valid character */
       if (lastWasEq) {
