@@ -11,9 +11,9 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 EXTRA_DIST = xsdtypes.inc xsdtypes.xsd
 
 localedir=$(datadir)/locale
-DEFS=\
+DEFS += \
   -DLOCALEDIR=\"$(localedir)\" \
-  -DGWENHYWFAR_PLUGINS=\"@gwenhywfar_plugins@\" @DEFS@
+  -DGWENHYWFAR_PLUGINS=\"$(gwenhywfar_plugindir)\"
 
 noinst_LTLIBRARIES=libparser.la
 
@@ -28,7 +28,7 @@ noinst_HEADERS=\
  xml_l.h \
  xsd_p.h
 
-iheaderdir=${includedir}/gwenhywfar
+iheaderdir = $(pkgincludedir)
 iheader_HEADERS=\
  base64.h \
  csv.h \

@@ -11,22 +11,22 @@ result=""
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @all_includes@ @gwenhywfar_includes@"
+	    result="$result @ssl_includes@ @gwenhywfar_includes@"
 	    ;;
 	--libraries)
-	    result="$result @gwenhywfar_libs@"
+	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libs@"
 	    ;;
 	--libraries++)
-	    result="$result @gwenhywfar_libspp@"
+	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libspp@"
 	    ;;
 	--libraries-ui)
-	    result="$result @gwenhywfar_libsui@"
+	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libsui@"
 	    ;;
 	--headers)
-	    result="$result @gwenhywfar_headers@"
+	    result="$result @gwenhywfar_pkgincludedir@"
 	    ;;
 	--plugins)
-	    result="$result @gwenhywfar_plugins@"
+	    result="$result @gwenhywfar_plugindir@"
 	    ;;
 	--sections)
 	    result="$result @gwenhywfar_sections@"

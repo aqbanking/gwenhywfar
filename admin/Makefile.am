@@ -1,6 +1,6 @@
 INCLUDES=@all_includes@
 
-AM_CFLAGS=-DGWEN_HEADERS=\"@gwenhywfar_headers@\"
+AM_CFLAGS = -DGWEN_HEADERS=$(pkgincludedir)
 
 
 bin_PROGRAMS=mklistdoc

@@ -1,7 +1,13 @@
+2005-02-14   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac, */Makefile.am: Clean up and unify installation
+	variables so that the gwenhywfar-config script is prepared to be
+	adapted by the windows setup program. Adapt Makefile.am's
+	accordingly.
 
 2005/02/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- this lib now uses $libdir instead of $prefix/lib)
+- this lib now uses $libdir instead of $prefix/lib
 
 
 ===========================================================================

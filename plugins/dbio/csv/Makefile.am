@@ -1,9 +1,9 @@
 EXTRA_DIST=README
 
-dbioplugindir=@gwenhywfar_plugins@/dbio
+dbioplugindir = $(gwenhywfar_plugindir)/dbio
 
 localedir=$(datadir)/locale
-DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+DEFS += -D LOCALEDIR=\"$(localedir)\"
 
 dbioplugin_LTLIBRARIES=csv.la
 dbioplugin_DATA=csv.xml
@@ -11,5 +11,5 @@ noinst_HEADERS=csv_p.h
 
 csv_la_SOURCES=csv.c
 csv_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
-csv_la_LDFLAGS=@STRIPALL@ -module -version-info 0:1:0
+csv_la_LDFLAGS = $(STRIPALL) -module -version-info 0:1:0
 

@@ -211,14 +211,14 @@ AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
-        gwenhywfar_lib="-lgwenhywfar"
-        gwenhywfar_libs="-L\${libdir} -lgwenhywfar"
-        gwenhywfar_libspp="-L\${libdir} -lgwenpp"
-        gwenhywfar_libsui="-L\${libdir} -lgwenui"
+        gwenhywfar_ldflags="-L\${libdir}"
+        gwenhywfar_libs="-lgwenhywfar"
+        gwenhywfar_libspp="-lgwenpp"
+        gwenhywfar_libsui="-lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
-        gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
+        gwenhywfar_pkgincludedir="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
-        gwenhywfar_plugins="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
         
@@ -238,14 +238,14 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
-        gwenhywfar_lib="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
-        gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
-        gwenhywfar_libspp="-L\$libdir -lgwenpp"
-        gwenhywfar_libsui="-L\$libdir -lgwenui"
+        gwenhywfar_ldflags="-L${WIN_PATH_WINDOWS_MINGW}"
+        gwenhywfar_libs="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_libspp="-lgwenpp"
+        gwenhywfar_libsui="-lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
-        gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
+        gwenhywfar_pkgincludedir="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
-        gwenhywfar_plugins="\$libdir/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugindir="\$libdir/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_MAKE_DLL_TARGET="dll"
         GWEN_INSTALL_DLL_TARGET="dll-install"
@@ -297,7 +297,6 @@ fi
 AQ_CHECK_SSL
 if test "$ssl_available" = "yes"; then
   all_includes="$all_includes $ssl_includes"
-  gwenhywfar_includes="$gwenhywfar_includes $ssl_includes"
   GWEN_CRYPTO="ossl"
   AC_DEFINE_UNQUOTED(GWEN_SSL_CRYPTO, 1, [Defined if OpenSSL crypto module is built])
   USE_CRYPT="yes"
@@ -531,32 +530,34 @@ ACX_COMPILE_WARN()
 
 PROG_LIBRARIES="${PROG_LIBRARIES} ${ssl_libraries} ${ssl_lib} ${ncurses_libs}"
 
+# Clean up include variables
+AS_SCRUB_INCLUDE(ssl_includes)
+AS_SCRUB_INCLUDE(gwenhywfar_includes)
+AS_SCRUB_INCLUDE(all_includes)
+
 
 ###-------------------------------------------------------------------------
 #
 # substitute vars
 #
-AS_SCRUB_INCLUDE(gwenhywfar_includes)
-AC_SUBST(PROG_LIBRARIES)
-AC_SUBST(gwenhywfar_includes)
-AC_SUBST(gwenhywfar_libs)
-AC_SUBST(gwenhywfar_lib)
-AC_SUBST(gwenhywfar_libspp)
-AC_SUBST(gwenhywfar_libsui)
-AC_SUBST(gwenhywfar_plugins)
-AC_SUBST(gwenhywfar_headers)
-AC_SUBST(gwenhywfar_sections)
-AC_SUBST(gwenhywfar_needed_libs)
-AC_SUBST(GWEN_OS)
-AC_SUBST(GWEN_MAKE_DLL_TARGET)
-AC_SUBST(GWEN_INSTALL_DLL_TARGET)
-AC_SUBST(gwenhywfar_os_lib)
-AC_SUBST(GWENHYWFAR_LIB)
-AC_SUBST(gwenhywfar_crypt_lib)
 AC_SUBST(GWEN_CRYPTO)
 AC_SUBST(GWEN_HEADER_FILES)
+AC_SUBST(GWEN_INSTALL_DLL_TARGET)
+AC_SUBST(GWEN_MAKE_DLL_TARGET)
+AC_SUBST(GWEN_OS)
+AC_SUBST(PROG_LIBRARIES)
 AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
+AC_SUBST(gwenhywfar_crypt_lib)
+AC_SUBST(gwenhywfar_includes)
+AC_SUBST(gwenhywfar_ldflags)
+AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_libspp)
+AC_SUBST(gwenhywfar_libsui)
+AC_SUBST(gwenhywfar_os_lib)
+AC_SUBST(gwenhywfar_pkgincludedir)
+AC_SUBST(gwenhywfar_plugindir)
+AC_SUBST(gwenhywfar_sections)
 
 
 ###-------------------------------------------------------------------------
