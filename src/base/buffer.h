@@ -30,7 +30,17 @@
 #define GWENHYWFAR_BUFFER_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+GWENHYWFAR_API
+typedef struct GWEN_BUFFER GWEN_BUFFER;
+#ifdef __cplusplus
+}
+#endif
+
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/bufferedio.h>
 
 
 #include <stdio.h>
@@ -53,16 +63,13 @@ extern "C" {
 
 #define GWEN_BUFFER_MODE_DYNAMIC          0x0001
 #define GWEN_BUFFER_MODE_ABORT_ON_MEMFULL 0x0002
+#define GWEN_BUFFER_MODE_ABORT_USE_BIO    0x0004
 
 #define GWEN_BUFFER_MODE_DEFAULT \
   (\
   GWEN_BUFFER_MODE_DYNAMIC | \
   GWEN_BUFFER_MODE_ABORT_ON_MEMFULL\
   )
-
-
-GWENHYWFAR_API
-typedef struct GWEN_BUFFER GWEN_BUFFER;
 
 
 /**
@@ -90,16 +97,32 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf);
 
 
 /**
- * Returns the current mode of the buffer (such as GWEN_BUFFER_MODE_DYNAMIC).
+ * Returns the current mode of the buffer
+ * (such as  @ref GWEN_BUFFER_MODE_DYNAMIC).
  */
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Buffer_GetMode(GWEN_BUFFER *bf);
 
 /**
- * Changes the current mode of the buffer (such as GWEN_BUFFER_MODE_DYNAMIC).
+ * Changes the current mode of the buffer
+ * (such as  @ref GWEN_BUFFER_MODE_DYNAMIC).
  */
 GWENHYWFAR_API
 void GWEN_Buffer_SetMode(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 mode);
+
+/**
+ * Adds the give mode to the current mode of the buffer
+ * (such as  @ref GWEN_BUFFER_MODE_DYNAMIC).
+ */
+GWENHYWFAR_API
+void GWEN_Buffer_AddMode(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 mode);
+
+/**
+ * Removes the give mode from the current mode of the buffer
+ * (such as  @ref GWEN_BUFFER_MODE_DYNAMIC).
+ */
+GWENHYWFAR_API
+void GWEN_Buffer_SubMode(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 mode);
 
 /**
  * Returns the hard limit. This is the maximum size of a GWEN_BUFFER in
@@ -369,6 +392,19 @@ GWENHYWFAR_API
 int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
                      GWEN_TYPE_UINT32 pos,
                      GWEN_TYPE_UINT32 l);
+
+
+/**
+ * Sets the buffered input to be used as a source.
+ * This BIO is used when a byte is to be returned while the buffer is
+ * empty (or the end of the buffer is reached). In such a case the missing
+ * bytes are read from this BIO if the mode contains
+ * @ref GWEN_BUFFER_MODE_ABORT_USE_BIO.
+ */
+GWENHYWFAR_API
+void GWEN_Buffer_SetSourceBIO(GWEN_BUFFER *bf,
+			      GWEN_BUFFEREDIO *bio,
+			      int take);
 
 
 GWENHYWFAR_API

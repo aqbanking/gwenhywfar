@@ -1,13 +1,26 @@
+
+2004/05/01: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- io/bufferedio: 
+  - added function GWEN_BufferedIO_ReadRawForced
+- base/buffer:
+  - added GWEN_Buffer_SetSourceBIO and a mechanism, which reads missing
+    data from a GWEN_BUFFEREDIO (if the buffer is in mode 
+    GWEN_BUFFER_MODE_ABORT_USE_BIO). Does work wor ReadChar and PeekChar.
+
+
 2004-04-28  Christian Stimming <stimming@tuhh.de>
 
 	* gwenhywfar.m4: For automake-1.8, add extra quotation in the
 	macro name.
+
 
 2004-04-26  Christian Stimming <stimming@tuhh.de>
 
 	* m4/acx_compile_warn.m4: For gcc3.4, add the new warning switch
 	-Wdeclaration-after-statement in order to preserve source code
 	compatibility with gcc2.95 and other compilers.
+
 
 2004/04/25: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

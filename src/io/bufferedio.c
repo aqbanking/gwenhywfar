@@ -36,6 +36,7 @@
 #include "bufferedio_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/waitcallback.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -659,6 +660,50 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_EOF);
   }
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
+                                             char *buffer,
+                                             unsigned int *bsize){
+  GWEN_ERRORCODE err;
+  char *lbuffer;
+  unsigned int lsize;
+  unsigned int bytesRead;
+  GWEN_WAITCALLBACK_RESULT cbres;
+
+  lbuffer=buffer;
+  bytesRead=0;
+  while(bytesRead<*bsize) {
+    cbres=GWEN_WaitCallbackProgress(bytesRead, *bsize);
+    if (cbres==GWEN_WaitCallbackResult_Abort) {
+      DBG_ERROR(0, "User abort");
+      *bsize=bytesRead;
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_PARTIAL);
+    }
+    lsize=*bsize-bytesRead;
+    err=GWEN_BufferedIO_ReadRaw(bt, lbuffer, &lsize);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+    if (lsize==0) {
+      DBG_ERROR(0, "Premature end of stream");
+      *bsize=bytesRead;
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_PARTIAL);
+    }
+    bytesRead+=lsize;
+    lbuffer+=lsize;
+  } /* while */
+
   return 0;
 }
 

@@ -351,6 +351,14 @@ GWENHYWFAR_API
                                          char *buffer,
                                          unsigned int *bsize);
 
+/**
+ * Reads exactly the amount of bytes given or returns an error.
+ */
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
+                                               char *buffer,
+                                               unsigned int *bsize);
+
 
 
 #ifdef __cplusplus
