@@ -45,6 +45,7 @@ extern "C" {
  */
 /*@{*/
 
+GWENHYWFAR_API
 typedef struct GWEN_RINGBUFFER GWEN_RINGBUFFER;
 
 
@@ -56,11 +57,13 @@ typedef struct GWEN_RINGBUFFER GWEN_RINGBUFFER;
  * Creates a new ring buffer
  * @param size maximum size of the ring buffer
  */
+GWENHYWFAR_API
 GWEN_RINGBUFFER *GWEN_RingBuffer_new(unsigned int size);
 
 /**
  * Destructor.
  */
+GWENHYWFAR_API
 void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb);
 
 
@@ -76,6 +79,7 @@ void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb);
  * to write. Upon return this variable contains the number of bytes actually
  * copied.
  */
+GWENHYWFAR_API
 int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
                                const char *buffer,
                                GWEN_TYPE_UINT32 *size);
@@ -83,6 +87,7 @@ int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
 /**
  * Writes a single byte to the ring buffer.
  */
+GWENHYWFAR_API
 int GWEN_RingBuffer_WriteByte(GWEN_RINGBUFFER *rb, char c);
 
 
@@ -94,6 +99,7 @@ int GWEN_RingBuffer_WriteByte(GWEN_RINGBUFFER *rb, char c);
  * to read. Upon return this variable contains the number of bytes actually
  * copied.
  */
+GWENHYWFAR_API
 int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
                               char *buffer,
                               GWEN_TYPE_UINT32 *size);
@@ -101,6 +107,7 @@ int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
 /**
  * Reads a single byte from the ring buffer.
  */
+GWENHYWFAR_API
 int GWEN_RingBuffer_ReadByte(GWEN_RINGBUFFER *rb);
 /*@}*/
 
@@ -112,17 +119,20 @@ int GWEN_RingBuffer_ReadByte(GWEN_RINGBUFFER *rb);
 /**
  * Returns the number of bytes stored inside the ring buffer.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetUsedBytes(const GWEN_RINGBUFFER *rb);
 
 /**
  * Returns the number of bytes which still can be stored inside the ring
  * buffer.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBytesLeft(const GWEN_RINGBUFFER *rb);
 
 /**
  * Returns the size of the ring buffer.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb);
 /*@}*/
 
@@ -135,16 +145,20 @@ GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb);
 /**
  * Returns the number of times the buffer was empty.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetEmptyCounter(const GWEN_RINGBUFFER *rb);
 
+GWENHYWFAR_API
 void GWEN_RingBuffer_ResetEmptyCounter(GWEN_RINGBUFFER *rb);
 
 
 /**
  * Returns the number of times the buffer was full.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetFullCounter(const GWEN_RINGBUFFER *rb);
 
+GWENHYWFAR_API
 void GWEN_RingBuffer_ResetFullCounter(GWEN_RINGBUFFER *rb);
 
 
@@ -152,11 +166,13 @@ void GWEN_RingBuffer_ResetFullCounter(GWEN_RINGBUFFER *rb);
  * Returns the number of bytes which have passed through this buffer (i.e.
  * bytes that have been written to <strong>and</strong> read from the buffer.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetThroughput(GWEN_RINGBUFFER *rb);
 
 /**
  * Resets the buffers throughput counter to zero.
  */
+GWENHYWFAR_API
 void GWEN_RingBuffer_ResetThroughput(GWEN_RINGBUFFER *rb);
 
 
@@ -164,12 +180,14 @@ void GWEN_RingBuffer_ResetThroughput(GWEN_RINGBUFFER *rb);
 /**
  * Returns the maximum number of bytes which has been stored in the buffer.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb);
 
 /**
  * Resets the counter for the maximum number of bytes stored in the
  * buffer.
  */
+GWENHYWFAR_API
 void GWEN_RingBuffer_ResetMaxUsedBytes(GWEN_RINGBUFFER *rb);
 /*@}*/ /* name */
 
@@ -186,6 +204,7 @@ void GWEN_RingBuffer_ResetMaxUsedBytes(GWEN_RINGBUFFER *rb);
  * call to @ref GWEN_RingBuffer_ReadBytes. This value (if not 0) can be
  * used for @ref GWEN_RingBuffer_SkipBytesRead.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb);
 
@@ -194,6 +213,7 @@ GWEN_TYPE_UINT32
  * call to @ref GWEN_RingBuffer_WriteBytes. This value (if not 0) can be
  * used for @ref GWEN_RingBuffer_SkipBytesWrite.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb);
 
@@ -203,6 +223,7 @@ GWEN_TYPE_UINT32
  * size value given here MUST be <= the value returned by
  * @ref GWEN_RingBuffer_GetMaxUnsegmentedRead !
  */
+GWENHYWFAR_API
 void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
                                    GWEN_TYPE_UINT32 psize);
 
@@ -212,6 +233,7 @@ void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
  * size value given here MUST be <= the value returned by
  * @ref GWEN_RingBuffer_GetMaxUnsegmentedWrite !
  */
+GWENHYWFAR_API
 void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
                                     GWEN_TYPE_UINT32 psize);
 
@@ -224,6 +246,7 @@ void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
  * taking data from the buffer in order to keep the internal structure
  * intact.
  */
+GWENHYWFAR_API
 const char *GWEN_RingBuffer_GetReadPointer(const GWEN_RINGBUFFER *rb);
 
 /**
@@ -235,6 +258,7 @@ const char *GWEN_RingBuffer_GetReadPointer(const GWEN_RINGBUFFER *rb);
  * writing data to the buffer in order to keep the internal structure
  * intact.
  */
+GWENHYWFAR_API
 char *GWEN_RingBuffer_GetWritePointer(const GWEN_RINGBUFFER *rb);
 
 /*@}*/ /* name */

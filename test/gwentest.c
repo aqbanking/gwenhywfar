@@ -768,7 +768,7 @@ int main(int argc, char **argv) {
 
   if (strcasecmp(argv[1], "dbfile")==0)
     rv=testDBfile(argc, argv);
-  if (strcasecmp(argv[1], "db")==0)
+  else if (strcasecmp(argv[1], "db")==0)
     rv=testDB(argc, argv);
   else if (strcasecmp(argv[1], "dbfile2")==0)
     rv=testDBfile2(argc, argv);

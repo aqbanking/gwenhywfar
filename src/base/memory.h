@@ -58,22 +58,30 @@ extern "C" {
 # endif
 
 
+  GWENHYWFAR_API 
   GWEN_ERRORCODE GWEN_Memory_ModuleInit();
+
+  GWENHYWFAR_API 
   GWEN_ERRORCODE GWEN_Memory_ModuleFini();
 
+  GWENHYWFAR_API 
   void GWEN_Memory_Report();
 
 
+  GWENHYWFAR_API 
   void *GWEN_Memory_NewObject(void *p,
                               const char *typeName,
                               const char *function,
                               const char *file,
                               int line);
+
+  GWENHYWFAR_API 
   void GWEN_Memory_FreeObject(void *object,
                               const char *function,
                               const char *file,
                               int line);
 
+  GWENHYWFAR_API 
   void GWEN_Memory_AttachObject(void *object,
                                 const char *function,
                                 const char *file,

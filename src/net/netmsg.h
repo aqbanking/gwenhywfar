@@ -29,12 +29,24 @@
 #ifndef GWEN_NETMSG_H
 #define GWEN_NETMSG_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+GWENHYWFAR_API
 typedef struct GWEN_NETMSG GWEN_NETMSG;
+#ifdef __cplusplus
+}
+#endif
 
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/misc.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 GWEN_LIST_FUNCTION_DEFS(GWEN_NETMSG, GWEN_NetMsg);
@@ -44,8 +56,11 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_NETMSG, GWEN_NetMsg);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetMsg_new(GWEN_TYPE_UINT32 bufferSize);
+GWENHYWFAR_API
 void GWEN_NetMsg_free(GWEN_NETMSG *msg);
+GWENHYWFAR_API
 void GWEN_NetMsg_Attach(GWEN_NETMSG *msg);
 
 /*@}*/
@@ -59,14 +74,17 @@ void GWEN_NetMsg_Attach(GWEN_NETMSG *msg);
  * Returns a pointer to the buffer belonging to a message.
  * This function does NOT relinquish ownership.
  */
+GWENHYWFAR_API
 GWEN_BUFFER *GWEN_NetMsg_GetBuffer(const GWEN_NETMSG *msg);
 
+GWENHYWFAR_API
 GWEN_BUFFER *GWEN_NetMsg_TakeBuffer(GWEN_NETMSG *msg);
 
 /**
  * Replaces the internal buffer with the given one.
  * Takes over ownership of the buffer.
  */
+GWENHYWFAR_API
 void GWEN_NetMsg_SetBuffer(GWEN_NETMSG *msg,
                            GWEN_BUFFER *buf);
 
@@ -74,7 +92,9 @@ void GWEN_NetMsg_SetBuffer(GWEN_NETMSG *msg,
  * Returns the value of the size variable. The meaning of this variable
  * depends on the protocol this message belongs to.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetMsg_GetSize(const GWEN_NETMSG *msg);
+GWENHYWFAR_API
 void GWEN_NetMsg_SetSize(GWEN_NETMSG *msg,
                          GWEN_TYPE_UINT32 size);
 
@@ -82,10 +102,14 @@ void GWEN_NetMsg_SetSize(GWEN_NETMSG *msg,
  * Returns a pointer to the DB belonging to a message.
  * This function does NOT relinquish ownership.
  */
+GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_NetMsg_GetDB(const GWEN_NETMSG *msg);
 
 /*@}*/
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

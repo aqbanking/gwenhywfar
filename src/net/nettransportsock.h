@@ -33,10 +33,20 @@
 #include <gwenhywfar/nettransport.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+GWENHYWFAR_API
 GWEN_NETTRANSPORT *GWEN_NetTransportSocket_new(GWEN_SOCKET *sk,
                                                int relinquish);
+
+GWENHYWFAR_API
 void GWEN_NetTransportSocket_free(GWEN_NETTRANSPORT *tr);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GWEN_NETTRANSPORTSOCK_H */
 

@@ -34,7 +34,9 @@ AC_ARG_WITH(openssl-includes, [  --with-openssl-includes=DIR adds openssl includ
   [ssl_search_inc_dirs="/usr/include\
     		       /usr/local/include\
 		       /usr/local/ssl/include\
-  		       /usr/ssl/include"])
+  		       /usr/ssl/include\
+                       /more/include"\
+                       ])
 
 dnl search for ssl
 AQ_SEARCH_FOR_PATH([openssl/des.h],[$ssl_search_inc_dirs])
@@ -76,10 +78,10 @@ if test "$OSYSTEM" != "windows" ; then
      fi
    done
    else
-     if test -z "$WIN_PATH_SYSTEM_MINGW"; then
+     if test -z "$WIN_PATH_WINDOWS_MINGW"; then
        AC_ERROR([Error in configure.ac: The macro aq_windoze did not set a windows system path -- maybe this macro has not yet been called.])
      fi
-     ssl_libraries="-L$WIN_PATH_SYSTEM_MINGW"
+     ssl_libraries="-L$WIN_PATH_WINDOWS_MINGW"
      ssl_lib="-llibeay32 -llibssl32"
      AC_MSG_RESULT($ssl_libraries ${ssl_lib})
 fi

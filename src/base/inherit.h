@@ -44,24 +44,37 @@ extern "C" {
    *
    */
   /*@{*/
+  GWENHYWFAR_API 
   typedef void (*GWEN_INHERIT_FREEDATAFN)(void *baseData,
                                           void *data);
 
   GWEN_LIST_FUNCTION_DEFS(GWEN_INHERITDATA, GWEN_InheritData);
 
+  GWENHYWFAR_API 
   GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
                                          GWEN_TYPE_UINT32 id,
                                          void *data,
                                          void *baseData,
                                          GWEN_INHERIT_FREEDATAFN fn);
+  GWENHYWFAR_API 
   void GWEN_InheritData_free(GWEN_INHERITDATA *d);
 
+  GWENHYWFAR_API 
   const char *GWEN_InheritData_GetTypeName(const GWEN_INHERITDATA *d);
+
+  GWENHYWFAR_API 
   GWEN_TYPE_UINT32 GWEN_InheritData_GetId(const GWEN_INHERITDATA *d);
+
+  GWENHYWFAR_API 
   void *GWEN_InheritData_GetData(const GWEN_INHERITDATA *d);
+
+  GWENHYWFAR_API 
   void *GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d);
 
+  GWENHYWFAR_API 
   GWEN_TYPE_UINT32 GWEN_Inherit_MakeId(const char *typeName);
+
+  GWENHYWFAR_API 
   void* GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
                               GWEN_TYPE_UINT32 id,
                               int wantCreate);

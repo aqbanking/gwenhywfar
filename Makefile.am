@@ -1,4 +1,6 @@
-SUBDIRS=doc src test m4
+SUBDIRS=doc src m4 test
+#DIST_SUBDIRS=test
+
 
 AUTOMAKE_OPTIONS = foreign
 

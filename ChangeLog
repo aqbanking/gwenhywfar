@@ -1,3 +1,45 @@
+
+2004/03/25: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- changed the way a DLL is created:
+    Now the libXXX.a library is taken (which - thanks to libtool - already
+    contains all object files needed for building the DLL) and all the
+    object files in the ".libs" folder of the toplevel library (because
+    for any strange reasons they are not included with the toplevel library).
+    This removes the need of enlisting all object files in the toplevel
+    library Makefile.am (and because compiling under Windoze takes a veeery
+    veeeery long time this is quite a helper ;-)
+  
+  Oh, just a quick note: At least my version of automake is quite buggy when
+  it comes to "DIST_SUBDIRS" variables inside a toplevel source folder.
+  I tried to put the test folder into such a variable but then "make dist"
+  only includes about the half of the project into the resulting tarball :-/
+  Hmm, quite strange... in lower leveled folders (like src/os) this works...
+
+  So for now the test program is even compiled under Windoze (sorry Christian,
+  but I have to make some tests right now with Windoze).
+  
+  It can of course be disabled again prior to the next release.
+
+- added some search paths for GWEN and SSL (just for my own conveniance)
+- fixed a WIN32 related problem: The reason why sometimes linking did not work
+  (e.g. if specifying "-L/c/windows/system" like someone did in OpenSSL.m4 ;-)
+  was, that in that case the windows dlls (like KERNEL32.DLL etc) are used
+  when linking. However, we need to use the mingw-wrapper version instead,
+  and so we have to prepend their path. After that you may specify whatever
+  other paths you like, but now we can be sure that the system libraries are
+  searched for in the mingw folder first.
+- fixed a bug in gwentest.c
+- GWEN-DLL is now again installed to the windows folder instead of the 
+  windows system folder. I think it is more appropriate that way, since the
+  windows system folder is very special, wheras the normal windows folder can
+  be used by any user to store libraries etc.
+
+NOTE: When linking programs using MinGW please make sure to always insert
+      "-L/mingw/lib" before all other "-L" specifications !
+      Otherwise linking is quite a horror, even for quite experienced users.
+
+
 2004-03-24   Christian Stimming <stimming@tuhh.de>
 
 	* test/gwentest.c: Finalize test code for Microsoft Visual Studio

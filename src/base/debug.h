@@ -48,6 +48,7 @@ extern "C" {
 #endif
 
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,
                                      GWEN_TYPE_UINT32 size,
                                      const char *fmt, ...);

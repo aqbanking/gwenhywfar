@@ -43,6 +43,7 @@ if test "$enable_gwenhywfar" != "no"; then
     [lcc_dir="${prefix} \
 	     /usr/local \
              /usr \
+	     /gwen \
              /"])
 
   for li in $lcc_dir; do

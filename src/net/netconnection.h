@@ -29,7 +29,6 @@
 #ifndef GWEN_NETCONNECTION_H
 #define GWEN_NETCONNECTION_H
 
-
 /** @defgroup MOD_NETCONNECTION Network Connection
  * @ingroup MOD_NET
  *
@@ -69,7 +68,15 @@
  * This is the data type for a connection.
  * It should be handled as a black box for maximum compatibility.
  */
+#include <gwenhywfar/gwenhywfarapi.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+GWENHYWFAR_API
 typedef struct GWEN_NETCONNECTION GWEN_NETCONNECTION;
+#ifdef __cplusplus
+}
+#endif
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -77,6 +84,11 @@ typedef struct GWEN_NETCONNECTION GWEN_NETCONNECTION;
 #include <gwenhywfar/netmsg.h>
 #include <gwenhywfar/ringbuffer.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+GWENHYWFAR_API
 typedef enum {
   GWEN_NetConnectionWorkResult_NoChange=0,
   GWEN_NetConnectionWorkResult_Change,
@@ -93,12 +105,16 @@ GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETCONNECTION);
  */
 /*@{*/
 /** see @ref GWEN_NetConnection_Work */
+GWENHYWFAR_API
 typedef GWEN_NETCONNECTION_WORKRESULT
   (*GWEN_NETCONNECTION_WORKFN)(GWEN_NETCONNECTION *conn);
+GWENHYWFAR_API
 typedef void (*GWEN_NETCONNECTION_FREEDATAFN)(GWEN_NETCONNECTION *conn);
 /** see @ref GWEN_NetConnection_Up */
+GWENHYWFAR_API
 typedef void (*GWEN_NETCONNECTION_UPFN)(GWEN_NETCONNECTION *conn);
 /** see @ref GWEN_NetConnection_down */
+GWENHYWFAR_API
 typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
 /*@}*/
 
@@ -117,10 +133,15 @@ typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
  * which library/program (this is interesting for connections which have been
  * added to the connection pool via @ref GWEN_Net_AddConnectionToPool)
  */
+GWENHYWFAR_API
 GWEN_NETCONNECTION *GWEN_NetConnection_new(GWEN_NETTRANSPORT *tr,
                                            int take,
                                            GWEN_TYPE_UINT32 libId);
+
+GWENHYWFAR_API
 void GWEN_NetConnection_free(GWEN_NETCONNECTION *conn);
+
+GWENHYWFAR_API
 void GWEN_NetConnection_Attach(GWEN_NETCONNECTION *conn);
 
 /*@}*/
@@ -138,6 +159,7 @@ void GWEN_NetConnection_Attach(GWEN_NETCONNECTION *conn);
  * @param bsize pointer to a variable with the size of the buffer. Upon
  * return this variable reflects the number of bytes really read
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_Read(GWEN_NETCONNECTION *conn,
                             char *buffer,
                             GWEN_TYPE_UINT32 *bsize);
@@ -152,6 +174,7 @@ int GWEN_NetConnection_Read(GWEN_NETCONNECTION *conn,
  * @param timeout timeout in seconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
                                  char *buffer,
                                  GWEN_TYPE_UINT32 *bsize,
@@ -166,6 +189,7 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
  * @param bsize pointer to a variable with the size of the buffer. Upon
  * return this variable reflects the number of bytes really written
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_Write(GWEN_NETCONNECTION *conn,
                              const char *buffer,
                              GWEN_TYPE_UINT32 *bsize);
@@ -183,6 +207,7 @@ int GWEN_NetConnection_Write(GWEN_NETCONNECTION *conn,
  * @param timeout timeout in seconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
                                   const char *buffer,
                                   GWEN_TYPE_UINT32 *bsize,
@@ -196,6 +221,7 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
  * @param timeout timeout in seconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
                              int timeout);
 /*@}*/
@@ -213,6 +239,7 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
  * @return 0 if ok, !=0 on error
  * @param conn connection
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_StartConnect(GWEN_NETCONNECTION *conn);
 
 /**
@@ -221,6 +248,7 @@ int GWEN_NetConnection_StartConnect(GWEN_NETCONNECTION *conn);
  * @return 0 if ok, !=0 on error
  * @param conn connection
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_Connect_Wait(GWEN_NETCONNECTION *conn,
                                     int timeout);
 
@@ -233,6 +261,7 @@ int GWEN_NetConnection_Connect_Wait(GWEN_NETCONNECTION *conn,
  * @return 0 if ok, !=0 on error
  * @param conn connection
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_StartListen(GWEN_NETCONNECTION *conn);
 
 /**
@@ -241,6 +270,7 @@ int GWEN_NetConnection_StartListen(GWEN_NETCONNECTION *conn);
  * @return new incoming transport layer (or 0 if there is none)
  * @param conn connection
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT*
   GWEN_NetConnection_GetNextIncoming(GWEN_NETCONNECTION *conn);
 
@@ -252,6 +282,7 @@ GWEN_NETTRANSPORT*
  * @param timeout timeout in seconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT*
   GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
                                           int timeout);
@@ -263,6 +294,7 @@ GWEN_NETTRANSPORT*
  * @return 0 if ok, !=0 on error
  * @param conn connection
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_StartDisconnect(GWEN_NETCONNECTION *conn);
 
 /**
@@ -273,6 +305,7 @@ int GWEN_NetConnection_StartDisconnect(GWEN_NETCONNECTION *conn);
  * @param timeout timeout in seconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_Disconnect_Wait(GWEN_NETCONNECTION *conn,
                                        int timeout);
 /*@}*/
@@ -291,6 +324,7 @@ int GWEN_NetConnection_Disconnect_Wait(GWEN_NETCONNECTION *conn,
  * @return 0 if ok, !=0 on error
  * @param conn connection
  */
+GWENHYWFAR_API
 GWEN_NETCONNECTION_WORKRESULT
   GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn);
 
@@ -303,6 +337,7 @@ GWEN_NETCONNECTION_WORKRESULT
  * @param timeout timeout in seconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+GWENHYWFAR_API
 int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
                                      GWEN_NETTRANSPORT_STATUS expStatus,
                                      int timeout);
@@ -314,6 +349,7 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
  * @param timeout timeout in milliseconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+GWENHYWFAR_API
 GWEN_NETCONNECTION_WORKRESULT
   GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
                           int timeout);
@@ -336,6 +372,7 @@ GWEN_NETCONNECTION_WORKRESULT
  * @return 0 if ok, !=0 on error
  * @param conn connection
  */
+GWENHYWFAR_API
 GWEN_NETCONNECTION_WORKRESULT
   GWEN_NetConnection_Work(GWEN_NETCONNECTION *conn);
 
@@ -351,6 +388,7 @@ GWEN_NETCONNECTION_WORKRESULT
  * However, the DOWN function is called automatically.
  * @param conn connection
  */
+GWENHYWFAR_API
 void GWEN_NetConnection_Up(GWEN_NETCONNECTION *conn);
 
 /**
@@ -358,6 +396,7 @@ void GWEN_NetConnection_Up(GWEN_NETCONNECTION *conn);
  * to be down.
  * @param conn connection
  */
+GWENHYWFAR_API
 void GWEN_NetConnection_Down(GWEN_NETCONNECTION *conn);
 /*@}*/
 
@@ -366,10 +405,15 @@ void GWEN_NetConnection_Down(GWEN_NETCONNECTION *conn);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void GWEN_NetConnection_SetWorkFn(GWEN_NETCONNECTION *conn,
                                   GWEN_NETCONNECTION_WORKFN fn );
+
+GWENHYWFAR_API
 void GWEN_NetConnection_SetUpFn(GWEN_NETCONNECTION *conn,
                                 GWEN_NETCONNECTION_UPFN fn );
+
+GWENHYWFAR_API
 void GWEN_NetConnection_SetDownFn(GWEN_NETCONNECTION *conn,
                                   GWEN_NETCONNECTION_DOWNFN fn );
 /*@}*/
@@ -396,6 +440,7 @@ void GWEN_NetConnection_SetDownFn(GWEN_NETCONNECTION *conn,
  * MUST NOT free the buffer returned. Programs should rather call the
  * various read functions instead of directly accessing the ring buffer.
  */
+GWENHYWFAR_API
 GWEN_RINGBUFFER *GWEN_NetConnection_GetReadBuffer(GWEN_NETCONNECTION *conn);
 
 /**
@@ -404,6 +449,7 @@ GWEN_RINGBUFFER *GWEN_NetConnection_GetReadBuffer(GWEN_NETCONNECTION *conn);
  * MUST NOT free the buffer returned. Programs should rather call the
  * various write functions instead of directly accessing the ring buffer.
  */
+GWENHYWFAR_API
 GWEN_RINGBUFFER *GWEN_NetConnection_GetWriteBuffer(GWEN_NETCONNECTION *conn);
 
 /**
@@ -411,6 +457,7 @@ GWEN_RINGBUFFER *GWEN_NetConnection_GetWriteBuffer(GWEN_NETCONNECTION *conn);
  * when finishing parsing an incoming messages in order to make them available
  * for programs. This function takes over ownership of the given message.
  */
+GWENHYWFAR_API
 void GWEN_NetConnection_AddInMsg(GWEN_NETCONNECTION *conn,
                                  GWEN_NETMSG *msg);
 
@@ -419,6 +466,7 @@ void GWEN_NetConnection_AddInMsg(GWEN_NETCONNECTION *conn,
  * The caller is responsible for freeing the message returned since this
  * function relinquishes ownership of that message.
  */
+GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetConnection_GetOutMsg(GWEN_NETCONNECTION *conn);
 
 /**
@@ -426,6 +474,7 @@ GWEN_NETMSG *GWEN_NetConnection_GetOutMsg(GWEN_NETCONNECTION *conn);
  * the queue. You should not modify that msg neither must you free
  * this message.
  */
+GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetConnection_PeekOutMsg(const GWEN_NETCONNECTION *conn);
 
 /*@}*/
@@ -441,6 +490,7 @@ GWEN_NETMSG *GWEN_NetConnection_PeekOutMsg(const GWEN_NETCONNECTION *conn);
  * The caller is responsible for freeing the message returned since this
  * function relinquishes ownership of that message.
  */
+GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetConnection_GetInMsg(GWEN_NETCONNECTION *conn);
 
 /**
@@ -448,6 +498,7 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg(GWEN_NETCONNECTION *conn);
  * The caller is responsible for freeing the message returned since this
  * function relinquishes ownership of that message.
  */
+GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
                                              int timeout);
 
@@ -456,11 +507,14 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
  * the queue. You should not modify that msg neither must you free
  * this message.
  */
+GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetConnection_PeekInMsg(const GWEN_NETCONNECTION *conn);
+
 /**
  * Adds a message to the output queue of this connection. It will be taken
  * from there by inheriting "classes" and be send via the transport layer.
  */
+GWENHYWFAR_API
 void GWEN_NetConnection_AddOutMsg(GWEN_NETCONNECTION *conn,
                                   GWEN_NETMSG *msg);
 
@@ -476,6 +530,7 @@ void GWEN_NetConnection_AddOutMsg(GWEN_NETCONNECTION *conn,
  * Returns the underlying transport layer.
  * This function does not relinquish ownership of the returned pointer !
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT*
   GWEN_NetConnection_GetTransportLayer(const GWEN_NETCONNECTION *conn);
 
@@ -483,6 +538,7 @@ GWEN_NETTRANSPORT*
 /**
  * This is just a conveniance function to retrieve the peer's address.
  */
+GWENHYWFAR_API
 const GWEN_INETADDRESS*
   GWEN_NetConnection_GetPeerAddr(const GWEN_NETCONNECTION *conn);
 
@@ -490,6 +546,7 @@ const GWEN_INETADDRESS*
  * This is just a conveniance function to retrieve the flags of the underlying
  * transport layer.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetConnection_GetFlags(const GWEN_NETCONNECTION *conn);
 
 
@@ -497,6 +554,7 @@ GWEN_TYPE_UINT32 GWEN_NetConnection_GetFlags(const GWEN_NETCONNECTION *conn);
  * This is just a conveniance function to retrieve the status of the
  * underlying transport layer.
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_STATUS
   GWEN_NetConnection_GetStatus(const GWEN_NETCONNECTION *conn);
 
@@ -504,6 +562,7 @@ GWEN_NETTRANSPORT_STATUS
  * This is just a conveniance function to set the flags of the underlying
  * transport layer.
  */
+GWENHYWFAR_API
 void GWEN_NetConnection_SetFlags(GWEN_NETCONNECTION *conn,
                                  GWEN_TYPE_UINT32 fl);
 
@@ -513,6 +572,7 @@ void GWEN_NetConnection_SetFlags(GWEN_NETCONNECTION *conn,
  * which library/program (this is interesting for connections which have been
  * added to the connection pool via @ref GWEN_Net_AddConnectionToPool)
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_NetConnection_GetLibraryMark(const GWEN_NETCONNECTION *conn);
 
@@ -521,6 +581,7 @@ GWEN_TYPE_UINT32
  * used to separate connections by any criteria the program likes.
  * This variable is not used by Gwenhywfar at all.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_NetConnection_GetUserMark(const GWEN_NETCONNECTION *conn);
 
@@ -529,6 +590,7 @@ GWEN_TYPE_UINT32
  * used to separate connections by any criteria the program likes.
  * This variable is not used by Gwenhywfar at all.
  */
+GWENHYWFAR_API
 void GWEN_NetConnection_SetUserMark(GWEN_NETCONNECTION *conn,
                                     GWEN_TYPE_UINT32 m);
 
@@ -541,11 +603,16 @@ void GWEN_NetConnection_SetUserMark(GWEN_NETCONNECTION *conn,
  *    are called</li>
  * </ul>
  */
+GWENHYWFAR_API
 double GWEN_NetConnection_GetIdleTime(const GWEN_NETCONNECTION *conn);
 
 /*@}*/
 
 /*@}*/ /* defgroup */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

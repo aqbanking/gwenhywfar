@@ -28,7 +28,15 @@
 #ifndef GWEN_NETTRANSPORT_H
 #define GWEN_NETTRANSPORT_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+GWENHYWFAR_API
 typedef struct GWEN_NETTRANSPORT GWEN_NETTRANSPORT;
+#ifdef __cplusplus
+}
+#endif
 
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/inetaddr.h>
@@ -36,6 +44,11 @@ typedef struct GWEN_NETTRANSPORT GWEN_NETTRANSPORT;
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+GWENHYWFAR_API
 typedef enum {
   GWEN_NetTransportWorkResult_NoChange=0,
   GWEN_NetTransportWorkResult_Change,
@@ -74,6 +87,7 @@ GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETTRANSPORT);
 /**
  * These are the result codes to be returned by functions of this group.
  */
+GWENHYWFAR_API
 typedef enum {
   /** Function succeeded */
   GWEN_NetTransportResultOk=0,
@@ -100,6 +114,7 @@ typedef enum {
 /**
  * This is the status of the transport layer.
  */
+GWENHYWFAR_API
 typedef enum {
   /** neither connected nor listening, this is the initial state */
   GWEN_NetTransportStatusUnconnected=0,
@@ -135,6 +150,7 @@ typedef enum {
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
+GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
 (*GWEN_NETTRANSPORT_STARTCONNECT)(GWEN_NETTRANSPORT *tr);
 
@@ -144,6 +160,7 @@ typedef GWEN_NETTRANSPORT_RESULT
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
+GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_STARTACCEPT)(GWEN_NETTRANSPORT *tr);
 
@@ -152,6 +169,7 @@ typedef GWEN_NETTRANSPORT_RESULT
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
+GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_STARTDISCONNECT)(GWEN_NETTRANSPORT *tr);
 
@@ -162,6 +180,7 @@ typedef GWEN_NETTRANSPORT_RESULT
  * bytes to read. Upon return this variable contains the number of bytes
  * actually read.
  */
+GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_READ)(GWEN_NETTRANSPORT *tr,
                             char *buffer,
@@ -174,6 +193,7 @@ typedef GWEN_NETTRANSPORT_RESULT
  * bytes to write. Upon return this variable contains the number of bytes
  * actually written.
  */
+GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_WRITE)(GWEN_NETTRANSPORT *tr,
                              const char *buffer,
@@ -187,6 +207,7 @@ typedef GWEN_NETTRANSPORT_RESULT
  * @param sset pointer to the socket set to which sockets should be added
  * @param forReading if !=0 then readable sockets are requested
  */
+GWENHYWFAR_API
 typedef int
   (*GWEN_NETTRANSPORT_ADDSOCKETS)(GWEN_NETTRANSPORT *tr,
                                   GWEN_SOCKETSET *sset,
@@ -195,6 +216,7 @@ typedef int
 /**
  * Allows the transport layer to do some work.
  */
+GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_WORKRESULT
   (*GWEN_NETTRANSPORT_WORK)(GWEN_NETTRANSPORT *tr);
 
@@ -208,6 +230,7 @@ typedef GWEN_NETTRANSPORT_WORKRESULT
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_NETTRANSPORT *GWEN_NetTransport_new();
 void GWEN_NetTransport_free(GWEN_NETTRANSPORT *tr);
 /*@}*/
@@ -222,6 +245,7 @@ void GWEN_NetTransport_free(GWEN_NETTRANSPORT *tr);
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_StartConnect(GWEN_NETTRANSPORT *tr);
 
@@ -230,6 +254,7 @@ GWEN_NETTRANSPORT_RESULT
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_StartAccept(GWEN_NETTRANSPORT *tr);
 
@@ -238,6 +263,7 @@ GWEN_NETTRANSPORT_RESULT
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_StartDisconnect(GWEN_NETTRANSPORT *tr);
 
@@ -245,6 +271,7 @@ GWEN_NETTRANSPORT_RESULT
  * Returns the next incoming connection if the transport layer is in
  * listening state (or 0 if there is none).
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT *GWEN_NetTransport_GetNextIncoming(GWEN_NETTRANSPORT *tr);
 /*@}*/
 
@@ -261,6 +288,7 @@ GWEN_NETTRANSPORT *GWEN_NetTransport_GetNextIncoming(GWEN_NETTRANSPORT *tr);
  * bytes to read. Upon return this variable contains the number of bytes
  * actually read.
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_Read(GWEN_NETTRANSPORT *tr,
                          char *buffer,
@@ -273,6 +301,7 @@ GWEN_NETTRANSPORT_RESULT
  * bytes to write. Upon return this variable contains the number of bytes
  * actually written.
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_Write(GWEN_NETTRANSPORT *tr,
                           const char *buffer,
@@ -293,6 +322,7 @@ GWEN_NETTRANSPORT_RESULT
  * @param sset pointer to the socket set to which sockets should be added
  * @param forReading if !=0 then readable sockets are requested
  */
+GWENHYWFAR_API
 int GWEN_NetTransport_AddSockets(GWEN_NETTRANSPORT *tr,
                                  GWEN_SOCKETSET *sset,
                                  int forReading);
@@ -300,6 +330,7 @@ int GWEN_NetTransport_AddSockets(GWEN_NETTRANSPORT *tr,
 /**
  * Allows the transport layer to do some work.
  */
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_WORKRESULT GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr);
 /*@}*/
 
@@ -308,37 +339,57 @@ GWEN_NETTRANSPORT_WORKRESULT GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_NETTRANSPORT_STATUS
   GWEN_NetTransport_GetStatus(const GWEN_NETTRANSPORT *tr);
 
+GWENHYWFAR_API
 void GWEN_NetTransport_SetStatus(GWEN_NETTRANSPORT *tr,
                                  GWEN_NETTRANSPORT_STATUS st);
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_NetTransport_GetFlags(const GWEN_NETTRANSPORT *tr);
 
+GWENHYWFAR_API
 void GWEN_NetTransport_SetFlags(GWEN_NETTRANSPORT *tr,
                                 GWEN_TYPE_UINT32 flags);
 
+GWENHYWFAR_API
 const GWEN_INETADDRESS*
   GWEN_NetTransport_GetLocalAddr(const GWEN_NETTRANSPORT *tr);
+
+GWENHYWFAR_API
 void GWEN_NetTransport_SetLocalAddr(GWEN_NETTRANSPORT *tr,
                                     const GWEN_INETADDRESS *addr);
 
+GWENHYWFAR_API
 const GWEN_INETADDRESS*
   GWEN_NetTransport_GetPeerAddr(const GWEN_NETTRANSPORT *tr);
+
+GWENHYWFAR_API
 void GWEN_NetTransport_SetPeerAddr(GWEN_NETTRANSPORT *tr,
                                    const GWEN_INETADDRESS *addr);
 
+GWENHYWFAR_API
 const char *GWEN_NetTransport_StatusName(GWEN_NETTRANSPORT_STATUS st);
+
+GWENHYWFAR_API
 const char *GWEN_NetTransport_ResultName(GWEN_NETTRANSPORT_RESULT res);
 
+GWENHYWFAR_API
 void GWEN_NetTransport_MarkActivity(GWEN_NETTRANSPORT *tr);
+
+GWENHYWFAR_API
 double GWEN_NetTransport_GetIdleTime(const GWEN_NETTRANSPORT *tr);
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetTransport_GetBackLog(const GWEN_NETTRANSPORT *tr);
+
+GWENHYWFAR_API
 void GWEN_NetTransport_SetBackLog(GWEN_NETTRANSPORT *tr, GWEN_TYPE_UINT32 i);
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_NetTransport_GetIncomingCount(const GWEN_NETTRANSPORT *tr);
 
@@ -349,6 +400,7 @@ GWEN_TYPE_UINT32
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void GWEN_NetTransport_AddNextIncoming(GWEN_NETTRANSPORT *tr,
                                        GWEN_NETTRANSPORT *newTr);
 /*@}*/
@@ -359,28 +411,35 @@ void GWEN_NetTransport_AddNextIncoming(GWEN_NETTRANSPORT *tr,
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void
   GWEN_NetTransport_SetStartConnectFn(GWEN_NETTRANSPORT *tr,
                                       GWEN_NETTRANSPORT_STARTCONNECT fn);
 
+GWENHYWFAR_API
 void
   GWEN_NetTransport_SetStartAcceptFn(GWEN_NETTRANSPORT *tr,
                                      GWEN_NETTRANSPORT_STARTACCEPT fn);
 
+GWENHYWFAR_API
 void
   GWEN_NetTransport_SetStartDisconnectFn(GWEN_NETTRANSPORT *tr,
                                          GWEN_NETTRANSPORT_STARTDISCONNECT fn);
 
 
+GWENHYWFAR_API
 void GWEN_NetTransport_SetReadFn(GWEN_NETTRANSPORT *tr,
                                  GWEN_NETTRANSPORT_READ fn);
 
+GWENHYWFAR_API
 void GWEN_NetTransport_SetWriteFn(GWEN_NETTRANSPORT *tr,
                                   GWEN_NETTRANSPORT_WRITE fn);
 
+GWENHYWFAR_API
 void GWEN_NetTransport_SetAddSocketsFn(GWEN_NETTRANSPORT *tr,
                                        GWEN_NETTRANSPORT_ADDSOCKETS fn);
 
+GWENHYWFAR_API
 void GWEN_NetTransport_SetWorkFn(GWEN_NETTRANSPORT *tr,
                                  GWEN_NETTRANSPORT_WORK fn);
 
@@ -388,6 +447,9 @@ void GWEN_NetTransport_SetWorkFn(GWEN_NETTRANSPORT *tr,
 
 /*@}*/ /* defgroup */
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GWEN_NETTRANSPORT_H */
 

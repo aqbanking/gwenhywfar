@@ -29,31 +29,49 @@
 #define GWEN_NET_H
 
 
-
-#include <gwenhywfar/net.h>
 #include <gwenhywfar/netconnection.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_Net_ModuleInit();
+
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_Net_ModuleFini();
 
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Net_GetLibraryId();
+
+GWENHYWFAR_API
 void GWEN_Net_AddConnectionToPool(GWEN_NETCONNECTION *conn);
 
 /**
  * @param timeout timeout in milliseconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
+
+GWENHYWFAR_API
 GWEN_NETCONNECTION_WORKRESULT GWEN_Net_HeartBeat(int timeout);
 
+
+GWENHYWFAR_API
 GWEN_NETCONNECTION_LIST *GWEN_Net_GetConnectionPool();
 
 
+GWENHYWFAR_API
 int GWEN_Net_HasActiveConnections();
+
+GWENHYWFAR_API
 int GWEN_Net_HasListeningConnections();
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWEN_NET_H */
