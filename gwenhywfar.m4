@@ -2,7 +2,7 @@
 # (c) 2002 Martin Preuss<martin@libchipcard.de>
 # This function checks for libgwenhywfar
 
-AC_DEFUN(AC_GWENHYWFAR, [
+AC_DEFUN([AC_GWENHYWFAR], [
 dnl searches for gwenhywfar
 dnl Arguments: 
 dnl   $1: major version minimum
