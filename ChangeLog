@@ -1,5 +1,13 @@
 $Id$
 
+2003-11-26  Christian Stimming <stimming@tuhh.de>
+
+	* src/crypt/ossl/cryptssl_des.c: Fix compatibility code to
+	openssl-0.9.6i which had a different declaration of the type
+	des_key_schedule. The respective change is mentioned in OpenSSL's
+	CHANGES file under the heading Changes between 0.9.6h and 0.9.7
+	[31 Dec 2002].
+
 2003/11/26 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - more work on IPC:

@@ -141,7 +141,7 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Crypt(const GWEN_CRYPTKEY *key,
 #if defined(DES_ede2_cbc_encrypt)
   DES_ede2_cbc_encrypt(psrc, pdst, srclen, &key1, &key2, &iv, cryptMode);
 #elif defined(des_ede2_cbc_encrypt)
-  des_ede2_cbc_encrypt(psrc, pdst, srclen, &key1, &key2, &iv, cryptMode);
+  des_ede2_cbc_encrypt(psrc, pdst, srclen, key1, key2, &iv, cryptMode);
 #else
 # error neither des_ede2_cbc_encrypt nor DES_ede2_cbc_encrypt defined ??
 #endif
