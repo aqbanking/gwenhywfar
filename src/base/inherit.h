@@ -89,6 +89,11 @@ extern "C" {
                               GWEN_TYPE_UINT32 id,
                               int wantCreate);
 
+  GWENHYWFAR_API
+    GWEN_INHERITDATA *GWEN_Inherit_FindEntry(GWEN_INHERITDATA_LIST *l,
+                                             GWEN_TYPE_UINT32 id,
+                                             int wantCreate);
+
   /** @name Macros To Be Used In Inherited Classes - Header Files
    *
    */
@@ -145,12 +150,13 @@ extern "C" {
                             void *data,\
                             GWEN_INHERIT_FREEDATAFN f) {\
   GWEN_INHERITDATA *d;\
+  void *p;\
     \
     assert(element);\
     assert(element->INHERIT__list);\
     \
-    d=GWEN_Inherit_FindData(element->INHERIT__list, id, 1);\
-    if (d) {\
+    p=GWEN_Inherit_FindData(element->INHERIT__list, id, 1);\
+    if (p) {\
       fprintf(stderr,\
               "ERROR: Type \"%s\" already inherits base type\n",\
               typeName);\
@@ -175,7 +181,7 @@ extern "C" {
     assert(element);\
     assert(element->INHERIT__list);\
     \
-    d=GWEN_Inherit_FindData(element->INHERIT__list, id, 1);\
+    d=GWEN_Inherit_FindEntry(element->INHERIT__list, id, 1);\
     if (!d) {\
       fprintf(stderr, \
               "ERROR: Type \"%s\" does not inherit base type\n",\

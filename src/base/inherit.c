@@ -163,5 +163,29 @@ void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
 
 
 
+GWEN_INHERITDATA *GWEN_Inherit_FindEntry(GWEN_INHERITDATA_LIST *l,
+					 GWEN_TYPE_UINT32 id,
+					 int wantCreate){
+  GWEN_INHERITDATA *ih;
+
+  assert(l);
+
+  DBG_VERBOUS(0, "Searching for inheritance id \"%08x\"", id);
+  ih=GWEN_InheritData_List_First(l);
+  while(ih) {
+    DBG_VERBOUS(0, "Checking type \"%s\" (%08x) against %08x",
+                ih->typeName, ih->id, id);
+    if (ih->id==id)
+      return ih;
+    ih=GWEN_InheritData_List_Next(ih);
+  } /* while */
+  if (!wantCreate) {
+    DBG_WARN(0, "Type \"%08x\" not derived from this base type", id);
+  }
+  return 0;
+}
+
+
+
 
 
