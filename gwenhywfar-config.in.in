@@ -14,6 +14,9 @@ for d in $*; do
 	--libraries++)
 	    result="$result @gwenhywfar_libspp@"
 	    ;;
+	--libraries-ui)
+	    result="$result @gwenhywfar_libsui@"
+	    ;;
 	--headers)
 	    result="$result @gwenhywfar_headers@"
 	    ;;
@@ -51,6 +54,8 @@ for d in $*; do
 	    echo "Usage:"
 	    echo "$0 --includes gives you the include flags"
 	    echo "$0 --libraries gives you the library flags"
+	    echo "$0 --libraries++ gives you the library flags for GwenPP"
+	    echo "$0 --libraries-ui returns the library flags for GwenUI"
 	    echo "$0 --headers gives you the location of the header files"
 	    echo "$0 --sections returns a string containing all sections of gwen"
 	    echo "$0 --vmajor gives the major version of LibGwenhywfar"

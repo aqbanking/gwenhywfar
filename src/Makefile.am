@@ -7,21 +7,11 @@ INCLUDES = $(all_includes) \
  -I$(top_srcdir)/src/net \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
- -I$(top_srcdir)/src/ui
+ -I$(top_srcdir)/gwenui
  
 
-# Define variables depending on whether we have ncurses available or
-# not.
-if USE_NCURSES
-gwenui_la = ui/libui.la
-gwenui_subdir = ui
-else
-gwenui_la =
-gwenui_subdir = 
-endif
+SUBDIRS = base crypt io ipc os parser net
 
-SUBDIRS = base crypt io ipc os parser net $(gwenui_subdir)
-SUBDIRS_DIST = base crypt io ipc os parser net ui
 
 EXTRA_DIST=\
  types.h.in \
@@ -46,8 +36,7 @@ libgwenhywfar_la_LIBADD=\
   ipc/libipc.la \
   net/libnet.la \
   os/libos.la \
-  $(gwenui_la) \
-  parser/libparser.la @all_libraries@
+  parser/libparser.la @all_libraries@ @ssl_libraries@ @ssl_lib@
 
 libgwenhywfar_la_LDFLAGS= \
   @STRIPALL@ -version-info \

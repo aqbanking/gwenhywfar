@@ -32,6 +32,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/misc2.h>
+#include <gwenhywfar/xml.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,6 +51,19 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path);
 
 GWENHYWFAR_API
 void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd);
+
+
+/**
+ * Returns the XML node this description consists of (the "plugin" node).
+ * It may contain additional information used by programs.
+ * This function does not relinquish ownership of the returned pointer,
+ * so you MUST NOT free it. As soon as the description itself is destroyed
+ * this XML node will be, too. So you have to call GWEN_XMLNode_dup() if
+ * you want the XML node to survive the description.
+ */
+GWENHYWFAR_API
+GWEN_XMLNODE*
+  GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 
 GWENHYWFAR_API

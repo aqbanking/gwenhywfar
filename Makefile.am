@@ -1,5 +1,12 @@
-SUBDIRS=admin doc src gwenpp m4 plugins tools test
-#DIST_SUBDIRS=test
+
+if USE_NCURSES
+gwenui_subdir = gwenui
+else
+gwenui_subdir = 
+endif
+
+SUBDIRS=admin doc m4 src gwenpp $(gwenui_subdir) plugins tools test
+SUBDIRS_DIST=admin doc m4 src gwenpp gwenui plugins tools test
 
 
 AUTOMAKE_OPTIONS = foreign

@@ -1,4 +1,15 @@
 
+2004/08/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- base/plugindescription: added functions to retrieve the XML node of
+  the plugin. This may contain more usefull information for the caller.
+- separated the ncurses based UI stuff from the rest: There is now
+  libgwenui.so which contains the UI functionality. Therefore gwen itself
+  no longer needs to be linked against ncurses. This also makes gwen lean
+  again ;-)
+  -> SO_VERSION incremented, SO_AGE=0 (makes it effectively .so.16)
+
+
 2004/08/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - base/waitcallback: fixed a severe bug

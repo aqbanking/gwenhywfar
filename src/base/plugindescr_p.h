@@ -44,6 +44,7 @@ struct GWEN_PLUGIN_DESCRIPTION {
   char *version;
   char *longDescr;
   int isActive;
+  GWEN_XMLNODE *xmlNode;
 };
 
 GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node);

@@ -9,7 +9,7 @@ libgwenpp_la_SOURCES=\
 
 libgwenpp_la_LDFLAGS= \
   @STRIPALL@ -version-info \
-  @GWENHYWFAR_SO_CURRENT@:@GWENHYWFAR_SO_REVISION@:@GWENHYWFAR_SO_AGE@
+  @GWENPP_SO_CURRENT@:@GWENPP_SO_REVISION@:@GWENPP_SO_AGE@
 
 libgwenpp_la_LIBADD=\
   -lstdc++ -L/mingw/lib -L../src @gwenhywfar_libs@

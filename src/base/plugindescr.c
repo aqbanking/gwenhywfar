@@ -60,6 +60,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
     return 0;
   }
   pd->name=strdup(p);
+  pd->xmlNode=GWEN_XMLNode_dup(node);
   p=GWEN_XMLNode_GetProperty(node, "type", 0);
   if (!p) {
     DBG_ERROR(0, "Plugin has no type");
@@ -87,6 +88,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
 void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
   if (pd) {
     GWEN_LIST_FINI(GWEN_PLUGIN_DESCRIPTION, pd);
+    GWEN_XMLNode_free(pd->xmlNode);
     free(pd->longDescr);
     free(pd->shortDescr);
     free(pd->author);
@@ -160,6 +162,13 @@ GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd){
   return pd->longDescr;
 }
 
+
+
+GWEN_XMLNODE*
+GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd){
+  assert(pd);
+  return pd->xmlNode;
+}
 
 
 

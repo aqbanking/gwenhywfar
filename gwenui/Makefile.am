@@ -11,7 +11,7 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 
 EXTRA_DIST=README 
 
-noinst_LTLIBRARIES=libui.la
+lib_LTLIBRARIES=libgwenui.la
 
 iheaderdir=${includedir}/gwenhywfar/ui
 iheader_HEADERS=\
@@ -55,7 +55,7 @@ noinst_HEADERS=\
   widget_p.h \
   window_p.h
 
-libui_la_SOURCES=\
+libgwenui_la_SOURCES=\
   button.c \
   checkbox.c \
   dropdownbox.c \
@@ -73,5 +73,16 @@ libui_la_SOURCES=\
   vslider.c \
   widget.c \
   window.c
+
+libgwenui_la_LIBADD=@all_libraries@ @ncurses_libs@
+
+libgwenui_la_LDFLAGS= \
+  @STRIPALL@ -version-info \
+   @GWENUI_SO_CURRENT@:@GWENUI_SO_REVISION@:@GWENUI_SO_AGE@
+
+
+
+
+
 
 

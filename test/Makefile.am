@@ -3,7 +3,9 @@ INCLUDES=@all_includes@
 #if IS_WINDOWS
 noinst_PROGRAMS=gwentest
 gwentest_SOURCES=gwentest.c
-gwentest_LDADD=-L/mingw/lib -L../src @gwenhywfar_libs@
+gwentest_LDADD=\
+  -L/mingw/lib -L../src @gwenhywfar_libs@ \
+  -L../gwenui @gwenhywfar_libsui@
 
 EXTRA_DIST = README.MSVC gwentest.vcproj
 #else

@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=13
-GWENHYWFAR_VERSION_BUILD=22
+GWENHYWFAR_VERSION_BUILD=24
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -79,9 +79,9 @@ AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_TAG,$GWENHYWFAR_VERSION_TAG, [tag])
 
 ###-------------------------------------------------------------------------
 #
-# SO version
+# SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="15"
+GWENHYWFAR_SO_CURRENT="16"
 GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_AGE="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
@@ -92,6 +92,39 @@ AC_SUBST(GWENHYWFAR_SO_AGE)
 AC_SUBST(GWENHYWFAR_SO_EFFECTIVE)
 
 AM_INIT_AUTOMAKE(gwenhywfar, $GWENHYWFAR_VERSION_RELEASE_STRING)
+
+
+
+###-------------------------------------------------------------------------
+#
+# SO version for GwenUI
+#
+GWENUI_SO_CURRENT="1"
+GWENUI_SO_REVISION="0"
+GWENUI_SO_AGE="0"
+GWENUI_SO_EFFECTIVE="`echo \$(($GWENUI_SO_CURRENT-$GWENUI_SO_AGE))`"
+
+AC_SUBST(GWENUI_SO_CURRENT)
+AC_SUBST(GWENUI_SO_REVISION)
+AC_SUBST(GWENUI_SO_AGE)
+AC_SUBST(GWENUI_SO_EFFECTIVE)
+
+
+
+###-------------------------------------------------------------------------
+#
+# SO version for GwenPP
+#
+GWENPP_SO_CURRENT="16"
+GWENPP_SO_REVISION="0"
+GWENPP_SO_AGE="0"
+GWENPP_SO_EFFECTIVE="`echo \$(($GWENPP_SO_CURRENT-$GWENPP_SO_AGE))`"
+
+AC_SUBST(GWENPP_SO_CURRENT)
+AC_SUBST(GWENPP_SO_REVISION)
+AC_SUBST(GWENPP_SO_AGE)
+AC_SUBST(GWENPP_SO_EFFECTIVE)
+
 
 
 ###-------------------------------------------------------------------------
@@ -182,6 +215,7 @@ case "$OS_TYPE" in
     posix)
         gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
         gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
+        gwenhywfar_libsui="-L`eval echo $prefix/lib` -lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
@@ -206,6 +240,7 @@ case "$OS_TYPE" in
         ACX_WINDOWS_PATHS
         gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
+        gwenhywfar_libsui="-L`eval echo $prefix/lib` -lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
@@ -248,7 +283,6 @@ fi
 #
 AQ_CHECK_SSL
 if test "$ssl_available" = "yes"; then
-  all_libraries="${all_libraries} ${ssl_libraries} ${ssl_lib}"
   all_includes="$all_includes $ssl_includes"
   gwenhywfar_includes="$gwenhywfar_includes $ssl_includes"
   GWEN_CRYPTO="ossl"
@@ -277,12 +311,14 @@ if test "$USE_NCURSES" != "yes"; then
 *** since at least my projects (Libchipcard, AqHBCI) will rely on it...
 ***
 *** Please make sure that the ncurses-devel packages are also installed.])
-  NCURSES_TOOLS=""
+  ncurses_libs=""
 else
   AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
   all_libraries="$all_libraries -lpanel -lncurses"
+  ncurses_libs="-lpanel -lncurses"
   NCURSES_TOOLS="dlgtest"
 fi
+AC_SUBST(ncurses_libs)
 AC_SUBST(NCURSES_TOOLS)
 AC_SUBST(USE_NCURSES)
 AM_CONDITIONAL(USE_NCURSES, [test "$USE_NCURSES" = "yes"])
@@ -469,6 +505,7 @@ AS_SCRUB_INCLUDE(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_libspp)
+AC_SUBST(gwenhywfar_libsui)
 AC_SUBST(gwenhywfar_plugins)
 AC_SUBST(gwenhywfar_headers)
 AC_SUBST(gwenhywfar_sections)
@@ -497,6 +534,7 @@ AC_CONFIG_FILES([Doxyfile
 		 gwenhywfar.spec
                  doc/Makefile
                  gwenpp/Makefile
+                 gwenui/Makefile
                  src/Makefile
                  src/types.h
                  src/ressource.rc
