@@ -1,9 +1,9 @@
-y# $Id$
+# $Id$
 # (c) 2004 Martin Preuss<martin@libchipcard.de>
 # These functions retrieve some important paths
 
 
-AC_DEFUN(AQ_WINDOZE_GETPATH, [
+AC_DEFUN([AQ_WINDOZE_GETPATH], [
 dnl IN:
 dnl   - $1: type of path to get:
 dnl         - windows: windows path
@@ -84,7 +84,7 @@ rm -f conf.winpath
 ])
 
 
-AC_DEFUN(AQ_WINDOZE_GETPATH_MINGW, [
+AC_DEFUN([AQ_WINDOZE_GETPATH_MINGW], [
 dnl IN:
 dnl   - $1: type of path to get:
 dnl         - windows: windows path
@@ -200,7 +200,7 @@ rm -f conf.winpath
 ])
 
 
-AC_DEFUN(ACX_WINDOWS_PATHS,[
+AC_DEFUN([ACX_WINDOWS_PATHS],[
 dnl IN: 
 dnl   - AC_CANONICAL_SYSTEM muste be called before
 dnl OUT:

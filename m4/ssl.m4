@@ -2,7 +2,7 @@
 # (c) 2002 Martin Preuss<martin@libchipcard.de>
 # This function checks if SSL is wanted and locates it
 
-AC_DEFUN(AQ_CHECK_SSL,[
+AC_DEFUN([AQ_CHECK_SSL],[
 dnl PREREQUISITES:
 dnl   - AQ_CHECK_OS must be called before
 dnl   - For windows, AQ_WINDOZE must be called beforehand

@@ -3,7 +3,7 @@
 # These functions search for QT 2-3
 
 
-AC_DEFUN(AQ_CHECK_QT,[
+AC_DEFUN([AQ_CHECK_QT],[
 dnl $1 = operating system name ("linux", "freebsd", "windows")
 dnl $2 = subdirs to include when QT is available
 dnl searches a dir for some files

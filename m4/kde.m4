@@ -3,7 +3,7 @@
 # These functions search for KDE 2-3
 
 
-AC_DEFUN(AQ_CHECK_KDE,[
+AC_DEFUN([AQ_CHECK_KDE],[
 dnl $1 = operating system name ("linux", "freebsd", "windows")
 dnl $2 = subdirs to include when KDE is available
 dnl searches a dir for some files

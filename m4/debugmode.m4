@@ -3,7 +3,7 @@
 # This function checks for the debugmode
 
 
-AC_DEFUN(AQ_DEBUGMODE,[
+AC_DEFUN([AQ_DEBUGMODE],[
 dnl IN: 
 dnl   nothing
 dnl OUT:

@@ -4,7 +4,7 @@
 dnl ACX_COMPILE_WARN()
 dnl Add arguments for compile warnings and debug options to ./configure.
 dnl
-AC_DEFUN(ACX_COMPILE_WARN,
+AC_DEFUN([ACX_COMPILE_WARN],
 [
 
 dnl For enabling of debugging flags/code

@@ -2,7 +2,7 @@
 # (c) 2002 Martin Preuss<martin@libchipcard.de>
 # This function checks for the output path for the documentation
 
-AC_DEFUN(AQ_DOCPATH,[
+AC_DEFUN([AQ_DOCPATH],[
 dnl PREREQUISITES:
 dnl   none
 dnl IN: 

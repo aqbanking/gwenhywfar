@@ -2,7 +2,7 @@
 # (c) 2004 Martin Preuss<martin@libchipcard.de>
 # These functions check for special types
 
-AC_DEFUN(AQ_TYPE_UINT32,[
+AC_DEFUN([AQ_TYPE_UINT32],[
 dnl PREREQUISITES:
 dnl   none
 dnl IN: 

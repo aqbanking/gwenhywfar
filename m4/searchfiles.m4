@@ -3,7 +3,7 @@
 # These functions search for files
 
 
-AC_DEFUN(AQ_SEARCH_FOR_PATH,[
+AC_DEFUN([AQ_SEARCH_FOR_PATH],[
 dnl searches for a file in a path
 dnl $1 = file to search
 dnl $2 = paths to search in
@@ -19,7 +19,7 @@ for li in $ld; do
 done
 ])
 
-AC_DEFUN(AQ_SEARCH_FILES,[
+AC_DEFUN([AQ_SEARCH_FILES],[
 dnl searches a dir for some files
 dnl $1 = path where to search
 dnl $2 = files to find
