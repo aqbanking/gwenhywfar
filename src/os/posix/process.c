@@ -49,7 +49,7 @@
 
 
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
-
+static struct sigaction original_sigchld_sa;
 
 
 GWEN_ERRORCODE GWEN_Process_ModuleInit(){
@@ -60,7 +60,7 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
   sigemptyset(&sa.sa_mask);
 
   sa.sa_flags=0;
-  if (sigaction(SIGCHLD, &sa, 0)) {
+  if (sigaction(SIGCHLD, &sa, &original_sigchld_sa)) {
     DBG_ERROR(0,
 	      "Could not setup signal handler for signal SIGCHLD: %s",
 	      strerror(errno));
@@ -68,6 +68,19 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
 			  GWEN_ERROR_SEVERITY_ERR,
 			  0,
 			  GWEN_ERROR_UNSPECIFIED);
+  }
+
+  if (original_sigchld_sa.sa_handler == SIG_DFL) {
+    DBG_DEBUG(0, "original_sigchld handler was SIG_DFL");
+  } else if (original_sigchld_sa.sa_handler == SIG_IGN) {
+    DBG_DEBUG(0, "original_sigchld handler was SIG_IGN");
+  }
+  else if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
+    DBG_ERROR(0,
+	      "Original signal handler for signal SIGCHLD was using "
+	      "SA_SIGINFO. This is not yet implemented in gwenhywfar. "
+	      "You need to fix GWEN_Process_SignalHandler to handle "
+	      "this case. For now we hope everything will be ok anyway.");
   }
 
   return 0;
@@ -142,6 +155,19 @@ void GWEN_Process_SignalHandler(int s) {
     DBG_ERROR(0, "Got unhandled signal \"%d\"", s);
     break;
   } /* switch */
+
+  /* Now check whether there has been already a different signal
+     handler for this signal */
+  if ( (original_sigchld_sa.sa_handler != SIG_DFL) &&
+       (original_sigchld_sa.sa_handler != SIG_IGN) ) {
+    if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
+      /* FIXME: not yet implemented */
+      /* original_sigchld_sa.sa_sigaction(s, siginfo, info); */
+    } else {
+      original_sigchld_sa.sa_handler(s);
+    }
+  }
+
 }
 
 
