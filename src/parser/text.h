@@ -65,6 +65,7 @@ extern "C" {
  * source string behind the word we've just cut out. This variable is only
  * modified upon successfull return
  */
+GWENHYWFAR_API
 char *GWEN_Text_GetWord(const char *src,
                         const char *delims,
                         char *buffer,
@@ -77,14 +78,17 @@ char *GWEN_Text_GetWord(const char *src,
  * All characters which are not alphanumeric are escaped by %XX where
  * XX ist the hexadecimal code of the character.
  */
+GWENHYWFAR_API
 char *GWEN_Text_Escape(const char *src,
                        char *buffer,
                        unsigned int maxsize);
 
+GWENHYWFAR_API
 char *GWEN_Text_Unescape(const char *src,
                          char *buffer,
                          unsigned int maxsize);
 
+GWENHYWFAR_API
 char *GWEN_Text_ToHex(const char *src, unsigned l, char *buffer,
                       unsigned int maxsize);
 
@@ -92,6 +96,7 @@ char *GWEN_Text_ToHex(const char *src, unsigned l, char *buffer,
  * Converts a string to Hex. After "groupsize" bytes the "delimiter" is
  * inserted.
  */
+GWENHYWFAR_API
 char *GWEN_Text_ToHexGrouped(const char *src,
                              unsigned l,
                              char *buffer,
@@ -100,6 +105,7 @@ char *GWEN_Text_ToHexGrouped(const char *src,
                              char delimiter,
                              int skipLeadingZeros);
 
+GWENHYWFAR_API
 int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize);
 
 /**
@@ -107,6 +113,7 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize);
  * @param fillchar if 0 then no filling takes place, positive values
  * extend to the right, negative values to the left.
  */
+GWENHYWFAR_API
 int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
                           int fillchar);
 
@@ -116,6 +123,7 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
  * which is given but empty.
  * @param ign set to !=0 to ignore cases
  */
+GWENHYWFAR_API
 int GWEN_Text_Compare(const char *s1, const char *s2, int ign);
 
 
@@ -126,6 +134,7 @@ int GWEN_Text_Compare(const char *s1, const char *s2, int ign);
  * @param p pattern to compare against
  * @param sensecase if 0 then cases are ignored
  */
+GWENHYWFAR_API
 int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
 
 
@@ -133,6 +142,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
  * This is used for debugging purposes and it shows the given data as a
  * classical hexdump.
  */
+GWENHYWFAR_API
 void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert);
 
 

@@ -46,8 +46,78 @@ extern "C" {
 #endif
 
 #ifndef HAVE_SNPRINTF
-# error Not using snprintf! Maybe "config.h" is not included?
-#endif
+# warning Not using snprintf! Maybe "config.h" is not included?
+
+#define DBG_ERROR(dbg_logger, format, args...) if (1){\
+  fprintf(stderr, __FILE__":%5d: " format  , __LINE__ , ## args);};
+
+#define DBG_ERROR_ERR(dbg_logger, dbg_err) {\
+ char dbg_errbuff[256]; \
+ GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
+  fprintf(stderr, __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
+
+
+#define DBG_WARN(dbg_logger, format, args...) if (1){\
+  fprintf(stderr, __FILE__":%5d: " format  , __LINE__ , ## args);};
+
+#define DBG_WARN_ERR(dbg_logger, dbg_err) {\
+ char dbg_errbuff[256]; \
+ GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
+  fprintf(stderr, __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
+
+
+#define DBG_NOTICE(dbg_logger, format, args...) if (1){\
+  fprintf(stderr, __FILE__":%5d: " format  , __LINE__ , ## args);};
+
+#define DBG_NOTICE_ERR(dbg_logger, dbg_err) {\
+ char dbg_errbuff[256]; \
+ GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
+  fprintf(stderr, __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
+
+#define DBG_INFO(dbg_logger, format, args...) if (1){\
+  fprintf(stderr, __FILE__":%5d: " format  , __LINE__ , ## args);};
+
+#define DBG_INFO_ERR(dbg_logger, dbg_err) {\
+ char dbg_errbuff[256]; \
+ GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
+  fprintf(stderr, __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
+
+
+#ifndef DISABLE_DEBUGLOG
+
+#define DBG_DEBUG(dbg_logger, format, args...) if (1){\
+  fprintf(stderr, __FILE__":%5d: " format  , __LINE__ , ## args);};
+
+#define DBG_DEBUG_ERR(dbg_logger, dbg_err) {\
+ char dbg_errbuff[256]; \
+ GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
+  fprintf(stderr, __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
+
+#define DBG_VERBOUS(dbg_logger, format, args...) if (1){\
+  fprintf(stderr, __FILE__":%5d: " format  , __LINE__ , ## args);};
+
+#define DBG_VERBOUS_ERR(dbg_logger, dbg_err) {\
+ char dbg_errbuff[256]; \
+ GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
+  fprintf(stderr, __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
+
+#else /* if DISABLE_DEBUGLOG */
+#define DBG_DEBUG(dbg_logger, format, args...)
+
+#define DBG_DEBUG_ERR(dbg_logger, dbg_err)
+
+#define DBG_VERBOUS(dbg_logger, format, args...)
+
+#define DBG_VERBOUS_ERR(dbg_logger, dbg_err)
+
+#endif /* DISABLE_DEBUGLOG */
+
+
+
+
+#else /* if we have snprintf */
+
+
 
 #define DBG_ERROR(dbg_logger, format, args...) if (1){\
   char dbg_buffer[256]; \
@@ -175,6 +245,9 @@ extern "C" {
 #define DBG_VERBOUS_ERR(dbg_logger, dbg_err)
 
 #endif /* DISABLE_DEBUGLOG */
+
+
+#endif /* if no snprintf */
 
 
 #ifdef __cplusplus

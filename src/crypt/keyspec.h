@@ -29,49 +29,80 @@
 #ifndef GWEN_KEYSPEC_H
 #define GWEN_KEYSPEC_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
 #include <stdio.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+GWENHYWFAR_API
 typedef struct GWEN_KEYSPEC GWEN_KEYSPEC;
 
 
+GWENHYWFAR_API
 GWEN_KEYSPEC *GWEN_KeySpec_new();
+GWENHYWFAR_API
 GWEN_KEYSPEC *GWEN_KeySpec_dup(const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 void GWEN_KeySpec_free(GWEN_KEYSPEC *ks);
 
+GWENHYWFAR_API
 const char *GWEN_KeySpec_GetKeyType(const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 void GWEN_KeySpec_SetKeyType(GWEN_KEYSPEC *ks,
                                     const char *s);
 
+GWENHYWFAR_API
 const char *GWEN_KeySpec_GetKeyName(const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 void GWEN_KeySpec_SetKeyName(GWEN_KEYSPEC *ks,
                                     const char *s);
 
+GWENHYWFAR_API
 const char *GWEN_KeySpec_GetOwner(const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks,
                            const char *s);
 
+GWENHYWFAR_API
 unsigned int GWEN_KeySpec_GetNumber(const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 void GWEN_KeySpec_SetNumber(GWEN_KEYSPEC *ks,
                                    unsigned int i);
 
+GWENHYWFAR_API
 unsigned int GWEN_KeySpec_GetVersion(const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
                              unsigned int i);
 
 
+GWENHYWFAR_API
 GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 const GWEN_KEYSPEC *GWEN_KeySpec_ConstNext(const GWEN_KEYSPEC *ks);
 
+GWENHYWFAR_API
 void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
                              GWEN_KEYSPEC **head);
+GWENHYWFAR_API
 void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
                              GWEN_KEYSPEC **head);
 
+GWENHYWFAR_API
 void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head);
 
 
+GWENHYWFAR_API
 void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 

@@ -30,9 +30,10 @@
 #ifndef GWENHYWFAR_LIBLOADER_P_H
 #define GWENHYWFAR_LIBLOADER_P_H "$Id"
 
+#include <windows.h>
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
-#include "libloader.h"
+#include <gwenhywfar/libloader.h>
 
 
 #ifdef __cplusplus

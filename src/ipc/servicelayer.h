@@ -29,9 +29,12 @@
 #ifndef GWENHYWFAR_SERVICELAYER_H
 #define GWENHYWFAR_SERVICELAYER_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+GWENHYWFAR_API
 typedef struct GWEN_SERVICELAYER GWEN_SERVICELAYER;
 #ifdef __cplusplus
 }
@@ -53,21 +56,28 @@ extern "C" {
 /*@{*/
 
 
+GWENHYWFAR_API
 typedef void (*GWEN_SERVICELAYER_FREEDATA_FN)(GWEN_SERVICELAYER *sl);
 
 
+GWENHYWFAR_API
 GWEN_SERVICELAYER *GWEN_ServiceLayer_new();
+GWENHYWFAR_API
 void GWEN_ServiceLayer_free(GWEN_SERVICELAYER *sl);
 
 
+GWENHYWFAR_API
 void GWEN_ServiceLayer_SetFreeDataFn(GWEN_SERVICELAYER *sl,
                                      GWEN_SERVICELAYER_FREEDATA_FN fn);
+GWENHYWFAR_API
 void *GWEN_ServiceLayer_GetData(GWEN_SERVICELAYER *sl);
+GWENHYWFAR_API
 void GWEN_ServiceLayer_SetData(GWEN_SERVICELAYER *sl, void *data);
 
 /**
  * Adds a connection to the service layer.
  */
+GWENHYWFAR_API
 GWEN_ERRORCODE
   GWEN_ServiceLayer_AddConnection(GWEN_SERVICELAYER *sl,
                                   GWEN_IPCCONNLAYER *conn);
@@ -78,6 +88,7 @@ GWEN_ERRORCODE
  *        connection)
  * @param userMark mark assigned by the application (0 matches any)
  */
+GWENHYWFAR_API
 GWEN_IPCCONNLAYER*
   GWEN_ServiceLayer_FindConnection(GWEN_SERVICELAYER *sl,
                                    unsigned int id,
@@ -90,6 +101,7 @@ GWEN_IPCCONNLAYER*
  * is established etc).
  * The given timeout value is used when waiting for socket changes (select).
  */
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_ServiceLayer_Work(GWEN_SERVICELAYER *sl, int timeout);
 
 
@@ -97,6 +109,7 @@ GWEN_ERRORCODE GWEN_ServiceLayer_Work(GWEN_SERVICELAYER *sl, int timeout);
  * Removes all connections which belong to the given service layer and which
  * are closed. Connections with the PERSISTENT-flag are not removed.
  */
+GWENHYWFAR_API
 void GWEN_ServiceLayer_RemoveClosed(GWEN_SERVICELAYER *sl);
 
 
@@ -108,6 +121,7 @@ void GWEN_ServiceLayer_RemoveClosed(GWEN_SERVICELAYER *sl);
  *        immediately. Otherwise the ConnectionLayer is allowed to do some
  *        closing handshaking.
  */
+GWENHYWFAR_API
 void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
                              unsigned int id,
                              unsigned int userMark,
@@ -118,6 +132,7 @@ void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
  * mechanism to make sure every connection has the same chance of providing
  * a message.
  */
+GWENHYWFAR_API
 GWEN_IPCMSG *GWEN_ServiceLayer_NextIncomingMsg(GWEN_SERVICELAYER *sl,
                                                unsigned int userMark);
 

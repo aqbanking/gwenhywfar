@@ -121,8 +121,8 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
       // create dir
       DBG_DEBUG(0, "Creating folder \"%s\"", p);
 
-      if (mkdir(p, S_IRWXU)) {
-        DBG_ERROR(0, "mkdir: %s (%s)", strerror(errno), p);
+      if (GWEN_Directory_Create(p)) {
+        DBG_ERROR(0, "Could not create directory \"%s\"", p);
         return 0;
       }
     }

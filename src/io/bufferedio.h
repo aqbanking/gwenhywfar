@@ -48,15 +48,18 @@ extern "C" {
 
 
 
+GWENHYWFAR_API
 typedef struct GWEN_BUFFEREDIOSTRUCT GWEN_BUFFEREDIO;
 
 
+GWENHYWFAR_API
 typedef enum {
   GWEN_LineModeUnix=0,
   GWEN_LineModeDOS
 } GWEN_BUFFEREDIOLINEMODE;
 
 
+GWENHYWFAR_API
 typedef enum {
   GWEN_BufferedIOTypeNone=0,
   GWEN_BufferedIOTypeFile,
@@ -208,6 +211,7 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *dm);
  * </ul>
  * @author Martin Preuss<martin@aquamaniac.de>
  */
+GWENHYWFAR_API
 void GWEN_BufferedIO_SetLineMode(GWEN_BUFFEREDIO *dm,
                                  GWEN_BUFFEREDIOLINEMODE lm);
 
@@ -215,6 +219,7 @@ void GWEN_BufferedIO_SetLineMode(GWEN_BUFFEREDIO *dm,
  * Return the currently used line mode.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
+GWENHYWFAR_API
 GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(GWEN_BUFFEREDIO *dm);
 
 
@@ -227,12 +232,14 @@ GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(GWEN_BUFFEREDIO *dm);
  * </ul>
  * @author Martin Preuss<martin@aquamaniac.de>
  */
+GWENHYWFAR_API
 void GWEN_BufferedIO_SetTimeout(GWEN_BUFFEREDIO *dm, int timeout);
 
 
 /**
  * Returns the currently used timeout value in milliseconds.
  */
+GWENHYWFAR_API
 int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm);
 
 
@@ -240,6 +247,7 @@ int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm);
  * Closes the stream without flushing any buffers. Call this in case
  * of a severe error. The content of the internal buffers will be lost !
  */
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
 
 

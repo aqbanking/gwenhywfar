@@ -32,9 +32,11 @@
 extern "C" {
 #endif
 
+GWENHYWFAR_API
 typedef struct GWEN_LOGGER GWEN_LOGGER;
 
 
+GWENHYWFAR_API
 typedef void (*GWEN_LOGGERFUNCTIONLOG)(const char *s);
 
 
@@ -68,7 +70,10 @@ GWENHYWFAR_API typedef enum {
 
 
 
+GWENHYWFAR_API
 GWEN_LOGGER *GWEN_Logger_new();
+
+GWENHYWFAR_API
 void GWEN_Logger_free(GWEN_LOGGER *lg);
 
 
@@ -79,6 +84,7 @@ void GWEN_Logger_free(GWEN_LOGGER *lg);
  * You must call GWEN_Logger_Open on that logger prior to calling this
  * function.
  */
+GWENHYWFAR_API
 void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg);
 
 

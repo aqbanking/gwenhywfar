@@ -35,13 +35,13 @@
 #include "inetsocket_p.h"
 #include "inetaddr_p.h"
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <sys/un.h>
 
 
 /* forward declaration */
@@ -56,7 +56,6 @@ static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_socket_errorform=0;
 GWEN_ERRORCODE GWEN_Socket_ModuleInit(){
   WORD wVersionRequested;
   WSADATA wsaData;
-  int err, i;
 
   if (!gwen_socket_is_initialized) {
     GWEN_ERRORCODE err;
@@ -74,19 +73,21 @@ GWEN_ERRORCODE GWEN_Socket_ModuleInit(){
     /* setup WINSOCK (request version 1.1) */
     wVersionRequested=MAKEWORD(1,1);
     err=WSAStartup(wVersionRequested,&wsaData);
-    if (err)
-      return GWEN_Error_New(0,
+    if (err) {
+      DBG_INFO(0, "Error on WSAStartup");
+      return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
-                            gwen_socket_error_descr.typ,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
                             err);
+    }
     /* check if the version returned is that we requested */
     if (LOBYTE(wsaData.wVersion)!=1 ||
         HIBYTE(wsaData.wVersion)!=1) {
       WSACleanup();
-      return Error_New(0,
-                       ERROR_SEVERITY_ERR,
-                       socket_error_descr.typ,
-                       SOCKET_ERROR_STARTUP);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_STARTUP);
     }
 
     gwen_socket_is_initialized=1;
@@ -222,24 +223,11 @@ GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp, GWEN_SOCKETTYPE socketType){
     break;
 
   case GWEN_SocketTypeUnix:
-#ifdef PF_UNIX
-    s=socket(PF_UNIX, SOCK_STREAM,0);
-#else if defined (AF_UNIX)
-    s=socket(AF_UNIX, SOCK_STREAM,0);
-#else
     DBG_ERROR(0, "No unix domain sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
                           GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
-#endif
-
-    if (s==-1)
-      return GWEN_Error_new(0,
-                            GWEN_ERROR_SEVERITY_ERR,
-                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                            errno);
-    sp->socket=s;
     break;
 
   default:
@@ -260,11 +248,16 @@ GWEN_ERRORCODE GWEN_Socket_Connect(GWEN_SOCKET *sp,
   if (connect(sp->socket,
               addr->address,
               addr->size)) {
-    if (errno!=EINPROGRESS)
+    if (WSAGetLastError()!=WSAEINPROGRESS &&
+        WSAGetLastError()!=WSAEWOULDBLOCK) {
+      DBG_ERROR(0, "Error %d (%s)",
+                WSAGetLastError(),
+                strerror(WSAGetLastError()));
       return GWEN_Error_new(0,
-                            GWEN_ERROR_SEVERITY_ERR,
-                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                            errno);
+                       GWEN_ERROR_SEVERITY_ERR,
+                       GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                       WSAGetLastError());
+    }
     else
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
@@ -606,30 +599,20 @@ GWEN_ERRORCODE GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
 
 
 GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
-                                       int fl) {
-  int prevFlags;
-  int newFlags;
+                                       int b) {
+  unsigned long fl;
 
   assert(sp);
-  /* get current socket flags */
-  prevFlags=fcntl(sp->socket,F_GETFL);
-  if (prevFlags==-1)
+  fl=!b;
+  if (ioctlsocket(sp->socket,FIONBIO,&fl)) {
+    DBG_ERROR(0, "Error %d (%s)",
+              WSAGetLastError(),
+              strerror(WSAGetLastError()));
     return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                          errno);
-
-  /* set nonblocking/blocking */
-  if (fl)
-    newFlags=prevFlags&(~O_NONBLOCK);
-  else
-    newFlags=prevFlags|O_NONBLOCK;
-
-  if (-1==fcntl(sp->socket,F_SETFL,newFlags))
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                          errno);
+                     GWEN_ERROR_SEVERITY_ERR,
+                     GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                     WSAGetLastError());
+  }
   return 0;
 }
 
@@ -637,13 +620,14 @@ GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
 
 GWEN_ERRORCODE GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp,
                                         int fl) {
+
   assert(sp);
   if (sp->type==GWEN_SocketTypeUnix)
     return 0;
   if (setsockopt(sp->socket,
                  SOL_SOCKET,
 		 SO_BROADCAST,
-		 &fl,
+		 (const char*)&fl,
 		 sizeof(fl)))
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -655,7 +639,7 @@ GWEN_ERRORCODE GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp,
 
 
 GWEN_ERRORCODE GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl){
-  assert(sp);
+	assert(sp);
 
   /*if (sp->type==SocketTypeUnix)
     return 0;*/
@@ -663,7 +647,7 @@ GWEN_ERRORCODE GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl){
   if (setsockopt(sp->socket,
 		 SOL_SOCKET,
 		 SO_REUSEADDR,
-		 &fl,
+		 (const char*)&fl,
 		 sizeof(fl)))
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -680,7 +664,7 @@ GWEN_ERRORCODE GWEN_Socket_GetSocketError(GWEN_SOCKET *sp) {
 
   assert(sp);
   rvs=sizeof(rv);
-  if (-1==getsockopt(sp->socket,SOL_SOCKET,SO_ERROR,&rv,&rvs))
+  if (-1==getsockopt(sp->socket,SOL_SOCKET,SO_ERROR,(char*)&rv,&rvs))
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),

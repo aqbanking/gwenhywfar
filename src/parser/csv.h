@@ -37,10 +37,12 @@ extern "C" {
 #endif
 
 
+GWENHYWFAR_API
 int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
                    GWEN_DB_NODE *cfg,
                    GWEN_DB_NODE *data);
 
+GWENHYWFAR_API
 int GWEN_CSV_Read(GWEN_BUFFEREDIO *bio,
                   GWEN_DB_NODE *cfg,
                   GWEN_DB_NODE *data);

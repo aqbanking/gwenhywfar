@@ -56,20 +56,24 @@ extern "C" {
 /*@}*/
 
 
+GWENHYWFAR_API
 typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 
 /**
  * Node type.
  */
+GWENHYWFAR_API
 typedef enum {
   GWEN_XMLNodeTypeTag=0,
   GWEN_XMLNodeTypeData,
   GWEN_XMLNodeTypeComment
 } GWEN_XMLNODE_TYPE;
 
+GWENHYWFAR_API
 typedef struct GWEN__XMLNODE GWEN_XMLNODE;
 
 
+GWENHYWFAR_API
 typedef int
     (*GWEN_XML_INCLUDE_FN)(GWEN_XMLNODE *n,
 			   const char *path,
@@ -81,9 +85,13 @@ typedef int
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data);
+GWENHYWFAR_API
 void GWEN_XMLNode_free(GWEN_XMLNODE *n);
+GWENHYWFAR_API
 void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n);
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
 /*@}*/
 
@@ -92,9 +100,12 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 const char *GWEN_XMLNode_GetProperty(GWEN_XMLNODE *n, const char *name,
                                      const char *defaultValue);
+GWENHYWFAR_API
 void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n, const char *name, const char *value);
+GWENHYWFAR_API
 void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
                                  GWEN_XMLNODE *sn,
                                  int overwrite);
@@ -104,8 +115,11 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(GWEN_XMLNODE *n);
+GWENHYWFAR_API
 const char *GWEN_XMLNode_GetData(GWEN_XMLNODE *n);
+GWENHYWFAR_API
 void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
 /*@}*/
 
@@ -113,8 +127,11 @@ void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
 /*@}*/
 
@@ -123,9 +140,13 @@ GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+GWENHYWFAR_API
 void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+GWENHYWFAR_API
 void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n);
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
                                     GWEN_XMLNODE_TYPE t, const char *data);
 /*@}*/
@@ -138,12 +159,14 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
 /**
  * Reads exactly ONE tag (and all its subtags) from the given bufferedIO.
  */
+GWENHYWFAR_API
 int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
                    unsigned int flags);
 
 /**
  * Reads all tags from a file and adds them as children to the given node.
  */
+GWENHYWFAR_API
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
                       unsigned int flags);
 /*@}*/
@@ -153,6 +176,7 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind);
 /*@}*/
 
@@ -164,16 +188,23 @@ void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind);
  */
 /*@{*/
 
+GWENHYWFAR_API
 typedef struct GWEN_XMLNODE_PATH GWEN_XMLNODE_PATH;
 
 
+GWENHYWFAR_API
 GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new();
+GWENHYWFAR_API
 GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(GWEN_XMLNODE_PATH *np);
+GWENHYWFAR_API
 void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np);
 
+GWENHYWFAR_API
 int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
                            GWEN_XMLNODE *n);
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np);
+GWENHYWFAR_API
 void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np);
 /*@}*/ /* defgroup */
 /*@}*/ /* defgroup (all)*/

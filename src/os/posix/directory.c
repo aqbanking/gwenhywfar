@@ -38,6 +38,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <gwenhywfar/debug.h>
 
 
@@ -133,6 +135,15 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
 
 
+int GWEN_Directory_Create(const char *path){
+
+  if (mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR)) {
+    DBG_INFO(0, "Error on mkdir(%s): %s",
+             path, strerror(errno));
+    return -1;
+  }
+  return 0;
+}
 
 
 

@@ -33,12 +33,11 @@
 #ifndef GWEN_SOCKET_P_H
 #define GWEN_SOCKET_P_H
 
+#include <windows.h>
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/inetsocket.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #ifdef HAVE_ARPA_INET_H
 # include <arpa/inet.h>
 #endif

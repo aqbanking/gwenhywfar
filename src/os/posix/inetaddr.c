@@ -156,9 +156,9 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
     ia->address=(struct sockaddr*)malloc(sizeof(struct sockaddr_un));
     assert(ia->address);
     aptr=(struct sockaddr_un*)(ia->address);
-#ifdef PF_UNIX
+#if defined(PF_UNIX)
     aptr->sun_family=PF_UNIX;
-#else if defined (AF_UNIX)
+#elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
     DBG_ERROR(0, "No unix domain sockets available for this system");
@@ -209,7 +209,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     /* reset */
 #ifdef PF_INET
     aptr->sin_family=PF_INET;
-#else if defined (AF_UNIX)
+#elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
     DBG_ERROR(0, "No unix domain sockets available for this system");
@@ -217,7 +217,6 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
                           GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
-#endif
 #endif
     aptr->sin_addr.s_addr=0;
 
@@ -239,7 +238,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     aptr=(struct sockaddr_un*)(ia->address);
 #ifdef PF_UNIX
     aptr->sun_family=PF_UNIX;
-#else if defined (AF_UNIX)
+#elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
     DBG_ERROR(0, "No unix domain sockets available for this system");
@@ -336,7 +335,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
     aptr=(struct sockaddr_un*)(ia->address);
 #ifdef PF_INET
     aptr->sun_family=PF_INET;
-#else if defined (AF_UNIX)
+#elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
     DBG_ERROR(0, "No unix domain sockets available for this system");

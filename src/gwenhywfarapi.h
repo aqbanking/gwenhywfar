@@ -28,7 +28,7 @@
 #ifndef GWENHYWFARAPI_H
 
 #ifdef __declspec
-# if BUILDING_GWENHYWFAR_DLL
+# if BUILDING_GWEN_DLL
 #  define GWENHYWFAR_API __declspec (dllexport)
 # else /* Not BUILDING_GWENHYWFAR_DLL */
 #  define GWENHYWFAR_API __declspec (dllimport)

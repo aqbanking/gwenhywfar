@@ -71,6 +71,7 @@ extern "C" {
 /**
  * Address family (in most cases this is AddressFamilyIP)
  */
+GWENHYWFAR_API
 typedef enum {
   /** Internet Protocol (IP) */
   GWEN_AddressFamilyIP=0,

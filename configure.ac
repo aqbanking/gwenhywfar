@@ -20,7 +20,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=4
-GWENHYWFAR_VERSION_BUILD=1
+GWENHYWFAR_VERSION_BUILD=3
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD($GWENHYWFAR_VERSION_TAG)"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL($GWENHYWFAR_VERSION_TAG)"
@@ -127,10 +127,11 @@ case "$OS_TYPE" in
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
-        gwenhywfar_libs=-L`eval echo $prefix` -lgwenhywfar
+        gwenhywfar_libs="-L`eval echo $prefix` -lgwenhywfar32"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_os_lib="os/windows/libos.la"
-        GWEN_OS="posix"
+        GWEN_DLL_TARGET="dll"
+        GWEN_OS="windows"
     	;;
 esac
 
@@ -240,6 +241,7 @@ AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_needed_libs)
 AC_SUBST(GWEN_OS)
+AC_SUBST(GWEN_DLL_TARGET)
 AC_SUBST(gwenhywfar_os_lib)
 AC_SUBST(GWENHYWFAR_LIB)
 AC_SUBST(gwenhywfar_crypt_lib)
@@ -259,6 +261,7 @@ AC_CONFIG_FILES([Doxyfile
 		 gwenhywfar.spec
                  doc/Makefile
                  src/Makefile
+                 src/ressource.rc
                  src/version.h
                  src/base/Makefile
                  src/crypt/Makefile
@@ -268,6 +271,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/ipc/Makefile
                  src/os/Makefile
                  src/os/posix/Makefile
+                 src/os/windows/Makefile
                  src/parser/Makefile
                  test/Makefile])
 AC_OUTPUT

@@ -29,25 +29,44 @@
 #ifndef GWENHYWFAR_MD_H
 #define GWENHYWFAR_MD_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
+GWENHYWFAR_API
 typedef struct GWEN_MD GWEN_MD;
 
+GWENHYWFAR_API
 typedef int (*GWEN_MD_BEGIN_FN)(GWEN_MD *md);
+GWENHYWFAR_API
 typedef int (*GWEN_MD_END_FN)(GWEN_MD *md);
+GWENHYWFAR_API
 typedef int (*GWEN_MD_UPDATE_FN)(GWEN_MD *md,
                                  const char *buf,
                                  unsigned int l);
+GWENHYWFAR_API
 typedef void (*GWEN_MD_FREEDATA_FN)(GWEN_MD *md);
 
 
+GWENHYWFAR_API
 GWEN_MD *GWEN_MD_Factory(const char *t);
+GWENHYWFAR_API
 void GWEN_MD_free(GWEN_MD *md);
+GWENHYWFAR_API
 unsigned char *GWEN_MD_GetDigestPtr(GWEN_MD *md);
+GWENHYWFAR_API
 unsigned int GWEN_MD_GetDigestSize(GWEN_MD *md);
 
+GWENHYWFAR_API
 int GWEN_MD_Begin(GWEN_MD *md);
+GWENHYWFAR_API
 int GWEN_MD_End(GWEN_MD *md);
+GWENHYWFAR_API
 int GWEN_MD_Update(GWEN_MD *md,
                    const char *buf,
                    unsigned int l);
@@ -59,35 +78,56 @@ int GWEN_MD_Update(GWEN_MD *md,
  * be called by modules implementing message digest code.
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_MD *GWEN_MD_new(unsigned int size);
+GWENHYWFAR_API
 void GWEN_MD_SetBeginFn(GWEN_MD *md, GWEN_MD_BEGIN_FN fn);
+GWENHYWFAR_API
 void GWEN_MD_SetEndFn(GWEN_MD *md, GWEN_MD_END_FN fn);
+GWENHYWFAR_API
 void GWEN_MD_SetUpdateFn(GWEN_MD *md, GWEN_MD_UPDATE_FN fn);
+GWENHYWFAR_API
 void GWEN_MD_SetFreeDataFn(GWEN_MD *md, GWEN_MD_FREEDATA_FN fn);
+GWENHYWFAR_API
 void GWEN_MD_SetData(GWEN_MD *md, void *data);
+GWENHYWFAR_API
 void *GWEN_MD_GetData(GWEN_MD *md);
 /*@}*/
 
 
+GWENHYWFAR_API
 typedef struct GWEN_MD_PROVIDER GWEN_MD_PROVIDER;
 
+GWENHYWFAR_API
 typedef GWEN_MD*
   (*GWEN_MDPROVIDER_NEWMD_FN)(GWEN_MD_PROVIDER *pr);
 
+GWENHYWFAR_API
 GWEN_MD_PROVIDER *GWEN_MdProvider_new();
+GWENHYWFAR_API
 void GWEN_MdProvider_free(GWEN_MD_PROVIDER *pr);
 
+GWENHYWFAR_API
 void GWEN_MdProvider_SetNewMdFn(GWEN_MD_PROVIDER *pr,
                                 GWEN_MDPROVIDER_NEWMD_FN newMdFn);
+GWENHYWFAR_API
 void GWEN_MdProvider_SetName(GWEN_MD_PROVIDER *pr,
                              const char *name);
 
 /**
  * On success this function takes over ownership of the given object.
  */
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_MD_RegisterProvider(GWEN_MD_PROVIDER *pr);
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_MD_UnregisterProvider(GWEN_MD_PROVIDER *pr);
+GWENHYWFAR_API
 void GWEN_Md_UnregisterAllProviders();
+
+#ifdef __cplusplus
+}
+#endif
+
 
 
 #endif

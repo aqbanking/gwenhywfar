@@ -45,6 +45,17 @@ GWENHYWFAR_API typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
 
 
 /**
+ *
+ */
+/*@{*/
+#define GWEN_DIR_FLAGS_USER_READ  0x0001
+#define GWEN_DIR_FLAGS_USER_WRITE 0x0002
+#define GWEN_DIR_FLAGS_USER_EXEC  0x0004
+/*@}*/
+
+
+
+/**
  * @defgroup MOD_DIRECTORY Directory Functions
  * @ingroup MOD_OS
  * @short Provides secure interprocess communication
@@ -111,6 +122,7 @@ GWENHYWFAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
  * Get the current users home directory and copy it into the given buffer.
  * @return 0 if ok, !=0 on error
  */
+GWENHYWFAR_API
 int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size);
 
 /**
@@ -120,7 +132,15 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size);
  * @param path path to inspect
  * @param flags flags, please see @ref GWEN_PATH_FLAGS_PATHMUSTEXIST et. al.
  */
+GWENHYWFAR_API
 int GWEN_Directory_GetPath(const char *path, unsigned int flags);
+
+
+/**
+ * Creates a directory.
+ */
+GWENHYWFAR_API
+int GWEN_Directory_Create(const char *path);
 
 
 /*@}*/ /* defgroup */

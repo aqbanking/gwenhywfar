@@ -47,6 +47,7 @@ extern "C" {
 /*@{*/
 
 
+GWENHYWFAR_API
 typedef enum {
   GWEN_TransportLayerTypeSocket=0
 } GWEN_TransportLayerType;
@@ -57,17 +58,24 @@ GWENHYWFAR_API
 
 
 
+GWENHYWFAR_API
 const char *GWEN_IPCTransportLayer_GetAddress(GWEN_IPCTRANSPORTLAYER *tl);
 
+GWENHYWFAR_API
 void GWEN_IPCTransportLayer_SetAddress(GWEN_IPCTRANSPORTLAYER *tl,
                                        const char *buffer);
+GWENHYWFAR_API
 int GWEN_IPCTransportLayer_GetPort(GWEN_IPCTRANSPORTLAYER *tl);
+GWENHYWFAR_API
 void GWEN_IPCTransportLayer_SetPort(GWEN_IPCTRANSPORTLAYER *tl, int port);
+GWENHYWFAR_API
 GWEN_TransportLayerType
   GWEN_IPCTransportLayer_GetType(GWEN_IPCTRANSPORTLAYER *tl);
 
 
+GWENHYWFAR_API
 GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayer_new();
+GWENHYWFAR_API
 void GWEN_IPCTransportLayer_free(GWEN_IPCTRANSPORTLAYER * tl);
 
 GWENHYWFAR_API GWEN_ERRORCODE

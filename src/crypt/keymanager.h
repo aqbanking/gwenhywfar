@@ -45,27 +45,41 @@
 #include <gwenhywfar/crypt.h>
 #include <gwenhywfar/keyspec.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+GWENHYWFAR_API
 typedef struct GWEN_KEYMANAGER GWEN_KEYMANAGER;
 
 
+GWENHYWFAR_API
 typedef const GWEN_CRYPTKEY*
   (*GWEN_KEYMANAGER_GETKEYFN)(GWEN_KEYMANAGER *km,
                               const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 typedef int (*GWEN_KEYMANAGER_ADDKEYFN)(GWEN_KEYMANAGER *km,
                                         const GWEN_CRYPTKEY *key);
+GWENHYWFAR_API
 typedef int (*GWEN_KEYMANAGER_DELKEYFN)(GWEN_KEYMANAGER *km,
                                         const GWEN_CRYPTKEY *key);
+GWENHYWFAR_API
 typedef void (*GWEN_KEYMANAGER_FREEDATAFN)(GWEN_KEYMANAGER *km);
 
 
 
+GWENHYWFAR_API
 void GWEN_KeyManager_free(GWEN_KEYMANAGER *km);
 
 
+GWENHYWFAR_API
 const GWEN_CRYPTKEY *GWEN_KeyManager_GetKey(GWEN_KEYMANAGER *km,
                                             const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
 int GWEN_KeyManager_AddKey(GWEN_KEYMANAGER *km,
                            const GWEN_CRYPTKEY *key);
+GWENHYWFAR_API
 int GWEN_KeyManager_DeleteKey(GWEN_KEYMANAGER *km,
                               const GWEN_CRYPTKEY *key);
 
@@ -76,19 +90,31 @@ int GWEN_KeyManager_DeleteKey(GWEN_KEYMANAGER *km,
  * inheritors (like "protected" in C++)
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_KEYMANAGER *GWEN_KeyManager_new();
 
+GWENHYWFAR_API
 void GWEN_KeyManager_SetGetKeyFn(GWEN_KEYMANAGER *km,
                                  GWEN_KEYMANAGER_GETKEYFN fn);
+GWENHYWFAR_API
 void GWEN_KeyManager_SetAddKeyFn(GWEN_KEYMANAGER *km,
                                  GWEN_KEYMANAGER_ADDKEYFN fn);
+GWENHYWFAR_API
 void GWEN_KeyManager_SetDelKeyFn(GWEN_KEYMANAGER *km,
                                  GWEN_KEYMANAGER_DELKEYFN fn);
+GWENHYWFAR_API
 void GWEN_KeyManager_SetFreeDataFn(GWEN_KEYMANAGER *km,
                                    GWEN_KEYMANAGER_FREEDATAFN fn);
+GWENHYWFAR_API
 void GWEN_KeyManager_SetData(GWEN_KEYMANAGER *km,
                              void *data);
+GWENHYWFAR_API
 void *GWEN_KeyManager_GetData(GWEN_KEYMANAGER *km);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 /*@}*/
 
