@@ -12,6 +12,7 @@ EXTRA_DIST= \
  README \
  README.W32 \
  gwenhywfar.m4 \
+ gwenhywfar.spec \
  gwenhywfar.spec.in 
 
 bin_SCRIPTS = gwenhywfar-config

@@ -19,7 +19,9 @@ all:
 	autoheader
 	automake -f --add-missing $(COPY)
 	autoconf
-	#./configure --enable-maintainer-mode
+
+local: all
+	./configure --prefix=/usr/local
 
 mp:
 	libtoolize -f --automake

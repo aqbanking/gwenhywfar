@@ -44,7 +44,8 @@ if test "$enable_gwenhywfar" != "no"; then
 
   for li in $lcc_dir; do
       if test -x "$li/bin/gwenhywfar-config"; then
-          gwenhywfar_dir="$li"
+          gwenhywfar_dir="$li";
+          break
       fi
   done
   if test -z "$gwenhywfar_dir"; then
