@@ -35,6 +35,8 @@ extern "C" {
 #endif
 
 #include <gwenhywfar/gwenhywfarapi.h>
+/* This is needed for PalmOS, because it define some functions needed */
+#include <string.h>
 #include <stdio.h>
 
 

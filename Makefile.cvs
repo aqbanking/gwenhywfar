@@ -30,5 +30,9 @@ all:
 	autoheader
 	automake --add-missing
 	autoconf
-	sed -e "s/main ()/PilotMain ()/g" configure >configure.palmos
+	sed -e "s/main ()/PilotMain ()/g" configure >configure.palmos && \
+	chmod u+x configure.palmos
 	#./configure --enable-maintainer-mode
+
+palm:
+	CFLAGS="${CFLAGS} -mnoshort" CXXFLAGS="${CXXFLAGS} -mnoshort" ./configure.palmos --enable-maintainer-mode --build=i686-pc-linux-gnu --host=m68k-palmos --prefix=/usr/m68k-palmos
