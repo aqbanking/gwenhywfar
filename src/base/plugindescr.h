@@ -56,10 +56,15 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path);
 
 /**
  * Loads a list of plugins descriptions.
- * When parsing the description files the given language will be selected.
+ * When parsing the description files entries for the current language will
+ * be selected. The current language can be set via @ref GWEN_I18N_SetLocale.
+ * @param path folder to search for XML files
+ * @param type plugin type (property "type" of tag "plugin")
+ * @param pdl plugin descriptions list2 to load descriptions to
  */
 GWENHYWFAR_API
-int GWEN_LoadPluginDescrsToList(const char *path,
+int GWEN_LoadPluginDescrsByType(const char *path,
+                                const char *type,
                                 GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl);
 
 

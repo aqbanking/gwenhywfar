@@ -424,7 +424,7 @@ GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm){
 
     path=GWEN_StringListEntry_Data(se);
     assert(path);
-    rv=GWEN_LoadPluginDescrsToList(path, pl);
+    rv=GWEN_LoadPluginDescrsByType(path, pm->name, pl);
     if (rv) {
       DBG_INFO(GWEN_LOGDOMAIN,
                "Error loading plugin description in \"%s\"", path);

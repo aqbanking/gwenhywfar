@@ -239,7 +239,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 
   pl=GWEN_PluginDescription_List2_new();
 
-  rv=GWEN_LoadPluginDescrsToList(path, pl);
+  rv=GWEN_LoadPluginDescrsByType(path, 0, pl);
   if (GWEN_PluginDescription_List2_GetSize(pl)==0) {
     GWEN_PluginDescription_List2_free(pl);
     return 0;
@@ -263,7 +263,8 @@ void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i){
 
 
 
-int GWEN_LoadPluginDescrsToList(const char *path,
+int GWEN_LoadPluginDescrsByType(const char *path,
+                                const char *type,
                                 GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
   GWEN_DIRECTORYDATA *d;
   GWEN_BUFFER *nbuf;
@@ -348,16 +349,35 @@ int GWEN_LoadPluginDescrsToList(const char *path,
                   n=GWEN_XMLNode_FindFirstTag(node, "plugin", 0, 0);
                 if (n) {
                   GWEN_PLUGIN_DESCRIPTION *pd;
+                  int loadIt;
 
-                  pd=GWEN_PluginDescription_new(n);
-		  if (!pd) {
-		    DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
-		  }
-		  else {
-		    GWEN_PluginDescription_SetFileName
-		      (pd, GWEN_Buffer_GetStart(nbuf));
-		    GWEN_PluginDescription_List2_PushBack(pdl, pd);
-		  }
+                  loadIt=1;
+                  if (type) {
+                    const char *ft;
+
+                    ft=GWEN_XMLNode_GetProperty(n, "type", 0);
+                    if (!ft)
+                      loadIt=0;
+                    else if (strcasecmp(ft, type)!=0){
+                      loadIt=0;
+                    }
+                  } /* if type specified */
+                  if (loadIt) {
+                    pd=GWEN_PluginDescription_new(n);
+                    if (!pd) {
+                      DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
+                    }
+                    else {
+                      GWEN_PluginDescription_SetFileName
+                        (pd, GWEN_Buffer_GetStart(nbuf));
+                      GWEN_PluginDescription_List2_PushBack(pdl, pd);
+                    }
+                  } /* if loadIt */
+                  else {
+                    DBG_INFO(GWEN_LOGDOMAIN,
+                             "Ignoring file \"%s\" (bad/missing type)",
+                             GWEN_Buffer_GetStart(nbuf));
+                  }
                 }
                 else {
                   DBG_WARN(GWEN_LOGDOMAIN,

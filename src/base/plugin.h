@@ -34,6 +34,9 @@
 #include <gwenhywfar/libloader.h>
 #include <gwenhywfar/plugindescr.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 typedef struct GWEN_PLUGIN GWEN_PLUGIN;
@@ -49,14 +52,24 @@ typedef GWEN_PLUGIN* (*GWEN_PLUGIN_FACTORYFN)(GWEN_PLUGIN_MANAGER *pm,
                                               const char *fileName);
 
 
+GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
                              const char *name,
                              const char *fileName);
+
+GWENHYWFAR_API
 void GWEN_Plugin_free(GWEN_PLUGIN *p);
 
+GWENHYWFAR_API
 GWEN_PLUGIN_MANAGER *GWEN_Plugin_GetManager(const GWEN_PLUGIN *p);
+
+GWENHYWFAR_API
 const char *GWEN_Plugin_GetName(const GWEN_PLUGIN *p);
+
+GWENHYWFAR_API
 const char *GWEN_Plugin_GetFileName(const GWEN_PLUGIN *p);
+
+GWENHYWFAR_API
 GWEN_LIBLOADER *GWEN_Plugin_GetLibLoader(const GWEN_PLUGIN *p);
 
 
@@ -65,33 +78,52 @@ GWEN_LIBLOADER *GWEN_Plugin_GetLibLoader(const GWEN_PLUGIN *p);
 
 
 
+GWENHYWFAR_API
 GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name);
+
+GWENHYWFAR_API
 void GWEN_PluginManager_free(GWEN_PLUGIN_MANAGER *pm);
 
 
+GWENHYWFAR_API
 const char *GWEN_PluginManager_GetName(const GWEN_PLUGIN_MANAGER *pm);
+
+GWENHYWFAR_API
 int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
                                const char *s);
 
+GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
                                            const char *modName);
+
+GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
 					       const char *modName,
 					       const char *fname);
 
 
+GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_GetPlugin(GWEN_PLUGIN_MANAGER *pm,
                                           const char *s);
 
+GWENHYWFAR_API
 int GWEN_PluginManager_Register(GWEN_PLUGIN_MANAGER *pm);
+
+GWENHYWFAR_API
 int GWEN_PluginManager_Unregister(GWEN_PLUGIN_MANAGER *pm);
 
+GWENHYWFAR_API
 GWEN_PLUGIN_MANAGER *GWEN_PluginManager_FindPluginManager(const char *s);
 
 
+GWENHYWFAR_API
 GWEN_PLUGIN_DESCRIPTION_LIST2*
 GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

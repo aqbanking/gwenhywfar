@@ -11,6 +11,8 @@
 - added I18N to plugin descriptions (uses the property "lang" in "plugin"
   tags). Every current locale is tried. If there is no plugin description
   in the current language the default description is used.
+- added generic plugin management. This will be used by new plugins
+  (in AqBanking and AqHBCI) and maybe in Gwen 2.x for DBIO plugins.
 
 
 2004/12/04: Martin Preuss<martin@libchipcard.de>
