@@ -37,13 +37,7 @@
 #include <string.h>
 #include <assert.h>
 
-#ifndef OS_WIN32
-# ifdef HAVE_DLFCN_H
-#  include <dlfcn.h>
-# endif
-#else
-# include <windows.h>
-#endif
+#include <windows.h>
 
 
 const char *GWEN_LibLoader_ErrorString(int c);
@@ -106,35 +100,15 @@ void GWEN_LibLoader_free(GWEN_LIBLOADER *h){
 GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
                                           const char *name){
   assert(h);
-#if DEBUGMODE>10
-  fprintf(stderr,"LibLoader_OpenLibrary\n");
-#endif
 
-#if defined (OS_WIN32)
   h->handle=(void*)LoadLibrary(name);
   if (!h->handle) {
-# if DEBUGMODE>0
-    fprintf(stderr,
-	    "LIBCHIPCARD: Error loading library \"%s\"\n",
-	    name);
-# endif
+    DBG_INFO(0, "Error loading library \"%s\"", name);
     return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-                          GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
+			  GWEN_ERROR_SEVERITY_ERR,
+			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
+			  GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
   }
-#else // for linux and others
-  h->handle=dlopen(name,RTLD_LAZY);
-  if (!h->handle) {
-    fprintf(stderr,
-	    "LIBCHIPCARD: Error loading library \"%s\": %s\n",
-	    name, dlerror());
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-                          GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
-  }
-#endif
   return 0;
 }
 
@@ -142,34 +116,17 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
 
 GWEN_ERRORCODE GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h){
   assert(h);
-#if DEBUGMODE>10
-  fprintf(stderr,"LibLoader_CloseLibrary\n");
-#endif
 
   if (!h->handle)
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
                           GWEN_LIBLOADER_ERROR_NOT_OPEN);
-#ifndef OS_WIN32
-  /* hmm, linux does not like this with libtowitoko.so and qlcsetup */
-  //result=(dlclose(_handle)==0);
-  if (dlclose(h->handle)!=0) {
-    fprintf(stderr,
-	    "LIBCHIPCARD: Error unloading library: %s\n",
-	    dlerror());
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-                          GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE);
-  }
-#else
   if (!FreeLibrary((HINSTANCE)h->handle))
     return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-                          GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE);
-#endif
+			  GWEN_ERROR_SEVERITY_ERR,
+			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
+			  GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE);
   h->handle=0;
   return 0;
 }
@@ -182,26 +139,11 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
   assert(name);
   assert(p);
 
-#if DEBUGMODE>10
-  fprintf(stderr,"LibLoader_Resolve\n");
-#endif
-
   if (!h->handle)
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
                           GWEN_LIBLOADER_ERROR_NOT_OPEN);
-#ifndef OS_WIN32
-  *p=dlsym(h->handle,name);
-  if (!*p) {
-    DBG_ERROR(0, "Error resolving symbol \"%s\": %s\n",
-              name, dlerror());
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-                          GWEN_LIBLOADER_ERROR_COULD_RESOLVE);
-  }
-#else
   *p=(void*)GetProcAddress((HINSTANCE)h->handle,name);
   if (!*p) {
     DBG_ERROR(0, "Error resolving symbol \"%s\"\n",
@@ -211,9 +153,8 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
                           GWEN_LIBLOADER_ERROR_COULD_RESOLVE);
   }
-#endif
   DBG_VERBOUS(0, "Resolved symbol \"%s\": %08x\n",
-              name, (int)*p);
+	      name, (int)*p);
   return 0;
 }
 

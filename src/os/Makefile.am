@@ -3,11 +3,14 @@ INCLUDES=@all_includes@
 EXTRA_DIST=\
  windows/Makefile.am \
  windows/Makefile.in \
- windows/libloader_p.h \
  windows/directory.c \
+ windows/directory_p.h \
  windows/inetaddr.c \
+ windows/inetaddr_p.h \
  windows/inetsocket.c \
+ windows/inetsocket_p.h \
  windows/libloader.c \
+ windows/libloader_p.h \
  posix/Makefile.am \
  posix/Makefile.in \
  posix/directory_p.h \

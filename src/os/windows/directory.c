@@ -34,21 +34,21 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <chameleon/debug.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
 
 
 
-DIRECTORYDATA *Directory_new(){
-  DIRECTORYDATA *d;
+GWEN_DIRECTORYDATA *GWEN_Directory_new(){
+  GWEN_DIRECTORYDATA *d;
 
-  d=(DIRECTORYDATA *)malloc(sizeof(DIRECTORYDATA));
-  assert(d);
-  memset(d,0,sizeof(DIRECTORYDATA));
+  GWEN_NEW_OBJECT(GWEN_DIRECTORYDATA, d);
   return d;
 }
 
 
-void Directory_free(DIRECTORYDATA *d){
+
+void GWEN_Directory_free(GWEN_DIRECTORYDATA *d){
   if (d) {
     if (d->handle!=INVALID_HANDLE_VALUE)
       FindClose(d->handle);
@@ -58,7 +58,8 @@ void Directory_free(DIRECTORYDATA *d){
 }
 
 
-int Directory_Open(DIRECTORYDATA *d, const char *n){
+
+int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n){
   assert(d);
   assert(n);
   if ((strlen(n)+5)>=sizeof(d->pattern)) {
@@ -68,22 +69,24 @@ int Directory_Open(DIRECTORYDATA *d, const char *n){
   strcpy(d->pattern, n);
   strcat(d->pattern, "\\*.*");
 
-  return Directory_Rewind(d);;
+  return GWEN_Directory_Rewind(d);;
 }
 
 
-int Directory_Close(DIRECTORYDATA *d){
-	int rv;
 
-	rv=0;
-    if (d->handle!=INVALID_HANDLE_VALUE)
-      rv=!FindClose(d->handle);
-    d->handle=INVALID_HANDLE_VALUE;
-	return rv;
+int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d){
+  int rv;
+
+  rv=0;
+  if (d->handle!=INVALID_HANDLE_VALUE)
+    rv=!FindClose(d->handle);
+  d->handle=INVALID_HANDLE_VALUE;
+  return rv;
 }
 
 
-int Directory_Read(DIRECTORYDATA *d,
+
+int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
 		   char *buffer,
 		   unsigned int len){
   WIN32_FIND_DATA wd;
@@ -117,7 +120,8 @@ int Directory_Read(DIRECTORYDATA *d,
 }
 
 
-int Directory_Rewind(DIRECTORYDATA *d){
+
+int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
   WIN32_FIND_DATA wd;
 
   assert(d);

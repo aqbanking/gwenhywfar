@@ -30,95 +30,111 @@
 # include <config.h>
 #endif
 
+#include "inetaddr_p.h"
+#include <gwenhywfar/misc.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "chameleon/inetaddr.h"
-#include "chameleon/debug.h"
+#include <netdb.h>
 #include <string.h>
+#include <sys/un.h>
+
+#include "gwenhywfar/debug.h"
+
+/* #define MEMTRACE */
+
+/* forward declaration */
+const char *GWEN_InetAddr_ErrorString(int c);
+
+#ifdef MEMTRACE
+static int GWEN_INETADDR__Counter=0;
+#endif
 
 
-// forward declaration
-const char *InetAddr_ErrorString(int c);
+static int gwen_inetaddr_is_initialized=0;
+static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_inetaddr_errorform=0;
 
 
-int inetaddr_is_initialized=0;
-ERRORTYPEREGISTRATIONFORM inetaddr_error_descr= {
-    InetAddr_ErrorString,
-    0,
-    "InetAddr"};
+GWEN_ERRORCODE GWEN_InetAddr_ModuleInit(){
+  if (!gwen_inetaddr_is_initialized) {
+    GWEN_ERRORCODE err;
 
-
-
-ERRORCODE InetAddr_ModuleInit(){
-    if (!inetaddr_is_initialized) {
-	if (!Error_RegisterType(&inetaddr_error_descr))
-	    return Error_New(0,
-			     ERROR_SEVERITY_ERR,
-			     ERROR_TYPE_ERROR,
-			     ERROR_COULD_NOT_REGISTER);
-	inetaddr_is_initialized=1;
-    }
-    return 0;
+    gwen_inetaddr_errorform=GWEN_ErrorType_new();
+    GWEN_ErrorType_SetName(gwen_inetaddr_errorform,
+                           GWEN_INETADDR_ERROR_TYPE);
+    GWEN_ErrorType_SetMsgPtr(gwen_inetaddr_errorform,
+			     GWEN_InetAddr_ErrorString);
+    err=GWEN_Error_RegisterType(gwen_inetaddr_errorform);
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    gwen_inetaddr_is_initialized=1;
+  }
+  return 0;
 }
 
 
-ERRORCODE InetAddr_ModuleFini(){
-    if (inetaddr_is_initialized) {
-	inetaddr_is_initialized=0;
-	if (!Error_UnregisterType(&inetaddr_error_descr))
-	    return Error_New(0,
-			     ERROR_SEVERITY_ERR,
-			     ERROR_TYPE_ERROR,
-			     ERROR_COULD_NOT_UNREGISTER);
-    }
-    return 0;
+
+GWEN_ERRORCODE GWEN_InetAddr_ModuleFini(){
+  if (gwen_inetaddr_is_initialized) {
+    GWEN_ERRORCODE err;
+
+    err=GWEN_Error_UnregisterType(gwen_inetaddr_errorform);
+    GWEN_ErrorType_free(gwen_inetaddr_errorform);
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    gwen_inetaddr_is_initialized=0;
+  }
+  return 0;
 }
 
 
-const char *InetAddr_ErrorString(int c) {
-    const char *s;
 
-    switch(c) {
-    case INETADDR_ERROR_MEMORY_FULL:
-	s="Memory full";
-	break;
-    case INETADDR_ERROR_BAD_ADDRESS:
-	s="Bad address";
-	break;
-    case INETADDR_ERROR_BUFFER_OVERFLOW:
-	s="Buffer overflow";
-	break;
-    case INETADDR_ERROR_HOST_NOT_FOUND:
-	s="Host not found";
-	break;
-    case INETADDR_ERROR_NO_ADDRESS:
-	s="No address";
-	break;
-    case INETADDR_ERROR_NO_RECOVERY:
-	s="No recovery";
-	break;
-    case INETADDR_ERROR_TRY_AGAIN:
-	s="Try again";
-	break;
-    case INETADDR_ERROR_UNKNOWN_DNS_ERROR:
-	s="Unknown DNS error";
-	break;
-    default:
-	s=(const char*)0;
-    } // switch
-    return s;
+const char *GWEN_InetAddr_ErrorString(int c) {
+  const char *s;
+
+  switch(c) {
+  case GWEN_INETADDR_ERROR_MEMORY_FULL:
+    s="Memory full";
+    break;
+  case GWEN_INETADDR_ERROR_BAD_ADDRESS:
+    s="Bad address";
+    break;
+  case GWEN_INETADDR_ERROR_BUFFER_OVERFLOW:
+    s="Buffer overflow";
+    break;
+  case GWEN_INETADDR_ERROR_HOST_NOT_FOUND:
+    s="Host not found";
+    break;
+  case GWEN_INETADDR_ERROR_NO_ADDRESS:
+    s="No address";
+    break;
+  case GWEN_INETADDR_ERROR_NO_RECOVERY:
+    s="No recovery";
+    break;
+  case GWEN_INETADDR_ERROR_TRY_AGAIN:
+    s="Try again";
+    break;
+  case GWEN_INETADDR_ERROR_UNKNOWN_DNS_ERROR:
+    s="Unknown DNS error";
+    break;
+  case GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY:
+    s="Unknown address family";
+    break;
+  default:
+    s=(const char*)0;
+  } /* switch */
+  return s;
 }
 
 
-INETADDRESS *InetAddr_new(AddressFamily af){
-  INETADDRESS *ia;
 
-  ia=(INETADDRESS *)malloc(sizeof(INETADDRESS));
-  assert(ia);
-  memset(ia,0,sizeof(INETADDRESS));
+GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
+  GWEN_INETADDRESS *ia;
+
+  GWEN_NEW_OBJECT(GWEN_INETADDRESS, ia);
+
   ia->af=af;
   switch(ia->af) {
-  case AddressFamilyIP: {
+  case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
     ia->address=(struct sockaddr*)malloc(sizeof(struct sockaddr_in));
@@ -134,29 +150,45 @@ INETADDRESS *InetAddr_new(AddressFamily af){
     break;
   }
 
-  case AddressFamilyUnix: {
-    DBG_ERROR("Unsupported address family (%d)",af);
-    assert(0);
+  case GWEN_AddressFamilyUnix: {
+    struct sockaddr_un *aptr;
+
+    ia->address=(struct sockaddr*)malloc(sizeof(struct sockaddr_un));
+    assert(ia->address);
+    aptr=(struct sockaddr_un*)(ia->address);
+#ifdef PF_UNIX
+    aptr->sun_family=PF_UNIX;
+#else if defined (AF_UNIX)
+    aptr->sun_family=AF_UNIX;
+#else
+    DBG_ERROR(0, "No unix domain sockets available for this system");
+    GWEN_InetAddr_free(ia);
+    return 0;
+#endif
+    aptr->sun_path[0]=0;
+    ia->size=sizeof(struct sockaddr_un);
+    memset(ia->address,0,ia->size);
     break;
   }
 
   default:
-    DBG_ERROR("Unknown address family (%d)",af);
-    assert(0);
+    DBG_ERROR(0, "Unknown address family (%d)",af);
+    abort();
   } /* switch */
 #ifdef MEMTRACE
-  INETADDR__Counter++;
-  DBG_INFO("InetAddr created, now %d",INETADDR__Counter);
+  GWEN_INETADDR__Counter++;
+  DBG_INFO(0, "InetAddr created, now %d",GWEN_INETADDR__Counter);
 #endif
   return ia;
 }
 
 
-void InetAddr_free(INETADDRESS *ia){
+
+void GWEN_InetAddr_free(GWEN_INETADDRESS *ia){
   if (ia) {
 #ifdef MEMTRACE
-    INETADDR__Counter--;
-    DBG_INFO("Free InetAddr, makes %d",INETADDR__Counter);
+    GWEN_INETADDR__Counter--;
+    DBG_INFO(0, "Free InetAddr, makes %d",GWEN_INETADDR__Counter);
 #endif
     free(ia->address);
     free(ia);
@@ -164,16 +196,17 @@ void InetAddr_free(INETADDRESS *ia){
 }
 
 
-ERRORCODE InetAddr_SetAddress(INETADDRESSPTR ia, const char *addr){
+
+GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
+					const char *addr){
   assert(ia);
 
   switch (ia->af) {
-  case AddressFamilyIP: {
+  case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
-
-    // reset
+    /* reset */
 #ifdef PF_INET
     aptr->sin_family=PF_INET;
 #else
@@ -181,32 +214,70 @@ ERRORCODE InetAddr_SetAddress(INETADDRESSPTR ia, const char *addr){
 #endif
     aptr->sin_addr.s_addr=0;
 
+
     if (addr) {
       // ok, address to be set
       aptr->sin_addr.s_addr=inet_addr(addr);
       if (aptr->sin_addr.s_addr==INADDR_NONE)
-	// bad address, so maybe it rather is a name
-	return Error_New(0,
-			 ERROR_SEVERITY_ERR,
-			 inetaddr_error_descr.typ,
-			 INETADDR_ERROR_BAD_ADDRESS);
+        // bad address, so maybe it rather is a name
+        return GWEN_Error_New(0,
+                              ERROR_SEVERITY_ERR,
+                              inetaddr_error_descr.typ,
+                              INETADDR_ERROR_BAD_ADDRESS);
+    }
+
+#if 0 /* this would be much better, but windows does not have inet_aton */
+    if (addr) {
+      /* ok, address to be set */
+      if (!inet_aton(addr,&aptr->sin_addr))
+        /* bad address, so maybe it rather is a name */
+	return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                              GWEN_INETADDR_ERROR_BAD_ADDRESS);
+    }
+#endif
+    break;
+  }
+
+  case GWEN_AddressFamilyUnix: {
+    struct sockaddr_un *aptr;
+
+    aptr=(struct sockaddr_un*)(ia->address);
+#ifdef PF_UNIX
+    aptr->sun_family=PF_UNIX;
+#else if defined (AF_UNIX)
+    aptr->sun_family=AF_UNIX;
+#else
+    DBG_ERROR(0, "No unix domain sockets available for this system");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+#endif
+    aptr->sun_path[0]=0;
+
+    if (addr) {
+      /* ok, address to be set */
+      if ((strlen(addr)+1)>sizeof(aptr->sun_path)) {
+	/* bad address */
+	DBG_ERROR(0, "Path too long (%d>%d)",
+		  strlen(addr)+1,sizeof(aptr->sun_path));
+	return GWEN_Error_new(0,
+			      GWEN_ERROR_SEVERITY_ERR,
+			      GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+			      GWEN_INETADDR_ERROR_BAD_ADDRESS);
+      }
+      strcpy(aptr->sun_path,addr);
+      ia->size=SUN_LEN(aptr);
     }
     break;
   }
-
-  case AddressFamilyUnix: {
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_UNSUPPORTED);
-    break;
-  }
-
   default:
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
   } /* switch */
 
   return 0;
@@ -215,112 +286,153 @@ ERRORCODE InetAddr_SetAddress(INETADDRESSPTR ia, const char *addr){
 
 // internal function
 int InetAddr_TranslateHError(int herr) {
-    int rv;
+  int rv;
 
-    switch(herr) {
-    case WSAHOST_NOT_FOUND:
-	rv=INETADDR_ERROR_HOST_NOT_FOUND;
-	break;
-    case WSANO_ADDRESS:
-	rv=INETADDR_ERROR_NO_ADDRESS;
-	break;
-    case WSANO_RECOVERY:
-	rv=INETADDR_ERROR_NO_RECOVERY;
-	break;
-    case WSATRY_AGAIN:
-	rv=INETADDR_ERROR_TRY_AGAIN;
-	break;
-    default:
-	rv=INETADDR_ERROR_UNKNOWN_DNS_ERROR;
-	break;
-    } // switch
-    return rv;
+  switch(herr) {
+  case WSAHOST_NOT_FOUND:
+    rv=GWEN_INETADDR_ERROR_HOST_NOT_FOUND;
+    break;
+  case WSANO_ADDRESS:
+    rv=GWEN_INETADDR_ERROR_NO_ADDRESS;
+    break;
+  case WSANO_RECOVERY:
+    rv=GWEN_INETADDR_ERROR_NO_RECOVERY;
+    break;
+  case WSATRY_AGAIN:
+    rv=GWEN_INETADDR_ERROR_TRY_AGAIN;
+    break;
+  default:
+    rv=GWEN_INETADDR_ERROR_UNKNOWN_DNS_ERROR;
+    break;
+  } // switch
+  return rv;
 }
 
 
-ERRORCODE InetAddr_SetName(INETADDRESSPTR ia, const char *name){
+
+GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
   struct hostent *he;
 
   assert(ia);
 
   switch (ia->af) {
-  case AddressFamilyIP: {
+  case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
-    // try to resolve name
+    /* try to resolve name */
     he=gethostbyname(name);
     if (!he)
-      return Error_New(0,
-		       ERROR_SEVERITY_ERR,
-		       inetaddr_error_descr.typ,
-		       InetAddr_TranslateHError(h_errno));
-    // name resolved, store address
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                            GWEN_InetAddr_TranslateHError(h_errno));
+    /* name resolved, store address */
     memcpy(&(aptr->sin_addr),
 	   he->h_addr_list[0],
 	   sizeof(struct in_addr));
     break;
   }
 
-  case AddressFamilyUnix: {
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_UNSUPPORTED);
+  case GWEN_AddressFamilyUnix: {
+    struct sockaddr_un *aptr;
+
+    aptr=(struct sockaddr_un*)(ia->address);
+#ifdef PF_INET
+    aptr->sun_family=PF_INET;
+#else if defined (AF_UNIX)
+    aptr->sun_family=AF_UNIX;
+#else
+    DBG_ERROR(0, "No unix domain sockets available for this system");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+#endif
+    aptr->sun_path[0]=0;
+
+    if (name) {
+      /* ok, address to be set */
+      if ((strlen(name)+1)>sizeof(aptr->sun_path)) {
+        /* bad address */
+	DBG_ERROR(0, "Path too long (%d>%d)",
+		  strlen(name)+1,sizeof(aptr->sun_path));
+	return GWEN_Error_new(0,
+			 GWEN_ERROR_SEVERITY_ERR,
+			 GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+			 GWEN_INETADDR_ERROR_BAD_ADDRESS);
+      }
+      strcpy(aptr->sun_path,name);
+      ia->size=SUN_LEN(aptr);
+    }
     break;
   }
 
   default:
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_Error_new(0,
+		     GWEN_ERROR_SEVERITY_ERR,
+		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
   } /* switch */
   return 0;
 }
 
 
-ERRORCODE InetAddr_GetAddress(const INETADDRESS *ia, char *buffer, unsigned int bsize){
+
+GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
+					char *buffer, unsigned int bsize){
   const char *s;
 
   assert(ia);
   assert(buffer);
 
   switch (ia->af) {
-  case AddressFamilyIP: {
+  case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
     s=inet_ntoa(aptr->sin_addr);
     assert(s);
     if (strlen(s)+1>bsize)
-      return Error_New(0,
-		       ERROR_SEVERITY_ERR,
-		       inetaddr_error_descr.typ,
-		       INETADDR_ERROR_BUFFER_OVERFLOW);
+      return GWEN_Error_new(0,
+		       GWEN_ERROR_SEVERITY_ERR,
+		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
     strcpy(buffer,s);
     break;
   }
 
-  case AddressFamilyUnix: {
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_UNSUPPORTED);
+  case GWEN_AddressFamilyUnix: {
+    struct sockaddr_un *aptr;
+    int i;
+
+    aptr=(struct sockaddr_un*)(ia->address);
+    s=aptr->sun_path;
+    i=ia->size;
+    i-=sizeof(aptr->sun_family);
+    if (i+1>(int)bsize)
+      return GWEN_Error_new(0,
+		       GWEN_ERROR_SEVERITY_ERR,
+		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
+    memmove(buffer,s,i);
+    buffer[i]=0;
     break;
   }
 
   default:
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_Error_new(0,
+		     GWEN_ERROR_SEVERITY_ERR,
+		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
   } /* switch */
   return 0;
 }
 
 
-ERRORCODE InetAddr_GetName(const INETADDRESS *ia, char *buffer, unsigned int bsize){
+
+GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
+				     char *buffer, unsigned int bsize){
   struct hostent *he;
   struct in_addr lia;
 
@@ -328,11 +440,11 @@ ERRORCODE InetAddr_GetName(const INETADDRESS *ia, char *buffer, unsigned int bsi
   assert(buffer);
 
   switch (ia->af) {
-  case AddressFamilyIP: {
+  case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
-    // resolve name from address
+    /* resolve name from address */
     lia=aptr->sin_addr;
 #ifdef PF_INET
     he=gethostbyaddr((char*)&lia,sizeof(lia),PF_INET);
@@ -340,51 +452,58 @@ ERRORCODE InetAddr_GetName(const INETADDRESS *ia, char *buffer, unsigned int bsi
     he=gethostbyaddr((char*)&lia,sizeof(lia),AF_INET);
 #endif
     if (!he)
-      return Error_New(0,
-		       ERROR_SEVERITY_ERR,
-		       inetaddr_error_descr.typ,
-		       InetAddr_TranslateHError(h_errno));
+      return GWEN_Error_new(0,
+		       GWEN_ERROR_SEVERITY_ERR,
+		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		       GWEN_InetAddr_TranslateHError(h_errno));
 
-    // copy name into given buffer
+    /* copy name into given buffer */
     assert(he->h_name);
     if (strlen(he->h_name)+1>bsize)
-      return Error_New(0,
-		       ERROR_SEVERITY_ERR,
-		       inetaddr_error_descr.typ,
-		       INETADDR_ERROR_BUFFER_OVERFLOW);
-    // copy the name into the buffer
+      return GWEN_Error_new(0,
+		       GWEN_ERROR_SEVERITY_ERR,
+		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
+    /* copy the name into the buffer */
     strcpy(buffer,he->h_name);
     break;
   }
 
-  case AddressFamilyUnix: {
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_UNSUPPORTED);
+  case GWEN_AddressFamilyUnix: {
+    struct sockaddr_un *aptr;
+
+    aptr=(struct sockaddr_un*)(ia->address);
+    /* simply copy path */
+    if (strlen(aptr->sun_path)+1>bsize)
+      return GWEN_Error_new(0,
+		       GWEN_ERROR_SEVERITY_ERR,
+		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
+    strcpy(buffer,aptr->sun_path);
     break;
   }
 
   default:
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_Error_new(0,
+		     GWEN_ERROR_SEVERITY_ERR,
+		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
 
   } /* switch */
 
-  // finished
+  /* finished */
   return 0;
 }
 
 
-int InetAddr_GetPort(const INETADDRESS *ia){
+
+int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia){
   int i;
 
   assert(ia);
 
   switch (ia->af) {
-  case AddressFamilyIP: {
+  case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
@@ -393,7 +512,7 @@ int InetAddr_GetPort(const INETADDRESS *ia){
   }
 
   default:
-    DBG_WARN("not an IP address");
+    DBG_WARN(0, "not an IP address");
     i=0;
   } /* switch */
 
@@ -401,11 +520,12 @@ int InetAddr_GetPort(const INETADDRESS *ia){
 }
 
 
-ERRORCODE InetAddr_SetPort(INETADDRESSPTR ia, int port){
+
+GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia, int port){
   assert(ia);
 
   switch (ia->af) {
-  case AddressFamilyIP: {
+  case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
@@ -414,13 +534,16 @@ ERRORCODE InetAddr_SetPort(INETADDRESSPTR ia, int port){
   }
 
   default:
-    return Error_New(0,
-		     ERROR_SEVERITY_ERR,
-		     inetaddr_error_descr.typ,
-		     INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
   } /* switch */
   return 0;
 }
+
+
+
 
 
 

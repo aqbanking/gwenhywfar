@@ -158,8 +158,12 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
     aptr=(struct sockaddr_un*)(ia->address);
 #ifdef PF_UNIX
     aptr->sun_family=PF_UNIX;
-#else
+#else if defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
+#else
+    DBG_ERROR(0, "No unix domain sockets available for this system");
+    GWEN_InetAddr_free(ia);
+    return 0;
 #endif
     aptr->sun_path[0]=0;
     ia->size=sizeof(struct sockaddr_un);
@@ -205,8 +209,15 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     /* reset */
 #ifdef PF_INET
     aptr->sin_family=PF_INET;
+#else if defined (AF_UNIX)
+    aptr->sun_family=AF_UNIX;
 #else
-    aptr->sin_family=AF_INET;
+    DBG_ERROR(0, "No unix domain sockets available for this system");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+#endif
 #endif
     aptr->sin_addr.s_addr=0;
 
@@ -228,8 +239,14 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     aptr=(struct sockaddr_un*)(ia->address);
 #ifdef PF_UNIX
     aptr->sun_family=PF_UNIX;
-#else
+#else if defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
+#else
+    DBG_ERROR(0, "No unix domain sockets available for this system");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
 #endif
     aptr->sun_path[0]=0;
 
@@ -319,8 +336,14 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
     aptr=(struct sockaddr_un*)(ia->address);
 #ifdef PF_INET
     aptr->sun_family=PF_INET;
+#else if defined (AF_UNIX)
+    aptr->sun_family=AF_UNIX;
 #else
-    aptr->sun_family=AF_INET;
+    DBG_ERROR(0, "No unix domain sockets available for this system");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
 #endif
     aptr->sun_path[0]=0;
 

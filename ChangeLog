@@ -1,5 +1,9 @@
 $Id$
 
+2003/12/10 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- started porting Gwen to Windoze
+
 
 ===========================================================================
 MARK: released gwenhywfar-0.9beta7 (2003/12/06)
