@@ -294,7 +294,7 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
       }
       else {
 	if (size<1) {
-	  DBG_ERROR(0, "Word too long");
+	  DBG_ERROR(0, "Error during XML reading: Word too long or buffer too small. Maybe the buffer size in the parser (xml_p.h) needs to be increased?");
 	  return -1;
 	}
 	*buffer=chr;
@@ -315,7 +315,7 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
       }
       else {
 	if (size<1) {
-	  DBG_ERROR(0, "Word too long");
+	  DBG_ERROR(0, "Error during XML reading: Word too long or buffer too small. Maybe the buffer size in the parser (xml_p.h) needs to be increased?");
 	  return -1;
 	}
 	*buffer=chr;
