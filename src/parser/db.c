@@ -1302,7 +1302,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             /* get next value */
             p=GWEN_Text_GetWord(pos,
                                 (dbflags&GWEN_DB_FLAGS_USE_COLON)?
-                                "}{: #":"}{= #,",
+                                "}{:#,":"}{=#,",
                                 wbuf,
                                 sizeof(wbuf)-1,
                                 GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |

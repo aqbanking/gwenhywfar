@@ -1,3 +1,7 @@
+2004-02-28  Ronny Buchmann <ronny-vlug@vlugnet.org>
+
+	* src/parser/db.c: don't stop reading values on space
+
 2004-02-24  Christian Stimming <stimming@tuhh.de>
 
 	* src/os/windows/libloader.c: Improve error message output.
