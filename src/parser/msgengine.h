@@ -209,7 +209,14 @@ void GWEN_MsgEngine_SetProtocolVersion(GWEN_MSGENGINE *e,
 
 
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_MsgEngine_GetDefinitions(GWEN_MSGENGINE *e);
+  GWEN_XMLNODE *GWEN_MsgEngine_GetDefinitions(GWEN_MSGENGINE *e);
+
+/**
+ * @param e message engine for which the definition is to be added
+ * @param n xml node to add
+ * @param take if !=0 then the message engine will take over ownership of
+ * the XML node.
+ */
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e,
                                    GWEN_XMLNODE *n,

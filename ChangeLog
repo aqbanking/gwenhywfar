@@ -1,4 +1,9 @@
 
+2004/01/12 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- posix/process.c: increased needed log level for error messages
+
+
 2004/01/11 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in gwenhywfar.m4

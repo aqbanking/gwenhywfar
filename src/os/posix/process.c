@@ -114,7 +114,7 @@ void GWEN_Process_SignalHandler(int s) {
     /* try to get the status */
     pid=waitpid(0, &status, WNOHANG);
     if (pid==-1) {
-      DBG_ERROR(0, "waitdpid(%d): %s", 0, strerror(errno));
+      DBG_DEBUG(0, "waitdpid(%d): %s", 0, strerror(errno));
     }
     else if (pid==0) {
       /* process still running ?! */
