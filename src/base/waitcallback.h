@@ -56,10 +56,10 @@ extern "C" {
  * <p>
  * In an application you would map a context to a progress dialog or something
  * similar. To support this the callback gets informed about when a context
- * is entered and leaved.
+ * is entered and left.
  * </p>
  * <p>
- * The following is an axample of how you could make use of this callbak in
+ * The following is an axample of how you could make use of this callback in
  * a GUI application:
  * </p>
  * @code
