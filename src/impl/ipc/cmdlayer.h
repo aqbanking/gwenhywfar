@@ -58,27 +58,37 @@ GWEN_ERRORCODE GWEN_IPCServiceCmd_Work(GWEN_IPCSERVICECMD *s,
                                        int timeout);
 
 
-GWEN_IPCMSG *GWEN_ConnectionLayerCmd_CreateMsg(GWEN_IPCCONNLAYER *cl,
-                                               unsigned int refId,
-                                               const char *name,
-                                               unsigned int version,
-                                               GWEN_DB_NODE *da);
-
 GWEN_DB_NODE *GWEN_IPCServiceCmd_ParseMsg(GWEN_IPCCONNLAYER *cl,
                                           GWEN_IPCMSG *msg);
 
-void GWEN_IPCServiceLayerCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
-                                               const char *name,
-                                               const char *version);
+
+void GWEN_IPCServiceCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
+                                          const char *name,
+                                          const char *version);
 
 GWEN_IPCCONNLAYER*
-  GWEN_IPCServiceLayerCmd_FindConnection(GWEN_IPCSERVICECMD *s,
-                                         unsigned int id,
-                                         unsigned int userMark);
+  GWEN_IPCServiceCmd_FindConnection(GWEN_IPCSERVICECMD *s,
+                                    unsigned int id,
+                                    unsigned int userMark);
 
 
-const char *GWEN_ConnectionLayerCmd_GetPeerName(GWEN_IPCCONNLAYER *cl);
-const char *GWEN_ConnectionLayerCmd_GetPeerVersion(GWEN_IPCCONNLAYER *cl);
+GWEN_IPCMSG *GWEN_IPCServiceCmd_CreateMsg(GWEN_IPCSERVICECMD *s,
+                                          unsigned int id,
+                                          unsigned int refId,
+                                          const char *name,
+                                          unsigned int version,
+                                          GWEN_DB_NODE *da);
+GWEN_IPCMSG *GWEN_IPCServiceCmd_FindMsgReply(GWEN_IPCSERVICECMD *s,
+                                             unsigned int refId);
+GWEN_IPCMSG *GWEN_IPCServiceCmd_GetRequest(GWEN_IPCSERVICECMD *s);
+GWEN_ERRORCODE GWEN_IPCServiceCmd_SendMessage(GWEN_IPCSERVICECMD *s,
+                                              GWEN_IPCMSG *msg);
+
+const char *GWEN_IPCServiceCmd_GetPeerName(GWEN_IPCSERVICECMD *s,
+                                           unsigned int id);
+const char *GWEN_IPCServiceCmd_GetPeerVersion(GWEN_IPCSERVICECMD *s,
+                                              unsigned int id);
+
 
 
 #endif /* GWENHYFWAR_CMDLAYER_H */

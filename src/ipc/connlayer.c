@@ -207,7 +207,11 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Accept(GWEN_IPCCONNLAYER *cl,
     DBG_DEBUG(0, "called from here");
     return err;
   }
+  newcl->libMark=cl->libMark;
+  newcl->userMark=cl->userMark;
+  newcl->flags=cl->flags | GWEN_IPCCONNLAYER_FLAGS_PASSIVE;
   *c=newcl;
+
   DBG_INFO(0, "Connection accepted as %d",
            GWEN_ConnectionLayer_GetId(newcl));
 
@@ -226,6 +230,7 @@ GWEN_IPCMSG *GWEN_ConnectionLayer_GetIncomingMsg(GWEN_IPCCONNLAYER *cl){
     assert(msg);
     GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
     cl->nIncomingMsgs--;
+    DBG_INFO(0, "Returning incoming message");
     return msg;
   }
   return 0;
@@ -243,6 +248,7 @@ GWEN_IPCMSG *GWEN_ConnectionLayer_GetOutgoingMsg(GWEN_IPCCONNLAYER *cl){
     assert(msg);
     GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->outgoingMsgs));
     cl->nOutgoingMsgs--;
+    DBG_INFO(0, "Returning outgoing message");
     return msg;
   }
   return 0;
@@ -257,7 +263,12 @@ GWEN_IPCMSG *GWEN_ConnectionLayer_FindMsgReply(GWEN_IPCCONNLAYER *cl,
 
   assert(cl);
   msg=cl->incomingMsgs;
+  if (!msg) {
+    DBG_INFO(0, "No incoming messages on %d.",
+             GWEN_ConnectionLayer_GetId(cl));
+  }
   while(msg) {
+    DBG_INFO(0, "Checking msg (refid=%d)", GWEN_Msg_GetReferenceId(msg));
     if (GWEN_Msg_GetReferenceId(msg)==refId) {
       DBG_DEBUG(0, "Found message for ID %d", refId);
       GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
@@ -303,6 +314,10 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
   if (cl->nIncomingMsgs<cl->maxIncomingMsgs) {
     GWEN_LIST_ADD(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
     cl->nIncomingMsgs++;
+    DBG_INFO(0, "Added message to incoming queue (%d)",
+             cl->nIncomingMsgs);
+    DBG_INFO(0, "First incoming message is %08x",
+             (unsigned int)cl->incomingMsgs);
   }
   else {
     DBG_INFO(0, "Incoming queue full (%d msgs)", cl->nIncomingMsgs);
@@ -312,7 +327,9 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
                           GWEN_IPC_ERROR_INQUEUE_FULL);
   }
 
-  DBG_INFO(0, "Added incoming msg (now %d msgs)", cl->nIncomingMsgs);
+  DBG_INFO(0, "Added incoming msg to %d (now %d msgs)",
+           GWEN_ConnectionLayer_GetId(cl),
+           cl->nIncomingMsgs);
   return 0;
 }
 

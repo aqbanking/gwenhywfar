@@ -83,11 +83,9 @@
  </SEGdef>
 
 
- <SEGdef code="PING" version="1"
+ <SEGdef id="Ping" code="PING" version="1"
          delimiter="+" terminator="'" >
    <GROUP type="SegHead" name="head" />
-    <ELEM name="name" type="AN" maxsize="32"/>
-    <ELEM name="version" type="ascii" maxsize="8"/>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

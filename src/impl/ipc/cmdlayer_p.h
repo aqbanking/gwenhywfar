@@ -118,6 +118,13 @@ GWEN_ERRORCODE GWEN_ConnectionLayerCmd_Close(GWEN_IPCCONNLAYER *cl,
                                              int force);
 
 
+const char *GWEN_ConnectionLayerCmd_GetPeerName(GWEN_IPCCONNLAYER *cl);
+const char *GWEN_ConnectionLayerCmd_GetPeerVersion(GWEN_IPCCONNLAYER *cl);
+GWEN_IPCMSG *GWEN_ConnectionLayerCmd_CreateMsg(GWEN_IPCCONNLAYER *cl,
+                                               unsigned int refId,
+                                               const char *name,
+                                               unsigned int version,
+                                               GWEN_DB_NODE *da);
 
 
 

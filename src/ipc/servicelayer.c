@@ -623,12 +623,20 @@ GWEN_IPCMSG *GWEN_ServiceLayer_GetRequest(GWEN_SERVICELAYER *sl){
   assert(sl);
   cl=GWEN_Global_ServiceLayer->connections;
   while(cl) {
+    DBG_INFO(0, "Checking connection %d",
+             GWEN_ConnectionLayer_GetId(cl));
     if (GWEN_ConnectionLayer_GetLibMark(cl)==sl->id) {
       /* found a matching connection for the given local service layer */
+      DBG_INFO(0, "Connection %d matches",
+               GWEN_ConnectionLayer_GetId(cl));
       msg=GWEN_ConnectionLayer_FindMsgReply(cl, 0);
       if (msg) {
 	DBG_INFO(0, "Found a message with no reference id");
 	return msg;
+      }
+      else {
+        DBG_INFO(0, "No matching message found on %d",
+                 GWEN_ConnectionLayer_GetId(cl));
       }
     }
     cl=GWEN_ConnectionLayer_GetNext(cl);

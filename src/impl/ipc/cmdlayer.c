@@ -507,9 +507,9 @@ void GWEN_ConnectionLayerCmd_SetNameAndVersion(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWEN_IPCServiceLayerCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
-                                               const char *name,
-                                               const char *version){
+void GWEN_IPCServiceCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
+                                          const char *name,
+                                          const char *version){
   assert(s);
   free(s->ownName);
   free(s->ownVersion);
@@ -936,7 +936,13 @@ GWEN_ERRORCODE GWEN_ConnectionLayerCmd_Work(GWEN_IPCCONNLAYER *cl, int rd){
     } /* while room for outgoing msgs */
 
     /* read msgs from msgLayer's inqueue */
-    while ((msg=GWEN_MsgLayer_GetIncomingMsg(ml))) {
+    while (1) {
+      msg=GWEN_MsgLayer_GetIncomingMsg(ml);
+      if (!msg) {
+        DBG_INFO(0, "No incoming message on msgLayer");
+        break;
+      }
+
       /* TODO: decrypt message */
 
       DBG_INFO(0, "Got an inbound message");
@@ -1006,11 +1012,6 @@ GWEN_ERRORCODE GWEN_ConnectionLayerCmd_Accept(GWEN_IPCCONNLAYER *cl,
   newccd=(GWEN_IPCCONNLAYERCMDDATA*)GWEN_ConnectionLayer_GetData(newcl);
   assert(newccd);
   newccd->securityState=GWEN_IPCCONNLAYERCMD_SECSTATE_CONNECTED;
-  GWEN_ConnectionLayer_SetUserMark(newcl,
-                                   GWEN_ConnectionLayer_GetUserMark(cl));
-  GWEN_ConnectionLayer_SetFlags(newcl,
-                                GWEN_ConnectionLayer_GetFlags(cl) |
-                                GWEN_IPCCONNLAYER_FLAGS_PASSIVE);
   *c=newcl;
   return 0;
 }
@@ -1417,15 +1418,101 @@ unsigned int GWEN_IPCServiceCmd_AddPeer(GWEN_IPCSERVICECMD *s,
 
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCCONNLAYER*
-GWEN_IPCServiceLayerCmd_FindConnection(GWEN_IPCSERVICECMD *s,
-                                       unsigned int id,
-                                       unsigned int userMark){
+GWEN_IPCServiceCmd_FindConnection(GWEN_IPCSERVICECMD *s,
+                                  unsigned int id,
+                                  unsigned int userMark){
   assert(s);
   assert(s->serviceLayer);
   return GWEN_ServiceLayer_FindConnection(s->serviceLayer, id, userMark);
 }
 
 
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_IPCServiceCmd_CreateMsg(GWEN_IPCSERVICECMD *s,
+                                          unsigned int id,
+                                          unsigned int refId,
+                                          const char *name,
+                                          unsigned int version,
+                                          GWEN_DB_NODE *da){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(s);
+  assert(s->serviceLayer);
+  cl=GWEN_ServiceLayer_FindConnection(s->serviceLayer, id, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection %d not found", id);
+    return 0;
+  }
+  return GWEN_ConnectionLayerCmd_CreateMsg(cl,
+                                           refId,
+                                           name,
+                                           version,
+                                           da);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_IPCServiceCmd_FindMsgReply(GWEN_IPCSERVICECMD *s,
+                                             unsigned int refId){
+  assert(s);
+  assert(s->serviceLayer);
+  return GWEN_ServiceLayer_FindMsgReply(s->serviceLayer, refId);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_IPCServiceCmd_GetRequest(GWEN_IPCSERVICECMD *s) {
+  assert(s);
+  assert(s->serviceLayer);
+  return GWEN_ServiceLayer_GetRequest(s->serviceLayer);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_IPCServiceCmd_SendMessage(GWEN_IPCSERVICECMD *s,
+                                              GWEN_IPCMSG *msg){
+  assert(s);
+  assert(s->serviceLayer);
+  return GWEN_ServiceLayer_SendMessage(s->serviceLayer, msg);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const char *GWEN_IPCServiceCmd_GetPeerName(GWEN_IPCSERVICECMD *s,
+                                           unsigned int id){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(s);
+  assert(s->serviceLayer);
+  cl=GWEN_ServiceLayer_FindConnection(s->serviceLayer, id, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection %d not found", id);
+    return 0;
+  }
+  return GWEN_ConnectionLayerCmd_GetPeerName(cl);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const char *GWEN_IPCServiceCmd_GetPeerVersion(GWEN_IPCSERVICECMD *s,
+                                              unsigned int id){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(s);
+  assert(s->serviceLayer);
+  cl=GWEN_ServiceLayer_FindConnection(s->serviceLayer, id, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection %d not found", id);
+    return 0;
+  }
+  return GWEN_ConnectionLayerCmd_GetPeerVersion(cl);
+}
 
 
 
@@ -1782,6 +1869,10 @@ GWEN_ERRORCODE GWEN_IPCCMD_SendSessionKeyRP(GWEN_IPCCONNLAYER *cl,
   }
   return 0;
 }
+
+
+
+
 
 
 
