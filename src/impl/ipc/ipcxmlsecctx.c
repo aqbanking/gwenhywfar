@@ -284,6 +284,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   GWEN_BUFFER *hashbuf;
   GWEN_ERRORCODE err;
   unsigned int rseq;
+  const GWEN_KEYSPEC *ks, *ks2;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
@@ -293,6 +294,25 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
     DBG_ERROR(0, "No remote sign key");
     return -1;
   }
+
+  /* verify that the key is the one we know */
+  ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
+  assert(ks);
+  ks2=GWEN_CryptKey_GetKeySpec(scd->remoteSignKey);
+  assert(ks2);
+  if (!(
+        (GWEN_Text_Compare(GWEN_KeySpec_GetOwner(ks),
+                           GWEN_KeySpec_GetOwner(ks2),1)==0) &&
+        (GWEN_Text_Compare(GWEN_KeySpec_GetKeyName(ks),
+                           GWEN_KeySpec_GetKeyName(ks2),1)==0) &&
+        (GWEN_KeySpec_GetNumber(ks)==GWEN_KeySpec_GetNumber(ks2)) &&
+        (GWEN_KeySpec_GetVersion(ks)==GWEN_KeySpec_GetVersion(ks2))
+       )) {
+    DBG_ERROR(0,
+              "Remote sign key differs from that one used for signing");
+    return -1;
+  }
+
 
   /* check signature sequence number */
   rseq=GWEN_HBCICryptoContext_GetSequenceNum(ctx);
@@ -419,12 +439,13 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
     GWEN_BUFFER *kbuf;
     GWEN_BUFFER *sbuf;
     GWEN_CRYPTKEY *key;
+    const GWEN_KEYSPEC *ks, *ks2;
     char *km;
 
     DBG_NOTICE(0, "Storing new session key");
     sbuf=GWEN_Buffer_new(0, 256, 0, 1);
     if (GWEN_Buffer_AppendBytes(sbuf,
-				GWEN_HBCICryptoContext_GetCryptKeyPtr(ctx),
+                                GWEN_HBCICryptoContext_GetCryptKeyPtr(ctx),
 				GWEN_HBCICryptoContext_GetCryptKeySize(ctx))){
       DBG_INFO(0, "here");
       GWEN_Buffer_free(sbuf);
@@ -434,6 +455,24 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
     GWEN_Buffer_Rewind(sbuf);
     if (scd->localCryptKey==0) {
       DBG_ERROR(0, "No local crypt key");
+      return -1;
+    }
+
+    /* verify that the key is the one we know */
+    ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
+    assert(ks);
+    ks2=GWEN_CryptKey_GetKeySpec(scd->localCryptKey);
+    assert(ks2);
+    if (!(
+          (GWEN_Text_Compare(GWEN_KeySpec_GetOwner(ks),
+                             GWEN_KeySpec_GetOwner(ks2),1)==0) &&
+          (GWEN_Text_Compare(GWEN_KeySpec_GetKeyName(ks),
+                             GWEN_KeySpec_GetKeyName(ks2),1)==0) &&
+          (GWEN_KeySpec_GetNumber(ks)==GWEN_KeySpec_GetNumber(ks2)) &&
+          (GWEN_KeySpec_GetVersion(ks)==GWEN_KeySpec_GetVersion(ks2))
+         )) {
+      DBG_ERROR(0,
+                "Local crypt key differs from that one used for encryption");
       return -1;
     }
 

@@ -28,7 +28,6 @@ Gwenhywfar includes the following features:
 - High-level functions for parsing XML-like files and accessing them
   like a hierarchical database (src/parser/)
 
-(FIXME: check whether this is correct)
 
 
 Requirements
@@ -42,7 +41,9 @@ Platforms
 
 Gwenhywfar is being developed on Linux. It should also run on Windows
 (under mingw) and Mac OS-X, but both of these ports still need more
-testing (FIXME: correct?).
+testing. 
+As soon as the Linux and Windows implementations are stable the PalmOS port 
+will be addressed.
 
 
 Documentation
@@ -61,8 +62,7 @@ Contact
 For questions about this library please ask on the mailing list of the
 OpenHBCI project openhbci-general (subscriber-only, please subscribe
 on http://lists.sourceforge.net/lists/listinfo/openhbci-general),
-since this is where the author(s) hang out. (FIXME: Choose whether you
-want it this way)
+since this is where the author(s) hang out. 
 
 
 Authors
@@ -71,12 +71,14 @@ Authors
 This library is being written by and is being maintained by Martin
 Preuss <martin@libchipcard.de>. Some minor work has been contributed
 by others including Christian Stimming <stimming@tuhh.de>.
+Some functions in "src/impl/msgengine/seccontext.c" have originally been 
+written by Fabian Kaiser in C++ for the project OpenHBCI. I simply transformed
+them to plain C.
 
 
 Name
 ----
 
-The name of this library was chosen because of --- (FIXME?). WATCH
-OUT: Due to the complicated spelling, sometimes the letters `f' and
-`w' at the end are switched around. Officially, the name should be
-Gwenhywfar, i.e. first `w', the `f'. (FIXME: or the other way round?)
+The name of this library was chosen because of --- (FIXME?).
+
+
