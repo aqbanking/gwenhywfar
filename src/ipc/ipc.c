@@ -461,7 +461,8 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_AddClient(GWEN_IPCMANAGER *mgr,
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
 						GWEN_IPCNODE *n,
-						GWEN_IPCREQUEST_LIST *rl) {
+                                                GWEN_IPCREQUEST_LIST *rl,
+                                                const char *msgType) {
   GWEN_IPCREQUEST *r;
 
   /* remove all messages for/of this client from request */
@@ -478,9 +479,9 @@ void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
       nextmsg=GWEN_IPCMsg_List_Next(msg);
       assert(msg->node);
       if (msg->node==n) {
-	/* same node, remove msg */
-	DBG_NOTICE(GWEN_LOGDOMAIN, "Removing message for/from node %08x",
-		   n->id);
+        /* same node, remove msg */
+        DBG_NOTICE(GWEN_LOGDOMAIN, "Removing %s message for/from node %08x",
+                   msgType, n->id);
 	if (msg->db) {
 	  GWEN_DB_Dump(msg->db, stderr, 2);
 	}
@@ -493,8 +494,8 @@ void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
     /* check whether the request is empty */
     if (GWEN_IPCMsg_List_First(r->requestMsgs)==0) {
       /* it is, remove the request */
-      DBG_NOTICE(GWEN_LOGDOMAIN, "Removing request %08x for/from node %08x",
-		 r->id, n->id);
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Removing %s request %08x for/from node %08x",
+                 msgType, r->id, n->id);
       GWEN_IPCRequest_List_Del(r);
       GWEN_IPCRequest_free(r);
     }
@@ -509,7 +510,7 @@ int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
 				 GWEN_TYPE_UINT32 nid) {
   GWEN_IPCNODE *n;
 
-  DBG_ERROR(GWEN_LOGDOMAIN, "Removing client %08x", nid);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Removing client %08x", nid);
   assert(mgr);
 
   /* get client node */
@@ -525,14 +526,12 @@ int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
   }
 
   /* remove all messages of this client in any request */
-  DBG_ERROR(GWEN_LOGDOMAIN, "Removing outRequest messages for node %08x", nid);
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->outRequests);
-  DBG_ERROR(GWEN_LOGDOMAIN, "Removing newInRequest messages for node %08x",
-	    nid);
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->newInRequests);
-  DBG_ERROR(GWEN_LOGDOMAIN, "Removing newOutRequest messages for node %08x",
-	    nid);
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests);
+  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->outRequests,
+                                             "outRequest");
+  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->newInRequests,
+                                             "newInRequest");
+  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests,
+                                             "newOutRequest");
   /* remove node */
   GWEN_IPCNode_List_Del(n);
   GWEN_IPCNode_free(n);

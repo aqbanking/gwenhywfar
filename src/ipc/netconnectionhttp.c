@@ -1013,11 +1013,11 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
       while(1) {
         rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
         if (rv1==GWEN_NetConnectionWorkResult_Change) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Change while writing");
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Change while writing");
           lchanges++;
         }
         else if (rv1==GWEN_NetConnectionWorkResult_Error) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Error on writing");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Error on writing");
           return rv1;
         }
         else {
@@ -1030,7 +1030,7 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
       while(1) {
         rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
         if (rv3==GWEN_NetConnectionWorkResult_Change) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Change while reading");
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Change while reading");
           lchanges++;
         }
         else if (rv3==GWEN_NetConnectionWorkResult_Error) {

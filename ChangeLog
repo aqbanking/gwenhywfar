@@ -2,6 +2,7 @@
 2005/01/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added missing translations
+- decreased verbosity of IPC code
 
 
 ===========================================================================

@@ -138,7 +138,8 @@ void GWEN_IPCManager__Connection_Down(GWEN_NETCONNECTION *conn);
 
 void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
                                                 GWEN_IPCNODE *n,
-                                                GWEN_IPCREQUEST_LIST *rl);
+                                                GWEN_IPCREQUEST_LIST *rl,
+                                                const char *msgType);
 
 void GWEN_IPCNode_Dump(GWEN_IPCNODE *n, FILE *f, int indent);
 void GWEN_IPCMsg_Dump(GWEN_IPCMSG *m, FILE *f, int indent);
