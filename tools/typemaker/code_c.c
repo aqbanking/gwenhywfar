@@ -639,7 +639,8 @@ int write_code_constrec_c(ARGUMENTS *args,
         int isPtr;
         const char *typ;
         const char *name;
-	const char *setval;
+        const char *setval;
+        const char *mode;
 
         name=GWEN_XMLNode_GetProperty(n, "name", 0);
         if (!name) {
@@ -655,6 +656,10 @@ int write_code_constrec_c(ARGUMENTS *args,
 
 	setval=GWEN_XMLNode_GetProperty(n, "preset", 0);
         isPtr=atoi(get_property(n, "ptr", "0"));
+        mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
+        if (strcasecmp(mode, "single")!=0)
+          /* lists always use pointers */
+          isPtr=1;
 
 	if (isPtr) {
 	  if (strcasecmp(typ, "GWEN_STRINGLIST")==0) {
@@ -662,7 +667,37 @@ int write_code_constrec_c(ARGUMENTS *args,
 	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
 	    GWEN_BufferedIO_Write(bio, name+1);
 	    GWEN_BufferedIO_WriteLine(bio, "=GWEN_StringList_new();");
-	  }
+          }
+          else if (strcasecmp(mode, "single")!=0) {
+            int initVar;
+
+            initVar=atoi(get_property(n, "init", "0"));
+            if (initVar) {
+              const char *fname;
+
+              fname=get_function_name(n, "new");
+              if (!fname) {
+                DBG_ERROR(0, "No new-function set for type %s", typ);
+                return -1;
+              }
+              GWEN_BufferedIO_Write(bio, "  st->");
+              GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+              GWEN_BufferedIO_Write(bio, name+1);
+              GWEN_BufferedIO_Write(bio, "=");
+              GWEN_BufferedIO_Write(bio, fname);
+              GWEN_BufferedIO_WriteLine(bio, "();");
+            } /* if init requested */
+          } /* if !single */
+          else {
+            if (setval) {
+              GWEN_BufferedIO_Write(bio, "  st->");
+              GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+              GWEN_BufferedIO_Write(bio, name+1);
+              GWEN_BufferedIO_Write(bio, "=");
+              GWEN_BufferedIO_Write(bio, setval);
+              GWEN_BufferedIO_WriteLine(bio, ";");
+            }
+          }
 	}
 	else {
 	  if (setval) {
