@@ -803,6 +803,13 @@ GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n);
 GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
 
+/**
+ * Returns the name of the variable specified by the given node.
+ * @param n db node specifying a variable (not a group !)
+ */
+GWENHYWFAR_API 
+const char *GWEN_DB_VariableName(GWEN_DB_NODE *n);
+
 /** Iterates through all variable nodes that are @e direct children
  * of the given node, calling the callback function 'func' on each
  * variable node.  Traversal will stop when 'func' returns a non-NULL

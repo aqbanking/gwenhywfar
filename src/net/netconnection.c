@@ -772,7 +772,7 @@ int GWEN_NetConnection_Wait(GWEN_NETCONNECTION *conn, int timeout,
 	return -1;
       }
       else {
-	DBG_VERBOUS(0, "Timeout");
+	DBG_VERBOUS(0, "Timeout (%d)", waitFlags);
 	GWEN_SocketSet_free(rset);
 	GWEN_SocketSet_free(wset);
 	return 1;
@@ -1131,6 +1131,13 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
         distance=timeout*1000;
     if (!distance)
       distance=750;
+  }
+
+  rv=GWEN_NetConnection_Work(conn);
+  if (rv==GWEN_NetConnectionWorkResult_Error) {
+    DBG_INFO(0, "Error while working");
+    GWEN_WaitCallback_Leave();
+    return 0;
   }
 
   GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
@@ -1543,6 +1550,24 @@ GWEN_NetConnection_GetStatus(const GWEN_NETCONNECTION *conn){
   assert(conn->transportLayer);
   return GWEN_NetTransport_GetStatus(conn->transportLayer);
 }
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnection_SetDownAfterSend(GWEN_NETCONNECTION *conn, int i){
+  assert(conn);
+  conn->downAfterSend=i;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetConnection_GetDownAfterSend(GWEN_NETCONNECTION *conn){
+  assert(conn);
+  return conn->downAfterSend;
+}
+
+
 
 
 

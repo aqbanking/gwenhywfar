@@ -20,6 +20,7 @@
 #include <gwenhywfar/nettransportsock.h>
 #include <gwenhywfar/nettransportssl.h>
 #include <gwenhywfar/netconnection.h>
+#include <gwenhywfar/netconnectionhttp.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/base64.h>
@@ -1031,6 +1032,88 @@ int testBase64(int argc, char **argv) {
 
 
 
+int testHTTPc(int argc, char **argv) {
+  GWEN_NETTRANSPORT *tr;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETCONNECTION *conn;
+  GWEN_DB_NODE *req;
+  GWEN_NETMSG *msg;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", 0, 1, 1);
+  if (!tr) {
+    fprintf(stderr, "SSL not supported.\n");
+    return 2;
+  }
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
+  GWEN_InetAddr_SetPort(addr, 443);
+  //GWEN_InetAddr_SetPort(addr, 80);
+  GWEN_NetTransport_SetPeerAddr(tr, addr);
+  GWEN_InetAddr_free(addr);
+
+  /* create connection layer */
+  conn=GWEN_NetConnectionHTTP_new(tr,
+                                  1,     /* take */
+                                  0,     /* libId */
+                                  1,0);  /* protocol version */
+  GWEN_NetConnection_SetUpFn(conn, connection_Up);
+  GWEN_NetConnection_SetDownFn(conn, connection_Down);
+  GWEN_NetConnectionHTTP_SubMode(conn,
+                                 GWEN_NETCONN_MODE_WAITBEFOREREAD |
+                                 GWEN_NETCONN_MODE_WAITBEFOREBODYREAD);
+
+  if (GWEN_NetConnection_Connect_Wait(conn, 30)) {
+    fprintf(stderr, "ERROR: Could not connect\n");
+    GWEN_NetConnection_free(conn);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  req=GWEN_DB_Group_new("request");
+  GWEN_DB_SetCharValue(req, GWEN_DB_FLAGS_DEFAULT,
+                       "command/cmd", "get");
+  GWEN_DB_SetCharValue(req, GWEN_DB_FLAGS_DEFAULT,
+                       "command/url", "/");
+  /*
+  GWEN_DB_SetCharValue(req, GWEN_DB_FLAGS_DEFAULT,
+                       "command/vars/var1", "value1");
+  GWEN_DB_SetCharValue(req, GWEN_DB_FLAGS_DEFAULT,
+                       "command/vars/var2", "val%ue2");
+  */
+  if (GWEN_NetConnectionHTTP_AddRequest(conn,
+                                        req,
+                                        0,
+                                        0)) {
+    fprintf(stderr, "Could not add request.\n");
+    return 1;
+  }
+
+  fprintf(stderr, "Waiting for response...\n");
+  msg=GWEN_NetConnection_GetInMsg_Wait(conn, 30);
+  if (!msg) {
+    fprintf(stderr, "ERROR: Could not read\n");
+    return 2;
+  }
+  fprintf(stderr, "Response was:\n");
+  GWEN_Buffer_Dump(GWEN_NetMsg_GetBuffer(msg), stderr, 2);
+
+  GWEN_NetMsg_free(msg);
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetConnection_Disconnect_Wait(conn, 30);
+  GWEN_NetConnection_free(conn);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -1073,6 +1156,8 @@ int main(int argc, char **argv) {
     rv=testSocketSSL(argc, argv);
   else if (strcasecmp(argv[1], "base64")==0)
     rv=testBase64(argc, argv);
+  else if (strcasecmp(argv[1], "httpc")==0)
+    rv=testHTTPc(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     return 1;

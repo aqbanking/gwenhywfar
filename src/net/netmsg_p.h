@@ -39,6 +39,9 @@ struct GWEN_NETMSG {
   GWEN_BUFFER *buffer;
   GWEN_TYPE_UINT32 size;
   GWEN_DB_NODE *node;
+  GWEN_BUFFEREDIO *bio;
+  int pmajor;
+  int pminor;
 
   GWEN_TYPE_UINT32 usage;
 };

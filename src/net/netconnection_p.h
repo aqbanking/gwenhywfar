@@ -48,6 +48,8 @@ struct GWEN_NETCONNECTION {
 
   GWEN_TYPE_UINT32 usage;
 
+  int downAfterSend;
+
   GWEN_RINGBUFFER *readBuffer;
   GWEN_RINGBUFFER *writeBuffer;
   GWEN_NETTRANSPORT_RESULT lastResult;

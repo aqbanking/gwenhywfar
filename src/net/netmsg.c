@@ -64,6 +64,11 @@ void GWEN_NetMsg_free(GWEN_NETMSG *msg){
       GWEN_DB_Group_free(msg->node);
       GWEN_Buffer_free(msg->buffer);
 
+      if (msg->bio) {
+        GWEN_BufferedIO_Abandon(msg->bio);
+        GWEN_BufferedIO_free(msg->bio);
+      }
+
       GWEN_LIST_FINI(GWEN_NETMSG, msg);
       free(msg);
     }
@@ -122,10 +127,85 @@ void GWEN_NetMsg_SetSize(GWEN_NETMSG *msg,
 
 
 
+void GWEN_NetMsg_DecrementSize(GWEN_NETMSG *msg,
+                               GWEN_TYPE_UINT32 offs){
+  assert(msg);
+  if (msg->size>=offs)
+    msg->size-=offs;
+}
+
+
+
+void GWEN_NetMsg_IncrementSize(GWEN_NETMSG *msg,
+                               GWEN_TYPE_UINT32 offs){
+  assert(msg);
+  msg->size+=offs;
+}
+
+
+
 GWEN_DB_NODE *GWEN_NetMsg_GetDB(const GWEN_NETMSG *msg){
   assert(msg);
   return msg->node;
 }
+
+
+
+GWEN_BUFFEREDIO *GWEN_NetMsg_GetBufferedIO(const GWEN_NETMSG *msg){
+  assert(msg);
+  return msg->bio;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_NetMsg_TakeBufferedIO(GWEN_NETMSG *msg){
+  GWEN_BUFFEREDIO *bio;
+
+  assert(msg);
+  bio=msg->bio;
+  msg->bio=0;
+  return bio;
+}
+
+
+
+void GWEN_NetMsg_SetBufferedIO(GWEN_NETMSG *msg, GWEN_BUFFEREDIO *bio){
+  assert(msg);
+  assert(bio);
+  if (msg->bio) {
+    GWEN_BufferedIO_Abandon(msg->bio);
+    GWEN_BufferedIO_free(msg->bio);
+  }
+  msg->bio=bio;
+}
+
+
+
+int GWEN_NetMsg_GetProtocolMajorVersion(const GWEN_NETMSG *msg){
+  assert(msg);
+  return msg->pmajor;
+}
+
+
+
+int GWEN_NetMsg_GetProtocolMinorVersion(const GWEN_NETMSG *msg){
+  assert(msg);
+  return msg->pminor;
+}
+
+
+
+void GWEN_NetMsg_SetProtocolVersion(GWEN_NETMSG *msg,
+                                    int pmajor, int pminor){
+  assert(msg);
+  msg->pmajor=pmajor;
+  msg->pminor=pminor;
+}
+
+
+
+
+
 
 
 

@@ -43,6 +43,7 @@ typedef struct GWEN_NETMSG GWEN_NETMSG;
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/bufferedio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -100,11 +101,52 @@ void GWEN_NetMsg_SetSize(GWEN_NETMSG *msg,
                          GWEN_TYPE_UINT32 size);
 
 /**
+ * Decrements the size value by the given offset (will not go below zero).
+ */
+GWENHYWFAR_API
+void GWEN_NetMsg_DecrementSize(GWEN_NETMSG *msg,
+                               GWEN_TYPE_UINT32 offs);
+
+/**
+ * Increments the size value by the given offset (does not check for
+ * wrap-around).
+ */
+GWENHYWFAR_API
+void GWEN_NetMsg_IncrementSize(GWEN_NETMSG *msg,
+                               GWEN_TYPE_UINT32 offs);
+
+/**
  * Returns a pointer to the DB belonging to a message.
  * This function does NOT relinquish ownership.
  */
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_NetMsg_GetDB(const GWEN_NETMSG *msg);
+
+
+GWENHYWFAR_API
+GWEN_BUFFEREDIO *GWEN_NetMsg_GetBufferedIO(const GWEN_NETMSG *msg);
+
+GWENHYWFAR_API
+GWEN_BUFFEREDIO *GWEN_NetMsg_TakeBufferedIO(GWEN_NETMSG *msg);
+
+/**
+ * Replaces the internal bufferedIO with the given one.
+ * Takes over ownership of the bufferedIO.
+ */
+GWENHYWFAR_API
+void GWEN_NetMsg_SetBufferedIO(GWEN_NETMSG *msg,
+                               GWEN_BUFFEREDIO *bio);
+
+GWENHYWFAR_API
+int GWEN_NetMsg_GetProtocolMajorVersion(const GWEN_NETMSG *msg);
+
+GWENHYWFAR_API
+int GWEN_NetMsg_GetProtocolMinorVersion(const GWEN_NETMSG *msg);
+
+GWENHYWFAR_API
+void GWEN_NetMsg_SetProtocolVersion(GWEN_NETMSG *msg,
+                                    int pmajor, int pminor);
+
 
 /*@}*/
 

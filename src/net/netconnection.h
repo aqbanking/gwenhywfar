@@ -610,6 +610,21 @@ void GWEN_NetConnection_SetUserMark(GWEN_NETCONNECTION *conn,
 GWENHYWFAR_API
 double GWEN_NetConnection_GetIdleTime(const GWEN_NETCONNECTION *conn);
 
+
+/**
+ * Call this function with i!=0 if you want the connection to be disconnected
+ * after the last message in the queue has been sent.
+ */
+GWENHYWFAR_API
+void GWEN_NetConnection_SetDownAfterSend(GWEN_NETCONNECTION *conn, int i);
+
+/**
+ * Returns the flag set by @ref GWEN_NetConnection_SetDownAfterSend (see
+ * there).
+ */
+GWENHYWFAR_API
+int GWEN_NetConnection_GetDownAfterSend(GWEN_NETCONNECTION *conn);
+
 /*@}*/
 
 /*@}*/ /* defgroup */

@@ -297,7 +297,7 @@ GWEN_NetTransportSSL_StartDisconnect(GWEN_NETTRANSPORT *tr){
   }
   if (rv==1 || rv==-1) {
     /* connection closed */
-    DBG_NOTICE(0, "Connection closed");
+    DBG_INFO(0, "Connection closed");
     GWEN_Socket_Close(skd->socket);
     SSL_free(skd->ssl);
     skd->ssl=0;
@@ -354,12 +354,13 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
       skd->ssl=0;
       SSL_CTX_free(skd->ssl_ctx);
       skd->ssl_ctx=0;
+      GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       GWEN_NetTransport_MarkActivity(tr);
       return GWEN_NetTransportResultError;
     }
   }
 
-  DBG_NOTICE(0, "Read %d bytes", rv);
+  DBG_DEBUG(0, "Read %d bytes", rv);
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
@@ -404,6 +405,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
       skd->ssl=0;
       SSL_CTX_free(skd->ssl_ctx);
       skd->ssl_ctx=0;
+      GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       GWEN_NetTransport_MarkActivity(tr);
       return GWEN_NetTransportResultError;
     }
@@ -415,11 +417,12 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
     skd->ssl=0;
     SSL_CTX_free(skd->ssl_ctx);
     skd->ssl_ctx=0;
+    GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
     GWEN_NetTransport_MarkActivity(tr);
     return GWEN_NetTransportResultError;
   }
 
-  DBG_NOTICE(0, "Written %d bytes", rv);
+  DBG_DEBUG(0, "Written %d bytes", rv);
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
@@ -599,7 +602,7 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
       return -1;
     }
 
-    DBG_NOTICE(0, "Saving file as \"%s\"", GWEN_Buffer_GetStart(nbuf));
+    DBG_DEBUG(0, "Saving file as \"%s\"", GWEN_Buffer_GetStart(nbuf));
     f=fopen(GWEN_Buffer_GetStart(nbuf), "w+");
     if (!f) {
       DBG_ERROR(0, "fopen(\"%s\", \"%s\"): %s",
@@ -828,7 +831,6 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     /* establish SSL */
     int fd;
 
-    DBG_NOTICE(0, "GWEN_NetTransportStatusPConnected");
     /* get socket handle (I know, it's ugly, but the function below is
      * not exported to the outside) */
     fd=GWEN_Socket_GetSocketInt(skd->socket);
@@ -878,6 +880,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           skd->ssl=0;
           SSL_CTX_free(skd->ssl_ctx);
           skd->ssl_ctx=0;
+          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
           return GWEN_NetTransportWorkResult_Error;
         }
         else {
@@ -901,6 +904,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         skd->ssl=0;
         SSL_CTX_free(skd->ssl_ctx);
         skd->ssl_ctx=0;
+        GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
         return GWEN_NetTransportWorkResult_Error;
       }
       else {
@@ -913,8 +917,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 
       certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
 
-      DBG_NOTICE(0, "Got a certificate: %s",
-                 certbuf);
+      DBG_INFO(0, "Got a certificate: %s",
+               certbuf);
       vr=SSL_get_verify_result(skd->ssl);
       if (vr==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
           vr==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
@@ -965,6 +969,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           GWEN_DB_Group_free(dbCert);
           free(certbuf);
           X509_free(cert);
+          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
           return GWEN_NetTransportWorkResult_Error;
         }
 
@@ -980,6 +985,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           skd->ssl_ctx=0;
           free(certbuf);
           X509_free(cert);
+          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
           return GWEN_NetTransportWorkResult_Error;
         }
         else {

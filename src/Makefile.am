@@ -1,6 +1,6 @@
 INCLUDES = $(all_includes) -I$(srcdir)/os/$(GWEN_OS)
 
-SUBDIRS=base crypt io os parser net
+SUBDIRS=base crypt io ipc os parser net
 
 EXTRA_DIST=\
  types.h.in \
@@ -21,6 +21,7 @@ libgwenhywfar_la_LIBADD=\
   base/libbase.la \
   crypt/libcrypt.la \
   io/libio.la \
+  ipc/libipc.la \
   net/libnet.la \
   os/libos.la \
   parser/libparser.la @all_libraries@

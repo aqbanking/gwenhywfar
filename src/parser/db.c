@@ -2209,6 +2209,20 @@ GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name){
 
 
 
+const char *GWEN_DB_VariableName(GWEN_DB_NODE *n){
+  assert(n);
+  if (n->h.typ!=GWEN_DB_NODETYPE_VAR) {
+    DBG_ERROR(0, "Node is not a variable");
+    return 0;
+  }
+  return n->var.name;
+}
+
+
+
+
+
+
 
 
 

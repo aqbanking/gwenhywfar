@@ -1,8 +1,19 @@
+
+2004/05/07: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/db: added function GWEN_DB_VariableName (I couldn't believe that
+  this function did not exist ;-)
+- started working on IPC stuff again, this time based on HTTPS, therefore
+  added ipc/netconnectionhttp (implements the HTTP protocol, together with
+  the transport layer NetTransportSSL we have HTTPS ;-)
+
+
 2004-05-07   Christian Stimming <stimming@tuhh.de>
 
 	* src/Makefile.am: For windows DLLs, create the def and lib files
 	with the filename including the SO_EFFECTIVE number as well,
 	because otherwise linking against it doesn't work.
+
 
 2004/05/06: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

@@ -35,6 +35,7 @@
 #include "inetsocket_p.h"
 #include "inetaddr_p.h"
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -119,6 +120,13 @@ GWEN_ERRORCODE GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
                                         const GWEN_SOCKET *sp){
   assert(ssp);
   assert(sp);
+  if (sp->socket==-1) {
+    DBG_ERROR(0, "Socket is not connected, can not add");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                          GWEN_SOCKET_ERROR_NOT_OPEN);
+  }
   ssp->highest=(ssp->highest<sp->socket)?sp->socket:ssp->highest;
   FD_SET(sp->socket,&(ssp->set));
   ssp->count++;
