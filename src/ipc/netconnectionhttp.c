@@ -98,7 +98,9 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
   GWEN_Buffer_Reset(tbuf);
 
   if (*buffer!=' ') {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (missing space after cmd)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (missing space after cmd, %02x)",
+              *buffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
@@ -581,7 +583,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     }
 
     /* append message to connection's queue */
-    DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
+    /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
     GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
     /* check whether the connection is to be disconnected */
@@ -605,7 +608,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     return GWEN_NetConnectionWorkResult_Change;
   } /* if in body mode */
   else {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "In no-header mode");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "In command/header mode");
     /* in command or header mode */
     while(GWEN_RingBuffer_GetUsedBytes(rbuf)) {
       int c;
@@ -638,7 +641,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    GWEN_NetMsg_free(chttp->currentInMsg);
 	    chttp->currentInMsg=0;
 	    return GWEN_NetConnectionWorkResult_Error;
-	  }
+          }
+
 	  /* adjust HTTP version to that used in the command */
 	  pmajor=GWEN_DB_GetIntValue(dbCmd,
 				     "pmajor", 0,
@@ -650,7 +654,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
 	  if (GWEN_DB_GetIntValue(dbCmd, "hasHeader", 0, 0)) {
             /* header is supposed to follow */
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Header follows");
+            DBG_VERBOUS(GWEN_LOGDOMAIN, "Header follows");
             chttp->inMode=GWEN_NetConnHttpMsgModeHeader;
             chttp->headerPos=GWEN_Buffer_GetPos(mbuf);
             GWEN_Buffer_SetBookmark(mbuf, 0, GWEN_Buffer_GetPos(mbuf));
@@ -658,7 +662,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	  else {
 	    const char *cmd;
 
-            DBG_DEBUG(GWEN_LOGDOMAIN, "No header follows");
+            DBG_ERROR(GWEN_LOGDOMAIN, "No header follows");
 	    /* no header, body eventually follows */
 	    cmd=GWEN_DB_GetCharValue(dbCmd, "cmd", 0, "");
 	    if (strcmp(cmd, "PUT")==0 ||
@@ -670,7 +674,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
 	    else {
               /* no body, message complete */
-              DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
+              /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
               /* check whether the connection is to be disconnected */
@@ -784,7 +789,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
                 if (!size) {
                   /* no body, message complete */
-                  DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
+                  DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
+                  /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
                   GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
                   /* check whether the connection is to be disconnected */
@@ -817,7 +823,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
             }
             else {
               /* no body, message complete */
-              DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
+              /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
               /* check whether the connection is to be disconnected */

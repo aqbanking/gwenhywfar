@@ -55,6 +55,14 @@ GWENHYWFAR_API
 void GWEN_IPCManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent);
 
 
+GWENHYWFAR_API
+const char *GWEN_IPCManager_GetApplicationName(const GWEN_IPCMANAGER *mgr);
+
+GWENHYWFAR_API
+void GWEN_IPCManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
+                                        const char *name);
+
+
 /**
  * Sets a callback function which is called for every network connection that
  * went up.

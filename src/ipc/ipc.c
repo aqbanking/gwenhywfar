@@ -365,6 +365,7 @@ void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr){
     DBG_MEM_DEC("GWEN_IPCMANAGER");
     assert(mgr->usage);
     if (--(mgr->usage)==0) {
+      free(mgr->application);
       GWEN_IPCRequest_List_free(mgr->oldInRequests);
       GWEN_IPCRequest_List_free(mgr->newInRequests);
       GWEN_IPCRequest_List_free(mgr->outRequests);
@@ -373,6 +374,23 @@ void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr){
       GWEN_FREE_OBJECT(mgr);
     }
   }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+const char *GWEN_IPCManager_GetApplicationName(const GWEN_IPCMANAGER *mgr) {
+  assert(mgr);
+  return mgr->application;
+}
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_IPCManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
+                                        const char *s){
+  assert(mgr);
+  if (s) mgr->application=strdup(s);
+  else mgr->application=0;
 }
 
 
@@ -601,8 +619,12 @@ int GWEN_IPCManager__SendMsg(GWEN_IPCMANAGER *mgr,
 
   GWEN_DB_SetCharValue(dbCmd, GWEN_DB_FLAGS_DEFAULT,
                        "cmd", "put");
-  GWEN_DB_SetCharValue(dbCmd, GWEN_DB_FLAGS_DEFAULT,
-                       "url", mgr->application);
+  if (mgr->application && *(mgr->application))
+    GWEN_DB_SetCharValue(dbCmd, GWEN_DB_FLAGS_DEFAULT,
+                         "url", mgr->application);
+  else
+    GWEN_DB_SetCharValue(dbCmd, GWEN_DB_FLAGS_DEFAULT,
+                         "url", "/gwenipc/unspecified");
 
   /* prepare vars */
   dbVars=GWEN_DB_GetGroup(dbCmd, GWEN_DB_FLAGS_DEFAULT, "vars");

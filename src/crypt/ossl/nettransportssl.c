@@ -31,7 +31,7 @@
 # include <config.h>
 #endif
 
-/* #define DEBUG_SSL_LOG */
+/*#define DEBUG_SSL_LOG*/
 
 #include "nettransportssl_p.h"
 #include <gwenhywfar/misc.h>
@@ -545,8 +545,28 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
     }
   }
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes:", rv);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Read %d bytes:", rv);
   GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
+#ifdef DEBUG_SSL_LOG
+  if (1) {
+    FILE *f;
+
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Saving...");
+    f=fopen("/tmp/read.bin", "a+");
+    if (!f) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
+    }
+    else {
+      if (fwrite(buffer, rv, 1, f)!=1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
+      }
+      if (fclose(f)) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
+      }
+    }
+    return 0;
+  }
+#endif
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
@@ -610,7 +630,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
   }
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes:", rv);
-  GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
+  GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous); 
 #ifdef DEBUG_SSL_LOG
   if (1) {
     FILE *f;

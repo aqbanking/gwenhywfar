@@ -290,7 +290,9 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
     /* add current size to it */
     nsize+=bf->realBufferSize;
     if (nsize>bf->hardLimit) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Size is beyond hard limit (%d>%d)", nsize, bf->hardLimit);
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Size is beyond hard limit (%d>%d)",
+                nsize, bf->hardLimit);
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
         abort();
       }
@@ -355,19 +357,10 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return 1;
   }
-  /*
-  if (bf->pos+1>bf->bufferSize) {
-    if (bf->bytesUsed+1 > bf->bufferSize) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d of %d bytes)",
-		bf->bytesUsed, bf->bufferSize);
-      return 1;
-    }
-  }
-  */
+
   bf->ptr[bf->bytesUsed]=c;
   if (bf->pos == bf->bytesUsed)
     bf->pos++;
-  /* bf->bytesUsed++; */
   /* append a NULL to allow using the buffer as ASCIIZ string */
   bf->ptr[++(bf->bytesUsed)]=0;
   return 0;
@@ -407,8 +400,8 @@ int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf){
     }
   }
   else {
-    DBG_VERBOUS(GWEN_LOGDOMAIN,
-                "End of used area reached (%d bytes)", bf->pos);
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "End of used area reached (%d bytes)", bf->pos);
     return -1;
   }
   return 0;
@@ -668,6 +661,7 @@ int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
   GWEN_TYPE_UINT32 i;
   unsigned char *pdst;
 
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "About to copy up to %d bytes", *size);
   i=0;
   pdst=buffer;
 
@@ -675,22 +669,28 @@ int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
     int j;
     int srcLeft;
 
+    if (bf->pos>=bf->bytesUsed) {
+      if (GWEN_Buffer__FillBuffer(bf)) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Could not fill buffer, but that's ok");
+        break;
+      }
+    }
+
     srcLeft=bf->bytesUsed - bf->pos;
-    j=*size-i;
+    if (srcLeft==0)
+      break;
+    j=(*size)-i;
     if (j>srcLeft)
       j=srcLeft;
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Copying %d bytes", j);
     memmove(pdst, bf->ptr + bf->pos, j);
     pdst+=j;
     i+=j;
     bf->pos+=j;
-
-    if (bf->pos>=bf->bytesUsed) {
-      if (GWEN_Buffer__FillBuffer(bf))
-        return -1;
-    }
   } /* while */
 
   *size=i;
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Copied %d bytes", *size);
   return 0;
 #endif
 }
@@ -909,7 +909,6 @@ int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
   /* if (bf->pos+size>bf->bufferSize) { */
   if (bf->bytesUsed+size>bf->bufferSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d [%d] of %d bytes)",
-              /*bf->pos, size,*/
               bf->bytesUsed, size+1,
               bf->bufferSize);
     return 1;
