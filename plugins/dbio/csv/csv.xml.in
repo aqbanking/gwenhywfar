@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf8" ?>
 <!DOCTYPE GWEN_PluginDescr SYSTEM "gwen/plugindescr.xsd" >
 
-<PluginDescr xmlns="http://www.aquamaniac.de/gwenhywfar/" >
+<PluginDescr xmlns="http://www.aquamaniac.de/gwenhywfar/PluginDescr" >
   <plugin name="csv" type="dbio" >
     <version>@GWENHYWFAR_VERSION_STRING@</version>
     <author>Martin Preuss(martin@libchipcard.de)</author>

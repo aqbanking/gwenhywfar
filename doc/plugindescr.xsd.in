@@ -27,7 +27,7 @@
     </xs:restriction>
   </xs:simpleType>
   
-  <xs:complexType name="plugin" >
+  <xs:complexType name="plugin" abstract="true" >
     <xs:sequence>
       <xs:element name="version" type="xs:string" />
       <xs:element name="author" type="xs:string" />
@@ -41,7 +41,7 @@
     
   </xs:complexType>
 
-  <xs:complexType name="PluginDescr" >
+  <xs:complexType name="PluginDescr" abstract="true" >
     <xs:sequence>
       <xs:element name="plugin" type="plugin" 
       	minOccurs="1" maxOccurs="unbounded"/>
