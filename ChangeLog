@@ -8,6 +8,8 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 - armed CSV plugins import function
+- fixed a bug in CSV-importer: now title lines are skipped if "title=0" in
+  parameters
 
 
 2004/11/11: Martin Preuss<martin@libchipcard.de>
