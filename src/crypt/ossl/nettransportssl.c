@@ -1032,7 +1032,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
     if (rv==0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
 		"SSL: Could not load certificate location "
-		"(was: \"%d\" and \"%s\")",
+		"(was: \"%s\" and \"%s\")",
 		skd->CAfile,
 		skd->CAdir);
       return -1;
