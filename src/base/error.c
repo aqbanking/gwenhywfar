@@ -43,6 +43,7 @@ const char *GWEN_Error_ErrorString(int c);
 
 static int gwen_error_is_initialized=0;
 static int gwen_error_nexttype=0;
+static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_error_errorformlist=0;
 static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_error_errorform=0;
 
 
@@ -81,7 +82,7 @@ void GWEN_ErrorType_SetName(GWEN_ERRORTYPEREGISTRATIONFORM *f,
                             const char *name){
   assert(f);
   assert(name);
-  assert((strlen(name)+1)>sizeof(f->name));
+  assert((strlen(name)+1)<sizeof(f->name));
   strcpy(f->name, name);
 }
 
@@ -116,8 +117,10 @@ GWEN_ERRORCODE GWEN_Error_ModuleInit() {
     GWEN_ErrorType_SetMsgPtr(gwen_error_errorform,
                              GWEN_Error_ErrorString);
     err=GWEN_Error_RegisterType(gwen_error_errorform);
-    if (!GWEN_Error_IsOk(err))
+    if (!GWEN_Error_IsOk(err)) {
+      GWEN_ErrorType_free(gwen_error_errorform);
       return err;
+    }
     gwen_error_is_initialized=1;
   } // if not initialized
   return 0;
@@ -130,6 +133,7 @@ GWEN_ERRORCODE GWEN_Error_ModuleFini() {
     GWEN_ERRORCODE err;
 
     err=GWEN_Error_UnregisterType(gwen_error_errorform);
+    GWEN_ErrorType_free(gwen_error_errorform);
     if (!GWEN_Error_IsOk(err))
       return err;
     gwen_error_is_initialized=0;
@@ -141,8 +145,9 @@ GWEN_ERRORCODE GWEN_Error_ModuleFini() {
 
 GWEN_ERRORCODE GWEN_Error_RegisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr){
   assert(tptr);
+
   GWEN_LIST_ADD(GWEN_ERRORTYPEREGISTRATIONFORM, tptr,
-                      &gwen_error_errorform);
+                &gwen_error_errorformlist);
 
   DBG_INFO(0, "Registered type \"%s\" (%d)\n",
            tptr->name, tptr->typ);
@@ -151,11 +156,11 @@ GWEN_ERRORCODE GWEN_Error_RegisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr){
 
 
 
-GWEN_ERRORCODE Error_UnregisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr) {
+GWEN_ERRORCODE GWEN_Error_UnregisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr) {
   assert(tptr);
 
   GWEN_LIST_DEL(GWEN_ERRORTYPEREGISTRATIONFORM, tptr,
-                &gwen_error_errorform);
+                &gwen_error_errorformlist);
 
   DBG_INFO(0, "Unregistered type \"%s\" (%d)\n",
            tptr->name, tptr->typ);
@@ -169,7 +174,7 @@ int GWEN_Error_FindType(const char *name){
 
   // browse all types
   assert(name);
-  tptr=gwen_error_errorform;
+  tptr=gwen_error_errorformlist;
   while(tptr) {
     // compare typename to argument
     if (strcmp(tptr->name,
@@ -188,7 +193,7 @@ const char *GWEN_Error_GetTypename(int t) {
   GWEN_ERRORTYPEREGISTRATIONFORM *tptr;
 
   // browse all types
-  tptr=gwen_error_errorform;
+  tptr=gwen_error_errorformlist;
   while(tptr) {
     if (tptr->typ==t)
       return tptr->name;
@@ -372,7 +377,7 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
 
     // get message function
     i=GWEN_Error_GetType(c);
-    tptr=gwen_error_errorform;
+    tptr=gwen_error_errorformlist;
     while(tptr) {
       if (tptr->typ==i)
         break;

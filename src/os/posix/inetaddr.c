@@ -78,6 +78,7 @@ GWEN_ERRORCODE GWEN_InetAddr_ModuleFini(){
     GWEN_ERRORCODE err;
 
     err=GWEN_Error_UnregisterType(gwen_inetaddr_errorform);
+    GWEN_ErrorType_free(gwen_inetaddr_errorform);
     if (!GWEN_Error_IsOk(err))
       return err;
     gwen_inetaddr_is_initialized=0;

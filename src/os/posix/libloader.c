@@ -78,6 +78,7 @@ GWEN_ERRORCODE GWEN_LibLoader_ModuleFini(){
     GWEN_ERRORCODE err;
 
     err=GWEN_Error_UnregisterType(gwen_libloader_errorform);
+    GWEN_ErrorType_free(gwen_libloader_errorform);
     if (!GWEN_Error_IsOk(err))
       return err;
     gwen_libloader_is_initialized=0;

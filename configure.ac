@@ -5,7 +5,19 @@
 GWENHYFWAR_AUTHOR="Martin Preuss<martin@libchipcard.de>"
 GWENHYFWAR_BUGREPORT_ADDR="<gwenhyfwar-bugs@libchipcard.de>"
 
+
+AC_PREREQ(2.57)
+AC_INIT
+AC_CANONICAL_TARGET([])
+AM_INIT_AUTOMAKE(Gwenhyfwar, 0.0.0)
+AC_CONFIG_SRCDIR([src/gwenhyfwarapi.h])
+AC_CONFIG_HEADER([config.h])
+
+
+
+#
 # versions
+#
 GWENHYFWAR_VERSION_MAJOR=0
 GWENHYFWAR_VERSION_MINOR=1
 GWENHYFWAR_VERSION_PATCHLEVEL=0
@@ -15,12 +27,17 @@ GWENHYFWAR_VERSION_FULLSTRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MIN
 GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
 
 
-AC_PREREQ(2.57)
-AC_INIT
-AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(Gwenhyfwar, $GWENHYFWAR_VERSION_FULLSTRING)
-AC_CONFIG_SRCDIR([src/gwenhyfwarapi.h])
-AC_CONFIG_HEADER([config.h])
+#
+# SO version
+#
+GWENHYFWAR_SO_CURRENT=0
+GWENHYFWAR_SO_REVISION=0
+GWENHYFWAR_SO_AGE=0
+AC_SUBST(GWENHYFWAR_SO_CURRENT)
+AC_SUBST(GWENHYFWAR_SO_REVISION)
+AC_SUBST(GWENHYFWAR_SO_AGE)
+
+
 
 # Checks for programs.
 AC_PROG_CC
@@ -167,5 +184,6 @@ AC_CONFIG_FILES([Makefile
                  src/os/Makefile
                  src/os/posix/Makefile
                  src/os/windows/Makefile
-                 src/parser/Makefile])
+                 src/parser/Makefile
+                 test/Makefile])
 AC_OUTPUT

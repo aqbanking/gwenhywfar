@@ -77,6 +77,7 @@ GWEN_ERRORCODE GWEN_Socket_ModuleFini(){
     GWEN_ERRORCODE err;
 
     err=GWEN_Error_UnregisterType(gwen_socket_errorform);
+    GWEN_ErrorType_free(gwen_socket_errorform);
     if (!GWEN_Error_IsOk(err))
       return err;
     gwen_socket_is_initialized=0;

@@ -181,27 +181,45 @@ void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n) {
 
 void GWEN_DB_Node_free(GWEN_DB_NODE *n){
   if (n) {
+    GWEN_DB_NODE *cn;
+
+    /* free children */
+    cn=n->h.child;
+    while(cn) {
+      GWEN_DB_NODE *ncn;
+
+      ncn=cn->h.next;
+      DBG_DEBUG(0, "Freeing child node");
+      GWEN_DB_Node_free(cn);
+      cn=ncn;
+    }
+
     /* free dynamic (allocated) data */
     switch(n->h.typ) {
     case GWEN_DB_NODETYPE_GROUP:
+      DBG_DEBUG(0, "Freeing dynamic data of group \"%s\"", n->group.name);
       free(n->group.name);
       break;
 
     case GWEN_DB_NODETYPE_VAR:
+      DBG_DEBUG(0, "Freeing dynamic data of var \"%s\"", n->var.name);
       free(n->var.name);
       break;
 
     case GWEN_DB_NODETYPE_VALUE:
       switch(n->val.h.typ) {
       case GWEN_DB_VALUETYPE_CHAR:
+        DBG_DEBUG(0, "Freeing dynamic data of char value");
         free(n->val.c.data);
         break;
 
       case GWEN_DB_VALUETYPE_INT:
         /* no dynamic data, nothing to do */
+        DBG_DEBUG(0, "Freeing dynamic data of int value");
         break;
 
       case GWEN_DB_VALUETYPE_BIN:
+        DBG_DEBUG(0, "Freeing dynamic data of bin value");
         free(n->val.b.data);
         break;
 
@@ -212,6 +230,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
     default:
       DBG_WARN(0, "Unknown node type (%d)", n->h.typ);
     }
+    DBG_DEBUG(0, "Freeing node itself");
     free(n);
   }
 
@@ -798,6 +817,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
     const char *p;
     int res;
 
+    DBG_DEBUG(0, "Converting char value to int");
     p=GWEN_DB_GetCharValueFromNode(nn);
     assert(p);
     if (sscanf(p, "%d", &res)!=1) {
@@ -812,7 +832,8 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
 	      idx, path);
     return defVal;
   }
-  return n->val.i.data;
+  DBG_DEBUG(0, "Returning value from node");
+  return nn->val.i.data;
 }
 
 

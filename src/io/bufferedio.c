@@ -94,6 +94,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini(){
     GWEN_ERRORCODE err;
 
     err=GWEN_Error_UnregisterType(gwen_bufferedio_errorform);
+    GWEN_ErrorType_free(gwen_bufferedio_errorform);
     if (!GWEN_Error_IsOk(err))
       return err;
     gwen_bufferedio_is_initialized=0;

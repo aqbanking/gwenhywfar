@@ -1,3 +1,11 @@
+
+2003/09/11 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- created libgwenhyfwar
+- added test tool
+- fixed db module
+
+
 2003/09/10 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added module db, worked on xml and msgengine modules, fixed some bugs

@@ -463,7 +463,7 @@ ac_includes_default="\
 #endif"
 
 ac_default_prefix=/usr
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBOBJS OSYSTEM OS_TYPE MAKE_DLL_TARGET INSTALL_DLL_TARGET ssl_includes ssl_libraries ssl_lib gwenhyfwar_includes gwenhyfwar_libs gwenhyfwar_needed_libs GWEN_OS gwenhyfwar_os_lib GWENHYFWAR_LIB gwenhyfwar_crypt_lib GWEN_CRYPTO GWEN_HEADER_FILES all_includes all_libraries LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot GWENHYFWAR_SO_CURRENT GWENHYFWAR_SO_REVISION GWENHYFWAR_SO_AGE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBOBJS OSYSTEM OS_TYPE MAKE_DLL_TARGET INSTALL_DLL_TARGET ssl_includes ssl_libraries ssl_lib gwenhyfwar_includes gwenhyfwar_libs gwenhyfwar_needed_libs GWEN_OS gwenhyfwar_os_lib GWENHYFWAR_LIB gwenhyfwar_crypt_lib GWEN_CRYPTO GWEN_HEADER_FILES all_includes all_libraries LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1822,7 +1822,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=Gwenhyfwar
- VERSION=$GWENHYFWAR_VERSION_FULLSTRING
+ VERSION=0.0.0
 
 
 cat >>confdefs.h <<_ACEOF
@@ -1950,6 +1950,32 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 
 
           ac_config_headers="$ac_config_headers config.h"
+
+
+
+
+#
+# versions
+#
+GWENHYFWAR_VERSION_MAJOR=0
+GWENHYFWAR_VERSION_MINOR=1
+GWENHYFWAR_VERSION_PATCHLEVEL=0
+GWENHYFWAR_VERSION_BUILD=0
+GWENHYFWAR_VERSION_TAG="CVS"
+GWENHYFWAR_VERSION_FULLSTRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL.$GWENHYFWAR_VERSION_BUILD($GWENHYFWAR_VERSION_TAG)"
+GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
+
+
+#
+# SO version
+#
+GWENHYFWAR_SO_CURRENT=0
+GWENHYFWAR_SO_REVISION=0
+GWENHYFWAR_SO_AGE=0
+
+
+
+
 
 
 # Checks for programs.
@@ -3635,7 +3661,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 3638 "configure"' > conftest.$ac_ext
+  echo '#line 3664 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5131,7 +5157,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5134:" \
+echo "$as_me:5160:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6143,11 +6169,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6146: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6172: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6150: \$? = $ac_status" >&5
+   echo "$as_me:6176: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6376,11 +6402,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6379: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6405: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6383: \$? = $ac_status" >&5
+   echo "$as_me:6409: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6443,11 +6469,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6446: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6472: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6450: \$? = $ac_status" >&5
+   echo "$as_me:6476: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8503,7 +8529,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8506 "configure"
+#line 8532 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8601,7 +8627,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8604 "configure"
+#line 8630 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10756,11 +10782,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10759: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10785: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10763: \$? = $ac_status" >&5
+   echo "$as_me:10789: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -10823,11 +10849,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10826: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10852: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10830: \$? = $ac_status" >&5
+   echo "$as_me:10856: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12080,7 +12106,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12083 "configure"
+#line 12109 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12178,7 +12204,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12181 "configure"
+#line 12207 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13001,11 +13027,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13004: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13030: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13008: \$? = $ac_status" >&5
+   echo "$as_me:13034: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13068,11 +13094,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13071: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13097: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13075: \$? = $ac_status" >&5
+   echo "$as_me:13101: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15058,11 +15084,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15061: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15087: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15065: \$? = $ac_status" >&5
+   echo "$as_me:15091: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15291,11 +15317,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15294: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15320: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15298: \$? = $ac_status" >&5
+   echo "$as_me:15324: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15358,11 +15384,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15361: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15387: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15365: \$? = $ac_status" >&5
+   echo "$as_me:15391: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17418,7 +17444,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17421 "configure"
+#line 17447 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17516,7 +17542,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17519 "configure"
+#line 17545 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -22544,7 +22570,7 @@ all_includes="${all_includes} -I`pwd`"
 #
 # list of files to create
 #
-                                                                                                              ac_config_files="$ac_config_files Makefile src/Makefile src/base/Makefile src/crypt/Makefile src/crypt/ossl/Makefile src/io/Makefile src/ipc/Makefile src/os/Makefile src/os/posix/Makefile src/os/windows/Makefile src/parser/Makefile"
+                                                                                                                        ac_config_files="$ac_config_files Makefile src/Makefile src/base/Makefile src/crypt/Makefile src/crypt/ossl/Makefile src/io/Makefile src/ipc/Makefile src/os/Makefile src/os/posix/Makefile src/os/windows/Makefile src/parser/Makefile test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -23112,6 +23138,7 @@ do
   "src/os/posix/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/os/posix/Makefile" ;;
   "src/os/windows/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/os/windows/Makefile" ;;
   "src/parser/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/parser/Makefile" ;;
+  "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
@@ -23230,6 +23257,9 @@ s,@INSTALL_STRIP_PROGRAM@,$INSTALL_STRIP_PROGRAM,;t t
 s,@AWK@,$AWK,;t t
 s,@SET_MAKE@,$SET_MAKE,;t t
 s,@am__leading_dot@,$am__leading_dot,;t t
+s,@GWENHYFWAR_SO_CURRENT@,$GWENHYFWAR_SO_CURRENT,;t t
+s,@GWENHYFWAR_SO_REVISION@,$GWENHYFWAR_SO_REVISION,;t t
+s,@GWENHYFWAR_SO_AGE@,$GWENHYFWAR_SO_AGE,;t t
 s,@CC@,$CC,;t t
 s,@CFLAGS@,$CFLAGS,;t t
 s,@LDFLAGS@,$LDFLAGS,;t t
