@@ -12,6 +12,8 @@ EXTRA_DIST=\
  windows/init.c \
  windows/libloader.c \
  windows/libloader_p.h \
+ windows/process.c \
+ windows/process_p.h \
  posix/Makefile.am \
  posix/Makefile.in \
  posix/directory_p.h \
@@ -21,7 +23,9 @@ EXTRA_DIST=\
  posix/directory.c \
  posix/inetaddr.c \
  posix/inetsocket.c \
- posix/libloader.c
+ posix/libloader.c \
+ posix/process.c \
+ posix/process_p.h
 
 SUBDIRS=@GWEN_OS@
 
@@ -30,7 +34,8 @@ iheader_HEADERS=\
  directory.h \
  inetaddr.h \
  inetsocket.h \
- libloader.h
+ libloader.h \
+ process.h
 
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\

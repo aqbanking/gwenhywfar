@@ -1,8 +1,21 @@
 $Id$
 
+2003/12/28 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- renamed Christian's new "GWEN_DB_isSomething" functions to
+  "GWEN_DB_IsSomething" (it is handled this way in GWEN_Error_IsOk, so we
+  have to keep it uniform)
+- added "process" to OS module. This allows for portably starting programs
+  (as needed by the upcoming version of Libchipcard)
+- added a graph to the documentation of the DB module to demonstrate the
+  internal structure
+- module XML: Added new flag which allows to ignore an <include> tag
+
+
 2003-12-28  Christian Stimming  <stimming@tuhh.de>
 
 	* src/parser/db.h: Add predicates for testing the type of a node.
+
 
 2003/12/20 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

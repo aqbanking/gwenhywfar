@@ -1769,21 +1769,25 @@ void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname){
 
 
 
-GWENHYWFAR_API
-int GWEN_DB_isGroup(const GWEN_DB_NODE *n)
-{
+int GWEN_DB_IsGroup(const GWEN_DB_NODE *n){
   assert(n);
   return n->h.typ==GWEN_DB_NODETYPE_GROUP;
 }
-GWENHYWFAR_API
-int GWEN_DB_isVariable(const GWEN_DB_NODE *n)
-{
+
+
+
+int GWEN_DB_IsVariable(const GWEN_DB_NODE *n){
   assert(n);
   return n->h.typ==GWEN_DB_NODETYPE_VAR;
 }
-GWENHYWFAR_API
-int GWEN_DB_isValue(const GWEN_DB_NODE *n)
-{
+
+
+
+int GWEN_DB_IsValue(const GWEN_DB_NODE *n){
   assert(n);
   return n->h.typ==GWEN_DB_NODETYPE_VALUE;
 }
+
+
+
+

@@ -837,7 +837,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	  }
 
           /* check whether the tag is "include" */
-          if (strcasecmp(n->data, "include")==0) {
+          if (!(flags & GWEN_XML_FLAGS_IGNORE_INCLUDE) &&
+              strcasecmp(n->data, "include")==0) {
             /* it is, we have to include something ;-) */
             GWEN_XMLNODE *inametag;
             const char *iname;
@@ -935,7 +936,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               /* just to be sure the freed tag is no longer used */
               n=0;
             } /* if include filename given */
-          }
+          } /* if include tag */
 
           /* surface */
           n=path[currDepth-1];

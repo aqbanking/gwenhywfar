@@ -63,7 +63,18 @@ extern "C" {
  */
 #define GWEN_XML_FLAGS_SHARE_TOPLEVEL      0x0002
 
+/**
+ * if set then the file given to the include tag are loaded to the root
+ * of the XML tree regardless of the tag's location.
+ */
 #define GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL 0x0004
+
+/**
+ * if set then include tags are treated as any other tag (i.e. no automatic
+ * file inclusion takes place. Instead the include tag is stored like any
+ * other tag would be).
+ */
+#define GWEN_XML_FLAGS_IGNORE_INCLUDE      0x0008
 
 /**
  * combination of other flags resembling the default flags

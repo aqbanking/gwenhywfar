@@ -43,7 +43,7 @@ extern "C" {
 /** @defgroup MOD_DB Database
  * @ingroup MOD_PARSER
  *
- * @brief This file contains the definition of a GWEN_DB database.
+ * @brief This group contains the definition of a GWEN_DB database.
  *
  * A GWEN_DB database consists of a tree of @ref GWEN_DB_NODE
  * entries.
@@ -68,6 +68,25 @@ extern "C" {
  * GWEN_DB_GetIntValue(), GWEN_DB_GetCharValue(),
  * GWEN_DB_GetBinValue(). These functions only accept a group  and a "path"
  * to the desired variable.
+ *
+ * <p>
+ *  The following graph shows the internal structure of a GWEN db: <br>
+ *  @image html db2.png "Internal structure of a GWEN db"
+ * <br>
+ * As you can see the DB consists of multiple units called NODE. Every node
+ * has a pointer to:
+ * <ul>
+ * <li>its parent</li>
+ * <li>its first child (only the <strong>first</strong>)</li>
+ * <li>its successor (not its predecessor!)
+ * </ul>
+ * Such a node can be either of the following:
+ * <ul>
+ *  <li>a group containing other groups and variables</li>
+ *  <li>a variable containing variables</li>
+ *  <li>a value</li>
+ * </ul>
+ * </p>
  */
 /*@{*/
 /** maximum size of a text line when reading/writing from/to streams */
@@ -198,7 +217,7 @@ GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
  * @param n db node
  */
 GWENHYWFAR_API
-int GWEN_DB_isGroup(const GWEN_DB_NODE *n);
+int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
 /*@}*/
 
 
@@ -308,7 +327,7 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
  * @param n db node
  */
 GWENHYWFAR_API
-int GWEN_DB_isVariable(const GWEN_DB_NODE *n);
+int GWEN_DB_IsVariable(const GWEN_DB_NODE *n);
     
 /** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
  * NODE is a Value or not. Usually the Application does not get in
@@ -317,7 +336,7 @@ int GWEN_DB_isVariable(const GWEN_DB_NODE *n);
  * @param n db node
  */
 GWENHYWFAR_API
-int GWEN_DB_isValue(const GWEN_DB_NODE *n);
+int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
 /*@}*/
 
 
