@@ -1,5 +1,9 @@
 $Id$
 
+2003/12/02 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- removed usage of libefence from test program
+
 
 2003/12/01 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
