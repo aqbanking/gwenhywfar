@@ -4090,7 +4090,7 @@ int testStringList2(int argc, char **argv) {
 
 int testFuzzy(int argc, char **argv) {
   const char *w1, *w2;
-  GWEN_TYPE_UINT32 score;
+  GWEN_TYPE_UINT32 score = 0;
 
   if (argc<4) {
     fprintf(stderr, "Two extra-arguments needed.\n");
