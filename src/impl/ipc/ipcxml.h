@@ -586,6 +586,13 @@ const char *GWEN_IPCXMLService_GetLocalName(GWEN_IPCXMLSERVICE *xs,
                                             unsigned int clid);
 
 /**
+ *
+ */
+void GWEN_IPCXMLService_SetLocalName(GWEN_IPCXMLSERVICE *xs,
+                                     unsigned int clid,
+                                     const char *n);
+
+/**
  * Returns the remote name for the connection.
  * The remote name determines whcih context (and keys) are to be used when
  * encrypting outgoing messages and verifying signatures of incoming
@@ -771,6 +778,13 @@ void GWEN_IPCXMLService_SetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
  * </p>
  */
 /*@{*/
+
+
+GWEN_ERRORCODE GWEN_IPCXMLService_AnonymousOpen(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int clid,
+                                                unsigned int oflags,
+                                                int timeout);
+
 /**
  * Checks whether there already is a session with the given ids.
  * @return 0 if there is no such session, !=0 if there is

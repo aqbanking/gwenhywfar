@@ -460,7 +460,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
   errors=0;
   ok=0;
   while(msgs<maxmsgs || msgs==0) {
-    DBG_NOTICE(0, "Handling message %d", msgs);
+    DBG_INFO(0, "Handling message %d", msgs);
     imsg=GWEN_ServiceLayer_NextIncomingMsg(xs->serviceLayer,
                                            userMark);
     if (!imsg) {
@@ -699,8 +699,8 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
               /* append data */
               GWEN_DB_AddGroup(rq->db, dgr);
 
-              DBG_INFO(0, "Request data so far:");
-              GWEN_DB_Dump(rq->db, stderr, 2);
+              /*DBG_INFO(0, "Request data so far:");
+               GWEN_DB_Dump(rq->db, stderr, 2); */
             } /* if segment number matches, too */
           } /* if request matches so far */
 
@@ -756,8 +756,8 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
         /* append data */
         GWEN_DB_AddGroup(rq->db, dgr);
 
-        DBG_INFO(0, "Request data so far:");
-        GWEN_DB_Dump(rq->db, stderr, 2);
+        /*DBG_INFO(0, "Request data so far:");
+         GWEN_DB_Dump(rq->db, stderr, 2);*/
 
         /* enqueue incoming request */
         GWEN_LIST_ADD(GWEN_IPCXMLREQUEST, rq,
@@ -785,6 +785,22 @@ const char *GWEN_IPCXMLService_GetLocalName(GWEN_IPCXMLSERVICE *xs,
   }
 
   return GWEN_IPCXMLConnLayer_GetLocalName(cl);
+}
+
+
+
+void GWEN_IPCXMLService_SetLocalName(GWEN_IPCXMLSERVICE *xs,
+                                     unsigned int clid,
+                                     const char *n){
+  GWEN_IPCCONNLAYER *cl;
+
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return;
+  }
+
+  GWEN_IPCXMLConnLayer_SetLocalName(cl, n);
 }
 
 
@@ -1294,6 +1310,8 @@ GWEN_ERRORCODE GWEN_IPCXMLService_GetContext(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
   }
 
+  DBG_INFO(0, "Looking for context for connection %s",
+           GWEN_IPCXMLConnLayer_GetLocalName(cl));
   ctx=GWEN_SecContextMgr_GetContext(xs->securityManager,
                                     GWEN_IPCXMLConnLayer_GetLocalName(cl),
                                     rname);
@@ -1430,7 +1448,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_SecureOpen(GWEN_IPCXMLSERVICE *xs,
   }
 
   /* -------------------------------------------------------- open session */
-  rqid=GWEN_IPCXMLCmd_Request_OpenSession(xs, clid,
+  rqid=GWEN_IPCXMLCmd_Request_OpenSession(xs, clid, 0,
                                           GWEN_IPCXML_REQUESTFLAGS_FLUSH);
   if (!rqid) {
     DBG_INFO(0, "here");
@@ -1454,7 +1472,8 @@ GWEN_ERRORCODE GWEN_IPCXMLService_SecureOpen(GWEN_IPCXMLSERVICE *xs,
     return err;
   }
   err=GWEN_IPCXMLCmd_Result_OpenSession(xs, rqid,
-                                        nbuffer, sizeof(nbuffer));
+                                        nbuffer, sizeof(nbuffer),
+                                        0, 0);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(0, err);
     GWEN_IPCXMLService_DeleteRequest(xs, rqid);
@@ -1488,8 +1507,8 @@ GWEN_ERRORCODE GWEN_IPCXMLService_SecureOpen(GWEN_IPCXMLSERVICE *xs,
                             GWEN_IPC_ERROR_INVALID);
     }
 
-    DBG_INFO(0, "Sending key:");
-    GWEN_KeySpec_Dump(GWEN_CryptKey_GetKeySpec(key), stderr, 2);
+    /*DBG_INFO(0, "Sending key:");
+    GWEN_KeySpec_Dump(GWEN_CryptKey_GetKeySpec(key), stderr, 2);*/
 
     rqid=GWEN_IPCXMLCmd_Request_SendPubKey(xs, clid,
                                            GWEN_IPCXML_REQUESTFLAGS_FLUSH,
@@ -1551,8 +1570,8 @@ GWEN_ERRORCODE GWEN_IPCXMLService_SecureOpen(GWEN_IPCXMLSERVICE *xs,
                             GWEN_IPC_ERROR_INVALID);
     }
 
-    DBG_INFO(0, "Sending key:");
-    GWEN_KeySpec_Dump(GWEN_CryptKey_GetKeySpec(key), stderr, 2);
+    /*DBG_INFO(0, "Sending key:");
+     GWEN_KeySpec_Dump(GWEN_CryptKey_GetKeySpec(key), stderr, 2);*/
 
     rqid=GWEN_IPCXMLCmd_Request_SendPubKey(xs, clid,
                                            GWEN_IPCXML_REQUESTFLAGS_FLUSH,
@@ -1658,6 +1677,356 @@ GWEN_ERRORCODE GWEN_IPCXMLService_SecureOpen(GWEN_IPCXMLSERVICE *xs,
   return 0;
 }
 
+
+
+GWEN_ERRORCODE GWEN_IPCXMLService_AnonymousOpen(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int clid,
+                                                unsigned int oflags,
+                                                int timeout) {
+  GWEN_IPCCONNLAYER *cl;
+  GWEN_CRYPTKEY *newsignkey;
+  GWEN_CRYPTKEY *newcryptkey;
+  unsigned int rqid;
+  time_t startTime;
+  int timeleft;
+  GWEN_ERRORCODE err;
+  unsigned int flags;
+  unsigned int newflags;
+  unsigned int rc;
+  char snbuffer[64];
+  char cnbuffer[64];
+  const char *lp;
+  GWEN_SECCTX *sc;
+
+  assert(xs);
+
+  startTime=time(0);
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return 0;
+  }
+
+  /* disable signing, because we are about to send our sign key */
+  flags=GWEN_IPCXMLService_GetSecurityFlags(xs, clid);
+  newflags=flags;
+  newflags&=~GWEN_HBCIMSG_FLAGS_SIGN;
+  newflags&=~GWEN_HBCIMSG_FLAGS_CRYPT;
+  err=GWEN_IPCXMLService_SetSecurityFlags(xs, clid,
+                                          newflags);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  /* -------------------------------------------------------- open session */
+  rqid=
+    GWEN_IPCXMLCmd_Request_OpenSession(xs, clid,
+                                       "anonymous",
+                                       GWEN_IPCXML_REQUESTFLAGS_FLUSH);
+  if (!rqid) {
+    DBG_INFO(0, "here");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  if (timeout>0) {
+    time_t currTime;
+
+    currTime=time(0);
+    timeleft=timeout-difftime(currTime, startTime);
+  }
+  else
+    timeleft=timeout;
+  err=GWEN_IPCXMLService_WaitForResponse(xs, rqid, timeleft);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return err;
+  }
+
+  err=GWEN_IPCXMLCmd_Result_OpenSession(xs, rqid,
+                                        snbuffer, sizeof(snbuffer),
+                                        cnbuffer, sizeof(cnbuffer));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return err;
+  }
+  if (*snbuffer==0) {
+    DBG_ERROR(0, "Peer did not send its id");
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_MSG);
+  }
+
+  lp=GWEN_IPCXMLService_GetRemoteName(xs, clid);
+  if (!lp) {
+    DBG_WARN(0, "No remote id");
+    GWEN_IPCXMLService_SetRemoteName(xs, clid, snbuffer);
+  }
+  if (strcasecmp(snbuffer,
+                 GWEN_IPCXMLService_GetRemoteName(xs, clid))!=0) {
+    DBG_ERROR(0, "Unexpected server id (%s)", snbuffer);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+
+  /* set new local id */
+  if (*cnbuffer==0) {
+    DBG_ERROR(0, "Peer did not send a new id");
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_MSG);
+  }
+  GWEN_IPCXMLService_SetLocalName(xs, clid, cnbuffer);
+
+  /* create new temporary context */
+  DBG_INFO(0,
+           "Creating temporary context for id \"%s\":\"%s\"",
+           cnbuffer, snbuffer);
+  sc=GWEN_IPCXMLSecCtx_new(cnbuffer, snbuffer);
+  assert(sc);
+  if (GWEN_IPCXMLSecCtxMgr_LoadKeys(xs->securityManager, sc, 0,
+                                    snbuffer)) {
+    DBG_WARN(0, "We have no keys for peer \"%s\"", snbuffer);
+    DBG_INFO(0, "Enter:");
+    getchar();
+  }
+  GWEN_SecContext_SetFlags(sc, GWEN_SECCTX_FLAGS_TEMP);
+
+  newsignkey=GWEN_CryptKey_Factory("RSA");
+  if (!newsignkey) {
+    DBG_ERROR(0, "Could not create RSA key");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  GWEN_CryptKey_SetOwner(newsignkey, cnbuffer);
+  GWEN_CryptKey_SetKeyName(newsignkey, "S");
+  err=GWEN_CryptKey_Generate(newsignkey, 768);
+  if (!GWEN_Error_IsOk(err)) {
+    GWEN_CryptKey_free(newsignkey);
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+  GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, newsignkey);
+
+  newcryptkey=GWEN_CryptKey_Factory("RSA");
+  if (!newcryptkey) {
+    DBG_ERROR(0, "Could not create RSA key");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  GWEN_CryptKey_SetOwner(newcryptkey, cnbuffer);
+  GWEN_CryptKey_SetKeyName(newcryptkey, "V");
+  err=GWEN_CryptKey_Generate(newcryptkey, 768);
+  if (!GWEN_Error_IsOk(err)) {
+    GWEN_CryptKey_free(newcryptkey);
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+  GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, newcryptkey);
+
+  if (GWEN_SecContextMgr_AddContext(xs->securityManager, sc)) {
+    DBG_INFO(0,
+             "Could not add temporary context for id \"%s\":\"%s\"",
+             cnbuffer, snbuffer);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    GWEN_SecContext_free(sc);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+
+
+  /* -------------------------------------------------- turn on encryption */
+  newflags|=GWEN_HBCIMSG_FLAGS_CRYPT;
+  err=GWEN_IPCXMLService_SetSecurityFlags(xs, clid,
+                                          newflags);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  /* --------------------------------------------- create and send sign key */
+  DBG_INFO(0, "Creating and sending sign key");
+
+  /*DBG_INFO(0, "Sending key:");
+   GWEN_KeySpec_Dump(GWEN_CryptKey_GetKeySpec(newsignkey), stderr, 2);*/
+
+  rqid=GWEN_IPCXMLCmd_Request_SendPubKey(xs, clid,
+                                         GWEN_IPCXML_REQUESTFLAGS_FLUSH,
+                                         newsignkey);
+  GWEN_CryptKey_free(newsignkey);
+  if (!rqid) {
+    DBG_INFO(0, "here");
+    GWEN_CryptKey_free(newcryptkey);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  if (timeout>0) {
+    time_t currTime;
+
+    currTime=time(0);
+    timeleft=timeout-difftime(currTime, startTime);
+  }
+  else
+    timeleft=timeout;
+  err=GWEN_IPCXMLService_WaitForResponse(xs, rqid, timeleft);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    GWEN_CryptKey_free(newcryptkey);
+    return err;
+  }
+  DBG_INFO(0, "Checking for response to SendPubKey (sign)");
+  err=GWEN_IPCXMLCmd_Result_SendPubKey(xs, rqid, &rc);
+  if (!GWEN_Error_IsOk(err)) {
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    DBG_INFO_ERR(0, err);
+    GWEN_CryptKey_free(newcryptkey);
+    return err;
+  }
+  else {
+    if (GWEN_IPCXML_RESULT_IS_OK(rc)) {
+      DBG_INFO(0, "Server accepted sign key");
+    }
+    else {
+      DBG_ERROR(0, "Server did not accept sign key: %d", rc);
+      GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+      GWEN_CryptKey_free(newcryptkey);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_GENERIC);
+    }
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+  }
+
+  /* ------------------------------------------------------ send crypt key */
+  DBG_INFO(0, "Creating and sending crypt key");
+  /*DBG_INFO(0, "Sending key:");
+   GWEN_KeySpec_Dump(GWEN_CryptKey_GetKeySpec(newcryptkey), stderr, 2);*/
+
+  rqid=GWEN_IPCXMLCmd_Request_SendPubKey(xs, clid,
+                                         GWEN_IPCXML_REQUESTFLAGS_FLUSH,
+                                         newcryptkey);
+  GWEN_CryptKey_free(newcryptkey);
+  if (!rqid) {
+    DBG_INFO(0, "here");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  if (timeout>0) {
+    time_t currTime;
+
+    currTime=time(0);
+    timeleft=timeout-difftime(currTime, startTime);
+  }
+  else
+    timeleft=timeout;
+  err=GWEN_IPCXMLService_WaitForResponse(xs, rqid, timeleft);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return err;
+  }
+  err=GWEN_IPCXMLCmd_Result_SendPubKey(xs, rqid, &rc);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return err;
+  }
+  else {
+    if (GWEN_IPCXML_RESULT_IS_OK(rc)) {
+      DBG_INFO(0, "Server accepted crypt key");
+    }
+    else {
+      DBG_ERROR(0, "Server did not accept crypt key: %d", rc);
+      GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_GENERIC);
+    }
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+  }
+
+  /* ----------------------------------------------- switch to secure mode */
+  /* enable signing */
+  newflags|=GWEN_HBCIMSG_FLAGS_SIGN;
+  err=GWEN_IPCXMLService_SetSecurityFlags(xs, clid,
+                                          newflags);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  rqid=GWEN_IPCXMLCmd_Request_Secure(xs, clid,
+                                     GWEN_IPCXML_REQUESTFLAGS_FLUSH);
+  if (!rqid) {
+    DBG_INFO(0, "here");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  if (timeout>0) {
+    time_t currTime;
+
+    currTime=time(0);
+    timeleft=timeout-difftime(currTime, startTime);
+  }
+  else
+    timeleft=timeout;
+  err=GWEN_IPCXMLService_WaitForResponse(xs, rqid, timeleft);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return err;
+  }
+
+  DBG_INFO(0, "Checking for response to Secure");
+  err=GWEN_IPCXMLCmd_Result_Secure(xs, rqid, &rc);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return err;
+  }
+  if (GWEN_IPCXML_RESULT_IS_OK(rc)) {
+    DBG_INFO(0, "Session secured");
+  }
+  else {
+    DBG_ERROR(0, "Session not secured: %d", rc);
+    GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  GWEN_IPCXMLService_DeleteRequest(xs, rqid);
+
+  DBG_NOTICE(0, "Connection open and secured");
+  return 0;
+}
 
 
 

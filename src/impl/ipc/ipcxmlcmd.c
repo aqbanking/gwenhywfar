@@ -39,6 +39,10 @@
 #include <gwenhywfar/ipcxmlconnlayer.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
+
+
+static unsigned int gwen_ipcxmlcmd_lastname=0;
 
 
 
@@ -688,11 +692,14 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_SendPubKey(GWEN_IPCXMLSERVICE *xs,
   }
 
   /* get context */
+  DBG_INFO(0, "Looking for context %s (%d)",
+           GWEN_CryptKey_GetOwner(key), connid);
   err=GWEN_IPCXMLService_GetContext(xs, connid,
                                     GWEN_CryptKey_GetOwner(key),
                                     &ctx);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(0, err);
+    getchar();
     GWEN_CryptKey_free(key);
     GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
                                       9000,
@@ -703,7 +710,9 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_SendPubKey(GWEN_IPCXMLSERVICE *xs,
   /* set key if possible */
   if (!(GWEN_SecContext_GetFlags(ctx) & GWEN_SECCTX_FLAGS_TEMP)) {
     /* only change keys on temporary context */
-    DBG_ERROR(0, "Will not change keys on non-temporary context");
+    DBG_ERROR(0,
+              "Will not change keys on non-temporary context (%s)",
+              GWEN_CryptKey_GetOwner(key));
     GWEN_IPCXMLService_ReleaseContext(xs, connid, ctx, 1);
     GWEN_CryptKey_free(key);
     GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
@@ -806,25 +815,33 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_SendPubKey(GWEN_IPCXMLSERVICE *xs,
 
 unsigned int GWEN_IPCXMLCmd_Request_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                 unsigned int clid,
+                                                const char *localName,
                                                 unsigned int flags){
   GWEN_DB_NODE *cfg;
   unsigned int rqid;
-  const char *p;
   unsigned int sflags;
 
   cfg=GWEN_DB_Group_new("request");
 
   /* turn on encryption */
   sflags=GWEN_IPCXMLService_GetSecurityFlags(xs, clid);
-  sflags|=GWEN_HBCIMSG_FLAGS_CRYPT;
+  if (strcasecmp(localName, "anonymous")==0) {
+    sflags&=~GWEN_HBCIMSG_FLAGS_CRYPT;
+    sflags&=~GWEN_HBCIMSG_FLAGS_SIGN;
+  }
+  else
+    sflags|=GWEN_HBCIMSG_FLAGS_CRYPT;
+
   GWEN_IPCXMLService_SetSecurityFlags(xs, clid, sflags);
 
-  p=GWEN_IPCXMLService_GetLocalName(xs, clid);
-  if (!p) {
-    DBG_ERROR(0, "No local name");
-    return 0;
+  if (!localName) {
+    localName=GWEN_IPCXMLService_GetLocalName(xs, clid);
+    if (!localName) {
+      DBG_ERROR(0, "No local name");
+      return 0;
+    }
   }
-  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "id", p);
+  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "id", localName);
   rqid=GWEN_IPCXMLService_AddRequest(xs, clid, "OpenSession", 0, cfg, flags);
   if (!rqid) {
     DBG_INFO(0, "here");
@@ -846,12 +863,15 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
   GWEN_SECCTX *sc;
   unsigned int cflags;
   int ctxadded;
+  int anon;
   unsigned int sid;
-
+  char buffer[32];
+  const char *peerName;
   assert(xs);
   assert(n);
 
   ctxadded=0;
+  anon=0;
   connid=GWEN_IPCXMLService_GetRequestConnection(xs, rqid);
   if (!connid) {
     DBG_INFO(0, "Could not get connection for request %d", rqid);
@@ -864,6 +884,18 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
 
   cflags=GWEN_IPCXMLService_GetConnectionFlags(xs, connid);
   cflags&=~GWEN_IPCXMLCONNLAYER_FLAGS_VERIFIED;
+  if (cflags & GWEN_IPCXMLCONNLAYER_FLAGS_SESSION_OPEN) {
+    DBG_ERROR(0, "Session already IS open");
+    /* TODO: Maybe close connection diirectly */
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Session already open", 0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_INVALID);
+  }
+
   GWEN_IPCXMLService_SetConnectionFlags(xs, connid, cflags);
 
   gr=GWEN_DB_GetGroup(n,
@@ -879,21 +911,8 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_UNKNOWN_MSG);
   }
 
-  /* check for encryption */
-  p=GWEN_DB_GetCharValue(n, "security/crypter", 0, 0);
-  if (!p) {
-    DBG_ERROR(0, "Message is not encrypted (it should be)");
-    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
-                                      9000,
-                                      "Message not encrypted", 0);
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
-                          GWEN_IPC_ERROR_BAD_MSG);
-  }
-
-  p=GWEN_DB_GetCharValue(gr, "id", 0, 0);
-  if (!p) {
+  peerName=GWEN_DB_GetCharValue(gr, "id", 0, 0);
+  if (!peerName) {
     DBG_ERROR(0, "No id given");
     /* Send error message */
     GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
@@ -905,12 +924,40 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_BAD_DATA);
   }
 
+  /* check for encryption (only if non-anonymous) */
+  if (strcasecmp(peerName, "anonymous")!=0) {
+    p=GWEN_DB_GetCharValue(n, "security/crypter", 0, 0);
+    if (!p) {
+      DBG_ERROR(0, "Message is not encrypted (it should be)");
+      GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                        9000,
+                                        "Message not encrypted", 0);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_BAD_MSG);
+    }
+  }
+
+  /* check for anonymous access */
+  if (strcasecmp(peerName, "anonymous")==0) {
+    time_t t;
+
+    t=time(0);
+    /* anonymous access, create name for peer */
+    sprintf(buffer, "anon%08x-%08x",
+            ++gwen_ipcxmlcmd_lastname, (unsigned int)t);
+    peerName=buffer;
+    DBG_INFO(0, "Created id \"%s\" for anonymous peer", peerName);
+    anon=1;
+  }
+
   sid=GWEN_IPCXMLService_AddSession(xs,
                                     GWEN_IPCXMLService_GetLocalName(xs,
                                                                     connid),
-                                    p);
+                                    peerName);
   if (!sid){
-    DBG_WARN(0, "Session for id \"%s\" already in use", p);
+    DBG_WARN(0, "Session for id \"%s\" already in use", peerName);
     GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
                                       9000,
                                       "Id already in use", 0);
@@ -920,16 +967,17 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_GENERIC);
   }
   else {
-    DBG_WARN(0, "Added session for id \"%s\"", p);
+    DBG_NOTICE(0, "Added session for id \"%s\"", peerName);
   }
 
   sc=0;
-  err=GWEN_IPCXMLService_GetContext(xs, connid, p, &sc);
+  err=GWEN_IPCXMLService_GetContext(xs, connid, peerName, &sc);
   if (!GWEN_Error_IsOk(err)) {
     if (cflags & GWEN_IPCXMLCONNLAYER_FLAGS_ALLOW_ADDCTX) {
-      DBG_NOTICE(0, "Context %s not found, will add it temporarily", p);
+      DBG_NOTICE(0, "Context %s not found, will add it temporarily",
+                 peerName);
       sc=GWEN_IPCXMLSecCtx_new(GWEN_IPCXMLService_GetLocalName(xs, connid),
-                               p);
+                               peerName);
       GWEN_SecContext_SetFlags(sc, GWEN_SECCTX_FLAGS_TEMP);
       err=GWEN_IPCXMLService_AddContext(xs, connid, sc);
       if (!GWEN_Error_IsOk(err)) {
@@ -969,9 +1017,9 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
   }
 
   /* set remote name */
-  GWEN_IPCXMLService_SetRemoteName(xs, connid, p);
+  GWEN_IPCXMLService_SetRemoteName(xs, connid, peerName);
 
-  if (!ctxadded && GWEN_IPCXMLCmd_IsSignedBy(n, p)) {
+  if (!ctxadded && !anon && GWEN_IPCXMLCmd_IsSignedBy(n, peerName)) {
     /* the other side signed the message, so it is verified */
     cflags|=GWEN_IPCXMLCONNLAYER_FLAGS_VERIFIED;
     GWEN_IPCXMLService_SetConnectionFlags(xs, connid, cflags);
@@ -984,6 +1032,11 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
                        GWEN_DB_FLAGS_DEFAULT,
                        "id",
                        GWEN_IPCXMLService_GetLocalName(xs, connid));
+  if (anon)
+    GWEN_DB_SetCharValue(rsp,
+                         GWEN_DB_FLAGS_DEFAULT,
+                         "peerid",
+                         peerName);
 
   err=GWEN_IPCXMLService_AddResponse(xs, rqid, "OpenSessionResponse", 0,
                                      rsp, flags);
@@ -994,7 +1047,10 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
     return err;
   }
 
+  /* mark session as open */
   GWEN_IPCXMLService_SetSessionId(xs, connid, sid);
+  cflags|=GWEN_IPCXMLCONNLAYER_FLAGS_SESSION_OPEN;
+  GWEN_IPCXMLService_SetConnectionFlags(xs, connid, cflags);
 
   GWEN_DB_Group_free(rsp);
   return 0;
@@ -1004,8 +1060,10 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
 
 GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                  unsigned int rqid,
-                                                 char *buffer,
-                                                 unsigned int size) {
+                                                 char *snbuffer,
+                                                 unsigned int snsize,
+                                                 char *cnbuffer,
+                                                 unsigned int cnsize) {
   GWEN_DB_NODE *n;
   const char *p;
 
@@ -1045,20 +1103,45 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
   p=GWEN_DB_GetCharValue(n, "OpenSessionresponse/id", 0, 0);
   if (!p) {
     DBG_WARN(0, "Peer has sent no id");
-    *buffer=0;
+    if (snbuffer)
+      *snbuffer=0;
   }
   else {
-    if (strlen(p)>=size) {
-      DBG_ERROR(0, "Buffer too small, will not copy id");
-      GWEN_DB_Group_free(n);
-      return GWEN_Error_new(0,
-                            GWEN_ERROR_SEVERITY_ERR,
-                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
-                            GWEN_IPC_ERROR_INVALID);
+    if (snbuffer) {
+      if (strlen(p)>=snsize) {
+        DBG_ERROR(0, "Buffer too small, will not copy id");
+        GWEN_DB_Group_free(n);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_INVALID);
+      }
+      memmove(snbuffer, p, strlen(p)+1);
+      DBG_NOTICE(0, "Peer is \"%s\"", snbuffer);
     }
-    memmove(buffer, p, strlen(p)+1);
-    DBG_NOTICE(0, "Peer is \"%s\"", buffer);
   }
+
+  p=GWEN_DB_GetCharValue(n, "OpenSessionresponse/peerid", 0, 0);
+  if (!p) {
+    DBG_WARN(0, "Peer has sent no new id");
+    if (cnbuffer)
+      *cnbuffer=0;
+  }
+  else {
+    if (cnbuffer) {
+      if (strlen(p)>=cnsize) {
+        DBG_ERROR(0, "Buffer too small, will not copy id");
+        GWEN_DB_Group_free(n);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_INVALID);
+      }
+      memmove(cnbuffer, p, strlen(p)+1);
+      DBG_NOTICE(0, "New id is \"%s\"", cnbuffer);
+    }
+  }
+
   GWEN_DB_Group_free(n);
   return 0;
 }

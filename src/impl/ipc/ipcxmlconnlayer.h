@@ -52,6 +52,7 @@ typedef struct GWEN_IPCXMLCONNLAYERDATA GWEN_IPCXMLCONNLAYERDATA;
 
 #define GWEN_IPCXMLCONNLAYER_FLAGS_VERIFIED     0x00010000
 #define GWEN_IPCXMLCONNLAYER_FLAGS_ALLOW_ADDCTX 0x00020000
+#define GWEN_IPCXMLCONNLAYER_FLAGS_SESSION_OPEN 0x00040000
 
 
 typedef void
@@ -94,6 +95,8 @@ GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_IPC2HBCI(GWEN_IPCCONNLAYER *cl,
                                             GWEN_IPCMSG *msg);
 
 const char *GWEN_IPCXMLConnLayer_GetLocalName(GWEN_IPCCONNLAYER *cl);
+void GWEN_IPCXMLConnLayer_SetLocalName(GWEN_IPCCONNLAYER *cl,
+                                       const char *n);
 
 const char *GWEN_IPCXMLConnLayer_GetRemoteName(GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,

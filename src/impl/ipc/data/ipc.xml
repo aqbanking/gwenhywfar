@@ -589,6 +589,7 @@ email       : martin@libchipcard.de
  >
    <GROUP type="SegHead" name="head" />
    <ELEM name="id" type="ascii" maxsize="32" />
+   <ELEM name="peerid" type="ascii" maxsize="32" minnum="0" />
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

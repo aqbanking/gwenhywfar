@@ -35,6 +35,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
+#define DISABLE_DEBUGLOG
+
 
 #ifdef GWEN_MEMTRACE
 static unsigned int GWEN_Buffer_Buffers=0;
@@ -650,7 +652,7 @@ int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c){
   if (bf->pos==0) {
     if ((bf->ptr-bf->realPtr)>=1) {
       /* we can simply insert it by occupying the reserved space */
-      DBG_NOTICE(0, "Using reserved space");
+      DBG_DEBUG(0, "Using reserved space");
       bf->ptr--;
       bf->ptr[bf->pos]=c;
       bf->bytesUsed++;

@@ -30,6 +30,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "servicelayer_p.h"
 #include <gwenhywfar/connlayer.h>
 #include <gwenhywfar/ipc.h>
@@ -48,7 +51,7 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
   GWEN_IPCCONNLAYER *curr;
   GWEN_ERRORCODE err;
 
-  DBG_NOTICE(0, "ServiceLayer is working");
+  DBG_INFO(0, "ServiceLayer is working");
   ndone=0;
   socks=0;
   curr=GWEN_Global_ServiceLayer->connections;

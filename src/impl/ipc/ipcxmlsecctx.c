@@ -172,7 +172,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
     }
 
     /* generate session key, if possible */
-    DBG_NOTICE(0, "Generating session key");
+    DBG_INFO(0, "Generating session key");
     scd->sessionKey=GWEN_CryptKey_Factory("DES");
     assert(scd->sessionKey);
     err=GWEN_CryptKey_Generate(scd->sessionKey, 0);
@@ -192,7 +192,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
 
     GWEN_Buffer_Rewind(kbuf);
     i=GWEN_CryptKey_GetChunkSize(scd->remoteCryptKey)-16;
-    DBG_INFO(0, "Padding with %d bytes", i);
+    DBG_DEBUG(0, "Padding with %d bytes", i);
     while(i-->0) {
       if (GWEN_Buffer_InsertByte(kbuf, (char)0)) {
         DBG_INFO(0, "here");
@@ -200,10 +200,10 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
         return GWEN_SecCtxRetvalError;
       }
     } /* while */
-    DBG_INFO(0, "Padding done");
+    DBG_DEBUG(0, "Padding done");
 
     sbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    DBG_INFO(0, "Encrypting key");
+    DBG_DEBUG(0, "Encrypting key");
     err=GWEN_CryptKey_Encrypt(scd->remoteCryptKey,
                               kbuf,
                               sbuf);
@@ -213,7 +213,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
       DBG_INFO_ERR(0, err);
       return GWEN_SecCtxRetvalError;
     }
-    DBG_INFO(0, "Encrypting key: done");
+    DBG_DEBUG(0, "Encrypting key: done");
 
     GWEN_HBCICryptoContext_SetCryptKey(ctx,
                                        GWEN_Buffer_GetStart(sbuf),
@@ -240,7 +240,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
     GWEN_HBCICryptoContext_SetSecurityId(ctx,
                                          scd->securityId,
                                          strlen(scd->securityId)+1);
-  DBG_INFO(0, "Context prepared");
+  DBG_DEBUG(0, "Context prepared");
   return GWEN_SecCtxRetvalOk;
 }
 
@@ -265,7 +265,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
   }
 
   /* hash data */
-  DBG_INFO(0, "Hash data");
+  DBG_DEBUG(0, "Hash data");
   md=GWEN_MD_Factory("RMD160");
   if (!md) {
     DBG_ERROR(0, "RMD160 not found");
@@ -291,7 +291,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
     GWEN_MD_free(md);
     return GWEN_SecCtxRetvalError;
   }
-  DBG_INFO(0, "Hashing done");
+  DBG_DEBUG(0, "Hashing done");
 
   hashbuf=GWEN_Buffer_new(0,
                           GWEN_MD_GetDigestSize(md),
@@ -307,7 +307,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
   GWEN_MD_free(md);
 
   /* padd */
-  DBG_INFO(0, "Padding hash using ISO 9796");
+  DBG_DEBUG(0, "Padding hash using ISO 9796");
   if (GWEN_SecContext_PaddWithISO9796(hashbuf)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(hashbuf);
@@ -329,7 +329,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
   scd->localSignSeq++;
 
   GWEN_Buffer_free(hashbuf);
-  DBG_INFO(0, "Signing done");
+  DBG_DEBUG(0, "Signing done");
   return GWEN_SecCtxRetvalOk;
 }
 
@@ -422,7 +422,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   GWEN_MD_free(md);
 
   /* padd */
-  DBG_INFO(0, "Padding hash using ISO 9796");
+  DBG_DEBUG(0, "Padding hash using ISO 9796");
   if (GWEN_SecContext_PaddWithISO9796(hashbuf)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(hashbuf);
@@ -461,14 +461,14 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
     return GWEN_SecCtxRetvalError;
   }
 
-  DBG_INFO(0, "Padding with ANSI X9.23");
+  DBG_DEBUG(0, "Padding with ANSI X9.23");
   if (GWEN_SecContext_PaddWithANSIX9_23(msgbuf)) {
     DBG_INFO(0, "here");
     return GWEN_SecCtxRetvalError;
   }
-  DBG_INFO(0, "Padding with ANSI X9.23: done");
+  DBG_DEBUG(0, "Padding with ANSI X9.23: done");
 
-  DBG_INFO(0, "Encrypting with session key");
+  DBG_DEBUG(0, "Encrypting with session key");
   err=GWEN_CryptKey_Encrypt(scd->sessionKey,
 			    msgbuf,
 			    cryptbuf);
@@ -476,7 +476,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
     DBG_INFO(0, "here");
     return GWEN_SecCtxRetvalError;
   }
-  DBG_INFO(0, "Encrypting with session key: done");
+  DBG_DEBUG(0, "Encrypting with session key: done");
 
   return GWEN_SecCtxRetvalOk;
 }
@@ -502,7 +502,7 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
     const GWEN_KEYSPEC *ks, *ks2;
     char *km;
 
-    DBG_NOTICE(0, "Storing new session key");
+    DBG_INFO(0, "Storing new session key");
     sbuf=GWEN_Buffer_new(0, 256, 0, 1);
     if (GWEN_Buffer_AppendBytes(sbuf,
                                 GWEN_HBCICryptoContext_GetCryptKeyPtr(ctx),
@@ -533,6 +533,10 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
          )) {
       DBG_ERROR(0,
                 "Local crypt key differs from that one used for encryption");
+      DBG_ERROR(0, "My version:");
+      GWEN_KeySpec_Dump(ks2, stderr, 1);
+      DBG_ERROR(0, "Used version:");
+      GWEN_KeySpec_Dump(ks, stderr, 1);
       return GWEN_SecCtxRetvalError;
     }
 
@@ -592,7 +596,6 @@ void GWEN_IPCXMLSecCtx_FreeData(GWEN_SECCTX *sc){
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
-  DBG_ERROR(0, "Freeing SecCtx-Data");
   GWEN_IPCXMLSecCtxData_free(scd);
 }
 
@@ -743,7 +746,6 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *localName,
 GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc,
                                             GWEN_DB_NODE *db){
   const char *p;
-  GWEN_DB_NODE *gr;
   GWEN_IPCXMLSECCTXDATA *scd;
 
   assert(sc);
@@ -758,33 +760,6 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc,
   if (p)
     GWEN_IPCXMLSecCtx_SetSecurityId(sc, p);
 
-  /* read the keys */
-  gr=GWEN_DB_GetGroup(db,
-                      GWEN_DB_FLAGS_DEFAULT |
-                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      "remotesignkey");
-  if (gr) {
-    GWEN_CryptKey_free(scd->remoteSignKey);
-    scd->remoteSignKey=GWEN_CryptKey_FromDb(gr);
-    if (scd->remoteSignKey==0) {
-      DBG_ERROR(0, "Could not read key");
-      return GWEN_SecCtxRetvalError;
-    }
-  } /* if "remotesignkey" group */
-
-  gr=GWEN_DB_GetGroup(db,
-                      GWEN_DB_FLAGS_DEFAULT |
-                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                      "remotecryptkey");
-  if (gr) {
-    GWEN_CryptKey_free(scd->remoteCryptKey);
-    scd->remoteCryptKey=GWEN_CryptKey_FromDb(gr);
-    if (scd->remoteCryptKey==0) {
-      DBG_ERROR(0, "Could not read key");
-      return GWEN_SecCtxRetvalError;
-    }
-  } /* if "remotecryptkey" group */
-
   GWEN_SecContext_SetData(sc, scd);
   return GWEN_SecCtxRetvalOk;
 }
@@ -794,8 +769,6 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc,
 GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
                                           GWEN_DB_NODE *db){
   GWEN_IPCXMLSECCTXDATA *scd;
-  GWEN_DB_NODE *gr;
-  GWEN_ERRORCODE err;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
@@ -811,32 +784,6 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
                       GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "remotesignseq",
                       scd->remoteSignSeq);
-  if (scd->remoteSignKey) {
-    gr=GWEN_DB_GetGroup(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_PATH_FLAGS_CREATE_GROUP,
-                        "remotesignkey");
-    assert(gr);
-    err=GWEN_CryptKey_ToDb(scd->remoteSignKey, gr, 1);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO_ERR(0, err);
-      return GWEN_SecCtxRetvalError;
-    }
-  }
-
-  if (scd->remoteCryptKey) {
-    gr=GWEN_DB_GetGroup(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_PATH_FLAGS_CREATE_GROUP,
-                        "remotecryptkey");
-    assert(gr);
-    err=GWEN_CryptKey_ToDb(scd->remoteCryptKey, gr, 1);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO_ERR(0, err);
-      return GWEN_SecCtxRetvalError;
-    }
-  }
-
   return GWEN_SecCtxRetvalOk;
 }
 
@@ -922,14 +869,12 @@ GWEN_ERRORCODE GWEN_IPCXMLSecCtx_SetRemoteCryptKey(GWEN_SECCTX *sc,
 
 
 
-
-
-
 GWEN_SECCTX *GWEN_IPCXMLSecCtxtMgr_FindContext(GWEN_SECCTX_MANAGER *scm,
                                                const char *localName,
                                                const char *remoteName){
   GWEN_LIST_ITERATOR *it;
   GWEN_IPCXMLSECCTXMGRDATA *scmd;
+  unsigned int i;
 
   assert(scm);
   assert(localName);
@@ -938,18 +883,25 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxtMgr_FindContext(GWEN_SECCTX_MANAGER *scm,
   assert(scmd);
   assert(scmd->contextList);
 
-  DBG_WARN(0, "Looking for context \"%s:%s\"", localName, remoteName);
+  DBG_DEBUG(0, "Looking for context \"%s:%s\" (%d)",
+            localName, remoteName,
+            GWEN_List_GetSize(scmd->contextList));
   it=GWEN_List_First(scmd->contextList);
   if (it) {
     GWEN_SECCTX *sc;
 
+    i=0;
     sc=(GWEN_SECCTX*)GWEN_ListIterator_Data(it);
     while(sc) {
+      DBG_DEBUG(0, "Checking this: %s / %s (%d)",
+                GWEN_SecContext_GetLocalName(sc),
+                GWEN_SecContext_GetRemoteName(sc), i++);
       if ((GWEN_Text_Compare(GWEN_SecContext_GetLocalName(sc),
                              localName, 1)==0) &&
           (GWEN_Text_Compare(GWEN_SecContext_GetRemoteName(sc),
                              remoteName, 1)==0)){
         GWEN_ListIterator_free(it);
+        DBG_DEBUG(0, "Found context.");
         return sc;
       }
       sc=(GWEN_SECCTX*)GWEN_ListIterator_Next(it);
@@ -957,7 +909,7 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxtMgr_FindContext(GWEN_SECCTX_MANAGER *scm,
   }
   GWEN_ListIterator_free(it);
 
-  DBG_INFO(0, "Context \"%s:%s\" not found.", localName, remoteName);
+  DBG_DEBUG(0, "Context \"%s:%s\" not found.", localName, remoteName);
   return 0;
 }
 
@@ -1020,6 +972,102 @@ int GWEN_IPCXMLSecCtxMgr_UnlockFile(int fid) {
 
 
 
+int GWEN_IPCXMLSecCtxMgr_LoadKeys(GWEN_SECCTX_MANAGER *scm,
+                                  GWEN_SECCTX *sc,
+                                  int local,
+                                  const char *name) {
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+  char path[256];
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *gr;
+  GWEN_CRYPTKEY *key;
+  const char *t;
+
+  DBG_DEBUG(0, "Loading keys");
+  assert(scm);
+  assert(name);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+  assert(scmd->dir);
+
+  if (local)
+    t="local";
+  else
+    t="remote";
+
+  if (strlen(scmd->dir)+
+      strlen("keys")+
+      strlen(t)+
+      strlen(name)+
+      10>sizeof(path)) {
+    DBG_ERROR(0, "Path too long");
+    return -1;
+  }
+
+  strcpy(path, scmd->dir);
+  strcat(path, "/keys/");
+  strcat(path, t);
+  strcat(path, "/");
+  strcat(path, name);
+  strcat(path, ".key");
+  if (GWEN_Directory_GetPath(path,
+                             GWEN_PATH_FLAGS_VARIABLE |
+                             GWEN_PATH_FLAGS_PATHMUSTEXIST)) {
+    DBG_INFO(0, "%s keys for \"%s\" not found",
+             t, name);
+    return -1;
+  }
+
+  /* try to read the file */
+  db=GWEN_DB_Group_new("context");
+  if (GWEN_DB_ReadFile(db, path,
+                       GWEN_DB_FLAGS_DEFAULT |
+                       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_INFO(0, "Error reading file \"%s\"", path);
+    GWEN_DB_Group_free(db);
+    return -1;
+  }
+
+  /* read keys */
+  gr=GWEN_DB_GetGroup(db,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "signkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      DBG_INFO(0, "Could not load key");
+      GWEN_DB_Group_free(db);
+      return -1;
+    }
+    if (local)
+      GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, key);
+    else
+      GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, key);
+  }
+
+  gr=GWEN_DB_GetGroup(db,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "cryptkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      DBG_INFO(0, "Could not load key");
+      GWEN_DB_Group_free(db);
+      return -1;
+    }
+    if (local)
+      GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, key);
+    else
+      GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, key);
+  }
+  GWEN_DB_Group_free(db);
+
+  return 0;
+}
+
+
 
 GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
                                              const char *localName,
@@ -1035,17 +1083,19 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
 
   if (remoteName) {
     /* try to read the file */
-    DBG_INFO(0, "Trying to read context \"%s:%s\"",
+    DBG_DEBUG(0, "Trying to read context \"%s:%s\"",
              localName, remoteName);
     if (strlen(scmd->dir)+
+        strlen("context")+
         strlen(localName)+
         strlen(remoteName)+
-        4>sizeof(path)) {
+        10>sizeof(path)) {
       DBG_ERROR(0, "Path too long");
       return 0;
     }
+
     strcpy(path, scmd->dir);
-    strcat(path, "/");
+    strcat(path, "/context/");
     strcat(path, localName);
     strcat(path, "/");
     strcat(path, remoteName);
@@ -1067,6 +1117,24 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
         return 0;
       }
       GWEN_SecContext_SetFlags(ctx, GWEN_SECCTX_FLAGS_TEMP);
+
+      /* load keys if possible (and needed) */
+      if (GWEN_IPCXMLSecCtx_GetLocalSignKey(ctx)==0 ||
+          GWEN_IPCXMLSecCtx_GetLocalCryptKey(ctx)==0) {
+        DBG_DEBUG(0, "Loading keys");
+        if (GWEN_IPCXMLSecCtxMgr_LoadKeys(scm, ctx, 1, localName)) {
+          DBG_INFO(0,
+                   "No local keys for %s, will use manager keys",
+                   localName);
+        }
+      }
+      if (GWEN_IPCXMLSecCtx_GetRemoteSignKey(ctx)==0 ||
+          GWEN_IPCXMLSecCtx_GetRemoteCryptKey(ctx)==0) {
+        if (GWEN_IPCXMLSecCtxMgr_LoadKeys(scm, ctx, 0, remoteName)) {
+          DBG_INFO(0, "No remote keys for %s", remoteName);
+        }
+      }
+
       if (GWEN_IPCXMLSecCtx_GetLocalSignKey(ctx)==0 &&
           scmd->localSignKey)
         GWEN_IPCXMLSecCtx_SetLocalSignKey(ctx,scmd->localSignKey);
@@ -1080,7 +1148,7 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
       GWEN_SECCTX *ctx;
       int fid;
 
-      DBG_INFO(0, "Trying to load file for context \"%s:%s\"",
+      DBG_DEBUG(0, "Trying to load file for context \"%s:%s\"",
                localName, remoteName);
       /* file exists, try to lock it */
       fid=GWEN_IPCXMLSecCtxMgr_LockFile(path);
@@ -1112,7 +1180,17 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
       /* store lock id (which actually is the file descriptor) */
       GWEN_SecContext_SetLockId(ctx, fid);
 
-      /* store local files if they are not already set */
+      /* load keys if possible */
+      if (GWEN_IPCXMLSecCtxMgr_LoadKeys(scm, ctx, 1, localName)) {
+        DBG_INFO(0,
+                 "No local keys for %s, will use manager keys",
+                 localName);
+      }
+      if (GWEN_IPCXMLSecCtxMgr_LoadKeys(scm, ctx, 0, remoteName)) {
+        DBG_WARN(0, "No remote keys for %s", remoteName);
+      }
+
+      /* store local keys if they are not already set */
       if (GWEN_IPCXMLSecCtx_GetLocalSignKey(ctx)==0 &&
           scmd->localSignKey)
         GWEN_IPCXMLSecCtx_SetLocalSignKey(ctx,scmd->localSignKey);
@@ -1129,10 +1207,22 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
     /* create a local-only context */
     DBG_INFO(0, "Creating local-only context");
     ctx=GWEN_IPCXMLSecCtx_new(localName, remoteName);
-    if (scmd->localSignKey)
-      GWEN_IPCXMLSecCtx_SetLocalSignKey(ctx,scmd->localSignKey);
-    if (scmd->localCryptKey)
-      GWEN_IPCXMLSecCtx_SetLocalCryptKey(ctx,scmd->localCryptKey);
+
+    /* load keys if possible */
+    if (GWEN_IPCXMLSecCtxMgr_LoadKeys(scm, ctx, 1, localName)) {
+      DBG_INFO(0,
+               "No local keys for %s, will use manager keys",
+               localName);
+      /* if keys could not be loaded, use manager keys */
+      if (scmd->localSignKey)
+        GWEN_IPCXMLSecCtx_SetLocalSignKey(ctx, scmd->localSignKey);
+      if (scmd->localCryptKey)
+        GWEN_IPCXMLSecCtx_SetLocalCryptKey(ctx, scmd->localCryptKey);
+    }
+    else {
+      DBG_DEBUG(0, "Local keys loaded");
+    }
+
     return ctx;
   }
 }
@@ -1164,17 +1254,20 @@ int GWEN_IPCXMLSecCtxMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
   }
 
   /* check for the existence of a file for the context */
-  DBG_INFO(0, "Trying to read context \"%s:%s\"",
+  DBG_DEBUG(0, "Trying to read context \"%s:%s\"",
            localName, remoteName);
+
   if (strlen(scmd->dir)+
+      strlen("context")+
       strlen(localName)+
       strlen(remoteName)+
-      4>sizeof(path)) {
+      10>sizeof(path)) {
     DBG_ERROR(0, "Path too long");
     return 0;
   }
+
   strcpy(path, scmd->dir);
-  strcat(path, "/");
+  strcat(path, "/context/");
   strcat(path, localName);
   strcat(path, "/");
   strcat(path, remoteName);
@@ -1247,18 +1340,23 @@ int GWEN_IPCXMLSecCtxMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
   localName=GWEN_SecContext_GetLocalName(sc);
   remoteName=GWEN_SecContext_GetRemoteName(sc);
 
+  DBG_INFO(0, "Deleting context \"%s:%s\"",
+           localName, remoteName);
+
   /* try to read the file */
-  DBG_INFO(0, "Trying to read context \"%s:%s\"",
+  DBG_DEBUG(0, "Trying to read context \"%s:%s\"",
            localName, remoteName);
   if (strlen(scmd->dir)+
+      strlen("context")+
       strlen(localName)+
       strlen(remoteName)+
-      4>sizeof(path)) {
+      10>sizeof(path)) {
     DBG_ERROR(0, "Path too long");
     return 0;
   }
+
   strcpy(path, scmd->dir);
-  strcat(path, "/");
+  strcat(path, "/context/");
   strcat(path, localName);
   strcat(path, "/");
   strcat(path, remoteName);
@@ -1271,7 +1369,7 @@ int GWEN_IPCXMLSecCtxMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
     fid=GWEN_SecContext_GetLockId(sc);
 
     /* file exists, remove it */
-    DBG_INFO(0, "Removing file for context \"%s:%s\"",
+    DBG_DEBUG(0, "Removing file for context \"%s:%s\"",
              localName, remoteName);
     if (unlink(path)) {
       DBG_ERROR(0, "Error on unlink(%s): %s",
@@ -1348,13 +1446,16 @@ int GWEN_IPCXMLSecCtxMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
   else {
     /* try to write the file */
     if (strlen(scmd->dir)+
+        strlen("context")+
         strlen(localName)+
         strlen(remoteName)+
-        4>sizeof(path)) {
+        5>sizeof(path)) {
       DBG_ERROR(0, "Path too long");
       return 0;
     }
     strcpy(path, scmd->dir);
+    strcat(path, "/");
+    strcat(path, "context");
     strcat(path, "/");
     strcat(path, localName);
     strcat(path, "/");
@@ -1396,7 +1497,7 @@ int GWEN_IPCXMLSecCtxMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
       }
 
       GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
-      DBG_INFO(0, "Context \"%s:%s\" released",
+      DBG_DEBUG(0, "Context \"%s:%s\" released",
                localName, remoteName);
       GWEN_SecContext_free(sc);
       return 0;

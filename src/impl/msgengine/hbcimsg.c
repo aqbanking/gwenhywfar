@@ -925,8 +925,8 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
 
   assert(hmsg);
 
-  DBG_NOTICE(0, "Encoding message");
-  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
+  DBG_INFO(0, "Encoding message");
+  /*GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);*/
 
   GWEN_MsgEngine_SetIntValue(GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog),
                              "MessageNumber",
@@ -945,8 +945,8 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     rawBuf=GWEN_Buffer_dup(hmsg->buffer);
     ks=hmsg->signers;
     while (ks) {
-      DBG_INFO(0, "Signing with this key:");
-      GWEN_KeySpec_Dump(ks, stderr, 1);
+      /*DBG_INFO(0, "Signing with this key:");
+      GWEN_KeySpec_Dump(ks, stderr, 1);*/
       if (GWEN_HBCIMsg_SignMsg(hmsg, rawBuf, ks)) {
         GWEN_Buffer_free(rawBuf);
         DBG_INFO(0, "here");
@@ -957,7 +957,7 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     GWEN_Buffer_free(rawBuf);
   } /* if signing is needed */
   DBG_INFO(0, "Letting all signers sign: done");
-  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
+  /*GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);*/
 
   /* encrypt message */
   if (hmsg->flags & GWEN_HBCIMSG_FLAGS_CRYPT) {
@@ -976,7 +976,7 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     return -1;
   }
   DBG_INFO(0, "Adding message tail: done");
-  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
+  /*GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);*/
 
   /* add msg head */
   DBG_INFO(0, "Adding message head");
@@ -985,7 +985,7 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     return -1;
   }
   DBG_INFO(0, "Adding message head: done");
-  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
+  /*GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);*/
 
   DBG_INFO(0, "Message finished");
   return 0;
@@ -1219,8 +1219,8 @@ int GWEN_HBCIMsg_ReadMessage(GWEN_MSGENGINE *e,
     segments++;
   } /* while */
 
-  DBG_NOTICE(0, "Parsed %d segments (%d had errors)",
-             segments, errors);
+  DBG_INFO(0, "Parsed %d segments (%d had errors)",
+           segments, errors);
   return 0;
 }
 
@@ -1814,8 +1814,9 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
   int rv;
   GWEN_DB_NODE *n, *n2;
 
-  DBG_NOTICE(0, "Decoding this message:");
-  GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
+  DBG_INFO(0, "Decoding message:");
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelInfo)
+    GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
 
   e=GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog);
   assert(e);
@@ -1936,7 +1937,8 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
   }
 
   DBG_INFO(0, "Decoded message is:");
-  GWEN_HBCIMsg_Dump(hmsg, stderr, 1);
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelInfo)
+    GWEN_HBCIMsg_Dump(hmsg, stderr, 1);
 
   return 0;
 }

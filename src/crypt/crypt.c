@@ -170,7 +170,6 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
 #endif
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
-    DBG_INFO(0, "Freeing Keyspec");
     GWEN_KeySpec_free(key->keyspec);
     free(key);
   }
@@ -267,8 +266,8 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
 
-  DBG_ERROR(0, "Reading key from here:");
-  GWEN_DB_Dump(db, stderr, 2);
+  /*DBG_ERROR(0, "Reading key from here:");
+  GWEN_DB_Dump(db, stderr, 2);*/
   key=GWEN_CryptKey_Factory(GWEN_DB_GetCharValue(db, "type", 0, ""));
   assert(key);
   GWEN_KeySpec_SetKeyName(key->keyspec,

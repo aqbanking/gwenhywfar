@@ -373,6 +373,7 @@ GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl) {
     /* add signer */
     GWEN_KEYSPEC *ks;
 
+    DBG_INFO(0, "Adding signer");
     ks=GWEN_KeySpec_new();
     GWEN_KeySpec_SetOwner(ks, GWEN_HBCIDialog_GetLocalName(ccd->dialog));
     GWEN_HBCIMsg_AddSigner(hmsg, ks);
@@ -383,6 +384,7 @@ GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl) {
     /* add crypt */
     const char *p;
 
+    DBG_INFO(0, "Setting crypter");
     p=GWEN_HBCIDialog_GetRemoteName(ccd->dialog);
     if (p) {
       GWEN_KEYSPEC *ks;
@@ -450,7 +452,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl) {
         ccd->currentMsg=0;
         return err;
       }
-      DBG_NOTICE(0, "Message successfully enqueued");
+      DBG_INFO(0, "Message successfully enqueued");
     } /* if message is not empty */
     else {
       DBG_INFO(0, "Message is empty, nothing to flush");
@@ -542,7 +544,8 @@ GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
     return 0;
   }
   DBG_INFO(0, "Node added as segment %d", segnum);
-  GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(ccd->currentMsg), stderr, 2);
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelInfo)
+    GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(ccd->currentMsg), stderr, 2);
 
   /* create request, fill it */
   DBG_INFO(0, "Creating new request");
@@ -649,7 +652,8 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_AddResponse(GWEN_IPCCONNLAYER *cl,
   }
 
   DBG_INFO(0, "Node added as segment %d", segnum);
-  GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(ccd->currentMsg), stderr, 2);
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelInfo)
+    GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(ccd->currentMsg), stderr, 2);
 
   if (flags & GWEN_IPCXML_REQUESTFLAGS_FLUSH) {
     DBG_INFO(0, "Flushing message");
@@ -678,6 +682,21 @@ const char *GWEN_IPCXMLConnLayer_GetLocalName(GWEN_IPCCONNLAYER *cl){
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
   return GWEN_HBCIDialog_GetLocalName(ccd->dialog);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_IPCXMLConnLayer_SetLocalName(GWEN_IPCCONNLAYER *cl,
+                                       const char *n){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  GWEN_HBCIDialog_SetLocalName(ccd->dialog, n);
 }
 
 
@@ -729,6 +748,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_SetSecurityFlags(GWEN_IPCCONNLAYER *cl,
     return err;
   }
 
+  DBG_INFO(0, "Setting security flags to %08x", flags);
   ccd->msgFlags=flags;
   return 0;
 }

@@ -59,6 +59,13 @@ GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetSessionKey(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetSessionKey(GWEN_SECCTX *d,
                                      GWEN_CRYPTKEY *k);
 
+
+int GWEN_IPCXMLSecCtxMgr_LoadKeys(GWEN_SECCTX_MANAGER *scm,
+                                  GWEN_SECCTX *sc,
+                                  int local,
+                                  const char *name);
+
+
 const char *GWEN_IPCXMLSecCtx_GetServiceCode(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetServiceCode(GWEN_SECCTX *d,
                                       const char *s);

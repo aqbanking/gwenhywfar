@@ -152,8 +152,13 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_SendPubKey(GWEN_IPCXMLSERVICE *xs,
  *
  */
 /*@{*/
+/**
+ * @param localName if NULL the the local name associated with the connection
+ * is used
+ */
 unsigned int GWEN_IPCXMLCmd_Request_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                 unsigned int clid,
+                                                const char *localName,
                                                 unsigned int flags);
 GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                  unsigned int rqid,
@@ -161,8 +166,10 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                  GWEN_DB_NODE *n);
 GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                  unsigned int rqid,
-                                                 char *buffer,
-                                                 unsigned int size);
+                                                 char *snbuffer,
+                                                 unsigned int snsize,
+                                                 char *cnbuffer,
+                                                 unsigned int cnsize);
 /*@}*/
 
 

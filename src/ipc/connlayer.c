@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 #include "connlayer_p.h"
 #include "msglayer_p.h"
 #include <gwenhywfar/msglayer.h>

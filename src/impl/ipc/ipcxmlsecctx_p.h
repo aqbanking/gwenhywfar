@@ -130,8 +130,6 @@ int GWEN_IPCXMLSecCtxMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
 
 
 
-
-
 #endif
 
 

@@ -30,6 +30,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "msglayer_p.h"
 #include <gwenhywfar/transportlayer.h>
 #include <gwenhywfar/ipc.h>
@@ -199,7 +202,7 @@ void GWEN_MsgLayer_SetData(GWEN_IPCMSGLAYER *ml, void *d){
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml, int rd){
   assert(ml);
-  DBG_NOTICE(0, "MsgLayer %d works.", ml->id);
+  DBG_DEBUG(0, "MsgLayer %d works.", ml->id);
   if (ml->workFn)
     return ml->workFn(ml, rd);
   else {

@@ -217,8 +217,8 @@ GWEN_SECCTX_RETVAL GWEN_SecContext_PrepareContext(GWEN_SECCTX *sc,
                                                   int crypt){
   assert(sc);
   assert(ctx);
-  DBG_NOTICE(0, "Preparing context for service \"%s\"",
-             GWEN_HBCICryptoContext_GetServiceCode(ctx));
+  DBG_INFO(0, "Preparing context for service \"%s\"",
+           GWEN_HBCICryptoContext_GetServiceCode(ctx));
   if (sc->prepareFn)
     return sc->prepareFn(sc, ctx, crypt);
   DBG_ERROR(0, "Prepare function not set.");
@@ -558,7 +558,7 @@ GWEN_SECCTX *GWEN_SecContextMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
                                            const char *localName,
                                            const char *remoteName){
   assert(scm);
-  DBG_WARN(0, "Looking for context \"%s:%s\"", localName, remoteName);
+  DBG_DEBUG(0, "Looking for context \"%s:%s\"", localName, remoteName);
   assert(scm->getContextFn);
   return scm->getContextFn(scm, localName, remoteName);
 }

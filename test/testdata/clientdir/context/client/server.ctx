@@ -1,0 +1,4 @@
+char localname="client"
+char remotename="server"
+int  localsignseq="16"
+int  remotesignseq="0"

@@ -1,6 +1,16 @@
 $Id$
 
 
+2003/12/01 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed some serious bugs in list code (this class seemed to be so simple,
+  but it is in fact quite complicated ;-)
+- nearly completed IPC code:
+  - added session management
+  - keys are no longer stored inside context files
+  - added AnonymousOpen function
+
+
 2003/11/30 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in list

@@ -75,7 +75,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     if ((flags & GWEN_PATH_FLAGS_PATHMUSTEXIST) ||
         ((flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST))) {
-      DBG_ERROR(0, "Path \"%s\" does not exist (it should)", p);
+      DBG_INFO(0, "Path \"%s\" does not exist (it should)", p);
       return 0;
     }
   }
@@ -84,20 +84,20 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     exists=1;
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
       if (!S_ISREG(st.st_mode)) {
-        DBG_ERROR(0, "%s not a regular file", p);
+        DBG_INFO(0, "%s not a regular file", p);
         return 0;
       }
     }
     else {
       if (!S_ISDIR(st.st_mode)) {
-        DBG_ERROR(0, "%s not a direcory", p);
+        DBG_INFO(0, "%s not a direcory", p);
         return 0;
       }
     }
     if ((flags & GWEN_PATH_FLAGS_PATHMUSTNOTEXIST) ||
         ((flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST))) {
-      DBG_ERROR(0, "Path \"%s\" does not exist (it should)", p);
+      DBG_INFO(0, "Path \"%s\" does not exist (it should)", p);
       return 0;
     }
   } // if stat is ok

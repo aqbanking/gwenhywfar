@@ -350,7 +350,8 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
         buffer=GWEN_Msg_GetBuffer(mcd->currentMsg);
         GWEN_Buffer_SetPos(buffer, 0);
         GWEN_MsgLayer_SetState(ml, GWEN_IPCMsglayerStateWriting);
-        GWEN_Buffer_Dump(GWEN_Msg_GetBuffer(msg), stderr, 1);
+        if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+          GWEN_Buffer_Dump(GWEN_Msg_GetBuffer(msg), stderr, 1);
       }
       else {
         DBG_DEBUG(0, "Nothing to write");

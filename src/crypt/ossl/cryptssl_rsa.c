@@ -192,7 +192,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(const GWEN_CRYPTKEY *key,
     }
 
     if (BN_cmp(bnresult2, bnresult) < 0) {
-      DBG_ERROR(0, "Using smaller signature");
+      DBG_INFO(0, "Using smaller signature");
       BN_copy(bnresult, bnresult2);
     }
   }
@@ -297,7 +297,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(const GWEN_CRYPTKEY *key,
   bnhash = BN_bin2bn(psrc, srclen, bnhash);
 
   if (BN_cmp(bndecsig, bnhash)!=0) {
-    DBG_ERROR(0, "Trying other signature variant");
+    DBG_INFO(0, "Trying other signature variant");
     BN_sub(bnhash, kd->n, bnhash);
     if (BN_cmp(bndecsig, bnhash)!=0) {
       DBG_ERROR(0, "Signature does not match");
@@ -344,8 +344,9 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   kd=RSA_new();
   assert(kd);
 
-  DBG_INFO(0, "Reading this key:");
-  GWEN_DB_Dump(db, stderr, 2);
+  DBG_DEBUG(0, "Reading this key:");
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+    GWEN_DB_Dump(db, stderr, 2);
 
   pub=GWEN_DB_GetIntValue(db, "public", 0, 1);
 

@@ -34,6 +34,7 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 
 
 typedef struct GWEN_LIST GWEN_LIST;
@@ -44,6 +45,8 @@ typedef struct GWEN_CONSTLIST_ITERATOR GWEN_CONSTLIST_ITERATOR;
 
 GWEN_LIST *GWEN_List_new();
 void GWEN_List_free(GWEN_LIST *l);
+
+void GWEN_List_Dump(GWEN_LIST *l, FILE *f, unsigned int indent);
 
 void GWEN_List_PushBack(GWEN_LIST *l, void *p);
 void GWEN_List_PushFront(GWEN_LIST *l, void *p);

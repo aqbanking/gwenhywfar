@@ -49,11 +49,12 @@ GWEN_LIST_ENTRY *GWEN_ListEntry_new(){
 void GWEN_ListEntry_free(GWEN_LIST_ENTRY *le){
   if (le) {
     if (le->usage) {
-      /* unlink in any case */
-      le->previous=0;
-      le->next=0;
       le->usage--;
       if (le->usage==0) {
+        /* unlink */
+        le->previous=0;
+        le->next=0;
+        DBG_DEBUG(0, "Freeing entry");
         /* really free */
         free(le);
       }
@@ -210,16 +211,17 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
     if (current->next) {
       it->current=current->next;
       current->next->usage++;
-      current->next=current->previous;
+      current->next->previous=current->previous;
     }
     else
       it->current=0;
     /* unlink from previous */
     if (current->previous)
-      current->previous=current->next;
+      current->previous->next=current->next;
     /* free */
     current->usage--;
     GWEN_ListEntry_free(current);
+    l->size--;
   }
 }
 
@@ -253,6 +255,30 @@ GWEN_LIST_ITERATOR *GWEN_List_Last(GWEN_LIST *l){
     li->current->usage++;
   return li;
 }
+
+
+
+void GWEN_List_Dump(GWEN_LIST *l, FILE *f, unsigned int indent){
+  GWEN_LIST_ENTRY *le;
+  unsigned int i;
+
+  fprintf(f, "List contains %d entries\n", l->size);
+  le=l->first;
+  while(le) {
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, "List entry %08x\n", (unsigned int)le);
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, " Usage   : %d\n", le->usage);
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, " Previous: %08x\n", (unsigned int)(le->previous));
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, " Next    : %08x\n", (unsigned int)(le->next));
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, " Data    : %08x\n", (unsigned int)(le->data));
+    le=le->next;
+  } /* while */
+}
+
 
 
 
@@ -348,11 +374,11 @@ GWEN_CONSTLIST_ENTRY *GWEN_ConstListEntry_new(){
 void GWEN_ConstListEntry_free(GWEN_CONSTLIST_ENTRY *le){
   if (le) {
     if (le->usage) {
-      /* unlink in any case */
-      le->previous=0;
-      le->next=0;
       le->usage--;
       if (le->usage==0) {
+        /* unlink */
+        le->previous=0;
+        le->next=0;
         /* really free */
         free(le);
       }
@@ -489,15 +515,16 @@ void GWEN_ConstList_Erase(GWEN_CONSTLIST *l, GWEN_CONSTLIST_ITERATOR *it){
     /* unlink from next */
     if (current->next) {
       it->current=current->next;
-      current->next=current->previous;
+      current->next->previous=current->previous;
     }
     else
       it->current=0;
     /* unlink from previous */
     if (current->previous)
-      current->previous=current->next;
+      current->previous->next=current->next;
     /* free */
     GWEN_ConstListEntry_free(current);
+    l->size--;
   }
 }
 
