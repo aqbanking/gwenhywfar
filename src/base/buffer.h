@@ -114,8 +114,17 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c);
  */
 int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf);
 
+/**
+ * Returns the byte from the current position without changing the
+ * position pointer. So multiple calls to this function will result
+ * in returning the same character.
+ * @return -1 on error, read char otherwise (in low byte)
+ */
+int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf);
+
 
 int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, unsigned int i);
+int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, unsigned int i);
 
 
 int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
@@ -125,6 +134,12 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
  * Returns the number of unused bytes within the buffer.
  */
 unsigned int GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf);
+
+
+/**
+ * Returns the number of bytes from pos to the end of the used area.
+ */
+unsigned int GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf);
 
 
 /**

@@ -103,18 +103,13 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                               unsigned int flags);
 
 int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
-                              const char *msg,
-                              unsigned int msgSize,
-                              unsigned int *pos,
+                              GWEN_BUFFER *msgbuf,
                               GWEN_XMLNODE *node,
-                              char *buffer,
-                              int *bufsize,
+                              GWEN_BUFFER *vbuf,
                               const char *delimiters);
 
 int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
-                              const char *msg,
-                              unsigned int msgSize,
-                              unsigned int *pos,
+                              GWEN_BUFFER *msgbuf,
                               GWEN_XMLNODE *node,
                               GWEN_XMLNODE *rnode,
                               GWEN_DB_NODE *gr,

@@ -162,7 +162,7 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
 
 
 
-int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf){
+int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf){
   assert(bf);
 
   if (bf->pos>=bf->bufferSize) {
@@ -175,7 +175,18 @@ int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf){
     return -1;
   }
 
-  return (unsigned char) (bf->ptr[bf->pos++]);
+  return (unsigned char) (bf->ptr[bf->pos]);
+}
+
+
+
+int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf){
+  int c;
+
+  c=GWEN_Buffer_PeekByte(bf);
+  if (c!=-1)
+    bf->pos++;
+  return c;
 }
 
 
@@ -189,6 +200,20 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, unsigned int i){
     return 1;
   }
   bf->pos+=i;
+  return 0;
+}
+
+
+
+int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, unsigned int i){
+  assert(bf);
+
+  if (bf->pos-i<0) {
+    DBG_ERROR(0, "Position %d outside buffer boundaries (%d bytes)",
+              bf->pos-i, bf->bufferSize);
+    return 1;
+  }
+  bf->pos-=i;
   return 0;
 }
 
@@ -214,6 +239,14 @@ unsigned int GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf){
   assert(bf);
 
   return (bf->bufferSize-bf->bytesUsed);
+}
+
+
+
+unsigned int GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf){
+  assert(bf);
+
+  return bf->bytesUsed-bf->pos;
 }
 
 

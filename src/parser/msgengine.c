@@ -675,11 +675,11 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
               return -1;
             }
           }
-          if (GWEN_Buffer_AppendByte(gbuf, c)) {
-            return -1;
-          }
+	  if (GWEN_Buffer_AppendByte(gbuf, c)) {
+	    return -1;
+	  }
 	}
-        p++;
+	p++;
         pcount++;
       } /* while */
       if (pcount<GWEN_Buffer_GetUsedBytes(data)) {
@@ -795,8 +795,11 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
     if (gr) {
       /* get the value of the given var from the db */
       if (GWEN_MsgEngine__IsCharTyp(type)) {
-        pdata=GWEN_DB_GetCharValue(gr, nptr, 0, 0);
-        datasize=strlen(pdata);
+	pdata=GWEN_DB_GetCharValue(gr, nptr, 0, 0);
+        if (pdata)
+	  datasize=strlen(pdata);
+	else
+          datasize=0;
       }
       else if (GWEN_MsgEngine__IsIntTyp(type)) {
         int idata;
@@ -1029,8 +1032,10 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
   pn=GWEN_XMLNode_GetParent(node);
   pvalue=GWEN_MsgEngine__findInValues(e, pn, name);
   if (pvalue) {
-    if (!topDown)
+    if (!topDown) {
+      *datasize=strlen(pvalue);
       return pvalue;
+    }
     DBG_INFO(0, "Found a value (%s), but will look further", pvalue);
     lastValue=pvalue;
   }
@@ -1067,6 +1072,7 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
     if (pvalue) {
       if (!topDown) {
 	free(bufferPtr);
+	*datasize=strlen(pvalue);
 	return pvalue;
       }
       DBG_INFO(0, "Found a value (%s), but will look further", pvalue);
@@ -1075,7 +1081,10 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
     pn=GWEN_XMLNode_GetParent(pn);
   } /* while */
   free(bufferPtr);
-  *datasize=strlen(lastValue);
+  if (lastValue)
+    *datasize=strlen(lastValue);
+  else
+    *datasize=0;
   return lastValue;
 }
 
@@ -1891,23 +1900,16 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
 
 
 int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
-                              const char *msg,
-                              unsigned int msgSize,
-                              unsigned int *pos,
+			      GWEN_BUFFER *msgbuf,
                               GWEN_XMLNODE *node,
-                              char *buffer,
-                              int *bufsize,
+			      GWEN_BUFFER *vbuf,
                               const char *delimiters) {
   unsigned int minsize;
   unsigned int maxsize;
   unsigned int minnum;
   const char *type;
-  const char *origBuffer;
   int rv;
-  unsigned int datasize;
 
-  origBuffer=buffer;
-  datasize=0;
 
   /* get some sizes */
   minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
@@ -1918,14 +1920,11 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   rv=1;
   if (e->typeReadPtr) {
     rv=e->typeReadPtr(e,
-                      msg,
-		      msgSize,
-		      pos,
+		      msgbuf,
 		      node,
-		      buffer,
-		      bufsize,
+		      vbuf,
 		      '\\',
-                      delimiters);
+		      delimiters);
   }
   if (rv==-1) {
     DBG_INFO(0, "External type reading failed on type \"%s\"", type);
@@ -1933,30 +1932,37 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   }
   else if (rv==1) {
     if (strcasecmp(type, "bin")==0) {
-      if (*pos>=msgSize) {
+      if (GWEN_Buffer_BytesLeft(msgbuf)==0) {
 	DBG_ERROR(0, "Premature end of message (@num@ expected)");
-        return -1;
+	return -1;
       }
       else {
 	char lbuffer[16];
+	int c;
 	char *p;
         int l;
 
 	p=lbuffer;
-	if (msg[*pos]!='@') {
+	c=GWEN_Buffer_ReadByte(msgbuf);
+	if (c!='@') {
 	  DBG_ERROR(0, "\"@num@\" expected");
 	  return -1;
 	}
-	(*pos)++;
-	while(*pos<msgSize) {
-	  if (msg[*pos]=='@')
-	    break;
-	  *p=msg[*pos];
+
+        c=0;
+	while(GWEN_Buffer_BytesLeft(msgbuf)>0) {
+	  c=GWEN_Buffer_ReadByte(msgbuf);
+	  if (c==-1) {
+	    DBG_ERROR(0, "\"@\" expected");
+	    return -1;
+	  }
+	  if (c=='@')
+            break;
+	  *p=(char)c;
 	  p++;
-	  (*pos)++;
 	} /* while */
         *p=0;
-	if (msg[*pos]!='@') {
+	if (c!='@') {
 	  DBG_ERROR(0, "\"@num@\" expected");
 	  return -1;
 	}
@@ -1964,17 +1970,21 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  DBG_ERROR(0, "Bad number format");
 	  return -1;
 	}
-	(*pos)++;
 	DBG_INFO(0, "Reading binary: %d bytes from pos %d (msgsize=%d)",
-		 l, *pos, msgSize);
-	if (msgSize-*pos+1<l) {
+		 l,
+		 GWEN_Buffer_GetPos(msgbuf),
+		 GWEN_Buffer_GetUsedBytes(msgbuf));
+	if (GWEN_Buffer_BytesLeft(msgbuf)<l) {
 	  DBG_ERROR(0, "Premature end of message (binary beyond end)");
 	  return -1;
-        }
-        memmove(buffer, msg+*pos, l);
-        datasize=l;
-        (*pos)+=l;
-        buffer+=l;
+	}
+	if (GWEN_Buffer_AppendBytes(vbuf,
+				    GWEN_Buffer_GetPosPointer(msgbuf),
+				    l)) {
+	  DBG_DEBUG(0, "Called from here");
+	  return -1;
+	}
+	GWEN_Buffer_IncrementPos(msgbuf,l);
       }
     } /* if bin */
     else {
@@ -1985,10 +1995,10 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
       isEscaped=0;
       lastWasEscape=0;
 
-      while(*pos<msgSize) {
+      while(GWEN_Buffer_BytesLeft(msgbuf)) {
 	int c;
 
-	c=(unsigned char)(msg[*pos]);
+	c=GWEN_Buffer_ReadByte(msgbuf);
 	if (lastWasEscape) {
 	  lastWasEscape=0;
 	  isEscaped=1;
@@ -2010,39 +2020,36 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 
 	    if (needsEscape) {
 	      /* write escape char */
-	      if (*bufsize<1) {
-		DBG_ERROR(0, "Buffer too small");
+	      if (GWEN_Buffer_AppendByte(vbuf, '\\')) {
+		DBG_DEBUG(0, "Called from here");
 		return -1;
 	      }
-              *(buffer++)='\\';
-              datasize++;
-            }
-	    if (*bufsize<1) {
-	      DBG_ERROR(0, "Buffer too small");
+	    }
+	    if (GWEN_Buffer_AppendByte(vbuf, c)) {
+	      DBG_DEBUG(0, "Called from here");
 	      return -1;
 	    }
-            *(buffer++)=(unsigned char)c;
-            datasize++;
 	  }
 	  else {
-	    /* delimiter found */
+	    /* delimiter found, step back */
+	    GWEN_Buffer_DecrementPos(msgbuf,1);
 	    break;
 	  }
 	}
-	(*pos)++;
       } /* while */
-      *buffer=0;
-      datasize=strlen(buffer)+1;
+      if (GWEN_Buffer_AppendByte(vbuf, 0)) {
+	DBG_DEBUG(0, "Called from here");
+	return -1;
+      }
     } /* if !bin */
   } /* if type not external */
 
   /* check the value */
-  if (datasize==0) {
+  if (GWEN_Buffer_GetUsedBytes(vbuf)==0) {
     DBG_INFO(0, "Datasize is 0");
     if (minnum==0) {
       DBG_INFO(0, "... but thats ok");
       /* value is empty, and that is allowed */
-      *bufsize=datasize;
       return 1;
     }
     else {
@@ -2052,26 +2059,25 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
     }
   }
 
-  if (minsize!=0 && minsize<datasize) {
-    DBG_INFO(0, "Value too short (%d<%d).", minsize, datasize);
+  if (minsize!=0 && minsize<GWEN_Buffer_GetUsedBytes(vbuf)) {
+    DBG_INFO(0, "Value too short (%d<%d).", minsize,
+	     GWEN_Buffer_GetUsedBytes(vbuf));
     return -1;
   }
 
-  if (maxsize!=0 && datasize>maxsize) {
-    DBG_INFO(0, "Value too long (%d>%d).", datasize, maxsize);
+  if (maxsize!=0 && GWEN_Buffer_GetUsedBytes(vbuf)>maxsize) {
+    DBG_INFO(0, "Value too long (%d>%d).",
+	     GWEN_Buffer_GetUsedBytes(vbuf), maxsize);
     return -1;
   }
 
-  *bufsize=datasize;
   return 0;
 }
 
 
 
 int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
-                              const char *msg,
-                              unsigned int msgSize,
-                              unsigned int *pos,
+			      GWEN_BUFFER *msgbuf,
                               GWEN_XMLNODE *node,
                               GWEN_XMLNODE *rnode,
                               GWEN_DB_NODE *gr,
@@ -2117,19 +2123,21 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
     terminator=*p;
   }
 
+  DBG_DEBUG(0, "Delimiters are \"%s\" and \"%c\"",
+	    delimiters, delimiter);
+
   n=GWEN_XMLNode_GetChild(node);
   while (n) {
     if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeTag) {
       const char *type;
 
-      if (*pos>=msgSize)
+      if (GWEN_Buffer_BytesLeft(msgbuf)==0)
 	break;
       //if (strchr(delimiters, msg[*pos]))
       //  break;
 
       type=GWEN_XMLNode_GetData(n);
       if (strcasecmp(type, "ELEM")==0) {
-        char buffer[GWEN_MSGENGINE_MAX_VALUE_LEN];
 	unsigned int loopNr;
 
 	/* get some sizes */
@@ -2142,11 +2150,23 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	loopNr=0;
 	abortLoop=0;
 	while(loopNr<maxnum && !abortLoop) {
+	  int c;
+
 	  DBG_DEBUG(0, "Reading %s", name);
-	  if (*pos>=msgSize)
+	  if (GWEN_Buffer_BytesLeft(msgbuf)==0)
 	    break;
-	  if (strchr(delimiters, msg[*pos])) {
+	  c=GWEN_Buffer_PeekByte(msgbuf);
+	  if (c==-1) {
+	    DBG_DEBUG(0, "called from here");
+	    return -1;
+	  }
+
+	  DBG_DEBUG(0, "Checking delimiter (whether \"%c\" is in \"%s\")",
+		    c, delimiters);
+	  if (strchr(delimiters, c)) {
 	    abortLoop=1;
+	    DBG_DEBUG(0, "Found delimiter (\"%c\" is in \"%s\")",
+		      c, delimiters);
 	  } /* if delimiter found */
           else {
             /* current char is not a delimiter */
@@ -2155,23 +2175,28 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
             else {
               /* name is given */
 	      int rv;
-              const char *dtype;
-              unsigned int datasize;
+	      const char *dtype;
+              GWEN_BUFFER *vbuf;
 
-              datasize=sizeof(buffer)-1;
-              rv=GWEN_MsgEngine__ReadValue(e,
-                                           msg,
-                                           msgSize,
-                                           pos,
-                                           n,
-                                           buffer,
-                                           &datasize,
-                                           ":+'");
-              if (rv==1) {
+	      vbuf=GWEN_Buffer_new(0,
+				   GWEN_MSGENGINE_MAX_VALUE_LEN,
+				   0,0);
+	      DBG_DEBUG(0, "Reading value from here:\n");
+	      GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
+				   GWEN_Buffer_BytesLeft(msgbuf));
+
+	      rv=GWEN_MsgEngine__ReadValue(e,
+                                           msgbuf,
+					   n,
+					   vbuf,
+					   ":+'");
+              GWEN_Buffer_SetPos(vbuf, 0);
+	      if (rv==1) {
 		DBG_INFO(0, "Empty value");
 	      }
 	      else if (rv==-1) {
 		DBG_INFO(0, "Error parsing node \"%s\"", type);
+		GWEN_Buffer_free(vbuf);
 		return -1;
 	      }
 
@@ -2179,54 +2204,61 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
               dtype=GWEN_XMLNode_GetProperty(n, "type", "");
               if (GWEN_MsgEngine__IsBinTyp(dtype)) {
                 if (e->binTypeReadPtr)
-                  rv=e->binTypeReadPtr(e, n, gr, buffer, datasize);
+		  rv=e->binTypeReadPtr(e, n, gr, vbuf);
                 else
                   rv=1;
                 if (rv==-1) {
                   DBG_INFO(0, "Called from here");
+		  GWEN_Buffer_free(vbuf);
                   return -1;
                 }
                 else if (rv==1) {
                   /* bin type not handled, so handle it myself */
                   if (GWEN_DB_SetBinValue(gr,
                                           GWEN_DB_FLAGS_DEFAULT,
-                                          name, buffer, datasize)) {
-                    DBG_INFO(0, "Could not set value for \"%s\"", name);
-                    return -1;
-                  }
-                }
+					  name,
+					  GWEN_Buffer_GetStart(vbuf),
+					  GWEN_Buffer_GetUsedBytes(vbuf))) {
+		    DBG_INFO(0, "Could not set value for \"%s\"", name);
+		    GWEN_Buffer_free(vbuf);
+		    return -1;
+		  }
+		}
               } /* if type is bin */
               else if (GWEN_MsgEngine__IsIntTyp(dtype)) {
                 int z;
 
-                if (1!=sscanf(buffer, "%d", &z)) {
-                  DBG_INFO(0, "Value for \"%s\" is not an integer",
-                           name);
-                  return -1;
-                }
-                if (GWEN_DB_SetIntValue(gr,
+		if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
+		  DBG_INFO(0, "Value for \"%s\" is not an integer",
+			   name);
+		  return -1;
+		}
+		if (GWEN_DB_SetIntValue(gr,
                                         GWEN_DB_FLAGS_DEFAULT,
-                                        name, z)) {
+					name, z)) {
                   DBG_INFO(0, "Could not set int value for \"%s\"", name);
                   return -1;
                 }
               } /* if type is int */
               else {
-                DBG_INFO(0, "Value is \"%s\"", buffer);
+		DBG_INFO(0, "Value is \"%s\"",
+			 GWEN_Buffer_GetStart(vbuf));
                 if (GWEN_DB_SetCharValue(gr,
-                                         GWEN_DB_FLAGS_DEFAULT,
-                                         name, buffer)) {
-                  DBG_INFO(0, "Could not set value for \"%s\"", name);
+					 GWEN_DB_FLAGS_DEFAULT,
+					 name,
+					 GWEN_Buffer_GetStart(vbuf))){
+		  DBG_INFO(0, "Could not set value for \"%s\"", name);
 		  return -1;
 		}
 	      } /* if !bin */
+	      GWEN_Buffer_free(vbuf);
 	    } /* if name is given */
           } /* if current char is not a delimiter */
 
-          if (*pos<msgSize) {
+	  if (GWEN_Buffer_BytesLeft(msgbuf)) {
 	    if (delimiter) {
-	      if (msg[*pos]==delimiter) {
-		(*pos)++;
+	      if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
+		GWEN_Buffer_IncrementPos(msgbuf,1);
 	      }
 	    }
 	  }
@@ -2274,13 +2306,13 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	abortLoop=0;
 	while(loopNr<maxnum && !abortLoop) {
 	  DBG_INFO(0, "Reading group type %s", gtype);
-	  if (*pos>=msgSize)
+	  if (GWEN_Buffer_BytesLeft(msgbuf)==0)
 	    break;
-	  if (strchr(delimiters, msg[*pos])) {
+	  if (strchr(delimiters, GWEN_Buffer_PeekByte(msgbuf))) {
 	    abortLoop=1;
 	  }
 	  else {
-            gname=GWEN_XMLNode_GetProperty(n, "name",0);
+	    gname=GWEN_XMLNode_GetProperty(n, "name",0);
 	    if (gname) {
               gcfg=GWEN_DB_GetGroup(gr,
                                     GWEN_PATH_FLAGS_NAMECREATE,
@@ -2297,21 +2329,19 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	    /* read group */
 	    DBG_INFO(0, "Reading group \"%s\"", gname);
 	    if (GWEN_MsgEngine__ReadGroup(e,
-                                          msg,
-                                          msgSize,
-                                          pos,
-                                          gn,
-                                          n,
-                                          gcfg,
-                                          delimiters)) {
-              DBG_INFO(0, "Could not read group \"%s\"", gtype);
+                                          msgbuf,
+					  gn,
+					  n,
+					  gcfg,
+					  delimiters)) {
+	      DBG_INFO(0, "Could not read group \"%s\"", gtype);
 	      return -1;
 	    }
 	  }
-	  if (*pos<msgSize) {
+	  if (GWEN_Buffer_BytesLeft(msgbuf)) {
 	    if (delimiter) {
-	      if (msg[*pos]==delimiter) {
-		(*pos)++;
+	      if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
+		GWEN_Buffer_IncrementPos(msgbuf, 1);
 	      }
 	    }
 	  }
@@ -2321,7 +2351,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	  DBG_ERROR(0, "Premature end of message (too few group repeats)");
 	  return -1;
 	}
-        n=GWEN_XMLNode_Next(n);
+	n=GWEN_XMLNode_Next(n);
       } /* if GROUP */
     } /* if TAG */
     else {
@@ -2349,13 +2379,14 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
   if (terminator) {
     /* skip terminator */
-    if (*pos<msgSize) {
-      if (msg[*pos]==terminator) {
-	(*pos)++;
+    if (GWEN_Buffer_BytesLeft(msgbuf)) {
+      if (GWEN_Buffer_PeekByte(msgbuf)==terminator) {
+        GWEN_Buffer_IncrementPos(msgbuf, 1);
       }
       else {
-	DBG_ERROR(0, "Terminating character missing (pos=%d)", *pos);
-        GWEN_XMLNode_Dump(node, stderr, 1);
+	DBG_ERROR(0, "Terminating character missing (pos=%d)",
+		  GWEN_Buffer_GetPos(msgbuf));
+	GWEN_XMLNode_Dump(node, stderr, 1);
 	return -1;
       }
     }
@@ -2371,16 +2402,12 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
 
 int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
-                                GWEN_XMLNODE *group,
-                                const char *msg,
-                                unsigned int msgSize,
-                                unsigned int *pos,
-                                GWEN_DB_NODE *msgData){
+				GWEN_XMLNODE *group,
+                                GWEN_BUFFER *msgbuf,
+				GWEN_DB_NODE *msgData){
 
   if (GWEN_MsgEngine__ReadGroup(e,
-                                msg,
-                                msgSize,
-                                pos,
+                                msgbuf,
                                 group,
                                 0,
                                 msgData,

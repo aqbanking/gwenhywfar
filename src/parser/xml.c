@@ -690,7 +690,7 @@ void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind) {
       fprintf(f, "<UNKNOWN");
     p=n->properties;
     while (p) {
-      fprintf(f, " %s=%s", p->name, p->value);
+      fprintf(f, " %s=\"%s\"", p->name, p->value);
       p=p->next;
     }
     fprintf(f, ">\n");

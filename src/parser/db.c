@@ -793,7 +793,7 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
 
   nv=GWEN_DB_ValueChar_new(val);
   GWEN_DB_Node_Append(nn, nv);
-  DBG_VERBOUS(0, "Added char value \%s\" to variable \"%s\"", val, path);
+  DBG_VERBOUS(0, "Added char value \"%s\" to variable \"%s\"", val, path);
 
   return 0;
 }

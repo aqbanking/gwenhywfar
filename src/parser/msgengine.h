@@ -49,12 +49,9 @@ typedef int (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
 				       char escapeChar);
 
 typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
-                                           const char *msg,
-                                           unsigned int msgSize,
-                                           unsigned int *pos,
+                                           GWEN_BUFFER *msgbuf,
                                            GWEN_XMLNODE *node,
-                                           char *buffer,
-                                           int *bufsize,
+                                           GWEN_BUFFER *vbuf,
                                            char escapeChar,
                                            const char *delimiters);
 
@@ -70,8 +67,7 @@ typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
 typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
                                               GWEN_XMLNODE *node,
                                               GWEN_DB_NODE *gr,
-                                              const char *data,
-                                              unsigned int datasize);
+                                              GWEN_BUFFER *vbuf);
 typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
                                                GWEN_XMLNODE *node,
                                                GWEN_DB_NODE *gr,
@@ -155,10 +151,10 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindGroupByProperty(GWEN_MSGENGINE *e,
  * "<GROUPS>", and the tag name will be "<GROUPdef>".
  */
 GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
-                                           const char *t,
-                                           const char *pname,
-                                           int version,
-                                           const char *pvalue);
+                                                const char *t,
+                                                const char *pname,
+                                                int version,
+                                                const char *pvalue);
 
 /**
  * Set a global variable which will be used for "$"-Variables in description
@@ -197,9 +193,7 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
 
 int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *group,
-                                const char *msg,
-                                unsigned int msgSize,
-                                unsigned int *pos,
+                                GWEN_BUFFER *msgbuf,
                                 GWEN_DB_NODE *gr);
 
 #ifdef __cplusplus

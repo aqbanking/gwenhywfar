@@ -1,0 +1,45 @@
+
+<GROUPS>
+	<GROUPdef id="SegHead" delimiter=":">
+    <ELEM name="code" type="AN" maxsize="6"/>
+    <ELEM name="seq" type="num" maxsize="15" topdown="1" />
+    <ELEM name="version" type="num" maxsize="3"/>
+    <ELEM name="ref" type="num" maxsize="3" minnum=0 />
+
+   <VALUES>
+      <VALUE path="seq">+SegmentNumber</VALUE>
+   </VALUES>
+  </GROUPdef>
+</GROUPS>
+
+
+<SEGS>
+
+ <SEGdef code="PING" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+    <ELEM name="name" type="AN" maxsize="32"/>
+    <ELEM name="version" type="ascii" maxsize="8"/>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <SEGdef code="PONG" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+    <ELEM name="name" type="AN" maxsize="32"/>
+    <ELEM name="version" type="ascii" maxsize="8"/>
+    <ELEM name="info" type="ascii" maxsize="32" minnum="0" maxnum="16"/>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+</SEGS>
+

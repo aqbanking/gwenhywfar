@@ -122,6 +122,13 @@ int GWEN_Text_Compare(const char *s1, const char *s2, int ign);
 int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
 
 
+/**
+ * This is used for debugging purposes and it shows the given data as a
+ * classical hexdump.
+ */
+void GWEN_Text_DumpString(const char *s, int l);
+
+
 #ifdef __cplusplus
 }
 #endif
