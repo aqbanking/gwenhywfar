@@ -1,4 +1,12 @@
 
+2004/04/25: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- renamed acx_windoze_paths.m4 to windoze.m4 thus overwriting the latter
+  file, since it basically contains the stuff which is in windoze.m4 plus
+  some minor additions.
+  This should take care of some autotool complaints...
+
+
 2004/04/24: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added base module "args" which transforms command line arguments to
