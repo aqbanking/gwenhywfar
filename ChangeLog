@@ -1,8 +1,27 @@
+
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/02/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_DBIO_GetPluginPath() which looksup the DBIO path from
+  the Windows registry (or returns the compile-time value on non-win32
+  platforms)
+- added function GWEN_Directory_OsifyPath() which is needed on Win32 platforms
+  to transform a path (possibly containing a drive letter like in "/c/") into
+  a system-usable path.
+- create DLLs for plugins
+- fixed DLL creation targets (don't create DLL from inside dlldir)
+
+
 2005-02-14   Christian Stimming <stimming@tuhh.de>
 
 	* gwenhywfar.iss.in: Add Pascal scripting program that will adapt
 	the gwenhywfar-config at *installation time* according to the
 	local paths.
+
 
 2005/02/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

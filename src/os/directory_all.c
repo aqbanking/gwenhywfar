@@ -201,6 +201,45 @@ int GWEN_Directory_GetPath(const char *path,
 
 
 
+int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
+                             int transformDriveElement){
+  int len;
+  const char *p;
+
+  len=strlen(path);
+  p=path;
+
+  /* handle drive letters (only check for normal slashes here) */
+#ifdef OS_WIN32
+  if (transformDriveElement) {
+    if (*p=='/')
+      if (isalpha(p[1]))
+        if (p[2]=='/') {
+          GWEN_Buffer_AppendByte(pbuf, p[0]);
+          GWEN_Buffer_AppendByte(pbuf, ':');
+          p+=2;
+        }
+  }
+#endif
+
+  while(*p) {
+    if (*p=='/' || *p=='\\') {
+      while (*p=='/' || *p=='\\')
+        p++;
+#ifdef OS_WIN32
+      GWEN_Buffer_AppendByte(pbuf, '\\');
+#else
+      GWEN_Buffer_AppendByte(pbuf, '/');
+#endif
+    }
+    else {
+      GWEN_Buffer_AppendByte(pbuf, *p);
+      p++;
+    }
+  }
+
+  return 0;
+}
 
 
 

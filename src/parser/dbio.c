@@ -38,6 +38,7 @@
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/directory.h>
 
 /* TODO: #include <gwenhywfar/plugin.h> */
 
@@ -46,6 +47,11 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+
+#ifdef OS_WIN32
+# include <windows.h>
+#endif
+
 
 
 GWEN_LIST_FUNCTIONS(GWEN_DBIO, GWEN_DBIO);
@@ -313,6 +319,73 @@ GWEN_DBIO *GWEN_DBIO_LoadPluginFile(const char *modname, const char *fname){
 
 
 
+int GWEN_DBIO_GetPluginPath(GWEN_BUFFER *pbuf) {
+#ifdef OS_WIN32
+  HKEY hkey;
+  TCHAR nbuffer[MAX_PATH];
+  BYTE vbuffer[MAX_PATH];
+  DWORD nsize;
+  DWORD vsize;
+  DWORD typ;
+  int i;
+
+  snprintf(nbuffer, sizeof(nbuffer), "Software\\Gwenhywfar\\Paths");
+
+  /* open the key */
+  if (RegOpenKey(HKEY_CURRENT_USER, nbuffer, &hkey)){
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "RegOpenKey failed, returning compile-time value");
+    GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
+                             "/"
+                             GWEN_DBIO_FOLDER,
+                             pbuf,
+                             1);
+    return 1;
+  }
+
+  /* find the key for dbio-plugins */
+  for (i=0;; i++) {
+    nsize=sizeof(nbuffer);
+    vsize=sizeof(vbuffer);
+    if (ERROR_SUCCESS!=RegEnumValue(hkey,
+                                    i,    /* index */
+                                    nbuffer,
+                                    &nsize,
+                                    0,       /* reserved */
+                                    &typ,
+                                    vbuffer,
+                                    &vsize))
+      break;
+    if (strcasecmp(nbuffer, "dbio-plugins")==0 &&
+        typ==REG_SZ) {
+      /* variable found */
+      RegCloseKey(hkey);
+      GWEN_Buffer_AppendBytes(pbuf, (char*)vbuffer, vsize-1);
+      return 0;
+    }
+  } /* for */
+
+  RegCloseKey(hkey);
+  DBG_INFO(GWEN_LOGDOMAIN,
+           "RegKey does not exist, returning compile-time value");
+  GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
+                           "/"
+                           GWEN_DBIO_FOLDER,
+                           pbuf,
+                           1);
+  return 1;
+#else
+  GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
+                           "/"
+                           GWEN_DBIO_FOLDER,
+                           pbuf,
+                           0);
+  return 0;
+#endif
+}
+
+
+
 GWEN_DBIO *GWEN_DBIO_LoadPlugin(const char *modname){
   GWEN_LIBLOADER *ll;
   GWEN_DBIO *dbio;
@@ -321,17 +394,20 @@ GWEN_DBIO *GWEN_DBIO_LoadPlugin(const char *modname){
   GWEN_BUFFER *nbuf;
   const char *s;
   GWEN_ERRORCODE err;
+  GWEN_BUFFER *pbuf;
 
   ll=GWEN_LibLoader_new();
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_DBIO_GetPluginPath(pbuf);
   if (GWEN_LibLoader_OpenLibraryWithPath(ll,
-                                         GWENHYWFAR_PLUGINS
-                                         "/"
-                                         GWEN_DBIO_FOLDER,
+                                         GWEN_Buffer_GetStart(pbuf),
                                          modname)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not load DBIO plugin \"%s\"", modname);
+    GWEN_Buffer_free(pbuf);
     GWEN_LibLoader_free(ll);
     return 0;
   }
+  GWEN_Buffer_free(pbuf);
 
   /* create name of init function */
   nbuf=GWEN_Buffer_new(0, 128, 0, 1);

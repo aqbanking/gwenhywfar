@@ -48,7 +48,7 @@ mp-darwin:
 	CFLAGS="-I/sw/include -ggdb -Wall" LDFLAGS="-L/sw/lib" ./configure
 
 mp-w32:
-	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --enable-maintainer-mode --prefix=/gwen --with-openssl-includes=/more/include
+	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --prefix=/c/posix --with-openssl-includes=/c/posix/include --enable-release
 
 mp-tu:
 	libtoolize -f --automake

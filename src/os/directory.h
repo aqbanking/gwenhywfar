@@ -36,6 +36,7 @@
 
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -142,6 +143,23 @@ int GWEN_Directory_GetPath(const char *path, unsigned int flags);
  */
 GWENHYWFAR_API
 int GWEN_Directory_Create(const char *path);
+
+/**
+ * Takes a path and translates it into a path that the running platform
+ * can understand.
+ * This is needed for unix paths used on Windows.
+ * If transformDriveElement is !=0 on Windows platforms and the first element
+ * of the path is "/x" (with x being [a..z,A..Z]) then this element is
+ * translated into the corresponding drive letter sequence (x:).
+ * Slashes and backslashes are transformed as needed by the running platform.
+ * Duplicate slashes/backslashed are removed.
+ * @param path path to translate
+ * @param pbuf buffer to which the path is appended
+ * @param transformDriveElemen see above (ignored on non-win32 platforms)
+ */
+GWENHYWFAR_API
+int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
+                             int transformDriveElement);
 
 
 /*@}*/ /* defgroup */

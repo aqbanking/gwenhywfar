@@ -49,8 +49,10 @@ Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; C
 ; The headers, and the aclocal macro. 
 Source: "distribution\win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
 Source: "distribution\win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
-; FIXME: So far the plugins are not compiled on windows, so they are
-; also not distributed.
+
+; The plugins
+Source: "distribution\win32-tmp\lib\gwenhywfar\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio\*"; DestDir: "{app}\lib\gwenhywfar\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"; Flags: ignoreversion recursesubdirs; Components: main
+
 
 ; And all the documentation
 Source: "README"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc

@@ -96,18 +96,18 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 	  else \
 	    SRCLIB=.libs/$(DLLSRC_LIB); \
 	  fi; \
-	  cd dlldir && ar x "../$${SRCLIB}" && \
-	 ( ls ../.libs/*.o && cp ../.libs/*.o .) && \
-	 $(DLLTOOL) -e ../exports.o *.o && \
+	  ( cd dlldir && ar x "../$${SRCLIB}" && \
+	   ( ls ../.libs/*.o && cp ../.libs/*.o .) ) && \
+	 $(DLLTOOL) -e exports.o *.o && \
 	 $(DLLWRAP) \
 	   --export-all \
-	   --output-def ../$(DLLEXP_DEF) \
-	   --implib ../$(DLLEXP_LIB) \
+	   --output-def $(DLLEXP_DEF) \
+	   --implib $(DLLEXP_LIB) \
 	   --driver-name $(CC) \
-	   -o ../$(DLLNAME) \
-	     *.o ../exports.o \
-	     ../ressource.o $(DLLLDFLAGS) $(DLLLDLIBS) \
-	)
+	   -o $(DLLNAME) \
+	     dlldir/*.o exports.o \
+	     ressource.o $(DLLLDFLAGS) $(DLLLDLIBS) \
+	) && rm -rf dlldir
 
 CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
 

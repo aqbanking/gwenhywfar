@@ -161,6 +161,18 @@ const char *GWEN_DBIO_GetDescription(const GWEN_DBIO *dbio);
  */
 GWENHYWFAR_API
 GWEN_DBIO *GWEN_DBIO_Find(const char *name);
+
+/**
+ * Returns the path to DBIO plugins. On Windows this path is looked upon
+ * from the registry key "Software\\Gwenhywfar\\Paths" in HKEY_CURRENT_USER.
+ * If this key does not exist or this is called on a non-win32 platform the
+ * compile-time value is returned.
+ * @return 0 if value found, 1 if on win32 and the key did not exist, -1 on error
+ * @param pbuf Buffer to which the path is appended.
+ */
+GWENHYWFAR_API
+int GWEN_DBIO_GetPluginPath(GWEN_BUFFER *pbuf);
+
 /*@}*/
 
 

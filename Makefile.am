@@ -24,7 +24,8 @@ EXTRA_DIST= config.rpath  \
  README.SOLARIS \
  gwenhywfar.m4 \
  gwenhywfar.spec \
- gwenhywfar.spec.in 
+ gwenhywfar.spec.in \
+ Makefile.cvs
 
 bin_SCRIPTS = gwenhywfar-config
 M4dir = $(datadir)/aclocal

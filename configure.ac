@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=7
 GWENHYWFAR_VERSION_PATCHLEVEL=2
-GWENHYWFAR_VERSION_BUILD=3
+GWENHYWFAR_VERSION_BUILD=4
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -121,7 +121,15 @@ AC_SUBST(GWENPP_SO_EFFECTIVE)
 
 
 
-dnl prefix handling
+###-------------------------------------------------------------------------
+# check for OS
+
+AQ_CHECK_OS
+
+
+###-------------------------------------------------------------------------
+# prefix handling
+
 AC_PREFIX_DEFAULT(/usr)
 if test "x$prefix" = "xNONE"; then
   prefix=$ac_default_prefix
@@ -207,7 +215,6 @@ AC_CHECK_FUNCS([symlink setlocale])
 #
 # OS dependant settings
 #
-AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
@@ -596,8 +603,10 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  plugins/dbio/Makefile
                  plugins/dbio/csv/Makefile
                  plugins/dbio/csv/csv.xml
+                 plugins/dbio/csv/ressource.rc
                  plugins/dbio/olddb/Makefile
                  plugins/dbio/olddb/olddb.xml
+                 plugins/dbio/olddb/ressource.rc
                  tools/Makefile
                  tools/xmlmerge/Makefile
                  tools/dlgtest/Makefile
