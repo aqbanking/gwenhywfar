@@ -1,9 +1,9 @@
-<plugin name="csv" type="dbio" >
+<plugin name="olddb" type="dbio" >
   <version>@GWENHYWFAR_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Exporter for CSV</short>
+  <short>Importer for OpenHBCI1</short>
   <descr>
-    This plugin exports data to a CSV file according to a given configuration.
+    This plugin imports data from an old OpenHBCI1-style file.
   </descr>
 </plugin>
 
