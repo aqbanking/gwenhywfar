@@ -379,7 +379,7 @@ int GWEN_NetConnectionHTTP_ParseHeader(const char *buffer,
     buffer++;
 
     /* skip blanks */
-    while(*buffer && isspace(*buffer)) buffer++;
+    while(*buffer && isspace((int)(*buffer))) buffer++;
 
     /* read value (filter out CR and stop at LF if not followed by a blank) */
     GWEN_Buffer_Reset(vbuf);
@@ -392,7 +392,7 @@ int GWEN_NetConnectionHTTP_ParseHeader(const char *buffer,
       if (*buffer==0)
 	break;
       buffer++;
-      if (!isspace(*buffer))
+      if (!isspace((int)(*buffer)))
 	break;
       buffer++;
     } /* for */
@@ -1038,7 +1038,7 @@ int GWEN_NetConnectionHTTP_Unescape(const char *src, GWEN_BUFFER *buf) {
 
 	/* skip '%' */
 	src++;
-	if (!(*src) || !isxdigit(*src)) {
+	if (!(*src) || !isxdigit((int)(*src))) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
 	  return -1;
 	}
@@ -1047,7 +1047,7 @@ int GWEN_NetConnectionHTTP_Unescape(const char *src, GWEN_BUFFER *buf) {
 
 	/* get second digit */
 	src++;
-	if (!(*src) || !isxdigit(*src)) {
+	if (!(*src) || !isxdigit((int)(*src))) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (only 1 digit)");
 	  return -1;
 	}

@@ -1,4 +1,9 @@
 
+===========================================================================
+MARK: released gwenhywfar-1.3 (2004/11/19)
+===========================================================================
+
+
 2004/11/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added functions:
@@ -12,6 +17,19 @@
   parameters
 - added defines for printf-templates for GWEN_TYPEs
 - fixed some 64bit-warnings
+- current version also compiles (with few warnings) on 
+  - alpha (Debian)                  [few warnings]
+  - amd64 (suse)                    [few warnings]
+  - SunOS (5.9, SUNW,Ultra-60)      [without warning]
+  - Mac OSX (Darwin 6.8, PowerPC)
+  - FreeBSD 4.10 (i386)
+  - NetBSD 1.6.1 (i386)
+- added support for NetBSD to automake script os.m4
+- fixed some bugs in Makefiles:
+  - when ncurses is not available (was assuming if
+    ncurses is not there it must be Windoze. Well, that's not the case ;-)
+  - there must be no blank between "-D" and the macro to define via 
+    "-DSOMETHING", otherwise some MacOSX bails out...
 
 
 2004/11/11: Martin Preuss<martin@libchipcard.de>

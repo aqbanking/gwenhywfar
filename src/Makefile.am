@@ -13,7 +13,7 @@ INCLUDES = $(all_includes) \
 SUBDIRS = base crypt io ipc os parser net
 
 localedir=$(datadir)/locale
-DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 
 EXTRA_DIST=\

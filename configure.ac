@@ -17,11 +17,11 @@ AC_CONFIG_HEADER([config.h])
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=1
-GWENHYWFAR_VERSION_MINOR=2
-GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=7
+GWENHYWFAR_VERSION_MINOR=3
+GWENHYWFAR_VERSION_PATCHLEVEL=0
+GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="cvs"
+GWENHYWFAR_VERSION_TAG="stable"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
@@ -30,9 +30,9 @@ GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="19"
-GWENHYWFAR_SO_REVISION="1"
-GWENHYWFAR_SO_AGE="2"
+GWENHYWFAR_SO_CURRENT="20"
+GWENHYWFAR_SO_REVISION="0"
+GWENHYWFAR_SO_AGE="3"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -216,6 +216,7 @@ AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
+        gwenhywfar_lib="-lgwenhywfar"
         gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
         gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
         gwenhywfar_libsui="-L`eval echo $prefix/lib` -lgwenui"
@@ -229,11 +230,20 @@ case "$OS_TYPE" in
         # add special libraries for solaris
         if test "$OSYSTEM" = "solaris"; then
           all_libraries="${all_libraries} -lresolv -lsocket"
+          PROG_LIBRARIES="${PROG_LIBRARIES} -lresolv -lsocket"
+        fi
+        
+        # add special libraries for darwin
+        if test "$OSYSTEM" = "osx"; then
+          # hmm, this should be detected by the GETTEXT macro...
+          all_libraries="${all_libraries} -lintl"
+          PROG_LIBRARIES="${PROG_LIBRARIES} -lintl"
         fi
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
+        gwenhywfar_lib="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
         gwenhywfar_libsui="-L`eval echo $prefix/lib` -lgwenui"
@@ -522,7 +532,7 @@ ACX_COMPILE_WARN()
 # compile program flagss
 #
 
-PROG_LIBRARIES="${ssl_libraries} ${ssl_lib} ${ncurses_libs}"
+PROG_LIBRARIES="${PROG_LIBRARIES} ${ssl_libraries} ${ssl_lib} ${ncurses_libs}"
 
 
 ###-------------------------------------------------------------------------
@@ -533,6 +543,7 @@ AS_SCRUB_INCLUDE(gwenhywfar_includes)
 AC_SUBST(PROG_LIBRARIES)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_lib)
 AC_SUBST(gwenhywfar_libspp)
 AC_SUBST(gwenhywfar_libsui)
 AC_SUBST(gwenhywfar_plugins)

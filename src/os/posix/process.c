@@ -49,63 +49,9 @@
 
 
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
-static struct sigaction original_sigchld_sa;
 
 
 GWEN_ERRORCODE GWEN_Process_ModuleInit(){
-#if 0 /* ----------------------------------------------- DISABLED */
-
-  /*
-   * The following code has been disabled, for two reasons:
-   * 1) It causes some problems with applications which expect a default
-   *    signal handler to be active, and for any reason setting SIG_DFL
-   *    does not solve this problem
-   * 2) It is not a core part of this class.
-   *    Well, it would have made some things easier (especially detaching the
-   *    calling process from the newly spawned one without leaving zombies
-   *    begind) but it seems to do more harm than good.
-   *    WIN32 architectures do not provide signals anyway, so maybe we can
-   *    live without them in this module even with POSIX compliant systems.
-   */
-
-  struct sigaction sa;
-
-  /* setup signal handler for SIGCHLD */
-  sa.sa_handler = GWEN_Process_SignalHandler;
-  sigemptyset(&sa.sa_mask);
-
-  sa.sa_flags = SA_SIGINFO;
-
-  /* FIXME: This needs more work! If the &sa handler is installed,
-     then gnucash-HEAD crashes each time on startup because guile
-     expected the default signal handler to be used during a call to
-     waitpid(2). The error message is something like "in procedure
-     waitpid: no child processes", i.e. guile expected the default
-     signal handler to be called for SIGCHLD. This cannot be changed
-     by storing the previous/original signal handler, because that one
-     is simply SIG_DFL, as confirmed by the message below. Maybe some
-     other flags and/or signals have to be checked? I have no idea. */
-  if (sigaction(SIGCHLD, &sa, &original_sigchld_sa)) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Could not setup signal handler for signal SIGCHLD: %s",
-	      strerror(errno));
-    return GWEN_Error_new(0,
-			  GWEN_ERROR_SEVERITY_ERR,
-			  0,
-			  GWEN_ERROR_UNSPECIFIED);
-  }
-
-  if (original_sigchld_sa.sa_handler == SIG_DFL) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "original_sigchld handler was SIG_DFL");
-  } else if (original_sigchld_sa.sa_handler == SIG_IGN) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "original_sigchld handler was SIG_IGN");
-  }
-  else if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
-    DBG_NOTICE(GWEN_LOGDOMAIN,
-	      "Original signal handler for signal SIGCHLD was using "
-	      "SA_SIGINFO. ");
-  }
-#endif /* ----------------------------------------------- DISABLED */
   return 0;
 }
 
@@ -141,7 +87,7 @@ GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid){
 
 
 
-void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
+void GWEN_Process_SignalHandler(int s) {
   int status;
   pid_t pid;
 
@@ -162,7 +108,7 @@ void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
       /* som process terminated */
       pr=GWEN_Process_FindProcess(pid);
       if (!pr) {
-	DBG_NOTICE(GWEN_LOGDOMAIN, "No infomation about process \"%d\" available", pid);
+	DBG_NOTICE(GWEN_LOGDOMAIN, "No infomation about process \"%d\" available", (int)pid);
       }
       else {
 	GWEN_Process_MakeState(pr, status);
@@ -178,19 +124,6 @@ void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Got unhandled signal \"%d\"", s);
     break;
   } /* switch */
-
-  /* Now check whether there has been already a different signal
-     handler for this signal */
-  if ( (original_sigchld_sa.sa_handler != SIG_DFL) && 
-       (original_sigchld_sa.sa_handler != SIG_IGN) ) {
-    if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
-      DBG_NOTICE(GWEN_LOGDOMAIN, "Unimplemented: About to call original sa_sigaction at signal \"%d\"", s);
-      /*original_sigchld_sa.sa_sigaction(s, siginfo, info);*/
-    } else {
-      DBG_NOTICE(GWEN_LOGDOMAIN, "About to call original sa_handler at signal \"%d\"", s);
-      original_sigchld_sa.sa_handler(s);
-    }
-  }
 
 }
 
@@ -268,7 +201,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   }
   else if (pid!=0) {
     /* parent */
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Process started with id %d", pid);
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Process started with id %d", (int)pid);
     pr->state=GWEN_ProcessStateRunning;
     pr->pid=pid;
 
@@ -323,7 +256,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   argc++;
   p=args;
   while(argc<32 && *p) {
-    while(*p && isspace(*p))
+    while(*p && isspace((int)*p))
       p++;
     if (!(*p))
       break;
@@ -358,7 +291,7 @@ GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w){
   /* try to get the status */
   rv=waitpid(pr->pid, &status, w?0:WNOHANG);
   if (rv==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "waitdpid(%d): %s", pr->pid, strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "waitdpid(%d): %s", (int)pr->pid, strerror(errno));
     return GWEN_ProcessStateUnknown;
   }
   else if (rv==0) {
@@ -377,7 +310,7 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   if (WIFEXITED(status)) {
     /* normal termination */
     DBG_INFO(GWEN_LOGDOMAIN, "Process %d exited with %d",
-	     pr->pid, WEXITSTATUS(status));
+	     (int)pr->pid, WEXITSTATUS(status));
     pr->state=GWEN_ProcessStateExited;
     pr->pid=-1;
     /* store result code */
@@ -387,7 +320,7 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   else if (WIFSIGNALED(status)) {
     /* uncaught signal */
     DBG_ERROR(GWEN_LOGDOMAIN, "Process %d terminated by signal %d",
-	      pr->pid, WTERMSIG(status));
+	      (int)pr->pid, WTERMSIG(status));
     pr->state=GWEN_ProcessStateAborted;
     pr->pid=-1;
     return pr->state;
@@ -395,14 +328,14 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   else if (WIFSTOPPED(status)) {
     /* process stopped by signal */
     DBG_ERROR(GWEN_LOGDOMAIN, "Process %d stopped by signal %d",
-	      pr->pid, WSTOPSIG(status));
+	      (int)pr->pid, WSTOPSIG(status));
     pr->state=GWEN_ProcessStateStopped;
     pr->pid=-1;
     return pr->state;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled status, assume process %d isn't running (%08x)",
-	      pr->pid, (unsigned int)status);
+	      (int)pr->pid, (unsigned int)status);
     return GWEN_ProcessStateUnknown;
   }
 }
@@ -472,7 +405,7 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
   /* kill process */
   if (kill(pr->pid, SIGKILL)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error on kill(%d, SIGKILL): %s",
-	      pr->pid, strerror(errno));
+	      (int)pr->pid, strerror(errno));
     return -1;
   }
   /* wait for process to respond to kill signal (should not take long) */

@@ -323,7 +323,7 @@ int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
              "%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):",priority,
 	     t->tm_year+1900, t->tm_mon+1, t->tm_mday,
 	     t->tm_hour, t->tm_min, t->tm_sec,
-             lg->logIdent, getpid());
+             lg->logIdent, (int)getpid());
 #  else
   i=snprintf(buffer, sizeof(buffer)-1,
 	     "%d:%04d/%02d/%02d %02d-%02d-%02d:%s:",priority,
@@ -340,7 +340,7 @@ int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
   sprintf(buffer,"%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):",priority,
           t->tm_year+1900, t->tm_mon+1, t->tm_mday,
           t->tm_hour, t->tm_min, t->tm_sec,
-          lg->logIdent, getpid());
+          lg->logIdent, (int)getpid());
 #  else
   sprintf(buffer,"%d:%04d/%02d/%02d %02d-%02d-%02d:%s:",priority,
 	  t->tm_year+1900, t->tm_mon+1, t->tm_mday,

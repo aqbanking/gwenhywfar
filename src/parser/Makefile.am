@@ -11,7 +11,7 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 
 localedir=$(datadir)/locale
 DEFS=\
-  -D LOCALEDIR=\"$(localedir)\" \
+  -DLOCALEDIR=\"$(localedir)\" \
   -DGWENHYWFAR_PLUGINS=\"@gwenhywfar_plugins@\" @DEFS@
 
 noinst_LTLIBRARIES=libparser.la

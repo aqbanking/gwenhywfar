@@ -13,7 +13,7 @@ SUBDIRS=@GWEN_OS@
 DIST_SUBDIRS=posix windows
 
 localedir=$(datadir)/locale
-DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\

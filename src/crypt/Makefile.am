@@ -13,7 +13,7 @@ SUBDIRS=@GWEN_CRYPTO@
 DIST_SUBDIRS=none ossl
 
 localedir=$(datadir)/locale
-DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\

@@ -1251,7 +1251,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
     }
 
     /* skip blanks */
-    while(*pos && isspace(*pos))
+    while(*pos && isspace((int)*pos))
       pos++;
 
     if (!*pos || *pos=='#') {
@@ -1270,7 +1270,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
         currVar=0;
         depth--;
         pos++;
-        while(*pos && isspace(*pos))
+        while(*pos && isspace((int)*pos))
           pos++;
       }
       else if (*pos=='#') {
@@ -1304,7 +1304,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
           }
 
           /* skip blanks */
-          while(*pos && isspace(*pos))
+          while(*pos && isspace((int)*pos))
             pos++;
 
           /* actually did read a word */
@@ -1366,7 +1366,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               return -1;
             }
             /* skip blanks */
-            while(*pos && isspace(*pos))
+            while(*pos && isspace((int)*pos))
               pos++;
             if (*pos!=((dbflags&GWEN_DB_FLAGS_USE_COLON)?':':'=')) {
               DBG_ERROR(GWEN_LOGDOMAIN, "Expected \"=\" in line %d at %d",
@@ -1484,7 +1484,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               GWEN_DB_Node_Append(currVar, tmpn);
 
             /* skip blanks */
-            while(*pos && isspace(*pos))
+            while(*pos && isspace((int)*pos))
               pos++;
 
             if (*pos!=',')
@@ -1493,7 +1493,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
           } /* while *pos */
         } /* if isVal */
 
-        while(*pos && isspace(*pos))
+        while(*pos && isspace((int)*pos))
           pos++;
         if (*pos) {
           if (*pos=='}') {
@@ -1506,7 +1506,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             currVar=0;
             depth--;
             pos++;
-            while(*pos && isspace(*pos))
+            while(*pos && isspace((int)*pos))
               pos++;
           }
           if (*pos && *pos!='#') {

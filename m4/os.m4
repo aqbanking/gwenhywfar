@@ -55,6 +55,12 @@ case "$target" in
 	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
+    *-netbsd*)
+	OSYSTEM="netbsd"
+	AC_DEFINE(OS_NETBSD,1,[if NetBSD is used])
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
+	OS_TYPE="posix"
+	;;
     *-beos*)
 	OSYSTEM="beos"
 	AC_DEFINE(OS_BEOS,1,[if BeOS is used])

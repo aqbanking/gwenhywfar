@@ -7,5 +7,5 @@ bin_PROGRAMS=dlgtest
 #noinst_HEADERS=args.h
 dlgtest_SOURCES=main.c
 dlgtest_LDADD = \
-  -L/mingw/lib -L../../src -lgwenhywfar @PROG_LIBRARIES@ \
+  -L/mingw/lib -L../../src @gwenhywfar_lib@ @PROG_LIBRARIES@ \
   -L../../gwenui -lgwenui

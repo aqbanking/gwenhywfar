@@ -53,7 +53,7 @@ void *GWEN_Path_Handle(const char *path,
   buf1=GWEN_Buffer_new(0, 128, 0, 1);
 
   /* skip leading blanks */
-  while (*path && isspace(*path))
+  while (*path && isspace((int)*path))
     path++;
 
   /* skip leading slashes */

@@ -9,4 +9,4 @@ bin_PROGRAMS=typemaker
 noinst_HEADERS=args.h typemaker_p.h
 typemaker_SOURCES=args.c main.c phc.c lhc.c ahc.c code_c.c
 typemaker_LDADD=@PROG_LIBRARIES@ \
-  -L/mingw/lib -L../../src -lgwenhywfar
+  -L/mingw/lib -L../../src @gwenhywfar_lib@

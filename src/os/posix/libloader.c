@@ -114,7 +114,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
   h->handle=dlopen(name, RTLD_LAZY);
   if (!h->handle) {
 
-#ifdef HAVE_SETLOCALE
+#ifdef ENABLE_NLS
     const char *orig_locale = setlocale(LC_MESSAGES,NULL);
     char *currentLocale = strdup(orig_locale ? orig_locale : "C");
     setlocale(LC_MESSAGES,"C");
@@ -125,7 +125,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
        otherwise the string might be any translated value. */
     errorstring = dlerror();
 
-#ifdef HAVE_SETLOCALE
+#ifdef ENABLE_NLS
     setlocale(LC_MESSAGES,currentLocale);
     free(currentLocale);
 #endif

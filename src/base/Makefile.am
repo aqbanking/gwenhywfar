@@ -12,7 +12,7 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 # -I$(top_srcdir)/src/os 
 
 localedir=$(datadir)/locale
-DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 
 noinst_LTLIBRARIES=libbase.la

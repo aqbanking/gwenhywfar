@@ -124,7 +124,7 @@ int scanLine(MACRO_DEF *macroDef,
     /* found something, search for opening bracket */
     macroBegin=p;
     p+=strlen(macroDef->macroName);
-    while(*p && isspace(*p)) p++;
+    while(*p && isspace((int)*p)) p++;
     if (*p && *p!='(')
       return -1;
 
@@ -140,7 +140,7 @@ int scanLine(MACRO_DEF *macroDef,
 
         /* found it, now read the typename */
         p++;
-        while(*p && isspace(*p)) p++;
+        while(*p && isspace((int)*p)) p++;
         typeName=p;
 
         /* find comma */
@@ -150,7 +150,7 @@ int scanLine(MACRO_DEF *macroDef,
             if (!typeNameEnd)
               typeNameEnd=p;
             p++;
-            while(*p && isspace(*p)) p++;
+            while(*p && isspace((int)*p)) p++;
             typePrefix=p;
 
             /* find closing bracket */
@@ -167,16 +167,16 @@ int scanLine(MACRO_DEF *macroDef,
 
                 /* check whether this is a definition */
                 s=buffer;
-                while(*s && isspace(*s)) s++;
+                while(*s && isspace((int)*s)) s++;
                 if (*s=='#') {
                   s++;
                   /* preprocessor command, check for define */
-                  while(*s && isspace(*s)) s++;
+                  while(*s && isspace((int)*s)) s++;
                   if (strncasecmp(s, "define ", 7)==0) {
                     s+=7;
                     /* it is a define, now check if the next nonblank is
                      * the beginning of this macro */
-                    while(*s && isspace(*s)) s++;
+                    while(*s && isspace((int)*s)) s++;
                     if (s==macroBegin) {
                       if (verbosity>1)
                         fprintf(stderr, "Found definition for macro \"%s\".\n",
@@ -217,7 +217,7 @@ int scanLine(MACRO_DEF *macroDef,
                 }
                 return 0;
               }
-              else if (isspace(*p)) {
+              else if (isspace((int)*p)) {
                 if (!typePrefixEnd)
                   typePrefixEnd=p;
               }
@@ -231,7 +231,7 @@ int scanLine(MACRO_DEF *macroDef,
             /* closing bracket missing, probably need more data... */
             return 1;
           }
-          else if (isspace(*p)) {
+          else if (isspace((int)*p)) {
             if (!typeNameEnd)
               typeNameEnd=p;
           }

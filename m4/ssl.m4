@@ -74,7 +74,7 @@ if test "$OSYSTEM" != "windows" ; then
      AQ_SEARCH_FILES("$d", [$ssl_search_lib_names])
      if test -n "$found_file" ; then
         ssl_libraries="-L$d"
-        ssl_lib="-l`echo $found_file | sed 's/lib//;s/\.so*//;s/\.a//'`"
+        ssl_lib="-l`echo $found_file | sed 's/lib//;s/\.so*//;s/\.a//'` -lcrypto"
         break
      fi
    done

@@ -1025,7 +1025,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
     DBG_DEBUG(GWEN_LOGDOMAIN, "Transforming value \"%s\"", pvalue);
     /* check whether the value is a property */
     p=pvalue;
-    while (*p && isspace(*p))
+    while (*p && isspace((int)*p))
       p++;
     if (*p=='$' || *p=='+') {
       /* global property */
@@ -2175,7 +2175,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
 
 		  /* check whether the value is a property */
 		  p=pvalue;
-		  while (*p && isspace(*p))
+		  while (*p && isspace((int)*p))
 		    p++;
 		  if (strlen(path)+strlen(pname)+2>sizeof(pbuffer)) {
 		    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
@@ -2511,7 +2511,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
 
 		  /* check whether the value is a property */
 		  p=pvalue;
-		  while (*p && isspace(*p))
+		  while (*p && isspace((int)*p))
 		    p++;
 		  if (strlen(path)+strlen(pname)+2>sizeof(pbuffer)) {
 		    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");

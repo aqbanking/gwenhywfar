@@ -179,7 +179,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
   while(*t && *p) {
     int i;
 
-    if (isdigit(*p))
+    if (isdigit((int)*p))
       i=(*p)-'0';
     else
       i=-1;

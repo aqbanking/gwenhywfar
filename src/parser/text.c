@@ -118,7 +118,7 @@ char *GWEN_Text_GetWord(const char *src,
           size++;
         }
         /* remember next loop whether this char was a blank */
-        if (isspace(*src) && !lastWasEscape) {
+        if (isspace((int)*src) && !lastWasEscape) {
           lastWasBlank=1;
           lastBlankPos=size;
         }
@@ -236,7 +236,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
 	  GWEN_Buffer_AppendByte(buf, *src);
         }
         /* remember next loop whether this char was a blank */
-        if (isspace(*src) && !lastWasEscape) {
+        if (isspace((int)*src) && !lastWasEscape) {
           lastWasBlank=1;
 	  lastBlankPos=GWEN_Buffer_GetPos(buf);
 	}
@@ -360,7 +360,7 @@ char *GWEN_Text_Unescape(const char *src,
 
 	/* skip '%' */
 	src++;
-	if (!(*src) || !isxdigit(*src)) {
+	if (!(*src) || !isxdigit((int)*src)) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
 	  return 0;
 	}
@@ -369,7 +369,7 @@ char *GWEN_Text_Unescape(const char *src,
 
 	/* get second digit */
 	src++;
-	if (!(*src) || !isxdigit(*src)) {
+	if (!(*src) || !isxdigit((int)*src)) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (only 1 digit)");
 	  return 0;
 	}
@@ -613,7 +613,7 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
     unsigned char c;
 
     /* read first digit */
-    if (!isxdigit(*src)) {
+    if (!isxdigit((int)*src)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad char in hex string");
       return -1;
     }
@@ -621,7 +621,7 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
 
     /* get second digit */
     src++;
-    if (!(*src) || !isxdigit(*src)) {
+    if (!(*src) || !isxdigit((int)*src)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete hex byte (only 1 digit)");
       return -1;
     }
@@ -657,11 +657,11 @@ int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
     unsigned char c;
 
     /* read first digit */
-    if (isspace(*src)) {
+    if (isspace((int)*src)) {
       src++;
     }
     else {
-      if (!isxdigit(*src)) {
+      if (!isxdigit((int)*src)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Bad char in hex string");
         return -1;
       }
@@ -669,7 +669,7 @@ int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
   
       /* get second digit */
       src++;
-      if (!(*src) || !isxdigit(*src)) {
+      if (!(*src) || !isxdigit((int)*src)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete hex byte (only 1 digit)");
         return -1;
       }
@@ -711,7 +711,7 @@ int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf) {
     }
     else {
       /* read first digit */
-      if (!isdigit(*src)) {
+      if (!isdigit((int)*src)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Bad char in bcd string");
         return -1;
       }
@@ -719,7 +719,7 @@ int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf) {
       src++;
     }
     /* get second digit */
-    if (!(*src) || !isxdigit(*src)) {
+    if (!(*src) || !isxdigit((int)*src)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete BCD byte (only 1 digit)");
       return -1;
     }
@@ -1119,7 +1119,7 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
 
 	/* skip '%' */
 	src++;
-	if (!(*src) || !isxdigit(*src)) {
+	if (!(*src) || !isxdigit((int)*src)) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
 	  return 0;
 	}
@@ -1128,7 +1128,7 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
 
 	/* get second digit */
 	src++;
-	if (!(*src) || !isxdigit(*src)) {
+	if (!(*src) || !isxdigit((int)*src)) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (only 1 digit)");
 	  return 0;
 	}
@@ -1213,7 +1213,7 @@ int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
         unsigned char d1, d2;
         unsigned char c;
 
-        if (isxdigit(src[1]) && isxdigit(src[2])) {
+        if (isxdigit((int)src[1]) && isxdigit((int)src[2])) {
           /* skip '%' */
           src++;
           /* read first digit */
@@ -1321,7 +1321,7 @@ void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf){
 
   for (i=0; i<size; i++) {
     /* remember next loop whether this char was a blank */
-    if (isspace(*p)) {
+    if (isspace((int)*p)) {
       if (!lastWasBlank) {
         /* store only one blank */
         lastWasBlank=1;
@@ -1413,7 +1413,7 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign){
           lmatch=2;
           break;
         }
-        if (isalnum(*s1) && isalnum(*t)) {
+        if (isalnum((int)*s1) && isalnum((int)*t)) {
           lmatch=1;
           break;
         }
@@ -1444,7 +1444,7 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign){
           lmatch=1;
           break;
         }
-        if (isalnum(*s1) && isalnum(*t)) {
+        if (isalnum((int)*s1) && isalnum((int)*t)) {
           lmatch=1;
           break;
         }

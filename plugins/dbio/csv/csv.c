@@ -72,7 +72,8 @@ int GWEN_CSV_GetNameAndIndex(const char *name,
       j++;
     } /* while */
     if (j>=sizeof(numbuffer)) {
-      DBG_INFO(0, "Index number too long (%u>=%u)", j, sizeof(numbuffer));
+      DBG_INFO(0, "Index number too long (%u>=%d)", j,
+               (int)(sizeof(numbuffer)));
       return -1;
     }
     numbuffer[j]=0;
