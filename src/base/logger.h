@@ -97,13 +97,16 @@ void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger);
 
 
 /**
- * Only sets the new default logger if it not already is set or if the new
- * default logger is NULL.
- * You must call GWEN_Logger_Open on that logger prior to calling this
- * function.
+ * DEPRECATED. Only sets the new default logger if it not already is
+ * set or if the new default logger is NULL.  You must call
+ * GWEN_Logger_Open on that logger prior to calling this function.
  */
 GWENHYWFAR_API
-void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) __attribute__((deprecated));
+void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) 
+#ifdef __GNUC__
+       __attribute__((deprecated))
+#endif /* __GNUC__ */
+       ;
 
 
 /**
