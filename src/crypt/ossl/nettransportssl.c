@@ -1693,7 +1693,6 @@ int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_NetTransportSSL__GenerateDhFile_Callback(int i, int j, void *p) {
   GWEN_WAITCALLBACK_RESULT res;
-  static const char chars[]="_-+x*x+-";
 
   switch(i) {
   case 0:
@@ -1711,8 +1710,6 @@ void GWEN_NetTransportSSL__GenerateDhFile_Callback(int i, int j, void *p) {
   if (res!=GWEN_WaitCallbackResult_Continue) {
     DBG_WARN(0, "User wants to abort, but this function can not be aborted");
   }
-
-  fprintf(stderr, "%c\r", chars[i%strlen(chars)]);
 }
 
 

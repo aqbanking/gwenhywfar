@@ -29,6 +29,7 @@ noinst_HEADERS=\
   checkbox_p.h \
   dropdownbox_p.h \
   editbox_p.h \
+  event_l.h \
   event_p.h \
   filedialog_p.h \
   hline_p.h \

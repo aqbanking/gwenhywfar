@@ -1763,9 +1763,30 @@ int GWEN_UILoader_Populate(GWEN_DB_NODE *dbDialog,
         d="";
 
       if (strcasecmp(wtype, "EditBox")==0 ||
-          strcasecmp(wtype, "DropDownBox")==0 ||
           strcasecmp(wtype, "TextWidget")==0) {
         GWEN_Widget_SetText(w, d, GWEN_EventSetTextMode_Replace);
+      }
+      else if(strcasecmp(wtype, "DropDownBox")==0) {
+        GWEN_BUFFER *buf;
+        unsigned int i;
+
+        GWEN_Widget_SetText(w, d, GWEN_EventSetTextMode_Replace);
+        buf=GWEN_Buffer_new(0, 256, 0, 1);
+        GWEN_Buffer_AppendString(buf, path);
+        GWEN_Buffer_AppendString(buf, "-choices");
+
+        for (i=0; ; i++) {
+          const char *p;
+
+          p=GWEN_DB_GetCharValue(dbData, GWEN_Buffer_GetStart(buf), i, 0);
+          if (!p) {
+            break;
+          }
+          if (GWEN_DropDownBox_AddChoice(w, p)) {
+            DBG_ERROR(0, "Could not add choice \"%s\"", p);
+          }
+        } /* for */
+        GWEN_Buffer_free(buf);
       }
       else {
         DBG_INFO(0, "Cannot handle widget type \"%s\"", wtype);

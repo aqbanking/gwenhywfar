@@ -48,6 +48,8 @@ GWEN_WIDGET *GWEN_DropDownBox_new(GWEN_WIDGET *parent,
 
 GWEN_BUFFER *GWEN_DropDownBox_GetText(const GWEN_WIDGET *w, int asAscii);
 
+int GWEN_DropDownBox_AddChoice(GWEN_WIDGET *w, const char *s);
+
 
 #endif
 

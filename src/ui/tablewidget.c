@@ -664,7 +664,6 @@ void GWEN_TableWidget_Refresh(GWEN_WIDGET *w){
   if (!win->changed)
     return;
 
-  beep();
   tc=GWEN_TableColumn_List_First(win->columns);
   while(tc) {
     GWEN_TableColumn_Update(tc);
@@ -756,17 +755,27 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
     break;
   }
   case GWEN_EventType_Draw: {
+    GWEN_TABLE_FIELD *tf;
+
     DBG_NOTICE(0, "Event: Draw(%s)", GWEN_Widget_GetName(w));
     win->previousHandler(w, e);
     GWEN_TableWidget_Update(w);
-    if (GWEN_Widget_GetState(w) & GWEN_WIDGET_STATE_HASFOCUS) {
-      GWEN_TABLE_FIELD *tf;
-      tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
-      if (tf) {
-        if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
-          GWEN_TableWidget_Highlight(w, tf, GWEN_WidgetColour_Selected);
+    tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
+    if (GWEN_Widget_GetState(w) & GWEN_WIDGET_STATE_HASFOCUS && tf) {
+      if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
+        GWEN_TableWidget_Highlight(w, tf, GWEN_WidgetColour_Selected);
+    }
+    if (tf) {
+      GWEN_EVENT *newE;
+
+      newE=GWEN_EventActivated_new(tf->text, win->mx, win->my);
+      assert(newE);
+      if (GWEN_Widget_SendEvent(w, w, newE)) {
+        DBG_INFO(0, "Could not send event");
+        GWEN_Event_free(newE);
       }
     }
+
     return GWEN_UIResult_Handled;
   }
 
@@ -911,7 +920,6 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
 
     else if (key==KEY_UP) {
       GWEN_TABLE_FIELD *tf;
-      GWEN_EVENT *newE;
 
       if (win->my) {
         tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
@@ -930,6 +938,8 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
                                            tf->y,
                                            tf->width,
                                            tf->height)) {
+          GWEN_EVENT *newE;
+
           if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
             GWEN_TableWidget_Highlight(w, tf, GWEN_WidgetColour_Selected);
           win->my--;
@@ -939,14 +949,14 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
             DBG_INFO(0, "Could not send event");
             GWEN_Event_free(newE);
           }
-          GWEN_Widget_SetCursorX(w, tf->x-win->left);
+	  GWEN_Widget_SetCursorX(w, tf->x-win->left);
           GWEN_Widget_SetCursorY(w, tf->y-win->top);
           //GWEN_Widget_Refresh(w);
-        }
-        else {
-          if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
-            GWEN_TableWidget_Highlight(w, tf, GWEN_WidgetColour_Selected);
-        }
+	}
+	else {
+	  if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
+	    GWEN_TableWidget_Highlight(w, tf, GWEN_WidgetColour_Selected);
+	}
       }
       else {
       }
@@ -1118,8 +1128,16 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
     tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
     if (tf) {
       if (ft==GWEN_EventFocusType_Got) {
-        if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
-          GWEN_TableWidget_Highlight(w, tf, GWEN_WidgetColour_Selected);
+	GWEN_EVENT *newE;
+
+	if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
+	  GWEN_TableWidget_Highlight(w, tf, GWEN_WidgetColour_Selected);
+	newE=GWEN_EventActivated_new(tf->text, win->mx, win->my);
+	assert(newE);
+	if (GWEN_Widget_SendEvent(w, w, newE)) {
+	  DBG_INFO(0, "Could not send event");
+	  GWEN_Event_free(newE);
+	}
       }
       else {
         if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)

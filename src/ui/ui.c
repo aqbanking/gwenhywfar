@@ -466,6 +466,13 @@ GWEN_UI_RESULT GWEN_UI_DispatchEvent(GWEN_EVENT *e) {
 
 GWEN_WIDGET *GWEN_UI_GetFocusWidget() {
   assert(GWEN_UI__ui);
+  if (GWEN_UI__ui->focusWidget) {
+    if (GWEN_Widget_GetState(GWEN_UI__ui->focusWidget) &
+        GWEN_WIDGET_STATE_CLOSED) {
+      GWEN_Widget_free(GWEN_UI__ui->focusWidget);
+      GWEN_UI__ui->focusWidget=0;
+    }
+  }
   return GWEN_UI__ui->focusWidget;
 }
 

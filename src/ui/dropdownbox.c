@@ -459,6 +459,17 @@ GWEN_BUFFER *GWEN_DropDownBox_GetText(const GWEN_WIDGET *w, int asAscii){
 
 
 
+int GWEN_DropDownBox_AddChoice(GWEN_WIDGET *w, const char *s) {
+  GWEN_DROPDOWNBOX *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_DROPDOWNBOX, w);
+  assert(win);
+
+  return !GWEN_StringList_AppendString(win->stringList, s, 0, 1);
+}
+
+
 
 
 

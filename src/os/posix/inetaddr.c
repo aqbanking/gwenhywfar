@@ -205,9 +205,12 @@ GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa){
   GWEN_NEW_OBJECT(GWEN_INETADDRESS, ia);
   ia->af=oa->af;
   ia->size=oa->size;
-  ia->address=(struct sockaddr *)malloc(sizeof(struct sockaddr));
-  assert(ia->address);
-  memmove(ia->address, oa->address, sizeof(struct sockaddr));
+  //ia->address=(struct sockaddr *)malloc(sizeof(struct sockaddr));
+  if (oa->size) {
+    ia->address=(struct sockaddr *)malloc(oa->size);
+    assert(ia->address);
+    memmove(ia->address, oa->address, oa->size);
+  }
   return ia;
 }
 
@@ -241,7 +244,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 #elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(0, "No TCP sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -276,8 +279,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
                           GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
 #endif
-    aptr->sun_path[0]=0;
-
+    memset(aptr->sun_path, 0, sizeof(aptr->sun_path));
     if (addr) {
       /* ok, address to be set */
       if ((strlen(addr)+1)>sizeof(aptr->sun_path)) {
@@ -289,7 +291,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 			      GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 			      GWEN_INETADDR_ERROR_BAD_ADDRESS);
       }
-      strcpy(aptr->sun_path,addr);
+      strcpy(aptr->sun_path, addr);
       ia->size=SUN_LEN(aptr);
     }
     break;

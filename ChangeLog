@@ -1,7 +1,18 @@
 
+===========================================================================
+MARK: released gwenhywfar-0.9.12 (2004/07/03)
+===========================================================================
+
+
+2004/07/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- some more fixes, prepared release
+
+
 2004/07/02: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - tools: added "dlgtest", a tool which allows testing a dialog.
+- ui: fixed a bug in MessageBox
 
 
 2004/07/01: Martin Preuss<martin@libchipcard.de>
