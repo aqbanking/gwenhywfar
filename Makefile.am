@@ -69,6 +69,15 @@ rpm:    $(PACKAGE).spec dist
 	if [ `rpm --version | awk '{ print $$3 }'` > /dev/null ]; then rpmbuild="rpmbuild"; fi && \
 	$$rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
+# Rule for using the Inno Setup compiler. The path to iscc.exe is set
+# manually here for now.
+ISCC = "C:\Programme\Inno Setup 4\iscc.exe"
+setup: gwenhywfar.iss
+	mkdir -p distribution
+	make prefix="`pwd`/distribution/win32-tmp" install \
+	 && $(ISCC) gwenhywfar.iss \
+	 && rm -rf distribution/win32-tmp
+
 # Extra rule for easy generation of Win32 archives with headers and
 # DLLs. The helper directories are configured by the following
 # variables.
@@ -82,7 +91,8 @@ win_bindir=$(PACKAGE)-$(VERSION)-win32-bin
 win_LIBRARY_NAME = $(PACKAGE)32_$(GWENHYWFAR_SO_EFFECTIVE)
 EXTRA_WIN_DIST=AUTHORS ChangeLog README README.W32 COPYING
 
-# Target that uses the current ./configure result for compiling
+# Target that uses the currently compiled result for installation
+# (with the current ./configure settings)
 win32:
 	mkdir -p distribution
 	make prefix="`pwd`/distribution/win32-tmp" install && \
@@ -102,7 +112,7 @@ win32:
 	 rm -Rf win32-bin )
 
 # Target that makes a full rebuild including ./configure
-win32-cs: dist
+win32-cs-start: dist
 	$(am__remove_distdir)
 	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
 	chmod -R a-w $(distdir); chmod a+w $(distdir)

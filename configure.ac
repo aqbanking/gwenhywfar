@@ -544,6 +544,7 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  m4/Makefile
                  gwenhywfar-config.in
 		 gwenhywfar.spec
+		 gwenhywfar.iss
                  doc/Makefile
                  gwenpp/Makefile
                  gwenui/Makefile

@@ -1,3 +1,10 @@
+2004-08-24   Christian Stimming <stimming@tuhh.de>
+
+	* gwenhywfar.iss.in: Add spec file for the Inno Setup Compiler
+	which will create a Windows Setup.exe program for the whole
+	package, see http://www.jrsoftware.org/isdl.php. Added "make
+	setup" for this target.
+
 2004-08-23   Christian Stimming <stimming@tuhh.de>
 
 	* src/os/gwentime.h: Include time.h.
