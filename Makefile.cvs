@@ -1,21 +1,10 @@
 default: all
 
-dist:
-	@echo "This file is to make it easier for you to create all you need"
-	aclocal -I ./m4
-	autoheader
-# use --include-deps, if you want to release the stuff. Don't use it for
-# yourself
-	automake --include-deps
-	autoconf
+dist: COPY=--copy
+dist: all
 	touch stamp-h.in
-	rm -f `find . -name \*~`
-	rm -Rf `find . -type d -name CVS`
-	rm -f `find . -type f -name .cvsignore`
-	#rm -f `find . -type f -name Makefile.am`
-	#rm -f configure.in
-	rm -Rf apidoc
-	rm -f Makefile.cvs
+	./configure
+	make dist
 
 cvsclean::
 	automake --include-deps
@@ -25,10 +14,10 @@ cvsclean::
 	rm -Rf apidoc
 
 all:
-	libtoolize -f --automake
+	libtoolize -f --automake $(COPY)
 	aclocal -I ./m4
 	autoheader
-	automake --add-missing
+	automake -f --add-missing $(COPY)
 	autoconf
 	#./configure --enable-maintainer-mode
 

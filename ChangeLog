@@ -1,4 +1,9 @@
 
+2004/01/21: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- applied a build patch submitted by Ronny Buchmann
+- fixed a severe bug in signature code
+
 
 2004/01/18 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

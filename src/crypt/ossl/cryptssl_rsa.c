@@ -37,6 +37,7 @@
 #include "cryptssl_rsa_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h> /* DEBUG ! */
 
 #include <openssl/rsa.h>
 #include <openssl/objects.h>
@@ -197,7 +198,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(const GWEN_CRYPTKEY *key,
     }
 
     if (BN_cmp(bnresult2, bnresult) < 0) {
-      DBG_INFO(0, "Using smaller signature");
+      DBG_DEBUG(0, "Using smaller signature");
       BN_copy(bnresult, bnresult2);
     }
   }
@@ -214,9 +215,13 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
                                      GWEN_BUFFER *dst){
   unsigned int srclen;
   unsigned char *pdst;
+  unsigned char *psrc;
   RSA *kd;
-  GWEN_ERRORCODE err;
   BIGNUM *bnresult;
+  int res;
+  BIGNUM *bnhash;
+  BIGNUM *bnresult2;
+  BN_CTX *bnctx;
 
   assert(key);
   assert(src);
@@ -241,23 +246,71 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BUFFER_FULL);
   }
-  pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
 
   bnresult = BN_new();
 
-  err=GWEN_CryptKeyRSA_SignBigNum(key, src, bnresult);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
-    BN_free(bnresult);
-    return err;
+  /* sign the src */
+  psrc=(unsigned char*)GWEN_Buffer_GetStart(src);
+  bnhash = BN_new();
+  bnresult2 = BN_new();
+  bnctx = BN_CTX_new();
+
+  bnhash = BN_bin2bn(psrc, srclen, bnhash);
+  BN_CTX_start(bnctx);
+  res=BN_mod_exp(bnresult, bnhash, kd->d, kd->n, bnctx);
+
+  /* FIXME: The description is quite the opposite of the code, while the
+   * code seems to be working (at least when verifying my own signatures)
+   * the iso9796-appendix is as follows:
+   * if (the calculated signature - the modulus) < (the calculated signature)
+   * use (the calculated signature - the modulus) as signature
+   */
+
+  if (!BN_sub(bnresult2, kd->n, bnresult)) {
+    DBG_ERROR(0, "Math error");
+    BN_free(bnresult2);
+    BN_free(bnhash);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_SIGN);
   }
 
-  BN_bn2bin(bnresult, pdst);
+  if (BN_cmp(bnresult2, bnresult) < 0) {
+    DBG_NOTICE(0, "Using smaller signature");
+    BN_copy(bnresult, bnresult2);
+  }
+
+  BN_free(bnresult2);
+  BN_free(bnhash);
+
+  if (GWEN_Buffer_GetPos(dst)!=0) {
+    DBG_WARN(0, "Not at start pos, we could otherwise be much faster");
+  }
+  /* padd up to srclen */
+  pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
+  res=BN_bn2bin(bnresult, pdst);
+  GWEN_Buffer_SetUsedBytes(dst,
+                           GWEN_Buffer_GetUsedBytes(dst)+res);
+  if (res<srclen) {
+    unsigned int j;
+
+    if (GWEN_Buffer_ReserveBytes(dst, srclen-res)) {
+      DBG_INFO(0, "Could not reserve %d bytes", srclen-res);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                            GWEN_CRYPT_ERROR_BUFFER_FULL);
+    }
+    for (j=0; j<(srclen-res); j++) {
+      GWEN_Buffer_InsertByte(dst, 0);
+    }
+  }
+  pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
+
   BN_free(bnresult);
 
   GWEN_Buffer_IncrementPos(dst, srclen);
-  GWEN_Buffer_AdjustUsedBytes(dst);
-
   return 0;
 }
 
