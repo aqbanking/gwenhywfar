@@ -159,6 +159,8 @@ int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 res){
 
     bf->ptr+=res;
     bf->bufferSize-=res;
+    if (bf->bufferSize)
+      bf->ptr[0]=0;
     return 0;
   }
 }

@@ -264,6 +264,30 @@ GWENHYWFAR_API
 
 
 /**
+ * This function counts the number of characters in the given UTF-8 buffer.
+ * @param s pointer to a buffer which contains UTF-8 characters
+ * @param len number of bytes (if 0 then all bytes up to a zero byte are
+ *  counted)
+ */
+GWENHYWFAR_API
+  int GWEN_Text_CountUtf8Chars(const char *s, int len);
+
+
+/**
+ * Replaces special characters which are used by XML (like "<", "&" etc)
+ * by known sequences (like "&amp;").
+ */
+GWENHYWFAR_API
+int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf);
+
+/**
+ * Replaces special character sequences to their coresponding character.
+ */
+GWENHYWFAR_API
+int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf);
+
+
+/**
  * Compares two strings and returns the percentage of their equality.
  * It is calculated by this formula:
  *  matches*100 / ((length of s1)+(length of s2))

@@ -1,12 +1,68 @@
+
+2004/12/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+Please note: The changes below are not checked on WIN32 !!
+I sometimes used the function strncasecmp(), maybe we have to find a way
+around this for WIN32 (or does MinGW already support it?)
+  ------------------------------------------------------------------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+- GWEN_XSD:
+  - started working on XSD module (not complete !!!)
+
+- GWEN_XML:
+  - fixed some bugs in XML code:
+    - now "[" and "]" are accepted within XML files (mostly used within 
+      <!DOCTYPE> tags), so we can now also read valid XML files (like the
+      various XSD files I'm currently dealing with)
+    - fixed the bug concerning simple quote characters ('): These characters
+      are now valid, too.
+  - added function GWEN_XML_GetXPath which returns the XPath from one
+    XML node to another one
+  - added flag GWEN_XML_FLAGS_INLINE_DATA (used to inline data tags directly
+    between start and end tag without any linefeed
+  - now indention is only done if the line position pointer in the BIO is 0
+    (which means: no unnecessary indention)
+  - added function GWEN_XMLNode_NormalizeNameSpaces() to remove unnecessary
+    namespaces from an XML tree
+  - special characters (like "&<>" etc) are now escaped and unescaped in
+    tagnames, property names and values and data.
+  - added function GWEN_XML_fromString() which creates an XML tree from
+    a string
+
+- GWEN_BUFFER:
+  - fixed a "bug": When reserving bytes in an empty buffer
+    the first character is set to 0 (to keep the buffer usable for C string
+    functions)
+
+- GWEN_DB:
+  - fixed a bug Remove the newline when omitting variables in 
+    GWEN_DB_WriteGroupToStream.
+  - added a mechanism to assign hash mechanisms to DB groups. This might be
+    used to speedup lookups of group members in GWEN_DBs.
+
+- GWEN_TEXT:
+  - added function GWEN_Text_CountUtf8Chars()
+
+- GWEN_BUFFEREDIO:
+  - added function GWEN_BufferedIO_GetLinePos()
+
+- GWEN_BIO_BUFFER:
+  - added function GWEN_BufferedIO_Buffer_fromString()
+
+
 2004-12-06   Christian Stimming <stimming@tuhh.de>
 
 	* src/os/windows/fslock.c: Finish file lock support on
 	Win32/MinGW; unfortunately link() is unavailable there.
 
+
 2004/12/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added I18N module (just a simple helper for some I18N issues)
-  When setting a locale the given locale is also stored in it generalized
+  When setting a locale the given locale is also stored in its generalized
   forms, e.g.:
     de_DE@euro is stored as:
     - de_DE@euro

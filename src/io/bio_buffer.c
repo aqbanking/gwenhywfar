@@ -208,6 +208,18 @@ GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer){
 
 
 
+GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_fromString(const char *s,
+                                                   int len){
+  GWEN_BUFFER *dbuf;
+
+  if (len==0)
+    len=strlen(s);
+  dbuf=GWEN_Buffer_new(0, len, 0, 1);
+  GWEN_Buffer_AppendBytes(dbuf, s, len);
+  GWEN_Buffer_Rewind(dbuf);
+  return GWEN_BufferedIO_Buffer2_new(dbuf, 1);
+}
+
 
 
 

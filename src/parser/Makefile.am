@@ -7,7 +7,8 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
- 
+
+EXTRA_DIST=xsdtypes.inc
 
 localedir=$(datadir)/locale
 DEFS=\
@@ -23,7 +24,9 @@ noinst_HEADERS=\
  dbio_p.h \
  msgengine_p.h \
  tlv_p.h \
- xml_p.h
+ xml_p.h \
+ xml_l.h \
+ xsd_p.h
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
@@ -35,7 +38,8 @@ iheader_HEADERS=\
  path.h \
  text.h \
  tlv.h \
- xml.h
+ xml.h \
+ xsd.h
 
 libparser_la_SOURCES=\
  base64.c \
@@ -46,5 +50,12 @@ libparser_la_SOURCES=\
  path.c \
  text.c \
  tlv.c \
- xml.c
+ xml.c \
+ xsd.c xsd_list.c xsd_write.c
+
+
+
+xsdtypes.inc: xsdtypes.xsd
+	./mkxsdtypes.sh $< >$@
+
 

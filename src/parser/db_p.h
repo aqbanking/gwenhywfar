@@ -52,6 +52,15 @@ typedef enum {
 } GWEN_DB_NODETYPE;
 
 
+struct GWEN_DB_HASH_MECHANISM {
+  GWEN_TYPE_UINT32 ref;
+  GWEN_DB_HASH_INITNODE_FN initNodeFn;
+  GWEN_DB_HASH_FININODE_FN finiNodeFn;
+  GWEN_DB_HASH_ADDNODE_FN addNodeFn;
+  GWEN_DB_HASH_UNLINKNODE_FN unlinkNodeFn;
+  GWEN_DB_HASH_GETNODE_FN getNodeFn;
+};
+
 
 struct GWEN_DB_HEADER {
   GWEN_DB_NODE *next;
@@ -66,6 +75,8 @@ struct GWEN_DB_HEADER {
 struct GWEN_DB_GROUP {
   GWEN_DB_HEADER h;
   char *name;
+  GWEN_DB_HASH_MECHANISM *hashMechanism;
+  void *hashData;
 };
 
 
@@ -202,6 +213,28 @@ void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
 void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
                                 GWEN_DB_NODE *n);
 void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n);
+
+
+
+int GWEN_DB_HashMechanism_InitNode(GWEN_DB_HASH_MECHANISM *hm,
+                                   GWEN_DB_NODE *node,
+                                   void **hashData);
+int GWEN_DB_HashMechanism_FiniNode(GWEN_DB_HASH_MECHANISM *hm,
+                                   GWEN_DB_NODE *node,
+                                   void **hashData);
+int GWEN_DB_HashMechanism_AddNode(GWEN_DB_HASH_MECHANISM *hm,
+                                  GWEN_DB_NODE *parent,
+                                  GWEN_DB_NODE *node,
+                                  int appendOrInsert,
+                                  void *hashData);
+int GWEN_DB_HashMechanism_UnlinkNode(GWEN_DB_HASH_MECHANISM *hm,
+                                     GWEN_DB_NODE *parent,
+                                     GWEN_DB_NODE *node,
+                                     void *hashData);
+GWEN_DB_NODE *GWEN_DB_HashMechanism_GetNode(GWEN_DB_HASH_MECHANISM *hm,
+                                            GWEN_DB_NODE *parent,
+                                            const char *name,
+                                            void *hashData);
 
 
 #endif

@@ -54,6 +54,13 @@ GWENHYWFAR_API
   GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer2_new(GWEN_BUFFER *buffer,
                                                int take);
 
+/**
+ * Create a buffered IO context using a GWEN_BUFFER.
+ * This context can be free'd using @ref GWEN_BufferedIO_free.
+ */
+GWENHYWFAR_API
+  GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_fromString(const char *s, int len);
+
 #ifdef __cplusplus
 }
 #endif

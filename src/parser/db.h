@@ -190,10 +190,12 @@ extern "C" {
  */
 /*@{*/
 /** is set then this node has been altered */
-#define GWEN_DB_NODE_FLAGS_DIRTY     0x00000001
+#define GWEN_DB_NODE_FLAGS_DIRTY                   0x00000001
 /** variable is volatile (will not be written) */
-#define GWEN_DB_NODE_FLAGS_VOLATILE  0x00000002
-
+#define GWEN_DB_NODE_FLAGS_VOLATILE                0x00000002
+/** this is only valid for groups. It determines whether subgroups will
+ *  inherit the hash mechanism set in the root node. */
+#define GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM  0x00000004
 /*@}*/
 
 
@@ -449,6 +451,24 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          GWEN_TYPE_UINT32 flags,
                          const char *path,
                          const char *val);
+
+
+/**
+ * Adds the given char value to the given variable if it not already exists
+ * (depending on the arguments senseCase and check).
+ * @return 0 on success, nonzero on error
+ * @param n db node
+ * @param path path and name of the variable
+ * @param val The string value that is copied into the DB
+ * @param senseCase if 0 then the case of the value is ignored while checking
+ * @param check if 1 then the variable will be checked for this value
+ */
+GWENHYWFAR_API 
+int GWEN_DB_AddCharValue(GWEN_DB_NODE *n,
+                         const char *path,
+                         const char *val,
+                         int senseCase,
+                         int check);
 
 
 /**
@@ -1044,6 +1064,89 @@ int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
  */
 GWENHYWFAR_API 
 void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
+/*@}*/
+
+
+
+/** @name Hash Mechanism
+ *
+ * These functions allow for the implementation of hash mechanisms for
+ * DB groups.
+ * Those mechanisms can be applied to group nodes to speed up the lookup of
+ * subnodes to groups.
+ */
+/*@{*/
+typedef struct GWEN_DB_HASH_MECHANISM GWEN_DB_HASH_MECHANISM;
+
+typedef int (*GWEN_DB_HASH_INITNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
+                                        GWEN_DB_NODE *node,
+                                        void **hashData);
+typedef int (*GWEN_DB_HASH_FININODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
+                                        GWEN_DB_NODE *node,
+                                        void **hashData);
+typedef int (*GWEN_DB_HASH_ADDNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
+                                       GWEN_DB_NODE *parent,
+                                       GWEN_DB_NODE *node,
+                                       int appendOrInsert, /* 1=append */
+                                       void *hashData);
+typedef int (*GWEN_DB_HASH_UNLINKNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
+                                          GWEN_DB_NODE *parent,
+                                          GWEN_DB_NODE *node,
+                                          void *hashData);
+typedef GWEN_DB_NODE* (*GWEN_DB_HASH_GETNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
+                                                 GWEN_DB_NODE *parent,
+                                                 const char *name,
+                                                 void *hashData);
+
+GWENHYWFAR_API 
+GWEN_DB_HASH_MECHANISM *GWEN_DB_HashMechanism_new();
+
+GWENHYWFAR_API 
+void GWEN_DB_HashMechanism_Attach(GWEN_DB_HASH_MECHANISM *hm);
+
+GWENHYWFAR_API 
+void GWEN_DB_HashMechanism_free(GWEN_DB_HASH_MECHANISM *hm);
+
+
+GWENHYWFAR_API 
+void GWEN_DB_HashMechanism_SetInitNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                         GWEN_DB_HASH_INITNODE_FN f);
+
+GWENHYWFAR_API 
+void GWEN_DB_HashMechanism_SetFiniNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                         GWEN_DB_HASH_FININODE_FN f);
+
+GWENHYWFAR_API 
+void GWEN_DB_HashMechanism_SetAddNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                        GWEN_DB_HASH_ADDNODE_FN f);
+
+GWENHYWFAR_API 
+void GWEN_DB_HashMechanism_SetUnlinkNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                           GWEN_DB_HASH_UNLINKNODE_FN f);
+
+GWENHYWFAR_API 
+void GWEN_DB_HashMechanism_SetGetNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                        GWEN_DB_HASH_GETNODE_FN f);
+
+
+/**
+ * Assigns a hash mechanism to a DB group. If the node flag
+ * @ref GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM is set on this node then
+ * this hash mechanism will be set to all nodes which become children to the
+ * given node as they are added (but only if the nodes to be added don't
+ * already have a hash mechanism of their own).
+ * <p>
+ * You should set the hash mechanism to the root node and also set the flag
+ * described above to ensure that every group in every level uses this hash
+ * mechanism. The GWEN_DB takes care of calling the approppriate init, fini,
+ * attach and free functions of the hash mechanism.
+ * </p>
+ *
+ */
+GWENHYWFAR_API 
+int GWEN_DB_Group_SetHashMechanism(GWEN_DB_NODE *node,
+                                   GWEN_DB_HASH_MECHANISM *hm);
+
 /*@}*/
 
 

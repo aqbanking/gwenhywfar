@@ -30,6 +30,7 @@ MinGW32 is a project with the goal to provide a free compiler system and a
 nearly complete shell environment which allows to execute the configure 
 script. The resulting DLLs and EXEs only link against Windows libraries, so
 there are no licence issues when releasing binary packages.
+These EXEs and DLLs don't need MinGW32 to be installed on the target system.
 The compiler itself is the very well known GCC.
 
 MinGW creates an environment just like under Linux (with quite the same

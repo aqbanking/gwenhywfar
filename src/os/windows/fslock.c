@@ -112,7 +112,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
     if (fd==-1) {
       DBG_DEBUG(GWEN_LOGDOMAIN,
 		"open(%s): %s",
-		fl->baseLockFilename,
+		fl->uniqueLockFilename,
 		strerror(errno));
       return GWEN_FSLock_ResultError;
     }

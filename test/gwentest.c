@@ -29,6 +29,8 @@
 #include <gwenhywfar/misc2.h>
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/fslock.h>
+#include <gwenhywfar/xsd.h>
+#include "../src/parser/xsd_p.h"
 #ifdef OS_WIN32
 # include <windows.h>
 # define sleep(x) Sleep(x*1000)
@@ -218,6 +220,32 @@ int testXML2(int argc, char **argv) {
   }
   fprintf(stderr, "XML file:\n");
   GWEN_XMLNode_Dump(n, stderr, 2);
+  GWEN_XMLNode_free(n);
+  return 0;
+}
+
+
+
+int testXML3(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+  fprintf(stderr, "XML file:\n");
+  GWEN_XMLNode_Dump(n, stderr, 2);
+  if (GWEN_XMLNode_WriteFile(n, "xml.out",
+                             GWEN_XML_FLAGS_DEFAULT)){
+    fprintf(stderr, "Could not write file xml.out\n");
+    return 2;
+  }
   GWEN_XMLNode_free(n);
   return 0;
 }
@@ -3179,12 +3207,240 @@ int testFsLock2(int argc, char **argv) {
 
 
 
+int testXSD(int argc, char **argv) {
+  GWEN_XSD_ENGINE *e;
+  GWEN_XSD_NAMESPACE *ns;
+  GWEN_XMLNODE *node;
+  int rv;
+  int i, j;
+  GWEN_BUFFER *ibuf;
+
+  if (argc<3) {
+    fprintf(stderr, "Usage: %s xsd FILENAME\n", argv[0]);
+    return 1;
+  }
+
+  e=GWEN_XSD_new();
+  if (GWEN_XSD_ImportStart(e)) {
+    fprintf(stderr, "Could not start importing.\n");
+    return 2;
+  }
+
+  for (j=2; j<argc; j++) {
+    node=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+    if (GWEN_XML_ReadFile(node, argv[j],
+                          GWEN_XML_FLAGS_DEFAULT |
+                          GWEN_XML_FLAGS_IGNORE_INCLUDE |
+                          GWEN_XML_FLAGS_NO_CONDENSE |
+                          GWEN_XML_FLAGS_KEEP_BLANKS)) {
+      fprintf(stderr, "Could not read file \"%s\"\n", argv[j]);
+      return 2;
+    }
+
+    rv=GWEN_XSD_ImportSchema(e, node, argv[j]);
+    if (rv) {
+      fprintf(stderr, "Could not import file \"%s\"\n", argv[j]);
+      return 3;
+    }
+    fprintf(stderr, "File \"%s\" imported.\n", argv[j]);
+  } /* for */
+
+  if (GWEN_XSD_ImportEnd(e)) {
+    fprintf(stderr, "Could not end importing.\n");
+    return 3;
+  }
+
+  ns=GWEN_XSD_NameSpace_List_First(e->nameSpaces);
+  i=1;
+  while(ns) {
+    fprintf(stderr, "Namespace %d: %s: %s (%s)\n",
+            i, ns->id, ns->name, ns->url);
+    ns=GWEN_XSD_NameSpace_List_Next(ns);
+    i++;
+  }
+  if (GWEN_XMLNode_WriteFile(e->rootNode, "xsd.out",
+                             GWEN_XML_FLAGS_DEFAULT)){
+    fprintf(stderr, "Could not write file xsd.out\n");
+    return 2;
+  }
+
+  ibuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_XSD_ListTypes(e,
+                         "http://www.fints.org/spec/xmlschema/4.0/final/transactions",
+                         "AcctBal_1_Req",
+                         //"http://www.fints.org/spec/xmlschema/4.0/final/types",
+                         //"ReqMsgHeader",
+                         ibuf)) {
+    fprintf(stderr, "Type not found.\n");
+  }
+  else {
+    fprintf(stderr, "Type found\n%s", GWEN_Buffer_GetStart(ibuf));
+  }
+
+  GWEN_XSD_free(e);
+  return 0;
+}
+
+
+
+int testXSD2(int argc, char **argv) {
+  GWEN_XSD_ENGINE *e;
+  GWEN_XSD_NAMESPACE *ns;
+  GWEN_XMLNODE *node;
+  int rv;
+  int i, j;
+  GWEN_DB_NODE *dbData;
+  GWEN_DB_NODE *dbT;
+  GWEN_XMLNODE *nStore;
+
+  if (argc<3) {
+    fprintf(stderr, "Usage: %s %s FILENAME\n", argv[0], argv[1]);
+    return 1;
+  }
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
+
+  e=GWEN_XSD_new();
+
+  if (GWEN_XSD_ImportStart(e)) {
+    fprintf(stderr, "Could not start importing.\n");
+    return 2;
+  }
+
+  if (GWEN_XSD_AddNameSpace(e,
+                            "fintstrans",
+                            "http://www.fints.org/spec/xmlschema/4.0/final/transactions",
+                            0, 0)) {
+    fprintf(stderr, "Could not set fintstrans namespace.\n");
+    return 2;
+  }
+  if (GWEN_XSD_AddNameSpace(e,
+                            "fintstypes",
+                            "http://www.fints.org/spec/xmlschema/4.0/final/types",
+                            0, 0)) {
+    fprintf(stderr, "Could not set fintstypes namespace.\n");
+    return 2;
+  }
+
+  for (j=2; j<argc; j++) {
+    node=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+    if (GWEN_XML_ReadFile(node, argv[j],
+                          GWEN_XML_FLAGS_DEFAULT/* |
+                          GWEN_XML_FLAGS_IGNORE_INCLUDE |
+                          GWEN_XML_FLAGS_NO_CONDENSE |
+                          GWEN_XML_FLAGS_KEEP_BLANKS*/)) {
+      fprintf(stderr, "Could not read file \"%s\"\n", argv[j]);
+      return 2;
+    }
+
+    rv=GWEN_XSD_ImportSchema(e, node, argv[j]);
+    if (rv) {
+      fprintf(stderr, "Could not import file \"%s\"\n", argv[j]);
+      return 3;
+    }
+    fprintf(stderr, "File \"%s\" imported.\n", argv[j]);
+  } /* for */
+
+  if (GWEN_XSD_ImportEnd(e)) {
+    fprintf(stderr, "Could not end importing.\n");
+    return 3;
+  }
+
+
+  ns=GWEN_XSD_NameSpace_List_First(e->nameSpaces);
+  i=1;
+  while(ns) {
+    fprintf(stderr, "Namespace %d: %s: %s (%s)\n",
+            i, ns->id, ns->name, ns->url);
+    ns=GWEN_XSD_NameSpace_List_Next(ns);
+    i++;
+  }
+
+  if (GWEN_XMLNode_WriteFile(e->rootNode, "xsd.out",
+                             GWEN_XML_FLAGS_DEFAULT)){
+    fprintf(stderr, "Could not write file xsd.out\n");
+    return 2;
+  }
+  if (GWEN_XMLNode_WriteFile(e->rootNode, "xsd.compact.out",
+                             0)){
+    fprintf(stderr, "Could not write file xsd.compact.out\n");
+    return 2;
+  }
+
+  dbData=GWEN_DB_Group_new("data");
+  nStore=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+
+  GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "All_Acct", "true");
+  GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "MaxNo_Entries", "2");
+  dbT=GWEN_DB_GetGroup(dbData, GWEN_DB_FLAGS_DEFAULT,
+                       "OrderingCustAcct");
+  assert(dbT);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "AcctNo", "123456789");
+  dbT=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_DEFAULT,
+                       "BankId");
+  assert(dbT);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "CountryCode", "280");
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "BankCode", "99999999");
+
+  if (GWEN_XSD_SetCurrentTargetNameSpace(e,
+                                         "http://www.fints.org/spec/xmlschema/4.0/final/types")) {
+    fprintf(stderr, "Could not change current target namespace.\n");
+  }
+  rv=GWEN_XSD_WriteElement(e,
+                           "http://www.fints.org/spec/xmlschema/4.0/final/transactions",
+                           "AcctBal_1_Req",
+                           //"http://www.fints.org/spec/xmlschema/4.0/final/types",
+                           //"ReqMsgHeader",
+                           dbData,
+                           nStore,
+                           1);
+  if (rv) {
+    fprintf(stderr, "Could not write type (%d).\n", rv);
+    GWEN_XMLNode_Dump(nStore, stderr, 2);
+  }
+  else {
+    fprintf(stderr, "Type written\n");
+    GWEN_XMLNode_Dump(nStore, stderr, 2);
+    if (GWEN_XMLNode_WriteFile(nStore, "xsd-result.xml",
+                               GWEN_XML_FLAGS_DEFAULT |
+                               GWEN_XML_FLAGS_SIMPLE)){
+      fprintf(stderr, "Could not write file xsd-result.xml\n");
+      return 2;
+    }
+    rv=GWEN_XMLNode_NormalizeNameSpaces(nStore);
+    if (rv) {
+      fprintf(stderr, "Could not normalize XML tree (%d)\n", rv);
+      return 2;
+    }
+    else {
+      fprintf(stderr, "XML tree normalized.\n");
+    }
+    if (GWEN_XMLNode_WriteFile(nStore, "xsd-result-norm.xml",
+                               GWEN_XML_FLAGS_DEFAULT |
+                               GWEN_XML_FLAGS_SIMPLE)){
+      fprintf(stderr, "Could not write file xsd-result-norm.xml\n");
+      return 2;
+    }
+  }
+
+  GWEN_XSD_free(e);
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
 
   GWEN_Init();
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
 
   if (argc<2) {
     fprintf(stderr, "Usage: %s <test>\n  where <test> is one of db, dbfile, dbfile2, list, key, mkkey, cpkey, xml, xml2, sn, ssl, accept, connect\n", argv[0]);
@@ -3211,6 +3467,8 @@ int main(int argc, char **argv) {
     rv=testXML(argc, argv);
   else if (strcasecmp(argv[1], "xml2")==0)
     rv=testXML2(argc, argv);
+  else if (strcasecmp(argv[1], "xml3")==0)
+    rv=testXML3(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
     rv=testSnprintf(argc, argv);
   else if (strcasecmp(argv[1], "accept")==0)
@@ -3289,6 +3547,10 @@ int main(int argc, char **argv) {
     rv=testFsLock(argc, argv);
   else if (strcasecmp(argv[1], "fslock2")==0)
     rv=testFsLock2(argc, argv);
+  else if (strcasecmp(argv[1], "xsd")==0)
+    rv=testXSD(argc, argv);
+  else if (strcasecmp(argv[1], "xsd2")==0)
+    rv=testXSD2(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

@@ -32,6 +32,7 @@
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/list2.h>
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -112,6 +113,10 @@ extern "C" {
  */
 #define GWEN_XML_FLAGS_IGNORE_DESCR 0x0200
 
+#define GWEN_XML_FLAGS_KEEP_BLANKS  0x0400
+
+#define GWEN_XML_FLAGS_SIMPLE       0x0800
+
 /**
  * combination of other flags resembling the default flags
  */
@@ -122,10 +127,6 @@ extern "C" {
   )
 
 /*@}*/
-
-/** The type of a property of a tag (in XML notation this would be
-    called the attribute of an element). */
-typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 
 /**
  * The possible types of a GWEN_XMLNODE.
@@ -145,6 +146,8 @@ typedef enum {
  * GWEN_XMLNODE_TYPE. */
 typedef struct GWEN__XMLNODE GWEN_XMLNODE;
 
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_XMLNODE, GWEN_XMLNode, GWENHYWFAR_API);
+
 
 typedef int
     (*GWEN_XML_INCLUDE_FN)(GWEN_XMLNODE *n,
@@ -152,6 +155,7 @@ typedef int
                            const char *file,
                            GWEN_STRINGLIST *sl,
 			   GWEN_TYPE_UINT32 flags);
+
 
 
 /** @name Constructors and Destructors
@@ -180,6 +184,12 @@ void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n);
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n);
+
+GWENHYWFAR_API
+  GWEN_XMLNODE *GWEN_XML_fromString(const char *s,
+                                    int len,
+                                    GWEN_TYPE_UINT32 flags);
+
 /*@}*/
 
 
@@ -401,6 +411,35 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(const GWEN_XMLNODE *n,
                                        const char *pname,
                                        const char *pvalue);
 
+/**
+ * Checks whether the second node is a child of the first one.
+ * @return 0 if statement is not true, !=0 otherwise
+ */
+GWENHYWFAR_API
+int GWEN_XMLNode_IsChildOf(const GWEN_XMLNODE *parent,
+                           const GWEN_XMLNODE *child);
+
+GWENHYWFAR_API
+int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
+                          const GWEN_XMLNODE *n2,
+                          GWEN_BUFFER *nbuf);
+
+/**
+ * Locates a tag by its XPath. Currently attributes are not allowed, and
+ * the flag @ref GWEN_PATH_FLAGS_VARIABLE is not supported.
+ * Supported types of XPaths are:
+ * <ul>
+ *   <li>/element[1]/element[2]</li>
+ *   <li>../../element[5]</li>
+ * </ul>
+ * and so on. As you can see index numbers are supported.
+ * You should not use this function to create a node but rather for node
+ * lookups.
+ */
+GWENHYWFAR_API
+GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
+                                          const char *path,
+                                          GWEN_TYPE_UINT32 flags);
 
 
 /*@}*/
@@ -475,6 +514,15 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *n,
 GWENHYWFAR_API
 int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
                    GWEN_TYPE_UINT32 flags);
+
+
+/**
+ * This function removes unnecessary namespaces from the given node and
+ * all nodes below.
+ */
+GWENHYWFAR_API
+int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n);
+
 
 /**
  * Reads all tags/elements from a file and adds them as children to

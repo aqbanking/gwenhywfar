@@ -28,12 +28,10 @@
 #ifndef GWENHYWFAR_XML_P_H
 #define GWENHYWFAR_XML_P_H
 
-#include <gwenhywfar/xml.h>
+#include "xml_l.h"
 
+#include <gwenhywfar/stringlist.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #define GWEN_XML_MAX_DEPTH 32
 
@@ -50,6 +48,7 @@ GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(const GWEN_XMLPROPERTY *p);
 void GWEN_XMLProperty_freeAll(GWEN_XMLPROPERTY *p);
 
 void GWEN_XMLProperty_add(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
+void GWEN_XMLProperty_insert(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
 void GWEN_XMLProperty_del(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
 
 struct GWEN__XMLNODE {
@@ -72,6 +71,11 @@ struct GWEN_XMLNODE_PATH {
   GWEN_XMLNODE *nodes[GWEN_XML_MAX_DEPTH];
 };
 
+
+
+void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
+                               const char *name, const char *value,
+                               int doInsert);
 
 /**
  * Reads a word from the buffered input until one of the delimiters is found.
@@ -115,11 +119,39 @@ GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
                                    const char *pvalue);
 
 
+int GWEN_XML__AddNameSpace(GWEN_STRINGLIST *sl,
+                           const char *prefix,
+                           const char *name);
+const char *GWEN_XML__FindNameSpaceByPrefix(GWEN_STRINGLIST *sl,
+                                            const char *s);
+const char *GWEN_XML__FindNameSpaceByName(GWEN_STRINGLIST *sl,
+                                          const char *s);
+const char *GWEN_XML__FindNameSpace(GWEN_STRINGLIST *sl,
+                                    const char *prefix,
+                                    const char *name);
 
-#ifdef __cplusplus
-}
-#endif
 
+/**
+ * Removes all namespace declarations which have been declared in a higher
+ * level.
+ */
+int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
+                                       GWEN_STRINGLIST *sl,
+                                       const char *currentNameSpace);
+
+/**
+ * Moves all namespace declarations from this node to the nodes
+ * of first use
+ */
+int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n);
+
+
+int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
+                                const char *prefix,
+                                const char *nspace);
+int GWEN_XMLNode__CheckAndSetNameSpace(GWEN_XMLNODE *n,
+                                       const char *prefix,
+                                       const char *nspace);
 
 
 #endif

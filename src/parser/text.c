@@ -42,6 +42,22 @@
 
 
 
+typedef struct {
+  int character;
+  const char *replace;
+} GWEN_TEXT_ESCAPE_ENTRY;
+
+static GWEN_TEXT_ESCAPE_ENTRY gwen_text__xml_escape_chars[]= {
+{'&', "&amp;"},
+{'<', "&lt;"},
+{'>', "&gt;"},
+{'\'', "&apos;"},
+{'\"', "&quot;"},
+{0, 0}
+};
+
+
+
 char *GWEN_Text_GetWord(const char *src,
                         const char *delims,
                         char *buffer,
@@ -1474,6 +1490,132 @@ double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign){
     return pc2;
   return pc1;
 }
+
+
+
+int GWEN_Text_CountUtf8Chars(const char *s, int len) {
+  int count;
+  int handled;
+
+  if (len==0)
+    len=strlen(s);
+  count=0;
+  handled=0;
+  while(handled<len) {
+    unsigned char c;
+    int i;
+
+    c=(unsigned char)*s;
+    if ((c & 0xfc)==0xfc)
+      i=5;
+    else if ((c & 0xf8)==0xf8)
+      i=4;
+    else if ((c & 0xf0)==0xf0)
+      i=3;
+    else if ((c & 0xe0)==0xe0)
+      i=2;
+    else if ((c & 0xc0)==0xc0)
+      i=1;
+    else if (c & 0x80) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid UTF8 character at pos %d", handled);
+      return -1;
+    }
+    else
+      i=0;
+    if (handled+i+1>len) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Incomplete UTF8 sequence at pos %d", handled);
+      return -1;
+    }
+    s++;
+    if (i) {
+      int j;
+
+      for (j=0; j<j; j++) {
+        if ((((unsigned char)*s) & 0xc0)!=0xc0) {
+          DBG_ERROR(GWEN_LOGDOMAIN,
+                    "Invalid UTF8 sequence at pos %d (rel %d of %d)",
+                    handled, j, i);
+        }
+        s++;
+      }
+    }
+    handled+=i+1;
+    count++;
+  } /* while */
+
+  return count;
+}
+
+
+
+int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char x;
+    int match;
+
+    match=0;
+    x=(unsigned char)*src;
+    if (x=='&') {
+      GWEN_TEXT_ESCAPE_ENTRY *e;
+      e=gwen_text__xml_escape_chars;
+      while(e->replace) {
+        int l;
+
+        l=strlen(e->replace);
+        if (strncasecmp(src, e->replace, l)==0) {
+          GWEN_Buffer_AppendByte(buf, e->character);
+          src+=l;
+          match=1;
+          break;
+        }
+        e++;
+      } /* while */
+    }
+    if (!match) {
+      GWEN_Buffer_AppendByte(buf, *src);
+      src++;
+    }
+  } /* while */
+
+  return 0;
+}
+
+
+
+int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char x;
+    GWEN_TEXT_ESCAPE_ENTRY *e;
+    int match;
+
+    match=0;
+    x=(unsigned char)*src;
+    e=gwen_text__xml_escape_chars;
+    while(e->replace) {
+      if (x==e->character) {
+        GWEN_Buffer_AppendString(buf, e->replace);
+        match=1;
+        break;
+      }
+      e++;
+    } /* while */
+
+    if (!match) {
+      GWEN_Buffer_AppendByte(buf, *src);
+    }
+    src++;
+  } /* while */
+
+  return 0;
+}
+
+
+
+
+
+
+
 
 
 

@@ -64,6 +64,7 @@ struct GWEN_BUFFEREDIOSTRUCT {
 
   int bytesRead;
   int bytesWritten;
+  int linePos;
   int lines;
 };
 

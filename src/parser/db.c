@@ -156,6 +156,24 @@ void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
     curr->h.next=n;
   }
   n->h.parent=parent;
+
+  if (parent->h.typ==GWEN_DB_NODETYPE_GROUP) {
+    if (parent->group.hashMechanism) {
+      if (GWEN_DB_HashMechanism_AddNode(parent->group.hashMechanism,
+                                        parent, n,
+                                        1,
+                                        parent->group.hashData)) {
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "Error adding node via hash mechanism for group \"%s\"",
+                 parent->group.name);
+      }
+      if (parent->h.nodeFlags & GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM &&
+          n->group.hashMechanism==0) {
+        n->h.nodeFlags|=GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM;
+        GWEN_DB_Group_SetHashMechanism(n, parent->group.hashMechanism);
+      }
+    }
+  }
 }
 
 
@@ -186,6 +204,23 @@ void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
     parent->h.child=n;
   }
   n->h.parent=parent;
+
+  if (parent->h.typ==GWEN_DB_NODETYPE_GROUP) {
+    if (parent->group.hashMechanism) {
+      if (GWEN_DB_HashMechanism_AddNode(parent->group.hashMechanism,
+                                        parent, n, 0,
+                                        parent->group.hashData)) {
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "Error adding node via hash mechanism for group \"%s\"",
+                 parent->group.name);
+      }
+      if (parent->h.nodeFlags & GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM &&
+          n->group.hashMechanism==0) {
+        n->h.nodeFlags|=GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM;
+        GWEN_DB_Group_SetHashMechanism(n, parent->group.hashMechanism);
+      }
+    }
+  }
 }
 
 
@@ -205,7 +240,22 @@ void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n) {
 
   assert(n);
   parent=n->h.parent;
-  assert(parent);
+  if (!parent) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Node is not linked, nothing to do");
+    return;
+  }
+
+  if (parent->h.typ==GWEN_DB_NODETYPE_GROUP) {
+    if (parent->group.hashMechanism) {
+      if (GWEN_DB_HashMechanism_UnlinkNode(parent->group.hashMechanism,
+                                           parent, n,
+                                           parent->group.hashData)) {
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "Error adding node via hash mechanism for group \"%s\"",
+                 parent->group.name);
+      }
+    }
+  }
 
   curr=parent->h.child;
   if (curr) {
@@ -220,6 +270,7 @@ void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n) {
 	curr->h.next=n->h.next;
     }
   }
+
   n->h.next=0;
   n->h.parent=0;
 }
@@ -258,12 +309,15 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
     /* free dynamic (allocated) data */
     switch(n->h.typ) {
     case GWEN_DB_NODETYPE_GROUP:
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing dynamic data of group \"%s\"", n->group.name);
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Freeing dynamic data of group \"%s\"", n->group.name);
+      GWEN_DB_Group_SetHashMechanism(n, 0);
       free(n->group.name);
       break;
 
     case GWEN_DB_NODETYPE_VAR:
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing dynamic data of var \"%s\"", n->var.name);
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Freeing dynamic data of var \"%s\"", n->var.name);
       free(n->var.name);
       break;
 
@@ -310,6 +364,13 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n){
   case GWEN_DB_NODETYPE_GROUP:
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Duplicating group \"%s\"", n->group.name);
     nn=GWEN_DB_Group_new(n->group.name);
+    if (n->group.hashMechanism) {
+      if (GWEN_DB_Group_SetHashMechanism(nn, n->group.hashMechanism)) {
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "Could not duplicate hash mechanism of group \"%s\"",
+                 n->group.name);
+      }
+    }
     break;
 
   case GWEN_DB_NODETYPE_VAR:
@@ -581,6 +642,18 @@ GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
   assert(n);
   assert(name);
 
+  if (n->h.typ==GWEN_DB_NODETYPE_GROUP) {
+    if (n->group.hashMechanism) {
+      nn=GWEN_DB_HashMechanism_GetNode(n->group.hashMechanism,
+                                       n,
+                                       name,
+                                       n->group.hashData);
+      if (nn)
+        if (nn->h.typ==GWEN_DB_NODETYPE_GROUP)
+          return nn;
+    }
+  }
+
   /* find existing node */
   nn=n->h.child;
   while(nn) {
@@ -604,6 +677,18 @@ GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
 
   assert(n);
   assert(name);
+
+  if (n->h.typ==GWEN_DB_NODETYPE_GROUP) {
+    if (n->group.hashMechanism) {
+      nn=GWEN_DB_HashMechanism_GetNode(n->group.hashMechanism,
+                                       n,
+                                       name,
+                                       n->group.hashData);
+      if (nn)
+        if (nn->h.typ==GWEN_DB_NODETYPE_VAR)
+          return nn;
+    }
+  }
 
   /* find existing node */
   nn=n->h.child;
@@ -646,13 +731,15 @@ void* GWEN_DB_HandlePath(const char *entry,
      ) {
     /* simply create the new variable/group */
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "Unconditionally creating variable \"%s\"", entry);
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Unconditionally creating variable \"%s\"", entry);
       nn=GWEN_DB_Var_new(entry);
       GWEN_DB_Node_Append(n, nn);
       return nn;
     }
     else {
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "Unconditionally creating group \"%s\"", entry);
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Unconditionally creating group \"%s\"", entry);
       nn=GWEN_DB_Group_new(entry);
       GWEN_DB_Node_Append(n, nn);
       return nn;
@@ -675,21 +762,25 @@ void* GWEN_DB_HandlePath(const char *entry,
         (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST)
        ) {
       if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-        DBG_VERBOUS(GWEN_LOGDOMAIN, "Variable \"%s\" does not exist", entry);
+        DBG_VERBOUS(GWEN_LOGDOMAIN,
+                    "Variable \"%s\" does not exist", entry);
       }
       else {
-        DBG_VERBOUS(GWEN_LOGDOMAIN, "Group \"%s\" does not exist", entry);
+        DBG_VERBOUS(GWEN_LOGDOMAIN,
+                    "Group \"%s\" does not exist", entry);
       }
       return 0;
     }
     /* create the new variable/group */
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "Variable \"%s\" not found, creating", entry);
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Variable \"%s\" not found, creating", entry);
       nn=GWEN_DB_Var_new(entry);
       GWEN_DB_Node_Append(n, nn);
     }
     else {
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "Group \"%s\" not found, creating", entry);
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Group \"%s\" not found, creating", entry);
       nn=GWEN_DB_Group_new(entry);
       GWEN_DB_Node_Append(n, nn);
     }
@@ -892,6 +983,58 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
   nv=GWEN_DB_ValueChar_new(val);
   GWEN_DB_Node_Append(nn, nv);
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Added char value \"%s\" to variable \"%s\"", val, path);
+
+  return 0;
+}
+
+
+
+int GWEN_DB_AddCharValue(GWEN_DB_NODE *n,
+                         const char *path,
+                         const char *val,
+                         int senseCase,
+                         int check){
+  GWEN_DB_NODE *nn;
+  GWEN_DB_NODE *nv;
+
+  /* select/create node */
+  nn=GWEN_DB_GetNode(n,
+                     path,
+                     GWEN_DB_FLAGS_DEFAULT | GWEN_PATH_FLAGS_VARIABLE);
+  if (!nn) {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Path \"%s\" not available",
+                path);
+    return -1;
+  }
+
+  if (check) {
+    nv=nn->h.child;
+    while(nv) {
+      if (nv->h.typ==GWEN_DB_NODETYPE_VALUE) {
+        if (nv->val.h.typ==GWEN_DB_VALUETYPE_CHAR) {
+          int res;
+
+          assert(nv->val.c.data);
+          if (senseCase)
+            res=strcasecmp(nv->val.c.data, val)==0;
+          else
+            res=strcmp(nv->val.c.data, val)==0;
+          if (res) {
+            DBG_DEBUG(GWEN_LOGDOMAIN,
+                      "Value \"%s\" of var \"%s\" already exists",
+                      val, var);
+            return 1;
+          }
+        }
+      }
+      nv=nv->h.next;
+    } /* while nc */
+  } /* if check */
+
+  nv=GWEN_DB_ValueChar_new(val);
+  GWEN_DB_Node_Append(nn, nv);
+  DBG_VERBOUS(GWEN_LOGDOMAIN,
+              "Added char value \"%s\" to variable \"%s\"", val, path);
 
   return 0;
 }
@@ -1924,10 +2067,12 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
             GWEN_Buffer_free(vbuf);
             cn=cn->h.next;
           } /* while cn */
-          err=GWEN_BufferedIO_WriteLine(bio, "");
-          if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-            return 1;
+          if (namewritten) {
+            err=GWEN_BufferedIO_WriteLine(bio, "");
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+              return 1;
+            }
           }
         } /* if children */
         lastWasVar=1;
@@ -2355,6 +2500,176 @@ const char *GWEN_DB_VariableName(GWEN_DB_NODE *n){
   }
   return n->var.name;
 }
+
+
+
+int GWEN_DB_Group_SetHashMechanism(GWEN_DB_NODE *n,
+                                   GWEN_DB_HASH_MECHANISM *hm){
+  GWEN_DB_HASH_MECHANISM *oldHm;
+
+  assert(n);
+  if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
+    return -1;
+  }
+  oldHm=n->group.hashMechanism;
+  if (n->group.hashMechanism) {
+    GWEN_DB_HashMechanism_FiniNode(n->group.hashMechanism,
+                                   n,
+                                   &(n->group.hashData));
+    n->group.hashMechanism=0;
+    n->group.hashData=0;
+  }
+  if (hm) {
+    if (GWEN_DB_HashMechanism_InitNode(n->group.hashMechanism,
+                                       n,
+                                       &(n->group.hashData))) {
+      n->group.hashMechanism=hm;
+      GWEN_DB_HashMechanism_Attach(n->group.hashMechanism);
+    }
+  }
+
+  if (oldHm)
+    GWEN_DB_HashMechanism_free(oldHm);
+
+  return 0;
+}
+
+
+
+GWEN_DB_HASH_MECHANISM *GWEN_DB_HashMechanism_new(){
+  GWEN_DB_HASH_MECHANISM *hm;
+
+  GWEN_NEW_OBJECT(GWEN_DB_HASH_MECHANISM, hm);
+  hm->ref=1;
+
+  return hm;
+}
+
+
+
+void GWEN_DB_HashMechanism_Attach(GWEN_DB_HASH_MECHANISM *hm){
+  assert(hm);
+  assert(hm->ref);
+  hm->ref++;
+}
+
+
+
+void GWEN_DB_HashMechanism_free(GWEN_DB_HASH_MECHANISM *hm){
+  if (hm) {
+    assert(hm->ref);
+    if (--hm->ref==0) {
+      GWEN_FREE_OBJECT(hm);
+    }
+  }
+}
+
+
+
+
+int GWEN_DB_HashMechanism_InitNode(GWEN_DB_HASH_MECHANISM *hm,
+                                   GWEN_DB_NODE *node,
+                                   void **hashData){
+  assert(hm);
+  if (hm->initNodeFn)
+    return hm->initNodeFn(hm, node, hashData);
+  else
+    return -1;
+}
+
+
+
+int GWEN_DB_HashMechanism_FiniNode(GWEN_DB_HASH_MECHANISM *hm,
+                                   GWEN_DB_NODE *node,
+                                   void **hashData){
+  assert(hm);
+  if (hm->finiNodeFn)
+    return hm->finiNodeFn(hm, node, hashData);
+  else
+    return -1;
+}
+
+
+
+int GWEN_DB_HashMechanism_AddNode(GWEN_DB_HASH_MECHANISM *hm,
+                                  GWEN_DB_NODE *parent,
+                                  GWEN_DB_NODE *node,
+                                  int appendOrInsert,
+                                  void *hashData){
+  assert(hm);
+  if (hm->addNodeFn)
+    return hm->addNodeFn(hm, parent, node, appendOrInsert, hashData);
+  else
+    return -1;
+}
+
+
+
+int GWEN_DB_HashMechanism_UnlinkNode(GWEN_DB_HASH_MECHANISM *hm,
+                                     GWEN_DB_NODE *parent,
+                                     GWEN_DB_NODE *node,
+                                     void *hashData){
+  assert(hm);
+  if (hm->unlinkNodeFn)
+    return hm->unlinkNodeFn(hm, parent, node, hashData);
+  else
+    return -1;
+}
+
+
+
+GWEN_DB_NODE *GWEN_DB_HashMechanism_GetNode(GWEN_DB_HASH_MECHANISM *hm,
+                                            GWEN_DB_NODE *parent,
+                                            const char *name,
+                                            void *hashData){
+  assert(hm);
+  if (hm->getNodeFn)
+    return hm->getNodeFn(hm, parent, name, hashData);
+  else
+    return 0;
+}
+
+
+
+void GWEN_DB_HashMechanism_SetInitNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                         GWEN_DB_HASH_INITNODE_FN f){
+  assert(hm);
+  hm->initNodeFn=f;
+}
+
+
+
+void GWEN_DB_HashMechanism_SetFiniNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                         GWEN_DB_HASH_FININODE_FN f){
+  assert(hm);
+  hm->finiNodeFn=f;
+}
+
+
+
+void GWEN_DB_HashMechanism_SetAddNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                        GWEN_DB_HASH_ADDNODE_FN f){
+  assert(hm);
+  hm->addNodeFn=f;
+}
+
+
+
+void GWEN_DB_HashMechanism_SetUnlinkNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                           GWEN_DB_HASH_UNLINKNODE_FN f){
+  assert(hm);
+  hm->unlinkNodeFn=f;
+}
+
+
+
+void GWEN_DB_HashMechanism_SetGetNodeFn(GWEN_DB_HASH_MECHANISM *hm,
+                                        GWEN_DB_HASH_GETNODE_FN f){
+  assert(hm);
+  hm->getNodeFn=f;
+}
+
 
 
 

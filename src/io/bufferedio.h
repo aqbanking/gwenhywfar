@@ -318,6 +318,10 @@ int GWEN_BufferedIO_GetLines(const GWEN_BUFFEREDIO *dm);
 
 
 GWENHYWFAR_API
+int GWEN_BufferedIO_GetLinePos(const GWEN_BUFFEREDIO *dm);
+
+
+GWENHYWFAR_API
 int GWEN_BufferedIO_GetBytesRead(const GWEN_BUFFEREDIO *dm);
 
 GWENHYWFAR_API
