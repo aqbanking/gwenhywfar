@@ -1,4 +1,10 @@
 
+2004/03/31: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added import/export framework for GWEN_DBs. This makes parser plugins
+  based on GWEN_DBs much easier.
+
+
 2004/03/25: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - reintroduced my old win32 target, since the one of Christian doesn't work

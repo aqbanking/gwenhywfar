@@ -2809,7 +2809,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
               } /* if type is int */
               else {
 		DBG_DEBUG(0, "Value is \"%s\"",
-                          GWEN_Buffer_GetStart(vbuf));
+			  GWEN_Buffer_GetStart(vbuf));
                 if (GWEN_DB_SetCharValue(gr,
 					 GWEN_DB_FLAGS_DEFAULT,
 					 name,

@@ -38,6 +38,7 @@
 #include "inetsocket_p.h"
 #include "libloader_p.h"
 #include "io/bufferedio_p.h"
+#include "parser/dbio_p.h"
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/logger.h"
 #include "gwenhywfar/crypt.h"
@@ -93,6 +94,10 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_Net_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
+    DBG_DEBUG(0, "Initializing DataBase IO module");
+    err=GWEN_DBIO_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
     /* add here more modules */
 
   }
@@ -115,6 +120,14 @@ GWEN_ERRORCODE GWEN_Fini() {
   gwen_is_initialized--;
   if (gwen_is_initialized==0) {
     /* add here more modules */
+    if (!GWEN_Error_IsOk(GWEN_DBIO_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(0, "GWEN_Fini: "
+                "Could not deinitialze module DBIO");
+    }
     if (!GWEN_Error_IsOk(GWEN_Net_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,
