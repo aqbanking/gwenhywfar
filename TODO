@@ -7,3 +7,11 @@ crypt:
     (will break compatibility -> for next major version)
 msgengine:
   - use "storedAs" in VALUE tags also
+
+xml:
+  - read encodings from XML header and convert text accordingly
+  - add argument to file reader/writer code which contains the target
+    encoding
+  - create an XML loader/saver context. This may contain callbacks for
+    postprocessing of tags when reading an XML file. It may also contain
+    some conversion settings etc.

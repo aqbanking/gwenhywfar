@@ -1,4 +1,9 @@
 
+2004/09/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- xml: added flag GWEN_XML_FLAGS_IGNORE_DESCR. This flag makes the XML code
+  ignore <DESCR> tags when reading a file.
+
 
 2004/09/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -485,7 +485,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	isEndTag=1;
 	p++;
       }
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Found tag \"%s\"", GWEN_Buffer_GetStart(bufTagName));
+      DBG_DEBUG(GWEN_LOGDOMAIN,
+                "Found tag \"%s\"", GWEN_Buffer_GetStart(bufTagName));
 
       isComment=0;
       if (strlen(p)>=3)
@@ -562,7 +563,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	if (isEndTag) {
 	  /* handle endtag */
 	  if (currDepth<1) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: More endtags than start tags !",
+            DBG_ERROR(GWEN_LOGDOMAIN,
+                      "Line %d: More endtags than start tags !",
                       GWEN_BufferedIO_GetLines(bio));
             GWEN_Buffer_free(bufTagName);
 	    return -1;
@@ -577,8 +579,20 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             return -1;
           }
 
+          /* check whether the tag is "descr" */
+          if (!(flags & GWEN_XML_FLAGS_IGNORE_DESCR) &&
+              strcasecmp(n->data, "descr")==0) {
+            GWEN_XMLNODE *nparent;
+
+            nparent=n->parent;
+            assert(nparent);
+            /* unlink <DESCR> tag and free it */
+            GWEN_XMLNode_UnlinkChild(nparent, n);
+            GWEN_XMLNode_free(n);
+            n=0;
+          }
           /* check whether the tag is "include" */
-          if (!(flags & GWEN_XML_FLAGS_IGNORE_INCLUDE) &&
+          else if (!(flags & GWEN_XML_FLAGS_IGNORE_INCLUDE) &&
               strcasecmp(n->data, "include")==0 &&
               fn) {
             /* it is, we have to include something ;-) */
@@ -600,7 +614,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               }
             }
             else {
-              DBG_WARN(GWEN_LOGDOMAIN, "Line %d: <INCLUDE> tag without children",
+              DBG_WARN(GWEN_LOGDOMAIN,
+                       "Line %d: <INCLUDE> tag without children",
                        GWEN_BufferedIO_GetLines(bio));
             }
 

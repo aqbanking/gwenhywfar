@@ -108,6 +108,11 @@ extern "C" {
 #define GWEN_XML_FLAGS_KEEP_CNTRL  0x0100
 
 /**
+ * If set then DESCR tags are ignored when reading XML files.
+ */
+#define GWEN_XML_FLAGS_IGNORE_DESCR 0x0200
+
+/**
  * combination of other flags resembling the default flags
  */
 #define GWEN_XML_FLAGS_DEFAULT \
