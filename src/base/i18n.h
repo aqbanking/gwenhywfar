@@ -36,6 +36,12 @@
 #include <gwenhywfar/stringlist.h>
 
 
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# include <locale.h>
+#endif
+
+
 
 #ifdef __cplusplus
 extern "C" {

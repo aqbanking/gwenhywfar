@@ -56,6 +56,14 @@
 #  include <sys/socket.h>
 #endif /* HAVE_SYS_SOCKET_H */
 
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# include <locale.h>
+# define I18N(text) dgettext("gwenhywfar", text)
+#else
+# define I18N(text) text
+#endif
+
 
 GWEN_INHERIT(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL);
 
@@ -1330,19 +1338,119 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       DBG_INFO(GWEN_LOGDOMAIN, "Got a certificate: %s",
                certbuf);
       vr=SSL_get_verify_result(skd->ssl);
-      if (vr==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
-          vr==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
-	  vr==X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) {
-	GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT res;
+      if (vr!=X509_V_OK) {
+        GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT res;
 	int isErr;
-	GWEN_DB_NODE *dbCert;
+        GWEN_DB_NODE *dbCert;
+        const char *s;
 
-	/* setup certificate */
+        if (skd->secure) {
+          DBG_ERROR(GWEN_LOGDOMAIN,
+                    "Invalid peer certificate in secure mode, aborting");
+          GWEN_Socket_Close(skd->socket);
+          SSL_free(skd->ssl);
+          skd->ssl=0;
+          SSL_CTX_free(skd->ssl_ctx);
+          skd->ssl_ctx=0;
+          free(certbuf);
+          X509_free(cert);
+          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
+          return GWEN_NetTransportWorkResult_Error;
+        }
+        else {
+          DBG_WARN(GWEN_LOGDOMAIN,
+                   "Invalid peer certificate, will ask user");
+        }
+
+        /* setup certificate */
         dbCert=GWEN_NetTransportSSL__Cert2Db(cert);
+
+        /* setup statusText and statusCode */
+        switch(vr) {
+        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+          s=I18N("New certificate");
+          break;
+        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+          s=I18N("Unable to get issuer certificate");
+          break;
+        case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
+          s=I18N("Unable to decrypt cert signature");
+          break;
+        case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
+          s=I18N("Unable to decode issuer public key");
+          break;
+        case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+          s=I18N("Cert signature failure");
+          break;
+        case X509_V_ERR_CERT_NOT_YET_VALID:
+          s=I18N("Cert not yet valid");
+          break;
+        case X509_V_ERR_CERT_HAS_EXPIRED:
+          s=I18N("Cert has expired");
+          break;
+        case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+          s=I18N("Self-signed root cert");
+          break;
+        case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+          s=I18N("Self-signed cert");
+          break;
+        case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+          s=I18N("Unable to verify leaf signature");
+          break;
+        case X509_V_ERR_CERT_CHAIN_TOO_LONG:
+          s=I18N("Cert chain too long");
+          break;
+        case X509_V_ERR_CERT_REVOKED:
+          s=I18N("Cert revoked");
+          break;
+        case X509_V_ERR_INVALID_CA:
+          s=I18N("Invalid CA");
+          break;
+        case X509_V_ERR_CERT_UNTRUSTED:
+          s=I18N("Cert untrusted");
+          break;
+        case X509_V_ERR_CERT_REJECTED:
+          s=I18N("Cert rejected");
+          break;
+
+        case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+        case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+        case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
+        case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
+        case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+        case X509_V_ERR_INVALID_PURPOSE:
+          s=I18N("Formal error in certificate");
+          break;
+
+        case X509_V_ERR_OUT_OF_MEM:
+          s=I18N("Out of memory");
+          break;
+        case X509_V_ERR_UNABLE_TO_GET_CRL:
+          s=I18N("Unable to get CRL");
+          break;
+        case X509_V_ERR_UNABLE_TO_DECRYPT_CRL_SIGNATURE:
+          s=I18N("Unable to decrypt CRL signature");
+          break;
+        case X509_V_ERR_CRL_SIGNATURE_FAILURE:
+          s=I18N("CRL signature failure");
+          break;
+        case X509_V_ERR_CRL_NOT_YET_VALID:
+          s=I18N("CRL not yet valid");
+          break;
+        case X509_V_ERR_CRL_HAS_EXPIRED:
+          s=I18N("CRL has expired");
+        default:
+          s=I18N("Unknown SSL error");
+
+        }
+        GWEN_DB_SetCharValue(dbCert, GWEN_DB_FLAGS_DEFAULT,
+                             "statusText", s);
 
         /* ask user */
         isErr=0;
-        DBG_INFO(GWEN_LOGDOMAIN, "Unknown certificate \"%s\", asking user", certbuf);
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "Unknown certificate \"%s\", asking user",
+                 certbuf);
         res=GWEN_NetTransportSSL__AskAddCert(tr, dbCert);
         switch(res) {
         case GWEN_NetTransportSSL_AskAddCertResultError:
@@ -1395,93 +1503,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
           return GWEN_NetTransportWorkResult_Error;
         }
-
         GWEN_DB_Group_free(dbCert);
-      }
-      else if (vr!=X509_V_OK) {
-        switch(vr) {
-        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to get issuer cert");
-          break;
-        case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to decrypt cert signature");
-          break;
-        case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to decode issuer public key");
-          break;
-        case X509_V_ERR_CERT_SIGNATURE_FAILURE:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Cert signature failure");
-          break;
-        case X509_V_ERR_CERT_NOT_YET_VALID:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Cert not yet valid");
-          break;
-        case X509_V_ERR_CERT_HAS_EXPIRED:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Cert has expired");
-          break;
-        case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Self-signed root cert");
-          break;
-        case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Self-signed cert");
-          break;
-        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to get issuer cert locally");
-          break;
-        case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to verify leaf signature");
-          break;
-        case X509_V_ERR_CERT_CHAIN_TOO_LONG:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Cert chain too long");
-          break;
-        case X509_V_ERR_CERT_REVOKED:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Cert revoked");
-          break;
-        case X509_V_ERR_INVALID_CA:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Invalid CA");
-          break;
-        case X509_V_ERR_CERT_UNTRUSTED:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Cert untrusted");
-          break;
-        case X509_V_ERR_CERT_REJECTED:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Cert rejected");
-          break;
-
-        case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
-        case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
-        case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
-        case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
-        case X509_V_ERR_PATH_LENGTH_EXCEEDED:
-        case X509_V_ERR_INVALID_PURPOSE:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Formal error in cert");
-          break;
-
-        case X509_V_ERR_OUT_OF_MEM:
-        case X509_V_ERR_UNABLE_TO_GET_CRL:
-        case X509_V_ERR_UNABLE_TO_DECRYPT_CRL_SIGNATURE:
-        case X509_V_ERR_CRL_SIGNATURE_FAILURE:
-        case X509_V_ERR_CRL_NOT_YET_VALID:
-        case X509_V_ERR_CRL_HAS_EXPIRED:
-        default:
-          DBG_ERROR(GWEN_LOGDOMAIN, "X509 error (%ld)", vr);
-          break;
-        } /* switch */
-
-        DBG_WARN(GWEN_LOGDOMAIN, "Invalid peer certificate");
-        if (skd->secure) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Invalid peer certificate, aborting");
-          GWEN_Socket_Close(skd->socket);
-          SSL_free(skd->ssl);
-          skd->ssl=0;
-          SSL_CTX_free(skd->ssl_ctx);
-          skd->ssl_ctx=0;
-          free(certbuf);
-          X509_free(cert);
-          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
-          return GWEN_NetTransportWorkResult_Error;
-        }
-        else {
-          DBG_WARN(GWEN_LOGDOMAIN, "Invalid peer certificate, ignoring");
-        }
       }
       else {
         /* store peer certificate */

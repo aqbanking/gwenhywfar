@@ -1,7 +1,17 @@
+
+2005/01/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- lightened up SSL connection code: Now all errors will be presented to the
+  user
+- added var to certificate DB in GWEN_NetTransportSSL__AskAddCert():
+  - statusText: explanation of the reason why the user is asked
+
+
 2005-01-11   Christian Stimming <stimming@tuhh.de>
 
 	* gwenhywfar.spec.in: Add BuildRequires to ensure a sane rpm
 	building environment.
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.4 (2004/12/30)
