@@ -68,7 +68,6 @@ extern "C" {
    * De-Initialize this module.
    */
   GWENHYWFAR_API GWEN_ERRORCODE GWEN_Process_ModuleFini();
-  /*@}*/
 
 
   /**

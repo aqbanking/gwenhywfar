@@ -86,16 +86,17 @@ extern "C" {
  * @code
  *
  * GWEN_WAITCALLBACK_RESULT myCallBackFunction(int count,
+ *                                             GWEN_WAITCALLBACK_MODE m,
  *                                             GWEN_WAITCALLBACK_CTX *ctx){
  *
  *  WINDOW *w;
  *   w=GWEN_WaitCallback_Context_GetData(ctx);
  *
- *   switch(count) {
- *     case GWEN_WAITCALLBACK_ENTER:
+ *   switch(m) {
+ *     case GWEN_WaitCallbackMode_Enter:
  *       Window_Open(w);
  *       break;
- *     case GWEN_WAITCALLBACK_LEAVE:
+ *     case GWEN_WaitCallbackMode_Leave:
  *       Window_Close(w);
  *       break;
  *     default:
@@ -128,6 +129,23 @@ extern "C" {
 #define GWEN_WAITCALLBACK_LEAVE (-2)
 
 
+/**
+ *
+ */
+GWENHYWFAR_API
+typedef enum {
+  /** normal callback */
+  GWEN_WaitCallbackMode_Normal=0,
+  /** this mode is used when entering callback context */
+  GWEN_WaitCallbackMode_Enter,
+  /** this mode is used when leaving callback context */
+  GWEN_WaitCallbackMode_Leave
+} GWEN_WAITCALLBACK_MODE;
+
+
+/**
+ *
+ */
 GWENHYWFAR_API
 typedef enum {
   /** tells the caller that it is ok to continue */
@@ -143,26 +161,14 @@ typedef struct GWEN_WAITCALLBACK_CTX GWEN_WAITCALLBACK_CTX;
 /**
  * This is the callback function of a context.
  * @param count the number of the call to this function.
- * There are some
- * special numbers:
- * <ul>
- *  <li>
- *    @ref GWEN_WAITCALLBACK_ENTER: this is used when
- *    @ref GWEN_WaitCallback_Enter is called. The callback function
- *    can use this value to create a GUI window or whatever is needed to
- *    ask the user whether he wants to abort.
- *  </li>
- *  <li>
- *    @ref GWEN_WAITCALLBACK_LEAVE: this is used when
- *    @ref GWEN_WaitCallback_Leave is called. The callback function
- *    can use this value to destroy a GUI window create above.
- *  </li>
- * </ul>
+ * @param m callback mode (see @ref GWEN_WaitCallbackMode_Normal and
+ * following)
  * @param ctx callback context used. The application can store private
  * data within such a context
  */
 GWENHYWFAR_API typedef
 GWEN_WAITCALLBACK_RESULT (*GWEN_WAITCALLBACK_FN)(int count,
+                                                 GWEN_WAITCALLBACK_MODE m,
                                                  GWEN_WAITCALLBACK_CTX *ctx);
 
 
@@ -175,7 +181,7 @@ GWEN_WAITCALLBACK_RESULT (*GWEN_WAITCALLBACK_FN)(int count,
  * implemented callback function
  */
 GWENHYWFAR_API
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(unsigned int count);
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(int count);
 
 
 /**

@@ -42,9 +42,8 @@ struct GWEN_WAITCALLBACK_CTX {
 };
 
 
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count);
-
-
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count,
+                                                    GWEN_WAITCALLBACK_MODE m);
 
 #endif
 

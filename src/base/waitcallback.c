@@ -39,7 +39,8 @@
 static GWEN_LIST *gwen_callbackstack=0;
 
 
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count){
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count,
+                                                    GWEN_WAITCALLBACK_MODE m){
   GWEN_WAITCALLBACK_CTX *ctx;
   GWEN_WAITCALLBACK_RESULT res;
   time_t lct;
@@ -58,14 +59,15 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count){
     return GWEN_WaitCallbackResult_Continue;
   }
   lct=time(0);
-  res=ctx->waitCallbackFn((int)count, ctx);
+  res=ctx->waitCallbackFn(count, m, ctx);
   ctx->lastCalled=lct;
   return res;
 }
 
 
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(unsigned int count){
-  return GWEN_WaitCallback_internal((int)count);
+
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(int count) {
+  return GWEN_WaitCallback_internal(count, GWEN_WaitCallbackMode_Normal);
 }
 
 
@@ -111,7 +113,7 @@ void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx){
   }
   ctx->usage++;
   GWEN_List_PushBack(gwen_callbackstack, ctx);
-  GWEN_WaitCallback_internal(GWEN_WAITCALLBACK_ENTER);
+  GWEN_WaitCallback_internal(0, GWEN_WaitCallbackMode_Enter);
 }
 
 
@@ -125,7 +127,7 @@ void GWEN_WaitCallback_Leave(){
     DBG_WARN(0, "No callbacks registered, should not happen here");
   }
   else {
-    GWEN_WaitCallback_internal(GWEN_WAITCALLBACK_LEAVE);
+    GWEN_WaitCallback_internal(0, GWEN_WaitCallbackMode_Leave);
     GWEN_List_PopBack(gwen_callbackstack);
     if (ctx->usage<2) {
       DBG_WARN(0, "Bad usage in WaitCallback context (%d)", ctx->usage);
