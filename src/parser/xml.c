@@ -335,7 +335,7 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
 
 
 int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
-                   unsigned int flags) {
+                   GWEN_TYPE_UINT32 flags) {
   GWEN_XMLNODE *path[GWEN_XML_MAX_DEPTH];
   int currDepth;
   int chr;
@@ -668,13 +668,13 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
 
 
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
-                      unsigned int flags){
+                      GWEN_TYPE_UINT32 flags){
   return GWEN_XML_ReadFileInt(n, 0, filepath, 0, flags);
 }
 
 
 int GWEN_XML_ReadFileSearch(GWEN_XMLNODE *n, const char *filepath,
-                            unsigned int flags,
+                            GWEN_TYPE_UINT32 flags,
                             GWEN_STRINGLIST *searchPath){
   return GWEN_XML_ReadFileInt(n, 0, filepath, searchPath, flags);
 }
@@ -708,7 +708,7 @@ void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
 
 int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                      GWEN_BUFFEREDIO *bio,
-                     unsigned int flags,
+                     GWEN_TYPE_UINT32 flags,
                      const char *fpath,
                      GWEN_STRINGLIST *sl,
                      GWEN_XML_INCLUDE_FN fn){
@@ -1182,7 +1182,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
                          const char *path,
                          const char *file,
                          GWEN_STRINGLIST *sl,
-                         unsigned int flags){
+                         GWEN_TYPE_UINT32 flags){
   GWEN_BUFFEREDIO *dm;
   int fd;
   unsigned int i;
@@ -1680,7 +1680,6 @@ int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
                            GWEN_XMLNODE *n){
   unsigned int i;
 
-  DBG_DEBUG(0, "Diving to %08x", (unsigned int)n);
   if (np->pos>=GWEN_XML_MAX_DEPTH) {
     DBG_ERROR(0, "Path too deep");
     return 1;

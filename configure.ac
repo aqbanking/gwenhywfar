@@ -20,8 +20,8 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=4
-GWENHYWFAR_VERSION_BUILD=21
-GWENHYWFAR_VERSION_TAG="rc"
+GWENHYWFAR_VERSION_BUILD=23
+GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD($GWENHYWFAR_VERSION_TAG)"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL($GWENHYWFAR_VERSION_TAG)"
 rpm_version="$VERSION"
@@ -105,7 +105,6 @@ AC_CHECK_FUNCS([select socket])
 AC_CHECK_FUNCS([strcasecmp strchr strdup strerror])
 AC_CHECK_FUNCS([snprintf])
 
-
 dnl prefix handling
 AC_PREFIX_DEFAULT(/usr)
 if test "x$prefix" = "xNONE"; then
@@ -124,6 +123,10 @@ case "$OS_TYPE" in
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
+        # check for some types
+        AQ_TYPE_UINT32(unsigned int)
+        GWEN_TYPE_UINT32=$aq_type_uint32
+        AC_SUBST(GWEN_TYPE_UINT32)
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
@@ -133,6 +136,10 @@ case "$OS_TYPE" in
         GWEN_MAKE_DLL_TARGET="dll"
         GWEN_INSTALL_DLL_TARGET="dll-install"
         GWEN_OS="windows"
+        # check for some types
+        AQ_TYPE_UINT32(unsigned int)
+        GWEN_TYPE_UINT32=$aq_type_uint32
+        AC_SUBST(GWEN_TYPE_UINT32)
     	;;
     palmos)
         gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
@@ -140,6 +147,10 @@ case "$OS_TYPE" in
         gwenhywfar_os_lib="os/palmos/libos.la"
         all_includes="$all_includes -I\${top_srcdir}/src/os/palmos/sysheaders"
         GWEN_OS="palmos"
+        # check for some types
+        AQ_TYPE_UINT32(unsigned long)
+        GWEN_TYPE_UINT32=$aq_type_uint32
+        AC_SUBST(GWEN_TYPE_UINT32)
     	;;
 esac
 
@@ -187,7 +198,8 @@ for d in ${GWEN_HEADER_DIRS}; do
     esac
   done
 done
-ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" &>/dev/null
+test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" &>/dev/null
+test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" &>/dev/null
 
 
 #
@@ -275,6 +287,8 @@ AC_CONFIG_FILES([Doxyfile
 		 gwenhywfar.spec
                  doc/Makefile
                  src/Makefile
+                 src/Makefile.palm
+                 src/types.h
                  src/ressource.rc
                  src/version.h
                  src/base/Makefile

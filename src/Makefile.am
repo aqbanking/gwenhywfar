@@ -3,7 +3,9 @@ INCLUDES=@all_includes@ -Ios/@GWEN_OS@
 SUBDIRS=base crypt io ipc os parser
 
 EXTRA_DIST=\
- version.h.in
+ types.h.in \
+ version.h.in \
+ Makefile.palm.in
 
 lib_LTLIBRARIES=libgwenhywfar.la
 iheaderdir=${includedir}/gwenhywfar

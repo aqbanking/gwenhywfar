@@ -34,6 +34,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/types.h>
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -382,7 +383,7 @@ const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
-                         unsigned int flags,
+                         GWEN_TYPE_UINT32 flags,
                          const char *path,
                          const char *val);
 
@@ -410,7 +411,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API
 int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
-                        unsigned int flags,
+                        GWEN_TYPE_UINT32 flags,
                         const char *path,
                         int val);
 
@@ -446,7 +447,7 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API
 int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
-			unsigned int flags,
+			GWEN_TYPE_UINT32 flags,
 			const char *path,
                         const void *val,
 			unsigned int valSize);
@@ -470,7 +471,7 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
-                               unsigned int flags,
+                               GWEN_TYPE_UINT32 flags,
                                const char *path);
 
 /**
@@ -581,7 +582,7 @@ int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
 GWENHYWFAR_API
 int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                            GWEN_BUFFEREDIO *bio,
-                           unsigned int dbflags);
+                           GWEN_TYPE_UINT32 dbflags);
 
 /**
  * Read a DB from a file.
@@ -593,7 +594,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
 GWENHYWFAR_API
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      const char *fname,
-                     unsigned int dbflags);
+                     GWEN_TYPE_UINT32 dbflags);
 
 /**
  * Write a DB to a GWEN_BUFFEREDIO.
@@ -605,7 +606,7 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
 GWENHYWFAR_API
 int GWEN_DB_WriteToStream(GWEN_DB_NODE *n,
                           GWEN_BUFFEREDIO *bio,
-                          unsigned int dbflags);
+                          GWEN_TYPE_UINT32 dbflags);
 
 /**
  * Write a DB to a file.
@@ -618,7 +619,7 @@ int GWEN_DB_WriteToStream(GWEN_DB_NODE *n,
 GWENHYWFAR_API
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
-                      unsigned int dbflags);
+                      GWEN_TYPE_UINT32 dbflags);
 /*@}*/
 
 

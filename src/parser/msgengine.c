@@ -1540,7 +1540,7 @@ int GWEN_MsgEngine__ShowElement(GWEN_MSGENGINE *e,
                                 const char *path,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
-                                unsigned int flags) {
+                                GWEN_TYPE_UINT32 flags) {
   const char *name;
   const char *type;
   const char *npath;
@@ -1637,7 +1637,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *node,
                               GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
-                              unsigned int flags) {
+                              GWEN_TYPE_UINT32 flags) {
   GWEN_XMLNODE *n;
   int isFirstElement;
   int omittedElements;
@@ -1849,7 +1849,7 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
                                const char *typ,
                                const char *msgName,
                                int msgVersion,
-                               unsigned int flags) {
+                               GWEN_TYPE_UINT32 flags) {
   GWEN_XMLNODE *group;
   GWEN_STRINGLIST *sl;
   int i, j;
@@ -1910,7 +1910,7 @@ int GWEN_MsgEngine__ListElement(GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
                                 GWEN_XMLNODE *listNode,
-                                unsigned int flags) {
+                                GWEN_TYPE_UINT32 flags) {
   const char *name;
   const char *type;
   const char *npath;
@@ -1973,7 +1973,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
                               GWEN_XMLNODE *listNode,
-                              unsigned int flags) {
+                              GWEN_TYPE_UINT32 flags) {
   GWEN_XMLNODE *n;
   int rv;
 
@@ -2159,7 +2159,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
                                          const char *typ,
                                          const char *msgName,
                                          int msgVersion,
-                                         unsigned int flags) {
+                                         GWEN_TYPE_UINT32 flags) {
   GWEN_XMLNODE *group;
   GWEN_STRINGLIST *sl;
   GWEN_XMLNODE *listNode;
@@ -2209,7 +2209,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
 			      GWEN_BUFFER *vbuf,
                               const char *delimiters,
-                              unsigned int flags) {
+                              GWEN_TYPE_UINT32 flags) {
   unsigned int minsize;
   unsigned int maxsize;
   unsigned int minnum;
@@ -2415,7 +2415,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
                               GWEN_DB_NODE *gr,
                               const char *delimiters,
-                              unsigned int flags) {
+                              GWEN_TYPE_UINT32 flags) {
   unsigned int minsize;
   unsigned int maxsize;
   unsigned int minnum;
@@ -2755,7 +2755,7 @@ int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
 				GWEN_XMLNODE *group,
                                 GWEN_BUFFER *msgbuf,
                                 GWEN_DB_NODE *msgData,
-                                unsigned int flags){
+                                GWEN_TYPE_UINT32 flags){
 
   if (GWEN_MsgEngine__ReadGroup(e,
                                 msgbuf,
@@ -2895,7 +2895,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                const char *gtype,
                                GWEN_BUFFER *mbuf,
                                GWEN_DB_NODE *gr,
-                               unsigned int flags) {
+                               GWEN_TYPE_UINT32 flags) {
   unsigned int segments;
 
   segments=0;

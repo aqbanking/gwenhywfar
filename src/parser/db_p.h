@@ -135,7 +135,7 @@ void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n);
  */
 void *GWEN_DB_HandlePath(const char *entry,
                          void *data,
-                         unsigned int flags);
+                         GWEN_TYPE_UINT32 flags);
 
 GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
                                 const char *name);
@@ -144,7 +144,7 @@ GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
 
 GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
                               const char *path,
-                              unsigned int flags);
+                              GWEN_TYPE_UINT32 flags);
 GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
                                const char *path,
                                int idx);
@@ -153,7 +153,7 @@ void GWEN_DB_ClearNode(GWEN_DB_NODE *n);
 
 int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                                GWEN_BUFFEREDIO *bio,
-                               unsigned int dbflags,
+                               GWEN_TYPE_UINT32 dbflags,
                                int insert);
 
 const char *GWEN_DB_GetCharValueFromNode(GWEN_DB_NODE *n);

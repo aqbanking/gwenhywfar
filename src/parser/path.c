@@ -40,7 +40,7 @@
 
 void *GWEN_Path_Handle(const char *path,
                        void *data,
-                       unsigned int flags,
+                       GWEN_TYPE_UINT32 flags,
                        GWEN_PATHHANDLERPTR elementFunction) {
   char buffer[256];
   int i;

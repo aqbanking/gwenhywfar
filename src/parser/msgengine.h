@@ -355,7 +355,7 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
                                const char *typ,
                                const char *msgName,
                                int msgVersion,
-                               unsigned int flags);
+                               GWEN_TYPE_UINT32 flags);
 
 /**
  * This function parses a single entity specified by a single
@@ -369,7 +369,7 @@ int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *group,
                                 GWEN_BUFFER *msgbuf,
                                 GWEN_DB_NODE *gr,
-                                unsigned int flags);
+                                GWEN_TYPE_UINT32 flags);
 
 /**
  * This function skips all bytes from the given buffer until the given
@@ -429,7 +429,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                const char *gtype,
                                GWEN_BUFFER *mbuf,
                                GWEN_DB_NODE *gr,
-                               unsigned int flags);
+                               GWEN_TYPE_UINT32 flags);
 
 /**
  * This function creates a full tree of all groups and elements
@@ -441,7 +441,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
                                          const char *typ,
                                          const char *msgName,
                                          int msgVersion,
-                                         unsigned int flags);
+                                         GWEN_TYPE_UINT32 flags);
 /*@}*/
 
 

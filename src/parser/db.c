@@ -572,7 +572,7 @@ GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
 
 void* GWEN_DB_HandlePath(const char *entry,
                          void *data,
-                         unsigned int flags) {
+                         GWEN_TYPE_UINT32 flags) {
   GWEN_DB_NODE *n;
   GWEN_DB_NODE *nn;
 
@@ -660,7 +660,7 @@ void* GWEN_DB_HandlePath(const char *entry,
 
 GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
                               const char *path,
-                              unsigned int flags){
+                              GWEN_TYPE_UINT32 flags){
   return (GWEN_DB_NODE*)GWEN_Path_Handle(path,
                                          n,
                                          flags,
@@ -813,7 +813,7 @@ const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
 
 
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
-			 unsigned int flags,
+			 GWEN_TYPE_UINT32 flags,
 			 const char *path,
 			 const char *val){
   GWEN_DB_NODE *nn;
@@ -884,7 +884,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
 
 
 int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
-			unsigned int flags,
+			GWEN_TYPE_UINT32 flags,
 			const char *path,
 			int val){
   GWEN_DB_NODE *nn;
@@ -944,7 +944,7 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
 
 
 int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
-			unsigned int flags,
+			GWEN_TYPE_UINT32 flags,
 			const char *path,
                         const void *val,
 			unsigned int valSize){
@@ -977,7 +977,7 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 
 
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
-			       unsigned int flags,
+			       GWEN_TYPE_UINT32 flags,
 			       const char *path) {
   GWEN_DB_NODE *nn;
 
@@ -1071,7 +1071,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
 
 int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                            GWEN_BUFFEREDIO *bio,
-                           unsigned int dbflags) {
+                           GWEN_TYPE_UINT32 dbflags) {
   GWEN_ERRORCODE err;
   GWEN_DB_NODE *currGrp;
   GWEN_DB_NODE *currVar;
@@ -1358,7 +1358,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
 
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      const char *fname,
-                     unsigned int dbflags) {
+                     GWEN_TYPE_UINT32 dbflags) {
   GWEN_BUFFEREDIO *bio;
   GWEN_ERRORCODE err;
   int fd;
@@ -1449,7 +1449,7 @@ void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n){
 
 int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 			       GWEN_BUFFEREDIO *bio,
-			       unsigned int dbflags,
+			       GWEN_TYPE_UINT32 dbflags,
 			       int insert) {
   GWEN_DB_NODE *n;
   GWEN_DB_NODE *cn;
@@ -1698,7 +1698,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 
 int GWEN_DB_WriteToStream(GWEN_DB_NODE *node,
 			  GWEN_BUFFEREDIO *bio,
-			  unsigned int dbflags) {
+			  GWEN_TYPE_UINT32 dbflags) {
   return GWEN_DB_WriteGroupToStream(node, bio, dbflags, 0);
 }
 
@@ -1706,7 +1706,7 @@ int GWEN_DB_WriteToStream(GWEN_DB_NODE *node,
 
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
-		      unsigned int dbflags){
+		      GWEN_TYPE_UINT32 dbflags){
   GWEN_BUFFEREDIO *bio;
   GWEN_ERRORCODE err;
   int fd;

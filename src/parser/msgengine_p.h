@@ -91,21 +91,21 @@ int GWEN_MsgEngine__ShowElement(GWEN_MSGENGINE *e,
                                 const char *path,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
-                                unsigned int flags);
+                                GWEN_TYPE_UINT32 flags);
 
 int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                               const char *path,
                               GWEN_XMLNODE *node,
                               GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
-                              unsigned int flags);
+                              GWEN_TYPE_UINT32 flags);
 
 int GWEN_MsgEngine__ListElement(GWEN_MSGENGINE *e,
                                 const char *path,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
                                 GWEN_XMLNODE *listNode,
-                                unsigned int flags);
+                                GWEN_TYPE_UINT32 flags);
 
 int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
                               const char *path,
@@ -113,7 +113,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
                               GWEN_XMLNODE *listNode,
-                              unsigned int flags);
+                              GWEN_TYPE_UINT32 flags);
 
 int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
                               GWEN_BUFFER *msgbuf,
@@ -121,7 +121,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
                               GWEN_BUFFER *vbuf,
                               const char *delimiters,
-                              unsigned int flags);
+                              GWEN_TYPE_UINT32 flags);
 
 int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                               GWEN_BUFFER *msgbuf,
@@ -129,7 +129,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
                               GWEN_DB_NODE *gr,
                               const char *delimiters,
-                              unsigned int flags);
+                              GWEN_TYPE_UINT32 flags);
 
 /**
  * @param dnode node of the element to transform

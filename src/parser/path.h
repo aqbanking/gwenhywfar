@@ -30,6 +30,8 @@
 #define GWENHYWFAR_PATH_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -129,7 +131,7 @@ extern "C" {
 GWENHYWFAR_API
   typedef void* (*GWEN_PATHHANDLERPTR)(const char *entry,
 				       void *data,
-				       unsigned int flags);
+				       GWEN_TYPE_UINT32 flags);
 
 
 /**
@@ -147,7 +149,7 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   void *GWEN_Path_Handle(const char *path,
 			 void *data,
-			 unsigned int flags,
+			 GWEN_TYPE_UINT32 flags,
 			 GWEN_PATHHANDLERPTR elementFunction);
 
 

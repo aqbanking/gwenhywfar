@@ -1,4 +1,9 @@
 
+2004/01/04 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added GWEN_TYPE_UINT32 (this is needed for crossplatform compilation,
+  e.g. for PalmOS in short-mode)
+
 
 ===========================================================================
 MARK: released gwenhywfar-0.9.4rc2 (2004/01/03)

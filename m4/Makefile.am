@@ -8,4 +8,5 @@ EXTRA_DIST=\
  pcsc.m4 \
  qt.m4 \
  searchfiles.m4 \
- ssl.m4
+ ssl.m4 \
+ types.m4

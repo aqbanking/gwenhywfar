@@ -90,7 +90,7 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
 
 int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                      GWEN_BUFFEREDIO *bio,
-                     unsigned int flags,
+                     GWEN_TYPE_UINT32 flags,
                      const char *path,
                      GWEN_STRINGLIST *sl,
                      GWEN_XML_INCLUDE_FN fn);
@@ -100,7 +100,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
                          const char *path,
                          const char *file,
                          GWEN_STRINGLIST *sl,
-                         unsigned int flags);
+                         GWEN_TYPE_UINT32 flags);
 
 
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(GWEN_XMLNODE *n,

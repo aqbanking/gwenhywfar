@@ -106,7 +106,7 @@ typedef int
 			   const char *path,
                            const char *file,
                            GWEN_STRINGLIST *sl,
-			   unsigned int flags);
+			   GWEN_TYPE_UINT32 flags);
 
 
 /** @name Constructors and Destructors
@@ -268,14 +268,14 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
  */
 GWENHYWFAR_API
 int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
-                   unsigned int flags);
+                   GWEN_TYPE_UINT32 flags);
 
 /**
  * Reads all tags from a file and adds them as children to the given node.
  */
 GWENHYWFAR_API
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
-                      unsigned int flags);
+                      GWEN_TYPE_UINT32 flags);
 
 /**
  * Reads the given file. If it the path is absolute it will be used directly.
@@ -289,7 +289,7 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
  */
 GWENHYWFAR_API
   int GWEN_XML_ReadFileSearch(GWEN_XMLNODE *n, const char *filepath,
-                              unsigned int flags,
+                              GWEN_TYPE_UINT32 flags,
                               GWEN_STRINGLIST *searchPath);
 
 

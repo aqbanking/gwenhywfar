@@ -42,7 +42,7 @@ char *GWEN_Text_GetWord(const char *src,
                         const char *delims,
                         char *buffer,
                         unsigned int maxsize,
-                        unsigned int flags,
+                        GWEN_TYPE_UINT32 flags,
                         const char **next){
   unsigned int size;
   int lastWasBlank;

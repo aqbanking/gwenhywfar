@@ -236,10 +236,13 @@ int GWEN_Error_GetSeverity(GWEN_ERRORCODE c){
 
 
 void GWEN_Error_SetSeverity(GWEN_ERRORCODE *c, int v){
+  GWEN_ERRORCODE nc;
+
   assert(c);
   (*c) &= 0x3fffffff;
-  v = (v&3)<<30;
-  (*c) |= v;
+  nc=(v&3);
+  nc=nc<<30;
+  (*c) |= nc;
 }
 
 
@@ -267,10 +270,13 @@ int GWEN_Error_GetType(GWEN_ERRORCODE c){
 
 
 void GWEN_Error_SetType(GWEN_ERRORCODE *c, int v){
+  GWEN_ERRORCODE nc;
+
   assert(c);
   (*c) &= ~0x0fff0000;
-  v = (v&0xfff)<<16;
-  (*c) |= v;
+  nc = (v&0xfff);
+  nc=nc<<16;
+  (*c) |= nc;
 }
 
 

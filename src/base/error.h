@@ -34,6 +34,7 @@
 #define GWENHYWFAR_ERROR_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
 
 
 /*
@@ -74,7 +75,7 @@ extern "C" {
  * <tr><td>15-0</td>  <td>Code (16 bit error code)</td></tr>
  * </table>
  */
-GWENHYWFAR_API typedef unsigned long GWEN_ERRORCODE;
+GWENHYWFAR_API typedef GWEN_TYPE_UINT32 GWEN_ERRORCODE;
 
 GWENHYWFAR_API typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
   GWEN_ERRORTYPEREGISTRATIONFORM;
