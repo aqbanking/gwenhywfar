@@ -349,6 +349,7 @@ void GWEN_WaitCallback_Enter_u(const char *id,
     else {
       DBG_INFO(0, "Callback \"%s\" not found and none is currently selected",
                id);
+      nctx = 0;
     }
   } /* if ctx not found */
   else {
@@ -364,9 +365,11 @@ void GWEN_WaitCallback_Enter_u(const char *id,
               GWEN_WaitCallback_List_GetCount(gwen_waitcallback__list));
   }
 
-  if (file)
-    nctx->enteredFromFile=strdup(file);
-  nctx->enteredFromLine=line;
+  if (nctx) {
+    if (file)
+      nctx->enteredFromFile=strdup(file);
+    nctx->enteredFromLine=line;
+  }
 }
 
 

@@ -304,7 +304,7 @@ for d in ${GWEN_HEADER_DIRS}; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
     case ${f} in
-      *l.h | *_p.h)
+      *_l.h | *_p.h)
       	 ;;
       *)
          GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${d}/${f}"

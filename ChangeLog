@@ -1,4 +1,10 @@
+2004-08-02   Christian Stimming <stimming@tuhh.de>
 
+	* src/base/waitcallback.c: Fix potential problem with
+	uninitialized pointer.
+
+	* configure.ac: Fix error in symlinking headers -- xml.h was
+	missed.
 
 2004/08/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
