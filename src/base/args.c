@@ -66,6 +66,7 @@ int GWEN_Args_Check(int argc, char **argv,
     const char *v;
     int value;
 
+    DBG_INFO(0, "Argument[%d] is \"%s\"", i, argv[i]);
     p=argv[i];
     if (*p=='-') {
       p++;
@@ -161,10 +162,6 @@ int GWEN_Args_Check(int argc, char **argv,
       memmove(tmpBuf, p, v-p);
       tmpBuf[v-p]=0;
 
-      if (*v=='=') {
-        v++;
-      }
-
       for(tmpArgs=args;;tmpArgs++) {
         if (strcasecmp(tmpArgs->longOption, tmpBuf)==0) {
           /* found option */
@@ -179,6 +176,16 @@ int GWEN_Args_Check(int argc, char **argv,
         }
       } /* for */
       i++;
+
+      if (*v=='=') {
+        if (!(tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT)) {
+          DBG_ERROR(0, "No argument allowed for option \"%s\"",
+                    tmpArgs->name);
+          free(tmpBuf);
+          return GWEN_ARGS_RESULT_ERROR;
+        }
+        v++;
+      }
 
       if (tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT) {
         /* argument needed */

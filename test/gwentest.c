@@ -21,6 +21,7 @@
 #include <gwenhywfar/nettransportsock.h>
 #include <gwenhywfar/netconnection.h>
 #include <gwenhywfar/process.h>
+#include <gwenhywfar/args.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # define sleep(x) Sleep(x*1000)
@@ -831,6 +832,66 @@ int testProcess(int argc, char **argv) {
 
 
 
+int testOptions(int argc, char **argv) {
+  int rv;
+  GWEN_DB_NODE *db;
+  GWEN_ARGS args[]={
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "charOption",                 /* name */
+    1,                            /* minnum */
+    0,                            /* maxnum */
+    0,                            /* count */
+    "c",                          /* short option */
+    "char",                       /* long option */
+    "char option",                /* short description */
+    "this is a char option"       /* long description */
+  },
+  {
+    0,                            /* flags */
+    GWEN_ArgsTypeInt,             /* type */
+    "boolOption",                 /* name */
+    0,                            /* minnum */
+    0,                            /* maxnum */
+    0,                            /* count */
+    "b",                          /* short option */
+    "bool",                       /* long option */
+    "bool option",                /* short description */
+    "this is a bool option"       /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT | GWEN_ARGS_FLAGS_LAST, /* flags */
+    GWEN_ArgsTypeInt,             /* type */
+    "intOption",                  /* name */
+    0,                            /* minnum */
+    0,                            /* maxnum */
+    0,                            /* count */
+    "i",                          /* short option */
+    "int",                        /* long option */
+    "int option",                 /* short description */
+    "this is an int option"       /* long description */
+  }
+  };
+
+  db=GWEN_DB_Group_new("arguments");
+  rv=GWEN_Args_Check(argc, argv, 1,
+		     GWEN_ARGS_MODE_ALLOW_FREEPARAM,
+		     args,
+		     db);
+  if (rv<1) {
+    fprintf(stderr, "ERROR: Could not parse (%d)\n", rv);
+  }
+  else {
+    GWEN_DB_Dump(db, stderr, 2);
+  }
+
+  GWEN_DB_Group_free(db);
+
+  return 0;
+}
+
+
 
 
 
@@ -872,6 +933,8 @@ int main(int argc, char **argv) {
     rv=testSocketConnect(argc, argv);
   else if (strcasecmp(argv[1], "process")==0)
     rv=testProcess(argc, argv);
+  else if (strcasecmp(argv[1], "option")==0)
+    rv=testOptions(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     return 1;

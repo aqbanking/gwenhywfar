@@ -4,6 +4,7 @@
 - added base module "args" which transforms command line arguments to
   a GWEN_DB. It performs some checks on the arguments given and makes it
   easier to create help screens.
+- debugged module "args" (it now works as intended)
 
 
 2004-04-16  Christian Stimming <stimming@tuhh.de>
@@ -13,10 +14,12 @@
 	caused every gwen version built with --disable-variadic-macros to
 	crash -- sorry. But it is fixed now.
 
+
 2004-04-08  Christian Stimming <stimming@tuhh.de>
 
 	* m4/ssl.m4: For openssl on windows, check more than one directory
 	for the location of the DLLs.
+
 
 ===========================================================================
 MARK: released gwenhywfar-0.9.9 (2004/04/08)
@@ -227,6 +230,7 @@ VERSIONINFO: For next release: SO_VERSION++, SO_AGE++
 	* src/os/windows/inetsocket.c: Add missing function argument.
 
 	* src/net/netmsg.c: Add include config.h.
+
 
 ===========================================================================
 MARK: released gwenhywfar-0.9.8 (2004/03/22)
