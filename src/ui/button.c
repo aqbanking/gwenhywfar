@@ -109,6 +109,7 @@ GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     key=GWEN_EventKey_GetKey(e);
     if (key==32) {
       const char *c;
+      GWEN_EVENT *newE;
 
       if (win->flags & GWEN_BUTTON_FLAGS_CHECKBOX) {
         win->isChecked=!win->isChecked;
@@ -118,17 +119,22 @@ GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
           c=" ";
         GWEN_Widget_WriteAt(w, 0, 0, c, strlen(c));
         GWEN_Widget_Refresh(w);
+        newE=GWEN_EventChecked_new(win->isChecked);
+        assert(newE);
+        if (GWEN_Widget_SendEvent(w, w, newE)) {
+          DBG_INFO(0, "Could not send event");
+          GWEN_Event_free(newE);
+        }
       }
       else {
-        GWEN_EVENT *e;
+        GWEN_EVENT *newE;
 
         assert(w);
-        beep();
-        e=GWEN_EventCommand_new(win->commandId);
-        assert(e);
-        if (GWEN_Widget_SendEvent(w, w, e)) {
+        newE=GWEN_EventCommand_new(win->commandId);
+        assert(newE);
+        if (GWEN_Widget_SendEvent(w, w, newE)) {
           DBG_INFO(0, "Could not send event");
-          GWEN_Event_free(e);
+          GWEN_Event_free(newE);
         }
       }
       return GWEN_UIResult_Handled;

@@ -1181,6 +1181,44 @@ int GWEN_EventChosen_GetY(const GWEN_EVENT *e){
 
 
 
+GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_CHECKED);
+
+GWEN_EVENT *GWEN_EventChecked_new(int status){
+  GWEN_EVENT *e;
+  GWEN_EVENT_CHECKED *et;
+
+  e=GWEN_Event_new(GWEN_EventType_Checked);
+  GWEN_NEW_OBJECT(GWEN_EVENT_CHECKED, et);
+  et->status=status;
+
+  GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_CHECKED,
+                       e, et,
+                       GWEN_EventChecked_freeData);
+  return e;
+}
+
+
+
+
+void GWEN_EventChecked_freeData(void *bp, void *p){
+  GWEN_EVENT_CHECKED *et;
+
+  et=(GWEN_EVENT_CHECKED*)p;
+  GWEN_FREE_OBJECT(et);
+}
+
+
+
+int GWEN_EventChecked_GetStatus(const GWEN_EVENT *e){
+  GWEN_EVENT_CHECKED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CHECKED, e);
+  assert(et);
+  return et->status;
+}
+
+
 
 
 

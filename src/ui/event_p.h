@@ -176,6 +176,15 @@ struct GWEN_EVENT_CHOSEN {
 void GWEN_EventChosen_freeData(void *bp, void *p);
 
 
+typedef struct GWEN_EVENT_CHECKED GWEN_EVENT_CHECKED;
+struct GWEN_EVENT_CHECKED {
+  int status;
+};
+void GWEN_EventChecked_freeData(void *bp, void *p);
+
+
 #endif
+
+
 
 
