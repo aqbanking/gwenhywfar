@@ -342,12 +342,21 @@ GWEN_NetTransportSSL_StartDisconnect(GWEN_NETTRANSPORT *tr){
     return GWEN_NetTransportResultError;
   }
 
+  if (!skd->ssl) {
+    /* connection closed */
+    DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+    GWEN_Socket_Close(skd->socket);
+    GWEN_NetTransport_MarkActivity(tr);
+    GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusPDisconnected);
+    return GWEN_NetTransportResultOk;
+  }
   rv=SSL_shutdown(skd->ssl);
   if (!rv) {
     /* send a TCP_FIN to trigger the other side's close_notify */
     shutdown(GWEN_Socket_GetSocketInt(skd->socket), 1);
     rv=SSL_shutdown(skd->ssl);
   }
+
   if (rv==1 || rv==-1) {
     /* connection closed */
     DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
