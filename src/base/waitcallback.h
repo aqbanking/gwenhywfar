@@ -64,7 +64,7 @@ extern "C" {
  * </p>
  * @code
  * void doSomethingVeryEnduring(WINDOW *myData) {
- *   GWEN_WAITCALLBACK_CTX *wctx;
+ *   GWEN_WAITCALLBACK_CTX *ctx;
  *   unsigned int i;
  *
  *   ctx=GWEN_WaitCallback_Context_new(myCallBackFunction, (void*)myData);
