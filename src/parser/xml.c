@@ -870,6 +870,45 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               n=0;
             } /* if include filename given */
           }
+          else {
+#if 0
+            if ((flags & GWEN_XML_FLAGS_SHARE_TOPLEVEL) &&
+                currDepth==1) {
+              GWEN_XMLNODE *oldtag;
+              GWEN_XMLNODE *nparent;
+
+              /* check whether there already is another tag with this name */
+              nparent=n->parent;
+              assert(nparent);
+              oldtag=GWEN_XMLNode_FindFirstTag(nparent, n->data, 0, 0);
+              while(oldtag) {
+                if (oldtag!=n)
+                  break;
+                oldtag=GWEN_XMLNode_FindNextTag(oldtag, n->data, 0, 0);
+              } /* while */
+              if (oldtag) {
+                GWEN_XMLNODE *itag;
+
+                /* unlink tag */
+                GWEN_XMLNode_UnlinkChild(nparent, n);
+                /* move all children of n to oldtag */
+                itag=n->child;
+                while(itag) {
+                  GWEN_XMLNODE *nextc;
+
+                  nextc=itag->next;
+                  GWEN_XMLNode_UnlinkChild(n, itag);
+                  GWEN_XMLNode_AddChild(oldtag, itag);
+                  itag=nextc;
+                } /* while */
+                /* free tag */
+                GWEN_XMLNode_free(n);
+                /* just to be sure the freed tag is no longer used */
+                n=0;
+              } /* if an old tag exists */
+            } /* if sharing is wanted and possible */
+#endif
+          }
 
           /* surface */
           n=path[currDepth-1];
@@ -1027,15 +1066,42 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    return -1;
 	  }
 
-	  /* ok, now the tag is complete, add it */
-	  if (currDepth>=GWEN_XML_MAX_DEPTH) {
-	    DBG_ERROR(0, "Maximum depth exceeded");
-	    GWEN_XMLNode_free(newNode);
-	    return -1;
-	  }
-	  GWEN_XMLNode_add(newNode, &(n->child));
-          newNode->parent=n;
-	  DBG_DEBUG(0, "Added node \"%s\"", newNode->data);
+          /* ok, now the tag is complete, add it */
+          if ((flags & GWEN_XML_FLAGS_SHARE_TOPLEVEL) &&
+              currDepth==0) {
+            GWEN_XMLNODE *oldNode;
+
+            oldNode=GWEN_XMLNode_FindFirstTag(n, newNode->data, 0, 0);
+            if (oldNode) {
+              /* use old node, copy properties */
+              DBG_INFO(0, "Using old toplevel node for \"%s\"",
+                       newNode->data);
+              GWEN_XMLNode_CopyProperties(oldNode, newNode, 0);
+              GWEN_XMLNode_free(newNode);
+              newNode=oldNode;
+            }
+            else {
+              /* otherwise add bew tag */
+              if (currDepth>=GWEN_XML_MAX_DEPTH) {
+                DBG_ERROR(0, "Maximum depth exceeded");
+                GWEN_XMLNode_free(newNode);
+                return -1;
+              }
+              GWEN_XMLNode_add(newNode, &(n->child));
+              newNode->parent=n;
+              DBG_DEBUG(0, "Added node \"%s\"", newNode->data);
+            }
+          }
+          else {
+            if (currDepth>=GWEN_XML_MAX_DEPTH) {
+              DBG_ERROR(0, "Maximum depth exceeded");
+              GWEN_XMLNode_free(newNode);
+              return -1;
+            }
+            GWEN_XMLNode_add(newNode, &(n->child));
+            newNode->parent=n;
+            DBG_DEBUG(0, "Added node \"%s\"", newNode->data);
+          }
           if (!isEndTag && !simpleTag) {
 	    /* only dive if this tag is not immediately ended */
 	    path[currDepth++]=n;

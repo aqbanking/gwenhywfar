@@ -3,6 +3,8 @@ $Id$
 2003/12/20 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - module XML: Added function that takes a search path (for <include> tags).
+- module XML: Added new flag which allows to share toplevel tags across
+  multiple files
 
 
 2003-12-20  Christian Stimming  <stimming@tuhh.de>

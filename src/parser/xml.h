@@ -52,7 +52,8 @@ extern "C" {
 /** @name Read Flags
  */
 /*@{*/
-#define GWEN_XML_FLAGS_READ_COMMENTS 0x0001
+#define GWEN_XML_FLAGS_READ_COMMENTS  0x0001
+#define GWEN_XML_FLAGS_SHARE_TOPLEVEL 0x0002
 #define GWEN_XML_FLAGS_DEFAULT 0
 /*@}*/
 
