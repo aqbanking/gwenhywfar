@@ -32,6 +32,10 @@
 #include <gwenhywfar/nettransport.h>
 #include <gwenhywfar/db.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /** @name Password Functions
  *
@@ -158,6 +162,10 @@ GWENHYWFAR_API
   GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList();
 /*@}*/
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWEN_NETTRANSPORTSSL_H */
