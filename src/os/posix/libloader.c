@@ -223,12 +223,10 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   /* append name of the library to load */
   GWEN_Buffer_AppendString(buffer, name);
   i=strlen(name);
-  if (i>3) {
-    if (strcmp(name+i-3, ".so")!=0) {
-      /* no SO-extension, add it myself */
-      withWhistlesAndBells=0;
-      GWEN_Buffer_AppendString(buffer, ".so");
-    }
+  if ((i<=3) || (strcmp(name+i-3, ".so")!=0)) {
+    /* no SO-extension, add it myself */
+    withWhistlesAndBells=0;
+    GWEN_Buffer_AppendString(buffer, ".so");
   }
 
   /* append trailing null byte */

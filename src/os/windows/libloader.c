@@ -197,11 +197,9 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   /* append name of the library to load */
   GWEN_Buffer_AppendString(buffer, name);
   i=strlen(name);
-  if (i>4) {
-    if (strcmp(name+i-4, ".dll")!=0) {
-      /* no DLL-extension, add it myself */
-      GWEN_Buffer_AppendString(buffer, ".dll");
-    }
+  if ((i<=4) || (strcmp(name+i-4, ".dll")!=0)) {
+    /* no DLL-extension, add it myself */
+    GWEN_Buffer_AppendString(buffer, ".dll");
   }
 
   /* append trailing null byte */

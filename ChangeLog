@@ -1,3 +1,8 @@
+2004-02-04  Christian Stimming <stimming@tuhh.de>
+
+	* src/os/windows/libloader.c, src/os/posix/libloader.c: Fix
+	errornous query for .so/.dll suffix.
+
 2004/02/02: Ronny Buchmann <ronny-hbci@vlugnet.org>
 ---------------------------------------------------
 - Makefile.cvs: make /usr/local in local: a variable
