@@ -1,0 +1,38 @@
+This README file contains instructions to compile the test program
+"gwentest.c" with the Microsoft Visual Studio compiler.
+
+It is possible to compile gwenhywfar by some other compiler (e.g. the
+mingw/gcc system) but still use the resulting DLL with some other
+compiler, e.gg. the Microsoft Visual Studio C compiler (MSVC). We will
+describe how to setup your MSVC project in order to use a
+MSVC-compiled executable together with a gcc-compiled gwenhywfar32.dll
+
+In order to test this possibility, according to
+http://www.mingw.org/mingwfaq.shtml#faq-msvcdll you need the
+gwenhywfar DLL and DEF files. These are already generated
+automatically when you run "make" under a Mingw system. Now, quoting
+from that mingw website, "MSVC cannot use the MinGW library, but since
+you have already the DEF file you may easily produce one by the
+Microsoft LIB tool", hence in the directory gwenhywfar/src you have to
+do
+
+  lib /machine:i386 /def:gwenhywfar32.def
+
+and there you have the gwenhywfar32.lib file that is needed in MSVC.
+
+Now you need to compile gwentest.c by MSVC. We have provided a MSVC
+project file in test/gwentest.vcproj. The include and library paths
+should already be set up correctly, except maybe for the library path
+to your mingw library directory (c:\msys\1.0\mingw\lib for me). This
+might need to be adapted by right-clicking on the "gwentest" project,
+then "Properties"-> "Linker"-> "General" -> "Additional library
+directories", and you have to insert the directory where mingw's
+library "libmingwex.a" can be found.
+
+After that, MSVC should be able to compile and link the gwentest
+program. If you run it, you don't see anything, because the program
+expects some command line arguments. Therefore you have to run the
+program from the command line, e.g. "gwentest.exe db"
+
+Enjoy!
+

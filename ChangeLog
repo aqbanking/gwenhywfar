@@ -1,3 +1,8 @@
+2004-03-24   Christian Stimming <stimming@tuhh.de>
+
+	* test/gwentest.c: Finalize test code for Microsoft Visual Studio
+	C compiler. Necessary steps are described in README.MSVC (really
+	not difficult).
 
 2004/03/24: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.00"
+	Name="gwentest"
+	ProjectGUID="{ABCFED38-EE1F-47C6-8761-4A4C1A7C7F05}"
+	Keyword="MakeFileProj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="1">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories=".."
+				PreprocessorDefinitions="OS_WIN32;NO_VARIADIC_MACROS"
+				WarningLevel="2"
+				SuppressStartupBanner="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="gwenhywfar32.lib libmingwex.a"
+				AdditionalLibraryDirectories="&quot;..\src&quot;;C:\msys\1.0\mingw\lib"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(TargetDir)/$(ProjectName).pdb"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="0">
+			<Tool
+				Name="VCNMakeTool"
+				Output="gwentest32.exe"/>
+		</Configuration>
+	</Configurations>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
+			<File
+				RelativePath="gwentest.c">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc">
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

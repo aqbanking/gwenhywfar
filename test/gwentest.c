@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+#ifndef OS_WIN32
+# include <unistd.h>
+#endif
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/db.h>
@@ -21,6 +23,7 @@
 #ifdef OS_WIN32
 # include <windows.h>
 # define sleep(x) Sleep(x)
+# define strcasecmp(a, b) strcmp(a, b)
 #endif
 
 int testSSL(int argc, char **argv) {
@@ -543,7 +546,7 @@ int testSnprintf(int argc, char **argv) {
 
   p=0xdeadbeef;
   i=GWEN_Debug_Snprintf(buffer, sizeof(buffer),
-                        "Test %010x %s [%s]\n", p, "Suckme", 0);
+                        "Test %010x %s [%s]\n", p, "Some crazy cow", 0);
   buffer[sizeof(buffer)-1]=0;
   fprintf(stderr, "Result: \"%s\" (%d)\n",
           buffer, i);
@@ -757,7 +760,7 @@ int main(int argc, char **argv) {
   int rv;
 
   if (argc<2) {
-    fprintf(stderr, "Usage: %s <test>\n  where <test> is one of dbfile, dbfile2, list, key, mkkey, cpkey, xml, xml2, sn, ssl, accept, connect\n", argv[0]);
+    fprintf(stderr, "Usage: %s <test>\n  where <test> is one of db, dbfile, dbfile2, list, key, mkkey, cpkey, xml, xml2, sn, ssl, accept, connect\n", argv[0]);
     return 1;
   }
 
@@ -765,6 +768,8 @@ int main(int argc, char **argv) {
 
   if (strcasecmp(argv[1], "dbfile")==0)
     rv=testDBfile(argc, argv);
+  if (strcasecmp(argv[1], "db")==0)
+    rv=testDB(argc, argv);
   else if (strcasecmp(argv[1], "dbfile2")==0)
     rv=testDBfile2(argc, argv);
   else if (strcasecmp(argv[1], "list")==0)
