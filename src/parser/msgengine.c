@@ -649,9 +649,9 @@ int GWEN_MsgEngine__GetInline(GWEN_MSGENGINE *e,
   const char *type;
 
 
+  type=GWEN_XMLNode_GetProperty(node, "type", "ascii");
   DBG_DEBUG(GWEN_LOGDOMAIN,
             "Getting data of type \"%s\" from within XML file", type);
-  type=GWEN_XMLNode_GetProperty(node, "type", "ascii");
   n=GWEN_XMLNode_GetFirstData(node);
   if (!n) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "No child");
