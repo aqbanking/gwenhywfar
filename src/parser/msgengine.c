@@ -2721,10 +2721,6 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                 }
               } /* if type is int */
               else {
-                if (strcasecmp(type, "date")==0) {
-                  DBG_ERROR(0, "Reading date from \"%s\"",
-                            GWEN_Buffer_GetStart(vbuf));
-                }
 		DBG_DEBUG(0, "Value is \"%s\"",
                           GWEN_Buffer_GetStart(vbuf));
                 if (GWEN_DB_SetCharValue(gr,
