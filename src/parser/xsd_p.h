@@ -420,7 +420,8 @@ int GWEN_XSD__WriteElementType(GWEN_XSD_ENGINE *e,
 int GWEN_XSD__WriteNode(GWEN_XSD_ENGINE *e,
                         GWEN_XMLNODE *nn,
                         GWEN_DB_NODE *dbNode,
-                        GWEN_XMLNODE *nStore);
+                        GWEN_XMLNODE *nStore,
+                        int defaultMinOccur);
 
 int GWEN_XSD__WriteNodes(GWEN_XSD_ENGINE *e,
                          GWEN_XMLNODE *n,

@@ -793,7 +793,8 @@ int GWEN_XSD__WriteElementType(GWEN_XSD_ENGINE *e,
 int GWEN_XSD__WriteNode(GWEN_XSD_ENGINE *e,
                         GWEN_XMLNODE *nn,
                         GWEN_DB_NODE *dbNode,
-                        GWEN_XMLNODE *nStore) {
+                        GWEN_XMLNODE *nStore,
+                        int defaultMinOccur) {
   const char *tagName;
   const char *tName;
   int minOccur;
@@ -802,12 +803,14 @@ int GWEN_XSD__WriteNode(GWEN_XSD_ENGINE *e,
   int idx;
   GWEN_XMLNODE *nNextStore;
   int nodeCreated;
+  char numbuf[16];
 
   assert(nn);
   nNextStore=nStore;
   nodeCreated=0;
+  snprintf(numbuf, sizeof(numbuf)-1, "%d", defaultMinOccur);
   tName=GWEN_XMLNode_GetProperty(nn, "name", 0);
-  x=GWEN_XMLNode_GetProperty(nn, "minOccurs", "1");
+  x=GWEN_XMLNode_GetProperty(nn, "minOccurs", numbuf);
   if (1!=sscanf(x, "%i", &minOccur)) {
     if (strcasecmp(x, "unbounded")==0)
       minOccur=0;
@@ -1038,7 +1041,7 @@ int GWEN_XSD__WriteSequence(GWEN_XSD_ENGINE *e,
   while(nn) {
     int rv;
 
-    rv=GWEN_XSD__WriteNode(e, nn, dbNode, nStore);
+    rv=GWEN_XSD__WriteNode(e, nn, dbNode, nStore, 1);
     if (rv)
       return rv;
     nn=GWEN_XMLNode_GetNextTag(nn);
@@ -1060,7 +1063,7 @@ int GWEN_XSD__WriteChoice(GWEN_XSD_ENGINE *e,
     int rv;
 
     /* try to write this node */
-    rv=GWEN_XSD__WriteNode(e, nn, dbNode, nStore);
+    rv=GWEN_XSD__WriteNode(e, nn, dbNode, nStore, 0);
     if (rv!=1)
       /* either an error or successfully written, so the choice is done */
       return rv;
