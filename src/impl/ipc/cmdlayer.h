@@ -31,6 +31,7 @@
 #include <gwenhyfwar/connlayer.h>
 #include <gwenhyfwar/servicelayer.h>
 #include <gwenhyfwar/db.h>
+#include <gwenhyfwar/crypt.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,6 +70,9 @@ GWEN_DB_NODE *GWEN_IPCServiceCmd_ParseMsg(GWEN_IPCCONNLAYER *cl,
 void GWEN_IPCServiceCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
                                           const char *name,
                                           const char *version);
+
+void GWEN_IPCServiceCmd_SetLocalKey(GWEN_IPCSERVICECMD *s,
+                                    GWEN_CRYPTKEY *localKey);
 
 GWEN_IPCCONNLAYER*
   GWEN_IPCServiceCmd_FindConnection(GWEN_IPCSERVICECMD *s,

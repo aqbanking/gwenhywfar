@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Sep 16 2003
+    begin       : Sat Nov 08 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,47 +25,33 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifndef GWENHYFWAR_CONNLAYER_P_H
-#define GWENHYFWAR_CONNLAYER_P_H
-
-#define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
+#ifndef GWENHYWFAR_HBCIDLG_P_H
+#define GWENHYWFAR_HBCIDLG_P_H
 
 
-#include <gwenhyfwar/connlayer.h>
+#include <gwenhyfwar/hbcidialog.h>
 
 
-struct GWEN_IPCCONNLAYER {
-  GWEN_IPCCONNLAYER *next;
+struct GWEN_HBCIDIALOG {
+  GWEN_MSGENGINE *msgEngine;
+  char *dialogId;
+  unsigned int lastReceivedMsgNum;
+  unsigned int nextMsgNum;
 
-  GWEN_IPCMSGLAYER *msgLayer;
-  GWEN_IPCCONNLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
+  void *inheritorData;
 
-  unsigned int typ;
-  unsigned int userMark;
-  unsigned int libMark;
-  unsigned int flags;
-
-  char *info;
-  void *data;
-
-  GWEN_IPCCONNLAYER_FREE freeDataFn;
-  GWEN_IPCCONNLAYER_OPEN openFn;
-  GWEN_IPCCONNLAYER_CLOSE closeFn;
-  GWEN_IPCCONNLAYER_WORK workFn;
-  GWEN_IPCCONNLAYER_ACCEPT acceptFn;
+  GWEN_HBCIDLG_PREPARECTX_FN prepareCtxFn;
+  GWEN_HBCIDLG_SIGN_FN signFn;
+  GWEN_HBCIDLG_VERIFY_FN verifyFn;
+  GWEN_HBCIDLG_ENCRYPT_FN encryptFn;
+  GWEN_HBCIDLG_DECRYPT_FN decryptFn;
+  GWEN_HBCIDLG_FREEDATA_FN freeDataFn;
 };
 
 
-#endif /* GWENHYFWAR_CONNLAYER_P_H */
 
+
+#endif
 
 
 

@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Sep 16 2003
+    begin       : Sat Nov 08 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,47 +25,41 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifndef GWENHYFWAR_CONNLAYER_P_H
-#define GWENHYFWAR_CONNLAYER_P_H
-
-#define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
+#ifndef GWENHYWFAR_HBCICRYPTOCONTEXT_H
+#define GWENHYWFAR_HBCICRYPTOCONTEXT_H
 
 
-#include <gwenhyfwar/connlayer.h>
+#include <gwenhyfwar/keyspec.h>
 
 
-struct GWEN_IPCCONNLAYER {
-  GWEN_IPCCONNLAYER *next;
-
-  GWEN_IPCMSGLAYER *msgLayer;
-  GWEN_IPCCONNLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
-
-  unsigned int typ;
-  unsigned int userMark;
-  unsigned int libMark;
-  unsigned int flags;
-
-  char *info;
-  void *data;
-
-  GWEN_IPCCONNLAYER_FREE freeDataFn;
-  GWEN_IPCCONNLAYER_OPEN openFn;
-  GWEN_IPCCONNLAYER_CLOSE closeFn;
-  GWEN_IPCCONNLAYER_WORK workFn;
-  GWEN_IPCCONNLAYER_ACCEPT acceptFn;
-};
+typedef struct GWEN_HBCICRYPTOCONTEXT GWEN_HBCICRYPTOCONTEXT;
 
 
-#endif /* GWENHYFWAR_CONNLAYER_P_H */
+GWEN_HBCICRYPTOCONTEXT *GWEN_HBCICryptoContext_new();
+void GWEN_HBCICryptoContext_free(GWEN_HBCICRYPTOCONTEXT *ctx);
 
 
+const char*
+  GWEN_HBCICryptoContext_GetSecurityIdPtr(GWEN_HBCICRYPTOCONTEXT *ctx);
 
+void GWEN_HBCICryptoContext_SetSecurityId(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                          void *p, unsigned int l);
+unsigned int
+  GWEN_HBCICryptoContext_GetSecurityIdSize(GWEN_HBCICRYPTOCONTEXT *ctx);
+
+unsigned int
+  GWEN_HBCICryptoContext_GetSequenceNum(GWEN_HBCICRYPTOCONTEXT *ctx);
+void GWEN_HBCICryptoContext_SetSequenceNum(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                           unsigned int i);
+
+const char*
+  GWEN_HBCICryptoContext_GetServiceCode(GWEN_HBCICRYPTOCONTEXT *ctx);
+void GWEN_HBCICryptoContext_SetServiceCode(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                           const char *s);
+
+GWEN_KEYSPEC *GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx);
+void GWEN_HBCICryptoContext_SetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                       GWEN_KEYSPEC *ks);
+
+#endif
 

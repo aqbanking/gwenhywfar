@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Sep 16 2003
+    begin       : Sat Nov 08 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,47 +25,65 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GWENHYWFAR_HBCIMSG_H
+#define GWENHYWFAR_HBCIMSG_H
 
-#ifndef GWENHYFWAR_CONNLAYER_P_H
-#define GWENHYFWAR_CONNLAYER_P_H
-
-#define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
-
-
-#include <gwenhyfwar/connlayer.h>
+#define GWEN_HBCIMSG_FLAGS_SIGN  0x0001
+#define GWEN_HBCIMSG_FLAGS_CRYPT 0x0002
 
 
-struct GWEN_IPCCONNLAYER {
-  GWEN_IPCCONNLAYER *next;
 
-  GWEN_IPCMSGLAYER *msgLayer;
-  GWEN_IPCCONNLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
-
-  unsigned int typ;
-  unsigned int userMark;
-  unsigned int libMark;
-  unsigned int flags;
-
-  char *info;
-  void *data;
-
-  GWEN_IPCCONNLAYER_FREE freeDataFn;
-  GWEN_IPCCONNLAYER_OPEN openFn;
-  GWEN_IPCCONNLAYER_CLOSE closeFn;
-  GWEN_IPCCONNLAYER_WORK workFn;
-  GWEN_IPCCONNLAYER_ACCEPT acceptFn;
-};
+#include <gwenhyfwar/error.h>
+#include <gwenhyfwar/buffer.h>
+#include <gwenhyfwar/db.h>
+#include <gwenhyfwar/msgengine.h>
+#include <gwenhyfwar/keyspec.h>
+#include <gwenhyfwar/hbcicryptocontext.h>
+#include <gwenhyfwar/hbcidialog.h>
 
 
-#endif /* GWENHYFWAR_CONNLAYER_P_H */
+typedef struct GWEN_HBCIMSG GWEN_HBCIMSG;
 
+
+GWEN_KEYSPEC *GWEN_HBCIMsg_GetSigners(GWEN_HBCIMSG *hmsg);
+void GWEN_HBCIMsg_AddSigner(GWEN_HBCIMSG *hmsg,
+                            GWEN_KEYSPEC *ks);
+unsigned int GWEN_HBCIMsg_GetSignerCount(GWEN_HBCIMSG *hmsg);
+
+GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(GWEN_HBCIMSG *hmsg);
+void GWEN_HBCIMsg_SetCrypter(GWEN_HBCIMSG *hmsg,
+                             GWEN_KEYSPEC *ks);
+
+
+GWEN_BUFFER *GWEN_HBCIMsg_GetBuffer(GWEN_HBCIMSG *hmsg);
+
+unsigned int GWEN_HBCIMsg_GetFlags(GWEN_HBCIMSG *hmsg);
+void GWEN_HBCIMsg_SetFlags(GWEN_HBCIMSG *hmsg,
+                           unsigned int f);
+
+void GWEN_HBCIMsg_SetMsgRef(GWEN_HBCIMSG *hmsg,
+                            unsigned int i);
+void GWEN_HBCIMsg_SetMsgNumber(GWEN_HBCIMSG *hmsg,
+                               unsigned int i);
+
+
+
+GWEN_HBCIMSG *GWEN_HBCIMsg_new(GWEN_HBCIDIALOG *hdlg);
+void GWEN_HBCIMsg_free(GWEN_HBCIMSG *hmsg);
+
+
+int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
+                         GWEN_XMLNODE *node,
+                         GWEN_DB_NODE *data);
+
+
+
+
+
+
+
+
+#endif
 
 
 

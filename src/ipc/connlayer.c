@@ -518,6 +518,21 @@ void GWEN_ConnectionLayer_Append(GWEN_IPCCONNLAYER *cl,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_ConnectionLayer_GetType(GWEN_IPCCONNLAYER *cl){
+  assert(cl);
+  return cl->typ;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayer_SetType(GWEN_IPCCONNLAYER *cl,
+                                  unsigned int i){
+  assert(cl);
+  cl->typ=i;
+}
+
 
 
 

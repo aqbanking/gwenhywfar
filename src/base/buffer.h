@@ -66,6 +66,9 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
 void GWEN_Buffer_free(GWEN_BUFFER *bf);
 
 
+GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf);
+
+
 /**
  * Returns the current mode of the buffer (such as GWEN_BUFFER_MODE_DYNAMIC).
  */
@@ -87,6 +90,35 @@ unsigned int GWEN_Buffer_GetHardLimit(GWEN_BUFFER *bf);
  * dynamic mode.
  */
 void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, unsigned int l);
+
+
+/**
+ * In dynamic mode, whenever there is new data to allocate then this value
+ * specifies how much data to allocate in addition.
+ * The allocated data in total for this buffer will be aligned to this value.
+ */
+unsigned int GWEN_Buffer_GetStep(GWEN_BUFFER *bf);
+
+/**
+ * In dynamic mode, whenever there is new data to allocate then this value
+ * specifies how much data to allocate in addition.
+ * The allocated data in total for this buffer will be aligned to this value.
+ * 1024 is a reasonable value. This value NEEDS to be aligned 2^n (i.e.
+ * only ONE bit must be set !)
+ */
+void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, unsigned int step);
+
+
+/**
+ * Reserves the given amount of bytes at the beginning of the buffer.
+ * Please note that this most likely results in a shift of the current
+ * position inside the buffer, so after this call all pointers obtained
+ * from this module (e.g. via @ref GWEN_Buffer_GetStart) are invalid !
+ * You can use this function to save some memory copy actions when
+ * inserting bytes at the beginning of the buffer.
+ */
+int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, unsigned int res);
+
 
 /**
  * Returns the start of the buffer. You can use the function
@@ -154,6 +186,29 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
  */
 int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c);
 
+/**
+ * Inserts multiple bytes at the current position.
+ * If the current position is 0 and there is reserved space at the beginning
+ * of the buffer then that space will be used.
+ * Otherwise the data at the current position will be moved out of the way
+ * and the new bytes inserted.
+ * The position pointer will not be altered, but all pointers obtained from
+ * this module (e.g. via @ref GWEN_Buffer_GetStart) become invalid !
+ */
+int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
+                            const char *buffer,
+                            unsigned int size);
+
+/**
+ * Inserts a byte at the current position.
+ * If the current position is 0 and there is reserved space at the beginning
+ * of the buffer then that space will be used.
+ * Otherwise the data at the current position will be moved out of the way
+ * and the new byte inserted.
+ * The position pointer will not be altered, but all pointers obtained from
+ * this module (e.g. via @ref GWEN_Buffer_GetStart) become invalid !
+ */
+int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c);
 
 /**
  * Returns the byte from the current position.
@@ -186,6 +241,9 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, unsigned int i);
 int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, unsigned int i);
 int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf);
 
+
+int GWEN_Buffer_InsertBuffer(GWEN_BUFFER *bf,
+                             GWEN_BUFFER *sf);
 
 int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
                              GWEN_BUFFER *sf);

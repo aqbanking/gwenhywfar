@@ -32,6 +32,7 @@
 #include <gwenhyfwar/cmdlayer.h>
 #include <gwenhyfwar/transportlayer.h>
 #include <gwenhyfwar/msgengine.h>
+#include <gwenhyfwar/crypt.h>
 
 
 #define GWEN_IPCCONNLAYERCMD_SECSTATE_CLOSED            0
@@ -79,6 +80,9 @@ struct GWEN_IPCCONNLAYERCMDDATA {
   unsigned int securityState;
   unsigned int flags;
   unsigned int lastRefId; /* for handshaking */
+  GWEN_CRYPTKEY *localKey;
+  GWEN_CRYPTKEY *remoteKey;
+  GWEN_CRYPTKEY *sessionKey;
   char *peerName;
   char *peerVersion;
   char *ownName;
@@ -130,13 +134,15 @@ struct GWEN_IPCSERVICECMD {
   GWEN_SERVICELAYER *serviceLayer;
   char *ownName;
   char *ownVersion;
+  GWEN_CRYPTKEY *localKey;
 };
 
 
 void GWEN_ConnectionLayerCmd_SetNameAndVersion(GWEN_IPCCONNLAYER *cl,
                                                const char *name,
                                                const char *version);
-
+void GWEN_ConnectionLayerCmd_SetLocalKey(GWEN_IPCCONNLAYER *cl,
+                                         GWEN_CRYPTKEY *localKey);
 
 
 GWEN_DB_NODE *GWEN_IPCCMD_ReceiveMsg(GWEN_IPCCONNLAYER *cl,

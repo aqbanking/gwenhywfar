@@ -1,0 +1,204 @@
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Sat Nov 08 2003
+    copyright   : (C) 2003 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU Lesser General Public            *
+ *   License as published by the Free Software Foundation; either          *
+ *   version 2.1 of the License, or (at your option) any later version.    *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,                 *
+ *   MA  02111-1307  USA                                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include "keyspec_p.h"
+#include <gwenhyfwar/misc.h>
+
+
+
+GWEN_KEYSPEC *GWEN_KeySpec_new(){
+  GWEN_KEYSPEC *ks;
+
+  GWEN_NEW_OBJECT(GWEN_KEYSPEC, ks);
+  return ks;
+}
+
+
+
+void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
+  if (ks) {
+    free(ks->keyType);
+    free(ks->keyName);
+    free(ks->owner);
+    free(ks);
+  }
+}
+
+
+
+GWEN_KEYSPEC *GWEN_KeySpec_dup(GWEN_KEYSPEC *ks){
+  GWEN_KEYSPEC *newKs;
+
+  assert(ks);
+  newKs=GWEN_KeySpec_new();
+  if (ks->keyType)
+    newKs->keyType=strdup(ks->keyType);
+  if (ks->keyName)
+    newKs->keyName=strdup(ks->keyName);
+  if (ks->owner)
+    newKs->owner=strdup(ks->owner);
+  newKs->number=ks->number;
+  newKs->version=ks->version;
+  return newKs;
+}
+
+
+
+GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->next;
+}
+
+
+
+void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
+                             GWEN_KEYSPEC **head){
+  assert(ks);
+  assert(head);
+  GWEN_LIST_ADD(GWEN_KEYSPEC, ks, head);
+}
+
+
+
+void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
+                             GWEN_KEYSPEC **head){
+  assert(ks);
+  assert(head);
+  GWEN_LIST_DEL(GWEN_KEYSPEC, ks, head);
+}
+
+
+
+const char *GWEN_KeySpec_GetKeyType(GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->keyType;
+}
+
+
+
+void GWEN_KeySpec_SetKeyType(GWEN_KEYSPEC *ks,
+                                    const char *s){
+  assert(ks);
+  assert(s);
+  free(ks->keyType);
+  ks->keyType=strdup(s);
+}
+
+
+
+const char *GWEN_KeySpec_GetKeyName(GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->keyName;
+}
+
+
+
+void GWEN_KeySpec_SetKeyName(GWEN_KEYSPEC *ks,
+                                    const char *s){
+  assert(ks);
+  assert(s);
+  free(ks->keyName);
+  ks->keyName=strdup(s);
+}
+
+
+
+const char *GWEN_KeySpec_GetOwner(GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->owner;
+}
+
+
+
+void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks,
+                                  const char *s){
+  assert(ks);
+  assert(s);
+  free(ks->owner);
+  ks->owner=strdup(s);
+}
+
+
+
+unsigned int GWEN_KeySpec_GetNumber(GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->number;
+}
+
+
+
+void GWEN_KeySpec_SetNumber(GWEN_KEYSPEC *ks,
+                                   unsigned int i){
+  assert(ks);
+  ks->number=i;
+}
+
+
+
+unsigned int GWEN_KeySpec_GetVersion(GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->version;
+}
+
+
+
+void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
+                                    unsigned int i){
+  assert(ks);
+  ks->version=i;
+}
+
+
+
+void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
+  GWEN_KEYSPEC *ks;
+
+  ks=*head;
+  while(ks) {
+    GWEN_KEYSPEC *nks;
+
+    nks=ks->next;
+    GWEN_KeySpec_free(ks);
+    ks=nks;
+  } /* while */
+  *head=0;
+}
+
+
+
+
+
+
+
+
+

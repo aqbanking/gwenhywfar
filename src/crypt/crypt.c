@@ -44,7 +44,7 @@ static int gwen_crypt_is_initialized=0;
 static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_crypt_errorform=0;
 
 
-static GWEN_CRYPT_PROVIDER *gwen_crypt_providers=0;
+static GWEN_CRYPTKEY_PROVIDER *gwen_crypt_providers=0;
 
 
 
@@ -125,9 +125,29 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
     free(key->keyType);
+    free(key->keyName);
     free(key->owner);
     free(key);
   }
+}
+
+
+
+GWEN_CRYPTKEY *GWEN_CryptKey_dup(GWEN_CRYPTKEY *key){
+  GWEN_CRYPTKEY *newKey;
+
+  assert(key);
+  assert(key->dupFn);
+  newKey=key->dupFn(key);
+  assert(key->keyType);
+  newKey->keyType=strdup(key->keyType);
+  if (key->keyName)
+    newKey->keyName=strdup(key->keyName);
+  if (key->owner)
+    newKey->owner=strdup(key->owner);
+  newKey->number=key->number;
+  newKey->version=key->version;
+  return newKey;
 }
 
 
@@ -188,21 +208,54 @@ unsigned int GWEN_CryptKey_GetChunkSize(GWEN_CRYPTKEY *key){
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_FromDB(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
                                     GWEN_DB_NODE *db){
+  GWEN_DB_NODE *gr;
+
   assert(key);
+  key->keyType=strdup(GWEN_DB_GetCharValue(db, "type", 0, ""));
+  key->keyName=strdup(GWEN_DB_GetCharValue(db, "name", 0, ""));
+  key->owner=strdup(GWEN_DB_GetCharValue(db, "owner", 0, ""));
+  key->number==GWEN_DB_GetIntValue(db, "number", 0, 0);
+  key->version==GWEN_DB_GetIntValue(db, "version", 0, 0);
+
+  gr=GWEN_DB_GetGroup(db,
+                      GWEN_DB_FLAGS_DEFAULT,
+                      "data");
   assert(key->fromDbFn);
-  return key->fromDbFn(key, db);
+  return key->fromDbFn(key, gr);
 }
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_ToDB(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_ToDb(GWEN_CRYPTKEY *key,
                                   GWEN_DB_NODE *db,
                                   int pub){
+  GWEN_DB_NODE *gr;
+
   assert(key);
+  GWEN_DB_SetCharValue(db,
+                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "type", key->keyType);
+  GWEN_DB_SetCharValue(db,
+                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "name", key->keyName);
+  GWEN_DB_SetCharValue(db,
+                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "owner", key->owner);
+  GWEN_DB_SetIntValue(db,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "number", key->number);
+  GWEN_DB_SetIntValue(db,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "version", key->version);
+
+  gr=GWEN_DB_GetGroup(db,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                      "data");
   assert(key->toDbFn);
-  return key->toDbFn(key, db, pub);
+  return key->toDbFn(key, gr, pub);
 }
 
 
@@ -245,6 +298,23 @@ void GWEN_CryptKey_SetKeyType(GWEN_CRYPTKEY *key,
   assert(s);
   free(key->keyType);
   key->keyType=strdup(s);
+}
+
+
+
+const char *GWEN_CryptKey_GetKeyName(GWEN_CRYPTKEY *key){
+  assert(key);
+  return key->keyName;
+}
+
+
+
+void GWEN_CryptKey_SetKeyName(GWEN_CRYPTKEY *key,
+                              const char *s){
+  assert(key);
+  assert(s);
+  free(key->keyName);
+  key->keyName=strdup(s);
 }
 
 
@@ -371,8 +441,8 @@ void GWEN_CryptKey_SetVerifyFn(GWEN_CRYPTKEY *key,
 
 
 
-void GWEN_CryptKey_SetGetChunkSize(GWEN_CRYPTKEY *key,
-                                   GWEN_CRYPTKEY_GETCHUNKSIZE_FN getChunkSizeFn){
+void GWEN_CryptKey_SetGetChunkSizeFn(GWEN_CRYPTKEY *key,
+                                     GWEN_CRYPTKEY_GETCHUNKSIZE_FN getChunkSizeFn){
   assert(key);
   key->getChunkSizeFn=getChunkSizeFn;
 }
@@ -411,8 +481,8 @@ void GWEN_CryptKey_SetFreeKeyDataFn(GWEN_CRYPTKEY *key,
 
 
 
-void GWEN_CryptKey_SetOpenKeyFn(GWEN_CRYPTKEY *key,
-                                GWEN_CRYPTKEY_OPEN_FN openFn){
+void GWEN_CryptKey_SetOpenFn(GWEN_CRYPTKEY *key,
+                             GWEN_CRYPTKEY_OPEN_FN openFn){
   assert(key);
   key->openFn=openFn;
 }
@@ -427,17 +497,34 @@ void GWEN_CryptKey_SetCloseFn(GWEN_CRYPTKEY *key,
 
 
 
+void GWEN_CryptKey_SetDupFn(GWEN_CRYPTKEY *key,
+                            GWEN_CRYPTKEY_DUP_FN dupFn){
+  assert(key);
+  key->dupFn=dupFn;
+}
 
-GWEN_CRYPT_PROVIDER *GWEN_CryptProvider_new(){
-  GWEN_CRYPT_PROVIDER *pr;
 
-  GWEN_NEW_OBJECT(GWEN_CRYPT_PROVIDER, pr);
+
+
+GWEN_CRYPTKEY_PROVIDER *GWEN_CryptProvider_new(){
+  GWEN_CRYPTKEY_PROVIDER *pr;
+
+  GWEN_NEW_OBJECT(GWEN_CRYPTKEY_PROVIDER, pr);
   return pr;
 }
 
 
 
-void GWEN_CryptProvider_SetNewKeyFn(GWEN_CRYPT_PROVIDER *pr,
+void GWEN_CryptProvider_free(GWEN_CRYPTKEY_PROVIDER *pr){
+  if (pr) {
+    free(pr->name);
+    free(pr);
+  }
+}
+
+
+
+void GWEN_CryptProvider_SetNewKeyFn(GWEN_CRYPTKEY_PROVIDER *pr,
                                     GWEN_CRYPTPROVIDER_NEWKEY_FN newKeyFn){
   assert(pr);
   pr->newKeyFn=newKeyFn;
@@ -445,8 +532,8 @@ void GWEN_CryptProvider_SetNewKeyFn(GWEN_CRYPT_PROVIDER *pr,
 
 
 
-GWEN_CRYPT_PROVIDER *GWEN_Crypt_FindProvider(const char *name){
-  GWEN_CRYPT_PROVIDER *pr;
+GWEN_CRYPTKEY_PROVIDER *GWEN_Crypt_FindProvider(const char *name){
+  GWEN_CRYPTKEY_PROVIDER *pr;
 
   pr=gwen_crypt_providers;
   while(pr) {
@@ -460,7 +547,7 @@ GWEN_CRYPT_PROVIDER *GWEN_Crypt_FindProvider(const char *name){
 
 
 
-GWEN_ERRORCODE GWEN_Crypt_RegisterProvider(GWEN_CRYPT_PROVIDER *pr){
+GWEN_ERRORCODE GWEN_Crypt_RegisterProvider(GWEN_CRYPTKEY_PROVIDER *pr){
   assert(pr);
 
   if (GWEN_Crypt_FindProvider(pr->name)){
@@ -471,13 +558,13 @@ GWEN_ERRORCODE GWEN_Crypt_RegisterProvider(GWEN_CRYPT_PROVIDER *pr){
                           GWEN_CRYPT_ERROR_ALREADY_REGISTERED);
   }
 
-  GWEN_LIST_ADD(GWEN_CRYPT_PROVIDER, pr, &gwen_crypt_providers);
+  GWEN_LIST_ADD(GWEN_CRYPTKEY_PROVIDER, pr, &gwen_crypt_providers);
   return 0;
 }
 
 
 
-GWEN_ERRORCODE GWEN_Crypt_UnregisterProvider(GWEN_CRYPT_PROVIDER *pr){
+GWEN_ERRORCODE GWEN_Crypt_UnregisterProvider(GWEN_CRYPTKEY_PROVIDER *pr){
   assert(pr);
 
   if (!GWEN_Crypt_FindProvider(pr->name)){
@@ -488,12 +575,34 @@ GWEN_ERRORCODE GWEN_Crypt_UnregisterProvider(GWEN_CRYPT_PROVIDER *pr){
                           GWEN_CRYPT_ERROR_NOT_REGISTERED);
   }
 
-  GWEN_LIST_DEL(GWEN_CRYPT_PROVIDER, pr, &gwen_crypt_providers);
+  GWEN_LIST_DEL(GWEN_CRYPTKEY_PROVIDER, pr, &gwen_crypt_providers);
   return 0;
 }
 
 
+void GWEN_CryptProvider_SetName(GWEN_CRYPTKEY_PROVIDER *pr,
+                                const char *name){
+  assert(pr);
+  assert(name);
+  free(pr->name);
+  pr->name=strdup(name);
+}
 
+
+
+GWEN_CRYPTKEY *GWEN_CryptKey_Factory(const char *t){
+  GWEN_CRYPTKEY_PROVIDER *pr;
+  GWEN_CRYPTKEY *key;
+
+  pr=GWEN_Crypt_FindProvider(t);
+  if (!pr) {
+    DBG_ERROR(0, "No crypt provider for \"%s\" found", t);
+    return 0;
+  }
+
+  key=pr->newKeyFn(pr);
+  return key;
+}
 
 
 

@@ -1,6 +1,6 @@
 INCLUDES=@all_includes@
 
-SUBDIRS=@GWEN_CRYPTO@ none
+SUBDIRS=@GWEN_CRYPTO@
 
 EXTRA_DIST=\
  ossl/cryptssl_p.h \
@@ -10,14 +10,17 @@ EXTRA_DIST=\
  
 iheaderdir=${includedir}/gwenhyfwar
 iheader_HEADERS=\
- crypt.h
+ crypt.h \
+ keyspec.h
 
 noinst_HEADERS=\
- crypt_p.h
+ crypt_p.h \
+ keyspec_p.h
 
 noinst_LTLIBRARIES=libcrypt.la
 
 libcrypt_la_SOURCES=\
- crypt.c
+ crypt.c \
+ keyspec.c
 
 libcrypt_la_LIBADD=@GWEN_CRYPTO@/libcryptimpl.la

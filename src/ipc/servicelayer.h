@@ -52,7 +52,7 @@ GWEN_ERRORCODE
 
 /**
  * Lookup a connection by its id and a user mark.
- * @param id conection id (automatically assigned when creating the
+ * @param id connection id (automatically assigned when creating the
  *        connection)
  * @param userMark mark assigned by the application (0 matches any)
  */

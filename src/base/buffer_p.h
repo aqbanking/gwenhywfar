@@ -44,18 +44,26 @@
 
 
 struct GWEN_BUFFER {
+  char *realPtr;
   char *ptr;
   unsigned int pos;
   unsigned int bufferSize;
+  unsigned int realBufferSize;
   unsigned bytesUsed;
   unsigned int flags;
   unsigned int mode;
   unsigned int hardLimit;
+  unsigned int step;
   unsigned int bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
 };
 
 
 int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size);
+
+
+void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
+                                 unsigned int pos,
+                                 unsigned int offset);
 
 
 

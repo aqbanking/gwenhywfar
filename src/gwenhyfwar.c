@@ -41,6 +41,7 @@
 #include "gwenhyfwar/debug.h"
 #include "gwenhyfwar/logger.h"
 #include "ipc/ipc_p.h"
+#include "gwenhyfwar/crypt.h"
 
 
 static GWEN_LOGGER *gwen_default_logger=0;
@@ -78,6 +79,10 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_IPC_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
+    DBG_DEBUG(0, "Initializing Crypt module");
+    err=GWEN_Crypt_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
     //add here more modules
 
   }
@@ -100,6 +105,14 @@ GWEN_ERRORCODE GWEN_Fini() {
   gwen_is_initialized--;
   if (gwen_is_initialized==0) {
     //add here more modules
+    if (!GWEN_Error_IsOk(GWEN_Crypt_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(0, "GWEN__Fini: "
+                "Could not deinitialze module Crypt");
+    }
     if (!GWEN_Error_IsOk(GWEN_IPC_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,

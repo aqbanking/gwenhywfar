@@ -49,6 +49,9 @@ extern "C" {
 #define GWEN_CRYPT_ERROR_VERIFY             8
 
 
+  GWEN_ERRORCODE GWEN_Crypt_ModuleInit();
+  GWEN_ERRORCODE GWEN_Crypt_ModuleFini();
+
 
   /** @name Functions expected in implementation
    *
@@ -61,8 +64,9 @@ extern "C" {
   GWEN_ERRORCODE GWEN_CryptImpl_Init();
 
   /**
-   * This function is expected to unregister all it's crypto service
-   * providers. It is called when the GWEN_Crypt module is deinitialized.
+   * This function is called when the GWEN_Crypt module is deinitialized.
+   * It can be used to release allocated data. It MUST NOT unregister any
+   * crypt key type, this is done automatically.
    */
   GWEN_ERRORCODE GWEN_CryptImpl_Fini();
   /*@}*/
@@ -74,6 +78,7 @@ extern "C" {
    *
    */
   /*@{*/
+  typedef GWEN_CRYPTKEY* (*GWEN_CRYPTKEY_DUP_FN)(GWEN_CRYPTKEY *key);
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_ENCRYPT_FN)(GWEN_CRYPTKEY *key,
                                                      GWEN_BUFFER *src,
                                                      GWEN_BUFFER *dst);
@@ -111,8 +116,16 @@ extern "C" {
 
 
 
+  /**
+   * @internal
+   */
   GWEN_CRYPTKEY *GWEN_CryptKey_new();
+
+
+  GWEN_CRYPTKEY *GWEN_CryptKey_Factory(const char *t);
+
   void GWEN_CryptKey_free(GWEN_CRYPTKEY *key);
+  GWEN_CRYPTKEY *GWEN_CryptKey_dup(GWEN_CRYPTKEY *key);
 
   GWEN_ERRORCODE GWEN_CryptKey_Encrypt(GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
@@ -132,10 +145,10 @@ extern "C" {
 
   unsigned int GWEN_CryptKey_GetChunkSize(GWEN_CRYPTKEY *key);
 
-  GWEN_ERRORCODE GWEN_CryptKey_FromDB(GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
                                       GWEN_DB_NODE *db);
 
-  GWEN_ERRORCODE GWEN_CryptKey_ToDB(GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_ToDb(GWEN_CRYPTKEY *key,
                                     GWEN_DB_NODE *db,
                                     int pub);
 
@@ -149,6 +162,11 @@ extern "C" {
   const char *GWEN_CryptKey_GetKeyType(GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetKeyType(GWEN_CRYPTKEY *key,
                                 const char *s);
+
+  const char *GWEN_CryptKey_GetKeyName(GWEN_CRYPTKEY *key);
+  void GWEN_CryptKey_SetKeyName(GWEN_CRYPTKEY *key,
+                                const char *s);
+
   const char *GWEN_CryptKey_GetOwner(GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetOwner(GWEN_CRYPTKEY *key,
                               const char *s);
@@ -166,6 +184,10 @@ extern "C" {
   void GWEN_CryptKey_DecrementOpenCount(GWEN_CRYPTKEY *key);
 
 
+  /** @name Function Setter
+   *
+   */
+  /*@{*/
   void GWEN_CryptKey_SetEncryptFn(GWEN_CRYPTKEY *key,
                                   GWEN_CRYPTKEY_ENCRYPT_FN encryptFn);
   void GWEN_CryptKey_SetDecryptFn(GWEN_CRYPTKEY *key,
@@ -174,8 +196,8 @@ extern "C" {
                                GWEN_CRYPTKEY_SIGN_FN signFn);
   void GWEN_CryptKey_SetVerifyFn(GWEN_CRYPTKEY *key,
                                  GWEN_CRYPTKEY_VERIFY_FN verifyFn);
-  void GWEN_CryptKey_SetGetChunkSize(GWEN_CRYPTKEY *key,
-                                     GWEN_CRYPTKEY_GETCHUNKSIZE_FN getChunkSizeFn);
+  void GWEN_CryptKey_SetGetChunkSizeFn(GWEN_CRYPTKEY *key,
+                                       GWEN_CRYPTKEY_GETCHUNKSIZE_FN getChunkSizeFn);
   void GWEN_CryptKey_SetFromDbFn(GWEN_CRYPTKEY *key,
                                  GWEN_CRYPTKEY_FROMDB_FN fromDbFn);
   void GWEN_CryptKey_SetToDbFn(GWEN_CRYPTKEY *key,
@@ -185,10 +207,14 @@ extern "C" {
   void GWEN_CryptKey_SetFreeKeyDataFn(GWEN_CRYPTKEY *key,
                                       GWEN_CRYPTKEY_FREEKEYDATA_FN freeKeyDataFn);
 
-  void GWEN_CryptKey_SetOpenKeyFn(GWEN_CRYPTKEY *key,
-                                  GWEN_CRYPTKEY_OPEN_FN openKeyFn);
+  void GWEN_CryptKey_SetOpenFn(GWEN_CRYPTKEY *key,
+                               GWEN_CRYPTKEY_OPEN_FN openKeyFn);
   void GWEN_CryptKey_SetCloseFn(GWEN_CRYPTKEY *key,
                                 GWEN_CRYPTKEY_CLOSE_FN closeKeyFn);
+  void GWEN_CryptKey_SetDupFn(GWEN_CRYPTKEY *key,
+                              GWEN_CRYPTKEY_DUP_FN dupFn);
+  /*@}*/
+
 
 
 
@@ -199,17 +225,24 @@ extern "C" {
    * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
    */
 
-  typedef struct GWEN_CRYPT_PROVIDER GWEN_CRYPT_PROVIDER;
+  typedef struct GWEN_CRYPTKEY_PROVIDER GWEN_CRYPTKEY_PROVIDER;
 
   typedef GWEN_CRYPTKEY*
-    (*GWEN_CRYPTPROVIDER_NEWKEY_FN)(GWEN_CRYPT_PROVIDER *pr);
+    (*GWEN_CRYPTPROVIDER_NEWKEY_FN)(GWEN_CRYPTKEY_PROVIDER *pr);
 
-  GWEN_CRYPT_PROVIDER *GWEN_CryptProvider_new();
-  void GWEN_CryptProvider_SetNewKeyFn(GWEN_CRYPT_PROVIDER *pr,
+  GWEN_CRYPTKEY_PROVIDER *GWEN_CryptProvider_new();
+  void GWEN_CryptProvider_free(GWEN_CRYPTKEY_PROVIDER *pr);
+
+  void GWEN_CryptProvider_SetNewKeyFn(GWEN_CRYPTKEY_PROVIDER *pr,
                                       GWEN_CRYPTPROVIDER_NEWKEY_FN newKeyFn);
+  void GWEN_CryptProvider_SetName(GWEN_CRYPTKEY_PROVIDER *pr,
+                                  const char *name);
 
-  GWEN_ERRORCODE GWEN_Crypt_RegisterProvider(GWEN_CRYPT_PROVIDER *pr);
-  GWEN_ERRORCODE GWEN_Crypt_UnregisterProvider(GWEN_CRYPT_PROVIDER *pr);
+  /**
+   * On success this function takes over ownership of the given object.
+   */
+  GWEN_ERRORCODE GWEN_Crypt_RegisterProvider(GWEN_CRYPTKEY_PROVIDER *pr);
+  GWEN_ERRORCODE GWEN_Crypt_UnregisterProvider(GWEN_CRYPTKEY_PROVIDER *pr);
 
 
 #ifdef __cplusplus

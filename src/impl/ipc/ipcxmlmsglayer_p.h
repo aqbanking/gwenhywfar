@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Sep 16 2003
+    begin       : Sat Nov 08 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -26,46 +26,51 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CONNLAYER_P_H
-#define GWENHYFWAR_CONNLAYER_P_H
+#ifndef GWENHYFWAR_IPCXMLMSGLAYER_P_H
+#define GWENHYFWAR_IPCXMLMSGLAYER_P_H
 
-#define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
+#include "ipcxmlmsglayer.h"
+#include <gwenhyfwar/transportlayer.h>
+#include <gwenhyfwar/msglayer.h>
+#include <gwenhyfwar/msgengine.h>
+
+#define GWEN_IPCXMLMSGLAYER_MSGSIZE 512
 
 
-#include <gwenhyfwar/connlayer.h>
+/**
+ * This is the module specific data for the msgLayer.
+ */
+struct GWEN_IPCXMLMSGLAYERDATA {
+  GWEN_MSGENGINE *msgEngine; /* not owned ! */
+  GWEN_IPCMSG *currentMsg;
+  int readingSize; /* if !=0 then we are still reading the size */
+  unsigned int bytesToRead; /* bytes still to read */
 
-
-struct GWEN_IPCCONNLAYER {
-  GWEN_IPCCONNLAYER *next;
-
-  GWEN_IPCMSGLAYER *msgLayer;
-  GWEN_IPCCONNLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
-
-  unsigned int typ;
-  unsigned int userMark;
-  unsigned int libMark;
-  unsigned int flags;
-
-  char *info;
-  void *data;
-
-  GWEN_IPCCONNLAYER_FREE freeDataFn;
-  GWEN_IPCCONNLAYER_OPEN openFn;
-  GWEN_IPCCONNLAYER_CLOSE closeFn;
-  GWEN_IPCCONNLAYER_WORK workFn;
-  GWEN_IPCCONNLAYER_ACCEPT acceptFn;
 };
+GWEN_IPCXMLMSGLAYERDATA *GWEN_IPCXMLMsgLayerData_new(GWEN_MSGENGINE *msgEngine);
+void GWEN_IPCXMLMsgLayerData_free(GWEN_IPCXMLMSGLAYERDATA *mcd);
+
+GWEN_IPCMSGLAYER *GWEN_IPCXMLMsgLayer_new(GWEN_MSGENGINE *msgEngine,
+                                          GWEN_IPCTRANSPORTLAYER *tl,
+                                          GWEN_IPCMSGLAYER_STATE st);
+void GWEN_IPCXMLMsgLayer_free(GWEN_IPCMSGLAYER *ml);
+GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
+                                        int rd);
+GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Accept(GWEN_IPCMSGLAYER *ml,
+                                          GWEN_IPCTRANSPORTLAYER *tl,
+                                          GWEN_IPCMSGLAYER **m);
 
 
-#endif /* GWENHYFWAR_CONNLAYER_P_H */
 
 
 
+
+
+
+
+
+
+
+
+#endif
 

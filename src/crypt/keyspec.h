@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Sep 16 2003
+    begin       : Sat Nov 08 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -26,46 +26,51 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CONNLAYER_P_H
-#define GWENHYFWAR_CONNLAYER_P_H
-
-#define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
+#ifndef GWEN_KEYSPEC_H
+#define GWEN_KEYSPEC_H
 
 
-#include <gwenhyfwar/connlayer.h>
+
+typedef struct GWEN_KEYSPEC GWEN_KEYSPEC;
 
 
-struct GWEN_IPCCONNLAYER {
-  GWEN_IPCCONNLAYER *next;
+GWEN_KEYSPEC *GWEN_KeySpec_new();
+GWEN_KEYSPEC *GWEN_KeySpec_dup(GWEN_KEYSPEC *ks);
+void GWEN_KeySpec_free(GWEN_KEYSPEC *ks);
 
-  GWEN_IPCMSGLAYER *msgLayer;
-  GWEN_IPCCONNLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
+const char *GWEN_KeySpec_GetKeyType(GWEN_KEYSPEC *ks);
+void GWEN_KeySpec_SetKeyType(GWEN_KEYSPEC *ks,
+                                    const char *s);
 
-  unsigned int typ;
-  unsigned int userMark;
-  unsigned int libMark;
-  unsigned int flags;
+const char *GWEN_KeySpec_GetKeyName(GWEN_KEYSPEC *ks);
+void GWEN_KeySpec_SetKeyName(GWEN_KEYSPEC *ks,
+                                    const char *s);
 
-  char *info;
-  void *data;
+const char *GWEN_KeySpec_GetOwner(GWEN_KEYSPEC *ks);
+void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks,
+                                  const char *s);
 
-  GWEN_IPCCONNLAYER_FREE freeDataFn;
-  GWEN_IPCCONNLAYER_OPEN openFn;
-  GWEN_IPCCONNLAYER_CLOSE closeFn;
-  GWEN_IPCCONNLAYER_WORK workFn;
-  GWEN_IPCCONNLAYER_ACCEPT acceptFn;
-};
+unsigned int GWEN_KeySpec_GetNumber(GWEN_KEYSPEC *ks);
+void GWEN_KeySpec_SetNumber(GWEN_KEYSPEC *ks,
+                                   unsigned int i);
+
+unsigned int GWEN_KeySpec_GetVersion(GWEN_KEYSPEC *ks);
+void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
+                                    unsigned int i);
 
 
-#endif /* GWENHYFWAR_CONNLAYER_P_H */
+GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks);
+void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
+                             GWEN_KEYSPEC **head);
+void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
+                             GWEN_KEYSPEC **head);
+
+void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head);
 
 
+
+
+
+#endif /* GWEN_KEYSPEC_H */
 
 

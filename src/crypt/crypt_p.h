@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Tue Sep 16 2003
-    copyright   : (C) 2003 by Martin Preuss
-    email       : martin@libchipcard.de
+ -------------------
+ cvs         : $Id$
+ begin       : Thu Nov 06 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,46 +26,47 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CONNLAYER_P_H
-#define GWENHYFWAR_CONNLAYER_P_H
-
-#define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
+#ifndef GWENHYFWAR_CRYPT_P_H
+#define GWENHYFWAR_CRYPT_P_H
 
 
-#include <gwenhyfwar/connlayer.h>
+#include <gwenhyfwar/crypt.h>
 
 
-struct GWEN_IPCCONNLAYER {
-  GWEN_IPCCONNLAYER *next;
 
-  GWEN_IPCMSGLAYER *msgLayer;
-  GWEN_IPCCONNLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
+struct GWEN_CRYPTKEY {
+  char *keyType;
+  char *keyName;
+  char *owner;
+  unsigned int number;
+  unsigned int version;
+  void *keyData;
+  int openCount;
 
-  unsigned int typ;
-  unsigned int userMark;
-  unsigned int libMark;
-  unsigned int flags;
+  GWEN_CRYPTKEY_DUP_FN dupFn;
+  GWEN_CRYPTKEY_ENCRYPT_FN encryptFn;
+  GWEN_CRYPTKEY_DECRYPT_FN decryptFn;
+  GWEN_CRYPTKEY_SIGN_FN signFn;
+  GWEN_CRYPTKEY_VERIFY_FN verifyFn;
+  GWEN_CRYPTKEY_GETCHUNKSIZE_FN getChunkSizeFn;
+  GWEN_CRYPTKEY_FROMDB_FN fromDbFn;
+  GWEN_CRYPTKEY_TODB_FN toDbFn;
+  GWEN_CRYPTKEY_GENERATEKEY_FN generateKeyFn;
+  GWEN_CRYPTKEY_FREEKEYDATA_FN freeKeyDataFn;
+  GWEN_CRYPTKEY_OPEN_FN openFn;
+  GWEN_CRYPTKEY_CLOSE_FN closeFn;
 
-  char *info;
-  void *data;
-
-  GWEN_IPCCONNLAYER_FREE freeDataFn;
-  GWEN_IPCCONNLAYER_OPEN openFn;
-  GWEN_IPCCONNLAYER_CLOSE closeFn;
-  GWEN_IPCCONNLAYER_WORK workFn;
-  GWEN_IPCCONNLAYER_ACCEPT acceptFn;
 };
 
 
-#endif /* GWENHYFWAR_CONNLAYER_P_H */
+struct GWEN_CRYPTKEY_PROVIDER {
+  GWEN_CRYPTKEY_PROVIDER *next;
+  char *name;
+  GWEN_CRYPTPROVIDER_NEWKEY_FN newKeyFn;
+};
 
 
+
+#endif
 
 

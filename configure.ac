@@ -21,7 +21,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYFWAR_VERSION_MAJOR=0
 GWENHYFWAR_VERSION_MINOR=9
 GWENHYFWAR_VERSION_PATCHLEVEL=2
-GWENHYFWAR_VERSION_BUILD=0
+GWENHYFWAR_VERSION_BUILD=2
 GWENHYFWAR_VERSION_TAG="cvs"
 GWENHYFWAR_VERSION_FULL_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL.$GWENHYFWAR_VERSION_BUILD($GWENHYFWAR_VERSION_TAG)"
 GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
@@ -120,6 +120,7 @@ case "$OS_TYPE" in
         gwenhyfwar_libs="-L`eval echo $prefix` -lgwenhyfwar"
         gwenhyfwar_includes="-I`eval echo $prefix/include`"
         gwenhyfwar_os_lib="os/posix/libos.la"
+        IPCDATA_DIR="`eval echo $prefix`/share/gwenhywfar/ipc"
         GWEN_OS="posix"
     	;;
     windows)
@@ -127,6 +128,7 @@ case "$OS_TYPE" in
         gwenhyfwar_libs=-L`eval echo $prefix` -lgwenhyfwar
         gwenhyfwar_includes="-I`eval echo $prefix/include`"
         gwenhyfwar_os_lib="os/windows/libos.la"
+        IPCDATA_DIR="`eval echo $prefix`/share/gwenhywfar/ipc"
         GWEN_OS="posix"
     	;;
 esac
@@ -150,7 +152,7 @@ fi
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/ipc src/parser src/impl src/impl/ipc"
+GWEN_HEADER_DIRS="src src/base src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/ipc src/parser src/impl src/impl/ipc src/impl/msgengine"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
@@ -176,6 +178,7 @@ ln -s "${lprefix}/src/version.h" "gwenhyfwar/version.h"
 # substitute vars
 #
 AS_SCRUB_INCLUDE(gwenhyfwar_includes)
+AC_SUBST(IPCDATA_DIR)
 AC_SUBST(gwenhyfwar_includes)
 AC_SUBST(gwenhyfwar_libs)
 AC_SUBST(gwenhyfwar_needed_libs)
@@ -208,5 +211,7 @@ AC_CONFIG_FILES([Makefile
                  src/parser/Makefile
                  src/impl/Makefile
                  src/impl/ipc/Makefile
+                 src/impl/ipc/data/Makefile
+                 src/impl/msgengine/Makefile
                  test/Makefile])
 AC_OUTPUT

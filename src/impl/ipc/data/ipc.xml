@@ -77,7 +77,7 @@
 
 
  <SEGdef id="RQGreet" code="RQGREET" version="1"
-         delimiter="+" terminator="'" encrypt="0" >
+         delimiter="+" terminator="'" crypt="0" sign="0" >
    <GROUP type="SegHead" name="head" />
    <ELEM name="encrypt" type="num" maxsize="1" />
    <ELEM name="sign" type="num" maxsize="1" />
@@ -92,7 +92,7 @@
 
 
  <SEGdef id="RPGreet" code="RPGREET" version="1"
-         delimiter="+" terminator="'" encrypt="0" >
+         delimiter="+" terminator="'" crypt="0" sign="0" >
    <GROUP type="SegHead" name="head" />
    <ELEM name="encrypt" type="num" maxsize="1" />
    <ELEM name="sign" type="num" maxsize="1" />
@@ -106,8 +106,8 @@
  </SEGdef>
 
 
- <SEGdef id="RQGetPubKey" code="RQGetPubKey" version="1"
-         delimiter="+" terminator="'" encrypt="0" >
+ <SEGdef id="RQGetPK" code="RQGETPK" version="1"
+         delimiter="+" terminator="'" crypt="0" sign="0" >
    <GROUP type="SegHead" name="head" />
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -116,20 +116,8 @@
  </SEGdef>
 
 
- <SEGdef id="RPGetPubKey" code="RPGetPubKey" version="1"
-         delimiter="+" terminator="'" encrypt="0" >
-   <GROUP type="SegHead" name="head" />
-   <GROUP type="PubRSACryptKey" name="key" />
-
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-   </VALUES>
- </SEGdef>
-
-
- <SEGdef id="RQSetPubKey" code="RQSetPubKey" version="1"
-         delimiter="+" terminator="'" encrypt="0" >
+ <SEGdef id="RPGetPK" code="RPGETPK" version="1"
+         delimiter="+" terminator="'" crypt="0" sign="0" >
    <GROUP type="SegHead" name="head" />
    <GROUP type="PubRSACryptKey" name="key" />
 
@@ -140,8 +128,20 @@
  </SEGdef>
 
 
- <SEGdef id="RPSetPubKey" code="RPSetPubKey" version="1"
-         delimiter="+" terminator="'" encrypt="0" >
+ <SEGdef id="RQSetPK" code="RQSETPK" version="1"
+         delimiter="+" terminator="'" crypt="0" sign="0" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="PubRSACryptKey" name="key" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="RPSetPK" code="RPSETPK" version="1"
+         delimiter="+" terminator="'" crypt="0" sign="0" >
    <GROUP type="SegHead" name="head" />
    <ELEM name="result" type="num" />
 
@@ -162,31 +162,6 @@
      <VALUE path="head/version">%version</VALUE>
    </VALUES>
  </SEGdef>
-
-
- <SEGdef id="Ping" code="PING" version="1"
-         delimiter="+" terminator="'" >
-   <GROUP type="SegHead" name="head" />
-
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-   </VALUES>
- </SEGdef>
-
- <SEGdef code="PONG" version="1"
-         delimiter="+" terminator="'" >
-   <GROUP type="SegHead" name="head" />
-    <ELEM name="name" type="AN" maxsize="32"/>
-    <ELEM name="version" type="ascii" maxsize="8"/>
-    <ELEM name="info" type="ascii" maxsize="32" minnum="0" maxnum="16"/>
-
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-   </VALUES>
- </SEGdef>
-
 
 </SEGS>
 

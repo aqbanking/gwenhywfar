@@ -36,6 +36,7 @@
 #include <gwenhyfwar/ipc.h>
 #include <gwenhyfwar/debug.h>
 #include <gwenhyfwar/misc.h>
+#include <gwenhyfwar/crypt.h>
 
 #include <gwenhyfwar/text.h>
 
@@ -456,6 +457,24 @@ GWEN_ERRORCODE GWEN_MsgLayerCmd_Accept(GWEN_IPCMSGLAYER *ml,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCCONNLAYER *GWEN_ConnectionLayerCmd_new(GWEN_MSGENGINE *msgEngine,
                                                GWEN_IPCMSGLAYER *ml,
@@ -507,6 +526,20 @@ void GWEN_ConnectionLayerCmd_SetNameAndVersion(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayerCmd_SetLocalKey(GWEN_IPCCONNLAYER *cl,
+                                         GWEN_CRYPTKEY *localKey){
+  GWEN_IPCCONNLAYERCMDDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCCONNLAYERCMDDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  GWEN_CryptKey_free(ccd->localKey);
+  ccd->localKey=localKey;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCServiceCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
                                           const char *name,
                                           const char *version){
@@ -515,6 +548,16 @@ void GWEN_IPCServiceCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
   free(s->ownVersion);
   s->ownName=strdup(name);
   s->ownVersion=strdup(version);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_IPCServiceCmd_SetLocalKey(GWEN_IPCSERVICECMD *s,
+                                    GWEN_CRYPTKEY *localKey){
+  assert(s);
+  GWEN_CryptKey_free(s->localKey);
+  s->localKey=localKey;
 }
 
 
@@ -668,9 +711,51 @@ GWEN_ConnectionLayerCmd_OpenActive(GWEN_IPCCONNLAYER *cl){
              GWEN_ConnectionLayer_GetId(cl));
     mdb=GWEN_IPCCMD_ReceiveMsg(cl, "RPGetPK");
     if (mdb) {
+      GWEN_DB_NODE *gr;
+      const char *p;
+
       /* evaluate the msg */
 
-      /* TODO: get and store public key */
+      /* get and store public key */
+      gr=GWEN_DB_GetGroup(mdb,
+                          GWEN_DB_FLAGS_DEFAULT|GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                          "key");
+      if (!gr) {
+        DBG_ERROR(0, "No key data from server, bad message");
+        GWEN_DB_Dump(mdb, stderr, 1);
+        GWEN_DB_Group_free(mdb);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_BAD_MSG);
+      }
+      GWEN_CryptKey_free(ccd->remoteKey);
+      ccd->remoteKey=0;
+      p=GWEN_DB_GetCharValue(gr, "type", 0, 0);
+      if (!p) {
+        DBG_ERROR(0, "Key type not given, bad message");
+        GWEN_DB_Group_free(mdb);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_BAD_MSG);
+      }
+      ccd->remoteKey=GWEN_CryptKey_Factory(p);
+      if (!ccd->remoteKey) {
+        DBG_ERROR(0, "Unknown key type \"%s\"", p);
+        GWEN_DB_Group_free(mdb);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_BAD_MSG);
+      }
+      err=GWEN_CryptKey_FromDb(ccd->remoteKey, gr);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR(0, "Error on key type \"%s\"", p);
+        GWEN_DB_Dump(gr, stderr, 1);
+        GWEN_DB_Group_free(mdb);
+        return err;
+      }
 
       GWEN_DB_Group_free(mdb);
 
@@ -805,7 +890,6 @@ GWEN_ConnectionLayerCmd_OpenPassive(GWEN_IPCCONNLAYER *cl){
         fl&=~GWEN_IPCCONNLAYERCMD_FLAGS_MUST_SIGN;
       ccd->flags=fl;
 
-      /* request servers public key */
       err=GWEN_IPCCMD_SendGreetRP(cl, refid);
       if (!GWEN_Error_IsOk(err)) {
         DBG_INFO(0, "called from here");
@@ -827,7 +911,6 @@ GWEN_ConnectionLayerCmd_OpenPassive(GWEN_IPCCONNLAYER *cl){
   } /* if greeting */
 
   else if (ccd->securityState==GWEN_IPCCONNLAYERCMD_SECSTATE_PK1) {
-    /* awaiting greeting response */
     GWEN_DB_NODE *mdb;
 
     DBG_INFO(0, "Waiting for pubkey request on %d",
@@ -870,16 +953,60 @@ GWEN_ConnectionLayerCmd_OpenPassive(GWEN_IPCCONNLAYER *cl){
 
     DBG_INFO(0, "Waiting for sendpubkey on %d",
              GWEN_ConnectionLayer_GetId(cl));
-    mdb=GWEN_IPCCMD_ReceiveMsg(cl, "RQSendPK");
+    mdb=GWEN_IPCCMD_ReceiveMsg(cl, "RQSetPK");
     if (mdb) {
       /* evaluate the msg */
       unsigned int refid;
+      GWEN_DB_NODE *gr;
+      const char *p;
 
       refid=GWEN_DB_GetIntValue(mdb,
                                 "head/ref",
                                 0, 0);
       DBG_NOTICE(0, "Send request key from \"%s\" (%s)",
                  ccd->peerName, ccd->peerVersion);
+
+      /* get and store public key */
+      gr=GWEN_DB_GetGroup(mdb,
+                          GWEN_DB_FLAGS_DEFAULT|GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                          "key");
+      if (!gr) {
+        DBG_ERROR(0, "No key data from client, bad message");
+        GWEN_DB_Dump(mdb, stderr, 1);
+        GWEN_DB_Group_free(mdb);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_BAD_MSG);
+      }
+      GWEN_CryptKey_free(ccd->remoteKey);
+      ccd->remoteKey=0;
+      p=GWEN_DB_GetCharValue(gr, "type", 0, 0);
+      if (!p) {
+        DBG_ERROR(0, "Key type not given, bad message");
+        GWEN_DB_Group_free(mdb);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_BAD_MSG);
+      }
+      ccd->remoteKey=GWEN_CryptKey_Factory(p);
+      if (!ccd->remoteKey) {
+        DBG_ERROR(0, "Unknown key type \"%s\"", p);
+        GWEN_DB_Group_free(mdb);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_BAD_MSG);
+      }
+      err=GWEN_CryptKey_FromDb(ccd->remoteKey, gr);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR(0, "Error on key type \"%s\"", p);
+        GWEN_DB_Dump(gr, stderr, 1);
+        GWEN_DB_Group_free(mdb);
+        return err;
+      }
+
       GWEN_DB_Group_free(mdb);
 
       /* send response */
@@ -1432,6 +1559,9 @@ unsigned int GWEN_IPCServiceCmd_AddListener(GWEN_IPCSERVICECMD *s,
                                  ml,
                                  GWEN_IPCConnectionLayerStateListening);
   GWEN_ConnectionLayerCmd_SetNameAndVersion(cl, s->ownName, s->ownVersion);
+  if (s->localKey)
+    GWEN_ConnectionLayerCmd_SetLocalKey(cl, GWEN_CryptKey_dup(s->localKey));
+
   cid=GWEN_ConnectionLayer_GetId(cl);
   GWEN_ConnectionLayer_SetUserMark(cl, mark);
   err=GWEN_ServiceLayer_AddConnection(s->serviceLayer, cl);
@@ -1811,10 +1941,18 @@ GWEN_ERRORCODE GWEN_IPCCMD_SendGetPubKeyRP(GWEN_IPCCONNLAYER *cl,
   if (GWEN_MsgLayer_CheckAddOutgoingMsg(ml)) {
     GWEN_IPCMSG *msg;
     GWEN_DB_NODE *db;
+    GWEN_DB_NODE *kd;
 
     /* create msg */
-    /* TODO: set parameters */
     db=GWEN_DB_Group_new("params");
+    kd=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "key");
+    assert(ccd->localKey);
+    err=GWEN_CryptKey_ToDb(ccd->localKey, kd, 1);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO(0, "here");
+      GWEN_DB_Group_free(db);
+      return err;
+    }
     msg=GWEN_ConnectionLayerCmd_CreateMsg(cl, 0, "RPGetPubKey", 0, db);
     GWEN_DB_Group_free(db);
     if (!msg) {
@@ -1859,9 +1997,19 @@ GWEN_ERRORCODE GWEN_IPCCMD_SendSetPubKeyRQ(GWEN_IPCCONNLAYER *cl) {
   if (GWEN_MsgLayer_CheckAddOutgoingMsg(ml)) {
     GWEN_IPCMSG *msg;
     GWEN_DB_NODE *db;
+    GWEN_DB_NODE *kd;
 
     /* create msg */
     db=GWEN_DB_Group_new("params");
+    kd=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "key");
+    assert(ccd->localKey);
+    err=GWEN_CryptKey_ToDb(ccd->localKey, kd, 1);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO(0, "here");
+      GWEN_DB_Group_free(db);
+      return err;
+    }
+
     msg=GWEN_ConnectionLayerCmd_CreateMsg(cl, 0, "RQSetPubKey", 0, db);
     GWEN_DB_Group_free(db);
     if (!msg) {

@@ -128,6 +128,9 @@ void GWEN_ConnectionLayer_SetLibMark(GWEN_IPCCONNLAYER *cl,
                                      unsigned int i);
 const char *GWEN_ConnectionLayer_GetStateString(GWEN_IPCCONNLAYER_STATE st);
 
+unsigned int GWEN_ConnectionLayer_GetType(GWEN_IPCCONNLAYER *cl);
+void GWEN_ConnectionLayer_SetType(GWEN_IPCCONNLAYER *cl,
+                                  unsigned int i);
 
 
 

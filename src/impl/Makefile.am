@@ -1,2 +1,3 @@
-SUBDIRS=ipc
+SUBDIRS=ipc msgengine
+
 
