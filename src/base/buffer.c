@@ -382,7 +382,7 @@ int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf){
   assert(bf);
 
   if (bf->pos>=bf->bytesUsed) {
-    if (bf->mode & GWEN_BUFFER_MODE_ABORT_USE_BIO) {
+    if (bf->mode & GWEN_BUFFER_MODE_USE_BIO) {
       if (bf->bio) {
         unsigned int toread;
         GWEN_ERRORCODE gerr;

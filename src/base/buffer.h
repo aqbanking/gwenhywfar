@@ -63,7 +63,7 @@ extern "C" {
 
 #define GWEN_BUFFER_MODE_DYNAMIC          0x0001
 #define GWEN_BUFFER_MODE_ABORT_ON_MEMFULL 0x0002
-#define GWEN_BUFFER_MODE_ABORT_USE_BIO    0x0004
+#define GWEN_BUFFER_MODE_USE_BIO    0x0004
 
 #define GWEN_BUFFER_MODE_DEFAULT \
   (\
@@ -399,7 +399,7 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
  * This BIO is used when a byte is to be returned while the buffer is
  * empty (or the end of the buffer is reached). In such a case the missing
  * bytes are read from this BIO if the mode contains
- * @ref GWEN_BUFFER_MODE_ABORT_USE_BIO.
+ * @ref GWEN_BUFFER_MODE_USE_BIO.
  */
 GWENHYWFAR_API
 void GWEN_Buffer_SetSourceBIO(GWEN_BUFFER *bf,
