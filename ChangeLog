@@ -1,4 +1,13 @@
 
+2004/07/30: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base: added module PluginDescription. This module loads all XML files
+  from a directory and tries to extract plugin informations from them.
+  In future all my plugins will be shipped with such an XML file to allow
+  scanning for available plugins without the need to actually load the
+  plugins (with all the rat's tail that implies).
+
+
 2004/07/29: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/text: added GWEN_Text_CheckSimilarity() which checks how equal

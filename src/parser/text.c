@@ -1408,7 +1408,7 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign){
       lmatch=0;
       while(*t) {
         if (toupper(*s1)==toupper(*t)) {
-          lmatch==2;
+          lmatch=2;
           break;
         }
         if (isalnum(*s1) && isalnum(*t)) {
@@ -1435,11 +1435,11 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign){
       lmatch=0;
       while(*t) {
         if (*s1==*t) {
-          lmatch==2;
+          lmatch=2;
           break;
         }
         if (toupper(*s1)==toupper(*t)) {
-          lmatch==1;
+          lmatch=1;
           break;
         }
         if (isalnum(*s1) && isalnum(*t)) {
