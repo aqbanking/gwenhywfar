@@ -454,6 +454,20 @@ GWEN_ERRORCODE GWEN_CryptKey_Close(GWEN_CRYPTKEY *key){
 
 
 
+int GWEN_CryptKey_GetStatus(const GWEN_CRYPTKEY *key){
+  assert(key);
+  return GWEN_KeySpec_GetStatus(key->keyspec);
+}
+
+
+
+void GWEN_CryptKey_SetStatus(GWEN_CRYPTKEY *key, int i){
+  assert(key);
+  GWEN_KeySpec_SetStatus(key->keyspec, i);
+}
+
+
+
 const char *GWEN_CryptKey_GetKeyType(const GWEN_CRYPTKEY *key){
   assert(key);
   return GWEN_KeySpec_GetKeyType(key->keyspec);

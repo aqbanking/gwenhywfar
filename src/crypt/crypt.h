@@ -244,6 +244,17 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   const GWEN_KEYSPEC *GWEN_CryptKey_GetKeySpec(const GWEN_CRYPTKEY *key);
 
+/**
+ * Returns the status of the key. This property is not used by gwen, but it
+ * might be used by applications. Therefore the values of this property are
+ * defined by the application which uses it.
+ */
+GWENHYWFAR_API
+int GWEN_CryptKey_GetStatus(const GWEN_CRYPTKEY *key);
+GWENHYWFAR_API
+void GWEN_CryptKey_SetStatus(GWEN_CRYPTKEY *key, int i);
+
+
 GWENHYWFAR_API
   const char *GWEN_CryptKey_GetKeyType(const GWEN_CRYPTKEY *key);
 GWENHYWFAR_API

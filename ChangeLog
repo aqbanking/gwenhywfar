@@ -7,6 +7,7 @@
 - msgengine: Now values can be given directly within an ELEM tag
   (like in <ELEM name="xyz" type="bytes">DirectValue</ELEM>).
   Before this change this only worked with unnamed elements.
+- added status field to cryptkey
 
 
 2004-09-22   Christian Stimming <stimming@tuhh.de>
