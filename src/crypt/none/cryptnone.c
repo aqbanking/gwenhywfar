@@ -35,6 +35,7 @@
 #include "cryptnone_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/nettransportssl.h>
 
 
 GWEN_ERRORCODE GWEN_CryptImpl_Init(){
