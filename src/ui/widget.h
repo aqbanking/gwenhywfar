@@ -205,6 +205,9 @@ void GWEN_Widget_Unsubscribe(GWEN_WIDGET *w,
 int GWEN_Widget_GetPhysicalX(const GWEN_WIDGET *w);
 int GWEN_Widget_GetPhysicalY(const GWEN_WIDGET *w);
 
+GWEN_WIDGET *GWEN_Widget_FindByName(GWEN_WIDGET *w, const char *name);
+
+
 
 /** @name Debugging
  *

@@ -1,4 +1,9 @@
 
+2004/07/02: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- tools: added "dlgtest", a tool which allows testing a dialog.
+
+
 2004/07/01: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ui:
@@ -9,7 +14,7 @@
     modified by the user. It is now usable with Libchipcard2 ;-)
     See doc/testdialog.xml for an example. You can try this with the
     following gwentest-command (from within the "test" folder):
-    "#> gwentest ../doc/testdialog.xml"
+    "#> gwentest u20 ../doc/testdialog.xml"
     
 
 2004/06/30: Martin Preuss<martin@libchipcard.de>

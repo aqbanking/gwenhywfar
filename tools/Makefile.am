@@ -1,1 +1,1 @@
-SUBDIRS=xmlmerge
+SUBDIRS=xmlmerge @NCURSES_TOOLS@

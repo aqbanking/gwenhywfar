@@ -1576,6 +1576,30 @@ void GWEN_Widget_SetRunFn(GWEN_WIDGET *w, GWEN_WIDGET_RUN_FN f){
 
 
 
+GWEN_WIDGET *GWEN_Widget_FindByName(GWEN_WIDGET *w, const char *name) {
+  GWEN_WIDGET *subw;
+  GWEN_WIDGET *wFound;
+
+  assert(w);
+  assert(name);
+
+  if (w->name)
+    if (strcasecmp(w->name, name)==0)
+      return w;
+
+  subw=GWEN_Widget_List_First(w->children);
+  while(subw) {
+    wFound=GWEN_Widget_FindByName(subw, name);
+    if (wFound)
+      return wFound;
+    subw=GWEN_Widget_List_Next(subw);
+  } /* while */
+
+  return 0;
+}
+
+
+
 
 
 

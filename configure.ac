@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=11
-GWENHYWFAR_VERSION_BUILD=27
+GWENHYWFAR_VERSION_BUILD=28
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -248,7 +248,7 @@ if test "$USE_NCURSES" != "yes"; then
 else
   AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
   all_libraries="$all_libraries -lpanel -lncurses"
-  NCURSES_TOOLS=""
+  NCURSES_TOOLS="dlgtest"
 fi
 AC_SUBST(NCURSES_TOOLS)
 AC_SUBST(USE_NCURSES)
@@ -449,6 +449,7 @@ AC_CONFIG_FILES([Doxyfile
                  plugins/dbio/csv/Makefile
                  tools/Makefile
                  tools/xmlmerge/Makefile
+                 tools/dlgtest/Makefile
                  test/Makefile
 		])
 AC_OUTPUT
