@@ -23,10 +23,6 @@ Support for PalmOS is currently under development, is does not work for now !
 2.2. CFLAGS
 -----------
 
-The default setting for m68k-palmos-gcc is to use short integers.
-Gwenhywfar however uses normal integers, so you have to tell gcc about it:
-"-mnoshort"
-
 You can select the PalmOS version to use with
 "palmos3.5", "-palmos4.0" or "-palmos5.0".
 
