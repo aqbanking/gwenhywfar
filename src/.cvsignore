@@ -2,3 +2,6 @@ version.h
 ressource.rc
 types.h
 Makefile.palm
+gwenhywfar32.def
+gwenhywfar32.dll
+gwenhywfar32.lib
