@@ -16,3 +16,5 @@ distribution
 *.tar.gz
 apidoc
 Doxyfile
+Makefile.palm
+conf.uint32
