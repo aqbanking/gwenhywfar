@@ -145,14 +145,15 @@ extern "C" {
 #define GWEN_PATH_FLAGS_CHECKROOT               0x00000800
 
 /**
- *
+ * This flag is only used with @ref GWEN_Path_HandleWithIdx to disable
+ * index handling.
  */
-#define GWEN_PATH_FLAGS_RFU1                    0x00001000
+#define GWEN_PATH_FLAGS_NO_IDX                  0x00001000
 
 /**
  *
  */
-#define GWEN_PATH_FLAGS_RFU2                    0x00002000
+#define GWEN_PATH_FLAGS_RFU1                    0x00002000
 
 
 /**
@@ -180,8 +181,13 @@ extern "C" {
 
 
 typedef void* (*GWEN_PATHHANDLERPTR)(const char *entry,
-				       void *data,
-				       GWEN_TYPE_UINT32 flags);
+                                     void *data,
+                                     GWEN_TYPE_UINT32 flags);
+
+typedef void* (*GWEN_PATHIDXHANDLERPTR)(const char *entry,
+                                        void *data,
+                                        int idx,
+                                        GWEN_TYPE_UINT32 flags);
 
 
 /**
@@ -201,6 +207,12 @@ GWENHYWFAR_API
 			 void *data,
 			 GWEN_TYPE_UINT32 flags,
 			 GWEN_PATHHANDLERPTR elementFunction);
+
+GWENHYWFAR_API
+  void *GWEN_Path_HandleWithIdx(const char *path,
+				void *data,
+				GWEN_TYPE_UINT32 flags,
+				GWEN_PATHIDXHANDLERPTR elementFunction);
 
 
 /**

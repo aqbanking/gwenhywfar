@@ -261,12 +261,15 @@ Starting with version 1.0 the following versioning scheme is to be used:
     old one) the major version is incremented and the other version parts
     are reset to 0.
 
+Starting with version 1.4.2 the version numbers of released packages always 
+use three digits.
+
 Examples:
 - version 1.2.1 has the same SO_MAJOR as 1.2.2, so 1.2.2 can completely
   replace 1.2.1 and vice versa without any problems
-- version 1.3 is downward compatible to 1.2
-- version 1.4 as well
-- version 2.0 is incompatible with 1.x
+- version 1.3.0 is downward compatible to 1.2
+- version 1.4.0 as well
+- version 2.0.0 is incompatible with 1.x
 
 
 

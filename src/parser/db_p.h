@@ -170,14 +170,17 @@ void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n);
 
 void *GWEN_DB_HandlePath(const char *entry,
                          void *data,
+                         int idx,
                          GWEN_TYPE_UINT32 flags);
 
 
 GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
-                                const char *name);
+                                const char *name,
+                                int idx);
 
 GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
-                              const char *name);
+                              const char *name,
+                              int idx);
 
 
 GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
@@ -234,6 +237,7 @@ int GWEN_DB_HashMechanism_UnlinkNode(GWEN_DB_HASH_MECHANISM *hm,
 GWEN_DB_NODE *GWEN_DB_HashMechanism_GetNode(GWEN_DB_HASH_MECHANISM *hm,
                                             GWEN_DB_NODE *parent,
                                             const char *name,
+                                            int idx,
                                             void *hashData);
 
 

@@ -114,6 +114,69 @@ int testDB(int argc, char **argv) {
                          -1);
   fprintf(stderr," Retrieved int value 2 is: %d\n", rv);
 
+  GWEN_DB_Dump(cfg, stderr, 2);
+
+  fprintf(stderr,"Releasing DB\n");
+  GWEN_DB_Group_free(cfg);
+  return 0;
+}
+
+
+
+int testDB2(int argc, char **argv) {
+  GWEN_DB_NODE *cfg;
+  int rv;
+  const char *p;
+
+  fprintf(stderr,"Creating DB\n");
+  cfg=GWEN_DB_Group_new("Config");
+
+  fprintf(stderr, "Setting char values\n");
+  GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_CREATE_GROUP, "testgroup");
+  GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_CREATE_GROUP, "testgroup");
+
+  rv=GWEN_DB_SetCharValue(cfg,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "testgroup[1]/charvar",
+                          "charvalue1");
+  rv=GWEN_DB_SetCharValue(cfg,
+                          0,
+                          "testgroup[1]/charvar",
+                          "charvalue2");
+
+  fprintf(stderr, "Retrieving char values\n");
+  p=GWEN_DB_GetCharValue(cfg,
+                         "testgroup[1]/charvar", 0,
+                         "defaultValue");
+  fprintf(stderr," Retrieved value 1 is: %s\n", p);
+
+  p=GWEN_DB_GetCharValue(cfg,
+                         "testgroup[1]/charvar", 1,
+                         "defaultValue");
+  fprintf(stderr," Retrieved value 2 is: %s\n", p);
+
+  fprintf(stderr, "Setting int values\n");
+  rv=GWEN_DB_SetIntValue(cfg,
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "testgroup[1]/intvar",
+                         11);
+
+  rv=GWEN_DB_SetIntValue(cfg,
+                         0,
+                         "testgroup[1]/intvar",
+                         22);
+  fprintf(stderr, "Retrieving int values\n");
+  rv=GWEN_DB_GetIntValue(cfg,
+                         "testgroup[1]/intvar", 0,
+                         -1);
+  fprintf(stderr," Retrieved int value 1 is: %d\n", rv);
+
+  rv=GWEN_DB_GetIntValue(cfg,
+                         "testgroup[1]/intvar", 1,
+                         -1);
+  fprintf(stderr," Retrieved int value 2 is: %d\n", rv);
+
+  GWEN_DB_Dump(cfg, stderr, 2);
 
   fprintf(stderr,"Releasing DB\n");
   GWEN_DB_Group_free(cfg);
@@ -3992,6 +4055,8 @@ int main(int argc, char **argv) {
     rv=testDBfile(argc, argv);
   else if (strcasecmp(argv[1], "db")==0)
     rv=testDB(argc, argv);
+  else if (strcasecmp(argv[1], "db2")==0)
+    rv=testDB2(argc, argv);
   else if (strcasecmp(argv[1], "dbfile2")==0)
     rv=testDBfile2(argc, argv);
   else if (strcasecmp(argv[1], "list")==0)

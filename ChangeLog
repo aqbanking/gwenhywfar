@@ -1,4 +1,15 @@
 
+
+2005/01/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_Path_HandleWithIdx(), make GWEN_DB use this instead of
+  the old function.
+  This results in GWEN_DB_ being able to handle indices, like in
+  "root/group[2]/var[1]"
+- now version numbers always use three digits (except for CVS packages).
+  @Christian: You won ;-)
+
+
 2005/01/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - valgrind session, fixed memory leaks in:

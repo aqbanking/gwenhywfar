@@ -1096,6 +1096,7 @@ typedef int (*GWEN_DB_HASH_UNLINKNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
 typedef GWEN_DB_NODE* (*GWEN_DB_HASH_GETNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
                                                  GWEN_DB_NODE *parent,
                                                  const char *name,
+                                                 int idx,
                                                  void *hashData);
 
 GWENHYWFAR_API 
