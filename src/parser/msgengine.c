@@ -1386,12 +1386,11 @@ GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
 
   mode=GWEN_MsgEngine_GetMode(e);
   proto=GWEN_MsgEngine_GetProtocolVersion(e);
-  n=GWEN_XMLNode_GetChild(node);
 
   /* find type+"S" */
   strcpy(buffer, t);
   strcat(buffer,"S");
-  n=GWEN_XMLNode_FindFirstTag(n, buffer, 0, 0);
+  n=GWEN_XMLNode_FindFirstTag(node, buffer, 0, 0);
   if (!n) {
     DBG_DEBUG(GWEN_LOGDOMAIN,
 	      "No definitions here for type \"%s\"", t);
@@ -1497,6 +1496,10 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
       n=GWEN_XMLNode_GetParent(n);
     }
   }
+
+  /* try root as a last resort */
+  if (!nRes && e->defs)
+    nRes=GWEN_MsgEngine__GetGroup(e, e->defs, t, version, pvalue);
 
   if (!nRes) {
     DBG_DEBUG(GWEN_LOGDOMAIN,
