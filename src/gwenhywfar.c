@@ -59,6 +59,13 @@ GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
   if (gwen_is_initialized==0) {
+#ifdef ENABLE_NLS
+    setlocale(LC_ALL,"");
+    if (bindtextdomain("gwenhywfar",  LOCALEDIR)==0) {
+      fprintf(stderr," Error bindtextdomain()\n");
+    }
+#endif
+
     err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;

@@ -5,13 +5,13 @@ else
 gwenui_subdir = 
 endif
 
-SUBDIRS=admin doc m4 src gwenpp $(gwenui_subdir) plugins tools test
+SUBDIRS=admin doc m4 src gwenpp $(gwenui_subdir) plugins tools test po
 SUBDIRS_DIST=admin doc m4 src gwenpp gwenui plugins tools test
 
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST= \
+EXTRA_DIST= config.rpath  \
  AUTHORS \
  COPYING \
  ChangeLog \

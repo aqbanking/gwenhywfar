@@ -30,12 +30,29 @@
 # include <config.h>
 #endif
 
+/* Internationalization */
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# include <locale.h>
+# define I18N(m) dgettext("gwenhywfar", m)
+#else
+# define I18N(m) m
+#endif
+
+
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
 #include "error_p.h"
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"
+
+#include "gwenhywfar/inetsocket.h"
+#include "gwenhywfar/inetaddr.h"
+#include "gwenhywfar/bufferedio.h"
+#include "gwenhywfar/crypt.h"
+#include "gwenhywfar/libloader.h"
+
 
 /* forward declaration */
 const char *GWEN_Error_ErrorString(int c);
@@ -440,6 +457,235 @@ const char *GWEN_Error_ErrorString(int c) {
   } /* switch */
   return s;
 }
+
+
+
+int GWEN_Error_GetSimpleCode(GWEN_ERRORCODE c){
+  int code;
+  const char *t;
+  int r;
+
+  if (GWEN_Error_IsOk(c))
+    return GWEN_SUCCESS;
+
+  code=GWEN_Error_GetCode(c);
+  t=GWEN_Error_GetTypename(GWEN_Error_GetType(c));
+  r=GWEN_ERROR_GENERIC;
+
+  if (strcasecmp(t, GWEN_SOCKET_ERROR_TYPE)==0) {
+    switch(code) {
+    case GWEN_SOCKET_ERROR_BAD_SOCKETTYPE:
+      r=GWEN_ERROR_BAD_SOCKETTYPE; break;
+    case GWEN_SOCKET_ERROR_NOT_OPEN:
+      r=GWEN_ERROR_NOT_OPEN; break;
+    case GWEN_SOCKET_ERROR_TIMEOUT:
+      r=GWEN_ERROR_TIMEOUT; break;
+    case GWEN_SOCKET_ERROR_IN_PROGRESS:
+      r=GWEN_ERROR_IN_PROGRESS; break;
+    case GWEN_SOCKET_ERROR_STARTUP:
+      r=GWEN_ERROR_STARTUP; break;
+    case GWEN_SOCKET_ERROR_INTERRUPTED:
+      r=GWEN_ERROR_INTERRUPTED; break;
+    case GWEN_SOCKET_ERROR_UNSUPPORTED:
+      r=GWEN_ERROR_UNSUPPORTED; break;
+    case GWEN_SOCKET_ERROR_ABORTED:
+      r=GWEN_ERROR_ABORTED; break;
+    case GWEN_SOCKET_ERROR_BROKEN_PIPE:
+      r=GWEN_ERROR_BROKEN_PIPE; break;
+    default:
+      r=GWEN_ERROR_GENERIC;
+    }
+  }
+  else if (strcasecmp(t, GWEN_INETADDR_ERROR_TYPE)==0) {
+    switch(code) {
+    case GWEN_INETADDR_ERROR_MEMORY_FULL:
+      r=GWEN_ERROR_MEMORY_FULL; break;
+    case GWEN_INETADDR_ERROR_BAD_ADDRESS:
+      r=GWEN_ERROR_BAD_ADDRESS; break;
+    case GWEN_INETADDR_ERROR_BUFFER_OVERFLOW:
+      r=GWEN_ERROR_BUFFER_OVERFLOW; break;
+    case GWEN_INETADDR_ERROR_HOST_NOT_FOUND:
+      r=GWEN_ERROR_HOST_NOT_FOUND; break;
+    case GWEN_INETADDR_ERROR_NO_ADDRESS:
+      r=GWEN_ERROR_NO_ADDRESS; break;
+    case GWEN_INETADDR_ERROR_NO_RECOVERY:
+      r=GWEN_ERROR_NO_RECOVERY; break;
+    case GWEN_INETADDR_ERROR_TRY_AGAIN:
+      r=GWEN_ERROR_TRY_AGAIN; break;
+    case GWEN_INETADDR_ERROR_UNKNOWN_DNS_ERROR:
+      r=GWEN_ERROR_UNKNOWN_DNS_ERROR; break;
+    case GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY:
+      r=GWEN_ERROR_BAD_ADDRESS_FAMILY; break;
+    case GWEN_INETADDR_ERROR_UNSUPPORTED:
+      r=GWEN_ERROR_UNSUPPORTED; break;
+    default:
+      r=GWEN_ERROR_GENERIC;
+    }
+  }
+  else if (strcasecmp(t, GWEN_LIBLOADER_ERROR_TYPE)==0) {
+    switch(code) {
+    case GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD:
+      r=GWEN_ERROR_COULD_NOT_LOAD; break;
+    case GWEN_LIBLOADER_ERROR_NOT_OPEN:
+      r=GWEN_ERROR_NOT_OPEN; break;
+    case GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE:
+      r=GWEN_ERROR_CLOSE; break;
+    case GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE:
+      r=GWEN_ERROR_COULD_NOT_RESOLVE; break;
+    case GWEN_LIBLOADER_ERROR_NOT_FOUND:
+      r=GWEN_ERROR_NOT_FOUND; break;
+    default:
+      r=GWEN_ERROR_GENERIC;
+    }
+  }
+  else if (strcasecmp(t, GWEN_BUFFEREDIO_ERROR_TYPE)==0) {
+    switch(code) {
+    case GWEN_BUFFEREDIO_ERROR_READ:
+      r=GWEN_ERROR_READ; break;
+    case GWEN_BUFFEREDIO_ERROR_WRITE:
+      r=GWEN_ERROR_WRITE; break;
+    case GWEN_BUFFEREDIO_ERROR_CLOSE:
+      r=GWEN_BUFFEREDIO_ERROR_CLOSE; break;
+    case GWEN_BUFFEREDIO_ERROR_TIMEOUT:
+      r=GWEN_ERROR_TIMEOUT; break;
+    case GWEN_BUFFEREDIO_ERROR_PARTIAL:
+      r=GWEN_ERROR_PARTIAL; break;
+    case GWEN_BUFFEREDIO_ERROR_EOF:
+      r=GWEN_ERROR_EOF; break;
+    case GWEN_BUFFEREDIO_ERROR_NO_DATA:
+      r=GWEN_ERROR_NO_DATA; break;
+    default:
+      r=GWEN_ERROR_GENERIC;
+    }
+  }
+  else if (strcasecmp(t, GWEN_CRYPT_ERROR_TYPE)==0) {
+    switch(code) {
+    case GWEN_CRYPT_ERROR_ALREADY_REGISTERED:
+      r=GWEN_ERROR_ALREADY_REGISTERED; break;
+    case GWEN_CRYPT_ERROR_NOT_REGISTERED:
+      r=GWEN_ERROR_NOT_REGISTERED; break;
+    case GWEN_CRYPT_ERROR_BAD_SIZE:
+      r=GWEN_ERROR_BAD_SIZE; break;
+    case GWEN_CRYPT_ERROR_BUFFER_FULL:
+      r=GWEN_ERROR_BUFFER_OVERFLOW; break;
+    case GWEN_CRYPT_ERROR_ENCRYPT:
+      r=GWEN_ERROR_ENCRYPT; break;
+    case GWEN_CRYPT_ERROR_DECRYPT:
+      r=GWEN_ERROR_DECRYPT; break;
+    case GWEN_CRYPT_ERROR_SIGN:
+      r=GWEN_ERROR_SIGN; break;
+    case GWEN_CRYPT_ERROR_VERIFY:
+      r=GWEN_ERROR_VERIFY; break;
+    case GWEN_CRYPT_ERROR_UNSUPPORTED:
+      r=GWEN_ERROR_UNSUPPORTED; break;
+    case GWEN_CRYPT_ERROR_SSL:
+      r=GWEN_ERROR_SSL; break;
+    case GWEN_CRYPT_ERROR_GENERIC:
+    default:
+      r=GWEN_ERROR_GENERIC;
+    }
+  }
+
+  return r;
+}
+
+
+
+const char *GWEN_Error_SimpleToString(int i){
+  const char *s;
+
+  switch(i) {
+  case GWEN_SUCCESS:
+    s=I18N("Ok"); break;
+  case GWEN_ERROR_GENERIC:
+    s=I18N("Generic error"); break;
+  case GWEN_ERROR_ABORTED:
+    s=I18N("Aborted"); break;
+  case GWEN_ERROR_NOT_AVAILABLE:
+    s=I18N("Not available"); break;
+  case GWEN_ERROR_BAD_SOCKETTYPE:
+    s=I18N("Bad socket type"); break;
+  case GWEN_ERROR_NOT_OPEN:
+    s=I18N("Not open"); break;
+  case GWEN_ERROR_TIMEOUT:
+    s=I18N("Timeout"); break;
+  case GWEN_ERROR_IN_PROGRESS:
+    s=I18N("In Progress"); break;
+  case GWEN_ERROR_STARTUP:
+    s=I18N("Startup error"); break;
+  case GWEN_ERROR_INTERRUPTED:
+    s=I18N("Interrupted system call"); break;
+  case GWEN_ERROR_UNSUPPORTED:
+    s=I18N("Unsupported"); break;
+  case GWEN_ERROR_BROKEN_PIPE:
+    s=I18N("Broken pipe"); break;
+  case GWEN_ERROR_MEMORY_FULL:
+    s=I18N("Memory full"); break;
+  case GWEN_ERROR_BAD_ADDRESS:
+    s=I18N("Bad address"); break;
+  case GWEN_ERROR_BUFFER_OVERFLOW:
+    s=I18N("Buffer overflow"); break;
+  case GWEN_ERROR_HOST_NOT_FOUND:
+    s=I18N("Host not found"); break;
+  case GWEN_ERROR_NO_ADDRESS:
+    s=I18N("No address"); break;
+  case GWEN_ERROR_NO_RECOVERY:
+    s=I18N("No recovery"); break;
+  case GWEN_ERROR_TRY_AGAIN:
+    s=I18N("Try again"); break;
+  case GWEN_ERROR_UNKNOWN_DNS_ERROR:
+    s=I18N("Unknown DNS error"); break;
+  case GWEN_ERROR_BAD_ADDRESS_FAMILY:
+    s=I18N("Bad address family"); break;
+  case GWEN_ERROR_COULD_NOT_LOAD:
+    s=I18N("Could not load"); break;
+  case GWEN_ERROR_COULD_NOT_RESOLVE:
+    s=I18N("Could not resolve a symbol"); break;
+  case GWEN_ERROR_NOT_FOUND:
+    s=I18N("Not found"); break;
+  case GWEN_ERROR_READ:
+    s=I18N("Could not read"); break;
+  case GWEN_ERROR_WRITE:
+    s=I18N("Could not write"); break;
+  case GWEN_ERROR_CLOSE:
+    s=I18N("Could not close"); break;
+  case GWEN_ERROR_NO_DATA:
+    s=I18N("No data"); break;
+  case GWEN_ERROR_PARTIAL:
+    s=I18N("Partial data"); break;
+  case GWEN_ERROR_EOF:
+    s=I18N("EOF met"); break;
+  case GWEN_ERROR_ALREADY_REGISTERED:
+    s=I18N("Already registered"); break;
+  case GWEN_ERROR_NOT_REGISTERED:
+    s=I18N("Not registered"); break;
+  case GWEN_ERROR_BAD_SIZE:
+    s=I18N("Bad size"); break;
+  case GWEN_ERROR_ENCRYPT:
+    s=I18N("Could not encrypt"); break;
+  case GWEN_ERROR_DECRYPT:
+    s=I18N("Could not decrypt"); break;
+  case GWEN_ERROR_SIGN:
+    s=I18N("Could not sign"); break;
+  case GWEN_ERROR_VERIFY:
+    s=I18N("Could not verify"); break;
+  case GWEN_ERROR_SSL:
+    s=I18N("Generic SSL error"); break;
+  default:
+    s="Unknown error";
+  }
+
+  return s;
+}
+
+
+
+
+
+
+
+
+
 
 
 

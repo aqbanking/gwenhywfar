@@ -15,6 +15,7 @@ cvsclean::
 
 all:
 	libtoolize -f --automake $(COPY)
+	autopoint -f
 	aclocal -I ./m4
 	autoheader
 	automake -f --add-missing $(COPY)
@@ -27,6 +28,7 @@ local: all
 
 mp:
 	libtoolize -f --automake
+	autopoint -f
 	aclocal -I ./m4
 	autoheader
 	automake --add-missing
@@ -41,6 +43,7 @@ mp-w32:
 
 mp-tu:
 	libtoolize -f --automake
+	autopoint -f
 	aclocal -I ./m4
 	autoheader
 	automake --add-missing

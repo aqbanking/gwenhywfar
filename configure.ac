@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=14
-GWENHYWFAR_VERSION_BUILD=5
+GWENHYWFAR_VERSION_BUILD=7
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -324,6 +324,14 @@ AC_SUBST(USE_NCURSES)
 AM_CONDITIONAL(USE_NCURSES, [test "$USE_NCURSES" = "yes"])
 
 
+
+###-------------------------------------------------------------------------
+# check for gettext
+#
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION(0.14.1)
+
+
 ###-------------------------------------------------------------------------
 #
 # create header directory, make symlinks
@@ -530,7 +538,7 @@ AC_SUBST(all_libraries)
 #
 # list of files to create
 #
-AC_CONFIG_FILES([Doxyfile
+AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  Makefile
                  admin/Makefile
                  m4/Makefile

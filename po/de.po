@@ -1,0 +1,184 @@
+# Translations for Gwenhywfar.
+# Copyright (C) YEAR Martin Preuss<martin@libchipcard.de>
+# This file is distributed under the same license as the Gwenhywfar package.
+# Martin Preuss <martin@libchipcard.de>, 2004.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Gwenhywfar\n"
+"Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
+"POT-Creation-Date: 2004-08-20 22:06+0200\n"
+"PO-Revision-Date: 2004-08-20 22:06+0200\n"
+"Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
+"Language-Team: DE <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/base/error.c:599
+msgid "Ok"
+msgstr ""
+
+#: src/base/error.c:601
+msgid "Generic error"
+msgstr ""
+
+#: src/base/error.c:603
+msgid "Aborted"
+msgstr ""
+
+#: src/base/error.c:605
+msgid "Not available"
+msgstr ""
+
+#: src/base/error.c:607
+msgid "Bad socket type"
+msgstr ""
+
+#: src/base/error.c:609
+msgid "Not open"
+msgstr ""
+
+#: src/base/error.c:611
+msgid "Timeout"
+msgstr ""
+
+#: src/base/error.c:613
+msgid "In Progress"
+msgstr ""
+
+#: src/base/error.c:615
+msgid "Startup error"
+msgstr ""
+
+#: src/base/error.c:617
+msgid "Interrupted system call"
+msgstr ""
+
+#: src/base/error.c:619
+msgid "Unsupported"
+msgstr ""
+
+#: src/base/error.c:621
+msgid "Broken pipe"
+msgstr ""
+
+#: src/base/error.c:623
+msgid "Memory full"
+msgstr ""
+
+#: src/base/error.c:625
+msgid "Bad address"
+msgstr ""
+
+#: src/base/error.c:627
+msgid "Buffer overflow"
+msgstr ""
+
+#: src/base/error.c:629
+msgid "Host not found"
+msgstr ""
+
+#: src/base/error.c:631
+msgid "No address"
+msgstr ""
+
+#: src/base/error.c:633
+msgid "No recovery"
+msgstr ""
+
+#: src/base/error.c:635
+msgid "Try again"
+msgstr ""
+
+#: src/base/error.c:637
+msgid "Unknown DNS error"
+msgstr ""
+
+#: src/base/error.c:639
+msgid "Bad address family"
+msgstr ""
+
+#: src/base/error.c:641
+msgid "Could not load"
+msgstr ""
+
+#: src/base/error.c:643
+msgid "Could not resolve a symbol"
+msgstr ""
+
+#: src/base/error.c:645
+msgid "Not found"
+msgstr ""
+
+#: src/base/error.c:647
+msgid "Could not read"
+msgstr ""
+
+#: src/base/error.c:649
+msgid "Could not write"
+msgstr ""
+
+#: src/base/error.c:651
+msgid "Could not close"
+msgstr ""
+
+#: src/base/error.c:653
+msgid "No data"
+msgstr ""
+
+#: src/base/error.c:655
+msgid "Partial data"
+msgstr ""
+
+#: src/base/error.c:657
+msgid "EOF met"
+msgstr ""
+
+#: src/base/error.c:659
+msgid "Already registered"
+msgstr ""
+
+#: src/base/error.c:661
+msgid "Not registered"
+msgstr ""
+
+#: src/base/error.c:663
+msgid "Bad size"
+msgstr ""
+
+#: src/base/error.c:665
+msgid "Could not encrypt"
+msgstr ""
+
+#: src/base/error.c:667
+msgid "Could not decrypt"
+msgstr ""
+
+#: src/base/error.c:669
+msgid "Could not sign"
+msgstr ""
+
+#: src/base/error.c:671
+msgid "Could not verify"
+msgstr ""
+
+#: src/base/error.c:673
+msgid "Generic SSL error"
+msgstr ""
+
+#: tools/xmlmerge/args.c:130
+#, c-format
+msgid "Unknown log type \"%s\"\n"
+msgstr ""
+
+#: tools/xmlmerge/args.c:142
+#, c-format
+msgid "Unknown log level \"%s\"\n"
+msgstr ""
+
+#: tools/xmlmerge/args.c:170
+#, c-format
+msgid "Unknown option \"%s\"\n"
+msgstr ""

@@ -28,7 +28,7 @@
 
 
 #ifndef GWENHYWFAR_PROCESS_H
-#define GWENHYWFAR_PROCESS_H "$Id$"
+#define GWENHYWFAR_PROCESS_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>

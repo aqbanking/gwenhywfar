@@ -8,6 +8,7 @@
   The first argument of all GWEN_Logger functions has been changed.
   However, in most cases a NULL was given, so you should simply need to
   recompile your sources with no (or at most few) changes.
+- prepared gwen for gettext
 
 
 2004-08-18   Christian Stimming <stimming@tuhh.de>
