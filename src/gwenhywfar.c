@@ -34,7 +34,7 @@
 #include <gwenhywfar/gwenhywfar.h>
 
 #include "base/debug.h"
-#include "base/logger.h"
+#include "base/logger_l.h"
 
 #include "base/error_l.h"
 #include "base/memory_l.h"
@@ -52,7 +52,6 @@
 
 
 
-static GWEN_LOGGER *gwen_default_logger=0;
 static unsigned int gwen_is_initialized=0;
 
 
@@ -60,15 +59,14 @@ GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
   if (gwen_is_initialized==0) {
-    /* setup default logger */
-    gwen_default_logger=GWEN_Logger_new();
-    GWEN_Logger_SetDefaultLogger(gwen_default_logger);
-    GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
-
     DBG_DEBUG(0, "Initializing Error module");
     GWEN_Error_ModuleInit();
     DBG_DEBUG(0, "Initializing Memory module");
     err=GWEN_Memory_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    DBG_DEBUG(0, "Initializing Logger module");
+    err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     DBG_DEBUG(0, "Initializing InetAddr module");
@@ -107,7 +105,7 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_WaitCallback_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    /* add here more modules */
+    /* add more modules here */
 
   }
   gwen_is_initialized++;
@@ -128,7 +126,7 @@ GWEN_ERRORCODE GWEN_Fini() {
 
   gwen_is_initialized--;
   if (gwen_is_initialized==0) {
-    /* add here more modules */
+    /* add more modules here */
     if (!GWEN_Error_IsOk(GWEN_WaitCallback_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,
@@ -201,6 +199,14 @@ GWEN_ERRORCODE GWEN_Fini() {
       DBG_ERROR(0, "GWEN_Fini: "
                 "Could not deinitialze module InetAddr");
     }
+    if (!GWEN_Error_IsOk(GWEN_Logger_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                       GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(0, "GWEN_Fini: "
+                "Could not deinitialze module Logger");
+    }
 
     /* must be deinitialized at last */
     if (!GWEN_Error_IsOk(GWEN_Memory_ModuleFini())) {
@@ -212,8 +218,6 @@ GWEN_ERRORCODE GWEN_Fini() {
                 "Could not deinitialze module Memory");
     }
     GWEN_Error_ModuleFini();
-    GWEN_Logger_SetDefaultLogger(0);
-    GWEN_Logger_free(gwen_default_logger);
   }
   return err;
 }

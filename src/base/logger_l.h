@@ -25,57 +25,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_LOGGER_P_H
-#define GWEN_LOGGER_P_H
+#ifndef GWEN_LOGGER_L_H
+#define GWEN_LOGGER_L_H
 
-#include "logger_l.h"
-#include <gwenhywfar/buffer.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <gwenhywfar/logger.h>
 
 
-struct GWEN_LOGGER {
-  GWEN_LOGGER *next;
-  int enabled;
-  GWEN_LOGGER_LOGTYPE logType;
-  char *logFile;
-  char *logIdent;
-  GWEN_LOGGER_LEVEL logLevel;
-  GWEN_LOGGERFUNCTIONLOG logFunction;
-  GWEN_TYPE_UINT32 usage;
-};
+GWEN_ERRORCODE GWEN_Logger_ModuleInit();
+GWEN_ERRORCODE GWEN_Logger_ModuleFini();
 
 
-typedef struct GWEN_LOGGER_DOMAIN GWEN_LOGGER_DOMAIN;
-struct GWEN_LOGGER_DOMAIN {
-  GWEN_LOGGER_DOMAIN *next;
-  char *name;
-  GWEN_LOGGER *logger;
-};
-GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_new(const char *name);
-void GWEN_LoggerDomain_free(GWEN_LOGGER_DOMAIN *ld);
-GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_Find(const char *name);
-void GWEN_LoggerDomain_Add(GWEN_LOGGER_DOMAIN *ld);
-void GWEN_LoggerDomain_Del(GWEN_LOGGER_DOMAIN *ld);
-GWEN_LOGGER *GWEN_LoggerDomain_GetLogger(const char *name);
-
-
-int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
-                               GWEN_LOGGER_LEVEL priority, const char *s,
-                               GWEN_BUFFER *mbuf);
-
-int GWEN_Logger__Log(GWEN_LOGGER *lg,
-                     GWEN_LOGGER_LEVEL priority, const char *s);
-
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* #ifndef GWEN_LOGGER_P_H */
-
-
+#endif /* GWEN_LOGGER_L_H */

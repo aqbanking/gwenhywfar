@@ -53,6 +53,32 @@ static GWEN_LOGGER *gwen_logger=0;
 static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
 
 
+
+GWEN_ERRORCODE GWEN_Logger_ModuleInit(){
+  gwen_loggerdomains=GWEN_LoggerDomain_new(GWEN_LOGDOMAIN);
+  gwen_logger=GWEN_Logger_new();
+  gwen_loggerdomains->logger=gwen_logger;
+  GWEN_Logger_Open(GWEN_LOGDOMAIN,
+                   "gwen",
+                   0,
+                   GWEN_LoggerTypeConsole,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelWarning);
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_Logger_ModuleFini(){
+  while(gwen_loggerdomains) {
+    GWEN_LoggerDomain_Del(gwen_loggerdomains);
+    GWEN_LoggerDomain_free(gwen_loggerdomains);
+  }
+  return 0;
+}
+
+
+
 GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_new(const char *name){
   GWEN_LOGGER_DOMAIN *ld;
 

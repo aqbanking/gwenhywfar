@@ -23,6 +23,7 @@ noinst_HEADERS=\
  idlist_p.h \
  inherit_p.h \
  list_p.h \
+ logger_l.h \
  logger_p.h \
  memory_l.h \
  memory_p.h \
