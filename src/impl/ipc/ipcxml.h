@@ -719,13 +719,21 @@ GWEN_ERRORCODE GWEN_IPCXMLService_DelContext(GWEN_IPCXMLSERVICE *xs,
                                              GWEN_SECCTX *ctx);
 
 /**
- *
+ * Returns the current connection flags.
+ * See @ref GWEN_IPCCONNLAYER_FLAGS_PERSISTENT and others for details.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
  */
 unsigned int GWEN_IPCXMLService_GetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
                                                    unsigned int clid);
 
 /**
- *
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param flags see
+ *  @ref GWEN_IPCCONNLAYER_FLAGS_PERSISTENT and others for details.
  */
 void GWEN_IPCXMLService_SetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
                                            unsigned int clid,
@@ -737,25 +745,86 @@ void GWEN_IPCXMLService_SetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
 
 /** @name Session Management
  *
+ * <p>
+ * The functions of this group are used internally.
+ * However, since they are used from inside the file <i>ipcxmlcmd.c</i>
+ * they are defined here. You should NOT consider theses functions part of the
+ * API, maybe I will move them around later.
+ * </p>
+ * <p>
+ * A session is defined by the combination of the local id and the remote id.
+ * The local id is the id assigned to a connection. The remote id is the id of
+ * a server we connect to or a client which connects to us.
+ * </p>
+ * <p>
+ * Managing sessions is in most cases only done by the server which wants to
+ * keep track of connected users.
+ * </p>
+ * <p>
+ * The session management implemented by IPCXML makes sure that a given
+ * context can only occur at most once. If another client tries to open
+ * a session using an id which is already in use it will not succeed.
+ * </p>
+ * <p>
+ * A session is created upon receiption of the command <i>OpenSession</i>
+ * and destroyed when the connection to the client is lost.
+ * </p>
  */
 /*@{*/
+/**
+ * Checks whether there already is a session with the given ids.
+ * @return 0 if there is no such session, !=0 if there is
+ * @param xs Pointer to the service to use
+ * @param lname local name
+ * @param rname remote name
+ */
 int GWEN_IPCXMLService_HasSession(GWEN_IPCXMLSERVICE *xs,
                                   const char *lname,
                                   const char *rname);
+
+/**
+ * Adds a session using the given ids. If the session could not be
+ * added (mostly because it is already in use) 0 is returned.
+ * Otherwise the session id is returned which can be used with
+ *   @ref GWEN_IPCXMLService_DelSession to destroy the session.
+ * @param xs Pointer to the service to use
+ * @param lname local name
+ * @param rname remote name
+ */
 unsigned int GWEN_IPCXMLService_AddSession(GWEN_IPCXMLSERVICE *xs,
                                            const char *lname,
                                            const char *rname);
+
+/**
+ * Destroys a session.
+ * @return 0 if ok, !=0 on error
+ * @param xs Pointer to the service to use
+ * @param sid id of the session to delete
+ */
 int GWEN_IPCXMLService_DelSession(GWEN_IPCXMLSERVICE *xs,
-                                  unsigned int id);
+                                  unsigned int sid);
 
-
-unsigned int GWEN_IPCXMLService_GetSessionId(GWEN_IPCXMLSERVICE *xs,
-                                             unsigned int clid);
-
+/**
+ * Stores a session id with a connection. This is used when the connection
+ * is lost to also destroy the session associated with the connection.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param sid session id to store (0 means <i>no session</i>)
+ */
 void GWEN_IPCXMLService_SetSessionId(GWEN_IPCXMLSERVICE *xs,
                                      unsigned int clid,
                                      unsigned int sid);
 
+/**
+ * Returns the session id associated with the given connection.
+ * If there is none (or the connection does not exists) 0 will be returned.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ */
+unsigned int GWEN_IPCXMLService_GetSessionId(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid);
 
 
 /*@}*/
