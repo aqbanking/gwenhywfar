@@ -293,6 +293,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   GWEN_BUFFER *lbuffer;
   char delimiters[2];
   int lines;
+  int ignoreLines;
 
   assert(dbio);
   assert(bio);
@@ -317,6 +318,9 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   quote=GWEN_DB_GetIntValue(cfg, "quote", 0, 1);
   groupName=GWEN_DB_GetCharValue(cfg, "group", 0, "line");
   title=GWEN_DB_GetIntValue(cfg, "title", 0, 1);
+  ignoreLines=GWEN_DB_GetIntValue(cfg, "ignoreLines", 0, 0);
+  if (title)
+    ignoreLines++;
 
   sl=GWEN_StringList_new();
   lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
@@ -341,10 +345,13 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
       return -1;
     }
 
-    if (lines || !title) {
+    if (lines<ignoreLines){
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Ignoring line %d", lines);
+    }
+    else {
       /* read columns */
       wbuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  
+
       s=GWEN_Buffer_GetStart(lbuffer);
       while(*s) {
         rv=GWEN_Text_GetWordToBuffer(s, delimiters, wbuffer,
