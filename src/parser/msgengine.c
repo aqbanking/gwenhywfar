@@ -3098,6 +3098,8 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       unsigned int ustart;
 
       ustart=GWEN_Buffer_GetPos(mbuf);
+      ustart++; // skip delimiter
+
       /* node not found, skip it */
       DBG_NOTICE(0,
 		 "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
@@ -3113,8 +3115,8 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
         unsigned int usize;
 
-	usize=GWEN_Buffer_GetPos(mbuf)-(ustart+1)-1;
-	GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart+1,
+	usize=GWEN_Buffer_GetPos(mbuf)-ustart-1;
+	GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart,
 			     usize,
 			     stderr, 1);
         if (GWEN_MsgEngine_AddTrustInfo(e,

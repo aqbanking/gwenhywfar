@@ -2,6 +2,8 @@
 
 	* src/parser/db.c: don't stop reading values on space
 
+	* src/parser/msgengine.c: fix offset for anonymizing unknown segments
+
 2004-02-24  Christian Stimming <stimming@tuhh.de>
 
 	* src/os/windows/libloader.c: Improve error message output.
