@@ -170,6 +170,7 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
 
 
 const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);
+void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname);
 
 
 void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);

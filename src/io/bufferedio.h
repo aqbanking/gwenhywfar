@@ -32,6 +32,7 @@
 #include <gwenhyfwar/gwenhyfwarapi.h>
 #include <gwenhyfwar/error.h>
 #include <gwenhyfwar/inetsocket.h>
+#include <gwenhyfwar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,7 +60,8 @@ typedef enum {
 typedef enum {
   GWEN_BufferedIOTypeNone=0,
   GWEN_BufferedIOTypeFile,
-  GWEN_BufferedIOTypeSocket
+  GWEN_BufferedIOTypeSocket,
+  GWEN_BufferedIOTypeBuffer
 } GWEN_BUFFEREDIOTYPE;
 
 
@@ -307,6 +309,24 @@ GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
 GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock);
+
+
+
+/*_________________________________________________________________________
+ *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                           Buffer Module
+ *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+
+/**
+ * Create a buffered IO context using a GWEN_BUFFER.
+ * This function takes over ownership for that buffer !
+ * This context can be free'd using @ref GWEN_BufferedIO_free.
+ */
+GWENHYFWAR_API
+  GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer);
 
 
 #ifdef __cplusplus

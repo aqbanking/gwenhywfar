@@ -32,6 +32,13 @@
 #include <gwenhyfwar/gwenhyfwarapi.h>
 #include <gwenhyfwar/buffer.h>
 
+#define GWEN_BUFFER_DEFAULT_HARDLIMIT (100*1024)
+
+/**
+ * When reallocating the buffer a multiple of this value is used.
+ * Needs to be aligned at 2^n
+ */
+#define GWEN_BUFFER_DYNAMIC_STEP 1024
 
 #define GWEN_BUFFER_FLAGS_OWNED   0x0001
 
@@ -42,8 +49,13 @@ struct GWEN_BUFFER {
   unsigned int bufferSize;
   unsigned bytesUsed;
   unsigned int flags;
+  unsigned int mode;
+  unsigned int hardLimit;
   unsigned int bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
 };
+
+
+int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size);
 
 
 

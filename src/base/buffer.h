@@ -39,6 +39,10 @@ extern "C" {
 
 #define GWEN_BUFFER_MAX_BOOKMARKS 4
 
+#define GWEN_BUFFER_MODE_DYNAMIC 0x0001
+
+#define GWEN_BUFFER_MODE_DEFAULT \
+  GWEN_BUFFER_MODE_DYNAMIC
 
 
 typedef struct GWEN_BUFFER GWEN_BUFFER;
@@ -61,6 +65,28 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
 
 void GWEN_Buffer_free(GWEN_BUFFER *bf);
 
+
+/**
+ * Returns the current mode of the buffer (such as GWEN_BUFFER_MODE_DYNAMIC).
+ */
+unsigned int GWEN_Buffer_GetMode(GWEN_BUFFER *bf);
+
+/**
+ * Changes the current mode of the buffer (such as GWEN_BUFFER_MODE_DYNAMIC).
+ */
+void GWEN_Buffer_SetMode(GWEN_BUFFER *bf, unsigned int mode);
+
+/**
+ * Returns the hard limit. This is the maximum size of a GWEN_BUFFER in
+ * dynamic mode.
+ */
+unsigned int GWEN_Buffer_GetHardLimit(GWEN_BUFFER *bf);
+
+/**
+ * Changes the hard limit. This is the maximum size of a GWEN_BUFFER in
+ * dynamic mode.
+ */
+void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, unsigned int l);
 
 /**
  * Returns the start of the buffer. You can use the function
@@ -135,6 +161,17 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c);
  * @return -1 on error, read char otherwise (in low byte)
  */
 int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf);
+
+
+/**
+ * Returns the bytes from the current position.
+ * The position pointer is adjusted accordingly.
+ * @return -1 on error, 0 if ok
+ */
+int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
+                          char *buffer,
+                          unsigned int *size);
+
 
 /**
  * Returns the byte from the current position without changing the

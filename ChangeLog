@@ -1,5 +1,13 @@
 $Id$
 
+
+2003/10/24 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added dynamic mode to GWEN_BUFFER (in this mode more memeory is allocated
+  as needed when writing to it)
+- added new BufferedIO type which uses a GWEN_BUFFER for reading/writing
+
+
 2003-10-20  Christian Stimming <stimming@tuhh.de>
 
 	* src/parser/msgengine.c: Improve some signed/unsigned compiler

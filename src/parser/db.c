@@ -1691,4 +1691,17 @@ GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
 
 
 
+void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname){
+  assert(n);
+  assert(newname);
+  assert(n->h.typ==GWEN_DB_NODETYPE_GROUP);
+  free(n->group.name);
+  n->group.name=strdup(newname);
+}
+
+
+
+
+
+
 
