@@ -4,10 +4,13 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/net \
- -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
- 
+
+# Don't include src/os above because its process.h conflicts with the
+# system's <process.h>, at least for gcc3.2 on mingw32
+# -I$(top_srcdir)/src/os 
+
 
 noinst_LTLIBRARIES=libbase.la
 

@@ -1,5 +1,8 @@
 2004-08-02   Christian Stimming <stimming@tuhh.de>
 
+	* src/base/Makefile.am: Remove -I$(top_srcdir)/src/os because its
+	process.h conflicts with <process.h> on gcc3.2 and mingw32.
+	
 	* src/base/waitcallback.c: Fix potential problem with
 	uninitialized pointer.
 
