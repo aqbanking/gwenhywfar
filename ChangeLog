@@ -1,5 +1,3 @@
-$Id$
-
 2003/12/28 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - renamed Christian's new "GWEN_DB_isSomething" functions to
@@ -13,6 +11,9 @@ $Id$
 
 
 2003-12-28  Christian Stimming  <stimming@tuhh.de>
+
+	* src/parser/db.h: Add foreach function for Groups, Variables, and
+	Values. Added a lot of explaining comments.
 
 	* src/parser/db.h: Add predicates for testing the type of a node.
 

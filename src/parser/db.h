@@ -45,13 +45,41 @@ extern "C" {
  *
  * @brief This group contains the definition of a GWEN_DB database.
  *
- * A GWEN_DB database consists of a tree of @ref GWEN_DB_NODE
- * entries.
- * Such a @ref GWEN_DB_NODE node can either be a group of nodes, or a
- * variable, or a variable's value. Usually an application programmer
- * will only get in touch with group nodes. Nevertheless first we
- * explain the difference of the three cases. Depending on either of
- * these cases, you can
+ * A GWEN_DB database consists of a tree of @ref GWEN_DB_NODE entries.
+ * Such a @ref GWEN_DB_NODE node can either be a group node, or a
+ * variable node, or a value node. Usually an application programmer
+ * will only get in touch with group nodes. The application programmer
+ * can iterate through the group nodes with GWEN_DB_GetGroup(),
+ * GWEN_DB_Groups_foreach(), and can retrieve variable values with
+ * GWEN_DB_GetIntValue(), GWEN_DB_GetCharValue() and so on.
+ *
+ * <p>
+ *  The following graph shows the internal structure of a GWEN_DB: <br>
+ *  @image html db2.png "Internal structure of a GWEN_DB"
+ * <br>
+ * As you can see the GWEN_DB consists of multiple units called NODE. Every node
+ * has a pointer to:
+ * <ul>
+ * <li>its parent</li>
+ * <li>its first child (only the <strong>first</strong>)</li>
+ * <li>its successor (but not its predecessor!)
+ * </ul>
+ * Such a node can be either of the following:
+ * <ul>
+ *  <li>a group containing other groups and variables</li>
+ *  <li>a variable containing values</li>
+ *  <li>a value containing its value data</li>
+ * </ul>
+ * </p>
+ *
+ * Each group has a name. Depending on the GWEN_DB_FLAGS given when
+ * reading a GWEN_DB from a file or creating it, it may very well be
+ * possible to have multiple groups with the same name as children of
+ * the same root node. Again: Child group nodes with the same name may
+ * very well exist.
+ *
+ * For the interested reader, we again explain the difference of the
+ * three kinds of nodes. Depending on either of these cases, you can
  *
  * <ol>
  * <li> Iterate through groups or get a variable with
@@ -69,24 +97,6 @@ extern "C" {
  * GWEN_DB_GetBinValue(). These functions only accept a group  and a "path"
  * to the desired variable.
  *
- * <p>
- *  The following graph shows the internal structure of a GWEN db: <br>
- *  @image html db2.png "Internal structure of a GWEN db"
- * <br>
- * As you can see the DB consists of multiple units called NODE. Every node
- * has a pointer to:
- * <ul>
- * <li>its parent</li>
- * <li>its first child (only the <strong>first</strong>)</li>
- * <li>its successor (not its predecessor!)
- * </ul>
- * Such a node can be either of the following:
- * <ul>
- *  <li>a group containing other groups and variables</li>
- *  <li>a variable containing variables</li>
- *  <li>a value</li>
- * </ul>
- * </p>
  */
 /*@{*/
 /** maximum size of a text line when reading/writing from/to streams */
@@ -211,8 +221,8 @@ GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
 
 /** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
- * NODE is a Group or not. Usually these are the only nodes that the
- * application gets in touch with.
+ * NODE is a Group or not. Usually these group nodes are the only
+ * nodes that the application gets in touch with.
  *
  * @param n db node
  */
@@ -222,123 +232,86 @@ int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
 
 
 
-/** @name Iterating Through Groups and Variables
+/** @name Iterating Through Groups 
  *
  */
 /*@{*/
 /**
- * Returns the first group below the given one.
- * If there is no group then NULL is returned.
+ * Returns the first group node below the given one.
+ *
+ * If there is no group node then NULL is returned. This can either
+ * mean that this node does not have any children or the only
+ * children are variables instead of groups.
+ *
  * @param n db node
  */
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n);
 
 /**
- * Returns the first group following the given one.
- * If there is no group then NULL is returned.
+ * Returns the next group node following the given one, which has the
+ * same parent node.
+ *
+ * This function works absolutely independently of the group nodes'
+ * names -- the returned node may or may not have the same name as the
+ * specified node. The only guarantee is that the returned node will
+ * be a group node.
+ *
+ * If there is no group node then NULL is returned. This can either
+ * mean that the parent node does not have any further
+ * children, or that the other children are variables instead
+ * of groups.
+ *
+ * @note This is the only function where the returned node is @e not
+ * the child of the specified node, but instead it is the next node
+ * with the same parent node. In other words, this function is an
+ * exception. In all other functions the returned node is a child of
+ * the specified node.
+ *
  * @param n db node
  */
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n);
 
-/**
- * Returns the first variable below the given group.
- * If there is no variable then NULL is returned.
- * @param n db node
+/** Callback function type for GWEN_DB_Groups_foreach(),
+ * GWEN_DB_Variables_foreach(), and GWEN_DB_Values_foreach().
+ *
+ * @param node The current node element 
+ *
+ * @param user_data The arbitrary data passed to the foreach function.
+ *
+ * @return NULL if the iteration should continue, or non-NULL if the
+ * iteration should stop and that value be returned.
  */
 GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n);
+typedef void *(*GWEN_DB_nodes_cb)(GWEN_DB_NODE *node, void *user_data);
 
-
-/**
- * Returns the next variable following the given one.
- * If there is no variable then NULL is returned.
- * @param n db node
- */
+/** Iterates through all group nodes that are @e direct children
+ * of the given node, calling the callback function 'func' on each
+ * group node.  Traversal will stop when 'func' returns a non-NULL
+ * value, and the routine will return with that value. Otherwise the
+ * routine will return NULL.
+ *
+ * If no nodes that are groups are found as children, then
+ * this function will simply do nothing.
+ *
+ * @param node The group node whose children shall be iterated through.
+ * @param func The function to be called with each group node.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ * @author Christian Stimming <stimming@tuhh.de> */
 GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
+void *GWEN_DB_Groups_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
+			     void *user_data);
 
-/**
- * Returns the type of the first value of the given variable
- * @param n root node of the DB
- * @param p path of the variable to inspect
- */
+/** Returns the number of group nodes that are @e direct children of
+ * the given node. In other words, this is the number of group nodes
+ * that will be reached in the GWEN_DB_Groups_foreach() function. */
 GWENHYWFAR_API
-GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
-                                          const char *p);
-
-/**
- * Returns the first value below the given variable.
- * If there is no value then NULL is returned.
- * @param n db node
- */
-GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
-
-/**
- * Returns the next value following the given one.
- * If there is no value then NULL is returned.
- * @param n db node
- */
-GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n);
-
-/**
- * Returns the type of the given value.
- * @param n db node
- */
-GWENHYWFAR_API
-GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
-
+unsigned int GWEN_DB_Groups_count(const GWEN_DB_NODE *node);
 /*@}*/
-
-
-
-
-/** @name Special Variable Treatment
- *
- */
-/*@{*/
-/**
- * Deletes the given variable by removing it and its values from the DB.
- * @param n root of the DB
- * @param path path to the variable to remove
- * @return Zero on success, nonzero on error
- */
-GWENHYWFAR_API
-int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
-                      const char *path);
-
-/**
- * Checks whether the given variable exists.
- * @return Zero if variable not found, nonzero otherwise
- * @param n root of the DB
- * @param path path to the variable to check for
- */
-GWENHYWFAR_API
-int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
-                           const char *path);
-
-/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
- * NODE is a Variable or not. Usually the Application does not get in
- * touch with such Nodes but only with nodes that are Groups.
- *
- * @param n db node
- */
-GWENHYWFAR_API
-int GWEN_DB_IsVariable(const GWEN_DB_NODE *n);
-    
-/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
- * NODE is a Value or not. Usually the Application does not get in
- * touch with such Nodes but only with nodes that are Groups.
- *
- * @param n db node
- */
-GWENHYWFAR_API
-int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
-/*@}*/
-
 
 
 
@@ -505,15 +478,21 @@ GWENHYWFAR_API
 void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname);
 
 /**
- * Adds the given group as a new child of the first given one.
+ * Adds the given group node as a new child of the given parent group node.
+ *
+ * The group name has no influence on what will happen in this
+ * function. In other words, if the parent group already has a child
+ * group with the same name as 'node', then after this function two
+ * child group nodes with the same name will exist.
  *
  * @note This function takes over the ownership of the new group, so
  * you MUST NOT free it afterwards.
- * @param n db node
- * @param nn node to add
+ *
+ * @param parent Some group node that will be the parent of the added node
+ * @param node Group node to add
  */
 GWENHYWFAR_API
-int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
+int GWEN_DB_AddGroup(GWEN_DB_NODE *parent, GWEN_DB_NODE *node);
 
 /**
  * This function adds all children of the second node as new children to
@@ -621,6 +600,197 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
                       unsigned int dbflags);
 /*@}*/
+
+
+/** @name Iterating Through Variables and variable handling
+ *
+ */
+/*@{*/
+/**
+ * Returns the first variable below the given group.
+ * If there is no variable then NULL is returned.
+ * @param n db node
+ */
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n);
+
+
+/**
+ * Returns the next variable node following the given one, which has
+ * the same parent node.
+ *
+ * This function works absolutely independently of the variable nodes'
+ * names -- the returned node may or may not have the same name as the
+ * specified node. The only guarantee is that the returned node will
+ * be a variable node.
+ *
+ * If there is no variable node then NULL is returned. This can either
+ * mean that the parent node does not have any further children, or
+ * that the other children are groups instead of variables.
+ *
+ * @note This is the only function where the returned node is @e not
+ * the child of the specified node, but instead it is the next node
+ * with the same parent node. In other words, this function is an
+ * exception. In all other functions the returned node is a child of
+ * the specified node.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
+
+/** Iterates through all variable nodes that are @e direct children
+ * of the given node, calling the callback function 'func' on each
+ * variable node.  Traversal will stop when 'func' returns a non-NULL
+ * value, and the routine will return with that value. Otherwise the
+ * routine will return NULL.
+ *
+ * If no nodes that are variables are found as children, then
+ * this function will simply do nothing.
+ *
+ * @param node The group node whose children shall be iterated through.
+ * @param func The function to be called with each group node.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ * @author Christian Stimming <stimming@tuhh.de> */
+GWENHYWFAR_API
+void *GWEN_DB_Variables_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
+				void *user_data);
+
+/** Returns the number of variable nodes that are @e direct children
+ * of the given node. In other words, this is the number of variable
+ * nodes that will be reached in the GWEN_DB_Variables_foreach()
+ * function. */
+GWENHYWFAR_API
+unsigned int GWEN_DB_Variables_count(const GWEN_DB_NODE *node);
+    
+/**
+ * Returns the type of the first value of the given variable
+ * @param n root node of the DB
+ * @param p path of the variable to inspect
+ */
+GWENHYWFAR_API
+GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
+                                          const char *p);
+
+/**
+ * Deletes the given variable by removing it and its values from the DB.
+ * @param n root of the DB
+ * @param path path to the variable to remove
+ * @return Zero on success, nonzero on error
+ */
+GWENHYWFAR_API
+int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
+                      const char *path);
+
+/**
+ * Checks whether the given variable exists.
+ * @return Zero if variable not found, nonzero otherwise
+ * @param n root of the DB
+ * @param path path to the variable to check for
+ */
+GWENHYWFAR_API
+int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
+                           const char *path);
+
+/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
+ * NODE is a Variable or not. Usually the Application does not get in
+ * touch with such Nodes but only with nodes that are Groups.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+int GWEN_DB_IsVariable(const GWEN_DB_NODE *n);
+/*@}*/
+
+
+/** @name Iterating Through Values and value handling
+ *
+ */
+/*@{*/
+/**
+ * Returns the first value below the given variable.
+ * If there is no value then NULL is returned.
+ * @param n db node
+ */
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
+
+/**
+ * Returns the next value node following the given one, which has the
+ * same parent node.
+ *
+ * This function works absolutely independently of the value nodes'
+ * names (FIXME: is there such thing as a value name? If not, then
+ * this paragraph should be removed) -- the returned node may or may
+ * not have the same name as the specified node. The only guarantee is
+ * that the returned node will be a value node.
+ *
+ * If there is no value node then NULL is returned. This can either
+ * mean that the parent node does not have any further children, or
+ * that the other children are variables instead of values (FIXME: Is
+ * the last sentence true? If this can't be the case then it can be
+ * deleted.)
+ *
+ * @note This is the only function where the returned node is @e not
+ * the child of the specified node, but instead it is the next node
+ * with the same parent node. In other words, this function is an
+ * exception. In all other functions the returned node is a child of
+ * the specified node.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n);
+
+/** Iterates through all value nodes that are @e direct children
+ * of the given node, calling the callback function 'func' on each
+ * value node.  Traversal will stop when 'func' returns a non-NULL
+ * value, and the routine will return with that value. Otherwise the
+ * routine will return NULL.
+ *
+ * If no nodes that are values are found as children, then
+ * this function will simply do nothing.
+ *
+ * @param node The variable node whose children shall be iterated through.
+ * @param func The function to be called with each group node.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ * @author Christian Stimming <stimming@tuhh.de> */
+GWENHYWFAR_API
+void *GWEN_DB_Values_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
+			     void *user_data);
+
+/** Returns the number of value nodes that are @e direct children of
+ * the given node. In other words, this is the number of value nodes
+ * that will be reached in the GWEN_DB_Values_foreach() function. */
+GWENHYWFAR_API
+unsigned int GWEN_DB_Values_count(const GWEN_DB_NODE *node);
+
+/**
+ * Returns the type of the given value.
+ * @param n db node
+ */
+GWENHYWFAR_API
+GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
+
+/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
+ * NODE is a Value or not. Usually the Application does not get in
+ * touch with such Nodes but only with nodes that are Groups.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
+/*@}*/
+
+
+
+
 
 
 /** @name Debugging

@@ -1789,5 +1789,83 @@ int GWEN_DB_IsValue(const GWEN_DB_NODE *n){
 }
 
 
+void *GWEN_DB_Groups_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
+			     void *user_data)
+{
+  assert(node);
+  assert(func);
+  GWEN_DB_NODE *iter = GWEN_DB_GetFirstGroup(node);
+  void *res = NULL;
+  while(iter){
+    res = (*func)(iter, user_data);
+    if (res) {
+      break;
+    }
+    iter = GWEN_DB_GetNextGroup(iter);
+  }
+  return res;
+}
+
+static void *count_cb(GWEN_DB_NODE *node, void *user_data)
+{
+  unsigned int *a = user_data;
+  ++(*a);
+  return NULL;
+}
+
+unsigned int GWEN_DB_Groups_count(const GWEN_DB_NODE *node)
+{
+  unsigned int res = 0;
+  GWEN_DB_Groups_foreach((GWEN_DB_NODE *)node, count_cb, &res);
+  return res;
+}
 
 
+
+void *GWEN_DB_Variables_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
+				void *user_data)
+{
+  assert(node);
+  assert(func);
+  GWEN_DB_NODE *iter = GWEN_DB_GetFirstVar(node);
+  void *res = NULL;
+  while(iter){
+    res = (*func)(iter, user_data);
+    if (res) {
+      break;
+    }
+    iter = GWEN_DB_GetNextVar(iter);
+  }
+  return res;
+}
+
+unsigned int GWEN_DB_Variables_count(const GWEN_DB_NODE *node)
+{
+  unsigned int res = 0;
+  GWEN_DB_Variables_foreach((GWEN_DB_NODE *)node, count_cb, &res);
+  return res;
+}
+
+void *GWEN_DB_Values_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
+			     void *user_data)
+{
+  assert(node);
+  assert(func);
+  GWEN_DB_NODE *iter = GWEN_DB_GetFirstValue(node);
+  void *res = NULL;
+  while(iter){
+    res = (*func)(iter, user_data);
+    if (res) {
+      break;
+    }
+    iter = GWEN_DB_GetNextValue(iter);
+  }
+  return res;
+}
+
+unsigned int GWEN_DB_Values_count(const GWEN_DB_NODE *node)
+{
+  unsigned int res = 0;
+  GWEN_DB_Values_foreach((GWEN_DB_NODE *)node, count_cb, &res);
+  return res;
+}
