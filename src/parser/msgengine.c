@@ -834,7 +834,9 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
         else if (GWEN_MsgEngine__IsBinTyp(type))
           vt=GWEN_DB_VALUETYPE_BIN;
         else {
-          DBG_WARN(0, "Unable to determine parameter type (%s)", type);
+          DBG_INFO(0,
+                   "Unable to determine parameter "
+                   "type (%s), assuming \"char\" for this matter", type);
           vt=GWEN_DB_VALUETYPE_CHAR;
         }
       }
@@ -2559,7 +2561,6 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	}
 	GWEN_Buffer_IncrementPos(msgbuf,l);
       }
-      realSize=GWEN_Buffer_GetUsedBytes(vbuf);
     } /* if bin */
     else {
       /* type is not bin */
@@ -2604,14 +2605,15 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  }
 	}
       } /* while */
-      if (GWEN_Buffer_AppendByte(vbuf, 0)) {
-	DBG_DEBUG(0, "Called from here");
-	return -1;
+      if (!GWEN_Buffer_RoomLeft(vbuf)) {
+        DBG_INFO(0, "Value buffer full.");
+        return -1;
       }
-      realSize=GWEN_Buffer_GetUsedBytes(vbuf)-1;
+      *(GWEN_Buffer_GetPosPointer(vbuf))=0;
     } /* if !bin */
   } /* if type not external */
 
+  realSize=GWEN_Buffer_GetUsedBytes(vbuf);
   /* check the value */
   if (realSize==0) {
     DBG_DEBUG(0, "Datasize is 0");
