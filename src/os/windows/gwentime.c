@@ -42,13 +42,13 @@ GWEN_TIME *GWEN_CurrentTime(){
   union {
        long long ns100; /*time since 1 Jan 1601 in 100ns units */
        FILETIME ft;
-     } _date;
+     } current_date;
 
-  GetSystemTimeAsFileTime( &(date.ft));
+  GetSystemTimeAsFileTime( &(current_date.ft));
 
   GWEN_NEW_OBJECT(GWEN_TIME, t);
-  t->usec=(long)((date.ns100 / 10LL) % 1000000LL );
-  t->sec=(long)((_now.ns100-(116444736000000000LL))/10000000LL);
+  t->usec=(long)((current_date.ns100 / 10LL) % 1000000LL );
+  t->sec=(long)((current_date.ns100-(116444736000000000LL))/10000000LL);
   return t;
 }
 
