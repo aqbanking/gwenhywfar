@@ -25,6 +25,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 /* Define this if you are extending the "class" NetConnection */
 #define GWEN_EXTEND_NETCONNECTION
@@ -36,14 +40,17 @@
 #include <time.h>
 
 
+
 GWEN_LIST_FUNCTIONS(GWEN_NETCONNECTION, GWEN_NetConnection);
 GWEN_INHERIT_FUNCTIONS(GWEN_NETCONNECTION);
 
 
 
+
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETCONNECTION *GWEN_NetConnection_new(GWEN_NETTRANSPORT *tr,
-					   int take){
+                                           int take,
+                                           GWEN_TYPE_UINT32 libId){
   GWEN_NETCONNECTION *conn;
 
   GWEN_NEW_OBJECT(GWEN_NETCONNECTION, conn);
@@ -56,6 +63,8 @@ GWEN_NETCONNECTION *GWEN_NetConnection_new(GWEN_NETTRANSPORT *tr,
   conn->lastResult=GWEN_NetTransportResultOk;
   conn->inMsgs=GWEN_NetMsg_List_new();
   conn->outMsgs=GWEN_NetMsg_List_new();
+  conn->libraryMark=libId;
+
   conn->usage=1;
   return conn;
 }
@@ -167,7 +176,7 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
 	return -1;
       }
 
-      DBG_INFO(0,
+      DBG_DEBUG(0,
                "WRITE: %d bytes in buffer",
                GWEN_RingBuffer_GetUsedBytes(conn->writeBuffer));
 
@@ -361,7 +370,7 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
 
     /* check for remaining bytes in write buffer */
     if (GWEN_RingBuffer_GetUsedBytes(conn->writeBuffer)==0) {
-      DBG_INFO(0, "Write buffer empty");
+      DBG_DEBUG(0, "Write buffer empty");
       break;
     }
 
@@ -559,12 +568,12 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
       GWEN_NetTransportStatusPDisconnected ||
       GWEN_NetTransport_GetStatus(conn->transportLayer)==
       GWEN_NetTransportStatusUnconnected){
-    DBG_INFO(0, "Inactive connection");
+    DBG_DEBUG(0, "Inactive connection");
     return GWEN_NetConnectionWorkResult_Error;
   }
 
   /* ask the next lower level to work */
-  DBG_INFO(0, "Letting transport layer work");
+  DBG_DEBUG(0, "Letting transport layer work");
   rv=GWEN_NetTransport_Work(conn->transportLayer);
   if (rv) {
     DBG_INFO(0, "Error in transport layer (%d)", rv);
@@ -593,12 +602,12 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
       int bsize;
       GWEN_NETTRANSPORT_RESULT res;
 
-      DBG_INFO(0, "Trying to write up to %d bytes", psize);
+      DBG_DEBUG(0, "Trying to write up to %d bytes", psize);
       bsize=psize;
       ptr=GWEN_RingBuffer_GetReadPointer(conn->writeBuffer);
       res=GWEN_NetTransport_Write(conn->transportLayer,
                                   ptr, &bsize);
-      DBG_INFO(0, "Result of transport layer write: %s (%d)",
+      DBG_DEBUG(0, "Result of transport layer write: %s (%d)",
                GWEN_NetTransport_ResultName(res),
                res);
 
@@ -617,12 +626,12 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
         int bsize;
         GWEN_NETTRANSPORT_RESULT res;
 
-        DBG_INFO(0, "Trying to read up to %d bytes", psize);
+        DBG_DEBUG(0, "Trying to read up to %d bytes", psize);
         bsize=psize;
         ptr=GWEN_RingBuffer_GetWritePointer(conn->readBuffer);
         res=GWEN_NetTransport_Read(conn->transportLayer,
                                    ptr, &bsize);
-        DBG_INFO(0, "Result of transport layer read: %s (%d)",
+        DBG_DEBUG(0, "Result of transport layer read: %s (%d)",
                  GWEN_NetTransport_ResultName(res),
                  res);
         if (res==GWEN_NetTransportResultOk) {
@@ -633,7 +642,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
             GWEN_NetConnection_Down(conn);
           }
           else {
-            DBG_INFO(0, "Adding %d bytes to read buffer", bsize);
+            DBG_DEBUG(0, "Adding %d bytes to read buffer", bsize);
             GWEN_RingBuffer_SkipBytesWrite(conn->readBuffer,
                                            bsize);
           }
@@ -1199,7 +1208,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
           errors++;
         }
         else if (rv==GWEN_NetConnectionWorkResult_Change) {
-          DBG_INFO(0, "There is a change in this connection");
+          DBG_DEBUG(0, "There is a change in this connection");
           return rv;
         }
       }
@@ -1289,19 +1298,19 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     if (st!=GWEN_NetTransportStatusUnconnected &&
         st!=GWEN_NetTransportStatusPDisconnected &&
         st!=GWEN_NetTransportStatusDisabled) {
-      DBG_INFO(0, "Working on connection...");
+      DBG_DEBUG(0, "Working on connection...");
       rv=GWEN_NetConnection_Work(curr);
       if (rv==GWEN_NetConnectionWorkResult_Error) {
         DBG_INFO(0, "Error working (result was %d)", rv);
         errors++;
       }
       else if (rv==GWEN_NetConnectionWorkResult_Change) {
-        DBG_INFO(0, "Change in connection");
+        DBG_DEBUG(0, "Change in connection");
         return rv;
       }
     }
     else {
-      DBG_INFO(0, "Skipping inactive connection");
+      DBG_DEBUG(0, "Skipping inactive connection");
     }
     curr=GWEN_NetConnection_List_Next(curr);
   } /* while */
@@ -1395,6 +1404,36 @@ void GWEN_NetConnection_Attach(GWEN_NETCONNECTION *conn){
   assert(conn);
   conn->usage++;
 }
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_TYPE_UINT32
+GWEN_NetConnection_GetLibraryMark(const GWEN_NETCONNECTION *conn){
+  assert(conn);
+  return conn->libraryMark;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_TYPE_UINT32
+GWEN_NetConnection_GetUserMark(const GWEN_NETCONNECTION *conn){
+  assert(conn);
+  return conn->userMark;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnection_SetUserMark(GWEN_NETCONNECTION *conn,
+                                    GWEN_TYPE_UINT32 m){
+  assert(conn);
+  conn->userMark=m;
+}
+
+
+
 
 
 

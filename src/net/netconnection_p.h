@@ -61,6 +61,9 @@ struct GWEN_NETCONNECTION {
 
   GWEN_NETMSG_LIST *inMsgs;
   GWEN_NETMSG_LIST *outMsgs;
+
+  GWEN_TYPE_UINT32 libraryMark;
+  GWEN_TYPE_UINT32 userMark;
 };
 
 

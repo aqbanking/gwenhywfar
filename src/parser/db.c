@@ -54,12 +54,13 @@
 #include <unistd.h>
 
 
+
+
 GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
-                                   unsigned int datasize){
+                                    unsigned int datasize){
   GWEN_DB_VALUE_BIN *v;
 
   GWEN_NEW_OBJECT(GWEN_DB_VALUE_BIN, v);
-
   v->h.h.typ=GWEN_DB_NODETYPE_VALUE;
   v->h.typ=GWEN_DB_VALUETYPE_BIN;
   if (datasize) {
@@ -279,9 +280,8 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
       DBG_WARN(0, "Unknown node type (%d)", n->h.typ);
     }
     DBG_VERBOUS(0, "Freeing node itself");
-    free(n);
+    GWEN_FREE_OBJECT(n);
   }
-
 }
 
 

@@ -51,6 +51,7 @@ GWEN_NETTRANSPORT *GWEN_NetTransport_new(){
   GWEN_INHERIT_INIT(GWEN_NETTRANSPORT, tr);
   tr->status=GWEN_NetTransportStatusUnconnected;
   tr->incomingConnections=GWEN_NetTransport_List_new();
+  tr->backLog=GWEN_NETTRANSPORT_DEFAULT_BACKLOG;
   tr->usage=1;
   return tr;
 }
@@ -64,6 +65,7 @@ void GWEN_NetTransport_free(GWEN_NETTRANSPORT *tr){
       GWEN_INHERIT_FINI(GWEN_NETTRANSPORT, tr);
 
       GWEN_NetTransport_List_free(tr->incomingConnections);
+      GWEN_InetAddr_free(tr->peerAddr);
 
       GWEN_LIST_FINI(GWEN_NETTRANSPORT, tr);
       free(tr);
@@ -376,6 +378,50 @@ const char *GWEN_NetTransport_ResultName(GWEN_NETTRANSPORT_RESULT res) {
 
   return s;
 }
+
+
+
+void GWEN_NetTransport_MarkActivity(GWEN_NETTRANSPORT *tr){
+  assert(tr);
+
+  tr->lastActivity=time(0);
+}
+
+
+
+double GWEN_NetTransport_GetIdleTime(const GWEN_NETTRANSPORT *tr){
+  assert(tr);
+
+  if (tr->lastActivity==0)
+    return 0;
+  return difftime(time(0), tr->lastActivity);
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_NetTransport_GetBackLog(const GWEN_NETTRANSPORT *tr){
+  assert(tr);
+  return tr->backLog;
+}
+
+
+
+void GWEN_NetTransport_SetBackLog(GWEN_NETTRANSPORT *tr, GWEN_TYPE_UINT32 i){
+  assert(tr);
+  tr->backLog=i;
+}
+
+
+
+GWEN_TYPE_UINT32
+GWEN_NetTransport_GetIncomingCount(const GWEN_NETTRANSPORT *tr){
+  assert(tr);
+  return GWEN_NetTransport_List_GetCount(tr->incomingConnections);
+}
+
+
+
+
 
 
 

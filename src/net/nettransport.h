@@ -326,6 +326,16 @@ void GWEN_NetTransport_SetPeerAddr(GWEN_NETTRANSPORT *tr,
 
 const char *GWEN_NetTransport_StatusName(GWEN_NETTRANSPORT_STATUS st);
 const char *GWEN_NetTransport_ResultName(GWEN_NETTRANSPORT_RESULT res);
+
+void GWEN_NetTransport_MarkActivity(GWEN_NETTRANSPORT *tr);
+double GWEN_NetTransport_GetIdleTime(const GWEN_NETTRANSPORT *tr);
+
+GWEN_TYPE_UINT32 GWEN_NetTransport_GetBackLog(const GWEN_NETTRANSPORT *tr);
+void GWEN_NetTransport_SetBackLog(GWEN_NETTRANSPORT *tr, GWEN_TYPE_UINT32 i);
+
+GWEN_TYPE_UINT32
+  GWEN_NetTransport_GetIncomingCount(const GWEN_NETTRANSPORT *tr);
+
 /*@}*/
 
 

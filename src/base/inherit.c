@@ -64,10 +64,11 @@ GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
 
 void GWEN_InheritData_free(GWEN_INHERITDATA *d) {
   if (d) {
-    DBG_INFO(0, "Freeing data for type \"%s\"",
+    DBG_DEBUG(0, "Freeing data for type \"%s\"",
              d->typeName);
     if (d->freeDataFn)
       d->freeDataFn(d->baseData, d->data);
+    free(d->typeName);
     GWEN_LIST_FINI(GWEN_INHERITDATA, d);
     free(d);
   }
@@ -136,14 +137,14 @@ void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
 
   ih=GWEN_InheritData_List_First(l);
   while(ih) {
-    DBG_INFO(0, "Checking type \"%s\" (%08x) against %08x",
-             ih->typeName, ih->id, id);
+    DBG_VERBOUS(0, "Checking type \"%s\" (%08x) against %08x",
+                ih->typeName, ih->id, id);
     if (ih->id==id)
       return ih->data;
     ih=GWEN_InheritData_List_Next(ih);
   } /* while */
   if (!wantCreate) {
-    DBG_WARN(0, "Type \"%08x\" Not derived from this base type", id);
+    DBG_WARN(0, "Type \"%08x\" not derived from this base type", id);
   }
   return 0;
 }

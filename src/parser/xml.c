@@ -261,17 +261,14 @@ void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child){
 }
 
 
-int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
-                       char chr,
-                       const char *delims,
-                       char *buffer,
-                       unsigned int size) {
+
+int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
+                          char chr,
+                          const char *delims,
+                          GWEN_BUFFER *buf) {
   int inQuote;
 
-  assert(size);
   inQuote=0;
-  size--;
-  buffer[0]=0;
 
   while(1) {
     /* get character, if needed */
@@ -293,13 +290,7 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
         break;
       }
       else {
-	if (size<1) {
-	  DBG_ERROR(0, "Error during XML reading: Word too long or buffer too small. Maybe the buffer size in the parser (xml_p.h) needs to be increased?");
-	  return -1;
-	}
-	*buffer=chr;
-	buffer++;
-	size--;
+        GWEN_Buffer_AppendByte(buf, chr);
       }
     }
     else {
@@ -314,357 +305,17 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
         return -1;
       }
       else {
-	if (size<1) {
-	  DBG_ERROR(0, "Error during XML reading: Word too long or buffer too small. Maybe the buffer size in the parser (xml_p.h) needs to be increased?");
-	  return -1;
-	}
-	*buffer=chr;
-        buffer++;
-	size--;
+        GWEN_Buffer_AppendByte(buf, chr);
       }
     }
     chr=0;
   } /* while */
-  *buffer=0;
 
   if (chr=='"')
     return 0;
   return chr;
 }
 
-
-
-int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
-                   GWEN_TYPE_UINT32 flags) {
-  GWEN_XMLNODE *path[GWEN_XML_MAX_DEPTH];
-  int currDepth;
-  int chr;
-  int isEndTag;
-  int eofMet;
-  int isComment;
-
-  currDepth=0;
-  chr=0;
-
-  while (!GWEN_BufferedIO_CheckEOF(bio)) {
-    /* read char (if none set) but skip blanks */
-    if (chr==0) {
-      chr=GWEN_BufferedIO_ReadChar(bio);
-      if (chr<0) {
-	DBG_ERROR(0, "Error on BufferedIO_ReadChar");
-	return -1;
-      }
-    }
-    eofMet=0;
-    while(isspace(chr)) {
-      if (GWEN_BufferedIO_CheckEOF(bio)) {
-	eofMet=1;
-        break;
-      }
-      chr=GWEN_BufferedIO_ReadChar(bio);
-      if (chr<0) {
-	DBG_ERROR(0, "Error on BufferedIO_ReadChar");
-	return -1;
-      }
-    }
-    if (eofMet)
-      break;
-
-    if (chr=='<') {
-      char tagname[GWEN_XML_MAX_TAGNAMELEN];
-      char *p;
-
-      isEndTag=0;
-
-      /* we have a tag */
-      chr=GWEN_XML__ReadWord(bio, 0, " ><", tagname, sizeof(tagname));
-      if (chr<0)
-	return -1;
-
-      p=tagname;
-      if (*p=='/') {
-	isEndTag=1;
-	p++;
-      }
-      DBG_DEBUG(0, "Found tag \"%s\"", tagname);
-
-      isComment=0;
-      if (strlen(p)>=3)
-	if (strncmp(p,"!--",3)==0)
-	  isComment=1;
-      if (isComment) {
-	char comment[GWEN_XML_MAX_REMARKLEN];
-	int comlen;
-        GWEN_XMLNODE *newNode;
-
-	comlen=0;
-	comment[0]=0;
-
-        DBG_DEBUG(0, "Found comment");
-	/* we have a remark tag, so read it over */
-	while(1) {
-	  if (chr==0) {
-	    if (GWEN_BufferedIO_CheckEOF(bio)) {
-	      DBG_ERROR(0, "Unexpected EOF within comment");
-	      return -1;
-	    }
-	    chr=GWEN_BufferedIO_ReadChar(bio);
-	    if (chr<0) {
-	      return -1;
-	    }
-          }
-
-          if (comlen>=(int)sizeof(comment)) {
-            DBG_ERROR(0, "Comment too long !");
-            return -1;
-          }
-	  comment[comlen++]=chr;
-
-	  if (comlen>=3) {
-	    if (strncmp(comment+comlen-3,"-->",3)==0) {
-	      comlen-=3;
-	      comment[comlen]=0;
-              break;
-            }
-            else {
-              if (!(flags & GWEN_XML_FLAGS_READ_COMMENTS)) {
-                DBG_VERBOUS(0, "Clipping comment to 2 bytes");
-                memmove(comment, comment+comlen-2, 2);
-                comlen=2;
-              }
-            }
-          }
-          chr=0;
-	} /* while */
-
-        /* create new node */
-        DBG_VERBOUS(0, "Comment finished");
-        if (flags & GWEN_XML_FLAGS_READ_COMMENTS) {
-          newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeComment,
-                                   comment);
-          GWEN_XMLNode_add(newNode, &(n->child));
-          newNode->parent=n;
-          DBG_DEBUG(0, "Added comment: \"%s\"", comment);
-        }
-        else {
-          DBG_DEBUG(0, "Skip comment");
-        }
-      } /* if remark */
-      else {
-	/* handle tagname */
-	if (isEndTag) {
-	  /* handle endtag */
-	  if (currDepth<1) {
-	    DBG_ERROR(0, "More endtags than start tags !");
-	    return -1;
-	  }
-	  if (strcasecmp(n->data, p)!=0) {
-	    DBG_ERROR(0, "endtag \"%s\" does not match last start tag (\"%s\")",
-		      tagname, n->data);
-	    return -1;
-	  }
-	  /* surface */
-	  n=path[currDepth-1];
-	  currDepth--;
-	  if (currDepth==0) {
-	    DBG_DEBUG(0, "One node done");
-	    return 0;
-	  }
-	}
-	else {
-	  /* this is a start tag */
-	  GWEN_XMLNODE *newNode;
-	  char varname[GWEN_XML_MAX_VARNAMELEN];
-	  char value[GWEN_XML_MAX_VALUELEN];
-
-	  if (*p) {
-	    int j;
-
-	    j=strlen(p)-1;
-	    if (p[j]=='/') {
-	      if (chr!='>') {
-		DBG_ERROR(0, "\"/\" only allowed just before \">\"");
-		return -1;
-	      }
-	      p[j]=0;
-	      isEndTag=1;
-	    }
-	  }
-
-	  newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, p);
-	  while (chr!='>' && chr!='/') {
-	    varname[0]=0;
-	    value[0]=0;
-
-	    /* skip blanks */
-	    chr=0;
-	    while(!GWEN_BufferedIO_CheckEOF(bio)) {
-	      chr=GWEN_BufferedIO_ReadChar(bio);
-	      if (chr<0) {
-		GWEN_XMLNode_free(newNode);
-		return -1;
-	      }
-	      if (!isspace(chr) && !iscntrl(chr))
-		break;
-	    }
-	    if (chr==0) {
-	      DBG_ERROR(0, "unexpected EOF");
-	      GWEN_XMLNode_free(newNode);
-	      return -1;
-	    }
-
-	    if (chr=='>' || chr=='/')
-	      break;
-
-	    /* read possibly following var */
-	    chr=GWEN_XML__ReadWord(bio, chr, " =/>", varname, sizeof(varname));
-	    if (chr<0) {
-	      GWEN_XMLNode_free(newNode);
-	      return -1;
-	    }
-
-            if (strcmp(varname, "?")==0) {
-              if (*p=='?') {
-                DBG_DEBUG(0, "Found closing question mark");
-                break;
-              }
-              else {
-                DBG_DEBUG(0, "Node name is: %s", p);
-              }
-            }
-	    DBG_DEBUG(0, "Found property \"%s\"", varname);
-
-	    /* skip blanks */
-	    if (isspace(chr)) {
-	      while(!GWEN_BufferedIO_CheckEOF(bio)) {
-		chr=GWEN_BufferedIO_ReadChar(bio);
-		if (chr<0) {
-		  GWEN_XMLNode_free(newNode);
-		  return -1;
-		}
-		if (!isspace(chr) && !iscntrl(chr))
-		  break;
-	      }
-	    }
-
-	    if (chr=='=') {
-	      chr=0;
-	      /* skip blanks */
-	      while(!GWEN_BufferedIO_CheckEOF(bio)) {
-		chr=GWEN_BufferedIO_ReadChar(bio);
-		if (chr<0) {
-		  GWEN_XMLNode_free(newNode);
-		  return -1;
-		}
-		if (!isspace(chr))
-		  break;
-	      }
-	      if (chr==0) {
-		DBG_ERROR(0, "Value expected for property \"%s\"",
-			  varname);
-		GWEN_XMLNode_free(newNode);
-		return -1;
-	      }
-
-	      if (chr=='>' || chr=='/') {
-		DBG_ERROR(0, "Value expected for property \"%s\"",
-			  varname);
-		GWEN_XMLNode_free(newNode);
-		return -1;
-	      }
-
-	      /* read value */
-	      chr=GWEN_XML__ReadWord(bio, chr, " />", value, sizeof(value));
-	      if (chr<0) {
-		GWEN_XMLNode_free(newNode);
-		return -1;
-	      }
-	      DBG_DEBUG(0, "Found value \"%s\"", value);
-	    } /* if value follows */
-
-	    if (varname[0]) {
-	      /* add property */
-	      GWEN_XMLPROPERTY *newProp;
-
-	      newProp=GWEN_XMLProperty_new(varname,
-                                           value[0]?value:0);
-	      GWEN_XMLProperty_add(newProp, &(newNode->properties));
-	    } /* if varname */
-	  } /* while vars follow */
-
-	  if (chr=='/') {
-	    isEndTag=1;
-
-	    if (GWEN_BufferedIO_CheckEOF(bio)) {
-	      DBG_ERROR(0, "\">\" expected");
-	      GWEN_XMLNode_free(newNode);
-	      return -1;
-	    }
-
-	    chr=GWEN_BufferedIO_ReadChar(bio);
-	    if (chr<0) {
-	      DBG_ERROR(0, "Error on ReadChar");
-	      GWEN_XMLNode_free(newNode);
-	      return -1;
-	    }
-	  }
-
-	  if (chr!='>') {
-	    DBG_ERROR(0, "\">\" expected");
-	    GWEN_XMLNode_free(newNode);
-	    return -1;
-	  }
-
-	  /* ok, now the tag is complete, add it */
-	  if (currDepth>=GWEN_XML_MAX_DEPTH) {
-	    DBG_ERROR(0, "Maximum depth exceeded");
-	    GWEN_XMLNode_free(newNode);
-	    return -1;
-	  }
-	  GWEN_XMLNode_add(newNode, &(n->child));
-          newNode->parent=n;
-	  DBG_DEBUG(0, "Added node \"%s\"", newNode->data);
-	  if (!isEndTag) {
-	    /* only dive if this tag is not immediately ended */
-	    path[currDepth++]=n;
-	    n=newNode;
-	  }
-	  else {
-	    /* immediate endTag, if depth is 0: done */
-	    if (currDepth==0) {
-	      DBG_DEBUG(0, "One node done");
-	      return 0;
-	    }
-	  }
-	} /* if start tag */
-      } /* if no remark */
-
-      chr=0; /* make begin of loop read new char */
-    } /* if "<" */
-    else {
-      /* add data to current tag */
-      GWEN_XMLNODE *newNode;
-      char data[GWEN_XML_MAX_DATALEN];
-
-      chr=GWEN_XML__ReadWord(bio, chr, "<", data, sizeof(data));
-      if (chr<0) {
-        return -1;
-      }
-      newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, data);
-      DBG_DEBUG(0, "Added data \"%s\"", data);
-      GWEN_XMLNode_add(newNode, &(n->child));
-      newNode->parent=n;
-    }
-    /* do not set chr=0, because we may already have the next char ('<') */
-  } /* while !eof */
-
-  if (currDepth!=0) {
-    DBG_ERROR(0, "%d tags are still open", currDepth);
-    return -1;
-  }
-
-  return 0;
-}
 
 
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
@@ -747,35 +398,37 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
       break;
 
     if (chr=='<') {
-      char tagname[GWEN_XML_MAX_TAGNAMELEN];
+      GWEN_BUFFER *bufTagName;
       char *p;
 
       isEndTag=0;
 
       /* we have a tag */
-      chr=GWEN_XML__ReadWord(bio, 0, " ><", tagname, sizeof(tagname));
-      if (chr<0)
-	return -1;
-
-      p=tagname;
+      bufTagName=GWEN_Buffer_new(0, 32, 0, 1);
+      chr=GWEN_XML__ReadWordBuf(bio, 0, " ><", bufTagName);
+      if (chr<0) {
+        GWEN_Buffer_free(bufTagName);
+        return -1;
+      }
+      GWEN_Buffer_AppendByte(bufTagName, 0);
+      p=GWEN_Buffer_GetStart(bufTagName);
       if (*p=='/') {
 	isEndTag=1;
 	p++;
       }
-      DBG_DEBUG(0, "Found tag \"%s\"", tagname);
+      DBG_DEBUG(0, "Found tag \"%s\"", GWEN_Buffer_GetStart(bufTagName));
 
       isComment=0;
       if (strlen(p)>=3)
 	if (strncmp(p,"!--",3)==0)
 	  isComment=1;
       if (isComment) {
-	char comment[GWEN_XML_MAX_REMARKLEN];
-	int comlen;
+        GWEN_BUFFER *bufComment;
         GWEN_XMLNODE *newNode;
+        int comlen;
 
-	comlen=0;
-	comment[0]=0;
-
+        comlen=0;
+        bufComment=GWEN_Buffer_new(0, 128, 0, 1);
         DBG_DEBUG(0, "Found comment");
 	/* we have a remark tag, so read it over */
 	while(1) {
@@ -785,27 +438,34 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      return -1;
 	    }
 	    chr=GWEN_BufferedIO_ReadChar(bio);
-	    if (chr<0) {
+            if (chr<0) {
+              GWEN_Buffer_free(bufComment);
+              GWEN_Buffer_free(bufTagName);
 	      return -1;
 	    }
           }
 
-          if (comlen>=(int)sizeof(comment)) {
-            DBG_ERROR(0, "Comment too long !");
-            return -1;
-          }
-	  comment[comlen++]=chr;
+          GWEN_Buffer_AppendByte(bufComment, chr);
+          comlen++;
 
-	  if (comlen>=3) {
-	    if (strncmp(comment+comlen-3,"-->",3)==0) {
-	      comlen-=3;
-	      comment[comlen]=0;
+          if (comlen>=3) {
+            char *bstart;
+
+            bstart=GWEN_Buffer_GetStart(bufComment);
+            if (strncmp(bstart+comlen-3,"-->", 3)==0){
+              /* comment finished */
+              GWEN_Buffer_SetUsedBytes(bufComment, comlen-3);
+              GWEN_Buffer_SetPos(bufComment, comlen-3);
+              GWEN_Buffer_AppendByte(bufComment, 0);
+              comlen-=3;
               break;
             }
             else {
               if (!(flags & GWEN_XML_FLAGS_READ_COMMENTS)) {
                 DBG_VERBOUS(0, "Clipping comment to 2 bytes");
-                memmove(comment, comment+comlen-2, 2);
+                memmove(bstart, bstart+comlen-2, 2);
+                GWEN_Buffer_SetUsedBytes(bufComment, 2);
+                GWEN_Buffer_SetPos(bufComment, 2);
                 comlen=2;
               }
             }
@@ -817,14 +477,16 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
         DBG_VERBOUS(0, "Comment finished");
         if (flags & GWEN_XML_FLAGS_READ_COMMENTS) {
           newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeComment,
-                                   comment);
+                                   GWEN_Buffer_GetStart(bufComment));
           GWEN_XMLNode_add(newNode, &(n->child));
           newNode->parent=n;
-          DBG_DEBUG(0, "Added comment: \"%s\"", comment);
+          DBG_DEBUG(0, "Added comment: \"%s\"",
+                    GWEN_Buffer_GetStart(bufComment));
         }
         else {
           DBG_DEBUG(0, "Skip comment");
         }
+        GWEN_Buffer_free(bufComment);
       } /* if remark */
       else {
 	/* handle tagname */
@@ -832,13 +494,15 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	  /* handle endtag */
 	  if (currDepth<1) {
 	    DBG_ERROR(0, "More endtags than start tags !");
+            GWEN_Buffer_free(bufTagName);
 	    return -1;
 	  }
 	  if (strcasecmp(n->data, p)!=0) {
 	    DBG_ERROR(0, "endtag \"%s\" does not match last start tag (\"%s\")",
-		      tagname, n->data);
-	    return -1;
-	  }
+                      GWEN_Buffer_GetStart(bufTagName), n->data);
+            GWEN_Buffer_free(bufTagName);
+            return -1;
+          }
 
           /* check whether the tag is "include" */
           if (!(flags & GWEN_XML_FLAGS_IGNORE_INCLUDE) &&
@@ -876,6 +540,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               if (irv) {
                 DBG_INFO(0, "here");
                 GWEN_XMLNode_free(newRoot);
+                GWEN_Buffer_free(bufTagName);
                 return irv;
               }
 
@@ -947,14 +612,22 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           currDepth--;
           if (currDepth==0) {
             DBG_DEBUG(0, "One node done");
+            GWEN_Buffer_free(bufTagName);
             return 0;
           }
         }
-	else {
+
+
+
+
+
+        else {
 	  /* this is a start tag */
-	  GWEN_XMLNODE *newNode;
-	  char varname[GWEN_XML_MAX_VARNAMELEN];
-          char value[GWEN_XML_MAX_VALUELEN];
+          GWEN_XMLNODE *newNode;
+          GWEN_BUFFER *bufVarName;
+          GWEN_BUFFER *bufValue;
+          const char *varname;
+          const char *value;
           int simpleTag;
 
           simpleTag=0;
@@ -967,6 +640,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    if (p[j]=='/') {
 	      if (chr!='>') {
 		DBG_ERROR(0, "\"/\" only allowed just before \">\"");
+                GWEN_Buffer_free(bufTagName);
 		return -1;
 	      }
 	      p[j]=0;
@@ -974,10 +648,14 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    }
 	  }
 
+          bufVarName=GWEN_Buffer_new(0, 128, 0, 1);
+          bufValue=GWEN_Buffer_new(0, 128, 0, 1);
           newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, p);
-	  while (chr!='>' && chr!='/') {
-	    varname[0]=0;
-	    value[0]=0;
+          while (chr!='>' && chr!='/') {
+            GWEN_Buffer_Reset(bufVarName);
+            GWEN_Buffer_Reset(bufValue);
+            varname=0;
+            value=0;
 
             /* skip blanks */
             //chr=0;
@@ -987,6 +665,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                 chr=GWEN_BufferedIO_ReadChar(bio);
                 if (chr<0) {
                   GWEN_XMLNode_free(newNode);
+                  GWEN_Buffer_free(bufValue);
+                  GWEN_Buffer_free(bufVarName);
+                  GWEN_Buffer_free(bufTagName);
                   return -1;
                 }
                 if (!isspace(chr) && !iscntrl(chr))
@@ -996,6 +677,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             if (chr==0) {
 	      DBG_ERROR(0, "unexpected EOF");
 	      GWEN_XMLNode_free(newNode);
+              GWEN_Buffer_free(bufValue);
+              GWEN_Buffer_free(bufVarName);
+              GWEN_Buffer_free(bufTagName);
 	      return -1;
 	    }
 
@@ -1003,12 +687,16 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      break;
 
 	    /* read possibly following var */
-	    chr=GWEN_XML__ReadWord(bio, chr, " =/>", varname, sizeof(varname));
-	    if (chr<0) {
+            chr=GWEN_XML__ReadWordBuf(bio, chr, " =/>", bufVarName);
+            if (chr<0) {
 	      GWEN_XMLNode_free(newNode);
+              GWEN_Buffer_free(bufValue);
+              GWEN_Buffer_free(bufVarName);
+              GWEN_Buffer_free(bufTagName);
 	      return -1;
 	    }
-
+            GWEN_Buffer_AppendByte(bufVarName, 0);
+            varname=GWEN_Buffer_GetStart(bufVarName);
             if (strcmp(varname, "?")==0) {
               if (*p=='?') {
                 DBG_DEBUG(0, "Found closing question mark");
@@ -1023,6 +711,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 		chr=GWEN_BufferedIO_ReadChar(bio);
 		if (chr<0) {
 		  GWEN_XMLNode_free(newNode);
+                  GWEN_Buffer_free(bufValue);
+                  GWEN_Buffer_free(bufVarName);
+                  GWEN_Buffer_free(bufTagName);
 		  return -1;
 		}
 		if (!isspace(chr) && !iscntrl(chr))
@@ -1030,6 +721,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      }
 	    }
 
+            value=0;
 	    if (chr=='=') {
 	      chr=0;
 	      /* skip blanks */
@@ -1037,6 +729,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 		chr=GWEN_BufferedIO_ReadChar(bio);
 		if (chr<0) {
 		  GWEN_XMLNode_free(newNode);
+                  GWEN_Buffer_free(bufValue);
+                  GWEN_Buffer_free(bufVarName);
+                  GWEN_Buffer_free(bufTagName);
 		  return -1;
 		}
 		if (!isspace(chr))
@@ -1046,6 +741,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 		DBG_ERROR(0, "Value expected for property \"%s\"",
 			  varname);
 		GWEN_XMLNode_free(newNode);
+                GWEN_Buffer_free(bufValue);
+                GWEN_Buffer_free(bufVarName);
+                GWEN_Buffer_free(bufTagName);
 		return -1;
 	      }
 
@@ -1053,27 +751,35 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 		DBG_ERROR(0, "Value expected for property \"%s\"",
 			  varname);
 		GWEN_XMLNode_free(newNode);
+                GWEN_Buffer_free(bufValue);
+                GWEN_Buffer_free(bufVarName);
+                GWEN_Buffer_free(bufTagName);
 		return -1;
 	      }
 
 	      /* read value */
-	      chr=GWEN_XML__ReadWord(bio, chr, " />", value, sizeof(value));
-	      if (chr<0) {
+              chr=GWEN_XML__ReadWordBuf(bio, chr, " />", bufValue);
+              if (chr<0) {
 		GWEN_XMLNode_free(newNode);
-		return -1;
-	      }
-	      DBG_DEBUG(0, "Found value \"%s\"", value);
-	    } /* if value follows */
+                GWEN_Buffer_free(bufValue);
+                GWEN_Buffer_free(bufVarName);
+                GWEN_Buffer_free(bufTagName);
+                return -1;
+              }
+              GWEN_Buffer_AppendByte(bufValue, 0);
+              value=GWEN_Buffer_GetStart(bufValue);
+              DBG_DEBUG(0, "Found value \"%s\"", value);
+            } /* if value follows */
 
-	    if (varname[0]) {
+            if (varname) {
 	      /* add property */
 	      GWEN_XMLPROPERTY *newProp;
 
 	      newProp=GWEN_XMLProperty_new(varname,
-                                           value[0]?value:0);
+                                           value);
 	      GWEN_XMLProperty_add(newProp, &(newNode->properties));
-	    } /* if varname */
-	  } /* while vars follow */
+            } /* if varname */
+          } /* while vars follow */
 
           if (chr=='/') {
             isEndTag=1;
@@ -1081,6 +787,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             if (GWEN_BufferedIO_CheckEOF(bio)) {
               DBG_ERROR(0, "\">\" expected");
               GWEN_XMLNode_free(newNode);
+              GWEN_Buffer_free(bufValue);
+              GWEN_Buffer_free(bufVarName);
+              GWEN_Buffer_free(bufTagName);
               return -1;
             }
 
@@ -1088,6 +797,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             if (chr<0) {
               DBG_ERROR(0, "Error on ReadChar");
               GWEN_XMLNode_free(newNode);
+              GWEN_Buffer_free(bufValue);
+              GWEN_Buffer_free(bufVarName);
+              GWEN_Buffer_free(bufTagName);
               return -1;
             }
           }
@@ -1095,6 +807,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	  if (chr!='>') {
 	    DBG_ERROR(0, "\">\" expected");
 	    GWEN_XMLNode_free(newNode);
+            GWEN_Buffer_free(bufValue);
+            GWEN_Buffer_free(bufVarName);
+            GWEN_Buffer_free(bufTagName);
 	    return -1;
 	  }
 
@@ -1117,6 +832,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               if (currDepth>=GWEN_XML_MAX_DEPTH) {
                 DBG_ERROR(0, "Maximum depth exceeded");
                 GWEN_XMLNode_free(newNode);
+                GWEN_Buffer_free(bufValue);
+                GWEN_Buffer_free(bufVarName);
+                GWEN_Buffer_free(bufTagName);
                 return -1;
               }
               GWEN_XMLNode_add(newNode, &(n->child));
@@ -1128,6 +846,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             if (currDepth>=GWEN_XML_MAX_DEPTH) {
               DBG_ERROR(0, "Maximum depth exceeded");
               GWEN_XMLNode_free(newNode);
+              GWEN_Buffer_free(bufValue);
+              GWEN_Buffer_free(bufVarName);
+              GWEN_Buffer_free(bufTagName);
               return -1;
             }
             GWEN_XMLNode_add(newNode, &(n->child));
@@ -1138,32 +859,46 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    /* only dive if this tag is not immediately ended */
 	    path[currDepth++]=n;
 	    n=newNode;
-	  }
-	  else {
+          }
+          else {
 	    /* immediate endTag, if depth is 0: done */
 	    if (currDepth==0) {
 	      DBG_DEBUG(0, "One node done");
+              GWEN_Buffer_free(bufValue);
+              GWEN_Buffer_free(bufVarName);
+              GWEN_Buffer_free(bufTagName);
 	      return 0;
 	    }
 	  }
-	} /* if start tag */
+          GWEN_Buffer_free(bufValue);
+          GWEN_Buffer_free(bufVarName);
+        } /* if start tag */
       } /* if no remark */
 
       chr=0; /* make begin of loop read new char */
+      GWEN_Buffer_free(bufTagName);
     } /* if "<" */
     else {
       /* add data to current tag */
       GWEN_XMLNODE *newNode;
-      char data[GWEN_XML_MAX_DATALEN];
+      GWEN_BUFFER *bufData;
 
-      chr=GWEN_XML__ReadWord(bio, chr, "<", data, sizeof(data));
+      bufData=GWEN_Buffer_new(0, 128, 0, 1);
+      chr=GWEN_XML__ReadWordBuf(bio, chr, "<", bufData);
       if (chr<0) {
+        GWEN_Buffer_free(bufData);
         return -1;
       }
-      newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, data);
-      DBG_DEBUG(0, "Added data \"%s\"", data);
+      GWEN_Buffer_AppendByte(bufData, 0);
+
+      newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData,
+                               GWEN_Buffer_GetStart(bufData));
+      DBG_DEBUG(0, "Added data \"%s\"",
+                GWEN_Buffer_GetStart(bufData));
       GWEN_XMLNode_add(newNode, &(n->child));
       newNode->parent=n;
+
+      GWEN_Buffer_free(bufData);
     }
     /* do not set chr=0, because we may already have the next char ('<') */
   } /* while !eof */

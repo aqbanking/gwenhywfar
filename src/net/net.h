@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sun Sep 14 2003
-    copyright   : (C) 2003 by Martin Preuss
+    begin       : Mon Feb 09 2004
+    copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,30 +25,31 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-
-#include "transportlayersocket_p.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
+#ifndef GWEN_NET_H
+#define GWEN_NET_H
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerUnix_new(){
-  GWEN_IPCTRANSPORTLAYER *t;
-  GWEN_IPCTRANSSOCKET *tlsocket;
+#include <gwenhywfar/net.h>
+#include <gwenhywfar/netconnection.h>
 
-  t=GWEN_IPCTransportLayerSocket_new();
-  tlsocket=(GWEN_IPCTRANSSOCKET*)t->privateData;
-  free(t->address);
-  t->address=strdup("");
-  tlsocket->socketType=GWEN_SocketTypeUnix;
-  tlsocket->addressFamily=GWEN_AddressFamilyUnix;
-  return t;
-}
+GWEN_ERRORCODE GWEN_Net_ModuleInit();
+GWEN_ERRORCODE GWEN_Net_ModuleFini();
 
+
+GWEN_TYPE_UINT32 GWEN_Net_GetLibraryId();
+void GWEN_Net_AddConnectionToPool(GWEN_NETCONNECTION *conn);
+
+
+GWEN_NETCONNECTION_WORKRESULT GWEN_Net_HeartBeat(int timeout);
+
+GWEN_NETCONNECTION_LIST *GWEN_Net_GetConnectionPool();
+
+
+
+
+
+
+
+#endif /* GWEN_NET_H */
 

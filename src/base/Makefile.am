@@ -9,6 +9,7 @@ noinst_HEADERS=\
  inherit_p.h \
  list_p.h \
  logger_p.h \
+ memory_p.h \
  ringbuffer_p.h \
  stringlist_p.h \
  waitcallback_p.h
@@ -21,6 +22,7 @@ iheader_HEADERS=\
  inherit.h \
  list.h \
  logger.h \
+ memory.h \
  misc.h \
  ringbuffer.h \
  stringlist.h \
@@ -33,6 +35,7 @@ libbase_la_SOURCES=\
  inherit.c \
  list.c \
  logger.c \
+ memory.c \
  ringbuffer.c \
  stringlist.c \
  waitcallback.c

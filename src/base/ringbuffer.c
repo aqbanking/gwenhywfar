@@ -65,7 +65,7 @@ int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
   GWEN_TYPE_UINT32 bytesLeft;
 
   if ((rb->bufferSize-rb->bytesUsed)==0) {
-    DBG_INFO(0, "Buffer full");
+    DBG_DEBUG(0, "Buffer full");
     rb->fullCounter++;
     return -1;
   }
@@ -103,7 +103,7 @@ GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb) {
 
   assert(rb);
   if (rb->bytesUsed==0) {
-    DBG_INFO(0, "Buffer empty");
+    DBG_DEBUG(0, "Buffer empty");
     rb->emptyCounter++;
     return 0;
   }
@@ -124,7 +124,7 @@ GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb) {
 
   assert(rb);
   if ((rb->bufferSize-rb->bytesUsed)==0) {
-    DBG_INFO(0, "Buffer full");
+    DBG_DEBUG(0, "Buffer full");
     rb->fullCounter++;
     return 0;
   }
@@ -182,7 +182,7 @@ int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
   GWEN_TYPE_UINT32 bytesLeft;
 
   if (rb->bytesUsed==0) {
-    DBG_INFO(0, "Buffer empty");
+    DBG_DEBUG(0, "Buffer empty");
     rb->emptyCounter++;
     return -1;
   }
@@ -238,7 +238,7 @@ int GWEN_RingBuffer_WriteByte(GWEN_RINGBUFFER *rb,
                               char c) {
   assert(rb);
   if ((rb->bufferSize-rb->bytesUsed)==0) {
-    DBG_INFO(0, "Buffer full");
+    DBG_DEBUG(0, "Buffer full");
     rb->fullCounter++;
     return -1;
   }
@@ -260,7 +260,7 @@ int GWEN_RingBuffer_ReadByte(GWEN_RINGBUFFER *rb) {
 
   assert(rb);
   if (rb->bytesUsed==0) {
-    DBG_INFO(0, "Buffer empty");
+    DBG_DEBUG(0, "Buffer empty");
     rb->emptyCounter++;
     return -1;
   }

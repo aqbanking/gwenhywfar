@@ -10,12 +10,14 @@ noinst_HEADERS=\
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
+ net.h \
  netconnection.h \
  netmsg.h \
  nettransport.h \
  nettransportsock.h
 
 libnet_la_SOURCES=\
+ net.c \
  netconnection.c \
  netmsg.c \
  nettransport.c \

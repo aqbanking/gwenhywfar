@@ -35,18 +35,7 @@
 extern "C" {
 #endif
 
-/* Watch out! These buffer length can easily be exceeded since XML
-   itself does not give you any limit on the length of particular
-   varilable or element names! This would mean that a valid XML file
-   is failed to be parsed. */
 #define GWEN_XML_MAX_DEPTH 32
-#define GWEN_XML_MAX_TAGNAMELEN 64
-#define GWEN_XML_MAX_VARNAMELEN 128
-/* The above value was already exceeded (when it was 32) for a PUBLIC
-   identifier in the <!DOCTYPE> element */
-#define GWEN_XML_MAX_VALUELEN   128
-#define GWEN_XML_MAX_DATALEN    2048
-#define GWEN_XML_MAX_REMARKLEN  16384
 
 struct GWEN__XMLPROPERTY {
   GWEN_XMLPROPERTY *next;
@@ -87,11 +76,10 @@ struct GWEN_XMLNODE_PATH {
  * Reads a word from the buffered input until one of the delimiters is found.
  * @return <0 on error, >0 if delimiter (code), 0 if stopped for EOF
  */
-int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
-                       char chr,
-                       const char *delims,
-                       char *buffer,
-                       unsigned int size);
+int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
+                          char chr,
+                          const char *delims,
+                          GWEN_BUFFER *buf);
 
 
 int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,

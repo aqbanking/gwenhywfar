@@ -600,7 +600,7 @@ int testSocketAccept(int argc, char **argv) {
   GWEN_InetAddr_free(addr);
 
   /* create connection layer */
-  conn=GWEN_NetConnection_new(tr, 1);
+  conn=GWEN_NetConnection_new(tr, 1, 1);
   GWEN_NetConnection_SetUpFn(conn, connection_Up);
   GWEN_NetConnection_SetDownFn(conn, connection_Down);
 
@@ -619,7 +619,7 @@ int testSocketAccept(int argc, char **argv) {
   }
 
   fprintf(stderr, "Got an incoming connection.\n");
-  conn2=GWEN_NetConnection_new(incoming, 1);
+  conn2=GWEN_NetConnection_new(incoming, 1, 1);
   GWEN_NetConnection_SetUpFn(conn2, connection_Up);
   GWEN_NetConnection_SetDownFn(conn2, connection_Down);
   GWEN_NetConnection_Up(conn2);
@@ -698,12 +698,16 @@ int testSocketConnect(int argc, char **argv) {
   GWEN_InetAddr_free(addr);
 
   /* create connection layer */
-  conn=GWEN_NetConnection_new(tr, 1);
+  conn=GWEN_NetConnection_new(tr, 1, 1);
   GWEN_NetConnection_SetUpFn(conn, connection_Up);
   GWEN_NetConnection_SetDownFn(conn, connection_Down);
 
+  GWEN_NetConnection_Attach(conn);
+  GWEN_NetConnection_free(conn);
+
   if (GWEN_NetConnection_Connect_Wait(conn, 30)) {
     fprintf(stderr, "ERROR: Could not connect\n");
+    GWEN_NetConnection_free(conn);
     return 2;
   }
   fprintf(stderr, "Connected.\n");

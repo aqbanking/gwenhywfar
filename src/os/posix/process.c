@@ -53,6 +53,21 @@ static struct sigaction original_sigchld_sa;
 
 
 GWEN_ERRORCODE GWEN_Process_ModuleInit(){
+#if 0 /* ----------------------------------------------- DISABLED */
+
+  /*
+   * The following code has been disabled, for two reasons:
+   * 1) It causes some problems with applications which expect a default
+   *    signal handler to be active, and for any reason setting SIG_DFL
+   *    does not solve this problem
+   * 2) It is not a core part of this class.
+   *    Well, it would have made some things easier (especially detaching the
+   *    calling process from the newly spawned one without leaving zombies
+   *    begind) but it seems to do more harm than good.
+   *    WIN32 architectures do not provide signals anyway, so maybe we can
+   *    live without them in this module even with POSIX compliant systems.
+   */
+
   struct sigaction sa;
 
   /* setup signal handler for SIGCHLD */
@@ -90,7 +105,7 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
 	      "Original signal handler for signal SIGCHLD was using "
 	      "SA_SIGINFO. ");
   }
-
+#endif /* ----------------------------------------------- DISABLED */
   return 0;
 }
 

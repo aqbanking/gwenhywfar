@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=7
-GWENHYWFAR_VERSION_BUILD=2
+GWENHYWFAR_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -76,9 +76,9 @@ AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_TAG,$GWENHYWFAR_VERSION_TAG, [tag])
 #
 # SO version
 #
-GWENHYWFAR_SO_CURRENT="4"
+GWENHYWFAR_SO_CURRENT="5"
 GWENHYWFAR_SO_REVISION="0"
-GWENHYWFAR_SO_AGE="2"
+GWENHYWFAR_SO_AGE="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 AC_SUBST(GWENHYWFAR_SO_CURRENT)
@@ -203,7 +203,7 @@ AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/ipc src/parser"
+GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
@@ -347,7 +347,6 @@ AC_CONFIG_FILES([Doxyfile
                  src/crypt/ossl/Makefile
                  src/crypt/none/Makefile
                  src/io/Makefile
-                 src/ipc/Makefile
                  src/os/Makefile
                  src/os/posix/Makefile
                  src/os/posix/system.h

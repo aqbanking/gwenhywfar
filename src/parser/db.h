@@ -41,6 +41,7 @@
 extern "C" {
 #endif
 
+
 /** @defgroup MOD_DB Database
  * @ingroup MOD_PARSER
  *
@@ -227,6 +228,7 @@ GWEN_DB_NODE *GWEN_DB_Group_new(const char *name);
  */
 GWENHYWFAR_API 
 void GWEN_DB_Group_free(GWEN_DB_NODE *n);
+
 
 /**
  * Creates a deep copy of the given node. This copy will then be owned

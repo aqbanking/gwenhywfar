@@ -1620,7 +1620,7 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
   }
 
   if (!hasEntries) {
-    DBG_ERROR(0, "No entries in node");
+    DBG_INFO(0, "No entries in node");
   }
   return hasEntries?0:1;
 }

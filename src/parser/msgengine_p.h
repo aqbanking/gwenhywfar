@@ -54,6 +54,7 @@ struct GWEN__MSGENGINE {
   //char *secMode;
   //unsigned int protocolVersion;
   GWEN_DB_NODE *globalValues;
+
   GWEN_MSGENGINE_TYPEREAD_PTR typeReadPtr;
   GWEN_MSGENGINE_TYPEWRITE_PTR typeWritePtr;
   GWEN_MSGENGINE_TYPECHECK_PTR typeCheckPtr;

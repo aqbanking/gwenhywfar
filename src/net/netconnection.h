@@ -112,12 +112,17 @@ typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
  * @param tr underlying transport layer
  * @param take if !=0 then the connection will take over ownership of the
  * transport layer
+ * @param libId id assigned via @ref GWEN_Net_GetLibraryId, this can
+ * be used by programs and libraries to find out which connection belongs to
+ * which library/program (this is interesting for connections which have been
+ * added to the connection pool via @ref GWEN_Net_AddConnectionToPool)
  */
 GWEN_NETCONNECTION *GWEN_NetConnection_new(GWEN_NETTRANSPORT *tr,
-                                           int take);
+                                           int take,
+                                           GWEN_TYPE_UINT32 libId);
 void GWEN_NetConnection_free(GWEN_NETCONNECTION *conn);
-
 void GWEN_NetConnection_Attach(GWEN_NETCONNECTION *conn);
+
 /*@}*/
 
 
@@ -493,6 +498,42 @@ GWEN_TYPE_UINT32 GWEN_NetConnection_GetFlags(const GWEN_NETCONNECTION *conn);
  */
 void GWEN_NetConnection_SetFlags(GWEN_NETCONNECTION *conn,
                                  GWEN_TYPE_UINT32 fl);
+
+/**
+ * Returns the id assigned via @ref GWEN_Net_GetLibraryId, this can
+ * be used by programs and libraries to find out which connection belongs to
+ * which library/program (this is interesting for connections which have been
+ * added to the connection pool via @ref GWEN_Net_AddConnectionToPool)
+ */
+GWEN_TYPE_UINT32
+  GWEN_NetConnection_GetLibraryMark(const GWEN_NETCONNECTION *conn);
+
+/**
+ * This is an integer value at the disposal of the application. It can be
+ * used to separate connections by any criteria the program likes.
+ * This variable is not used by Gwenhywfar at all.
+ */
+GWEN_TYPE_UINT32
+  GWEN_NetConnection_GetUserMark(const GWEN_NETCONNECTION *conn);
+
+/**
+ * This is an integer value at the disposal of the application. It can be
+ * used to separate connections by any criteria the program likes.
+ * This variable is not used by Gwenhywfar at all.
+ */
+void GWEN_NetConnection_SetUserMark(GWEN_NETCONNECTION *conn,
+                                    GWEN_TYPE_UINT32 m);
+
+/**
+ * Returns the time (in seconds) the connection has been idle.
+ * Please note that the connection is idle if
+ * <ul>
+ *  <li>there was no traffic on the connection</li>
+ *  <li>neither @ref GWEN_NetConnection_Work nor @ref GWEN_NetConnection_Walk
+ *    are called</li>
+ * </ul>
+ */
+double GWEN_NetConnection_GetIdleTime(const GWEN_NETCONNECTION *conn);
 
 /*@}*/
 

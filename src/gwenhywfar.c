@@ -40,9 +40,10 @@
 #include "io/bufferedio_p.h"
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/logger.h"
-#include "ipc/ipc_p.h"
 #include "gwenhywfar/crypt.h"
 #include "gwenhywfar/process.h"
+#include "gwenhywfar/memory.h"
+#include "net/net.h"
 
 
 static GWEN_LOGGER *gwen_default_logger=0;
@@ -60,6 +61,10 @@ GWEN_ERRORCODE GWEN_Init() {
 
     DBG_DEBUG(0, "Initializing Error module");
     GWEN_Error_ModuleInit();
+    DBG_DEBUG(0, "Initializing Memory module");
+    err=GWEN_Memory_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
     DBG_DEBUG(0, "Initializing InetAddr module");
     err=GWEN_InetAddr_ModuleInit();
     if (!GWEN_Error_IsOk(err))
@@ -76,16 +81,16 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_BufferedIO_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing IPC module");
-    err=GWEN_IPC_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
-      return err;
     DBG_DEBUG(0, "Initializing Crypt module");
     err=GWEN_Crypt_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     DBG_DEBUG(0, "Initializing Process module");
     err=GWEN_Process_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    DBG_DEBUG(0, "Initializing Network module");
+    err=GWEN_Net_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     /* add here more modules */
@@ -110,6 +115,14 @@ GWEN_ERRORCODE GWEN_Fini() {
   gwen_is_initialized--;
   if (gwen_is_initialized==0) {
     /* add here more modules */
+    if (!GWEN_Error_IsOk(GWEN_Net_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(0, "GWEN_Fini: "
+                "Could not deinitialze module Net");
+    }
     if (!GWEN_Error_IsOk(GWEN_Process_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,
@@ -125,14 +138,6 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
       DBG_ERROR(0, "GWEN_Fini: "
                 "Could not deinitialze module Crypt");
-    }
-    if (!GWEN_Error_IsOk(GWEN_IPC_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(0, "GWEN_Fini: "
-                "Could not deinitialze module IPC");
     }
     if (!GWEN_Error_IsOk(GWEN_BufferedIO_ModuleFini())) {
       err=GWEN_Error_new(0,
@@ -165,6 +170,16 @@ GWEN_ERRORCODE GWEN_Fini() {
                        GWEN_ERROR_COULD_NOT_UNREGISTER);
       DBG_ERROR(0, "GWEN_Fini: "
                 "Could not deinitialze module InetAddr");
+    }
+
+    /* must be deinitialized at last */
+    if (!GWEN_Error_IsOk(GWEN_Memory_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(0, "GWEN_Fini: "
+                "Could not deinitialze module Memory");
     }
     GWEN_Error_ModuleFini();
     GWEN_Logger_SetDefaultLogger(0);

@@ -1,4 +1,87 @@
 
+2004/03/17: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- netconnection, nettransport:
+  - introduced idle time counter
+  - introduced backlog (see "man 2 listen")
+- ipc:
+  - removed this module since it is replaced by the net module
+- Make system:
+  - fixed the warnign about LDD_LDFLAGS not being used
+  - changed SO version and library version
+
+
+2004/03/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- xml:
+  - moved usage of static buffers to GWEN_BUFFERs. This removes any limit
+    on the size of an XML data element since a GWEN_BUFFER allocates the
+    memory space needed dynamically (unless told otherwise).
+    This should improve the probability of correctly reading a valid XML 
+    document. Even the size of a comment is now unlimited.
+    Well, not exactly unlimited, the hard limit of a GWEN_BUFFER is per 
+    default about 64 KB.
+    Even with the knowledge that Bill Gates once crashed with the
+    statement "640 kb oughta be enough"  I boldly guess this will suffice ;-)
+    
+    However, if it doesn't we can simply adjust the hard limit of the 
+    GWEN_BUFFERs used inside the XML code (those limits are not static, they
+    are assigned on a per object basis).
+    
+    About the 640 KB note: That was the base of the 640 KB barrier the older
+    ones amongst us had to deal with some years ago ;-)
+    Who wouldn't remember the times when we had to sqeeze out every single
+    byte below 640 KB by loading drivers into higher memory space (himem) ;-)
+    just to play Doom with proper graphics and sound ;-)
+    
+    Hmm, on the other hand I also worked well with 64 KB CP/M computers back 
+    in the 90ies ;-)
+    
+    Ok, enough history for today ;-)
+  - removed dead code
+- buffer:
+  - added mode flag ABORT_ON_MEMFULL
+    This takes into account the fact that most AppendByte/AppendString etc
+    functions of the GWEN_Buffer module are called without checking for the 
+    result.
+    Well, that's ok, because normally a GWEN_BUFFER is in dynamic mode (as
+    described above), and in that mode such a call SHOULD never fail.
+    However, if it does anyway there might be an error later in the program's
+    run which would not necessarily point to the real cause: The full buffer.
+    An error due to a full buffer clearly is a design/development problem
+    which is now handled as such: abort() is called which leaves the user
+    with a core dump for detailed debugging.
+    This flag is turned on by default, but if you want the old behaviour you
+    can still turn if off on a per object basis.
+- inherit:
+  - added this module which facilitates inheritance (as known in C++).
+    The implementation of inheritance models isn't as elegant as it is in
+    C++ but it is type safe and it works just fine.
+    One base class can be inherited by one or more other "classes".
+    Each inheriting class has it's own data associated with the base object.
+    You only need to use some macros in the inherited class and only two
+    macros in inheriting classes for a complete implementation of inheritance.
+
+    As I stated before (and I'm quite sure Christian will assist with this
+    statement): Macros are very, very bad. Seriously.
+    But they are the only alternative as long as templates are not implemented
+    in C. And BTW: If the macros are properly designed and well tested they
+    cause more problems to their developers since developing a macro is very,
+    very difficulty.
+    However, once they work they are quite usefull.
+
+    Please refer to the modules net/netconnection and net/nettransport
+    for an example of LIST and INHERIT macro usage.
+- net/*
+  - added multiple files which implement a networking framework which can be
+    used with different network protocols and transport layer types.
+    This will replace the old IPC stuff which wasn't too well designed ;-)
+    The new modules have prooven to be very usefull while developing a
+    C implementation of the HBCI protocol (and HTTP for that matter).
+    These implementations will soon be released as a new GWEN module (like
+    the old GWEN-IPC module which is now discontinued).
+
+
 2004/03/11: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - db:

@@ -47,6 +47,7 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_NETMSG, GWEN_NetMsg);
 GWEN_NETMSG *GWEN_NetMsg_new(GWEN_TYPE_UINT32 bufferSize);
 void GWEN_NetMsg_free(GWEN_NETMSG *msg);
 void GWEN_NetMsg_Attach(GWEN_NETMSG *msg);
+
 /*@}*/
 
 

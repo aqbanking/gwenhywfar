@@ -30,7 +30,12 @@
 #define GWEN_NETTRANSPORT_P_H
 
 
+#define GWEN_NETTRANSPORT_DEFAULT_BACKLOG 10
+
+
 #include <gwenhywfar/nettransport.h>
+
+#include <time.h>
 
 
 struct GWEN_NETTRANSPORT {
@@ -52,6 +57,10 @@ struct GWEN_NETTRANSPORT {
 
   GWEN_INETADDRESS *localAddr;
   GWEN_INETADDRESS *peerAddr;
+
+  time_t lastActivity;
+
+  GWEN_TYPE_UINT32 backLog;
 
   GWEN_TYPE_UINT32 usage;
 };

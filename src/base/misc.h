@@ -82,12 +82,6 @@
 extern "C" {
 #endif
 
-#define GWEN_NEW_OBJECT(typ, varname) \
-  varname=(typ *)malloc(sizeof(typ)); \
-  assert(varname); \
-  memset(varname,0,sizeof(typ));
-
-
   /** @defgroup GWEN_MACRO_LIST Macros For Typesafe List Handling
    *
    */
@@ -221,6 +215,7 @@ extern "C" {
 #define GWEN_LIST_FUNCTIONS(t, pr) \
   void pr##_List_Add(t *element, t##_LIST *l) { \
   assert(l); \
+  assert(element->listPtr==0);/* element MUST NOT be in any list */ \
   GWEN_LIST_ADD(t, element, &(l->first)); \
   element->listPtr=l;\
   l->count++;\
@@ -228,6 +223,7 @@ extern "C" {
   \
   void pr##_List_Insert(t *element, t##_LIST *l) { \
   assert(l); \
+  assert(element->listPtr==0); /* element MUST NOT be in any list */ \
   GWEN_LIST_INSERT(t, element, &(l->first)); \
   element->listPtr=l;\
   l->count++;\
@@ -299,6 +295,8 @@ extern "C" {
   }
   /*@}*/ /* defgroup */
 
+
+#include <gwenhywfar/memory.h>
 
 
 
