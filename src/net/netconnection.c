@@ -294,7 +294,6 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
   GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   lastHadNoWaitFlags=0;
   for (count=0;;) {
-
     /* actually try to write */
     rv=GWEN_NetConnection_Write(conn, buffer, bsize);
     if (rv==0) {
@@ -855,20 +854,29 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
 
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
+      GWEN_NETTRANSPORT_STATUS st;
 
+      st=GWEN_NetConnection_GetStatus(conn);
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
         GWEN_WaitCallback_Leave();
 	return -1;
       }
 
-      if (GWEN_NetTransport_GetStatus(conn->transportLayer)==expStatus) {
+      if (st==expStatus) {
         DBG_INFO(GWEN_LOGDOMAIN,
                  "Expected status \"%s\" (%d) reached",
                  GWEN_NetTransport_StatusName(expStatus),
                  expStatus);
         GWEN_WaitCallback_Leave();
         return 0;
+      }
+      else if (st==GWEN_NetTransportStatusDisabled ||
+               st==GWEN_NetTransportStatusUnconnected) {
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Connection is inactive, will never change status");
+        GWEN_WaitCallback_Leave();
+        return -1;
       }
 
       /* prepare waitflags */
@@ -900,8 +908,10 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
 	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
 	    difftime(time(0), startt)>timeout) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Timeout while waiting for status %d, giving up",
-                   expStatus);
+          DBG_INFO(GWEN_LOGDOMAIN,
+                   "Timeout while waiting for status %d, giving up (%d)",
+                   expStatus,
+                   GWEN_NetConnection_GetStatus(conn));
           GWEN_WaitCallback_Leave();
           return 1;
         }
@@ -1044,8 +1054,11 @@ GWEN_NetConnection_Work(GWEN_NETCONNECTION *conn){
   assert(conn);
   if (conn->workFn)
     res=conn->workFn(conn);
-  else
-    res=GWEN_NetConnection_WorkIO(conn);
+  else {
+    DBG_WARN(GWEN_LOGDOMAIN, "Work function not set");
+    res=GWEN_NetConnectionWorkResult_Error;
+  }
+
   if (res==GWEN_NetConnectionWorkResult_Change) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Change on connection.");
   }
@@ -1324,13 +1337,12 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
   rset=GWEN_SocketSet_new();
   wset=GWEN_SocketSet_new();
 
-#if 1 /* FIXME: set to 0 to debug job-error in AqBanking */
   /* -------------------------------------------- let all connections work */
   curr=GWEN_NetConnection_List_First(connList);
   while(curr) {
     GWEN_NETTRANSPORT_STATUS st;
 
-    st=GWEN_NetTransport_GetStatus(curr->transportLayer);
+    st=GWEN_NetConnection_GetStatus(curr);
     if (st!=GWEN_NetTransportStatusDisabled &&
         st!=GWEN_NetTransportStatusUnconnected) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Working on connection...");
@@ -1347,6 +1359,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Skipping inactive connection");
     }
+
     curr=GWEN_NetConnection_List_Next(curr);
   } /* while */
 
@@ -1361,7 +1374,6 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     DBG_ERROR( GWEN_LOGDOMAIN, "Not a single connection succeeded");
     return GWEN_NetConnectionWorkResult_Error;
   }
-#endif
 
   /* ------------------------------------------------------ sample sockets */
   curr=GWEN_NetConnection_List_First(connList);
@@ -1477,30 +1489,29 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
   GWEN_SocketSet_free(rset);
   GWEN_SocketSet_free(wset);
 
-
-  /* -------------------------------------------- let all connections work */
+  /* -------------------------------------- let all connections work again */
   curr=GWEN_NetConnection_List_First(connList);
   while(curr) {
     GWEN_NETTRANSPORT_STATUS st;
 
-    st=GWEN_NetTransport_GetStatus(curr->transportLayer);
-    if (st!=GWEN_NetTransportStatusUnconnected &&
-        st!=GWEN_NetTransportStatusPDisconnected &&
-        st!=GWEN_NetTransportStatusDisabled) {
+    st=GWEN_NetConnection_GetStatus(curr);
+    if (st!=GWEN_NetTransportStatusDisabled &&
+        st!=GWEN_NetTransportStatusUnconnected) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Working on connection...");
       rv=GWEN_NetConnection_Work(curr);
       if (rv==GWEN_NetConnectionWorkResult_Error) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Error working (result was %d)", rv);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error working (result was %d)", rv);
         errors++;
       }
       else if (rv==GWEN_NetConnectionWorkResult_Change) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Change in connection");
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Change in connection");
         changes++;
       }
     }
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Skipping inactive connection");
     }
+
     curr=GWEN_NetConnection_List_Next(curr);
   } /* while */
 

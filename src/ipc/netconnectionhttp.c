@@ -1006,6 +1006,51 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
 
     changesBak=changes;
 
+    while(1) {
+      int lchanges=0;
+
+      /* do all write work */
+      while(1) {
+        rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
+        if (rv1==GWEN_NetConnectionWorkResult_Change) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Change while writing");
+          lchanges++;
+        }
+        else if (rv1==GWEN_NetConnectionWorkResult_Error) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Error on writing");
+          return rv1;
+        }
+        else {
+          DBG_DEBUG(GWEN_LOGDOMAIN, "No change while writing");
+          break;
+        }
+      }
+
+      /* do all read work */
+      while(1) {
+        rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
+        if (rv3==GWEN_NetConnectionWorkResult_Change) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Change while reading");
+          lchanges++;
+        }
+        else if (rv3==GWEN_NetConnectionWorkResult_Error) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Error on reading");
+          return rv3;
+        }
+        else {
+          DBG_DEBUG(GWEN_LOGDOMAIN, "No change while reading");
+          break;
+        }
+      }
+      changes+=lchanges;
+      if (!lchanges)
+        break;
+    } /* while */
+
+    if (changes) {
+      return GWEN_NetConnectionWorkResult_Change;
+    }
+
     rv2=GWEN_NetConnection_WorkIO(conn);
     if (rv2==GWEN_NetConnectionWorkResult_Change) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Change on WorkIO");
@@ -1015,78 +1060,11 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on WorkIO");
       return rv2;
     }
-
-    /* do all write work */
-    while(1) {
-      rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
-      if (rv1==GWEN_NetConnectionWorkResult_Change) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Change while writing");
-        changes++;
-      }
-      else if (rv1==GWEN_NetConnectionWorkResult_Error) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Error on writing");
-        return rv1;
-      }
-      else {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "No change while writing");
-        break;
-      }
-    }
-  
-    /* do all read work */
-    while(1) {
-      rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
-      if (rv3==GWEN_NetConnectionWorkResult_Change) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Change while reading");
-        changes++;
-      }
-      else if (rv3==GWEN_NetConnectionWorkResult_Error) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Error on reading");
-        return rv3;
-      }
-      else {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "No change while reading");
-        break;
-      }
-    }
-
-    if (changesBak==changes) {
-      GWEN_NETTRANSPORT_STATUS st;
-
-      st=GWEN_NetConnection_GetStatus(conn);
-      if (st==GWEN_NetTransportStatusPDisconnected ||
-          st==GWEN_NetTransportStatusUnconnected) {
-        if (changes) {
-          DBG_DEBUG(GWEN_LOGDOMAIN,
-                    "Connection is down after some changes, done.");
-          break;
-        }
-        else {
-          DBG_ERROR(GWEN_LOGDOMAIN,
-                    "Connection %p (%p) is down, no changes, aborting",
-                    conn,
-                    GWEN_NetConnection_GetTransportLayer(conn));
-          return GWEN_NetConnectionWorkResult_Error;
-        }
-      }
-
-      DBG_DEBUG(GWEN_LOGDOMAIN, "No more changes, doing some IO work");
-      rv2=GWEN_NetConnection_WorkIO(conn);
-      if (rv2==GWEN_NetConnectionWorkResult_Change) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Change on WorkIO");
-        changes++;
-      }
-      else if (rv2==GWEN_NetConnectionWorkResult_Error) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error on WorkIO");
-        return rv2;
-      }
-    }
-
-    if (changesBak==changes) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "No more changes, even after IO work");
+    else if (rv2==GWEN_NetConnectionWorkResult_NoChange) {
       break;
     }
-  }
+  } /* while */
+
   if (changes) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "There were some changes (%d)", changes);
     return GWEN_NetConnectionWorkResult_Change;

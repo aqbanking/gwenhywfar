@@ -1407,6 +1407,58 @@ int testHTTPd(int argc, char **argv) {
 
 
 
+int testSSLC(int argc, char **argv) {
+  GWEN_NETTRANSPORT *tr;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETCONNECTION *conn;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", "newtrusted",
+                              0, //"lancelot.crt",
+                              "dh_1024.pem",
+                              0, 1);
+  if (!tr) {
+    fprintf(stderr, "SSL not supported.\n");
+    return 2;
+  }
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "82.165.27.189");
+  GWEN_InetAddr_SetPort(addr, 443);
+  GWEN_NetTransport_SetPeerAddr(tr, addr);
+  GWEN_InetAddr_free(addr);
+
+  /* create connection layer */
+  conn=GWEN_NetConnectionHTTP_new(tr,
+                                  1,     /* take */
+                                  0,     /* libId */
+                                  1,0);  /* protocol version */
+  GWEN_NetConnection_SetUpFn(conn, connection_Up);
+  GWEN_NetConnection_SetDownFn(conn, connection_Down);
+  GWEN_NetConnectionHTTP_SubMode(conn,
+                                 GWEN_NETCONN_MODE_WAITBEFOREREAD |
+                                 GWEN_NETCONN_MODE_WAITBEFOREBODYREAD);
+
+  if (GWEN_NetConnection_Connect_Wait(conn, 15)) {
+    fprintf(stderr, "ERROR: Could not connect\n");
+    GWEN_NetConnection_free(conn);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetConnection_Disconnect_Wait(conn, 30);
+  GWEN_NetConnection_free(conn);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 
 
 
@@ -4163,6 +4215,8 @@ int main(int argc, char **argv) {
     rv=testPtr(argc, argv);
   else if (strcasecmp(argv[1], "sl2")==0)
     rv=testStringList2(argc, argv);
+  else if (strcasecmp(argv[1], "sslc")==0)
+    rv=testSSLC(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

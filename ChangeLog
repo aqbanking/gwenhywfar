@@ -1,4 +1,15 @@
 
+===========================================================================
+MARK: released gwenhywfar-1.6.0 (2005/01/22)
+===========================================================================
+
+2005/01/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some bugs in network code
+- added some fields to certificate DB to make it more informative
+- fixed a bug: SSL code was not storing the SSL certificate
+
+
 2005/01/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added GWEN_NetTransportSSL_SetAskAddCertFn2() which allows setting a

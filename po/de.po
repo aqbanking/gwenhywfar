@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-01-14 17:10+0100\n"
+"POT-Creation-Date: 2005-01-22 04:06+0100\n"
 "PO-Revision-Date: 2004-08-21 00:22+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -169,95 +169,99 @@ msgstr "Fehler bei der Signaturüberprüfung"
 msgid "Generic SSL error"
 msgstr "Allgemeiner SSL Fehler"
 
-#: src/crypt/ossl/nettransportssl.c:1373
+#: src/crypt/ossl/nettransportssl.c:1405
 msgid "New certificate"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1376
+#: src/crypt/ossl/nettransportssl.c:1409
 msgid "Unable to get issuer certificate"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1379
+#: src/crypt/ossl/nettransportssl.c:1413
 msgid "Unable to decrypt cert signature"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1382
+#: src/crypt/ossl/nettransportssl.c:1417
 msgid "Unable to decode issuer public key"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1385
+#: src/crypt/ossl/nettransportssl.c:1421
 msgid "Cert signature failure"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1388
+#: src/crypt/ossl/nettransportssl.c:1425
 msgid "Cert not yet valid"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1391
+#: src/crypt/ossl/nettransportssl.c:1429
 msgid "Cert has expired"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1394
+#: src/crypt/ossl/nettransportssl.c:1433
 msgid "Self-signed root cert"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1397
+#: src/crypt/ossl/nettransportssl.c:1437
 msgid "Self-signed cert"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1400
+#: src/crypt/ossl/nettransportssl.c:1441
 msgid "Unable to verify leaf signature"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1403
+#: src/crypt/ossl/nettransportssl.c:1445
 msgid "Cert chain too long"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1406
+#: src/crypt/ossl/nettransportssl.c:1449
 msgid "Cert revoked"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1409
+#: src/crypt/ossl/nettransportssl.c:1453
 msgid "Invalid CA"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1412
+#: src/crypt/ossl/nettransportssl.c:1457
 msgid "Cert untrusted"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1415
+#: src/crypt/ossl/nettransportssl.c:1461
 msgid "Cert rejected"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1424
+#: src/crypt/ossl/nettransportssl.c:1471
 msgid "Formal error in certificate"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1428
+#: src/crypt/ossl/nettransportssl.c:1476
 msgid "Out of memory"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1431
+#: src/crypt/ossl/nettransportssl.c:1480
 msgid "Unable to get CRL"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1434
+#: src/crypt/ossl/nettransportssl.c:1484
 msgid "Unable to decrypt CRL signature"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1437
+#: src/crypt/ossl/nettransportssl.c:1488
 msgid "CRL signature failure"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1440
+#: src/crypt/ossl/nettransportssl.c:1492
 msgid "CRL not yet valid"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1443
+#: src/crypt/ossl/nettransportssl.c:1496
 msgid "CRL has expired"
 msgstr ""
 
-#: src/crypt/ossl/nettransportssl.c:1445
+#: src/crypt/ossl/nettransportssl.c:1500
+msgid "Certificate ok"
+msgstr ""
+
+#: src/crypt/ossl/nettransportssl.c:1503
 #, fuzzy
 msgid "Unknown SSL error"
 msgstr "Unbekannter DNS-Fehler"
