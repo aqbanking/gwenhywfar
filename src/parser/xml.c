@@ -1403,7 +1403,9 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n){
 
 
 GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n){
-  return GWEN_XMLNode_GetNextOfType(n, GWEN_XMLNodeTypeTag);
+  if (!n->next)
+    return 0;
+  return GWEN_XMLNode_GetNextOfType(n->next, GWEN_XMLNodeTypeTag);
 }
 
 
@@ -1415,7 +1417,9 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n){
 
 
 GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n){
-  return GWEN_XMLNode_GetNextOfType(n, GWEN_XMLNodeTypeData);
+  if (!n->next)
+    return 0;
+  return GWEN_XMLNode_GetNextOfType(n->next, GWEN_XMLNodeTypeData);
 }
 
 

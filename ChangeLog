@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/12/20 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in XML code
+
+
 2003/12/18 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added MD algorithm: MD5
