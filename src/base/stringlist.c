@@ -409,4 +409,13 @@ void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
 
 
 
+const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l){
+  assert(l);
+  if (l->first==0)
+    return 0;
+  return l->first->data;
+}
+
+
+
 

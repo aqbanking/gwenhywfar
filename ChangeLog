@@ -1,4 +1,8 @@
 
+===========================================================================
+MARK: released gwenhywfar-1.5.0 (2005/01/14)
+===========================================================================
+
 
 2005/01/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -8,6 +12,7 @@
   "root/group[2]/var[1]"
 - now version numbers always use three digits (except for CVS packages).
   @Christian: You won ;-)
+- added function GWEN_StringList_FirstString()
 
 
 2005/01/13: Martin Preuss<martin@libchipcard.de>

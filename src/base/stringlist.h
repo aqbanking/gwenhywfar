@@ -142,6 +142,9 @@ void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
 			      void *(*func)(const char *s, void *u), 
 			      void *user_data);
 
+GWENHYWFAR_API
+const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l);
+
 #ifdef __cplusplus
 }
 #endif
