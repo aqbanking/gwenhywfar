@@ -1351,17 +1351,18 @@ int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf){
   char numbuf[128];
   int rv;
 #ifdef HAVE_SETLOCALE
-  const char *currentLocale;
+  const char *orig_locale = setlocale(LC_NUMERIC, NULL);
+  char *currentLocale = strdup(orig_locale ? orig_locale : "C");
+  setlocale(LC_NUMERIC,"C");
 #endif
 
-#ifdef HAVE_SETLOCALE
-  currentLocale=setlocale(LC_NUMERIC, 0);
-  setlocale(LC_NUMERIC, "C");
-#endif
   rv=snprintf(numbuf, sizeof(numbuf), "%lf", num);
+
 #ifdef HAVE_SETLOCALE
   setlocale(LC_NUMERIC, currentLocale);
+  free(currentLocale);
 #endif
+
   if (rv<1 || rv>=sizeof(numbuf))
     return -1;
   GWEN_Buffer_AppendString(buf, numbuf);
@@ -1373,17 +1374,18 @@ int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf){
 int GWEN_Text_StringToDouble(const char *s, double *num){
   int rv;
 #ifdef HAVE_SETLOCALE
-  const char *currentLocale;
+  const char *orig_locale = setlocale(LC_NUMERIC, NULL);
+  char *currentLocale = strdup(orig_locale ? orig_locale : "C");
+  setlocale(LC_NUMERIC,"C");
 #endif
 
-#ifdef HAVE_SETLOCALE
-  currentLocale=setlocale(LC_NUMERIC, 0);
-  setlocale(LC_NUMERIC, "C");
-#endif
   rv=sscanf(s, "%lf", num);
+
 #ifdef HAVE_SETLOCALE
   setlocale(LC_NUMERIC, currentLocale);
+  free(currentLocale);
 #endif
+
   if (rv!=1)
     return -1;
   return 0;

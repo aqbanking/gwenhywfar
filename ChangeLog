@@ -1,4 +1,9 @@
+2004-09-25  Christian Stimming  <stimming@tuhh.de>
 
+	* src/parser/text.c, src/os/posix/libloader.c: When changing the
+	locale, immediately copy the previous locale to a new
+	buffer. Otherwise often enough the returned string which was
+	static storage was no longer valid.
 
 2004/09/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
