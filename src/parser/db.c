@@ -30,7 +30,7 @@
 # include <config.h>
 #endif
 
-//#define DISABLE_DEBUGLOG
+#define DISABLE_DEBUGLOG
 
 #include "db_p.h"
 #include <gwenhyfwar/misc.h>
@@ -198,7 +198,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
       GWEN_DB_NODE *ncn;
 
       ncn=cn->h.next;
-      DBG_DEBUG(0, "Freeing child node");
+      DBG_VERBOUS(0, "Freeing child node");
       GWEN_DB_Node_free(cn);
       cn=ncn;
     }
@@ -206,29 +206,29 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
     /* free dynamic (allocated) data */
     switch(n->h.typ) {
     case GWEN_DB_NODETYPE_GROUP:
-      DBG_DEBUG(0, "Freeing dynamic data of group \"%s\"", n->group.name);
+      DBG_VERBOUS(0, "Freeing dynamic data of group \"%s\"", n->group.name);
       free(n->group.name);
       break;
 
     case GWEN_DB_NODETYPE_VAR:
-      DBG_DEBUG(0, "Freeing dynamic data of var \"%s\"", n->var.name);
+      DBG_VERBOUS(0, "Freeing dynamic data of var \"%s\"", n->var.name);
       free(n->var.name);
       break;
 
     case GWEN_DB_NODETYPE_VALUE:
       switch(n->val.h.typ) {
       case GWEN_DB_VALUETYPE_CHAR:
-        DBG_DEBUG(0, "Freeing dynamic data of char value");
+        DBG_VERBOUS(0, "Freeing dynamic data of char value");
         free(n->val.c.data);
         break;
 
       case GWEN_DB_VALUETYPE_INT:
         /* no dynamic data, nothing to do */
-        DBG_DEBUG(0, "Freeing dynamic data of int value");
+        DBG_VERBOUS(0, "Freeing dynamic data of int value");
         break;
 
       case GWEN_DB_VALUETYPE_BIN:
-        DBG_DEBUG(0, "Freeing dynamic data of bin value");
+        DBG_VERBOUS(0, "Freeing dynamic data of bin value");
         free(n->val.b.data);
         break;
 
@@ -240,7 +240,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
     default:
       DBG_WARN(0, "Unknown node type (%d)", n->h.typ);
     }
-    DBG_DEBUG(0, "Freeing node itself");
+    DBG_VERBOUS(0, "Freeing node itself");
     free(n);
   }
 
@@ -252,12 +252,12 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(GWEN_DB_NODE *n){
 
   switch(n->h.typ) {
   case GWEN_DB_NODETYPE_GROUP:
-    DBG_DEBUG(0, "Duplicating group \"%s\"", n->group.name);
+    DBG_VERBOUS(0, "Duplicating group \"%s\"", n->group.name);
     nn=GWEN_DB_Group_new(n->group.name);
     break;
 
   case GWEN_DB_NODETYPE_VAR:
-    DBG_DEBUG(0, "Duplicating variable \"%s\"", n->var.name);
+    DBG_VERBOUS(0, "Duplicating variable \"%s\"", n->var.name);
     nn=GWEN_DB_Var_new(n->var.name);
     break;
 
@@ -637,7 +637,7 @@ void* GWEN_DB_HandlePath(const char *entry,
         (!(flags & GWEN_PATH_FLAGS_LAST) &
          (flags & GWEN_PATH_FLAGS_PATHMUSTNOTEXIST))
        ) {
-      DBG_DEBUG(0, "Entry \"%s\" already exists", entry);
+      DBG_VERBOUS(0, "Entry \"%s\" already exists", entry);
       return 0;
     }
   }
@@ -683,7 +683,7 @@ GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
 		     GWEN_PATH_FLAGS_NAMEMUSTEXIST |
 		     GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not found",
+    DBG_VERBOUS(0, "Path \"%s\" not found",
 	      path);
     return 0;
   }
@@ -702,7 +702,7 @@ GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
     }
     nn=nn->h.next;
   } /* while */
-  DBG_DEBUG(0, "No value[%d] for path \"%s\"",
+  DBG_VERBOUS(0, "No value[%d] for path \"%s\"",
 	    idx, path);
   return 0;
 }
@@ -720,7 +720,7 @@ int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
 		     GWEN_PATH_FLAGS_NAMEMUSTEXIST |
 		     GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not found",
+    DBG_VERBOUS(0, "Path \"%s\" not found",
 	      path);
     return 1;
   }
@@ -741,7 +741,7 @@ int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
 		     GWEN_PATH_FLAGS_PATHMUSTEXIST |
 		     GWEN_PATH_FLAGS_NAMEMUSTEXIST);
   if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not found",
+    DBG_VERBOUS(0, "Path \"%s\" not found",
 	      path);
     return 1;
   }
@@ -764,7 +764,7 @@ int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
                        GWEN_PATH_FLAGS_PATHMUSTEXIST |
                        GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (!nn) {
-      DBG_DEBUG(0, "Path \"%s\" not found",
+      DBG_VERBOUS(0, "Path \"%s\" not found",
                 path);
       return 1;
     }
@@ -786,13 +786,13 @@ const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
 
   nn=GWEN_DB_GetValue(n, path, idx);
   if (!nn){
-    DBG_DEBUG(0, "Value for \"%s\" not found, returning default value",
+    DBG_VERBOUS(0, "Value for \"%s\" not found, returning default value",
 	      path);
     return defVal;
   }
   if (nn->val.h.typ!=GWEN_DB_VALUETYPE_CHAR) {
     /* bad type */
-    DBG_DEBUG(0, "Bad type for path \"%s\", returning default value",
+    DBG_VERBOUS(0, "Bad type for path \"%s\", returning default value",
 	      path);
     return defVal;
   }
@@ -813,7 +813,7 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
 		     path,
 		     flags | GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not available",
+    DBG_VERBOUS(0, "Path \"%s\" not available",
 	      path);
     return 1;
   }
@@ -841,7 +841,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
 
   nn=GWEN_DB_GetValue(n, path, idx);
   if (!nn){
-    DBG_DEBUG(0, "Value[%d] for \"%s\" not found, returning default value",
+    DBG_VERBOUS(0, "Value[%d] for \"%s\" not found, returning default value",
 	      idx, path);
     return defVal;
   }
@@ -850,7 +850,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
     const char *p;
     int res;
 
-    DBG_DEBUG(0, "Converting char value to int");
+    DBG_VERBOUS(0, "Converting char value to int");
     p=GWEN_DB_GetCharValueFromNode(nn);
     assert(p);
     if (sscanf(p, "%d", &res)!=1) {
@@ -861,11 +861,11 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
     return res;
   }
   else if (nn->val.h.typ!=GWEN_DB_VALUETYPE_INT) {
-    DBG_DEBUG(0, "Value[%d] of \"%s\" is not an int or char value",
+    DBG_VERBOUS(0, "Value[%d] of \"%s\" is not an int or char value",
 	      idx, path);
     return defVal;
   }
-  DBG_DEBUG(0, "Returning value from node (\"%s\":%d)",
+  DBG_VERBOUS(0, "Returning value from node (\"%s\":%d)",
             path, idx);
   return nn->val.i.data;
 }
@@ -884,7 +884,7 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
 		     path,
 		     flags | GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not available",
+    DBG_VERBOUS(0, "Path \"%s\" not available",
 	      path);
     return 1;
   }
@@ -915,14 +915,14 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
   assert(returnValueSize);
   nn=GWEN_DB_GetValue(n, path, idx);
   if (!nn){
-    DBG_DEBUG(0, "Value for \"%s\" not found, returning default value",
+    DBG_VERBOUS(0, "Value for \"%s\" not found, returning default value",
 	      path);
     *returnValueSize=defValSize;
     return defVal;
   }
   if (nn->val.h.typ!=GWEN_DB_VALUETYPE_BIN) {
     /* bad type */
-    DBG_DEBUG(0, "Bad type for path \"%s\", returning default value",
+    DBG_VERBOUS(0, "Bad type for path \"%s\", returning default value",
 	      path);
     *returnValueSize=defValSize;
     return defVal;
@@ -947,7 +947,7 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 		     path,
 		     flags | GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not available",
+    DBG_VERBOUS(0, "Path \"%s\" not available",
 	      path);
     return 1;
   }
@@ -977,7 +977,7 @@ GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
 		     path,
 		     flags & ~GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not available",
+    DBG_VERBOUS(0, "Path \"%s\" not available",
 	      path);
     return 0;
   }
@@ -1106,7 +1106,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
       pos++;
 
     if (!*pos || *pos=='#') {
-      DBG_DEBUG(0, "Line %d is empty", lineno);
+      DBG_VERBOUS(0, "Line %d is empty", lineno);
     }
     else {
       if (*pos=='}') {
@@ -1126,7 +1126,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
       }
       else if (*pos=='#') {
         /* comment only line */
-        DBG_DEBUG(0, "Comment-only line");
+        DBG_VERBOUS(0, "Comment-only line");
       }
       else {
         if (*pos==',') {
@@ -1164,7 +1164,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             GWEN_DB_NODE *tmpn;
 
             pos++;
-            DBG_DEBUG(0, "Found group \"%s\"", wbuf);
+            DBG_VERBOUS(0, "Found group \"%s\"", wbuf);
             tmpn=GWEN_DB_GetGroup(currGrp, dbflags, wbuf);
             if (!tmpn) {
               DBG_ERROR(0, "Error in line %d, pos %d (no group)",
@@ -1177,13 +1177,13 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
           }
           else if (*pos==((dbflags&GWEN_DB_FLAGS_USE_COLON)?':':'=')) {
             /* found a variable */
-            DBG_DEBUG(0, "Found a variable \"%s\", handle it later", wbuf);
+            DBG_VERBOUS(0, "Found a variable \"%s\", handle it later", wbuf);
             isVar=1;
           }
           else {
             /* found another word, so the previous word is a type specifier */
             isVar=1;
-            DBG_DEBUG(0, "Found a type specifier \"%s\"", wbuf);
+            DBG_VERBOUS(0, "Found a type specifier \"%s\"", wbuf);
             if (strcasecmp(p, "int")==0)
               vt=GWEN_DB_VALUETYPE_INT;
 
@@ -1217,7 +1217,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
         } /* if !isVal */
 
         if (isVar) {
-          DBG_DEBUG(0, "Creating variable \"%s\"", wbuf);
+          DBG_VERBOUS(0, "Creating variable \"%s\"", wbuf);
           pos++;
           currVar=GWEN_DB_GetNode(currGrp,
                                   wbuf,
@@ -1237,7 +1237,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
           }
 
           while (*pos) {
-            DBG_DEBUG(0, "Reading value");
+            DBG_VERBOUS(0, "Reading value");
             /* get next value */
             p=GWEN_Text_GetWord(pos,
                                 (dbflags&GWEN_DB_FLAGS_USE_COLON)?
@@ -1250,12 +1250,12 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                                 GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
                                 &pos);
             if (!p || !*wbuf) {
-              DBG_INFO(0, "Line %d, pos %d: no word",
-                       lineno, pos-linebuf+1);
+              DBG_DEBUG(0, "Line %d, pos %d: no word",
+                        lineno, pos-linebuf+1);
               break;
             }
 
-            DBG_DEBUG(0, "Creating value \"%s\"", wbuf);
+            DBG_VERBOUS(0, "Creating value \"%s\"", wbuf);
 
             /* set value */
             switch(vt) {
@@ -1393,7 +1393,7 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
 
   nn=nn->h.child;
   while (nn) {
-    DBG_DEBUG(0, "Duplicating node");
+    DBG_VERBOUS(0, "Duplicating node");
     cpn=GWEN_DB_Node_dup(nn);
     GWEN_DB_Node_Append(n, cpn);
     nn=nn->h.next;
@@ -1425,7 +1425,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 
   n=node->h.child;
   while(n) {
-    DBG_DEBUG(0, "Writing node");
+    DBG_VERBOUS(0, "Writing node");
     switch(n->h.typ) {
     case GWEN_DB_NODETYPE_GROUP:
       if (dbflags & GWEN_DB_FLAGS_WRITE_SUBGROUPS) {

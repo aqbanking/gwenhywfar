@@ -1335,7 +1335,7 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
                                          unsigned int *datasize) {
   GWEN_XMLNODE *pn;
 
-  DBG_INFO(0, "Looking for value of \"%s\" in <VALUES>", name);
+  DBG_DEBUG(0, "Looking for value of \"%s\" in <VALUES>", name);
   pn=GWEN_XMLNode_GetChild(node);
 
   while(pn) {
@@ -1395,7 +1395,7 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
     pn=GWEN_XMLNode_Next(pn);
   } /* while node */
 
-  DBG_INFO(0, "No value found for \"%s\" in <VALUES>", name);
+  DBG_DEBUG(0, "No value found for \"%s\" in <VALUES>", name);
   return 0;
 }
 
@@ -3487,21 +3487,55 @@ GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
     unsigned int i;
     char numbuffer[32];
     char *rp;
+    GWEN_MSGENGINE_TRUSTEDDATA *std;
+    int match;
 
-    rp=(char*)malloc(ntd->size+1);
-    assert(rp);
-    if (ntd->size==1) {
-      if (count>=0x10)
-        nextNr+=0x10;
-    }
-    sprintf(numbuffer, "%02X", nextNr++);
-    for (i=0; i<ntd->size; i++) {
-      if (count<0x10)
-        rp[i]=numbuffer[1];
+    /* check whether the same data already exists */
+    std=td;
+    match=0;
+    while(std && std!=ntd) {
+
+      match=1;
+      if (std->size==ntd->size) {
+        unsigned int i;
+
+        for (i=0; i<td->size; i++) {
+          if (std->data[i]!=ntd->data[i]) {
+            match=0;
+            break;
+          }
+        } /* for */
+      }
       else
-        rp[i]=numbuffer[i&1];
-    } /* for */
-    rp[i]=0;
+        match=0;
+
+      if (match)
+        break;
+      std=std->next;
+    } /* while */
+
+    if (match) {
+      /* copy the found match */
+      rp=strdup(std->replacement);
+    }
+    else {
+      /* this is a new one */
+      rp=(char*)malloc(ntd->size+1);
+      assert(rp);
+
+      if (ntd->size==1) {
+        if (count>=0x10)
+          nextNr+=0x10;
+      }
+      sprintf(numbuffer, "%02X", nextNr++);
+      for (i=0; i<ntd->size; i++) {
+        if (count<0x10)
+          rp[i]=numbuffer[1];
+        else
+          rp[i]=numbuffer[i&1];
+      } /* for */
+      rp[i]=0;
+    }
     DBG_INFO(0, "Replacement: \"%s\" for \"%s\" (%d)", rp,
              ntd->description,
              ntd->size);
