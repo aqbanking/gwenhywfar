@@ -83,15 +83,16 @@ GWENHYWFAR_API GWEN_TIME *GWEN_Time_dup(const GWEN_TIME *t);
 /**
  * Returns the time in seconds since the epoch (00:00:00 UTC Jan 1, 1970).
  */
-GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t);
+GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_Time_Seconds(const GWEN_TIME *t);
 
 /** returns the time in milliseconds */
-GWENHYWFAR_API double GWEN_Time_Milliseconds(GWEN_TIME *t);
+GWENHYWFAR_API double GWEN_Time_Milliseconds(const GWEN_TIME *t);
 
 /**
  * Returns the difference between t1 and t2 in milliseconds
  */
-GWENHYWFAR_API double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0);
+GWENHYWFAR_API double GWEN_Time_Diff(const GWEN_TIME *t1,
+                                     const GWEN_TIME *t0);
 
 GWENHYWFAR_API int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
                                                int *hours,

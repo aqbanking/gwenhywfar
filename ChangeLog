@@ -2,6 +2,7 @@
 2004/08/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - base/waitcallback: fixed a severe bug
+- os/gwentime: changed some arguments to const
 
 
 2004/08/02: Martin Preuss<martin@libchipcard.de>
