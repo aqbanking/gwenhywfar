@@ -7,6 +7,7 @@
   ------------------------------------------------------------------------
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
+- armed CSV plugins import function
 
 
 2004/11/11: Martin Preuss<martin@libchipcard.de>
