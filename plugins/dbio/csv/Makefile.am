@@ -3,6 +3,7 @@ EXTRA_DIST=README
 dbioplugindir=@gwenhywfar_plugins@/dbio
 
 dbioplugin_LTLIBRARIES=csv.la
+dbioplugin_DATA=csv.xml
 noinst_HEADERS=csv_p.h
 
 csv_la_SOURCES=csv.c

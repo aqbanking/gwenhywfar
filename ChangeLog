@@ -8,6 +8,7 @@
   no longer needs to be linked against ncurses. This also makes gwen lean
   again ;-)
   -> SO_VERSION incremented, SO_AGE=0 (makes it effectively .so.16)
+- install an XML file for the CSV plugin
 
 
 2004/08/05: Martin Preuss<martin@libchipcard.de>

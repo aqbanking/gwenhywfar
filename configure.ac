@@ -556,6 +556,7 @@ AC_CONFIG_FILES([Doxyfile
                  plugins/Makefile
                  plugins/dbio/Makefile
                  plugins/dbio/csv/Makefile
+                 plugins/dbio/csv/csv.xml
                  tools/Makefile
                  tools/xmlmerge/Makefile
                  tools/dlgtest/Makefile
