@@ -1015,7 +1015,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
                                            GWEN_XMLNODE *dnode,
                                            unsigned int *datasize) {
   const char *p;
-  static char pbuffer[256];
+  char pbuffer[256];
   GWEN_DB_NODE *globalValues;
 
   globalValues=GWEN_MsgEngine__GetGlobalValues(e);
