@@ -36,7 +36,8 @@ struct GWEN_HBCIDIALOG {
   GWEN_MSGENGINE *msgEngine;
   GWEN_SECCTX_MANAGER *securityManager;
   char *dialogId;
-  char *localContext;
+  char *localName;
+  char *remoteName;
   unsigned int lastReceivedMsgNum;
   unsigned int nextMsgNum;
   unsigned int flags;

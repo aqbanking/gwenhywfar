@@ -72,7 +72,8 @@ typedef void
 
 
 
-GWEN_SECCTX *GWEN_SecContext_new(const char *name);
+GWEN_SECCTX *GWEN_SecContext_new(const char *localName,
+                                 const char *remoteName);
 void GWEN_SecContext_free(GWEN_SECCTX *sc);
 
 
@@ -89,7 +90,32 @@ void GWEN_SecContext_SetDecrpytFn(GWEN_SECCTX *sctx,
 void GWEN_SecContext_SetFreeDataFn(GWEN_SECCTX *sctx,
                                    GWEN_SECCTX_FREEDATA_FN fn);
 
-const char *GWEN_SecContext_GetName(GWEN_SECCTX *sc);
+const char *GWEN_SecContext_GetLocalName(GWEN_SECCTX *sc);
+const char *GWEN_SecContext_GetRemoteName(GWEN_SECCTX *sc);
+
+
+/** @name Local Signature Sequence Counter
+ *
+ * This counter is used when signing data locally.
+ */
+/*@{*/
+unsigned int GWEN_SecContext_GetLocalSignSeq(GWEN_SECCTX *sc);
+void GWEN_SecContext_SetLocalSignSeq(GWEN_SECCTX *sc,
+                                     unsigned int i);
+unsigned int GWEN_SecContext_NextLocalSignSeq(GWEN_SECCTX *sc);
+/*@}*/
+
+/** @name Remote Signature Sequence Counter
+ *
+ * This counter is used when verifying a signature created by a remote
+ * partner.
+ */
+/*@{*/
+unsigned int GWEN_SecContext_GetRemoteSignSeq(GWEN_SECCTX *sc);
+void GWEN_SecContext_SetRemoteSignSeq(GWEN_SECCTX *sc,
+                                      unsigned int i);
+/*@}*/
+
 
 void *GWEN_SecContext_GetData(GWEN_SECCTX *sc);
 void GWEN_SecContext_SetData(GWEN_SECCTX *sc,
@@ -150,7 +176,8 @@ typedef struct GWEN_SECCTX_MANAGER GWEN_SECCTX_MANAGER;
 
 typedef GWEN_SECCTX*
   (*GWEN_SECCTXMGR_GETCONTEXT_FN)(GWEN_SECCTX_MANAGER *scm,
-                                  const char *name);
+                                  const char *localName,
+                                  const char *remoteName);
 
 
 typedef int
@@ -192,7 +219,8 @@ void GWEN_SecContextMgr_SetData(GWEN_SECCTX_MANAGER *scm, void *d);
  * the returned context, if any.
  */
 GWEN_SECCTX *GWEN_SecContextMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
-                                           const char *name);
+                                           const char *localName,
+                                           const char *remoteName);
 
 
 /**

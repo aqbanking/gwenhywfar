@@ -93,9 +93,13 @@ void GWEN_HBCIDialog_Attach(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIDialog_Detach(GWEN_HBCIDIALOG *hdlg);
 
 
-const char *GWEN_HBCIDialog_GetLocalContext(GWEN_HBCIDIALOG *hdlg);
-void GWEN_HBCIDialog_SetLocalContext(GWEN_HBCIDIALOG *hdlg,
-                                     const char *s);
+const char *GWEN_HBCIDialog_GetLocalName(GWEN_HBCIDIALOG *hdlg);
+void GWEN_HBCIDialog_SetLocalName(GWEN_HBCIDIALOG *hdlg,
+                                  const char *s);
+
+const char *GWEN_HBCIDialog_GetRemoteName(GWEN_HBCIDIALOG *hdlg);
+void GWEN_HBCIDialog_SetRemoteName(GWEN_HBCIDIALOG *hdlg,
+                                   const char *s);
 
 
 #ifdef __cplusplus

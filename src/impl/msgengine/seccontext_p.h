@@ -39,7 +39,10 @@
 
 
 struct GWEN_SECCTX {
-  char *name;
+  char *localName;
+  char *remoteName;
+  unsigned int localSignSeq;
+  unsigned int remoteSignSeq;
   void *data;
 
   GWEN_SECCTX_PREPARECTX_FN prepareFn;

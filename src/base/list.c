@@ -87,6 +87,8 @@ void GWEN_List_PushBack(GWEN_LIST *l, void *p){
   le=GWEN_ListEntry_new();
   le->data=p;
   le->previous=l->last;
+  if (l->last)
+    l->last->next=le;
   l->last=le;
   if (!(l->first))
     l->first=le;

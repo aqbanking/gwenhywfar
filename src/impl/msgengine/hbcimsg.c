@@ -425,12 +425,12 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
   assert(ks);
 
   /* check local context */
-  if (!GWEN_HBCIDialog_GetLocalContext(hmsg->dialog)) {
-    DBG_ERROR(0, "No local context, aborting");
+  if (!GWEN_HBCIDialog_GetLocalName(hmsg->dialog)) {
+    DBG_ERROR(0, "No local name, aborting");
     return -1;
   }
   else {
-    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalContext(hmsg->dialog),
+    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
                           GWEN_KeySpec_GetOwner(ks),1)!=0) {
       DBG_ERROR(0, "Key owner does not match local context");
       return -1;
@@ -554,7 +554,9 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   assert(scm);
   GWEN_HBCICryptoContext_SetServiceCode(ctx,
                                         GWEN_SecContext_GetServiceCode(scm));
-  sc=GWEN_SecContextMgr_GetContext(scm, GWEN_KeySpec_GetOwner(ks));
+  sc=GWEN_SecContextMgr_GetContext(scm,
+                                   GWEN_KeySpec_GetOwner(ks),
+                                   GWEN_HBCIDialog_GetRemoteName(hmsg->dialog));
   if (!sc) {
     DBG_ERROR(0,
               "Unknown security context \"%s\"",
@@ -734,6 +736,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   GWEN_HBCICryptoContext_SetServiceCode(ctx,
                                         GWEN_SecContext_GetServiceCode(scm));
   sc=GWEN_SecContextMgr_GetContext(scm,
+                                   GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
                                    GWEN_KeySpec_GetOwner(hmsg->crypter));
   if (!sc) {
     DBG_ERROR(0,
@@ -1230,14 +1233,14 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
   GWEN_KeySpec_SetKeyName(ks, s);
 
   /* check local context */
-  if (!GWEN_HBCIDialog_GetLocalContext(hmsg->dialog)) {
-    DBG_ERROR(0, "No local context, aborting");
+  if (!GWEN_HBCIDialog_GetLocalName(hmsg->dialog)) {
+    DBG_ERROR(0, "No local name, aborting");
     return -1;
   }
   else {
-    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalContext(hmsg->dialog),
+    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
                           GWEN_KeySpec_GetOwner(ks),1)!=0) {
-      DBG_ERROR(0, "Key owner does not match local context");
+      DBG_ERROR(0, "Key owner does not match local name");
       return -1;
     }
   }
@@ -1392,7 +1395,9 @@ int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr){
   GWEN_Buffer_SetStep(ndbuf, 512);
   ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
   assert(ks);
-  sc=GWEN_SecContextMgr_GetContext(scm, GWEN_KeySpec_GetOwner(ks));
+  sc=GWEN_SecContextMgr_GetContext(scm,
+                                   GWEN_KeySpec_GetOwner(ks),
+                                   GWEN_HBCIDialog_GetRemoteName(hmsg->dialog));
   if (!sc) {
     DBG_ERROR(0,
               "Unknown security context \"%s\"",
@@ -1686,7 +1691,9 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
 
     ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
     assert(ks);
-    sc=GWEN_SecContextMgr_GetContext(scm, GWEN_KeySpec_GetOwner(ks));
+    sc=GWEN_SecContextMgr_GetContext(scm,
+                                     GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
+                                     GWEN_KeySpec_GetOwner(ks));
     if (!sc) {
       DBG_ERROR(0,
                 "Unknown security context \"%s\"",

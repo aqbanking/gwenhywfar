@@ -116,8 +116,13 @@ GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityEnv(GWEN_IPCXMLSERVICE *xs,
                                                  const GWEN_KEYSPEC *signer,
                                                  const GWEN_KEYSPEC *crypter);
 
-const char *GWEN_IPCXMLService_GetLocalContext(GWEN_IPCXMLSERVICE *xs,
-                                               unsigned int clid);
+const char *GWEN_IPCXMLService_GetLocalName(GWEN_IPCXMLSERVICE *xs,
+                                            unsigned int clid);
+const char *GWEN_IPCXMLService_GetRemoteName(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid);
+void GWEN_IPCXMLService_SetRemoteName(GWEN_IPCXMLSERVICE *xs,
+                                      unsigned int clid,
+                                      const char *s);
 
 
 GWEN_ERRORCODE GWEN_IPCXMLService_Work(GWEN_IPCXMLSERVICE *xs,

@@ -11,6 +11,7 @@ $Id$
   Now it basically works. I also fixed many bugs in the code which is not
   used by programs, since it is under heavy development.
 - reading keys from a file and writing then to a file now works
+- fixed a severe bug in "list"
 
 
 2003-11-21  Christian Stimming <stimming@tuhh.de>

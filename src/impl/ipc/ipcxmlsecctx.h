@@ -39,7 +39,8 @@
 typedef struct GWEN_IPCXMLSECCTXDATA GWEN_IPCXMLSECCTXDATA;
 
 
-GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *name);
+GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *localName,
+                                   const char *remoteName);
 
 
 int GWEN_IPCXMLSecCtx_AddKey(GWEN_SECCTX *d,
@@ -51,10 +52,6 @@ int GWEN_IPCXMLSecCtx_DelKey(GWEN_SECCTX *d,
 GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetSessionKey(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetSessionKey(GWEN_SECCTX *d,
                                      GWEN_CRYPTKEY *k);
-
-unsigned int GWEN_IPCXMLSecCtx_GetSignSeq(GWEN_SECCTX *d);
-void GWEN_IPCXMLSecCtx_SetSignSeq(GWEN_SECCTX *d,
-                                  unsigned int i);
 
 const char *GWEN_IPCXMLSecCtx_GetServiceCode(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetServiceCode(GWEN_SECCTX *d,

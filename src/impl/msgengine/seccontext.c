@@ -41,12 +41,17 @@
 
 
 
-GWEN_SECCTX *GWEN_SecContext_new(const char *name){
+GWEN_SECCTX *GWEN_SecContext_new(const char *localName,
+                                 const char *remoteName){
   GWEN_SECCTX *sc;
 
   GWEN_NEW_OBJECT(GWEN_SECCTX, sc);
-  if (name)
-    sc->name=strdup(name);
+  if (localName)
+    sc->localName=strdup(localName);
+  if (remoteName)
+    sc->remoteName=strdup(remoteName);
+  sc->localSignSeq=1;
+  sc->remoteSignSeq=0;
   return sc;
 }
 
@@ -56,7 +61,8 @@ void GWEN_SecContext_free(GWEN_SECCTX *sc){
   if (sc) {
     if (sc->data && sc->freeDataFn)
       sc->freeDataFn(sc);
-    free(sc->name);
+    free(sc->localName);
+    free(sc->remoteName);
     free(sc);
   }
 }
@@ -111,19 +117,87 @@ void GWEN_SecContext_SetFreeDataFn(GWEN_SECCTX *sc,
 
 
 
-const char *GWEN_SecContext_GetName(GWEN_SECCTX *sc){
+const char *GWEN_SecContext_GetLocalName(GWEN_SECCTX *sc){
   assert(sc);
-  return sc->name;
+  return sc->localName;
 }
 
 
 
-void GWEN_SecContext_SetName(GWEN_SECCTX *sc,
-                             const char *s){
+void GWEN_SecContext_SetLocalName(GWEN_SECCTX *sc,
+                                  const char *s){
   assert(sc);
   assert(s);
-  free(sc->name);
-  sc->name=strdup(s);
+  free(sc->localName);
+  sc->localName=strdup(s);
+}
+
+
+
+const char *GWEN_SecContext_GetRemoteName(GWEN_SECCTX *sc){
+  assert(sc);
+  return sc->remoteName;
+}
+
+
+
+void GWEN_SecContext_SetRemoteName(GWEN_SECCTX *sc,
+                                   const char *s){
+  assert(sc);
+  assert(s);
+  free(sc->remoteName);
+  sc->remoteName=strdup(s);
+}
+
+
+
+unsigned int GWEN_SecContext_GetLocalSignSeq(GWEN_SECCTX *sc){
+  assert(sc);
+  return sc->localSignSeq;
+}
+
+
+
+void GWEN_SecContext_SetLocalSignSeq(GWEN_SECCTX *sc,
+                                     unsigned int i){
+  assert(sc);
+  if (sc->localSignSeq>i) {
+    DBG_WARN(0,
+             "Local signature sequence is higher (%d>%d), not adjusting",
+             sc->localSignSeq, i);
+  }
+  else {
+    sc->localSignSeq=i;
+  }
+}
+
+
+
+unsigned int GWEN_SecContext_NextLocalSignSeq(GWEN_SECCTX *sc){
+  assert(sc);
+  return sc->localSignSeq++;
+}
+
+
+
+unsigned int GWEN_SecContext_GetRemoteSignSeq(GWEN_SECCTX *sc){
+  assert(sc);
+  return sc->remoteSignSeq;
+}
+
+
+
+void GWEN_SecContext_SetRemoteSignSeq(GWEN_SECCTX *sc,
+                                      unsigned int i){
+  assert(sc);
+  if (sc->remoteSignSeq>i) {
+    DBG_WARN(0,
+             "Remote signature sequence is higher (%d>%d), not adjusting",
+             sc->remoteSignSeq, i);
+  }
+  else {
+    sc->remoteSignSeq=i;
+  }
 }
 
 
@@ -431,18 +505,20 @@ void GWEN_SecContextMgr_SetData(GWEN_SECCTX_MANAGER *scm,
 
 
 GWEN_SECCTX *GWEN_SecContextMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
-                                           const char *name){
+                                           const char *localName,
+                                           const char *remoteName){
   GWEN_LIST_ITERATOR *it;
 
   assert(scm);
-  DBG_WARN(0, "Looking for context \"%s\"", name);
+  DBG_WARN(0, "Looking for context \"%s:%s\"", localName, remoteName);
   it=GWEN_List_First(scm->contextList);
   if (it) {
     GWEN_SECCTX *sc;
 
     sc=(GWEN_SECCTX*)GWEN_ListIterator_Data(it);
     while(sc) {
-      if (GWEN_Text_Compare(sc->name, name, 1)==0) {
+      if ((GWEN_Text_Compare(sc->localName, localName, 1)==0) &&
+          (GWEN_Text_Compare(sc->remoteName, remoteName, 1)==0)){
         GWEN_ListIterator_free(it);
         return sc;
       }
@@ -452,10 +528,11 @@ GWEN_SECCTX *GWEN_SecContextMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
   GWEN_ListIterator_free(it);
 
   if (scm->getContextFn) {
-    DBG_INFO(0, "Context \"%s\" not already known, trying function", name);
-    return scm->getContextFn(scm, name);
+    DBG_INFO(0, "Context \"%s:%s\" not already known, trying function",
+             localName, remoteName);
+    return scm->getContextFn(scm, localName, remoteName);
   }
-  DBG_INFO(0, "Context \"%s\" not found.", name);
+  DBG_INFO(0, "Context \"%s:%s\" not found.", localName, remoteName);
   return 0;
 }
 
@@ -470,6 +547,7 @@ int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
       return -1;
     }
   }
+  DBG_INFO(0, "Pushing back context");
   GWEN_List_PushBack(scm->contextList, sc);
   return 0;
 }

@@ -34,7 +34,6 @@
 
 struct GWEN_IPCXMLSECCTXDATA {
   GWEN_KEYMANAGER *keyManager;
-  unsigned int signSeq;
   GWEN_CRYPTKEY *sessionKey;
 
   char *serviceCode;

@@ -680,8 +680,8 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
 
 
 
-const char *GWEN_IPCXMLService_GetLocalContext(GWEN_IPCXMLSERVICE *xs,
-                                               unsigned int clid){
+const char *GWEN_IPCXMLService_GetLocalName(GWEN_IPCXMLSERVICE *xs,
+                                            unsigned int clid){
   GWEN_IPCCONNLAYER *cl;
 
   cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
@@ -690,7 +690,38 @@ const char *GWEN_IPCXMLService_GetLocalContext(GWEN_IPCXMLSERVICE *xs,
     return 0;
   }
 
-  return GWEN_IPCXMLConnLayer_GetLocalContext(cl);
+  return GWEN_IPCXMLConnLayer_GetLocalName(cl);
+}
+
+
+
+const char *GWEN_IPCXMLService_GetRemoteName(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid){
+  GWEN_IPCCONNLAYER *cl;
+
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return 0;
+  }
+
+  return GWEN_IPCXMLConnLayer_GetRemoteName(cl);
+}
+
+
+
+void GWEN_IPCXMLService_SetRemoteName(GWEN_IPCXMLSERVICE *xs,
+                                      unsigned int clid,
+                                      const char *s){
+  GWEN_IPCCONNLAYER *cl;
+
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return;
+  }
+
+  GWEN_IPCXMLConnLayer_SetRemoteName(cl, s);
 }
 
 

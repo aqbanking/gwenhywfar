@@ -87,34 +87,6 @@ void GWEN_IPCXMLSecCtx_SetSessionKey(GWEN_SECCTX *sc,
 
 
 
-unsigned int GWEN_IPCXMLSecCtx_GetSignSeq(GWEN_SECCTX *sc){
-  GWEN_IPCXMLSECCTXDATA *scd;
-
-  assert(sc);
-  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
-  assert(scd);
-
-  return scd->signSeq;
-}
-
-
-
-void GWEN_IPCXMLSecCtx_SetSignSeq(GWEN_SECCTX *sc,
-                                  unsigned int i){
-  GWEN_IPCXMLSECCTXDATA *scd;
-
-  assert(sc);
-  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
-  assert(scd);
-
-  scd->signSeq=i;
-}
-
-
-
-
-
-
 int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
                                  GWEN_HBCICRYPTOCONTEXT *ctx,
                                  int crypt){
@@ -192,7 +164,8 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
   }
   else {
     /* sign */
-    GWEN_HBCICryptoContext_SetSequenceNum(ctx, scd->signSeq);
+    GWEN_HBCICryptoContext_SetSequenceNum(ctx,
+                                          GWEN_SecContext_GetLocalSignSeq(sc));
   }
 
   GWEN_HBCICryptoContext_SetMode(ctx, "RDH");
@@ -286,7 +259,8 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
     return err;
   }
 
-  scd->signSeq++;
+  /* increment signature counter */
+  GWEN_SecContext_NextLocalSignSeq(sc);
 
   GWEN_Buffer_free(hashbuf);
   DBG_INFO(0, "Signing done");
@@ -319,12 +293,12 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
 
   /* check signature sequence number */
   rseq=GWEN_HBCICryptoContext_GetSequenceNum(ctx);
-  if (rseq<=scd->signSeq) {
+  if (rseq<=GWEN_SecContext_GetRemoteSignSeq(sc)) {
     DBG_ERROR(0, "bad signature sequence number (%d<%d)",
-              rseq, scd->signSeq);
+              rseq, GWEN_SecContext_GetRemoteSignSeq(sc));
     //return -1; /* comment this out for debugging purposes */
   }
-  scd->signSeq=rseq;
+  GWEN_SecContext_SetRemoteSignSeq(sc, rseq);
 
   /* hash data */
   md=GWEN_MD_Factory("RMD160");
@@ -562,11 +536,12 @@ void GWEN_IPCXMLSecCtx_SetServiceCode(GWEN_SECCTX *sc,
 
 
 
-GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *name){
+GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *localName,
+                                   const char *remoteName){
   GWEN_SECCTX *sc;
   GWEN_IPCXMLSECCTXDATA *scd;
 
-  sc=GWEN_SecContext_new(name);
+  sc=GWEN_SecContext_new(localName, remoteName);
   scd=GWEN_IPCXMLSecCtxData_new();
   scd->keyManager=GWEN_IPCXMLKeyManager_new();
   GWEN_SecContext_SetPrepareCtxFn(sc, GWEN_IPCXMLSecCtx_PrepareCTX);

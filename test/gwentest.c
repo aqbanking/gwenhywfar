@@ -418,9 +418,10 @@ int testDialog(int argc, char **argv) {
   }
   fprintf(stderr, "Generating key done.\n");
 
-  sc=GWEN_IPCXMLSecCtx_new("martin");
+  sc=GWEN_IPCXMLSecCtx_new("martin", "martin");
   GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetSignSeq(sc, 4554);
+  GWEN_SecContext_SetLocalSignSeq(sc, 4554);
+  GWEN_SecContext_SetRemoteSignSeq(sc, 5555);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;
@@ -546,14 +547,28 @@ int testServer(int argc, char **argv) {
   GWEN_DB_Group_free(keydb);
   keydb=0;
 
-  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key));
+  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
+                           GWEN_CryptKey_GetOwner(key));
   GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetSignSeq(sc, 4554);
+  GWEN_SecContext_SetLocalSignSeq(sc, 1);
+  GWEN_SecContext_SetRemoteSignSeq(sc, 0);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;
   }
   fprintf(stderr, "Context added.\n");
+
+  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
+                           0);
+  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_SecContext_SetLocalSignSeq(sc, 1);
+  GWEN_SecContext_SetRemoteSignSeq(sc, 0);
+  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
+    fprintf(stderr, "Could not add context.\n");
+    return 2;
+  }
+  fprintf(stderr, "Context 2 added.\n");
+
 
   fprintf(stderr, "Creating service.\n");
   service=GWEN_IPCXMLService_new(e, scm);
@@ -573,6 +588,8 @@ int testServer(int argc, char **argv) {
     fprintf(stderr, "Error.\n");
     return 2;
   }
+  //GWEN_IPCXMLService_SetRemoteName(service, serverId, "martin");
+
   fprintf(stderr, "Creating server: done.\n");
 
   for (;;) {
@@ -654,9 +671,11 @@ int testClient(int argc, char **argv) {
   GWEN_DB_Group_free(keydb);
   keydb=0;
 
-  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key));
+  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
+                           GWEN_CryptKey_GetOwner(key));
   GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetSignSeq(sc, 4554);
+  GWEN_SecContext_SetLocalSignSeq(sc, 1);
+  GWEN_SecContext_SetRemoteSignSeq(sc, 0);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;

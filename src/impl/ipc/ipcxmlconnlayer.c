@@ -65,7 +65,7 @@ void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd){
 
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
-                                            const char *localContext,
+                                            const char *localName,
                                             GWEN_SECCTX_MANAGER *scm,
                                             GWEN_IPCMSGLAYER *ml,
                                             int active){
@@ -73,7 +73,7 @@ GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
   assert(msgEngine);
-  assert(localContext);
+  assert(localName);
   assert(scm);
   assert(ml);
 
@@ -83,7 +83,7 @@ GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
   ccd->securityManager=scm;
   ccd->dialog=GWEN_HBCIDialog_new(msgEngine, scm);
   ccd->dialogId=1;
-  GWEN_HBCIDialog_SetLocalContext(ccd->dialog, localContext);
+  GWEN_HBCIDialog_SetLocalName(ccd->dialog, localName);
   if (active)
     GWEN_HBCIDialog_SetFlags(ccd->dialog, GWEN_HBCIDIALOG_FLAGS_INITIATOR);
 
@@ -171,7 +171,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Accept(GWEN_IPCCONNLAYER *cl,
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
   newcl=GWEN_IPCXMLConnLayer_new(ccd->msgEngine,
-                                 GWEN_HBCIDialog_GetLocalContext(ccd->dialog),
+                                 GWEN_HBCIDialog_GetLocalName(ccd->dialog),
                                  ccd->securityManager, ml, 0);
   DBG_INFO(0, "Created new GWEN_IPCCONNLAYER for incoming connection");
   newccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(newcl);
@@ -433,6 +433,9 @@ GWEN_IPCXMLConnLayer_SetSecurityEnv(GWEN_IPCCONNLAYER *cl,
   else
     ccd->crypter=0;
 
+  GWEN_IPCXMLConnLayer_SetRemoteName(cl,
+                                     GWEN_KeySpec_GetOwner(crypter));
+
   return 0;
 }
 
@@ -602,7 +605,7 @@ GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
 
 
 
-const char *GWEN_IPCXMLConnLayer_GetLocalContext(GWEN_IPCCONNLAYER *cl){
+const char *GWEN_IPCXMLConnLayer_GetLocalName(GWEN_IPCCONNLAYER *cl){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
   assert(cl);
@@ -610,7 +613,34 @@ const char *GWEN_IPCXMLConnLayer_GetLocalContext(GWEN_IPCCONNLAYER *cl){
   assert(ccd);
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
-  return GWEN_HBCIDialog_GetLocalContext(ccd->dialog);
+  return GWEN_HBCIDialog_GetLocalName(ccd->dialog);
+}
+
+
+
+const char *GWEN_IPCXMLConnLayer_GetRemoteName(GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  return GWEN_HBCIDialog_GetRemoteName(ccd->dialog);
+}
+
+
+
+void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,
+                                        const char *s){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  GWEN_HBCIDialog_SetRemoteName(ccd->dialog, s);
 }
 
 

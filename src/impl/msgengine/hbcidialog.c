@@ -156,7 +156,8 @@ void GWEN_HBCIDialog_free(GWEN_HBCIDIALOG *hdlg){
     if (hdlg->inheritorData && hdlg->freeDataFn)
       hdlg->freeDataFn(hdlg);
     free(hdlg->dialogId);
-    free(hdlg->localContext);
+    free(hdlg->localName);
+    free(hdlg->remoteName);
     free(hdlg);
   }
 }
@@ -196,19 +197,36 @@ void GWEN_HBCIDialog_Detach(GWEN_HBCIDIALOG *hdlg){
 
 
 
-const char *GWEN_HBCIDialog_GetLocalContext(GWEN_HBCIDIALOG *hdlg){
+const char *GWEN_HBCIDialog_GetLocalName(GWEN_HBCIDIALOG *hdlg){
   assert(hdlg);
-  return hdlg->localContext;
+  return hdlg->localName;
 }
 
 
 
-void GWEN_HBCIDialog_SetLocalContext(GWEN_HBCIDIALOG *hdlg,
-                                     const char *s){
+void GWEN_HBCIDialog_SetLocalName(GWEN_HBCIDIALOG *hdlg,
+                                  const char *s){
   assert(hdlg);
   assert(s);
-  free(hdlg->localContext);
-  hdlg->localContext=strdup(s);
+  free(hdlg->localName);
+  hdlg->localName=strdup(s);
+}
+
+
+
+const char *GWEN_HBCIDialog_GetRemoteName(GWEN_HBCIDIALOG *hdlg){
+  assert(hdlg);
+  return hdlg->remoteName;
+}
+
+
+
+void GWEN_HBCIDialog_SetRemoteName(GWEN_HBCIDIALOG *hdlg,
+                                   const char *s){
+  assert(hdlg);
+  assert(s);
+  free(hdlg->remoteName);
+  hdlg->remoteName=strdup(s);
 }
 
 
@@ -220,6 +238,8 @@ void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg){
   free(hdlg->dialogId);
   hdlg->dialogId=strdup("0");
   hdlg->nextMsgNum=1;
+  free(hdlg->remoteName);
+  hdlg->remoteName=0;
 }
 
 

@@ -59,7 +59,7 @@ void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd);
 
 
 GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
-                                            const char *localContext,
+                                            const char *localName,
                                             GWEN_SECCTX_MANAGER *scm,
                                             GWEN_IPCMSGLAYER *ml,
                                             int active);
@@ -85,7 +85,11 @@ GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
 GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_IPC2HBCI(GWEN_IPCCONNLAYER *cl,
                                             GWEN_IPCMSG *msg);
 
-const char *GWEN_IPCXMLConnLayer_GetLocalContext(GWEN_IPCCONNLAYER *cl);
+const char *GWEN_IPCXMLConnLayer_GetLocalName(GWEN_IPCCONNLAYER *cl);
+
+const char *GWEN_IPCXMLConnLayer_GetRemoteName(GWEN_IPCCONNLAYER *cl);
+void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,
+                                        const char *s);
 
 #endif /* GWEN_IPCXMLCONNLAYER_H */
 
