@@ -3,6 +3,7 @@ INCLUDES=@all_includes@
 noinst_LTLIBRARIES=libbase.la
 
 noinst_HEADERS=\
+ args_p.h \
  buffer_p.h \
  debug_p.h \
  error_p.h \
@@ -17,6 +18,7 @@ noinst_HEADERS=\
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
+ args.h \
  buffer.h \
  debug.h \
  error.h \
@@ -31,6 +33,7 @@ iheader_HEADERS=\
  waitcallback.h
 
 libbase_la_SOURCES=\
+ args.c \
  buffer.c \
  debug.c \
  error.c \
