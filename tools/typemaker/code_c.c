@@ -1220,7 +1220,7 @@ int write_code_builtin_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
     GWEN_BufferedIO_Write(bio, "void ");
     GWEN_BufferedIO_Write(bio, prefix);
-    GWEN_BufferedIO_Write(bio, "List2_freeAll(");
+    GWEN_BufferedIO_Write(bio, "_List2_freeAll(");
     GWEN_BufferedIO_Write(bio, styp);
     GWEN_BufferedIO_WriteLine(bio, "_LIST2 *stl) {");
 
