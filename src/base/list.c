@@ -330,12 +330,12 @@ void GWEN_List_PopBack(GWEN_LIST *l){
   lp=l->listPtr;
 
   le=lp->last;
-  lp->last=le->previous;
   if (le) {
+    lp->last=le->previous;
     if (le->previous) {
       le->previous->next=0;
-      lp->last = le->previous; /* FIXME: This was necessary, wasn't it? */
-    } else {
+    }
+    else {
       lp->last=0;
       lp->first=0;
     }
@@ -365,12 +365,12 @@ void GWEN_List_PopFront(GWEN_LIST *l){
   lp=l->listPtr;
 
   le=lp->first;
-  lp->first=le->next;
   if (le) {
+    lp->first=le->next;
     if (le->next) {
       le->next->previous=0;
-      lp->first = le->next; /* FIXME: This was necessary, wasn't it? */
-    } else {
+    }
+    else {
       lp->first=0;
       lp->last=0;
     }
