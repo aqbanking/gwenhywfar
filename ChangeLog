@@ -3,6 +3,7 @@
 ------------------------------------------------
 - fixed some bugs in args.c
 - modified the prototype of GWEN_WaitCallback_Log
+- fixed GWEN_TYPE_UINT64 for MSVC
 
 
 2004/05/04: Martin Preuss<martin@libchipcard.de>

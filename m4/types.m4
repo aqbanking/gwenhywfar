@@ -76,7 +76,8 @@ AC_TRY_RUN([
 int main (){
   const char *s;
   FILE *f;
-  
+
+#ifdef __GNUC__  
   if (sizeof(unsigned int)==8)
     s="unsigned int";
   else if (sizeof(unsigned short)==8)
@@ -89,6 +90,15 @@ int main (){
     printf("Could not determine type for UINT64");
     exit(1);
   }
+#else
+# ifdef ULONG64
+    s="ULONG64";
+# else
+    printf("Could not determine type for UINT64");
+    exit(1);
+# endif
+#endif
+
   f=fopen("conf.uint64", "w+");
   if (!f) {
     printf("Could not create file conf.uint64\n");
