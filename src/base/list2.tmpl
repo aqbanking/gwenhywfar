@@ -155,13 +155,20 @@ extern "C" {
    */
   @TYPENAME@ *@FN_PREFIX@_List2Iterator_Data(@TYPENAME@_LIST2_ITERATOR *li); 
 
-  /**
-   * Calls the provided function for every element in the list.
-   * If the given function returns 0 then traversing the list is stopped
-   * and the current element is returned.
+  /** Traverses the list, calling the callback function 'func' on
+   * each list element.  Traversal will stop when 'func' returns a
+   * non-NULL value, and the routine will return with that
+   * value. Otherwise the routine will return NULL. 
+   * @param list The list to traverse.
+   * @param func The function to be called with each list element.
+   * @param user_data A pointer passed on to the function 'func'.
+   * @return The non-NULL pointer returned by 'func' as soon as it
+   * returns one. Otherwise (i.e. 'func' always returns NULL)
+   * returns NULL.
    */
-  @TYPENAME@ *@FN_PREFIX@_List2_ForEach(@TYPENAME@_LIST2 *l,
-					@TYPENAME@_LIST2_FOREACH);
+  @TYPENAME@ *@FN_PREFIX@_List2_ForEach(@TYPENAME@_LIST2 *list,
+					@TYPENAME@_LIST2_FOREACH func,
+					void *user_data);
 
 
   typedef struct @TYPENAME@_CONSTLIST2 @TYPENAME@_CONSTLIST2; 
@@ -205,7 +212,19 @@ extern "C" {
    
   const @TYPENAME@ *@FN_PREFIX@_ConstList2Iterator_Data(@TYPENAME@_CONSTLIST2_ITERATOR *li); 
    
-  const @TYPENAME@ *@FN_PREFIX@_ConstList2_ForEach(@TYPENAME@_CONSTLIST2 *l, @TYPENAME@_CONSTLIST2_FOREACH);
+  /** Traverses the list, calling the callback function 'func' on
+   * each list element.  Traversal will stop when 'func' returns a
+   * non-NULL value, and the routine will return with that
+   * value. Otherwise the routine will return NULL. 
+   * @param list The list to traverse.
+   * @param func The function to be called with each list element.
+   * @param user_data A pointer passed on to the function 'func'.
+   * @return The non-NULL pointer returned by 'func' as soon as it
+   * returns one. Otherwise (i.e. 'func' always returns NULL)
+   * returns NULL.
+   */
+  const @TYPENAME@ *@FN_PREFIX@_ConstList2_ForEach(@TYPENAME@_CONSTLIST2 *list,
+	@TYPENAME@_CONSTLIST2_FOREACH func, void *user_data);
 
 
 #ifdef __cplusplus
