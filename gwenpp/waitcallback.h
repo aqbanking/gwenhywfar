@@ -49,7 +49,7 @@ namespace GWEN {
                                                 unsigned int level);
     static void _log(GWEN_WAITCALLBACK *ctx,
                      unsigned int level,
-                     unsigned int loglevel,
+                     GWEN_LOGGER_LEVEL loglevel,
                      const char *s);
     static void _freeData(void *bp, void *p);
 

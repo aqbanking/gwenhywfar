@@ -137,7 +137,7 @@ typedef
   void
   (*GWEN_WAITCALLBACK_LOGFN)(GWEN_WAITCALLBACK *ctx,
                              unsigned int level,
-                             unsigned int loglevel,
+                             GWEN_LOGGER_LEVEL loglevel,
 			     const char *s);
 /*@}*/
 

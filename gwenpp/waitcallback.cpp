@@ -72,7 +72,7 @@ namespace GWEN {
   
   void WaitCallback::_log(GWEN_WAITCALLBACK *ctx,
                           unsigned int level,
-                          unsigned int loglevel,
+                          GWEN_LOGGER_LEVEL loglevel,
                           const char *s){
     GWEN::WaitCallback *wcb;
 

@@ -210,6 +210,7 @@ GWEN_WAITCALLBACK *GWEN_WaitCallback__FindTemplate(const char *s) {
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_WaitCallback_Register(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Registering Callback %s", ctx->id);
   GWEN_WaitCallback_List_Insert(ctx, gwen_waitcallback__templates);
   return 0;
 }

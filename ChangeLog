@@ -1,3 +1,9 @@
+
+2005/03/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in WaitCallback (type mismatch)
+
+
 2005-03-29   Christian Stimming <stimming@tuhh.de>
 
 	* src/base/plugin.h: Add PluginManager_AddPathFromWinReg() which
@@ -10,6 +16,7 @@
 	* configure.ac, src/crypt/padd.c, crypt.c: If random()/srandom()
 	is not available, use rand()/srand(). Necessary for
 	e.g. windows/mingw32.
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.10.0 (2005/03/28)
