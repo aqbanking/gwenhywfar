@@ -28,10 +28,22 @@
 #ifndef GWENHYWFAR_ARGS_H
 #define GWENHYWFAR_ARGS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+typedef struct GWEN_ARGS GWEN_ARGS;
+#ifdef __cplusplus
+}
+#endif
+
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 #define GWEN_ARGS_FLAGS_HAS_ARGUMENT     0x00000001
@@ -59,7 +71,7 @@ typedef enum {
  * Developer's note: Please note that any change within this struct will
  * make it necessary to increment the SO_VERSION of the library !
  */
-typedef struct {
+struct GWEN_ARGS {
   GWEN_TYPE_UINT32 flags;
   GWEN_ARGS_TYPE type;
   const char *name;
@@ -70,7 +82,7 @@ typedef struct {
   const char *longOption;
   const char *shortDescription;
   const char *longDescription;
-} GWEN_ARGS;
+};
 
 
 int GWEN_Args_Check(int argc, char **argv,
@@ -84,6 +96,10 @@ int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
 
 int GWEN_Args_ShortUsage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                          GWEN_ARGS_OUTTYPE ot);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYWFAR_ARGS_H */
