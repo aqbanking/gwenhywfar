@@ -107,6 +107,13 @@ void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) __attribute__((deprecated));
 
 
 /**
+ * Checks whether a given log domain already exists.
+ * @return 1 if it exists, 0 otherwise
+ */
+GWENHYWFAR_API int GWEN_Logger_Exists(const char *logDomain);
+
+
+/**
  * Sets up logging. It automatically enables logging.
  * @author Martin Preuss<martin@libchipcard.de>
  * @param ident this string is prepended to each message logged to identify

@@ -692,6 +692,14 @@ const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt) {
 
 
 
+int GWEN_Logger_Exists(const char *logDomain){
+  assert(logDomain);
+  return (GWEN_LoggerDomain_Find(logDomain)!=0);
+}
+
+
+
+
 
 
 
