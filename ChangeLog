@@ -1,6 +1,13 @@
+
+2004/09/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a tool which allows me to create simple data containers more easily
+
+
 2004-09-01   Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfar.c: Replace fprintf with DBG_DEBUG.
+
 
 2004/08/31: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

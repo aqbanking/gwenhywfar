@@ -1,0 +1,27 @@
+
+This tool generates source and header files for simple data containers from XML files.
+It creates fromDb and toDb functions for structs and getters and setters for any
+member.
+
+This makes it easier to maintain data containers with many members (as in
+AB_TRANSACTION).
+
+A member you add to the XML file will immidiately be loaded, saved, destroyed and
+copied with the rest of the struct upon request (e.g. _fromDb() will load all members
+from a GWEN_DB).
+
+The current version creates a C file and headers for it. 
+Maybe I will later write code to create C++ files as well.
+
+It also creates appropriate API documentation if provided with the source XML file.
+
+
+Usage:
+ typemaker [-d DOMAIN] infile1 infile2 [...] infileN
+
+Domain is the name of the API, e.g. for AqBanking you would choose AQBANKING_API,
+for Gwen GWENHYWFAR_API etc.
+This is used with the list and heritage macros.
+
+
+Martin Preuss
