@@ -190,7 +190,7 @@ void GWEN_WaitCallback_SetLogFn(GWEN_WAITCALLBACK *ctx,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_WAITCALLBACK *GWEN_WaitCallback__FindCallback(const char *s) {
+GWEN_WAITCALLBACK *GWEN_WaitCallback__FindTemplate(const char *s) {
   GWEN_WAITCALLBACK *ctx;
 
   assert(gwen_waitcallback__templates);
@@ -325,19 +325,32 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos){
 
 
 /* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK *GWEN_WaitCallback__GetTemplateOf(GWEN_WAITCALLBACK *ctx) {
+  assert(ctx);
+  /* get original context */
+  while(ctx->originalCtx)
+    ctx=ctx->originalCtx;
+  /* return the context from which the original context has been
+   * instantiated */
+  return ctx->instantiatedFrom;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 void GWEN_WaitCallback_Enter_u(const char *id,
                                const char *file,
                                int line){
   GWEN_WAITCALLBACK *ctx;
   GWEN_WAITCALLBACK *nctx;
 
-  ctx=GWEN_WaitCallback__FindCallback(id);
+  nctx=0;
+  ctx=GWEN_WaitCallback__FindTemplate(id);
   if (!ctx) {
     if (gwen_waitcallback__current) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Callback \"%s\" not found, faking it", id);
 
       nctx=GWEN_WaitCallback_new(id);
-      nctx->previousCtx=gwen_waitcallback__current;
       if (gwen_waitcallback__current->originalCtx) {
         nctx->originalCtx=gwen_waitcallback__current->originalCtx;
         nctx->level=gwen_waitcallback__current->level+1;
@@ -346,9 +359,6 @@ void GWEN_WaitCallback_Enter_u(const char *id,
         nctx->originalCtx=gwen_waitcallback__current;
         nctx->level=1;
       }
-      gwen_waitcallback__current=nctx;
-      nctx->lastEntered=time(0);
-      GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
     }
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN,
@@ -356,26 +366,60 @@ void GWEN_WaitCallback_Enter_u(const char *id,
                 "currently selected, faking it",
                 id);
       nctx=GWEN_WaitCallback_new(id);
-      gwen_waitcallback__current=nctx;
-      nctx->lastEntered=time(0);
-      GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
     }
   } /* if ctx not found */
   else {
-    /* ctx found, select it */
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Callback \"%s\" found", id);
-    nctx=GWEN_WaitCallback_Instantiate(ctx);
-    assert(nctx);
+    GWEN_WAITCALLBACK *nc;
+
+    /* ctx found, enter it */
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Callback template for \"%s\" found", id);
+    /* check whether this template is currently in use */
+    nc=gwen_waitcallback__current;
+    while(nc) {
+      GWEN_WAITCALLBACK *realNc;
+
+      realNc=nc;
+      /* get original context, if any */
+      while(realNc->originalCtx) {
+        realNc=realNc->originalCtx;
+      }
+      /* compare templates */
+      if (realNc->instantiatedFrom==ctx)
+        break;
+      nc=nc->previousCtx;
+    }
+
+    if (nc) {
+      DBG_DEBUG(GWEN_LOGDOMAIN,
+                "Callback \"%s\" already entered, reusing it (%d)",
+                id, nc->level);
+      nctx=GWEN_WaitCallback_new(id);
+      if (nc->originalCtx) {
+        nctx->originalCtx=nc->originalCtx;
+        nctx->level=nc->level+1;
+      }
+      else {
+        nctx->originalCtx=nc;
+        nctx->level=1;
+      }
+    }
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Instantiating from callback \"%s\"", id);
+      nctx=GWEN_WaitCallback_Instantiate(ctx);
+      assert(nctx);
+      free(nctx->id);
+      nctx->id=strdup(id);
+    }
+  }
+
+  if (nctx) {
     nctx->previousCtx=gwen_waitcallback__current;
     gwen_waitcallback__current=nctx;
     nctx->lastEntered=time(0);
     GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Active callbacks: %d",
-              GWEN_WaitCallback_List_GetCount(gwen_waitcallback__list));
-  }
-
-  if (nctx) {
-      nctx->nestingLevel=gwen_waitcallback__nesting_level++;
+    nctx->nestingLevel=gwen_waitcallback__nesting_level++;
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Nesting level now: %d",
+              gwen_waitcallback__nesting_level);
     if (file)
       nctx->enteredFromFile=strdup(file);
     nctx->enteredFromLine=line;
@@ -398,7 +442,7 @@ void GWEN_WaitCallback_Leave(){
   GWEN_WaitCallback_free(gwen_waitcallback__current);
   gwen_waitcallback__current=ctx;
   if (ctx) {
-    DBG_VERBOUS(GWEN_LOGDOMAIN, "Returned to callback \"%s\"", ctx->id);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Returned to callback \"%s\"", ctx->id);
   }
   gwen_waitcallback__nesting_level--;
 }

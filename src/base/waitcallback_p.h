@@ -72,10 +72,11 @@ struct GWEN_WAITCALLBACK {
 void *GWEN_WaitCallback__HandlePathElement(const char *entry,
                                            void *data,
                                            unsigned int flags);
-GWEN_WAITCALLBACK *GWEN_WaitCallback__FindCallback(const char *s);
+GWEN_WAITCALLBACK *GWEN_WaitCallback__FindTemplate(const char *s);
 
 GWEN_WAITCALLBACK *GWEN_WaitCallback_Instantiate(GWEN_WAITCALLBACK *ctx);
 
+GWEN_WAITCALLBACK *GWEN_WaitCallback__GetTemplateOf(GWEN_WAITCALLBACK *ctx);
 
 #endif
 

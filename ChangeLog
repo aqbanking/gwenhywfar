@@ -1,4 +1,12 @@
 
+2004/09/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- waitcallback.c: now reuses templates which are currently entered if
+  they match the requested one
+- msgengine.c: now looks for groups not only at the XML root but at every
+  XML node along the current path
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.1 (2004/09/15)
 ===========================================================================

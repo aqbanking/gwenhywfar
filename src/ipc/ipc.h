@@ -185,8 +185,7 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
 /**
  * <p>
  * Returns the GWEN_DB of the incoming request with the given id.
- * The caller takes ownership of the returned DB (if any), so it is up to him
- * to free the data returned.
+ * The IPC manager remains the owner of the DB returned.
  * </p>
  * <p>
  * The DB returned contains a special group called <b>IPC</b>, which in turn

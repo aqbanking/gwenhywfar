@@ -172,6 +172,20 @@ int GWEN_MsgEngine_GetHighestTrustLevel(GWEN_XMLNODE *node,
 
 GWEN_DB_NODE *GWEN_MsgEngine__GetGlobalValues(GWEN_MSGENGINE *e);
 
+GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
+                                       GWEN_XMLNODE *node,
+                                       const char *t,
+                                       const char *pname,
+                                       int version,
+                                       const char *pvalue);
+GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
+                                      GWEN_XMLNODE *node,
+                                      const GWEN_XMLNODE_PATH *nodePath,
+                                      const char *t,
+                                      const char *pname,
+                                      int version,
+                                      const char *pvalue);
+
 
 struct GWEN_MSGENGINE_TRUSTEDDATA {
   GWEN_MSGENGINE_TRUSTEDDATA *next;

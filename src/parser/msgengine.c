@@ -1367,6 +1367,161 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
 
 
 
+GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
+                                       GWEN_XMLNODE *node,
+                                       const char *t,
+                                       const char *pname,
+                                       int version,
+                                       const char *pvalue) {
+  GWEN_XMLNODE *n;
+  const char *p;
+  int i;
+  const char *mode;
+  unsigned int proto;
+  char buffer[256];
+
+  if ((strlen(t)+4)>sizeof(buffer)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Type name too long.");
+    return 0;
+  }
+
+  mode=GWEN_MsgEngine_GetMode(e);
+  proto=GWEN_MsgEngine_GetProtocolVersion(e);
+  if (!e->defs) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No definitions available");
+    return 0;
+  }
+  n=e->defs;
+  n=GWEN_XMLNode_GetChild(n);
+
+  /* find type+"S" */
+  strcpy(buffer, t);
+  strcat(buffer,"S");
+  n=GWEN_XMLNode_FindFirstTag(e->defs, buffer, 0, 0);
+  if (!n) {
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "No definitions here for type \"%s\"", t);
+    return 0;
+  }
+
+  /* find approppriate group definition */
+  if (!mode)
+    mode="";
+  n=GWEN_XMLNode_GetFirstTag(n);
+  if (!n) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No definitions inside \"%s\"", buffer);
+    return 0;
+  }
+
+  /* find type+"def" */
+  strcpy(buffer, t);
+  strcat(buffer, "def");
+  while(n) {
+    p=GWEN_XMLNode_GetData(n);
+    assert(p);
+    if (strcasecmp(p, buffer)==0 ||
+	strcasecmp(p, t)==0) {
+      p=GWEN_XMLNode_GetProperty(n, pname,"");
+      if (strcasecmp(p, pvalue)==0) {
+	i=atoi(GWEN_XMLNode_GetProperty(n, "pversion" ,"0"));
+	if (proto==0 || (int)proto==i || i==0) {
+	  i=atoi(GWEN_XMLNode_GetProperty(n, "version" ,"0"));
+	  if (version==0 || version==i) {
+	    p=GWEN_XMLNode_GetProperty(n, "mode","");
+	    if (strcasecmp(p, mode)==0 || !*p) {
+	      DBG_DEBUG(GWEN_LOGDOMAIN,
+			"Group definition for \"%s=%s\" found",
+			pname, pvalue);
+	      return n;
+	    }
+	  }
+	}
+      }
+    }
+    n=GWEN_XMLNode_GetNextTag(n);
+  } /* while */
+
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+	    "Group definition for \"%s=%s\"(%d) not found here",
+	    pname,
+	    pvalue,
+	    version);
+  return 0;
+}
+
+
+
+GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
+				      GWEN_XMLNODE *node,
+				      const GWEN_XMLNODE_PATH *nodePath,
+				      const char *t,
+				      const char *pname,
+				      int version,
+				      const char *pvalue) {
+  GWEN_XMLNODE *n;
+  GWEN_XMLNODE *nLast;
+  GWEN_XMLNODE *nRes;
+  GWEN_XMLNODE_PATH *pathCopy;
+
+  assert(node);
+  assert(nodePath);
+  assert(t);
+  assert(pname);
+  assert(pvalue);
+
+  pathCopy=GWEN_XMLNode_Path_dup(nodePath);
+  nRes=0;
+  n=GWEN_XMLNode_Path_Surface(pathCopy);
+  /* first try all nodes along the path */
+  while(n) {
+    nLast=n;
+    nRes=GWEN_MsgEngine__GetGroup(e, n, t, pname, version, pvalue);
+    if (nRes)
+      break;
+    n=GWEN_XMLNode_Path_Surface(pathCopy);
+  }
+  GWEN_XMLNode_Path_free(pathCopy);
+  if (nRes) {
+    /* already found */
+    if (nRes==node) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Loop detected.");
+      return 0;
+    }
+    return nRes;
+  }
+
+  if (nLast)
+    n=nLast;
+  else
+    n=node;
+
+  if (n) {
+    n=GWEN_XMLNode_GetParent(n);
+    while(n) {
+      nRes=GWEN_MsgEngine__GetGroup(e, n, t, pname, version, pvalue);
+      if (nRes)
+	break;
+      n=GWEN_XMLNode_GetParent(n);
+    }
+  }
+
+  if (!nRes) {
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "Group definition for \"%s=%s\"(%d) not found",
+	      pname,
+	      pvalue,
+	      version);
+    return 0;
+  }
+  if (nRes==node) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Loop detected.");
+    return 0;
+  }
+  return nRes;
+}
+
+
+
 int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
                                GWEN_BUFFER *gbuf,
                                GWEN_XMLNODE *node,
@@ -1546,12 +1701,13 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 	}
         else {
           DBG_VERBOUS(GWEN_LOGDOMAIN, "<%s> tag is of type \"%s\"", typ, gtype);
-          gn=GWEN_MsgEngine_FindNodeByProperty(e, typ, "id", gversion, gtype);
-          if (!gn) {
-            DBG_INFO(GWEN_LOGDOMAIN, "Definition for type \"%s\" not found", typ);
-            return -1;
-          }
-        }
+	  gn=GWEN_MsgEngine_GetGroup(e, n, nodePath, typ, "id",
+				     gversion, gtype);
+	  if (!gn) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Definition for type \"%s\" not found", typ);
+	    return -1;
+	  }
+	}
 
         gname=0;
         gcfg=0;
