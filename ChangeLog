@@ -1,4 +1,9 @@
 
+2005/04/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a memory leak in typemaker generated code (spotted by Andreas Degert)
+
+
 2005/03/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in WaitCallback (type mismatch)

@@ -1171,14 +1171,6 @@ int write_code_dupList_c(ARGUMENTS *args, GWEN_XMLNODE *n,
       }
   
       /* actually generate the code */
-      GWEN_BufferedIO_Write(bio, "  ");
-      GWEN_BufferedIO_Write(bio, "st->");
-      GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-      GWEN_BufferedIO_Write(bio, name+1);
-      GWEN_BufferedIO_Write(bio, "=");
-      GWEN_BufferedIO_Write(bio, elemPrefix);
-      GWEN_BufferedIO_WriteLine(bio, "_List_new();");
-  
       GWEN_BufferedIO_Write(bio, "  if (");
       GWEN_BufferedIO_Write(bio, listName);
       GWEN_BufferedIO_WriteLine(bio, ") {");
@@ -1188,7 +1180,17 @@ int write_code_dupList_c(ARGUMENTS *args, GWEN_XMLNODE *n,
       GWEN_BufferedIO_Write(bio, elemType);
       GWEN_BufferedIO_WriteLine(bio, " *e;");
       GWEN_BufferedIO_WriteLine(bio, "");
-  
+
+      /* st->LIST=LIST_new() */
+      GWEN_BufferedIO_Write(bio, "  ");
+      GWEN_BufferedIO_Write(bio, "st->");
+      GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+      GWEN_BufferedIO_Write(bio, name+1);
+      GWEN_BufferedIO_Write(bio, "=");
+      GWEN_BufferedIO_Write(bio, elemPrefix);
+      GWEN_BufferedIO_WriteLine(bio, "_List_new();");
+
+
       /* e=ElemType_List_First */
       GWEN_BufferedIO_Write(bio, "    e=");
       GWEN_BufferedIO_Write(bio, elemPrefix);
