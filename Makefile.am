@@ -57,6 +57,7 @@ win32: dist
 	  && dc_destdir="$${TMPDIR-/tmp}/am-dc-$$$$/" \
 	  && cd $(distdir)/=build \
 	  && ../configure --srcdir=.. --prefix="$$dc_install_base" \
+	    --enable-static \
 	    $(DISTCHECK_CONFIGURE_FLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) check \
