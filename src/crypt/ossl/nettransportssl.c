@@ -350,10 +350,10 @@ GWEN_NetTransportSSL_StartDisconnect(GWEN_NETTRANSPORT *tr){
   if (st==GWEN_NetTransportStatusUnconnected ||
       st==GWEN_NetTransportStatusPDisconnected ||
       st==GWEN_NetTransportStatusDisabled) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Socket is inactive: %s (%d)",
-              GWEN_NetTransport_StatusName(GWEN_NetTransport_GetStatus(tr)),
-              GWEN_NetTransport_GetStatus(tr));
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Socket is inactive: %s (%d)",
+	     GWEN_NetTransport_StatusName(GWEN_NetTransport_GetStatus(tr)),
+	     GWEN_NetTransport_GetStatus(tr));
     return GWEN_NetTransportResultError;
   }
 
@@ -647,8 +647,8 @@ int GWEN_NetTransportSSL_PasswordCB(char *buffer, int num,
 GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
 GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
 				 GWEN_DB_NODE *cert){
-  DBG_NOTICE(GWEN_LOGDOMAIN, "Would ask user about this:");
-  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelNotice)
+  DBG_INFO(GWEN_LOGDOMAIN, "Would ask user about this:");
+  if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevelInfo)
     GWEN_DB_Dump(cert, stderr, 2);
 
   if (gwen_netransportssl_askAddCertFn2)
@@ -733,7 +733,7 @@ void GWEN_NetTransportSSL__InfoCallBack(SSL *s, int where, int ret){
 int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
                                    X509 *cert,
                                    const char *dir,
-                                   int incoming) {
+                                   int overwrite) {
   FILE *f;
   const char *fmode = "";
   char cn[256];
@@ -778,7 +778,7 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
       GWEN_Buffer_SetPos(nbuf, pos);
       GWEN_Buffer_AppendByte(nbuf, '.');
       GWEN_Buffer_AppendString(nbuf, numbuf);
-      if (incoming)
+      if (overwrite)
         /* overwrite older incoming certificates */
         break;
       if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
@@ -1561,9 +1561,9 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         case GWEN_NetTransportSSL_AskAddCertResultTmp:
           DBG_INFO(GWEN_LOGDOMAIN, "Temporarily trusting certificate");
           break;
-        case GWEN_NetTransportSSL_AskAddCertResultPerm:
+	case GWEN_NetTransportSSL_AskAddCertResultPerm:
           DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to trusted certs");
-          if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->CAdir, 0)) {
+          if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->CAdir, !isNew)) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
             isErr=1;
           }
@@ -1574,12 +1574,12 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
             isErr=1;
           }
           else {
-            DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to incoming certs");
-            if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->newCAdir, 1)) {
-              DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
-              isErr=1;
-            }
-          }
+	    DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to incoming certs");
+	    if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->newCAdir, 1)) {
+	      DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
+	      isErr=1;
+	    }
+	  }
           break;
         default:
           DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected result");
