@@ -17,7 +17,8 @@ $Id$
              5. ChangeLog
              6. BUILD Version Number
              7. Versioning
-             8. Documentation
+             8. CVS Usage
+             9. Documentation
 
 
 
@@ -260,7 +261,20 @@ Examples:
 
 
 
-8. Documentation
+8. CVS Usage
+============
+
+Please make sure that a commit to CVS does not make the CVS repository
+unusable, so before committing:
+- check whether your local version compiles correctly
+- check whether the library/executable created actually DOES work
+
+This is necessary because the CVS version is actually used by testers and the 
+developers. So rendering the CVS version unusable would be disastrous...
+
+
+
+9. Documentation
 ================
 
 Every exported function and type should be documented inside a header file.
