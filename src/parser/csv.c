@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 
-# This file is deprecated !!
+/* This file is deprecated !! */
 
 
 #ifdef HAVE_CONFIG_H
