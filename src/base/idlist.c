@@ -212,6 +212,7 @@ int GWEN_IdList_AddId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
   }
 
   GWEN_IdTable_AddId(idt, id);
+  idl->entryCount++;
   return 0;
 }
 
@@ -229,6 +230,7 @@ int GWEN_IdList_DelId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
     if (!GWEN_IdTable_DelId(idt, id)) {
       /* found a table which had this id */
       GWEN_IdList_Clean(idl);
+      idl->entryCount--;
       return 0;
     }
     idt=GWEN_IdTable_List_Next(idt);
@@ -303,29 +305,34 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl){
 
 GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl){
   GWEN_IDTABLE *idt;
+  GWEN_TYPE_UINT32 id;
 
   assert(idl);
 
   idt=idl->current;
-  /* find free table */
-  while(idt) {
-    GWEN_IDTABLE *next;
-    GWEN_TYPE_UINT32 id;
-
-    next=GWEN_IdTable_List_Next(idt);
+  if (idt) {
     id=GWEN_IdTable_GetNextId(idt);
     if (id) {
       idl->current=idt;
       return id;
     }
-    idt=next;
-    if (idt) {
-      id=GWEN_IdTable_GetFirstId(idt);
-      if (id)
-        return id;
+  }
+  else {
+    idl->current=0;
+    return 0;
+  }
+
+  idt=GWEN_IdTable_List_Next(idt);
+  while (idt) {
+    id=GWEN_IdTable_GetFirstId(idt);
+    if (id) {
+      idl->current=idt;
+      return id;
     }
+    idt=GWEN_IdTable_List_Next(idt);
   } /* while */
 
+  idl->current=0;
   return 0;
 }
 
@@ -367,7 +374,9 @@ int GWEN_IdList_Sort(GWEN_IDLIST *idl){
     assert(id);
     ptr[i]=id;
   } /* for */
-  GWEN_IdList_Clean(idl);
+
+  GWEN_IdTable_List_Clear(idl->idTables);
+  idl->current=0;
 
   /* sort temporary list */
   while(1) {
