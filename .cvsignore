@@ -25,3 +25,5 @@ install-sh
 ltmain.sh
 missing
 mkinstalldirs
+listdoc.h
+gwenhywfar.tag
