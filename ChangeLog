@@ -1,9 +1,17 @@
+
+
+2004/08/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- base/inherit: added a macro which allows unlinking a type from a base type
+
+
 2004-08-06   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Fix header links for gwenui directory.
 
 	* src/crypt/ossl/cryptssl.c (GWEN_CryptKey_FromPasswordSSL): Fix
 	wrong buffer size variable.
+
 
 2004/08/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -21,6 +29,7 @@
   data. New code is required to use the other function 
   (GWEN_CryptKey_FromPassword()). This allows removing OpenSSL dependencies
   from other projects (like AqHBCI's OpenHBCI medium plugin)
+- base/inherit: added a macro which allows unlinking a type from a base type
 
 
 2004/08/05: Martin Preuss<martin@libchipcard.de>

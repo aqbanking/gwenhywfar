@@ -65,6 +65,9 @@ extern "C" {
   GWENHYWFAR_API 
   void GWEN_InheritData_free(GWEN_INHERITDATA *d);
 
+  GWENHYWFAR_API
+    void GWEN_InheritData_clear(GWEN_INHERITDATA *d);
+
   GWENHYWFAR_API 
   const char *GWEN_InheritData_GetTypeName(const GWEN_INHERITDATA *d);
 
@@ -99,7 +102,7 @@ extern "C" {
   GWEN_INHERITDATA_LIST *INHERIT__list;
 
   /**
-   * Use this macro in the header file of the inherited class. This defines
+   * Use this macro in the header file of the base class. This defines
    * the prototypes of some inheritance functions.
    * You should not care about these functions here, since you should not use
    * them directly. Please use @ref GWEN_INHERIT_GETDATA and
@@ -112,7 +115,10 @@ extern "C" {
                             void *data,\
                             GWEN_INHERIT_FREEDATAFN f);\
   int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id);\
-  GWEN_INHERITDATA_LIST *t##__INHERIT_GETLIST(const t *element);
+  GWEN_INHERITDATA_LIST *t##__INHERIT_GETLIST(const t *element);\
+  void t##__INHERIT_UNLINK(t *element, \
+                           const char *typeName,\
+                           GWEN_TYPE_UINT32 id);\
 
   /*@}*/
 
@@ -122,7 +128,7 @@ extern "C" {
    */
   /*@{*/
   /**
-   * Use this macro in the C file of the inherited class. It defines the
+   * Use this macro in the C file of the base class. It defines the
    * implementations of the inheritance functions. This macro MUST be
    * placed after the include statement which includes the classes header
    * file.
@@ -139,30 +145,50 @@ extern "C" {
                             void *data,\
                             GWEN_INHERIT_FREEDATAFN f) {\
   GWEN_INHERITDATA *d;\
-  \
-  assert(element);\
-  assert(element->INHERIT__list);\
-  \
-  d=GWEN_Inherit_FindData(element->INHERIT__list, id, 1);\
-  if (d) {\
-    fprintf(stderr,\
-            "ERROR: Type \"%s\" already inherits base type\n",\
-            typeName);\
-    abort();\
-  }\
-  d=GWEN_InheritData_new(typeName, id, data, (void*)element, f);\
-  GWEN_InheritData_List_Insert(d, element->INHERIT__list);\
+    \
+    assert(element);\
+    assert(element->INHERIT__list);\
+    \
+    d=GWEN_Inherit_FindData(element->INHERIT__list, id, 1);\
+    if (d) {\
+      fprintf(stderr,\
+              "ERROR: Type \"%s\" already inherits base type\n",\
+              typeName);\
+      abort();\
+    }\
+    d=GWEN_InheritData_new(typeName, id, data, (void*)element, f);\
+    GWEN_InheritData_List_Insert(d, element->INHERIT__list);\
   }\
   \
   int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id) {\
-  assert(element);\
-  assert(element->INHERIT__list);\
+    assert(element);\
+    assert(element->INHERIT__list);\
   \
-  return (GWEN_Inherit_FindData(element->INHERIT__list, id, 1)!=0);\
+    return (GWEN_Inherit_FindData(element->INHERIT__list, id, 1)!=0);\
+  }\
+  \
+  void t##__INHERIT_UNLINK(t *element, \
+                           const char *typeName,\
+                           GWEN_TYPE_UINT32 id) {\
+    GWEN_INHERITDATA *d;\
+    \
+    assert(element);\
+    assert(element->INHERIT__list);\
+    \
+    d=GWEN_Inherit_FindData(element->INHERIT__list, id, 0);\
+    if (!d) {\
+      fprintf(stderr,\
+              "ERROR: Type \"%s\" already inherits base type\n",\
+              typeName);\
+      abort();\
+    }\
+    GWEN_InheritData_clear(d);\
+    GWEN_InheritData_List_Del(d);\
+    GWEN_InheritData_free(d);\
   }
 
   /**
-   * Use this macro in your C file in constructor functions for the inherited
+   * Use this macro in your C file in constructor functions for the base
    * class. This macro initializes the elements defined by the macro
    * @ref GWEN_INHERIT_ELEMENT.
    */
@@ -173,7 +199,7 @@ extern "C" {
 
 
   /**
-   * Use this macro in your C file in destructor functions for the inherited
+   * Use this macro in your C file in destructor functions for the base
    * class. This macro deinitializes the elements defined by the macro
    * @ref GWEN_INHERIT_ELEMENT. This should be the first instruction in that
    * function, because it also gives inheriting classes the opportunity to
@@ -195,7 +221,7 @@ extern "C" {
   /**
    * Use this in the C file of inheriting classes. It initializes a global
    * variable with a hash of the inheriting type name. This is used to speed
-   * up inmheritance functions. This variable will be filled with a value
+   * up inheritance functions. This variable will be filled with a value
    * upon the first invocation of the macro @ref GWEN_INHERIT_SETDATA.
    */
 #define GWEN_INHERIT(bt, t) \
@@ -244,6 +270,20 @@ extern "C" {
                            ((t##__INHERIT_ID==0)?\
                             ((t##__INHERIT_ID=GWEN_Inherit_MakeId(__STRING(t)))):\
                             t##__INHERIT_ID)))?1:0)
+
+  /**
+   * This macro gives up the inheritance for the given type. After this
+   * macro has been executed there is no link left between the type and
+   * its base type.
+   * @param bt base type
+   * @param t derived type
+   */
+#define GWEN_INHERIT_UNLINK(bt, t, element) {\
+    if (!t##__INHERIT_ID)\
+      t##__INHERIT_ID=GWEN_Inherit_MakeId(__STRING(t));\
+    bt##__INHERIT_REMOVEDATA(element, __STRING(t), t##__INHERIT_ID);\
+  }
+
   /*@}*/
 
   /*@}*/ /* defgroup */

@@ -77,6 +77,14 @@ void GWEN_InheritData_free(GWEN_INHERITDATA *d) {
 
 
 
+void GWEN_InheritData_clear(GWEN_INHERITDATA *d){
+  assert(d);
+  d->freeDataFn=0;
+  d->data=0;
+}
+
+
+
 const char *GWEN_InheritData_GetTypeName(const GWEN_INHERITDATA *d){
   assert(d);
   return d->typeName;
