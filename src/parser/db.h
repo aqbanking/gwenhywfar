@@ -148,10 +148,12 @@ extern "C" {
 #define GWEN_DB_FLAGS_APPEND_FILE            0x08000000
 /** Char values are escaped when writing them to a file. */
 #define GWEN_DB_FLAGS_ESCAPE_CHARVALUES      0x10000000
-/** Char values are escaped when reading them from a file (uses the same
+/** Char values are unescaped when reading them from a file (uses the same
  * bit @ref GWEN_DB_FLAGS_ESCAPE_CHARVALUES uses) */
 #define GWEN_DB_FLAGS_UNESCAPE_CHARVALUES    0x10000000
-
+/** locks a file before reading from or writing to it
+ * This is used by @ref GWEN_DB_ReadFile and @ref GWEN_DB_WriteFile */
+#define GWEN_DB_FLAGS_LOCKFILE               0x20000000
 /** These are the default flags which you use in most cases */
 #define GWEN_DB_FLAGS_DEFAULT \
   (\

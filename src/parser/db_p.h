@@ -32,6 +32,9 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/db.h>
 
+#define GWEN_DB_DEFAULT_LOCK_TIMEOUT 1000
+
+
 typedef struct GWEN_DB_HEADER GWEN_DB_HEADER;
 typedef struct GWEN_DB_GROUP GWEN_DB_GROUP;
 typedef struct GWEN_DB_VAR GWEN_DB_VAR;

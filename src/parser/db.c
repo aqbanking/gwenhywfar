@@ -39,6 +39,7 @@
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/dbio.h>
+#include <gwenhywfar/fslock.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -1698,15 +1699,38 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
   GWEN_ERRORCODE err;
   int fd;
   int rv;
+  GWEN_FSLOCK *lck=0;
 
+  /* if locking requested */
+  if (dbflags & GWEN_DB_FLAGS_LOCKFILE) {
+    GWEN_FSLOCK_RESULT res;
+
+    lck=GWEN_FSLock_new(fname, GWEN_FSLock_TypeFile);
+    assert(lck);
+    res=GWEN_FSLock_Lock(lck, GWEN_DB_DEFAULT_LOCK_TIMEOUT);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not apply lock to file \"%s\" (%d)",
+                fname, res);
+      GWEN_FSLock_free(lck);
+      return -1;
+    }
+  }
+
+  /* open file */
   fd=open(fname, O_RDONLY);
   if (fd==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
               fname,
               strerror(errno));
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
     return -1;
   }
 
+  /* read from file */
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
   rv=GWEN_DB_ReadFromStream(n, bio, dbflags);
@@ -1714,9 +1738,27 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
     GWEN_BufferedIO_free(bio);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
     return -1;
   }
   GWEN_BufferedIO_free(bio);
+
+  /* remove lock, if any */
+  if (lck) {
+    GWEN_FSLOCK_RESULT res;
+
+    res=GWEN_FSLock_Unlock(lck);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_WARN(GWEN_LOGDOMAIN,
+               "Could not remove lock on file \"%s\" (%d)",
+               fname, res);
+    }
+    GWEN_FSLock_free(lck);
+  }
+
   return rv;
 }
 
@@ -2126,7 +2168,25 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
   GWEN_ERRORCODE err;
   int fd;
   int rv;
+  GWEN_FSLOCK *lck=0;
 
+  /* if locking requested */
+  if (dbflags & GWEN_DB_FLAGS_LOCKFILE) {
+    GWEN_FSLOCK_RESULT res;
+
+    lck=GWEN_FSLock_new(fname, GWEN_FSLock_TypeFile);
+    assert(lck);
+    res=GWEN_FSLock_Lock(lck, GWEN_DB_DEFAULT_LOCK_TIMEOUT);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not apply lock to file \"%s\" (%d)",
+                fname, res);
+      GWEN_FSLock_free(lck);
+      return -1;
+    }
+  }
+
+  /* open file */
   if (dbflags & GWEN_DB_FLAGS_APPEND_FILE)
     fd=open(fname, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
   else
@@ -2135,9 +2195,14 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
     DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
               fname,
               strerror(errno));
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
     return -1;
   }
 
+  /* write to file */
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
   rv=GWEN_DB_WriteToStream(n, bio, dbflags);
@@ -2145,9 +2210,27 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
     GWEN_BufferedIO_free(bio);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
     return -1;
   }
   GWEN_BufferedIO_free(bio);
+
+  /* remove lock, if any */
+  if (lck) {
+    GWEN_FSLOCK_RESULT res;
+
+    res=GWEN_FSLock_Unlock(lck);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_WARN(GWEN_LOGDOMAIN,
+               "Could not remove lock on file \"%s\" (%d)",
+               fname, res);
+    }
+    GWEN_FSLock_free(lck);
+  }
+
   return rv;
 }
 
