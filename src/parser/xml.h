@@ -36,6 +36,10 @@
 extern "C" {
 #endif
 
+#define GWEN_XML_FLAGS_READ_COMMENTS 0x0001
+
+#define GWEN_XML_FLAGS_DEFAULT 0
+
 
 typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 typedef enum {
@@ -66,6 +70,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
 GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
 void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
 void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n);
 
 GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
                                     GWEN_XMLNODE_TYPE t, const char *data);
@@ -74,12 +79,14 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
 /**
  * Reads ONE tag (and all its subtags) from the given bufferedIO.
  */
-int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio);
+int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
+                   unsigned int flags);
 
 /**
  * Reads all tags from a file and adds them as children to the given node.
  */
-int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath);
+int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
+                      unsigned int flags);
 
 
 void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind);

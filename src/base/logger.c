@@ -158,9 +158,9 @@ void GWEN_Logger_Close(GWEN_LOGGER *lg){
 }
 
 
-int _Logger_CreateMessage(GWEN_LOGGER *lg,
-                          GWEN_LOGGER_LEVEL priority, const char *s,
-			  char *buffer, int bufsize) {
+int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
+                               GWEN_LOGGER_LEVEL priority, const char *s,
+                               char *buffer, int bufsize) {
   int i;
 #ifdef HAVE_TIME_H
   struct tm *t;
@@ -231,8 +231,8 @@ int _Logger_CreateMessage(GWEN_LOGGER *lg,
 
 
 
-int _Logger_Log(GWEN_LOGGER *lg,
-                GWEN_LOGGER_LEVEL priority, const char *s){
+int GWEN_Logger__Log(GWEN_LOGGER *lg,
+                     GWEN_LOGGER_LEVEL priority, const char *s){
   FILE *f;
   int pri;
   char buffer[300];
@@ -245,8 +245,8 @@ int _Logger_Log(GWEN_LOGGER *lg,
 
   switch(lg->logType) {
   case GWEN_LoggerTypeFile:
-    rv=_Logger_CreateMessage(lg, priority, s,
-			     buffer, sizeof(buffer));
+    rv=GWEN_Logger__CreateMessage(lg, priority, s,
+				  buffer, sizeof(buffer));
     if (rv)
       return rv;
 
@@ -319,8 +319,8 @@ int _Logger_Log(GWEN_LOGGER *lg,
 	      "LOGGER: Logtype is \"Function\", but no function is set.\n");
       return 1;
     }
-    rv=_Logger_CreateMessage(lg, priority, s,
-			     buffer, sizeof(buffer));
+    rv=GWEN_Logger__CreateMessage(lg, priority, s,
+				  buffer, sizeof(buffer));
     if (rv)
       return rv;
     (lg->logFunction)(buffer);
@@ -328,8 +328,8 @@ int _Logger_Log(GWEN_LOGGER *lg,
 
   case GWEN_LoggerTypeConsole:
   default:
-    rv=_Logger_CreateMessage(lg, priority, s,
-			     buffer, sizeof(buffer));
+    rv=GWEN_Logger__CreateMessage(lg, priority, s,
+				  buffer, sizeof(buffer));
     if (rv)
       return rv;
 
@@ -368,7 +368,7 @@ int GWEN_Logger_Log(GWEN_LOGGER *lg,
   rv=0;
   p=buffer;
   while (*p) {
-    rv|=_Logger_Log(lg, priority, p);
+    rv|=GWEN_Logger__Log(lg, priority, p);
     while(*p)
       p++;
     p++;

@@ -37,10 +37,64 @@
 extern "C" {
 #endif
 
-typedef struct GWEN__MSGENGINE GWEN_MSGENGINE;
 
 #define GWEN_MSGENGINE_SHOW_FLAGS_NOSET 0x0001
 #define GWEN_MSGENGINE_MAX_VALUE_LEN    8192
+
+#define GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO 0x0001
+#define GWEN_MSGENGINE_READ_FLAGS_DEFAULT 0
+
+
+typedef struct GWEN__MSGENGINE GWEN_MSGENGINE;
+typedef struct GWEN_MSGENGINE_TRUSTEDDATA GWEN_MSGENGINE_TRUSTEDDATA;
+typedef enum {
+  GWEN_MsgEngineTrustLevelNone=0,
+  GWEN_MsgEngineTrustLevelLow,
+  GWEN_MsgEngineTrustLevelMedium,
+  GWEN_MsgEngineTrustLevelHigh,
+  GWEN_MsgEngineTrustLevelFull
+} GWEN_MSGENGINE_TRUSTLEVEL;
+
+
+GWEN_MSGENGINE_TRUSTEDDATA*
+  GWEN_MsgEngine_TrustedData_new(const char *data,
+                                 unsigned int size,
+                                 const char *description,
+                                 GWEN_MSGENGINE_TRUSTLEVEL trustLevel);
+void GWEN_MsgEngine_TrustedData_free(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+GWEN_MSGENGINE_TRUSTEDDATA*
+  GWEN_MsgEngine_TrustedData_GetNext(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+const char*
+  GWEN_MsgEngine_TrustedData_GetData(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+unsigned int
+  GWEN_MsgEngine_TrustedData_GetSize(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+const char*
+  GWEN_MsgEngine_TrustedData_GetDescription(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+GWEN_MSGENGINE_TRUSTLEVEL
+  GWEN_MsgEngine_TrustedData_GetTrustLevel(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+const char*
+  GWEN_MsgEngine_TrustedData_GetReplacement(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+
+int GWEN_MsgEngine_TrustedData_AddPos(GWEN_MSGENGINE_TRUSTEDDATA *td,
+                                      unsigned int pos);
+
+int GWEN_MsgEngine_TrustedData_GetFirstPos(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+int GWEN_MsgEngine_TrustedData_GetNextPos(GWEN_MSGENGINE_TRUSTEDDATA *td);
+
+int
+  GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
+                                                *td);
+
+
+
 
 
 typedef int (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
@@ -200,7 +254,8 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *group,
                                 GWEN_BUFFER *msgbuf,
-                                GWEN_DB_NODE *gr);
+                                GWEN_DB_NODE *gr,
+                                unsigned int flags);
 
 /**
  * This function skips all bytes from the given buffer until the given
@@ -254,7 +309,39 @@ int GWEN_MsgEngine_SkipSegment(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                const char *gtype,
                                GWEN_BUFFER *mbuf,
-                               GWEN_DB_NODE *gr);
+                               GWEN_DB_NODE *gr,
+                               unsigned int flags);
+
+/**
+ * This function creates a full tree of all groups and elements
+ * used by the given message.
+ * The caller is responsible for freeing the data returned.
+ */
+GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
+                                         const char *typ,
+                                         const char *msgName,
+                                         int msgVersion,
+                                         unsigned int flags);
+
+
+/**
+ * Searches for a property in "node" and in "refnode" and all its parents.
+ * If topdown is 0 then the nearest value is used, otherwise the farest
+ * one is used.
+ */
+const char *GWEN_MsgEngine_SearchForProperty(GWEN_XMLNODE *node,
+                                             GWEN_XMLNODE *refnode,
+                                             const char *name,
+                                             int topDown);
+
+
+/**
+ * This function returns trust info gathered while parsing a message.
+ * The caller of this function takes over ownership of this list of
+ * data, so it is his responsibility to free it.
+ * @return list of trust data (0 if none)
+ */
+GWEN_MSGENGINE_TRUSTEDDATA *GWEN_MsgEngine_TakeTrustInfo(GWEN_MSGENGINE *e);
 
 
 #ifdef __cplusplus

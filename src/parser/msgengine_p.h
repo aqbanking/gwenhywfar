@@ -42,6 +42,7 @@
 #define GWEN_MSGENGINE_TYPENAME_WIDTH 10
 
 #define GWEN_MSGENGINE_SHOW_FLAGS_OPTIONAL 0x00010000
+#define GWEN_MSGENGINE_TRUSTEDDATA_MAXPOS  32
 
 
 struct GWEN__MSGENGINE {
@@ -60,6 +61,7 @@ struct GWEN__MSGENGINE {
   GWEN_MSGENGINE_BINTYPEREAD_PTR binTypeReadPtr;
   GWEN_MSGENGINE_BINTYPEWRITE_PTR binTypeWritePtr;
 
+  GWEN_MSGENGINE_TRUSTEDDATA *trustInfos;
   void *inheritorData;
 };
 
@@ -102,25 +104,51 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                               GWEN_STRINGLIST *sl,
                               unsigned int flags);
 
+int GWEN_MsgEngine__ListElement(GWEN_MSGENGINE *e,
+                                const char *path,
+                                GWEN_XMLNODE *node,
+                                GWEN_STRINGLIST *sl,
+                                GWEN_XMLNODE *listNode,
+                                unsigned int flags);
+
+int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
+                              const char *path,
+                              GWEN_XMLNODE *node,
+                              GWEN_XMLNODE *rnode,
+                              GWEN_STRINGLIST *sl,
+                              GWEN_XMLNODE *listNode,
+                              unsigned int flags);
+
 int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
                               GWEN_BUFFER *msgbuf,
                               GWEN_XMLNODE *node,
+                              GWEN_XMLNODE *rnode,
                               GWEN_BUFFER *vbuf,
-                              const char *delimiters);
+                              const char *delimiters,
+                              unsigned int flags);
 
 int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                               GWEN_BUFFER *msgbuf,
                               GWEN_XMLNODE *node,
                               GWEN_XMLNODE *rnode,
                               GWEN_DB_NODE *gr,
-                              const char *delimiters);
+                              const char *delimiters,
+                              unsigned int flags);
+
+/**
+ * @param dnode node of the element to transform
+ */
 const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
                                          GWEN_XMLNODE *node,
-                                         const char *name);
+                                         GWEN_XMLNODE *dnode,
+                                         const char *name,
+                                         unsigned int *datasize);
 
 const char  *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
                                             const char *pvalue,
-                                            GWEN_XMLNODE *node);
+                                            GWEN_XMLNODE *node,
+                                            GWEN_XMLNODE *dnode,
+                                            unsigned int *datasize);
 const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
                                            GWEN_XMLNODE *node,
                                            GWEN_XMLNODE *refnode,
@@ -129,6 +157,20 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__IsCharTyp(const char *type);
 int GWEN_MsgEngine__IsIntTyp(const char *type);
 int GWEN_MsgEngine__IsBinTyp(const char *type);
+
+
+struct GWEN_MSGENGINE_TRUSTEDDATA {
+  GWEN_MSGENGINE_TRUSTEDDATA *next;
+  char *data;
+  unsigned int size;
+  char *description;
+  unsigned int trustLevel;
+  char *replacement;
+  unsigned int positions[GWEN_MSGENGINE_TRUSTEDDATA_MAXPOS];
+  unsigned int posCount;
+  unsigned int posPointer;
+};
+
 
 
 #endif

@@ -147,6 +147,7 @@ int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf);
 
 int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, unsigned int i);
 int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, unsigned int i);
+int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf);
 
 
 int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,

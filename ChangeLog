@@ -1,6 +1,14 @@
 $Id$
 
 
+2003/10/12 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a whole bunch of bugs
+- MessageEngine is now able to list all GROUPS and ELEMents which belong to
+  a given message. This allows for tools that show the variables needed/set
+  by different messages (as needed by OpenHBCI).
+
+
 2003/10/07 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - db module is now able to write a configuration (except binary data)

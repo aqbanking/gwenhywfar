@@ -280,6 +280,7 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(GWEN_DB_NODE *n){
       DBG_WARN(0, "Unknown value type (%d)", n->val.h.typ);
       nn=0;
     }
+    break;
 
   default:
     DBG_WARN(0, "Unknown node type (%d)", n->h.typ);
@@ -296,6 +297,10 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(GWEN_DB_NODE *n){
 
       /* duplicate child and add it */
       ncn=GWEN_DB_Node_dup(cn);
+      if (!ncn) {
+        GWEN_DB_Node_free(nn);
+        return 0;
+      }
       GWEN_DB_Node_Append(nn, ncn);
       cn=cn->h.next;
     } /* while cn */
@@ -348,6 +353,7 @@ GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n){
     DBG_ERROR(0, "Node is not a group");
     return 0;
   }
+  n=n->h.next;
   while(n) {
     if (n->h.typ==GWEN_DB_NODETYPE_GROUP)
       break;
@@ -383,6 +389,7 @@ GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n){
     DBG_ERROR(0, "Node is not a variable");
     return 0;
   }
+  n=n->h.next;
   while(n) {
     if (n->h.typ==GWEN_DB_NODETYPE_VAR)
       break;
@@ -418,6 +425,7 @@ GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n){
     DBG_ERROR(0, "Node is not a value");
     return 0;
   }
+  n=n->h.next;
   while(n) {
     if (n->h.typ==GWEN_DB_NODETYPE_VALUE)
       break;
@@ -562,20 +570,20 @@ void* GWEN_DB_HandlePath(const char *entry,
 
   /* check whether we are allowed to simply create the node */
   if (
-      ((flags & GWEN_PATH_FLAGS_LAST) &
+      ((flags & GWEN_PATH_FLAGS_LAST) &&
        (flags & GWEN_PATH_FLAGS_NAMECREATE)) ||
-      (!(flags & GWEN_PATH_FLAGS_LAST) &
+      (!(flags & GWEN_PATH_FLAGS_LAST) &&
        (flags & GWEN_PATH_FLAGS_PATHCREATE))
      ) {
     /* simply create the new variable/group */
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-      DBG_VERBOUS(0, "Creating variable \"%s\"", entry);
+      DBG_VERBOUS(0, "Unconditionally creating variable \"%s\"", entry);
       nn=GWEN_DB_Var_new(entry);
       GWEN_DB_Node_Append(n, nn);
       return nn;
     }
     else {
-      DBG_VERBOUS(0, "Creating group \"%s\"", entry);
+      DBG_VERBOUS(0, "Unconditionally creating group \"%s\"", entry);
       nn=GWEN_DB_Group_new(entry);
       GWEN_DB_Node_Append(n, nn);
       return nn;
@@ -1219,9 +1227,9 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                                 GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
                                 &pos);
             if (!p || !*wbuf) {
-              DBG_ERROR(0, "Error in line %d, pos %d (no word)",
-                        lineno, pos-linebuf+1);
-              return -1;
+              DBG_WARN(0, "Line %d, pos %d: no word",
+                       lineno, pos-linebuf+1);
+              break;
             }
 
             DBG_DEBUG(0, "Creating value \"%s\"", wbuf);
@@ -1253,7 +1261,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             if (*pos!=',')
               break;
             pos++;
-          }
+          } /* while *pos */
         } /* if isVal */
 
         while(*pos && isspace(*pos))
@@ -1355,7 +1363,8 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
   }
 
   if (nn->h.typ!=GWEN_DB_NODETYPE_GROUP) {
-    DBG_ERROR(0, "Sorce node is not a group");
+    DBG_ERROR(0, "Source node is not a group");
+    GWEN_DB_Dump(nn, stderr, 1);
     return -1;
   }
 
@@ -1396,19 +1405,17 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
     switch(n->h.typ) {
     case GWEN_DB_NODETYPE_GROUP:
       if (dbflags & GWEN_DB_FLAGS_WRITE_SUBGROUPS) {
-	err=GWEN_BufferedIO_WriteLine(bio, "");
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_INFO(0, "called from here");
-	  return 1;
-	}
-	for (i=0; i<insert; i++) {
-	  err=GWEN_BufferedIO_WriteChar(bio, ' ');
-	  if (!GWEN_Error_IsOk(err)) {
-	    DBG_INFO(0, "called from here");
-	    return 1;
-	  }
-	}
-	err=GWEN_BufferedIO_Write(bio, n->group.name);
+        /* indend */
+        if (dbflags & GWEN_DB_FLAGS_INDEND) {
+          for (i=0; i<insert; i++) {
+            err=GWEN_BufferedIO_WriteChar(bio, ' ');
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "called from here");
+              return 1;
+            }
+          } /* for */
+        } /* if indend */
+        err=GWEN_BufferedIO_Write(bio, n->group.name);
 	if (!GWEN_Error_IsOk(err)) {
 	  DBG_INFO(0, "called from here");
 	  return 1;
@@ -1419,24 +1426,45 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	  return 1;
 	}
 	if (GWEN_DB_WriteGroupToStream(n, bio, dbflags, insert+2))
-	  return 1;
-	for (i=0; i<insert; i++) {
-	  err=GWEN_BufferedIO_WriteChar(bio, ' ');
-	  if (!GWEN_Error_IsOk(err)) {
-	    DBG_INFO(0, "called from here");
-	    return 1;
-	  }
-	}
-	err=GWEN_BufferedIO_Write(bio, "} # ");
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_INFO(0, "called from here");
-	  return 1;
-	}
-	err=GWEN_BufferedIO_WriteLine(bio, n->group.name);
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_INFO(0, "called from here");
-	  return 1;
-	}
+          return 1;
+
+        /* indend */
+        if (dbflags & GWEN_DB_FLAGS_INDEND) {
+          for (i=0; i<insert; i++) {
+            err=GWEN_BufferedIO_WriteChar(bio, ' ');
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "called from here");
+              return 1;
+            }
+          } /* for */
+        } /* if indend */
+
+        if (dbflags & GWEN_DB_FLAGS_DETAILED_GROUPS) {
+          err=GWEN_BufferedIO_Write(bio, "} # ");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "called from here");
+            return 1;
+          }
+          err=GWEN_BufferedIO_WriteLine(bio, n->group.name);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "called from here");
+            return 1;
+          }
+        } /* if detailed groups */
+        else {
+          err=GWEN_BufferedIO_WriteLine(bio, "}");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "called from here");
+            return 1;
+          }
+        }
+        if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
+          err=GWEN_BufferedIO_WriteLine(bio, "");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "called from here");
+            return 1;
+          }
+        }
       }
       break;
 
@@ -1489,14 +1517,17 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 
 	    if (!namewritten) {
 	      /* write name */
-	      for (i=0; i<insert; i++) {
-		err=GWEN_BufferedIO_WriteChar(bio, ' ');
-		if (!GWEN_Error_IsOk(err)) {
-		  DBG_INFO(0, "called from here");
-		  return 1;
-		}
-	      }
-	      err=GWEN_BufferedIO_Write(bio, typname);
+              /* indend */
+              if (dbflags & GWEN_DB_FLAGS_INDEND) {
+                for (i=0; i<insert; i++) {
+                  err=GWEN_BufferedIO_WriteChar(bio, ' ');
+                  if (!GWEN_Error_IsOk(err)) {
+                    DBG_INFO(0, "called from here");
+                    return 1;
+                  }
+                } /* for */
+              } /* if indend */
+              err=GWEN_BufferedIO_Write(bio, typname);
 	      if (!GWEN_Error_IsOk(err)) {
 		DBG_INFO(0, "called from here");
 		return 1;
@@ -1598,7 +1629,7 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
   int fd;
   int rv;
 
-  fd=open(fname, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+  fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
   if (fd==-1) {
     DBG_ERROR(0, "Error opening file \"%s\": %s",
 	      fname,
@@ -1619,6 +1650,27 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
   return rv;
 }
 
+
+
+int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
+                           const char *path){
+  return (GWEN_DB_FindVar(n, path)!=0);
+}
+
+
+
+GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
+                                          const char *p){
+  GWEN_DB_NODE *nn;
+
+  nn=GWEN_DB_FindVar(n, p);
+  if (!nn)
+    return GWEN_DB_VALUETYPE_UNKNOWN;
+  nn=GWEN_DB_GetFirstValue(nn);
+  if (!nn)
+    return GWEN_DB_VALUETYPE_UNKNOWN;
+  return GWEN_DB_GetValueType(nn);
+}
 
 
 

@@ -46,8 +46,18 @@ extern "C" {
 #define GWEN_DB_FLAGS_QUOTE_VARNAMES         0x00040000
 #define GWEN_DB_FLAGS_QUOTE_VALUES           0x00080000
 #define GWEN_DB_FLAGS_WRITE_SUBGROUPS        0x00100000
+#define GWEN_DB_FLAGS_DETAILED_GROUPS        0x00200000
+#define GWEN_DB_FLAGS_INDEND                 0x00400000
+#define GWEN_DB_FLAGS_ADD_GROUP_NEWLINES     0x00800000
 
 #define GWEN_DB_FLAGS_DEFAULT \
+  GWEN_DB_FLAGS_QUOTE_VALUES | \
+  GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+  GWEN_DB_FLAGS_DETAILED_GROUPS | \
+  GWEN_DB_FLAGS_INDEND | \
+  GWEN_DB_FLAGS_ADD_GROUP_NEWLINES
+
+#define GWEN_DB_FLAGS_COMPACT \
   GWEN_DB_FLAGS_QUOTE_VALUES | \
   GWEN_DB_FLAGS_WRITE_SUBGROUPS
 
@@ -77,6 +87,10 @@ GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
 GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
 GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n);
 GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
+
+GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
+                                          const char *p);
+
 
 const char *GWEN_DB_GetCharValueFromNode(GWEN_DB_NODE *n);
 int GWEN_DB_GetIntValueFromNode(GWEN_DB_NODE *n);
@@ -147,6 +161,10 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
                                unsigned int flags,
                                const char *path);
+
+
+int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
+                           const char *path);
 
 
 const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);

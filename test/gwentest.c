@@ -128,7 +128,7 @@ int testXML(int argc, char **argv) {
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
-  if (GWEN_XML_ReadFile(n, "test.xml")) {
+  if (GWEN_XML_ReadFile(n, "test.xml", GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }
@@ -154,7 +154,7 @@ int testMsg(int argc, char **argv) {
   din=GWEN_DB_Group_new("ParsedData");
   gbuf=GWEN_Buffer_new(0, 1024,0,1);
 
-  if (GWEN_XML_ReadFile(n, "test.xml")) {
+  if (GWEN_XML_ReadFile(n, "test.xml", GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }
@@ -198,7 +198,8 @@ int testMsg(int argc, char **argv) {
   if (GWEN_MsgEngine_ParseMessage(e,
                                   sn,
                                   gbuf,
-                                  din)) {
+                                  din,
+                                  GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO)) {
     fprintf(stderr, "Error parsing message.\n");
     return 3;
   }
@@ -207,6 +208,47 @@ int testMsg(int argc, char **argv) {
   GWEN_MsgEngine_free(e);
   GWEN_DB_Group_free(da);
   GWEN_DB_Group_free(din);
+  return 0;
+}
+
+
+
+int testListMsg(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_MSGENGINE *e;
+  GWEN_XMLNODE *sn;
+  const char *segname;
+
+  if (argc<3) {
+    fprintf(stderr, "Segment name needed.\n");
+    return 1;
+  }
+  segname=argv[2];
+
+  e=GWEN_MsgEngine_new();
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+
+  if (GWEN_XML_ReadFile(n, "test.xml", GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  GWEN_MsgEngine_SetDefinitions(e, n);
+
+  sn=GWEN_MsgEngine_ListMessage(e,
+                                "SEG",
+                                segname,
+                                0,
+                                /*GWEN_MSGENGINE_SHOW_FLAGS_NOSET*/ 0);
+  if (!sn) {
+    fprintf(stderr, "Error listing message.\n");
+    return 3;
+  }
+
+  fprintf(stderr, "Node:\n");
+  GWEN_XMLNode_Dump(sn, stderr, 2);
+
+  GWEN_MsgEngine_free(e);
   return 0;
 }
 
@@ -434,6 +476,8 @@ int main(int argc, char **argv) {
     rv=testDBfile(argc, argv);
   else if (strcasecmp(argv[1], "dbfile2")==0)
     rv=testDBfile2(argc, argv);
+  else if (strcasecmp(argv[1], "list")==0)
+    rv=testListMsg(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

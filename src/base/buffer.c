@@ -196,12 +196,32 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, unsigned int i){
   assert(bf);
 
   if (i+bf->pos>=bf->bufferSize) {
-    DBG_ERROR(0, "Position %d outside buffer boundaries (%d bytes)",
-              i+bf->pos, bf->bufferSize);
-    return 1;
+    DBG_INFO(0,
+             "Position %d outside buffer boundaries (%d bytes)\n"
+             "Incrementing anyway",
+             i+bf->pos, bf->bufferSize);
   }
   bf->pos+=i;
   return 0;
+}
+
+
+
+int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf){
+  assert(bf);
+  if (bf->pos<=bf->bufferSize) {
+    if (bf->pos>bf->bytesUsed) {
+      DBG_INFO(0, "Adjusted buffer (uses now %d bytes)",
+               bf->pos);
+      bf->bytesUsed=bf->pos;
+    }
+    return 0;
+  }
+  else {
+    DBG_ERROR(0, "Pointer outside buffer size (%d bytes)",
+              bf->bufferSize);
+    return 1;
+  }
 }
 
 
@@ -248,7 +268,10 @@ unsigned int GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf){
 unsigned int GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf){
   assert(bf);
 
-  return bf->bytesUsed-bf->pos;
+  if (bf->pos<bf->bytesUsed)
+    return bf->bytesUsed-bf->pos;
+  else
+    return 0;
 }
 
 

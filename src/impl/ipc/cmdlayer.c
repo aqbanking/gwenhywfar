@@ -254,7 +254,8 @@ GWEN_ERRORCODE GWEN_MsgLayerCmd_Work(GWEN_IPCMSGLAYER *ml,
               if (GWEN_MsgEngine_ParseMessage(mcd->msgEngine,
                                               sn,
                                               buffer,
-                                              tmpda)) {
+                                              tmpda,
+                                              GWEN_MSGENGINE_READ_FLAGS_DEFAULT)) {
                 DBG_ERROR(0, "Bad message (pos=%d)",
                           GWEN_Buffer_GetPos(buffer));
                 GWEN_DB_Group_free(tmpda);
@@ -1229,7 +1230,8 @@ GWEN_DB_NODE *GWEN_IPCServiceCmd_ParseMsg(GWEN_IPCCONNLAYER *cl,
   rv=GWEN_MsgEngine_ReadMessage(ccd->msgEngine,
                                 "SEG",
                                 buffer,
-                                db);
+                                db,
+                                GWEN_MSGENGINE_READ_FLAGS_DEFAULT);
   if (rv==-1) {
     DBG_INFO(0, "called from here");
     GWEN_DB_Group_free(db);
@@ -1282,7 +1284,7 @@ GWEN_ERRORCODE GWEN_IPCServiceCmd_Init(GWEN_IPCSERVICECMD *s,
   DBG_INFO(0, "Initializing IPCServiceCmd");
   assert(s);
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
-  if (GWEN_XML_ReadFile(n, xmlfile)) {
+  if (GWEN_XML_ReadFile(n, xmlfile, GWEN_XML_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Error reading XML file \"%s\".\n", xmlfile);
     GWEN_XMLNode_free(n);
     return GWEN_Error_new(0,

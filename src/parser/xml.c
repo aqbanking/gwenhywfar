@@ -326,7 +326,8 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
 
 
 
-int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio) {
+int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
+                   unsigned int flags) {
   GWEN_XMLNODE *path[GWEN_XML_MAX_DEPTH];
   int currDepth;
   int chr;
@@ -403,25 +404,43 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio) {
 	    if (chr<0) {
 	      return -1;
 	    }
-	  }
+          }
+
+          if (comlen>=sizeof(comment)) {
+            DBG_ERROR(0, "Comment too long !");
+            return -1;
+          }
 	  comment[comlen++]=chr;
 
 	  if (comlen>=3) {
 	    if (strncmp(comment+comlen-3,"-->",3)==0) {
 	      comlen-=3;
 	      comment[comlen]=0;
-	      break;
-	    }
-	  }
-	  chr=0;
+              break;
+            }
+            else {
+              if (!(flags & GWEN_XML_FLAGS_READ_COMMENTS)) {
+                DBG_VERBOUS(0, "Clipping comment to 2 bytes");
+                memmove(comment, comment+comlen-2, 2);
+                comlen=2;
+              }
+            }
+          }
+          chr=0;
 	} /* while */
 
-	/* create new node */
-	newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeComment,
-                                 comment);
-	GWEN_XMLNode_add(newNode, &(n->child));
-	newNode->parent=n;
-	DBG_DEBUG(0, "Added comment: \"%s\"", comment);
+        /* create new node */
+        DBG_VERBOUS(0, "Comment finished");
+        if (flags & GWEN_XML_FLAGS_READ_COMMENTS) {
+          newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeComment,
+                                   comment);
+          GWEN_XMLNode_add(newNode, &(n->child));
+          newNode->parent=n;
+          DBG_DEBUG(0, "Added comment: \"%s\"", comment);
+        }
+        else {
+          DBG_DEBUG(0, "Skip comment");
+        }
       } /* if remark */
       else {
 	/* handle tagname */
@@ -632,7 +651,8 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio) {
 }
 
 
-int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath){
+int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
+                      unsigned int flags){
   GWEN_BUFFEREDIO *dm;
   int fd;
 
@@ -648,7 +668,7 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath){
   GWEN_BufferedIO_SetReadBuffer(dm,0,1024);
 
   while(!GWEN_BufferedIO_CheckEOF(dm)) {
-    if (GWEN_XML_Parse(n, dm)) {
+    if (GWEN_XML_Parse(n, dm, flags)) {
       DBG_ERROR(0, "Error parsing");
       GWEN_BufferedIO_Close(dm);
       GWEN_BufferedIO_free(dm);
@@ -760,6 +780,22 @@ void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child){
   child->parent=0;
 }
 
+
+
+void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n){
+  GWEN_XMLNODE *cn;
+
+  assert(n);
+  cn=n->child;
+  while(cn) {
+    GWEN_XMLNODE *ncn;
+
+    ncn=cn->next;
+    GWEN_XMLNode_free(cn);
+    cn=ncn;
+  } /* while */
+  n->child=0;
+}
 
 
 
