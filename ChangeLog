@@ -1,4 +1,11 @@
 
+2004/01/16 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added GWEN_WaitCallback:
+  This allows for nesting callback contexts. This is now a generic way
+  to inform the application about long term actions.
+
+
 2004/01/15 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - DB: 

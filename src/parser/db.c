@@ -1075,7 +1075,20 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
         break;
 
       case GWEN_DB_VALUETYPE_BIN:
-        fprintf(f, "Value : %d bytes (bin)\n", n->val.b.dataSize);
+        if (1) {
+          char *buffer;
+
+          buffer=(char*)malloc((n->val.b.dataSize*2)+1);
+          assert(buffer);
+          if (GWEN_Text_ToHex(n->val.b.data, n->val.b.dataSize,
+                              buffer, (n->val.b.dataSize*2)+1)==0) {
+            fprintf(f, "Value : %d bytes (bin)\n", n->val.b.dataSize);
+          }
+          else {
+            fprintf(f, "Value : %s (bin)\n", buffer);
+          }
+          free(buffer);
+        }
         break;
 
       default:

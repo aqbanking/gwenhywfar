@@ -8,7 +8,8 @@ noinst_HEADERS=\
  error_p.h \
  list_p.h \
  logger_p.h \
- stringlist_p.h
+ stringlist_p.h \
+ waitcallback_p.h
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
@@ -18,7 +19,8 @@ iheader_HEADERS=\
  list.h \
  logger.h \
  misc.h \
- stringlist.h
+ stringlist.h \
+ waitcallback.h
 
 libbase_la_SOURCES=\
  buffer.c \
@@ -26,4 +28,6 @@ libbase_la_SOURCES=\
  error.c \
  list.c \
  logger.c \
- stringlist.c
+ stringlist.c \
+ waitcallback.c
+

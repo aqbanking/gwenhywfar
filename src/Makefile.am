@@ -43,12 +43,13 @@ DLL_NAME=gwenhywfar32.dll
 DLL_EXP_LIB=gwenhywfar32.lib
 DLL_EXP_DEF=gwenhywfar32.def
 DLL_OBJS= \
-   base/stringlist.o \
    base/buffer.o\
    base/debug.o\
    base/error.o\
    base/list.o\
    base/logger.o\
+   base/stringlist.o \
+   base/waitcallback.o\
    io/bufferedio.o\
    crypt/ossl/cryptssl.o \
    crypt/ossl/cryptssl_md5.o\
