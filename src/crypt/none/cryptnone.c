@@ -62,7 +62,7 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             const char *dhfile,
                                             int secure,
                                             int takeOver){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return 0;
 }
 
@@ -76,7 +76,7 @@ GWEN_NetTransportSSL_SetGetPasswordFn(GWEN_NETTRANSPORTSSL_GETPASSWD_FN fn){
 
 GWEN_NETTRANSPORTSSL_GETPASSWD_FN
 GWEN_NetTransportSSL_GetGetPasswordFn(){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return 0;
 }
 
@@ -84,14 +84,14 @@ GWEN_NetTransportSSL_GetGetPasswordFn(){
 
 void
 GWEN_NetTransportSSL_SetAskAddCertFn(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN fn){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
 }
 
 
 
 GWEN_NETTRANSPORTSSL_ASKADDCERT_FN
 GWEN_NetTransportSSL_GetAskAddCertFn(){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return 0;
 }
 
@@ -99,13 +99,13 @@ GWEN_NetTransportSSL_GetAskAddCertFn(){
 
 void GWEN_NetTransportSSL_SetCipherList(GWEN_NETTRANSPORT *tr,
                                         const char *ciphers){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
 }
 
 
 
 GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList(){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return 0;
 }
 
@@ -116,14 +116,14 @@ int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
                                                 int serial,
                                                 int days,
                                                 GWEN_DB_NODE *db) {
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return -1;
 }
 
 
 
 int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits) {
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return -1;
 }
 
@@ -131,21 +131,21 @@ int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits) {
 
 GWEN_DB_NODE*
 GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return 0;
 }
 
 
 
 int GWEN_NetTransportSSL_IsSecure(const GWEN_NETTRANSPORT *tr){
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return 0;
 }
 
 
 
 int GWEN_NetTransportSSL_IsOfType(GWEN_NETTRANSPORT *tr) {
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return 0;
 }
 
@@ -155,13 +155,13 @@ int GWEN_NetTransportSSL_IsOfType(GWEN_NETTRANSPORT *tr) {
 int GWEN_CryptKey_FromPasswordSSL(const char *password,
                                   unsigned char *buffer,
                                   unsigned int bsize){
-  if (i!=16) {
+  if (bsize!=16) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Buffer must be exact 16 bytes in length.\n"
-              "But this function is not supported, anyway (no OpenSSL)");
+	      "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
     return -1;
   }
-  DBG_ERROR(GWEN_LOGDOMAIN, "Crypto functions not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without OpenSSL! Crypto functions not supported.");
   return -1;
 }
 
