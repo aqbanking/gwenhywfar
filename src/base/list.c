@@ -200,6 +200,12 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
   assert(it);
   if (it->current) {
     current=it->current;
+    /* unlink from list */
+    if (l->first==current)
+      l->first=current->next;
+    if (l->last==current)
+      l->last=current->previous;
+
     /* unlink from next */
     if (current->next) {
       it->current=current->next;
@@ -223,6 +229,8 @@ GWEN_LIST_ITERATOR *GWEN_List_First(GWEN_LIST *l){
   GWEN_LIST_ITERATOR *li;
 
   assert(l);
+  if (l->first==0)
+    return 0;
   li=GWEN_ListIterator_new(l);
   li->current=l->first;
   if (li->current) {
@@ -237,6 +245,8 @@ GWEN_LIST_ITERATOR *GWEN_List_Last(GWEN_LIST *l){
   GWEN_LIST_ITERATOR *li;
 
   assert(l);
+  if (l->last==0)
+    return 0;
   li=GWEN_ListIterator_new(l);
   li->current=l->last;
   if (li->current)
@@ -470,6 +480,12 @@ void GWEN_ConstList_Erase(GWEN_CONSTLIST *l, GWEN_CONSTLIST_ITERATOR *it){
   assert(it);
   if (it->current) {
     current=it->current;
+    /* unlink from list */
+    if (l->first==current)
+      l->first=current->next;
+    if (l->last==current)
+      l->last=current->previous;
+
     /* unlink from next */
     if (current->next) {
       it->current=current->next;
@@ -507,6 +523,8 @@ GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_First(GWEN_CONSTLIST *l){
   GWEN_CONSTLIST_ITERATOR *li;
 
   assert(l);
+  if (l->first==0)
+    return 0;
   li=GWEN_ConstListIterator_new(l);
   li->current=l->first;
   if (li->current)
@@ -520,6 +538,8 @@ GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_Last(GWEN_CONSTLIST *l){
   GWEN_CONSTLIST_ITERATOR *li;
 
   assert(l);
+  if (l->last==0)
+    return 0;
   li=GWEN_ConstListIterator_new(l);
   li->current=l->last;
   if (li->current)

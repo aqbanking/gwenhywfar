@@ -1,6 +1,13 @@
 $Id$
 
 
+2003/11/30 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in list
+- IPC is now ready for deeper testing
+- added some new test files
+
+
 2003/11/29 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - XML module: added special handling for tags named "include": If such

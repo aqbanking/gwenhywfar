@@ -133,35 +133,6 @@ GWEN_MSGENGINE *GWEN_IPCXMLConnLayer_GetMsgEngine(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int GWEN_IPCXMLConnLayer_GetFlags(GWEN_IPCCONNLAYER *cl){
-  GWEN_IPCXMLCONNLAYERDATA *ccd;
-
-  assert(cl);
-  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
-  assert(ccd);
-  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
-
-  return ccd->flags;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void GWEN_IPCXMLConnLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
-                                   unsigned int f){
-  GWEN_IPCXMLCONNLAYERDATA *ccd;
-
-  assert(cl);
-  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
-  assert(ccd);
-  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
-
-  ccd->flags=f;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Accept(GWEN_IPCCONNLAYER *cl,
                                            GWEN_IPCMSGLAYER *ml,
                                            GWEN_IPCCONNLAYER **c){
@@ -183,7 +154,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Accept(GWEN_IPCCONNLAYER *cl,
   assert(newccd);
 
   /* copy important data */
-  newccd->flags=ccd->flags;
+  GWEN_ConnectionLayer_SetFlags(newcl, GWEN_ConnectionLayer_GetFlags(cl));
   newccd->connectedFn=ccd->connectedFn;
   newccd->disconnectedFn=ccd->disconnectedFn;
   *c=newcl;
@@ -461,10 +432,12 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl) {
       }
 
       DBG_INFO(0, "Encoding message");
-      err=GWEN_HBCIMsg_EncodeMsg(ccd->currentMsg);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_INFO_ERR(0, err);
-        return err;
+      if (GWEN_HBCIMsg_EncodeMsg(ccd->currentMsg)) {
+        DBG_WARN(0, "Error encoding message");
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                              GWEN_IPC_ERROR_BAD_DATA);
       }
       DBG_INFO(0, "Transforming message for message layer");
       msg=GWEN_IPCXMLConnLayer_HBCI2IPC(cl, ccd->currentMsg);
@@ -894,7 +867,7 @@ GWEN_IPCXMLConnLayer_GetCryptKey(GWEN_IPCCONNLAYER *cl){
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
   assert(ccd->securityManager);
-  return GWEN_IPCXMLSecCtxMgr_GetLocalSignKey(ccd->securityManager);
+  return GWEN_IPCXMLSecCtxMgr_GetLocalCryptKey(ccd->securityManager);
 }
 
 
@@ -910,11 +883,37 @@ void GWEN_IPCXMLConnLayer_SetCryptKey(GWEN_IPCCONNLAYER *cl,
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
   assert(ccd->securityManager);
-  GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(ccd->securityManager, key);
+  GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(ccd->securityManager, key);
 }
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_IPCXMLConnLayer_GetSessionId(GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  return ccd->sessionId;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_IPCXMLConnLayer_SetSessionId(GWEN_IPCCONNLAYER *cl,
+                                       unsigned int id){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  ccd->sessionId=id;
+}
 
 
 

@@ -4,7 +4,7 @@ int  localsignseq="1"
 int  remotesignseq="15"
 remotesignkey {
   char type="RSA"
-  char name="B"
+  char name="S"
   char owner="client"
   int  number="0"
   int  version="0"
@@ -18,7 +18,7 @@ remotesignkey {
 
 remotecryptkey {
   char type="RSA"
-  char name="B"
+  char name="V"
   char owner="client"
   int  number="0"
   int  version="0"

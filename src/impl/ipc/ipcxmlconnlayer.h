@@ -50,10 +50,8 @@
 typedef struct GWEN_IPCXMLCONNLAYERDATA GWEN_IPCXMLCONNLAYERDATA;
 
 
-#define GWEN_IPCXMLCONNLAYER_FLAGS_NEED_SIGN    0x0001
-#define GWEN_IPCXMLCONNLAYER_FLAGS_NEED_CRYPT   0x0002
-#define GWEN_IPCXMLCONNLAYER_FLAGS_VERIFIED     0x0004
-#define GWEN_IPCXMLCONNLAYER_FLAGS_ALLOW_ADDCTX 0x0008
+#define GWEN_IPCXMLCONNLAYER_FLAGS_VERIFIED     0x00010000
+#define GWEN_IPCXMLCONNLAYER_FLAGS_ALLOW_ADDCTX 0x00020000
 
 
 typedef void
@@ -78,10 +76,6 @@ GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_SERVICELAYER *sl,
                                             int active);
 
 GWEN_MSGENGINE *GWEN_IPCXMLConnLayer_GetMsgEngine(GWEN_IPCCONNLAYER *cl);
-unsigned int GWEN_IPCXMLConnLayer_GetFlags(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
-                                   unsigned int f);
-
 
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl);
 
@@ -112,6 +106,11 @@ unsigned int GWEN_IPCXMLConnLayer_GetSecurityFlags(GWEN_IPCCONNLAYER *cl);
 
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_SetSecurityFlags(GWEN_IPCCONNLAYER *cl,
                                                      unsigned int flags);
+
+unsigned int GWEN_IPCXMLConnLayer_GetSessionId(GWEN_IPCCONNLAYER *cl);
+void GWEN_IPCXMLConnLayer_SetSessionId(GWEN_IPCCONNLAYER *cl,
+                                       unsigned int id);
+
 
 void GWEN_IPCXMLConnLayer_Connected(GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLConnLayer_Disconnected(GWEN_IPCCONNLAYER *cl);

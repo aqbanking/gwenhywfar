@@ -151,73 +151,75 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
                                  int crypt){
   GWEN_IPCXMLSECCTXDATA *scd;
   GWEN_ERRORCODE err;
+  GWEN_BUFFER *kbuf;
+  GWEN_BUFFER *sbuf;
+  int i;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
   if (crypt) {
+    /* create new session key */
     if (scd->remoteCryptKey==0) {
       DBG_ERROR(0, "No remote crypt key");
       return GWEN_SecCtxRetvalError;
     }
     GWEN_HBCICryptoContext_SetKeySpec(ctx,
                                       GWEN_CryptKey_GetKeySpec(scd->remoteCryptKey));
-    if (!(scd->sessionKey)) {
-      GWEN_BUFFER *kbuf;
-      GWEN_BUFFER *sbuf;
-      int i;
+    if (scd->sessionKey) {
+      GWEN_CryptKey_free(scd->sessionKey);
+    }
 
-      /* generate session key, if possible */
-      DBG_NOTICE(0, "Generating session key");
-      scd->sessionKey=GWEN_CryptKey_Factory("DES");
-      assert(scd->sessionKey);
-      err=GWEN_CryptKey_Generate(scd->sessionKey, 0);
-      if (!GWEN_Error_IsOk(err)) {
-        DBG_INFO_ERR(0, err);
-        return GWEN_SecCtxRetvalError;
-      }
-      kbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      GWEN_Buffer_ReserveBytes(kbuf, 128);
-      if (GWEN_Buffer_AppendBytes(kbuf,
-				  GWEN_CryptKey_GetKeyData(scd->sessionKey),
-				  16)) {
-	DBG_INFO(0, "here");
-	GWEN_Buffer_free(kbuf);
-	return GWEN_SecCtxRetvalError;
-      }
+    /* generate session key, if possible */
+    DBG_NOTICE(0, "Generating session key");
+    scd->sessionKey=GWEN_CryptKey_Factory("DES");
+    assert(scd->sessionKey);
+    err=GWEN_CryptKey_Generate(scd->sessionKey, 0);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(0, err);
+      return GWEN_SecCtxRetvalError;
+    }
+    kbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_ReserveBytes(kbuf, 128);
+    if (GWEN_Buffer_AppendBytes(kbuf,
+                                GWEN_CryptKey_GetKeyData(scd->sessionKey),
+                                16)) {
+      DBG_INFO(0, "here");
+      GWEN_Buffer_free(kbuf);
+      return GWEN_SecCtxRetvalError;
+    }
 
-      GWEN_Buffer_Rewind(kbuf);
-      i=GWEN_CryptKey_GetChunkSize(scd->remoteCryptKey)-16;
-      DBG_INFO(0, "Padding with %d bytes", i);
-      while(i-->0) {
-	if (GWEN_Buffer_InsertByte(kbuf, (char)0)) {
-	  DBG_INFO(0, "here");
-	  GWEN_Buffer_free(kbuf);
-	  return GWEN_SecCtxRetvalError;
-	}
-      } /* while */
-      DBG_INFO(0, "Padding done");
-
-      sbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      DBG_INFO(0, "Encrypting key");
-      err=GWEN_CryptKey_Encrypt(scd->remoteCryptKey,
-                                kbuf,
-                                sbuf);
-      if (!GWEN_Error_IsOk(err)) {
+    GWEN_Buffer_Rewind(kbuf);
+    i=GWEN_CryptKey_GetChunkSize(scd->remoteCryptKey)-16;
+    DBG_INFO(0, "Padding with %d bytes", i);
+    while(i-->0) {
+      if (GWEN_Buffer_InsertByte(kbuf, (char)0)) {
+        DBG_INFO(0, "here");
         GWEN_Buffer_free(kbuf);
-        GWEN_Buffer_free(sbuf);
-        DBG_INFO_ERR(0, err);
         return GWEN_SecCtxRetvalError;
       }
-      DBG_INFO(0, "Encrypting key: done");
+    } /* while */
+    DBG_INFO(0, "Padding done");
 
-      GWEN_HBCICryptoContext_SetCryptKey(ctx,
-                                         GWEN_Buffer_GetStart(sbuf),
-                                         GWEN_Buffer_GetUsedBytes(sbuf));
+    sbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    DBG_INFO(0, "Encrypting key");
+    err=GWEN_CryptKey_Encrypt(scd->remoteCryptKey,
+                              kbuf,
+                              sbuf);
+    if (!GWEN_Error_IsOk(err)) {
       GWEN_Buffer_free(kbuf);
       GWEN_Buffer_free(sbuf);
-    } /* if no session key */
+      DBG_INFO_ERR(0, err);
+      return GWEN_SecCtxRetvalError;
+    }
+    DBG_INFO(0, "Encrypting key: done");
+
+    GWEN_HBCICryptoContext_SetCryptKey(ctx,
+                                       GWEN_Buffer_GetStart(sbuf),
+                                       GWEN_Buffer_GetUsedBytes(sbuf));
+    GWEN_Buffer_free(kbuf);
+    GWEN_Buffer_free(sbuf);
   }
   else {
     if (scd->localSignKey==0) {
@@ -558,6 +560,10 @@ GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
     GWEN_Buffer_free(kbuf);
     GWEN_CryptKey_free(scd->sessionKey);
     scd->sessionKey=key;
+  }
+  else {
+    DBG_ERROR(0, "No message key");
+    return GWEN_SecCtxRetvalError;
   }
 
   /* now decrypt the message */
@@ -1291,6 +1297,7 @@ int GWEN_IPCXMLSecCtxMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
                                localName, 1)==0) &&
             (GWEN_Text_Compare(GWEN_SecContext_GetRemoteName(ctx),
                                remoteName, 1)==0)){
+          GWEN_List_Erase(scmd->contextList, it);
           GWEN_ListIterator_free(it);
           GWEN_SecContext_free(ctx);
           return 0;
@@ -1334,7 +1341,8 @@ int GWEN_IPCXMLSecCtxMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
                 localName, remoteName);
       return -1;
     }
-    GWEN_SecContext_free(sc);
+    DBG_INFO(0, "Releasing temporary context \"%s\":\"%s\"",
+             localName, remoteName);
     return 0;
   }
   else {

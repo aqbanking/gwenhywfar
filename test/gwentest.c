@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/db.h>
@@ -654,51 +655,76 @@ int testServer(int argc, char **argv) {
 
       DBG_NOTICE(0, "Got a request (%d)", reqid);
       for (;;) {
-        GWEN_DB_NODE *rqgr;
-
         rqdata=GWEN_IPCXMLService_GetRequestData(service, reqid);
         if (!rqdata) {
           DBG_NOTICE(0, "Request finished");
           break;
         }
-        rqgr=GWEN_DB_GetFirstGroup(rqdata);
-        while (rqgr) {
-          if (strcasecmp(GWEN_DB_GroupName(rqgr), "GetKey")==0) {
-            DBG_INFO(0, "Got a key request");
-            err=GWEN_IPCXMLCmd_Handle_GetPubKey(service,
-                                                reqid,
-                                                GWEN_IPCXML_REQUESTFLAGS_FLUSH,
-                                                rqdata);
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_ERROR_ERR(0, err);
-            }
-            else {
-              DBG_INFO(0, "Request handled.");
-            }
-          }
-          else if (strcasecmp(GWEN_DB_GroupName(rqgr), "OpenSession")==0) {
-            DBG_INFO(0, "Got a session open request");
-            err=
-              GWEN_IPCXMLCmd_Handle_OpenSession(service,
-                                                reqid,
-                                                GWEN_IPCXML_REQUESTFLAGS_FLUSH,
-                                                rqdata);
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_ERROR_ERR(0, err);
-            }
-            else {
-              DBG_INFO(0, "Request handled.");
-            }
-          }
-
-          else if (strcasecmp(GWEN_DB_GroupName(rqgr), "Security")==0) {
+        if (strcasecmp(GWEN_DB_GroupName(rqdata), "GetKey")==0) {
+          DBG_INFO(0, "Got a key request");
+          err=GWEN_IPCXMLCmd_Handle_GetPubKey(service,
+                                              reqid,
+                                              GWEN_IPCXML_REQUESTFLAGS_FLUSH,
+                                              rqdata);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
           }
           else {
-            DBG_NOTICE(0, "Unknown request:");
-            GWEN_DB_Dump(rqgr, stderr, 1);
+            DBG_INFO(0, "Request handled.");
           }
-          rqgr=GWEN_DB_GetNextGroup(rqgr);
-        } /* while */
+        }
+        else if (strcasecmp(GWEN_DB_GroupName(rqdata), "SendKey")==0) {
+          DBG_INFO(0, "Got a sendkey request");
+          err=GWEN_IPCXMLCmd_Handle_SendPubKey(service,
+                                               reqid,
+                                               GWEN_IPCXML_REQUESTFLAGS_FLUSH,
+                                               rqdata);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+          }
+          else {
+            DBG_INFO(0, "Request handled.");
+          }
+        }
+        else if (strcasecmp(GWEN_DB_GroupName(rqdata), "OpenSession")==0) {
+          DBG_INFO(0, "Got a session open request");
+          err=
+            GWEN_IPCXMLCmd_Handle_OpenSession(service,
+                                              reqid,
+                                              GWEN_IPCXML_REQUESTFLAGS_FLUSH,
+                                              rqdata);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+          }
+          else {
+            DBG_INFO(0, "Request handled.");
+          }
+        }
+        else if (strcasecmp(GWEN_DB_GroupName(rqdata), "Secure")==0) {
+          DBG_INFO(0, "Got a session open request");
+          err=
+            GWEN_IPCXMLCmd_Handle_Secure(service,
+                                         reqid,
+                                         GWEN_IPCXML_REQUESTFLAGS_FLUSH,
+                                         rqdata);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_ERROR_ERR(0, err);
+          }
+          else {
+            DBG_INFO(0, "Request handled.");
+          }
+        }
+
+        else {
+          DBG_NOTICE(0, "Unknown request:");
+          GWEN_DB_Dump(rqdata, stderr, 1);
+          GWEN_IPCXMLCmd_Response_SegResult(service,
+                                            reqid,
+                                            GWEN_IPCXML_REQUESTFLAGS_FLUSH,
+                                            9000,
+                                            "Unknown request",
+                                            0);
+        }
         GWEN_DB_Group_free(rqdata);
       } /* for */
       GWEN_IPCXMLService_DeleteRequest(service, reqid);
@@ -1248,6 +1274,258 @@ int testClient3(int argc, char **argv) {
 }
 
 
+int testClient4(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_MSGENGINE *e;
+  GWEN_DB_NODE *da;
+  GWEN_DB_NODE *keydb;
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_IPCXMLSERVICE *service;
+  unsigned int serverId;
+  GWEN_DB_NODE *gr;
+  char mgrpath[256];
+  char keypath[256];
+
+  if (argc<3) {
+    fprintf(stderr,
+            "  Please give the name of the directory \n"
+            "  containing test data files (usually \"./tmp/gwentest\")\n"
+            "  You will have to copy the content of \"testdata\" "
+            "into that folder first...\n"
+            "  Oh, and the name of the folder must be relative to the\n"
+            "  current working directory, absolute folders are not allowed.\n"
+            "  A simple \"cp testdata tmp\" should do the trick.\n"
+            "  Please do NOT use \"testdata\" directly,\n"
+            "  because it would modify your CVS directory.\n");
+    return 1;
+  }
+  strcpy(mgrpath, argv[2]);
+  strcat(mgrpath, "/clientdir/");
+  strcpy(keypath, argv[2]);
+  strcat(keypath, "/client.key");
+
+  e=GWEN_MsgEngine_new();
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  da=GWEN_DB_Group_new("Data");
+
+  if (GWEN_XML_ReadFile(n, "../src/impl/ipc/data/ipc.xml",
+			GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  GWEN_MsgEngine_SetDefinitions(e, n, 1);
+  GWEN_MsgEngine_SetProtocolVersion(e, 1);
+  GWEN_MsgEngine_SetMode(e, "RDH");
+
+  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", mgrpath);
+
+  keydb=GWEN_DB_Group_new("keys");
+  if (GWEN_DB_ReadFile(keydb, keypath,
+		       GWEN_DB_FLAGS_DEFAULT |
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    fprintf(stderr, "Error reading key file");
+    return 2;
+  }
+
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "signkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(scm, key);
+  }
+
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "cryptkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(scm, key);
+  }
+
+  GWEN_DB_Group_free(keydb);
+  keydb=0;
+
+  fprintf(stderr, "Creating service.\n");
+  service=GWEN_IPCXMLService_new(e, scm);
+  fprintf(stderr, "Creating service: done.\n");
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
+  fprintf(stderr, "Creating client.\n");
+  serverId=GWEN_IPCXMLService_AddClient(service,
+                                        GWEN_IPCXMLServiceTypeTCP,
+                                        "client",
+                                        "server",
+                                        1,
+                                        "192.168.115.2",
+                                        44444,
+                                        0);
+  if (!serverId) {
+    fprintf(stderr, "Error.\n");
+    return 2;
+  }
+  fprintf(stderr, "Creating client: done.\n");
+
+  fprintf(stderr, "Opening session...\n");
+  err=GWEN_IPCXMLService_SecureOpen(service, serverId,
+                                    //GWEN_IPCXMLSERVICE_OPENFLAG_SENDSIGNKEY |
+                                    //GWEN_IPCXMLSERVICE_OPENFLAG_SENDCRYPTKEY |
+                                    0,
+                                    20);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  fprintf(stderr, "Sleeping...\n");
+  sleep(20);
+
+  fprintf(stderr, "Exit.\n");
+  GWEN_IPCXMLService_free(service);
+  return 0;
+}
+
+
+
+int testClient5(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_MSGENGINE *e;
+  GWEN_DB_NODE *da;
+  GWEN_DB_NODE *keydb;
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_IPCXMLSERVICE *service;
+  unsigned int serverId;
+  GWEN_DB_NODE *gr;
+  char mgrpath[256];
+  char keypath[256];
+
+  if (argc<3) {
+    fprintf(stderr,
+            "  Please give the name of the directory \n"
+            "  containing test data files (usually \"./tmp/gwentest\")\n"
+            "  You will have to copy the content of \"testdata\" "
+            "into that folder first...\n"
+            "  Oh, and the name of the folder must be relative to the\n"
+            "  current working directory, absolute folders are not allowed.\n"
+            "  A simple \"cp testdata tmp\" should do the trick.\n"
+            "  Please do NOT use \"testdata\" directly,\n"
+            "  because it would modify your CVS directory.\n");
+    return 1;
+  }
+  strcpy(mgrpath, argv[2]);
+  strcat(mgrpath, "/clientdir/");
+  strcpy(keypath, argv[2]);
+  strcat(keypath, "/client5.key");
+
+  e=GWEN_MsgEngine_new();
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  da=GWEN_DB_Group_new("Data");
+
+  if (GWEN_XML_ReadFile(n, "../src/impl/ipc/data/ipc.xml",
+			GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  GWEN_MsgEngine_SetDefinitions(e, n, 1);
+  GWEN_MsgEngine_SetProtocolVersion(e, 1);
+  GWEN_MsgEngine_SetMode(e, "RDH");
+
+  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", mgrpath);
+
+  keydb=GWEN_DB_Group_new("keys");
+  if (GWEN_DB_ReadFile(keydb, keypath,
+		       GWEN_DB_FLAGS_DEFAULT |
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    fprintf(stderr, "Error reading key file");
+    return 2;
+  }
+
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "signkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(scm, key);
+  }
+
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "cryptkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(scm, key);
+  }
+
+  GWEN_DB_Group_free(keydb);
+  keydb=0;
+
+  fprintf(stderr, "Creating service.\n");
+  service=GWEN_IPCXMLService_new(e, scm);
+  fprintf(stderr, "Creating service: done.\n");
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
+  fprintf(stderr, "Creating client.\n");
+  serverId=GWEN_IPCXMLService_AddClient(service,
+                                        GWEN_IPCXMLServiceTypeTCP,
+                                        "client5",
+                                        "server",
+                                        1,
+                                        "192.168.115.2",
+                                        44444,
+                                        0);
+  if (!serverId) {
+    fprintf(stderr, "Error.\n");
+    return 2;
+  }
+  fprintf(stderr, "Creating client: done.\n");
+
+  fprintf(stderr, "Opening session...\n");
+  err=GWEN_IPCXMLService_SecureOpen(service, serverId,
+                                    GWEN_IPCXMLSERVICE_OPENFLAG_SENDSIGNKEY |
+                                    GWEN_IPCXMLSERVICE_OPENFLAG_SENDCRYPTKEY |
+                                    0,
+                                    20);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  fprintf(stderr, "Sleeping...\n");
+  sleep(20);
+
+  fprintf(stderr, "Exit.\n");
+  GWEN_IPCXMLService_free(service);
+  return 0;
+}
+
 
 
 
@@ -1378,6 +1656,10 @@ int main(int argc, char **argv) {
     rv=testClient2(argc, argv);
   else if (strcasecmp(argv[1], "client3")==0)
     rv=testClient3(argc, argv);
+  else if (strcasecmp(argv[1], "client4")==0)
+    rv=testClient4(argc, argv);
+  else if (strcasecmp(argv[1], "client5")==0)
+    rv=testClient5(argc, argv);
   else if (strcasecmp(argv[1], "mkkey")==0)
     rv=testMkKey(argc, argv);
   else if (strcasecmp(argv[1], "cpkey")==0)

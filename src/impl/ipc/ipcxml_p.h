@@ -45,16 +45,41 @@ struct GWEN_IPCXMLREQUEST {
 };
 
 
+
+typedef struct GWEN_IPCXMLSESSION GWEN_IPCXMLSESSION;
+struct GWEN_IPCXMLSESSION {
+  GWEN_IPCXMLSESSION *next;
+
+  unsigned int sessionId;
+  char *localName;
+  char *remoteName;
+};
+
+GWEN_IPCXMLSESSION *GWEN_IPCXMLSession_new(const char *lname,
+                                           const char *rname);
+void GWEN_IPCXMLSession_free(GWEN_IPCXMLSESSION *s);
+const char *GWEN_IPCXMLSession_GetLocalName(GWEN_IPCXMLSESSION *s);
+void GWEN_IPCXMLSession_SetLocalName(GWEN_IPCXMLSESSION *s,
+                                     const char *n);
+const char *GWEN_IPCXMLSession_GetRemoteName(GWEN_IPCXMLSESSION *s);
+void GWEN_IPCXMLSession_SetRemoteName(GWEN_IPCXMLSESSION *s,
+                                      const char *n);
+
+
+
 struct GWEN_IPCXMLSERVICE {
   GWEN_SERVICELAYER *serviceLayer;
   GWEN_SECCTX_MANAGER *securityManager;
   GWEN_MSGENGINE *msgEngine;
+  GWEN_IPCXMLSESSION *sessions;
 
   GWEN_IPCXMLREQUEST *outgoingRequests;
   GWEN_IPCXMLREQUEST *incomingRequests;
   GWEN_IPCXMLSERVICE_CONNUP_FN connUpFn;
   GWEN_IPCXMLSERVICE_CONNDOWN_FN connDownFn;
 };
+
+
 
 
 
@@ -82,6 +107,10 @@ void GWEN_IPCXMLService_ConnectionUp(GWEN_SERVICELAYER *sl,
                                      GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLService_ConnectionDown(GWEN_SERVICELAYER *sl,
                                        GWEN_IPCCONNLAYER *cl);
+
+GWEN_IPCXMLSESSION *GWEN_IPCXMLService_FindSession(GWEN_IPCXMLSERVICE *xs,
+                                                   const char *lname,
+                                                   const char *rname);
 
 
 #endif

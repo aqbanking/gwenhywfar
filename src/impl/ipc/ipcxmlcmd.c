@@ -47,7 +47,7 @@ int GWEN_IPCXMLCmd_IsSignedBy(GWEN_DB_NODE *n, const char *signer) {
   unsigned int i;
 
   for (i=0; ; i++) {
-    p=GWEN_DB_GetCharValue(n, "security/signesr", i, 0);
+    p=GWEN_DB_GetCharValue(n, "security/signers", i, 0);
     if (!p)
       break;
     if (strcasecmp(p, signer)==0) {
@@ -395,6 +395,31 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_GetPubKey(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_INQUEUE_EMPTY);
   }
 
+  if (strcasecmp(GWEN_DB_GroupName(n), "SegResult")==0) {
+    unsigned int rc;
+    GWEN_ERRORCODE err;
+
+    err=GWEN_IPCXMLCmd_Result_SegResult(xs, n, &rc);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(0, err);
+    }
+    else {
+      DBG_INFO(0, "Got an error: %d", rc);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_GENERIC);
+    }
+  }
+
+  if (strcasecmp(GWEN_DB_GroupName(n), "GetKeyResponse")!=0) {
+    DBG_INFO(0, "Not a GetkeyResponse");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_UNKNOWN_MSG);
+  }
+
   keygr=GWEN_DB_Group_new("key");
 
   GWEN_DB_SetCharValue(keygr,
@@ -403,26 +428,35 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_GetPubKey(GWEN_IPCXMLSERVICE *xs,
   GWEN_DB_SetCharValue(keygr,
                        GWEN_DB_FLAGS_DEFAULT,
                        "name",
-                       GWEN_DB_GetCharValue(n, "keyname/keytype", 0, ""));
+                       GWEN_DB_GetCharValue(n,
+                                            "GetKeyResponse/keyname/keytype",
+                                            0, ""));
 
   GWEN_DB_SetCharValue(keygr,
                        GWEN_DB_FLAGS_DEFAULT,
                        "owner",
-                       GWEN_DB_GetCharValue(n, "keyname/userid", 0, ""));
+                       GWEN_DB_GetCharValue(n,
+                                            "GetKeyResponse/keyname/userid",
+                                            0, ""));
 
   GWEN_DB_SetIntValue(keygr,
                       GWEN_DB_FLAGS_DEFAULT,
                       "number",
-                      GWEN_DB_GetIntValue(n, "keyname/keynum", 0, 0));
+                      GWEN_DB_GetIntValue(n,
+                                          "GetKeyResponse/keyname/keynum",
+                                          0, 0));
   GWEN_DB_SetIntValue(keygr,
                       GWEN_DB_FLAGS_DEFAULT,
                       "version",
-                      GWEN_DB_GetIntValue(n, "keyname/keyversion", 0, 0));
+                      GWEN_DB_GetIntValue(n,
+                                          "GetKeyResponse/keyname/keyversion",
+                                          0, 0));
   GWEN_DB_SetIntValue(keygr,
                       GWEN_DB_FLAGS_DEFAULT,
                       "data/public", 1);
 
-  binval=GWEN_DB_GetBinValue(n, "key/modulus", 0, 0, 0, &binsize);
+  binval=GWEN_DB_GetBinValue(n, "GetKeyResponse/key/modulus", 0,
+                             0, 0, &binsize);
   if (!binval) {
     DBG_ERROR(0, "No modulus in key");
     GWEN_DB_Group_free(keygr);
@@ -436,7 +470,8 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_GetPubKey(GWEN_IPCXMLSERVICE *xs,
                       GWEN_DB_FLAGS_DEFAULT,
                       "data/n", binval, binsize);
 
-  binval=GWEN_DB_GetBinValue(n, "key/exponent", 0, 0, 0, &binsize);
+  binval=GWEN_DB_GetBinValue(n, "GetKeyResponse/key/exponent", 0,
+                             0, 0, &binsize);
   if (!binval) {
     DBG_ERROR(0, "No exponent in key");
     GWEN_DB_Group_free(keygr);
@@ -496,7 +531,7 @@ unsigned int GWEN_IPCXMLCmd_Request_SendPubKey(GWEN_IPCXMLSERVICE *xs,
     isSignKey=0;
   }
   else {
-    DBG_ERROR(0, "bad keytype");
+    DBG_ERROR(0, "bad keytype (%s)", GWEN_CryptKey_GetKeyName(key));
     return 0;
   }
 
@@ -527,6 +562,208 @@ unsigned int GWEN_IPCXMLCmd_Request_SendPubKey(GWEN_IPCXMLSERVICE *xs,
   GWEN_DB_Group_free(db);
   return rqid;
 }
+
+
+
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_SendPubKey(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int rqid,
+                                                unsigned int flags,
+                                                GWEN_DB_NODE *n) {
+  GWEN_ERRORCODE err;
+  unsigned int connid;
+  int isSignKey;
+  GWEN_DB_NODE *keygr;
+  GWEN_CRYPTKEY *key;
+  const void *binval;
+  unsigned int binsize;
+  GWEN_SECCTX *ctx;
+
+  assert(xs);
+  assert(n);
+
+  connid=GWEN_IPCXMLService_GetRequestConnection(xs, rqid);
+  if (!connid) {
+    DBG_INFO(0, "Could not get connection for request %d", rqid);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_REQUEST_NOT_FOUND);
+  }
+  DBG_INFO(0, "Connection id is %d", connid);
+
+  /* get key */
+  keygr=GWEN_DB_Group_new("key");
+  GWEN_DB_SetCharValue(keygr,
+                       GWEN_DB_FLAGS_DEFAULT,
+                       "type", "RSA");
+  GWEN_DB_SetCharValue(keygr,
+                       GWEN_DB_FLAGS_DEFAULT,
+                       "name",
+                       GWEN_DB_GetCharValue(n, "sendkey/keyname/keytype", 0,
+                                            ""));
+
+  GWEN_DB_SetCharValue(keygr,
+                       GWEN_DB_FLAGS_DEFAULT,
+                       "owner",
+                       GWEN_DB_GetCharValue(n, "sendkey/keyname/userid", 0,
+                                            ""));
+
+  GWEN_DB_SetIntValue(keygr,
+                      GWEN_DB_FLAGS_DEFAULT,
+                      "number",
+                      GWEN_DB_GetIntValue(n, "sendkey/keyname/keynum", 0,
+                                          0));
+  GWEN_DB_SetIntValue(keygr,
+                      GWEN_DB_FLAGS_DEFAULT,
+                      "version",
+                      GWEN_DB_GetIntValue(n, "sendkey/keyname/keyversion", 0,
+                                          0));
+  GWEN_DB_SetIntValue(keygr,
+                      GWEN_DB_FLAGS_DEFAULT,
+                      "data/public", 1);
+
+  binval=GWEN_DB_GetBinValue(n, "sendkey/key/modulus", 0, 0, 0, &binsize);
+  if (!binval) {
+    DBG_ERROR(0, "No modulus in key");
+    GWEN_DB_Group_free(keygr);
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Bad key data",
+                                      0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_DATA);
+  }
+  GWEN_DB_SetBinValue(keygr,
+                      GWEN_DB_FLAGS_DEFAULT,
+                      "data/n", binval, binsize);
+
+  binval=GWEN_DB_GetBinValue(n, "sendkey/key/exponent", 0, 0, 0, &binsize);
+  if (!binval) {
+    DBG_ERROR(0, "No exponent in key");
+    GWEN_DB_Group_free(keygr);
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Bad key data",
+                                      0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_DATA);
+  }
+  GWEN_DB_SetBinValue(keygr,
+                      GWEN_DB_FLAGS_DEFAULT,
+                      "data/e", binval, binsize);
+
+  key=GWEN_CryptKey_FromDb(keygr);
+  if (!key) {
+    DBG_INFO(0, "here");
+    GWEN_DB_Group_free(keygr);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  GWEN_DB_Group_free(keygr);
+
+
+  if (strcasecmp(GWEN_CryptKey_GetKeyName(key), "S")==0) {
+    isSignKey=1;
+  }
+  else if (strcasecmp(GWEN_CryptKey_GetKeyName(key), "V")==0) {
+    isSignKey=0;
+  }
+  else {
+    DBG_ERROR(0, "bad keytype");
+    GWEN_CryptKey_free(key);
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Bad key data",
+                                      0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_DATA);
+  }
+
+  /* get context */
+  err=GWEN_IPCXMLService_GetContext(xs, connid,
+                                    GWEN_CryptKey_GetOwner(key),
+                                    &ctx);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_CryptKey_free(key);
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Unknown context", 0);
+    return err;
+  }
+
+  /* set key if possible */
+  if (!(GWEN_SecContext_GetFlags(ctx) & GWEN_SECCTX_FLAGS_TEMP)) {
+    /* only change keys on temporary context */
+    DBG_ERROR(0, "Will not change keys on non-temporary context");
+    GWEN_IPCXMLService_ReleaseContext(xs, connid, ctx, 1);
+    GWEN_CryptKey_free(key);
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Non-temporary context", 0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  else {
+    const GWEN_CRYPTKEY *oldKey;
+    if (isSignKey)
+      oldKey=GWEN_IPCXMLSecCtx_GetRemoteSignKey(ctx);
+    else
+      oldKey=GWEN_IPCXMLSecCtx_GetRemoteCryptKey(ctx);
+
+    if (oldKey &&
+        !(GWEN_SecContext_GetFlags(ctx)&GWEN_SECCTX_FLAGS_ALLOW_KEY_CHANGE)){
+      /* only change keys on temporary context */
+      DBG_ERROR(0, "Will not change existing keys");
+      GWEN_IPCXMLService_ReleaseContext(xs, connid, ctx, 1);
+      GWEN_CryptKey_free(key);
+      GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                        9000,
+                                        "Keys already exist", 0);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_GENERIC);
+    }
+    if (isSignKey)
+      GWEN_IPCXMLSecCtx_SetRemoteSignKey(ctx, key);
+    else
+      GWEN_IPCXMLSecCtx_SetRemoteCryptKey(ctx, key);
+  }
+
+  err=GWEN_IPCXMLService_ReleaseContext(xs, connid, ctx, 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_WARN(0, "Internal error");
+    DBG_INFO_ERR(0, err);
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Key already exists", 0);
+    return err;
+  }
+
+  err=GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                        10,
+                                        "Key accepted", 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+  DBG_INFO(0, "New key in use");
+  return 0;
+}
+
+
+
 
 
 
@@ -579,7 +816,7 @@ unsigned int GWEN_IPCXMLCmd_Request_OpenSession(GWEN_IPCXMLSERVICE *xs,
 
   /* turn on encryption */
   sflags=GWEN_IPCXMLService_GetSecurityFlags(xs, clid);
-  sflags|=GWEN_IPCXMLCONNLAYER_FLAGS_NEED_CRYPT;
+  sflags|=GWEN_HBCIMSG_FLAGS_CRYPT;
   GWEN_IPCXMLService_SetSecurityFlags(xs, clid, sflags);
 
   p=GWEN_IPCXMLService_GetLocalName(xs, clid);
@@ -609,6 +846,7 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
   GWEN_SECCTX *sc;
   unsigned int cflags;
   int ctxadded;
+  unsigned int sid;
 
   assert(xs);
   assert(n);
@@ -667,6 +905,24 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_BAD_DATA);
   }
 
+  sid=GWEN_IPCXMLService_AddSession(xs,
+                                    GWEN_IPCXMLService_GetLocalName(xs,
+                                                                    connid),
+                                    p);
+  if (!sid){
+    DBG_WARN(0, "Session for id \"%s\" already in use", p);
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Id already in use", 0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_GENERIC);
+  }
+  else {
+    DBG_WARN(0, "Added session for id \"%s\"", p);
+  }
+
   sc=0;
   err=GWEN_IPCXMLService_GetContext(xs, connid, p, &sc);
   if (!GWEN_Error_IsOk(err)) {
@@ -682,6 +938,8 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
         GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
                                           9000,
                                           "Could not add context", 0);
+        GWEN_SecContext_free(sc);
+        GWEN_IPCXMLService_DelSession(xs, sid);
         return err;
       }
       ctxadded=1;
@@ -689,6 +947,7 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
     else {
       DBG_ERROR(0, "Context unknown, and I'm not allowed to add it");
       /* Send error message */
+      GWEN_IPCXMLService_DelSession(xs, sid);
       GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
                                         9000,
                                         "Unknown id", 0);
@@ -701,6 +960,7 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
     if (!GWEN_Error_IsOk(err)) {
       DBG_INFO_ERR(0, err);
       /* Send error message */
+      GWEN_IPCXMLService_DelSession(xs, sid);
       GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
                                         9000,
                                         "Internal error", 0);
@@ -730,8 +990,11 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(0, err);
     GWEN_DB_Group_free(rsp);
+    GWEN_IPCXMLService_DelSession(xs, sid);
     return err;
   }
+
+  GWEN_IPCXMLService_SetSessionId(xs, connid, sid);
 
   GWEN_DB_Group_free(rsp);
   return 0;
@@ -754,9 +1017,35 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_INQUEUE_EMPTY);
   }
 
-  p=GWEN_DB_GetCharValue(n, "id", 0, 0);
+  if (strcasecmp(GWEN_DB_GroupName(n), "SegResult")==0) {
+    unsigned int rc;
+    GWEN_ERRORCODE err;
+
+    err=GWEN_IPCXMLCmd_Result_SegResult(xs, n, &rc);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(0, err);
+    }
+    else {
+      DBG_INFO(0, "Got an error: %d", rc);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_GENERIC);
+    }
+  }
+
+  if (strcasecmp(GWEN_DB_GroupName(n), "OpenSessionresponse")!=0) {
+    DBG_INFO(0, "Not an OpenSessionresponse");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_UNKNOWN_MSG);
+  }
+
+  p=GWEN_DB_GetCharValue(n, "OpenSessionresponse/id", 0, 0);
   if (!p) {
     DBG_WARN(0, "Peer has sent no id");
+    *buffer=0;
   }
   else {
     if (strlen(p)>=size) {
@@ -768,6 +1057,7 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
                             GWEN_IPC_ERROR_INVALID);
     }
     memmove(buffer, p, strlen(p)+1);
+    DBG_NOTICE(0, "Peer is \"%s\"", buffer);
   }
   GWEN_DB_Group_free(n);
   return 0;
@@ -783,6 +1073,140 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
  *                                Close Session
  *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
+
+
+
+
+
+
+
+
+
+
+
+/*___________________________________________________________________________
+ *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                                Secure
+ *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+
+unsigned int GWEN_IPCXMLCmd_Request_Secure(GWEN_IPCXMLSERVICE *xs,
+                                           unsigned int clid,
+                                           unsigned int flags) {
+  GWEN_DB_NODE *cfg;
+  unsigned int rqid;
+  unsigned int sflags;
+
+  cfg=GWEN_DB_Group_new("request");
+
+  /* turn on encryption and signing */
+  sflags=GWEN_IPCXMLService_GetSecurityFlags(xs, clid);
+  sflags|=GWEN_HBCIMSG_FLAGS_SIGN;
+  sflags|=GWEN_HBCIMSG_FLAGS_CRYPT;
+  GWEN_IPCXMLService_SetSecurityFlags(xs, clid, sflags);
+
+  rqid=GWEN_IPCXMLService_AddRequest(xs, clid, "Secure", 0, cfg, flags);
+  if (!rqid) {
+    DBG_INFO(0, "here");
+  }
+  return rqid;
+}
+
+
+
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_Secure(GWEN_IPCXMLSERVICE *xs,
+                                            unsigned int rqid,
+                                            unsigned int flags,
+                                            GWEN_DB_NODE *n) {
+  GWEN_ERRORCODE err;
+  unsigned int connid;
+  const char *p;
+  unsigned int sflags;
+
+  assert(xs);
+  assert(n);
+
+  connid=GWEN_IPCXMLService_GetRequestConnection(xs, rqid);
+  if (!connid) {
+    DBG_INFO(0, "Could not get connection for request %d", rqid);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_REQUEST_NOT_FOUND);
+  }
+  DBG_INFO(0, "Connection id is %d", connid);
+
+  /* check for encryption */
+  p=GWEN_DB_GetCharValue(n, "security/crypter", 0, 0);
+  if (!p) {
+    DBG_ERROR(0, "Message is not encrypted (it should be)");
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Message not encrypted", 0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_MSG);
+  }
+
+  /* check for signer */
+  p=GWEN_IPCXMLService_GetRemoteName(xs, connid);
+  if (!GWEN_IPCXMLCmd_IsSignedBy(n, p)) {
+    DBG_ERROR(0, "Message is not signed (it should be)");
+    GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                      9000,
+                                      "Message not signed", 0);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_MSG);
+  }
+
+  /* turn on encryption and signing */
+  sflags=GWEN_IPCXMLService_GetSecurityFlags(xs, connid);
+  sflags|=GWEN_HBCIMSG_FLAGS_SIGN;
+  sflags|=GWEN_HBCIMSG_FLAGS_CRYPT;
+  GWEN_IPCXMLService_SetSecurityFlags(xs, connid, sflags);
+
+  err=GWEN_IPCXMLCmd_Response_SegResult(xs, rqid, flags,
+                                        10,
+                                        "Channel secured", 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_Secure(GWEN_IPCXMLSERVICE *xs,
+                                            unsigned int rqid,
+                                            unsigned int *result){
+  GWEN_DB_NODE *db;
+  GWEN_ERRORCODE err;
+
+  db=GWEN_IPCXMLService_GetResponseData(xs, rqid);
+  if (!db) {
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_WARN,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_INQUEUE_EMPTY);
+  }
+
+  err=GWEN_IPCXMLCmd_Result_SegResult(xs, db, result);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_DB_Group_free(db);
+    return err;
+  }
+
+  GWEN_DB_Group_free(db);
+  return 0;
+}
 
 
 

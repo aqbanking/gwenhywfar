@@ -131,22 +131,16 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_GetPubKey(GWEN_IPCXMLSERVICE *xs,
 /** @name Sending Public Keys
  * @brief Sends a public key or handles such a request
  *
- * <p>
- * This group contains no handler for this request, since only the application
- * can decide what to do with a received key. Some applications may decide
- * to temporary store the received key for review before using it
- * permanently, others may simply set the received as the new sign/crypt key.
- * </p>
- * <p>
- * However, the handler should create a "SegResult" for the request which
- * tells the requestor about the success of the key submission.
- * </p>
  */
 /*@{*/
 unsigned int GWEN_IPCXMLCmd_Request_SendPubKey(GWEN_IPCXMLSERVICE *xs,
                                                unsigned int connid,
                                                unsigned int flags,
                                                const GWEN_CRYPTKEY *key);
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_SendPubKey(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int rqid,
+                                                unsigned int flags,
+                                                GWEN_DB_NODE *n);
 GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_SendPubKey(GWEN_IPCXMLSERVICE *xs,
                                                 unsigned int rqid,
                                                 unsigned int *result);
@@ -154,6 +148,10 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_SendPubKey(GWEN_IPCXMLSERVICE *xs,
 /*@}*/
 
 
+/** @name Session Opening
+ *
+ */
+/*@{*/
 unsigned int GWEN_IPCXMLCmd_Request_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                 unsigned int clid,
                                                 unsigned int flags);
@@ -165,8 +163,24 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
                                                  unsigned int rqid,
                                                  char *buffer,
                                                  unsigned int size);
+/*@}*/
 
 
+/** @name Securing a Session
+ *
+ */
+/*@{*/
+unsigned int GWEN_IPCXMLCmd_Request_Secure(GWEN_IPCXMLSERVICE *xs,
+                                           unsigned int clid,
+                                           unsigned int flags);
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_Secure(GWEN_IPCXMLSERVICE *xs,
+                                            unsigned int rqid,
+                                            unsigned int flags,
+                                            GWEN_DB_NODE *n);
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_Secure(GWEN_IPCXMLSERVICE *xs,
+                                            unsigned int rqid,
+                                            unsigned int *result);
+/*@}*/
 
 /*@}*/
 

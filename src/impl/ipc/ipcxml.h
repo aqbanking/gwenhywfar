@@ -169,6 +169,15 @@ void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
 /*@}*/
 
 
+/** @name Open Flags
+ *
+ */
+/*@{*/
+#define GWEN_IPCXMLSERVICE_OPENFLAG_SENDSIGNKEY  0x0001
+#define GWEN_IPCXMLSERVICE_OPENFLAG_SENDCRYPTKEY 0x0002
+/*@}*/
+
+
 /**
  * This is the type expected by all functions of this group.
  * You should not bother about the data which is behind this type, it
@@ -497,6 +506,17 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
 GWEN_DB_NODE *GWEN_IPCXMLService_PeekResponseData(GWEN_IPCXMLSERVICE *xs,
                                                   unsigned int requestId);
 
+/**
+ * Waits until a response for the fiven request arrives or a timeout occurs.
+ * @param xs Pointer to the service to use
+ * @param requestId id retrieved via @ref GWEN_IPCXMLService_GetNextRequest
+ * @param timeout timeout in seconds (if 0 then this function returns
+ * immediately, if -1 then the function will wait forever)
+ */
+GWEN_ERRORCODE GWEN_IPCXMLService_WaitForResponse(GWEN_IPCXMLSERVICE *xs,
+                                                  unsigned int rqid,
+                                                  int timeout);
+
 
 /*@}*/
 
@@ -514,9 +534,12 @@ GWEN_DB_NODE *GWEN_IPCXMLService_PeekResponseData(GWEN_IPCXMLSERVICE *xs,
  * public sign and crypt key to the server.
  * If the server responds positively then the security flags will be set
  * in order to allow signing and encryption.
+ * @param oflags open flags, see @ref GWEN_IPCXMLSERVICE_OPENFLAG_SENDSIGNKEY
+ * and others
  */
 GWEN_ERRORCODE GWEN_IPCXMLService_SecureOpen(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int clid,
+                                             unsigned int oflags,
                                              int timeout);
 
 /**
@@ -707,6 +730,32 @@ unsigned int GWEN_IPCXMLService_GetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
 void GWEN_IPCXMLService_SetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
                                            unsigned int clid,
                                            unsigned int flags);
+
+
+/*@}*/
+
+
+/** @name Session Management
+ *
+ */
+/*@{*/
+int GWEN_IPCXMLService_HasSession(GWEN_IPCXMLSERVICE *xs,
+                                  const char *lname,
+                                  const char *rname);
+unsigned int GWEN_IPCXMLService_AddSession(GWEN_IPCXMLSERVICE *xs,
+                                           const char *lname,
+                                           const char *rname);
+int GWEN_IPCXMLService_DelSession(GWEN_IPCXMLSERVICE *xs,
+                                  unsigned int id);
+
+
+unsigned int GWEN_IPCXMLService_GetSessionId(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid);
+
+void GWEN_IPCXMLService_SetSessionId(GWEN_IPCXMLSERVICE *xs,
+                                     unsigned int clid,
+                                     unsigned int sid);
+
 
 
 /*@}*/

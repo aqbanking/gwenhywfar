@@ -51,13 +51,13 @@
 struct GWEN_IPCXMLCONNLAYERDATA {
   GWEN_SERVICELAYER *serviceLayer; /* not owned */
   GWEN_MSGENGINE *msgEngine; /* not owned ! */
-  unsigned int flags;
 
   unsigned int msgFlags;
 
   GWEN_HBCIDIALOG *dialog;
   GWEN_SECCTX_MANAGER *securityManager;
   unsigned int dialogId;
+  unsigned int sessionId;
 
   unsigned int connected;
   GWEN_HBCIMSG *currentMsg;

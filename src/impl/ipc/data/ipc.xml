@@ -517,7 +517,7 @@ email       : martin@libchipcard.de
 
  <SEGdef id="GetKeyResponse" 
          code="GSGETKEY" 
-         version="2"
+         version="1"
          pversion="1"
          delimiter="+" 
          terminator="'"
@@ -537,6 +537,30 @@ email       : martin@libchipcard.de
      <VALUE path="id">224</VALUE>
    </VALUES>
  </SEGdef>
+
+
+ <SEGdef id="SendKey" 
+         code="GCSENDKEY" 
+         version="1"
+         pversion="1"
+         delimiter="+" 
+         terminator="'" 
+         mode="RDH"
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP name="keyname" type="keyname" />
+   <GROUP name="key" type="key" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
+
 
 
  <SEGdef id="OpenSession" 
@@ -565,6 +589,22 @@ email       : martin@libchipcard.de
  >
    <GROUP type="SegHead" name="head" />
    <ELEM name="id" type="ascii" maxsize="32" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="Secure" 
+         code="GCSEC" 
+         version="1"
+         pversion="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

@@ -231,8 +231,11 @@ void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg){
   hdlg->dialogId=strdup("0");
   hdlg->nextMsgNum=1;
   hdlg->lastReceivedMsgNum=0;
-  free(hdlg->remoteName);
-  hdlg->remoteName=0;
+  if (!(hdlg->flags & GWEN_HBCIDIALOG_FLAGS_INITIATOR)) {
+    /* only reset remote name if this is a passive connection */
+    free(hdlg->remoteName);
+    hdlg->remoteName=0;
+  }
 }
 
 
