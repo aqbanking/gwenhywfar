@@ -370,7 +370,6 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
     if (inQuote) {
       if (chr==lastQuoteChar) {
 	inQuote=0;
-	DBG_ERROR(0, "Matching quote character found");
         break;
       }
       else {

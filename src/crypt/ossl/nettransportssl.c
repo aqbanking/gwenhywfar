@@ -746,6 +746,7 @@ GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
 void
 GWEN_NetTransportSSL_SetAskAddCertFn(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN fn){
   gwen_netransportssl_askAddCertFn=fn;
+  gwen_netransportssl_askAddCertFn2=0;
 }
 
 
@@ -762,6 +763,7 @@ void
 GWEN_NetTransportSSL_SetAskAddCertFn2(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN2 fn,
 				      void *user_data){
   gwen_netransportssl_askAddCertFn2=fn;
+  gwen_netransportssl_askAddCertFn=0;
   gwen_netransportssl_askAddCertUserData=user_data;
 }
 
@@ -1478,6 +1480,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       int isWarning;
       GWEN_INETADDRESS *peerAddr;
       GWEN_ERRORCODE err;
+      GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT res;
+      int isErr;
 
       certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
 
@@ -1609,7 +1613,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         isError=1;
         break;
       case X509_V_OK:
-        s=I18N("Certificate ok");
+        s=I18N("Certificate is valid");
         break;
       default:
         s=I18N("Unknown SSL error");
@@ -1631,91 +1635,82 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       GWEN_DB_SetIntValue(dbCert, GWEN_DB_FLAGS_DEFAULT,
                           "isWarning", isWarning);
 
-      if (vr!=X509_V_OK) {
-        GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT res;
-	int isErr;
 
-	if (skd->secure) {
-          DBG_ERROR(GWEN_LOGDOMAIN,
-                    "Invalid peer certificate in secure mode, aborting");
-          GWEN_Socket_Close(skd->socket);
-          SSL_free(skd->ssl);
-          skd->ssl=0;
-          SSL_CTX_free(skd->ssl_ctx);
-          skd->ssl_ctx=0;
-          free(certbuf);
-          X509_free(cert);
-          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
-          return GWEN_NetTransportWorkResult_Error;
-        }
-        else {
-          DBG_INFO(GWEN_LOGDOMAIN,
-                   "Invalid peer certificate, will ask user");
-        }
-
-        /* ask user */
-        isErr=0;
-        DBG_INFO(GWEN_LOGDOMAIN,
-                 "Unknown certificate \"%s\", asking user",
-                 certbuf);
-        res=GWEN_NetTransportSSL__AskAddCert(tr, dbCert);
-        switch(res) {
-        case GWEN_NetTransportSSL_AskAddCertResultError:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Error asking user");
-          isErr=1;
-          break;
-        case GWEN_NetTransportSSL_AskAddCertResultNo:
-          DBG_ERROR(GWEN_LOGDOMAIN, "User doesn't trust the certificate");
-          isErr=1;
-          break;
-        case GWEN_NetTransportSSL_AskAddCertResultTmp:
-          DBG_INFO(GWEN_LOGDOMAIN, "Temporarily trusting certificate");
-          break;
-	case GWEN_NetTransportSSL_AskAddCertResultPerm:
-          DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to trusted certs");
-          if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->CAdir, !isNew)) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
-            isErr=1;
-          }
-          break;
-        case GWEN_NetTransportSSL_AskAddCertResultIncoming:
-          if (!skd->newCAdir) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "No dir for incoming connections given");
-            isErr=1;
-          }
-          else {
-	    DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to incoming certs");
-	    if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->newCAdir, 1)) {
-	      DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
-	      isErr=1;
-	    }
-	  }
-          break;
-        default:
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected result");
-          break;
-        } /* switch */
-
-        if (isErr) {
-          GWEN_Socket_Close(skd->socket);
-          SSL_free(skd->ssl);
-          skd->ssl=0;
-          SSL_CTX_free(skd->ssl_ctx);
-          skd->ssl_ctx=0;
-          free(certbuf);
-          X509_free(cert);
-          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
-          return GWEN_NetTransportWorkResult_Error;
-        }
+      if (vr==X509_V_OK && skd->secure) {
+	DBG_ERROR(GWEN_LOGDOMAIN,
+		  "Invalid peer certificate in secure mode, aborting");
+	GWEN_Socket_Close(skd->socket);
+	SSL_free(skd->ssl);
+	skd->ssl=0;
+	SSL_CTX_free(skd->ssl_ctx);
+	skd->ssl_ctx=0;
+	free(certbuf);
+	X509_free(cert);
+	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
+	return GWEN_NetTransportWorkResult_Error;
       }
-      else {
-        /* store peer certificate */
-        skd->peerCertificate=GWEN_NetTransportSSL__Cert2Db(cert);
-        DBG_INFO(GWEN_LOGDOMAIN, "Certificate of peer \"%s\" is valid",
-                 GWEN_DB_GetCharValue(skd->peerCertificate,
-                                      "commonName", 0,
-                                      "<nobody>"));
-        skd->isSecure=1;
+
+      /* ask user */
+      isErr=0;
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "Unknown certificate \"%s\", asking user",
+	       certbuf);
+      res=GWEN_NetTransportSSL__AskAddCert(tr, dbCert);
+      switch(res) {
+      case GWEN_NetTransportSSL_AskAddCertResultError:
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error asking user");
+	isErr=1;
+	break;
+      case GWEN_NetTransportSSL_AskAddCertResultNo:
+	DBG_ERROR(GWEN_LOGDOMAIN, "User doesn't trust the certificate");
+	isErr=1;
+	break;
+      case GWEN_NetTransportSSL_AskAddCertResultTmp:
+	DBG_INFO(GWEN_LOGDOMAIN, "Temporarily trusting certificate");
+	break;
+      case GWEN_NetTransportSSL_AskAddCertResultPerm:
+	DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to trusted certs");
+	if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->CAdir, !isNew)) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
+	  isErr=1;
+	}
+	break;
+      case GWEN_NetTransportSSL_AskAddCertResultIncoming:
+	if (!skd->newCAdir) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "No dir for incoming connections given");
+	  isErr=1;
+	}
+	else {
+	  DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to incoming certs");
+	  if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->newCAdir, 1)) {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
+	    isErr=1;
+	  }
+	}
+	break;
+      default:
+	DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected result");
+	break;
+      } /* switch */
+
+      if (isErr) {
+	GWEN_Socket_Close(skd->socket);
+	SSL_free(skd->ssl);
+	skd->ssl=0;
+	SSL_CTX_free(skd->ssl_ctx);
+	skd->ssl_ctx=0;
+	free(certbuf);
+	X509_free(cert);
+	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
+	return GWEN_NetTransportWorkResult_Error;
+      }
+
+      if (vr==X509_V_OK) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Secure connection with peer \"%s\"",
+		 GWEN_DB_GetCharValue(skd->peerCertificate,
+				      "commonName", 0,
+				      "<nobody>"));
+	skd->isSecure=1;
       }
       free(certbuf);
       X509_free(cert);
