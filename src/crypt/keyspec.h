@@ -62,6 +62,16 @@ GWENHYWFAR_API
   void GWEN_KeySpec_SetKeyType(GWEN_KEYSPEC *ks,
                                const char *s);
 
+/**
+ * Returns the status of the key. This property is not used by gwen, but it
+ * might be used by applications. Therefore the values of this property are
+ * defined by the application which uses it.
+ */
+GWENHYWFAR_API
+int GWEN_KeySpec_GetStatus(const GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
+void GWEN_KeySpec_SetStatus(GWEN_KEYSPEC *ks, int i);
+
 GWENHYWFAR_API
   const char *GWEN_KeySpec_GetKeyName(const GWEN_KEYSPEC *ks);
 GWENHYWFAR_API

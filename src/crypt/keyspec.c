@@ -90,6 +90,7 @@ GWEN_KEYSPEC *GWEN_KeySpec_dup(const GWEN_KEYSPEC *ks){
     newKs->owner=strdup(ks->owner);
   newKs->number=ks->number;
   newKs->version=ks->version;
+  newKs->status=ks->status;
   return newKs;
 }
 
@@ -207,6 +208,20 @@ void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
 
 
 
+int GWEN_KeySpec_GetStatus(const GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->status;
+}
+
+
+
+void GWEN_KeySpec_SetStatus(GWEN_KEYSPEC *ks, int i){
+  assert(ks);
+  ks->status=i;
+}
+
+
+
 void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
   GWEN_KEYSPEC *ks;
 
@@ -263,6 +278,9 @@ int GWEN_KeySpec_ToDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n) {
   GWEN_DB_SetIntValue(n,
                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "version", ks->version);
+  GWEN_DB_SetIntValue(n,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "status", ks->status);
 
   return 0;
 }
@@ -280,6 +298,8 @@ int GWEN_KeySpec_FromDb(GWEN_KEYSPEC *ks, GWEN_DB_NODE *db){
                          GWEN_DB_GetIntValue(db, "number", 0, 0));
   GWEN_KeySpec_SetVersion(ks,
                           GWEN_DB_GetIntValue(db, "version", 0, 0));
+  GWEN_KeySpec_SetStatus(ks,
+                         GWEN_DB_GetIntValue(db, "status", 0, 0));
   return 0;
 }
 

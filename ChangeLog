@@ -17,6 +17,7 @@
     XML node along the current path
   - now looks for groups under their "id" and (if not found) "name"
 - crypt, keyspec: added inherit- and list2 macros to both objects
+- added status field to keyspec
   ------------------------------------------------------------------------
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
