@@ -208,7 +208,7 @@ void *GWEN_WaitCallback_Context_GetData(GWEN_WAITCALLBACK_CTX *ctx);
  * @ref GWEN_WaitCallback will use the given context until
  * @ref GWEN_WaitCallback_Leave is called. This functions calls the
  * callback function of this context with the value
- * @ref GWEN_WAITCALLBACK_ENTER
+ * @ref GWEN_WaitCallbackMode_Enter
  */
 GWENHYWFAR_API
 void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx);
@@ -216,7 +216,7 @@ void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx);
 /**
  * Leaves a waitcallback context.
  * This functions calls the callback function of the current context with the
- * value @ref GWEN_WAITCALLBACK_LEAVE and restores the context used just
+ * value @ref GWEN_WaitCallbackMode_Leave and restores the context used just
  * before @ref GWEN_WaitCallback_Enter was called.
  */
 GWENHYWFAR_API
