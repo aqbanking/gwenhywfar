@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=11
-GWENHYWFAR_VERSION_BUILD=7
+GWENHYWFAR_VERSION_BUILD=8
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -226,10 +226,32 @@ AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
 
 
 
+# ---------------------------------------------------------------------------
+# check for ncurses
+#
+
+use_ncurses="yes"
+AC_CHECK_LIB(ncurses, newwin, [], [use_ncurses="no"])
+AC_CHECK_LIB(form, new_form, [], [use_ncurses="no"])
+AC_CHECK_HEADERS([ncurses.h], [], [use_ncurses="no"])
+AC_CHECK_HEADERS([form.h], [], [use_ncurses="no"])
+if test "$use_ncurses" != "yes"; then
+  AC_MSG_WARN([
+*** ncurses not found, the text interface will not be available.])
+  NCURSES_TOOLS=""
+else
+  AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
+  all_libraries="$all_libraries -lpanel -lncurses"
+  NCURSES_TOOLS=""
+fi
+AC_SUBST(NCURSES_TOOLS)
+
+
+
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/ipc src/os src/os/${GWEN_OS} src/parser"
+GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/ipc src/os src/os/${GWEN_OS} src/parser src/ui"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
@@ -392,6 +414,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/system.h
                  src/parser/Makefile
                  src/net/Makefile
+                 src/ui/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile
                  plugins/dbio/csv/Makefile

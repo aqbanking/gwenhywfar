@@ -30,6 +30,11 @@
 # define strcasecmp(a, b) strcmp(a, b)
 #endif
 
+#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui.h>
+#include <gwenhywfar/window.h>
+#include <gwenhywfar/textwidget.h>
+
 
 int testDB(int argc, char **argv) {
   GWEN_DB_NODE *cfg;
@@ -1285,6 +1290,296 @@ int testHTTPd(int argc, char **argv) {
 
 
 
+
+
+
+/* _________________________________________________________________________
+ * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                                  UI Tests
+ * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+int uitest1(int argc, char **argv) {
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+  sleep(2);
+
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+int uitest2(int argc, char **argv) {
+  GWEN_WIDGET *w;
+  GWEN_UI_RESULT res;
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+
+  w=GWEN_Widget_new(0,
+                    GWEN_WIDGET_FLAGS_DEFAULT |
+                    GWEN_WIDGET_FLAGS_BORDER,
+                    "Test-Widget",
+                    "Test",
+                    4, 4,
+                    20, 6);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(w);
+
+  GWEN_UI_Flush();
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
+int uitest3(int argc, char **argv) {
+  GWEN_WIDGET *w;
+  GWEN_UI_RESULT res;
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+
+  w=GWEN_Window_new(0,
+                    GWEN_WIDGET_FLAGS_DEFAULT |
+                    GWEN_WIDGET_FLAGS_BORDER |
+                    GWEN_WINDOW_FLAGS_TITLE,
+                    "Test-Widget",
+                    "Ueberschrift",
+                    4, 4,
+                    40, 10);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(w);
+
+  GWEN_UI_Flush();
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
+int uitest4(int argc, char **argv) {
+  GWEN_WIDGET *w;
+  GWEN_UI_RESULT res;
+  unsigned char buffer[]="%ff%02This%ff%00 is a %ff%01test";
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+
+  w=GWEN_Window_new(0,
+                    GWEN_WIDGET_FLAGS_DEFAULT |
+                    GWEN_WIDGET_FLAGS_BORDER |
+                    GWEN_WINDOW_FLAGS_TITLE,
+                    "Test-Widget",
+                    "Ueberschrift",
+                    4, 4,
+                    40, 10);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Message);
+  GWEN_Widget_Redraw(w);
+
+  GWEN_Widget_WriteAt(GWEN_Window_GetViewPort(w), 4, 4, buffer, 0);
+  GWEN_Widget_Update(GWEN_Window_GetViewPort(w));
+  GWEN_UI_Flush();
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
+int uitest5(int argc, char **argv) {
+  GWEN_WIDGET *w;
+  GWEN_UI_RESULT res;
+  unsigned char buffer[]=
+    "<gwen>"
+    "<i>This</i> is a <b>test</b><br/>"
+    "And <strong>this here</strong>, tooAnd this line<br/>"
+    "is as good as a test<br/>"
+    "as the lines<br/>"
+    "above this one<br/>"
+    "<br/>"
+    "Well, I need to fill<br/>"
+    "this <b>space</b> here<br/>"
+    "but with what ?<br/>"
+    "Hmm, but I think...<br/>"
+    "this might be enough<br/>"
+    "At least now ;-)<br/>"
+    "</gwen>";
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+
+  w=GWEN_TextWidget_new(0,
+                        GWEN_WIDGET_FLAGS_DEFAULT |
+                        GWEN_TEXTWIDGET_FLAGS_LINEMODE,
+                        "Test-Widget",
+                        buffer,
+                        4, 4,
+                        40, 10);
+  GWEN_TextWidget_SetVirtualSize(w, 40, 20);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(w);
+  GWEN_UI_Flush();
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
+int uitest6(int argc, char **argv) {
+  GWEN_WIDGET *w;
+  GWEN_WIDGET *tv;
+  GWEN_UI_RESULT res;
+  unsigned char buffer[]=
+    "<gwen>"
+    "<i>This</i> is a <b>test</b><br/>"
+    "And <strong>this here</strong>, tooAnd this line<br/>"
+    "is as good as a test<br/>"
+    "as the lines<br/>"
+    "above this one<br/>"
+    "<br/>"
+    "Well, I need to fill<br/>"
+    "this <b>space</b> here<br/>"
+    "but with what ?<br/>"
+    "Hmm, but I think...<br/>"
+    "this might be enough<br/>"
+    "At least now ;-)<br/>"
+    "</gwen>";
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+  w=GWEN_Window_new(0,
+                    GWEN_WIDGET_FLAGS_DEFAULT |
+                    GWEN_WIDGET_FLAGS_BORDER |
+                    GWEN_WINDOW_FLAGS_TITLE,
+                    "Test-Widget",
+                    "Ueberschrift",
+                    4, 4,
+                    50, 20);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(w);
+
+  tv=GWEN_TextWidget_new(GWEN_Window_GetViewPort(w),
+                         GWEN_WIDGET_FLAGS_DEFAULT |
+                         GWEN_TEXTWIDGET_FLAGS_LINEMODE,
+                         "Test-Liste",
+                         buffer,
+                         2, 2,
+                         40, 10);
+  GWEN_TextWidget_SetVirtualSize(tv, 40, 20);
+  GWEN_Widget_SetColour(tv, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(tv);
+  GWEN_Widget_SetFocus(tv);
+  GWEN_UI_Flush();
+
+  GWEN_Widget_Dump(w, 1);
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -1336,6 +1631,18 @@ int main(int argc, char **argv) {
     rv=testHTTPc(argc, argv);
   else if (strcasecmp(argv[1], "httpd")==0)
     rv=testHTTPd(argc, argv);
+  else if (strcasecmp(argv[1], "u1")==0)
+    rv=uitest1(argc, argv);
+  else if (strcasecmp(argv[1], "u2")==0)
+    rv=uitest2(argc, argv);
+  else if (strcasecmp(argv[1], "u3")==0)
+    rv=uitest3(argc, argv);
+  else if (strcasecmp(argv[1], "u4")==0)
+    rv=uitest4(argc, argv);
+  else if (strcasecmp(argv[1], "u5")==0)
+    rv=uitest5(argc, argv);
+  else if (strcasecmp(argv[1], "u6")==0)
+    rv=uitest6(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

@@ -409,6 +409,15 @@ void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
 
 
 
+int GWEN_XML_Parse(GWEN_XMLNODE *n,
+                   GWEN_BUFFEREDIO *bio,
+                   GWEN_TYPE_UINT32 flags) {
+  return GWEN_XML_ReadBIO(n, bio, flags | GWEN_XML_FLAGS_IGNORE_INCLUDE,
+                          0, 0, 0);
+}
+
+
+
 int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                      GWEN_BUFFEREDIO *bio,
                      GWEN_TYPE_UINT32 flags,
@@ -562,7 +571,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
           /* check whether the tag is "include" */
           if (!(flags & GWEN_XML_FLAGS_IGNORE_INCLUDE) &&
-              strcasecmp(n->data, "include")==0) {
+              strcasecmp(n->data, "include")==0 &&
+              sl && fn) {
             /* it is, we have to include something ;-) */
             GWEN_XMLNODE *inametag;
             const char *iname;

@@ -112,6 +112,9 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf);
 GWENHYWFAR_API
 int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf);
 
+GWENHYWFAR_API
+int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf);
+
 
 /**
  * This function does the same as @ref GWEN_Text_UnescapeToBuffer but it

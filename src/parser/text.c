@@ -1243,6 +1243,51 @@ int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
 
 
 
+int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf) {
+  while(GWEN_Buffer_GetBytesLeft(src)) {
+    int z;
+    unsigned char x;
+
+    z=GWEN_Buffer_ReadByte(src);
+    if (z==-1) {
+      DBG_INFO(0, "here");
+      return -1;
+    }
+    x=(unsigned char)z;
+    if (!(
+          (x>='A' && x<='Z') ||
+          (x>='a' && x<='z') ||
+          (x>='0' && x<='9') ||
+          x==' ' ||
+          x=='.' ||
+          x==',' ||
+          x=='.' ||
+          x=='*' ||
+          x=='?'
+         )) {
+      unsigned char c;
+
+      GWEN_Buffer_AppendByte(buf, '%');
+      c=(((unsigned char)x)>>4)&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+      c=((unsigned char)x)&0xf;
+      if (c>9)
+        c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    else
+      GWEN_Buffer_AppendByte(buf, x);
+  } /* while */
+
+  return 0;
+}
+
+
+
 void GWEN_Text_LogString(const char *s, unsigned l,
                          GWEN_LOGGER *lg,
                          GWEN_LOGGER_LEVEL lv){

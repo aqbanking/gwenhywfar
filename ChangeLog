@@ -1,4 +1,10 @@
 
+2004/06/20: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- started working on a ncurses GUI which will be used by Libchipcard's setup
+  tools and maybe by AqMoney2...
+
+
 2004/06/17: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - crypt/nettransportssl, net/netransportsock: be more verbous about the reason
