@@ -49,7 +49,9 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_RESULT([not found ])
       AC_MSG_ERROR([
 *** The library Gwenhywfar was not found. Obtain it from 
-*** http://gwenhywfar.sf.net . If it is already installed, 
+*** http://gwenhywfar.sf.net, direct link for download is 
+*** http://sf.net/project/showfiles.php?group_id=88769 . 
+*** If it is already installed (including the -devel package), 
 *** you might need to specify the location with the 
 *** option --with-gwen-dir=DIR.])
   else
