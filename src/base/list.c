@@ -421,6 +421,19 @@ void *GWEN_List_ForEach(GWEN_LIST *l,
 
 
 
+void GWEN_List_Unshare(GWEN_LIST *l) {
+  if (l->listPtr->refCount>1) {
+    GWEN__LISTPTR *nlp;
+
+    /* only copy the list if someone else is using it */
+    nlp=GWEN__ListPtr_dup(l->listPtr);
+    GWEN__ListPtr_free(l->listPtr);
+    l->listPtr=nlp;
+  }
+}
+
+
+
 void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
   GWEN_LIST_ENTRY *current;
   GWEN__LISTPTR *lp;
@@ -428,9 +441,31 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
   assert(l);
   assert(l->listPtr);
   if (l->listPtr->refCount>1) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Can not erase iterator-referenced data on shared lists");
-    abort();
+    GWEN_LIST_ENTRY *tle;
+    GWEN__LISTPTR *nlp;
+    int i;
+
+    /* find the position of the iterator within current list */
+    tle=it->current;
+    assert(tle);
+    i=0;
+    while(tle) {
+      i++;
+      tle=tle->previous;
+    }
+
+    /* copy the list */
+    nlp=GWEN__ListPtr_new(l->listPtr);
+    GWEN__ListPtr_free(l->listPtr);
+    l->listPtr=nlp;
+
+    /* seek and set the iterator position */
+    tle=l->listPtr->first;
+    while(tle && i--) {
+      tle=tle->next;
+    }
+    assert(tle);
+    it->current=tle;
   }
   lp=l->listPtr;
 
@@ -621,8 +656,6 @@ GWEN_REFPTR *GWEN_ListIterator_DataRefPtr(GWEN_LIST_ITERATOR *li){
     return li->current->dataPtr;
   return 0;
 }
-
-
 
 
 

@@ -61,7 +61,7 @@ extern "C" {
   decl t##_LIST2 *pr##_List2_new(); \
   decl void pr##_List2_free(t##_LIST2 *l); \
   decl t##_LIST2 *pr##_List2_dup(const t##_LIST2 *l); \
-  decl GWEN_TYPE_UINT32 pr##_List2_GetFlags(const t##_LIST2 *l); \
+  decl void pr##_List2_Unshare(t##_LIST2 *l); \
   decl void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent); \
   decl void pr##_List2_PushBack(t##_LIST2 *l, t *p); \
   decl void pr##_List2_PushFront(t##_LIST2 *l, t *p); \
@@ -102,6 +102,10 @@ extern "C" {
   t##_LIST2 *pr##_List2_dup(const t##_LIST2 *l) {\
     return (t##_LIST2*)GWEN_List_dup((GWEN_LIST*)l); \
   }\
+  \
+  void pr##_List2_Unshare(t##_LIST2 *l) { \
+    GWEN_List_Unshare((GWEN_LIST*)l); \
+  } \
   \
   void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent) { \
     GWEN_List_Dump((GWEN_LIST*) l, f, indent); \

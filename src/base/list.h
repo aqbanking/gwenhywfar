@@ -70,6 +70,11 @@ void GWEN_List_free(GWEN_LIST *l);
 GWENHYWFAR_API
 GWEN_LIST *GWEN_List_dup(const GWEN_LIST *l);
 
+
+GWENHYWFAR_API
+void GWEN_List_Unshare(GWEN_LIST *l);
+
+
 GWENHYWFAR_API
 void GWEN_List_Dump(const GWEN_LIST *l, FILE *f, unsigned int indent);
 

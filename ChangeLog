@@ -26,6 +26,8 @@
     is used when copying lists. It can also be used to set the list into
     AUTODELETE mode (which is off by default to maintain compatibility with
     existing code).
+  - added function GWEN_List_Unshare()
+  - re-armed function GWEN_List_Erase()
 
 
 2004/12/14: Martin Preuss<martin@libchipcard.de>
