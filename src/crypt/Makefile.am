@@ -13,6 +13,7 @@ iheader_HEADERS=\
  nettransportssl.h
 
 noinst_HEADERS=\
+ crypt_l.h \
  crypt_p.h \
  keymanager_p.h \
  keyspec_p.h \
