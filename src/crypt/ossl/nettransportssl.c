@@ -658,7 +658,7 @@ GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
   else if (gwen_netransportssl_askAddCertFn)
     return gwen_netransportssl_askAddCertFn(tr, cert);
   else {
-    DBG_WARN(GWEN_LOGDOMAIN, "No askAddCert function set");
+    DBG_INFO(GWEN_LOGDOMAIN, "No askAddCert function set");
     return GWEN_NetTransportSSL_AskAddCertResultNo;
   }
 }
@@ -1537,7 +1537,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           return GWEN_NetTransportWorkResult_Error;
         }
         else {
-          DBG_WARN(GWEN_LOGDOMAIN,
+          DBG_INFO(GWEN_LOGDOMAIN,
                    "Invalid peer certificate, will ask user");
         }
 
@@ -1553,10 +1553,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           isErr=1;
           break;
         case GWEN_NetTransportSSL_AskAddCertResultNo:
-          if (skd->secure) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "User doesn't trust the certificate");
-            isErr=1;
-          }
+          DBG_ERROR(GWEN_LOGDOMAIN, "User doesn't trust the certificate");
+          isErr=1;
           break;
         case GWEN_NetTransportSSL_AskAddCertResultTmp:
           DBG_INFO(GWEN_LOGDOMAIN, "Temporarily trusting certificate");

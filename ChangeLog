@@ -1,9 +1,23 @@
+
+
+2005/02/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in GWEN_Directory_HandlePathElement() on WIN32 platforms
+- decreased verbosity of directory_all.c and in nettransportssl.c
+- added a note about regexp.dll to README
+- now always break SSL connection if the user does not trust the cert (not
+  even temporarily)
+- fixed a newly introduced bug in mklistdoc/Makefile.am: GWEN_HEADERS must be
+  quoted.
+
+
 2005-02-14   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, */Makefile.am: Clean up and unify installation
 	variables so that the gwenhywfar-config script is prepared to be
 	adapted by the windows setup program. Adapt Makefile.am's
 	accordingly.
+
 
 2005/02/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

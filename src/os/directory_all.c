@@ -61,12 +61,19 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
   int withDrive;
   GWEN_BUFFER *buf;
   GWEN_BUFFER *ebuf = 0;
+  const char *origEntry;
 
   withDrive=0;
+  origEntry=entry;
+
 #ifdef OS_WIN32
   if (entry && isalpha(*entry)) {
-    if ( (strlen(entry) > 1) && (entry[1] == ':') ) {
-      ebuf=GWEN_Buffer_new(0, strlen(entry)+2, 0, 1);
+    int len;
+
+    /* append backslash if entry only consists of a drive specification */
+    len=strlen(entry);
+    if ( (len==2) && (entry[1] == ':') ) {
+      ebuf=GWEN_Buffer_new(0, len+2, 0, 1);
       GWEN_Buffer_AppendString(ebuf, entry);
       GWEN_Buffer_AppendByte(ebuf, '\\');
       withDrive=1;
@@ -83,17 +90,22 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
 
   buf=(GWEN_BUFFER*)data;
   if (GWEN_Buffer_GetUsedBytes(buf) && !withDrive) {
+    char c;
+
+    c=GWEN_Buffer_GetStart(buf)[GWEN_Buffer_GetUsedBytes(buf)-1];
 #ifdef OS_WIN32
-    GWEN_Buffer_AppendByte(buf, '\\');
+    if (c!='\\')
+      GWEN_Buffer_AppendByte(buf, '\\');
 #else
-    GWEN_Buffer_AppendByte(buf, '/');
+    if (c!='/')
+      GWEN_Buffer_AppendByte(buf, '/');
 #endif /* OS_WIN32 */
   }
   GWEN_Buffer_AppendString(buf, entry);
 
   /* check for existence of the file/folder */
   p=GWEN_Buffer_GetStart(buf);
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Checking entry \"%s\"", p);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Checking path \"%s\"", p);
   if (stat(p, &st)) {
     exists=0;
     DBG_DEBUG(GWEN_LOGDOMAIN, "stat: %s (%s)", strerror(errno), p);
@@ -125,7 +137,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     if ((flags & GWEN_PATH_FLAGS_PATHMUSTNOTEXIST) ||
         ((flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST))) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Path \"%s\" does not exist (it should)", p);
+      DBG_INFO(GWEN_LOGDOMAIN, "Path \"%s\" exists (it should not)", p);
       GWEN_Buffer_free(ebuf);
       return 0;
     }

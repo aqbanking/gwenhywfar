@@ -127,7 +127,7 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
   assert(d);
   d->handle=FindFirstFile(d->pattern,&wd);
   if (d->handle==INVALID_HANDLE_VALUE) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "No entry for \"%s\"", d->pattern);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "No entry for \"%s\"", d->pattern);
     return 1;
   }
   if ((strlen(wd.cFileName)+1)>=sizeof(d->lastName)) {
