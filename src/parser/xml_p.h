@@ -88,6 +88,21 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
                        unsigned int size);
 
 
+int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
+                     GWEN_BUFFEREDIO *bio,
+                     unsigned int flags,
+                     const char *path,
+                     GWEN_XML_INCLUDE_FN fn);
+
+
+int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
+                         const char *path,
+                         const char *file,
+                         unsigned int flags);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -555,8 +555,9 @@ int testServer(int argc, char **argv) {
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
   da=GWEN_DB_Group_new("Data");
 
+  fprintf(stderr, "Reading file:\n");
   if (GWEN_XML_ReadFile(n, "../src/impl/ipc/data/ipc.xml",
-			GWEN_XML_FLAGS_DEFAULT)) {
+                        GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }

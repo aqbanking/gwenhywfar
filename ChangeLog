@@ -1,5 +1,13 @@
 $Id$
 
+
+2003/11/29 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- XML module: added special handling for tags named "include": If such
+  a tag is encountered it will be replaced by the content of the file
+  pointed to by the tag's data
+
+
 ===========================================================================
 MARK: released gwenhywfar-0.9beta6 (2003/11/29)
 ===========================================================================

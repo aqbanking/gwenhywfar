@@ -47,6 +47,7 @@ extern "C" {
  */
 /*@{*/
 
+
 /** @name Read Flags
  */
 /*@{*/
@@ -67,6 +68,13 @@ typedef enum {
 } GWEN_XMLNODE_TYPE;
 
 typedef struct GWEN__XMLNODE GWEN_XMLNODE;
+
+
+typedef int
+    (*GWEN_XML_INCLUDE_FN)(GWEN_XMLNODE *n,
+			   const char *path,
+			   const char *file,
+			   unsigned int flags);
 
 
 /** @name Constructors and Destructors
@@ -123,12 +131,12 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
 /*@}*/
 
 
-/** @name Readin And Writing From/To Streams
+/** @name Reading And Writing From/To Streams
  *
  */
 /*@{*/
 /**
- * Reads exacrly ONE tag (and all its subtags) from the given bufferedIO.
+ * Reads exactly ONE tag (and all its subtags) from the given bufferedIO.
  */
 int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
                    unsigned int flags);

@@ -515,7 +515,6 @@ email       : martin@libchipcard.de
  </SEGdef>
 
 
-
  <SEGdef id="GetKeyResponse" 
          code="GSGETKEY" 
          version="2"
@@ -538,7 +537,6 @@ email       : martin@libchipcard.de
      <VALUE path="id">224</VALUE>
    </VALUES>
  </SEGdef>
-
 
 
  <SEGdef id="OpenSession" 
@@ -573,7 +571,6 @@ email       : martin@libchipcard.de
      <VALUE path="head/version">%version</VALUE>
    </VALUES>
  </SEGdef>
-
 
 
 </SEGS>
