@@ -3237,13 +3237,15 @@ GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
         if (count<0x10)
           rp[i]=numbuffer[1];
         else
-          rp[i]=numbuffer[i&1];
+          rp[i]=numbuffer[1-(i&1)];
       } /* for */
       rp[i]=0;
     }
-    DBG_INFO(0, "Replacement: \"%s\" for \"%s\" (%d)", rp,
-             ntd->description,
-             ntd->size);
+    /*
+     DBG_DEBUG(0, "Replacement: \"%s\" for \"%s\" (%d)", rp,
+     ntd->description,
+     ntd->size);
+     */
     free(ntd->replacement);
     ntd->replacement=rp;
 

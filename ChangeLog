@@ -1,5 +1,12 @@
 $Id$
 
+2003/11/25 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in DB: Could not write longer binary values because of
+  the size of static buffers. I will have to think about storing binary
+  data anyway, because a 1024 bytes big binary is not easy to store within
+  a single line ;-)
+
 
 2003/11/24 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

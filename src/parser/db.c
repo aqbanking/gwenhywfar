@@ -899,7 +899,6 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
   nv=GWEN_DB_ValueInt_new(val);
   GWEN_DB_Node_Append(nn, nv);
   DBG_VERBOUS(0, "Added int value \%d\" to variable \"%s\"", val, path);
-
   return 0;
 }
 
@@ -962,7 +961,6 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
   nv=GWEN_DB_ValueBin_new(val, valSize);
   GWEN_DB_Node_Append(nn, nv);
   DBG_VERBOUS(0, "Added bin value to variable \"%s\"", path);
-
   return 0;
 }
 
@@ -1529,10 +1527,12 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	values=0;
 	while(cn) {
           char numbuffer[32];
-          char binbuffer[256];
+          char *binbuffer;
+          unsigned int bbsize;
 	  const char *pvalue;
 
-	  pvalue=0;
+          pvalue=0;
+          binbuffer=0;
 	  switch(cn->h.typ) {
 	  case GWEN_DB_NODETYPE_VALUE:
 	    switch(cn->val.h.typ) {
@@ -1554,11 +1554,14 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	      break;
 
             case GWEN_DB_VALUETYPE_BIN:
+              bbsize=cn->val.b.dataSize*2+1;
+              binbuffer=(char*)malloc(bbsize);
+              assert(binbuffer);
               typname="bin  ";
               if (!GWEN_Text_ToHex(cn->val.b.data,
                                    cn->val.b.dataSize,
                                    binbuffer,
-                                   sizeof(binbuffer))) {
+                                   bbsize)) {
                 DBG_ERROR(0, "Error writing binary value");
                 return 1;
               }
@@ -1578,6 +1581,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                   err=GWEN_BufferedIO_WriteChar(bio, ' ');
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(0, "called from here");
+                    free(binbuffer);
                     return 1;
                   }
                 } /* for */
@@ -1586,6 +1590,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                 err=GWEN_BufferedIO_Write(bio, typname);
                 if (!GWEN_Error_IsOk(err)) {
                   DBG_INFO(0, "called from here");
+                  free(binbuffer);
                   return 1;
                 }
               }
@@ -1593,18 +1598,21 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 		err=GWEN_BufferedIO_Write(bio, "\"");
 		if (!GWEN_Error_IsOk(err)) {
 		  DBG_INFO(0, "called from here");
+                  free(binbuffer);
 		  return 1;
 		}
 	      }
 	      err=GWEN_BufferedIO_Write(bio, n->var.name);
 	      if (!GWEN_Error_IsOk(err)) {
 		DBG_INFO(0, "called from here");
+                free(binbuffer);
 		return 1;
 	      }
 	      if (dbflags & GWEN_DB_FLAGS_QUOTE_VARNAMES) {
 		err=GWEN_BufferedIO_Write(bio, "\"");
 		if (!GWEN_Error_IsOk(err)) {
 		  DBG_INFO(0, "called from here");
+                  free(binbuffer);
 		  return 1;
 		}
               }
@@ -1613,7 +1621,8 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                                          ":":"="));
 	      if (!GWEN_Error_IsOk(err)) {
 		DBG_INFO(0, "called from here");
-		return 1;
+                free(binbuffer);
+                return 1;
 	      }
 	      namewritten=1;
 	    } /* if !namewritten */
@@ -1622,6 +1631,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	      err=GWEN_BufferedIO_Write(bio, ", ");
 	      if (!GWEN_Error_IsOk(err)) {
 		DBG_INFO(0, "called from here");
+                free(binbuffer);
 		return 1;
 	      }
 	    }
@@ -1630,18 +1640,21 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	      err=GWEN_BufferedIO_Write(bio, "\"");
 	      if (!GWEN_Error_IsOk(err)) {
 		DBG_INFO(0, "called from here");
+                free(binbuffer);
 		return 1;
 	      }
 	    }
 	    err=GWEN_BufferedIO_Write(bio, pvalue);
 	    if (!GWEN_Error_IsOk(err)) {
 	      DBG_INFO(0, "called from here");
+              free(binbuffer);
 	      return 1;
 	    }
 	    if (dbflags & GWEN_DB_FLAGS_QUOTE_VALUES) {
 	      err=GWEN_BufferedIO_Write(bio, "\"");
 	      if (!GWEN_Error_IsOk(err)) {
 		DBG_INFO(0, "called from here");
+                free(binbuffer);
 		return 1;
 	      }
 	    }
@@ -1651,6 +1664,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	    break;
 	  } /* switch */
 
+          free(binbuffer);
 	  cn=cn->h.next;
 	} /* while cn */
 	err=GWEN_BufferedIO_WriteLine(bio, "");
