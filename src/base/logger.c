@@ -83,6 +83,8 @@ int GWEN_Logger_Open(GWEN_LOGGER *lg,
                      const char *file,
                      GWEN_LOGGER_LOGTYPE logtype,
                      GWEN_LOGGER_FACILITY facility){
+  if (lg==0)
+    lg=gwen_logger;
   assert(lg);
   lg->logType=logtype;
 

@@ -149,8 +149,8 @@ GWEN_ERRORCODE GWEN_Error_RegisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr){
   GWEN_LIST_ADD(GWEN_ERRORTYPEREGISTRATIONFORM, tptr,
                 &gwen_error_errorformlist);
 
-  DBG_INFO(0, "Registered type \"%s\" (%d)\n",
-           tptr->name, tptr->typ);
+  DBG_DEBUG(0, "Registered type \"%s\" (%d)\n",
+            tptr->name, tptr->typ);
   return 0;
 }
 
@@ -162,8 +162,8 @@ GWEN_ERRORCODE GWEN_Error_UnregisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr) {
   GWEN_LIST_DEL(GWEN_ERRORTYPEREGISTRATIONFORM, tptr,
                 &gwen_error_errorformlist);
 
-  DBG_INFO(0, "Unregistered type \"%s\" (%d)\n",
-           tptr->name, tptr->typ);
+  DBG_DEBUG(0, "Unregistered type \"%s\" (%d)\n",
+            tptr->name, tptr->typ);
   return 0;
 }
 

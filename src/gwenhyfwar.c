@@ -54,7 +54,7 @@ GWEN_ERRORCODE GWEN_Init() {
     /* setup default logger */
     gwen_default_logger=GWEN_Logger_new();
     GWEN_Logger_SetDefaultLogger(gwen_default_logger);
-    GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+    GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
 
     DBG_DEBUG(0, "Initializing Error module");
     GWEN_Error_ModuleInit();

@@ -34,6 +34,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
 #include <gwenhyfwar/debug.h>
 
 
@@ -110,6 +114,21 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
 
 
 
+int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
+  struct passwd *p;
+
+  p=getpwuid(getuid());
+  if (!p) {
+    DBG_ERROR(0, "%s at getpwuid", strerror(errno));
+    return -1;
+  }
+  if (size<strlen(p->pw_dir)+1) {
+    DBG_ERROR(0, "Buffer too small (need %d bytes)", strlen(p->pw_dir)+1);
+    return -1;
+  }
+  strcpy(buffer, p->pw_dir);
+  return 0;
+}
 
 
 

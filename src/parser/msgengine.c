@@ -719,7 +719,8 @@ int GWEN_MsgEngine__IsCharTyp(const char *type) {
   return
     (strcasecmp(type, "alpha")==0) ||
     (strcasecmp(type, "ascii")==0) ||
-    (strcasecmp(type, "an")==0);
+    (strcasecmp(type, "an")==0) ||
+    (strcasecmp(type, "float")==0);
 }
 
 
@@ -827,6 +828,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
           vt=GWEN_DB_VALUETYPE_BIN;
         else {
           DBG_WARN(0, "Unable to determine parameter type (%s)", type);
+          vt=GWEN_DB_VALUETYPE_CHAR;
         }
       }
 

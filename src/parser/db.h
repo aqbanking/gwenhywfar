@@ -110,6 +110,8 @@ int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
                         const char *path);
 /**
  * @return 0 on success, !=0 on error
+ * @param path path to the group under the given node to clear
+ * (if 0 then clear the given node)
  */
 int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
                        const char *path);

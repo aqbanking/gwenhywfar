@@ -46,6 +46,9 @@ GWENHYFWAR_API GWEN_STRINGLIST *GWEN_StringList_new();
 GWENHYFWAR_API void GWEN_StringList_free(GWEN_STRINGLIST *sl);
 GWENHYFWAR_API void GWEN_StringList_Clear(GWEN_STRINGLIST *sl);
 
+GWENHYFWAR_API
+  unsigned int GWEN_StringList_Count(GWEN_STRINGLIST *sl);
+
 GWENHYFWAR_API GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s,
                                                               int take);
 GWENHYFWAR_API void GWEN_StringListEntry_ReplaceString(GWEN_STRINGLISTENTRY *e,

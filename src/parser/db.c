@@ -745,19 +745,25 @@ int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
 
 int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
 		       const char *path){
-  GWEN_DB_NODE *nn;
+  assert(n);
+  if (path) {
+    GWEN_DB_NODE *nn;
 
-  /* find corresponding node */
-  nn=GWEN_DB_GetNode(n,
-		     path,
-		     GWEN_PATH_FLAGS_PATHMUSTEXIST |
-		     GWEN_PATH_FLAGS_NAMEMUSTEXIST);
-  if (!nn) {
-    DBG_DEBUG(0, "Path \"%s\" not found",
-	      path);
-    return 1;
+    /* find corresponding node */
+    nn=GWEN_DB_GetNode(n,
+                       path,
+                       GWEN_PATH_FLAGS_PATHMUSTEXIST |
+                       GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+    if (!nn) {
+      DBG_DEBUG(0, "Path \"%s\" not found",
+                path);
+      return 1;
+    }
+    GWEN_DB_ClearNode(nn);
   }
-  GWEN_DB_ClearNode(nn);
+  else {
+    GWEN_DB_ClearNode(n);
+  }
   return 0;
 }
 

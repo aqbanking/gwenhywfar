@@ -100,6 +100,13 @@ GWENHYFWAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
 GWENHYFWAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
 
 
+/**
+ * Get the current users home directory and copy it into the given buffer.
+ * @return 0 if ok, !=0 on error
+ */
+int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size);
+
+
 #ifdef __cplusplus
 }
 #endif

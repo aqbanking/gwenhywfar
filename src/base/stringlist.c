@@ -261,5 +261,11 @@ const char *GWEN_StringListEntry_Data(GWEN_STRINGLISTENTRY *se){
 }
 
 
+unsigned int GWEN_StringList_Count(GWEN_STRINGLIST *sl){
+  assert(sl);
+  return sl->count;
+}
+
+
 
 
