@@ -46,7 +46,7 @@
 # include <gwenhywfar/ui/dropdownbox.h>
 # include <gwenhywfar/ui/filedialog.h>
 # include <gwenhywfar/ui/loader.h>
-# include "../src/ui/loader_p.h"
+# include "../gwenui/loader_p.h"
 #endif
 
 
@@ -2176,7 +2176,7 @@ int uitest12(int argc, char **argv) {
 }
 
 
-#include "../src/ui/textwidget_p.h"
+#include "../gwenui/textwidget_p.h"
 
 
 int uitest13(int argc, char **argv) {
