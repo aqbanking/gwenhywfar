@@ -193,6 +193,14 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_Write(bio, ", ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_WriteLine(bio, ")");
+
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_Write(bio, "_LIST *");
+    GWEN_BufferedIO_Write(bio, prefix);
+    GWEN_BufferedIO_Write(bio, "_List_dup(const ");
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_WriteLine(bio, "_LIST *stl);");
+
   }
 
   if (strcasecmp(get_struct_property(node, "list2", ""),
@@ -204,12 +212,20 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_WriteLine(bio, ")");
 
     GWEN_BufferedIO_WriteLine(bio, "");
-
     GWEN_BufferedIO_Write(bio, "void ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_List2_freeAll(");
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, "_LIST2 *stl);");
+
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_Write(bio, "_LIST2 *");
+    GWEN_BufferedIO_Write(bio, prefix);
+    GWEN_BufferedIO_Write(bio, "_List2_dup(const ");
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_WriteLine(bio, "_LIST2 *stl);");
+
+    GWEN_BufferedIO_WriteLine(bio, "");
   }
 
   if (strcasecmp(nacc, "lib")==0) {

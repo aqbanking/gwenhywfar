@@ -1,4 +1,16 @@
 
+2004/11/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- typemaker:
+  - added property "volatile": if set then the element is not written to or
+    read from a db
+  - fixed some bugs: DOMAIN name was not prepended to function definitions 
+    in header files
+  - now _LIST2_dup() functions are created if LIST2 is enabled
+  - now adds apidocs for automatically generated functions
+- list(2): First() and Last() use const arguments now
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.3 (2004/11/19)
 ===========================================================================

@@ -194,13 +194,16 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       GWEN_BufferedIO_Write(bio, ", ");
       GWEN_BufferedIO_Write(bio, args->domain);
     }
+    GWEN_BufferedIO_WriteLine(bio, ")");
 
-    err = GWEN_BufferedIO_WriteLine(bio, ")");
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
-      GWEN_Buffer_free(hbuf);
-      return -1;
-    }
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_Write(bio, "_LIST *");
+    GWEN_BufferedIO_Write(bio, prefix);
+    GWEN_BufferedIO_Write(bio, "_List_dup(const ");
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_WriteLine(bio, "_LIST *stl);");
+
+    GWEN_BufferedIO_WriteLine(bio, "");
   }
 
   if (strcasecmp(get_struct_property(node, "list2", ""),
@@ -216,30 +219,75 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       GWEN_BufferedIO_Write(bio, ", ");
       GWEN_BufferedIO_Write(bio, args->domain);
     }
-
     GWEN_BufferedIO_WriteLine(bio, ")");
     GWEN_BufferedIO_WriteLine(bio, "");
 
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Destroys all objects stored in the given "
+                              "LIST2 and the list itself");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, "void ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_List2_freeAll(");
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, "_LIST2 *stl);");
+
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Creates a deep copy of the given LIST2.");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_Write(bio, "_LIST2 *");
+    GWEN_BufferedIO_Write(bio, prefix);
+    GWEN_BufferedIO_Write(bio, "_List2_dup(const ");
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_WriteLine(bio, "_LIST2 *stl);");
+
     GWEN_BufferedIO_WriteLine(bio, "");
   }
 
   if (strcasecmp(nacc, "public")==0) {
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Creates a new object.");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_Write(bio, " *");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_WriteLine(bio, "_new();");
 
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Destroys the given object.");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, "void ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_free(");
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, " *st);");
 
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Increments the usage counter of the "
+                              "given object, so an additional free() is"
+                              " needed to destroy the object.");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, "void ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_Attach(");
@@ -247,6 +295,14 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_WriteLine(bio, " *st);");
 
     /* dup */
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Creates and returns a deep copy of the"
+                              "given object.");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_Write(bio, " *");
     GWEN_BufferedIO_Write(bio, prefix);
@@ -255,31 +311,62 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_WriteLine(bio, "*st);");
 
     /* FromDb */
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Creates an object from the data in the"
+                              " given GWEN_DB_NODE");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_Write(bio, " *");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_WriteLine(bio, "_fromDb(GWEN_DB_NODE *db);");
 
     /* ToDb */
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Stores an object in the"
+                              " given GWEN_DB_NODE");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, "int ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_toDb(const ");
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, "*st, GWEN_DB_NODE *db);");
 
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Returns 0 if this object has not been"
+                              " modified, !=0 otherwise");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, "int ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_IsModified(const ");
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, " *st);");
 
+    GWEN_BufferedIO_WriteLine(bio,
+                              "/** Sets the modified state of the given "
+                              "object");
+    GWEN_BufferedIO_WriteLine(bio, "*/");
+    if (args->domain) {
+      GWEN_BufferedIO_Write(bio, args->domain);
+      GWEN_BufferedIO_Write(bio, " ");
+    }
     GWEN_BufferedIO_Write(bio, "void ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_SetModified(");
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, " *st, int i);");
   }
-
 
   rv=write_h_setget_c(args, node, bio, "public");
   if (rv) {

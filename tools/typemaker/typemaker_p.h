@@ -61,6 +61,11 @@ int write_code_dupArg_c(ARGUMENTS *args,
                         GWEN_BUFFEREDIO *bio,
                         const char *param);
 
+int write_code_dupList_c(ARGUMENTS *args, GWEN_XMLNODE *n,
+                         GWEN_BUFFEREDIO *bio,
+                         const char *listName);
+
+
 int write_code_dup_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                      GWEN_BUFFEREDIO *bio);
 int write_code_todb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
@@ -77,6 +82,9 @@ int write_code_fromdb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 GWEN_XMLNODE *find_type_node(GWEN_XMLNODE *node, const char *name);
 const char *get_function_name(GWEN_XMLNODE *node, const char *ftype);
+const char *get_function_name2(GWEN_XMLNODE *node, const char *ftype,
+                               const char *name);
+GWEN_XMLNODE *get_typedef(GWEN_XMLNODE *node, const char *name);
 
 int write_code_builtin_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                          GWEN_BUFFEREDIO *bio);

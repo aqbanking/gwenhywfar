@@ -69,8 +69,8 @@ extern "C" {
   decl void pr##_List2_PopBack(t##_LIST2 *l); \
   decl void pr##_List2_PopFront(t##_LIST2 *l); \
   decl void pr##_List2_Clear(t##_LIST2 *l); \
-  decl t##_LIST2_ITERATOR *pr##_List2_First(t##_LIST2 *l); \
-  decl t##_LIST2_ITERATOR *pr##_List2_Last(t##_LIST2 *l); \
+  decl t##_LIST2_ITERATOR *pr##_List2_First(const t##_LIST2 *l); \
+  decl t##_LIST2_ITERATOR *pr##_List2_Last(const t##_LIST2 *l); \
   decl t##_LIST2_ITERATOR *pr##_List2Iterator_new(t##_LIST2 *l); \
   decl void pr##_List2Iterator_free(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2Iterator_Previous(t##_LIST2_ITERATOR *li); \
@@ -134,11 +134,11 @@ extern "C" {
   }\
   \
   \
-  t##_LIST2_ITERATOR *pr##_List2_First(t##_LIST2 *l) { \
+  t##_LIST2_ITERATOR *pr##_List2_First(const t##_LIST2 *l) { \
     return (t##_LIST2_ITERATOR*) GWEN_List_First((GWEN_LIST*) l); \
   }\
   \
-  t##_LIST2_ITERATOR *pr##_List2_Last(t##_LIST2 *l) { \
+  t##_LIST2_ITERATOR *pr##_List2_Last(const t##_LIST2 *l) { \
     return (t##_LIST2_ITERATOR*) GWEN_List_Last((GWEN_LIST*) l); \
   }\
   \
@@ -204,8 +204,8 @@ extern "C" {
   decl void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_PopFront(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_Clear(t##_CONSTLIST2 *l); \
-  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(t##_CONSTLIST2 *l); \
-  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(t##_CONSTLIST2 *l); \
+  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(const t##_CONSTLIST2 *l); \
+  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(const t##_CONSTLIST2 *l); \
   decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2Iterator_new(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2Iterator_free(t##_CONSTLIST2_ITERATOR *li); \
   decl const t *pr##_ConstList2Iterator_Previous(t##_CONSTLIST2_ITERATOR *li); \
@@ -263,11 +263,11 @@ extern "C" {
   }\
   \
   \
-  t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(t##_CONSTLIST2 *l) { \
+  t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(const t##_CONSTLIST2 *l) { \
     return (t##_CONSTLIST2_ITERATOR*) GWEN_ConstList_First((GWEN_CONSTLIST*) l); \
   }\
   \
-  t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(t##_CONSTLIST2 *l) { \
+  t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(const t##_CONSTLIST2 *l) { \
     return (t##_CONSTLIST2_ITERATOR*) GWEN_ConstList_Last((GWEN_CONSTLIST*) l); \
   }\
   \

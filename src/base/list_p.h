@@ -72,14 +72,14 @@ struct GWEN_CONSTLIST {
 
 
 struct GWEN_LIST_ITERATOR {
-  GWEN_LIST *list;
+  const GWEN_LIST *list;
 
   GWEN_LIST_ENTRY *current;
 };
 
 
 struct GWEN_CONSTLIST_ITERATOR {
-  GWEN_CONSTLIST *list;
+  const GWEN_CONSTLIST *list;
 
   GWEN_CONSTLIST_ENTRY *current;
 };
