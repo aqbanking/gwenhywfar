@@ -125,10 +125,6 @@ extern "C" {
 
 #include <time.h>
 
-#define GWEN_WAITCALLBACK_ENTER (-1)
-#define GWEN_WAITCALLBACK_LEAVE (-2)
-
-
 /**
  *
  */
