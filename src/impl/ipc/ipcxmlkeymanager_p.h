@@ -29,8 +29,8 @@
 #define GWENHYWFAR_IPCXMLKEYMANAGER_P_H
 
 
-#include <gwenhyfwar/ipcxmlkeymanager.h>
-#include <gwenhyfwar/list.h>
+#include <gwenhywfar/ipcxmlkeymanager.h>
+#include <gwenhywfar/list.h>
 
 
 typedef struct GWEN_IPCXMLKEYMANAGERDATA GWEN_IPCXMLKEYMANAGERDATA;

@@ -29,10 +29,10 @@
 #ifndef GWENHYFWAR_CMDLAYER_P_H
 #define GWENHYFWAR_CMDLAYER_P_H
 
-#include <gwenhyfwar/cmdlayer.h>
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/cmdlayer.h>
+#include <gwenhywfar/transportlayer.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/crypt.h>
 
 
 #define GWEN_IPCCONNLAYERCMD_SECSTATE_CLOSED            0

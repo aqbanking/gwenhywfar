@@ -28,11 +28,11 @@
 #ifndef GWENHYFWAR_MSGENGINE_P_H
 #define GWENHYFWAR_MSGENGINE_P_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/stringlist.h>
-#include <gwenhyfwar/buffer.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/buffer.h>
 
 
 #define GWEN_MSGENGINE_CHARSTOESCAPE ":+\"\'"

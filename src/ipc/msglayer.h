@@ -30,8 +30,8 @@
 #define GWENHYFWAR_MSGLAYER_H
 
 
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/buffer.h>
+#include <gwenhywfar/transportlayer.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {

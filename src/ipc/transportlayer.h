@@ -29,8 +29,8 @@
 #ifndef GWENHYFWAR_TRANSPORTLAYER_H
 #define GWENHYFWAR_TRANSPORTLAYER_H
 
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/inetsocket.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/inetsocket.h>
 
 
 #ifdef __cplusplus

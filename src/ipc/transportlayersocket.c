@@ -34,9 +34,9 @@
 
 
 #include "transportlayersocket_p.h"
-#include <gwenhyfwar/inetsocket.h>
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 
 
 

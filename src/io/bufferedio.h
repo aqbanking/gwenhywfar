@@ -29,10 +29,10 @@
 #ifndef GWENHYFWAR_BUFFEREDIO_H
 #define GWENHYFWAR_BUFFEREDIO_H "$Id$"
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/inetsocket.h>
-#include <gwenhyfwar/buffer.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {

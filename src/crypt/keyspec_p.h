@@ -29,7 +29,7 @@
 #ifndef GWEN_KEYSPEC_P_H
 #define GWEN_KEYSPEC_P_H
 
-#include <gwenhyfwar/keyspec.h>
+#include <gwenhywfar/keyspec.h>
 
 struct GWEN_KEYSPEC {
   GWEN_KEYSPEC *next;

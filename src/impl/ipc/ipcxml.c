@@ -32,11 +32,11 @@
 #endif
 
 #include "ipcxml_p.h"
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/ipcxmlmsglayer.h>
-#include <gwenhyfwar/ipcxmlconnlayer.h>
-#include <gwenhyfwar/ipc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/ipcxmlmsglayer.h>
+#include <gwenhywfar/ipcxmlconnlayer.h>
+#include <gwenhywfar/ipc.h>
 
 
 static unsigned int GWEN_IPCXMLRequest_LastId=0;

@@ -30,10 +30,10 @@
 #define GWENHYFWAR_CRYPT_H
 
 
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/buffer.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/keyspec.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/keyspec.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -32,11 +32,11 @@
 #endif
 
 #include "ipcxmlsecctx_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/text.h>
-#include <gwenhyfwar/md.h>
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/md.h>
+#include <gwenhywfar/crypt.h>
 
 
 

@@ -11,7 +11,7 @@ noinst_HEADERS=\
  transportlayer_p.h \
  transportlayersocket_p.h
 
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  connlayer.h \
  ipc.h \

@@ -28,7 +28,7 @@
 #ifndef GWENHYFWAR_XML_P_H
 #define GWENHYFWAR_XML_P_H
 
-#include <gwenhyfwar/xml.h>
+#include <gwenhywfar/xml.h>
 
 
 #ifdef __cplusplus

@@ -30,9 +30,9 @@
 #define GWENHYFWAR_IPCXMLMSGLAYER_P_H
 
 #include "ipcxmlmsglayer.h"
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/msglayer.h>
-#include <gwenhyfwar/msgengine.h>
+#include <gwenhywfar/transportlayer.h>
+#include <gwenhywfar/msglayer.h>
+#include <gwenhywfar/msgengine.h>
 
 #define GWEN_IPCXMLMSGLAYER_MSGSIZE 512
 

@@ -30,8 +30,8 @@
 #define GWEN_DEBUG_H
 
 #include <stdio.h>
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/logger.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/logger.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -28,7 +28,7 @@
 #ifndef GWEN_LOGGER_P_H
 #define GWEN_LOGGER_P_H
 
-#include <gwenhyfwar/logger.h>
+#include <gwenhywfar/logger.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -31,14 +31,14 @@
 #endif
 
 #include "inetaddr_p.h"
-#include <gwenhyfwar/misc.h>
+#include <gwenhywfar/misc.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <netdb.h>
 #include <string.h>
 #include <sys/un.h>
 
-#include "gwenhyfwar/debug.h"
+#include "gwenhywfar/debug.h"
 
 /* #define MEMTRACE */
 

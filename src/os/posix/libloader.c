@@ -31,8 +31,8 @@
 #endif
 
 #include "libloader_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

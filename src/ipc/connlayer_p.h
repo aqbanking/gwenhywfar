@@ -33,7 +33,7 @@
 #define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
 
 
-#include <gwenhyfwar/connlayer.h>
+#include <gwenhywfar/connlayer.h>
 
 
 struct GWEN_IPCCONNLAYER {

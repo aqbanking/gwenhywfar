@@ -29,8 +29,8 @@
 #define GWENHYFWAR_CSV_H
 
 
-#include <gwenhyfwar/bufferedio.h>
-#include <gwenhyfwar/db.h>
+#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/db.h>
 
 #ifdef __cplusplus
 extern "C" {

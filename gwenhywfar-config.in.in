@@ -6,10 +6,10 @@ result=""
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @all_includes@ @gwenhyfwar_includes@"
+	    result="$result @all_includes@ @gwenhywfar_includes@"
 	    ;;
 	--libraries)
-	    result="$result @gwenhyfwar_libs@"
+	    result="$result @gwenhywfar_libs@"
 	    ;;
 	--vmajor)
 	    result="$result @GWENHYFWAR_VERSION_MAJOR@"

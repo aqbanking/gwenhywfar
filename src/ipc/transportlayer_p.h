@@ -29,7 +29,7 @@
 #ifndef GWENHYFWAR_TRANSPORTLAYER_P_H
 #define GWENHYFWAR_TRANSPORTLAYER_P_H
 
-#include <gwenhyfwar/transportlayer.h>
+#include <gwenhywfar/transportlayer.h>
 
 
 GWENHYFWAR_API typedef

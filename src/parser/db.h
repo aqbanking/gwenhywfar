@@ -58,9 +58,9 @@
 #ifndef GWENHYFWAR_DB_H
 #define GWENHYFWAR_DB_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/path.h>
-#include <gwenhyfwar/bufferedio.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/path.h>
+#include <gwenhywfar/bufferedio.h>
 #include <stdio.h>
 
 #ifdef __cplusplus

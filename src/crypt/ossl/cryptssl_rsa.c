@@ -32,8 +32,8 @@
 
 
 #include "cryptssl_rsa_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 
 #include <openssl/rsa.h>
 #include <openssl/objects.h>

@@ -30,9 +30,9 @@
 #ifndef GWENHYFWAR_LIBLOADER_P_H
 #define GWENHYFWAR_LIBLOADER_P_H "$Id"
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/libloader.h>
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/libloader.h>
+#include <gwenhywfar/error.h>
 
 
 #ifdef __cplusplus

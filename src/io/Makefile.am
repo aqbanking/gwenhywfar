@@ -5,7 +5,7 @@ noinst_LTLIBRARIES=libio.la
 noinst_HEADERS=\
  bufferedio_p.h
 
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  bufferedio.h
 

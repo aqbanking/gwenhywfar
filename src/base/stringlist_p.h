@@ -28,8 +28,8 @@
 #ifndef GWENHYFWAR_STRINGLIST_P_H
 #define GWENHYFWAR_STRINGLIST_P_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/stringlist.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/stringlist.h>
 
 
 #ifdef __cplusplus

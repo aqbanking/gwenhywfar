@@ -34,8 +34,8 @@
 #include <assert.h>
 #include <string.h>
 #include "error_p.h"
-#include "gwenhyfwar/debug.h"
-#include "gwenhyfwar/misc.h"
+#include "gwenhywfar/debug.h"
+#include "gwenhywfar/misc.h"
 
 /* forward declaration */
 const char *GWEN_Error_ErrorString(int c);

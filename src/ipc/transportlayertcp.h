@@ -29,7 +29,7 @@
 #ifndef GWENHYFWAR_TRANSPORTLAYERTCP_H
 #define GWENHYFWAR_TRANSPORTLAYERTCP_H
 
-#include <gwenhyfwar/transportlayer.h>
+#include <gwenhywfar/transportlayer.h>
 
 #ifdef __cplusplus
 extern "C" {

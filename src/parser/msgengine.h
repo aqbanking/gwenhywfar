@@ -28,10 +28,10 @@
 #ifndef GWENHYFWAR_MSGENGINE_H
 #define GWENHYFWAR_MSGENGINE_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/xml.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/buffer.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/xml.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {

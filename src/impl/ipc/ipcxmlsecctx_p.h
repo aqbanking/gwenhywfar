@@ -29,7 +29,7 @@
 #ifndef GWENHYWFAR_IPCXMLSECCTX_P_H
 #define GWENHYWFAR_IPCXMLSECCTX_P_H
 
-#include <gwenhyfwar/ipcxmlsecctx.h>
+#include <gwenhywfar/ipcxmlsecctx.h>
 
 
 struct GWEN_IPCXMLSECCTXDATA {

@@ -31,10 +31,10 @@
 #endif
 
 #include "servicelayer_p.h"
-#include <gwenhyfwar/connlayer.h>
-#include <gwenhyfwar/ipc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/misc.h>
+#include <gwenhywfar/connlayer.h>
+#include <gwenhywfar/ipc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
 
 
 static GWEN_GLOBAL_SERVICELAYER *GWEN_Global_ServiceLayer=0;

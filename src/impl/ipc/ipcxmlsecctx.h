@@ -29,11 +29,11 @@
 #define GWENHYWFAR_IPCXMSECCTX_H
 
 
-#include <gwenhyfwar/crypt.h>
-#include <gwenhyfwar/keyspec.h>
-#include <gwenhyfwar/seccontext.h>
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/ipcxmlkeymanager.h>
+#include <gwenhywfar/crypt.h>
+#include <gwenhywfar/keyspec.h>
+#include <gwenhywfar/seccontext.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/ipcxmlkeymanager.h>
 
 
 typedef struct GWEN_IPCXMLSECCTXDATA GWEN_IPCXMLSECCTXDATA;

@@ -30,8 +30,8 @@
 # include <config.h>
 #endif
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/misc.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/misc.h>
 #include "stringlist_p.h"
 #include "debug.h"
 #include <stdlib.h>

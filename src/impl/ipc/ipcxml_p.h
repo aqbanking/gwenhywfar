@@ -29,9 +29,9 @@
 #ifndef GWENHYWFAR_IPCXML_P_H
 #define GWENHYWFAR_IPCXML_P_H
 
-#include <gwenhyfwar/ipcxml.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/hbcimsg.h>
+#include <gwenhywfar/ipcxml.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/hbcimsg.h>
 
 
 struct GWEN_IPCXMLREQUEST {

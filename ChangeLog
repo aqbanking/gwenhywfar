@@ -12,6 +12,8 @@ $Id$
   used by programs, since it is under heavy development.
 - reading keys from a file and writing then to a file now works
 - fixed a severe bug in "list"
+- finally corrected spelling of Gwenhywfar ;-)
+  Thanks to Thomas Viehmann for providing a nice conversion script ;-)
 
 
 2003-11-21  Christian Stimming <stimming@tuhh.de>
@@ -83,7 +85,7 @@ MARK: released gwenhywfar-0.9beta5 (2003/11/21)
 
 2003-11-12  Christian Stimming  <stimming@tuhh.de>
 
-	* configure.ac: Fix -L argument in gwenhyfwar_libs; it was missing
+	* configure.ac: Fix -L argument in gwenhywfar_libs; it was missing
 	the /lib suffix.
 
 2003/11/12 Martin Preuss <martin@libchipcard.de>
@@ -297,7 +299,7 @@ MARK: released gwenhywfar-0.9beta1 (2003/10/27)
 
 2003/09/11 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
-- created libgwenhyfwar
+- created libgwenhywfar
 - added test tool
 - fixed db module
 

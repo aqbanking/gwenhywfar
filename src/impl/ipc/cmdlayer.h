@@ -28,10 +28,10 @@
 #ifndef GWENHYFWAR_CMDLAYER_H
 #define GWENHYFWAR_CMDLAYER_H
 
-#include <gwenhyfwar/connlayer.h>
-#include <gwenhyfwar/servicelayer.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/connlayer.h>
+#include <gwenhywfar/servicelayer.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/crypt.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -32,8 +32,8 @@
 #define DISABLE_DEBUGLOG
 
 #include "path.h"
-#include "gwenhyfwar/debug.h"
-#include "gwenhyfwar/misc.h"
+#include "gwenhywfar/debug.h"
+#include "gwenhywfar/misc.h"
 #include <ctype.h>
 
 

@@ -6,17 +6,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <gwenhyfwar/gwenhyfwar.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/xml.h>
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/text.h>
-#include <gwenhyfwar/hbcidialog.h>
-#include <gwenhyfwar/hbcimsg.h>
-#include <gwenhyfwar/ipcxmlsecctx.h>
-#include <gwenhyfwar/ipcxmlkeymanager.h>
-#include <gwenhyfwar/ipcxml.h>
+#include <gwenhywfar/gwenhywfar.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/hbcidialog.h>
+#include <gwenhywfar/hbcimsg.h>
+#include <gwenhywfar/ipcxmlsecctx.h>
+#include <gwenhywfar/ipcxmlkeymanager.h>
+#include <gwenhywfar/ipcxml.h>
 
 
 int testDB(int argc, char **argv) {

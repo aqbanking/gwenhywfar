@@ -33,11 +33,11 @@
 
 
 #include "ipcxmlconnlayer_p.h"
-#include <gwenhyfwar/ipc.h>
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/ipcxmlsecctx.h>
-#include <gwenhyfwar/ipcxml.h>
+#include <gwenhywfar/ipc.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/ipcxmlsecctx.h>
+#include <gwenhywfar/ipcxml.h>
 
 
 

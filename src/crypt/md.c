@@ -31,9 +31,9 @@
 #endif
 
 #include "md_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/crypt.h>
 #include <stdlib.h>
 
 

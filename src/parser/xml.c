@@ -32,8 +32,8 @@
 #define DISABLE_DEBUGLOG
 
 #include "xml_p.h"
-#include "gwenhyfwar/debug.h"
-#include "gwenhyfwar/misc.h"
+#include "gwenhywfar/debug.h"
+#include "gwenhywfar/misc.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>

@@ -29,8 +29,8 @@
 #ifndef GWENHYFWAR_IPC_P_H
 #define GWENHYFWAR_IPC_P_H
 
-#include <gwenhyfwar/ipc.h>
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/ipc.h>
+#include <gwenhywfar/error.h>
 
 
 GWEN_ERRORCODE GWEN_IPC_ModuleInit();

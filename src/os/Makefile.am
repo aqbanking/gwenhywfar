@@ -21,7 +21,7 @@ EXTRA_DIST=\
 
 SUBDIRS=@GWEN_OS@
 
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  directory.h \
  inetaddr.h \

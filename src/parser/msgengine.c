@@ -31,14 +31,14 @@
 
 /*#define DISABLE_DEBUGLOG */
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 #include <msgengine_p.h>
-#include <gwenhyfwar/xml.h>
-#include <gwenhyfwar/text.h>
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/path.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/buffer.h>
+#include <gwenhywfar/xml.h>
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/path.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/buffer.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>

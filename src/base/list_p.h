@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-#include <gwenhyfwar/list.h>
+#include <gwenhywfar/list.h>
 
 
 typedef struct GWEN_LIST_ENTRY GWEN_LIST_ENTRY;

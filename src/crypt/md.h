@@ -29,7 +29,7 @@
 #ifndef GWENHYWFAR_MD_H
 #define GWENHYWFAR_MD_H
 
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/error.h>
 
 typedef struct GWEN_MD GWEN_MD;
 

@@ -33,9 +33,9 @@
 #ifndef GWEN_SOCKET_H
 #define GWEN_SOCKET_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include "gwenhyfwar/error.h"
-#include <gwenhyfwar/inetaddr.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include "gwenhywfar/error.h"
+#include <gwenhywfar/inetaddr.h>
 
 #ifdef __cplusplus
 extern "C" {

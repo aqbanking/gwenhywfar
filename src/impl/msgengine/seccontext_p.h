@@ -30,8 +30,8 @@
 #ifndef GWENHYWFAR_SECCONTEXT_P_H
 #define GWENHYWFAR_SECCONTEXT_P_H
 
-#include <gwenhyfwar/seccontext.h>
-#include <gwenhyfwar/list.h>
+#include <gwenhywfar/seccontext.h>
+#include <gwenhywfar/list.h>
 
 
 #define GWEN_SECCONTEXT_KEYSIZE 96

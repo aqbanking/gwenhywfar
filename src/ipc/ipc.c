@@ -31,8 +31,8 @@
 #endif
 
 #include "ipc_p.h"
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/error.h>
 
 
 

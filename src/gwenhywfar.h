@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Mon Nov 17 2003
-    copyright   : (C) 2003 by Martin Preuss
-    email       : martin@libchipcard.de
+ -------------------
+ cvs         : $Id$
+ begin       : Thu Sep 11 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,23 +26,28 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_KEYMANAGER_P_H
-#define GWENHYWFAR_KEYMANAGER_P_H
+#ifndef GWENHYFWAR_GWENHYFWAR_H
+#define GWENHYFWAR_GWENHYFWAR_H
+
+#include <gwenhywfar/error.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-#include <gwenhywfar/keymanager.h>
+GWEN_ERRORCODE GWEN_Init();
+GWEN_ERRORCODE GWEN_Fini();
 
 
-struct GWEN_KEYMANAGER {
-  void *data;
-  GWEN_KEYMANAGER_GETKEYFN getKeyFn;
-  GWEN_KEYMANAGER_ADDKEYFN addKeyFn;
-  GWEN_KEYMANAGER_DELKEYFN delKeyFn;
-  GWEN_KEYMANAGER_FREEDATAFN freeDataFn;
-};
+void GWEN_Version(int *major,
+                  int *minor,
+                  int *patchlevel,
+                  int *build);
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif
-

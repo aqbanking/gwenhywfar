@@ -32,9 +32,9 @@
 
 
 #include "crypt_p.h"
-#include <gwenhyfwar/md.h>
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/md.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 
 #include <string.h>
 #include <assert.h>

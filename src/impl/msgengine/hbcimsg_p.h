@@ -30,11 +30,11 @@
 
 #define GWEN_HBCIMSG_DEFAULTSIZE 256
 
-#include <gwenhyfwar/hbcimsg.h>
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/buffer.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/msgengine.h>
+#include <gwenhywfar/hbcimsg.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/msgengine.h>
 
 
 struct GWEN_HBCIMSG {

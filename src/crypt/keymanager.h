@@ -42,8 +42,8 @@
 #define GWENHYWFAR_KEYMANAGER_H
 
 
-#include <gwenhyfwar/crypt.h>
-#include <gwenhyfwar/keyspec.h>
+#include <gwenhywfar/crypt.h>
+#include <gwenhywfar/keyspec.h>
 
 typedef struct GWEN_KEYMANAGER GWEN_KEYMANAGER;
 

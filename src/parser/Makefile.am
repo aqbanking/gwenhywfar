@@ -8,7 +8,7 @@ noinst_HEADERS=\
  msgengine_p.h \
  xml_p.h
 
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  csv.h \
  db.h \

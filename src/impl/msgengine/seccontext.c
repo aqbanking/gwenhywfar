@@ -32,9 +32,9 @@
 
 
 #include "seccontext_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/text.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 #include <stdlib.h>
 #include <string.h>
 

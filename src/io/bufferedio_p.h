@@ -29,10 +29,10 @@
 #ifndef GWENHYFWAR_BUFFEREDIO_P_H
 #define GWENHYFWAR_BUFFEREDIO_P_H "$Id$"
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/bufferedio.h>
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/inetsocket.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/inetsocket.h>
 
 
 #define GWEN_BUFFEREDIO_CR 13

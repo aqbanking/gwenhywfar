@@ -26,15 +26,15 @@
  ***************************************************************************/
 
 /**
- * @file gwenhyfwar/error.h
+ * @file gwenhywfar/error.h
  * @short This file contains the module for error handling.
  */
 
 #ifndef GWENHYFWAR_ERROR_P_H
 #define GWENHYFWAR_ERROR_P_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/error.h>
 
 /**
  * @defgroup mod_error Error module

@@ -36,8 +36,8 @@
 #define GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE 3
 #define GWEN_LIBLOADER_ERROR_COULD_RESOLVE   4
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/error.h>
 
 #ifdef __cplusplus
 extern "C" {

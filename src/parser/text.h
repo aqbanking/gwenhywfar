@@ -30,7 +30,7 @@
 #ifndef GWENHYFWAR_TEXT_H
 #define GWENHYFWAR_TEXT_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 
 #include <stdio.h>
 

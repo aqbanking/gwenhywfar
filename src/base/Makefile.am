@@ -9,7 +9,7 @@ noinst_HEADERS=\
  logger_p.h \
  stringlist_p.h
 
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  buffer.h \
  debug.h \

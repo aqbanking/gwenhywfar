@@ -35,8 +35,8 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/debug.h>
 
 char *GWEN_Text_GetWord(const char *src,
                         const char *delims,

@@ -26,14 +26,14 @@
  ***************************************************************************/
 
 /**
- * @file gwenhyfwar/error.h
+ * @file gwenhywfar/error.h
  * @short This file contains the module for error handling.
  */
 
 #ifndef GWENHYFWAR_ERROR_H
 #define GWENHYFWAR_ERROR_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 
 
 /*

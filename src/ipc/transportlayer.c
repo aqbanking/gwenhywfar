@@ -30,8 +30,8 @@
 #endif
 
 #include "transportlayer_p.h"
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/misc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
 
 
 

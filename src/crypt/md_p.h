@@ -30,7 +30,7 @@
 #ifndef GWENHYWFAR_MD_P_H
 #define GWENHYWFAR_MD_P_H
 
-#include <gwenhyfwar/md.h>
+#include <gwenhywfar/md.h>
 
 
 struct GWEN_MD {

@@ -32,8 +32,8 @@
 #endif
 
 #include "hbcicryptocontext_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 
 
 

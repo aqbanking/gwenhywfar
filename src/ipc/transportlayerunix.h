@@ -29,7 +29,7 @@
 #ifndef GWENHYFWAR_TRANSPORTLAYERUNIX_H
 #define GWENHYFWAR_TRANSPORTLAYERUNIX_H
 
-#include <gwenhyfwar/transportlayer.h>
+#include <gwenhywfar/transportlayer.h>
 
 
 #ifdef __cplusplus

@@ -29,11 +29,11 @@
 #ifndef GWENHYWFAR_IPCXML_H
 #define GWENHYWFAR_IPCXML_H
 
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/servicelayer.h>
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/keymanager.h>
-#include <gwenhyfwar/ipcxmlsecctx.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/servicelayer.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/keymanager.h>
+#include <gwenhywfar/ipcxmlsecctx.h>
 
 
 typedef struct GWEN_IPCXMLREQUEST GWEN_IPCXMLREQUEST;

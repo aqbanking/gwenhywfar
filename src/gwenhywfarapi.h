@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Mon Nov 17 2003
-    copyright   : (C) 2003 by Martin Preuss
+    begin       : Wed Sep 02 2002
+    copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,24 +25,18 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GWENHYFWARAPI_H
 
-#ifndef GWENHYWFAR_KEYMANAGER_P_H
-#define GWENHYWFAR_KEYMANAGER_P_H
-
-
-#include <gwenhywfar/keymanager.h>
-
-
-struct GWEN_KEYMANAGER {
-  void *data;
-  GWEN_KEYMANAGER_GETKEYFN getKeyFn;
-  GWEN_KEYMANAGER_ADDKEYFN addKeyFn;
-  GWEN_KEYMANAGER_DELKEYFN delKeyFn;
-  GWEN_KEYMANAGER_FREEDATAFN freeDataFn;
-};
-
-
-
+#ifdef __declspec
+# if BUILDING_GWENHYFWAR_DLL
+#  define GWENHYFWAR_API __declspec (dllexport)
+# else /* Not BUILDING_GWENHYFWAR_DLL */
+#  define GWENHYFWAR_API __declspec (dllimport)
+# endif /* Not BUILDING_GWENHYFWAR_DLL */
+#else
+# define GWENHYFWAR_API
+#endif
 
 #endif
+
 

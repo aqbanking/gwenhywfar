@@ -33,9 +33,9 @@
 #ifndef GWEN_SOCKET_P_H
 #define GWEN_SOCKET_P_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/inetsocket.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/inetsocket.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

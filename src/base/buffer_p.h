@@ -29,8 +29,8 @@
 #ifndef GWENHYFWAR_BUFFER_P_H
 #define GWENHYFWAR_BUFFER_P_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/buffer.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/buffer.h>
 
 #define GWEN_BUFFER_DEFAULT_HARDLIMIT (100*1024)
 

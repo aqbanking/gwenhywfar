@@ -31,10 +31,10 @@
 #endif
 
 #include "msglayer_p.h"
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/ipc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/misc.h>
+#include <gwenhywfar/transportlayer.h>
+#include <gwenhywfar/ipc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
 
 
 static unsigned int GWEN_IPCMsgLayer_LastMsgLayerId=0;

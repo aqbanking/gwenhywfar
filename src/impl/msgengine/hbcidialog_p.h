@@ -29,7 +29,7 @@
 #define GWENHYWFAR_HBCIDLG_P_H
 
 
-#include <gwenhyfwar/hbcidialog.h>
+#include <gwenhywfar/hbcidialog.h>
 
 
 struct GWEN_HBCIDIALOG {

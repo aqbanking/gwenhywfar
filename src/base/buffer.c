@@ -31,9 +31,9 @@
 #endif
 
 #include "buffer_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/text.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 
 #ifdef GWEN_MEMTRACE

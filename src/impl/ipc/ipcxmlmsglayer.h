@@ -29,9 +29,9 @@
 #ifndef GWENHYFWAR_IPCXMLMSGLAYER_H
 #define GWENHYFWAR_IPCXMLMSGLAYER_H
 
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/msglayer.h>
-#include <gwenhyfwar/connlayer.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/msglayer.h>
+#include <gwenhywfar/connlayer.h>
 
 
 typedef struct GWEN_IPCXMLMSGLAYERDATA GWEN_IPCXMLMSGLAYERDATA;

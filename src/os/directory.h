@@ -35,7 +35,7 @@
 #define GWEN_DIRECTORY_H
 
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 
 #ifdef __cplusplus
 extern "C" {

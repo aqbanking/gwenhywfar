@@ -38,7 +38,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/debug.h>
 
 
 

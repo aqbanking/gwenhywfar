@@ -30,8 +30,8 @@
 #define GWENHYFWAR_TRANSPORTLAYERSOCKET_P_H
 
 #include "transportlayer_p.h"
-#include <gwenhyfwar/inetsocket.h>
-#include <gwenhyfwar/bufferedio.h>
+#include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/bufferedio.h>
 
 #define GWEN_TRANSPORTLAYERSOCKET_BUFFERSIZE 256
 

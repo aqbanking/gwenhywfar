@@ -5,26 +5,26 @@ SUBDIRS=base crypt io ipc os parser impl
 EXTRA_DIST=\
  version.h.in
 
-lib_LTLIBRARIES=libgwenhyfwar.la
-iheaderdir=${includedir}/gwenhyfwar
+lib_LTLIBRARIES=libgwenhywfar.la
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
-  gwenhyfwar.h \
-  gwenhyfwarapi.h \
+  gwenhywfar.h \
+  gwenhywfarapi.h \
   version.h
 
-libgwenhyfwar_la_SOURCES=\
-  gwenhyfwar.c
+libgwenhywfar_la_SOURCES=\
+  gwenhywfar.c
 
-libgwenhyfwar_la_LIBADD=\
+libgwenhywfar_la_LIBADD=\
   base/libbase.la \
   crypt/libcrypt.la \
   io/libio.la \
   ipc/libipc.la \
-  @gwenhyfwar_os_lib@ \
+  @gwenhywfar_os_lib@ \
   parser/libparser.la \
   impl/ipc/libimplipc.la \
   impl/msgengine/libimplmsg.la  @all_libraries@
-libgwenhyfwar_la_LDFLAGS= \
+libgwenhywfar_la_LDFLAGS= \
   -version-info \
    @GWENHYFWAR_SO_CURRENT@:@GWENHYFWAR_SO_REVISION@:@GWENHYFWAR_SO_AGE@
 

@@ -32,10 +32,10 @@
 
 #include "connlayer_p.h"
 #include "msglayer_p.h"
-#include <gwenhyfwar/msglayer.h>
-#include <gwenhyfwar/ipc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/misc.h>
+#include <gwenhywfar/msglayer.h>
+#include <gwenhywfar/ipc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
 
 
 

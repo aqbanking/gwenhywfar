@@ -30,7 +30,7 @@
 #define GWENHYFWAR_CRYPTNONE_P_H
 
 
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/crypt.h>
 
 GWEN_ERRORCODE GWEN_CryptImpl_Init();
 GWEN_ERRORCODE GWEN_CryptImpl_Fini();

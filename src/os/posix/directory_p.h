@@ -38,8 +38,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/directory.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/directory.h>
 
 
 #ifdef __cplusplus

@@ -34,14 +34,14 @@
 
 
 #include "bufferedio_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/text.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/text.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
 
-#include "gwenhyfwar/debug.h"
+#include "gwenhywfar/debug.h"
 
 
 const char *GWEN_BufferedIO_ErrorString(int c){

@@ -29,7 +29,7 @@
 #ifndef GWENHYFWAR_PATH_H
 #define GWENHYFWAR_PATH_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -31,7 +31,7 @@
 #define GWENHYFWAR_SERVICELAYER_P_H
 
 
-#include <gwenhyfwar/servicelayer.h>
+#include <gwenhywfar/servicelayer.h>
 #include "connlayer_p.h"
 
 

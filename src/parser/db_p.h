@@ -29,8 +29,8 @@
 #ifndef GWENHYFWAR_DB_P_H
 #define GWENHYFWAR_DB_P_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/db.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/db.h>
 
 typedef struct GWEN_DB_HEADER GWEN_DB_HEADER;
 typedef struct GWEN_DB_GROUP GWEN_DB_GROUP;

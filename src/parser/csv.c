@@ -31,8 +31,8 @@
 #endif
 
 #include "csv.h"
-#include <gwenhyfwar/text.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/debug.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>

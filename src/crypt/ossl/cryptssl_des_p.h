@@ -34,7 +34,7 @@
 #define GWEN_CRYPT_DES_MAX_KEY_LENGTH      4096
 #define GWEN_CRYPT_DES_NAME "DES"
 
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/crypt.h>
 #include <openssl/des.h>
 #include <openssl/objects.h>
 

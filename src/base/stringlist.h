@@ -28,7 +28,7 @@
 #ifndef GWENHYFWAR_STRINGLIST_H
 #define GWENHYFWAR_STRINGLIST_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 
 
 #ifdef __cplusplus

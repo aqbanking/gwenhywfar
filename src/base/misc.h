@@ -28,7 +28,7 @@
 #ifndef GWENHYFWAR_MISC_H
 #define GWENHYFWAR_MISC_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>

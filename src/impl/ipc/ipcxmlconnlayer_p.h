@@ -29,12 +29,12 @@
 #ifndef GWEN_IPCXMLCONNLAYER_P_H
 #define GWEN_IPCXMLCONNLAYER_P_H
 
-#include <gwenhyfwar/ipcxmlconnlayer.h>
+#include <gwenhywfar/ipcxmlconnlayer.h>
 
-#include <gwenhyfwar/connlayer.h>
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/connlayer.h>
+#include <gwenhywfar/transportlayer.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/crypt.h>
 
 
 #define GWEN_IPCXMLCONNLAYER_FLAGS_MUST_SIGN  0x0001
@@ -43,9 +43,9 @@
 #define GWEN_IPCXMLCONNLAYER_MSGSIZE 1024
 #define GWEN_IPCXMLCONNLAYER_TYPE 0xbeef
 
-#include <gwenhyfwar/hbcimsg.h>
-#include <gwenhyfwar/hbcidialog.h>
-#include <gwenhyfwar/db.h>
+#include <gwenhywfar/hbcimsg.h>
+#include <gwenhywfar/hbcidialog.h>
+#include <gwenhywfar/db.h>
 
 
 struct GWEN_IPCXMLCONNLAYERDATA {

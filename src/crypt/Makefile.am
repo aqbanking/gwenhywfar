@@ -12,7 +12,7 @@ EXTRA_DIST=\
  none/cryptnone_p.h \
  none/cryptnone.c
  
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  crypt.h \
  keymanager.h \

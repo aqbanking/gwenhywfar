@@ -31,14 +31,14 @@
 #endif
 
 #include "cmdlayer_p.h"
-#include <gwenhyfwar/msglayer.h>
-#include <gwenhyfwar/servicelayer.h>
-#include <gwenhyfwar/ipc.h>
-#include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/msglayer.h>
+#include <gwenhywfar/servicelayer.h>
+#include <gwenhywfar/ipc.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/crypt.h>
 
-#include <gwenhyfwar/text.h>
+#include <gwenhywfar/text.h>
 
 #include <stdarg.h>
 

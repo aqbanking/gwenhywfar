@@ -34,8 +34,8 @@
 #define GWEN_INETADDR_H
 
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include "gwenhyfwar/error.h"
+#include <gwenhywfar/gwenhywfarapi.h>
+#include "gwenhywfar/error.h"
 
 #ifdef __cplusplus
 extern "C" {

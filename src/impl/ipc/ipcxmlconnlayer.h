@@ -30,14 +30,14 @@
 #define GWEN_IPCXMLCONNLAYER_H
 
 
-#include <gwenhyfwar/connlayer.h>
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/crypt.h>
-#include <gwenhyfwar/keymanager.h>
-#include <gwenhyfwar/hbcimsg.h>
+#include <gwenhywfar/connlayer.h>
+#include <gwenhywfar/transportlayer.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/crypt.h>
+#include <gwenhywfar/keymanager.h>
+#include <gwenhywfar/hbcimsg.h>
 
-#include <gwenhyfwar/ipcxml.h>
+#include <gwenhywfar/ipcxml.h>
 
 
 typedef struct GWEN_IPCXMLCONNLAYERDATA GWEN_IPCXMLCONNLAYERDATA;

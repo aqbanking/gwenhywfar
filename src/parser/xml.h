@@ -28,8 +28,8 @@
 #ifndef GWENHYFWAR_XML_H
 #define GWENHYFWAR_XML_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/bufferedio.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/bufferedio.h>
 #include <stdio.h>
 
 #ifdef __cplusplus

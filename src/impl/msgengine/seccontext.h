@@ -30,8 +30,8 @@
 #define GWENHYWFAR_SECCONTEXT_H
 
 
-#include <gwenhyfwar/hbcicryptocontext.h>
-#include <gwenhyfwar/buffer.h>
+#include <gwenhywfar/hbcicryptocontext.h>
+#include <gwenhywfar/buffer.h>
 
 
 typedef struct GWEN_SECCTX GWEN_SECCTX;

@@ -29,8 +29,8 @@
 #ifndef GWENHYFWAR_CONNLAYER_H
 #define GWENHYFWAR_CONNLAYER_H
 
-#include <gwenhyfwar/msglayer.h>
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/msglayer.h>
+#include <gwenhywfar/error.h>
 
 #ifdef __cplusplus
 extern "C" {

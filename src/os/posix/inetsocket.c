@@ -34,7 +34,7 @@
 
 #include "inetsocket_p.h"
 #include "inetaddr_p.h"
-#include <gwenhyfwar/misc.h>
+#include <gwenhywfar/misc.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>

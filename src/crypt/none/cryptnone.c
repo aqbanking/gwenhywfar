@@ -33,8 +33,8 @@
 
 
 #include "cryptnone_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 
 
 GWEN_ERRORCODE GWEN_CryptImpl_Init(){

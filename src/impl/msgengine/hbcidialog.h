@@ -31,8 +31,8 @@
 #define GWEN_HBCIDIALOG_FLAGS_INITIATOR 0x0001
 
 
-#include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/seccontext.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/seccontext.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -32,7 +32,7 @@
 
 #define GWEN_MD_RMD160_NAME "RMD160"
 
-#include <gwenhyfwar/md.h>
+#include <gwenhywfar/md.h>
 #include <openssl/ripemd.h>
 #include <openssl/objects.h>
 

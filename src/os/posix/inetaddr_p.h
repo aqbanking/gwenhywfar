@@ -34,9 +34,9 @@
 #define GWEN_INETADDR_P_H
 
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/inetaddr.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/inetaddr.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

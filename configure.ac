@@ -3,14 +3,14 @@
 
 # info
 GWENHYFWAR_AUTHOR="Martin Preuss<martin@libchipcard.de>"
-GWENHYFWAR_BUGREPORT_ADDR="<gwenhyfwar-bugs@libchipcard.de>"
+GWENHYFWAR_BUGREPORT_ADDR="<gwenhywfar-bugs@libchipcard.de>"
 
 
 AC_PREREQ(2.57)
 AC_INIT
 AC_CANONICAL_TARGET([])
 AM_INIT_AUTOMAKE(gwenhywfar, 0.9beta5)
-AC_CONFIG_SRCDIR([src/gwenhyfwarapi.h])
+AC_CONFIG_SRCDIR([src/gwenhywfarapi.h])
 AC_CONFIG_HEADER([config.h])
 
 
@@ -19,8 +19,8 @@ AC_CONFIG_HEADER([config.h])
 #
 GWENHYFWAR_VERSION_MAJOR=0
 GWENHYFWAR_VERSION_MINOR=9
-GWENHYFWAR_VERSION_PATCHLEVEL=2
-GWENHYFWAR_VERSION_BUILD=19
+GWENHYFWAR_VERSION_PATCHLEVEL=3
+GWENHYFWAR_VERSION_BUILD=1
 GWENHYFWAR_VERSION_TAG="cvs"
 GWENHYFWAR_VERSION_FULL_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL.$GWENHYFWAR_VERSION_BUILD($GWENHYFWAR_VERSION_TAG)"
 GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
@@ -120,17 +120,17 @@ AQ_CHECK_OS
 
 case "$OS_TYPE" in
     posix)
-        gwenhyfwar_libs="-L`eval echo $prefix/lib` -lgwenhyfwar"
-        gwenhyfwar_includes="-I`eval echo $prefix/include`"
-        gwenhyfwar_os_lib="os/posix/libos.la"
+        gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
+        gwenhywfar_includes="-I`eval echo $prefix/include`"
+        gwenhywfar_os_lib="os/posix/libos.la"
         IPCDATA_DIR="`eval echo $prefix`/share/gwenhywfar/ipc"
         GWEN_OS="posix"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_CHAMELEON_DLL,1, [Define if DLL is built])
-        gwenhyfwar_libs=-L`eval echo $prefix` -lgwenhyfwar
-        gwenhyfwar_includes="-I`eval echo $prefix/include`"
-        gwenhyfwar_os_lib="os/windows/libos.la"
+        gwenhywfar_libs=-L`eval echo $prefix` -lgwenhywfar
+        gwenhywfar_includes="-I`eval echo $prefix/include`"
+        gwenhywfar_os_lib="os/windows/libos.la"
         IPCDATA_DIR="`eval echo $prefix`/share/gwenhywfar/ipc"
         GWEN_OS="posix"
     	;;
@@ -144,7 +144,7 @@ AQ_CHECK_SSL
 if test "$ssl_available" = "yes"; then
   all_libraries="${all_libraries} ${ssl_libraries} ${ssl_lib}"
   all_includes="$all_includes $ssl_includes"
-  gwenhyfwar_includes="$gwenhyfwar_includes $ssl_includes"
+  gwenhywfar_includes="$gwenhywfar_includes $ssl_includes"
   GWEN_CRYPTO="ossl"
 else
   GWEN_CRYPTO="none"
@@ -159,8 +159,8 @@ GWEN_HEADER_DIRS="src src/base src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os 
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
-rm -Rf gwenhyfwar
-mkdir gwenhyfwar
+rm -Rf gwenhywfar
+mkdir gwenhywfar
 GWEN_HEADER_FILES=""
 for d in ${GWEN_HEADER_DIRS}; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
@@ -170,12 +170,12 @@ for d in ${GWEN_HEADER_DIRS}; do
       *_p.h)
       		;;
       *)
-    		ln -s "${lprefix}/${d}/${f}" "gwenhyfwar/${f}"
+    		ln -s "${lprefix}/${d}/${f}" "gwenhywfar/${f}"
                 ;;
     esac
   done
 done
-ln -s "${lprefix}/src/version.h" "gwenhyfwar/version.h"
+ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h"
 
 
 #
@@ -198,15 +198,15 @@ ACX_COMPILE_WARN()
 #
 # substitute vars
 #
-AS_SCRUB_INCLUDE(gwenhyfwar_includes)
+AS_SCRUB_INCLUDE(gwenhywfar_includes)
 AC_SUBST(IPCDATA_DIR)
-AC_SUBST(gwenhyfwar_includes)
-AC_SUBST(gwenhyfwar_libs)
-AC_SUBST(gwenhyfwar_needed_libs)
+AC_SUBST(gwenhywfar_includes)
+AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_needed_libs)
 AC_SUBST(GWEN_OS)
-AC_SUBST(gwenhyfwar_os_lib)
+AC_SUBST(gwenhywfar_os_lib)
 AC_SUBST(GWENHYFWAR_LIB)
-AC_SUBST(gwenhyfwar_crypt_lib)
+AC_SUBST(gwenhywfar_crypt_lib)
 AC_SUBST(GWEN_CRYPTO)
 AC_SUBST(GWEN_HEADER_FILES)
 AC_SUBST(all_includes)

@@ -30,8 +30,8 @@
 #define GWENHYWFAR_IPCXMLKEYMANAGER_H
 
 
-#include <gwenhyfwar/keymanager.h>
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/keymanager.h>
+#include <gwenhywfar/crypt.h>
 
 
 GWEN_KEYMANAGER *GWEN_IPCXMLKeyManager_new();

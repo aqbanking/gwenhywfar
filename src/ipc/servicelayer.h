@@ -29,8 +29,8 @@
 #ifndef GWENHYFWAR_SERVICELAYER_H
 #define GWENHYFWAR_SERVICELAYER_H
 
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/connlayer.h>
+#include <gwenhywfar/error.h>
+#include <gwenhywfar/connlayer.h>
 
 #ifdef __cplusplus
 extern "C" {

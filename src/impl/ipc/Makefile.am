@@ -10,7 +10,7 @@ noinst_HEADERS=\
  ipcxmlkeymanager_p.h \
  ipcxmlmsglayer_p.h
 
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  ipcxml.h \
  ipcxmlconnlayer.h \

@@ -32,9 +32,9 @@
 #define GWEN_IPCMSGLAYER_MAXINCOMING_MSGS 32
 #define GWEN_IPCMSGLAYER_MAXOUTGOING_MSGS 32
 
-#include <gwenhyfwar/msglayer.h>
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/error.h>
+#include <gwenhywfar/msglayer.h>
+#include <gwenhywfar/transportlayer.h>
+#include <gwenhywfar/error.h>
 
 
 

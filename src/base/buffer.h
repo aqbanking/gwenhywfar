@@ -29,7 +29,7 @@
 #ifndef GWENHYFWAR_BUFFER_H
 #define GWENHYFWAR_BUFFER_H
 
-#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 
 #include <stdio.h>
 

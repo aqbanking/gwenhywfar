@@ -29,7 +29,7 @@
 #define GWENHYWFAR_HBCICRYPTOCONTEXT_H
 
 
-#include <gwenhyfwar/keyspec.h>
+#include <gwenhywfar/keyspec.h>
 
 
 typedef struct GWEN_HBCICRYPTOCONTEXT GWEN_HBCICRYPTOCONTEXT;

@@ -35,7 +35,7 @@
 #define GWEN_CRYPT_RSA_DEFAULT_EXPONENT    65537
 
 
-#include <gwenhyfwar/crypt.h>
+#include <gwenhywfar/crypt.h>
 #include <stdio.h>
 
 #include <openssl/bn.h>

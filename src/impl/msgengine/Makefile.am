@@ -7,7 +7,7 @@ noinst_HEADERS=\
  hbcimsg_p.h \
  seccontext_p.h
 
-iheaderdir=${includedir}/gwenhyfwar
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  hbcicryptocontext.h \
  hbcidialog.h \
