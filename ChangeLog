@@ -1,3 +1,7 @@
+===========================================================================
+MARK: released gwenhywfar-0.9.6 (2004/02/15)
+===========================================================================
+
 2004-02-13  Christian Stimming <stimming@tuhh.de>
 
 	* src/parser/xml.h: Improved documentation: Clarified the
