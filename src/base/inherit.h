@@ -104,6 +104,7 @@ extern "C" {
                             GWEN_TYPE_UINT32 id,\
                             void *data,\
                             GWEN_INHERIT_FREEDATAFN f);\
+  int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id);\
   GWEN_INHERITDATA_LIST *t##__INHERIT_GETLIST(const t *element);
 
   /*@}*/
@@ -144,6 +145,13 @@ extern "C" {
   }\
   d=GWEN_InheritData_new(typeName, id, data, (void*)element, f);\
   GWEN_InheritData_List_Insert(d, element->INHERIT__list);\
+  }\
+  \
+  int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id) {\
+  assert(element);\
+  assert(element->INHERIT__list);\
+  \
+  return (GWEN_Inherit_FindData(element->INHERIT__list, id, 1)!=0);\
   }
 
   /**
@@ -214,6 +222,18 @@ extern "C" {
   t##__INHERIT_ID=GWEN_Inherit_MakeId(__STRING(t));\
   bt##__INHERIT_SETDATA(element, __STRING(t), t##__INHERIT_ID, data, fn);
 
+  /**
+   * This macro checks whether the given element is of the given type.
+   * @return !=0 if the pointer is of the expected type, 0 otherwise
+   * @param bt base type
+   * @param t derived type
+   * @param element pointer which is to be checked
+   */
+#define GWEN_INHERIT_ISOFTYPE(bt, t, element) \
+  ((bt##__INHERIT_ISOFTYPE(element,\
+                           ((t##__INHERIT_ID==0)?\
+                            ((t##__INHERIT_ID=GWEN_Inherit_MakeId(__STRING(t)))):\
+                            t##__INHERIT_ID)))?1:0)
   /*@}*/
 
   /*@}*/ /* defgroup */

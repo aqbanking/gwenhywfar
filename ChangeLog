@@ -12,6 +12,9 @@
 - base/idlist:
   - added function GWEN_IdList_Clean() to clean a list
   - added function GWEN_IdList_Sort() to sort an id list in ascending order
+- base/inherit.h:
+  - added macro GWEN_INHERIT_ISOFTYPE which checks whether a given pointer
+    refers to an object of a given type
 
 
 2004/04/04: Martin Preuss<martin@libchipcard.de>
