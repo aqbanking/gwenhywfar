@@ -189,6 +189,7 @@ if test "$ssl_available" = "yes"; then
 else
   GWEN_CRYPTO="none"
 fi
+AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
 
 
 

@@ -34,7 +34,6 @@ all-local: @GWEN_MAKE_DLL_TARGET@
 install-exec-local: @GWEN_INSTALL_DLL_TARGET@
 
 
-if IS_WINDOWS
 # dll stuff
 DLLTOOL=dlltool
 DLLWRAP=dllwrap
@@ -43,6 +42,20 @@ WINDRES=windres
 DLL_NAME=gwenhywfar32.dll
 DLL_EXP_LIB=gwenhywfar32.lib
 DLL_EXP_DEF=gwenhywfar32.def
+
+# Decide for object files for crypto module
+GWEN_CRYPT_OSSL_OBJS = crypt/ossl/cryptssl.o \
+   crypt/ossl/cryptssl_des.o \
+   crypt/ossl/cryptssl_md5.o\
+   crypt/ossl/cryptssl_rmd160.o\
+   crypt/ossl/cryptssl_rsa.o 
+GWEN_CRYPT_NONE_OBJS = crypt/none/cryptnone.o
+if GWEN_SSL_CRYPTO
+GWEN_CRYPT_OBJS = $(GWEN_CRYPT_OSSL_OBJS)
+else
+GWEN_CRYPT_OBJS = $(GWEN_CRYPT_NONE_OBJS)
+endif
+
 DLL_OBJS= \
    base/buffer.o\
    base/debug.o\
@@ -52,11 +65,7 @@ DLL_OBJS= \
    base/stringlist.o \
    base/waitcallback.o\
    io/bufferedio.o\
-   crypt/ossl/cryptssl.o \
-   crypt/ossl/cryptssl_md5.o\
-   crypt/ossl/cryptssl_rsa.o \
-   crypt/ossl/cryptssl_rmd160.o\
-   crypt/ossl/cryptssl_des.o\
+   $(GWEN_CRYPT_OBJS) \
    crypt/md.o\
    crypt/keymanager.o\
    crypt/keyspec.o\
@@ -99,6 +108,7 @@ $(DLL_NAME) $(DLL_EXP_LIB) $(DLL_EXP_DEF): $(DLL_OBJS) libgwenhywfar.la ressourc
 	$(DLLWRAP) $(DLL_WRAP_FLAGS) -o $(DLL_NAME) \
 	    $(DLL_OBJS) ressource.o exports.o $(DLL_LDFLAGS) $(DLL_LDLIBS)
 
+if IS_WINDOWS
 dll: $(DLL_NAME)
 
 dll-install: dll
