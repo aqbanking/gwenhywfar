@@ -117,8 +117,10 @@ void usage(const char *prgname) {
                "--logfile ARG    name of the logfile\n"
                "--logtype ARG    log type\n"
                "--loglevel ARG   log level\n"
+	       "-d ARG           use ARG as domain prefix macro for function declarations\n"
                "-o ARG           name of output file (stdout if omitted)\n"
                "--compact        write a more compact file\n"
+	       "-V | --version   print version of this tool and exit\n"
               )
          );
 }

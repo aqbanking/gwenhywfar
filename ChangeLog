@@ -1,3 +1,7 @@
+2004-09-03   Christian Stimming <stimming@tuhh.de>
+
+	* tools/typemaker/code_c.c: Add include config.h in the
+	output. Make the auto-generation warning in the output more clear.
 
 ===========================================================================
 MARK: released gwenhywfar-1.0.0 (2004/09/02)
