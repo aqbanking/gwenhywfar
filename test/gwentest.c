@@ -739,6 +739,10 @@ int testSocketSSL(int argc, char **argv) {
   /* create transport layer */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
   tr=GWEN_NetTransportSSL_new(sk, 0, "trusted", 0, 1);
+  if (!tr) {
+    fprintf(stderr, "SSL not supported.\n");
+    return 2;
+  }
   addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
   GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
   GWEN_InetAddr_SetPort(addr, 443);
