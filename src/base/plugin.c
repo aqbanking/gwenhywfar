@@ -252,7 +252,8 @@ int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
 
   RegCloseKey(hkey);
   DBG_ERROR(GWEN_LOGDOMAIN, 
-	    "In RegKey the variable %s does not exist", varname);
+	    "In RegKey \"%s\" the variable \"%s\" does not exist", 
+	    keypath, varname);
   return 1;
 
 #else /* OS_WIN32 */
