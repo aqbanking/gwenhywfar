@@ -1,4 +1,5 @@
 
+
 2004/07/27: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/base64: fixed a bug in GWEN_Base64_Decode
