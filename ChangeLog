@@ -4,6 +4,7 @@
 - base/waitcallback: fixed a severe bug
 - os/gwentime: changed some arguments to const
 - base/idlist: fixed a severe bug
+- io/bufferedio: fixed a bug (was never closing streams)
 
 
 2004/08/02: Martin Preuss<martin@libchipcard.de>

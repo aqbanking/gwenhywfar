@@ -124,6 +124,7 @@ GWEN_BUFFEREDIO *GWEN_BufferedIO_new(){
   GWEN_NEW_OBJECT(GWEN_BUFFEREDIO, bt);
   GWEN_INHERIT_INIT(GWEN_BUFFEREDIO, bt);
   bt->lineMode=GWEN_LineModeUnix;
+  bt->flags=GWEN_BUFFEREDIO_FLAGS_DEFAULT;
   return bt;
 }
 
