@@ -28,6 +28,7 @@
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/misc2.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/fslock.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # define sleep(x) Sleep(x*1000)
@@ -3118,6 +3119,66 @@ int testOldDbImport(int argc, char **argv) {
 
 
 
+int testFsLock(int argc, char **argv) {
+  GWEN_FSLOCK *fl;
+  GWEN_FSLOCK_RESULT res;
+
+  if (argc<3) {
+    fprintf(stderr, "Usage: %s fslock FILENAME\n", argv[0]);
+    return 1;
+  }
+
+  fl=GWEN_FSLock_new(argv[2], GWEN_FSLock_TypeFile);
+  fprintf(stderr, "Locking %s\n", argv[2]);
+  res=GWEN_FSLock_Lock(fl, 3000);
+  if (res!=GWEN_FSLock_ResultOk) {
+    fprintf(stderr, "Error locking %s: %d\n", argv[2], res);
+    return 2;
+  }
+  fprintf(stderr, "Holding lock on %s ...\n", argv[2]);
+  sleep(10);
+  fprintf(stderr, "Unlocking %s\n", argv[2]);
+  res=GWEN_FSLock_Unlock(fl);
+  if (res!=GWEN_FSLock_ResultOk) {
+    fprintf(stderr, "Error unlocking %s: %d\n", argv[2], res);
+    return 3;
+  }
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
+int testFsLock2(int argc, char **argv) {
+  GWEN_FSLOCK *fl;
+  GWEN_FSLOCK_RESULT res;
+
+  if (argc<3) {
+    fprintf(stderr, "Usage: %s fslock2 FOLDERNAME\n", argv[0]);
+    return 1;
+  }
+
+  fl=GWEN_FSLock_new(argv[2], GWEN_FSLock_TypeDir);
+  fprintf(stderr, "Locking %s\n", argv[2]);
+  res=GWEN_FSLock_Lock(fl, 3000);
+  if (res!=GWEN_FSLock_ResultOk) {
+    fprintf(stderr, "Error locking %s: %d\n", argv[2], res);
+    return 2;
+  }
+  fprintf(stderr, "Holding lock on %s ...\n", argv[2]);
+  sleep(10);
+  fprintf(stderr, "Unlocking %s\n", argv[2]);
+  res=GWEN_FSLock_Unlock(fl);
+  if (res!=GWEN_FSLock_ResultOk) {
+    fprintf(stderr, "Error unlocking %s: %d\n", argv[2], res);
+    return 3;
+  }
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3224,6 +3285,10 @@ int main(int argc, char **argv) {
     rv=testCsvExport(argc, argv);
   else if (strcasecmp(argv[1], "olddb")==0)
     rv=testOldDbImport(argc, argv);
+  else if (strcasecmp(argv[1], "fslock")==0)
+    rv=testFsLock(argc, argv);
+  else if (strcasecmp(argv[1], "fslock2")==0)
+    rv=testFsLock2(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

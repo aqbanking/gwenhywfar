@@ -1473,6 +1473,7 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
   t0=GWEN_CurrentTime();
   assert(t0);
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
 
   if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE)
     distance=GWEN_NETCONNECTION_TIMEOUT_NONE;
@@ -1487,7 +1488,6 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
       distance=50;
   }
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;count++) {
     if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
       DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");

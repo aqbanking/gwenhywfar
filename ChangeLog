@@ -1,4 +1,15 @@
 
+2004/12/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added simple file/folder locking mechanism
+- started working on filters for GWEN_BUFFEREDIO. I used these kind of filters
+  in AqBackup, but they weren't as sophisticated as the current ones are ;-)
+  Fortunately I can now use the GWEN_RINGBUFFER functions...
+  ------------------------------------------------------------------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
 2004/11/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added DBIO plugin for old OpenHBCI1-style config files

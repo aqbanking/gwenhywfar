@@ -18,6 +18,7 @@ DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  directory.h \
+ fslock.h \
  gwentime.h \
  inetaddr.h \
  inetsocket.h \
@@ -25,6 +26,7 @@ iheader_HEADERS=\
  process.h
 
 noinst_HEADERS= \
+ fslock_p.h \
  gwentime_l.h \
  gwentime_p.h \
  inetaddr_l.h \
@@ -35,6 +37,7 @@ noinst_HEADERS= \
 
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\
+ fslock_all.c \
  directory_all.c \
  gwentime_all.c \
  inetsocket_all.c
