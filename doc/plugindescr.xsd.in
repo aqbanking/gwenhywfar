@@ -11,6 +11,10 @@
 
  XML schema for Gwenhywfar PluginDescr files
  Part of Gwenhywfar @GWENHYWFAR_VERSION_STRING@.
+
+ Validate your plugin description files with the following command:
+    xmllint -noout -schema plugindescr.xsd YOURFILE
+ (Please duplicate the single hyphens above)
 -->
 
 <xs:schema xmlns="http://www.aquamaniac.de/gwenhywfar/"
