@@ -30,6 +30,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/stringlist.h>
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -77,7 +78,8 @@ GWENHYWFAR_API
 typedef int
     (*GWEN_XML_INCLUDE_FN)(GWEN_XMLNODE *n,
 			   const char *path,
-			   const char *file,
+                           const char *file,
+                           GWEN_STRINGLIST *sl,
 			   unsigned int flags);
 
 
@@ -214,6 +216,23 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
 GWENHYWFAR_API
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
                       unsigned int flags);
+
+/**
+ * Reads the given file. If it the path is absolute it will be used directly.
+ * If it is relative then the given search path will be searched if the
+ * file with the given name could not be loaded without a search path.
+ * @param n XML node to store the read tags in
+ * @param filepath name (and optionally path) of the file to read
+ * @param flags see @ref GWEN_XML_FLAGS_DEFAULT and others
+ * @param searchPath a string list containing multiple multiple directories
+ * to scan if the file could not be opened directly
+ */
+GWENHYWFAR_API
+  int GWEN_XML_ReadFileSearch(GWEN_XMLNODE *n, const char *filepath,
+                              unsigned int flags,
+                              GWEN_STRINGLIST *searchPath);
+
+
 /*@}*/
 
 

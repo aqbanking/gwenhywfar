@@ -149,6 +149,33 @@ int testXML(int argc, char **argv) {
 
 
 
+int testXML2(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_STRINGLIST *sl;
+  unsigned int j;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  sl=GWEN_StringList_new();
+  for (j=3; j<argc; j++)
+    GWEN_StringList_AppendString(sl, argv[j], 0, 1);
+
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+  if (GWEN_XML_ReadFileSearch(n, argv[2], GWEN_XML_FLAGS_DEFAULT, sl)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+  fprintf(stderr, "XML file:\n");
+  GWEN_XMLNode_Dump(n, stderr, 2);
+  GWEN_XMLNode_free(n);
+  return 0;
+}
+
+
+
 int testMsg(int argc, char **argv) {
   GWEN_XMLNODE *n;
   GWEN_MSGENGINE *e;
@@ -501,7 +528,6 @@ int testKeyFromPW(int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-  GWEN_ERRORCODE err;
   int rv;
 
   if (argc<2) {
@@ -509,14 +535,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  fprintf(stderr, "Initializing Gwenhywfar\n");
-  err=GWEN_Init();
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
-  fprintf(stderr, "Gwenhywfar initialized\n");
 
   if (strcasecmp(argv[1], "dbfile")==0)
     rv=testDBfile(argc, argv);
@@ -534,18 +553,13 @@ int main(int argc, char **argv) {
     rv=testKeyFromPW(argc, argv);
   else if (strcasecmp(argv[1], "xml")==0)
     rv=testXML(argc, argv);
+  else if (strcasecmp(argv[1], "xml2")==0)
+    rv=testXML2(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;
   }
 
-  fprintf(stderr, "Deinitializing Gwenhywfar\n");
-  err=GWEN_Fini();
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  fprintf(stderr, "Gwenhywfar deinitialized\n");
   return rv;
 }
 

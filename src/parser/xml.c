@@ -43,6 +43,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <unistd.h>
 
 
 
@@ -664,37 +665,14 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
 
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
                       unsigned int flags){
-  return GWEN_XML_ReadFileInt(n, 0, filepath, flags);
+  return GWEN_XML_ReadFileInt(n, 0, filepath, 0, flags);
+}
 
-#if 0
-  GWEN_BUFFEREDIO *dm;
-  int fd;
 
-  fd=open(filepath, O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(0, "open(%s): %s",
-	      filepath,
-	      strerror(errno));
-    return -1;
-  }
-
-  dm=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(dm,0,1024);
-
-  while(!GWEN_BufferedIO_CheckEOF(dm)) {
-    if (GWEN_XML_Parse(n, dm, flags)) {
-      DBG_ERROR(0, "Error parsing");
-      GWEN_BufferedIO_Close(dm);
-      GWEN_BufferedIO_free(dm);
-      return -1;
-    }
-  } /* while */
-
-  GWEN_BufferedIO_Close(dm);
-  GWEN_BufferedIO_free(dm);
-
-  return 0;
-#endif
+int GWEN_XML_ReadFileSearch(GWEN_XMLNODE *n, const char *filepath,
+                            unsigned int flags,
+                            GWEN_STRINGLIST *searchPath){
+  return GWEN_XML_ReadFileInt(n, 0, filepath, searchPath, flags);
 }
 
 
@@ -703,6 +681,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                      GWEN_BUFFEREDIO *bio,
                      unsigned int flags,
                      const char *fpath,
+                     GWEN_STRINGLIST *sl,
                      GWEN_XML_INCLUDE_FN fn){
   GWEN_XMLNODE *path[GWEN_XML_MAX_DEPTH];
   int currDepth;
@@ -861,12 +840,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               GWEN_XMLNODE *itag;
 
               newRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "tmproot");
-              DBG_ERROR(0, "Reading file \"%s\"-\"%s\"",
+              DBG_ERROR(0, "Reading file \"%s\" / \"%s\"",
                         fpath, iname);
-              irv=GWEN_XML_ReadFileInt(newRoot,
-                                       fpath,
-                                       iname,
-                                       flags);
+              irv=fn(newRoot, fpath, iname, sl, flags);
               if (irv) {
                 DBG_INFO(0, "here");
                 GWEN_XMLNode_free(newRoot);
@@ -1107,6 +1083,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
                          const char *path,
                          const char *file,
+                         GWEN_STRINGLIST *sl,
                          unsigned int flags){
   GWEN_BUFFEREDIO *dm;
   int fd;
@@ -1131,11 +1108,85 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     if (path) {
       if (*path) {
         strcat(fullname, path);
-        strcat(fullname, "/");
+        if (path[strlen(path)-1]!='/')
+          strcat(fullname, "/");
       }
     }
     strcat(fullname, file);
 
+    /* open file */
+    fd=open(fullname, O_RDONLY);
+    if (fd==-1) {
+      if (!sl) {
+        DBG_ERROR(0, "open(%s): %s",
+                  fullname,
+                  strerror(errno));
+        free(fullname);
+        return -1;
+      }
+      else {
+        GWEN_STRINGLISTENTRY *se;
+        int gotcha;
+
+        DBG_INFO(0, "open(%s): %s",
+                 fullname,
+                 strerror(errno));
+        free(fullname);
+        fullname=0;
+        gotcha=0;
+
+        /* try the search path */
+        se=GWEN_StringList_FirstEntry(sl);
+        while(se) {
+          const char *sp;
+
+          sp=GWEN_StringListEntry_Data(se);
+          if (!sp) {
+            DBG_ERROR(0, "No data in string list entry, internal error");
+            return -1;
+          }
+          if (!*sp) {
+            DBG_ERROR(0,
+                      "Empty string in string list entry, internal error");
+            return -1;
+          }
+
+          i=0;
+          i+=strlen(sp)+1;
+          i+=strlen(file)+1;
+          fullname=(char*)malloc(i);
+          assert(fullname);
+          fullname[0]=0;
+          strcpy(fullname, sp);
+          if (fullname[strlen(fullname)-1]!='/')
+            strcat(fullname, "/");
+          strcat(fullname, file);
+          /* try to open this file */
+          fd=open(fullname, O_RDONLY);
+          if (fd!=-1) {
+            close(fd);
+            gotcha=1;
+            break;
+          }
+          else {
+            DBG_INFO(0, "open(%s): %s",
+                     fullname,
+                     strerror(errno));
+          }
+
+          free(fullname);
+          fullname=0;
+          se=GWEN_StringListEntry_Next(se);
+        } /* while */
+        if (!gotcha) {
+          DBG_ERROR(0, "Could not open file \"%s\".", file);
+          return -1;
+        }
+        /* now fullname points to the full path */
+      }
+    } /* if file not found */
+    else
+      close(fd);
   }
   else {
     /* create full name from file name only, since it is absolute */
@@ -1157,7 +1208,6 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     return -1;
   }
 
-
   /* divide file name into path and file name */
   path=fullname;
   p=strrchr(fullname, '/');
@@ -1170,7 +1220,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
   GWEN_BufferedIO_SetReadBuffer(dm,0,1024);
 
   while(!GWEN_BufferedIO_CheckEOF(dm)) {
-    if (GWEN_XML_ReadBIO(n, dm, flags, path, GWEN_XML_ReadFileInt)) {
+    if (GWEN_XML_ReadBIO(n, dm, flags, path, sl, GWEN_XML_ReadFileInt)) {
       DBG_ERROR(0, "Error parsing");
       free(fullname);
       GWEN_BufferedIO_Close(dm);

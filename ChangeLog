@@ -1,8 +1,14 @@
 $Id$
 
+2003/12/20 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- module XML: Added function that takes a search path (for <include> tags).
+
+
 2003-12-20  Christian Stimming  <stimming@tuhh.de>
 
 	* gwenhywfar.m4: Make version error message more verbose.
+
 
 2003/12/20 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
