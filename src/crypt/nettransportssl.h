@@ -133,7 +133,7 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             int secure,
                                             int takeOver);
 
-/** @name Cipher List
+/** @name Misc Functions around SSL connections
  *
  */
 /*@{*/
@@ -159,6 +159,47 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList();
+
+/**
+ * <p>
+ * Generates and signs a certificate to be used with the underlying crypto
+ * system (in most cases OpenSSL).
+ * This function may use whatever format it sees fit when storing the
+ * certificate.
+ * </p>
+ * <p>
+ * The given DB should contain some data to be stored within the certificate,
+ * such as:
+ * <ul>
+ *   <li>countryName</li>
+ *   <li>commonName</li>
+ *   <li>organizationName</li>
+ *   <li>organizationalUnitName</li>
+ *   <li>localityName</li>
+ *   <li>stateOrProvinceName</li>
+ * </ul>
+ * </p>
+ * @param bits number of bits to be used (you should use at least 1024 bits)
+ * @param serial serial number of the certificate (at your disposal)
+ * @param day if !=0 then this is the number of days the certificate is valid
+ * @param db GWEN_DB containing some information (see above)
+ */
+GWENHYWFAR_API
+  int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
+                                                  int bits,
+                                                  int serial,
+                                                  int days,
+                                                  GWEN_DB_NODE *db);
+
+/**
+ * Returns a DB containing the certificate of the current peer (or 0 if
+ * none).
+ * The caller MUST NOT free the DB returned (if any).
+ */
+GWENHYWFAR_API
+  GWEN_DB_NODE*
+  GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr);
+
 /*@}*/
 
 

@@ -110,6 +110,26 @@ GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList(){
 
 
 
+int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
+                                                int bits,
+                                                int serial,
+                                                int days,
+                                                GWEN_DB_NODE *db) {
+  DBG_ERROR(0, "Crypto functions not supported");
+  return -1;
+}
+
+
+
+GWEN_DB_NODE*
+GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr){
+  DBG_ERROR(0, "Crypto functions not supported");
+  return -1;
+}
+
+
+
+
 
 
 

@@ -77,6 +77,7 @@ int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
     if (idt->entries[i]==0) {
       idt->entries[i]=id;
       idt->freeEntries--;
+      return 0;
     }
   } /* for */
   return 0;
@@ -91,8 +92,9 @@ int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
   assert(id);
 
   for (i=0; i<GWEN_IDTABLE_MAXENTRIES; i++) {
-    if (idt->entries[i]==id)
+    if (idt->entries[i]==id) {
       return 1;
+    }
   } /* for */
   return 0;
 }
@@ -126,7 +128,7 @@ int GWEN_IdTable_IsEmpty(const GWEN_IDTABLE *idt){
 
 int GWEN_IdTable_IsFull(const GWEN_IDTABLE *idt){
   assert(idt);
-  return idt->freeEntries!=0;
+  return idt->freeEntries==0;
 }
 
 

@@ -1,4 +1,12 @@
 
+
+2004/06/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- os/gwentime: added function to retrieve the time in milliseconds
+- base/idlist: fixed two severe bugs
+- crypt/ossl/nettransportssl: added functions to retrieve the peer certificate
+
+
 2004/06/02: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/msgengine: added getter/setter for delimiters

@@ -77,6 +77,13 @@ double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0){
 
 
 
+double GWEN_Time_Milliseconds(GWEN_TIME *t){
+  assert(t);
+  return (double)((t->tv.tv_sec*1000)+(t->tv.tv_usec/1000));
+}
+
+
+
 GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t){
   assert(t);
   return t->tv.tv_sec;

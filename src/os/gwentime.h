@@ -45,7 +45,10 @@ GWENHYWFAR_API GWEN_TIME *GWEN_CurrentTime();
 GWENHYWFAR_API void GWEN_Time_free(GWEN_TIME *t);
 
 GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t);
+/* returns the time in milliseconds */
+GWENHYWFAR_API double GWEN_Time_Milliseconds(GWEN_TIME *t);
 
+/** returns the difference between t1 and t2 in milliseconds */
 GWENHYWFAR_API double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0);
 
 GWENHYWFAR_API int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,

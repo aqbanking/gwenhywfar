@@ -34,6 +34,7 @@
 #include <openssl/ssl.h>
 
 #define GWEN_NETTRANSPORTSSL_MAXCOLL 100
+#define GWEN_NETTRANSPORTSSL_DEFAULT_CERT_DAYS 365
 
 
 typedef struct GWEN_NETTRANSPORTSSL {
@@ -49,6 +50,7 @@ typedef struct GWEN_NETTRANSPORTSSL {
   int isSecure;
   int active;
   char *cipherList;
+  GWEN_DB_NODE *peerCertificate;
 } GWEN_NETTRANSPORTSSL;
 
 

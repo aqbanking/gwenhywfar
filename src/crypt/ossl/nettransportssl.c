@@ -43,6 +43,9 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 
+#include <openssl/conf.h>
+#include <openssl/x509v3.h>
+
 #include <string.h>
 #include <errno.h>
 #include <sys/socket.h>
@@ -79,6 +82,7 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
     free(skd->ownCertFile);
     free(skd->dhfile);
     free(skd->cipherList);
+    free(skd->peerCertificate);
     free(skd);
   }
 }
@@ -139,6 +143,20 @@ void GWEN_NetTransportSSL_FreeData(void *bp, void *p){
 
 
 /* -------------------------------------------------------------- FUNCTION */
+GWEN_DB_NODE*
+GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr) {
+  GWEN_NETTRANSPORTSSL *skd;
+
+  assert(tr);
+  skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
+  assert(skd);
+
+  return skd->peerCertificate;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORT_RESULT
 GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr){
   GWEN_NETTRANSPORTSSL *skd;
@@ -147,6 +165,7 @@ GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr){
 
   assert(tr);
   skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
+  assert(skd);
 
   GWEN_InetAddr_GetAddress(GWEN_NetTransport_GetPeerAddr(tr),
                            addrBuffer, sizeof(addrBuffer));
@@ -525,7 +544,6 @@ GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
                                  GWEN_DB_NODE *cert){
   DBG_NOTICE(0, "Would ask user about this:");
   GWEN_DB_Dump(cert, stderr, 2);
-  return GWEN_NetTransportSSL_AskAddCertResultPerm;
 
   if (gwen_netransportssl_askAddCertFn)
     return gwen_netransportssl_askAddCertFn(tr, cert);
@@ -746,6 +764,10 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
                          0);
   }
 
+  /* enable all workarounds for bugs in other SSL implementation for
+   * maximum compatibility */
+  SSL_CTX_set_options(skd->ssl_ctx, SSL_OP_ALL);
+
   skd->ssl=SSL_new(skd->ssl_ctx);
 
   /* tell SSL to use our socket */
@@ -797,10 +819,60 @@ void GWEN_NetTransportSSL__CertEntries2Db(X509_NAME *nm,
 
 
 
+int GWEN_NetTransportSSL__ASN_UTC2Db(ASN1_TIME *d,
+                                     GWEN_DB_NODE *db,
+                                     const char *name) {
+  if (d->data) {
+    const char *s;
+    unsigned int i;
+    struct tm t;
+    struct tm *lt;
+    time_t currTime;
+    int isUtc;
+
+    s=(const char*)(d->data);
+    i=strlen(s);
+    if (i<10) {
+      DBG_ERROR(0, "Bad time expression (%s)", s);
+      return -1;
+    }
+    currTime=time(0);
+    isUtc=(s[i-1]=='Z');
+    if (isUtc)
+      lt=gmtime(&currTime);
+    else
+      lt=localtime(&currTime);
+
+    memmove(&t, lt, sizeof(t));
+    t.tm_year=((s[0]-'0')*10)+(s[1]-'0')+100;
+    t.tm_mon=(((s[2]-'0')*10)+(s[3]-'0'))-1;
+    t.tm_mday=((s[4]-'0')*10)+(s[5]-'0');
+    t.tm_hour=((s[6]-'0')*10)+(s[7]-'0');
+    t.tm_min=((s[8]-'0')*10)+(s[9]-'0');
+    if (i>11)
+      t.tm_sec=((s[10]-'0')*10)+(s[11]-'0');
+    else
+      t.tm_sec=0;
+    t.tm_wday=0;
+    t.tm_yday=0;
+
+    currTime=mktime(&t);
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        name, (unsigned int)currTime);
+    return 0;
+  }
+  else {
+    return -1;
+  }
+}
+
+
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert) {
   GWEN_DB_NODE *dbCert;
   X509_NAME *nm;
+  ASN1_TIME *d;
+  EVP_PKEY *pktmp;
 
   nm=X509_get_subject_name(cert);
 
@@ -825,6 +897,65 @@ GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert) {
   GWEN_NetTransportSSL__CertEntries2Db(nm, dbCert,
                                        NID_stateOrProvinceName,
                                        "stateOrProvinceName");
+
+  d=X509_get_notBefore(cert);
+  if (d) {
+    if (GWEN_NetTransportSSL__ASN_UTC2Db(d, dbCert, "notBefore")) {
+      DBG_ERROR(0, "Error in notBefore date");
+    }
+  }
+
+  d=X509_get_notAfter(cert);
+  if (d) {
+    if (GWEN_NetTransportSSL__ASN_UTC2Db(d, dbCert, "notAfter")) {
+      DBG_ERROR(0, "Error in notBefore date");
+    }
+  }
+
+  pktmp=X509_get_pubkey(cert);
+  if (pktmp) {
+    RSA *kd;
+
+    kd=EVP_PKEY_get1_RSA(pktmp);
+    if (kd) {
+      char buffer[256];
+      int l;
+      GWEN_DB_NODE *dbKey;
+      GWEN_DB_NODE *dbKeyData;
+
+      dbKey=GWEN_DB_GetGroup(dbCert, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                             "pubKey");
+
+      assert(dbKey);
+      dbKeyData=GWEN_DB_GetGroup(dbKey, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                                 "data");
+      GWEN_DB_SetCharValue(dbKey,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "type", "RSA");
+
+      GWEN_DB_SetIntValue(dbKeyData,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "public", 1);
+      if (kd->n) {
+        l=BN_bn2bin(kd->n, (unsigned char*) &buffer);
+        GWEN_DB_SetBinValue(dbKeyData,
+                            GWEN_DB_FLAGS_DEFAULT |
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "n", buffer, l);
+      }
+
+      if (kd->e) {
+        l=BN_bn2bin(kd->e, (unsigned char*) &buffer);
+        GWEN_DB_SetBinValue(dbKeyData,
+                            GWEN_DB_FLAGS_DEFAULT |
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "e", buffer, l);
+      }
+      RSA_free(kd);
+    } /* if there is data for the public key */
+    EVP_PKEY_free(pktmp);
+  } /* if there is a pubkey */
   return dbCert;
 }
 
@@ -879,6 +1010,11 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
   case GWEN_NetTransportStatusPConnected: {
     /* establish SSL */
     int fd;
+
+    /* reset security */
+    GWEN_DB_Group_free(skd->peerCertificate);
+    skd->peerCertificate=0;
+    skd->isSecure=0;
 
     /* get socket handle (I know, it's ugly, but the function below is
      * not exported to the outside) */
@@ -953,6 +1089,9 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     }
 
     /* now logically connected */
+    GWEN_DB_Group_free(skd->peerCertificate);
+    skd->peerCertificate=0;
+
     cert=SSL_get_peer_certificate(skd->ssl);
     if (!cert) {
       if (skd->secure) {
@@ -1052,7 +1191,9 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       }
       else {
         DBG_NOTICE(0, "Peer certificate is valid");
-        /* TODO: check_cert? */
+
+        /* store peer certificate */
+        skd->peerCertificate=GWEN_NetTransportSSL__Cert2Db(cert);
         skd->isSecure=1;
       }
       free(certbuf);
@@ -1281,6 +1422,177 @@ GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList(){
     return 0;
   }
 }
+
+
+
+int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
+                                                int bits,
+                                                int serial,
+                                                int days,
+                                                GWEN_DB_NODE *db) {
+  X509 *x;
+  EVP_PKEY *pk;
+  RSA *rsa;
+  X509_NAME *name=NULL;
+  X509_NAME_ENTRY *ne=NULL;
+  FILE *f;
+  const char *p;
+
+  X509V3_add_standard_extensions();
+
+  pk=EVP_PKEY_new();
+  if (!pk){
+    fprintf(stderr, "Could not create RSA key\n");
+    EVP_PKEY_free(pk);
+    X509V3_EXT_cleanup();
+    return -1;
+  }
+
+  x=X509_new();
+  if (!x) {
+    fprintf(stderr, "Could not create certificate\n");
+    EVP_PKEY_free(pk);
+    X509V3_EXT_cleanup();
+    return -1;
+  }
+
+  rsa=RSA_generate_key(bits, RSA_F4, NULL, NULL);
+  if (!EVP_PKEY_assign_RSA(pk, rsa)){
+    fprintf(stderr, "Could not assign RSA key\n");
+    X509_free(x);
+    EVP_PKEY_free(pk);
+    RSA_free(rsa);
+    X509V3_EXT_cleanup();
+    return -1;
+  }
+  rsa=NULL;
+
+  X509_set_version(x,3);
+  ASN1_INTEGER_set(X509_get_serialNumber(x),serial);
+  X509_gmtime_adj(X509_get_notBefore(x),0);
+  if (!days)
+    days=GWEN_NETTRANSPORTSSL_DEFAULT_CERT_DAYS;
+  X509_gmtime_adj(X509_get_notAfter(x),(long)60*60*24*days);
+  X509_set_pubkey(x, pk);
+
+  name=X509_NAME_new();
+
+  p=GWEN_DB_GetCharValue(db, "countryName", 0, "DE");
+  ne=X509_NAME_ENTRY_create_by_NID(NULL,
+                                   NID_countryName,
+                                   V_ASN1_APP_CHOOSE,
+                                   (unsigned char*)p,
+                                   -1);
+  X509_NAME_add_entry(name, ne, 0, 0);
+
+  p=GWEN_DB_GetCharValue(db, "commonName", 0, 0);
+  if (p) {
+    X509_NAME_ENTRY_create_by_NID(&ne, NID_commonName,
+                                  V_ASN1_APP_CHOOSE,
+                                  (unsigned char*)p,
+                                  -1);
+    X509_NAME_add_entry(name, ne, -1, 0);
+  }
+
+  p=GWEN_DB_GetCharValue(db, "organizationName", 0, 0);
+  if (p) {
+    X509_NAME_ENTRY_create_by_NID(&ne, NID_organizationName,
+                                  V_ASN1_APP_CHOOSE,
+                                  (unsigned char*)p,
+                                  -1);
+    X509_NAME_add_entry(name, ne, -1, 0);
+  }
+
+  p=GWEN_DB_GetCharValue(db, "organizationalUnitName", 0, 0);
+  if (p) {
+    X509_NAME_ENTRY_create_by_NID(&ne, NID_organizationalUnitName,
+                                  V_ASN1_APP_CHOOSE,
+                                  (unsigned char*)p,
+                                  -1);
+    X509_NAME_add_entry(name, ne, -1, 0);
+  }
+
+  p=GWEN_DB_GetCharValue(db, "localityName", 0, 0);
+  if (p) {
+    X509_NAME_ENTRY_create_by_NID(&ne, NID_localityName,
+                                  V_ASN1_APP_CHOOSE,
+                                  (unsigned char*)p,
+                                  -1);
+    X509_NAME_add_entry(name, ne, -1, 0);
+  }
+
+  p=GWEN_DB_GetCharValue(db, "stateOrProvinceName", 0, 0);
+  if (p) {
+    X509_NAME_ENTRY_create_by_NID(&ne, NID_stateOrProvinceName,
+                                  V_ASN1_APP_CHOOSE,
+                                  (unsigned char*)p,
+                                  -1);
+    X509_NAME_add_entry(name, ne, -1, 0);
+  }
+
+  X509_set_subject_name(x, name);
+  X509_set_issuer_name(x, name);
+
+  /* finished with structure */
+  X509_NAME_ENTRY_free(ne);
+  X509_NAME_free(name);
+
+  if (!X509_sign(x, pk, EVP_md5())) {
+    fprintf(stderr, "Could not sign\n");
+    X509_free(x);
+    EVP_PKEY_free(pk);
+    X509V3_EXT_cleanup();
+    return -1;
+  }
+
+  /* save key */
+  f=fopen(fname, "w+");
+  if (!f) {
+    fprintf(stderr, "Could not save private key\n");
+    X509_free(x);
+    EVP_PKEY_free(pk);
+    X509V3_EXT_cleanup();
+    return -1;
+  }
+  PEM_write_RSAPrivateKey(f,
+                          pk->pkey.rsa,
+                          NULL,
+                          NULL,
+                          0,
+                          NULL,
+                          NULL);
+  /* save cert */
+  PEM_write_X509(f, x);
+  if (fclose(f)) {
+    fprintf(stderr, "Could not close file\n");
+    X509_free(x);
+    EVP_PKEY_free(pk);
+    X509V3_EXT_cleanup();
+    return -1;
+  }
+  X509_free(x);
+  EVP_PKEY_free(pk);
+  X509V3_EXT_cleanup();
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
