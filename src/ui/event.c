@@ -148,6 +148,7 @@ const char *GWEN_Event_TypeName(GWEN_EVENT_TYPE t) {
   case GWEN_EventType_Selected: s="Selected"; break;
   case GWEN_EventType_Chosen: s="Chosen"; break;
   case GWEN_EventType_Checked: s="Checked"; break;
+  case GWEN_EventType_Activated: s="Activated"; break;
   case GWEN_EventType_None: s="None"; break;
   default: s="Unknown"; break;
   }
@@ -1236,6 +1237,73 @@ int GWEN_EventChecked_GetStatus(const GWEN_EVENT *e){
 
 GWEN_EVENT *GWEN_EventChanged_new(){
   return GWEN_Event_new(GWEN_EventType_Changed);
+}
+
+
+
+GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_ACTIVATED);
+
+GWEN_EVENT *GWEN_EventActivated_new(const char *text, int x, int y){
+  GWEN_EVENT *e;
+  GWEN_EVENT_ACTIVATED *et;
+
+  e=GWEN_Event_new(GWEN_EventType_Activated);
+  GWEN_NEW_OBJECT(GWEN_EVENT_ACTIVATED, et);
+  if (text)
+    et->text=strdup(text);
+  et->x=x;
+  et->y=y;
+
+  GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_ACTIVATED,
+                       e, et,
+                       GWEN_EventActivated_freeData);
+  return e;
+}
+
+
+
+void GWEN_EventActivated_freeData(void *bp, void *p){
+  GWEN_EVENT_ACTIVATED *et;
+
+  et=(GWEN_EVENT_ACTIVATED*)p;
+  free(et->text);
+  GWEN_FREE_OBJECT(et);
+}
+
+
+
+const char *GWEN_EventActivated_GetText(const GWEN_EVENT *e){
+  GWEN_EVENT_ACTIVATED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_ACTIVATED, e);
+  assert(et);
+
+  return et->text;
+}
+
+
+
+int GWEN_EventActivated_GetX(const GWEN_EVENT *e){
+  GWEN_EVENT_ACTIVATED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_ACTIVATED, e);
+  assert(et);
+
+  return et->x;
+}
+
+
+
+int GWEN_EventActivated_GetY(const GWEN_EVENT *e){
+  GWEN_EVENT_ACTIVATED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_ACTIVATED, e);
+  assert(et);
+
+  return et->y;
 }
 
 

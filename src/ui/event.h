@@ -79,7 +79,8 @@ typedef enum {
   GWEN_EventType_Selected,
   GWEN_EventType_Chosen,
   GWEN_EventType_Checked,
-  GWEN_EventType_Changed
+  GWEN_EventType_Changed,
+  GWEN_EventType_Activated
 } GWEN_EVENT_TYPE;
 
 
@@ -234,6 +235,13 @@ int GWEN_EventChecked_GetStatus(const GWEN_EVENT *e);
 
 
 GWEN_EVENT *GWEN_EventChanged_new();
+
+
+GWEN_EVENT *GWEN_EventActivated_new(const char *text, int x, int y);
+const char *GWEN_EventActivated_GetText(const GWEN_EVENT *e);
+int GWEN_EventActivated_GetX(const GWEN_EVENT *e);
+int GWEN_EventActivated_GetY(const GWEN_EVENT *e);
+
 
 
 void GWEN_Event_Dump(const GWEN_EVENT *e);

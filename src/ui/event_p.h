@@ -184,6 +184,15 @@ struct GWEN_EVENT_CHECKED {
 void GWEN_EventChecked_freeData(void *bp, void *p);
 
 
+
+typedef struct GWEN_EVENT_ACTIVATED GWEN_EVENT_ACTIVATED;
+struct GWEN_EVENT_ACTIVATED {
+  char *text;
+  int x, y;
+};
+void GWEN_EventActivated_freeData(void *bp, void *p);
+
+
 #endif
 
 
