@@ -50,7 +50,7 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
                     const char *b3){
 
 
-
+  return 0;
 }
 
 

@@ -1178,7 +1178,7 @@ int GWEN_TextWidget__DrawLine(GWEN_WIDGET *w, GWEN_TW_LINE *l,
   const unsigned char *p;
   const unsigned char *startPtr;
   int i, j, pos;
-  int lastWasEsc, lastEsc;
+  int lastWasEsc, lastEsc = GWEN_WIDGET_ATT_ESC_CHAR;
 
   assert(w);
   win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
@@ -1347,7 +1347,7 @@ int GWEN_TextWidget__DrawArea(GWEN_WIDGET *w,
 
 int GWEN_TextWidget_LineRedraw(GWEN_WIDGET *w, GWEN_TW_LINE *l) {
   GWEN_TEXTWIDGET *win;
-  int x, y, len;
+  int x = 0, y, len;
   int left, right;
   GWEN_TW_LINE *tmpl;
 
@@ -1386,8 +1386,8 @@ int GWEN_TextWidget_LineRedraw(GWEN_WIDGET *w, GWEN_TW_LINE *l) {
                l->leftBorder, l->rightBorder);
     return 0;
   }
-  y-=win->top;
-  x=left-win->left;
+  y -= win->top;
+  x = left-win->left;
 
   DBG_NOTICE(0, "Update dims: %d/%d, %d (%d, %d)",
              x, y, len, left, right);
