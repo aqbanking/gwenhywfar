@@ -124,9 +124,8 @@ GWEN_DB_NODE *GWEN_DB_Var_new(const char *name){
 }
 
 
-
-void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
-                         GWEN_DB_NODE *n){
+void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
+				 GWEN_DB_NODE *n){
   GWEN_DB_NODE *curr;
 
   assert(parent);
@@ -147,8 +146,18 @@ void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
 
 
 
-void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
+void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
                          GWEN_DB_NODE *n){
+  GWEN_DB_Node_Append_UnDirty(parent, n);
+  GWEN_DB_ModifyBranchFlagsUp(parent,
+			      GWEN_DB_NODE_FLAGS_DIRTY,
+			      GWEN_DB_NODE_FLAGS_DIRTY);
+}
+
+
+
+void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
+				GWEN_DB_NODE *n){
   GWEN_DB_NODE *curr;
 
   assert(parent);
@@ -167,7 +176,16 @@ void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
 
 
 
-void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n) {
+void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
+			 GWEN_DB_NODE *n){
+  GWEN_DB_Node_InsertUnDirty(parent, n);
+  GWEN_DB_ModifyBranchFlagsUp(parent,
+			      GWEN_DB_NODE_FLAGS_DIRTY,
+			      GWEN_DB_NODE_FLAGS_DIRTY);
+}
+
+
+void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n) {
   GWEN_DB_NODE *curr;
   GWEN_DB_NODE *parent;
 
@@ -192,6 +210,20 @@ void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n) {
   n->h.parent=0;
 }
 
+
+
+void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n) {
+  GWEN_DB_NODE *parent;
+
+  assert(n);
+  parent=n->h.parent;
+  assert(parent);
+
+  GWEN_DB_Node_Unlink_UnDirty(n);
+  GWEN_DB_ModifyBranchFlagsUp(parent,
+			      GWEN_DB_NODE_FLAGS_DIRTY,
+			      GWEN_DB_NODE_FLAGS_DIRTY);
+}
 
 
 void GWEN_DB_Node_free(GWEN_DB_NODE *n){
@@ -307,7 +339,7 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n){
         GWEN_DB_Node_free(nn);
         return 0;
       }
-      GWEN_DB_Node_Append(nn, ncn);
+      GWEN_DB_Node_Append_UnDirty(nn, ncn);
       cn=cn->h.next;
     } /* while cn */
   }
@@ -1889,6 +1921,59 @@ unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node){
   unsigned int res = 0;
   GWEN_DB_Values_Foreach((GWEN_DB_NODE *)node, GWEN_DB_count_cb, &res);
   return res;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_DB_GetNodeFlags(const GWEN_DB_NODE *n){
+  assert(n);
+  return n->h.nodeFlags;
+}
+
+
+
+void GWEN_DB_SetNodeFlags(GWEN_DB_NODE *n,
+                          GWEN_TYPE_UINT32 flags){
+  assert(n);
+  n->h.nodeFlags=flags;
+}
+
+
+
+void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
+				 GWEN_TYPE_UINT32 newflags,
+				 GWEN_TYPE_UINT32 mask){
+  GWEN_TYPE_UINT32 flags;
+
+  assert(n);
+
+  while(n) {
+    flags=n->h.nodeFlags;
+    flags=((flags^newflags)&(mask))^flags;
+    n->h.nodeFlags=flags;
+    n=n->h.parent;
+  } /* while */
+}
+
+
+
+void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
+				   GWEN_TYPE_UINT32 newflags,
+				   GWEN_TYPE_UINT32 mask){
+  GWEN_TYPE_UINT32 flags;
+  GWEN_DB_NODE *cn;
+
+  assert(n);
+
+  flags=n->h.nodeFlags;
+  flags=((flags^newflags)&(mask))^flags;
+  n->h.nodeFlags=flags;
+
+  cn=n->h.child;
+  while(cn) {
+    GWEN_DB_ModifyBranchFlagsDown(cn, newflags, mask);
+    cn=cn->h.next;
+  } /* while cn */
 }
 
 

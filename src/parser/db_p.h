@@ -57,6 +57,7 @@ struct GWEN_DB_HEADER {
   GWEN_DB_NODE *parent;
   GWEN_DB_NODE *child;
   GWEN_DB_NODETYPE typ;
+  GWEN_TYPE_UINT32 nodeFlags;
 };
 
 
@@ -184,6 +185,14 @@ const void *GWEN_DB_GetBinValueFromNode(GWEN_DB_NODE *n,
 
 
 static void *GWEN_DB_count_cb(GWEN_DB_NODE *node, void *user_data);
+
+void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
+                                 GWEN_DB_NODE *n);
+void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
+                                GWEN_DB_NODE *n);
+void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n);
+
+
 
 #endif
 

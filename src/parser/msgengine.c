@@ -919,6 +919,14 @@ int GWEN_MsgEngine_GetHighestTrustLevel(GWEN_XMLNODE *node,
   if (value>highestTrust)
     highestTrust=value;
 
+  pn=node;
+  while(pn) {
+    value=atoi(GWEN_XMLNode_GetProperty(pn, "trustlevel","0"));
+    if (value>highestTrust)
+      highestTrust=value;
+    pn=GWEN_XMLNode_GetParent(pn);
+  } /* while */
+
   pn=refnode;
   while(pn) {
     value=atoi(GWEN_XMLNode_GetProperty(pn, "trustlevel","0"));

@@ -632,7 +632,7 @@ GWEN_ERRORCODE GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl){
 		 SOL_SOCKET,
 		 SO_REUSEADDR,
 		 &fl,
-		 sizeof(fl)))
+                 sizeof(fl)))
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),

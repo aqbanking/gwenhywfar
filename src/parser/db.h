@@ -170,6 +170,15 @@ extern "C" {
 /*@}*/
 
 
+/** @name Node Flags
+ */
+/*@{*/
+/** is set then this node has been altered */
+#define GWEN_DB_NODE_FLAGS_DIRTY 0x00000001
+
+/*@}*/
+
+
 /**
  * This is the type used to store a DB. Its contents are explicitly NOT
  * part of the API. 
@@ -556,6 +565,53 @@ int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API 
 int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
+
+/**
+ * Returns the node flags for the given db node.
+ * Please note that all modifications applied to a node will set the
+ * dirty flag in the node itself and all its parents.
+ * This allows to use this funcion here to check whether a DB has been
+ * modified.
+ * @return current node flags for this node (see
+ * @ref GWEN_DB_NODE_FLAGS_DIRTY)
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API 
+  GWEN_TYPE_UINT32 GWEN_DB_GetNodeFlags(const GWEN_DB_NODE *n);
+
+/**
+ * Modifies the node flags for the given db node
+ * @param n db node
+ * @param flags flags to set (see @ref GWEN_DB_NODE_FLAGS_DIRTY)
+ */
+GWENHYWFAR_API 
+  void GWEN_DB_SetNodeFlags(GWEN_DB_NODE *n,
+                            GWEN_TYPE_UINT32 flags);
+
+/**
+ * Modifies the flags of the given node and all its parents according
+ * to the parameters given.
+ * @param n db node
+ * @param newflags new flags to set (see @ref GWEN_DB_NODE_FLAGS_DIRTY)
+ * @param mask only those flags which are set in this mask are modified
+ *  according to newflags
+ */
+void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
+                                 GWEN_TYPE_UINT32 newflags,
+                                 GWEN_TYPE_UINT32 mask);
+
+/**
+ * Modifies the flags of the given node and all its children according
+ * to the parameters given.
+ * @param n db node
+ * @param newflags new flags to set (see @ref GWEN_DB_NODE_FLAGS_DIRTY)
+ * @param mask only those flags which are set in this mask are modified
+ *  according to newflags
+ */
+void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
+                                   GWEN_TYPE_UINT32 newflags,
+                                   GWEN_TYPE_UINT32 mask);
 
 /*@}*/
 

@@ -1,3 +1,12 @@
+
+2004/01/15 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- DB: 
+    - added "nodeflags" (intended to be used for flagging "dirty" nodes etc)
+    - every modification of a node (except modifying nodeflags) will mark that
+      node and all its parents as dirty.
+
+
 2004-01-14  Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Fix typo -- $() is a variable in a Makefile, but
@@ -7,6 +16,10 @@
 ------------------------------------------------
 - added windoze.m4 to get some windows paths
 - fixed types.m4 (was not removing conf.uint32 when finished)
+- msgengine: GetHighestTrustLevel now also takes the parents of the given
+  node into account (instead of only the parent of the refererring node)
+- os/inetaddr: added GWEN_InetAddr_GetCapabilities to check whether a given
+  Address Family (or feature) exists)
 
 
 2004/01/12 Martin Preuss <martin@libchipcard.de>
