@@ -30,6 +30,10 @@
 
 #include <gwenhywfar/buffer.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /** @defgroup MOD_CRYPT_PADD Padding Functions
  * @ingroup MOD_CRYPT
@@ -65,6 +69,9 @@ int GWEN_Padd_UnpaddWithANSIX9_23(GWEN_BUFFER *src);
 
 /*@}*/
 
+#ifdef __cplusplus
+}
+#endif
 
 
 
