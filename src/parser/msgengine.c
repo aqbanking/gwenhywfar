@@ -1459,8 +1459,8 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
 				      int version,
 				      const char *pvalue) {
   GWEN_XMLNODE *n;
-  GWEN_XMLNODE *nLast;
-  GWEN_XMLNODE *nRes;
+  GWEN_XMLNODE *nLast = 0;
+  GWEN_XMLNODE *nRes = 0;
   GWEN_XMLNODE_PATH *pathCopy;
 
   assert(node);
@@ -1469,7 +1469,6 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
   assert(pvalue);
 
   pathCopy=GWEN_XMLNode_Path_dup(nodePath);
-  nRes=0;
   n=GWEN_XMLNode_Path_Surface(pathCopy);
   /* first try all nodes along the path */
   while(n) {
