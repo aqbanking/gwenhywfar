@@ -78,6 +78,8 @@ extern "C" {
   \)
 
 
+#define GWEN_BUFFEREDIO_CBID_IO "GWEN_BUFFEREDIO_CBID_IO"
+
 
 GWENHYWFAR_API
 typedef enum {

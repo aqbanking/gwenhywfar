@@ -145,6 +145,7 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;) {
 
     /* actually try to read */
@@ -167,14 +168,16 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
     rv=GWEN_NetConnection_Work(conn);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
       DBG_INFO(0, "Error while working");
+      GWEN_WaitCallback_Leave();
       return -1;
     }
 
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
 
-      if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(0, "User aborted via waitcallback");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
 
@@ -198,6 +201,7 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
       rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
       if (rv==-1) {
 	DBG_INFO(0, "Error while waiting");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
       if (rv==0)
@@ -210,12 +214,14 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
 	    difftime(time(0), startt)>timeout) {
 	  DBG_INFO(0, "Could not read within %d seconds, giving up",
 		   timeout);
+          GWEN_WaitCallback_Leave();
 	  return 1;
 	}
       }
     } /* for */
 
   } /* for */
+  GWEN_WaitCallback_Leave();
 
   return 0;
 }
@@ -273,6 +279,7 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;) {
 
     /* actually try to write */
@@ -287,14 +294,16 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
     rv=GWEN_NetConnection_Work(conn);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
       DBG_INFO(0, "Error while working");
+      GWEN_WaitCallback_Leave();
       return -1;
     }
 
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
 
-      if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(0, "User aborted via waitcallback");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
 
@@ -314,6 +323,7 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
       rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
       if (rv==-1) {
 	DBG_INFO(0, "Error while waiting");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
       if (rv==0)
@@ -326,12 +336,14 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
 	    difftime(time(0), startt)>timeout) {
 	  DBG_INFO(0, "Could not read within %d seconds, giving up",
 		   timeout);
+          GWEN_WaitCallback_Leave();
 	  return 1;
 	}
       }
     } /* for */
 
   } /* for */
+  GWEN_WaitCallback_Leave();
 
   return 0;
 }
@@ -362,11 +374,13 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;) {
     /* let the connection work */
     rv=GWEN_NetConnection_Work(conn);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
       DBG_INFO(0, "Error while working");
+      GWEN_WaitCallback_Leave();
       return -1;
     }
 
@@ -389,8 +403,9 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
         return -1;
       }
 
-      if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(0, "User aborted via waitcallback");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
 
@@ -410,6 +425,7 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
       rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
       if (rv==-1) {
 	DBG_INFO(0, "Error while waiting");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
       if (rv==0)
@@ -422,12 +438,14 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
 	    difftime(time(0), startt)>timeout) {
 	  DBG_INFO(0, "Could not write within %d seconds, giving up",
 		   timeout);
+          GWEN_WaitCallback_Leave();
 	  return 1;
 	}
       }
     } /* for */
 
   } /* for */
+  GWEN_WaitCallback_Leave();
 
   return 0;
 
@@ -779,20 +797,23 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;) {
 
     /* let the connection work */
     rv=GWEN_NetConnection_Work(conn);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
       DBG_INFO(0, "Error while working");
+      GWEN_WaitCallback_Leave();
       return -1;
     }
 
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
 
-      if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(0, "User aborted via waitcallback");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
 
@@ -801,6 +822,7 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
                  "Expected status \"%s\" (%d) reached",
                  GWEN_NetTransport_StatusName(expStatus),
                  expStatus);
+        GWEN_WaitCallback_Leave();
         return 0;
       }
 
@@ -822,6 +844,7 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
       rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
       if (rv==-1) {
 	DBG_INFO(0, "Error while waiting");
+        GWEN_WaitCallback_Leave();
 	return -1;
       }
       if (rv==0)
@@ -834,12 +857,14 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
 	    difftime(time(0), startt)>timeout) {
 	  DBG_INFO(0, "Timeout while waiting for status %d, giving up",
                    expStatus);
+          GWEN_WaitCallback_Leave();
           return 1;
         }
       }
     } /* for */
 
   } /* for */
+  GWEN_WaitCallback_Leave();
 
   return 0;
 }
@@ -881,18 +906,21 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;) {
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
 
-      if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(0, "User aborted via waitcallback");
+        GWEN_WaitCallback_Leave();
 	return 0;
       }
 
       tr=GWEN_NetTransport_GetNextIncoming(conn->transportLayer);
       if (tr) {
         DBG_INFO(0, "Found an incoming connection");
+        GWEN_WaitCallback_Leave();
         return tr;
       }
 
@@ -913,6 +941,7 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
       rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
       if (rv==-1) {
 	DBG_INFO(0, "Error while waiting");
+        GWEN_WaitCallback_Leave();
 	return 0;
       }
       if (rv==0)
@@ -924,6 +953,7 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
 	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
 	    difftime(time(0), startt)>timeout) {
           DBG_INFO(0, "Timeout while waiting for connection, giving up");
+          GWEN_WaitCallback_Leave();
           return 0;
         }
       }
@@ -933,9 +963,11 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
     rv=GWEN_NetConnection_Work(conn);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
       DBG_INFO(0, "Error while working");
+      GWEN_WaitCallback_Leave();
       return 0;
     }
   } /* for */
+  GWEN_WaitCallback_Leave();
 
   return 0;
 }
@@ -1086,18 +1118,21 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;) {
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
 
-      if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(0, "User aborted via waitcallback");
+        GWEN_WaitCallback_Leave();
 	return 0;
       }
 
       msg=GWEN_NetConnection_GetInMsg(conn);
       if (msg) {
         DBG_INFO(0, "Found an incoming message");
+        GWEN_WaitCallback_Leave();
         return msg;
       }
 
@@ -1117,6 +1152,7 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
       rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
       if (rv==-1) {
 	DBG_INFO(0, "Error while waiting");
+        GWEN_WaitCallback_Leave();
 	return 0;
       }
       if (rv==0)
@@ -1128,6 +1164,7 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
 	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
 	    difftime(time(0), startt)>timeout) {
           DBG_INFO(0, "Timeout while waiting for connection, giving up");
+          GWEN_WaitCallback_Leave();
           return 0;
         }
       }
@@ -1137,9 +1174,11 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
     rv=GWEN_NetConnection_Work(conn);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
       DBG_INFO(0, "Error while working");
+      GWEN_WaitCallback_Leave();
       return 0;
     }
   } /* for */
+  GWEN_WaitCallback_Leave();
 
   return 0;
 }
@@ -1375,9 +1414,11 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
       distance=500;
   }
 
+  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
   for (count=0;;count++) {
-    if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
       DBG_ERROR(0, "User aborted via waitcallback");
+      GWEN_WaitCallback_Leave();
       return GWEN_NetConnectionWorkResult_Error;
     }
 
@@ -1385,11 +1426,13 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
     if (rv==GWEN_NetConnectionWorkResult_Error) {
       DBG_INFO(0, "here");
       GWEN_Time_free(t0);
+      GWEN_WaitCallback_Leave();
       return rv;
     }
     else if (rv==GWEN_NetConnectionWorkResult_Change) {
       DBG_DEBUG(0, "Walk done");
       GWEN_Time_free(t0);
+      GWEN_WaitCallback_Leave();
       return rv;
     }
     else {
@@ -1399,6 +1442,7 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
         double d;
 
         if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE) {
+          GWEN_WaitCallback_Leave();
           return GWEN_NetConnectionWorkResult_NoChange;
         }
         t1=GWEN_CurrentTime();
@@ -1410,11 +1454,13 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
           DBG_INFO(0, "Could not walk within %d milliseconds, giving up",
                    timeout);
           GWEN_Time_free(t0);
+          GWEN_WaitCallback_Leave();
           return GWEN_NetConnectionWorkResult_NoChange;
         }
       }
     }
   } /* for */
+  GWEN_WaitCallback_Leave();
 
   DBG_WARN(0, "We should never reach this point");
   GWEN_Time_free(t0);

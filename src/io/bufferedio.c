@@ -676,11 +676,15 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
 
   lbuffer=buffer;
   bytesRead=0;
+
+  GWEN_WaitCallback_Enter(GWEN_BUFFEREDIO_CBID_IO);
+  GWEN_WaitCallback_SetProgressTotal(*bsize);
   while(bytesRead<*bsize) {
-    cbres=GWEN_WaitCallbackProgress(bytesRead, *bsize);
+    cbres=GWEN_WaitCallbackProgress(bytesRead);
     if (cbres==GWEN_WaitCallbackResult_Abort) {
       DBG_ERROR(0, "User abort");
       *bsize=bytesRead;
+      GWEN_WaitCallback_Leave();
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -690,11 +694,13 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
     err=GWEN_BufferedIO_ReadRaw(bt, lbuffer, &lsize);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
+      GWEN_WaitCallback_Leave();
       return err;
     }
     if (lsize==0) {
       DBG_ERROR(0, "Premature end of stream");
       *bsize=bytesRead;
+      GWEN_WaitCallback_Leave();
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -703,6 +709,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
     bytesRead+=lsize;
     lbuffer+=lsize;
   } /* while */
+  GWEN_WaitCallback_Leave();
 
   return 0;
 }

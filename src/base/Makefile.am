@@ -14,6 +14,7 @@ noinst_HEADERS=\
  memory_p.h \
  ringbuffer_p.h \
  stringlist_p.h \
+ waitcallback_l.h \
  waitcallback_p.h
 
 iheaderdir=${includedir}/gwenhywfar

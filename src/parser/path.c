@@ -84,7 +84,7 @@ void *GWEN_Path_Handle(const char *path,
     if (*path) {
       /* skip slashes */
       path++;
-      while (*path && *path=='/')
+      while (*path && (*path=='/' || *path=='\\'))
         path++;
 
       /* check if delimiter is followed by #0 */

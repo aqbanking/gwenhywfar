@@ -30,24 +30,49 @@
 #define GWEN_WAIT_CALLBACK_P_H
 
 
-#include <gwenhywfar/waitcallback.h>
+#include "waitcallback_l.h"
 #include <time.h>
 
 
-struct GWEN_WAITCALLBACK_CTX {
-  GWEN_WAITCALLBACK_FN waitCallbackFn;
+struct GWEN_WAITCALLBACK {
+  GWEN_LIST_ELEMENT(GWEN_WAITCALLBACK);
+  GWEN_INHERIT_ELEMENT(GWEN_WAITCALLBACK);
+
+  GWEN_WAITCALLBACK *previousCtx;
+  GWEN_WAITCALLBACK *originalCtx;
+  GWEN_WAITCALLBACK *instantiatedFrom;
+  unsigned int level;
+
+  GWEN_WAITCALLBACK_CHECKABORTFN checkAbortFn;
+  GWEN_WAITCALLBACK_INSTANTIATEFN instantiateFn;
+  GWEN_WAITCALLBACK_LOGFN logFn;
+
+  char *id;
+  GWEN_TYPE_UINT64 pos;
+  GWEN_TYPE_UINT64 total;
+
+  GWEN_WAITCALLBACK_LIST *registeredCallbacks;
+
   time_t lastCalled;
   time_t lastEntered;
   int proposedDistance;
-  unsigned int usage;
-  void *data;
+
+  GWEN_TYPE_UINT32 usage;
 };
 
 
-GWEN_WAITCALLBACK_RESULT
-  GWEN_WaitCallback_internal(GWEN_TYPE_UINT32 pos,
-                             GWEN_TYPE_UINT32 total,
-                             GWEN_WAITCALLBACK_MODE m);
+void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx);
+
+
+void *GWEN_WaitCallback__HandlePathElement(const char *entry,
+                                           void *data,
+                                           unsigned int flags);
+GWEN_WAITCALLBACK *GWEN_WaitCallback__FindCallback(const char *s);
+
 
 #endif
+
+
+
+
 

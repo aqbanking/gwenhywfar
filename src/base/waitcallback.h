@@ -30,6 +30,20 @@
 #define GWEN_WAIT_CALLBACK_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/misc.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+GWENHYWFAR_API typedef struct GWEN_WAITCALLBACK GWEN_WAITCALLBACK;
+GWEN_LIST_FUNCTION_DEFS(GWEN_WAITCALLBACK, GWEN_WaitCallback);
+GWEN_INHERIT_FUNCTION_DEFS(GWEN_WAITCALLBACK);
+#ifdef __cplusplus
+}
+#endif
+
+
 #include <gwenhywfar/types.h>
 
 
@@ -54,72 +68,6 @@ extern "C" {
  * Wait callbacks are organized in callback-contexts which must be entered
  * and left.
  * </p>
- * <p>
- * In an application you would map a context to a progress dialog or something
- * similar. To support this the callback gets informed about when a context
- * is entered and left.
- * </p>
- * <p>
- * The following is an axample of how you could make use of this callback in
- * a GUI application:
- * </p>
- * @code
- * void doSomethingVeryEnduring(WINDOW *myData) {
- *   GWEN_WAITCALLBACK_CTX *ctx;
- *   unsigned int i;
- *
- *   ctx=GWEN_WaitCallback_Context_new(myCallBackFunction, (void*)myData);
- *   GWEN_WaitCallback_Enter(ctx);
- *
- *   for (i=0; i<10000000; i++) {
- *     if (GWEN_WaitCallback(i)==GWEN_WaitCallbackResult_Abort) {
- *       fprintf(stderr, "User aborted.\n");
- *     }
- *   }
- *   GWEN_WaitCallback_Leave();
- * }
- * @endcode
- *
- * <p>
- * The callback function itself might be implemented like this:
- * </p>
- *
- * @code
- *
- * GWEN_WAITCALLBACK_RESULT myCallBackFunction(int count,
- *                                             GWEN_WAITCALLBACK_MODE m,
- *                                             GWEN_WAITCALLBACK_CTX *ctx){
- *
- *  WINDOW *w;
- *   w=GWEN_WaitCallback_Context_GetData(ctx);
- *
- *   switch(m) {
- *     case GWEN_WaitCallbackMode_Enter:
- *       Window_Open(w);
- *       break;
- *     case GWEN_WaitCallbackMode_Leave:
- *       Window_Close(w);
- *       break;
- *     default:
- *       return do_something_to_ask_the_user_whether_he_wishes_to_abort();
- *   }
- *   return GWEN_WaitCallbackResult_Continue;
- * }
- *
- * @endcode
- *
- * <p>
- * Please note that the type @e WINDOW is a fictive type, it is just a
- * placeholder representing a GUI window or dialog.
- * </p>
- * <p>
- * As you can see the callback function checks for entering and leaving of
- * callback contexts. So the application should call
- * @ref GWEN_WaitCallback_Enter at the beginning of the long term operation
- * to give the callback function the opportunity to create a window.
- * At the end of the operation you should call @ref GWEN_WaitCallback_Leave
- * in order to close the window.
- * </p>
  */
 /*@{*/
 
@@ -127,135 +75,137 @@ extern "C" {
 #include <time.h>
 
 /**
- *
+ * Result of @ref GWEN_WAITCALLBACK_CHECKABORTFN.
  */
 GWENHYWFAR_API
-typedef enum {
-  /** normal callback */
-  GWEN_WaitCallbackMode_Normal=0,
-  /** this mode is used when entering callback context */
-  GWEN_WaitCallbackMode_Enter,
-  /** this mode is used when leaving callback context */
-  GWEN_WaitCallbackMode_Leave
-} GWEN_WAITCALLBACK_MODE;
+  typedef enum {
+    /** tells the caller that it is ok to continue */
+    GWEN_WaitCallbackResult_Continue=0,
+    /** tells the caller to abort */
+    GWEN_WaitCallbackResult_Abort
+  } GWEN_WAITCALLBACK_RESULT;
 
 
-/**
+/** @name Prototypes For Virtual Functions
  *
  */
-GWENHYWFAR_API
-typedef enum {
-  /** tells the caller that it is ok to continue */
-  GWEN_WaitCallbackResult_Continue=0,
-  /** tells the caller to abort */
-  GWEN_WaitCallbackResult_Abort
-} GWEN_WAITCALLBACK_RESULT;
-
-
-GWENHYWFAR_API
-typedef struct GWEN_WAITCALLBACK_CTX GWEN_WAITCALLBACK_CTX;
+/*@{*/
 
 /**
- * This is the callback function of a context. The values of the paramaters
- * pos and total can be used to show a progress bar. E.g. if you are
- * copying a file you could set @i pos to the current write position and
- * @i total to the size of the file.
- * @param pos current position
- * @param total total size
- * @param m callback mode (see @ref GWEN_WaitCallbackMode_Normal and
- * following)
- * @param ctx callback context used. The application can store private
- * data within such a context
+ * Checks whether the user wants to abort the current action.
+ * @param ctx context
+ * This function is optional.
+ * @param level If the context given to @ref GWEN_WaitCallback_Enter did
+ * not exist then a new default context has been created which uses the
+ * functions (like this one) of the at that time active context. For such an
+ * artificially derived context the level represents the current level
+ * below the context given as parameter <i>ctx</i>. So if the level is 0 then
+ * the given context actually <b>is</b> the currently active one.
  */
 GWENHYWFAR_API typedef
   GWEN_WAITCALLBACK_RESULT
-  (*GWEN_WAITCALLBACK_FN)(GWEN_TYPE_UINT32 pos,
-                          GWEN_TYPE_UINT32 total,
-                          GWEN_WAITCALLBACK_MODE m,
-                          GWEN_WAITCALLBACK_CTX *ctx);
+  (*GWEN_WAITCALLBACK_CHECKABORTFN)(GWEN_WAITCALLBACK *ctx,
+				    unsigned int level);
 
 
 /**
- * An application can call this function from within long term operations.
- * The callback function of the last callback context entered will be
- * called. This allows for the caller to be independant of the context
- * actually used.
- * This function is deprecated, it internally calls
- * @ref GWEN_WaitCallbackProgress (with pos=count and total=0).
- * @param count optional number, the value is only interpreted by the
- * implemented callback function
+ * Uses the given context as a template to instantiate a new context.
+ * For GUI callbacks this function can be used to open a window (such as
+ * progress dialogs etc).
+ * This function <b>must</b> be set.
+ * @param ctx context
  */
-GWENHYWFAR_API
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(int count);
+GWENHYWFAR_API typedef
+  GWEN_WAITCALLBACK*
+  (*GWEN_WAITCALLBACK_INSTANTIATEFN)(GWEN_WAITCALLBACK *ctx);
 
 
 /**
- * This callback function does the same as @ref GWEN_WaitCallback, but
- * this one is better suited to show progress reports.
+ * Logs a message to the given callback.
+ * A GUI program could use this function to write the given string to an
+ * open window.
+ * This function is optional.
+ * @param ctx context
+ * @param level see @ref GWEN_WAITCALLBACK_CHECKABORTFN
+ * @param s log string
  */
-GWENHYWFAR_API
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT32 pos,
-						   GWEN_TYPE_UINT32 total);
+GWENHYWFAR_API typedef
+  void
+  (*GWEN_WAITCALLBACK_LOGFN)(GWEN_WAITCALLBACK *ctx,
+			     unsigned int level,
+			     const char *s);
+/*@}*/
 
+
+/** @name Virtual Functions
+ *
+ */
+/*@{*/
 
 /**
- * Creates a new waitcallback context. This is not automatically selected.
- * @param fn your callback function for this context
- * @param data optional private data for the callback function.
+ * Checks whether the user wants to abort the current action.
+ * This in fact calls the function @ref GWEN_WAITCALLBACK_CHECKABORTFN
+ * stored in the current waitcallback context.
  */
 GWENHYWFAR_API
-GWEN_WAITCALLBACK_CTX *GWEN_WaitCallback_Context_new(GWEN_WAITCALLBACK_FN fn,
-                                                     void *data);
+  GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback();
 
 /**
- * Destructor for a context. You MUST call this for every created context
- * to avoid memory leaks.
+ * This is basically a combination of the functions
+ * @ref GWEN_WaitCallback_SetProgressPos and
+ * @ref GWEN_WaitCallback.
+ * @param pos current progress position
  */
 GWENHYWFAR_API
-void GWEN_WaitCallback_Context_free(GWEN_WAITCALLBACK_CTX *ctx);
+  GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos);
 
 /**
- * Returns the private data given when the context was created (see
- * @ref GWEN_WaitCallback_Context_new)
+ * Enters the callback of the given name. If there is no callback of that name
+ * below the currently active callback context then it will be faked.
+ * This simply means that a new default context is created which still calls
+ * the currently active context (but with level!=0).
+ * If the context does exist its function
+ * @ref GWEN_WAITCALLBACK_INSTANTIATEFN will be called and the resulting
+ * context becomes the active one.
  */
 GWENHYWFAR_API
-void *GWEN_WaitCallback_Context_GetData(GWEN_WAITCALLBACK_CTX *ctx);
+  void GWEN_WaitCallback_Enter(const char *id);
 
 /**
- * Enters a waitcallback context. After calling this all calls to
- * @ref GWEN_WaitCallback will use the given context until
- * @ref GWEN_WaitCallback_Leave is called. This functions calls the
- * callback function of this context with the value
- * @ref GWEN_WaitCallbackMode_Enter
+ * Leaves the currently active context (by freeing it) and reinstates the
+ * previously active one.
  */
 GWENHYWFAR_API
-void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx);
+  void GWEN_WaitCallback_Leave();
 
 /**
- * Leaves a waitcallback context.
- * This functions calls the callback function of the current context with the
- * value @ref GWEN_WaitCallbackMode_Leave and restores the context used just
- * before @ref GWEN_WaitCallback_Enter was called.
+ * Sends the given log string to the currently active context.
+ * Internally calls @ref GWEN_WAITCALLBACK_LOGFN.
  */
 GWENHYWFAR_API
-void GWEN_WaitCallback_Leave();
+  void GWEN_WaitCallback_Log(const char *s);
+/*@}*/
 
+
+/** @name Informational Functions
+ *
+ */
+/*@{*/
 
 /**
- * Returns the time when the callback function was last called
- * (or 0 if it has never been called)
+ * You can use this to initialize a progress dialog. This value can later be
+ * used by the callback function to properly display a progress bar.
  */
 GWENHYWFAR_API
-time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx);
-
+  void GWEN_WaitCallback_SetProgressTotal(GWEN_TYPE_UINT64 total);
 
 /**
- * Returns the time when the callback context was last entered (or 0 if
- * it never has been).
+ * You can use this to feed a progress dialog. This value can later be
+ * used by the callback function to properly display a progress bar.
+ * @param pos current progress position
  */
 GWENHYWFAR_API
-time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK_CTX *ctx);
-
+  void GWEN_WaitCallback_SetProgressPos(GWEN_TYPE_UINT64 pos);
 
 /**
  * Returns the proposed distance in milliseconds between two
@@ -265,7 +215,83 @@ time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK_CTX *ctx);
  * be inspected)
  */
 GWENHYWFAR_API
-  int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK_CTX *ctx);
+  int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK *ctx);
+/*@}*/
+
+
+
+#if (defined(GWEN_EXTEND_WAITCALLBACK) || defined(DOXYGEN))
+
+/** @name Functions To Be Used By Inheritors
+ *
+ */
+/*@{*/
+
+/**
+ * Creates a new callback. This function should only be used by inheriting
+ * "classes".
+ */
+GWENHYWFAR_API
+  GWEN_WAITCALLBACK *GWEN_WaitCallback_new(const char *id);
+
+/**
+ * Returns the current progress position (as set by
+ * @ref GWEN_WaitCallback_SetProgressPos).
+ * This can be used by the callback context to correctly display a
+ * progress bar.
+ */
+GWENHYWFAR_API
+  GWEN_TYPE_UINT64
+  GWEN_WaitCallback_GetProgressPos(GWEN_WAITCALLBACK *ctx);
+
+/**
+ * Returns the progress total (as set by
+ * @ref GWEN_WaitCallback_SetProgressTotal).
+ * This can be used by the callback context to correctly display a
+ * progress bar.
+ */
+GWENHYWFAR_API
+  GWEN_TYPE_UINT64
+  GWEN_WaitCallback_GetProgressTotal(GWEN_WAITCALLBACK *ctx);
+
+/**
+ * Sets the checkAbort function (see @ref GWEN_WAITCALLBACK_CHECKABORTFN).
+ */
+GWENHYWFAR_API
+  void
+  GWEN_WaitCallback_SetCheckAbortFn(GWEN_WAITCALLBACK *ctx,
+				    GWEN_WAITCALLBACK_CHECKABORTFN fn);
+
+/**
+ * Sets the instantiate function (see @ref GWEN_WAITCALLBACK_INSTANTIATEFN).
+ */
+GWENHYWFAR_API
+  void
+  GWEN_WaitCallback_SetInstantiateFn(GWEN_WAITCALLBACK *ctx,
+				     GWEN_WAITCALLBACK_INSTANTIATEFN fn);
+
+/**
+ * Sets the log function (see @ref GWEN_WAITCALLBACK_LOGFN).
+ */
+GWENHYWFAR_API
+  void
+  GWEN_WaitCallback_SetLogFn(GWEN_WAITCALLBACK *ctx,
+			     GWEN_WAITCALLBACK_LOGFN fn);
+
+/**
+ * Returns the time when the callback function was last called
+ * (or 0 if it has never been called)
+ */
+GWENHYWFAR_API
+  time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK *ctx);
+
+
+/**
+ * Returns the time when the callback context was last entered (or 0 if
+ * it never has been).
+ */
+GWENHYWFAR_API
+  time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK *ctx);
 
 
 /**
@@ -274,8 +300,12 @@ GWENHYWFAR_API
  * mechanism itself.
  */
 GWENHYWFAR_API
-  void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK_CTX *ctx,
-                                     int d);
+  void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK *ctx,
+				     int d);
+/*@}*/
+
+#endif
+
 
 
 /*@}*/

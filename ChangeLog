@@ -1,4 +1,11 @@
 
+2004/05/04: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added type GWEN_TYPE_UINT64
+- rewrote GWEN_WAITCALLBACK stuff (will have to modify some dependant
+  projects in order to use this new infrastructure)
+
+
 2004/05/02: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added new functions to GWEN_Time:

@@ -30,150 +30,379 @@
 # include <config.h>
 #endif
 
+#define GWEN_EXTEND_WAITCALLBACK
+/* #define DISABLE_DEBUGLOG */
+
 #include "waitcallback_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/path.h>
 
 
-static GWEN_LIST *gwen_callbackstack=0;
+GWEN_LIST_FUNCTIONS(GWEN_WAITCALLBACK, GWEN_WaitCallback);
+GWEN_INHERIT_FUNCTIONS(GWEN_WAITCALLBACK);
 
 
-GWEN_WAITCALLBACK_RESULT
-GWEN_WaitCallback_internal(GWEN_TYPE_UINT32 pos,
-                           GWEN_TYPE_UINT32 total,
-                           GWEN_WAITCALLBACK_MODE m){
-  GWEN_WAITCALLBACK_CTX *ctx;
-  GWEN_WAITCALLBACK_RESULT res;
-  time_t lct;
+static GWEN_WAITCALLBACK *gwen_waitcallback__root=0;
+static GWEN_WAITCALLBACK *gwen_waitcallback__current=0;
+static GWEN_WAITCALLBACK_LIST *gwen_waitcallback__list=0;
 
-  if (!gwen_callbackstack) {
-    DBG_VERBOUS(0, "No callbacks registered (1)");
-    return GWEN_WaitCallbackResult_Continue;
-  }
-  ctx=GWEN_List_GetBack(gwen_callbackstack);
-  if (!ctx) {
-    DBG_WARN(0, "No callbacks registered, should not happen here");
-    return GWEN_WaitCallbackResult_Continue;
-  }
 
-  if (!ctx->waitCallbackFn) {
-    DBG_WARN(0, "No callback set");
-    return GWEN_WaitCallbackResult_Continue;
-  }
-
-  lct=time(0);
-  res=ctx->waitCallbackFn(pos, total, m, ctx);
-  ctx->lastCalled=lct;
-  return res;
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_WaitCallback_ModuleInit(){
+  gwen_waitcallback__root=GWEN_WaitCallback_new("");
+  gwen_waitcallback__list=GWEN_WaitCallback_List_new();
+  return 0;
 }
 
 
 
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(int count) {
-  return GWEN_WaitCallbackProgress(count, 0);
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_WaitCallback_ModuleFini(){
+  GWEN_WaitCallback_List_free(gwen_waitcallback__list);
+  GWEN_WaitCallback_free(gwen_waitcallback__root);
+  return 0;
 }
 
 
 
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT32 pos,
-                                                   GWEN_TYPE_UINT32 total) {
-  return GWEN_WaitCallback_internal(pos, total,
-                                    GWEN_WaitCallbackMode_Normal);
-}
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK *GWEN_WaitCallback_new(const char *id) {
+  GWEN_WAITCALLBACK *ctx;
 
-
-
-GWEN_WAITCALLBACK_CTX *GWEN_WaitCallback_Context_new(GWEN_WAITCALLBACK_FN fn,
-                                                     void *data){
-  GWEN_WAITCALLBACK_CTX *ctx;
-
-  GWEN_NEW_OBJECT(GWEN_WAITCALLBACK_CTX, ctx);
+  assert(id);
+  GWEN_NEW_OBJECT(GWEN_WAITCALLBACK, ctx);
+  GWEN_LIST_INIT(GWEN_WAITCALLBACK, ctx);
+  GWEN_INHERIT_INIT(GWEN_WAITCALLBACK, ctx);
+  ctx->registeredCallbacks=GWEN_WaitCallback_List_new();
+  ctx->id=strdup(id);
   ctx->usage=1;
-  ctx->waitCallbackFn=fn;
-  ctx->data=data;
   return ctx;
 }
 
 
 
-void GWEN_WaitCallback_Context_free(GWEN_WAITCALLBACK_CTX *ctx){
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx){
   if (ctx) {
-    if (ctx->usage>1) {
-      DBG_ERROR(0, "Context still in use !");
-      abort();
+    assert(ctx->usage);
+    if (--(ctx->usage)==0) {
+      GWEN_INHERIT_FINI(GWEN_WAITCALLBACK, ctx);
+
+      GWEN_WaitCallback_List_free(ctx->registeredCallbacks);
+      GWEN_WaitCallback_free(ctx->instantiatedFrom);
+      free(ctx->id);
+
+      GWEN_LIST_FINI(GWEN_WAITCALLBACK, ctx);
+      GWEN_FREE_OBJECT(ctx);
     }
-    free(ctx);
   }
 }
 
 
 
-void *GWEN_WaitCallback_Context_GetData(GWEN_WAITCALLBACK_CTX *ctx){
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_Attach(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
-  return ctx->data;
-}
-
-
-void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx){
-  assert(ctx);
-
-  if (!gwen_callbackstack) {
-    gwen_callbackstack=GWEN_List_new();
-  }
-  if (ctx->usage>1) {
-    DBG_INFO(0, "WaitCallback entered recursively");
-  }
   ctx->usage++;
-  GWEN_List_PushBack(gwen_callbackstack, ctx);
-  GWEN_WaitCallback_internal(0, 0, GWEN_WaitCallbackMode_Enter);
-  ctx->lastEntered=time(0);
 }
 
 
 
-void GWEN_WaitCallback_Leave(){
-  GWEN_WAITCALLBACK_CTX *ctx;
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_SetProgressPos(GWEN_TYPE_UINT64 pos){
+  GWEN_WAITCALLBACK *ctx;
 
-  assert(gwen_callbackstack);
-  ctx=GWEN_List_GetBack(gwen_callbackstack);
+  ctx=gwen_waitcallback__current;
   if (!ctx) {
-    DBG_WARN(0, "No callbacks registered, should not happen here");
+    DBG_INFO(0, "No callback active");
   }
   else {
-    GWEN_WaitCallback_internal(0, 0, GWEN_WaitCallbackMode_Leave);
-    GWEN_List_PopBack(gwen_callbackstack);
-    if (ctx->usage<2) {
-      DBG_WARN(0, "Bad usage in WaitCallback context (%d)", ctx->usage);
-    }
-    else
-      ctx->usage--;
-  }
-
-  if (GWEN_List_GetSize(gwen_callbackstack)==0) {
-    GWEN_List_free(gwen_callbackstack);
-    gwen_callbackstack=0;
+    ctx->pos=pos;
   }
 }
 
 
 
-time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx){
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_SetProgressTotal(GWEN_TYPE_UINT64 total){
+  GWEN_WAITCALLBACK *ctx;
+
+  ctx=gwen_waitcallback__current;
+  if (!ctx) {
+    DBG_INFO(0, "No callback active");
+  }
+  else {
+    ctx->total=total;
+  }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_TYPE_UINT64
+GWEN_WaitCallback_GetProgressPos(GWEN_WAITCALLBACK *ctx){
+  assert(ctx);
+  return ctx->pos;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_TYPE_UINT64
+GWEN_WaitCallback_GetProgressTotal(GWEN_WAITCALLBACK *ctx){
+  assert(ctx);
+  return ctx->total;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_SetCheckAbortFn(GWEN_WAITCALLBACK *ctx,
+                                       GWEN_WAITCALLBACK_CHECKABORTFN fn){
+  assert(ctx);
+  ctx->checkAbortFn=fn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_SetInstantiateFn(GWEN_WAITCALLBACK *ctx,
+                                        GWEN_WAITCALLBACK_INSTANTIATEFN fn){
+  assert(ctx);
+  ctx->instantiateFn=fn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_SetLogFn(GWEN_WAITCALLBACK *ctx,
+                                GWEN_WAITCALLBACK_LOGFN fn){
+  assert(ctx);
+  ctx->logFn=fn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void *GWEN_WaitCallback__HandlePathElement(const char *entry,
+                                           void *data,
+                                           unsigned int flags){
+  GWEN_WAITCALLBACK *ctx;
+  GWEN_WAITCALLBACK *tctx;
+
+  assert(data);
+  ctx=(GWEN_WAITCALLBACK*)data;
+
+  if (flags & GWEN_PATH_FLAGS_ROOT) {
+    ctx=gwen_waitcallback__root;
+    entry++; /* skip leading slash which appears if ROOT flag is set */
+    if (!(*entry))
+      /* the root entry itself is wanted, return it */
+      return ctx;
+  }
+
+  tctx=GWEN_WaitCallback_List_First(ctx->registeredCallbacks);
+  while(tctx) {
+    if (tctx->id)
+      if (strcasecmp(tctx->id, entry)==0)
+        return (void*)tctx;
+    tctx=GWEN_WaitCallback_List_Next(tctx);
+  } /* while */
+
+  return 0;
+}
+
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK *GWEN_WaitCallback__FindCallback(const char *s) {
+  GWEN_WAITCALLBACK *ctx;
+  void *p;
+
+  assert(gwen_waitcallback__current);
+  ctx=gwen_waitcallback__current;
+  if (ctx->instantiatedFrom)
+    ctx=ctx->instantiatedFrom;
+
+  p=GWEN_Path_Handle(s,
+                     (void*)ctx,
+                     GWEN_PATH_FLAGS_CHECKROOT,
+                     GWEN_WaitCallback__HandlePathElement);
+  if (!p){
+    DBG_DEBUG(0, "Callback \"%s\" not found", s);
+    return 0;
+  }
+
+  return (GWEN_WAITCALLBACK*)p;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_WaitCallback_Register(const char *id,
+                               GWEN_WAITCALLBACK *ctx){
+  GWEN_WAITCALLBACK *tctx;
+
+  assert(id);
+  assert(ctx);
+
+  tctx=GWEN_WaitCallback__FindCallback(id);
+  if (!tctx) {
+    DBG_ERROR(0, "Callback \"%s\" not found", id);
+    return -1;
+  }
+  GWEN_WaitCallback_List_Insert(ctx, tctx->registeredCallbacks);
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
+  GWEN_WAITCALLBACK *ctx;
+  GWEN_WAITCALLBACK_RESULT rv;
+
+  ctx=gwen_waitcallback__current;
+  if (!ctx){
+    DBG_INFO(0, "No callback currently selected");
+    return GWEN_WaitCallbackResult_Continue;
+  }
+  else {
+    if (!ctx->checkAbortFn) {
+      DBG_DEBUG(0, "No checkAbort function set");
+      return GWEN_WaitCallbackResult_Continue;
+    }
+    else {
+      if (ctx->originalCtx)
+        rv=ctx->checkAbortFn(ctx->originalCtx, ctx->level);
+      else
+        rv=ctx->checkAbortFn(ctx, 0);
+      ctx->lastCalled=time(0);
+      return rv;
+    }
+  }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos){
+  GWEN_WAITCALLBACK *ctx;
+
+  ctx=gwen_waitcallback__current;
+  if (!ctx){
+    DBG_INFO(0, "No callback currently selected");
+    return GWEN_WaitCallbackResult_Continue;
+  }
+  else {
+    ctx->pos=pos;
+    return GWEN_WaitCallback();
+  }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_Enter(const char *id){
+  GWEN_WAITCALLBACK *ctx;
+  GWEN_WAITCALLBACK *nctx;
+
+  ctx=GWEN_WaitCallback__FindCallback(id);
+  if (!ctx) {
+    if (gwen_waitcallback__current) {
+      DBG_INFO(0, "Callback \"%s\" not found, faking it", id);
+      nctx=GWEN_WaitCallback_new(id);
+      nctx->previousCtx=gwen_waitcallback__current;
+      if (gwen_waitcallback__current->originalCtx) {
+        nctx->originalCtx=gwen_waitcallback__current->originalCtx;
+        nctx->level=gwen_waitcallback__current->level+1;
+      }
+      else {
+        nctx->originalCtx=gwen_waitcallback__current;
+        nctx->level=1;
+      }
+      gwen_waitcallback__current=nctx;
+      nctx->lastEntered=time(0);
+      GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
+    }
+    else {
+      DBG_INFO(0, "Callback \"%s\" not found and none is currently selected",
+               id);
+    }
+  } /* if ctx not found */
+  else {
+    /* ctx found, select it */
+    DBG_INFO(0, "Callback \"%s\" found", id);
+    assert(ctx->instantiateFn);
+    nctx=ctx->instantiateFn(ctx);
+    assert(nctx);
+    nctx->instantiatedFrom=ctx;
+    GWEN_WaitCallback_Attach(ctx);
+    nctx->previousCtx=gwen_waitcallback__current;
+    gwen_waitcallback__current=nctx;
+    nctx->lastEntered=time(0);
+    GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
+  }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_Leave(){
+  GWEN_WAITCALLBACK *ctx;
+
+  assert(gwen_waitcallback__current);
+  ctx=gwen_waitcallback__current->previousCtx;
+  GWEN_WaitCallback_free(gwen_waitcallback__current);
+  gwen_waitcallback__current=ctx;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_Log(const char *s){
+  GWEN_WAITCALLBACK *ctx;
+
+  DBG_DEBUG(0, "Callback Log: \"%s\"", s);
+  ctx=gwen_waitcallback__current;
+  if (!ctx){
+    DBG_INFO(0, "No callback currently selected");
+  }
+  else {
+    if (!ctx->logFn) {
+      DBG_DEBUG(0, "No log function set");
+    }
+    else {
+      if (ctx->originalCtx)
+        ctx->logFn(ctx->originalCtx,
+                   ctx->level,
+                   s);
+      else {
+        ctx->logFn(ctx, 0, s);
+      }
+    }
+  }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->lastCalled;
 }
 
 
 
-int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK_CTX *ctx){
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK *ctx){
   if (ctx==0) {
-    if (!gwen_callbackstack) {
-      DBG_VERBOUS(0, "No callbacks registered");
-      return 0;
-    }
-    ctx=GWEN_List_GetBack(gwen_callbackstack);
+    ctx=gwen_waitcallback__current;
     if (!ctx) {
-      DBG_WARN(0, "No callbacks registered, should not happen here");
+      DBG_INFO(0, "No callback currently selected");
       return 0;
     }
   }
@@ -182,7 +411,8 @@ int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK_CTX *ctx){
 
 
 
-void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK_CTX *ctx,
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK *ctx,
                                    int d){
   assert(ctx);
   ctx->proposedDistance=d;
@@ -190,7 +420,8 @@ void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK_CTX *ctx,
 
 
 
-time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK_CTX *ctx){
+/* -------------------------------------------------------------- FUNCTION */
+time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->lastEntered;
 }
