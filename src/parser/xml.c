@@ -1876,8 +1876,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
             DBG_INFO(GWEN_LOGDOMAIN, "Error writing tag \"%s\"", n->data);
             return -1;
           }
-          if (((flags & GWEN_XML_FLAGS_INDENT) &&
-               (c->type!=GWEN_XMLNodeTypeData)) ||
+          if ((c->type!=GWEN_XMLNodeTypeData) ||
               (c->type==GWEN_XMLNodeTypeData &&
                !(flags & GWEN_XML_FLAGS_SIMPLE))){
             err=GWEN_BufferedIO_WriteLine(bio, "");
@@ -2007,7 +2006,7 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
   while(nn) {
     if (GWEN_XMLNode__WriteToStream(nn, bio, flags, 0))
       return -1;
-    if (nn->next && (flags & GWEN_XML_FLAGS_INDENT)) {
+    if (nn->next) {
       GWEN_ERRORCODE err;
 
       err=GWEN_BufferedIO_WriteLine(bio, "");

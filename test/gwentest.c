@@ -3357,12 +3357,13 @@ int testXSD2(int argc, char **argv) {
   }
 
   if (GWEN_XMLNode_WriteFile(e->rootNode, "xsd.out",
-                             GWEN_XML_FLAGS_DEFAULT)){
+                             GWEN_XML_FLAGS_DEFAULT |
+                             GWEN_XML_FLAGS_SIMPLE)){
     fprintf(stderr, "Could not write file xsd.out\n");
     return 2;
   }
   if (GWEN_XMLNode_WriteFile(e->rootNode, "xsd.compact.out",
-                             0)){
+                             GWEN_XML_FLAGS_SIMPLE)){
     fprintf(stderr, "Could not write file xsd.compact.out\n");
     return 2;
   }
