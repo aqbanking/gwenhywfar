@@ -31,9 +31,7 @@
  * @brief This file contains the definition of a GWEN_DB database.
  *
  * A GWEN_DB database consists of a tree of @ref GWEN_DB_NODE
- * entries. FIXME: Describe "the big picture" here, please -- here's
- * what I understood:
- *
+ * entries.
  * Such a @ref GWEN_DB_NODE node can either be a group of nodes, or a
  * variable, or a variable's value. Usually an application programmer
  * will only get in touch with group nodes. Nevertheless first we
@@ -53,9 +51,8 @@
  * To retrieve or set the value of such a variable, the following
  * "shortcut" functions for all three supported typed exist:
  * GWEN_DB_GetIntValue(), GWEN_DB_GetCharValue(),
- * GWEN_DB_GetBinValue(). These functions only accept a group (FIXME:
- * is this correct? No varilable, no value?) and a "path" to the
- * desired variable.
+ * GWEN_DB_GetBinValue(). These functions only accept a group  and a "path"
+ * to the desired variable.
  */
 
 #ifndef GWENHYFWAR_DB_H
@@ -181,10 +178,8 @@ void GWEN_DB_Group_free(GWEN_DB_NODE *n);
  * Creates a deep copy of the given node. This copy will then be owned
  * by the caller and MUST be freed after using it by calling @ref
  * GWEN_DB_Group_free().
- *
- * FIXME: Is is possible to make the argument const here?
  */
-GWEN_DB_NODE *GWEN_DB_Group_dup(GWEN_DB_NODE *n);
+GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
 /*@}*/
 
 
@@ -227,9 +222,8 @@ GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
                                           const char *p);
 
 /**
- * Returns the first value below the given group. (FIXME: You really
- * mean group here, not variable?)  If there is no value then NULL is
- * returned.
+ * Returns the first value below the given variable.
+ * If there is no value then NULL is returned.
  */
 GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
 
@@ -255,9 +249,6 @@ GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
 /*@{*/
 /**
  * Deletes the given variable by removing it and its values from the DB.
- *
- * FIXME: This means the value (char, binary) is also freed if necessary?
- *
  * @param n root of the DB
  * @param path path to the variable to remove
  * @return Zero on success, nonzero on error
@@ -298,7 +289,9 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
  *
  * The setter functions either replace an existing variable, create a missing
  * variable, or return an error if the variable does not exist (see description
- * of the flags). 
+ * of the flags).
+ * All setter functions make deep copies of the given values, so you may
+ * free the params after calling the setter function.
  *
  * All getter functions return the variable's retrieved value. All
  * setter functions return Zero if ok and Nonzero on error.
@@ -318,11 +311,7 @@ const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
                                  int idx,
                                  const char *defVal);
 /**
- *
- * @param val The string value that is copied into the DB. (FIXME: Is
- * this correct, i.e. the DB holds a separate copy? Or does the DB
- * take over ownership of the val?)
- *
+ * @param val The string value that is copied into the DB
  * @return 0 on success, nonzero on error
  */
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
@@ -358,9 +347,7 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
                                 unsigned int *returnValueSize);
 
 /**
- * @param val The binary data that is copied into the DB. (FIXME: Is
- * this correct, i.e. the DB holds a separate copy? Or does the DB
- * take over ownership of the val?)
+ * @param val The binary data that is copied into the DB.
  * @param valSize The number of bytes in the binary data value.
  *
  * @return 0 on success, nonzero on error

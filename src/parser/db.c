@@ -247,7 +247,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
 }
 
 
-GWEN_DB_NODE *GWEN_DB_Node_dup(GWEN_DB_NODE *n){
+GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n){
   GWEN_DB_NODE *nn;
 
   switch(n->h.typ) {
@@ -289,7 +289,7 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(GWEN_DB_NODE *n){
 
   /* duplicate all children and add them to the new node */
   if (nn) {
-    GWEN_DB_NODE *cn;
+    const GWEN_DB_NODE *cn;
 
     cn=n->h.child;
     while(cn) {
@@ -317,7 +317,7 @@ void GWEN_DB_Group_free(GWEN_DB_NODE *n){
 
 
 
-GWEN_DB_NODE *GWEN_DB_Group_dup(GWEN_DB_NODE *n){
+GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n){
   assert(n);
   if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
     DBG_ERROR(0, "Node is not a group");

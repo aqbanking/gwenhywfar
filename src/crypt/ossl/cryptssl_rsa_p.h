@@ -70,6 +70,9 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Open(GWEN_CRYPTKEY *key);
 GWEN_ERRORCODE GWEN_CryptKeyRSA_Close(GWEN_CRYPTKEY *key);
 
 
+GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(GWEN_CRYPTKEY *key,
+                                           GWEN_BUFFER *src,
+                                           BIGNUM *bnresult);
 
 
 

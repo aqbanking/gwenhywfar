@@ -121,7 +121,7 @@ GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);
 GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data);
 GWEN_DB_NODE *GWEN_DB_Var_new(const char *name);
 
-GWEN_DB_NODE *GWEN_DB_Node_dup(GWEN_DB_NODE *n);
+GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n);
 void GWEN_DB_Node_free(GWEN_DB_NODE *n);
 
 void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,

@@ -134,17 +134,76 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(GWEN_CRYPTKEY *key,
 
 
 
+GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(GWEN_CRYPTKEY *key,
+                                           GWEN_BUFFER *src,
+                                           BIGNUM *bnresult){
+  unsigned int srclen;
+  unsigned char *psrc;
+  RSA *kd;
+
+  int res;
+  BIGNUM *bnhash;
+  BIGNUM *bnresult2;
+  BN_CTX *bnctx;
+
+  assert(key);
+  assert(src);
+  assert(bnresult);
+
+  kd=(RSA*)GWEN_CryptKey_GetKeyData(key);
+  assert(kd);
+
+  srclen=GWEN_Buffer_GetUsedBytes(src);
+  if (srclen!=GWEN_CryptKey_GetChunkSize(key)) {
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_BAD_SIZE);
+  }
+  psrc=GWEN_Buffer_GetPosPointer(src);
+
+  bnhash = BN_new();
+  bnresult2 = BN_new();
+  bnctx = BN_CTX_new();
+
+  bnhash = BN_bin2bn(psrc, srclen, bnhash);
+
+  BN_CTX_start(bnctx);
+  res=BN_mod_exp(bnresult, bnhash, kd->d, kd->n, bnctx);
+
+  /* the iso9796-appendix is as follows:
+   * if (the calculated signature - the modulus) < (the calculated signature)
+   * use (the calculated signature - the modulus) as signature
+   */
+  BN_sub(bnresult2, kd->n, bnresult);
+  if (BN_cmp(bnresult2, bnresult) < 0) {
+    BN_free(bnresult);
+    bnresult = bnresult2;
+    bnresult2=0;
+  }
+
+  BN_free(bnresult2);
+  BN_free(bnhash);
+  return 0;
+}
+
+
+
 GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(GWEN_CRYPTKEY *key,
                                      GWEN_BUFFER *src,
                                      GWEN_BUFFER *dst){
   unsigned int srclen;
-  unsigned int dstlen;
-  char *psrc;
-  char *pdst;
+  unsigned char *pdst;
+  RSA *kd;
+  GWEN_ERRORCODE err;
+  BIGNUM *bnresult;
 
   assert(key);
   assert(src);
   assert(dst);
+
+  kd=(RSA*)GWEN_CryptKey_GetKeyData(key);
+  assert(kd);
 
   srclen=GWEN_Buffer_GetUsedBytes(src);
   if (srclen!=GWEN_CryptKey_GetChunkSize(key)) {
@@ -159,20 +218,21 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BUFFER_FULL);
   }
-  psrc=GWEN_Buffer_GetPosPointer(src);
   pdst=GWEN_Buffer_GetPosPointer(dst);
 
-  dstlen=GWEN_Buffer_RoomLeft(dst);
-  if (!RSA_sign(NID_ripemd160,
-                psrc, srclen,
-                pdst, &dstlen,
-                GWEN_CryptKey_GetKeyData(key))) {
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
-                          GWEN_CRYPT_ERROR_SIGN);
+  bnresult = BN_new();
+
+  err=GWEN_CryptKeyRSA_SignBigNum(key, src, bnresult);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "here");
+    BN_free(bnresult);
+    return err;
   }
-  GWEN_Buffer_IncrementPos(dst, dstlen);
+
+  BN_bn2bin(bnresult, pdst);
+  BN_free(bnresult);
+
+  GWEN_Buffer_IncrementPos(dst, srclen);
   GWEN_Buffer_AdjustUsedBytes(dst);
   return 0;
 }
@@ -183,27 +243,69 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
                                        GWEN_BUFFER *signature){
   unsigned int srclen;
-  unsigned int dstlen;
-  char *psrc;
-  char *psig;
+  unsigned int siglen;
+  unsigned char *psrc;
+  unsigned char *psig;
+  RSA *kd;
+  GWEN_ERRORCODE err;
+
+  BIGNUM *bnsig;
+  BIGNUM *bndecsig;
+  BIGNUM *bnhash;
+  BN_CTX *bnctx;
 
   assert(key);
   assert(src);
   assert(signature);
 
+  kd=(RSA*)GWEN_CryptKey_GetKeyData(key);
+  assert(kd);
+
   srclen=GWEN_Buffer_GetUsedBytes(src);
   psrc=GWEN_Buffer_GetPosPointer(src);
-  dstlen=GWEN_Buffer_GetUsedBytes(signature);
+  siglen=GWEN_Buffer_GetUsedBytes(signature);
   psig=GWEN_Buffer_GetPosPointer(signature);
-  if (!RSA_verify(NID_ripemd160,
-                  psrc, srclen,
-                  psig, dstlen,
-                  GWEN_CryptKey_GetKeyData(key))) {
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
-                          GWEN_CRYPT_ERROR_VERIFY);
+
+  bnsig=BN_new();
+  bndecsig=BN_new();
+  bnhash=BN_new();
+  bnctx=BN_CTX_new();
+
+  // decrypt the institutes signature
+  bnsig = BN_bin2bn(psig, siglen, bnsig);
+  BN_CTX_start(bnctx);
+  BN_mod_exp(bndecsig, bnsig, kd->e, kd->n, bnctx);
+
+  err=GWEN_CryptKeyRSA_SignBigNum(key, src, bnhash);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "here");
+    BN_free(bnsig);
+    BN_free(bndecsig);
+    BN_free(bnhash);
+    BN_CTX_free(bnctx);
+    return err;
   }
+
+  if (BN_cmp(bndecsig, bnhash)!=0) {
+    BN_sub(bnhash, bnhash, kd->n);
+    if (BN_cmp(bndecsig, bnhash)!=0) {
+      DBG_ERROR(0, "Signature does not match");
+      BN_free(bnsig);
+      BN_free(bndecsig);
+      BN_free(bnhash);
+      BN_CTX_free(bnctx);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                            GWEN_CRYPT_ERROR_VERIFY);
+    }
+  }
+
+  BN_free(bnsig);
+  BN_free(bndecsig);
+  BN_free(bnhash);
+  BN_CTX_free(bnctx);
+
   return 0;
 }
 
