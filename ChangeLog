@@ -1,4 +1,9 @@
 
+2003/09/14 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added transport layers (socket: TCP and Unix) to IPC module
+
+
 2003/09/13 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added "test" folder, started debugging
