@@ -355,6 +355,7 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return 1;
   }
+  /*
   if (bf->pos+1>bf->bufferSize) {
     if (bf->bytesUsed+1 > bf->bufferSize) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d of %d bytes)",
@@ -362,7 +363,7 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
       return 1;
     }
   }
-
+  */
   bf->ptr[bf->bytesUsed]=c;
   if (bf->pos == bf->bytesUsed)
     bf->pos++;

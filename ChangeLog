@@ -4,7 +4,7 @@
 - partially reverted cs' changes to base/buffer.c: Please dicuss *before*
   making changes to this important class, it is widely used (especially
   GWEN_Buffer_AppendByte).
-
+- took back my latest change (argh, we *need* to discuss those changes)
 
 2005-03-04   Christian Stimming <stimming@tuhh.de>
 
