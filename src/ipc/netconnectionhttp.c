@@ -724,16 +724,16 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
 	    if (hasBody) {
 	      if (GWEN_DB_VariableExists(dbHeader, "content-length")) {
-		int size;
+                int size;
 
 		if (1!=sscanf(GWEN_DB_GetCharValue(dbHeader,
-						   "content-length", 0, ""),
-			      "%d", &size)){
-		  DBG_ERROR(0, "Error parsing HTTP header (bad size)");
+                                                   "content-length", 0, ""),
+                              "%d", &size)){
+                  DBG_ERROR(0, "Error parsing HTTP header (bad size)");
 		  GWEN_NetMsg_free(chttp->currentInMsg);
 		  chttp->currentInMsg=0;
 		  return GWEN_NetConnectionWorkResult_Error;
-		}
+                }
 		if (size>GWEN_NETCONNHTTP_MAXBODYSIZE) {
 		  DBG_ERROR(0, "Bad HTTP request (size limit exceeded)");
 		  GWEN_NetMsg_free(chttp->currentInMsg);
@@ -741,6 +741,13 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 		  return GWEN_NetConnectionWorkResult_Error;
 		}
 
+                if (!size) {
+                  /* no body, message complete */
+                  DBG_INFO(0, "Got a message");
+                  GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
+                  chttp->currentInMsg=0;
+                  return GWEN_NetConnectionWorkResult_Change;
+                }
                 /* set size */
 		GWEN_NetMsg_SetSize(chttp->currentInMsg, size);
 	      } /* if size given */
@@ -1206,6 +1213,48 @@ int GWEN_NetConnectionHTTP_WriteCommand(GWEN_NETCONNECTION *conn,
 
 
 /* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetConnectionHTTP_WriteStatus(GWEN_NETCONNECTION *conn,
+                                       GWEN_DB_NODE *db,
+                                       GWEN_BUFFER *buf) {
+  const char *p;
+  int pmajor;
+  int pminor;
+  GWEN_NETCONNECTIONHTTP *chttp;
+  int i;
+  char numbuf[16];
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  /* append protocol version if >=1.0 */
+  pmajor=chttp->pmajor;
+  pminor=chttp->pminor;
+
+  GWEN_Buffer_AppendString(buf, " HTTP/");
+  snprintf(numbuf, sizeof(numbuf), "%d", pmajor);
+  GWEN_Buffer_AppendString(buf, numbuf);
+  GWEN_Buffer_AppendByte(buf, '.');
+  snprintf(numbuf, sizeof(numbuf), "%d", pminor);
+  GWEN_Buffer_AppendString(buf, numbuf);
+  GWEN_Buffer_AppendByte(buf, ' ');
+
+  /* append command */
+  i=GWEN_DB_GetIntValue(db, "code", 0, 0);
+  snprintf(numbuf, sizeof(numbuf), "%d", i);
+  GWEN_Buffer_AppendString(buf, numbuf);
+  p=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (p) {
+    GWEN_Buffer_AppendByte(buf, ' ');
+    GWEN_Buffer_AppendString(buf, p);
+  }
+  GWEN_Buffer_AppendString(buf, "\r\n");
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetConnectionHTTP_WriteHeader(GWEN_NETCONNECTION *conn,
 				       GWEN_DB_NODE *db,
 				       GWEN_BUFFER *buf) {
@@ -1310,6 +1359,81 @@ int GWEN_NetConnectionHTTP_AddRequest(GWEN_NETCONNECTION *conn,
   if (chttp->pmajor>0) {
     /* write header */
     db=GWEN_DB_GetGroup(dbRequest, GWEN_DB_FLAGS_DEFAULT, "header");
+    assert(db);
+    db=GWEN_DB_Group_dup(db);
+
+    /* modify header (TODO) */
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "server",
+			 "Gwenhywfar "GWENHYWFAR_VERSION_FULL_STRING);
+
+    if (GWEN_NetConnectionHTTP_WriteHeader(conn, db, buf)) {
+      DBG_ERROR(0, "Error writing header");
+      GWEN_BufferedIO_free(bio);
+      GWEN_DB_Group_free(db);
+      return -1;
+    }
+    GWEN_DB_Group_free(db);
+  }
+
+  GWEN_Buffer_Dump(buf, stderr, 2);
+
+  GWEN_NetConnection_AddOutMsg(conn, msg);
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetConnectionHTTP_AddResponse(GWEN_NETCONNECTION *conn,
+                                       GWEN_DB_NODE *dbResponse,
+                                       GWEN_BUFFER *body,
+                                       GWEN_BUFFEREDIO *bio) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+  GWEN_NETMSG *msg;
+  GWEN_BUFFER *buf;
+  GWEN_DB_NODE *db;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  if (body && bio) {
+    DBG_ERROR(0, "Please give either a buffer or a bufferedio, not both");
+    abort();
+  }
+
+  if (body) {
+    /* body given, create BUFFEREDIO from it */
+    bio=GWEN_BufferedIO_Buffer_new(body);
+    GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  }
+
+  /* create message */
+  msg=GWEN_NetMsg_new(1024);
+  buf=GWEN_NetMsg_GetBuffer(msg);
+
+  /* store request data */
+  GWEN_DB_AddGroupChildren(GWEN_NetMsg_GetDB(msg), dbResponse);
+
+  /* set new bufferedIO */
+  if (bio)
+    GWEN_NetMsg_SetBufferedIO(msg, bio);
+
+  /* write command */
+  db=GWEN_DB_GetGroup(dbResponse, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "status");
+  assert(db);
+  if (GWEN_NetConnectionHTTP_WriteCommand(conn, db, buf)) {
+    DBG_ERROR(0, "Error writing status");
+    GWEN_BufferedIO_free(bio);
+    return -1;
+  }
+
+  GWEN_NetMsg_SetProtocolVersion(msg, chttp->pmajor, chttp->pminor);
+
+  if (chttp->pmajor>0) {
+    /* write header */
+    db=GWEN_DB_GetGroup(dbResponse, GWEN_DB_FLAGS_DEFAULT, "header");
     assert(db);
     db=GWEN_DB_Group_dup(db);
 

@@ -88,12 +88,12 @@ int GWEN_NetConnectionHTTP_WriteBody(GWEN_NETCONNECTION *conn,
 int GWEN_NetConnectionHTTP_WriteCommand(GWEN_NETCONNECTION *conn,
                                         GWEN_DB_NODE *db,
                                         GWEN_BUFFER *buf);
+int GWEN_NetConnectionHTTP_WriteStatus(GWEN_NETCONNECTION *conn,
+                                       GWEN_DB_NODE *db,
+                                       GWEN_BUFFER *buf);
 int GWEN_NetConnectionHTTP_WriteHeader(GWEN_NETCONNECTION *conn,
                                        GWEN_DB_NODE *db,
                                        GWEN_BUFFER *buf);
-
-void GWEN_NetConnectionHTTP_Escape(const char *src, GWEN_BUFFER *buf);
-int GWEN_NetConnectionHTTP_Unescape(const char *src, GWEN_BUFFER *buf);
 
 
 

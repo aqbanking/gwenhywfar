@@ -172,54 +172,88 @@ GWEN_TYPE_UINT32 GWEN_NetConnectionHTTP_GetState(GWEN_NETCONNECTION *conn);
 
 
 /**
- * Add a request which is sent as soon as possible.
+ * <p>
+ * Functions in this group add a request or response which is sent as soon as
+ * possible.
+ * </p>
  * The request itself consists of three parts:
  * <ul>
- *  <li>a command</li>
+ *  <li>a command (or a status in case of a response)</li>
  *  <li>an optional header</li>
  *  <li>a message body</li>
  * </ul>
+ * <p>
  * The first two items are stored inside a GWEN_DB. This GWEN_DB has the
  * following structure (example):
  * @code
  *   request {
- *     command {
- *       cmd="get"   # or "put" or "head" or any other valid HTTP command
- *       url="/"     # uniform ressource locator on the server
+ *     command {                 # this group only exists in requests
+ *       cmd="get"               # or "put" or "head" or any other valid HTTP
+ *       url="/"                 # command uniform ressource locator on the
+ *                               # server
  *
- *       vars {      # this group is optional and may contain whatever
- *         user="me" # variable you like. All these variables are
- *         pass="xy" # URL-encoded and appended to the URL before sending
- *       }           # HTTP-escaping is done transparently
+ *       vars {                  # this group is optional and may contain
+ *         user="me"             # whatever variable you like. All these
+ *         pass="xy"             # variables are URL-encoded and appended to
+ *       }                       # the URL before sending
+ *     }                         # HTTP-escaping is done transparently
  *
+ *     status {                  # this group only exists in responses
+ *       int code="200"          # status code
+ *       text="Ok"               # status message (human readable)
  *     }
+ *
  *     header {                  # this group is optional and may contain
  *       connection="keep-alive" # any valid HTTP header.
  *       accept="image/gif"      # any data MUST be completely surrounded
  *     }                         # quotation marks (no kommas outside!)
  *   }
  * @endcode
+ * </p>
  * The body (if any) can be given by either of two ways:
  * <ul>
  *  <li>by a GWEN_BUFFER (use argument <b>body</b>)</li>
  *  <li>by a GWEN_BUFFEREDIO (use argument <b>bio</b>)</li>
  * </ul>
+ * <p>
  * You can <b>not</b> use both.<br>
  * If neither way is selected no body is sent.<br>
+ * </p>
+ * <p>
  * <b>Note:</b>This function takes over the ownership of the GWEN_BUFFER (if
  * any) and the GWEN_BUFFER (if given) regardless of the result.
+ * </p>
  * @param conn HTTP connection to use
  * @param dbRequest command and optional header as described above
  * @param body message body given by a GWEN_BUFFER (0 if not)
  * @param bio message body given by a GWEN_BUFFEREDIO (0 if not)
  */
+/*@{*/
 int GWEN_NetConnectionHTTP_AddRequest(GWEN_NETCONNECTION *conn,
                                       GWEN_DB_NODE *dbRequest,
                                       GWEN_BUFFER *body,
                                       GWEN_BUFFEREDIO *bio);
 
 
+int GWEN_NetConnectionHTTP_AddResponse(GWEN_NETCONNECTION *conn,
+                                       GWEN_DB_NODE *dbResponse,
+                                       GWEN_BUFFER *body,
+                                       GWEN_BUFFEREDIO *bio);
+/*@}*/
+
+
+/** @name Tool Functions
+ *
+ */
+/*@{*/
+void GWEN_NetConnectionHTTP_Escape(const char *src, GWEN_BUFFER *buf);
+int GWEN_NetConnectionHTTP_Unescape(const char *src, GWEN_BUFFER *buf);
+/*@}*/
 
 
 #endif /* GWENNET_HTTP_H */
+
+
+
+
 

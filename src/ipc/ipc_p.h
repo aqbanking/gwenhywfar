@@ -32,10 +32,14 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_IPCNODE, GWEN_IPCNode);
 struct GWEN_IPCNODE {
   GWEN_LIST_ELEMENT(GWEN_IPCNODE);
   GWEN_NETCONNECTION *connection;
+  int isServer;
   GWEN_TYPE_UINT32 id;
   GWEN_TYPE_UINT32 mark;
   GWEN_TYPE_UINT32 usage;
   char *baseAuth;
+
+  GWEN_TYPE_UINT32 nextMsgId;
+  GWEN_TYPE_UINT32 lastMsgId;
 };
 GWEN_IPCNODE *GWEN_IPCNode_new();
 void GWEN_IPCNode_free(GWEN_IPCNODE *n);
@@ -105,6 +109,7 @@ struct GWEN_IPCMANAGER {
   GWEN_IPCREQUEST_LIST *outRequests;
   GWEN_IPCREQUEST_LIST *newInRequests;
   GWEN_IPCREQUEST_LIST *oldInRequests;
+  unsigned int sendTimeOut;
 };
 
 GWEN_IPCREQUEST *GWEN_IPCManager__FindRequest(GWEN_IPCMANAGER *mgr,
@@ -116,8 +121,15 @@ GWEN_TYPE_UINT32 GWEN_IPCManager__AddService(GWEN_IPCMANAGER *mgr,
                                              GWEN_NETTRANSPORT *tr,
                                              GWEN_TYPE_UINT32 mark,
                                              int isServer);
-int GWEN_IPCManager__CollectMsgs(GWEN_IPCMANAGER *mgr, int maxMsg);
+GWEN_IPCMSG *GWEN_IPCManager__MakeErrorResponse(GWEN_IPCMANAGER *mgr,
+                                                GWEN_IPCMSG *m,
+                                                int code,
+                                                const char *txt);
+int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg);
+int GWEN_IPCManager__CheckRequests(GWEN_IPCMANAGER *mgr);
 
+void GWEN_IPCManager__Connection_Up(GWEN_NETCONNECTION *conn);
+void GWEN_IPCManager__Connection_Down(GWEN_NETCONNECTION *conn);
 
 
 

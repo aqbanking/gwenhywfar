@@ -56,8 +56,9 @@ int GWEN_Crypt_IsAvailable() {
 
 
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
-                                            const char *cafile,
                                             const char *capath,
+                                            const char *ownCertFile,
+					    const char *dhfile,
                                             int secure,
                                             int relinquish){
   DBG_ERROR(0, "Crypto functions not supported");
@@ -82,6 +83,7 @@ GWEN_NetTransportSSL_GetGetPasswordFn(){
 
 void
 GWEN_NetTransportSSL_SetAskAddCertFn(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN fn){
+  DBG_ERROR(0, "Crypto functions not supported");
 }
 
 

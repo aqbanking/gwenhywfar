@@ -1,4 +1,9 @@
 
+2004/05/09: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- completed IPC stuff (still untested), added documentation to ipc/ipc.h
+
+
 2004/05/08: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added module ipc/ipc. This is a very simple IPC model based on
