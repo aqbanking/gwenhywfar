@@ -183,6 +183,10 @@ int GWEN_Widget_Changed(GWEN_WIDGET *w);
 const char *GWEN_Widget_GetHelpText(const GWEN_WIDGET *w);
 void GWEN_Widget_SetHelpText(GWEN_WIDGET *w, const char *s);
 
+const char *GWEN_Widget_GetDbVarName(const GWEN_WIDGET *w);
+void GWEN_Widget_SetDbVarName(GWEN_WIDGET *w, const char *s);
+
+
 int GWEN_Widget_IsChildOf(GWEN_WIDGET *wchild, GWEN_WIDGET *w);
 int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w);
 

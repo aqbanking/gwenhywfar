@@ -53,6 +53,31 @@ int GWEN_UILoader__AdjustWidgetsPos(GWEN_DB_NODE *db,
                                     int x, int y);
 
 
+GWEN_WIDGET *GWEN_UILoader_LoadButton(GWEN_WIDGET *parent,
+                                      GWEN_DB_NODE *db,
+                                      GWEN_XMLNODE *n);
+GWEN_WIDGET *GWEN_UILoader_LoadWindow(GWEN_WIDGET *parent,
+                                      GWEN_DB_NODE *db,
+                                      GWEN_XMLNODE *n);
+GWEN_WIDGET *GWEN_UILoader_LoadEditBox(GWEN_WIDGET *parent,
+                                       GWEN_DB_NODE *db,
+                                       GWEN_XMLNODE *n);
+GWEN_WIDGET *GWEN_UILoader_LoadCheckBox(GWEN_WIDGET *parent,
+                                        GWEN_DB_NODE *db,
+                                        GWEN_XMLNODE *n);
+GWEN_WIDGET *GWEN_UILoader_LoadDropDownBox(GWEN_WIDGET *parent,
+                                           GWEN_DB_NODE *db,
+                                           GWEN_XMLNODE *n);
+GWEN_WIDGET *GWEN_UILoader_LoadTextWidget(GWEN_WIDGET *parent,
+                                          GWEN_DB_NODE *db,
+                                          GWEN_XMLNODE *n);
+GWEN_WIDGET *GWEN_UILoader_LoadTableWidget(GWEN_WIDGET *parent,
+                                           GWEN_DB_NODE *db,
+                                           GWEN_XMLNODE *n);
+
+
+
+
 
 
 

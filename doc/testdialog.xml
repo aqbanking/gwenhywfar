@@ -1,0 +1,61 @@
+
+
+<widget name="dlg1" type="Window">
+  <flags>
+    <flag>WIDGET_FLAGS_BORDER</flag>
+    <flag>WINDOW_FLAGS_TITLE</flag>
+  </flags>
+  <width>80</width>
+  <height>25</height>
+  <title> Test-Dialog </title>
+
+  <vgroup align="top" >
+  
+    <hgroup align="center" gap="1" >
+  
+      <widget name="Button1" type="Button">
+        <flags>
+          <flag>WIDGET_FLAGS_BORDER</flag>
+          <flag>WIDGET_FLAGS_FOCUSABLE</flag>
+          <flag>WIDGET_FLAGS_HCENTER</flag>
+        </flags>
+        
+        <width>16</width>
+        <height>1</height>
+        <text> Button1 </text>
+        <helptext>
+          This is an example of a <b>help</b> text.
+        </helptext>
+        
+      </widget>
+  
+      <widget name="Button2" type="Button">
+        <flags>
+          <flag>WIDGET_FLAGS_BORDER</flag>
+          <flag>WIDGET_FLAGS_FOCUSABLE</flag>
+          <flag>WIDGET_FLAGS_HCENTER</flag>
+        </flags>
+        
+        <width>16</width>
+        <height>1</height>
+        <text> Button2 </text>
+      </widget>
+  
+    </hgroup>
+
+    <widget name="Button3" type="Button">
+      <flags>
+        <flag>WIDGET_FLAGS_BORDER</flag>
+        <flag>WIDGET_FLAGS_FOCUSABLE</flag>
+        <flag>WIDGET_FLAGS_HCENTER</flag>
+      </flags>
+      
+      <width>16</width>
+      <height>1</height>
+      <text> Button3 </text>
+    </widget>
+
+
+  </vgroup>
+    
+</widget>

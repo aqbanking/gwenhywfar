@@ -2,6 +2,15 @@
 2004/06/29: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ui:
+  - finished widget-loader, I will now have to think of a way to
+    automatically run a dialog and fill in form dar from a DB and to
+    store the user input into it. This will very much simplify creating
+    of dialogs.
+
+
+2004/06/29: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui:
   - started working on a widget-loader (loads and creates widgets from an
     XML file)
 - parser:

@@ -74,6 +74,7 @@ struct GWEN_WIDGET {
 
   /* additional data */
   char *helpText;
+  char *dbVarName;
 
   /* ncurses data */
   WINDOW *window;

@@ -40,6 +40,9 @@ GWEN_DB_NODE *GWEN_UILoader_ParseWidget(GWEN_XMLNODE *n,
                                         int x, int y,
                                         int width, int height);
 
+GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
+                                      GWEN_DB_NODE *db);
+
 
 
 #endif

@@ -197,6 +197,7 @@ void GWEN_Widget_free(GWEN_WIDGET *w){
       free(w->name);
       free(w->typeName);
       free(w->text);
+      free(w->dbVarName);
       wclear(w->window);
       if (w->window) {
         DBG_WARN(0, "Widget still open");
@@ -1429,6 +1430,22 @@ void GWEN_Widget_SetHelpText(GWEN_WIDGET *w, const char *s){
   free(w->helpText);
   if (s) w->helpText=strdup(s);
   else w->helpText=0;
+}
+
+
+
+const char *GWEN_Widget_GetDbVarName(const GWEN_WIDGET *w){
+  assert(w);
+  return w->dbVarName;
+}
+
+
+
+void GWEN_Widget_SetDbVarName(GWEN_WIDGET *w, const char *s){
+  assert(w);
+  free(w->dbVarName);
+  if (s) w->dbVarName=strdup(s);
+  else w->dbVarName=0;
 }
 
 

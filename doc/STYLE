@@ -36,11 +36,11 @@ modified to comply to this document.
 The goal of these guidelines is to keep the project files uniform and thus
 making it easier to read them.
 
-This document is subject to changes, and the project admins are open for
+This document is subject to changes, and the project admin is open for
 discussion and suggestions ;-)
 
-We know that many parts of this project do not fully comply to this
-style guide but we are working on it ;-)
+I know that many parts of this project do not fully comply to this
+style guide but I am working on it ;-)
 
 
 
@@ -280,7 +280,7 @@ developers. So rendering the CVS version unusable would be disastrous...
 Every exported function and type should be documented inside a header file.
 This project uses doxygen for this purpose.
 
-Well, not every function is documented right now, but we are working on 
+Well, not every function is documented right now, but I am working on 
 that ;-)
 
 

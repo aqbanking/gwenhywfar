@@ -17,13 +17,14 @@ EXTRA_DIST=\
  types.h.in \
  version.h.in
 
-lib_LTLIBRARIES=libgwenhywfar.la
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
   gwenhywfar.h \
   gwenhywfarapi.h \
   types.h \
   version.h
+
+lib_LTLIBRARIES=libgwenhywfar.la
 
 libgwenhywfar_la_SOURCES=\
   gwenhywfar.c

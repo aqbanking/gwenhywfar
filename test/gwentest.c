@@ -30,6 +30,9 @@
 # define sleep(x) Sleep(x*1000)
 # define strcasecmp(a, b) strcmp(a, b)
 #endif
+#ifdef USE_NCURSES
+# include <ncurses.h>
+#endif
 
 #include <gwenhywfar/ui/widget.h>
 #include <gwenhywfar/ui/ui.h>
@@ -2813,6 +2816,71 @@ int uitest19(int argc, char **argv) {
 }
 
 
+
+int uitest20(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_XMLNODE *nn;
+  GWEN_DB_NODE *db;
+  GWEN_WIDGET *w;
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  nn=GWEN_XMLNode_GetFirstTag(n);
+  if (!nn) {
+    DBG_ERROR(0, "No subtag");
+    return 1;
+  }
+
+  db=GWEN_UILoader_ParseWidget(nn,
+                               0, 0,
+                               80, 25);
+  if (db) {
+    DBG_NOTICE(0, "DB is:");
+    GWEN_DB_Dump(db, stdout, 2);
+  }
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+  w=GWEN_UILoader_LoadWidget(0, db);
+  if (!w) {
+    DBG_ERROR(0, "Could not load widgets");
+  }
+  else {
+    GWEN_Widget_Dump(w, 1);
+    GWEN_Widget_Redraw(w);
+    GWEN_UI_Flush();
+    DBG_NOTICE(0, "Waiting...");
+    getch();
+  }
+
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  return 0;
+}
+
+
 #endif /* USE_NCURSES */
 
 
@@ -2908,6 +2976,8 @@ int main(int argc, char **argv) {
     rv=uitest18(argc, argv);
   else if (strcasecmp(argv[1], "u19")==0)
     rv=uitest19(argc, argv);
+  else if (strcasecmp(argv[1], "u20")==0)
+    rv=uitest20(argc, argv);
 #endif /* USE_NCURSES */
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
