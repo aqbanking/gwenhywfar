@@ -81,7 +81,14 @@ if test "$OSYSTEM" != "windows" ; then
      if test -z "$WIN_PATH_WINDOWS_MINGW"; then
        AC_ERROR([Error in configure.ac: The macro aq_windoze did not set a windows system path -- maybe this macro has not yet been called.])
      fi
-     ssl_libraries="-L$WIN_PATH_WINDOWS_MINGW"
+     # Check for the directory of the installed OpenSSL DLLs
+     for d in "$WIN_PATH_WINDOWS_MINGW" "$WIN_PATH_SYSTEM_MINGW"; do
+	AQ_SEARCH_FILES("$d", "libssl32.dll")
+	if test -n "$found_file"; then
+	   ssl_libraries="-L$d"
+	   break
+	fi
+     done
      ssl_lib="-llibeay32 -llibssl32"
      AC_MSG_RESULT($ssl_libraries ${ssl_lib})
 fi
@@ -89,7 +96,7 @@ fi
 AC_MSG_CHECKING(whether openssl is usable)
 if test -z "$ssl_libraries" -o -z "$ssl_lib" -o -z "$ssl_includes"; then
     ssl_available="no"
-    AC_MSG_WARN(ssl libraries not found.)
+    AC_MSG_ERROR(ssl libraries not found.)
 else
     ssl_available="yes"
     AC_MSG_RESULT(yes)

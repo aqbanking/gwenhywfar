@@ -1,7 +1,7 @@
 This is Gwenhywfar, a multi-platform helper library for networking and
 security applications and libraries. It is heavily used by libchipcard
-www.libchipcard.de and OpenHBCI-TNG (The Next Generation)
-www.openhbci.de.
+http://www.libchipcard.de, OpenHBCI2 http://www.openhbci.de, and the
+simulation tool Simthetic http://simthetic.sourceforge.net .
 
 
 Features
@@ -24,18 +24,19 @@ Gwenhywfar includes the following features:
 - Networking functions which allow to manage many connections to be used
   economically even in single threaded applications
 
+- High-level functions for parsing files with a simplified "XML-like"
+  format and accessing them like a hierarchical database (src/parser/)
+
 - High-level cryptographic functions on top of OpenSSL functionality
   (src/crypt/)
-
-- High-level functions for parsing XML-like files and accessing them
-  like a hierarchical database (src/parser/)
 
 
 
 Requirements
 ------------
 
-- OpenSSL >= 0.9.6x (0.9.7x recommended)
+- OpenSSL >= 0.9.6x (0.9.7x recommended); this can optionally be
+  disabled by the configure switch --disable-ssl
 
 
 Platforms
@@ -43,7 +44,10 @@ Platforms
 
 Gwenhywfar is being developed on Linux. But the following platforms are also
 supported:
-- Windows (98, NT and newer)
+
+- Windows (98, NT and newer; for using this library from Microsoft
+  Visual Studio C please see the explanations in test/README.MSVC)
+
 - FreeBSD (untested, but most likely to work)
 - NetBSD  (untested, but most likely to work)
 - OpenBSD (untested, but most likely to work)
@@ -59,7 +63,7 @@ files. Many header files already include extensive comments in
 doxygen-format (however some don't).
 For a more or less complete API documentation use the command
 "make srcdoc"
-You wil need the tool doxygen.
+You will need the tool doxygen for this command to run.
 
 
 Contact

@@ -1,3 +1,7 @@
+2004-04-08  Christian Stimming <stimming@tuhh.de>
+
+	* m4/ssl.m4: For openssl on windows, check more than one directory
+	for the location of the DLLs.
 
 ===========================================================================
 MARK: released gwenhywfar-0.9.9 (2004/04/08)
