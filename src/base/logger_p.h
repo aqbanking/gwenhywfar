@@ -48,7 +48,7 @@ struct GWEN_LOGGER {
 
 int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
                                GWEN_LOGGER_LEVEL priority, const char *s,
-                               char *buffer, int bufsize);
+                               char *buffer, unsigned int bufsize);
 int GWEN_Logger__Log(GWEN_LOGGER *lg,
                      GWEN_LOGGER_LEVEL priority, const char *s);
 

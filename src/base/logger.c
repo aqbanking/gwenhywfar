@@ -164,8 +164,8 @@ void GWEN_Logger_Close(GWEN_LOGGER *lg){
 
 int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
                                GWEN_LOGGER_LEVEL priority, const char *s,
-                               char *buffer, int bufsize) {
-  int i;
+                               char *buffer, unsigned int bufsize) {
+  unsigned int i;
 #ifdef HAVE_TIME_H
   struct tm *t;
   time_t tt;
@@ -265,7 +265,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
     }
 
     rv=fprintf(f, "%s", buffer);
-    if (rv==-1 || rv!=strlen(buffer)) {
+    if (rv==-1 || rv!=(int)strlen(buffer)) {
       fprintf(stderr,
 	      "LOGGER: Unable to write to file \"%s\" (%s)\n",
 	      lg->logFile,
@@ -349,7 +349,7 @@ int GWEN_Logger_Log(GWEN_LOGGER *lg,
   char buffer[256];
   const char *p;
   int rv;
-  int i;
+  unsigned int i;
 
   if (lg==0)
     lg=gwen_logger;

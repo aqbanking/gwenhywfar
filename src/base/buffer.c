@@ -606,7 +606,7 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
       return 0;
     }
     else {
-      if ((bf->ptr-bf->realPtr)>=size) {
+      if ( (bf->ptr - bf->realPtr) >= (int)size ) {
         /* we can simply insert it by occupying the reserved space */
         bf->ptr-=size;
         memmove(bf->ptr, buffer, size);

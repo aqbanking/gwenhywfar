@@ -290,7 +290,8 @@ void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v){
 
 
 /* internal function */
-int GWEN_Error_ConcatStrings(char *dst, int dsize, const char *src) {
+static int 
+GWEN_Error_ConcatStrings(char *dst, unsigned int dsize, const char *src) {
   if (!src)
     return 1;
   assert(dst);
