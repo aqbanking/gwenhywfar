@@ -1,8 +1,8 @@
 dlldir
 gwenhywfar32*.dll
-gwenhywfar32.def
-gwenhywfar32.exp
-gwenhywfar32.lib
+gwenhywfar32*.def
+gwenhywfar32*.exp
+gwenhywfar32*.lib
 ressource.rc
 types.h
 version.h

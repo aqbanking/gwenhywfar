@@ -36,7 +36,7 @@ BUILT_SOURCES = types.h version.h
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME=gwenhywfar
+LIBRARY_NAME = gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
 DLLLDLIBS = -L/mingw/lib $(ssl_libraries) $(ssl_lib) -lwsock32
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
@@ -45,11 +45,11 @@ DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 # You should not have to make any modifications below this point
 #
 
-DLLNAME=$(LIBRARY_NAME)32_$(GWENHYWFAR_SO_EFFECTIVE).dll
-DLLEXP_LIB=$(LIBRARY_NAME)32.lib
-DLLEXP_DEF=$(LIBRARY_NAME)32.def
-DLLSRC_LIB=lib$(LIBRARY_NAME).a
-DLLSRC_LIBLA=lib$(LIBRARY_NAME).la
+DLLNAME = $(LIBRARY_NAME).dll
+DLLEXP_LIB = $(LIBRARY_NAME).lib
+DLLEXP_DEF = $(LIBRARY_NAME).def
+DLLSRC_LIB = $(lib_LTLIBRARIES:.la=.a)
+DLLSRC_LIBLA = $(lib_LTLIBRARIES)
 
 all-local: dll
 #@GWEN_MAKE_DLL_TARGET@
@@ -95,6 +95,6 @@ $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
 CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
 
 endif
-
+# IS_WINDOWS
 
 

@@ -1,3 +1,9 @@
+2004-05-07   Christian Stimming <stimming@tuhh.de>
+
+	* src/Makefile.am: For windows DLLs, create the def and lib files
+	with the filename including the SO_EFFECTIVE number as well,
+	because otherwise linking against it doesn't work.
+
 2004/05/06: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - more strict usage of *_p.h files. These files should nly be included by
