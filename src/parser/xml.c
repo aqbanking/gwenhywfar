@@ -1833,22 +1833,24 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
           }
         }
         else {
-          err=GWEN_BufferedIO_WriteLine(bio, "");
-          if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-            return -1;
-          }
+	  err=GWEN_BufferedIO_WriteLine(bio, "");
+	  if (!GWEN_Error_IsOk(err)) {
+	    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+	    return -1;
+	  }
 
-          if (GWEN_BufferedIO_GetLinePos(bio)==0){
-            for(i=0; i<ind+3; i++) {
-              err=GWEN_BufferedIO_WriteChar(bio, ' ');
-              if (!GWEN_Error_IsOk(err)) {
-                DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-                return -1;
-              }
-            }
-          }
-        }
+	  if (flags & GWEN_XML_FLAGS_INDENT) {
+	    if (GWEN_BufferedIO_GetLinePos(bio)==0){
+	      for(i=0; i<ind+3; i++) {
+		err=GWEN_BufferedIO_WriteChar(bio, ' ');
+		if (!GWEN_Error_IsOk(err)) {
+		  DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+		  return -1;
+		}
+	      }
+	    }
+	  }
+	}
 
         tbuf=GWEN_Buffer_new(0, strlen(p->name), 0, 1);
         if (GWEN_Text_EscapeXmlToBuffer(p->name, tbuf)) {

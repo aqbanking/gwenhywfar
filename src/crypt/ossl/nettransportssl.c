@@ -527,7 +527,7 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
       }
       else {
         if (sslerr==SSL_ERROR_ZERO_RETURN) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Connection closed");
+          DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
           GWEN_Socket_Close(skd->socket);
           SSL_free(skd->ssl);
           skd->ssl=0;

@@ -49,6 +49,7 @@ struct _S_ARGS {
   GWEN_LOGGER_LEVEL logLevel;   /* --loglevel ARG */
   const char *outputFile;       /* -o ARG */
   int compact;                  /* --compact */
+  int header;                   /* --header */
 };
 
 

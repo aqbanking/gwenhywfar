@@ -43,6 +43,7 @@ ARGUMENTS *Arguments_new() {
   ar->logLevel=GWEN_LoggerLevelNotice;
   ar->logType=GWEN_LoggerTypeConsole;
   ar->compact=0;
+  ar->header=0;
   return ar;
 }
 
@@ -168,6 +169,9 @@ int checkArgs(ARGUMENTS *args, int argc, char **argv) {
     }
     else if (strcmp(argv[i],"--compact")==0) {
       args->compact=1;
+    }
+    else if (strcmp(argv[i],"--header")==0) {
+      args->header=1;
     }
     else if (strcmp(argv[i],"-h")==0 || strcmp(argv[i],"--help")==0) {
       usage(argv[0]);

@@ -1090,7 +1090,7 @@ GWEN_NetConnection_Work(GWEN_NETCONNECTION *conn){
     DBG_DEBUG(GWEN_LOGDOMAIN, "Change on connection.");
   }
   else if (res==GWEN_NetConnectionWorkResult_Error) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error on connection.");
+    DBG_INFO(GWEN_LOGDOMAIN, "Error on connection.");
   }
   return res;
 }
@@ -1384,7 +1384,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       DBG_DEBUG(GWEN_LOGDOMAIN, "Working on connection...");
       rv=GWEN_NetConnection_Work(curr);
       if (rv==GWEN_NetConnectionWorkResult_Error) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error working (result was %d)", rv);
+        DBG_INFO(GWEN_LOGDOMAIN, "Error working (result was %d)", rv);
         errors++;
       }
       else if (rv==GWEN_NetConnectionWorkResult_Change) {

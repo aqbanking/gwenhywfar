@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/03/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added option "--header" to tool xmlmerge. With this given the resulting
+  file will contain some XML headers (like ?xml)
+
+
 2005/03/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added environment variable "GWEN_SSL_DEBUG"

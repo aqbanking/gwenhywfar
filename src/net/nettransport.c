@@ -142,7 +142,7 @@ GWEN_NetTransport_Read(GWEN_NETTRANSPORT *tr,
 
   rv=tr->readFn(tr, buffer, bsize);
   if (rv==0 && *bsize==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "EOF met (read)");
+    DBG_INFO(GWEN_LOGDOMAIN, "EOF met (read)");
     tr->flags|=GWEN_NETTRANSPORT_FLAGS_EOF_IN;
   }
 

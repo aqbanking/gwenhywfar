@@ -1129,8 +1129,11 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
          GWEN_NETTRANSPORT_FLAGS_WAS_LCONNECTED) &&
         (GWEN_NetConnection_GetStatus(conn)!=
          GWEN_NetTransportStatusLConnected)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Connection recently went down");
-      GWEN_NetConnection_Dump(conn);
+      DBG_INFO(GWEN_LOGDOMAIN, "Connection recently went down");
+      if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevelDebug)
+        GWEN_NetConnection_Dump(conn);
+      GWEN_NetConnection_SetStatus(conn,
+                                   GWEN_NetTransportStatusDisabled);
       return GWEN_NetConnectionWorkResult_Error;
     }
 
@@ -1535,7 +1538,8 @@ int GWEN_NetConnectionHTTP_AddRequest(GWEN_NETCONNECTION *conn,
   assert(chttp);
 
   if (body && bio) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Please give either a buffer or a bufferedio, not both");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Please give either a buffer or a bufferedio, not both");
     abort();
   }
 
@@ -1612,7 +1616,8 @@ int GWEN_NetConnectionHTTP_AddResponse(GWEN_NETCONNECTION *conn,
   assert(chttp);
 
   if (body && bio) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Please give either a buffer or a bufferedio, not both");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Please give either a buffer or a bufferedio, not both");
     abort();
   }
 

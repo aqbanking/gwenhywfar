@@ -118,18 +118,31 @@ int main(int argc, char **argv) {
   }
 
   top=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-  /** add comment */
+  /* add comment */
   comment=GWEN_XMLNode_new(GWEN_XMLNodeTypeComment,
                            "This is an automatically generated file, "
                            "do not edit");
   GWEN_XMLNode_AddChild(top, comment);
+
+  /* add header */
+  if (args->header) {
+    GWEN_XMLNODE *header;
+
+    header=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,
+                            "?xml");
+    GWEN_XMLNode_SetProperty(header, "version", "1.0");
+    GWEN_XMLNode_SetProperty(header, "encoding", "utf8");
+    GWEN_XMLNode_AddHeader(top, header);
+  }
 
   /* read all files */
   while(inFile) {
     GWEN_XMLNODE *n;
 
     n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "inFile");
-    if (GWEN_XML_ReadFile(n, inFile->param, GWEN_XML_FLAGS_DEFAULT)) {
+    if (GWEN_XML_ReadFile(n, inFile->param,
+                          GWEN_XML_FLAGS_DEFAULT |
+                          GWEN_XML_FLAGS_HANDLE_HEADERS)) {
       fprintf(stderr, "ERROR: Error reading file \"%s\"\n", inFile->param);
       GWEN_XMLNode_free(n);
       GWEN_XMLNode_free(top);
@@ -163,10 +176,15 @@ int main(int argc, char **argv) {
 
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
-  flags=GWEN_XML_FLAGS_DEFAULT;
+  flags=GWEN_XML_FLAGS_SIMPLE;
   if (args->compact) {
-    flags&=~GWEN_XML_FLAGS_INDENT;
+    flags=GWEN_XML_FLAGS_SIMPLE;
   }
+  else {
+    flags=GWEN_XML_FLAGS_INDENT;
+  }
+  flags|=GWEN_XML_FLAGS_HANDLE_HEADERS;
+
   rv=GWEN_XMLNode_WriteToStream(top, bio, flags);
   err=GWEN_BufferedIO_Close(bio);
   if (!GWEN_Error_IsOk(err)) {
