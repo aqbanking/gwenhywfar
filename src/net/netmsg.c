@@ -26,6 +26,10 @@
  ***************************************************************************/
 
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include "netmsg_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

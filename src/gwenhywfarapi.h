@@ -37,6 +37,25 @@
 # define GWENHYWFAR_API
 #endif
 
+/* Convenience macros to test the versions of glibc and gcc. Taken
+   from <features.h> which does not contain this on MinGW systems.  */
+#ifndef __GNUC_PREREQ
+# if defined __GNUC__ && defined __GNUC_MINOR__
+#  define __GNUC_PREREQ(maj, min) \
+        ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+# else
+#  define __GNUC_PREREQ(maj, min) 0
+# endif
+#endif /* __GNUC_PREREQ */
+
+
+/* Taken from <sys/cdefs.h> which does not contain this on MinGW
+   systems.  */
+#ifndef __STRING
+# define __STRING(x)     #x
+#endif /* __STRING */
+
+
 /* This is needed for PalmOS, because it define some functions needed */
 #include <string.h>
 #include <gwenhywfar/system.h>

@@ -360,7 +360,7 @@ GWEN_ERRORCODE GWEN_Socket_Accept(GWEN_SOCKET *sp,
 
   localAddr=GWEN_InetAddr_new(af);
   addrlen=localAddr->size;
-  localSocket=GWEN_Socket_new();
+  localSocket=GWEN_Socket_new(sp->type);
   localSocket->socket=accept(sp->socket,
                              localAddr->address,
                              &addrlen);

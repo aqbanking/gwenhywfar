@@ -1,3 +1,11 @@
+2004-03-22  Christian Stimming <stimming@tuhh.de>
+
+	* src/gwenhywfarapi.h: Add macro declarations that are unavailable
+	on mingw systems.
+
+	* src/os/windows/inetsocket.c: Add missing function argument.
+
+	* src/net/netmsg.c: Add include config.h.
 
 ===========================================================================
 MARK: released gwenhywfar-0.9.8 (2004/03/22)
