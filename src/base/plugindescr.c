@@ -33,6 +33,7 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/bio_buffer.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -161,6 +162,45 @@ const char*
 GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd){
   assert(pd);
   return pd->longDescr;
+}
+
+
+
+int
+GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                            const char *s,
+                                            GWEN_BUFFER *buf){
+  GWEN_XMLNODE *n;
+
+  assert(pd);
+  assert(pd->xmlNode);
+
+  n=GWEN_XMLNode_FindFirstTag(pd->xmlNode, "descr", 0, 0);
+  if (n) {
+    n=GWEN_XMLNode_FindFirstTag(n, "text", "format", s);
+    if (n) {
+      GWEN_BUFFEREDIO *bio;
+
+      bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
+      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
+      if (GWEN_XMLNode_WriteToStream(n, bio,
+                                     GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
+        DBG_INFO(0, "here");
+        GWEN_BufferedIO_Abandon(bio);
+        GWEN_BufferedIO_free(bio);
+        return -1;
+      }
+      if (GWEN_BufferedIO_Close(bio)) {
+        DBG_INFO(0, "here");
+        GWEN_BufferedIO_free(bio);
+        return -1;
+      }
+      GWEN_BufferedIO_free(bio);
+      return 0;
+    }
+  }
+
+  return -1;
 }
 
 

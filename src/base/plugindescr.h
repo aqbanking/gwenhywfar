@@ -93,8 +93,33 @@ GWENHYWFAR_API
 const char*
   GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
 
+
+/**
+ * <p>
+ * Seeks for a long description with the given format and appends it to the
+ * data in the given buffer.
+ * </p>
+ * <p>
+ * The DESCR tag of the plugin description is expected to contain sub tags
+ * named TEXT with the property "FORMAT" describing the format.
+ * </p>
+ * <p>
+ * Currently supported format is "html".
+ * </p>
+ * @return 0 if ok, !=0 on error
+ * @param pd plugin description
+ * @param s name of the format (e.g. <i>html</i>)
+ * @param buf buffer to append the description to
+ */
+GWENHYWFAR_API
+int
+GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                            const char *s,
+                                            GWEN_BUFFER *buf);
+
 GWENHYWFAR_API
   int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);
+
 GWENHYWFAR_API
   void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i);
 
