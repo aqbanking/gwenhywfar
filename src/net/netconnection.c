@@ -1496,7 +1496,8 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     if (!GWEN_Error_IsOk(err)) {
       if (GWEN_Error_GetType(err)!=
 	  GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
-	  GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT) {
+          (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
+           GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
 	DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
 	GWEN_SocketSet_free(rset);
 	GWEN_SocketSet_free(wset);
@@ -1504,7 +1505,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
 	return GWEN_NetConnectionWorkResult_Error;
       }
       else {
-	DBG_DEBUG(GWEN_LOGDOMAIN, "Timeout");
+	DBG_DEBUG(GWEN_LOGDOMAIN, "Timeout or interrupted");
 	GWEN_SocketSet_free(rset);
         GWEN_SocketSet_free(wset);
         if (changes)

@@ -2,9 +2,15 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/03/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_Netconnection_Walk() now returns a timeout rather than an error when 
+  select() has been interrupted by a signal.
+
+
 2005/03/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- GWEN_NetTransportSSL_StartConnect() no returns 
+- GWEN_NetTransportSSL_StartConnect() now returns 
   GWEN_NetTransportResultWantRead instead of GWEN_NetTransportResultOk when
   the connect is in progress.
 - same with GWEN_NetTransportSocket_StartConnect()
