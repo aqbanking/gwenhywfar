@@ -1,8 +1,16 @@
+
+2004/07/31: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- gwenhywfar.m4: fixed a buf (was always using libgwen_pp instead of 
+  libgwenhywfar)
+
+
 2004-07-30   Christian Stimming <stimming@tuhh.de>
 
 	* all header files: Removed GWENHYWFAR_API from all typedefs since
 	this will break compilation of Win32 applications as soon as those
 	use any gwen typedef as function return type.
+
 
 2004/07/30: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
