@@ -41,6 +41,8 @@ static GWEN_LIST *gwen_callbackstack=0;
 
 GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count){
   GWEN_WAITCALLBACK_CTX *ctx;
+  GWEN_WAITCALLBACK_RESULT res;
+  time_t lct;
 
   if (!gwen_callbackstack) {
     DBG_DEBUG(0, "No callbacks registered (1)");
@@ -55,7 +57,10 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count){
     DBG_WARN(0, "No callbacks set");
     return GWEN_WaitCallbackResult_Continue;
   }
-  return ctx->waitCallbackFn((int)count, ctx);
+  lct=time(0);
+  res=ctx->waitCallbackFn((int)count, ctx);
+  ctx->lastCalled=lct;
+  return res;
 }
 
 
@@ -137,6 +142,10 @@ void GWEN_WaitCallback_Leave(){
 
 
 
+time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx){
+  assert(ctx);
+  return ctx->lastCalled;
+}
 
 
 

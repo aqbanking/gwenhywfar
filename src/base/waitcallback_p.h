@@ -31,10 +31,12 @@
 
 
 #include <gwenhywfar/waitcallback.h>
+#include <time.h>
 
 
 struct GWEN_WAITCALLBACK_CTX {
   GWEN_WAITCALLBACK_FN waitCallbackFn;
+  time_t lastCalled;
   unsigned int usage;
   void *data;
 };

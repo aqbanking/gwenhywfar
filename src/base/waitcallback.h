@@ -29,6 +29,8 @@
 #ifndef GWEN_WAIT_CALLBACK_H
 #define GWEN_WAIT_CALLBACK_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -120,10 +122,13 @@ extern "C" {
 /*@{*/
 
 
+#include <time.h>
+
 #define GWEN_WAITCALLBACK_ENTER (-1)
 #define GWEN_WAITCALLBACK_LEAVE (-2)
 
 
+GWENHYWFAR_API
 typedef enum {
   /** tells the caller that it is ok to continue */
   GWEN_WaitCallbackResult_Continue=0,
@@ -132,6 +137,7 @@ typedef enum {
 } GWEN_WAITCALLBACK_RESULT;
 
 
+GWENHYWFAR_API
 typedef struct GWEN_WAITCALLBACK_CTX GWEN_WAITCALLBACK_CTX;
 
 /**
@@ -155,7 +161,7 @@ typedef struct GWEN_WAITCALLBACK_CTX GWEN_WAITCALLBACK_CTX;
  * @param ctx callback context used. The application can store private
  * data within such a context
  */
-typedef
+GWENHYWFAR_API typedef
 GWEN_WAITCALLBACK_RESULT (*GWEN_WAITCALLBACK_FN)(int count,
                                                  GWEN_WAITCALLBACK_CTX *ctx);
 
@@ -168,6 +174,7 @@ GWEN_WAITCALLBACK_RESULT (*GWEN_WAITCALLBACK_FN)(int count,
  * @param count optional number, the value is only interpreted by the
  * implemented callback function
  */
+GWENHYWFAR_API
 GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(unsigned int count);
 
 
@@ -176,6 +183,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(unsigned int count);
  * @param fn your callback function for this context
  * @param data optional private data for the callback function.
  */
+GWENHYWFAR_API
 GWEN_WAITCALLBACK_CTX *GWEN_WaitCallback_Context_new(GWEN_WAITCALLBACK_FN fn,
                                                      void *data);
 
@@ -183,12 +191,14 @@ GWEN_WAITCALLBACK_CTX *GWEN_WaitCallback_Context_new(GWEN_WAITCALLBACK_FN fn,
  * Destructor for a context. You MUST call this for every created context
  * to avoid memory leaks.
  */
+GWENHYWFAR_API
 void GWEN_WaitCallback_Context_free(GWEN_WAITCALLBACK_CTX *ctx);
 
 /**
  * Returns the private data given when the context was created (see
  * @ref GWEN_WaitCallback_Context_new)
  */
+GWENHYWFAR_API
 void *GWEN_WaitCallback_Context_GetData(GWEN_WAITCALLBACK_CTX *ctx);
 
 /**
@@ -198,6 +208,7 @@ void *GWEN_WaitCallback_Context_GetData(GWEN_WAITCALLBACK_CTX *ctx);
  * callback function of this context with the value
  * @ref GWEN_WAITCALLBACK_ENTER
  */
+GWENHYWFAR_API
 void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx);
 
 /**
@@ -206,8 +217,16 @@ void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx);
  * value @ref GWEN_WAITCALLBACK_LEAVE and restores the context used just
  * before @ref GWEN_WaitCallback_Enter was called.
  */
+GWENHYWFAR_API
 void GWEN_WaitCallback_Leave();
 
+
+/**
+ * Returns the time when the callback function was last called
+ * (or 0 if it has never been called)
+ */
+GWENHYWFAR_API
+time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx);
 
 /*@}*/
 
