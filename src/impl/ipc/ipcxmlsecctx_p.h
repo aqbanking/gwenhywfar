@@ -33,8 +33,7 @@
 
 
 struct GWEN_IPCXMLSECCTXDATA {
-  GWEN_CRYPTKEY *signKey;
-  GWEN_CRYPTKEY *cryptKey;
+  GWEN_KEYMANAGER *keyManager;
   unsigned int signSeq;
   GWEN_CRYPTKEY *sessionKey;
 

@@ -74,11 +74,6 @@ unsigned int GWEN_HBCIDialog_GetNextMsgNum(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIDialog_SetNextMsgNum(GWEN_HBCIDIALOG *hdlg,
                                    unsigned int i);
 
-const char *GWEN_HBCIDialog_GetOwner(GWEN_HBCIDIALOG *hdlg);
-void GWEN_HBCIDialog_SetOwner(GWEN_HBCIDIALOG *hdlg,
-                              const char *s);
-
-
 void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg);
 
 
@@ -96,6 +91,12 @@ GWEN_SECCTX_MANAGER*
 
 void GWEN_HBCIDialog_Attach(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIDialog_Detach(GWEN_HBCIDIALOG *hdlg);
+
+
+const char *GWEN_HBCIDialog_GetLocalContext(GWEN_HBCIDIALOG *hdlg);
+void GWEN_HBCIDialog_SetLocalContext(GWEN_HBCIDIALOG *hdlg,
+                                     const char *s);
+
 
 #ifdef __cplusplus
 }

@@ -16,6 +16,7 @@
 #include <gwenhyfwar/hbcimsg.h>
 #include <gwenhyfwar/ipcxmlsecctx.h>
 #include <gwenhyfwar/ipcxmlkeymanager.h>
+#include <gwenhyfwar/ipcxml.h>
 
 
 int testDB(int argc, char **argv) {
@@ -418,8 +419,7 @@ int testDialog(int argc, char **argv) {
   fprintf(stderr, "Generating key done.\n");
 
   sc=GWEN_IPCXMLSecCtx_new("martin");
-  GWEN_IPCXMLSecCtx_SetCryptKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
   GWEN_IPCXMLSecCtx_SetSignSeq(sc, 4554);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
@@ -444,15 +444,13 @@ int testDialog(int argc, char **argv) {
   }
 
   GWEN_HBCIMsg_SetFlags(hmsg,
-                        GWEN_HBCIMSG_FLAGS_SIGN |
-                        GWEN_HBCIMSG_FLAGS_CRYPT);
+                        GWEN_HBCIMSG_FLAGS_SIGN /*|
+                        GWEN_HBCIMSG_FLAGS_CRYPT*/);
 
   GWEN_HBCIMsg_AddSigner(hmsg,
                          GWEN_CryptKey_GetKeySpec(key));
   GWEN_HBCIMsg_SetCrypter(hmsg,
                           GWEN_CryptKey_GetKeySpec(key));
-
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
 
   requestId=GWEN_HBCIMsg_AddNode(hmsg, sn, da);
   if (requestId==0) {
@@ -460,7 +458,7 @@ int testDialog(int argc, char **argv) {
     return 2;
   }
 
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelWarning);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
 
   fprintf(stderr, "Encoding message\n");
   if (GWEN_HBCIMsg_EncodeMsg(hmsg)) {
@@ -480,7 +478,7 @@ int testDialog(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "Decoding message: done\n");
-  /* GWEN_DB_Dump(da, stderr, 2); */
+  GWEN_DB_Dump(da, stderr, 2);
 
   GWEN_MsgEngine_free(e);
   GWEN_DB_Group_free(da);
@@ -491,6 +489,333 @@ int testDialog(int argc, char **argv) {
   return 0;
 }
 
+
+
+int testServer(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_MSGENGINE *e;
+  GWEN_XMLNODE *sn;
+  GWEN_DB_NODE *da;
+  GWEN_DB_NODE *keydb;
+  GWEN_HBCIDIALOG *dlg;
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_HBCIMSG *hmsg;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_SECCTX *sc;
+  unsigned int requestId;
+  GWEN_IPCXMLSERVICE *service;
+  unsigned int serverId;
+
+  if (argc<4) {
+    fprintf(stderr, "Path of XML file and key file needed.\n");
+    return 1;
+  }
+  e=GWEN_MsgEngine_new();
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  da=GWEN_DB_Group_new("Data");
+
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  GWEN_MsgEngine_SetDefinitions(e, n, 1);
+  GWEN_MsgEngine_SetProtocolVersion(e, 1);
+  GWEN_MsgEngine_SetMode(e, "RDH");
+
+  scm=GWEN_SecContextMgr_new("TestService-1");
+
+  key=GWEN_CryptKey_Factory("RSA");
+  if (!key) {
+    fprintf(stderr, "Error creating key.\n");
+    return 1;
+  }
+
+  keydb=GWEN_DB_Group_new("key");
+  if (GWEN_DB_ReadFile(keydb, argv[3], GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading file \"%s\"", argv[3]);
+    return 2;
+  }
+
+  err=GWEN_CryptKey_FromDb(key, keydb);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  GWEN_DB_Group_free(keydb);
+  keydb=0;
+
+  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key));
+  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetSignSeq(sc, 4554);
+  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
+    fprintf(stderr, "Could not add context.\n");
+    return 2;
+  }
+  fprintf(stderr, "Context added.\n");
+
+  fprintf(stderr, "Creating service.\n");
+  service=GWEN_IPCXMLService_new(e, scm);
+  fprintf(stderr, "Creating service: done.\n");
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
+  fprintf(stderr, "Creating server.\n");
+  serverId=GWEN_IPCXMLService_AddServer(service,
+                                        GWEN_IPCXMLServiceTypeTCP,
+                                        "martin",
+                                        1,
+                                        "192.168.115.2",
+                                        44444,
+                                        0);
+  if (!serverId) {
+    fprintf(stderr, "Error.\n");
+    return 2;
+  }
+  fprintf(stderr, "Creating server: done.\n");
+
+  for (;;) {
+    int chr;
+
+    fprintf(stderr, "Hit ENTER to Work (or ESC and ENTER to abort)\n");
+    chr=getchar();
+    if (chr==27)
+      break;
+    err=GWEN_IPCXMLService_Work(service, 1000);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+    }
+    err=GWEN_IPCXMLService_HandleMsgs(service, 0, 1);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+    }
+  } /* for */
+
+  fprintf(stderr, "Exit.\n");
+  GWEN_IPCXMLService_free(service);
+  return 0;
+}
+
+
+
+int testClient(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_MSGENGINE *e;
+  GWEN_XMLNODE *sn;
+  GWEN_DB_NODE *da;
+  GWEN_DB_NODE *keydb;
+  GWEN_HBCIDIALOG *dlg;
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_HBCIMSG *hmsg;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_SECCTX *sc;
+  unsigned int requestId;
+  GWEN_IPCXMLSERVICE *service;
+  unsigned int serverId;
+
+  if (argc<4) {
+    fprintf(stderr, "Path of XML file and key file needed.\n");
+    return 1;
+  }
+  e=GWEN_MsgEngine_new();
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  da=GWEN_DB_Group_new("Data");
+
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  GWEN_MsgEngine_SetDefinitions(e, n, 1);
+  GWEN_MsgEngine_SetProtocolVersion(e, 1);
+  GWEN_MsgEngine_SetMode(e, "RDH");
+
+  scm=GWEN_SecContextMgr_new("TestService-1");
+
+  key=GWEN_CryptKey_Factory("RSA");
+  if (!key) {
+    fprintf(stderr, "Error creating key.\n");
+    return 1;
+  }
+
+  keydb=GWEN_DB_Group_new("key");
+  if (GWEN_DB_ReadFile(keydb, argv[3], GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading file \"%s\"", argv[3]);
+    return 2;
+  }
+
+  err=GWEN_CryptKey_FromDb(key, keydb);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  GWEN_DB_Group_free(keydb);
+  keydb=0;
+
+  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key));
+  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetSignSeq(sc, 4554);
+  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
+    fprintf(stderr, "Could not add context.\n");
+    return 2;
+  }
+  fprintf(stderr, "Context added.\n");
+
+  fprintf(stderr, "Creating service.\n");
+  service=GWEN_IPCXMLService_new(e, scm);
+  fprintf(stderr, "Creating service: done.\n");
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
+  fprintf(stderr, "Creating client.\n");
+  serverId=GWEN_IPCXMLService_AddClient(service,
+                                        GWEN_IPCXMLServiceTypeTCP,
+                                        "martin",
+                                        1,
+                                        "192.168.115.2",
+                                        44444,
+                                        0);
+  if (!serverId) {
+    fprintf(stderr, "Error.\n");
+    return 2;
+  }
+  fprintf(stderr, "Creating client: done.\n");
+
+  err=GWEN_IPCXMLService_SetSecurityEnv(service,
+                                        serverId,
+                                        GWEN_CryptKey_GetKeySpec(key),
+                                        GWEN_CryptKey_GetKeySpec(key));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  fprintf(stderr, "Adding request...\n");
+  requestId=GWEN_IPCXMLService_AddRequest(service,
+                                          1,
+                                          "Test",
+                                          0,
+                                          da,
+                                          1);
+  if (!requestId) {
+    DBG_ERROR(0, "No request created.");
+    return 2;
+  }
+
+  for (;;) {
+    int chr;
+
+    fprintf(stderr, "Hit ENTER to Work (or ESC and ENTER to abort)\n");
+    chr=getchar();
+    if (chr==27)
+      break;
+    fprintf(stderr, "Working...\n");
+    err=GWEN_IPCXMLService_Work(service, 1000);
+    fprintf(stderr, "Working... done.\n");
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+    }
+  } /* for */
+
+  fprintf(stderr, "Exit.\n");
+  GWEN_IPCXMLService_free(service);
+  return 0;
+}
+
+
+
+
+
+int testMkKey(int argc, char **argv) {
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *db;
+
+  if (argc<3) {
+    fprintf(stderr, "Path of key file needed.\n");
+    return 1;
+  }
+
+  key=GWEN_CryptKey_Factory("RSA");
+  if (!key) {
+    fprintf(stderr, "Error creating key.\n");
+    return 1;
+  }
+
+  GWEN_CryptKey_SetOwner(key, "martin");
+  GWEN_CryptKey_SetKeyName(key, "B");
+
+  fprintf(stderr, "Generating key.\n");
+  err=GWEN_CryptKey_Generate(key, 768);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Generating key done.\n");
+
+  db=GWEN_DB_Group_new("key");
+  err=GWEN_CryptKey_ToDb(key,
+                         db, 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  if (GWEN_DB_WriteFile(db, argv[2], GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error writing file \"%s\"", argv[2]);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+int testCopyKey(int argc, char **argv) {
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *db2;
+
+  if (argc<4) {
+    fprintf(stderr, "Path of souce and destination key files needed.\n");
+    return 1;
+  }
+
+  key=GWEN_CryptKey_Factory("RSA");
+  if (!key) {
+    fprintf(stderr, "Error creating key.\n");
+    return 1;
+  }
+
+  db=GWEN_DB_Group_new("key");
+  if (GWEN_DB_ReadFile(db, argv[2], GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading file \"%s\"", argv[2]);
+    return 2;
+  }
+
+  err=GWEN_CryptKey_FromDb(key, db);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  GWEN_DB_Group_free(db);
+
+  db2=GWEN_DB_Group_new("key");
+  err=GWEN_CryptKey_ToDb(key,
+                         db2, 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  if (GWEN_DB_WriteFile(db2, argv[3], GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error writing file \"%s\"", argv[3]);
+    return 2;
+  }
+
+  return 0;
+}
 
 
 
@@ -522,6 +847,14 @@ int main(int argc, char **argv) {
     rv=testKey(argc, argv);
   else if (strcasecmp(argv[1], "dlg")==0)
     rv=testDialog(argc, argv);
+  else if (strcasecmp(argv[1], "server")==0)
+    rv=testServer(argc, argv);
+  else if (strcasecmp(argv[1], "client")==0)
+    rv=testClient(argc, argv);
+  else if (strcasecmp(argv[1], "mkkey")==0)
+    rv=testMkKey(argc, argv);
+  else if (strcasecmp(argv[1], "cpkey")==0)
+    rv=testCopyKey(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

@@ -83,6 +83,12 @@ const char *GWEN_IPC_ErrorString(int c){
   case GWEN_IPC_ERROR_GENERIC:
     s="Generic error";
     break;
+  case GWEN_IPC_ERROR_INQUEUE_EMPTY:
+    s="Input queue empty";
+    break;
+  case GWEN_IPC_ERROR_SOME_FAILED:
+    s="Some messages had errors";
+    break;
   default:
     s=0;
   } /* switch */

@@ -499,9 +499,6 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   
       DBG_DEBUG(0, "Getting data of type \"%s\" from within XML file", type);
       n=GWEN_XMLNode_GetChild(node);
-      DBG_DEBUG(0, "Current node is %8x (new node is %8x)",
-               (unsigned int)node,
-               (unsigned int)n);
       if (!n) {
         DBG_DEBUG(0, "No child");
       }
@@ -762,7 +759,6 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
                                            unsigned int *datasize) {
   const char *p;
   static char pbuffer[256];
-  const char *type;
 
   if (pvalue) {
     DBG_DEBUG(0, "Transforming value \"%s\"", pvalue);
@@ -801,6 +797,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
       else {
         int z;
         GWEN_DB_VALUETYPE vt;
+        const char *type;
 
         DBG_DEBUG(0, "Getting global property \"%s\"", p);
         vt=GWEN_DB_GetVariableType(e->globalValues, p);
@@ -953,6 +950,7 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
   }
   topDown=atoi(GWEN_XMLNode_GetProperty(node, "topdown","0"));
   lastValue=0;
+  lastDataSize=0;
 
   bufferPtr=0;
 

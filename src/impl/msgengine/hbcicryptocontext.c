@@ -104,8 +104,8 @@ void GWEN_HBCICryptoContext_SetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx,
                                        const GWEN_KEYSPEC *ks){
   assert(ctx);
   assert(ks);
-  if (ctx->key)
-    GWEN_KeySpec_free(ctx->key);
+  DBG_INFO(0, "Freeing Keyspec");
+  GWEN_KeySpec_free(ctx->key);
   ctx->key=GWEN_KeySpec_dup(ks);
 }
 
@@ -148,6 +148,7 @@ void GWEN_HBCICryptoContext_free(GWEN_HBCICRYPTOCONTEXT *ctx){
     free(ctx->pCryptKey);
     free(ctx->mode);
     free(ctx->serviceCode);
+    DBG_INFO(0, "Freeing Keyspec");
     GWEN_KeySpec_free(ctx->key);
     free(ctx);
   }

@@ -156,6 +156,7 @@ void GWEN_HBCIDialog_free(GWEN_HBCIDIALOG *hdlg){
     if (hdlg->inheritorData && hdlg->freeDataFn)
       hdlg->freeDataFn(hdlg);
     free(hdlg->dialogId);
+    free(hdlg->localContext);
     free(hdlg);
   }
 }
@@ -195,28 +196,27 @@ void GWEN_HBCIDialog_Detach(GWEN_HBCIDIALOG *hdlg){
 
 
 
-const char *GWEN_HBCIDialog_GetOwner(GWEN_HBCIDIALOG *hdlg){
+const char *GWEN_HBCIDialog_GetLocalContext(GWEN_HBCIDIALOG *hdlg){
   assert(hdlg);
-  return hdlg->owner;
+  return hdlg->localContext;
 }
 
 
 
-void GWEN_HBCIDialog_SetOwner(GWEN_HBCIDIALOG *hdlg,
-                              const char *s){
+void GWEN_HBCIDialog_SetLocalContext(GWEN_HBCIDIALOG *hdlg,
+                                     const char *s){
   assert(hdlg);
   assert(s);
-  free(hdlg->owner);
-  hdlg->owner=strdup(s);
+  free(hdlg->localContext);
+  hdlg->localContext=strdup(s);
 }
+
 
 
 void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg){
   assert(hdlg);
   if (hdlg->resetFn)
     hdlg->resetFn(hdlg);
-  free(hdlg->owner);
-  hdlg->owner=0;
   free(hdlg->dialogId);
   hdlg->dialogId=strdup("0");
   hdlg->nextMsgNum=1;

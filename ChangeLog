@@ -1,5 +1,18 @@
 $Id$
 
+
+2003/11/22 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in DB concerning loading of binary data
+- added a warning to DB when an unknown type specifier is found (which
+  defaults to "char")
+- fixed a bug in RSA code concerning loading of keys from a DB
+- first successful test of client/server IPC ;-)
+  Now it basically works. I also fixed many bugs in the code which is not
+  used by programs, since it is under heavy development.
+- reading keys from a file and writing then to a file now works
+
+
 2003-11-21  Christian Stimming <stimming@tuhh.de>
 
 	* README: Add some explanation of this package. Martin's

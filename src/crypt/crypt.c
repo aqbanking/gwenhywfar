@@ -170,6 +170,7 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
 #endif
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
+    DBG_INFO(0, "Freeing Keyspec");
     GWEN_KeySpec_free(key->keyspec);
     free(key);
   }
@@ -196,6 +197,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key){
   newKey->freeKeyDataFn=key->freeKeyDataFn;
   newKey->openFn=key->openFn;
   newKey->closeFn=key->closeFn;
+  DBG_INFO(0, "Freeing Keyspec");
   GWEN_KeySpec_free(newKey->keyspec);
   newKey->keyspec=GWEN_KeySpec_dup(key->keyspec);
   newKey->pub=key->pub;
@@ -204,7 +206,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key){
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_Encrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_Encrypt(const GWEN_CRYPTKEY *key,
                                      GWEN_BUFFER *src,
                                      GWEN_BUFFER *dst){
   assert(key);
@@ -216,7 +218,7 @@ GWEN_ERRORCODE GWEN_CryptKey_Encrypt(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_Decrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_Decrypt(const GWEN_CRYPTKEY *key,
                                      GWEN_BUFFER *src,
                                      GWEN_BUFFER *dst){
   assert(key);
@@ -228,7 +230,7 @@ GWEN_ERRORCODE GWEN_CryptKey_Decrypt(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_Sign(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_Sign(const GWEN_CRYPTKEY *key,
                                   GWEN_BUFFER *src,
                                   GWEN_BUFFER *dst){
   assert(key);
@@ -240,7 +242,7 @@ GWEN_ERRORCODE GWEN_CryptKey_Sign(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_Verify(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_Verify(const GWEN_CRYPTKEY *key,
                                     GWEN_BUFFER *src,
                                     GWEN_BUFFER *dst){
   assert(key);
@@ -284,7 +286,7 @@ GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_ToDb(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
                                   GWEN_DB_NODE *db,
                                   int pub){
   GWEN_DB_NODE *gr;
@@ -564,7 +566,7 @@ void GWEN_CryptKey_SetDupFn(GWEN_CRYPTKEY *key,
 
 
 
-int GWEN_CryptKey_IsPublic(GWEN_CRYPTKEY *key){
+int GWEN_CryptKey_IsPublic(const GWEN_CRYPTKEY *key){
   assert(key);
   return key->pub;
 }

@@ -75,7 +75,7 @@ unsigned int GWEN_HBCIMsg_GetSignerCount(GWEN_HBCIMSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(GWEN_HBCIMSG *hmsg){
+const GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(const GWEN_HBCIMSG *hmsg){
   assert(hmsg);
   return hmsg->crypter;
 }
@@ -183,6 +183,7 @@ GWEN_HBCIMSG *GWEN_HBCIMsg_new(GWEN_HBCIDIALOG *hdlg){
 void GWEN_HBCIMsg_free(GWEN_HBCIMSG *hmsg){
   if (hmsg) {
     GWEN_KeySpec_Clear(&(hmsg->signers));
+    DBG_INFO(0, "Freeing Keyspec");
     GWEN_KeySpec_free(hmsg->crypter);
     GWEN_Buffer_free(hmsg->buffer);
     GWEN_Buffer_free(hmsg->origbuffer);
@@ -218,6 +219,7 @@ int GWEN_HBCIMsg_AddMsgTail(GWEN_HBCIMSG *hmsg){
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "head/seq",
                       hmsg->lastSegment+1);
+  GWEN_Buffer_SetPos(hmsg->buffer, GWEN_Buffer_GetUsedBytes(hmsg->buffer));
   rv=GWEN_MsgEngine_CreateMessageFromNode(e,
                                           node,
                                           hmsg->buffer,
@@ -396,6 +398,7 @@ unsigned int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
   hmsg->lastSegment=GWEN_MsgEngine_GetIntValue(e,
                                                "SegmentNumber",
                                                1)-1;
+  hmsg->nodes++;
   return hmsg->lastSegment;
 }
 
@@ -420,6 +423,19 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
 
   ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
   assert(ks);
+
+  /* check local context */
+  if (!GWEN_HBCIDialog_GetLocalContext(hmsg->dialog)) {
+    DBG_ERROR(0, "No local context, aborting");
+    return -1;
+  }
+  else {
+    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalContext(hmsg->dialog),
+                          GWEN_KeySpec_GetOwner(ks),1)!=0) {
+      DBG_ERROR(0, "Key owner does not match local context");
+      return -1;
+    }
+  }
 
   tt=time(0);
   lt=localtime(&tt);
@@ -544,14 +560,12 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
               "Unknown security context \"%s\"",
               GWEN_KeySpec_GetOwner(ks));
     GWEN_HBCICryptoContext_free(ctx);
-    GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
   if (GWEN_SecContext_PrepareContext(sc, ctx, 0)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
-    GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
@@ -560,7 +574,6 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   if (GWEN_HBCIMsg_PrepareCryptoSeg(hmsg, ctx, cfg, 1)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
-    GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
@@ -568,7 +581,6 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   if (strlen(p)>=sizeof(ctrlref)) {
     DBG_INFO(0, "Control reference too long (14 bytes maximum)");
     GWEN_HBCICryptoContext_free(ctx);
-    GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
@@ -883,6 +895,9 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
 
   assert(hmsg);
 
+  DBG_NOTICE(0, "Encoding message");
+  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
+
   GWEN_MsgEngine_SetIntValue(GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog),
                              "MessageNumber",
                              hmsg->msgNum);
@@ -910,6 +925,7 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     GWEN_Buffer_free(rawBuf);
   } /* if signing is needed */
   DBG_INFO(0, "Letting all signers sign: done");
+  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
 
   /* encrypt message */
   if (hmsg->flags & GWEN_HBCIMSG_FLAGS_CRYPT) {
@@ -928,6 +944,7 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     return -1;
   }
   DBG_INFO(0, "Adding message tail: done");
+  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
 
   /* add msg head */
   DBG_INFO(0, "Adding message head");
@@ -936,6 +953,7 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     return -1;
   }
   DBG_INFO(0, "Adding message head: done");
+  GWEN_Buffer_Dump(hmsg->buffer, stderr, 2);
 
   DBG_INFO(0, "Message finished");
   return 0;
@@ -1205,16 +1223,32 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
   s=GWEN_DB_GetCharValue(n, "key/keytype", 0, 0);
   if (!s) {
     DBG_ERROR(0, "no keytype");
+    DBG_INFO(0, "Freeing Keyspec");
     GWEN_KeySpec_free(ks);
     return -1;
   }
   GWEN_KeySpec_SetKeyName(ks, s);
+
+  /* check local context */
+  if (!GWEN_HBCIDialog_GetLocalContext(hmsg->dialog)) {
+    DBG_ERROR(0, "No local context, aborting");
+    return -1;
+  }
+  else {
+    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalContext(hmsg->dialog),
+                          GWEN_KeySpec_GetOwner(ks),1)!=0) {
+      DBG_ERROR(0, "Key owner does not match local context");
+      return -1;
+    }
+  }
+
   GWEN_HBCICryptoContext_SetServiceCode(ctx,
                                         GWEN_DB_GetCharValue(n,
                                                              "key/bankcode",
                                                              0,
                                                              ""));
   GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
+  DBG_INFO(0, "Freeing Keyspec");
   GWEN_KeySpec_free(ks);
 
   p=GWEN_DB_GetBinValue(n,
@@ -1702,6 +1736,9 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
   int rv;
   GWEN_DB_NODE *n;
 
+  DBG_NOTICE(0, "Decoding this message:");
+  GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
+
   e=GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog);
   assert(e);
 
@@ -1773,10 +1810,94 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
     return -1;
   }
 
+  DBG_INFO(0, "Decoded message is:");
+  GWEN_HBCIMsg_Dump(hmsg, stderr, 1);
+
   return 0;
 }
 
 
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_HBCIMsg_Dump(const GWEN_HBCIMSG *hmsg, FILE *f, int indent) {
+  unsigned int i;
+  GWEN_KEYSPEC *ks;
+
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "GWEN_HBCIMsg\n");
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "==================================================\n");
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  if (hmsg->origbuffer) {
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, "Original buffer      :\n");
+    GWEN_Buffer_Dump(hmsg->origbuffer, f, indent+2);
+  }
+  else {
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, "Original buffer      : none\n");
+  }
+  if (hmsg->buffer) {
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, "Buffer:\n");
+    GWEN_Buffer_Dump(hmsg->buffer, f, indent+2);
+  }
+  else {
+    for (i=0; i<indent; i++) fprintf(f, " ");
+    fprintf(f, "Buffer               : none\n");
+  }
+
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  if (hmsg->crypter) {
+    fprintf(f, "Crypter:\n");
+    GWEN_KeySpec_Dump(hmsg->crypter, f, indent+2);
+  }
+  else {
+    fprintf(f, "Crypter: none\n");
+  }
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Signers (%d):\n", hmsg->nSigners);
+  ks=hmsg->signers;
+  while(ks) {
+    GWEN_KeySpec_Dump(ks, f, indent+2);
+    ks=GWEN_KeySpec_Next(ks);
+  } /* while */
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "MsgLayer             : %d\n", hmsg->msgLayerId);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Nodes                : %d\n", hmsg->nodes);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Msg number           : %d\n", hmsg->msgNum);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Reference msg number : %d\n", hmsg->refMsgNum);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "First segment        : %d\n", hmsg->firstSegment);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Last segment         : %d\n", hmsg->lastSegment);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Flags                :");
+  if (hmsg->flags & GWEN_HBCIMSG_FLAGS_SIGN)
+    fprintf(f, " SIGN");
+  if (hmsg->flags & GWEN_HBCIMSG_FLAGS_CRYPT)
+    fprintf(f, " CRYPT");
+  fprintf(f, "\n");
+
+}
+
+
+
+unsigned int GWEN_HBCIMsg_GetDialogNumber(GWEN_HBCIMSG *hmsg){
+  assert(hmsg);
+  return hmsg->dialogNumber;
+}
+
+
+
+void GWEN_HBCIMsg_SetDialogNumber(GWEN_HBCIMSG *hmsg,
+                                  unsigned int i){
+  assert(hmsg);
+  hmsg->dialogNumber=i;
+}
 
 
 

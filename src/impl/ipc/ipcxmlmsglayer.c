@@ -105,14 +105,17 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
   hasRead=0;
   hasWritten=0;
   assert(ml);
-  DBG_DEBUG(0, "Working on msgLayer %d", GWEN_MsgLayer_GetId(ml));
+  DBG_INFO(0, "Working on msgLayer %d", GWEN_MsgLayer_GetId(ml));
   mcd=(GWEN_IPCXMLMSGLAYERDATA*)GWEN_MsgLayer_GetData(ml);
   assert(mcd);
 
   tl=GWEN_MsgLayer_GetTransportLayer(ml);
   assert(tl);
 
+  canRead=rd;
+
   if (rd) {
+    DBG_INFO(0, "Read mode");
     for (;;) {
       /* this loop runs as long as there still is data to read */
       if (GWEN_MsgLayer_GetState(ml)==GWEN_IPCMsglayerStateIdle) {
@@ -345,7 +348,7 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
       assert(mcd->currentMsg);
       buffer=GWEN_Msg_GetBuffer(mcd->currentMsg);
       bytes=GWEN_Buffer_BytesLeft(buffer);
-      DBG_DEBUG(0, "Writing %d bytes", bytes);
+      DBG_INFO(0, "Writing %d bytes", bytes);
       err=GWEN_IPCTransportLayer_Write(tl,
                                        GWEN_Buffer_GetPosPointer(buffer),
                                        &bytes);

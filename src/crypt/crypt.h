@@ -81,19 +81,19 @@ extern "C" {
    */
   /*@{*/
   typedef GWEN_CRYPTKEY* (*GWEN_CRYPTKEY_DUP_FN)(const GWEN_CRYPTKEY *key);
-  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_ENCRYPT_FN)(GWEN_CRYPTKEY *key,
+  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_ENCRYPT_FN)(const GWEN_CRYPTKEY *key,
                                                      GWEN_BUFFER *src,
                                                      GWEN_BUFFER *dst);
 
-  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_DECRYPT_FN)(GWEN_CRYPTKEY *key,
+  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_DECRYPT_FN)(const GWEN_CRYPTKEY *key,
                                                      GWEN_BUFFER *src,
                                                      GWEN_BUFFER *dst);
 
-  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_SIGN_FN)(GWEN_CRYPTKEY *key,
+  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_SIGN_FN)(const GWEN_CRYPTKEY *key,
                                                   GWEN_BUFFER *src,
                                                   GWEN_BUFFER *dst);
 
-  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_VERIFY_FN)(GWEN_CRYPTKEY *key,
+  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_VERIFY_FN)(const GWEN_CRYPTKEY *key,
                                                     GWEN_BUFFER *src,
                                                     GWEN_BUFFER *dst);
 
@@ -103,7 +103,7 @@ extern "C" {
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_FROMDB_FN)(GWEN_CRYPTKEY *key,
                                                     GWEN_DB_NODE *db);
 
-  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_TODB_FN)(GWEN_CRYPTKEY *key,
+  typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_TODB_FN)(const GWEN_CRYPTKEY *key,
                                                GWEN_DB_NODE *db,
                                                int pub);
 
@@ -130,22 +130,22 @@ extern "C" {
   void GWEN_CryptKey_free(GWEN_CRYPTKEY *key);
   GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key);
 
-  int GWEN_CryptKey_IsPublic(GWEN_CRYPTKEY *key);
+  int GWEN_CryptKey_IsPublic(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetPublic(GWEN_CRYPTKEY *key, int i);
 
-  GWEN_ERRORCODE GWEN_CryptKey_Encrypt(GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_Encrypt(const GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
                                        GWEN_BUFFER *dst);
 
-  GWEN_ERRORCODE GWEN_CryptKey_Decrypt(GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_Decrypt(const GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
                                        GWEN_BUFFER *dst);
 
-  GWEN_ERRORCODE GWEN_CryptKey_Sign(GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_Sign(const GWEN_CRYPTKEY *key,
                                     GWEN_BUFFER *src,
                                     GWEN_BUFFER *dst);
 
-  GWEN_ERRORCODE GWEN_CryptKey_Verify(GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_Verify(const GWEN_CRYPTKEY *key,
                                       GWEN_BUFFER *src,
                                       GWEN_BUFFER *dst);
 
@@ -154,7 +154,7 @@ extern "C" {
   GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
                                       GWEN_DB_NODE *db);
 
-  GWEN_ERRORCODE GWEN_CryptKey_ToDb(GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
                                     GWEN_DB_NODE *db,
                                     int pub);
 

@@ -36,11 +36,11 @@ struct GWEN_HBCIDIALOG {
   GWEN_MSGENGINE *msgEngine;
   GWEN_SECCTX_MANAGER *securityManager;
   char *dialogId;
+  char *localContext;
   unsigned int lastReceivedMsgNum;
   unsigned int nextMsgNum;
   unsigned int flags;
 
-  char *owner;
   unsigned int usage;
   void *inheritorData;
 

@@ -51,7 +51,6 @@
 struct GWEN_IPCXMLCONNLAYERDATA {
   GWEN_MSGENGINE *msgEngine; /* not owned ! */
   unsigned int flags;
-  GWEN_CRYPTKEY *localKey;
 
   GWEN_HBCIDIALOG *dialog;
   GWEN_SECCTX_MANAGER *securityManager;
@@ -75,8 +74,6 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Close(GWEN_IPCCONNLAYER *cl,
                                           int force);
 void GWEN_IPCXMLConnLayer_Down(GWEN_IPCCONNLAYER *cl);
 
-GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_IPC2HBCI(GWEN_IPCCONNLAYER *cl,
-                                            GWEN_IPCMSG *msg);
 GWEN_IPCMSG *GWEN_IPCXMLConnLayer_HBCI2IPC(GWEN_IPCCONNLAYER *cl,
                                            GWEN_HBCIMSG *hmsg);
 

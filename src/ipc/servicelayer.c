@@ -48,6 +48,7 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
   GWEN_IPCCONNLAYER *curr;
   GWEN_ERRORCODE err;
 
+  DBG_NOTICE(0, "ServiceLayer is working");
   ndone=0;
   socks=0;
   curr=GWEN_Global_ServiceLayer->connections;
@@ -327,8 +328,8 @@ void GWEN_GlobalServiceLayer_RemoveClosed() {
       if (!(GWEN_ConnectionLayer_GetFlags(cl) &
             GWEN_IPCCONNLAYER_FLAGS_PERSISTENT)) {
         /* remove closed connection if it is not marked persistent */
-        DBG_NOTICE(0, "Removing connection (%d)",
-                   GWEN_ConnectionLayer_GetId(cl));
+        DBG_INFO(0, "Removing connection (%d)",
+                 GWEN_ConnectionLayer_GetId(cl));
         GWEN_LIST_DEL(GWEN_IPCCONNLAYER,
                       cl,
                       &(GWEN_Global_ServiceLayer->connections));
@@ -535,6 +536,79 @@ void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
   assert(sl);
   GWEN_GlobalServiceLayer_Close(id, sl->id, userMark, force);
 }
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_ServiceLayer_NextIncomingMsg(GWEN_SERVICELAYER *sl,
+                                               unsigned int userMark) {
+  GWEN_IPCCONNLAYER *curr;
+  GWEN_IPCCONNLAYER *startedAt;
+
+  assert(sl);
+  curr=0;
+
+  if (sl->lastCheckedMsgLayer)
+    curr=GWEN_ServiceLayer_FindConnection(sl, 0, userMark);
+  if (!curr)
+    curr=GWEN_Global_ServiceLayer->connections;
+  else {
+    /* get the next connection */
+    while(curr) {
+      if (sl->id==GWEN_ConnectionLayer_GetLibMark(curr))
+        if (userMark==0 || userMark==GWEN_ConnectionLayer_GetUserMark(curr))
+          break;
+      curr=GWEN_ConnectionLayer_GetNext(curr);
+    } /* while */
+  }
+
+  if (!curr) {
+    DBG_VERBOUS(0, "No connection found for %d/%d",
+                sl->id, userMark);
+    return 0;
+  }
+
+  startedAt=curr;
+  while (curr) {
+    GWEN_IPCMSGLAYER *ml;
+    GWEN_IPCMSG *msg;
+
+    ml=GWEN_ConnectionLayer_GetMsgLayer(curr);
+    assert(ml);
+    msg=GWEN_MsgLayer_GetIncomingMsg(ml);
+    if (msg) {
+      DBG_INFO(0, "Got a message from %d", GWEN_MsgLayer_GetId(ml));
+      sl->lastCheckedMsgLayer=GWEN_MsgLayer_GetId(ml);
+      return msg;
+    }
+
+    /* get next matching connection layer */
+    curr=GWEN_ConnectionLayer_GetNext(curr);
+    if (!curr)
+      curr=GWEN_Global_ServiceLayer->connections;
+    while(curr && curr!=startedAt) {
+      if (sl->id==GWEN_ConnectionLayer_GetLibMark(curr))
+        if (userMark==0 || userMark==GWEN_ConnectionLayer_GetUserMark(curr))
+          break;
+      curr=GWEN_ConnectionLayer_GetNext(curr);
+      if (!curr)
+        curr=GWEN_Global_ServiceLayer->connections;
+    } /* while */
+    if (curr==startedAt) {
+      DBG_INFO(0, "All checked, no message");
+      return 0;
+    }
+  } /* while */
+
+  DBG_INFO(0, "No message");
+  return 0;
+}
+
+
+
+
+
+
 
 
 

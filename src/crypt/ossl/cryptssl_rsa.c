@@ -51,7 +51,7 @@ void GWEN_CryptKeyRSA_FreeKeyData(GWEN_CRYPTKEY *key){
 
 
 
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,
                                         GWEN_BUFFER *dst){
   unsigned int srclen;
@@ -95,7 +95,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(const GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,
                                         GWEN_BUFFER *dst){
   unsigned int srclen;
@@ -139,7 +139,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(const GWEN_CRYPTKEY *key,
                                            GWEN_BUFFER *src,
                                            BIGNUM *bnresult){
   unsigned int srclen;
@@ -204,7 +204,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
                                      GWEN_BUFFER *src,
                                      GWEN_BUFFER *dst){
   unsigned int srclen;
@@ -258,7 +258,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(const GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
                                        GWEN_BUFFER *signature){
   unsigned int srclen;
@@ -344,18 +344,29 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   kd=RSA_new();
   assert(kd);
 
+  DBG_INFO(0, "Reading this key:");
+  GWEN_DB_Dump(db, stderr, 2);
+
   pub=GWEN_DB_GetIntValue(db, "public", 0, 1);
+
+  if (pub) {
+    p=GWEN_DB_GetBinValue(db, "e", 0, 0, 0, &len);
+    if (p) {
+      bn=BN_new();
+      kd->e=BN_bin2bn((unsigned char*) p, len, bn);
+    }
+  }
+  else {
+    /* OpenSSL might be using blinding, so we MUST set e even if it is not
+     * otherwise used for private keys */
+    kd->e=BN_new();
+    BN_set_word(kd->e, GWEN_CRYPT_RSA_DEFAULT_EXPONENT);
+  }
 
   p=GWEN_DB_GetBinValue(db, "n", 0, 0, 0, &len);
   if (p) {
     bn=BN_new();
     kd->n=BN_bin2bn((unsigned char*) p, len, bn);
-  }
-
-  p=GWEN_DB_GetBinValue(db, "e", 0, 0, 0, &len);
-  if (p) {
-    bn=BN_new();
-    kd->e=BN_bin2bn((unsigned char*) p, len, bn);
   }
 
   if (!pub) {
@@ -402,7 +413,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
 
 
 
-GWEN_ERRORCODE GWEN_CryptKeyRSA_ToDb(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_ToDb(const GWEN_CRYPTKEY *key,
                                      GWEN_DB_NODE *db,
                                      int pub){
   char buffer[GWEN_CRYPT_RSA_MAX_KEY_LENGTH/8];
@@ -415,55 +426,70 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_ToDb(GWEN_CRYPTKEY *key,
                       GWEN_DB_FLAGS_DEFAULT |
                       GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "public", pub);
-
-  l=BN_bn2bin(kd->n, (unsigned char*) &buffer);
-  GWEN_DB_SetBinValue(db,
-                      GWEN_DB_FLAGS_DEFAULT |
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "n", buffer, l);
-  if (pub!=0) {
-    l=BN_bn2bin(kd->e, (unsigned char*) &buffer);
+  if (kd->n) {
+    l=BN_bn2bin(kd->n, (unsigned char*) &buffer);
     GWEN_DB_SetBinValue(db,
                         GWEN_DB_FLAGS_DEFAULT |
                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "e", buffer, l);
+                        "n", buffer, l);
+  }
+  if (pub!=0) {
+    if (kd->e) {
+      l=BN_bn2bin(kd->e, (unsigned char*) &buffer);
+      GWEN_DB_SetBinValue(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "e", buffer, l);
+    }
   }
   else {
-    l=BN_bn2bin(kd->p, (unsigned char*) &buffer);
-    GWEN_DB_SetBinValue(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "p", buffer, l);
+    if (kd->p) {
+      l=BN_bn2bin(kd->p, (unsigned char*) &buffer);
+      GWEN_DB_SetBinValue(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "p", buffer, l);
+    }
 
-    l=BN_bn2bin(kd->q, (unsigned char*) &buffer);
-    GWEN_DB_SetBinValue(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "q", buffer, l);
+    if (kd->q) {
+      l=BN_bn2bin(kd->q, (unsigned char*) &buffer);
+      GWEN_DB_SetBinValue(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "q", buffer, l);
+    }
 
-    l=BN_bn2bin(kd->dmp1, (unsigned char*) &buffer);
-    GWEN_DB_SetBinValue(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "dmp1", buffer, l);
+    if (kd->dmp1) {
+      l=BN_bn2bin(kd->dmp1, (unsigned char*) &buffer);
+      GWEN_DB_SetBinValue(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "dmp1", buffer, l);
+    }
 
-    l=BN_bn2bin(kd->dmq1, (unsigned char*) &buffer);
-    GWEN_DB_SetBinValue(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "dmq1", buffer, l);
+    if (kd->dmq1) {
+      l=BN_bn2bin(kd->dmq1, (unsigned char*) &buffer);
+      GWEN_DB_SetBinValue(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "dmq1", buffer, l);
+    }
 
-    l=BN_bn2bin(kd->iqmp, (unsigned char*) &buffer);
-    GWEN_DB_SetBinValue(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "iqmp", buffer, l);
+    if (kd->iqmp) {
+      l=BN_bn2bin(kd->iqmp, (unsigned char*) &buffer);
+      GWEN_DB_SetBinValue(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "iqmp", buffer, l);
+    }
 
-    l=BN_bn2bin(kd->d, (unsigned char*) &buffer);
-    GWEN_DB_SetBinValue(db,
-                        GWEN_DB_FLAGS_DEFAULT |
-                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "d", buffer, l);
+    if (kd->d) {
+      l=BN_bn2bin(kd->d, (unsigned char*) &buffer);
+      GWEN_DB_SetBinValue(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "d", buffer, l);
+    }
   }
   return 0;
 }

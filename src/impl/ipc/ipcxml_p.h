@@ -31,6 +31,7 @@
 
 #include <gwenhyfwar/ipcxml.h>
 #include <gwenhyfwar/db.h>
+#include <gwenhyfwar/hbcimsg.h>
 
 
 struct GWEN_IPCXMLREQUEST {
@@ -58,11 +59,17 @@ struct GWEN_IPCXMLSERVICE {
 
 GWEN_IPCCONNLAYER *GWEN_IPCXMLService_CreateCL(GWEN_IPCXMLSERVICE *xs,
                                                GWEN_IPCXMLSERVICE_TYPE st,
+                                               const char *localContext,
                                                unsigned int userMark,
                                                const char *addr,
                                                unsigned int port,
                                                unsigned int flags);
 
+GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
+                                            GWEN_HBCIMSG *hmsg);
+
+int GWEN_IPCXMLService_AddSecurityGroup(GWEN_HBCIMSG *hmsg,
+                                        GWEN_DB_NODE *n);
 
 
 

@@ -31,7 +31,7 @@ overwritten:
     state of the msgLayer
 - GWEN_IPCMSGLAYER_FREE freeDataFn;
     The called function should free its private data stored within the
-    msgLayer
+    msgLayer (not the msglayer itself !)
 - GWEN_IPCMSGLAYER_ACCEPT acceptFn;
     The called function should call GWEN_IPCTransportLayer_Accept and create
     a new msgLayer with the new transportLayer
@@ -48,7 +48,7 @@ within GWEN_IPCCONNLAYER objects. The following functions should be
 overwritten:
 - GWEN_IPCCONNLAYER_FREE freeDataFn;
     The called function should free its private data stored within the
-    msgLayer
+    connection layer (not the layer itself !)
 - GWEN_IPCCONNLAYER_OPEN openFn;
     The called function should connect to the peer and initiate the
     handshaking. 

@@ -83,8 +83,14 @@ GWEN_IPCXMLSERVICE *GWEN_IPCXMLService_new(GWEN_MSGENGINE *msgEngine,
 
 void GWEN_IPCXMLService_free(GWEN_IPCXMLSERVICE *xs);
 
+/**
+ * @param localContext name of the local context. This is the name of the
+ * owner of the local keys. These keys are looked up in the service's
+ * context manager.
+ */
 unsigned int GWEN_IPCXMLService_AddServer(GWEN_IPCXMLSERVICE *xs,
                                           GWEN_IPCXMLSERVICE_TYPE st,
+                                          const char *localContext,
                                           unsigned int userMark,
                                           const char *addr,
                                           unsigned int port,
@@ -92,6 +98,7 @@ unsigned int GWEN_IPCXMLService_AddServer(GWEN_IPCXMLSERVICE *xs,
 
 unsigned int GWEN_IPCXMLService_AddClient(GWEN_IPCXMLSERVICE *xs,
                                           GWEN_IPCXMLSERVICE_TYPE st,
+                                          const char *localContext,
                                           unsigned int userMark,
                                           const char *addr,
                                           unsigned int port,
@@ -104,6 +111,21 @@ unsigned int GWEN_IPCXMLService_AddRequest(GWEN_IPCXMLSERVICE *xs,
                                            GWEN_DB_NODE *db,
                                            int flush);
 
+GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityEnv(GWEN_IPCXMLSERVICE *xs,
+                                                 unsigned int clid,
+                                                 const GWEN_KEYSPEC *signer,
+                                                 const GWEN_KEYSPEC *crypter);
+
+const char *GWEN_IPCXMLService_GetLocalContext(GWEN_IPCXMLSERVICE *xs,
+                                               unsigned int clid);
+
+
+GWEN_ERRORCODE GWEN_IPCXMLService_Work(GWEN_IPCXMLSERVICE *xs,
+                                       int timeout);
+
+GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int userMark,
+                                             int maxmsgs);
 
 
 

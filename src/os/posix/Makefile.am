@@ -1,5 +1,7 @@
 INCLUDES=@all_includes@
 
+EXTRA_DIST=README
+
 noinst_LTLIBRARIES=libos.la
 
 noinst_HEADERS=\

@@ -50,6 +50,7 @@ struct GWEN_GLOBAL_SERVICELAYER {
 
 struct GWEN_SERVICELAYER {
   unsigned int id;
+  unsigned int lastCheckedMsgLayer;
 };
 
 

@@ -1,5 +1,7 @@
 INCLUDES=@all_includes@
 
+EXTRA_DIST=README
+
 noinst_LTLIBRARIES=libipc.la
 noinst_HEADERS=\
  connlayer_p.h \

@@ -94,6 +94,12 @@ GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks){
 }
 
 
+const GWEN_KEYSPEC *GWEN_KeySpec_ConstNext(const GWEN_KEYSPEC *ks){
+  assert(ks);
+  return ks->next;
+}
+
+
 
 void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
                              GWEN_KEYSPEC **head){
@@ -198,6 +204,7 @@ void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
   GWEN_KEYSPEC *ks;
 
   ks=*head;
+  DBG_INFO(0, "Clearing list of KeySpecs");
   while(ks) {
     GWEN_KEYSPEC *nks;
 
@@ -205,11 +212,31 @@ void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
     GWEN_KeySpec_free(ks);
     ks=nks;
   } /* while */
+  DBG_INFO(0, "Clearing list of KeySpecs: done");
   *head=0;
 }
 
 
 
+void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, int indent){
+  unsigned int i;
+
+  assert(ks);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "GWEN_KeySpec\n");
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "--------------------------------------------------\n");
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "KeyType : %s\n", ks->keyType);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "KeyName : %s\n", ks->keyName);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Owner   : %s\n", ks->owner);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Number  : %d\n", ks->number);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Version : %d\n", ks->version);
+}
 
 
 

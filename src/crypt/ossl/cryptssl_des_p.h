@@ -45,22 +45,22 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Register();
 GWEN_CRYPTKEY *GWEN_CryptKeyDES_new();
 GWEN_CRYPTKEY *GWEN_CryptKeyDES_dup(const GWEN_CRYPTKEY *key);
 void GWEN_CryptKeyDES_FreeKeyData(GWEN_CRYPTKEY *key);
-GWEN_ERRORCODE GWEN_CryptKeyDES_Encrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyDES_Encrypt(const GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,
                                         GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyDES_Decrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyDES_Decrypt(const GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,
                                         GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyDES_Sign(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyDES_Sign(const GWEN_CRYPTKEY *key,
                                      GWEN_BUFFER *src,
                                      GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyDES_Verify(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyDES_Verify(const GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
                                        GWEN_BUFFER *signature);
 unsigned int GWEN_CryptKeyDES_GetChunkSize(const GWEN_CRYPTKEY *key);
 GWEN_ERRORCODE GWEN_CryptKeyDES_FromDb(GWEN_CRYPTKEY *key,
                                        GWEN_DB_NODE *db);
-GWEN_ERRORCODE GWEN_CryptKeyDES_ToDb(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyDES_ToDb(const GWEN_CRYPTKEY *key,
                                      GWEN_DB_NODE *db,
                                      int pub);
 GWEN_ERRORCODE GWEN_CryptKeyDES_Generate(GWEN_CRYPTKEY *key,
@@ -69,7 +69,7 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Open(GWEN_CRYPTKEY *key);
 GWEN_ERRORCODE GWEN_CryptKeyDES_Close(GWEN_CRYPTKEY *key);
 
 
-GWEN_ERRORCODE GWEN_CryptKeyDES_Crypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyDES_Crypt(const GWEN_CRYPTKEY *key,
                                       GWEN_BUFFER *src,
                                       GWEN_BUFFER *dst,
                                       int cryptMode);

@@ -65,7 +65,7 @@ void GWEN_KeyManager_free(GWEN_KEYMANAGER *km);
 const GWEN_CRYPTKEY *GWEN_KeyManager_GetKey(GWEN_KEYMANAGER *km,
                                             const GWEN_KEYSPEC *ks);
 int GWEN_KeyManager_AddKey(GWEN_KEYMANAGER *km,
-                                        const GWEN_CRYPTKEY *key);
+                           const GWEN_CRYPTKEY *key);
 int GWEN_KeyManager_DeleteKey(GWEN_KEYMANAGER *km,
                               const GWEN_CRYPTKEY *key);
 

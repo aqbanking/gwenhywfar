@@ -33,7 +33,7 @@
 #include <gwenhyfwar/keyspec.h>
 #include <gwenhyfwar/seccontext.h>
 #include <gwenhyfwar/msgengine.h>
-#include <gwenhyfwar/keymanager.h>
+#include <gwenhyfwar/ipcxmlkeymanager.h>
 
 
 typedef struct GWEN_IPCXMLSECCTXDATA GWEN_IPCXMLSECCTXDATA;
@@ -42,13 +42,11 @@ typedef struct GWEN_IPCXMLSECCTXDATA GWEN_IPCXMLSECCTXDATA;
 GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *name);
 
 
-GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetSignKey(GWEN_SECCTX *d);
-void GWEN_IPCXMLSecCtx_SetSignKey(GWEN_SECCTX *d,
-                                  GWEN_CRYPTKEY *k);
+int GWEN_IPCXMLSecCtx_AddKey(GWEN_SECCTX *d,
+                             const GWEN_CRYPTKEY *k);
+int GWEN_IPCXMLSecCtx_DelKey(GWEN_SECCTX *d,
+                             const GWEN_CRYPTKEY *k);
 
-GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetCryptKey(GWEN_SECCTX *d);
-void GWEN_IPCXMLSecCtx_SetCryptKey(GWEN_SECCTX *d,
-                                   GWEN_CRYPTKEY *k);
 
 GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetSessionKey(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetSessionKey(GWEN_SECCTX *d,

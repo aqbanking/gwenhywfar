@@ -58,6 +58,7 @@ void GWEN_ConnectionLayer_free(GWEN_IPCCONNLAYER *cl){
     if (cl->freeDataFn)
       cl->freeDataFn(cl);
     GWEN_MsgLayer_free(cl->msgLayer);
+    cl->msgLayer=0;
     free(cl->info);
     free(cl);
   }

@@ -40,6 +40,7 @@
 #include <gwenhyfwar/keyspec.h>
 #include <gwenhyfwar/hbcicryptocontext.h>
 #include <gwenhyfwar/hbcidialog.h>
+#include <stdio.h>
 
 
 #ifdef __cplusplus
@@ -55,7 +56,7 @@ int GWEN_HBCIMsg_AddSigner(GWEN_HBCIMSG *hmsg,
                            const GWEN_KEYSPEC *ks);
 unsigned int GWEN_HBCIMsg_GetSignerCount(GWEN_HBCIMSG *hmsg);
 
-GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(GWEN_HBCIMSG *hmsg);
+const GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(const GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetCrypter(GWEN_HBCIMSG *hmsg,
                              const GWEN_KEYSPEC *ks);
 
@@ -92,7 +93,9 @@ void GWEN_HBCIMsg_SetMsgLayerId(GWEN_HBCIMSG *hmsg,
 
 unsigned int GWEN_HBCIMsg_GetNodes(GWEN_HBCIMSG *hmsg);
 
-
+unsigned int GWEN_HBCIMsg_GetDialogNumber(GWEN_HBCIMSG *hmsg);
+void GWEN_HBCIMsg_SetDialogNumber(GWEN_HBCIMSG *hmsg,
+                                  unsigned int did);
 
 GWEN_HBCIMSG *GWEN_HBCIMsg_new(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIMsg_free(GWEN_HBCIMSG *hmsg);
@@ -115,6 +118,7 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
                            GWEN_DB_NODE *gr,
                            unsigned int flags);
 
+void GWEN_HBCIMsg_Dump(const GWEN_HBCIMSG *hmsg, FILE *f, int indent);
 
 
 #ifdef __cplusplus

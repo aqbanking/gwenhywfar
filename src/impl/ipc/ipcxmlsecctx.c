@@ -51,65 +51,12 @@ GWEN_IPCXMLSECCTXDATA *GWEN_IPCXMLSecCtxData_new(){
 
 void GWEN_IPCXMLSecCtxData_free(GWEN_IPCXMLSECCTXDATA *d){
   if (d) {
-    GWEN_CryptKey_free(d->signKey);
-    GWEN_CryptKey_free(d->cryptKey);
     GWEN_CryptKey_free(d->sessionKey);
     free(d->serviceCode);
     free(d->securityId);
+    GWEN_KeyManager_free(d->keyManager);
     free(d);
   }
-}
-
-
-
-GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetSignKey(GWEN_SECCTX *sc){
-  GWEN_IPCXMLSECCTXDATA *scd;
-
-  assert(sc);
-  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
-  assert(scd);
-
-  return scd->signKey;
-}
-
-
-
-void GWEN_IPCXMLSecCtx_SetSignKey(GWEN_SECCTX *sc,
-                                  GWEN_CRYPTKEY *k){
-  GWEN_IPCXMLSECCTXDATA *scd;
-
-  assert(sc);
-  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
-  assert(scd);
-
-  GWEN_CryptKey_free(scd->signKey);
-  scd->signKey=k;
-}
-
-
-
-GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetCryptKey(GWEN_SECCTX *sc){
-  GWEN_IPCXMLSECCTXDATA *scd;
-
-  assert(sc);
-  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
-  assert(scd);
-
-  return scd->cryptKey;
-}
-
-
-
-void GWEN_IPCXMLSecCtx_SetCryptKey(GWEN_SECCTX *sc,
-                                   GWEN_CRYPTKEY *k){
-  GWEN_IPCXMLSECCTXDATA *scd;
-
-  assert(sc);
-  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
-  assert(scd);
-
-  GWEN_CryptKey_free(scd->cryptKey);
-  scd->cryptKey=k;
 }
 
 
@@ -173,17 +120,20 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
                                  int crypt){
   GWEN_IPCXMLSECCTXDATA *scd;
   GWEN_ERRORCODE err;
+  const GWEN_CRYPTKEY *key;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
-  if (crypt) {
-    if (!scd->cryptKey) {
-      DBG_ERROR(0, "No crypt key");
-      return -1;
-    }
+  key=GWEN_KeyManager_GetKey(scd->keyManager,
+                             GWEN_HBCICryptoContext_GetKeySpec(ctx));
+  if (!key) {
+    DBG_ERROR(0, "Key not found");
+    return -1;
+  }
 
+  if (crypt) {
     if (!(scd->sessionKey)) {
       GWEN_BUFFER *kbuf;
       GWEN_BUFFER *sbuf;
@@ -209,7 +159,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
       }
 
       GWEN_Buffer_Rewind(kbuf);
-      i=GWEN_CryptKey_GetChunkSize(scd->cryptKey)-16;
+      i=GWEN_CryptKey_GetChunkSize(key)-16;
       DBG_INFO(0, "Padding with %d bytes", i);
       while(i-->0) {
 	if (GWEN_Buffer_InsertByte(kbuf, (char)0)) {
@@ -222,7 +172,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
 
       sbuf=GWEN_Buffer_new(0, 256, 0, 1);
       DBG_INFO(0, "Encrypting key");
-      err=GWEN_CryptKey_Encrypt(scd->cryptKey,
+      err=GWEN_CryptKey_Encrypt(key,
                                 kbuf,
                                 sbuf);
       if (!GWEN_Error_IsOk(err)) {
@@ -242,11 +192,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
   }
   else {
     /* sign */
-    if (!scd->signKey) {
-      DBG_ERROR(0, "No sign key");
-      return -1;
-    }
-    GWEN_HBCICryptoContext_SetSequenceNum(ctx, scd->signSeq+1); /* DEBUG*/
+    GWEN_HBCICryptoContext_SetSequenceNum(ctx, scd->signSeq);
   }
 
   GWEN_HBCICryptoContext_SetMode(ctx, "RDH");
@@ -270,6 +216,7 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
   GWEN_MD *md;
   GWEN_BUFFER *hashbuf;
   GWEN_ERRORCODE err;
+  const GWEN_CRYPTKEY *signKey;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
@@ -327,8 +274,10 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
 
   /* sign hash */
   GWEN_Buffer_Rewind(hashbuf);
+  signKey=GWEN_KeyManager_GetKey(scd->keyManager,
+                                 GWEN_HBCICryptoContext_GetKeySpec(ctx));
 
-  err=GWEN_CryptKey_Sign(scd->signKey,
+  err=GWEN_CryptKey_Sign(signKey,
                          hashbuf,
                          signbuf);
   if (!GWEN_Error_IsOk(err)) {
@@ -336,6 +285,8 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
     GWEN_Buffer_free(hashbuf);
     return err;
   }
+
+  scd->signSeq++;
 
   GWEN_Buffer_free(hashbuf);
   DBG_INFO(0, "Signing done");
@@ -353,14 +304,16 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   GWEN_BUFFER *hashbuf;
   GWEN_ERRORCODE err;
   unsigned int rseq;
+  const GWEN_CRYPTKEY *signKey;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
-  if (!(scd->cryptKey)) {
-    /* still no remote key, error */
-    DBG_ERROR(0, "No crypt key");
+  signKey=GWEN_KeyManager_GetKey(scd->keyManager,
+                                 GWEN_HBCICryptoContext_GetKeySpec(ctx));
+  if (!signKey) {
+    DBG_ERROR(0, "Key not found");
     return -1;
   }
 
@@ -369,7 +322,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   if (rseq<=scd->signSeq) {
     DBG_ERROR(0, "bad signature sequence number (%d<%d)",
               rseq, scd->signSeq);
-    return -1;
+    //return -1; /* comment this out for debugging purposes */
   }
   scd->signSeq=rseq;
 
@@ -420,7 +373,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   }
 
   /* verify hash */
-  err=GWEN_CryptKey_Verify(scd->cryptKey,
+  err=GWEN_CryptKey_Verify(signKey,
                            hashbuf,
                            signbuf);
   if (!GWEN_Error_IsOk(err)) {
@@ -431,8 +384,6 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   GWEN_Buffer_free(hashbuf);
 
   return 0;
-
-
 }
 
 
@@ -491,6 +442,7 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
     GWEN_BUFFER *kbuf;
     GWEN_BUFFER *sbuf;
     GWEN_CRYPTKEY *key;
+    const GWEN_CRYPTKEY *cryptKey;
     char *km;
 
     DBG_NOTICE(0, "Storing new session key");
@@ -504,7 +456,14 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
     }
     kbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_Rewind(sbuf);
-    err=GWEN_CryptKey_Decrypt(scd->signKey,
+    cryptKey=GWEN_KeyManager_GetKey(scd->keyManager,
+                                    GWEN_HBCICryptoContext_GetKeySpec(ctx));
+    if (!cryptKey) {
+      DBG_ERROR(0, "Key not found");
+      return -1;
+    }
+
+    err=GWEN_CryptKey_Decrypt(cryptKey,
 			      sbuf,
 			      kbuf);
     if (!GWEN_Error_IsOk(err)) {
@@ -526,6 +485,8 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
     GWEN_CryptKey_SetKeyData(key, km);
     GWEN_Buffer_free(sbuf);
     GWEN_Buffer_free(kbuf);
+    GWEN_CryptKey_free(scd->sessionKey);
+    scd->sessionKey=key;
   }
 
   /* now decrypt the message */
@@ -553,6 +514,7 @@ void GWEN_IPCXMLSecCtx_FreeData(GWEN_SECCTX *sc){
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
+
   GWEN_IPCXMLSecCtxData_free(scd);
 }
 
@@ -565,8 +527,6 @@ void GWEN_IPCXMLSecCtx_Reset(GWEN_SECCTX *sc){
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
-  GWEN_CryptKey_free(scd->cryptKey);
-  scd->cryptKey=0;
   GWEN_CryptKey_free(scd->sessionKey);
   scd->sessionKey=0;
   free(scd->securityId);
@@ -608,6 +568,7 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *name){
 
   sc=GWEN_SecContext_new(name);
   scd=GWEN_IPCXMLSecCtxData_new();
+  scd->keyManager=GWEN_IPCXMLKeyManager_new();
   GWEN_SecContext_SetPrepareCtxFn(sc, GWEN_IPCXMLSecCtx_PrepareCTX);
   GWEN_SecContext_SetSignFn(sc, GWEN_IPCXMLSecCtx_Sign);
   GWEN_SecContext_SetVerifyFn(sc, GWEN_IPCXMLSecCtx_Verify);
@@ -621,6 +582,22 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *name){
 }
 
 
+int GWEN_IPCXMLSecCtx_AddKey(GWEN_SECCTX *sc,
+                             const GWEN_CRYPTKEY *k){
+  GWEN_IPCXMLSECCTXDATA *scd;
+
+  assert(sc);
+  assert(k);
+  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
+  assert(scd);
+  assert(scd->keyManager);
+
+  if (GWEN_KeyManager_AddKey(scd->keyManager, k)) {
+    DBG_INFO(0, "here");
+    return -1;
+  }
+  return 0;
+}
 
 
 

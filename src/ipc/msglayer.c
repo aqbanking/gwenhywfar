@@ -76,7 +76,7 @@ GWEN_BUFFER *GWEN_Msg_TakeBuffer(GWEN_IPCMSG *m){
   assert(m);
   bf=m->buffer;
   m->buffer=0;
-  return m->buffer;
+  return bf;
 }
 
 
@@ -167,9 +167,11 @@ void GWEN_MsgLayer_free(GWEN_IPCMSGLAYER *ml){
     }
 
     /* free the rest */
-    if (ml->freeDataFn)
+    if (ml->freeDataFn) {
       ml->freeDataFn(ml);
+    }
     GWEN_IPCTransportLayer_free(ml->transportLayer);
+    ml->transportLayer=0;
     free(ml);
   }
 }
@@ -197,6 +199,7 @@ void GWEN_MsgLayer_SetData(GWEN_IPCMSGLAYER *ml, void *d){
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml, int rd){
   assert(ml);
+  DBG_NOTICE(0, "MsgLayer %d works.", ml->id);
   if (ml->workFn)
     return ml->workFn(ml, rd);
   else {

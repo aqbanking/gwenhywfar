@@ -59,6 +59,7 @@ void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd);
 
 
 GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
+                                            const char *localContext,
                                             GWEN_SECCTX_MANAGER *scm,
                                             GWEN_IPCMSGLAYER *ml,
                                             int active);
@@ -67,11 +68,6 @@ GWEN_MSGENGINE *GWEN_IPCXMLConnLayer_GetMsgEngine(GWEN_IPCCONNLAYER *cl);
 unsigned int GWEN_IPCXMLConnLayer_GetFlags(GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLConnLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
                                    unsigned int f);
-GWEN_CRYPTKEY *GWEN_IPCXMLConnLayer_GetLocalKey(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetLocalKey(GWEN_IPCCONNLAYER *cl,
-                                      GWEN_CRYPTKEY *k);
-
-
 
 
 GWEN_ERRORCODE
@@ -86,6 +82,10 @@ GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
                                                     GWEN_DB_NODE *db,
                                                     int flush);
 
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_IPC2HBCI(GWEN_IPCCONNLAYER *cl,
+                                            GWEN_IPCMSG *msg);
+
+const char *GWEN_IPCXMLConnLayer_GetLocalContext(GWEN_IPCCONNLAYER *cl);
 
 #endif /* GWEN_IPCXMLCONNLAYER_H */
 

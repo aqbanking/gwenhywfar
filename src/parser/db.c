@@ -1071,7 +1071,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
   char wbuf[256];
   char *p;
   const char *pos;
-  unsigned int lineno;
+  int lineno;
   GWEN_DB_VALUETYPE vt;
   int depth;
 
@@ -1187,7 +1187,14 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             DBG_VERBOUS(0, "Found a type specifier \"%s\"", wbuf);
             if (strcasecmp(p, "int")==0)
               vt=GWEN_DB_VALUETYPE_INT;
-
+            else if (strcasecmp(p, "bin")==0)
+              vt=GWEN_DB_VALUETYPE_BIN;
+            else if (strcasecmp(p, "char")==0)
+              vt=GWEN_DB_VALUETYPE_CHAR;
+            else {
+              DBG_WARN(0, "Unknown type \"%s\", assuming \"char\"", p);
+              vt=GWEN_DB_VALUETYPE_CHAR;
+            }
             /* get the variable name */
             wbuf[0]=(char)0;
             p=GWEN_Text_GetWord(pos,

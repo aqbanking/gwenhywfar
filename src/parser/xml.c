@@ -631,8 +631,7 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
 
       chr=GWEN_XML__ReadWord(bio, chr, "<", data, sizeof(data));
       if (chr<0) {
-	GWEN_XMLNode_free(newNode);
-	return -1;
+        return -1;
       }
       newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, data);
       DBG_DEBUG(0, "Added data \"%s\"", data);

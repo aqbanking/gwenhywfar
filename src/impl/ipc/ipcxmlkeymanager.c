@@ -78,13 +78,17 @@ GWEN_IPCXMLKeyManager_FindKey(GWEN_IPCXMLKEYMANAGERDATA *kd,
                               const GWEN_KEYSPEC *ks){
   GWEN_LIST_ITERATOR *it;
   GWEN_CRYPTKEY *key;
+  GWEN_CRYPTKEY *foundKey;
 
+  foundKey=0;
   it=GWEN_List_First(kd->keys);
   if (it) {
     key=(GWEN_CRYPTKEY*)GWEN_ListIterator_Data(it);
     while(key) {
       const GWEN_KEYSPEC *ks2;
+      int gotcha;
 
+      gotcha=0;
       ks2=GWEN_CryptKey_GetKeySpec(key);
       DBG_DEBUG(0, "Comparing these:");
       DBG_DEBUG(0, "Key1: %s:%s:%d:%d",
@@ -101,18 +105,62 @@ GWEN_IPCXMLKeyManager_FindKey(GWEN_IPCXMLKEYMANAGERDATA *kd,
       if (GWEN_Text_Compare(GWEN_KeySpec_GetOwner(ks),
                             GWEN_KeySpec_GetOwner(ks2),1)==0)
         if (GWEN_Text_Compare(GWEN_KeySpec_GetKeyName(ks),
-                              GWEN_KeySpec_GetKeyName(ks2),1)==0)
-          if (GWEN_KeySpec_GetNumber(ks)==GWEN_KeySpec_GetNumber(ks2))
-            if (GWEN_KeySpec_GetVersion(ks)==GWEN_KeySpec_GetVersion(ks2)) {
-              GWEN_ListIterator_free(it);
-              return key;
+                              GWEN_KeySpec_GetKeyName(ks2),1)==0){
+          if (GWEN_KeySpec_GetNumber(ks)==999) {
+            if (foundKey) {
+              if (GWEN_KeySpec_GetNumber(ks2)>
+                  GWEN_CryptKey_GetNumber(foundKey)) {
+                /* new key number is higher than that of the previously
+                 * found key */
+                gotcha=1;
+              }
             }
+            else {
+              gotcha=1;
+            }
+          }
+          else {
+            if (GWEN_KeySpec_GetNumber(ks)==GWEN_KeySpec_GetNumber(ks2))
+              gotcha=1;
+          }
+
+          if (gotcha) {
+            gotcha=0;
+            if (GWEN_KeySpec_GetVersion(ks)==999) {
+              if (foundKey) {
+                if (GWEN_KeySpec_GetVersion(ks2)>
+                    GWEN_CryptKey_GetVersion(foundKey)) {
+                  /* new key version is higher than that of the previously
+                   * found key */
+                  gotcha=1;
+                }
+              }
+              else {
+                gotcha=1;
+              }
+            }
+            else {
+              if (GWEN_KeySpec_GetVersion(ks)==GWEN_KeySpec_GetVersion(ks2))
+                gotcha=1;
+            }
+          }
+
+          if (gotcha) {
+            foundKey=key;
+            if (GWEN_KeySpec_GetNumber(ks)!=999 &&
+                GWEN_KeySpec_GetVersion(ks)!=999) {
+              /* version and number explicitly given, return the found key */
+              break;
+            }
+          }
+        } /* if keyname and owner match */
       key=(GWEN_CRYPTKEY*)GWEN_ListIterator_Next(it);
     } /* while */
     GWEN_ListIterator_free(it);
   }
 
-  return 0;
+  /* return the most current key (or none) */
+  return foundKey;
 }
 
 

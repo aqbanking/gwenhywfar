@@ -91,6 +91,15 @@ void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
                              unsigned int userMark,
                              int force);
 
+/**
+ * Returns the next incoming message. This function uses a round-robin
+ * mechanism to make sure every connection has the same chance of providing
+ * a message.
+ */
+GWEN_IPCMSG *GWEN_ServiceLayer_NextIncomingMsg(GWEN_SERVICELAYER *sl,
+                                               unsigned int userMark);
+
+
 #ifdef __cplusplus
 }
 #endif

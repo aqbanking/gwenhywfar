@@ -286,7 +286,7 @@ GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
 
   if (tlp->bio) {
     /* if a bio exists then the socket gets by deleted by it */
-    DBG_DEBUG(0, "Freeing buffered IO");
+    DBG_INFO(0, "Freeing buffered IO");
     GWEN_BufferedIO_Abandon(tlp->bio);
     GWEN_BufferedIO_free(tlp->bio);
     tlp->socket=0;
@@ -294,7 +294,7 @@ GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
   }
   else {
     /* bio does not exist, so delete the socket myself */
-    DBG_DEBUG(0, "No buffered IO, freeing socket");
+    DBG_INFO(0, "No buffered IO, freeing socket");
     err=GWEN_Socket_Close(tlp->socket);
     GWEN_Socket_free(tlp->socket);
     tlp->socket=0;
@@ -422,7 +422,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Write(GWEN_IPCTRANSPORTLAYER *tl,
     DBG_INFO(0, "called from here");
   }
   else {
-    DBG_DEBUG(0, "Read %d bytes", *bsize);
+    DBG_INFO(0, "Written %d bytes", *bsize);
   }
   return err;
 }
@@ -540,7 +540,6 @@ void GWEN_IPCTransportLayerSocket_free(GWEN_IPCTRANSPORTLAYER *tl){
     tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
 
     GWEN_IPCTransportLayerSocket_Data_free(tlp);
-    free(tl);
   }
 }
 
@@ -559,11 +558,13 @@ GWEN_IPCTRANSSOCKET *GWEN_IPCTransportLayerSocket_Data_new(){
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCTransportLayerSocket_Data_free(GWEN_IPCTRANSSOCKET *tlsocket) {
   if (tlsocket) {
-    if (tlsocket->bio)
+    if (tlsocket->bio) {
       GWEN_BufferedIO_free(tlsocket->bio);
-    else
+    }
+    else {
       /* only free the socket if it is not used by tlsocket->bio */
       GWEN_Socket_free(tlsocket->socket);
+    }
     free(tlsocket);
   }
 }

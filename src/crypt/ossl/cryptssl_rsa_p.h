@@ -46,22 +46,22 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Register();
 GWEN_CRYPTKEY *GWEN_CryptKeyRSA_new();
 GWEN_CRYPTKEY *GWEN_CryptKeyRSA_dup(const GWEN_CRYPTKEY *key);
 void GWEN_CryptKeyRSA_FreeKeyData(GWEN_CRYPTKEY *key);
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,
                                         GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(const GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,
                                         GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
                                      GWEN_BUFFER *src,
                                      GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(const GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
                                        GWEN_BUFFER *signature);
 unsigned int GWEN_CryptKeyRSA_GetChunkSize(const GWEN_CRYPTKEY *key);
 GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
                                        GWEN_DB_NODE *db);
-GWEN_ERRORCODE GWEN_CryptKeyRSA_ToDb(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_ToDb(const GWEN_CRYPTKEY *key,
                                      GWEN_DB_NODE *db,
                                      int pub);
 GWEN_ERRORCODE GWEN_CryptKeyRSA_Generate(GWEN_CRYPTKEY *key,
@@ -70,7 +70,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Open(GWEN_CRYPTKEY *key);
 GWEN_ERRORCODE GWEN_CryptKeyRSA_Close(GWEN_CRYPTKEY *key);
 
 
-GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(const GWEN_CRYPTKEY *key,
                                            GWEN_BUFFER *src,
                                            BIGNUM *bnresult);
 

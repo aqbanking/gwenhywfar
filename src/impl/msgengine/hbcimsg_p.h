@@ -50,6 +50,7 @@ struct GWEN_HBCIMSG {
   unsigned int msgLayerId;
 
   unsigned int nodes;
+  unsigned int dialogNumber;
   unsigned int msgNum;
   unsigned int refMsgNum;
   unsigned int firstSegment;

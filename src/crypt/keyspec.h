@@ -29,6 +29,7 @@
 #ifndef GWEN_KEYSPEC_H
 #define GWEN_KEYSPEC_H
 
+#include <stdio.h>
 
 
 typedef struct GWEN_KEYSPEC GWEN_KEYSPEC;
@@ -60,6 +61,8 @@ void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
 
 
 GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks);
+const GWEN_KEYSPEC *GWEN_KeySpec_ConstNext(const GWEN_KEYSPEC *ks);
+
 void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
                              GWEN_KEYSPEC **head);
 void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
@@ -68,6 +71,7 @@ void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
 void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head);
 
 
+void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, int indent);
 
 
 
