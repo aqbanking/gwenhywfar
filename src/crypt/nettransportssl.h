@@ -200,6 +200,9 @@ GWENHYWFAR_API
   GWEN_DB_NODE*
   GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr);
 
+GWENHYWFAR_API
+  int GWEN_NetTransportSSL_IsSecure(const GWEN_NETTRANSPORT *tr);
+
 /*@}*/
 
 

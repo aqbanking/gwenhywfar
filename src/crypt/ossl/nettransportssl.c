@@ -157,6 +157,19 @@ GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL_IsSecure(const GWEN_NETTRANSPORT *tr){
+  GWEN_NETTRANSPORTSSL *skd;
+
+  assert(tr);
+  skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
+  assert(skd);
+
+  return skd->isSecure;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORT_RESULT
 GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr){
   GWEN_NETTRANSPORTSSL *skd;
@@ -1576,6 +1589,8 @@ int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
 
   return 0;
 }
+
+
 
 
 
