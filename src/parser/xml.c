@@ -376,7 +376,8 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
       }
     }
     else {
-      if (chr=='"' || chr=='\'' || chr=='[') {
+      if (((chr=='[' || chr=='"' || chr=='\'') &&
+           !(flags & GWEN_XML_FLAGS__DATA))) {
         lastWasSpace=0;
         inQuote=1;
         if (chr=='[')
@@ -416,7 +417,8 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
     chr=0;
   } /* while */
 
-  if (chr=='"' || chr=='\'' || chr==']')
+  if (((chr==']' || chr=='"' || chr=='\'') &&
+       !(flags & GWEN_XML_FLAGS__DATA)))
     return 0;
   if (lastWasSpace) {
     GWEN_TYPE_UINT32 s;
@@ -494,6 +496,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
   currDepth=0;
   chr=0;
 
+  flags&=~GWEN_XML_FLAGS__INTERNAL;
   while (!GWEN_BufferedIO_CheckEOF(bio)) {
     /* read char (if none set) but skip blanks */
     if (chr==0) {
@@ -1134,7 +1137,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
       GWEN_BUFFER *tbuf;
 
       bufData=GWEN_Buffer_new(0, 128, 0, 1);
-      chr=GWEN_XML__ReadWordBuf(bio, flags, chr, "<", bufData);
+      chr=GWEN_XML__ReadWordBuf(bio, flags | GWEN_XML_FLAGS__DATA,
+				chr, "<", bufData);
       if (chr<0) {
         GWEN_Buffer_free(bufData);
         return -1;

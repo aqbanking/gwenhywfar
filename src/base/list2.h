@@ -79,6 +79,7 @@ extern "C" {
   decl t *pr##_List2Iterator_Previous(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
+  decl void pr##_List2Iterator_IncLinkCount(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH, void *user_data);
 
   /** This macro should be used in applications, not in libraries. In
@@ -174,6 +175,14 @@ extern "C" {
   \
   t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li) { \
     return (t*) GWEN_ListIterator_Data((GWEN_LIST_ITERATOR*)li); \
+  } \
+  \
+  void pr##_List2Iterator_IncLinkCount(t##_LIST2_ITERATOR *li) { \
+    GWEN_ListIterator_IncLinkCount((GWEN_LIST_ITERATOR*)li); \
+  } \
+  \
+  unsigned int pr##_List2Iterator_GetLinkCount(const t##_LIST2_ITERATOR *li){\
+    return GWEN_ListIterator_GetLinkCount((const GWEN_LIST_ITERATOR*)li); \
   } \
   \
   t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH fn, void *user_data){ \

@@ -29,11 +29,8 @@
 #ifndef GWENHYWFAR_LIST_P_H
 #define GWENHYWFAR_LIST_P_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/inherit.h>
 
 
 typedef struct GWEN_LIST_ENTRY GWEN_LIST_ENTRY;
@@ -45,6 +42,7 @@ struct GWEN_LIST_ENTRY {
   GWEN_LIST_ENTRY *next;
   GWEN_REFPTR *dataPtr;
   unsigned int usage;
+  unsigned int linkCount;
 };
 
 
@@ -73,6 +71,7 @@ GWEN__LISTPTR *GWEN__ListPtr_dup(GWEN__LISTPTR *lp);
 
 
 struct GWEN_LIST {
+  GWEN_INHERIT_ELEMENT(GWEN_LIST)
   GWEN__LISTPTR *listPtr;
   GWEN_REFPTR_INFO *refPtrInfo;
 };
@@ -99,11 +98,6 @@ struct GWEN_CONSTLIST_ITERATOR {
   GWEN_CONSTLIST_ENTRY *current;
 };
 
-
-
-#ifdef __cplusplus
-}
-#endif
 
 
 #endif

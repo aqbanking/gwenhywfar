@@ -32,6 +32,8 @@
 
 #include <gwenhywfar/stringlist.h>
 
+#define GWEN_XML_FLAGS__INTERNAL 0xf0000000
+#define GWEN_XML_FLAGS__DATA     0x10000000
 
 #define GWEN_XML_MAX_DEPTH 32
 

@@ -37,6 +37,7 @@ noinst_HEADERS=\
  refptr_p.h \
  ringbuffer_p.h \
  stringlist_p.h \
+ stringlist2_p.h \
  waitcallback_l.h \
  waitcallback_p.h
 
@@ -62,6 +63,7 @@ iheader_HEADERS=\
  refptr.h \
  ringbuffer.h \
  stringlist.h \
+ stringlist2.h \
  waitcallback.h
 
 libbase_la_SOURCES=\
@@ -80,5 +82,6 @@ libbase_la_SOURCES=\
  refptr.c \
  ringbuffer.c \
  stringlist.c \
+ stringlist2.c \
  waitcallback.c
 

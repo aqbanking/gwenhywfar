@@ -4,6 +4,13 @@
   ------------------------------------------------------------------------
 
 
+2004/12/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_XML: Fixed a problem: Now data (between XML elements) can contain any
+  character except "<". Quotation marks and apostrophs are now only parsed
+  within element definitions.
+
+
 2004/12/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added new class GWEN_REFPTR (a type of smart pointer with reference counter)
@@ -28,6 +35,10 @@
     existing code).
   - added function GWEN_List_Unshare()
   - re-armed function GWEN_List_Erase()
+  - GWEN_LISTs can now be inherited
+  - fixed some bugs
+- added new class GWEN_STRINGLIST2. This one internally uses GWEN_LIST with 
+  caching.
 
 
 2004/12/14: Martin Preuss<martin@libchipcard.de>

@@ -35,6 +35,9 @@
 #include <gwenhywfar/debug.h>
 
 
+GWEN_INHERIT_FUNCTIONS(GWEN_LIST)
+
+
 
 GWEN_LIST_ENTRY *GWEN_ListEntry_new(){
   GWEN_LIST_ENTRY *le;
@@ -133,6 +136,7 @@ GWEN__LISTPTR *GWEN__ListPtr_dup(GWEN__LISTPTR *lp){
     if (!(nlp->first))
       nlp->first=nle;
     nlp->size++;
+    nle->linkCount=le->linkCount;
 
     le=le->next;
   } /* while */
@@ -151,6 +155,7 @@ GWEN_LIST *GWEN_List_new(){
   GWEN_LIST *l;
 
   GWEN_NEW_OBJECT(GWEN_LIST, l);
+  GWEN_INHERIT_INIT(GWEN_LIST, l);
   l->listPtr=GWEN__ListPtr_new();
   return l;
 }
@@ -159,6 +164,7 @@ GWEN_LIST *GWEN_List_new(){
 
 void GWEN_List_free(GWEN_LIST *l){
   if (l) {
+    GWEN_INHERIT_FINI(GWEN_LIST, l);
     GWEN__ListPtr_free(l->listPtr);
     GWEN_RefPtrInfo_free(l->refPtrInfo);
     free(l);
@@ -220,6 +226,7 @@ void GWEN_List_PushBackRefPtr(GWEN_LIST *l, GWEN_REFPTR *rp){
   if (!(lp->first))
     lp->first=le;
   lp->size++;
+  le->linkCount=1;
 }
 
 
@@ -253,6 +260,7 @@ void GWEN_List_PushFrontRefPtr(GWEN_LIST *l, GWEN_REFPTR *rp){
   if (!(lp->last))
     lp->last=le;
   lp->size++;
+  le->linkCount=1;
 }
 
 
@@ -331,6 +339,7 @@ void GWEN_List_PopBack(GWEN_LIST *l){
 
   le=lp->last;
   if (le) {
+    le->linkCount=0;
     lp->last=le->previous;
     if (le->previous) {
       le->previous->next=0;
@@ -366,6 +375,7 @@ void GWEN_List_PopFront(GWEN_LIST *l){
 
   le=lp->first;
   if (le) {
+    le->linkCount=0;
     lp->first=le->next;
     if (le->next) {
       le->next->previous=0;
@@ -451,18 +461,19 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
     tle=it->current;
     assert(tle);
     i=0;
-    while(tle) {
+    while(tle->previous) {
       i++;
       tle=tle->previous;
     }
 
     /* copy the list */
-    nlp=GWEN__ListPtr_new(l->listPtr);
+    nlp=GWEN__ListPtr_dup(l->listPtr);
     GWEN__ListPtr_free(l->listPtr);
     l->listPtr=nlp;
 
     /* seek and set the iterator position */
     tle=l->listPtr->first;
+    assert(tle);
     while(tle && i--) {
       tle=tle->next;
     }
@@ -473,28 +484,32 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
 
   assert(it);
   if (it->current) {
-    current=it->current;
-    /* unlink from list */
-    if (lp->first==current)
-      lp->first=current->next;
-    if (lp->last==current)
-      lp->last=current->previous;
+    if (it->current->linkCount==1) {
+      current=it->current;
+      /* unlink from list */
+      if (lp->first==current)
+        lp->first=current->next;
+      if (lp->last==current)
+        lp->last=current->previous;
 
-    /* unlink from next */
-    if (current->next) {
-      it->current=current->next;
-      current->next->usage++;
-      current->next->previous=current->previous;
+      /* unlink from next */
+      if (current->next) {
+        it->current=current->next;
+        current->next->usage++;
+        current->next->previous=current->previous;
+      }
+      else
+        it->current=0;
+      /* unlink from previous */
+      if (current->previous)
+        current->previous->next=current->next;
+      /* free */
+      current->usage--;
+      GWEN_ListEntry_free(current);
+      lp->size--;
     }
     else
-      it->current=0;
-    /* unlink from previous */
-    if (current->previous)
-      current->previous->next=current->next;
-    /* free */
-    current->usage--;
-    GWEN_ListEntry_free(current);
-    lp->size--;
+      it->current->linkCount--;
   }
 }
 
@@ -657,6 +672,24 @@ GWEN_REFPTR *GWEN_ListIterator_DataRefPtr(GWEN_LIST_ITERATOR *li){
   if (li->current)
     return li->current->dataPtr;
   return 0;
+}
+
+
+
+void GWEN_ListIterator_IncLinkCount(GWEN_LIST_ITERATOR *li){
+  assert(li);
+
+  if (li->current)
+    li->current->linkCount++;
+}
+
+
+
+unsigned int GWEN_ListIterator_GetLinkCount(const GWEN_LIST_ITERATOR *li){
+  assert(li);
+
+  assert(li->current);
+  return li->current->linkCount;
 }
 
 

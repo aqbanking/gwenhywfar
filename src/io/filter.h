@@ -61,6 +61,12 @@ GWEN_FILTER_RESULT GWEN_Filter_Work(GWEN_FILTER *f, int oneLoop);
 void GWEN_Filter_SetWorkFn(GWEN_FILTER *f, GWEN_FILTER_WORKFN fn);
 
 
+/**
+ * Appends a successor to the given filter.
+ * This means data output by fPredecessor is from now on additionally
+ * fed to the fNew. If nPredecessor already has a successor
+ * then the data stream will be duplicated to feed all successors.
+ */
 void GWEN_Filter_AppendNext(GWEN_FILTER *fPredecessor, GWEN_FILTER *fNew);
 
 

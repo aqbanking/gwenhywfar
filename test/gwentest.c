@@ -31,6 +31,7 @@
 #include <gwenhywfar/fslock.h>
 #include <gwenhywfar/xsd.h>
 #include <gwenhywfar/refptr.h>
+#include <gwenhywfar/stringlist2.h>
 #include "../src/parser/xsd_p.h"
 #ifdef OS_WIN32
 # include <windows.h>
@@ -3697,6 +3698,183 @@ int testPtr(int argc, char **argv) {
 
 
 
+int testStringList2(int argc, char **argv) {
+  GWEN_STRINGLIST2 *sl2;
+  GWEN_STRINGLIST2 *sl2copy;
+  GWEN_STRINGLIST2_ITERATOR *it;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
+  sl2=GWEN_StringList2_new();
+  GWEN_StringList2_AppendString(sl2, "1:First string", 0,
+                                GWEN_StringList2_IntertModeNoDouble);
+  GWEN_StringList2_AppendString(sl2, "2:Second string", 0,
+                                GWEN_StringList2_IntertModeNoDouble);
+  GWEN_StringList2_AppendString(sl2, "3:Third string", 0,
+                                GWEN_StringList2_IntertModeNoDouble);
+  GWEN_StringList2_AppendString(sl2, "4:Fourth string", 0,
+                                GWEN_StringList2_IntertModeNoDouble);
+
+  fprintf(stderr, "List:\n");
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  GWEN_StringList2_AppendString(sl2, strdup("3:Third string"), 1,
+                                GWEN_StringList2_IntertModeNoDouble);
+
+  fprintf(stderr, "List:\n");
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  GWEN_StringList2_AppendString(sl2, "3:Third string", 0,
+                                GWEN_StringList2_IntertModeReuse);
+
+  fprintf(stderr, "List:\n");
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  GWEN_StringList2_RemoveString(sl2, "3:Third string");
+  fprintf(stderr, "List:\n");
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  sl2copy=GWEN_StringList2_dup(sl2);
+  fprintf(stderr, "CopyList:\n");
+  it=GWEN_StringList2_First(sl2copy);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  GWEN_StringList2_RemoveString(sl2, "3:Third string");
+  fprintf(stderr, "List:\n");
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+  fprintf(stderr, "CopyList:\n");
+  it=GWEN_StringList2_First(sl2copy);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  GWEN_StringList2_RemoveString(sl2copy, "2:Second string");
+  fprintf(stderr, "List:\n");
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+  fprintf(stderr, "CopyList:\n");
+  it=GWEN_StringList2_First(sl2copy);
+  if (it) {
+    const char *t;
+    int i;
+
+    t=GWEN_StringList2Iterator_Data(it);
+    i=0;
+    while(t) {
+      fprintf(stderr, "String %d: %s [%d]\n", i, t,
+              GWEN_StringList2Iterator_GetLinkCount(it));
+      t=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+
+  GWEN_StringList2_free(sl2);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3818,6 +3996,8 @@ int main(int argc, char **argv) {
     rv=testXSD3(argc, argv);
   else if (strcasecmp(argv[1], "ptr")==0)
     rv=testPtr(argc, argv);
+  else if (strcasecmp(argv[1], "sl2")==0)
+    rv=testStringList2(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

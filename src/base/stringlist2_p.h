@@ -25,27 +25,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_STRINGLIST_P_H
-#define GWENHYWFAR_STRINGLIST_P_H
+#ifndef GWENHYWFAR_STRINGLIST2_P_H
+#define GWENHYWFAR_STRINGLIST2_P_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/stringlist2.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/refptr.h>
+#include <gwenhywfar/list.h>
 
 
-struct GWEN_STRINGLISTENTRYSTRUCT {
-  GWEN_STRINGLISTENTRY *next;
-  const char *data;
-  GWEN_TYPE_UINT32 refCount;
-};
 
-
-struct GWEN_STRINGLISTSTRUCT {
-  GWEN_STRINGLISTENTRY *first;
-  unsigned int count;
+struct GWEN_STRINGLIST2 {
   int senseCase;
-  int ignoreRefCount;
+  GWEN_LIST *listPtr;
 };
+
+GWEN_STRINGLIST2_ITERATOR*
+GWEN_StringList2__GetString(const GWEN_STRINGLIST2 *sl2,
+                            const char *s);
 
 
 #endif

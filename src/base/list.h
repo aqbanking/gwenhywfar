@@ -35,6 +35,7 @@ extern "C" {
 #endif
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/inherit.h>
 #include <gwenhywfar/refptr.h>
 /* This is needed for PalmOS, because it define some functions needed */
 #include <string.h>
@@ -73,6 +74,10 @@ typedef struct GWEN_LIST_ITERATOR GWEN_LIST_ITERATOR;
 /** An iterator for the const doubly-linked list, i.e. a pointer to a
     specific element */
 typedef struct GWEN_CONSTLIST_ITERATOR GWEN_CONSTLIST_ITERATOR;
+
+
+/** allow inheriting of lists */
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_LIST, GWENHYWFAR_API)
 
 
 /** Constructor. Returns a new empty list. */
@@ -274,6 +279,11 @@ void *GWEN_ListIterator_Data(GWEN_LIST_ITERATOR *li);
 GWENHYWFAR_API
 GWEN_REFPTR *GWEN_ListIterator_DataRefPtr(GWEN_LIST_ITERATOR *li);
 
+GWENHYWFAR_API
+void GWEN_ListIterator_IncLinkCount(GWEN_LIST_ITERATOR *li);
+
+GWENHYWFAR_API
+unsigned int GWEN_ListIterator_GetLinkCount(const GWEN_LIST_ITERATOR *li);
 
 
 
