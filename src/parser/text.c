@@ -862,37 +862,57 @@ int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
   unsigned wlength;
   unsigned plength;
 
+  unsigned int _wpos = *wpos, _ppos = *ppos, _matches = *matches;
+
   a=0;
   b=0;
   wlength=strlen(w);
   plength=strlen(p);
 
-
-  while (*wpos<wlength && *ppos<plength) {
-    a=w[*wpos];
-    b=p[*ppos];
-    if (b=='*')
+  while (_wpos<wlength && _ppos<plength) {
+    a=w[_wpos];
+    b=p[_ppos];
+    if (b=='*') {
+      *wpos = _wpos;
+      *ppos = _ppos;
+      *matches = _matches;
       return 1;
+    }
     if (!sensecase) {
       a=toupper(a);
       b=toupper(b);
     }
     /* count matches */
     if (a==b)
-      (*matches)++;
-    if (a!=b && b!='?')
+      ++_matches;
+    if (a!=b && b!='?') {
+      *wpos = _wpos;
+      *ppos = _ppos;
+      *matches = _matches;
       return 0;
-    (*wpos)++;
-    (*ppos)++;
+    }
+    ++_wpos;
+    ++_ppos;
   }
   /* both at end, would be ok */
-  if (*wpos==wlength && *ppos==plength)
+  if (_wpos==wlength && _ppos==plength) {
+    *wpos = _wpos;
+    *ppos = _ppos;
+    *matches = _matches;
     return 1;
+  }
   /* word ends, pattern doesnt, would be ok if pattern is '*' here */
-  if (*wpos>=wlength && *ppos<plength)
-    if (p[*ppos]=='*')
+  if (_wpos>=wlength && _ppos<plength)
+    if (p[_ppos]=='*') {
+      *wpos = _wpos;
+      *ppos = _ppos;
+      *matches = _matches;
       return 1;
+    }
   /* otherwise no match ;-/ */
+  *wpos = _wpos;
+  *ppos = _ppos;
+  *matches = _matches;
   return 0;
 }
 

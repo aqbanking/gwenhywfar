@@ -1,5 +1,7 @@
 2005-03-04   Christian Stimming <stimming@tuhh.de>
 
+	* src/parser/text.c: Also some small performance improvements.
+
 	* src/base/buffer.c, src/io/bufferedio.c: Add some small
 	performance improvements; add comments about further potential
 	performance improvements.
