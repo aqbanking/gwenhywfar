@@ -1022,7 +1022,7 @@ int GWEN_DB_AddCharValue(GWEN_DB_NODE *n,
           if (res) {
             DBG_DEBUG(GWEN_LOGDOMAIN,
                       "Value \"%s\" of var \"%s\" already exists",
-                      val, var);
+                      val, path);
             return 1;
           }
         }
