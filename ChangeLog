@@ -6,6 +6,8 @@
   - API change !!
     Now all callbacks are kept in a flat list. You also now need to unregister
     callbacks you once registered !
+  - GWEN_WaitCallback_Enter() is now a macro. This allows me track down the
+    origin of a Callback (i.e. from where is has been entered).
   -> SO_VERSION incremented, SO_AGE=0 (makes it effectively .so.15)
 
 

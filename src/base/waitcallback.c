@@ -215,24 +215,33 @@ int GWEN_WaitCallback_Register(GWEN_WAITCALLBACK *ctx){
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_WaitCallback_Unregister(GWEN_WAITCALLBACK *ctx){
   GWEN_WAITCALLBACK *tctx;
+  int haveSome;
 
   assert(ctx);
   GWEN_WaitCallback_List_Del(ctx);
 
   tctx=GWEN_WaitCallback_List_First(gwen_waitcallback__list);
+  haveSome=0;
   while(tctx) {
     if (tctx->instantiatedFrom==ctx) {
       /* this callback is instantiated from the one to unregister, huh... */
-      DBG_WARN(0,
-	       "There are still callbacks open, some of them "
-	       "are instantiated from the one you are unregistering...\n"
-	       "Please check your application.");
-      GWEN_WaitCallback_List_Clear(gwen_waitcallback__list);
-      gwen_waitcallback__current=0;
-      return 0;
+      haveSome++;
+      DBG_WARN(0, "Call back still open from \"%s:%d\"",
+               tctx->enteredFromFile,
+               tctx->enteredFromLine);
     }
     tctx=GWEN_WaitCallback_List_Next(tctx);
   } /* while */
+
+  if (haveSome) {
+    DBG_WARN(0,
+             "There are still callbacks open, some of them "
+             "are instantiated from the one you are unregistering...\n"
+             "Please check your application.");
+    GWEN_WaitCallback_List_Clear(gwen_waitcallback__list);
+    gwen_waitcallback__current=0;
+    return 0;
+  }
 
   return 0;
 }
@@ -312,7 +321,9 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_WaitCallback_Enter(const char *id){
+void GWEN_WaitCallback_Enter_u(const char *id,
+                               const char *file,
+                               int line){
   GWEN_WAITCALLBACK *ctx;
   GWEN_WAITCALLBACK *nctx;
 
@@ -352,6 +363,10 @@ void GWEN_WaitCallback_Enter(const char *id){
     DBG_DEBUG(0, "Active callbacks: %d",
               GWEN_WaitCallback_List_GetCount(gwen_waitcallback__list));
   }
+
+  if (file)
+    nctx->enteredFromFile=strdup(file);
+  nctx->enteredFromLine=line;
 }
 
 

@@ -163,6 +163,12 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos);
 
+
+GWENHYWFAR_API
+  void GWEN_WaitCallback_Enter_u(const char *id,
+                                 const char *file,
+                                 int line);
+
 /**
  * Enters the callback of the given name. If there is no callback of that name
  * below the currently active callback context then it will be faked.
@@ -172,8 +178,9 @@ GWENHYWFAR_API
  * @ref GWEN_WAITCALLBACK_INSTANTIATEFN will be called and the resulting
  * context becomes the active one.
  */
-GWENHYWFAR_API
-  void GWEN_WaitCallback_Enter(const char *id);
+#define GWEN_WaitCallback_Enter(id) \
+  GWEN_WaitCallback_Enter_u(id, __FILE__, __LINE__)
+
 
 /**
  * Leaves the currently active context (by freeing it) and reinstates the

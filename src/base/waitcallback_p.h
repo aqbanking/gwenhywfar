@@ -49,6 +49,10 @@ struct GWEN_WAITCALLBACK {
   GWEN_WAITCALLBACK_LOGFN logFn;
 
   char *id;
+
+  char *enteredFromFile;
+  int enteredFromLine;
+
   GWEN_TYPE_UINT64 pos;
   GWEN_TYPE_UINT64 total;
 
