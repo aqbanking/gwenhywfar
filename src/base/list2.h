@@ -53,45 +53,25 @@ extern "C" {
   typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
   typedef t* (t##_LIST2_FOREACH)(t *element); \
   \
-  GWENHYWFAR_API \
   t##_LIST2 *pr##_List2_new(); \
-  GWENHYWFAR_API \
   void pr##_List2_free(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent); \
-  GWENHYWFAR_API \
   void pr##_List2_PushBack(t##_LIST2 *l, t *p); \
-  GWENHYWFAR_API \
   void pr##_List2_PushFront(t##_LIST2 *l, t *p); \
-  GWENHYWFAR_API \
   t *pr##_List2_GetFront(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   t *pr##_List2_GetBack(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it); \
-  GWENHYWFAR_API \
   unsigned int pr##_List2_GetSize(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_List2_PopBack(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_List2_PopFront(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_List2_Clear(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   t##_LIST2_ITERATOR *pr##_List2_First(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   t##_LIST2_ITERATOR *pr##_List2_Last(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   t##_LIST2_ITERATOR *pr##_List2Iterator_new(t##_LIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_List2Iterator_free(t##_LIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   t *pr##_List2Iterator_Previous(t##_LIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH);
 
 
@@ -201,41 +181,23 @@ extern "C" {
   typedef struct t##_CONSTLIST2_ITERATOR t##_CONSTLIST2_ITERATOR; \
   typedef const t* (t##_CONSTLIST2_FOREACH)(const t *element); \
   \
-  GWENHYWFAR_API \
   t##_CONSTLIST2 *pr##_ConstList2_new(); \
-  GWENHYWFAR_API \
   void pr##_ConstList2_free(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_ConstList2_PushBack(t##_CONSTLIST2 *l, const t *p); \
-  GWENHYWFAR_API \
   void pr##_ConstList2_PushFront(t##_CONSTLIST2 *l, const t *p); \
-  GWENHYWFAR_API \
   const t *pr##_ConstList2_GetFront(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   const t *pr##_ConstList2_GetBack(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   unsigned int pr##_ConstList2_GetSize(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_ConstList2_PopFront(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_ConstList2_Clear(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   t##_CONSTLIST2_ITERATOR *pr##_ConstList2Iterator_new(t##_CONSTLIST2 *l); \
-  GWENHYWFAR_API \
   void pr##_ConstList2Iterator_free(t##_CONSTLIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   const t *pr##_ConstList2Iterator_Previous(t##_CONSTLIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   const t *pr##_ConstList2Iterator_Next(t##_CONSTLIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li); \
-  GWENHYWFAR_API \
   const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH);
 
 

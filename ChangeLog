@@ -11,6 +11,11 @@
 
 2004-08-02   Christian Stimming <stimming@tuhh.de>
 
+	* src/base/list2.h: Remove GWENHYWFAR_API from function
+	definitions in the macro because the implementations will not be
+	imported from the DLL but instead be generated locally through the
+	other macro.
+
 	* src/base/Makefile.am: Remove -I$(top_srcdir)/src/os because its
 	process.h conflicts with <process.h> on gcc3.2 and mingw32.
 	
