@@ -2649,7 +2649,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       /* store segment size within DB */
       GWEN_DB_SetIntValue(storegrp,
                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "segment/pos",
+                          "segment/length",
                           GWEN_Buffer_GetPos(mbuf)-startPos);
       segments++;
     }
