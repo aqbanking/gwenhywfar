@@ -1,7 +1,14 @@
+
+2004/08/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added GWEN_Time_fromUtcString()
+
+
 2004-08-16   Christian Stimming <stimming@tuhh.de>
 
 	* src/os/windows/gwentime.c (GWEN_Time_new): Remove errornous
 	extra variable declaration.
+
 
 2004/08/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -92,6 +92,9 @@ GWENHYWFAR_API GWEN_TIME *GWEN_Time_new(int year,
 GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromString(const char *s,
                                                const char *tmpl);
 
+GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromUtcString(const char *s,
+                                                  const char *tmpl);
+
 
 /**
  * Creates a GWEN_TIME object from the return value of @ref GWEN_Time_Seconds.

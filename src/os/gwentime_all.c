@@ -119,7 +119,7 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
 
 
 
-GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl){
+GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
   int year, month, day;
   int hour, min, sec;
   const char *p;
@@ -188,13 +188,27 @@ GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl){
   } /* while */
 
   /* get time in local time */
-  gwt=GWEN_Time_new(year, month, day, hour, min, sec, 0);
+  gwt=GWEN_Time_new(year, month, day, hour, min, sec, inUtc);
   if (!gwt) {
     DBG_INFO(0, "here");
     return 0;
   }
   return gwt;
 }
+
+
+
+GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl){
+  return GWEN_Time__fromString(s, tmpl, 0);
+}
+
+
+
+GWEN_TIME *GWEN_Time_fromUtcString(const char *s, const char *tmpl){
+  return GWEN_Time__fromString(s, tmpl, 1);
+}
+
+
 
 
 
