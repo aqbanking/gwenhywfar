@@ -29,6 +29,7 @@
 #define GWEN_LOGGER_P_H
 
 #include <gwenhywfar/logger.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +50,8 @@ struct GWEN_LOGGER {
 
 int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
                                GWEN_LOGGER_LEVEL priority, const char *s,
-                               char *buffer, unsigned int bufsize);
+                               GWEN_BUFFER *mbuf);
+
 int GWEN_Logger__Log(GWEN_LOGGER *lg,
                      GWEN_LOGGER_LEVEL priority, const char *s);
 

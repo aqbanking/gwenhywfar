@@ -238,6 +238,13 @@ GWENHYWFAR_API
 int GWEN_IPCManager_Work(GWEN_IPCMANAGER *mgr, int maxmsg);
 
 
+/**
+ * Returns a pointer to the connection used by the given node.
+ */
+GWENHYWFAR_API
+GWEN_NETCONNECTION *GWEN_IPCManager_GetConnection(GWEN_IPCMANAGER *mgr,
+                                                  GWEN_TYPE_UINT32 nid);
+
 #ifdef __cplusplus
 }
 #endif

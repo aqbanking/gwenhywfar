@@ -1,4 +1,10 @@
 
+2004/05/16: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base/logger.c: fixed a buffer overflow bug
+- ipc/ipc.c: more fixes and minor modifications
+
+
 2004/05/14: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ipc/ipc.{c,h}: fixed some bugs

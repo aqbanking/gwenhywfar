@@ -583,6 +583,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     return GWEN_NetConnectionWorkResult_Change;
   } /* if in body mode */
   else {
+    DBG_DEBUG(0, "In no-header mode");
     /* in command or header mode */
     while(GWEN_RingBuffer_GetUsedBytes(rbuf)) {
       int c;
@@ -918,14 +919,14 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
   chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
   assert(chttp);
 
-  DBG_NOTICE(0, "Working on HTTP connection");
+  DBG_DEBUG(0, "Working on HTTP connection");
 
   rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
   if (rv1==GWEN_NetConnectionWorkResult_Change) {
-    DBG_INFO(0, "Change while writing");
+    DBG_DEBUG(0, "Change while writing");
   }
   else if (rv1==GWEN_NetConnectionWorkResult_Error) {
-    DBG_INFO(0, "Error on writing");
+    DBG_DEBUG(0, "Error on writing");
     return rv1;
   }
   else {
@@ -934,7 +935,7 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
 
   rv2=GWEN_NetConnection_WorkIO(conn);
   if (rv2==GWEN_NetConnectionWorkResult_Change) {
-    DBG_INFO(0, "Change on WorkIO");
+    DBG_DEBUG(0, "Change on WorkIO");
   }
   else if (rv2==GWEN_NetConnectionWorkResult_Error) {
     DBG_DEBUG(0, "Error on WorkIO");
@@ -942,7 +943,7 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
 
   rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
   if (rv3!=GWEN_NetConnectionWorkResult_NoChange) {
-    DBG_NOTICE(0, "Change while reading");
+    DBG_DEBUG(0, "Change while reading");
   }
   else {
     DBG_DEBUG(0, "No change while reading");

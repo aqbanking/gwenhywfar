@@ -32,6 +32,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/logger.h>
 #include <gwenhywfar/buffer.h>
 #include <stdio.h>
 
@@ -168,6 +169,17 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
  */
 GWENHYWFAR_API
 void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert);
+
+
+GWENHYWFAR_API
+void GWEN_Text_DumpString2Buffer(const char *s, unsigned l,
+                                 GWEN_BUFFER *mbuf,
+                                 unsigned insert);
+
+GWENHYWFAR_API
+void GWEN_Text_LogString(const char *s, unsigned l,
+                         GWEN_LOGGER *lg,
+                         GWEN_LOGGER_LEVEL lv);
 
 
 #ifdef __cplusplus

@@ -686,8 +686,8 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
         res=GWEN_NetTransport_Read(conn->transportLayer,
                                    ptr, &bsize);
         DBG_DEBUG(0, "Result of transport layer read: %s (%d)",
-                 GWEN_NetTransport_ResultName(res),
-                 res);
+                  GWEN_NetTransport_ResultName(res),
+                  res);
         if (res==GWEN_NetTransportResultOk) {
           if (bsize==0) {
             DBG_INFO(0, "Connection is down");

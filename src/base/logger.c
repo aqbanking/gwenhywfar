@@ -32,6 +32,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/buffer.h>
 
 #include "logger_p.h"
 
@@ -180,7 +181,7 @@ void GWEN_Logger_Close(GWEN_LOGGER *lg){
 
 int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
                                GWEN_LOGGER_LEVEL priority, const char *s,
-                               char *buffer, unsigned int bufsize) {
+                               GWEN_BUFFER *mbuf) {
 #ifdef HAVE_SNPRINTF
   unsigned int i;
 #endif /* HAVE_SNPRINTF */
@@ -188,10 +189,11 @@ int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
   struct tm *t;
   time_t tt;
 #endif /* HAVE_TIME_H */
+  char buffer[256];
 
   assert(lg);
   if (lg->logIdent) {
-    if (strlen(s)+strlen(lg->logIdent)+32>=bufsize) {
+    if (strlen(lg->logIdent)+32>=sizeof(buffer)) {
       fprintf(stderr," LOGGER: Logbuffer too small (1).\n");
       return 1;
     }
@@ -202,52 +204,54 @@ int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
   t=localtime(&tt);
 
 # ifdef HAVE_SNPRINTF
-  buffer[bufsize-1]=0;
 #  ifdef HAVE_GETPID
-  i=snprintf(buffer, bufsize-1,
-	     "%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):%s\n",priority,
+  i=snprintf(buffer, sizeof(buffer)-1,
+             "%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):",priority,
 	     t->tm_year+1900, t->tm_mon+1, t->tm_mday,
 	     t->tm_hour, t->tm_min, t->tm_sec,
-	     lg->logIdent, getpid(), s);
+             lg->logIdent, getpid());
 #  else
-  i=snprintf(buffer, bufsize-1,
-	     "%d:%04d/%02d/%02d %02d-%02d-%02d:%s:%s\n",priority,
+  i=snprintf(buffer, sizeof(buffer)-1,
+	     "%d:%04d/%02d/%02d %02d-%02d-%02d:%s:",priority,
 	     t->tm_year+1900, t->tm_mon+1, t->tm_mday,
 	     t->tm_hour, t->tm_min, t->tm_sec,
-	     lg->logIdent, s);
+             lg->logIdent);
 #  endif /* HAVE_GETPID */
-  if (i>=bufsize) {
+  if (i>=sizeof(buffer)) {
     fprintf(stderr," LOGGER: Logbuffer too small (2).\n");
     return 1;
   }
 # else   /* HAVE_SNPRINTF */
 #  ifdef HAVE_GETPID
-  sprintf(buffer,"%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):%s\n",priority,
-	  t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-	  t->tm_hour, t->tm_min, t->tm_sec,
-          lg->logIdent, getpid(), s);
+  sprintf(buffer,"%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):",priority,
+          t->tm_year+1900, t->tm_mon+1, t->tm_mday,
+          t->tm_hour, t->tm_min, t->tm_sec,
+          lg->logIdent, getpid());
 #  else
-  sprintf(buffer,"%d:%04d/%02d/%02d %02d-%02d-%02d:%s:%s\n",priority,
+  sprintf(buffer,"%d:%04d/%02d/%02d %02d-%02d-%02d:%s:",priority,
 	  t->tm_year+1900, t->tm_mon+1, t->tm_mday,
 	  t->tm_hour, t->tm_min, t->tm_sec,
-	  lg->logIdent, s);
+          lg->logIdent);
 #  endif /* HAVE_GETPID */
 # endif  /* HAVE_SNPRINTF */
 #else    /* HAVE_TIME_H */
 # ifdef HAVE_SNPRINTF
-  buffer[bufsize-1]=0;
-  i=snprintf(buffer, bufsize-1,
-	     "%d:%s:%s\n",priority,
-	     lg->logIdent, s);
-  if (i>=bufsize) {
+  buffer[sizeof(buffer)-1]=0;
+  i=snprintf(buffer, sizeof(buffer)-1,
+             "%d:%s:",priority,
+	     lg->logIdent);
+  if (i>=sizeof(buffer)) {
     fprintf(stderr," LOGGER: Logbuffer too small (3).\n");
     return 1;
   }
 # else   /* HAVE_SNPRINTF */
-  sprintf(buffer,"%d:%s:%s\n",priority,
-	  lg->logIdent, s);
+  sprintf(buffer,"%d:%s:",priority,
+          lg->logIdent);
 # endif  /* HAVE_SNPRINTF */
 #endif   /* HAVE_TIME_H */
+  GWEN_Buffer_AppendString(mbuf, buffer);
+  GWEN_Buffer_AppendString(mbuf, s);
+  GWEN_Buffer_AppendByte(mbuf, '\n');
   return 0;
 }
 
@@ -260,7 +264,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 #ifdef HAVE_SYSLOG_H
     int pri;
 #endif /* HAVE_SYSLOG_H */
-    char buffer[300];
+    GWEN_BUFFER *mbuf;
     int rv;
 
     assert(lg);
@@ -268,12 +272,14 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
       /* priority too low, don't log */
       return 0;
 
+    mbuf=GWEN_Buffer_new(0, 256, 0, 1);
     switch(lg->logType) {
     case GWEN_LoggerTypeFile:
-      rv=GWEN_Logger__CreateMessage(lg, priority, s,
-                                    buffer, sizeof(buffer));
-      if (rv)
+      rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
+      if (rv) {
+        GWEN_Buffer_free(mbuf);
         return rv;
+      }
 
       f=fopen(lg->logFile,"a+");
       if (f==0) {
@@ -282,17 +288,19 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
                 lg->logFile,
                 strerror(errno));
         lg->logType=GWEN_LoggerTypeConsole;
+        GWEN_Buffer_free(mbuf);
         return 1;
       }
 
-      rv=fprintf(f, "%s", buffer);
-      if (rv==-1 || rv!=(int)strlen(buffer)) {
+      if (fwrite(GWEN_Buffer_GetStart(mbuf),
+                 GWEN_Buffer_GetUsedBytes(mbuf), 1, f)!=1) {
         fprintf(stderr,
                 "LOGGER: Unable to write to file \"%s\" (%s)\n",
                 lg->logFile,
                 strerror(errno));
         fclose(f);
         lg->logType=GWEN_LoggerTypeConsole;
+        GWEN_Buffer_free(mbuf);
         return 1;
       }
       if (fclose(f)) {
@@ -301,6 +309,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
                 lg->logFile,
                 strerror(errno));
         lg->logType=GWEN_LoggerTypeConsole;
+        GWEN_Buffer_free(mbuf);
         return 1;
       }
       break;
@@ -344,26 +353,30 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
       if (lg->logFunction==0) {
         fprintf(stderr,
                 "LOGGER: Logtype is \"Function\", but no function is set.\n");
+        GWEN_Buffer_free(mbuf);
         return 1;
       }
-      rv=GWEN_Logger__CreateMessage(lg, priority, s,
-                                    buffer, sizeof(buffer));
-      if (rv)
+      rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
+      if (rv) {
+        GWEN_Buffer_free(mbuf);
         return rv;
-      (lg->logFunction)(buffer);
+      }
+      (lg->logFunction)(GWEN_Buffer_GetStart(mbuf));
       break;
 
     case GWEN_LoggerTypeConsole:
     default:
-      rv=GWEN_Logger__CreateMessage(lg, priority, s,
-                                    buffer, sizeof(buffer));
-      if (rv)
+      rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
+      if (rv) {
+        GWEN_Buffer_free(mbuf);
         return rv;
+      }
 
-      fprintf(stderr, "%s", buffer);
+      fprintf(stderr, "%s", GWEN_Buffer_GetStart(mbuf));
       break;
     } /* switch */
     lg=lg->next;
+    GWEN_Buffer_free(mbuf);
   } /* while lg */
   return 0;
 }
@@ -372,10 +385,10 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 
 int GWEN_Logger_Log(GWEN_LOGGER *lg,
                     GWEN_LOGGER_LEVEL priority, const char *s){
-  char buffer[256];
   const char *p;
   int rv;
   unsigned int i;
+  GWEN_BUFFER *mbuf;
 
   if (lg==0)
     lg=gwen_logger;
@@ -385,24 +398,25 @@ int GWEN_Logger_Log(GWEN_LOGGER *lg,
     return 1;
 
   /* copy buffer, exchange all newlines by 0 */
+  mbuf=GWEN_Buffer_new(0, strlen(s)+1, 0, 1);
   for (i=0; i<strlen(s)+1; i++) {
     if (s[i]=='\n') {
-      buffer[i]=0;
+      GWEN_Buffer_AppendByte(mbuf, 0);
     }
     else
-      buffer[i]=s[i];
+      GWEN_Buffer_AppendByte(mbuf, s[i]);
   }
-  buffer[i]=0; /* add final 0 */
 
   /* now log each line */
   rv=0;
-  p=buffer;
+  p=GWEN_Buffer_GetStart(mbuf);
   while (*p) {
     rv|=GWEN_Logger__Log(lg, priority, p);
     while(*p)
       p++;
     p++;
   }
+  GWEN_Buffer_free(mbuf);
   return rv;
 }
 

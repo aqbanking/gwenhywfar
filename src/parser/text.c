@@ -656,6 +656,53 @@ void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert) {
 
 
 
+void GWEN_Text_DumpString2Buffer(const char *s, unsigned l,
+                                 GWEN_BUFFER *mbuf,
+                                 unsigned insert) {
+  unsigned int i;
+  unsigned int j;
+  unsigned int pos;
+  unsigned k;
+  char numbuf[32];
+
+  pos=0;
+  for (k=0; k<insert; k++)
+    GWEN_Buffer_AppendByte(mbuf, ' ');
+  GWEN_Buffer_AppendString(mbuf,"String size is ");
+  snprintf(numbuf, sizeof(numbuf), "%d", l);
+  GWEN_Buffer_AppendString(mbuf, numbuf);
+  GWEN_Buffer_AppendByte(mbuf, '\n');
+  while(pos<l) {
+    for (k=0; k<insert; k++)
+      GWEN_Buffer_AppendByte(mbuf, ' ');
+    snprintf(numbuf, sizeof(numbuf),"%04x: ",pos);
+    GWEN_Buffer_AppendString(mbuf, numbuf);
+    j=pos+16;
+    if (j>=l)
+      j=l;
+
+    /* show hex dump */
+    for (i=pos; i<j; i++) {
+      snprintf(numbuf, sizeof(numbuf),"%02x ", (unsigned char)s[i]);
+      GWEN_Buffer_AppendString(mbuf, numbuf);
+    }
+    if (j-pos<16)
+      for (i=0; i<16-(j-pos); i++)
+        GWEN_Buffer_AppendString(mbuf, "   ");
+    /* show text */
+    for (i=pos; i<j; i++) {
+      if (s[i]<32)
+        GWEN_Buffer_AppendByte(mbuf, '.');
+      else
+        GWEN_Buffer_AppendByte(mbuf, s[i]);
+    }
+    GWEN_Buffer_AppendByte(mbuf, '\n');
+    pos+=16;
+  }
+}
+
+
+
 
 
 
@@ -836,6 +883,19 @@ int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
   } /* while */
 
   return 0;
+}
+
+
+
+void GWEN_Text_LogString(const char *s, unsigned l,
+                         GWEN_LOGGER *lg,
+                         GWEN_LOGGER_LEVEL lv){
+  GWEN_BUFFER *mbuf;
+
+  mbuf=GWEN_Buffer_new(0, l*10, 0, 1);
+  GWEN_Text_DumpString2Buffer(s, l, mbuf, 0);
+  GWEN_Logger_Log(lg, lv, GWEN_Buffer_GetStart(mbuf));
+  GWEN_Buffer_free(mbuf);
 }
 
 

@@ -383,7 +383,7 @@ int GWEN_IPCManager__SendMsg(GWEN_IPCMANAGER *mgr,
   GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_DEFAULT,
                        "id", numbuf);
   if (m->refId) {
-    snprintf(numbuf, sizeof(numbuf), "%d", m->id);
+    snprintf(numbuf, sizeof(numbuf), "%d", m->refId);
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_DEFAULT,
                          "refid", numbuf);
   }
@@ -617,6 +617,7 @@ GWEN_DB_NODE *GWEN_IPCManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
   while(r) {
     if (r->id==rid)
       break;
+    r=GWEN_IPCRequest_List_Next(r);
   } /* while */
   if (!r) {
     DBG_ERROR(0, "Request %08x not found", rid);
@@ -627,6 +628,27 @@ GWEN_DB_NODE *GWEN_IPCManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
   assert(om);
 
   return om->db;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_NETCONNECTION *GWEN_IPCManager_GetConnection(GWEN_IPCMANAGER *mgr,
+                                                  GWEN_TYPE_UINT32 nid){
+  GWEN_IPCNODE *n;
+
+  n=GWEN_IPCNode_List_First(mgr->nodes);
+  while(n) {
+    if (n->id==nid)
+      break;
+    n=GWEN_IPCNode_List_Next(n);
+  } /* while */
+  if (!n) {
+    DBG_ERROR(0, "Node %08x not found", nid);
+    return 0;
+  }
+
+  return n->connection;
 }
 
 
@@ -707,11 +729,11 @@ int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg) {
   while(n && (maxMsg==0 || msgs<maxMsg)) {
     GWEN_NETMSG *nm;
 
-    DBG_NOTICE(0, "Checking node");
+    DBG_DEBUG(0, "Checking node");
     if (n->isServer) {
       GWEN_NETTRANSPORT *tr;
 
-      DBG_NOTICE(0, "Node is a server");
+      DBG_DEBUG(0, "Node is a server");
       /* collect connections */
       tr=GWEN_NetConnection_GetNextIncoming(n->connection);
       if (tr) {
@@ -738,11 +760,11 @@ int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg) {
         GWEN_NetConnection_Up(newconn);
       }
       else {
-        DBG_NOTICE(0, "No incoming connection");
+        DBG_DEBUG(0, "No incoming connection");
       }
     }
     else {
-      DBG_NOTICE(0, "Node is NOT a server");
+      DBG_DEBUG(0, "Node is NOT a server");
       nm=GWEN_NetConnection_GetInMsg(n->connection);
       if (nm) {
         GWEN_DB_NODE *dbCmd;
@@ -848,7 +870,7 @@ int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg) {
         msgs++;
       } /* if there was a netmessage */
       else {
-        DBG_NOTICE(0, "No message");
+        DBG_DEBUG(0, "No message");
       }
     } /* if listening */
     n=GWEN_IPCNode_List_Next(n);
