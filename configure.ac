@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=9
-GWENHYWFAR_VERSION_BUILD=22
+GWENHYWFAR_VERSION_BUILD=23
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -148,20 +148,6 @@ AC_SUBST(prefix)
 
 dnl OS dependant settings
 AQ_CHECK_OS
-
-# check for specialities
-AC_MSG_CHECKING(for system dependant settings)
-case "$OSYSTEM" in
-    osx)
-      all_libraries="-L/sw/lib $all_libraries -ldl"
-      all_includes="$all_includes -I/sw/include"
-      AC_MSG_RESULT(yes, for OSX)
-      ;;
-    *)
-      AC_MSG_RESULT(none)
-      ;;
-esac
-
 
 case "$OS_TYPE" in
     posix)

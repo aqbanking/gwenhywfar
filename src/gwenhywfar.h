@@ -36,10 +36,14 @@ extern "C" {
 #endif
 
 
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_Init();
+
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_Fini();
 
 
+GWENHYWFAR_API
 void GWEN_Version(int *major,
                   int *minor,
                   int *patchlevel,

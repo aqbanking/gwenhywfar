@@ -13,6 +13,7 @@ EXTRA_DIST= \
  NEWS \
  README \
  README.W32 \
+ README.DARWIN \
  gwenhywfar.m4 \
  gwenhywfar.spec \
  gwenhywfar.spec.in 

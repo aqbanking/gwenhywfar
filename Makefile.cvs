@@ -32,6 +32,9 @@ mp:
 	automake --add-missing
 	autoconf
 	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode
+
+mp-darwin:
+	CFLAGS="-I/sw/include -ggdb -Wall" LDFLAGS="-L/sw/lib" ./configure
 	
 mp-w32:
 	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --enable-maintainer-mode --prefix=/gwen --with-openssl-includes=/more/include
@@ -43,3 +46,5 @@ mp-tu:
 	automake --add-missing
 	autoconf
 	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --prefix=/home/preuss/install
+
+
