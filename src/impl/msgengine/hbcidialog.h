@@ -28,6 +28,9 @@
 #ifndef GWENHYWFAR_HBCIDLG_H
 #define GWENHYWFAR_HBCIDLG_H
 
+#define GWEN_HBCIDIALOG_FLAGS_INITIATOR 0x0001
+
+
 #include <gwenhyfwar/hbcicryptocontext.h>
 #include <gwenhyfwar/buffer.h>
 #include <gwenhyfwar/msgengine.h>
@@ -72,6 +75,9 @@ typedef int
 typedef void
   (*GWEN_HBCIDLG_FREEDATA_FN)(GWEN_HBCIDIALOG *hdlg);
 
+typedef void
+  (*GWEN_HBCIDLG_RESET_FN)(GWEN_HBCIDIALOG *hdlg);
+
 
 
 void GWEN_HBCIDialog_SetPrepareCtxFn(GWEN_HBCIDIALOG *hdlg,
@@ -85,7 +91,9 @@ void GWEN_HBCIDialog_SetEncryptFn(GWEN_HBCIDIALOG *hdlg,
 void GWEN_HBCIDialog_SetDecrpytFn(GWEN_HBCIDIALOG *hdlg,
                                GWEN_HBCIDLG_DECRYPT_FN decryptFn);
 void GWEN_HBCIDialog_SetFreeDataFn(GWEN_HBCIDIALOG *hdlg,
-                                GWEN_HBCIDLG_FREEDATA_FN fn);
+                                   GWEN_HBCIDLG_FREEDATA_FN fn);
+void GWEN_HBCIDialog_SetResetFn(GWEN_HBCIDIALOG *hdlg,
+                                GWEN_HBCIDLG_RESET_FN fn);
 void GWEN_HBCIDialog_SetInheritorData(GWEN_HBCIDIALOG *hdlg,
                                       void *data);
 
@@ -107,6 +115,9 @@ unsigned int GWEN_HBCIDialog_GetNextMsgNum(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIDialog_SetNextMsgNum(GWEN_HBCIDIALOG *hdlg,
                                    unsigned int i);
 
+const char *GWEN_HBCIDialog_GetOwner(GWEN_HBCIDIALOG *hdlg);
+void GWEN_HBCIDialog_SetOwner(GWEN_HBCIDIALOG *hdlg,
+                              const char *s);
 
 
 
@@ -135,8 +146,15 @@ int GWEN_HBCIDialog_Decrypt(GWEN_HBCIDIALOG *hdlg,
                             GWEN_BUFFER *decryptbuf,
                             GWEN_HBCICRYPTOCONTEXT *ctx);
 
+void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg);
+
+
 GWEN_HBCIDIALOG *GWEN_HBCIDialog_new(GWEN_MSGENGINE *e);
 void GWEN_HBCIDialog_free(GWEN_HBCIDIALOG *hdlg);
+
+unsigned int GWEN_HBCIDialog_GetFlags(GWEN_HBCIDIALOG *hdlg);
+void GWEN_HBCIDialog_SetFlags(GWEN_HBCIDIALOG *hdlg,
+                              unsigned int f);
 
 
 /**
@@ -156,6 +174,8 @@ int GWEN_HBCIDialog_UnpaddWithANSIX9_23(GWEN_BUFFER *src);
 /*@}*/
 
 
+void GWEN_HBCIDialog_Attach(GWEN_HBCIDIALOG *hdlg);
+void GWEN_HBCIDialog_Detach(GWEN_HBCIDIALOG *hdlg);
 
 #ifdef __cplusplus
 }

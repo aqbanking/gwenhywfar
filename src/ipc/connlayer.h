@@ -41,16 +41,6 @@ extern "C" {
 #define GWEN_IPCCONNLAYER_FLAGS_PASSIVE    0x0002
 
 
-typedef enum {
-  GWEN_IPCConnectionLayerStateUnconnected=0,
-  GWEN_IPCConnectionLayerStateOpening,
-  GWEN_IPCConnectionLayerStateOpen,
-  GWEN_IPCConnectionLayerStateClosing,
-  GWEN_IPCConnectionLayerStateListening,
-  GWEN_IPCConnectionLayerStateClosed
-} GWEN_IPCCONNLAYER_STATE;
-
-
 typedef struct GWEN_IPCCONNLAYER GWEN_IPCCONNLAYER;
 
 typedef void (*GWEN_IPCCONNLAYER_FREE)(GWEN_IPCCONNLAYER *cl);
@@ -63,12 +53,12 @@ typedef GWEN_ERRORCODE (*GWEN_IPCCONNLAYER_OPEN)(GWEN_IPCCONNLAYER *cl);
 typedef GWEN_ERRORCODE (*GWEN_IPCCONNLAYER_CLOSE)(GWEN_IPCCONNLAYER *cl,
                                                   int force);
 
+typedef void (*GWEN_IPCCONNLAYER_DOWN)(GWEN_IPCCONNLAYER *cl);
+
 
 
 GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_GetNext(GWEN_IPCCONNLAYER *cl);
 GWEN_IPCMSG *GWEN_ConnectionLayer_GetIncomingMsg(GWEN_IPCCONNLAYER *cl);
-GWEN_IPCMSG *GWEN_ConnectionLayer_FindMsgReply(GWEN_IPCCONNLAYER *cl,
-                                               unsigned int refId);
 GWEN_ERRORCODE GWEN_ConnectionLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
                                                    GWEN_IPCMSG *msg);
 int GWEN_ConnectionLayer_HasOutgoingMsg(GWEN_IPCCONNLAYER *cl);
@@ -77,16 +67,13 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Work(GWEN_IPCCONNLAYER *cl,
 GWEN_ERRORCODE GWEN_ConnectionLayer_Open(GWEN_IPCCONNLAYER *cl);
 GWEN_ERRORCODE GWEN_ConnectionLayer_Close(GWEN_IPCCONNLAYER *cl,
                                           int force);
-GWEN_IPCCONNLAYER_STATE GWEN_ConnectionLayer_GetState(GWEN_IPCCONNLAYER *cl);
-void GWEN_ConnectionLayer_SetState(GWEN_IPCCONNLAYER *cl,
-                                   GWEN_IPCCONNLAYER_STATE st);
+void GWEN_ConnectionLayer_Down(GWEN_IPCCONNLAYER *cl);
+
 unsigned int GWEN_ConnectionLayer_GetId(GWEN_IPCCONNLAYER *cl);
 unsigned int GWEN_ConnectionLayer_GetFlags(GWEN_IPCCONNLAYER *cl);
 void GWEN_ConnectionLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
                                    unsigned int flags);
 
-GWEN_IPCCONNLAYER_STATE
-  GWEN_ConnectionLayer_GetState(GWEN_IPCCONNLAYER *cl);
 const char *GWEN_ConnectionLayer_GetInfo(GWEN_IPCCONNLAYER *cl);
 void GWEN_ConnectionLayer_SetInfo(GWEN_IPCCONNLAYER *cl, const char *s);
 GWEN_ERRORCODE GWEN_ConnectionLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
@@ -100,8 +87,7 @@ GWEN_IPCMSG *GWEN_ConnectionLayer_GetOutgoingMsg(GWEN_IPCCONNLAYER *cl);
 
 
 
-GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_new(GWEN_IPCMSGLAYER *ml,
-                                            GWEN_IPCCONNLAYER_STATE st);
+GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_new(GWEN_IPCMSGLAYER *ml);
 void GWEN_ConnectionLayer_free(GWEN_IPCCONNLAYER *cl);
 void GWEN_ConnectionLayer_Append(GWEN_IPCCONNLAYER *cl,
                                  GWEN_IPCCONNLAYER *newcl);
@@ -123,10 +109,13 @@ void GWEN_ConnectionLayer_SetOpenFn(GWEN_IPCCONNLAYER *cl,
                                     GWEN_IPCCONNLAYER_OPEN f);
 void GWEN_ConnectionLayer_SetCloseFn(GWEN_IPCCONNLAYER *cl,
                                      GWEN_IPCCONNLAYER_CLOSE f);
+void GWEN_ConnectionLayer_SetDownFn(GWEN_IPCCONNLAYER *cl,
+                                    GWEN_IPCCONNLAYER_DOWN f);
+
+
 GWEN_IPCMSGLAYER *GWEN_ConnectionLayer_GetMsgLayer(GWEN_IPCCONNLAYER *cl);
 void GWEN_ConnectionLayer_SetLibMark(GWEN_IPCCONNLAYER *cl,
                                      unsigned int i);
-const char *GWEN_ConnectionLayer_GetStateString(GWEN_IPCCONNLAYER_STATE st);
 
 unsigned int GWEN_ConnectionLayer_GetType(GWEN_IPCCONNLAYER *cl);
 void GWEN_ConnectionLayer_SetType(GWEN_IPCCONNLAYER *cl,

@@ -34,6 +34,8 @@
 #include <gwenhyfwar/transportlayer.h>
 #include <gwenhyfwar/msgengine.h>
 #include <gwenhyfwar/crypt.h>
+#include <gwenhyfwar/keymanager.h>
+#include <gwenhyfwar/hbcimsg.h>
 
 
 typedef struct GWEN_IPCXMLCONNLAYERDATA GWEN_IPCXMLCONNLAYERDATA;
@@ -55,45 +57,28 @@ void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd);
 
 
 GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
+                                            GWEN_KEYMANAGER *keyManager,
                                             GWEN_IPCMSGLAYER *ml,
-                                            GWEN_IPCMSGLAYER_STATE st);
+                                            int active);
 
 GWEN_MSGENGINE *GWEN_IPCXMLConnLayer_GetMsgEngine(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetMsgEngine(GWEN_IPCCONNLAYER *cl,
-                                       GWEN_MSGENGINE *e);
-unsigned int GWEN_IPCXMLConnLayer_GetSecurityState(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetSecurityState(GWEN_IPCCONNLAYER *cl,
-                                           unsigned int s);
 unsigned int GWEN_IPCXMLConnLayer_GetFlags(GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLConnLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
                                    unsigned int f);
 GWEN_CRYPTKEY *GWEN_IPCXMLConnLayer_GetLocalKey(GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLConnLayer_SetLocalKey(GWEN_IPCCONNLAYER *cl,
                                       GWEN_CRYPTKEY *k);
-GWEN_CRYPTKEY *GWEN_IPCXMLConnLayer_GetRemoteKey(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetRemoteKey(GWEN_IPCCONNLAYER *cl,
-                                       GWEN_CRYPTKEY *k);
-GWEN_CRYPTKEY *GWEN_IPCXMLConnLayer_GetSessionKey(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetSessionKey(GWEN_IPCCONNLAYER *cl,
-                                        GWEN_CRYPTKEY *k);
 
-const char *GWEN_IPCXMLConnLayer_GetPeerName(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetPeerName(GWEN_IPCCONNLAYER *cl,
-                                      const char *s);
-const char *GWEN_IPCXMLConnLayer_GetPeerVersion(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetPeerVersion(GWEN_IPCCONNLAYER *cl,
-                                         const char *s);
-
-const char *GWEN_IPCXMLConnLayer_GetOwnName(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetOwnName(GWEN_IPCCONNLAYER *cl,
-                                     const char *s);
-const char *GWEN_IPCXMLConnLayer_GetOwnVersion(GWEN_IPCCONNLAYER *cl);
-void GWEN_IPCXMLConnLayer_SetOwnVersion(GWEN_IPCCONNLAYER *cl,
-                                        const char *s);
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl);
 
 
 
+GWEN_ERRORCODE
+  GWEN_IPCXMLConnLayer_SetSecurityEnv(GWEN_IPCCONNLAYER *cl,
+                                      const GWEN_KEYSPEC *signer,
+                                      const GWEN_KEYSPEC *crypter);
 
+GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl);
 
 
 

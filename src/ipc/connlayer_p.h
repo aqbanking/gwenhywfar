@@ -40,13 +40,6 @@ struct GWEN_IPCCONNLAYER {
   GWEN_IPCCONNLAYER *next;
 
   GWEN_IPCMSGLAYER *msgLayer;
-  GWEN_IPCCONNLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
 
   unsigned int typ;
   unsigned int userMark;
@@ -61,6 +54,7 @@ struct GWEN_IPCCONNLAYER {
   GWEN_IPCCONNLAYER_CLOSE closeFn;
   GWEN_IPCCONNLAYER_WORK workFn;
   GWEN_IPCCONNLAYER_ACCEPT acceptFn;
+  GWEN_IPCCONNLAYER_DOWN downFn;
 };
 
 

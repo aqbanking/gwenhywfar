@@ -49,25 +49,23 @@
 
 #include <gwenhyfwar/hbcimsg.h>
 #include <gwenhyfwar/hbcidialog.h>
+#include <gwenhyfwar/db.h>
 
 
 struct GWEN_IPCXMLCONNLAYERDATA {
   GWEN_MSGENGINE *msgEngine; /* not owned ! */
-  unsigned int securityState;
   unsigned int flags;
   GWEN_CRYPTKEY *localKey;
-  GWEN_CRYPTKEY *remoteKey;
-  GWEN_CRYPTKEY *sessionKey;
-  char *peerName;
-  char *peerVersion;
-  char *ownName;
-  char *ownVersion;
 
   GWEN_HBCIDIALOG *dialog;
-  GWEN_HBCIMSG *incomingMsgs;
-  GWEN_HBCIMSG *outgoingMsgs;
-  GWEN_IPCXMLCONNLAYER_ENCODE_FN encodeFn;
-  GWEN_IPCXMLCONNLAYER_DECODE_FN decodeFn;
+  GWEN_KEYMANAGER *keyManager;
+  unsigned int dialogId;
+
+  unsigned int connected;
+  GWEN_HBCIMSG *currentMsg;
+
+  GWEN_KEYSPEC *signer;
+  GWEN_KEYSPEC *crypter;
 };
 
 
@@ -79,18 +77,15 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Accept(GWEN_IPCCONNLAYER *cl,
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Open(GWEN_IPCCONNLAYER *cl);
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Close(GWEN_IPCCONNLAYER *cl,
                                           int force);
+void GWEN_IPCXMLConnLayer_Down(GWEN_IPCCONNLAYER *cl);
 
-void GWEN_IPCXMLConnLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                         GWEN_HBCIMSG *m);
-void GWEN_IPCXMLConnLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
-                                         GWEN_HBCIMSG *m);
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_IPC2HBCI(GWEN_IPCCONNLAYER *cl,
+                                            GWEN_IPCMSG *msg);
+GWEN_IPCMSG *GWEN_IPCXMLConnLayer_HBCI2IPC(GWEN_IPCCONNLAYER *cl,
+                                           GWEN_HBCIMSG *hmsg);
 
-
-GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_NextIncomingMsg(GWEN_IPCCONNLAYER *cl);
-GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_FindIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                                      unsigned int refid);
-void GWEN_IPCXMLConnLayer_UnlinkIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                            GWEN_HBCIMSG *m);
+void GWEN_IPCXMLConnLayer_Down(GWEN_IPCCONNLAYER *cl);
+GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Up(GWEN_IPCCONNLAYER *cl);
 
 
 #endif /* GWEN_IPCXMLCONNLAYER_P_H */

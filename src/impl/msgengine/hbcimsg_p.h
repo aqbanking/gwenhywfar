@@ -47,6 +47,8 @@ struct GWEN_HBCIMSG {
   GWEN_KEYSPEC *signers;
   unsigned int nSigners;
 
+  unsigned int msgLayerId;
+
   unsigned int nodes;
   unsigned int msgNum;
   unsigned int refMsgNum;

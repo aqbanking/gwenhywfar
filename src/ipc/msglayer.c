@@ -37,7 +37,6 @@
 #include <gwenhyfwar/misc.h>
 
 
-static unsigned int GWEN_IPCMsgLayer_LastMsgId=0;
 static unsigned int GWEN_IPCMsgLayer_LastMsgLayerId=0;
 
 
@@ -47,7 +46,6 @@ GWEN_IPCMSG *GWEN_Msg_new(){
   GWEN_IPCMSG *m;
 
   GWEN_NEW_OBJECT(GWEN_IPCMSG, m);
-  m->msgId=++GWEN_IPCMsgLayer_LastMsgId;
   return m;
 }
 
@@ -56,8 +54,6 @@ GWEN_IPCMSG *GWEN_Msg_new(){
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_Msg_free(GWEN_IPCMSG *m){
   if (m) {
-    if (m->freeDataFn)
-      m->freeDataFn(m);
     GWEN_Buffer_free(m->buffer);
     free(m);
   }
@@ -66,16 +62,20 @@ void GWEN_Msg_free(GWEN_IPCMSG *m){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWEN_Msg_SetMsgLayerId(GWEN_IPCMSG *m, unsigned int id){
+GWEN_BUFFER *GWEN_Msg_GetBuffer(GWEN_IPCMSG *m){
   assert(m);
-  m->msgLayerId=id;
+  return m->buffer;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_BUFFER *GWEN_Msg_GetBuffer(GWEN_IPCMSG *m){
+GWEN_BUFFER *GWEN_Msg_TakeBuffer(GWEN_IPCMSG *m){
+  GWEN_BUFFER *bf;
+
   assert(m);
+  bf=m->buffer;
+  m->buffer=0;
   return m->buffer;
 }
 
@@ -99,51 +99,10 @@ unsigned int GWEN_Msg_GetMsgLayerId(GWEN_IPCMSG *m){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int GWEN_Msg_GetMsgId(GWEN_IPCMSG *m){
+void GWEN_Msg_SetMsgLayerId(GWEN_IPCMSG *m,
+                            unsigned int i){
   assert(m);
-  return m->msgId;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-unsigned int GWEN_Msg_GetReferenceId(GWEN_IPCMSG *m){
-  assert(m);
-  return m->refId;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void GWEN_Msg_SetReferenceId(GWEN_IPCMSG *m, unsigned int i){
-  assert(m);
-  m->refId=i;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void *GWEN_Msg_GetData(GWEN_IPCMSG *m){
-  assert(m);
-  return m->data;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void GWEN_Msg_SetData(GWEN_IPCMSG *m, void *d){
-  assert(m);
-  if (m->freeDataFn)
-    m->freeDataFn(m);
-  m->data=d;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void GWEN_Msg_SetFreeFn(GWEN_IPCMSG *m, GWEN_IPCMSG_FREE f){
-  assert(m);
-  m->freeDataFn=f;
+  m->msgLayerId=i;
 }
 
 

@@ -198,6 +198,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key){
   newKey->closeFn=key->closeFn;
   GWEN_KeySpec_free(newKey->keyspec);
   newKey->keyspec=GWEN_KeySpec_dup(key->keyspec);
+  newKey->pub=key->pub;
   return newKey;
 }
 
@@ -560,6 +561,21 @@ void GWEN_CryptKey_SetDupFn(GWEN_CRYPTKEY *key,
   assert(key);
   key->dupFn=dupFn;
 }
+
+
+
+int GWEN_CryptKey_IsPublic(GWEN_CRYPTKEY *key){
+  assert(key);
+  return key->pub;
+}
+
+
+
+void GWEN_CryptKey_SetPublic(GWEN_CRYPTKEY *key, int i){
+  assert(key);
+  key->pub=i;
+}
+
 
 
 

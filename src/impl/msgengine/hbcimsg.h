@@ -62,6 +62,18 @@ void GWEN_HBCIMsg_SetCrypter(GWEN_HBCIMSG *hmsg,
 
 GWEN_BUFFER *GWEN_HBCIMsg_GetBuffer(GWEN_HBCIMSG *hmsg);
 
+/**
+ * Takes the buffer away from the HBCIMsg.
+ * The caller is responsible for freeing the returned buffer !
+ */
+GWEN_BUFFER *GWEN_HBCIMsg_TakeBuffer(GWEN_HBCIMSG *hmsg);
+
+/**
+ * Takes over ownership of the given buffer.
+ */
+void GWEN_HBCIMsg_SetBuffer(GWEN_HBCIMSG *hmsg,
+                            GWEN_BUFFER *bf);
+
 unsigned int GWEN_HBCIMsg_GetFlags(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetFlags(GWEN_HBCIMSG *hmsg,
                            unsigned int f);
@@ -73,6 +85,12 @@ void GWEN_HBCIMsg_SetMsgRef(GWEN_HBCIMSG *hmsg,
 unsigned int GWEN_HBCIMsg_GetMsgNumber(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetMsgNumber(GWEN_HBCIMSG *hmsg,
                                unsigned int i);
+
+unsigned int GWEN_HBCIMsg_GetMsgLayerId(GWEN_HBCIMSG *hmsg);
+void GWEN_HBCIMsg_SetMsgLayerId(GWEN_HBCIMSG *hmsg,
+                                unsigned int i);
+
+unsigned int GWEN_HBCIMsg_GetNodes(GWEN_HBCIMSG *hmsg);
 
 
 

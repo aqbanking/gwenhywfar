@@ -308,43 +308,6 @@ GWEN_GlobalServiceLayer_FindConnection(unsigned int id,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWEN_GlobalServiceLayer_CheckClosed() {
-  GWEN_IPCCONNLAYER *cl;
-  GWEN_IPCMSGLAYER *ml;
-  GWEN_ERRORCODE err;
-
-  DBG_INFO(0, "Checking for physically close connections");
-  cl=GWEN_Global_ServiceLayer->connections;
-  while(cl) {
-    GWEN_IPCCONNLAYER *nextcl;
-
-    nextcl=cl->next;
-    ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
-    assert(ml);
-    DBG_INFO(0, "MsgLayer state is %d",
-             GWEN_MsgLayer_GetState(ml));
-    if (GWEN_MsgLayer_GetState(ml)==GWEN_IPCMsglayerStateClosed) {
-      if (GWEN_ConnectionLayer_GetState(cl)==
-          GWEN_IPCConnectionLayerStateOpen ||
-          GWEN_ConnectionLayer_GetState(cl)==
-          GWEN_IPCConnectionLayerStateOpening
-         ) {
-        /* force closing of connection */
-        DBG_NOTICE(0, "Forcing logical close of connection %d",
-                   GWEN_ConnectionLayer_GetId(cl));
-        err=GWEN_ConnectionLayer_Close(cl, 1);
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
-        }
-      } /* if normally open */
-    }
-    cl=nextcl;
-  } /* while */
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 void GWEN_GlobalServiceLayer_RemoveClosed() {
   GWEN_IPCCONNLAYER *cl;
   GWEN_IPCMSGLAYER *ml;
@@ -353,19 +316,14 @@ void GWEN_GlobalServiceLayer_RemoveClosed() {
   cl=GWEN_Global_ServiceLayer->connections;
   while(cl) {
     GWEN_IPCCONNLAYER *nextcl;
-    GWEN_IPCCONNLAYER_STATE st;
-
-    st=GWEN_ConnectionLayer_GetState(cl);
-    DBG_INFO(0, "State of connection %d: \"%s\" (%d)",
-             GWEN_ConnectionLayer_GetId(cl),
-             GWEN_ConnectionLayer_GetStateString(st),
-             st);
 
     nextcl=cl->next;
     ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
     assert(ml);
-    if (GWEN_ConnectionLayer_GetState(cl)==
-        GWEN_IPCConnectionLayerStateClosed) {
+    if (GWEN_MsgLayer_GetState(ml)==GWEN_IPCMsglayerStateClosed) {
+      /* notify connection layer */
+      GWEN_ConnectionLayer_Down(cl);
+
       if (!(GWEN_ConnectionLayer_GetFlags(cl) &
             GWEN_IPCCONNLAYER_FLAGS_PERSISTENT)) {
         /* remove closed connection if it is not marked persistent */
@@ -554,18 +512,9 @@ GWEN_ERRORCODE GWEN_ServiceLayer_Work(GWEN_SERVICELAYER *sl, int timeout){
   /* TODO: read next message, sort it in */
 
   /* do some cleanup */
-  GWEN_ServiceLayer_CheckClosed(sl);
   GWEN_ServiceLayer_RemoveClosed(sl);
 
   return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void GWEN_ServiceLayer_CheckClosed(GWEN_SERVICELAYER *sl){
-  assert(sl);
-  GWEN_GlobalServiceLayer_CheckClosed();
 }
 
 
@@ -586,106 +535,6 @@ void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
   assert(sl);
   GWEN_GlobalServiceLayer_Close(id, sl->id, userMark, force);
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_ServiceLayer_FindMsgReply(GWEN_SERVICELAYER *sl,
-					    unsigned int refId){
-  GWEN_IPCCONNLAYER *cl;
-  GWEN_IPCMSG *msg;
-
-  assert(sl);
-  cl=GWEN_Global_ServiceLayer->connections;
-  while(cl) {
-    if (GWEN_ConnectionLayer_GetLibMark(cl)==sl->id) {
-      /* found a matching connection for the given local service layer */
-      msg=GWEN_ConnectionLayer_FindMsgReply(cl, refId);
-      if (msg) {
-	DBG_INFO(0, "Found a matching message (refid=%d)", refId);
-        return msg;
-      }
-    }
-    cl=GWEN_ConnectionLayer_GetNext(cl);
-  } /* while */
-
-  DBG_DEBUG(0, "No reply found for id=%d", refId);
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_ServiceLayer_GetRequest(GWEN_SERVICELAYER *sl){
-  GWEN_IPCCONNLAYER *cl;
-  GWEN_IPCMSG *msg;
-
-  assert(sl);
-  cl=GWEN_Global_ServiceLayer->connections;
-  while(cl) {
-    DBG_INFO(0, "Checking connection %d",
-             GWEN_ConnectionLayer_GetId(cl));
-    if (GWEN_ConnectionLayer_GetLibMark(cl)==sl->id) {
-      /* found a matching connection for the given local service layer */
-      DBG_INFO(0, "Connection %d matches",
-               GWEN_ConnectionLayer_GetId(cl));
-      msg=GWEN_ConnectionLayer_FindMsgReply(cl, 0);
-      if (msg) {
-	DBG_INFO(0, "Found a message with no reference id");
-	return msg;
-      }
-      else {
-        DBG_INFO(0, "No matching message found on %d",
-                 GWEN_ConnectionLayer_GetId(cl));
-      }
-    }
-    cl=GWEN_ConnectionLayer_GetNext(cl);
-  } /* while */
-
-  DBG_DEBUG(0, "No request found");
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE GWEN_ServiceLayer_SendMessage(GWEN_SERVICELAYER *sl,
-                                             GWEN_IPCMSG *msg){
-  GWEN_IPCCONNLAYER *cl;
-  GWEN_ERRORCODE err;
-
-  assert(sl);
-  cl=GWEN_ServiceLayer_FindConnection(sl,
-                                      GWEN_Msg_GetMsgLayerId(msg),
-                                      0);
-  if (cl==0) {
-    DBG_ERROR(0, "Connection %d not found", GWEN_Msg_GetMsgLayerId(msg));
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
-                          GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
-  }
-  err=GWEN_ConnectionLayer_AddOutgoingMsg(cl, msg);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO(0, "called from here");
-    return err;
-  }
-  DBG_INFO(0, "Message successfully enqueued");
-  if (GWEN_ConnectionLayer_GetState(cl)==
-      GWEN_IPCConnectionLayerStateUnconnected){
-    /* automatically open connection */
-    DBG_INFO(0, "Connection %d is closed, opening it",
-             GWEN_ConnectionLayer_GetId(cl));
-    err=GWEN_ConnectionLayer_Open(cl);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO(0, "called from here");
-      return err;
-    }
-  }
-
-  return 0;
-}
-
 
 
 

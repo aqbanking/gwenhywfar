@@ -39,7 +39,6 @@ struct GWEN_IPCXMLDIALOGDATA {
   GWEN_CRYPTKEY *remoteKey;
   unsigned int remoteSignSeq;
   GWEN_CRYPTKEY *sessionKey;
-  unsigned int flags;
 
   char *serviceCode;
   char *securityId;
@@ -74,6 +73,7 @@ int GWEN_IPCXMLDialog_Decrypt(GWEN_HBCIDIALOG *hdlg,
 
 void GWEN_IPCXMLDialog_FreeData(GWEN_HBCIDIALOG *hdlg);
 
+void GWEN_IPCXMLDialog_Reset(GWEN_HBCIDIALOG *hdlg);
 
 
 #endif

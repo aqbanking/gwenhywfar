@@ -100,6 +100,53 @@ GWEN_BUFFER *GWEN_HBCIMsg_GetBuffer(GWEN_HBCIMSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+GWEN_BUFFER *GWEN_HBCIMsg_TakeBuffer(GWEN_HBCIMSG *hmsg){
+  GWEN_BUFFER *bf;
+
+  assert(hmsg);
+  bf=hmsg->buffer;
+  hmsg->buffer=0;
+  return bf;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_HBCIMsg_SetBuffer(GWEN_HBCIMSG *hmsg,
+                            GWEN_BUFFER *bf){
+  assert(hmsg);
+  GWEN_Buffer_free(hmsg->buffer);
+  hmsg->buffer=bf;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_HBCIMsg_GetMsgLayerId(GWEN_HBCIMSG *hmsg){
+  assert(hmsg);
+  return hmsg->msgLayerId;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_HBCIMsg_GetNodes(GWEN_HBCIMSG *hmsg){
+  assert(hmsg);
+  return hmsg->nodes;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_HBCIMsg_SetMsgLayerId(GWEN_HBCIMSG *hmsg,
+                                unsigned int i){
+  assert(hmsg);
+  hmsg->msgLayerId=i;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 void GWEN_HBCIMsg_SetMsgRef(GWEN_HBCIMSG *hmsg,
                             unsigned int i){
   assert(hmsg);
@@ -123,6 +170,7 @@ GWEN_HBCIMSG *GWEN_HBCIMsg_new(GWEN_HBCIDIALOG *hdlg){
 
   GWEN_NEW_OBJECT(GWEN_HBCIMSG, hmsg);
   hmsg->dialog=hdlg;
+  GWEN_HBCIDialog_Attach(hdlg);
   hmsg->buffer=GWEN_Buffer_new(0, GWEN_HBCIMSG_DEFAULTSIZE, 0, 1);
   GWEN_Buffer_SetStep(hmsg->buffer, 512);
   hmsg->msgNum=GWEN_HBCIDialog_GetNextMsgNum(hdlg);
@@ -138,6 +186,7 @@ void GWEN_HBCIMsg_free(GWEN_HBCIMSG *hmsg){
     GWEN_KeySpec_free(hmsg->crypter);
     GWEN_Buffer_free(hmsg->buffer);
     GWEN_Buffer_free(hmsg->origbuffer);
+    GWEN_HBCIDialog_Detach(hmsg->dialog);
     free(hmsg);
   }
 }
@@ -401,7 +450,8 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
   DBG_INFO(0, "Date and Time: %s / %s",
            sdate, stime);
 
-  if (hmsg->refMsgNum)
+  if (GWEN_HBCIDialog_GetFlags(hmsg->dialog) &
+      GWEN_HBCIDIALOG_FLAGS_INITIATOR)
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                         "SecDetails/dir", 2);
   else
@@ -417,6 +467,9 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                        "key/userid",
                        GWEN_KeySpec_GetOwner(ks));
+  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                       "key/keytype",
+                       GWEN_KeySpec_GetKeyName(ks));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "key/keynum",
                       GWEN_KeySpec_GetNumber(ks));
@@ -1113,6 +1166,7 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
   /* prepare context */
   GWEN_KeySpec_SetOwner(ks, GWEN_DB_GetCharValue(n, "key/userid", 0, ""));
   GWEN_KeySpec_SetNumber(ks, GWEN_DB_GetIntValue(n, "key/keynum", 0, 0));
+  GWEN_KeySpec_SetKeyName(ks, GWEN_DB_GetCharValue(n, "key/keytype", 0, ""));
   GWEN_KeySpec_SetVersion(ks,
                           GWEN_DB_GetIntValue(n, "key/keyversion", 0, 0));
   s=GWEN_DB_GetCharValue(n, "key/keytype", 0, 0);

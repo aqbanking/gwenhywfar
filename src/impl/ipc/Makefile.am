@@ -4,7 +4,7 @@ INCLUDES=@all_includes@
 
 noinst_LTLIBRARIES=libimplipc.la
 noinst_HEADERS=\
- cmdlayer_p.h \
+ ipcxml_p.h \
  ipcxmlconnlayer_p.h \
  ipcxmldialog_p.h \
  ipcxmlkeymanager_p.h \
@@ -12,14 +12,14 @@ noinst_HEADERS=\
 
 iheaderdir=${includedir}/gwenhyfwar
 iheader_HEADERS=\
- cmdlayer.h \
+ ipcxml.h \
  ipcxmlconnlayer.h \
  ipcxmldialog.h \
  ipcxmlkeymanager.h \
  ipcxmlmsglayer.h
 
 libimplipc_la_SOURCES=\
- cmdlayer.c \
+ ipcxml.c \
  ipcxmlconnlayer.c \
  ipcxmldialog.c \
  ipcxmlkeymanager.c \

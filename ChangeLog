@@ -1,5 +1,12 @@
 $Id$
 
+2003/11/18 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- should now work with OpenSSL 0.9.6 as well...
+- again more work on IPC
+- fixed some bugs
+
+
 2003/11/17 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - module "db" can now read/write binary values from/to streams

@@ -60,22 +60,17 @@ void GWEN_Msg_free(GWEN_IPCMSG *m);
 GWEN_IPCMSG *GWEN_Msg_GetNext(GWEN_IPCMSG *m);
 
 GWEN_BUFFER *GWEN_Msg_GetBuffer(GWEN_IPCMSG *m);
-void GWEN_Msg_SetBuffer(GWEN_IPCMSG *m, GWEN_BUFFER *buf);
-unsigned int GWEN_Msg_GetMsgLayerId(GWEN_IPCMSG *m);
-void GWEN_Msg_SetMsgLayerId(GWEN_IPCMSG *m, unsigned int id);
-unsigned int GWEN_Msg_GetReferenceId(GWEN_IPCMSG *m);
-void GWEN_Msg_SetReferenceId(GWEN_IPCMSG *m, unsigned int i);
-unsigned int GWEN_Msg_GetMsgId(GWEN_IPCMSG *m);
-
-
 /**
- * @name Internal functions not to be used by applications
+ * Takes the buffer from the message.
+ * This makes the caller responsible for freeing the returned buffer !
  */
-/*@{*/
-void *GWEN_Msg_GetData(GWEN_IPCMSG *m);
-void GWEN_Msg_SetData(GWEN_IPCMSG *m, void *data);
-void GWEN_Msg_SetFreeFn(GWEN_IPCMSG *m, GWEN_IPCMSG_FREE f);
-/*@}*/
+GWEN_BUFFER *GWEN_Msg_TakeBuffer(GWEN_IPCMSG *m);
+
+void GWEN_Msg_SetBuffer(GWEN_IPCMSG *m, GWEN_BUFFER *buf);
+
+unsigned int GWEN_Msg_GetMsgLayerId(GWEN_IPCMSG *m);
+void GWEN_Msg_SetMsgLayerId(GWEN_IPCMSG *m,
+                            unsigned int i);
 
 
 

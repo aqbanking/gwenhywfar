@@ -12,7 +12,6 @@
 #include <gwenhyfwar/xml.h>
 #include <gwenhyfwar/msgengine.h>
 #include <gwenhyfwar/text.h>
-#include <gwenhyfwar/cmdlayer.h>
 #include <gwenhyfwar/hbcidialog.h>
 #include <gwenhyfwar/hbcimsg.h>
 #include <gwenhyfwar/ipcxmldialog.h>
@@ -259,196 +258,6 @@ int testListMsg(int argc, char **argv) {
 
 
 
-int testService(int argc, char **argv) {
-  GWEN_IPCSERVICECMD *s;
-  GWEN_ERRORCODE err;
-  unsigned int connId;
-  int i;
-  GWEN_IPCMSG *msg;
-
-  fprintf(stderr, "Initializing service\n");
-  s=GWEN_IPCServiceCmd_new();
-  err=GWEN_IPCServiceCmd_Init(s, "test.xml");
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  fprintf(stderr, "Initializing service: done\n");
-
-
-  fprintf(stderr, "Adding listener\n");
-  connId=GWEN_IPCServiceCmd_AddListener(s, "127.0.0.1", 44444, 1);
-  if (connId==0) {
-    fprintf(stderr, "Could not add listener\n");
-    return 2;
-  }
-  fprintf(stderr, "New listener added (id=%d)\n", connId);
-
-  for (i=0; 1; i++) {
-    fprintf(stderr, "\n\nWorking (loop %d)...\n\n", i);
-    err=GWEN_IPCServiceCmd_Work(s, 60*1000);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
-      return 1;
-    }
-    msg=GWEN_IPCServiceCmd_GetRequest(s);
-    if (msg) {
-      fprintf(stderr, "Got a request.\n");
-      GWEN_Buffer_Dump(GWEN_Msg_GetBuffer(msg), stderr, 2);
-      GWEN_Msg_free(msg);
-    }
-    else {
-      fprintf(stderr, "No request.\n");
-    }
-    fprintf(stderr, "Working done\n");
-  }
-
-  fprintf(stderr, "Deinitializing service\n");
-  err=GWEN_IPCServiceCmd_Fini(s);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  GWEN_IPCServiceCmd_free(s);
-  fprintf(stderr, "Deinitializing service: done\n");
-
-  return 0;
-}
-
-
-
-int testClient(int argc, char **argv) {
-  GWEN_IPCSERVICECMD *s;
-  GWEN_ERRORCODE err;
-  unsigned int connId;
-  int i;
-  GWEN_IPCCONNLAYER *cl;
-
-  fprintf(stderr, "Initializing service\n");
-  s=GWEN_IPCServiceCmd_new();
-  err=GWEN_IPCServiceCmd_Init(s, "test.xml");
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  fprintf(stderr, "Initializing service: done\n");
-
-
-  fprintf(stderr, "Adding peer\n");
-  connId=GWEN_IPCServiceCmd_AddPeer(s, "127.0.0.1", 44444, 1);
-  if (connId==0) {
-    fprintf(stderr, "Could not add peer\n");
-    return 2;
-  }
-  fprintf(stderr, "New peer added (id=%d)\n", connId);
-
-  cl=GWEN_IPCServiceCmd_FindConnection(s, connId, 0);
-  if (!cl) {
-    fprintf(stderr, "Haeh ? Connection %d not found ?!\n", connId);
-    return 3;
-  }
-
-  err=GWEN_ConnectionLayer_Open(cl);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 3;
-  }
-
-  for (i=0; i< 12; i++) {
-    fprintf(stderr, "\n\nWorking (loop %d)...\n\n", i);
-    err=GWEN_IPCServiceCmd_Work(s, 10*1000);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
-      return 1;
-    }
-    fprintf(stderr, "Working done\n");
-  }
-
-  fprintf(stderr, "Deinitializing service\n");
-  err=GWEN_IPCServiceCmd_Fini(s);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  GWEN_IPCServiceCmd_free(s);
-  fprintf(stderr, "Deinitializing service: done\n");
-
-  return 0;
-}
-
-
-
-int testPing(int argc, char **argv) {
-  GWEN_IPCSERVICECMD *s;
-  GWEN_ERRORCODE err;
-  unsigned int connId;
-  int i;
-  GWEN_IPCMSG *pingMsg;
-  GWEN_DB_NODE *pingDb;
-
-  fprintf(stderr, "Initializing service\n");
-  s=GWEN_IPCServiceCmd_new();
-  err=GWEN_IPCServiceCmd_Init(s, "test.xml");
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  fprintf(stderr, "Initializing service: done\n");
-
-
-  fprintf(stderr, "Adding peer\n");
-  connId=GWEN_IPCServiceCmd_AddPeer(s, "127.0.0.1", 44444, 1);
-  if (connId==0) {
-    fprintf(stderr, "Could not add peer\n");
-    return 2;
-  }
-  fprintf(stderr, "New peer added (id=%d)\n", connId);
-
-  pingDb=GWEN_DB_Group_new("pingdb");
-  pingMsg=GWEN_IPCServiceCmd_CreateMsg(s,
-                                       connId,
-                                       0,
-                                       "Ping",
-                                       0,
-                                       pingDb);
-  if (!pingMsg) {
-    fprintf(stderr, "Could not create ping message\n");
-    return 2;
-  }
-
-  fprintf(stderr, "Sending PING message\n");
-  err=GWEN_IPCServiceCmd_SendMessage(s, pingMsg);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  fprintf(stderr, "Sending PING message: done.\n");
-
-
-  for (i=0; i< 12; i++) {
-    fprintf(stderr, "\n\nWorking (loop %d)...\n\n", i);
-    err=GWEN_IPCServiceCmd_Work(s, 10*1000);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
-      return 1;
-    }
-    fprintf(stderr, "Working done\n");
-  }
-
-  fprintf(stderr, "Deinitializing service\n");
-  err=GWEN_IPCServiceCmd_Fini(s);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 1;
-  }
-  GWEN_IPCServiceCmd_free(s);
-  fprintf(stderr, "Deinitializing service: done\n");
-
-  return 0;
-}
-
-
-
 int testKey(int argc, char **argv) {
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
@@ -590,6 +399,7 @@ int testDialog(int argc, char **argv) {
   km=GWEN_IPCXMLKeyManager_new();
 
   dlg=GWEN_IPCXMLDialog_new(e, km);
+  GWEN_HBCIDialog_SetFlags(dlg, GWEN_HBCIDIALOG_FLAGS_INITIATOR);
   key=GWEN_CryptKey_Factory("RSA");
   if (!key) {
     fprintf(stderr, "Error creating key.\n");
@@ -597,7 +407,7 @@ int testDialog(int argc, char **argv) {
   }
 
   GWEN_CryptKey_SetOwner(key, "Martin");
-  GWEN_CryptKey_SetKeyName(key, "S");
+  GWEN_CryptKey_SetKeyName(key, "B");
 
   fprintf(stderr, "Generating key.\n");
   err=GWEN_CryptKey_Generate(key, 768);
@@ -650,11 +460,12 @@ int testDialog(int argc, char **argv) {
   }
   fprintf(stderr, "Encoding message done\n");
 
-  //fprintf(stderr, "Buffer is: \n");
-  //GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
+  fprintf(stderr, "Buffer is: \n");
+  GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
 
   GWEN_IPCXMLDialog_SetRemoteKey(dlg, 0);
 
+  GWEN_HBCIDialog_SetFlags(dlg, 0);
   fprintf(stderr, "Decoding message\n");
   if (GWEN_HBCIMsg_DecodeMsg(hmsg,
                              da, 0)) {
@@ -694,16 +505,7 @@ int main(int argc, char **argv) {
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
   fprintf(stderr, "Gwenhywfar initialized\n");
 
-  /*rv=testDB(argc, argv);
-   rv=testXML(argc, argv);
-   rv=testMsg(argc, argv); */
-  if (strcasecmp(argv[1], "server")==0)
-    rv=testService(argc, argv);
-  else if (strcasecmp(argv[1], "client")==0)
-    rv=testClient(argc, argv);
-  else if (strcasecmp(argv[1], "ping")==0)
-    rv=testPing(argc, argv);
-  else if (strcasecmp(argv[1], "dbfile")==0)
+  if (strcasecmp(argv[1], "dbfile")==0)
     rv=testDBfile(argc, argv);
   else if (strcasecmp(argv[1], "dbfile2")==0)
     rv=testDBfile2(argc, argv);

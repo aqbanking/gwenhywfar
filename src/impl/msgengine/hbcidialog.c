@@ -85,6 +85,14 @@ void GWEN_HBCIDialog_SetFreeDataFn(GWEN_HBCIDIALOG *hdlg,
 
 
 
+void GWEN_HBCIDialog_SetResetFn(GWEN_HBCIDIALOG *hdlg,
+                                GWEN_HBCIDLG_RESET_FN fn){
+  assert(hdlg);
+  hdlg->resetFn=fn;
+}
+
+
+
 void GWEN_HBCIDialog_SetInheritorData(GWEN_HBCIDIALOG *hdlg,
                                       void *data){
   assert(hdlg);
@@ -226,9 +234,10 @@ GWEN_HBCIDIALOG *GWEN_HBCIDialog_new(GWEN_MSGENGINE *e){
   GWEN_HBCIDIALOG *hdlg;
 
   GWEN_NEW_OBJECT(GWEN_HBCIDIALOG, hdlg);
+  hdlg->usage=1;
   hdlg->msgEngine=e;
-  hdlg->dialogId=strdup("0");
-  hdlg->nextMsgNum=1;
+
+  GWEN_HBCIDialog_Reset(hdlg);
   return hdlg;
 }
 
@@ -380,6 +389,69 @@ int GWEN_HBCIDialog_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
   GWEN_Buffer_SetPos(src, lastpos-paddLength);
   return 0;
 }
+
+
+
+unsigned int GWEN_HBCIDialog_GetFlags(GWEN_HBCIDIALOG *hdlg){
+  assert(hdlg);
+  return hdlg->flags;
+}
+
+
+
+void GWEN_HBCIDialog_SetFlags(GWEN_HBCIDIALOG *hdlg,
+                              unsigned int f){
+  assert(hdlg);
+  hdlg->flags=f;
+}
+
+
+
+void GWEN_HBCIDialog_Attach(GWEN_HBCIDIALOG *hdlg){
+  assert(hdlg);
+  hdlg->usage++;
+}
+
+
+
+void GWEN_HBCIDialog_Detach(GWEN_HBCIDIALOG *hdlg){
+  if (hdlg) {
+    assert(hdlg->usage);
+    hdlg->usage--;
+    if (!hdlg->usage)
+      GWEN_HBCIDialog_free(hdlg);
+  }
+}
+
+
+
+const char *GWEN_HBCIDialog_GetOwner(GWEN_HBCIDIALOG *hdlg){
+  assert(hdlg);
+  return hdlg->owner;
+}
+
+
+
+void GWEN_HBCIDialog_SetOwner(GWEN_HBCIDIALOG *hdlg,
+                              const char *s){
+  assert(hdlg);
+  assert(s);
+  free(hdlg->owner);
+  hdlg->owner=strdup(s);
+}
+
+
+void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg){
+  assert(hdlg);
+  if (hdlg->resetFn)
+    hdlg->resetFn(hdlg);
+  free(hdlg->owner);
+  hdlg->owner=0;
+  free(hdlg->dialogId);
+  hdlg->dialogId=strdup("0");
+  hdlg->nextMsgNum=1;
+}
+
 
 
 

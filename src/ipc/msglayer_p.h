@@ -30,7 +30,7 @@
 #define GWENHYFWAR_MSGLAYER_P_H
 
 #define GWEN_IPCMSGLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCMSGLAYER_MAXOUTGOING_MSGS 1
+#define GWEN_IPCMSGLAYER_MAXOUTGOING_MSGS 32
 
 #include <gwenhyfwar/msglayer.h>
 #include <gwenhyfwar/transportlayer.h>
@@ -42,10 +42,6 @@ struct GWEN_IPCMSG {
   GWEN_IPCMSG *next;
   GWEN_BUFFER *buffer;
   unsigned int msgLayerId;
-  unsigned int msgId;
-  unsigned int refId;
-  void *data;
-  GWEN_IPCMSG_FREE freeDataFn;
 };
 
 

@@ -34,6 +34,8 @@
 #include <gwenhyfwar/ipc.h>
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/text.h>
+#include <gwenhyfwar/hbcidialog.h>
 
 
 
@@ -292,6 +294,7 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
           } /* if canRead */
 
           if (mcd->bytesToRead==0) {
+            /* add message */
             err=GWEN_MsgLayer_AddIncomingMsg(ml, mcd->currentMsg);
             if (!GWEN_Error_IsOk(err)) {
               DBG_INFO(0, "called from here");
@@ -407,3 +410,8 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Accept(GWEN_IPCMSGLAYER *ml,
   *m=newml;
   return 0;
 }
+
+
+
+
+

@@ -60,10 +60,6 @@ GWEN_CRYPTKEY *GWEN_IPCXMLDialog_GetSessionKey(GWEN_HBCIDIALOG *d);
 void GWEN_IPCXMLDialog_SetSessionKey(GWEN_HBCIDIALOG *d,
                                      GWEN_CRYPTKEY *k);
 
-unsigned int GWEN_IPCXMLDialog_GetFlags(GWEN_HBCIDIALOG *d);
-void GWEN_IPCXMLDialog_SetFlags(GWEN_HBCIDIALOG *d,
-                                unsigned int f);
-
 unsigned int GWEN_IPCXMLDialog_GetLocalSignSeq(GWEN_HBCIDIALOG *d);
 void GWEN_IPCXMLDialog_SetLocalSignSeq(GWEN_HBCIDIALOG *d,
                                        unsigned int i);

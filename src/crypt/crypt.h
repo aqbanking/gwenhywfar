@@ -130,6 +130,9 @@ extern "C" {
   void GWEN_CryptKey_free(GWEN_CRYPTKEY *key);
   GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key);
 
+  int GWEN_CryptKey_IsPublic(GWEN_CRYPTKEY *key);
+  void GWEN_CryptKey_SetPublic(GWEN_CRYPTKEY *key, int i);
+
   GWEN_ERRORCODE GWEN_CryptKey_Encrypt(GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,
                                        GWEN_BUFFER *dst);

@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 08 2003
+    begin       : Sat Nov 15 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,46 +25,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_HBCIDLG_P_H
-#define GWENHYWFAR_HBCIDLG_P_H
+
+#ifndef GWENHYWFAR_IPCXML_P_H
+#define GWENHYWFAR_IPCXML_P_H
+
+#include <gwenhyfwar/ipcxml.h>
+#include <gwenhyfwar/servicelayer.h>
 
 
-#define GWEN_HBCIDIALOG_KEYSIZE 96
 
+struct GWEN_IPCXMLREQUEST {
+  GWEN_IPCXMLREQUEST *next;
 
-#include <gwenhyfwar/hbcidialog.h>
-
-
-struct GWEN_HBCIDIALOG {
-  GWEN_MSGENGINE *msgEngine;
-  char *dialogId;
-  unsigned int lastReceivedMsgNum;
-  unsigned int nextMsgNum;
-  unsigned int flags;
-
-  char *owner;
-  unsigned int usage;
-  void *inheritorData;
-
-  GWEN_HBCIDLG_PREPARECTX_FN prepareCtxFn;
-  GWEN_HBCIDLG_SIGN_FN signFn;
-  GWEN_HBCIDLG_VERIFY_FN verifyFn;
-  GWEN_HBCIDLG_ENCRYPT_FN encryptFn;
-  GWEN_HBCIDLG_DECRYPT_FN decryptFn;
-  GWEN_HBCIDLG_FREEDATA_FN freeDataFn;
-  GWEN_HBCIDLG_RESET_FN resetFn;
+  unsigned int id;
+  unsigned int msgLayerId;
+  unsigned int dialogId;
+  unsigned int messageNumber;
+  unsigned int segmentNumber;
+  GWEN_DB_NODE *db;
 };
 
 
-/**
- * This function has been taken from OpenHBCI (rsakey.cpp, written by Fabian
- * Kaiser)
- */
-unsigned char GWEN_HBCIDialog_permutate(unsigned char input);
+struct GWEN_IPCXMLSERVICE {
+  GWEN_SERVICELAYER *serviceLayer;
+
+  GWEN_IPCXMLREQUEST *outgoingRequests;
+  GWEN_IPCXMLREQUEST *incomingRequests;
+
+};
+
 
 
 
 #endif
+
 
 
 

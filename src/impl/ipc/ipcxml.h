@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 08 2003
+    begin       : Sat Nov 15 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,42 +25,47 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_HBCIDLG_P_H
-#define GWENHYWFAR_HBCIDLG_P_H
+
+#ifndef GWENHYWFAR_IPCXML_H
+#define GWENHYWFAR_IPCXML_H
 
 
-#define GWEN_HBCIDIALOG_KEYSIZE 96
+#include <gwenhyfwar/db.h>
 
 
-#include <gwenhyfwar/hbcidialog.h>
+typedef struct GWEN_IPCXMLREQUEST GWEN_IPCXMLREQUEST;
+typedef struct GWEN_IPCXMLSERVICE GWEN_IPCXMLSERVICE;
 
 
-struct GWEN_HBCIDIALOG {
-  GWEN_MSGENGINE *msgEngine;
-  char *dialogId;
-  unsigned int lastReceivedMsgNum;
-  unsigned int nextMsgNum;
-  unsigned int flags;
 
-  char *owner;
-  unsigned int usage;
-  void *inheritorData;
+GWEN_IPCXMLREQUEST *GWEN_IPCXMLRequest_new();
+void GWEN_IPCXMLRequest_free(GWEN_IPCXMLREQUEST *r);
 
-  GWEN_HBCIDLG_PREPARECTX_FN prepareCtxFn;
-  GWEN_HBCIDLG_SIGN_FN signFn;
-  GWEN_HBCIDLG_VERIFY_FN verifyFn;
-  GWEN_HBCIDLG_ENCRYPT_FN encryptFn;
-  GWEN_HBCIDLG_DECRYPT_FN decryptFn;
-  GWEN_HBCIDLG_FREEDATA_FN freeDataFn;
-  GWEN_HBCIDLG_RESET_FN resetFn;
-};
+unsigned int GWEN_IPCXMLRequest_GetId(GWEN_IPCXMLREQUEST *r);
+void GWEN_IPCXMLRequest_SetId(GWEN_IPCXMLREQUEST *r,
+                              unsigned int i);
+
+unsigned int GWEN_IPCXMLRequest_GetMsgLayerId(GWEN_IPCXMLREQUEST *r);
+void GWEN_IPCXMLRequest_SetMsgLayerId(GWEN_IPCXMLREQUEST *r,
+                                      unsigned int i);
+
+unsigned int GWEN_IPCXMLRequest_GetDialogId(GWEN_IPCXMLREQUEST *r);
+void GWEN_IPCXMLRequest_SetDialogId(GWEN_IPCXMLREQUEST *r,
+                                    unsigned int i);
+
+unsigned int GWEN_IPCXMLRequest_GetMessageNumber(GWEN_IPCXMLREQUEST *r);
+void GWEN_IPCXMLRequest_SetMessageNumber(GWEN_IPCXMLREQUEST *r,
+                                         unsigned int i);
+
+unsigned int GWEN_IPCXMLRequest_GetSegmentNumber(GWEN_IPCXMLREQUEST *r);
+void GWEN_IPCXMLRequest_SetSegmentNumber(GWEN_IPCXMLREQUEST *r,
+                                         unsigned int i);
+
+GWEN_DB_NODE *GWEN_IPCXMLRequest_GetDb(GWEN_IPCXMLREQUEST *r);
+void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
+                              GWEN_DB_NODE *db);
 
 
-/**
- * This function has been taken from OpenHBCI (rsakey.cpp, written by Fabian
- * Kaiser)
- */
-unsigned char GWEN_HBCIDialog_permutate(unsigned char input);
 
 
 

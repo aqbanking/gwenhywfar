@@ -138,7 +138,13 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Crypt(GWEN_CRYPTKEY *key,
   des_set_key(&right, key2);
   memset(iv, 0, 8);
 
+#if defined(DES_ede2_cbc_encrypt)
   DES_ede2_cbc_encrypt(psrc, pdst, srclen, &key1, &key2, &iv, cryptMode);
+#elif defined(des_ede2_cbc_encrypt)
+  des_ede2_cbc_encrypt(psrc, pdst, srclen, &key1, &key2, &iv, cryptMode);
+#else
+# error neither des_ede2_cbc_encrypt nor DES_ede2_cbc_encrypt defined ??
+#endif
   GWEN_Buffer_IncrementPos(dst, srclen);
   GWEN_Buffer_AdjustUsedBytes(dst);
   return 0;

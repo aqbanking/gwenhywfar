@@ -140,31 +140,6 @@ void GWEN_IPCXMLDialog_SetSessionKey(GWEN_HBCIDIALOG *d,
 
 
 
-unsigned int GWEN_IPCXMLDialog_GetFlags(GWEN_HBCIDIALOG *d){
-  GWEN_IPCXMLDIALOGDATA *dd;
-
-  assert(d);
-  dd=(GWEN_IPCXMLDIALOGDATA*)GWEN_HBCIDialog_GetInheritorData(d);
-  assert(dd);
-
-  return dd->flags;
-}
-
-
-
-void GWEN_IPCXMLDialog_SetFlags(GWEN_HBCIDIALOG *d,
-                                unsigned int f){
-  GWEN_IPCXMLDIALOGDATA *dd;
-
-  assert(d);
-  dd=(GWEN_IPCXMLDIALOGDATA*)GWEN_HBCIDialog_GetInheritorData(d);
-  assert(dd);
-
-  dd->flags=f;
-}
-
-
-
 unsigned int GWEN_IPCXMLDialog_GetLocalSignSeq(GWEN_HBCIDIALOG *d){
   GWEN_IPCXMLDIALOGDATA *dd;
 
@@ -631,6 +606,23 @@ void GWEN_IPCXMLDialog_FreeData(GWEN_HBCIDIALOG *d){
 
 
 
+void GWEN_IPCXMLDialog_Reset(GWEN_HBCIDIALOG *d){
+  GWEN_IPCXMLDIALOGDATA *dd;
+
+  assert(d);
+  dd=(GWEN_IPCXMLDIALOGDATA*)GWEN_HBCIDialog_GetInheritorData(d);
+  assert(dd);
+
+  GWEN_CryptKey_free(dd->remoteKey);
+  dd->remoteKey=0;
+  GWEN_CryptKey_free(dd->sessionKey);
+  dd->sessionKey=0;
+  free(dd->securityId);
+  dd->securityId=0;
+}
+
+
+
 const char *GWEN_IPCXMLDialog_GetServiceCode(GWEN_HBCIDIALOG *d){
   GWEN_IPCXMLDIALOGDATA *dd;
 
@@ -672,6 +664,7 @@ GWEN_HBCIDIALOG *GWEN_IPCXMLDialog_new(GWEN_MSGENGINE *e,
   GWEN_HBCIDialog_SetEncryptFn(d, GWEN_IPCXMLDialog_Encrypt);
   GWEN_HBCIDialog_SetDecrpytFn(d, GWEN_IPCXMLDialog_Decrypt);
   GWEN_HBCIDialog_SetFreeDataFn(d, GWEN_IPCXMLDialog_FreeData);
+  GWEN_HBCIDialog_SetResetFn(d, GWEN_IPCXMLDialog_Reset);
 
   GWEN_HBCIDialog_SetInheritorData(d, dd);
 

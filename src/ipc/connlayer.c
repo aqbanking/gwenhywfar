@@ -40,15 +40,11 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_new(GWEN_IPCMSGLAYER *ml,
-                                            GWEN_IPCCONNLAYER_STATE st) {
+GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_new(GWEN_IPCMSGLAYER *ml) {
   GWEN_IPCCONNLAYER *cl;
 
   assert(ml);
   GWEN_NEW_OBJECT(GWEN_IPCCONNLAYER, cl);
-  cl->maxIncomingMsgs=GWEN_IPCCONNLAYER_MAXINCOMING_MSGS;
-  cl->maxOutgoingMsgs=GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS;
-  cl->state=st;
   cl->msgLayer=ml;
   return cl;
 }
@@ -58,28 +54,6 @@ GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_new(GWEN_IPCMSGLAYER *ml,
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_ConnectionLayer_free(GWEN_IPCCONNLAYER *cl){
   if (cl) {
-    GWEN_IPCMSG *msg;
-
-    /* free all incoming msgs */
-    msg=cl->incomingMsgs;
-    while(msg) {
-      GWEN_IPCMSG *nextmsg;
-
-      nextmsg=msg->next;
-      GWEN_Msg_free(msg);
-      msg=nextmsg;
-    }
-
-    /* free all outgoing msgs */
-    msg=cl->outgoingMsgs;
-    while(msg) {
-      GWEN_IPCMSG *nextmsg;
-
-      nextmsg=msg->next;
-      GWEN_Msg_free(msg);
-      msg=nextmsg;
-    }
-
     /* free the rest */
     if (cl->freeDataFn)
       cl->freeDataFn(cl);
@@ -174,6 +148,15 @@ void GWEN_ConnectionLayer_SetCloseFn(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayer_SetDownFn(GWEN_IPCCONNLAYER *cl,
+                                    GWEN_IPCCONNLAYER_DOWN f){
+  assert(cl);
+  cl->downFn=f;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_ConnectionLayer_Accept(GWEN_IPCCONNLAYER *cl,
                                            GWEN_IPCCONNLAYER **c){
   GWEN_IPCMSGLAYER *ml;
@@ -182,13 +165,6 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Accept(GWEN_IPCCONNLAYER *cl,
   GWEN_ERRORCODE err;
 
   assert(cl);
-  if (cl->state!=GWEN_IPCConnectionLayerStateListening) {
-    DBG_ERROR(0, "ConnectionLayer is not listening");
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
-                          GWEN_IPC_ERROR_BAD_STATE);
-  }
 
   /* let the message layer accept the new connection */
   assert(cl->msgLayer);
@@ -216,121 +192,6 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Accept(GWEN_IPCCONNLAYER *cl,
            GWEN_ConnectionLayer_GetId(newcl));
 
   return err;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_ConnectionLayer_GetIncomingMsg(GWEN_IPCCONNLAYER *cl){
-  GWEN_IPCMSG *msg;
-
-  assert(cl);
-  if (cl->nIncomingMsgs) {
-    msg=cl->incomingMsgs;
-    assert(msg);
-    GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
-    cl->nIncomingMsgs--;
-    DBG_INFO(0, "Returning incoming message");
-    return msg;
-  }
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_ConnectionLayer_GetOutgoingMsg(GWEN_IPCCONNLAYER *cl){
-  GWEN_IPCMSG *msg;
-
-  assert(cl);
-  if (cl->nOutgoingMsgs) {
-    msg=cl->outgoingMsgs;
-    assert(msg);
-    GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->outgoingMsgs));
-    cl->nOutgoingMsgs--;
-    DBG_INFO(0, "Returning outgoing message");
-    return msg;
-  }
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_ConnectionLayer_FindMsgReply(GWEN_IPCCONNLAYER *cl,
-                                               unsigned int refId){
-  GWEN_IPCMSG *msg;
-
-  assert(cl);
-  msg=cl->incomingMsgs;
-  if (!msg) {
-    DBG_INFO(0, "No incoming messages on %d.",
-             GWEN_ConnectionLayer_GetId(cl));
-  }
-  while(msg) {
-    DBG_INFO(0, "Checking msg (refid=%d)", GWEN_Msg_GetReferenceId(msg));
-    if (GWEN_Msg_GetReferenceId(msg)==refId) {
-      DBG_DEBUG(0, "Found message for ID %d", refId);
-      GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
-      cl->nIncomingMsgs--;
-      return msg;
-    }
-    msg=GWEN_Msg_GetNext(msg);
-  }
-  DBG_DEBUG(0, "No message for ID %d found", refId);
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE GWEN_ConnectionLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
-                                                   GWEN_IPCMSG *msg){
-  assert(cl);
-  assert(msg);
-  if (cl->nOutgoingMsgs<cl->maxOutgoingMsgs) {
-    GWEN_LIST_ADD(GWEN_IPCMSG, msg, &(cl->outgoingMsgs));
-    cl->nOutgoingMsgs++;
-  }
-  else {
-    DBG_INFO(0, "Outgoing queue full (%d msgs)", cl->nOutgoingMsgs);
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
-                          GWEN_IPC_ERROR_OUTQUEUE_FULL);
-  }
-
-  DBG_INFO(0, "Added outgoing msg (now %d msgs)", cl->nOutgoingMsgs);
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE GWEN_ConnectionLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
-                                                   GWEN_IPCMSG *msg){
-  assert(cl);
-  assert(msg);
-  if (cl->nIncomingMsgs<cl->maxIncomingMsgs) {
-    GWEN_LIST_ADD(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
-    cl->nIncomingMsgs++;
-    DBG_INFO(0, "Added message to incoming queue (%d)",
-             cl->nIncomingMsgs);
-    DBG_INFO(0, "First incoming message is %08x",
-             (unsigned int)cl->incomingMsgs);
-  }
-  else {
-    DBG_INFO(0, "Incoming queue full (%d msgs)", cl->nIncomingMsgs);
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
-                          GWEN_IPC_ERROR_INQUEUE_FULL);
-  }
-
-  DBG_INFO(0, "Added incoming msg to %d (now %d msgs)",
-           GWEN_ConnectionLayer_GetId(cl),
-           cl->nIncomingMsgs);
-  return 0;
 }
 
 
@@ -394,6 +255,15 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Close(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayer_Down(GWEN_IPCCONNLAYER *cl){
+  assert(cl);
+  if (cl->downFn)
+    cl->downFn(cl);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 unsigned int GWEN_ConnectionLayer_GetId(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   assert(cl->msgLayer);
@@ -437,45 +307,6 @@ void GWEN_ConnectionLayer_SetLibMark(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCCONNLAYER_STATE
-GWEN_ConnectionLayer_GetState(GWEN_IPCCONNLAYER *cl){
-  assert(cl);
-  return cl->state;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void GWEN_ConnectionLayer_SetState(GWEN_IPCCONNLAYER *cl,
-                                   GWEN_IPCCONNLAYER_STATE st){
-  assert(cl);
-  DBG_INFO(0, "Changing state on %d from \"%s\" (%d) to \"%s\" (%d)",
-           GWEN_ConnectionLayer_GetId(cl),
-           GWEN_ConnectionLayer_GetStateString(cl->state),
-           cl->state,
-           GWEN_ConnectionLayer_GetStateString(st),
-           st);
-  cl->state=st;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-const char *GWEN_ConnectionLayer_GetStateString(GWEN_IPCCONNLAYER_STATE st){
-  switch(st) {
-  case GWEN_IPCConnectionLayerStateUnconnected: return "Unconnected";
-  case GWEN_IPCConnectionLayerStateOpening:     return "Opening";
-  case GWEN_IPCConnectionLayerStateOpen:        return "Open";
-  case GWEN_IPCConnectionLayerStateClosing:     return "Closing";
-  case GWEN_IPCConnectionLayerStateListening:   return "Listening";
-  case GWEN_IPCConnectionLayerStateClosed:      return "Closed";
-  default: return "Unknown";
-  }
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 unsigned int GWEN_ConnectionLayer_GetFlags(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   return cl->flags;
@@ -496,14 +327,6 @@ void GWEN_ConnectionLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
 GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_GetNext(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   return cl->next;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int GWEN_ConnectionLayer_HasOutgoingMsg(GWEN_IPCCONNLAYER *cl){
-  assert(cl);
-  return (cl->nOutgoingMsgs!=0);
 }
 
 
