@@ -18,6 +18,7 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/nettransport.h>
+#include <gwenhywfar/netconnection.h>
 
 #include <time.h>
 
@@ -45,6 +46,31 @@ GWEN_IPCMANAGER *GWEN_IPCManager_new();
 
 GWENHYWFAR_API
 void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr);
+
+
+/**
+ * Sets a callback function which is called for every network connection that
+ * went up.
+ */
+GWENHYWFAR_API
+void GWEN_IPCManager_SetUpFn(GWEN_IPCMANAGER *mgr,
+                             GWEN_TYPE_UINT32 id,
+                             GWEN_NETCONNECTION_UPFN fn);
+
+/**
+ * Sets a callback function which is called for every network connection that
+ * went down.
+ */
+GWENHYWFAR_API
+void GWEN_IPCManager_SetDownFn(GWEN_IPCMANAGER *mgr,
+                               GWEN_TYPE_UINT32 id,
+                               GWEN_NETCONNECTION_DOWNFN fn);
+
+/**
+ * Starts disconnecting the given client/server.
+ */
+GWENHYWFAR_API
+int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid);
 
 
 /**
@@ -87,6 +113,7 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_AddClient(GWEN_IPCMANAGER *mgr,
 
 /**
  * Sends a request via the given connection.
+ * It takes over the ownership of the given GWEN_DB in any case.
  * @return request id of the request created (0 on error)
  * @param mgr pointer to the IPC manager object
  * @param nid value returned by @ref GWEN_IPCManager_AddClient or by

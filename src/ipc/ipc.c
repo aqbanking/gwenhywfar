@@ -955,6 +955,67 @@ int GWEN_IPCManager_Work(GWEN_IPCMANAGER *mgr, int maxmsg) {
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_IPCManager_SetUpFn(GWEN_IPCMANAGER *mgr,
+                             GWEN_TYPE_UINT32 nid,
+                             GWEN_NETCONNECTION_UPFN fn){
+  GWEN_IPCNODE *n;
+
+  n=GWEN_IPCNode_List_First(mgr->nodes);
+  while(n) {
+    if (n->id==nid)
+      break;
+    n=GWEN_IPCNode_List_Next(n);
+  } /* while */
+  if (!n) {
+    DBG_ERROR(0, "Node %08x not found", nid);
+    return;
+  }
+
+  GWEN_NetConnection_SetUpFn(n->connection, fn);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_IPCManager_SetDownFn(GWEN_IPCMANAGER *mgr,
+			       GWEN_TYPE_UINT32 nid,
+			       GWEN_NETCONNECTION_DOWNFN fn){
+  GWEN_IPCNODE *n;
+
+  n=GWEN_IPCNode_List_First(mgr->nodes);
+  while(n) {
+    if (n->id==nid)
+      break;
+    n=GWEN_IPCNode_List_Next(n);
+  } /* while */
+  if (!n) {
+    DBG_ERROR(0, "Node %08x not found", nid);
+    return;
+  }
+
+  GWEN_NetConnection_SetDownFn(n->connection, fn);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid){
+  GWEN_IPCNODE *n;
+
+  n=GWEN_IPCNode_List_First(mgr->nodes);
+  while(n) {
+    if (n->id==nid)
+      break;
+    n=GWEN_IPCNode_List_Next(n);
+  } /* while */
+  if (!n) {
+    DBG_ERROR(0, "Node %08x not found", nid);
+    return -1;
+  }
+
+  return GWEN_NetConnection_StartDisconnect(n->connection);
+}
 
 
 

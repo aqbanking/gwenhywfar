@@ -411,15 +411,15 @@ void GWEN_NetConnection_Down(GWEN_NETCONNECTION *conn);
 /*@{*/
 GWENHYWFAR_API
 void GWEN_NetConnection_SetWorkFn(GWEN_NETCONNECTION *conn,
-                                  GWEN_NETCONNECTION_WORKFN fn );
+                                  GWEN_NETCONNECTION_WORKFN fn);
 
 GWENHYWFAR_API
 void GWEN_NetConnection_SetUpFn(GWEN_NETCONNECTION *conn,
-                                GWEN_NETCONNECTION_UPFN fn );
+                                GWEN_NETCONNECTION_UPFN fn);
 
 GWENHYWFAR_API
 void GWEN_NetConnection_SetDownFn(GWEN_NETCONNECTION *conn,
-                                  GWEN_NETCONNECTION_DOWNFN fn );
+                                  GWEN_NETCONNECTION_DOWNFN fn);
 /*@}*/
 
 

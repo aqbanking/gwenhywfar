@@ -1,4 +1,13 @@
 
+2004/05/13: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ipc/ipc.{c,h}: 
+  - added functions GWEN_IPCManager_SetUpFn and
+    GWEN_IPCManager_SetDownFn to allow keeping track of connection states
+  - added function GWEN_IPCManager_Disconnect to actively disconnect a given
+    client/server
+
+
 2004/05/10: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ipc/*.h: prepared for use by C++ code
