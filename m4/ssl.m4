@@ -37,10 +37,11 @@ AC_ARG_WITH(openssl-includes, [  --with-openssl-includes=DIR adds openssl includ
 dnl search for ssl
 AQ_SEARCH_FOR_PATH([openssl/des.h],[$ssl_search_inc_dirs])
 if test -z "$found_dir" ; then
-    AC_MSG_ERROR(Please specify the location of your openssl includes.)
+    AC_MSG_RESULT(not found)
+else
+  ssl_includes="-I$found_dir"
+  AC_MSG_RESULT($ssl_includes)
 fi
-ssl_includes="-I$found_dir"
-AC_MSG_RESULT($ssl_includes)
 
 
 dnl ******* openssl lib ***********

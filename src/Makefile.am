@@ -27,7 +27,9 @@ libgwenhywfar_la_LDFLAGS= \
    @GWENHYWFAR_SO_CURRENT@:@GWENHYWFAR_SO_REVISION@:@GWENHYWFAR_SO_AGE@
 
 
-all-local: @GWEN_DLL_TARGET@
+all-local: @GWEN_MAKE_DLL_TARGET@
+
+install-exec-local: @GWEN_INSTALL_DLL_TARGET@
 
 
 # dll stuff
@@ -81,14 +83,14 @@ DLL_WRAP_FLAGS=--export-all --output-def $(DLL_EXP_DEF) \
 	--driver-name $(CXX)
 
 
-$(DLL_NAME) $(DLL_EXP_LIB) $(DLL_EXP_DEF): $(DLL_OBJS) exports.o
+$(DLL_NAME) $(DLL_EXP_LIB) $(DLL_EXP_DEF): $(DLL_OBJS) ressource.o exports.o
 	$(DLLWRAP) $(DLL_WRAP_FLAGS) -o $(DLL_NAME) \
-	    $(DLL_OBJS) exports.o $(DLL_LDFLAGS) $(DLL_LDLIBS)
+	    $(DLL_OBJS) ressource.o exports.o $(DLL_LDFLAGS) $(DLL_LDLIBS)
 
 dll: $(DLL_NAME)
 
 dll-install: dll
-	cp $(DLL_NAME) c:\\windows\\$(DLL_NAME)
+	$(INSTALL) -c $(DLL_NAME) $(DESTDIR)/c/windows/$(DLL_NAME)
 
 ressource.o: ressource.rc
 	$(WINDRES) -i $< -o $@

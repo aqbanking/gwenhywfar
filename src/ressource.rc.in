@@ -65,7 +65,7 @@ BEGIN
             VALUE "OriginalFilename", "GWENHYWFAR32.DLL\0"
             //VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "Gwenhywfar\0"
-            VALUE "ProductVersion", "v@rpm_version@\0"
+            VALUE "ProductVersion", "v@GWENHYWFAR_VERSION_FULL_STRING@\0"
             VALUE "Author", "Martin Preuss\0"
             VALUE "Email", "martin@libchipcard.de\0"
             VALUE "Homepage", "http://gwenhywfar.sf.net/\0"
