@@ -47,12 +47,12 @@ GWEN_ERRORCODE GWEN_Socket__StartOpen(GWEN_SOCKET *sp,
 
   err=GWEN_Socket_Open(sp);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   err=GWEN_Socket_SetBlocking(sp, 0);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
 
@@ -62,7 +62,7 @@ GWEN_ERRORCODE GWEN_Socket__StartOpen(GWEN_SOCKET *sp,
     if (GWEN_Error_GetType(err)!=GWEN_Error_FindType("Socket") ||
         GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_IN_PROGRESS) {
       /* real error, so return that error */
-      DBG_ERROR_ERR(0, err)
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err)
       return err;
     }
   }
@@ -81,7 +81,7 @@ GWEN_ERRORCODE GWEN_Socket__CheckOpen(GWEN_SOCKET *sp,
 
   err=GWEN_SocketSet_AddSocket(wset, sp);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   err=GWEN_Socket_Select(0, wset, 0, timeout);
@@ -89,20 +89,20 @@ GWEN_ERRORCODE GWEN_Socket__CheckOpen(GWEN_SOCKET *sp,
   if (!GWEN_Error_IsOk(err)) {
     if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
       if (GWEN_Error_GetCode(err)==GWEN_SOCKET_ERROR_TIMEOUT) {
-        DBG_INFO(0, "Socket timeout");
+        DBG_INFO(GWEN_LOGDOMAIN, "Socket timeout");
         return err;
       }
       else if (GWEN_Error_GetCode(err)==GWEN_SOCKET_ERROR_INTERRUPTED) {
-        DBG_INFO(0, "Interrupted system call");
+        DBG_INFO(GWEN_LOGDOMAIN, "Interrupted system call");
         return err;
       }
       else {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return err;
       }
     } /* if socket error */
     else {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
   } /* if error */
@@ -110,18 +110,18 @@ GWEN_ERRORCODE GWEN_Socket__CheckOpen(GWEN_SOCKET *sp,
   /* get socket error */
   err=GWEN_Socket_GetSocketError(sp);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
 
   /* make socket blocking again */
   err=GWEN_Socket_SetBlocking(sp, 1);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
 
-  DBG_INFO(0, "Connected");
+  DBG_INFO(GWEN_LOGDOMAIN, "Connected");
   return 0;
 }
 
@@ -139,7 +139,7 @@ GWEN_ERRORCODE GWEN_Socket_Connect_Wait(GWEN_SOCKET *sp,
   startt=time(0);
   err=GWEN_Socket__StartOpen(sp, addr);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     GWEN_Socket_Close(sp);
     return err;
   }
@@ -159,7 +159,7 @@ GWEN_ERRORCODE GWEN_Socket_Connect_Wait(GWEN_SOCKET *sp,
 
   for (count=0;;count++) {
     if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
-      DBG_ERROR(0, "User aborted via waitcallback");
+      DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
       GWEN_Socket_Close(sp);
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
@@ -169,34 +169,34 @@ GWEN_ERRORCODE GWEN_Socket_Connect_Wait(GWEN_SOCKET *sp,
 
     err=GWEN_Socket__CheckOpen(sp, distance);
     if (GWEN_Error_IsOk(err)) {
-      DBG_INFO(0, "Connected");
+      DBG_INFO(GWEN_LOGDOMAIN, "Connected");
       return 0;
     }
     if (timeout==0) {
-      DBG_ERROR(0, "Could not connect immediately, aborting");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not connect immediately, aborting");
       GWEN_Socket_Close(sp);
       return err;
     }
     if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
       if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
           GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return err;
       }
     } /* if socket error */
     else {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
     if (timeout!=-1) {
       if (difftime(time(0), startt)>timeout) {
-        DBG_INFO_ERR(0, err);
+        DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
         break;
       }
     }
   } /* for */
 
-  DBG_ERROR(0, "Could not connect within %d seconds, aborting", timeout);
+  DBG_ERROR(GWEN_LOGDOMAIN, "Could not connect within %d seconds, aborting", timeout);
   GWEN_Socket_Close(sp);
   return GWEN_Error_new(0,
                         GWEN_ERROR_SEVERITY_ERR,
@@ -231,7 +231,7 @@ GWEN_ERRORCODE GWEN_Socket_Accept_Wait(GWEN_SOCKET *sp,
 
   for (count=0;;count++) {
     if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
-      DBG_ERROR(0, "User aborted via waitcallback");
+      DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
       GWEN_Socket_Close(sp);
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
@@ -243,25 +243,25 @@ GWEN_ERRORCODE GWEN_Socket_Accept_Wait(GWEN_SOCKET *sp,
       break;
     }
     if (timeout==0) {
-      DBG_ERROR(0, "Could not accept immediately, aborting");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not accept immediately, aborting");
       GWEN_Socket_Close(sp);
       return err;
     }
     if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
       if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
           GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return err;
       }
     } /* if socket error */
     else {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
     if (timeout!=-1) {
       if (difftime(time(0), startt)>timeout) {
-        DBG_INFO_ERR(0, err);
-        DBG_ERROR(0, "Could not accept within %d seconds, aborting", timeout);
+        DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Could not accept within %d seconds, aborting", timeout);
         GWEN_Socket_Close(sp);
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
@@ -273,7 +273,7 @@ GWEN_ERRORCODE GWEN_Socket_Accept_Wait(GWEN_SOCKET *sp,
 
   err=GWEN_Socket_Accept(sp, addr, newsock);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   return 0;
@@ -313,7 +313,7 @@ GWEN_ERRORCODE GWEN_Socket_Read_Wait(GWEN_SOCKET *sp,
 
     for (;;count++) {
       if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
-        DBG_ERROR(0, "User aborted via waitcallback");
+        DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
         GWEN_Socket_Close(sp);
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
@@ -325,25 +325,25 @@ GWEN_ERRORCODE GWEN_Socket_Read_Wait(GWEN_SOCKET *sp,
         break;
       }
       if (timeout==0) {
-        DBG_ERROR(0, "Could not accept immediately, aborting");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Could not accept immediately, aborting");
         GWEN_Socket_Close(sp);
         return err;
       }
       if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
         if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
             GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return err;
         }
       } /* if socket error */
       else {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return err;
       }
       if (timeout!=-1) {
         if (difftime(time(0), startt)>timeout) {
-          DBG_INFO_ERR(0, err);
-          DBG_ERROR(0, "Could not accept within %d seconds, aborting", timeout);
+          DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Could not accept within %d seconds, aborting", timeout);
           GWEN_Socket_Close(sp);
           return GWEN_Error_new(0,
                                 GWEN_ERROR_SEVERITY_ERR,
@@ -356,7 +356,7 @@ GWEN_ERRORCODE GWEN_Socket_Read_Wait(GWEN_SOCKET *sp,
     lsize=*bsize-bytesPos;
     err=GWEN_Socket_Read(sp, buffer+bytesPos, &lsize);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO_ERR(0, err);
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
     bytesPos+=lsize;
@@ -401,7 +401,7 @@ GWEN_ERRORCODE GWEN_Socket_Write_Wait(GWEN_SOCKET *sp,
 
     for (;;count++) {
       if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
-        DBG_ERROR(0, "User aborted via waitcallback");
+        DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
         GWEN_Socket_Close(sp);
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
@@ -413,25 +413,25 @@ GWEN_ERRORCODE GWEN_Socket_Write_Wait(GWEN_SOCKET *sp,
         break;
       }
       if (timeout==0) {
-        DBG_ERROR(0, "Could not accept immediately, aborting");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Could not accept immediately, aborting");
         GWEN_Socket_Close(sp);
         return err;
       }
       if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
         if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
             GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return err;
         }
       } /* if socket error */
       else {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return err;
       }
       if (timeout!=-1) {
         if (difftime(time(0), startt)>timeout) {
-          DBG_INFO_ERR(0, err);
-          DBG_ERROR(0, "Could not accept within %d seconds, aborting", timeout);
+          DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Could not accept within %d seconds, aborting", timeout);
           GWEN_Socket_Close(sp);
           return GWEN_Error_new(0,
                                 GWEN_ERROR_SEVERITY_ERR,
@@ -444,7 +444,7 @@ GWEN_ERRORCODE GWEN_Socket_Write_Wait(GWEN_SOCKET *sp,
     lsize=*bsize-bytesPos;
     err=GWEN_Socket_Write(sp, buffer+bytesPos, &lsize);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO_ERR(0, err);
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
     bytesPos+=lsize;

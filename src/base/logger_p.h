@@ -44,8 +44,22 @@ struct GWEN_LOGGER {
   char *logIdent;
   GWEN_LOGGER_LEVEL logLevel;
   GWEN_LOGGERFUNCTIONLOG logFunction;
+  GWEN_TYPE_UINT32 usage;
 };
 
+
+typedef struct GWEN_LOGGER_DOMAIN GWEN_LOGGER_DOMAIN;
+struct GWEN_LOGGER_DOMAIN {
+  GWEN_LOGGER_DOMAIN *next;
+  char *name;
+  GWEN_LOGGER *logger;
+};
+GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_new(const char *name);
+void GWEN_LoggerDomain_free(GWEN_LOGGER_DOMAIN *ld);
+GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_Find(const char *name);
+void GWEN_LoggerDomain_Add(GWEN_LOGGER_DOMAIN *ld);
+void GWEN_LoggerDomain_Del(GWEN_LOGGER_DOMAIN *ld);
+GWEN_LOGGER *GWEN_LoggerDomain_GetLogger(const char *name);
 
 
 int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,

@@ -251,7 +251,7 @@ void GWEN_Text_DumpString2Buffer(const char *s, unsigned l,
 
 GWENHYWFAR_API
 void GWEN_Text_LogString(const char *s, unsigned l,
-                         GWEN_LOGGER *lg,
+                         const char *logDomain,
                          GWEN_LOGGER_LEVEL lv);
 
 

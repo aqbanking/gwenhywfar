@@ -99,7 +99,7 @@ char *GWEN_Text_GetWord(const char *src,
             break;
           }
           else {
-            DBG_DEBUG(0,
+            DBG_DEBUG(GWEN_LOGDOMAIN,
                       "Found a closing \" without an opening one "
                       "(consider using a backslash to escape)");
             return 0;
@@ -136,20 +136,20 @@ char *GWEN_Text_GetWord(const char *src,
   buffer[size]=0;
 
   if (insideQuotes) {
-    DBG_DEBUG(0, "Missing \" after word");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Missing \" after word");
     return 0;
   }
   /* check whether the source string was correctly terminated */
   if (flags & GWEN_TEXT_FLAGS_NEED_DELIMITER) {
     if (*src) {
       if (strchr(delims, *src)==0) {
-        DBG_ERROR(0, "No delimiter found within specified length");
+        DBG_ERROR(GWEN_LOGDOMAIN, "No delimiter found within specified length");
 	return 0;
       }
     }
     else {
       if (!(flags & GWEN_TEXT_FLAGS_NULL_IS_DELIMITER)) {
-	DBG_ERROR(0, "String ends without delimiter");
+	DBG_ERROR(GWEN_LOGDOMAIN, "String ends without delimiter");
 	return 0;
       }
     }
@@ -218,7 +218,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
             break;
           }
           else {
-	    DBG_ERROR(0,
+	    DBG_ERROR(GWEN_LOGDOMAIN,
 		      "Found a closing \" without an opening one "
 		      "(consider using a backslash to escape)");
 	    return -1;
@@ -251,20 +251,20 @@ int GWEN_Text_GetWordToBuffer(const char *src,
     } /* while */
 
   if (insideQuotes) {
-    DBG_ERROR(0, "Missing \" after word");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing \" after word");
     return -1;
   }
   /* check whether the source string was correctly terminated */
   if (flags & GWEN_TEXT_FLAGS_NEED_DELIMITER) {
     if (*src) {
       if (strchr(delims, *src)==0) {
-        DBG_ERROR(0, "No delimiter found within specified length");
+        DBG_ERROR(GWEN_LOGDOMAIN, "No delimiter found within specified length");
 	return -1;
       }
     }
     else {
       if (!(flags & GWEN_TEXT_FLAGS_NULL_IS_DELIMITER)) {
-	DBG_ERROR(0, "String ends without delimiter");
+	DBG_ERROR(GWEN_LOGDOMAIN, "String ends without delimiter");
 	return -1;
       }
     }
@@ -299,7 +299,7 @@ char *GWEN_Text_Escape(const char *src,
       unsigned char c;
 
       if ((maxsize-1)<size+3) {
-	DBG_ERROR(0, "Buffer too small");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
 	return 0;
       }
       buffer[size++]='%';
@@ -318,7 +318,7 @@ char *GWEN_Text_Escape(const char *src,
       if (size<(maxsize-1))
 	buffer[size++]=*src;
       else {
-	DBG_ERROR(0, "Buffer too small");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
 	return 0;
       }
     }
@@ -349,7 +349,7 @@ char *GWEN_Text_Unescape(const char *src,
       if (size<(maxsize-1))
 	buffer[size++]=*src;
       else {
-	DBG_ERROR(0, "Buffer too small");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
 	return 0;
       }
     }
@@ -361,7 +361,7 @@ char *GWEN_Text_Unescape(const char *src,
 	/* skip '%' */
 	src++;
 	if (!(*src) || !isxdigit(*src)) {
-	  DBG_ERROR(0, "Incomplete escape sequence (no digits)");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
 	  return 0;
 	}
 	/* read first digit */
@@ -370,7 +370,7 @@ char *GWEN_Text_Unescape(const char *src,
 	/* get second digit */
 	src++;
 	if (!(*src) || !isxdigit(*src)) {
-	  DBG_ERROR(0, "Incomplete escape sequence (only 1 digit)");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (only 1 digit)");
 	  return 0;
 	}
 	d2=(unsigned char)(toupper(*src));
@@ -387,12 +387,12 @@ char *GWEN_Text_Unescape(const char *src,
 	if (size<(maxsize-1))
 	  buffer[size++]=(char)c;
 	else {
-	  DBG_ERROR(0, "Buffer too small");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
 	  return 0;
 	}
       }
       else {
-	DBG_ERROR(0, "Found non-alphanum "
+	DBG_ERROR(GWEN_LOGDOMAIN, "Found non-alphanum "
 		  "characters in escaped string (\"%s\")",
 		  src);
         return 0;
@@ -412,7 +412,7 @@ char *GWEN_Text_ToHex(const char *src, unsigned l,
   unsigned int size;
 
   if ((l*2)+1 > maxsize) {
-    DBG_ERROR(0, "Buffer too small");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
     return 0;
   }
 
@@ -472,14 +472,14 @@ char *GWEN_Text_ToHexGrouped(const char *src,
     c+='0';
     if (!skipThis) {
       if (size+1>=maxsize) {
-	DBG_ERROR(0, "Buffer too small");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
         return 0;
       }
       buffer[size++]=c;
       j++;
       if (j==groupsize) {
 	if (size+1>=maxsize) {
-	  DBG_ERROR(0, "Buffer too small");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
 	  return 0;
 	}
 	buffer[size++]=delimiter;
@@ -499,7 +499,7 @@ char *GWEN_Text_ToHexGrouped(const char *src,
       c+=7;
     c+='0';
     if (size+1>=maxsize) {
-      DBG_ERROR(0, "Buffer too small");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
       return 0;
     }
     if (!skipThis) {
@@ -508,7 +508,7 @@ char *GWEN_Text_ToHexGrouped(const char *src,
       if (j==groupsize) {
 	if (pos+1<l) {
 	  if (size+1>=maxsize) {
-	    DBG_ERROR(0, "Buffer too small");
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
 	    return 0;
 	  }
 	  buffer[size++]=delimiter;
@@ -555,13 +555,13 @@ int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
     c+='0';
     if (!skipThis) {
       if (GWEN_Buffer_AppendByte(buf, c)) {
-        DBG_INFO(0, "here");
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
         return -1;
       }
       j++;
       if (groupsize && j==groupsize) {
         if (GWEN_Buffer_AppendByte(buf, delimiter)) {
-          DBG_INFO(0, "here");
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
           return -1;
         }
 	j=0;
@@ -581,14 +581,14 @@ int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
     c+='0';
     if (!skipThis) {
       if (GWEN_Buffer_AppendByte(buf, c)) {
-        DBG_INFO(0, "here");
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
         return -1;
       }
       j++;
       if (groupsize && j==groupsize) {
 	if (pos+1<l) {
           if (GWEN_Buffer_AppendByte(buf, delimiter)) {
-            DBG_INFO(0, "here");
+            DBG_INFO(GWEN_LOGDOMAIN, "here");
             return -1;
           }
         }
@@ -614,7 +614,7 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
 
     /* read first digit */
     if (!isxdigit(*src)) {
-      DBG_ERROR(0, "Bad char in hex string");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad char in hex string");
       return -1;
     }
     d1=(unsigned char)(toupper(*src));
@@ -622,7 +622,7 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
     /* get second digit */
     src++;
     if (!(*src) || !isxdigit(*src)) {
-      DBG_ERROR(0, "Incomplete hex byte (only 1 digit)");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete hex byte (only 1 digit)");
       return -1;
     }
     d2=(unsigned char)(toupper(*src));
@@ -641,7 +641,7 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
     if (size<(maxsize))
       buffer[size++]=(char)c;
     else {
-      DBG_ERROR(0, "Buffer too small");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
       return -1;
     }
   } /* while */
@@ -662,7 +662,7 @@ int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
     }
     else {
       if (!isxdigit(*src)) {
-        DBG_ERROR(0, "Bad char in hex string");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad char in hex string");
         return -1;
       }
       d1=(unsigned char)(toupper(*src));
@@ -670,7 +670,7 @@ int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
       /* get second digit */
       src++;
       if (!(*src) || !isxdigit(*src)) {
-        DBG_ERROR(0, "Incomplete hex byte (only 1 digit)");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete hex byte (only 1 digit)");
         return -1;
       }
       d2=(unsigned char)(toupper(*src));
@@ -712,7 +712,7 @@ int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf) {
     else {
       /* read first digit */
       if (!isdigit(*src)) {
-        DBG_ERROR(0, "Bad char in bcd string");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad char in bcd string");
         return -1;
       }
       d1=(unsigned char)(*src);
@@ -720,7 +720,7 @@ int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf) {
     }
     /* get second digit */
     if (!(*src) || !isxdigit(*src)) {
-      DBG_ERROR(0, "Incomplete BCD byte (only 1 digit)");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete BCD byte (only 1 digit)");
       return -1;
     }
     d2=(unsigned char)(*src);
@@ -769,13 +769,13 @@ int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
     c+='0';
     if (!skipThis) {
       if (GWEN_Buffer_AppendByte(buf, c)) {
-        DBG_INFO(0, "here");
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
         return -1;
       }
       j++;
       if (groupsize && j==groupsize) {
         if (GWEN_Buffer_AppendByte(buf, delimiter)) {
-          DBG_INFO(0, "here");
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
           return -1;
         }
 	j=0;
@@ -793,14 +793,14 @@ int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
     c+='0';
     if (!skipThis) {
       if (GWEN_Buffer_AppendByte(buf, c)) {
-        DBG_INFO(0, "here");
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
         return -1;
       }
       j++;
       if (groupsize && j==groupsize) {
 	if (pos+1<l) {
           if (GWEN_Buffer_AppendByte(buf, delimiter)) {
-            DBG_INFO(0, "here");
+            DBG_INFO(GWEN_LOGDOMAIN, "here");
             return -1;
           }
         }
@@ -946,7 +946,7 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
   sprintf(lbuffer,"%d", num);
   i=strlen(lbuffer);
   if (i>=bufsize) {
-    DBG_ERROR(0, "Buffer too small (%d>=%d)", i, bufsize);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (%d>=%d)", i, bufsize);
     return -1;
   }
   if (fillchar>0) {
@@ -1120,7 +1120,7 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
 	/* skip '%' */
 	src++;
 	if (!(*src) || !isxdigit(*src)) {
-	  DBG_ERROR(0, "Incomplete escape sequence (no digits)");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
 	  return 0;
 	}
 	/* read first digit */
@@ -1129,7 +1129,7 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
 	/* get second digit */
 	src++;
 	if (!(*src) || !isxdigit(*src)) {
-	  DBG_ERROR(0, "Incomplete escape sequence (only 1 digit)");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (only 1 digit)");
 	  return 0;
 	}
 	d2=(unsigned char)(toupper(*src));
@@ -1146,7 +1146,7 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
         GWEN_Buffer_AppendByte(buf, (char)c);
       }
       else {
-        DBG_ERROR(0, "Found non-alphanum "
+        DBG_ERROR(GWEN_LOGDOMAIN, "Found non-alphanum "
                   "characters in escaped string (\"%s\")",
                   src);
         return -1;
@@ -1254,7 +1254,7 @@ int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf) {
 
     z=GWEN_Buffer_ReadByte(src);
     if (z==-1) {
-      DBG_INFO(0, "here");
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
       return -1;
     }
     x=(unsigned char)z;
@@ -1293,13 +1293,13 @@ int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf) {
 
 
 void GWEN_Text_LogString(const char *s, unsigned l,
-                         GWEN_LOGGER *lg,
+                         const char *logDomain,
                          GWEN_LOGGER_LEVEL lv){
   GWEN_BUFFER *mbuf;
 
   mbuf=GWEN_Buffer_new(0, l*10, 0, 1);
   GWEN_Text_DumpString2Buffer(s, l, mbuf, 0);
-  GWEN_Logger_Log(lg, lv, GWEN_Buffer_GetStart(mbuf));
+  GWEN_Logger_Log(logDomain, lv, GWEN_Buffer_GetStart(mbuf));
   GWEN_Buffer_free(mbuf);
 }
 

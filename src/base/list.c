@@ -54,7 +54,7 @@ void GWEN_ListEntry_free(GWEN_LIST_ENTRY *le){
         /* unlink */
         le->previous=0;
         le->next=0;
-        DBG_DEBUG(0, "Freeing entry");
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Freeing entry");
         /* really free */
         free(le);
       }

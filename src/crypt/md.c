@@ -51,7 +51,7 @@ GWEN_MD *GWEN_MD_new(unsigned int size){
   GWEN_NEW_OBJECT(GWEN_MD, md);
 #ifdef GWEN_MEMTRACE
   GWEN_MD_Count++;
-  DBG_INFO(0, "New MD (now %d)", GWEN_MD_Count);
+  DBG_INFO(GWEN_LOGDOMAIN, "New MD (now %d)", GWEN_MD_Count);
 #endif
   if (size) {
     md->pDigest=(unsigned char*)malloc(size);
@@ -67,7 +67,7 @@ void GWEN_MD_free(GWEN_MD *md){
 #ifdef GWEN_MEMTRACE
     assert(GWEN_MD_Count);
     GWEN_MD_Count--;
-    DBG_INFO(0, "Free MD (now %d)", GWEN_MD_Count);
+    DBG_INFO(GWEN_LOGDOMAIN, "Free MD (now %d)", GWEN_MD_Count);
 #endif
     if (md->data && md->freeDataFn)
       md->freeDataFn(md);
@@ -207,7 +207,7 @@ GWEN_ERRORCODE GWEN_MD_RegisterProvider(GWEN_MD_PROVIDER *pr){
   assert(pr);
 
   if (GWEN_MD_FindProvider(pr->name)){
-    DBG_INFO(0, "Service \"%s\" already registered", pr->name);
+    DBG_INFO(GWEN_LOGDOMAIN, "Service \"%s\" already registered", pr->name);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -225,7 +225,7 @@ GWEN_ERRORCODE GWEN_MD_UnregisterProvider(GWEN_MD_PROVIDER *pr){
   assert(pr);
 
   if (!GWEN_MD_FindProvider(pr->name)){
-    DBG_INFO(0, "Service \"%s\" not registered", pr->name);
+    DBG_INFO(GWEN_LOGDOMAIN, "Service \"%s\" not registered", pr->name);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -259,7 +259,7 @@ GWEN_MD *GWEN_MD_Factory(const char *t){
 
   pr=GWEN_MD_FindProvider(t);
   if (!pr) {
-    DBG_ERROR(0, "No MD provider for \"%s\" found", t);
+    DBG_ERROR(GWEN_LOGDOMAIN, "No MD provider for \"%s\" found", t);
     return 0;
   }
 
@@ -295,31 +295,31 @@ int GWEN_MD_Hash(const char *typ,
 
   md=GWEN_MD_Factory(typ);
   if (!md) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
 
   if (GWEN_MD_Begin(md)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_MD_free(md);
     return -1;
   }
 
   if (GWEN_MD_Update(md, data, dsize)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_MD_free(md);
     return -1;
   }
 
   if (GWEN_MD_End(md)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_MD_free(md);
     return -1;
   }
 
   i=GWEN_MD_GetDigestSize(md);
   if (i>*bsize) {
-    DBG_ERROR(0, "Buffer too small");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
     GWEN_MD_free(md);
     return -1;
   }

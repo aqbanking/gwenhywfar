@@ -45,7 +45,7 @@ int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){
   struct timeval tv;
 
   if (gettimeofday(&tv, &tz)) {
-    DBG_ERROR(0, "Could not get current time");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not get current time");
     return -1;
   }
   GWEN_Time__SetSecsAndMSecs(ti, tv.tv_sec, tv.tv_usec/1000);

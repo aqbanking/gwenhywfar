@@ -63,7 +63,7 @@ int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n){
   assert(d);
   assert(n);
   if ((strlen(n)+5)>=sizeof(d->pattern)) {
-    DBG_ERROR(0, "Directory name too long");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Directory name too long");
     return 1;
   }
   strcpy(d->pattern, n);
@@ -96,13 +96,13 @@ int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
   assert(len);
 
   if (d->lastName[0]==0) {
-    DBG_INFO(0, "No more entries");
+    DBG_INFO(GWEN_LOGDOMAIN, "No more entries");
     return 1;
   }
 
   /* copy existing entry */
   if ((strlen(d->lastName)>=len)) {
-    DBG_ERROR(0, "Buffer too small");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
     return 1;
   }
   strcpy(buffer, d->lastName);
@@ -111,7 +111,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
   d->lastName[0]=0;
   if (FindNextFile(d->handle,&wd)) {
     if ((strlen(wd.cFileName)+1)>=sizeof(d->lastName)) {
-      DBG_ERROR(0, "Entry too long");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Entry too long");
     }
 
     strcpy(d->lastName,wd.cFileName);
@@ -127,11 +127,11 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
   assert(d);
   d->handle=FindFirstFile(d->pattern,&wd);
   if (d->handle==INVALID_HANDLE_VALUE) {
-    DBG_ERROR(0, "No entry for \"%s\"", d->pattern);
+    DBG_ERROR(GWEN_LOGDOMAIN, "No entry for \"%s\"", d->pattern);
     return 1;
   }
   if ((strlen(wd.cFileName)+1)>=sizeof(d->lastName)) {
-    DBG_ERROR(0, "Entry name too long");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Entry name too long");
     return 1;
   }
   strcpy(d->lastName,wd.cFileName);
@@ -143,7 +143,7 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
 int GWEN_Directory_Create(const char *path){
 
   if (_mkdir(path)) {
-    DBG_INFO(0, "Error on _mkdir(%s): %s",
+    DBG_INFO(GWEN_LOGDOMAIN, "Error on _mkdir(%s): %s",
              path, strerror(errno));
     return -1;
   }
@@ -157,11 +157,11 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
   rv=GetWindowsDirectory(buffer, size);
   if (rv==0) {
-    DBG_INFO(0, "Error on GetWindowsDirectory");
+    DBG_INFO(GWEN_LOGDOMAIN, "Error on GetWindowsDirectory");
     return -1;
   }
   if (rv>=size) {
-    DBG_INFO(0, "Buffer too small");
+    DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
     return -1;
   }
   return 0;

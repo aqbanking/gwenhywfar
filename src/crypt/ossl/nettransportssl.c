@@ -201,26 +201,26 @@ GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr){
 
   if (GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusUnconnected &&
       GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusPDisconnected){
-    DBG_ERROR(0, "Socket is not unconnected (status \"%s\")",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not unconnected (status \"%s\")",
               GWEN_NetTransport_StatusName(GWEN_NetTransport_GetStatus(tr)));
     return GWEN_NetTransportResultError;
   }
 
-  DBG_INFO(0, "Starting to connect to %s (port %d)",
+  DBG_INFO(GWEN_LOGDOMAIN, "Starting to connect to %s (port %d)",
            addrBuffer,
            GWEN_InetAddr_GetPort(GWEN_NetTransport_GetPeerAddr(tr)));
 
   /* arm socket code */
   err=GWEN_Socket_Open(skd->socket);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_NetTransportResultError;
   }
 
   /* set nonblocking */
   err=GWEN_Socket_SetBlocking(skd->socket, 0);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_NetTransportResultError;
   }
 
@@ -232,7 +232,7 @@ GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr){
     if (GWEN_Error_GetType(err)!=GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
         GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_IN_PROGRESS) {
       /* real error, so return that error */
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return GWEN_NetTransportResultError;
     }
 
@@ -241,7 +241,7 @@ GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr){
   }
   else {
     /* connection succeeded */
-    DBG_INFO(0, "Connection established with %s (port %d)",
+    DBG_INFO(GWEN_LOGDOMAIN, "Connection established with %s (port %d)",
              addrBuffer,
              GWEN_InetAddr_GetPort(GWEN_NetTransport_GetPeerAddr(tr)));
     /* adjust status (logically connected) */
@@ -263,7 +263,7 @@ GWEN_NetTransportSSL_StartAccept(GWEN_NETTRANSPORT *tr){
   assert(tr);
   skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
   if (GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusUnconnected) {
-    DBG_ERROR(0, "Socket is not unconnected (%d)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not unconnected (%d)",
               GWEN_NetTransport_GetStatus(tr));
     return GWEN_NetTransportResultError;
   }
@@ -271,28 +271,28 @@ GWEN_NetTransportSSL_StartAccept(GWEN_NETTRANSPORT *tr){
   GWEN_InetAddr_GetAddress(GWEN_NetTransport_GetLocalAddr(tr),
                            addrBuffer, sizeof(addrBuffer));
 
-  DBG_INFO(0, "Starting to listen on %s (port %d)",
+  DBG_INFO(GWEN_LOGDOMAIN, "Starting to listen on %s (port %d)",
            addrBuffer,
            GWEN_InetAddr_GetPort(GWEN_NetTransport_GetLocalAddr(tr)));
 
   /* arm socket code */
   err=GWEN_Socket_Open(skd->socket);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_NetTransportResultError;
   }
 
   /* set nonblocking */
   err=GWEN_Socket_SetBlocking(skd->socket, 0);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_NetTransportResultError;
   }
 
   /* reuse address */
   err=GWEN_Socket_SetReuseAddress(skd->socket, 1);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_NetTransportResultError;
   }
 
@@ -300,14 +300,14 @@ GWEN_NetTransportSSL_StartAccept(GWEN_NETTRANSPORT *tr){
   skd->active=0;
   err=GWEN_Socket_Bind(skd->socket, GWEN_NetTransport_GetLocalAddr(tr));
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_NetTransportResultError;
   }
 
   /* start listening */
   err=GWEN_Socket_Listen(skd->socket, 10);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_NetTransportResultError;
   }
 
@@ -335,7 +335,7 @@ GWEN_NetTransportSSL_StartDisconnect(GWEN_NETTRANSPORT *tr){
   if (st==GWEN_NetTransportStatusUnconnected ||
       st==GWEN_NetTransportStatusPDisconnected ||
       st==GWEN_NetTransportStatusDisabled) {
-    DBG_ERROR(0,
+    DBG_ERROR(GWEN_LOGDOMAIN,
               "Socket is inactive: %s (%d)",
               GWEN_NetTransport_StatusName(GWEN_NetTransport_GetStatus(tr)),
               GWEN_NetTransport_GetStatus(tr));
@@ -350,7 +350,7 @@ GWEN_NetTransportSSL_StartDisconnect(GWEN_NETTRANSPORT *tr){
   }
   if (rv==1 || rv==-1) {
     /* connection closed */
-    DBG_INFO(0, "Connection closed");
+    DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
     GWEN_Socket_Close(skd->socket);
     SSL_free(skd->ssl);
     skd->ssl=0;
@@ -383,13 +383,13 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
 
   /* check status */
   if (GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusLConnected) {
-    DBG_ERROR(0, "Socket is not connected (%d)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected (%d)",
               GWEN_NetTransport_GetStatus(tr));
     return GWEN_NetTransportResultError;
   }
 
   /* try to read */
-  DBG_DEBUG(0, "Reading up to %d bytes while status \"%s\"",
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading up to %d bytes while status \"%s\"",
             *bsize,
             SSL_state_string_long(skd->ssl));
 
@@ -405,18 +405,18 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
       return GWEN_NetTransportResultWantWrite;
     else {
       if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
-        DBG_INFO(0, "Connection just went down (%d: %s)",
+        DBG_INFO(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
                  sslerr,
                  GWEN_NetTransportSSL_ErrorString(sslerr));
       }
       else {
         if (sslerr==SSL_ERROR_ZERO_RETURN) {
-          DBG_INFO(0, "Connection closed");
+          DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
         }
         else {
-          DBG_ERROR(0, "List of pending SSL errors:");
+          DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
           ERR_print_errors_fp(stderr); /* DEBUG */
-          DBG_ERROR(0, "SSL error: %s (%d)",
+          DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
                     GWEN_NetTransportSSL_ErrorString(sslerr),
                     sslerr);
         }
@@ -443,7 +443,7 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
     }
   }
 
-  DBG_DEBUG(0, "Read %d bytes:", rv);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes:", rv);
   GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
@@ -465,7 +465,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
 
   /* check status */
   if (GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusLConnected) {
-    DBG_ERROR(0, "Socket is not connected (%d)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected (%d)",
               GWEN_NetTransport_GetStatus(tr));
     return GWEN_NetTransportResultError;
   }
@@ -482,7 +482,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
     else if (sslerr==SSL_ERROR_WANT_WRITE)
       return GWEN_NetTransportResultWantWrite;
     else {
-      DBG_ERROR(0, "SSL error: %s (%d)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
                 GWEN_NetTransportSSL_ErrorString(sslerr),
                 sslerr);
       GWEN_Socket_Close(skd->socket);
@@ -496,7 +496,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
     }
   }
   else if (rv==0) {
-    DBG_ERROR(0, "Broken pipe");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Broken pipe");
     GWEN_Socket_Close(skd->socket);
     SSL_free(skd->ssl);
     skd->ssl=0;
@@ -507,23 +507,23 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
     return GWEN_NetTransportResultError;
   }
 
-  DBG_DEBUG(0, "Written %d bytes:", rv);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes:", rv);
   GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
 #ifdef DEBUG_SSL_LOG
   if (1) {
     FILE *f;
 
-    DBG_NOTICE(0, "Saving...");
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Saving...");
     f=fopen("/tmp/written.bin", "a+");
     if (!f) {
-      DBG_ERROR(0, "fopen: %s", strerror(errno));
+      DBG_ERROR(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
     }
     else {
       if (fwrite(buffer, rv, 1, f)!=1) {
-        DBG_ERROR(0, "fwrite: %s", strerror(errno));
+        DBG_ERROR(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
       }
       if (fclose(f)) {
-        DBG_ERROR(0, "fclose: %s", strerror(errno));
+        DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
       }
     }
     return 0;
@@ -550,7 +550,7 @@ int GWEN_NetTransportSSL_AddSockets(GWEN_NETTRANSPORT *tr,
   /* add socket */
   err=GWEN_SocketSet_AddSocket(sset, skd->socket);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return -1;
   }
   return 0;
@@ -564,7 +564,7 @@ int GWEN_NetTransportSSL__Check_Cert(GWEN_NETTRANSPORTSSL *skd,
   char cn[256];
 
   if (SSL_get_verify_result(skd->ssl)!=X509_V_OK) {
-    DBG_ERROR(0, "Invalid certificate");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid certificate");
     return -1;
   }
   /* check common name */
@@ -572,7 +572,7 @@ int GWEN_NetTransportSSL__Check_Cert(GWEN_NETTRANSPORTSSL *skd,
   X509_NAME_get_text_by_NID(X509_get_subject_name(peer),
                             NID_commonName, cn, sizeof(cn));
   if(strcasecmp(cn, name)) {
-    DBG_WARN(0, "Common name does not match (\"%s\" != \"%s\")",
+    DBG_WARN(GWEN_LOGDOMAIN, "Common name does not match (\"%s\" != \"%s\")",
              cn, name);
     return -1;
   }
@@ -587,7 +587,7 @@ int GWEN_NetTransportSSL_GetPassword(GWEN_NETTRANSPORT *tr,
   if (gwen_netransportssl_getPasswordFn)
     return gwen_netransportssl_getPasswordFn(tr, buffer, num, rwflag);
   else {
-    DBG_WARN(0, "No getPasswordFn set");
+    DBG_WARN(GWEN_LOGDOMAIN, "No getPasswordFn set");
     return 0;
   }
 }
@@ -623,14 +623,14 @@ int GWEN_NetTransportSSL_PasswordCB(char *buffer, int num,
 GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
 GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
                                  GWEN_DB_NODE *cert){
-  DBG_DEBUG(0, "Would ask user about this:");
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Would ask user about this:");
   if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
     GWEN_DB_Dump(cert, stderr, 2);
 
   if (gwen_netransportssl_askAddCertFn)
     return gwen_netransportssl_askAddCertFn(tr, cert);
   else {
-    DBG_WARN(0, "No askAddCert function set");
+    DBG_WARN(GWEN_LOGDOMAIN, "No askAddCert function set");
     return GWEN_NetTransportSSL_AskAddCertResultNo;
   }
 }
@@ -666,23 +666,23 @@ void GWEN_NetTransportSSL__InfoCallBack(SSL *s, int where, int ret){
     str="undefined";
 
   if (where & SSL_CB_LOOP){
-    DBG_INFO(0,"%s: %s",str,SSL_state_string_long(s));
+    DBG_INFO(GWEN_LOGDOMAIN,"%s: %s",str,SSL_state_string_long(s));
   }
   else if (where & SSL_CB_ALERT){
     str=(where & SSL_CB_READ)?"read":"write";
-    DBG_INFO(0, "SSL3 alert %s: %s: %s",
+    DBG_INFO(GWEN_LOGDOMAIN, "SSL3 alert %s: %s: %s",
              str,
              SSL_alert_type_string_long(ret),
              SSL_alert_desc_string_long(ret));
   }
   else if (where & SSL_CB_EXIT){
     if (ret==0) {
-      DBG_INFO(0, "%s: failed in \"%s\"",
+      DBG_INFO(GWEN_LOGDOMAIN, "%s: failed in \"%s\"",
                str,
                SSL_state_string_long(s));
     }
     else if (ret<0){
-      DBG_DEBUG(0, "%s: error in \"%s\"",
+      DBG_DEBUG(GWEN_LOGDOMAIN, "%s: error in \"%s\"",
                 str,
                 SSL_state_string_long(s));
     }
@@ -724,7 +724,7 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
     /* check path, create it if necessary */
     if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
                                GWEN_PATH_FLAGS_CHECKROOT)) {
-      DBG_ERROR(0, "Invalid path (\"%s\")", GWEN_Buffer_GetStart(nbuf));
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid path (\"%s\")", GWEN_Buffer_GetStart(nbuf));
       GWEN_Buffer_free(nbuf);
       return -1;
     }
@@ -748,15 +748,15 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
       }
     }
     if (i>=GWEN_NETTRANSPORTSSL_MAXCOLL) {
-      DBG_ERROR(0, "Maximum number of hash collisions reached!");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Maximum number of hash collisions reached!");
       GWEN_Buffer_free(nbuf);
       return -1;
     }
 
-    DBG_DEBUG(0, "Saving file as \"%s\"", GWEN_Buffer_GetStart(nbuf));
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Saving file as \"%s\"", GWEN_Buffer_GetStart(nbuf));
     f=fopen(GWEN_Buffer_GetStart(nbuf), "w+");
     if (!f) {
-      DBG_ERROR(0, "fopen(\"%s\", \"%s\"): %s",
+      DBG_ERROR(GWEN_LOGDOMAIN, "fopen(\"%s\", \"%s\"): %s",
                 GWEN_Buffer_GetStart(nbuf), fmode, strerror(errno));
       GWEN_Buffer_free(nbuf);
       return -1;
@@ -764,20 +764,20 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
     GWEN_Buffer_free(nbuf);
   }
   else {
-    DBG_ERROR(0, "Don't know where to save the file...");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Don't know where to save the file...");
     return -1;
   }
 
   if (!PEM_write_X509(f, cert)) {
-    DBG_ERROR(0, "Could not save certificate of \"%s\"", cn);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not save certificate of \"%s\"", cn);
     return 0;
   }
 
   if (fclose(f)) {
-    DBG_ERROR(0, "fclose: %s", strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
     return -1;
   }
-  DBG_INFO(0, "Certificate of \"%s\" added", cn);
+  DBG_INFO(GWEN_LOGDOMAIN, "Certificate of \"%s\" added", cn);
 
   return 0;
 }
@@ -791,12 +791,12 @@ int GWEN_NetTransportSSL__VerifyCallBack(int preverify_ok,
 
   err=X509_STORE_CTX_get_error(ctx);
   if (!preverify_ok) {
-    DBG_INFO(0, "Verify error %d: \"%s\"",
+    DBG_INFO(GWEN_LOGDOMAIN, "Verify error %d: \"%s\"",
              err, X509_verify_cert_error_string(err));
     if (err==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
         err==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
         err==X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) {
-      DBG_INFO(0, "Unknown certificate, will not abort yet");
+      DBG_INFO(GWEN_LOGDOMAIN, "Unknown certificate, will not abort yet");
       return 1;
     }
   }
@@ -826,13 +826,13 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 
   if (skd->ownCertFile) {
     /* load own certificate file */
-    DBG_DEBUG(0, "Loading certificate and keys");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate and keys");
     if (!(SSL_CTX_use_certificate_chain_file(skd->ssl_ctx,
 					     skd->ownCertFile))){
       int sslerr;
 
       sslerr=SSL_get_error(skd->ssl, rv);
-      DBG_ERROR(0, "SSL error reading certfile: %s (%d)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "SSL error reading certfile: %s (%d)",
                 GWEN_NetTransportSSL_ErrorString(sslerr),
                 sslerr);
       return -1;
@@ -844,13 +844,13 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
       int sslerr;
 
       sslerr=SSL_get_error(skd->ssl, rv);
-      DBG_ERROR(0, "SSL error reading keyfile: %s (%d)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "SSL error reading keyfile: %s (%d)",
                 GWEN_NetTransportSSL_ErrorString(sslerr),
                 sslerr);
       return -1;
     }
     if (!SSL_CTX_check_private_key(skd->ssl_ctx)) {
-      DBG_ERROR(0, "Private key does not match the certificate public key");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Private key does not match the certificate public key");
       return -1;
     }
 
@@ -858,10 +858,10 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 
   /* setup locations of certificates */
   if (skd->CAdir) {
-    DBG_DEBUG(0, "Loading certificate locations");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate locations");
     rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
     if (rv==0) {
-      DBG_ERROR(0, "SSL: Could not load certificate location");
+      DBG_ERROR(GWEN_LOGDOMAIN, "SSL: Could not load certificate location");
       return -1;
     }
   }
@@ -873,11 +873,11 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
     if (GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusListening) {
       FILE *f;
 
-      DBG_DEBUG(0, "Loading DH params");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Loading DH params");
 
       f=fopen(skd->dhfile, "r");
       if (!f) {
-        DBG_ERROR(0, "SSL: fopen(%s): %s", skd->dhfile, strerror(errno));
+        DBG_ERROR(GWEN_LOGDOMAIN, "SSL: fopen(%s): %s", skd->dhfile, strerror(errno));
         return -1;
       }
       else {
@@ -887,7 +887,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
         dh_tmp=PEM_read_DHparams(f, NULL, NULL, NULL);
         fclose(f);
         if (dh_tmp==0) {
-          DBG_ERROR(0, "SSL: Error reading DH params");
+          DBG_ERROR(GWEN_LOGDOMAIN, "SSL: Error reading DH params");
           return -1;
         }
 
@@ -896,7 +896,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
           int sslerr;
 
           sslerr=SSL_get_error(skd->ssl, rv);
-          DBG_ERROR(0, "SSL DH_check error: %s (%d)",
+          DBG_ERROR(GWEN_LOGDOMAIN, "SSL DH_check error: %s (%d)",
                     GWEN_NetTransportSSL_ErrorString(sslerr),
                     sslerr);
           DH_free(dh_tmp);
@@ -904,13 +904,13 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
         }
 
         if (codes & DH_CHECK_P_NOT_PRIME){
-          DBG_ERROR(0, "SSL DH error: p is not prime");
+          DBG_ERROR(GWEN_LOGDOMAIN, "SSL DH error: p is not prime");
           DH_free(dh_tmp);
           return -1;
         }
         if ((codes & DH_NOT_SUITABLE_GENERATOR) &&
             (codes & DH_CHECK_P_NOT_SAFE_PRIME)){
-          DBG_ERROR(0, "SSL DH error : "
+          DBG_ERROR(GWEN_LOGDOMAIN, "SSL DH error : "
                     "neither suitable generator or safe prime");
           DH_free(dh_tmp);
           return -1;
@@ -918,7 +918,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 
         /* DH params seem to be ok */
         if (SSL_CTX_set_tmp_dh(skd->ssl_ctx, dh_tmp)<0) {
-          DBG_ERROR(0, "SSL: Could not set DH params");
+          DBG_ERROR(GWEN_LOGDOMAIN, "SSL: Could not set DH params");
           DH_free(dh_tmp);
           return -1;
         }
@@ -964,7 +964,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
     int sslerr;
 
     sslerr=SSL_get_error(skd->ssl, rv);
-    DBG_ERROR(0, "SSL error setting socket: %s (%d)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "SSL error setting socket: %s (%d)",
 	      GWEN_NetTransportSSL_ErrorString(sslerr),
               sslerr);
     return -1;
@@ -1022,7 +1022,7 @@ int GWEN_NetTransportSSL__ASN_UTC2Db(ASN1_TIME *d,
     s=(const char*)(d->data);
     i=strlen(s);
     if (i<10) {
-      DBG_ERROR(0, "Bad time expression (%s)", s);
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad time expression (%s)", s);
       return -1;
     }
     currTime=time(0);
@@ -1090,14 +1090,14 @@ GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert) {
   d=X509_get_notBefore(cert);
   if (d) {
     if (GWEN_NetTransportSSL__ASN_UTC2Db(d, dbCert, "notBefore")) {
-      DBG_ERROR(0, "Error in notBefore date");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error in notBefore date");
     }
   }
 
   d=X509_get_notAfter(cert);
   if (d) {
     if (GWEN_NetTransportSSL__ASN_UTC2Db(d, dbCert, "notAfter")) {
-      DBG_ERROR(0, "Error in notBefore date");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error in notBefore date");
     }
   }
 
@@ -1162,13 +1162,13 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
   skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
 
   st=GWEN_NetTransport_GetStatus(tr);
-  DBG_DEBUG(0, "Working with status \"%s\" (%d)",
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Working with status \"%s\" (%d)",
             GWEN_NetTransport_StatusName(st),
             st);
   switch(st) {
   case GWEN_NetTransportStatusPConnecting: {
     char addrBuffer[128];
-    DBG_VERBOUS(0, "Still connecting");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Still connecting");
 
     /* get socket error to check whether the connect succeeded */
     err=GWEN_Socket_GetSocketError(skd->socket);
@@ -1177,21 +1177,21 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
           (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
            GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return GWEN_NetTransportWorkResult_Error;
       }
-      DBG_VERBOUS(0, "Still not connected");
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Still not connected");
       return GWEN_NetTransportWorkResult_NoChange;
     }
     /* log address */
     GWEN_InetAddr_GetAddress(GWEN_NetTransport_GetPeerAddr(tr),
                              addrBuffer, sizeof(addrBuffer));
-    DBG_INFO(0, "Connection established with %s (port %d)",
+    DBG_INFO(GWEN_LOGDOMAIN, "Connection established with %s (port %d)",
              addrBuffer,
              GWEN_InetAddr_GetPort(GWEN_NetTransport_GetPeerAddr(tr)));
     /* set to "physically connected" */
     GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusPConnected);
-    DBG_INFO(0, "Physical connection established");
+    DBG_INFO(GWEN_LOGDOMAIN, "Physical connection established");
     GWEN_NetTransport_MarkActivity(tr);
     return GWEN_NetTransportWorkResult_Change;
   }
@@ -1209,7 +1209,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
      * not exported to the outside) */
     fd=GWEN_Socket_GetSocketInt(skd->socket);
     if (fd==-1) {
-      DBG_ERROR(0, "No socket handle, cannot use this socket with SSL");
+      DBG_ERROR(GWEN_LOGDOMAIN, "No socket handle, cannot use this socket with SSL");
       GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       return GWEN_NetTransportWorkResult_Error;
     }
@@ -1242,11 +1242,11 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     /* check for established SSL */
     ERR_clear_error();
     if (skd->active) {
-      DBG_VERBOUS(0, "Calling connect");
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Calling connect");
       rv=SSL_connect(skd->ssl);
     }
     else {
-      DBG_VERBOUS(0, "Calling accept");
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Calling accept");
       rv=SSL_accept(skd->ssl);
     }
 
@@ -1257,10 +1257,10 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       if (sslerr!=SSL_ERROR_WANT_READ &&
 	  sslerr!=SSL_ERROR_WANT_WRITE) {
 	if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
-          DBG_DEBUG(0, "SSL: Syscall error flagged, but errno is 0...");
+          DBG_DEBUG(GWEN_LOGDOMAIN, "SSL: Syscall error flagged, but errno is 0...");
         }
         else {
-          DBG_ERROR(0, "SSL error: %s (%d)",
+          DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
                     GWEN_NetTransportSSL_ErrorString(sslerr),
                     sslerr);
           ERR_print_errors_fp(stderr);
@@ -1293,13 +1293,13 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       assert(ci);
 
       p=SSL_CIPHER_description(ci, buffer, sizeof(buffer));
-      DBG_INFO(0, "Connected using \"%s\"", p);
+      DBG_INFO(GWEN_LOGDOMAIN, "Connected using \"%s\"", p);
     }
 
     cert=SSL_get_peer_certificate(skd->ssl);
     if (!cert) {
       if (skd->secure) {
-        DBG_ERROR(0, "Peer did not send a certificate, abort");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Peer did not send a certificate, abort");
         GWEN_Socket_Close(skd->socket);
         SSL_free(skd->ssl);
         skd->ssl=0;
@@ -1309,7 +1309,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         return GWEN_NetTransportWorkResult_Error;
       }
       else {
-        DBG_WARN(0, "Peer did not send a certificate");
+        DBG_WARN(GWEN_LOGDOMAIN, "Peer did not send a certificate");
       }
     }
     else {
@@ -1318,7 +1318,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 
       certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
 
-      DBG_INFO(0, "Got a certificate: %s",
+      DBG_INFO(GWEN_LOGDOMAIN, "Got a certificate: %s",
                certbuf);
       vr=SSL_get_verify_result(skd->ssl);
       if (vr==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
@@ -1333,44 +1333,44 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 
         /* ask user */
         isErr=0;
-        DBG_INFO(0, "Unknown certificate \"%s\", asking user", certbuf);
+        DBG_INFO(GWEN_LOGDOMAIN, "Unknown certificate \"%s\", asking user", certbuf);
         res=GWEN_NetTransportSSL__AskAddCert(tr, dbCert);
         switch(res) {
         case GWEN_NetTransportSSL_AskAddCertResultError:
-          DBG_ERROR(0, "Error asking user");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Error asking user");
           isErr=1;
           break;
         case GWEN_NetTransportSSL_AskAddCertResultNo:
           if (skd->secure) {
-            DBG_ERROR(0, "User doesn't trust the certificate");
+            DBG_ERROR(GWEN_LOGDOMAIN, "User doesn't trust the certificate");
             isErr=1;
           }
           break;
         case GWEN_NetTransportSSL_AskAddCertResultTmp:
-          DBG_INFO(0, "Temporarily trusting certificate");
+          DBG_INFO(GWEN_LOGDOMAIN, "Temporarily trusting certificate");
           break;
         case GWEN_NetTransportSSL_AskAddCertResultPerm:
-          DBG_NOTICE(0, "Adding certificate to trusted certs");
+          DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to trusted certs");
           if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->CAdir, 0)) {
-            DBG_ERROR(0, "Error saving certificate");
+            DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
             isErr=1;
           }
           break;
         case GWEN_NetTransportSSL_AskAddCertResultIncoming:
           if (!skd->newCAdir) {
-            DBG_ERROR(0, "No dir for incoming connections given");
+            DBG_ERROR(GWEN_LOGDOMAIN, "No dir for incoming connections given");
             isErr=1;
           }
           else {
-            DBG_NOTICE(0, "Adding certificate to incoming certs");
+            DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to incoming certs");
             if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->newCAdir, 1)) {
-              DBG_ERROR(0, "Error saving certificate");
+              DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
               isErr=1;
             }
           }
           break;
         default:
-          DBG_ERROR(0, "Unexpected result");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected result");
           break;
         } /* switch */
 
@@ -1392,49 +1392,49 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       else if (vr!=X509_V_OK) {
         switch(vr) {
         case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
-          DBG_ERROR(0, "Unable to get issuer cert");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to get issuer cert");
           break;
         case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
-          DBG_ERROR(0, "Unable to decrypt cert signature");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to decrypt cert signature");
           break;
         case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
-          DBG_ERROR(0, "Unable to decode issuer public key");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to decode issuer public key");
           break;
         case X509_V_ERR_CERT_SIGNATURE_FAILURE:
-          DBG_ERROR(0, "Cert signature failure");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Cert signature failure");
           break;
         case X509_V_ERR_CERT_NOT_YET_VALID:
-          DBG_ERROR(0, "Cert not yet valid");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Cert not yet valid");
           break;
         case X509_V_ERR_CERT_HAS_EXPIRED:
-          DBG_ERROR(0, "Cert has expired");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Cert has expired");
           break;
         case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-          DBG_ERROR(0, "Self-signed root cert");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Self-signed root cert");
           break;
         case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
-          DBG_ERROR(0, "Self-signed cert");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Self-signed cert");
           break;
         case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-          DBG_ERROR(0, "Unable to get issuer cert locally");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to get issuer cert locally");
           break;
         case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
-          DBG_ERROR(0, "Unable to verify leaf signature");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unable to verify leaf signature");
           break;
         case X509_V_ERR_CERT_CHAIN_TOO_LONG:
-          DBG_ERROR(0, "Cert chain too long");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Cert chain too long");
           break;
         case X509_V_ERR_CERT_REVOKED:
-          DBG_ERROR(0, "Cert revoked");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Cert revoked");
           break;
         case X509_V_ERR_INVALID_CA:
-          DBG_ERROR(0, "Invalid CA");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Invalid CA");
           break;
         case X509_V_ERR_CERT_UNTRUSTED:
-          DBG_ERROR(0, "Cert untrusted");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Cert untrusted");
           break;
         case X509_V_ERR_CERT_REJECTED:
-          DBG_ERROR(0, "Cert rejected");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Cert rejected");
           break;
 
         case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
@@ -1443,7 +1443,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
         case X509_V_ERR_PATH_LENGTH_EXCEEDED:
         case X509_V_ERR_INVALID_PURPOSE:
-          DBG_ERROR(0, "Formal error in cert");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Formal error in cert");
           break;
 
         case X509_V_ERR_OUT_OF_MEM:
@@ -1453,13 +1453,13 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         case X509_V_ERR_CRL_NOT_YET_VALID:
         case X509_V_ERR_CRL_HAS_EXPIRED:
         default:
-          DBG_ERROR(0, "X509 error (%ld)", vr);
+          DBG_ERROR(GWEN_LOGDOMAIN, "X509 error (%ld)", vr);
           break;
         } /* switch */
 
-        DBG_WARN(0, "Invalid peer certificate");
+        DBG_WARN(GWEN_LOGDOMAIN, "Invalid peer certificate");
         if (skd->secure) {
-          DBG_ERROR(0, "Invalid peer certificate, aborting");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Invalid peer certificate, aborting");
           GWEN_Socket_Close(skd->socket);
           SSL_free(skd->ssl);
           skd->ssl=0;
@@ -1471,13 +1471,13 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           return GWEN_NetTransportWorkResult_Error;
         }
         else {
-          DBG_WARN(0, "Invalid peer certificate, ignoring");
+          DBG_WARN(GWEN_LOGDOMAIN, "Invalid peer certificate, ignoring");
         }
       }
       else {
         /* store peer certificate */
         skd->peerCertificate=GWEN_NetTransportSSL__Cert2Db(cert);
-        DBG_INFO(0, "Certificate of peer \"%s\" is valid",
+        DBG_INFO(GWEN_LOGDOMAIN, "Certificate of peer \"%s\" is valid",
                  GWEN_DB_GetCharValue(skd->peerCertificate,
                                       "commonName", 0,
                                       "<nobody>"));
@@ -1487,7 +1487,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       X509_free(cert);
     }
 
-    DBG_INFO(0, "SSL connection established (%s)",
+    DBG_INFO(GWEN_LOGDOMAIN, "SSL connection established (%s)",
              (skd->isSecure)?"verified":"not verified");
 
     GWEN_NetTransport_MarkActivity(tr);
@@ -1501,7 +1501,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     GWEN_NETTRANSPORT *newTr;
     char addrBuffer[128];
 
-    DBG_VERBOUS(0, "Listening");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Listening");
     if (GWEN_NetTransport_GetIncomingCount(tr)+1<
         GWEN_NetTransport_GetBackLog(tr)) {
       newS=0;
@@ -1517,23 +1517,23 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
             (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
              GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
           /* jepp, there was an error */
-          DBG_INFO_ERR(0, err);
+          DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
           return GWEN_NetTransportWorkResult_Error;
         }
         /* otherwise there simply is no waiting connection */
-        DBG_DEBUG(0, "No incoming connection");
+        DBG_DEBUG(GWEN_LOGDOMAIN, "No incoming connection");
         return GWEN_NetTransportWorkResult_NoChange;
       }
 
       /* we have an incoming connection */
       GWEN_InetAddr_GetAddress(iaddr, addrBuffer, sizeof(addrBuffer));
-      DBG_INFO(0, "Incoming connection from %s (port %d)",
+      DBG_INFO(GWEN_LOGDOMAIN, "Incoming connection from %s (port %d)",
                addrBuffer, GWEN_InetAddr_GetPort(iaddr));
 
       /* set socket nonblocking */
       err=GWEN_Socket_SetBlocking(newS, 0);
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         GWEN_InetAddr_free(iaddr);
         GWEN_Socket_free(newS);
         return GWEN_NetTransportWorkResult_Error;
@@ -1563,14 +1563,14 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       return GWEN_NetTransportWorkResult_Change;
     }
     else {
-      DBG_INFO(0, "Too many incoming connections waiting");
+      DBG_INFO(GWEN_LOGDOMAIN, "Too many incoming connections waiting");
     }
     GWEN_NetTransport_MarkActivity(tr);
     break;
   }
 
   case GWEN_NetTransportStatusLConnected:
-    DBG_DEBUG(0, "Active connection, nothing to do");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Active connection, nothing to do");
     /* TODO: check whether read/write are possible, return code
      * accordingly */
     break;
@@ -1579,7 +1579,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     rv=SSL_shutdown(skd->ssl);
     if (rv==1 || rv==-1) {
       /* connection closed */
-      DBG_INFO(0, "Connection closed");
+      DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
       GWEN_Socket_Close(skd->socket);
       SSL_free(skd->ssl);
       skd->ssl=0;
@@ -1596,12 +1596,12 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
   case GWEN_NetTransportStatusDisabled:
   case GWEN_NetTransportStatusPDisconnecting:
   case GWEN_NetTransportStatusPDisconnected:
-    DBG_VERBOUS(0, "Inactive connection (status \"%s\")",
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Inactive connection (status \"%s\")",
                 GWEN_NetTransport_StatusName(st));
     break;
 
   default:
-    DBG_WARN(0, "Hmm, status \"%s\" (%d) is unexpected...",
+    DBG_WARN(GWEN_LOGDOMAIN, "Hmm, status \"%s\" (%d) is unexpected...",
              GWEN_NetTransport_StatusName(st),
              st);
     break;
@@ -1704,7 +1704,7 @@ GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList(){
     return dbCiphers;
   } /* if ciphers */
   else {
-    DBG_WARN(0, "No ciphers");
+    DBG_WARN(GWEN_LOGDOMAIN, "No ciphers");
     SSL_free(ssl);
     SSL_CTX_free(ctx);
     return 0;
@@ -1874,19 +1874,19 @@ void GWEN_NetTransportSSL__GenerateDhFile_Callback(int i, int j, void *p) {
 
   switch(i) {
   case 0:
-    DBG_DEBUG(0, "Generated %d. potential prime number", j);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Generated %d. potential prime number", j);
     break;
   case 1:
-    DBG_DEBUG(0, "Testing %d. prime number", j);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Testing %d. prime number", j);
     break;
   case 2:
-    DBG_DEBUG(0, "Prime found in %d. try", j);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Prime found in %d. try", j);
     break;
   } /* switch */
 
   res=GWEN_WaitCallback();
   if (res!=GWEN_WaitCallbackResult_Continue) {
-    DBG_WARN(0, "User wants to abort, but this function can not be aborted");
+    DBG_WARN(GWEN_LOGDOMAIN, "User wants to abort, but this function can not be aborted");
   }
 }
 
@@ -1899,7 +1899,7 @@ int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits) {
 
 #ifdef GWEN_RANDOM_DEVICE
   if (!RAND_load_file(GWEN_RANDOM_DEVICE, 40)) {
-    DBG_ERROR(0, "Could not seed random (maybe \"%s\" is missing?)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not seed random (maybe \"%s\" is missing?)",
 	      GWEN_RANDOM_DEVICE);
     return -1;
   }
@@ -1909,31 +1909,31 @@ int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits) {
 			    GWEN_NetTransportSSL__GenerateDhFile_Callback,
 			    0);
   if (!dh) {
-    DBG_ERROR(0, "Could not generate DH parameters");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not generate DH parameters");
     return -1;
   }
 
   f=fopen(fname, "w+");
   if (!f) {
-    DBG_ERROR(0, "fopen(%s): %s", fname, strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s): %s", fname, strerror(errno));
     DH_free(dh);
     return -1;
   }
 
   if (!PEM_write_DHparams(f, dh)) {
-    DBG_ERROR(0, "Could not write DH params");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not write DH params");
     fclose(f);
     DH_free(dh);
     return -1;
   }
 
   if (fclose(f)) {
-    DBG_ERROR(0, "fclose(%s): %s", fname, strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "fclose(%s): %s", fname, strerror(errno));
     DH_free(dh);
     return -1;
   }
 
-  DBG_INFO(0, "DH params generated and written");
+  DBG_INFO(GWEN_LOGDOMAIN, "DH params generated and written");
   DH_free(dh);
   return 0;
 }

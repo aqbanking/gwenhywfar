@@ -196,11 +196,11 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 
   /* do some fast checks */
   if (bt->readerError) {
-    DBG_DEBUG(0, "Error flagged");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Error flagged");
     return GWEN_BUFFEREDIO_CHAR_ERROR;
   }
   if (bt->readerEOF) {
-    DBG_DEBUG(0, "EOF flagged");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF flagged");
     return GWEN_BUFFEREDIO_CHAR_EOF;
   }
 
@@ -219,10 +219,10 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
       if (GWEN_Error_GetType(err)==
           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE) &&
           GWEN_Error_GetCode(err)==GWEN_BUFFEREDIO_ERROR_NO_DATA) {
-        DBG_INFO(0, "Could not fill input buffer, no data");
+        DBG_INFO(GWEN_LOGDOMAIN, "Could not fill input buffer, no data");
         return GWEN_BUFFEREDIO_CHAR_NO_DATA;
       }
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       bt->readerError=1;
       return GWEN_BUFFEREDIO_CHAR_ERROR;
     }
@@ -231,7 +231,7 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
     bt->readerEOF=(i==0);
   }
   if (bt->readerEOF) {
-    DBG_DEBUG(0, "EOF now met");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF now met");
     return GWEN_BUFFEREDIO_CHAR_EOF;
   }
   return (unsigned char)(bt->readerBuffer[bt->readerBufferPos]);
@@ -260,13 +260,13 @@ GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt){
 
   assert(bt);
   if (bt->writerBufferFilled==0) {
-    DBG_DEBUG(0, "WriteBuffer empty, nothing to flush.");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "WriteBuffer empty, nothing to flush.");
     return 0;
   }
   assert(bt->writerBuffer);
   assert(bt->writePtr);
   written=bt->writerBufferFlushPos;
-  DBG_DEBUG(0, "Flushing %d bytes", bt->writerBufferFilled);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Flushing %d bytes", bt->writerBufferFilled);
   while(written<bt->writerBufferFilled) {
     i=bt->writerBufferFilled-written;
     err=bt->writePtr(bt,
@@ -274,7 +274,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt){
 		     &i,
 		     bt->timeout);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
     written+=i;
@@ -294,19 +294,19 @@ GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt){
 
   assert(bt);
   if (bt->writerBufferFilled==0) {
-    DBG_DEBUG(0, "WriteBuffer empty, nothing to flush.");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "WriteBuffer empty, nothing to flush.");
     return 0;
   }
   assert(bt->writerBuffer);
   assert(bt->writePtr);
   i=bt->writerBufferFilled-bt->writerBufferFlushPos;
-  DBG_DEBUG(0, "Flushing %d bytes", i);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Flushing %d bytes", i);
   err=bt->writePtr(bt,
 		   &(bt->writerBuffer[bt->writerBufferFlushPos]),
 		   &i,
 		   bt->timeout);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   if (i<bt->writerBufferFilled-bt->writerBufferFlushPos) {
@@ -356,7 +356,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *bt, char c){
 
     err=GWEN_BufferedIO_Flush(bt);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
   }
@@ -372,7 +372,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *bt, char c){
 
     err=GWEN_BufferedIO_Flush(bt);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
   }
@@ -393,11 +393,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *bt){
     err2=0;
 
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   if (!GWEN_Error_IsOk(err2)) {
-    DBG_ERROR_ERR(0, err2);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err2);
     return err2;
   }
   return 0;
@@ -412,7 +412,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *bt){
   assert(bt->closePtr);
   err=bt->closePtr(bt);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   return 0;
@@ -436,11 +436,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
     }
     c=GWEN_BufferedIO_ReadChar(bt);
     if (c==GWEN_BUFFEREDIO_CHAR_NO_DATA) {
-      DBG_INFO(0, "No more data for now");
+      DBG_INFO(GWEN_LOGDOMAIN, "No more data for now");
       break;
     }
     if (c<0) {
-      DBG_ERROR(0, "Error while reading");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error while reading");
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -481,11 +481,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadLine2Buffer(GWEN_BUFFEREDIO *bt,
     }
     c=GWEN_BufferedIO_ReadChar(bt);
     if (c==GWEN_BUFFEREDIO_CHAR_NO_DATA) {
-      DBG_INFO(0, "No more data for now");
+      DBG_INFO(GWEN_LOGDOMAIN, "No more data for now");
       break;
     }
     if (c<0) {
-      DBG_ERROR(0, "Error while reading");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error while reading");
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -517,7 +517,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
   while(*buffer) {
     err=GWEN_BufferedIO_WriteChar(bt, *buffer);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
     buffer++;
@@ -535,25 +535,25 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
   assert(buffer);
   err=GWEN_BufferedIO_Write(bt, buffer);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   if (bt->lineMode==GWEN_LineModeDOS) {
     err=GWEN_BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_CR);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
   }
   err=GWEN_BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_LF);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
 
   err=GWEN_BufferedIO_Flush(bt);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
 
@@ -606,7 +606,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
     /* some data in the buffer, this must be flushed first */
     err=GWEN_BufferedIO_ShortFlush(bt);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return err;
     }
     if (GWEN_Error_GetType(err)==
@@ -625,7 +625,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
                    &i,
                    bt->timeout);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     return err;
   }
   *bsize=i;
@@ -641,14 +641,14 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
 
   /* do some fast checks */
   if (bt->readerError) {
-    DBG_INFO(0, "Error flagged");
+    DBG_INFO(GWEN_LOGDOMAIN, "Error flagged");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_WARN,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
   if (bt->readerEOF) {
-    DBG_INFO(0, "EOF flagged");
+    DBG_INFO(GWEN_LOGDOMAIN, "EOF flagged");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_WARN,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -662,7 +662,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     i=bt->readerBufferFilled-bt->readerBufferPos;
     if (i>*bsize)
       i=*bsize;
-    DBG_DEBUG(0, "Reading rest from buffer (%d at %d of %d)",
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Reading rest from buffer (%d at %d of %d)",
              i,bt->readerBufferPos, bt->readerBufferFilled);
 
     if (i) {
@@ -671,7 +671,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
       bt->readerBufferPos+=i;
     }
     *bsize=i;
-    DBG_DEBUG(0, "Read %d bytes from buffer", i);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes from buffer", i);
     return 0;
   }
   else {
@@ -679,7 +679,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     GWEN_ERRORCODE err;
     int i;
 
-    DBG_DEBUG(0, "Reading directly from source");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Reading directly from source");
     assert(bt->readPtr);
     i=*bsize;
     err=bt->readPtr(bt,
@@ -687,16 +687,16 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
                     &i,
                     bt->timeout);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       bt->readerError=1;
       return err;
     }
     bt->readerEOF=(i==0);
     *bsize=i;
-    DBG_DEBUG(0, "Read %d bytes from source", i);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes from source", i);
   }
   if (bt->readerEOF) {
-    DBG_DEBUG(0, "EOF now met");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF now met");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_WARN,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -724,7 +724,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
   while(bytesRead<*bsize) {
     cbres=GWEN_WaitCallbackProgress(bytesRead);
     if (cbres==GWEN_WaitCallbackResult_Abort) {
-      DBG_ERROR(0, "User abort");
+      DBG_ERROR(GWEN_LOGDOMAIN, "User abort");
       *bsize=bytesRead;
       GWEN_WaitCallback_Leave();
       return GWEN_Error_new(0,
@@ -735,12 +735,12 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
     lsize=*bsize-bytesRead;
     err=GWEN_BufferedIO_ReadRaw(bt, lbuffer, &lsize);
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       GWEN_WaitCallback_Leave();
       return err;
     }
     if (lsize==0) {
-      DBG_ERROR(0, "Premature end of stream");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of stream");
       *bsize=bytesRead;
       GWEN_WaitCallback_Leave();
       return GWEN_Error_new(0,

@@ -121,7 +121,7 @@ GWEN_ERRORCODE GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
   assert(ssp);
   assert(sp);
   if (sp->socket==-1) {
-    DBG_ERROR(0, "Socket is not connected, can not add");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected, can not add");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),

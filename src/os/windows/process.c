@@ -104,13 +104,13 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   /* create a pipe for the child process's STDOUT */
   if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDOUT) {
-    DBG_INFO(0, "Redirecting stdout");
+    DBG_INFO(GWEN_LOGDOMAIN, "Redirecting stdout");
     if (!CreatePipe(&hChildStdoutRd, &hChildStdoutWr, &saAttr, 0)) {
-      DBG_ERROR(0, "Could not create stdout pipe");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not create stdout pipe");
       return -1;
     }
     si.hStdOutput=hChildStdoutWr;
-    DBG_INFO(0, "Creating WinFile");
+    DBG_INFO(GWEN_LOGDOMAIN, "Creating WinFile");
     pr->stdOut=GWEN_BufferedIO_WinFile_new(hChildStdoutRd);
     GWEN_BufferedIO_SetReadBuffer(pr->stdOut, 0, 128);
   }
@@ -119,14 +119,14 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDIN) {
     /* create a pipe for the child process's STDIN */
-    DBG_INFO(0, "Redirecting stdin");
+    DBG_INFO(GWEN_LOGDOMAIN, "Redirecting stdin");
     if (!CreatePipe(&hChildStdinRd, &hChildStdinWr, &saAttr, 0)) {
-      DBG_ERROR(0, "Could not create stdin pipe");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not create stdin pipe");
       return -1;
     }
     si.hStdInput=hChildStdinRd;
     pr->stdIn=GWEN_BufferedIO_WinFile_new(hChildStdinWr);
-    DBG_INFO(0, "Creating WinFile");
+    DBG_INFO(GWEN_LOGDOMAIN, "Creating WinFile");
     GWEN_BufferedIO_SetWriteBuffer(pr->stdIn, 0, 128);
   }
   else
@@ -134,21 +134,21 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   /* create a pipe for the child process's STDERR */
   if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDERR) {
-    DBG_INFO(0, "Redirecting stderr");
+    DBG_INFO(GWEN_LOGDOMAIN, "Redirecting stderr");
     if (!CreatePipe(&hChildStderrRd, &hChildStderrWr, &saAttr, 0)) {
-      DBG_ERROR(0, "Could not create stderr pipe");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not create stderr pipe");
       return -1;
     }
     si.hStdError=hChildStderrWr;
     pr->stdErr=GWEN_BufferedIO_WinFile_new(hChildStderrRd);
-    DBG_INFO(0, "Creating WinFile");
+    DBG_INFO(GWEN_LOGDOMAIN, "Creating WinFile");
     GWEN_BufferedIO_SetReadBuffer(pr->stdErr, 0, 128);
   }
   else
     si.hStdError=GetStdHandle(STD_ERROR_HANDLE);
 
   /* create the child process */
-  DBG_INFO(0, "Creating Command line");
+  DBG_INFO(GWEN_LOGDOMAIN, "Creating Command line");
   cmdline=(char*)malloc(strlen(prg)+strlen(args)+2);
   strcpy(cmdline, prg);
   strcat(cmdline, " ");
@@ -156,7 +156,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   pr->finished=0;
 
-  DBG_INFO(0, "Starting process");
+  DBG_INFO(GWEN_LOGDOMAIN, "Starting process");
   if (CreateProcess(NULL,              /* lpszApplicationName */
                     cmdline,           /* lpszCommandLine */
                     NULL,              /* lpsaProcess */
@@ -168,7 +168,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                     &si,               /* lpsiStartInfo */
                     &(pr->processInfo) /* lppiProcInfo */
                    )!=TRUE) {
-    DBG_ERROR(0, "Error executing \"%s\" (%d)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error executing \"%s\" (%d)",
               cmdline, (int)GetLastError());
     pst=GWEN_ProcessStateNotStarted;
     /* error, close our end of the pipe. The other end will be closed
@@ -181,7 +181,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
       CloseHandle(hChildStderrRd);
   }
   else {
-    DBG_INFO(0, "Process started");
+    DBG_INFO(GWEN_LOGDOMAIN, "Process started");
     pst=GWEN_ProcessStateRunning;
   }
 
@@ -215,7 +215,7 @@ GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr){
     return GWEN_Process_MakeState(pr, dwExitCode);
   }
   else {
-    DBG_ERROR(0, "Error getting exitcode (%d)", (int)GetLastError());
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error getting exitcode (%d)", (int)GetLastError());
     return GWEN_ProcessStateUnknown;
   }
 }
@@ -260,7 +260,7 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr){
     return 0;
   }
   else {
-    DBG_ERROR(0, "Error getting exitcode (%d)", (int)GetLastError());
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error getting exitcode (%d)", (int)GetLastError());
     return -1;
   }
 }
@@ -270,7 +270,7 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr){
 int GWEN_Process_Terminate(GWEN_PROCESS *pr){
   if (TerminateProcess(pr->processInfo.hProcess,
                        GWEN_PROCESS_EXITCODE_ABORT)!=TRUE) {
-    DBG_ERROR(0, "Error terminating process (%d)", (int)GetLastError());
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error terminating process (%d)", (int)GetLastError());
     return -1;
   }
   if (GWEN_Process_Wait(pr)) {
@@ -360,7 +360,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
   bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
   assert(bft);
   if (*size<1) {
-    DBG_WARN(0, "Nothing to read");
+    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to read");
     *size=0;
     return 0;
   }
@@ -369,23 +369,23 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
 
     werr=GetLastError();
     if (werr==ERROR_BROKEN_PIPE) {
-      DBG_INFO(0, "EOF met (broken pipe)");
+      DBG_INFO(GWEN_LOGDOMAIN, "EOF met (broken pipe)");
       *size=0;
       return 0;
     }
-    DBG_ERROR(0, "Could not read (%ld)", werr);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not read (%ld)", werr);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
   if (bytesRead==0) {
-    DBG_DEBUG(0, "EOF met");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
     *size=0;
     return 0;
   }
 
-  DBG_INFO(0, "%ld bytes read", bytesRead);
+  DBG_INFO(GWEN_LOGDOMAIN, "%ld bytes read", bytesRead);
   *size=bytesRead;
   return 0;
 }
@@ -403,18 +403,18 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
   bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
   assert(bft);
   if (*size<1) {
-    DBG_WARN(0, "Nothing to write");
+    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to write");
     *size=0;
     return 0;
   }
   if (!WriteFile(bft->fd, buffer, *size, &written, 0)) {
-    DBG_ERROR(0, "Could not write (%ld)", GetLastError());
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not write (%ld)", GetLastError());
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_WRITE);
   }
-  DBG_INFO(0, "%ld bytes written", written);
+  DBG_INFO(GWEN_LOGDOMAIN, "%ld bytes written", written);
   *size=written;
   return 0;
 }
@@ -428,7 +428,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
   bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
   assert(bft);
   if (!CloseHandle(bft->fd)) {
-    DBG_ERROR(0, "Could not close (%ld)", GetLastError());
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not close (%ld)", GetLastError());
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),

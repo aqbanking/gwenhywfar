@@ -52,7 +52,7 @@ int GWEN_Base64_Encode(const unsigned char *src, unsigned int size,
 
   if (maxLineLength) {
     if (maxLineLength<4) {
-      DBG_ERROR(0, "I need at least 4 bytes per line");
+      DBG_ERROR(GWEN_LOGDOMAIN, "I need at least 4 bytes per line");
       return -1;
     }
   }
@@ -157,7 +157,7 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
           src++;
       }
       if (!*src) {
-        DBG_ERROR(0, "Premature end reached");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Premature end reached");
         return -1;
       }
       if (*src=='=')

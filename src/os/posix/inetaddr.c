@@ -176,7 +176,7 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
 #elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
     GWEN_InetAddr_free(ia);
     return 0;
 #endif
@@ -187,12 +187,12 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
   }
 
   default:
-    DBG_ERROR(0, "Unknown address family (%d)",af);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown address family (%d)",af);
     assert(0);
   } /* switch */
 #ifdef MEMTRACE
   GWEN_INETADDR__Counter++;
-  DBG_INFO(0, "InetAddr created, now %d",GWEN_INETADDR__Counter);
+  DBG_INFO(GWEN_LOGDOMAIN, "InetAddr created, now %d",GWEN_INETADDR__Counter);
 #endif
   return ia;
 }
@@ -220,7 +220,7 @@ void GWEN_InetAddr_free(GWEN_INETADDRESS *ia){
   if (ia) {
 #ifdef MEMTRACE
     GWEN_INETADDR__Counter--;
-    DBG_INFO(0, "Free InetAddr, makes %d",GWEN_INETADDR__Counter);
+    DBG_INFO(GWEN_LOGDOMAIN, "Free InetAddr, makes %d",GWEN_INETADDR__Counter);
 #endif
     free(ia->address);
     free(ia);
@@ -244,7 +244,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 #elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
-    DBG_ERROR(0, "No TCP sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No TCP sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -273,7 +273,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 #elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -284,7 +284,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
       /* ok, address to be set */
       if ((strlen(addr)+1)>sizeof(aptr->sun_path)) {
 	/* bad address */
-	DBG_ERROR(0, "Path too long (%d>%d)",
+	DBG_ERROR(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
 		  strlen(addr)+1,sizeof(aptr->sun_path));
 	return GWEN_Error_new(0,
 			      GWEN_ERROR_SEVERITY_ERR,
@@ -369,7 +369,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
 #elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -381,7 +381,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
       /* ok, address to be set */
       if ((strlen(name)+1)>sizeof(aptr->sun_path)) {
         /* bad address */
-	DBG_ERROR(0, "Path too long (%d>%d)",
+	DBG_ERROR(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
 		  strlen(name)+1,sizeof(aptr->sun_path));
 	return GWEN_Error_new(0,
 			 GWEN_ERROR_SEVERITY_ERR,
@@ -538,7 +538,7 @@ int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia){
   }
 
   default:
-    DBG_WARN(0, "not an IP address");
+    DBG_WARN(GWEN_LOGDOMAIN, "not an IP address");
     i=0;
   } /* switch */
 

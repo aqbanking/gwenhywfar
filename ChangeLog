@@ -1,8 +1,21 @@
+
+
+2004/08/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- introduced logdomains: Now every library can have its own log domain,
+  making it much easier to debug a single library out of multiple libs
+  NOTE: This is an incompatible API change, therefore SO_VERSION++.
+  The first argument of all GWEN_Logger functions has been changed.
+  However, in most cases a NULL was given, so you should simply need to
+  recompile your sources with no (or at most few) changes.
+
+
 2004-08-18   Christian Stimming <stimming@tuhh.de>
 
 	* src/base/misc.h, list2.h, inherit.h: Add extra macro for an
 	empty string because in the definition of GWEN_LIST_FUNCTION_DEFS,
 	the MSVC compiler does not accept an empty macro argument.
+
 
 2004/08/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -75,7 +75,7 @@ GWEN_ERRORCODE GWEN_Socket_ModuleInit(){
     wVersionRequested=MAKEWORD(1,1);
     rv=WSAStartup(wVersionRequested,&wsaData);
     if (rv) {
-      DBG_INFO(0, "Error on WSAStartup");
+      DBG_INFO(GWEN_LOGDOMAIN, "Error on WSAStartup");
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
@@ -147,7 +147,7 @@ GWEN_ERRORCODE GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
   assert(ssp);
   assert(sp);
   if (sp->socket==-1) {
-    DBG_ERROR(0, "Socket is not connected, can not add");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected, can not add");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
@@ -242,7 +242,7 @@ GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp){
     break;
 
   case GWEN_SocketTypeUnix:
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -269,7 +269,7 @@ GWEN_ERRORCODE GWEN_Socket_Connect(GWEN_SOCKET *sp,
               addr->size)) {
     if (WSAGetLastError()!=WSAEINPROGRESS &&
         WSAGetLastError()!=WSAEWOULDBLOCK) {
-      DBG_ERROR(0, "Error %d (%s)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error %d (%s)",
                 WSAGetLastError(),
                 strerror(WSAGetLastError()));
       return GWEN_Error_new(0,
@@ -677,7 +677,7 @@ GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
   assert(sp);
   fl=!b;
   if (ioctlsocket(sp->socket,FIONBIO,&fl)) {
-    DBG_ERROR(0, "Error %d (%s)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error %d (%s)",
               WSAGetLastError(),
               strerror(WSAGetLastError()));
     return GWEN_Error_new(0,

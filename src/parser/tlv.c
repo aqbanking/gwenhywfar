@@ -98,7 +98,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   GWEN_TYPE_UINT32 startPos;
 
   if (!GWEN_Buffer_GetBytesLeft(mbuf)) {
-    DBG_ERROR(0, "Buffer empty");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer empty");
     return 0;
   }
 
@@ -112,7 +112,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
 
   /* get tag type */
   if (size<2) {
-    DBG_ERROR(0, "Too few bytes for BER-TLV");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes for BER-TLV");
     return 0;
   }
   j=(unsigned char)(p[pos]);
@@ -121,7 +121,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
     if ((j & 0x1f)==0x1f) {
       pos++;
       if (pos>=size) {
-        DBG_ERROR(0, "Too few bytes");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
         return 0;
       }
       j=(unsigned char)(p[pos]);
@@ -129,14 +129,14 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
     else
       j&=0x1f;
   }
-  DBG_DEBUG(0, "Tag type %02x%s", j,
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Tag type %02x%s", j,
             isBerTlv?" (BER-TLV)":"");
   tagType=j;
 
   /* get length */
   pos++;
   if (pos>=size) {
-    DBG_ERROR(0, "Too few bytes");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
     return 0;
   }
   j=(unsigned char)(p[pos]);
@@ -145,14 +145,14 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
       if (j==0x81) {
         pos++;
         if (pos>=size) {
-          DBG_ERROR(0, "Too few bytes");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
           return 0;
         }
         j=(unsigned char)(p[pos]);
       } /* 0x81 */
       else if (j==0x82) {
         if (pos+1>=size) {
-          DBG_ERROR(0, "Too few bytes");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
           return 0;
         }
         pos++;
@@ -161,7 +161,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
         j+=(unsigned char)(p[pos]);
       } /* 0x82 */
       else {
-        DBG_ERROR(0, "Unexpected tag length modifier %02x", j);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x", j);
         return 0;
       }
     } /* if tag length modifier */
@@ -169,7 +169,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   else {
     if (j==255) {
       if (pos+2>=size) {
-        DBG_ERROR(0, "Too few bytes");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
         return 0;
       }
       pos++;
@@ -183,9 +183,9 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   tagData=p+pos;
   GWEN_Buffer_IncrementPos(mbuf, pos);
 
-  DBG_DEBUG(0, "Tag: %02x (%d bytes)", tagType, tagLength);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Tag: %02x (%d bytes)", tagType, tagLength);
   if (pos+j>size) {
-    DBG_ERROR(0, "Too few bytes");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
     return 0;
   }
 

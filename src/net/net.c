@@ -84,7 +84,7 @@ GWEN_NETCONNECTION_WORKRESULT GWEN_Net_HeartBeat(int timeout){
   }
   else {
     /* no connections, but wait for 750 ms to avoid CPU overload */
-    DBG_INFO(0, "No connections, sleeping to avoid CPU overload");
+    DBG_INFO(GWEN_LOGDOMAIN, "No connections, sleeping to avoid CPU overload");
     GWEN_Socket_Select(0, 0, 0, 750);
     return GWEN_NetConnectionWorkResult_NoChange;
   }

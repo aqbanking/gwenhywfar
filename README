@@ -1,8 +1,10 @@
 
 This is Gwenhywfar, a multi-platform helper library for networking and
 security applications and libraries. It is heavily used by libchipcard
-http://www.libchipcard.de, OpenHBCI2 http://www.openhbci.de, and the
-simulation tool Simthetic http://simthetic.sourceforge.net .
+http://www.libchipcard.de, OpenHBCI2 http://www.openhbci.de, the
+simulation tool Simthetic http://simthetic.sourceforge.net and
+AqBanking/AqHBCI (http://www.aquamaniac.de/aqbanking/).
+
 
 
 Features
@@ -54,9 +56,9 @@ supported:
 - Windows (98, NT and newer; for using this library from Microsoft
   Visual Studio C please see the explanations in test/README.MSVC)
 
-- FreeBSD (untested, but most likely to work)
-- NetBSD  (untested, but most likely to work)
-- OpenBSD (untested, but most likely to work)
+- FreeBSD  (untested, but most likely to work)
+- NetBSD   (untested, but most likely to work)
+- OpenBSD  (untested, but most likely to work)
 - Mac OS-X (untested)
 
 

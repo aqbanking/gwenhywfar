@@ -77,18 +77,18 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
   assert(bft);
 
   if (*size<1) {
-    DBG_WARN(0, "Nothing to read");
+    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to read");
     *size=0;
     return 0;
   }
   rv=read(bft->fd, buffer, *size);
   if (rv==0) {
-    DBG_DEBUG(0, "EOF met");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
     *size=0;
     return 0;
   }
   if (rv<0) {
-    DBG_ERROR(0, "Could not read (%s)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not read (%s)",
 	      strerror(errno));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -113,13 +113,13 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
   assert(bft);
 
   if (*size<1) {
-    DBG_WARN(0, "Nothing to write");
+    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to write");
     *size=0;
     return 0;
   }
   rv=write(bft->fd, buffer, *size);
   if (rv<1) {
-    DBG_ERROR(0, "Could not write (%s)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not write (%s)",
 	      strerror(errno));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -143,7 +143,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm){
     return 0;
   }
   if (close(bft->fd)) {
-    DBG_ERROR(0, "Could not close (%s)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not close (%s)",
 	      strerror(errno));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,

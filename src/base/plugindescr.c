@@ -56,7 +56,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
   GWEN_LIST_INIT(GWEN_PLUGIN_DESCRIPTION, pd);
   p=GWEN_XMLNode_GetProperty(node, "name", 0);
   if (!p) {
-    DBG_ERROR(0, "Unnamed plugin");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unnamed plugin");
     GWEN_PluginDescription_free(pd);
     return 0;
   }
@@ -64,7 +64,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
   pd->xmlNode=GWEN_XMLNode_dup(node);
   p=GWEN_XMLNode_GetProperty(node, "type", 0);
   if (!p) {
-    DBG_ERROR(0, "Plugin has no type");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Plugin has no type");
     GWEN_PluginDescription_free(pd);
     return 0;
   }
@@ -185,13 +185,13 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
       GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
       if (GWEN_XMLNode_WriteToStream(n, bio,
                                      GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
-        DBG_INFO(0, "here");
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
         GWEN_BufferedIO_Abandon(bio);
         GWEN_BufferedIO_free(bio);
         return -1;
       }
       if (GWEN_BufferedIO_Close(bio)) {
-        DBG_INFO(0, "here");
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
         GWEN_BufferedIO_free(bio);
         return -1;
       }
@@ -230,7 +230,8 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 
   d=GWEN_Directory_new();
   if (GWEN_Directory_Open(d, GWEN_Buffer_GetStart(nbuf))) {
-    DBG_INFO(0, "Path \"%s\" is not available",
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Path \"%s\" is not available",
 	     GWEN_Buffer_GetStart(nbuf));
     GWEN_Buffer_free(nbuf);
     GWEN_Directory_free(d);
@@ -256,7 +257,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 	  GWEN_Buffer_AppendString(nbuf, nbuffer);
 
 	  if (stat(GWEN_Buffer_GetStart(nbuf), &st)) {
-	    DBG_ERROR(0, "stat(%s): %s",
+	    DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
 		      GWEN_Buffer_GetStart(nbuf),
 		      strerror(errno));
 	  }
@@ -268,7 +269,8 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 	      if (GWEN_XML_ReadFile(node,
 				    GWEN_Buffer_GetStart(nbuf),
 				    GWEN_XML_FLAGS_DEFAULT)) {
-		DBG_WARN(0, "Bad file \"%s\"", GWEN_Buffer_GetStart(nbuf));
+                DBG_WARN(GWEN_LOGDOMAIN,
+                         "Bad file \"%s\"", GWEN_Buffer_GetStart(nbuf));
 	      }
 	      else {
 		GWEN_XMLNODE *n;
@@ -279,14 +281,14 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 
 		  pd=GWEN_PluginDescription_new(n);
 		  if (!pd) {
-		    DBG_WARN(0, "Bad plugin description");
+		    DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
 		  }
 		  else {
                     GWEN_PluginDescription_List2_PushBack(pdl, pd);
                   }
                 }
                 else {
-                  DBG_WARN(0,
+                  DBG_WARN(GWEN_LOGDOMAIN,
                            "File \"%s\" does not contain plugin "
                            "description",
                            GWEN_Buffer_GetStart(nbuf));

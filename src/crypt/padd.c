@@ -81,18 +81,18 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
 
   /* src+src+src */
   if (GWEN_Buffer_AppendBytes(src, (const char*)hash, l)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
 
   if (GWEN_Buffer_AppendBytes(src, (const char*)hash, l)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
 
   /* src=src(20,40) */
   if (GWEN_Buffer_Crop(src, 20, 40)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
 
@@ -130,7 +130,7 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
 
   GWEN_Buffer_Reset(src);
   if (GWEN_Buffer_AppendBytes(src, (const char*)buffer, sizeof(buffer))) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
 
@@ -159,7 +159,7 @@ int GWEN_Padd_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
 
   lastpos=GWEN_Buffer_GetUsedBytes(src);
   if (lastpos<8) {
-    DBG_ERROR(0, "Buffer too small");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
     return -1;
   }
   lastpos--;
@@ -167,7 +167,7 @@ int GWEN_Padd_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
   p=GWEN_Buffer_GetStart(src)+lastpos;
   paddLength=*p;
   if (paddLength<1 || paddLength>8) {
-    DBG_ERROR(0, "Invalid padding (%d bytes ?)", paddLength);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid padding (%d bytes ?)", paddLength);
     return -1;
   }
   GWEN_Buffer_Crop(src, 0, GWEN_Buffer_GetUsedBytes(src)-paddLength);

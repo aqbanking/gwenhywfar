@@ -237,7 +237,7 @@ void GWEN_XMLNode_IncUsage(GWEN_XMLNODE *n){
 void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n){
   assert(n);
   if (n->usage==0) {
-    DBG_WARN(0, "Node usage already is zero");
+    DBG_WARN(GWEN_LOGDOMAIN, "Node usage already is zero");
   }
   else
     n->usage--;
@@ -305,7 +305,7 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
 	break;
       chr=GWEN_BufferedIO_ReadChar(bio);
       if (chr<0) {
-	DBG_ERROR(0, "Error on ReadChar");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error on ReadChar");
 	return -1;
       }
     }
@@ -331,7 +331,7 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
 	break;
       }
       else if (chr=='<') {
-	DBG_ERROR(0, "No tags inside a tag definition allowed");
+	DBG_ERROR(GWEN_LOGDOMAIN, "No tags inside a tag definition allowed");
         return -1;
       }
       else {
@@ -439,7 +439,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
     if (chr==0) {
       chr=GWEN_BufferedIO_ReadChar(bio);
       if (chr<0) {
-	DBG_ERROR(0, "Error on BufferedIO_ReadChar");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error on BufferedIO_ReadChar");
 	return -1;
       }
     }
@@ -451,7 +451,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
       }
       chr=GWEN_BufferedIO_ReadChar(bio);
       if (chr<0) {
-	DBG_ERROR(0, "Error on BufferedIO_ReadChar");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error on BufferedIO_ReadChar");
 	return -1;
       }
     }
@@ -477,7 +477,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	isEndTag=1;
 	p++;
       }
-      DBG_DEBUG(0, "Found tag \"%s\"", GWEN_Buffer_GetStart(bufTagName));
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Found tag \"%s\"", GWEN_Buffer_GetStart(bufTagName));
 
       isComment=0;
       if (strlen(p)>=3)
@@ -490,12 +490,12 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
         comlen=0;
         bufComment=GWEN_Buffer_new(0, 128, 0, 1);
-        DBG_DEBUG(0, "Found comment");
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Found comment");
 	/* we have a remark tag, so read it over */
 	while(1) {
 	  if (chr==0) {
 	    if (GWEN_BufferedIO_CheckEOF(bio)) {
-	      DBG_ERROR(0, "Unexpected EOF within comment");
+	      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected EOF within comment");
 	      return -1;
 	    }
 	    chr=GWEN_BufferedIO_ReadChar(bio);
@@ -523,7 +523,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             }
             else {
               if (!(flags & GWEN_XML_FLAGS_READ_COMMENTS)) {
-                DBG_VERBOUS(0, "Clipping comment to 2 bytes");
+                DBG_VERBOUS(GWEN_LOGDOMAIN, "Clipping comment to 2 bytes");
                 memmove(bstart, bstart+comlen-2, 2);
                 GWEN_Buffer_Crop(bufComment, 0, 2);
                 GWEN_Buffer_SetPos(bufComment, 2);
@@ -535,17 +535,17 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	} /* while */
 
         /* create new node */
-        DBG_VERBOUS(0, "Comment finished");
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Comment finished");
         if (flags & GWEN_XML_FLAGS_READ_COMMENTS) {
           newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeComment,
                                    GWEN_Buffer_GetStart(bufComment));
           GWEN_XMLNode_add(newNode, &(n->child));
           newNode->parent=n;
-          DBG_DEBUG(0, "Added comment: \"%s\"",
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Added comment: \"%s\"",
                     GWEN_Buffer_GetStart(bufComment));
         }
         else {
-          DBG_DEBUG(0, "Skip comment");
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Skip comment");
         }
         GWEN_Buffer_free(bufComment);
       } /* if remark */
@@ -554,13 +554,13 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	if (isEndTag) {
 	  /* handle endtag */
 	  if (currDepth<1) {
-            DBG_ERROR(0, "Line %d: More endtags than start tags !",
+            DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: More endtags than start tags !",
                       GWEN_BufferedIO_GetLines(bio));
             GWEN_Buffer_free(bufTagName);
 	    return -1;
 	  }
 	  if (strcasecmp(n->data, p)!=0) {
-            DBG_ERROR(0,
+            DBG_ERROR(GWEN_LOGDOMAIN,
                       "Line %d: endtag \"%s\" does not match "
                       "last start tag (\"%s\")",
                       GWEN_BufferedIO_GetLines(bio),
@@ -586,13 +586,13 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                 iname=inametag->data;
               }
               else {
-                DBG_WARN(0,
+                DBG_WARN(GWEN_LOGDOMAIN,
                          "Line %d: <INCLUDE> tag with unexpected children",
                          GWEN_BufferedIO_GetLines(bio));
               }
             }
             else {
-              DBG_WARN(0, "Line %d: <INCLUDE> tag without children",
+              DBG_WARN(GWEN_LOGDOMAIN, "Line %d: <INCLUDE> tag without children",
                        GWEN_BufferedIO_GetLines(bio));
             }
 
@@ -603,12 +603,12 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               GWEN_XMLNODE *itag;
 
               newRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "tmproot");
-              DBG_INFO(0, "Line %d: Including file \"%s\" / \"%s\"",
+              DBG_INFO(GWEN_LOGDOMAIN, "Line %d: Including file \"%s\" / \"%s\"",
                        GWEN_BufferedIO_GetLines(bio),
                        fpath, iname);
               irv=fn(newRoot, fpath, iname, sl, flags);
               if (irv) {
-                DBG_INFO(0, "here");
+                DBG_INFO(GWEN_LOGDOMAIN, "here");
                 GWEN_XMLNode_free(newRoot);
                 GWEN_Buffer_free(bufTagName);
                 return irv;
@@ -628,7 +628,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                 if (flags & GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL) {
                   GWEN_XMLNODE *tl;
 
-                  DBG_INFO(0, "Line %d: Importing node to toplevel",
+                  DBG_INFO(GWEN_LOGDOMAIN, "Line %d: Importing node to toplevel",
                            GWEN_BufferedIO_GetLines(bio));
                   tl=nparent;
                   while(tl->parent)
@@ -643,7 +643,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                                                       itag->data, 0, 0);
                     if (oldNode) {
                       /* use old node, copy properties */
-                      DBG_INFO(0,
+                      DBG_INFO(GWEN_LOGDOMAIN,
                                "Line %d: Using old toplevel node for \"%s\"",
                                GWEN_BufferedIO_GetLines(bio),
                                itag->data);
@@ -684,7 +684,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           n=path[currDepth-1];
           currDepth--;
           if (currDepth==0) {
-            DBG_DEBUG(0, "One node done");
+            DBG_DEBUG(GWEN_LOGDOMAIN, "One node done");
             GWEN_Buffer_free(bufTagName);
             return 0;
           }
@@ -718,7 +718,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    j=strlen(p)-1;
 	    if (p[j]=='/') {
 	      if (chr!='>') {
-                DBG_ERROR(0,
+                DBG_ERROR(GWEN_LOGDOMAIN,
                           "Line %d: \"/\" only allowed just before \">\"",
                           GWEN_BufferedIO_GetLines(bio));
                 GWEN_Buffer_free(bufTagName);
@@ -740,7 +740,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
             /* skip blanks */
             /*chr=0; */
-            DBG_DEBUG(0, "Current char is: \"%c\"", chr);
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Current char is: \"%c\"", chr);
             if (chr==0 || isspace(chr)) {
               while(!GWEN_BufferedIO_CheckEOF(bio)) {
                 chr=GWEN_BufferedIO_ReadChar(bio);
@@ -756,7 +756,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               } /* while */
             }
             if (chr==0) {
-	      DBG_ERROR(0, "unexpected EOF");
+	      DBG_ERROR(GWEN_LOGDOMAIN, "unexpected EOF");
 	      GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
               GWEN_Buffer_free(bufVarName);
@@ -780,11 +780,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             varname=GWEN_Buffer_GetStart(bufVarName);
             if (strcmp(varname, "?")==0) {
               if (*p=='?') {
-                DBG_DEBUG(0, "Found closing question mark");
+                DBG_DEBUG(GWEN_LOGDOMAIN, "Found closing question mark");
                 break;
               }
             }
-            DBG_DEBUG(0, "Found property \"%s\"", varname);
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Found property \"%s\"", varname);
 
 	    /* skip blanks */
 	    if (isspace(chr)) {
@@ -819,7 +819,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 		  break;
 	      }
 	      if (chr==0) {
-                DBG_ERROR(0, "Line %d: Value expected for property \"%s\"",
+                DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: Value expected for property \"%s\"",
                           GWEN_BufferedIO_GetLines(bio),
                           varname);
 		GWEN_XMLNode_free(newNode);
@@ -830,7 +830,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      }
 
 	      if (chr=='>' || chr=='/') {
-                DBG_ERROR(0, "Line %d: Value expected for property \"%s\"",
+                DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: Value expected for property \"%s\"",
                           GWEN_BufferedIO_GetLines(bio),
                           varname);
 		GWEN_XMLNode_free(newNode);
@@ -851,7 +851,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               }
               GWEN_Buffer_AppendByte(bufValue, 0);
               value=GWEN_Buffer_GetStart(bufValue);
-              DBG_DEBUG(0, "Found value \"%s\"", value);
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Found value \"%s\"", value);
             } /* if value follows */
 
             if (varname) {
@@ -868,7 +868,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             isEndTag=1;
 
             if (GWEN_BufferedIO_CheckEOF(bio)) {
-              DBG_ERROR(0, "Line %d: \">\" expected",
+              DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: \">\" expected",
                         GWEN_BufferedIO_GetLines(bio));
               GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
@@ -879,7 +879,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
             chr=GWEN_BufferedIO_ReadChar(bio);
             if (chr<0) {
-              DBG_ERROR(0, "Error on ReadChar");
+              DBG_ERROR(GWEN_LOGDOMAIN, "Error on ReadChar");
               GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
               GWEN_Buffer_free(bufVarName);
@@ -889,7 +889,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           }
 
 	  if (chr!='>') {
-            DBG_ERROR(0, "Line %d: \">\" expected",
+            DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: \">\" expected",
                       GWEN_BufferedIO_GetLines(bio));
 	    GWEN_XMLNode_free(newNode);
             GWEN_Buffer_free(bufValue);
@@ -906,7 +906,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             oldNode=GWEN_XMLNode_FindFirstTag(n, newNode->data, 0, 0);
             if (oldNode) {
               /* use old node, copy properties */
-              DBG_INFO(0, "Line %d: Using old toplevel node for \"%s\"",
+              DBG_INFO(GWEN_LOGDOMAIN, "Line %d: Using old toplevel node for \"%s\"",
                        GWEN_BufferedIO_GetLines(bio),
                        newNode->data);
               GWEN_XMLNode_CopyProperties(oldNode, newNode, 0);
@@ -916,7 +916,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             else {
               /* otherwise add bew tag */
               if (currDepth>=GWEN_XML_MAX_DEPTH) {
-                DBG_ERROR(0, "Line %d: Maximum depth exceeded",
+                DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: Maximum depth exceeded",
                           GWEN_BufferedIO_GetLines(bio));
                 GWEN_XMLNode_free(newNode);
                 GWEN_Buffer_free(bufValue);
@@ -926,12 +926,12 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               }
               GWEN_XMLNode_add(newNode, &(n->child));
               newNode->parent=n;
-              DBG_DEBUG(0, "Added node \"%s\"", newNode->data);
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Added node \"%s\"", newNode->data);
             }
           }
           else {
             if (currDepth>=GWEN_XML_MAX_DEPTH) {
-              DBG_ERROR(0, "Line %d: Maximum depth exceeded",
+              DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: Maximum depth exceeded",
                         GWEN_BufferedIO_GetLines(bio));
               GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
@@ -941,7 +941,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             }
             GWEN_XMLNode_add(newNode, &(n->child));
             newNode->parent=n;
-            DBG_DEBUG(0, "Added node \"%s\"", newNode->data);
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Added node \"%s\"", newNode->data);
           }
           if (!isEndTag && !simpleTag) {
 	    /* only dive if this tag is not immediately ended */
@@ -951,7 +951,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           else {
 	    /* immediate endTag, if depth is 0: done */
 	    if (currDepth==0) {
-	      DBG_DEBUG(0, "One node done");
+	      DBG_DEBUG(GWEN_LOGDOMAIN, "One node done");
               GWEN_Buffer_free(bufValue);
               GWEN_Buffer_free(bufVarName);
               GWEN_Buffer_free(bufTagName);
@@ -981,7 +981,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
       newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData,
                                GWEN_Buffer_GetStart(bufData));
-      DBG_DEBUG(0, "Added data \"%s\"",
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Added data \"%s\"",
                 GWEN_Buffer_GetStart(bufData));
       GWEN_XMLNode_add(newNode, &(n->child));
       newNode->parent=n;
@@ -992,7 +992,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
   } /* while !eof */
 
   if (currDepth!=0) {
-    DBG_ERROR(0, "Line %d: %d tags are still open",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: %d tags are still open",
               GWEN_BufferedIO_GetLines(bio),
               currDepth);
     return -1;
@@ -1041,7 +1041,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     fd=open(fullname, O_RDONLY);
     if (fd==-1) {
       if (!sl) {
-	DBG_INFO(0, "open(%s): %s",
+	DBG_INFO(GWEN_LOGDOMAIN, "open(%s): %s",
 		 fullname,
 		 strerror(errno));
 	free(fullname);
@@ -1051,7 +1051,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
         GWEN_STRINGLISTENTRY *se;
         int gotcha;
 
-        DBG_INFO(0, "open(%s): %s",
+        DBG_INFO(GWEN_LOGDOMAIN, "open(%s): %s",
                  fullname,
                  strerror(errno));
         free(fullname);
@@ -1065,11 +1065,11 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
 
           sp=GWEN_StringListEntry_Data(se);
           if (!sp) {
-            DBG_ERROR(0, "No data in string list entry, internal error");
+            DBG_ERROR(GWEN_LOGDOMAIN, "No data in string list entry, internal error");
             return -1;
           }
           if (!*sp) {
-            DBG_ERROR(0,
+            DBG_ERROR(GWEN_LOGDOMAIN,
                       "Empty string in string list entry, internal error");
             return -1;
           }
@@ -1092,7 +1092,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
             break;
           }
           else {
-            DBG_INFO(0, "open(%s): %s",
+            DBG_INFO(GWEN_LOGDOMAIN, "open(%s): %s",
                      fullname,
                      strerror(errno));
           }
@@ -1102,7 +1102,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
           se=GWEN_StringListEntry_Next(se);
         } /* while */
         if (!gotcha) {
-	  DBG_INFO(0, "Could not open file \"%s\".", file);
+	  DBG_INFO(GWEN_LOGDOMAIN, "Could not open file \"%s\".", file);
 	  return -1;
         }
         /* now fullname points to the full path */
@@ -1124,7 +1124,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
   /* open file */
   fd=open(fullname, O_RDONLY);
   if (fd==-1) {
-    DBG_INFO(0, "open(%s): %s",
+    DBG_INFO(GWEN_LOGDOMAIN, "open(%s): %s",
 	     fullname,
 	     strerror(errno));
     free(fullname);
@@ -1144,7 +1144,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
 
   while(!GWEN_BufferedIO_CheckEOF(dm)) {
     if (GWEN_XML_ReadBIO(n, dm, flags, path, sl, GWEN_XML_ReadFileInt)) {
-      DBG_ERROR(0, "Error parsing");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing");
       free(fullname);
       GWEN_BufferedIO_Close(dm);
       GWEN_BufferedIO_free(dm);
@@ -1237,7 +1237,7 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind) {
     fprintf(f, "-->\n");
   }
   else {
-    DBG_ERROR(0, "Unknown tag type (%d)", n->type);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown tag type (%d)", n->type);
   }
 }
 
@@ -1259,7 +1259,7 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *node,
   } /* while */
 
   if (!n) {
-    DBG_DEBUG(0, "Node %d:\"%s\" not found", t, data);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Node %d:\"%s\" not found", t, data);
     return 0;
   }
 
@@ -1506,7 +1506,7 @@ int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
   unsigned int i;
 
   if (np->pos>=GWEN_XML_MAX_DEPTH) {
-    DBG_ERROR(0, "Path too deep");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Path too deep");
     return 1;
   }
 
@@ -1515,7 +1515,7 @@ int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
     assert(np->nodes[i]!=n);
   }
   np->nodes[np->pos++]=n;
-  DBG_DEBUG(0, "Dived to %d", np->pos);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Dived to %d", np->pos);
   return 0;
 }
 
@@ -1523,10 +1523,10 @@ int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
 
 GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np){
   if (np->pos==0) {
-    DBG_DEBUG(0, "Root reached");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Root reached");
     return 0;
   }
-  DBG_DEBUG(0, "Surfaced to %d", np->pos-1);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Surfaced to %d", np->pos-1);
   return np->nodes[--np->pos];
 }
 
@@ -1536,10 +1536,10 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np){
   unsigned int i;
 
   if (np->pos==0) {
-    DBG_NOTICE(0, "Empty path");
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Empty path");
   }
   for (i=0; i<np->pos; i++) {
-    DBG_NOTICE(0, "Path entry %d:", i);
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Path entry %d:", i);
     GWEN_XMLNode_Dump(np->nodes[i], stderr, 1);
   }
 }
@@ -1563,7 +1563,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     for(i=0; i<ind; i++) {
       err=GWEN_BufferedIO_WriteChar(bio, ' ');
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return -1;
       }
     }
@@ -1573,7 +1573,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
   if (n->type==GWEN_XMLNodeTypeTag) {
     err=GWEN_BufferedIO_WriteChar(bio, '<');
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return -1;
     }
     if (n->data)
@@ -1581,7 +1581,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     else
       err=GWEN_BufferedIO_Write(bio, "UNKNOWN");
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return -1;
     }
     p=n->properties;
@@ -1590,20 +1590,20 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
         if (!(flags & GWEN_XML_FLAGS_INDENT)) {
           err=GWEN_BufferedIO_WriteChar(bio, ' ');
           if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
         }
         else {
           err=GWEN_BufferedIO_WriteLine(bio, "");
           if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
           for(i=0; i<ind+3; i++) {
             err=GWEN_BufferedIO_WriteChar(bio, ' ');
             if (!GWEN_Error_IsOk(err)) {
-              DBG_ERROR_ERR(0, err);
+              DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
               return -1;
             }
           }
@@ -1611,24 +1611,24 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 
         err=GWEN_BufferedIO_Write(bio, p->name);
         if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return -1;
         }
   
         if (p->value) {
           err=GWEN_BufferedIO_Write(bio, "=\"");
           if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
           err=GWEN_BufferedIO_Write(bio, p->value);
           if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
           err=GWEN_BufferedIO_Write(bio, "\"");
           if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
         }
@@ -1638,13 +1638,13 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
       if (flags & GWEN_XML_FLAGS_INDENT) {
         err=GWEN_BufferedIO_WriteLine(bio, "");
         if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return -1;
         }
         for(i=0; i<ind; i++) {
           err=GWEN_BufferedIO_WriteChar(bio, ' ');
           if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
         }
@@ -1656,7 +1656,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
         simpleTag=1;
         err=GWEN_BufferedIO_WriteChar(bio, '?');
         if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return -1;
         }
       }
@@ -1668,21 +1668,21 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     if (n->child==0) {
       err=GWEN_BufferedIO_WriteLine(bio, "/>");
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return -1;
       }
     }
     else {
       err=GWEN_BufferedIO_WriteLine(bio, ">");
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return -1;
       }
       if (!simpleTag) {
         c=n->child;
         while(c) {
           if (GWEN_XMLNode__WriteToStream(c, bio, flags, ind+2)) {
-            DBG_INFO(0, "Error writing tag \"%s\"", n->data);
+            DBG_INFO(GWEN_LOGDOMAIN, "Error writing tag \"%s\"", n->data);
             return -1;
           }
           c=c->next;
@@ -1691,14 +1691,14 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
           for(i=0; i<ind; i++) {
             err=GWEN_BufferedIO_WriteChar(bio, ' ');
             if (!GWEN_Error_IsOk(err)) {
-              DBG_ERROR_ERR(0, err);
+              DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
               return -1;
             }
           }
         }
         err=GWEN_BufferedIO_Write(bio, "</");
         if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return -1;
         }
         if (n->data)
@@ -1706,19 +1706,19 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
         else
           err=GWEN_BufferedIO_Write(bio, "UNKNOWN");
         if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return -1;
         }
   
         err=GWEN_BufferedIO_WriteLine(bio, ">");
         if (!GWEN_Error_IsOk(err)) {
-          DBG_ERROR_ERR(0, err);
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return -1;
         }
         if (flags & GWEN_XML_FLAGS_INDENT) {
           err=GWEN_BufferedIO_WriteLine(bio, "");
           if (!GWEN_Error_IsOk(err)) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
         }
@@ -1729,7 +1729,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     if (n->data) {
       err=GWEN_BufferedIO_WriteLine(bio, n->data);
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return -1;
       }
     }
@@ -1737,25 +1737,25 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
   else if (n->type==GWEN_XMLNodeTypeComment) {
     err=GWEN_BufferedIO_Write(bio, "<!--");
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return -1;
     }
 
     if (n->data) {
       err=GWEN_BufferedIO_Write(bio, n->data);
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(0, err);
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return -1;
       }
     }
     err=GWEN_BufferedIO_WriteLine(bio, "-->");
     if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(0, err);
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
       return -1;
     }
   }
   else {
-    DBG_ERROR(0, "Unknown tag type (%d)", n->type);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown tag type (%d)", n->type);
   }
 
   return 0;
@@ -1791,7 +1791,7 @@ int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
 
   fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
   if (fd==-1) {
-    DBG_ERROR(0, "Error opening file \"%s\": %s",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
               fname,
               strerror(errno));
     return -1;
@@ -1802,7 +1802,7 @@ int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
   rv=GWEN_XMLNode_WriteToStream(n, bio, flags);
   err=GWEN_BufferedIO_Close(bio);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO(0, "called from here");
+    DBG_INFO(GWEN_LOGDOMAIN, "called from here");
     GWEN_BufferedIO_free(bio);
     return -1;
   }

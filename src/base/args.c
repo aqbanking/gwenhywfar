@@ -63,7 +63,7 @@ int GWEN_Args_Check(int argc, char **argv,
     const char *v;
     int value;
 
-    DBG_INFO(0, "Argument[%d] is \"%s\"", i, argv[i]);
+    DBG_INFO(GWEN_LOGDOMAIN, "Argument[%d] is \"%s\"", i, argv[i]);
     p=argv[i];
     if (*p=='-') {
       p++;
@@ -86,12 +86,12 @@ int GWEN_Args_Check(int argc, char **argv,
         i++;
       }
       else {
-        DBG_ERROR(0, "Only options are allowed");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Only options are allowed");
         GWEN_DB_Group_free(counts);
         return GWEN_ARGS_RESULT_ERROR;
       }
       if (mode & GWEN_ARGS_MODE_STOP_AT_FREEPARAM) {
-        DBG_DEBUG(0, "Free parameter found, stopping as requested");
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Free parameter found, stopping as requested");
         stop=1;
       }
       break;
@@ -110,7 +110,7 @@ int GWEN_Args_Check(int argc, char **argv,
         } /* if shortOption */
 
         if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST) {
-          DBG_ERROR(0, "Unknown short option \"%s\"", p);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unknown short option \"%s\"", p);
           GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         }
@@ -120,7 +120,7 @@ int GWEN_Args_Check(int argc, char **argv,
       if (tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT) {
         /* argument needed */
         if (i>=argc) {
-          DBG_ERROR(0, "Argument needed for option \"%s\"", tmpArgs->name);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Argument needed for option \"%s\"", tmpArgs->name);
           GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         }
@@ -134,7 +134,7 @@ int GWEN_Args_Check(int argc, char **argv,
 
         case GWEN_ArgsTypeInt:
           if (sscanf(argv[i], "%i", &value)!=1) {
-            DBG_ERROR(0, "Non-integer argument for short option \"%s\"", p);
+            DBG_ERROR(GWEN_LOGDOMAIN, "Non-integer argument for short option \"%s\"", p);
             GWEN_DB_Group_free(counts);
             return GWEN_ARGS_RESULT_ERROR;
           }
@@ -145,7 +145,8 @@ int GWEN_Args_Check(int argc, char **argv,
           break;
 
         default:
-          DBG_ERROR(0, "Unknown option type \"%d\"", tmpArgs->type);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unknown option type \"%d\"",
+                    tmpArgs->type);
           GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         } /* switch */
@@ -186,7 +187,7 @@ int GWEN_Args_Check(int argc, char **argv,
         } /* if longOption */
 
         if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST) {
-          DBG_ERROR(0, "Unknown long option \"%s\"", tmpBuf);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unknown long option \"%s\"", tmpBuf);
           free(tmpBuf);
           GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
@@ -196,7 +197,7 @@ int GWEN_Args_Check(int argc, char **argv,
 
       if (*v=='=') {
         if (!(tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT)) {
-          DBG_ERROR(0, "No argument allowed for option \"%s\"",
+          DBG_ERROR(GWEN_LOGDOMAIN, "No argument allowed for option \"%s\"",
                     tmpArgs->name);
           free(tmpBuf);
           GWEN_DB_Group_free(counts);
@@ -208,7 +209,7 @@ int GWEN_Args_Check(int argc, char **argv,
       if (tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT) {
         /* argument needed */
         if (*v==0) {
-          DBG_ERROR(0, "Argument needed for option \"%s\"", tmpArgs->name);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Argument needed for option \"%s\"", tmpArgs->name);
           free(tmpBuf);
           GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
@@ -223,7 +224,7 @@ int GWEN_Args_Check(int argc, char **argv,
 
         case GWEN_ArgsTypeInt:
           if (sscanf(v, "%i", &value)!=1) {
-            DBG_ERROR(0, "Non-integer argument for long option \"%s\"",
+            DBG_ERROR(GWEN_LOGDOMAIN, "Non-integer argument for long option \"%s\"",
                       tmpBuf);
             free(tmpBuf);
             GWEN_DB_Group_free(counts);
@@ -236,7 +237,7 @@ int GWEN_Args_Check(int argc, char **argv,
           break;
 
         default:
-          DBG_ERROR(0, "Unknown option type \"%d\"", tmpArgs->type);
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unknown option type \"%d\"", tmpArgs->type);
           GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         } /* switch */
@@ -256,7 +257,8 @@ int GWEN_Args_Check(int argc, char **argv,
       break;
 
     default:
-      DBG_ERROR(0, "Internal error (unknown argv type \"%d\")", t);
+      DBG_ERROR(GWEN_LOGDOMAIN, "Internal error (unknown argv type \"%d\")",
+                t);
       GWEN_DB_Group_free(counts);
       return GWEN_ARGS_RESULT_ERROR;
       break;
@@ -278,11 +280,11 @@ int GWEN_Args_Check(int argc, char **argv,
     /* check minnum */
     if (tmpArgs->minNum && (c<tmpArgs->minNum)) {
       if (tmpArgs->minNum>1) {
-        DBG_ERROR(0, "Option \"%s\" needed %d times (have %d)",
+        DBG_ERROR(GWEN_LOGDOMAIN, "Option \"%s\" needed %d times (have %d)",
                   s, tmpArgs->minNum, c);
       }
       else {
-        DBG_ERROR(0, "Option \"%s\" needed", s);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Option \"%s\" needed", s);
       }
       GWEN_DB_Group_free(counts);
       return GWEN_ARGS_RESULT_ERROR;
@@ -290,7 +292,8 @@ int GWEN_Args_Check(int argc, char **argv,
 
     /* check maxnum */
     if (tmpArgs->maxNum && (c>tmpArgs->maxNum)) {
-      DBG_ERROR(0, "Option \"%s\" needed at most %d times (have %d)",
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Option \"%s\" needed at most %d times (have %d)",
                 s, tmpArgs->maxNum, c);
       GWEN_DB_Group_free(counts);
       return GWEN_ARGS_RESULT_ERROR;
@@ -374,7 +377,8 @@ int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf){
       }
     } /* if any option */
     else {
-      DBG_ERROR(0, "Option \"%s\" has neither a long nor a short name",
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Option \"%s\" has neither a long nor a short name",
                 tmpArgs->name);
       return -1;
     }
@@ -406,7 +410,7 @@ int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
     rv=GWEN_Args_UsageHTML(args, ubuf);
     break;
   default:
-    DBG_ERROR(0, "Unknown output type %d", ot);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown output type %d", ot);
     rv=-1;
   } /* switch */
 

@@ -107,12 +107,12 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 
   assert(h);
 
-  DBG_DEBUG(0, "Loading library \"%s\"", name);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Loading library \"%s\"", name);
 
   h->handle=dlopen(name, RTLD_LAZY);
   if (!h->handle) {
     serr=dlerror();
-    DBG_INFO(0, "dlopen(%s): %s", name, serr);
+    DBG_INFO(GWEN_LOGDOMAIN, "dlopen(%s): %s", name, serr);
     /* FIXME: What about internationalization ? */
     if (strstr(serr, "No such file")) {
       if (strstr(serr, name)) {
@@ -145,7 +145,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
 			  GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
   }
-  DBG_INFO(0, "Loaded library \"%s\"", name);
+  DBG_INFO(GWEN_LOGDOMAIN, "Loaded library \"%s\"", name);
   return 0;
 }
 
@@ -189,14 +189,14 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
                           GWEN_LIBLOADER_ERROR_NOT_OPEN);
   *p=dlsym(h->handle,name);
   if (!*p) {
-    DBG_ERROR(0, "Error resolving symbol \"%s\": %s\n",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error resolving symbol \"%s\": %s\n",
               name, dlerror());
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
 			  GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE);
   }
-  DBG_VERBOUS(0, "Resolved symbol \"%s\": %08x\n",
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %08x\n",
               name, (int)*p);
   return 0;
 }
@@ -245,7 +245,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   /* try to load the library */
   err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
   if (GWEN_Error_IsOk(err)) {
-    DBG_INFO(0, "Library \"%s\" loaded",
+    DBG_INFO(GWEN_LOGDOMAIN, "Library \"%s\" loaded",
              GWEN_Buffer_GetStart(buffer));
     GWEN_Buffer_free(buffer);
     return 0;
@@ -255,8 +255,8 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   /*if (GWEN_Error_GetType(err)!=
       GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
       GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
-    DBG_ERROR_ERR(0, err);
-    DBG_INFO(0, "Could not load library \"%s\"",
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not load library \"%s\"",
              GWEN_Buffer_GetStart(buffer));
     GWEN_Buffer_free(buffer);
     return err;
@@ -270,7 +270,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
     GWEN_Buffer_AppendString(buffer, ".so");
     err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
     if (GWEN_Error_IsOk(err)) {
-      DBG_INFO(0, "Library \"%s\" loaded",
+      DBG_INFO(GWEN_LOGDOMAIN, "Library \"%s\" loaded",
                GWEN_Buffer_GetStart(buffer));
       GWEN_Buffer_free(buffer);
       return 0;
@@ -282,7 +282,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
     if (GWEN_Error_GetType(err)!=
         GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
         GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
-      DBG_INFO(0, "Could not load library \"%s\"",
+      DBG_INFO(GWEN_LOGDOMAIN, "Could not load library \"%s\"",
                GWEN_Buffer_GetStart(buffer));
       GWEN_Buffer_free(buffer);
       return err;
@@ -296,7 +296,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
     /* try again */
     err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
     if (GWEN_Error_IsOk(err)) {
-      DBG_INFO(0, "Library \"%s\" loaded",
+      DBG_INFO(GWEN_LOGDOMAIN, "Library \"%s\" loaded",
                GWEN_Buffer_GetStart(buffer));
       GWEN_Buffer_free(buffer);
       return 0;
@@ -306,7 +306,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
     if (GWEN_Error_GetType(err)!=
         GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
         GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
-      DBG_INFO(0, "Could not load library \"%s\"",
+      DBG_INFO(GWEN_LOGDOMAIN, "Could not load library \"%s\"",
                GWEN_Buffer_GetStart(buffer));
       GWEN_Buffer_free(buffer);
       return err;
@@ -317,7 +317,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
       GWEN_Buffer_AppendString(buffer, ".so");
       err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
       if (GWEN_Error_IsOk(err)) {
-        DBG_INFO(0, "Library \"%s\" loaded",
+        DBG_INFO(GWEN_LOGDOMAIN, "Library \"%s\" loaded",
                  GWEN_Buffer_GetStart(buffer));
         GWEN_Buffer_free(buffer);
         return 0;
@@ -325,7 +325,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
     }
   }
 
-  DBG_INFO(0, "Library \"%s\" name (or variants) not found, giving up",
+  DBG_INFO(GWEN_LOGDOMAIN, "Library \"%s\" name (or variants) not found, giving up",
            name);
   GWEN_Buffer_free(buffer);
   return err;

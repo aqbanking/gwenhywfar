@@ -142,7 +142,7 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleFini(){
     gwen_crypt_is_initialized=0;
 #ifdef GWEN_MEMTRACE
     if (GWEN_CryptKey_Count) {
-      DBG_WARN(0, "Still %d CryptKeys in memory", GWEN_CryptKey_Count);
+      DBG_WARN(GWEN_LOGDOMAIN, "Still %d CryptKeys in memory", GWEN_CryptKey_Count);
     }
 #endif
   }
@@ -159,7 +159,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
   GWEN_NEW_OBJECT(GWEN_CRYPTKEY, ck);
 #ifdef GWEN_MEMTRACE
   GWEN_CryptKey_Count++;
-  DBG_INFO(0, "New Cryptkey (now %d)", GWEN_CryptKey_Count);
+  DBG_INFO(GWEN_LOGDOMAIN, "New Cryptkey (now %d)", GWEN_CryptKey_Count);
 #endif
 
   ck->keyspec=GWEN_KeySpec_new();
@@ -172,7 +172,7 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
 #ifdef GWEN_MEMTRACE
     assert(GWEN_CryptKey_Count);
     GWEN_CryptKey_Count--;
-    DBG_INFO(0, "Free Cryptkey (now %d)", GWEN_CryptKey_Count);
+    DBG_INFO(GWEN_LOGDOMAIN, "Free Cryptkey (now %d)", GWEN_CryptKey_Count);
 #endif
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
@@ -202,7 +202,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key){
   newKey->freeKeyDataFn=key->freeKeyDataFn;
   newKey->openFn=key->openFn;
   newKey->closeFn=key->closeFn;
-  DBG_INFO(0, "Freeing Keyspec");
+  DBG_INFO(GWEN_LOGDOMAIN, "Freeing Keyspec");
   GWEN_KeySpec_free(newKey->keyspec);
   newKey->keyspec=GWEN_KeySpec_dup(key->keyspec);
   newKey->pub=key->pub;
@@ -274,11 +274,11 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
 
   key=GWEN_CryptKey_Factory(GWEN_DB_GetCharValue(db, "type", 0, ""));
   if (!key) {
-    DBG_INFO(0, "Could not create key");
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not create key");
     return 0;
   }
   if (GWEN_KeySpec_FromDb(key->keyspec, db)) {
-    DBG_ERROR(0, "Could not create keyspec from DB");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not create keyspec from DB");
     GWEN_CryptKey_free(key);
     return 0;
   }
@@ -288,7 +288,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
   assert(key->fromDbFn);
   err=key->fromDbFn(key, gr);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     GWEN_CryptKey_free(key);
     return 0;
   }
@@ -304,7 +304,7 @@ GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
 
   assert(key);
   if (GWEN_KeySpec_ToDb(key->keyspec, db)) {
-    DBG_ERROR(0, "Could not store keyspec in DB");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not store keyspec in DB");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -338,7 +338,7 @@ GWEN_ERRORCODE GWEN_CryptKey_SetData(GWEN_CRYPTKEY *key,
   assert(key->fromDbFn);
   err=key->fromDbFn(key, n);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     GWEN_DB_Group_free(n);
     return err;
   }
@@ -363,14 +363,14 @@ GWEN_ERRORCODE GWEN_CryptKey_GetData(GWEN_CRYPTKEY *key,
   n=GWEN_DB_Group_new("data");
   err=key->toDbFn(key, n, 0);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     GWEN_DB_Group_free(n);
     return err;
   }
 
   p=GWEN_DB_GetBinValue(n, "keydata", 0, 0, 0, &size);
   if (!p) {
-    DBG_INFO(0, "No key data");
+    DBG_INFO(GWEN_LOGDOMAIN, "No key data");
     GWEN_DB_Group_free(n);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -378,7 +378,7 @@ GWEN_ERRORCODE GWEN_CryptKey_GetData(GWEN_CRYPTKEY *key,
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
   if (size>*bsize) {
-    DBG_INFO(0, "Buffer too small");
+    DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
     GWEN_DB_Group_free(n);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -413,7 +413,7 @@ int GWEN_CryptKey_FromPassword(const char *password,
   case 16: algo="MD5"; break;
   case 20: algo="RMD160"; break;
   default:
-    DBG_ERROR(0, "Bad size (%d)", bsize);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad size (%d)", bsize);
     return -1;
   } /* switch */
 
@@ -423,7 +423,7 @@ int GWEN_CryptKey_FromPassword(const char *password,
                    strlen(password),
                    buffer,
                    &nsize)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
 
@@ -577,7 +577,7 @@ void GWEN_CryptKey_DecrementOpenCount(GWEN_CRYPTKEY *key){
   if (key->openCount>0)
     key->openCount--;
   else {
-    DBG_WARN(0, "OpenCount already 0");
+    DBG_WARN(GWEN_LOGDOMAIN, "OpenCount already 0");
   }
 }
 
@@ -739,7 +739,7 @@ GWEN_ERRORCODE GWEN_Crypt_RegisterProvider(GWEN_CRYPTKEY_PROVIDER *pr){
   assert(pr);
 
   if (GWEN_Crypt_FindProvider(pr->name)){
-    DBG_INFO(0, "Service \"%s\" already registered", pr->name);
+    DBG_INFO(GWEN_LOGDOMAIN, "Service \"%s\" already registered", pr->name);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -756,7 +756,7 @@ GWEN_ERRORCODE GWEN_Crypt_UnregisterProvider(GWEN_CRYPTKEY_PROVIDER *pr){
   assert(pr);
 
   if (!GWEN_Crypt_FindProvider(pr->name)){
-    DBG_INFO(0, "Service \"%s\" not registered", pr->name);
+    DBG_INFO(GWEN_LOGDOMAIN, "Service \"%s\" not registered", pr->name);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -784,7 +784,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_Factory(const char *t){
 
   pr=GWEN_Crypt_FindProvider(t);
   if (!pr) {
-    DBG_ERROR(0, "No crypt provider for \"%s\" found", t);
+    DBG_ERROR(GWEN_LOGDOMAIN, "No crypt provider for \"%s\" found", t);
     return 0;
   }
 

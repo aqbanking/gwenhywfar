@@ -95,7 +95,7 @@ void *GWEN_Path_Handle(const char *path,
            * supposed to be a group. If the flags indicate that an entry
            * is to be found then this would be an error, because the path
            * ends in a group instead of an entry */
-          DBG_DEBUG(0, "Path ends with a group while an entry is wanted");
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Path ends with a group while an entry is wanted");
           return 0;
         }
         /* other wise simply mark this element as the last one */
@@ -133,7 +133,7 @@ void *GWEN_Path_Handle(const char *path,
         else
           rv=GWEN_Text_EscapeToBuffer(p, buf2);
         if (rv) {
-          DBG_ERROR(0, "Could not escape path element");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Could not escape path element");
           GWEN_Buffer_free(buf2);
           GWEN_Buffer_free(buf1);
           return 0;
@@ -158,7 +158,7 @@ void *GWEN_Path_Handle(const char *path,
         else
           rv=GWEN_Text_UnescapeToBuffer(p, buf2);
         if (rv) {
-          DBG_ERROR(0, "Could not unescape path element");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Could not unescape path element");
           GWEN_Buffer_free(buf2);
           GWEN_Buffer_free(buf1);
           return 0;
@@ -172,13 +172,13 @@ void *GWEN_Path_Handle(const char *path,
     if (elementFunction) {
       data=(elementFunction)(GWEN_Buffer_GetStart(buf1), data, flags);
       if (!data) {
-        DBG_DEBUG(0, "Error on path element \"%s\"",
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Error on path element \"%s\"",
                   GWEN_Buffer_GetStart(buf1));
         GWEN_Buffer_free(buf1);
         return 0;
       }
     }
-    DBG_DEBUG(0, "Successfully handled element \"%s\"",
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Successfully handled element \"%s\"",
               GWEN_Buffer_GetStart(buf1));
     if (startAtRoot)
       startAtRoot=0;

@@ -86,7 +86,7 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
      is simply SIG_DFL, as confirmed by the message below. Maybe some
      other flags and/or signals have to be checked? I have no idea. */
   if (sigaction(SIGCHLD, &sa, &original_sigchld_sa)) {
-    DBG_ERROR(0,
+    DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not setup signal handler for signal SIGCHLD: %s",
 	      strerror(errno));
     return GWEN_Error_new(0,
@@ -96,12 +96,12 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
   }
 
   if (original_sigchld_sa.sa_handler == SIG_DFL) {
-    DBG_DEBUG(0, "original_sigchld handler was SIG_DFL");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "original_sigchld handler was SIG_DFL");
   } else if (original_sigchld_sa.sa_handler == SIG_IGN) {
-    DBG_DEBUG(0, "original_sigchld handler was SIG_IGN");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "original_sigchld handler was SIG_IGN");
   }
   else if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
-    DBG_NOTICE(0,
+    DBG_NOTICE(GWEN_LOGDOMAIN,
 	      "Original signal handler for signal SIGCHLD was using "
 	      "SA_SIGINFO. ");
   }
@@ -150,11 +150,11 @@ void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
     /* try to get the status */
     pid=waitpid(0, &status, WNOHANG);
     if (pid==-1) {
-      DBG_DEBUG(0, "waitdpid(%d): %s", 0, strerror(errno));
+      DBG_DEBUG(GWEN_LOGDOMAIN, "waitdpid(%d): %s", 0, strerror(errno));
     }
     else if (pid==0) {
       /* process still running ?! */
-      DBG_DEBUG(0, "Got a SIGCHLD but no child terminated ??");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Got a SIGCHLD but no child terminated ??");
     }
     else {
       GWEN_PROCESS *pr;
@@ -162,7 +162,7 @@ void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
       /* som process terminated */
       pr=GWEN_Process_FindProcess(pid);
       if (!pr) {
-	DBG_NOTICE(0, "No infomation about process \"%d\" available", pid);
+	DBG_NOTICE(GWEN_LOGDOMAIN, "No infomation about process \"%d\" available", pid);
       }
       else {
 	GWEN_Process_MakeState(pr, status);
@@ -175,7 +175,7 @@ void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
     break;
 
   default:
-    DBG_ERROR(0, "Got unhandled signal \"%d\"", s);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Got unhandled signal \"%d\"", s);
     break;
   } /* switch */
 
@@ -184,10 +184,10 @@ void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
   if ( (original_sigchld_sa.sa_handler != SIG_DFL) && 
        (original_sigchld_sa.sa_handler != SIG_IGN) ) {
     if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
-      DBG_NOTICE(0, "Unimplemented: About to call original sa_sigaction at signal \"%d\"", s);
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Unimplemented: About to call original sa_sigaction at signal \"%d\"", s);
       /*original_sigchld_sa.sa_sigaction(s, siginfo, info);*/
     } else {
-      DBG_NOTICE(0, "About to call original sa_handler at signal \"%d\"", s);
+      DBG_NOTICE(GWEN_LOGDOMAIN, "About to call original sa_handler at signal \"%d\"", s);
       original_sigchld_sa.sa_handler(s);
     }
   }
@@ -238,7 +238,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   assert(pr);
 
   if (GWEN_Process_Redirect(pr)) {
-    DBG_ERROR(0, "Could not setup redirections");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirections");
     pr->state=GWEN_ProcessStateNotStarted;
     pr->pid=-1;
     return GWEN_ProcessStateNotStarted;
@@ -268,7 +268,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   }
   else if (pid!=0) {
     /* parent */
-    DBG_NOTICE(0, "Process started with id %d", pid);
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Process started with id %d", pid);
     pr->state=GWEN_ProcessStateRunning;
     pr->pid=pid;
 
@@ -294,28 +294,28 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   /* child, build arguments */
   argc=0;
 
-  DBG_NOTICE(0, "I'm the child process");
+  DBG_NOTICE(GWEN_LOGDOMAIN, "I'm the child process");
 
   /* setup redirections */
   if (pr->filesStdin[0]!=-1) {
     close(pr->filesStdin[0]);
     close(0);
     if (dup(pr->filesStdin[1])==-1) {
-      DBG_ERROR(0, "Could not setup redirection");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection");
     }
   }
   if (pr->filesStdout[0]!=-1) {
     close(pr->filesStdout[0]);
     close(1);
     if (dup(pr->filesStdout[1])==-1) {
-      DBG_ERROR(0, "Could not setup redirection");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection");
     }
   }
   if (pr->filesStderr[0]!=-1) {
     close(pr->filesStderr[0]);
     close(2);
     if (dup(pr->filesStderr[1])==-1) {
-      DBG_ERROR(0, "Could not setup redirection");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection");
     }
   }
 
@@ -343,7 +343,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   /* parameters ready, exec */
   execvp(prg, argv);
   /* if we reach this point an error occurred */
-  DBG_ERROR(0, "Could not start program \"%s\": %s",
+  DBG_ERROR(GWEN_LOGDOMAIN, "Could not start program \"%s\": %s",
 	    prg, strerror(errno));
   exit(EXIT_FAILURE);
 }
@@ -358,7 +358,7 @@ GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w){
   /* try to get the status */
   rv=waitpid(pr->pid, &status, w?0:WNOHANG);
   if (rv==-1) {
-    DBG_ERROR(0, "waitdpid(%d): %s", pr->pid, strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "waitdpid(%d): %s", pr->pid, strerror(errno));
     return GWEN_ProcessStateUnknown;
   }
   else if (rv==0) {
@@ -376,7 +376,7 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   /* process has terminated for any reason */
   if (WIFEXITED(status)) {
     /* normal termination */
-    DBG_INFO(0, "Process %d exited with %d",
+    DBG_INFO(GWEN_LOGDOMAIN, "Process %d exited with %d",
 	     pr->pid, WEXITSTATUS(status));
     pr->state=GWEN_ProcessStateExited;
     pr->pid=-1;
@@ -386,7 +386,7 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   } /* if exited normally */
   else if (WIFSIGNALED(status)) {
     /* uncaught signal */
-    DBG_ERROR(0, "Process %d terminated by signal %d",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Process %d terminated by signal %d",
 	      pr->pid, WTERMSIG(status));
     pr->state=GWEN_ProcessStateAborted;
     pr->pid=-1;
@@ -394,14 +394,14 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   } /* if terminated by signal */
   else if (WIFSTOPPED(status)) {
     /* process stopped by signal */
-    DBG_ERROR(0, "Process %d stopped by signal %d",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Process %d stopped by signal %d",
 	      pr->pid, WSTOPSIG(status));
     pr->state=GWEN_ProcessStateStopped;
     pr->pid=-1;
     return pr->state;
   }
   else {
-    DBG_ERROR(0, "Unhandled status, assume process %d isn't running (%08x)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled status, assume process %d isn't running (%08x)",
 	      pr->pid, (unsigned int)status);
     return GWEN_ProcessStateUnknown;
   }
@@ -443,7 +443,7 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr){
 
   if (pr->pid==-1) {
     /* process is running, but we have no pid ?! */
-    DBG_ERROR(0, "Process is running but we don't have its pid");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Process is running but we don't have its pid");
     return -1;
   }
   pst=GWEN_Process_GetState(pr, 1);
@@ -459,19 +459,19 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
 
   if (pr->state!=GWEN_ProcessStateRunning) {
     /* process is not running, so return */
-    DBG_INFO(0, "Process is not running, doing nothing");
+    DBG_INFO(GWEN_LOGDOMAIN, "Process is not running, doing nothing");
     return 0;
   }
 
   if (pr->pid==-1) {
     /* process is running, but we have no pid ?! */
-    DBG_ERROR(0, "Process is running but we don't have its pid");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Process is running but we don't have its pid");
     return -1;
   }
 
   /* kill process */
   if (kill(pr->pid, SIGKILL)) {
-    DBG_ERROR(0, "Error on kill(%d, SIGKILL): %s",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on kill(%d, SIGKILL): %s",
 	      pr->pid, strerror(errno));
     return -1;
   }
@@ -540,9 +540,9 @@ int GWEN_Process_Redirect(GWEN_PROCESS *pr) {
   if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDIN) {
     int filedes[2];
 
-    DBG_DEBUG(0, "Redirecting stdin");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Redirecting stdin");
     if (pipe(filedes)) {
-      DBG_ERROR(0, "pipe(): %s", strerror(errno));
+      DBG_ERROR(GWEN_LOGDOMAIN, "pipe(): %s", strerror(errno));
       return -1;
     }
     pr->filesStdin[0]=filedes[1];
@@ -552,9 +552,9 @@ int GWEN_Process_Redirect(GWEN_PROCESS *pr) {
   if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDOUT) {
     int filedes[2];
 
-    DBG_DEBUG(0, "Redirecting stdout");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Redirecting stdout");
     if (pipe(filedes)) {
-      DBG_ERROR(0, "pipe(): %s", strerror(errno));
+      DBG_ERROR(GWEN_LOGDOMAIN, "pipe(): %s", strerror(errno));
       return -1;
     }
     pr->filesStdout[0]=filedes[0];
@@ -564,9 +564,9 @@ int GWEN_Process_Redirect(GWEN_PROCESS *pr) {
   if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDERR) {
     int filedes[2];
 
-    DBG_DEBUG(0, "Redirecting stderr");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Redirecting stderr");
     if (pipe(filedes)) {
-      DBG_ERROR(0, "pipe(): %s", strerror(errno));
+      DBG_ERROR(GWEN_LOGDOMAIN, "pipe(): %s", strerror(errno));
       return -1;
     }
     pr->filesStderr[0]=filedes[0];

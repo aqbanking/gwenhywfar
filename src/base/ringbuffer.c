@@ -65,7 +65,7 @@ int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
   GWEN_TYPE_UINT32 bytesLeft;
 
   if ((rb->bufferSize-rb->bytesUsed)==0) {
-    DBG_DEBUG(0, "Buffer full");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer full");
     rb->fullCounter++;
     return -1;
   }
@@ -103,7 +103,7 @@ GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb) {
 
   assert(rb);
   if (rb->bytesUsed==0) {
-    DBG_DEBUG(0, "Buffer empty");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer empty");
     rb->emptyCounter++;
     return 0;
   }
@@ -124,7 +124,7 @@ GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb) {
 
   assert(rb);
   if ((rb->bufferSize-rb->bytesUsed)==0) {
-    DBG_DEBUG(0, "Buffer full");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer full");
     rb->fullCounter++;
     return 0;
   }
@@ -144,7 +144,7 @@ void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
   assert(rb);
 
   if (rb->bytesUsed<psize) {
-    DBG_ERROR(0, "Asked to skip more bytes than available");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Asked to skip more bytes than available");
     abort();
   }
   rb->readPos+=psize;
@@ -161,7 +161,7 @@ void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
   assert(rb);
 
   if ((rb->bufferSize-rb->bytesUsed)<psize) {
-    DBG_ERROR(0, "Asked to skip more bytes than possible");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Asked to skip more bytes than possible");
     abort();
   }
 
@@ -182,7 +182,7 @@ int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
   GWEN_TYPE_UINT32 bytesLeft;
 
   if (rb->bytesUsed==0) {
-    DBG_DEBUG(0, "Buffer empty");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer empty");
     rb->emptyCounter++;
     return -1;
   }
@@ -238,7 +238,7 @@ int GWEN_RingBuffer_WriteByte(GWEN_RINGBUFFER *rb,
                               char c) {
   assert(rb);
   if ((rb->bufferSize-rb->bytesUsed)==0) {
-    DBG_DEBUG(0, "Buffer full");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer full");
     rb->fullCounter++;
     return -1;
   }
@@ -260,7 +260,7 @@ int GWEN_RingBuffer_ReadByte(GWEN_RINGBUFFER *rb) {
 
   assert(rb);
   if (rb->bytesUsed==0) {
-    DBG_DEBUG(0, "Buffer empty");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer empty");
     rb->emptyCounter++;
     return -1;
   }

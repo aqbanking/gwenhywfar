@@ -128,13 +128,13 @@ GWEN_NetTransport_Read(GWEN_NETTRANSPORT *tr,
   assert(tr);
   assert(tr->readFn);
   if (tr->flags & GWEN_NETTRANSPORT_FLAGS_EOF_IN) {
-    DBG_ERROR(0, "Reading beyond EOF");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Reading beyond EOF");
     return GWEN_NetTransportResultError;
   }
 
   rv=tr->readFn(tr, buffer, bsize);
   if (rv==0 && *bsize==0) {
-    DBG_DEBUG(0, "EOF met (read)");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met (read)");
     tr->flags|=GWEN_NETTRANSPORT_FLAGS_EOF_IN;
   }
 
@@ -150,11 +150,11 @@ GWEN_NetTransport_Write(GWEN_NETTRANSPORT *tr,
   assert(tr);
   assert(tr->writeFn);
   if (tr->flags & GWEN_NETTRANSPORT_FLAGS_EOF_OUT) {
-    DBG_ERROR(0, "Writing beyond EOF");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Writing beyond EOF");
     return GWEN_NetTransportResultError;
   }
   if (*bsize==0) {
-    DBG_DEBUG(0, "EOF met (write)");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met (write)");
     tr->flags|=GWEN_NETTRANSPORT_FLAGS_EOF_OUT;
   }
   return tr->writeFn(tr, buffer, bsize);

@@ -107,7 +107,7 @@ GWEN_ErrorType_GetMsgPtr(GWEN_ERRORTYPEREGISTRATIONFORM *f){
 
 GWEN_ERRORCODE GWEN_Error_ModuleInit() {
 
-  DBG_VERBOUS(0, "Error_ModuleInit");
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Error_ModuleInit");
   if (!gwen_error_is_initialized) {
     GWEN_ERRORCODE err;
 
@@ -149,7 +149,7 @@ GWEN_ERRORCODE GWEN_Error_RegisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr){
   GWEN_LIST_ADD(GWEN_ERRORTYPEREGISTRATIONFORM, tptr,
                 &gwen_error_errorformlist)
 
-  DBG_DEBUG(0, "Registered type \"%s\" (%d)\n",
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Registered type \"%s\" (%d)\n",
             tptr->name, tptr->typ);
   return 0;
 }
@@ -162,7 +162,7 @@ GWEN_ERRORCODE GWEN_Error_UnregisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr) {
   GWEN_LIST_DEL(GWEN_ERRORTYPEREGISTRATIONFORM, tptr,
                 &gwen_error_errorformlist);
 
-  DBG_DEBUG(0, "Unregistered type \"%s\" (%d)\n",
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Unregistered type \"%s\" (%d)\n",
             tptr->name, tptr->typ);
   return 0;
 }

@@ -60,7 +60,7 @@ GWEN_ERRORCODE GWEN_Memory_ModuleInit(){
   if (s) {
     GWEN_MEMORY__OBJECT_LIST *l;
 
-    DBG_INFO(0, "Memory debugging is enabled");
+    DBG_INFO(GWEN_LOGDOMAIN, "Memory debugging is enabled");
 
     l=GWEN_Memory__Object_List_new();
 

@@ -69,7 +69,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
 
   srclen=GWEN_Buffer_GetUsedBytes(src);
   if (srclen!=GWEN_CryptKey_GetChunkSize(key)) {
-    DBG_ERROR(0, "Size %d!=%d",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Size %d!=%d",
               srclen, GWEN_CryptKey_GetChunkSize(key));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -191,14 +191,14 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(const GWEN_CRYPTKEY *key,
 
   if (BN_cmp(bnresult, kd->n) < 0) {
     if (!BN_sub(bnresult2, kd->n, bnresult)) {
-      DBG_ERROR(0, "Math error");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Math error");
       BN_free(bnresult2);
       BN_free(bnhash);
       return -1;
     }
 
     if (BN_cmp(bnresult2, bnresult) < 0) {
-      DBG_DEBUG(0, "Using smaller signature");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Using smaller signature");
       BN_copy(bnresult, bnresult2);
     }
   }
@@ -232,7 +232,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
 
   srclen=GWEN_Buffer_GetUsedBytes(src);
   if (srclen!=GWEN_CryptKey_GetChunkSize(key)) {
-    DBG_INFO(0, "Bad size of source data (%d!=%d)",
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad size of source data (%d!=%d)",
              srclen, GWEN_CryptKey_GetChunkSize(key));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -240,7 +240,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
   if (GWEN_Buffer_AllocRoom(dst, srclen)) {
-    DBG_INFO(0, "Could not allocate room for %d bytes", srclen);
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not allocate room for %d bytes", srclen);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -267,7 +267,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
    */
 
   if (!BN_sub(bnresult2, kd->n, bnresult)) {
-    DBG_ERROR(0, "Math error");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Math error");
     BN_free(bnresult2);
     BN_free(bnhash);
     return GWEN_Error_new(0,
@@ -277,7 +277,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
   }
 
   if (BN_cmp(bnresult2, bnresult) < 0) {
-    DBG_DEBUG(0, "Using smaller signature");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Using smaller signature");
     BN_copy(bnresult, bnresult2);
   }
 
@@ -285,7 +285,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
   BN_free(bnhash);
 
   if (GWEN_Buffer_GetPos(dst)!=0) {
-    DBG_WARN(0, "Not at start pos, we could otherwise be much faster");
+    DBG_WARN(GWEN_LOGDOMAIN, "Not at start pos, we could otherwise be much faster");
   }
   /* padd up to srclen */
   pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
@@ -296,7 +296,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
     unsigned int j;
 
     if (GWEN_Buffer_ReserveBytes(dst, srclen-res)) {
-      DBG_INFO(0, "Could not reserve %d bytes", srclen-res);
+      DBG_INFO(GWEN_LOGDOMAIN, "Could not reserve %d bytes", srclen-res);
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -355,10 +355,10 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(const GWEN_CRYPTKEY *key,
   bnhash = BN_bin2bn(psrc, srclen, bnhash);
 
   if (BN_cmp(bndecsig, bnhash)!=0) {
-    DBG_INFO(0, "Trying other signature variant");
+    DBG_INFO(GWEN_LOGDOMAIN, "Trying other signature variant");
     BN_sub(bnhash, kd->n, bnhash);
     if (BN_cmp(bndecsig, bnhash)!=0) {
-      DBG_ERROR(0, "Signature does not match");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Signature does not match");
       BN_free(bnsig);
       BN_free(bndecsig);
       BN_free(bnhash);
@@ -402,7 +402,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   kd=RSA_new();
   assert(kd);
 
-  DBG_DEBUG(0, "Reading this key:");
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading this key:");
   if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
     GWEN_DB_Dump(db, stderr, 2);
 
@@ -660,7 +660,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Register(){
   err=GWEN_Crypt_RegisterProvider(pr);
   if (!GWEN_Error_IsOk(err)) {
     GWEN_CryptProvider_free(pr);
-    DBG_INFO(0, "called from here");
+    DBG_INFO(GWEN_LOGDOMAIN, "called from here");
     return err;
   }
   return 0;

@@ -155,19 +155,19 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
   }
 
   case GWEN_AddressFamilyUnix: {
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
     GWEN_InetAddr_free(ia);
     return 0;
     break;
   }
 
   default:
-    DBG_ERROR(0, "Unknown address family (%d)",af);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown address family (%d)",af);
     abort();
   } /* switch */
 #ifdef MEMTRACE
   GWEN_INETADDR__Counter++;
-  DBG_INFO(0, "InetAddr created, now %d",GWEN_INETADDR__Counter);
+  DBG_INFO(GWEN_LOGDOMAIN, "InetAddr created, now %d",GWEN_INETADDR__Counter);
 #endif
   return ia;
 }
@@ -192,7 +192,7 @@ void GWEN_InetAddr_free(GWEN_INETADDRESS *ia){
   if (ia) {
 #ifdef MEMTRACE
     GWEN_INETADDR__Counter--;
-    DBG_INFO(0, "Free InetAddr, makes %d",GWEN_INETADDR__Counter);
+    DBG_INFO(GWEN_LOGDOMAIN, "Free InetAddr, makes %d",GWEN_INETADDR__Counter);
 #endif
     free(ia->address);
     free(ia);
@@ -247,7 +247,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
   }
 
   case GWEN_AddressFamilyUnix: {
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -316,7 +316,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
   }
 
   case GWEN_AddressFamilyUnix: {
-    DBG_ERROR(0, "No unix domain sockets available for this system");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -452,7 +452,7 @@ int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia){
   }
 
   default:
-    DBG_WARN(0, "not an IP address");
+    DBG_WARN(GWEN_LOGDOMAIN, "not an IP address");
     i=0;
   } /* switch */
 

@@ -53,7 +53,7 @@ int GWEN_CSV_GetNameAndIndex(const char *name,
   } /* while */
 
   if (i>=size) {
-    DBG_INFO(0, "Name too long (%d>=%d)", i, size);
+    DBG_INFO(GWEN_LOGDOMAIN, "Name too long (%d>=%d)", i, size);
     return -1;
   }
   buffer[i]=0;
@@ -71,7 +71,7 @@ int GWEN_CSV_GetNameAndIndex(const char *name,
       j++;
     } /* while */
     if (j>=sizeof(numbuffer)) {
-      DBG_INFO(0, "Index number too long (%d>=%d)", j, sizeof(numbuffer));
+      DBG_INFO(GWEN_LOGDOMAIN, "Index number too long (%d>=%d)", j, sizeof(numbuffer));
       return -1;
     }
     numbuffer[j]=0;
@@ -100,14 +100,14 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
   assert(cfg);
   assert(data);
 
-  DBG_WARN(0,
+  DBG_WARN(GWEN_LOGDOMAIN,
            "Using \"GWEN_CSV_Write\" is now deprecated. "
            "Please use the GWEN_DBIO plugin \"csv\" instead");
 
   /* get general configuration */
   colgr=GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "columns");
   if (!colgr) {
-    DBG_ERROR(0, "Error in configuration: No columns specified");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error in configuration: No columns specified");
     return -1;
   }
   p=GWEN_DB_GetCharValue(cfg, "delimiter", 0, ";");
@@ -136,16 +136,16 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
         /* no value. finished */
         err=GWEN_BufferedIO_WriteLine(bio, "");
         if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
+          DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
           return -1;
         }
-        DBG_INFO(0, "No colums left, line finished");
+        DBG_INFO(GWEN_LOGDOMAIN, "No colums left, line finished");
         break;
       }
       /* break down to name and index */
       idx=GWEN_CSV_GetNameAndIndex(p, namebuffer, sizeof(namebuffer));
       if (idx==-1) {
-        DBG_INFO(0, "Error in configuration: Bad name for column %d",
+        DBG_INFO(GWEN_LOGDOMAIN, "Error in configuration: Bad name for column %d",
                  column);
         return -1;
       }
@@ -154,7 +154,7 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
       if (idx) {
         GWEN_Text_NumToString(idx, numbuffer, sizeof(numbuffer), 0);
         if (strlen(namebuffer)+strlen(numbuffer)+1>=sizeof(namebuffer)) {
-          DBG_ERROR(0, "Internal: namebuffer too small");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Internal: namebuffer too small");
           return -1;
         }
         strcat(namebuffer, numbuffer);
@@ -171,7 +171,7 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
         /* write delimiter */
         err=GWEN_BufferedIO_WriteChar(bio, delimiter);
         if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
+          DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
           return -1;
         }
       } /* if not first column */
@@ -179,21 +179,21 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
         /* write quotation mark */
         err=GWEN_BufferedIO_WriteChar(bio, '\"');
         if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
+          DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
           return -1;
         }
       } /* if quote */
       /* write value */
       err=GWEN_BufferedIO_Write(bio, namebuffer);
       if (!GWEN_Error_IsOk(err)) {
-        DBG_INFO(0, "Called from here");
+        DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
         return -1;
       }
       if (quote) {
         /* write quotation mark */
         err=GWEN_BufferedIO_WriteChar(bio, '\"');
         if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
+          DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
           return -1;
         }
       } /* if quote */
@@ -215,27 +215,27 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
           /* no value. finished */
           err=GWEN_BufferedIO_WriteLine(bio, "");
           if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "Called from here");
+            DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
             return -1;
           }
-          DBG_INFO(0, "No colums left, line finished");
+          DBG_INFO(GWEN_LOGDOMAIN, "No colums left, line finished");
           break;
         }
         /* break down to name and index */
         idx=GWEN_CSV_GetNameAndIndex(p, namebuffer, sizeof(namebuffer));
         if (idx==-1) {
-          DBG_INFO(0, "Error in configuration: Bad name for column %d",
+          DBG_INFO(GWEN_LOGDOMAIN, "Error in configuration: Bad name for column %d",
                    column);
           return -1;
         }
         /* get data */
-        DBG_DEBUG(0, "Checking value of %s[%d]", namebuffer, idx);
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Checking value of %s[%d]", namebuffer, idx);
         p=GWEN_DB_GetCharValue(n, namebuffer, idx, "");
         if (column!=1) {
           /* write delimiter */
           err=GWEN_BufferedIO_WriteChar(bio, delimiter);
           if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "Called from here");
+            DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
             return -1;
           }
         } /* if not first column */
@@ -243,21 +243,21 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
           /* write quotation mark */
           err=GWEN_BufferedIO_WriteChar(bio, '\"');
           if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "Called from here");
+            DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
             return -1;
           }
         } /* if quote */
         /* write value */
         err=GWEN_BufferedIO_Write(bio, p);
         if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
+          DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
           return -1;
         }
         if (quote) {
           /* write quotation mark */
           err=GWEN_BufferedIO_WriteChar(bio, '\"');
           if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "Called from here");
+            DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
             return -1;
           }
         } /* if quote */
@@ -274,7 +274,7 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
 int GWEN_CSV_Read(GWEN_BUFFEREDIO *bio,
                   GWEN_DB_NODE *cfg,
                   GWEN_DB_NODE *data){
-  DBG_ERROR(0, "Function not yet implemented (and never will be, "
+  DBG_ERROR(GWEN_LOGDOMAIN, "Function not yet implemented (and never will be, "
             "since it is deprecated)");
   return -1;
 }

@@ -47,7 +47,7 @@ GWEN_KEYSPEC *GWEN_KeySpec_new(){
   GWEN_NEW_OBJECT(GWEN_KEYSPEC, ks);
 #ifdef GWEN_MEMTRACE
   GWEN_KeySpec_Count++;
-  DBG_INFO(0, "New KeySpec (now %d)", GWEN_KeySpec_Count);
+  DBG_INFO(GWEN_LOGDOMAIN, "New KeySpec (now %d)", GWEN_KeySpec_Count);
 #endif
   ks->number=1;
   ks->version=1;
@@ -61,7 +61,7 @@ void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
 #ifdef GWEN_MEMTRACE
     assert(GWEN_KeySpec_Count);
     GWEN_KeySpec_Count--;
-    DBG_INFO(0, "Free KeySpec (now %d)", GWEN_KeySpec_Count);
+    DBG_INFO(GWEN_LOGDOMAIN, "Free KeySpec (now %d)", GWEN_KeySpec_Count);
 #endif
     free(ks->keyType);
     free(ks->keyName);
@@ -206,7 +206,7 @@ void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
   GWEN_KEYSPEC *ks;
 
   ks=*head;
-  DBG_INFO(0, "Clearing list of KeySpecs");
+  DBG_INFO(GWEN_LOGDOMAIN, "Clearing list of KeySpecs");
   while(ks) {
     GWEN_KEYSPEC *nks;
 
@@ -214,7 +214,7 @@ void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
     GWEN_KeySpec_free(ks);
     ks=nks;
   } /* while */
-  DBG_INFO(0, "Clearing list of KeySpecs: done");
+  DBG_INFO(GWEN_LOGDOMAIN, "Clearing list of KeySpecs: done");
   *head=0;
 }
 

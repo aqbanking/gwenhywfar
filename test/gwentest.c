@@ -18,6 +18,7 @@
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/msgengine.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/dbio.h>
 #include <gwenhywfar/nettransportsock.h>
 #include <gwenhywfar/nettransportssl.h>
 #include <gwenhywfar/netconnection.h>
@@ -32,6 +33,11 @@
 # define sleep(x) Sleep(x*1000)
 # define strcasecmp(a, b) strcmp(a, b)
 #endif
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #ifdef USE_NCURSES
 # include <ncurses.h>
 # include <gwenhywfar/ui/widget.h>
@@ -2940,6 +2946,67 @@ int testTime(int argc, char **argv) {
 }
 
 
+
+int testDBIO(int argc, char **argv) {
+  GWEN_BUFFEREDIO *bio;
+  GWEN_DBIO *dbio;
+  GWEN_ERRORCODE err;
+  int rv;
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbParams;
+  int fd;
+
+  dbio=GWEN_DBIO_GetPlugin("swift");
+  if (!dbio) {
+    DBG_ERROR(0, "Plugin SWIFT is not supported");
+    return -1;
+  }
+
+  fd=open("booked.mt", O_RDONLY);
+  if (fd==-1) {
+    DBG_ERROR(0, "Could not open file (%s)", strerror(errno));
+    return 2;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+
+  db=GWEN_DB_Group_new("transactions");
+  dbParams=GWEN_DB_Group_new("params");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "type", "mt940");
+  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+    rv=GWEN_DBIO_Import(dbio, bio, GWEN_PATH_FLAGS_CREATE_GROUP,
+                        db, dbParams);
+    if (rv) {
+      DBG_ERROR(0, "Error parsing SWIFT mt940");
+    }
+  } /* while */
+  GWEN_DB_Group_free(dbParams);
+  err=GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "called from here");
+    GWEN_DB_Group_free(db);
+    return -1;
+  }
+
+  /* DEBUG */
+  if (GWEN_DB_WriteFile(db,
+                        "transactions.trans",
+                        GWEN_DB_FLAGS_DEFAULT)) {
+    DBG_ERROR(0, "Could not write transactions");
+  }
+
+  return 0;
+}
+
+
+
+
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -3037,6 +3104,8 @@ int main(int argc, char **argv) {
 #endif /* USE_NCURSES */
   else if (strcasecmp(argv[1], "list2")==0)
     rv=testList2(argc, argv);
+  else if (strcasecmp(argv[1], "dbio")==0)
+    rv=testDBIO(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

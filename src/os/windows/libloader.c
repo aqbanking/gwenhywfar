@@ -127,7 +127,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
     if ( (werr == ERROR_DLL_NOT_FOUND) ||
 	 (werr == ERROR_FILE_NOT_FOUND) ||
 	 (werr == ERROR_MOD_NOT_FOUND) ) {
-      DBG_INFO(0, "File \"%s\" not found", name);
+      DBG_INFO(GWEN_LOGDOMAIN, "File \"%s\" not found", name);
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
@@ -135,7 +135,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
     }
     /* TODO: Find the code for resolve errors */
     else {
-      DBG_INFO(0, "Error loading library \"%s\" (%d)", name, werr);
+      DBG_INFO(GWEN_LOGDOMAIN, "Error loading library \"%s\" (%d)", name, werr);
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
@@ -179,14 +179,14 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
                           GWEN_LIBLOADER_ERROR_NOT_OPEN);
   *p=(void*)GetProcAddress((HINSTANCE)h->handle,name);
   if (!*p) {
-    DBG_ERROR(0, "Error resolving symbol \"%s\"\n",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error resolving symbol \"%s\"\n",
               name);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
                           GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE);
   }
-  DBG_VERBOUS(0, "Resolved symbol \"%s\": %08x\n",
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %08x\n",
 	      name, (int)*p);
   return 0;
 }
@@ -225,14 +225,14 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   /* try to load the library */
   err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO(0, "Could not load library \"%s\"",
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not load library \"%s\"",
              GWEN_Buffer_GetStart(buffer));
-    DBG_INFO_ERR(0, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     GWEN_Buffer_free(buffer);
     return err;
   }
 
-  DBG_INFO(0, "Library \"%s\" loaded",
+  DBG_INFO(GWEN_LOGDOMAIN, "Library \"%s\" loaded",
 	   GWEN_Buffer_GetStart(buffer));
   GWEN_Buffer_free(buffer);
   return 0;

@@ -96,7 +96,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
   de=readdir(d->handle);
   if (de) {
     if (len<strlen(de->d_name)+1) {
-      DBG_ERROR(0, "Buffer too small");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
       return 1;
     }
     strcpy(buffer,de->d_name);
@@ -121,11 +121,11 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
   p=getpwuid(geteuid());
   if (!p) {
-    DBG_ERROR(0, "%s at getpwuid", strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "%s at getpwuid", strerror(errno));
     return -1;
   }
   if (size<strlen(p->pw_dir)+1) {
-    DBG_ERROR(0, "Buffer too small (need %d bytes)", strlen(p->pw_dir)+1);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (need %d bytes)", strlen(p->pw_dir)+1);
     return -1;
   }
   strcpy(buffer, p->pw_dir);
@@ -138,7 +138,7 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 int GWEN_Directory_Create(const char *path){
 
   if (mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR)) {
-    DBG_INFO(0, "Error on mkdir(%s): %s",
+    DBG_INFO(GWEN_LOGDOMAIN, "Error on mkdir(%s): %s",
              path, strerror(errno));
     return -1;
   }

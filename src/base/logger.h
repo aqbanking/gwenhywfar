@@ -32,6 +32,8 @@
 extern "C" {
 #endif
 
+#define GWEN_LOGDOMAIN "gwenhywfar"
+
 #include <gwenhywfar/gwenhywfarapi.h>
 
 typedef struct GWEN_LOGGER GWEN_LOGGER;
@@ -81,6 +83,9 @@ GWEN_LOGGER *GWEN_Logger_new();
 GWENHYWFAR_API
 void GWEN_Logger_free(GWEN_LOGGER *lg);
 
+GWENHYWFAR_API
+void GWEN_Logger_Attach(GWEN_LOGGER *lg);
+
 
 /**
  * Adds a logger to the given one. So if the old logger is to log something
@@ -112,17 +117,17 @@ void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg);
  * @param logtype how to log (via syslog, to a file, to the console etc)
  * @param facility what kind of program the log message comes from
  */
-GWENHYWFAR_API int GWEN_Logger_Open(GWEN_LOGGER *lg,
-                                   const char *ident,
-                                   const char *file,
-                                   GWEN_LOGGER_LOGTYPE logtype,
-                                   GWEN_LOGGER_FACILITY facility);
+GWENHYWFAR_API int GWEN_Logger_Open(const char *logDomain,
+                                    const char *ident,
+                                    const char *file,
+                                    GWEN_LOGGER_LOGTYPE logtype,
+                                    GWEN_LOGGER_FACILITY facility);
 
 /**
  * Shuts down logging. Automatically disables logging.
  * @author Martin Preuss<martin@libchipcard.de>
  */
-GWENHYWFAR_API void GWEN_Logger_Close(GWEN_LOGGER *lg);
+GWENHYWFAR_API void GWEN_Logger_Close(const char *logDomain);
 
 /**
  * Log a message.
@@ -131,7 +136,7 @@ GWENHYWFAR_API void GWEN_Logger_Close(GWEN_LOGGER *lg);
  * @param s string to log. This string is cut at all occurences of a newline
  * character thus splitting it into multiple log lines if necessary
  */
-GWENHYWFAR_API int GWEN_Logger_Log(GWEN_LOGGER *lg,
+GWENHYWFAR_API int GWEN_Logger_Log(const char *logDomain,
                                    GWEN_LOGGER_LEVEL priority, const char *s);
 
 /**
@@ -139,7 +144,7 @@ GWENHYWFAR_API int GWEN_Logger_Log(GWEN_LOGGER *lg,
  * @author Martin Preuss<martin@libchipcard.de>
  * @param f if 0 then logging is disabled, otherwise it is enabled
  */
-GWENHYWFAR_API void GWEN_Logger_Enable(GWEN_LOGGER *lg,
+GWENHYWFAR_API void GWEN_Logger_Enable(const char *logDomain,
                                        int f);
 
 /**
@@ -147,7 +152,7 @@ GWENHYWFAR_API void GWEN_Logger_Enable(GWEN_LOGGER *lg,
  * @author Martin Preuss<martin@libchipcard.de>
  * @return 0 if disabled, 1 otherwise
  */
-GWENHYWFAR_API int GWEN_Logger_IsEnabled(GWEN_LOGGER *lg);
+GWENHYWFAR_API int GWEN_Logger_IsEnabled(const char *logDomain);
 
 /**
  * Sets the logger level. All messages with a priority up to the given one
@@ -155,14 +160,14 @@ GWENHYWFAR_API int GWEN_Logger_IsEnabled(GWEN_LOGGER *lg);
  * @author Martin Preuss<martin@libchipcard.de>
  * @param l maximum level to be logged
  */
-GWENHYWFAR_API void GWEN_Logger_SetLevel(GWEN_LOGGER *lg,
+GWENHYWFAR_API void GWEN_Logger_SetLevel(const char *logDomain,
                                          GWEN_LOGGER_LEVEL l);
 
 /**
  * Returns the current log level.
  * @author Martin Preuss<martin@libchipcard.de>
  */
-GWENHYWFAR_API int GWEN_Logger_GetLevel(GWEN_LOGGER *lg);
+GWENHYWFAR_API int GWEN_Logger_GetLevel(const char *logDomain);
 
 
 /**
@@ -170,13 +175,13 @@ GWENHYWFAR_API int GWEN_Logger_GetLevel(GWEN_LOGGER *lg);
  * should contain the name of the running program.
  * @author Martin Preuss<martin@libchipcard.de>
  */
-GWENHYWFAR_API void GWEN_Logger_SetIdent(GWEN_LOGGER *lg,
-                                        const char *id);
+GWENHYWFAR_API void GWEN_Logger_SetIdent(const char *logDomain,
+                                         const char *id);
 
 /**
- * Set the name of the file to be used in when logging to a file.
+ * Set the name of the file to be used when logging to a file.
  */
-void GWEN_Logger_SetFilename(GWEN_LOGGER *lg, const char *name);
+void GWEN_Logger_SetFilename(const char *logDomain, const char *name);
 
 
 /**
@@ -185,7 +190,7 @@ void GWEN_Logger_SetFilename(GWEN_LOGGER *lg, const char *name);
  * @author Martin Preuss<martin@libchipcard.de>
  */
 GWENHYWFAR_API
-  GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(GWEN_LOGGER *lg,
+  GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(const char *logDomain,
                                                     GWEN_LOGGERFUNCTIONLOG fn);
 
 /**

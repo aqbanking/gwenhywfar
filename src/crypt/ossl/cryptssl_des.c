@@ -304,7 +304,7 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Register(){
   err=GWEN_Crypt_RegisterProvider(pr);
   if (!GWEN_Error_IsOk(err)) {
     GWEN_CryptProvider_free(pr);
-    DBG_INFO(0, "called from here");
+    DBG_INFO(GWEN_LOGDOMAIN, "called from here");
     return err;
   }
   return 0;

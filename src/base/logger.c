@@ -50,12 +50,82 @@
 
 
 static GWEN_LOGGER *gwen_logger=0;
+static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
+
+
+GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_new(const char *name){
+  GWEN_LOGGER_DOMAIN *ld;
+
+  assert(name);
+  GWEN_NEW_OBJECT(GWEN_LOGGER_DOMAIN, ld);
+  ld->name=strdup(name);
+  return ld;
+}
+
+
+
+void GWEN_LoggerDomain_free(GWEN_LOGGER_DOMAIN *ld){
+  if (ld) {
+    free(ld->name);
+    GWEN_Logger_free(ld->logger);
+    GWEN_FREE_OBJECT(ld);
+  }
+}
+
+
+GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_Find(const char *name) {
+  GWEN_LOGGER_DOMAIN *ld;
+
+  assert(name);
+  ld=gwen_loggerdomains;
+  while(ld) {
+    if (strcasecmp(ld->name, name)==0)
+      break;
+  }
+
+  return ld;
+}
+
+
+
+void GWEN_LoggerDomain_Add(GWEN_LOGGER_DOMAIN *ld){
+  assert(ld);
+  GWEN_LIST_INSERT(GWEN_LOGGER_DOMAIN, ld, &gwen_loggerdomains);
+}
+
+
+
+void GWEN_LoggerDomain_Del(GWEN_LOGGER_DOMAIN *ld){
+  assert(ld);
+  GWEN_LIST_DEL(GWEN_LOGGER_DOMAIN, ld, &gwen_loggerdomains);
+}
+
+
+
+GWEN_LOGGER *GWEN_LoggerDomain_GetLogger(const char *name) {
+  if (name) {
+    GWEN_LOGGER_DOMAIN *ld;
+
+    ld=GWEN_LoggerDomain_Find(name);
+    if (ld)
+      return ld->logger;
+    assert(gwen_logger);
+    ld=GWEN_LoggerDomain_new(name);
+    ld->logger=gwen_logger;
+    GWEN_Logger_Attach(ld->logger);
+    return ld->logger;
+  }
+  assert(gwen_logger);
+  return gwen_logger;
+}
+
 
 
 GWEN_LOGGER *GWEN_Logger_new(){
   GWEN_LOGGER *lg;
 
   GWEN_NEW_OBJECT(GWEN_LOGGER, lg);
+  lg->usage=1;
   lg->enabled=1;
   lg->logType=GWEN_LoggerTypeConsole;
   lg->logLevel=GWEN_LoggerLevelError;
@@ -66,10 +136,20 @@ GWEN_LOGGER *GWEN_Logger_new(){
 
 void GWEN_Logger_free(GWEN_LOGGER *lg){
   if (lg) {
-    free(lg->logFile);
-    free(lg->logIdent);
-    free(lg);
+    assert(lg->usage);
+    if (--(lg->usage)==0) {
+      free(lg->logFile);
+      free(lg->logIdent);
+      free(lg);
+    }
   }
+}
+
+
+
+void GWEN_Logger_Attach(GWEN_LOGGER *lg){
+  assert(lg);
+  lg->usage++;
 }
 
 
@@ -97,18 +177,19 @@ void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg){
 
 
 
-int GWEN_Logger_Open(GWEN_LOGGER *lg,
+int GWEN_Logger_Open(const char *logDomain,
                      const char *ident,
                      const char *file,
                      GWEN_LOGGER_LOGTYPE logtype,
                      GWEN_LOGGER_FACILITY facility){
-  if (lg==0)
-    lg=gwen_logger;
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
   lg->logType=logtype;
 
-  GWEN_Logger_SetIdent(lg, ident);
-  GWEN_Logger_SetFilename(lg, file);
+  GWEN_Logger_SetIdent(logDomain, ident);
+  GWEN_Logger_SetFilename(logDomain, file);
 
   if (logtype==GWEN_LoggerTypeFile) {
     /* logging to a file */
@@ -161,16 +242,17 @@ int GWEN_Logger_Open(GWEN_LOGGER *lg,
     lg->enabled=1;
   }
 
-  return GWEN_Logger_Log(lg, GWEN_LoggerLevelDebug, "started");
+  return GWEN_Logger_Log(logDomain, GWEN_LoggerLevelDebug, "started");
 }
 
 
 
-void GWEN_Logger_Close(GWEN_LOGGER *lg){
-  if (lg==0)
-    lg=gwen_logger;
+void GWEN_Logger_Close(const char *logDomain){
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
-  GWEN_Logger_Log(lg, GWEN_LoggerLevelDebug,"stopped");
+  GWEN_Logger_Log(logDomain, GWEN_LoggerLevelDebug, "stopped");
   lg->logType=GWEN_LoggerTypeConsole;
   lg->enabled=0;
 #ifdef HAVE_SYSLOG_H
@@ -383,15 +465,15 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 
 
 
-int GWEN_Logger_Log(GWEN_LOGGER *lg,
+int GWEN_Logger_Log(const char *logDomain,
                     GWEN_LOGGER_LEVEL priority, const char *s){
   const char *p;
   int rv;
   unsigned int i;
   GWEN_BUFFER *mbuf;
+  GWEN_LOGGER *lg;
 
-  if (lg==0)
-    lg=gwen_logger;
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
 
   if (!lg->enabled)
@@ -430,36 +512,40 @@ int GWEN_Logger_Log(GWEN_LOGGER *lg,
 
 
 
-void GWEN_Logger_Enable(GWEN_LOGGER *lg, int f){
-  if (lg==0)
-    lg=gwen_logger;
+void GWEN_Logger_Enable(const char *logDomain, int f){
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
   lg->enabled=f;
 }
 
 
 
-int GWEN_Logger_IsEnabled(GWEN_LOGGER *lg){
-  if (lg==0)
-    lg=gwen_logger;
+int GWEN_Logger_IsEnabled(const char *logDomain){
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
   return lg->enabled;
 }
 
 
 
-void GWEN_Logger_SetLevel(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL l){
-  if (lg==0)
-    lg=gwen_logger;
+void GWEN_Logger_SetLevel(const char *logDomain, GWEN_LOGGER_LEVEL l){
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
   lg->logLevel=l;
 }
 
 
 
-int GWEN_Logger_GetLevel(GWEN_LOGGER *lg) {
-  if (lg==0)
-    lg=gwen_logger;
+int GWEN_Logger_GetLevel(const char *logDomain) {
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
 
   return lg->logLevel;
@@ -467,9 +553,10 @@ int GWEN_Logger_GetLevel(GWEN_LOGGER *lg) {
 
 
 
-void GWEN_Logger_SetIdent(GWEN_LOGGER *lg, const char *id){
-  if (lg==0)
-    lg=gwen_logger;
+void GWEN_Logger_SetIdent(const char *logDomain, const char *id){
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
 
   free(lg->logIdent);
@@ -481,9 +568,10 @@ void GWEN_Logger_SetIdent(GWEN_LOGGER *lg, const char *id){
 
 
 
-void GWEN_Logger_SetFilename(GWEN_LOGGER *lg, const char *name){
-  if (lg==0)
-    lg=gwen_logger;
+void GWEN_Logger_SetFilename(const char *logDomain, const char *name){
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
 
   free(lg->logFile);

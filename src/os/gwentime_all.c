@@ -47,7 +47,7 @@ GWEN_TIME *GWEN_CurrentTime(){
 
   GWEN_NEW_OBJECT(GWEN_TIME, t);
   if (GWEN_Time__GetCurrentTime(t)) {
-    DBG_ERROR(0, "Could not get current time");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not get current time");
     GWEN_Time_free(t);
     return 0;
   }
@@ -88,7 +88,7 @@ int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db) {
 
   assert(dbT);
   if (GWEN_Time_GetBrokenDownUtcDate(t, &i1, &i2, &i3)) {
-    DBG_INFO(0, "Could not break down date");
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not break down date");
     return -1;
   }
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -101,7 +101,7 @@ int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db) {
   dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "time");
   assert(dbT);
   if (GWEN_Time_GetBrokenDownUtcTime(t, &i1, &i2, &i3)) {
-    DBG_INFO(0, "Could not break down time");
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not break down time");
     return -1;
   }
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -133,7 +133,7 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
     month=GWEN_DB_GetIntValue(dbT, "month", 0, 1)-1;
     year=GWEN_DB_GetIntValue(dbT, "year", 0, 0);
     if (!day || !year) {
-      DBG_INFO(0, "Bad date in DB");
+      DBG_INFO(GWEN_LOGDOMAIN, "Bad date in DB");
       return 0;
     }
   }
@@ -145,12 +145,12 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
     sec=GWEN_DB_GetIntValue(dbT, "sec", 0, 0);
   }
 
-  DBG_NOTICE(0,
+  DBG_NOTICE(GWEN_LOGDOMAIN,
              "Creating time from this: %04d/%02d/%02d - %02d:%02d:%02d (%d)",
              year, month, day, hour, min, sec, inUtc);
   t=GWEN_Time_new(year, month, day, hour, min, sec, inUtc);
   if (!t) {
-    DBG_INFO(0, "Bad date/time");
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad date/time");
     return 0;
   }
 
@@ -219,7 +219,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
       sec+=i;
       break;
     default:
-      DBG_ERROR(0,
+      DBG_ERROR(GWEN_LOGDOMAIN,
                 "Unknown character in template, will skip in both strings");
       break;
     }
@@ -230,7 +230,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
   /* get time in local time */
   gwt=GWEN_Time_new(year, month-1, day, hour, min, sec, inUtc);
   if (!gwt) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     return 0;
   }
   return gwt;
@@ -398,7 +398,7 @@ int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
   tt=t->secs;
   tb=localtime(&tt);
   if (!tb) {
-    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "localtime(): %s", strerror(errno));
     return -1;
   }
   *hours=tb->tm_hour;
@@ -420,7 +420,7 @@ int GWEN_Time_GetBrokenDownUtcTime(const GWEN_TIME *t,
   tt=t->secs;
   tb=gmtime(&tt);
   if (!tb) {
-    DBG_ERROR(0, "gmtime(): %s", strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "gmtime(): %s", strerror(errno));
     return -1;
   }
   *hours=tb->tm_hour;
@@ -442,7 +442,7 @@ int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
   tt=t->secs;
   tb=localtime(&tt);
   if (!tb) {
-    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "localtime(): %s", strerror(errno));
     return -1;
   }
   *days=tb->tm_mday;
@@ -464,7 +464,7 @@ int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
   tt=t->secs;
   tb=gmtime(&tt);
   if (!tb) {
-    DBG_ERROR(0, "gmtime(): %s", strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "gmtime(): %s", strerror(errno));
     return -1;
   }
   *days=tb->tm_mday;

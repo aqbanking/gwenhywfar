@@ -75,7 +75,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
   GWEN_BUFFEREDIO_SOCKET *bft;
   int retrycount;
 
-  DBG_DEBUG(0, "Reading %d bytes", *size);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading %d bytes", *size);
   assert(dm);
   assert(buffer);
   assert(size);
@@ -83,7 +83,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
   assert(bft);
   assert(bft->sock);
   if (*size<1) {
-    DBG_WARN(0, "Nothing to read");
+    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to read");
     *size=0;
     return 0;
   }
@@ -102,12 +102,12 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
                              GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                              GWEN_BUFFEREDIO_ERROR_TIMEOUT);
           else if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-            DBG_ERROR_ERR(0, err);
+            DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return err;
           }
 	} /* if socket error */
 	else {
-	  DBG_ERROR_ERR(0, err);
+	  DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
           return err;
 	}
       }
@@ -116,7 +116,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
       retrycount--;
     } /* while */
     if (retrycount<1) {
-      DBG_ERROR(0, "Interrupted too often, giving up");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Interrupted too often, giving up");
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -132,12 +132,12 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
       if (GWEN_Error_GetType(err)==
           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
 	if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-	  DBG_ERROR_ERR(0, err);
+	  DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
 	  return err;
 	}
       } /* if socket error */
       else {
-	DBG_ERROR_ERR(0, err);
+	DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
 	return err;
       }
     }
@@ -146,14 +146,14 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
     retrycount--;
   } /* while */
   if (retrycount<1) {
-    DBG_ERROR(0, "Interrupted too often, giving up");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Interrupted too often, giving up");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
 
-  DBG_DEBUG(0, "Reading ok (%d bytes)", *size);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading ok (%d bytes)", *size);
   return 0;
 }
 
@@ -174,7 +174,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
   assert(bft);
   assert(bft->sock);
   if (*size<1) {
-    DBG_WARN(0, "Nothing to write");
+    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to write");
     *size=0;
     return 0;
   }
@@ -192,12 +192,12 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
                                   GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                                   GWEN_BUFFEREDIO_ERROR_TIMEOUT);
 	  else if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-	    DBG_ERROR_ERR(0, err);
+	    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
 	    return err;
 	  }
 	} /* if socket error */
 	else {
-	  DBG_ERROR_ERR(0, err);
+	  DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
 	  return err;
 	}
       }
@@ -206,7 +206,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
       retrycount--;
     } /* while */
     if (retrycount<1) {
-      DBG_ERROR(0, "Interrupted too often, giving up");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Interrupted too often, giving up");
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
@@ -222,12 +222,12 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
       if (GWEN_Error_GetType(err)==
           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
 	if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
-	  DBG_ERROR_ERR(0, err);
+	  DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
 	  return err;
 	}
       } /* if socket error */
       else {
-	DBG_ERROR_ERR(0, err);
+	DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
 	return err;
       }
     }
@@ -237,14 +237,14 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
     retrycount--;
   } /* while */
   if (retrycount<1) {
-    DBG_ERROR(0, "Interrupted too often, giving up");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Interrupted too often, giving up");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_WRITE);
   }
 
-  DBG_VERBOUS(0, "Writing ok");
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Writing ok");
   return 0;
 }
 
@@ -257,9 +257,9 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Close(GWEN_BUFFEREDIO *dm){
   bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_SOCKET, dm);
   assert(bft);
   assert(bft->sock);
-  DBG_DEBUG(0, "Closing socket");
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Closing socket");
   if (GWEN_Socket_Close(bft->sock)) {
-    DBG_ERROR(0, "Could not close (%s)",
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not close (%s)",
 	      strerror(errno));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,

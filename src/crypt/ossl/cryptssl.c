@@ -52,37 +52,37 @@ GWEN_ERRORCODE GWEN_CryptImpl_Init(){
 
   err=0;
 
-  DBG_INFO(0, "Initializing OpenSSL");
+  DBG_INFO(GWEN_LOGDOMAIN, "Initializing OpenSSL");
   SSL_load_error_strings();
   SSL_library_init();
 
   /* register the various cryptkey types */
-  DBG_INFO(0, "Registering RSA");
+  DBG_INFO(GWEN_LOGDOMAIN, "Registering RSA");
   lerr=GWEN_CryptKeyRSA_Register();
   if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     err=lerr;
   }
 
-  DBG_INFO(0, "Registering DES");
+  DBG_INFO(GWEN_LOGDOMAIN, "Registering DES");
   lerr=GWEN_CryptKeyDES_Register();
   if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     err=lerr;
   }
 
   /* register the various MD types */
-  DBG_INFO(0, "Registering RMD160");
+  DBG_INFO(GWEN_LOGDOMAIN, "Registering RMD160");
   lerr=GWEN_MdRmd160_Register();
   if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     err=lerr;
   }
 
-  DBG_INFO(0, "Registering MD5");
+  DBG_INFO(GWEN_LOGDOMAIN, "Registering MD5");
   lerr=GWEN_MdMd5_Register();
   if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
     err=lerr;
   }
 
@@ -122,7 +122,7 @@ int GWEN_CryptKey_FromPasswordSSL(const char *password,
   int i;
 
   if (bsize!=16) {
-    DBG_ERROR(0, "Buffer must be exact 16 bytes in length");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer must be exact 16 bytes in length");
     return -1;
   }
   des_string_to_2keys(password, &left, &right);
