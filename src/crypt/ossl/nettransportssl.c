@@ -660,9 +660,34 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
     return 0;
   }
 
+  if (fclose(f)) {
+    DBG_ERROR(0, "fclose: %s", strerror(errno));
+    return -1;
+  }
   DBG_INFO(0, "Certificate of \"%s\" added", cn);
 
   return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL__VerifyCallBack(int preverify_ok,
+                                         X509_STORE_CTX *ctx) {
+  int err;
+
+  err=X509_STORE_CTX_get_error(ctx);
+  if (!preverify_ok) {
+    DBG_INFO(0, "Verify error %d: \"%s\"",
+             err, X509_verify_cert_error_string(err));
+    if (err==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
+        err==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
+        err==X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) {
+      DBG_INFO(0, "Unknown certificate, will not abort yet");
+      return 1;
+    }
+  }
+  return preverify_ok;
 }
 
 
@@ -759,22 +784,22 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
         SSL_CTX_set_verify(skd->ssl_ctx,
                            SSL_VERIFY_PEER |
                            SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
-                           0);
+                           GWEN_NetTransportSSL__VerifyCallBack);
       else
         SSL_CTX_set_verify(skd->ssl_ctx,
                            SSL_VERIFY_PEER,
-                           0);
+                           GWEN_NetTransportSSL__VerifyCallBack);
     }
   }
   else {
     if (skd->secure)
       SSL_CTX_set_verify(skd->ssl_ctx,
                          SSL_VERIFY_PEER,
-                         0);
+                         GWEN_NetTransportSSL__VerifyCallBack);
     else
       SSL_CTX_set_verify(skd->ssl_ctx,
                          SSL_VERIFY_NONE,
-                         0);
+                         GWEN_NetTransportSSL__VerifyCallBack);
   }
 
   /* enable all workarounds for bugs in other SSL implementation for
@@ -1080,13 +1105,14 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       if (sslerr!=SSL_ERROR_WANT_READ &&
 	  sslerr!=SSL_ERROR_WANT_WRITE) {
 	if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
-          DBG_NOTICE(0, "Accept postponed");
-	  return GWEN_NetTransportWorkResult_NoChange;
-	}
-	DBG_ERROR(0, "SSL error: %s (%d)",
-		  GWEN_NetTransportSSL_ErrorString(sslerr),
-		  sslerr);
-	ERR_print_errors_fp(stderr);
+          DBG_NOTICE(0, "SSL: Syscall error flagged, but errno is 0...");
+        }
+        else {
+          DBG_ERROR(0, "SSL error: %s (%d)",
+                    GWEN_NetTransportSSL_ErrorString(sslerr),
+                    sslerr);
+          ERR_print_errors_fp(stderr);
+        }
 
 	GWEN_Socket_Close(skd->socket);
 	SSL_free(skd->ssl);
@@ -1203,10 +1229,12 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         }
       }
       else {
-        DBG_NOTICE(0, "Peer certificate is valid");
-
         /* store peer certificate */
         skd->peerCertificate=GWEN_NetTransportSSL__Cert2Db(cert);
+        DBG_NOTICE(0, "Certificate of peer \"%s\" is valid",
+                   GWEN_DB_GetCharValue(skd->peerCertificate,
+                                        "commonName", 0,
+                                        "<nobody>"));
         skd->isSecure=1;
       }
       free(certbuf);
