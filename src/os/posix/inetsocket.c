@@ -714,6 +714,13 @@ GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp){
 
 
 
+int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp){
+  assert(sp);
+  return sp->socket;
+}
+
+
+
 const char *GWEN_Socket_ErrorString(int c){
   const char *s;
 

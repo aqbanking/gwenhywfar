@@ -205,6 +205,7 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp);
 
+
 /**
  * Retrieves the peer's address
  * @param sp socket

@@ -25,59 +25,27 @@
  *                                                                         *
  ***************************************************************************/
 
-/**
- * @file chameleon/socket.h
- * @short This file contains sockets and socket sets.
- */
 
-#ifndef GWEN_SOCKET_P_H
-#define GWEN_SOCKET_P_H
+#ifndef GWEN_SOCKET_L_H
+#define GWEN_SOCKET_L_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket_l.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-
+#include <gwenhywfar/inetsocket.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
-  int socket;
-  int type;
-};
-
-
-GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
-  int highest;
-};
-
-
 /**
- * Initializes this module.
+ * @internal
+ * This is an internal function, it should not be used by an application.
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
-
-/**
- * Deinitializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
-
+GWENHYWFAR_API int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GWEN_SOCKET_P_H */
-
+#endif /* #ifndef GWEN_SOCKET_H */
 
 

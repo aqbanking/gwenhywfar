@@ -39,6 +39,9 @@ iheader_HEADERS=\
  libloader.h \
  process.h
 
+noinst_headers= \
+ inetsocket_l.h
+
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\
  directory_all.c
