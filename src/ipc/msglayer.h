@@ -58,6 +58,7 @@ GWEN_IPCMSG *GWEN_Msg_GetNext(GWEN_IPCMSG *m);
 GWEN_BUFFER *GWEN_Msg_GetBuffer(GWEN_IPCMSG *m);
 void GWEN_Msg_SetBuffer(GWEN_IPCMSG *m, GWEN_BUFFER *buf);
 unsigned int GWEN_Msg_GetMsgLayerId(GWEN_IPCMSG *m);
+void GWEN_Msg_SetMsgLayerId(GWEN_IPCMSG *m, unsigned int id);
 unsigned int GWEN_Msg_GetReferenceId(GWEN_IPCMSG *m);
 void GWEN_Msg_SetReferenceId(GWEN_IPCMSG *m, unsigned int i);
 
@@ -86,6 +87,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml,
 GWEN_IPCMSG *GWEN_MsgLayer_GetIncomingMsg(GWEN_IPCMSGLAYER *ml);
 GWEN_ERRORCODE GWEN_MsgLayer_AddOutgoingMsg(GWEN_IPCMSGLAYER *ml,
                                             GWEN_IPCMSG *msg);
+int GWEN_MsgLayer_CheckAddOutgoingMsg(GWEN_IPCMSGLAYER *ml);
 unsigned int GWEN_MsgLayer_GetId(GWEN_IPCMSGLAYER *ml);
 
 GWEN_IPCMSGLAYER_STATE GWEN_MsgLayer_GetState(GWEN_IPCMSGLAYER *ml);

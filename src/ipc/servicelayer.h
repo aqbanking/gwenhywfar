@@ -100,6 +100,10 @@ void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
 /**
  * This function checks whether there is an incoming message with reference
  * to the given one (by id).
+ * This function only checks the incoming queue of all connections, it
+ * does not transmit or receive anything.
+ * Please note that in order to transmit anything you must periodically call
+ * @ref GWEN_ServiceLayer_Work.
  */
 GWEN_IPCMSG *GWEN_ServiceLayer_FindMsgReply(GWEN_SERVICELAYER *sl,
                                             unsigned int refId);
@@ -107,9 +111,28 @@ GWEN_IPCMSG *GWEN_ServiceLayer_FindMsgReply(GWEN_SERVICELAYER *sl,
 /**
  * Returns a message which is not a reply to a previously sent message
  * (such a message has a reference id of 0).
+ * This function only checks the incoming queue of all connections, it
+ * does not transmit or receive anything.
+ * Please note that in order to transmit anything you must periodically call
+ * @ref GWEN_ServiceLayer_Work.
  */
 GWEN_IPCMSG *GWEN_ServiceLayer_GetRequest(GWEN_SERVICELAYER *sl);
 
+
+/**
+ * Sends a message. The recipient is given within the message itself
+ * (@ref GWEN_Msg_SetMsgLayerId).
+ * On success this function takes over ownership of the given message,
+ * you should not access it any more after calling this function.
+ * On error the message still belongs to the caller.
+ * This function only enqueues the message in the corresponding connections
+ * outgoing queue. It will be send as soon as the connection layer becomes
+ * idle.
+ * Please note that in order to transmit anything you must periodically call
+ * @ref GWEN_ServiceLayer_Work.
+ */
+GWEN_ERRORCODE GWEN_ServiceLayer_SendMessage(GWEN_SERVICELAYER *sl,
+                                             GWEN_IPCMSG *msg);
 
 
 #endif /* GWENHYFWAR_SERVICELAYER_H */

@@ -590,6 +590,31 @@ GWEN_IPCMSG *GWEN_ServiceLayer_GetRequest(GWEN_SERVICELAYER *sl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_ServiceLayer_SendMessage(GWEN_SERVICELAYER *sl,
+                                             GWEN_IPCMSG *msg){
+  GWEN_IPCCONNLAYER *cl;
+  GWEN_ERRORCODE err;
+
+  assert(sl);
+  cl=GWEN_ServiceLayer_FindConnection(sl,
+                                      GWEN_Msg_GetMsgLayerId(msg),
+                                      0);
+  if (cl==0) {
+    DBG_ERROR(0, "Connection %d not found", GWEN_Msg_GetMsgLayerId(msg));
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
+  }
+  err=GWEN_ConnectionLayer_AddOutgoingMsg(cl, msg);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "called from here");
+    return err;
+  }
+  DBG_INFO(0, "Message successfully enqueued");
+  return 0;
+}
 
 
 

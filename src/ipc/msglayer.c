@@ -66,6 +66,14 @@ void GWEN_Msg_free(GWEN_IPCMSG *m){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+void GWEN_Msg_SetMsgLayerId(GWEN_IPCMSG *m, unsigned int id){
+  assert(m);
+  m->msgLayerId=id;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_BUFFER *GWEN_Msg_GetBuffer(GWEN_IPCMSG *m){
   assert(m);
   return m->buffer;
@@ -257,6 +265,14 @@ GWEN_ERRORCODE GWEN_MsgLayer_AddOutgoingMsg(GWEN_IPCMSGLAYER *ml,
 
   DBG_INFO(0, "Added outgoing msg (now %d msgs)", ml->nOutgoingMsgs);
   return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_MsgLayer_CheckAddOutgoingMsg(GWEN_IPCMSGLAYER *ml){
+  assert(ml);
+  return ((ml->maxOutgoingMsgs-ml->nOutgoingMsgs)>0);
 }
 
 
