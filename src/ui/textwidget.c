@@ -72,7 +72,7 @@ GWEN_TW_LINE *GWEN_TWLine_new(GWEN_TYPE_UINT32 startAttributes,
 int GWEN_TWLine_SetText(GWEN_TW_LINE *l,
                         GWEN_TYPE_UINT32 startAttributes,
                         const char *s) {
-  GWEN_TYPE_UINT32 endAttributes;
+  GWEN_TYPE_UINT32 endAttributes = 0;
 
   assert(l);
 
@@ -84,7 +84,7 @@ int GWEN_TWLine_SetText(GWEN_TW_LINE *l,
     unsigned int i;
     int error;
     int lastWasEsc;
-    int lastEscape;
+    int lastEscape = GWEN_WIDGET_ATT_ESC_CHAR;
     unsigned int length;
 
     p=s;
@@ -266,7 +266,7 @@ int GWEN_TextWidget_WriteLine(GWEN_WIDGET *w, int x, int y) {
     unsigned int i;
     int error;
     int lastWasEsc;
-    int lastEscape;
+    int lastEscape = GWEN_WIDGET_ATT_ESC_CHAR;
     startAttributes=l->startAttributes;
     const char *startPos;
     int length;
@@ -1118,7 +1118,7 @@ GWEN_TW_LINE *GWEN_TextWidget_LineOpen(GWEN_WIDGET *w, int n, int crea) {
   unsigned int i;
   int error;
   int lastWasEsc;
-  int lastEscape;
+  int lastEscape = GWEN_WIDGET_ATT_ESC_CHAR;
   const char *p;
 
   assert(w);

@@ -33,8 +33,8 @@
 #include "window_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/hslider.h>
-#include <gwenhywfar/vslider.h>
+#include "hslider.h"
+#include "vslider.h"
 
 
 #include <ncurses.h> // for beep, DEBUG
