@@ -2374,7 +2374,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   }
   else if (rv==1) {
     if (strcasecmp(type, "bin")==0) {
-      if (GWEN_Buffer_BytesLeft(msgbuf)==0) {
+      if (GWEN_Buffer_GetBytesLeft(msgbuf)==0) {
 	DBG_ERROR(0, "Premature end of message (@num@ expected)");
 	return -1;
       }
@@ -2392,7 +2392,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	}
 
         c=0;
-	while(GWEN_Buffer_BytesLeft(msgbuf)>0) {
+	while(GWEN_Buffer_GetBytesLeft(msgbuf)>0) {
 	  c=GWEN_Buffer_ReadByte(msgbuf);
 	  if (c==-1) {
 	    DBG_ERROR(0, "\"@\" expected");
@@ -2416,7 +2416,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 		 l,
 		 GWEN_Buffer_GetPos(msgbuf),
 		 GWEN_Buffer_GetUsedBytes(msgbuf));
-	if (GWEN_Buffer_BytesLeft(msgbuf) < (unsigned) l) {
+	if (GWEN_Buffer_GetBytesLeft(msgbuf) < (unsigned) l) {
 	  DBG_ERROR(0, "Premature end of message (binary beyond end)");
 	  return -1;
 	}
@@ -2437,7 +2437,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
       isEscaped=0;
       lastWasEscape=0;
 
-      while(GWEN_Buffer_BytesLeft(msgbuf)) {
+      while(GWEN_Buffer_GetBytesLeft(msgbuf)) {
 	int c;
 
 	c=GWEN_Buffer_ReadByte(msgbuf);
@@ -2597,7 +2597,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
     if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeTag) {
       const char *type;
 
-      if (GWEN_Buffer_BytesLeft(msgbuf)==0)
+      if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
 	break;
 
       type=GWEN_XMLNode_GetData(n);
@@ -2617,7 +2617,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	  int c;
 
 	  DBG_DEBUG(0, "Reading %s", name);
-	  if (GWEN_Buffer_BytesLeft(msgbuf)==0)
+	  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
 	    break;
 	  c=GWEN_Buffer_PeekByte(msgbuf);
 	  if (c==-1) {
@@ -2647,7 +2647,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 				   0,0);
               /*DBG_DEBUG(0, "Reading value from here:\n");
                GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
-                                   GWEN_Buffer_BytesLeft(msgbuf),
+                                   GWEN_Buffer_GetBytesLeft(msgbuf),
                                    stderr, 1);*/
 
 	      rv=GWEN_MsgEngine__ReadValue(e,
@@ -2736,7 +2736,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	    } /* if name is given */
           } /* if current char is not a delimiter */
 
-	  if (GWEN_Buffer_BytesLeft(msgbuf)) {
+	  if (GWEN_Buffer_GetBytesLeft(msgbuf)) {
 	    if (delimiter) {
 	      if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
 		GWEN_Buffer_IncrementPos(msgbuf,1);
@@ -2787,7 +2787,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	abortLoop=0;
 	while(loopNr<maxnum && !abortLoop) {
 	  DBG_DEBUG(0, "Reading group type %s", gtype);
-	  if (GWEN_Buffer_BytesLeft(msgbuf)==0)
+	  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
 	    break;
 	  if (strchr(delimiters, GWEN_Buffer_PeekByte(msgbuf))) {
 	    abortLoop=1;
@@ -2822,7 +2822,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	      return -1;
 	    }
 	  }
-	  if (GWEN_Buffer_BytesLeft(msgbuf)) {
+	  if (GWEN_Buffer_GetBytesLeft(msgbuf)) {
 	    if (delimiter) {
 	      if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
 		GWEN_Buffer_IncrementPos(msgbuf, 1);
@@ -2863,7 +2863,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
   if (terminator) {
     /* skip terminator */
-    if (GWEN_Buffer_BytesLeft(msgbuf)) {
+    if (GWEN_Buffer_GetBytesLeft(msgbuf)) {
       if (GWEN_Buffer_PeekByte(msgbuf)==terminator) {
         GWEN_Buffer_IncrementPos(msgbuf, 1);
       }
@@ -2963,7 +2963,7 @@ int GWEN_MsgEngine_SkipSegment(GWEN_MSGENGINE *e,
   int esc;
 
   esc=0;
-  while(GWEN_Buffer_BytesLeft(msgbuf)) {
+  while(GWEN_Buffer_GetBytesLeft(msgbuf)) {
     if (esc) {
       esc=0;
     }
@@ -3034,7 +3034,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
 
   segments=0;
 
-  while(GWEN_Buffer_BytesLeft(mbuf)) {
+  while(GWEN_Buffer_GetBytesLeft(mbuf)) {
     GWEN_XMLNODE *node;
     unsigned int posBak;
     const char *p;

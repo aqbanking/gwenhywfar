@@ -445,6 +445,12 @@ GWEN_TYPE_UINT32 GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf){
 
 
 GWEN_TYPE_UINT32 GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf){
+  DBG_WARN(0, "You should better use \"GWEN_Buffer_GetBytesLeft\"");
+  return GWEN_Buffer_GetBytesLeft(bf);
+}
+
+
+GWEN_TYPE_UINT32 GWEN_Buffer_GetBytesLeft(GWEN_BUFFER *bf){
   assert(bf);
 
   if (bf->pos<bf->bytesUsed)

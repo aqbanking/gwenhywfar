@@ -33,6 +33,14 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 
 
+/** @defgroup MOD_RINGBUFFER Ringbuffer Management
+ * @ingroup MOD_BASE
+ *
+ * @brief This file contains the definition of a GWEN_RINGBUFFER.
+ *
+ */
+/*@{*/
+
 typedef struct GWEN_RINGBUFFER GWEN_RINGBUFFER;
 
 
@@ -93,6 +101,9 @@ GWEN_TYPE_UINT32 GWEN_RingBuffer_GetUsedBytes(const GWEN_RINGBUFFER *rb);
  * buffer.
  */
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBytesLeft(const GWEN_RINGBUFFER *rb);
+
+/*@}*/ /* group */
+
 
 
 #endif /* GWEN_RINGBUFFER_H */

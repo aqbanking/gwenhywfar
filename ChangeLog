@@ -3,6 +3,7 @@
 ------------------------------------------------
 - added new base module: GWEN_RingBuffer; this module introduces a
   circular read/write buffer.
+- started cleaning up function names
 
 
 2004/01/22: Martin Preuss<martin@libchipcard.de>

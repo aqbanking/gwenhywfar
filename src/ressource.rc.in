@@ -58,7 +58,7 @@ BEGIN
             //VALUE "Comments", "\0"
             VALUE "CompanyName", " Aquamaniac\0"
             VALUE "FileDescription", "Multi purpose library\0"
-            VALUE "FileVersion", "v@rpm_version@\0"
+            VALUE "FileVersion", "v@GWENHYWFAR_VERSION_RELEASE_STRING@\0"
             VALUE "InternalName", "Gwenhywfar\0"
             VALUE "LegalCopyright", "Copyright © 2003 by Martin Preuss\0"
             VALUE "LegalTrademarks", "Aquamaniac\0"

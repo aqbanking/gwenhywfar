@@ -44,7 +44,7 @@ extern "C" {
 /** @defgroup MOD_BUFFER Buffer Management
  * @ingroup MOD_BASE
  *
- * @brief This file contains the definition of a GWEN_DB database.
+ * @brief This file contains the definition of a GWEN_BUFFER.
  *
  */
 /*@{*/
@@ -321,9 +321,16 @@ GWEN_TYPE_UINT32 GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf);
 
 /**
  * Returns the number of bytes from pos to the end of the used area.
+ * Deprecated, please use @ref GWEN_Buffer_GetBytesLeft instead.
  */
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf);
+
+/**
+ * Returns the number of bytes from pos to the end of the used area.
+ */
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_Buffer_GetBytesLeft(GWEN_BUFFER *bf);
 
 
 /**
