@@ -51,12 +51,6 @@ fi
 
 dnl ******* openssl lib ***********
 AC_MSG_CHECKING(for openssl libs)
-AC_ARG_WITH(openssl-libname, [  --with-openssl-libname=NAME  specify the name of the openssl library],
-  [ssl_search_lib_names="$withval"],
-  [ssl_search_lib_names="libssl.so \
-	                 libssl.so.* \
-	                 libssl.a"])
-
 AC_ARG_WITH(openssl-libs, [  --with-openssl-libs=DIR  adds openssl library path],
   [ssl_search_lib_dirs="$withval"],
   [ssl_search_lib_dirs="/usr/lib \
@@ -70,29 +64,31 @@ AC_ARG_WITH(openssl-libs, [  --with-openssl-libs=DIR  adds openssl library path]
 
 dnl search for openssl libs
 if test "$OSYSTEM" != "windows" ; then
+dnl POSIX systems
    for d in $ssl_search_lib_dirs; do
-     AQ_SEARCH_FILES("$d", [$ssl_search_lib_names])
+     AQ_SEARCH_FILES("$d", [libssl.so libssl.so.* libssl.a])
      if test -n "$found_file" ; then
         ssl_libraries="-L$d"
-        ssl_lib="-l`echo $found_file | sed 's/lib//;s/\.so*//;s/\.a//'` -lcrypto"
+        ssl_lib="-lssl -lcrypto"
         break
      fi
    done
    AC_MSG_RESULT($ssl_libraries ${ssl_lib})
-   else
-     if test -z "$WIN_PATH_WINDOWS_MINGW"; then
-       AC_ERROR([Error in configure.ac: The macro aq_windoze did not set a windows system path -- maybe this macro has not yet been called.])
-     fi
-     # Check for the directory of the installed OpenSSL DLLs
-     for d in "$WIN_PATH_WINDOWS_MINGW" "$WIN_PATH_SYSTEM_MINGW"; do
-	AQ_SEARCH_FILES("$d", "libssl32.dll")
-	if test -n "$found_file"; then
-	   ssl_libraries="-L$d"
-	   break
-	fi
-     done
-     ssl_lib="-llibeay32 -llibssl32"
-     AC_MSG_RESULT($ssl_libraries ${ssl_lib})
+else
+dnl Windoze systems
+   if test -z "$WIN_PATH_WINDOWS_MINGW"; then
+     AC_ERROR([Error in configure.ac: The macro aq_windoze did not set a windows system path -- maybe this macro has not yet been called.])
+   fi
+   # Check for the directory of the installed OpenSSL DLLs
+   for d in "$WIN_PATH_WINDOWS_MINGW" "$WIN_PATH_SYSTEM_MINGW"; do
+      AQ_SEARCH_FILES("$d", "libssl32.dll")
+      if test -n "$found_file"; then
+         ssl_libraries="-L$d"
+         break
+      fi
+   done
+   ssl_lib="-llibeay32 -llibssl32"
+   AC_MSG_RESULT($ssl_libraries ${ssl_lib})
 fi
 
 AC_MSG_CHECKING(whether openssl is usable)
