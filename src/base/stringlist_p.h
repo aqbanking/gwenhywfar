@@ -30,6 +30,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/types.h>
 
 
 #ifdef __cplusplus
@@ -40,6 +41,7 @@ extern "C" {
 struct GWEN_STRINGLISTENTRYSTRUCT {
   GWEN_STRINGLISTENTRY *next;
   const char *data;
+  GWEN_TYPE_UINT32 refCount;
 };
 
 
@@ -47,6 +49,7 @@ struct GWEN_STRINGLISTSTRUCT {
   GWEN_STRINGLISTENTRY *first;
   unsigned int count;
   int senseCase;
+  int ignoreRefCount;
 };
 
 

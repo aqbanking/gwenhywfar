@@ -78,6 +78,15 @@ GWENHYWFAR_API
 void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i);
 
 /**
+ * Normally this group of functions ignores reference counters on stringlist
+ * entries when removing a string via @ref GWEN_StringList_RemoveString.
+ * You can change this behaviour here.
+ * @param sl string list
+ * @param i if 0 then reference counters are honoured
+ */
+void GWEN_StringList_SetIgnoreRefCount(GWEN_STRINGLIST *sl, int i);
+
+/**
  * Appends a string.
  * @return 0 if not appended, !=0 if appended
  * @param take if true then the StringList takes over ownership of the string

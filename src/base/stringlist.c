@@ -45,6 +45,7 @@ GWEN_STRINGLIST *GWEN_StringList_new(){
 
   GWEN_NEW_OBJECT(GWEN_STRINGLIST, sl);
   assert(sl);
+  sl->ignoreRefCount=1;
   return sl;
 }
 
@@ -73,11 +74,19 @@ void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i) {
 
 
 
+void GWEN_StringList_SetIgnoreRefCount(GWEN_STRINGLIST *sl, int i) {
+  assert(sl);
+  sl->ignoreRefCount=i;
+}
+
+
+
 GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s, int take){
   GWEN_STRINGLISTENTRY *sl;
 
   GWEN_NEW_OBJECT(GWEN_STRINGLISTENTRY, sl);
   assert(sl);
+  sl->refCount=1;
   if (s) {
     if (take)
       sl->data=s;
@@ -192,6 +201,7 @@ int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
 	if (strcmp(se->data, s)==0) {
 	  if (take)
 	    free((char*)s);
+	  se->refCount++;
 	  return 0;
 	}
 	se=se->next;
@@ -202,6 +212,7 @@ int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
 	if (strcasecmp(se->data, s)==0) {
 	  if (take)
 	    free((char*)s);
+	  se->refCount++;
 	  return 0;
 	}
 	se=se->next;
@@ -229,6 +240,7 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
 	if (strcmp(se->data, s)==0) {
 	  if (take)
 	    free((char*)s);
+	  se->refCount++;
 	  return 0;
 	}
 	se=se->next;
@@ -239,6 +251,7 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
 	if (strcasecmp(se->data, s)==0) {
 	  if (take)
 	    free((char*)s);
+	  se->refCount++;
 	  return 0;
 	}
 	se=se->next;
@@ -261,7 +274,14 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
   if (sl->senseCase) {
     while(se) {
       if (strcmp(se->data, s)==0) {
-	GWEN_StringList_RemoveEntry(sl, se);
+	assert(se->refCount);
+	se->refCount--;
+	if (sl->ignoreRefCount)
+	  GWEN_StringList_RemoveEntry(sl, se);
+	else {
+	  if (se->refCount==0)
+	    GWEN_StringList_RemoveEntry(sl, se);
+	}
 	return 1;
       }
       se=se->next;
@@ -271,7 +291,15 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
   else {
     while(se) {
       if (strcasecmp(se->data, s)==0) {
-	GWEN_StringList_RemoveEntry(sl, se);
+	assert(se->refCount);
+	se->refCount--;
+	if (sl->ignoreRefCount)
+	  GWEN_StringList_RemoveEntry(sl, se);
+	else {
+	  assert(se->refCount);
+	  if (se->refCount==0)
+	    GWEN_StringList_RemoveEntry(sl, se);
+	}
 	return 1;
       }
       se=se->next;

@@ -151,6 +151,8 @@ GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name){
   GWEN_LIST_INIT(GWEN_PLUGIN_MANAGER, pm);
   pm->name=strdup(name);
   pm->paths=GWEN_StringList_new();
+  /* let the string list handle reference counters */
+  GWEN_StringList_SetIgnoreRefCount(pm->paths, 0);
   pm->plugins=GWEN_Plugin_List_new();
 
   return pm;

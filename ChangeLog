@@ -13,6 +13,16 @@
   in the current language the default description is used.
 - added generic plugin management. This will be used by new plugins
   (in AqBanking and AqHBCI) and maybe in Gwen 2.x for DBIO plugins.
+- StringList: Added reference counter to StringListEntry.
+  When adding or inserting a string via GWEN_StringList_AppendString or
+  GWEN_StringList_InsertString and double checking is enabled then the
+  reference counter of a string is incremented if the string to be added or
+  inserted is already in the list.
+  The default behaviour of GWEN_StringList_RemoveString is the same as before:
+  It removes a matching string regardless of its reference counter.
+  However, if GWEN_StringList_SetIgnoreRefCount() is called with a null
+  argument only those strings are removed whose reference counter reaches
+  zero.
 
 
 2004/12/04: Martin Preuss<martin@libchipcard.de>
