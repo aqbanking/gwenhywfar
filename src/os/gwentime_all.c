@@ -475,7 +475,7 @@ int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
 
 
 
-struct tm GWEN_Time_To_tm(const GWEN_TIME *t) {
+struct tm GWEN_Time_toTm(const GWEN_TIME *t) {
   struct tm *tb;
   time_t tt;
 
@@ -485,7 +485,7 @@ struct tm GWEN_Time_To_tm(const GWEN_TIME *t) {
   return *tb;
 }
 
-time_t GWEN_Time_To_time_t(const GWEN_TIME *t) {
+time_t GWEN_Time_toTime_t(const GWEN_TIME *t) {
   assert(t);
   return t->secs;
 }

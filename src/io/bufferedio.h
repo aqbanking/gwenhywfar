@@ -317,10 +317,20 @@ GWENHYWFAR_API
 int GWEN_BufferedIO_GetLines(const GWEN_BUFFEREDIO *dm);
 
 
+GWENHYWFAR_API
+int GWEN_BufferedIO_GetBytesRead(const GWEN_BUFFEREDIO *dm);
+
+GWENHYWFAR_API
+int GWEN_BufferedIO_GetBytesWritten(const GWEN_BUFFEREDIO *dm);
+
+
+GWENHYWFAR_API
 void GWEN_BufferedIO_SetReadFn(GWEN_BUFFEREDIO *dm,
                                GWEN_BUFFEREDIOREADFN fn);
+GWENHYWFAR_API
 void GWEN_BufferedIO_SetWriteFn(GWEN_BUFFEREDIO *dm,
                                 GWEN_BUFFEREDIOWRITEFN fn);
+GWENHYWFAR_API
 void GWEN_BufferedIO_SetCloseFn(GWEN_BUFFEREDIO *dm,
                                 GWEN_BUFFEREDIOCLOSEFN fn);
 

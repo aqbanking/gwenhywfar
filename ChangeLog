@@ -1,7 +1,17 @@
+
+2004/08/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added statistical functions to GWEN_BufferedIo
+- changed GWEN_Time_To_time_t -> GWEN_Time_toTime_t 
+  and GWEN_Time_To_tm -> GWEN_Time_toTm to adhere (that's how the other
+  converter functions are called throughout the library)
+
+
 2004-08-21  Christian Stimming  <stimming@tuhh.de>
 
 	* src/os/gwentime.h: Add conversion functions GWEN_Time_To_tm and
 	GWEN_Time_To_time_t.
+
 
 2004/08/20: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

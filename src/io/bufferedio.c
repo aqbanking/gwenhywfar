@@ -247,6 +247,7 @@ int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bt){
     bt->readerBufferPos++;
     if (i==GWEN_BUFFEREDIO_LF)
       bt->lines++;
+    bt->bytesRead++;
   }
   return i;
 }
@@ -363,6 +364,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *bt, char c){
 
   /* write char to buffer */
   bt->writerBuffer[bt->writerBufferPos++]=c;
+  bt->bytesWritten++;
   if (bt->writerBufferPos>bt->writerBufferFilled)
     bt->writerBufferFilled=bt->writerBufferPos;
 
@@ -629,6 +631,8 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
     return err;
   }
   *bsize=i;
+  bt->bytesWritten+=i;
+
   return err;
 }
 
@@ -672,6 +676,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     }
     *bsize=i;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes from buffer", i);
+    bt->bytesRead+=i;
     return 0;
   }
   else {
@@ -693,6 +698,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     }
     bt->readerEOF=(i==0);
     *bsize=i;
+    bt->bytesRead+=i;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes from source", i);
   }
   if (bt->readerEOF) {
@@ -813,6 +819,20 @@ void GWEN_BufferedIO_SetCloseFn(GWEN_BUFFEREDIO *dm,
 int GWEN_BufferedIO_GetLines(const GWEN_BUFFEREDIO *dm){
   assert(dm);
   return dm->lines;
+}
+
+
+
+int GWEN_BufferedIO_GetBytesRead(const GWEN_BUFFEREDIO *dm){
+  assert(dm);
+  return dm->bytesRead;
+}
+
+
+
+int GWEN_BufferedIO_GetBytesWritten(const GWEN_BUFFEREDIO *dm){
+  assert(dm);
+  return dm->bytesWritten;
 }
 
 
