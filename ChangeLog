@@ -1,3 +1,9 @@
+2004-09-22   Christian Stimming <stimming@tuhh.de>
+
+	* src/os/posix/libloader.c: Fix problem with evaluation of
+	dlerror() return value when translations are turned
+	on. Effectively, the error evaluation during loading of libraries
+	was totally broken since 2004-08-20, but is now fixed again.
 
 2004/09/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

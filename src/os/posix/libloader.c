@@ -38,7 +38,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-
+#ifdef ENABLE_NLS
+# include <locale.h>
+#endif
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
 #endif
@@ -103,7 +105,7 @@ void GWEN_LibLoader_free(GWEN_LIBLOADER *h){
 
 GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 					  const char *name){
-  const char *serr;
+  const char *errorstring;
 
   assert(h);
 
@@ -111,22 +113,35 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 
   h->handle=dlopen(name, RTLD_LAZY);
   if (!h->handle) {
-    serr=dlerror();
-    DBG_INFO(GWEN_LOGDOMAIN, "dlopen(%s): %s", name, serr);
-    /* FIXME: What about internationalization ? */
-    if (strstr(serr, "No such file")) {
-      if (strstr(serr, name)) {
+
+#ifdef ENABLE_NLS
+    char *orig_locale = setlocale(LC_MESSAGES,NULL);
+    setlocale(LC_MESSAGES,"C");
+#endif
+
+    /* The string is checked against the known "C" locale strings
+       below. We *have* to switch to the C locale temporarily because
+       otherwise the string might be any translated value. */
+    errorstring = dlerror();
+
+#ifdef ENABLE_NLS
+    setlocale(LC_MESSAGES,orig_locale);
+#endif
+
+    DBG_INFO(GWEN_LOGDOMAIN, "dlopen(%s): %s", name, errorstring);
+    if (strstr(errorstring, "No such file")) {
+      if (strstr(errorstring, name)) {
 	return GWEN_Error_new(0,
 			      GWEN_ERROR_SEVERITY_ERR,
 			      GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
 			      GWEN_LIBLOADER_ERROR_NOT_FOUND);
       }
     }
-    else if (strstr(serr, "undefined symbol:")) {
+    else if (strstr(errorstring, "undefined symbol:")) {
       DBG_INFO(GWEN_LOGDOMAIN,
                "GWEN: Error loading library: %s",
-               serr);
-      if (strstr(serr, name))
+               errorstring);
+      if (strstr(errorstring, name))
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
                               GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
@@ -139,7 +154,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
     }
     DBG_INFO(GWEN_LOGDOMAIN,
              "GWEN: Error loading library: %s",
-             serr);
+             errorstring);
     return GWEN_Error_new(0,
 			  GWEN_ERROR_SEVERITY_ERR,
 			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
