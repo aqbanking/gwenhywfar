@@ -89,7 +89,9 @@ GWEN_IPCREQUEST *GWEN_IPCRequest_new();
 void GWEN_IPCRequest_free(GWEN_IPCREQUEST *r);
 void GWEN_IPCRequest_AddRequestMsg(GWEN_IPCREQUEST *r, GWEN_IPCMSG *m);
 void GWEN_IPCRequest_AddResponseMsg(GWEN_IPCREQUEST *r, GWEN_IPCMSG *m);
-int GWEN_IPCRequest_HasRequestMsg(GWEN_IPCREQUEST *r, GWEN_TYPE_UINT32 id);
+int GWEN_IPCRequest_HasRequestMsg(GWEN_IPCREQUEST *r,
+                                  GWEN_TYPE_UINT32 nid,
+                                  GWEN_TYPE_UINT32 id);
 
 
 

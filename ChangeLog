@@ -1,4 +1,15 @@
 
+2004/06/06: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ipc/ipc: fixed a bug (did not take node id into account when assigning a
+  response to a request)
+
+
+===========================================================================
+MARK: released gwenhywfar-0.9.11 (2004/06/06)
+===========================================================================
+
+
 2004/06/04: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - base/idlist.c: fixed another stupid bug

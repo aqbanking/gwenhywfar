@@ -172,7 +172,9 @@ void GWEN_IPCRequest_AddResponseMsg(GWEN_IPCREQUEST *r, GWEN_IPCMSG *m){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCRequest_HasRequestMsg(GWEN_IPCREQUEST *r, GWEN_TYPE_UINT32 id){
+int GWEN_IPCRequest_HasRequestMsg(GWEN_IPCREQUEST *r,
+                                  GWEN_TYPE_UINT32 nid,
+				  GWEN_TYPE_UINT32 id){
   GWEN_IPCMSG *m;
 
   assert(r);
@@ -180,7 +182,8 @@ int GWEN_IPCRequest_HasRequestMsg(GWEN_IPCREQUEST *r, GWEN_TYPE_UINT32 id){
 
   m=GWEN_IPCMsg_List_First(r->requestMsgs);
   while(m) {
-    if (m->id==id)
+    if (m->node->id==nid &&
+	m->id==id)
       return 1;
     m=GWEN_IPCMsg_List_Next(m);
   } /* while */
@@ -555,6 +558,9 @@ int GWEN_IPCManager_SendResponse(GWEN_IPCMANAGER *mgr,
   m->db=rsp;
   m->id=++(om->node->nextMsgId);
 
+  DBG_DEBUG(0, "Sending response %08x for request %08x",
+	    m->id, m->refId);
+
   if (GWEN_IPCManager__SendMsg(mgr, m)) {
     DBG_ERROR(0, "Could not send response");
     GWEN_IPCMsg_free(m);
@@ -837,7 +843,7 @@ int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg) {
 				  "ipc/refId", refId);
 	      r=GWEN_IPCRequest_List_First(mgr->outRequests);
 	      while(r) {
-		if (GWEN_IPCRequest_HasRequestMsg(r, refId))
+		if (GWEN_IPCRequest_HasRequestMsg(r, n->id, refId))
 		  break;
 		r=GWEN_IPCRequest_List_Next(r);
 	      } /* while r */
@@ -849,7 +855,7 @@ int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg) {
 	      else {
 		GWEN_IPCMSG *m;
 
-		DBG_INFO(0, "Got a response for request %08x", r->id);
+		DBG_DEBUG(0, "Got a response for request %08x", r->id);
 		m=GWEN_IPCMsg_new(n);
 		m->db=dbMsg;
 		m->id=msgId;
@@ -863,7 +869,7 @@ int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg) {
 	      GWEN_IPCMSG *m;
 
 	      /* this is a new incoming request */
-	      DBG_DEBUG(0, "Got an incoming request");
+              DBG_DEBUG(0, "Got an incoming request (%08x)", msgId);
 	      m=GWEN_IPCMsg_new(n);
 	      m->db=dbMsg;
 	      m->id=msgId;
