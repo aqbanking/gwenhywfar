@@ -137,8 +137,8 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
 	if (*buffer=='=') {
 	  buffer++;
 	  while(*buffer && *buffer!=' ' && *buffer!='&')
-	    GWEN_Buffer_AppendByte(nbuf, *(buffer++));
-	}
+	    GWEN_Buffer_AppendByte(vbuf, *(buffer++));
+        }
 
 	/* store variable/value pair in DB */
 	t1=GWEN_Buffer_new(0, 64, 0, 1);
@@ -472,7 +472,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
   }
 
   if (chttp->state & GWEN_NETCONNHTTP_STATE_STOPREAD) {
-    DBG_DEBUG(0, "StopRead state set, nothing to do");
+    DBG_NOTICE(0, "StopRead state set, nothing to do");
     chttp->state|=GWEN_NETCONNHTTP_STATE_WAITINGFORREAD;
     return GWEN_NetConnectionWorkResult_NoChange;
   }
@@ -480,6 +480,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
   /* just starting to read ? */
   if (!(chttp->state & GWEN_NETCONNHTTP_STATE_STARTEDREAD)) {
     /* only set state, nothing more for now */
+    DBG_NOTICE(0, "Just started to read");
     chttp->state|=GWEN_NETCONNHTTP_STATE_STARTEDREAD;
   }
 
@@ -490,8 +491,10 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     /* read body */
     GWEN_TYPE_UINT32 size, i = 0, j, l;
 
+    DBG_NOTICE(0, "BodyRead mode");
+
     if (chttp->state & GWEN_NETCONNHTTP_STATE_STOPBODYREAD) {
-      DBG_DEBUG(0, "StopBodyRead state set, nothing to do");
+      DBG_NOTICE(0, "StopBodyRead state set, nothing to do");
       chttp->state|=GWEN_NETCONNHTTP_STATE_WAITINGFORBODYREAD;
       return GWEN_NetConnectionWorkResult_NoChange;
     }
@@ -509,13 +512,13 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     }
 
     /* read rest of the message */
-    while (size==0 || (i=chttp->bodyBytesRead)<size) {
+    while ((i=chttp->bodyBytesRead)<size || size==0) {
       GWEN_TYPE_UINT32 lbak;
 
       if (size && i>=size)
 	break;
 
-      DBG_DEBUG(0, "Reading rest of the message... (%d bytes)", size);
+      DBG_NOTICE(0, "Reading rest of the message... (%d bytes)", size);
       j=GWEN_RingBuffer_GetMaxUnsegmentedRead(rbuf);
       if (!j) {
 	/* read buffer empty, check whether the connection has been closed */
@@ -532,7 +535,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    return GWEN_NetConnectionWorkResult_Error;
 	  }
 	  /* message complete, break */
-          DBG_INFO(0, "Message finished");
+          DBG_NOTICE(0, "Message finished");
 	  break;
 	} /* if not connected */
 	DBG_DEBUG(0, "Readbuffer empty");
@@ -574,7 +577,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     }
 
     /* append message to connection's queue */
-    DBG_INFO(0, "Got a message");
+    DBG_NOTICE(0, "Got a message");
     GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
     chttp->currentInMsg=0;
     return GWEN_NetConnectionWorkResult_Change;
@@ -593,8 +596,6 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
       if (chttp->inMode==GWEN_NetConnHttpMsgModeCmd) {
         /* read command line */
-	DBG_DEBUG(0, "Reading command...");
-
 	GWEN_Buffer_AppendByte(mbuf, c);
 	if (c==10) {
 	  GWEN_DB_NODE *dbCmd;
@@ -602,7 +603,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
           int pminor;
 
 	  /* line feed, so we have the command */
-
+          DBG_NOTICE(0, "Command finished");
 	  /* parse command */
 	  dbCmd=GWEN_DB_GetGroup(GWEN_NetMsg_GetDB(chttp->currentInMsg),
 				 GWEN_DB_FLAGS_OVERWRITE_GROUPS,
@@ -625,7 +626,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	  GWEN_NetMsg_SetProtocolVersion(chttp->currentInMsg, pmajor, pminor);
 
 	  if (GWEN_DB_GetIntValue(dbCmd, "hasHeader", 0, 0)) {
-	    /* header is supposed to follow */
+            /* header is supposed to follow */
+            DBG_NOTICE(0, "Header follows");
             chttp->inMode=GWEN_NetConnHttpMsgModeHeader;
             chttp->headerPos=GWEN_Buffer_GetPos(mbuf);
             GWEN_Buffer_SetBookmark(mbuf, 0, GWEN_Buffer_GetPos(mbuf));
@@ -633,6 +635,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	  else {
 	    const char *cmd;
 
+            DBG_NOTICE(0, "No header follows");
 	    /* no header, body eventually follows */
 	    cmd=GWEN_DB_GetCharValue(dbCmd, "cmd", 0, "");
 	    if (strcmp(cmd, "PUT")==0 ||
@@ -643,8 +646,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	      chttp->headerPos=0;
 	    }
 	    else {
-	      /* no body, message complete */
-	      DBG_INFO(0, "Got a message");
+              /* no body, message complete */
+              DBG_NOTICE(0, "Got a message");
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 	      chttp->currentInMsg=0;
 	      return GWEN_NetConnectionWorkResult_Change;
@@ -655,8 +658,6 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
       }
       else if (chttp->inMode==GWEN_NetConnHttpMsgModeStatus) {
 	/* read status line */
-	DBG_DEBUG(0, "Reading status...");
-
 	GWEN_Buffer_AppendByte(mbuf, c);
 	if (c==10) {
 	  GWEN_DB_NODE *dbStatus;
@@ -684,17 +685,19 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	}
       }
       else if (chttp->inMode==GWEN_NetConnHttpMsgModeHeader) {
-	/* read header line */
-	DBG_DEBUG(0, "Reading header...");
-
+        /* read header line */
 	GWEN_Buffer_AppendByte(mbuf, c);
-	if (c==10) {
+        if (c==10) {
+          //DBG_NOTICE(0, "Header so far: (last 4 bytes:%08x)",
+          //           chttp->inLast4Bytes);
+          //GWEN_Buffer_Dump(mbuf, stderr, 2);
 	  /* line feed, so we have a line */
 	  if (chttp->inLast4Bytes==0x0d0a0d0a){
 	    GWEN_DB_NODE *dbHeader;
             int hasBody;
 	    const char *p;
 
+            DBG_NOTICE(0, "Empty line, header ends");
 	    /* empty line, so the header ends, parse it */
 	    dbHeader=GWEN_DB_GetGroup(GWEN_NetMsg_GetDB(chttp->currentInMsg),
 				      GWEN_DB_FLAGS_OVERWRITE_GROUPS,
@@ -722,10 +725,12 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    else
 	      hasBody=1;
 
-	    if (hasBody) {
+            if (hasBody) {
+              DBG_NOTICE(0, "Message has a body");
 	      if (GWEN_DB_VariableExists(dbHeader, "content-length")) {
                 int size;
 
+                DBG_NOTICE(0, "Size variable exists");
 		if (1!=sscanf(GWEN_DB_GetCharValue(dbHeader,
                                                    "content-length", 0, ""),
                               "%d", &size)){
@@ -734,30 +739,25 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 		  chttp->currentInMsg=0;
 		  return GWEN_NetConnectionWorkResult_Error;
                 }
-		if (size>GWEN_NETCONNHTTP_MAXBODYSIZE) {
-		  DBG_ERROR(0, "Bad HTTP request (size limit exceeded)");
-		  GWEN_NetMsg_free(chttp->currentInMsg);
-		  chttp->currentInMsg=0;
-		  return GWEN_NetConnectionWorkResult_Error;
-		}
 
                 if (!size) {
                   /* no body, message complete */
-                  DBG_INFO(0, "Got a message");
+                  DBG_NOTICE(0, "Got a message");
                   GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
                   chttp->currentInMsg=0;
                   return GWEN_NetConnectionWorkResult_Change;
                 }
                 /* set size */
+                DBG_NOTICE(0, "Body size is %d", size);
 		GWEN_NetMsg_SetSize(chttp->currentInMsg, size);
 	      } /* if size given */
 	      chttp->inMode=GWEN_NetConnHttpMsgModeBody;
 	      if (chttp->mode & GWEN_NETCONN_MODE_WAITBEFOREBODYREAD)
 		chttp->state|=GWEN_NETCONNHTTP_STATE_STOPBODYREAD;
-	    }
-	    else {
-	      /* no body, message complete */
-	      DBG_INFO(0, "Got a message");
+            }
+            else {
+              /* no body, message complete */
+              DBG_NOTICE(0, "Got a message");
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 	      chttp->currentInMsg=0;
 	      return GWEN_NetConnectionWorkResult_Change;
@@ -780,7 +780,7 @@ GWEN_NETCONNECTION_WORKRESULT
 GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
   GWEN_BUFFER *mbuf;
   GWEN_NETCONNECTIONHTTP *chttp;
-  GWEN_TYPE_UINT32 i = 0, j;
+  GWEN_TYPE_UINT32 i=0, j;
   GWEN_RINGBUFFER *wbuf;
 
   assert(conn);
@@ -818,14 +818,14 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
   if (chttp->outMode==GWEN_NetConnHttpMsgModeBuffer) {
     /* complete header if necessary */
     while((i=GWEN_Buffer_GetBytesLeft(mbuf))) {
-      DBG_DEBUG(0, "Writing message...");
+      DBG_DEBUG(0, "Writing command/status/header...");
       j=GWEN_RingBuffer_GetMaxUnsegmentedWrite(wbuf);
       if (!j) {
-	DBG_DEBUG(0, "Writebuffer full");
-	return GWEN_NetConnectionWorkResult_NoChange;
+        DBG_NOTICE(0, "Writebuffer full");
+        return GWEN_NetConnectionWorkResult_NoChange;
       }
       if (j>i)
-	j=i;
+        j=i;
 
       memmove(GWEN_RingBuffer_GetWritePointer(wbuf),
 	      GWEN_Buffer_GetPosPointer(mbuf),
@@ -845,7 +845,7 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       GWEN_NetMsg_free(chttp->currentOutMsg);
       chttp->currentOutMsg=0;
 
-      DBG_INFO(0, "Message written");
+      DBG_NOTICE(0, "Message written");
       return GWEN_NetConnectionWorkResult_Change;
     }
 
@@ -864,17 +864,16 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
 	  return GWEN_NetConnectionWorkResult_Error;
 	}
         /* otherwise EOF flags the end of the body */
-	break;
+        DBG_NOTICE(0, "Body ends");
+        break;
       } /* if EOF */
 
-      DBG_DEBUG(0, "Writing body...");
+      DBG_NOTICE(0, "Writing body...");
       j=GWEN_RingBuffer_GetMaxUnsegmentedWrite(wbuf);
       if (!j) {
-	DBG_DEBUG(0, "Writebuffer full");
+	DBG_WARN(0, "Writebuffer full");
 	return GWEN_NetConnectionWorkResult_NoChange;
       }
-      if (j>i)
-	j=i;
 
       jbak=j;
       err=GWEN_BufferedIO_ReadRaw(bio,
@@ -891,10 +890,12 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       chttp->bodyBytesWritten+=j;
 
       if (j<jbak) {
-	DBG_DEBUG(0, "Read buffer empty");
+	DBG_WARN(0, "Read buffer empty");
 	return GWEN_NetConnectionWorkResult_NoChange;
       }
     } /* while */
+    DBG_NOTICE(0, "Body completely written (%d bytes)",
+               chttp->bodyBytesWritten);
   } /* if BIO mode (-> if writing the body) */
 
   /* otherwise message written */
@@ -909,41 +910,50 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
 GWEN_NETCONNECTION_WORKRESULT
 GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
   GWEN_NETCONNECTIONHTTP *chttp;
-  GWEN_NETCONNECTION_WORKRESULT rv;
-  GWEN_NETCONNECTION_WORKRESULT rvBak;
+  GWEN_NETCONNECTION_WORKRESULT rv1;
+  GWEN_NETCONNECTION_WORKRESULT rv2;
+  GWEN_NETCONNECTION_WORKRESULT rv3;
 
   assert(conn);
   chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
   assert(chttp);
 
-  DBG_DEBUG(0, "Working on HTTP connection");
+  DBG_NOTICE(0, "Working on HTTP connection");
 
-  rv=GWEN_NetConnectionHTTP_WriteWork(conn);
-  if (rv==GWEN_NetConnectionWorkResult_Change) {
-    DBG_DEBUG(0, "Change while writing");
-    return rv;
+  rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
+  if (rv1==GWEN_NetConnectionWorkResult_Change) {
+    DBG_INFO(0, "Change while writing");
   }
-  else if (rv==GWEN_NetConnectionWorkResult_Error) {
-    DBG_DEBUG(0, "Error on writing");
-    return rv;
+  else if (rv1==GWEN_NetConnectionWorkResult_Error) {
+    DBG_INFO(0, "Error on writing");
+    return rv1;
+  }
+  else {
+    DBG_DEBUG(0, "No change while writing");
   }
 
-  rv=GWEN_NetConnection_WorkIO(conn);
-  if (rv==GWEN_NetConnectionWorkResult_Change) {
-    DBG_DEBUG(0, "Change on WorkIO");
+  rv2=GWEN_NetConnection_WorkIO(conn);
+  if (rv2==GWEN_NetConnectionWorkResult_Change) {
+    DBG_INFO(0, "Change on WorkIO");
   }
-  else if (rv==GWEN_NetConnectionWorkResult_Error) {
+  else if (rv2==GWEN_NetConnectionWorkResult_Error) {
     DBG_DEBUG(0, "Error on WorkIO");
   }
-  rvBak=rv;
 
-  rv=GWEN_NetConnectionHTTP_ReadWork(conn);
-  if (rv!=GWEN_NetConnectionWorkResult_NoChange) {
-    DBG_INFO(0, "Change while reading");
-    return rv;
+  rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
+  if (rv3!=GWEN_NetConnectionWorkResult_NoChange) {
+    DBG_NOTICE(0, "Change while reading");
+  }
+  else {
+    DBG_DEBUG(0, "No change while reading");
   }
 
-  return rvBak;
+  if (rv2!=GWEN_NetConnectionWorkResult_NoChange)
+    return rv2;
+  if (rv1!=GWEN_NetConnectionWorkResult_NoChange)
+    return rv1;
+
+  return rv3;
 }
 
 
@@ -1330,8 +1340,11 @@ int GWEN_NetConnectionHTTP_AddRequest(GWEN_NETCONNECTION *conn,
 
   if (body) {
     /* body given, create BUFFEREDIO from it */
+    GWEN_Buffer_Rewind(body);
     bio=GWEN_BufferedIO_Buffer_new(body);
     GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+    DBG_NOTICE(0, "Body is:");
+    GWEN_Buffer_Dump(body, stderr, 2);
   }
 
   /* create message */
@@ -1375,8 +1388,6 @@ int GWEN_NetConnectionHTTP_AddRequest(GWEN_NETCONNECTION *conn,
     }
     GWEN_DB_Group_free(db);
   }
-
-  GWEN_Buffer_Dump(buf, stderr, 2);
 
   GWEN_NetConnection_AddOutMsg(conn, msg);
   return 0;
@@ -1451,6 +1462,7 @@ int GWEN_NetConnectionHTTP_AddResponse(GWEN_NETCONNECTION *conn,
     GWEN_DB_Group_free(db);
   }
 
+  DBG_NOTICE(0, "Adding this response");
   GWEN_Buffer_Dump(buf, stderr, 2);
 
   GWEN_NetConnection_AddOutMsg(conn, msg);

@@ -608,6 +608,7 @@ void GWEN_Buffer_Reset(GWEN_BUFFER *bf){
   assert(bf);
   bf->pos=0;
   bf->bytesUsed=0;
+  bf->ptr[0]=0;
 }
 
 
