@@ -59,13 +59,12 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
   int exists;
   int withDrive;
   GWEN_BUFFER *buf;
-  GWEN_BUFFER *ebuf;
+  GWEN_BUFFER *ebuf = 0;
 
   withDrive=0;
 #ifdef OS_WIN32
-  ebuf=0;
-  if (isalpha(*entry)) {
-    if (entry[1]==':') {
+  if (entry && isalpha(*entry)) {
+    if ( (strlen(entry) > 1) && (entry[1] == ':') ) {
       ebuf=GWEN_Buffer_new(0, strlen(entry)+2, 0, 1);
       GWEN_Buffer_AppendString(ebuf, entry);
       GWEN_Buffer_AppendByte(ebuf, '\\');
@@ -73,9 +72,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
       entry=GWEN_Buffer_GetStart(ebuf);
     }
   }
-#else
-  ebuf=0;
-#endif
+#endif /* OS_WIN32 */
 
   if (strcasecmp(entry, "..")==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "\"..\" detected");
@@ -89,7 +86,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     GWEN_Buffer_AppendByte(buf, '\\');
 #else
     GWEN_Buffer_AppendByte(buf, '/');
-#endif
+#endif /* OS_WIN32 */
   }
   GWEN_Buffer_AppendString(buf, entry);
 
