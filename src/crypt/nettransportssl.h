@@ -85,7 +85,9 @@ GWENHYWFAR_API
     /** user trusts the given certificate for this session only */
     GWEN_NetTransportSSL_AskAddCertResultTmp,
     /** user trusts the given certificate permanently */
-    GWEN_NetTransportSSL_AskAddCertResultPerm
+    GWEN_NetTransportSSL_AskAddCertResultPerm,
+    /** store the cert in an incoming directory, trust it for this session  */
+    GWEN_NetTransportSSL_AskAddCertResultIncoming
   } GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT;
 
 /**
@@ -128,6 +130,7 @@ GWENHYWFAR_API
 GWENHYWFAR_API
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             const char *capath,
+                                            const char *newcapath,
                                             const char *ownCertFile,
                                             const char *dhfile,
                                             int secure,
@@ -202,6 +205,9 @@ GWENHYWFAR_API
 
 GWENHYWFAR_API
   int GWEN_NetTransportSSL_IsSecure(const GWEN_NETTRANSPORT *tr);
+
+GWENHYWFAR_API
+  int GWEN_NetTransportSSL_IsOfType(GWEN_NETTRANSPORT *tr);
 
 /*@}*/
 

@@ -136,6 +136,12 @@ int GWEN_NetTransportSSL_IsSecure(const GWEN_NETTRANSPORT *tr){
 
 
 
+int GWEN_NetTransportSSL_IsOfType(GWEN_NETTRANSPORT *tr) {
+  return 0;
+}
+
+
+
 
 
 

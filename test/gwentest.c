@@ -750,7 +750,7 @@ int testSocketSSL(int argc, char **argv) {
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
   //tr=GWEN_NetTransportSSL_new(sk, "trusted", 0, "dh_1024.pem", 1, 1);
   //tr=GWEN_NetTransportSSL_new(sk, "trusted.pem", 0, 0, 1, 1);
-  tr=GWEN_NetTransportSSL_new(sk, "trusted", 0, 0, 1, 1);
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", "newtrusted", 0, 0, 1, 1);
   if (!tr) {
     fprintf(stderr, "SSL not supported.\n");
     return 2;
@@ -1100,7 +1100,7 @@ int testHTTPc(int argc, char **argv) {
 
   /* create transport layer */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  tr=GWEN_NetTransportSSL_new(sk, "trusted",
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", "newtrusted",
                               0, //"lancelot.crt",
                               "dh_1024.pem",
                               1, 1);
@@ -1190,7 +1190,7 @@ int testHTTPd(int argc, char **argv) {
 
   /* create transport layer */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  tr=GWEN_NetTransportSSL_new(sk, "trusted", "lancelot.crt",
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", "newtrusted", "lancelot.crt",
                               "dh_1024.pem",
                               0, /* secure */
                               1);

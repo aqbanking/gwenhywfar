@@ -79,6 +79,7 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
     if (skd->ownSocket)
       GWEN_Socket_free(skd->socket);
     free(skd->CAdir);
+    free(skd->newCAdir);
     free(skd->ownCertFile);
     free(skd->dhfile);
     free(skd->cipherList);
@@ -92,6 +93,7 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             const char *capath,
+                                            const char *newcapath,
                                             const char *ownCertFile,
 					    const char *dhfile,
                                             int secure,
@@ -108,6 +110,8 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
   skd->ownSocket=relinquish;
   if (capath)
     skd->CAdir=strdup(capath);
+  if (newcapath)
+    skd->newCAdir=strdup(newcapath);
   if (ownCertFile)
     skd->ownCertFile=strdup(ownCertFile);
   if (dhfile)
@@ -152,6 +156,13 @@ GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr) {
   assert(skd);
 
   return skd->peerCertificate;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL_IsOfType(GWEN_NETTRANSPORT *tr) {
+  return GWEN_INHERIT_ISOFTYPE(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
 }
 
 
@@ -585,7 +596,9 @@ GWEN_NETTRANSPORTSSL_ASKADDCERT_FN GWEN_NetTransportSSL_GetAskAddCertFn(){
 
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
-                                   X509 *cert) {
+                                   X509 *cert,
+                                   const char *dir,
+                                   int incoming) {
   FILE *f;
   const char *fmode = "";
   char cn[256];
@@ -610,7 +623,7 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
     hash=X509_NAME_hash(nm);
     snprintf(numbuf, sizeof(numbuf), "%08lx", hash);
     nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-    GWEN_Buffer_AppendString(nbuf, skd->CAdir);
+    GWEN_Buffer_AppendString(nbuf, dir);
     /* check path, create it if necessary */
     if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
                                GWEN_PATH_FLAGS_CHECKROOT)) {
@@ -627,6 +640,9 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
       GWEN_Buffer_SetPos(nbuf, pos);
       GWEN_Buffer_AppendByte(nbuf, '.');
       GWEN_Buffer_AppendString(nbuf, numbuf);
+      if (incoming)
+        /* overwrite older incoming certificates */
+        break;
       if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
                                  GWEN_PATH_FLAGS_NAMEMUSTEXIST|
                                  GWEN_PATH_FLAGS_VARIABLE|
@@ -1186,9 +1202,22 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           break;
         case GWEN_NetTransportSSL_AskAddCertResultPerm:
           DBG_NOTICE(0, "Adding certificate to trusted certs");
-          if (GWEN_NetTransportSSL__SaveCert(tr, cert)) {
+          if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->CAdir, 0)) {
             DBG_ERROR(0, "Error saving certificate");
             isErr=1;
+          }
+          break;
+        case GWEN_NetTransportSSL_AskAddCertResultIncoming:
+          if (!skd->newCAdir) {
+            DBG_ERROR(0, "No dir for incoming connections given");
+            isErr=1;
+          }
+          else {
+            DBG_NOTICE(0, "Adding certificate to incoming certs");
+            if (GWEN_NetTransportSSL__SaveCert(tr, cert, skd->newCAdir, 1)) {
+              DBG_ERROR(0, "Error saving certificate");
+              isErr=1;
+            }
           }
           break;
         default:
@@ -1296,6 +1325,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       /* create new transport layer, let it take over the new socket */
       newTr=GWEN_NetTransportSSL_new(newS,
                                      skd->CAdir,
+                                     skd->newCAdir,
 				     skd->ownCertFile,
                                      skd->dhfile,
                                      skd->secure,

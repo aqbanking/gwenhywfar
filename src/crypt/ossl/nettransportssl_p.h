@@ -42,6 +42,7 @@ typedef struct GWEN_NETTRANSPORTSSL {
   int ownSocket;
 
   char *CAdir;
+  char *newCAdir;
   char *ownCertFile;
   char *dhfile;
   SSL_CTX *ssl_ctx;
@@ -108,7 +109,9 @@ GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
                                    GWEN_DB_NODE *cert);
 
 int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
-                                   X509 *cert);
+                                   X509 *cert,
+                                   const char *dir,
+                                   int incoming);
 
 void GWEN_NetTransportSSL__CertEntries2Db(X509_NAME *nm,
                                           GWEN_DB_NODE *db,
