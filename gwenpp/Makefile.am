@@ -12,5 +12,5 @@ libgwenpp_la_LDFLAGS= \
   @GWENPP_SO_CURRENT@:@GWENPP_SO_REVISION@:@GWENPP_SO_AGE@
 
 libgwenpp_la_LIBADD=\
-  -lstdc++ -L/mingw/lib -L../src @gwenhywfar_libs@
+  -lstdc++ -L/mingw/lib -L../src -lgwenhywfar
 

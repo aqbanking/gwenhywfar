@@ -1,3 +1,9 @@
+2004-09-24   Christian Stimming <stimming@tuhh.de>
+
+	* gwenpp/Makefile.am, tools/*/Makefile.am: Fix LIBADD flags so
+	that all libraries and tools are forced to link against the
+	currently compiled libgwen instead of the potentially installed
+	one. Necessary for e.g. building new rpms.
 
 2004/09/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
