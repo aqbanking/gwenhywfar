@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-02-19 15:51+0100\n"
-"PO-Revision-Date: 2005-02-19 15:51+0100\n"
+"POT-Creation-Date: 2005-02-20 20:04+0100\n"
+"PO-Revision-Date: 2005-02-20 20:56+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -151,7 +151,7 @@ msgstr "Fehlerhafte Groesse"
 
 #: src/base/error.c:667
 msgid "Could not encrypt"
-msgstr "Fehler beim verschlüsseln"
+msgstr "Fehler beim Verschlüsseln"
 
 #: src/base/error.c:669
 msgid "Could not decrypt"
@@ -199,7 +199,7 @@ msgstr "Zertifikat ist nicht mehr gültig"
 
 #: src/crypt/ossl/nettransportssl.c:1549
 msgid "Self-signed root cert"
-msgstr "Selbst-signiertes Zertifikat"
+msgstr "Selbst-signiertes Root-Zertifikat"
 
 #: src/crypt/ossl/nettransportssl.c:1553
 msgid "Self-signed cert"
@@ -296,4 +296,3 @@ msgstr "Unbekannter Loglevel \"%s\"\n"
 #, c-format
 msgid "Unknown option \"%s\"\n"
 msgstr "Unbekannte Option \"%s\"\n"
-

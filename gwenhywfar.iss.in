@@ -63,6 +63,16 @@ Source: "ChangeLog"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
 
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Define the registry keys Setup should create (HKCU = HKEY_CURRENT_USER)
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[Registry]
+Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"
+; FIXME: So far the plugin DLLs are not included in the file section above
+Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "plugins"; ValueData: "{app}\lib"
+Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "dbio-plugins"; ValueData: "{app}\lib\dbio"
+
+
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This large section is a Pascal scripting program that will modify
 ; the gwenhywfar-config shell script so that it then includes the
 ; correct values according to our local installation. See
