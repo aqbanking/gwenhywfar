@@ -268,6 +268,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
         rv=ctx->originalCtx->checkAbortFn(ctx->originalCtx,
                                           ctx->level);
         ctx->originalCtx->lastCalled=time(0);
+        ctx->lastCalled=time(0);
       }
     } /* if there is an original context */
     else {
@@ -348,9 +349,9 @@ void GWEN_WaitCallback_Enter_u(const char *id,
     }
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN,
-		"Callback \"%s\" not found and none is\n"
-		"currently selected, faking it",
-		id);
+                "Callback \"%s\" not found and none is\n"
+                "currently selected, faking it",
+                id);
       nctx=GWEN_WaitCallback_new(id);
       gwen_waitcallback__current=nctx;
       nctx->lastEntered=time(0);

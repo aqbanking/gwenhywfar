@@ -1,9 +1,16 @@
+
+2004/08/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- BufferedIO: Added function GWEN_BufferedIO_WriteRawForced
+
+
 2004-08-24   Christian Stimming <stimming@tuhh.de>
 
 	* gwenhywfar.iss.in: Add spec file for the Inno Setup Compiler
 	which will create a Windows Setup.exe program for the whole
 	package, see http://www.jrsoftware.org/isdl.php. Added "make
 	setup" for this target.
+
 
 2004-08-23   Christian Stimming <stimming@tuhh.de>
 
@@ -14,6 +21,7 @@
 	logdomain.
 	
 	* src/base/stringlist.h: Add GWEN_StringList_ForEach function.
+
 
 2004/08/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

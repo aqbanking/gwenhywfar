@@ -764,6 +764,59 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
 
 
 
+GWEN_ERRORCODE GWEN_BufferedIO_WriteRawForced(GWEN_BUFFEREDIO *bt,
+                                              char *buffer,
+                                              unsigned int *bsize){
+  GWEN_ERRORCODE err;
+  char *lbuffer;
+  unsigned int lsize;
+  unsigned int bytesWritten;
+  GWEN_WAITCALLBACK_RESULT cbres;
+
+  lbuffer=buffer;
+  bytesWritten=0;
+
+  GWEN_WaitCallback_Enter(GWEN_BUFFEREDIO_CBID_IO);
+  GWEN_WaitCallback_SetProgressTotal(*bsize);
+  while(bytesWritten<*bsize) {
+    cbres=GWEN_WaitCallbackProgress(bytesWritten);
+    if (cbres==GWEN_WaitCallbackResult_Abort) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "User abort");
+      *bsize=bytesWritten;
+      GWEN_WaitCallback_Leave();
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_PARTIAL);
+    }
+    lsize=*bsize-bytesWritten;
+    err=GWEN_BufferedIO_WriteRaw(bt, lbuffer, &lsize);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+      GWEN_WaitCallback_Leave();
+      return err;
+    }
+    if (lsize==0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Broken pipe");
+      *bsize=bytesWritten;
+      GWEN_WaitCallback_Leave();
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_PARTIAL);
+    }
+    bytesWritten+=lsize;
+    lbuffer+=lsize;
+  } /* while */
+  GWEN_WaitCallback_Leave();
+
+  return 0;
+
+}
+
+
+
+
 GWEN_TYPE_UINT32 GWEN_BufferedIO_GetFlags(const GWEN_BUFFEREDIO *bt) {
   assert(bt);
   return bt->flags;
