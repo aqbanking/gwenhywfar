@@ -51,6 +51,7 @@ int main (){
  [AC_MSG_ERROR(Could not determine type)],
  [aq_type_uint32="$1"; AC_MSG_RESULT([Crosscompiling, assuming $1])]
 )
+rm -f conf.uint32
 
 ])
 

@@ -9,4 +9,5 @@ EXTRA_DIST=\
  qt.m4 \
  searchfiles.m4 \
  ssl.m4 \
- types.m4
+ types.m4 \
+ windoze.m4

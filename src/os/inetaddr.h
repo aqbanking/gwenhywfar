@@ -68,6 +68,17 @@ extern "C" {
 #define GWEN_INETADDR_ERROR_UNSUPPORTED          10
 /*@}*/
 
+/** @name Capabilities of this module
+ *
+ */
+/*@{*/
+#define GWEN_INETADDR_CAPS_AF_TCP  0x00000001
+#define GWEN_INETADDR_CAPS_AF_UNIX 0x00000002
+
+GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_InetAddr_GetCapabilities();
+/*@}*/
+
+
 /**
  * Address family (in most cases this is AddressFamilyIP)
  */
@@ -191,6 +202,8 @@ GWENHYWFAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
 GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
                                                     int port);
 /*@}*/
+
+
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,10 @@
 
+2004/01/14 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added windoze.m4 to get some windows paths
+- fixed types.m4 (was not removing conf.uint32 when finished)
+
+
 2004/01/12 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - posix/process.c: increased needed log level for error messages

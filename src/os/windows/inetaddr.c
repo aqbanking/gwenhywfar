@@ -52,6 +52,12 @@ static int gwen_inetaddr_is_initialized=0;
 static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_inetaddr_errorform=0;
 
 
+GWEN_TYPE_UINT32 GWEN_InetAddr_GetCapabilities(){
+  return
+    GWEN_INETADDR_CAPS_AF_TCP;
+}
+
+
 GWEN_ERRORCODE GWEN_InetAddr_ModuleInit(){
   if (!gwen_inetaddr_is_initialized) {
     GWEN_ERRORCODE err;
