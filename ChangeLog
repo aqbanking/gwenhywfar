@@ -5,9 +5,11 @@
 
 2004/12/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- added function GWEN_IPCManager_RemoveClient(). This function does what its
-  name implies, so it is now safe to write IPC servers (like the Libchipcard2
-  server) without the server process getting bigger and bigger...
+- GWEN_IPC:
+  - added function GWEN_IPCManager_RemoveClient(). This function does what its
+    name implies, so it is now safe to write IPC servers (like the Libchipcard2
+    server) without the server process getting bigger and bigger...
+  - fixed a bug (GWEN_IPC_ERROR_CODES had a bad value)
 
 
 2004/12/28: Martin Preuss<martin@libchipcard.de>
