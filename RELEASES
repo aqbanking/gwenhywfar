@@ -1,0 +1,14 @@
+
+
+2003/10/27 Version 0.9beta1
+---------------------------
+This is the initial release of LibGwenhywfar.
+It is already under heavy use by OpenHBCI-TNG and AqMoney-TNG.
+
+This release is just to allow OpenHBC-TNG users to test the current version.
+
+The following features are still missing (but are worked on):
+- support for non-POSIX platforms (most importantly Windoze and PalmOS)
+- cryptographic functions (using either OpenSSL or system dependant functions
+  of PalmOS respectively)
+- complete API documentation
