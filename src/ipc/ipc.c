@@ -1020,8 +1020,7 @@ int GWEN_IPCManager_Work(GWEN_IPCMANAGER *mgr, int maxmsg) {
     DBG_ERROR(0, "Error checking requests");
   }
 
-
-  return 0;
+  return msgs?0:1;
 }
 
 

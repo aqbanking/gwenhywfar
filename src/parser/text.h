@@ -153,6 +153,29 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize);
 GWENHYWFAR_API
 int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf);
 
+
+/**
+ * Reads bcd bytes and stores them in the given buffer.
+ */
+GWENHYWFAR_API
+int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf);
+
+
+/**
+ * Writes the given BCD data as a hex string to the destination buffer.
+ * @param groupsize if !=0 then after this many characters in the destination
+ *   buffer the delimiter is inserted
+ * @param delimiter character to write after groupsize characters
+ * @param skipLeadingZeroes if !=0 then leading zeroes are suppressed
+ */
+GWENHYWFAR_API
+int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
+                          GWEN_BUFFER *buf,
+                          unsigned int groupsize,
+                          char delimiter,
+                          int skipLeadingZeroes);
+
+
 /**
  * @return number of bytes in the buffer (-1 on error)
  * @param fillchar if 0 then no filling takes place, positive values
@@ -201,6 +224,13 @@ void GWEN_Text_LogString(const char *s, unsigned l,
                          GWEN_LOGGER *lg,
                          GWEN_LOGGER_LEVEL lv);
 
+
+/**
+ * Condenses a buffer containing chars.
+ * This means removing unnecessary spaces.
+ */
+GWENHYWFAR_API
+  void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf);
 
 #ifdef __cplusplus
 }

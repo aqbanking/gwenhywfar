@@ -29,6 +29,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 /* Define this if you are extending the "class" NetConnection */
 #define GWEN_EXTEND_NETCONNECTION
@@ -140,8 +142,8 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
   else {
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
-      if ((distance/1000)>timeout)
-        distance=timeout*1000;
+      if ((distance)>timeout)
+        distance=timeout;
     if (!distance)
       distance=750;
   }
@@ -193,10 +195,10 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
       /* prepare waitflags */
       waitFlags=0;
       if (GWEN_RingBuffer_GetBytesLeft(conn->readBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantRead)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD)
         waitFlags|=GWEN_NETCONNECTION_WAIT_READ;
       if (GWEN_RingBuffer_GetUsedBytes(conn->writeBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantWrite)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE)
         waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
         DBG_WARN(0, "Nothing to wait on");
@@ -281,8 +283,8 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
   else {
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
-      if ((distance/1000)>timeout)
-        distance=timeout*1000;
+      if ((distance)>timeout)
+        distance=timeout;
     if (!distance)
       distance=750;
   }
@@ -323,10 +325,10 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
       /* prepare waitflags */
       waitFlags=0;
       if (GWEN_RingBuffer_GetBytesLeft(conn->readBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantRead)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD)
         waitFlags|=GWEN_NETCONNECTION_WAIT_READ;
       if (GWEN_RingBuffer_GetUsedBytes(conn->writeBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantWrite)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE)
         waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
         DBG_WARN(0, "Nothing to wait on");
@@ -383,8 +385,8 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
   else {
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
-      if ((distance/1000)>timeout)
-        distance=timeout*1000;
+      if ((distance)>timeout)
+        distance=timeout;
     if (!distance)
       distance=750;
   }
@@ -427,10 +429,10 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
       /* prepare waitflags */
       waitFlags=0;
       if (GWEN_RingBuffer_GetBytesLeft(conn->readBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantRead)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD)
         waitFlags|=GWEN_NETCONNECTION_WAIT_READ;
       if (GWEN_RingBuffer_GetUsedBytes(conn->writeBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantWrite)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE)
         waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
         DBG_WARN(0, "Nothing to wait on, should not happen");
@@ -477,6 +479,11 @@ int GWEN_NetConnection_StartConnect(GWEN_NETCONNECTION *conn){
     return -1;
   }
   conn->lastResult=GWEN_NetTransport_StartConnect(conn->transportLayer);
+  if (conn->lastResult==GWEN_NetTransportResultWantRead)
+    conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
+  if (conn->lastResult==GWEN_NetTransportResultWantWrite)
+    conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
+
   if (conn->lastResult==GWEN_NetTransportResultError ||
       conn->lastResult==GWEN_NetTransportResultAborted) {
     DBG_INFO(0, "here");
@@ -528,6 +535,10 @@ int GWEN_NetConnection_StartListen(GWEN_NETCONNECTION *conn){
     return -1;
   }
   conn->lastResult=GWEN_NetTransport_StartAccept(conn->transportLayer);
+  if (conn->lastResult==GWEN_NetTransportResultWantRead)
+    conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
+  if (conn->lastResult==GWEN_NetTransportResultWantWrite)
+    conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
   if (conn->lastResult==GWEN_NetTransportResultError ||
       conn->lastResult==GWEN_NetTransportResultAborted) {
     DBG_INFO(0, "here");
@@ -547,6 +558,10 @@ int GWEN_NetConnection_StartDisconnect(GWEN_NETCONNECTION *conn){
     return -1;
   }
   conn->lastResult=GWEN_NetTransport_StartDisconnect(conn->transportLayer);
+  if (conn->lastResult==GWEN_NetTransportResultWantRead)
+    conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
+  if (conn->lastResult==GWEN_NetTransportResultWantWrite)
+    conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
   if (conn->lastResult==GWEN_NetTransportResultError ||
       conn->lastResult==GWEN_NetTransportResultAborted) {
     DBG_INFO(0, "here");
@@ -601,6 +616,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
   assert(conn);
 
   doneSomething=0;
+  conn->ioFlags=0;
   startStatus=GWEN_NetTransport_GetStatus(conn->transportLayer);
 
   /* check for disabled connection */
@@ -655,14 +671,15 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
       int bsize;
       GWEN_NETTRANSPORT_RESULT res;
 
-      DBG_DEBUG(0, "Trying to write up to %d bytes", psize);
+      DBG_NOTICE(0, "Trying to write up to %d bytes", psize);
       bsize=psize;
       ptr=GWEN_RingBuffer_GetReadPointer(conn->writeBuffer);
       res=GWEN_NetTransport_Write(conn->transportLayer,
                                   ptr, &bsize);
-      DBG_DEBUG(0, "Result of transport layer write: %s (%d)",
+      DBG_DEBUG(0,
+                "Result of transport layer write: %s (%d) %d bytes written",
                 GWEN_NetTransport_ResultName(res),
-                res);
+                res, bsize);
 
       if (res==GWEN_NetTransportResultOk) {
         GWEN_RingBuffer_SkipBytesRead(conn->writeBuffer,
@@ -670,6 +687,16 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
         doneSomething=1;
       }
       conn->lastResult=res;
+      if (conn->lastResult==GWEN_NetTransportResultWantRead)
+        conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
+      else if (conn->lastResult==GWEN_NetTransportResultWantWrite) {
+        DBG_NOTICE(0, "\nAnswer was \"WANTWRITE\"");
+        conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
+      }
+      else if (conn->lastResult==GWEN_NetTransportResultOk) {
+        conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_DIDWRITE;
+        DBG_NOTICE(0, "Written");
+      }
     }
 
     if (!(GWEN_NetTransport_GetFlags(conn->transportLayer) &
@@ -703,6 +730,15 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
           }
         }
         conn->lastResult=res;
+        if (conn->lastResult==GWEN_NetTransportResultWantRead)
+          conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
+        else if (conn->lastResult==GWEN_NetTransportResultWantWrite) {
+          DBG_NOTICE(0, "\nAnswer was \"WANTWRITE\"");
+          conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
+        }
+        else if (conn->lastResult==GWEN_NetTransportResultOk) {
+          conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_DIDREAD;
+        }
       }
     } /* if not EOF met */
   } /* if logically connected */
@@ -806,8 +842,8 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
   else {
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
-      if ((distance/1000)>timeout)
-        distance=timeout*1000;
+      if ((distance)>timeout)
+        distance=timeout;
     if (!distance)
       distance=750;
   }
@@ -843,16 +879,16 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
 
       /* prepare waitflags */
       waitFlags=0;
-      if (conn->lastResult==GWEN_NetTransportResultWantRead ||
+      if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD ||
           conn->lastResult==GWEN_NetTransportResultOk)
         waitFlags|=GWEN_NETCONNECTION_WAIT_READ;
       /* don't change the following rule unless you really know what you
        * are doing! */
-      if (conn->lastResult==GWEN_NetTransportResultWantWrite ||
+      if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE ||
           conn->lastResult==GWEN_NetTransportResultOk)
-	waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
+        waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
-	DBG_WARN(0, "Unexpected last result %d", conn->lastResult);
+        DBG_WARN(0, "Unexpected last result %d", conn->lastResult);
       }
 
       /* wait */
@@ -915,8 +951,8 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
   else {
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
-      if ((distance/1000)>timeout)
-        distance=timeout*1000;
+      if ((distance)>timeout)
+        distance=timeout;
     if (!distance)
       distance=750;
   }
@@ -942,10 +978,10 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
       /* prepare waitflags */
       waitFlags=0;
       /* dont change this unless you know exactly what you are doing */
-      if (conn->lastResult==GWEN_NetTransportResultWantRead ||
+      if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD ||
 	  conn->lastResult==GWEN_NetTransportResultOk)
 	waitFlags|=GWEN_NETCONNECTION_WAIT_READ;
-      if (conn->lastResult==GWEN_NetTransportResultWantWrite ||
+      if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE ||
           GWEN_RingBuffer_GetUsedBytes((conn->writeBuffer)))
 	waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
@@ -1127,8 +1163,8 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
   else {
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
-      if ((distance/1000)>timeout)
-        distance=timeout*1000;
+      if ((distance)>timeout)
+        distance=timeout;
     if (!distance)
       distance=750;
   }
@@ -1161,10 +1197,11 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
       /* prepare waitflags */
       waitFlags=0;
       if (GWEN_RingBuffer_GetBytesLeft(conn->readBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantRead)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD)
         waitFlags|=GWEN_NETCONNECTION_WAIT_READ;
       if (GWEN_RingBuffer_GetUsedBytes(conn->writeBuffer) ||
-          conn->lastResult==GWEN_NetTransportResultWantWrite)
+          conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE ||
+          GWEN_NetMsg_List_GetCount(conn->outMsgs))
         waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
         DBG_WARN(0, "Nothing to wait on, should not happen");
@@ -1272,7 +1309,9 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
   GWEN_SOCKETSET *rset, *wset;
   GWEN_NETCONNECTION_WORKRESULT rv;
   unsigned int errors;
+  int changes;
 
+  changes=0;
   errors=0;
   rset=GWEN_SocketSet_new();
   wset=GWEN_SocketSet_new();
@@ -1281,7 +1320,9 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
   curr=GWEN_NetConnection_List_First(connList);
   while(curr) {
     GWEN_NETTRANSPORT_STATUS st;
+    GWEN_TYPE_UINT32 connCheckValue;
 
+    connCheckValue=GWEN_NetConnection_Check(curr);
     st=GWEN_NetTransport_GetStatus(curr->transportLayer);
     if (st!=GWEN_NetTransportStatusUnconnected &&
         st!=GWEN_NetTransportStatusPDisconnected &&
@@ -1295,7 +1336,12 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
         }
         else if (rv==GWEN_NetConnectionWorkResult_Change) {
           DBG_INFO(0, "There is a change in this connection");
-          return rv;
+          changes++;
+        }
+        else {
+          DBG_DEBUG(0, "No changes, status is: toREAD=%d, toWRITE=%d",
+                    GWEN_RingBuffer_GetBytesLeft(curr->readBuffer),
+                    GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer));
         }
       }
 
@@ -1303,7 +1349,9 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
            curr->lastResult==GWEN_NetTransportResultOk) &&
           GWEN_RingBuffer_GetBytesLeft(curr->readBuffer)) {*/
 
-      if (GWEN_RingBuffer_GetBytesLeft(curr->readBuffer)) {
+      if (GWEN_RingBuffer_GetBytesLeft(curr->readBuffer) ||
+          (curr->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD) ||
+          (connCheckValue & GWEN_NETCONNECTION_CHECK_WANTREAD)) {
         DBG_VERBOUS(0, "Adding Read socket");
 
         /* add read sockets */
@@ -1313,13 +1361,16 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
         }
       }
       else {
-        DBG_VERBOUS(0, "Not adding read socket");
+        DBG_NOTICE(0, "Not adding read socket");
       }
 
-      /*if (curr->lastResult==GWEN_NetTransportResultWantWrite ||
+      /*if ((conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE) ||
           curr->lastResult==GWEN_NetTransportResultOk ||
           GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer)) {*/
-      if (GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer)) {
+      if (GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer) ||
+          (curr->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE) ||
+          GWEN_NetMsg_List_GetCount(curr->outMsgs) ||
+          (connCheckValue & GWEN_NETCONNECTION_CHECK_WANTWRITE)) {
         DBG_INFO(0, "Adding write socket");
 
         /* add write sockets */
@@ -1329,7 +1380,8 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
         }
       }
       else {
-        DBG_VERBOUS(0, "Not adding write socket");
+        DBG_DEBUG(0, "Not adding write socket (last result was %d)",
+                  curr->lastResult);
       }
     }
     curr=GWEN_NetConnection_List_Next(curr);
@@ -1343,7 +1395,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     /* no socket, so sleep to reduce CPU usage */
     if (timeout) {
       /* well, actually only sleep if the caller wanted a timeout */
-      DBG_INFO(0, "Sleeping");
+      DBG_NOTICE(0, "Sleeping");
       GWEN_Socket_Select(0, 0, 0, GWEN_NETCONNECTION_CPU_TIMEOUT);
       GWEN_SocketSet_free(rset);
       GWEN_SocketSet_free(wset);
@@ -1367,8 +1419,11 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       else {
 	DBG_DEBUG(0, "Timeout");
 	GWEN_SocketSet_free(rset);
-	GWEN_SocketSet_free(wset);
-        return GWEN_NetConnectionWorkResult_NoChange; /* FIXME: Change? */
+        GWEN_SocketSet_free(wset);
+        if (changes)
+          return GWEN_NetConnectionWorkResult_Change;
+        else
+          return GWEN_NetConnectionWorkResult_NoChange; /* FIXME: Change? */
       }
     }
   }
@@ -1393,7 +1448,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       }
       else if (rv==GWEN_NetConnectionWorkResult_Change) {
         DBG_INFO(0, "Change in connection");
-        return rv;
+        changes++;
       }
     }
     else {
@@ -1406,6 +1461,9 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     DBG_INFO(0, "Got %d errors", errors);
     return -1;
   }
+  if (changes)
+    return GWEN_NetConnectionWorkResult_Change;
+
   return GWEN_NetConnectionWorkResult_NoChange;
 }
 
@@ -1423,6 +1481,7 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
   t0=GWEN_CurrentTime();
   assert(t0);
 
+
   if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE)
     distance=GWEN_NETCONNECTION_TIMEOUT_NONE;
   else if (timeout==GWEN_NETCONNECTION_TIMEOUT_FOREVER)
@@ -1433,7 +1492,7 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
       if ((distance)>timeout)
         distance=timeout;
     if (!distance)
-      distance=500;
+      distance=50;
   }
 
   GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
@@ -1565,6 +1624,26 @@ void GWEN_NetConnection_SetDownAfterSend(GWEN_NETCONNECTION *conn, int i){
 int GWEN_NetConnection_GetDownAfterSend(GWEN_NETCONNECTION *conn){
   assert(conn);
   return conn->downAfterSend;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnection_SetCheckFn(GWEN_NETCONNECTION *conn,
+                                   GWEN_NETCONNECTION_CHECKFN fn){
+  assert(conn);
+  conn->checkFn=fn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_TYPE_UINT32 GWEN_NetConnection_Check(GWEN_NETCONNECTION *conn){
+  assert(conn);
+  if (conn->checkFn)
+    return conn->checkFn(conn);
+  else
+    return 0;
 }
 
 

@@ -87,6 +87,9 @@ typedef struct GWEN_NETCONNECTION GWEN_NETCONNECTION;
 #include <gwenhywfar/netmsg.h>
 #include <gwenhywfar/ringbuffer.h>
 
+#define GWEN_NETCONNECTION_CHECK_WANTREAD  0x0001
+#define GWEN_NETCONNECTION_CHECK_WANTWRITE 0x0002
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -95,7 +98,7 @@ GWENHYWFAR_API
 typedef enum {
   GWEN_NetConnectionWorkResult_NoChange=0,
   GWEN_NetConnectionWorkResult_Change,
-  GWEN_NetConnectionWorkResult_Error
+  GWEN_NetConnectionWorkResult_Error,
 } GWEN_NETCONNECTION_WORKRESULT;
 
 
@@ -112,14 +115,17 @@ GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETCONNECTION)
 GWENHYWFAR_API
 typedef GWEN_NETCONNECTION_WORKRESULT
   (*GWEN_NETCONNECTION_WORKFN)(GWEN_NETCONNECTION *conn);
-GWENHYWFAR_API
-typedef void (*GWEN_NETCONNECTION_FREEDATAFN)(GWEN_NETCONNECTION *conn);
 /** see @ref GWEN_NetConnection_Up */
 GWENHYWFAR_API
 typedef void (*GWEN_NETCONNECTION_UPFN)(GWEN_NETCONNECTION *conn);
 /** see @ref GWEN_NetConnection_down */
 GWENHYWFAR_API
-typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
+  typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
+
+GWENHYWFAR_API
+  typedef GWEN_TYPE_UINT32
+  (*GWEN_NETCONNECTION_CHECKFN)(GWEN_NETCONNECTION *conn);
+
 /*@}*/
 
 
@@ -402,6 +408,7 @@ void GWEN_NetConnection_Up(GWEN_NETCONNECTION *conn);
  */
 GWENHYWFAR_API
 void GWEN_NetConnection_Down(GWEN_NETCONNECTION *conn);
+
 /*@}*/
 
 
@@ -420,6 +427,9 @@ void GWEN_NetConnection_SetUpFn(GWEN_NETCONNECTION *conn,
 GWENHYWFAR_API
 void GWEN_NetConnection_SetDownFn(GWEN_NETCONNECTION *conn,
                                   GWEN_NETCONNECTION_DOWNFN fn);
+GWENHYWFAR_API
+void GWEN_NetConnection_SetCheckFn(GWEN_NETCONNECTION *conn,
+                                   GWEN_NETCONNECTION_CHECKFN fn);
 /*@}*/
 
 

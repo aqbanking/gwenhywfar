@@ -571,6 +571,115 @@ int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 
+int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char d1, d2;
+    unsigned char c;
+
+    /* read first digit */
+    if (!isdigit(*src)) {
+      DBG_ERROR(0, "Bad char in bcd string");
+      return -1;
+    }
+    d1=(unsigned char)(*src);
+
+    /* get second digit */
+    src++;
+    if (!(*src) || !isxdigit(*src)) {
+      DBG_ERROR(0, "Incomplete hex byte (only 1 digit)");
+      return -1;
+    }
+    d2=(unsigned char)(*src);
+    src++;
+
+    /* compute character */
+    d1-='0';
+    c=(d1<<4)&0xf0;
+    d2-='0';
+    c+=(d2&0xf);
+    /* store character */
+    GWEN_Buffer_AppendByte(buf, (char)c);
+  } /* while */
+
+  return 0;
+}
+
+
+
+int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
+                          GWEN_BUFFER *buf,
+                          unsigned int groupsize,
+                          char delimiter,
+                          int skipLeadingZeroes){
+  unsigned int pos;
+  unsigned int size;
+  unsigned int j;
+
+  j=0;
+
+  pos=0;
+  size=0;
+  j=0;
+  while(pos<l) {
+    unsigned char c;
+    int skipThis;
+
+    skipThis=0;
+    c=(((unsigned char)(src[pos]))>>4)&0xf;
+    if (skipLeadingZeroes) {
+      if (c==0)
+	skipThis=1;
+      else
+	skipLeadingZeroes=0;
+    }
+    c+='0';
+    if (!skipThis) {
+      if (GWEN_Buffer_AppendByte(buf, c)) {
+        DBG_INFO(0, "here");
+        return -1;
+      }
+      j++;
+      if (groupsize && j==groupsize) {
+        if (GWEN_Buffer_AppendByte(buf, delimiter)) {
+          DBG_INFO(0, "here");
+          return -1;
+        }
+	j=0;
+      }
+    }
+
+    skipThis=0;
+    c=((unsigned char)(src[pos]))&0xf;
+    if (skipLeadingZeroes) {
+      if (c==0 && pos+1<l)
+	skipThis=1;
+      else
+	skipLeadingZeroes=0;
+    }
+    c+='0';
+    if (!skipThis) {
+      if (GWEN_Buffer_AppendByte(buf, c)) {
+        DBG_INFO(0, "here");
+        return -1;
+      }
+      j++;
+      if (groupsize && j==groupsize) {
+	if (pos+1<l) {
+          if (GWEN_Buffer_AppendByte(buf, delimiter)) {
+            DBG_INFO(0, "here");
+            return -1;
+          }
+        }
+        j=0;
+      }
+    }
+    pos++;
+  }
+  return 0;
+}
+
+
+
 int GWEN_Text_Compare(const char *s1, const char *s2, int ign) {
   if (s1)
     if (*s1==0)
@@ -1014,6 +1123,51 @@ void GWEN_Text_LogString(const char *s, unsigned l,
   GWEN_Logger_Log(lg, lv, GWEN_Buffer_GetStart(mbuf));
   GWEN_Buffer_free(mbuf);
 }
+
+
+
+void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf){
+  const char *p;
+  char *dst;
+  unsigned int size;
+  unsigned int i;
+  int lastWasBlank;
+  char *lastBlankPos;
+
+  dst=GWEN_Buffer_GetStart(buf);
+  p=dst;
+  size=GWEN_Buffer_GetUsedBytes(buf);
+  lastWasBlank=0;
+  lastBlankPos=0;
+
+  for (i=0; i<size; i++) {
+    /* remember next loop whether this char was a blank */
+    if (isspace(*p)) {
+      if (!lastWasBlank) {
+        /* store only one blank */
+        lastWasBlank=1;
+        lastBlankPos=dst;
+        *(dst++)=*p;
+      }
+    }
+    else {
+      lastWasBlank=0;
+      lastBlankPos=0;
+      *(dst++)=*p;
+    }
+    p++;
+  }
+
+  /* remove trailing blanks */
+  if (lastBlankPos!=0)
+    dst=lastBlankPos;
+
+  size=dst-GWEN_Buffer_GetStart(buf);
+  GWEN_Buffer_Crop(buf, 0, size);
+}
+
+
+
 
 
 

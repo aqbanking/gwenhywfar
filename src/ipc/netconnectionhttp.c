@@ -14,6 +14,7 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
 
 #define GWEN_EXTEND_NETCONNECTION
 
@@ -823,7 +824,7 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       DBG_DEBUG(0, "Writing command/status/header...");
       j=GWEN_RingBuffer_GetMaxUnsegmentedWrite(wbuf);
       if (!j) {
-        DBG_VERBOUS(0, "Writebuffer full");
+        DBG_NOTICE(0, "Writebuffer full");
         return GWEN_NetConnectionWorkResult_NoChange;
       }
       if (j>i)
@@ -892,8 +893,8 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       chttp->bodyBytesWritten+=j;
 
       if (j<jbak) {
-	DBG_DEBUG(0, "Read buffer empty");
-	return GWEN_NetConnectionWorkResult_NoChange;
+        DBG_NOTICE(0, "Read buffer empty");
+        return GWEN_NetConnectionWorkResult_NoChange;
       }
     } /* while */
     DBG_DEBUG(0, "Body completely written (%d bytes)",
@@ -915,6 +916,7 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
   GWEN_NETCONNECTION_WORKRESULT rv1;
   GWEN_NETCONNECTION_WORKRESULT rv2;
   GWEN_NETCONNECTION_WORKRESULT rv3;
+  int changes;
 
   assert(conn);
   chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
@@ -922,40 +924,68 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
 
   DBG_DEBUG(0, "Working on HTTP connection");
 
-  rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
-  if (rv1==GWEN_NetConnectionWorkResult_Change) {
-    DBG_DEBUG(0, "Change while writing");
+  changes=0;
+
+  while(1) {
+    int changesBak;
+
+    changesBak=changes;
+    rv2=GWEN_NetConnection_WorkIO(conn);
+    if (rv2==GWEN_NetConnectionWorkResult_Change) {
+      DBG_DEBUG(0, "Change on WorkIO");
+      changes++;
+    }
+    else if (rv2==GWEN_NetConnectionWorkResult_Error) {
+      DBG_DEBUG(0, "Error on WorkIO");
+      return rv2;
+    }
+  
+    /* do all write work */
+    while(1) {
+      rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
+      if (rv1==GWEN_NetConnectionWorkResult_Change) {
+        DBG_NOTICE(0, "Change while writing");
+        changes++;
+      }
+      else if (rv1==GWEN_NetConnectionWorkResult_Error) {
+        DBG_DEBUG(0, "Error on writing");
+        return rv1;
+      }
+      else {
+        DBG_DEBUG(0, "No change while writing");
+        break;
+      }
+    }
+  
+    /* do all read work */
+    while(1) {
+      rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
+      if (rv3==GWEN_NetConnectionWorkResult_Change) {
+        DBG_DEBUG(0, "Change while reading");
+        changes++;
+      }
+      else if (rv3==GWEN_NetConnectionWorkResult_Error) {
+        DBG_DEBUG(0, "Error on reading");
+        return rv3;
+      }
+      else {
+        DBG_DEBUG(0, "No change while reading");
+        break;
+      }
+    }
+  
+    if (changesBak==changes) {
+      DBG_DEBUG(0, "No more changes");
+      break;
+    }
   }
-  else if (rv1==GWEN_NetConnectionWorkResult_Error) {
-    DBG_DEBUG(0, "Error on writing");
-    return rv1;
-  }
-  else {
-    DBG_DEBUG(0, "No change while writing");
+  if (changes) {
+    DBG_NOTICE(0, "There were some changes (%d)", changes);
+    return GWEN_NetConnectionWorkResult_Change;
   }
 
-  rv2=GWEN_NetConnection_WorkIO(conn);
-  if (rv2==GWEN_NetConnectionWorkResult_Change) {
-    DBG_DEBUG(0, "Change on WorkIO");
-  }
-  else if (rv2==GWEN_NetConnectionWorkResult_Error) {
-    DBG_DEBUG(0, "Error on WorkIO");
-  }
-
-  rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
-  if (rv3!=GWEN_NetConnectionWorkResult_NoChange) {
-    DBG_DEBUG(0, "Change while reading");
-  }
-  else {
-    DBG_DEBUG(0, "No change while reading");
-  }
-
-  if (rv2!=GWEN_NetConnectionWorkResult_NoChange)
-    return rv2;
-  if (rv1!=GWEN_NetConnectionWorkResult_NoChange)
-    return rv1;
-
-  return rv3;
+  DBG_DEBUG(0, "There were NO changes");
+  return GWEN_NetConnectionWorkResult_NoChange;
 }
 
 

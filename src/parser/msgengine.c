@@ -368,6 +368,9 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
                                GWEN_XMLNODE *node) {
   unsigned int minsize;
   unsigned int maxsize;
+  unsigned int fixSize;
+  unsigned int startPos;
+  int filler;
   const char *type;
   const char *name;
   int rv;
@@ -375,10 +378,22 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   /* get some sizes */
   minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
   maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
+  fixSize=atoi(GWEN_XMLNode_GetProperty(node, "size","0"));
+  filler=atoi(GWEN_XMLNode_GetProperty(node, "filler","0"));
   type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
   name=GWEN_XMLNode_GetProperty(node, "name","<unnamed>");
+  startPos=GWEN_Buffer_GetPos(gbuf);
 
-  /* copy value to buffer */
+  /* check sizes */
+  if (minsize && GWEN_Buffer_GetUsedBytes(data)<minsize) {
+    DBG_ERROR(0, "Data too short (minsize is %d)", minsize);
+    return -1;
+  }
+  if (maxsize && GWEN_Buffer_GetUsedBytes(data)>maxsize) {
+    DBG_ERROR(0, "Data too long (maxsize is %d)", maxsize);
+    return -1;
+  }
+
   rv=1;
   if (e->typeWritePtr) {
     rv=e->typeWritePtr(e,
@@ -529,7 +544,24 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   else {
     DBG_INFO(0, "Type \"%s\" (for %s) is external (write)",
              type, name);
+
+  } /* if external type */
+
+  /* fill data */
+  if (fixSize) {
+    GWEN_TYPE_UINT32 bs;
+    unsigned int j;
+
+    bs=GWEN_Buffer_GetPos(gbuf)-startPos;
+    if (bs>fixSize) {
+      DBG_ERROR(0, "Data too long (fixed size is %d)", fixSize);
+      return -1;
+    }
+
+    for (j=bs; j<fixSize; j++)
+      GWEN_Buffer_AppendByte(gbuf, (unsigned char)filler);
   }
+
   return 0;
 }
 
@@ -627,8 +659,6 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
 			 64,
                          0,
                          1);
-    GWEN_Buffer_SetMode(data,
-                        GWEN_BUFFER_MODE_DEFAULT | GWEN_BUFFER_MODE_DYNAMIC);
 
     rv=e->binTypeWritePtr(e, node, gr, data);
     if (rv==-1) {
@@ -775,6 +805,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                          datasize,
                          0 /* dont take ownership*/ );
   }
+
 
   /* write value */
   if (GWEN_MsgEngine__WriteValue(e,
@@ -2443,7 +2474,6 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   minnum=atoi(GWEN_XMLNode_GetProperty(node, "minnum","1"));
   type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
 
-
   rv=1;
   if (e->typeReadPtr) {
     rv=e->typeReadPtr(e,
@@ -2546,8 +2576,10 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  else {
 	    if (c=='\\' || iscntrl(c)) {
 	      DBG_WARN(0,
-		       "Found a bad character (%02x), converting to SPACE",
-		       (unsigned int)c);
+		       "Found a bad character (%02x) in type \"%s\", "
+		       "converting to SPACE",
+		       (unsigned int)c,
+		       type);
 	      c=' ';
 	    }
 	    if (GWEN_Buffer_AppendByte(vbuf, c)) {
@@ -2557,11 +2589,6 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  }
 	}
       } /* while */
-      if (GWEN_Buffer_AllocRoom(vbuf, 1)) {
-        DBG_INFO(0, "Value buffer full.");
-        return -1;
-      }
-      *(GWEN_Buffer_GetPosPointer(vbuf))=0;
     } /* if !bin */
   } /* if type not external */
   else {
@@ -2569,6 +2596,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   }
 
   realSize=GWEN_Buffer_GetUsedBytes(vbuf);
+
   /* check the value */
   if (realSize==0) {
     DBG_DEBUG(0, "Datasize is 0");

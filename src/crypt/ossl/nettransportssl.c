@@ -366,7 +366,7 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
   }
 
   DBG_DEBUG(0, "Read %d bytes:", rv);
-  GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelDebug);
+  GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
@@ -429,7 +429,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
   }
 
   DBG_DEBUG(0, "Written %d bytes:", rv);
-  GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelDebug);
+  GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
