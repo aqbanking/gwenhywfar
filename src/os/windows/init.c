@@ -55,7 +55,8 @@ BOOL APIENTRY DllMain(HINSTANCE hInst,
       fprintf(stderr, "Could not initialize Gwenhywfar, aborting\n");
       return FALSE;
     }
-    fprintf(stderr, "Gwenhywfar initialized.\n"); /* DEBUG */
+    /* DEBUG */
+    /* fprintf(stderr, "Gwenhywfar initialized.\n"); */
     break;
 
   case DLL_PROCESS_DETACH:
@@ -63,7 +64,8 @@ BOOL APIENTRY DllMain(HINSTANCE hInst,
     if (!GWEN_Error_IsOk(err)) {
       fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
     }
-    fprintf(stderr, "Gwenhywfar deinitialized.\n"); /* DEBUG */
+    /* DEBUG */
+    /* fprintf(stderr, "Gwenhywfar deinitialized.\n"); */
     break;
 
   case DLL_THREAD_ATTACH:
