@@ -41,6 +41,9 @@
 #include <string.h>
 #include <ctype.h>
 
+#ifdef OS_WIN32
+# include <windows.h>
+#endif
 
 static GWEN_PLUGIN_MANAGER_LIST *gwen_plugin_manager__list=0;
 
@@ -203,6 +206,59 @@ int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
   return GWEN_StringList_AppendString(pm->paths, s, 0, 1);
 }
 
+GWENHYWFAR_API
+int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
+					 const char *keypath,
+					 const char *varname)
+{
+#ifdef OS_WIN32
+  HKEY hkey;
+  TCHAR nbuffer[MAX_PATH];
+  BYTE vbuffer[MAX_PATH];
+  DWORD nsize;
+  DWORD vsize;
+  DWORD typ;
+  int i;
+
+  assert(pm);
+
+  snprintf(nbuffer, sizeof(nbuffer), keypath);
+
+  /* open the key */
+  if (RegOpenKey(HKEY_CURRENT_USER, nbuffer, &hkey)){
+    DBG_ERROR(GWEN_LOGDOMAIN, "RegOpenKey %s failed.", keypath);
+    return 1;
+  }
+
+  /* find the variablename  */
+  for (i=0;; i++) {
+    nsize=sizeof(nbuffer);
+    vsize=sizeof(vbuffer);
+    if (ERROR_SUCCESS!=RegEnumValue(hkey,
+                                    i,    /* index */
+                                    nbuffer,
+                                    &nsize,
+                                    0,       /* reserved */
+                                    &typ,
+                                    vbuffer,
+                                    &vsize))
+      break;
+    if (strcasecmp(nbuffer, varname)==0 && typ==REG_SZ) {
+      /* variable found */
+      RegCloseKey(hkey);
+      return GWEN_StringList_AppendString(pm->paths, (char*)vbuffer, 0, 1);
+    }
+  } /* for */
+
+  RegCloseKey(hkey);
+  DBG_ERROR(GWEN_LOGDOMAIN, 
+	    "In RegKey the variable %s does not exist", varname);
+  return 1;
+
+#else /* OS_WIN32 */
+  return 0;
+#endif /* OS_WIN32 */
+}
 
 
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,

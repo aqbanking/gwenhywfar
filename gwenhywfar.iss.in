@@ -46,6 +46,9 @@ Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; F
 ; The config-script. It is post-processed by the Pascal script below.
 Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig({app}\bin\@PACKAGE@-config)
 
+; The tools executables
+Source: "distribution\win32-tmp\bin\*.exe"; DestDir: "{app}\bin"; Flags: ignoreversion; Components: devel
+
 ; The headers, and the aclocal macro. 
 Source: "distribution\win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
 Source: "distribution\win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel

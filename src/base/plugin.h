@@ -88,9 +88,31 @@ void GWEN_PluginManager_free(GWEN_PLUGIN_MANAGER *pm);
 GWENHYWFAR_API
 const char *GWEN_PluginManager_GetName(const GWEN_PLUGIN_MANAGER *pm);
 
+/** Add a directory path to lookup plugins from. */
 GWENHYWFAR_API
 int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
                                const char *s);
+/** Add a directory path from the windows registry HKEY_CURRENT_USER,
+ * to lookup plugins from. On Non-Windows systems, this function does
+ * nothing and returns zero.
+ *
+ * FIXME: Maybe it should be possible whether to lookup in
+ * HKEY_CURRENT_USER vs. HKEY_LOCAL_MACHINE?
+ *
+ * @return Zero on success, and non-zero on error.
+ *
+ * @param pm The PluginManager
+ *
+ * @param keypath The path to the registry key,
+ * e.g. "Software\\MySoftware\\Whatever"
+ *
+ * @param varname The key name (variable name?) inside the given
+ * registry key, e.g. "myvariable".
+*/
+GWENHYWFAR_API
+int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
+					 const char *keypath,
+					 const char *varname);
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,

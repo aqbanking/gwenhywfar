@@ -1,5 +1,8 @@
 2005-03-29   Christian Stimming <stimming@tuhh.de>
 
+	* src/base/plugin.h: Add PluginManager_AddPathFromWinReg() which
+	reads a path from the windows registry.
+
 	* src/crypt/crypt.c: Add function GWEN_Random() which uses an
 	internal RNG state. This was, the application's RNG state is left
 	untouched.
