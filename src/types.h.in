@@ -50,9 +50,10 @@ GWENHYWFAR_API typedef @GWEN_TYPE_UINT32@ GWEN_TYPE_UINT32;
  *  MSVC are supported. For any further compilers, additional
  *  conditional clauses have to be added. */
 #ifdef __GNUC__
-  GWENHYWFAR_API GWEN_GNUC_EXTENSION 
+  GWEN_GNUC_EXTENSION GWENHYWFAR_API 
   typedef @GWEN_TYPE_UINT64@ GWEN_TYPE_UINT64;
 #else /* __GNUC__ */
+# include <windows.h>
   /* Workaround for Microsoft Visual Studio Compiler (MSVC) which does
    * not have "long long" but ULONG64 instead. */
   GWENHYWFAR_API typedef ULONG64 GWEN_TYPE_UINT64;
