@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=13
-GWENHYWFAR_VERSION_BUILD=29
+GWENHYWFAR_VERSION_BUILD=30
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -314,7 +314,7 @@ if test "$USE_NCURSES" != "yes"; then
   ncurses_libs=""
 else
   AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
-  all_libraries="$all_libraries -lpanel -lncurses"
+  all_libraries="$all_libraries"
   ncurses_libs="-lpanel -lncurses"
   NCURSES_TOOLS="dlgtest"
 fi

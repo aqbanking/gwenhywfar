@@ -840,6 +840,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                     "Value for element \"%s[%d]\" (mode \"%s\") not found",
                     name, loopNr,
                     GWEN_MsgEngine_GetMode(e));
+          GWEN_DB_Dump(gr, stderr, 4);
 	  GWEN_Buffer_free(data);
           return -1;
         }
@@ -1230,7 +1231,7 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
   if (!node) {
     DBG_WARN(0, "No node !");
   }
-  topDown=atoi(GWEN_XMLNode_GetProperty(node, "topdown","0"));
+  topDown=atoi(GWEN_XMLNode_GetProperty(node, "topdown", "0"));
   lastValue=0;
   lastDataSize=0;
 
@@ -1300,7 +1301,7 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
                                          unsigned int *datasize) {
   GWEN_XMLNODE *pn;
 
-  DBG_DEBUG(0, "Looking for value of \"%s\" in <VALUES>", name);
+  DBG_VERBOUS(0, "Looking for value of \"%s\" in <VALUES>", name);
   pn=GWEN_XMLNode_GetChild(node);
 
   while(pn) {
@@ -1310,7 +1311,7 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
 
       p=GWEN_XMLNode_GetData(pn);
       assert(p);
-      DBG_DEBUG(0, "Checking %s",p);
+      DBG_DEBUG(0, "Checking %s", p);
       if (strcasecmp(p, "VALUES")==0) {
 	DBG_DEBUG(0, "<values> found");
 	/* <preset> found, check all values */
@@ -1380,6 +1381,7 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
   int isFirstElement;
   int omittedElements;
   int hasEntries;
+
 
   /* get some settings */
   if (rnode) {

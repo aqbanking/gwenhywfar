@@ -1,4 +1,9 @@
 
+2004/08/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed "-lpanel -lncurses" from all_libraries
+
+
 2004/08/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - did the same with the list templates...
