@@ -41,7 +41,6 @@ extern "C" {
 #endif
 
 
-GWENHYWFAR_API
 typedef struct GWEN_KEYSPEC GWEN_KEYSPEC;
 
 

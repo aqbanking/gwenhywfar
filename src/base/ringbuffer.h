@@ -45,7 +45,6 @@ extern "C" {
  */
 /*@{*/
 
-GWENHYWFAR_API
 typedef struct GWEN_RINGBUFFER GWEN_RINGBUFFER;
 
 

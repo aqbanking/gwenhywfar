@@ -75,9 +75,9 @@ extern "C" {
  * <tr><td>15-0</td>  <td>Code (16 bit error code)</td></tr>
  * </table>
  */
-GWENHYWFAR_API typedef GWEN_TYPE_UINT32 GWEN_ERRORCODE;
+typedef GWEN_TYPE_UINT32 GWEN_ERRORCODE;
 
-GWENHYWFAR_API typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
+typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
   GWEN_ERRORTYPEREGISTRATIONFORM;
 
 /**
@@ -86,7 +86,7 @@ GWENHYWFAR_API typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
  * readable text (please note that this code is PART of a ERRORCODE, not the
  * whole ERRORCODE itself !).
  */
-GWENHYWFAR_API typedef const char* (*GWEN_ERRORMESSAGEPTR)(int c);
+typedef const char* (*GWEN_ERRORMESSAGEPTR)(int c);
 
 
 GWENHYWFAR_API

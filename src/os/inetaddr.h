@@ -82,7 +82,6 @@ GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_InetAddr_GetCapabilities();
 /**
  * Address family (in most cases this is AddressFamilyIP)
  */
-GWENHYWFAR_API
 typedef enum {
   /** Internet Protocol (IP) */
   GWEN_AddressFamilyIP=0,
@@ -95,7 +94,7 @@ typedef enum {
  * You shoukd treat this type as opaque. Its members are not part of the API,
  * i.e. they are subject to changes without notice !
  */
-GWENHYWFAR_API typedef struct GWEN_INETADDRESSSTRUCT GWEN_INETADDRESS;
+typedef struct GWEN_INETADDRESSSTRUCT GWEN_INETADDRESS;
 
 
 /**

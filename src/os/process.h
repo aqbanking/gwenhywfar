@@ -49,12 +49,12 @@
 extern "C" {
 #endif
 
-  GWENHYWFAR_API typedef struct GWEN_PROCESS GWEN_PROCESS;
+  typedef struct GWEN_PROCESS GWEN_PROCESS;
 
   /**
    * States a process can assume.
    */
-  GWENHYWFAR_API typedef enum {
+  typedef enum {
     /** process has not yet been started */
     GWEN_ProcessStateNotStarted=0,
     /** process is running */

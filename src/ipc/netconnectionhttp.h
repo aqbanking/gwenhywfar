@@ -80,7 +80,6 @@ extern "C" {
  * This type is used when calling the callback function which writes the body
  * received.
  */
-GWENHYWFAR_API
 typedef enum {
   /** starting to receive the message body */
   GWEN_NetConnHttp_WriteBodyModeStart=0,
@@ -125,7 +124,6 @@ GWEN_NETCONNECTION *GWEN_NetConnectionHTTP_new(GWEN_NETTRANSPORT *tr,
  * mode=@ref GWEN_NetConnHttp_WriteBodyModeAbort
  */
 /*@{*/
-GWENHYWFAR_API
 typedef int (*GWEN_NETCONNHTTP_WRITEBODY_FN)(GWEN_NETCONNECTION *conn,
                                              const char *buffer,
                                              GWEN_TYPE_UINT32 *bsize,

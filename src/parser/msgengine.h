@@ -49,10 +49,8 @@ extern "C" {
  *
  */
 /*@{*/
-GWENHYWFAR_API
 typedef struct GWEN_MSGENGINE_TRUSTEDDATA GWEN_MSGENGINE_TRUSTEDDATA;
 
-GWENHYWFAR_API
 typedef enum {
   GWEN_MsgEngineTrustLevelNone=0,
   GWEN_MsgEngineTrustLevelLow,
@@ -130,7 +128,6 @@ int
  */
 /*@{*/
 
-GWENHYWFAR_API
 typedef struct GWEN__MSGENGINE GWEN_MSGENGINE;
 
 GWEN_INHERIT_FUNCTION_DEFS(GWEN_MSGENGINE)
@@ -143,7 +140,6 @@ GWEN_INHERIT_FUNCTION_DEFS(GWEN_MSGENGINE)
  * in C++)
  */
 /*@{*/
-GWENHYWFAR_API
 typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
                                            GWEN_BUFFER *msgbuf,
                                            GWEN_XMLNODE *node,
@@ -154,7 +150,6 @@ typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
 /**
  * @return 0 on success, -1 on error, 1 if unknown type
  */
-GWENHYWFAR_API
 typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
                                             GWEN_BUFFER *gbuf,
                                             GWEN_BUFFER *data,
@@ -163,17 +158,14 @@ typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
 /**
  * Checks of what base-type the given type is.
  */
-GWENHYWFAR_API
 typedef GWEN_DB_VALUETYPE (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
                                                           const char *tname);
 
-
-GWENHYWFAR_API
 typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
                                               GWEN_XMLNODE *node,
                                               GWEN_DB_NODE *gr,
                                               GWEN_BUFFER *vbuf);
-GWENHYWFAR_API
+
 typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
                                                GWEN_XMLNODE *node,
                                                GWEN_DB_NODE *gr,
@@ -182,21 +174,17 @@ typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
 /**
  * Get the value of the given name (or default value if none set)
  */
-GWENHYWFAR_API
-  typedef const char* (*GWEN_MSGENGINE_GETCHARVALUE_PTR)(GWEN_MSGENGINE *e,
+typedef const char* (*GWEN_MSGENGINE_GETCHARVALUE_PTR)(GWEN_MSGENGINE *e,
                                                          const char *name,
                                                          const char *defValue);
-GWENHYWFAR_API
-  typedef int (*GWEN_MSGENGINE_GETINTVALUE_PTR)(GWEN_MSGENGINE *e,
+typedef int (*GWEN_MSGENGINE_GETINTVALUE_PTR)(GWEN_MSGENGINE *e,
                                                 const char *name,
                                                 int defValue);
 
-GWENHYWFAR_API
-  typedef GWEN_DB_NODE*
+typedef GWEN_DB_NODE*
   (*GWEN_MSGENGINE_GETGLOBALVALUES_PTR)(GWEN_MSGENGINE *e);
 
-GWENHYWFAR_API
-  typedef void (*GWEN_MSGENGINE_FREEDATA_PTR)(GWEN_MSGENGINE *e);
+typedef void (*GWEN_MSGENGINE_FREEDATA_PTR)(GWEN_MSGENGINE *e);
 
 /*@}*/
 

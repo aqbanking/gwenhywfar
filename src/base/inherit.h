@@ -50,7 +50,6 @@ extern "C" {
    *
    */
   /*@{*/
-  GWENHYWFAR_API 
   typedef void (*GWEN_INHERIT_FREEDATAFN)(void *baseData,
                                           void *data);
 

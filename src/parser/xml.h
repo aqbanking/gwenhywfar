@@ -108,13 +108,11 @@ extern "C" {
 
 /** The type of a property of a tag (in XML notation this would be
     called the attribute of an element). */
-GWENHYWFAR_API
 typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 
 /**
  * The possible types of a GWEN_XMLNODE.
  */
-GWENHYWFAR_API
 typedef enum {
   /** A node can be a tag (in XML notation these are called
       elements). */
@@ -128,11 +126,9 @@ typedef enum {
 /** The abstract type XMLNODE. Each node is one node in the document
  * tree and can represent different things, see @ref
  * GWEN_XMLNODE_TYPE. */
-GWENHYWFAR_API
 typedef struct GWEN__XMLNODE GWEN_XMLNODE;
 
 
-GWENHYWFAR_API
 typedef int
     (*GWEN_XML_INCLUDE_FN)(GWEN_XMLNODE *n,
 			   const char *path,
@@ -577,8 +573,7 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind);
  */
 /*@{*/
 
-GWENHYWFAR_API
-  typedef struct GWEN_XMLNODE_PATH GWEN_XMLNODE_PATH;
+typedef struct GWEN_XMLNODE_PATH GWEN_XMLNODE_PATH;
 
 
 GWENHYWFAR_API

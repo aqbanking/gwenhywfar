@@ -49,9 +49,9 @@ extern "C" {
 #endif
 
 #define GWEN_LIST2_FUNCTION_DEFS(t, pr) \
-  GWENHYWFAR_API typedef struct t##_LIST2 t##_LIST2; \
-  GWENHYWFAR_API typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
-  GWENHYWFAR_API typedef t* (t##_LIST2_FOREACH)(t *element); \
+  typedef struct t##_LIST2 t##_LIST2; \
+  typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
+  typedef t* (t##_LIST2_FOREACH)(t *element); \
   \
   GWENHYWFAR_API \
   t##_LIST2 *pr##_List2_new(); \
@@ -197,11 +197,8 @@ extern "C" {
 
 
 #define GWEN_CONSTLIST2_FUNCTION_DEFS(t, pr) \
-  GWENHYWFAR_API \
   typedef struct t##_CONSTLIST2 t##_CONSTLIST2; \
-  GWENHYWFAR_API \
   typedef struct t##_CONSTLIST2_ITERATOR t##_CONSTLIST2_ITERATOR; \
-  GWENHYWFAR_API \
   typedef const t* (t##_CONSTLIST2_FOREACH)(const t *element); \
   \
   GWENHYWFAR_API \

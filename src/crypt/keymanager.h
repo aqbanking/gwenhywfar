@@ -50,21 +50,16 @@ extern "C" {
 #endif
 
 
-GWENHYWFAR_API
 typedef struct GWEN_KEYMANAGER GWEN_KEYMANAGER;
 
 
-GWENHYWFAR_API
 typedef const GWEN_CRYPTKEY*
   (*GWEN_KEYMANAGER_GETKEYFN)(GWEN_KEYMANAGER *km,
                               const GWEN_KEYSPEC *ks);
-GWENHYWFAR_API
 typedef int (*GWEN_KEYMANAGER_ADDKEYFN)(GWEN_KEYMANAGER *km,
                                         const GWEN_CRYPTKEY *key);
-GWENHYWFAR_API
 typedef int (*GWEN_KEYMANAGER_DELKEYFN)(GWEN_KEYMANAGER *km,
                                         const GWEN_CRYPTKEY *key);
-GWENHYWFAR_API
 typedef void (*GWEN_KEYMANAGER_FREEDATAFN)(GWEN_KEYMANAGER *km);
 
 

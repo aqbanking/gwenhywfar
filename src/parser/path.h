@@ -179,8 +179,7 @@ extern "C" {
 
 
 
-GWENHYWFAR_API
-  typedef void* (*GWEN_PATHHANDLERPTR)(const char *entry,
+typedef void* (*GWEN_PATHHANDLERPTR)(const char *entry,
 				       void *data,
 				       GWEN_TYPE_UINT32 flags);
 

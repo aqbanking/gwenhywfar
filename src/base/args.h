@@ -33,7 +33,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-GWENHYWFAR_API
 typedef struct GWEN_ARGS GWEN_ARGS;
 #ifdef __cplusplus
 }
@@ -59,13 +58,11 @@ extern "C" {
 #define GWEN_ARGS_RESULT_HELP  (-2)
 
 
-GWENHYWFAR_API
 typedef enum {
   GWEN_ArgsTypeChar=0,
   GWEN_ArgsTypeInt
 } GWEN_ARGS_TYPE;
 
-GWENHYWFAR_API
 typedef enum {
   GWEN_ArgsOutTypeTXT=0,
   GWEN_ArgsOutTypeHTML

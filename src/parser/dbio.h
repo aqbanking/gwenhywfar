@@ -38,7 +38,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-GWENHYWFAR_API
 typedef struct GWEN_DBIO GWEN_DBIO;
 #ifdef __cplusplus
 }
@@ -72,18 +71,15 @@ GWEN_INHERIT_FUNCTION_DEFS(GWEN_DBIO)
 /* No trailing semicolon here because this is a macro call */
 
 
-GWENHYWFAR_API
 typedef GWEN_DBIO* (*GWEN_DBIO_FACTORYFN)(void);
 
 
-GWENHYWFAR_API
 typedef int (*GWEN_DBIO_IMPORTFN)(GWEN_DBIO *dbio,
 				  GWEN_BUFFEREDIO *bio,
 				  GWEN_TYPE_UINT32 flags,
                                   GWEN_DB_NODE *db,
                                   GWEN_DB_NODE *params);
 
-GWENHYWFAR_API
 typedef int (*GWEN_DBIO_EXPORTFN)(GWEN_DBIO *dbio,
 				  GWEN_BUFFEREDIO *bio,
 				  GWEN_TYPE_UINT32 flags,

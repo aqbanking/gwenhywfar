@@ -38,7 +38,6 @@ extern "C" {
 
 
 
-GWENHYWFAR_API
 typedef struct GWEN_IPCMANAGER GWEN_IPCMANAGER;
 
 

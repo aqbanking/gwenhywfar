@@ -52,7 +52,6 @@ extern "C" {
  * the function should let the user verify the password before writing
  * it into the buffer).
  */
-GWENHYWFAR_API
 typedef int (*GWEN_NETTRANSPORTSSL_GETPASSWD_FN)(GWEN_NETTRANSPORT *tr,
                                                  char *buffer, int num,
                                                  int rwflag);
@@ -76,8 +75,7 @@ GWENHYWFAR_API
  *
  */
 /*@{*/
-GWENHYWFAR_API
-  typedef enum {
+typedef enum {
     /** error asking the user */
     GWEN_NetTransportSSL_AskAddCertResultError=0,
     /** user does not trust the given certificate */
@@ -88,7 +86,7 @@ GWENHYWFAR_API
     GWEN_NetTransportSSL_AskAddCertResultPerm,
     /** store the cert in an incoming directory, trust it for this session  */
     GWEN_NetTransportSSL_AskAddCertResultIncoming
-  } GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT;
+} GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT;
 
 /**
  * This is the prototype of the callback which asks the user whether he wants
@@ -96,8 +94,7 @@ GWENHYWFAR_API
  * @param tr transport layer via which the certificate has been received
  * @param cert a DB node containing information about the certificate
  */
-GWENHYWFAR_API
-  typedef GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+typedef GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
   (*GWEN_NETTRANSPORTSSL_ASKADDCERT_FN)(GWEN_NETTRANSPORT *tr,
                                         GWEN_DB_NODE *cert);
 

@@ -75,7 +75,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-GWENHYWFAR_API
 typedef struct GWEN_NETCONNECTION GWEN_NETCONNECTION;
 #ifdef __cplusplus
 }
@@ -94,7 +93,6 @@ typedef struct GWEN_NETCONNECTION GWEN_NETCONNECTION;
 extern "C" {
 #endif
 
-GWENHYWFAR_API
 typedef enum {
   GWEN_NetConnectionWorkResult_NoChange=0,
   GWEN_NetConnectionWorkResult_Change,
@@ -112,18 +110,14 @@ GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETCONNECTION)
  */
 /*@{*/
 /** see @ref GWEN_NetConnection_Work */
-GWENHYWFAR_API
 typedef GWEN_NETCONNECTION_WORKRESULT
   (*GWEN_NETCONNECTION_WORKFN)(GWEN_NETCONNECTION *conn);
 /** see @ref GWEN_NetConnection_Up */
-GWENHYWFAR_API
 typedef void (*GWEN_NETCONNECTION_UPFN)(GWEN_NETCONNECTION *conn);
 /** see @ref GWEN_NetConnection_down */
-GWENHYWFAR_API
-  typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
+typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
 
-GWENHYWFAR_API
-  typedef GWEN_TYPE_UINT32
+typedef GWEN_TYPE_UINT32
   (*GWEN_NETCONNECTION_CHECKFN)(GWEN_NETCONNECTION *conn);
 
 /*@}*/

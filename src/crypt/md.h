@@ -38,18 +38,13 @@ extern "C" {
 
 
 
-GWENHYWFAR_API
 typedef struct GWEN_MD GWEN_MD;
 
-GWENHYWFAR_API
 typedef int (*GWEN_MD_BEGIN_FN)(GWEN_MD *md);
-GWENHYWFAR_API
 typedef int (*GWEN_MD_END_FN)(GWEN_MD *md);
-GWENHYWFAR_API
 typedef int (*GWEN_MD_UPDATE_FN)(GWEN_MD *md,
                                  const char *buf,
                                  unsigned int l);
-GWENHYWFAR_API
 typedef void (*GWEN_MD_FREEDATA_FN)(GWEN_MD *md);
 
 
@@ -112,10 +107,8 @@ void *GWEN_MD_GetData(GWEN_MD *md);
 /*@}*/
 
 
-GWENHYWFAR_API
 typedef struct GWEN_MD_PROVIDER GWEN_MD_PROVIDER;
 
-GWENHYWFAR_API
 typedef GWEN_MD*
   (*GWEN_MDPROVIDER_NEWMD_FN)(GWEN_MD_PROVIDER *pr);
 

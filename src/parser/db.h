@@ -204,13 +204,11 @@ extern "C" {
  * A description of what can be done with this type can be found in
  * @ref db.h
  */
-GWENHYWFAR_API
 typedef union GWEN_DB_NODE GWEN_DB_NODE;
 
 /**
  * This specifies the type of a value stored in the DB.
  */
-GWENHYWFAR_API
 typedef enum {
   /** type unknown */
   GWEN_DB_VALUETYPE_UNKNOWN=0,

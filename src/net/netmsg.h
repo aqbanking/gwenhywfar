@@ -33,7 +33,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-GWENHYWFAR_API
 typedef struct GWEN_NETMSG GWEN_NETMSG;
 #ifdef __cplusplus
 }

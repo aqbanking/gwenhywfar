@@ -34,15 +34,11 @@ extern "C" {
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
-GWENHYWFAR_API
 typedef struct GWEN_LOGGER GWEN_LOGGER;
 
-
-GWENHYWFAR_API
 typedef void (*GWEN_LOGGERFUNCTIONLOG)(const char *s);
 
-
-GWENHYWFAR_API typedef enum {
+typedef enum {
   GWEN_LoggerTypeConsole,
   GWEN_LoggerTypeFile,
   GWEN_LoggerTypeSyslog,
@@ -52,7 +48,7 @@ GWENHYWFAR_API typedef enum {
 } GWEN_LOGGER_LOGTYPE;
 
 
-GWENHYWFAR_API typedef enum {
+typedef enum {
   GWEN_LoggerFacilityAuth=0,
   GWEN_LoggerFacilityDaemon,
   GWEN_LoggerFacilityMail,
@@ -63,7 +59,7 @@ GWENHYWFAR_API typedef enum {
 } GWEN_LOGGER_FACILITY;
 
 
-GWENHYWFAR_API typedef enum {
+typedef enum {
   GWEN_LoggerLevelEmergency=0,
   GWEN_LoggerLevelAlert,
   GWEN_LoggerLevelCritical,

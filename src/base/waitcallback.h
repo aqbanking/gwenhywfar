@@ -36,7 +36,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-GWENHYWFAR_API typedef struct GWEN_WAITCALLBACK GWEN_WAITCALLBACK;
+typedef struct GWEN_WAITCALLBACK GWEN_WAITCALLBACK;
 GWEN_LIST_FUNCTION_DEFS(GWEN_WAITCALLBACK, GWEN_WaitCallback)
 GWEN_INHERIT_FUNCTION_DEFS(GWEN_WAITCALLBACK)
 /* No trailing semicolon here because this is a macro call */
@@ -78,13 +78,12 @@ extern "C" {
 /**
  * Result of @ref GWEN_WAITCALLBACK_CHECKABORTFN.
  */
-GWENHYWFAR_API
-  typedef enum {
-    /** tells the caller that it is ok to continue */
-    GWEN_WaitCallbackResult_Continue=0,
-    /** tells the caller to abort */
-    GWEN_WaitCallbackResult_Abort
-  } GWEN_WAITCALLBACK_RESULT;
+typedef enum {
+  /** tells the caller that it is ok to continue */
+  GWEN_WaitCallbackResult_Continue=0,
+  /** tells the caller to abort */
+  GWEN_WaitCallbackResult_Abort
+} GWEN_WAITCALLBACK_RESULT;
 
 
 /** @name Prototypes For Virtual Functions
@@ -103,7 +102,7 @@ GWENHYWFAR_API
  * below the context given as parameter <i>ctx</i>. So if the level is 0 then
  * the given context actually <b>is</b> the currently active one.
  */
-GWENHYWFAR_API typedef
+typedef
   GWEN_WAITCALLBACK_RESULT
   (*GWEN_WAITCALLBACK_CHECKABORTFN)(GWEN_WAITCALLBACK *ctx,
 				    unsigned int level);
@@ -116,7 +115,7 @@ GWENHYWFAR_API typedef
  * This function <b>must</b> be set.
  * @param ctx context
  */
-GWENHYWFAR_API typedef
+typedef
   GWEN_WAITCALLBACK*
   (*GWEN_WAITCALLBACK_INSTANTIATEFN)(GWEN_WAITCALLBACK *ctx);
 
@@ -133,7 +132,7 @@ GWENHYWFAR_API typedef
  * level). Libgwenhywfar itself does not use this function.
  * @param s log string
  */
-GWENHYWFAR_API typedef
+typedef
   void
   (*GWEN_WAITCALLBACK_LOGFN)(GWEN_WAITCALLBACK *ctx,
                              unsigned int level,

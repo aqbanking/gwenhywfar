@@ -32,7 +32,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-GWENHYWFAR_API
 typedef struct GWEN_NETTRANSPORT GWEN_NETTRANSPORT;
 #ifdef __cplusplus
 }
@@ -48,7 +47,6 @@ typedef struct GWEN_NETTRANSPORT GWEN_NETTRANSPORT;
 extern "C" {
 #endif
 
-GWENHYWFAR_API
 typedef enum {
   GWEN_NetTransportWorkResult_NoChange=0,
   GWEN_NetTransportWorkResult_Change,
@@ -88,7 +86,6 @@ GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETTRANSPORT)
 /**
  * These are the result codes to be returned by functions of this group.
  */
-GWENHYWFAR_API
 typedef enum {
   /** Function succeeded */
   GWEN_NetTransportResultOk=0,
@@ -115,7 +112,6 @@ typedef enum {
 /**
  * This is the status of the transport layer.
  */
-GWENHYWFAR_API
 typedef enum {
   /** neither connected nor listening, this is the initial state */
   GWEN_NetTransportStatusUnconnected=0,
@@ -151,7 +147,6 @@ typedef enum {
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
-GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
 (*GWEN_NETTRANSPORT_STARTCONNECT)(GWEN_NETTRANSPORT *tr);
 
@@ -161,7 +156,6 @@ typedef GWEN_NETTRANSPORT_RESULT
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
-GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_STARTACCEPT)(GWEN_NETTRANSPORT *tr);
 
@@ -170,7 +164,6 @@ typedef GWEN_NETTRANSPORT_RESULT
  * Please note that this function MUST set the status accordingly (using
  * @ref GWEN_NetTransport_SetStatus).
  */
-GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_STARTDISCONNECT)(GWEN_NETTRANSPORT *tr);
 
@@ -181,7 +174,6 @@ typedef GWEN_NETTRANSPORT_RESULT
  * bytes to read. Upon return this variable contains the number of bytes
  * actually read.
  */
-GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_READ)(GWEN_NETTRANSPORT *tr,
                             char *buffer,
@@ -194,7 +186,6 @@ typedef GWEN_NETTRANSPORT_RESULT
  * bytes to write. Upon return this variable contains the number of bytes
  * actually written.
  */
-GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_WRITE)(GWEN_NETTRANSPORT *tr,
                              const char *buffer,
@@ -208,7 +199,6 @@ typedef GWEN_NETTRANSPORT_RESULT
  * @param sset pointer to the socket set to which sockets should be added
  * @param forReading if !=0 then readable sockets are requested
  */
-GWENHYWFAR_API
 typedef int
   (*GWEN_NETTRANSPORT_ADDSOCKETS)(GWEN_NETTRANSPORT *tr,
                                   GWEN_SOCKETSET *sset,
@@ -217,7 +207,6 @@ typedef int
 /**
  * Allows the transport layer to do some work.
  */
-GWENHYWFAR_API
 typedef GWEN_NETTRANSPORT_WORKRESULT
   (*GWEN_NETTRANSPORT_WORK)(GWEN_NETTRANSPORT *tr);
 

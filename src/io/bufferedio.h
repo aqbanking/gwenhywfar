@@ -35,7 +35,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  GWENHYWFAR_API typedef struct GWEN_BUFFEREDIOSTRUCT GWEN_BUFFEREDIO;
+  typedef struct GWEN_BUFFEREDIOSTRUCT GWEN_BUFFEREDIO;
   GWEN_INHERIT_FUNCTION_DEFS(GWEN_BUFFEREDIO)
   /* No trailing semicolon because this is a macro call */
 #ifdef __cplusplus
@@ -83,25 +83,20 @@ extern "C" {
 #define GWEN_BUFFEREDIO_CBID_IO "GWEN_BUFFEREDIO_CBID_IO"
 
 
-GWENHYWFAR_API
 typedef enum {
   GWEN_LineModeUnix=0,
   GWEN_LineModeDOS
 } GWEN_BUFFEREDIOLINEMODE;
 
-
-GWENHYWFAR_API
-  typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOREADFN)(GWEN_BUFFEREDIO *dm,
-                                                  char *buffer,
+typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOREADFN)(GWEN_BUFFEREDIO *dm,
+                                                 char *buffer,
                                                   int *size,
                                                   int timeout);
-GWENHYWFAR_API
-  typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOWRITEFN)(GWEN_BUFFEREDIO *dm,
+typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOWRITEFN)(GWEN_BUFFEREDIO *dm,
                                                    const char *buffer,
                                                    int *size,
                                                    int timeout);
-GWENHYWFAR_API
-  typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOCLOSEFN)(GWEN_BUFFEREDIO *dm);
+typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOCLOSEFN)(GWEN_BUFFEREDIO *dm);
 
 
 

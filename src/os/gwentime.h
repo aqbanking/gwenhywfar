@@ -37,7 +37,7 @@
 extern "C" {
 #endif
 
-GWENHYWFAR_API typedef struct GWEN_TIME GWEN_TIME;
+typedef struct GWEN_TIME GWEN_TIME;
 
 
 

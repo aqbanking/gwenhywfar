@@ -68,7 +68,7 @@ extern "C" {
 /**
  * Socket types
  */
-GWENHYWFAR_API typedef enum {
+typedef enum {
   GWEN_SocketTypeTCP=1,
   GWEN_SocketTypeUDP,
   GWEN_SocketTypeRAW,
@@ -76,9 +76,9 @@ GWENHYWFAR_API typedef enum {
 } GWEN_SOCKETTYPE;
 
 
-GWENHYWFAR_API typedef struct GWEN_SOCKETSTRUCT GWEN_SOCKET;
+typedef struct GWEN_SOCKETSTRUCT GWEN_SOCKET;
 
-GWENHYWFAR_API typedef struct GWEN_SOCKETSETSTRUCT GWEN_SOCKETSET;
+typedef struct GWEN_SOCKETSETSTRUCT GWEN_SOCKETSET;
 
 
 /**

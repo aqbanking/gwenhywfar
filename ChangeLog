@@ -1,3 +1,8 @@
+2004-07-30   Christian Stimming <stimming@tuhh.de>
+
+	* all header files: Removed GWENHYWFAR_API from all typedefs since
+	this will break compilation of Win32 applications as soon as those
+	use any gwen typedef as function return type.
 
 2004/07/30: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
