@@ -84,7 +84,7 @@ int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d){
 
 int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
                         char *buffer,
-                        int len){
+                        unsigned int len){
   struct dirent *de;
 
   assert(d);

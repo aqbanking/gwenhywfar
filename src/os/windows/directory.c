@@ -85,7 +85,7 @@ int Directory_Close(DIRECTORYDATA *d){
 
 int Directory_Read(DIRECTORYDATA *d,
 		   char *buffer,
-		   int len){
+		   unsigned int len){
   WIN32_FIND_DATA wd;
 
   assert(d);

@@ -87,7 +87,7 @@ GWENHYFWAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
  */
 GWENHYFWAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
                                        char *buffer,
-                                       int len);
+                                       unsigned int len);
 
 /**
  * Rewinds the internal pointers, so that the next call to

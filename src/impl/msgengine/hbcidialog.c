@@ -322,10 +322,10 @@ int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src) {
     j2=40-i;
     j3=sizeof(buffer) - (2*i);
 
-    if (j1>=0 && j1<sizeof(buffer) && j2>=0) {
+    if (j1>=0 && j1<(int)sizeof(buffer) && j2>=0) {
       buffer[j1]=p[j2];
     }
-    if (j3>=0 && j3<sizeof(buffer) && j2>=0) {
+    if (j3>=0 && j3<(int)sizeof(buffer) && j2>=0) {
       buffer[j3]=GWEN_HBCIDialog_permutate(p[j2]);
     }
   } /* for */

@@ -232,7 +232,7 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
               }
               GWEN_Buffer_SetPos(buffer, currPos);
               msgsize=GWEN_DB_GetIntValue(tmpda, "size", 0, -1);
-              if (msgsize<GWEN_Buffer_GetUsedBytes(buffer)) {
+              if (msgsize<(int)GWEN_Buffer_GetUsedBytes(buffer)) {
                 DBG_ERROR(0, "Bad size (%d)", msgsize);
                 GWEN_DB_Group_free(tmpda);
                 DBG_INFO(0, "Severe error, closing connection");

@@ -584,7 +584,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
 
   if (bt->readerBufferPos<bt->readerBufferFilled) {
     /* buffer not empty, so read from the buffer first */
-    int i;
+    unsigned int i;
 
     i=bt->readerBufferFilled-bt->readerBufferPos;
     if (i>*bsize)

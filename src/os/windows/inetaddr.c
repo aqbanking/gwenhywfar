@@ -280,7 +280,7 @@ ERRORCODE InetAddr_SetName(INETADDRESSPTR ia, const char *name){
 }
 
 
-ERRORCODE InetAddr_GetAddress(const INETADDRESS *ia, char *buffer, int bsize){
+ERRORCODE InetAddr_GetAddress(const INETADDRESS *ia, char *buffer, unsigned int bsize){
   const char *s;
 
   assert(ia);
@@ -320,7 +320,7 @@ ERRORCODE InetAddr_GetAddress(const INETADDRESS *ia, char *buffer, int bsize){
 }
 
 
-ERRORCODE InetAddr_GetName(const INETADDRESS *ia, char *buffer, int bsize){
+ERRORCODE InetAddr_GetName(const INETADDRESS *ia, char *buffer, unsigned int bsize){
   struct hostent *he;
   struct in_addr lia;
 

@@ -406,7 +406,7 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
 	    }
           }
 
-          if (comlen>=sizeof(comment)) {
+          if (comlen>=(int)sizeof(comment)) {
             DBG_ERROR(0, "Comment too long !");
             return -1;
           }

@@ -295,7 +295,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
     } /* if type is "bin" */
     else if (strcasecmp(type, "num")==0) {
       int num;
-      int len;
+      unsigned int len;
       unsigned int lj;
 
       num=atoi(GWEN_Buffer_GetPosPointer(data));
@@ -729,7 +729,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
 	p=GWEN_XMLNode_GetProperty(n, pname,"");
         if (strcasecmp(p, pvalue)==0) {
           i=atoi(GWEN_XMLNode_GetProperty(n, "pversion" ,"0"));
-          if (proto==0 || proto==i || i==0) {
+          if (proto==0 || (int)proto==i || i==0) {
             i=atoi(GWEN_XMLNode_GetProperty(n, "version" ,"0"));
             if (version==0 || version==i) {
               p=GWEN_XMLNode_GetProperty(n, "mode","");
@@ -2216,7 +2216,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   unsigned int posInMsg;
   const char *type;
   int rv;
-  int realSize;
+  unsigned int realSize;
 
   /* get some sizes */
   posInMsg=GWEN_Buffer_GetPos(msgbuf);

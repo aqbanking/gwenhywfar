@@ -147,7 +147,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia,
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
-                                          char *buffer, int bsize);
+                                          char *buffer, unsigned int bsize);
 
 /**
  * Gets the host name stored in the INETADDRESS. If there is none, then the
@@ -159,7 +159,7 @@ GWENHYFWAR_API
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
-                                       char *buffer, int bsize);
+                                       char *buffer, unsigned int bsize);
 /*@}*/
 
 /**

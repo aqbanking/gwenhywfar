@@ -60,7 +60,7 @@ void *GWEN_Path_Handle(const char *path,
     /* copy element into buffer */
     i=0;
     while (*path && !(*path=='/' || *path=='\\')) {
-      if (i>(sizeof(buffer)-1)) {
+      if (i>((int)sizeof(buffer)-1)) {
         DBG_ERROR(0, "Path element too long");
         return 0;
       }

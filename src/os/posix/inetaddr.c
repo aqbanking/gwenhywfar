@@ -353,7 +353,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
 
 
 GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
-					char *buffer, int bsize){
+					char *buffer, unsigned int bsize){
   const char *s;
 
   assert(ia);
@@ -383,7 +383,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
     s=aptr->sun_path;
     i=ia->size;
     i-=sizeof(aptr->sun_family);
-    if (i+1>bsize)
+    if (i+1>(int)bsize)
       return GWEN_Error_new(0,
 		       GWEN_ERROR_SEVERITY_ERR,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -405,7 +405,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
 
 
 GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
-				     char *buffer, int bsize){
+				     char *buffer, unsigned int bsize){
   struct hostent *he;
   struct in_addr lia;
 
