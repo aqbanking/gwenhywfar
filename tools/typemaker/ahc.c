@@ -168,7 +168,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       GWEN_BufferedIO_Write(bio, args->domain);
     }
 
-    GWEN_BufferedIO_WriteLine(bio, ")");
+    err = GWEN_BufferedIO_WriteLine(bio, ")");
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       GWEN_Buffer_free(hbuf);
@@ -190,7 +190,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       GWEN_BufferedIO_Write(bio, args->domain);
     }
 
-    GWEN_BufferedIO_WriteLine(bio, ")");
+    err = GWEN_BufferedIO_WriteLine(bio, ")");
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       GWEN_Buffer_free(hbuf);
