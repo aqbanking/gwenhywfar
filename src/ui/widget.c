@@ -947,8 +947,17 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       DBG_NOTICE(0, "Emergency quit");
       exit(2);
     }
-    else if (key==9) {
+    else if (key==9 ||
+             key==KEY_DOWN ||
+             key==KEY_RIGHT) {
       if (GWEN_UI_FocusToNext(w)) {
+        beep();
+        return GWEN_UIResult_Handled;
+      }
+    }
+    else if (key==KEY_LEFT ||
+             key==KEY_UP) {
+      if (GWEN_UI_FocusToPrevious(w)) {
         beep();
         return GWEN_UIResult_Handled;
       }

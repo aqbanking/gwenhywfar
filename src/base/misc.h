@@ -301,10 +301,12 @@ extern "C" {
   void pr##_List_Insert(t *element, t##_LIST *list); \
   void pr##_List_Del(t *element); \
   t* pr##_List_First(const t##_LIST *l); \
+  t* pr##_List_Last(const t##_LIST *l); \
   void pr##_List_Clear(t##_LIST *l); \
   t##_LIST* pr##_List_new(); \
   void pr##_List_free(t##_LIST *l); \
   t* pr##_List_Next(const t *element); \
+  t* pr##_List_Previous(const t *element); \
   GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l);
 
 
@@ -364,6 +366,18 @@ extern "C" {
     else return 0; \
   } \
   \
+  t* pr##_List_Last(const t##_LIST *l) { \
+    t* el; \
+    \
+    assert(l); \
+    el=l->first; \
+    if (!el) \
+      return 0; \
+    while(el->next)\
+      el=el->next; \
+    return el; \
+  } \
+  \
   void pr##_List_Clear(t##_LIST *l) { \
     t* el; \
     while(l->first) {\
@@ -388,6 +402,20 @@ extern "C" {
   t* pr##_List_Next(const t *element) { \
     assert(element);\
     return element->next;\
+  } \
+  \
+  t* pr##_List_Previous(const t *element) { \
+    t *tmpel; \
+    \
+    assert(element);\
+    assert(element->listPtr);\
+    assert(element->listPtr->first); \
+    tmpel=element->listPtr->first; \
+    while(tmpel->next && tmpel->next!=element) \
+      tmpel=tmpel->next; \
+    if (tmpel->next!=element) \
+      return 0; \
+    return tmpel; \
   } \
   \
   GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l){\

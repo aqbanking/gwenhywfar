@@ -47,6 +47,10 @@ struct GWEN_UI {
 GWEN_UI_RESULT GWEN_UI_HandleEvents();
 
 GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w);
+GWEN_WIDGET *GWEN_UI_GetDeepestFocusableBackwards(GWEN_WIDGET *w);
+
+GWEN_WIDGET *GWEN_UI__FocusToNext(GWEN_WIDGET *wlevel);
+GWEN_WIDGET *GWEN_UI__FocusToPrevious(GWEN_WIDGET *wlevel);
 
 int GWEN_UI_HandleKeyEvents();
 

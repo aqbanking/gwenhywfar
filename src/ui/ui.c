@@ -673,6 +673,57 @@ GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w){
 
 
 
+GWEN_WIDGET *GWEN_UI_GetDeepestFocusableBackwards(GWEN_WIDGET *w){
+  GWEN_WIDGET *wnext;
+  GWEN_WIDGET *wfocus;
+  GWEN_TYPE_UINT32 wf, ws;
+
+  wf=GWEN_Widget_GetFlags(w);
+  ws=GWEN_Widget_GetState(w);
+
+  DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(w));
+
+  if (!(ws & GWEN_WIDGET_STATE_ACTIVE) ||
+      (ws & GWEN_WIDGET_STATE_CLOSED)) {
+    DBG_NOTICE(0, "Widget \"%s\" inactive or closed",
+               GWEN_Widget_GetName(w));
+    return 0;
+  }
+
+  wnext=GWEN_Widget_GetFirstChild(w);
+  if (wnext) {
+    while(GWEN_Widget_List_Next(wnext))
+      wnext=GWEN_Widget_List_Next(wnext);
+  }
+  while (wnext) {
+    GWEN_TYPE_UINT32 wf, ws;
+
+    wf=GWEN_Widget_GetFlags(wnext);
+    ws=GWEN_Widget_GetState(wnext);
+    if ((ws & GWEN_WIDGET_STATE_ACTIVE) &&
+        !(ws & GWEN_WIDGET_STATE_CLOSED)) {
+      wfocus=GWEN_UI_GetDeepestFocusableBackwards(wnext);
+      if (wfocus) {
+        DBG_NOTICE(0, "Widget \"%s\" found", GWEN_Widget_GetName(wfocus));
+        return wfocus;
+      }
+      if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
+          !(ws & GWEN_WIDGET_STATE_HASFOCUS))
+        return wnext;
+    }
+
+    wnext=GWEN_Widget_List_Previous(wnext);
+  } /* while */
+
+  if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
+      !(ws & GWEN_WIDGET_STATE_HASFOCUS))
+    return w;
+
+  return 0;
+}
+
+
+
 GWEN_WIDGET *GWEN_UI__FocusToNext(GWEN_WIDGET *wlevel){
   GWEN_WIDGET *wfocus;
 
@@ -734,6 +785,79 @@ int GWEN_UI_FocusToNext(){
       if (wfocus)
         break;
       wc=GWEN_Widget_List_Next(wc);
+    }
+  }
+
+  if (!wfocus)
+    return 1;
+
+  GWEN_UI_SetFocus(wfocus);
+  return 0;
+}
+
+
+
+GWEN_WIDGET *GWEN_UI__FocusToPrevious(GWEN_WIDGET *wlevel){
+  GWEN_WIDGET *wfocus;
+
+  assert(wlevel);
+  while(wlevel) {
+    GWEN_WIDGET *wnext;
+
+    DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wlevel));
+    wnext=GWEN_Widget_List_Previous(wlevel);
+    if (!wnext) {
+      DBG_NOTICE(0, "No previous widget");
+    }
+    while(wnext) {
+      DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wnext));
+      wfocus=GWEN_UI_GetDeepestFocusableBackwards(wnext);
+      if (wfocus) {
+        return wfocus;
+      }
+
+      wnext=GWEN_Widget_List_Previous(wnext);
+    }
+    if (GWEN_Widget_GetFlags(wlevel) & GWEN_WIDGET_FLAGS_MODAL)
+      wlevel=0;
+    else
+      wlevel=GWEN_Widget_GetParent(wlevel);
+  }
+
+  DBG_NOTICE(0, "No previous widget to focus to");
+  return 0;
+}
+
+
+
+int GWEN_UI_FocusToPrevious(){
+  GWEN_WIDGET *wfocus;
+
+  wfocus=0;
+  if (GWEN_UI__ui->focusWidget)
+    wfocus=GWEN_UI__FocusToPrevious(GWEN_UI__ui->focusWidget);
+  if (!wfocus) {
+    GWEN_WIDGET *wc;
+
+    /* get last focus */
+    wc=0;
+    /* get root (or modal widget above) */
+    if (GWEN_UI__ui->focusWidget) {
+      wc=GWEN_Widget_GetParent(GWEN_UI__ui->focusWidget);
+      while(wc) {
+        if (GWEN_Widget_GetFlags(wc) & GWEN_WIDGET_FLAGS_MODAL)
+          /* found root */
+          break;
+        wc=GWEN_Widget_GetParent(wc);
+      }
+    }
+    if (!wc)
+      wc=GWEN_Widget_List_Last(GWEN_UI__ui->rootWidgets);
+    while(wc) {
+      wfocus=GWEN_UI_GetDeepestFocusableBackwards(wc);
+      if (wfocus)
+        break;
+      wc=GWEN_Widget_List_Previous(wc);
     }
   }
 
