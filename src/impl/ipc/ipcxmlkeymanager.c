@@ -257,9 +257,68 @@ GWEN_KEYMANAGER *GWEN_IPCXMLKeyManager_new(){
 
 
 
+int GWEN_IPCXMLKeyManager_KeysFromDB(GWEN_KEYMANAGER *km,
+                                     GWEN_DB_NODE *db) {
+  GWEN_DB_NODE *gr;
+
+  gr=GWEN_DB_GetFirstGroup(db);
+  while (gr) {
+    GWEN_CRYPTKEY *key;
+
+    key=GWEN_CryptKey_Factory("RSA");
+    if (!key) {
+      DBG_ERROR(0, "Could not create key");
+      return 0;
+    }
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key)
+      if (GWEN_KeyManager_AddKey(km, key)) {
+        GWEN_CryptKey_free(key);
+        DBG_ERROR(0, "Could not add key");
+        return -1;
+      }
+    GWEN_CryptKey_free(key);
+    gr=GWEN_DB_GetNextGroup(gr);
+  } /* while */
+
+  return 0;
+}
 
 
 
+int GWEN_IPCXMLKeyManager_KeysToDB(GWEN_KEYMANAGER *km,
+                                   GWEN_DB_NODE *db) {
+  GWEN_LIST_ITERATOR *it;
+  GWEN_IPCXMLKEYMANAGERDATA *kd;
+  GWEN_ERRORCODE err;
+
+  assert(km);
+  kd=(GWEN_IPCXMLKEYMANAGERDATA*)GWEN_KeyManager_GetData(km);
+  assert(kd);
+
+  it=GWEN_List_First(kd->keys);
+  if (it) {
+    GWEN_CRYPTKEY *key;
+    GWEN_DB_NODE *gr;
+
+    key=(GWEN_CRYPTKEY*)GWEN_ListIterator_Data(it);
+
+    while(key) {
+      gr=GWEN_DB_GetGroup(db,
+                          GWEN_DB_FLAGS_DEFAULT |
+                          GWEN_PATH_FLAGS_CREATE_GROUP,
+                          "keys/key");
+      assert(gr);
+      err=GWEN_CryptKey_ToDb(key, gr, 0);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_INFO_ERR(0, err);
+        return -1;
+      }
+      key=(GWEN_CRYPTKEY*)GWEN_ListIterator_Next(it);
+    } /* while */
+  } /* if it */
+  return 0;
+}
 
 
 

@@ -262,13 +262,13 @@ unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key){
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
-                                    GWEN_DB_NODE *db){
+GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
   GWEN_DB_NODE *gr;
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
 
+  key=GWEN_CryptKey_Factory(GWEN_DB_GetCharValue(db, "type", 0, ""));
   assert(key);
-  GWEN_KeySpec_SetKeyType(key->keyspec,
-                          GWEN_DB_GetCharValue(db, "type", 0, ""));
   GWEN_KeySpec_SetKeyName(key->keyspec,
                           GWEN_DB_GetCharValue(db, "name", 0, ""));
   GWEN_KeySpec_SetOwner(key->keyspec,
@@ -281,7 +281,13 @@ GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
                       GWEN_DB_FLAGS_DEFAULT,
                       "data");
   assert(key->fromDbFn);
-  return key->fromDbFn(key, gr);
+  err=key->fromDbFn(key, gr);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_CryptKey_free(key);
+    return 0;
+  }
+  return key;
 }
 
 
@@ -677,6 +683,8 @@ GWEN_CRYPTKEY *GWEN_CryptKey_Factory(const char *t){
   }
 
   key=pr->newKeyFn(pr);
+  if (key)
+    GWEN_CryptKey_SetKeyType(key, t);
   return key;
 }
 

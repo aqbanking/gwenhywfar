@@ -43,12 +43,6 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *localName,
                                    const char *remoteName);
 
 
-int GWEN_IPCXMLSecCtx_AddKey(GWEN_SECCTX *d,
-                             const GWEN_CRYPTKEY *k);
-int GWEN_IPCXMLSecCtx_DelKey(GWEN_SECCTX *d,
-                             const GWEN_CRYPTKEY *k);
-
-
 GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetSessionKey(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetSessionKey(GWEN_SECCTX *d,
                                      GWEN_CRYPTKEY *k);
@@ -56,6 +50,39 @@ void GWEN_IPCXMLSecCtx_SetSessionKey(GWEN_SECCTX *d,
 const char *GWEN_IPCXMLSecCtx_GetServiceCode(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetServiceCode(GWEN_SECCTX *d,
                                       const char *s);
+
+unsigned int GWEN_IPCXMLSecCtx_GetLocalSignSeq(GWEN_SECCTX *sc);
+void GWEN_IPCXMLSecCtx_SetLocalSignSeq(GWEN_SECCTX *sc,
+                                       unsigned int i);
+unsigned int GWEN_IPCXMLSecCtx_GetRemoteSignSeq(GWEN_SECCTX *sc);
+void GWEN_IPCXMLSecCtx_SetRemoteSignSeq(GWEN_SECCTX *sc,
+                                        unsigned int i);
+
+/**
+ * Does NOT take over ownership of the given key.
+ */
+void GWEN_IPCXMLSecCtx_SetLocalSignKey(GWEN_SECCTX *sc,
+                                       const GWEN_CRYPTKEY *key);
+
+/**
+ * Does NOT take over ownership of the given key.
+ */
+void GWEN_IPCXMLSecCtx_SetLocalCryptKey(GWEN_SECCTX *sc,
+                                        const GWEN_CRYPTKEY *key);
+
+/**
+ * Takes over ownership of the given key.
+ */
+void GWEN_IPCXMLSecCtx_SetRemoteSignKey(GWEN_SECCTX *sc,
+                                        GWEN_CRYPTKEY *key);
+
+/**
+ * Takes over ownership of the given key.
+ */
+void GWEN_IPCXMLSecCtx_SetRemoteCryptKey(GWEN_SECCTX *sc,
+                                         GWEN_CRYPTKEY *key);
+
+
 
 #endif
 

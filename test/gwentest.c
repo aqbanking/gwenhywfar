@@ -419,9 +419,10 @@ int testDialog(int argc, char **argv) {
   fprintf(stderr, "Generating key done.\n");
 
   sc=GWEN_IPCXMLSecCtx_new("martin", "martin");
-  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_SecContext_SetLocalSignSeq(sc, 4554);
-  GWEN_SecContext_SetRemoteSignSeq(sc, 5555);
+  GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 4554);
+  GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 5555);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;
@@ -539,9 +540,9 @@ int testServer(int argc, char **argv) {
     return 2;
   }
 
-  err=GWEN_CryptKey_FromDb(key, keydb);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+  key=GWEN_CryptKey_FromDb(keydb);
+  if (!key) {
+    fprintf(stderr, "Could not load key\n");
     return 2;
   }
   GWEN_DB_Group_free(keydb);
@@ -549,9 +550,12 @@ int testServer(int argc, char **argv) {
 
   sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
                            GWEN_CryptKey_GetOwner(key));
-  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_SecContext_SetLocalSignSeq(sc, 1);
-  GWEN_SecContext_SetRemoteSignSeq(sc, 0);
+  GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 1);
+  GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 0);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;
@@ -560,9 +564,12 @@ int testServer(int argc, char **argv) {
 
   sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
                            0);
-  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_SecContext_SetLocalSignSeq(sc, 1);
-  GWEN_SecContext_SetRemoteSignSeq(sc, 0);
+  GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 1);
+  GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 0);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;
@@ -663,9 +670,9 @@ int testClient(int argc, char **argv) {
     return 2;
   }
 
-  err=GWEN_CryptKey_FromDb(key, keydb);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+  key=GWEN_CryptKey_FromDb(keydb);
+  if (!key) {
+    fprintf(stderr, "Could not load key\n");
     return 2;
   }
   GWEN_DB_Group_free(keydb);
@@ -673,13 +680,17 @@ int testClient(int argc, char **argv) {
 
   sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
                            GWEN_CryptKey_GetOwner(key));
-  GWEN_IPCXMLSecCtx_AddKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_SecContext_SetLocalSignSeq(sc, 1);
-  GWEN_SecContext_SetRemoteSignSeq(sc, 0);
+  GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 1);
+  GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 0);
   if (GWEN_SecContextMgr_AddContext(scm, sc)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;
   }
+
   fprintf(stderr, "Context added.\n");
 
   fprintf(stderr, "Creating service.\n");
@@ -702,15 +713,12 @@ int testClient(int argc, char **argv) {
   }
   fprintf(stderr, "Creating client: done.\n");
 
-  err=GWEN_IPCXMLService_SetSecurityEnv(service,
-                                        serverId,
-                                        GWEN_CryptKey_GetKeySpec(key),
-                                        GWEN_CryptKey_GetKeySpec(key));
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 2;
-  }
-
+  GWEN_IPCXMLService_SetRemoteName(service,
+                                   serverId,
+                                   "martin");
+  GWEN_IPCXMLService_SetSecurityFlags(service, serverId,
+                                      GWEN_HBCIMSG_FLAGS_SIGN |
+                                      GWEN_HBCIMSG_FLAGS_CRYPT);
   fprintf(stderr, "Adding request...\n");
   requestId=GWEN_IPCXMLService_AddRequest(service,
                                           1,
@@ -814,9 +822,9 @@ int testCopyKey(int argc, char **argv) {
     return 2;
   }
 
-  err=GWEN_CryptKey_FromDb(key, db);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
+  key=GWEN_CryptKey_FromDb(db);
+  if (!key) {
+    fprintf(stderr, "Could not load key\n");
     return 2;
   }
   GWEN_DB_Group_free(db);

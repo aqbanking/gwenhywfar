@@ -180,6 +180,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Accept(GWEN_IPCCONNLAYER *cl,
   /* copy important data */
   newccd->flags=ccd->flags;
 
+
   GWEN_IPCXMLConnLayer_Up(newcl);
 
   *c=newcl;
@@ -311,6 +312,8 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Work(GWEN_IPCCONNLAYER *cl, int rd){
           GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_IN_PROGRESS) {
         /* real error, so return that error */
         DBG_INFO(0, "called from here");
+        /* TODO: try again to connect after a certain timeout */
+        GWEN_MsgLayer_SetState(ml, GWEN_IPCMsglayerStateUnconnected);
         return err;
       }
       /* otherwise connecting in progress, return */
@@ -375,7 +378,6 @@ GWEN_IPCMSG *GWEN_IPCXMLConnLayer_HBCI2IPC(GWEN_IPCCONNLAYER *cl,
 GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl) {
   GWEN_IPCXMLCONNLAYERDATA *ccd;
   GWEN_HBCIMSG *hmsg;
-  unsigned int flags;
 
   assert(cl);
   ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
@@ -385,58 +387,39 @@ GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl) {
   hmsg=GWEN_HBCIMsg_new(ccd->dialog);
   GWEN_HBCIMsg_SetMsgLayerId(hmsg, GWEN_ConnectionLayer_GetId(cl));
 
-  flags=GWEN_HBCIMsg_GetFlags(hmsg);
-  flags&=~(GWEN_HBCIMSG_FLAGS_CRYPT | GWEN_HBCIMSG_FLAGS_SIGN);
+  GWEN_HBCIMsg_SetFlags(hmsg, ccd->msgFlags);
 
-  if (ccd->crypter) {
-    flags|=GWEN_HBCIMSG_FLAGS_CRYPT;
-    GWEN_HBCIMsg_SetCrypter(hmsg, ccd->crypter);
+  if (ccd->msgFlags & GWEN_HBCIMSG_FLAGS_SIGN) {
+    /* add signer */
+    GWEN_KEYSPEC *ks;
+
+    ks=GWEN_KeySpec_new();
+    GWEN_KeySpec_SetOwner(ks, GWEN_HBCIDialog_GetLocalName(ccd->dialog));
+    GWEN_HBCIMsg_SetCrypter(hmsg, ks);
+    GWEN_KeySpec_free(ks);
   }
-  if (ccd->signer) {
-    flags|=GWEN_HBCIMSG_FLAGS_SIGN;
-    GWEN_HBCIMsg_AddSigner(hmsg, ccd->signer);
+
+  if (ccd->msgFlags & GWEN_HBCIMSG_FLAGS_CRYPT) {
+    /* add crypt */
+    const char *p;
+
+    p=GWEN_HBCIDialog_GetRemoteName(ccd->dialog);
+    if (p) {
+      GWEN_KEYSPEC *ks;
+
+      ks=GWEN_KeySpec_new();
+      GWEN_KeySpec_SetOwner(ks, p);
+      GWEN_HBCIMsg_AddSigner(hmsg, ks);
+      GWEN_KeySpec_free(ks);
+    }
+    else {
+      DBG_ERROR(0, "Encryption requested but no remote name");
+      GWEN_HBCIMsg_free(hmsg);
+      return 0;
+    }
   }
-  GWEN_HBCIMsg_SetFlags(hmsg, flags);
+
   return hmsg;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE
-GWEN_IPCXMLConnLayer_SetSecurityEnv(GWEN_IPCCONNLAYER *cl,
-                                    const GWEN_KEYSPEC *signer,
-                                    const GWEN_KEYSPEC *crypter){
-  GWEN_IPCXMLCONNLAYERDATA *ccd;
-  GWEN_ERRORCODE err;
-
-  assert(cl);
-  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
-  assert(ccd);
-  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
-
-  err=GWEN_IPCXMLConnLayer_Flush(cl);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO_ERR(0, err);
-    return err;
-  }
-
-  GWEN_KeySpec_free(ccd->signer);
-  if (signer)
-    ccd->signer=GWEN_KeySpec_dup(signer);
-  else
-    ccd->signer=0;
-
-  GWEN_KeySpec_free(ccd->crypter);
-  if (crypter)
-    ccd->crypter=GWEN_KeySpec_dup(crypter);
-  else
-    ccd->crypter=0;
-
-  GWEN_IPCXMLConnLayer_SetRemoteName(cl,
-                                     GWEN_KeySpec_GetOwner(crypter));
-
-  return 0;
 }
 
 
@@ -605,6 +588,102 @@ GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_IPCXMLConnLayer_AddResponse(GWEN_IPCCONNLAYER *cl,
+                                                GWEN_IPCXMLREQUEST *rq,
+                                                GWEN_XMLNODE *node,
+                                                GWEN_DB_NODE *db,
+                                                int flush) {
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+  GWEN_ERRORCODE err;
+  unsigned int segnum;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  /* check whether we have an open connection */
+  if (!ccd->connected) {
+    DBG_ERROR(0, "Connection not open, no response possible");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_BAD_STATE);
+  } /* if !connected */
+
+  if (ccd->currentMsg) {
+    /* there already is a message, check whether it belongs to the same
+     * request */
+    if ((GWEN_HBCIMsg_GetMsgRef(ccd->currentMsg)!=
+         GWEN_IPCXMLRequest_GetMessageNumber(rq)) ||
+        (GWEN_HBCIMsg_GetDialogNumber(ccd->currentMsg)!=
+         GWEN_IPCXMLRequest_GetDialogId(rq))) {
+      DBG_INFO(0, "Different message, flushing");
+      /* directly encode and enqueue the message if requested */
+      err=GWEN_IPCXMLConnLayer_Flush(cl);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_INFO_ERR(0, err);
+        return err;
+      }
+    }
+  }
+
+  /* create message if there is none */
+  if (!ccd->currentMsg) {
+    DBG_INFO(0, "Creating new message");
+    ccd->currentMsg=GWEN_IPCXMLConnLayer_MsgFactory(cl);
+    if (!ccd->currentMsg) {
+      DBG_ERROR(0, "Could not create message");
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_INTERNAL);
+    }
+    /* store message reference number */
+    GWEN_HBCIMsg_SetMsgNumber(ccd->currentMsg,
+                              GWEN_IPCXMLRequest_GetMessageNumber(rq));
+  }
+
+  /* store reference segment number */
+  GWEN_DB_SetIntValue(db,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "head/ref",
+                      GWEN_IPCXMLRequest_GetSegmentNumber(rq));
+
+  /* add node to message */
+  DBG_INFO(0, "Adding node");
+  segnum=GWEN_HBCIMsg_AddNode(ccd->currentMsg, node, db);
+  if (segnum==0) {
+    DBG_INFO(0, "Could not add node");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_INVALID);
+  }
+
+  DBG_INFO(0, "Node added as segment %d", segnum);
+  GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(ccd->currentMsg), stderr, 2);
+
+  if (flush) {
+    DBG_INFO(0, "Flushing message");
+    /* directly encode and enqueue the message if requested */
+    err=GWEN_IPCXMLConnLayer_Flush(cl);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(0, err);
+      GWEN_IPCXMLRequest_free(rq);
+      return err;
+    }
+  }
+
+  /* finished */
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 const char *GWEN_IPCXMLConnLayer_GetLocalName(GWEN_IPCCONNLAYER *cl){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
@@ -618,6 +697,7 @@ const char *GWEN_IPCXMLConnLayer_GetLocalName(GWEN_IPCCONNLAYER *cl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 const char *GWEN_IPCXMLConnLayer_GetRemoteName(GWEN_IPCCONNLAYER *cl){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
@@ -631,6 +711,7 @@ const char *GWEN_IPCXMLConnLayer_GetRemoteName(GWEN_IPCCONNLAYER *cl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,
                                         const char *s){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
@@ -642,6 +723,31 @@ void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,
 
   GWEN_HBCIDialog_SetRemoteName(ccd->dialog, s);
 }
+
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_IPCXMLConnLayer_SetSecurityFlags(GWEN_IPCCONNLAYER *cl,
+                                                     unsigned int flags){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+  GWEN_ERRORCODE err;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  err=GWEN_IPCXMLConnLayer_Flush(cl);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  ccd->msgFlags=flags;
+  return 0;
+}
+
 
 
 

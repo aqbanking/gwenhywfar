@@ -41,8 +41,6 @@
 struct GWEN_SECCTX {
   char *localName;
   char *remoteName;
-  unsigned int localSignSeq;
-  unsigned int remoteSignSeq;
   void *data;
 
   GWEN_SECCTX_PREPARECTX_FN prepareFn;
@@ -51,7 +49,8 @@ struct GWEN_SECCTX {
   GWEN_SECCTX_ENCRYPT_FN encryptFn;
   GWEN_SECCTX_DECRYPT_FN decryptFn;
   GWEN_SECCTX_FREEDATA_FN freeDataFn;
-
+  GWEN_SECCTX_FROMDB_FN fromDbFn;
+  GWEN_SECCTX_TODB_FN toDbFn;
 };
 
 

@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/11/23 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- more work on IPC. I think I now have found the best method ;-)
+
+
 2003/11/22 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in DB concerning loading of binary data

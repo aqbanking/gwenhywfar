@@ -349,10 +349,9 @@ unsigned int GWEN_IPCXMLService_AddRequest(GWEN_IPCXMLSERVICE *xs,
 
 
 
-GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityEnv(GWEN_IPCXMLSERVICE *xs,
-                                                 unsigned int clid,
-                                                 const GWEN_KEYSPEC *signer,
-                                                 const GWEN_KEYSPEC *crypter){
+GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityFlags(GWEN_IPCXMLSERVICE *xs,
+                                                   unsigned int clid,
+                                                   unsigned int flags) {
   GWEN_IPCCONNLAYER *cl;
   GWEN_ERRORCODE err;
 
@@ -365,7 +364,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityEnv(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
   }
 
-  err=GWEN_IPCXMLConnLayer_SetSecurityEnv(cl, signer, crypter);
+  err=GWEN_IPCXMLConnLayer_SetSecurityFlags(cl, flags);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(0, err);
     return err;
@@ -609,6 +608,10 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
                 GWEN_DB_Group_free(dgr);
                 return -1;
               }
+              GWEN_DB_SetIntValue(dgr,
+                                  GWEN_DB_FLAGS_DEFAULT,
+                                  "security/segmentnumber",
+                                  GWEN_DB_GetIntValue(gr, "head/seq", 0, 0));
 
               /* copy response */
               GWEN_DB_AddGroup(dgr, GWEN_DB_Group_dup(gr));
@@ -655,6 +658,10 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
           GWEN_IPCXMLRequest_free(rq);
           return -1;
         }
+        GWEN_DB_SetIntValue(dgr,
+                            GWEN_DB_FLAGS_DEFAULT,
+                            "security/segmentnumber",
+                            GWEN_DB_GetIntValue(gr, "head/seq", 0, 0));
 
         /* copy response */
         GWEN_DB_AddGroup(dgr, GWEN_DB_Group_dup(gr));
@@ -723,6 +730,174 @@ void GWEN_IPCXMLService_SetRemoteName(GWEN_IPCXMLSERVICE *xs,
 
   GWEN_IPCXMLConnLayer_SetRemoteName(cl, s);
 }
+
+
+
+GWEN_IPCXMLREQUEST *GWEN_IPCXMLService_GetInRequest(GWEN_IPCXMLSERVICE *xs,
+                                                    unsigned int id) {
+  GWEN_IPCXMLREQUEST *rq;
+
+  rq=xs->incomingRequests;
+  while(rq) {
+    if (rq->id==id)
+      return rq;
+    rq=rq->next;
+  } /* while */
+  return 0;
+}
+
+
+
+GWEN_IPCXMLREQUEST *GWEN_IPCXMLService_GetOutRequest(GWEN_IPCXMLSERVICE *xs,
+                                                     unsigned int id) {
+  GWEN_IPCXMLREQUEST *rq;
+
+  rq=xs->outgoingRequests;
+  while(rq) {
+    if (rq->id==id)
+      return rq;
+    rq=rq->next;
+  } /* while */
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_IPCXMLService_AddResponse(GWEN_IPCXMLSERVICE *xs,
+                                              unsigned int requestId,
+                                              const char *requestName,
+                                              unsigned int requestVersion,
+                                              GWEN_DB_NODE *db,
+                                              int flush){
+  GWEN_IPCCONNLAYER *cl;
+  GWEN_IPCXMLREQUEST *rq;
+  GWEN_ERRORCODE err;
+  GWEN_XMLNODE *node;
+
+  assert(xs);
+
+  rq=GWEN_IPCXMLService_GetInRequest(xs, requestId);
+  if (!rq) {
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_REQUEST_NOT_FOUND);
+  }
+
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer,
+                                      rq->msgLayerId, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", rq->msgLayerId);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
+  }
+
+  node=GWEN_MsgEngine_FindNodeByProperty(xs->msgEngine,
+                                         "SEG",
+                                         "id",
+                                         requestVersion,
+                                         requestName);
+  if (!node) {
+    DBG_ERROR(0, "Request \"%s\" (version %d) not found",
+              requestName, requestVersion);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_UNKNOWN_MSG);
+  }
+
+  err=GWEN_IPCXMLConnLayer_AddResponse(cl,
+                                       rq,
+                                       node,
+                                       db,
+                                       flush);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_IPCXMLService_Flush(GWEN_IPCXMLSERVICE *xs,
+                                        unsigned int clid){
+  GWEN_IPCCONNLAYER *cl;
+  GWEN_ERRORCODE err;
+
+  assert(xs);
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
+  }
+
+  err=GWEN_IPCXMLConnLayer_Flush(cl);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+  return 0;
+}
+
+
+
+void GWEN_IPCXMLService_Close(GWEN_IPCXMLSERVICE *xs,
+                              unsigned int id,
+                              unsigned int userMark,
+                              int force){
+  assert(xs);
+  assert(xs->serviceLayer);
+  GWEN_ServiceLayer_Close(xs->serviceLayer, id, userMark, force);
+}
+
+
+
+unsigned int GWEN_IPCXMLService_GetNextRequest(GWEN_IPCXMLSERVICE *xs){
+  GWEN_IPCXMLREQUEST *rq;
+
+  rq=xs->incomingRequests;
+  if (!rq) {
+    DBG_DEBUG(0, "No incoming request");
+    return 0;
+  }
+
+  DBG_INFO(0, "Returning incoming request %d", rq->id);
+  return rq->id;
+}
+
+
+
+GWEN_ERRORCODE GWEN_IPCXMLService_DeleteRequest(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int requestId){
+  GWEN_IPCXMLREQUEST *rq;
+
+  rq=GWEN_IPCXMLService_GetInRequest(xs, requestId);
+  if (rq) {
+    GWEN_LIST_DEL(GWEN_IPCXMLREQUEST, rq, &(xs->incomingRequests));
+  }
+  else {
+    rq=GWEN_IPCXMLService_GetOutRequest(xs, requestId);
+    if (!rq) {
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                            GWEN_IPC_ERROR_REQUEST_NOT_FOUND);
+    }
+    GWEN_LIST_DEL(GWEN_IPCXMLREQUEST, rq, &(xs->outgoingRequests));
+  }
+  return 0;
+}
+
+
+
+
+
 
 
 

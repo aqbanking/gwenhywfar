@@ -50,8 +50,6 @@ GWEN_SECCTX *GWEN_SecContext_new(const char *localName,
     sc->localName=strdup(localName);
   if (remoteName)
     sc->remoteName=strdup(remoteName);
-  sc->localSignSeq=1;
-  sc->remoteSignSeq=0;
   return sc;
 }
 
@@ -117,6 +115,22 @@ void GWEN_SecContext_SetFreeDataFn(GWEN_SECCTX *sc,
 
 
 
+void GWEN_SecContext_SetFromDbFn(GWEN_SECCTX *sc,
+                                 GWEN_SECCTX_FROMDB_FN fn){
+  assert(sc);
+  sc->fromDbFn=fn;
+}
+
+
+
+void GWEN_SecContext_SetToDbFn(GWEN_SECCTX *sc,
+                               GWEN_SECCTX_TODB_FN fn){
+  assert(sc);
+  sc->toDbFn=fn;
+}
+
+
+
 const char *GWEN_SecContext_GetLocalName(GWEN_SECCTX *sc){
   assert(sc);
   return sc->localName;
@@ -147,57 +161,6 @@ void GWEN_SecContext_SetRemoteName(GWEN_SECCTX *sc,
   assert(s);
   free(sc->remoteName);
   sc->remoteName=strdup(s);
-}
-
-
-
-unsigned int GWEN_SecContext_GetLocalSignSeq(GWEN_SECCTX *sc){
-  assert(sc);
-  return sc->localSignSeq;
-}
-
-
-
-void GWEN_SecContext_SetLocalSignSeq(GWEN_SECCTX *sc,
-                                     unsigned int i){
-  assert(sc);
-  if (sc->localSignSeq>i) {
-    DBG_WARN(0,
-             "Local signature sequence is higher (%d>%d), not adjusting",
-             sc->localSignSeq, i);
-  }
-  else {
-    sc->localSignSeq=i;
-  }
-}
-
-
-
-unsigned int GWEN_SecContext_NextLocalSignSeq(GWEN_SECCTX *sc){
-  assert(sc);
-  return sc->localSignSeq++;
-}
-
-
-
-unsigned int GWEN_SecContext_GetRemoteSignSeq(GWEN_SECCTX *sc){
-  assert(sc);
-  return sc->remoteSignSeq;
-}
-
-
-
-void GWEN_SecContext_SetRemoteSignSeq(GWEN_SECCTX *sc,
-                                      unsigned int i){
-  assert(sc);
-  if (sc->remoteSignSeq>i) {
-    DBG_WARN(0,
-             "Remote signature sequence is higher (%d>%d), not adjusting",
-             sc->remoteSignSeq, i);
-  }
-  else {
-    sc->remoteSignSeq=i;
-  }
 }
 
 
@@ -283,6 +246,57 @@ int GWEN_SecContext_Decrypt(GWEN_SECCTX *sc,
   DBG_ERROR(0, "Decrypt function not set.");
   return -1;
 }
+
+
+
+int GWEN_SecContext_FromDB(GWEN_SECCTX *sc,
+                           GWEN_DB_NODE *db){
+  const char *p;
+
+  assert(sc);
+  if (sc->fromDbFn==0) {
+    DBG_ERROR(0, "FromDB function not set.");
+    return -1;
+  }
+
+  p=GWEN_DB_GetCharValue(db, "localname", 0, 0);
+  if (p) {
+    free(sc->localName);
+    sc->localName=strdup(p);
+  }
+  p=GWEN_DB_GetCharValue(db, "remotename", 0, 0);
+  if (p) {
+    free(sc->remoteName);
+    sc->remoteName=strdup(p);
+  }
+
+  return sc->fromDbFn(sc, db);
+}
+
+
+
+int GWEN_SecContext_ToDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db){
+  assert(sc);
+
+  if (sc->toDbFn==0) {
+    DBG_ERROR(0, "ToDB function not set.");
+    return -1;
+  }
+  if (sc->localName)
+    GWEN_DB_SetCharValue(db,
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "localname", sc->localName);
+  if (sc->remoteName)
+    GWEN_DB_SetCharValue(db,
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "remotename", sc->remoteName);
+  return sc->toDbFn(sc, db);
+}
+
+
+
 
 
 

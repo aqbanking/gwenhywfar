@@ -33,8 +33,15 @@
 
 
 struct GWEN_IPCXMLSECCTXDATA {
-  GWEN_KEYMANAGER *keyManager;
   GWEN_CRYPTKEY *sessionKey;
+  unsigned int localSignSeq;
+  unsigned int remoteSignSeq;
+
+  const GWEN_CRYPTKEY *localSignKey;
+  const GWEN_CRYPTKEY *localCryptKey;
+
+  GWEN_CRYPTKEY *remoteSignKey;
+  GWEN_CRYPTKEY *remoteCryptKey;
 
   char *serviceCode;
   char *securityId;
@@ -68,6 +75,16 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
                               GWEN_HBCICRYPTOCONTEXT *ctx);
 
 void GWEN_IPCXMLSecCtx_FreeData(GWEN_SECCTX *sc);
+
+
+int GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
+int GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
+                           GWEN_DB_NODE *db);
+
+const char *GWEN_IPCXMLSecCtx_GetSecurityId(GWEN_SECCTX *d);
+void GWEN_IPCXMLSecCtx_SetSecurityId(GWEN_SECCTX *d,
+                                     const char *s);
+
 
 
 #endif

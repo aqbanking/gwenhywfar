@@ -89,6 +89,9 @@ const char *GWEN_IPC_ErrorString(int c){
   case GWEN_IPC_ERROR_SOME_FAILED:
     s="Some messages had errors";
     break;
+  case GWEN_IPC_ERROR_REQUEST_NOT_FOUND:
+    s="Request not found";
+    break;
   default:
     s=0;
   } /* switch */

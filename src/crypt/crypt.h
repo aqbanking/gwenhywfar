@@ -151,8 +151,7 @@ extern "C" {
 
   unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key);
 
-  GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
-                                      GWEN_DB_NODE *db);
+  GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db);
 
   GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
                                     GWEN_DB_NODE *db,

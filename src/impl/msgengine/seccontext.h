@@ -32,6 +32,7 @@
 
 #include <gwenhywfar/hbcicryptocontext.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/db.h>
 
 
 typedef struct GWEN_SECCTX GWEN_SECCTX;
@@ -67,6 +68,13 @@ typedef int
                             GWEN_BUFFER *decryptbuf,
                             GWEN_HBCICRYPTOCONTEXT *ctx);
 
+typedef int
+  (*GWEN_SECCTX_FROMDB_FN)(GWEN_SECCTX *sctx,
+                           GWEN_DB_NODE *db);
+typedef int
+  (*GWEN_SECCTX_TODB_FN)(GWEN_SECCTX *sctx,
+                         GWEN_DB_NODE *db);
+
 typedef void
   (*GWEN_SECCTX_FREEDATA_FN)(GWEN_SECCTX *sctx);
 
@@ -89,6 +97,11 @@ void GWEN_SecContext_SetDecrpytFn(GWEN_SECCTX *sctx,
                                   GWEN_SECCTX_DECRYPT_FN decryptFn);
 void GWEN_SecContext_SetFreeDataFn(GWEN_SECCTX *sctx,
                                    GWEN_SECCTX_FREEDATA_FN fn);
+void GWEN_SecContext_SetFromDbFn(GWEN_SECCTX *sctx,
+                                 GWEN_SECCTX_FROMDB_FN fn);
+void GWEN_SecContext_SetToDbFn(GWEN_SECCTX *sctx,
+                               GWEN_SECCTX_TODB_FN fn);
+
 
 const char *GWEN_SecContext_GetLocalName(GWEN_SECCTX *sc);
 const char *GWEN_SecContext_GetRemoteName(GWEN_SECCTX *sc);
@@ -102,7 +115,6 @@ const char *GWEN_SecContext_GetRemoteName(GWEN_SECCTX *sc);
 unsigned int GWEN_SecContext_GetLocalSignSeq(GWEN_SECCTX *sc);
 void GWEN_SecContext_SetLocalSignSeq(GWEN_SECCTX *sc,
                                      unsigned int i);
-unsigned int GWEN_SecContext_NextLocalSignSeq(GWEN_SECCTX *sc);
 /*@}*/
 
 /** @name Remote Signature Sequence Counter
@@ -147,6 +159,9 @@ int GWEN_SecContext_Decrypt(GWEN_SECCTX *sctx,
                             GWEN_BUFFER *msgbuf,
                             GWEN_BUFFER *decryptbuf,
                             GWEN_HBCICRYPTOCONTEXT *ctx);
+
+int GWEN_SecContext_FromDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
+int GWEN_SecContext_ToDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
 
 
 /**
@@ -208,7 +223,6 @@ void GWEN_SecContextMgr_SetDelFn(GWEN_SECCTX_MANAGER *scm,
 
 void GWEN_SecContextMgr_SetFreeDataFn(GWEN_SECCTX_MANAGER *scm,
                                       GWEN_SECCTXMGR_FREEDATA_FN fn);
-
 
 void *GWEN_SecContextMgr_GetData(GWEN_SECCTX_MANAGER *scm);
 void GWEN_SecContextMgr_SetData(GWEN_SECCTX_MANAGER *scm, void *d);

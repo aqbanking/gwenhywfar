@@ -36,6 +36,12 @@
 
 GWEN_KEYMANAGER *GWEN_IPCXMLKeyManager_new();
 
+int GWEN_IPCXMLKeyManager_KeysFromDB(GWEN_KEYMANAGER *km,
+                                     GWEN_DB_NODE *db);
+int GWEN_IPCXMLKeyManager_KeysToDB(GWEN_KEYMANAGER *km,
+                                   GWEN_DB_NODE *db);
+
+
 
 #endif
 
