@@ -35,15 +35,15 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
-#include <chameleon/chameleonapi.h>
-#include <chameleon/debug.h>
+#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhyfwar/debug.h>
 
-char *Text_GetWord(const char *src,
-		   const char *delims,
-		   char *buffer,
-		   unsigned int maxsize,
-		   unsigned int flags,
-		   const char **next){
+char *GWEN_Text_GetWord(const char *src,
+                        const char *delims,
+                        char *buffer,
+                        unsigned int maxsize,
+                        unsigned int flags,
+                        const char **next){
   unsigned int size;
   int lastWasBlank;
   int lastBlankPos;
@@ -51,7 +51,7 @@ char *Text_GetWord(const char *src,
   assert(maxsize);
 
   /* skip leading blanks, if wanted */
-  if (flags & TEXT_FLAGS_DEL_LEADING_BLANKS) {
+  if (flags & GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS) {
     while(*src && *src<33)
       src++;
   }
@@ -64,7 +64,7 @@ char *Text_GetWord(const char *src,
 	strchr(delims, *src)==0 &&
 	size<(maxsize-1)) {
     if (!lastWasBlank ||
-	(lastWasBlank && !(flags & TEXT_FLAGS_DEL_MULTIPLE_BLANKS))) {
+	(lastWasBlank && !(flags & GWEN_TEXT_FLAGS_DEL_MULTIPLE_BLANKS))) {
       /* only copy if last char was NOT blank or
        * last was blank but the caller does not want to have multiple
        * blanks removed */
@@ -88,23 +88,23 @@ char *Text_GetWord(const char *src,
   buffer[size]=0;
 
   /* check whether the source string was correctly terminated */
-  if (flags & TEXT_FLAGS_NEED_DELIMITER) {
+  if (flags & GWEN_TEXT_FLAGS_NEED_DELIMITER) {
     if (*src) {
       if (strchr(delims, *src)==0) {
-	DBG_ERROR("No delimiter found within specified length");
+        DBG_ERROR(0, "No delimiter found within specified length");
 	return 0;
       }
     }
     else {
-      if (!(flags & TEXT_FLAGS_NULL_IS_DELIMITER)) {
-	DBG_ERROR("String ends without delimiter");
+      if (!(flags & GWEN_TEXT_FLAGS_NULL_IS_DELIMITER)) {
+	DBG_ERROR(0, "String ends without delimiter");
 	return 0;
       }
     }
   }
 
   /* remove trailing blanks, if wanted */
-  if (flags & TEXT_FLAGS_DEL_TRAILING_BLANKS) {
+  if (flags & GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS) {
     if (lastBlankPos!=-1)
       buffer[lastBlankPos]=0;
   }
@@ -114,9 +114,10 @@ char *Text_GetWord(const char *src,
 }
 
 
-char *Text_Escape(const char *src,
-		  char *buffer,
-		  unsigned int maxsize) {
+
+char *GWEN_Text_Escape(const char *src,
+                       char *buffer,
+                       unsigned int maxsize) {
   unsigned int size;
 
   size=0;
@@ -131,7 +132,7 @@ char *Text_Escape(const char *src,
       unsigned char c;
 
       if ((maxsize-1)<size+3) {
-	DBG_ERROR("Buffer too small");
+	DBG_ERROR(0, "Buffer too small");
 	return 0;
       }
       buffer[size++]='%';
@@ -150,7 +151,7 @@ char *Text_Escape(const char *src,
       if (size<(maxsize-1))
 	buffer[size++]=*src;
       else {
-	DBG_ERROR("Buffer too small");
+	DBG_ERROR(0, "Buffer too small");
 	return 0;
       }
     }
@@ -163,9 +164,9 @@ char *Text_Escape(const char *src,
 }
 
 
-char *Text_Unescape(const char *src,
-		    char *buffer,
-		    unsigned int maxsize){
+char *GWEN_Text_Unescape(const char *src,
+                         char *buffer,
+                         unsigned int maxsize){
   unsigned int size;
 
   size=0;
@@ -181,7 +182,7 @@ char *Text_Unescape(const char *src,
       if (size<(maxsize-1))
 	buffer[size++]=*src;
       else {
-	DBG_ERROR("Buffer too small");
+	DBG_ERROR(0, "Buffer too small");
 	return 0;
       }
     }
@@ -193,7 +194,7 @@ char *Text_Unescape(const char *src,
 	/* skip '%' */
 	src++;
 	if (!(*src) || !isxdigit(*src)) {
-	  DBG_ERROR("Incomplete escape sequence (no digits)");
+	  DBG_ERROR(0, "Incomplete escape sequence (no digits)");
 	  return 0;
 	}
 	/* read first digit */
@@ -202,7 +203,7 @@ char *Text_Unescape(const char *src,
 	/* get second digit */
 	src++;
 	if (!(*src) || !isxdigit(*src)) {
-	  DBG_ERROR("Incomplete escape sequence (only 1 digit)");
+	  DBG_ERROR(0, "Incomplete escape sequence (only 1 digit)");
 	  return 0;
 	}
 	d2=(unsigned char)(toupper(*src));
@@ -219,12 +220,12 @@ char *Text_Unescape(const char *src,
 	if (size<(maxsize-1))
 	  buffer[size++]=(char)c;
 	else {
-	  DBG_ERROR("Buffer too small");
+	  DBG_ERROR(0, "Buffer too small");
 	  return 0;
 	}
       }
       else {
-	DBG_ERROR("Found non-alphanum "
+	DBG_ERROR(0, "Found non-alphanum "
 		  "characters in escaped string (\"%s\")",
 		  src);
         return 0;
@@ -238,12 +239,13 @@ char *Text_Unescape(const char *src,
 }
 
 
-char *Text_ToHex(const char *src, int l, char *buffer, unsigned maxsize) {
+char *GWEN_Text_ToHex(const char *src, int l,
+                      char *buffer, unsigned maxsize) {
   unsigned int pos;
   unsigned int size;
 
   if ((l*2)+1 > maxsize) {
-    DBG_ERROR("Buffer too small");
+    DBG_ERROR(0, "Buffer too small");
     return 0;
   }
 
@@ -269,13 +271,14 @@ char *Text_ToHex(const char *src, int l, char *buffer, unsigned maxsize) {
 }
 
 
-char *Text_ToHexGrouped(const char *src,
-			int l,
-			char *buffer,
-			unsigned maxsize,
-			unsigned int groupsize,
-			char delimiter,
-			int skipLeadingZeroes) {
+
+char *GWEN_Text_ToHexGrouped(const char *src,
+                             int l,
+                             char *buffer,
+                             unsigned maxsize,
+                             unsigned int groupsize,
+                             char delimiter,
+                             int skipLeadingZeroes) {
   unsigned int pos;
   unsigned int size;
   unsigned int j;
@@ -302,14 +305,14 @@ char *Text_ToHexGrouped(const char *src,
     c+='0';
     if (!skipThis) {
       if (size+1>=maxsize) {
-	DBG_ERROR("Buffer too small");
+	DBG_ERROR(0, "Buffer too small");
         return 0;
       }
       buffer[size++]=c;
       j++;
       if (j==groupsize) {
 	if (size+1>=maxsize) {
-	  DBG_ERROR("Buffer too small");
+	  DBG_ERROR(0, "Buffer too small");
 	  return 0;
 	}
 	buffer[size++]=delimiter;
@@ -329,7 +332,7 @@ char *Text_ToHexGrouped(const char *src,
       c+=7;
     c+='0';
     if (size+1>=maxsize) {
-      DBG_ERROR("Buffer too small");
+      DBG_ERROR(0, "Buffer too small");
       return 0;
     }
     if (!skipThis) {
@@ -338,7 +341,7 @@ char *Text_ToHexGrouped(const char *src,
       if (j==groupsize) {
 	if (pos+1<l) {
 	  if (size+1>=maxsize) {
-	    DBG_ERROR("Buffer too small");
+	    DBG_ERROR(0, "Buffer too small");
 	    return 0;
 	  }
 	  buffer[size++]=delimiter;
@@ -353,7 +356,8 @@ char *Text_ToHexGrouped(const char *src,
 }
 
 
-int Text_FromHex(const char *src, char *buffer, unsigned maxsize){
+
+int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
   unsigned int pos;
   unsigned int size;
 
@@ -365,7 +369,7 @@ int Text_FromHex(const char *src, char *buffer, unsigned maxsize){
 
     /* read first digit */
     if (!isxdigit(*src)) {
-      DBG_ERROR("Bad char in hex string");
+      DBG_ERROR(0, "Bad char in hex string");
       return -1;
     }
     d1=(unsigned char)(toupper(*src));
@@ -373,7 +377,7 @@ int Text_FromHex(const char *src, char *buffer, unsigned maxsize){
     /* get second digit */
     src++;
     if (!(*src) || !isxdigit(*src)) {
-      DBG_ERROR("Incomplete hex byte (only 1 digit)");
+      DBG_ERROR(0, "Incomplete hex byte (only 1 digit)");
       return -1;
     }
     d2=(unsigned char)(toupper(*src));
@@ -392,7 +396,7 @@ int Text_FromHex(const char *src, char *buffer, unsigned maxsize){
     if (size<(maxsize))
       buffer[size++]=(char)c;
     else {
-      DBG_ERROR("Buffer too small");
+      DBG_ERROR(0, "Buffer too small");
       return -1;
     }
   } /* while */
@@ -401,7 +405,8 @@ int Text_FromHex(const char *src, char *buffer, unsigned maxsize){
 }
 
 
-int Text_Compare(const char *s1, const char *s2, int ign) {
+
+int GWEN_Text_Compare(const char *s1, const char *s2, int ign) {
   if (s1)
     if (strlen(s1)==0)
       s1=0;
@@ -423,10 +428,10 @@ int Text_Compare(const char *s1, const char *s2, int ign) {
 
 
 
-int Text__cmpSegment(const char *w, unsigned int *wpos,
-		     const char *p, unsigned int *ppos,
-		     int sensecase,
-		     unsigned int *matches) {
+int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
+                          const char *p, unsigned int *ppos,
+                          int sensecase,
+                          unsigned int *matches) {
   char a;
   char b;
   unsigned wlength;
@@ -467,10 +472,11 @@ int Text__cmpSegment(const char *w, unsigned int *wpos,
 }
 
 
-int Text__findSegment(const char *w, unsigned int *wpos,
-		      const char *p, unsigned int *ppos,
-		      int sensecase,
-		      unsigned int *matches) {
+
+int GWEN_Text__findSegment(const char *w, unsigned int *wpos,
+                           const char *p, unsigned int *ppos,
+                           int sensecase,
+                           unsigned int *matches) {
   unsigned int lwpos, lppos, lmatches;
   unsigned wlength;
 
@@ -482,7 +488,7 @@ int Text__findSegment(const char *w, unsigned int *wpos,
     *ppos=lppos;
     *wpos=lwpos;
     *matches=lmatches;
-    if (Text__cmpSegment(w,wpos,p,ppos,sensecase,matches))
+    if (GWEN_Text__cmpSegment(w,wpos,p,ppos,sensecase,matches))
       return 1;
     lwpos++;
   }
@@ -490,7 +496,7 @@ int Text__findSegment(const char *w, unsigned int *wpos,
 }
 
 
-int Text_ComparePattern(const char *w, const char *p, int sensecase) {
+int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
   unsigned int ppos;
   unsigned int wpos;
   unsigned int matches;
@@ -500,7 +506,7 @@ int Text_ComparePattern(const char *w, const char *p, int sensecase) {
   plength=strlen(p);
 
   // compare until first occurrence of '*'
-  if (!Text__cmpSegment(w,&wpos,p,&ppos,sensecase,&matches))
+  if (!GWEN_Text__cmpSegment(w,&wpos,p,&ppos,sensecase,&matches))
     return -1;
 
   while(1) {
@@ -513,7 +519,7 @@ int Text_ComparePattern(const char *w, const char *p, int sensecase) {
     if (ppos>=plength)
       return matches;
     // find next matching segment
-    if (!Text__findSegment(w,&wpos,p,&ppos,sensecase,&matches))
+    if (!GWEN_Text__findSegment(w,&wpos,p,&ppos,sensecase,&matches))
       return -1;
   } // while
   // I know, we'll never get to here ;-)
@@ -522,15 +528,15 @@ int Text_ComparePattern(const char *w, const char *p, int sensecase) {
 
 
 
-int Text_NumToString(int num, char *buffer, unsigned int bufsize,
-		     int fillchar){
+int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
+                          int fillchar){
   char lbuffer[128];
   int i;
 
   sprintf(lbuffer,"%d", num);
   i=strlen(lbuffer);
   if (i>=bufsize) {
-    DBG_ERROR("Buffer too small (%d>=%d)", i, bufsize);
+    DBG_ERROR(0, "Buffer too small (%d>=%d)", i, bufsize);
     return -1;
   }
   if (fillchar>0) {

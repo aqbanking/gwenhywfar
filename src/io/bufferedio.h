@@ -228,7 +228,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
  * This file will automatically be closed upon @ref GWEN_BufferedIO_Close.
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
-GWENHYFWAR_API GWEN_BUFFEREDIO *BufferedIO_File_new(int fd);
+GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
 
 
 
@@ -247,7 +247,7 @@ GWENHYFWAR_API GWEN_BUFFEREDIO *BufferedIO_File_new(int fd);
  * This function takes over ownership for that socket !
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
-GWENHYFWAR_API GWEN_BUFFEREDIO *BufferedIO_Socket_new(GWEN_SOCKET *sock);
+GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock);
 
 
 

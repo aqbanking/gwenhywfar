@@ -28,58 +28,58 @@
 #ifndef GWENHYFWAR_XML_P_H
 #define GWENHYFWAR_XML_P_H
 
-#include <chameleon/xml.h>
+#include <gwenhyfwar/xml.h>
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define XML_MAX_DEPTH 16
-#define XML_MAX_TAGNAMELEN 32
-#define XML_MAX_VARNAMELEN 32
-#define XML_MAX_VALUELEN   64
-#define XML_MAX_DATALEN    1024
-#define XML_MAX_REMARKLEN  1024
+#define GWEN_XML_MAX_DEPTH 16
+#define GWEN_XML_MAX_TAGNAMELEN 32
+#define GWEN_XML_MAX_VARNAMELEN 32
+#define GWEN_XML_MAX_VALUELEN   64
+#define GWEN_XML_MAX_DATALEN    1024
+#define GWEN_XML_MAX_REMARKLEN  1024
 
-struct _XMLPROPERTY {
-  XMLPROPERTY *next;
+struct GWEN__XMLPROPERTY {
+  GWEN_XMLPROPERTY *next;
   char *name;
   char *value;
 };
 
 
-XMLPROPERTY *XMLProperty_new(const char *name, const char *value);
-void XMLProperty_free(XMLPROPERTY *p);
-XMLPROPERTY *XMLProperty_dup(XMLPROPERTY *p);
-void XMLProperty_freeAll(XMLPROPERTY *p);
+GWEN_XMLPROPERTY *GWEN_XMLProperty_new(const char *name, const char *value);
+void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p);
+GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(GWEN_XMLPROPERTY *p);
+void GWEN_XMLProperty_freeAll(GWEN_XMLPROPERTY *p);
 
-void XMLProperty_add(XMLPROPERTY *p, XMLPROPERTY **head);
-void XMLProperty_del(XMLPROPERTY *p, XMLPROPERTY **head);
+void GWEN_XMLProperty_add(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
+void GWEN_XMLProperty_del(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
 
-struct _XMLNODE {
-  XMLNODE *next;
-  XMLNODE *child;
-  XMLNODE *parent;
+struct GWEN__XMLNODE {
+  GWEN_XMLNODE *next;
+  GWEN_XMLNODE *child;
+  GWEN_XMLNODE *parent;
 
-  XMLNODE_TYPE type;
-  XMLPROPERTY *properties;
+  GWEN_XMLNODE_TYPE type;
+  GWEN_XMLPROPERTY *properties;
   char *data;
 };
 
-void XMLNode_add(XMLNODE *n, XMLNODE **head);
-void XMLNode_del(XMLNODE *n, XMLNODE **head);
+void GWEN_XMLNode_add(GWEN_XMLNODE *n, GWEN_XMLNODE **head);
+void GWEN_XMLNode_del(GWEN_XMLNODE *n, GWEN_XMLNODE **head);
 
 
 /**
  * Reads a word from the buffered input until one of the delimiters is found.
  * @return <0 on error, >0 if delimiter (code), 0 if stopped for EOF
  */
-int XML__ReadWord(BUFFEREDIOTABLE *bio,
-                  char chr,
-		  const char *delims,
-		  char *buffer,
-		  unsigned int size);
+int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
+                       char chr,
+                       const char *delims,
+                       char *buffer,
+                       unsigned int size);
 
 
 #ifdef __cplusplus

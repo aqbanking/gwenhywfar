@@ -25,116 +25,116 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CHAMELEON_MSGENGINE_P_H
-#define CHAMELEON_MSGENGINE_P_H
+#ifndef GWENHYFWAR_MSGENGINE_P_H
+#define GWENHYFWAR_MSGENGINE_P_H
 
-#include <chameleon/chameleon.h>
-#include <chameleon/msgengine.h>
-#include <chameleon/conf.h>
-#include <chameleon/stringlist.h>
-
-
-#define MSGENGINE_CHARSTOESCAPE ":+\"\'"
-#define MSGENGINE_DEFAULT_GROUPDELIM ":"
-#define MSGENGINE_DEFAULT_DELIMITERS ":+\"\'"
-#define MSGENGINE_VARNAME_WIDTH  30
-#define MSGENGINE_TYPENAME_WIDTH 10
-
-#define MSGENGINE_SHOW_FLAGS_OPTIONAL 0x00010000
+#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhyfwar/msgengine.h>
+#include <gwenhyfwar/db.h>
+#include <gwenhyfwar/stringlist.h>
 
 
-struct _MSGENGINE {
-  XMLNODE *defs;
+#define GWEN_MSGENGINE_CHARSTOESCAPE ":+\"\'"
+#define GWEN_MSGENGINE_DEFAULT_GROUPDELIM ":"
+#define GWEN_MSGENGINE_DEFAULT_DELIMITERS ":+\"\'"
+#define GWEN_MSGENGINE_VARNAME_WIDTH  30
+#define GWEN_MSGENGINE_TYPENAME_WIDTH 10
+
+#define GWEN_MSGENGINE_SHOW_FLAGS_OPTIONAL 0x00010000
+
+
+struct GWEN__MSGENGINE {
+  GWEN_XMLNODE *defs;
   char escapeChar;
   char *charsToEscape;
   char *delimiters;
   char *secMode;
   unsigned int cfgMode;
-  CONFIGGROUP *globalValues;
-  MSGENGINE_FORMAT msgFormat;
-  MSGENGINE_TYPECHECK_PTR typeCheckPtr;
-  MSGENGINE_TYPEREAD_PTR typeReadPtr;
-  MSGENGINE_TYPEWRITE_PTR typeWritePtr;
+  GWEN_DB_NODE *globalValues;
+  GWEN_MSGENGINE_FORMAT msgFormat;
+  GWEN_MSGENGINE_TYPECHECK_PTR typeCheckPtr;
+  GWEN_MSGENGINE_TYPEREAD_PTR typeReadPtr;
+  GWEN_MSGENGINE_TYPEWRITE_PTR typeWritePtr;
 
-  MSGENGINE_BINTYPEREAD_PTR binTypeReadPtr;
-  MSGENGINE_BINTYPEWRITE_PTR binTypeWritePtr;
+  GWEN_MSGENGINE_BINTYPEREAD_PTR binTypeReadPtr;
+  GWEN_MSGENGINE_BINTYPEWRITE_PTR binTypeWritePtr;
 
   void *inheritorData;
 };
 
 
-int MsgEngine__CheckValue(MSGENGINE *e,
-			  const char *value,
-			  XMLNODE *node,
-			  char escapeChar);
+int GWEN_MsgEngine__CheckValue(GWEN_MSGENGINE *e,
+                               const char *value,
+                               GWEN_XMLNODE *node,
+                               char escapeChar);
 
-int MsgEngine__WriteValue(MSGENGINE *e,
-			  char *buffer,
-			  unsigned int size,
-			  unsigned int *pos,
-			  const char *value,
-			  XMLNODE *node);
+int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
+                               char *buffer,
+                               unsigned int size,
+                               unsigned int *pos,
+                               const char *value,
+                               GWEN_XMLNODE *node);
 
-int MsgEngine__WriteElement(MSGENGINE *e,
-			    char *buffer,
-			    unsigned int size,
-			    unsigned int *pos,
-			    XMLNODE *node,
-			    XMLNODE *rnode,
-			    CONFIGGROUP *gr,
-			    int loopNr,
-			    int isOptional);
+int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
+                                 char *buffer,
+                                 unsigned int size,
+                                 unsigned int *pos,
+                                 GWEN_XMLNODE *node,
+                                 GWEN_XMLNODE *rnode,
+                                 GWEN_DB_NODE *gr,
+                                 int loopNr,
+                                 int isOptional);
 
-int MsgEngine__WriteGroup(MSGENGINE *e,
-			  char *buffer,
-			  unsigned int size,
-			  unsigned int *pos,
-			  XMLNODE *node,  /** format node */
-			  XMLNODE *rnode, /** reference node */
-			  CONFIGGROUP *gr,
-			  int groupIsOptional);
+int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
+                               char *buffer,
+                               unsigned int size,
+                               unsigned int *pos,
+                               GWEN_XMLNODE *node,  /** format node */
+                               GWEN_XMLNODE *rnode, /** reference node */
+                               GWEN_DB_NODE *gr,
+                               int groupIsOptional);
 
-int MsgEngine__ShowElement(MSGENGINE *e,
-			   const char *path,
-			   XMLNODE *node,
-			   STRINGLIST *sl,
-			   unsigned int flags);
+int GWEN_MsgEngine__ShowElement(GWEN_MSGENGINE *e,
+                                const char *path,
+                                GWEN_XMLNODE *node,
+                                GWEN_STRINGLIST *sl,
+                                unsigned int flags);
 
-int MsgEngine__ShowGroup(MSGENGINE *e,
-			 const char *path,
-			 XMLNODE *node,
-			 XMLNODE *rnode,
-			 STRINGLIST *sl,
-			 unsigned int flags);
+int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
+                              const char *path,
+                              GWEN_XMLNODE *node,
+                              GWEN_XMLNODE *rnode,
+                              GWEN_STRINGLIST *sl,
+                              unsigned int flags);
 
-int MsgEngine__ReadValue(MSGENGINE *e,
-			 const char *msg,
-			 unsigned int msgSize,
-			 unsigned int *pos,
-			 XMLNODE *node,
-			 char *buffer,
-			 int bufsize,
-			 const char *delimiters);
+int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
+                              const char *msg,
+                              unsigned int msgSize,
+                              unsigned int *pos,
+                              GWEN_XMLNODE *node,
+                              char *buffer,
+                              int bufsize,
+                              const char *delimiters);
 
-int MsgEngine__ReadGroup(MSGENGINE *e,
-			 const char *msg,
-			 unsigned int msgSize,
-			 unsigned int *pos,
-			 XMLNODE *node,
-			 XMLNODE *rnode,
-			 CONFIGGROUP *gr,
-			 const char *delimiters);
-const char *MsgEngine__findInValues(MSGENGINE *e,
-				    XMLNODE *node,
-				    const char *name);
+int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
+                              const char *msg,
+                              unsigned int msgSize,
+                              unsigned int *pos,
+                              GWEN_XMLNODE *node,
+                              GWEN_XMLNODE *rnode,
+                              GWEN_DB_NODE *gr,
+                              const char *delimiters);
+const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
+                                         GWEN_XMLNODE *node,
+                                         const char *name);
 
-const char  *MsgEngine__TransformValue(MSGENGINE *e,
-				       const char *pvalue,
-				       XMLNODE *node);
-const char *MsgEngine__SearchForValue(MSGENGINE *e,
-				      XMLNODE *node,
-				      XMLNODE *refnode,
-				      const char *name);
+const char  *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
+                                            const char *pvalue,
+                                            GWEN_XMLNODE *node);
+const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
+                                           GWEN_XMLNODE *node,
+                                           GWEN_XMLNODE *refnode,
+                                           const char *name);
 
 
 #endif

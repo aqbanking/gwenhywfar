@@ -51,6 +51,7 @@ GWEN_ERRORTYPEREGISTRATIONFORM *GWEN_ErrorType_new(){
 
   GWEN_NEW_OBJECT(GWEN_ERRORTYPEREGISTRATIONFORM, f);
   GWEN_ErrorType_SetType(f, gwen_error_nexttype++);
+  return f;
 }
 
 

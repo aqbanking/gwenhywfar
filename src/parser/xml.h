@@ -28,8 +28,8 @@
 #ifndef GWENHYFWAR_XML_H
 #define GWENHYFWAR_XML_H
 
-#include <chameleon/chameleonapi.h>
-#include <chameleon/bufferedio.h>
+#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhyfwar/bufferedio.h>
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -37,52 +37,52 @@ extern "C" {
 #endif
 
 
-typedef struct _XMLPROPERTY XMLPROPERTY;
+typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 typedef enum {
-  XMLNodeTypeTag=0,
-  XMLNodeTypeData,
-  XMLNodeTypeComment
-} XMLNODE_TYPE;
+  GWEN_XMLNodeTypeTag=0,
+  GWEN_XMLNodeTypeData,
+  GWEN_XMLNodeTypeComment
+} GWEN_XMLNODE_TYPE;
 
-typedef struct _XMLNODE XMLNODE;
+typedef struct GWEN__XMLNODE GWEN_XMLNODE;
 
-XMLNODE *XMLNode_new(XMLNODE_TYPE t, const char *data);
-void XMLNode_free(XMLNODE *n);
-void XMLNode_freeAll(XMLNODE *n);
-XMLNODE *XMLNode_dup(XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data);
+void GWEN_XMLNode_free(GWEN_XMLNODE *n);
+void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
 
-XMLNODE *XMLNode_Next(XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
 
-const char *XMLNode_GetProperty(XMLNODE *n, const char *name,
-				const char *defaultValue);
-void XMLNode_SetProperty(XMLNODE *n, const char *name, const char *value);
+const char *GWEN_XMLNode_GetProperty(GWEN_XMLNODE *n, const char *name,
+                                     const char *defaultValue);
+void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n, const char *name, const char *value);
 
-XMLNODE_TYPE XMLNode_GetType(XMLNODE *n);
+GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(GWEN_XMLNODE *n);
 
-const char *XMLNode_GetData(XMLNODE *n);
-void XMLNode_SetData(XMLNODE *n, const char *data);
+const char *GWEN_XMLNode_GetData(GWEN_XMLNODE *n);
+void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
 
-XMLNODE *XMLNode_GetChild(XMLNODE *n);
-XMLNODE *XMLNode_GetParent(XMLNODE *n);
-void XMLNode_AddChild(XMLNODE *n, XMLNODE *child);
-void XMLNode_UnlinkChild(XMLNODE *n, XMLNODE *child);
+GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
+void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
 
-XMLNODE *XMLNode_FindNode(XMLNODE *n,
-			  XMLNODE_TYPE t, const char *data);
+GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
+                                    GWEN_XMLNODE_TYPE t, const char *data);
 
 
 /**
  * Reads ONE tag (and all its subtags) from the given bufferedIO.
  */
-int XML_Parse(XMLNODE *n, BUFFEREDIOTABLE *bio);
+int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio);
 
 /**
  * Reads all tags from a file and adds them as children to the given node.
  */
-int XML_ReadFile(XMLNODE *n, const char *filepath);
+int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath);
 
 
-void XMLNode_Dump(XMLNODE *n, FILE *f, int ind);
+void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind);
 
 
 #ifdef __cplusplus

@@ -30,18 +30,18 @@
 #ifndef GWENHYFWAR_TEXT_H
 #define GWENHYFWAR_TEXT_H
 
-#include <chameleon/chameleonapi.h>
+#include <gwenhyfwar/gwenhyfwarapi.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-#define TEXT_FLAGS_DEL_LEADING_BLANKS  0x00000001
-#define TEXT_FLAGS_DEL_TRAILING_BLANKS 0x00000002
-#define TEXT_FLAGS_DEL_MULTIPLE_BLANKS 0x00000004
-#define TEXT_FLAGS_NEED_DELIMITER      0x00000008
-#define TEXT_FLAGS_NULL_IS_DELIMITER   0x00000010
+#define GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS  0x00000001
+#define GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS 0x00000002
+#define GWEN_TEXT_FLAGS_DEL_MULTIPLE_BLANKS 0x00000004
+#define GWEN_TEXT_FLAGS_NEED_DELIMITER      0x00000008
+#define GWEN_TEXT_FLAGS_NULL_IS_DELIMITER   0x00000010
 
 
 /**
@@ -60,48 +60,48 @@ extern "C" {
  * source string behind the word we've just cut out. This variable is only
  * modified upon successfull return
  */
-char *Text_GetWord(const char *src,
-		   const char *delims,
-		   char *buffer,
-		   unsigned int maxsize,
-		   unsigned int flags,
-		   const char **next);
+char *GWEN_Text_GetWord(const char *src,
+                        const char *delims,
+                        char *buffer,
+                        unsigned int maxsize,
+                        unsigned int flags,
+                        const char **next);
 
 /**
  * This function does escaping like it is used for HTTP URL encoding.
  * All characters which are not alphanumeric are escaped by %XX where
  * XX ist the hexadecimal code of the character.
  */
-char *Text_Escape(const char *src,
-		  char *buffer,
-		  unsigned int maxsize);
+char *GWEN_Text_Escape(const char *src,
+                       char *buffer,
+                       unsigned int maxsize);
 
-char *Text_Unescape(const char *src,
-		    char *buffer,
-		    unsigned int maxsize);
+char *GWEN_Text_Unescape(const char *src,
+                         char *buffer,
+                         unsigned int maxsize);
 
-char *Text_ToHex(const char *src, int l, char *buffer, unsigned maxsize);
+char *GWEN_Text_ToHex(const char *src, int l, char *buffer, unsigned maxsize);
 
 /**
  * Converts a string to Hex. After "groupsize" bytes the "delimiter" is
  * inserted.
  */
-char *Text_ToHexGrouped(const char *src,
-			int l,
-			char *buffer,
-			unsigned maxsize,
-			unsigned int groupsize,
-			char delimiter,
-			int skipLeadingZeros);
+char *GWEN_Text_ToHexGrouped(const char *src,
+                             int l,
+                             char *buffer,
+                             unsigned maxsize,
+                             unsigned int groupsize,
+                             char delimiter,
+                             int skipLeadingZeros);
 
-int Text_FromHex(const char *src, char *buffer, unsigned maxsize);
+int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize);
 
 /**
  * @param fillchar if 0 then no filling takes place, positive values
  * extend to the right, negative values to the left.
  */
-int Text_NumToString(int num, char *buffer, unsigned int bufsize,
-                     int fillchar);
+int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
+                          int fillchar);
 
 /**
  * Compares two strings. If either of them is given but empty, that string
@@ -109,7 +109,7 @@ int Text_NumToString(int num, char *buffer, unsigned int bufsize,
  * which is given but empty.
  * @param ign set to !=0 to ignore cases
  */
-int Text_Compare(const char *s1, const char *s2, int ign);
+int GWEN_Text_Compare(const char *s1, const char *s2, int ign);
 
 
 /**
@@ -119,7 +119,7 @@ int Text_Compare(const char *s1, const char *s2, int ign);
  * @param p pattern to compare against
  * @param sensecase if 0 then cases are ignored
  */
-int Text_ComparePattern(const char *w, const char *p, int sensecase);
+int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
 
 
 #ifdef __cplusplus

@@ -32,6 +32,7 @@
 
 #include "libloader_p.h"
 #include <gwenhyfwar/misc.h>
+#include <gwenhyfwar/debug.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -56,6 +56,13 @@ GWENHYFWAR_API void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
                                                 GWEN_STRINGLISTENTRY *se);
 GWENHYFWAR_API void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
                                                 GWEN_STRINGLISTENTRY *se);
+GWENHYFWAR_API
+  GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(GWEN_STRINGLIST *sl);
+GWENHYFWAR_API
+  GWEN_STRINGLISTENTRY *GWEN_StringListEntry_Next(GWEN_STRINGLISTENTRY *se);
+
+GWENHYFWAR_API
+  const char *GWEN_StringListEntry_Data(GWEN_STRINGLISTENTRY *se);
 
 /**
  * Appends a string.
@@ -87,6 +94,7 @@ GWENHYFWAR_API int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
  */
 GWENHYFWAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
                                                 const char *s);
+
 
 
 #ifdef __cplusplus

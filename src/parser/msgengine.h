@@ -28,30 +28,30 @@
 #ifndef GWENHYFWAR_MSGENGINE_H
 #define GWENHYFWAR_MSGENGINE_H
 
-#include <chameleon/chameleonapi.h>
-#include <chameleon/xml.h>
-#include <chameleon/conf.h>
+#include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhyfwar/xml.h>
+#include <gwenhyfwar/db.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct _MSGENGINE MSGENGINE;
+typedef struct GWEN__MSGENGINE GWEN_MSGENGINE;
 
-#define MSGENGINE_SHOW_FLAGS_NOSET 0x0001
-#define MSGENGINE_MAX_VALUE_LEN    8192
+#define GWEN_MSGENGINE_SHOW_FLAGS_NOSET 0x0001
+#define GWEN_MSGENGINE_MAX_VALUE_LEN    8192
 
 
-typedef int (*MSGENGINE_TYPECHECK_PTR)(MSGENGINE *e,
+typedef int (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
 				       const char *value,
-				       XMLNODE *node,
+				       GWEN_XMLNODE *node,
 				       char escapeChar);
 
-typedef int (*MSGENGINE_TYPEREAD_PTR)(MSGENGINE *e,
+typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
 				      const char *msg,
 				      unsigned int msgSize,
 				      unsigned int *pos,
-				      XMLNODE *node,
+				      GWEN_XMLNODE *node,
 				      char *buffer,
 				      int bufsize,
 				      char escapeChar,
@@ -60,143 +60,151 @@ typedef int (*MSGENGINE_TYPEREAD_PTR)(MSGENGINE *e,
 /**
  * @return 0 on success, -1 on error, 1 if unknown type
  */
-typedef int (*MSGENGINE_TYPEWRITE_PTR)(MSGENGINE *e,
+typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
 				       char *buffer,
 				       unsigned int size,
 				       unsigned int *pos,
 				       const char *value,
-				       XMLNODE *node);
+				       GWEN_XMLNODE *node);
 
 
-typedef int (*MSGENGINE_BINTYPEREAD_PTR)(MSGENGINE *e,
-					 XMLNODE *node,
-					 CONFIGGROUP *gr,
+typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
+					 GWEN_XMLNODE *node,
+					 GWEN_DB_NODE *gr,
 					 const char *data);
-typedef int (*MSGENGINE_BINTYPEWRITE_PTR)(MSGENGINE *e,
-					  XMLNODE *node,
-					  CONFIGGROUP *gr,
+typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
+					  GWEN_XMLNODE *node,
+					  GWEN_DB_NODE *gr,
 					  char *buffer,
 					  unsigned int bufsize);
 
 
 
 typedef enum {
-  MsgEngineFormatText=0
-} MSGENGINE_FORMAT;
+  GWEN_MsgEngineFormatText=0
+} GWEN_MSGENGINE_FORMAT;
 
 
-MSGENGINE *MsgEngine_new();
-void MsgEngine_free(MSGENGINE *e);
+GWEN_MSGENGINE *GWEN_MsgEngine_new();
+void GWEN_MsgEngine_free(GWEN_MSGENGINE *e);
 
-void MsgEngine_SetFormat(MSGENGINE *e, MSGENGINE_FORMAT f);
-MSGENGINE_FORMAT MsgEngine_GetFormat(MSGENGINE *e);
+void GWEN_MsgEngine_SetFormat(GWEN_MSGENGINE *e, GWEN_MSGENGINE_FORMAT f);
+GWEN_MSGENGINE_FORMAT GWEN_MsgEngine_GetFormat(GWEN_MSGENGINE *e);
 
-void MsgEngine_SetEscapeChar(MSGENGINE *e, char c);
-char MsgEngine_GetEscapeChar(MSGENGINE *e);
+void GWEN_MsgEngine_SetEscapeChar(GWEN_MSGENGINE *e, char c);
+char GWEN_MsgEngine_GetEscapeChar(GWEN_MSGENGINE *e);
 
-void MsgEngine_SetCharsToEscape(MSGENGINE *e, const char *c);
-const char *MsgEngine_GetCharsToEscape(MSGENGINE *e);
+void GWEN_MsgEngine_SetCharsToEscape(GWEN_MSGENGINE *e, const char *c);
+const char *GWEN_MsgEngine_GetCharsToEscape(GWEN_MSGENGINE *e);
 
-void MsgEngine_SetMode(MSGENGINE *e, const char *mode);
-const char *MsgEngine_GetMode(MSGENGINE *e);
+void GWEN_MsgEngine_SetMode(GWEN_MSGENGINE *e, const char *mode);
+const char *GWEN_MsgEngine_GetMode(GWEN_MSGENGINE *e);
 
-unsigned int MsgEngine_GetConfigMode(MSGENGINE *e);
-void MsgEngine_SetConfigMode(MSGENGINE *e, unsigned int m);
+unsigned int GWEN_MsgEngine_GetConfigMode(GWEN_MSGENGINE *e);
+void GWEN_MsgEngine_SetConfigMode(GWEN_MSGENGINE *e, unsigned int m);
 
-XMLNODE *MsgEngine_GetDefinitions(MSGENGINE *e);
-void MsgEngine_SetDefinitions(MSGENGINE *e, XMLNODE *n);
+GWEN_XMLNODE *GWEN_MsgEngine_GetDefinitions(GWEN_MSGENGINE *e);
+void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e, GWEN_XMLNODE *n);
 
-int MsgEngine_AddDefinitions(MSGENGINE *e,
-			     XMLNODE *node);
+int GWEN_MsgEngine_AddDefinitions(GWEN_MSGENGINE *e,
+                                  GWEN_XMLNODE *node);
 
-void MsgEngine_SetTypeCheckFunction(MSGENGINE *e, MSGENGINE_TYPECHECK_PTR p);
-MSGENGINE_TYPECHECK_PTR MsgEngine_GetTypeCheckFunction(MSGENGINE *e);
+void GWEN_MsgEngine_SetTypeCheckFunction(GWEN_MSGENGINE *e,
+                                         GWEN_MSGENGINE_TYPECHECK_PTR p);
+GWEN_MSGENGINE_TYPECHECK_PTR
+  GWEN_MsgEngine_GetTypeCheckFunction(GWEN_MSGENGINE *e);
 
-void MsgEngine_SetTypeReadFunction(MSGENGINE *e, MSGENGINE_TYPEREAD_PTR p);
-MSGENGINE_TYPEREAD_PTR MsgEngine_GetTypeReadFunction(MSGENGINE *e);
+void GWEN_MsgEngine_SetTypeReadFunction(GWEN_MSGENGINE *e,
+                                        GWEN_MSGENGINE_TYPEREAD_PTR p);
+GWEN_MSGENGINE_TYPEREAD_PTR
+  GWEN_MsgEngine_GetTypeReadFunction(GWEN_MSGENGINE *e);
 
-void MsgEngine_SetTypeWriteFunction(MSGENGINE *e, MSGENGINE_TYPEWRITE_PTR p);
-MSGENGINE_TYPEWRITE_PTR MsgEngine_GetTypeWriteFunction(MSGENGINE *e);
+void GWEN_MsgEngine_SetTypeWriteFunction(GWEN_MSGENGINE *e,
+                                         GWEN_MSGENGINE_TYPEWRITE_PTR p);
+GWEN_MSGENGINE_TYPEWRITE_PTR
+  GWEN_MsgEngine_GetTypeWriteFunction(GWEN_MSGENGINE *e);
 
 
 /** @name Handler for binary data
  *
  */
 /*@{*/
-void MsgEngine_SetBinTypeReadFunction(MSGENGINE *e,
-				      MSGENGINE_BINTYPEREAD_PTR p);
-MSGENGINE_BINTYPEREAD_PTR MsgEngine_GetBinTypeReadFunction(MSGENGINE *e);
+void GWEN_MsgEngine_SetBinTypeReadFunction(GWEN_MSGENGINE *e,
+                                           GWEN_MSGENGINE_BINTYPEREAD_PTR p);
+GWEN_MSGENGINE_BINTYPEREAD_PTR
+  GWEN_MsgEngine_GetBinTypeReadFunction(GWEN_MSGENGINE *e);
 
-void MsgEngine_SetBinTypeWriteFunction(MSGENGINE *e,
-				       MSGENGINE_BINTYPEWRITE_PTR p);
-MSGENGINE_BINTYPEWRITE_PTR MsgEngine_GetBinTypeWriteFunction(MSGENGINE *e);
+void GWEN_MsgEngine_SetBinTypeWriteFunction(GWEN_MSGENGINE *e,
+                                            GWEN_MSGENGINE_BINTYPEWRITE_PTR p);
+GWEN_MSGENGINE_BINTYPEWRITE_PTR
+  GWEN_MsgEngine_GetBinTypeWriteFunction(GWEN_MSGENGINE *e);
 /*@}*/
 
 
-void *MsgEngine_GetInheritorData(MSGENGINE *e);
-void MsgEngine_SetInheritorData(MSGENGINE *e, void *d);
+void *GWEN_MsgEngine_GetInheritorData(GWEN_MSGENGINE *e);
+void GWEN_MsgEngine_SetInheritorData(GWEN_MSGENGINE *e, void *d);
 
-XMLNODE *MsgEngine_FindGroupByProperty(MSGENGINE *e,
-				       const char *pname,
-				       int version,
-				       const char *pvalue);
+GWEN_XMLNODE *GWEN_MsgEngine_FindGroupByProperty(GWEN_MSGENGINE *e,
+                                                 const char *pname,
+                                                 int version,
+                                                 const char *pvalue);
 
 /**
  * Looks for a node of the given type.
  * Example: If type is "GROUP" then the node will be searched in
  * "<GROUPS>", and the tag name will be "<GROUPdef>".
  */
-XMLNODE *MsgEngine_FindNodeByProperty(MSGENGINE *e,
-				      const char *t,
-				      const char *pname,
-				      int version,
-				      const char *pvalue);
+GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
+                                           const char *t,
+                                           const char *pname,
+                                           int version,
+                                           const char *pvalue);
 
 /**
  * Set a global variable which will be used for "$"-Variables in description
  * files.
  */
-int MsgEngine_SetValue(MSGENGINE *e,
-		       const char *path,
-		       const char *value);
-int MsgEngine_SetIntValue(MSGENGINE *e,
-			  const char *path,
-			  int value);
-const char *MsgEngine_GetValue(MSGENGINE *e,
+int GWEN_MsgEngine_SetValue(GWEN_MSGENGINE *e,
+                            const char *path,
+                            const char *value);
+int GWEN_MsgEngine_SetIntValue(GWEN_MSGENGINE *e,
+                               const char *path,
+                               int value);
+const char *GWEN_MsgEngine_GetValue(GWEN_MSGENGINE *e,
 			       const char *path,
 			       const char *defValue);
-int MsgEngine_GetIntValue(MSGENGINE *e,
-			  const char *path,
-			  int defValue);
+int GWEN_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
+                               const char *path,
+                               int defValue);
 
 
-int MsgEngine_CreateMessage(MSGENGINE *e,
-			    const char *msgName,
-                            int msgVersion,
-			    char *buffer,
-			    unsigned int size,
-			    unsigned int *pos,
-			    CONFIGGROUP *msgData);
+int GWEN_MsgEngine_CreateMessage(GWEN_MSGENGINE *e,
+                                 const char *msgName,
+                                 int msgVersion,
+                                 char *buffer,
+                                 unsigned int size,
+                                 unsigned int *pos,
+                                 GWEN_DB_NODE *msgData);
 
-int MsgEngine_CreateMessageFromNode(MSGENGINE *e,
-				    XMLNODE *node,
-				    char *buffer,
-				    unsigned int size,
-				    unsigned int *pos,
-				    CONFIGGROUP *msgData);
+int GWEN_MsgEngine_CreateMessageFromNode(GWEN_MSGENGINE *e,
+                                         GWEN_XMLNODE *node,
+                                         char *buffer,
+                                         unsigned int size,
+                                         unsigned int *pos,
+                                         GWEN_DB_NODE *msgData);
 
-int MsgEngine_ShowMessage(MSGENGINE *e,
-                          const char *typ,
-			  const char *msgName,
-			  int msgVersion,
-			  unsigned int flags);
+int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
+                               const char *typ,
+                               const char *msgName,
+                               int msgVersion,
+                               unsigned int flags);
 
-int MsgEngine_ParseMessage(MSGENGINE *e,
-			   XMLNODE *group,
-			   const char *msg,
-			   unsigned int msgSize,
-			   unsigned int *pos,
-			   CONFIGGROUP *gr);
+int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
+                                GWEN_XMLNODE *group,
+                                const char *msg,
+                                unsigned int msgSize,
+                                unsigned int *pos,
+                                GWEN_DB_NODE *gr);
 
 #ifdef __cplusplus
 }

@@ -165,7 +165,7 @@ void GWEN_StringList_Clear(GWEN_STRINGLIST *sl){
   sl->first=0;
   while (se) {
     next=se->next;
-    StringListEntry_free(se);
+    GWEN_StringListEntry_free(se);
     se=next;
   } /* while */
 }
@@ -237,6 +237,27 @@ GWENHYFWAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
   } /* while */
 
   return 0;
+}
+
+
+
+GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(GWEN_STRINGLIST *sl){
+  assert(sl);
+  return sl->first;
+}
+
+
+
+GWEN_STRINGLISTENTRY *GWEN_StringListEntry_Next(GWEN_STRINGLISTENTRY *se){
+  assert(se);
+  return se->next;
+}
+
+
+
+const char *GWEN_StringListEntry_Data(GWEN_STRINGLISTENTRY *se){
+  assert(se);
+  return se->data;
 }
 
 

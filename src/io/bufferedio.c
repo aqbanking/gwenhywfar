@@ -167,7 +167,7 @@ void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt, char *buffer, int len){
 
 
 int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *bt){
-  return (BufferedIO_PeekChar(bt)==-2);
+  return (GWEN_BufferedIO_PeekChar(bt)==-2);
 }
 
 
@@ -197,7 +197,7 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 		    bt->readerBuffer,
 		    &i,
 		    bt->timeout);
-    if (!Error_IsOk(err)) {
+    if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       bt->readerError=1;
       return -1;
@@ -218,7 +218,7 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bt){
   int i;
 
-  i=BufferedIO_PeekChar(bt);
+  i=GWEN_BufferedIO_PeekChar(bt);
   if (i>=0)
     bt->readerBufferPos++;
   return i;
@@ -246,7 +246,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt){
 		     &(bt->writerBuffer[written]),
 		     &i,
 		     bt->timeout);
-    if (!Error_IsOk(err)) {
+    if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return err;
     }
@@ -269,8 +269,8 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *bt, char c){
   if (bt->writerBufferFilled>=bt->writerBufferLength) {
     GWEN_ERRORCODE err;
 
-    err=BufferedIO_Flush(bt);
-    if (!Error_IsOk(err)) {
+    err=GWEN_BufferedIO_Flush(bt);
+    if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return err;
     }
@@ -285,8 +285,8 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *bt, char c){
   if (bt->writerBufferFilled>=bt->writerBufferLength) {
     GWEN_ERRORCODE err;
 
-    err=BufferedIO_Flush(bt);
-    if (!Error_IsOk(err)) {
+    err=GWEN_BufferedIO_Flush(bt);
+    if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return err;
     }
@@ -301,13 +301,13 @@ GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *bt){
 
   assert(bt);
   assert(bt->closePtr);
-  err=BufferedIO_Flush(bt);
+  err=GWEN_BufferedIO_Flush(bt);
   err2=bt->closePtr(bt);
-  if (!Error_IsOk(err)) {
+  if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);
     return err;
   }
-  if (!Error_IsOk(err2)) {
+  if (!GWEN_Error_IsOk(err2)) {
     DBG_ERROR_ERR(0, err2);
     return err2;
   }
@@ -322,7 +322,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *bt){
   assert(bt);
   assert(bt->closePtr);
   err=bt->closePtr(bt);
-  if (!Error_IsOk(err)) {
+  if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);
     return err;
   }
@@ -341,11 +341,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
   pos=0;
   /* now read */
   while(s>1) {
-    if (BufferedIO_CheckEOF(bt)) {
+    if (GWEN_BufferedIO_CheckEOF(bt)) {
       buffer[pos]=0;
       break;
     }
-    c=BufferedIO_ReadChar(bt);
+    c=GWEN_BufferedIO_ReadChar(bt);
     if (c<0) {
       DBG_ERROR(0, "Error while reading");
       return GWEN_Error_new(0,
@@ -384,8 +384,8 @@ GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
   assert(bt);
   assert(buffer);
   while(*buffer) {
-    err=BufferedIO_WriteChar(bt, *buffer);
-    if (!Error_IsOk(err)) {
+    err=GWEN_BufferedIO_WriteChar(bt, *buffer);
+    if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return err;
     }
@@ -402,26 +402,26 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
 
   assert(bt);
   assert(buffer);
-  err=BufferedIO_Write(bt, buffer);
-  if (!Error_IsOk(err)) {
+  err=GWEN_BufferedIO_Write(bt, buffer);
+  if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);
     return err;
   }
   if (bt->lineMode==GWEN_LineModeDOS) {
-    err=BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_CR);
-    if (!Error_IsOk(err)) {
+    err=GWEN_BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_CR);
+    if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return err;
     }
   }
-  err=BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_LF);
-  if (!Error_IsOk(err)) {
+  err=GWEN_BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_LF);
+  if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);
     return err;
   }
 
-  err=BufferedIO_Flush(bt);
-  if (!Error_IsOk(err)) {
+  err=GWEN_BufferedIO_Flush(bt);
+  if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);
     return err;
   }
@@ -634,7 +634,7 @@ GWEN_BUFFEREDIO_SOCKET *GWEN_BufferedIO_Socket_Table__new() {
 
 void GWEN_BufferedIO_Socket_Table__free(GWEN_BUFFEREDIO_SOCKET *bft) {
   if (bft) {
-    Socket_free(bft->sock);
+    GWEN_Socket_free(bft->sock);
     free(bft);
   }
 }
@@ -664,16 +664,17 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
   if (timeout>=0) {
     retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
     while(retrycount) {
-      err=Socket_WaitForRead(bft->sock, timeout);
-      if (!Error_IsOk(err)) {
-	if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
-	  if (Error_GetCode(err)==GWEN_SOCKET_ERROR_TIMEOUT)
+      err=GWEN_Socket_WaitForRead(bft->sock, timeout);
+      if (!GWEN_Error_IsOk(err)) {
+        if (GWEN_Error_GetType(err)==
+            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+          if (GWEN_Error_GetCode(err)==GWEN_SOCKET_ERROR_TIMEOUT)
             return
               GWEN_Error_new(0,
                              GWEN_ERROR_SEVERITY_ERR,
                              GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                              GWEN_BUFFEREDIO_ERROR_TIMEOUT);
-          else if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+          else if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
             DBG_ERROR_ERR(0, err);
             return err;
           }
@@ -699,10 +700,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
   /* ok. socket seems to be ready now */
   retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
   while(retrycount) {
-    err=Socket_Read(bft->sock, buffer, size);
-    if (!Error_IsOk(err)) {
-      if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
-	if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+    err=GWEN_Socket_Read(bft->sock, buffer, size);
+    if (!GWEN_Error_IsOk(err)) {
+      if (GWEN_Error_GetType(err)==
+          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+	if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
 	  DBG_ERROR_ERR(0, err);
 	  return err;
 	}
@@ -753,15 +755,16 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
   if (timeout>=0) {
     retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
     while(retrycount) {
-      err=Socket_WaitForWrite(bft->sock, timeout);
-      if (!Error_IsOk(err)) {
-	if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
-	  if (Error_GetCode(err)==GWEN_SOCKET_ERROR_TIMEOUT)
+      err=GWEN_Socket_WaitForWrite(bft->sock, timeout);
+      if (!GWEN_Error_IsOk(err)) {
+        if (GWEN_Error_GetType(err)==
+            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+	  if (GWEN_Error_GetCode(err)==GWEN_SOCKET_ERROR_TIMEOUT)
             return GWEN_Error_new(0,
                                   GWEN_ERROR_SEVERITY_ERR,
                                   GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                                   GWEN_BUFFEREDIO_ERROR_TIMEOUT);
-	  else if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+	  else if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
 	    DBG_ERROR_ERR(0, err);
 	    return err;
 	  }
@@ -787,10 +790,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
   /* ok. socket seems to be ready now */
   retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
   while(retrycount) {
-    err=Socket_Write(bft->sock, buffer, size);
-    if (!Error_IsOk(err)) {
-      if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
-	if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+    err=GWEN_Socket_Write(bft->sock, buffer, size);
+    if (!GWEN_Error_IsOk(err)) {
+      if (GWEN_Error_GetType(err)==
+          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+	if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
 	  DBG_ERROR_ERR(0, err);
 	  return err;
 	}
@@ -827,7 +831,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Close(GWEN_BUFFEREDIO *dm){
   assert(bft);
   assert(bft->sock);
   DBG_DEBUG(0, "Closing socket");
-  if (Socket_Close(bft->sock)) {
+  if (GWEN_Socket_Close(bft->sock)) {
     DBG_ERROR(0, "Could not close (%s)",
 	      strerror(errno));
     return GWEN_Error_new(0,

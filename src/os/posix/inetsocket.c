@@ -347,7 +347,6 @@ GWEN_ERRORCODE GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
                                        GWEN_INETADDRESS **newaddr){
   int addrlen;
   GWEN_INETADDRESS *localAddr;
-  GWEN_SOCKET *localSocket;
   GWEN_AddressFamily af;
 
   assert(sp);
@@ -670,14 +669,14 @@ GWEN_ERRORCODE GWEN_Socket_WaitForRead(GWEN_SOCKET *sp,
 
   set=GWEN_SocketSet_new();
 
-  err=SocketSet_AddSocket(set,sp);
-  if (!Error_IsOk(err)) {
+  err=GWEN_SocketSet_AddSocket(set,sp);
+  if (!GWEN_Error_IsOk(err)) {
     GWEN_SocketSet_free(set);
     return err;
   }
-  err=Socket_Select(set,0,0,timeout);
+  err=GWEN_Socket_Select(set,0,0,timeout);
   GWEN_SocketSet_free(set);
-  if (Error_IsOk(err)) {
+  if (GWEN_Error_IsOk(err)) {
     return 0;
   }
 
@@ -693,13 +692,13 @@ GWEN_ERRORCODE GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp,
 
   set=GWEN_SocketSet_new();
   err=GWEN_SocketSet_AddSocket(set,sp);
-  if (!Error_IsOk(err)) {
+  if (!GWEN_Error_IsOk(err)) {
     GWEN_SocketSet_free(set);
     return err;
   }
   err=GWEN_Socket_Select(0,set,0,timeout);
   GWEN_SocketSet_free(set);
-  if (Error_IsOk(err))
+  if (GWEN_Error_IsOk(err))
     return 0;
 
   return err;

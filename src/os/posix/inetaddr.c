@@ -213,10 +213,10 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
       // ok, address to be set
       if (!inet_aton(addr,&aptr->sin_addr))
 	// bad address, so maybe it rather is a name
-	return Error_new(0,
-			 GWEN_ERROR_SEVERITY_ERR,
-			 GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
-			 GWEN_INETADDR_ERROR_BAD_ADDRESS);
+	return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                              GWEN_INETADDR_ERROR_BAD_ADDRESS);
     }
     break;
   }
@@ -249,10 +249,10 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     break;
   }
   default:
-    return Error_new(0,
-		     GWEN_ERROR_SEVERITY_ERR,
-		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
-		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
   } /* switch */
 
   return 0;
@@ -301,10 +301,10 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
     // try to resolve name
     he=gethostbyname(name);
     if (!he)
-      return Error_new(0,
-		       GWEN_ERROR_SEVERITY_ERR,
-		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
-		       GWEN_InetAddr_TranslateHError(h_errno));
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                            GWEN_InetAddr_TranslateHError(h_errno));
     // name resolved, store address
     memcpy(&(aptr->sin_addr),
 	   he->h_addr_list[0],
@@ -329,7 +329,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
 	// bad address
 	DBG_ERROR(0, "Path too long (%d>%d)",
 		  strlen(name)+1,sizeof(aptr->sun_path));
-	return Error_new(0,
+	return GWEN_Error_new(0,
 			 GWEN_ERROR_SEVERITY_ERR,
 			 GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 			 GWEN_INETADDR_ERROR_BAD_ADDRESS);
@@ -341,7 +341,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
   }
 
   default:
-    return Error_new(0,
+    return GWEN_Error_new(0,
 		     GWEN_ERROR_SEVERITY_ERR,
 		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
@@ -366,7 +366,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
     s=inet_ntoa(aptr->sin_addr);
     assert(s);
     if (strlen(s)+1>bsize)
-      return Error_new(0,
+      return GWEN_Error_new(0,
 		       GWEN_ERROR_SEVERITY_ERR,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
@@ -383,7 +383,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
     i=ia->size;
     i-=sizeof(aptr->sun_family);
     if (i+1>bsize)
-      return Error_new(0,
+      return GWEN_Error_new(0,
 		       GWEN_ERROR_SEVERITY_ERR,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
@@ -393,7 +393,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
   }
 
   default:
-    return Error_new(0,
+    return GWEN_Error_new(0,
 		     GWEN_ERROR_SEVERITY_ERR,
 		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
@@ -424,7 +424,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
     he=gethostbyaddr((char*)&lia,sizeof(lia),AF_INET);
 #endif
     if (!he)
-      return Error_new(0,
+      return GWEN_Error_new(0,
 		       GWEN_ERROR_SEVERITY_ERR,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		       GWEN_InetAddr_TranslateHError(h_errno));
@@ -432,7 +432,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
     // copy name into given buffer
     assert(he->h_name);
     if (strlen(he->h_name)+1>bsize)
-      return Error_new(0,
+      return GWEN_Error_new(0,
 		       GWEN_ERROR_SEVERITY_ERR,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
@@ -447,7 +447,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
     aptr=(struct sockaddr_un*)(ia->address);
     /* simply copy path */
     if (strlen(aptr->sun_path)+1>bsize)
-      return Error_new(0,
+      return GWEN_Error_new(0,
 		       GWEN_ERROR_SEVERITY_ERR,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
@@ -456,7 +456,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
   }
 
   default:
-    return Error_new(0,
+    return GWEN_Error_new(0,
 		     GWEN_ERROR_SEVERITY_ERR,
 		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
@@ -506,10 +506,10 @@ GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia, int port){
   }
 
   default:
-    return Error_new(0,
-		     GWEN_ERROR_SEVERITY_ERR,
-		     GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
-		     GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
+                          GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY);
   } /* switch */
   return 0;
 }
