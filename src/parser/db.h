@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 
-/** @file gwenhywfar/db.h */
+/** @file db.h */
 
 #ifndef GWENHYWFAR_DB_H
 #define GWENHYWFAR_DB_H

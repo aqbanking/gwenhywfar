@@ -36,7 +36,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/types.h>
-#include <gwenhywfar/inetsocket_l.h>
+#include "inetsocket_l.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

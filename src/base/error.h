@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file gwenhywfar/error.h
+ * @file error.h
  * @short This file contains the module for error handling.
  */
 

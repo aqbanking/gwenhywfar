@@ -114,7 +114,7 @@ typedef GWEN_NETCONNECTION_WORKRESULT
   (*GWEN_NETCONNECTION_WORKFN)(GWEN_NETCONNECTION *conn);
 /** see @ref GWEN_NetConnection_Up */
 typedef void (*GWEN_NETCONNECTION_UPFN)(GWEN_NETCONNECTION *conn);
-/** see @ref GWEN_NetConnection_down */
+/** see @ref GWEN_NetConnection_Down */
 typedef void (*GWEN_NETCONNECTION_DOWNFN)(GWEN_NETCONNECTION *conn);
 
 typedef GWEN_TYPE_UINT32
@@ -349,7 +349,7 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
 /**
  * Lets a list of connections work. This functions waits if needed until
  * at least one connection becomes active.
- * @param firstConn first connection
+ * @param connlist list of connections to walk
  * @param timeout timeout in milliseconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */

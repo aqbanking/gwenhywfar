@@ -71,7 +71,7 @@ extern "C" {
 #define GWEN_BUFFEREDIO_CHAR_NO_DATA (-3)
 
 
-/** IF set then @ref BufferedIO_Close is enabled */
+/** If set then @ref GWEN_BufferedIO_Close is enabled */
 #define GWEN_BUFFEREDIO_FLAGS_CLOSE   0x00000001
 
 #define GWEN_BUFFEREDIO_FLAGS_DEFAULT \

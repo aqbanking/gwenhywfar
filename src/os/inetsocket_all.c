@@ -30,7 +30,7 @@
 # include <config.h>
 #endif
 
-#include <gwenhywfar/inetsocket_l.h>
+#include "inetsocket_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/waitcallback.h>
 #include <string.h>

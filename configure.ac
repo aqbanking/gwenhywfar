@@ -12,19 +12,21 @@ AC_CANONICAL_TARGET([])
 AC_CONFIG_SRCDIR([src/gwenhywfarapi.h])
 AC_CONFIG_HEADER([config.h])
 
+###-------------------------------------------------------------------------
 #
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=13
-GWENHYWFAR_VERSION_BUILD=14
+GWENHYWFAR_VERSION_BUILD=15
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
 
+###-------------------------------------------------------------------------
 #
 # Create release string
 #
@@ -74,6 +76,8 @@ AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_FULL_STRING,"$GWENHYWFAR_VERSION_FULL_STRI
                    [full version string])
 AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_TAG,$GWENHYWFAR_VERSION_TAG, [tag])
 
+
+###-------------------------------------------------------------------------
 #
 # SO version
 #
@@ -90,23 +94,37 @@ AC_SUBST(GWENHYWFAR_SO_EFFECTIVE)
 AM_INIT_AUTOMAKE(gwenhywfar, $GWENHYWFAR_VERSION_RELEASE_STRING)
 
 
+###-------------------------------------------------------------------------
+#
+# static/shared handling
+#
 AC_ENABLE_STATIC(no)
 AC_ENABLE_SHARED(yes)
 
 
+###-------------------------------------------------------------------------
+#
 # Checks for programs.
+#
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_PROG_AWK
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
+AC_CHECK_PROG(SED,sed,sed)
 
 
+###-------------------------------------------------------------------------
+#
 # Checks for libraries.
+#
 AC_CHECK_LIB(dl,dlopen)
 
 
+###-------------------------------------------------------------------------
+#
 # Checks for header files.
+#
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h])
@@ -122,12 +140,19 @@ AC_CHECK_HEADERS([sys/types.h])
 AC_CHECK_HEADERS([sys/wait.h])
 
 
+###-------------------------------------------------------------------------
+#
 # Checks for typedefs, structures, and compiler characteristics.
+#
 AC_C_CONST
 AC_HEADER_TIME
 AC_STRUCT_TM
 
+
+###-------------------------------------------------------------------------
+#
 # Checks for library functions.
+#
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MKTIME
 AC_FUNC_SELECT_ARGTYPES
@@ -147,7 +172,10 @@ fi
 AC_SUBST(prefix)
 
 
-dnl OS dependant settings
+###-------------------------------------------------------------------------
+#
+# OS dependant settings
+#
 AQ_CHECK_OS
 
 case "$OS_TYPE" in
@@ -198,6 +226,8 @@ esac
 
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
+
+###-------------------------------------------------------------------------
 #
 # check whether variadic macros should be supported
 #
@@ -211,6 +241,8 @@ if test "x$enable_variadic_macros" == "xno"; then
   AC_DEFINE(NO_VARIADIC_MACROS, 1, [Define if variadic macros should be disabled])
 fi
 
+
+###-------------------------------------------------------------------------
 #
 # check for encryption library
 #
@@ -233,7 +265,6 @@ AC_SUBST(USE_CRYPT)
 # ---------------------------------------------------------------------------
 # check for ncurses
 #
-
 USE_NCURSES="yes"
 AC_CHECK_LIB(ncurses, newwin, [], [USE_NCURSES="no"])
 AC_CHECK_LIB(panel, new_panel, [], [USE_NCURSES="no"])
@@ -257,28 +288,28 @@ AC_SUBST(USE_NCURSES)
 AM_CONDITIONAL(USE_NCURSES, [test "$USE_NCURSES" = "yes"])
 
 
+###-------------------------------------------------------------------------
 #
 # create header directory, make symlinks
 #
 GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/ipc src/os src/os/${GWEN_OS}"
 GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
-GWEN_MODULES="ui"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
 rm -Rf gwenhywfar &>/dev/null
 mkdir gwenhywfar
-GWEN_HEADER_FILES=""
+GWEN_HEADER_FILES="doc/apidoc.h"
 for d in ${GWEN_HEADER_DIRS}; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${lprefix}/${d}/${f}"
     case ${f} in
-      *_p.h)
-      		;;
+      *l.h | *_p.h)
+      	 ;;
       *)
-    		ln -s "${lprefix}/${d}/${f}" "gwenhywfar/${f}"
-                ;;
+         GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${d}/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar/${f}"
+         ;;
     esac
   done
 done
@@ -295,29 +326,32 @@ for d in ${GWEN_MODULES}; do
   mkdir gwenhywfar/$d
   hfiles=`( cd "${srcdir}/src/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
-    GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${lprefix}/${d}/${f}"
     case ${f} in
       *_p.h | *_l.h)
-      		;;
+      	 ;;
       *)
-    		ln -s "${lprefix}/src/${d}/${f}" "gwenhywfar/${d}/${f}"
-                ;;
+         GWEN_HEADER_FILES="${GWEN_HEADER_FILES} src/${d}/${f}"
+    	 ln -s "${lprefix}/src/${d}/${f}" "gwenhywfar/${d}/${f}"
+         ;;
     esac
   done
 done
 
 
+
+###-------------------------------------------------------------------------
 #
 # check docpath
 #
 AC_MSG_CHECKING(docpath)
 AC_ARG_WITH(docpath, [  --with-docpath=DIR where to store the apidoc],
   [docpath="$withval"],
-  [docpath="apidoc"])
+  [docpath="${HOME}/apidoc"])
 AC_SUBST(docpath)
 AC_MSG_RESULT($docpath)
 
 
+###-------------------------------------------------------------------------
 #
 # check for doc type
 #
@@ -337,14 +371,43 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="doc/apidoc.h gwenhywfar"
+	DOXYGEN_INPUT="${GWEN_HEADER_FILES}"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
 AC_MSG_RESULT($enable_fulldoc)
 
 
-dnl Search for dlopen
+###-------------------------------------------------------------------------
+#
+# search for tag files
+#
+AC_MSG_CHECKING(doxygen tag files)
+DOXYGEN_TAGFILES=""
+if test -d "${docpath}"; then
+  DOXYGEN_TAGFILES="`cd ${docpath} && ls *.tag`"
+  if test -n "${DOXYGEN_TAGFILES}"; then
+   DOXYGEN_TAGFILES="`echo ${DOXYGEN_TAGFILES} | ${SED} -e s/${PACKAGE}.tag//`"
+  fi
+  realfiles=""
+  for ff in ${DOXYGEN_TAGFILES}; do
+    realfiles="${realfiles} ${docpath}/${ff}"
+  done
+  DOXYGEN_TAGFILES="${realfiles}"
+fi
+if test -z "${DOXYGEN_TAGFILES}"; then
+  AC_MSG_RESULT(none)
+else
+  AC_MSG_RESULT(found)
+fi
+AC_SUBST(DOXYGEN_TAGFILES)
+
+
+
+###-------------------------------------------------------------------------
+#
+# Search for dlopen
+#
 LIBS=""
 AC_SEARCH_LIBS(dlopen, c dl)
 if test "$LIBS" = "-lc"; then
@@ -355,6 +418,7 @@ LIBS=""
 all_libraries="$all_libraries $ld_library"
 
 
+###-------------------------------------------------------------------------
 #
 # check for release
 #
@@ -378,7 +442,7 @@ AC_SUBST(STRIPALL)
 AC_MSG_RESULT($enable_release)
 
 
-
+###-------------------------------------------------------------------------
 #
 # check for MEMTRACE
 #
@@ -397,6 +461,7 @@ fi
 ACX_COMPILE_WARN()
 
 
+###-------------------------------------------------------------------------
 #
 # substitute vars
 #
@@ -420,6 +485,7 @@ AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
 
 
+###-------------------------------------------------------------------------
 #
 # list of files to create
 #

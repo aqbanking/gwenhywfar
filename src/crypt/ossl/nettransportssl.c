@@ -38,7 +38,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/directory.h>
-#include <gwenhywfar/inetsocket_l.h>
+#include "inetsocket_l.h"
 #include <gwenhywfar/waitcallback.h>
 
 #include <openssl/pem.h>

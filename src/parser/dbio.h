@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 
-/** @file gwenhywfar/dbio.h
+/** @file dbio.h
  * @short This file provides the GWEN DB import/export framework.
  */
 

@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file gwenhywfar/directory.h
+ * @file directory.h
  * @short This file contains the directory handling module
  */
 

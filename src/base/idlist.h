@@ -25,7 +25,7 @@
  *                                                                         *
  ***************************************************************************/
 
-/** @file gwenhywfar/idlist.h
+/** @file idlist.h
  * @short A list of GWEN_TYPE_UINT32 objects
  */
 

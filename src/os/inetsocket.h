@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file gwenhywfar/inetsocket.h
+ * @file inetsocket.h
  * @short This file contains sockets and socket sets.
  */
 

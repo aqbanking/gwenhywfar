@@ -90,7 +90,7 @@ extern "C" {
    * Let's assume you have a structure type called MYSTRUCT and you want
    * to manage lists of them. Let's further assume that you want the
    * functions dealing with that struct have prefixes like MyStruct (as in
-   * @i MyStruct_new)
+   * @b MyStruct_new)
    * </p>
    * The header file would look like this:
    *
