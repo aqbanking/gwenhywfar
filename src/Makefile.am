@@ -34,6 +34,7 @@ all-local: @GWEN_MAKE_DLL_TARGET@
 install-exec-local: @GWEN_INSTALL_DLL_TARGET@
 
 
+if IS_WINDOWS
 # dll stuff
 DLLTOOL=dlltool
 DLLWRAP=dllwrap
@@ -109,3 +110,4 @@ ressource.o: ressource.rc
 exports.o: libgwenhywfar.la $(DLL_OBJS)
 	$(DLLTOOL) -e exports.o $(DLL_OBJS)
 
+endif

@@ -11,7 +11,7 @@ iheader_HEADERS=\
  libloader.h \
  process.h
 
-noinst_headers= \
+noinst_HEADERS= \
  inetsocket_all_p.h \
  inetsocket_l.h
 

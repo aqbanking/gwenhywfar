@@ -277,7 +277,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
   }
 
   if (BN_cmp(bnresult2, bnresult) < 0) {
-    DBG_NOTICE(0, "Using smaller signature");
+    DBG_DEBUG(0, "Using smaller signature");
     BN_copy(bnresult, bnresult2);
   }
 

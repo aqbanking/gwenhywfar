@@ -1,8 +1,17 @@
 
+===========================================================================
+MARK: released gwenhywfar-0.9.5 (2004/01/21)
+===========================================================================
+
+
 2004/01/21: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - applied a build patch submitted by Ronny Buchmann
 - fixed a severe bug in signature code
+- changed version string determination:
+  if TAG is "cvs" then the full version string (including major, minor,
+  patchlevel, build and tag) are used.
+  Otherwise all traling "0" in a version number are removed.
 
 
 2004/01/18 Martin Preuss <martin@libchipcard.de>
