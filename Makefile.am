@@ -1,4 +1,4 @@
-SUBDIRS=doc src m4 test
+SUBDIRS=doc src m4 plugins test
 #DIST_SUBDIRS=test
 
 

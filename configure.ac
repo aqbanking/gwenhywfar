@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=8
-GWENHYWFAR_VERSION_BUILD=8
+GWENHYWFAR_VERSION_BUILD=10
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -368,9 +368,9 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/system.h
                  src/parser/Makefile
                  src/net/Makefile
-                 src/plugins/Makefile
-                 src/plugins/dbio/Makefile
-                 src/plugins/dbio/csv/Makefile
+                 plugins/Makefile
+                 plugins/dbio/Makefile
+                 plugins/dbio/csv/Makefile
                  test/Makefile
 		])
 AC_OUTPUT
