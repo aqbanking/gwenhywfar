@@ -10,3 +10,7 @@ POTFILES
 quot.sed
 remove-potcdate.sin
 Rules-quot
+*.gmo
+gwenhywfar.pot
+remove-potcdate.sed
+stamp-po
