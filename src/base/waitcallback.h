@@ -127,12 +127,16 @@ GWENHYWFAR_API typedef
  * This function is optional.
  * @param ctx context
  * @param level see @ref GWEN_WAITCALLBACK_CHECKABORTFN
+ * @param loglevel a higher level results in a more detailed output. Loglevels
+ * are defined from 0 (the most important level) and 10 (the least important
+ * level). Libgwenhywfar itself does not use this function.
  * @param s log string
  */
 GWENHYWFAR_API typedef
   void
   (*GWEN_WAITCALLBACK_LOGFN)(GWEN_WAITCALLBACK *ctx,
-			     unsigned int level,
+                             unsigned int level,
+                             unsigned int loglevel,
 			     const char *s);
 /*@}*/
 
@@ -183,7 +187,8 @@ GWENHYWFAR_API
  * Internally calls @ref GWEN_WAITCALLBACK_LOGFN.
  */
 GWENHYWFAR_API
-  void GWEN_WaitCallback_Log(const char *s);
+  void GWEN_WaitCallback_Log(unsigned int loglevel,
+                             const char *s);
 /*@}*/
 
 

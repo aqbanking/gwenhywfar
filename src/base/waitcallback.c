@@ -271,22 +271,32 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
   ctx=gwen_waitcallback__current;
   if (!ctx){
     DBG_INFO(0, "No callback currently selected");
-    return GWEN_WaitCallbackResult_Continue;
+    rv=GWEN_WaitCallbackResult_Continue;
   }
   else {
-    if (!ctx->checkAbortFn) {
-      DBG_DEBUG(0, "No checkAbort function set");
-      return GWEN_WaitCallbackResult_Continue;
-    }
+    if (ctx->originalCtx) {
+      if (!ctx->originalCtx->checkAbortFn) {
+        DBG_DEBUG(0, "No checkAbort function set");
+        rv=GWEN_WaitCallbackResult_Continue;
+      }
+      else {
+        rv=ctx->originalCtx->checkAbortFn(ctx->originalCtx,
+                                          ctx->level);
+        ctx->originalCtx->lastCalled=time(0);
+      }
+    } /* if there is an original context */
     else {
-      if (ctx->originalCtx)
-        rv=ctx->checkAbortFn(ctx->originalCtx, ctx->level);
-      else
+      if (!ctx->checkAbortFn) {
+        DBG_DEBUG(0, "No checkAbort function set");
+        rv=GWEN_WaitCallbackResult_Continue;
+      }
+      else {
         rv=ctx->checkAbortFn(ctx, 0);
-      ctx->lastCalled=time(0);
-      return rv;
+        ctx->lastCalled=time(0);
+      }
     }
   }
+  return rv;
 }
 
 
@@ -365,12 +375,15 @@ void GWEN_WaitCallback_Leave(){
   ctx=gwen_waitcallback__current->previousCtx;
   GWEN_WaitCallback_free(gwen_waitcallback__current);
   gwen_waitcallback__current=ctx;
+  if (ctx) {
+    DBG_NOTICE(0, "Returned to callback \"%s\"", ctx->id);
+  }
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_WaitCallback_Log(const char *s){
+void GWEN_WaitCallback_Log(unsigned int loglevel, const char *s){
   GWEN_WAITCALLBACK *ctx;
 
   DBG_DEBUG(0, "Callback Log: \"%s\"", s);
@@ -379,16 +392,23 @@ void GWEN_WaitCallback_Log(const char *s){
     DBG_INFO(0, "No callback currently selected");
   }
   else {
-    if (!ctx->logFn) {
-      DBG_DEBUG(0, "No log function set");
-    }
-    else {
-      if (ctx->originalCtx)
-        ctx->logFn(ctx->originalCtx,
-                   ctx->level,
-                   s);
+    if (ctx->originalCtx) {
+      if (!ctx->originalCtx->logFn) {
+        DBG_NOTICE(0, "No log function set in \"%s\"", ctx->originalCtx->id);
+      }
       else {
-        ctx->logFn(ctx, 0, s);
+        ctx->originalCtx->logFn(ctx->originalCtx,
+                                ctx->level,
+                                loglevel,
+                                s);
+      }
+    } /* if there is an original context */
+    else {
+      if (!ctx->logFn) {
+        DBG_NOTICE(0, "No log function set in \"%s\"", ctx->id);
+      }
+      else {
+        ctx->logFn(ctx, 0, loglevel, s);
       }
     }
   }

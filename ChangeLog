@@ -2,6 +2,7 @@
 2004/05/05: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed some bugs in args.c
+- modified the prototype of GWEN_WaitCallback_Log
 
 
 2004/05/04: Martin Preuss<martin@libchipcard.de>
