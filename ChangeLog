@@ -3,6 +3,14 @@
   ------------------------------------------------------------------------
 
 
+2004/12/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- undid a change by Christian from 2004-12-20: keep buffer in function
+  GWEN_MsgEngine__TransformValue() static, since it's content is returned.
+  Removing the "static" attribute will return a pointer to data which has been
+  already freed.
+
+
 2004/12/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - GWEN_STRINGLIST2:

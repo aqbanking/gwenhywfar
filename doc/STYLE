@@ -233,7 +233,8 @@ project then this should be marked.
 
 The file "configure.ac" contains a line which sets the BUILD version number
 (GWENHYWFAR_VERSION_BUILD=xyz).
-Please update this number after a change.
+Please update this number after a change (and just before committing your
+changes)..
 
 This has to do with the latency of the CVS server: Public CVS lags some hours
 behind developer CVS, because public access is served from the CVS backup.

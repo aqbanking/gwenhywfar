@@ -602,6 +602,7 @@ int GWEN_IPCManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
   } /* while */
   if (!r) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Request %08x not found", rid);
+    abort();
     return -1;
   }
   GWEN_IPCRequest_List_Del(r);
