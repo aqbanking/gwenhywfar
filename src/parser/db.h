@@ -227,14 +227,6 @@ void GWEN_DB_Group_free(GWEN_DB_NODE *n);
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
 
-/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
- * NODE is a Group or not. Usually these group nodes are the only
- * nodes that the application gets in touch with.
- *
- * @param n db node
- */
-GWENHYWFAR_API
-int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
 /*@}*/
 
 
@@ -341,13 +333,14 @@ unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node);
  * </ul>
  *
  * The setter functions either replace an existing variable, create a missing
- * variable, or return an error if the variable does not exist (see description
- * of the flags).
+ * variable, add a value or return an error if the variable does not exist
+ * (see description of the flags).
  * All setter functions make deep copies of the given values, so you may
  * free the params after calling the setter function.
  *
- * All getter functions return the variable's retrieved value. All
- * setter functions return Zero if ok and Nonzero on error.
+ * All getter functions return a const pointer to the variable's retrieved
+ * value.
+ * All setter functions return Zero if ok and Nonzero on error.
  *
  * This module knows about the following types (see @ref GWEN_DB_VALUETYPE):
  * <ul>
@@ -355,6 +348,16 @@ unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node);
  *  <li>int (integer values)</li>
  *  <li>bin (binary, user specified data)</li>
  * </ul>
+ *
+ * @note The value returned by a getter function is only valid as long as the
+ * corresponding variable (node) exists.<br>
+ * So if you retrieve the value of a variable and delete the variable (or even
+ * the whole DB) afterwards the pointer becomes invalid and using it will most
+ * likely crash your program.<br>
+ * If you want to use such a value even after the corresponding variable
+ * has been deleted you need to make a copy.
+ *
+
  */
 /*@{*/
 /**
@@ -544,6 +547,16 @@ int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
 GWENHYWFAR_API
 int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
                        const char *path);
+
+/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
+ * NODE is a Group or not. Usually these group nodes are the only
+ * nodes that the application gets in touch with.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
+
 /*@}*/
 
 
