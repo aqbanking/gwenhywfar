@@ -332,9 +332,10 @@ void GWEN_List_PopBack(GWEN_LIST *l){
   le=lp->last;
   lp->last=le->previous;
   if (le) {
-    if (le->previous)
+    if (le->previous) {
       le->previous->next=0;
-    else {
+      lp->last = le->previous; /* FIXME: This was necessary, wasn't it? */
+    } else {
       lp->last=0;
       lp->first=0;
     }
@@ -366,9 +367,10 @@ void GWEN_List_PopFront(GWEN_LIST *l){
   le=lp->first;
   lp->first=le->next;
   if (le) {
-    if (le->next)
+    if (le->next) {
       le->next->previous=0;
-    else {
+      lp->first = le->next; /* FIXME: This was necessary, wasn't it? */
+    } else {
       lp->first=0;
       lp->last=0;
     }
@@ -772,9 +774,10 @@ void GWEN_ConstList_PopBack(GWEN_CONSTLIST *l){
   assert(l);
   le=l->last;
   if (le) {
-    if (le->previous)
+    if (le->previous) {
       le->previous->next=0;
-    else {
+      l->last = le->previous; /* FIXME: This was necessary, wasn't it? */
+    } else {
       l->last=0;
       l->first=0;
     }
@@ -791,9 +794,10 @@ void GWEN_ConstList_PopFront(GWEN_CONSTLIST *l){
   assert(l);
   le=l->first;
   if (le) {
-    if (le->next)
+    if (le->next) {
       le->next->previous=0;
-    else {
+      l->first = le->next; /* FIXME: This was necessary, wasn't it? */
+    } else {
       l->first=0;
       l->last=0;
     }
