@@ -52,8 +52,20 @@ extern "C" {
 /** @name Read Flags
  */
 /*@{*/
+
+/**
+ * if set then comments are read. Otherwise they are ignored when reading
+ * a file */
 #define GWEN_XML_FLAGS_READ_COMMENTS  0x0001
+/**
+ * if set then toplevel elements are shared across all files (even included
+ * ones, if the include tag appears in the top level)
+ */
 #define GWEN_XML_FLAGS_SHARE_TOPLEVEL 0x0002
+
+/**
+ * combination of other flags resembling the default flags
+ */
 #define GWEN_XML_FLAGS_DEFAULT 0
 /*@}*/
 
@@ -101,17 +113,47 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
 
 /** @name Managing Properties
  *
+ * A property is given within a tag, like in this example:
+ * @code
+ * <tag property="1" />
+ * @endcode
  */
 /*@{*/
+/**
+ * Returns the value of the given property (or the default value if the
+ * property does not exist or is empty).
+ * @param n node (must be a tag)
+ * @param name name of the property
+ * @param defaultValue default value to be returned if no value could
+ * be retrieved
+ */
 GWENHYWFAR_API
-const char *GWEN_XMLNode_GetProperty(GWEN_XMLNODE *n, const char *name,
-                                     const char *defaultValue);
+  const char *GWEN_XMLNode_GetProperty(GWEN_XMLNODE *n, const char *name,
+                                       const char *defaultValue);
+
+/**
+ * Sets the value of a property. This property will be created if it does not
+ * exist and overwritten if it does.
+ * @param n node (must be a tag)
+ * @param name name of the property
+ * @param value new value of the property
+ */
 GWENHYWFAR_API
-void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n, const char *name, const char *value);
+  void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
+                                const char *name,
+                                const char *value);
+
+/**
+ * This function copies the properties of one tag to another one.
+ * @param tn destination node (must be a tag)
+ * @param sn source node (must be a tag)
+ * @param overwrite if !=0 then existing properties in the destination node
+ * will be overwritten.
+ */
 GWENHYWFAR_API
-void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
-                                 GWEN_XMLNODE *sn,
-                                 int overwrite);
+  void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
+                                   GWEN_XMLNODE *sn,
+                                   int overwrite);
 /*@}*/
 
 /** @name Type And Data

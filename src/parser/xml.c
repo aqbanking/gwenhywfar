@@ -840,8 +840,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               GWEN_XMLNODE *itag;
 
               newRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "tmproot");
-              DBG_ERROR(0, "Reading file \"%s\" / \"%s\"",
-                        fpath, iname);
+              DBG_INFO(0, "Reading file \"%s\" / \"%s\"",
+                       fpath, iname);
               irv=fn(newRoot, fpath, iname, sl, flags);
               if (irv) {
                 DBG_INFO(0, "here");
