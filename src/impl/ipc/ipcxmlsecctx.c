@@ -38,6 +38,7 @@
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/crypt.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/ipc.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
@@ -145,7 +146,7 @@ const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetRemoteCryptKey(GWEN_SECCTX *sc){
 
 
 
-int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
                                  GWEN_HBCICRYPTOCONTEXT *ctx,
                                  int crypt){
   GWEN_IPCXMLSECCTXDATA *scd;
@@ -158,7 +159,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
   if (crypt) {
     if (scd->remoteCryptKey==0) {
       DBG_ERROR(0, "No remote crypt key");
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
     GWEN_HBCICryptoContext_SetKeySpec(ctx,
                                       GWEN_CryptKey_GetKeySpec(scd->remoteCryptKey));
@@ -174,7 +175,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
       err=GWEN_CryptKey_Generate(scd->sessionKey, 0);
       if (!GWEN_Error_IsOk(err)) {
         DBG_INFO_ERR(0, err);
-        return -1;
+        return GWEN_SecCtxRetvalError;
       }
       kbuf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_ReserveBytes(kbuf, 128);
@@ -183,7 +184,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
 				  16)) {
 	DBG_INFO(0, "here");
 	GWEN_Buffer_free(kbuf);
-	return -1;
+	return GWEN_SecCtxRetvalError;
       }
 
       GWEN_Buffer_Rewind(kbuf);
@@ -193,7 +194,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
 	if (GWEN_Buffer_InsertByte(kbuf, (char)0)) {
 	  DBG_INFO(0, "here");
 	  GWEN_Buffer_free(kbuf);
-	  return -1;
+	  return GWEN_SecCtxRetvalError;
 	}
       } /* while */
       DBG_INFO(0, "Padding done");
@@ -207,7 +208,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
         GWEN_Buffer_free(kbuf);
         GWEN_Buffer_free(sbuf);
         DBG_INFO_ERR(0, err);
-        return -1;
+        return GWEN_SecCtxRetvalError;
       }
       DBG_INFO(0, "Encrypting key: done");
 
@@ -221,7 +222,7 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
   else {
     if (scd->localSignKey==0) {
       DBG_ERROR(0, "No local sign key");
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
     GWEN_HBCICryptoContext_SetKeySpec(ctx,
                                       GWEN_CryptKey_GetKeySpec(scd->localSignKey));
@@ -238,15 +239,15 @@ int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
                                          scd->securityId,
                                          strlen(scd->securityId)+1);
   DBG_INFO(0, "Context prepared");
-  return 0;
+  return GWEN_SecCtxRetvalOk;
 }
 
 
 
-int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
-                           GWEN_BUFFER *msgbuf,
-                           GWEN_BUFFER *signbuf,
-                           GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
+                                          GWEN_BUFFER *msgbuf,
+                                          GWEN_BUFFER *signbuf,
+                                          GWEN_HBCICRYPTOCONTEXT *ctx){
   GWEN_IPCXMLSECCTXDATA *scd;
   GWEN_MD *md;
   GWEN_BUFFER *hashbuf;
@@ -258,7 +259,7 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
 
   if (scd->localSignKey==0) {
     DBG_ERROR(0, "No local sign key");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   /* hash data */
@@ -266,13 +267,13 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
   md=GWEN_MD_Factory("RMD160");
   if (!md) {
     DBG_ERROR(0, "RMD160 not found");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   if (GWEN_MD_Begin(md)) {
     DBG_INFO(0, "here");
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   if (GWEN_MD_Update(md,
@@ -280,13 +281,13 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
                      GWEN_Buffer_GetUsedBytes(msgbuf))) {
     DBG_INFO(0, "here");
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   if (GWEN_MD_End(md)) {
     DBG_INFO(0, "here");
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
   DBG_INFO(0, "Hashing done");
 
@@ -299,7 +300,7 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
     DBG_INFO(0, "here");
     GWEN_Buffer_free(hashbuf);
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
   GWEN_MD_free(md);
 
@@ -308,7 +309,7 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
   if (GWEN_SecContext_PaddWithISO9796(hashbuf)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(hashbuf);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   /* sign hash */
@@ -327,15 +328,15 @@ int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
 
   GWEN_Buffer_free(hashbuf);
   DBG_INFO(0, "Signing done");
-  return 0;
+  return GWEN_SecCtxRetvalOk;
 }
 
 
 
-int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
-                             GWEN_BUFFER *msgbuf,
-                             GWEN_BUFFER *signbuf,
-                             GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
+                                            GWEN_BUFFER *msgbuf,
+                                            GWEN_BUFFER *signbuf,
+                                            GWEN_HBCICRYPTOCONTEXT *ctx){
   GWEN_IPCXMLSECCTXDATA *scd;
   GWEN_MD *md;
   GWEN_BUFFER *hashbuf;
@@ -349,7 +350,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
 
   if (scd->remoteSignKey==0) {
     DBG_ERROR(0, "No remote sign key");
-    return -1;
+    return GWEN_SecCtxRetvalUnknown;
   }
 
   /* verify that the key is the one we know */
@@ -367,7 +368,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
        )) {
     DBG_ERROR(0,
               "Remote sign key differs from that one used for signing");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
 
@@ -376,7 +377,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   if (rseq<=GWEN_IPCXMLSecCtx_GetRemoteSignSeq(sc)) {
     DBG_ERROR(0, "bad signature sequence number (%d<%d)",
               rseq, GWEN_IPCXMLSecCtx_GetRemoteSignSeq(sc));
-    //return -1; /* comment this out for debugging purposes */
+    return GWEN_SecCtxRetvalError; /* comment this out for debugging */
   }
   GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, rseq);
 
@@ -384,13 +385,13 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   md=GWEN_MD_Factory("RMD160");
   if (!md) {
     DBG_ERROR(0, "RMD160 not found");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   if (GWEN_MD_Begin(md)) {
     DBG_INFO(0, "here");
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   if (GWEN_MD_Update(md,
@@ -398,13 +399,13 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
                      GWEN_Buffer_GetUsedBytes(msgbuf))) {
     DBG_INFO(0, "here");
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   if (GWEN_MD_End(md)) {
     DBG_INFO(0, "here");
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   hashbuf=GWEN_Buffer_new(0, GWEN_MD_GetDigestSize(md), 0, 1);
@@ -414,7 +415,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
     DBG_INFO(0, "here");
     GWEN_Buffer_free(hashbuf);
     GWEN_MD_free(md);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
   GWEN_MD_free(md);
 
@@ -423,7 +424,7 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
   if (GWEN_SecContext_PaddWithISO9796(hashbuf)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(hashbuf);
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   /* verify hash */
@@ -431,21 +432,21 @@ int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
                            hashbuf,
                            signbuf);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO(0, "here");
+    DBG_INFO_ERR(0, err);
     GWEN_Buffer_free(hashbuf);
-    return err;
+    return GWEN_SecCtxRetvalError;
   }
   GWEN_Buffer_free(hashbuf);
 
-  return 0;
+  return GWEN_SecCtxRetvalOk;
 }
 
 
 
-int GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
-                              GWEN_BUFFER *msgbuf,
-                              GWEN_BUFFER *cryptbuf,
-                              GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
+                                             GWEN_BUFFER *msgbuf,
+                                             GWEN_BUFFER *cryptbuf,
+                                             GWEN_HBCICRYPTOCONTEXT *ctx){
   GWEN_IPCXMLSECCTXDATA *scd;
   GWEN_ERRORCODE err;
 
@@ -455,13 +456,13 @@ int GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
 
   if (!(scd->sessionKey)) {
     DBG_ERROR(0, "No session key");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   DBG_INFO(0, "Padding with ANSI X9.23");
   if (GWEN_SecContext_PaddWithANSIX9_23(msgbuf)) {
     DBG_INFO(0, "here");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
   DBG_INFO(0, "Padding with ANSI X9.23: done");
 
@@ -471,19 +472,19 @@ int GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
 			    cryptbuf);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO(0, "here");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
   DBG_INFO(0, "Encrypting with session key: done");
 
-  return 0;
+  return GWEN_SecCtxRetvalOk;
 }
 
 
 
-int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
-                              GWEN_BUFFER *msgbuf,
-                              GWEN_BUFFER *decryptbuf,
-                              GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
+                                             GWEN_BUFFER *msgbuf,
+                                             GWEN_BUFFER *decryptbuf,
+                                             GWEN_HBCICRYPTOCONTEXT *ctx){
   GWEN_IPCXMLSECCTXDATA *scd;
   GWEN_ERRORCODE err;
 
@@ -506,13 +507,13 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
 				GWEN_HBCICryptoContext_GetCryptKeySize(ctx))){
       DBG_INFO(0, "here");
       GWEN_Buffer_free(sbuf);
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
     kbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_Rewind(sbuf);
     if (scd->localCryptKey==0) {
       DBG_ERROR(0, "No local crypt key");
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
 
     /* verify that the key is the one we know */
@@ -530,7 +531,7 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
          )) {
       DBG_ERROR(0,
                 "Local crypt key differs from that one used for encryption");
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
 
     err=GWEN_CryptKey_Decrypt(scd->localCryptKey,
@@ -540,7 +541,7 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
       DBG_INFO(0, "here");
       GWEN_Buffer_free(sbuf);
       GWEN_Buffer_free(kbuf);
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
 
     key=GWEN_CryptKey_Factory("DES");
@@ -565,15 +566,15 @@ int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
 			    decryptbuf);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO(0, "here");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   if (GWEN_SecContext_UnpaddWithANSIX9_23(decryptbuf)) {
     DBG_INFO(0, "here");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
-  return 0;
+  return GWEN_SecCtxRetvalOk;
 }
 
 
@@ -733,8 +734,8 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtx_new(const char *localName,
 }
 
 
-int GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc,
-                             GWEN_DB_NODE *db){
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc,
+                                            GWEN_DB_NODE *db){
   const char *p;
   GWEN_DB_NODE *gr;
   GWEN_IPCXMLSECCTXDATA *scd;
@@ -761,7 +762,7 @@ int GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc,
     scd->remoteSignKey=GWEN_CryptKey_FromDb(gr);
     if (scd->remoteSignKey==0) {
       DBG_ERROR(0, "Could not read key");
-      return 0;
+      return GWEN_SecCtxRetvalError;
     }
   } /* if "remotesignkey" group */
 
@@ -774,18 +775,18 @@ int GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc,
     scd->remoteCryptKey=GWEN_CryptKey_FromDb(gr);
     if (scd->remoteCryptKey==0) {
       DBG_ERROR(0, "Could not read key");
-      return 0;
+      return GWEN_SecCtxRetvalError;
     }
   } /* if "remotecryptkey" group */
 
   GWEN_SecContext_SetData(sc, scd);
-  return 0;
+  return GWEN_SecCtxRetvalOk;
 }
 
 
 
-int GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
-                           GWEN_DB_NODE *db){
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
+                                          GWEN_DB_NODE *db){
   GWEN_IPCXMLSECCTXDATA *scd;
   GWEN_DB_NODE *gr;
   GWEN_ERRORCODE err;
@@ -813,7 +814,7 @@ int GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
     err=GWEN_CryptKey_ToDb(scd->remoteSignKey, gr, 1);
     if (!GWEN_Error_IsOk(err)) {
       DBG_INFO_ERR(0, err);
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
   }
 
@@ -826,11 +827,11 @@ int GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
     err=GWEN_CryptKey_ToDb(scd->remoteCryptKey, gr, 1);
     if (!GWEN_Error_IsOk(err)) {
       DBG_INFO_ERR(0, err);
-      return -1;
+      return GWEN_SecCtxRetvalError;
     }
   }
 
-  return 0;
+  return GWEN_SecCtxRetvalOk;
 }
 
 
@@ -867,30 +868,50 @@ void GWEN_IPCXMLSecCtx_SetLocalCryptKey(GWEN_SECCTX *sc,
 
 
 
-void GWEN_IPCXMLSecCtx_SetRemoteSignKey(GWEN_SECCTX *sc,
-                                        GWEN_CRYPTKEY *key){
+GWEN_ERRORCODE GWEN_IPCXMLSecCtx_SetRemoteSignKey(GWEN_SECCTX *sc,
+                                                  GWEN_CRYPTKEY *key){
   GWEN_IPCXMLSECCTXDATA *scd;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
+  if (scd->remoteSignKey &&
+      !(GWEN_SecContext_GetFlags(sc) &
+        GWEN_SECCTX_FLAGS_ALLOW_KEY_CHANGE)) {
+    DBG_ERROR(0, "There already is a sign key");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_INVALID);
+  }
   GWEN_CryptKey_free(scd->remoteSignKey);
   scd->remoteSignKey=key;
+  return 0;
 }
 
 
 
-void GWEN_IPCXMLSecCtx_SetRemoteCryptKey(GWEN_SECCTX *sc,
-                                         GWEN_CRYPTKEY *key){
+GWEN_ERRORCODE GWEN_IPCXMLSecCtx_SetRemoteCryptKey(GWEN_SECCTX *sc,
+                                                   GWEN_CRYPTKEY *key){
   GWEN_IPCXMLSECCTXDATA *scd;
 
   assert(sc);
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
+  if (scd->remoteCryptKey &&
+      !(GWEN_SecContext_GetFlags(sc) &
+        GWEN_SECCTX_FLAGS_ALLOW_KEY_CHANGE)) {
+    DBG_ERROR(0, "There already is a crypt key");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_INVALID);
+  }
   GWEN_CryptKey_free(scd->remoteCryptKey);
   scd->remoteCryptKey=key;
+  return 0;
 }
 
 
@@ -1113,14 +1134,14 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
 
 
 int GWEN_IPCXMLSecCtxMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
-                                    GWEN_SECCTX *sc,
-                                    int tmp){
+                                    GWEN_SECCTX *sc){
   GWEN_IPCXMLSECCTXMGRDATA *scmd;
   char path[256];
   const char *localName;
   const char *remoteName;
   GWEN_DB_NODE *db;
   int fid;
+  unsigned int flags;
 
   assert(scm);
   scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
@@ -1128,6 +1149,7 @@ int GWEN_IPCXMLSecCtxMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
 
   localName=GWEN_SecContext_GetLocalName(sc);
   remoteName=GWEN_SecContext_GetRemoteName(sc);
+  flags=GWEN_SecContext_GetFlags(sc);
 
   if (!remoteName) {
     DBG_ERROR(0, "Will not add local-only context \"%s\"",
@@ -1165,7 +1187,7 @@ int GWEN_IPCXMLSecCtxMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
     return -1;
   }
 
-  if (tmp) {
+  if (flags & GWEN_SECCTX_FLAGS_TEMP) {
     DBG_INFO(0, "Adding temporary context \"%s:%s\"",
              localName, remoteName);
     GWEN_List_PushBack(scmd->contextList, sc);

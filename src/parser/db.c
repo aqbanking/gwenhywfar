@@ -615,7 +615,12 @@ void* GWEN_DB_HandlePath(const char *entry,
          (flags & GWEN_PATH_FLAGS_PATHMUSTEXIST)) ||
         (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST)
        ) {
-      DBG_VERBOUS(0, "Entry \"%s\" does not exist", entry);
+      if (flags & GWEN_PATH_FLAGS_VARIABLE) {
+        DBG_VERBOUS(0, "Variable \"%s\" does not exist", entry);
+      }
+      else {
+        DBG_VERBOUS(0, "Group \"%s\" does not exist", entry);
+      }
       return 0;
     }
     /* create the new variable/group */

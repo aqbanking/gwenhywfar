@@ -52,35 +52,35 @@ GWEN_IPCXMLSECCTXDATA *GWEN_IPCXMLSecCtxData_new();
 void GWEN_IPCXMLSecCtxData_free(GWEN_IPCXMLSECCTXDATA *d);
 
 
-int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
-                                 GWEN_HBCICRYPTOCONTEXT *ctx,
-                                 int crypt);
-int GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
-                           GWEN_BUFFER *msgbuf,
-                           GWEN_BUFFER *signbuf,
-                           GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
+                                                GWEN_HBCICRYPTOCONTEXT *ctx,
+                                                int crypt);
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Sign(GWEN_SECCTX *sc,
+                                          GWEN_BUFFER *msgbuf,
+                                          GWEN_BUFFER *signbuf,
+                                          GWEN_HBCICRYPTOCONTEXT *ctx);
 
-int GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
-                             GWEN_BUFFER *msgbuf,
-                             GWEN_BUFFER *signbuf,
-                             GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Verify(GWEN_SECCTX *sc,
+                                            GWEN_BUFFER *msgbuf,
+                                            GWEN_BUFFER *signbuf,
+                                            GWEN_HBCICRYPTOCONTEXT *ctx);
 
-int GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
-                              GWEN_BUFFER *msgbuf,
-                              GWEN_BUFFER *cryptbuf,
-                              GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Encrypt(GWEN_SECCTX *sc,
+                                             GWEN_BUFFER *msgbuf,
+                                             GWEN_BUFFER *cryptbuf,
+                                             GWEN_HBCICRYPTOCONTEXT *ctx);
 
-int GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
-                              GWEN_BUFFER *msgbuf,
-                              GWEN_BUFFER *decryptbuf,
-                              GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_Decrypt(GWEN_SECCTX *sc,
+                                             GWEN_BUFFER *msgbuf,
+                                             GWEN_BUFFER *decryptbuf,
+                                             GWEN_HBCICRYPTOCONTEXT *ctx);
 
 void GWEN_IPCXMLSecCtx_FreeData(GWEN_SECCTX *sc);
 
 
-int GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
-int GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
-                           GWEN_DB_NODE *db);
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_FromDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
+GWEN_SECCTX_RETVAL GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
+                                          GWEN_DB_NODE *db);
 
 const char *GWEN_IPCXMLSecCtx_GetSecurityId(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetSecurityId(GWEN_SECCTX *d,
@@ -120,8 +120,7 @@ GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
                                              const char *localName,
                                              const char *remoteName);
 int GWEN_IPCXMLSecCtxMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
-                                    GWEN_SECCTX *sc,
-                                    int tmp);
+                                    GWEN_SECCTX *sc);
 int GWEN_IPCXMLSecCtxMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
                                     GWEN_SECCTX *sc);
 

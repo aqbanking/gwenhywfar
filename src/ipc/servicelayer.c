@@ -326,15 +326,14 @@ void GWEN_GlobalServiceLayer_RemoveClosed() {
     ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
     assert(ml);
     if (GWEN_MsgLayer_GetState(ml)==GWEN_IPCMsglayerStateClosed) {
-      /* notify connection layer */
-      GWEN_ConnectionLayer_Down(cl);
-
       if (!(GWEN_ConnectionLayer_GetFlags(cl) &
             GWEN_IPCCONNLAYER_FLAGS_PERSISTENT)) {
         if (GWEN_MsgLayer_GetIncomingMsgCount(ml)==0) {
           /* remove closed connection if it is not marked persistent */
           DBG_INFO(0, "Removing connection (%d)",
                    GWEN_ConnectionLayer_GetId(cl));
+          /* notify connection layer */
+          GWEN_ConnectionLayer_Down(cl);
           GWEN_LIST_DEL(GWEN_IPCCONNLAYER,
                         cl,
                         &(GWEN_Global_ServiceLayer->connections));
@@ -350,6 +349,9 @@ void GWEN_GlobalServiceLayer_RemoveClosed() {
       else {
         DBG_INFO(0, "Connection %d is closed but persistent",
                  GWEN_ConnectionLayer_GetId(cl));
+        /* notify connection layer */
+        GWEN_ConnectionLayer_Down(cl);
+        GWEN_MsgLayer_SetState(ml, GWEN_IPCMsglayerStateUnconnected);
       }
     }
     cl=nextcl;

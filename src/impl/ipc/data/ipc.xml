@@ -541,5 +541,40 @@ email       : martin@libchipcard.de
 
 
 
+ <SEGdef id="OpenSession" 
+         code="GCOPEN" 
+         version="1"
+         pversion="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="id" type="ascii" maxsize="32" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="OpenSessionResponse" 
+         code="GSOPEN" 
+         version="1"
+         pversion="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="id" type="ascii" maxsize="32" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
 </SEGS>
 

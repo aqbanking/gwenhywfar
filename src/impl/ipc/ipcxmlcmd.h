@@ -54,12 +54,18 @@
 /*@{*/
 
 
+
+/** @name Help Functions
+ */
+/*@{*/
+int GWEN_IPCXMLCmd_IsSignedBy(GWEN_DB_NODE *n, const char *signer);
+/*@}*/
+
 /** @name Segment Result Handling
  * @brief These functions handle segment results.
  *
  */
 /*@{*/
-
 /**
  * This function returns the segment result code. The following groups
  * are defined so far (subset of HBCI protocol):
@@ -146,6 +152,20 @@ GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_SendPubKey(GWEN_IPCXMLSERVICE *xs,
                                                 unsigned int *result);
 
 /*@}*/
+
+
+unsigned int GWEN_IPCXMLCmd_Request_OpenSession(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int clid,
+                                                unsigned int flags);
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Handle_OpenSession(GWEN_IPCXMLSERVICE *xs,
+                                                 unsigned int rqid,
+                                                 unsigned int flags,
+                                                 GWEN_DB_NODE *n);
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_OpenSession(GWEN_IPCXMLSERVICE *xs,
+                                                 unsigned int rqid,
+                                                 char *buffer,
+                                                 unsigned int size);
+
 
 
 /*@}*/

@@ -413,6 +413,53 @@ GWEN_ERRORCODE GWEN_IPCXMLService_DeleteRequest(GWEN_IPCXMLSERVICE *xs,
  * Returns the first DB group from the given incoming request and unlinks it
  * from that request.
  * This DB group is a part of the request data sent to us.
+ * The DB group returned contains at least two groups:
+ * <ol>
+ *  <li><i>security</i>: This group contains security relevant information
+ *   about the message this response has been sent with. This group may
+ *   contain some important variables:
+ *   <ul>
+ *    <li>
+ *      <i>crypter</i>: Owner of the key which was used to decrypt the
+ *      message (not present if the message wasn't encrypted)
+ *    </li>
+ *    <li>
+ *      <i>signers</i>: multi-value variable, each value represents one
+ *       signer of the message. There is something special about the first
+ *       character:
+ *       <ul>
+ *         <li>
+ *           if it is "?" then the signature could not be verified
+ *           (in most cases this is because we do not have the partner's sign
+ *           key)
+ *         </li>
+ *         <li>
+ *           if it is "!" then the signature is invalid
+ *         </li>
+ *       </ul>
+ *       If the first character is none of the above then the value contains
+ *       the name of the signer for this valid signature.
+ *       Otherwise the name of the signature in question begins after
+ *       the special character.<br>
+ *       Example:<br>
+ *       A message has been signed by <i>SignerA</i> (valid signature),
+ *      <i>SignerB</i> (unknown key) and <i>SignerC</i>
+ *      (invalid signature).<br>
+ *      So the list of signers wouls look like this:
+ *      <ul>
+ *        <li>SignerA</li>
+ *        <li>?SignerB</li>
+ *        <li>!SignerC</li>
+ *      </ul>
+ *    </li>
+ *   </ul>
+ *  </li>
+ *  <li>
+ *   A group containing the actual request data as parsed from the message
+ *   received.
+ *  </li>
+ * </ol>
+ *
  * The caller is reponsible for freeing the returned group by calling
  * @ref GWEN_DB_Group_free.
  * @param xs Pointer to the service to use
@@ -426,6 +473,8 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetRequestData(GWEN_IPCXMLSERVICE *xs,
  * request.
  * This DB group is a part of the response returned by the peer (to which
  * the request has originally been sent).
+ * Please see @ref GWEN_IPCXMLService_GetRequestData for details about the
+ * contents of the DB returned.
  * The caller is reponsible for freeing the returned group by calling
  * @ref GWEN_DB_Group_free.
  * @param xs Pointer to the service to use
@@ -629,13 +678,10 @@ GWEN_ERRORCODE GWEN_IPCXMLService_ReleaseContext(GWEN_IPCXMLSERVICE *xs,
  * @param clid Id of the client/server retrieved via
  *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
  * @param ctx context to add
- * @param tmp if not zero then the context is only temporary. It will
- * not be stored on disc.
  */
 GWEN_ERRORCODE GWEN_IPCXMLService_AddContext(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int clid,
-                                             GWEN_SECCTX *ctx,
-                                             int tmp);
+                                             GWEN_SECCTX *ctx);
 
 /**
  * Deletes a context obtained via @ref GWEN_IPCXMLService_GetContext
@@ -648,6 +694,19 @@ GWEN_ERRORCODE GWEN_IPCXMLService_AddContext(GWEN_IPCXMLSERVICE *xs,
 GWEN_ERRORCODE GWEN_IPCXMLService_DelContext(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int clid,
                                              GWEN_SECCTX *ctx);
+
+/**
+ *
+ */
+unsigned int GWEN_IPCXMLService_GetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
+                                                   unsigned int clid);
+
+/**
+ *
+ */
+void GWEN_IPCXMLService_SetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
+                                           unsigned int clid,
+                                           unsigned int flags);
 
 
 /*@}*/

@@ -1399,8 +1399,11 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 			gname, loopNr);
 	      return -1;
 	    }
-	  } /* if empty group */
-	} /* for */
+          } /* if empty group */
+          /* use next group next time if any */
+          if (gcfg)
+            gcfg=GWEN_DB_GetNextGroup(gcfg);
+        } /* for */
       }
     }
     else if (t==GWEN_XMLNodeTypeData) {

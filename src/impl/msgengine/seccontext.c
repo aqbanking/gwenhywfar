@@ -212,9 +212,9 @@ void GWEN_SecContext_SetLockId(GWEN_SECCTX *sc,
 
 
 
-int GWEN_SecContext_PrepareContext(GWEN_SECCTX *sc,
-                                   GWEN_HBCICRYPTOCONTEXT *ctx,
-                                   int crypt){
+GWEN_SECCTX_RETVAL GWEN_SecContext_PrepareContext(GWEN_SECCTX *sc,
+                                                  GWEN_HBCICRYPTOCONTEXT *ctx,
+                                                  int crypt){
   assert(sc);
   assert(ctx);
   DBG_NOTICE(0, "Preparing context for service \"%s\"",
@@ -222,71 +222,71 @@ int GWEN_SecContext_PrepareContext(GWEN_SECCTX *sc,
   if (sc->prepareFn)
     return sc->prepareFn(sc, ctx, crypt);
   DBG_ERROR(0, "Prepare function not set.");
-  return -1;
+  return GWEN_SecCtxRetvalError;
 }
 
 
 
-int GWEN_SecContext_Sign(GWEN_SECCTX *sc,
-                         GWEN_BUFFER *msgbuf,
-                         GWEN_BUFFER *signbuf,
-                         GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_SecContext_Sign(GWEN_SECCTX *sc,
+                                        GWEN_BUFFER *msgbuf,
+                                        GWEN_BUFFER *signbuf,
+                                        GWEN_HBCICRYPTOCONTEXT *ctx){
   assert(sc);
   if (sc->signFn)
     return sc->signFn(sc, msgbuf, signbuf, ctx);
   DBG_ERROR(0, "Sign function not set.");
-  return -1;
+  return GWEN_SecCtxRetvalError;
 }
 
 
 
-int GWEN_SecContext_Verify(GWEN_SECCTX *sc,
-                           GWEN_BUFFER *msgbuf,
-                           GWEN_BUFFER *signbuf,
-                           GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_SecContext_Verify(GWEN_SECCTX *sc,
+                                          GWEN_BUFFER *msgbuf,
+                                          GWEN_BUFFER *signbuf,
+                                          GWEN_HBCICRYPTOCONTEXT *ctx){
   assert(sc);
   if (sc->verifyFn)
     return sc->verifyFn(sc, msgbuf, signbuf, ctx);
   DBG_ERROR(0, "Verify function not set.");
-  return -1;
+  return GWEN_SecCtxRetvalError;
 }
 
 
 
-int GWEN_SecContext_Encrypt(GWEN_SECCTX *sc,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *cryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_SecContext_Encrypt(GWEN_SECCTX *sc,
+                                           GWEN_BUFFER *msgbuf,
+                                           GWEN_BUFFER *cryptbuf,
+                                           GWEN_HBCICRYPTOCONTEXT *ctx){
   assert(sc);
   if (sc->encryptFn)
     return sc->encryptFn(sc, msgbuf, cryptbuf, ctx);
   DBG_ERROR(0, "Encrypt function not set.");
-  return -1;
+  return GWEN_SecCtxRetvalError;
 }
 
 
 
-int GWEN_SecContext_Decrypt(GWEN_SECCTX *sc,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *decryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx){
+GWEN_SECCTX_RETVAL GWEN_SecContext_Decrypt(GWEN_SECCTX *sc,
+                                           GWEN_BUFFER *msgbuf,
+                                           GWEN_BUFFER *decryptbuf,
+                                           GWEN_HBCICRYPTOCONTEXT *ctx){
   assert(sc);
   if (sc->decryptFn)
     return sc->decryptFn(sc, msgbuf, decryptbuf, ctx);
   DBG_ERROR(0, "Decrypt function not set.");
-  return -1;
+  return GWEN_SecCtxRetvalError;
 }
 
 
 
-int GWEN_SecContext_FromDB(GWEN_SECCTX *sc,
-                           GWEN_DB_NODE *db){
+GWEN_SECCTX_RETVAL GWEN_SecContext_FromDB(GWEN_SECCTX *sc,
+                                          GWEN_DB_NODE *db){
   const char *p;
 
   assert(sc);
   if (sc->fromDbFn==0) {
     DBG_ERROR(0, "FromDB function not set.");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
 
   p=GWEN_DB_GetCharValue(db, "localname", 0, 0);
@@ -305,12 +305,12 @@ int GWEN_SecContext_FromDB(GWEN_SECCTX *sc,
 
 
 
-int GWEN_SecContext_ToDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db){
+GWEN_SECCTX_RETVAL GWEN_SecContext_ToDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db){
   assert(sc);
 
   if (sc->toDbFn==0) {
     DBG_ERROR(0, "ToDB function not set.");
-    return -1;
+    return GWEN_SecCtxRetvalError;
   }
   if (sc->localName)
     GWEN_DB_SetCharValue(db,
@@ -566,11 +566,10 @@ GWEN_SECCTX *GWEN_SecContextMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
 
 
 int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
-                                  GWEN_SECCTX *sc,
-                                  int tmp){
+                                  GWEN_SECCTX *sc){
   assert(scm);
   assert(scm->addContextFn);
-  return scm->addContextFn(scm, sc, tmp);
+  return scm->addContextFn(scm, sc);
 }
 
 

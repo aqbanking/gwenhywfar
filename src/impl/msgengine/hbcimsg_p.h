@@ -73,6 +73,21 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
 
 int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg);
 
+/**
+ * This function verifies all signatures and adds th corrsponding keyspec
+ * to the list of signers.
+ * If a signature can not be verified (because there is no remote sign key
+ * or our remote sign key differs from that used signing the data) then a
+ * "?" is prepended to the owner of the keyspec added.
+ * If the signature could be verified and turned out to be invalid a "!" is
+ * prepended to the owner's name.
+ * Thus you can later check for correct signatures by checking for the first
+ * character of the keyspec's owner.
+ */
+int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
+                        GWEN_DB_NODE *gr,
+                        unsigned int flags);
+
 int GWEN_HBCIMsg_AddMsgHead(GWEN_HBCIMSG *hmsg);
 int GWEN_HBCIMsg_AddMsgTail(GWEN_HBCIMSG *hmsg);
 

@@ -50,7 +50,15 @@ extern "C" {
  */
 /*@{*/
 
-#define GWEN_SECCTX_FLAGS_TEMP 0x0001
+#define GWEN_SECCTX_FLAGS_TEMP             0x0001
+#define GWEN_SECCTX_FLAGS_ALLOW_KEY_CHANGE 0x0002
+
+
+  typedef enum {
+    GWEN_SecCtxRetvalOk=0,
+    GWEN_SecCtxRetvalUnknown,
+    GWEN_SecCtxRetvalError
+  } GWEN_SECCTX_RETVAL;
 
 
 typedef struct GWEN_SECCTX GWEN_SECCTX;
@@ -60,39 +68,39 @@ typedef struct GWEN_SECCTX GWEN_SECCTX;
  *
  */
 /*@{*/
-typedef int
+typedef GWEN_SECCTX_RETVAL
   (*GWEN_SECCTX_PREPARECTX_FN)(GWEN_SECCTX *sctx,
                                 GWEN_HBCICRYPTOCONTEXT *ctx,
                                 int crypt);
 
-typedef int
+typedef GWEN_SECCTX_RETVAL
   (*GWEN_SECCTX_SIGN_FN)(GWEN_SECCTX *sctx,
                          GWEN_BUFFER *msgbuf,
                          GWEN_BUFFER *signbuf,
                          GWEN_HBCICRYPTOCONTEXT *ctx);
 
-typedef int
+typedef GWEN_SECCTX_RETVAL
   (*GWEN_SECCTX_VERIFY_FN)(GWEN_SECCTX *sctx,
                            GWEN_BUFFER *msgbuf,
                            GWEN_BUFFER *signbuf,
                            GWEN_HBCICRYPTOCONTEXT *ctx);
 
-typedef int
+typedef GWEN_SECCTX_RETVAL
   (*GWEN_SECCTX_ENCRYPT_FN)(GWEN_SECCTX *sctx,
                             GWEN_BUFFER *msgbuf,
                             GWEN_BUFFER *cryptbuf,
                             GWEN_HBCICRYPTOCONTEXT *ctx);
 
-typedef int
+typedef GWEN_SECCTX_RETVAL
   (*GWEN_SECCTX_DECRYPT_FN)(GWEN_SECCTX *sctx,
                             GWEN_BUFFER *msgbuf,
                             GWEN_BUFFER *decryptbuf,
                             GWEN_HBCICRYPTOCONTEXT *ctx);
 
-typedef int
+typedef GWEN_SECCTX_RETVAL
   (*GWEN_SECCTX_FROMDB_FN)(GWEN_SECCTX *sctx,
                            GWEN_DB_NODE *db);
-typedef int
+typedef GWEN_SECCTX_RETVAL
   (*GWEN_SECCTX_TODB_FN)(GWEN_SECCTX *sctx,
                          GWEN_DB_NODE *db);
 
@@ -192,33 +200,33 @@ void GWEN_SecContext_SetRemoteSignSeq(GWEN_SECCTX *sc,
  */
 /*@{*/
 
-int GWEN_SecContext_PrepareContext(GWEN_SECCTX *sctx,
-                                   GWEN_HBCICRYPTOCONTEXT *ctx,
-                                   int crypt);
+GWEN_SECCTX_RETVAL GWEN_SecContext_PrepareContext(GWEN_SECCTX *sctx,
+                                                  GWEN_HBCICRYPTOCONTEXT *ctx,
+                                                  int crypt);
 
 
-int GWEN_SecContext_Sign(GWEN_SECCTX *sctx,
-                         GWEN_BUFFER *msgbuf,
-                         GWEN_BUFFER *signbuf,
-                         GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_SecContext_Sign(GWEN_SECCTX *sctx,
+                                        GWEN_BUFFER *msgbuf,
+                                        GWEN_BUFFER *signbuf,
+                                        GWEN_HBCICRYPTOCONTEXT *ctx);
 
-int GWEN_SecContext_Verify(GWEN_SECCTX *sctx,
-                           GWEN_BUFFER *msgbuf,
-                           GWEN_BUFFER *signbuf,
-                           GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_SecContext_Verify(GWEN_SECCTX *sctx,
+                                          GWEN_BUFFER *msgbuf,
+                                          GWEN_BUFFER *signbuf,
+                                          GWEN_HBCICRYPTOCONTEXT *ctx);
 
-int GWEN_SecContext_Encrypt(GWEN_SECCTX *sctx,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *cryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_SecContext_Encrypt(GWEN_SECCTX *sctx,
+                                           GWEN_BUFFER *msgbuf,
+                                           GWEN_BUFFER *cryptbuf,
+                                           GWEN_HBCICRYPTOCONTEXT *ctx);
 
-int GWEN_SecContext_Decrypt(GWEN_SECCTX *sctx,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *decryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx);
+GWEN_SECCTX_RETVAL GWEN_SecContext_Decrypt(GWEN_SECCTX *sctx,
+                                           GWEN_BUFFER *msgbuf,
+                                           GWEN_BUFFER *decryptbuf,
+                                           GWEN_HBCICRYPTOCONTEXT *ctx);
 
-int GWEN_SecContext_FromDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
-int GWEN_SecContext_ToDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
+GWEN_SECCTX_RETVAL GWEN_SecContext_FromDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
+GWEN_SECCTX_RETVAL GWEN_SecContext_ToDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
 /*@}*/
 
 
@@ -270,8 +278,7 @@ typedef GWEN_SECCTX*
 
 typedef int
   (*GWEN_SECCTXMGR_ADDCONTEXT_FN)(GWEN_SECCTX_MANAGER *scm,
-                                  GWEN_SECCTX *sc,
-                                  int tmp);
+                                  GWEN_SECCTX *sc);
 
 
 typedef int
@@ -344,8 +351,7 @@ int GWEN_SecContextMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
  * This function takes over ownership of the given context.
  */
 int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
-                                  GWEN_SECCTX *sc,
-                                  int tmp);
+                                  GWEN_SECCTX *sc);
 
 
 /**

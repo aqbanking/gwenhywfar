@@ -2,7 +2,7 @@ SUBDIRS=doc src test m4
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  gwenhywfar.m4 \
- gwenhywfar.spec.in DOXYFILE.in
+ gwenhywfar.spec.in Doxyfile.in
 
 bin_SCRIPTS=gwenhywfar-config
 M4dir=@prefix@/share/aclocal

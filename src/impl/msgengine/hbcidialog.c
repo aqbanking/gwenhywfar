@@ -77,14 +77,6 @@ GWEN_MSGENGINE *GWEN_HBCIDialog_GetMsgEngine(GWEN_HBCIDIALOG *hdlg){
 
 
 
-void GWEN_HBCIDialog_SetMsgEngine(GWEN_HBCIDIALOG *hdlg,
-                                  GWEN_MSGENGINE *e){
-  assert(hdlg);
-  hdlg->msgEngine=e;
-}
-
-
-
 const char *GWEN_HBCIDialog_GetDialogId(GWEN_HBCIDIALOG *hdlg){
   assert(hdlg);
   if (hdlg->dialogId)
@@ -238,6 +230,7 @@ void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg){
   free(hdlg->dialogId);
   hdlg->dialogId=strdup("0");
   hdlg->nextMsgNum=1;
+  hdlg->lastReceivedMsgNum=0;
   free(hdlg->remoteName);
   hdlg->remoteName=0;
 }

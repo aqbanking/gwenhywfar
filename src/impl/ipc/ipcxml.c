@@ -1176,6 +1176,39 @@ void GWEN_IPCXMLService_SetCryptKey(GWEN_IPCXMLSERVICE *xs,
 
 
 
+unsigned int GWEN_IPCXMLService_GetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
+                                                   unsigned int clid){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(xs);
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return 0;
+  }
+
+  return GWEN_IPCXMLConnLayer_GetFlags(cl);
+}
+
+
+
+void GWEN_IPCXMLService_SetConnectionFlags(GWEN_IPCXMLSERVICE *xs,
+                                           unsigned int clid,
+                                           unsigned int flags){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(xs);
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return;
+  }
+
+  GWEN_IPCXMLConnLayer_SetFlags(cl, flags);
+}
+
+
+
 GWEN_ERRORCODE GWEN_IPCXMLService_GetContext(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int clid,
                                              const char *rname,
@@ -1240,8 +1273,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_ReleaseContext(GWEN_IPCXMLSERVICE *xs,
 
 GWEN_ERRORCODE GWEN_IPCXMLService_AddContext(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int clid,
-                                             GWEN_SECCTX *ctx,
-                                             int tmp){
+                                             GWEN_SECCTX *ctx){
   GWEN_IPCCONNLAYER *cl;
   GWEN_ERRORCODE err;
 
@@ -1255,7 +1287,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_AddContext(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
   }
 
-  err=GWEN_SecContextMgr_AddContext(xs->securityManager, ctx, tmp);
+  err=GWEN_SecContextMgr_AddContext(xs->securityManager, ctx);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(0, err);
     return err;

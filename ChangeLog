@@ -1,5 +1,15 @@
 $Id$
 
+2003/11/29 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in msgengine.c: Did not correctly iterate through multiple
+  groups when writing a group multiple times to a message (like in group
+  "result" in HBCI segment "SegResult": The group "result" may appear up
+  to 99 times, and for each appearance msgengine should use the next group,
+  but it always took the first one).
+- IPCXMLCmd: added "OpenSession" command
+
+
 2003/11/28 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - more work on IPC stuff

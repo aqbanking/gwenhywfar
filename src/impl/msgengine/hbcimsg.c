@@ -1729,36 +1729,70 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
                                      GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
                                      GWEN_KeySpec_GetOwner(ks));
     if (!sc) {
-      DBG_ERROR(0,
-                "Unknown security context \"%s\"",
-                GWEN_KeySpec_GetOwner(ks));
-      GWEN_HBCICryptoContext_free(ctx);
+      char *nb;
+      GWEN_KEYSPEC *nks;
+
+      nks=GWEN_KeySpec_dup(ks);
+      p=GWEN_KeySpec_GetOwner(nks);
+      assert(p);
+      nb=(char*)malloc(strlen(p)+2);
+      assert(nb);
+      nb[0]='?';
+      nb[1]=0;
+      strcat(nb, p);
+      GWEN_KeySpec_SetOwner(nks, nb);
+      GWEN_HBCIMsg_AddSigner(hmsg, nks);
+      GWEN_KeySpec_free(nks);
+      free(nb);
+      DBG_WARN(0,
+               "Unknown security context \"%s\", no verification",
+               GWEN_KeySpec_GetOwner(ks));
+    }
+    else {
+      /* verify signature */
+      rv=GWEN_SecContext_Verify(sc, dbuf, sigbuf, ctx);
       GWEN_Buffer_free(sigbuf);
       GWEN_Buffer_free(dbuf);
-      GWEN_List_free(sigheads);
-      GWEN_List_free(sigtails);
-      return -1;
-    }
 
-    /* verify signature */
-    rv=GWEN_SecContext_Verify(sc, dbuf, sigbuf, ctx);
-    GWEN_Buffer_free(sigbuf);
-    GWEN_Buffer_free(dbuf);
+      if (rv==GWEN_SecCtxRetvalOk) {
+        /* add signer */
+        GWEN_HBCIMsg_AddSigner(hmsg, GWEN_HBCICryptoContext_GetKeySpec(ctx));
+        DBG_INFO(0, "Signature is valid");
+      }
+      else {
+        char cc;
+        char *nb;
+        GWEN_KEYSPEC *nks;
 
-    if (rv) {
-      DBG_ERROR(0, "Invalid signature");
-      GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
-      GWEN_HBCICryptoContext_free(ctx);
-      GWEN_List_free(sigheads);
-      GWEN_List_free(sigtails);
-      return -1;
+        if (rv==GWEN_SecCtxRetvalUnknown) {
+          DBG_WARN(0,
+                   "Unknown security context \"%s\", no verification",
+                   GWEN_KeySpec_GetOwner(ks));
+          cc='?';
+        }
+        else {
+          DBG_WARN(0, "Invalid signature");
+          cc='!';
+        }
+
+        nks=GWEN_KeySpec_dup(ks);
+        p=GWEN_KeySpec_GetOwner(nks);
+        assert(p);
+        nb=(char*)malloc(strlen(p)+2);
+        assert(nb);
+        nb[0]=cc;
+        nb[1]=0;
+        strcat(nb, p);
+        GWEN_KeySpec_SetOwner(nks, nb);
+        GWEN_HBCIMsg_AddSigner(hmsg, nks);
+        GWEN_KeySpec_free(nks);
+        free(nb);
+      }
+      GWEN_SecContextMgr_ReleaseContext(scm, sc, 0);
     }
-    GWEN_SecContextMgr_ReleaseContext(scm, sc, 0);
+    GWEN_HBCICryptoContext_free(ctx);
     DBG_INFO(0, "Verification done");
 
-    /* add signer */
-    GWEN_HBCIMsg_AddSigner(hmsg, GWEN_HBCICryptoContext_GetKeySpec(ctx));
-    GWEN_HBCICryptoContext_free(ctx);
   } /* for */
 
 
