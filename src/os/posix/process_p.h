@@ -33,7 +33,7 @@
 
 #include <gwenhywfar/process.h>
 #include <sys/types.h>
-
+#include <signal.h>
 
 
 
@@ -49,7 +49,7 @@ struct GWEN_PROCESS {
 
 
 GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w);
-void GWEN_Process_SignalHandler(int s);
+void GWEN_Process_SignalHandler(int s, siginfo_t *siginfo, void *voidptr);
 GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid);
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status);
 

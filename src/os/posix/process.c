@@ -56,10 +56,21 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
   struct sigaction sa;
 
   /* setup signal handler for SIGCHLD */
-  sa.sa_handler=GWEN_Process_SignalHandler;
+  sa.sa_sigaction = GWEN_Process_SignalHandler;
   sigemptyset(&sa.sa_mask);
 
-  sa.sa_flags=0;
+  sa.sa_flags = SA_SIGINFO;
+
+  /* FIXME: This needs more work! If the &sa handler is installed,
+     then gnucash-HEAD crashes each time on startup because guile
+     expected its own signal handler to be used -- the error message
+     is something like "in procedure waitpid: no child processes",
+     i.e. guile expected its own signal handler to be called for
+     SIGCHLD. However, when we execute this below then we get printed
+     "original handler was SIG_DFL". But if we call this SIG_DFL
+     handler below in SignalHandler, we will get a segfault. Maybe
+     some other flags and/or signals have to be checked? I have no
+     idea. */
   if (sigaction(SIGCHLD, &sa, &original_sigchld_sa)) {
     DBG_ERROR(0,
 	      "Could not setup signal handler for signal SIGCHLD: %s",
@@ -71,16 +82,14 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
   }
 
   if (original_sigchld_sa.sa_handler == SIG_DFL) {
-    DBG_DEBUG(0, "original_sigchld handler was SIG_DFL");
+    DBG_NOTICE(0, "original_sigchld handler was SIG_DFL");
   } else if (original_sigchld_sa.sa_handler == SIG_IGN) {
-    DBG_DEBUG(0, "original_sigchld handler was SIG_IGN");
+    DBG_NOTICE(0, "original_sigchld handler was SIG_IGN");
   }
   else if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
-    DBG_ERROR(0,
+    DBG_NOTICE(0,
 	      "Original signal handler for signal SIGCHLD was using "
-	      "SA_SIGINFO. This is not yet implemented in gwenhywfar. "
-	      "You need to fix GWEN_Process_SignalHandler to handle "
-	      "this case. For now we hope everything will be ok anyway.");
+	      "SA_SIGINFO. ");
   }
 
   return 0;
@@ -118,7 +127,7 @@ GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid){
 
 
 
-void GWEN_Process_SignalHandler(int s) {
+void GWEN_Process_SignalHandler(int s, siginfo_t *siginfo, void *info) {
   int status;
   pid_t pid;
 
@@ -158,12 +167,13 @@ void GWEN_Process_SignalHandler(int s) {
 
   /* Now check whether there has been already a different signal
      handler for this signal */
-  if ( (original_sigchld_sa.sa_handler != SIG_DFL) &&
+  if ( (original_sigchld_sa.sa_handler != SIG_DFL) && 
        (original_sigchld_sa.sa_handler != SIG_IGN) ) {
     if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
-      /* FIXME: not yet implemented */
-      /* original_sigchld_sa.sa_sigaction(s, siginfo, info); */
+      DBG_NOTICE(0, "About to call original sa_sigaction at signal \"%d\"", s);
+      original_sigchld_sa.sa_sigaction(s, siginfo, info);
     } else {
+      DBG_NOTICE(0, "About to call original sa_handler at signal \"%d\"", s);
       original_sigchld_sa.sa_handler(s);
     }
   }

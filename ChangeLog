@@ -1,3 +1,8 @@
+2004-03-06  Christian Stimming  <stimming@tuhh.de>
+
+	* src/os/posix/process.c: Try to fix SIGCHLD problem some
+	more. Still doesn't work with gnucash, though.
+
 2004-03-05  Christian Stimming <stimming@tuhh.de>
 
 	* src/os/posix/process.c: Remember old SIGCHLD handler and call it
