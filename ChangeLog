@@ -1,5 +1,11 @@
 $Id$
 
+2003/10/31 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added function GWEN_Version
+- added parser module CSV
+
+
 2003/10/30 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - fixed memory leaks

@@ -38,7 +38,6 @@
 #include <gwenhyfwar/misc.h>
 
 #include <gwenhyfwar/text.h>
-#include <gwenhyfwar/version.h>
 
 #include <stdarg.h>
 
@@ -78,7 +77,7 @@ GWEN_ConnectionLayerCmdData_new(GWEN_MSGENGINE *msgEngine){
   GWEN_NEW_OBJECT(GWEN_IPCCONNLAYERCMDDATA, ccd);
   ccd->msgEngine=msgEngine;
   ccd->ownName=strdup("Gwenhywfar");
-  ccd->ownVersion=strdup(GWENHYFWAR_VERSION_FULLSTRING);
+  ccd->ownVersion=strdup(GWENHYFWAR_VERSION_FULL_STRING);
   return ccd;
 }
 
@@ -1257,7 +1256,7 @@ GWEN_IPCSERVICECMD *GWEN_IPCServiceCmd_new(){
 
   GWEN_NEW_OBJECT(GWEN_IPCSERVICECMD, s);
   s->ownName=strdup("Gwenhywfar");
-  s->ownVersion=strdup(GWENHYFWAR_VERSION_FULLSTRING);
+  s->ownVersion=strdup(GWENHYFWAR_VERSION_FULL_STRING);
   return s;
 }
 

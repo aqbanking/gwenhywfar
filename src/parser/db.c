@@ -1249,12 +1249,16 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                                 GWEN_TEXT_FLAGS_DEL_QUOTES |
                                 GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
                                 &pos);
-            if (!p || !*wbuf) {
+            /* if (!p || !*wbuf) { */
+            if (!p) {
               DBG_DEBUG(0, "Line %d, pos %d: no word",
                         lineno, pos-linebuf+1);
               break;
             }
-
+            if (!*wbuf) {
+              DBG_INFO(0, "Line %d, pos %d: no word",
+                       lineno, pos-linebuf+1);
+            }
             DBG_VERBOUS(0, "Creating value \"%s\"", wbuf);
 
             /* set value */

@@ -9,6 +9,27 @@
 /* Define to 1 if the `closedir' function returns void instead of `int'. */
 #undef CLOSEDIR_VOID
 
+/* build */
+#undef GWENHYFWAR_VERSION_BUILD
+
+/* full version string */
+#undef GWENHYFWAR_VERSION_FULL_STRING
+
+/* major version */
+#undef GWENHYFWAR_VERSION_MAJOR
+
+/* minor version */
+#undef GWENHYFWAR_VERSION_MINOR
+
+/* patchlevel */
+#undef GWENHYFWAR_VERSION_PATCHLEVEL
+
+/* version string */
+#undef GWENHYFWAR_VERSION_STRING
+
+/* tag */
+#undef GWENHYFWAR_VERSION_TAG
+
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 

@@ -148,3 +148,18 @@ GWEN_ERRORCODE GWEN_Fini() {
 }
 
 
+
+void GWEN_Version(int *major,
+                  int *minor,
+                  int *patchlevel,
+                  int *build){
+  *major=GWENHYFWAR_VERSION_MAJOR;
+  *minor=GWENHYFWAR_VERSION_MINOR;
+  *patchlevel=GWENHYFWAR_VERSION_PATCHLEVEL;
+  *build=GWENHYFWAR_VERSION_BUILD;
+}
+
+
+
+
+

@@ -2,7 +2,7 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Sep 11 2003
+ begin       : Thu Oct 30 2003
  copyright   : (C) 2003 by Martin Preuss
  email       : martin@libchipcard.de
 
@@ -25,25 +25,26 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GWENHYFWAR_CSV_H
+#define GWENHYFWAR_CSV_H
 
-#ifndef GWENHYFWAR_GWENHYFWAR_H
-#define GWENHYFWAR_GWENHYFWAR_H
 
-#include <gwenhyfwar/error.h>
+#include <gwenhyfwar/bufferedio.h>
+#include <gwenhyfwar/db.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-GWEN_ERRORCODE GWEN_Init();
-GWEN_ERRORCODE GWEN_Fini();
+int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
+                   GWEN_DB_NODE *cfg,
+                   GWEN_DB_NODE *data);
 
+int GWEN_CSV_Read(GWEN_BUFFEREDIO *bio,
+                  GWEN_DB_NODE *cfg,
+                  GWEN_DB_NODE *data);
 
-void GWEN_Version(int *major,
-                  int *minor,
-                  int *patchlevel,
-                  int *build);
 
 #ifdef __cplusplus
 }
@@ -51,3 +52,5 @@ void GWEN_Version(int *major,
 
 
 #endif
+
+

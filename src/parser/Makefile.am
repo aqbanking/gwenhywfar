@@ -3,12 +3,14 @@ INCLUDES=@all_includes@
 noinst_LTLIBRARIES=libparser.la
 
 noinst_HEADERS=\
+ csv_p.h \
  db_p.h \
  msgengine_p.h \
  xml_p.h
 
 iheaderdir=${includedir}/gwenhyfwar
 iheader_HEADERS=\
+ csv.h \
  db.h \
  msgengine.h \
  path.h \
@@ -16,6 +18,7 @@ iheader_HEADERS=\
  xml.h
 
 libparser_la_SOURCES=\
+ csv.c \
  db.c \
  msgengine.c \
  path.c \
