@@ -1,4 +1,10 @@
 
+2004/05/18: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/msgengine: switched inherit code to new gwenhywfar/inherit type
+- parser/text: added function GWEN_Text_ToHexBuffer
+
+
 2004/05/17: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ipc/ipc: more fixes

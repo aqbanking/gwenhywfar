@@ -405,6 +405,84 @@ char *GWEN_Text_ToHexGrouped(const char *src,
 
 
 
+int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
+                          GWEN_BUFFER *buf,
+                          unsigned int groupsize,
+                          char delimiter,
+                          int skipLeadingZeroes){
+  unsigned int pos;
+  unsigned int size;
+  unsigned int j;
+
+  j=0;
+
+  pos=0;
+  size=0;
+  j=0;
+  while(pos<l) {
+    unsigned char c;
+    int skipThis;
+
+    skipThis=0;
+    c=(((unsigned char)(src[pos]))>>4)&0xf;
+    if (skipLeadingZeroes) {
+      if (c==0)
+	skipThis=1;
+      else
+	skipLeadingZeroes=0;
+    }
+    if (c>9)
+      c+=7;
+    c+='0';
+    if (!skipThis) {
+      if (GWEN_Buffer_AppendByte(buf, c)) {
+        DBG_INFO(0, "here");
+        return -1;
+      }
+      j++;
+      if (groupsize && j==groupsize) {
+        if (GWEN_Buffer_AppendByte(buf, delimiter)) {
+          DBG_INFO(0, "here");
+          return -1;
+        }
+	j=0;
+      }
+    }
+
+    skipThis=0;
+    c=((unsigned char)(src[pos]))&0xf;
+    if (skipLeadingZeroes) {
+      if (c==0 && pos+1<l)
+	skipThis=1;
+      else
+	skipLeadingZeroes=0;
+    }
+    if (c>9)
+      c+=7;
+    c+='0';
+    if (!skipThis) {
+      if (GWEN_Buffer_AppendByte(buf, c)) {
+        DBG_INFO(0, "here");
+        return -1;
+      }
+      j++;
+      if (groupsize && j==groupsize) {
+	if (pos+1<l) {
+          if (GWEN_Buffer_AppendByte(buf, delimiter)) {
+            DBG_INFO(0, "here");
+            return -1;
+          }
+        }
+        j=0;
+      }
+    }
+    pos++;
+  }
+  return 0;
+}
+
+
+
 int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
   unsigned int pos;
   unsigned int size;

@@ -33,6 +33,7 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/inherit.h>
 
 
 #define GWEN_MSGENGINE_CHARSTOESCAPE ":+\"\'"
@@ -46,6 +47,7 @@
 
 
 struct GWEN__MSGENGINE {
+  GWEN_INHERIT_ELEMENT(GWEN_MSGENGINE)
   GWEN_XMLNODE *defs;
   int ownDefs;
   char escapeChar;

@@ -133,6 +133,9 @@ int
 GWENHYWFAR_API
 typedef struct GWEN__MSGENGINE GWEN_MSGENGINE;
 
+GWEN_INHERIT_FUNCTION_DEFS(GWEN_MSGENGINE)
+
+
 /** @name Virtual Functions
  *
  * A message engine contains some pointers to functions which allow

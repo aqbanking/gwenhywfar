@@ -118,6 +118,20 @@ char *GWEN_Text_ToHex(const char *src, unsigned l, char *buffer,
                       unsigned int maxsize);
 
 /**
+ * Writes the given binary data as a hex string to the destination buffer.
+ * @param groupsize if !=0 then after this many characters in the destination
+ *   buffer the delimiter is inserted
+ * @param delimiter character to write after groupsize characters
+ * @param skipLeadingZeroes if !=0 then leading zeroes are suppressed
+ */
+GWENHYWFAR_API
+int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
+                          GWEN_BUFFER *buf,
+                          unsigned int groupsize,
+                          char delimiter,
+                          int skipLeadingZeroes);
+
+/**
  * Converts a string to Hex. After "groupsize" bytes the "delimiter" is
  * inserted.
  */

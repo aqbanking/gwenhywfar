@@ -45,11 +45,14 @@
 #include <ctype.h>
 
 
+GWEN_INHERIT_FUNCTIONS(GWEN_MSGENGINE)
+
 
 GWEN_MSGENGINE *GWEN_MsgEngine_new(){
   GWEN_MSGENGINE *e;
 
   GWEN_NEW_OBJECT(GWEN_MSGENGINE, e);
+  GWEN_INHERIT_INIT(GWEN_MSGENGINE, e);
   e->charsToEscape=strdup(GWEN_MSGENGINE_CHARSTOESCAPE);
   e->delimiters=strdup(GWEN_MSGENGINE_DEFAULT_DELIMITERS);
   e->globalValues=GWEN_DB_Group_new("globalvalues");
@@ -64,6 +67,8 @@ void GWEN_MsgEngine_free(GWEN_MSGENGINE *e){
   if (e) {
     assert(e->usage);
     if (--(e->usage)==0) {
+      GWEN_INHERIT_FINI(GWEN_MSGENGINE, e);
+
       if (e->inheritorData && e->freeDataPtr)
 	e->freeDataPtr(e);
       if (e->ownDefs)
@@ -82,7 +87,7 @@ void GWEN_MsgEngine_free(GWEN_MSGENGINE *e){
 	  td=tdn;
 	} /* while */
       }
-      free(e);
+      GWEN_FREE_OBJECT(e);
     }
   }
 }
@@ -334,6 +339,7 @@ void
 GWEN_MsgEngine_SetFreeDataFunction(GWEN_MSGENGINE *e,
                                    GWEN_MSGENGINE_FREEDATA_PTR p){
   assert(e);
+  DBG_WARN(0, "GWEN_MsgEngine_SetFreeDataFunction: Deprecated");
   e->freeDataPtr=p;
 }
 
@@ -348,6 +354,7 @@ void *GWEN_MsgEngine_GetInheritorData(const GWEN_MSGENGINE *e){
 
 void GWEN_MsgEngine_SetInheritorData(GWEN_MSGENGINE *e, void *d){
   assert(e);
+  DBG_WARN(0, "GWEN_MsgEngine_SetInheritorData: Deprecated");
   if (e->inheritorData && e->freeDataPtr)
     e->freeDataPtr(e);
   e->inheritorData=d;
