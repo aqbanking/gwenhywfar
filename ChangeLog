@@ -1,5 +1,16 @@
 $Id$
 
+
+===========================================================================
+MARK: released gwenhywfar-0.9beta7 (2003/12/06)
+===========================================================================
+
+
+2003/12/06 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- prepared next release
+
+
 2003/12/04 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - removed IPC stuff from Gwenhywfar. You can find the IPC stuff in
