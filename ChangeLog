@@ -1,4 +1,9 @@
 
+2004/05/05: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed some bugs in args.c
+
+
 2004/05/04: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added type GWEN_TYPE_UINT64

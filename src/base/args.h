@@ -60,7 +60,7 @@ extern "C" {
 GWENHYWFAR_API
 typedef enum {
   GWEN_ArgsTypeChar=0,
-  GWEN_ArgsTypeInt
+  GWEN_ArgsTypeInt,
 } GWEN_ARGS_TYPE;
 
 GWENHYWFAR_API

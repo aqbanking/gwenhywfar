@@ -81,9 +81,8 @@ int GWEN_Args_Check(int argc, char **argv,
     case GWEN_ArgsElementTypeFreeParam:
       if (mode & GWEN_ARGS_MODE_ALLOW_FREEPARAM) {
         GWEN_DB_SetCharValue(db,
-                             GWEN_DB_FLAGS_DEFAULT |
-                             GWEN_PATH_FLAGS_CREATE_VAR,
-                             "params/param", p);
+                             GWEN_DB_FLAGS_DEFAULT,
+                             "params", p);
         i++;
       }
       else {
@@ -99,14 +98,16 @@ int GWEN_Args_Check(int argc, char **argv,
 
     case GWEN_ArgsElementTypeShort:
       for(tmpArgs=args;;tmpArgs++) {
-        if (strcasecmp(tmpArgs->shortOption, p)==0) {
-          /* found option */
-          GWEN_DB_SetIntValue(counts, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                              tmpArgs->name,
-                              GWEN_DB_GetIntValue(counts,
-                                                  tmpArgs->name, 0, 0)+1);
-          break;
-        }
+        if (tmpArgs->shortOption) {
+          if (strcmp(tmpArgs->shortOption, p)==0) {
+            /* found option */
+            GWEN_DB_SetIntValue(counts, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                tmpArgs->name,
+                                GWEN_DB_GetIntValue(counts,
+                                                    tmpArgs->name, 0, 0)+1);
+            break;
+          }
+        } /* if shortOption */
 
         if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST) {
           DBG_ERROR(0, "Unknown short option \"%s\"", p);
@@ -169,14 +170,16 @@ int GWEN_Args_Check(int argc, char **argv,
       tmpBuf[v-p]=0;
 
       for(tmpArgs=args;;tmpArgs++) {
-        if (strcasecmp(tmpArgs->longOption, tmpBuf)==0) {
-          /* found option */
-          GWEN_DB_SetIntValue(counts, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                              tmpArgs->name,
-                              GWEN_DB_GetIntValue(counts,
-                                                  tmpArgs->name, 0, 0)+1);
-          break;
-        }
+        if (tmpArgs->longOption) {
+          if (strcmp(tmpArgs->longOption, tmpBuf)==0) {
+            /* found option */
+            GWEN_DB_SetIntValue(counts, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                tmpArgs->name,
+                                GWEN_DB_GetIntValue(counts,
+                                                    tmpArgs->name, 0, 0)+1);
+            break;
+          }
+        } /* if longOption */
 
         if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST) {
           DBG_ERROR(0, "Unknown long option \"%s\"", tmpBuf);
