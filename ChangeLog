@@ -6,6 +6,9 @@
   throughout Gwen it is less memory consuming. I used it in the current
   development version of Libchipcard and found it usefull in another project
   so I decided to move it to Gwen.
+- parser/db:
+  - added functions GWEN_DB_FindFirstGroup and GWEN_DB_FindFirstGroup which
+    simplify searching for groups by name.
 
 
 2004/04/04: Martin Preuss<martin@libchipcard.de>

@@ -288,16 +288,53 @@ GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n);
  * children, or that the other children are variables instead
  * of groups.
  *
- * @note This is the only function where the returned node is @e not
+ * @note This is one of the few functions where the returned node is @e not
  * the child of the specified node, but instead it is the next node
  * with the same parent node. In other words, this function is an
- * exception. In all other functions the returned node is a child of
+ * exception. In most other functions the returned node is a child of
  * the specified node.
  *
  * @param n db node
  */
 GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n);
+
+
+/**
+ * Returns the first group node below the given one by name.
+ *
+ * If there is no matching group node then NULL is returned. This can either
+ * mean that this node does not have any children or the only
+ * children are variables instead of groups or their is no group of the
+ * given name.
+ *
+ * @param n db node
+ * @param name name to look for (joker and wildcards allowed)
+ */
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name);
+
+/**
+ * Returns the next group node following the given one, which has the
+ * same parent node, by name.
+ *
+ * If there is no matching group node then NULL is returned. This can either
+ * mean that the parent node does not have any further
+ * children, or that the other children are variables instead
+ * of groups or that there is no group with the given name.
+ *
+ * @note This is one of the few functions where the returned node is @e not
+ * the child of the specified node, but instead it is the next node
+ * with the same parent node. In other words, this function is an
+ * exception. In most other functions the returned node is a child of
+ * the specified node.
+ *
+ * @param n db node
+ * @param name name to look for (joker and wildcards allowed)
+ */
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name);
+
 
 /** Callback function type for GWEN_DB_Groups_Foreach(),
  * GWEN_DB_Variables_Foreach(), and GWEN_DB_Values_Foreach().

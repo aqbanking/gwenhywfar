@@ -2165,4 +2165,53 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
 
 
 
+GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name){
+  GWEN_DB_NODE *nn;
+
+  assert(n);
+  if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
+    DBG_ERROR(0, "Node is not a group");
+    return 0;
+  }
+  nn=n->h.child;
+  while(nn) {
+    if (nn->h.typ==GWEN_DB_NODETYPE_GROUP) {
+      if (-1!=GWEN_Text_ComparePattern(nn->group.name, name, 0))
+        break;
+    }
+    nn=nn->h.next;
+  } /* while node */
+  return nn;
+}
+
+
+
+GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name){
+  GWEN_DB_NODE *og;
+
+  og=n;
+  assert(n);
+  if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
+    DBG_ERROR(0, "Node is not a group");
+    return 0;
+  }
+  n=n->h.next;
+  while(n) {
+    if (n->h.typ==GWEN_DB_NODETYPE_GROUP) {
+      if (-1!=GWEN_Text_ComparePattern(nn->group.name, name, 0))
+        break;
+    }
+    n=n->h.next;
+  } /* while node */
+  assert(n!=og);
+  return n;
+}
+
+
+
+
+
+
+
+
 
