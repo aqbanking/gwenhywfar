@@ -249,6 +249,8 @@ void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent){
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "--------------------------------------------------\n");
   for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Status : %02x\n", ks->status);
+  for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "KeyType : %s\n", ks->keyType);
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "KeyName : %s\n", ks->keyName);
