@@ -1,0 +1,3 @@
+INCLUDES=@all_includes@
+
+SUBDIRS=@GWEN_CRYPTO@

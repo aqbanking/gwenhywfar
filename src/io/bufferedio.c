@@ -1,0 +1,874 @@
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Fri Feb 07 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU Lesser General Public            *
+ *   License as published by the Free Software Foundation; either          *
+ *   version 2.1 of the License, or (at your option) any later version.    *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,                 *
+ *   MA  02111-1307  USA                                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include "bufferedio_p.h"
+#include <gwenhyfwar/misc.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+
+#include "gwenhyfwar/debug.h"
+
+
+const char *GWEN_BufferedIO_ErrorString(int c){
+  const char *s;
+
+  switch(c) {
+  case GWEN_BUFFEREDIO_ERROR_READ:
+    s="Error on read";
+    break;
+  case GWEN_BUFFEREDIO_ERROR_WRITE:
+    s="Error on write";
+    break;
+  case GWEN_BUFFEREDIO_ERROR_CLOSE:
+    s="Error on write";
+    break;
+  case GWEN_BUFFEREDIO_ERROR_TIMEOUT:
+    s="Transaction timout";
+    break;
+  default:
+    s=0;
+  } /* switch */
+
+  return s;
+}
+
+
+
+static int gwen_bufferedio_is_initialized=0;
+static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_bufferedio_errorform=0;
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit(){
+  if (!gwen_bufferedio_is_initialized) {
+    GWEN_ERRORCODE err;
+
+    gwen_bufferedio_errorform=GWEN_ErrorType_new();
+    GWEN_ErrorType_SetName(gwen_bufferedio_errorform,
+                           GWEN_INETADDR_ERROR_TYPE);
+    GWEN_ErrorType_SetMsgPtr(gwen_bufferedio_errorform,
+                             GWEN_BufferedIO_ErrorString);
+    err=GWEN_Error_RegisterType(gwen_bufferedio_errorform);
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    gwen_bufferedio_is_initialized=1;
+  }
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini(){
+  if (gwen_bufferedio_is_initialized) {
+    GWEN_ERRORCODE err;
+
+    err=GWEN_Error_UnregisterType(gwen_bufferedio_errorform);
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    gwen_bufferedio_is_initialized=0;
+  }
+  return 0;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_BufferedIO_new(){
+  GWEN_BUFFEREDIO *bt;
+
+  GWEN_NEW_OBJECT(GWEN_BUFFEREDIO, bt);
+  bt->lineMode=GWEN_LineModeUnix;
+  return bt;
+}
+
+
+
+void GWEN_BufferedIO_free(GWEN_BUFFEREDIO *bt){
+  if (bt) {
+    if (bt->freePtr)
+      bt->freePtr(bt->privateData);
+    free(bt->readerBuffer);
+    free(bt->writerBuffer);
+    free(bt);
+  }
+}
+
+
+
+void GWEN_BufferedIO_SetReadBuffer(GWEN_BUFFEREDIO *bt,
+                                   char *buffer, int len){
+  assert(bt);
+  free(bt->readerBuffer);
+  bt->readerBuffer=0;
+  if (buffer==0) {
+    if (len>0) {
+      bt->readerBuffer=malloc(len);
+      assert(bt->readerBuffer);
+    }
+  }
+  else
+    bt->readerBuffer=buffer;
+
+  bt->readerBufferLength=len;
+  bt->readerBufferFilled=0;
+  bt->readerBufferPos=0;
+}
+
+
+
+void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt, char *buffer, int len){
+  assert(bt);
+  free(bt->writerBuffer);
+  bt->writerBuffer=0;
+  if (buffer==0) {
+    if (len>0) {
+      bt->writerBuffer=malloc(len);
+      assert(bt->writerBuffer);
+    }
+  }
+  else
+    bt->writerBuffer=buffer;
+
+  bt->writerBufferLength=len;
+  bt->writerBufferFilled=0;
+  bt->writerBufferPos=0;
+}
+
+
+
+int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *bt){
+  return (BufferedIO_PeekChar(bt)==-2);
+}
+
+
+
+int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
+  assert(bt);
+  assert(bt->readerBuffer);
+
+  /* do some fast checks */
+  if (bt->readerError) {
+    DBG_DEBUG(0, "Error flagged");
+    return -1;
+  }
+  if (bt->readerEOF) {
+    DBG_DEBUG(0, "EOF flagged");
+    return -2;
+  }
+
+  if (bt->readerBufferPos>=bt->readerBufferFilled) {
+    /* buffer empty, no EOF met, so fill it */
+    GWEN_ERRORCODE err;
+    int i;
+
+    assert(bt->readPtr);
+    i=bt->readerBufferLength;
+    err=bt->readPtr(bt,
+		    bt->readerBuffer,
+		    &i,
+		    bt->timeout);
+    if (!Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      bt->readerError=1;
+      return -1;
+    }
+    bt->readerBufferFilled=i;
+    bt->readerBufferPos=0;
+    bt->readerEOF=(i==0);
+  }
+  if (bt->readerEOF) {
+    DBG_DEBUG(0, "EOF now met");
+    return -2;
+  }
+  return (unsigned char)(bt->readerBuffer[bt->readerBufferPos]);
+}
+
+
+
+int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bt){
+  int i;
+
+  i=BufferedIO_PeekChar(bt);
+  if (i>=0)
+    bt->readerBufferPos++;
+  return i;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt){
+  GWEN_ERRORCODE err;
+  int i;
+  int written;
+
+  assert(bt);
+  if (bt->writerBufferFilled==0) {
+    DBG_DEBUG(0, "WriteBuffer empty, nothing to flush.");
+    return 0;
+  }
+  assert(bt->writerBuffer);
+  assert(bt->writePtr);
+  written=0;
+  DBG_DEBUG(0, "Flushing %d bytes", bt->writerBufferFilled);
+  while(written<bt->writerBufferFilled) {
+    i=bt->writerBufferFilled-written;
+    err=bt->writePtr(bt,
+		     &(bt->writerBuffer[written]),
+		     &i,
+		     bt->timeout);
+    if (!Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+    written+=i;
+  } /* while */
+
+  bt->writerBufferPos=0;
+  bt->writerBufferFilled=0;
+
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *bt, char c){
+  assert(bt);
+  assert(bt->writerBuffer);
+
+  /* flush buffer if needed (only needed if last flush attempt failed) */
+  if (bt->writerBufferFilled>=bt->writerBufferLength) {
+    GWEN_ERRORCODE err;
+
+    err=BufferedIO_Flush(bt);
+    if (!Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+  }
+
+  /* write char to buffer */
+  bt->writerBuffer[bt->writerBufferPos++]=c;
+  if (bt->writerBufferPos>bt->writerBufferFilled)
+    bt->writerBufferFilled=bt->writerBufferPos;
+
+  /* flush buffer if needed */
+  if (bt->writerBufferFilled>=bt->writerBufferLength) {
+    GWEN_ERRORCODE err;
+
+    err=BufferedIO_Flush(bt);
+    if (!Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+  }
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *bt){
+  GWEN_ERRORCODE err, err2;
+
+  assert(bt);
+  assert(bt->closePtr);
+  err=BufferedIO_Flush(bt);
+  err2=bt->closePtr(bt);
+  if (!Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return err;
+  }
+  if (!Error_IsOk(err2)) {
+    DBG_ERROR_ERR(0, err2);
+    return err2;
+  }
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *bt){
+  GWEN_ERRORCODE err;
+
+  assert(bt);
+  assert(bt->closePtr);
+  err=bt->closePtr(bt);
+  if (!Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return err;
+  }
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
+                                        char *buffer,
+                                        unsigned int s){
+  int c;
+  int pos;
+
+  assert(s);
+  pos=0;
+  /* now read */
+  while(s>1) {
+    if (BufferedIO_CheckEOF(bt)) {
+      buffer[pos]=0;
+      break;
+    }
+    c=BufferedIO_ReadChar(bt);
+    if (c<0) {
+      DBG_ERROR(0, "Error while reading");
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_READ);
+    }
+
+    if (c==GWEN_BUFFEREDIO_LF) {
+      /* LF ends every line */
+      buffer[pos]=0;
+      break;
+    }
+
+    if (c!=GWEN_BUFFEREDIO_CR || bt->lineMode==GWEN_LineModeUnix) {
+      buffer[pos]=(unsigned char)c;
+      pos++;
+      s--;
+    }
+  } /* while */
+
+  /* add terminating null */
+  if (s)
+    buffer[pos]=0;
+
+  /* reading done */
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
+                                     const char *buffer){
+  GWEN_ERRORCODE err;
+
+  assert(bt);
+  assert(buffer);
+  while(*buffer) {
+    err=BufferedIO_WriteChar(bt, *buffer);
+    if (!Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+    buffer++;
+  } /* while */
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
+                                         const char *buffer){
+  GWEN_ERRORCODE err;
+
+  assert(bt);
+  assert(buffer);
+  err=BufferedIO_Write(bt, buffer);
+  if (!Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return err;
+  }
+  if (bt->lineMode==GWEN_LineModeDOS) {
+    err=BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_CR);
+    if (!Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+  }
+  err=BufferedIO_WriteChar(bt, GWEN_BUFFEREDIO_LF);
+  if (!Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return err;
+  }
+
+  err=BufferedIO_Flush(bt);
+  if (!Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return err;
+  }
+
+  return 0;
+}
+
+
+
+void GWEN_BufferedIO_SetLineMode(GWEN_BUFFEREDIO *dm,
+                                 GWEN_BUFFEREDIOLINEMODE lm){
+  assert(dm);
+  dm->lineMode=lm;
+}
+
+
+
+GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(GWEN_BUFFEREDIO *dm){
+  assert(dm);
+  return dm->lineMode;
+}
+
+
+
+void GWEN_BufferedIO_SetTimeout(GWEN_BUFFEREDIO *dm, int timeout){
+  assert(dm);
+  dm->timeout=timeout;
+}
+
+
+
+int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm){
+  assert(dm);
+  return dm->timeout;
+}
+
+
+
+
+/*_________________________________________________________________________
+ *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                           File Module
+ *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+
+
+struct GWEN_BUFFEREDIO_FILE_STRUCT {
+  int fd;
+};
+typedef struct GWEN_BUFFEREDIO_FILE_STRUCT GWEN_BUFFEREDIO_FILE_TABLE;
+
+
+
+
+GWEN_BUFFEREDIO_FILE_TABLE *GWEN_BufferedIO_File_Table__new() {
+  GWEN_BUFFEREDIO_FILE_TABLE *bft;
+
+  bft=(GWEN_BUFFEREDIO_FILE_TABLE *)malloc(sizeof(GWEN_BUFFEREDIO_FILE_TABLE));
+  assert(bft);
+  memset(bft,0,sizeof(GWEN_BUFFEREDIO_FILE_TABLE));
+  bft->fd=-1;
+  return bft;
+}
+
+
+
+void GWEN_BufferedIO_File_Table__free(GWEN_BUFFEREDIO_FILE_TABLE *bft) {
+  free(bft);
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
+                                          char *buffer,
+                                          int *size,
+                                          int timeout){
+  int rv;
+  GWEN_BUFFEREDIO_FILE_TABLE *bft;
+
+  assert(dm);
+  bft=(GWEN_BUFFEREDIO_FILE_TABLE *)(dm->privateData);
+  assert(bft);
+  if (*size<1) {
+    DBG_WARN(0, "Nothing to read");
+    *size=0;
+    return 0;
+  }
+  rv=read(bft->fd, buffer, *size);
+  if (rv==0) {
+    DBG_DEBUG(0, "EOF met");
+    *size=0;
+    return 0;
+  }
+  if (rv<0) {
+    DBG_ERROR(0, "Could not read (%s)",
+	      strerror(errno));
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_READ);
+  }
+  *size=rv;
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
+                                           const char *buffer,
+                                           int *size,
+                                           int timeout){
+  int rv;
+  GWEN_BUFFEREDIO_FILE_TABLE *bft;
+
+  assert(dm);
+  bft=(GWEN_BUFFEREDIO_FILE_TABLE *)(dm->privateData);
+  assert(bft);
+  if (*size<1) {
+    DBG_WARN(0, "Nothing to write");
+    *size=0;
+    return 0;
+  }
+  rv=write(bft->fd, buffer, *size);
+  if (rv<1) {
+    DBG_ERROR(0, "Could not write (%s)",
+	      strerror(errno));
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_WRITE);
+  }
+  *size=rv;
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm){
+  GWEN_BUFFEREDIO_FILE_TABLE *bft;
+
+  assert(dm);
+  bft=(GWEN_BUFFEREDIO_FILE_TABLE *)(dm->privateData);
+  assert(bft);
+  if (close(bft->fd)) {
+    DBG_ERROR(0, "Could not close (%s)",
+	      strerror(errno));
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_CLOSE);
+  }
+  return 0;
+}
+
+
+
+void GWEN_BufferedIO_File__free(void *p){
+  if (p)
+    GWEN_BufferedIO_File_Table__free((GWEN_BUFFEREDIO_FILE_TABLE *)p);
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd){
+  GWEN_BUFFEREDIO *bt;
+  GWEN_BUFFEREDIO_FILE_TABLE *bft;
+
+  bt=GWEN_BufferedIO_new();
+  bft=GWEN_BufferedIO_File_Table__new();
+  bt->privateData=bft;
+  bft->fd=fd;
+  bt->readPtr=GWEN_BufferedIO_File__Read;
+  bt->writePtr=GWEN_BufferedIO_File__Write;
+  bt->closePtr=GWEN_BufferedIO_File__Close;
+  bt->freePtr=GWEN_BufferedIO_File__free;
+  bt->iotype=GWEN_BufferedIOTypeFile;
+  bt->timeout=GWEN_BUFFEREDIO_FILE_TIMEOUT;
+  return bt;
+}
+
+
+
+
+/*_________________________________________________________________________
+ *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ *                           Socket Module
+ *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+ */
+
+
+
+
+struct GWEN_BUFFEREDIO_SOCKET_STRUCT {
+  GWEN_SOCKET *sock;
+};
+typedef struct GWEN_BUFFEREDIO_SOCKET_STRUCT GWEN_BUFFEREDIO_SOCKET;
+
+
+GWEN_BUFFEREDIO_SOCKET *GWEN_BufferedIO_Socket_Table__new() {
+  GWEN_BUFFEREDIO_SOCKET *bft;
+
+  GWEN_NEW_OBJECT(GWEN_BUFFEREDIO_SOCKET, bft);
+
+  return bft;
+}
+
+
+
+void GWEN_BufferedIO_Socket_Table__free(GWEN_BUFFEREDIO_SOCKET *bft) {
+  if (bft) {
+    Socket_free(bft->sock);
+    free(bft);
+  }
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
+                                            char *buffer,
+                                            int *size,
+                                            int timeout){
+  GWEN_ERRORCODE err;
+  GWEN_BUFFEREDIO_SOCKET *bft;
+  int retrycount;
+
+  assert(dm);
+  assert(buffer);
+  assert(size);
+  bft=(GWEN_BUFFEREDIO_SOCKET *)(dm->privateData);
+  assert(bft);
+  assert(bft->sock);
+  if (*size<1) {
+    DBG_WARN(0, "Nothing to read");
+    *size=0;
+    return 0;
+  }
+
+  if (timeout>=0) {
+    retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
+    while(retrycount) {
+      err=Socket_WaitForRead(bft->sock, timeout);
+      if (!Error_IsOk(err)) {
+	if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+	  if (Error_GetCode(err)==GWEN_SOCKET_ERROR_TIMEOUT)
+            return
+              GWEN_Error_new(0,
+                             GWEN_ERROR_SEVERITY_ERR,
+                             GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                             GWEN_BUFFEREDIO_ERROR_TIMEOUT);
+          else if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+            DBG_ERROR_ERR(0, err);
+            return err;
+          }
+	} /* if socket error */
+	else {
+	  DBG_ERROR_ERR(0, err);
+          return err;
+	}
+      }
+      else
+	break;
+      retrycount--;
+    } /* while */
+    if (retrycount<1) {
+      DBG_ERROR(0, "Interrupted too often, giving up");
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_READ);
+    }
+  } /* if timeout */
+
+  /* ok. socket seems to be ready now */
+  retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
+  while(retrycount) {
+    err=Socket_Read(bft->sock, buffer, size);
+    if (!Error_IsOk(err)) {
+      if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+	if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+	  DBG_ERROR_ERR(0, err);
+	  return err;
+	}
+      } /* if socket error */
+      else {
+	DBG_ERROR_ERR(0, err);
+	return err;
+      }
+    }
+    else
+      break;
+    retrycount--;
+  } /* while */
+  if (retrycount<1) {
+    DBG_ERROR(0, "Interrupted too often, giving up");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_READ);
+  }
+
+  DBG_DEBUG(0, "Reading ok");
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
+                                             const char *buffer,
+                                             int *size,
+                                             int timeout){
+  GWEN_ERRORCODE err;
+  GWEN_BUFFEREDIO_SOCKET *bft;
+  int retrycount;
+
+  assert(dm);
+  assert(buffer);
+  assert(size);
+  bft=(GWEN_BUFFEREDIO_SOCKET *)(dm->privateData);
+  assert(bft);
+  assert(bft->sock);
+  if (*size<1) {
+    DBG_WARN(0, "Nothing to write");
+    *size=0;
+    return 0;
+  }
+
+  if (timeout>=0) {
+    retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
+    while(retrycount) {
+      err=Socket_WaitForWrite(bft->sock, timeout);
+      if (!Error_IsOk(err)) {
+	if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+	  if (Error_GetCode(err)==GWEN_SOCKET_ERROR_TIMEOUT)
+            return GWEN_Error_new(0,
+                                  GWEN_ERROR_SEVERITY_ERR,
+                                  GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                                  GWEN_BUFFEREDIO_ERROR_TIMEOUT);
+	  else if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+	    DBG_ERROR_ERR(0, err);
+	    return err;
+	  }
+	} /* if socket error */
+	else {
+	  DBG_ERROR_ERR(0, err);
+	  return err;
+	}
+      }
+      else
+	break;
+      retrycount--;
+    } /* while */
+    if (retrycount<1) {
+      DBG_ERROR(0, "Interrupted too often, giving up");
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_WRITE);
+    }
+  } /* if timeout */
+
+  /* ok. socket seems to be ready now */
+  retrycount=GWEN_BUFFEREDIO_SOCKET_TRIES;
+  while(retrycount) {
+    err=Socket_Write(bft->sock, buffer, size);
+    if (!Error_IsOk(err)) {
+      if (Error_GetType(err)==Error_FindType(GWEN_SOCKET_ERROR_TYPE)) {
+	if (Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+	  DBG_ERROR_ERR(0, err);
+	  return err;
+	}
+      } /* if socket error */
+      else {
+	DBG_ERROR_ERR(0, err);
+	return err;
+      }
+    }
+    else
+      break;
+
+    retrycount--;
+  } /* while */
+  if (retrycount<1) {
+    DBG_ERROR(0, "Interrupted too often, giving up");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_WRITE);
+  }
+
+  DBG_DEBUG(0, "Writing ok");
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_Socket__Close(GWEN_BUFFEREDIO *dm){
+  GWEN_BUFFEREDIO_SOCKET *bft;
+
+  assert(dm);
+  bft=(GWEN_BUFFEREDIO_SOCKET *)(dm->privateData);
+  assert(bft);
+  assert(bft->sock);
+  DBG_DEBUG(0, "Closing socket");
+  if (Socket_Close(bft->sock)) {
+    DBG_ERROR(0, "Could not close (%s)",
+	      strerror(errno));
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_CLOSE);
+  }
+  return 0;
+}
+
+
+
+void GWEN_BufferedIO_Socket__free(void *p){
+  if (p)
+    GWEN_BufferedIO_Socket_Table__free((GWEN_BUFFEREDIO_SOCKET *)p);
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock){
+  GWEN_BUFFEREDIO *bt;
+  GWEN_BUFFEREDIO_SOCKET *bft;
+
+  bt=GWEN_BufferedIO_new();
+  bft=GWEN_BufferedIO_Socket_Table__new();
+  bt->privateData=bft;
+  bft->sock=sock;
+  bt->readPtr=GWEN_BufferedIO_Socket__Read;
+  bt->writePtr=GWEN_BufferedIO_Socket__Write;
+  bt->closePtr=GWEN_BufferedIO_Socket__Close;
+  bt->freePtr=GWEN_BufferedIO_Socket__free;
+  bt->iotype=GWEN_BufferedIOTypeSocket;
+  bt->timeout=GWEN_BUFFEREDIO_SOCKET_TIMEOUT;
+  return bt;
+}
+
+
+
+
+
+
+
+
+
