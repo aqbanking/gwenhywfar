@@ -338,7 +338,7 @@ void GWEN_WaitCallback_Enter(const char *id){
   } /* if ctx not found */
   else {
     /* ctx found, select it */
-    DBG_INFO(0, "Callback \"%s\" found", id);
+    DBG_DEBUG(0, "Callback \"%s\" found", id);
     assert(ctx->instantiateFn);
     nctx=ctx->instantiateFn(ctx);
     assert(nctx);
@@ -348,6 +348,8 @@ void GWEN_WaitCallback_Enter(const char *id){
     gwen_waitcallback__current=nctx;
     nctx->lastEntered=time(0);
     GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
+    DBG_DEBUG(0, "Active callbacks: %d",
+              GWEN_WaitCallback_List_GetCount(gwen_waitcallback__list));
   }
 }
 
@@ -358,8 +360,8 @@ void GWEN_WaitCallback_Leave(){
   GWEN_WAITCALLBACK *ctx;
 
   assert(gwen_waitcallback__current);
-  DBG_INFO(0, "Leaving callback context \"%s\"",
-           gwen_waitcallback__current->id);
+  DBG_DEBUG(0, "Leaving callback context \"%s\"",
+            gwen_waitcallback__current->id);
   ctx=gwen_waitcallback__current->previousCtx;
   GWEN_WaitCallback_free(gwen_waitcallback__current);
   gwen_waitcallback__current=ctx;
@@ -407,7 +409,7 @@ int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK *ctx){
   if (ctx==0) {
     ctx=gwen_waitcallback__current;
     if (!ctx) {
-      DBG_INFO(0, "No callback currently selected");
+      DBG_DEBUG(0, "No callback currently selected");
       return 0;
     }
   }
