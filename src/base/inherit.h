@@ -48,7 +48,8 @@ extern "C" {
   typedef void (*GWEN_INHERIT_FREEDATAFN)(void *baseData,
                                           void *data);
 
-  GWEN_LIST_FUNCTION_DEFS(GWEN_INHERITDATA, GWEN_InheritData);
+  GWEN_LIST_FUNCTION_DEFS(GWEN_INHERITDATA, GWEN_InheritData)
+  /* No trailing semicolon because this is a macro call */
 
   GWENHYWFAR_API 
   GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,

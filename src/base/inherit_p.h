@@ -35,7 +35,8 @@
 
 
 struct GWEN_INHERITDATA {
-  GWEN_LIST_ELEMENT(GWEN_INHERITDATA);
+  GWEN_LIST_ELEMENT(GWEN_INHERITDATA)
+  /* No trailing semicolon here because this is a macro call */
 
   GWEN_TYPE_UINT32 id;
   void *data;

@@ -39,8 +39,9 @@
 
 
 struct GWEN_DBIO {
-  GWEN_LIST_ELEMENT(GWEN_DBIO);
-  GWEN_INHERIT_ELEMENT(GWEN_DBIO);
+  GWEN_LIST_ELEMENT(GWEN_DBIO)
+  GWEN_INHERIT_ELEMENT(GWEN_DBIO)
+  /* No trailing semicolon here because this is a macro call */
   GWEN_LIBLOADER *libLoader;
   GWEN_DBIO_IMPORTFN importFn;
   GWEN_DBIO_EXPORTFN exportFn;

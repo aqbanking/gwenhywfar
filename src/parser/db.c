@@ -941,7 +941,7 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
 
   nv=GWEN_DB_ValueInt_new(val);
   GWEN_DB_Node_Append(nn, nv);
-  DBG_VERBOUS(0, "Added int value \%d\" to variable \"%s\"", val, path);
+  DBG_VERBOUS(0, "Added int value \"%d\" to variable \"%s\"", val, path);
   return 0;
 }
 

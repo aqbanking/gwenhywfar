@@ -44,7 +44,8 @@
 #include <gwenhywfar/debug.h>
 
 
-GWEN_INHERIT(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_SOCKET);
+GWEN_INHERIT(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_SOCKET)
+/* No trailing semicolon here because this is a macro call */
 
 
 GWEN_BUFFEREDIO_SOCKET *GWEN_BufferedIO_Socket_Table__new() {

@@ -44,7 +44,8 @@
 #include <gwenhywfar/debug.h>
 
 
-GWEN_INHERIT(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_FILE);
+GWEN_INHERIT(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_FILE)
+/* No trailing semicolon here because this is a macro call */
 
 
 

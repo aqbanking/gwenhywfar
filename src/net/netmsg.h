@@ -49,7 +49,8 @@ extern "C" {
 #endif
 
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_NETMSG, GWEN_NetMsg);
+GWEN_LIST_FUNCTION_DEFS(GWEN_NETMSG, GWEN_NetMsg)
+/* No trailing semicolon here because this is a macro call */
 
 
 /** @name Constructors And Destructors

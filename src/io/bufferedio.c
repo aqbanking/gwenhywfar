@@ -45,7 +45,7 @@
 #include <gwenhywfar/debug.h>
 
 
-GWEN_INHERIT_FUNCTIONS(GWEN_BUFFEREDIO);
+GWEN_INHERIT_FUNCTIONS(GWEN_BUFFEREDIO)
 
 
 const char *GWEN_BufferedIO_ErrorString(int c){

@@ -41,7 +41,8 @@
 #include <string.h>
 
 
-GWEN_LIST_FUNCTIONS(GWEN_IDTABLE, GWEN_IdTable);
+GWEN_LIST_FUNCTIONS(GWEN_IDTABLE, GWEN_IdTable)
+/* No trailing semicolon here because this is a macro call */
 
 
 

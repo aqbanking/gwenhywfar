@@ -39,9 +39,11 @@
 
 
 typedef struct GWEN_IDTABLE GWEN_IDTABLE;
-GWEN_LIST_FUNCTION_DEFS(GWEN_IDTABLE, GWEN_IdTable);
+GWEN_LIST_FUNCTION_DEFS(GWEN_IDTABLE, GWEN_IdTable)
+/* No trailing semicolon here because this is a macro call */
 struct GWEN_IDTABLE {
-  GWEN_LIST_ELEMENT(GWEN_IDTABLE);
+  GWEN_LIST_ELEMENT(GWEN_IDTABLE)
+  /* No trailing semicolon here because this is a macro call */
   GWEN_TYPE_UINT32 freeEntries;
   GWEN_TYPE_UINT32 entries[GWEN_IDTABLE_MAXENTRIES];
   GWEN_TYPE_UINT32 current;

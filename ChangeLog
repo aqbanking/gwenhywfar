@@ -1,3 +1,20 @@
+2004-05-05   Christian Stimming <stimming@tuhh.de>
+
+	* src/*: Remove trailing semicolons from macro calls where
+	"-pedantic" complains about them.
+	
+	* src/base/misc.h: Remove trailing semicolons from the function
+	definitions in the GWEN_LIST_FUNCTIONS macro since ISO C89 does
+	not allow these (-pedantic i.e. --enable-warnings=all will give
+	warnings about that). Admittantly all modern compilers have no
+	problems with them and ISO C99 allows these, but we never know
+	whether our source code might get compiled with something
+	different. In other words, since it doesn't hurt us to comply with
+	the older standard, we try to do it here.
+
+	* src/types.h.in: Add __extension__ specifier to "long long"
+	definition in order to avoid warnings when compiling with
+	gcc and "-pedantic".
 
 2004/05/05: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

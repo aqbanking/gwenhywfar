@@ -99,8 +99,9 @@ typedef enum {
 } GWEN_NETCONNECTION_WORKRESULT;
 
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_NETCONNECTION, GWEN_NetConnection);
-GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETCONNECTION);
+GWEN_LIST_FUNCTION_DEFS(GWEN_NETCONNECTION, GWEN_NetConnection)
+GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETCONNECTION)
+/* No trailing semicolon here because this is a macro call */
 
 
 /** @name Prototypes For Virtual Functions

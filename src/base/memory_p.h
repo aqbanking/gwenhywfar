@@ -63,11 +63,12 @@ extern "C" {
 
 
   GWEN_LIST_FUNCTION_DEFS(GWEN_MEMORY__OBJECT_STRING,
-                          GWEN_Memory__Object_String);
+                          GWEN_Memory__Object_String)
+  /* No trailing semicolon here because this is a macro call */
 
 
   struct GWEN_MEMORY__OBJECT_STRING {
-    GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT_STRING);
+    GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT_STRING)
     char *text;
   };
 
@@ -80,10 +81,10 @@ extern "C" {
 
 
 
-  GWEN_LIST_FUNCTION_DEFS(GWEN_MEMORY__OBJECT, GWEN_Memory__Object);
+  GWEN_LIST_FUNCTION_DEFS(GWEN_MEMORY__OBJECT, GWEN_Memory__Object)
 
   struct GWEN_MEMORY__OBJECT {
-    GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT);
+    GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT)
 
     void *object;
     char *typeName;
