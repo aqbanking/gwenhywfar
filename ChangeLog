@@ -11,6 +11,7 @@
 - prepared gwen for gettext
 - added simplified error codes to GWEN_Error, will get away from that
   complicated GWEN_ERRORCODE stuff, since that isn't needed anyway.
+- added GWEN_Logger_IsOpen()
 
 
 2004-08-18   Christian Stimming <stimming@tuhh.de>

@@ -258,6 +258,8 @@ int GWEN_Logger_Open(const char *logDomain,
     lg->enabled=1;
   }
 
+  lg->open=1;
+
   return GWEN_Logger_Log(logDomain, GWEN_LoggerLevelDebug, "started");
 }
 
@@ -274,6 +276,20 @@ void GWEN_Logger_Close(const char *logDomain){
 #ifdef HAVE_SYSLOG_H
   closelog();
 #endif
+  lg->open=0;
+}
+
+
+
+int GWEN_Logger_IsOpen(const char *logDomain){
+  GWEN_LOGGER_DOMAIN *ld;
+
+  if (!logDomain)
+    logDomain="default";
+  ld=GWEN_LoggerDomain_Find(logDomain);
+  if (ld)
+    return ld->logger->open;
+  return 0;
 }
 
 

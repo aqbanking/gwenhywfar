@@ -137,6 +137,12 @@ GWENHYWFAR_API int GWEN_Logger_Open(const char *logDomain,
 GWENHYWFAR_API void GWEN_Logger_Close(const char *logDomain);
 
 /**
+ * Checks whether the logger for the given logDomain is open or not.
+ */
+GWENHYWFAR_API int GWEN_Logger_IsOpen(const char *logDomain);
+
+
+/**
  * Log a message.
  * @author Martin Preuss<martin@libchipcard.de>
  * @param priority priority of the message
