@@ -49,7 +49,7 @@ void GWEN_LibInit() {
     fprintf(stderr, "Could not initialize Gwenhywfar, aborting\n");
     abort();
   }
-  fprintf(stderr, "Gwenhywfar initialized.\n");
+  /* fprintf(stderr, "Gwenhywfar initialized.\n"); */
 }
 
 
@@ -60,6 +60,6 @@ void GWEN_LibFini() {
   if (!GWEN_Error_IsOk(err)) {
     fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
   }
-  fprintf(stderr, "Gwenhywfar deinitialized.\n");
+  /* fprintf(stderr, "Gwenhywfar deinitialized.\n"); */
 }
 

@@ -1,4 +1,15 @@
 
+2004/01/10 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- logger: added function GWEN_Logger_AddLogger. This functions allows to
+  log to multiple loggers in parallel. This is interesting for debugging
+  purposes when you still want to log to syslog (or whatever service you
+  like) but want to additionally log to a log file or stderr.
+- Makefile.cvs: added my own target, since somebody always comments out my
+  "./configure" ;-) And I really think I know who does ;-)
+- posix/init.c: removed debugging output upon startup/shutdown of Gwen. I am
+  convinced now that __attribute__((constructor)) really works
+
 
 ===========================================================================
 MARK: released gwenhywfar-0.9.4rc3 (2004/01/07)

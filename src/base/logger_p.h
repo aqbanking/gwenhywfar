@@ -36,6 +36,7 @@ extern "C" {
 
 
 struct GWEN_LOGGER {
+  GWEN_LOGGER *next;
   int enabled;
   GWEN_LOGGER_LOGTYPE logType;
   char *logFile;

@@ -73,6 +73,22 @@ void GWEN_Logger_free(GWEN_LOGGER *lg){
 
 
 
+void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger){
+  assert(newLogger);
+
+  if (oldLogger==0)
+    oldLogger=gwen_logger;
+
+  if (!oldLogger) {
+    gwen_logger=newLogger;
+  }
+  else {
+    GWEN_LIST_ADD(GWEN_LOGGER, newLogger, &(oldLogger->next));
+  }
+}
+
+
+
 void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg){
   if (gwen_logger==0 || lg==0)
     gwen_logger=lg;
@@ -237,111 +253,115 @@ int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
 
 int GWEN_Logger__Log(GWEN_LOGGER *lg,
                      GWEN_LOGGER_LEVEL priority, const char *s){
-  FILE *f;
-  int pri;
-  char buffer[300];
-  int rv;
+  while(lg) {
+    FILE *f;
+    int pri;
+    char buffer[300];
+    int rv;
 
-  assert(lg);
-  if (priority>lg->logLevel)
-    /* priority too low, don't log */
-    return 0;
+    assert(lg);
+    if (priority>lg->logLevel)
+      /* priority too low, don't log */
+      return 0;
 
-  switch(lg->logType) {
-  case GWEN_LoggerTypeFile:
-    rv=GWEN_Logger__CreateMessage(lg, priority, s,
-				  buffer, sizeof(buffer));
-    if (rv)
-      return rv;
+    switch(lg->logType) {
+    case GWEN_LoggerTypeFile:
+      rv=GWEN_Logger__CreateMessage(lg, priority, s,
+                                    buffer, sizeof(buffer));
+      if (rv)
+        return rv;
 
-    f=fopen(lg->logFile,"a+");
-    if (f==0) {
-      fprintf(stderr,
-	      "LOGGER: Unable to open file \"%s\" (%s)\n",
-	      lg->logFile,
-	      strerror(errno));
-      lg->logType=GWEN_LoggerTypeConsole;
-      return 1;
-    }
+      f=fopen(lg->logFile,"a+");
+      if (f==0) {
+        fprintf(stderr,
+                "LOGGER: Unable to open file \"%s\" (%s)\n",
+                lg->logFile,
+                strerror(errno));
+        lg->logType=GWEN_LoggerTypeConsole;
+        return 1;
+      }
 
-    rv=fprintf(f, "%s", buffer);
-    if (rv==-1 || rv!=(int)strlen(buffer)) {
-      fprintf(stderr,
-	      "LOGGER: Unable to write to file \"%s\" (%s)\n",
-	      lg->logFile,
-	      strerror(errno));
-      fclose(f);
-      lg->logType=GWEN_LoggerTypeConsole;
-      return 1;
-    }
-    if (fclose(f)) {
-      fprintf(stderr,
-	      "LOGGER: Unable to close file \"%s\" (%s)\n",
-	      lg->logFile,
-	      strerror(errno));
-      lg->logType=GWEN_LoggerTypeConsole;
-      return 1;
-    }
-    break;
+      rv=fprintf(f, "%s", buffer);
+      if (rv==-1 || rv!=(int)strlen(buffer)) {
+        fprintf(stderr,
+                "LOGGER: Unable to write to file \"%s\" (%s)\n",
+                lg->logFile,
+                strerror(errno));
+        fclose(f);
+        lg->logType=GWEN_LoggerTypeConsole;
+        return 1;
+      }
+      if (fclose(f)) {
+        fprintf(stderr,
+                "LOGGER: Unable to close file \"%s\" (%s)\n",
+                lg->logFile,
+                strerror(errno));
+        lg->logType=GWEN_LoggerTypeConsole;
+        return 1;
+      }
+      break;
 
 #ifdef HAVE_SYSLOG_H
-  case GWEN_LoggerTypeSyslog:
-    switch(priority) {
-    case GWEN_LoggerLevelEmergency:
-      pri=LOG_EMERG;
+    case GWEN_LoggerTypeSyslog:
+      switch(priority) {
+      case GWEN_LoggerLevelEmergency:
+        pri=LOG_EMERG;
+        break;
+      case GWEN_LoggerLevelAlert:
+        pri=LOG_ALERT;
+        break;
+      case GWEN_LoggerLevelCritical:
+        pri=LOG_CRIT;
+        break;
+      case GWEN_LoggerLevelError:
+        pri=LOG_ERR;
+        break;
+      case GWEN_LoggerLevelWarning:
+        pri=LOG_WARNING;
+        break;
+      case GWEN_LoggerLevelNotice:
+        pri=LOG_NOTICE;
+        break;
+      case GWEN_LoggerLevelInfo:
+        pri=LOG_NOTICE;
+        break;
+      case GWEN_LoggerLevelDebug:
+      default:
+        pri=LOG_DEBUG;
+        break;
+      } /* switch */
+      syslog(pri,"%s",s);
       break;
-    case GWEN_LoggerLevelAlert:
-      pri=LOG_ALERT;
-      break;
-    case GWEN_LoggerLevelCritical:
-      pri=LOG_CRIT;
-      break;
-    case GWEN_LoggerLevelError:
-      pri=LOG_ERR;
-      break;
-    case GWEN_LoggerLevelWarning:
-      pri=LOG_WARNING;
-      break;
-    case GWEN_LoggerLevelNotice:
-      pri=LOG_NOTICE;
-      break;
-    case GWEN_LoggerLevelInfo:
-      pri=LOG_NOTICE;
-      break;
-    case GWEN_LoggerLevelDebug:
-    default:
-      pri=LOG_DEBUG;
-      break;
-    } /* switch */
-    syslog(pri,"%s",s);
-    break;
 #endif
 
-  case GWEN_LoggerTypeFunction:
-    if (lg->logFunction==0) {
-      fprintf(stderr,
-	      "LOGGER: Logtype is \"Function\", but no function is set.\n");
-      return 1;
-    }
-    rv=GWEN_Logger__CreateMessage(lg, priority, s,
-				  buffer, sizeof(buffer));
-    if (rv)
-      return rv;
-    (lg->logFunction)(buffer);
-    break;
+    case GWEN_LoggerTypeFunction:
+      if (lg->logFunction==0) {
+        fprintf(stderr,
+                "LOGGER: Logtype is \"Function\", but no function is set.\n");
+        return 1;
+      }
+      rv=GWEN_Logger__CreateMessage(lg, priority, s,
+                                    buffer, sizeof(buffer));
+      if (rv)
+        return rv;
+      (lg->logFunction)(buffer);
+      break;
 
-  case GWEN_LoggerTypeConsole:
-  default:
-    rv=GWEN_Logger__CreateMessage(lg, priority, s,
-				  buffer, sizeof(buffer));
-    if (rv)
-      return rv;
+    case GWEN_LoggerTypeConsole:
+    default:
+      rv=GWEN_Logger__CreateMessage(lg, priority, s,
+                                    buffer, sizeof(buffer));
+      if (rv)
+        return rv;
 
-    fprintf(stderr, "%s", buffer);
-    break;
-  } /* switch */
+      fprintf(stderr, "%s", buffer);
+      break;
+    } /* switch */
+    lg=lg->next;
+  } /* while lg */
   return 0;
 }
+
 
 
 int GWEN_Logger_Log(GWEN_LOGGER *lg,
@@ -428,7 +448,7 @@ void GWEN_Logger_SetIdent(GWEN_LOGGER *lg, const char *id){
   if (id)
     lg->logIdent=strdup(id);
   else
-    lg->logIdent=strdup("No ident, please adjust program");
+    lg->logIdent=strdup("No ident, please adjust your program");
 }
 
 

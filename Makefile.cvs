@@ -32,5 +32,13 @@ all:
 	autoconf
 	#./configure --enable-maintainer-mode
 
+mp:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	automake --add-missing
+	autoconf
+	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode
+
 win32:
 	./configure --with-openssl-includes=/more/include --prefix=/gwen

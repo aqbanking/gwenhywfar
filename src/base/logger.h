@@ -77,6 +77,14 @@ GWENHYWFAR_API
 void GWEN_Logger_free(GWEN_LOGGER *lg);
 
 
+/**
+ * Adds a logger to the given one. So if the old logger is to log something
+ * then the newly added logger will log the same message as well.
+ * The new logger must already be open (via @ref GWEN_Logger_Open).
+ */
+GWENHYWFAR_API
+void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger);
+
 
 /**
  * Only sets the new default logger if it not already is set or if the new
