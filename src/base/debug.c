@@ -314,7 +314,7 @@ void DBG_ERROR(GWEN_LOGGER *dbg_logger, const char *format, ...) {
   va_list args;
   char dbg_buffer[256]; 
   va_start(args, format);
-  snprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
+  vsnprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
   dbg_buffer[sizeof(dbg_buffer)-1] = 0; 
   GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelError, dbg_buffer);
   va_end(args);
@@ -324,7 +324,7 @@ void DBG_WARN(GWEN_LOGGER *dbg_logger, const char *format, ...) {
   va_list args;
   char dbg_buffer[256]; 
   va_start(args, format);
-  snprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
+  vsnprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
   dbg_buffer[sizeof(dbg_buffer)-1] = 0; 
   GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelWarning, dbg_buffer);
   va_end(args);
@@ -335,7 +335,7 @@ void DBG_NOTICE(GWEN_LOGGER *dbg_logger, const char *format, ...) {
     va_list args;
     char dbg_buffer[256]; 
     va_start(args, format);
-    snprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
+    vsnprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
     dbg_buffer[sizeof(dbg_buffer)-1] = 0; 
     GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelNotice, dbg_buffer);
     va_end(args);
@@ -347,7 +347,7 @@ void DBG_INFO(GWEN_LOGGER *dbg_logger, const char *format, ...) {
     va_list args;
     char dbg_buffer[256]; 
     va_start(args, format);
-    snprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
+    vsnprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
     dbg_buffer[sizeof(dbg_buffer)-1] = 0; 
     GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelInfo, dbg_buffer);
     va_end(args);
@@ -360,7 +360,7 @@ void DBG_DEBUG(GWEN_LOGGER *dbg_logger, const char *format, ...) {
     va_list args;
     char dbg_buffer[256]; 
     va_start(args, format);
-    snprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
+    vsnprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
     dbg_buffer[sizeof(dbg_buffer)-1] = 0; 
     GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelDebug, dbg_buffer);
     va_end(args);
@@ -374,7 +374,7 @@ void DBG_VERBOUS(GWEN_LOGGER *dbg_logger, const char *format, ...) {
     va_list args;
     char dbg_buffer[256]; 
     va_start(args, format);
-    snprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
+    vsnprintf(dbg_buffer, sizeof(dbg_buffer)-1, format, args);
     dbg_buffer[sizeof(dbg_buffer)-1] = 0; 
     GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelVerbous, dbg_buffer);
     va_end(args);

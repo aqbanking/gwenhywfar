@@ -1,3 +1,10 @@
+2004-04-16  Christian Stimming <stimming@tuhh.de>
+
+	* src/base/debug.c: Fix DBG_* functions that are the replacements
+	for their variadic-macros counterpart. Unfortunately this error
+	caused every gwen version built with --disable-variadic-macros to
+	crash -- sorry. But it is fixed now.
+
 2004-04-08  Christian Stimming <stimming@tuhh.de>
 
 	* m4/ssl.m4: For openssl on windows, check more than one directory
