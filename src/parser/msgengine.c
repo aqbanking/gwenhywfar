@@ -1370,7 +1370,6 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
 GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
                                        GWEN_XMLNODE *node,
                                        const char *t,
-                                       const char *pname,
                                        int version,
                                        const char *pvalue) {
   GWEN_XMLNODE *n;
@@ -1421,7 +1420,9 @@ GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
     assert(p);
     if (strcasecmp(p, buffer)==0 ||
 	strcasecmp(p, t)==0) {
-      p=GWEN_XMLNode_GetProperty(n, pname,"");
+      p=GWEN_XMLNode_GetProperty(n, "id", "");
+      if (strcasecmp(p, pvalue)!=0)
+	p=GWEN_XMLNode_GetProperty(n, "name", "");
       if (strcasecmp(p, pvalue)==0) {
 	i=atoi(GWEN_XMLNode_GetProperty(n, "pversion" ,"0"));
 	if (proto==0 || (int)proto==i || i==0) {
@@ -1455,7 +1456,6 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
 				      GWEN_XMLNODE *node,
 				      const GWEN_XMLNODE_PATH *nodePath,
 				      const char *t,
-				      const char *pname,
 				      int version,
 				      const char *pvalue) {
   GWEN_XMLNODE *n;
@@ -1466,7 +1466,6 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
   assert(node);
   assert(nodePath);
   assert(t);
-  assert(pname);
   assert(pvalue);
 
   pathCopy=GWEN_XMLNode_Path_dup(nodePath);
@@ -1475,7 +1474,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
   /* first try all nodes along the path */
   while(n) {
     nLast=n;
-    nRes=GWEN_MsgEngine__GetGroup(e, n, t, pname, version, pvalue);
+    nRes=GWEN_MsgEngine__GetGroup(e, n, t, version, pvalue);
     if (nRes)
       break;
     n=GWEN_XMLNode_Path_Surface(pathCopy);
@@ -1498,7 +1497,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
   if (n) {
     n=GWEN_XMLNode_GetParent(n);
     while(n) {
-      nRes=GWEN_MsgEngine__GetGroup(e, n, t, pname, version, pvalue);
+      nRes=GWEN_MsgEngine__GetGroup(e, n, t, version, pvalue);
       if (nRes)
 	break;
       n=GWEN_XMLNode_GetParent(n);
@@ -1701,7 +1700,7 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 	}
         else {
           DBG_VERBOUS(GWEN_LOGDOMAIN, "<%s> tag is of type \"%s\"", typ, gtype);
-	  gn=GWEN_MsgEngine_GetGroup(e, n, nodePath, typ, "id",
+	  gn=GWEN_MsgEngine_GetGroup(e, n, nodePath, typ,
 				     gversion, gtype);
 	  if (!gn) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Definition for type \"%s\" not found", typ);
