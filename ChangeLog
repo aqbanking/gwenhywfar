@@ -2,6 +2,8 @@
 2004/01/11 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in gwenhywfar.m4
+- applied a patch submitted by Ronny Buchmann which turns the specfile into a 
+  multi-distribution spec file.
 
 
 2004/01/10 Martin Preuss <martin@libchipcard.de>
