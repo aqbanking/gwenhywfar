@@ -145,8 +145,18 @@ int GWEN_Net_HasListeningConnections(){
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_Net_Dump() {
+  GWEN_NETCONNECTION *conn;
 
-
+  fprintf(stderr, "==============================================\n");
+  fprintf(stderr, "Network Status:\n");
+  conn=GWEN_NetConnection_List_First(gwen_netconnection__list);
+  while(conn) {
+    GWEN_NetConnection_Dump(conn);
+    conn=GWEN_NetConnection_List_Next(conn);
+  }
+}
 
 
 

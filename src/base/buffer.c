@@ -37,12 +37,6 @@
 
 #define DISABLE_DEBUGLOG
 
-
-#ifdef GWEN_MEMTRACE
-static GWEN_TYPE_UINT32 GWEN_Buffer_Buffers=0;
-
-#endif
-
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
                              GWEN_TYPE_UINT32 size,
                              GWEN_TYPE_UINT32 used,
@@ -50,10 +44,6 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
   GWEN_BUFFER *bf;
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, bf);
-#ifdef GWEN_MEMTRACE
-  GWEN_Buffer_Buffers++;
-  DBG_DEBUG(GWEN_LOGDOMAIN, "New buffer (now %d)", GWEN_Buffer_Buffers);
-#endif
   if (!buffer) {
     /* allocate buffer */
     if (size) {
@@ -88,11 +78,6 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
 
 void GWEN_Buffer_free(GWEN_BUFFER *bf){
   if (bf) {
-#ifdef GWEN_MEMTRACE
-    assert(GWEN_Buffer_Buffers);
-    GWEN_Buffer_Buffers--;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Free buffer (now %d)", GWEN_Buffer_Buffers);
-#endif
     if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
       free(bf->realPtr);
     if (bf->bio) {
@@ -111,10 +96,6 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
   GWEN_TYPE_UINT32 i;
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, newbf);
-#ifdef GWEN_MEMTRACE
-  GWEN_Buffer_Buffers++;
-  DBG_DEBUG(GWEN_LOGDOMAIN, "New buffer (now %d)", GWEN_Buffer_Buffers);
-#endif
   if (bf->realPtr && bf->realBufferSize) {
     newbf->realPtr=(char*)malloc(bf->realBufferSize);
     newbf->ptr=newbf->realPtr+(bf->ptr-bf->realPtr);

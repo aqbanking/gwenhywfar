@@ -33,12 +33,50 @@
 #include <gwenhywfar/debug.h>
 
 
+typedef enum {
+  GWEN_MemoryDebugEntryTypeUnknown=0,
+  GWEN_MemoryDebugEntryTypeCreate,
+  GWEN_MemoryDebugEntryTypeAttach,
+  GWEN_MemoryDebugEntryTypeFree
+} GWEN_MEMORY_DEBUG_ENTRY_TYPE;
+
+
+
+typedef struct GWEN_MEMORY_DEBUG_ENTRY GWEN_MEMORY_DEBUG_ENTRY;
+struct GWEN_MEMORY_DEBUG_ENTRY {
+  GWEN_MEMORY_DEBUG_ENTRY *next;
+  GWEN_MEMORY_DEBUG_ENTRY_TYPE type;
+  char *file;
+  int line;
+};
+GWEN_MEMORY_DEBUG_ENTRY*
+GWEN_MemoryDebugEntry_new(GWEN_MEMORY_DEBUG_ENTRY_TYPE t,
+                          const char *wFile,
+                          int wLine);
+void GWEN_MemoryDebugEntry_free(GWEN_MEMORY_DEBUG_ENTRY *e);
+
+
+struct GWEN_MEMORY_DEBUG_OBJECT {
+  GWEN_MEMORY_DEBUG_OBJECT *next;
+  char *name;
+  long int count;
+  GWEN_MEMORY_DEBUG_ENTRY *entries;
+};
+GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebugObject_new(const char *name);
+void GWEN_MemoryDebugObject_free(GWEN_MEMORY_DEBUG_OBJECT *o);
+
+
+GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebug__FindObject(const char *name);
+void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
+                                  GWEN_TYPE_UINT32 mode);
+
+
 
 GWEN_TYPE_UINT32 GWEN_Debug_PrintDec(char *buffer,
-                                 GWEN_TYPE_UINT32 size,
-                                 GWEN_TYPE_UINT32 num,
-                                 int leadingZero,
-                                 GWEN_TYPE_UINT32 length);
+                                     GWEN_TYPE_UINT32 size,
+                                     GWEN_TYPE_UINT32 num,
+                                     int leadingZero,
+                                     GWEN_TYPE_UINT32 length);
 
 
 GWEN_TYPE_UINT32 GWEN_Debug_PrintHex(char *buffer,
@@ -47,6 +85,7 @@ GWEN_TYPE_UINT32 GWEN_Debug_PrintHex(char *buffer,
                                      int leadingZero,
                                      int up,
                                      GWEN_TYPE_UINT32 length);
+
 
 
 #endif

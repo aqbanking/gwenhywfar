@@ -37,11 +37,6 @@
 #include <stdlib.h>
 
 
-#ifdef GWEN_MEMTRACE
-static unsigned int GWEN_MD_Count=0;
-#endif
-
-
 static GWEN_MD_PROVIDER *gwen_md_providers=0;
 
 
@@ -49,10 +44,7 @@ GWEN_MD *GWEN_MD_new(unsigned int size){
   GWEN_MD *md;
 
   GWEN_NEW_OBJECT(GWEN_MD, md);
-#ifdef GWEN_MEMTRACE
-  GWEN_MD_Count++;
-  DBG_INFO(GWEN_LOGDOMAIN, "New MD (now %d)", GWEN_MD_Count);
-#endif
+  DBG_MEM_INC("GWEN_MD", 0);
   if (size) {
     md->pDigest=(unsigned char*)malloc(size);
     md->lDigest=size;
@@ -64,11 +56,7 @@ GWEN_MD *GWEN_MD_new(unsigned int size){
 
 void GWEN_MD_free(GWEN_MD *md){
   if (md) {
-#ifdef GWEN_MEMTRACE
-    assert(GWEN_MD_Count);
-    GWEN_MD_Count--;
-    DBG_INFO(GWEN_LOGDOMAIN, "Free MD (now %d)", GWEN_MD_Count);
-#endif
+    DBG_MEM_DEC("GWEN_MD");
     if (md->data && md->freeDataFn)
       md->freeDataFn(md);
     free(md->pDigest);

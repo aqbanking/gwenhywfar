@@ -635,7 +635,11 @@ int GWEN_NetConnection_GetDownAfterSend(GWEN_NETCONNECTION *conn);
 
 /*@}*/
 
+GWENHYWFAR_API
+void GWEN_NetConnection_Dump(const GWEN_NETCONNECTION *conn);
+
 /*@}*/ /* defgroup */
+
 
 #ifdef __cplusplus
 }

@@ -149,6 +149,11 @@ void GWEN_NetMsg_SetProtocolVersion(GWEN_NETMSG *msg,
 
 /*@}*/
 
+
+GWENHYWFAR_API
+void GWEN_NetMsg_Dump(const GWEN_NETMSG *msg);
+
+
 #ifdef __cplusplus
 }
 #endif

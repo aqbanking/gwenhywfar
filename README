@@ -75,6 +75,17 @@ On Windows, an .exe setup program is provided, created with the Inno
 Setup Compiler http://www.jrsoftware.org/isdl.php .
 
 
+Environment Variables
+---------------------
+
+"GWEN_MEMORY_DEBUG"
+This integer variable tells gwen whether (and how) to print the memory
+debugger statistic. This only works for sources compiled with the defined
+macro GWEN_MEMORY_DEBUG. 
+- "0" shows ALL listed objects
+- "1" only shows those objects whose count is not 0
+
+
 Documentation
 -------------
 

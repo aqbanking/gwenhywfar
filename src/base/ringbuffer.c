@@ -42,6 +42,7 @@ GWEN_RINGBUFFER *GWEN_RingBuffer_new(unsigned int size){
 
   assert(size);
   GWEN_NEW_OBJECT(GWEN_RINGBUFFER, rb);
+  DBG_MEM_INC("GWEN_RINGBUFFER", 0);
   rb->ptr=(char*)malloc(size);
   rb->bufferSize=size;
   return rb;
@@ -51,6 +52,7 @@ GWEN_RINGBUFFER *GWEN_RingBuffer_new(unsigned int size){
 
 void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb){
   if (rb) {
+    DBG_MEM_DEC("GWEN_RINGBUFFER");
     free(rb->ptr);
     free(rb);
   }

@@ -931,6 +931,8 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
     int changesBak;
 
     changesBak=changes;
+
+#if 0
     rv2=GWEN_NetConnection_WorkIO(conn);
     if (rv2==GWEN_NetConnectionWorkResult_Change) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Change on WorkIO");
@@ -940,7 +942,8 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on WorkIO");
       return rv2;
     }
-  
+#endif
+
     /* do all write work */
     while(1) {
       rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
@@ -974,9 +977,39 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
         break;
       }
     }
-  
+
     if (changesBak==changes) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "No more changes");
+      GWEN_NETTRANSPORT_STATUS st;
+
+      st=GWEN_NetConnection_GetStatus(conn);
+      if (st==GWEN_NetTransportStatusPDisconnected ||
+          st==GWEN_NetTransportStatusUnconnected) {
+        if (changes) {
+          DBG_DEBUG(GWEN_LOGDOMAIN,
+                    "Connection is down after some changes, done.");
+          break;
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN,
+                    "Connection is down, no changes, aborting");
+          return GWEN_NetConnectionWorkResult_Error;
+        }
+      }
+
+      DBG_DEBUG(GWEN_LOGDOMAIN, "No more changes, doing some IO work");
+      rv2=GWEN_NetConnection_WorkIO(conn);
+      if (rv2==GWEN_NetConnectionWorkResult_Change) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Change on WorkIO");
+        changes++;
+      }
+      else if (rv2==GWEN_NetConnectionWorkResult_Error) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on WorkIO");
+        return rv2;
+      }
+    }
+
+    if (changesBak==changes) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "No more changes, even after IO work");
       break;
     }
   }

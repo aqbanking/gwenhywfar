@@ -21,6 +21,7 @@
 #include <gwenhywfar/netconnection.h>
 
 #include <time.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,6 +50,9 @@ void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr);
 
 GWENHYWFAR_API
 void GWEN_IPCManager_Attach(GWEN_IPCMANAGER *mgr);
+
+GWENHYWFAR_API
+void GWEN_IPCManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent);
 
 
 /**

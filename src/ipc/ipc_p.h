@@ -140,6 +140,11 @@ void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
                                                 GWEN_IPCNODE *n,
                                                 GWEN_IPCREQUEST_LIST *rl);
 
+void GWEN_IPCNode_Dump(GWEN_IPCNODE *n, FILE *f, int indent);
+void GWEN_IPCMsg_Dump(GWEN_IPCMSG *m, FILE *f, int indent);
+void GWEN_IPCRequest_Dump(GWEN_IPCREQUEST *r, FILE *f, int indent);
+
+
 
 #endif /* GWEN_IPC_P_H */
 

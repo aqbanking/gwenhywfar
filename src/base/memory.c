@@ -53,6 +53,7 @@ GWEN_LIST_FUNCTIONS(GWEN_MEMORY__OBJECT_STRING, GWEN_Memory__Object_String)
 
 
 GWEN_ERRORCODE GWEN_Memory_ModuleInit(){
+#if 0
   const char *s;
 
   s=getenv(GWEN_MEMORY_ENV_DEBUG);
@@ -68,6 +69,7 @@ GWEN_ERRORCODE GWEN_Memory_ModuleInit(){
     GWEN_Memory__Objects=l;
 
   }
+#endif
   return 0;
 }
 
@@ -84,6 +86,7 @@ GWEN_ERRORCODE GWEN_Memory_ModuleFini(){
 
 
 void GWEN_Memory_Report(){
+#if 0
   if (GWEN_Memory__Objects) {
     int dumpAll;
     GWEN_MEMORY__OBJECT_LIST *l;
@@ -225,6 +228,7 @@ void GWEN_Memory_Report(){
             GWEN_Memory__Object_List_GetCount(l));
     GWEN_Memory__Objects=l;
   }
+#endif
 }
 
 

@@ -44,11 +44,6 @@
 #include <stdlib.h>
 
 
-#ifdef GWEN_MEMTRACE
-static unsigned int GWEN_CryptKey_Count=0;
-#endif
-
-
 static int gwen_crypt_is_initialized=0;
 static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_crypt_errorform=0;
 
@@ -161,10 +156,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
 
   GWEN_NEW_OBJECT(GWEN_CRYPTKEY, ck);
   GWEN_INHERIT_INIT(GWEN_CRYPTKEY, ck);
-#ifdef GWEN_MEMTRACE
-  GWEN_CryptKey_Count++;
-  DBG_INFO(GWEN_LOGDOMAIN, "New Cryptkey (now %d)", GWEN_CryptKey_Count);
-#endif
+  DBG_MEM_INC("GWEN_CRYPTKEY", 0);
 
   ck->keyspec=GWEN_KeySpec_new();
   return ck;
@@ -173,11 +165,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
 
 void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
   if (key) {
-#ifdef GWEN_MEMTRACE
-    assert(GWEN_CryptKey_Count);
-    GWEN_CryptKey_Count--;
-    DBG_INFO(GWEN_LOGDOMAIN, "Free Cryptkey (now %d)", GWEN_CryptKey_Count);
-#endif
+    DBG_MEM_DEC("GWEN_CRYPTKEY");
     GWEN_INHERIT_FINI(GWEN_CRYPTKEY, key);
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);

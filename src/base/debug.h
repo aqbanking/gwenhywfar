@@ -47,6 +47,46 @@ extern "C" {
 # define DBG_LEAVE
 #endif
 
+#define GWEN_MEMORY_DEBUG_MODE_ALL      0
+#define GWEN_MEMORY_DEBUG_MODE_OPEN     1
+#define GWEN_MEMORY_DEBUG_MODE_DETAILED 2
+#define GWEN_MEMORY_DEBUG_MODE_SHORT    3
+
+typedef struct GWEN_MEMORY_DEBUG_OBJECT GWEN_MEMORY_DEBUG_OBJECT;
+
+GWENHYWFAR_API
+void GWEN_MemoryDebug_Increment(const char *name,
+                                const char *wFile,
+                                int wLine,
+                                int attach);
+GWENHYWFAR_API
+void GWEN_MemoryDebug_Decrement(const char *name,
+                                const char *wFile,
+                                int wLine);
+
+GWENHYWFAR_API
+void GWEN_MemoryDebug_Dump(GWEN_TYPE_UINT32 mode);
+
+GWENHYWFAR_API
+void GWEN_MemoryDebug_DumpObject(const char *name,
+                                 GWEN_TYPE_UINT32 mode);
+
+GWENHYWFAR_API
+long int GWEN_MemoryDebug_GetObjectCount(const char *name);
+
+GWENHYWFAR_API
+void GWEN_MemoryDebug_CleanUp();
+
+
+#ifdef GWEN_MEMORY_DEBUG
+# define DBG_MEM_INC(o, attach)\
+  GWEN_MemoryDebug_Increment(o, __FILE__, __LINE__, attach)
+# define DBG_MEM_DEC(o)\
+  GWEN_MemoryDebug_Decrement(o, __FILE__, __LINE__)
+#else
+# define DBG_MEM_INC(o, attach)
+# define DBG_MEM_DEC(o)
+#endif
 
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,

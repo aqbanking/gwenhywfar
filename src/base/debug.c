@@ -33,6 +33,14 @@
 #include "debug_p.h"
 
 #include <stdarg.h>
+#include <assert.h>
+#include <stdio.h>
+#include <gwenhywfar/misc.h>
+
+
+
+static GWEN_MEMORY_DEBUG_OBJECT *gwen_debug__memobjects=0;
+
 
 
 GWEN_TYPE_UINT32 GWEN_Debug_PrintDec(char *buffer,
@@ -383,3 +391,248 @@ void DBG_VERBOUS(const char *dbg_logger, const char *format, ...) {
 }
 
 #endif /* NO_VARIADIC_MACROS */
+
+
+
+
+
+
+
+GWEN_MEMORY_DEBUG_ENTRY*
+GWEN_MemoryDebugEntry_new(GWEN_MEMORY_DEBUG_ENTRY_TYPE t,
+                          const char *wFile,
+                          int wLine){
+  GWEN_MEMORY_DEBUG_ENTRY *e;
+
+  assert(wFile);
+  assert(wLine);
+  GWEN_NEW_OBJECT(GWEN_MEMORY_DEBUG_ENTRY, e);
+  e->file=strdup(wFile);
+  e->line=wLine;
+  e->type=t;
+  return e;
+}
+
+
+
+void GWEN_MemoryDebugEntry_free(GWEN_MEMORY_DEBUG_ENTRY *e){
+  if (e) {
+    free(e->file);
+    GWEN_FREE_OBJECT(e);
+  }
+}
+
+
+
+
+GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebugObject_new(const char *name){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+
+  assert(name);
+  GWEN_NEW_OBJECT(GWEN_MEMORY_DEBUG_OBJECT, o);
+  o->name=strdup(name);
+  return o;
+}
+
+
+
+void GWEN_MemoryDebugObject_free(GWEN_MEMORY_DEBUG_OBJECT *o) {
+  if (o) {
+    GWEN_MEMORY_DEBUG_ENTRY *e;
+
+    e=o->entries;
+    while(e) {
+      GWEN_MEMORY_DEBUG_ENTRY *next;
+
+      next=e->next;
+      GWEN_MemoryDebugEntry_free(e);
+      e=next;
+    }
+    free(o->name);
+    GWEN_FREE_OBJECT(o);
+  }
+}
+
+
+
+GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebug__FindObject(const char *name){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+
+  o=gwen_debug__memobjects;
+  while(o) {
+    assert(o->name);
+    if (strcasecmp(o->name, name)==0)
+      break;
+    if (o->next==o) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "What ?? Pointing to myself ??");
+      abort();
+    }
+    o=o->next;
+  }
+
+  return o;
+}
+
+
+
+void GWEN_MemoryDebug_Increment(const char *name,
+                                const char *wFile,
+                                int wLine,
+                                int attach){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+  GWEN_MEMORY_DEBUG_ENTRY *e;
+
+  assert(name);
+  assert(wFile);
+  assert(wLine);
+  o=GWEN_MemoryDebug__FindObject(name);
+  if (!o) {
+    o=GWEN_MemoryDebugObject_new(name);
+    GWEN_LIST_ADD(GWEN_MEMORY_DEBUG_OBJECT, o, &gwen_debug__memobjects);
+    e=GWEN_MemoryDebugEntry_new(attach?GWEN_MemoryDebugEntryTypeAttach:
+                                GWEN_MemoryDebugEntryTypeCreate,
+                                wFile, wLine);
+    GWEN_LIST_ADD(GWEN_MEMORY_DEBUG_ENTRY, e, &(o->entries));
+    o->count++;
+  }
+  else {
+    e=GWEN_MemoryDebugEntry_new(attach?GWEN_MemoryDebugEntryTypeAttach:
+                                GWEN_MemoryDebugEntryTypeCreate,
+                                wFile, wLine);
+    GWEN_LIST_ADD(GWEN_MEMORY_DEBUG_ENTRY, e, &(o->entries));
+    o->count++;
+  }
+}
+
+
+
+void GWEN_MemoryDebug_Decrement(const char *name,
+                                const char *wFile,
+                                int wLine){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+  GWEN_MEMORY_DEBUG_ENTRY *e;
+
+  assert(name);
+  assert(wFile);
+  assert(wLine);
+  o=GWEN_MemoryDebug__FindObject(name);
+  if (!o) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Object to be freed not found (%s at %s:%d)",
+              name, wFile, wLine);
+    o=GWEN_MemoryDebugObject_new(name);
+    GWEN_LIST_ADD(GWEN_MEMORY_DEBUG_OBJECT, o, &gwen_debug__memobjects);
+    e=GWEN_MemoryDebugEntry_new(GWEN_MemoryDebugEntryTypeFree,
+                                wFile, wLine);
+    GWEN_LIST_ADD(GWEN_MEMORY_DEBUG_ENTRY, e, &(o->entries));
+    o->count--;
+  }
+  else {
+    e=GWEN_MemoryDebugEntry_new(GWEN_MemoryDebugEntryTypeFree,
+                                wFile, wLine);
+    GWEN_LIST_ADD(GWEN_MEMORY_DEBUG_ENTRY, e, &(o->entries));
+    o->count--;
+  }
+}
+
+
+
+void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
+                                  GWEN_TYPE_UINT32 mode){
+
+  DBG_ERROR(0, "Object \"%s\" (count=%ld)",
+            o->name, o->count);
+  if (o->count!=0 || mode==GWEN_MEMORY_DEBUG_MODE_DETAILED) {
+    GWEN_MEMORY_DEBUG_ENTRY *e;
+
+    if (mode!=GWEN_MEMORY_DEBUG_MODE_SHORT) {
+      e=o->entries;
+      while(e) {
+        const char *s;
+
+        fprintf(stderr, " ");
+        switch(e->type) {
+        case GWEN_MemoryDebugEntryTypeCreate:
+          s="created";
+          break;
+        case GWEN_MemoryDebugEntryTypeAttach:
+          s="attached";
+          break;
+        case GWEN_MemoryDebugEntryTypeFree:
+          s="freed";
+          break;
+        default:
+          s="<unknown action>";
+          break;
+        }
+        DBG_ERROR(0, " %s at %s:%d", s, e->file, e->line);
+        e=e->next;
+      } /* while e */
+    }
+  }
+}
+
+
+
+void GWEN_MemoryDebug_DumpObject(const char *name,
+                                 GWEN_TYPE_UINT32 mode){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+
+  assert(name);
+  o=GWEN_MemoryDebug__FindObject(name);
+  if (!o) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Object \"%s\" not found", name);
+  }
+  else
+    GWEN_MemoryDebug__DumpObject(o, mode);
+}
+
+
+
+long int GWEN_MemoryDebug_GetObjectCount(const char *name){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+
+  assert(name);
+  o=GWEN_MemoryDebug__FindObject(name);
+  if (!o) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Object \"%s\" not found", name);
+    return 0;
+  }
+  else
+    return o->count;
+}
+
+
+
+void GWEN_MemoryDebug_Dump(GWEN_TYPE_UINT32 mode){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+
+  DBG_ERROR(0, "Gwenhywfar Memory Debugger Statistics:");
+  DBG_ERROR(0, "====================================== begin\n");
+  o=gwen_debug__memobjects;
+  while(o) {
+    GWEN_MemoryDebug__DumpObject(o, mode);
+    o=o->next;
+  }
+  DBG_ERROR(0, "====================================== end\n");
+}
+
+
+
+void GWEN_MemoryDebug_CleanUp(){
+  GWEN_MEMORY_DEBUG_OBJECT *o;
+
+  o=gwen_debug__memobjects;
+  while(o) {
+    GWEN_MEMORY_DEBUG_OBJECT *next;
+
+    next=o->next;
+    GWEN_MemoryDebugObject_free(o);
+    o=next;
+  }
+  gwen_debug__memobjects=0;
+}
+
+
+
+

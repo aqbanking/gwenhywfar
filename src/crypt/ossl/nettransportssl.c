@@ -81,6 +81,7 @@ GWEN_NETTRANSPORTSSL *GWEN_NetTransportSSLData_new(){
   GWEN_NETTRANSPORTSSL *skd;
 
   GWEN_NEW_OBJECT(GWEN_NETTRANSPORTSSL, skd);
+  DBG_MEM_INC("GWEN_NETTRANSPORTSSL", 0);
   return skd;
 }
 
@@ -89,6 +90,7 @@ GWEN_NETTRANSPORTSSL *GWEN_NetTransportSSLData_new(){
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
   if (skd) {
+    DBG_MEM_DEC("GWEN_NETTRANSPORTSSL");
     if (skd->ownSocket)
       GWEN_Socket_free(skd->socket);
     free(skd->CAdir);

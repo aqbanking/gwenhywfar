@@ -46,6 +46,7 @@ GWEN_NETTRANSPORTSOCKET *GWEN_NetTransportSocketData_new(){
   GWEN_NETTRANSPORTSOCKET *skd;
 
   GWEN_NEW_OBJECT(GWEN_NETTRANSPORTSOCKET, skd);
+  DBG_MEM_INC("GWEN_NETTRANSPORTSOCKET", 0);
   return skd;
 }
 
@@ -54,6 +55,7 @@ GWEN_NETTRANSPORTSOCKET *GWEN_NetTransportSocketData_new(){
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_NetTransportSocketData_free(GWEN_NETTRANSPORTSOCKET *skd){
   if (skd) {
+    DBG_MEM_DEC("GWEN_NETTRANSPORTSOCKET");
     if (skd->ownSocket)
       GWEN_Socket_free(skd->socket);
     free(skd);

@@ -47,6 +47,7 @@ GWEN_NETTRANSPORT *GWEN_NetTransport_new(){
   GWEN_NETTRANSPORT *tr;
 
   GWEN_NEW_OBJECT(GWEN_NETTRANSPORT, tr);
+  DBG_MEM_INC("GWEN_NETTRANSPORT", 0);
   GWEN_LIST_INIT(GWEN_NETTRANSPORT, tr);
   GWEN_INHERIT_INIT(GWEN_NETTRANSPORT, tr);
   tr->status=GWEN_NetTransportStatusUnconnected;
@@ -61,6 +62,7 @@ GWEN_NETTRANSPORT *GWEN_NetTransport_new(){
 void GWEN_NetTransport_free(GWEN_NETTRANSPORT *tr){
   if (tr) {
     assert(tr->usage);
+    DBG_MEM_DEC("GWEN_NETTRANSPORT");
     if (--(tr->usage)==0) {
       GWEN_INHERIT_FINI(GWEN_NETTRANSPORT, tr);
 
@@ -78,6 +80,7 @@ void GWEN_NetTransport_free(GWEN_NETTRANSPORT *tr){
 
 void GWEN_NetTransport_Attach(GWEN_NETTRANSPORT *tr){
   assert(tr);
+  DBG_MEM_INC("GWEN_NETTRANSPORT", 1);
   tr->usage++;
 }
 

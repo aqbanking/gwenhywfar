@@ -35,12 +35,6 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
-/*#define GWEN_MEMTRACE*/
-
-#ifdef GWEN_MEMTRACE
-static unsigned int GWEN_KeySpec_Count=0;
-#endif
-
 
 GWEN_INHERIT_FUNCTIONS(GWEN_KEYSPEC)
 GWEN_LIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec)
@@ -50,11 +44,8 @@ GWEN_KEYSPEC *GWEN_KeySpec_new(){
   GWEN_KEYSPEC *ks;
 
   GWEN_NEW_OBJECT(GWEN_KEYSPEC, ks);
+  DBG_MEM_INC("GWEN_KEYSPEC", 0);
   GWEN_INHERIT_INIT(GWEN_KEYSPEC, ks);
-#ifdef GWEN_MEMTRACE
-  GWEN_KeySpec_Count++;
-  DBG_INFO(GWEN_LOGDOMAIN, "New KeySpec (now %d)", GWEN_KeySpec_Count);
-#endif
   ks->number=1;
   ks->version=1;
   return ks;
@@ -64,11 +55,7 @@ GWEN_KEYSPEC *GWEN_KeySpec_new(){
 
 void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
   if (ks) {
-#ifdef GWEN_MEMTRACE
-    assert(GWEN_KeySpec_Count);
-    GWEN_KeySpec_Count--;
-    DBG_INFO(GWEN_LOGDOMAIN, "Free KeySpec (now %d)", GWEN_KeySpec_Count);
-#endif
+    DBG_MEM_DEC("GWEN_KEYSPEC");
     GWEN_INHERIT_FINI(GWEN_KEYSPEC, ks);
     free(ks->keyType);
     free(ks->keyName);

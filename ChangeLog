@@ -4,7 +4,12 @@
 - valgrind session, fixed memory leaks in:
   - GWEN_NetTransport_free()
   - GWEN_WaitCallback_free()
-
+- added memtrace code to debug*.{c,h}
+- improved function GWEN_NetConnectionHTTP_Work(): It now only calls the 
+  WorkIO function if necessary, otherwise it doesn't: This might fix the
+  problem with AqHBCI and banks which terminate the connection before all
+  messages have been read. This way this function only returns an error if
+  no there are no more messages in the queues.
 
 
 2005/01/12: Martin Preuss<martin@libchipcard.de>

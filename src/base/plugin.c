@@ -74,6 +74,7 @@ GWEN_PLUGIN *GWEN_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
   assert(pm);
   assert(name);
   GWEN_NEW_OBJECT(GWEN_PLUGIN, p);
+  DBG_MEM_INC("GWEN_PLUGIN", 0);
   p->refCount=1;
   GWEN_INHERIT_INIT(GWEN_PLUGIN, p);
   GWEN_LIST_INIT(GWEN_PLUGIN, p);
@@ -89,6 +90,7 @@ GWEN_PLUGIN *GWEN_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
 
 void GWEN_Plugin_free(GWEN_PLUGIN *p){
   if (p) {
+    DBG_MEM_DEC("GWEN_PLUGIN");
     assert(p->refCount);
     if (--(p->refCount)==0) {
       GWEN_INHERIT_FINI(GWEN_PLUGIN, p);
@@ -109,6 +111,7 @@ void GWEN_Plugin_free(GWEN_PLUGIN *p){
 void GWEN_Plugin_Attach(GWEN_PLUGIN *p){
   assert(p);
   assert(p->refCount);
+  DBG_MEM_INC("GWEN_PLUGIN", 1);
   p->refCount++;
 }
 
@@ -159,6 +162,7 @@ GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name){
 
   assert(name);
   GWEN_NEW_OBJECT(GWEN_PLUGIN_MANAGER, pm);
+  DBG_MEM_INC("GWEN_PLUGIN_MANAGER", 0);
   GWEN_INHERIT_INIT(GWEN_PLUGIN_MANAGER, pm);
   GWEN_LIST_INIT(GWEN_PLUGIN_MANAGER, pm);
   pm->name=strdup(name);
@@ -174,6 +178,7 @@ GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name){
 
 void GWEN_PluginManager_free(GWEN_PLUGIN_MANAGER *pm){
   if (pm) {
+    DBG_MEM_DEC("GWEN_PLUGIN_MANAGER");
     GWEN_Plugin_List_free(pm->plugins);
     GWEN_INHERIT_FINI(GWEN_PLUGIN_MANAGER, pm);
     GWEN_StringList_free(pm->paths);

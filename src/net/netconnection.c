@@ -58,6 +58,7 @@ GWEN_NETCONNECTION *GWEN_NetConnection_new(GWEN_NETTRANSPORT *tr,
   GWEN_NETCONNECTION *conn;
 
   GWEN_NEW_OBJECT(GWEN_NETCONNECTION, conn);
+  DBG_MEM_INC("GWEN_NETCONNECTION", 0);
   GWEN_LIST_INIT(GWEN_NETCONNECTION, conn);
   GWEN_INHERIT_INIT(GWEN_NETCONNECTION, conn);
   conn->readBuffer=GWEN_RingBuffer_new(GWEN_NETCONNECTION_BUFFERSIZE);
@@ -78,6 +79,7 @@ GWEN_NETCONNECTION *GWEN_NetConnection_new(GWEN_NETTRANSPORT *tr,
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_NetConnection_free(GWEN_NETCONNECTION *conn){
   if (conn) {
+    DBG_MEM_DEC("GWEN_NETCONNECTION");
     assert(conn->usage);
     if (--(conn->usage)==0) {
       GWEN_INHERIT_FINI(GWEN_NETCONNECTION, conn);
@@ -1562,6 +1564,7 @@ void GWEN_NetConnection_SetFlags(GWEN_NETCONNECTION *conn,
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_NetConnection_Attach(GWEN_NETCONNECTION *conn){
   assert(conn);
+  DBG_MEM_INC("GWEN_NETCONNECTION", 1);
   conn->usage++;
 }
 
@@ -1650,7 +1653,84 @@ GWEN_TYPE_UINT32 GWEN_NetConnection_Check(GWEN_NETCONNECTION *conn){
 
 
 
+void GWEN_NetConnection_Dump(const GWEN_NETCONNECTION *conn) {
+  if (conn) {
+    GWEN_NETMSG *m;
+    const char *s;
 
+    fprintf(stderr, "--------------------------------\n");
+    fprintf(stderr, "Net Connection\n");
+    fprintf(stderr, "Usage          : %d\n", conn->usage);
+    fprintf(stderr, "Library mark   : %d\n", conn->libraryMark);
+    fprintf(stderr, "User mark      : %d\n", conn->userMark);
+    fprintf(stderr, "Last result    : %d\n", conn->lastResult);
+    fprintf(stderr, "Status         : ");
+    switch(GWEN_NetConnection_GetStatus(conn)) {
+    case GWEN_NetTransportStatusUnconnected:
+      s="Unconnected";
+      break;
+    case GWEN_NetTransportStatusPConnecting:
+      s="Connecting physically";
+      break;
+    case GWEN_NetTransportStatusPConnected:
+      s="Physically connected";
+      break;
+    case GWEN_NetTransportStatusLConnecting:
+      s="Connecting logically";
+      break;
+    case GWEN_NetTransportStatusLConnected:
+      s="Logically connected";
+      break;
+    case GWEN_NetTransportStatusLDisconnecting:
+      s="Disconnecting logically";
+      break;
+    case GWEN_NetTransportStatusLDisconnected:
+      s="Logically disconnected";
+      break;
+    case GWEN_NetTransportStatusPDisconnecting:
+      s="Physically disconnecting";
+      break;
+    case GWEN_NetTransportStatusPDisconnected:
+      s="Physically disconnected";
+      break;
+    case GWEN_NetTransportStatusListening:
+      s="Listening";
+      break;
+    case GWEN_NetTransportStatusDisabled:
+      s="Disabled";
+      break;
+    default:
+      s="Unknown";
+    }
+    fprintf(stderr, "%s\n", s);
+    fprintf(stderr, "Down after send: %s\n",
+            (conn->downAfterSend)?"yes":"no");
+    fprintf(stderr, "IO-Flags       :");
+    if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD)
+      fprintf(stderr, " WANTREAD");
+    if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE)
+      fprintf(stderr, " WANTWRITE");
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, "Incoming messages:\n");
+    m=GWEN_NetMsg_List_First(conn->inMsgs);
+    if (!m)
+      fprintf(stderr, "none\n");
+    while(m) {
+      GWEN_NetMsg_Dump(m);
+      m=GWEN_NetMsg_List_Next(m);
+    }
+
+    fprintf(stderr, "Outgoing messages:\n");
+    m=GWEN_NetMsg_List_First(conn->outMsgs);
+    if (!m)
+      fprintf(stderr, "none\n");
+    while(m) {
+      GWEN_NetMsg_Dump(m);
+      m=GWEN_NetMsg_List_Next(m);
+    }
+  }
+}
 
 
 

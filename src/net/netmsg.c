@@ -46,6 +46,7 @@ GWEN_NETMSG *GWEN_NetMsg_new(GWEN_TYPE_UINT32 bufferSize){
   GWEN_NETMSG *msg;
 
   GWEN_NEW_OBJECT(GWEN_NETMSG, msg);
+  DBG_MEM_INC("GWEN_NETMSG", 0);
   GWEN_LIST_INIT(GWEN_NETMSG, msg);
   if (bufferSize)
     msg->buffer=GWEN_Buffer_new(0, bufferSize, 0, 1);
@@ -60,6 +61,7 @@ GWEN_NETMSG *GWEN_NetMsg_new(GWEN_TYPE_UINT32 bufferSize){
 void GWEN_NetMsg_free(GWEN_NETMSG *msg){
   if (msg) {
     assert(msg->usage);
+    DBG_MEM_DEC("GWEN_NETMSG");
     if (--(msg->usage)==0) {
       GWEN_DB_Group_free(msg->node);
       GWEN_Buffer_free(msg->buffer);
@@ -79,6 +81,7 @@ void GWEN_NetMsg_free(GWEN_NETMSG *msg){
 
 void GWEN_NetMsg_Attach(GWEN_NETMSG *msg){
   assert(msg);
+  DBG_MEM_INC("GWEN_NETMSG", 1);
   msg->usage++;
 }
 
@@ -204,7 +207,20 @@ void GWEN_NetMsg_SetProtocolVersion(GWEN_NETMSG *msg,
 
 
 
-
+void GWEN_NetMsg_Dump(const GWEN_NETMSG *msg) {
+  if (msg) {
+    fprintf(stderr, "--------------------------------\n");
+    fprintf(stderr, "Net Message\n");
+    fprintf(stderr, "Usage   : %d\n", msg->usage);
+    fprintf(stderr, "Size   : %d\n", msg->size);
+    fprintf(stderr, "PMajor : %d\n", msg->pmajor);
+    fprintf(stderr, "PMinor : %d\n", msg->pminor);
+    fprintf(stderr, "Buffer :\n");
+    GWEN_Buffer_Dump(msg->buffer, stderr, 4);
+    fprintf(stderr, "DB     :\n");
+    GWEN_DB_Dump(msg->node, stderr, 4);
+  }
+}
 
 
 

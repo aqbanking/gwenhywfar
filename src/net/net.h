@@ -61,6 +61,9 @@ GWENHYWFAR_API
 int GWEN_Net_HasListeningConnections();
 
 
+GWENHYWFAR_API
+void GWEN_Net_Dump();
+
 
 #ifdef __cplusplus
 }

@@ -131,6 +131,7 @@ GWEN_ERRORCODE GWEN_Init() {
 
 GWEN_ERRORCODE GWEN_Fini() {
   GWEN_ERRORCODE err;
+  const char *s;
 
   err=0;
 
@@ -238,6 +239,15 @@ GWEN_ERRORCODE GWEN_Fini() {
                 "Could not deinitialze module I18N");
     }
     GWEN_Error_ModuleFini();
+
+    s=getenv("GWEN_MEMORY_DEBUG");
+    if (s) {
+      int i;
+
+      if (1==sscanf(s, "%i", &i))
+        GWEN_MemoryDebug_Dump(i);
+    }
+
     /* must be deinitialized at last */
     if (!GWEN_Error_IsOk(GWEN_Logger_ModuleFini())) {
       err=GWEN_Error_new(0,
@@ -248,6 +258,8 @@ GWEN_ERRORCODE GWEN_Fini() {
                 "Could not deinitialze module Logger");
     }
   }
+
+  GWEN_MemoryDebug_CleanUp();
   return err;
 }
 

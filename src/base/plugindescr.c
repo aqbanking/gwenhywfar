@@ -54,6 +54,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
   const char *p;
 
   GWEN_NEW_OBJECT(GWEN_PLUGIN_DESCRIPTION, pd);
+  DBG_MEM_INC("GWEN_PLUGIN_DESCRIPTION", 0);
   GWEN_LIST_INIT(GWEN_PLUGIN_DESCRIPTION, pd);
   p=GWEN_XMLNode_GetProperty(node, "name", 0);
   if (!p) {
@@ -89,6 +90,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
 
 void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
   if (pd) {
+    DBG_MEM_DEC("GWEN_PLUGIN_DESCRIPTION");
     GWEN_LIST_FINI(GWEN_PLUGIN_DESCRIPTION, pd);
     GWEN_XMLNode_free(pd->xmlNode);
     free(pd->fileName);
