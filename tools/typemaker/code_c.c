@@ -308,7 +308,8 @@ int write_code_todbArg_c(ARGUMENTS *args,
         /* actually generate the code */
 	GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
 	GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
-        GWEN_BufferedIO_WriteLine(bio, "  ");
+
+        GWEN_BufferedIO_Write(bio, "    ");
 	GWEN_BufferedIO_Write(bio, elemType);
 	GWEN_BufferedIO_WriteLine(bio, " *e;");
 	GWEN_BufferedIO_WriteLine(bio, "");
@@ -892,6 +893,8 @@ int write_code_setget_c(ARGUMENTS *args,
         const char *typ;
         const char *name;
         const char *mode;
+        int isConst;
+        int doCopy;
 
         GWEN_BufferedIO_WriteLine(bio, "");
         GWEN_BufferedIO_WriteLine(bio, "");
@@ -909,6 +912,8 @@ int write_code_setget_c(ARGUMENTS *args,
         }
 
         isPtr=atoi(get_property(n, "ptr", "0"));
+        isConst=atoi(get_property(n, "const", "1"));
+        doCopy=atoi(get_property(n, "copy", "1"));
         mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
 
         if (isPtr && strcasecmp(mode, "single")==0) {
@@ -949,7 +954,7 @@ int write_code_setget_c(ARGUMENTS *args,
         GWEN_BufferedIO_Write(bio, "(");
         GWEN_BufferedIO_Write(bio, styp);
         GWEN_BufferedIO_Write(bio, " *st, ");
-        if (isPtr) {
+        if (isPtr && isConst) {
           GWEN_BufferedIO_Write(bio, "const ");
         }
         GWEN_BufferedIO_Write(bio, typ);
@@ -977,14 +982,31 @@ int write_code_setget_c(ARGUMENTS *args,
             GWEN_BufferedIO_Write(bio, name+1);
             GWEN_BufferedIO_Write(bio, "=");
 
-            rv=write_code_dupArg_c(args, n, bio, "d");
-            if (rv)
-              return rv;
+            if (doCopy) {
+              rv=write_code_dupArg_c(args, n, bio, "d");
+              if (rv)
+                return rv;
+            }
+            else {
+              GWEN_BufferedIO_WriteLine(bio, "d;");
+            }
           }
           else {
-            rv=write_code_dupList_c(args, n, bio, "d");
-            if (rv)
-              return rv;
+            if (doCopy) {
+              rv=write_code_dupList_c(args, n, bio, "d");
+              if (rv)
+                return rv;
+            }
+            else {
+              if (isConst) {
+                DBG_ERROR(0, "Properties: CONST but not COPY");
+                return -1;
+              }
+              GWEN_BufferedIO_Write(bio, "    st->");
+              GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+              GWEN_BufferedIO_Write(bio, name+1);
+              GWEN_BufferedIO_WriteLine(bio, "=d;");
+            }
           }
           GWEN_BufferedIO_WriteLine(bio, "  else");
           GWEN_BufferedIO_Write(bio, "    st->");
@@ -1352,6 +1374,7 @@ int write_code_duprec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
         const char *typ;
         const char *name;
         const char *mode;
+        int doCopy;
 
         name=GWEN_XMLNode_GetProperty(n, "name", 0);
         if (!name) {
@@ -1366,6 +1389,7 @@ int write_code_duprec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
         }
 
         isPtr=atoi(get_property(n, "ptr", "0"));
+        doCopy=atoi(get_property(n, "copy", "1"));
         mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
         if (strcasecmp(mode, "single")!=0)
           /* lists are always pointers */
@@ -1399,10 +1423,17 @@ int write_code_duprec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
             GWEN_BufferedIO_WriteChar(bio, tolower(*name));
             GWEN_BufferedIO_Write(bio, name+1);
             GWEN_BufferedIO_Write(bio, "=");
-            rv=write_code_dupArg_c(args, n, bio, GWEN_Buffer_GetStart(pbuf));
-            GWEN_Buffer_free(pbuf);
-            if (rv)
-              return rv;
+            if (doCopy) {
+              rv=write_code_dupArg_c(args, n, bio, GWEN_Buffer_GetStart(pbuf));
+              GWEN_Buffer_free(pbuf);
+              if (rv)
+                return rv;
+            }
+            else {
+              GWEN_BufferedIO_WriteLine(bio, GWEN_Buffer_GetStart(pbuf));
+              GWEN_Buffer_free(pbuf);
+              GWEN_BufferedIO_Write(bio, ";");
+            }
           }
         }
         else {

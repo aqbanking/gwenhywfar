@@ -152,7 +152,9 @@ int write_h_setget_c(ARGUMENTS *args,
           const char *typ;
           const char *name;
           const char *mode;
-  
+          int isConst;
+          int doCopy;
+
           name=GWEN_XMLNode_GetProperty(n, "name", 0);
           if (!name) {
             DBG_ERROR(0, "No name for element");
@@ -166,6 +168,8 @@ int write_h_setget_c(ARGUMENTS *args,
           }
 
           isPtr=atoi(get_property(n, "ptr", "0"));
+          isConst=atoi(get_property(n, "const", "1"));
+          doCopy=atoi(get_property(n, "copy", "1"));
           mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
           if (strcasecmp(mode, "single")!=0)
             isPtr=1;
@@ -182,7 +186,8 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_BufferedIO_Write(bio, args->domain);
             GWEN_BufferedIO_Write(bio, " ");
           }
-          if (isPtr && strcasecmp(mode, "single")==0) {
+          if (isPtr &&
+              (strcasecmp(mode, "single")==0 || isConst)) {
             GWEN_BufferedIO_Write(bio, "const ");
           }
           GWEN_BufferedIO_Write(bio, typ);
@@ -220,7 +225,7 @@ int write_h_setget_c(ARGUMENTS *args,
           GWEN_BufferedIO_Write(bio, "(");
           GWEN_BufferedIO_Write(bio, styp);
           GWEN_BufferedIO_Write(bio, " *el, ");
-          if (isPtr) {
+          if (isPtr && isConst) {
             GWEN_BufferedIO_Write(bio, "const ");
           }
           GWEN_BufferedIO_Write(bio, typ);
