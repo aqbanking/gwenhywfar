@@ -9,7 +9,8 @@ iheader_HEADERS=\
  keymanager.h \
  keyspec.h \
  md.h \
- padd.h
+ padd.h \
+ sslconnection.h
 
 noinst_HEADERS=\
  crypt_p.h \
