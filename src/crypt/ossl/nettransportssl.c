@@ -36,6 +36,8 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/directory.h>
 #include <gwenhywfar/inetsocket_l.h>
 
 #include <openssl/pem.h>
@@ -72,7 +74,6 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
   if (skd) {
     if (skd->ownSocket)
       GWEN_Socket_free(skd->socket);
-    free(skd->CAfile);
     free(skd->CAdir);
     free(skd->ownCertFile);
     free(skd->cipherList);
@@ -84,7 +85,6 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
-                                            const char *cafile,
                                             const char *capath,
                                             const char *ownCertFile,
                                             int secure,
@@ -99,8 +99,6 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
 
   skd->socket=sk;
   skd->ownSocket=relinquish;
-  if (cafile)
-    skd->CAfile=strdup(cafile);
   if (capath)
     skd->CAdir=strdup(capath);
   if (ownCertFile)
@@ -515,11 +513,10 @@ int GWEN_NetTransportSSL_PasswordCB(char *buffer, int num,
 GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
 GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
                                  GWEN_DB_NODE *cert){
-  /*
   DBG_NOTICE(0, "Would ask user about this:");
   GWEN_DB_Dump(cert, stderr, 2);
-  return GWEN_NetTransportSSL_AskAddCertResultTmp;
-  */
+  return GWEN_NetTransportSSL_AskAddCertResultPerm;
+
   if (gwen_netransportssl_askAddCertFn)
     return gwen_netransportssl_askAddCertFn(tr, cert);
   else {
@@ -549,25 +546,81 @@ GWEN_NETTRANSPORTSSL_ASKADDCERT_FN GWEN_NetTransportSSL_GetAskAddCertFn(){
 int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
                                    X509 *cert) {
   FILE *f;
-  const char *fname;
   const char *fmode;
   char cn[256];
+  GWEN_NETTRANSPORTSSL *skd;
+  X509_NAME *nm;
 
-  X509_NAME_get_text_by_NID(X509_get_subject_name(cert),
+  assert(tr);
+  skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
+  assert(skd);
+
+  nm=X509_get_subject_name(cert);
+  X509_NAME_get_text_by_NID(nm,
                             NID_commonName, cn, sizeof(cn));
 
-  f=fopen(fname, fmode);
-  if (!f) {
-    DBG_ERROR(0, "fopen(\"%s\", \"%s\"): %s",
-              fname, fmode, strerror(errno));
+  if (skd->CAdir) {
+    GWEN_BUFFER *nbuf;
+    unsigned long hash;
+    char numbuf[32];
+    int i;
+    GWEN_TYPE_UINT32 pos;
+
+    hash=X509_NAME_hash(nm);
+    snprintf(numbuf, sizeof(numbuf), "%08lx", hash);
+    nbuf=GWEN_Buffer_new(0, 128, 0, 1);
+    GWEN_Buffer_AppendString(nbuf, skd->CAdir);
+    /* check path, create it if necessary */
+    if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+                               GWEN_PATH_FLAGS_CHECKROOT)) {
+      DBG_ERROR(0, "Invalid path (\"%s\")", GWEN_Buffer_GetStart(nbuf));
+      GWEN_Buffer_free(nbuf);
+      return -1;
+    }
+    GWEN_Buffer_AppendByte(nbuf, '/');
+    GWEN_Buffer_AppendString(nbuf, numbuf);
+    pos=GWEN_Buffer_GetPos(nbuf);
+    for (i=0; i<GWEN_NETTRANSPORTSSL_MAXCOLL; i++) {
+      snprintf(numbuf, sizeof(numbuf), "%d", i);
+      GWEN_Buffer_SetUsedBytes(nbuf, pos);
+      GWEN_Buffer_SetPos(nbuf, pos);
+      GWEN_Buffer_AppendByte(nbuf, '.');
+      GWEN_Buffer_AppendString(nbuf, numbuf);
+      if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+                                 GWEN_PATH_FLAGS_NAMEMUSTEXIST|
+                                 GWEN_PATH_FLAGS_VARIABLE|
+                                 GWEN_PATH_FLAGS_CHECKROOT)) {
+        break;
+      }
+    }
+    if (i>=GWEN_NETTRANSPORTSSL_MAXCOLL) {
+      DBG_ERROR(0, "Maximum number of hash collisions reached!");
+      GWEN_Buffer_free(nbuf);
+      return -1;
+    }
+
+    DBG_NOTICE(0, "Saving file as \"%s\"", GWEN_Buffer_GetStart(nbuf));
+    f=fopen(GWEN_Buffer_GetStart(nbuf), "w+");
+    if (!f) {
+      DBG_ERROR(0, "fopen(\"%s\", \"%s\"): %s",
+                GWEN_Buffer_GetStart(nbuf), fmode, strerror(errno));
+      GWEN_Buffer_free(nbuf);
+      return -1;
+    }
+    GWEN_Buffer_free(nbuf);
+  }
+  else {
+    DBG_INFO(0, "Don't know where to save the file...");
     return -1;
   }
+
   if (!PEM_write_X509(f, cert)) {
     DBG_ERROR(0, "Could not save certificate of \"%s\"", cn);
     return 0;
   }
 
   DBG_INFO(0, "Certificate of \"%s\" added", cn);
+
   return 0;
 }
 
@@ -589,9 +642,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
                                          tr);
 
   /* setup locations of certificates */
-  rv=SSL_CTX_load_verify_locations(skd->ssl_ctx,
-                                   skd->CAfile,
-                                   skd->CAdir);
+  rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
   if (rv==0) {
     int sslerr;
 
@@ -865,12 +916,14 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       DBG_NOTICE(0, "Got a certificate: %s",
                  certbuf);
       vr=SSL_get_verify_result(skd->ssl);
-      if (vr==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY) {
-        GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT res;
-        int isErr;
-        GWEN_DB_NODE *dbCert;
+      if (vr==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
+          vr==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
+	  vr==X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) {
+	GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT res;
+	int isErr;
+	GWEN_DB_NODE *dbCert;
 
-        /* setup certificate */
+	/* setup certificate */
         dbCert=GWEN_NetTransportSSL__Cert2Db(cert);
 
         /* ask user */
@@ -996,11 +1049,10 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 
       /* create new transport layer, let it take over the new socket */
       newTr=GWEN_NetTransportSSL_new(newS,
-                                     skd->CAfile,
                                      skd->CAdir,
                                      skd->ownCertFile,
                                      skd->secure,
-                                     1);
+				     1);
       GWEN_NetTransport_SetPeerAddr(newTr, iaddr);
       GWEN_InetAddr_free(iaddr);
       GWEN_NetTransport_SetLocalAddr(newTr, GWEN_NetTransport_GetLocalAddr(tr));

@@ -119,7 +119,6 @@ GWENHYWFAR_API
 
 /**
  * Creates a new SSL socket.
- * @param cafile name of a file containing trusted certificates (or 0)
  * @param cadir name of a folder containing trusted certificates (or 0)
  * @param ownCertFile name of a file containing the certificate to be
  *   used (or 0)
@@ -128,7 +127,6 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
-                                            const char *cafile,
                                             const char *capath,
                                             const char *ownCertFile,
                                             int secure,

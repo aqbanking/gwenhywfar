@@ -33,12 +33,13 @@
 #include <gwenhywfar/nettransportssl.h>
 #include <openssl/ssl.h>
 
+#define GWEN_NETTRANSPORTSSL_MAXCOLL 100
+
 
 typedef struct GWEN_NETTRANSPORTSSL {
   GWEN_SOCKET *socket;
   int ownSocket;
 
-  char *CAfile;
   char *CAdir;
   char *ownCertFile;
   SSL_CTX *ssl_ctx;

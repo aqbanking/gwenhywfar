@@ -746,7 +746,8 @@ int testSocketSSL(int argc, char **argv) {
 
   /* create transport layer */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  tr=GWEN_NetTransportSSL_new(sk, 0, "trusted", 0, 1, 1);
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", 0, 1, 1);
+  //tr=GWEN_NetTransportSSL_new(sk, "trusted.pem", 0, 0, 1, 1);
   if (!tr) {
     fprintf(stderr, "SSL not supported.\n");
     return 2;
