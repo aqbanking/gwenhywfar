@@ -35,9 +35,21 @@
 #include "connlayer_p.h"
 
 
+#define GWEN_SERVICELAYER_CPU_TIMEOUT 500
+
+
+typedef struct GWEN_GLOBAL_SERVICELAYER GWEN_GLOBAL_SERVICELAYER;
+
+
 struct GWEN_GLOBAL_SERVICELAYER {
   GWEN_IPCCONNLAYER *connections;
+  unsigned int localLayers;
+};
 
+
+
+struct GWEN_SERVICELAYER {
+  unsigned int id;
 };
 
 
@@ -60,6 +72,11 @@ void GWEN_GlobalServiceLayer_Close(unsigned int id,
                                    unsigned int libMark,
                                    unsigned int userMark,
                                    int force);
+
+GWEN_ERRORCODE
+  GWEN_GlobalServiceLayer_RegisterLocalLayer(GWEN_SERVICELAYER *sl);
+GWEN_ERRORCODE
+  GWEN_GlobalServiceLayer_UnregisterLocalLayer(GWEN_SERVICELAYER *sl);
 
 
 

@@ -129,7 +129,7 @@ fi
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/ipc src/parser"
+GWEN_HEADER_DIRS="src src/base src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/ipc src/parser src/impl src/impl/ipc"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
@@ -185,5 +185,7 @@ AC_CONFIG_FILES([Makefile
                  src/os/posix/Makefile
                  src/os/windows/Makefile
                  src/parser/Makefile
+                 src/impl/Makefile
+                 src/impl/ipc/Makefile
                  test/Makefile])
 AC_OUTPUT

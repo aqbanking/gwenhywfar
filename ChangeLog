@@ -1,6 +1,12 @@
 $Id$
 
 
+2003/09/18 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added servicelayer to ipc
+- added impl folder for implementations (starting with IPC)
+
+
 2003/09/17 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - worked on IPC stuff (still untested)

@@ -38,7 +38,7 @@
 
 
 static GWEN_GLOBAL_SERVICELAYER *GWEN_Global_ServiceLayer=0;
-
+static unsigned int GWEN_Global_ServiceLayer_LastId=0;
 
 
 /* --------------------------------------------------------------- FUNCTION */
@@ -129,12 +129,15 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
 
     if (!socks) {
       if (ndone) {
-        /* no socket but something done, so sleep to reduce CPU usage */
-        DBG_VERBOUS(0, "Sleeping");
-        GWEN_Socket_Select(0, 0, 0, timeout);
-        GWEN_SocketSet_free(rset);
-        GWEN_SocketSet_free(wset);
-        return 0;
+	/* no socket but we did something, so sleep to reduce CPU usage */
+	if (timeout) {
+          /* well, only sleep if the caller wanted a timeout */
+	  DBG_VERBOUS(0, "Sleeping");
+	  GWEN_Socket_Select(0, 0, 0, GWEN_SERVICELAYER_CPU_TIMEOUT);
+	}
+	GWEN_SocketSet_free(rset);
+	GWEN_SocketSet_free(wset);
+	return 0;
       }
       else {
         /* nothing done, so simply return an error */
@@ -323,8 +326,8 @@ void GWEN_GlobalServiceLayer_RemoveClosed() {
     assert(ml);
     if (GWEN_ConnectionLayer_GetState(cl)==
         GWEN_IPCConnectionLayerStateClosed)
-      if (GWEN_ConnectionLayer_GetFlags(cl) &
-          GWEN_IPCCONNLAYER_FLAGS_PERSISTENT) {
+      if (!(GWEN_ConnectionLayer_GetFlags(cl) &
+            GWEN_IPCCONNLAYER_FLAGS_PERSISTENT)) {
         /* remove closed connection if it is not marked persistent */
         DBG_NOTICE(0, "Removing connection (%s)",
                    GWEN_ConnectionLayer_GetInfo(cl));
@@ -390,6 +393,202 @@ void GWEN_GlobalServiceLayer_Close(unsigned int id,
     cl=cl->next;
   } /* while */
 }
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE
+GWEN_GlobalServiceLayer_RegisterLocalLayer(GWEN_SERVICELAYER *sl){
+  assert(sl);
+  if (GWEN_Global_ServiceLayer==0) {
+    GWEN_Global_ServiceLayer=GWEN_GlobalServiceLayer_new();
+  }
+  GWEN_Global_ServiceLayer->localLayers++;
+  sl->id=++GWEN_Global_ServiceLayer_LastId;
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE
+GWEN_GlobalServiceLayer_UnregisterLocalLayer(GWEN_SERVICELAYER *sl){
+  assert(sl);
+  if (GWEN_Global_ServiceLayer) {
+    DBG_INFO(0, "Unregistering local service layer %d", sl->id);
+    if (GWEN_Global_ServiceLayer->localLayers<2) {
+      DBG_INFO(0, "Global service layer no longer in use, freeing");
+      GWEN_GlobalServiceLayer_free(GWEN_Global_ServiceLayer);
+      GWEN_Global_ServiceLayer=0;
+    }
+    else {
+      GWEN_Global_ServiceLayer->localLayers--;
+      DBG_INFO(0, "Global service layer still in use (%d layers)",
+	       GWEN_Global_ServiceLayer->localLayers);
+    }
+  }
+  else {
+    DBG_WARN(0, "Unregister: No local service layer registered.");
+  }
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_SERVICELAYER *GWEN_ServiceLayer_new(){
+  GWEN_SERVICELAYER *sl;
+  GWEN_ERRORCODE err;
+
+  GWEN_NEW_OBJECT(GWEN_SERVICELAYER, sl);
+  err=GWEN_GlobalServiceLayer_RegisterLocalLayer(sl);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR(0, "Could not register local layer, aborting.");
+    assert(GWEN_Error_IsOk(err));
+  }
+  return sl;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ServiceLayer_free(GWEN_SERVICELAYER *sl){
+  if (sl) {
+    GWEN_ERRORCODE err;
+
+    err=GWEN_GlobalServiceLayer_UnregisterLocalLayer(sl);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR(0, "Could not unregister local layer, aborting.");
+      assert(GWEN_Error_IsOk(err));
+    }
+    free(sl);
+  }
+}
+
+
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE
+GWEN_ServiceLayer_AddConnection(GWEN_SERVICELAYER *sl,
+				GWEN_IPCCONNLAYER *conn){
+  assert(sl);
+  assert(conn);
+  GWEN_ConnLayer_SetLibMark(conn, sl->id);
+  return GWEN_GlobalServiceLayer_AddConnection(conn);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCCONNLAYER*
+GWEN_ServiceLayer_FindConnection(GWEN_SERVICELAYER *sl,
+				 unsigned int id,
+				 unsigned int userMark){
+  assert(sl);
+  return GWEN_GlobalServiceLayer_FindConnection(id,
+						sl->id,
+						userMark);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_ServiceLayer_Work(GWEN_SERVICELAYER *sl, int timeout){
+  GWEN_ERRORCODE err;
+
+  assert(sl);
+  err=GWEN_GlobalServiceLayer_Work(timeout);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "called from here");
+    return err;
+  }
+
+  /* TODO: read next message, sort it in */
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ServiceLayer_CheckClosed(GWEN_SERVICELAYER *sl){
+  assert(sl);
+  GWEN_GlobalServiceLayer_CheckClosed();
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ServiceLayer_RemoveClosed(GWEN_SERVICELAYER *sl){
+  assert(sl);
+  GWEN_GlobalServiceLayer_RemoveClosed();
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
+			     unsigned int id,
+                             unsigned int userMark,
+			     int force){
+  assert(sl);
+  GWEN_GlobalServiceLayer_Close(id, sl->id, userMark, force);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_ServiceLayer_FindMsgReply(GWEN_SERVICELAYER *sl,
+					    unsigned int refId){
+  GWEN_IPCCONNLAYER *cl;
+  GWEN_IPCMSG *msg;
+
+  assert(sl);
+  cl=GWEN_Global_ServiceLayer->connections;
+  while(cl) {
+    if (GWEN_ConnectionLayer_GetLibMark(cl)==sl->id) {
+      /* found a matching connection for the given local service layer */
+      msg=GWEN_ConnectionLayer_FindMsgReply(cl, refId);
+      if (msg) {
+	DBG_INFO(0, "Found a matching message (refid=%d)", refId);
+        return msg;
+      }
+    }
+    cl=GWEN_ConnectionLayer_GetNext(cl);
+  } /* while */
+
+  DBG_DEBUG(0, "No reply found for id=%d", refId);
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_ServiceLayer_GetRequest(GWEN_SERVICELAYER *sl){
+  GWEN_IPCCONNLAYER *cl;
+  GWEN_IPCMSG *msg;
+
+  assert(sl);
+  cl=GWEN_Global_ServiceLayer->connections;
+  while(cl) {
+    if (GWEN_ConnectionLayer_GetLibMark(cl)==sl->id) {
+      /* found a matching connection for the given local service layer */
+      msg=GWEN_ConnectionLayer_FindMsgReply(cl, 0);
+      if (msg) {
+	DBG_INFO(0, "Found a message with no reference id");
+	return msg;
+      }
+    }
+    cl=GWEN_ConnectionLayer_GetNext(cl);
+  } /* while */
+
+  DBG_DEBUG(0, "No request found");
+  return 0;
+}
+
+
 
 
 

@@ -231,6 +231,28 @@ GWEN_IPCMSG *GWEN_ConnectionLayer_GetIncomingMsg(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_ConnectionLayer_FindMsgReply(GWEN_IPCCONNLAYER *cl,
+                                               unsigned int refId){
+  GWEN_IPCMSG *msg;
+
+  assert(cl);
+  msg=cl->incomingMsgs;
+  while(msg) {
+    if (GWEN_Msg_GetReferenceId(msg)==refId) {
+      DBG_DEBUG(0, "Found message for ID %d", refId);
+      GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
+      cl->nIncomingMsgs--;
+      return msg;
+    }
+    msg=GWEN_Msg_GetNext(msg);
+  }
+  DBG_DEBUG(0, "No message for ID %d found", refId);
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_ConnectionLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
                                                    GWEN_IPCMSG *msg){
   assert(cl);
@@ -377,6 +399,15 @@ void GWEN_ConnectionLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
   assert(cl);
   cl->flags=flags;
 }
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_GetNext(GWEN_IPCCONNLAYER *cl){
+  assert(cl);
+  return cl->next;
+}
+
 
 
 

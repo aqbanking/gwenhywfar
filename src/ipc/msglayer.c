@@ -472,6 +472,11 @@ GWEN_SOCKET *GWEN_IPCMsgLayer_GetWriteSocket(GWEN_IPCMSGLAYER *ml){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_Msg_GetNext(GWEN_IPCMSG *m){
+  assert(m);
+  return m->next;
+}
 
 
 

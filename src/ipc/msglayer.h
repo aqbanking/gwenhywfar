@@ -53,6 +53,8 @@ typedef enum {
 
 GWEN_IPCMSG *GWEN_Msg_new();
 void GWEN_Msg_free(GWEN_IPCMSG *m);
+GWEN_IPCMSG *GWEN_Msg_GetNext(GWEN_IPCMSG *m);
+
 GWEN_BUFFER *GWEN_Msg_GetBuffer(GWEN_IPCMSG *m);
 void GWEN_Msg_SetBuffer(GWEN_IPCMSG *m, GWEN_BUFFER *buf);
 unsigned int GWEN_Msg_GetMsgLayerId(GWEN_IPCMSG *m);

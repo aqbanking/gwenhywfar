@@ -58,7 +58,10 @@ typedef GWEN_ERRORCODE (*GWEN_IPCCONNLAYER_CLOSE)(GWEN_IPCCONNLAYER *cl,
 
 
 
+GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_GetNext(GWEN_IPCCONNLAYER *cl);
 GWEN_IPCMSG *GWEN_ConnectionLayer_GetIncomingMsg(GWEN_IPCCONNLAYER *cl);
+GWEN_IPCMSG *GWEN_ConnectionLayer_FindMsgReply(GWEN_IPCCONNLAYER *cl,
+                                               unsigned int refId);
 GWEN_ERRORCODE GWEN_ConnectionLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
                                                    GWEN_IPCMSG *msg);
 GWEN_ERRORCODE GWEN_ConnectionLayer_Work(GWEN_IPCCONNLAYER *cl,

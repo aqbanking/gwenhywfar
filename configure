@@ -22516,7 +22516,7 @@ fi
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/ipc src/parser"
+GWEN_HEADER_DIRS="src src/base src/crypt src/crypt/${GWEN_CRYPTO} src/io src/os src/os/${GWEN_OS} src/ipc src/parser src/impl src/impl/ipc"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
@@ -22570,7 +22570,7 @@ all_includes="${all_includes} -I`pwd`"
 #
 # list of files to create
 #
-                                                                                                                        ac_config_files="$ac_config_files Makefile src/Makefile src/base/Makefile src/crypt/Makefile src/crypt/ossl/Makefile src/io/Makefile src/ipc/Makefile src/os/Makefile src/os/posix/Makefile src/os/windows/Makefile src/parser/Makefile test/Makefile"
+                                                                                                                                            ac_config_files="$ac_config_files Makefile src/Makefile src/base/Makefile src/crypt/Makefile src/crypt/ossl/Makefile src/io/Makefile src/ipc/Makefile src/os/Makefile src/os/posix/Makefile src/os/windows/Makefile src/parser/Makefile src/impl/Makefile src/impl/ipc/Makefile test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -23138,6 +23138,8 @@ do
   "src/os/posix/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/os/posix/Makefile" ;;
   "src/os/windows/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/os/windows/Makefile" ;;
   "src/parser/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/parser/Makefile" ;;
+  "src/impl/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/impl/Makefile" ;;
+  "src/impl/ipc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/impl/ipc/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;

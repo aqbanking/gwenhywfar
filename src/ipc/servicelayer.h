@@ -29,10 +29,86 @@
 #ifndef GWENHYFWAR_SERVICELAYER_H
 #define GWENHYFWAR_SERVICELAYER_H
 
+#include <gwenhyfwar/error.h>
+#include <gwenhyfwar/connlayer.h>
 
-typedef struct GWEN_GLOBAL_SERVICELAYER GWEN_GLOBAL_SERVICELAYER;
+
+typedef struct GWEN_SERVICELAYER GWEN_SERVICELAYER;
 
 
+GWEN_SERVICELAYER *GWEN_ServiceLayer_new();
+void GWEN_ServiceLayer_free(GWEN_SERVICELAYER *sl);
+
+
+/**
+ * Adds a connection to the service layer.
+ */
+GWEN_ERRORCODE
+  GWEN_ServiceLayer_AddConnection(GWEN_SERVICELAYER *sl,
+                                  GWEN_IPCCONNLAYER *conn);
+
+/**
+ * Lookup a connection by its id and a user mark.
+ * @param id conection id (automatically assigned when creating the
+ *        connection)
+ * @param userMark mark assigned by the application (0 matches any)
+ */
+GWEN_IPCCONNLAYER*
+  GWEN_ServiceLayer_FindConnection(GWEN_SERVICELAYER *sl,
+                                   unsigned int id,
+                                   unsigned int userMark);
+
+/**
+ * This function calls the work function of all connections, for which
+ * data is available (either read or write) or whose socket state changed
+ * (e.g. when there is an incoming connection, or when an outgoing connection
+ * is established etc).
+ * The given timeout value is used when waiting for socket changes (select).
+ */
+GWEN_ERRORCODE GWEN_ServiceLayer_Work(GWEN_SERVICELAYER *sl, int timeout);
+
+
+/**
+ * Checks whether there are some connections which are physically closed
+ * (i.e. the transport layer is closed) but which are not marked closed
+ * in the connection layer. So this is just a simple cleanup, to keep
+ * all layers in sync.
+ */
+void GWEN_ServiceLayer_CheckClosed(GWEN_SERVICELAYER *sl);
+
+
+/**
+ * Removes all connections which belong to the given service layer and which
+ * are closed. Connections with the PERSISTENT-flag are not removed.
+ */
+void GWEN_ServiceLayer_RemoveClosed(GWEN_SERVICELAYER *sl);
+
+
+/**
+ * Closes all matching connections belonging to the given service layer.
+ * @param id connection id (assigned upon creating it. 0 matches any)
+ * @param userMark a special mark assigned by the application (0 matches any)
+ * @param force if !=0 then the connection will be closed physically
+ *        immediately. Otherwise the ConnectionLayer is allowed to do some
+ *        closing handshaking.
+ */
+void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
+                             unsigned int id,
+                             unsigned int userMark,
+                             int force);
+
+/**
+ * This function checks whether there is an incoming message with reference
+ * to the given one (by id).
+ */
+GWEN_IPCMSG *GWEN_ServiceLayer_FindMsgReply(GWEN_SERVICELAYER *sl,
+                                            unsigned int refId);
+
+/**
+ * Returns a message which is not a reply to a previously sent message
+ * (such a message has a reference id of 0).
+ */
+GWEN_IPCMSG *GWEN_ServiceLayer_GetRequest(GWEN_SERVICELAYER *sl);
 
 
 

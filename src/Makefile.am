@@ -1,6 +1,6 @@
 INCLUDES=@all_includes@ -Ios/@GWEN_OS@
 
-SUBDIRS=base crypt io ipc os parser
+SUBDIRS=base crypt io ipc os parser impl
 lib_LTLIBRARIES=libgwenhyfwar.la
 iheaderdir=${includedir}/gwenhyfwar
 iheader_HEADERS=\
