@@ -38,6 +38,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
+#include "crypt_l.h"
 
 #include <openssl/des.h>
 #include <openssl/rand.h>
@@ -259,13 +260,7 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Generate(GWEN_CRYPTKEY *k,
 
   /* seed random */
   for (i=0; i<sizeof(randomData); i++)
-    randomData[i] = (unsigned char) 
-#ifdef HAVE_RANDOM
-      random()
-#else
-      rand()
-#endif
-      ;
+    randomData[i] = (unsigned char) GWEN_Random();
   RAND_seed(randomData, sizeof(randomData));
 
   /* generate left half */

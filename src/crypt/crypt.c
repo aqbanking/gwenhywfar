@@ -51,6 +51,11 @@ static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_crypt_errorform=0;
 
 static GWEN_CRYPTKEY_PROVIDER *gwen_crypt_providers=0;
 
+#define GWEN_RANDSTATE_BUFSIZE 256
+#ifdef HAVE_RANDOM
+static char gwen_random_state[GWEN_RANDSTATE_BUFSIZE];
+#endif
+
 
 GWEN_INHERIT_FUNCTIONS(GWEN_CRYPTKEY)
 GWEN_LIST2_FUNCTIONS(GWEN_CRYPTKEY, GWEN_CryptKey)
@@ -116,9 +121,15 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleInit(){
       GWEN_Error_UnregisterType(gwen_crypt_errorform);
       return err;
     }
-    /* seed random */
+
+    /* seed random number generator*/
 #ifdef HAVE_SRANDOM
-    srandom((unsigned int)time(0));
+    {
+      char* prev_randstate = initstate((unsigned int)time(0),
+				       gwen_random_state,
+				       GWEN_RANDSTATE_BUFSIZE);
+      setstate(prev_randstate);
+    }
 #else
     srand((unsigned int)time(0));
 #endif
@@ -875,9 +886,15 @@ void GWEN_CryptKey_SubFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl){
 }
 
 
-
-
-
-
-
-
+long int GWEN_Random()
+{
+  long int result;
+#ifdef HAVE_RANDOM
+  char* prev_randstate = setstate(gwen_random_state);
+  result = random();
+  setstate(prev_randstate);
+#else
+  result = rand();
+#endif
+  return result;
+}

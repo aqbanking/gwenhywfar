@@ -1,5 +1,9 @@
 2005-03-29   Christian Stimming <stimming@tuhh.de>
 
+	* src/crypt/crypt.c: Add function GWEN_Random() which uses an
+	internal RNG state. This was, the application's RNG state is left
+	untouched.
+
 	* configure.ac, src/crypt/padd.c, crypt.c: If random()/srandom()
 	is not available, use rand()/srand(). Necessary for
 	e.g. windows/mingw32.

@@ -38,6 +38,8 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_Crypt_ModuleFini();
 
+GWENHYWFAR_API
+  long int GWEN_Random();
 
 #endif /* GWENHYWFAR_CRYPT_L_H */
 
