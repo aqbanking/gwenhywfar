@@ -149,6 +149,18 @@ GWENHYWFAR_API int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
                                                   int *month,
                                                   int *year);
 
+/**
+ * Returns this date as a struct tm (see ctime(3)) in the local time
+ * zone.
+ */
+GWENHYWFAR_API struct tm GWEN_Time_To_tm(const GWEN_TIME *t);
+
+/**
+ * Returns this date as a time_t value (see time(2)).
+ */
+GWENHYWFAR_API time_t GWEN_Time_To_time_t(const GWEN_TIME *t);
+
+
 
 #ifdef __cplusplus
 }

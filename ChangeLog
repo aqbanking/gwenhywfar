@@ -1,4 +1,7 @@
+2004-08-21  Christian Stimming  <stimming@tuhh.de>
 
+	* src/os/gwentime.h: Add conversion functions GWEN_Time_To_tm and
+	GWEN_Time_To_time_t.
 
 2004/08/20: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
