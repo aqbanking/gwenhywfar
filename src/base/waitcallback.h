@@ -154,6 +154,9 @@ typedef
 GWENHYWFAR_API
   GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback();
 
+GWENHYWFAR_API
+void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx);
+
 /**
  * This is basically a combination of the functions
  * @ref GWEN_WaitCallback_SetProgressPos and

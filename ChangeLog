@@ -3,6 +3,8 @@
 2004/08/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - adapted mklistdoc to new macro names
+- Valgrind-Session:
+  - added GWEN_WaitCallback_free() to public headers
 
 
 2004/08/27: Martin Preuss<martin@libchipcard.de>

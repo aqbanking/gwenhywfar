@@ -66,8 +66,6 @@ struct GWEN_WAITCALLBACK {
 };
 
 
-void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx);
-
 
 void *GWEN_WaitCallback__HandlePathElement(const char *entry,
                                            void *data,
