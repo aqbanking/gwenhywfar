@@ -227,7 +227,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 
 		  pd=GWEN_PluginDescription_new(n);
 		  if (!pd) {
-		    DBG_WARN(0, "Bad provider description");
+		    DBG_WARN(0, "Bad plugin description");
 		  }
 		  else {
                     GWEN_PluginDescription_List2_PushBack(pdl, pd);
@@ -235,7 +235,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
                 }
                 else {
                   DBG_WARN(0,
-                           "File \"%s\" does not contain provider "
+                           "File \"%s\" does not contain plugin "
                            "description",
                            GWEN_Buffer_GetStart(nbuf));
                 }
