@@ -35,6 +35,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/messagebox.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
@@ -64,7 +65,6 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
     }
   }
 
-  flags|=GWEN_WIDGET_FLAGS_PANEL;
   GWEN_NEW_OBJECT(GWEN_WIDGET, w);
   GWEN_INHERIT_INIT(GWEN_WIDGET, w);
   GWEN_LIST_INIT(GWEN_WIDGET, w);
@@ -84,15 +84,15 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   w->parent=parent;
   if (parent) {
     if (width==0)
-      width=GWEN_Widget_GetWidth(parent);
+      width=GWEN_Widget_GetWidth(parent)-x;
     if (height==0)
-      height=GWEN_Widget_GetHeight(parent);
+      height=GWEN_Widget_GetHeight(parent)-y;
   }
   else {
     if (width==0)
-      width=COLS;
+      width=COLS-x;
     if (height==0)
-      height=LINES;
+      height=LINES-y;
   }
   w->x=x;
   w->y=y;
@@ -101,6 +101,9 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   w->state=GWEN_WIDGET_STATE_ACTIVE;
   w->cursorX=-1;
   w->cursorY=-1;
+
+  DBG_NOTICE(0, "Creating widget \"%s\" %d/%d, %d/%d (%s)",
+             name, x, y, width, height, text);
 
   w->flags=flags;
   if (parent) {
@@ -140,13 +143,9 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   }
   leaveok(w->window, FALSE);
 
-  if (w->flags & GWEN_WIDGET_FLAGS_PANEL) {
-    w->panel=new_panel(w->window);
-    update_panels();
-    top_panel(w->panel);
-  }
-  else
-    wrefresh(w->window);
+  w->panel=new_panel(w->window);
+  update_panels();
+  top_panel(w->panel);
 
   keypad(w->window, (w->flags & GWEN_WIDGET_FLAGS_KEYPAD)?TRUE:FALSE);
   scrollok(w->window, (w->flags & GWEN_WIDGET_FLAGS_SCROLL)?TRUE:FALSE);
@@ -160,8 +159,10 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
     GWEN_Event_free(e);
   }
 
-  if (text)
+  if (text) {
+    DBG_NOTICE(0, "Setting text \"%s\"", text);
     GWEN_Widget_SetText(w, text, GWEN_EventSetTextMode_Replace);
+  }
   return w;
 }
 
@@ -177,13 +178,24 @@ void GWEN_Widget_Attach(GWEN_WIDGET *w){
 void GWEN_Widget_free(GWEN_WIDGET *w){
   if (w) {
     assert(w->usage);
-    DBG_NOTICE(0, "Usage of widget \"%s\": %d", w->name, w->usage);
     if ((--w->usage)==0) {
+      GWEN_WIDGET *cw;
+
+      cw=GWEN_Widget_List_First(w->children);
+      while(cw) {
+        cw->parent=0;
+        cw=GWEN_Widget_List_Next(cw);
+      }
+
+      DBG_NOTICE(0, "Freeing widget \"%s\" [%08x]",
+                 w->name, (unsigned int)w);
+
       GWEN_INHERIT_FINI(GWEN_WIDGET, w);
+
+      GWEN_Widget_List_free(w->children);
       free(w->name);
       free(w->typeName);
       free(w->text);
-      GWEN_Widget_List_free(w->children);
       wclear(w->window);
       if (w->window) {
         DBG_WARN(0, "Widget still open");
@@ -422,6 +434,31 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
   const char *p;
 
   assert(w);
+  assert(w->usage);
+
+
+  if (GWEN_Event_GetType(e)==GWEN_EventType_Key) {
+    int key;
+
+    DBG_NOTICE(0, "Event: Key(%s)", w->name);
+    key=GWEN_EventKey_GetKey(e);
+    if (key==KEY_F(1)) {
+      GWEN_WIDGET *hw;
+
+      DBG_NOTICE(0, "Help-Key pressed");
+      hw=w;
+      if (w->helpText) {
+        DBG_NOTICE(0, "Showing help-screen");
+        GWEN_MessageBox(w,
+                        "HelpWindow",
+                        "Help",
+                        w->helpText,
+                        "Ok", 0, 0);
+        return GWEN_UIResult_Handled;
+      }
+      return GWEN_UIResult_NotHandled;
+    }
+  }
 
   if (GWEN_Event_GetRecipient(e)!=w) {
     /* do not handle events for children */
@@ -497,8 +534,10 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
         x++;
       }
     }
-    if (w->text)
+    if (w->text) {
+      DBG_NOTICE(0, "Setting text \"%s\"", w->text);
       mvwprintw(w->window, y, x, w->text);
+    }
     GWEN_Widget_Refresh(w);
     //wrefresh(w->window);
     //doupdate();
@@ -530,18 +569,17 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
           GWEN_Event_free(eClosed);
         }
       }
-      if (w->flags & GWEN_WIDGET_FLAGS_PANEL) {
-        wclear(w->window);
-        del_panel(w->panel);
-        delwin(w->window);
-        w->window=0;
-        update_panels();
-      }
+      wclear(w->window);
+      del_panel(w->panel);
+      delwin(w->window);
+      w->window=0;
+      w->panel=0;
+      update_panels();
       //refresh();
       return GWEN_UIResult_Handled;
     }
     else
-      return GWEN_UIResult_NotHandled;
+      return GWEN_UIResult_Finished;
   }
 
   case GWEN_EventType_Closed: {
@@ -591,10 +629,6 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     case GWEN_WIDGET_CMD_CLOSE:
       GWEN_Widget_Close(w);
       return GWEN_UIResult_Handled;
-    case GWEN_WIDGET_CMD_QUIT:
-      return GWEN_UIResult_Quit;
-    case GWEN_WIDGET_CMD_FINISHED:
-      return GWEN_UIResult_Finished;
     default:
       break;
     }
@@ -646,7 +680,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     }
     if (maxc>len)
       maxc=len;
-    DBG_NOTICE(0, "Highlighting %d, %d, %d bytes (true:%d)",
+    DBG_NOTICE(0, "ZZZ: Highlighting %d, %d, %d bytes (true:%d)",
                x, y, len, hi);
     if (hi==0)
       hi=w->colour;
@@ -675,13 +709,14 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     x=GWEN_EventWriteAt_GetX(e);
     y=GWEN_EventWriteAt_GetY(e);
     len=GWEN_EventWriteAt_GetLen(e);
-    DBG_NOTICE(0, "Writing at %d, %d, %d bytes",
+    DBG_NOTICE(0, "ZZZ: Writing at %d, %d, %d bytes",
                x, y, len);
 
     maxc=w->width;
     if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
       x++;
-      y++;
+      if (w->height>1)
+        y++;
       maxc-=2;
     }
     p=(const unsigned char*)GWEN_EventWriteAt_GetText(e);
@@ -690,7 +725,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       int attrs;
       int c;
 
-      DBG_NOTICE(0, "Writing this at %d/%d [%d, %d]:", x, y, len, maxc);
+      DBG_NOTICE(0, "Writing this at %d/%d [%d, %d]:",
+                 x, y, len, maxc);
       GWEN_Text_LogString(p, len, 0, GWEN_LoggerLevelNotice);
       wmove(w->window, y, x);
       wbkgdset(w->window, COLOR_PAIR(w->colour));
@@ -749,6 +785,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
           maxc--;
         }
         else if (isprint(c)) {
+          DBG_NOTICE(0, "Writing char %02x", c);
           if (waddch(w->window, c | attrs)==ERR) {
             DBG_VERBOUS(0, "Error writing to window (%02x)", c);
             break;
@@ -759,6 +796,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
           DBG_NOTICE(0, "Unprintable character detected.");
           abort();
         }
+        x++;
         p++;
         len--;
       } /* while */
@@ -794,18 +832,57 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     DBG_INFO(0, "Event: Clear(%s)", w->name);
     x=GWEN_EventClear_GetX(e);
     y=GWEN_EventClear_GetY(e);
+    if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
+      x++;
+      if (w->height>1)
+        y++;
+    }
     m=GWEN_EventClear_GetMode(e);
     DBG_NOTICE(0, "Clearing dims: %d/%d (%d) [%s]", x, y, m, w->name);
-    wmove(w->window, y, x);
     switch(m) {
     case GWEN_EventClearMode_All:
+      wmove(w->window, y, x);
       wclear(w->window);
+      if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
+        if (w->height>1) {
+          box(w->window, 0, 0);
+        }
+        else if (w->height==1) {
+          wmove(w->window, 0, 0);
+          waddch(w->window, '[');
+          wmove(w->window, 0, w->width-1);
+          waddch(w->window, ']');
+        }
+      }
       break;
     case GWEN_EventClearMode_ToEOL:
-      wclrtoeol(w->window);
+      if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
+        int len;
+
+        len=w->width-2-x;
+        x++;
+        while(len-->0)
+          mvwaddch(w->window, y, x++, ' ');
+      }
+      else {
+        wmove(w->window, y, x);
+        wclrtoeol(w->window);
+      }
       break;
     case GWEN_EventClearMode_ToBottom:
+      wmove(w->window, y, x);
       wclrtobot(w->window);
+      if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
+        if (w->height>1) {
+          box(w->window, 0, 0);
+        }
+        else if (w->height==1) {
+          wmove(w->window, 0, 0);
+          waddch(w->window, '[');
+          wmove(w->window, 0, w->width-1);
+          waddch(w->window, ']');
+        }
+      }
       break;
     default:
       DBG_DEBUG(0, "Unknown mode (%d)", m);
@@ -837,11 +914,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
 
     DBG_INFO(0, "Event: Key(%s)", w->name);
     key=GWEN_EventKey_GetKey(e);
-    if (key==KEY_F(10)) {
-      DBG_NOTICE(0, "Finished.");
-      return GWEN_UIResult_Quit;
-    }
-    else if (key==KEY_F(5)) {
+    if (key==KEY_F(5)) {
       DBG_NOTICE(0, "Updating");
       //doupdate();
       update_panels();
@@ -859,6 +932,11 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     else if (key==KEY_F(11)) {
       beep();
       GWEN_UI_DumpWidgets();
+    }
+    if (key==KEY_F(12)) {
+      GWEN_UI_End();
+      DBG_NOTICE(0, "Emergency quit");
+      exit(2);
     }
     else if (key==9) {
       if (GWEN_UI_FocusToNext(w)) {
@@ -1060,7 +1138,7 @@ int GWEN_Widget_Refresh(GWEN_WIDGET *w) {
   /* refresh all children */
   subw=GWEN_Widget_List_First(w->children);
   while(subw) {
-    GWEN_Widget_Update(subw);
+    GWEN_Widget_Refresh(subw);
     subw=GWEN_Widget_List_Next(subw);
   } /* while */
 
@@ -1103,6 +1181,26 @@ int GWEN_Widget_Scrolled(GWEN_WIDGET *w, int byX, int byY) {
 
 int GWEN_Widget_WriteAt(GWEN_WIDGET *w, int x, int y, const char *t, int len){
   GWEN_EVENT *e;
+
+  if (t) {
+    GWEN_BUFFER *mb;
+    int i;
+
+    mb=GWEN_Buffer_new(0, len, 0, 1);
+    for (i=0; i<len; i++) {
+      if (!isprint(t[i]))
+        GWEN_Buffer_AppendByte(mb, '?');
+      else
+        GWEN_Buffer_AppendByte(mb, t[i]);
+    }
+    DBG_NOTICE(0, "Writing this: \"%s\"",
+               GWEN_Buffer_GetStart(mb));
+    if (strstr(GWEN_Buffer_GetStart(mb), "<gwen>")) {
+      DBG_NOTICE(0, "What ??");
+      abort();
+    }
+    GWEN_Buffer_free(mb);
+  }
 
   assert(w);
   e=GWEN_EventWriteAt_new(x, y, t, len);
@@ -1258,6 +1356,8 @@ void GWEN_Widget_Dump(GWEN_WIDGET *w, int indent) {
 int GWEN_Widget_IsChildOf(GWEN_WIDGET *wc, GWEN_WIDGET *w) {
   assert(w);
   while(wc) {
+    assert(wc->usage);
+    assert(w->usage);
     if (wc==w)
       return 1;
     wc=wc->parent;
@@ -1271,6 +1371,8 @@ int GWEN_Widget_IsChildOf(GWEN_WIDGET *wc, GWEN_WIDGET *w) {
 int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w) {
   assert(w);
   assert(wc);
+  assert(w->usage);
+  assert(wc->usage);
   return GWEN_Widget_IsChildOf(w, wc);
   return 0;
 }
@@ -1327,6 +1429,25 @@ GWEN_UI_RESULT GWEN_Widget_Run(GWEN_WIDGET *w) {
     }
   }
 }
+
+
+
+const char *GWEN_Widget_GetHelpText(const GWEN_WIDGET *w){
+  assert(w);
+  return w->helpText;
+}
+
+
+
+void GWEN_Widget_SetHelpText(GWEN_WIDGET *w, const char *s){
+  assert(w);
+  free(w->helpText);
+  if (s) w->helpText=strdup(s);
+  else w->helpText=0;
+}
+
+
+
 
 
 

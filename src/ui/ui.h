@@ -29,6 +29,10 @@
 #define GWEN_UI_UI_H
 
 
+#define GWEN_UI_KEY_DELETE 0x14a
+#define GWEN_UI_KEY_INSERT 0x14b
+
+
 typedef enum {
   GWEN_UIResult_Handled=0,
   GWEN_UIResult_NotHandled,

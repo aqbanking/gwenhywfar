@@ -54,6 +54,9 @@ void GWEN_TextWidget_SetVirtualSize(GWEN_WIDGET *w,
                                     int vwidth,
                                     int vheight);
 
+int GWEN_TextWidget_GetVirtualWidth(const GWEN_WIDGET *w);
+int GWEN_TextWidget_GetVirtualHeight(const GWEN_WIDGET *w);
+
 
 GWEN_TW_LINE *GWEN_TextWidget_LineOpen(GWEN_WIDGET *w, int n, int cre);
 int GWEN_TextWidget_LineClose(GWEN_WIDGET *w,
@@ -72,6 +75,7 @@ int GWEN_TextWidget_LineSetAttributes(GWEN_WIDGET *w,
                                       GWEN_TYPE_UINT32 atts);
 int GWEN_TextWidget_LineSetPos(GWEN_WIDGET *w, GWEN_TW_LINE *l, int pos);
 int GWEN_TextWidget_LineClear(GWEN_WIDGET *w, GWEN_TW_LINE *l);
+int GWEN_TextWidget_LineDelete(GWEN_WIDGET *w, GWEN_TW_LINE *l, int n);
 int GWEN_TextWidget_LineRedraw(GWEN_WIDGET *w, GWEN_TW_LINE *l);
 int GWEN_TextWidget_LineWriteText(GWEN_WIDGET *w,
                                   GWEN_TW_LINE *l,
@@ -81,6 +85,10 @@ int GWEN_TextWidget_LineWriteText(GWEN_WIDGET *w,
 int GWEN_TextWidget_EnsureVisible(GWEN_WIDGET *w,
                                   int x, int y,
                                   int width, int height);
+
+int GWEN_TextWidget_GetLeft(const GWEN_WIDGET *w);
+int GWEN_TextWidget_GetTop(const GWEN_WIDGET *w);
+
 
 GWEN_TW_LINE_LIST *GWEN_TextWidget_XMLToLines(GWEN_XMLNODE *n,
                                               int leftBorder,

@@ -32,6 +32,8 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/widget.h>
 
+#define GWEN_BUTTON_FLAGS_CHECKBOX 0x00010000
+
 
 typedef struct GWEN_BUTTON GWEN_BUTTON;
 
@@ -43,6 +45,8 @@ GWEN_WIDGET *GWEN_Button_new(GWEN_WIDGET *parent,
                              GWEN_TYPE_UINT32 commandId,
                              int x, int y, int width, int height);
 
+int GWEN_Button_IsChecked(const GWEN_WIDGET *w);
+void GWEN_Button_SetChecked(GWEN_WIDGET *w, int b);
 
 
 #endif

@@ -53,7 +53,7 @@ GWEN_WIDGET *GWEN_Button_new(GWEN_WIDGET *parent,
   GWEN_BUTTON *win;
 
   w=GWEN_Widget_new(parent,
-                    flags,
+                    flags & ~GWEN_WIDGET_FLAGS_WINDOWFLAGS,
                     name, text,
                     x,
                     y,
@@ -63,6 +63,7 @@ GWEN_WIDGET *GWEN_Button_new(GWEN_WIDGET *parent,
   GWEN_NEW_OBJECT(GWEN_BUTTON, win);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_BUTTON, w, win,
                        GWEN_Button_freeData);
+  win->flags=flags;
   win->commandId=commandId;
   win->previousHandler=GWEN_Widget_GetEventHandler(w);
   assert(win->previousHandler);
@@ -104,18 +105,31 @@ GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
   case GWEN_EventType_Key: {
     int key;
 
-    DBG_INFO(0, "Event: Key(%s)", GWEN_Widget_GetName(w));
+    DBG_NOTICE(0, "Event: Key(%s)", GWEN_Widget_GetName(w));
     key=GWEN_EventKey_GetKey(e);
-    if (key==13) {
-      GWEN_EVENT *e;
+    if (key==13 || key==32) {
+      const char *c;
 
-      assert(w);
-      beep();
-      e=GWEN_EventCommand_new(win->commandId);
-      assert(e);
-      if (GWEN_Widget_SendEvent(w, w, e)) {
-        DBG_INFO(0, "Could not send event");
-        GWEN_Event_free(e);
+      if (win->flags & GWEN_BUTTON_FLAGS_CHECKBOX) {
+        win->isChecked=!win->isChecked;
+        if (win->isChecked)
+          c="X";
+        else
+          c=" ";
+        GWEN_Widget_WriteAt(w, 0, 0, c, strlen(c));
+        GWEN_Widget_Refresh(w);
+      }
+      else {
+        GWEN_EVENT *e;
+
+        assert(w);
+        beep();
+        e=GWEN_EventCommand_new(win->commandId);
+        assert(e);
+        if (GWEN_Widget_SendEvent(w, w, e)) {
+          DBG_INFO(0, "Could not send event");
+          GWEN_Event_free(e);
+        }
       }
       return GWEN_UIResult_Handled;
     }
@@ -132,6 +146,31 @@ GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
 
   return win->previousHandler(w, e);
 }
+
+
+
+int GWEN_Button_IsChecked(const GWEN_WIDGET *w){
+  GWEN_BUTTON *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_BUTTON, w);
+  assert(win);
+  return win->isChecked;
+}
+
+
+
+void GWEN_Button_SetChecked(GWEN_WIDGET *w, int b){
+  GWEN_BUTTON *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_BUTTON, w);
+  assert(win);
+  win->isChecked=b;
+}
+
+
+
 
 
 

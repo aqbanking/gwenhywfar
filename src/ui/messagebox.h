@@ -35,7 +35,6 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
                     const char *name,
                     const char *title,
                     const char *text,
-                    int width,
                     const char *b1,
                     const char *b2,
                     const char *b3);

@@ -25,25 +25,23 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GWEN_UI_CHECKBOX_H
+#define GWEN_UI_CHECKBOX_H
 
-#ifndef GWEN_UI_BUTTON_P_H
-#define GWEN_UI_BUTTON_P_H
-
-#include <gwenhywfar/button.h>
-
-
-struct GWEN_BUTTON {
-  GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
-  GWEN_TYPE_UINT32 flags;
-  GWEN_TYPE_UINT32 commandId;
-  int isChecked;
-};
-void GWEN_Button_freeData(void *bp, void *p);
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/widget.h>
 
 
-GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
+GWEN_WIDGET *GWEN_CheckBox_new(GWEN_WIDGET *parent,
+                               GWEN_TYPE_UINT32 flags,
+                               const char *name,
+                               const char *text,
+                               int x, int y,
+                               int width, int height);
 
-
+int GWEN_CheckBox_IsChecked(const GWEN_WIDGET *w);
+void GWEN_CheckBox_SetChecked(GWEN_WIDGET *w, int b);
 
 
 #endif

@@ -90,7 +90,6 @@ GWEN_EVENT_TYPE GWEN_Event_GetType(const GWEN_EVENT *e);
 GWEN_WIDGET *GWEN_Event_GetSender(const GWEN_EVENT *e);
 GWEN_WIDGET *GWEN_Event_GetRecipient(const GWEN_EVENT *e);
 
-
 GWEN_EVENT *GWEN_Event_new(GWEN_EVENT_TYPE t);
 
 void GWEN_Event_free(GWEN_EVENT *e);

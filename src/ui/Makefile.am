@@ -5,6 +5,8 @@ noinst_LTLIBRARIES=libui.la
 iheaderdir=${includedir}/gwenhywfar/ui
 iheader_HEADERS=\
   button.h \
+  checkbox.h \
+  editbox.h \
   event.h \
   hslider.h \
   messagebox.h \
@@ -18,6 +20,8 @@ iheader_HEADERS=\
 
 noinst_HEADERS=\
   button_p.h \
+  checkbox_p.h \
+  editbox_p.h \
   event_p.h \
   hslider_p.h \
   messagebox_p.h \
@@ -33,6 +37,8 @@ noinst_HEADERS=\
 
 libui_la_SOURCES=\
   button.c \
+  checkbox.c \
+  editbox.c \
   event.c \
   hslider.c \
   messagebox.c \

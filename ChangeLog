@@ -1,4 +1,16 @@
 
+2004/06/26: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui: 
+  - introduced MODAL flag for widgets (focus will never go beyond a MODAL
+    widget)
+  - completed MessageBox, which is now able to calculate the necessary width
+    and height by itself
+  - added EditBox
+  - added CheckBox
+  - fixed some bugs
+
+
 2004/06/25: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ui:

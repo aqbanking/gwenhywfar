@@ -72,6 +72,7 @@ void GWEN_Event_free(GWEN_EVENT *e){
 
 void GWEN_Event_SetSender(GWEN_EVENT *e, GWEN_WIDGET *w){
   assert(e);
+  assert(e->usage);
   GWEN_Widget_free(e->sender);
   e->sender=w;
   if (w) {
@@ -83,6 +84,7 @@ void GWEN_Event_SetSender(GWEN_EVENT *e, GWEN_WIDGET *w){
 
 void GWEN_Event_SetRecipient(GWEN_EVENT *e, GWEN_WIDGET *w){
   assert(e);
+  assert(e->usage);
   GWEN_Widget_free(e->recipient);
   e->recipient=w;
   if (w)
@@ -94,6 +96,7 @@ void GWEN_Event_SetRecipient(GWEN_EVENT *e, GWEN_WIDGET *w){
 
 GWEN_EVENT_TYPE GWEN_Event_GetType(const GWEN_EVENT *e){
   assert(e);
+  assert(e->usage);
   return e->type;
 }
 
@@ -101,6 +104,7 @@ GWEN_EVENT_TYPE GWEN_Event_GetType(const GWEN_EVENT *e){
 
 GWEN_WIDGET *GWEN_Event_GetSender(const GWEN_EVENT *e){
   assert(e);
+  assert(e->usage);
   return e->sender;
 }
 
@@ -108,6 +112,7 @@ GWEN_WIDGET *GWEN_Event_GetSender(const GWEN_EVENT *e){
 
 GWEN_WIDGET *GWEN_Event_GetRecipient(const GWEN_EVENT *e){
   assert(e);
+  assert(e->usage);
   return e->recipient;
 }
 
@@ -148,6 +153,7 @@ const char *GWEN_Event_TypeName(GWEN_EVENT_TYPE t) {
 
 void GWEN_Event_Dump(const GWEN_EVENT *e){
   assert(e);
+  assert(e->usage);
 
   DBG_NOTICE(0, "Event[%02d] %9.9s at %04x (sender=\"%s\", recipient=\"%s\")",
              e->id,

@@ -25,24 +25,35 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GWEN_UI_EDITBOX_P_H
+#define GWEN_UI_EDITBOX_P_H
 
-#ifndef GWEN_UI_BUTTON_P_H
-#define GWEN_UI_BUTTON_P_H
+#include <gwenhywfar/editbox.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/widget.h>
+#include <gwenhywfar/textwidget.h>
 
-#include <gwenhywfar/button.h>
 
 
-struct GWEN_BUTTON {
+typedef struct GWEN_EDITBOX GWEN_EDITBOX;
+struct GWEN_EDITBOX {
   GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
   GWEN_TYPE_UINT32 flags;
-  GWEN_TYPE_UINT32 commandId;
-  int isChecked;
+  int currX;
+  int currY;
+  GWEN_TW_LINE *currLine;
+  int insertMode;
+  int clearAllFlag;
+  int maxLen;
 };
-void GWEN_Button_freeData(void *bp, void *p);
+void GWEN_EditBox_freeData(void *bp, void *p);
 
 
-GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
 
+int GWEN_EditBox_EnsureLine(GWEN_WIDGET *w, int y);
+void GWEN_EditBox_AdjustCursor(GWEN_WIDGET *w);
+GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
 
 
 

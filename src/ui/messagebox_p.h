@@ -32,6 +32,7 @@
 #define GWEN_MSGBOX_CMD_BUT2 2
 #define GWEN_MSGBOX_CMD_BUT3 3
 
+#define GWEN_MESSAGEBOX_MINWIDTH 30
 
 #include <gwenhywfar/messagebox.h>
 

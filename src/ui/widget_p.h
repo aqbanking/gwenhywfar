@@ -66,6 +66,9 @@ struct GWEN_WIDGET {
   GWEN_TYPE_UINT32 state;
   GWEN_WIDGET_EVENTHANDLER_FN eventHandler;
 
+  /* additional data */
+  char *helpText;
+
   /* ncurses data */
   WINDOW *window;
   PANEL *panel;

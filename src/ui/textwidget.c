@@ -125,7 +125,7 @@ GWEN_WIDGET *GWEN_TextWidget_new(GWEN_WIDGET *parent,
 
   w=GWEN_Widget_new(parent,
                     flags & ~GWEN_WIDGET_FLAGS_WINDOWFLAGS,
-                    name, text, x, y, width, height);
+                    name, 0, x, y, width, height);
   GWEN_Widget_SetTypeName(w, "TextWidget");
 
   GWEN_NEW_OBJECT(GWEN_TEXTWIDGET, win);
@@ -139,6 +139,8 @@ GWEN_WIDGET *GWEN_TextWidget_new(GWEN_WIDGET *parent,
   win->previousHandler=GWEN_Widget_GetEventHandler(w);
   assert(win->previousHandler);
   GWEN_Widget_SetEventHandler(w, GWEN_TextWidget_EventHandler);
+  if (text)
+    GWEN_TextWidget_SetText(w, text, GWEN_EventSetTextMode_Replace);
   return w;
 }
 
@@ -224,77 +226,6 @@ int GWEN_TextWidget_SetText(GWEN_WIDGET *w,
     return -1;
   }
   return GWEN_TextWidget_SetPreparedText(w, ll, m);
-}
-
-
-
-int GWEN_TextWidget_SetText_DEPRECATED(GWEN_WIDGET *w,
-                                       const char *text,
-                                       GWEN_EVENT_SETTEXT_MODE m) {
-  GWEN_TEXTWIDGET *win;
-  GWEN_XMLNODE *xmlNode;
-  GWEN_XMLNODE *n;
-  GWEN_BUFFEREDIO *bio;
-  GWEN_BUFFER *buf;
-
-  assert(w);
-  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
-  assert(win);
-
-  if (m==GWEN_EventSetTextMode_Replace && !text) {
-    GWEN_TWLine_List_Clear(win->lines);
-    return 0;
-  }
-
-  buf=GWEN_Buffer_new(0, strlen(text), 0, 1);
-  GWEN_Buffer_AppendString(buf, text);
-  GWEN_Buffer_Rewind(buf);
-  bio=GWEN_BufferedIO_Buffer2_new(buf, 1);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
-  xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-  if (GWEN_XML_Parse(xmlNode, bio, GWEN_XML_FLAGS_DEFAULT)) {
-    DBG_INFO(0, "here");
-    GWEN_BufferedIO_free(bio);
-    GWEN_XMLNode_free(xmlNode);
-    return -1;
-  }
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
-
-  if (m==GWEN_EventSetTextMode_Replace)
-    GWEN_TWLine_List_Clear(win->lines);
-
-  n=GWEN_XMLNode_GetFirstTag(xmlNode);
-  if (n) {
-    GWEN_BUFFER *lineBuf;
-    int pos;
-    GWEN_TW_LINE_LIST *ll;
-    int rv;
-
-    lineBuf=GWEN_Buffer_new(0, 256, 0, 1);
-    pos=0;
-    if (m!=GWEN_EventSetTextMode_Insert)
-      ll=win->lines;
-    else
-      ll=GWEN_TWLine_List_new();
-    rv=GWEN_TextWidget_ParseXMLTag(w,
-                                   n,
-                                   lineBuf,
-                                   0,
-                                   0,
-                                   0,
-                                   &pos,
-                                   ll);
-    if (rv) {
-      if (m==GWEN_EventSetTextMode_Insert)
-        GWEN_TWLine_List_free(ll);
-      GWEN_Buffer_free(lineBuf);
-      GWEN_XMLNode_free(xmlNode);
-      return -1;
-    }
-  }
-
-  return 0;
 }
 
 
@@ -619,7 +550,7 @@ GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
   }
   case GWEN_EventType_Draw: {
     DBG_NOTICE(0, "Event: Draw(%s)", GWEN_Widget_GetName(w));
-    GWEN_Widget_Clear(w, 0, 0, GWEN_EventClearMode_All);
+    win->previousHandler(w, e);
     GWEN_TextWidget_Draw(w);
     if ((GWEN_Widget_GetState(w) & GWEN_WIDGET_STATE_HASFOCUS) &&
         (win->flags & GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT)) {
@@ -629,7 +560,6 @@ GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     }
     GWEN_Widget_SetCursorX(w, 0);
     GWEN_Widget_SetCursorY(w, win->pos-win->top);
-    win->previousHandler(w, e);
     GWEN_Widget_Refresh(w);
     return GWEN_UIResult_Handled;
   }
@@ -1360,14 +1290,14 @@ int GWEN_TextWidget__DrawLine(GWEN_WIDGET *w, GWEN_TW_LINE *l,
   assert(lastWasEsc==0);
 
   if (startPtr) {
-    DBG_NOTICE(0, "Updating dims: %d/%d, %d(%d) [%d, %d]",
+    DBG_NOTICE(0, "ZZZ: Updating dims: %d/%d, %d(%d) [%d, %d]",
                x, y, len, p-startPtr, win->left, win->top);
     GWEN_Text_LogString(startPtr, p-startPtr, 0, GWEN_LoggerLevelNotice);
     GWEN_Widget_WriteAt(w,
                         x-win->left, y-win->top,
                         startPtr, p-startPtr);
     if (i) {
-      DBG_NOTICE(0, "Clearing rest of line [%d, %d]",
+      DBG_NOTICE(0, "ZZZ: Clearing rest of line [%d, %d]",
                  p-startPtr,
                  i);
       GWEN_Widget_Clear(w, pos+1, y-win->top,
@@ -1375,7 +1305,7 @@ int GWEN_TextWidget__DrawLine(GWEN_WIDGET *w, GWEN_TW_LINE *l,
     }
   }
   else {
-    DBG_NOTICE(0, "Clearing line %d", y);
+    DBG_NOTICE(0, "ZZZ: Clearing line %d", y);
     GWEN_Widget_WriteAt(w,
                         win->left, y-win->top,
                         " ", 1);
@@ -1576,8 +1506,9 @@ int GWEN_TextWidget_LineWriteText_INS(GWEN_WIDGET *w,
   p=pChars+l->rightBorder;
   while(p>=(pChars+l->currentPos) && *p && isspace(*p)) {
     blnks++;
-    p++;
+    p--;
   }
+  DBG_NOTICE(0, "ZZZ: Blanks: %d", blnks);
   if (blnks<len) {
     DBG_INFO(0, "Line full");
     return -1;
@@ -1588,18 +1519,21 @@ int GWEN_TextWidget_LineWriteText_INS(GWEN_WIDGET *w,
 
   if (blnks<l->rightBorder-l->currentPos+1) {
     /* move data behind out of the way */
-    p=pChars+=i;
-    memmove(p, pChars, i);
-    p=pAtts+=len;
-    memmove(p, pAtts, i);
+    DBG_NOTICE(0, "ZZZ: Moving %d bytes from %d",
+               l->rightBorder-l->currentPos+1-blnks,
+               l->currentPos);
+    p=pChars+i;
+    memmove(p, pChars, l->rightBorder-l->currentPos+1-blnks);
+    p=pAtts+i;
+    memmove(p, pAtts, l->rightBorder-l->currentPos+1-blnks);
   }
 
   /* actually write into the buffer */
-  l->currentPos+=i;
   while(i--) {
     *pChars++=*text++;
     *pAtts++=l->currentAtts;
   }
+  l->currentPos+=i;
 
   l->changed=1;
   l->compressed=0;
@@ -1621,8 +1555,12 @@ int GWEN_TextWidget_LineWriteText(GWEN_WIDGET *w,
   assert(text);
   assert(len>=0);
 
-  if (l->currentPos>l->rightBorder || l->currentPos<l->leftBorder) {
-    DBG_INFO(0, "Position outside border");
+  if (l->rightBorder && l->currentPos>l->rightBorder) {
+    DBG_INFO(0, "Position outside border (right)");
+    return -1;
+  }
+  if (l->leftBorder && l->currentPos<l->leftBorder) {
+    DBG_INFO(0, "Position outside border (left)");
     return -1;
   }
 
@@ -1636,10 +1574,55 @@ int GWEN_TextWidget_LineWriteText(GWEN_WIDGET *w,
   if (!len)
     return 0;
 
-  if (l->insertOn)
+  if (l->insertOn) {
+    DBG_NOTICE(0, "ZZZ: InsertMode");
     return GWEN_TextWidget_LineWriteText_INS(w, l, text, len);
-  else
+  }
+  else {
+    DBG_NOTICE(0, "ZZZ: OverwriteMode");
     return GWEN_TextWidget_LineWriteText_OV(w, l, text, len);
+  }
+}
+
+
+
+int GWEN_TextWidget_LineDelete(GWEN_WIDGET *w, GWEN_TW_LINE *l, int n){
+  GWEN_TEXTWIDGET *win;
+  int len;
+  char *pAtts;
+  char *pChars;
+  int i;
+
+  assert(l);
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
+  assert(win);
+
+  len=((l->rightBorder-l->currentPos)+1)-n;
+
+  pChars=GWEN_Buffer_GetStart(l->chars);
+  pAtts=GWEN_Buffer_GetStart(l->attributes);
+
+  if (len!=n && len>0) {
+    DBG_NOTICE(0, "ZZZ: Moving %d bytes from %d to %d",
+               len, l->currentPos+n, l->currentPos);
+    /* need to copy */
+    memmove(pChars+l->currentPos, pChars+l->currentPos+n,
+            len);
+    memmove(pAtts+l->currentPos, pAtts+l->currentPos+n,
+            len);
+  }
+
+  pChars+=l->currentPos+len;
+  pAtts+=l->currentPos+len;
+  for (i=0; i<n; i++) {
+    *(pChars++)=' ';
+    *(pAtts++)=0;
+  }
+
+  l->changed=1;
+  l->compressed=0;
+  return 0;
 }
 
 
@@ -1656,6 +1639,8 @@ int GWEN_TextWidget_EnsureVisible(GWEN_WIDGET *w,
   win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
   assert(win);
 
+  DBG_NOTICE(0, "Asking to ensure this: %d/%d, %d/%d",
+             x, y, width, height);
   ww=GWEN_Widget_GetWidth(w);
   wh=GWEN_Widget_GetHeight(w);
 
@@ -1675,9 +1660,12 @@ int GWEN_TextWidget_EnsureVisible(GWEN_WIDGET *w,
       xoffs=((x+width)-(win->left+ww));
   }
 
-  if (x+xoffs>=(win->left+ww))
-    xoffs=(x-(win->left+ww)+width);    /* scroll to the right */
-
+  if (x+xoffs>=(win->left+ww)) {
+    DBG_NOTICE(0, "New X would be outside right border (%d, %d, %d)",
+               x, xoffs, win->left);
+    xoffs=(x+xoffs)-(win->left+ww);
+    //xoffs=(x-(win->left+ww)+width);    /* scroll to the right */
+  }
 
   if (y<win->top)
     yoffs=-(win->top-y);
@@ -1699,7 +1687,8 @@ int GWEN_TextWidget_EnsureVisible(GWEN_WIDGET *w,
   DBG_NOTICE(0, "Scrolling by: %d, %d", xoffs, yoffs);
 
   if ((win->left+xoffs+ww)>win->vwidth) {
-    DBG_NOTICE(0, "X Does not fit (vwidth=%d)", win->vwidth);
+    DBG_NOTICE(0, "X Does not fit into virtual size (vwidth=%d)",
+               win->vwidth);
     return -1;
   }
 
@@ -1792,8 +1781,6 @@ GWEN_TW_LINE_LIST *GWEN_TextWidget_XMLToLines(GWEN_XMLNODE *n,
   GWEN_TW_LINE *l;
   int rv;
 
-  DBG_NOTICE(0, "Parsing this:");
-  GWEN_XMLNode_Dump(n, stderr, 2);
   ll=GWEN_TWLine_List_new();
   l=GWEN_TextWidget__NewLine(0, leftBorder, rightBorder);
   if (!l) {
@@ -1904,7 +1891,7 @@ int GWEN_TextWidget__ParseXMLSubNodes(GWEN_XMLNODE *n,
           DBG_NOTICE(0, "New line");
           GWEN_TWLine_List_Add((*l), ll);
           *l=GWEN_TextWidget__NewLine(currentAtts, indent,
-                                     (*l)->rightBorder);
+                                      (*l)->rightBorder);
           if (!(*l)) {
             DBG_INFO(0, "here");
             return -1;
@@ -1946,12 +1933,59 @@ int GWEN_TextWidget_GetMaxWidth(GWEN_TW_LINE_LIST *ll) {
     if (GWEN_TextWidget_SelectLine(l)) {
       return -1;
     }
+    DBG_NOTICE(0, "ZZZ: Width: %d bytes",
+               GWEN_Buffer_GetUsedBytes(l->chars));
     if (i<GWEN_Buffer_GetUsedBytes(l->chars))
       i=GWEN_Buffer_GetUsedBytes(l->chars);
     l=GWEN_TWLine_List_Next(l);
   }
 
+  DBG_NOTICE(0, "ZZZ: Highest width: %d bytes",
+            i);
   return i;
+}
+
+
+
+int GWEN_TextWidget_GetLeft(const GWEN_WIDGET *w){
+  GWEN_TEXTWIDGET *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
+  assert(win);
+  return win->left;
+}
+
+
+int GWEN_TextWidget_GetTop(const GWEN_WIDGET *w){
+  GWEN_TEXTWIDGET *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
+  assert(win);
+  return win->top;
+}
+
+
+
+int GWEN_TextWidget_GetVirtualWidth(const GWEN_WIDGET *w){
+  GWEN_TEXTWIDGET *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
+  assert(win);
+  return win->vwidth;
+}
+
+
+
+int GWEN_TextWidget_GetVirtualHeight(const GWEN_WIDGET *w){
+  GWEN_TEXTWIDGET *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
+  assert(win);
+  return win->vheight;
 }
 
 
