@@ -197,6 +197,25 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
                           int fillchar);
 
 /**
+ * This functions transforms a string into a double float value.
+ * It always uses a comma (",") regardless of the current locale settings.
+ * This makes sure that a value can always be parsed regardless of the
+ * country settings of the producer of that string.
+ */
+GWENHYWFAR_API
+int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf);
+
+/**
+ * This functions transforms a double float value into a string.
+ * It always uses a comma (",") regardless of the current locale settings.
+ * This makes sure that a value can always be parsed regardless of the
+ * country settings of the producer of that string.
+ */
+GWENHYWFAR_API
+int GWEN_Text_StringToDouble(const char *s, double *num);
+
+
+/**
  * Compares two strings. If either of them is given but empty, that string
  * will be treaten as not given. This way a string NOT given equals a string
  * which is given but empty.

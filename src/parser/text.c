@@ -29,14 +29,18 @@
 # include <config.h>
 #endif
 
-
 #include "text.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/debug.h>
+
+
 
 char *GWEN_Text_GetWord(const char *src,
                         const char *delims,
@@ -1339,6 +1343,50 @@ void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf){
 
   size=dst-GWEN_Buffer_GetStart(buf);
   GWEN_Buffer_Crop(buf, 0, size);
+}
+
+
+
+int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf){
+  char numbuf[128];
+  int rv;
+#ifdef HAVE_SETLOCALE
+  const char *currentLocale;
+#endif
+
+#ifdef HAVE_SETLOCALE
+  currentLocale=setlocale(LC_NUMERIC, 0);
+  setlocale(LC_NUMERIC, "C");
+#endif
+  rv=snprintf(numbuf, sizeof(numbuf), "%lf", num);
+#ifdef HAVE_SETLOCALE
+  setlocale(LC_NUMERIC, currentLocale);
+#endif
+  if (rv<1 || rv>=sizeof(numbuf))
+    return -1;
+  GWEN_Buffer_AppendString(buf, numbuf);
+  return 0;
+}
+
+
+
+int GWEN_Text_StringToDouble(const char *s, double *num){
+  int rv;
+#ifdef HAVE_SETLOCALE
+  const char *currentLocale;
+#endif
+
+#ifdef HAVE_SETLOCALE
+  currentLocale=setlocale(LC_NUMERIC, 0);
+  setlocale(LC_NUMERIC, "C");
+#endif
+  rv=sscanf(s, "%lf", num);
+#ifdef HAVE_SETLOCALE
+  setlocale(LC_NUMERIC, currentLocale);
+#endif
+  if (rv!=1)
+    return -1;
+  return 0;
 }
 
 

@@ -36,6 +36,7 @@
 #include <time.h>
 #include <errno.h>
 #include <string.h>
+#include <ctype.h>
 
 
 
@@ -55,6 +56,18 @@ GWEN_TIME *GWEN_CurrentTime(){
   t->usec=(long)((current_date.ns100 / 10LL) % 1000000LL );
   t->sec=(long)((current_date.ns100-(116444736000000000LL))/10000000LL);
   return t;
+}
+
+
+
+GWEN_TIME *GWEN_Time_dup(const GWEN_TIME *t){
+  GWEN_TIME *newT;
+
+  assert(t);
+  GWEN_NEW_OBJECT(GWEN_TIME, newT);
+  newT->sec=t->sec;
+  newT->usec=t->usec;
+  return newT;
 }
 
 
@@ -131,6 +144,116 @@ int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
   *month=tb->tm_mon;
   *year=tb->tm_year+1900;
   return 0;
+}
+
+
+
+GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl){
+  int year, month, day;
+  int hour, min, sec;
+  const char *p;
+  const char *t;
+  GWEN_TIME *gwt;
+  time_t tt;
+  struct tm ti;
+  struct tm *tp;
+
+  assert(s);
+  assert(tmpl);
+  year=month=day=0;
+  hour=min=sec=0;
+
+  p=s;
+  t=tmpl;
+  while(*t && *p) {
+    int i;
+
+    if (isdigit(*p))
+      i=(*p)-'0';
+    else
+      i=-1;
+
+    switch(*t) {
+    case 'Y':
+      if (i==-1)
+	return 0;
+      year*=10;
+      year+=i;
+      break;
+    case 'M':
+      if (i==-1)
+	return 0;
+      month*=10;
+      month+=i;
+      break;
+    case 'D':
+      if (i==-1)
+	return 0;
+      day*=10;
+      day+=i;
+      break;
+    case 'h':
+      if (i==-1)
+	return 0;
+      hour*=10;
+      hour+=i;
+      break;
+    case 'm':
+      if (i==-1)
+	return 0;
+      min*=10;
+      min+=i;
+      break;
+    case 's':
+      if (i==-1)
+	return 0;
+      sec*=10;
+      sec+=i;
+      break;
+    default:
+      DBG_DEBUG(0,
+		"Unknown character in template, will skip in both strings");
+      break;
+    }
+    t++;
+    p++;
+  } /* while */
+
+  tt=time(0);
+  tp=localtime(&tt);
+  assert(tp);
+  memmove(&ti, tp, sizeof(ti));
+  ti.tm_sec=sec;
+  ti.tm_min=min;
+  ti.tm_hour=hour;
+  if (year<100) {
+    if (year<72)
+      year+=2000;
+    year+=1900;
+  }
+  ti.tm_year=year-1900;
+  ti.tm_mon=month-1;
+  ti.tm_mday=day;
+  ti.tm_yday=0;
+  ti.tm_wday=0;
+  tt=mktime(&ti);
+  assert(tt!=-1);
+
+  GWEN_NEW_OBJECT(GWEN_TIME, gwt);
+  gwt->sec=tt;
+  gwt->usec=0;
+  return gwt;
+}
+
+
+
+GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromSeconds(GWEN_TYPE_UINT32 s){
+  GWEN_TIME *t;
+
+  GWEN_NEW_OBJECT(GWEN_TIME, t);
+  t->sec=s;
+  t->usec=0;
+  return t;
 }
 
 

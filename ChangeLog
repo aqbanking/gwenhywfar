@@ -6,6 +6,14 @@
   (GWEN_ARGS_FLAGS_HELP).
 - crypt/padd: removed usage of a deprecated function (so that the annoying
   warning in OpenHBCI2/AqHBCI vanishes)
+- os/gwentime: 
+  - added a function that allows to generically parse date and time from a 
+    string (guided by a template string)
+  - added GWEN_Time_dup()
+  - added GWEN_Time_fromSeconds()
+- parser/text:
+  - added function GWEN_Text_DoubleToBuffer()
+  - GWEN_Text_StringToDouble()
 
 
 ===========================================================================
