@@ -1432,7 +1432,7 @@ GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
 	    if (strcasecmp(p, mode)==0 || !*p) {
 	      DBG_DEBUG(GWEN_LOGDOMAIN,
 			"Group definition for \"%s=%s\" found",
-			pname, pvalue);
+			t, pvalue);
 	      return n;
 	    }
 	  }
@@ -1444,7 +1444,7 @@ GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
 
   DBG_DEBUG(GWEN_LOGDOMAIN,
 	    "Group definition for \"%s=%s\"(%d) not found here",
-	    pname,
+	    t,
 	    pvalue,
 	    version);
   return 0;
@@ -1506,7 +1506,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
   if (!nRes) {
     DBG_DEBUG(GWEN_LOGDOMAIN,
 	      "Group definition for \"%s=%s\"(%d) not found",
-	      pname,
+	      t,
 	      pvalue,
 	      version);
     return 0;
