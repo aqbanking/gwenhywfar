@@ -161,10 +161,11 @@ void GWEN_HBCIDialog_SetNextMsgNum(GWEN_HBCIDIALOG *hdlg,
 
 
 int GWEN_HBCIDialog_PrepareContext(GWEN_HBCIDIALOG *hdlg,
-                                   GWEN_HBCICRYPTOCONTEXT *ctx){
+                                   GWEN_HBCICRYPTOCONTEXT *ctx,
+                                   int crypt){
   assert(hdlg);
   assert(hdlg->prepareCtxFn);
-  return hdlg->prepareCtxFn(hdlg, ctx);
+  return hdlg->prepareCtxFn(hdlg, ctx, crypt);
 }
 
 

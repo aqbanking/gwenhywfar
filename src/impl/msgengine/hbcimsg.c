@@ -34,6 +34,7 @@
 #include "hbcimsg_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/text.h>
 
 #include <time.h>
 
@@ -134,6 +135,7 @@ void GWEN_HBCIMsg_free(GWEN_HBCIMSG *hmsg){
     GWEN_KeySpec_Clear(&(hmsg->signers));
     GWEN_KeySpec_free(hmsg->crypter);
     GWEN_Buffer_free(hmsg->buffer);
+    GWEN_Buffer_free(hmsg->origbuffer);
     free(hmsg);
   }
 }
@@ -457,7 +459,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   /* prepare context */
   ctx=GWEN_HBCICryptoContext_new();
   GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
-  if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx)) {
+  if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx, 0)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_Buffer_free(hbuf);
@@ -616,7 +618,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   /* prepare context */
   ctx=GWEN_HBCICryptoContext_new();
   GWEN_HBCICryptoContext_SetKeySpec(ctx, hmsg->crypter);
-  if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx)) {
+  if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx, 1)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_Buffer_free(hbuf);
@@ -647,10 +649,16 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
     return -1;
   }
 
-  GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "CryptAlgo/MsgKey",
-                      GWEN_HBCICryptoContext_GetCryptKeyPtr(ctx),
-                      GWEN_HBCICryptoContext_GetCryptKeySize(ctx));
+  if (GWEN_HBCICryptoContext_GetCryptKeyPtr(ctx)) {
+    /* only set message key if there is one.
+     * The original HBCI protocol creates a message key for every message,
+     * but the simplified IPC protocol only creates a session key if there
+     * is none or if the existing session key is too old */
+    GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                        "CryptAlgo/MsgKey",
+                        GWEN_HBCICryptoContext_GetCryptKeyPtr(ctx),
+                        GWEN_HBCICryptoContext_GetCryptKeySize(ctx));
+  }
 
   rv=GWEN_MsgEngine_CreateMessageFromNode(e,
                                           node,
@@ -804,11 +812,507 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+/* return -1 on error (with group "seg/error" set) or -2 if the message is
+ * faulty */
+int GWEN_HBCIMsg_ReadSegment(GWEN_MSGENGINE *e,
+                             const char *gtype,
+                             GWEN_BUFFER *mbuf,
+                             GWEN_DB_NODE *gr,
+                             unsigned int flags) {
+  GWEN_XMLNODE *node;
+  unsigned int posBak;
+  const char *p;
+  GWEN_DB_NODE *tmpdb;
+  int segVer;
+
+  /* find head segment description */
+  tmpdb=GWEN_DB_Group_new("tmpdb");
+  node=GWEN_MsgEngine_FindGroupByProperty(e,
+                                          "id",
+                                          0,
+                                          "SegHead");
+  if (node==0) {
+    DBG_ERROR(0, "Segment description not found (internal error)");
+    GWEN_DB_Group_free(tmpdb);
+    return -2;
+  }
+
+  /* parse head segment */
+  posBak=GWEN_Buffer_GetPos(mbuf);
+  if (GWEN_MsgEngine_ParseMessage(e,
+                                  node,
+                                  mbuf,
+                                  tmpdb,
+                                  flags)) {
+    DBG_ERROR(0, "Error parsing segment head");
+    GWEN_DB_Group_free(tmpdb);
+    return -2;
+  }
+
+  GWEN_Buffer_SetPos(mbuf, posBak);
+
+  /* get segment code */
+  segVer=GWEN_DB_GetIntValue(tmpdb,
+                             "version",
+                             0,
+                             0);
+  p=GWEN_DB_GetCharValue(tmpdb,
+                         "code",
+                         0,
+                         0);
+  if (!p) {
+    DBG_ERROR(0, "No segment code for %s ? This seems to be a bad msg...",
+              gtype);
+    DBG_ERROR(0, "Full message (pos=%04x)", posBak);
+    GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf),
+                         GWEN_Buffer_GetUsedBytes(mbuf),
+                         stderr, 1);
+    GWEN_DB_Dump(tmpdb, stderr, 1);
+    GWEN_DB_Group_free(tmpdb);
+    return -1;
+  }
+
+  /* try to find corresponding XML node */
+  node=GWEN_MsgEngine_FindNodeByProperty(e,
+                                         gtype,
+                                         "code",
+                                         segVer,
+                                         p);
+  if (node==0) {
+    GWEN_DB_NODE *storegrp;
+    unsigned int startPos;
+
+    GWEN_Buffer_SetPos(mbuf, posBak);
+    startPos=posBak;
+
+    storegrp=GWEN_DB_GetGroup(gr,
+                              GWEN_PATH_FLAGS_CREATE_GROUP,
+                              p);
+    assert(storegrp);
+
+    /* store the start position of this segment within the DB */
+    GWEN_DB_SetIntValue(storegrp,
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "segment/pos",
+                        startPos);
+    GWEN_DB_SetIntValue(storegrp,
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "segment/error/code",
+                        9000);
+    GWEN_DB_SetCharValue(storegrp,
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "segment/error/text",
+                         "Unknown segment");
+    GWEN_DB_SetIntValue(storegrp,
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "segment/error/pos",
+                        startPos);
+
+    /* node not found, skip it */
+    DBG_WARN(0,
+             "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
+             p,
+             GWEN_DB_GetIntValue(tmpdb, "seq", 0, -1),
+             GWEN_DB_GetIntValue(tmpdb, "version", 0, -1),
+             GWEN_DB_GetIntValue(tmpdb, "ref", 0, -1));
+    if (GWEN_MsgEngine_SkipSegment(e, mbuf, '?', '\'')) {
+      DBG_ERROR(0, "Error skipping segment \"%s\"", p);
+      GWEN_DB_Group_free(tmpdb);
+      return -1;
+    }
+    /* store segment size within DB */
+    GWEN_DB_SetIntValue(storegrp,
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "segment/length",
+                        GWEN_Buffer_GetPos(mbuf)-startPos);
+    /* handle trust info */
+    if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
+      unsigned int usize;
+
+      usize=GWEN_Buffer_GetPos(mbuf)-(startPos+1)-1;
+      GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos+1,
+                           usize,
+                           stderr, 1);
+      if (GWEN_MsgEngine_AddTrustInfo(e,
+                                      GWEN_Buffer_GetStart(mbuf)+startPos,
+                                      usize,
+                                      p,
+                                      GWEN_MsgEngineTrustLevelHigh,
+                                      startPos)) {
+        DBG_INFO(0, "called from here");
+        GWEN_DB_Group_free(tmpdb);
+        return -1;
+      }
+    } /* if trustInfo handling wanted */
+  }
+  else {
+    /* ok, node available, get the corresponding description and parse
+     * the segment */
+    const char *id;
+    GWEN_DB_NODE *storegrp;
+    unsigned int startPos;
+
+    /* restore start position, since the segment head is part of a full
+     * description, so we need to restart reading from the very begin */
+    GWEN_Buffer_SetPos(mbuf, posBak);
+
+    /* create group in DB for this segment */
+    id=GWEN_XMLNode_GetProperty(node, "id", p);
+    storegrp=GWEN_DB_GetGroup(gr,
+                              GWEN_PATH_FLAGS_CREATE_GROUP,
+                              id);
+    assert(storegrp);
+
+    /* store the start position of this segment within the DB */
+    startPos=GWEN_Buffer_GetPos(mbuf);
+    GWEN_DB_SetIntValue(storegrp,
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "segment/pos",
+                        startPos);
+
+    /* parse the segment */
+    if (GWEN_MsgEngine_ParseMessage(e,
+                                    node,
+                                    mbuf,
+                                    storegrp,
+                                    flags)) {
+      GWEN_DB_SetIntValue(storegrp,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "segment/error/code",
+                          9000);
+      GWEN_DB_SetCharValue(storegrp,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "segment/error/text",
+                           "Syntax error");
+      GWEN_DB_SetIntValue(storegrp,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "segment/error/pos",
+                          GWEN_Buffer_GetPos(mbuf)-startPos);
+
+      DBG_ERROR(0, "Error parsing segment \"%s\"",p);
+      GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
+                           GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
+                           stderr, 1);
+      GWEN_DB_Group_free(tmpdb);
+      return -1;
+    }
+
+    /* store segment size within DB */
+    GWEN_DB_SetIntValue(storegrp,
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "segment/length",
+                        GWEN_Buffer_GetPos(mbuf)-startPos);
+  }
+  GWEN_DB_Group_free(tmpdb);
+
+  return 0;
+}
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_HBCIMsg_ReadMessage(GWEN_MSGENGINE *e,
+                             const char *gtype,
+                             GWEN_BUFFER *mbuf,
+                             GWEN_DB_NODE *gr,
+                             unsigned int flags) {
+  unsigned int segments;
+  unsigned int errors;
+  int rv;
+
+  segments=0;
+  errors=0;
+
+  while(GWEN_Buffer_BytesLeft(mbuf)) {
+    rv=GWEN_HBCIMsg_ReadSegment(e, gtype, mbuf, gr, flags);
+    if (rv==-2) {
+      DBG_INFO(0, "here");
+      return -1;
+    }
+    else if (rv==-1) {
+      DBG_INFO(0, "here");
+      errors++;
+    }
+    segments++;
+  } /* while */
+
+  DBG_NOTICE(0, "Parsed %d segments (%d had errors)",
+             segments, errors);
+  return 0;
+}
 
 
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
+                                     GWEN_HBCICRYPTOCONTEXT *ctx,
+                                     GWEN_DB_NODE *n) {
+  GWEN_KEYSPEC *ks;
+  const void *p;
+  const char *s;
+  unsigned int size;
+  GWEN_MSGENGINE *e;
+
+  assert(hmsg);
+  assert(ctx);
+  assert(n);
+
+  e=GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog);
+  assert(e);
+  ks=GWEN_KeySpec_new();
+
+  /* prepare context */
+  GWEN_KeySpec_SetOwner(ks, GWEN_DB_GetCharValue(n, "userid", 0, ""));
+  GWEN_KeySpec_SetNumber(ks, GWEN_DB_GetIntValue(n, "key/keynum", 0, 0));
+  GWEN_KeySpec_SetVersion(ks,
+                          GWEN_DB_GetIntValue(n, "key/keyversion", 0, 0));
+  s=GWEN_DB_GetCharValue(n, "key/keytype", 0, 0);
+  if (!s) {
+    DBG_ERROR(0, "no keytype");
+    GWEN_KeySpec_free(ks);
+    return -1;
+  }
+  GWEN_KeySpec_SetKeyName(ks, s);
+  GWEN_HBCICryptoContext_SetServiceCode(ctx,
+                                        GWEN_DB_GetCharValue(n,
+                                                             "key/bankcode",
+                                                             0,
+                                                             ""));
+  GWEN_KeySpec_free(hmsg->crypter);
+  hmsg->crypter=ks;
+
+  p=GWEN_DB_GetBinValue(n,
+                        "CryptAlgo/MsgKey",
+                        0,
+                        0,0,
+                        &size);
+  if (p)
+    GWEN_HBCICryptoContext_SetCryptKey(ctx, p, size);
+
+  /* store security id */
+  if (strcasecmp(GWEN_MsgEngine_GetMode(e), "RDH")==0) {
+    /* RDH mode */
+    s=GWEN_DB_GetCharValue(n,
+                           "SecDetails/SecId",
+                           0,
+                           0);
+    if (s)
+      GWEN_HBCICryptoContext_SetSecurityId(ctx, s, strlen(s));
+  }
+  else {
+    /* DDV mode */
+    p=GWEN_DB_GetBinValue(n,
+                          "SecDetails/SecId",
+                          0,
+                          0,0,
+                          &size);
+    if (p)
+      GWEN_HBCICryptoContext_SetSecurityId(ctx, p, size);
+  }
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr){
+  GWEN_HBCICRYPTOCONTEXT *ctx;
+  const void *p;
+  unsigned int size;
+  GWEN_DB_NODE *nhead;
+  GWEN_DB_NODE *ndata;
+  GWEN_BUFFER *cdbuf;
+  GWEN_BUFFER *ndbuf;
+  int rv;
+
+  /* decrypt */
+  ctx=GWEN_HBCICryptoContext_new();
+
+  nhead=GWEN_DB_GetGroup(gr,
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                         "CryptHead");
+  if (!nhead) {
+    DBG_ERROR(0, "No crypt head");
+    GWEN_HBCICryptoContext_free(ctx);
+    return -1;
+  }
+
+  ndata=GWEN_DB_GetGroup(gr,
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                         "CryptData");
+  if (!ndata) {
+    DBG_ERROR(0, "No crypt data");
+    GWEN_HBCICryptoContext_free(ctx);
+    return -1;
+  }
+
+  rv=GWEN_HBCIMsg_PrepareCryptoSegDec(hmsg, ctx, nhead);
+  if (rv) {
+    DBG_INFO(0, "here");
+    GWEN_HBCICryptoContext_free(ctx);
+    return -1;
+  }
+
+  p=GWEN_DB_GetBinValue(ndata,
+                        "CryptData",
+                        0,
+                        0,0,
+                        &size);
+  if (!p) {
+    DBG_ERROR(0, "No crypt data");
+    GWEN_HBCICryptoContext_free(ctx);
+    return -1;
+  }
+
+  cdbuf=GWEN_Buffer_new((void*)p, size, size, 0);
+  GWEN_Buffer_SetMode(cdbuf, 0); /* no dynamic mode ! */
+
+  ndbuf=GWEN_Buffer_new(0, GWEN_HBCIMSG_DEFAULTSIZE, 0, 1);
+  GWEN_Buffer_SetStep(ndbuf, 512);
+
+  rv=GWEN_HBCIDialog_Decrypt(hmsg->dialog,
+                             cdbuf,
+                             ndbuf,
+                             ctx);
+  if (rv) {
+    DBG_INFO(0, "here");
+    GWEN_Buffer_free(cdbuf);
+    GWEN_Buffer_free(ndbuf);
+    GWEN_HBCICryptoContext_free(ctx);
+    return -1;
+  }
+
+  /* store new buffer inside message */
+  GWEN_Buffer_free(hmsg->origbuffer);
+  hmsg->origbuffer=hmsg->buffer;
+  GWEN_Buffer_Rewind(ndbuf);
+  hmsg->buffer=ndbuf;
+
+  GWEN_Buffer_free(cdbuf);
+  GWEN_HBCICryptoContext_free(ctx);
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_HBCIMsg_SequenceCheck(GWEN_DB_NODE *gr) {
+  GWEN_DB_NODE *n;
+  unsigned int sn;
+  unsigned int errors;
+
+  sn=1;
+  errors=0;
+  n=GWEN_DB_GetFirstGroup(gr);
+  while(n) {
+    unsigned int rsn;
+
+    rsn=GWEN_DB_GetIntValue(n, "seg/seq", 0, 0);
+    if (rsn!=sn) {
+      DBG_ERROR(0, "Unexpected sequence number (%d, expected %d)",
+                rsn, sn);
+      GWEN_DB_SetIntValue(n,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "segment/error/code",
+                          9000);
+      GWEN_DB_SetCharValue(n,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "segment/error/text",
+                           "Unexpected segment number");
+      errors++;
+    }
+    sn++;
+    n=GWEN_DB_GetNextGroup(n);
+  } /* while */
+
+  if (errors)
+    return -1;
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_HBCIMsg_Decode(GWEN_HBCIMSG *hmsg,
+                        GWEN_BUFFER *mbuf,
+                        GWEN_DB_NODE *gr,
+                        unsigned int flags) {
+  GWEN_MSGENGINE *e;
+  int rv;
+  GWEN_DB_NODE *n;
+
+  GWEN_Buffer_free(hmsg->buffer);
+  hmsg->buffer=mbuf;
+  e=GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog);
+  assert(e);
+
+  rv=GWEN_HBCIMsg_ReadMessage(e, "SEG", mbuf, gr, flags);
+  if (rv) {
+    DBG_INFO(0, "here");
+    return -1;
+  }
+
+  /* find Crypt head */
+  n=GWEN_DB_GetGroup(gr,
+                     GWEN_DB_FLAGS_DEFAULT |
+                     GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                     "CryptHead");
+  if (n) {
+    if (GWEN_DB_GetIntValue(n, "seg/error/code", 0, 0)>=9000) {
+      DBG_ERROR(0, "Encryption error");
+      return -1;
+    }
+    rv=GWEN_HBCIMsg_Decrypt(hmsg, gr);
+    if (rv) {
+      DBG_INFO(0, "here");
+      return -1;
+    }
+    /* unlink and delete crypthead */
+    GWEN_DB_UnlinkGroup(n);
+    GWEN_DB_Group_free(n);
+
+    /* unlink and delete cryptdata */
+    n=GWEN_DB_GetGroup(gr,
+                       GWEN_DB_FLAGS_DEFAULT |
+                       GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "CryptData");
+    if (n) {
+      GWEN_DB_UnlinkGroup(n);
+      GWEN_DB_Group_free(n);
+    }
+    /* parse decrypted message part */
+    n=GWEN_DB_GetGroup(gr,
+                       GWEN_DB_FLAGS_DEFAULT |
+                       GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       "MsgTail");
+    if (n) {
+      /* temporarily unlink MsgTail, it will be appended after decoding
+       * the crypted part, to keep the segment sequence correct */
+      GWEN_DB_UnlinkGroup(n);
+    }
+    rv=GWEN_HBCIMsg_ReadMessage(e, "SEG", hmsg->buffer, gr, flags);
+    if (n)
+      GWEN_DB_AddGroup(gr, n);
+    if (rv) {
+      DBG_INFO(0, "here");
+      return -1;
+    }
+  } /* if crypthead */
+
+  /* check segment sequence numbers */
+  rv=GWEN_HBCIMsg_SequenceCheck(gr);
+  if (rv) {
+    DBG_INFO(0, "here");
+    return -1;
+  }
+
+
+  return 0;
+}
 
 
 

@@ -42,7 +42,8 @@ typedef struct GWEN_HBCIDIALOG GWEN_HBCIDIALOG;
 
 typedef int
   (*GWEN_HBCIDLG_PREPARECTX_FN)(GWEN_HBCIDIALOG *hdlg,
-                                GWEN_HBCICRYPTOCONTEXT *ctx);
+                                GWEN_HBCICRYPTOCONTEXT *ctx,
+                                int crypt);
 
 
 typedef int
@@ -109,7 +110,8 @@ void GWEN_HBCIDialog_SetNextMsgNum(GWEN_HBCIDIALOG *hdlg,
 
 
 int GWEN_HBCIDialog_PrepareContext(GWEN_HBCIDIALOG *hdlg,
-                                   GWEN_HBCICRYPTOCONTEXT *ctx);
+                                   GWEN_HBCICRYPTOCONTEXT *ctx,
+                                   int crypt);
 
 
 int GWEN_HBCIDialog_Sign(GWEN_HBCIDIALOG *hdlg,

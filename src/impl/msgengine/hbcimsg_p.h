@@ -41,6 +41,7 @@ struct GWEN_HBCIMSG {
   GWEN_HBCIMSG *next;
   GWEN_HBCIDIALOG *dialog;
   GWEN_BUFFER *buffer;
+  GWEN_BUFFER *origbuffer;
 
   GWEN_KEYSPEC *crypter;
   GWEN_KEYSPEC *signers;
@@ -71,6 +72,27 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg);
 int GWEN_HBCIMsg_AddMsgHead(GWEN_HBCIMSG *hmsg);
 int GWEN_HBCIMsg_AddMsgTail(GWEN_HBCIMSG *hmsg);
 
+/* return -1 on error (with group "seg/error" set) or -2 if the message is
+ * faulty */
+int GWEN_HBCIMsg_ReadSegment(GWEN_MSGENGINE *e,
+                             const char *gtype,
+                             GWEN_BUFFER *mbuf,
+                             GWEN_DB_NODE *gr,
+                             unsigned int flags);
+
+int GWEN_HBCIMsg_ReadMessage(GWEN_MSGENGINE *e,
+                             const char *gtype,
+                             GWEN_BUFFER *mbuf,
+                             GWEN_DB_NODE *gr,
+                             unsigned int flags);
+
+int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
+                                     GWEN_HBCICRYPTOCONTEXT *ctx,
+                                     GWEN_DB_NODE *n);
+
+int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr);
+
+int GWEN_HBCIMsg_SequenceCheck(GWEN_DB_NODE *gr);
 
 
 

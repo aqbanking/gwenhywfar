@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 08 2003
+    begin       : Sat Nov 15 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,53 +25,73 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_HBCICRYPTOCONTEXT_H
-#define GWENHYWFAR_HBCICRYPTOCONTEXT_H
+
+#ifndef GWENHYWFAR_LIST_P_H
+#define GWENHYWFAR_LIST_P_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <gwenhyfwar/list.h>
 
 
-#include <gwenhyfwar/keyspec.h>
+typedef struct GWEN_LIST_ENTRY GWEN_LIST_ENTRY;
+typedef struct GWEN_CONSTLIST_ENTRY GWEN_CONSTLIST_ENTRY;
 
 
-typedef struct GWEN_HBCICRYPTOCONTEXT GWEN_HBCICRYPTOCONTEXT;
+struct GWEN_LIST_ENTRY {
+  GWEN_LIST_ENTRY *previous;
+  GWEN_LIST_ENTRY *next;
+  void *data;
+  unsigned int usage;
+};
 
 
-GWEN_HBCICRYPTOCONTEXT *GWEN_HBCICryptoContext_new();
-void GWEN_HBCICryptoContext_free(GWEN_HBCICRYPTOCONTEXT *ctx);
+struct GWEN_CONSTLIST_ENTRY {
+  GWEN_CONSTLIST_ENTRY *previous;
+  GWEN_CONSTLIST_ENTRY *next;
+  const void *data;
+  unsigned int usage;
+};
 
 
-const char*
-  GWEN_HBCICryptoContext_GetSecurityIdPtr(GWEN_HBCICRYPTOCONTEXT *ctx);
-
-void GWEN_HBCICryptoContext_SetSecurityId(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                          const void *p, unsigned int l);
-unsigned int
-  GWEN_HBCICryptoContext_GetSecurityIdSize(GWEN_HBCICRYPTOCONTEXT *ctx);
-
-unsigned int
-  GWEN_HBCICryptoContext_GetSequenceNum(GWEN_HBCICRYPTOCONTEXT *ctx);
-void GWEN_HBCICryptoContext_SetSequenceNum(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                           unsigned int i);
-
-const char*
-  GWEN_HBCICryptoContext_GetServiceCode(GWEN_HBCICRYPTOCONTEXT *ctx);
-void GWEN_HBCICryptoContext_SetServiceCode(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                           const char *s);
-
-GWEN_KEYSPEC *GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx);
-void GWEN_HBCICryptoContext_SetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                       GWEN_KEYSPEC *ks);
-
-void GWEN_HBCICryptoContext_SetCryptKey(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                        const char *p,
-                                        unsigned int size);
-const char *
-  GWEN_HBCICryptoContext_GetCryptKeyPtr(GWEN_HBCICRYPTOCONTEXT *ctx);
-
-unsigned int
-  GWEN_HBCICryptoContext_GetCryptKeySize(GWEN_HBCICRYPTOCONTEXT *ctx);
+struct GWEN_LIST {
+  GWEN_LIST_ENTRY *first;
+  GWEN_LIST_ENTRY *last;
+  unsigned int size;
+};
 
 
+struct GWEN_CONSTLIST {
+  GWEN_CONSTLIST_ENTRY *first;
+  GWEN_CONSTLIST_ENTRY *last;
+  unsigned int size;
+};
+
+
+
+struct GWEN_LIST_ITERATOR {
+  GWEN_LIST *list;
+
+  GWEN_LIST_ENTRY *current;
+};
+
+
+struct GWEN_CONSTLIST_ITERATOR {
+  GWEN_CONSTLIST *list;
+
+  GWEN_CONSTLIST_ENTRY *current;
+};
+
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif
+
+
 

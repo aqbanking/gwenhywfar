@@ -49,7 +49,7 @@ GWEN_HBCICryptoContext_GetSecurityIdPtr(GWEN_HBCICRYPTOCONTEXT *ctx){
 
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_HBCICryptoContext_SetSecurityId(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                          void *p, unsigned int l){
+                                          const void *p, unsigned int l){
   assert(ctx);
   if (ctx->pSecurityId)
     free(ctx->pSecurityId);
