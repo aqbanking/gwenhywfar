@@ -226,6 +226,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
       default:
         DBG_WARN(0, "Unknown value type (%d)", n->val.h.typ);
       }
+      break;
 
     default:
       DBG_WARN(0, "Unknown node type (%d)", n->h.typ);
@@ -966,6 +967,62 @@ const char *GWEN_DB_GroupName(GWEN_DB_NODE *n){
     return 0;
   }
   return n->group.name;
+}
+
+
+
+void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
+  if (n) {
+    GWEN_DB_NODE *cn;
+    int i;
+
+    for (i=0; i<insert; i++)
+      fprintf(f, " ");
+
+    /* dump dynamic (allocated) data */
+    switch(n->h.typ) {
+    case GWEN_DB_NODETYPE_GROUP:
+      fprintf(f, "Group : \"%s\"\n", n->group.name);
+      break;
+
+    case GWEN_DB_NODETYPE_VAR:
+      fprintf(f, "Var   : \"%s\"\n", n->var.name);
+      break;
+
+    case GWEN_DB_NODETYPE_VALUE:
+      switch(n->val.h.typ) {
+      case GWEN_DB_VALUETYPE_CHAR:
+        fprintf(f, "Value : \"%s\" (char)\n", n->val.c.data);
+        break;
+
+      case GWEN_DB_VALUETYPE_INT:
+        /* no dynamic data, nothing to do */
+        fprintf(f, "Value : %d (int)\n", n->val.i.data);
+        break;
+
+      case GWEN_DB_VALUETYPE_BIN:
+        fprintf(f, "Value : %d bytes (bin)\n", n->val.b.dataSize);
+        break;
+
+      default:
+        fprintf(f, "Value : [unknown type]\n");
+      }
+      break;
+
+    default:
+      fprintf(f, "[unknown node type %d]\n", n->h.typ);
+    }
+
+    /* dump children */
+    cn=n->h.child;
+    while(cn) {
+      GWEN_DB_Dump(cn, f, insert+2);
+      cn=cn->h.next;
+    }
+  }
+  else {
+    fprintf(f, "[no node]\n");
+  }
 }
 
 

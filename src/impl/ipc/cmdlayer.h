@@ -30,6 +30,7 @@
 
 #include <gwenhyfwar/connlayer.h>
 #include <gwenhyfwar/servicelayer.h>
+#include <gwenhyfwar/db.h>
 
 #define GWEN_CMDLAYER_MAXMSGSIZE 8192
 
@@ -57,12 +58,14 @@ GWEN_ERRORCODE GWEN_IPCServiceCmd_Work(GWEN_IPCSERVICECMD *s,
                                        int timeout);
 
 
-unsigned int GWEN_IPCCMD_SendMsg(GWEN_SERVICELAYER *sl,
-                                 unsigned int connId,
-                                 unsigned int refId,
-                                 const char *name,
-                                 unsigned int version,
-                                 ...);
+GWEN_IPCMSG *GWEN_IPCCMD_CreateMsg(GWEN_IPCCONNLAYER *cl,
+                                   unsigned int refId,
+                                   const char *name,
+                                   unsigned int version,
+                                   ...);
+GWEN_DB_NODE *GWEN_IPCServiceCmd_ParseMsg(GWEN_IPCCONNLAYER *cl,
+                                          GWEN_IPCMSG *msg);
+
 
 
 #endif /* GWENHYFWAR_CMDLAYER_H */

@@ -497,4 +497,15 @@ GWEN_IPCMSG *GWEN_Msg_GetNext(GWEN_IPCMSG *m){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_MsgLayer_OutgoingMsgs(GWEN_IPCMSGLAYER *ml){
+  assert(ml);
+  return ml->nOutgoingMsgs;
+}
+
+
+
+
+
+
 

@@ -32,14 +32,15 @@
 
 
 #define GWEN_IPC_ERROR_TYPE "IPC"
-#define GWEN_IPC_ERROR_INQUEUE_FULL         1
-#define GWEN_IPC_ERROR_OUTQUEUE_FULL        2
-#define GWEN_IPC_ERROR_BAD_STATE            3
-#define GWEN_IPC_ERROR_NO_CONNECTIONS       4
-#define GWEN_IPC_ERROR_CONNECTION_NOT_FOUND 5
-#define GWEN_IPC_ERROR_XMLFILE              6
-#define GWEN_IPC_ERROR_SEG_NOT_FOUND        7
-#define GWEN_IPC_ERROR_BAD_MSG              8
+#define GWEN_IPC_ERROR_INQUEUE_FULL          1
+#define GWEN_IPC_ERROR_OUTQUEUE_FULL         2
+#define GWEN_IPC_ERROR_BAD_STATE             3
+#define GWEN_IPC_ERROR_NO_CONNECTIONS        4
+#define GWEN_IPC_ERROR_CONNECTION_NOT_FOUND  5
+#define GWEN_IPC_ERROR_XMLFILE               6
+#define GWEN_IPC_ERROR_SEG_NOT_FOUND         7
+#define GWEN_IPC_ERROR_BAD_MSG               8
+#define GWEN_IPC_ERROR_HANDSHAKING           9
 
 
 #endif /* GWENHYFWAR_IPC_H */

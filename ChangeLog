@@ -1,6 +1,13 @@
 $Id$
 
 
+2003/09/22 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- more work on IPC: Receiving messages and parsing them using msgEngine
+  works ;-) I will have to concentrate on creating a test function for
+  opening a connection to test writing of messages.
+
+
 2003/09/21 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - worked on MsgEngine, IPC-CmdLayer

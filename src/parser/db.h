@@ -30,6 +30,8 @@
 #define GWENHYFWAR_DB_H
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
+#include <gwenhyfwar/path.h>
+#include <stdio.h>
 
 #define GWEN_DB_FLAGS_OVERWRITE_VARS         0x00010000
 #define GWEN_DB_FLAGS_OVERWRITE_GROUPS       0x00020000
@@ -135,6 +137,9 @@ GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
 
 
 const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);
+
+
+void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
 
 #endif
 

@@ -41,11 +41,13 @@
  </SEGdef>
 
 
- <SEGdef id="Open" code="OPEN" version="1"
+ <SEGdef id="RQGreet" code="RQGREET" version="1"
          delimiter="+" terminator="'" encrypt="0" >
    <GROUP type="SegHead" name="head" />
-    <ELEM name="name" type="AN" maxsize="32"/>
-    <ELEM name="version" type="ascii" maxsize="16"/>
+   <ELEM name="encrypt" type="num" maxsize="1" />
+   <ELEM name="sign" type="num" maxsize="1" />
+   <ELEM name="name" type="AN" maxsize="32"/>
+   <ELEM name="version" type="ascii" maxsize="16"/>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -54,7 +56,22 @@
  </SEGdef>
 
 
- <SEGdef id="Close" code="CLOSE" version="1"
+ <SEGdef id="RPGreet" code="RPGREET" version="1"
+         delimiter="+" terminator="'" encrypt="0" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="encrypt" type="num" maxsize="1" />
+   <ELEM name="sign" type="num" maxsize="1" />
+   <ELEM name="name" type="AN" maxsize="32"/>
+   <ELEM name="version" type="ascii" maxsize="16"/>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="RQClose" code="RQCLOSE" version="1"
          delimiter="+" terminator="'"  encrypt="0" >
    <GROUP type="SegHead" name="head" />
     <ELEM name="reason" type="ascii" maxsize="64"/>

@@ -113,6 +113,7 @@ GWEN_IPCMSGLAYER *GWEN_MsgLayer_new(GWEN_IPCTRANSPORTLAYER *tl,
 void GWEN_MsgLayer_free(GWEN_IPCMSGLAYER *ml);
 
 GWEN_IPCMSG *GWEN_MsgLayer_GetOutgoingMsg(GWEN_IPCMSGLAYER *ml);
+unsigned int GWEN_MsgLayer_OutgoingMsgs(GWEN_IPCMSGLAYER *ml);
 GWEN_ERRORCODE GWEN_MsgLayer_AddIncomingMsg(GWEN_IPCMSGLAYER *ml,
                                             GWEN_IPCMSG *msg);
 void GWEN_MsgLayer_SetState(GWEN_IPCMSGLAYER *ml,

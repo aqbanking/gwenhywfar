@@ -75,6 +75,10 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
       tl=GWEN_MsgLayer_GetTransportLayer(ml);
       state=GWEN_MsgLayer_GetState(ml);
 
+      DBG_INFO(0, "State=%d, msgs=%d",
+               state,
+               GWEN_MsgLayer_OutgoingMsgs(ml));
+
       if (state!=GWEN_IPCMsglayerStateClosed) {
         /* check for read sockets */
         if (state==GWEN_IPCMsglayerStateReading ||
@@ -102,12 +106,14 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
               ndone++;
           } /* if no socket */
         } /* if readable state */
-        else if (state==GWEN_IPCMsglayerStateWriting ||
-                 state==GWEN_IPCMsglayerStateConnecting ||
-                 (state==GWEN_IPCMsglayerStateIdle &&
-                  GWEN_ConnectionLayer_HasOutgoingMsg(curr))) {
+
+        if (state==GWEN_IPCMsglayerStateWriting ||
+            state==GWEN_IPCMsglayerStateConnecting ||
+            (state==GWEN_IPCMsglayerStateIdle &&
+             GWEN_MsgLayer_OutgoingMsgs(ml))) {
           GWEN_SOCKET *sock;
 
+          DBG_INFO(0, "Checking for writing...");
           sock=GWEN_IPCTransportLayer_GetWriteSocket(tl);
           if (sock) {
             DBG_VERBOUS(0, "Adding a socket to the write set");
