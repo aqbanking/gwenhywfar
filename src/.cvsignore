@@ -1,2 +1,4 @@
 version.h
 ressource.rc
+types.h
+Makefile.palm
