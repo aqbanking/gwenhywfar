@@ -184,6 +184,11 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetGroup(GWEN_MSGENGINE *e,
                                       int version,
                                       const char *pvalue);
 
+int GWEN_MsgEngine__GetInline(GWEN_MSGENGINE *e,
+                              GWEN_XMLNODE *node,
+                              GWEN_BUFFER *mbuf);
+
+
 
 struct GWEN_MSGENGINE_TRUSTEDDATA {
   GWEN_MSGENGINE_TRUSTEDDATA *next;

@@ -5,3 +5,5 @@ db:
 crypt:
   - remove old list functions, replace them by the list macros
     (will break compatibility -> for next major version)
+msgengine:
+  - use "storedAs" in VALUE tags also
