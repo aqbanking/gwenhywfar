@@ -56,9 +56,12 @@ struct GWEN__MSGENGINE {
   GWEN_DB_NODE *globalValues;
   GWEN_MSGENGINE_TYPEREAD_PTR typeReadPtr;
   GWEN_MSGENGINE_TYPEWRITE_PTR typeWritePtr;
+  GWEN_MSGENGINE_TYPECHECK_PTR typeCheckPtr;
 
   GWEN_MSGENGINE_BINTYPEREAD_PTR binTypeReadPtr;
   GWEN_MSGENGINE_BINTYPEWRITE_PTR binTypeWritePtr;
+
+  GWEN_MSGENGINE_GETCHARVALUE_PTR getCharValuePtr;
 
   GWEN_MSGENGINE_TRUSTEDDATA *trustInfos;
   void *inheritorData;
@@ -150,9 +153,9 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
                                            GWEN_XMLNODE_PATH *nodePath,
                                            const char *name,
                                            unsigned int *datasize);
-int GWEN_MsgEngine__IsCharTyp(const char *type);
-int GWEN_MsgEngine__IsIntTyp(const char *type);
-int GWEN_MsgEngine__IsBinTyp(const char *type);
+int GWEN_MsgEngine__IsCharTyp(GWEN_MSGENGINE *e, const char *type);
+int GWEN_MsgEngine__IsIntTyp(GWEN_MSGENGINE *e, const char *type);
+int GWEN_MsgEngine__IsBinTyp(GWEN_MSGENGINE *e, const char *type);
 
 int GWEN_MsgEngine_GetHighestTrustLevel(GWEN_XMLNODE *node,
                                         GWEN_XMLNODE *refnode);

@@ -3,6 +3,10 @@
 ------------------------------------------------
 - fixed windoze macros
 - worked on SSL code
+- MsgEngine: 
+  - added a getCharValue callback to retrieve <VALUE>s with leading '?'
+  - added checkType callback which lets inheritors return the base type
+    instead of assuming "char".
 
 
 2004/01/17 Martin Preuss <martin@libchipcard.de>

@@ -157,6 +157,13 @@ typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
                                             GWEN_BUFFER *data,
                                             GWEN_XMLNODE *node);
 
+/**
+ * Checks of what base-type the given type is.
+ */
+GWENHYWFAR_API
+typedef GWEN_DB_VALUETYPE (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
+                                                          const char *tname);
+
 
 GWENHYWFAR_API
 typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
@@ -168,6 +175,15 @@ typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
                                                GWEN_XMLNODE *node,
                                                GWEN_DB_NODE *gr,
                                                GWEN_BUFFER *dbuf);
+
+/**
+ * Get the value of the given name (or default value if none set)
+ */
+GWENHYWFAR_API
+  typedef const char* (*GWEN_MSGENGINE_GETCHARVALUE_PTR)(GWEN_MSGENGINE *e,
+                                                         const char *name,
+                                                         const char *defValue);
+
 /*@}*/
 
 
@@ -245,6 +261,14 @@ void GWEN_MsgEngine_SetTypeWriteFunction(GWEN_MSGENGINE *e,
 GWENHYWFAR_API
 GWEN_MSGENGINE_TYPEWRITE_PTR
   GWEN_MsgEngine_GetTypeWriteFunction(GWEN_MSGENGINE *e);
+
+GWENHYWFAR_API
+void GWEN_MsgEngine_SetTypeCheckFunction(GWEN_MSGENGINE *e,
+                                         GWEN_MSGENGINE_TYPECHECK_PTR p);
+GWENHYWFAR_API
+GWEN_MSGENGINE_TYPECHECK_PTR
+GWEN_MsgEngine_GetTypeCheckFunction(GWEN_MSGENGINE *e);
+
 /*@}*/ /* Extending Data Type Handling */
 
 
@@ -266,6 +290,16 @@ GWENHYWFAR_API
 GWEN_MSGENGINE_BINTYPEWRITE_PTR
   GWEN_MsgEngine_GetBinTypeWriteFunction(GWEN_MSGENGINE *e);
 /*@}*/  /* Extending Binary Data Handling */
+
+
+/** @name Setters For Virtual Functions: Getting Variables
+ *
+ */
+/*@{*/
+GWENHYWFAR_API
+void GWEN_MsgEngine_SetGetCharValueFunction(GWEN_MSGENGINE *e,
+                                            GWEN_MSGENGINE_GETCHARVALUE_PTR p);
+/*@}*/  /* Getting variables */
 
 
 /** @name Extending GWEN_MSGENGINE

@@ -195,6 +195,25 @@ GWEN_MsgEngine_GetTypeWriteFunction(GWEN_MSGENGINE *e){
 
 
 
+void GWEN_MsgEngine_SetTypeCheckFunction(GWEN_MSGENGINE *e,
+                                         GWEN_MSGENGINE_TYPECHECK_PTR p){
+  assert(e);
+  e->typeCheckPtr=p;
+}
+
+
+
+GWEN_MSGENGINE_TYPECHECK_PTR
+GWEN_MsgEngine_GetTypeCheckFunction(GWEN_MSGENGINE *e){
+  assert(e);
+  return e->typeCheckPtr;
+}
+
+
+
+
+
+
 void GWEN_MsgEngine_SetBinTypeReadFunction(GWEN_MSGENGINE *e,
                                            GWEN_MSGENGINE_BINTYPEREAD_PTR p){
   assert(e);
@@ -225,6 +244,16 @@ GWEN_MsgEngine_GetBinTypeWriteFunction(GWEN_MSGENGINE *e){
   assert(e);
   return e->binTypeWritePtr;
 }
+
+
+
+void
+GWEN_MsgEngine_SetGetCharValueFunction(GWEN_MSGENGINE *e,
+                                       GWEN_MSGENGINE_GETCHARVALUE_PTR p){
+  assert(e);
+  e->getCharValuePtr=p;
+}
+
 
 
 
@@ -417,7 +446,17 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
 
 
 
-int GWEN_MsgEngine__IsCharTyp(const char *type) {
+int GWEN_MsgEngine__IsCharTyp(GWEN_MSGENGINE *e,
+                              const char *type) {
+  if (e->typeCheckPtr) {
+    GWEN_DB_VALUETYPE vt;
+
+    vt=e->typeCheckPtr(e, type);
+    if (vt!=GWEN_DB_VALUETYPE_UNKNOWN) {
+      if (vt==GWEN_DB_VALUETYPE_CHAR)
+        return 1;
+    }
+  }
   return
     (strcasecmp(type, "alpha")==0) ||
     (strcasecmp(type, "ascii")==0) ||
@@ -427,14 +466,34 @@ int GWEN_MsgEngine__IsCharTyp(const char *type) {
 
 
 
-int GWEN_MsgEngine__IsIntTyp(const char *type) {
+int GWEN_MsgEngine__IsIntTyp(GWEN_MSGENGINE *e,
+                             const char *type) {
+  if (e->typeCheckPtr) {
+    GWEN_DB_VALUETYPE vt;
+
+    vt=e->typeCheckPtr(e, type);
+    if (vt!=GWEN_DB_VALUETYPE_UNKNOWN) {
+      if (vt==GWEN_DB_VALUETYPE_INT)
+        return 1;
+    }
+  }
   return
     (strcasecmp(type, "num")==0);
 }
 
 
 
-int GWEN_MsgEngine__IsBinTyp(const char *type) {
+int GWEN_MsgEngine__IsBinTyp(GWEN_MSGENGINE *e,
+                             const char *type) {
+  if (e->typeCheckPtr) {
+    GWEN_DB_VALUETYPE vt;
+
+    vt=e->typeCheckPtr(e, type);
+    if (vt!=GWEN_DB_VALUETYPE_UNKNOWN) {
+      if (vt==GWEN_DB_VALUETYPE_BIN)
+        return 1;
+    }
+  }
   return
     (strcasecmp(type, "bin")==0);
 }
@@ -545,11 +604,11 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
          */
         vt=GWEN_DB_GetVariableType(gr, nptr);
         if (vt==GWEN_DB_VALUETYPE_UNKNOWN) {
-          if (GWEN_MsgEngine__IsCharTyp(type))
+          if (GWEN_MsgEngine__IsCharTyp(e, type))
             vt=GWEN_DB_VALUETYPE_CHAR;
-          else if (GWEN_MsgEngine__IsIntTyp(type))
+          else if (GWEN_MsgEngine__IsIntTyp(e, type))
             vt=GWEN_DB_VALUETYPE_INT;
-          else if (GWEN_MsgEngine__IsBinTyp(type))
+          else if (GWEN_MsgEngine__IsBinTyp(e, type))
             vt=GWEN_DB_VALUETYPE_BIN;
           else {
             DBG_INFO(0,
@@ -808,11 +867,11 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
             return 0;
           }
           type=GWEN_XMLNode_GetProperty(dnode, "type", "ascii");
-          if (GWEN_MsgEngine__IsCharTyp(type))
+          if (GWEN_MsgEngine__IsCharTyp(e, type))
             vt=GWEN_DB_VALUETYPE_CHAR;
-          else if (GWEN_MsgEngine__IsIntTyp(type))
+          else if (GWEN_MsgEngine__IsIntTyp(e, type))
             vt=GWEN_DB_VALUETYPE_INT;
-          else if (GWEN_MsgEngine__IsBinTyp(type))
+          else if (GWEN_MsgEngine__IsBinTyp(e, type))
             vt=GWEN_DB_VALUETYPE_BIN;
           else {
             DBG_ERROR(0,
@@ -856,6 +915,23 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
 
       DBG_DEBUG(0, "Getting property \"%s\"", p);
       pvalue=GWEN_XMLNode_GetProperty(node, p, 0);
+      if (pvalue) {
+        *datasize=strlen(pvalue);
+        DBG_DEBUG(0, "Transformed value \"%s\"", pvalue);
+      }
+      else
+        *datasize=0;
+    }
+    else if (*p=='?') {
+      /* program variable accessable via callback */
+      p++;
+
+      DBG_DEBUG(0, "Getting program variable \"%s\"", p);
+      if (e->getCharValuePtr)
+        pvalue=e->getCharValuePtr(e, p, 0);
+      else
+        pvalue=0;
+
       if (pvalue) {
         *datasize=strlen(pvalue);
         DBG_DEBUG(0, "Transformed value \"%s\"", pvalue);
@@ -2236,6 +2312,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   minnum=atoi(GWEN_XMLNode_GetProperty(node, "minnum","1"));
   type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
 
+
   rv=1;
   if (e->typeReadPtr) {
     rv=e->typeReadPtr(e,
@@ -2557,7 +2634,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
               /* special handling for binary data */
               dtype=GWEN_XMLNode_GetProperty(n, "type", "");
-              if (GWEN_MsgEngine__IsBinTyp(dtype)) {
+              if (GWEN_MsgEngine__IsBinTyp(e, dtype)) {
                 if (e->binTypeReadPtr)
 		  rv=e->binTypeReadPtr(e, n, gr, vbuf);
                 else
@@ -2580,7 +2657,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 		  }
 		}
               } /* if type is bin */
-              else if (GWEN_MsgEngine__IsIntTyp(dtype)) {
+              else if (GWEN_MsgEngine__IsIntTyp(e, dtype)) {
                 int z;
 
 		if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
@@ -2596,8 +2673,12 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                 }
               } /* if type is int */
               else {
+                if (strcasecmp(type, "date")==0) {
+                  DBG_ERROR(0, "Reading date from \"%s\"",
+                            GWEN_Buffer_GetStart(vbuf));
+                }
 		DBG_DEBUG(0, "Value is \"%s\"",
-			 GWEN_Buffer_GetStart(vbuf));
+                          GWEN_Buffer_GetStart(vbuf));
                 if (GWEN_DB_SetCharValue(gr,
 					 GWEN_DB_FLAGS_DEFAULT,
 					 name,
