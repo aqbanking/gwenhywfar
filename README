@@ -39,11 +39,14 @@ Requirements
 Platforms
 ---------
 
-Gwenhywfar is being developed on Linux. It should also run on Windows
-(under mingw) and Mac OS-X, but both of these ports still need more
-testing. 
-As soon as the Linux and Windows implementations are stable the PalmOS port 
-will be addressed.
+Gwenhywfar is being developed on Linux. But the following platforms are also
+supported:
+- Windows (98, NT and newer)
+- FreeBSD (untested, but most likely to work)
+- NetBSD  (untested, but most likely to work)
+- OpenBSD (untested, but most likely to work)
+- Mac OS-X (untested)
+
 
 
 Documentation
@@ -79,6 +82,6 @@ them to plain C.
 Name
 ----
 
-The name of this library was chosen because of --- (FIXME?).
-
+The name of this library was chosen to honour a very special person ;-)
+(that should suffice as an explanation)
 

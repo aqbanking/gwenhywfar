@@ -32,6 +32,10 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/gwenhywfarapi.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /** @defgroup MOD_RINGBUFFER Ringbuffer Management
  * @ingroup MOD_BASE
@@ -173,6 +177,9 @@ void GWEN_RingBuffer_ResetMaxUsedBytes(GWEN_RINGBUFFER *rb);
 
 /*@}*/ /* group */
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWEN_RINGBUFFER_H */
