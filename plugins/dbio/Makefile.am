@@ -1,2 +1,2 @@
-SUBDIRS=csv
+SUBDIRS=csv olddb
 EXTRA_DIST=README

@@ -1,4 +1,8 @@
 
+2004/11/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added DBIO plugin for old OpenHBCI1-style config files
+
 
 2004/11/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

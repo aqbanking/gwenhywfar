@@ -3091,6 +3091,33 @@ int testCsvExport(int argc, char **argv) {
 
 
 
+int testOldDbImport(int argc, char **argv) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbParams;
+
+  db=GWEN_DB_Group_new("test");
+  dbParams=GWEN_DB_Group_new("params");
+  if (GWEN_DB_ReadFileAs(db,
+                         "test.olddb",
+                         "olddb",
+                         dbParams,
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_ERROR(0, "Could not read test file");
+    return 2;
+  }
+
+  if (GWEN_DB_WriteFile(db,
+                        "test.out",
+                        GWEN_DB_FLAGS_DEFAULT)) {
+    DBG_ERROR(0, "Could not write outfile");
+  }
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3195,6 +3222,8 @@ int main(int argc, char **argv) {
     rv=testTimeToString(argc, argv);
   else if (strcasecmp(argv[1], "csvexport")==0)
     rv=testCsvExport(argc, argv);
+  else if (strcasecmp(argv[1], "olddb")==0)
+    rv=testOldDbImport(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
