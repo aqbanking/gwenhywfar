@@ -919,8 +919,8 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
     p=GWEN_DB_GetCharValueFromNode(nn);
     assert(p);
     if (sscanf(p, "%d", &res)!=1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Value[%d] of \"%s\" is not an int value",
-		idx, path);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Value[%d] of \"%s\" is not an int value",
+                idx, path);
       return defVal;
     }
     return res;

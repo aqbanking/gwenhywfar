@@ -572,7 +572,9 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
 
     bs=GWEN_Buffer_GetPos(gbuf)-startPos;
     if (bs>fixSize) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Data too long (fixed size is %d)", fixSize);
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Data too long (size is %d, fixed size is %d)",
+                bs, fixSize);
       return -1;
     }
 
