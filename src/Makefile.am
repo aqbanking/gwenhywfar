@@ -9,7 +9,8 @@ lib_LTLIBRARIES=libgwenhyfwar.la
 iheaderdir=${includedir}/gwenhyfwar
 iheader_HEADERS=\
   gwenhyfwar.h \
-  gwenhyfwarapi.h
+  gwenhyfwarapi.h \
+  version.h
 
 libgwenhyfwar_la_SOURCES=\
   gwenhyfwar.c
