@@ -29,22 +29,27 @@ int main (){
 
   buffer[0]=0;
   
-  if (strcasecmp("$1", "windows")==0) {
-    GetWindowsDirectory(buffer, sizeof(buffer));
-  }
-  else if (strcasecmp("$1", "system")==0) {
-    GetSystemDirectory(buffer, sizeof(buffer));
-  }
-  else if (strcasecmp("$1", "home")==0) {
+  if (strlen("$2")) {
     if (strlen("$2")>=sizeof(buffer)) {
-      printf("default path is too long ($2)\n");
+      printf("path is too long ($2)\n");
       exit(1);
     }
     strcpy(buffer, "$2");
   }
   else {
-    printf("Unknown type \"$1\"\n");
-    exit(1);
+    if (strcasecmp("$1", "windows")==0) {
+      GetWindowsDirectory(buffer, sizeof(buffer));
+    }
+    else if (strcasecmp("$1", "system")==0) {
+      GetSystemDirectory(buffer, sizeof(buffer));
+    }
+    else if (strcasecmp("$1", "home")==0) {
+      GetWindowsDirectory(buffer, sizeof(buffer));
+    }
+    else {
+      printf("Unknown type \"$1\"\n");
+      exit(1);
+    }
   }
   
   f=fopen("conf.winpath", "w+");
@@ -97,24 +102,31 @@ int main (){
   int lastWasSlash;
 
   buffer[0]=0;
-  
-  if (strcasecmp("$1", "windows")==0) {
-    GetWindowsDirectory(buffer, sizeof(buffer));
-  }
-  else if (strcasecmp("$1", "system")==0) {
-    GetSystemDirectory(buffer, sizeof(buffer));
-  }
-  else if (strcasecmp("$1", "home")==0) {
-    if (strlen("$2")>=sizeof(buffer)-1) {
-      printf("default path is too long ($2)\n");
+
+  if (strlen("$2")) {
+    if (strlen("$2")>=sizeof(buffer)) {
+      printf("path is too long ($2)\n");
       exit(1);
     }
     strcpy(buffer, "$2");
   }
   else {
-    printf("Unknown type \"$1\"\n");
-    exit(1);
+    if (strcasecmp("$1", "windows")==0) {
+      GetWindowsDirectory(buffer, sizeof(buffer));
+    }
+    else if (strcasecmp("$1", "system")==0) {
+      GetSystemDirectory(buffer, sizeof(buffer));
+    }
+    else if (strcasecmp("$1", "home")==0) {
+      GetWindowsDirectory(buffer, sizeof(buffer));
+    }
+    else {
+      printf("Unknown type \"$1\"\n");
+      exit(1);
+    }
   }
+  
+
   /* create mingw path */
   tp=buffer2;
   p=buffer;
@@ -185,8 +197,7 @@ dnl     WIN_PATH_SYSTEM        : path and name of the Windoze folder
 
 # presets
 AC_ARG_WITH(home-path,    [  --with-home-path=DIR    specify the home directory for a user],
-  [aq_windoze_path_home="$withval"],
-  [aq_windoze_path_home="$HOME"])
+  [aq_windoze_path_home="$withval"])
 AC_ARG_WITH(system-path,  [  --with-system-path=DIR  specify the system directory],
   [aq_windoze_path_system="$withval"])
 AC_ARG_WITH(windows-path, [  --with-windows-path=DIR specify the windows directory],
