@@ -3266,10 +3266,10 @@ int testXSD(int argc, char **argv) {
 
   ibuf=GWEN_Buffer_new(0, 256, 0, 1);
   if (GWEN_XSD_ListTypes(e,
-                         "http://www.fints.org/spec/xmlschema/4.0/final/transactions",
-                         "AcctBal_1_Req",
-                         //"http://www.fints.org/spec/xmlschema/4.0/final/types",
-                         //"ReqMsgHeader",
+                         //"http://www.fints.org/spec/xmlschema/4.0/final/transactions",
+                         //"AcctBal_1_Req",
+                         "http://www.fints.org/spec/xmlschema/4.0/final/types",
+                         "ReqMsgHeader",
                          ibuf)) {
     fprintf(stderr, "Type not found.\n");
   }

@@ -52,232 +52,296 @@
 
 
 
+int GWEN_XSD__ListSequence(GWEN_XSD_ENGINE *e,
+                           GWEN_XMLNODE *n,
+                           GWEN_BUFFER *outBuffer,
+                           int indent){
+  GWEN_XMLNODE *nn;
+  int i;
+
+  nn=GWEN_XMLNode_GetFirstTag(n);
+  while(nn) {
+    const char *tagName;
+    int minOccur;
+    int maxOccur;
+    const char *x;
+    char numbuf[16];
+  
+    assert(n);
+    x=GWEN_XMLNode_GetProperty(n, "minOccurs", "1");
+    if (1!=sscanf(x, "%i", &minOccur)) {
+      if (strcasecmp(x, "unbounded")==0)
+        minOccur=0;
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad minOccurrs property");
+        return -1;
+      }
+    }
+    x=GWEN_XMLNode_GetProperty(n, "maxOccurs", "1");
+    if (1!=sscanf(x, "%i", &maxOccur)) {
+      if (strcasecmp(x, "unbounded")==0)
+        maxOccur=0;
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad maxOccurrs property");
+        return -1;
+      }
+    }
+
+    tagName=GWEN_XMLNode_GetData(nn);
+    assert(tagName);
+
+    GWEN_Buffer_AppendString(outBuffer, "\n");
+    for (i=0; i<indent; i++)
+      GWEN_Buffer_AppendByte(outBuffer, ' ');
+    GWEN_Buffer_AppendByte(outBuffer, toupper(*tagName));
+    GWEN_Buffer_AppendString(outBuffer, tagName+1);
+    GWEN_Buffer_AppendString(outBuffer, " ");
+
+    /* min and max occurrences */
+    if (minOccur==1 && maxOccur==1) {
+      GWEN_Buffer_AppendString(outBuffer, "(mandatory)");
+    }
+    else if (minOccur==0) {
+      if (maxOccur==0)
+        GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
+      else if (maxOccur==1)
+        GWEN_Buffer_AppendString(outBuffer, "(optional)");
+      else {
+        GWEN_Buffer_AppendString(outBuffer, "(optional, up to ");
+        snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
+      }
+    }
+    else if (maxOccur==0) {
+      if (minOccur==0)
+        GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
+      else if (minOccur==1)
+        GWEN_Buffer_AppendString(outBuffer, "(mandatory, unlimited)");
+      else {
+        GWEN_Buffer_AppendString(outBuffer, "(unlimited, minimum ");
+        snprintf(numbuf, sizeof(numbuf)-1, "%d)", minOccur);
+      }
+    }
+    else {
+      snprintf(numbuf, sizeof(numbuf)-1, "(%d", minOccur);
+      GWEN_Buffer_AppendString(outBuffer, numbuf);
+      GWEN_Buffer_AppendString(outBuffer, "-");
+      snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
+      GWEN_Buffer_AppendString(outBuffer, numbuf);
+      GWEN_Buffer_AppendByte(outBuffer, ' ');
+    }
+    GWEN_Buffer_AppendString(outBuffer, "\n");
+
+    if (strcasecmp(tagName, "element")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListElementTypes(e, nn, outBuffer, indent+2);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "group")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListGroupTypes(e, nn, outBuffer, indent+2);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "sequence")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListSequence(e, nn, outBuffer, indent+2);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "choice")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListChoice(e, nn, outBuffer, indent+2);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "any")==0) {
+      for (i=0; i<indent+2; i++)
+        GWEN_Buffer_AppendByte(outBuffer, ' ');
+      GWEN_Buffer_AppendString(outBuffer, "Name : data\n");
+      for (i=0; i<indent+2; i++)
+        GWEN_Buffer_AppendByte(outBuffer, ' ');
+      GWEN_Buffer_AppendString(outBuffer, "Type : unrestricted data\n");
+    }
+    nn=GWEN_XMLNode_GetNextTag(nn);
+  }
+  return 0;
+}
+
+
+
+int GWEN_XSD__ListChoice(GWEN_XSD_ENGINE *e,
+                         GWEN_XMLNODE *n,
+                         GWEN_BUFFER *outBuffer,
+                         int indent){
+  GWEN_XMLNODE *nn;
+  int first;
+  int i;
+
+  nn=GWEN_XMLNode_GetFirstTag(n);
+  first=1;
+  while(nn) {
+    const char *tagName;
+    int minOccur;
+    int maxOccur;
+    const char *x;
+    char numbuf[16];
+  
+    assert(n);
+    x=GWEN_XMLNode_GetProperty(n, "minOccurs", "1");
+    if (1!=sscanf(x, "%i", &minOccur)) {
+      if (strcasecmp(x, "unbounded")==0)
+        minOccur=0;
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad minOccurrs property");
+        return -1;
+      }
+    }
+    x=GWEN_XMLNode_GetProperty(n, "maxOccurs", "1");
+    if (1!=sscanf(x, "%i", &maxOccur)) {
+      if (strcasecmp(x, "unbounded")==0)
+        maxOccur=0;
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad maxOccurrs property");
+        return -1;
+      }
+    }
+
+    tagName=GWEN_XMLNode_GetData(nn);
+    assert(tagName);
+
+    for (i=0; i<indent; i++)
+      GWEN_Buffer_AppendByte(outBuffer, ' ');
+    if (first) {
+      GWEN_Buffer_AppendString(outBuffer, "Choice:\n");
+      first=0;
+    }
+    else {
+      GWEN_Buffer_AppendString(outBuffer, "or:\n");
+    }
+
+    for (i=0; i<indent+2; i++)
+      GWEN_Buffer_AppendByte(outBuffer, ' ');
+    GWEN_Buffer_AppendByte(outBuffer, toupper(*tagName));
+    GWEN_Buffer_AppendString(outBuffer, tagName+1);
+    GWEN_Buffer_AppendString(outBuffer, " ");
+
+    /* min and max occurrences */
+    if (minOccur==1 && maxOccur==1) {
+      GWEN_Buffer_AppendString(outBuffer, "(mandatory)");
+    }
+    else if (minOccur==0) {
+      if (maxOccur==0)
+        GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
+      else if (maxOccur==1)
+        GWEN_Buffer_AppendString(outBuffer, "(optional)");
+      else {
+        GWEN_Buffer_AppendString(outBuffer, "(optional, up to ");
+        snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
+      }
+    }
+    else if (maxOccur==0) {
+      if (minOccur==0)
+        GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
+      else if (minOccur==1)
+        GWEN_Buffer_AppendString(outBuffer, "(mandatory, unlimited)");
+      else {
+        GWEN_Buffer_AppendString(outBuffer, "(unlimited, minimum ");
+        snprintf(numbuf, sizeof(numbuf)-1, "%d)", minOccur);
+      }
+    }
+    else {
+      snprintf(numbuf, sizeof(numbuf)-1, "(%d", minOccur);
+      GWEN_Buffer_AppendString(outBuffer, numbuf);
+      GWEN_Buffer_AppendString(outBuffer, "-");
+      snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
+      GWEN_Buffer_AppendString(outBuffer, numbuf);
+      GWEN_Buffer_AppendByte(outBuffer, ' ');
+    }
+    GWEN_Buffer_AppendString(outBuffer, "\n");
+
+    if (strcasecmp(tagName, "element")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListElementTypes(e, nn, outBuffer, indent+4);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "group")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListGroupTypes(e, nn, outBuffer, indent+4);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "sequence")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListSequence(e, nn, outBuffer, indent+4);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "choice")==0) {
+      int rv;
+
+      rv=GWEN_XSD__ListChoice(e, nn, outBuffer, indent+4);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "any")==0) {
+      for (i=0; i<indent+4; i++)
+        GWEN_Buffer_AppendByte(outBuffer, ' ');
+      GWEN_Buffer_AppendString(outBuffer, "Name : data\n");
+      for (i=0; i<indent+4; i++)
+        GWEN_Buffer_AppendByte(outBuffer, ' ');
+      GWEN_Buffer_AppendString(outBuffer, "Type : unrestricted data\n");
+    }
+    nn=GWEN_XMLNode_GetNextTag(nn);
+  } /* while nn */
+  return 0;
+}
+
+
 
 int GWEN_XSD__ListNodes(GWEN_XSD_ENGINE *e,
 			GWEN_XMLNODE *n,
 			GWEN_BUFFER *outBuffer,
 			int indent){
   GWEN_XMLNODE *nn;
-  int i;
+  int rv;
 
   nn=GWEN_XMLNode_FindFirstTag(n, "sequence", 0, 0);
   if (nn) {
-    nn=GWEN_XMLNode_GetFirstTag(nn);
-    while(nn) {
-      const char *tagName;
-      int minOccur;
-      int maxOccur;
-      const char *x;
-      char numbuf[16];
-    
-      assert(n);
-      x=GWEN_XMLNode_GetProperty(n, "minOccurs", "1");
-      if (1!=sscanf(x, "%i", &minOccur)) {
-	if (strcasecmp(x, "unbounded")==0)
-	  minOccur=0;
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Bad minOccurrs property");
-	  return -1;
-	}
-      }
-      x=GWEN_XMLNode_GetProperty(n, "maxOccurs", "1");
-      if (1!=sscanf(x, "%i", &maxOccur)) {
-	if (strcasecmp(x, "unbounded")==0)
-	  maxOccur=0;
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Bad maxOccurrs property");
-	  return -1;
-	}
-      }
-
-      tagName=GWEN_XMLNode_GetData(nn);
-      assert(tagName);
-
-      GWEN_Buffer_AppendString(outBuffer, "\n");
-      for (i=0; i<indent; i++)
-	GWEN_Buffer_AppendByte(outBuffer, ' ');
-      GWEN_Buffer_AppendByte(outBuffer, toupper(*tagName));
-      GWEN_Buffer_AppendString(outBuffer, tagName+1);
-      GWEN_Buffer_AppendString(outBuffer, " ");
-
-      /* min and max occurrences */
-      if (minOccur==1 && maxOccur==1) {
-	GWEN_Buffer_AppendString(outBuffer, "(mandatory)");
-      }
-      else if (minOccur==0) {
-	if (maxOccur==0)
-	  GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
-	else if (maxOccur==1)
-	  GWEN_Buffer_AppendString(outBuffer, "(optional)");
-	else {
-	  GWEN_Buffer_AppendString(outBuffer, "(optional, up to ");
-	  snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
-	}
-      }
-      else if (maxOccur==0) {
-	if (minOccur==0)
-	  GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
-	else if (minOccur==1)
-	  GWEN_Buffer_AppendString(outBuffer, "(mandatory, unlimited)");
-	else {
-	  GWEN_Buffer_AppendString(outBuffer, "(unlimited, minimum ");
-	  snprintf(numbuf, sizeof(numbuf)-1, "%d)", minOccur);
-	}
-      }
-      else {
-	snprintf(numbuf, sizeof(numbuf)-1, "(%d", minOccur);
-	GWEN_Buffer_AppendString(outBuffer, numbuf);
-	GWEN_Buffer_AppendString(outBuffer, "-");
-	snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
-	GWEN_Buffer_AppendString(outBuffer, numbuf);
-	GWEN_Buffer_AppendByte(outBuffer, ' ');
-      }
-      GWEN_Buffer_AppendString(outBuffer, "\n");
-
-      if (strcasecmp(tagName, "element")==0) {
-	int rv;
-
-	rv=GWEN_XSD__ListElementTypes(e, nn, outBuffer, indent+2);
-	if (rv) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here");
-	  return rv;
-	}
-      }
-      else if (strcasecmp(tagName, "group")==0) {
-	int rv;
-
-	rv=GWEN_XSD__ListGroupTypes(e, nn, outBuffer, indent+2);
-	if (rv) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here");
-	  return rv;
-	}
-      }
-      else if (strcasecmp(tagName, "any")==0) {
-	for (i=0; i<indent+2; i++)
-	  GWEN_Buffer_AppendByte(outBuffer, ' ');
-	GWEN_Buffer_AppendString(outBuffer, "Name : data\n");
-	for (i=0; i<indent+2; i++)
-	  GWEN_Buffer_AppendByte(outBuffer, ' ');
-	GWEN_Buffer_AppendString(outBuffer, "Type : unrestricted data\n");
-      }
-      nn=GWEN_XMLNode_GetNextTag(nn);
-    }
+    rv=GWEN_XSD__ListSequence(e, nn, outBuffer, indent);
+    if (rv)
+      return rv;
   }
   else {
-    int first;
-
     nn=GWEN_XMLNode_FindFirstTag(n, "choice", 0, 0);
     if (nn) {
-      nn=GWEN_XMLNode_GetFirstTag(nn);
-      first=1;
-      while(nn) {
-	const char *tagName;
-	int minOccur;
-	int maxOccur;
-	const char *x;
-	char numbuf[16];
-      
-	assert(n);
-	x=GWEN_XMLNode_GetProperty(n, "minOccurs", "1");
-	if (1!=sscanf(x, "%i", &minOccur)) {
-	  if (strcasecmp(x, "unbounded")==0)
-	    minOccur=0;
-	  else {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Bad minOccurrs property");
-	    return -1;
-	  }
-	}
-	x=GWEN_XMLNode_GetProperty(n, "maxOccurs", "1");
-	if (1!=sscanf(x, "%i", &maxOccur)) {
-	  if (strcasecmp(x, "unbounded")==0)
-	    maxOccur=0;
-	  else {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Bad maxOccurrs property");
-	    return -1;
-	  }
-	}
-
-	tagName=GWEN_XMLNode_GetData(nn);
-	assert(tagName);
-
-	for (i=0; i<indent; i++)
-	  GWEN_Buffer_AppendByte(outBuffer, ' ');
-	if (first) {
-	  GWEN_Buffer_AppendString(outBuffer, "Choice:\n");
-	  first=0;
-	}
-	else {
-	  GWEN_Buffer_AppendString(outBuffer, "or:\n");
-	}
-
-	for (i=0; i<indent+2; i++)
-	  GWEN_Buffer_AppendByte(outBuffer, ' ');
-	GWEN_Buffer_AppendByte(outBuffer, toupper(*tagName));
-	GWEN_Buffer_AppendString(outBuffer, tagName+1);
-	GWEN_Buffer_AppendString(outBuffer, " ");
-  
-	/* min and max occurrences */
-	if (minOccur==1 && maxOccur==1) {
-	  GWEN_Buffer_AppendString(outBuffer, "(mandatory)");
-	}
-	else if (minOccur==0) {
-	  if (maxOccur==0)
-	    GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
-	  else if (maxOccur==1)
-	    GWEN_Buffer_AppendString(outBuffer, "(optional)");
-	  else {
-	    GWEN_Buffer_AppendString(outBuffer, "(optional, up to ");
-	    snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
-	  }
-	}
-	else if (maxOccur==0) {
-	  if (minOccur==0)
-	    GWEN_Buffer_AppendString(outBuffer, "(optional, unlimited)");
-	  else if (minOccur==1)
-	    GWEN_Buffer_AppendString(outBuffer, "(mandatory, unlimited)");
-	  else {
-	    GWEN_Buffer_AppendString(outBuffer, "(unlimited, minimum ");
-	    snprintf(numbuf, sizeof(numbuf)-1, "%d)", minOccur);
-	  }
-	}
-	else {
-	  snprintf(numbuf, sizeof(numbuf)-1, "(%d", minOccur);
-	  GWEN_Buffer_AppendString(outBuffer, numbuf);
-	  GWEN_Buffer_AppendString(outBuffer, "-");
-	  snprintf(numbuf, sizeof(numbuf)-1, "%d)", maxOccur);
-	  GWEN_Buffer_AppendString(outBuffer, numbuf);
-	  GWEN_Buffer_AppendByte(outBuffer, ' ');
-	}
-	GWEN_Buffer_AppendString(outBuffer, "\n");
-
-	if (strcasecmp(tagName, "element")==0) {
-	  int rv;
-
-	  rv=GWEN_XSD__ListElementTypes(e, nn, outBuffer, indent+4);
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here");
-	    return rv;
-	  }
-	}
-	else if (strcasecmp(tagName, "group")==0) {
-	  int rv;
-
-	  rv=GWEN_XSD__ListGroupTypes(e, nn, outBuffer, indent+4);
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here");
-	    return rv;
-	  }
-	}
-	else if (strcasecmp(tagName, "any")==0) {
-	  for (i=0; i<indent+4; i++)
-	    GWEN_Buffer_AppendByte(outBuffer, ' ');
-	  GWEN_Buffer_AppendString(outBuffer, "Name : data\n");
-	  for (i=0; i<indent+4; i++)
-	    GWEN_Buffer_AppendByte(outBuffer, ' ');
-	  GWEN_Buffer_AppendString(outBuffer, "Type : unrestricted data\n");
-	}
-	nn=GWEN_XMLNode_GetNextTag(nn);
-      } /* while nn */
+      rv=GWEN_XSD__ListChoice(e, nn, outBuffer, indent);
+      if (rv)
+        return rv;
     }
   }
 

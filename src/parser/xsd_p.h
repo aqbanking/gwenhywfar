@@ -373,6 +373,15 @@ int GWEN_XSD__ListNodes(GWEN_XSD_ENGINE *e,
                         GWEN_BUFFER *outBuffer,
                         int indent);
 
+int GWEN_XSD__ListSequence(GWEN_XSD_ENGINE *e,
+                           GWEN_XMLNODE *n,
+                           GWEN_BUFFER *outBuffer,
+                           int indent);
+int GWEN_XSD__ListChoice(GWEN_XSD_ENGINE *e,
+                         GWEN_XMLNODE *n,
+                         GWEN_BUFFER *outBuffer,
+                         int indent);
+
 
 int GWEN_XSD__GetTypeFacets(GWEN_XSD_ENGINE *e,
                             GWEN_XMLNODE *nType,
@@ -412,6 +421,16 @@ int GWEN_XSD__WriteNodes(GWEN_XSD_ENGINE *e,
                          GWEN_XMLNODE *n,
                          GWEN_DB_NODE *dbNode,
                          GWEN_XMLNODE *nStore);
+
+int GWEN_XSD__WriteSequence(GWEN_XSD_ENGINE *e,
+                            GWEN_XMLNODE *n,
+                            GWEN_DB_NODE *dbNode,
+                            GWEN_XMLNODE *nStore);
+int GWEN_XSD__WriteChoice(GWEN_XSD_ENGINE *e,
+                          GWEN_XMLNODE *n,
+                          GWEN_DB_NODE *dbNode,
+                          GWEN_XMLNODE *nStore);
+
 
 int GWEN_XSD__WriteElementTypes(GWEN_XSD_ENGINE *e,
                                 GWEN_XMLNODE *nElement,
