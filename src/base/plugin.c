@@ -74,6 +74,7 @@ GWEN_PLUGIN *GWEN_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
   assert(pm);
   assert(name);
   GWEN_NEW_OBJECT(GWEN_PLUGIN, p);
+  p->refCount=1;
   GWEN_INHERIT_INIT(GWEN_PLUGIN, p);
   GWEN_LIST_INIT(GWEN_PLUGIN, p);
   p->manager=pm;
@@ -88,16 +89,27 @@ GWEN_PLUGIN *GWEN_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
 
 void GWEN_Plugin_free(GWEN_PLUGIN *p){
   if (p) {
-    GWEN_INHERIT_FINI(GWEN_PLUGIN, p);
-    free(p->name);
-    free(p->fileName);
-    if (p->libLoader) {
-      GWEN_LibLoader_CloseLibrary(p->libLoader);
-      GWEN_LibLoader_free(p->libLoader);
-    }
-    GWEN_LIST_FINI(GWEN_PLUGIN, p);
-    GWEN_FREE_OBJECT(p);
-  }
+    assert(p->refCount);
+    if (--(p->refCount)==0) {
+      GWEN_INHERIT_FINI(GWEN_PLUGIN, p);
+      free(p->name);
+      free(p->fileName);
+      if (p->libLoader) {
+	GWEN_LibLoader_CloseLibrary(p->libLoader);
+	GWEN_LibLoader_free(p->libLoader);
+      }
+      GWEN_LIST_FINI(GWEN_PLUGIN, p);
+      GWEN_FREE_OBJECT(p);
+    } /* if refCount reaches zero */
+  } /* if p */
+}
+
+
+
+void GWEN_Plugin_Attach(GWEN_PLUGIN *p){
+  assert(p);
+  assert(p->refCount);
+  p->refCount++;
 }
 
 
@@ -253,7 +265,6 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
 
   /* store libloader */
   GWEN_Plugin_SetLibLoader(plugin, ll);
-
   return plugin;
 }
 

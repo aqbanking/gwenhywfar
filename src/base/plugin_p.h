@@ -51,6 +51,7 @@ struct GWEN_PLUGIN {
   char *name;
   char *fileName;
   GWEN_LIBLOADER *libLoader;
+  GWEN_TYPE_UINT32 refCount;
 };
 
 

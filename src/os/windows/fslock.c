@@ -115,28 +115,64 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
     }
     close(fd);
 
+    /* get the link count of the new unique file for later comparison */
     if (stat(fl->uniqueLockFilename, &st)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
 		fl->uniqueLockFilename, strerror(errno));
+      remove(fl->uniqueLockFilename);
+      return GWEN_FSLock_ResultError;
     }
     linkCount=(int)(st.st_nlink);
 
+    /* create a hard link to the new unique file with the name of the
+     * real lock file. This is guaranteed to be atomic even on NFS */
     if (link(fl->uniqueLockFilename, fl->baseLockFilename)) {
+      int lnerr;
+
+      lnerr=errno;
+
       DBG_INFO(GWEN_LOGDOMAIN, "link(%s, %s): %s",
 	       fl->uniqueLockFilename,
 	       fl->baseLockFilename,
 	       strerror(errno));
-      if (stat(fl->uniqueLockFilename, &st)) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
-		  fl->uniqueLockFilename, strerror(errno));
+      if (lnerr==EPERM) {
+	int fd;
+
+	/* link() is not supported on the destination filesystem, try it the
+	 * traditional way. This should be ok, since the only FS which does
+	 * not handle the O_EXCL flag properly is NFS, and NFS would not
+	 * return EPERM (because it generally supports link()).
+	 * So for NFS file systems we would not reach this point.
+	 */
+	fd=open(fl->baseLockFilename,
+		O_CREAT | O_EXCL | O_TRUNC | O_RDWR,
+		S_IRUSR | S_IWUSR);
+	if (fd==-1) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
+		   fl->entryName);
+	  remove(fl->uniqueLockFilename);
+	  return GWEN_FSLock_ResultBusy;
+	}
+	close(fd);
       }
-      if ((int)(st.st_nlink)!=linkCount+1) {
-	DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
-		 fl->entryName);
-	remove(fl->uniqueLockFilename);
-	return GWEN_FSLock_ResultBusy;
+      else {
+	/* link() generally is supported on the destination file system,
+	 * check whether the link count of the unique file has been
+         * incremented */
+	if (stat(fl->uniqueLockFilename, &st)) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
+		    fl->uniqueLockFilename, strerror(errno));
+	  remove(fl->uniqueLockFilename);
+	  return GWEN_FSLock_ResultError;
+	}
+	if ((int)(st.st_nlink)!=linkCount+1) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
+		   fl->entryName);
+	  remove(fl->uniqueLockFilename);
+	  return GWEN_FSLock_ResultBusy;
+	}
       }
-    }
+    } /* if error on link */
 
     DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock applied to %s", fl->entryName);
   }

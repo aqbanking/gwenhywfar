@@ -23,6 +23,10 @@
   However, if GWEN_StringList_SetIgnoreRefCount() is called with a null
   argument only those strings are removed whose reference counter reaches
   zero.
+- fslock.c: added fallback mechanism for file systems which do not support the
+  link() function. Use open() with O_EXCL flag on those systems instead.
+  This should also work with FAT or other file systems which do not support
+  link().
 
 
 2004/12/04: Martin Preuss<martin@libchipcard.de>
