@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=11
-GWENHYWFAR_VERSION_BUILD=13
+GWENHYWFAR_VERSION_BUILD=14
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -232,12 +232,16 @@ AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
 
 USE_NCURSES="yes"
 AC_CHECK_LIB(ncurses, newwin, [], [USE_NCURSES="no"])
-AC_CHECK_LIB(form, new_form, [], [USE_NCURSES="no"])
+AC_CHECK_LIB(panel, new_panel, [], [USE_NCURSES="no"])
 AC_CHECK_HEADERS([ncurses.h], [], [USE_NCURSES="no"])
-AC_CHECK_HEADERS([form.h], [], [USE_NCURSES="no"])
+AC_CHECK_HEADERS([panel.h], [], [USE_NCURSES="no"])
 if test "$USE_NCURSES" != "yes"; then
   AC_MSG_WARN([
-*** ncurses not found, the text interface will not be available.])
+*** ncurses not found, the text interface will not be available.
+*** It is strongly recommended to compile Gwenhywfar with ncurses support
+*** since at least my projects (Libchipcard, AqHBCI) will rely on it...
+***
+*** Please make sure that the ncurses-devel packages are also installed.])
   NCURSES_TOOLS=""
 else
   AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
