@@ -1,4 +1,17 @@
 
+2004/05/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added module ipc/ipc. This is a very simple IPC model based on
+  GWEN_DBs send over HTTP (which in turn may be sent over any supported
+  transport layer, such as TCP/UDP sockets and SSL).
+  This allows maximum flexibility while maintaining a very simple API.
+  Even with this simple API you can implement any security depth you like:
+  - unencrypted using HTTP over UDP sockets
+  - unencrypted using HTTP via TCP sockets
+  - encrypted using HTTP via SSL
+  - encrypted using HTTP via SSL while checking certificates
+
+
 2004/05/07: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/db: added function GWEN_DB_VariableName (I couldn't believe that
@@ -6,6 +19,7 @@
 - started working on IPC stuff again, this time based on HTTPS, therefore
   added ipc/netconnectionhttp (implements the HTTP protocol, together with
   the transport layer NetTransportSSL we have HTTPS ;-)
+- io/bio_buffer: added constructor which does NOT take over ownership
 
 
 2004-05-07   Christian Stimming <stimming@tuhh.de>

@@ -626,8 +626,9 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
 	  if (GWEN_DB_GetIntValue(dbCmd, "hasHeader", 0, 0)) {
 	    /* header is supposed to follow */
-	    chttp->inMode=GWEN_NetConnHttpMsgModeHeader;
-	    chttp->headerPos=GWEN_Buffer_GetPos(mbuf);
+            chttp->inMode=GWEN_NetConnHttpMsgModeHeader;
+            chttp->headerPos=GWEN_Buffer_GetPos(mbuf);
+            GWEN_Buffer_SetBookmark(mbuf, 0, GWEN_Buffer_GetPos(mbuf));
 	  }
 	  else {
 	    const char *cmd;
@@ -678,6 +679,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	  /* header is supposed to follow */
 	  chttp->inMode=GWEN_NetConnHttpMsgModeHeader;
 	  chttp->headerPos=GWEN_Buffer_GetPos(mbuf);
+          GWEN_Buffer_SetBookmark(mbuf, 0, GWEN_Buffer_GetPos(mbuf));
 	  break;
 	}
       }
@@ -705,6 +707,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	      chttp->currentInMsg=0;
 	      return GWEN_NetConnectionWorkResult_Error;
 	    }
+            GWEN_Buffer_SetBookmark(mbuf, 1, GWEN_Buffer_GetPos(mbuf));
 
 	    hasBody=0;
 	    if ((GWEN_NetConnection_GetFlags(conn) &

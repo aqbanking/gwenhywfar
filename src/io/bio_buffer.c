@@ -59,7 +59,8 @@ GWEN_BUFFEREDIO_BUFFER *GWEN_BufferedIO_Buffer_Table__new() {
 
 void GWEN_BufferedIO_Buffer_Table__free(GWEN_BUFFEREDIO_BUFFER *bft) {
   if (bft) {
-    GWEN_Buffer_free(bft->buffer);
+    if (bft->own)
+      GWEN_Buffer_free(bft->buffer);
     free(bft);
   }
 }
@@ -178,7 +179,7 @@ void GWEN_BufferedIO_Buffer_FreeData(void *bp, void *p) {
 
 
 
-GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer){
+GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer2_new(GWEN_BUFFER *buffer, int take){
   GWEN_BUFFEREDIO *bt;
   GWEN_BUFFEREDIO_BUFFER *bft;
 
@@ -186,6 +187,7 @@ GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer){
   bt=GWEN_BufferedIO_new();
   bft=GWEN_BufferedIO_Buffer_Table__new();
   bft->buffer=buffer;
+  bft->own=take;
 
   GWEN_INHERIT_SETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_BUFFER,
                        bt, bft,
@@ -197,6 +199,15 @@ GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer){
 
   return bt;
 }
+
+
+
+GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer){
+  return GWEN_BufferedIO_Buffer2_new(buffer, 1);
+}
+
+
+
 
 
 

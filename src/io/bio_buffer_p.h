@@ -35,6 +35,7 @@
 struct GWEN_BUFFEREDIO_BUFFER {
   GWEN_BUFFER *buffer;
   int closed;
+  int own;
 };
 typedef struct GWEN_BUFFEREDIO_BUFFER GWEN_BUFFEREDIO_BUFFER;
 

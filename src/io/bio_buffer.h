@@ -44,6 +44,16 @@ extern "C" {
 GWENHYWFAR_API
   GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer);
 
+
+/**
+ * Create a buffered IO context using a GWEN_BUFFER.
+ * This function does NOT take over ownership for that buffer !
+ * This context can be free'd using @ref GWEN_BufferedIO_free.
+ */
+GWENHYWFAR_API
+  GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer2_new(GWEN_BUFFER *buffer,
+                                               int take);
+
 #ifdef __cplusplus
 }
 #endif
