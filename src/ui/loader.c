@@ -174,7 +174,7 @@ int GWEN_UILoader__ParseWidget(GWEN_XMLNODE *n,
         p=GWEN_XMLNode_GetData(dn);
         if (p) {
           int not;
-          GWEN_TYPE_UINT32 flag;
+          GWEN_TYPE_UINT32 flag = 0;
   
           if (*p=='-' || *p=='!') {
             p++;
@@ -365,8 +365,8 @@ int GWEN_UILoader__ParseVGroup(GWEN_XMLNODE *n,
   const char *align;
   int gap;
   int offset;
-  int currY;
-  int useAll;
+  int currY = 0;
+  int useAll = 1;
   GWEN_DB_NODE *dbW;
 
   assert(n);
@@ -564,8 +564,8 @@ int GWEN_UILoader__ParseHGroup(GWEN_XMLNODE *n,
   const char *align;
   int gap;
   int offset;
-  int currX;
-  int useAll;
+  int currX = 0;
+  int useAll = 1;
   GWEN_DB_NODE *dbW;
 
   assert(n);
@@ -1675,7 +1675,7 @@ int GWEN_UILoader_Populate(GWEN_DB_NODE *dbDialog,
     path=GWEN_DB_GetCharValue(dbDialogCfg, "path", 0, 0);
     if (w && wtype && path) {
       const char *dtype;
-      const char *d;
+      const char *d = 0;
       char numbuf[64];
 
       /* create data */
