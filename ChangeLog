@@ -1,5 +1,12 @@
 $Id$
 
+2003/11/16 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed several bugs
+- continued work on IPC
+- module "crypt": added DES
+
+
 2003/11/15 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - further work on IPC part

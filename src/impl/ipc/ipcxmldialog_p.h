@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 08 2003
+    begin       : Sat Nov 15 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,36 +25,57 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_HBCICRYPTOCONTEXT_P_H
-#define GWENHYWFAR_HBCICRYPTOCONTEXT_P_H
 
-#define GWEN_HBCIMSG_DEFAULTSIZE 256
+#ifndef GWENHYWFAR_IPCXMLDIALOG_P_H
+#define GWENHYWFAR_IPCXMLDIALOG_P_H
 
-#include <gwenhyfwar/hbcimsg.h>
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/buffer.h>
-#include <gwenhyfwar/db.h>
-#include <gwenhyfwar/msgengine.h>
+#include <gwenhyfwar/ipcxmldialog.h>
 
 
+struct GWEN_IPCXMLDIALOGDATA {
+  GWEN_CRYPTKEY *localKey;
+  unsigned int localSignSeq;
+  GWEN_CRYPTKEY *remoteKey;
+  unsigned int remoteSignSeq;
+  GWEN_CRYPTKEY *sessionKey;
+  unsigned int flags;
 
+  char *serviceCode;
+  char *securityId;
 
-
-struct GWEN_HBCICRYPTOCONTEXT {
-  char *serviceCode; /* bank code for HBCI */
-  char *pSecurityId;
-  unsigned int lSecurityId;
-  char *pCryptKey;
-  unsigned int lCryptKey;
-  unsigned int seq;
-  GWEN_KEYSPEC *key;
-  char *mode;
 };
 
+GWEN_IPCXMLDIALOGDATA *GWEN_IPCXMLDialogData_new();
+void GWEN_IPCXMLDialogData_free(GWEN_IPCXMLDIALOGDATA *d);
+
+
+int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *hdlg,
+                                 GWEN_HBCICRYPTOCONTEXT *ctx,
+                                 int crypt);
+int GWEN_IPCXMLDialog_Sign(GWEN_HBCIDIALOG *hdlg,
+                           GWEN_BUFFER *msgbuf,
+                           GWEN_BUFFER *signbuf,
+                           GWEN_HBCICRYPTOCONTEXT *ctx);
+
+int GWEN_IPCXMLDialog_Verify(GWEN_HBCIDIALOG *hdlg,
+                             GWEN_BUFFER *msgbuf,
+                             GWEN_BUFFER *signbuf,
+                             GWEN_HBCICRYPTOCONTEXT *ctx);
+
+int GWEN_IPCXMLDialog_Encrypt(GWEN_HBCIDIALOG *hdlg,
+                              GWEN_BUFFER *msgbuf,
+                              GWEN_BUFFER *cryptbuf,
+                              GWEN_HBCICRYPTOCONTEXT *ctx);
+
+int GWEN_IPCXMLDialog_Decrypt(GWEN_HBCIDIALOG *hdlg,
+                              GWEN_BUFFER *msgbuf,
+                              GWEN_BUFFER *decryptbuf,
+                              GWEN_HBCICRYPTOCONTEXT *ctx);
+
+void GWEN_IPCXMLDialog_FreeData(GWEN_HBCIDIALOG *hdlg);
 
 
 
 #endif
-
 
 

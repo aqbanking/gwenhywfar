@@ -48,6 +48,7 @@
 #define GWEN_IPCXMLCONNLAYER_TYPE 0xbeef
 
 #include <gwenhyfwar/hbcimsg.h>
+#include <gwenhyfwar/hbcidialog.h>
 
 
 struct GWEN_IPCXMLCONNLAYERDATA {
@@ -61,7 +62,8 @@ struct GWEN_IPCXMLCONNLAYERDATA {
   char *peerVersion;
   char *ownName;
   char *ownVersion;
-  unsigned int msgNumber;
+
+  GWEN_HBCIDIALOG *dialog;
   GWEN_HBCIMSG *incomingMsgs;
   GWEN_HBCIMSG *outgoingMsgs;
   GWEN_IPCXMLCONNLAYER_ENCODE_FN encodeFn;

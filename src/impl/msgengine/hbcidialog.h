@@ -88,7 +88,9 @@ void GWEN_HBCIDialog_SetDecrpytFn(GWEN_HBCIDIALOG *hdlg,
 void GWEN_HBCIDialog_SetFreeDataFn(GWEN_HBCIDIALOG *hdlg,
                                 GWEN_HBCIDLG_FREEDATA_FN fn);
 void GWEN_HBCIDialog_SetInheritorData(GWEN_HBCIDIALOG *hdlg,
-                                   void *data);
+                                      void *data);
+
+void *GWEN_HBCIDialog_GetInheritorData(GWEN_HBCIDIALOG *hdlg);
 
 GWEN_MSGENGINE *GWEN_HBCIDialog_GetMsgEngine(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIDialog_SetMsgEngine(GWEN_HBCIDIALOG *hdlg,
@@ -143,6 +145,17 @@ void GWEN_HBCIDialog_free(GWEN_HBCIDIALOG *hdlg);
  * (file rsakey.cpp). Moved to C by me (Martin Preuss)
  */
 int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src);
+
+
+/** @name Padding for DES
+ * These functions are used for padding when encrypting/decrypting data
+ * using 2-key-triple-DES.
+ */
+/*@{*/
+int GWEN_HBCIDialog_PaddWithANSIX9_23(GWEN_BUFFER *src);
+int GWEN_HBCIDialog_UnpaddWithANSIX9_23(GWEN_BUFFER *src);
+/*@}*/
+
 
 
 #ifdef __cplusplus

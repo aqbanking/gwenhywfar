@@ -94,6 +94,13 @@ void GWEN_HBCIDialog_SetInheritorData(GWEN_HBCIDIALOG *hdlg,
 
 
 
+void *GWEN_HBCIDialog_GetInheritorData(GWEN_HBCIDIALOG *hdlg){
+  assert(hdlg);
+  return hdlg->inheritorData;
+}
+
+
+
 GWEN_MSGENGINE *GWEN_HBCIDialog_GetMsgEngine(GWEN_HBCIDIALOG *hdlg){
   assert(hdlg);
   return hdlg->msgEngine;
@@ -345,6 +352,41 @@ int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src) {
 
 
 
+
+int GWEN_HBCIDialog_PaddWithANSIX9_23(GWEN_BUFFER *src) {
+  unsigned char paddLength;
+  unsigned int i;
+
+  paddLength=8-(GWEN_Buffer_GetUsedBytes(src) % 8);
+  for (i=0; i<paddLength; i++)
+    GWEN_Buffer_AppendByte(src, paddLength);
+  return 0;
+}
+
+
+
+int GWEN_HBCIDialog_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
+  const char *p;
+  unsigned int lastpos;
+  unsigned char paddLength;
+
+  lastpos=GWEN_Buffer_GetUsedBytes(src);
+  if (lastpos<8) {
+    DBG_ERROR(0, "Buffer too small");
+    return -1;
+  }
+  lastpos--;
+
+  p=GWEN_Buffer_GetStart(src)+lastpos;
+  paddLength=*p;
+  if (paddLength<1 || paddLength>8) {
+    DBG_ERROR(0, "Invalid padding (%d bytes ?)", paddLength);
+    return -1;
+  }
+  GWEN_Buffer_SetUsedBytes(src, GWEN_Buffer_GetUsedBytes(src)-paddLength);
+  GWEN_Buffer_SetPos(src, lastpos-paddLength);
+  return 0;
+}
 
 
 

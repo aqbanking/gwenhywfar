@@ -569,7 +569,7 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
                             const char *buffer,
                             unsigned int size){
   char *p;
-  unsigned int i;
+  int i;
 
   assert(bf);
 
@@ -613,9 +613,9 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
   }
   p=bf->ptr+bf->pos;
   i=bf->bytesUsed-bf->pos;
-  if (i)
+  if (i>0)
     /* move current data at pos out of the way */
-    memmove(p, p+size, i);
+    memmove(p+size, p, i);
   /* copy in new data */
   memmove(bf->ptr+bf->pos, buffer, size);
   bf->bytesUsed+=size;
@@ -627,12 +627,13 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
 
 int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c){
   char *p;
-  unsigned int i;
+  int i;
   assert(bf);
 
   if (bf->pos==0) {
     if ((bf->ptr-bf->realPtr)>=1) {
       /* we can simply insert it by occupying the reserved space */
+      DBG_NOTICE(0, "Using reserved space");
       bf->ptr--;
       bf->ptr[bf->pos]=c;
       bf->bytesUsed++;
@@ -654,9 +655,10 @@ int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c){
   }
   p=bf->ptr+bf->pos;
   i=bf->bytesUsed-bf->pos;
-  if (i)
+  if (i>0)
     /* move current data at pos out of the way */
-    memmove(p, p+1, i);
+    memmove(p+1, p, i);
+
   /* copy in new data */
   bf->ptr[bf->pos]=c;
   bf->bytesUsed++;

@@ -32,6 +32,7 @@
 
 
 #include "cryptssl_p.h"
+#include "cryptssl_des_p.h"
 #include "cryptssl_rsa_p.h"
 #include "cryptssl_rmd160_p.h"
 #include <gwenhyfwar/misc.h>
@@ -48,6 +49,13 @@ GWEN_ERRORCODE GWEN_CryptImpl_Init(){
   /* register the various cryptkey types */
   DBG_INFO(0, "Registering RSA");
   lerr=GWEN_CryptKeyRSA_Register();
+  if (!GWEN_Error_IsOk(lerr)) {
+    DBG_INFO(0, "here");
+    err=lerr;
+  }
+
+  DBG_INFO(0, "Registering DES");
+  lerr=GWEN_CryptKeyDES_Register();
   if (!GWEN_Error_IsOk(lerr)) {
     DBG_INFO(0, "here");
     err=lerr;

@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 08 2003
+    begin       : Sat Nov 15 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,36 +25,50 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_HBCICRYPTOCONTEXT_P_H
-#define GWENHYWFAR_HBCICRYPTOCONTEXT_P_H
+#ifndef GWENHYWFAR_IPCXMLDIALOG_H
+#define GWENHYWFAR_IPCXMLDIALOG_H
 
-#define GWEN_HBCIMSG_DEFAULTSIZE 256
 
-#include <gwenhyfwar/hbcimsg.h>
-#include <gwenhyfwar/error.h>
-#include <gwenhyfwar/buffer.h>
-#include <gwenhyfwar/db.h>
+#include <gwenhyfwar/crypt.h>
+#include <gwenhyfwar/hbcidialog.h>
 #include <gwenhyfwar/msgengine.h>
 
 
+typedef struct GWEN_IPCXMLDIALOGDATA GWEN_IPCXMLDIALOGDATA;
 
 
-
-struct GWEN_HBCICRYPTOCONTEXT {
-  char *serviceCode; /* bank code for HBCI */
-  char *pSecurityId;
-  unsigned int lSecurityId;
-  char *pCryptKey;
-  unsigned int lCryptKey;
-  unsigned int seq;
-  GWEN_KEYSPEC *key;
-  char *mode;
-};
+GWEN_HBCIDIALOG *GWEN_IPCXMLDialog_new(GWEN_MSGENGINE *e);
 
 
+GWEN_CRYPTKEY *GWEN_IPCXMLDialog_GetLocalKey(GWEN_HBCIDIALOG *d);
+void GWEN_IPCXMLDialog_SetLocalKey(GWEN_HBCIDIALOG *d,
+                                   GWEN_CRYPTKEY *k);
+
+GWEN_CRYPTKEY *GWEN_IPCXMLDialog_GetRemoteKey(GWEN_HBCIDIALOG *d);
+void GWEN_IPCXMLDialog_SetRemoteKey(GWEN_HBCIDIALOG *d,
+                                    GWEN_CRYPTKEY *k);
+
+GWEN_CRYPTKEY *GWEN_IPCXMLDialog_GetSessionKey(GWEN_HBCIDIALOG *d);
+void GWEN_IPCXMLDialog_SetSessionKey(GWEN_HBCIDIALOG *d,
+                                     GWEN_CRYPTKEY *k);
+
+unsigned int GWEN_IPCXMLDialog_GetFlags(GWEN_HBCIDIALOG *d);
+void GWEN_IPCXMLDialog_SetFlags(GWEN_HBCIDIALOG *d,
+                                unsigned int f);
+
+unsigned int GWEN_IPCXMLDialog_GetLocalSignSeq(GWEN_HBCIDIALOG *d);
+void GWEN_IPCXMLDialog_SetLocalSignSeq(GWEN_HBCIDIALOG *d,
+                                       unsigned int i);
+
+unsigned int GWEN_IPCXMLDialog_GetRemoteSignSeq(GWEN_HBCIDIALOG *d);
+void GWEN_IPCXMLDialog_SetRemoteSignSeq(GWEN_HBCIDIALOG *d,
+                                        unsigned int i);
 
 
 #endif
+
+
+
 
 
 

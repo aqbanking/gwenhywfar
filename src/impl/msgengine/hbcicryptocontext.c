@@ -100,7 +100,7 @@ GWEN_KEYSPEC *GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx){
 
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_HBCICryptoContext_SetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                       GWEN_KEYSPEC *ks){
+                                       const GWEN_KEYSPEC *ks){
   assert(ctx);
   if (ctx->key)
     GWEN_KeySpec_free(ctx->key);
@@ -186,6 +186,22 @@ GWEN_HBCICryptoContext_GetCryptKeySize(GWEN_HBCICRYPTOCONTEXT *ctx){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+const char *GWEN_HBCICryptoContext_GetMode(GWEN_HBCICRYPTOCONTEXT *ctx){
+  assert(ctx);
+  return ctx->mode;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_HBCICryptoContext_SetMode(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                    const char *m){
+  assert(ctx);
+  assert(m);
+  free(ctx->mode);
+  ctx->mode=strdup(m);
+}
 
 
 

@@ -65,7 +65,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
-  if (GWEN_Buffer_RoomLeft(dst)<srclen) {
+  if (GWEN_Buffer_AllocRoom(dst, srclen)) {
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -109,7 +109,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
-  if (GWEN_Buffer_RoomLeft(dst)<srclen) {
+  if (GWEN_Buffer_AllocRoom(dst, srclen)) {
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -212,7 +212,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
-  if (GWEN_Buffer_RoomLeft(dst)<srclen) {
+  if (GWEN_Buffer_AllocRoom(dst, srclen)) {
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -276,6 +276,9 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(GWEN_CRYPTKEY *key,
   BN_CTX_start(bnctx);
   BN_mod_exp(bndecsig, bnsig, kd->e, kd->n, bnctx);
 
+  bnhash = BN_bin2bn(psrc, srclen, bnhash);
+
+  /*
   err=GWEN_CryptKeyRSA_SignBigNum(key, src, bnhash);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO(0, "here");
@@ -284,7 +287,8 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(GWEN_CRYPTKEY *key,
     BN_free(bnhash);
     BN_CTX_free(bnctx);
     return err;
-  }
+    }
+    */
 
   if (BN_cmp(bndecsig, bnhash)!=0) {
     BN_sub(bnhash, bnhash, kd->n);
@@ -311,7 +315,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(GWEN_CRYPTKEY *key,
 
 
 
-unsigned int GWEN_CryptKeyRSA_GetChunkSize(GWEN_CRYPTKEY *key){
+unsigned int GWEN_CryptKeyRSA_GetChunkSize(const GWEN_CRYPTKEY *key){
   RSA *kd;
 
   assert(key);

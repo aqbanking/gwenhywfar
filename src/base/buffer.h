@@ -277,6 +277,12 @@ void GWEN_Buffer_Reset(GWEN_BUFFER *bf);
 void GWEN_Buffer_Rewind(GWEN_BUFFER *bf);
 
 
+/**
+ * Make sure that the buffer has enough room for the given bytes.
+ */
+int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size);
+
+
 /* crops the buffer to the specified bytes */
 int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
                      unsigned int pos,

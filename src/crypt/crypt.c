@@ -128,9 +128,7 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
   if (key) {
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
-    free(key->keyType);
-    free(key->keyName);
-    free(key->owner);
+    free(key->keyspec);
     free(key);
   }
 }
@@ -143,14 +141,8 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(GWEN_CRYPTKEY *key){
   assert(key);
   assert(key->dupFn);
   newKey=key->dupFn(key);
-  assert(key->keyType);
-  newKey->keyType=strdup(key->keyType);
-  if (key->keyName)
-    newKey->keyName=strdup(key->keyName);
-  if (key->owner)
-    newKey->owner=strdup(key->owner);
-  newKey->number=key->number;
-  newKey->version=key->version;
+  assert(key->keyspec);
+  newKey->keyspec=GWEN_KeySpec_dup(key->keyspec);
   return newKey;
 }
 
@@ -204,7 +196,7 @@ GWEN_ERRORCODE GWEN_CryptKey_Verify(GWEN_CRYPTKEY *key,
 
 
 
-unsigned int GWEN_CryptKey_GetChunkSize(GWEN_CRYPTKEY *key){
+unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key){
   assert(key);
   assert(key->getChunkSizeFn);
   return key->getChunkSizeFn(key);
@@ -217,12 +209,16 @@ GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
   GWEN_DB_NODE *gr;
 
   assert(key);
-  key->keyType=strdup(GWEN_DB_GetCharValue(db, "type", 0, ""));
-  key->keyName=strdup(GWEN_DB_GetCharValue(db, "name", 0, ""));
-  key->owner=strdup(GWEN_DB_GetCharValue(db, "owner", 0, ""));
-  key->number==GWEN_DB_GetIntValue(db, "number", 0, 0);
-  key->version==GWEN_DB_GetIntValue(db, "version", 0, 0);
-
+  GWEN_KeySpec_SetKeyType(key->keyspec,
+                          GWEN_DB_GetCharValue(db, "type", 0, ""));
+  GWEN_KeySpec_SetKeyName(key->keyspec,
+                          GWEN_DB_GetCharValue(db, "name", 0, ""));
+  GWEN_KeySpec_SetOwner(key->keyspec,
+                        GWEN_DB_GetCharValue(db, "owner", 0, ""));
+  GWEN_KeySpec_SetNumber(key->keyspec,
+                         GWEN_DB_GetIntValue(db, "number", 0, 0));
+  GWEN_KeySpec_SetVersion(key->keyspec,
+                          GWEN_DB_GetIntValue(db, "version", 0, 0));
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT,
                       "data");
@@ -240,19 +236,19 @@ GWEN_ERRORCODE GWEN_CryptKey_ToDb(GWEN_CRYPTKEY *key,
   assert(key);
   GWEN_DB_SetCharValue(db,
                        GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "type", key->keyType);
+                       "type", GWEN_KeySpec_GetKeyType(key->keyspec));
   GWEN_DB_SetCharValue(db,
                        GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "name", key->keyName);
+                       "name", GWEN_KeySpec_GetKeyName(key->keyspec));
   GWEN_DB_SetCharValue(db,
                        GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "owner", key->owner);
+                       "owner", GWEN_KeySpec_GetOwner(key->keyspec));
   GWEN_DB_SetIntValue(db,
                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "number", key->number);
+                      "number", GWEN_KeySpec_GetNumber(key->keyspec));
   GWEN_DB_SetIntValue(db,
                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "version", key->version);
+                      "version", GWEN_KeySpec_GetVersion(key->keyspec));
 
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT |
@@ -289,9 +285,9 @@ GWEN_ERRORCODE GWEN_CryptKey_Close(GWEN_CRYPTKEY *key){
 
 
 
-const char *GWEN_CryptKey_GetKeyType(GWEN_CRYPTKEY *key){
+const char *GWEN_CryptKey_GetKeyType(const GWEN_CRYPTKEY *key){
   assert(key);
-  return key->keyType;
+  return GWEN_KeySpec_GetKeyType(key->keyspec);
 }
 
 
@@ -300,15 +296,14 @@ void GWEN_CryptKey_SetKeyType(GWEN_CRYPTKEY *key,
                               const char *s){
   assert(key);
   assert(s);
-  free(key->keyType);
-  key->keyType=strdup(s);
+  GWEN_KeySpec_SetKeyType(key->keyspec, s);
 }
 
 
 
-const char *GWEN_CryptKey_GetKeyName(GWEN_CRYPTKEY *key){
+const char *GWEN_CryptKey_GetKeyName(const GWEN_CRYPTKEY *key){
   assert(key);
-  return key->keyName;
+  return GWEN_KeySpec_GetKeyName(key->keyspec);
 }
 
 
@@ -317,15 +312,14 @@ void GWEN_CryptKey_SetKeyName(GWEN_CRYPTKEY *key,
                               const char *s){
   assert(key);
   assert(s);
-  free(key->keyName);
-  key->keyName=strdup(s);
+  GWEN_KeySpec_SetKeyName(key->keyspec, s);
 }
 
 
 
-const char *GWEN_CryptKey_GetOwner(GWEN_CRYPTKEY *key){
+const char *GWEN_CryptKey_GetOwner(const GWEN_CRYPTKEY *key){
   assert(key);
-  return key->owner;
+  return GWEN_KeySpec_GetOwner(key->keyspec);
 }
 
 
@@ -334,15 +328,14 @@ void GWEN_CryptKey_SetOwner(GWEN_CRYPTKEY *key,
                             const char *s){
   assert(key);
   assert(s);
-  free(key->owner);
-  key->owner=strdup(s);
+  GWEN_KeySpec_SetOwner(key->keyspec, s);
 }
 
 
 
-unsigned int GWEN_CryptKey_GetNumber(GWEN_CRYPTKEY *key){
+unsigned int GWEN_CryptKey_GetNumber(const GWEN_CRYPTKEY *key){
   assert(key);
-  return key->number;
+  return GWEN_KeySpec_GetNumber(key->keyspec);
 }
 
 
@@ -350,14 +343,14 @@ unsigned int GWEN_CryptKey_GetNumber(GWEN_CRYPTKEY *key){
 void GWEN_CryptKey_SetNumber(GWEN_CRYPTKEY *key,
                              unsigned int i){
   assert(key);
-  key->number=i;
+  GWEN_KeySpec_SetNumber(key->keyspec, i);
 }
 
 
 
-unsigned int GWEN_CryptKey_GetVersion(GWEN_CRYPTKEY *key){
+unsigned int GWEN_CryptKey_GetVersion(const GWEN_CRYPTKEY *key){
   assert(key);
-  return key->version;
+  return GWEN_KeySpec_GetVersion(key->keyspec);
 }
 
 
@@ -365,12 +358,12 @@ unsigned int GWEN_CryptKey_GetVersion(GWEN_CRYPTKEY *key){
 void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
                               unsigned int i){
   assert(key);
-  key->version=i;
+  GWEN_KeySpec_SetVersion(key->keyspec, i);
 }
 
 
 
-void *GWEN_CryptKey_GetKeyData(GWEN_CRYPTKEY *key){
+void *GWEN_CryptKey_GetKeyData(const GWEN_CRYPTKEY *key){
   assert(key);
   return key->keyData;
 }
@@ -389,7 +382,13 @@ void GWEN_CryptKey_SetKeyData(GWEN_CRYPTKEY *key,
 
 
 
-int GWEN_CryptKey_GetOpenCount(GWEN_CRYPTKEY *key){
+const GWEN_KEYSPEC *GWEN_CryptKey_GetKeySpec(const GWEN_CRYPTKEY *key){
+  assert(key);
+  return key->keyspec;
+}
+
+
+int GWEN_CryptKey_GetOpenCount(const GWEN_CRYPTKEY *key){
   assert(key);
   return key->openCount;
 }

@@ -35,11 +35,7 @@
 
 
 struct GWEN_CRYPTKEY {
-  char *keyType;
-  char *keyName;
-  char *owner;
-  unsigned int number;
-  unsigned int version;
+  GWEN_KEYSPEC *keyspec;
   void *keyData;
   int openCount;
 

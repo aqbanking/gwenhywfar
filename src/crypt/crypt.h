@@ -33,6 +33,7 @@
 #include <gwenhyfwar/error.h>
 #include <gwenhyfwar/buffer.h>
 #include <gwenhyfwar/db.h>
+#include <gwenhyfwar/keyspec.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,6 +48,7 @@ extern "C" {
 #define GWEN_CRYPT_ERROR_DECRYPT            6
 #define GWEN_CRYPT_ERROR_SIGN               7
 #define GWEN_CRYPT_ERROR_VERIFY             8
+#define GWEN_CRYPT_ERROR_UNSUPPORTED        9
 
 
   GWEN_ERRORCODE GWEN_Crypt_ModuleInit();
@@ -95,7 +97,8 @@ extern "C" {
                                                     GWEN_BUFFER *src,
                                                     GWEN_BUFFER *dst);
 
-  typedef unsigned int (*GWEN_CRYPTKEY_GETCHUNKSIZE_FN)(GWEN_CRYPTKEY *key);
+  typedef unsigned int
+    (*GWEN_CRYPTKEY_GETCHUNKSIZE_FN)(const GWEN_CRYPTKEY *key);
 
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_FROMDB_FN)(GWEN_CRYPTKEY *key,
                                                     GWEN_DB_NODE *db);
@@ -143,7 +146,7 @@ extern "C" {
                                       GWEN_BUFFER *src,
                                       GWEN_BUFFER *dst);
 
-  unsigned int GWEN_CryptKey_GetChunkSize(GWEN_CRYPTKEY *key);
+  unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key);
 
   GWEN_ERRORCODE GWEN_CryptKey_FromDb(GWEN_CRYPTKEY *key,
                                       GWEN_DB_NODE *db);
@@ -159,27 +162,33 @@ extern "C" {
 
   GWEN_ERRORCODE GWEN_CryptKey_Close(GWEN_CRYPTKEY *key);
 
-  const char *GWEN_CryptKey_GetKeyType(GWEN_CRYPTKEY *key);
+  /**
+   * Returns a pointer to the key's description.
+   * You MUST NOT free the returned pointer.
+   */
+  const GWEN_KEYSPEC *GWEN_CryptKey_GetKeySpec(const GWEN_CRYPTKEY *key);
+
+  const char *GWEN_CryptKey_GetKeyType(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetKeyType(GWEN_CRYPTKEY *key,
                                 const char *s);
 
-  const char *GWEN_CryptKey_GetKeyName(GWEN_CRYPTKEY *key);
+  const char *GWEN_CryptKey_GetKeyName(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetKeyName(GWEN_CRYPTKEY *key,
                                 const char *s);
 
-  const char *GWEN_CryptKey_GetOwner(GWEN_CRYPTKEY *key);
+  const char *GWEN_CryptKey_GetOwner(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetOwner(GWEN_CRYPTKEY *key,
                               const char *s);
-  unsigned int GWEN_CryptKey_GetNumber(GWEN_CRYPTKEY *key);
+  unsigned int GWEN_CryptKey_GetNumber(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetNumber(GWEN_CRYPTKEY *key,
                                unsigned int i);
-  unsigned int GWEN_CryptKey_GetVersion(GWEN_CRYPTKEY *key);
+  unsigned int GWEN_CryptKey_GetVersion(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
                                 unsigned int i);
-  void *GWEN_CryptKey_GetKeyData(GWEN_CRYPTKEY *key);
+  void *GWEN_CryptKey_GetKeyData(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_SetKeyData(GWEN_CRYPTKEY *key,
                                 void *kd);
-  int GWEN_CryptKey_GetOpenCount(GWEN_CRYPTKEY *key);
+  int GWEN_CryptKey_GetOpenCount(const GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_IncrementOpenCount(GWEN_CRYPTKEY *key);
   void GWEN_CryptKey_DecrementOpenCount(GWEN_CRYPTKEY *key);
 

@@ -58,9 +58,6 @@ struct GWEN_BUFFER {
 };
 
 
-int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size);
-
-
 void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
                                  unsigned int pos,
                                  int offset);

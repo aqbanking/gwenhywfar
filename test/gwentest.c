@@ -13,6 +13,9 @@
 #include <gwenhyfwar/msgengine.h>
 #include <gwenhyfwar/text.h>
 #include <gwenhyfwar/cmdlayer.h>
+#include <gwenhyfwar/hbcidialog.h>
+#include <gwenhyfwar/hbcimsg.h>
+#include <gwenhyfwar/ipcxmldialog.h>
 
 
 int testDB(int argc, char **argv) {
@@ -445,6 +448,113 @@ int testPing(int argc, char **argv) {
 
 
 
+int testKey(int argc, char **argv) {
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFER *srcbuf;
+  GWEN_BUFFER *dstbuf;
+  GWEN_BUFFER *rawbuf;
+  int i;
+
+  if (argc<3) {
+    fprintf(stderr, "Data needed\n");
+    return 1;
+  }
+  key=GWEN_CryptKey_Factory("RSA");
+  if (!key) {
+    fprintf(stderr, "Could not create key\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Generating key...\n");
+  err=GWEN_CryptKey_Generate(key, 768);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Generating key done\n");
+
+  srcbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  GWEN_Buffer_ReserveBytes(srcbuf, 128);
+  dstbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  rawbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+
+  GWEN_Buffer_AppendBytes(srcbuf, argv[2], strlen(argv[2]));
+  fprintf(stderr, "Buffer before padding:\n");
+  GWEN_Text_DumpString(GWEN_Buffer_GetStart(srcbuf),
+                       GWEN_Buffer_GetUsedBytes(srcbuf),
+                       stderr, 2);
+
+  GWEN_Buffer_SetPos(srcbuf, 0);
+  i=GWEN_CryptKey_GetChunkSize(key)-GWEN_Buffer_GetUsedBytes(srcbuf);
+  fprintf(stderr, "Inserting %d bytes\n", i);
+  while(i-->0) {
+    if (GWEN_Buffer_InsertByte(srcbuf, (char)0)) {
+      fprintf(stderr, "Could not insert byte\n");
+      return 2;
+    }
+  } /* while */
+
+  fprintf(stderr, "Buffer after padding:\n");
+  GWEN_Text_DumpString(GWEN_Buffer_GetStart(srcbuf),
+                       GWEN_Buffer_GetUsedBytes(srcbuf),
+                       stderr, 2);
+
+  fprintf(stderr, "Encrypting\n");
+  err=GWEN_CryptKey_Encrypt(key, srcbuf, dstbuf);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Encrypting done.\n");
+
+  fprintf(stderr, "Buffer after encryption:\n");
+  GWEN_Text_DumpString(GWEN_Buffer_GetStart(dstbuf),
+                       GWEN_Buffer_GetUsedBytes(dstbuf),
+                       stderr, 2);
+
+  fprintf(stderr, "Decrypting\n");
+  GWEN_Buffer_SetPos(dstbuf, 0);
+  err=GWEN_CryptKey_Decrypt(key, dstbuf, rawbuf);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Decrypting done.\n");
+
+  fprintf(stderr, "Buffer after decryption:\n");
+  GWEN_Text_DumpString(GWEN_Buffer_GetStart(rawbuf),
+                       GWEN_Buffer_GetUsedBytes(rawbuf),
+                       stderr, 2);
+
+  fprintf(stderr, "Signing.\n");
+  GWEN_Buffer_Reset(dstbuf);
+  GWEN_Buffer_Rewind(srcbuf);
+  err=GWEN_CryptKey_Sign(key, srcbuf, dstbuf);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Signing done.\n");
+  fprintf(stderr, "Buffer after signing:\n");
+  GWEN_Text_DumpString(GWEN_Buffer_GetStart(dstbuf),
+                       GWEN_Buffer_GetUsedBytes(dstbuf),
+                       stderr, 2);
+
+  fprintf(stderr, "Verifying.\n");
+  GWEN_Buffer_Rewind(srcbuf);
+  GWEN_Buffer_Rewind(dstbuf);
+  err=GWEN_CryptKey_Verify(key, srcbuf, dstbuf);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Verifying done.\n");
+
+  return 0;
+}
+
+
 
 int main(int argc, char **argv) {
   GWEN_ERRORCODE err;
@@ -461,6 +571,7 @@ int main(int argc, char **argv) {
     DBG_ERROR_ERR(0, err);
     return 1;
   }
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
   fprintf(stderr, "Gwenhywfar initialized\n");
 
   /*rv=testDB(argc, argv);
@@ -478,6 +589,8 @@ int main(int argc, char **argv) {
     rv=testDBfile2(argc, argv);
   else if (strcasecmp(argv[1], "list")==0)
     rv=testListMsg(argc, argv);
+  else if (strcasecmp(argv[1], "key")==0)
+    rv=testKey(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

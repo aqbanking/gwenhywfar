@@ -56,7 +56,7 @@ void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
 
 
 
-GWEN_KEYSPEC *GWEN_KeySpec_dup(GWEN_KEYSPEC *ks){
+GWEN_KEYSPEC *GWEN_KeySpec_dup(const GWEN_KEYSPEC *ks){
   GWEN_KEYSPEC *newKs;
 
   assert(ks);
@@ -99,7 +99,7 @@ void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
 
 
 
-const char *GWEN_KeySpec_GetKeyType(GWEN_KEYSPEC *ks){
+const char *GWEN_KeySpec_GetKeyType(const GWEN_KEYSPEC *ks){
   assert(ks);
   return ks->keyType;
 }
@@ -116,7 +116,7 @@ void GWEN_KeySpec_SetKeyType(GWEN_KEYSPEC *ks,
 
 
 
-const char *GWEN_KeySpec_GetKeyName(GWEN_KEYSPEC *ks){
+const char *GWEN_KeySpec_GetKeyName(const GWEN_KEYSPEC *ks){
   assert(ks);
   return ks->keyName;
 }
@@ -133,7 +133,7 @@ void GWEN_KeySpec_SetKeyName(GWEN_KEYSPEC *ks,
 
 
 
-const char *GWEN_KeySpec_GetOwner(GWEN_KEYSPEC *ks){
+const char *GWEN_KeySpec_GetOwner(const GWEN_KEYSPEC *ks){
   assert(ks);
   return ks->owner;
 }
@@ -150,7 +150,7 @@ void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks,
 
 
 
-unsigned int GWEN_KeySpec_GetNumber(GWEN_KEYSPEC *ks){
+unsigned int GWEN_KeySpec_GetNumber(const GWEN_KEYSPEC *ks){
   assert(ks);
   return ks->number;
 }
@@ -165,7 +165,7 @@ void GWEN_KeySpec_SetNumber(GWEN_KEYSPEC *ks,
 
 
 
-unsigned int GWEN_KeySpec_GetVersion(GWEN_KEYSPEC *ks){
+unsigned int GWEN_KeySpec_GetVersion(const GWEN_KEYSPEC *ks){
   assert(ks);
   return ks->version;
 }
@@ -173,7 +173,7 @@ unsigned int GWEN_KeySpec_GetVersion(GWEN_KEYSPEC *ks){
 
 
 void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
-                                    unsigned int i){
+                             unsigned int i){
   assert(ks);
   ks->version=i;
 }

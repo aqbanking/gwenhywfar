@@ -88,7 +88,8 @@ int GWEN_HBCIMsg_ReadMessage(GWEN_MSGENGINE *e,
 
 int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
                                      GWEN_HBCICRYPTOCONTEXT *ctx,
-                                     GWEN_DB_NODE *n);
+                                     GWEN_DB_NODE *n,
+                                     int crypt);
 
 int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr);
 

@@ -58,8 +58,12 @@ void GWEN_HBCICryptoContext_SetServiceCode(GWEN_HBCICRYPTOCONTEXT *ctx,
                                            const char *s);
 
 GWEN_KEYSPEC *GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx);
+
+/**
+ * Stores a copy of the given keyspec.
+ */
 void GWEN_HBCICryptoContext_SetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx,
-                                       GWEN_KEYSPEC *ks);
+                                       const GWEN_KEYSPEC *ks);
 
 void GWEN_HBCICryptoContext_SetCryptKey(GWEN_HBCICRYPTOCONTEXT *ctx,
                                         const char *p,
@@ -70,7 +74,9 @@ const char *
 unsigned int
   GWEN_HBCICryptoContext_GetCryptKeySize(GWEN_HBCICRYPTOCONTEXT *ctx);
 
-
+const char *GWEN_HBCICryptoContext_GetMode(GWEN_HBCICRYPTOCONTEXT *ctx);
+void GWEN_HBCICryptoContext_SetMode(GWEN_HBCICRYPTOCONTEXT *ctx,
+                                    const char *m);
 
 
 #endif
