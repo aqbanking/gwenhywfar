@@ -357,7 +357,6 @@ GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl){
 }
 
 
-GWENHYWFAR_API
 void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l, 
 			      void *(*func)(const char *s, void *u), 
 			      void *user_data) {
