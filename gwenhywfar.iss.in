@@ -110,7 +110,7 @@ begin
   windir := MingwBacksl(ExpandConstant('{win}'));
   appdir := MingwBacksl(ExpandConstant('{app}'));
   includedir := appdir + '/include';
-  plugindir := appdir + '/lib/@PACKAGE@/plugins';
+  plugindir := appdir + '/lib/@PACKAGE@/plugins/@GWENHYWFAR_SO_EFFECTIVE@';
 
   { Now make all the replacements }
   { Explanation: StringChange(S,FromStr,ToStr): Change all occurances in S of FromStr to ToStr. }
