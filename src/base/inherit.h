@@ -175,10 +175,10 @@ extern "C" {
     assert(element);\
     assert(element->INHERIT__list);\
     \
-    d=GWEN_Inherit_FindData(element->INHERIT__list, id, 0);\
+    d=GWEN_Inherit_FindData(element->INHERIT__list, id, 1);\
     if (!d) {\
-      fprintf(stderr,\
-              "ERROR: Type \"%s\" already inherits base type\n",\
+      fprintf(stderr, \
+              "ERROR: Type \"%s\" does not inherit base type\n",\
               typeName);\
       abort();\
     }\
