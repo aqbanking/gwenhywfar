@@ -29,13 +29,18 @@
 #define GWEN_UI_TEXTWIDGET_H
 
 #include <gwenhywfar/widget.h>
+#include <gwenhywfar/xml.h>
+
 
 typedef struct GWEN_TW_LINE GWEN_TW_LINE;
+GWEN_LIST_FUNCTION_DEFS(GWEN_TW_LINE, GWEN_TWLine)
+
 
 #define GWEN_TEXTWIDGET_FLAGS_BREAKLINES  0x00010000
 #define GWEN_TEXTWIDGET_FLAGS_LINEMODE    0x00020000
 #define GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT   0x00040000
 #define GWEN_TEXTWIDGET_FLAGS_DATACHANGE  0x00080000
+#define GWEN_TEXTWIDGET_FLAGS_FIXED       0x00100000
 
 
 GWEN_WIDGET *GWEN_TextWidget_new(GWEN_WIDGET *parent,
@@ -77,7 +82,18 @@ int GWEN_TextWidget_EnsureVisible(GWEN_WIDGET *w,
                                   int x, int y,
                                   int width, int height);
 
+GWEN_TW_LINE_LIST *GWEN_TextWidget_XMLToLines(GWEN_XMLNODE *n,
+                                              int leftBorder,
+                                              int rightBorder);
+GWEN_TW_LINE_LIST *GWEN_TextWidget_TextToLines(const char *s,
+                                               int leftBorder,
+                                               int rightBorder);
 
+int GWEN_TextWidget_SetPreparedText(GWEN_WIDGET *w,
+                                    GWEN_TW_LINE_LIST *ll,
+                                    GWEN_EVENT_SETTEXT_MODE m);
+
+int GWEN_TextWidget_GetMaxWidth(GWEN_TW_LINE_LIST *ll);
 
 
 

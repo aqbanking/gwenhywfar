@@ -56,6 +56,15 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   GWEN_WIDGET *w;
   GWEN_EVENT *e;
 
+  if (parent) {
+    if (parent->state & GWEN_WIDGET_STATE_CLOSED) {
+      DBG_ERROR(0, "Parent is closed, cannot create subwindow \"%s\"",
+                name);
+      return 0;
+    }
+  }
+
+  flags|=GWEN_WIDGET_FLAGS_PANEL;
   GWEN_NEW_OBJECT(GWEN_WIDGET, w);
   GWEN_INHERIT_INIT(GWEN_WIDGET, w);
   GWEN_LIST_INIT(GWEN_WIDGET, w);
@@ -118,7 +127,7 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
     //                 height, width,
     //                 y, x);
     GWEN_Widget_List_Add(w, w->parent->children);
-    wrefresh(w->window);
+    //wrefresh(w->window);
   }
   else {
     GWEN_UI_AddRootWidget(w);
@@ -127,7 +136,7 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
     w->window=newwin(height, width,
                      y, x);
     assert(w->window);
-    refresh();
+    //refresh();
   }
   leaveok(w->window, FALSE);
 
@@ -136,6 +145,8 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
     update_panels();
     top_panel(w->panel);
   }
+  else
+    wrefresh(w->window);
 
   keypad(w->window, (w->flags & GWEN_WIDGET_FLAGS_KEYPAD)?TRUE:FALSE);
   scrollok(w->window, (w->flags & GWEN_WIDGET_FLAGS_SCROLL)?TRUE:FALSE);
@@ -166,12 +177,25 @@ void GWEN_Widget_Attach(GWEN_WIDGET *w){
 void GWEN_Widget_free(GWEN_WIDGET *w){
   if (w) {
     assert(w->usage);
+    DBG_NOTICE(0, "Usage of widget \"%s\": %d", w->name, w->usage);
     if ((--w->usage)==0) {
       GWEN_INHERIT_FINI(GWEN_WIDGET, w);
       free(w->name);
       free(w->typeName);
       free(w->text);
       GWEN_Widget_List_free(w->children);
+      wclear(w->window);
+      if (w->window) {
+        DBG_WARN(0, "Widget still open");
+        if (w->panel) {
+          del_panel(w->panel);
+          delwin(w->window);
+          update_panels();
+        }
+        else {
+          delwin(w->window);
+        }
+      }
       GWEN_LIST_FINI(GWEN_WIDGET, w);
       GWEN_FREE_OBJECT(w);
     }
@@ -376,8 +400,15 @@ GWEN_UI_RESULT GWEN_Widget_HandleEvent(GWEN_WIDGET *w,
       return GWEN_UIResult_Error;
     }
     else if (rv==GWEN_UIResult_Quit) {
-      DBG_INFO(0, "Event handler want's to stop the loop");
+      DBG_INFO(0, "Event handler want's to stop the loop (quit)");
       return GWEN_UIResult_Quit;
+    }
+    else if (rv==GWEN_UIResult_Finished) {
+      DBG_INFO(0, "Event handler want's to stop the loop (finished)");
+      return GWEN_UIResult_Finished;
+    }
+    else {
+      return rv;
     }
   }
 
@@ -468,42 +499,49 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     }
     if (w->text)
       mvwprintw(w->window, y, x, w->text);
-    wrefresh(w->window);
+    GWEN_Widget_Refresh(w);
+    //wrefresh(w->window);
     //doupdate();
     return GWEN_UIResult_Handled;
   }
 
   case GWEN_EventType_Close: {
     DBG_INFO(0, "Event: Close(%s)", w->name);
-    if (w->state & GWEN_WIDGET_STATE_CLOSED) {
-      DBG_NOTICE(0, "Widget already *is* closed");
-      return GWEN_UIResult_NotHandled;
-    }
-    w->state|=GWEN_WIDGET_STATE_CLOSED;
-    if (w->parent) {
-      GWEN_EVENT *eClosed;
-
-      /* send "Closed" event to parent.
-       * Since events are attached to both sender and recipient of an event
-       * this widget will not be deleted now, even though the function
-       * GWEN_Widget_free() is called below. That will just decrement the
-       * usage counter of this widget. When the "closed" event is handled
-       * and freed this widget will finally be deleted.
-       */
-      eClosed=GWEN_EventClosed_new();
-      assert(eClosed);
-      if (GWEN_Widget_SendEvent(w, w->parent, eClosed)) {
-        DBG_INFO(0, "Could not send event");
-        GWEN_Event_free(eClosed);
+    if (GWEN_Event_GetRecipient(e)==w) {
+      if (w->state & GWEN_WIDGET_STATE_CLOSED) {
+        DBG_NOTICE(0, "Widget already *is* closed");
+        return GWEN_UIResult_NotHandled;
       }
+      w->state|=GWEN_WIDGET_STATE_CLOSED;
+      if (w->parent) {
+        GWEN_EVENT *eClosed;
+
+        /* send "Closed" event to parent.
+         * Since events are attached to both sender and recipient of an event
+         * this widget will not be deleted now, even though the function
+         * GWEN_Widget_free() is called below. That will just decrement the
+         * usage counter of this widget. When the "closed" event is handled
+         * and freed this widget will finally be deleted.
+         */
+        eClosed=GWEN_EventClosed_new();
+        assert(eClosed);
+        if (GWEN_Widget_SendEvent(w->parent, w, eClosed)) {
+          DBG_INFO(0, "Could not send event");
+          GWEN_Event_free(eClosed);
+        }
+      }
+      if (w->flags & GWEN_WIDGET_FLAGS_PANEL) {
+        wclear(w->window);
+        del_panel(w->panel);
+        delwin(w->window);
+        w->window=0;
+        update_panels();
+      }
+      //refresh();
+      return GWEN_UIResult_Handled;
     }
-    if (w->flags & GWEN_WIDGET_FLAGS_PANEL) {
-      wclear(w->window);
-      del_panel(w->panel);
-    }
-    GWEN_Widget_free(w);
-    refresh();
-    return GWEN_UIResult_Handled;
+    else
+      return GWEN_UIResult_NotHandled;
   }
 
   case GWEN_EventType_Closed: {
@@ -545,7 +583,6 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
 
   case GWEN_EventType_LastClosed:
     DBG_INFO(0, "Event: LastClosed(%s)", w->name);
-    GWEN_Widget_Close(w);
     return GWEN_UIResult_Handled;
 
   case GWEN_EventType_Command:
@@ -556,6 +593,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       return GWEN_UIResult_Handled;
     case GWEN_WIDGET_CMD_QUIT:
       return GWEN_UIResult_Quit;
+    case GWEN_WIDGET_CMD_FINISHED:
+      return GWEN_UIResult_Finished;
     default:
       break;
     }
@@ -670,7 +709,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
           }
           p++;
           c=*p;
-          DBG_VERBOUS(0, "Setting new attributes %02x", c);
+          DBG_NOTICE(0, "Setting new attributes %02x", c);
           attrs=COLOR_PAIR(w->colour);
           if (c & GWEN_WIDGET_ATT_STANDOUT)
             attrs|=A_BOLD;
@@ -701,7 +740,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
           case GWEN_WIDGET_CHAR_TTEE: ch=ACS_TTEE; break;
           case GWEN_WIDGET_CHAR_BTEE: ch=ACS_BTEE; break;
           case GWEN_WIDGET_CHAR_BLOCK: ch=ACS_BLOCK; break;
-          default: ch='?'; break;
+          default: ch='?'; DBG_NOTICE(0, "Bad character \"%04x\"", c); break;
           } /* switch */
           if (waddch(w->window, ch | attrs)==ERR) {
             DBG_VERBOUS(0, "Error writing to window (%02x)", c);
@@ -785,7 +824,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
 
   case GWEN_EventType_Refresh:
     DBG_INFO(0, "Event: Refresh(%s)", w->name);
-    wrefresh(w->window);
+    //wrefresh(w->window);
+    update_panels();
     return GWEN_UIResult_Handled;
 
   case GWEN_EventType_Move:
@@ -803,11 +843,12 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     }
     else if (key==KEY_F(5)) {
       DBG_NOTICE(0, "Updating");
-      doupdate();
+      //doupdate();
+      update_panels();
     }
     else if (key==KEY_F(6)) {
       DBG_NOTICE(0, "Refreshing");
-      wrefresh(w->window);
+      //wrefresh(w->window);
       GWEN_Widget_Refresh(w);
     }
     else if (key==KEY_F(7)) {
@@ -841,7 +882,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
         wbkgd(w->window, COLOR_PAIR(w->colour));
         wattr_set(w->window, 0, w->colour, 0);
         w->state|=GWEN_WIDGET_STATE_HIGHLIGHT;
-        wrefresh(w->window);
+        GWEN_Widget_Refresh(w);
+        //wrefresh(w->window);
       }
       else {
         w->state&=~GWEN_WIDGET_STATE_HIGHLIGHT;
@@ -855,7 +897,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
         w->colour=w->normalColour;
         wbkgd(w->window, COLOR_PAIR(w->colour));
         wattr_set(w->window, 0, w->colour, 0);
-        wrefresh(w->window);
+        GWEN_Widget_Refresh(w);
+        //wrefresh(w->window);
       }
     }
     return GWEN_UIResult_Handled;
@@ -1196,12 +1239,12 @@ void GWEN_Widget_Dump(GWEN_WIDGET *w, int indent) {
       GWEN_Buffer_AppendByte(m, '-');
   }
 
-  DBG_NOTICE(0, "%s %s[%s]: Dims: %d/%d %d/%d",
+  DBG_NOTICE(0, "%s %s[%s]: Dims: %d/%d %d/%d [%d]",
              indent?GWEN_Buffer_GetStart(m):"",
              w->name,
              w->typeName,
              w->x, w->y,
-             w->width, w->height);
+             w->width, w->height, w->usage);
   GWEN_Buffer_free(m);
   sw=GWEN_Widget_List_First(w->children);
   while(sw) {
@@ -1236,8 +1279,22 @@ int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w) {
 
 int GWEN_Widget_Close(GWEN_WIDGET *w) {
   GWEN_EVENT *e;
+  GWEN_WIDGET *subw;
 
   assert(w);
+
+  if (w->state & GWEN_WIDGET_STATE_CLOSED) {
+    DBG_ERROR(0, "Widget \"%s\" is already closed", w->name);
+    return -1;
+  }
+
+  /* close all children */
+  subw=GWEN_Widget_List_First(w->children);
+  while(subw) {
+    GWEN_Widget_Close(subw);
+    subw=GWEN_Widget_List_Next(subw);
+  } /* while */
+
   e=GWEN_EventClose_new();
   assert(e);
   if (GWEN_Widget_SendEvent(w, w, e)) {
@@ -1245,7 +1302,30 @@ int GWEN_Widget_Close(GWEN_WIDGET *w) {
     GWEN_Event_free(e);
     return -1;
   }
+
   return 0;
+}
+
+
+
+GWEN_UI_RESULT GWEN_Widget_Run(GWEN_WIDGET *w) {
+  GWEN_UI_RESULT res;
+
+  for (;;) {
+    GWEN_EVENT *e;
+
+    e=GWEN_UI_GetNextEvent();
+    if (!e)
+      return GWEN_UIResult_NotHandled;
+    DBG_NOTICE(0, "Got this event:");
+    GWEN_Event_Dump(e);
+    res=GWEN_UI_DispatchEvent(e);
+    GWEN_Event_free(e);
+    if (res==GWEN_UIResult_Finished ||
+        res==GWEN_UIResult_Quit) {
+      return res;
+    }
+  }
 }
 
 

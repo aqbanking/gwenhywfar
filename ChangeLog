@@ -1,9 +1,20 @@
+
+2004/06/25: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui:
+  - nearly completed MessageBox
+  - reworked XML->text parsing of TextWidget
+  - close events do now work
+  - provide more control over event handling for applications
+
+
 2004-06-24   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, src/Makefile.am: Make the compilation of the UI
 	module conditional on whether ncurses is available. If it is not
 	there, then the whole GWEN_UI module will neither be compiled nor
 	installed.
+
 
 2004/06/24: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

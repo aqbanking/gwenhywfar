@@ -28,6 +28,10 @@
 #ifndef GWEN_UI_MESSAGEBOX_P_H
 #define GWEN_UI_MESSAGEBOX_P_H
 
+#define GWEN_MSGBOX_CMD_BUT1 1
+#define GWEN_MSGBOX_CMD_BUT2 2
+#define GWEN_MSGBOX_CMD_BUT3 3
+
 
 #include <gwenhywfar/messagebox.h>
 

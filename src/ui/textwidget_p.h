@@ -34,8 +34,6 @@
 #include <gwenhywfar/buffer.h>
 
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_TW_LINE, GWEN_TWLine)
-
 struct GWEN_TW_LINE {
   GWEN_LIST_ELEMENT(GWEN_TW_LINE)
   GWEN_TYPE_UINT32 usage;
@@ -58,12 +56,15 @@ struct GWEN_TW_LINE {
   int decompressed;
   GWEN_TYPE_UINT32 currentAtts;
 };
-GWEN_TW_LINE *GWEN_TWLine_new(GWEN_TYPE_UINT32 atts, const char *s);
+GWEN_TW_LINE *GWEN_TWLine_new(GWEN_TYPE_UINT32 atts,
+                              const char *s,
+                              int len);
 void GWEN_TWLine_free(GWEN_TW_LINE *l);
 void GWEN_TWLine_Attach(GWEN_TW_LINE *l);
 int GWEN_TWLine_SetText(GWEN_TW_LINE *l,
                         GWEN_TYPE_UINT32 atts,
-                        const char *s);
+                        const char *s,
+                        int len);
 
 
 
@@ -123,10 +124,26 @@ int GWEN_TextWidget__DrawArea(GWEN_WIDGET *w,
                               int x, int len,
                               int y, int height);
 
-int GWEN_TextWidget_DecompressLine(GWEN_WIDGET *w, GWEN_TW_LINE *l);
+int GWEN_TextWidget_DecompressLine(GWEN_TW_LINE *l);
 int GWEN_TextWidget_CompressLine(GWEN_TW_LINE *l);
 
-int GWEN_TextWidget_SelectLine(GWEN_WIDGET *w, GWEN_TW_LINE *l);
+int GWEN_TextWidget_SelectLine(GWEN_TW_LINE *l);
+
+GWEN_TW_LINE *GWEN_TextWidget__NewLine(GWEN_TYPE_UINT32 startAtts,
+                                       int indent,
+                                       int rightBorder);
+int GWEN_TextWidget__ParseXMLTag(GWEN_XMLNODE *n,
+                                 GWEN_TYPE_UINT32 currentAtts,
+                                 int indent,
+                                 GWEN_TW_LINE_LIST *ll,
+                                 GWEN_TW_LINE **l);
+int GWEN_TextWidget__ParseXMLSubNodes(GWEN_XMLNODE *n,
+                                      GWEN_TYPE_UINT32 currentAtts,
+                                      int indent,
+                                      GWEN_TW_LINE_LIST *ll,
+                                      GWEN_TW_LINE **l);
+
+
 
 
 

@@ -33,15 +33,34 @@ typedef enum {
   GWEN_UIResult_Handled=0,
   GWEN_UIResult_NotHandled,
   GWEN_UIResult_Error,
+  GWEN_UIResult_Finished,
   GWEN_UIResult_Quit
 } GWEN_UI_RESULT;
 
+
+#include <gwenhywfar/event.h>
 
 int GWEN_UI_Begin();
 int GWEN_UI_End();
 
 void GWEN_UI_Flush();
 GWEN_UI_RESULT GWEN_UI_Work();
+
+
+GWEN_EVENT *GWEN_UI_PeekNextEvent();
+GWEN_EVENT *GWEN_UI_GetNextEvent();
+GWEN_UI_RESULT GWEN_UI_DispatchEvent(GWEN_EVENT *e);
+
+GWEN_WIDGET *GWEN_UI_GetFocusWidget();
+
+
+
+int GWEN_UI_GetCols();
+int GWEN_UI_GetLines();
+
+
+int GWEN_UI_Calculate_MinWidth(const char *text);
+int GWEN_UI_Calculate_Height(const char *text, int width);
 
 
 #endif

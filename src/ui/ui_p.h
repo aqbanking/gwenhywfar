@@ -48,6 +48,8 @@ GWEN_UI_RESULT GWEN_UI_HandleEvents();
 
 GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w);
 
+int GWEN_UI_HandleKeyEvents();
+
 
 #endif
 

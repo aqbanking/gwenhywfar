@@ -43,6 +43,7 @@ struct GWEN_EVENT {
   GWEN_WIDGET *recipient;
   time_t posted;
   GWEN_TYPE_UINT32 id;
+  GWEN_TYPE_UINT32 usage;
 };
 
 

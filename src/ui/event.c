@@ -49,6 +49,7 @@ GWEN_EVENT *GWEN_Event_new(GWEN_EVENT_TYPE t) {
   GWEN_LIST_INIT(GWEN_EVENT, e);
   e->type=t;
   e->id=++GWEN_EVENT__lastId;
+  e->usage=1;
   return e;
 }
 
@@ -56,11 +57,14 @@ GWEN_EVENT *GWEN_Event_new(GWEN_EVENT_TYPE t) {
 
 void GWEN_Event_free(GWEN_EVENT *e){
   if (e) {
-    GWEN_INHERIT_FINI(GWEN_EVENT, e);
-    GWEN_Widget_free(e->recipient);
-    GWEN_Widget_free(e->sender);
-    GWEN_LIST_FINI(GWEN_EVENT, e);
-    GWEN_FREE_OBJECT(e);
+    assert(e->usage);
+    if ((--e->usage)==0) {
+      GWEN_INHERIT_FINI(GWEN_EVENT, e);
+      GWEN_Widget_free(e->recipient);
+      GWEN_Widget_free(e->sender);
+      GWEN_LIST_FINI(GWEN_EVENT, e);
+      GWEN_FREE_OBJECT(e);
+    }
   }
 }
 
@@ -128,6 +132,11 @@ const char *GWEN_Event_TypeName(GWEN_EVENT_TYPE t) {
   case GWEN_EventType_ChgAtts: s="ChgAtts"; break;
   case GWEN_EventType_Clear: s="Clear"; break;
   case GWEN_EventType_Highlight: s="Highlight"; break;
+  case GWEN_EventType_ContentChg: s="ContentChange"; break;
+  case GWEN_EventType_Command: s="Command"; break;
+  case GWEN_EventType_Close: s="Close"; break;
+  case GWEN_EventType_Closed: s="Closed"; break;
+  case GWEN_EventType_LastClosed: s="LastClosed"; break;
   case GWEN_EventType_None: s="None"; break;
   default: s="Unknown"; break;
   }

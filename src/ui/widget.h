@@ -102,6 +102,7 @@ typedef enum {
 
 #define GWEN_WIDGET_CMD_CLOSE     0x80000001
 #define GWEN_WIDGET_CMD_QUIT      0x80000002
+#define GWEN_WIDGET_CMD_FINISHED  0x80000003
 
 
 typedef GWEN_UI_RESULT (*GWEN_WIDGET_EVENTHANDLER_FN)(GWEN_WIDGET *w,
@@ -175,6 +176,9 @@ int GWEN_Widget_Close(GWEN_WIDGET *w);
 
 int GWEN_Widget_IsChildOf(GWEN_WIDGET *wchild, GWEN_WIDGET *w);
 int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w);
+
+
+GWEN_UI_RESULT GWEN_Widget_Run(GWEN_WIDGET *w);
 
 
 
