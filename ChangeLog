@@ -4,6 +4,12 @@
   ------------------------------------------------------------------------
 
 
+2005/02/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- now the fingerprint of a certificate is written to the DB when converting a
+  certificate
+
+
 2005/02/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added function GWEN_DBIO_GetPluginPath() which looksup the DBIO path from

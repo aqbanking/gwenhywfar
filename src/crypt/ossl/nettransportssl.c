@@ -1103,6 +1103,8 @@ GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert) {
   X509_NAME *nm;
   ASN1_TIME *d;
   EVP_PKEY *pktmp;
+  unsigned int  md_size;
+  unsigned char md[EVP_MAX_MD_SIZE];
 
   nm=X509_get_subject_name(cert);
 
@@ -1186,6 +1188,37 @@ GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert) {
     } /* if there is data for the public key */
     EVP_PKEY_free(pktmp);
   } /* if there is a pubkey */
+
+  if (!X509_digest(cert, EVP_md5(), md, &md_size)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Error building fingerprint of the certificate");
+  }
+  if (!md_size) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Empty fingerprint of the certificate");
+  }
+  else {
+    GWEN_BUFFER *dbuf;
+
+    GWEN_DB_SetBinValue(dbCert,
+			GWEN_DB_FLAGS_DEFAULT |
+			GWEN_DB_FLAGS_OVERWRITE_VARS,
+			"fingerprint", md, md_size);
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (GWEN_Text_ToHexBuffer(md, md_size, dbuf, 2, ':', 0)) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Could not convert fingerprint to hex");
+    }
+    else {
+      GWEN_DB_SetCharValue(dbCert,
+			   GWEN_DB_FLAGS_DEFAULT |
+			   GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "HexFingerprint", GWEN_Buffer_GetStart(dbuf));
+    }
+    GWEN_Buffer_free(dbuf);
+  }
+
   return dbCert;
 }
 
