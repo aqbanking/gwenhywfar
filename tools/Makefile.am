@@ -1,2 +1,2 @@
 SUBDIRS=xmlmerge @NCURSES_TOOLS@ typemaker
-DIST_SUBDIRS=xmlmerge dlgtest
+DIST_SUBDIRS=xmlmerge dlgtest typemaker

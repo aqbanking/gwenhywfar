@@ -1,10 +1,12 @@
 
 This is Gwenhywfar, a multi-platform helper library for networking and
-security applications and libraries. It is heavily used by libchipcard
-http://www.libchipcard.de, OpenHBCI2 http://www.openhbci.de, the
-simulation tool Simthetic http://simthetic.sourceforge.net and
-AqBanking/AqHBCI (http://www.aquamaniac.de/aqbanking/).
-
+security applications and libraries. 
+It is used by 
+ - libchipcard (http://www.libchipcard.de), 
+ - OpenHBCI2 (http://www.openhbci.de), 
+ - Simthetic, the simulation tool (http://simthetic.sourceforge.net)
+ - AqBanking/AqHBCI (http://www.aquamaniac.de/aqbanking/).
+ - and others by using one of the projects above
 
 
 Features
@@ -29,15 +31,21 @@ Gwenhywfar includes the following features:
 
 - High-level functions for parsing files with a simplified "XML-like"
   format and accessing them like a hierarchical database (src/parser/)
+  It is able to process most valid XML files, too.
 
 - High-level cryptographic functions on top of OpenSSL functionality
   (src/crypt/)
 
 - Support for interprocess communication (HTTP on top of SSL or plain
-  TCP/UDP sockets)
+  TCP/UDP sockets, with or without certificates for clients and/or servers)
 
 - Console user-interface (including a simple HTML parser) based on
   ncurses
+
+- A tool to generate simple data containers from XML files (automatically
+  generates getters, setters, constructor, destructor, deep-copy function,
+  usage counter handling, functions for reading from and writing to GWEN_DBs)
+  (used by AqBanking to create the transaction class)
 
 
 Requirements
@@ -68,7 +76,7 @@ Setup Compiler http://www.jrsoftware.org/isdl.php .
 Documentation
 -------------
 
-Currently the documentation can be found in the header files. Many header 
+The documentation can be found in the header files. Many header 
 files already include extensive comments in doxygen-format (however some 
 don't).
 For a more or less complete API documentation use the command
@@ -89,8 +97,12 @@ Authors
 -------
 
 This library is being written by and is being maintained by Martin
-Preuss <martin@libchipcard.de>. Some minor work has been contributed
-by others including Christian Stimming <stimming@tuhh.de>.
+Preuss <martin@libchipcard.de>. 
+
+I also wish to thank Christian Stimming <stimming@tuhh.de> for his
+contributions and for adding MSVC support to Gwen (thus making Gwen completely
+available on Windows).
+
 
 
 Name
@@ -98,4 +110,9 @@ Name
 
 The name of this library was chosen to honour a very special person ;-)
 (that should suffice as an explanation)
+
+
+
+Hamburg, Germany 2004/09/02
+
 
