@@ -281,7 +281,7 @@ extern "C" {
 #define GWEN_INHERIT_UNLINK(bt, t, element) {\
     if (!t##__INHERIT_ID)\
       t##__INHERIT_ID=GWEN_Inherit_MakeId(__STRING(t));\
-    bt##__INHERIT_REMOVEDATA(element, __STRING(t), t##__INHERIT_ID);\
+    bt##__INHERIT_UNLINK(element, __STRING(t), t##__INHERIT_ID);\
   }
 
   /*@}*/
