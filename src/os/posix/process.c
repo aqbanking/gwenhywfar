@@ -56,7 +56,7 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
   struct sigaction sa;
 
   /* setup signal handler for SIGCHLD */
-  sa.sa_sigaction = GWEN_Process_SignalHandler;
+  sa.sa_handler = GWEN_Process_SignalHandler;
   sigemptyset(&sa.sa_mask);
 
   sa.sa_flags = SA_SIGINFO;
@@ -127,7 +127,7 @@ GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid){
 
 
 
-void GWEN_Process_SignalHandler(int s, siginfo_t *siginfo, void *info) {
+void GWEN_Process_SignalHandler(int s/*, siginfo_t *siginfo, void *info*/) {
   int status;
   pid_t pid;
 
@@ -170,8 +170,8 @@ void GWEN_Process_SignalHandler(int s, siginfo_t *siginfo, void *info) {
   if ( (original_sigchld_sa.sa_handler != SIG_DFL) && 
        (original_sigchld_sa.sa_handler != SIG_IGN) ) {
     if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
-      DBG_NOTICE(0, "About to call original sa_sigaction at signal \"%d\"", s);
-      original_sigchld_sa.sa_sigaction(s, siginfo, info);
+      DBG_NOTICE(0, "Unimplemented: About to call original sa_sigaction at signal \"%d\"", s);
+      /*original_sigchld_sa.sa_sigaction(s, siginfo, info);*/
     } else {
       DBG_NOTICE(0, "About to call original sa_handler at signal \"%d\"", s);
       original_sigchld_sa.sa_handler(s);
