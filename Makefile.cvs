@@ -25,8 +25,9 @@ cvsclean::
 	rm -Rf apidoc
 
 all:
+	libtoolize -f --automake
 	aclocal -I ./m4
 	autoheader
-	automake
+	automake --add-missing
 	autoconf
-	./configure --enable-maintainer-mode
+	#./configure --enable-maintainer-mode
