@@ -3,6 +3,10 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/01/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- decreased verbosity
+
 
 2005/01/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -480,10 +480,12 @@ void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
       assert(msg->node);
       if (msg->node==n) {
         /* same node, remove msg */
-        DBG_NOTICE(GWEN_LOGDOMAIN, "Removing %s message for/from node %08x",
-                   msgType, n->id);
-	if (msg->db) {
-	  GWEN_DB_Dump(msg->db, stderr, 2);
+	DBG_INFO(GWEN_LOGDOMAIN, "Removing %s message for/from node %08x",
+		 msgType, n->id);
+	if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevelInfo) {
+	  if (msg->db) {
+	    GWEN_DB_Dump(msg->db, stderr, 2);
+	  }
 	}
 	GWEN_IPCMsg_List_Del(msg);
 	GWEN_IPCMsg_free(msg);
@@ -494,8 +496,8 @@ void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
     /* check whether the request is empty */
     if (GWEN_IPCMsg_List_First(r->requestMsgs)==0) {
       /* it is, remove the request */
-      DBG_NOTICE(GWEN_LOGDOMAIN, "Removing %s request %08x for/from node %08x",
-                 msgType, r->id, n->id);
+      DBG_INFO(GWEN_LOGDOMAIN, "Removing %s request %08x for/from node %08x",
+	       msgType, r->id, n->id);
       GWEN_IPCRequest_List_Del(r);
       GWEN_IPCRequest_free(r);
     }
@@ -653,7 +655,7 @@ int GWEN_IPCManager__SendMsg(GWEN_IPCMANAGER *mgr,
 
   if (GWEN_NetConnection_GetStatus(m->node->connection)==
       GWEN_NetTransportStatusUnconnected) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Starting connection");
+    DBG_INFO(GWEN_LOGDOMAIN, "Starting connection");
     if (GWEN_NetConnection_StartConnect(m->node->connection)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Could not start connection");
       GWEN_DB_Group_free(dbReq);

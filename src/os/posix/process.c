@@ -201,7 +201,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   }
   else if (pid!=0) {
     /* parent */
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Process started with id %d", (int)pid);
+    DBG_INFO(GWEN_LOGDOMAIN, "Process started with id %d", (int)pid);
     pr->state=GWEN_ProcessStateRunning;
     pr->pid=pid;
 
@@ -227,7 +227,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   /* child, build arguments */
   argc=0;
 
-  DBG_NOTICE(GWEN_LOGDOMAIN, "I'm the child process");
+  DBG_DEBUG(GWEN_LOGDOMAIN, "I'm the child process");
 
   /* setup redirections */
   if (pr->filesStdin[0]!=-1) {

@@ -30,12 +30,13 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 #include "buffer_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
-#define DISABLE_DEBUGLOG
 
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
                              GWEN_TYPE_UINT32 size,

@@ -581,7 +581,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     }
 
     /* append message to connection's queue */
-    DBG_ERROR(GWEN_LOGDOMAIN, "Got a message");
+    DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
     GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
     /* check whether the connection is to be disconnected */
@@ -670,7 +670,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
 	    else {
               /* no body, message complete */
-              DBG_ERROR(GWEN_LOGDOMAIN, "Got a message");
+              DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
               /* check whether the connection is to be disconnected */
@@ -784,7 +784,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
                 if (!size) {
                   /* no body, message complete */
-                  DBG_ERROR(GWEN_LOGDOMAIN, "Got a message");
+                  DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
                   GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
                   /* check whether the connection is to be disconnected */
@@ -817,7 +817,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
             }
             else {
               /* no body, message complete */
-              DBG_ERROR(GWEN_LOGDOMAIN, "Got a message");
+              DBG_INFO(GWEN_LOGDOMAIN, "Got a message");
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
               /* check whether the connection is to be disconnected */
