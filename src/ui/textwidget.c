@@ -1872,13 +1872,15 @@ int GWEN_TextWidget__ParseXMLSubNodes(GWEN_XMLNODE *n,
                                       GWEN_TW_LINE **l){
   const char *p;
   int rv;
+  int first;
 
+  first=1;
   while(n) {
-    if (GWEN_Buffer_GetUsedBytes((*l)->chars)>indent) {
+    if (GWEN_Buffer_GetUsedBytes((*l)->chars)>indent && !first) {
       GWEN_Buffer_AppendByte((*l)->chars, ' ');
       GWEN_Buffer_AppendByte((*l)->attributes, 0);
     }
-
+    first=0;
     switch(GWEN_XMLNode_GetType(n)) {
     case GWEN_XMLNodeTypeData:
       p=GWEN_XMLNode_GetData(n);

@@ -2494,7 +2494,8 @@ int uitest16(int argc, char **argv) {
 
   GWEN_Widget_SetHelpText(mw,
                           "<gwen>"
-                          "This is a small example of a help screen.<br/>"
+                          "This is a small <b>example</b> <i>of</i> a help "
+                          "screen.<br/>"
                           "You can assign a help text to any widget.<br/>"
                           "<br/>"
                           "If no help text for a widget is available<br/>"
