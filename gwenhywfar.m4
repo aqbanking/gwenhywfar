@@ -46,6 +46,11 @@ if test "$enable_gwenhywfar" != "no"; then
   done
   if test -z "$gwenhywfar_dir"; then
       AC_MSG_RESULT([not found ])
+      AC_MSG_ERROR([
+*** The library Gwenhywfar was not found. Obtain it from 
+*** http://gwenhywfar.sf.net . If it is already installed, 
+*** you might need to specify the location with the 
+*** option --with-gwen-dir=DIR.])
   else
       AC_MSG_RESULT($gwenhywfar_dir)
       AC_MSG_CHECKING(for gwen libs)
