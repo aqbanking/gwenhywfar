@@ -1,2 +1,2 @@
-EXTRA_DIST=apidoc.h STYLE
+EXTRA_DIST=apidoc.h STYLE db2.png
 
