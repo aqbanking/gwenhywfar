@@ -73,6 +73,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
                                unsigned int size,
                                unsigned int *pos,
                                const char *value,
+                               unsigned int datasize,
                                GWEN_XMLNODE *node);
 
 int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
@@ -113,7 +114,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
                               unsigned int *pos,
                               GWEN_XMLNODE *node,
                               char *buffer,
-                              int bufsize,
+                              int *bufsize,
                               const char *delimiters);
 
 int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
@@ -134,7 +135,11 @@ const char  *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
 const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
                                            GWEN_XMLNODE *node,
                                            GWEN_XMLNODE *refnode,
-                                           const char *name);
+                                           const char *name,
+                                           unsigned int *datasize);
+int GWEN_MsgEngine__IsCharTyp(const char *type);
+int GWEN_MsgEngine__IsIntTyp(const char *type);
+int GWEN_MsgEngine__IsBinTyp(const char *type);
 
 
 #endif

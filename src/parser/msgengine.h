@@ -48,35 +48,37 @@ typedef int (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
 				       char escapeChar);
 
 typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
-				      const char *msg,
-				      unsigned int msgSize,
-				      unsigned int *pos,
-				      GWEN_XMLNODE *node,
-				      char *buffer,
-				      int bufsize,
-				      char escapeChar,
-				      const char *delimiters);
+                                           const char *msg,
+                                           unsigned int msgSize,
+                                           unsigned int *pos,
+                                           GWEN_XMLNODE *node,
+                                           char *buffer,
+                                           int *bufsize,
+                                           char escapeChar,
+                                           const char *delimiters);
 
 /**
  * @return 0 on success, -1 on error, 1 if unknown type
  */
 typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
-				       char *buffer,
-				       unsigned int size,
-				       unsigned int *pos,
-				       const char *value,
-				       GWEN_XMLNODE *node);
+                                            char *buffer,
+                                            unsigned int size,
+                                            unsigned int *pos,
+                                            const char *value,
+                                            unsigned int datasize,
+                                            GWEN_XMLNODE *node);
 
 
 typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
-					 GWEN_XMLNODE *node,
-					 GWEN_DB_NODE *gr,
-					 const char *data);
+                                              GWEN_XMLNODE *node,
+                                              GWEN_DB_NODE *gr,
+                                              const char *data,
+                                              unsigned int datasize);
 typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
-					  GWEN_XMLNODE *node,
-					  GWEN_DB_NODE *gr,
-					  char *buffer,
-					  unsigned int bufsize);
+                                               GWEN_XMLNODE *node,
+                                               GWEN_DB_NODE *gr,
+                                               char *buffer,
+                                               unsigned int bufsize);
 
 
 
