@@ -1183,7 +1183,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
 
       case GWEN_DB_VALUETYPE_PTR:
         /* no dynamic data, nothing to do */
-        fprintf(f, "Value : %08x (ptr)\n", (unsigned int)(n->val.p.data));
+        fprintf(f, "Value : %p (ptr)\n", n->val.p.data);
         break;
 
       default:
@@ -1262,7 +1262,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
         /* end of current group */
         if (depth<1) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Extra \"}\" in line %d, pos %d",
-                    lineno, pos-linebuf+1);
+                    lineno, (int)(pos-linebuf+1));
           return -1;
         }
         assert(currGrp->h.parent);
@@ -1299,7 +1299,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                               &pos);
           if (!p || !*wbuf) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d",
-                      lineno, pos-linebuf+1);
+                      lineno, (int)(pos-linebuf+1));
             return -1;
           }
 
@@ -1317,7 +1317,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             tmpn=GWEN_DB_GetGroup(currGrp, dbflags, wbuf);
             if (!tmpn) {
               DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d (no group)",
-                        lineno, pos-linebuf+1);
+                        lineno, (int)(pos-linebuf+1));
               return -1;
             }
             currGrp=tmpn;
@@ -1341,7 +1341,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               vt=GWEN_DB_VALUETYPE_CHAR;
             else if (strcasecmp(p, "ptr")==0){
               DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d (invalid type)",
-                        lineno, pos-linebuf+1);
+                        lineno, (int)(pos-linebuf+1));
               return -1;
             }
             else {
@@ -1362,7 +1362,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                                 &pos);
             if (!p || !*wbuf) {
               DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d",
-                        lineno, pos-linebuf+1);
+                        lineno, (int)(pos-linebuf+1));
               return -1;
             }
             /* skip blanks */
@@ -1370,7 +1370,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               pos++;
             if (*pos!=((dbflags&GWEN_DB_FLAGS_USE_COLON)?':':'=')) {
               DBG_ERROR(GWEN_LOGDOMAIN, "Expected \"=\" in line %d at %d",
-                        lineno, pos-linebuf+1);
+                        lineno, (int)(pos-linebuf+1));
               return -1;
             }
             isVar=1;
@@ -1393,7 +1393,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
 
           if (!currVar) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d (no var)",
-                      lineno, pos-linebuf+1);
+                      lineno, (int)(pos-linebuf+1));
             return -1;
           }
 
@@ -1431,7 +1431,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                 vbuf=GWEN_Buffer_new(0, strlen(wbuf)+2, 0, 1);
                 if (GWEN_Text_UnescapeToBufferTolerant(wbuf, vbuf)) {
                   DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d (bad char value)",
-                            lineno, pos-linebuf+1);
+                            lineno, (int)(pos-linebuf+1));
                   GWEN_Buffer_free(vbuf);
                   return -1;
                 }
@@ -1445,7 +1445,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             case GWEN_DB_VALUETYPE_INT:
               if (sscanf(wbuf, "%d", &value)!=1) {
                 DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d (no integer)",
-                          lineno, pos-linebuf+1);
+                          lineno, (int)(pos-linebuf+1));
                 return -1;
               }
               tmpn=GWEN_DB_ValueInt_new(value);
@@ -1458,7 +1458,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
 	      if (GWEN_Text_FromHexBuffer(wbuf, bbuf)) {
 		DBG_ERROR(GWEN_LOGDOMAIN,
 			  "Error in line %d, pos %d (no binary)",
-			  lineno, pos-linebuf+1);
+			  lineno, (int)(pos-linebuf+1));
                 GWEN_Buffer_free(bbuf);
 		return -1;
 	      }
@@ -1469,7 +1469,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
 		tmpn=0;
 		DBG_WARN(GWEN_LOGDOMAIN,
 			 "Line %d, pos %d: empty binary value",
-			 lineno, pos-linebuf+1);
+			 lineno, (int)(pos-linebuf+1));
 	      }
 	      GWEN_Buffer_free(bbuf);
               break;
@@ -1477,7 +1477,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             default:
 	      DBG_ERROR(GWEN_LOGDOMAIN,
 			"Error in line %d, pos %d (bad type)",
-                        lineno, pos-linebuf+1);
+                        lineno, (int)(pos-linebuf+1));
               return -1;
             } /* switch */
             if (tmpn)
@@ -1499,7 +1499,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
           if (*pos=='}') {
             if (depth<1) {
               DBG_ERROR(GWEN_LOGDOMAIN, "Extra \"}\" in line %d, pos %d",
-                        lineno, pos-linebuf+1);
+                        lineno, (int)(pos-linebuf+1));
             }
             assert(currGrp->h.parent);
             currGrp=currGrp->h.parent;
@@ -1511,7 +1511,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
           }
           if (*pos && *pos!='#') {
             DBG_ERROR(GWEN_LOGDOMAIN, "Extra character in line %d, pos %d",
-                      lineno, pos-linebuf+1);
+                      lineno, (int)(pos-linebuf+1));
             return -1;
           }
         }

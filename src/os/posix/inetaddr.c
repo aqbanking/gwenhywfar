@@ -285,7 +285,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
       if ((strlen(addr)+1)>sizeof(aptr->sun_path)) {
 	/* bad address */
 	DBG_ERROR(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
-		  strlen(addr)+1,sizeof(aptr->sun_path));
+		  (int)(strlen(addr)+1),(int)(sizeof(aptr->sun_path)));
 	return GWEN_Error_new(0,
 			      GWEN_ERROR_SEVERITY_ERR,
 			      GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -382,7 +382,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
       if ((strlen(name)+1)>sizeof(aptr->sun_path)) {
         /* bad address */
 	DBG_ERROR(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
-		  strlen(name)+1,sizeof(aptr->sun_path));
+		  (int)(strlen(name)+1),(int)(sizeof(aptr->sun_path)));
 	return GWEN_Error_new(0,
 			 GWEN_ERROR_SEVERITY_ERR,
 			 GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),

@@ -587,7 +587,8 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert) {
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Bytes Reserved : %d\n", bf->ptr-bf->realPtr);
+  fprintf(f, "Bytes Reserved : "GWEN_TYPE_TMPL_UINT32"\n",
+          (GWEN_TYPE_UINT32)(bf->ptr-bf->realPtr));
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");

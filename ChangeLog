@@ -11,6 +11,7 @@
 - fixed a bug in CSV-importer: now title lines are skipped if "title=0" in
   parameters
 - added defines for printf-templates for GWEN_TYPEs
+- fixed some 64bit-warnings
 
 
 2004/11/11: Martin Preuss<martin@libchipcard.de>

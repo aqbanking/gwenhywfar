@@ -286,15 +286,15 @@ void GWEN_List_Dump(GWEN_LIST *l, FILE *f, unsigned int indent){
   le=l->first;
   while(le) {
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, "List entry %08x\n", (unsigned int)le);
+    fprintf(f, "List entry %p\n", le);
     for (i=0; i<indent; i++) fprintf(f, " ");
     fprintf(f, " Usage   : %d\n", le->usage);
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, " Previous: %08x\n", (unsigned int)(le->previous));
+    fprintf(f, " Previous: %p\n", le->previous);
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, " Next    : %08x\n", (unsigned int)(le->next));
+    fprintf(f, " Next    : %p\n", le->next);
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, " Data    : %08x\n", (unsigned int)(le->data));
+    fprintf(f, " Data    : %p\n", le->data);
     le=le->next;
   } /* while */
 }

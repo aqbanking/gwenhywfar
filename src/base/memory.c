@@ -152,8 +152,8 @@ void GWEN_Memory_Report(){
                       "-------------------------------------------------\n");
               headerShown=1;
             }
-            fprintf(stderr, "%08x ",
-                    (unsigned int)o->object);
+            fprintf(stderr, "%p ",
+                    o->object);
             if (o->usage>0)
               fprintf(stderr,
                       "(not freed, usage left is %d, should be 0) ",

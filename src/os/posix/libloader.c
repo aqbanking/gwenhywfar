@@ -213,8 +213,8 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
 			  GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE);
   }
-  DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %08x\n",
-              name, (int)*p);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %p\n",
+              name, *p);
   return 0;
 }
 

@@ -131,7 +131,7 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
     }
     if (sizeof(gwen_directory_posix__homedir)<strlen(p->pw_dir)+1) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Internal: Buffer too small (need %d bytes)",
-		strlen(p->pw_dir)+1);
+                (int)(strlen(p->pw_dir)+1));
       endpwent();
       return -1;
     }
@@ -142,7 +142,7 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
   if (size<strlen(gwen_directory_posix__homedir)+1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (need %d bytes)",
-	      strlen(gwen_directory_posix__homedir)+1);
+	      (int)(strlen(gwen_directory_posix__homedir)+1));
     return -1;
   }
   strcpy(buffer, gwen_directory_posix__homedir);

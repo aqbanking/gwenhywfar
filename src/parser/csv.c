@@ -26,6 +26,9 @@
  ***************************************************************************/
 
 
+# This file is deprecated !!
+
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -71,7 +74,7 @@ int GWEN_CSV_GetNameAndIndex(const char *name,
       j++;
     } /* while */
     if (j>=sizeof(numbuffer)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Index number too long (%d>=%d)", j, sizeof(numbuffer));
+      DBG_INFO(GWEN_LOGDOMAIN, "Index number too long (%u>=%u)", j, sizeof(numbuffer));
       return -1;
     }
     numbuffer[j]=0;
