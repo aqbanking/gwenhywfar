@@ -949,7 +949,7 @@ int write_code_setget_c(ARGUMENTS *args,
         GWEN_BufferedIO_Write(bio, "(");
         GWEN_BufferedIO_Write(bio, styp);
         GWEN_BufferedIO_Write(bio, " *st, ");
-        if (isPtr  && strcasecmp(mode, "single")==0) {
+        if (isPtr) {
           GWEN_BufferedIO_Write(bio, "const ");
         }
         GWEN_BufferedIO_Write(bio, typ);
