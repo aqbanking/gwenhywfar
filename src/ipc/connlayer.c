@@ -201,12 +201,15 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Accept(GWEN_IPCCONNLAYER *cl,
 
   /* let the connection layer accept the new connection */
   assert(cl->acceptFn);
+  DBG_INFO(0, "Calling connectionLayer->acceptFn");
   err=cl->acceptFn(cl, newml, &newcl);
   if (!GWEN_Error_IsOk(err)) {
     DBG_DEBUG(0, "called from here");
     return err;
   }
   *c=newcl;
+  DBG_INFO(0, "Connection accepted as %d",
+           GWEN_ConnectionLayer_GetId(newcl));
 
   return err;
 }
@@ -334,7 +337,7 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Close(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int GWEN_ConnLayer_GetId(GWEN_IPCCONNLAYER *cl){
+unsigned int GWEN_ConnectionLayer_GetId(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   assert(cl->msgLayer);
   return GWEN_MsgLayer_GetId(cl->msgLayer);
@@ -343,7 +346,7 @@ unsigned int GWEN_ConnLayer_GetId(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int GWEN_ConnLayer_GetUserMark(GWEN_IPCCONNLAYER *cl){
+unsigned int GWEN_ConnectionLayer_GetUserMark(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   return cl->userMark;
 }
@@ -351,8 +354,8 @@ unsigned int GWEN_ConnLayer_GetUserMark(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWEN_ConnLayer_SetUserMark(GWEN_IPCCONNLAYER *cl,
-                                unsigned int i){
+void GWEN_ConnectionLayer_SetUserMark(GWEN_IPCCONNLAYER *cl,
+                                      unsigned int i){
   assert(cl);
   cl->userMark=i;
 }
@@ -360,7 +363,7 @@ void GWEN_ConnLayer_SetUserMark(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int GWEN_ConnLayer_GetLibMark(GWEN_IPCCONNLAYER *cl){
+unsigned int GWEN_ConnectionLayer_GetLibMark(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   return cl->libMark;
 }
@@ -368,8 +371,8 @@ unsigned int GWEN_ConnLayer_GetLibMark(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWEN_ConnLayer_SetLibMark(GWEN_IPCCONNLAYER *cl,
-                               unsigned int i){
+void GWEN_ConnectionLayer_SetLibMark(GWEN_IPCCONNLAYER *cl,
+                                     unsigned int i){
   assert(cl);
   cl->libMark=i;
 }
@@ -389,6 +392,8 @@ GWEN_ConnectionLayer_GetState(GWEN_IPCCONNLAYER *cl){
 void GWEN_ConnectionLayer_SetState(GWEN_IPCCONNLAYER *cl,
                                    GWEN_IPCCONNLAYER_STATE st){
   assert(cl);
+  DBG_INFO(0, "Changing state from %d to %d",
+           cl->state, st);
   cl->state=st;
 }
 

@@ -61,6 +61,7 @@ unsigned int GWEN_Msg_GetMsgLayerId(GWEN_IPCMSG *m);
 void GWEN_Msg_SetMsgLayerId(GWEN_IPCMSG *m, unsigned int id);
 unsigned int GWEN_Msg_GetReferenceId(GWEN_IPCMSG *m);
 void GWEN_Msg_SetReferenceId(GWEN_IPCMSG *m, unsigned int i);
+unsigned int GWEN_Msg_GetMsgId(GWEN_IPCMSG *m);
 
 
 /**

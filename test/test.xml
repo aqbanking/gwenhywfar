@@ -1,7 +1,7 @@
 
 <GROUPS>
 	<GROUPdef id="SegHead" delimiter=":">
-    <ELEM name="code" type="AN" maxsize="6"/>
+    <ELEM name="code" type="AN" maxsize="8"/>
     <ELEM name="seq" type="num" maxsize="15" topdown="1" />
     <ELEM name="version" type="num" maxsize="3"/>
     <ELEM name="ref" type="num" maxsize="3" minnum=0 />
@@ -14,6 +14,31 @@
 
 
 <SEGS>
+
+ <SEGdef id="MsgHeadShort" version="1" delimiter="+" >
+   <!-- "Nachrichtenkopf"beim Einlesen der Groesse -->
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="size" type="num" maxsize="12" leftfill="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="MsgHead" code="AQMSGHEAD" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="size" type="num" maxsize="12" leftfill="1" />
+   <ELEM name="version" type="ascii" maxsize="8"/>
+   <ELEM name="dialogId" type="num" maxsize="20" />
+   <ELEM name="msgnum" type="num" maxsize="4" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
 
  <SEGdef code="PING" version="1"
          delimiter="+" terminator="'" >

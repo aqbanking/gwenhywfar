@@ -37,6 +37,10 @@
 #define GWEN_IPC_ERROR_BAD_STATE            3
 #define GWEN_IPC_ERROR_NO_CONNECTIONS       4
 #define GWEN_IPC_ERROR_CONNECTION_NOT_FOUND 5
+#define GWEN_IPC_ERROR_XMLFILE              6
+#define GWEN_IPC_ERROR_SEG_NOT_FOUND        7
+#define GWEN_IPC_ERROR_BAD_MSG              8
+
 
 #endif /* GWENHYFWAR_IPC_H */
 

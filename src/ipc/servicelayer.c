@@ -67,8 +67,11 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
       GWEN_IPCTRANSPORTLAYER *tl;
       GWEN_IPCMSGLAYER_STATE state;
 
+      DBG_INFO(0, "Checking connection %d",
+               GWEN_ConnectionLayer_GetId(curr));
       ml=GWEN_ConnectionLayer_GetMsgLayer(curr);
       assert(ml);
+      DBG_INFO(0, "MessageLayer is %08x", (unsigned int)ml);
       tl=GWEN_MsgLayer_GetTransportLayer(ml);
       state=GWEN_MsgLayer_GetState(ml);
 
@@ -188,6 +191,8 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
              * new connection waiting */
             GWEN_IPCCONNLAYER *newconn;
 
+            DBG_INFO(0, "Listening connection %d is readable",
+                     GWEN_ConnectionLayer_GetId(curr));
             /* accept connection */
             err=GWEN_ConnectionLayer_Accept(curr, &newconn);
             if (!GWEN_Error_IsOk(err)) {
@@ -210,6 +215,8 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
         sock=GWEN_IPCTransportLayer_GetReadSocket(tl);
         if (sock) {
           if (GWEN_SocketSet_HasSocket(rset, sock)) {
+            DBG_INFO(0, "Idle/Reading connection %d is readable",
+                     GWEN_ConnectionLayer_GetId(curr));
             err=GWEN_ConnectionLayer_Work(curr, 1);
             if (!GWEN_Error_IsOk(err)) {
               DBG_INFO(0, "Called from here");
@@ -222,6 +229,8 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
         sock=GWEN_IPCTransportLayer_GetWriteSocket(tl);
         if (sock) {
           if (GWEN_SocketSet_HasSocket(wset, sock)) {
+            DBG_INFO(0, "Connecting connection %d is writeable",
+                     GWEN_ConnectionLayer_GetId(curr));
             err=GWEN_ConnectionLayer_Work(curr, 0);
             if (!GWEN_Error_IsOk(err)) {
               DBG_INFO(0, "Called from here");
@@ -289,6 +298,7 @@ void GWEN_GlobalServiceLayer_CheckClosed() {
   GWEN_IPCMSGLAYER *ml;
   GWEN_ERRORCODE err;
 
+  DBG_INFO(0, "Checking for physically close connections");
   cl=GWEN_Global_ServiceLayer->connections;
   while(cl) {
     GWEN_IPCCONNLAYER *nextcl;
@@ -296,12 +306,17 @@ void GWEN_GlobalServiceLayer_CheckClosed() {
     nextcl=cl->next;
     ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
     assert(ml);
+    DBG_INFO(0, "MsgLayer state is %d",
+             GWEN_MsgLayer_GetState(ml));
     if (GWEN_MsgLayer_GetState(ml)==GWEN_IPCMsglayerStateClosed) {
       if (GWEN_ConnectionLayer_GetState(cl)==
-          GWEN_IPCConnectionLayerStateOpen) {
+          GWEN_IPCConnectionLayerStateOpen ||
+          GWEN_ConnectionLayer_GetState(cl)==
+          GWEN_IPCConnectionLayerStateOpening
+         ) {
         /* force closing of connection */
-        DBG_NOTICE(0, "Forcing logical close of connection (%s)",
-                   GWEN_ConnectionLayer_GetInfo(cl));
+        DBG_NOTICE(0, "Forcing logical close of connection %d",
+                   GWEN_ConnectionLayer_GetId(cl));
         err=GWEN_ConnectionLayer_Close(cl, 1);
         if (!GWEN_Error_IsOk(err)) {
           DBG_INFO(0, "Called from here");
@@ -319,24 +334,34 @@ void GWEN_GlobalServiceLayer_RemoveClosed() {
   GWEN_IPCCONNLAYER *cl;
   GWEN_IPCMSGLAYER *ml;
 
+  DBG_INFO(0, "Removing closed connections");
   cl=GWEN_Global_ServiceLayer->connections;
   while(cl) {
     GWEN_IPCCONNLAYER *nextcl;
 
+    DBG_INFO(0, "State of connection %d: %d",
+             GWEN_ConnectionLayer_GetId(cl),
+             GWEN_ConnectionLayer_GetState(cl));
     nextcl=cl->next;
     ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
     assert(ml);
     if (GWEN_ConnectionLayer_GetState(cl)==
-        GWEN_IPCConnectionLayerStateClosed)
+        GWEN_IPCConnectionLayerStateClosed) {
       if (!(GWEN_ConnectionLayer_GetFlags(cl) &
             GWEN_IPCCONNLAYER_FLAGS_PERSISTENT)) {
         /* remove closed connection if it is not marked persistent */
-        DBG_NOTICE(0, "Removing connection (%s)",
-                   GWEN_ConnectionLayer_GetInfo(cl));
+        DBG_NOTICE(0, "Removing connection (%d)",
+                   GWEN_ConnectionLayer_GetId(cl));
         GWEN_LIST_DEL(GWEN_IPCCONNLAYER,
                       cl,
                       &(GWEN_Global_ServiceLayer->connections));
+        GWEN_ConnectionLayer_free(cl);
       }
+      else {
+        DBG_INFO(0, "Connection %d is closed but persistent",
+                 GWEN_ConnectionLayer_GetId(cl));
+      }
+    }
     cl=nextcl;
   } /* while */
 }
@@ -477,7 +502,7 @@ GWEN_ServiceLayer_AddConnection(GWEN_SERVICELAYER *sl,
 				GWEN_IPCCONNLAYER *conn){
   assert(sl);
   assert(conn);
-  GWEN_ConnLayer_SetLibMark(conn, sl->id);
+  GWEN_ConnectionLayer_SetLibMark(conn, sl->id);
   return GWEN_GlobalServiceLayer_AddConnection(conn);
 }
 
@@ -508,6 +533,10 @@ GWEN_ERRORCODE GWEN_ServiceLayer_Work(GWEN_SERVICELAYER *sl, int timeout){
   }
 
   /* TODO: read next message, sort it in */
+
+  /* do some cleanup */
+  GWEN_ServiceLayer_CheckClosed(sl);
+  GWEN_ServiceLayer_RemoveClosed(sl);
 
   return 0;
 }

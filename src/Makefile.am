@@ -15,7 +15,8 @@ libgwenhyfwar_la_LIBADD=\
   io/libio.la \
   ipc/libipc.la \
   os/@GWEN_OS@/libos.la \
-  parser/libparser.la
+  parser/libparser.la \
+  impl/ipc/libimplipc.la
 libgwenhyfwar_la_LDFLAGS= \
   -version-info \
    @GWENHYFWAR_SO_CURRENT@:@GWENHYFWAR_SO_REVISION@:@GWENHYFWAR_SO_AGE@

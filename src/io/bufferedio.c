@@ -305,14 +305,18 @@ GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt){
 
 int GWEN_BufferedIO_ReadBufferEmpty(GWEN_BUFFEREDIO *bt) {
   assert(bt);
-  return ((bt->readerBuffer==0)  || !bt->readerBufferFilled);
+  return ((bt->readerBuffer==0) ||
+          !bt->readerBufferFilled ||
+          bt->readerBufferPos>=bt->readerBufferFilled);
 }
 
 
 
 int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt) {
   assert(bt);
-  return ((bt->writerBuffer==0)  || !bt->writerBufferFilled);
+  return ((bt->writerBuffer==0)  ||
+          !bt->writerBufferFilled ||
+          bt->writerBufferPos>=bt->writerBufferFilled);
 }
 
 
@@ -578,9 +582,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     /* buffer not empty, so read from the buffer first */
     int i;
 
-    i=bt->readerBufferPos<bt->readerBufferFilled;
+    i=bt->readerBufferFilled-bt->readerBufferPos;
     if (i>*bsize)
       i=*bsize;
+    DBG_INFO(0, "Reading rest from buffer (%d at %d of %d)",
+             i,bt->readerBufferPos, bt->readerBufferFilled);
 
     if (i) {
       /* copy as much bytes as needed, advance pointer */
@@ -588,6 +594,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
       bt->readerBufferPos+=i;
     }
     *bsize=i;
+    DBG_INFO(0, "Read %d bytes from buffer", i);
     return 0;
   }
   else {
@@ -595,6 +602,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     GWEN_ERRORCODE err;
     int i;
 
+    DBG_INFO(0, "Reading directly from source");
     assert(bt->readPtr);
     i=*bsize;
     err=bt->readPtr(bt,
@@ -608,6 +616,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     }
     bt->readerEOF=(i==0);
     *bsize=i;
+    DBG_INFO(0, "Read %d bytes from source", i);
   }
   if (bt->readerEOF) {
     DBG_DEBUG(0, "EOF now met");
@@ -884,7 +893,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
 
-  DBG_DEBUG(0, "Reading ok");
+  DBG_DEBUG(0, "Reading ok (%d bytes)", *size);
   return 0;
 }
 

@@ -11,6 +11,7 @@
 #include <gwenhyfwar/xml.h>
 #include <gwenhyfwar/msgengine.h>
 #include <gwenhyfwar/text.h>
+#include <gwenhyfwar/cmdlayer.h>
 
 
 int testDB(int argc, char **argv) {
@@ -158,6 +159,55 @@ int testMsg(int argc, char **argv) {
 
 
 
+
+int testService(int argc, char **argv) {
+  GWEN_IPCSERVICECMD *s;
+  GWEN_ERRORCODE err;
+  unsigned int connId;
+  int i;
+
+  fprintf(stderr, "Initializing service\n");
+  s=GWEN_IPCServiceCmd_new();
+  err=GWEN_IPCServiceCmd_Init(s, "test.xml");
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 1;
+  }
+  fprintf(stderr, "Initializing service: done\n");
+
+
+  fprintf(stderr, "Adding listener\n");
+  connId=GWEN_IPCServiceCmd_AddListener(s, "127.0.0.1", 44444, 1);
+  if (connId==0) {
+    fprintf(stderr, "Could not add listener\n");
+    return 2;
+  }
+  fprintf(stderr, "New listener added (id=%d)\n", connId);
+
+  for (i=0; i< 10; i++) {
+    fprintf(stderr, "\n\nWorking (loop %d)...\n\n", i);
+    err=GWEN_IPCServiceCmd_Work(s, 60*1000);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return 1;
+    }
+    fprintf(stderr, "Working done\n");
+  }
+
+  fprintf(stderr, "Deinitializing service\n");
+  err=GWEN_IPCServiceCmd_Fini(s);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 1;
+  }
+  GWEN_IPCServiceCmd_free(s);
+  fprintf(stderr, "Deinitializing service: done\n");
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   GWEN_ERRORCODE err;
   int rv;
@@ -172,7 +222,8 @@ int main(int argc, char **argv) {
 
   //rv=testDB(argc, argv);
   //rv=testXML(argc, argv);
-  rv=testMsg(argc, argv);
+  //rv=testMsg(argc, argv);
+  rv=testService(argc, argv);
 
   fprintf(stderr, "Deinitializing Gwenhywfar\n");
   err=GWEN_Fini();

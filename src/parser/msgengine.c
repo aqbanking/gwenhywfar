@@ -2059,13 +2059,15 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
     }
   }
 
-  if (minsize!=0 && minsize<GWEN_Buffer_GetUsedBytes(vbuf)) {
+  /* -1 because the trailing zero doesn't count */
+  if (minsize!=0 && minsize-1<GWEN_Buffer_GetUsedBytes(vbuf)) {
     DBG_INFO(0, "Value too short (%d<%d).", minsize,
 	     GWEN_Buffer_GetUsedBytes(vbuf));
     return -1;
   }
 
-  if (maxsize!=0 && GWEN_Buffer_GetUsedBytes(vbuf)>maxsize) {
+  /* -1 because the trailing zero doesn't count */
+  if (maxsize!=0 && GWEN_Buffer_GetUsedBytes(vbuf)-1>maxsize) {
     DBG_INFO(0, "Value too long (%d>%d).",
 	     GWEN_Buffer_GetUsedBytes(vbuf), maxsize);
     return -1;

@@ -34,6 +34,7 @@
 
 
 #define GWEN_IPCCONNLAYER_FLAGS_PERSISTENT 0x0001
+#define GWEN_IPCCONNLAYER_FLAGS_PASSIVE    0x0002
 
 
 typedef enum {
@@ -115,8 +116,8 @@ void GWEN_ConnectionLayer_SetOpenFn(GWEN_IPCCONNLAYER *cl,
 void GWEN_ConnectionLayer_SetCloseFn(GWEN_IPCCONNLAYER *cl,
                                      GWEN_IPCCONNLAYER_CLOSE f);
 GWEN_IPCMSGLAYER *GWEN_ConnectionLayer_GetMsgLayer(GWEN_IPCCONNLAYER *cl);
-void GWEN_ConnLayer_SetLibMark(GWEN_IPCCONNLAYER *cl,
-                               unsigned int i);
+void GWEN_ConnectionLayer_SetLibMark(GWEN_IPCCONNLAYER *cl,
+                                     unsigned int i);
 
 
 

@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/09/20 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- started debugging several modules (mostly IPC and msgEngine)
+
+
 2003/09/19 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added cmdlayer to impl/ipc

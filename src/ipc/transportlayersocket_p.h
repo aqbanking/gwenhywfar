@@ -33,6 +33,7 @@
 #include <gwenhyfwar/inetsocket.h>
 #include <gwenhyfwar/bufferedio.h>
 
+#define GWEN_TRANSPORTLAYERSOCKET_BUFFERSIZE 256
 
 typedef struct GWEN_IPCTRANSSOCKET GWEN_IPCTRANSSOCKET;
 

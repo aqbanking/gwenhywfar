@@ -105,6 +105,11 @@ GWEN_ERRORCODE GWEN_ConnectionLayerCmd_Close(GWEN_IPCCONNLAYER *cl,
 
 
 
+struct GWEN_IPCSERVICECMD {
+  GWEN_MSGENGINE *msgEngine;
+  GWEN_SERVICELAYER *serviceLayer;
+};
+
 
 
 #endif /* GWENHYFWAR_CMDLAYER_P_H */

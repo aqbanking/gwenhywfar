@@ -311,7 +311,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_AddIncomingMsg(GWEN_IPCMSGLAYER *ml,
                           GWEN_IPC_ERROR_INQUEUE_FULL);
   }
 
-  DBG_INFO(0, "Added outgoing msg (now %d msgs)", ml->nIncomingMsgs);
+  DBG_INFO(0, "Added incoming msg (now %d msgs)", ml->nIncomingMsgs);
   return 0;
 
 }
@@ -419,12 +419,11 @@ GWEN_ERRORCODE GWEN_MsgLayer_Disconnect(GWEN_IPCMSGLAYER *ml) {
   }
   assert(ml->transportLayer);
   tl=ml->transportLayer;
+  ml->state=GWEN_IPCMsglayerStateClosed;
   err=GWEN_IPCTransportLayer_Disconnect(tl);
   if (!GWEN_Error_IsOk(err)) {
     DBG_DEBUG(0, "called from here");
-    return err;
   }
-  ml->state=GWEN_IPCMsglayerStateClosed;
   return err;
 }
 
@@ -458,6 +457,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Accept(GWEN_IPCMSGLAYER *ml,
 
   /* let the msg layer accept the new connection */
   assert(ml->acceptFn);
+  DBG_INFO(0, "Calling msgLayer->acceptFn");
   err=ml->acceptFn(ml, newtl, &newml);
   if (!GWEN_Error_IsOk(err)) {
     DBG_DEBUG(0, "called from here");
@@ -465,6 +465,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Accept(GWEN_IPCMSGLAYER *ml,
   }
   *m=newml;
 
+  DBG_INFO(0, "Connection accepted");
   return err;
 }
 
