@@ -565,7 +565,7 @@ int GWEN_FileDialog_Run(GWEN_WIDGET *w) {
   response=0;
   for (;;) {
     GWEN_EVENT *e;
-    GWEN_UI_RESULT res;
+    GWEN_UI_RESULT res = GWEN_UIResult_NotHandled;
 
     e=GWEN_UI_GetNextEvent();
     if (!e)

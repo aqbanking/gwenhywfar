@@ -204,7 +204,7 @@ GWEN_UI_RESULT GWEN_DropDownBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     pos=-1;
     if (t) {
       GWEN_STRINGLISTENTRY *se;
-      int i;
+      int i = 0;
 
       se=GWEN_StringList_FirstEntry(win->stringList);
       while(se) {
