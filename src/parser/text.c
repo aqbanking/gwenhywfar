@@ -456,10 +456,10 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
 
 int GWEN_Text_Compare(const char *s1, const char *s2, int ign) {
   if (s1)
-    if (strlen(s1)==0)
+    if (*s1==0)
       s1=0;
   if (s2)
-    if (strlen(s2)==0)
+    if (*s2==0)
       s2=0;
   if (!s1 && !s2)
     return 0;
@@ -554,8 +554,9 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
   plength=strlen(p);
 
   // compare until first occurrence of '*'
-  if (!GWEN_Text__cmpSegment(w,&wpos,p,&ppos,sensecase,&matches))
+  if (!GWEN_Text__cmpSegment(w,&wpos,p,&ppos,sensecase,&matches)) {
     return -1;
+  }
 
   while(1) {
     // if pattern ends we have done it
@@ -567,8 +568,9 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
     if (ppos>=plength)
       return matches;
     // find next matching segment
-    if (!GWEN_Text__findSegment(w,&wpos,p,&ppos,sensecase,&matches))
+    if (!GWEN_Text__findSegment(w,&wpos,p,&ppos,sensecase,&matches)) {
       return -1;
+    }
   } // while
   // I know, we'll never get to here ;-)
   return -1;

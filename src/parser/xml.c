@@ -875,9 +875,17 @@ void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np){
 
 int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
                            GWEN_XMLNODE *n){
+  unsigned int i;
+
+  DBG_DEBUG(0, "Diving to %08x", (unsigned int)n);
   if (np->pos>=GWEN_XML_MAX_DEPTH) {
     DBG_ERROR(0, "Path too deep");
     return 1;
+  }
+
+  /* check for double entries */
+  for (i=0; i<np->pos; i++) {
+    assert(np->nodes[i]!=n);
   }
   np->nodes[np->pos++]=n;
   DBG_DEBUG(0, "Dived to %d", np->pos);

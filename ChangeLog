@@ -8,6 +8,7 @@ $Id$
   HBCI jobs containing <MESSAGE> tags)
 - XML: Added type "GWEN_XMLNODE_PATH". This type stores a XML node path. It
   is used now by MessageEngine for <VALUE> lookups when creating a message
+- MessageEngine: fixed a bug in value lookup code
 
 
 2003/10/19 Martin Preuss <martin@libchipcard.de>
