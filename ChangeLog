@@ -1,4 +1,19 @@
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/02/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a stupid design flaw in CONSTLIST2: The only difference between
+  a GWEN_LIST and GWEN_CONSTLIST was the type of the stored data.
+  So instead of creating a new type (GWEN_CONSTLIST) we now basically use
+  a GWEN_LIST and modify the return value if necessary. This change is
+  completely transparent, no API change involved.
+- added function GWEN_IdList_dup()
+
+
 2005/02/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in GWEN_Time_Diff()

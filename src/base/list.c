@@ -695,6 +695,11 @@ unsigned int GWEN_ListIterator_GetLinkCount(const GWEN_LIST_ITERATOR *li){
 
 
 
+
+
+
+
+
 /* __________________________________________________________________________
  * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
  *                                 ConstList
@@ -702,311 +707,135 @@ unsigned int GWEN_ListIterator_GetLinkCount(const GWEN_LIST_ITERATOR *li){
  */
 
 
-GWEN_CONSTLIST_ENTRY *GWEN_ConstListEntry_new(){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  GWEN_NEW_OBJECT(GWEN_CONSTLIST_ENTRY, le);
-  le->usage=1;
-  return le;
-}
-
-
-
-void GWEN_ConstListEntry_free(GWEN_CONSTLIST_ENTRY *le){
-  if (le) {
-    if (le->usage) {
-      le->usage--;
-      if (le->usage==0) {
-        /* unlink */
-        le->previous=0;
-        le->next=0;
-        /* really free */
-        free(le);
-      }
-    }
-  }
-}
-
-
 
 GWEN_CONSTLIST *GWEN_ConstList_new(){
-  GWEN_CONSTLIST *l;
-
-  GWEN_NEW_OBJECT(GWEN_CONSTLIST, l);
-  return l;
+  return GWEN_List_new();
 }
 
 
 
 void GWEN_ConstList_free(GWEN_CONSTLIST *l){
-  if (l) {
-    GWEN_ConstList_Clear(l);
-    free(l);
-  }
+  GWEN_List_free(l);
 }
 
 
 
 void GWEN_ConstList_PushBack(GWEN_CONSTLIST *l, const void *p){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  le=GWEN_ConstListEntry_new();
-  le->data=p;
-  le->previous=l->last;
-  l->last=le;
-  if (!(l->first))
-    l->first=le;
-  l->size++;
+  GWEN_List_PushBack(l, (void*)p);
 }
 
 
 
 void GWEN_ConstList_PushFront(GWEN_CONSTLIST *l, const void *p){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  le=GWEN_ConstListEntry_new();
-  le->data=p;
-  le->next=l->first;
-  if (l->first)
-    l->first->previous=le;
-  l->first=le;
-  if (!(l->last))
-    l->last=le;
-  l->size++;
+  GWEN_List_PushFront(l, (void*)p);
 }
 
 
 
 const void *GWEN_ConstList_GetFront(GWEN_CONSTLIST *l){
-  assert(l);
-  if (l->first)
-    return l->first->data;
-  return 0;
+  return GWEN_List_GetFront(l);
 }
 
 
 
 const void *GWEN_ConstList_GetBack(GWEN_CONSTLIST *l){
-  assert(l);
-  if (l->last)
-    return l->last->data;
-  return 0;
+  return GWEN_List_GetBack(l);
 }
 
 
 
 unsigned int GWEN_ConstList_GetSize(GWEN_CONSTLIST *l){
-  assert(l);
-  return l->size;
+  return GWEN_List_GetSize(l);
 }
 
 
 
 void GWEN_ConstList_PopBack(GWEN_CONSTLIST *l){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  assert(l);
-  le=l->last;
-  if (le) {
-    if (le->previous) {
-      le->previous->next=0;
-      l->last = le->previous; /* FIXME: This was necessary, wasn't it? */
-    } else {
-      l->last=0;
-      l->first=0;
-    }
-    GWEN_ConstListEntry_free(le);
-    l->size--;
-  }
+  GWEN_List_PopBack(l);
 }
 
 
 
 void GWEN_ConstList_PopFront(GWEN_CONSTLIST *l){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  assert(l);
-  le=l->first;
-  if (le) {
-    if (le->next) {
-      le->next->previous=0;
-      l->first = le->next; /* FIXME: This was necessary, wasn't it? */
-    } else {
-      l->first=0;
-      l->last=0;
-    }
-    GWEN_ConstListEntry_free(le);
-    l->size--;
-  }
+  GWEN_List_PopFront(l);
 }
 
 
 
 void GWEN_ConstList_Erase(GWEN_CONSTLIST *l, GWEN_CONSTLIST_ITERATOR *it){
-  GWEN_CONSTLIST_ENTRY *current;
-
-  assert(l);
-  assert(it);
-  if (it->current) {
-    current=it->current;
-    /* unlink from list */
-    if (l->first==current)
-      l->first=current->next;
-    if (l->last==current)
-      l->last=current->previous;
-
-    /* unlink from next */
-    if (current->next) {
-      it->current=current->next;
-      current->next->previous=current->previous;
-    }
-    else
-      it->current=0;
-    /* unlink from previous */
-    if (current->previous)
-      current->previous->next=current->next;
-    /* free */
-    GWEN_ConstListEntry_free(current);
-    l->size--;
-  }
+  GWEN_List_Erase(l, it);
 }
 
 
 
 void GWEN_ConstList_Clear(GWEN_CONSTLIST *l){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  assert(l);
-  le=l->first;
-  while(le) {
-    GWEN_CONSTLIST_ENTRY *nle;
-
-    nle=le->next;
-    GWEN_ConstListEntry_free(le);
-    le=nle;
-  } /* while */
+  GWEN_List_Clear(l);
 }
 
 
 const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *l, 
 				   GWEN_CONSTLIST_FOREACH_CB fn,
 				   void *user_data){
-  GWEN_CONSTLIST_ITERATOR *it;
+  GWEN_LIST_ITERATOR *it;
   const void *el;
   assert(l);
 
-  it = GWEN_ConstList_First(l);
+  it = GWEN_List_First(l);
   if (!it)
     return 0;
-  el = GWEN_ConstListIterator_Data(it);
+  el = GWEN_ListIterator_Data(it);
   while(el) {
     el = fn(el, user_data);
     if (el) {
-      GWEN_ConstListIterator_free(it);
+      GWEN_ListIterator_free(it);
       return el;
     }
-    el = GWEN_ConstListIterator_Next(it);
+    el = GWEN_ListIterator_Next(it);
   }
-  GWEN_ConstListIterator_free(it);
+  GWEN_ListIterator_free(it);
   return 0;
 }
 
-GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_First(const GWEN_CONSTLIST *l){
-  GWEN_CONSTLIST_ITERATOR *li;
 
-  assert(l);
-  if (l->first==0)
-    return 0;
-  li=GWEN_ConstListIterator_new(l);
-  li->current=l->first;
-  if (li->current)
-    li->current->usage++;
-  return li;
+
+GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_First(const GWEN_CONSTLIST *l){
+  return GWEN_List_First(l);
 }
 
 
 
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_Last(const GWEN_CONSTLIST *l){
-  GWEN_CONSTLIST_ITERATOR *li;
-
-  assert(l);
-  if (l->last==0)
-    return 0;
-  li=GWEN_ConstListIterator_new(l);
-  li->current=l->last;
-  if (li->current)
-    li->current->usage++;
-  return li;
+  return GWEN_List_Last(l);
 }
 
 
 
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstListIterator_new(const GWEN_CONSTLIST *l){
-  GWEN_CONSTLIST_ITERATOR *li;
-
-  GWEN_NEW_OBJECT(GWEN_CONSTLIST_ITERATOR, li);
-  li->list=l;
-  return li;
+  return GWEN_ListIterator_new(l);
 }
 
 
 
 void GWEN_ConstListIterator_free(GWEN_CONSTLIST_ITERATOR *li){
-  if (li) {
-    if (li->current)
-      GWEN_ConstListEntry_free(li->current);
-    free(li);
-  }
+  GWEN_ListIterator_free(li);
 }
 
 
 
 const void *GWEN_ConstListIterator_Previous(GWEN_CONSTLIST_ITERATOR *li){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  assert(li);
-
-  le=li->current;
-  if (le)
-    le=le->previous;
-  if (li->current)
-    GWEN_ConstListEntry_free(li->current);
-  li->current=le;
-  if (le) {
-    le->usage++;
-    return le->data;
-  }
-  return 0;
+  return GWEN_ListIterator_Previous(li);
 }
 
 
 
 const void *GWEN_ConstListIterator_Next(GWEN_CONSTLIST_ITERATOR *li){
-  GWEN_CONSTLIST_ENTRY *le;
-
-  assert(li);
-
-  le=li->current;
-  if (le)
-    le=le->next;
-  if (li->current)
-    GWEN_ConstListEntry_free(li->current);
-  li->current=le;
-  if (le) {
-    le->usage++;
-    return le->data;
-  }
-  return 0;
+  return GWEN_ListIterator_Next(li);
 }
 
 
 
 const void *GWEN_ConstListIterator_Data(GWEN_CONSTLIST_ITERATOR *li){
-  assert(li);
-
-  if (li->current)
-    return li->current->data;
-  return 0;
+  return GWEN_ListIterator_Data(li);
 }
 
 

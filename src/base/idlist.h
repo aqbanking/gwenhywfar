@@ -70,6 +70,14 @@ void GWEN_IdList_free(GWEN_IDLIST *idl);
 
 
 /**
+ * Returns a new id list which contains all the ids of the given list
+ * in the same order. However, the list returned is compact (i.e. it has no
+ * wholes).
+ */
+GWEN_IDLIST *GWEN_IdList_dup(const GWEN_IDLIST *idl);
+
+
+/**
  * Removes all ids from the list thus leaving it empty.
  */
 void GWEN_IdList_Clear(GWEN_IDLIST *idl);

@@ -417,6 +417,31 @@ void GWEN_IdList_Clear(GWEN_IDLIST *idl){
 
 
 
+GWEN_IDLIST *GWEN_IdList_dup(const GWEN_IDLIST *idl){
+  GWEN_IDLIST *nidl;
+  GWEN_IDTABLE *idt;
+
+  assert(idl);
+  nidl=GWEN_IdList_new();
+
+  idt=GWEN_IdTable_List_First(idl->idTables);
+  while(idt) {
+    if (idt->freeEntries!=GWEN_IDTABLE_MAXENTRIES){
+      int i;
+
+      for (i=0; i<GWEN_IDTABLE_MAXENTRIES; i++) {
+	if (idt->entries[i]!=0)
+	  GWEN_IdList_AddId(nidl, idt->entries[i]);
+      }
+    }
+    idt=GWEN_IdTable_List_Next(idt);
+  }
+
+  return nidl;
+}
+
+
+
 
 
 

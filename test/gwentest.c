@@ -4088,6 +4088,24 @@ int testStringList2(int argc, char **argv) {
 
 
 
+int testFuzzy(int argc, char **argv) {
+  const char *w1, *w2;
+  GWEN_TYPE_UINT32 score;
+
+  if (argc<4) {
+    fprintf(stderr, "Two extra-arguments needed.\n");
+    return 1;
+  }
+  w1=argv[2];
+  w2=argv[3];
+
+  //score=GWEN_Text_FuzzyCompare(w1, w2);
+  fprintf(stderr, "Similarity: "GWEN_TYPE_TMPL_UINT32"\n", score);
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4217,6 +4235,8 @@ int main(int argc, char **argv) {
     rv=testStringList2(argc, argv);
   else if (strcasecmp(argv[1], "sslc")==0)
     rv=testSSLC(argc, argv);
+  else if (strcasecmp(argv[1], "fuzzy")==0)
+    rv=testFuzzy(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

@@ -61,7 +61,7 @@ typedef void *(*GWEN_LIST_FOREACH_CB)(void *element, void *user_data);
  *
  * The list contains pointer to const data objects, with the ability
  * to iterate over the list in both directions. */
-typedef struct GWEN_CONSTLIST GWEN_CONSTLIST;
+typedef struct GWEN_LIST GWEN_CONSTLIST;
 
 /** Callback function for one const list element. */
 typedef const void *(*GWEN_CONSTLIST_FOREACH_CB)(const void *element,
@@ -73,7 +73,7 @@ typedef struct GWEN_LIST_ITERATOR GWEN_LIST_ITERATOR;
 
 /** An iterator for the const doubly-linked list, i.e. a pointer to a
     specific element */
-typedef struct GWEN_CONSTLIST_ITERATOR GWEN_CONSTLIST_ITERATOR;
+typedef struct GWEN_LIST_ITERATOR GWEN_CONSTLIST_ITERATOR;
 
 
 /** allow inheriting of lists */

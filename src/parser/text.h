@@ -41,6 +41,8 @@
 extern "C" {
 #endif
 
+#define GWEN_TEXT_FUZZY_SHIFT               10
+
 
 #define GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS  0x00000001
 #define GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS 0x00000002
@@ -304,6 +306,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf);
  */
 GWENHYWFAR_API
   double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign);
+
 
 
 #ifdef __cplusplus

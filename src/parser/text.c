@@ -39,6 +39,7 @@
 #endif
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/stringlist.h>
 
 
 
@@ -74,7 +75,7 @@ char *GWEN_Text_GetWord(const char *src,
 
   /* skip leading blanks, if wanted */
   if (flags & GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS) {
-    while(*src && *src<33)
+    while(*src && (unsigned char)(*src)<33)
       src++;
   }
 
@@ -134,7 +135,7 @@ char *GWEN_Text_GetWord(const char *src,
           size++;
         }
         /* remember next loop whether this char was a blank */
-        if (isspace((int)*src) && !lastWasEscape) {
+        if (isspace((int)((unsigned char)*src)) && !lastWasEscape) {
           lastWasBlank=1;
           lastBlankPos=size;
         }
@@ -195,7 +196,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
 
   /* skip leading blanks, if wanted */
   if (flags & GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS) {
-    while(*src && *src<33)
+    while(*src && (unsigned char)(*src)<33)
       src++;
   }
 
@@ -1609,6 +1610,7 @@ int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 
   return 0;
 }
+
 
 
 
