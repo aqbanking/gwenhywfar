@@ -1,4 +1,10 @@
 
+2004/09/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a function to GWEN_DBIO which allows to check whether a given file
+  is supported by a given plugin
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.0.1 (2004/09/10)
 ===========================================================================

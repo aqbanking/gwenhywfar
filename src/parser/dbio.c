@@ -154,6 +154,21 @@ int GWEN_DBIO_Export(GWEN_DBIO *dbio,
 
 
 
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio,
+                                               const char *fname) {
+  assert(dbio);
+  assert(fname);
+
+  if (dbio->checkFileFn)
+    return dbio->checkFileFn(dbio, fname);
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "No checkFile function set");
+    return GWEN_DBIO_CheckFileResultUnknown;
+  }
+}
+
+
+
 const char *GWEN_DBIO_GetName(const GWEN_DBIO *dbio){
   assert(dbio);
   return dbio->name;
@@ -223,6 +238,12 @@ void GWEN_DBIO_SetImportFn(GWEN_DBIO *dbio, GWEN_DBIO_IMPORTFN f){
 void GWEN_DBIO_SetExportFn(GWEN_DBIO *dbio, GWEN_DBIO_EXPORTFN f){
   assert(dbio);
   dbio->exportFn=f;
+}
+
+
+void GWEN_DBIO_SetCheckFileFn(GWEN_DBIO *dbio, GWEN_DBIO_CHECKFILEFN f){
+  assert(dbio);
+  dbio->checkFileFn=f;
 }
 
 

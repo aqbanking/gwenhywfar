@@ -45,6 +45,8 @@ struct GWEN_DBIO {
   GWEN_LIBLOADER *libLoader;
   GWEN_DBIO_IMPORTFN importFn;
   GWEN_DBIO_EXPORTFN exportFn;
+  GWEN_DBIO_CHECKFILEFN checkFileFn;
+
   char *name;
   char *descr;
 

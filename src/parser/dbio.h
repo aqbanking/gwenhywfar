@@ -70,9 +70,13 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_DBIO, GWEN_DBIO, GWENHYWFAR_API)
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_DBIO, GWENHYWFAR_API)
 /* No trailing semicolon here because this is a macro call */
 
+typedef enum {
+  GWEN_DBIO_CheckFileResultOk=0,
+  GWEN_DBIO_CheckFileResultNotOk,
+  GWEN_DBIO_CheckFileResultUnknown
+} GWEN_DBIO_CHECKFILE_RESULT;
 
 typedef GWEN_DBIO* (*GWEN_DBIO_FACTORYFN)(void);
-
 
 typedef int (*GWEN_DBIO_IMPORTFN)(GWEN_DBIO *dbio,
 				  GWEN_BUFFEREDIO *bio,
@@ -85,6 +89,9 @@ typedef int (*GWEN_DBIO_EXPORTFN)(GWEN_DBIO *dbio,
 				  GWEN_TYPE_UINT32 flags,
                                   GWEN_DB_NODE *db,
                                   GWEN_DB_NODE *params);
+
+typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio,
+                                     const char *fname);
 
 
 /** @name Functions To Be Used By Applications
@@ -113,6 +120,14 @@ int GWEN_DBIO_Export(GWEN_DBIO *dbio,
                      GWEN_TYPE_UINT32 flags,
                      GWEN_DB_NODE *db,
                      GWEN_DB_NODE *params);
+
+/**
+ * Checks whether the given file is supported by the given DBIO.
+ */
+GWENHYWFAR_API
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio,
+					       const char *fname);
+
 
 /**
  * Releases the ressources associated with the given GWEN_DBIO if the usage
@@ -172,6 +187,9 @@ void GWEN_DBIO_SetImportFn(GWEN_DBIO *dbio, GWEN_DBIO_IMPORTFN f);
  */
 GWENHYWFAR_API
 void GWEN_DBIO_SetExportFn(GWEN_DBIO *dbio, GWEN_DBIO_EXPORTFN f);
+
+GWENHYWFAR_API
+void GWEN_DBIO_SetCheckFileFn(GWEN_DBIO *dbio, GWEN_DBIO_CHECKFILEFN f);
 
 /*@}*/
 
