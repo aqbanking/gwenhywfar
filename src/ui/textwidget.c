@@ -527,6 +527,35 @@ void GWEN_TextWidget_Draw(GWEN_WIDGET *w){
 
 
 
+int GWEN_TextWidget_Ascify(GWEN_BUFFER *src, GWEN_BUFFER *dst) {
+  GWEN_TYPE_UINT32 len;
+  const unsigned char *p;
+  int lastWasEscape;
+
+  p=GWEN_Buffer_GetStart(src);
+  len=GWEN_Buffer_GetUsedBytes(src);
+  lastWasEscape=0;
+
+  while(len--) {
+    if (lastWasEscape)
+      lastWasEscape=0;
+    else {
+      if (*p>=0xf0)
+        lastWasEscape=1;
+      else
+        GWEN_Buffer_AppendByte(dst, *p);
+    }
+    p++;
+  } /* while */
+  if (lastWasEscape) {
+    DBG_NOTICE(0, "Bad string");
+    return -1;
+  }
+  return 0;
+}
+
+
+
 GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
   GWEN_TEXTWIDGET *win;
 
@@ -545,6 +574,7 @@ GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     m=GWEN_EventSetText_GetMode(e);
     if (p) {
       GWEN_TextWidget_SetText(w, p, m);
+      GWEN_Widget_Redraw(w);
     }
     return GWEN_UIResult_Handled;
   }
@@ -757,7 +787,43 @@ GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       }
       return GWEN_UIResult_Handled;
     }
-    if (key==KEY_F(9)) {
+    else if (key==13) {
+      GWEN_TW_LINE *l;
+      GWEN_BUFFER *buf;
+
+      if (win->flags & GWEN_TEXTWIDGET_FLAGS_LINEMODE) {
+        /* text chosen */
+        l=GWEN_TextWidget_LineOpen(w, win->pos, 0);
+        if (l) {
+          if (!l->compressed) {
+            if (GWEN_TextWidget_CompressLine(l)) {
+              DBG_NOTICE(0, "Could not compress line");
+            }
+          }
+          assert(l->compressed);
+          assert(l->compressedText);
+
+          buf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(l->compressedText),
+                              0, 1);
+          if (!GWEN_TextWidget_Ascify(l->compressedText, buf)) {
+            GWEN_EVENT *newE;
+
+            newE=GWEN_EventChosen_new(GWEN_Buffer_GetStart(buf),
+                                      0, win->pos);
+            assert(newE);
+            if (GWEN_Widget_SendEvent(w, w, newE)) {
+              DBG_INFO(0, "Could not send event");
+              GWEN_Event_free(newE);
+            }
+          }
+          GWEN_Buffer_free(buf);
+          GWEN_TextWidget_LineClose(w, l, 0);
+        }
+      }
+      return GWEN_UIResult_Handled;
+    }
+
+    else if (key==KEY_F(9)) {
       FILE *f;
       GWEN_TW_LINE *l;
 

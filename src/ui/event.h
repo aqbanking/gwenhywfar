@@ -33,6 +33,7 @@
 
 typedef struct GWEN_EVENT GWEN_EVENT;
 
+
 typedef enum {
   GWEN_EventSetTextMode_Replace=0,
   GWEN_EventSetTextMode_Append,
@@ -51,13 +52,6 @@ typedef enum {
   GWEN_EventClearMode_ToEOL,
   GWEN_EventClearMode_ToBottom
 } GWEN_EVENT_CLEAR_MODE;
-
-
-#include <gwenhywfar/widget.h>
-
-
-GWEN_LIST_FUNCTION_DEFS(GWEN_EVENT, GWEN_Event)
-GWEN_INHERIT_FUNCTION_DEFS(GWEN_EVENT)
 
 
 typedef enum {
@@ -81,14 +75,27 @@ typedef enum {
   GWEN_EventType_Command,
   GWEN_EventType_Close,
   GWEN_EventType_Closed,
-  GWEN_EventType_LastClosed
+  GWEN_EventType_LastClosed,
+  GWEN_EventType_Selected,
+  GWEN_EventType_Chosen
 } GWEN_EVENT_TYPE;
+
+
+#include <gwenhywfar/widget.h>
+
+
+GWEN_LIST_FUNCTION_DEFS(GWEN_EVENT, GWEN_Event)
+GWEN_INHERIT_FUNCTION_DEFS(GWEN_EVENT)
 
 
 
 GWEN_EVENT_TYPE GWEN_Event_GetType(const GWEN_EVENT *e);
 GWEN_WIDGET *GWEN_Event_GetSender(const GWEN_EVENT *e);
 GWEN_WIDGET *GWEN_Event_GetRecipient(const GWEN_EVENT *e);
+const char *GWEN_Event_GetEventTypeName(const GWEN_EVENT *e);
+
+int GWEN_Event_DueToSubscription(const GWEN_EVENT *e);
+
 
 GWEN_EVENT *GWEN_Event_new(GWEN_EVENT_TYPE t);
 
@@ -206,6 +213,18 @@ int GWEN_EventContentChg_GetHeight(const GWEN_EVENT *e);
 
 GWEN_EVENT *GWEN_EventCommand_new(GWEN_TYPE_UINT32 commandId);
 GWEN_TYPE_UINT32 GWEN_EventCommand_GetCommandId(const GWEN_EVENT *e);
+
+
+GWEN_EVENT *GWEN_EventSelected_new(const char *text, int x, int y);
+const char *GWEN_EventSelected_GetText(const GWEN_EVENT *e);
+int GWEN_EventSelected_GetX(const GWEN_EVENT *e);
+int GWEN_EventSelected_GetY(const GWEN_EVENT *e);
+
+
+GWEN_EVENT *GWEN_EventChosen_new(const char *text, int x, int y);
+const char *GWEN_EventChosen_GetText(const GWEN_EVENT *e);
+int GWEN_EventChosen_GetX(const GWEN_EVENT *e);
+int GWEN_EventChosen_GetY(const GWEN_EVENT *e);
 
 
 void GWEN_Event_Dump(const GWEN_EVENT *e);

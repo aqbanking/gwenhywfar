@@ -30,9 +30,15 @@
 #define GWEN_UI_EVENT_P_H
 
 
-#include <gwenhywfar/event.h>
+#include <gwenhywfar/event_l.h>
 #include <time.h>
 
+
+struct GWEN_EVENT_SUBSCRIPTION {
+  GWEN_LIST_ELEMENT(GWEN_EVENT_SUBSCRIPTION)
+  GWEN_EVENT_TYPE type;
+  GWEN_WIDGET *widget;
+};
 
 
 struct GWEN_EVENT {
@@ -43,6 +49,7 @@ struct GWEN_EVENT {
   GWEN_WIDGET *recipient;
   time_t posted;
   GWEN_TYPE_UINT32 id;
+  int subscriptionMark;
   GWEN_TYPE_UINT32 usage;
 };
 
@@ -149,6 +156,24 @@ struct GWEN_EVENT_COMMAND {
   GWEN_TYPE_UINT32 commandId;
 };
 void GWEN_EventCommand_freeData(void *bp, void *p);
+
+
+
+typedef struct GWEN_EVENT_SELECTED GWEN_EVENT_SELECTED;
+struct GWEN_EVENT_SELECTED {
+  char *text;
+  int x, y;
+};
+void GWEN_EventSelected_freeData(void *bp, void *p);
+
+
+
+typedef struct GWEN_EVENT_CHOSEN GWEN_EVENT_CHOSEN;
+struct GWEN_EVENT_CHOSEN {
+  char *text;
+  int x, y;
+};
+void GWEN_EventChosen_freeData(void *bp, void *p);
 
 
 #endif

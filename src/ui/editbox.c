@@ -60,7 +60,7 @@ GWEN_WIDGET *GWEN_EditBox_new(GWEN_WIDGET *parent,
     GWEN_WIDGET_FLAGS_NEEDCURSOR |
     GWEN_WIDGET_FLAGS_HIGHLIGHT;
 
-  DBG_NOTICE(0, "ZZZ: EditFlags are: %04x", wflags);
+  DBG_NOTICE(0, "EditFlags are: %04x", wflags);
   w=GWEN_TextWidget_new(parent,
                         wflags,
                         name,
@@ -145,7 +145,7 @@ void GWEN_EditBox_AdjustCursor(GWEN_WIDGET *w) {
   }
   GWEN_Widget_SetCursorX(w, x);
   GWEN_Widget_SetCursorY(w, y);
-  DBG_NOTICE(0, "ZZZ: Cursor at: %d/%d", x, y);
+  DBG_NOTICE(0, "Cursor at: %d/%d", x, y);
 }
 
 
@@ -244,44 +244,50 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       }
     }
     else if (key==GWEN_UI_KEY_INSERT) {
+      if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT))
+        return GWEN_UIResult_Handled;
       win->clearAllFlag=0;
       win->insertMode=!win->insertMode;
       beep();
       return GWEN_UIResult_Handled;
     }
     else if (key==GWEN_UI_KEY_DELETE) {
+      if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT))
+        return GWEN_UIResult_Handled;
       if (win->clearAllFlag)
         GWEN_TextWidget_LineClear(w, win->currLine);
       win->clearAllFlag=0;
       if (GWEN_EditBox_EnsureLine(w, win->currY)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
                                     win->maxLen, 1);
       if (GWEN_TextWidget_LineSetPos(w, win->currLine, win->currX)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       if (GWEN_TextWidget_LineDelete(w, win->currLine, 1)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       if (GWEN_TextWidget_LineRedraw(w, win->currLine)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       return GWEN_UIResult_Handled;
     }
     else if (key==KEY_BACKSPACE) {
+      if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT))
+        return GWEN_UIResult_Handled;
       win->clearAllFlag=0;
       if (GWEN_EditBox_EnsureLine(w, win->currY)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
@@ -292,17 +298,17 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       win->currX--;
       if (GWEN_TextWidget_LineSetPos(w, win->currLine, win->currX)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       if (GWEN_TextWidget_LineDelete(w, win->currLine, 1)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       if (GWEN_TextWidget_LineRedraw(w, win->currLine)) {
         beep();
-        DBG_NOTICE(0, "ZZZ: here");
+        DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
       GWEN_EditBox_AdjustCursor(w);
@@ -312,6 +318,8 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       char buffer[2];
       int ww;
 
+      if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT))
+        return GWEN_UIResult_Handled;
       if (GWEN_EditBox_EnsureLine(w, win->currY)) {
         beep();
         return GWEN_UIResult_Handled;

@@ -41,6 +41,7 @@
 #include <gwenhywfar/messagebox.h>
 #include <gwenhywfar/editbox.h>
 #include <gwenhywfar/checkbox.h>
+#include <gwenhywfar/dropdownbox.h>
 
 
 int testDB(int argc, char **argv) {
@@ -2389,6 +2390,7 @@ int uitest15(int argc, char **argv) {
                      60, 22);
   ev=GWEN_EditBox_new(GWEN_Window_GetViewPort(mw),
                       GWEN_WIDGET_FLAGS_DEFAULT |
+                      GWEN_EDITBOX_FLAGS_EDIT |
                       GWEN_WIDGET_FLAGS_BORDER,
                       "EditBox",
                       buffer,
@@ -2579,6 +2581,144 @@ int uitest16(int argc, char **argv) {
 }
 
 
+
+int uitest17(int argc, char **argv) {
+  GWEN_WIDGET *mw;
+  GWEN_WIDGET *but1;
+  GWEN_WIDGET *but2;
+  GWEN_WIDGET *but3;
+  GWEN_WIDGET *dd;
+  GWEN_UI_RESULT res;
+  GWEN_STRINGLIST *sl;
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+  mw=GWEN_Window_new(0,
+                     (GWEN_WIDGET_FLAGS_DEFAULT |
+                      GWEN_WIDGET_FLAGS_BORDER |
+                      GWEN_WINDOW_FLAGS_TITLE) &
+                     ~GWEN_WIDGET_FLAGS_FOCUSABLE,
+                      "Main-Widget",
+                     "Ueberschrift",
+                     1, 1,
+                     60, 22);
+
+  GWEN_Widget_SetHelpText(mw,
+                          "<gwen>"
+                          "This is a small <b>example</b> <i>of</i> a help "
+                          "screen.<br>"
+                          "You can assign a help text to any widget.<br>"
+                          "<br>"
+                          "If no help text for a widget is available<br>"
+                          "all parents are consulted."
+                          "</gwen>");
+
+  but1=GWEN_CheckBox_new(GWEN_Window_GetViewPort(mw),
+                        GWEN_WIDGET_FLAGS_DEFAULT |
+                        //GWEN_WIDGET_FLAGS_BORDER |
+                        GWEN_WIDGET_FLAGS_HIGHLIGHT,
+                        "Test-Checkbox",
+                        "<gwen>This is the checkbox text</gwen>",
+                        0, 0,
+                        40, 4);
+  GWEN_Widget_SetColour(but1, GWEN_WidgetColour_Message);
+
+  but2=GWEN_CheckBox_new(GWEN_Window_GetViewPort(mw),
+                         GWEN_WIDGET_FLAGS_DEFAULT |
+                         //GWEN_WIDGET_FLAGS_BORDER |
+                         GWEN_WIDGET_FLAGS_HIGHLIGHT,
+                         "Test-Checkbox",
+                         "Second Box",
+                         0, 5,
+                         40, 4);
+  GWEN_Widget_SetColour(but2, GWEN_WidgetColour_Message);
+
+  sl=GWEN_StringList_new();
+  GWEN_StringList_AppendString(sl, "Test1", 0, 1);
+  GWEN_StringList_AppendString(sl, "Test2", 0, 1);
+  GWEN_StringList_AppendString(sl, "Test3", 0, 1);
+  GWEN_StringList_AppendString(sl, "Test4", 0, 1);
+  GWEN_StringList_AppendString(sl, "Test5", 0, 1);
+  GWEN_StringList_AppendString(sl, "Test6", 0, 1);
+  dd=GWEN_DropDownBox_new(GWEN_Window_GetViewPort(mw),
+                          GWEN_WIDGET_FLAGS_DEFAULT |
+                          GWEN_WIDGET_FLAGS_BORDER |
+                          GWEN_WIDGET_FLAGS_HCENTER |
+                          GWEN_DROPDOWNBOX_FLAGS_EDIT |
+                          GWEN_WIDGET_FLAGS_HIGHLIGHT,
+                          "Test-Button",
+                          0, 10,
+                          20, 3,
+                          sl);
+  GWEN_Widget_SetColour(dd, GWEN_WidgetColour_Message);
+
+
+  but3=GWEN_Button_new(GWEN_Window_GetViewPort(mw),
+                       GWEN_WIDGET_FLAGS_DEFAULT |
+                       GWEN_WIDGET_FLAGS_BORDER |
+                       GWEN_WIDGET_FLAGS_HCENTER |
+                       GWEN_WIDGET_FLAGS_HIGHLIGHT,
+                       "Test-Button",
+                       "Quit",
+                       0xdeadbeef, /* commandId */
+                       24, 18,
+                       10, 1);
+  GWEN_Widget_SetColour(but3, GWEN_WidgetColour_Message);
+
+  GWEN_Widget_SetFocus(but1);
+  GWEN_Widget_Dump(mw, 1);
+
+  GWEN_Widget_Redraw(mw);
+
+  res=GWEN_UIResult_NotHandled;
+  GWEN_Widget_Dump(mw, 4);
+  for (;;) {
+    GWEN_EVENT *e;
+
+    e=GWEN_UI_GetNextEvent();
+    if (!e)
+      break;
+    DBG_NOTICE(0, "Got this event:");
+    GWEN_Event_Dump(e);
+    if (GWEN_Event_GetType(e)==GWEN_EventType_Command) {
+      if (GWEN_EventCommand_GetCommandId(e)==0xdeadbeef) {
+        GWEN_Widget_Close(mw);
+      }
+      else
+        res=GWEN_UI_DispatchEvent(e);
+    }
+    else
+      res=GWEN_UI_DispatchEvent(e);
+    GWEN_Event_free(e);
+  }
+
+  DBG_NOTICE(0, "Box 1 is %schecked",
+             GWEN_CheckBox_IsChecked(but1)?"":"not ");
+  DBG_NOTICE(0, "Box 2 is %schecked",
+             GWEN_CheckBox_IsChecked(but2)?"":"not ");
+
+  GWEN_Widget_free(mw);
+
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
 #endif /* USE_NCURSES */
 
 
@@ -2668,6 +2808,8 @@ int main(int argc, char **argv) {
     rv=uitest15(argc, argv);
   else if (strcasecmp(argv[1], "u16")==0)
     rv=uitest16(argc, argv);
+  else if (strcasecmp(argv[1], "u17")==0)
+    rv=uitest17(argc, argv);
 #endif /* USE_NCURSES */
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

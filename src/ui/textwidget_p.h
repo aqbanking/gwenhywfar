@@ -143,6 +143,7 @@ int GWEN_TextWidget__ParseXMLSubNodes(GWEN_XMLNODE *n,
                                       GWEN_TW_LINE_LIST *ll,
                                       GWEN_TW_LINE **l);
 
+int GWEN_TextWidget_Ascify(GWEN_BUFFER *src, GWEN_BUFFER *dst);
 
 
 

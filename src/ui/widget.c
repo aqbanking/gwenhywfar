@@ -71,7 +71,8 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   w->usage=1;
   w->eventHandler=GWEN_Widget__HandleEvent;
   w->typeName=strdup("Widget");
-
+  w->subscribers=GWEN_EventSubscr_List_new();
+  w->subscriptions=GWEN_EventSubscr_List_new();
   if (GWEN_Widget_LastId==0)
     GWEN_Widget_LastId=time(0);
   w->id=++GWEN_Widget_LastId;
@@ -181,6 +182,7 @@ void GWEN_Widget_free(GWEN_WIDGET *w){
     if ((--w->usage)==0) {
       GWEN_WIDGET *cw;
 
+      GWEN_Widget_UnsubscribeFromAll(w);
       cw=GWEN_Widget_List_First(w->children);
       while(cw) {
         cw->parent=0;
@@ -208,6 +210,8 @@ void GWEN_Widget_free(GWEN_WIDGET *w){
           delwin(w->window);
         }
       }
+      GWEN_EventSubscr_List_free(w->subscribers);
+      GWEN_EventSubscr_List_free(w->subscriptions);
       GWEN_LIST_FINI(GWEN_WIDGET, w);
       GWEN_FREE_OBJECT(w);
     }
@@ -403,6 +407,10 @@ GWEN_UI_RESULT GWEN_Widget_HandleEvent(GWEN_WIDGET *w,
     GWEN_UI_RESULT rv;
 
     rv=w->eventHandler(w, e);
+    /* propagate event to all subscribers */
+    GWEN_Widget_InformSubscribers(w, e);
+
+    /* handle result */
     if (rv==GWEN_UIResult_Handled) {
       DBG_VERBOUS(0, "Event handled");
       return GWEN_UIResult_Handled;
@@ -1449,7 +1457,122 @@ void GWEN_Widget_SetHelpText(GWEN_WIDGET *w, const char *s){
 
 
 
+void GWEN_Widget_Subscribe(GWEN_WIDGET *w,
+                           GWEN_EVENT_TYPE t,
+                           GWEN_WIDGET *subscriber){
+  GWEN_EVENT_SUBSCRIPTION *su;
 
+  assert(w);
+  assert(subscriber);
+
+  /* store in target */
+  su=GWEN_EventSubscr_new(t, subscriber);
+  GWEN_EventSubscr_List_Add(su, w->subscribers);
+
+  /* store in caller */
+  su=GWEN_EventSubscr_new(t, w);
+  GWEN_EventSubscr_List_Add(su, subscriber->subscriptions);
+}
+
+
+
+void GWEN_Widget_Unsubscribe(GWEN_WIDGET *w,
+                             GWEN_EVENT_TYPE t,
+                             GWEN_WIDGET *subscriber){
+  GWEN_EVENT_SUBSCRIPTION *su;
+
+  assert(w);
+  assert(subscriber);
+
+  /* remove from target */
+  su=GWEN_EventSubscr_List_First(w->subscribers);
+  while(su) {
+    if (GWEN_EventSubscr_GetType(su)==t &&
+        GWEN_EventSubscr_GetWidget(su)==subscriber)
+      break;
+    su=GWEN_EventSubscr_List_Next(su);
+  }
+  if (su) {
+    GWEN_EventSubscr_List_Del(su);
+    GWEN_EventSubscr_free(su);
+  }
+
+  /* remove from caller */
+  su=GWEN_EventSubscr_List_First(subscriber->subscriptions);
+  while(su) {
+    if (GWEN_EventSubscr_GetType(su)==t &&
+        GWEN_EventSubscr_GetWidget(su)==subscriber)
+      break;
+    su=GWEN_EventSubscr_List_Next(su);
+  }
+  if (su) {
+    GWEN_EventSubscr_List_Del(su);
+    GWEN_EventSubscr_free(su);
+  }
+}
+
+
+
+void GWEN_Widget_UnsubscribeFromAll(GWEN_WIDGET *w) {
+  GWEN_EVENT_SUBSCRIPTION *src;
+
+  assert(w);
+  src=GWEN_EventSubscr_List_First(w->subscriptions);
+  while(src) {
+    GWEN_EVENT_TYPE t;
+    GWEN_WIDGET *ww;
+    GWEN_EVENT_SUBSCRIPTION *dst;
+    GWEN_EVENT_SUBSCRIPTION *next;
+
+    t=GWEN_EventSubscr_GetType(src);
+    ww=GWEN_EventSubscr_GetWidget(src);
+    /* remove from target */
+    dst=GWEN_EventSubscr_List_First(ww->subscribers);
+    while(dst) {
+      if (GWEN_EventSubscr_GetType(dst)==t &&
+          GWEN_EventSubscr_GetWidget(dst)==ww)
+        break;
+      dst=GWEN_EventSubscr_List_Next(dst);
+    }
+    if (dst) {
+      GWEN_EventSubscr_List_Del(dst);
+      GWEN_EventSubscr_free(dst);
+    }
+
+    next=GWEN_EventSubscr_List_Next(src);
+    /* remove from caller */
+    GWEN_EventSubscr_List_Del(src);
+    GWEN_EventSubscr_free(src);
+    src=next;
+  }
+}
+
+
+
+void GWEN_Widget_InformSubscribers(GWEN_WIDGET *w, GWEN_EVENT *e) {
+  GWEN_EVENT_SUBSCRIPTION *su;
+
+  assert(w);
+  assert(e);
+
+  if (GWEN_Event_DueToSubscription(e))
+    /* do not propagate events received due to subscriptions */
+    return;
+  GWEN_Event_SetSubscriptionMark(e, 1);
+
+  /* remove from target */
+  su=GWEN_EventSubscr_List_First(w->subscribers);
+  while(su) {
+    if (GWEN_EventSubscr_GetType(su)==GWEN_Event_GetType(e)) {
+      DBG_NOTICE(0, "Informing subscriber \"%s\" about event \"%s\"",
+                 GWEN_Widget_GetName(GWEN_EventSubscr_GetWidget(su)),
+                 GWEN_Event_GetEventTypeName(e));
+      GWEN_Widget_HandleEvent(GWEN_EventSubscr_GetWidget(su), e);
+    }
+    su=GWEN_EventSubscr_List_Next(su);
+  }
+  GWEN_Event_SetSubscriptionMark(e, 0);
+}
 
 
 

@@ -38,6 +38,9 @@
 GWEN_LIST_FUNCTIONS(GWEN_EVENT, GWEN_Event)
 GWEN_INHERIT_FUNCTIONS(GWEN_EVENT)
 
+GWEN_LIST_FUNCTIONS(GWEN_EVENT_SUBSCRIPTION, GWEN_EventSubscr)
+
+
 static GWEN_TYPE_UINT32 GWEN_EVENT__lastId=0;
 
 
@@ -151,6 +154,27 @@ const char *GWEN_Event_TypeName(GWEN_EVENT_TYPE t) {
 
 
 
+const char *GWEN_Event_GetEventTypeName(const GWEN_EVENT *e){
+  assert(e);
+  return GWEN_Event_TypeName(e->type);
+}
+
+
+
+int GWEN_Event_DueToSubscription(const GWEN_EVENT *e) {
+  assert(e);
+  return e->subscriptionMark;
+}
+
+
+
+void GWEN_Event_SetSubscriptionMark(GWEN_EVENT *e, int m) {
+  assert(e);
+  e->subscriptionMark=m;
+}
+
+
+
 void GWEN_Event_Dump(const GWEN_EVENT *e){
   assert(e);
   assert(e->usage);
@@ -165,6 +189,43 @@ void GWEN_Event_Dump(const GWEN_EVENT *e){
 
 
 
+
+
+
+
+GWEN_EVENT_SUBSCRIPTION *GWEN_EventSubscr_new(GWEN_EVENT_TYPE t,
+                                              GWEN_WIDGET *widget){
+  GWEN_EVENT_SUBSCRIPTION *es;
+
+  assert(widget);
+  GWEN_NEW_OBJECT(GWEN_EVENT_SUBSCRIPTION, es);
+  GWEN_LIST_INIT(GWEN_EVENT_SUBSCRIPTION, es);
+  es->type=t;
+  es->widget=widget;
+  return es;
+}
+
+
+
+void GWEN_EventSubscr_free(GWEN_EVENT_SUBSCRIPTION *es){
+  if (es) {
+    GWEN_LIST_FINI(GWEN_EVENT_SUBSCRIPTION, es);
+    GWEN_FREE_OBJECT(es);
+  }
+}
+
+
+
+GWEN_EVENT_TYPE GWEN_EventSubscr_GetType(const GWEN_EVENT_SUBSCRIPTION *es){
+  assert(es);
+  return es->type;
+}
+
+
+GWEN_WIDGET *GWEN_EventSubscr_GetWidget(const GWEN_EVENT_SUBSCRIPTION *es){
+  assert(es);
+  return es->widget;
+}
 
 
 
@@ -972,6 +1033,153 @@ GWEN_EVENT *GWEN_EventClosed_new(){
 GWEN_EVENT *GWEN_EventLastClosed_new(){
   return GWEN_Event_new(GWEN_EventType_LastClosed);
 }
+
+
+
+
+
+
+GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_SELECTED);
+
+GWEN_EVENT *GWEN_EventSelected_new(const char *text, int x, int y){
+  GWEN_EVENT *e;
+  GWEN_EVENT_SELECTED *et;
+
+  e=GWEN_Event_new(GWEN_EventType_Selected);
+  GWEN_NEW_OBJECT(GWEN_EVENT_SELECTED, et);
+  if (text)
+    et->text=strdup(text);
+  et->x=x;
+  et->y=y;
+
+  GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_SELECTED,
+                       e, et,
+                       GWEN_EventSelected_freeData);
+  return e;
+}
+
+
+
+void GWEN_EventSelected_freeData(void *bp, void *p){
+  GWEN_EVENT_SELECTED *et;
+
+  et=(GWEN_EVENT_SELECTED*)p;
+  free(et->text);
+  GWEN_FREE_OBJECT(et);
+}
+
+
+
+const char *GWEN_EventSelected_GetText(const GWEN_EVENT *e){
+  GWEN_EVENT_SELECTED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_SELECTED, e);
+  assert(et);
+
+  return et->text;
+}
+
+
+
+int GWEN_EventSelected_GetX(const GWEN_EVENT *e){
+  GWEN_EVENT_SELECTED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_SELECTED, e);
+  assert(et);
+
+  return et->x;
+}
+
+
+
+int GWEN_EventSelected_GetY(const GWEN_EVENT *e){
+  GWEN_EVENT_SELECTED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_SELECTED, e);
+  assert(et);
+
+  return et->y;
+}
+
+
+
+
+
+
+
+
+
+GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_CHOSEN);
+
+GWEN_EVENT *GWEN_EventChosen_new(const char *text, int x, int y){
+  GWEN_EVENT *e;
+  GWEN_EVENT_CHOSEN *et;
+
+  e=GWEN_Event_new(GWEN_EventType_Chosen);
+  GWEN_NEW_OBJECT(GWEN_EVENT_CHOSEN, et);
+  if (text)
+    et->text=strdup(text);
+  et->x=x;
+  et->y=y;
+
+  GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_CHOSEN,
+                       e, et,
+                       GWEN_EventChosen_freeData);
+  return e;
+}
+
+
+
+void GWEN_EventChosen_freeData(void *bp, void *p){
+  GWEN_EVENT_CHOSEN *et;
+
+  et=(GWEN_EVENT_CHOSEN*)p;
+  free(et->text);
+  GWEN_FREE_OBJECT(et);
+}
+
+
+
+const char *GWEN_EventChosen_GetText(const GWEN_EVENT *e){
+  GWEN_EVENT_CHOSEN *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CHOSEN, e);
+  assert(et);
+
+  return et->text;
+}
+
+
+
+int GWEN_EventChosen_GetX(const GWEN_EVENT *e){
+  GWEN_EVENT_CHOSEN *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CHOSEN, e);
+  assert(et);
+
+  return et->x;
+}
+
+
+
+int GWEN_EventChosen_GetY(const GWEN_EVENT *e){
+  GWEN_EVENT_CHOSEN *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CHOSEN, e);
+  assert(et);
+
+  return et->y;
+}
+
+
+
+
 
 
 

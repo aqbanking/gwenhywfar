@@ -184,6 +184,17 @@ int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w);
 GWEN_UI_RESULT GWEN_Widget_Run(GWEN_WIDGET *w);
 
 
+void GWEN_Widget_Subscribe(GWEN_WIDGET *w,
+                           GWEN_EVENT_TYPE t,
+                           GWEN_WIDGET *subscriber);
+
+void GWEN_Widget_Unsubscribe(GWEN_WIDGET *w,
+                             GWEN_EVENT_TYPE t,
+                             GWEN_WIDGET *subscriber);
+
+int GWEN_Widget_GetPhysicalX(const GWEN_WIDGET *w);
+int GWEN_Widget_GetPhysicalY(const GWEN_WIDGET *w);
+
 
 /** @name Debugging
  *

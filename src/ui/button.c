@@ -107,7 +107,7 @@ GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
 
     DBG_NOTICE(0, "Event: Key(%s)", GWEN_Widget_GetName(w));
     key=GWEN_EventKey_GetKey(e);
-    if (key==13 || key==32) {
+    if (key==32) {
       const char *c;
 
       if (win->flags & GWEN_BUTTON_FLAGS_CHECKBOX) {

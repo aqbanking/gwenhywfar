@@ -32,12 +32,20 @@
 
 #include <gwenhywfar/event.h>
 
-
 void GWEN_Event_SetSender(GWEN_EVENT *e, GWEN_WIDGET *w);
 void GWEN_Event_SetRecipient(GWEN_EVENT *e, GWEN_WIDGET *w);
 
 GWEN_WIDGET *GWEN_Event_GetRecipient(const GWEN_EVENT *e);
 
+void GWEN_Event_SetSubscriptionMark(GWEN_EVENT *e, int m);
+
+typedef struct GWEN_EVENT_SUBSCRIPTION GWEN_EVENT_SUBSCRIPTION;
+GWEN_LIST_FUNCTION_DEFS(GWEN_EVENT_SUBSCRIPTION, GWEN_EventSubscr)
+GWEN_EVENT_SUBSCRIPTION *GWEN_EventSubscr_new(GWEN_EVENT_TYPE t,
+                                              GWEN_WIDGET *widget);
+void GWEN_EventSubscr_free(GWEN_EVENT_SUBSCRIPTION *es);
+GWEN_EVENT_TYPE GWEN_EventSubscr_GetType(const GWEN_EVENT_SUBSCRIPTION *es);
+GWEN_WIDGET *GWEN_EventSubscr_GetWidget(const GWEN_EVENT_SUBSCRIPTION *es);
 
 
 
