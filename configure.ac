@@ -245,7 +245,7 @@ case "$OS_TYPE" in
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_pkgincludedir="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
-        gwenhywfar_plugindir="\$libdir/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_MAKE_DLL_TARGET="dll"
         GWEN_INSTALL_DLL_TARGET="dll-install"
