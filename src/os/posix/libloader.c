@@ -39,7 +39,7 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef HAVE_DLFCN_H
+#if defined(HAVE_DLFCN_H) || defined(OS_DARWIN)
 # include <dlfcn.h>
 #endif
 

@@ -14,6 +14,7 @@ noinst_HEADERS=\
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
+ base64.h \
  csv.h \
  db.h \
  dbio.h \

@@ -35,7 +35,8 @@ AC_ARG_WITH(openssl-includes, [  --with-openssl-includes=DIR adds openssl includ
     		       /usr/local/include\
 		       /usr/local/ssl/include\
   		       /usr/ssl/include\
-                       /more/include"\
+                       /more/include\
+                       /sw/include"\
                        ])
 
 dnl search for ssl
@@ -64,6 +65,7 @@ AC_ARG_WITH(openssl-libs, [  --with-openssl-libs=DIR  adds openssl library path]
 		       /usr/lib/openssl/lib \
 		       /usr/local/ssl/lib \
 		       /usr/local/openssl/lib \
+                       /sw/lib \
 		       /lib"])
 
 dnl search for openssl libs

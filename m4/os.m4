@@ -30,6 +30,11 @@ case "$target" in
 	AC_DEFINE(OS_LINUX,1,[if linux is used])
 	OS_TYPE="posix"
 	;;
+    *-darwin*)
+	OSYSTEM="osx"
+	AC_DEFINE(OS_DARWIN,1,[if Apple Darwin is used])
+	OS_TYPE="posix"
+	;;
     *-openbsd*)
 	OSYSTEM="openbsd"
 	AC_DEFINE(OS_OPENBSD,1,[if OpenBSD is used])

@@ -9,6 +9,8 @@
 - ssl module is now able to save certificates if demanded by the user
 - added parser/base64. This is not an elegant implementation but it
   works ;-) (Currently I don't have the time for a more elaborated version)
+- tried some Darwin fixes (still minimun success, that system is quite 
+  different in some aspects. However, the configure script runs).
 
 
 2004-05-05   Christian Stimming <stimming@tuhh.de>
