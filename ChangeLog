@@ -1,3 +1,7 @@
+===========================================================================
+MARK: released gwenhywfar-0.9.7 (2004/02/18)
+===========================================================================
+
 2004-02-17  Christian Stimming <stimming@tuhh.de>
 
 	* src/parser/xml_p.h (GWEN_XML_MAX_VARNAMELEN): Increased static
