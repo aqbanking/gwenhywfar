@@ -39,7 +39,7 @@ Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.dll"; DestDir: "{win}"; Flags
 Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
 
 ; The config-script, the headers, and the aclocal macro. FIXME: Are
-; there additional libraries in $prefix/lib which should be
+; there additional libraries in $libdir which should be
 ; distributed? So far they are not distributed.
 Source: "distribution\win32-tmp\bin\*"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel
 Source: "distribution\win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel

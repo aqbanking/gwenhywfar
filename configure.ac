@@ -19,9 +19,9 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=7
 GWENHYWFAR_VERSION_PATCHLEVEL=2
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
@@ -121,6 +121,16 @@ AC_SUBST(GWENPP_SO_EFFECTIVE)
 
 
 
+dnl prefix handling
+AC_PREFIX_DEFAULT(/usr)
+if test "x$prefix" = "xNONE"; then
+  prefix=$ac_default_prefix
+  ac_configure_args="$ac_configure_args --prefix $prefix"
+fi
+AC_SUBST(prefix)
+
+
+
 ###-------------------------------------------------------------------------
 #
 # static/shared handling
@@ -192,14 +202,6 @@ AC_CHECK_FUNCS([strcasecmp strchr strdup strerror])
 AC_CHECK_FUNCS([snprintf])
 AC_CHECK_FUNCS([symlink setlocale])
 
-dnl prefix handling
-AC_PREFIX_DEFAULT(/usr)
-if test "x$prefix" = "xNONE"; then
-  prefix=$ac_default_prefix
-  ac_configure_args="$ac_configure_args --prefix $prefix"
-fi
-AC_SUBST(prefix)
-
 
 ###-------------------------------------------------------------------------
 #
@@ -210,13 +212,13 @@ AQ_CHECK_OS
 case "$OS_TYPE" in
     posix)
         gwenhywfar_lib="-lgwenhywfar"
-        gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
-        gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
-        gwenhywfar_libsui="-L`eval echo $prefix/lib` -lgwenui"
+        gwenhywfar_libs="-L\${libdir} -lgwenhywfar"
+        gwenhywfar_libspp="-L\${libdir} -lgwenpp"
+        gwenhywfar_libsui="-L\${libdir} -lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
-        gwenhywfar_plugins="`eval echo $prefix/lib`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugins="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
         
@@ -238,12 +240,12 @@ case "$OS_TYPE" in
         ACX_WINDOWS_PATHS
         gwenhywfar_lib="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
-        gwenhywfar_libspp="-L`eval echo $prefix/lib` -lgwenpp"
-        gwenhywfar_libsui="-L`eval echo $prefix/lib` -lgwenui"
+        gwenhywfar_libspp="-L\$libdir -lgwenpp"
+        gwenhywfar_libsui="-L\$libdir -lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
-        gwenhywfar_plugins="`eval echo $prefix/lib`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugins="\$libdir/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_MAKE_DLL_TARGET="dll"
         GWEN_INSTALL_DLL_TARGET="dll-install"
