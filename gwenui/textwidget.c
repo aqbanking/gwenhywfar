@@ -428,7 +428,7 @@ int GWEN_TextWidget_ParseXMLSubNodes(GWEN_WIDGET *w,
       if (p) {
         if (addSpace) {
           GWEN_Buffer_AppendByte(buf, ' ');
-          *(pos++);
+          pos++;
         }
 
         while(*p) {
@@ -1365,7 +1365,7 @@ int GWEN_TextWidget__DrawLine(GWEN_WIDGET *w, GWEN_TW_LINE *l,
 
   if (startPtr) {
     DBG_NOTICE(0, "Updating line: %d/%d, %d(%d) [%d, %d]",
-               x, y, len, p-startPtr, win->left, win->top);
+               x, y, len, (int)(p-startPtr), win->left, win->top);
     GWEN_Widget_WriteAt(w,
                         x-win->left, y-win->top,
                         startPtr, p-startPtr);

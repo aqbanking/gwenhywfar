@@ -439,10 +439,10 @@ int GWEN_FileDialog_ScanDir(GWEN_WIDGET *w, const char *s, GWEN_DB_NODE *db){
 
             if (isspace(*p))
               snprintf(numbuf, sizeof(numbuf), " %7d",
-                       rest);
+                       (int)rest);
             else
               snprintf(numbuf, sizeof(numbuf), "%7d%c",
-                       rest, *p);
+                       (int)rest, *p);
             GWEN_DB_SetCharValue(dbEntry,
                                  GWEN_DB_FLAGS_OVERWRITE_VARS,
                                  "size",

@@ -1269,7 +1269,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
         currGrp=currGrp->h.parent;
         currVar=0;
         depth--;
-        *pos++;
+        pos++;
         while(*pos && isspace(*pos))
           pos++;
       }
@@ -1505,7 +1505,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             currGrp=currGrp->h.parent;
             currVar=0;
             depth--;
-            *pos++;
+            pos++;
             while(*pos && isspace(*pos))
               pos++;
           }

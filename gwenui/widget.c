@@ -188,8 +188,8 @@ void GWEN_Widget_free(GWEN_WIDGET *w){
         cw=GWEN_Widget_List_Next(cw);
       }
 
-      DBG_NOTICE(0, "Freeing widget \"%s\" [%08x]",
-                 w->name, (unsigned int)w);
+      DBG_NOTICE(0, "Freeing widget \"%s\" [%p]",
+                 w->name, w);
 
       GWEN_INHERIT_FINI(GWEN_WIDGET, w);
 
