@@ -1,3 +1,6 @@
+2004-07-20   Christian Stimming <stimming@tuhh.de>
+
+	* Makefile.am: Fix win32-cs target with wrong .lib filename.
 
 2004/07/20: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

@@ -44,9 +44,16 @@ rpm:    $(PACKAGE).spec dist
 # DLLs. The helper directories are configured by the following
 # variables.
 win_buildroot=distribution
+# The following two variables are both temporary directories and also
+# the name of the resulting archive.
 win_develdir=$(PACKAGE)-$(VERSION)-win32-devel
 win_bindir=$(PACKAGE)-$(VERSION)-win32-bin
+# The name of the actual DLL -- has to match the one in
+# src/Makefile.am
+win_LIBRARY_NAME = $(PACKAGE)32_$(GWENHYWFAR_SO_EFFECTIVE)
 EXTRA_WIN_DIST=AUTHORS ChangeLog README README.W32 COPYING
+
+# Target that uses the current ./configure result for compiling
 win32:
 	mkdir -p distribution
 	make prefix="`pwd`/distribution/win32-tmp" install && \
@@ -55,16 +62,17 @@ win32:
 	 cp -r win32-tmp/include win32-devel/ && \
 	 cp -r win32-tmp/share win32-devel && \
 	 cp ../AUTHORS ../ChangeLog ../README ../README.W32 ../COPYING win32-devel/ && \
-	 tar pczvf gwenhywfar-@VERSION@-win32-devel.tgz win32-devel && \
+	 tar pczvf $(win_develdir).tgz win32-devel && \
 	 rm -Rf win32-devel && \
 	 rm -Rf win32-tmp )
 	mkdir -p distribution/win32-bin && \
-	 cp -r src/gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).dll distribution/win32-bin/ && \
+	 cp -r src/$(win_LIBRARY_NAME).dll distribution/win32-bin/ && \
 	 cp AUTHORS ChangeLog README README.W32 COPYING distribution/win32-bin/ && \
 	 strip distribution/win32-bin/*.dll && \
-	 ( cd distribution && tar pczvf gwenhywfar-@VERSION@-win32-bin.tgz win32-bin && \
+	 ( cd distribution && tar pczvf $(win_bindir).tgz win32-bin && \
 	 rm -Rf win32-bin )
 
+# Target that makes a full rebuild including ./configure
 win32-cs: dist
 	$(am__remove_distdir)
 	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
@@ -83,8 +91,8 @@ win32-cs: dist
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) check \
 	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && cp src/$(PACKAGE)32_$(GWENHYWFAR_SO_EFFECTIVE).dll ../../$(win_buildroot)/$(win_bindir) \
-	  && cp src/$(PACKAGE)32.lib ../../$(win_buildroot)/$(win_develdir) \
+	  && cp src/$(win_LIBRARY_NAME).dll ../../$(win_buildroot)/$(win_bindir) \
+	  && cp src/$(win_LIBRARY_NAME).lib ../../$(win_buildroot)/$(win_develdir) \
 	  && cd ../../$(win_buildroot) \
 	  && cp -r "$$dc_install_base"/bin $(win_develdir) \
 	  && cp -r "$$dc_install_base"/include $(win_develdir) \
@@ -94,8 +102,8 @@ win32-cs: dist
 	  && cp $(EXTRA_WIN_DIST) $(win_buildroot)/$(win_bindir) \
 	  && cd $(win_buildroot) \
 	  && strip $(win_bindir)/*.dll \
-	  && zip -9r $(win_develdir).zip $(win_develdir) \
-	  && zip -9r $(win_bindir).zip $(win_bindir) \
+	  && zip -r $(win_develdir).zip $(win_develdir) \
+	  && zip -r $(win_bindir).zip $(win_bindir) \
 	  && rm -Rf $(win_develdir) $(win_bindir)
 	$(am__remove_distdir)
 
