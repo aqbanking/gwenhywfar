@@ -38,13 +38,15 @@ around this for WIN32 (or does MinGW already support it?)
     functions)
 
 - GWEN_DB:
-  - fixed a bug Remove the newline when omitting variables in 
+  - fixed a bug: Remove the newline when omitting variables in 
     GWEN_DB_WriteGroupToStream.
   - added a mechanism to assign hash mechanisms to DB groups. This might be
     used to speedup lookups of group members in GWEN_DBs.
 
 - GWEN_TEXT:
   - added function GWEN_Text_CountUtf8Chars()
+  - added function GWEN_Text_EscapeXmlToBuffer()
+  - added function GWEN_Text_UnescapeXmlToBuffer()
 
 - GWEN_BUFFEREDIO:
   - added function GWEN_BufferedIO_GetLinePos()
