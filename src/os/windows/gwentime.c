@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Mon Feb 09 2004
+    begin       : Wed Mar 24 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,36 +25,61 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_NET_H
-#define GWEN_NET_H
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include "gwentime_p.h"
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 
 
 
-#include <gwenhywfar/net.h>
-#include <gwenhywfar/netconnection.h>
+GWEN_TIME *GWEN_CurrentTime(){
+  GWEN_TIME *t;
+  struct timezone tz;
 
-GWEN_ERRORCODE GWEN_Net_ModuleInit();
-GWEN_ERRORCODE GWEN_Net_ModuleFini();
+  GWEN_NEW_OBJECT(GWEN_TIME, t);
+  if (gettimeofday(&(t->tv), &tz)) {
+    DBG_ERROR(0, "Could not get current time");
+    GWEN_FREE_OBJECT(t);
+    return 0;
+  }
 
-
-GWEN_TYPE_UINT32 GWEN_Net_GetLibraryId();
-void GWEN_Net_AddConnectionToPool(GWEN_NETCONNECTION *conn);
-
-/**
- * @param timeout timeout in milliseconds (or a special timeout value, see
- * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
- */
-GWEN_NETCONNECTION_WORKRESULT GWEN_Net_HeartBeat(int timeout);
-
-GWEN_NETCONNECTION_LIST *GWEN_Net_GetConnectionPool();
-
-
-int GWEN_Net_HasActiveConnections();
-int GWEN_Net_HasListeningConnections();
+  return t;
+}
 
 
 
+void GWEN_Time_free(GWEN_TIME *t){
+  if (t) {
+    GWEN_FREE_OBJECT(t);
+  }
+}
 
 
-#endif /* GWEN_NET_H */
+
+double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0){
+  double d;
+
+  assert(t1);
+  assert(t0);
+
+  d=((t1->tv.tv_sec*1000)+(t1->tv.tv_usec/1000))-
+    ((t0->tv.tv_sec*1000)+(t0->tv.tv_usec/1000));
+
+  return d;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t){
+  assert(t);
+  return t->tv.tv_sec;
+}
+
+
+
+
+
 

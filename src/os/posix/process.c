@@ -244,6 +244,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   }
   else if (pid!=0) {
     /* parent */
+    DBG_NOTICE(0, "Process started with id %d", pid);
     pr->state=GWEN_ProcessStateRunning;
     pr->pid=pid;
     return GWEN_ProcessStateRunning;
@@ -251,6 +252,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   /* child, build arguments */
   argc=0;
 
+  DBG_NOTICE(0, "I'm the child process");
   argv[0]=strdup(prg);
   argc++;
   p=args;
@@ -287,7 +289,6 @@ GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w){
   int status;
 
   assert(pr);
-
   /* try to get the status */
   rv=waitpid(pr->pid, &status, w?0:WNOHANG);
   if (rv==-1) {

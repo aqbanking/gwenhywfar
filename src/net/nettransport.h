@@ -36,6 +36,12 @@ typedef struct GWEN_NETTRANSPORT GWEN_NETTRANSPORT;
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 
+typedef enum {
+  GWEN_NetTransportWorkResult_NoChange=0,
+  GWEN_NetTransportWorkResult_Change,
+  GWEN_NetTransportWorkResult_Error
+} GWEN_NETTRANSPORT_WORKRESULT;
+
 
 GWEN_LIST_FUNCTION_DEFS(GWEN_NETTRANSPORT, GWEN_NetTransport);
 GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETTRANSPORT);
@@ -189,7 +195,7 @@ typedef int
 /**
  * Allows the transport layer to do some work.
  */
-typedef int
+typedef GWEN_NETTRANSPORT_WORKRESULT
   (*GWEN_NETTRANSPORT_WORK)(GWEN_NETTRANSPORT *tr);
 
 /*@}*/
@@ -294,7 +300,7 @@ int GWEN_NetTransport_AddSockets(GWEN_NETTRANSPORT *tr,
 /**
  * Allows the transport layer to do some work.
  */
-int GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr);
+GWEN_NETTRANSPORT_WORKRESULT GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr);
 /*@}*/
 
 

@@ -82,6 +82,7 @@ DLLOBJS= \
    net/nettransport.o \
    net/nettransportsock.o\
    os/windows/directory.o\
+   os/windows/gwentime.o \
    os/windows/inetaddr.o\
    os/windows/inetsocket.o\
    os/windows/init.o \

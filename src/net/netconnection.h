@@ -311,7 +311,7 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
  * Lets a list of connections work. This functions waits if needed until
  * at least one connection becomes active.
  * @param firstConn first connection
- * @param timeout timeout in seconds (or a special timeout value, see
+ * @param timeout timeout in milliseconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
  */
 GWEN_NETCONNECTION_WORKRESULT

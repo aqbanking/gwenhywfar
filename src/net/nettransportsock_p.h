@@ -71,7 +71,8 @@ int GWEN_NetTransportSocket_AddSockets(GWEN_NETTRANSPORT *tr,
                                        GWEN_SOCKETSET *sset,
                                        int forReading);
 
-int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr);
+GWEN_NETTRANSPORT_WORKRESULT
+  GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr);
 
 
 

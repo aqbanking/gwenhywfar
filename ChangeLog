@@ -1,3 +1,12 @@
+
+2004/03/24: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added new module GWEN_TIME (does not contain much for now, but I need a
+  higher granularity then time() offers)
+
+VERSIONINFO: For next release: SO_VERSION++, SO_AGE++
+
+
 2004-03-24  Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, src/base/debug.h, src/base/debug.c: Variadic

@@ -204,7 +204,7 @@ void GWEN_NetTransport_SetFlags(GWEN_NETTRANSPORT *tr,
 
 
 
-int GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr) {
+GWEN_NETTRANSPORT_WORKRESULT GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr) {
   assert(tr);
   assert(tr->workFn);
   return tr->workFn(tr);

@@ -6,6 +6,7 @@ DIST_SUBDIRS=posix windows
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  directory.h \
+ gwentime.h \
  inetaddr.h \
  inetsocket.h \
  libloader.h \

@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Mon Feb 09 2004
+    begin       : Wed Mar 24 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,36 +25,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_NET_H
-#define GWEN_NET_H
+
+#ifndef GWEN_TIME_P_H
+#define GWEN_TIME_P_H
+
+#include <gwenhywfar/gwentime.h>
+
+#include <sys/time.h>
+#include <time.h>
 
 
+struct GWEN_TIME {
+  struct timeval tv;
 
-#include <gwenhywfar/net.h>
-#include <gwenhywfar/netconnection.h>
-
-GWEN_ERRORCODE GWEN_Net_ModuleInit();
-GWEN_ERRORCODE GWEN_Net_ModuleFini();
+};
 
 
-GWEN_TYPE_UINT32 GWEN_Net_GetLibraryId();
-void GWEN_Net_AddConnectionToPool(GWEN_NETCONNECTION *conn);
-
-/**
- * @param timeout timeout in milliseconds (or a special timeout value, see
- * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
- */
-GWEN_NETCONNECTION_WORKRESULT GWEN_Net_HeartBeat(int timeout);
-
-GWEN_NETCONNECTION_LIST *GWEN_Net_GetConnectionPool();
-
-
-int GWEN_Net_HasActiveConnections();
-int GWEN_Net_HasListeningConnections();
-
-
-
-
-
-#endif /* GWEN_NET_H */
+#endif
 

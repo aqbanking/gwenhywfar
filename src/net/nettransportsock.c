@@ -373,7 +373,8 @@ int GWEN_NetTransportSocket_AddSockets(GWEN_NETTRANSPORT *tr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
+GWEN_NETTRANSPORT_WORKRESULT
+GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
   GWEN_NETTRANSPORTSOCKET *skd;
   GWEN_NETTRANSPORT_STATUS st;
   GWEN_ERRORCODE err;
@@ -383,8 +384,8 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
 
   st=GWEN_NetTransport_GetStatus(tr);
   DBG_DEBUG(0, "Working with status \"%s\" (%d)",
-           GWEN_NetTransport_StatusName(st),
-           st);
+            GWEN_NetTransport_StatusName(st),
+            st);
   switch(st) {
   case GWEN_NetTransportStatusPConnecting: {
     char addrBuffer[128];
@@ -398,10 +399,10 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
           (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
            GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
         DBG_INFO_ERR(0, err);
-        return -1;
+        return GWEN_NetTransportWorkResult_Error;
       }
       DBG_VERBOUS(0, "Still not connected");
-      return 0;
+      return GWEN_NetTransportWorkResult_NoChange;
     }
     /* log address */
     GWEN_InetAddr_GetAddress(GWEN_NetTransport_GetPeerAddr(tr),
@@ -413,6 +414,7 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
     GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusLConnected);
     DBG_INFO(0, "Connection established");
     GWEN_NetTransport_MarkActivity(tr);
+    return GWEN_NetTransportWorkResult_Change;
     break;
   }
 
@@ -439,11 +441,11 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
              GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
           /* jepp, there was an error */
           DBG_INFO_ERR(0, err);
-          return -1;
+          return GWEN_NetTransportWorkResult_Error;
         }
         /* otherwise there simply is no waiting connection */
         DBG_DEBUG(0, "No incoming connection");
-        return 0;
+        return GWEN_NetTransportWorkResult_NoChange;
       }
 
       /* we have an incoming connection */
@@ -457,7 +459,7 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
         DBG_ERROR_ERR(0, err);
         GWEN_InetAddr_free(iaddr);
         GWEN_Socket_free(newS);
-        return -1;
+        return GWEN_NetTransportWorkResult_Error;
       }
 
       /* create new transport layer, let it take over the new socket */
@@ -474,6 +476,7 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
 
       /* add it to queue of incoming connections */
       GWEN_NetTransport_AddNextIncoming(tr, newTr);
+      return GWEN_NetTransportWorkResult_Change;
     }
     else {
       DBG_INFO(0, "Too many incoming connections waiting");
@@ -483,7 +486,9 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
   }
 
   case GWEN_NetTransportStatusLConnected:
-    DBG_VERBOUS(0, "Active connection, nothing to do");
+    DBG_DEBUG(0, "Active connection, nothing to do");
+    /* TODO: check whether read/write are possible, return code
+     * accordingly */
     break;
 
   case GWEN_NetTransportStatusUnconnected:
@@ -501,7 +506,7 @@ int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr) {
     break;
   } /* switch */
 
-  return 0;
+  return GWEN_NetTransportWorkResult_NoChange;
 }
 
 
