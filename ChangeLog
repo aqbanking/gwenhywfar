@@ -1,5 +1,11 @@
 
 
+2004/09/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- db: ReadFromStream now uses a GWEN_BUFFER instead of a fixed char buffer.
+  This removes unnecessary limits (and allows libchipcard to work)
+
+
 2004-09-24   Christian Stimming <stimming@tuhh.de>
 
 	* gwenpp/Makefile.am, tools/*/Makefile.am: Fix LIBADD flags so

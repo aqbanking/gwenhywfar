@@ -641,7 +641,7 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
     if (size<(maxsize))
       buffer[size++]=(char)c;
     else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (maxsize=%d)", maxsize);
       return -1;
     }
   } /* while */

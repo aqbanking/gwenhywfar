@@ -1451,26 +1451,32 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               tmpn=GWEN_DB_ValueInt_new(value);
               break;
             case GWEN_DB_VALUETYPE_BIN: {
-              char binbuffer[128];
-              int binsize;
+	      GWEN_BUFFER *bbuf;
+              unsigned int bsize;
 
-              binsize=GWEN_Text_FromHex(wbuf, binbuffer, sizeof(binbuffer));
-              if (binsize<0) {
-                DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d (no binary)",
-                          lineno, pos-linebuf+1);
-                return -1;
-              }
-              if (binsize)
-                tmpn=GWEN_DB_ValueBin_new(binbuffer, binsize);
-              else {
-                tmpn=0;
-                DBG_WARN(GWEN_LOGDOMAIN, "Line %d, pos %d: empty binary value",
-                         lineno, pos-linebuf+1);
-              }
+              bbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	      if (GWEN_Text_FromHexBuffer(wbuf, bbuf)) {
+		DBG_ERROR(GWEN_LOGDOMAIN,
+			  "Error in line %d, pos %d (no binary)",
+			  lineno, pos-linebuf+1);
+                GWEN_Buffer_free(bbuf);
+		return -1;
+	      }
+	      bsize=GWEN_Buffer_GetUsedBytes(bbuf);
+	      if (bsize)
+		tmpn=GWEN_DB_ValueBin_new(GWEN_Buffer_GetStart(bbuf), bsize);
+	      else {
+		tmpn=0;
+		DBG_WARN(GWEN_LOGDOMAIN,
+			 "Line %d, pos %d: empty binary value",
+			 lineno, pos-linebuf+1);
+	      }
+	      GWEN_Buffer_free(bbuf);
               break;
             }
             default:
-              DBG_ERROR(GWEN_LOGDOMAIN, "Error in line %d, pos %d (bad type)",
+	      DBG_ERROR(GWEN_LOGDOMAIN,
+			"Error in line %d, pos %d (bad type)",
                         lineno, pos-linebuf+1);
               return -1;
             } /* switch */
