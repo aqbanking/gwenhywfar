@@ -107,7 +107,6 @@ void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx){
 void GWEN_WaitCallback_Attach(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   ctx->usage++;
-  DBG_NOTICE(0, "Attached to callback \"%s\"", ctx->id);
 }
 
 
