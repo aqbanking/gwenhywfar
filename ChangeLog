@@ -1,16 +1,20 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released gwenhywfar-1.8.0 (2005/02/19)
+===========================================================================
+
 
 2005-02-20  Christian Stimming  <stimming@tuhh.de>
 
 	* gwenhywfar.spec.in: Add *.crt files to rpm.
+
 
 2005/02/19: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - when setting the new function type pointer for AskAddCert then set the
   old pointer to 0 and vice versa.
 - now when a certificate has been received the user is always asked
+- fixed link order in tools
 
 
 2005/02/18: Martin Preuss<martin@libchipcard.de>
