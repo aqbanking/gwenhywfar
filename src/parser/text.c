@@ -47,7 +47,7 @@ typedef struct {
   const char *replace;
 } GWEN_TEXT_ESCAPE_ENTRY;
 
-static GWEN_TEXT_ESCAPE_ENTRY gwen_text__xml_escape_chars[]= {
+static const GWEN_TEXT_ESCAPE_ENTRY gwen_text__xml_escape_chars[]= {
 {'&', "&amp;"},
 {'<', "&lt;"},
 {'>', "&gt;"},
@@ -1557,7 +1557,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
     match=0;
     x=(unsigned char)*src;
     if (x=='&') {
-      GWEN_TEXT_ESCAPE_ENTRY *e;
+      const GWEN_TEXT_ESCAPE_ENTRY *e;
       e=gwen_text__xml_escape_chars;
       while(e->replace) {
         int l;
@@ -1586,7 +1586,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
   while(*src) {
     unsigned char x;
-    GWEN_TEXT_ESCAPE_ENTRY *e;
+    const GWEN_TEXT_ESCAPE_ENTRY *e;
     int match;
 
     match=0;

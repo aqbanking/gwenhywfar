@@ -1,7 +1,15 @@
-
   -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
+
+2004-12-20   Christian Stimming <stimming@tuhh.de>
+
+	* src/parser/msgengine.c: Make local character buffer non-static
+	so that there will not be any thread-related problems.
+
+	* src/parser/text.c: Make static conversion structure const so
+	that it is absolutely clear that this has read-only access. To
+	avoid potential thread-related problems.
 
 
 2004/12/16: Martin Preuss<martin@libchipcard.de>
