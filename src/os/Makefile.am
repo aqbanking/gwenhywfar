@@ -14,6 +14,7 @@ EXTRA_DIST=\
  windows/libloader_p.h \
  windows/process.c \
  windows/process_p.h \
+ windows/system.h.in \
  posix/Makefile.am \
  posix/Makefile.in \
  posix/directory_p.h \
@@ -25,7 +26,8 @@ EXTRA_DIST=\
  posix/inetsocket.c \
  posix/libloader.c \
  posix/process.c \
- posix/process_p.h
+ posix/process_p.h \
+ posix/system.h.in
 
 SUBDIRS=@GWEN_OS@
 

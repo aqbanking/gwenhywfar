@@ -80,7 +80,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   STARTUPINFO si;
   char *cmdline;
 
-  memset(si, 0, sizeof(si));
+  memset(&si, 0, sizeof(si));
   si.cb=sizeof(si);
   GetStartupInfo(&si);
 
@@ -92,7 +92,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   pr->finished=0;
 
   if (CreateProcess(NULL,              /* lpszApplicationName */
-                    cmdLine,           /* lpszCommandLine */
+                    cmdline,           /* lpszCommandLine */
                     NULL,              /* lpsaProcess */
                     NULL,              /* lpsaThread */
                     TRUE,              /* fInheritHandles */
@@ -103,7 +103,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                     &(pr->processInfo) /* lppiProcInfo */
                    )!=TRUE) {
     DBG_ERROR(0, "Error executing \"%s\" (%d)",
-              cmdline, GetLastError());
+              cmdline, (int)GetLastError());
     free(cmdline);
     return GWEN_ProcessStateNotStarted;
   }
@@ -126,7 +126,7 @@ GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr){
     return GWEN_Process_MakeState(pr, dwExitCode);
   }
   else {
-    DBG_ERROR(0, "Error getting exitcode (%d)", GetLastError());
+    DBG_ERROR(0, "Error getting exitcode (%d)", (int)GetLastError());
     return GWEN_ProcessStateUnknown;
   }
 }
@@ -143,7 +143,7 @@ int GWEN_Process_GetResult(GWEN_PROCESS *pr){
 
 
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status){
-  if (status==STILL_RUNNING) {
+  if (status==STILL_ACTIVE) {
     pr->state=GWEN_ProcessStateRunning;
   }
   else {
@@ -171,7 +171,7 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr){
     return 0;
   }
   else {
-    DBG_ERROR(0, "Error getting exitcode (%d)", GetLastError());
+    DBG_ERROR(0, "Error getting exitcode (%d)", (int)GetLastError());
     return -1;
   }
 }
@@ -182,7 +182,7 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
 
   if (TerminateProcess(pr->processInfo.hProcess,
                        GWEN_PROCESS_EXITCODE_ABORT)!=TRUE) {
-    DBG_ERROR(0, "Error terminating process (%d)", GetLastError());
+    DBG_ERROR(0, "Error terminating process (%d)", (int)GetLastError());
     return -1;
   }
   if (GWEN_Process_Wait(pr)) {

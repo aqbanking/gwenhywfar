@@ -32,3 +32,5 @@ all:
 	autoconf
 	#./configure --enable-maintainer-mode
 
+win32:
+	./configure --with-openssl-includes=/more/include --prefix=/gwen

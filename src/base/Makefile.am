@@ -4,6 +4,7 @@ noinst_LTLIBRARIES=libbase.la
 
 noinst_HEADERS=\
  buffer_p.h \
+ debug_p.h \
  error_p.h \
  list_p.h \
  logger_p.h \

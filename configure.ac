@@ -9,7 +9,7 @@ GWENHYWFAR_BUGREPORT_ADDR="<gwenhywfar-bugs@libchipcard.de>"
 AC_PREREQ(2.57)
 AC_INIT
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(gwenhywfar, 0.9.4rc2)
+AM_INIT_AUTOMAKE(gwenhywfar, 0.9.4rc3)
 AC_CONFIG_SRCDIR([src/gwenhywfarapi.h])
 AC_CONFIG_HEADER([config.h])
 
@@ -20,8 +20,8 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=4
-GWENHYWFAR_VERSION_BUILD=34
-GWENHYWFAR_VERSION_TAG="cvs"
+GWENHYWFAR_VERSION_BUILD=35
+GWENHYWFAR_VERSION_TAG="rc"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD($GWENHYWFAR_VERSION_TAG)"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL($GWENHYWFAR_VERSION_TAG)"
 rpm_version="$VERSION"
@@ -224,6 +224,29 @@ fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
 AC_MSG_RESULT($enable_fulldoc)
+
+
+#
+# check for release
+#
+AC_MSG_CHECKING(whether this is an official release)
+AC_ARG_ENABLE(release,
+  [  --enable-release         make this an official release (default=no)],
+  [ case "${enableval}" in
+    yes) enable_release="yes";;
+    no)  enable_release="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-release);;
+    esac
+  ],
+  enable_release="no")
+
+if test "$enable_release" = "yes"; then
+  STRIPALL="-s"
+else
+  STRIPALL=""
+fi
+AC_SUBST(STRIPALL)
+AC_MSG_RESULT($enable_release)
 
 
 

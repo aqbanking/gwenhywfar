@@ -4,8 +4,7 @@ SUBDIRS=base crypt io ipc os parser
 
 EXTRA_DIST=\
  types.h.in \
- version.h.in \
- Makefile.palm.in
+ version.h.in
 
 lib_LTLIBRARIES=libgwenhywfar.la
 iheaderdir=${includedir}/gwenhywfar
@@ -26,7 +25,7 @@ libgwenhywfar_la_LIBADD=\
   os/libos.la \
   parser/libparser.la @all_libraries@
 libgwenhywfar_la_LDFLAGS= \
-  -version-info \
+  @STRIPALL@ -version-info \
    @GWENHYWFAR_SO_CURRENT@:@GWENHYWFAR_SO_REVISION@:@GWENHYWFAR_SO_AGE@
 
 
@@ -52,6 +51,7 @@ DLL_OBJS= \
    base/logger.o\
    io/bufferedio.o\
    crypt/ossl/cryptssl.o \
+   crypt/ossl/cryptssl_md5.o\
    crypt/ossl/cryptssl_rsa.o \
    crypt/ossl/cryptssl_rmd160.o\
    crypt/ossl/cryptssl_des.o\
@@ -85,6 +85,7 @@ DLL_OBJS= \
 
 
 DLL_LDLIBS=-lstdc++ -L/c/windows -llibeay32 -llibssl32 -lwsock32
+DLL_LDFLAGS=@STRIPALL@
 DLL_WRAP_FLAGS=--export-all --output-def $(DLL_EXP_DEF) \
 	--implib $(DLL_EXP_LIB) \
 	--driver-name $(CXX)

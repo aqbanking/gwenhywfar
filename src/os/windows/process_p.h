@@ -31,6 +31,7 @@
 #define GWENHYWFAR_PROCESS_P_H "$Id"
 
 #include <gwenhywfar/process.h>
+#include <windows.h>
 
 
 #define GWEN_PROCESS_EXITCODE_ABORT 253

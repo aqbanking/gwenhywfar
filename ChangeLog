@@ -1,4 +1,16 @@
 
+
+===========================================================================
+MARK: released gwenhywfar-0.9.4rc3 (2004/01/07)
+===========================================================================
+
+
+2004/01/07 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- cleanup of Makefiles
+- prepared next release
+
+
 2004/01/05 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added "system.h", which defines some system dependant macros on some
