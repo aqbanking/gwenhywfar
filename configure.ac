@@ -21,7 +21,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYFWAR_VERSION_MAJOR=0
 GWENHYFWAR_VERSION_MINOR=9
 GWENHYFWAR_VERSION_PATCHLEVEL=2
-GWENHYFWAR_VERSION_BUILD=7
+GWENHYFWAR_VERSION_BUILD=9
 GWENHYFWAR_VERSION_TAG="cvs"
 GWENHYFWAR_VERSION_FULL_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL.$GWENHYFWAR_VERSION_BUILD($GWENHYFWAR_VERSION_TAG)"
 GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
@@ -173,6 +173,23 @@ for d in ${GWEN_HEADER_DIRS}; do
   done
 done
 ln -s "${lprefix}/src/version.h" "gwenhyfwar/version.h"
+
+
+#
+# check for MEMTRACE
+#
+AC_MSG_CHECKING(if MEMTRACE is wanted)
+AC_ARG_ENABLE(memtrace,
+  [  --enable-memtrace             enable memory trace (default=no)],
+  enable_memtrace="$enableval",
+  enable_memtrace="no")
+AC_MSG_RESULT($enable_memtrace)
+
+if test "$enable_memtrace" != "no"; then
+  AC_DEFINE(GWEN_MEMTRACE, 1, [if memory trace is wanted])
+fi
+
+
 
 #
 # substitute vars

@@ -54,12 +54,13 @@ GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
   GWEN_DB_VALUE_BIN *v;
 
   GWEN_NEW_OBJECT(GWEN_DB_VALUE_BIN, v);
+
   v->h.h.typ=GWEN_DB_NODETYPE_VALUE;
   v->h.typ=GWEN_DB_VALUETYPE_BIN;
   if (datasize) {
     assert(data);
     v->dataSize=datasize;
-    v->data=malloc(datasize);
+    v->data=(char*)malloc(datasize);
     assert(v->data);
     memmove(v->data, data, datasize);
   }
@@ -948,7 +949,7 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 		     flags | GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
     DBG_VERBOUS(0, "Path \"%s\" not available",
-	      path);
+                path);
     return 1;
   }
 
@@ -1274,6 +1275,19 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               }
               tmpn=GWEN_DB_ValueInt_new(value);
               break;
+            case GWEN_DB_VALUETYPE_BIN: {
+              char binbuffer[128];
+              int binsize;
+
+              binsize=GWEN_Text_FromHex(wbuf, binbuffer, sizeof(binbuffer));
+              if (binsize<1) {
+                DBG_ERROR(0, "Error in line %d, pos %d (no binary)",
+                          lineno, pos-linebuf+1);
+                return -1;
+              }
+              tmpn=GWEN_DB_ValueBin_new(binbuffer, binsize);
+              break;
+            }
             default:
               DBG_ERROR(0, "Error in line %d, pos %d (bad type)",
                         lineno, pos-linebuf+1);
@@ -1507,7 +1521,8 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	namewritten=0;
 	values=0;
 	while(cn) {
-	  char numbuffer[32];
+          char numbuffer[32];
+          char binbuffer[256];
 	  const char *pvalue;
 
 	  pvalue=0;
@@ -1531,16 +1546,20 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	      pvalue=numbuffer;
 	      break;
 
-	    case GWEN_DB_VALUETYPE_BIN:
-	      typname="bin  ";
-	      /* TODO: convert bin2hex */
-	      DBG_WARN(0 , "Bin value (%d bytes) not supported\n",
-                       cn->val.b.dataSize);
-              pvalue="writing type BIN not yet supported";
-	      break;
+            case GWEN_DB_VALUETYPE_BIN:
+              typname="bin  ";
+              if (!GWEN_Text_ToHex(cn->val.b.data,
+                                   cn->val.b.dataSize,
+                                   binbuffer,
+                                   sizeof(binbuffer))) {
+                DBG_ERROR(0, "Error writing binary value");
+                return 1;
+              }
+              pvalue=binbuffer;
+              break;
 
-	    default:
-	      DBG_WARN(0, "Unknown value type (%d)\n", n->val.h.typ);
+            default:
+              DBG_WARN(0, "Unknown value type (%d)\n", n->val.h.typ);
               break;
 	    } /* switch value type */
 

@@ -33,13 +33,22 @@
 
 #include "keyspec_p.h"
 #include <gwenhyfwar/misc.h>
+#include <gwenhyfwar/debug.h>
 
+
+#ifdef GWEN_MEMTRACE
+static unsigned int GWEN_KeySpec_Count=0;
+#endif
 
 
 GWEN_KEYSPEC *GWEN_KeySpec_new(){
   GWEN_KEYSPEC *ks;
 
   GWEN_NEW_OBJECT(GWEN_KEYSPEC, ks);
+#ifdef GWEN_MEMTRACE
+  GWEN_KeySpec_Count++;
+  DBG_INFO(0, "New KeySpec (now %d)", GWEN_KeySpec_Count);
+#endif
   return ks;
 }
 
@@ -47,6 +56,11 @@ GWEN_KEYSPEC *GWEN_KeySpec_new(){
 
 void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
   if (ks) {
+#ifdef GWEN_MEMTRACE
+    assert(GWEN_KeySpec_Count);
+    GWEN_KeySpec_Count--;
+    DBG_INFO(0, "Free KeySpec (now %d)", GWEN_KeySpec_Count);
+#endif
     free(ks->keyType);
     free(ks->keyName);
     free(ks->owner);

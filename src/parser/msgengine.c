@@ -279,7 +279,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
       DBG_DEBUG(0, "Writing binary data (%d bytes added to %d bytes)",
                 GWEN_Buffer_GetUsedBytes(data),
                 GWEN_Buffer_GetUsedBytes(gbuf));
-      if (GWEN_Buffer_RoomLeft(gbuf)<10+GWEN_Buffer_GetUsedBytes(data)) {
+      if (GWEN_Buffer_AllocRoom(gbuf, 10+GWEN_Buffer_GetUsedBytes(data))) {
         DBG_ERROR(0, "Buffer too small");
         return -1;
       }
@@ -302,7 +302,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
       len=strlen(GWEN_Buffer_GetPosPointer(data));
 
       if (atoi(GWEN_XMLNode_GetProperty(node, "leftfill","0"))) {
-        if ((maxsize+1)>=GWEN_Buffer_RoomLeft(gbuf)) {
+        if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
           DBG_ERROR(0, "Buffer too small");
           return -1;
         }
@@ -316,7 +316,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
           GWEN_Buffer_AppendByte(gbuf, GWEN_Buffer_ReadByte(data));
       }
       else if (atoi(GWEN_XMLNode_GetProperty(node, "rightfill","0"))) {
-        if ((maxsize+1)>=GWEN_Buffer_RoomLeft(gbuf)) {
+        if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
           DBG_ERROR(0, "Buffer too small");
           return -1;
         }
@@ -330,7 +330,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
           GWEN_Buffer_AppendByte(gbuf, '0');
       }
       else {
-        if ((maxsize+1)>=GWEN_Buffer_RoomLeft(gbuf)) {
+        if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
           DBG_ERROR(0, "Maxsize in XML file is higher than the buffer size");
           return -1;
         }
@@ -2339,7 +2339,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  }
 	}
       } /* while */
-      if (!GWEN_Buffer_RoomLeft(vbuf)) {
+      if (GWEN_Buffer_AllocRoom(vbuf, 1)) {
         DBG_INFO(0, "Value buffer full.");
         return -1;
       }
@@ -2536,7 +2536,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
               }
 
               /* add 0 just in case... */
-              if (!GWEN_Buffer_RoomLeft(vbuf)) {
+              if (GWEN_Buffer_AllocRoom(vbuf, 1)) {
                   DBG_INFO(0, "Value buffer full.");
                   GWEN_Buffer_free(vbuf);
                   return -1;

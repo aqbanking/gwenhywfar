@@ -33,6 +33,7 @@
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
 #include <gwenhyfwar/text.h>
+#include <gwenhyfwar/crypt.h>
 
 
 
@@ -322,9 +323,6 @@ int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src) {
     }
   } /* for */
 
-  DBG_ERROR(0, "Buffer:");
-  GWEN_Text_DumpString(buffer, sizeof(buffer), stderr, 2);
-
   /* copy last 16 bytes to the beginning */
   memmove(buffer, buffer+(sizeof(buffer)-16), 16);
 
@@ -337,9 +335,6 @@ int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src) {
   p[0] = p[0] & 127;
   p[0] = p[0] | 64;
   p[sizeof(buffer) - 40] = p[sizeof(buffer) - 40] ^ 1;
-
-  DBG_ERROR(0, "Buffer:");
-  GWEN_Text_DumpString(buffer, sizeof(buffer), stderr, 2);
 
   GWEN_Buffer_Reset(src);
   if (GWEN_Buffer_AppendBytes(src, buffer, sizeof(buffer))) {
@@ -387,8 +382,6 @@ int GWEN_HBCIDialog_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
   GWEN_Buffer_SetPos(src, lastpos-paddLength);
   return 0;
 }
-
-
 
 
 

@@ -385,7 +385,7 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
     }
     if (tptr) {
       if (tptr->msgptr)
-        s=tptr->msgptr(i);
+        s=tptr->msgptr(GWEN_Error_GetCode(c));
       else
         s=(const char*)0;
     }

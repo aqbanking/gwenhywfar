@@ -36,9 +36,15 @@
 
 
 #include <gwenhyfwar/crypt.h>
+#include <stdio.h>
+
+#include <openssl/bn.h>
+
 
 GWEN_ERRORCODE GWEN_CryptImpl_Init();
 GWEN_ERRORCODE GWEN_CryptImpl_Fini();
+
+void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent);
 
 
 #endif

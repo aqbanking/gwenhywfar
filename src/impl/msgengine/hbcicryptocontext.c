@@ -91,7 +91,8 @@ void GWEN_HBCICryptoContext_SetSequenceNum(GWEN_HBCICRYPTOCONTEXT *ctx,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_KEYSPEC *GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx){
+const GWEN_KEYSPEC *
+GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx){
   assert(ctx);
   return ctx->key;
 }
@@ -144,6 +145,8 @@ void GWEN_HBCICryptoContext_free(GWEN_HBCICRYPTOCONTEXT *ctx){
   if (ctx) {
     free(ctx->pSecurityId);
     free(ctx->pCryptKey);
+    free(ctx->mode);
+    free(ctx->serviceCode);
     GWEN_KeySpec_free(ctx->key);
     free(ctx);
   }

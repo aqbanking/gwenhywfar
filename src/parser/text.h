@@ -86,7 +86,7 @@ char *GWEN_Text_Unescape(const char *src,
                          unsigned int maxsize);
 
 char *GWEN_Text_ToHex(const char *src, unsigned l, char *buffer,
-                      unsigned maxsize);
+                      unsigned int maxsize);
 
 /**
  * Converts a string to Hex. After "groupsize" bytes the "delimiter" is

@@ -42,7 +42,6 @@ struct GWEN_IPCXMLDIALOGDATA {
 
   char *serviceCode;
   char *securityId;
-
 };
 
 GWEN_IPCXMLDIALOGDATA *GWEN_IPCXMLDialogData_new();

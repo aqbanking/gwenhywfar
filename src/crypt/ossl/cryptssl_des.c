@@ -34,6 +34,7 @@
 #include "cryptssl_des_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/text.h>
 
 #include <openssl/des.h>
 #include <openssl/rand.h>
@@ -121,13 +122,13 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Crypt(GWEN_CRYPTKEY *key,
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
 
-  if (GWEN_Buffer_RoomLeft(dst)<srclen) {
+  if (GWEN_Buffer_AllocRoom(dst, srclen)) {
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BUFFER_FULL);
   }
-  psrc=GWEN_Buffer_GetPosPointer(src);
+  psrc=GWEN_Buffer_GetStart(src);
   pdst=GWEN_Buffer_GetPosPointer(dst);
 
   memmove(left, kd, 8);

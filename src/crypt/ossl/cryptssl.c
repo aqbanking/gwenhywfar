@@ -37,6 +37,7 @@
 #include "cryptssl_rmd160_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/text.h>
 
 
 
@@ -80,6 +81,14 @@ GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
 
 
 
+void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent) {
+  char *bnbuf;
+
+  bnbuf=(char*)malloc(BN_num_bytes(bn));
+  BN_bn2bin(bn, bnbuf);
+  GWEN_Text_DumpString(bnbuf, BN_num_bytes(bn), f, indent);
+  free(bnbuf);
+}
 
 
 

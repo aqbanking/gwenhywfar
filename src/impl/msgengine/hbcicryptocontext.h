@@ -57,7 +57,8 @@ const char*
 void GWEN_HBCICryptoContext_SetServiceCode(GWEN_HBCICRYPTOCONTEXT *ctx,
                                            const char *s);
 
-GWEN_KEYSPEC *GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx);
+const GWEN_KEYSPEC *
+  GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx);
 
 /**
  * Stores a copy of the given keyspec.

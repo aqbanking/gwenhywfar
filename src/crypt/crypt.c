@@ -41,6 +41,11 @@
 #include <stdlib.h>
 
 
+#ifdef GWEN_MEMTRACE
+static unsigned int GWEN_CryptKey_Count=0;
+#endif
+
+
 static int gwen_crypt_is_initialized=0;
 static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_crypt_errorform=0;
 
@@ -58,6 +63,27 @@ const char *GWEN_Crypt_ErrorString(int c){
     break;
   case GWEN_CRYPT_ERROR_NOT_REGISTERED:
     s="Crypto provider not registered";
+    break;
+  case GWEN_CRYPT_ERROR_BAD_SIZE:
+    s="Bad size of data";
+    break;
+  case GWEN_CRYPT_ERROR_BUFFER_FULL:
+    s="Buffer full";
+    break;
+  case GWEN_CRYPT_ERROR_ENCRYPT:
+    s="Encryption error";
+    break;
+  case GWEN_CRYPT_ERROR_DECRYPT:
+    s="Decryption error";
+    break;
+  case GWEN_CRYPT_ERROR_SIGN:
+    s="Sign error";
+    break;
+  case GWEN_CRYPT_ERROR_VERIFY:
+    s="Verification error";
+    break;
+  case GWEN_CRYPT_ERROR_UNSUPPORTED:
+    s="Function not supported.";
     break;
   default:
     s=0;
@@ -108,6 +134,11 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleFini(){
     if (!GWEN_Error_IsOk(err))
       return err;
     gwen_crypt_is_initialized=0;
+#ifdef GWEN_MEMTRACE
+    if (GWEN_CryptKey_Count) {
+      DBG_WARN(0, "Still %d CryptKeys in memory", GWEN_CryptKey_Count);
+    }
+#endif
   }
   return 0;
 }
@@ -120,15 +151,26 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
   GWEN_CRYPTKEY *ck;
 
   GWEN_NEW_OBJECT(GWEN_CRYPTKEY, ck);
+#ifdef GWEN_MEMTRACE
+  GWEN_CryptKey_Count++;
+  DBG_INFO(0, "New Cryptkey (now %d)", GWEN_CryptKey_Count);
+#endif
+
+  ck->keyspec=GWEN_KeySpec_new();
   return ck;
 }
 
 
 void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
   if (key) {
+#ifdef GWEN_MEMTRACE
+    assert(GWEN_CryptKey_Count);
+    GWEN_CryptKey_Count--;
+    DBG_INFO(0, "Free Cryptkey (now %d)", GWEN_CryptKey_Count);
+#endif
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
-    free(key->keyspec);
+    GWEN_KeySpec_free(key->keyspec);
     free(key);
   }
 }
@@ -142,6 +184,19 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(GWEN_CRYPTKEY *key){
   assert(key->dupFn);
   newKey=key->dupFn(key);
   assert(key->keyspec);
+  newKey->dupFn=key->dupFn;
+  newKey->encryptFn=key->encryptFn;
+  newKey->decryptFn=key->decryptFn;
+  newKey->signFn=key->signFn;
+  newKey->verifyFn=key->verifyFn;
+  newKey->getChunkSizeFn=key->getChunkSizeFn;
+  newKey->fromDbFn=key->fromDbFn;
+  newKey->toDbFn=key->toDbFn;
+  newKey->generateKeyFn=key->generateKeyFn;
+  newKey->freeKeyDataFn=key->freeKeyDataFn;
+  newKey->openFn=key->openFn;
+  newKey->closeFn=key->closeFn;
+  GWEN_KeySpec_free(newKey->keyspec);
   newKey->keyspec=GWEN_KeySpec_dup(key->keyspec);
   return newKey;
 }

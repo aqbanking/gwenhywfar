@@ -56,15 +56,28 @@ GWEN_ERRORCODE GWEN_MdRmd160_Register(){
 
 GWEN_MD *GWEN_MdRmd160_new(){
   GWEN_MD *md;
+  RIPEMD160_CTX *ctx;
 
   md=GWEN_MD_new(20);
+  ctx=(RIPEMD160_CTX*)malloc(sizeof(RIPEMD160_CTX));
+  GWEN_MD_SetData(md, ctx);
+  GWEN_MD_SetBeginFn(md, GWEN_MdRmd160_Begin);
+  GWEN_MD_SetUpdateFn(md, GWEN_MdRmd160_Update);
+  GWEN_MD_SetEndFn(md, GWEN_MdRmd160_End);
+  GWEN_MD_SetFreeDataFn(md, GWEN_MdRmd160_FreeData);
   return md;
 }
 
 
 
 void GWEN_MdRmd160_FreeData(GWEN_MD *md){
-  free(GWEN_MD_GetData(md));
+  RIPEMD160_CTX *ctx;
+
+  if (md) {
+    ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+    assert(ctx);
+    free(ctx);
+  }
 }
 
 
@@ -73,9 +86,9 @@ int GWEN_MdRmd160_Begin(GWEN_MD *md){
   RIPEMD160_CTX *ctx;
 
   assert(md);
-  ctx=(RIPEMD160_CTX*)malloc(sizeof(RIPEMD160_CTX));
+  ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+  assert(ctx);
   RIPEMD160_Init(ctx);
-  GWEN_MD_SetData(md, ctx);
   return 0;
 }
 
@@ -88,8 +101,6 @@ int GWEN_MdRmd160_End(GWEN_MD *md){
   ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
   assert(ctx);
   RIPEMD160_Final(GWEN_MD_GetDigestPtr(md), ctx);
-  free(ctx);
-  GWEN_MD_SetData(md, 0);
   return 0;
 }
 

@@ -475,5 +475,22 @@ email       : martin@libchipcard.de
 
 
 
+ <SEGdef id="Test" 
+         code="GBTEST"
+         version="1"
+         pversion="1"
+         delimiter="+" 
+         terminator="'"
+ >
+   <GROUP type="SegHead" name="head" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
 </SEGS>
 

@@ -1,5 +1,10 @@
 $Id$
 
+2003/11/17 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- module "db" can now read/write binary values from/to streams
+
+
 2003/11/16 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - fixed several bugs

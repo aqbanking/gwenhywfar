@@ -45,7 +45,6 @@ typedef int
                                 GWEN_HBCICRYPTOCONTEXT *ctx,
                                 int crypt);
 
-
 typedef int
   (*GWEN_HBCIDLG_SIGN_FN)(GWEN_HBCIDIALOG *hdlg,
                           GWEN_BUFFER *msgbuf,

@@ -456,6 +456,8 @@ int testKey(int argc, char **argv) {
   GWEN_BUFFER *rawbuf;
   int i;
 
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
   if (argc<3) {
     fprintf(stderr, "Data needed\n");
     return 1;
@@ -556,6 +558,113 @@ int testKey(int argc, char **argv) {
 
 
 
+int testDialog(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_MSGENGINE *e;
+  GWEN_XMLNODE *sn;
+  GWEN_DB_NODE *da;
+  GWEN_HBCIDIALOG *dlg;
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_HBCIMSG *hmsg;
+
+  if (argc<3) {
+    fprintf(stderr, "Path of XML file needed.\n");
+    return 1;
+  }
+  e=GWEN_MsgEngine_new();
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  da=GWEN_DB_Group_new("Data");
+
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  GWEN_MsgEngine_SetDefinitions(e, n, 1);
+  GWEN_MsgEngine_SetProtocolVersion(e, 1);
+  GWEN_MsgEngine_SetMode(e, "RDH");
+
+  dlg=GWEN_IPCXMLDialog_new(e);
+  key=GWEN_CryptKey_Factory("RSA");
+  if (!key) {
+    fprintf(stderr, "Error creating key.\n");
+    return 1;
+  }
+
+  GWEN_CryptKey_SetOwner(key, "Martin");
+
+  fprintf(stderr, "Generating key.\n");
+  err=GWEN_CryptKey_Generate(key, 768);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Generating key done.\n");
+  GWEN_IPCXMLDialog_SetLocalKey(dlg, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLDialog_SetRemoteKey(dlg, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLDialog_SetServiceCode(dlg, "Test-Service");
+
+  hmsg=GWEN_HBCIMsg_new(dlg);
+  GWEN_HBCIMsg_SetMsgNumber(hmsg, 1);
+
+  sn=GWEN_MsgEngine_FindNodeByProperty(e,
+                                       "SEG",
+                                       "code",
+                                       1,
+                                       "GBTEST");
+  if (!sn) {
+    fprintf(stderr, "Segment not found.\n");
+    return 2;
+  }
+
+  GWEN_HBCIMsg_SetFlags(hmsg,
+                        GWEN_HBCIMSG_FLAGS_SIGN |
+                        GWEN_HBCIMSG_FLAGS_CRYPT);
+
+  GWEN_HBCIMsg_AddSigner(hmsg,
+                         GWEN_CryptKey_GetKeySpec(key));
+  GWEN_HBCIMsg_SetCrypter(hmsg,
+                          GWEN_CryptKey_GetKeySpec(key));
+
+  if (GWEN_HBCIMsg_AddNode(hmsg, sn, da)) {
+    fprintf(stderr, "Could not add node.\n");
+    return 2;
+  }
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelWarning);
+
+  fprintf(stderr, "Encoding message\n");
+  if (GWEN_HBCIMsg_EncodeMsg(hmsg)) {
+    fprintf(stderr, "Could not encode.\n");
+    return 2;
+  }
+  fprintf(stderr, "Encoding message done\n");
+
+  //fprintf(stderr, "Buffer is: \n");
+  //GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
+
+  fprintf(stderr, "Decoding message\n");
+  if (GWEN_HBCIMsg_DecodeMsg(hmsg,
+                             da, 0)) {
+    fprintf(stderr, "Error decoding.\n");
+    return 1;
+  }
+  fprintf(stderr, "Decoding message: done\n");
+  //GWEN_DB_Dump(da, stderr, 2);
+
+  GWEN_MsgEngine_free(e);
+  GWEN_DB_Group_free(da);
+  GWEN_HBCIMsg_free(hmsg);
+  GWEN_HBCIDialog_free(dlg);
+  GWEN_CryptKey_free(key);
+
+  return 0;
+}
+
+
+
+
 int main(int argc, char **argv) {
   GWEN_ERRORCODE err;
   int rv;
@@ -591,6 +700,8 @@ int main(int argc, char **argv) {
     rv=testListMsg(argc, argv);
   else if (strcasecmp(argv[1], "key")==0)
     rv=testKey(argc, argv);
+  else if (strcasecmp(argv[1], "dlg")==0)
+    rv=testDialog(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

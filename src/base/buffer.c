@@ -36,6 +36,11 @@
 #include <gwenhyfwar/text.h>
 
 
+#ifdef GWEN_MEMTRACE
+static unsigned int GWEN_Buffer_Buffers=0;
+
+#endif
+
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
                              unsigned int size,
                              unsigned int used,
@@ -43,6 +48,10 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
   GWEN_BUFFER *bf;
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, bf);
+#ifdef GWEN_MEMTRACE
+  GWEN_Buffer_Buffers++;
+  DBG_INFO(0, "New buffer (now %d)", GWEN_Buffer_Buffers);
+#endif
   if (!buffer) {
     /* allocate buffer */
     if (size) {
@@ -76,6 +85,11 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
 
 void GWEN_Buffer_free(GWEN_BUFFER *bf){
   if (bf) {
+#ifdef GWEN_MEMTRACE
+    assert(GWEN_Buffer_Buffers);
+    GWEN_Buffer_Buffers--;
+    DBG_INFO(0, "Free buffer (now %d)", GWEN_Buffer_Buffers);
+#endif
     if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
       free(bf->realPtr);
     free(bf);
@@ -88,6 +102,10 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
   unsigned int i;
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, newbf);
+#ifdef GWEN_MEMTRACE
+  GWEN_Buffer_Buffers++;
+  DBG_INFO(0, "New buffer (now %d)", GWEN_Buffer_Buffers);
+#endif
   if (bf->realPtr && bf->realBufferSize) {
     newbf->realPtr=(char*)malloc(bf->realBufferSize);
     newbf->ptr=newbf->realPtr+(bf->ptr-bf->realPtr);
@@ -227,7 +245,8 @@ int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, unsigned int i){
 int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size) {
   assert(bf);
   DBG_DEBUG(0, "Allocating %d bytes", size);
-  if (bf->pos+size>bf->bufferSize) {
+  /*if (bf->pos+size>bf->bufferSize) {*/
+  if (bf->bytesUsed+size>bf->bufferSize) {
     /* need to realloc */
     unsigned int nsize;
     unsigned int noffs;
@@ -242,7 +261,8 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size) {
     /* calculate reserved bytes (to set ptr later) */
     reserved=bf->ptr-bf->realPtr;
     /* this is the raw number of bytes we need */
-    nsize=bf->pos+size-bf->bufferSize;
+    /*nsize=bf->pos+size-bf->bufferSize;*/
+    nsize=bf->bytesUsed+size-bf->bufferSize;
     /* round it up */
     nsize=(nsize+(bf->step-1));
     nsize&=~(bf->step-1);
@@ -280,14 +300,19 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
     DBG_INFO(0, "called from here");
     return 1;
   }
-  if (bf->pos+size>bf->bufferSize) {
+  /* if (bf->pos+size>bf->bufferSize) { */
+  if (bf->bytesUsed+size>bf->bufferSize) {
     DBG_ERROR(0, "Buffer full (%d [%d] of %d bytes)",
-	      bf->pos, size,
-	      bf->bufferSize);
+              /*bf->pos, size,*/
+              bf->bytesUsed, size,
+              bf->bufferSize);
     return 1;
   }
-  memmove(bf->ptr+bf->pos, buffer, size);
-  bf->pos+=size;
+  /*memmove(bf->ptr+bf->pos, buffer, size);*/
+  memmove(bf->ptr+bf->bytesUsed, buffer, size);
+  /*bf->pos+=size;*/
+  if (bf->pos==bf->bytesUsed)
+    bf->pos+=size;
   bf->bytesUsed+=size;
   return 0;
 }
@@ -301,11 +326,16 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
     DBG_INFO(0, "called from here");
     return 1;
   }
-  if (bf->pos+1>bf->bufferSize) {
-    DBG_ERROR(0, "Buffer full (%d of %d bytes)", bf->pos, bf->bufferSize);
+  /*if (bf->pos+1>bf->bufferSize) {*/
+  if (bf->bytesUsed+1>bf->bufferSize) {
+    /*DBG_ERROR(0, "Buffer full (%d of %d bytes)", bf->pos, bf->bufferSize);*/
+    DBG_ERROR(0, "Buffer full (%d of %d bytes)",
+              bf->bytesUsed, bf->bufferSize);
     return 1;
   }
-  bf->ptr[bf->pos++]=c;
+  bf->ptr[bf->bytesUsed]=c;
+  if (bf->pos==bf->bytesUsed)
+    bf->pos++;
   bf->bytesUsed++;
   return 0;
 }
@@ -344,10 +374,6 @@ int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf){
 int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, unsigned int i){
   assert(bf);
 
-  if (GWEN_Buffer_AllocRoom(bf, i)) {
-    DBG_INFO(0, "called from here");
-    return 1;
-  }
   if (i+bf->pos>=bf->bufferSize) {
     DBG_INFO(0,
              "Position %d outside buffer boundaries (%d bytes)\n"
@@ -397,18 +423,8 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
                              GWEN_BUFFER *sf){
   assert(bf);
   assert(sf);
-  if (GWEN_Buffer_AllocRoom(bf, sf->bytesUsed)) {
-    DBG_INFO(0, "called from here");
-    return 1;
-  }
-  if (bf->pos+sf->bytesUsed>bf->bufferSize) {
-    DBG_ERROR(0, "Buffer full (%d of %d bytes)", bf->pos, bf->bufferSize);
-    return 1;
-  }
-  DBG_DEBUG(0, "Adding %d bytes at %d", sf->bytesUsed, bf->pos);
-  memmove(bf->ptr+bf->pos, sf->ptr, sf->bytesUsed);
-  bf->pos+=sf->bytesUsed;
-  bf->bytesUsed+=sf->bytesUsed;
+  if (sf->bytesUsed)
+    return GWEN_Buffer_AppendBytes(bf, sf->ptr, sf->bytesUsed);
   return 0;
 }
 
@@ -417,6 +433,7 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
 unsigned int GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf){
   assert(bf);
 
+  DBG_WARN(0, "You should better use \"GWEN_Buffer_AllocRoom\"");
   if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
     return bf->hardLimit-bf->bytesUsed;
   return (bf->bufferSize-bf->bytesUsed);
@@ -468,7 +485,7 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert) {
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Pos : %d\n", bf->pos);
+  fprintf(f, "Pos : %d (%04x)\n", bf->pos, bf->pos);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");

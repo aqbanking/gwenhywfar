@@ -30,6 +30,7 @@
 
 
 #include <gwenhyfwar/crypt.h>
+#include <gwenhyfwar/keyspec.h>
 #include <gwenhyfwar/hbcidialog.h>
 #include <gwenhyfwar/msgengine.h>
 
@@ -64,6 +65,9 @@ unsigned int GWEN_IPCXMLDialog_GetRemoteSignSeq(GWEN_HBCIDIALOG *d);
 void GWEN_IPCXMLDialog_SetRemoteSignSeq(GWEN_HBCIDIALOG *d,
                                         unsigned int i);
 
+const char *GWEN_IPCXMLDialog_GetServiceCode(GWEN_HBCIDIALOG *d);
+void GWEN_IPCXMLDialog_SetServiceCode(GWEN_HBCIDIALOG *d,
+                                      const char *s);
 
 #endif
 

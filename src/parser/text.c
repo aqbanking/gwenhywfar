@@ -288,7 +288,7 @@ char *GWEN_Text_Unescape(const char *src,
 
 
 char *GWEN_Text_ToHex(const char *src, unsigned l,
-                      char *buffer, unsigned maxsize) {
+                      char *buffer, unsigned int maxsize) {
   unsigned int pos;
   unsigned int size;
 

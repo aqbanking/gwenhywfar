@@ -30,6 +30,9 @@
 /* tag */
 #undef GWENHYFWAR_VERSION_TAG
 
+/* if memory trace is wanted */
+#undef GWEN_MEMTRACE
+
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 

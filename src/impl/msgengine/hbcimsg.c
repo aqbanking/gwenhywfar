@@ -51,14 +51,15 @@ GWEN_KEYSPEC *GWEN_HBCIMsg_GetSigners(GWEN_HBCIMSG *hmsg){
 
 /* --------------------------------------------------------------- FUNCTION */
 int GWEN_HBCIMsg_AddSigner(GWEN_HBCIMSG *hmsg,
-                           GWEN_KEYSPEC *ks){
+                           const GWEN_KEYSPEC *ks){
   assert(hmsg);
+  assert(ks);
 
   if (hmsg->nodes) {
     DBG_ERROR(0, "Signers must be added before nodes !");
     return -1;
   }
-  GWEN_KeySpec_Add(ks, &(hmsg->signers));
+  GWEN_KeySpec_Add(GWEN_KeySpec_dup(ks), &(hmsg->signers));
   hmsg->nSigners++;
   return 0;
 }
@@ -83,9 +84,9 @@ GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(GWEN_HBCIMSG *hmsg){
 
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_HBCIMsg_SetCrypter(GWEN_HBCIMSG *hmsg,
-                             GWEN_KEYSPEC *ks){
+                             const GWEN_KEYSPEC *ks){
   assert(hmsg);
-  hmsg->crypter=ks;
+  hmsg->crypter=GWEN_KeySpec_dup(ks);
 }
 
 
@@ -236,6 +237,7 @@ int GWEN_HBCIMsg_AddMsgHead(GWEN_HBCIMSG *hmsg) {
                                           cfg);
   if (rv) {
     DBG_INFO(0, "Could not create msgHead");
+    GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
@@ -258,14 +260,19 @@ int GWEN_HBCIMsg_AddMsgHead(GWEN_HBCIMSG *hmsg) {
   GWEN_DB_Group_free(cfg);
   if (rv) {
     DBG_INFO(0, "Could not create 2nd version of msgHead");
+    GWEN_Buffer_free(hbuf);
     return -1;
   }
 
   /* insert msgHead */
+  GWEN_Buffer_SetPos(hmsg->buffer, 0);
   if (GWEN_Buffer_InsertBuffer(hmsg->buffer, hbuf)) {
     DBG_INFO(0, "Could not insert msgHead");
+    GWEN_Buffer_free(hbuf);
     return -1;
   }
+
+  GWEN_Buffer_free(hbuf);
   return 0;
 }
 
@@ -350,11 +357,11 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
                                   GWEN_DB_NODE *cfg,
                                   int createCtrlRef) {
   char sdate[9];
-  char stime[6];
+  char stime[7];
   char ctrlref[15];
   struct tm *lt;
   time_t tt;
-  GWEN_KEYSPEC *ks;
+  const GWEN_KEYSPEC *ks;
   GWEN_MSGENGINE *e;
 
   assert(hmsg);
@@ -369,28 +376,37 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
 
   if (createCtrlRef) {
     /* create control reference */
-    if (strftime(ctrlref, sizeof(ctrlref),
-                 "%Y%m%d%H%M%S", lt)>=sizeof(ctrlref)) {
+    if (!strftime(ctrlref, sizeof(ctrlref),
+                  "%Y%m%d%H%M%S", lt)) {
       DBG_INFO(0, "CtrlRef string too long");
-      return -1;
-    }
-    /* create date */
-    if (strftime(sdate, sizeof(sdate),
-                 "%Y%m%d", lt)>=sizeof(sdate)) {
-      DBG_INFO(0, "Date string too long");
-      return -1;
-    }
-    /* create time */
-    if (strftime(stime, sizeof(stime),
-                 "%H%M%S", lt)>=sizeof(stime)) {
-      DBG_INFO(0, "Date string too long");
       return -1;
     }
 
     GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                          "ctrlref", ctrlref);
   }
+  /* create date */
+  if (!strftime(sdate, sizeof(sdate),
+                "%Y%m%d", lt)) {
+    DBG_INFO(0, "Date string too long");
+    return -1;
+  }
+  /* create time */
+  if (!strftime(stime, sizeof(stime),
+                "%H%M%S", lt)) {
+    DBG_INFO(0, "Date string too long");
+    return -1;
+  }
 
+  DBG_INFO(0, "Date and Time: %s / %s",
+           sdate, stime);
+
+  if (hmsg->refMsgNum)
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                        "SecDetails/dir", 2);
+  else
+    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                        "SecDetails/dir", 1);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                        "SecStamp/date", sdate);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
@@ -402,10 +418,10 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
                        "key/userid",
                        GWEN_KeySpec_GetOwner(ks));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "key/num",
+                      "key/keynum",
                       GWEN_KeySpec_GetNumber(ks));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "key/version",
+                      "key/keyversion",
                       GWEN_KeySpec_GetVersion(ks));
 
   /* store security id */
@@ -457,6 +473,8 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
     return -1;
   }
 
+  cfg=GWEN_DB_Group_new("sighead");
+
   /* prepare context */
   ctx=GWEN_HBCICryptoContext_new();
   GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
@@ -488,7 +506,6 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
 
   /* create SigHead */
   hbuf=GWEN_Buffer_new(0, 128+GWEN_Buffer_GetUsedBytes(rawBuf), 0, 1);
-  cfg=GWEN_DB_Group_new("sighead");
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "head/seq", hmsg->firstSegment-1);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
@@ -528,26 +545,31 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
     GWEN_DB_Group_free(cfg);
     return -1;
   }
+  DBG_INFO(0, "Signing done");
 
   /* insert new SigHead at beginning of message buffer */
+  DBG_INFO(0, "Inserting signature head");
+  GWEN_Buffer_Rewind(hmsg->buffer);
   GWEN_Buffer_InsertBytes(hmsg->buffer, GWEN_Buffer_GetStart(hbuf), l);
 
   GWEN_HBCICryptoContext_free(ctx);
   GWEN_DB_Group_free(cfg);
 
-
   /* create sigtail */
+  DBG_INFO(0, "Creating signature tail");
   GWEN_Buffer_Reset(hbuf);
   cfg=GWEN_DB_Group_new("sigtail");
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "head/seq", hmsg->lastSegment+1);
   /* store to DB */
-  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                       "ctrlref", ctrlref);
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "signature",
                       GWEN_Buffer_GetStart(sigbuf),
                       GWEN_Buffer_GetUsedBytes(sigbuf));
+
+  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                       "ctrlref", ctrlref);
+  GWEN_Buffer_free(sigbuf);
 
   /* get node */
   node=GWEN_MsgEngine_FindNodeByProperty(e,
@@ -566,19 +588,21 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
                                           hbuf,
                                           cfg);
   if (rv) {
-    DBG_INFO(0, "Could not create SigHead");
+    DBG_INFO(0, "Could not create SigTail");
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
 
   /* append sigtail */
+  DBG_INFO(0, "Appending signature tail");
   if (GWEN_Buffer_AppendBuffer(hmsg->buffer, hbuf)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
+  DBG_INFO(0, "Appending signature tail: done");
 
   GWEN_Buffer_free(hbuf);
   GWEN_DB_Group_free(cfg);
@@ -602,6 +626,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   GWEN_HBCICRYPTOCONTEXT *ctx;
   GWEN_MSGENGINE *e;
 
+  DBG_INFO(0, "Encrypting message");
   assert(hmsg);
   e=GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog);
   assert(e);
@@ -617,6 +642,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   }
 
   /* prepare context */
+  DBG_INFO(0, "Preparing context for encryption");
   ctx=GWEN_HBCICryptoContext_new();
   GWEN_HBCICryptoContext_SetKeySpec(ctx, hmsg->crypter);
   if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx, 1)) {
@@ -626,8 +652,12 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
     GWEN_DB_Group_free(cfg);
     return -1;
   }
+  DBG_INFO(0, "Preparing context for encryption: done");
 
   /* encrypt message */
+  DBG_INFO(0, "Encrypting message");
+  cryptbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(hmsg->buffer)+256,0,1);
+  GWEN_Buffer_Rewind(hmsg->buffer);
   if (GWEN_HBCIDialog_Encrypt(hmsg->dialog, hmsg->buffer, cryptbuf, ctx)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(cryptbuf);
@@ -635,6 +665,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
     GWEN_DB_Group_free(cfg);
     return -1;
   }
+  DBG_INFO(0, "Encrypting message: done");
 
   /* create CryptHead */
   hbuf=GWEN_Buffer_new(0, 256+GWEN_Buffer_GetUsedBytes(hmsg->buffer), 0, 1);
@@ -674,6 +705,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   }
 
   GWEN_DB_Group_free(cfg);
+  GWEN_HBCICryptoContext_free(ctx);
 
 
   /* create cryptdata */
@@ -684,6 +716,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
                       "cryptdata",
                       GWEN_Buffer_GetStart(cryptbuf),
                       GWEN_Buffer_GetUsedBytes(cryptbuf));
+  GWEN_Buffer_free(cryptbuf);
 
   /* get node */
   node=GWEN_MsgEngine_FindNodeByProperty(e,
@@ -765,7 +798,12 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
 
   assert(hmsg);
 
+  GWEN_MsgEngine_SetIntValue(GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog),
+                             "MessageNumber",
+                             hmsg->msgNum);
+
   /* sign message */
+  DBG_INFO(0, "Letting all signers sign");
   if (hmsg->flags & GWEN_HBCIMSG_FLAGS_SIGN) {
     GWEN_BUFFER *rawBuf;
     GWEN_KEYSPEC *ks;
@@ -786,26 +824,33 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     } /* while */
     GWEN_Buffer_free(rawBuf);
   } /* if signing is needed */
+  DBG_INFO(0, "Letting all signers sign: done");
 
   /* encrypt message */
   if (hmsg->flags & GWEN_HBCIMSG_FLAGS_CRYPT) {
+    DBG_INFO(0, "Encrypting message");
     if (GWEN_HBCIMsg_EncryptMsg(hmsg)) {
       DBG_INFO(0, "here");
       return -1;
     }
+    DBG_INFO(0, "Encrypting message: done");
   }
 
   /* add msg tail */
+  DBG_INFO(0, "Adding message tail");
   if (GWEN_HBCIMsg_AddMsgTail(hmsg)) {
     DBG_INFO(0, "here");
     return -1;
   }
+  DBG_INFO(0, "Adding message tail: done");
 
   /* add msg head */
+  DBG_INFO(0, "Adding message head");
   if (GWEN_HBCIMsg_AddMsgHead(hmsg)) {
     DBG_INFO(0, "here");
     return -1;
   }
+  DBG_INFO(0, "Adding message head: done");
 
   DBG_INFO(0, "Message finished");
   return 0;
@@ -932,9 +977,6 @@ int GWEN_HBCIMsg_ReadSegment(GWEN_MSGENGINE *e,
       unsigned int usize;
 
       usize=GWEN_Buffer_GetPos(mbuf)-(startPos+1)-1;
-      GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos+1,
-                           usize,
-                           stderr, 1);
       if (GWEN_MsgEngine_AddTrustInfo(e,
                                       GWEN_Buffer_GetStart(mbuf)+startPos,
                                       usize,
@@ -1033,6 +1075,10 @@ int GWEN_HBCIMsg_ReadMessage(GWEN_MSGENGINE *e,
     }
     else if (rv==-1) {
       DBG_INFO(0, "here");
+
+      DBG_ERROR(0, "Error here:");
+      GWEN_Buffer_Dump(mbuf, stderr, 2);
+      return -1; /* DEBUG */
       errors++;
     }
     segments++;
@@ -1082,8 +1128,10 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
                                                              "key/bankcode",
                                                              0,
                                                              ""));
-  GWEN_KeySpec_free(hmsg->crypter);
-  hmsg->crypter=ks;
+  //GWEN_KeySpec_free(hmsg->crypter);
+  //hmsg->crypter=ks;
+  GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
+  GWEN_KeySpec_free(ks);
 
   p=GWEN_DB_GetBinValue(n,
                         "CryptAlgo/MsgKey",
@@ -1112,6 +1160,10 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
   else {
     int m;
 
+    GWEN_HBCICryptoContext_SetSequenceNum(ctx,
+                                          GWEN_DB_GetIntValue(n,
+                                                              "signseq", 0,
+                                                              0));
     m=GWEN_DB_GetIntValue(n, "SignAlgo/algo", 0, -1);
     if (m==-1) {
       DBG_ERROR(0, "Bad security mode (non-DDV, non-RDH)");
@@ -1231,6 +1283,9 @@ int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr){
   GWEN_Buffer_Rewind(ndbuf);
   hmsg->buffer=ndbuf;
 
+  /* store crypter */
+  GWEN_HBCIMsg_SetCrypter(hmsg, GWEN_HBCICryptoContext_GetKeySpec(ctx));
+
   GWEN_Buffer_free(cdbuf);
   GWEN_HBCICryptoContext_free(ctx);
   return 0;
@@ -1244,13 +1299,14 @@ int GWEN_HBCIMsg_SequenceCheck(GWEN_DB_NODE *gr) {
   unsigned int sn;
   unsigned int errors;
 
+  DBG_INFO(0, "Sequence check");
   sn=1;
   errors=0;
   n=GWEN_DB_GetFirstGroup(gr);
   while(n) {
     unsigned int rsn;
 
-    rsn=GWEN_DB_GetIntValue(n, "segment/seq", 0, 0);
+    rsn=GWEN_DB_GetIntValue(n, "head/seq", 0, 0);
     if (rsn!=sn) {
       DBG_ERROR(0, "Unexpected sequence number (%d, expected %d)",
                 rsn, sn);
@@ -1270,6 +1326,7 @@ int GWEN_HBCIMsg_SequenceCheck(GWEN_DB_NODE *gr) {
 
   if (errors)
     return -1;
+  DBG_INFO(0, "Sequence check ok");
   return 0;
 }
 
@@ -1280,12 +1337,14 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
                         GWEN_DB_NODE *gr,
                         unsigned int flags) {
   GWEN_LIST *sigheads;
+  GWEN_LIST *sigtails;
   GWEN_DB_NODE *n;
   int nonSigHeads;
   int nSigheads;
   unsigned int dataBegin;
   char *dataStart;
   unsigned int dataLength;
+  unsigned int i;
 
   sigheads=GWEN_List_new();
 
@@ -1355,10 +1414,53 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
     return -1;
   }
 
+  sigtails=GWEN_List_new();
+  while(n) {
+    if (strcasecmp(GWEN_DB_GroupName(n), "SigTail")!=0)
+      break;
+    GWEN_List_PushBack(sigtails, n);
+    n=GWEN_DB_GetNextGroup(n);
+  } /* while */
+
+  if (!n) {
+    DBG_ERROR(0, "Message tail expected");
+    GWEN_List_free(sigheads);
+    GWEN_List_free(sigtails);
+    return -1;
+  }
+
+  if (strcasecmp(GWEN_DB_GroupName(n), "MsgTail")!=0) {
+    DBG_ERROR(0, "Unexpected segment (msg tail expected)");
+    GWEN_List_free(sigheads);
+    GWEN_List_free(sigtails);
+    return -1;
+  }
+
+  n=GWEN_DB_GetNextGroup(n);
+  if (n) {
+    DBG_ERROR(0, "Unexpected segment (end expected)");
+    GWEN_List_free(sigheads);
+    GWEN_List_free(sigtails);
+    return -1;
+  }
+
+  if (GWEN_List_GetSize(sigheads)!=
+      GWEN_List_GetSize(sigtails)) {
+    DBG_ERROR(0,
+              "Number of signature heads (%d) does not match "
+              "number of signature tails (%d)",
+              GWEN_List_GetSize(sigheads),
+              GWEN_List_GetSize(sigtails));
+    GWEN_List_free(sigheads);
+    GWEN_List_free(sigtails);
+    return -1;
+  }
+
   /* ok, now verify all signatures */
   dataStart=GWEN_Buffer_GetStart(hmsg->buffer)+dataBegin;
-  while(n) {
+  for (i=0; i< GWEN_List_GetSize(sigtails); i++) {
     GWEN_DB_NODE *sighead;
+    GWEN_DB_NODE *sigtail;
     GWEN_BUFFER *dbuf;
     GWEN_BUFFER *sigbuf;
     const void *p;
@@ -1366,18 +1468,28 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
     int rv;
     GWEN_HBCICRYPTOCONTEXT *ctx;
 
+    /* get signature tail */
+    sigtail=(GWEN_DB_NODE*)GWEN_List_GetBack(sigtails);
+
     /* get corresponding signature head */
-    sighead=(GWEN_DB_NODE*)GWEN_List_GetBack(sigheads);
-    if (!sighead) {
-      DBG_ERROR(0, "No signature head left (internal error)");
+    sighead=(GWEN_DB_NODE*)GWEN_List_GetFront(sigheads);
+
+    if (!sighead || !sigtail) {
+      DBG_ERROR(0, "No signature head/tail left (internal error)");
+      GWEN_List_free(sigheads);
+      GWEN_List_free(sigtails);
       return -1;
     }
-    GWEN_List_PopBack(sigheads);
+
+    GWEN_List_PopBack(sigtails);
+    GWEN_List_PopFront(sigheads);
 
     /* some checks */
     if (strcasecmp(GWEN_DB_GetCharValue(sighead, "ctrlref", 0, ""),
-                   GWEN_DB_GetCharValue(n, "ctrlref", 0, ""))!=0) {
+                   GWEN_DB_GetCharValue(sigtail, "ctrlref", 0, ""))!=0) {
       DBG_ERROR(0, "Non-matching signature tail");
+      GWEN_List_free(sigheads);
+      GWEN_List_free(sigtails);
       return -1;
     }
 
@@ -1401,21 +1513,28 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
     GWEN_Buffer_AppendBytes(dbuf, dataStart, dataLength);
 
     /* prepare signature buffer */
-    p=GWEN_DB_GetBinValue(n, "signature", 0, 0, 0, &size);
+    p=GWEN_DB_GetBinValue(sigtail, "signature", 0, 0, 0, &size);
     if (!p) {
       DBG_ERROR(0, "No signature");
       GWEN_Buffer_free(dbuf);
+      GWEN_List_free(sigheads);
+      GWEN_List_free(sigtails);
       return -1;
     }
+
+    GWEN_Buffer_Rewind(dbuf);
+
     sigbuf=GWEN_Buffer_new((char*)p, size, size, 0);
     GWEN_Buffer_SetMode(sigbuf, 0);
 
     /* prepare context */
     ctx=GWEN_HBCICryptoContext_new();
-    if (GWEN_HBCIMsg_PrepareCryptoSegDec(hmsg, ctx, n, 0)) {
+    if (GWEN_HBCIMsg_PrepareCryptoSegDec(hmsg, ctx, sighead, 0)) {
       GWEN_HBCICryptoContext_free(ctx);
       GWEN_Buffer_free(sigbuf);
       GWEN_Buffer_free(dbuf);
+      GWEN_List_free(sigheads);
+      GWEN_List_free(sigtails);
       DBG_INFO(0, "here");
       return -1;
     }
@@ -1428,32 +1547,20 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
     if (rv) {
       DBG_ERROR(0, "Invalid signature");
       GWEN_HBCICryptoContext_free(ctx);
+      GWEN_List_free(sigheads);
+      GWEN_List_free(sigtails);
       return -1;
     }
 
     /* add signer */
     GWEN_HBCIMsg_AddSigner(hmsg, GWEN_HBCICryptoContext_GetKeySpec(ctx));
     GWEN_HBCICryptoContext_free(ctx);
+  } /* for */
 
-    n=GWEN_DB_GetNextGroup(n);
-  } /* while */
 
-  if (!n) {
-    DBG_ERROR(0, "Message tail expected");
-    return -1;
-  }
-
-  if (strcasecmp(GWEN_DB_GroupName(n), "MsgTail")!=0) {
-    DBG_ERROR(0, "Unexpected segment (msg tail expected)");
-    return -1;
-  }
-
-  n=GWEN_DB_GetNextGroup(n);
-  if (n) {
-    DBG_ERROR(0, "Unexpected segment (end expected)");
-    return -1;
-  }
-
+  GWEN_List_free(sigheads);
+  GWEN_List_free(sigtails);
+  DBG_INFO(0, "Signature valid");
   return 0;
 }
 
@@ -1462,20 +1569,18 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int GWEN_HBCIMsg_Decode(GWEN_HBCIMSG *hmsg,
-                        GWEN_BUFFER *mbuf,
-                        GWEN_DB_NODE *gr,
-                        unsigned int flags) {
+int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
+                           GWEN_DB_NODE *gr,
+                           unsigned int flags) {
   GWEN_MSGENGINE *e;
   int rv;
   GWEN_DB_NODE *n;
 
-  GWEN_Buffer_free(hmsg->buffer);
-  hmsg->buffer=mbuf;
   e=GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog);
   assert(e);
 
-  rv=GWEN_HBCIMsg_ReadMessage(e, "SEG", mbuf, gr, flags);
+  GWEN_Buffer_Rewind(hmsg->buffer);
+  rv=GWEN_HBCIMsg_ReadMessage(e, "SEG", hmsg->buffer, gr, flags);
   if (rv) {
     DBG_INFO(0, "here");
     return -1;
@@ -1535,6 +1640,12 @@ int GWEN_HBCIMsg_Decode(GWEN_HBCIMSG *hmsg,
     return -1;
   }
 
+  /* verify signatures */
+  rv=GWEN_HBCIMsg_Verify(hmsg, gr, flags);
+  if (rv) {
+    DBG_INFO(0, "here");
+    return -1;
+  }
 
   return 0;
 }

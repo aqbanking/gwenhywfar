@@ -34,6 +34,7 @@
 #include "ipcxmldialog_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/text.h>
 #include <gwenhyfwar/md.h>
 #include <gwenhyfwar/crypt.h>
 
@@ -53,6 +54,8 @@ void GWEN_IPCXMLDialogData_free(GWEN_IPCXMLDIALOGDATA *d){
     GWEN_CryptKey_free(d->localKey);
     GWEN_CryptKey_free(d->remoteKey);
     GWEN_CryptKey_free(d->sessionKey);
+    free(d->serviceCode);
+    free(d->securityId);
     free(d);
   }
 }
@@ -212,6 +215,10 @@ void GWEN_IPCXMLDialog_SetRemoteSignSeq(GWEN_HBCIDIALOG *d,
 
 
 
+
+
+
+
 int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
                                  GWEN_HBCICRYPTOCONTEXT *ctx,
                                  int crypt){
@@ -257,7 +264,9 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
 	return -1;
       }
 
+      GWEN_Buffer_Rewind(kbuf);
       i=GWEN_CryptKey_GetChunkSize(dd->remoteKey)-16;
+      DBG_INFO(0, "Padding with %d bytes", i);
       while(i-->0) {
 	if (GWEN_Buffer_InsertByte(kbuf, (char)0)) {
 	  DBG_INFO(0, "here");
@@ -265,8 +274,10 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
 	  return -1;
 	}
       } /* while */
+      DBG_INFO(0, "Padding done");
 
       sbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      DBG_INFO(0, "Encrypting key");
       err=GWEN_CryptKey_Encrypt(dd->remoteKey,
                                 kbuf,
                                 sbuf);
@@ -276,6 +287,7 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
         DBG_INFO_ERR(0, err);
         return -1;
       }
+      DBG_INFO(0, "Encrypting key: done");
 
       GWEN_HBCICryptoContext_SetCryptKey(ctx,
                                          GWEN_Buffer_GetStart(sbuf),
@@ -291,14 +303,17 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
     ks=GWEN_CryptKey_GetKeySpec(dd->localKey);
     assert(ks);
     GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
-    GWEN_HBCICryptoContext_SetSequenceNum(ctx, dd->localSignSeq++);
+    GWEN_HBCICryptoContext_SetSequenceNum(ctx, dd->localSignSeq+1); /* DEBUG*/
   }
 
   GWEN_HBCICryptoContext_SetMode(ctx, "RDH");
-  GWEN_HBCICryptoContext_SetServiceCode(ctx, dd->serviceCode);
-  GWEN_HBCICryptoContext_SetSecurityId(ctx,
-                                       dd->securityId,
-                                       strlen(dd->securityId)+1);
+  if (dd->serviceCode)
+    GWEN_HBCICryptoContext_SetServiceCode(ctx, dd->serviceCode);
+  if (dd->securityId)
+    GWEN_HBCICryptoContext_SetSecurityId(ctx,
+                                         dd->securityId,
+                                         strlen(dd->securityId)+1);
+  DBG_INFO(0, "Context prepared");
   return 0;
 }
 
@@ -318,6 +333,7 @@ int GWEN_IPCXMLDialog_Sign(GWEN_HBCIDIALOG *d,
   assert(dd);
 
   /* hash data */
+  DBG_INFO(0, "Hash data");
   md=GWEN_MD_Factory("RMD160");
   if (!md) {
     DBG_ERROR(0, "RMD160 not found");
@@ -343,10 +359,11 @@ int GWEN_IPCXMLDialog_Sign(GWEN_HBCIDIALOG *d,
     GWEN_MD_free(md);
     return -1;
   }
+  DBG_INFO(0, "Hashing done");
 
   hashbuf=GWEN_Buffer_new(0,
                           GWEN_MD_GetDigestSize(md),
-                          GWEN_MD_GetDigestSize(md), 1);
+                          0, 1);
   if (GWEN_Buffer_AppendBytes(hashbuf,
                               GWEN_MD_GetDigestPtr(md),
                               GWEN_MD_GetDigestSize(md))) {
@@ -357,17 +374,28 @@ int GWEN_IPCXMLDialog_Sign(GWEN_HBCIDIALOG *d,
   }
   GWEN_MD_free(md);
 
+  /* padd */
+  DBG_INFO(0, "Padding hash using ISO 9796");
+  if (GWEN_HBCIDialog_PaddWithISO9796(hashbuf)) {
+    DBG_INFO(0, "here");
+    GWEN_Buffer_free(hashbuf);
+    return -1;
+  }
+
   /* sign hash */
+  GWEN_Buffer_Rewind(hashbuf);
+
   err=GWEN_CryptKey_Sign(dd->localKey,
                          hashbuf,
                          signbuf);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_INFO(0, "here");
+    DBG_INFO_ERR(0, err);
     GWEN_Buffer_free(hashbuf);
     return err;
   }
 
   GWEN_Buffer_free(hashbuf);
+  DBG_INFO(0, "Signing done");
   return 0;
 }
 
@@ -395,7 +423,8 @@ int GWEN_IPCXMLDialog_Verify(GWEN_HBCIDIALOG *d,
   /* check signature sequence number */
   rseq=GWEN_HBCICryptoContext_GetSequenceNum(ctx);
   if (rseq<=dd->remoteSignSeq) {
-    DBG_ERROR(0, "bad signature sequence number");
+    DBG_ERROR(0, "bad signature sequence number (%d<%d)",
+              rseq, dd->remoteSignSeq);
     return -1;
   }
   dd->remoteSignSeq=rseq;
@@ -427,9 +456,7 @@ int GWEN_IPCXMLDialog_Verify(GWEN_HBCIDIALOG *d,
     return -1;
   }
 
-  hashbuf=GWEN_Buffer_new(0,
-                          GWEN_MD_GetDigestSize(md),
-                          GWEN_MD_GetDigestSize(md), 1);
+  hashbuf=GWEN_Buffer_new(0, GWEN_MD_GetDigestSize(md), 0, 1);
   if (GWEN_Buffer_AppendBytes(hashbuf,
                               GWEN_MD_GetDigestPtr(md),
                               GWEN_MD_GetDigestSize(md))) {
@@ -439,6 +466,14 @@ int GWEN_IPCXMLDialog_Verify(GWEN_HBCIDIALOG *d,
     return -1;
   }
   GWEN_MD_free(md);
+
+  /* padd */
+  DBG_INFO(0, "Padding hash using ISO 9796");
+  if (GWEN_HBCIDialog_PaddWithISO9796(hashbuf)) {
+    DBG_INFO(0, "here");
+    GWEN_Buffer_free(hashbuf);
+    return -1;
+  }
 
   /* verify hash */
   err=GWEN_CryptKey_Verify(dd->remoteKey,
@@ -474,10 +509,14 @@ int GWEN_IPCXMLDialog_Encrypt(GWEN_HBCIDIALOG *d,
     return -1;
   }
 
+  DBG_INFO(0, "Padding with ANSI X9.23");
   if (GWEN_HBCIDialog_PaddWithANSIX9_23(msgbuf)) {
     DBG_INFO(0, "here");
     return -1;
   }
+  DBG_INFO(0, "Padding with ANSI X9.23: done");
+
+  DBG_INFO(0, "Encrypting with session key");
   err=GWEN_CryptKey_Encrypt(dd->sessionKey,
 			    msgbuf,
 			    cryptbuf);
@@ -485,6 +524,7 @@ int GWEN_IPCXMLDialog_Encrypt(GWEN_HBCIDIALOG *d,
     DBG_INFO(0, "here");
     return -1;
   }
+  DBG_INFO(0, "Encrypting with session key: done");
 
   return 0;
 }
@@ -519,6 +559,7 @@ int GWEN_IPCXMLDialog_Decrypt(GWEN_HBCIDIALOG *d,
       return -1;
     }
     kbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_Rewind(sbuf);
     err=GWEN_CryptKey_Decrypt(dd->localKey,
 			      sbuf,
 			      kbuf);
@@ -528,6 +569,7 @@ int GWEN_IPCXMLDialog_Decrypt(GWEN_HBCIDIALOG *d,
       GWEN_Buffer_free(kbuf);
       return -1;
     }
+
     key=GWEN_CryptKey_Factory("DES");
     assert(key);
     km=(char*)malloc(16);
@@ -536,6 +578,7 @@ int GWEN_IPCXMLDialog_Decrypt(GWEN_HBCIDIALOG *d,
 	    GWEN_Buffer_GetStart(kbuf)+
 	    GWEN_Buffer_GetUsedBytes(kbuf)-16,
 	    16);
+
     GWEN_CryptKey_SetKeyData(key, km);
     GWEN_Buffer_free(sbuf);
     GWEN_Buffer_free(kbuf);
@@ -549,7 +592,8 @@ int GWEN_IPCXMLDialog_Decrypt(GWEN_HBCIDIALOG *d,
     DBG_INFO(0, "here");
     return -1;
   }
-  if (GWEN_HBCIDialog_UnpaddWithANSIX9_23(msgbuf)) {
+
+  if (GWEN_HBCIDialog_UnpaddWithANSIX9_23(decryptbuf)) {
     DBG_INFO(0, "here");
     return -1;
   }
@@ -566,6 +610,33 @@ void GWEN_IPCXMLDialog_FreeData(GWEN_HBCIDIALOG *d){
   dd=(GWEN_IPCXMLDIALOGDATA*)GWEN_HBCIDialog_GetInheritorData(d);
   assert(dd);
   GWEN_IPCXMLDialogData_free(dd);
+}
+
+
+
+const char *GWEN_IPCXMLDialog_GetServiceCode(GWEN_HBCIDIALOG *d){
+  GWEN_IPCXMLDIALOGDATA *dd;
+
+  assert(d);
+  dd=(GWEN_IPCXMLDIALOGDATA*)GWEN_HBCIDialog_GetInheritorData(d);
+  assert(dd);
+
+  return dd->serviceCode;
+}
+
+
+
+void GWEN_IPCXMLDialog_SetServiceCode(GWEN_HBCIDIALOG *d,
+                                      const char *s){
+  GWEN_IPCXMLDIALOGDATA *dd;
+
+  assert(d);
+  assert(s);
+  dd=(GWEN_IPCXMLDIALOGDATA*)GWEN_HBCIDialog_GetInheritorData(d);
+  assert(dd);
+
+  free(dd->serviceCode);
+  dd->serviceCode=strdup(s);
 }
 
 

@@ -52,12 +52,12 @@ typedef struct GWEN_HBCIMSG GWEN_HBCIMSG;
 
 GWEN_KEYSPEC *GWEN_HBCIMsg_GetSigners(GWEN_HBCIMSG *hmsg);
 int GWEN_HBCIMsg_AddSigner(GWEN_HBCIMSG *hmsg,
-                           GWEN_KEYSPEC *ks);
+                           const GWEN_KEYSPEC *ks);
 unsigned int GWEN_HBCIMsg_GetSignerCount(GWEN_HBCIMSG *hmsg);
 
 GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetCrypter(GWEN_HBCIMSG *hmsg,
-                             GWEN_KEYSPEC *ks);
+                             const GWEN_KEYSPEC *ks);
 
 
 GWEN_BUFFER *GWEN_HBCIMsg_GetBuffer(GWEN_HBCIMSG *hmsg);
@@ -90,6 +90,9 @@ int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
 unsigned int GWEN_HBCIMsg_GetCurrentSegmentNumber(GWEN_HBCIMSG *hmsg);
 
 int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg);
+int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
+                           GWEN_DB_NODE *gr,
+                           unsigned int flags);
 
 
 
