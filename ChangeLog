@@ -7,6 +7,8 @@
 - debugged module "args" (it now works as intended)
 - GWEN_Args_Usage() is now able to produce an ASCII help screen using
   GWEN_ARGS
+- changed GWEN_ARGS so that it can now be used as const. All functions
+  now accept "const GWEN_ARGS*" pointers.
 
 
 2004-04-16  Christian Stimming <stimming@tuhh.de>

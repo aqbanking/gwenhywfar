@@ -44,23 +44,20 @@
 int GWEN_Args_Check(int argc, char **argv,
                     int startAt,
                     GWEN_TYPE_UINT32 mode,
-                    GWEN_ARGS *args,
+                    const GWEN_ARGS *args,
                     GWEN_DB_NODE *db){
   int i;
   const char *p;
-  GWEN_ARGS *tmpArgs;
+  const GWEN_ARGS *tmpArgs;
+  GWEN_DB_NODE *counts;
+  int stop;
 
   i=startAt;
 
-  /* reset count fields of all options */
-  for(tmpArgs=args;;tmpArgs++) {
-    tmpArgs->count=0;
+  counts=GWEN_DB_Group_new("counts");
 
-    if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST)
-      break;
-  } /* for */
-
-  while(i<argc) {
+  stop=0;
+  while(i<argc && !stop) {
     GWEN_ARGS_ELEMENT_TYPE t;
     char *tmpBuf;
     const char *v;
@@ -91,11 +88,12 @@ int GWEN_Args_Check(int argc, char **argv,
       }
       else {
         DBG_ERROR(0, "Only options are allowed");
+        GWEN_DB_Group_free(counts);
         return GWEN_ARGS_RESULT_ERROR;
       }
       if (mode & GWEN_ARGS_MODE_STOP_AT_FREEPARAM) {
         DBG_DEBUG(0, "Free parameter found, stopping as requested");
-        return i;
+        stop=1;
       }
       break;
 
@@ -103,12 +101,16 @@ int GWEN_Args_Check(int argc, char **argv,
       for(tmpArgs=args;;tmpArgs++) {
         if (strcasecmp(tmpArgs->shortOption, p)==0) {
           /* found option */
-          tmpArgs->count++;
+          GWEN_DB_SetIntValue(counts, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                              tmpArgs->name,
+                              GWEN_DB_GetIntValue(counts,
+                                                  tmpArgs->name, 0, 0)+1);
           break;
         }
 
         if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST) {
           DBG_ERROR(0, "Unknown short option \"%s\"", p);
+          GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         }
       } /* for */
@@ -118,6 +120,7 @@ int GWEN_Args_Check(int argc, char **argv,
         /* argument needed */
         if (i>=argc) {
           DBG_ERROR(0, "Argument needed for option \"%s\"", tmpArgs->name);
+          GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         }
         switch(tmpArgs->type) {
@@ -131,6 +134,7 @@ int GWEN_Args_Check(int argc, char **argv,
         case GWEN_ArgsTypeInt:
           if (sscanf(argv[i], "%i", &value)!=1) {
             DBG_ERROR(0, "Non-integer argument for short option \"%s\"", p);
+            GWEN_DB_Group_free(counts);
             return GWEN_ARGS_RESULT_ERROR;
           }
           GWEN_DB_SetIntValue(db,
@@ -141,6 +145,7 @@ int GWEN_Args_Check(int argc, char **argv,
 
         default:
           DBG_ERROR(0, "Unknown option type \"%d\"", tmpArgs->type);
+          GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         } /* switch */
         i++;
@@ -148,7 +153,8 @@ int GWEN_Args_Check(int argc, char **argv,
       else {
         GWEN_DB_SetIntValue(db,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            tmpArgs->name, tmpArgs->count);
+                            tmpArgs->name,
+                            GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));
       }
       break;
 
@@ -165,13 +171,17 @@ int GWEN_Args_Check(int argc, char **argv,
       for(tmpArgs=args;;tmpArgs++) {
         if (strcasecmp(tmpArgs->longOption, tmpBuf)==0) {
           /* found option */
-          tmpArgs->count++;
+          GWEN_DB_SetIntValue(counts, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                              tmpArgs->name,
+                              GWEN_DB_GetIntValue(counts,
+                                                  tmpArgs->name, 0, 0)+1);
           break;
         }
 
         if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST) {
           DBG_ERROR(0, "Unknown long option \"%s\"", tmpBuf);
           free(tmpBuf);
+          GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         }
       } /* for */
@@ -182,6 +192,7 @@ int GWEN_Args_Check(int argc, char **argv,
           DBG_ERROR(0, "No argument allowed for option \"%s\"",
                     tmpArgs->name);
           free(tmpBuf);
+          GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         }
         v++;
@@ -192,6 +203,7 @@ int GWEN_Args_Check(int argc, char **argv,
         if (*v==0) {
           DBG_ERROR(0, "Argument needed for option \"%s\"", tmpArgs->name);
           free(tmpBuf);
+          GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         }
         switch(tmpArgs->type) {
@@ -207,6 +219,7 @@ int GWEN_Args_Check(int argc, char **argv,
             DBG_ERROR(0, "Non-integer argument for long option \"%s\"",
                       tmpBuf);
             free(tmpBuf);
+            GWEN_DB_Group_free(counts);
             return GWEN_ARGS_RESULT_ERROR;
           }
           GWEN_DB_SetIntValue(db,
@@ -217,13 +230,15 @@ int GWEN_Args_Check(int argc, char **argv,
 
         default:
           DBG_ERROR(0, "Unknown option type \"%d\"", tmpArgs->type);
+          GWEN_DB_Group_free(counts);
           return GWEN_ARGS_RESULT_ERROR;
         } /* switch */
       }
       else {
         GWEN_DB_SetIntValue(db,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            tmpArgs->name, tmpArgs->count);
+                            tmpArgs->name,
+                            GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));
       }
       free(tmpBuf);
 
@@ -231,6 +246,7 @@ int GWEN_Args_Check(int argc, char **argv,
 
     default:
       DBG_ERROR(0, "Internal error (unknown argv type \"%d\")", t);
+      GWEN_DB_Group_free(counts);
       return GWEN_ARGS_RESULT_ERROR;
       break;
     } /* switch */
@@ -239,34 +255,40 @@ int GWEN_Args_Check(int argc, char **argv,
   /* check argument counts */
   for(tmpArgs=args;;tmpArgs++) {
     const char *s;
+    int c;
 
     if (tmpArgs->longOption)
       s=tmpArgs->longOption;
     else
       s=tmpArgs->shortOption;
 
+    c=GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0);
+
     /* check minnum */
-    if (tmpArgs->minNum && (tmpArgs->count<tmpArgs->minNum)) {
+    if (tmpArgs->minNum && (c<tmpArgs->minNum)) {
       if (tmpArgs->minNum>1) {
         DBG_ERROR(0, "Option \"%s\" needed %d times (have %d)",
-                  s, tmpArgs->minNum, tmpArgs->count);
+                  s, tmpArgs->minNum, c);
       }
       else {
         DBG_ERROR(0, "Option \"%s\" needed", s);
       }
+      GWEN_DB_Group_free(counts);
       return GWEN_ARGS_RESULT_ERROR;
     }
 
     /* check maxnum */
-    if (tmpArgs->maxNum && (tmpArgs->count>tmpArgs->maxNum)) {
+    if (tmpArgs->maxNum && (c>tmpArgs->maxNum)) {
       DBG_ERROR(0, "Option \"%s\" needed at most %d times (have %d)",
-                s, tmpArgs->maxNum, tmpArgs->count);
+                s, tmpArgs->maxNum, c);
+      GWEN_DB_Group_free(counts);
       return GWEN_ARGS_RESULT_ERROR;
     }
 
     if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST)
       break;
   } /* for */
+  GWEN_DB_Group_free(counts);
 
   return i;
 }
@@ -293,8 +315,8 @@ int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins){
 
 
 
-int GWEN_Args_UsageTXT(GWEN_ARGS *args, GWEN_BUFFER *ubuf){
-  GWEN_ARGS *tmpArgs;
+int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf){
+  const GWEN_ARGS *tmpArgs;
 
   for(tmpArgs=args;;tmpArgs++) {
     const char *s;
@@ -355,13 +377,14 @@ int GWEN_Args_UsageTXT(GWEN_ARGS *args, GWEN_BUFFER *ubuf){
 
 
 
-int GWEN_Args_UsageHTML(GWEN_ARGS *args, GWEN_BUFFER *ubuf){
+int GWEN_Args_UsageHTML(const GWEN_ARGS *args, GWEN_BUFFER *ubuf){
   return 0;
 }
 
 
 
-int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf, GWEN_ARGS_OUTTYPE ot){
+int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
+                    GWEN_ARGS_OUTTYPE ot){
   int rv;
 
   switch(ot) {
@@ -381,7 +404,7 @@ int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf, GWEN_ARGS_OUTTYPE ot){
 
 
 
-int GWEN_Args_ShortUsage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
+int GWEN_Args_ShortUsage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                          GWEN_ARGS_OUTTYPE ot){
   return 0;
 }

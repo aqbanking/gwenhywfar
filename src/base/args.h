@@ -28,6 +28,8 @@
 #ifndef GWENHYWFAR_ARGS_H
 #define GWENHYWFAR_ARGS_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,7 +39,6 @@ typedef struct GWEN_ARGS GWEN_ARGS;
 }
 #endif
 
-#include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
@@ -82,7 +83,6 @@ struct GWEN_ARGS {
   const char *name;
   unsigned int minNum;
   unsigned int maxNum;
-  unsigned int count;
   const char *shortOption;
   const char *longOption;
   const char *shortDescription;
@@ -94,15 +94,15 @@ GWENHYWFAR_API
 int GWEN_Args_Check(int argc, char **argv,
 		    int startAt,
 		    GWEN_TYPE_UINT32 mode,
-		    GWEN_ARGS *args,
+		    const GWEN_ARGS *args,
 		    GWEN_DB_NODE *db);
 
 GWENHYWFAR_API
-int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
+int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                     GWEN_ARGS_OUTTYPE ot);
 
 GWENHYWFAR_API
-int GWEN_Args_ShortUsage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
+int GWEN_Args_ShortUsage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                          GWEN_ARGS_OUTTYPE ot);
 
 #ifdef __cplusplus

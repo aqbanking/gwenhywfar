@@ -836,14 +836,13 @@ int testOptions(int argc, char **argv) {
   int rv;
   GWEN_DB_NODE *db;
   GWEN_BUFFER *ubuf;
-  GWEN_ARGS args[]={
+  const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsTypeChar,            /* type */
     "charOption",                 /* name */
     1,                            /* minnum */
     0,                            /* maxnum */
-    0,                            /* count */
     "c",                          /* short option */
     "char",                       /* long option */
     "char option",                /* short description */
@@ -855,7 +854,6 @@ int testOptions(int argc, char **argv) {
     "boolOption",                 /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
-    0,                            /* count */
     "b",                          /* short option */
     "bool",                       /* long option */
     "bool option",                /* short description */
@@ -869,7 +867,6 @@ int testOptions(int argc, char **argv) {
     "intOption",                  /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
-    0,                            /* count */
     "i",                          /* short option */
     "int",                        /* long option */
     "int option",                 /* short description */
