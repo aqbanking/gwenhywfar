@@ -1,5 +1,7 @@
 INCLUDES=@all_includes@
 
+EXTRA_DIST=README
+
 noinst_LTLIBRARIES=libui.la
 
 iheaderdir=${includedir}/gwenhywfar/ui
@@ -10,6 +12,7 @@ iheader_HEADERS=\
   editbox.h \
   event.h \
   filedialog.h \
+  hline.h \
   hslider.h \
   loader.h \
   messagebox.h \
@@ -28,6 +31,7 @@ noinst_HEADERS=\
   editbox_p.h \
   event_p.h \
   filedialog_p.h \
+  hline_p.h \
   hslider_p.h \
   loader_p.h \
   messagebox_p.h \
@@ -48,6 +52,7 @@ libui_la_SOURCES=\
   editbox.c \
   event.c \
   filedialog.c \
+  hline.c \
   hslider.c \
   loader.c \
   messagebox.c \

@@ -25,42 +25,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_UI_EDITBOX_H
-#define GWEN_UI_EDITBOX_H
-
-typedef enum {
-  GWEN_EditBoxType_Char=0,
-  GWEN_EditBoxType_Int
-} GWEN_EDITBOX_TYPE;
+#ifndef GWEN_UI_HLINE_P_H
+#define GWEN_UI_HLINE_P_H
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/ui/widget.h>
-#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/ui/hline.h>
 
-#define GWEN_EDITBOX_FLAGS_MULTILINE 0x00010000
-#define GWEN_EDITBOX_FLAGS_DYNAMIC   0x00020000
-#define GWEN_EDITBOX_FLAGS_CLEARALL  0x00040000
-#define GWEN_EDITBOX_FLAGS_INSERT    0x00080000
-#define GWEN_EDITBOX_FLAGS_EDIT      0x00100000
+typedef struct GWEN_HLINE GWEN_HLINE;
 
 
-GWEN_WIDGET *GWEN_EditBox_new(GWEN_WIDGET *parent,
-                              GWEN_TYPE_UINT32 flags,
-                              const char *name,
-                              const char *text,
-                              int x, int y,
-                              int width, int height,
-                              int maxLen);
-
-GWEN_BUFFER *GWEN_EditBox_GetText(const GWEN_WIDGET *w, int asAscii);
-
-void GWEN_EditBox_SetDataType(GWEN_WIDGET *w, GWEN_EDITBOX_TYPE d);
+struct GWEN_HLINE {
+  GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
+  GWEN_TYPE_UINT32 flags;
+};
+void GWEN_HLine_freeData(void *bp, void *p);
 
 
-int GWEN_EditBox_Validate(GWEN_WIDGET *w);
+GWEN_UI_RESULT GWEN_HLine_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
 
 #endif
+
+
+
 
 
 

@@ -2824,8 +2824,8 @@ int uitest19(int argc, char **argv) {
 int uitest20(int argc, char **argv) {
   GWEN_XMLNODE *n;
   GWEN_XMLNODE *nn;
-  GWEN_DB_NODE *db;
-  GWEN_WIDGET *w;
+  GWEN_DB_NODE *dbData;
+  int res;
 
   GWEN_Logger_Open(0, "test", "gwentest.log",
                    GWEN_LoggerTypeFile,
@@ -2849,30 +2849,23 @@ int uitest20(int argc, char **argv) {
     return 1;
   }
 
-  db=GWEN_DB_Group_new("dialog");
+  dbData=GWEN_DB_Group_new("dialogData");
+
+  GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_DEFAULT,
+                       "type", "private");
+  GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_DEFAULT,
+                       "addr", "127.0.0.1");
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_DEFAULT,
+                      "port", 32891);
+
   DBG_NOTICE(0, "Initializing UI");
   if (GWEN_UI_Begin()) {
     DBG_ERROR(0, "Could not init UI");
     return 2;
   }
 
-  w=GWEN_UILoader_LoadDialog(0, nn, db);
-  if (!w) {
-    DBG_ERROR(0, "Could not load widgets");
-  }
-  else {
-    int res;
-
-    GWEN_Widget_Dump(w, 1);
-    GWEN_Widget_Redraw(w);
-    GWEN_UI_Flush();
-    DBG_NOTICE(0, "Running...");
-    res=GWEN_Widget_Run(w);
-    DBG_NOTICE(0, "Running... done. (%d)", res);
-    GWEN_Widget_Close(w);
-    GWEN_UI_Flush();
-    GWEN_Widget_free(w);
-  }
+  res=GWEN_UILoader_ExecDialog(0, nn, dbData);
+  DBG_NOTICE(0, "Response was: %d", res);
 
   DBG_NOTICE(0, "Deinitializing UI");
   if (GWEN_UI_End()) {
@@ -2880,7 +2873,9 @@ int uitest20(int argc, char **argv) {
     return 2;
   }
 
-  GWEN_DB_Dump(db, stderr, 2);
+  if (res==1) {
+    GWEN_DB_Dump(dbData, stderr, 2);
+  }
 
   return 0;
 }

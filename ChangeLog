@@ -1,4 +1,16 @@
 
+2004/07/01: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui:
+  - added a new widget type: "HLine". This widget simply draws a horizontal
+    line or serves as a placeholder (to be used with the DialogLoader).
+  - finished GWEN_UILoader. It is now able to automatically arrange widgets,
+    to populate created widgets with user data and to retrieve the data
+    modified by the user. It is now usable with Libchipcard2 ;-)
+    See doc/testdialog.xml for an example. You can try this with the
+    following gwentest-command (from within the "test" folder):
+    "#> gwentest ../doc/testdialog.xml"
+    
 
 2004/06/30: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

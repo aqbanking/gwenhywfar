@@ -709,8 +709,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       int attrs;
       unsigned int c;
 
-      //DBG_NOTICE(0, "Writing this at %d/%d [%d, %d]:",
-      //           x, y, len, maxc);
+      DBG_NOTICE(0, "Writing this at %d/%d [%d, %d]:",
+                 x, y, len, maxc);
       GWEN_Text_LogString(p, len, 0, GWEN_LoggerLevelNotice);
       wmove(w->window, y, x);
       wbkgdset(w->window, COLOR_PAIR(w->colour));
@@ -843,7 +843,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
         int len;
 
-        len=w->width-2-x;
+        len=(w->width-2-x);
         x++;
         while(len-->0)
           mvwaddch(w->window, y, x++, ' ');

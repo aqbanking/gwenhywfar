@@ -74,6 +74,9 @@ GWEN_WIDGET *GWEN_UILoader_LoadTextWidget(GWEN_WIDGET *parent,
 GWEN_WIDGET *GWEN_UILoader_LoadTableWidget(GWEN_WIDGET *parent,
                                            GWEN_DB_NODE *db,
                                            GWEN_XMLNODE *n);
+GWEN_WIDGET *GWEN_UILoader_LoadHLine(GWEN_WIDGET *parent,
+                                     GWEN_DB_NODE *db,
+                                     GWEN_XMLNODE *n);
 
 
 int GWEN_UILoader_ParseWidget(GWEN_XMLNODE *n,
@@ -89,6 +92,18 @@ int GWEN_UILoader__ExtractText(GWEN_XMLNODE *n,
                                const char *name);
 
 
+
+GWEN_WIDGET *GWEN_UILoader_LoadDialog(GWEN_WIDGET *parent,
+                                      GWEN_XMLNODE *n,
+                                      GWEN_DB_NODE *db);
+
+int GWEN_UILoader_Populate(GWEN_DB_NODE *dbDialog,
+                           GWEN_DB_NODE *dbData);
+
+int GWEN_UILoader_Evaluate(GWEN_DB_NODE *dbDialog,
+                           GWEN_DB_NODE *dbData,
+                           GWEN_BUFFER *errMsg);
+int GWEN_UILoader_Run(GWEN_WIDGET *w);
 
 
 

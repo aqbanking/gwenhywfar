@@ -124,11 +124,14 @@ int GWEN_EditBox_EnsureLine(GWEN_WIDGET *w, int y) {
     win->currLine=GWEN_TextWidget_LineOpen(w, y,
                                            (win->flags &
                                             GWEN_EDITBOX_FLAGS_DYNAMIC));
-    if (!win->currLine)
+    if (!win->currLine) {
+      DBG_ERROR(0, "Could not open line %d", y);
       return -1;
+    }
   }
-  if (!win->currLine)
+  if (!win->currLine) {
     return -1;
+  }
   if (win->maxLen)
     GWEN_TextWidget_LineSetBorders(w, win->currLine, 0, win->maxLen-1);
   else
@@ -361,9 +364,13 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       char buffer[2];
       int ww;
 
-      if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT))
+      DBG_NOTICE(0, "Got a key event");
+      if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT)) {
+        DBG_NOTICE(0, "Not in edit mode");
         return GWEN_UIResult_Handled;
+      }
       if (GWEN_EditBox_EnsureLine(w, win->currY)) {
+        DBG_NOTICE(0, "Could not ensure line %d", win->currY);
         return GWEN_UIResult_Handled;
       }
 
@@ -443,6 +450,12 @@ void GWEN_EditBox_SetDataType(GWEN_WIDGET *w, GWEN_EDITBOX_TYPE d){
   win->dataType=d;
 }
 
+
+
+int GWEN_EditBox_Validate(GWEN_WIDGET *w){
+  /* TODO: allow setting of a validator which is to be called here */
+  return 0;
+}
 
 
 

@@ -33,15 +33,29 @@
 #include <gwenhywfar/ui/widget.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/buffer.h>
 
 
 
-GWEN_WIDGET *GWEN_UILoader_LoadDialog(GWEN_WIDGET *parent,
-                                      GWEN_XMLNODE *n,
-                                      GWEN_DB_NODE *db);
-
-int GWEN_UILoader_Populate(GWEN_DB_NODE *dbDialog,
-                           GWEN_DB_NODE *dbData);
+/**
+ * <p>
+ * This function loads a dialog from the given XML node using the given
+ * GWEN_DB as source and as target for the user data.
+ * The XML nodew contains information about which widget uses which GWEN_DB
+ * entry.
+ * </p>
+ * <p>
+ * For this to work the dialog must at least include one button with the
+ * command code "1". This is assumed to be the OK button.
+ * If a button with the command "2" is found it is assumed to be the ABORT
+ * button. A button with the command "3" may later be used to restore
+ * default values (but is currently not implemented).
+ * </p>
+ * @return -1 on error, 1 if the user pressed [OK], 2 if the user aborted
+ */
+int GWEN_UILoader_ExecDialog(GWEN_WIDGET *w,
+                             GWEN_XMLNODE *n,
+                             GWEN_DB_NODE *dbData);
 
 
 #endif

@@ -48,9 +48,167 @@
             This allows setting the <b>connection</b> type.
           </gwen>
         </helptext>
+        
+        <config>
+          <path> type </path>
+          <type> char </type>
+          <minlen> 3  </minlen>
+          <maxlen> 16 </maxlen>
+        </config>
+      </widget>
+
+    </hgroup>
+
+    <hgroup align="left" gap="1" >
+  
+      <widget name="Label2" type="TextWidget">
+        <flags>
+        </flags>
+        
+        <width>20</width>
+        <height>1</height>
+        <text> 
+          <gwen> Address </gwen> 
+        </text>
       </widget>
   
+      <widget name="EditBox1" type="EditBox">
+        <flags>
+          <flag>WIDGET_FLAGS_DEFAULT</flag>
+          <flag>WIDGET_FLAGS_BORDER</flag>
+          <flag>WIDGET_FLAGS_HIGHLIGHT</flag>
+          <flag>EDITBOX_FLAGS_EDIT</flag>
+          <flag>EDITBOX_FLAGS_CLEARALL</flag>
+          <flag>EDITBOX_FLAGS_INSERT</flag>
+          <flag>EDITBOX_FLAGS_DYNAMIC</flag>
+        </flags>
+        
+        <width>30</width>
+        <height>1</height>
+        
+        <maxlen> 64 </maxlen>
+        
+        <helptext>
+          <gwen>
+            This allows setting the address.
+          </gwen>
+        </helptext>
+        
+        <config>
+          <path> addr </path>
+          <type> char </type>
+          <maxlen> 64 </maxlen>
+        </config>
+      </widget>
+
     </hgroup>
+
+    <hgroup align="left" gap="1" >
+  
+      <widget name="Label3" type="TextWidget">
+        <flags>
+        </flags>
+        
+        <width>20</width>
+        <height>1</height>
+        <text> 
+          <gwen> TCP Port </gwen> 
+        </text>
+      </widget>
+  
+      <widget name="EditBox2" type="EditBox">
+        <flags>
+          <flag>WIDGET_FLAGS_DEFAULT</flag>
+          <flag>WIDGET_FLAGS_BORDER</flag>
+          <flag>WIDGET_FLAGS_HIGHLIGHT</flag>
+          <flag>EDITBOX_FLAGS_EDIT</flag>
+          <flag>EDITBOX_FLAGS_CLEARALL</flag>
+          <flag>EDITBOX_FLAGS_INSERT</flag>
+          <flag>EDITBOX_FLAGS_DYNAMIC</flag>
+        </flags>
+        
+        <width>8</width>
+        <height>1</height>
+        
+        <maxlen> 6 </maxlen>
+        
+        <helptext>
+          <gwen>
+            This allows setting the TCP port.
+          </gwen>
+        </helptext>
+        
+        <config>
+          <path> port </path>
+          <type> int </type>
+          <minvalue> 1 </minvalue>
+          <maxvalue> 65535 </maxvalue>
+        </config>
+      </widget>
+
+    </hgroup>
+
+
+    <widget name="HLine1" type="HLine">
+      <height>1</height>
+      <flags>
+        <flag>HLINE_FLAGS_EMPTY</flag>
+      </flags>
+    </widget>
+		
+    
+    <widget name="HLine2" type="HLine">
+      <height>1</height>
+    </widget>
+
+    <hgroup align="right" gap="1" >
+
+      <widget name="Button1" type="Button">
+        <flags>
+          <flag>WIDGET_FLAGS_DEFAULT</flag>
+          <flag>WIDGET_FLAGS_HCENTER</flag>
+          <flag>WIDGET_FLAGS_BORDER</flag>
+          <flag>WIDGET_FLAGS_HIGHLIGHT</flag>
+        </flags>
+        
+        <width>8</width>
+        <height>1</height>
+        
+        <command>1</command>
+        
+        <text>Ok</text>
+        
+        <helptext>
+          <gwen>
+            Press this button when finished..
+          </gwen>
+        </helptext>
+      </widget>
+
+      <widget name="Button2" type="Button">
+        <flags>
+          <flag>WIDGET_FLAGS_DEFAULT</flag>
+          <flag>WIDGET_FLAGS_HCENTER</flag>
+          <flag>WIDGET_FLAGS_BORDER</flag>
+          <flag>WIDGET_FLAGS_HIGHLIGHT</flag>
+        </flags>
+        
+        <width>8</width>
+        <height>1</height>
+        
+        <command>2</command>
+        
+        <text>Abort</text>
+        
+        <helptext>
+          <gwen>
+            Press this button when to abort.
+          </gwen>
+        </helptext>
+      </widget>
+
+    </hgroup>
+
 
   </vgroup>
     

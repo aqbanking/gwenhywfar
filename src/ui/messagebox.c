@@ -72,6 +72,11 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
   but1=but2=but3=0;
   scrollerFlags=GWEN_WIDGET_FLAGS_DEFAULT;
 
+  prevFocus=GWEN_UI_GetFocusWidget();
+  if (prevFocus) {
+    DBG_NOTICE(0, "Previous focus: %s", GWEN_Widget_GetName(prevFocus));
+  }
+
   /* calculate minimum width */
   if (b1 && b2 && b3) {
     int i, i1, i2, i3;
@@ -141,8 +146,6 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
 
   DBG_NOTICE(0, "ZZZ: Sizes: width=%d, height=%d, twidth=%d (%d)",
              width, height, twidth, -twidth);
-
-  prevFocus=GWEN_UI_GetFocusWidget();
 
   x=(GWEN_UI_GetCols()-width)/2;
   y=(GWEN_UI_GetLines()-height)/2;
@@ -334,8 +337,8 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
         DBG_ERROR(0, "Unknown command \"%d\"", cmd);
         break;
       }
-      GWEN_Widget_Close(mw); // DEBUG
       GWEN_Event_free(e);
+      break;
     }
     else {
       res=GWEN_UI_DispatchEvent(e);
@@ -350,9 +353,14 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
 
   DBG_NOTICE(0, "ZZZ: Response was: %d", response);
 
+  GWEN_Widget_Close(mw);
+  GWEN_UI_Flush();
   GWEN_Widget_free(mw);
-  if (prevFocus)
+  if (prevFocus) {
+    DBG_NOTICE(0, "Setting focus back to: %s",
+               GWEN_Widget_GetName(prevFocus));
     GWEN_Widget_SetFocus(prevFocus);
+  }
   return response;
 }
 
