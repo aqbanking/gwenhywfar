@@ -30,6 +30,11 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
+/** define type templates */
+#define GWEN_TYPE_TMPL_UINT32 "@GWEN_TYPE_TMPL_UINT32@"
+#define GWEN_TYPE_TMPL_UINT64 "@GWEN_TYPE_TMPL_UINT64@"
+
+
 /** Define an unsigned integer type with 32 bit storage length. */
 typedef @GWEN_TYPE_UINT32@ GWEN_TYPE_UINT32;
 

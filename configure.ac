@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=2
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=5
+GWENHYWFAR_VERSION_BUILD=6
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -225,13 +225,6 @@ case "$OS_TYPE" in
         gwenhywfar_plugins="`eval echo $prefix/lib`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
-        # check for some types
-        AQ_TYPE_UINT32(unsigned int)
-        GWEN_TYPE_UINT32=$aq_type_uint32
-        AC_SUBST(GWEN_TYPE_UINT32)
-        AQ_TYPE_UINT64(unsigned long long)
-        GWEN_TYPE_UINT64=$aq_type_uint64
-        AC_SUBST(GWEN_TYPE_UINT64)
         
         # add special libraries for solaris
         if test "$OSYSTEM" = "solaris"; then
@@ -252,17 +245,29 @@ case "$OS_TYPE" in
         GWEN_MAKE_DLL_TARGET="dll"
         GWEN_INSTALL_DLL_TARGET="dll-install"
         GWEN_OS="windows"
-        # check for some types
-        AQ_TYPE_UINT32(unsigned int)
-        GWEN_TYPE_UINT32=$aq_type_uint32
-        AC_SUBST(GWEN_TYPE_UINT32)
-        AQ_TYPE_UINT64(unsigned long long)
-        GWEN_TYPE_UINT64=$aq_type_uint64
-        AC_SUBST(GWEN_TYPE_UINT64)
     	;;
+    *)
+    	AC_MSG_ERROR(**** Unknown operating system type)
+        ;;
 esac
 
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+
+
+###-------------------------------------------------------------------------
+#
+# check for some types and printf-templates
+#
+AQ_TYPE_UINT32(unsigned int)
+AQ_TYPE_UINT64(unsigned long long)
+GWEN_TYPE_UINT32=$aq_type_uint32
+AC_SUBST(GWEN_TYPE_UINT32)
+GWEN_TYPE_TMPL_UINT32=$aq_type_tmpl_uint32
+AC_SUBST(GWEN_TYPE_TMPL_UINT32)
+GWEN_TYPE_UINT64=$aq_type_uint64
+AC_SUBST(GWEN_TYPE_UINT64)
+GWEN_TYPE_TMPL_UINT64=$aq_type_tmpl_uint64
+AC_SUBST(GWEN_TYPE_TMPL_UINT64)
 
 
 ###-------------------------------------------------------------------------

@@ -12,6 +12,7 @@ dnl   Variables:
 dnl     aq_type_uint32
 dnl   Defines:
 
+# check for type to use
 AC_MSG_CHECKING(for UINT32 type)
 rm -f conf.uint32
 AC_TRY_RUN([
@@ -53,6 +54,48 @@ int main (){
 )
 rm -f conf.uint32
 
+# check for template to use
+AC_MSG_CHECKING(for UINT32 template)
+rm -f conf.uint32
+AC_TRY_RUN([
+#include <stdlib.h>
+#include <stdio.h>
+
+int main (){
+  const char *s;
+  FILE *f;
+  
+  if (sizeof(unsigned int)==4)
+    s="%u";
+  else if (sizeof(unsigned short)==4)
+    s="%hu";
+  else if (sizeof(unsigned long)==4)
+    s="%lu";
+  else if (sizeof(unsigned long long)==4)
+    s="%llu";
+  else {
+    printf("Could not determine template for UINT32");
+    exit(1);
+  }
+  f=fopen("conf.uint32", "w+");
+  if (!f) {
+    printf("Could not create file conf.uint32\n");
+    exit(1);
+  }
+  fprintf(f, "%s\n", s);
+  if (fclose(f)) {
+   printf("Could not close file.\n");
+   exit(1);
+  }
+  exit(0);
+}
+ ],
+ [aq_type_tmpl_uint32=`cat conf.uint32`; AC_MSG_RESULT($aq_type_tmpl_uint32)],
+ [AC_MSG_ERROR(Could not determine type)],
+ [aq_type_tmpl_uint32="$1"; AC_MSG_RESULT([Crosscompiling, assuming $1])]
+)
+rm -f conf.uint32
+
 ])
 
 
@@ -67,6 +110,7 @@ dnl   Variables:
 dnl     aq_type_uint64
 dnl   Defines:
 
+# check for type to use
 AC_MSG_CHECKING(for UINT64 type)
 rm -f conf.uint64
 AC_TRY_RUN([
@@ -106,6 +150,50 @@ int main (){
  [aq_type_uint64=`cat conf.uint64`; AC_MSG_RESULT($aq_type_uint64)],
  [AC_MSG_ERROR(Could not determine type)],
  [aq_type_uint64="$1"; AC_MSG_RESULT([Crosscompiling, assuming $1])]
+)
+rm -f conf.uint64
+
+
+# check for template to use
+AC_MSG_CHECKING(for UINT64 template)
+rm -f conf.uint64
+AC_TRY_RUN([
+#include <stdlib.h>
+#include <stdio.h>
+
+int main (){
+  const char *s;
+  FILE *f;
+
+  if (sizeof(unsigned int)==8)
+    s="%u";
+  else if (sizeof(unsigned short)==8)
+    s="%hu";
+  else if (sizeof(unsigned long)==8)
+    s="%lu";
+  else if (sizeof(unsigned long long)==8)
+    s="%llu";
+  else {
+    printf("Could not determine template for UINT64");
+    exit(1);
+  }
+
+  f=fopen("conf.uint64", "w+");
+  if (!f) {
+    printf("Could not create file conf.uint64\n");
+    exit(1);
+  }
+  fprintf(f, "%s\n", s);
+  if (fclose(f)) {
+   printf("Could not close file.\n");
+   exit(1);
+  }
+  exit(0);
+}
+ ],
+ [aq_type_tmpl_uint64=`cat conf.uint64`; AC_MSG_RESULT($aq_type_tmpl_uint64)],
+ [AC_MSG_ERROR(Could not determine type)],
+ [aq_type_tmpl_uint64="$1"; AC_MSG_RESULT([Crosscompiling, assuming $1])]
 )
 rm -f conf.uint64
 
