@@ -94,9 +94,9 @@ Examples: GWEN_DB_Values_Count, GWEN_Error_GetType
 
 3.2. Function Definitions
 -------------------------
-Function name consist of multiple words combined by an underscore.
+Function names consist of multiple words combined by underscores.
 Every word after the prefixes starts with a capital.
-If the last word itself consists of multiple words (like in GetType) then
+If any word itself consists of multiple sub-words (like in GetType) then
 every sub-word should start with a capital, too.
 This improves the readability of the code.
 
@@ -104,12 +104,12 @@ There is one exceptions from this rule (for historical reasons):
 Functions which are constructors, destructors or duplication functions (like
 GWEN_Buffer_new, GWEN_Buffer_free, GWEN_Buffer_dup) need to have the last word
 start with a lowercase letter.
-These functions should also use the given word as shown above:
+These functions also should use the given words below:
 - _new  for constructors
 - _free for destructors
 - _dup  for deep copy duplications
 
-Example: GWEN_DB_Values_Count, GWEN_Error_GetCode
+Example: GWEN_DB_Values_Count, GWEN_Error_GetCode, GWEN_Error_new
 
 
 3.3. Type Definitions
