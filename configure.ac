@@ -189,7 +189,8 @@ if test "$enable_memtrace" != "no"; then
   AC_DEFINE(GWEN_MEMTRACE, 1, [if memory trace is wanted])
 fi
 
-
+# Debug arguments for compilation
+ACX_COMPILE_WARN()
 
 #
 # substitute vars
