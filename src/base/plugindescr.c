@@ -313,20 +313,25 @@ int GWEN_LoadPluginDescrsByType(const char *path,
 	  }
 	  else {
 	    if (!S_ISDIR(st.st_mode)) {
-	      GWEN_XMLNODE *node;
+              GWEN_XMLNODE *fileNode;
 
-	      node=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-	      if (GWEN_XML_ReadFile(node,
+              fileNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+              if (GWEN_XML_ReadFile(fileNode,
 				    GWEN_Buffer_GetStart(nbuf),
-				    GWEN_XML_FLAGS_DEFAULT)) {
+                                    GWEN_XML_FLAGS_DEFAULT |
+                                    GWEN_XML_FLAGS_HANDLE_HEADERS)) {
                 DBG_WARN(GWEN_LOGDOMAIN,
                          "Bad file \"%s\"", GWEN_Buffer_GetStart(nbuf));
-	      }
+              }
 	      else {
-		GWEN_XMLNODE *n;
+                GWEN_XMLNODE *node;
+                GWEN_XMLNODE *n;
                 GWEN_STRINGLIST *langl;
 
                 n=0;
+                node=GWEN_XMLNode_FindFirstTag(fileNode, "PluginDescr", 0, 0);
+                if (!node)
+                  node=fileNode;
                 langl=GWEN_I18N_GetCurrentLocaleList();
                 if (langl) {
                   GWEN_STRINGLISTENTRY *se;
@@ -386,7 +391,7 @@ int GWEN_LoadPluginDescrsByType(const char *path,
                            GWEN_Buffer_GetStart(nbuf));
                 }
               }
-              GWEN_XMLNode_free(node);
+              GWEN_XMLNode_free(fileNode);
             } /* if !dir */
           } /* if stat was ok */
         } /* if XML */

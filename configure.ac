@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=3
 GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=12
+GWENHYWFAR_VERSION_BUILD=13
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -575,6 +575,7 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
 		 gwenhywfar.spec
 		 gwenhywfar.iss
                  doc/Makefile
+		 doc/plugindescr.xsd
                  gwenpp/Makefile
                  gwenui/Makefile
                  src/Makefile

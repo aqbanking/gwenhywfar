@@ -30,6 +30,8 @@
   - fixed a bug in GWEN_Text_CountUtf8Chars()
 - added a test profile which can be used with "gwentest xsd3"
 - Christian established that the current CVS compiles under MinGW32.
+- changed format of plugin description files (are now valid XML files)
+- added schema for plugin description files and an example file
 
 
 2004/12/13: Martin Preuss<martin@libchipcard.de>
