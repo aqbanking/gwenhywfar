@@ -62,7 +62,7 @@
 extern "C" {
 #endif
 
-/** @name Simplified Error Codes
+/** @defgroup MOD_ERROR_SIMPLE Simplified Error Codes
  *
  */
 /*@{*/

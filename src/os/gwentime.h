@@ -126,6 +126,19 @@ GWENHYWFAR_API double GWEN_Time_Diff(const GWEN_TIME *t1,
                                      const GWEN_TIME *t0);
 
 /**
+ * Adds the given number of seconds to the given GWEN_TIME.
+ * @return 0 if ok, !=0 on error (see @ref MOD_ERROR_SIMPLE)
+ */
+GWENHYWFAR_API int GWEN_Time_AddSeconds(GWEN_TIME *ti, GWEN_TYPE_UINT32 secs);
+
+/**
+ * Subs the given number of seconds from the given GWEN_TIME.
+ * @return 0 if ok, !=0 on error (see @ref MOD_ERROR_SIMPLE)
+ */
+GWENHYWFAR_API int GWEN_Time_SubSeconds(GWEN_TIME *ti, GWEN_TYPE_UINT32 secs);
+
+
+/**
  * Returns the broken down time as local time.
  */
 GWENHYWFAR_API int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,

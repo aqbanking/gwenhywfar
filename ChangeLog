@@ -1,6 +1,12 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released gwenhywfar-1.9.10 (2005/03/28)
+
+Please note: The CryptToken framework in src/crypt2/ is not considered part
+of the API yet, so changes there will not change the SO version !
+Please do not use the stuff from src/crypts2 until the next release.
+===========================================================================
+
 
 2005/03/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

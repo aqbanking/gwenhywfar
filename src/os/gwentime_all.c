@@ -71,6 +71,38 @@ GWEN_TIME *GWEN_Time_fromSeconds(GWEN_TYPE_UINT32 secs) {
 
 
 
+int GWEN_Time_AddSeconds(GWEN_TIME *ti,
+			 GWEN_TYPE_UINT32 secs) {
+  GWEN_TYPE_UINT32 i;
+
+  assert(ti);
+  i=ti->secs+secs;
+  if (i<ti->secs) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Overflow when adding "GWEN_TYPE_TMPL_UINT32" seconds", secs);
+    return GWEN_ERROR_INVALID;
+  }
+  ti->secs=i;
+  return 0;
+}
+
+
+
+int GWEN_Time_SubSeconds(GWEN_TIME *ti,
+			 GWEN_TYPE_UINT32 secs) {
+  assert(ti);
+
+  if (ti->secs<secs) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Underflow when subtracting "GWEN_TYPE_TMPL_UINT32" seconds",
+	     secs);
+    return GWEN_ERROR_INVALID;
+  }
+  ti->secs-=secs;
+  return 0;
+}
+
+
 void GWEN_Time__SetSecsAndMSecs(GWEN_TIME *ti,
                                 GWEN_TYPE_UINT32 secs,
                                 GWEN_TYPE_UINT32 msecs){
@@ -224,8 +256,8 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
       sec+=i;
       break;
     default:
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Unknown character in template, will skip in both strings");
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Unknown character in template, will skip in both strings");
       break;
     }
     t++;
