@@ -128,6 +128,26 @@ int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
 
 
 
+int GWEN_Time_GetBrokenDownUtcTime(const GWEN_TIME *t,
+                                   int *hours,
+                                   int *mins,
+                                   int *secs){
+  struct tm *tb;
+
+  assert(t);
+  tb=gmtime(&(t->sec));
+  if (!tb) {
+    DBG_ERROR(0, "gmtime(): %s", strerror(errno));
+    return -1;
+  }
+  *hours=tb->tm_hour;
+  *mins=tb->tm_min;
+  *secs=tb->tm_sec;
+  return 0;
+}
+
+
+
 int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
                                 int *days,
                                 int *month,
@@ -148,79 +168,56 @@ int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
 
 
 
-GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl){
+int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
+                                   int *days,
+                                   int *month,
+                                   int *year){
+  struct tm *tb;
+
+  assert(t);
+  tb=gmtime(&(t->sec));
+  if (!tb) {
+    DBG_ERROR(0, "gmtime(): %s", strerror(errno));
+    return -1;
+  }
+  *days=tb->tm_mday;
+  *month=tb->tm_mon;
+  *year=tb->tm_year+1900;
+  return 0;
+}
+
+
+
+GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromSeconds(GWEN_TYPE_UINT32 s){
+  GWEN_TIME *t;
+
+  GWEN_NEW_OBJECT(GWEN_TIME, t);
+  t->sec=s;
+  t->usec=0;
+  return t;
+}
+
+
+
+GWEN_TIME *GWEN_Time_new(int year,
+                         int month,
+                         int day,
+                         int hour,
+                         int min,
+                         int sec,
+                         int inUtc){
   int year, month, day;
   int hour, min, sec;
-  const char *p;
-  const char *t;
   GWEN_TIME *gwt;
   time_t tt;
   struct tm ti;
   struct tm *tp;
 
-  assert(s);
-  assert(tmpl);
-  year=month=day=0;
-  hour=min=sec=0;
-
-  p=s;
-  t=tmpl;
-  while(*t && *p) {
-    int i;
-
-    if (isdigit(*p))
-      i=(*p)-'0';
-    else
-      i=-1;
-
-    switch(*t) {
-    case 'Y':
-      if (i==-1)
-	return 0;
-      year*=10;
-      year+=i;
-      break;
-    case 'M':
-      if (i==-1)
-	return 0;
-      month*=10;
-      month+=i;
-      break;
-    case 'D':
-      if (i==-1)
-	return 0;
-      day*=10;
-      day+=i;
-      break;
-    case 'h':
-      if (i==-1)
-	return 0;
-      hour*=10;
-      hour+=i;
-      break;
-    case 'm':
-      if (i==-1)
-	return 0;
-      min*=10;
-      min+=i;
-      break;
-    case 's':
-      if (i==-1)
-	return 0;
-      sec*=10;
-      sec+=i;
-      break;
-    default:
-      DBG_DEBUG(0,
-		"Unknown character in template, will skip in both strings");
-      break;
-    }
-    t++;
-    p++;
-  } /* while */
-
   tt=time(0);
-  tp=localtime(&tt);
+  if (inUtc)
+    tp=gmtime(&tt);
+  else
+    tp=localtime(&tt);
   assert(tp);
   memmove(&ti, tp, sizeof(ti));
   ti.tm_sec=sec;
@@ -247,14 +244,10 @@ GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl){
 
 
 
-GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromSeconds(GWEN_TYPE_UINT32 s){
-  GWEN_TIME *t;
 
-  GWEN_NEW_OBJECT(GWEN_TIME, t);
-  t->sec=s;
-  t->usec=0;
-  return t;
-}
+
+
+
 
 
 

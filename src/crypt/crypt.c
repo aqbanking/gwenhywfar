@@ -483,6 +483,7 @@ void GWEN_CryptKey_SetKeyName(GWEN_CRYPTKEY *key,
 
 const char *GWEN_CryptKey_GetOwner(const GWEN_CRYPTKEY *key){
   assert(key);
+  assert(key->keyspec);
   return GWEN_KeySpec_GetOwner(key->keyspec);
 }
 
@@ -492,6 +493,7 @@ void GWEN_CryptKey_SetOwner(GWEN_CRYPTKEY *key,
                             const char *s){
   assert(key);
   assert(s);
+  assert(key->keyspec);
   GWEN_KeySpec_SetOwner(key->keyspec, s);
 }
 
@@ -499,6 +501,7 @@ void GWEN_CryptKey_SetOwner(GWEN_CRYPTKEY *key,
 
 unsigned int GWEN_CryptKey_GetNumber(const GWEN_CRYPTKEY *key){
   assert(key);
+  assert(key->keyspec);
   return GWEN_KeySpec_GetNumber(key->keyspec);
 }
 
@@ -507,6 +510,7 @@ unsigned int GWEN_CryptKey_GetNumber(const GWEN_CRYPTKEY *key){
 void GWEN_CryptKey_SetNumber(GWEN_CRYPTKEY *key,
                              unsigned int i){
   assert(key);
+  assert(key->keyspec);
   GWEN_KeySpec_SetNumber(key->keyspec, i);
 }
 
@@ -514,6 +518,7 @@ void GWEN_CryptKey_SetNumber(GWEN_CRYPTKEY *key,
 
 unsigned int GWEN_CryptKey_GetVersion(const GWEN_CRYPTKEY *key){
   assert(key);
+  assert(key->keyspec);
   return GWEN_KeySpec_GetVersion(key->keyspec);
 }
 
@@ -522,6 +527,7 @@ unsigned int GWEN_CryptKey_GetVersion(const GWEN_CRYPTKEY *key){
 void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
                               unsigned int i){
   assert(key);
+  assert(key->keyspec);
   GWEN_KeySpec_SetVersion(key->keyspec, i);
 }
 

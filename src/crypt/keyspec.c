@@ -49,6 +49,8 @@ GWEN_KEYSPEC *GWEN_KeySpec_new(){
   GWEN_KeySpec_Count++;
   DBG_INFO(0, "New KeySpec (now %d)", GWEN_KeySpec_Count);
 #endif
+  ks->number=1;
+  ks->version=1;
   return ks;
 }
 

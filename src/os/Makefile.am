@@ -31,6 +31,7 @@ noinst_HEADERS= \
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\
  directory_all.c \
+ gwentime_all.c \
  inetsocket_all.c
  
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la

@@ -1,4 +1,12 @@
 
+2004/08/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions to get the time/date as UTC time
+- added functions to set/get a GWEN_TIME from/to a GWEN_DB
+- moved common code from various os-dependant gwentime.c files to 
+  gwentime_all.c.
+
+
 ===========================================================================
 MARK: released gwenhywfar-0.9.14 (2004/08/11)
 ===========================================================================

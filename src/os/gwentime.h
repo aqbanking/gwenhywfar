@@ -32,6 +32,8 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/db.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,12 +42,28 @@ extern "C" {
 typedef struct GWEN_TIME GWEN_TIME;
 
 
+GWENHYWFAR_API int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db);
+GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db);
+
 
 GWENHYWFAR_API GWEN_TIME *GWEN_CurrentTime();
 
+GWENHYWFAR_API GWEN_TIME *GWEN_Time_new(int year,
+                                        int month,
+                                        int day,
+                                        int hour,
+                                        int min,
+                                        int sec,
+                                        int inUtc);
+
 /**
+ * <p>
  * Parses the data and time from the given string according to the template
  * string (quite similar to sscanf).
+ * </p>
+ * <p>
+ * The string is expected to contain the date/time in local time.
+ * </p>
  * The following characters are accepted in the template string:
  * <table border="1">
  *  <tr><td>Character</td><td>Meaning</td></tr>
@@ -73,6 +91,8 @@ GWENHYWFAR_API GWEN_TIME *GWEN_CurrentTime();
  */
 GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromString(const char *s,
                                                const char *tmpl);
+
+
 /**
  * Creates a GWEN_TIME object from the return value of @ref GWEN_Time_Seconds.
  */
@@ -94,14 +114,37 @@ GWENHYWFAR_API double GWEN_Time_Milliseconds(const GWEN_TIME *t);
 GWENHYWFAR_API double GWEN_Time_Diff(const GWEN_TIME *t1,
                                      const GWEN_TIME *t0);
 
+/**
+ * Returns the broken down time as local time.
+ */
 GWENHYWFAR_API int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
                                                int *hours,
                                                int *mins,
                                                int *secs);
+
+/**
+ * Returns the broken down time as UTC time (Greenwhich Mean time).
+ */
+GWENHYWFAR_API int GWEN_Time_GetBrokenDownUtcTime(const GWEN_TIME *t,
+                                                  int *hours,
+                                                  int *mins,
+                                                  int *secs);
+
+/**
+ * Returns the broken down date as local date.
+ */
 GWENHYWFAR_API int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
                                                int *days,
                                                int *month,
                                                int *year);
+
+/**
+ * Returns the broken down time as UTC date (Greenwhich Mean time).
+ */
+GWENHYWFAR_API int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
+                                                  int *days,
+                                                  int *month,
+                                                  int *year);
 
 
 #ifdef __cplusplus
