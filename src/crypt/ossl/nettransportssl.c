@@ -31,7 +31,7 @@
 # include <config.h>
 #endif
 
-/*#define DEBUG_SSL_LOG*/
+#define DEBUG_SSL_LOG
 
 #include "nettransportssl_p.h"
 #include <gwenhywfar/misc.h>
@@ -53,6 +53,7 @@
 
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 #ifdef HAVE_SYS_SOCKET_H
 #  include <sys/socket.h>
 #endif /* HAVE_SYS_SOCKET_H */
@@ -540,6 +541,12 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
         return GWEN_NetTransportResultOk;
       }
       else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+        ERR_print_errors_fp(stderr); /* DEBUG */
+        DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
+                  GWEN_NetTransportSSL_ErrorString(sslerr),
+                  sslerr);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Disabling connection");
         GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
         GWEN_NetTransport_MarkActivity(tr);
         return GWEN_NetTransportResultError;
@@ -549,8 +556,8 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Read %d bytes:", rv);
   GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous);
-#ifdef DEBUG_SSL_LOG
-  if (1) {
+
+  if (getenv("GWEN_SSL_DEBUG")) {
     FILE *f;
 
     DBG_NOTICE(GWEN_LOGDOMAIN, "Saving...");
@@ -566,9 +573,8 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
         DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
       }
     }
-    return 0;
   }
-#endif
+
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
@@ -633,8 +639,8 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes:", rv);
   GWEN_Text_LogString(buffer, rv, 0, GWEN_LoggerLevelVerbous); 
-#ifdef DEBUG_SSL_LOG
-  if (1) {
+
+  if (getenv("GWEN_SSL_DEBUG")) {
     FILE *f;
 
     DBG_NOTICE(GWEN_LOGDOMAIN, "Saving...");
@@ -650,9 +656,8 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
         DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
       }
     }
-    return 0;
   }
-#endif
+
   *bsize=rv;
 
   GWEN_NetTransport_MarkActivity(tr);
@@ -1390,6 +1395,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     if (fd==-1) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "No socket handle, cannot use this socket with SSL");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Disabling connection");
       GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       return GWEN_NetTransportWorkResult_Error;
     }
@@ -1406,6 +1412,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       skd->ssl=0;
       SSL_CTX_free(skd->ssl_ctx);
       skd->ssl_ctx=0;
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup SSL conntection");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Disabling connection");
       GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       return GWEN_NetTransportWorkResult_Error;
     }
@@ -1437,7 +1445,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       if (sslerr!=SSL_ERROR_WANT_READ &&
 	  sslerr!=SSL_ERROR_WANT_WRITE) {
 	if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
-          DBG_DEBUG(GWEN_LOGDOMAIN, "SSL: Syscall error flagged, but errno is 0...");
+          DBG_ERROR(GWEN_LOGDOMAIN,
+                    "SSL: Syscall error flagged, but errno is 0...");
         }
         else {
           DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
@@ -1450,7 +1459,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 	SSL_free(skd->ssl);
 	skd->ssl=0;
 	SSL_CTX_free(skd->ssl_ctx);
-	skd->ssl_ctx=0;
+        skd->ssl_ctx=0;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Disabling connection");
 	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
 	return GWEN_NetTransportWorkResult_Error;
       }
@@ -1486,6 +1496,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
         skd->ssl=0;
         SSL_CTX_free(skd->ssl_ctx);
         skd->ssl_ctx=0;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Disabling connection");
         GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
         return GWEN_NetTransportWorkResult_Error;
       }
@@ -1672,6 +1683,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 	skd->ssl_ctx=0;
 	free(certbuf);
 	X509_free(cert);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Disabling connection");
 	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
 	return GWEN_NetTransportWorkResult_Error;
       }
@@ -1727,7 +1739,9 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 	skd->ssl_ctx=0;
 	free(certbuf);
 	X509_free(cert);
-	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
+
+        DBG_ERROR(GWEN_LOGDOMAIN, "Disabling connection");
+        GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
 	return GWEN_NetTransportWorkResult_Error;
       }
 

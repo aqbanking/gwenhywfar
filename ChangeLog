@@ -2,6 +2,13 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/03/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added environment variable "GWEN_SSL_DEBUG"
+- reworked parts of GWEN_NetConnectionHTTP, GWEN_NetConnection and 
+  GWEN_NetTransportSSL. This should work now with more banks.
+
+
 2005/03/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added message digest SHA1
@@ -16,6 +23,9 @@
   - GWEN_Padd_UnpaddWithPkcs1Bt2()
 - added GWEN_CryptToken framework (generic interface to cryptographic tokens,
   like keyfiles or chipcards)
+- added much debugging to SSL code (I'm going to hunt this bug down now ;-)
+- added functions to retrieve CryptToken data from XML (needed by 
+  Libchipcard2)
 
 
 2005/03/22: Martin Preuss<martin@libchipcard.de>

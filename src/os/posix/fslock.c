@@ -105,10 +105,10 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
 
     fd=open(fl->uniqueLockFilename, O_CREAT|O_TRUNC|O_RDWR, S_IRUSR|S_IWUSR);
     if (fd==-1) {
-      DBG_DEBUG(GWEN_LOGDOMAIN,
-		"open(%s): %s",
-		fl->baseLockFilename,
-		strerror(errno));
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "open(%s): %s",
+                fl->baseLockFilename,
+                strerror(errno));
       return GWEN_FSLock_ResultError;
     }
     close(fd);

@@ -17,6 +17,8 @@
 #include <gwenhywfar/keyspec.h>
 #include <gwenhywfar/crypt.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
 
 
 #define GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_SIGN      0x00000001
@@ -37,6 +39,7 @@
 #define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_KEYDESCRS  0x00000040
 
 #define GWEN_CRYPTTOKEN_FLAGS_MANAGES_SIGNSEQ       0x00010000
+#define GWEN_CRYPTTOKEN_FLAGS_PREDEF_CONTEXT_ONLY   0x00020000
 
 
 
@@ -181,6 +184,7 @@ GWEN_CRYPTTOKEN_SIGNINFO*
 GWEN_CRYPTTOKEN_SIGNINFO *GWEN_CryptToken_SignInfo_fromDb(GWEN_DB_NODE *db);
 void GWEN_CryptToken_SignInfo_toDb(const GWEN_CRYPTTOKEN_SIGNINFO *si,
                                    GWEN_DB_NODE *db);
+GWEN_CRYPTTOKEN_SIGNINFO *GWEN_CryptToken_SignInfo_fromXml(GWEN_XMLNODE *n);
 
 
 GWEN_TYPE_UINT32
@@ -213,6 +217,7 @@ GWEN_CRYPTTOKEN_CRYPTINFO*
 GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_fromDb(GWEN_DB_NODE *db);
 void GWEN_CryptToken_CryptInfo_toDb(const GWEN_CRYPTTOKEN_CRYPTINFO *ci,
                                     GWEN_DB_NODE *db);
+GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_fromXml(GWEN_XMLNODE *n);
 
 
 GWEN_TYPE_UINT32
@@ -245,6 +250,7 @@ GWEN_CRYPTTOKEN_KEYINFO*
 GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromDb(GWEN_DB_NODE *db);
 void GWEN_CryptToken_KeyInfo_toDb(const GWEN_CRYPTTOKEN_KEYINFO *ki,
                                   GWEN_DB_NODE *db);
+GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromXml(GWEN_XMLNODE *n);
 
 int GWEN_CryptToken_KeyInfo_GetKeyId(const GWEN_CRYPTTOKEN_KEYINFO *ki);
 void GWEN_CryptToken_KeyInfo_SetKeyId(GWEN_CRYPTTOKEN_KEYINFO *ki,
@@ -294,6 +300,7 @@ GWEN_CRYPTTOKEN_CONTEXT*
 GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromDb(GWEN_DB_NODE *db);
 void GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                   GWEN_DB_NODE *db);
+GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromXml(GWEN_XMLNODE *n);
 
 
 GWEN_TYPE_UINT32
@@ -527,6 +534,10 @@ const GWEN_CRYPTTOKEN_CRYPTINFO*
 const GWEN_CRYPTTOKEN_KEYINFO*
   GWEN_CryptToken_GetKeyInfoById(GWEN_CRYPTTOKEN *ct,
                                  GWEN_TYPE_UINT32 kid);
+
+const GWEN_CRYPTTOKEN_CONTEXT*
+  GWEN_CryptToken_GetContextById(GWEN_CRYPTTOKEN *ct,
+                                 GWEN_TYPE_UINT32 id);
 
 
 int GWEN_CryptToken_Hash(GWEN_CRYPTTOKEN_HASHALGO algo,

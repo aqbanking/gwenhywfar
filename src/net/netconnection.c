@@ -1242,6 +1242,14 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
         return msg;
       }
 
+#if 0
+      if (conn->notified & GWEN_NETCONNECTION_NOTIFIED_DOWN) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Connection went down");
+        return 0;
+      }
+#endif
+
+#if 1
       /* prepare waitflags */
       waitFlags=0;
       if (GWEN_RingBuffer_GetBytesLeft(conn->readBuffer) ||
@@ -1265,6 +1273,7 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
       if (rv==0)
 	/* found activity, break */
 	break;
+#endif
 
       /* check timeout */
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
@@ -1393,6 +1402,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
   if (changes) {
     GWEN_SocketSet_free(rset);
     GWEN_SocketSet_free(wset);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Change in any connection");
     return GWEN_NetConnectionWorkResult_Change;
   }
   if (errors==GWEN_NetConnection_List_GetCount(connList)) {
@@ -1408,11 +1418,11 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     GWEN_NETTRANSPORT_STATUS st;
     GWEN_TYPE_UINT32 connCheckValue;
 
-    connCheckValue=GWEN_NetConnection_Check(curr);
     st=GWEN_NetTransport_GetStatus(curr->transportLayer);
     if (st!=GWEN_NetTransportStatusUnconnected &&
         st!=GWEN_NetTransportStatusPDisconnected &&
         st!=GWEN_NetTransportStatusDisabled) {
+      /*
       if (!GWEN_RingBuffer_GetBytesLeft(curr->readBuffer) ||
           !GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer)) {
         rv=GWEN_NetConnection_Work(curr);
@@ -1430,6 +1440,8 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
                     GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer));
         }
       }
+      */
+      connCheckValue=GWEN_NetConnection_Check(curr);
 
       /*if ((curr->lastResult==GWEN_NetTransportResultWantRead ||
            curr->lastResult==GWEN_NetTransportResultOk) &&
@@ -1442,13 +1454,26 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
 
         /* add read sockets */
         if (GWEN_NetTransport_AddSockets(curr->transportLayer, rset, 1)) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Could not add read sockets");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Could not add read sockets");
+          GWEN_NetConnection_Dump(curr);
           errors++;
         }
       }
       else {
-	DBG_NOTICE(GWEN_LOGDOMAIN, "Not adding read socket:");
-	GWEN_NetConnection_Dump(curr);
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Not adding read socket:");
+        /*
+        if (GWEN_RingBuffer_GetBytesLeft(curr->readBuffer)==0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "No space left in incoming buffer");
+        }
+        if ((curr->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD)==0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "IOFLAG does not contain WANTREAD");
+        }
+        if ((connCheckValue & GWEN_NETCONNECTION_CHECK_WANTREAD)==0) {
+          DBG_ERROR(GWEN_LOGDOMAIN,
+                    "checkValue does not contain WANTREAD (%x)",
+                    connCheckValue);
+        }
+        GWEN_NetConnection_Dump(curr);*/
       }
 
       /*if ((conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE) ||
@@ -1458,7 +1483,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
           (curr->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE) ||
           GWEN_NetMsg_List_GetCount(curr->outMsgs) ||
           (connCheckValue & GWEN_NETCONNECTION_CHECK_WANTWRITE)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Adding write socket");
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding write socket");
 
         /* add write sockets */
         if (GWEN_NetTransport_AddSockets(curr->transportLayer, wset, 0)) {
@@ -1467,14 +1492,14 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
         }
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN,
-		  "Not adding write socket (last result was %d)",
-                  curr->lastResult);
+	DBG_VERBOUS(GWEN_LOGDOMAIN,
+                    "Not adding write socket (last result was %d)",
+                    curr->lastResult);
       }
     }
     else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Inactive conntection:");
-      GWEN_NetConnection_Dump(curr);
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Inactive connection:");
+      /*GWEN_NetConnection_Dump(curr);*/
     }
     curr=GWEN_NetConnection_List_Next(curr);
   } /* while */
@@ -1608,9 +1633,11 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
 	/* not the first call, so this doesn't need to be an error
 	 * However, this means previous calls yielded no error, so there must
 	 * have been any kind of change if we now got an error.
-	 */
+         */
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Hmm, not a real error, will return \"change\" instead");
 	GWEN_Time_free(t0);
-	GWEN_WaitCallback_Leave();
+        GWEN_WaitCallback_Leave();
 	return GWEN_NetConnectionWorkResult_Change;
       }
     }
@@ -1767,9 +1794,11 @@ void GWEN_NetConnection_Dump(const GWEN_NETCONNECTION *conn) {
   if (conn) {
     GWEN_NETMSG *m;
     const char *s;
+    GWEN_TYPE_UINT32 fl;
 
     fprintf(stderr, "--------------------------------\n");
     fprintf(stderr, "Net Connection\n");
+    fprintf(stderr, "Pointer        : %p\n", conn);
     fprintf(stderr, "Usage          : %d\n", conn->usage);
     fprintf(stderr, "Library mark   : %d\n", conn->libraryMark);
     fprintf(stderr, "User mark      : %d\n", conn->userMark);
@@ -1820,6 +1849,22 @@ void GWEN_NetConnection_Dump(const GWEN_NETCONNECTION *conn) {
       fprintf(stderr, " WANTREAD");
     if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE)
       fprintf(stderr, " WANTWRITE");
+    fprintf(stderr, "\n");
+
+    fl=GWEN_NetTransport_GetFlags(conn->transportLayer);
+    fprintf(stderr, "Flags          :");
+    if (fl & GWEN_NETTRANSPORT_FLAGS_PASSIVE)
+      fprintf(stderr, " PASSIVE");
+    if (fl & GWEN_NETTRANSPORT_FLAGS_EOF_IN)
+      fprintf(stderr, " EOF_IN");
+    if (fl & GWEN_NETTRANSPORT_FLAGS_EOF_OUT)
+      fprintf(stderr, " EOF_OUT");
+    if (fl & GWEN_NETTRANSPORT_FLAGS_RESTARTABLE)
+      fprintf(stderr, " RESTARTABLE");
+    if (fl & GWEN_NETTRANSPORT_FLAGS_WAS_LCONNECTED)
+      fprintf(stderr, " WAS_LCONNECTED");
+    if (fl & GWEN_NETTRANSPORT_FLAGS_WENT_DOWN)
+      fprintf(stderr, " WENT_DOWN");
     fprintf(stderr, "\n");
 
     fprintf(stderr, "Incoming messages:\n");

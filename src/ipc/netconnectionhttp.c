@@ -21,6 +21,7 @@
 #include "netconnectionhttp_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/text.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -186,7 +187,8 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
   }
   else {
     if (*buffer!=' ') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (missing space after url)");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Bad format of HTTP request (missing space after url)");
       GWEN_Buffer_free(tbuf);
       return -1;
     }
@@ -201,7 +203,8 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
     GWEN_Buffer_Reset(tbuf);
 
     if (*buffer!='/') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (missing slash after proto)");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Bad format of HTTP request (missing slash after proto)");
       GWEN_Buffer_free(tbuf);
       return -1;
     }
@@ -212,7 +215,8 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
       GWEN_Buffer_AppendByte(tbuf, *(buffer++));
     } /* while */
     if (1!=sscanf(GWEN_Buffer_GetStart(tbuf), "%d", &i)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (bad major version)");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Bad format of HTTP request (bad major version)");
       GWEN_Buffer_free(tbuf);
       return -1;
     }
@@ -220,13 +224,15 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
 			"pmajor", i);
     GWEN_Buffer_Reset(tbuf);
     if (i<1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad HTTP request (pmajor given as 0)");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Bad HTTP request (pmajor given as 0)");
       GWEN_Buffer_free(tbuf);
       return -1;
     }
 
     if (*buffer!='.') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (missing decimal point)");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Bad format of HTTP request (missing decimal point)");
       GWEN_Buffer_free(tbuf);
       return -1;
     }
@@ -234,7 +240,8 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
 
     /* read minor version */
     if (1!=sscanf(buffer, "%d", &i)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (bad major version)");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Bad format of HTTP request (bad major version)");
       GWEN_Buffer_free(tbuf);
       return -1;
     }
@@ -255,8 +262,10 @@ int GWEN_NetConnectionHTTP_ParseCommand(const char *buffer,
 int GWEN_NetConnectionHTTP_ParseStatus(const char *buffer,
 				       GWEN_DB_NODE *db) {
   GWEN_BUFFER *tbuf;
+  const char *obuffer;
   int i;
 
+  obuffer=buffer;
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   /* read protocol */
@@ -268,7 +277,9 @@ int GWEN_NetConnectionHTTP_ParseStatus(const char *buffer,
   GWEN_Buffer_Reset(tbuf);
 
   if (*buffer!='/') {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (missing slash after proto)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (missing slash after proto)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Data was: \"%s\"", obuffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
@@ -279,7 +290,9 @@ int GWEN_NetConnectionHTTP_ParseStatus(const char *buffer,
     GWEN_Buffer_AppendByte(tbuf, *(buffer++));
   } /* while */
   if (1!=sscanf(GWEN_Buffer_GetStart(tbuf), "%d", &i)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (bad major version)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (bad major version)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Data was: \"%s\"", obuffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
@@ -288,12 +301,15 @@ int GWEN_NetConnectionHTTP_ParseStatus(const char *buffer,
   GWEN_Buffer_Reset(tbuf);
   if (i<1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Bad HTTP request (pmajor given as 0)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Data was: \"%s\"", obuffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
 
   if (*buffer!='.') {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (missing decimal point)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (missing decimal point)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Data was: \"%s\"", obuffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
@@ -304,7 +320,9 @@ int GWEN_NetConnectionHTTP_ParseStatus(const char *buffer,
     GWEN_Buffer_AppendByte(tbuf, *(buffer++));
   } /* while */
   if (1!=sscanf(GWEN_Buffer_GetStart(tbuf), "%d", &i)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (bad minor version)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (bad minor version)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Data was: \"%s\"", obuffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
@@ -313,7 +331,9 @@ int GWEN_NetConnectionHTTP_ParseStatus(const char *buffer,
   GWEN_Buffer_Reset(tbuf);
 
   if (*buffer!=' ') {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (missing space after proto)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (missing space after proto)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Data was: \"%s\"", obuffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
@@ -324,7 +344,9 @@ int GWEN_NetConnectionHTTP_ParseStatus(const char *buffer,
     GWEN_Buffer_AppendByte(tbuf, *(buffer++));
   } /* while */
   if (1!=sscanf(GWEN_Buffer_GetStart(tbuf), "%d", &i)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP request (bad status code)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (bad status code)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Data was: \"%s\"", obuffer);
     GWEN_Buffer_free(tbuf);
     return -1;
   }
@@ -361,7 +383,8 @@ int GWEN_NetConnectionHTTP_ParseHeader(const char *buffer,
       /* empty line, so the header ends here */
       buffer++;
       if (*buffer!=10) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP header (no LF after CR)");
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Bad format of HTTP header (no LF after CR)");
 	GWEN_Buffer_free(nbuf);
 	GWEN_Buffer_free(vbuf);
 	return -1;
@@ -373,7 +396,8 @@ int GWEN_NetConnectionHTTP_ParseHeader(const char *buffer,
       GWEN_Buffer_AppendByte(nbuf, *(buffer++));
     } /* while */
     if (*buffer!=':') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of HTTP header (missing colon after name)");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Bad format of HTTP header (missing colon after name)");
       GWEN_Buffer_free(nbuf);
       GWEN_Buffer_free(vbuf);
       return -1;
@@ -427,7 +451,9 @@ int GWEN_NetConnectionHTTP_WriteBody(GWEN_NETCONNECTION *conn,
   else {
     if (m==GWEN_NetConnHttp_WriteBodyModeWrite && *bsize) {
       GWEN_Buffer_AppendBytes(GWEN_NetMsg_GetBuffer(chttp->currentInMsg),
-			      buffer, *bsize);
+                              buffer, *bsize);
+      /*GWEN_Buffer_Dump(GWEN_NetMsg_GetBuffer(chttp->currentInMsg),
+                       stderr, 2);*/
     }
     return 0;
   }
@@ -449,6 +475,12 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
   assert(chttp);
 
   if (!chttp->currentInMsg) {
+    if (GWEN_NetConnection_GetStatus(conn)!=
+        GWEN_NetTransportStatusLConnected) {
+      /* not connected, don't create an incoming message */
+      return GWEN_NetConnectionWorkResult_NoChange;
+    }
+
     chttp->currentInMsg=GWEN_NetMsg_new(GWEN_NETCONNHTTP_MSGBUFSIZE);
     chttp->bodyBytesRead=0;
     chttp->headerPos=0;
@@ -463,7 +495,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
     if (GWEN_NetConnection_GetFlags(conn) & GWEN_NETTRANSPORT_FLAGS_PASSIVE ||
 	chttp->mode & GWEN_NETCONN_MODE_IPC){
-      /* passive, so this is HTTP a server */
+      /* passive, so this is a HTTP server */
       chttp->inMode=GWEN_NetConnHttpMsgModeCmd;
     } /* if server */
     else {
@@ -507,8 +539,9 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     size=GWEN_NetMsg_GetSize(chttp->currentInMsg);
 
     if (!(chttp->state & GWEN_NETCONNHTTP_STATE_STARTEDBODYREAD)){
+      /* just starting to write the body */
       if (GWEN_NetConnectionHTTP_WriteBody
-	  (conn, 0, 0, GWEN_NetConnHttp_WriteBodyModeStart)){
+          (conn, 0, 0, GWEN_NetConnHttp_WriteBodyModeStart)){
 	DBG_ERROR(GWEN_LOGDOMAIN, "Error storing body (START)");
 	GWEN_NetMsg_free(chttp->currentInMsg);
 	chttp->currentInMsg=0;
@@ -524,33 +557,50 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
       if (size && i>=size)
 	break;
 
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading rest of the message... (%d bytes)", size);
       j=GWEN_RingBuffer_GetMaxUnsegmentedRead(rbuf);
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Reading rest of the message... "
+                  "(%d bytes, already %d, space: %d)",
+                  size, chttp->bodyBytesRead, j);
       if (!j) {
 	/* read buffer empty, check whether the connection has been closed */
-	if (GWEN_NetConnection_GetStatus(conn)!=
-	    GWEN_NetTransportStatusLConnected) {
-	  /* not logically connected, assume EOF */
-	  if (size!=0) {
-	    /* exact size given, so this EOF is premature */
-	    DBG_ERROR(GWEN_LOGDOMAIN, "EOF met prematurely");
-	    GWEN_NetConnectionHTTP_WriteBody
-	      (conn, 0, 0, GWEN_NetConnHttp_WriteBodyModeAbort);
-	    GWEN_NetMsg_free(chttp->currentInMsg);
-	    chttp->currentInMsg=0;
-	    return GWEN_NetConnectionWorkResult_Error;
-	  }
-	  /* message complete, break */
+        if (GWEN_NetConnection_GetFlags(conn) &
+            GWEN_NETTRANSPORT_FLAGS_EOF_IN) {
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Connection recently went down");
+          /* not logically connected, assume EOF */
+          if (size!=0) {
+            /* exact size given, so this EOF is premature */
+            DBG_ERROR(GWEN_LOGDOMAIN, "EOF met prematurely");
+            GWEN_NetConnectionHTTP_WriteBody
+              (conn, 0, 0, GWEN_NetConnHttp_WriteBodyModeAbort);
+            GWEN_NetMsg_free(chttp->currentInMsg);
+            chttp->currentInMsg=0;
+            return GWEN_NetConnectionWorkResult_Error;
+          }
+
+          /* message complete, break */
+          if (chttp->bodyBytesRead==0) {
+            /* no body read, delete incoming message */
+            GWEN_NetConnectionHTTP_WriteBody
+              (conn, 0, 0, GWEN_NetConnHttp_WriteBodyModeAbort);
+            GWEN_NetMsg_free(chttp->currentInMsg);
+            chttp->currentInMsg=0;
+            return GWEN_NetConnectionWorkResult_NoChange;
+          }
           DBG_DEBUG(GWEN_LOGDOMAIN, "Message finished");
-	  break;
-	} /* if not connected */
-	DBG_DEBUG(GWEN_LOGDOMAIN, "Readbuffer empty");
+          break;
+        } /* if not connected */
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Readbuffer empty");
 	return GWEN_NetConnectionWorkResult_NoChange;
       }
 
-      l=size-i;
-      if (l>j)
-	l=j;
+      if (size) {
+        l=size-i;
+        if (l>j)
+          l=j;
+      }
+      else
+        l=j;
 
       lbak=l;
       if (GWEN_NetConnectionHTTP_WriteBody
@@ -559,19 +609,32 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	   &l, GWEN_NetConnHttp_WriteBodyModeWrite)) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Error storing body (1)");
 	GWEN_NetMsg_free(chttp->currentInMsg);
-	chttp->currentInMsg=0;
+        chttp->currentInMsg=0;
 	return GWEN_NetConnectionWorkResult_Error;
       }
       if (l) {
-	DBG_DEBUG(GWEN_LOGDOMAIN, "%d bytes read (total: %d)", l, l+chttp->bodyBytesRead);
-	GWEN_RingBuffer_SkipBytesRead(rbuf, l);
+        DBG_DEBUG(GWEN_LOGDOMAIN,
+                  "%d bytes read (total: %d)",
+                  l, l+chttp->bodyBytesRead);
+        GWEN_RingBuffer_SkipBytesRead(rbuf, l);
 	chttp->bodyBytesRead+=l;
       }
       if (l<lbak) {
-	DBG_DEBUG(GWEN_LOGDOMAIN, "Writebuffer full");
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Writebuffer full");
 	return GWEN_NetConnectionWorkResult_NoChange;
       }
     } /* while */
+
+    if (chttp->bodyBytesRead==0) {
+      /* FIXME: Check whether a header/command exists ! */
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "No bytes of body read, will not add message");
+      GWEN_NetConnectionHTTP_WriteBody(conn, 0, 0,
+                                       GWEN_NetConnHttp_WriteBodyModeAbort);
+      GWEN_NetMsg_free(chttp->currentInMsg);
+      chttp->currentInMsg=0;
+      return GWEN_NetConnectionWorkResult_Error;
+    }
 
     /* tell the writer function about the end of the body */
     if (GWEN_NetConnectionHTTP_WriteBody(conn, 0, 0,
@@ -584,7 +647,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
     /* append message to connection's queue */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
-    /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
+    /*GWEN_NetMsg_Dump(chttp->currentInMsg);*/
     GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
     /* check whether the connection is to be disconnected */
@@ -662,7 +725,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	  else {
 	    const char *cmd;
 
-            DBG_ERROR(GWEN_LOGDOMAIN, "No header follows");
+            DBG_DEBUG(GWEN_LOGDOMAIN, "No header follows");
 	    /* no header, body eventually follows */
 	    cmd=GWEN_DB_GetCharValue(dbCmd, "cmd", 0, "");
 	    if (strcmp(cmd, "PUT")==0 ||
@@ -693,7 +756,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
                   DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
                 }
               }
-              DBG_INFO(GWEN_LOGDOMAIN, "Added incoming message");
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
 
               chttp->currentInMsg=0;
 	      return GWEN_NetConnectionWorkResult_Change;
@@ -704,7 +767,8 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
       }
       else if (chttp->inMode==GWEN_NetConnHttpMsgModeStatus) {
 	/* read status line */
-	GWEN_Buffer_AppendByte(mbuf, c);
+        GWEN_Buffer_AppendByte(mbuf, c);
+
 	if (c==10) {
 	  GWEN_DB_NODE *dbStatus;
 
@@ -773,23 +837,24 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	      hasBody=1;
 
             if (hasBody) {
-              DBG_DEBUG(GWEN_LOGDOMAIN, "Message has a body");
+              DBG_VERBOUS(GWEN_LOGDOMAIN, "Message has a body");
 	      if (GWEN_DB_VariableExists(dbHeader, "content-length")) {
                 int size;
 
-                DBG_DEBUG(GWEN_LOGDOMAIN, "Size variable exists");
-		if (1!=sscanf(GWEN_DB_GetCharValue(dbHeader,
+                DBG_VERBOUS(GWEN_LOGDOMAIN, "Size variable exists");
+                if (1!=sscanf(GWEN_DB_GetCharValue(dbHeader,
                                                    "content-length", 0, ""),
                               "%d", &size)){
-                  DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing HTTP header (bad size)");
-		  GWEN_NetMsg_free(chttp->currentInMsg);
-		  chttp->currentInMsg=0;
-		  return GWEN_NetConnectionWorkResult_Error;
+                  DBG_ERROR(GWEN_LOGDOMAIN,
+                            "Error parsing HTTP header (bad size)");
+                  GWEN_NetMsg_free(chttp->currentInMsg);
+                  chttp->currentInMsg=0;
+                  return GWEN_NetConnectionWorkResult_Error;
                 }
 
                 if (!size) {
                   /* no body, message complete */
-                  DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
+                  DBG_VERBOUS(GWEN_LOGDOMAIN, "Got a message (no body)");
                   /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
                   GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
@@ -808,7 +873,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
                       DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
                     }
                   }
-                  DBG_INFO(GWEN_LOGDOMAIN, "Added incoming message");
+                  DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
 
                   chttp->currentInMsg=0;
                   return GWEN_NetConnectionWorkResult_Change;
@@ -823,7 +888,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
             }
             else {
               /* no body, message complete */
-              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message, no body");
               /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
 	      GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
@@ -842,7 +907,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
                   DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
                 }
               }
-              DBG_INFO(GWEN_LOGDOMAIN, "Added incoming message");
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
 
 	      chttp->currentInMsg=0;
 	      return GWEN_NetConnectionWorkResult_Change;
@@ -903,7 +968,7 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
   if (chttp->outMode==GWEN_NetConnHttpMsgModeBuffer) {
     /* complete header if necessary */
     while((i=GWEN_Buffer_GetBytesLeft(mbuf))) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Writing command/status/header...");
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Writing command/status/header...");
       j=GWEN_RingBuffer_GetMaxUnsegmentedWrite(wbuf);
       if (!j) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "Writebuffer full");
@@ -953,10 +1018,11 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
         break;
       } /* if EOF */
 
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Writing body...");
       j=GWEN_RingBuffer_GetMaxUnsegmentedWrite(wbuf);
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Writing body... (size=%d, space=%d)",
+                  size, j);
       if (!j) {
-	DBG_DEBUG(GWEN_LOGDOMAIN, "Writebuffer full");
+	DBG_VERBOUS(GWEN_LOGDOMAIN, "Writebuffer full");
 	return GWEN_NetConnectionWorkResult_NoChange;
       }
 
@@ -975,11 +1041,14 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       chttp->bodyBytesWritten+=j;
 
       if (j<jbak) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Read buffer empty");
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Read buffer empty");
         return GWEN_NetConnectionWorkResult_NoChange;
       }
+      else {
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Read %d bytes to internal buffer", j);
+      }
     } /* while */
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Body completely written (%d bytes)",
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Body completely written (%d bytes)",
               chttp->bodyBytesWritten);
   } /* if BIO mode (-> if writing the body) */
 
@@ -998,70 +1067,77 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
   GWEN_NETCONNECTION_WORKRESULT rv1;
   GWEN_NETCONNECTION_WORKRESULT rv2;
   GWEN_NETCONNECTION_WORKRESULT rv3;
-  int changes;
+  int l0changes=0;
 
   assert(conn);
   chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
   assert(chttp);
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Working on HTTP connection");
-
-  changes=0;
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Working on HTTP connection");
 
   while(1) {
-    int changesBak;
-
-    changesBak=changes;
+    int l1changes=0;
 
     while(1) {
-      int lchanges=0;
+      int l2changes=0;
 
       /* do all write work */
       while(1) {
         rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
         if (rv1==GWEN_NetConnectionWorkResult_Change) {
           DBG_DEBUG(GWEN_LOGDOMAIN, "Change while writing");
-          lchanges++;
+          l2changes++;
         }
         else if (rv1==GWEN_NetConnectionWorkResult_Error) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Error on writing");
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "Error on writing");
           return rv1;
         }
         else {
-          DBG_DEBUG(GWEN_LOGDOMAIN, "No change while writing");
+          DBG_VERBOUS(GWEN_LOGDOMAIN, "No change while writing");
           break;
         }
       }
+      l1changes+=l2changes;
 
       /* do all read work */
       while(1) {
         rv3=GWEN_NetConnectionHTTP_ReadWork(conn);
         if (rv3==GWEN_NetConnectionWorkResult_Change) {
           DBG_DEBUG(GWEN_LOGDOMAIN, "Change while reading");
-          lchanges++;
+          l2changes++;
         }
         else if (rv3==GWEN_NetConnectionWorkResult_Error) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Error on reading");
           return rv3;
         }
         else {
-          DBG_DEBUG(GWEN_LOGDOMAIN, "No change while reading");
+          DBG_VERBOUS(GWEN_LOGDOMAIN, "No change while reading");
           break;
         }
-      }
-      changes+=lchanges;
-      if (!lchanges)
+      } /* while */
+      l1changes+=l2changes;
+      if (!l2changes)
         break;
     } /* while */
+    l0changes+=l1changes;
 
-    if (changes) {
+    if (l1changes) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Change on Read/Write-Work");
       return GWEN_NetConnectionWorkResult_Change;
+    }
+    if ((GWEN_NetConnection_GetFlags(conn) &
+         GWEN_NETTRANSPORT_FLAGS_WAS_LCONNECTED) &&
+        (GWEN_NetConnection_GetStatus(conn)!=
+         GWEN_NetTransportStatusLConnected)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Connection recently went down");
+      GWEN_NetConnection_Dump(conn);
+      return GWEN_NetConnectionWorkResult_Error;
     }
 
     rv2=GWEN_NetConnection_WorkIO(conn);
     if (rv2==GWEN_NetConnectionWorkResult_Change) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Change on WorkIO");
-      changes++;
+      l0changes++;
     }
     else if (rv2==GWEN_NetConnectionWorkResult_Error) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on WorkIO");
@@ -1072,8 +1148,8 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
     }
   } /* while */
 
-  if (changes) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "There were some changes (%d)", changes);
+  if (l0changes) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "There were some changes (%d)", l0changes);
     return GWEN_NetConnectionWorkResult_Change;
   }
 

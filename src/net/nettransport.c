@@ -93,7 +93,9 @@ GWEN_NetTransport_StartConnect(GWEN_NETTRANSPORT *tr){
   /* reset EOF and PASSIVE flags */
   tr->flags&=~(GWEN_NETTRANSPORT_FLAGS_EOF_OUT |
 	       GWEN_NETTRANSPORT_FLAGS_EOF_IN |
-	       GWEN_NETTRANSPORT_FLAGS_PASSIVE);
+               GWEN_NETTRANSPORT_FLAGS_PASSIVE |
+               GWEN_NETTRANSPORT_FLAGS_WAS_LCONNECTED |
+               GWEN_NETTRANSPORT_FLAGS_WENT_DOWN);
   return tr->startConnectFn(tr);
 }
 
@@ -106,7 +108,9 @@ GWEN_NetTransport_StartAccept(GWEN_NETTRANSPORT *tr){
 
   /* reset EOF flags */
   tr->flags&=~(GWEN_NETTRANSPORT_FLAGS_EOF_OUT |
-	       GWEN_NETTRANSPORT_FLAGS_EOF_IN);
+               GWEN_NETTRANSPORT_FLAGS_EOF_IN |
+               GWEN_NETTRANSPORT_FLAGS_WAS_LCONNECTED |
+               GWEN_NETTRANSPORT_FLAGS_WENT_DOWN);
   /* adjust flags */
   tr->flags|=GWEN_NETTRANSPORT_FLAGS_PASSIVE;
   return tr->startAcceptFn(tr);
@@ -138,7 +142,7 @@ GWEN_NetTransport_Read(GWEN_NETTRANSPORT *tr,
 
   rv=tr->readFn(tr, buffer, bsize);
   if (rv==0 && *bsize==0) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met (read)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "EOF met (read)");
     tr->flags|=GWEN_NETTRANSPORT_FLAGS_EOF_IN;
   }
 
@@ -157,10 +161,11 @@ GWEN_NetTransport_Write(GWEN_NETTRANSPORT *tr,
     DBG_ERROR(GWEN_LOGDOMAIN, "Writing beyond EOF");
     return GWEN_NetTransportResultError;
   }
+  /*
   if (*bsize==0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met (write)");
     tr->flags|=GWEN_NETTRANSPORT_FLAGS_EOF_OUT;
-  }
+  }*/
   return tr->writeFn(tr, buffer, bsize);
 }
 
@@ -188,12 +193,19 @@ void GWEN_NetTransport_SetStatus(GWEN_NETTRANSPORT *tr,
                                  GWEN_NETTRANSPORT_STATUS st){
   assert(tr);
   if (tr->status!=st) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Changing status of %p from %s to %s",
-              tr,
-              GWEN_NetTransport_StatusName(tr->status),
-              GWEN_NetTransport_StatusName(st));
+    DBG_INFO(GWEN_LOGDOMAIN, "Changing status of %p from %s to %s",
+             tr,
+             GWEN_NetTransport_StatusName(tr->status),
+             GWEN_NetTransport_StatusName(st));
   }
   tr->status=st;
+  /* check for important changes */
+  if (tr->status==GWEN_NetTransportStatusLConnected)
+    tr->flags|=GWEN_NETTRANSPORT_FLAGS_WAS_LCONNECTED;
+  else {
+    if (tr->flags & GWEN_NETTRANSPORT_FLAGS_WAS_LCONNECTED)
+      tr->flags|=GWEN_NETTRANSPORT_FLAGS_WENT_DOWN;
+  }
 }
 
 

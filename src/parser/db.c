@@ -1701,6 +1701,19 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
   int rv;
   GWEN_FSLOCK *lck=0;
 
+  /* open file */
+  fd=open(fname, O_RDONLY);
+  if (fd==-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
+              fname,
+              strerror(errno));
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return -1;
+  }
+
   /* if locking requested */
   if (dbflags & GWEN_DB_FLAGS_LOCKFILE) {
     GWEN_FSLOCK_RESULT res;
@@ -1713,21 +1726,9 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                 "Could not apply lock to file \"%s\" (%d)",
                 fname, res);
       GWEN_FSLock_free(lck);
+      close(fd);
       return -1;
     }
-  }
-
-  /* open file */
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
-              fname,
-              strerror(errno));
-    if (lck) {
-      GWEN_FSLock_Unlock(lck);
-      GWEN_FSLock_free(lck);
-    }
-    return -1;
   }
 
   /* read from file */
