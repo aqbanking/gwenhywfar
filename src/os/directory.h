@@ -81,7 +81,8 @@ GWENHYWFAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
  * by calling @ref GWEN_Directory_new().
  * @param n path and name of the directory to open
  */
-GWENHYWFAR_API int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
+GWENHYWFAR_API
+  int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
 
 /**
  * Closes a previously opened directory.

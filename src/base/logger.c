@@ -397,6 +397,8 @@ int GWEN_Logger_Log(GWEN_LOGGER *lg,
   if (!lg->enabled)
     return 1;
 
+  /* temporarily disable logging to avoid endless loops */
+  lg->enabled=0;
   /* copy buffer, exchange all newlines by 0 */
   mbuf=GWEN_Buffer_new(0, strlen(s)+1, 0, 1);
   for (i=0; i<strlen(s)+1; i++) {
@@ -417,6 +419,8 @@ int GWEN_Logger_Log(GWEN_LOGGER *lg,
     p++;
   }
   GWEN_Buffer_free(mbuf);
+  /* reenable logging */
+  lg->enabled=1;
   return rv;
 }
 

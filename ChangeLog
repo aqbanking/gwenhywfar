@@ -1,4 +1,10 @@
 
+2004/05/21: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base/logger.c: fixed a severe bug (trapped into endless loop when
+  log level was "debug")
+
+
 2004/05/20: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/xml: added a usage counter and some functions around it to be

@@ -439,7 +439,8 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
-                                    GWEN_XMLNODE_TYPE t, const char *data);
+                                    GWEN_XMLNODE_TYPE t,
+                                    const char *data);
 /*@}*/
 
 
