@@ -10,6 +10,20 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+/* Internationalization */
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# include <locale.h>
+# define I18N(m) dgettext("gwenhywfar", m)
+# define I18S(m) m
+#else
+# define I18N(m) m
+# define I18S(m) m
+#endif
 
 #include "args.h"
 #include <gwenhywfar/debug.h>
@@ -96,14 +110,16 @@ void Arguments_free(ARGUMENTS *ar) {
 
 
 void usage(const char *prgname) {
-  fprintf(stdout,
-          k_PRG_VERSION_INFO "\n"
-          "-v               verbous\n"
-          "--logfile ARG    name of the logfile\n"
-          "--logtype ARG    log type\n"
-          "--loglevel ARG   log level\n"
-          "-o ARG           name of output file (stdout if omitted)\n"
-          "--compact        write a more compact file\n"
+  fprintf(stdout, "%s%s",
+          k_PRG_VERSION_INFO "\n",
+          I18N(
+               "-v               verbous\n"
+               "--logfile ARG    name of the logfile\n"
+               "--logtype ARG    log type\n"
+               "--loglevel ARG   log level\n"
+               "-o ARG           name of output file (stdout if omitted)\n"
+               "--compact        write a more compact file\n"
+              )
          );
 }
 

@@ -34,7 +34,8 @@
 #ifdef ENABLE_NLS
 # include <libintl.h>
 # include <locale.h>
-# define I18N(m) dgettext("gwenhywfar", m)
+//# define I18N(m) dgettext("gwenhywfar", m)
+# define I18N(m) gettext(m)
 # define I18S(m) m
 #else
 # define I18N(m) m
@@ -72,9 +73,16 @@ GWEN_ERRORCODE GWEN_Init() {
 
   if (gwen_is_initialized==0) {
 #ifdef ENABLE_NLS
+    const char *s;
+
     setlocale(LC_ALL,"");
-    if (bindtextdomain("gwenhywfar",  LOCALEDIR)==0) {
+    s=bindtextdomain("gwenhywfar",  LOCALEDIR);
+    if (!s) {
       fprintf(stderr," Error bindtextdomain()\n");
+    }
+    else {
+      fprintf(stderr, "Textdomain bound (%s).\n", s);
+      bind_textdomain_codeset("gwenhywfar", "UTF-8");
     }
 #endif
 

@@ -16,6 +16,16 @@
 # include <config.h>
 #endif
 
+/* Internationalization */
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# include <locale.h>
+# define I18N(m) dgettext("gwenhywfar", m)
+# define I18S(m) m
+#else
+# define I18N(m) m
+# define I18S(m) m
+#endif
 
 
 #include <stdio.h>

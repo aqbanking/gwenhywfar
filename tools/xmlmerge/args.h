@@ -13,16 +13,6 @@
 #ifndef XMLMERGE_ARGS_H
 #define XMLMERGE_ARGS_H
 
-/* Internationalization */
-#ifdef HAVE_GETTEXT_ENVIRONMENT
-# include <libintl.h>
-# include <locale.h>
-# define I18N(m) gettext(m)
-#else
-# define I18N(m) m
-#endif
-#define I18NT(m) m
-
 #include <gwenhywfar/logger.h>
 
 
