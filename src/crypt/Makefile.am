@@ -11,16 +11,19 @@ EXTRA_DIST=\
 iheaderdir=${includedir}/gwenhyfwar
 iheader_HEADERS=\
  crypt.h \
- keyspec.h
+ keyspec.h \
+ md.h
 
 noinst_HEADERS=\
  crypt_p.h \
- keyspec_p.h
+ keyspec_p.h \
+ md_p.h
 
 noinst_LTLIBRARIES=libcrypt.la
 
 libcrypt_la_SOURCES=\
  crypt.c \
- keyspec.c
+ keyspec.c \
+ md.c
 
 libcrypt_la_LIBADD=@GWEN_CRYPTO@/libcryptimpl.la

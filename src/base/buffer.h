@@ -277,6 +277,12 @@ void GWEN_Buffer_Reset(GWEN_BUFFER *bf);
 void GWEN_Buffer_Rewind(GWEN_BUFFER *bf);
 
 
+/* crops the buffer to the specified bytes */
+int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
+                     unsigned int pos,
+                     unsigned int l);
+
+
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert);
 
 

@@ -42,12 +42,17 @@
 #include <gwenhyfwar/hbcidialog.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct GWEN_HBCIMSG GWEN_HBCIMSG;
 
 
 GWEN_KEYSPEC *GWEN_HBCIMsg_GetSigners(GWEN_HBCIMSG *hmsg);
-void GWEN_HBCIMsg_AddSigner(GWEN_HBCIMSG *hmsg,
-                            GWEN_KEYSPEC *ks);
+int GWEN_HBCIMsg_AddSigner(GWEN_HBCIMSG *hmsg,
+                           GWEN_KEYSPEC *ks);
 unsigned int GWEN_HBCIMsg_GetSignerCount(GWEN_HBCIMSG *hmsg);
 
 GWEN_KEYSPEC *GWEN_HBCIMsg_GetCrypter(GWEN_HBCIMSG *hmsg);
@@ -82,10 +87,15 @@ int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
                          GWEN_XMLNODE *node,
                          GWEN_DB_NODE *data);
 
+unsigned int GWEN_HBCIMsg_GetCurrentSegmentNumber(GWEN_HBCIMSG *hmsg);
+
+int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg);
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 

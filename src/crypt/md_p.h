@@ -2,7 +2,7 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
+ begin       : Thu Nov 13 2003
  copyright   : (C) 2003 by Martin Preuss
  email       : martin@libchipcard.de
 
@@ -26,54 +26,36 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#ifndef GWENHYWFAR_MD_P_H
+#define GWENHYWFAR_MD_P_H
+
+#include <gwenhyfwar/md.h>
+
+
+struct GWEN_MD {
+  char *pDigest;
+  unsigned int lDigest;
+  void *data;
+
+  GWEN_MD_BEGIN_FN beginFn;
+  GWEN_MD_END_FN endFn;
+  GWEN_MD_UPDATE_FN updateFn;
+  GWEN_MD_FREEDATA_FN freeDataFn;
+};
+
+
+struct GWEN_MD_PROVIDER {
+  GWEN_MD_PROVIDER *next;
+  char *name;
+  GWEN_MDPROVIDER_NEWMD_FN newMdFn;
+};
+
+
+GWEN_MD_PROVIDER *GWEN_MD_FindProvider(const char *name);
+
+
+
 #endif
-
-
-#include "cryptssl_p.h"
-#include "cryptssl_rsa_p.h"
-#include "cryptssl_rmd160_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  GWEN_ERRORCODE err;
-  GWEN_ERRORCODE lerr;
-
-  err=0;
-
-  /* register the various cryptkey types */
-  DBG_INFO(0, "Registering RSA");
-  lerr=GWEN_CryptKeyRSA_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  /* register the various MD types */
-  DBG_INFO(0, "Registering RMD160");
-  lerr=GWEN_MdRmd160_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  return err;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
-
-
-
-
-
-
 
 

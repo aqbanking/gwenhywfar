@@ -32,6 +32,10 @@
 #include <gwenhyfwar/buffer.h>
 #include <gwenhyfwar/msgengine.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct GWEN_HBCIDIALOG GWEN_HBCIDIALOG;
 
@@ -130,6 +134,18 @@ int GWEN_HBCIDialog_Decrypt(GWEN_HBCIDIALOG *hdlg,
 
 GWEN_HBCIDIALOG *GWEN_HBCIDialog_new(GWEN_MSGENGINE *e);
 void GWEN_HBCIDialog_free(GWEN_HBCIDIALOG *hdlg);
+
+
+/**
+ * The original code (in C++) has been written by Fabian Kaiser for OpenHBCI
+ * (file rsakey.cpp). Moved to C by me (Martin Preuss)
+ */
+int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

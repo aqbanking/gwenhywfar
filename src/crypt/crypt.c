@@ -32,6 +32,7 @@
 
 
 #include "crypt_p.h"
+#include <gwenhyfwar/md.h>
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
 
@@ -94,6 +95,9 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleInit(){
 GWEN_ERRORCODE GWEN_Crypt_ModuleFini(){
   if (gwen_crypt_is_initialized) {
     GWEN_ERRORCODE err;
+
+    GWEN_Crypt_UnregisterAllProviders();
+    GWEN_Md_UnregisterAllProviders();
 
     err=GWEN_CryptImpl_Fini();
     if (!GWEN_Error_IsOk(err))
@@ -606,6 +610,19 @@ GWEN_CRYPTKEY *GWEN_CryptKey_Factory(const char *t){
 
 
 
+void GWEN_Crypt_UnregisterAllProviders(){
+  GWEN_CRYPTKEY_PROVIDER *pr;
+
+  pr=gwen_crypt_providers;
+  while(pr) {
+    GWEN_CRYPTKEY_PROVIDER *npr;
+
+    npr=pr->next;
+    GWEN_Crypt_UnregisterProvider(pr);
+    GWEN_CryptProvider_free(pr);
+    pr=npr;
+  } /* while */
+}
 
 
 

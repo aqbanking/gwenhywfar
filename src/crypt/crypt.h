@@ -244,6 +244,8 @@ extern "C" {
   GWEN_ERRORCODE GWEN_Crypt_RegisterProvider(GWEN_CRYPTKEY_PROVIDER *pr);
   GWEN_ERRORCODE GWEN_Crypt_UnregisterProvider(GWEN_CRYPTKEY_PROVIDER *pr);
 
+  void GWEN_Crypt_UnregisterAllProviders();
+
 
 #ifdef __cplusplus
 }

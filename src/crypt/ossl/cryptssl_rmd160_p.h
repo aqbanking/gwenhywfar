@@ -26,54 +26,38 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+#ifndef GWENHYFWAR_CRYPTSSL_RMD160_P_H
+#define GWENHYFWAR_CRYPTSSL_RMD160_P_H
+
+
+#define GWEN_MD_RMD160_NAME "RMD160"
+
+#include <gwenhyfwar/md.h>
+#include <openssl/ripemd.h>
+#include <openssl/objects.h>
+
+
+GWEN_ERRORCODE GWEN_MdRmd160_Register();
+
+GWEN_MD *GWEN_MdRmd160_new();
+void GWEN_MdRmd160_FreeData(GWEN_MD *md);
+
+int GWEN_MdRmd160_Begin(GWEN_MD *md);
+int GWEN_MdRmd160_End(GWEN_MD *md);
+int GWEN_MdRmd160_Update(GWEN_MD *md,
+                         const char *buf,
+                         unsigned int l);
+
+
+
+
+
+
+
+
+
+
+
 #endif
-
-
-#include "cryptssl_p.h"
-#include "cryptssl_rsa_p.h"
-#include "cryptssl_rmd160_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  GWEN_ERRORCODE err;
-  GWEN_ERRORCODE lerr;
-
-  err=0;
-
-  /* register the various cryptkey types */
-  DBG_INFO(0, "Registering RSA");
-  lerr=GWEN_CryptKeyRSA_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  /* register the various MD types */
-  DBG_INFO(0, "Registering RMD160");
-  lerr=GWEN_MdRmd160_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  return err;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
-
-
-
-
-
-
 
 

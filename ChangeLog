@@ -1,5 +1,12 @@
 $Id$
 
+2003/11/13 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a severe bug in GWEN_Buffer (error in dynamic mode)
+- added rmd160 to crypt module
+- added padding with ISO 9796-1 (taken from OpenHBCI, the functions introduced
+  have originally been written by Fabian Kaiser and adapted for Gwen by me)
+
 
 2003/11/12 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

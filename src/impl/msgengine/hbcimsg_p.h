@@ -46,6 +46,7 @@ struct GWEN_HBCIMSG {
   GWEN_KEYSPEC *signers;
   unsigned int nSigners;
 
+  unsigned int nodes;
   unsigned int msgNum;
   unsigned int refMsgNum;
   unsigned int firstSegment;
@@ -64,6 +65,14 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
 int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
                          GWEN_BUFFER *rawBuf,
                          GWEN_KEYSPEC *ks);
+
+int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg);
+
+int GWEN_HBCIMsg_AddMsgHead(GWEN_HBCIMSG *hmsg);
+int GWEN_HBCIMsg_AddMsgTail(GWEN_HBCIMSG *hmsg);
+
+
+
 
 
 #endif

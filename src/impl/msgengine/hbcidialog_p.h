@@ -29,6 +29,9 @@
 #define GWENHYWFAR_HBCIDLG_P_H
 
 
+#define GWEN_HBCIDIALOG_KEYSIZE 96
+
+
 #include <gwenhyfwar/hbcidialog.h>
 
 
@@ -48,6 +51,12 @@ struct GWEN_HBCIDIALOG {
   GWEN_HBCIDLG_FREEDATA_FN freeDataFn;
 };
 
+
+/**
+ * This function has been taken from OpenHBCI (rsakey.cpp, written by Fabian
+ * Kaiser)
+ */
+unsigned char GWEN_HBCIDialog_permutate(unsigned char input);
 
 
 

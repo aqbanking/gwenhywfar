@@ -230,6 +230,8 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size) {
   if (bf->pos+size>bf->bufferSize) {
     /* need to realloc */
     unsigned int nsize;
+    unsigned int noffs;
+    unsigned int reserved;
     void *p;
 
     /* check for dynamic mode */
@@ -237,27 +239,32 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size) {
       DBG_ERROR(0, "Not in dynamic mode");
       return 1;
     }
+    /* calculate reserved bytes (to set ptr later) */
+    reserved=bf->ptr-bf->realPtr;
     /* this is the raw number of bytes we need */
     nsize=bf->pos+size-bf->bufferSize;
     /* round it up */
     nsize=(nsize+(bf->step-1));
     nsize&=~(bf->step-1);
+    /* store number of additional bytes to allocate */
+    noffs=nsize;
     /* add current size to it */
-    nsize+=bf->bufferSize;
+    nsize+=bf->realBufferSize;
     if (nsize>bf->hardLimit) {
       DBG_ERROR(0, "Size is beyond hard limit (%d>%d)", nsize, bf->hardLimit);
       return 1;
     }
     DBG_DEBUG(0, "Reallocating from %d to %d bytes", bf->bufferSize, nsize);
-    p=realloc(bf->ptr, nsize);
+    p=realloc(bf->realPtr, nsize);
     if (!p) {
       DBG_ERROR(0, "Realloc failed.");
       return 1;
     }
     /* store new size and pointer */
-    bf->ptr=p;
-    bf->realBufferSize+=(nsize-bf->bufferSize);
-    bf->bufferSize=nsize;
+    bf->realPtr=p;
+    bf->ptr=bf->realPtr+reserved;
+    bf->realBufferSize=nsize;
+    bf->bufferSize+=noffs;
   }
 
   return 0;
@@ -546,7 +553,7 @@ void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, unsigned int step){
 
 void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
                                  unsigned int pos,
-                                 unsigned int offset) {
+                                 int offset) {
   unsigned int i;
 
   assert(bf);
@@ -666,5 +673,32 @@ int GWEN_Buffer_InsertBuffer(GWEN_BUFFER *bf,
 
   return GWEN_Buffer_InsertBytes(bf, sf->ptr, sf->bytesUsed);
 }
+
+
+
+int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
+                     unsigned int pos,
+                     unsigned int l) {
+  if (pos) {
+    if (pos>=bf->bufferSize) {
+      DBG_ERROR(0, "Position outside buffer");
+      return -1;
+    }
+    bf->ptr+=pos;
+    bf->bufferSize-=pos;
+    bf->pos-=pos;
+    if (bf->bytesUsed-pos<l) {
+      DBG_INFO(0, "Invalid length");
+      return -1;
+    }
+    bf->bytesUsed=l;
+    GWEN_Buffer_AdjustBookmarks(bf, pos, -pos);
+  }
+  return 0;
+}
+
+
+
+
 
 

@@ -31,44 +31,85 @@
 #endif
 
 
-#include "cryptssl_p.h"
-#include "cryptssl_rsa_p.h"
 #include "cryptssl_rmd160_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
 
 
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
+GWEN_ERRORCODE GWEN_MdRmd160_Register(){
+  GWEN_MD_PROVIDER *pr;
   GWEN_ERRORCODE err;
-  GWEN_ERRORCODE lerr;
 
-  err=0;
-
-  /* register the various cryptkey types */
-  DBG_INFO(0, "Registering RSA");
-  lerr=GWEN_CryptKeyRSA_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
+  pr=GWEN_MdProvider_new();
+  GWEN_MdProvider_SetNewMdFn(pr, GWEN_MdRmd160_new);
+  GWEN_MdProvider_SetName(pr, GWEN_MD_RMD160_NAME);
+  err=GWEN_MD_RegisterProvider(pr);
+  if (!GWEN_Error_IsOk(err)) {
+    GWEN_MdProvider_free(pr);
+    DBG_INFO(0, "called from here");
+    return err;
   }
-
-  /* register the various MD types */
-  DBG_INFO(0, "Registering RMD160");
-  lerr=GWEN_MdRmd160_Register();
-  if (!GWEN_Error_IsOk(lerr)) {
-    DBG_INFO(0, "here");
-    err=lerr;
-  }
-
-  return err;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
   return 0;
 }
+
+
+
+GWEN_MD *GWEN_MdRmd160_new(){
+  GWEN_MD *md;
+
+  md=GWEN_MD_new(20);
+  return md;
+}
+
+
+
+void GWEN_MdRmd160_FreeData(GWEN_MD *md){
+  free(GWEN_MD_GetData(md));
+}
+
+
+
+int GWEN_MdRmd160_Begin(GWEN_MD *md){
+  RIPEMD160_CTX *ctx;
+
+  assert(md);
+  ctx=(RIPEMD160_CTX*)malloc(sizeof(RIPEMD160_CTX));
+  RIPEMD160_Init(ctx);
+  GWEN_MD_SetData(md, ctx);
+  return 0;
+}
+
+
+
+int GWEN_MdRmd160_End(GWEN_MD *md){
+  RIPEMD160_CTX *ctx;
+
+  assert(md);
+  ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+  assert(ctx);
+  RIPEMD160_Final(GWEN_MD_GetDigestPtr(md), ctx);
+  free(ctx);
+  GWEN_MD_SetData(md, 0);
+  return 0;
+}
+
+
+
+int GWEN_MdRmd160_Update(GWEN_MD *md,
+                         const char *buf,
+                         unsigned int l){
+  RIPEMD160_CTX *ctx;
+
+  assert(md);
+  ctx=(RIPEMD160_CTX*)GWEN_MD_GetData(md);
+  assert(ctx);
+  RIPEMD160_Update(ctx, buf, l);
+  return 0;
+}
+
+
+
+
 
 
 
