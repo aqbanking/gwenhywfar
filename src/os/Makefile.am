@@ -22,6 +22,8 @@ iheader_HEADERS=\
  process.h
 
 noinst_HEADERS= \
+ gwentime_l.h \
+ gwentime_p.h \
  inetaddr_l.h \
  inetsocket_all_p.h \
  inetsocket_l.h \

@@ -26,6 +26,7 @@
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/misc2.h>
+#include <gwenhywfar/gwentime.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # define sleep(x) Sleep(x*1000)
@@ -2909,6 +2910,36 @@ int testList2(int argc, char **argv) {
 
 
 
+int testTime(int argc, char **argv) {
+  GWEN_TIME *ti1;
+  GWEN_TIME *ti2;
+  GWEN_DB_NODE *db1;
+  GWEN_DB_NODE *db2;
+
+  ti1=GWEN_CurrentTime();
+  assert(ti1);
+
+  db1=GWEN_DB_Group_new("time");
+  if (GWEN_Time_toDb(ti1, db1)) {
+    fprintf(stderr, "Error saving time.\n");
+    return 1;
+  }
+  DBG_NOTICE(0, "Time 1:");
+  GWEN_DB_Dump(db1, stderr, 2);
+
+  ti2=GWEN_Time_fromDb(db1);
+  db2=GWEN_DB_Group_new("time");
+  if (GWEN_Time_toDb(ti2, db2)) {
+    fprintf(stderr, "Error saving time.\n");
+    return 1;
+  }
+  DBG_NOTICE(0, "Time 2:");
+  GWEN_DB_Dump(db2, stderr, 2);
+
+  return 0;
+}
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -2960,6 +2991,8 @@ int main(int argc, char **argv) {
     rv=testHTTPc(argc, argv);
   else if (strcasecmp(argv[1], "httpd")==0)
     rv=testHTTPd(argc, argv);
+  else if (strcasecmp(argv[1], "time")==0)
+    rv=testTime(argc, argv);
 #ifdef USE_NCURSES
   else if (strcasecmp(argv[1], "u1")==0)
     rv=uitest1(argc, argv);

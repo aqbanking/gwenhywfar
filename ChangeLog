@@ -1,4 +1,12 @@
 
+2004/08/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- very much simplified GWEN_TIME: It now mostly uses <time.h> functions
+  and a local version of mktime (to make the time from UTC time instead
+  of local time). This leaves only one function which the OS layer has to 
+  provide.
+
+
 2004/08/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added GWEN_Time_fromUtcString()

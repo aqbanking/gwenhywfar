@@ -25,52 +25,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#ifndef GWEN_TIME_P_H
+#define GWEN_TIME_P_H
+
+#include "gwentime_l.h"
+
+
+
+struct GWEN_TIME {
+  GWEN_TYPE_UINT32 secs;
+  GWEN_TYPE_UINT32 msecs;
+};
+
+
+
+GWEN_TYPE_UINT32 GWEN_Time__mktimeUtc(int year,
+                                      int month,
+                                      int day,
+                                      int hour,
+                                      int min,
+                                      int sec);
+
+
 #endif
-
-#include "gwentime_p.h"
-#include "../gwentime_l.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
-
-#include <time.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
-
-
-
-/* The idea of this function is taken from a posting by Anders Carlsson on the mailing list
- * bug-gnu-chess (http://mail.gnu.org/archive/html/bug-gnu-chess/2004-01/msg00020.html)
-*/
-int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){
-  long sec, msec
-  union {
-    GWEN_TYPE_UINT64 ns100; /* time since 1 Jan 1601 in 100ns units */
-    FILETIME ft;
-  } current_date;
-
-  GetSystemTimeAsFileTime( &(current_date.ft));
-
-  GWEN_NEW_OBJECT(GWEN_TIME, t);
-  msec=(long)((current_date.ns100 / 10000LL) % 1000LL );
-  sec=(long)((current_date.ns100-(116444736000000000LL))/10000000LL);
-  GWEN_Time__SetSecsAndMSecs(ti, sec, msec);
-  return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

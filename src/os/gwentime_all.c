@@ -31,11 +31,48 @@
 #endif
 
 
+#include "gwentime_p.h"
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/debug.h>
 
 #include <time.h>
 #include <ctype.h>
+#include <errno.h>
+#include <string.h>
+
+
+
+GWEN_TIME *GWEN_CurrentTime(){
+  GWEN_TIME *t;
+
+  GWEN_NEW_OBJECT(GWEN_TIME, t);
+  if (GWEN_Time__GetCurrentTime(t)) {
+    DBG_ERROR(0, "Could not get current time");
+    GWEN_Time_free(t);
+    return 0;
+  }
+  return t;
+}
+
+
+
+GWEN_TIME *GWEN_Time_fromSeconds(GWEN_TYPE_UINT32 secs) {
+  GWEN_TIME *t;
+
+  GWEN_NEW_OBJECT(GWEN_TIME, t);
+  t->secs=secs;
+  return t;
+}
+
+
+
+void GWEN_Time__SetSecsAndMSecs(GWEN_TIME *ti,
+                                GWEN_TYPE_UINT32 secs,
+                                GWEN_TYPE_UINT32 msecs){
+  assert(ti);
+  ti->secs=secs;
+  ti->msecs=msecs;
+}
 
 
 
@@ -57,7 +94,7 @@ int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db) {
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "day", i1);
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "month", i2);
+		      "month", i2+1);
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "year", i3);
 
@@ -68,11 +105,11 @@ int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db) {
     return -1;
   }
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "hours", i1);
+		      "hour", i1);
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "minutes", i2);
+		      "min", i2);
   GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "seconds", i3);
+                      "sec", i3);
 
   return 0;
 }
@@ -93,7 +130,7 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
   if (dbT) {
     day=GWEN_DB_GetIntValue(dbT, "day", 0, 0);
-    month=GWEN_DB_GetIntValue(dbT, "month", 0, 0);
+    month=GWEN_DB_GetIntValue(dbT, "month", 0, 1)-1;
     year=GWEN_DB_GetIntValue(dbT, "year", 0, 0);
     if (!day || !year) {
       DBG_INFO(0, "Bad date in DB");
@@ -108,6 +145,9 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
     sec=GWEN_DB_GetIntValue(dbT, "sec", 0, 0);
   }
 
+  DBG_NOTICE(0,
+             "Creating time from this: %04d/%02d/%02d - %02d:%02d:%02d (%d)",
+             year, month, day, hour, min, sec, inUtc);
   t=GWEN_Time_new(year, month, day, hour, min, sec, inUtc);
   if (!t) {
     DBG_INFO(0, "Bad date/time");
@@ -179,8 +219,8 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
       sec+=i;
       break;
     default:
-      DBG_DEBUG(0,
-		"Unknown character in template, will skip in both strings");
+      DBG_ERROR(0,
+                "Unknown character in template, will skip in both strings");
       break;
     }
     t++;
@@ -188,7 +228,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
   } /* while */
 
   /* get time in local time */
-  gwt=GWEN_Time_new(year, month, day, hour, min, sec, inUtc);
+  gwt=GWEN_Time_new(year, month-1, day, hour, min, sec, inUtc);
   if (!gwt) {
     DBG_INFO(0, "here");
     return 0;
@@ -210,9 +250,228 @@ GWEN_TIME *GWEN_Time_fromUtcString(const char *s, const char *tmpl){
 
 
 
+GWEN_TIME *GWEN_Time_new(int year,
+                         int month,
+                         int day,
+                         int hour,
+                         int min,
+                         int sec,
+                         int inUtc){
+  GWEN_TYPE_UINT32 s;
+
+  if (inUtc)
+    s=GWEN_Time__mktimeUtc(year, month, day, hour, min, sec);
+  else {
+    struct tm ti;
+    struct tm *tp;
+    time_t tt;
+
+    tt=time(0);
+    tp=localtime(&tt);
+    assert(tp);
+    memmove(&ti, tp, sizeof(ti));
+    ti.tm_sec=sec;
+    ti.tm_min=min;
+    ti.tm_hour=hour;
+    if (year<100) {
+      if (year<72)
+        year+=2000;
+      year+=1900;
+    }
+    ti.tm_year=year-1900;
+    ti.tm_mon=month-1;
+    ti.tm_mday=day;
+    ti.tm_yday=0;
+    ti.tm_wday=0;
+    tt=mktime(&ti);
+    assert(tt!=(time_t)-1);
+    s=(GWEN_TYPE_UINT32)tt;
+  }
+  return GWEN_Time_fromSeconds(s);
+}
 
 
 
+GWEN_TYPE_UINT32 GWEN_Time__mktimeUtc(int year,
+                                      int month,
+                                      int day,
+                                      int hour,
+                                      int min,
+                                      int sec) {
+  GWEN_TYPE_UINT32 result;
+  int i;
+  int isLeap;
+  const GWEN_TYPE_UINT32 hoursecs=60*60;
+  const GWEN_TYPE_UINT32 daysecs=24*hoursecs;
+  const GWEN_TYPE_UINT32 yearsecs=365*daysecs;
+  const GWEN_TYPE_UINT32 monthDays[12]=
+    {
+      31, 28, 31, 30,
+      31, 30, 31, 31,
+      30, 31, 30, 31
+    };
+
+  result=(year-1970)*yearsecs;
+
+  for (i=1970; i<year; i++)
+    if ((((i % 4)==0) &&
+          ((i % 100)!=0)) ||
+        ((i % 400)==0))
+      result+=daysecs;
+
+  isLeap=((((year % 4)==0) &&
+           ((year % 100)!=0)) ||
+          ((year % 400)==0));
+
+  for (i=0; i<month; i++)
+    if (isLeap && i==1)
+      result+=29*daysecs;
+    else
+      result+=monthDays[i]*daysecs;
+
+  result+=(day-1)*daysecs;
+  result+=(hour*hoursecs);
+  result+=min*60;
+  result+=sec;
+
+  return result;
+}
+
+
+
+GWEN_TIME *GWEN_Time_dup(const GWEN_TIME *t){
+  GWEN_TIME *newT;
+
+  assert(t);
+  GWEN_NEW_OBJECT(GWEN_TIME, newT);
+  newT->secs=t->secs;
+  newT->msecs=t->msecs;
+  return newT;
+}
+
+
+
+void GWEN_Time_free(GWEN_TIME *t){
+  if (t) {
+    GWEN_FREE_OBJECT(t);
+  }
+}
+
+
+
+double GWEN_Time_Diff(const GWEN_TIME *t1, const GWEN_TIME *t0){
+  double d;
+
+  assert(t1);
+  assert(t0);
+
+  d=((t1->secs*1000)+(t1->msecs))-
+    ((t0->secs*1000)+(t0->msecs));
+
+  return d;
+}
+
+
+
+double GWEN_Time_Milliseconds(const GWEN_TIME *t){
+  assert(t);
+  return (double)((t->secs*1000)+(t->msecs));
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_Time_Seconds(const GWEN_TIME *t){
+  assert(t);
+  return t->secs;
+}
+
+
+
+int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
+                                int *hours,
+                                int *mins,
+                                int *secs){
+  struct tm *tb;
+  time_t tt;
+
+  assert(t);
+  tt=t->secs;
+  tb=localtime(&tt);
+  if (!tb) {
+    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    return -1;
+  }
+  *hours=tb->tm_hour;
+  *mins=tb->tm_min;
+  *secs=tb->tm_sec;
+  return 0;
+}
+
+
+
+int GWEN_Time_GetBrokenDownUtcTime(const GWEN_TIME *t,
+                                   int *hours,
+                                   int *mins,
+                                   int *secs){
+  struct tm *tb;
+  time_t tt;
+
+  assert(t);
+  tt=t->secs;
+  tb=gmtime(&tt);
+  if (!tb) {
+    DBG_ERROR(0, "gmtime(): %s", strerror(errno));
+    return -1;
+  }
+  *hours=tb->tm_hour;
+  *mins=tb->tm_min;
+  *secs=tb->tm_sec;
+  return 0;
+}
+
+
+
+int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
+                                int *days,
+                                int *month,
+                                int *year){
+  struct tm *tb;
+  time_t tt;
+
+  assert(t);
+  tt=t->secs;
+  tb=localtime(&tt);
+  if (!tb) {
+    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    return -1;
+  }
+  *days=tb->tm_mday;
+  *month=tb->tm_mon;
+  *year=tb->tm_year+1900;
+  return 0;
+}
+
+
+
+int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
+                                   int *days,
+                                   int *month,
+                                   int *year){
+  struct tm *tb;
+  time_t tt;
+
+  assert(t);
+  tt=t->secs;
+  tb=gmtime(&tt);
+  if (!tb) {
+    DBG_ERROR(0, "gmtime(): %s", strerror(errno));
+    return -1;
+  }
+  *days=tb->tm_mday;
+  *month=tb->tm_mon;
+  *year=tb->tm_year+1900;
+  return 0;
+}
 
 
 
