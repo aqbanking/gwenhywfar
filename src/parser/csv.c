@@ -115,7 +115,7 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
     delimiter=p[0];
   quote=GWEN_DB_GetIntValue(cfg, "quote", 0, 1);
   groupName=GWEN_DB_GetCharValue(cfg, "group", 0, "");
-  title=GWEN_DB_GetIntValue(cfg, "quote", 0, 1);
+  title=GWEN_DB_GetIntValue(cfg, "title", 0, 1);
 
   if (title) {
     /* write title */

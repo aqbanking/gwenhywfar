@@ -5,6 +5,7 @@ $Id$
 ------------------------------------------------
 - fixed a bug in MsgEngine (ReadMessage was not taking segment version into
   account)
+- fixed a bug in CSV code (was taking "quote" for "title")
 
 
 ===========================================================================
