@@ -56,6 +56,9 @@ static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_crypt_errorform=0;
 static GWEN_CRYPTKEY_PROVIDER *gwen_crypt_providers=0;
 
 
+GWEN_INHERIT_FUNCTIONS(GWEN_CRYPTKEY)
+GWEN_LIST2_FUNCTIONS(GWEN_CRYPTKEY, GWEN_CryptKey)
+
 
 const char *GWEN_Crypt_ErrorString(int c){
   const char *s;
@@ -157,6 +160,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
   GWEN_CRYPTKEY *ck;
 
   GWEN_NEW_OBJECT(GWEN_CRYPTKEY, ck);
+  GWEN_INHERIT_INIT(GWEN_CRYPTKEY, ck);
 #ifdef GWEN_MEMTRACE
   GWEN_CryptKey_Count++;
   DBG_INFO(GWEN_LOGDOMAIN, "New Cryptkey (now %d)", GWEN_CryptKey_Count);
@@ -174,6 +178,7 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
     GWEN_CryptKey_Count--;
     DBG_INFO(GWEN_LOGDOMAIN, "Free Cryptkey (now %d)", GWEN_CryptKey_Count);
 #endif
+    GWEN_INHERIT_FINI(GWEN_CRYPTKEY, key);
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
     GWEN_KeySpec_free(key->keyspec);
@@ -811,6 +816,19 @@ void GWEN_Crypt_UnregisterAllProviders(){
 }
 
 
+
+GWEN_CRYPTKEY *GWEN_CryptKey_List2__freeAll_cb(GWEN_CRYPTKEY *st, void *user_data) {
+  GWEN_CryptKey_free(st);
+return 0;
+}
+
+
+void GWEN_CryptKey_List2_freeAll(GWEN_CRYPTKEY_LIST2 *stl) {
+  if (stl) {
+    GWEN_CryptKey_List2_ForEach(stl, GWEN_CryptKey_List2__freeAll_cb, 0);
+    GWEN_CryptKey_List2_free(stl); 
+  }
+}
 
 
 

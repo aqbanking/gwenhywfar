@@ -32,6 +32,7 @@
 #include <gwenhywfar/keyspec.h>
 
 struct GWEN_KEYSPEC {
+  GWEN_INHERIT_ELEMENT(GWEN_KEYSPEC)
   GWEN_KEYSPEC *next;
   char *keyType;
   char *keyName;
@@ -41,6 +42,8 @@ struct GWEN_KEYSPEC {
 };
 
 
+GWEN_KEYSPEC *GWEN_KeySpec_List2__freeAll_cb(GWEN_KEYSPEC *st,
+                                             void *user_data);
 
 
 

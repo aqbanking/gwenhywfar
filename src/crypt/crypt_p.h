@@ -35,6 +35,7 @@
 
 
 struct GWEN_CRYPTKEY {
+  GWEN_INHERIT_ELEMENT(GWEN_CRYPTKEY)
   GWEN_KEYSPEC *keyspec;
   void *keyData;
   int openCount;
@@ -54,6 +55,9 @@ struct GWEN_CRYPTKEY {
   GWEN_CRYPTKEY_CLOSE_FN closeFn;
 
 };
+
+GWEN_CRYPTKEY *GWEN_CryptKey_List2__freeAll_cb(GWEN_CRYPTKEY *st, void
+                                               *user_data);
 
 
 struct GWEN_CRYPTKEY_PROVIDER {

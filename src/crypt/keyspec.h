@@ -31,9 +31,10 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/list2.h>
 #include <stdio.h>
-/* This is needed for PalmOS, because it define some functions needed */
-#include <string.h>
 
 
 #ifdef __cplusplus
@@ -42,6 +43,10 @@ extern "C" {
 
 
 typedef struct GWEN_KEYSPEC GWEN_KEYSPEC;
+
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_KEYSPEC, GWENHYWFAR_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_KEYSPEC, GWEN_KeySpec, GWENHYWFAR_API)
+void GWEN_KeySpec_List2_freeAll(GWEN_KEYSPEC_LIST2 *ksl);
 
 
 GWENHYWFAR_API

@@ -34,6 +34,8 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/keyspec.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/list2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,6 +80,11 @@ GWENHYWFAR_API
 
 
 typedef struct GWEN_CRYPTKEY GWEN_CRYPTKEY;
+
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWENHYWFAR_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWEN_CryptKey, GWENHYWFAR_API)
+void GWEN_CryptKey_List2_freeAll(GWEN_CRYPTKEY_LIST2 *stl);
+
 
 /** @name Function prototypes
  *

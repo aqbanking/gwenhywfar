@@ -35,16 +35,20 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
-
 #ifdef GWEN_MEMTRACE
 static unsigned int GWEN_KeySpec_Count=0;
 #endif
+
+
+GWEN_INHERIT_FUNCTIONS(GWEN_KEYSPEC)
+GWEN_LIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec)
 
 
 GWEN_KEYSPEC *GWEN_KeySpec_new(){
   GWEN_KEYSPEC *ks;
 
   GWEN_NEW_OBJECT(GWEN_KEYSPEC, ks);
+  GWEN_INHERIT_INIT(GWEN_KEYSPEC, ks);
 #ifdef GWEN_MEMTRACE
   GWEN_KeySpec_Count++;
   DBG_INFO(GWEN_LOGDOMAIN, "New KeySpec (now %d)", GWEN_KeySpec_Count);
@@ -63,6 +67,7 @@ void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
     GWEN_KeySpec_Count--;
     DBG_INFO(GWEN_LOGDOMAIN, "Free KeySpec (now %d)", GWEN_KeySpec_Count);
 #endif
+    GWEN_INHERIT_FINI(GWEN_KEYSPEC, ks);
     free(ks->keyType);
     free(ks->keyName);
     free(ks->owner);
@@ -280,6 +285,18 @@ int GWEN_KeySpec_FromDb(GWEN_KEYSPEC *ks, GWEN_DB_NODE *db){
 
 
 
+GWEN_KEYSPEC *GWEN_KeySpec_List2__freeAll_cb(GWEN_KEYSPEC *st, void *user_data) {
+  GWEN_KeySpec_free(st);
+return 0;
+}
+
+
+void GWEN_KeySpec_List2_freeAll(GWEN_KEYSPEC_LIST2 *stl) {
+  if (stl) {
+    GWEN_KeySpec_List2_ForEach(stl, GWEN_KeySpec_List2__freeAll_cb, 0);
+    GWEN_KeySpec_List2_free(stl); 
+  }
+}
 
 
 
