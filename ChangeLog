@@ -1,4 +1,10 @@
 
+
+===========================================================================
+MARK: released gwenhywfar-0.9.10 (2004/05/27)
+===========================================================================
+
+
 2004/05/26: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in MsgEngine (strchr doens't like if the character
@@ -6,7 +12,7 @@
   data such as bytes, words, dwords etc which are used by 
   Libchipcard2)
 - fixed a bug in NetTransportSSL
-- Gwen now compiles on Solaris (tested with R220)
+- Gwen now compiles on Solaris (tested with SunOS 5.9)
 - fixed some M4 macros (e.g. "find" on Solaris is not as powerfull as it is
   on Linux)
 
