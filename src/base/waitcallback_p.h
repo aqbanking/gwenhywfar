@@ -62,6 +62,8 @@ struct GWEN_WAITCALLBACK {
   time_t lastEntered;
   int proposedDistance;
 
+  int nestingLevel;
+
   GWEN_TYPE_UINT32 usage;
 };
 

@@ -48,6 +48,8 @@ GWEN_INHERIT_FUNCTIONS(GWEN_WAITCALLBACK)
 static GWEN_WAITCALLBACK_LIST *gwen_waitcallback__templates=0;
 static GWEN_WAITCALLBACK *gwen_waitcallback__current=0;
 static GWEN_WAITCALLBACK_LIST *gwen_waitcallback__list=0;
+static int gwen_waitcallback__nesting_level=0;
+
 
 
 /* -------------------------------------------------------------- FUNCTION */
@@ -373,6 +375,7 @@ void GWEN_WaitCallback_Enter_u(const char *id,
   }
 
   if (nctx) {
+      nctx->nestingLevel=gwen_waitcallback__nesting_level++;
     if (file)
       nctx->enteredFromFile=strdup(file);
     nctx->enteredFromLine=line;
@@ -397,6 +400,7 @@ void GWEN_WaitCallback_Leave(){
   if (ctx) {
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Returned to callback \"%s\"", ctx->id);
   }
+  gwen_waitcallback__nesting_level--;
 }
 
 
@@ -479,6 +483,24 @@ const char *GWEN_WaitCallback_GetId(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->id;
 }
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_WaitCallback_GetNestingLevel(const GWEN_WAITCALLBACK *ctx){
+  if (!ctx)
+    ctx=gwen_waitcallback__current;
+
+  if (!ctx) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "No callback active");
+    return -1;
+  }
+  return ctx->nestingLevel;
+}
+
+
+
+
 
 
 

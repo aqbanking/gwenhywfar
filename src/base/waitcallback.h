@@ -231,6 +231,14 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK *ctx);
+
+/**
+ * Resturns the nesting level of the given context
+ *
+ */
+GWENHYWFAR_API
+int GWEN_WaitCallback_GetNestingLevel(const GWEN_WAITCALLBACK *ctx);
+
 /*@}*/
 
 

@@ -1,4 +1,9 @@
 
+2004/08/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- waitcallback: added nesting level information
+
+
 2004/08/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - valgrind session: 
