@@ -2186,7 +2186,7 @@ GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name){
 
 
 
-GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name){
+GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name){
   GWEN_DB_NODE *og;
 
   og=n;
@@ -2198,7 +2198,7 @@ GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name){
   n=n->h.next;
   while(n) {
     if (n->h.typ==GWEN_DB_NODETYPE_GROUP) {
-      if (-1!=GWEN_Text_ComparePattern(nn->group.name, name, 0))
+      if (-1!=GWEN_Text_ComparePattern(n->group.name, name, 0))
         break;
     }
     n=n->h.next;
