@@ -15,7 +15,7 @@ cvsclean::
 
 all:
 	libtoolize -f --automake $(COPY)
-	autopoint -f || echo "If autopoint complains about the wrong gettext version, then you should change the line AM_GNU_GETTEXT_VERSION(0.14.1) in configure.ac so that it uses the version of gettext that you have installed. Then run make -f Makefile.cvs again."
+	autopoint -f || (echo "If autopoint complains about the wrong gettext version, then you should change the line AM_GNU_GETTEXT_VERSION(0.14.1) in configure.ac so that it uses the version of gettext that you have installed. Then run make -f Makefile.cvs again." && exit 1)
 	aclocal -I ./m4
 	autoheader
 	automake -f --add-missing $(COPY)
@@ -37,7 +37,7 @@ mp:
 
 mp-darwin:
 	CFLAGS="-I/sw/include -ggdb -Wall" LDFLAGS="-L/sw/lib" ./configure
-	
+
 mp-w32:
 	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --enable-maintainer-mode --prefix=/gwen --with-openssl-includes=/more/include
 
