@@ -32,8 +32,16 @@
 #include <gwenhyfwar/transportlayer.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 GWENHYFWAR_API
   GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerUnix_new();
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

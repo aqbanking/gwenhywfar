@@ -31,6 +31,10 @@
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @name Path Flags
  *
@@ -111,6 +115,10 @@ GWENHYFWAR_API
 			 GWEN_PATHHANDLERPTR elementFunction);
 
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYFWAR_PATH_H */

@@ -32,6 +32,9 @@
 #include <gwenhyfwar/error.h>
 #include <gwenhyfwar/connlayer.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct GWEN_SERVICELAYER GWEN_SERVICELAYER;
 
@@ -133,6 +136,10 @@ GWEN_IPCMSG *GWEN_ServiceLayer_GetRequest(GWEN_SERVICELAYER *sl);
  */
 GWEN_ERRORCODE GWEN_ServiceLayer_SendMessage(GWEN_SERVICELAYER *sl,
                                              GWEN_IPCMSG *msg);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYFWAR_SERVICELAYER_H */

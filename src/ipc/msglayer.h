@@ -33,6 +33,9 @@
 #include <gwenhyfwar/transportlayer.h>
 #include <gwenhyfwar/buffer.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct GWEN_IPCMSG GWEN_IPCMSG;
 typedef struct GWEN_IPCMSGLAYER GWEN_IPCMSGLAYER;
@@ -138,5 +141,8 @@ const char *GWEN_MsgLayer_GetStateString(GWEN_IPCMSGLAYER_STATE st);
 /*@}*/
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GWENHYFWAR_MSGLAYER_H */

@@ -105,14 +105,14 @@ AQ_CHECK_OS
 case "$OS_TYPE" in
     posix)
         gwenhyfwar_libs="-L`eval echo $prefix` -lgwenhyfwar"
-        gwenhyfwar_includes="-I`eval echo $includedir`"
+        gwenhyfwar_includes="-I`eval echo $prefix/include`"
         gwenhyfwar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_CHAMELEON_DLL,1, [Define if DLL is built])
         gwenhyfwar_libs=-L`eval echo $prefix` -lgwenhyfwar
-        gwenhyfwar_includes="-I`eval echo $includedir`"
+        gwenhyfwar_includes="-I`eval echo $prefix/include`"
         gwenhyfwar_os_lib="os/windows/libos.la"
         GWEN_OS="posix"
     	;;
@@ -156,9 +156,6 @@ for d in ${GWEN_HEADER_DIRS}; do
     esac
   done
 done
-
-all_includes="${all_includes} -I`pwd`"
-
 
 
 #

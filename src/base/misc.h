@@ -34,6 +34,10 @@
 #include <assert.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define GWEN_NEW_OBJECT(typ, varname) \
   varname=(typ *)malloc(sizeof(typ)); \
   assert(varname); \
@@ -79,6 +83,10 @@
   }                            \
   sr->next=0;}
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

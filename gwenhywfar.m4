@@ -32,7 +32,7 @@ gwenhywfar_libs=""
 gwenhywfar_includes=""
 if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_CHECKING(for gwenhywfar)
-  AC_ARG_WITH(chipcard-dir, [  --with-chipcard-dir=DIR
+  AC_ARG_WITH(gwen-dir, [  --with-gwen-dir=DIR
                             uses gwenhywfar from given dir],
     [lcc_dir="$withval"],
     [lcc_dir="/usr/local \
@@ -47,9 +47,13 @@ if test "$enable_gwenhywfar" != "no"; then
   if test -z "$gwenhywfar_dir"; then
       AC_MSG_RESULT([not found ])
   else
-      gwenhywfar_libs="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries`"
-      gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
       AC_MSG_RESULT($gwenhywfar_dir)
+      AC_MSG_CHECKING(for gwen libs)
+      gwenhywfar_libs="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries`"
+      AC_MSG_RESULT($gwenhywfar_libs)
+      AC_MSG_CHECKING(for gwen includes)
+      gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
+      AC_MSG_RESULT($gwenhywfar_includes)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)
   AC_ARG_ENABLE(gwenhywfar,
@@ -86,7 +90,8 @@ if test "$enable_gwenhywfar" != "no"; then
   fi
 dnl end of "if enable-gwenhywfar"
 fi
-AC_SUBST(gwenhyfwar_dir)
-AC_SUBST(gwenhyfwar_libs)
-AC_SUBST(gwenhyfwar_includes)
+
+AC_SUBST(gwenhywfar_dir)
+AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_includes)
 ])

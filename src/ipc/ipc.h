@@ -29,6 +29,9 @@
 #ifndef GWENHYFWAR_IPC_H
 #define GWENHYFWAR_IPC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 #define GWEN_IPC_ERROR_TYPE "IPC"
@@ -41,6 +44,11 @@
 #define GWEN_IPC_ERROR_SEG_NOT_FOUND         7
 #define GWEN_IPC_ERROR_BAD_MSG               8
 #define GWEN_IPC_ERROR_HANDSHAKING           9
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYFWAR_IPC_H */

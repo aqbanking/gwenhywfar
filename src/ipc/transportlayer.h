@@ -33,6 +33,11 @@
 #include <gwenhyfwar/inetsocket.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef enum {
   GWEN_TransportLayerTypeSocket=0,
 } GWEN_TransportLayerType;
@@ -117,6 +122,9 @@ GWENHYFWAR_API
   GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerUnix_new();
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYFWAR_TRANSPORTLAYER_H */

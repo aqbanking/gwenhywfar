@@ -6,7 +6,7 @@ result=""
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @all_includes@ @gwenhywfar_includes@"
+	    result="$result @all_includes@ @gwenhyfwar_includes@"
 	    ;;
 	--libraries)
 	    result="$result @gwenhyfwar_libs@"

@@ -1,6 +1,12 @@
 $Id$
 
 
+2003/10/07 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- db module is now able to write a configuration (except binary data)
+- fixed some bugs
+
+
 2003/09/24 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - many, many fixes, improved DB module etc

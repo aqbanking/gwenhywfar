@@ -32,6 +32,10 @@
 #include <gwenhyfwar/servicelayer.h>
 #include <gwenhyfwar/db.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define GWEN_CMDLAYER_MAXMSGSIZE 8192
 
 typedef struct GWEN_IPCSERVICECMD GWEN_IPCSERVICECMD;
@@ -90,6 +94,10 @@ const char *GWEN_IPCServiceCmd_GetPeerVersion(GWEN_IPCSERVICECMD *s,
                                               unsigned int id);
 
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GWENHYFWAR_CMDLAYER_H */
 

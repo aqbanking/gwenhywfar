@@ -34,12 +34,22 @@
 #include <gwenhyfwar/bufferedio.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define GWEN_DB_LINE_MAXSIZE  1024
 
 #define GWEN_DB_FLAGS_OVERWRITE_VARS         0x00010000
 #define GWEN_DB_FLAGS_OVERWRITE_GROUPS       0x00020000
 
-#define GWEN_DB_FLAGS_DEFAULT 0
+#define GWEN_DB_FLAGS_QUOTE_VARNAMES         0x00040000
+#define GWEN_DB_FLAGS_QUOTE_VALUES           0x00080000
+#define GWEN_DB_FLAGS_WRITE_SUBGROUPS        0x00100000
+
+#define GWEN_DB_FLAGS_DEFAULT \
+  GWEN_DB_FLAGS_QUOTE_VALUES | \
+  GWEN_DB_FLAGS_WRITE_SUBGROUPS
 
 
 
@@ -70,8 +80,8 @@ GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
 
 const char *GWEN_DB_GetCharValueFromNode(GWEN_DB_NODE *n);
 int GWEN_DB_GetIntValueFromNode(GWEN_DB_NODE *n);
-void *GWEN_DB_GetBinValueFromNode(GWEN_DB_NODE *n,
-                                  unsigned int *size);
+const void *GWEN_DB_GetBinValueFromNode(GWEN_DB_NODE *n,
+                                        unsigned int *size);
 
 
 /**
@@ -118,12 +128,12 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
                         int val);
 
 
-void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
-			  const char *path,
-			  int idx,
-			  void *defVal,
-			  unsigned int defValSize,
-                          unsigned int *returnValueSize);
+const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
+                                const char *path,
+                                int idx,
+                                const void *defVal,
+                                unsigned int defValSize,
+                                unsigned int *returnValueSize);
 
 /**
  * @return 0 on success, !=0 on error
@@ -131,7 +141,7 @@ void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
 int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 			unsigned int flags,
 			const char *path,
-			void *val,
+                        const void *val,
 			unsigned int valSize);
 
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
@@ -146,6 +156,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
 
 int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
 int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
+void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n);
 
 int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                            GWEN_BUFFEREDIO *bio,
@@ -153,6 +164,19 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      const char *fname,
                      unsigned int dbflags);
+
+int GWEN_DB_WriteToStream(GWEN_DB_NODE *node,
+                          GWEN_BUFFEREDIO *bio,
+                          unsigned int dbflags);
+
+int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
+                      const char *fname,
+                      unsigned int dbflags);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

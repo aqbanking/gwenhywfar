@@ -31,9 +31,18 @@
 
 #include <gwenhyfwar/error.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 GWEN_ERRORCODE GWEN_Init();
 GWEN_ERRORCODE GWEN_Fini();
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

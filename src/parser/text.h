@@ -102,6 +102,7 @@ char *GWEN_Text_ToHexGrouped(const char *src,
 int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize);
 
 /**
+ * @return number of bytes in the buffer (-1 on error)
  * @param fillchar if 0 then no filling takes place, positive values
  * extend to the right, negative values to the left.
  */

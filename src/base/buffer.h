@@ -33,6 +33,9 @@
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define GWEN_BUFFER_MAX_BOOKMARKS 4
 
@@ -181,6 +184,9 @@ void GWEN_Buffer_Rewind(GWEN_BUFFER *bf);
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, int insert);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

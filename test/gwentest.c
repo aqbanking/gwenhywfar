@@ -93,6 +93,37 @@ int testDBfile(int argc, char **argv) {
 
 
 
+int testDBfile2(int argc, char **argv) {
+  GWEN_DB_NODE *db;
+
+  if (argc<4) {
+    fprintf(stderr, "%s dbfile2 src dest\n", argv[0]);
+    return 1;
+  }
+  fprintf(stderr,"Creating DB\n");
+  db=GWEN_DB_Group_new("Config");
+
+  fprintf(stderr,"Reading file\n");
+  if (GWEN_DB_ReadFile(db, argv[2], 0)) {
+    fprintf(stderr,"Error reading file.\n");
+    return 1;
+  }
+  fprintf(stderr, "DB is:\n");
+  GWEN_DB_Dump(db, stderr, 2);
+
+  if (GWEN_DB_WriteFile(db, argv[3], GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr,"Error writing file.\n");
+    return 1;
+  }
+
+  fprintf(stderr,"Releasing DB\n");
+  GWEN_DB_Group_free(db);
+  return 0;
+}
+
+
+
+
 int testXML(int argc, char **argv) {
   GWEN_XMLNODE *n;
 
@@ -401,6 +432,8 @@ int main(int argc, char **argv) {
     rv=testPing(argc, argv);
   else if (strcasecmp(argv[1], "dbfile")==0)
     rv=testDBfile(argc, argv);
+  else if (strcasecmp(argv[1], "dbfile2")==0)
+    rv=testDBfile2(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

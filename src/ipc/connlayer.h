@@ -32,6 +32,10 @@
 #include <gwenhyfwar/msglayer.h>
 #include <gwenhyfwar/error.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #define GWEN_IPCCONNLAYER_FLAGS_PERSISTENT 0x0001
 #define GWEN_IPCCONNLAYER_FLAGS_PASSIVE    0x0002
@@ -127,6 +131,9 @@ const char *GWEN_ConnectionLayer_GetStateString(GWEN_IPCCONNLAYER_STATE st);
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYFWAR_CONNLAYER_H */

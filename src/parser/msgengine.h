@@ -71,8 +71,7 @@ typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
 typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
                                                GWEN_XMLNODE *node,
                                                GWEN_DB_NODE *gr,
-                                               char *buffer,
-                                               unsigned int bufsize);
+                                               GWEN_BUFFER *dbuf);
 
 
 

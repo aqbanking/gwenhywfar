@@ -33,6 +33,10 @@
 #include <gwenhyfwar/error.h>
 #include <gwenhyfwar/inetsocket.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #define GWEN_BUFFEREDIO_ERROR_TYPE    "BufferedIO"
 #define GWEN_BUFFEREDIO_ERROR_READ    1
@@ -304,6 +308,10 @@ GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
  */
 GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYFWAR_BUFFEREDIO_H */

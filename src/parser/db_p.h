@@ -115,7 +115,7 @@ union GWEN_DB_NODE {
 };
 
 
-GWEN_DB_NODE *GWEN_DB_ValueBin_new(void *data,
+GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
                                    unsigned int datasize);
 GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);
 GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data);
@@ -149,6 +149,12 @@ GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
                                const char *path,
                                int idx);
 void GWEN_DB_ClearNode(GWEN_DB_NODE *n);
+
+
+int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
+                               GWEN_BUFFEREDIO *bio,
+                               unsigned int dbflags,
+                               int insert);
 
 
 #endif
