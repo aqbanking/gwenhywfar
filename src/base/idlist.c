@@ -408,6 +408,15 @@ int GWEN_IdList_Sort(GWEN_IDLIST *idl){
 
 
 
+void GWEN_IdList_Clear(GWEN_IDLIST *idl){
+  assert(idl);
+  GWEN_IdTable_List_Clear(idl->idTables);
+  idl->entryCount=0;
+  idl->current=0;
+}
+
+
+
 
 
 

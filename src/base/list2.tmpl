@@ -50,7 +50,8 @@ extern "C" {
   /**
    * See @ref @FN_PREFIX@_List2_ForEach.
    */
-  typedef @TYPENAME@* (@TYPENAME@_LIST2_FOREACH)(@TYPENAME@ *element); 
+  typedef @TYPENAME@* (@TYPENAME@_LIST2_FOREACH)(@TYPENAME@ *element,
+                                                 void *user_data);
 
   /**
    * Creates a new list. This mus be freed using @ref @FN_PREFIX@_List2_free.
@@ -165,7 +166,9 @@ extern "C" {
 
   typedef struct @TYPENAME@_CONSTLIST2 @TYPENAME@_CONSTLIST2; 
   typedef struct @TYPENAME@_CONSTLIST2_ITERATOR @TYPENAME@_CONSTLIST2_ITERATOR; 
-  typedef const @TYPENAME@* (@TYPENAME@_CONSTLIST2_FOREACH)(const @TYPENAME@ *element); 
+  typedef const @TYPENAME@*
+    (@TYPENAME@_CONSTLIST2_FOREACH)(const @TYPENAME@ *element,
+                                    void *user_data);
   
    
   @TYPENAME@_CONSTLIST2 *@FN_PREFIX@_ConstList2_new(); 

@@ -68,10 +68,11 @@ GWEN_IDLIST *GWEN_IdList_new();
  */
 void GWEN_IdList_free(GWEN_IDLIST *idl);
 
+
 /**
  * Removes all ids from the list thus leaving it empty.
  */
-void GWEN_IdList_Clean(GWEN_IDLIST *idl);
+void GWEN_IdList_Clear(GWEN_IDLIST *idl);
 
 /**
  * Adds an id to the list. This function does no doublecheck.
