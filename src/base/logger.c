@@ -397,6 +397,10 @@ int GWEN_Logger_Log(GWEN_LOGGER *lg,
   if (!lg->enabled)
     return 1;
 
+  if (priority>lg->logLevel)
+    /* priority too low, don't log */
+    return 0;
+
   /* temporarily disable logging to avoid endless loops */
   lg->enabled=0;
   /* copy buffer, exchange all newlines by 0 */

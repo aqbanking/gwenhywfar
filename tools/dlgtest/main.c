@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
     return 1;
   }
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
   if (GWEN_XML_ReadFile(n, argv[1], GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 2;

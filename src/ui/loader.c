@@ -113,6 +113,7 @@ int GWEN_UILoader__ParseWidget(GWEN_XMLNODE *n,
   int hoffs;
   GWEN_DB_NODE *dbW;
   GWEN_TYPE_UINT32 flags;
+  const char *name;
 
   assert(n);
   assert(db);
@@ -122,29 +123,31 @@ int GWEN_UILoader__ParseWidget(GWEN_XMLNODE *n,
   flags=0;
 
   GWEN_DB_ClearGroup(db, 0);
-
+  name=GWEN_XMLNode_GetProperty(n, "name", "(unnamed)");
   localX=GWEN_XMLNode_GetIntValue(n, "x", *x);
   localY=GWEN_XMLNode_GetIntValue(n, "y", *y);
   localW=GWEN_XMLNode_GetIntValue(n, "width", width-localX);
   localH=GWEN_XMLNode_GetIntValue(n, "height", height-localY);
-  DBG_NOTICE(0, "Parsing Widget [%s] (%d/%d, %d/%d)",
-             GWEN_XMLNode_GetData(n),
-             localX, localY, localW, localH);
+  DBG_NOTICE(0, "Parsing Widget [%s] (%d/%d, %d/%d, %d/%d)",
+             name,
+             localX, localY, localW, localH, width, height);
 
   *x+=localW;
   *y+=localH;
 
   if ((localX+localW)>width) {
     DBG_ERROR(0,
-              "Widget does not fit into parent (x=%d, w=%d, width=%d)",
-              localX, localW, width);
+              "Widget \"%s\" does not fit into parent "
+              "(x=%d, w=%d, width=%d)",
+              name, localX, localW, width);
     return -1;
   }
 
   if ((localY+localH)>height) {
     DBG_ERROR(0,
-              "Widget does not fit into parent (y=%d, h=%d, height=%d)",
-              localY, localH, height);
+              "Widget \"%s\" does not fit into parent "
+              "(y=%d, h=%d, height=%d)",
+              name, localY, localH, height);
     return -1;
   }
 
@@ -188,7 +191,6 @@ int GWEN_UILoader__ParseWidget(GWEN_XMLNODE *n,
           }
           else
             not=0;
-          DBG_NOTICE(0, "Parsing flag \"%s\"", p);
           if (strcasecmp(p, "WIDGET_FLAGS_DEFAULT")==0) {
             flag=GWEN_WIDGET_FLAGS_DEFAULT;
           }
@@ -579,6 +581,8 @@ int GWEN_UILoader__ParseHGroup(GWEN_XMLNODE *n,
 
   maxY=0;
   elements=0;
+
+  DBG_NOTICE(0, "Parsing HGroup (%d/%d, %d/%d", *x, *y, width, height);
 
   GWEN_DB_ClearGroup(db, 0);
   align=GWEN_XMLNode_GetProperty(n, "align", "none");
