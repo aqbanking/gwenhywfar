@@ -1386,17 +1386,12 @@ GWEN_XMLNODE *GWEN_MsgEngine__GetGroup(GWEN_MSGENGINE *e,
 
   mode=GWEN_MsgEngine_GetMode(e);
   proto=GWEN_MsgEngine_GetProtocolVersion(e);
-  if (!e->defs) {
-    DBG_INFO(GWEN_LOGDOMAIN, "No definitions available");
-    return 0;
-  }
-  n=e->defs;
-  n=GWEN_XMLNode_GetChild(n);
+  n=GWEN_XMLNode_GetChild(node);
 
   /* find type+"S" */
   strcpy(buffer, t);
   strcat(buffer,"S");
-  n=GWEN_XMLNode_FindFirstTag(e->defs, buffer, 0, 0);
+  n=GWEN_XMLNode_FindFirstTag(n, buffer, 0, 0);
   if (!n) {
     DBG_DEBUG(GWEN_LOGDOMAIN,
 	      "No definitions here for type \"%s\"", t);

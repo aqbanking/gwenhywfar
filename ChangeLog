@@ -3,6 +3,7 @@
 2004/09/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - GWEN_KeySpec_Dump now prints the status as well
+- fixed a bug introduced yesterday
 
 
 2004-09-22   Christian Stimming <stimming@tuhh.de>
