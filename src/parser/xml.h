@@ -88,7 +88,7 @@ GWENHYWFAR_API
 typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 
 /**
- * Node type.
+ * The possible types of a GWEN_XMLNODE.
  */
 GWENHYWFAR_API
 typedef enum {
@@ -101,6 +101,9 @@ typedef enum {
   GWEN_XMLNodeTypeComment
 } GWEN_XMLNODE_TYPE;
 
+/** The abstract type XMLNODE. Each node is one node in the document
+ * tree and can represent different things, see @ref
+ * GWEN_XMLNODE_TYPE. */
 GWENHYWFAR_API
 typedef struct GWEN__XMLNODE GWEN_XMLNODE;
 
@@ -120,10 +123,17 @@ typedef int
 /*@{*/
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data);
+
+/** Free the given node (but not its children nodes, FIXME: is this
+ * correct?) */
 GWENHYWFAR_API
 void GWEN_XMLNode_free(GWEN_XMLNODE *n);
+
+/** Free the given node and all of its children nodes. */
 GWENHYWFAR_API
 void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n);
+
+/** Create and return a deep copy of the given node. */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
 /*@}*/
@@ -184,10 +194,16 @@ GWENHYWFAR_API
  *
  */
 /*@{*/
+/** Returns the type of the given node. */
 GWENHYWFAR_API
 GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(GWEN_XMLNODE *n);
+
+/** Returns the character data of the given node. */
 GWENHYWFAR_API
 const char *GWEN_XMLNode_GetData(GWEN_XMLNODE *n);
+
+/** Set the character data of the given node to the given value. This
+ * function will create a deep copy of the character data. */
 GWENHYWFAR_API
 void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
 /*@}*/
@@ -217,6 +233,9 @@ GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
+
+/** Returns the parent node of the given node, or NULL if it already
+ * is the root node. */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
 
@@ -243,7 +262,26 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n);
  * element exists. */
 GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n);
 
+/** Descends in the XML tree to the first children data node below the
+ * given node. 
+ *
+ * Different from GWEN_XMLNode_GetChild() this function only looks for
+ * another data node and not for a (more general) node. 
+ *
+ * @return The first children data node, or NULL if none exists. */
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n);
+
+/** Iterates on the same level in the XML tree from the given data
+ * node to the next one on the same level (i.e. the returned element
+ * has the same parent node as the given element). An XML element may
+ * have multiple data nodes as children, and you use this function to
+ * iterate through all of them.
+ *
+ * Different from GWEN_XMLNode_Next() this function only looks for
+ * another data node  and not for a (more general) node.
+ *
+ * @return The next data node on the same level, or NULL if no more
+ * data node exists. */
 GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
 
 /**
