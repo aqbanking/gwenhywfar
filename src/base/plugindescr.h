@@ -74,6 +74,11 @@ GWENHYWFAR_API
 const char*
   GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
 
+GWENHYWFAR_API
+  int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API
+  void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i);
+
 
 #ifdef __cplusplus
 }

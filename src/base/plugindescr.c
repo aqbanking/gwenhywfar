@@ -260,3 +260,29 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 
   return pdl;
 }
+
+
+
+int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd){
+  assert(pd);
+  return pd->isActive;
+}
+
+
+
+void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i){
+  assert(pd);
+  pd->isActive=i;
+}
+
+
+
+
+
+
+
+
+
+
+
+

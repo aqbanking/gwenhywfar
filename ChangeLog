@@ -3,6 +3,10 @@
 ------------------------------------------------
 - gwenhywfar.m4: fixed a buf (was always using libgwen_pp instead of 
   libgwenhywfar)
+- base/stringlist: Added GWEN_StringList_SetSenseCase() which allows
+  changing the behaviour regarding cases. The default behaviour has now
+  changed to ignore cases.
+- base/plugindescr: Added field "isActive", this can be set by applications
 
 
 2004-07-30   Christian Stimming <stimming@tuhh.de>

@@ -46,6 +46,7 @@ struct GWEN_STRINGLISTENTRYSTRUCT {
 struct GWEN_STRINGLISTSTRUCT {
   GWEN_STRINGLISTENTRY *first;
   unsigned int count;
+  int senseCase;
 };
 
 

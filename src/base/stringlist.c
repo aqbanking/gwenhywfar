@@ -66,6 +66,13 @@ void GWEN_StringList_free(GWEN_STRINGLIST *sl){
 
 
 
+void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i) {
+  assert(sl);
+  sl->senseCase=i;
+}
+
+
+
 GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s, int take){
   GWEN_STRINGLISTENTRY *sl;
 
@@ -180,14 +187,26 @@ int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
 
   if (checkDouble) {
     se=sl->first;
-    while(se) {
-      if (strcmp(se->data, s)==0) {
-	if (take)
-	  free((char*)s);
-        return 0;
-      }
-      se=se->next;
-    } /* while */
+    if (sl->senseCase) {
+      while(se) {
+	if (strcmp(se->data, s)==0) {
+	  if (take)
+	    free((char*)s);
+	  return 0;
+	}
+	se=se->next;
+      } /* while */
+    }
+    else {
+      while(se) {
+	if (strcasecmp(se->data, s)==0) {
+	  if (take)
+	    free((char*)s);
+	  return 0;
+	}
+	se=se->next;
+      } /* while */
+    }
   } /* if checkdouble */
 
   se=GWEN_StringListEntry_new(s, take);
@@ -205,16 +224,27 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
 
   if (checkDouble) {
     se=sl->first;
-    while(se) {
-      if (strcmp(se->data, s)==0) {
-	if (take)
-	  free((char*)s);
-	return 0;
-      }
-      se=se->next;
-    } /* while */
+    if (sl->senseCase) {
+      while(se) {
+	if (strcmp(se->data, s)==0) {
+	  if (take)
+	    free((char*)s);
+	  return 0;
+	}
+	se=se->next;
+      } /* while */
+    }
+    else {
+      while(se) {
+	if (strcasecmp(se->data, s)==0) {
+	  if (take)
+	    free((char*)s);
+	  return 0;
+	}
+	se=se->next;
+      } /* while */
+    }
   } /* if checkdouble */
-
   se=GWEN_StringListEntry_new(s, take);
   se->next=sl->first;
   sl->first=se;
@@ -228,15 +258,26 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
   GWEN_STRINGLISTENTRY *se;
 
   se=sl->first;
-  while(se) {
-    if (strcmp(se->data, s)==0) {
-      GWEN_StringList_RemoveEntry(sl, se);
-      return 1;
-    }
-    se=se->next;
-  } /* while */
-
-  return 0;
+  if (sl->senseCase) {
+    while(se) {
+      if (strcmp(se->data, s)==0) {
+	GWEN_StringList_RemoveEntry(sl, se);
+	return 1;
+      }
+      se=se->next;
+    } /* while */
+    return 0;
+  }
+  else {
+    while(se) {
+      if (strcasecmp(se->data, s)==0) {
+	GWEN_StringList_RemoveEntry(sl, se);
+	return 1;
+      }
+      se=se->next;
+    } /* while */
+    return 0;
+  }
 }
 
 
@@ -274,14 +315,24 @@ int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
 
   assert(sl);
   se=sl->first;
-  while(se) {
-    if (strcmp(se->data, s)==0) {
-      return 1;
-    }
-    se=se->next;
-  } /* while */
-
-  return 0;
+  if (sl->senseCase) {
+    while(se) {
+      if (strcmp(se->data, s)==0) {
+	return 1;
+      }
+      se=se->next;
+    } /* while */
+    return 0;
+  }
+  else {
+    while(se) {
+      if (strcasecmp(se->data, s)==0) {
+	return 1;
+      }
+      se=se->next;
+    } /* while */
+    return 0;
+  }
 }
 
 

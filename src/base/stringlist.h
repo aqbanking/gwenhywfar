@@ -70,6 +70,14 @@ GWENHYWFAR_API
   const char *GWEN_StringListEntry_Data(const GWEN_STRINGLISTENTRY *se);
 
 /**
+ * Normally this group of functions ignores cases when comparing two strings.
+ * You can change this behaviour here.
+ * @param sl string list
+ * @param i if 0 then cases are ignored
+ */
+void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i);
+
+/**
  * Appends a string.
  * @return 0 if not appended, !=0 if appended
  * @param take if true then the StringList takes over ownership of the string
