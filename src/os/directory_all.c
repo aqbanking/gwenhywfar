@@ -57,16 +57,40 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
   char *p;
   struct stat st;
   int exists;
+  int withDrive;
   GWEN_BUFFER *buf;
+  GWEN_BUFFER *ebuf;
+
+  withDrive=0;
+#ifdef OS_WIN32
+  ebuf=0;
+  if (isalpha(*entry)) {
+    if (entry[1]==':') {
+      ebuf=GWEN_Buffer_new(0, strlen(entry)+2, 0, 1);
+      GWEN_Buffer_AppendString(ebuf, entry);
+      GWEN_Buffer_AppendByte(ebuf, '\\');
+      withDrive=1;
+      entry=GWEN_Buffer_GetStart(ebuf);
+    }
+  }
+#else
+  ebuf=0;
+#endif
 
   if (strcasecmp(entry, "..")==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "\"..\" detected");
+    GWEN_Buffer_free(ebuf);
     return 0;
   }
 
   buf=(GWEN_BUFFER*)data;
-  if (GWEN_Buffer_GetUsedBytes(buf))
+  if (GWEN_Buffer_GetUsedBytes(buf) && !withDrive) {
+#ifdef OS_WIN32
+    GWEN_Buffer_AppendByte(buf, '\\');
+#else
     GWEN_Buffer_AppendByte(buf, '/');
+#endif
+  }
   GWEN_Buffer_AppendString(buf, entry);
 
   /* check for existence of the file/folder */
@@ -79,6 +103,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
         ((flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST))) {
       DBG_INFO(GWEN_LOGDOMAIN, "Path \"%s\" does not exist (it should)", p);
+      GWEN_Buffer_free(ebuf);
       return 0;
     }
   }
@@ -88,12 +113,14 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
       if (!S_ISREG(st.st_mode)) {
         DBG_INFO(GWEN_LOGDOMAIN, "%s not a regular file", p);
+	GWEN_Buffer_free(ebuf);
         return 0;
       }
     }
     else {
       if (!S_ISDIR(st.st_mode)) {
         DBG_INFO(GWEN_LOGDOMAIN, "%s not a direcory", p);
+	GWEN_Buffer_free(ebuf);
         return 0;
       }
     }
@@ -101,6 +128,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
         ((flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST))) {
       DBG_INFO(GWEN_LOGDOMAIN, "Path \"%s\" does not exist (it should)", p);
+      GWEN_Buffer_free(ebuf);
       return 0;
     }
   } /* if stat is ok */
@@ -115,6 +143,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
       fd=open(p, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
       if (fd==-1) {
         DBG_ERROR(GWEN_LOGDOMAIN, "open: %s (%s)", strerror(errno), p);
+	GWEN_Buffer_free(ebuf);
         return 0;
       }
       close(fd);
@@ -126,6 +155,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
 
       if (GWEN_Directory_Create(p)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Could not create directory \"%s\"", p);
+	GWEN_Buffer_free(ebuf);
         return 0;
       }
     }
@@ -134,6 +164,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     DBG_DEBUG(GWEN_LOGDOMAIN, "Entry \"%s\" exists", p);
   }
   DBG_DEBUG(GWEN_LOGDOMAIN, "Returning this: %s", p);
+  GWEN_Buffer_free(ebuf);
   return buf;
 }
 
