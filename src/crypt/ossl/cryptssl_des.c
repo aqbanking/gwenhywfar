@@ -259,7 +259,13 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Generate(GWEN_CRYPTKEY *k,
 
   /* seed random */
   for (i=0; i<sizeof(randomData); i++)
-    randomData[i] = (unsigned char) rand();
+    randomData[i] = (unsigned char) 
+#ifdef HAVE_RANDOM
+      random()
+#else
+      rand()
+#endif
+      ;
   RAND_seed(randomData, sizeof(randomData));
 
   /* generate left half */

@@ -209,6 +209,7 @@ AC_CHECK_FUNCS([select socket])
 AC_CHECK_FUNCS([strcasecmp strchr strdup strerror])
 AC_CHECK_FUNCS([snprintf])
 AC_CHECK_FUNCS([symlink setlocale])
+AC_CHECK_FUNCS([srandom random])
 
 
 ###-------------------------------------------------------------------------

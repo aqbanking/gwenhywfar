@@ -247,7 +247,13 @@ int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize){
   for (i=0; i<diff-11; i++) {
     int r;
 
-    while((r=random() & 0xff)==0);
+    while( (r=
+#ifdef HAVE_RANDOM
+	    random()
+#else
+	    rand()
+#endif
+	    & 0xff) == 0 );
     *(p++)=(unsigned char)r;
   }
   *(p++)=0x00;

@@ -117,8 +117,11 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleInit(){
       return err;
     }
     /* seed random */
+#ifdef HAVE_SRANDOM
     srandom((unsigned int)time(0));
+#else
     srand((unsigned int)time(0));
+#endif
 
     gwen_crypt_is_initialized=1;
   }

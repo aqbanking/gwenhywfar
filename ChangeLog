@@ -1,3 +1,8 @@
+2005-03-29   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac, src/crypt/padd.c, crypt.c: If random()/srandom()
+	is not available, use rand()/srand(). Necessary for
+	e.g. windows/mingw32.
 
 ===========================================================================
 MARK: released gwenhywfar-1.10.0 (2005/03/28)
