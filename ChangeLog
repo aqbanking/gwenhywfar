@@ -9,6 +9,9 @@ $Id$
 - removed some of Christian's FIXMEs in README, since he got it all
   perfectly right ;-)
 - added Doxyfile.in, started working on API documentation
+- added "src/os/directory_all.c" which contains some usefull functions (well,
+  ONE at this moment)
+- improved APIDOC of some "classes"
 
 
 2003/11/22 Martin Preuss <martin@libchipcard.de>

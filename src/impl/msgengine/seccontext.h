@@ -34,11 +34,27 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+/** @defgroup MOD_SECCTX_ALL General Security Context
+ *
+ */
+/*@{*/
+
+
+/** @defgroup MOD_SECCTX Security Context
+ *
+ */
+/*@{*/
 typedef struct GWEN_SECCTX GWEN_SECCTX;
 
 
-
+/** @name Prototypes for Virtual Functions
+ *
+ */
+/*@{*/
 typedef int
   (*GWEN_SECCTX_PREPARECTX_FN)(GWEN_SECCTX *sctx,
                                 GWEN_HBCICRYPTOCONTEXT *ctx,
@@ -77,14 +93,23 @@ typedef int
 
 typedef void
   (*GWEN_SECCTX_FREEDATA_FN)(GWEN_SECCTX *sctx);
+/*@}*/
 
 
 
+/** @name Constructor And Destructor
+ *
+ */
+/*@{*/
 GWEN_SECCTX *GWEN_SecContext_new(const char *localName,
                                  const char *remoteName);
 void GWEN_SecContext_free(GWEN_SECCTX *sc);
 
 
+/** @name Getters and Setters For Virtual Functions and Data
+ *
+ */
+/*@{*/
 void GWEN_SecContext_SetPrepareCtxFn(GWEN_SECCTX *sctx,
                                      GWEN_SECCTX_PREPARECTX_FN fn);
 void GWEN_SecContext_SetSignFn(GWEN_SECCTX *sctx,
@@ -101,10 +126,32 @@ void GWEN_SecContext_SetFromDbFn(GWEN_SECCTX *sctx,
                                  GWEN_SECCTX_FROMDB_FN fn);
 void GWEN_SecContext_SetToDbFn(GWEN_SECCTX *sctx,
                                GWEN_SECCTX_TODB_FN fn);
+void *GWEN_SecContext_GetData(GWEN_SECCTX *sc);
+void GWEN_SecContext_SetData(GWEN_SECCTX *sc,
+                             void *d);
+/*@}*/
 
 
+/** @name General Information
+ *
+ *
+ */
+/*@{*/
 const char *GWEN_SecContext_GetLocalName(GWEN_SECCTX *sc);
 const char *GWEN_SecContext_GetRemoteName(GWEN_SECCTX *sc);
+/*@}*/
+
+
+/** @name Lock Id
+ *
+ * This can be used by a context manager to store the lock id when
+ * locking a context, it is not meant to be used by an application.
+ */
+/*@{*/
+unsigned int GWEN_SecContext_GetLockId(GWEN_SECCTX *sc);
+void GWEN_SecContext_SetLockId(GWEN_SECCTX *sc,
+                               unsigned int id);
+/*@}*/
 
 
 /** @name Local Signature Sequence Counter
@@ -129,11 +176,12 @@ void GWEN_SecContext_SetRemoteSignSeq(GWEN_SECCTX *sc,
 /*@}*/
 
 
-void *GWEN_SecContext_GetData(GWEN_SECCTX *sc);
-void GWEN_SecContext_SetData(GWEN_SECCTX *sc,
-                             void *d);
 
 
+/** @name Virtual Functions
+ *
+ */
+/*@{*/
 
 int GWEN_SecContext_PrepareContext(GWEN_SECCTX *sctx,
                                    GWEN_HBCICRYPTOCONTEXT *ctx,
@@ -162,33 +210,49 @@ int GWEN_SecContext_Decrypt(GWEN_SECCTX *sctx,
 
 int GWEN_SecContext_FromDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
 int GWEN_SecContext_ToDB(GWEN_SECCTX *sc, GWEN_DB_NODE *db);
-
-
-/**
- * The original code (in C++) has been written by Fabian Kaiser for OpenHBCI
- * (file rsakey.cpp). Moved to C by me (Martin Preuss)
- */
-int GWEN_SecContext_PaddWithISO9796(GWEN_BUFFER *src);
-
-
-/** @name Padding for DES
- * These functions are used for padding when encrypting/decrypting data
- * using 2-key-triple-DES.
- */
-/*@{*/
-int GWEN_SecContext_PaddWithANSIX9_23(GWEN_BUFFER *src);
-int GWEN_SecContext_UnpaddWithANSIX9_23(GWEN_BUFFER *src);
 /*@}*/
 
 
+/** @name Padding Functions
+ * These functions are used for padding when encrypting/decrypting data
+ * using 2-key-triple-DES or when signing data.
+ * The original code (in C++) has been written by
+ * <strong>Fabian Kaiser</strong> for <strong>OpenHBCI</strong>
+ * (file rsakey.cpp). Translated to C and slightly modified by me
+ * (Martin Preuss)
+ */
+/*@{*/
+/**
+ */
+int GWEN_SecContext_PaddWithISO9796(GWEN_BUFFER *src);
+
+/**
+ * This function is used to pad the plain text data to a multiple of 8 bytes
+ * size before encryoting it.
+ */
+int GWEN_SecContext_PaddWithANSIX9_23(GWEN_BUFFER *src);
+
+/**
+ * This function is used to remove padding from plain text data after
+ * decrypting it.
+ */
+int GWEN_SecContext_UnpaddWithANSIX9_23(GWEN_BUFFER *src);
+/*@}*/ /* name */
 
 
+/*@}*/ /* defgroup */
 
 
-
+/** @defgroup MOD_SECCTX_MANAGER Security Context Manager
+ *
+ */
+/*@{*/
 typedef struct GWEN_SECCTX_MANAGER GWEN_SECCTX_MANAGER;
 
-
+/** @name Prototypes for Virtual Functions
+ *
+ */
+/*@{*/
 typedef GWEN_SECCTX*
   (*GWEN_SECCTXMGR_GETCONTEXT_FN)(GWEN_SECCTX_MANAGER *scm,
                                   const char *localName,
@@ -206,12 +270,21 @@ typedef int
 
 typedef void
   (*GWEN_SECCTXMGR_FREEDATA_FN)(GWEN_SECCTX_MANAGER *scm);
+/*@}*/
 
 
-
+/** @name Constructor And Destructor
+ *
+ */
+/*@{*/
 GWEN_SECCTX_MANAGER *GWEN_SecContextMgr_new(const char *serviceCode);
 void GWEN_SecContextMgr_free(GWEN_SECCTX_MANAGER *scm);
+/*@}*/
 
+/** @name Setters And Getters For Virtual Functions And Data
+ *
+ */
+/*@{*/
 void GWEN_SecContextMgr_SetGetFn(GWEN_SECCTX_MANAGER *scm,
                                  GWEN_SECCTXMGR_GETCONTEXT_FN fn);
 
@@ -226,8 +299,13 @@ void GWEN_SecContextMgr_SetFreeDataFn(GWEN_SECCTX_MANAGER *scm,
 
 void *GWEN_SecContextMgr_GetData(GWEN_SECCTX_MANAGER *scm);
 void GWEN_SecContextMgr_SetData(GWEN_SECCTX_MANAGER *scm, void *d);
+/*@}*/
 
 
+/** @name Managing Contexts
+ *
+ */
+/*@{*/
 /**
  * This function keeps ownership of the given context, so you MUST NOT free
  * the returned context, if any.
@@ -250,11 +328,22 @@ int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
  */
 int GWEN_SecContextMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
                                   GWEN_SECCTX *sc);
+/*@}*/
 
 
-const char *GWEN_SecContext_GetServiceCode(GWEN_SECCTX_MANAGER *scm);
+/** @name Informational Functions
+ *
+ */
+/*@{*/
+const char *GWEN_SecContextMgr_GetServiceCode(GWEN_SECCTX_MANAGER *scm);
+/*@}*/ /* name */
 
+/*@}*/ /* defgroup */
+/*@}*/ /* defgroup (all) */
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

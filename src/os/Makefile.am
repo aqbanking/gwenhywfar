@@ -27,3 +27,10 @@ iheader_HEADERS=\
  inetaddr.h \
  inetsocket.h \
  libloader.h
+
+noinst_LTLIBRARIES=libos.la
+libos_la_SOURCES=\
+ directory_all.c
+ 
+libos_la_LIBADD=@GWEN_OS@/libosimpl.la
+

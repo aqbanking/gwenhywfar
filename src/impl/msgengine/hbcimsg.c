@@ -553,7 +553,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   scm=GWEN_HBCIDialog_GetSecurityManager(hmsg->dialog);
   assert(scm);
   GWEN_HBCICryptoContext_SetServiceCode(ctx,
-                                        GWEN_SecContext_GetServiceCode(scm));
+                                        GWEN_SecContextMgr_GetServiceCode(scm));
   sc=GWEN_SecContextMgr_GetContext(scm,
                                    GWEN_KeySpec_GetOwner(ks),
                                    GWEN_HBCIDialog_GetRemoteName(hmsg->dialog));
@@ -734,7 +734,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   scm=GWEN_HBCIDialog_GetSecurityManager(hmsg->dialog);
   assert(scm);
   GWEN_HBCICryptoContext_SetServiceCode(ctx,
-                                        GWEN_SecContext_GetServiceCode(scm));
+                                        GWEN_SecContextMgr_GetServiceCode(scm));
   sc=GWEN_SecContextMgr_GetContext(scm,
                                    GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
                                    GWEN_KeySpec_GetOwner(hmsg->crypter));
@@ -1348,7 +1348,7 @@ int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr){
   /* decrypt */
   ctx=GWEN_HBCICryptoContext_new();
   GWEN_HBCICryptoContext_SetServiceCode(ctx,
-                                        GWEN_SecContext_GetServiceCode(scm));
+                                        GWEN_SecContextMgr_GetServiceCode(scm));
 
   nhead=GWEN_DB_GetGroup(gr,
                          GWEN_DB_FLAGS_DEFAULT |
@@ -1678,7 +1678,7 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
     /* prepare context */
     ctx=GWEN_HBCICryptoContext_new();
     GWEN_HBCICryptoContext_SetServiceCode(ctx,
-                                          GWEN_SecContext_GetServiceCode(scm));
+                                          GWEN_SecContextMgr_GetServiceCode(scm));
     if (GWEN_HBCIMsg_PrepareCryptoSegDec(hmsg, ctx, sighead, 0)) {
       GWEN_HBCICryptoContext_free(ctx);
       GWEN_Buffer_free(sigbuf);

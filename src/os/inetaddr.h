@@ -43,7 +43,7 @@ extern "C" {
 
 
 /**
- * @defgroup inetaddr Internet Address Module
+ * @defgroup MOD_INETADDR Internet Address Module
  * @short This module handles internet addresses
  *
  * This module allows using of internet IP addresses. It is also capable of
@@ -52,6 +52,8 @@ extern "C" {
  */
 /*@{*/
 
+/** @name Error Codes */
+/*@{*/
 #define GWEN_INETADDR_ERROR_TYPE "InetAddr"
 #define GWEN_INETADDR_ERROR_MEMORY_FULL          1
 #define GWEN_INETADDR_ERROR_BAD_ADDRESS          2
@@ -63,12 +65,15 @@ extern "C" {
 #define GWEN_INETADDR_ERROR_UNKNOWN_DNS_ERROR    8
 #define GWEN_INETADDR_ERROR_BAD_ADDRESS_FAMILY   9
 #define GWEN_INETADDR_ERROR_UNSUPPORTED          10
+/*@}*/
 
 /**
  * Address family (in most cases this is AddressFamilyIP)
  */
 typedef enum {
+  /** Internet Protocol (IP) */
   GWEN_AddressFamilyIP=0,
+  /* Unix Domain Socket */
   GWEN_AddressFamilyUnix
 } GWEN_AddressFamily;
 

@@ -43,12 +43,14 @@ extern "C" {
 
 
 /**
- * @defgroup socksandsets Sockets and Socket Sets
+ * @defgroup MOD_SOCKETSANDSETS Sockets and Socket Sets
  *
  * This module handles sockets and socket sets.
  * @{
  */
 
+/** @name Error Codes */
+/*@{*/
 #define GWEN_SOCKET_ERROR_TYPE "Socket"
 #define GWEN_SOCKET_ERROR_BAD_SOCKETTYPE (-1)
 #define GWEN_SOCKET_ERROR_NOT_OPEN       (-2)
@@ -57,10 +59,11 @@ extern "C" {
 #define GWEN_SOCKET_ERROR_STARTUP        (-5)
 #define GWEN_SOCKET_ERROR_INTERRUPTED    (-6)
 #define GWEN_SOCKET_ERROR_UNSUPPORTED    (-7)
+/*@}*/
 
 
 /**
- *
+ * Socket types
  */
 GWENHYFWAR_API typedef enum {
   GWEN_SocketTypeTCP=1,
@@ -76,7 +79,7 @@ GWENHYFWAR_API typedef struct GWEN_SOCKETSETSTRUCT GWEN_SOCKETSET;
 
 
 /**
- * @defgroup socketset Socket Set Functions
+ * @defgroup MOD_SOCKETSET Socket Set Functions
  *
  * These functions operate on socket sets. A socket set is used by the socket
  * function @ref GWEN_Socket_Select() to check on which socket changes in state
@@ -118,7 +121,7 @@ GWENHYFWAR_API int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
 
 
 /**
- * @defgroup socket Socket Functions
+ * @defgroup MOD_SOCKET Socket Functions
  *
  * This group operates on IP sockets.
  * @{
@@ -169,7 +172,7 @@ GWENHYFWAR_API
 
 /**
  * This accepts a new connection on the given socket. This socket must be
- * listening (achieved by calling @ref GWEN_GWEN_Socket_Listen).
+ * listening (achieved by calling @ref GWEN_Socket_Listen).
  * @param sp socket which is listening
  * @param addr pointer to a pointer to an address. Upon return this pointer
  * will point to a newly allocated address containing the address of the
@@ -195,8 +198,19 @@ GWENHYFWAR_API
  */
 /*@{*/
 
+/**
+ * Returns the socket type.
+ * @param sp socket
+ */
 GWENHYFWAR_API GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp);
 
+/**
+ * Retrieves the peer's address
+ * @param sp socket
+ * @param addr pointer to a pointer to an @ref GWEN_INETADDRESS.
+ * Upon successful return that pointer will point to the address of the
+ * peer. In that case the caller is responsible for freeing that address.
+ */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
                                          GWEN_INETADDRESS **addr);
@@ -217,14 +231,16 @@ GWENHYFWAR_API
 
 /**
  * Wait until the given socket becomes readable or a timeout occurrs.
- * @param timout please see @ref GWEN_Socket_Select for details
+ * @param sp socket
+ * @param timeout please see @ref GWEN_Socket_Select for details
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout);
 
 /**
  * Wait until the given socket becomes writeable or a timeout occurrs.
- * @param timout please see @ref GWEN_Socket_Select for details
+ * @param sp socket
+ * @param timeout please see @ref GWEN_Socket_Select for details
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout);
@@ -240,6 +256,7 @@ GWENHYFWAR_API
 
 /**
  * Read bytes from a socket.
+ * @param sp socket
  * @param buffer pointer to the buffer to receive the data
  * @param bsize pointer to an integer variable. Upon call this should hold
  * the number of bytes to read, upon return it will contain the number of
@@ -251,6 +268,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_Read(GWEN_SOCKET *sp,
 
 /**
  * Write bytes to an open socket.
+ * @param sp socket
  * @param buffer pointer to a buffer containing the bytes to be written
  * @param bsize pointer to an integer variable containing the number of bytes
  * to write. Upon return this variable holds the number of bytes actually
@@ -262,6 +280,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_Write(GWEN_SOCKET *sp,
 
 /**
  * Reads bytes from an UDP socket, which is connectionless.
+ * @param sp socket
  * @param addr pointer to pointer to an address to receive the address of the
  * peer we have received data from.
  * Please note that if upon return this value is !=NULL then you are
@@ -278,6 +297,7 @@ GWENHYFWAR_API
                                       int *bsize);
 /**
  * Writes data to an UDP socket, which is connectionless.
+ * @param sp socket
  * @param addr pointer to the address struct specifying the recipient
  * @param buffer pointer to a buffer containing the bytes to be written
  * @param bsize pointer to an integer variable containing the number of bytes
@@ -297,12 +317,42 @@ GWENHYFWAR_API
  * These functions manipulate settings on a socket.
  */
 /*@{*/
+/**
+ * Toggles the sockets blocking/non-blocking mode.
+ * @param sp socket
+ * @param fl if 0 then nonblocking is requested, otherwise blocking is assumed
+ */
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
                                                       int fl);
+/**
+ * Toggles the sockets broadcast/non-broadcast mode.
+ * If in broadcast mode (for UDP sockets only) the socket is able to receive
+ * packets that have been sent to a broadcast address, otherwise those
+ * packets are ignored.
+ * @param sp socket
+ * @param fl if nonzero then broadcast is enabled
+ */
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp,
                                                        int fl);
+
+/**
+ * Returns a pending socket error. This is used when trying to connect to
+ * a server when in non-blocking mode. In this case the connect call will
+ * in some cases return with an error code indicating that the connect is in
+ * progress. Later you will then need to find out whether that connect
+ * succeeded or not. And this is the function which can tell you that ;-)
+ * @param sp socket
+ */
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_GetSocketError(GWEN_SOCKET *sp);
 
+/**
+ * Normally after closing a socket the occupied TCP/UDP port will be
+ * unavailable for another call to the system function bind (2).
+ * If reusing is allowed then this latency is removed. This function is
+ * usefull for servers.
+ * @param sp socket
+ * @param fl if nonzero then reusing the address is enabled
+ */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl);
 /*@}*/

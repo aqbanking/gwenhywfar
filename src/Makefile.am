@@ -20,7 +20,7 @@ libgwenhywfar_la_LIBADD=\
   crypt/libcrypt.la \
   io/libio.la \
   ipc/libipc.la \
-  @gwenhywfar_os_lib@ \
+  os/libos.la \
   parser/libparser.la \
   impl/ipc/libimplipc.la \
   impl/msgengine/libimplmsg.la  @all_libraries@

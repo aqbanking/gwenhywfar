@@ -80,11 +80,43 @@ void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
  * @short Provides secure interprocess communication
  * @author Martin Preuss<martin@libchipcard.de>
  *
- * The functions in this group provide a secure IPC mechanism.
+ * <p>The functions in this group provide a secure IPC mechanism.
  * IPC messages are defined in an XML file and parsed by a
  * @ref GWEN_MSGENGINE.
  * This IPC services allows signing and encrpyting messages.
- * You can use TCP sockets or Unix Domain sockets for the communication.
+ * You can use TCP sockets or unix domain sockets for communication.</p>
+ *
+ * <p>The usual way of using this module is this:
+ * <ol type="1" >
+ *  <li>
+ *   setup a @ref GWEN_MSGENGINE (create it, load appropriate XML files etc)
+ *  </li>
+ *  <li>
+ *   setup a @ref GWEN_SECCTX_MANAGER (create it, load and add security
+ *   contexts etc)
+ *  </li>
+ *  <li>
+ *   call @ref GWEN_IPCXMLService_AddServer or
+ *   @ref GWEN_IPCXMLService_AddClient as often as required
+ *  </li>
+ *  <li>
+ *   call @ref GWEN_IPCXMLService_SetRemoteName as soon as you know to whom
+ *   you are talking
+ *  </li>
+ *  <li>
+ *   call @ref GWEN_IPCXMLService_SetSecurityFlags to choose whether you want
+ *   encryption and signing take place
+ *  </li>
+ *  <li>
+ *   start sending or awaiting requests and responses by calling one of
+ *   @ref GWEN_IPCXMLService_AddRequest, @ref GWEN_IPCXMLService_AddResponse
+ *   and @ref GWEN_IPCXMLService_GetNextRequest.<br>
+ *   Please remember to delete
+ *   requests which have been completely handled by calling
+ *   @ref GWEN_IPCXMLService_DeleteRequest.
+ *  </li>
+ * </ol>
+ * </p>
  */
 /*@{*/
 
@@ -117,12 +149,16 @@ typedef enum {
 /*@{*/
 /**
  * Creates new IPC service.
- * @param scm security context manager. This one will be used to lookup
- * security context objects which are then to perform signing, encrypting,
- * decrypting and so on.
  * You MUST call @ref GWEN_IPCXMLService_free in order to prevent memory
  * leaks (a simple <i>free</i> does not free all.the data associated with
  * an IPC service).
+ * @param msgEngine pointer to a message engine to be used for creating
+ * and parsing the IPC messages.
+ * This function DOES NOT take over ownership of that pointer !
+ * @param scm security context manager. This one will be used to lookup
+ * security context objects which are then to perform signing, encrypting,
+ * decrypting and so on.
+ * This function DOES NOT take over ownership of that pointer !
  */
 GWEN_IPCXMLSERVICE *GWEN_IPCXMLService_new(GWEN_MSGENGINE *msgEngine,
                                            GWEN_SECCTX_MANAGER *scm);
@@ -157,6 +193,7 @@ void GWEN_IPCXMLService_free(GWEN_IPCXMLSERVICE *xs);
  * listens for incoming connections and accepts them.
  * @return new connection id (or 0 on error)
  * @param xs Pointer to the service to use
+ * @param st connection type (in this case the socket type to be used)
  * @param localName name of the local context. This is the name of the
  * owner of the local keys. These keys are looked up in the service's
  * context manager.
@@ -185,6 +222,7 @@ unsigned int GWEN_IPCXMLService_AddServer(GWEN_IPCXMLSERVICE *xs,
  * actively connects to a running server.
  * @return new connection id (or 0 on error)
  * @param xs Pointer to the service to use
+ * @param st connection type (in this case the socket type to be used)
  * @param localName name of the local context. This is the name of the
  * owner of the local keys. These keys are looked up in the service's
  * context manager.
@@ -201,7 +239,7 @@ unsigned int GWEN_IPCXMLService_AddServer(GWEN_IPCXMLSERVICE *xs,
  */
 unsigned int GWEN_IPCXMLService_AddClient(GWEN_IPCXMLSERVICE *xs,
                                           GWEN_IPCXMLSERVICE_TYPE st,
-                                          const char *localContext,
+                                          const char *localName,
                                           unsigned int userMark,
                                           const char *addr,
                                           unsigned int port,
@@ -333,14 +371,59 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
  *
  */
 /*@{*/
+/**
+ * Set security flags on a given connection.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ * @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param flags flags to set as define in gwenhywfar/hbcimsg.h.
+ * Flags can be one or more of the follwoing values (OR combined):
+ * <ul>
+ *  <li>@ref GWEN_HBCIMSG_FLAGS_SIGN (sign outgoing messages)</li>
+ *  <li>@ref GWEN_HBCIMSG_FLAGS_CRYPT (encrypt outgoing messages)</li>
+ * </ul>
+ */
 GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityFlags(GWEN_IPCXMLSERVICE *xs,
                                                    unsigned int clid,
                                                    unsigned int flags);
 
+/**
+ * Returns the local name for the given connection.
+ * The local name determines which context (and which keys) are to be used
+ * when decrypting received messages and signing outgoing messages.
+ * This local name is set upon creation of the connection via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ */
 const char *GWEN_IPCXMLService_GetLocalName(GWEN_IPCXMLSERVICE *xs,
                                             unsigned int clid);
+
+/**
+ * Returns the remote name for the connection.
+ * The remote name determines whcih context (and keys) are to be used when
+ * encrypting outgoing messages and verifying signatures of incoming
+ * messages. It is reset whenever the physical connection is lost.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ */
 const char *GWEN_IPCXMLService_GetRemoteName(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int clid);
+
+/**
+ * Sets the remote name for the given connection.
+ * The remote name determines which context (and keys) are to be used when
+ * encrypting outgoing messages.
+ * It is reset whenever the physical connection is lost.
+ * You MUST set the remote name if you want to enter a secure mode (using
+ * signatures and encryption).
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param s new remote name
+ */
 void GWEN_IPCXMLService_SetRemoteName(GWEN_IPCXMLSERVICE *xs,
                                       unsigned int clid,
                                       const char *s);
@@ -351,15 +434,42 @@ void GWEN_IPCXMLService_SetRemoteName(GWEN_IPCXMLSERVICE *xs,
 /** @name Work
  *
  *
+ * <p>Since the IPC mechanism provided by a GWEN_IPCXMLSERVICE is plain
+ * single-threaded your application needs to periodically give this library
+ * an opportunity to do its work.</p>
+ * <p>This group contains functions which do the input/output and functions
+ * which handle incoming messages by sorting them into internal request
+ * lists.</p>
  */
 /*@{*/
+/**
+ * This function does all the physical reading and writing. It also
+ * handles incoming connections. You should call this function every once in a
+ * while if you want sending/receiving messages to actually take place.
+ * @param xs Pointer to the service to use
+ * @param timeout time to wait for sockets in milliseconds (in most cases this
+ * function uses the system call <i>select</i>, in this case this parameter
+ * is used as a timeout value). If <i>0</i> then this function won't wait
+ * at all, if <i>-1</i> it will probably wait forever (or just until any
+ * socket is readable or writable ;-).
+ */
 GWEN_ERRORCODE GWEN_IPCXMLService_Work(GWEN_IPCXMLSERVICE *xs,
                                        int timeout);
 
+/**
+ * This function checks for messages received by the message layers and
+ * handles them. If an incoming message is a response to a previously
+ * sent request then it will be sorted into that request as a response.
+ * Otherwise the message will be enqueued as a new incoming request.
+ * Messages which pretend to be a response but for which no request can
+ * be found (either because there never was such a request or the request has
+ * meanwhile been deleted) are silently dropped (well, not completely silenty,
+ * they will be logged but dismissed).
+ */
 GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int userMark,
                                              int maxmsgs);
-/*@}*/
+/*@}*/ /* name */
 
 /*@}*/ /* defgroup */
 

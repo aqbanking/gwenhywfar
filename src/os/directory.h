@@ -44,6 +44,12 @@ extern "C" {
 GWENHYFWAR_API typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
 
 
+/**
+ * @defgroup MOD_DIRECTORY Directory Functions
+ * @short Provides secure interprocess communication
+ * @author Martin Preuss<martin@libchipcard.de>
+ */
+/*@{*/
 
 /**
  * Constructor.
@@ -105,6 +111,18 @@ GWENHYFWAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
  * @return 0 if ok, !=0 on error
  */
 int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size);
+
+/**
+ * Gets a file path. It uses @ref MOD_PATH to either create or check for
+ * the existence of a given path.
+ * @return 0 if ok, !=0 on error
+ * @param path path to inspect
+ * @param flags flags, please see @ref GWEN_PATH_FLAGS_PATHMUSTEXIST et. al.
+ */
+int GWEN_Directory_GetPath(const char *path, unsigned int flags);
+
+
+/*@}*/ /* defgroup */
 
 
 #ifdef __cplusplus

@@ -42,6 +42,7 @@ struct GWEN_SECCTX {
   char *localName;
   char *remoteName;
   void *data;
+  unsigned int lockId;
 
   GWEN_SECCTX_PREPARECTX_FN prepareFn;
   GWEN_SECCTX_SIGN_FN signFn;

@@ -579,7 +579,7 @@ int GWEN_SecContextMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
 
 
 
-const char *GWEN_SecContext_GetServiceCode(GWEN_SECCTX_MANAGER *scm){
+const char *GWEN_SecContextMgr_GetServiceCode(GWEN_SECCTX_MANAGER *scm){
   assert(scm);
   return scm->serviceCode;
 }

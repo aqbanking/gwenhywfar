@@ -26,7 +26,21 @@
  ***************************************************************************/
 
 
-/** @file db.h
+/** @file gwenhywfar/db.h */
+
+#ifndef GWENHYFWAR_DB_H
+#define GWENHYFWAR_DB_H
+
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/path.h>
+#include <gwenhywfar/bufferedio.h>
+#include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** @defgroup MOD_DB Database
  *
  * @brief This file contains the definition of a GWEN_DB database.
  *
@@ -54,26 +68,14 @@
  * GWEN_DB_GetBinValue(). These functions only accept a group  and a "path"
  * to the desired variable.
  */
-
-#ifndef GWENHYFWAR_DB_H
-#define GWENHYFWAR_DB_H
-
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/path.h>
-#include <gwenhywfar/bufferedio.h>
-#include <stdio.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+/*@{*/
 /** maximum size of a text line when reading/writing from/to streams */
 #define GWEN_DB_LINE_MAXSIZE  1024
 
 /** @name DB Flags
  *
  * Please note that the setter functions also take the flags from
- * the module GWEN_PATH into account. So you most likely need to specify
+ * the module @ref MOD_PATH into account. So you most likely need to specify
  * them, too.
  */
 /*@{*/
@@ -105,8 +107,6 @@ extern "C" {
 #define GWEN_DB_FLAGS_OMIT_TYPES             0x04000000
 /** appends data to an existing file instead of overwriting it */
 #define GWEN_DB_FLAGS_APPEND_FILE            0x08000000
-/*@}*/
-
 
 /** These are the default flags which you use in most cases */
 #define GWEN_DB_FLAGS_DEFAULT \
@@ -129,6 +129,7 @@ extern "C" {
 #define GWEN_DB_FLAGS_HTTP \
   GWEN_DB_FLAGS_USE_COLON |\
   GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE
+/*@}*/
 
 
 /**
@@ -165,12 +166,14 @@ typedef enum {
  * Creates a new (empty) group with the given name. I.e. this is the
  * constructor.  When finished using this group, you should free it
  * using @ref GWEN_DB_Group_free() in order to avoid memory leaks.
+ * @param name name of the group to create
  */
 GWEN_DB_NODE *GWEN_DB_Group_new(const char *name);
 
 /**
  * Frees a DB group. I.e. this is the destructor. This is needed to
  * avoid memory leaks.
+ * @param n db node
  */
 void GWEN_DB_Group_free(GWEN_DB_NODE *n);
 
@@ -178,6 +181,7 @@ void GWEN_DB_Group_free(GWEN_DB_NODE *n);
  * Creates a deep copy of the given node. This copy will then be owned
  * by the caller and MUST be freed after using it by calling @ref
  * GWEN_DB_Group_free().
+ * @param n db node
  */
 GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
 /*@}*/
@@ -191,18 +195,21 @@ GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
 /**
  * Returns the first group below the given one.
  * If there is no group then NULL is returned.
+ * @param n db node
  */
 GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n);
 
 /**
  * Returns the first group following the given one.
  * If there is no group then NULL is returned.
+ * @param n db node
  */
 GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n);
 
 /**
  * Returns the first variable below the given group.
  * If there is no variable then NULL is returned.
+ * @param n db node
  */
 GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n);
 
@@ -210,6 +217,7 @@ GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n);
 /**
  * Returns the next variable following the given one.
  * If there is no variable then NULL is returned.
+ * @param n db node
  */
 GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
 
@@ -224,17 +232,20 @@ GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
 /**
  * Returns the first value below the given variable.
  * If there is no value then NULL is returned.
+ * @param n db node
  */
 GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
 
 /**
  * Returns the next value following the given one.
  * If there is no value then NULL is returned.
+ * @param n db node
  */
 GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n);
 
 /**
  * Returns the type of the given value.
+ * @param n db node
  */
 GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
 
@@ -304,15 +315,24 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
  * </ul>
  */
 /*@{*/
-/** Returns the variable's retrieved value.
+/**
+ * Returns the variable's retrieved value.
+ * @param n db node
+ * @param path path and name of the variable
+ * @param idx index number of the value to return
+ * @param defVal default value to return in case there is no real value
  */
 const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
                                  const char *path,
                                  int idx,
                                  const char *defVal);
 /**
- * @param val The string value that is copied into the DB
  * @return 0 on success, nonzero on error
+ * @param n db node
+ * @param flags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
+ * @param path path and name of the variable
+ * @param val The string value that is copied into the DB
  */
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          unsigned int flags,
@@ -320,7 +340,12 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          const char *val);
 
 
-/** Returns the variable's retrieved value.
+/**
+ * Returns the variable's retrieved value.
+ * @param n db node
+ * @param path path and name of the variable
+ * @param idx index number of the value to return
+ * @param defVal default value to return in case there is no real value
  */
 int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
                         const char *path,
@@ -329,6 +354,11 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
 
 /**
  * @return 0 on success, nonzero on error
+ * @param n db node
+ * @param flags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
+ * @param path path and name of the variable
+ * @param val new value
  */
 int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
                         unsigned int flags,
@@ -336,8 +366,16 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
                         int val);
 
 
-/** Returns the variable's retrieved value. The size of the binary
+/**
+ * Returns the variable's retrieved value. The size of the binary
  * data is written into the int pointer argument returnValueSize.
+ * @param n db node
+ * @param path path and name of the variable
+ * @param idx index number of the value to return
+ * @param defVal default value to return in case there is no real value
+ * @param defValSize size of the default value
+ * @param returnValueSize pointer to a variable to receive the length
+ * of the data returned
  */
 const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
                                 const char *path,
@@ -347,6 +385,10 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
                                 unsigned int *returnValueSize);
 
 /**
+ * @param n db node
+ * @param path path and name of the variable
+ * @param flags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
  * @param val The binary data that is copied into the DB.
  * @param valSize The number of bytes in the binary data value.
  *
@@ -370,6 +412,10 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
  * This function either creates a new group, returns an existing one or
  * returns an error if there is no group but the caller wanted one (depending
  * on the flags given).
+ * @param n db node
+ * @param flags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
+ * @param path path and name of the group to be created/located
  */
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
                                unsigned int flags,
@@ -382,6 +428,8 @@ const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);
 
 /**
  * Renames the given group.
+ * @param n db node
+ * @param newname new name for the group
  */
 void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname);
 
@@ -390,6 +438,8 @@ void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname);
  *
  * @note This function takes over the ownership of the new group, so
  * you MUST NOT free it afterwards.
+ * @param n db node
+ * @param nn node to add
  */
 int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
 
@@ -399,6 +449,8 @@ int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
  *
  * @note This function does NOT take over ownership of the new
  * group. The caller is still the owner of the given group.
+ * @param n db node
+ * @param nn node whose children are to be added (makes deep copies)
  */
 int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
 
@@ -409,18 +461,22 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
  * This function DOES NOT free the group, it just unlinks it. You can then use
  * it with e.g. @ref GWEN_DB_AddGroup or other functions to relink it at any
  * other position of even in other DBs.
+ * @param n db node
  */
 void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n);
 
 /**
  * Locates and removes the group of the given name.
  * @return 0 on success, nonzero on error
+ * @param n db node
+ * @param path path to the group to delete
  */
 int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
                         const char *path);
 /**
  * Frees all children of the given node thereby clearing it.
  * @return 0 on success, nonzero on error
+ * @param n db node
  * @param path path to the group under the given node to clear
  * (if 0 then clear the given node)
  */
@@ -440,25 +496,46 @@ int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
  */
 /*@{*/
 
-/** Read a DB from GWEN_BUFFEREDIO.
+/**
+ * Read a DB from GWEN_BUFFEREDIO.
+ * @param n db node
+ * @param bio buffered IO to use
+ * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
  */
 int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                            GWEN_BUFFEREDIO *bio,
                            unsigned int dbflags);
 
-/** Read a DB from a file.
+/**
+ * Read a DB from a file.
+ * @param n db node
+ * @param fname path and name of the file to load
+ * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
  */
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      const char *fname,
                      unsigned int dbflags);
 
-/** Write a DB to a GWEN_BUFFEREDIO.
+/**
+ * Write a DB to a GWEN_BUFFEREDIO.
+ * @param n db node
+ * @param bio buffered IO to use
+ * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
  */
-int GWEN_DB_WriteToStream(GWEN_DB_NODE *node,
+int GWEN_DB_WriteToStream(GWEN_DB_NODE *n,
                           GWEN_BUFFEREDIO *bio,
                           unsigned int dbflags);
 
-/** Write a DB to a file.
+/**
+ * Write a DB to a file.
+ * @param n db node
+ * @param fname path and name of the file to create. If it already exists
+ * it will be overwritten
+ * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
  */
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
@@ -476,10 +553,13 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
 /**
  * Dumps the content of the given DB to the given file (e.g. stderr).
  * @param n node to dump
- * @param f destination file
+ * @param f destination file (e.g. stderr)
  * @param insert number of blanks to insert at every line
  */
 void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
+/*@}*/
+
+
 /*@}*/
 
 

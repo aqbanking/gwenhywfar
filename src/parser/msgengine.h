@@ -37,15 +37,17 @@
 extern "C" {
 #endif
 
+/** @defgroup MOD_MSGENGINE_ALL Message Engine
+ *
+ * This group contains function providing creating and parsing messages
+ * based on an XML-alike file.
+ */
+/*@{*/
 
-#define GWEN_MSGENGINE_SHOW_FLAGS_NOSET 0x0001
-#define GWEN_MSGENGINE_MAX_VALUE_LEN    8192
-
-#define GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO 0x0001
-#define GWEN_MSGENGINE_READ_FLAGS_DEFAULT 0
-
-
-typedef struct GWEN__MSGENGINE GWEN_MSGENGINE;
+/** @defgroup MOD_TRUSTDATA Trust Data Handling
+ *
+ */
+/*@{*/
 typedef struct GWEN_MSGENGINE_TRUSTEDDATA GWEN_MSGENGINE_TRUSTEDDATA;
 typedef enum {
   GWEN_MsgEngineTrustLevelNone=0,
@@ -92,11 +94,35 @@ int GWEN_MsgEngine_TrustedData_GetNextPos(GWEN_MSGENGINE_TRUSTEDDATA *td);
 int
   GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
                                                 *td);
+/*@}*/ /* defgroup */
 
 
 
+#define GWEN_MSGENGINE_SHOW_FLAGS_NOSET 0x0001
+#define GWEN_MSGENGINE_MAX_VALUE_LEN    8192
+
+/** @name Read Flags
+ */
+/*@{*/
+#define GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO 0x0001
+#define GWEN_MSGENGINE_READ_FLAGS_DEFAULT 0
+/*@}*/
 
 
+/** @defgroup MOD_MSGENGINE Message Engine
+ *
+ */
+/*@{*/
+
+typedef struct GWEN__MSGENGINE GWEN_MSGENGINE;
+
+/** @name Virtual Functions
+ *
+ * A message engine contains some pointers to functions which allow
+ * extending the functionality of a message engine (like virtual functions
+ * in C++)
+ */
+/*@{*/
 typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
                                            GWEN_BUFFER *msgbuf,
                                            GWEN_XMLNODE *node,
@@ -121,12 +147,21 @@ typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
                                                GWEN_XMLNODE *node,
                                                GWEN_DB_NODE *gr,
                                                GWEN_BUFFER *dbuf);
+/*@}*/
 
 
-
+/** @name Constructor And Destructor
+ *
+ */
+/*@{*/
 GWEN_MSGENGINE *GWEN_MsgEngine_new();
 void GWEN_MsgEngine_free(GWEN_MSGENGINE *e);
+/*@}*/
 
+/** @name Setters And Getters
+ *
+ */
+/*@{*/
 void GWEN_MsgEngine_SetEscapeChar(GWEN_MSGENGINE *e, char c);
 char GWEN_MsgEngine_GetEscapeChar(GWEN_MSGENGINE *e);
 
@@ -149,7 +184,13 @@ void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e,
 
 int GWEN_MsgEngine_AddDefinitions(GWEN_MSGENGINE *e,
                                   GWEN_XMLNODE *node);
+/*@}*/
 
+
+/** @name Setters For Virtual Functions: Extending Data Type Handling
+ *
+ */
+/*@{*/
 void GWEN_MsgEngine_SetTypeReadFunction(GWEN_MSGENGINE *e,
                                         GWEN_MSGENGINE_TYPEREAD_PTR p);
 GWEN_MSGENGINE_TYPEREAD_PTR
@@ -159,9 +200,10 @@ void GWEN_MsgEngine_SetTypeWriteFunction(GWEN_MSGENGINE *e,
                                          GWEN_MSGENGINE_TYPEWRITE_PTR p);
 GWEN_MSGENGINE_TYPEWRITE_PTR
   GWEN_MsgEngine_GetTypeWriteFunction(GWEN_MSGENGINE *e);
+/*@}*/ /* Extending Data Type Handling */
 
 
-/** @name Handler for binary data
+/** @name Setters For Virtual Functions: Extending Binary Data Handling
  *
  */
 /*@{*/
@@ -174,12 +216,20 @@ void GWEN_MsgEngine_SetBinTypeWriteFunction(GWEN_MSGENGINE *e,
                                             GWEN_MSGENGINE_BINTYPEWRITE_PTR p);
 GWEN_MSGENGINE_BINTYPEWRITE_PTR
   GWEN_MsgEngine_GetBinTypeWriteFunction(GWEN_MSGENGINE *e);
-/*@}*/
+/*@}*/  /* Extending Binary Data Handling */
 
 
+/** @name Extending GWEN_MSGENGINE
+ */
+/*@{*/
 void *GWEN_MsgEngine_GetInheritorData(GWEN_MSGENGINE *e);
 void GWEN_MsgEngine_SetInheritorData(GWEN_MSGENGINE *e, void *d);
+/*@}*/
 
+/** @name Locating XML Nodes And Properties
+ *
+ */
+/*@{*/
 GWEN_XMLNODE *GWEN_MsgEngine_FindGroupByProperty(GWEN_MSGENGINE *e,
                                                  const char *pname,
                                                  int version,
@@ -195,7 +245,21 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
                                                 const char *pname,
                                                 int version,
                                                 const char *pvalue);
+/**
+ * Searches for a property in "node" and in "refnode" and all its parents.
+ * If topdown is 0 then the nearest value is used, otherwise the farest
+ * one is used.
+ */
+const char *GWEN_MsgEngine_SearchForProperty(GWEN_XMLNODE *node,
+                                             GWEN_XMLNODE *refnode,
+                                             const char *name,
+                                             int topDown);
+/*@}*/
 
+/** @name Getters And Setters for Global Variables
+ *
+ */
+/*@{*/
 /**
  * Set a global variable which will be used for "$"-Variables in description
  * files.
@@ -212,8 +276,13 @@ const char *GWEN_MsgEngine_GetValue(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
                                const char *path,
                                int defValue);
+/*@}*/
 
 
+/** @name Parsing, Listing And Creating Messages
+ *
+ */
+/*@{*/
 int GWEN_MsgEngine_CreateMessage(GWEN_MSGENGINE *e,
                                  const char *msgName,
                                  int msgVersion,
@@ -225,6 +294,9 @@ int GWEN_MsgEngine_CreateMessageFromNode(GWEN_MSGENGINE *e,
                                          GWEN_BUFFER *gbuf,
                                          GWEN_DB_NODE *msgData);
 
+/**
+ * Deprecated, use @ref GWEN_MsgEngine_ListMessage instead.
+ */
 int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
                                const char *typ,
                                const char *msgName,
@@ -287,11 +359,14 @@ int GWEN_MsgEngine_SkipSegment(GWEN_MSGENGINE *e,
  * be multiple groups with the same name if a given segment type occurs more
  * often than once.
  * @return 0 if ok, -1 on error and 1 if no segment was available
+ * @param e message engine
  * @param gtype typename for segments (most callers use "SEG")
  * @param mbuf GWEN_BUFFER containing the message. Parsing is started at
  * the current position within the buffer, so please make sure that this
  * pos is set to the beginning of the message before calling this function.
  * @param gr database to store information parsed from the given message
+ * @param flags see @ref GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO and
+ *  @ref GWEN_MSGENGINE_READ_FLAGS_DEFAULT
  */
 int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                const char *gtype,
@@ -309,19 +384,13 @@ GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
                                          const char *msgName,
                                          int msgVersion,
                                          unsigned int flags);
+/*@}*/
 
 
-/**
- * Searches for a property in "node" and in "refnode" and all its parents.
- * If topdown is 0 then the nearest value is used, otherwise the farest
- * one is used.
+/** @name Handling Trust Information
+ *
  */
-const char *GWEN_MsgEngine_SearchForProperty(GWEN_XMLNODE *node,
-                                             GWEN_XMLNODE *refnode,
-                                             const char *name,
-                                             int topDown);
-
-
+/*@{*/
 /**
  * This function returns trust info gathered while parsing a message.
  * The caller of this function takes over ownership of this list of
@@ -340,6 +409,11 @@ int GWEN_MsgEngine_AddTrustInfo(GWEN_MSGENGINE *e,
                                 const char *description,
                                 GWEN_MSGENGINE_TRUSTLEVEL trustLevel,
                                 unsigned int pos);
+
+/*@}*/ /* Handling Trust Information */
+/*@}*/ /* defgroup */
+/*@}*/ /* defgroup (yes, twice) */
+
 
 #ifdef __cplusplus
 }

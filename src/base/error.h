@@ -71,7 +71,7 @@ GWENHYFWAR_API typedef const char* (*GWEN_ERRORMESSAGEPTR)(int c);
 
 
 /**
- * @defgroup mod_error Error module
+ * @defgroup MOD_ERROR Error module
  * @short This module does all error handling
  * @author Martin Preuss<martin@libchipcard.de>
  *
@@ -272,6 +272,7 @@ GWENHYFWAR_API void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v);
  * ERRORCODE.
  * @return 1 detailed error message created. If some parts of the ERRORCODE
  * could not be translated (e.g. unassigned type number etc) a 0 is returned.
+ * @param c error code
  * @param buffer pointer to a buffer to receive the message
  * @param bsize size of that buffer in bytes
  */
