@@ -72,9 +72,17 @@ extern "C" {
 
 /**
  * if this bit is set then the last element of the path is created in any
- * case. This may lead to double entries of the last element.
+ * case (this is for groups).
+ * This may lead to double entries of the last element.
  */
-#define GWEN_PATH_FLAGS_NAMECREATE             0x00000020
+#define GWEN_PATH_FLAGS_CREATE_GROUP            0x00000020
+
+/**
+ * if this bit is set then the last element of the path is created in any
+ * case (this is for variables).
+ * This may lead to double entries of the last element.
+ */
+#define GWEN_PATH_FLAGS_CREATE_VAR              0x00000040
 
 
 /**
@@ -83,20 +91,19 @@ extern "C" {
  * is called by @ref GWEN_Path_Handle then this flag is modified
  * to reflect the type of the current path element.
  */
-#define GWEN_PATH_FLAGS_VARIABLE               0x00000040
-
+#define GWEN_PATH_FLAGS_VARIABLE                0x00000080
 
 /**
  * @internal
  */
-#define GWEN_PATH_FLAGS_INTERNAL               0x0000ff00
+#define GWEN_PATH_FLAGS_INTERNAL               0x0000f000
 
 /**
  * @internal
  * this is flagged for the path function. If this is set then the
  * element given is the last one, otherwise it is not.
  */
-#define GWEN_PATH_FLAGS_LAST                   0x00000100
+#define GWEN_PATH_FLAGS_LAST                   0x00001000
 
 /*@}*/
 

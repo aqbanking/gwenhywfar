@@ -348,6 +348,9 @@ GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n){
 
 
 GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n){
+  GWEN_DB_NODE *og;
+
+  og=n;
   assert(n);
   if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
     DBG_ERROR(0, "Node is not a group");
@@ -359,6 +362,7 @@ GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n){
       break;
     n=n->h.next;
   } /* while node */
+  assert(n!=og);
   return n;
 }
 
@@ -571,8 +575,13 @@ void* GWEN_DB_HandlePath(const char *entry,
   /* check whether we are allowed to simply create the node */
   if (
       ((flags & GWEN_PATH_FLAGS_LAST) &&
-       (flags & GWEN_PATH_FLAGS_NAMECREATE)) ||
-      (!(flags & GWEN_PATH_FLAGS_LAST) &&
+       (((flags & GWEN_PATH_FLAGS_VARIABLE) &&
+         (flags & GWEN_PATH_FLAGS_CREATE_VAR)) ||
+        (!(flags & GWEN_PATH_FLAGS_VARIABLE) &&
+         (flags & GWEN_PATH_FLAGS_CREATE_GROUP)))
+      ) ||
+      (
+       !(flags & GWEN_PATH_FLAGS_LAST) &&
        (flags & GWEN_PATH_FLAGS_PATHCREATE))
      ) {
     /* simply create the new variable/group */
@@ -1233,7 +1242,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                                 GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
                                 &pos);
             if (!p || !*wbuf) {
-              DBG_WARN(0, "Line %d, pos %d: no word",
+              DBG_INFO(0, "Line %d, pos %d: no word",
                        lineno, pos-linebuf+1);
               break;
             }
@@ -1376,6 +1385,7 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
 
   nn=nn->h.child;
   while (nn) {
+    DBG_INFO(0, "Duplicating node");
     cpn=GWEN_DB_Node_dup(nn);
     GWEN_DB_Node_Append(n, cpn);
     nn=nn->h.next;

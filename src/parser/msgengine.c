@@ -894,7 +894,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
         return 1;
       }
       else {
-	DBG_ERROR(0, "Value for element \"%s[%d]\" not found",
+	DBG_INFO(0, "Value for element \"%s[%d]\" not found",
 		  name, loopNr);
 	return -1;
       }
@@ -949,7 +949,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
 
   mode=e->secMode;
   if (!e->defs) {
-    DBG_ERROR(0, "No definitions available");
+    DBG_INFO(0, "No definitions available");
     return 0;
   }
   n=e->defs;
@@ -969,7 +969,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
   } /* while */
 
   if (!n) {
-    DBG_ERROR(0, "No definitions available for type \"%s\"", t);
+    DBG_INFO(0, "No definitions available for type \"%s\"", t);
     return 0;
   }
 
@@ -978,7 +978,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
     mode="";
   n=GWEN_XMLNode_GetChild(n);
   if (!n) {
-    DBG_ERROR(0, "No definitions inside \"%s\"", buffer);
+    DBG_INFO(0, "No definitions inside \"%s\"", buffer);
     return 0;
   }
 
@@ -1007,7 +1007,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
     n=GWEN_XMLNode_Next(n);
   } /* while */
 
-  DBG_ERROR(0, "Group definition for \"%s=%s\" not found", pname, pvalue);
+  DBG_INFO(0, "Group definition for \"%s=%s\" not found", pname, pvalue);
   return 0;
 }
 
@@ -2857,7 +2857,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	    if (gname) {
               DBG_DEBUG(0, "Creating group \"%s\"", gname);
               gcfg=GWEN_DB_GetGroup(gr,
-                                    GWEN_PATH_FLAGS_NAMECREATE,
+                                    GWEN_PATH_FLAGS_CREATE_GROUP,
                                     gname);
 	      if (!gcfg) {
 		DBG_ERROR(0, "Could not select group \"%s\"",
@@ -3169,7 +3169,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       /* create group in DB for this segment */
       id=GWEN_XMLNode_GetProperty(node, "id", p);
       storegrp=GWEN_DB_GetGroup(gr,
-                                GWEN_PATH_FLAGS_NAMECREATE,
+                                GWEN_PATH_FLAGS_CREATE_GROUP,
                                 id);
       assert(storegrp);
 
