@@ -1,2 +1,2 @@
-EXTRA_DIST=apidoc.h
+EXTRA_DIST=apidoc.h STYLE
 

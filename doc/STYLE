@@ -1,0 +1,250 @@
+$Id$
+
+
+                             Table of Content
+             1. Introduction
+             2. Names of Header Files
+             3. Definitions of Types, Functions etc
+             3.1. Prefixes
+             3.2. Function Definitions
+             3.3. Type Definitions
+             3.4. Enum Elements
+             3.5. Macro Definitions
+             4. Formal Style
+             4.1. Indent Style
+             4.2. Brackets
+             4.3. Start of Files
+             5. ChangeLog
+             6. BUILD Version Number
+             7. Documentation
+
+
+
+
+1. Introduction
+===============
+
+This file contains some style guidelines which I would like to see respected
+by all authors providing code to this project.
+
+Nobody will wrench off your head if your submission does not follow these
+guidelines, but you should be aware that your code will most likely be
+modified to comply to this document.
+
+The goal of these guidelines is to keep the project files uniform and thus
+making it easier to read them.
+
+This document is subject to changes, and the project admins are open for
+discussion and suggestions ;-)
+
+We know that many parts of this project do not fully comply to this
+style guide but we are working on it ;-)
+
+
+
+2. Names of Header Files
+========================
+For every module there may optionally be these header files:
+- MODULENAME.h   prototypes and type definitions to be exported
+- MODULENAME_p.h prototypes and type definitions to be used by the module
+                 only (these files are not installed)
+- MODULENAME_l.h prototypes and type definitions to be used by the library
+                 only (these files are not installed)
+
+MODULENAME must be the name of the module (like error) in all-lowercase
+letters (this is to avoid problems with file systems which do not support
+case sensitive file names).
+
+
+
+3. Definitions of Types, Functions etc
+======================================
+
+Every type, function, macro etc that is exported must be introduced by the
+keyword "GWENHYWFAR_API".
+This is needed for WIN32 platforms to inform the compiler about which
+symbols are to be imported from this project.
+
+Every function must have a prototype. 
+For exported functions they should be in the modules header file, for
+non-exported functions these should be in the "MODULENAME_p.h" or in the
+"MODULENAME_l.h" file.
+
+Example: GWENHYWFAR_API void GWEN_DB_Group_free(GWEN_DB_NODE *n);
+
+
+3.1. Prefixes
+-------------
+Every function or type name has two prefixes:
+- GWEN_
+    This forms a namespace "GWEN" which prevents function name
+    collisions
+- a module name 
+    This makes every function name unique within GWEN.
+    The module name should be all-capitals if the name is shorter than two
+    characters. It should start with a capital otherwise.
+
+Please note that even internal functions (i.e. those which are not to be used
+outside the library) MUST have this prefixes.
+
+Examples: GWEN_DB_Values_Count, GWEN_Error_GetType
+
+
+3.2. Function Definitions
+-------------------------
+Function name consist of multiple words combined by an underscore.
+Every word after the prefixes starts with a capital.
+If the last word itself consists of multiple words (like in GetType) then
+every sub-word should start with a capital, too.
+This improves the readability of the code.
+
+There is one exceptions from this rule (for historical reasons):
+Functions which are constructors, destructors or duplication functions (like
+GWEN_Buffer_new, GWEN_Buffer_free, GWEN_Buffer_dup) need to have the last word
+start with a lowercase letter.
+These functions should also use the given word as shown above:
+- _new  for constructors
+- _free for destructors
+- _dup  for deep copy duplications
+
+Example: GWEN_DB_Values_Count, GWEN_Error_GetCode
+
+
+3.3. Type Definitions
+---------------------
+Types are written in all-capitals, like in GWEN_DB_NODE.
+
+
+3.4. Enum Elements
+------------------
+New enum elements should consist of multiple words which are concatenated (like
+in GWEN_LoggerLevelError).
+Unfortunately the enum definitions inside the GWEN_DB module do not follow
+this guideline in this regard. Since changing this would produce many problems
+this rule only applies to new enum definitions.
+
+
+3.5. Macro Definitions
+----------------------
+
+Macro names are written in all-capitals, like in GWEN_DB_FLAGS_DEFAULT.
+
+
+
+4. Formal Style
+===============
+
+4.1. Indent Style
+-----------------
+The preferred style is GNU: two space indent.
+
+
+4.2. Brackets
+-------------
+The preferred style here is to have the opening bracket at the very same
+line as the keyword which introduces the block, like in:
+
+  if (pos) {
+    if (pos>=bf->bufferSize) {
+      DBG_ERROR(0, "Position outside buffer");
+      return -1;
+    }
+  }
+
+The closing bracket is supposed to be alone in the next line following the
+block (as seen above).
+
+
+4.3. Start of Files
+-------------------
+Every source file (*.{c, cpp, h}) should have a header like this:
+
+------------------------------------------------- X8 cut here
+/***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Tue Sep 09 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU Lesser General Public            *
+ *   License as published by the Free Software Foundation; either          *
+ *   version 2.1 of the License, or (at your option) any later version.    *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,                 *
+ *   MA  02111-1307  USA                                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+------------------------------------------------- X8 cut here
+
+The copyright and email entry should of course be adapted ;-)
+
+All files within this project are licensed under the GNU LGPL, and the header
+of every file must reflect that (as is in the header above).
+
+
+
+5. ChangeLog
+============
+
+Every change to the CVS version of this project should be accompanied by
+a descriptive text in the file ChangeLog.
+
+The format of such an entry should match that of the existing entries,
+currently these are emacs-style and "my style" ;-)
+
+However, the format does not really matter, as long as it contains the 
+following information:
+- date of change
+- name of the author of the changes
+- description of the change
+
+If the change breaks compatiblity with the previously existing version of this
+project then this should be marked.
+
+
+
+6. BUILD Version Number
+=======================
+
+The file "configure.ac" contains a line which sets the BUILD version number
+(GWENHYWFAR_VERSION_BUILD=xyz).
+Please update this number after a change.
+
+This has to do with the latency of the CVS server: Public CVS lags some hours
+behind developer CVS, because public access is served from the CVS backup.
+
+The BUILD version number allows to identify the version if some user wants to
+try the current CVS version of this project but only draws an older version
+because of the latency.
+
+
+
+7. Documentation
+================
+
+Every exported function and type should be documented inside a header file.
+This project uses doxygen for this purpose.
+
+Well, not every function is documented right now, but we are working on 
+that ;-)
+
+
+
+Martin Preuss, Hamburg/Germany, Dec 28 2003
+
+
+
+

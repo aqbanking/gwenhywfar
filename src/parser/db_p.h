@@ -161,6 +161,8 @@ int GWEN_DB_GetIntValueFromNode(GWEN_DB_NODE *n);
 const void *GWEN_DB_GetBinValueFromNode(GWEN_DB_NODE *n,
                                         unsigned int *size);
 
+static void *GWEN_DB_count_cb(GWEN_DB_NODE *node, void *user_data);
+
 #endif
 
 

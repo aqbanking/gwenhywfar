@@ -1,3 +1,5 @@
+
+
 2003/12/28 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - renamed Christian's new "GWEN_DB_isSomething" functions to
@@ -8,6 +10,8 @@
 - added a graph to the documentation of the DB module to demonstrate the
   internal structure
 - module XML: Added new flag which allows to ignore an <include> tag
+- added doc/STYLE
+- changed some function definition to comply to the STYLE odcument
 
 
 2003-12-28  Christian Stimming  <stimming@tuhh.de>

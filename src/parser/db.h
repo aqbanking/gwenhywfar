@@ -57,8 +57,8 @@ extern "C" {
  *  The following graph shows the internal structure of a GWEN_DB: <br>
  *  @image html db2.png "Internal structure of a GWEN_DB"
  * <br>
- * As you can see the GWEN_DB consists of multiple units called NODE. Every node
- * has a pointer to:
+ * As you can see the GWEN_DB consists of multiple units called NODE. Every
+ * node has a pointer to:
  * <ul>
  * <li>its parent</li>
  * <li>its first child (only the <strong>first</strong>)</li>
@@ -67,7 +67,7 @@ extern "C" {
  * Such a node can be either of the following:
  * <ul>
  *  <li>a group containing other groups and variables</li>
- *  <li>a variable containing values</li>
+ *  <li>a variable containing values (and values only)</li>
  *  <li>a value containing its value data</li>
  * </ul>
  * </p>
@@ -76,7 +76,7 @@ extern "C" {
  * reading a GWEN_DB from a file or creating it, it may very well be
  * possible to have multiple groups with the same name as children of
  * the same root node. Again: Child group nodes with the same name may
- * very well exist.
+ * very well exist. This also applies to variable nodes.
  *
  * For the interested reader, we again explain the difference of the
  * three kinds of nodes. Depending on either of these cases, you can
@@ -104,9 +104,16 @@ extern "C" {
 
 /** @name DB Flags
  *
+ * <p>
  * Please note that the setter functions also take the flags from
- * the module @ref MOD_PATH into account. So you most likely need to specify
+ * the module @ref MOD_PATH (e.g. @ref GWEN_PATH_FLAGS_PATHMUSTEXIST)
+ * into account. So you most likely need to specify
  * them, too.
+ * </p>
+ * <p>
+ * However, for your conveniance there is a default flag value which suffices
+ * in most cases (@ref GWEN_DB_FLAGS_DEFAULT).
+ * </p>
  */
 /*@{*/
 /** Overwrite existing values when assigning a new value to a variable */
@@ -273,8 +280,8 @@ GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n);
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n);
 
-/** Callback function type for GWEN_DB_Groups_foreach(),
- * GWEN_DB_Variables_foreach(), and GWEN_DB_Values_foreach().
+/** Callback function type for GWEN_DB_Groups_Foreach(),
+ * GWEN_DB_Variables_Foreach(), and GWEN_DB_Values_Foreach().
  *
  * @param node The current node element 
  *
@@ -284,7 +291,7 @@ GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n);
  * iteration should stop and that value be returned.
  */
 GWENHYWFAR_API
-typedef void *(*GWEN_DB_nodes_cb)(GWEN_DB_NODE *node, void *user_data);
+typedef void *(*GWEN_DB_NODES_CB)(GWEN_DB_NODE *node, void *user_data);
 
 /** Iterates through all group nodes that are @e direct children
  * of the given node, calling the callback function 'func' on each
@@ -303,14 +310,14 @@ typedef void *(*GWEN_DB_nodes_cb)(GWEN_DB_NODE *node, void *user_data);
  * returns NULL.
  * @author Christian Stimming <stimming@tuhh.de> */
 GWENHYWFAR_API
-void *GWEN_DB_Groups_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
+void *GWEN_DB_Groups_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 			     void *user_data);
 
 /** Returns the number of group nodes that are @e direct children of
  * the given node. In other words, this is the number of group nodes
  * that will be reached in the GWEN_DB_Groups_foreach() function. */
 GWENHYWFAR_API
-unsigned int GWEN_DB_Groups_count(const GWEN_DB_NODE *node);
+unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node);
 /*@}*/
 
 
@@ -656,15 +663,15 @@ GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
  * returns NULL.
  * @author Christian Stimming <stimming@tuhh.de> */
 GWENHYWFAR_API
-void *GWEN_DB_Variables_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
-				void *user_data);
+void *GWEN_DB_Variables_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
+                                void *user_data);
 
 /** Returns the number of variable nodes that are @e direct children
  * of the given node. In other words, this is the number of variable
- * nodes that will be reached in the GWEN_DB_Variables_foreach()
+ * nodes that will be reached in the GWEN_DB_Variables_Foreach()
  * function. */
 GWENHYWFAR_API
-unsigned int GWEN_DB_Variables_count(const GWEN_DB_NODE *node);
+unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node);
     
 /**
  * Returns the type of the first value of the given variable
@@ -762,14 +769,14 @@ GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n);
  * returns NULL.
  * @author Christian Stimming <stimming@tuhh.de> */
 GWENHYWFAR_API
-void *GWEN_DB_Values_foreach(GWEN_DB_NODE *node, GWEN_DB_nodes_cb func,
-			     void *user_data);
+void *GWEN_DB_Values_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
+                             void *user_data);
 
 /** Returns the number of value nodes that are @e direct children of
  * the given node. In other words, this is the number of value nodes
  * that will be reached in the GWEN_DB_Values_foreach() function. */
 GWENHYWFAR_API
-unsigned int GWEN_DB_Values_count(const GWEN_DB_NODE *node);
+unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node);
 
 /**
  * Returns the type of the given value.
