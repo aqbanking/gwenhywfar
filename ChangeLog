@@ -2,6 +2,7 @@
 2004/08/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed "-lpanel -lncurses" from all_libraries
+- fixed network code (netconnection, nettransportssl etc)
 
 
 2004/08/09: Martin Preuss<martin@libchipcard.de>

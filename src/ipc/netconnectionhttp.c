@@ -937,7 +937,7 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
       changes++;
     }
     else if (rv2==GWEN_NetConnectionWorkResult_Error) {
-      DBG_DEBUG(0, "Error on WorkIO");
+      DBG_ERROR(0, "Error on WorkIO");
       return rv2;
     }
   

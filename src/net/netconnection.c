@@ -640,7 +640,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
   DBG_DEBUG(0, "Letting transport layer work");
   rv=GWEN_NetTransport_Work(conn->transportLayer);
   if (rv==GWEN_NetTransportWorkResult_Error) {
-    DBG_INFO(0, "Error in transport layer (%d)", rv);
+    DBG_ERROR(0, "Error in transport layer (%d)", rv);
     return GWEN_NetConnectionWorkResult_Error;
   }
   else if (rv==GWEN_NetTransportWorkResult_NoChange) {
@@ -1600,6 +1600,16 @@ GWEN_NetConnection_GetStatus(const GWEN_NETCONNECTION *conn){
   assert(conn);
   assert(conn->transportLayer);
   return GWEN_NetTransport_GetStatus(conn->transportLayer);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnection_SetStatus(GWEN_NETCONNECTION *conn,
+                                  GWEN_NETTRANSPORT_STATUS nst){
+  assert(conn);
+  assert(conn->transportLayer);
+  GWEN_NetTransport_SetStatus(conn->transportLayer, nst);
 }
 
 

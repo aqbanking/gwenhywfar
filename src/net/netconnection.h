@@ -566,6 +566,10 @@ GWENHYWFAR_API
 GWEN_NETTRANSPORT_STATUS
   GWEN_NetConnection_GetStatus(const GWEN_NETCONNECTION *conn);
 
+GWENHYWFAR_API
+void GWEN_NetConnection_SetStatus(GWEN_NETCONNECTION *conn,
+                                  GWEN_NETTRANSPORT_STATUS nst);
+
 /**
  * This is just a conveniance function to set the flags of the underlying
  * transport layer.
