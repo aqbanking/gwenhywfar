@@ -1,4 +1,11 @@
+2004-01-27  Christian Stimming <stimming@tuhh.de>
 
+	* m4/ssl.m4: Use WIN_PATH_SYSTEM_MINGW for windows.
+	* configure.ac: Also allow version autoconf-2.56. If this breaks
+	anything, then of course the change should be reverted.
+	Also use WIN_PATH_SYSTEM_MINGW for gwenhyfar_libraries.
+	
+	
 2004/01/26: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added a note about CVS usability to STYLE file

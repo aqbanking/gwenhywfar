@@ -4,7 +4,8 @@
 
 AC_DEFUN(AQ_CHECK_SSL,[
 dnl PREREQUISITES:
-dnl   - AQ_CHECK_OS must becalled before
+dnl   - AQ_CHECK_OS must be called before
+dnl   - For windows, AQ_WINDOZE must be called beforehand
 dnl IN: 
 dnl   nothing
 dnl OUT:
@@ -14,6 +15,7 @@ dnl     ssl_lib: SSL libraries to link against (subst)
 dnl     ssl_includes: Path to the SSL includes (subst)
 dnl     ssl_available: "yes" if OpenSSL is available
 dnl   Defines:
+AC_REQUIRE([AQ_CHECK_OS])
 
 dnl check if ssl is desired
 AC_MSG_CHECKING(if OpenSSL should be used)
@@ -74,7 +76,10 @@ if test "$OSYSTEM" != "windows" ; then
      fi
    done
    else
-     ssl_libraries="-L/c/windows"
+     if test -z "$WIN_PATH_SYSTEM_MINGW"; then
+       AC_ERROR([Error in configure.ac: The macro aq_windoze did not set a windows system path -- maybe this macro has not yet been called.])
+     fi
+     ssl_libraries="-L$WIN_PATH_SYSTEM_MINGW"
      ssl_lib="-llibeay32 -llibssl32"
      AC_MSG_RESULT($ssl_libraries ${ssl_lib})
 fi

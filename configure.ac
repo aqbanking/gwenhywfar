@@ -6,7 +6,7 @@ GWENHYWFAR_AUTHOR="Martin Preuss<martin@libchipcard.de>"
 GWENHYWFAR_BUGREPORT_ADDR="<martin@libchipcard.de>"
 
 
-AC_PREREQ(2.57)
+AC_PREREQ(2.56)
 AC_INIT
 AC_CANONICAL_TARGET([])
 AC_CONFIG_SRCDIR([src/gwenhywfarapi.h])
@@ -160,7 +160,7 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
         AQ_WINDOZE
-        gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32"
+        gwenhywfar_libs="-L${WIN_PATH_SYSTEM_MINGW} -lgwenhywfar32"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_sections=""
         gwenhywfar_os_lib="os/windows/libos.la"
