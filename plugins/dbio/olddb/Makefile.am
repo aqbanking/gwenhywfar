@@ -10,6 +10,6 @@ dbioplugin_DATA=olddb.xml
 noinst_HEADERS=olddb_p.h
 
 olddb_la_SOURCES=olddb.c
-olddb_la_LIBADD=-L../../../src -lgwenhywfar
+olddb_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
 olddb_la_LDFLAGS=@STRIPALL@ -module -version-info 0:1:0
 
