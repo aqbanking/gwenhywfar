@@ -83,6 +83,7 @@ win32: dist
 # compilation.
 quick: config.h
 	make -C src version.h types.h
+	make -C src/os/$(GWEN_OS) system.h
 	make
 
 CLEANFILES = gwennet-config 
