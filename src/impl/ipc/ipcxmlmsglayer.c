@@ -179,6 +179,14 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
 
             /* read the rest of the header */
             bread=mcd->bytesToRead;
+            if (GWEN_Buffer_AllocRoom(buffer, bread)) {
+              DBG_INFO(0, "Not enough room in buffer, closing connection");
+              GWEN_MsgLayer_Disconnect(ml);
+              return GWEN_Error_new(0,
+                                    GWEN_ERROR_SEVERITY_ERR,
+                                    GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                                    GWEN_IPC_ERROR_INTERNAL);
+            }
             err=GWEN_IPCTransportLayer_Read(tl,
                                             GWEN_Buffer_GetPosPointer(buffer),
                                             &bread);
@@ -280,6 +288,14 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
 
               /* read the rest of the header */
               bread=mcd->bytesToRead;
+              if (GWEN_Buffer_AllocRoom(buffer, bread)) {
+                DBG_INFO(0, "Not enough room in buffer, closing connection");
+                GWEN_MsgLayer_Disconnect(ml);
+                return GWEN_Error_new(0,
+                                      GWEN_ERROR_SEVERITY_ERR,
+                                      GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                                      GWEN_IPC_ERROR_INTERNAL);
+              }
               err=GWEN_IPCTransportLayer_Read(tl,
                                               GWEN_Buffer_GetPosPointer(buffer),
                                               &bread);
@@ -334,6 +350,7 @@ GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
         buffer=GWEN_Msg_GetBuffer(mcd->currentMsg);
         GWEN_Buffer_SetPos(buffer, 0);
         GWEN_MsgLayer_SetState(ml, GWEN_IPCMsglayerStateWriting);
+        GWEN_Buffer_Dump(GWEN_Msg_GetBuffer(msg), stderr, 1);
       }
       else {
         DBG_DEBUG(0, "Nothing to write");

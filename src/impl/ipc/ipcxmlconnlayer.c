@@ -186,7 +186,6 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Accept(GWEN_IPCCONNLAYER *cl,
   newccd->flags=ccd->flags;
   newccd->connectedFn=ccd->connectedFn;
   newccd->disconnectedFn=ccd->disconnectedFn;
-
   *c=newcl;
   return 0;
 }
@@ -254,7 +253,6 @@ void GWEN_IPCXMLConnLayer_Up(GWEN_IPCCONNLAYER *cl){
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
   ccd->connected=1;
-  ccd->dialogId++;
   GWEN_HBCIDialog_Reset(ccd->dialog);
 
   ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
@@ -282,7 +280,7 @@ void GWEN_IPCXMLConnLayer_Down(GWEN_IPCCONNLAYER *cl){
     /* notify application */
     GWEN_IPCXMLConnLayer_Disconnected(cl);
     ccd->connected=0;
-    /*GWEN_HBCIDialog_Reset(ccd->dialog);*/
+    ccd->dialogId++;
   }
 }
 
@@ -357,6 +355,7 @@ GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_IPC2HBCI(GWEN_IPCCONNLAYER *cl,
   /* copy data from IPC message to HBCI message */
   GWEN_HBCIMsg_SetBuffer(hmsg, GWEN_Msg_TakeBuffer(msg));
   GWEN_HBCIMsg_SetMsgLayerId(hmsg, GWEN_ConnectionLayer_GetId(cl));
+  DBG_INFO(0, "Setting dialog number to %d", ccd->dialogId);
   GWEN_HBCIMsg_SetDialogNumber(hmsg, ccd->dialogId);
   return hmsg;
 }
@@ -615,7 +614,8 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_AddResponse(GWEN_IPCCONNLAYER *cl,
 
   /* check whether we have an open connection */
   if (!ccd->connected) {
-    DBG_ERROR(0, "Connection not open, no response possible");
+    DBG_ERROR(0, "Connection %d not open, no response possible",
+              GWEN_ConnectionLayer_GetId(cl));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
@@ -651,8 +651,10 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_AddResponse(GWEN_IPCCONNLAYER *cl,
                             GWEN_IPC_ERROR_INTERNAL);
     }
     /* store message reference number */
-    GWEN_HBCIMsg_SetMsgNumber(ccd->currentMsg,
-                              GWEN_IPCXMLRequest_GetMessageNumber(rq));
+    DBG_INFO(0, "Message Reference Number is %d",
+             GWEN_IPCXMLRequest_GetMessageNumber(rq));
+    GWEN_HBCIMsg_SetMsgRef(ccd->currentMsg,
+                           GWEN_IPCXMLRequest_GetMessageNumber(rq));
   }
 
   /* store reference segment number */

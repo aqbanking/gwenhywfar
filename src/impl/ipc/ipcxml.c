@@ -441,6 +441,10 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
                             GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
                             GWEN_IPC_ERROR_CONNECTION_NOT_FOUND);
     }
+
+    DBG_INFO(0, "Got a message for connection %d",
+             GWEN_ConnectionLayer_GetId(cl));
+
     hmsg=GWEN_IPCXMLConnLayer_IPC2HBCI(cl, imsg);
     GWEN_Msg_free(imsg);
     imsg=0;
@@ -601,10 +605,22 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
       if (messageNumber) {
         unsigned int matches;
 
+        DBG_INFO(0, "Got a response to message %d", messageNumber);
         matches=0;
-        rq=xs->incomingRequests;
+        rq=xs->outgoingRequests;
         while(rq) {
-          if ((rq->msgLayerId==rq->msgLayerId) &&
+          DBG_INFO(0,
+                   "Checking this:"
+                   " msgLayer id  : %d / %d\n"
+                   " dialog id    : %d / %d\n"
+                   " MsgNumber: %d / %d"
+                   " segmentNumber: %d / %d",
+                   msgLayerId, rq->msgLayerId,
+                   dialogId, rq->dialogId,
+                   messageNumber, rq->messageNumber,
+                   segmentNumber, rq->segmentNumber);
+
+          if ((msgLayerId==rq->msgLayerId) &&
               (dialogId==rq->dialogId) &&
               (messageNumber==rq->messageNumber)) {
             if ((segmentNumber==rq->segmentNumber) ||
@@ -621,12 +637,19 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
               if (GWEN_IPCXMLService_AddSecurityGroup(hmsg, dgr)) {
                 DBG_INFO(0, "here");
                 GWEN_DB_Group_free(dgr);
-                return -1;
+                return GWEN_Error_new(0,
+                                      GWEN_ERROR_SEVERITY_ERR,
+                                      GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                                      GWEN_IPC_ERROR_BAD_MSG);
               }
               GWEN_DB_SetIntValue(dgr,
                                   GWEN_DB_FLAGS_DEFAULT,
                                   "security/segmentnumber",
                                   GWEN_DB_GetIntValue(gr, "head/seq", 0, 0));
+              GWEN_DB_SetIntValue(dgr,
+                                  GWEN_DB_FLAGS_DEFAULT,
+                                  "security/msgnum",
+                                  messageNumber);
 
               /* copy response */
               GWEN_DB_AddGroup(dgr, GWEN_DB_Group_dup(gr));
@@ -643,7 +666,10 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
         } /* while */
         if (!matches) {
           DBG_ERROR(0, "Got an unrequested response, dismissing.");
-          return -1;
+          return GWEN_Error_new(0,
+                                GWEN_ERROR_SEVERITY_ERR,
+                                GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                                GWEN_IPC_ERROR_INVALID);
         }
       } /* if messageNumber */
       else {
@@ -651,6 +677,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
         GWEN_DB_NODE *dgr;
 
         /* create request, fill it */
+        DBG_INFO(0, "Got an incoming request");
         rq=GWEN_IPCXMLRequest_new();
         GWEN_IPCXMLRequest_SetMsgLayerId(rq,
                                          GWEN_HBCIMsg_GetMsgLayerId(hmsg));
@@ -671,7 +698,10 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsg(GWEN_IPCXMLSERVICE *xs,
           DBG_INFO(0, "here");
           GWEN_DB_Group_free(dgr);
           GWEN_IPCXMLRequest_free(rq);
-          return -1;
+          return GWEN_Error_new(0,
+                                GWEN_ERROR_SEVERITY_ERR,
+                                GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                                GWEN_IPC_ERROR_BAD_MSG);
         }
         GWEN_DB_SetIntValue(dgr,
                             GWEN_DB_FLAGS_DEFAULT,
@@ -983,7 +1013,9 @@ unsigned int GWEN_IPCXMLService_GetRequestConnection(GWEN_IPCXMLSERVICE *xs,
                                                      unsigned int rqid){
   GWEN_IPCXMLREQUEST *rq;
 
-  rq=GWEN_IPCXMLService_GetOutRequest(xs, rqid);
+  rq=GWEN_IPCXMLService_GetInRequest(xs, rqid);
+  if (!rq)
+    rq==GWEN_IPCXMLService_GetOutRequest(xs, rqid);
   if (!rq) {
     DBG_ERROR(0, "Request %d not found", rqid);
     return 0;

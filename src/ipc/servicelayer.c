@@ -592,6 +592,7 @@ GWEN_IPCMSG *GWEN_ServiceLayer_NextIncomingMsg(GWEN_SERVICELAYER *sl,
     msg=GWEN_MsgLayer_GetIncomingMsg(ml);
     if (msg) {
       DBG_INFO(0, "Got a message from %d", GWEN_MsgLayer_GetId(ml));
+      GWEN_Msg_SetMsgLayerId(msg, GWEN_MsgLayer_GetId(ml));
       sl->lastCheckedMsgLayer=GWEN_MsgLayer_GetId(ml);
       return msg;
     }

@@ -133,6 +133,21 @@ void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
 #define GWEN_IPCXML_REQUEST_ANYID 0xffffffff
 
 
+/** @name Macros for Inspecting Result Codes
+ *
+ */
+/*@{*/
+/** Checks whether the result code is generally ok */
+#define GWEN_IPCXML_RESULT_IS_OK(rcode) (rcode<9000)
+/** Checks whether the result code represents an information */
+#define GWEN_IPCXML_RESULT_IS_INFO(rcode) (rcode>=1000 && rcode<2000)
+/** Checks whether the result code represents a warning */
+#define GWEN_IPCXML_RESULT_IS_WARNING(rcode) (rcode>=3000 && rcode<4000)
+/** Checks whether the result code represents an error */
+#define GWEN_IPCXML_RESULT_IS_ERROR(rcode) (rcode>=9000)
+/*@}*/
+
+
 /** @name Request Flags
  *
  */
@@ -353,7 +368,6 @@ unsigned int GWEN_IPCXMLService_AddRequest(GWEN_IPCXMLSERVICE *xs,
  * @param db GWEN_DB_NODE containing the parameters belonging to the given
  * request
  * @param flags see @ref GWEN_IPCXML_REQUESTFLAGS_FLUSH
-
  */
 GWEN_ERRORCODE GWEN_IPCXMLService_AddResponse(GWEN_IPCXMLSERVICE *xs,
                                               unsigned int requestId,
@@ -381,10 +395,11 @@ unsigned int GWEN_IPCXMLService_GetNextRequest(GWEN_IPCXMLSERVICE *xs);
 /**
  * Returns the id of the connection via which the given request reached us.
  * @param xs Pointer to the service to use
- * @param requestId id retrieved via @ref GWEN_IPCXMLService_GetNextRequest
+ * @param rqid id retrieved via @ref GWEN_IPCXMLService_GetNextRequest
  */
 unsigned int GWEN_IPCXMLService_GetRequestConnection(GWEN_IPCXMLSERVICE *xs,
                                                      unsigned int rqid);
+
 
 /**
  * Removes a given request.

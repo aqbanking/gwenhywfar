@@ -265,6 +265,7 @@ int GWEN_HBCIMsg_AddMsgHead(GWEN_HBCIMSG *hmsg) {
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "msgnum", hmsg->msgNum);
   if (hmsg->refMsgNum) {
+    DBG_INFO(0, "Adding Reference Message Number");
     /* add message reference */
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                         "msgref/msgnum", hmsg->refMsgNum);
@@ -1777,7 +1778,7 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
                            unsigned int flags) {
   GWEN_MSGENGINE *e;
   int rv;
-  GWEN_DB_NODE *n;
+  GWEN_DB_NODE *n, *n2;
 
   DBG_NOTICE(0, "Decoding this message:");
   GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
@@ -1790,6 +1791,52 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
   if (rv) {
     DBG_INFO(0, "here");
     return -1;
+  }
+
+  /* take some values out of the message head (with checks) */
+  n=GWEN_DB_GetGroup(gr,
+                     GWEN_DB_FLAGS_DEFAULT |
+                     GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                     "MsgHead");
+  if (!n) {
+    DBG_ERROR(0, "No message head segment");
+    return -1;
+  }
+  hmsg->msgNum=GWEN_DB_GetIntValue(n, "msgnum", 0, 0);
+  if (strcasecmp(GWEN_HBCIDialog_GetDialogId(hmsg->dialog), "0")==0) {
+    /* dialog id not yet known, copy it */
+    const char *p;
+
+    p=GWEN_DB_GetCharValue(n, "dialogid", 0, 0);
+    if (!p) {
+      DBG_ERROR(0, "No dialog id in message");
+      return -1;
+    }
+    DBG_INFO(0, "Setting new dialog id (%s)", p);
+    GWEN_HBCIDialog_SetDialogId(hmsg->dialog, p);
+  }
+  n2=GWEN_DB_GetGroup(n,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "msgref");
+  if (n2) {
+    /* we have a message reference, get it */
+    const char *p;
+
+    DBG_INFO(0, "Found a message reference");
+    p=GWEN_DB_GetCharValue(n2, "dialogid", 0, 0);
+    if (!p) {
+      DBG_ERROR(0, "No reference dialog id in message");
+      return -1;
+    }
+    if (strcasecmp(GWEN_HBCIDialog_GetDialogId(hmsg->dialog),p)!=0) {
+      DBG_ERROR(0, "Dialog id does not match current dialog id !");
+      return -1;
+    }
+    hmsg->refMsgNum=GWEN_DB_GetIntValue(n2, "msgnum", 0, 0);
+  }
+  else {
+    DBG_INFO(0, "No message reference found");
   }
 
   /* find Crypt head */
@@ -1820,6 +1867,7 @@ int GWEN_HBCIMsg_DecodeMsg(GWEN_HBCIMSG *hmsg,
       GWEN_DB_UnlinkGroup(n);
       GWEN_DB_Group_free(n);
     }
+
     /* parse decrypted message part */
     n=GWEN_DB_GetGroup(gr,
                        GWEN_DB_FLAGS_DEFAULT |
@@ -1910,6 +1958,8 @@ void GWEN_HBCIMsg_Dump(const GWEN_HBCIMSG *hmsg,
   fprintf(f, "MsgLayer             : %d\n", hmsg->msgLayerId);
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "Nodes                : %d\n", hmsg->nodes);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "Dialog number        : %d\n", hmsg->dialogNumber);
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "Msg number           : %d\n", hmsg->msgNum);
   for (i=0; i<indent; i++) fprintf(f, " ");

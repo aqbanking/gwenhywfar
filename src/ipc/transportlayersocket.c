@@ -286,7 +286,6 @@ GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
 
   if (tlp->bio) {
     /* if a bio exists then the socket gets by deleted by it */
-    DBG_INFO(0, "Freeing buffered IO");
     GWEN_BufferedIO_Abandon(tlp->bio);
     GWEN_BufferedIO_free(tlp->bio);
     tlp->socket=0;
@@ -294,7 +293,7 @@ GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
   }
   else {
     /* bio does not exist, so delete the socket myself */
-    DBG_INFO(0, "No buffered IO, freeing socket");
+    DBG_DEBUG(0, "No buffered IO, freeing socket");
     err=GWEN_Socket_Close(tlp->socket);
     GWEN_Socket_free(tlp->socket);
     tlp->socket=0;
@@ -422,7 +421,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Write(GWEN_IPCTRANSPORTLAYER *tl,
     DBG_INFO(0, "called from here");
   }
   else {
-    DBG_INFO(0, "Written %d bytes", *bsize);
+    DBG_DEBUG(0, "Written %d bytes", *bsize);
   }
   return err;
 }

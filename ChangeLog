@@ -1,5 +1,13 @@
 $Id$
 
+2003/11/26 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- more work on IPC:
+  - added some basic IPC requests/responses (such as segment results)
+  - added a test which sends a getkey request and shows the reply
+  - fixed some bugs
+
+
 2003/11/25 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in DB: Could not write longer binary values because of

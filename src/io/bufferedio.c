@@ -577,11 +577,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
 
   /* do some fast checks */
   if (bt->readerError) {
-    DBG_DEBUG(0, "Error flagged");
+    DBG_INFO(0, "Error flagged");
     return -1;
   }
   if (bt->readerEOF) {
-    DBG_DEBUG(0, "EOF flagged");
+    DBG_INFO(0, "EOF flagged");
     return -2;
   }
 
@@ -823,6 +823,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
   GWEN_BUFFEREDIO_SOCKET *bft;
   int retrycount;
 
+  DBG_DEBUG(0, "Reading %d bytes", *size);
   assert(dm);
   assert(buffer);
   assert(size);
@@ -900,7 +901,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
 
-  DBG_VERBOUS(0, "Reading ok (%d bytes)", *size);
+  DBG_DEBUG(0, "Reading ok (%d bytes)", *size);
   return 0;
 }
 

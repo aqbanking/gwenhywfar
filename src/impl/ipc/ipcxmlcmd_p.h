@@ -32,6 +32,9 @@
 #include <gwenhywfar/ipcxml.h>
 
 
+GWEN_ERRORCODE GWEN_IPCXMLCmd_PreparePubKey(GWEN_IPCXMLSERVICE *xs,
+                                            const GWEN_CRYPTKEY *key,
+                                            GWEN_DB_NODE *rsp);
 
 
 
