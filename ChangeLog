@@ -1,3 +1,8 @@
+2005-04-04   Christian Stimming <stimming@tuhh.de>
+
+	* src/base/plugin.h: Add PluginManager_GetPaths to enable access
+	to the search paths from the outside. Necessary for aqhbci's
+	mediumprovider.
 
 2005/04/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

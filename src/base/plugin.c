@@ -515,6 +515,12 @@ GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm){
 }
 
 
+const GWEN_STRINGLIST *
+GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm)
+{
+  assert(pm);
+  return pm->paths;
+}
 
 
 

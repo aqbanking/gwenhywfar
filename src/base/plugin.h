@@ -114,6 +114,12 @@ int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
 					 const char *keypath,
 					 const char *varname);
 
+/** Returns the list of all search paths of the given
+ * PluginManager. */
+GWENHYWFAR_API 
+const GWEN_STRINGLIST *
+GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm);
+
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
                                            const char *modName);
