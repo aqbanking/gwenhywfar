@@ -5,6 +5,8 @@
   platforms
 - process.c: less verbous signal handler
 - aborted PalmOS port
+- reverted debug.h macros to use snprintf again, since all architectures
+  except PalmOS have it, and PalmOS is no longer supported
 
 
 2004/01/04 Martin Preuss <martin@libchipcard.de>
