@@ -177,8 +177,8 @@ GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
   }
 
   /* all setup, try to initiate a connection */
-  if (timeout==0)
-    distance=0;
+  if (timeout==GWEN_SSLCONN_TIMEOUT_NONE)
+    distance=GWEN_SSLCONN_TIMEOUT_NONE;
   else if (timeout==-1)
     distance=-1;
   else {
@@ -261,8 +261,9 @@ GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
     else {
       break;
     }
-    if (timeout!=-1) {
-      if (difftime(time(0), startt)>timeout) {
+    if (timeout!=GWEN_SSLCONN_TIMEOUT_FOREVER) {
+      if (timeout==GWEN_SSLCONN_TIMEOUT_NONE ||
+          difftime(time(0), startt)>timeout) {
         DBG_INFO_ERR(0, err);
         DBG_ERROR(0, "Could not connect within %d seconds, aborting",
                   timeout);
@@ -336,7 +337,130 @@ GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
 
 
 
-GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn){
+GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn,
+                                       int timeout){
+  GWEN_ERRORCODE err;
+  int rv;
+  time_t startt;
+  int distance;
+  int count;
+
+  /* try to close connection */
+  startt=time(0);
+  if (timeout==0)
+    distance=0;
+  else if (timeout==-1)
+    distance=-1;
+  else {
+    distance=GWEN_WaitCallback_GetDistance(0);
+    if (distance)
+      if ((distance/1000)>timeout)
+        distance=timeout/1000;
+    if (!distance)
+      distance=750;
+  }
+
+  for (count=0;;) {
+    if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      DBG_ERROR(0, "User aborted via waitcallback");
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_ABORTED);
+    }
+    rv=SSL_shutdown(conn->ssl);
+
+    if (rv==0) {
+      /* connection closed */
+      DBG_NOTICE(0, "Connection closed");
+      GWEN_Socket_Close(conn->socket);
+      SSL_free(conn->ssl);
+      conn->ssl=0;
+      SSL_CTX_free(conn->ssl_ctx);
+      conn->ssl_ctx=0;
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_BROKEN_PIPE);
+    }
+    else if (rv<0) {
+      int sslerr;
+
+      sslerr=SSL_get_error(conn->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ) {
+        err=GWEN_Socket_WaitForRead(conn->socket, distance);
+      }
+      else if (sslerr==SSL_ERROR_WANT_WRITE) {
+        err=GWEN_Socket_WaitForWrite(conn->socket, distance);
+      }
+      else {
+        DBG_ERROR(0, "SSL error: %s (%d)",
+                  GWEN_SSLConn_ErrorString(sslerr),
+                  sslerr);
+        GWEN_Socket_Close(conn->socket);
+        SSL_free(conn->ssl);
+        conn->ssl=0;
+        SSL_CTX_free(conn->ssl_ctx);
+        conn->ssl_ctx=0;
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                              GWEN_CRYPT_ERROR_SSL);
+      } /* if unhandled error */
+
+      /* check for socket error */
+      if (!GWEN_Error_IsOk(err)) {
+        if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
+          if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
+              GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+            DBG_ERROR_ERR(0, err);
+            GWEN_Socket_Close(conn->socket);
+            SSL_free(conn->ssl);
+            conn->ssl=0;
+            SSL_CTX_free(conn->ssl_ctx);
+            conn->ssl_ctx=0;
+            return err;
+          }
+        } /* if socket error */
+        else {
+          DBG_ERROR_ERR(0, err);
+          GWEN_Socket_Close(conn->socket);
+          SSL_free(conn->ssl);
+          conn->ssl=0;
+          SSL_CTX_free(conn->ssl_ctx);
+          conn->ssl_ctx=0;
+          return err;
+        }
+      }
+    } /* if SSL error */
+    else {
+      break;
+    }
+    if (timeout!=GWEN_SSLCONN_TIMEOUT_FOREVER) {
+      if (timeout==GWEN_SSLCONN_TIMEOUT_NONE ||
+          difftime(time(0), startt)>timeout) {
+        DBG_INFO_ERR(0, err);
+        DBG_ERROR(0, "Could not disconnect within %d seconds, aborting",
+                  timeout);
+        GWEN_Socket_Close(conn->socket);
+        SSL_free(conn->ssl);
+        conn->ssl=0;
+        SSL_CTX_free(conn->ssl_ctx);
+        conn->ssl_ctx=0;
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                              GWEN_SOCKET_ERROR_TIMEOUT);
+      }
+    }
+  } /* for */
+
+  GWEN_Socket_Close(conn->socket);
+  SSL_free(conn->ssl);
+  conn->ssl=0;
+  SSL_CTX_free(conn->ssl_ctx);
+  conn->ssl_ctx=0;
+  return 0;
 }
 
 
@@ -345,6 +469,153 @@ GWEN_ERRORCODE GWEN_SSLConn_Accept(GWEN_SSL_CONNECTION *conn,
                                    GWEN_INETADDRESS **addr,
                                    int secure,
                                    int timeout){
+  DBG_ERROR(0, "Not yet supported");
+  return GWEN_Error_new(0,
+                        GWEN_ERROR_SEVERITY_ERR,
+                        GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                        GWEN_SOCKET_ERROR_UNSUPPORTED);
+}
+
+
+
+GWEN_ERRORCODE GWEN_SSLConn__ReadOrWrite(GWEN_SSL_CONNECTION *conn,
+                                         const char *outbuffer,
+                                         char *inbuffer,
+                                         int *bsize,
+                                         int timeout,
+                                         int reading){
+  GWEN_ERRORCODE err;
+  int rv;
+  time_t startt;
+  int distance;
+  int count;
+
+  /* all setup, try to initiate a connection */
+  startt=time(0);
+  if (timeout==0)
+    distance=0;
+  else if (timeout==-1)
+    distance=-1;
+  else {
+    distance=GWEN_WaitCallback_GetDistance(0);
+    if (distance)
+      if ((distance/1000)>timeout)
+        distance=timeout/1000;
+    if (!distance)
+      distance=750;
+  }
+
+  for (count=0;;) {
+    if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      DBG_ERROR(0, "User aborted via waitcallback");
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_ABORTED);
+    }
+    if (reading)
+      rv=SSL_read(conn->ssl, inbuffer, *bsize);
+    else
+      rv=SSL_write(conn->ssl, outbuffer, *bsize);
+
+    if (rv==0) {
+      /* connection closed */
+      DBG_NOTICE(0, "Connection closed");
+      GWEN_Socket_Close(conn->socket);
+      SSL_free(conn->ssl);
+      conn->ssl=0;
+      SSL_CTX_free(conn->ssl_ctx);
+      conn->ssl_ctx=0;
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_BROKEN_PIPE);
+    }
+    else if (rv<0) {
+      int sslerr;
+
+      sslerr=SSL_get_error(conn->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ) {
+        err=GWEN_Socket_WaitForRead(conn->socket, distance);
+      }
+      else if (sslerr==SSL_ERROR_WANT_WRITE) {
+        err=GWEN_Socket_WaitForWrite(conn->socket, distance);
+      }
+      else {
+        DBG_ERROR(0, "SSL error: %s (%d)",
+                  GWEN_SSLConn_ErrorString(sslerr),
+                  sslerr);
+        GWEN_Socket_Close(conn->socket);
+        SSL_free(conn->ssl);
+        conn->ssl=0;
+        SSL_CTX_free(conn->ssl_ctx);
+        conn->ssl_ctx=0;
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                              GWEN_CRYPT_ERROR_SSL);
+      } /* if unhandled error */
+
+      /* check for socket error */
+      if (!GWEN_Error_IsOk(err)) {
+        if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
+          if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
+              GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+            DBG_ERROR_ERR(0, err);
+            GWEN_Socket_Close(conn->socket);
+            SSL_free(conn->ssl);
+            conn->ssl=0;
+            SSL_CTX_free(conn->ssl_ctx);
+            conn->ssl_ctx=0;
+            return err;
+          }
+        } /* if socket error */
+        else {
+          DBG_ERROR_ERR(0, err);
+          GWEN_Socket_Close(conn->socket);
+          SSL_free(conn->ssl);
+          conn->ssl=0;
+          SSL_CTX_free(conn->ssl_ctx);
+          conn->ssl_ctx=0;
+          return err;
+        }
+      }
+    } /* if SSL error */
+    else {
+      /* set number of bytes written */
+      *bsize=rv;
+      break;
+    }
+    if (timeout==GWEN_SSLCONN_TIMEOUT_TRYONLY) {
+      DBG_INFO(0, "Could not %s within %d seconds, aborting",
+               reading?"read":"write",
+               timeout);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_WARN,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_TIMEOUT);
+    }
+    else if (timeout!=GWEN_SSLCONN_TIMEOUT_FOREVER) {
+      if (timeout==GWEN_SSLCONN_TIMEOUT_NONE ||
+          difftime(time(0), startt)>timeout) {
+        DBG_INFO_ERR(0, err);
+        DBG_ERROR(0, "Could not %s within %d seconds, aborting",
+                  reading?"read":"write",
+                  timeout);
+        GWEN_Socket_Close(conn->socket);
+        SSL_free(conn->ssl);
+        conn->ssl=0;
+        SSL_CTX_free(conn->ssl_ctx);
+        conn->ssl_ctx=0;
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                              GWEN_SOCKET_ERROR_TIMEOUT);
+      }
+    }
+  } /* for */
+
+  return 0;
 }
 
 
@@ -353,6 +624,25 @@ GWEN_ERRORCODE GWEN_SSLConn_Read(GWEN_SSL_CONNECTION *conn,
                                  char *buffer,
                                  int *bsize,
                                  int timeout){
+  GWEN_ERRORCODE err;
+
+  err=GWEN_SSLConn__ReadOrWrite(conn, 0, buffer, bsize, timeout, 1);
+  /* check for socket error */
+  if (!GWEN_Error_IsOk(err)) {
+    if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
+      if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
+          GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+        DBG_INFO_ERR(0, err);
+        return err;
+      }
+    } /* if socket error */
+    else {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+  }
+
+  return 0;
 }
 
 
@@ -361,6 +651,25 @@ GWEN_ERRORCODE GWEN_SSLConn_Write(GWEN_SSL_CONNECTION *conn,
                                   const char *buffer,
                                   int *bsize,
                                   int timeout){
+  GWEN_ERRORCODE err;
+
+  err=GWEN_SSLConn__ReadOrWrite(conn, buffer, 0, bsize, timeout, 0);
+  /* check for socket error */
+  if (!GWEN_Error_IsOk(err)) {
+    if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
+      if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
+          GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+        DBG_INFO_ERR(0, err);
+        return err;
+      }
+    } /* if socket error */
+    else {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+  }
+
+  return 0;
 }
 
 
@@ -371,12 +680,20 @@ const char *GWEN_SSLConn_ErrorString(unsigned int e) {
 
   switch(e) {
   case SSL_ERROR_NONE:             s="SSL: None"; break;
+#ifdef SSL_ERROR_ZERO_RETURN
   case SSL_ERROR_ZERO_RETURN:      s="SSL: connection closed"; break;
+#endif
   case SSL_ERROR_WANT_READ:        s="SSL: Want to read"; break;
   case SSL_ERROR_WANT_WRITE:       s="SSL: Want to write"; break;
+#ifdef SSL_ERROR_WANT_CONNECT
   case SSL_ERROR_WANT_CONNECT:     s="SSL: Want to connect"; break;
+#endif
+#ifdef SSL_ERROR_WANT_ACCEPT
   case SSL_ERROR_WANT_ACCEPT:      s="SSL: Want to accept"; break;
+#endif
+#ifdef SSL_ERROR_WANT_X509_LOOKUP
   case SSL_ERROR_WANT_X509_LOOKUP: s="SSL: Want to lookup certificate"; break;
+#endif
   case SSL_ERROR_SYSCALL:          s=strerror(errno); break;
   case SSL_ERROR_SSL:              s="SSL: protocol error"; break;
   default:                         s="SSL: Unknown error"; break;

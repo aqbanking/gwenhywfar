@@ -743,6 +743,12 @@ const char *GWEN_Socket_ErrorString(int c){
   case GWEN_SOCKET_ERROR_INTERRUPTED:
     s="Operation interrupted by system signal.";
     break;
+  case GWEN_SOCKET_ERROR_ABORTED:
+    s="Operation aborted by user.";
+    break;
+  case GWEN_SOCKET_ERROR_BROKEN_PIPE:
+    s="Broken connection.";
+    break;
   default:
     if (c>0)
       s=strerror(c);

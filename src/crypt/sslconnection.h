@@ -32,6 +32,12 @@
 #include <gwenhywfar/inetsocket.h>
 
 
+#define GWEN_SSLCONN_TIMEOUT_NONE    (0)
+#define GWEN_SSLCONN_TIMEOUT_FOREVER (-1)
+#define GWEN_SSLCONN_TIMEOUT_TRYONLY (-2)
+
+
+
 typedef struct GWEN_SSL_CONNECTION GWEN_SSL_CONNECTION;
 
 
@@ -53,7 +59,8 @@ GWENHYWFAR_API
 				      int timeout);
 
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn);
+  GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn,
+                                         int timeout);
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_SSLConn_Accept(GWEN_SSL_CONNECTION *conn,

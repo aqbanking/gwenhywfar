@@ -44,6 +44,12 @@ struct GWEN_SSL_CONNECTION {
   int isSecure;
 };
 
+GWEN_ERRORCODE GWEN_SSLConn__ReadOrWrite(GWEN_SSL_CONNECTION *conn,
+                                         const char *outbuffer,
+                                         char *inbuffer,
+                                         int *bsize,
+                                         int timeout,
+                                         int reading);
 
 const char *GWEN_SSLConn_ErrorString(unsigned int e);
 

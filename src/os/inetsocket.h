@@ -61,6 +61,7 @@ extern "C" {
 #define GWEN_SOCKET_ERROR_INTERRUPTED    (-6)
 #define GWEN_SOCKET_ERROR_UNSUPPORTED    (-7)
 #define GWEN_SOCKET_ERROR_ABORTED        (-8)
+#define GWEN_SOCKET_ERROR_BROKEN_PIPE    (-9)
 /*@}*/
 
 
