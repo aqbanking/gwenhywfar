@@ -61,7 +61,9 @@ extern "C" {
  * if set then toplevel elements are shared across all files (even included
  * ones, if the include tag appears in the top level)
  */
-#define GWEN_XML_FLAGS_SHARE_TOPLEVEL 0x0002
+#define GWEN_XML_FLAGS_SHARE_TOPLEVEL      0x0002
+
+#define GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL 0x0004
 
 /**
  * combination of other flags resembling the default flags
@@ -236,6 +238,10 @@ GWENHYWFAR_API
 void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
 GWENHYWFAR_API
 void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n);
+GWENHYWFAR_API
+  void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
+                                    int copythem);
+
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
                                     GWEN_XMLNODE_TYPE t, const char *data);

@@ -677,6 +677,31 @@ int GWEN_XML_ReadFileSearch(GWEN_XMLNODE *n, const char *filepath,
 
 
 
+void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
+                                  int copythem){
+  GWEN_XMLNODE *ch;
+
+  assert(n);
+  assert(nn);
+
+  ch=nn->child;
+  while(ch) {
+    GWEN_XMLNODE *nc;
+
+    nc=ch->next;
+    if (!copythem) {
+      GWEN_XMLNode_UnlinkChild(nn, ch);
+      GWEN_XMLNode_AddChild(n, ch);
+    }
+    else {
+      GWEN_XMLNode_AddChild(n, GWEN_XMLNode_dup(ch));
+    }
+    ch=nc;
+  } /* while */
+}
+
+
+
 int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                      GWEN_BUFFEREDIO *bio,
                      unsigned int flags,
@@ -840,7 +865,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               GWEN_XMLNODE *itag;
 
               newRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "tmproot");
-              DBG_INFO(0, "Reading file \"%s\" / \"%s\"",
+              DBG_INFO(0, "Including file \"%s\" / \"%s\"",
                        fpath, iname);
               irv=fn(newRoot, fpath, iname, sl, flags);
               if (irv) {
@@ -860,54 +885,56 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                 GWEN_XMLNODE *nextc;
 
                 nextc=itag->next;
-                GWEN_XMLNode_UnlinkChild(newRoot, itag);
-                GWEN_XMLNode_AddChild(nparent, itag);
+                if (flags & GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL) {
+                  GWEN_XMLNODE *tl;
+
+                  DBG_INFO(0, "Importing node to toplevel");
+                  tl=nparent;
+                  while(tl->parent)
+                    tl=tl->parent;
+
+                  if ((flags & GWEN_XML_FLAGS_SHARE_TOPLEVEL) &&
+                      (itag->type==GWEN_XMLNodeTypeTag)) {
+                    GWEN_XMLNODE *oldNode;
+
+                    /* share toplevel, so find old tag and copy newtag in */
+                    oldNode=GWEN_XMLNode_FindFirstTag(tl,
+                                                      itag->data, 0, 0);
+                    if (oldNode) {
+                      /* use old node, copy properties */
+                      DBG_INFO(0, "Using old toplevel node for \"%s\"",
+                               itag->data);
+                      GWEN_XMLNode_CopyProperties(oldNode, itag, 0);
+                      /* append children only (move them) */
+                      GWEN_XMLNode_AddChildrenOnly(oldNode, itag, 0);
+                      GWEN_XMLNode_UnlinkChild(newRoot, itag);
+                      GWEN_XMLNode_free(itag);
+                    }
+                    else {
+                      /* simply add to toplevel */
+                      GWEN_XMLNode_UnlinkChild(newRoot, itag);
+                      GWEN_XMLNode_AddChild(tl, itag);
+                    }
+                  }
+                  else {
+                    /* simply add to toplevel */
+                    GWEN_XMLNode_UnlinkChild(newRoot, itag);
+                    GWEN_XMLNode_AddChild(tl, itag);
+                  }
+                }
+                else {
+                  /* simply add to current position */
+                  GWEN_XMLNode_UnlinkChild(newRoot, itag);
+                  GWEN_XMLNode_AddChild(nparent, itag);
+                }
                 itag=nextc;
               } /* while */
-              /* free <INCLUDE> tag */
+              /* free <INCLUDE> tag and new root */
+              GWEN_XMLNode_free(newRoot);
               GWEN_XMLNode_free(n);
               /* just to be sure the freed tag is no longer used */
               n=0;
             } /* if include filename given */
-          }
-          else {
-#if 0
-            if ((flags & GWEN_XML_FLAGS_SHARE_TOPLEVEL) &&
-                currDepth==1) {
-              GWEN_XMLNODE *oldtag;
-              GWEN_XMLNODE *nparent;
-
-              /* check whether there already is another tag with this name */
-              nparent=n->parent;
-              assert(nparent);
-              oldtag=GWEN_XMLNode_FindFirstTag(nparent, n->data, 0, 0);
-              while(oldtag) {
-                if (oldtag!=n)
-                  break;
-                oldtag=GWEN_XMLNode_FindNextTag(oldtag, n->data, 0, 0);
-              } /* while */
-              if (oldtag) {
-                GWEN_XMLNODE *itag;
-
-                /* unlink tag */
-                GWEN_XMLNode_UnlinkChild(nparent, n);
-                /* move all children of n to oldtag */
-                itag=n->child;
-                while(itag) {
-                  GWEN_XMLNODE *nextc;
-
-                  nextc=itag->next;
-                  GWEN_XMLNode_UnlinkChild(n, itag);
-                  GWEN_XMLNode_AddChild(oldtag, itag);
-                  itag=nextc;
-                } /* while */
-                /* free tag */
-                GWEN_XMLNode_free(n);
-                /* just to be sure the freed tag is no longer used */
-                n=0;
-              } /* if an old tag exists */
-            } /* if sharing is wanted and possible */
-#endif
           }
 
           /* surface */

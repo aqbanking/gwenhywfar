@@ -1,5 +1,12 @@
 $Id$
 
+
+2003/12/20 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- module XML: Added new flag which allows to always include files to the
+  toplevel.
+
+
 ===========================================================================
 MARK: released gwenhywfar-0.9.4rc1 (2003/12/20)
 ===========================================================================

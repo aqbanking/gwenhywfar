@@ -164,7 +164,11 @@ int testXML2(int argc, char **argv) {
 
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
-  if (GWEN_XML_ReadFileSearch(n, argv[2], GWEN_XML_FLAGS_DEFAULT, sl)) {
+  if (GWEN_XML_ReadFileSearch(n, argv[2],
+                              GWEN_XML_FLAGS_DEFAULT |
+                              GWEN_XML_FLAGS_SHARE_TOPLEVEL |
+                              GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL,
+                              sl)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }
