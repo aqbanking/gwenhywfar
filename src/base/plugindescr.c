@@ -90,6 +90,7 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
   if (pd) {
     GWEN_LIST_FINI(GWEN_PLUGIN_DESCRIPTION, pd);
     GWEN_XMLNode_free(pd->xmlNode);
+    free(pd->fileName);
     free(pd->longDescr);
     free(pd->shortDescr);
     free(pd->author);
@@ -205,6 +206,24 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
 
 
 
+const char*
+GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd){
+  assert(pd);
+  return pd->fileName;
+}
+
+
+
+void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
+					const char *s){
+  assert(pd);
+  free(pd->fileName);
+  if (s) pd->fileName=strdup(s);
+  else pd->fileName=0;
+}
+
+
+
 GWEN_XMLNODE*
 GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd){
   assert(pd);
@@ -284,8 +303,10 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 		    DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
 		  }
 		  else {
-                    GWEN_PluginDescription_List2_PushBack(pdl, pd);
-                  }
+		    GWEN_PluginDescription_SetFileName
+		      (pd, GWEN_Buffer_GetStart(nbuf));
+		    GWEN_PluginDescription_List2_PushBack(pdl, pd);
+		  }
                 }
                 else {
                   DBG_WARN(GWEN_LOGDOMAIN,

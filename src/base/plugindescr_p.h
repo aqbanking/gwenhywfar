@@ -37,6 +37,8 @@
 struct GWEN_PLUGIN_DESCRIPTION {
   GWEN_LIST_ELEMENT(GWEN_PLUGIN_DESCRIPTION);
 
+  char *fileName;
+
   char *name;
   char *type;
   char *shortDescr;

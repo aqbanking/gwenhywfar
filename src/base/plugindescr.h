@@ -93,6 +93,15 @@ GWENHYWFAR_API
 const char*
   GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
 
+GWENHYWFAR_API
+const char*
+  GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd);
+
+GWENHYWFAR_API
+void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
+                                        const char *s);
+
+
 
 /**
  * <p>
