@@ -226,6 +226,7 @@ GWEN_UI_RESULT GWEN_DropDownBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       free(win->chosenText);
       win->chosenText=0;
       win->chosenText=strdup(t);
+      DBG_NOTICE(0, "Setting text on edit field to [%s]", t);
       GWEN_Widget_SetText(win->wEdit, t,
                           GWEN_EventSetText_GetMode(e));
       newE=GWEN_EventChosen_new(t, 0, 0);
@@ -390,6 +391,7 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
   for (;;) {
     GWEN_EVENT *e;
 
+    DBG_NOTICE(0, "Loop");
     e=GWEN_UI_GetNextEvent();
     if (!e) {
       break;
@@ -406,9 +408,13 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
       else win->chosenText=0;
       GWEN_Widget_Close(wScroller);
       GWEN_Event_free(e);
+      GWEN_UI_Flush();
+      DBG_NOTICE(0, "Stopping this.");
+      break;
     }
     else if (GWEN_Event_GetType(e)==GWEN_EventType_Focus) {
       if (GWEN_EventFocus_GetFocusEventType(e)==GWEN_EventFocusType_Lost){
+        DBG_NOTICE(0, "Focus lost");
         GWEN_Widget_Close(wScroller);
         GWEN_UI_Flush();
         free(win->chosenText);
@@ -416,9 +422,14 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
         focusLost=1;
         break;
       }
+      else {
+        DBG_NOTICE(0, "Focus won.");
+      }
     }
     else {
-      GWEN_UI_DispatchEvent(e);
+      GWEN_UI_RESULT res;
+
+      res=GWEN_UI_DispatchEvent(e);
       GWEN_Event_free(e);
     }
   }
@@ -428,6 +439,7 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
                         GWEN_EventSetTextMode_Replace);
   }
 
+  DBG_NOTICE(0, "Loop end");
   GWEN_Widget_free(wScroller);
   if (prevFocus && !focusLost)
     GWEN_Widget_SetFocus(prevFocus);

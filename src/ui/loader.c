@@ -37,6 +37,8 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/bio_buffer.h>
 
 #include <gwenhywfar/ui/button.h>
 #include <gwenhywfar/ui/window.h>
@@ -46,6 +48,49 @@
 #include <gwenhywfar/ui/dropdownbox.h>
 #include <gwenhywfar/ui/textwidget.h>
 #include <gwenhywfar/ui/tablewidget.h>
+
+
+
+int GWEN_UILoader__ExtractText(GWEN_XMLNODE *n,
+                               GWEN_DB_NODE *db,
+                               const char *name) {
+  GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFER *buf;
+  GWEN_XMLNODE *nn;
+
+  nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
+  if (!nn) {
+    DBG_NOTICE(0, "XML node not found");
+    return 0;
+  }
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
+  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
+  if (GWEN_XMLNode_WriteToStream(nn, bio, 0)) {
+    DBG_ERROR(0, "Error writing text");
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    GWEN_Buffer_free(buf);
+    return -1;
+  }
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_BufferedIO_free(bio);
+    GWEN_Buffer_free(buf);
+    return -1;
+  }
+
+  GWEN_BufferedIO_free(bio);
+  DBG_NOTICE(0, "Setting text [%s]=\"%s\"", name, GWEN_Buffer_GetStart(buf));
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       name, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_free(buf);
+
+  return 0;
+}
+
 
 
 
@@ -71,8 +116,6 @@ int GWEN_UILoader__ParseWidget(GWEN_XMLNODE *n,
   assert(db);
   assert(x);
   assert(y);
-  assert(width);
-  assert(height);
 
   flags=0;
 
@@ -82,7 +125,8 @@ int GWEN_UILoader__ParseWidget(GWEN_XMLNODE *n,
   localY=GWEN_XMLNode_GetIntValue(n, "y", *y);
   localW=GWEN_XMLNode_GetIntValue(n, "width", width-localX);
   localH=GWEN_XMLNode_GetIntValue(n, "height", height-localY);
-  DBG_NOTICE(0, "Parsing Widget (%d/%d, %d/%d)",
+  DBG_NOTICE(0, "Parsing Widget [%s] (%d/%d, %d/%d)",
+             GWEN_XMLNode_GetData(n),
              localX, localY, localW, localH);
 
   *x+=localW;
@@ -212,8 +256,36 @@ int GWEN_UILoader__ParseWidget(GWEN_XMLNODE *n,
                         "flags", flags);
   }
 
-  /* check for children */
+  /* read config specific data */
+  nn=GWEN_XMLNode_FindFirstTag(n, "config", 0, 0);
+  if (nn) {
+    const char *p;
+    GWEN_DB_NODE *dbConfig;
+    int i;
 
+    dbConfig=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "config");
+    assert(dbConfig);
+    p=GWEN_XMLNode_GetCharValue(nn, "path", 0);
+    if (p)
+      GWEN_DB_SetCharValue(dbConfig, GWEN_DB_FLAGS_DEFAULT, "path", p);
+    p=GWEN_XMLNode_GetCharValue(nn, "type", 0);
+    if (p)
+      GWEN_DB_SetCharValue(dbConfig, GWEN_DB_FLAGS_DEFAULT, "type", p);
+    i=GWEN_XMLNode_GetIntValue(nn, "minlen", 0);
+    if (i)
+      GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_DEFAULT, "minlen", i);
+    i=GWEN_XMLNode_GetIntValue(nn, "maxlen", 0);
+    if (i)
+      GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_DEFAULT, "maxlen", i);
+    i=GWEN_XMLNode_GetIntValue(nn, "minvalue", 0);
+    if (i)
+      GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_DEFAULT, "minvalue", i);
+    i=GWEN_XMLNode_GetIntValue(nn, "maxvalue", 0);
+    if (i)
+      GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_DEFAULT, "maxvalue", i);
+  }
+
+  /* check for children */
   childX=0;
   childY=0;
 
@@ -315,8 +387,8 @@ int GWEN_UILoader__ParseVGroup(GWEN_XMLNODE *n,
   gap=atoi(GWEN_XMLNode_GetProperty(n, "gap", "0"));
   localX=GWEN_XMLNode_GetIntValue(n, "x", *x);
   localY=GWEN_XMLNode_GetIntValue(n, "y", *y);
-  localW=GWEN_XMLNode_GetIntValue(n, "width", width);
-  localH=GWEN_XMLNode_GetIntValue(n, "height", height);
+  localW=GWEN_XMLNode_GetIntValue(n, "width", width-localX);
+  localH=GWEN_XMLNode_GetIntValue(n, "height", height-localY);
 
   if ((localX+localW)>width) {
     DBG_ERROR(0,
@@ -511,8 +583,8 @@ int GWEN_UILoader__ParseHGroup(GWEN_XMLNODE *n,
   gap=atoi(GWEN_XMLNode_GetProperty(n, "gap", "0"));
   localX=GWEN_XMLNode_GetIntValue(n, "x", *x);
   localY=GWEN_XMLNode_GetIntValue(n, "y", *y);
-  localW=GWEN_XMLNode_GetIntValue(n, "width", width);
-  localH=GWEN_XMLNode_GetIntValue(n, "height", height);
+  localW=GWEN_XMLNode_GetIntValue(n, "width", width-localX);
+  localH=GWEN_XMLNode_GetIntValue(n, "height", height-localY);
 
   if ((localX+localW)>width) {
     DBG_ERROR(0,
@@ -709,26 +781,42 @@ int GWEN_UILoader__AdjustWidgetsPos(GWEN_DB_NODE *db,
 
 
 
-GWEN_DB_NODE *GWEN_UILoader_ParseWidget(GWEN_XMLNODE *n,
-                                        int x, int y,
-                                        int width, int height) {
-  GWEN_DB_NODE *db;
+int GWEN_UILoader_ParseWidget(GWEN_XMLNODE *n,
+                              GWEN_DB_NODE *db,
+                              int x, int y,
+                              int width, int height) {
   int localX, localY;
 
   localX=0;
   localY=0;
-  db=GWEN_DB_Group_new("widget");
+
+  /* get defaults for with and height */
+  if (width==0)
+    width=GWEN_UI_GetCols();
+  if (height==0)
+    height=GWEN_UI_GetLines();
+
   if (GWEN_UILoader__ParseWidget(n, db, &localX, &localY, width, height)) {
-    GWEN_DB_Group_free(db);
-    return 0;
+    return -1;
+  }
+
+  DBG_NOTICE(0, "width=%d, height=%d", localX, localY);
+
+  if (x==-1) {
+    x=(width-localX)/2;
+    DBG_NOTICE(0, "Changed X to %d", x);
+  }
+
+  if (y==-1) {
+    y=(height-localY)/2;
+    DBG_NOTICE(0, "Changed Y to %d", y);
   }
 
   if (GWEN_UILoader__AdjustWidgetsPos(db, x, y)) {
-    GWEN_DB_Group_free(db);
-    return 0;
+    return -1;
   }
 
-  return db;
+  return 0;
 }
 
 
@@ -749,9 +837,17 @@ GWEN_WIDGET *GWEN_UILoader_LoadButton(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   nn=GWEN_XMLNode_FindFirstTag(n, "flags", 0, 0);
   if (nn) {
@@ -802,7 +898,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadButton(GWEN_WIDGET *parent,
   assert(widget);
   if (helpText)
     GWEN_Widget_SetHelpText(widget, helpText);
-
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -822,10 +919,18 @@ GWEN_WIDGET *GWEN_UILoader_LoadWindow(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
   title=GWEN_XMLNode_GetCharValue(n, "title", 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   nn=GWEN_XMLNode_FindFirstTag(n, "flags", 0, 0);
   if (nn) {
@@ -870,12 +975,14 @@ GWEN_WIDGET *GWEN_UILoader_LoadWindow(GWEN_WIDGET *parent,
     }
   }
 
+  DBG_NOTICE(0, "Flags: %08x", flags);
   widget=GWEN_Window_new(parent, flags, name, title,
                          x, y, w, h);
   assert(widget);
   if (helpText)
     GWEN_Widget_SetHelpText(widget, helpText);
-
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -895,10 +1002,18 @@ GWEN_WIDGET *GWEN_UILoader_LoadScrollWidget(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
   title=GWEN_XMLNode_GetCharValue(n, "title", 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   nn=GWEN_XMLNode_FindFirstTag(n, "flags", 0, 0);
   if (nn) {
@@ -955,6 +1070,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadScrollWidget(GWEN_WIDGET *parent,
   if (helpText)
     GWEN_Widget_SetHelpText(widget, helpText);
 
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -974,10 +1091,18 @@ GWEN_WIDGET *GWEN_UILoader_LoadEditBox(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   maxLen=GWEN_DB_GetIntValue(db, "maxlen", 0, 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   nn=GWEN_XMLNode_FindFirstTag(n, "flags", 0, 0);
   if (nn) {
@@ -1040,6 +1165,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadEditBox(GWEN_WIDGET *parent,
   if (helpText)
     GWEN_Widget_SetHelpText(widget, helpText);
 
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -1058,9 +1185,17 @@ GWEN_WIDGET *GWEN_UILoader_LoadCheckBox(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   widget=GWEN_CheckBox_new(parent, flags, name, text,
                            x, y, w, h);
@@ -1068,6 +1203,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadCheckBox(GWEN_WIDGET *parent,
   if (helpText)
     GWEN_Widget_SetHelpText(widget, helpText);
 
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -1088,10 +1225,18 @@ GWEN_WIDGET *GWEN_UILoader_LoadDropDownBox(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   maxLen=GWEN_DB_GetIntValue(db, "maxlen", 0, 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   nn=GWEN_XMLNode_FindFirstTag(n, "flags", 0, 0);
   if (nn) {
@@ -1150,7 +1295,7 @@ GWEN_WIDGET *GWEN_UILoader_LoadDropDownBox(GWEN_WIDGET *parent,
         if (p)
           GWEN_StringList_AppendString(sl, p, 0, 1);
       }
-      nn=GWEN_XMLNode_FindNextTag(nn, "flag", 0, 0);
+      nn=GWEN_XMLNode_FindNextTag(nn, "choice", 0, 0);
     }
   }
 
@@ -1161,6 +1306,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadDropDownBox(GWEN_WIDGET *parent,
   if (helpText)
     GWEN_Widget_SetHelpText(widget, helpText);
 
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -1180,9 +1327,17 @@ GWEN_WIDGET *GWEN_UILoader_LoadTextWidget(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   nn=GWEN_XMLNode_FindFirstTag(n, "flags", 0, 0);
   if (nn) {
@@ -1248,6 +1403,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadTextWidget(GWEN_WIDGET *parent,
   if (helpText)
     GWEN_Widget_SetHelpText(widget, helpText);
 
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -1267,9 +1424,17 @@ GWEN_WIDGET *GWEN_UILoader_LoadTableWidget(GWEN_WIDGET *parent,
   w=GWEN_DB_GetIntValue(db, "width", 0, 0);
   h=GWEN_DB_GetIntValue(db, "height", 0, 0);
   name=GWEN_XMLNode_GetCharValue(n, "name", 0);
-  text=GWEN_XMLNode_GetCharValue(n, "text", 0);
-  helpText=GWEN_XMLNode_GetCharValue(n, "helpText", 0);
   flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "text")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  text=GWEN_DB_GetCharValue(db, "text", 0, 0);
+  if (GWEN_UILoader__ExtractText(n, db, "helptext")) {
+    DBG_ERROR(0, "Error extracting text");
+    return 0;
+  }
+  helpText=GWEN_DB_GetCharValue(db, "helpText", 0, 0);
 
   nn=GWEN_XMLNode_FindFirstTag(n, "flags", 0, 0);
   if (nn) {
@@ -1354,6 +1519,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadTableWidget(GWEN_WIDGET *parent,
     }
   }
 
+  GWEN_DB_DeleteVar(db, "text");
+  GWEN_DB_DeleteVar(db, "helpText");
   return widget;
 }
 
@@ -1366,7 +1533,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
   GWEN_WIDGET *widget;
   GWEN_WIDGET *newParent;
 
-
+  DBG_NOTICE(0, "Loading child of %08x (%s)",
+             (unsigned int)parent, GWEN_DB_GroupName(db));
   widget=0;
   newParent=0;
   if (strcasecmp(GWEN_DB_GroupName(db), "widget")==0) {
@@ -1379,36 +1547,44 @@ GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
     typeName=GWEN_XMLNode_GetProperty(n, "type", 0);
     if (typeName) {
       if (strcasecmp(typeName, "button")==0) {
+        DBG_NOTICE(0, "Loading Button");
         widget=GWEN_UILoader_LoadButton(parent, db, n);
         newParent=widget;
       }
       else if (strcasecmp(typeName, "window")==0) {
+        DBG_NOTICE(0, "Loading Window");
         widget=GWEN_UILoader_LoadWindow(parent, db, n);
         if (widget)
           newParent=GWEN_Window_GetViewPort(widget);
       }
       else if (strcasecmp(typeName, "scrollwidget")==0) {
+        DBG_NOTICE(0, "Loading ScrollWidget");
         widget=GWEN_UILoader_LoadScrollWidget(parent, db, n);
         if (widget)
           newParent=GWEN_ScrollWidget_GetViewPort(widget);
       }
       else if (strcasecmp(typeName, "editbox")==0) {
+        DBG_NOTICE(0, "Loading EditBox");
         widget=GWEN_UILoader_LoadEditBox(parent, db, n);
         newParent=widget;
       }
       else if (strcasecmp(typeName, "checkbox")==0) {
+        DBG_NOTICE(0, "Loading CheckBox");
         widget=GWEN_UILoader_LoadCheckBox(parent, db, n);
         newParent=widget;
       }
       else if (strcasecmp(typeName, "dropdownbox")==0) {
+        DBG_NOTICE(0, "Loading DropDownBox");
         widget=GWEN_UILoader_LoadDropDownBox(parent, db, n);
         newParent=widget;
       }
       else if (strcasecmp(typeName, "textwidget")==0) {
+        DBG_NOTICE(0, "Loading TextWidget");
         widget=GWEN_UILoader_LoadTextWidget(parent, db, n);
         newParent=widget;
       }
       else if (strcasecmp(typeName, "tablewidget")==0) {
+        DBG_NOTICE(0, "Loading TableWidget");
         widget=GWEN_UILoader_LoadTableWidget(parent, db, n);
         newParent=widget;
       }
@@ -1419,36 +1595,129 @@ GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
       }
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
                            "type", typeName);
+      DBG_NOTICE(0, "Loaded a widget (%08x, %08x)",
+                 (unsigned int)widget,
+                 (unsigned int)newParent);
     }
     if (!widget) {
       DBG_ERROR(0, "Could not load widget");
       return 0;
     }
     GWEN_DB_SetPtrValue(db, GWEN_DB_FLAGS_DEFAULT,
-                        "widgetPtr", (void*)widget);
+                        "widgetPointer", (void*)widget);
   } /* if widget */
   else {
     newParent=parent;
+    widget=parent;
+    DBG_NOTICE(0, "Not a widget");
   }
 
   /* load all children */
+  DBG_NOTICE(0, "Loading children of widget %08x (%s)",
+             (unsigned int)widget,
+             GWEN_DB_GroupName(db));
   dbW=GWEN_DB_GetFirstGroup(db);
   while(dbW) {
     GWEN_WIDGET *subw;
 
+    DBG_NOTICE(0, "Loading now %s", GWEN_DB_GroupName(dbW));
     subw=GWEN_UILoader_LoadWidget(newParent, dbW);
     if (!subw) {
-      DBG_INFO(0, "here");
+      DBG_NOTICE(0, "here");
       GWEN_Widget_free(widget);
       return 0;
     }
     dbW=GWEN_DB_GetNextGroup(dbW);
   } /* while */
 
-  if (!widget)
-    return parent;
   return widget;
 }
+
+
+
+GWEN_WIDGET *GWEN_UILoader_LoadDialog(GWEN_WIDGET *parent,
+                                      GWEN_XMLNODE *n,
+                                      GWEN_DB_NODE *db){
+  GWEN_WIDGET *w;
+  GWEN_DB_NODE *dbDialog;
+
+  dbDialog=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, "widget");
+  if (GWEN_UILoader_ParseWidget(n, dbDialog, -1, -1, 0, 0)) {
+    DBG_ERROR(0, "Could not parse dialog");
+    return 0;
+  }
+
+  w=GWEN_UILoader_LoadWidget(parent, dbDialog);
+  if (!w) {
+    DBG_NOTICE(0, "Could not load dialog");
+    return 0;
+  }
+
+  return w;
+}
+
+
+
+int GWEN_UILoader_Populate(GWEN_DB_NODE *dbDialog,
+                           GWEN_DB_NODE *dbData){
+  GWEN_DB_NODE *dbDialogChild;
+  GWEN_DB_NODE *dbDialogCfg;
+
+  dbDialogCfg=GWEN_DB_GetGroup(dbDialog, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                               "config");
+  if (dbDialogCfg) {
+    const char *wtype;
+    const char *path;
+    GWEN_WIDGET *w;
+
+    w=GWEN_DB_GetPtrValue(dbDialog, "widgetPointer", 0, 0);
+    wtype=GWEN_DB_GetCharValue(dbDialog, "type", 0, 0);
+    path=GWEN_DB_GetCharValue(dbDialogCfg, "path", 0, 0);
+    if (w && wtype && path) {
+      const char *dtype;
+      const char *d;
+      char numbuf[64];
+
+      /* create data */
+      dtype=GWEN_DB_GetCharValue(dbDialogCfg, "type", 0, "char");
+      if (strcasecmp(dtype, "char")==0) {
+        d=GWEN_DB_GetCharValue(dbData, path, 0, 0);
+      }
+      else if (strcasecmp(dtype, "int")==0) {
+        snprintf(numbuf, sizeof(numbuf), "%i",
+                 GWEN_DB_GetIntValue(dbData, path, 0, 0));
+        d=numbuf;
+      }
+
+      if (!d)
+        d="";
+
+      if (strcasecmp(wtype, "EditBox")==0 ||
+          strcasecmp(wtype, "DropDownBox")==0 ||
+          strcasecmp(wtype, "TextWidget")==0) {
+        GWEN_Widget_SetText(w, d, GWEN_EventSetTextMode_Replace);
+      }
+      else {
+        DBG_INFO(0, "Cannot handle widget type \"%s\"", wtype);
+        return -1;
+      }
+    }
+  }
+
+  dbDialogChild=GWEN_DB_GetFirstGroup(dbDialog);
+  while(dbDialogChild) {
+    if (GWEN_UILoader_Populate(dbDialogChild, dbData)) {
+      DBG_INFO(0, "here");
+      return -1;
+    }
+    dbDialogChild=GWEN_DB_GetNextGroup(dbDialogChild);
+  }
+
+  return 0;
+}
+
+
+
 
 
 

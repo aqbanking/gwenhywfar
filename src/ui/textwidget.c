@@ -931,12 +931,14 @@ GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     win->previousHandler(w, e);
     ft=GWEN_EventFocus_GetFocusEventType(e);
     if (ft==GWEN_EventFocusType_Got) {
+      DBG_NOTICE(0, "Got focus");
       if (win->flags & GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT)
         GWEN_Widget_Highlight(w, 0, win->pos-win->top,
                               GWEN_Widget_GetWidth(w),
                               GWEN_WidgetColour_Selected);
     }
     else {
+      DBG_NOTICE(0, "Lost focus");
       if (win->flags & GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT)
         GWEN_Widget_Highlight(w, 0, win->pos-win->top,
                               GWEN_Widget_GetWidth(w),

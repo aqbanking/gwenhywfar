@@ -76,6 +76,17 @@ GWEN_WIDGET *GWEN_UILoader_LoadTableWidget(GWEN_WIDGET *parent,
                                            GWEN_XMLNODE *n);
 
 
+int GWEN_UILoader_ParseWidget(GWEN_XMLNODE *n,
+                              GWEN_DB_NODE *db,
+                              int x, int y,
+                              int width, int height);
+
+GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
+                                      GWEN_DB_NODE *db);
+
+int GWEN_UILoader__ExtractText(GWEN_XMLNODE *n,
+                               GWEN_DB_NODE *db,
+                               const char *name);
 
 
 

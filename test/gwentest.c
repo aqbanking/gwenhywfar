@@ -32,21 +32,23 @@
 #endif
 #ifdef USE_NCURSES
 # include <ncurses.h>
+# include <gwenhywfar/ui/widget.h>
+# include <gwenhywfar/ui/ui.h>
+# include <gwenhywfar/ui/window.h>
+# include <gwenhywfar/ui/textwidget.h>
+# include <gwenhywfar/ui/tablewidget.h>
+# include <gwenhywfar/ui/button.h>
+# include <gwenhywfar/ui/scrollwidget.h>
+# include <gwenhywfar/ui/messagebox.h>
+# include <gwenhywfar/ui/editbox.h>
+# include <gwenhywfar/ui/checkbox.h>
+# include <gwenhywfar/ui/dropdownbox.h>
+# include <gwenhywfar/ui/filedialog.h>
+# include <gwenhywfar/ui/loader.h>
+# include "../src/ui/loader_p.h"
 #endif
 
-#include <gwenhywfar/ui/widget.h>
-#include <gwenhywfar/ui/ui.h>
-#include <gwenhywfar/ui/window.h>
-#include <gwenhywfar/ui/textwidget.h>
-#include <gwenhywfar/ui/tablewidget.h>
-#include <gwenhywfar/ui/button.h>
-#include <gwenhywfar/ui/scrollwidget.h>
-#include <gwenhywfar/ui/messagebox.h>
-#include <gwenhywfar/ui/editbox.h>
-#include <gwenhywfar/ui/checkbox.h>
-#include <gwenhywfar/ui/dropdownbox.h>
-#include <gwenhywfar/ui/filedialog.h>
-#include <gwenhywfar/ui/loader.h>
+
 
 
 int testDB(int argc, char **argv) {
@@ -2799,14 +2801,16 @@ int uitest19(int argc, char **argv) {
     DBG_ERROR(0, "No subtag");
     return 1;
   }
-
-  db=GWEN_UILoader_ParseWidget(nn,
-                               0, 0,
-                               80, 25);
-  if (db) {
+  db=GWEN_DB_Group_new("dialog");
+  if (GWEN_UILoader_ParseWidget(nn,
+                                db,
+                                0, 0,
+                                80, 25)) {
+    DBG_ERROR(0, "Could not parse widget");
+  }
+  else {
     DBG_NOTICE(0, "DB is:");
     GWEN_DB_Dump(db, stdout, 2);
-    GWEN_DB_Group_free(db);
   }
   GWEN_XMLNode_free(n);
   return 0;
@@ -2845,30 +2849,29 @@ int uitest20(int argc, char **argv) {
     return 1;
   }
 
-  db=GWEN_UILoader_ParseWidget(nn,
-                               0, 0,
-                               80, 25);
-  if (db) {
-    DBG_NOTICE(0, "DB is:");
-    GWEN_DB_Dump(db, stdout, 2);
-  }
-
+  db=GWEN_DB_Group_new("dialog");
   DBG_NOTICE(0, "Initializing UI");
   if (GWEN_UI_Begin()) {
     DBG_ERROR(0, "Could not init UI");
     return 2;
   }
 
-  w=GWEN_UILoader_LoadWidget(0, db);
+  w=GWEN_UILoader_LoadDialog(0, nn, db);
   if (!w) {
     DBG_ERROR(0, "Could not load widgets");
   }
   else {
+    int res;
+
     GWEN_Widget_Dump(w, 1);
     GWEN_Widget_Redraw(w);
     GWEN_UI_Flush();
-    DBG_NOTICE(0, "Waiting...");
-    getch();
+    DBG_NOTICE(0, "Running...");
+    res=GWEN_Widget_Run(w);
+    DBG_NOTICE(0, "Running... done. (%d)", res);
+    GWEN_Widget_Close(w);
+    GWEN_UI_Flush();
+    GWEN_Widget_free(w);
   }
 
   DBG_NOTICE(0, "Deinitializing UI");
@@ -2876,6 +2879,8 @@ int uitest20(int argc, char **argv) {
     DBG_ERROR(0, "Could not deinit UI");
     return 2;
   }
+
+  GWEN_DB_Dump(db, stderr, 2);
 
   return 0;
 }

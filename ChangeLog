@@ -1,4 +1,15 @@
 
+
+2004/06/30: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui:
+  - widget loader can now setup a complete dialog (including HTML help
+    texts etc).
+  - started working on a function whcih populates the dialog widgets with
+    values. The next step will be to retrieve and validate data entered by
+    the user.
+
+
 2004/06/29: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ui:

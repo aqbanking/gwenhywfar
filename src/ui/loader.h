@@ -36,13 +36,12 @@
 
 
 
-GWEN_DB_NODE *GWEN_UILoader_ParseWidget(GWEN_XMLNODE *n,
-                                        int x, int y,
-                                        int width, int height);
-
-GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
+GWEN_WIDGET *GWEN_UILoader_LoadDialog(GWEN_WIDGET *parent,
+                                      GWEN_XMLNODE *n,
                                       GWEN_DB_NODE *db);
 
+int GWEN_UILoader_Populate(GWEN_DB_NODE *dbDialog,
+                           GWEN_DB_NODE *dbData);
 
 
 #endif

@@ -1,60 +1,56 @@
 
 
-<widget name="dlg1" type="Window">
+<widget name="dlgConnectionData" type="Window">
   <flags>
+    <flag>WIDGET_FLAGS_DEFAULT</flag>
     <flag>WIDGET_FLAGS_BORDER</flag>
+    <flag>WIDGET_FLAGS_MODAL</flag>
     <flag>WINDOW_FLAGS_TITLE</flag>
   </flags>
-  <width>80</width>
-  <height>25</height>
-  <title> Test-Dialog </title>
+  <width>53</width>
+  <height>10</height>
+  <title> Enter Connection Data </title>
 
-  <vgroup align="top" >
+  <vgroup align="top" gap="0" >
+    <y>1</y>
+    
+    <hgroup align="left" gap="1" >
   
-    <hgroup align="center" gap="1" >
-  
-      <widget name="Button1" type="Button">
+      <widget name="Label1" type="TextWidget">
         <flags>
-          <flag>WIDGET_FLAGS_BORDER</flag>
-          <flag>WIDGET_FLAGS_FOCUSABLE</flag>
-          <flag>WIDGET_FLAGS_HCENTER</flag>
         </flags>
         
-        <width>16</width>
+        <width>20</width>
         <height>1</height>
-        <text> Button1 </text>
-        <helptext>
-          This is an example of a <b>help</b> text.
-        </helptext>
-        
+        <text> 
+          <gwen>Connection <b>type</b></gwen> 
+        </text>
       </widget>
   
-      <widget name="Button2" type="Button">
+      <widget name="DropDownBox1" type="DropDownBox">
         <flags>
+          <flag>WIDGET_FLAGS_DEFAULT</flag>
           <flag>WIDGET_FLAGS_BORDER</flag>
-          <flag>WIDGET_FLAGS_FOCUSABLE</flag>
-          <flag>WIDGET_FLAGS_HCENTER</flag>
+          <flag>WIDGET_FLAGS_HIGHLIGHT</flag>
         </flags>
         
-        <width>16</width>
+        <width>30</width>
         <height>1</height>
-        <text> Button2 </text>
+        
+        <choices>
+          <choice>local</choice>
+          <choice>private</choice>
+          <choice>secure</choice>
+        </choices>
+        
+        <helptext>
+          <gwen>
+            This allows setting the <b>connection</b> type.
+          </gwen>
+        </helptext>
       </widget>
   
     </hgroup>
-
-    <widget name="Button3" type="Button">
-      <flags>
-        <flag>WIDGET_FLAGS_BORDER</flag>
-        <flag>WIDGET_FLAGS_FOCUSABLE</flag>
-        <flag>WIDGET_FLAGS_HCENTER</flag>
-      </flags>
-      
-      <width>16</width>
-      <height>1</height>
-      <text> Button3 </text>
-    </widget>
-
 
   </vgroup>
     

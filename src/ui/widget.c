@@ -1405,7 +1405,7 @@ int GWEN_Widget_Run(GWEN_WIDGET *w) {
 
       e=GWEN_UI_GetNextEvent();
       if (!e)
-        return GWEN_UIResult_NotHandled;
+        return 1;
       res=GWEN_UI_DispatchEvent(e);
       GWEN_Event_free(e);
       if (res==GWEN_UIResult_Finished ||

@@ -318,13 +318,14 @@ int GWEN_UI_HandleKeyEvents(int wt) {
   }
   if (GWEN_UI__ui->focusWidget==0) {
     /* find a widget which may receive the focus */
-    if (!GWEN_UI_FocusToNext()) {
+    if (GWEN_UI_FocusToNext()) {
       DBG_ERROR(0, "No focusable widget found");
       return -1;
     }
-    return 1;
+    GWEN_UI_Flush();
   }
-  else {
+
+  if (1) {
     int ch;
     int cx;
     int cy;
@@ -388,13 +389,16 @@ void GWEN_UI_SetFocus(GWEN_WIDGET *w) {
   assert(GWEN_UI__ui);
 
   if (GWEN_UI__ui->focusWidget) {
-    GWEN_EVENT *e;
+    if (!(GWEN_Widget_GetState(GWEN_UI__ui->focusWidget) &
+          GWEN_WIDGET_STATE_CLOSED)) {
+      GWEN_EVENT *e;
 
-    e=GWEN_EventFocus_new(GWEN_EventFocusType_Lost);
-    assert(e);
-    if (GWEN_UI_SendEvent(GWEN_UI__ui->focusWidget, 0, e, 0)) {
-      DBG_ERROR(0, "Could not send event");
-      GWEN_Event_free(e);
+      e=GWEN_EventFocus_new(GWEN_EventFocusType_Lost);
+      assert(e);
+      if (GWEN_UI_SendEvent(GWEN_UI__ui->focusWidget, 0, e, 0)) {
+        DBG_ERROR(0, "Could not send event");
+        GWEN_Event_free(e);
+      }
     }
     GWEN_Widget_free(GWEN_UI__ui->focusWidget);
     GWEN_UI__ui->focusWidget=0;
@@ -619,6 +623,7 @@ GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w){
 
     wf=GWEN_Widget_GetFlags(wnext);
     ws=GWEN_Widget_GetState(wnext);
+
     if ((ws & GWEN_WIDGET_STATE_ACTIVE) &&
         !(ws & GWEN_WIDGET_STATE_CLOSED)) {
       wfocus=GWEN_UI_GetDeepestFocusable(wnext);
@@ -626,16 +631,18 @@ GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w){
         return wfocus;
       }
       if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
-          !(ws & GWEN_WIDGET_STATE_HASFOCUS))
+          !(ws & GWEN_WIDGET_STATE_HASFOCUS)) {
         return wnext;
+      }
     }
 
     wnext=GWEN_Widget_List_Next(wnext);
   } /* while */
 
   if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
-      !(ws & GWEN_WIDGET_STATE_HASFOCUS))
+      !(ws & GWEN_WIDGET_STATE_HASFOCUS)) {
     return w;
+  }
 
   return 0;
 }
