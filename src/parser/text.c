@@ -1571,6 +1571,30 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len) {
 
 
 int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
+  unsigned char *pdst;
+  GWEN_TYPE_UINT32 roomLeft;
+  GWEN_TYPE_UINT32 bytesAdded;
+
+#define GWEN_TEXT__APPENDCHAR(chr)                     \
+  if (roomLeft<2) {                                   \
+    if (bytesAdded) {                                 \
+      GWEN_Buffer_IncrementPos(buf, bytesAdded);      \
+      GWEN_Buffer_AdjustUsedBytes(buf);               \
+    }                                                 \
+    GWEN_Buffer_AllocRoom(buf, 2);                    \
+    pdst=GWEN_Buffer_GetPosPointer(buf);              \
+    roomLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(buf); \
+    bytesAdded=0;                                     \
+   }                                                  \
+   *(pdst++)=(unsigned char)chr;                      \
+   *pdst=0;                                           \
+   bytesAdded++;                                      \
+  roomLeft--
+
+  pdst=GWEN_Buffer_GetPosPointer(buf);
+  roomLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
+  bytesAdded=0;
+
   while(*src) {
     unsigned char x;
     int match;
@@ -1585,7 +1609,8 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 
         l=strlen(e->replace);
         if (strncasecmp(src, e->replace, l)==0) {
-          GWEN_Buffer_AppendByte(buf, e->character);
+          GWEN_TEXT__APPENDCHAR(e->character);
+          //GWEN_Buffer_AppendByte(buf, e->character);
           src+=l;
           match=1;
           break;
@@ -1594,12 +1619,17 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
       } /* while */
     }
     if (!match) {
-      GWEN_Buffer_AppendByte(buf, *src);
-      src++;
+      GWEN_TEXT__APPENDCHAR(*(src++));
     }
   } /* while */
 
+  if (bytesAdded) {
+    GWEN_Buffer_IncrementPos(buf, bytesAdded);
+    GWEN_Buffer_AdjustUsedBytes(buf);
+  }
+
   return 0;
+#undef GWEN_TEXT__APPENDCHAR
 }
 
 

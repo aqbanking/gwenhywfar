@@ -1,3 +1,7 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
 
 2005/03/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -6,6 +10,22 @@
   GWEN_Buffer_AppendByte).
 - took back my latest change (not completely, though)
   (argh, we *need* to discuss those changes)
+- started optimisations of my own:
+  - GWEN_Buffer: 
+    - ReadChar() no longer calls PeekChar()
+    - _new(): Now allocate size+1 (less reallocs, in a test from over 
+       700 to 4)
+  - GWEN_BufferedIO: same here
+  - GWEN_XML: 
+    - ReadWordBuf now doesn't call CheckEOF, since the return value
+      of GWEN_BufferedIO_ReadChar() has an error code for this case
+    - ReadWordBuf no longer uses GWEN_Buffer_AppendByte
+    - ReadBIO no longer calls GWEN_BufferedIO_CheckEOF
+  - GWEN_Text: 
+    GWEN_Text_UnescapeXmlToBuffer() no longer uses GWEN_Buffer_AppendByte
+- added function GWEN_Buffer_GetMaxUnsegmentedWrite()
+These changes will require to increment SO_CURRENT.
+
 
 2005-03-04   Christian Stimming <stimming@tuhh.de>
 
@@ -14,6 +34,7 @@
 	* src/base/buffer.c, src/io/bufferedio.c: Add some small
 	performance improvements; add comments about further potential
 	performance improvements.
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.9.0 (2005/02/19)

@@ -184,26 +184,50 @@ void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt, char *buffer, int len){
 
 
 
-int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *bt)
-{
-  /* In some applications (notably in simthetic), this function is
-     called *a lot*. It is maybe possible to make this function less
-     costly? Maybe by simply checking bt->readerEOF but not calling
-     PeekChar? */
+int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *bt){
   return (GWEN_BufferedIO_PeekChar(bt) == GWEN_BUFFEREDIO_CHAR_EOF);
 }
 
 
 
+int GWEN_BufferedIO__FillReadBuffer(GWEN_BUFFEREDIO *bt){
+  GWEN_ERRORCODE err;
+  int i;
+
+  assert(bt->readPtr);
+  i=bt->readerBufferLength;
+  err=bt->readPtr(bt,
+                  bt->readerBuffer,
+                  &i,
+                  bt->timeout);
+  if (!GWEN_Error_IsOk(err)) {
+    if (GWEN_Error_GetType(err)==
+        GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE) &&
+        GWEN_Error_GetCode(err)==GWEN_BUFFEREDIO_ERROR_NO_DATA) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Could not fill input buffer, no data");
+      return GWEN_BUFFEREDIO_CHAR_NO_DATA;
+    }
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    bt->readerError=1;
+    return GWEN_BUFFEREDIO_CHAR_ERROR;
+  }
+  bt->readerBufferFilled=i;
+  bt->readerBufferPos=0;
+  bt->readerEOF=(i==0);
+
+  if (bt->readerEOF) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF now met");
+    return GWEN_BUFFEREDIO_CHAR_EOF;
+  }
+
+  return 0;
+}
+
+
+
 int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
-  /* In some applications (notably in simthetic), this function is
-     called *a lot*. It is quite worthy to spend some effort in making
-     this function call less costly. Is it maybe possible to skip even
-     the error checks? This would directly boost the performance. */
-  /* Because of this reason and as a single exception, we skip the
-     assertions here. */
-  /* assert(bt);
-     assert(bt->readerBuffer); */
+  assert(bt);
+  assert(bt->readerBuffer);
 
   /* do some fast checks */
   if (bt->readerError) {
@@ -217,34 +241,9 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 
   if (bt->readerBufferPos >= bt->readerBufferFilled) {
     /* buffer empty, no EOF met, so fill it */
-    GWEN_ERRORCODE err;
-    int i;
-
-    assert(bt->readPtr);
-    i=bt->readerBufferLength;
-    err=bt->readPtr(bt,
-		    bt->readerBuffer,
-		    &i,
-		    bt->timeout);
-    if (!GWEN_Error_IsOk(err)) {
-      if (GWEN_Error_GetType(err)==
-          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE) &&
-          GWEN_Error_GetCode(err)==GWEN_BUFFEREDIO_ERROR_NO_DATA) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Could not fill input buffer, no data");
-        return GWEN_BUFFEREDIO_CHAR_NO_DATA;
-      }
-      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-      bt->readerError=1;
-      return GWEN_BUFFEREDIO_CHAR_ERROR;
-    }
-    bt->readerBufferFilled=i;
-    bt->readerBufferPos=0;
-    bt->readerEOF=(i==0);
-
-    if (bt->readerEOF) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "EOF now met");
-      return GWEN_BUFFEREDIO_CHAR_EOF;
-    }
+    int rv=GWEN_BufferedIO__FillReadBuffer(bt);
+    if (rv)
+      return rv;
   }
   return (unsigned char)(bt->readerBuffer[bt->readerBufferPos]);
 }
@@ -254,22 +253,34 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bt){
   int i;
 
-  /* In some applications (notably in simthetic), this function is
-     called *a lot*. It is quite worthy to spend some effort in making
-     this function call less costly. Is it maybe possible to directly
-     read the character from the BufferedIO instead of calling
-     PeekChar?  This would directly boost the performance. */
-  i=GWEN_BufferedIO_PeekChar(bt);
-  if (i>=0) {
-    bt->readerBufferPos++;
-    if (i==GWEN_BUFFEREDIO_LF) {
-      bt->lines++;
-      bt->linePos=0;
-    }
-    else
-      bt->linePos++;
-    bt->bytesRead++;
+  assert(bt);
+  assert(bt->readerBuffer);
+
+  /* do some fast checks */
+  if (bt->readerError) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Error flagged");
+    return GWEN_BUFFEREDIO_CHAR_ERROR;
   }
+  if (bt->readerEOF) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF flagged");
+    return GWEN_BUFFEREDIO_CHAR_EOF;
+  }
+
+  if (bt->readerBufferPos >= bt->readerBufferFilled) {
+    /* buffer empty, no EOF met, so fill it */
+    int rv=GWEN_BufferedIO__FillReadBuffer(bt);
+    if (rv)
+      return rv;
+  }
+  i=(unsigned char)(bt->readerBuffer[bt->readerBufferPos++]);
+  if (i==GWEN_BUFFEREDIO_LF) {
+    bt->lines++;
+    bt->linePos=0;
+  }
+  else
+    bt->linePos++;
+  bt->bytesRead++;
+
   return i;
 }
 

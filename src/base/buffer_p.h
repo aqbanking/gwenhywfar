@@ -70,6 +70,8 @@ void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
                                  int offset);
 
 
+int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf);
+
 
 #endif
 

@@ -345,10 +345,18 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
                              GWEN_BUFFER *sf);
 
 /**
- * Returns the number of unused bytes within the buffer.
+ * @depracated
  */
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf);
+
+
+/**
+ * Returns the maximum number of bytes which can be written to the buffer
+ * at once (i.e. with reallocation).
+ */
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf);
 
 
 /**

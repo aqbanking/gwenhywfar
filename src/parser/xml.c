@@ -338,7 +338,6 @@ void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child){
 }
 
 
-
 int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
                           GWEN_TYPE_UINT32 flags,
                           int chr,
@@ -347,19 +346,45 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
   int inQuote;
   int lastQuoteChar = '\0';
   int lastWasSpace;
+  unsigned char *pdst;
+  GWEN_TYPE_UINT32 roomLeft;
+  GWEN_TYPE_UINT32 bytesAdded;
+
+#define GWEN_XML__APPENDCHAR(chr)                     \
+  if (roomLeft<2) {                                   \
+    if (bytesAdded) {                                 \
+      GWEN_Buffer_IncrementPos(buf, bytesAdded);      \
+      GWEN_Buffer_AdjustUsedBytes(buf);               \
+    }                                                 \
+    GWEN_Buffer_AllocRoom(buf, 2);                    \
+    pdst=GWEN_Buffer_GetPosPointer(buf);              \
+    roomLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(buf); \
+    bytesAdded=0;                                     \
+   }                                                  \
+   *(pdst++)=(unsigned char)chr;                      \
+   *pdst=0;                                           \
+   bytesAdded++;                                      \
+  roomLeft--
 
   inQuote=0;
   lastWasSpace=0;
 
+  pdst=GWEN_Buffer_GetPosPointer(buf);
+  roomLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
+  bytesAdded=0;
   while(1) {
     /* get character, if needed */
     if (chr==0) {
-      if (GWEN_BufferedIO_CheckEOF(bio))
-	break;
       chr=GWEN_BufferedIO_ReadChar(bio);
       if (chr<0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Error on ReadChar");
-	return -1;
+        if (chr==GWEN_BUFFEREDIO_CHAR_EOF)
+          break;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on ReadChar");
+        if (bytesAdded) {
+          GWEN_Buffer_IncrementPos(buf, bytesAdded);
+          GWEN_Buffer_AdjustUsedBytes(buf);
+        }
+        return -1;
       }
     }
 
@@ -374,7 +399,8 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
       }
       else {
         lastWasSpace=0;
-        GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
+
+        GWEN_XML__APPENDCHAR(chr);
       }
     }
     else {
@@ -392,6 +418,10 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
       }
       else if (chr=='<') {
 	DBG_ERROR(GWEN_LOGDOMAIN, "No tags inside a tag definition allowed");
+        if (bytesAdded) {
+          GWEN_Buffer_IncrementPos(buf, bytesAdded);
+          GWEN_Buffer_AdjustUsedBytes(buf);
+        }
         return -1;
       }
       else {
@@ -402,23 +432,27 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
 		lastWasSpace=0;
 	      else
 		lastWasSpace=1;
-	      GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
+              GWEN_XML__APPENDCHAR(chr);
 	    }
           }
           else {
 	    lastWasSpace=0;
-
-            GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
+            GWEN_XML__APPENDCHAR(chr);
           }
         }
         else {
           lastWasSpace=0;
-          GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
+          GWEN_XML__APPENDCHAR(chr);
         }
       }
     }
     chr=0;
   } /* while */
+
+  if (bytesAdded) {
+    GWEN_Buffer_IncrementPos(buf, bytesAdded);
+    GWEN_Buffer_AdjustUsedBytes(buf);
+  }
 
   if (((chr==']' || chr=='"' || chr=='\'') &&
        !(flags & GWEN_XML_FLAGS__DATA)))
@@ -430,7 +464,9 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
     GWEN_Buffer_Crop(buf, 0, s-1);
     GWEN_Buffer_SetPos(buf, s);
   }
+
   return chr;
+#undef GWEN_XML__APPENDCHAR
 }
 
 
@@ -500,24 +536,27 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
   chr=0;
 
   flags&=~GWEN_XML_FLAGS__INTERNAL;
-  while (!GWEN_BufferedIO_CheckEOF(bio)) {
+  while (1) {
     /* read char (if none set) but skip blanks */
     if (chr==0) {
       chr=GWEN_BufferedIO_ReadChar(bio);
       if (chr<0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Error on BufferedIO_ReadChar");
-	return -1;
+        if (chr==GWEN_BUFFEREDIO_CHAR_EOF) {
+          break;
+        }
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on BufferedIO_ReadChar");
+        return -1;
       }
     }
     eofMet=0;
     if (!(flags & GWEN_XML_FLAGS_KEEP_BLANKS)) {
       while(isspace(chr)) {
-        if (GWEN_BufferedIO_CheckEOF(bio)) {
-          eofMet=1;
-          break;
-        }
         chr=GWEN_BufferedIO_ReadChar(bio);
         if (chr<0) {
+          if (chr==GWEN_BUFFEREDIO_CHAR_EOF) {
+            eofMet=1;
+            break;
+          }
           DBG_ERROR(GWEN_LOGDOMAIN, "Error on BufferedIO_ReadChar");
           return -1;
         }
@@ -567,12 +606,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	/* we have a remark tag, so read it over */
 	while(1) {
 	  if (chr==0) {
-	    if (GWEN_BufferedIO_CheckEOF(bio)) {
-	      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected EOF within comment");
-	      return -1;
-	    }
 	    chr=GWEN_BufferedIO_ReadChar(bio);
             if (chr<0) {
+              if (chr==GWEN_BUFFEREDIO_CHAR_EOF) {
+                DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected EOF within comment");
+              }
               GWEN_Buffer_free(bufComment);
               GWEN_Buffer_free(bufTagName);
 	      return -1;
@@ -612,7 +650,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
         if (flags & GWEN_XML_FLAGS_READ_COMMENTS) {
           GWEN_BUFFER *tbuf;
 
-          tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+          tbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(bufComment),
+                               0, 1);
           if (GWEN_Text_UnescapeXmlToBuffer(GWEN_Buffer_GetStart(bufComment),
                                             tbuf)) {
             GWEN_Buffer_free(tbuf);
@@ -863,9 +902,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             /*chr=0; */
             DBG_DEBUG(GWEN_LOGDOMAIN, "Current char is: \"%c\"", chr);
             if (chr==0 || isspace(chr)) {
-              while(!GWEN_BufferedIO_CheckEOF(bio)) {
+              while(1) {
                 chr=GWEN_BufferedIO_ReadChar(bio);
                 if (chr<0) {
+                  if (chr==GWEN_BUFFEREDIO_CHAR_EOF)
+                    break;
                   GWEN_XMLNode_free(newNode);
                   GWEN_Buffer_free(bufValue);
                   GWEN_Buffer_free(bufVarName);
@@ -913,9 +954,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
 	    /* skip blanks */
 	    if (isspace(chr)) {
-	      while(!GWEN_BufferedIO_CheckEOF(bio)) {
+	      while(1) {
 		chr=GWEN_BufferedIO_ReadChar(bio);
 		if (chr<0) {
+                  if (chr==GWEN_BUFFEREDIO_CHAR_EOF)
+                    break;
 		  GWEN_XMLNode_free(newNode);
                   GWEN_Buffer_free(bufValue);
                   GWEN_Buffer_free(bufVarName);
@@ -931,9 +974,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    if (chr=='=') {
 	      chr=0;
 	      /* skip blanks */
-	      while(!GWEN_BufferedIO_CheckEOF(bio)) {
+	      while(1) {
 		chr=GWEN_BufferedIO_ReadChar(bio);
 		if (chr<0) {
+                  if (chr==GWEN_BUFFEREDIO_CHAR_EOF)
+                    break;
 		  GWEN_XMLNode_free(newNode);
                   GWEN_Buffer_free(bufValue);
                   GWEN_Buffer_free(bufVarName);
@@ -1020,19 +1065,15 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           if (chr=='/') {
             isEndTag=1;
 
-            if (GWEN_BufferedIO_CheckEOF(bio)) {
-              DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: \">\" expected",
-                        GWEN_BufferedIO_GetLines(bio));
-              GWEN_XMLNode_free(newNode);
-              GWEN_Buffer_free(bufValue);
-              GWEN_Buffer_free(bufVarName);
-              GWEN_Buffer_free(bufTagName);
-              return -1;
-            }
-
             chr=GWEN_BufferedIO_ReadChar(bio);
             if (chr<0) {
-              DBG_ERROR(GWEN_LOGDOMAIN, "Error on ReadChar");
+              if (chr==GWEN_BUFFEREDIO_CHAR_EOF) {
+                DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: \">\" expected",
+                          GWEN_BufferedIO_GetLines(bio));
+              }
+              else {
+                DBG_ERROR(GWEN_LOGDOMAIN, "Error on ReadChar");
+              }
               GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
               GWEN_Buffer_free(bufVarName);
@@ -1041,9 +1082,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             }
           }
 
-	  if (chr!='>') {
-            DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: \">\" expected",
-                      GWEN_BufferedIO_GetLines(bio));
+          if (chr!='>') {
 	    GWEN_XMLNode_free(newNode);
             GWEN_Buffer_free(bufValue);
             GWEN_Buffer_free(bufVarName);
@@ -1139,7 +1178,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
       GWEN_BUFFER *bufData;
       GWEN_BUFFER *tbuf;
 
-      bufData=GWEN_Buffer_new(0, 128, 0, 1);
+      bufData=GWEN_Buffer_new(0, 256, 0, 1);
       chr=GWEN_XML__ReadWordBuf(bio, flags | GWEN_XML_FLAGS__DATA,
 				chr, "<", bufData);
       if (chr<0) {
@@ -1762,7 +1801,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     if (n->data) {
       GWEN_BUFFER *tbuf;
 
-      tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+      tbuf=GWEN_Buffer_new(0, strlen(n->data), 0, 1);
       if (GWEN_Text_EscapeXmlToBuffer(n->data, tbuf)) {
         GWEN_Buffer_free(tbuf);
         DBG_INFO(GWEN_LOGDOMAIN, "here");
@@ -1806,7 +1845,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
           }
         }
 
-        tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+        tbuf=GWEN_Buffer_new(0, strlen(p->name), 0, 1);
         if (GWEN_Text_EscapeXmlToBuffer(p->name, tbuf)) {
           GWEN_Buffer_free(tbuf);
           DBG_INFO(GWEN_LOGDOMAIN, "here");
@@ -1825,7 +1864,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
             DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
             return -1;
           }
-          tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+          tbuf=GWEN_Buffer_new(0, strlen(p->value), 0, 1);
           if (GWEN_Text_EscapeXmlToBuffer(p->value, tbuf)) {
             GWEN_Buffer_free(tbuf);
             DBG_INFO(GWEN_LOGDOMAIN, "here");
@@ -1932,7 +1971,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
         if (n->data) {
           GWEN_BUFFER *tbuf;
 
-          tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+          tbuf=GWEN_Buffer_new(0, strlen(n->data), 0, 1);
           if (GWEN_Text_EscapeXmlToBuffer(n->data, tbuf)) {
             GWEN_Buffer_free(tbuf);
             DBG_INFO(GWEN_LOGDOMAIN, "here");
@@ -1966,7 +2005,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     if (n->data) {
       GWEN_BUFFER *tbuf;
 
-      tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+      tbuf=GWEN_Buffer_new(0, strlen(n->data), 0, 1);
       if (GWEN_Text_EscapeXmlToBuffer(n->data, tbuf)) {
         GWEN_Buffer_free(tbuf);
         DBG_INFO(GWEN_LOGDOMAIN, "here");
@@ -1995,7 +2034,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
       if (n->data) {
         GWEN_BUFFER *tbuf;
   
-        tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+        tbuf=GWEN_Buffer_new(0, strlen(n->data), 0, 1);
         if (GWEN_Text_EscapeXmlToBuffer(n->data, tbuf)) {
           GWEN_Buffer_free(tbuf);
           DBG_INFO(GWEN_LOGDOMAIN, "here");
