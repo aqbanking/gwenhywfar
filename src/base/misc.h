@@ -448,14 +448,15 @@ extern "C" {
   }
   /*@}*/ /* defgroup */
 
+#ifdef __cplusplus
+}
+#endif
+
 
 #include <gwenhywfar/memory.h>
 
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

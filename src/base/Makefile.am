@@ -31,6 +31,7 @@ iheader_HEADERS=\
  logger.h \
  memory.h \
  misc.h \
+ misc2.h \
  ringbuffer.h \
  stringlist.h \
  waitcallback.h

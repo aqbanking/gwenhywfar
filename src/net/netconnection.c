@@ -453,8 +453,9 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
 	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
 	    difftime(time(0), startt)>timeout) {
-	  DBG_INFO(0, "Could not write within %d seconds, giving up",
-		   timeout);
+          DBG_INFO(0, "Could not write within %d seconds, giving up (%d)",
+                   waitFlags,
+                   timeout);
           GWEN_WaitCallback_Leave();
 	  return 1;
 	}

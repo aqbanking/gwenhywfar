@@ -25,6 +25,7 @@
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/base64.h>
+#include <gwenhywfar/misc2.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # define sleep(x) Sleep(x*1000)
@@ -2884,6 +2885,28 @@ int uitest20(int argc, char **argv) {
 #endif /* USE_NCURSES */
 
 
+GWEN_LIST2_FUNCTION_DEFS(GWEN_CRYPTKEY, GWEN_CryptKey);
+GWEN_LIST2_FUNCTIONS(GWEN_CRYPTKEY, GWEN_CryptKey);
+
+GWEN_LIST2_FUNCTION_DEFS(GWEN_KEYSPEC, GWEN_KeySpec);
+GWEN_LIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec);
+
+GWEN_CONSTLIST2_FUNCTION_DEFS(GWEN_KEYSPEC, GWEN_KeySpec);
+GWEN_CONSTLIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec);
+
+int testList2(int argc, char **argv) {
+  GWEN_CRYPTKEY_LIST2 *keyList;
+  GWEN_CRYPTKEY *key;
+  GWEN_KEYSPEC_LIST2 *specList;
+  GWEN_KEYSPEC *spec;
+
+  keyList=GWEN_CryptKey_List2_new();
+
+  GWEN_CryptKey_List2_free(keyList);
+
+  return 0;
+}
+
 
 
 int main(int argc, char **argv) {
@@ -2979,6 +3002,8 @@ int main(int argc, char **argv) {
   else if (strcasecmp(argv[1], "u20")==0)
     rv=uitest20(argc, argv);
 #endif /* USE_NCURSES */
+  else if (strcasecmp(argv[1], "list2")==0)
+    rv=testList2(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

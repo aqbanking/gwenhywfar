@@ -28,7 +28,13 @@
 #ifndef GWENHYWFAR_INHERIT_H
 #define GWENHYWFAR_INHERIT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef struct GWEN_INHERITDATA GWEN_INHERITDATA;
+#ifdef __cplusplus
+}
+#endif
 
 
 #include <gwenhywfar/misc.h>

@@ -1,4 +1,11 @@
 
+2004/07/28: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base/misc.h: fixed a bug (concerning C++)
+- base: added misc2.h
+  This file now contains wrappers around a GWEN_LIST which allow typesafe
+  use of a GWEN_LIST.
+
 
 2004/07/27: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
