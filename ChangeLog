@@ -1,4 +1,12 @@
 
+2004/05/26: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in MsgEngine (strchr doens't like if the character
+  searched for is \0, which is a valid character when reading binary
+  data such as bytes, words, dwords etc which are used by 
+  Libchipcard2)
+
+
 2004/05/25: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/msgengine.c: fixed a bug which occurred if "maxnum" was

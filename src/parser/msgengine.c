@@ -2538,7 +2538,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  }
 	}
 	if (c!=-1) {
-	  if (!isEscaped && strchr(delimiters, c)!=0) {
+          if (!isEscaped && (c && strchr(delimiters, c)!=0)) {
 	    /* delimiter found, step back */
 	    GWEN_Buffer_DecrementPos(msgbuf,1);
 	    break;
@@ -2708,23 +2708,25 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	loopNr=0;
 	abortLoop=0;
 	while((maxnum==0 || loopNr<maxnum) && !abortLoop) {
-	  int c;
+          int c;
 
-	  DBG_DEBUG(0, "Reading %s", name);
-	  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
-	    break;
+          DBG_DEBUG(0, "Reading %s", name);
+          if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
+            break;
 	  c=GWEN_Buffer_PeekByte(msgbuf);
 	  if (c==-1) {
 	    DBG_DEBUG(0, "called from here");
 	    return -1;
 	  }
 
-	  DBG_DEBUG(0, "Checking delimiter (whether \"%c\" is in \"%s\")",
-		    c, delimiters);
-	  if (strchr(delimiters, c)) {
-	    abortLoop=1;
-	    DBG_DEBUG(0, "Found delimiter (\"%c\" is in \"%s\")",
-		      c, delimiters);
+          DBG_VERBOUS(0,
+                      "Checking delimiter "
+                      "(whether \"%c\" is in \"%s\")",
+                      c, delimiters);
+          if (c && strchr(delimiters, c)) {
+            abortLoop=1;
+            DBG_DEBUG(0, "Found delimiter (\"%02x\" is in \"%s\")",
+                      c, delimiters);
 	  } /* if delimiter found */
           else {
             /* current char is not a delimiter */
@@ -2883,14 +2885,17 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	/* get configuration */
 	loopNr=0;
 	abortLoop=0;
-	while((maxnum==0 || loopNr<maxnum) && !abortLoop) {
-	  DBG_DEBUG(0, "Reading group type %s", gtype);
+        while((maxnum==0 || loopNr<maxnum) && !abortLoop) {
+          int c;
+
+          DBG_DEBUG(0, "Reading group type %s", gtype);
 	  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
-	    break;
-	  if (strchr(delimiters, GWEN_Buffer_PeekByte(msgbuf))) {
-	    abortLoop=1;
-	  }
-	  else {
+            break;
+          c=GWEN_Buffer_PeekByte(msgbuf);
+          if (c && strchr(delimiters, c)) {
+            abortLoop=1;
+          }
+          else {
 	    gname=GWEN_XMLNode_GetProperty(n, "name",0);
 	    if (gname) {
               DBG_DEBUG(0, "Creating group \"%s\"", gname);
@@ -2950,7 +2955,8 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
 	i=atoi(GWEN_XMLNode_GetProperty(n, "minnum", "1"));
 	if (i) {
-	  DBG_ERROR(0, "Premature end of message (still tags to parse)");
+          DBG_ERROR(0, "Premature end of message (still tags to parse)");
+          GWEN_XMLNode_Dump(n, stderr, 2);
 	  return -1;
 	}
       }
