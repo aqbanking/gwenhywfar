@@ -38,6 +38,7 @@
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/dbio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -2037,6 +2038,91 @@ void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
   } /* while cn */
 }
 
+
+
+
+
+int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
+                       const char *fname,
+                       const char *type,
+                       GWEN_DB_NODE *params,
+                       GWEN_TYPE_UINT32 dbflags){
+  GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
+  GWEN_DBIO *dbio;
+  int fd;
+  int rv;
+
+  dbio=GWEN_DBIO_GetPlugin(dbio);
+  if (!dbio) {
+    DBG_ERROR(0, "Plugin \"%s\" is not supported", type);
+    return -1;
+  }
+  fd=open(fname, O_RDONLY);
+  if (fd==-1) {
+    DBG_ERROR(0, "Error opening file \"%s\": %s",
+              fname,
+              strerror(errno));
+    return -1;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  rv=GWEN_DBIO_Import(dbio, bio, dbflags, db, params);
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "called from here");
+    GWEN_BufferedIO_free(bio);
+    return -1;
+  }
+  GWEN_BufferedIO_free(bio);
+  return rv;
+
+}
+
+
+
+int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
+                        const char *fname,
+                        const char *type,
+                        GWEN_DB_NODE *params,
+                        GWEN_TYPE_UINT32 dbflags){
+  GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
+  GWEN_DBIO *dbio;
+  int fd;
+  int rv;
+
+  dbio=GWEN_DBIO_GetPlugin(dbio);
+  if (!dbio) {
+    DBG_ERROR(0, "Plugin \"%s\" is not supported", type);
+    return -1;
+  }
+
+  if (dbflags & GWEN_DB_FLAGS_APPEND_FILE)
+    fd=open(fname, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
+  else
+    fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  if (fd==-1) {
+    DBG_ERROR(0, "Error opening file \"%s\": %s",
+              fname,
+              strerror(errno));
+    return -1;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
+  rv=GWEN_DBIO_Export(dbio, bio, dbflags, db, params);
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "called from here");
+    GWEN_BufferedIO_free(bio);
+    return -1;
+  }
+  GWEN_BufferedIO_free(bio);
+  return rv;
+
+}
 
 
 

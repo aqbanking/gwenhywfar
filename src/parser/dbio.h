@@ -79,13 +79,15 @@ GWENHYWFAR_API
 typedef int (*GWEN_DBIO_IMPORTFN)(GWEN_DBIO *dbio,
 				  GWEN_BUFFEREDIO *bio,
 				  GWEN_TYPE_UINT32 flags,
-				  GWEN_DB_NODE *db);
+                                  GWEN_DB_NODE *db,
+                                  GWEN_DB_NODE *params);
 
 GWENHYWFAR_API
 typedef int (*GWEN_DBIO_EXPORTFN)(GWEN_DBIO *dbio,
 				  GWEN_BUFFEREDIO *bio,
 				  GWEN_TYPE_UINT32 flags,
-				  GWEN_DB_NODE *db);
+                                  GWEN_DB_NODE *db,
+                                  GWEN_DB_NODE *params);
 
 
 /** @name Functions To Be Used By Applications
@@ -101,7 +103,8 @@ GWENHYWFAR_API
 int GWEN_DBIO_Import(GWEN_DBIO *dbio,
                      GWEN_BUFFEREDIO *bio,
                      GWEN_TYPE_UINT32 flags,
-                     GWEN_DB_NODE *db);
+                     GWEN_DB_NODE *db,
+                     GWEN_DB_NODE *params);
 
 /**
  * Writes data to the given GWEN_BUFFEREDIO in the format of this particular
@@ -111,7 +114,8 @@ GWENHYWFAR_API
 int GWEN_DBIO_Export(GWEN_DBIO *dbio,
                      GWEN_BUFFEREDIO *bio,
                      GWEN_TYPE_UINT32 flags,
-                     GWEN_DB_NODE *db);
+                     GWEN_DB_NODE *db,
+                     GWEN_DB_NODE *params);
 
 /**
  * Releases the ressources associated with the given GWEN_DBIO if the usage

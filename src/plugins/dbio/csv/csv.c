@@ -30,7 +30,7 @@
 # include <config.h>
 #endif
 
-#include "csv.h"
+#include "csv_p.h"
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <stdlib.h>
@@ -83,9 +83,11 @@ int GWEN_CSV_GetNameAndIndex(const char *name,
 
 
 
-int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
-                   GWEN_DB_NODE *cfg,
-                   GWEN_DB_NODE *data){
+int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
+                         GWEN_BUFFEREDIO *bio,
+                         GWEN_TYPE_UINT32 flags,
+                         GWEN_DB_NODE *data,
+                         GWEN_DB_NODE *cfg) {
   GWEN_DB_NODE *colgr;
   GWEN_DB_NODE *n;
   int delimiter;
@@ -96,13 +98,10 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
   unsigned int column;
   int title;
 
+  assert(dbio);
   assert(bio);
   assert(cfg);
   assert(data);
-
-  DBG_WARN(0,
-           "Using \"GWEN_CSV_Write\" is now deprecated. "
-           "Please use the GWEN_DBIO plugin \"csv\" instead");
 
   /* get general configuration */
   colgr=GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "columns");
@@ -271,13 +270,23 @@ int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
 
 
 
-int GWEN_CSV_Read(GWEN_BUFFEREDIO *bio,
-                  GWEN_DB_NODE *cfg,
-                  GWEN_DB_NODE *data){
-  DBG_ERROR(0, "Function not yet implemented (and never will be, "
-            "since it is deprecated)");
+int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
+                         GWEN_BUFFEREDIO *bio,
+                         GWEN_TYPE_UINT32 flags,
+                         GWEN_DB_NODE *data,
+                         GWEN_DB_NODE *cfg){
+  DBG_ERROR(0, "Function not yet implemented");
   return -1;
 }
+
+
+
+GWEN_DBIO *csv_factory() {
+  return GWEN_DBIO_new("csv", "Imports and exports CSV data");
+}
+
+
+
 
 
 

@@ -368,6 +368,9 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/system.h
                  src/parser/Makefile
                  src/net/Makefile
+                 src/plugins/Makefile
+                 src/plugins/dbio/Makefile
+                 src/plugins/dbio/csv/Makefile
                  test/Makefile
 		])
 AC_OUTPUT

@@ -1,6 +1,6 @@
 INCLUDES = $(all_includes) -I$(srcdir)/os/$(GWEN_OS)
 
-SUBDIRS=base crypt io os parser net
+SUBDIRS=base crypt io os parser net plugins
 
 EXTRA_DIST=\
  types.h.in \

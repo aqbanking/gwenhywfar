@@ -2,6 +2,10 @@
 2004/04/01: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added plugin loading functions to GWEN_DBIO
+- added functions GWEN_DB_WriteFileAs and GWEN_DB_ReadFileAs which allow
+  using GWEN_DBIO plugins fro importing/exporting any format of files
+  supported by plugins.
+- added plugin "csv" which replaces the now deprecated CSV parser module
 
 
 2004/03/31: Martin Preuss<martin@libchipcard.de>

@@ -119,13 +119,14 @@ void GWEN_DBIO_Attach(GWEN_DBIO *dbio){
 int GWEN_DBIO_Import(GWEN_DBIO *dbio,
                      GWEN_BUFFEREDIO *bio,
                      GWEN_TYPE_UINT32 flags,
-                     GWEN_DB_NODE *db){
+                     GWEN_DB_NODE *db,
+                     GWEN_DB_NODE *params) {
   assert(dbio);
   assert(bio);
   assert(db);
 
   if (dbio->importFn)
-    return dbio->importFn(dbio, bio, flags, db);
+    return dbio->importFn(dbio, bio, flags, db, params);
   else {
     DBG_INFO(0, "No import function set");
     return -1;
@@ -137,13 +138,14 @@ int GWEN_DBIO_Import(GWEN_DBIO *dbio,
 int GWEN_DBIO_Export(GWEN_DBIO *dbio,
                      GWEN_BUFFEREDIO *bio,
                      GWEN_TYPE_UINT32 flags,
-                     GWEN_DB_NODE *db){
+                     GWEN_DB_NODE *db,
+                     GWEN_DB_NODE *params) {
   assert(dbio);
   assert(bio);
   assert(db);
 
   if (dbio->exportFn)
-    return dbio->exportFn(dbio, bio, flags, db);
+    return dbio->exportFn(dbio, bio, flags, db, params);
   else {
     DBG_INFO(0, "No export function set");
     return -1;

@@ -677,6 +677,40 @@ GWENHYWFAR_API
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
                       GWEN_TYPE_UINT32 dbflags);
+
+/**
+ * Imports a file into a DB using a GWEN_DBIO importer.
+ * @param n node to read into (becomes the root of the imported data)
+ * @param fname name of the file to import
+ * @param type GWEN_DBIO type
+ * @param params parameters for the GWEN_DBIO importer (content depends on
+ * the importer, may even be NULL for some types)
+ * @param dbflags flags to use while importing (see
+ * @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others)
+ */
+GWENHYWFAR_API 
+int GWEN_DB_ReadFileAs(GWEN_DB_NODE *n,
+                       const char *fname,
+                       const char *type,
+                       GWEN_DB_NODE *params,
+                       GWEN_TYPE_UINT32 dbflags);
+
+/**
+ * Exports a DB to a file using a GWEN_DBIO exporter.
+ * @param n node to write
+ * @param fname name of the file to export to
+ * @param type GWEN_DBIO type
+ * @param params parameters for the GWEN_DBIO exporter (content depends on
+ * the exporter, may even be NULL for some types)
+ * @param dbflags flags to use while exporting (see
+ * @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others)
+ */
+GWENHYWFAR_API 
+int GWEN_DB_WriteFileAs(GWEN_DB_NODE *n,
+                        const char *fname,
+                        const char *type,
+                        GWEN_DB_NODE *params,
+                        GWEN_TYPE_UINT32 dbflags);
 /*@}*/
 
 

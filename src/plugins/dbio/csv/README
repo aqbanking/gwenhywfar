@@ -1,0 +1,59 @@
+
+
+CSV Plugin
+==========
+
+This plugin can be used to export a GWEN_DB to a CSV stream.
+CSV is a very old format which allows to transfer data between data base
+programs.
+
+This plugin uses a special configuration GWEN_DB which tells it which
+column of a line is to contain which variable from the DB.
+
+That configuation is most likely loaded from a configuration file.
+Below is an example of such a file (taken from AqMoney2):
+
+-----------------------------------------------------------------------X8
+# this file contains the description of a CSV format when exporting
+# transactions
+
+# if 1 then values are quoted
+quote="1"
+
+# if 1 then a title line will be written containing the names of each
+# column
+title="1"
+
+# special values are "TAB" and "SPACE"
+delimiter=";" 
+
+# this is the group name looked for in the given data to GWEN_DBIO_Export
+# if not given then all groups match
+#group="transaction"
+
+# this group contains the definition for each column
+# each variable in this group has its number as name
+# you can use index variables in the names (using square brackets)
+# the value of each of these variables is the name of a variable to be looked
+# up in the data given to GWEN_DBIO_Export
+columns {
+  1="jobid"
+  2="ouraccount/bankCode"
+  3="ouraccount/accountId"
+  4="otheraccount/bankCode"
+  5="otheraccount/accountId"
+  6="date"
+  7="valutadate"
+  8="value/value"
+  9="value/currency"
+  10="othername[0]"
+  11="othername[1]"
+  12="purpose[0]"
+  13="purpose[1]"
+  14="purpose[2]"
+  15="purpose[3]"
+} # columns
+-----------------------------------------------------------------------X8
+
+
+

@@ -1,0 +1,5 @@
+
+This folder contains DBIO plugins.
+These are plugins that import data into a GWEN_DB or exports them from
+a GWEN_DB.
+
