@@ -1,4 +1,13 @@
 
+2004/07/04: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base/args: GWEN_Args_Check is now able to return a new code which flags
+  that the user wanted help. This circumstance is detected by a new flag
+  (GWEN_ARGS_FLAGS_HELP).
+- crypt/padd: removed usage of a deprecated function (so that the annoying
+  warning in OpenHBCI2/AqHBCI vanishes)
+
+
 ===========================================================================
 MARK: released gwenhywfar-0.9.12 (2004/07/03)
 ===========================================================================

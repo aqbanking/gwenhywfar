@@ -170,7 +170,7 @@ int GWEN_Padd_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
     DBG_ERROR(0, "Invalid padding (%d bytes ?)", paddLength);
     return -1;
   }
-  GWEN_Buffer_SetUsedBytes(src, GWEN_Buffer_GetUsedBytes(src)-paddLength);
+  GWEN_Buffer_Crop(src, 0, GWEN_Buffer_GetUsedBytes(src)-paddLength);
   GWEN_Buffer_SetPos(src, lastpos-paddLength);
   return 0;
 }

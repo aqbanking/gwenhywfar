@@ -152,10 +152,14 @@ int GWEN_Args_Check(int argc, char **argv,
         i++;
       }
       else {
-        GWEN_DB_SetIntValue(db,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            tmpArgs->name,
-                            GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));
+	if (tmpArgs->flags & GWEN_ARGS_FLAGS_HELP) {
+	  GWEN_DB_Group_free(counts);
+	  return GWEN_ARGS_RESULT_HELP;
+	}
+	GWEN_DB_SetIntValue(db,
+			    GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    tmpArgs->name,
+			    GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));
       }
       break;
 
@@ -238,7 +242,11 @@ int GWEN_Args_Check(int argc, char **argv,
         } /* switch */
       }
       else {
-        GWEN_DB_SetIntValue(db,
+	if (tmpArgs->flags & GWEN_ARGS_FLAGS_HELP) {
+	  GWEN_DB_Group_free(counts);
+	  return GWEN_ARGS_RESULT_HELP;
+	}
+	GWEN_DB_SetIntValue(db,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             tmpArgs->name,
                             GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));

@@ -123,7 +123,11 @@ extern "C" {
  */
 #define GWEN_PATH_FLAGS_ESCAPE                  0x00000100
 
-#define GWEN_PATH_FLAGS_UNESCAPE                0x00000200
+/** use the same flag for both escape and unescape */
+#define GWEN_PATH_FLAGS_UNESCAPE                0x00000100
+
+/* be more tolerant, don't escape common characters such as '.' */
+#define GWEN_PATH_FLAGS_TOLERANT_ESCAPE         0x00000200
 
 /**
  * Allow to also escape/unescape the last path element (otherwise it will
@@ -141,16 +145,27 @@ extern "C" {
 #define GWEN_PATH_FLAGS_CHECKROOT               0x00000800
 
 /**
+ *
+ */
+#define GWEN_PATH_FLAGS_RFU1                    0x00001000
+
+/**
+ *
+ */
+#define GWEN_PATH_FLAGS_RFU2                    0x00002000
+
+
+/**
  * @internal
  */
-#define GWEN_PATH_FLAGS_INTERNAL                0x0000f000
+#define GWEN_PATH_FLAGS_INTERNAL                0x0000c000
 
 /**
  * @internal
  * this is flagged for the path function. If this is set then the
  * element given is the last one, otherwise it is not.
  */
-#define GWEN_PATH_FLAGS_LAST                    0x00001000
+#define GWEN_PATH_FLAGS_LAST                    0x00004000
 
 /**
  * @internal
@@ -158,7 +173,7 @@ extern "C" {
  * element given is within root (in this case the element passed to the
  * element handler funcion will start with a slash), otherwise it is not.
  */
-#define GWEN_PATH_FLAGS_ROOT                    0x00002000
+#define GWEN_PATH_FLAGS_ROOT                    0x00008000
 
 /*@}*/
 

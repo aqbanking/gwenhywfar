@@ -119,6 +119,7 @@ void *GWEN_Path_Handle(const char *path,
       if (flags & GWEN_PATH_FLAGS_ESCAPE) {
         GWEN_BUFFER *buf2;
         const char *p;
+        int rv;
 
         buf2=GWEN_Buffer_new(0, 64, 0, 1);
         GWEN_Buffer_SetStep(buf2, 128);
@@ -127,7 +128,11 @@ void *GWEN_Path_Handle(const char *path,
           p++;
           GWEN_Buffer_AppendByte(buf2, '/');
         }
-        if (GWEN_Text_EscapeToBuffer(p, buf2)) {
+        if (flags & GWEN_PATH_FLAGS_TOLERANT_ESCAPE)
+          rv=GWEN_Text_EscapeToBufferTolerant(p, buf2);
+        else
+          rv=GWEN_Text_EscapeToBuffer(p, buf2);
+        if (rv) {
           DBG_ERROR(0, "Could not escape path element");
           GWEN_Buffer_free(buf2);
           GWEN_Buffer_free(buf1);
@@ -139,6 +144,7 @@ void *GWEN_Path_Handle(const char *path,
       else if (flags & GWEN_PATH_FLAGS_UNESCAPE) {
         GWEN_BUFFER *buf2;
         const char *p;
+        int rv;
 
         buf2=GWEN_Buffer_new(0, 64, 0, 1);
         GWEN_Buffer_SetStep(buf2, 128);
@@ -147,7 +153,11 @@ void *GWEN_Path_Handle(const char *path,
           p++;
           GWEN_Buffer_AppendByte(buf2, '/');
         }
-        if (GWEN_Text_UnescapeToBuffer(p, buf2)) {
+        if (flags & GWEN_PATH_FLAGS_TOLERANT_ESCAPE)
+          rv=GWEN_Text_UnescapeToBufferTolerant(p, buf2);
+        else
+          rv=GWEN_Text_UnescapeToBuffer(p, buf2);
+        if (rv) {
           DBG_ERROR(0, "Could not unescape path element");
           GWEN_Buffer_free(buf2);
           GWEN_Buffer_free(buf1);
