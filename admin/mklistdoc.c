@@ -531,7 +531,7 @@ int processFile(const char *fname) {
 
 
 int main(int argc, char **argv) {
-  int i;
+  int i = 1;
   int wantHelp;
 
   wantHelp=0;
