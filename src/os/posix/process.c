@@ -63,14 +63,13 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
 
   /* FIXME: This needs more work! If the &sa handler is installed,
      then gnucash-HEAD crashes each time on startup because guile
-     expected its own signal handler to be used -- the error message
-     is something like "in procedure waitpid: no child processes",
-     i.e. guile expected its own signal handler to be called for
-     SIGCHLD. However, when we execute this below then we get printed
-     "original handler was SIG_DFL". But if we call this SIG_DFL
-     handler below in SignalHandler, we will get a segfault. Maybe
-     some other flags and/or signals have to be checked? I have no
-     idea. */
+     expected the default signal handler to be used during a call to
+     waitpid(2). The error message is something like "in procedure
+     waitpid: no child processes", i.e. guile expected the default
+     signal handler to be called for SIGCHLD. This cannot be changed
+     by storing the previous/original signal handler, because that one
+     is simply SIG_DFL, as confirmed by the message below. Maybe some
+     other flags and/or signals have to be checked? I have no idea. */
   if (sigaction(SIGCHLD, &sa, &original_sigchld_sa)) {
     DBG_ERROR(0,
 	      "Could not setup signal handler for signal SIGCHLD: %s",
