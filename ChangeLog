@@ -1,4 +1,9 @@
 
+2004/06/16: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/db: added function GWEN_DB_InsertGroup
+
+
 2004/06/11: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ipc/ipc.c: added GWEN_IPCManager_Attach() and usage counter

@@ -1465,11 +1465,31 @@ int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
   }
 
   if (nn->h.typ!=GWEN_DB_NODETYPE_GROUP) {
-    DBG_ERROR(0, "Sorce node is not a group");
+    DBG_ERROR(0, "Source node is not a group");
     return 0;
   }
 
   GWEN_DB_Node_Append(n, nn);
+  return 0;
+}
+
+
+
+int GWEN_DB_InsertGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
+  assert(n);
+  assert(nn);
+
+  if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
+    DBG_ERROR(0, "Target node is not a group");
+    return 0;
+  }
+
+  if (nn->h.typ!=GWEN_DB_NODETYPE_GROUP) {
+    DBG_ERROR(0, "Source node is not a group");
+    return 0;
+  }
+
+  GWEN_DB_Node_Insert(n, nn);
   return 0;
 }
 

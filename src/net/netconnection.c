@@ -1523,8 +1523,8 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
         GWEN_Time_free(t1);
 
         if (d>=timeout) {
-          DBG_INFO(0, "Could not walk within %d milliseconds, giving up",
-                   timeout);
+	  DBG_DEBUG(0, "Could not walk within %d milliseconds, giving up",
+		    timeout);
           GWEN_Time_free(t0);
           GWEN_WaitCallback_Leave();
           return GWEN_NetConnectionWorkResult_NoChange;

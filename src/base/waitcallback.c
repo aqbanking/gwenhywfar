@@ -327,7 +327,7 @@ void GWEN_WaitCallback_Enter(const char *id){
   ctx=GWEN_WaitCallback__FindCallback(id);
   if (!ctx) {
     if (gwen_waitcallback__current) {
-      DBG_INFO(0, "Callback \"%s\" not found, faking it", id);
+      DBG_DEBUG(0, "Callback \"%s\" not found, faking it", id);
       nctx=GWEN_WaitCallback_new(id);
       nctx->previousCtx=gwen_waitcallback__current;
       if (gwen_waitcallback__current->originalCtx) {

@@ -568,6 +568,24 @@ GWENHYWFAR_API
 int GWEN_DB_AddGroup(GWEN_DB_NODE *parent, GWEN_DB_NODE *node);
 
 /**
+ * Adds the given group node as the new first child of the given parent group
+ * node.
+ *
+ * The group name has no influence on what will happen in this
+ * function. In other words, if the parent group already has a child
+ * group with the same name as 'node', then after this function two
+ * child group nodes with the same name will exist.
+ *
+ * @note This function takes over the ownership of the new group, so
+ * you MUST NOT free it afterwards.
+ *
+ * @param parent Some group node that will be the parent of the added node
+ * @param node Group node to add
+ */
+GWENHYWFAR_API 
+int GWEN_DB_InsertGroup(GWEN_DB_NODE *parent, GWEN_DB_NODE *node);
+
+/**
  * This function adds all children of the second node as new children to
  * the first given one.
  *
