@@ -538,11 +538,13 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
   maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
 
-  if (e->binTypeWritePtr && strcasecmp(type, "bin")==0) {
+  if (e->binTypeWritePtr &&
+      strcasecmp(type, "bin")==0 &&
+      atoi(GWEN_XMLNode_GetProperty(node, "writebin", "1"))) {
     int rv;
 
     data=GWEN_Buffer_new(0,
-                         64,
+			 64,
                          0,
                          1);
     GWEN_Buffer_SetMode(data,
@@ -2637,7 +2639,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
             else {
               /* name is given */
 	      int rv;
-	      const char *dtype;
+              const char *dtype;
               GWEN_BUFFER *vbuf;
 
 	      vbuf=GWEN_Buffer_new(0,
@@ -2679,9 +2681,11 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
               /* special handling for binary data */
               dtype=GWEN_XMLNode_GetProperty(n, "type", "");
               if (GWEN_MsgEngine__IsBinTyp(e, dtype)) {
-                if (e->binTypeReadPtr)
-		  rv=e->binTypeReadPtr(e, n, gr, vbuf);
-                else
+		if (atoi(GWEN_XMLNode_GetProperty(n, "readbin", "1")) &&
+                    e->binTypeReadPtr) {
+                  rv=e->binTypeReadPtr(e, n, gr, vbuf);
+                }
+		else
                   rv=1;
                 if (rv==-1) {
                   DBG_INFO(0, "Called from here");

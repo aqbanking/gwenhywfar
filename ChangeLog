@@ -1,4 +1,14 @@
 
+2004/01/22: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- msgengine: added properties "readbin" and "writebin" to <ELEM> tags.
+  If "type" is "bin" then these properties are checked (default to "1").
+  If "0" then the binary data will not be parsed (this is needed to fix a
+  problem in OpenHBCI with banks, which send partial SWIFT MT942 which
+  have to be combined AFTER receiving all parts. So this parsing clearly can
+  not be done from within the message engine)
+
+
 ===========================================================================
 MARK: released gwenhywfar-0.9.5 (2004/01/21)
 ===========================================================================
