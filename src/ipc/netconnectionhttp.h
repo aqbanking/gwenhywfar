@@ -13,8 +13,13 @@
 #ifndef GWENNET_HTTP_H
 #define GWENNET_HTTP_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/netconnection.h>
 #include <gwenhywfar/bufferedio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 /** @name Mode Settings
@@ -75,6 +80,7 @@
  * This type is used when calling the callback function which writes the body
  * received.
  */
+GWENHYWFAR_API
 typedef enum {
   /** starting to receive the message body */
   GWEN_NetConnHttp_WriteBodyModeStart=0,
@@ -87,6 +93,7 @@ typedef enum {
 } GWEN_NETCONNHTTP_WRITEBODY_MODE;
 
 
+GWENHYWFAR_API
 GWEN_NETCONNECTION *GWEN_NetConnectionHTTP_new(GWEN_NETTRANSPORT *tr,
                                                int take,
                                                GWEN_TYPE_UINT32 libId,
@@ -118,6 +125,7 @@ GWEN_NETCONNECTION *GWEN_NetConnectionHTTP_new(GWEN_NETTRANSPORT *tr,
  * mode=@ref GWEN_NetConnHttp_WriteBodyModeAbort
  */
 /*@{*/
+GWENHYWFAR_API
 typedef int (*GWEN_NETCONNHTTP_WRITEBODY_FN)(GWEN_NETCONNECTION *conn,
                                              const char *buffer,
                                              GWEN_TYPE_UINT32 *bsize,
@@ -128,6 +136,7 @@ typedef int (*GWEN_NETCONNHTTP_WRITEBODY_FN)(GWEN_NETCONNECTION *conn,
  * you need to call this function to actually start reading the message
  * body.
  */
+GWENHYWFAR_API
 void GWEN_NetConnectionHTTP_StartBodyRead(GWEN_NETCONNECTION *conn);
 
 /**
@@ -135,6 +144,7 @@ void GWEN_NetConnectionHTTP_StartBodyRead(GWEN_NETCONNECTION *conn);
  * @ref GWEN_NETCONN_MODE_WAITBEFOREREAD is in effect. In this case
  * you need to call this function to actually start reading the next message.
  */
+GWENHYWFAR_API
 void GWEN_NetConnectionHTTP_StartRead(GWEN_NETCONNECTION *conn);
 
 /**
@@ -147,6 +157,7 @@ void GWEN_NetConnectionHTTP_StartRead(GWEN_NETCONNECTION *conn);
  * MUST NOT free it (and you should not manipulate data inside this object
  * besides the GWEN_DB_NODE and the GWEN_BUFFEREDIO settings).
  */
+GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetConnectionHTTP_GetCurrentInMsg(GWEN_NETCONNECTION *conn);
 /*@}*/
 
@@ -155,11 +166,15 @@ GWEN_NETMSG *GWEN_NetConnectionHTTP_GetCurrentInMsg(GWEN_NETCONNECTION *conn);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetConnectionHTTP_GetMode(GWEN_NETCONNECTION *conn);
+GWENHYWFAR_API
 void GWEN_NetConnectionHTTP_SetMode(GWEN_NETCONNECTION *conn,
                                     GWEN_TYPE_UINT32 m);
+GWENHYWFAR_API
 void GWEN_NetConnectionHTTP_AddMode(GWEN_NETCONNECTION *conn,
                                     GWEN_TYPE_UINT32 m);
+GWENHYWFAR_API
 void GWEN_NetConnectionHTTP_SubMode(GWEN_NETCONNECTION *conn,
                                     GWEN_TYPE_UINT32 m);
 
@@ -167,6 +182,7 @@ void GWEN_NetConnectionHTTP_SubMode(GWEN_NETCONNECTION *conn,
  * You can use this function to check whether the connection needs the
  * program's attention.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetConnectionHTTP_GetState(GWEN_NETCONNECTION *conn);
 /*@}*/
 
@@ -229,12 +245,14 @@ GWEN_TYPE_UINT32 GWEN_NetConnectionHTTP_GetState(GWEN_NETCONNECTION *conn);
  * @param bio message body given by a GWEN_BUFFEREDIO (0 if not)
  */
 /*@{*/
+GWENHYWFAR_API
 int GWEN_NetConnectionHTTP_AddRequest(GWEN_NETCONNECTION *conn,
                                       GWEN_DB_NODE *dbRequest,
                                       GWEN_BUFFER *body,
                                       GWEN_BUFFEREDIO *bio);
 
 
+GWENHYWFAR_API
 int GWEN_NetConnectionHTTP_AddResponse(GWEN_NETCONNECTION *conn,
                                        GWEN_DB_NODE *dbResponse,
                                        GWEN_BUFFER *body,
@@ -246,9 +264,17 @@ int GWEN_NetConnectionHTTP_AddResponse(GWEN_NETCONNECTION *conn,
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void GWEN_NetConnectionHTTP_Escape(const char *src, GWEN_BUFFER *buf);
+
+GWENHYWFAR_API
 int GWEN_NetConnectionHTTP_Unescape(const char *src, GWEN_BUFFER *buf);
 /*@}*/
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENNET_HTTP_H */

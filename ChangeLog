@@ -1,4 +1,10 @@
 
+2004/05/10: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ipc/*.h: prepared for use by C++ code
+- ipc/ipc: minor additions
+
+
 2004/05/09: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - completed IPC stuff (still untested), added documentation to ipc/ipc.h
@@ -9,7 +15,7 @@
 - added module ipc/ipc. This is a very simple IPC model based on
   GWEN_DBs send over HTTP (which in turn may be sent over any supported
   transport layer, such as TCP/UDP sockets and SSL).
-  This allows maximum flexibility while maintaining a very simple API.
+  This allows for maximum flexibility while maintaining a very simple API.
   Even with this simple API you can implement any security depth you like:
   - unencrypted using HTTP over UDP sockets
   - unencrypted using HTTP via TCP sockets

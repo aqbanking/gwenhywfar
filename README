@@ -1,3 +1,4 @@
+
 This is Gwenhywfar, a multi-platform helper library for networking and
 security applications and libraries. It is heavily used by libchipcard
 http://www.libchipcard.de, OpenHBCI2 http://www.openhbci.de, and the
@@ -30,6 +31,8 @@ Gwenhywfar includes the following features:
 - High-level cryptographic functions on top of OpenSSL functionality
   (src/crypt/)
 
+- Support for interprocess communication (HTTP on top of SSL or plain
+  TCP/UDP sockets)
 
 
 Requirements

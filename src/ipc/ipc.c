@@ -620,6 +620,35 @@ GWEN_DB_NODE *GWEN_IPCManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
+GWEN_DB_NODE *GWEN_IPCManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
+                                               GWEN_TYPE_UINT32 rid){
+  GWEN_IPCREQUEST *r;
+  GWEN_IPCMSG *m;
+  GWEN_DB_NODE *db;
+
+  r=GWEN_IPCRequest_List_First(mgr->outRequests);
+  while(r) {
+    if (r->id==rid)
+      break;
+    r=GWEN_IPCRequest_List_Next(r);
+  } /* while */
+  if (!r) {
+    DBG_ERROR(0, "Request %08x not found", rid);
+    return 0;
+  }
+
+  m=GWEN_IPCMsg_List_First(r->responseMsgs);
+  assert(m);
+
+  db=m->db;
+  assert(m->node);
+  assert(m->node->id);
+  return db;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_DB_NODE *GWEN_IPCManager_GetResponseData(GWEN_IPCMANAGER *mgr,
                                               GWEN_TYPE_UINT32 rid){
   GWEN_IPCREQUEST *r;
