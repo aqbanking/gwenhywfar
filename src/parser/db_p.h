@@ -137,9 +137,6 @@ void *GWEN_DB_HandlePath(const char *entry,
                          void *data,
                          unsigned int flags);
 
-GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
-                              const char *path,
-                              unsigned int flags);
 GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
                                 const char *name);
 GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,

@@ -47,6 +47,8 @@ char *GWEN_Text_GetWord(const char *src,
   unsigned int size;
   int lastWasBlank;
   int lastBlankPos;
+  int insideQuotes;
+  int lastWasEscape;
 
   assert(maxsize);
 
@@ -60,33 +62,79 @@ char *GWEN_Text_GetWord(const char *src,
   size=0;
   lastWasBlank=0;
   lastBlankPos=-1;
-  while(*src &&
-	strchr(delims, *src)==0 &&
-	size<(maxsize-1)) {
-    if (!lastWasBlank ||
-	(lastWasBlank && !(flags & GWEN_TEXT_FLAGS_DEL_MULTIPLE_BLANKS))) {
-      /* only copy if last char was NOT blank or
-       * last was blank but the caller does not want to have multiple
-       * blanks removed */
+  lastWasEscape=0;
+  insideQuotes=0;
+
+  if (*src=='"') {
+    insideQuotes=1;
+    if (flags & GWEN_TEXT_FLAGS_DEL_QUOTES)
+      src++;
+  }
+
+  while(*src && size<(maxsize-1)) {
+    if (lastWasEscape) {
       buffer[size]=*src;
       size++;
-    }
-    /* remember next loop whether this char was a blank */
-    if (isspace(*src)) {
-      lastWasBlank=1;
-      lastBlankPos=size;
-    }
-    else {
+      lastWasEscape=0;
       lastWasBlank=0;
       lastBlankPos=-1;
     }
-    /* advance source pointer */
-    src++;
-  } /* while */
+    else {
+      if (*src=='\\' && (flags & GWEN_TEXT_FLAGS_CHECK_BACKSLASH)) {
+        lastWasEscape=1;
+        lastWasBlank=0;
+        lastBlankPos=-1;
+      }
+      else {
+        if (!insideQuotes && strchr(delims, *src)!=0)
+          break;
+        if (*src=='"') {
+          if (insideQuotes) {
+            insideQuotes=0;
+            src++;
+            break;
+          }
+          else {
+            DBG_DEBUG(0,
+                      "Found a closing \" without an opening one "
+                      "(consider using a backslash to escape)");
+            return 0;
+          }
+        }
+
+
+        if (insideQuotes ||
+            !lastWasBlank ||
+            (lastWasBlank &&
+             !(flags & GWEN_TEXT_FLAGS_DEL_MULTIPLE_BLANKS))) {
+          /* only copy if last char was NOT blank or
+           * last was blank but the caller does not want to have multiple
+           * blanks removed */
+          buffer[size]=*src;
+          size++;
+        }
+        /* remember next loop whether this char was a blank */
+        if (isspace(*src) && !lastWasEscape) {
+          lastWasBlank=1;
+          lastBlankPos=size;
+        }
+        else {
+          lastWasBlank=0;
+          lastBlankPos=-1;
+        }
+      } /* if this is not a backslash */
+    } /* !lastWasEscape */
+      /* advance source pointer */
+      src++;
+    } /* while */
 
   /* add trailing null to correctly terminate the buffer */
   buffer[size]=0;
 
+  if (insideQuotes) {
+    DBG_DEBUG(0, "Missing \" after word");
+    return 0;
+  }
   /* check whether the source string was correctly terminated */
   if (flags & GWEN_TEXT_FLAGS_NEED_DELIMITER) {
     if (*src) {

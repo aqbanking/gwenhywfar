@@ -167,6 +167,17 @@ unsigned int GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf);
 char *GWEN_Buffer_GetPosPointer(GWEN_BUFFER *bf);
 
 
+/**
+ * Resets the position pointer and the byte counter.
+ */
+void GWEN_Buffer_Reset(GWEN_BUFFER *bf);
+
+/**
+ * Resets the pos pointer
+ */
+void GWEN_Buffer_Rewind(GWEN_BUFFER *bf);
+
+
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, int insert);
 
 

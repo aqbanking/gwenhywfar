@@ -310,5 +310,23 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, int insert) {
 
 
 
+void GWEN_Buffer_Reset(GWEN_BUFFER *bf){
+  assert(bf);
+  bf->pos=0;
+  bf->bytesUsed=0;
+}
+
+
+
+void GWEN_Buffer_Rewind(GWEN_BUFFER *bf){
+  assert(bf);
+  bf->pos=0;
+}
+
+
+
+
+
+
 
 

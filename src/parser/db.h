@@ -31,7 +31,10 @@
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
 #include <gwenhyfwar/path.h>
+#include <gwenhyfwar/bufferedio.h>
 #include <stdio.h>
+
+#define GWEN_DB_LINE_MAXSIZE  1024
 
 #define GWEN_DB_FLAGS_OVERWRITE_VARS         0x00010000
 #define GWEN_DB_FLAGS_OVERWRITE_GROUPS       0x00020000
@@ -140,6 +143,17 @@ const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);
 
 
 void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
+
+int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
+int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
+
+int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
+                           GWEN_BUFFEREDIO *bio,
+                           unsigned int dbflags);
+int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
+                     const char *fname,
+                     unsigned int dbflags);
+
 
 #endif
 

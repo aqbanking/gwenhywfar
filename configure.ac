@@ -182,6 +182,7 @@ AC_SUBST(all_libraries)
 # list of files to create
 #
 AC_CONFIG_FILES([Makefile
+                 gwenhywfar-config.in
                  src/Makefile
                  src/version.h
                  src/base/Makefile

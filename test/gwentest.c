@@ -73,6 +73,26 @@ int testDB(int argc, char **argv) {
 
 
 
+int testDBfile(int argc, char **argv) {
+  GWEN_DB_NODE *db;
+
+  fprintf(stderr,"Creating DB\n");
+  db=GWEN_DB_Group_new("Config");
+
+  fprintf(stderr,"Reading file\n");
+  if (GWEN_DB_ReadFile(db, "test.db", 0)) {
+    fprintf(stderr,"Error reading file.\n");
+    return 1;
+  }
+  fprintf(stderr, "DB is:\n");
+  GWEN_DB_Dump(db, stderr, 2);
+  fprintf(stderr,"Releasing DB\n");
+  GWEN_DB_Group_free(db);
+  return 0;
+}
+
+
+
 int testXML(int argc, char **argv) {
   GWEN_XMLNODE *n;
 
@@ -352,6 +372,7 @@ int testPing(int argc, char **argv) {
 
 
 
+
 int main(int argc, char **argv) {
   GWEN_ERRORCODE err;
   int rv;
@@ -378,6 +399,8 @@ int main(int argc, char **argv) {
     rv=testClient(argc, argv);
   else if (strcasecmp(argv[1], "ping")==0)
     rv=testPing(argc, argv);
+  else if (strcasecmp(argv[1], "dbfile")==0)
+    rv=testDBfile(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

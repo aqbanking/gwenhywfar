@@ -22577,7 +22577,7 @@ all_includes="${all_includes} -I`pwd`"
 #
 # list of files to create
 #
-                                                                                                                                                      ac_config_files="$ac_config_files Makefile src/Makefile src/version.h src/base/Makefile src/crypt/Makefile src/crypt/ossl/Makefile src/io/Makefile src/ipc/Makefile src/os/Makefile src/os/posix/Makefile src/os/windows/Makefile src/parser/Makefile src/impl/Makefile src/impl/ipc/Makefile test/Makefile"
+                                                                                                                                                                ac_config_files="$ac_config_files Makefile gwenhywfar-config.in src/Makefile src/version.h src/base/Makefile src/crypt/Makefile src/crypt/ossl/Makefile src/io/Makefile src/ipc/Makefile src/os/Makefile src/os/posix/Makefile src/os/windows/Makefile src/parser/Makefile src/impl/Makefile src/impl/ipc/Makefile test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -23135,6 +23135,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "gwenhywfar-config.in" ) CONFIG_FILES="$CONFIG_FILES gwenhywfar-config.in" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
   "src/version.h" ) CONFIG_FILES="$CONFIG_FILES src/version.h" ;;
   "src/base/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/base/Makefile" ;;

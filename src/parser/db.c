@@ -30,16 +30,23 @@
 # include <config.h>
 #endif
 
-#define DISABLE_DEBUGLOG
+//#define DISABLE_DEBUGLOG
 
 #include "db_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
 #include <gwenhyfwar/path.h>
+#include <gwenhyfwar/bufferedio.h>
+#include <gwenhyfwar/text.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <errno.h>
+#include <ctype.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 
 GWEN_DB_NODE *GWEN_DB_ValueBin_new(void *data,
@@ -1026,6 +1033,323 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
     fprintf(f, "[no node]\n");
   }
 }
+
+
+
+int  GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
+                            GWEN_BUFFEREDIO *bio,
+                            unsigned int dbflags) {
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *currGrp;
+  GWEN_DB_NODE *currVar;
+  char linebuf[GWEN_DB_LINE_MAXSIZE];
+  char wbuf[256];
+  char *p;
+  const char *pos;
+  unsigned int lineno;
+  GWEN_DB_VALUETYPE vt;
+  int depth;
+
+  currGrp=n;
+  currVar=0;
+  lineno=0;
+  depth=0;
+
+  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+    int isVar;
+    int isVal;
+
+    isVar=0;
+    isVal=0;
+    vt=GWEN_DB_VALUETYPE_CHAR;
+    pos=linebuf;
+
+    /* read next line */
+    lineno++;
+    err=GWEN_BufferedIO_ReadLine(bio, linebuf, sizeof(linebuf)-1);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR(0, "Error in line %d", lineno);
+      return -1;
+    }
+
+    /* skip blanks */
+    while(*pos && isspace(*pos))
+      pos++;
+
+    if (!*pos || *pos=='#') {
+      DBG_DEBUG(0, "Line %d is empty", lineno);
+    }
+    else {
+      if (*pos=='}') {
+        /* end of current group */
+        if (depth<1) {
+          DBG_ERROR(0, "Extra \"}\" in line %d, pos %d",
+                    lineno, pos-linebuf+1);
+          return -1;
+        }
+        assert(currGrp->h.parent);
+        currGrp=currGrp->h.parent;
+        currVar=0;
+        depth--;
+        *pos++;
+        while(*pos && isspace(*pos))
+          pos++;
+      }
+      else if (*pos=='#') {
+        /* comment only line */
+        DBG_DEBUG(0, "Comment-only line");
+      }
+      else {
+        if (*pos==',') {
+          /* continuing a variable on the next line */
+          pos++;
+          isVal=1;
+        }
+
+        if (!isVal) {
+          /* get first word */
+          *wbuf=(char)0;
+          p=GWEN_Text_GetWord(pos,
+                              "}{= #,",
+                              wbuf,
+                              sizeof(wbuf)-1,
+                              GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+                              GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
+                              GWEN_TEXT_FLAGS_DEL_QUOTES |
+                              GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
+                              &pos);
+          if (!p || !*wbuf) {
+            DBG_ERROR(0, "Error in line %d, pos %d",
+                      lineno, pos-linebuf+1);
+            return -1;
+          }
+
+          /* skip blanks */
+          while(*pos && isspace(*pos))
+            pos++;
+
+          /* actually did read a word */
+          if (*pos=='{') {
+            /* found a group definition */
+            GWEN_DB_NODE *tmpn;
+
+            pos++;
+            DBG_DEBUG(0, "Found group \"%s\"", wbuf);
+            tmpn=GWEN_DB_GetGroup(currGrp, dbflags, wbuf);
+            if (!tmpn) {
+              DBG_ERROR(0, "Error in line %d, pos %d (no group)",
+                        lineno, pos-linebuf+1);
+              return -1;
+            }
+            currGrp=tmpn;
+            currVar=0;
+            depth++;
+          }
+          else if (*pos=='=') {
+            /* found a variable */
+            DBG_DEBUG(0, "Found a variable \"%s\", handle it later", wbuf);
+            isVar=1;
+          }
+          else {
+            /* found another word, so the previous word is a type specifier */
+            isVar=1;
+            DBG_DEBUG(0, "Found a type specifier \"%s\"", wbuf);
+            if (strcasecmp(p, "int")==0)
+              vt=GWEN_DB_VALUETYPE_INT;
+
+            /* get the variable name */
+            wbuf[0]=(char)0;
+            p=GWEN_Text_GetWord(pos,
+                                "}{= #",
+                                wbuf,
+                                sizeof(wbuf)-1,
+                                GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+                                GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
+                                GWEN_TEXT_FLAGS_DEL_QUOTES |
+                                GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
+                                &pos);
+            if (!p || !*wbuf) {
+              DBG_ERROR(0, "Error in line %d, pos %d",
+                        lineno, pos-linebuf+1);
+              return -1;
+            }
+            /* skip blanks */
+            while(*pos && isspace(*pos))
+              pos++;
+            if (*pos!='=') {
+              DBG_ERROR(0, "Expected \"=\" in line %d at %d",
+                        lineno, pos-linebuf+1);
+              return -1;
+            }
+            isVar=1;
+          } /* if two words */
+        } /* if !isVal */
+
+        if (isVar) {
+          DBG_DEBUG(0, "Creating variable \"%s\"", wbuf);
+          pos++;
+          currVar=GWEN_DB_GetNode(currGrp,
+                                  wbuf,
+                                  dbflags | GWEN_PATH_FLAGS_VARIABLE);
+          /* next word is a value */
+          isVal=1;
+        } /* isVar */
+
+        if (isVal) {
+          GWEN_DB_NODE *tmpn;
+          int value;
+
+          if (!currVar) {
+            DBG_ERROR(0, "Error in line %d, pos %d (no var)",
+                      lineno, pos-linebuf+1);
+            return -1;
+          }
+
+          while (*pos) {
+            DBG_DEBUG(0, "Reading value");
+            /* get next value */
+            p=GWEN_Text_GetWord(pos,
+                                "}{= #,",
+                                wbuf,
+                                sizeof(wbuf)-1,
+                                GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+                                GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
+                                GWEN_TEXT_FLAGS_DEL_QUOTES |
+                                GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
+                                &pos);
+            if (!p || !*wbuf) {
+              DBG_ERROR(0, "Error in line %d, pos %d (no word)",
+                        lineno, pos-linebuf+1);
+              return -1;
+            }
+
+            DBG_DEBUG(0, "Creating value \"%s\"", wbuf);
+
+            /* set value */
+            switch(vt) {
+            case GWEN_DB_VALUETYPE_CHAR:
+              tmpn=GWEN_DB_ValueChar_new(wbuf);
+              break;
+            case GWEN_DB_VALUETYPE_INT:
+              if (sscanf(wbuf, "%d", &value)!=1) {
+                DBG_ERROR(0, "Error in line %d, pos %d (no integer)",
+                          lineno, pos-linebuf+1);
+                return -1;
+              }
+              tmpn=GWEN_DB_ValueInt_new(value);
+              break;
+            default:
+              DBG_ERROR(0, "Error in line %d, pos %d (bad type)",
+                        lineno, pos-linebuf+1);
+              return -1;
+            } /* switch */
+            GWEN_DB_Node_Append(currVar, tmpn);
+
+            /* skip blanks */
+            while(*pos && isspace(*pos))
+              pos++;
+
+            if (*pos!=',')
+              break;
+            pos++;
+          }
+        } /* if isVal */
+
+        while(*pos && isspace(*pos))
+          pos++;
+        if (*pos) {
+          if (*pos=='}') {
+            if (depth<1) {
+              DBG_ERROR(0, "Extra \"}\" in line %d, pos %d",
+                        lineno, pos-linebuf+1);
+            }
+            assert(currGrp->h.parent);
+            currGrp=currGrp->h.parent;
+            currVar=0;
+            depth--;
+            *pos++;
+            while(*pos && isspace(*pos))
+              pos++;
+          }
+          if (*pos && *pos!='#') {
+            DBG_ERROR(0, "Extra character in line %d, pos %d",
+                      lineno, pos-linebuf+1);
+            return -1;
+          }
+        }
+      }
+    } /* if line is not empty */
+  } /* while */
+
+  if (depth) {
+    DBG_ERROR(0, "Unbalanced groups (missing %d \"}\" at end of file)",
+              depth);
+    return -1;
+  }
+  return 0;
+}
+
+
+
+int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
+                     const char *fname,
+                     unsigned int dbflags) {
+  GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
+  int fd;
+  int rv;
+
+  fd=open(fname, O_RDONLY);
+  if (fd==-1) {
+    DBG_ERROR(0, "Error opening file \"%s\": %s",
+              fname,
+              strerror(errno));
+    return -1;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  rv=GWEN_DB_ReadFromStream(n, bio, dbflags);
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "called from here");
+    GWEN_BufferedIO_free(bio);
+    return -1;
+  }
+  GWEN_BufferedIO_free(bio);
+  return rv;
+}
+
+
+
+int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
+  assert(n);
+  assert(nn);
+  GWEN_DB_Node_Append(n, nn);
+  return 0;
+}
+
+
+
+int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
+  GWEN_DB_NODE *cpn;
+
+  assert(n);
+  assert(nn);
+
+  nn=nn->h.child;
+  while (nn) {
+    cpn=GWEN_DB_Node_dup(nn);
+    GWEN_DB_Node_Append(n, cpn);
+    nn=nn->h.next;
+  } /* while */
+  return 0;
+}
+
+
+
+
+
 
 
 
