@@ -61,6 +61,8 @@ struct GWEN_BUFFEREDIOSTRUCT {
   int writerBufferFilled;
   int writerBufferPos;
   int writerBufferFlushPos;
+
+  int lines;
 };
 
 

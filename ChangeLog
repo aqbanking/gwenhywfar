@@ -1,4 +1,10 @@
 
+2004/06/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/db: increased size of the word buffer used (I'm still looking
+  for a better solution. Maybe I will write a DBIO which reads/writes DB as
+  XML files...)
+
 
 2004-06-07  Christian Stimming <stimming@tuhh.de>
 

@@ -545,12 +545,16 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	if (isEndTag) {
 	  /* handle endtag */
 	  if (currDepth<1) {
-	    DBG_ERROR(0, "More endtags than start tags !");
+            DBG_ERROR(0, "Line %d: More endtags than start tags !",
+                      GWEN_BufferedIO_GetLines(bio));
             GWEN_Buffer_free(bufTagName);
 	    return -1;
 	  }
 	  if (strcasecmp(n->data, p)!=0) {
-	    DBG_ERROR(0, "endtag \"%s\" does not match last start tag (\"%s\")",
+            DBG_ERROR(0,
+                      "Line %d: endtag \"%s\" does not match "
+                      "last start tag (\"%s\")",
+                      GWEN_BufferedIO_GetLines(bio),
                       GWEN_Buffer_GetStart(bufTagName), n->data);
             GWEN_Buffer_free(bufTagName);
             return -1;
@@ -572,11 +576,14 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                 iname=inametag->data;
               }
               else {
-                DBG_WARN(0, "<INCLUDE> tag with unexpected children");
+                DBG_WARN(0,
+                         "Line %d: <INCLUDE> tag with unexpected children",
+                         GWEN_BufferedIO_GetLines(bio));
               }
             }
             else {
-              DBG_WARN(0, "<INCLUDE> tag without children");
+              DBG_WARN(0, "Line %d: <INCLUDE> tag without children",
+                       GWEN_BufferedIO_GetLines(bio));
             }
 
             if (iname) {
@@ -586,7 +593,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               GWEN_XMLNODE *itag;
 
               newRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "tmproot");
-              DBG_INFO(0, "Including file \"%s\" / \"%s\"",
+              DBG_INFO(0, "Line %d: Including file \"%s\" / \"%s\"",
+                       GWEN_BufferedIO_GetLines(bio),
                        fpath, iname);
               irv=fn(newRoot, fpath, iname, sl, flags);
               if (irv) {
@@ -610,7 +618,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                 if (flags & GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL) {
                   GWEN_XMLNODE *tl;
 
-                  DBG_INFO(0, "Importing node to toplevel");
+                  DBG_INFO(0, "Line %d: Importing node to toplevel",
+                           GWEN_BufferedIO_GetLines(bio));
                   tl=nparent;
                   while(tl->parent)
                     tl=tl->parent;
@@ -624,7 +633,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                                                       itag->data, 0, 0);
                     if (oldNode) {
                       /* use old node, copy properties */
-                      DBG_INFO(0, "Using old toplevel node for \"%s\"",
+                      DBG_INFO(0,
+                               "Line %d: Using old toplevel node for \"%s\"",
+                               GWEN_BufferedIO_GetLines(bio),
                                itag->data);
                       GWEN_XMLNode_CopyProperties(oldNode, itag, 0);
                       /* append children only (move them) */
@@ -686,7 +697,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    j=strlen(p)-1;
 	    if (p[j]=='/') {
 	      if (chr!='>') {
-		DBG_ERROR(0, "\"/\" only allowed just before \">\"");
+                DBG_ERROR(0,
+                          "Line %d: \"/\" only allowed just before \">\"",
+                          GWEN_BufferedIO_GetLines(bio));
                 GWEN_Buffer_free(bufTagName);
 		return -1;
 	      }
@@ -785,8 +798,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 		  break;
 	      }
 	      if (chr==0) {
-		DBG_ERROR(0, "Value expected for property \"%s\"",
-			  varname);
+                DBG_ERROR(0, "Line %d: Value expected for property \"%s\"",
+                          GWEN_BufferedIO_GetLines(bio),
+                          varname);
 		GWEN_XMLNode_free(newNode);
                 GWEN_Buffer_free(bufValue);
                 GWEN_Buffer_free(bufVarName);
@@ -795,8 +809,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      }
 
 	      if (chr=='>' || chr=='/') {
-		DBG_ERROR(0, "Value expected for property \"%s\"",
-			  varname);
+                DBG_ERROR(0, "Line %d: Value expected for property \"%s\"",
+                          GWEN_BufferedIO_GetLines(bio),
+                          varname);
 		GWEN_XMLNode_free(newNode);
                 GWEN_Buffer_free(bufValue);
                 GWEN_Buffer_free(bufVarName);
@@ -832,7 +847,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             isEndTag=1;
 
             if (GWEN_BufferedIO_CheckEOF(bio)) {
-              DBG_ERROR(0, "\">\" expected");
+              DBG_ERROR(0, "Line %d: \">\" expected",
+                        GWEN_BufferedIO_GetLines(bio));
               GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
               GWEN_Buffer_free(bufVarName);
@@ -852,7 +868,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           }
 
 	  if (chr!='>') {
-	    DBG_ERROR(0, "\">\" expected");
+            DBG_ERROR(0, "Line %d: \">\" expected",
+                      GWEN_BufferedIO_GetLines(bio));
 	    GWEN_XMLNode_free(newNode);
             GWEN_Buffer_free(bufValue);
             GWEN_Buffer_free(bufVarName);
@@ -868,7 +885,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             oldNode=GWEN_XMLNode_FindFirstTag(n, newNode->data, 0, 0);
             if (oldNode) {
               /* use old node, copy properties */
-              DBG_INFO(0, "Using old toplevel node for \"%s\"",
+              DBG_INFO(0, "Line %d: Using old toplevel node for \"%s\"",
+                       GWEN_BufferedIO_GetLines(bio),
                        newNode->data);
               GWEN_XMLNode_CopyProperties(oldNode, newNode, 0);
               GWEN_XMLNode_free(newNode);
@@ -877,7 +895,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             else {
               /* otherwise add bew tag */
               if (currDepth>=GWEN_XML_MAX_DEPTH) {
-                DBG_ERROR(0, "Maximum depth exceeded");
+                DBG_ERROR(0, "Line %d: Maximum depth exceeded",
+                          GWEN_BufferedIO_GetLines(bio));
                 GWEN_XMLNode_free(newNode);
                 GWEN_Buffer_free(bufValue);
                 GWEN_Buffer_free(bufVarName);
@@ -891,7 +910,8 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           }
           else {
             if (currDepth>=GWEN_XML_MAX_DEPTH) {
-              DBG_ERROR(0, "Maximum depth exceeded");
+              DBG_ERROR(0, "Line %d: Maximum depth exceeded",
+                        GWEN_BufferedIO_GetLines(bio));
               GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
               GWEN_Buffer_free(bufVarName);
@@ -951,7 +971,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
   } /* while !eof */
 
   if (currDepth!=0) {
-    DBG_ERROR(0, "%d tags are still open", currDepth);
+    DBG_ERROR(0, "Line %d: %d tags are still open",
+              GWEN_BufferedIO_GetLines(bio),
+              currDepth);
     return -1;
   }
 

@@ -163,6 +163,121 @@ char *GWEN_Text_GetWord(const char *src,
 
 
 
+int GWEN_Text_GetWordToBuffer(const char *src,
+                              const char *delims,
+                              GWEN_BUFFER *buf,
+                              GWEN_TYPE_UINT32 flags,
+                              const char **next){
+  int lastWasBlank;
+  int lastBlankPos;
+  int insideQuotes;
+  int lastWasEscape;
+
+  /* skip leading blanks, if wanted */
+  if (flags & GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS) {
+    while(*src && *src<33)
+      src++;
+  }
+
+  /* get word */
+  lastWasBlank=0;
+  lastBlankPos=-1;
+  lastWasEscape=0;
+  insideQuotes=0;
+
+  if (*src=='"') {
+    insideQuotes=1;
+    if (flags & GWEN_TEXT_FLAGS_DEL_QUOTES)
+      src++;
+  }
+
+  while(*src) {
+    if (lastWasEscape) {
+      GWEN_Buffer_AppendByte(buf, *src);
+      lastWasEscape=0;
+      lastWasBlank=0;
+      lastBlankPos=-1;
+    }
+    else {
+      if (*src=='\\' && (flags & GWEN_TEXT_FLAGS_CHECK_BACKSLASH)) {
+        lastWasEscape=1;
+        lastWasBlank=0;
+        lastBlankPos=-1;
+      }
+      else {
+        if (!insideQuotes && strchr(delims, *src)!=0)
+          break;
+        if (*src=='"') {
+          if (insideQuotes) {
+            insideQuotes=0;
+            src++;
+            break;
+          }
+          else {
+	    DBG_ERROR(0,
+		      "Found a closing \" without an opening one "
+		      "(consider using a backslash to escape)");
+	    return -1;
+          }
+        }
+
+
+        if (insideQuotes ||
+            !lastWasBlank ||
+            (lastWasBlank &&
+             !(flags & GWEN_TEXT_FLAGS_DEL_MULTIPLE_BLANKS))) {
+          /* only copy if last char was NOT blank or
+           * last was blank but the caller does not want to have multiple
+           * blanks removed */
+	  GWEN_Buffer_AppendByte(buf, *src);
+        }
+        /* remember next loop whether this char was a blank */
+        if (isspace(*src) && !lastWasEscape) {
+          lastWasBlank=1;
+	  lastBlankPos=GWEN_Buffer_GetPos(buf);
+	}
+        else {
+          lastWasBlank=0;
+          lastBlankPos=-1;
+        }
+      } /* if this is not a backslash */
+    } /* !lastWasEscape */
+      /* advance source pointer */
+      src++;
+    } /* while */
+
+  if (insideQuotes) {
+    DBG_ERROR(0, "Missing \" after word");
+    return -1;
+  }
+  /* check whether the source string was correctly terminated */
+  if (flags & GWEN_TEXT_FLAGS_NEED_DELIMITER) {
+    if (*src) {
+      if (strchr(delims, *src)==0) {
+        DBG_ERROR(0, "No delimiter found within specified length");
+	return -1;
+      }
+    }
+    else {
+      if (!(flags & GWEN_TEXT_FLAGS_NULL_IS_DELIMITER)) {
+	DBG_ERROR(0, "String ends without delimiter");
+	return -1;
+      }
+    }
+  }
+
+  /* remove trailing blanks, if wanted */
+  if (flags & GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS) {
+    if (lastBlankPos!=-1)
+      GWEN_Buffer_Crop(buf, 0, lastBlankPos);
+  }
+
+  *next=src;
+  return 0;
+}
+
+
+
 char *GWEN_Text_Escape(const char *src,
                        char *buffer,
                        unsigned int maxsize) {

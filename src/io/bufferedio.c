@@ -242,8 +242,11 @@ int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bt){
   int i;
 
   i=GWEN_BufferedIO_PeekChar(bt);
-  if (i>=0)
+  if (i>=0) {
     bt->readerBufferPos++;
+    if (i==GWEN_BUFFEREDIO_LF)
+      bt->lines++;
+  }
   return i;
 }
 
@@ -459,6 +462,44 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
   /* add terminating null */
   if (s)
     buffer[pos]=0;
+
+  /* reading done */
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_ReadLine2Buffer(GWEN_BUFFEREDIO *bt,
+                                               GWEN_BUFFER *buffer) {
+  int c;
+
+  /* now read */
+  while(1) {
+    if (GWEN_BufferedIO_CheckEOF(bt)) {
+      break;
+    }
+    c=GWEN_BufferedIO_ReadChar(bt);
+    if (c==GWEN_BUFFEREDIO_CHAR_NO_DATA) {
+      DBG_INFO(0, "No more data for now");
+      break;
+    }
+    if (c<0) {
+      DBG_ERROR(0, "Error while reading");
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_READ);
+    }
+
+    if (c==GWEN_BUFFEREDIO_LF) {
+      /* LF ends every line */
+      break;
+    }
+
+    if (c!=GWEN_BUFFEREDIO_CR || bt->lineMode==GWEN_LineModeUnix) {
+      GWEN_Buffer_AppendByte(buffer, (unsigned char)c);
+    }
+  } /* while */
 
   /* reading done */
   return 0;
@@ -764,6 +805,13 @@ void GWEN_BufferedIO_SetCloseFn(GWEN_BUFFEREDIO *dm,
                                 GWEN_BUFFEREDIOCLOSEFN fn){
   assert(dm);
   dm->closePtr=fn;
+}
+
+
+
+int GWEN_BufferedIO_GetLines(const GWEN_BUFFEREDIO *dm){
+  assert(dm);
+  return dm->lines;
 }
 
 

@@ -48,6 +48,7 @@ extern "C" {
 #include <gwenhywfar/bio_file.h>
 #include <gwenhywfar/bio_socket.h>
 #include <gwenhywfar/bio_buffer.h>
+#include <gwenhywfar/buffer.h>
 
 
 
@@ -208,6 +209,16 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
                                                        unsigned int s);
 
 /**
+ * Reads a line until a CR (in Unix mode) or a CRLF (DOS mode) is found.
+ * The trailing CR or CRLF is not copied into the buffer.
+ * This function uses a GWEN_BUFFER to store the data.
+ * @author Martin Preuss<martin@aquamaniac.de>
+ */
+GWENHYWFAR_API
+GWEN_ERRORCODE GWEN_BufferedIO_ReadLine2Buffer(GWEN_BUFFEREDIO *bt,
+                                               GWEN_BUFFER *buffer);
+
+/**
  * Writes a character into the stream.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
@@ -305,6 +316,10 @@ void GWEN_BufferedIO_SetTimeout(GWEN_BUFFEREDIO *dm, int timeout);
  */
 GWENHYWFAR_API
 int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm);
+
+
+GWENHYWFAR_API
+int GWEN_BufferedIO_GetLines(const GWEN_BUFFEREDIO *dm);
 
 
 void GWEN_BufferedIO_SetReadFn(GWEN_BUFFEREDIO *dm,

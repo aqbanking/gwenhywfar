@@ -75,6 +75,14 @@ char *GWEN_Text_GetWord(const char *src,
                         GWEN_TYPE_UINT32 flags,
                         const char **next);
 
+GWENHYWFAR_API
+int GWEN_Text_GetWordToBuffer(const char *src,
+                              const char *delims,
+                              GWEN_BUFFER *buf,
+                              GWEN_TYPE_UINT32 flags,
+                              const char **next);
+
+
 /**
  * This function does escaping like it is used for HTTP URL encoding.
  * All characters which are not alphanumeric are escaped by %XX where
