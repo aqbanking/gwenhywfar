@@ -1,4 +1,9 @@
 
+2004/04/01: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added plugin loading functions to GWEN_DBIO
+
+
 2004/03/31: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added import/export framework for GWEN_DBs. This makes parser plugins

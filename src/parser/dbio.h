@@ -45,6 +45,12 @@ typedef struct GWEN_DBIO GWEN_DBIO;
 #endif
 
 
+/**
+ * name of the folder below Gwen's PLUGIN folder which holds DBIO plugins
+ */
+#define GWEN_DBIO_FOLDER "dbio"
+
+
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/types.h>
@@ -63,6 +69,10 @@ extern "C" {
 
 GWEN_LIST_FUNCTION_DEFS(GWEN_DBIO, GWEN_DBIO);
 GWEN_INHERIT_FUNCTION_DEFS(GWEN_DBIO);
+
+
+GWENHYWFAR_API
+typedef GWEN_DBIO* (*GWEN_DBIO_FACTORYFN)(void);
 
 
 GWENHYWFAR_API
@@ -197,6 +207,31 @@ void GWEN_DBIO_SetLibLoader(GWEN_DBIO *dbio, GWEN_LIBLOADER *ll);
  */
 GWENHYWFAR_API
 int GWEN_DBIO_Register(GWEN_DBIO *dbio);
+
+/**
+ * This function only loads the given plugin file, it does not register it.
+ */
+GWENHYWFAR_API
+GWEN_DBIO *GWEN_DBIO_LoadPluginFile(const char *modname, const char *fname);
+
+/**
+ * This functions searches for a plugin which supports the given type in
+ * the usual place ("GWENHYWFAR_PLUGIN/dbio/"). It does not register the
+ * plugin.
+ */
+GWENHYWFAR_API
+GWEN_DBIO *GWEN_DBIO_LoadPlugin(const char *modname);
+
+/**
+ * This functions returns the DBIO of the given name. If it already is
+ * registered, then simply the registered one is returned. Otherwise this
+ * function tries to load the appropriate plugin and registers it before
+ * returning it to the caller.
+ * The caller MUST NOT free the plugin returned, this module keeps the
+ * ownership of the plugin.
+ */
+GWENHYWFAR_API
+GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname);
 
 /*@}*/
 

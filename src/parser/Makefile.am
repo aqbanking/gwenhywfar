@@ -1,5 +1,7 @@
 INCLUDES=@all_includes@
 
+AM_CFLAGS=-DGWENHYWFAR_PLUGINS=\"@gwenhywfar_plugins@\"
+
 noinst_LTLIBRARIES=libparser.la
 
 noinst_HEADERS=\
