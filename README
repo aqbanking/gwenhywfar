@@ -31,7 +31,7 @@ Gwenhywfar includes the following features:
 
 - High-level functions for parsing files with a simplified "XML-like"
   format and accessing them like a hierarchical database (src/parser/)
-  It is able to process most valid XML files, too.
+  It is able to process valid XML files, too.
 
 - High-level cryptographic functions on top of OpenSSL functionality
   (src/crypt/)
@@ -42,10 +42,10 @@ Gwenhywfar includes the following features:
 - Console user-interface (including a simple HTML parser) based on
   ncurses
 
-- A tool to generate simple data containers from XML files (automatically
+- A tool to generate simple data containers from XML files. It automatically
   generates getters, setters, constructor, destructor, deep-copy function,
-  usage counter handling, functions for reading from and writing to GWEN_DBs)
-  (used by AqBanking to create the transaction class)
+  usage counter handling, modification tracking, functions for reading from 
+  and writing to GWEN_DBs (used by AqBanking to create the transaction class)
 
 
 Requirements
@@ -53,6 +53,7 @@ Requirements
 
 - OpenSSL >= 0.9.6x (0.9.7x recommended); this can optionally be
   disabled by the configure switch --disable-ssl
+- ncurses (optional, used for user interface library gwenui)
 
 
 Platforms
