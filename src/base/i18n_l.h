@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Wed Sep 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Fri Sep 12 2003
+    copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,49 +25,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFARAPI_H
 
-#ifdef __declspec
-# if BUILDING_GWEN_DLL
-#  define GWENHYWFAR_API __declspec (dllexport)
-# else /* Not BUILDING_GWENHYWFAR_DLL */
-#  define GWENHYWFAR_API __declspec (dllimport)
-# endif /* Not BUILDING_GWENHYWFAR_DLL */
+#ifndef GWENHYWFAR_I18N_L_H
+#define GWENHYWFAR_I18N_L_H
+
+
+/* Internationalization */
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# include <locale.h>
+# define I18N(m) dgettext("gwenhywfar", m)
+# define I18S(m) m
 #else
-# define GWENHYWFAR_API
+# define I18N(m) m
+# define I18S(m) m
 #endif
 
-/* Convenience macros to test the versions of glibc and gcc. Taken
-   from <features.h> which does not contain this on MinGW systems.  */
-#ifndef __GNUC_PREREQ
-# if defined __GNUC__ && defined __GNUC_MINOR__
-#  define __GNUC_PREREQ(maj, min) \
-        ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
-# else
-#  define __GNUC_PREREQ(maj, min) 0
-# endif
-#endif /* __GNUC_PREREQ */
+#include <gwenhywfar/i18n.h>
 
 
-/* Taken from <sys/cdefs.h> which does not contain this on MinGW
-   systems.  */
-#ifndef __STRING
-# define __STRING(x)     #x
-#endif /* __STRING */
+GWEN_ERRORCODE GWEN_I18N_ModuleInit();
+GWEN_ERRORCODE GWEN_I18N_ModuleFini();
 
 
-/* This is needed for PalmOS, because it define some functions needed */
-#include <string.h>
-#include <gwenhywfar/system.h>
-
-
-#ifdef __GNUC__
-# define DEPRECATED __attribute__((deprecated))
-#else
-# define DEPRECATED
-#endif /* __GNUC__ */
 
 
 #endif
-
-

@@ -39,6 +39,8 @@
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/text.h>
 
+/* TODO: #include <gwenhywfar/plugin.h> */
+
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -55,7 +57,19 @@ static GWEN_DBIO_LIST *gwen_dbio__list=0;
 
 
 GWEN_ERRORCODE GWEN_DBIO_ModuleInit(){
+  /* TODO: GWEN_PLUGIN_MANAGER *pm; */
+
   gwen_dbio__list=GWEN_DBIO_List_new();
+  /* TODO:
+  pm=GWEN_PluginManager_new("dbio");
+  if (GWEN_PluginManager_Register(pm)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not register DBIO plugin manager");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_ERROR_TYPE_ERROR,
+                          GWEN_ERROR_UNSPECIFIED);
+  }
+  */
   return 0;
 }
 

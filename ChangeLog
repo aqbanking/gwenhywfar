@@ -1,4 +1,18 @@
 
+2004/12/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added I18N module (just a simple helper for some I18N issues)
+  When setting a locale the given locale is also stored in it generalized
+  forms, e.g.:
+    de_DE@euro is stored as:
+    - de_DE@euro
+    - de_DE
+    - de
+- added I18N to plugin descriptions (uses the property "lang" in "plugin"
+  tags). Every current locale is tried. If there is no plugin description
+  in the current language the default description is used.
+
+
 2004/12/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - implemented FSLock at least for POSIX the way "man 2 open" suggests.

@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Wed Sep 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Fri Sep 12 2003
+    copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,49 +25,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFARAPI_H
 
-#ifdef __declspec
-# if BUILDING_GWEN_DLL
-#  define GWENHYWFAR_API __declspec (dllexport)
-# else /* Not BUILDING_GWENHYWFAR_DLL */
-#  define GWENHYWFAR_API __declspec (dllimport)
-# endif /* Not BUILDING_GWENHYWFAR_DLL */
-#else
-# define GWENHYWFAR_API
+#ifndef GWENHYWFAR_I18N_H
+#define GWENHYWFAR_I18N_H
+
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/misc2.h>
+#include <gwenhywfar/xml.h>
+#include <gwenhywfar/stringlist.h>
+
+
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-/* Convenience macros to test the versions of glibc and gcc. Taken
-   from <features.h> which does not contain this on MinGW systems.  */
-#ifndef __GNUC_PREREQ
-# if defined __GNUC__ && defined __GNUC_MINOR__
-#  define __GNUC_PREREQ(maj, min) \
-        ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
-# else
-#  define __GNUC_PREREQ(maj, min) 0
-# endif
-#endif /* __GNUC_PREREQ */
+GWENHYWFAR_API
+int GWEN_I18N_SetLocale(const char *s);
+
+GWENHYWFAR_API
+GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList();
+
+GWENHYWFAR_API
+const char *GWEN_I18N_GetCurrentLocale();
+
+#ifdef __cplusplus
+}
+#endif
 
 
-/* Taken from <sys/cdefs.h> which does not contain this on MinGW
-   systems.  */
-#ifndef __STRING
-# define __STRING(x)     #x
-#endif /* __STRING */
-
-
-/* This is needed for PalmOS, because it define some functions needed */
-#include <string.h>
-#include <gwenhywfar/system.h>
-
-
-#ifdef __GNUC__
-# define DEPRECATED __attribute__((deprecated))
-#else
-# define DEPRECATED
-#endif /* __GNUC__ */
 
 
 #endif
+
+
 
 

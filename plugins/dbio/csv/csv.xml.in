@@ -7,4 +7,12 @@
   </descr>
 </plugin>
 
+<plugin name="csv" type="dbio" lang="de" >
+  <version>@GWENHYWFAR_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Exporter fuer CSV</short>
+  <descr>
+    Diese Erweiterung importiert und exportiert CSV-Dateien.
+  </descr>
+</plugin>
 

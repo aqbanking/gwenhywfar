@@ -54,6 +54,15 @@ GWENHYWFAR_API
 GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path);
 
 
+/**
+ * Loads a list of plugins descriptions.
+ * When parsing the description files the given language will be selected.
+ */
+GWENHYWFAR_API
+int GWEN_LoadPluginDescrsToList(const char *path,
+                                GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl);
+
+
 GWENHYWFAR_API
 void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd);
 

@@ -30,6 +30,7 @@
 #endif
 
 #include "plugindescr_p.h"
+#include "i18n_l.h"
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
@@ -233,11 +234,41 @@ GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd){
 
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
+  int rv;
+
+  pl=GWEN_PluginDescription_List2_new();
+
+  rv=GWEN_LoadPluginDescrsToList(path, pl);
+  if (GWEN_PluginDescription_List2_GetSize(pl)==0) {
+    GWEN_PluginDescription_List2_free(pl);
+    return 0;
+  }
+  return pl;
+}
+
+
+
+int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd){
+  assert(pd);
+  return pd->isActive;
+}
+
+
+
+void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i){
+  assert(pd);
+  pd->isActive=i;
+}
+
+
+
+int GWEN_LoadPluginDescrsToList(const char *path,
+                                GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
   GWEN_DIRECTORYDATA *d;
   GWEN_BUFFER *nbuf;
   char nbuffer[64];
   unsigned int pathLen;
-  GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl;
 
   if (!path)
     path="";
@@ -254,10 +285,9 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 	     GWEN_Buffer_GetStart(nbuf));
     GWEN_Buffer_free(nbuf);
     GWEN_Directory_free(d);
-    return 0;
+    return -1;
   }
 
-  pdl=GWEN_PluginDescription_List2_new();
   while(!GWEN_Directory_Read(d,
 			     nbuffer,
 			     sizeof(nbuffer))) {
@@ -293,12 +323,33 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 	      }
 	      else {
 		GWEN_XMLNODE *n;
+                GWEN_STRINGLIST *langl;
 
-                n=GWEN_XMLNode_FindFirstTag(node, "plugin", 0, 0);
-		if (n) {
-		  GWEN_PLUGIN_DESCRIPTION *pd;
+                n=0;
+                langl=GWEN_I18N_GetCurrentLocaleList();
+                if (langl) {
+                  GWEN_STRINGLISTENTRY *se;
 
-		  pd=GWEN_PluginDescription_new(n);
+                  se=GWEN_StringList_FirstEntry(langl);
+                  while(se) {
+                    const char *l;
+
+                    l=GWEN_StringListEntry_Data(se);
+                    DBG_NOTICE(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
+                    assert(l);
+                    n=GWEN_XMLNode_FindFirstTag(node, "plugin", "lang", l);
+                    if (n)
+                      break;
+                    se=GWEN_StringListEntry_Next(se);
+                  } /* while */
+                } /* if language list available */
+
+                if (!n)
+                  n=GWEN_XMLNode_FindFirstTag(node, "plugin", 0, 0);
+                if (n) {
+                  GWEN_PLUGIN_DESCRIPTION *pd;
+
+                  pd=GWEN_PluginDescription_new(n);
 		  if (!pd) {
 		    DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
 		  }
@@ -326,26 +377,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
   GWEN_Directory_free(d);
   GWEN_Buffer_free(nbuf);
 
-  if (GWEN_PluginDescription_List2_GetSize(pdl)==0) {
-    GWEN_PluginDescription_List2_free(pdl);
-    return 0;
-  }
-
-  return pdl;
-}
-
-
-
-int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd){
-  assert(pd);
-  return pd->isActive;
-}
-
-
-
-void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i){
-  assert(pd);
-  pd->isActive=i;
+  return 0;
 }
 
 

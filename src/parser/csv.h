@@ -40,20 +40,12 @@ extern "C" {
 GWENHYWFAR_API
 int GWEN_CSV_Write(GWEN_BUFFEREDIO *bio,
                    GWEN_DB_NODE *cfg,
-                   GWEN_DB_NODE *data)
-#ifdef __GNUC__
-       __attribute__((deprecated))
-#endif /* __GNUC__ */
-       ;
+                   GWEN_DB_NODE *data) DEPRECATED;
 
 GWENHYWFAR_API
 int GWEN_CSV_Read(GWEN_BUFFEREDIO *bio,
                   GWEN_DB_NODE *cfg,
-                  GWEN_DB_NODE *data)
-#ifdef __GNUC__
-       __attribute__((deprecated))
-#endif /* __GNUC__ */
-       ;
+                  GWEN_DB_NODE *data) DEPRECATED;
 
 
 #ifdef __cplusplus

@@ -32,6 +32,8 @@
 
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/libloader.h>
+#include <gwenhywfar/plugindescr.h>
+
 
 
 typedef struct GWEN_PLUGIN GWEN_PLUGIN;
@@ -42,6 +44,9 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_PLUGIN, GWENHYWFAR_API)
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_PLUGIN_MANAGER, GWENHYWFAR_API)
 
 
+typedef GWEN_PLUGIN* (*GWEN_PLUGIN_FACTORYFN)(GWEN_PLUGIN_MANAGER *pm,
+                                              const char *name,
+                                              const char *fileName);
 
 
 GWEN_PLUGIN *GWEN_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
@@ -69,13 +74,23 @@ int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
                                const char *s);
 
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
-                                           const char *s);
+                                           const char *modName);
 GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
-                                               const char *s);
+					       const char *modName,
+					       const char *fname);
 
 
 GWEN_PLUGIN *GWEN_PluginManager_GetPlugin(GWEN_PLUGIN_MANAGER *pm,
                                           const char *s);
+
+int GWEN_PluginManager_Register(GWEN_PLUGIN_MANAGER *pm);
+int GWEN_PluginManager_Unregister(GWEN_PLUGIN_MANAGER *pm);
+
+GWEN_PLUGIN_MANAGER *GWEN_PluginManager_FindPluginManager(const char *s);
+
+
+GWEN_PLUGIN_DESCRIPTION_LIST2*
+GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm);
 
 
 #endif

@@ -34,12 +34,6 @@
 #ifdef ENABLE_NLS
 # include <libintl.h>
 # include <locale.h>
-//# define I18N(m) dgettext("gwenhywfar", m)
-# define I18N(m) gettext(m)
-# define I18S(m) m
-#else
-# define I18N(m) m
-# define I18S(m) m
 #endif
 
 
@@ -51,6 +45,8 @@
 
 #include "base/error_l.h"
 #include "base/memory_l.h"
+#include "base/plugin_l.h"
+#include "base/i18n_l.h"
 
 #include "os/inetaddr_l.h"
 #include "os/inetsocket_l.h"
@@ -64,7 +60,6 @@
 #include "base/waitcallback_l.h"
 
 
-
 static unsigned int gwen_is_initialized=0;
 
 
@@ -72,25 +67,15 @@ GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
   if (gwen_is_initialized==0) {
-#ifdef ENABLE_NLS
-    const char *s;
-
-    setlocale(LC_ALL,"");
-    s=bindtextdomain("gwenhywfar",  LOCALEDIR);
-    if (!s) {
-      DBG_WARN(GWEN_LOGDOMAIN, " Error bindtextdomain()\n");
-    }
-    else {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Textdomain bound (%s).\n", s);
-      bind_textdomain_codeset("gwenhywfar", "UTF-8");
-    }
-#endif
-
     err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     GWEN_Error_ModuleInit();
     err=GWEN_Memory_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing I18N module");
+    err=GWEN_I18N_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing InetAddr module");
@@ -119,6 +104,10 @@ GWEN_ERRORCODE GWEN_Init() {
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Network module");
     err=GWEN_Net_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Plugin module");
+    err=GWEN_Plugin_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing DataBase IO module");
@@ -166,6 +155,14 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module DBIO");
+    }
+    if (!GWEN_Error_IsOk(GWEN_Plugin_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
+                "Could not deinitialze module Plugin");
     }
     if (!GWEN_Error_IsOk(GWEN_Net_ModuleFini())) {
       err=GWEN_Error_new(0,
@@ -231,6 +228,14 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Memory");
+    }
+    if (!GWEN_Error_IsOk(GWEN_I18N_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
+                "Could not deinitialze module I18N");
     }
     GWEN_Error_ModuleFini();
     /* must be deinitialized at last */
