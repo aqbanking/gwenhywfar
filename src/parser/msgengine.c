@@ -256,6 +256,15 @@ GWEN_MsgEngine_SetGetCharValueFunction(GWEN_MSGENGINE *e,
 
 
 
+void
+GWEN_MsgEngine_SetGetIntValueFunction(GWEN_MSGENGINE *e,
+                                      GWEN_MSGENGINE_GETINTVALUE_PTR p){
+  assert(e);
+  e->getIntValuePtr=p;
+}
+
+
+
 
 
 
@@ -923,21 +932,56 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
         *datasize=0;
     }
     else if (*p=='?') {
+      GWEN_DB_VALUETYPE vt;
+      int z;
+      const char *dtype;
+
+      /* get type */
+      dtype=GWEN_XMLNode_GetProperty(dnode, "type","ASCII");
+
       /* program variable accessable via callback */
       p++;
-
       DBG_DEBUG(0, "Getting program variable \"%s\"", p);
-      if (e->getCharValuePtr)
-        pvalue=e->getCharValuePtr(e, p, 0);
-      else
-        pvalue=0;
 
-      if (pvalue) {
-        *datasize=strlen(pvalue);
-        DBG_DEBUG(0, "Transformed value \"%s\"", pvalue);
+      pvalue=0;
+      if (GWEN_MsgEngine__IsCharTyp(e, dtype))
+        vt=GWEN_DB_VALUETYPE_CHAR;
+      else if (GWEN_MsgEngine__IsIntTyp(e, dtype))
+        vt=GWEN_DB_VALUETYPE_INT;
+      else {
+        vt=GWEN_DB_VALUETYPE_CHAR;
       }
-      else
-        *datasize=0;
+
+      switch(vt) {
+      case GWEN_DB_VALUETYPE_CHAR:
+        if (e->getCharValuePtr) {
+          pvalue=e->getCharValuePtr(e, p, 0);
+          if (pvalue)
+            *datasize=strlen(pvalue);
+        }
+        break;
+
+      case GWEN_DB_VALUETYPE_INT:
+        if (e->getIntValuePtr) {
+          z=e->getIntValuePtr(e, p, 0);
+          if (GWEN_Text_NumToString(z, pbuffer, sizeof(pbuffer),0)<1) {
+            DBG_ERROR(0, "Error converting num to string");
+            return 0;
+          }
+          pvalue=pbuffer;
+          *datasize=strlen(pvalue);
+        }
+        else {
+          DBG_NOTICE(0, "Callback for getIntValue not set");
+        }
+        break;
+
+      default:
+        DBG_ERROR(0,"Unhandled type %s", dtype);
+        return 0;
+      } /* switch */
+
+      DBG_DEBUG(0, "Value transformed");
     }
     else {
       *datasize=strlen(pvalue);
@@ -3054,16 +3098,16 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
 
       ustart=GWEN_Buffer_GetPos(mbuf);
       /* node not found, skip it */
-      DBG_WARN(0,
-	       "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
-	       p,
-	       GWEN_DB_GetIntValue(tmpdb, "seq", 0, -1),
-	       GWEN_DB_GetIntValue(tmpdb, "version", 0, -1),
-	       GWEN_DB_GetIntValue(tmpdb, "ref", 0, -1));
+      DBG_NOTICE(0,
+		 "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
+		 p,
+		 GWEN_DB_GetIntValue(tmpdb, "seq", 0, -1),
+		 GWEN_DB_GetIntValue(tmpdb, "version", 0, -1),
+		 GWEN_DB_GetIntValue(tmpdb, "ref", 0, -1));
       if (GWEN_MsgEngine_SkipSegment(e, mbuf, '?', '\'')) {
-        DBG_ERROR(0, "Error skipping segment \"%s\"", p);
-        GWEN_DB_Group_free(tmpdb);
-        return -1;
+	DBG_ERROR(0, "Error skipping segment \"%s\"", p);
+	GWEN_DB_Group_free(tmpdb);
+	return -1;
       }
       if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
         unsigned int usize;

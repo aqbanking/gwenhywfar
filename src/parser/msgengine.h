@@ -183,6 +183,10 @@ GWENHYWFAR_API
   typedef const char* (*GWEN_MSGENGINE_GETCHARVALUE_PTR)(GWEN_MSGENGINE *e,
                                                          const char *name,
                                                          const char *defValue);
+GWENHYWFAR_API
+  typedef int (*GWEN_MSGENGINE_GETINTVALUE_PTR)(GWEN_MSGENGINE *e,
+                                                const char *name,
+                                                int defValue);
 
 /*@}*/
 
@@ -299,6 +303,9 @@ GWEN_MSGENGINE_BINTYPEWRITE_PTR
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetGetCharValueFunction(GWEN_MSGENGINE *e,
                                             GWEN_MSGENGINE_GETCHARVALUE_PTR p);
+GWENHYWFAR_API
+void GWEN_MsgEngine_SetGetIntValueFunction(GWEN_MSGENGINE *e,
+                                           GWEN_MSGENGINE_GETINTVALUE_PTR p);
 /*@}*/  /* Getting variables */
 
 

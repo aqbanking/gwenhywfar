@@ -354,6 +354,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
     GWEN_DB_Dump(db, stderr, 2);
 
   pub=GWEN_DB_GetIntValue(db, "public", 0, 1);
+  GWEN_CryptKey_SetPublic(key, pub);
 
   p=GWEN_DB_GetBinValue(db, "e", 0, 0, 0, &len);
   if (p) {
