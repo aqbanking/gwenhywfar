@@ -85,7 +85,7 @@ GWENHYFWAR_API typedef const char* (*GWEN_ERRORMESSAGEPTR)(int c);
  *  <li>function to create human readable error messages for this type</li>
  * </ul>
  */
-// @{
+/*@{*/
 
 
 int GWEN_ErrorType_GetType(GWEN_ERRORTYPEREGISTRATIONFORM *f);
@@ -147,7 +147,7 @@ GWEN_ERRORMESSAGEPTR
  * Since function pointers are involved you should carefully register and
  * unregister the error types.
  */
-//@{
+/*@{*/
 
 /**
  * Register an error type. This function is called by other modules
@@ -164,13 +164,13 @@ GWENHYFWAR_API
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Error_UnregisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr);
-//@}
+/*@}*/
 
 /**
  * @name Error Type Lookup
  * These functions lookup error types by name or by number.
  */
-//@{
+/*@{*/
 
 /**
  * This function returns the type number for the given type name.
@@ -185,14 +185,14 @@ GWENHYFWAR_API int GWEN_Error_FindType(const char *name);
  * @param t type number
  */
 GWENHYFWAR_API const char *GWEN_Error_GetTypename(int t);
-//@}
+/*@}*/
 
 
 /**
  * @name Getters And Setters
  * These functions get and set parts of an ERRORCODE.
  */
-//@{
+/*@{*/
 /**
  * Creates an error code based on the arguments given
  * @return error code based on the given arguments
@@ -259,14 +259,14 @@ GWENHYFWAR_API int GWEN_Error_GetCode(GWEN_ERRORCODE c);
  * Sets the error code.
  */
 GWENHYFWAR_API void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v);
-//@}
+/*@}*/
 
 
 /**
  * @name Verbosity
  * Composing error messages.
  */
-//@{
+/*@{*/
 /**
  * Composes a human readable error string which dumps all parts of an
  * ERRORCODE.
@@ -278,15 +278,15 @@ GWENHYFWAR_API void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v);
 GWENHYFWAR_API int GWEN_Error_ToString(GWEN_ERRORCODE c,
                                        char *buffer,
                                        int bsize);
-//@}
+/*@}*/
 
 #ifdef __cplusplus
 }
 #endif
 
-//@} group mod_error
+/*@} group mod_error */
 
 
-#endif // MOD_ERROR_H
+#endif /* MOD_ERROR_H */
 
 

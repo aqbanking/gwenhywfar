@@ -37,7 +37,7 @@
 #include "gwenhyfwar/debug.h"
 #include "gwenhyfwar/misc.h"
 
-// forward declaration
+/* forward declaration */
 const char *GWEN_Error_ErrorString(int c);
 
 
@@ -122,7 +122,7 @@ GWEN_ERRORCODE GWEN_Error_ModuleInit() {
       return err;
     }
     gwen_error_is_initialized=1;
-  } // if not initialized
+  } /* if not initialized */
   return 0;
 }
 
@@ -172,18 +172,18 @@ GWEN_ERRORCODE GWEN_Error_UnregisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr) {
 int GWEN_Error_FindType(const char *name){
   GWEN_ERRORTYPEREGISTRATIONFORM *tptr;
 
-  // browse all types
+  /* browse all types */
   assert(name);
   tptr=gwen_error_errorformlist;
   while(tptr) {
-    // compare typename to argument
+    /* compare typename to argument */
     if (strcmp(tptr->name,
                name)==0)
-      // match, return type number
+      /* match, return type number */
       return tptr->typ;
     tptr=tptr->next;
-  } // while
-  // not found
+  } /* while */
+  /* not found */
   return -1;
 }
 
@@ -192,7 +192,7 @@ int GWEN_Error_FindType(const char *name){
 const char *GWEN_Error_GetTypename(int t) {
   GWEN_ERRORTYPEREGISTRATIONFORM *tptr;
 
-  // browse all types
+  /* browse all types */
   tptr=gwen_error_errorformlist;
   while(tptr) {
     if (tptr->typ==t)
@@ -289,7 +289,7 @@ void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v){
 
 
 
-// internal function
+/* internal function */
 int GWEN_Error_ConcatStrings(char *dst, int dsize, const char *src) {
   if (!src)
     return 1;
@@ -302,7 +302,7 @@ int GWEN_Error_ConcatStrings(char *dst, int dsize, const char *src) {
 
 
 int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
-  char str[64]; // for number conversions
+  char str[64]; /* for number conversions */
   const char *s;
   int i;
   GWEN_ERRORTYPEREGISTRATIONFORM *tptr;
@@ -312,7 +312,7 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
     return 0;
   buffer[0]=0;
 
-  // severity
+  /* severity */
   if (!GWEN_Error_ConcatStrings(buffer,bsize," Severity: "))
     return 0;
   switch(GWEN_Error_GetSeverity(c)) {
@@ -335,13 +335,13 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
   default:
     s="Unknown";
     break;
-  } // switch
+  } /* switch */
   if (!GWEN_Error_ConcatStrings(buffer,bsize,s))
     return 0;
 
   if (GWEN_Error_IsCustom(c)) {
-    // this is an custom error, so the normal rules do not apply
-    // error type
+    /* this is an custom error, so the normal rules do not apply
+     * error type */
     if (!GWEN_Error_ConcatStrings(buffer,bsize," Custom Type: "))
       return 0;
     sprintf(str,"%d (%04x)",
@@ -350,7 +350,7 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
     if (!GWEN_Error_ConcatStrings(buffer,bsize,str))
       return 0;
 
-    // error code
+    /* error code */
     if (!GWEN_Error_ConcatStrings(buffer,bsize," Custom Code: "))
       return 0;
     sprintf(str,"%d (%04x)",
@@ -360,7 +360,7 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
       return 0;
   }
   else {
-    // error type
+    /* error type */
     if (!GWEN_Error_ConcatStrings(buffer,bsize," Type: "))
       return 0;
     s=GWEN_Error_GetTypename(GWEN_Error_GetType(c));
@@ -371,11 +371,11 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
     if (!GWEN_Error_ConcatStrings(buffer,bsize,s))
       return 0;
 
-    // error code
+    /* error code */
     if (!GWEN_Error_ConcatStrings(buffer,bsize," Code: "))
       return 0;
 
-    // get message function
+    /* get message function */
     i=GWEN_Error_GetType(c);
     tptr=gwen_error_errorformlist;
     while(tptr) {
@@ -406,7 +406,7 @@ int GWEN_Error_ToString(GWEN_ERRORCODE c, char *buffer, int bsize) {
       return 0;
   }
 
-  // finished
+  /* finished */
   return 1;
 }
 
@@ -430,7 +430,7 @@ const char *GWEN_Error_ErrorString(int c) {
     break;
   default:
     s=(const char*)0;
-  } // switch
+  } /* switch */
   return s;
 }
 

@@ -40,9 +40,9 @@
 
 #include "gwenhyfwar/debug.h"
 
-//#define MEMTRACE
+/* #define MEMTRACE */
 
-// forward declaration
+/* forward declaration */
 const char *GWEN_InetAddr_ErrorString(int c);
 
 #ifdef MEMTRACE
@@ -121,7 +121,7 @@ const char *GWEN_InetAddr_ErrorString(int c) {
     break;
   default:
     s=(const char*)0;
-  } // switch
+  } /* switch */
   return s;
 }
 
@@ -202,7 +202,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
-    // reset
+    /* reset */
 #ifdef PF_INET
     aptr->sin_family=PF_INET;
 #else
@@ -211,9 +211,9 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     aptr->sin_addr.s_addr=0;
 
     if (addr) {
-      // ok, address to be set
+      /* ok, address to be set */
       if (!inet_aton(addr,&aptr->sin_addr))
-	// bad address, so maybe it rather is a name
+        /* bad address, so maybe it rather is a name */
 	return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
                               GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -234,9 +234,9 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
     aptr->sun_path[0]=0;
 
     if (addr) {
-      // ok, address to be set
+      /* ok, address to be set */
       if ((strlen(addr)+1)>sizeof(aptr->sun_path)) {
-	// bad address
+	/* bad address */
 	DBG_ERROR(0, "Path too long (%d>%d)",
 		  strlen(addr)+1,sizeof(aptr->sun_path));
 	return GWEN_Error_new(0,
@@ -261,7 +261,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 
 
 
-// internal function
+/* internal function */
 int GWEN_InetAddr_TranslateHError(int herr) {
   int rv;
 
@@ -283,7 +283,7 @@ int GWEN_InetAddr_TranslateHError(int herr) {
   default:
     rv=GWEN_INETADDR_ERROR_UNKNOWN_DNS_ERROR;
     break;
-  } // switch
+  } /* switch */
   return rv;
 }
 
@@ -299,14 +299,14 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
-    // try to resolve name
+    /* try to resolve name */
     he=gethostbyname(name);
     if (!he)
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
                             GWEN_InetAddr_TranslateHError(h_errno));
-    // name resolved, store address
+    /* name resolved, store address */
     memcpy(&(aptr->sin_addr),
 	   he->h_addr_list[0],
 	   sizeof(struct in_addr));
@@ -325,9 +325,9 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
     aptr->sun_path[0]=0;
 
     if (name) {
-      // ok, address to be set
+      /* ok, address to be set */
       if ((strlen(name)+1)>sizeof(aptr->sun_path)) {
-	// bad address
+        /* bad address */
 	DBG_ERROR(0, "Path too long (%d>%d)",
 		  strlen(name)+1,sizeof(aptr->sun_path));
 	return GWEN_Error_new(0,
@@ -417,7 +417,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
     struct sockaddr_in *aptr;
 
     aptr=(struct sockaddr_in*)(ia->address);
-    // resolve name from address
+    /* resolve name from address */
     lia=aptr->sin_addr;
 #ifdef PF_INET
     he=gethostbyaddr((char*)&lia,sizeof(lia),PF_INET);
@@ -430,14 +430,14 @@ GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		       GWEN_InetAddr_TranslateHError(h_errno));
 
-    // copy name into given buffer
+    /* copy name into given buffer */
     assert(he->h_name);
     if (strlen(he->h_name)+1>bsize)
       return GWEN_Error_new(0,
 		       GWEN_ERROR_SEVERITY_ERR,
 		       GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
 		       GWEN_INETADDR_ERROR_BUFFER_OVERFLOW);
-    // copy the name into the buffer
+    /* copy the name into the buffer */
     strcpy(buffer,he->h_name);
     break;
   }
@@ -464,7 +464,7 @@ GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
 
   } /* switch */
 
-  // finished
+  /* finished */
   return 0;
 }
 

@@ -44,7 +44,7 @@
 #include <sys/un.h>
 
 
-// forward declaration
+/* forward declaration */
 const char *GWEN_Socket_ErrorString(int c);
 
 static int gwen_socket_is_initialized=0;
@@ -215,7 +215,7 @@ GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp, GWEN_SOCKETTYPE socketType){
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
                           GWEN_SOCKET_ERROR_BAD_SOCKETTYPE);
-  } // switch
+  } /* switch */
 
   return 0;
 }
@@ -297,7 +297,7 @@ GWEN_ERRORCODE GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog){
 GWEN_ERRORCODE GWEN_Socket_Accept(GWEN_SOCKET *sp,
                                   GWEN_INETADDRESS **newaddr,
                                   GWEN_SOCKET **newsock){
-  int addrlen;
+  unsigned int addrlen;
   GWEN_INETADDRESS *localAddr;
   GWEN_SOCKET *localSocket;
   GWEN_AddressFamily af;
@@ -346,7 +346,7 @@ GWEN_ERRORCODE GWEN_Socket_Accept(GWEN_SOCKET *sp,
 
 GWEN_ERRORCODE GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
                                        GWEN_INETADDRESS **newaddr){
-  int addrlen;
+  unsigned int addrlen;
   GWEN_INETADDRESS *localAddr;
   GWEN_AddressFamily af;
 
@@ -413,16 +413,16 @@ GWEN_ERRORCODE GWEN_Socket_Select(GWEN_SOCKETSET *rs,
   h=(h1>h2)?h1:h2;
   h=(h>h3)?h:h3;
   if (timeout<0)
-    // wait for ever
+    /* wait for ever */
     rv=select(h+1,s1,s2,s3,0);
   else {
-    // return immediately
+    /* return immediately */
     tv.tv_sec=0;
     tv.tv_usec=timeout*1000;
     rv=select(h+1,s1,s2,s3,&tv);
   }
   if (rv<0) {
-    // error
+    /* error */
     if (errno==EINTR)
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
@@ -435,7 +435,7 @@ GWEN_ERRORCODE GWEN_Socket_Select(GWEN_SOCKETSET *rs,
                             errno);
   }
   if (rv==0)
-    // timeout
+    /* timeout */
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
@@ -493,7 +493,7 @@ GWEN_ERRORCODE GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
                                     GWEN_INETADDRESS **newaddr,
                                     char *buffer,
                                     int *bsize){
-  int addrlen;
+  unsigned int addrlen;
   int i;
   GWEN_INETADDRESS *localAddr;
   GWEN_AddressFamily af;
@@ -579,7 +579,7 @@ GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
   int newFlags;
 
   assert(sp);
-  // get current socket flags
+  /* get current socket flags */
   prevFlags=fcntl(sp->socket,F_GETFL);
   if (prevFlags==-1)
     return GWEN_Error_new(0,
@@ -587,7 +587,7 @@ GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
                           errno);
 
-  // set nonblocking/blocking
+  /* set nonblocking/blocking */
   if (fl)
     newFlags=prevFlags&(~O_NONBLOCK);
   else
@@ -741,7 +741,7 @@ const char *GWEN_Socket_ErrorString(int c){
       s=strerror(c);
     else
       s=(const char*)0;
-  } // switch
+  } /* switch */
   return s;
 }
 

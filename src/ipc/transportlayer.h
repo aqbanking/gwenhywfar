@@ -39,7 +39,7 @@ extern "C" {
 
 
 typedef enum {
-  GWEN_TransportLayerTypeSocket=0,
+  GWEN_TransportLayerTypeSocket=0
 } GWEN_TransportLayerType;
 
 

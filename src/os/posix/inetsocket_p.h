@@ -77,7 +77,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
 }
 #endif
 
-#endif // GWEN_SOCKET_P_H
+#endif /* GWEN_SOCKET_P_H */
 
 
 

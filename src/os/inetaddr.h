@@ -50,7 +50,7 @@ extern "C" {
  * resolving addresses and hostnames.
  * @author Martin Preuss<martin@libchipcard.de>
  */
-//@{
+/*@{*/
 
 #define GWEN_INETADDR_ERROR_TYPE "InetAddr"
 #define GWEN_INETADDR_ERROR_MEMORY_FULL          1
@@ -85,7 +85,7 @@ GWENHYFWAR_API typedef struct GWEN_INETADDRESSSTRUCT GWEN_INETADDRESS;
  *
  * These functions are converned with initialisation issues.
  */
-//@{
+/*@{*/
 
 /**
  * Initialize this module.
@@ -96,7 +96,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleInit();
  * De-Initialize this module.
  */
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
-//@}
+/*@}*/
 
 
 /**
@@ -104,12 +104,12 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
  *
  * These functions allocate and free administrative data about IP addresses.
  */
-//@{
+/*@{*/
 
 GWENHYFWAR_API GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af);
 GWENHYFWAR_API void GWEN_InetAddr_free(GWEN_INETADDRESS *ia);
 
-//@}
+/*@}*/
 
 
 /**
@@ -118,7 +118,7 @@ GWENHYFWAR_API void GWEN_InetAddr_free(GWEN_INETADDRESS *ia);
  * These functions allow getting and setting of IP addresses either by
  * hostname or host address.
  */
-//@{
+/*@{*/
 
 /**
  * Sets the IP address.
@@ -160,14 +160,14 @@ GWENHYFWAR_API
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
                                        char *buffer, int bsize);
-//@}
+/*@}*/
 
 /**
  * @name Get and set port
  *
  * These functions allow getting and setting of the port.
  */
-//@{
+/*@{*/
 
 /**
  * Return the port stored in the INETADDRESS
@@ -183,16 +183,16 @@ GWENHYFWAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
  */
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
                                                     int port);
-//@}
+/*@}*/
 
 #ifdef __cplusplus
 }
 #endif
 
-//@} defgroup
+/*@} defgroup */
 
 
-#endif // GWEN_INETADDR_H
+#endif /* GWEN_INETADDR_H */
 
 
 

@@ -64,10 +64,10 @@ GWENHYFWAR_API struct GWEN_INETADDRESSSTRUCT {
 }
 #endif
 
-//@} defgroup
+/*@} defgroup */
 
 
-#endif // MOD_INETADDR_H
+#endif /* MOD_INETADDR_H */
 
 
 

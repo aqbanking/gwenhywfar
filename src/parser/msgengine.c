@@ -29,7 +29,7 @@
 # include <config.h>
 #endif
 
-//#define DISABLE_DEBUGLOG
+/*#define DISABLE_DEBUGLOG */
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
 #include <msgengine_p.h>
@@ -62,6 +62,7 @@ void GWEN_MsgEngine_free(GWEN_MSGENGINE *e){
   if (e) {
     GWEN_XMLNode_free(e->defs);
     free(e->charsToEscape);
+    free(e->delimiters);
     free(e->secMode);
     GWEN_DB_Group_free(e->globalValues);
     if (e->trustInfos) {
@@ -2451,8 +2452,6 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
       if (GWEN_Buffer_BytesLeft(msgbuf)==0)
 	break;
-      //if (strchr(delimiters, msg[*pos]))
-      //  break;
 
       type=GWEN_XMLNode_GetData(n);
       if (strcasecmp(type, "ELEM")==0) {

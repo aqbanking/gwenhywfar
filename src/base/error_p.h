@@ -51,7 +51,7 @@
  *  <li>function to create human readable error messages for this type</li>
  * </ul>
  */
-// @{
+/*@{*/
 
 /*
  * Allow this to be used from C and C++
@@ -97,7 +97,7 @@ struct GWEN_ERRORTYPEREGISTRATIONFORM {
 /**
  * @name Initialization
  */
-//@{
+/*@{*/
 /**
  * Initializes this module.
  */
@@ -108,7 +108,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Error_ModuleInit();
  */
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_Error_ModuleFini();
 
-//@}
+/*@}*/
 
 
 
@@ -116,9 +116,9 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Error_ModuleFini();
 }
 #endif
 
-//@} group mod_error
+/*@} group mod_error */
 
 
-#endif // MOD_ERROR_H
+#endif /* MOD_ERROR_H */
 
 

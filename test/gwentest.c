@@ -463,9 +463,9 @@ int main(int argc, char **argv) {
   }
   fprintf(stderr, "Gwenhywfar initialized\n");
 
-  //rv=testDB(argc, argv);
-  //rv=testXML(argc, argv);
-  //rv=testMsg(argc, argv);
+  /*rv=testDB(argc, argv);
+   rv=testXML(argc, argv);
+   rv=testMsg(argc, argv); */
   if (strcasecmp(argv[1], "server")==0)
     rv=testService(argc, argv);
   else if (strcasecmp(argv[1], "client")==0)

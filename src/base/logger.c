@@ -65,6 +65,8 @@ GWEN_LOGGER *GWEN_Logger_new(){
 
 void GWEN_Logger_free(GWEN_LOGGER *lg){
   if (lg) {
+    free(lg->logFile);
+    free(lg->logIdent);
     free(lg);
   }
 }

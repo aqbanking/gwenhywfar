@@ -91,11 +91,11 @@ GWENHYFWAR_API typedef struct GWEN_SOCKETSETSTRUCT GWEN_SOCKETSET;
  * A socket set is a group of sockets. They are used for the function
  * @ref Socket_Select.
  */
-//@{
+/*@{*/
 GWENHYFWAR_API GWEN_SOCKETSET *GWEN_SocketSet_new();
 GWENHYFWAR_API void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp);
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp);
-//@}
+/*@}*/
 
 /**
  * @name Add, remove, check sockets
@@ -103,7 +103,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp);
  * These functions allow adding and removing sockets to/from a socket set
  * as well as checking whether a specific socket is part of a socket set.
  */
-//@{
+/*@{*/
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
                                           const GWEN_SOCKET *sp);
@@ -112,9 +112,9 @@ GWENHYFWAR_API
                                              const GWEN_SOCKET *sp);
 GWENHYFWAR_API int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
                                             const GWEN_SOCKET *sp);
-//@}
-//end of group socketset
-//@}
+/*@}*/
+/*end of group socketset */
+/*@}*/
 
 
 /**
@@ -127,7 +127,7 @@ GWENHYFWAR_API int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
 /**
  * @name Creation and Destruction
  */
-//@{
+/*@{*/
 
 /**
  * Constructor. You should always use this to create socket variables.
@@ -150,14 +150,14 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp,
  * Unarms a socket thus closing any connection associated with this socket.
  */
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_Close(GWEN_SOCKET *sp);
-//@}
+/*@}*/
 
 /**
  * @name Connecting and Disconnecting
  *
  * These functions allow active and passive connections to other hosts.
  */
-//@{
+/*@{*/
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_Connect(GWEN_SOCKET *sp,
                                      const GWEN_INETADDRESS *addr);
@@ -185,7 +185,7 @@ GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_Accept(GWEN_SOCKET *sp,
                                     GWEN_INETADDRESS **addr,
                                     GWEN_SOCKET **newsock);
-//@}
+/*@}*/
 
 /**
  * @name Informational Functions
@@ -193,7 +193,7 @@ GWENHYFWAR_API
  * These functions return some usefull information about sockets or
  * connections.
  */
-//@{
+/*@{*/
 
 GWENHYFWAR_API GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp);
 
@@ -228,7 +228,7 @@ GWENHYFWAR_API
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout);
-//@}
+/*@}*/
 
 /**
  * @name Data Exchange Functions
@@ -236,7 +236,7 @@ GWENHYFWAR_API
  * These functions handle exchange of data with other hosts via the Internet
  * Protocol.
  */
-//@{
+/*@{*/
 
 /**
  * Read bytes from a socket.
@@ -289,14 +289,14 @@ GWENHYFWAR_API
                                      const GWEN_INETADDRESS *addr,
                                      const char *buffer,
                                      int *bsize);
-//@}
+/*@}*/
 
 /**
  * @name Socket Settings Functions
  *
  * These functions manipulate settings on a socket.
  */
-//@{
+/*@{*/
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
                                                       int fl);
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp,
@@ -305,19 +305,19 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_GetSocketError(GWEN_SOCKET *sp);
 
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl);
-//@}
+/*@}*/
 
-// end of group socket
-//@}
+/* end of group socket */
+/*@}*/
 
-// end of group socketsandsets
-//@}
+/* end of group socketsandsets */
+/*@}*/
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // GWEN_SOCKET_H
+#endif /* GWEN_SOCKET_H */
 
 
 
