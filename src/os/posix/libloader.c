@@ -252,14 +252,16 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   }
 
   /* could not load, check why */
-  if (GWEN_Error_GetType(err)!=
+  /*if (GWEN_Error_GetType(err)!=
       GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
       GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
+    DBG_ERROR_ERR(0, err);
     DBG_INFO(0, "Could not load library \"%s\"",
              GWEN_Buffer_GetStart(buffer));
     GWEN_Buffer_free(buffer);
     return err;
   }
+  */
 
   /* hmm, not found, try some variants */
   if (missingSoExt) {

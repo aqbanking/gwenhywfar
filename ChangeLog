@@ -11,6 +11,7 @@
   In future all my plugins will be shipped with such an XML file to allow
   scanning for available plugins without the need to actually load the
   plugins (with all the rat's tail that implies).
+- fixed a bug in POSIX libloader
 
 
 2004/07/29: Martin Preuss<martin@libchipcard.de>
