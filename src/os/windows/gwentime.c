@@ -45,7 +45,7 @@
  * bug-gnu-chess (http://mail.gnu.org/archive/html/bug-gnu-chess/2004-01/msg00020.html)
 */
 int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){
-  long sec, msec
+  long sec, msec;
   union {
     GWEN_TYPE_UINT64 ns100; /* time since 1 Jan 1601 in 100ns units */
     FILETIME ft;
@@ -53,24 +53,8 @@ int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){
 
   GetSystemTimeAsFileTime( &(current_date.ft));
 
-  GWEN_NEW_OBJECT(GWEN_TIME, t);
   msec=(long)((current_date.ns100 / 10000LL) % 1000LL );
   sec=(long)((current_date.ns100-(116444736000000000LL))/10000000LL);
   GWEN_Time__SetSecsAndMSecs(ti, sec, msec);
   return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
