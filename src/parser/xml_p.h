@@ -78,7 +78,8 @@ struct GWEN_XMLNODE_PATH {
  * @return <0 on error, >0 if delimiter (code), 0 if stopped for EOF
  */
 int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
-                          char chr,
+                          GWEN_TYPE_UINT32 flags,
+                          int chr,
                           const char *delims,
                           GWEN_BUFFER *buf);
 

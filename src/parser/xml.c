@@ -289,7 +289,8 @@ void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child){
 
 
 int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
-                          char chr,
+                          GWEN_TYPE_UINT32 flags,
+                          int chr,
                           const char *delims,
                           GWEN_BUFFER *buf) {
   int inQuote;
@@ -309,7 +310,7 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
 	return -1;
       }
     }
-    if (iscntrl(chr))
+    if (iscntrl(chr) && !(flags & GWEN_XML_FLAGS_KEEP_CNTRL))
       chr=' ';
 
     if (inQuote) {
@@ -336,11 +337,14 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
       }
       else {
         if (!inQuote) {
-          if (isspace(chr)) {
-            if (!lastWasSpace) {
-              lastWasSpace=1;
-              GWEN_Buffer_AppendByte(buf, chr);
-            }
+	  if (isspace(chr)) {
+	    if (!lastWasSpace) {
+	      if ((flags & GWEN_XML_FLAGS_NO_CONDENSE))
+		lastWasSpace=0;
+	      else
+		lastWasSpace=1;
+	      GWEN_Buffer_AppendByte(buf, chr);
+	    }
           }
           else {
             lastWasSpace=0;
@@ -466,7 +470,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
       /* we have a tag */
       bufTagName=GWEN_Buffer_new(0, 32, 0, 1);
-      chr=GWEN_XML__ReadWordBuf(bio, 0, " ><", bufTagName);
+      chr=GWEN_XML__ReadWordBuf(bio,
+				flags &
+				~GWEN_XML_FLAGS_NO_CONDENSE &
+				~GWEN_XML_FLAGS_KEEP_CNTRL,
+				0, " ><", bufTagName);
       if (chr<0) {
         GWEN_Buffer_free(bufTagName);
         return -1;
@@ -768,7 +776,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      break;
 
 	    /* read possibly following var */
-            chr=GWEN_XML__ReadWordBuf(bio, chr, " =/>", bufVarName);
+	    chr=GWEN_XML__ReadWordBuf(bio,
+				      flags &
+				      ~GWEN_XML_FLAGS_NO_CONDENSE &
+				      ~GWEN_XML_FLAGS_KEEP_CNTRL,
+				      chr, " =/>", bufVarName);
             if (chr<0) {
 	      GWEN_XMLNode_free(newNode);
               GWEN_Buffer_free(bufValue);
@@ -841,8 +853,12 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      }
 
 	      /* read value */
-              chr=GWEN_XML__ReadWordBuf(bio, chr, " />", bufValue);
-              if (chr<0) {
+	      chr=GWEN_XML__ReadWordBuf(bio,
+					flags &
+					~GWEN_XML_FLAGS_NO_CONDENSE &
+					~GWEN_XML_FLAGS_KEEP_CNTRL,
+					chr, " />", bufValue);
+	      if (chr<0) {
 		GWEN_XMLNode_free(newNode);
                 GWEN_Buffer_free(bufValue);
                 GWEN_Buffer_free(bufVarName);
@@ -972,12 +988,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
       GWEN_BUFFER *bufData;
 
       bufData=GWEN_Buffer_new(0, 128, 0, 1);
-      chr=GWEN_XML__ReadWordBuf(bio, chr, "<", bufData);
+      chr=GWEN_XML__ReadWordBuf(bio, flags, chr, "<", bufData);
       if (chr<0) {
         GWEN_Buffer_free(bufData);
         return -1;
       }
-      GWEN_Buffer_AppendByte(bufData, 0);
 
       newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData,
                                GWEN_Buffer_GetStart(bufData));

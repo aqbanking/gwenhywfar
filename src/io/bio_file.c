@@ -117,6 +117,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
     *size=0;
     return 0;
   }
+
   rv=write(bft->fd, buffer, *size);
   if (rv<1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not write (%s)",

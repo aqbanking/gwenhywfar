@@ -236,6 +236,12 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
                             const char *buffer,
                             GWEN_TYPE_UINT32 size);
 
+GWENHYWFAR_API
+int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
+                              unsigned char c,
+                              GWEN_TYPE_UINT32 size);
+
+
 /**
  * Appends a string to the buffer (without the trailing null char!)
  * The position pointer is adjusted accordingly.

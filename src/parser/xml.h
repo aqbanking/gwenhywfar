@@ -96,6 +96,18 @@ extern "C" {
 #define GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS 0x0040
 
 /**
+ * If set then data will not be condensed (e.g. multiple spaces will not
+ * be replaced by a single one).
+ */
+#define GWEN_XML_FLAGS_NO_CONDENSE 0x0080
+
+/**
+ * If set then control characters (such as CR, LF) will not be removed from
+ * data.
+ */
+#define GWEN_XML_FLAGS_KEEP_CNTRL  0x0100
+
+/**
  * combination of other flags resembling the default flags
  */
 #define GWEN_XML_FLAGS_DEFAULT \

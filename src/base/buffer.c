@@ -861,6 +861,33 @@ void GWEN_Buffer_SetSourceBIO(GWEN_BUFFER *bf,
 
 
 
+int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
+                              unsigned char c,
+                              GWEN_TYPE_UINT32 size){
+  assert(bf);
+  if (GWEN_Buffer_AllocRoom(bf, size+1)) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
+    return 1;
+  }
+  /* if (bf->pos+size>bf->bufferSize) { */
+  if (bf->bytesUsed+size>bf->bufferSize) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d [%d] of %d bytes)",
+              /*bf->pos, size,*/
+              bf->bytesUsed, size+1,
+              bf->bufferSize);
+    return 1;
+  }
+  memset(bf->ptr+bf->bytesUsed, c, size);
+  if (bf->pos==bf->bytesUsed)
+    bf->pos+=size;
+  bf->bytesUsed+=size;
+  /* append a NULL to allow using the buffer as ASCIIZ string */
+  bf->ptr[bf->bytesUsed]=0;
+  return 0;
+}
+
+
+
 
 
 
