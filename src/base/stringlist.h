@@ -117,6 +117,22 @@ GWENHYWFAR_API int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
                                              const char *s);
 
 
+/** Traverses the list, calling the callback function 'func' on
+ * each list element.  Traversal will stop when 'func' returns a
+ * non-NULL value, and the routine will return with that
+ * value. Otherwise the routine will return NULL. 
+ * @param l The list to traverse.
+ * @param func The function to be called with each list element.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ */
+GWENHYWFAR_API
+void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l, 
+			      void *(*func)(const char *s, void *u), 
+			      void *user_data);
+
 #ifdef __cplusplus
 }
 #endif

@@ -357,6 +357,28 @@ GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl){
 }
 
 
+GWENHYWFAR_API
+void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l, 
+			      void *(*func)(const char *s, void *u), 
+			      void *user_data) {
+  GWEN_STRINGLISTENTRY *it;
+  const char *el;
+  void *result = 0;
+  assert(l);
+
+  it = GWEN_StringList_FirstEntry(l);
+  if (!it)
+    return 0;
+  while(it) {
+    el = GWEN_StringListEntry_Data(it);
+    result = func(el, user_data);
+    if (result) {
+      return result;
+    }
+    it = GWEN_StringListEntry_Next(it);
+  }
+  return 0;
+}
 
 
 
