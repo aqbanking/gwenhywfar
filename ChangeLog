@@ -1,4 +1,9 @@
 
+2004/05/25: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/msgengine.c: fixed a bug which occurred if "maxnum" was
+  zero in XML files
+
 
 2004/05/24: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

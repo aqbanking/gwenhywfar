@@ -2707,7 +2707,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
 	loopNr=0;
 	abortLoop=0;
-	while(loopNr<maxnum && !abortLoop) {
+	while((maxnum==0 || loopNr<maxnum) && !abortLoop) {
 	  int c;
 
 	  DBG_DEBUG(0, "Reading %s", name);
@@ -2840,7 +2840,8 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	  loopNr++;
 	} /* while */
 	if (loopNr<minnum) {
-	  DBG_ERROR(0, "Premature end of message (too few ELEM repeats)");
+          DBG_ERROR(0, "Premature end of message (too few ELEM repeats)");
+          GWEN_XMLNode_Dump(n, stderr, 2);
 	  return -1;
 	}
 	n=GWEN_XMLNode_Next(n);
@@ -2882,7 +2883,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	/* get configuration */
 	loopNr=0;
 	abortLoop=0;
-	while(loopNr<maxnum && !abortLoop) {
+	while((maxnum==0 || loopNr<maxnum) && !abortLoop) {
 	  DBG_DEBUG(0, "Reading group type %s", gtype);
 	  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
 	    break;

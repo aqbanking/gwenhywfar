@@ -331,6 +331,8 @@ void GWEN_MsgEngine_SetGetIntValueFunction(GWEN_MSGENGINE *e,
 
 
 /** @name Extending GWEN_MSGENGINE
+ *
+ * The functions in this group are strongly deprecated.
  */
 /*@{*/
 GWENHYWFAR_API
