@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=8
-GWENHYWFAR_VERSION_BUILD=6
+GWENHYWFAR_VERSION_BUILD=7
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -155,7 +155,7 @@ case "$OS_TYPE" in
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
-        gwenhywfar_plugins="`eval echo $prefix/share`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugins="`eval echo $prefix/lib`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
         # check for some types
@@ -170,7 +170,7 @@ case "$OS_TYPE" in
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
-        gwenhywfar_plugins="`eval echo $prefix/share`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugins="`eval echo $prefix/lib`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_MAKE_DLL_TARGET="dll"
         GWEN_INSTALL_DLL_TARGET="dll-install"

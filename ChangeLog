@@ -6,6 +6,7 @@
   using GWEN_DBIO plugins fro importing/exporting any format of files
   supported by plugins.
 - added plugin "csv" which replaces the now deprecated CSV parser module
+- changed install location of plugins from "share" to "lib"
 
 
 2004/03/31: Martin Preuss<martin@libchipcard.de>
