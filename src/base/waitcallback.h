@@ -225,8 +225,10 @@ GWENHYWFAR_API
 
 
 GWENHYWFAR_API
-  int GWEN_WaitCallback_Register(const char *id,
-                                 GWEN_WAITCALLBACK *ctx);
+  int GWEN_WaitCallback_Register(GWEN_WAITCALLBACK *ctx);
+
+GWENHYWFAR_API
+  int GWEN_WaitCallback_Unregister(GWEN_WAITCALLBACK *ctx);
 
 
 #if (defined(GWEN_EXTEND_WAITCALLBACK) || defined(DOXYGEN))

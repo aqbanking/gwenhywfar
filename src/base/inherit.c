@@ -63,7 +63,7 @@ GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
 
 void GWEN_InheritData_free(GWEN_INHERITDATA *d) {
   if (d) {
-    DBG_VERBOUS(0, "Freeing data for type \"%s\"",
+    DBG_NOTICE(0, "Freeing data for type \"%s\"",
              d->typeName);
     if (d->freeDataFn)
       d->freeDataFn(d->baseData, d->data);

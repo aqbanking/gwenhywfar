@@ -139,10 +139,14 @@ namespace GWEN {
 
 
 
-  int WaitCallback::registerCallback(const char *id){
-    return GWEN_WaitCallback_Register(id, _ctx);
+  int WaitCallback::registerCallback(){
+    return GWEN_WaitCallback_Register(_ctx);
   }
 
+
+  int WaitCallback::unregisterCallback(){
+    return GWEN_WaitCallback_Unregister(_ctx);
+  }
 
 
   const char *WaitCallback::getId(){

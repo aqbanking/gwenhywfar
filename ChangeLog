@@ -1,7 +1,12 @@
 
 2004/08/01: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
-- base/waitcallback: fixed a bug (was unable to find callbacks by id).
+- base/waitcallback: 
+  - fixed a bug (was unable to find callbacks by id).
+  - API change !!
+    Now all callbacks are kept in a flat list. You also now need to unregister
+    callbacks you once registered !
+  -> SO_VERSION incremented, SO_AGE=0 (makes it effectively .so.15)
 
 
 2004/07/31: Martin Preuss<martin@libchipcard.de>

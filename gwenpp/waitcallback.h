@@ -148,8 +148,16 @@ namespace GWEN {
      * After having registered this callback its method @ref instantiate()
      * will be called by Gwenhywfar whenever a callback of this type
      * is entered via @ref GWEN_WaitCallback_Enter.
+     * You must unregister this callback before exiting from the calling
+     * application/library.
      */
-    int registerCallback(const char *id);
+    int registerCallback();
+
+    /**
+     * You must call this member in order to make a clean shutdown of your
+     * program/library.
+     */
+    int unregisterCallback();
 
     /**
      * Returns the Id of this callback.
