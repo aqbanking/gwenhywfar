@@ -6,6 +6,9 @@
   - GWEN_Time_GetBrokenDownDate
 - fixed a bug in base/buffer (did not abort when mode
   GWEN_BUFFER_MODE_ABORT_ON_MEMFULL was given)
+- fixed another bug in base/buffer (could not set a position outside
+  buffer boundaries even if in USE_BIO mode)
+- fixed yet another bug in base/buffer (did not crop if pos was 0)
 
 
 2004/05/01: Martin Preuss<martin@libchipcard.de>

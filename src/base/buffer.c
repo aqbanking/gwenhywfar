@@ -233,9 +233,14 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
   assert(bf);
 
   if (i>=bf->bufferSize) {
-    DBG_ERROR(0, "Position %d outside buffer boundaries (%d bytes)",
-              i, bf->bufferSize);
-    return 1;
+    if (bf->mode & GWEN_BUFFER_MODE_USE_BIO) {
+      bf->pos=i;
+    }
+    else {
+      DBG_ERROR(0, "Position %d outside buffer boundaries (%d bytes)",
+                i, bf->bufferSize);
+      return -1;
+    }
   }
   bf->pos=i;
   return 0;
@@ -437,10 +442,12 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
   assert(bf);
 
   if (i+bf->pos>=bf->bufferSize) {
-    DBG_DEBUG(0,
-             "Position %d outside buffer boundaries (%d bytes)\n"
-             "Incrementing anyway",
-             i+bf->pos, bf->bufferSize);
+    if (!(bf->mode & GWEN_BUFFER_MODE_USE_BIO)) {
+      DBG_DEBUG(0,
+                "Position %d outside buffer boundaries (%d bytes)\n"
+                "Incrementing anyway",
+                i+bf->pos, bf->bufferSize);
+    }
   }
   bf->pos+=i;
   return 0;
@@ -778,21 +785,21 @@ int GWEN_Buffer_InsertBuffer(GWEN_BUFFER *bf,
 int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
                      GWEN_TYPE_UINT32 pos,
                      GWEN_TYPE_UINT32 l) {
-  if (pos) {
-    if (pos>=bf->bufferSize) {
-      DBG_ERROR(0, "Position outside buffer");
-      return -1;
-    }
-    bf->ptr+=pos;
-    bf->bufferSize-=pos;
-    bf->pos-=pos;
-    if (bf->bytesUsed-pos<l) {
-      DBG_INFO(0, "Invalid length");
-      return -1;
-    }
-    bf->bytesUsed=l;
-    GWEN_Buffer_AdjustBookmarks(bf, pos, -pos);
+  if (pos>=bf->bufferSize) {
+    DBG_ERROR(0, "Position outside buffer");
+    return -1;
   }
+  bf->ptr+=pos;
+  bf->bufferSize-=pos;
+  bf->pos-=pos;
+  if (bf->bytesUsed-pos<l) {
+    DBG_INFO(0, "Invalid length");
+    return -1;
+  }
+  bf->bytesUsed=l;
+  GWEN_Buffer_AdjustBookmarks(bf, pos, -pos);
+  bf->ptr[bf->bytesUsed]=0;
+
   return 0;
 }
 
