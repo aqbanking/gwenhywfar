@@ -7,6 +7,10 @@
 - aborted PalmOS port
 - reverted debug.h macros to use snprintf again, since all architectures
   except PalmOS have it, and PalmOS is no longer supported
+- added padding submodule to crypt module. This includes some commonly used
+  padding algorithms (like ISO 9796 and ANSIX9_23). Those are taken from the
+  GWEN_IPC package (and they originated from Fabian Kaiser's C++-code for 
+  OpenHBCI in rsakey.cpp, with modifications and translation to C).
 
 
 2004/01/04 Martin Preuss <martin@libchipcard.de>

@@ -59,6 +59,7 @@ DLL_OBJS= \
    crypt/keymanager.o\
    crypt/keyspec.o\
    crypt/crypt.o\
+   crypt/padd.o \
    ipc/transportlayertcp.o\
    ipc/connlayer.o\
    ipc/ipc.o\

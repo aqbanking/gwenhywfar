@@ -17,13 +17,15 @@ iheader_HEADERS=\
  crypt.h \
  keymanager.h \
  keyspec.h \
- md.h
+ md.h \
+ padd.h
 
 noinst_HEADERS=\
  crypt_p.h \
  keymanager_p.h \
  keyspec_p.h \
- md_p.h
+ md_p.h \
+ padd_p.h
 
 noinst_LTLIBRARIES=libcrypt.la
 
@@ -31,6 +33,7 @@ libcrypt_la_SOURCES=\
  crypt.c \
  keymanager.c \
  keyspec.c \
- md.c
+ md.c \
+ padd.c
 
 libcrypt_la_LIBADD=@GWEN_CRYPTO@/libcryptimpl.la
