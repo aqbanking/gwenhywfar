@@ -31,6 +31,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/types.h>
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -229,8 +230,34 @@ const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n);
 /** Set the character data of the given node to the given value. This
  * function will create a deep copy of the character data. */
 GWENHYWFAR_API
-void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
+  void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
 /*@}*/
+
+
+/** @name Usage Counter
+ *
+ * <p>
+ * The usage counter of a node is only used by applications, not by
+ * Gwenhywfar itself. So if the application does not set this
+ * counter it will always be zero.
+ * </p>
+ * <p>
+ * An application could use this counter to check whether a given node
+ * is still in use by some parts of the application in order to free
+ * unused nodes.
+ * </p>
+ */
+/*@{*/
+GWENHYWFAR_API
+  void GWEN_XMLNode_IncUsage(GWEN_XMLNODE *n);
+
+GWENHYWFAR_API
+  void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n);
+
+GWENHYWFAR_API
+  GWEN_TYPE_UINT32 GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n);
+/*@}*/
+
 
 /** @name Iterating Through an XML Tree
  *

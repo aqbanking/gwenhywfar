@@ -1,7 +1,15 @@
 
+2004/05/20: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/xml: added a usage counter and some functions around it to be
+  used by an application (not used internally, but they allow marking
+  and detection of unused nodes)
+
+
 2004/05/18: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
-- parser/msgengine: switched inherit code to new gwenhywfar/inherit type
+- parser/msgengine: switched inherit code to new gwenhywfar/inherit 
+  type
 - parser/text: added function GWEN_Text_ToHexBuffer
 
 

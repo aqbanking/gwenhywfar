@@ -226,6 +226,32 @@ void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
 }
 
 
+
+void GWEN_XMLNode_IncUsage(GWEN_XMLNODE *n){
+  assert(n);
+  n->usage++;
+}
+
+
+
+void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n){
+  assert(n);
+  if (n->usage==0) {
+    DBG_WARN(0, "Node usage already is zero");
+  }
+  else
+    n->usage--;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n){
+  assert(n);
+  return n->usage;
+}
+
+
+
 const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n){
   assert(n);
   return n->data;
