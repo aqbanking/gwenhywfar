@@ -41,41 +41,41 @@ DLL_NAME=gwenhywfar32.dll
 DLL_EXP_LIB=gwenhywfar32.lib
 DLL_EXP_DEF=gwenhywfar32.def
 DLL_OBJS= \
-   base/stringlist.lo \
-   base/buffer.lo\
-   base/error.lo\
-   base/list.lo\
-   base/logger.lo\
-   io/bufferedio.lo\
-   crypt/ossl/cryptssl.lo \
-   crypt/ossl/cryptssl_rsa.lo \
-   crypt/ossl/cryptssl_rmd160.lo\
-   crypt/ossl/cryptssl_des.lo\
-   crypt/md.lo\
-   crypt/keymanager.lo\
-   crypt/keyspec.lo\
-   crypt/crypt.lo\
-   ipc/transportlayertcp.lo\
-   ipc/connlayer.lo\
-   ipc/ipc.lo\
-   ipc/msglayer.lo\
-   ipc/transportlayer.lo\
-   ipc/servicelayer.lo\
-   ipc/transportlayersocket.lo\
-   ipc/transportlayerunix.lo\
-   os/windows/directory.lo\
-   os/windows/inetaddr.lo\
-   os/windows/inetsocket.lo\
-   os/windows/init.lo \
-   os/windows/libloader.lo\
-   os/directory_all.lo\
-   parser/db.lo\
-   parser/csv.lo \
-   parser/path.lo\
-   parser/msgengine.lo\
-   parser/text.lo\
-   parser/xml.lo\
-   gwenhywfar.lo
+   base/stringlist.o \
+   base/buffer.o\
+   base/error.o\
+   base/list.o\
+   base/logger.o\
+   io/bufferedio.o\
+   crypt/ossl/cryptssl.o \
+   crypt/ossl/cryptssl_rsa.o \
+   crypt/ossl/cryptssl_rmd160.o\
+   crypt/ossl/cryptssl_des.o\
+   crypt/md.o\
+   crypt/keymanager.o\
+   crypt/keyspec.o\
+   crypt/crypt.o\
+   ipc/transportlayertcp.o\
+   ipc/connlayer.o\
+   ipc/ipc.o\
+   ipc/msglayer.o\
+   ipc/transportlayer.o\
+   ipc/servicelayer.o\
+   ipc/transportlayersocket.o\
+   ipc/transportlayerunix.o\
+   os/windows/directory.o\
+   os/windows/inetaddr.o\
+   os/windows/inetsocket.o\
+   os/windows/init.o \
+   os/windows/libloader.o\
+   os/directory_all.o\
+   parser/db.o\
+   parser/csv.o \
+   parser/path.o\
+   parser/msgengine.o\
+   parser/text.o\
+   parser/xml.o\
+   gwenhywfar.o
 
 
 DLL_LDLIBS=-lstdc++ -L/c/windows -llibeay32 -llibssl32 -lwsock32

@@ -5,7 +5,7 @@ EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  gwenhywfar.spec.in Doxyfile.in
 
 bin_SCRIPTS=gwenhywfar-config
-M4dir=@prefix@/share/aclocal
+M4dir=$(prefix)/share/aclocal
 M4_DATA=gwenhywfar.m4
 ACLOCAL_AMFLAGS = -I m4
 
