@@ -2679,6 +2679,15 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	break;
 
       type=GWEN_XMLNode_GetData(n);
+
+      /*
+      DBG_NOTICE(0, "Reading group from here :");
+      GWEN_Text_DumpString(GWEN_Buffer_GetStart(msgbuf)+
+                           GWEN_Buffer_GetPos(msgbuf),
+                           GWEN_Buffer_GetUsedBytes(msgbuf)-
+                           GWEN_Buffer_GetPos(msgbuf),
+                           stderr, 3);
+                           */
       if (strcasecmp(type, "ELEM")==0) {
 	unsigned int loopNr;
 

@@ -24,6 +24,7 @@ local: PREFIX=/usr/local
 local: all
 	./configure --prefix=$(PREFIX)
 
+
 mp:
 	libtoolize -f --automake
 	aclocal -I ./m4
@@ -31,9 +32,9 @@ mp:
 	automake --add-missing
 	autoconf
 	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode
-
-win32:
-	./configure --with-openssl-includes=/more/include --prefix=/gwen
+	
+mp-w32:
+	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --enable-maintainer-mode --prefix=/gwen --with-openssl-includes=/more/include
 
 mp-tu:
 	libtoolize -f --automake

@@ -15,14 +15,18 @@ dnl   - aq_windoze_path: path retrieved
 dnl
 
 rm -f conf.winpath
+save_LIBS="${LIBS}"
+LIBS="${LIBS} -lshfolder"
 AC_TRY_RUN([
 #include <windows.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <shlobj.h>
 
 int main (){
   char buffer[260];
+  const char *choice = "$1";
   FILE *f;
 
   buffer[0]=0;
@@ -35,14 +39,22 @@ int main (){
     strcpy(buffer, "$2");
   }
   else {
-    if (strcasecmp("$1", "windows")==0) {
+    if (strcasecmp(choice, "windows")==0) {
       GetWindowsDirectory(buffer, sizeof(buffer));
     }
-    else if (strcasecmp("$1", "system")==0) {
+    else if (strcasecmp(choice, "system")==0) {
       GetSystemDirectory(buffer, sizeof(buffer));
     }
-    else if (strcasecmp("$1", "home")==0) {
+    else if (strcasecmp(choice, "home")==0) {
       GetWindowsDirectory(buffer, sizeof(buffer));
+    }
+    else if (strcasecmp(choice, "program_files") == 0) {
+      SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES,
+        	      NULL, 0, buffer);
+    }
+    else if (strcasecmp(choice, "common_appdata") == 0) {
+      SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA,
+        	      NULL, 0, buffer);
     }
     else {
       printf("Unknown type \"$1\"\n");
@@ -67,6 +79,7 @@ int main (){
  [AC_MSG_ERROR(Could not determine path for $1)],
  [aq_windoze_path="$2"; AC_MSG_RESULT([Crosscompiling, assuming $2])]
 )
+LIBS="${save_LIBS}"
 rm -f conf.winpath
 ])
 
@@ -83,15 +96,18 @@ dnl   - aq_windoze_path: path retrieved
 dnl
 
 rm -f conf.winpath
+LIBS="${LIBS} -lshfolder"
 AC_TRY_RUN([
 #include <windows.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <shlobj.h>
 
 int main (){
   char buffer[260];
   char buffer2[260+2];
+  const char *choice = "$1";
   char *p;
   char *tp;
   FILE *f;
@@ -107,14 +123,22 @@ int main (){
     strcpy(buffer, "$2");
   }
   else {
-    if (strcasecmp("$1", "windows")==0) {
+    if (strcasecmp(choice, "windows")==0) {
       GetWindowsDirectory(buffer, sizeof(buffer));
     }
-    else if (strcasecmp("$1", "system")==0) {
+    else if (strcasecmp(choice, "system")==0) {
       GetSystemDirectory(buffer, sizeof(buffer));
     }
-    else if (strcasecmp("$1", "home")==0) {
+    else if (strcasecmp(choice, "home")==0) {
       GetWindowsDirectory(buffer, sizeof(buffer));
+    }
+    else if (strcasecmp(choice, "program_files") == 0) {
+      SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES,
+        	      NULL, 0, buffer);
+    }
+    else if (strcasecmp(choice, "common_appdata") == 0) {
+      SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA,
+        	      NULL, 0, buffer);
     }
     else {
       printf("Unknown type \"$1\"\n");
@@ -171,6 +195,7 @@ int main (){
  [AC_MSG_ERROR(Could not determine path for $1)],
  [aq_windoze_path="$2"; AC_MSG_RESULT([Crosscompiling, assuming $2])]
 )
+LIBS="${save_LIBS}"
 rm -f conf.winpath
 ])
 
@@ -186,10 +211,16 @@ dnl     WIN_PATH_WINDOWS       : path and name of the Windoze system folder
 dnl     WIN_PATH_WINDOWS_MINGW : path and name of the Windoze system folder
 dnl     WIN_PATH_SYSTEM        : path and name of the Windoze folder
 dnl     WIN_PATH_SYSTEM_MINGW  : path and name of the Windoze folder
+dnl     WIN_PATH_PROGRAM_FILES
+dnl     WIN_PATH_PROGRAM_FILES_MINGW
+dnl     WIN_PATH_COMMON_APPDATA
+dnl     WIN_PATH_COMMON_APPDATA_MINGW
 dnl   Defines:
 dnl     WIN_PATH_HOME          : path and name of the Windoze home folder
 dnl     WIN_PATH_WINDOWS       : path and name of the Windoze system folder
 dnl     WIN_PATH_SYSTEM        : path and name of the Windoze folder
+dnl     WIN_PATH_PROGRAM_FILES : path of the program files folder
+dnl     WIN_PATH_COMMON_APPDATA : The directory containing application data for all users
 
 # presets
 AC_ARG_WITH(home-path,    [  --with-home-path=DIR    specify the home directory for a user],
@@ -256,6 +287,44 @@ AC_CACHE_VAL(gwenhywfar_cv_path_system_mingw,
 WIN_PATH_SYSTEM_MINGW="$gwenhywfar_cv_path_system_mingw"
 AC_MSG_RESULT([$WIN_PATH_SYSTEM_MINGW])
 
+# program files directory
+AC_MSG_CHECKING([for program files path (program)])
+AC_CACHE_VAL(gwenhywfar_cv_path_programfiles,
+[
+  AQ_WINDOZE_GETPATH(program_files, [$aq_windoze_path_system])
+  gwenhywfar_cv_path_programfiles="$aq_windoze_path"
+])
+WIN_PATH_PROGRAM_FILES="$gwenhywfar_cv_path_programfiles"
+AC_MSG_RESULT([$WIN_PATH_PROGRAM_FILES])
+
+AC_MSG_CHECKING([for program files path (mingw)])
+AC_CACHE_VAL(gwenhywfar_cv_path_programfiles_mingw,
+[
+  AQ_WINDOZE_GETPATH_MINGW(program_files, [$aq_windoze_path_system])
+  gwenhywfar_cv_path_programfiles_mingw="$aq_windoze_path"
+])
+WIN_PATH_PROGRAM_FILES_MINGW="$gwenhywfar_cv_path_programfiles_mingw"
+AC_MSG_RESULT([$WIN_PATH_PROGRAM_FILES_MINGW])
+
+# common application data directory
+AC_MSG_CHECKING([for common app data path (program)])
+AC_CACHE_VAL(gwenhywfar_cv_path_commonappdata,
+[
+  AQ_WINDOZE_GETPATH(common_appdata, [$aq_windoze_path_system])
+  gwenhywfar_cv_path_commonappdata="$aq_windoze_path"
+])
+WIN_PATH_COMMON_APPDATA="$gwenhywfar_cv_path_commonappdata"
+AC_MSG_RESULT([$WIN_PATH_COMMON_APPDATA])
+
+AC_MSG_CHECKING([for common app data path (mingw)])
+AC_CACHE_VAL(gwenhywfar_cv_path_commonappdata_mingw,
+[
+  AQ_WINDOZE_GETPATH_MINGW(common_appdata, [$aq_windoze_path_system])
+  gwenhywfar_cv_path_commonappdata_mingw="$aq_windoze_path"
+])
+WIN_PATH_COMMON_APPDATA_MINGW="$gwenhywfar_cv_path_commonappdata_mingw"
+AC_MSG_RESULT([$WIN_PATH_COMMON_APPDATA_MINGW])
+
 # finish variables
 AC_SUBST(WIN_PATH_HOME)
 AC_DEFINE_UNQUOTED(WIN_PATH_HOME, "$WIN_PATH_HOME", [home path])
@@ -266,4 +335,10 @@ AC_SUBST(WIN_PATH_WINDOWS_MINGW)
 AC_SUBST(WIN_PATH_SYSTEM)
 AC_DEFINE_UNQUOTED(WIN_PATH_SYSTEM, "$WIN_PATH_SYSTEM", [system path])
 AC_SUBST(WIN_PATH_SYSTEM_MINGW)
+AC_SUBST(WIN_PATH_PROGRAM_FILES)
+AC_DEFINE_UNQUOTED(WIN_PATH_PROGRAM_FILES, "$WIN_PATH_PROGRAM_FILES", [program files path])
+AC_SUBST(WIN_PATH_PROGRAM_FILES_MINGW)
+AC_SUBST(WIN_PATH_COMMON_APPDATA)
+AC_DEFINE_UNQUOTED(WIN_PATH_COMMON_APPDATA, "$WIN_PATH_COMMON_APPDATA", [common app data path])
+AC_SUBST(WIN_PATH_COMMON_APPDATA_MINGW)
 ])

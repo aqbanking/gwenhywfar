@@ -84,7 +84,7 @@ Every function or type name has two prefixes:
     collisions
 - a module name 
     This makes every function name unique within GWEN.
-    The module name should be all-capitals if the name is shorter than two
+    The module name should be all-capitals if the name is shorter than three
     characters or is an abbreviation. 
     It should start with a capital otherwise.
 

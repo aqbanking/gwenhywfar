@@ -39,7 +39,7 @@ c:\SOMEPATH -> /c/SOMEPATH
 d:\SOMEPATH -> /d/SOMEPATH
 and so on.
 
-The root directory of MinGW is a a subdirectory of the one you installed
+The root directory of MinGW is a subdirectory of the one you installed
 mingw to, in most cases "c:\msys\1.0". So "/" from inside the shell actually 
 refers to that directory.
 
@@ -76,21 +76,17 @@ These headers are only needed if you want to compile Gwenhywfar itself !
 2.2. Make Order
 ---------------
 
-If you retrieved gwenhywfar from CVS, first do a "make -f
-Makefile.dist". Then:
+If you retrieved gwenhywfar from CVS, first do a 
+"make -f Makefile.dist". Then:
 
 - ./configure
 
   Common options in this step are 
-  ./configure --enable-static --enable-shared \
-    --with-openssl-includes=/openssl_prefix/include \
-    LDFLAGS="-L/mingw/lib"  
-
-  --enable-static and --enable-shared let the blabla.o object files be
-  created, necessary for linking the dll. The LDFLAGS are needed if
-  your local mingw installation has some libraries in the specified
-  directory.
+  ./configure --with-openssl-includes=/openssl_prefix/include
 
 - make     (this creates the dll)
 - make install (this installs the headers to the specified prefix)
-- then copy the DLL src/gwenhywfar32.dll to your windows folder.
+- then copy the DLL src/gwenhywfar32.dll to your windows folder 
+  (or alternatively do a "make dll-install" which does the same)
+
+

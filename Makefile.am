@@ -45,7 +45,25 @@ win_buildroot=distribution
 win_develdir=$(PACKAGE)-$(VERSION)-win32-devel
 win_bindir=$(PACKAGE)-$(VERSION)-win32-bin
 EXTRA_WIN_DIST=AUTHORS ChangeLog README README.W32 COPYING
-win32: dist
+win32:
+	mkdir -p distribution
+	make prefix="`pwd`/distribution/win32-tmp" install && \
+	 ( cd distribution && mkdir -p win32-devel && \
+	 cp -r win32-tmp/bin win32-devel/ && \
+	 cp -r win32-tmp/include win32-devel/ && \
+	 cp -r win32-tmp/share win32-devel && \
+	 cp ../AUTHORS ../ChangeLog ../README ../README.W32 ../COPYING win32-devel/ && \
+	 tar pczvf gwenhywfar-@VERSION@-win32-devel.tgz win32-devel && \
+	 rm -Rf win32-devel && \
+	 rm -Rf win32-tmp )
+	mkdir -p distribution/win32-bin && \
+	 cp -r src/gwenhywfar32.dll distribution/win32-bin/ && \
+	 cp AUTHORS ChangeLog README README.W32 COPYING distribution/win32-bin/ && \
+	 strip distribution/win32-bin/*.dll && \
+	 ( cd distribution && tar pczvf gwenhywfar-@VERSION@-win32-bin.tgz win32-bin && \
+	 rm -Rf win32-bin )
+
+win32-cs: dist
 	$(am__remove_distdir)
 	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
 	chmod -R a-w $(distdir); chmod a+w $(distdir)
@@ -59,7 +77,6 @@ win32: dist
 	  && dc_destdir="$${TMPDIR-/tmp}/am-dc-$$$$/" \
 	  && cd $(distdir)/=build \
 	  && ../configure --srcdir=.. --prefix="$$dc_install_base" \
-	    --enable-static \
 	    $(DISTCHECK_CONFIGURE_FLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) check \

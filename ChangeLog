@@ -1,6 +1,18 @@
 
 2004/03/25: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
+- reintroduced my old win32 target, since the one of Christian doesn't work
+  the way I need it: It needs to build all objects/libraries again, and that
+  simply takes too much time. Another problem is that my configure options
+  are not used when creating the windows binaries (i.e. that makes using the
+  same target in the project simthetic useless for my local system).
+  So I now use my old approach which is simple, ugly but it works ;-)
+  Christian may still use his target (which is now called "win32-cs") ;-)
+- updated README.W32 to reflect the changes below
+
+
+2004/03/25: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
 - changed the way a DLL is created:
     Now the libXXX.a library is taken (which - thanks to libtool - already
     contains all object files needed for building the DLL) and all the

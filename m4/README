@@ -4,10 +4,3 @@
 This folder includes some usefull macros for the automake/autoconf tools.
 This dramatically simplifies the "configure.in" file.
 
-All "*.m4" files are copied into "../acinclude.m4"
-All "*.h" files are copied into "../acconfig.h".
-
-So if your're adding a macro file here that defines some values to be
-presented in "config.h" you must provide a header file, too. Otherwise
-aclocal or whatever autotool that was complains about a symbol not being
-covered by aclocal.h.
