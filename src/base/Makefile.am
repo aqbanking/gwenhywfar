@@ -11,6 +11,9 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 # system's <process.h>, at least for gcc3.2 on mingw32
 # -I$(top_srcdir)/src/os 
 
+localedir=$(datadir)/locale
+DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+
 
 noinst_LTLIBRARIES=libbase.la
 

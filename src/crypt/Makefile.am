@@ -12,6 +12,9 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 SUBDIRS=@GWEN_CRYPTO@
 DIST_SUBDIRS=none ossl
 
+localedir=$(datadir)/locale
+DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  crypt.h \

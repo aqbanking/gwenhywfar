@@ -8,9 +8,12 @@ INCLUDES = $(all_includes) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/gwenui
- 
+
 
 SUBDIRS = base crypt io ipc os parser net
+
+localedir=$(datadir)/locale
+DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
 
 
 EXTRA_DIST=\

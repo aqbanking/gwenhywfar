@@ -9,7 +9,10 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/ui
  
 
-AM_CFLAGS=-DGWENHYWFAR_PLUGINS=\"@gwenhywfar_plugins@\"
+localedir=$(datadir)/locale
+DEFS=\
+  -D LOCALEDIR=\"$(localedir)\" \
+  -DGWENHYWFAR_PLUGINS=\"@gwenhywfar_plugins@\" @DEFS@
 
 noinst_LTLIBRARIES=libparser.la
 

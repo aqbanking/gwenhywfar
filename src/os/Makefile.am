@@ -12,6 +12,9 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 SUBDIRS=@GWEN_OS@
 DIST_SUBDIRS=posix windows
 
+localedir=$(datadir)/locale
+DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  directory.h \

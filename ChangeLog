@@ -9,6 +9,8 @@
   However, in most cases a NULL was given, so you should simply need to
   recompile your sources with no (or at most few) changes.
 - prepared gwen for gettext
+- added simplified error codes to GWEN_Error, will get away from that
+  complicated GWEN_ERRORCODE stuff, since that isn't needed anyway.
 
 
 2004-08-18   Christian Stimming <stimming@tuhh.de>

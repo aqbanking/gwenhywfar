@@ -2,6 +2,9 @@ EXTRA_DIST=README
 
 dbioplugindir=@gwenhywfar_plugins@/dbio
 
+localedir=$(datadir)/locale
+DEFS=-D LOCALEDIR=\"$(localedir)\" @DEFS@
+
 dbioplugin_LTLIBRARIES=csv.la
 dbioplugin_DATA=csv.xml
 noinst_HEADERS=csv_p.h
