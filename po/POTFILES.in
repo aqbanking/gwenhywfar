@@ -76,7 +76,6 @@
 ./gwenui/tablewidget.c
 ./gwenui/textwidget.c
 ./gwenui/ui.c
-./gwenui/vline.c
 ./gwenui/vslider.c
 ./gwenui/widget.c
 ./gwenui/window.c
