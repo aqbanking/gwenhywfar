@@ -45,7 +45,10 @@ extern "C" {
 # define DBG_LEAVE
 #endif
 
-#ifdef HAVE_SNPRINTF
+
+#ifndef HAVE_SNPRINTF
+# error Not using snprintf! Maybe "config.h" is not included?
+#endif
 
 #define DBG_ERROR(dbg_logger, format, args...) if (1){\
   char dbg_buffer[256]; \
@@ -119,6 +122,10 @@ extern "C" {
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelInfo, dbg_buffer);};
 
 
+
+
+#ifndef DISABLE_DEBUGLOG
+
 #define DBG_DEBUG(dbg_logger, format, args...) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {\
  char dbg_buffer[256]; \
@@ -160,78 +167,15 @@ extern "C" {
 
 #else
 
-#warning Not using snprintf! Maybe "config.h" is not included?
+#define DBG_DEBUG(dbg_logger, format, args...)
 
-#define DBG_ERROR(dbg_logger, format, args...) {\
- fprintf(stderr, \
-  __FILE__":%5d: " format  "\n" , __LINE__ , ## args);};
+#define DBG_DEBUG_ERR(dbg_logger, dbg_err)
 
-#define DBG_ERROR_ERR(dbg_logger, dbg_err) {\
- char dbg_errbuff[256]; \
- GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
- fprintf(stderr, \
-  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
+#define DBG_VERBOUS(dbg_logger, format, args...)
 
-#define DBG_WARN(dbg_logger, format, args...) {\
- fprintf(stderr,\
-  __FILE__":%5d: " format  "\n" , __LINE__ , ## args);};
+#define DBG_VERBOUS_ERR(dbg_logger, dbg_err)
 
-#define DBG_WARN_ERR(dbg_logger, dbg_err) {\
- char dbg_errbuff[256]; \
- GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
- fprintf(stderr,\
-  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
-
-#define DBG_NOTICE(dbg_logger, format, args...) {\
- fprintf(stderr,\
-  __FILE__":%5d: " format "\n" , __LINE__ , ## args);};
-
-#define DBG_NOTICE_ERR(dbg_logger, dbg_err) {\
- char dbg_errbuff[256]; \
- GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
- fprintf(stderr,\
-  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
-
-
-#define DBG_INFO(dbg_logger, format, args...) \
- if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelInfo) {\
- fprintf(stderr,\
-  __FILE__":%5d: " format  "\n" , __LINE__ , ## args);};
-
-#define DBG_INFO_ERR(dbg_logger, dbg_err) \
- if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelInfo) {\
- char dbg_errbuff[256]; \
- GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
- fprintf(stderr,\
-  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
-
-
-#define DBG_DEBUG(dbg_logger, format, args...) \
- if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {\
- fprintf(stderr,\
-  __FILE__":%5d: " format  "\n" , __LINE__ , ## args);};
-
-#define DBG_DEBUG_ERR(dbg_logger, dbg_err) \
- if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {\
- char dbg_errbuff[256]; \
- GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
- fprintf(stderr,\
-  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
-
-
-#define DBG_VERBOUS(dbg_logger, format, args...) \
-  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) { \
-  fprintf(stderr,\
-  __FILE__":%5d: " format  "\n" , __LINE__ , ## args);};
-
-#define DBG_VERBOUS_ERR(dbg_logger, dbg_err) \
- if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {\
- char dbg_errbuff[256]; \
- GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
- fprintf(stderr,\
-  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff);};
-
-#endif /* HAVE_SNPRINTF */
+#endif /* DISABLE_DEBUGLOG */
 
 #ifdef __cplusplus
 }

@@ -53,6 +53,27 @@ const char *GWEN_IPC_ErrorString(int c){
   case GWEN_IPC_ERROR_OUTQUEUE_FULL:
     s="Outgoing message queue full";
     break;
+  case GWEN_IPC_ERROR_BAD_STATE:
+    s="Bad state";
+    break;
+  case GWEN_IPC_ERROR_NO_CONNECTIONS:
+    s="No connections";
+    break;
+  case GWEN_IPC_ERROR_CONNECTION_NOT_FOUND:
+    s="Connection not found";
+    break;
+  case GWEN_IPC_ERROR_XMLFILE:
+    s="Error loading XML file";
+    break;
+  case GWEN_IPC_ERROR_SEG_NOT_FOUND:
+    s="Segment not found";
+    break;
+  case GWEN_IPC_ERROR_BAD_MSG:
+    s="Bad message";
+    break;
+  case GWEN_IPC_ERROR_HANDSHAKING:
+    s="Error in handshaking";
+    break;
   default:
     s=0;
   } /* switch */

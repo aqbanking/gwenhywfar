@@ -234,6 +234,23 @@ GWEN_IPCMSG *GWEN_ConnectionLayer_GetIncomingMsg(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCMSG *GWEN_ConnectionLayer_GetOutgoingMsg(GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCMSG *msg;
+
+  assert(cl);
+  if (cl->nOutgoingMsgs) {
+    msg=cl->outgoingMsgs;
+    assert(msg);
+    GWEN_LIST_DEL(GWEN_IPCMSG, msg, &(cl->outgoingMsgs));
+    cl->nOutgoingMsgs--;
+    return msg;
+  }
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCMSG *GWEN_ConnectionLayer_FindMsgReply(GWEN_IPCCONNLAYER *cl,
                                                unsigned int refId){
   GWEN_IPCMSG *msg;
@@ -273,6 +290,29 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_AddOutgoingMsg(GWEN_IPCCONNLAYER *cl,
   }
 
   DBG_INFO(0, "Added outgoing msg (now %d msgs)", cl->nOutgoingMsgs);
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_ConnectionLayer_AddIncomingMsg(GWEN_IPCCONNLAYER *cl,
+                                                   GWEN_IPCMSG *msg){
+  assert(cl);
+  assert(msg);
+  if (cl->nIncomingMsgs<cl->maxIncomingMsgs) {
+    GWEN_LIST_ADD(GWEN_IPCMSG, msg, &(cl->incomingMsgs));
+    cl->nIncomingMsgs++;
+  }
+  else {
+    DBG_INFO(0, "Incoming queue full (%d msgs)", cl->nIncomingMsgs);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_INQUEUE_FULL);
+  }
+
+  DBG_INFO(0, "Added incoming msg (now %d msgs)", cl->nIncomingMsgs);
   return 0;
 }
 
@@ -392,9 +432,28 @@ GWEN_ConnectionLayer_GetState(GWEN_IPCCONNLAYER *cl){
 void GWEN_ConnectionLayer_SetState(GWEN_IPCCONNLAYER *cl,
                                    GWEN_IPCCONNLAYER_STATE st){
   assert(cl);
-  DBG_INFO(0, "Changing state from %d to %d",
-           cl->state, st);
+  DBG_INFO(0, "Changing state on %d from \"%s\" (%d) to \"%s\" (%d)",
+           GWEN_ConnectionLayer_GetId(cl),
+           GWEN_ConnectionLayer_GetStateString(cl->state),
+           cl->state,
+           GWEN_ConnectionLayer_GetStateString(st),
+           st);
   cl->state=st;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const char *GWEN_ConnectionLayer_GetStateString(GWEN_IPCCONNLAYER_STATE st){
+  switch(st) {
+  case GWEN_IPCConnectionLayerStateUnconnected: return "Unconnected";
+  case GWEN_IPCConnectionLayerStateOpening:     return "Opening";
+  case GWEN_IPCConnectionLayerStateOpen:        return "Open";
+  case GWEN_IPCConnectionLayerStateClosing:     return "Closing";
+  case GWEN_IPCConnectionLayerStateListening:   return "Listening";
+  case GWEN_IPCConnectionLayerStateClosed:      return "Closed";
+  default: return "Unknown";
+  }
 }
 
 

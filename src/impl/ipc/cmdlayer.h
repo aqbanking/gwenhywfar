@@ -58,14 +58,27 @@ GWEN_ERRORCODE GWEN_IPCServiceCmd_Work(GWEN_IPCSERVICECMD *s,
                                        int timeout);
 
 
-GWEN_IPCMSG *GWEN_IPCCMD_CreateMsg(GWEN_IPCCONNLAYER *cl,
-                                   unsigned int refId,
-                                   const char *name,
-                                   unsigned int version,
-                                   ...);
+GWEN_IPCMSG *GWEN_ConnectionLayerCmd_CreateMsg(GWEN_IPCCONNLAYER *cl,
+                                               unsigned int refId,
+                                               const char *name,
+                                               unsigned int version,
+                                               GWEN_DB_NODE *da);
+
 GWEN_DB_NODE *GWEN_IPCServiceCmd_ParseMsg(GWEN_IPCCONNLAYER *cl,
                                           GWEN_IPCMSG *msg);
 
+void GWEN_IPCServiceLayerCmd_SetNameAndVersion(GWEN_IPCSERVICECMD *s,
+                                               const char *name,
+                                               const char *version);
+
+GWEN_IPCCONNLAYER*
+  GWEN_IPCServiceLayerCmd_FindConnection(GWEN_IPCSERVICECMD *s,
+                                         unsigned int id,
+                                         unsigned int userMark);
+
+
+const char *GWEN_ConnectionLayerCmd_GetPeerName(GWEN_IPCCONNLAYER *cl);
+const char *GWEN_ConnectionLayerCmd_GetPeerVersion(GWEN_IPCCONNLAYER *cl);
 
 
 #endif /* GWENHYFWAR_CMDLAYER_H */

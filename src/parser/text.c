@@ -567,34 +567,39 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
 
 
 
-void GWEN_Text_DumpString(const char *s, int l) {
+void GWEN_Text_DumpString(const char *s, int l, FILE *f, int insert) {
   unsigned int i;
   unsigned int j;
   unsigned int pos;
+  unsigned k;
 
   pos=0;
-  fprintf(stderr,"String size is %d:\n",l);
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f,"String size is %d:\n",l);
   while(pos<l) {
-    fprintf(stderr,"%04x: ",pos);
+    for (k=0; k<insert; k++)
+      fprintf(f, " ");
+    fprintf(f,"%04x: ",pos);
     j=pos+16;
     if (j>=l)
       j=l;
 
     // show hex dump
     for (i=pos; i<j; i++) {
-      fprintf(stderr,"%02x ",(unsigned char)s[i]);
+      fprintf(f,"%02x ",(unsigned char)s[i]);
     }
     if (j-pos<16)
       for (i=0; i<16-(j-pos); i++)
-	fprintf(stderr,"   ");
+	fprintf(f,"   ");
     // show text
     for (i=pos; i<j; i++) {
       if (s[i]<32)
-	fprintf(stderr,".");
+	fprintf(f,".");
       else
-	fprintf(stderr,"%c",s[i]);
+	fprintf(f,"%c",s[i]);
     }
-    fprintf(stderr,"\n");
+    fprintf(f,"\n");
     pos+=16;
   }
 }

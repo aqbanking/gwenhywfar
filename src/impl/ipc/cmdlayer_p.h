@@ -82,6 +82,10 @@ struct GWEN_IPCCONNLAYERCMDDATA {
   unsigned int securityState;
   unsigned int flags;
   unsigned int lastRefId; /* for handshaking */
+  char *peerName;
+  char *peerVersion;
+  char *ownName;
+  char *ownVersion;
 };
 GWEN_IPCCONNLAYERCMDDATA *
 GWEN_ConnectionLayerCmdData_new(GWEN_MSGENGINE *msgEngine);
@@ -100,6 +104,7 @@ GWEN_ERRORCODE GWEN_MsgLayerCmd_Accept(GWEN_IPCMSGLAYER *ml,
 
 
 
+
 GWEN_IPCCONNLAYER *GWEN_ConnectionLayerCmd_new(GWEN_MSGENGINE *msgEngine,
                                                GWEN_IPCMSGLAYER *ml,
                                                GWEN_IPCMSGLAYER_STATE st);
@@ -114,10 +119,19 @@ GWEN_ERRORCODE GWEN_ConnectionLayerCmd_Close(GWEN_IPCCONNLAYER *cl,
 
 
 
+
+
 struct GWEN_IPCSERVICECMD {
   GWEN_MSGENGINE *msgEngine;
   GWEN_SERVICELAYER *serviceLayer;
+  char *ownName;
+  char *ownVersion;
 };
+
+
+void GWEN_ConnectionLayerCmd_SetNameAndVersion(GWEN_IPCCONNLAYER *cl,
+                                               const char *name,
+                                               const char *version);
 
 
 

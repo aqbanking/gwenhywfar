@@ -29,6 +29,7 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
 #include <msgengine_p.h>
@@ -973,12 +974,12 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
       incr=(*p=='+');
       p++;
 
-      DBG_INFO(0, "Getting global property \"%s\"", p);
+      DBG_DEBUG(0, "Getting global property \"%s\"", p);
       if (incr) {
         int z;
 
         z=GWEN_DB_GetIntValue(e->globalValues, p, 0, 0);
-        DBG_INFO(0, "Incrementing global property \"%s\" (%d)",
+        DBG_DEBUG(0, "Incrementing global property \"%s\" (%d)",
                  p, z);
         if (GWEN_Text_NumToString(z, pbuffer, sizeof(pbuffer),0)<1) {
           DBG_ERROR(0, "Error converting num to string");
@@ -1003,7 +1004,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
       /* local property */
       p++;
 
-      DBG_INFO(0, "Getting property \"%s\"", p);
+      DBG_DEBUG(0, "Getting property \"%s\"", p);
       pvalue=GWEN_XMLNode_GetProperty(node, p, 0);
       DBG_DEBUG(0, "Transformed value \"%s\"", pvalue);
     }
@@ -1024,7 +1025,7 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
   int topDown;
   const char *lastValue;
 
-  DBG_INFO(0, "Searching for value of \"%s\" in <VALUES>", name);
+  DBG_DEBUG(0, "Searching for value of \"%s\" in <VALUES>", name);
   topDown=atoi(GWEN_XMLNode_GetProperty(node, "topdown","0"));
   lastValue=0;
 
@@ -1036,7 +1037,7 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
       *datasize=strlen(pvalue);
       return pvalue;
     }
-    DBG_INFO(0, "Found a value (%s), but will look further", pvalue);
+    DBG_DEBUG(0, "Found a value (%s), but will look further", pvalue);
     lastValue=pvalue;
   }
 
@@ -1075,7 +1076,7 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
 	*datasize=strlen(pvalue);
 	return pvalue;
       }
-      DBG_INFO(0, "Found a value (%s), but will look further", pvalue);
+      DBG_DEBUG(0, "Found a value (%s), but will look further", pvalue);
       lastValue=pvalue;
     }
     pn=GWEN_XMLNode_GetParent(pn);
@@ -1970,7 +1971,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  DBG_ERROR(0, "Bad number format");
 	  return -1;
 	}
-	DBG_INFO(0, "Reading binary: %d bytes from pos %d (msgsize=%d)",
+	DBG_DEBUG(0, "Reading binary: %d bytes from pos %d (msgsize=%d)",
 		 l,
 		 GWEN_Buffer_GetPos(msgbuf),
 		 GWEN_Buffer_GetUsedBytes(msgbuf));
@@ -2046,7 +2047,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 
   /* check the value */
   if (GWEN_Buffer_GetUsedBytes(vbuf)==0) {
-    DBG_INFO(0, "Datasize is 0");
+    DBG_DEBUG(0, "Datasize is 0");
     if (minnum==0) {
       DBG_INFO(0, "... but thats ok");
       /* value is empty, and that is allowed */
@@ -2183,9 +2184,10 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	      vbuf=GWEN_Buffer_new(0,
 				   GWEN_MSGENGINE_MAX_VALUE_LEN,
 				   0,0);
-	      DBG_DEBUG(0, "Reading value from here:\n");
-	      GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
-				   GWEN_Buffer_BytesLeft(msgbuf));
+              /*DBG_DEBUG(0, "Reading value from here:\n");
+               GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
+                                   GWEN_Buffer_BytesLeft(msgbuf),
+                                   stderr, 1);*/
 
 	      rv=GWEN_MsgEngine__ReadValue(e,
                                            msgbuf,
@@ -2243,7 +2245,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                 }
               } /* if type is int */
               else {
-		DBG_INFO(0, "Value is \"%s\"",
+		DBG_DEBUG(0, "Value is \"%s\"",
 			 GWEN_Buffer_GetStart(vbuf));
                 if (GWEN_DB_SetCharValue(gr,
 					 GWEN_DB_FLAGS_DEFAULT,
@@ -2307,7 +2309,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	loopNr=0;
 	abortLoop=0;
 	while(loopNr<maxnum && !abortLoop) {
-	  DBG_INFO(0, "Reading group type %s", gtype);
+	  DBG_DEBUG(0, "Reading group type %s", gtype);
 	  if (GWEN_Buffer_BytesLeft(msgbuf)==0)
 	    break;
 	  if (strchr(delimiters, GWEN_Buffer_PeekByte(msgbuf))) {
@@ -2329,7 +2331,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	      gcfg=gr;
 
 	    /* read group */
-	    DBG_INFO(0, "Reading group \"%s\"", gname);
+	    DBG_DEBUG(0, "Reading group \"%s\"", gname);
 	    if (GWEN_MsgEngine__ReadGroup(e,
                                           msgbuf,
 					  gn,
@@ -2641,7 +2643,8 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                       storegrp)) {
         DBG_ERROR(0, "Error parsing segment \"%s\"",p);
         GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
-                             GWEN_Buffer_GetUsedBytes(mbuf)-startPos);
+                             GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
+                             stderr, 1);
         GWEN_DB_Group_free(tmpdb);
         return -1;
       }

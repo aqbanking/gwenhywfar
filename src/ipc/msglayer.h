@@ -41,13 +41,14 @@ typedef void (*GWEN_IPCMSG_FREE)(GWEN_IPCMSG *m);
 
 
 typedef enum {
-  GWEN_IPCMsglayerStateClosed=0,
+  GWEN_IPCMsglayerStateUnconnected=0,
   GWEN_IPCMsglayerStateIdle,
   GWEN_IPCMsglayerStateReading,
   GWEN_IPCMsglayerStateWriting,
   GWEN_IPCMsglayerStateConnecting,
   GWEN_IPCMsglayerStateListening,
   GWEN_IPCMsglayerStateWaiting,
+  GWEN_IPCMsglayerStateClosed
 } GWEN_IPCMSGLAYER_STATE;
 
 
@@ -90,6 +91,8 @@ GWEN_IPCMSG *GWEN_MsgLayer_GetIncomingMsg(GWEN_IPCMSGLAYER *ml);
 GWEN_ERRORCODE GWEN_MsgLayer_AddOutgoingMsg(GWEN_IPCMSGLAYER *ml,
                                             GWEN_IPCMSG *msg);
 int GWEN_MsgLayer_CheckAddOutgoingMsg(GWEN_IPCMSGLAYER *ml);
+int GWEN_MsgLayer_CheckAddIncomingMsg(GWEN_IPCMSGLAYER *ml);
+
 unsigned int GWEN_MsgLayer_GetId(GWEN_IPCMSGLAYER *ml);
 
 GWEN_IPCMSGLAYER_STATE GWEN_MsgLayer_GetState(GWEN_IPCMSGLAYER *ml);
@@ -130,6 +133,7 @@ void GWEN_MsgLayer_SetFreeDataFn(GWEN_IPCMSGLAYER *ml,
 void GWEN_MsgLayer_SetWorkFn(GWEN_IPCMSGLAYER *ml, GWEN_IPCMSGLAYER_WORK f);
 void GWEN_MsgLayer_SetAcceptFn(GWEN_IPCMSGLAYER *ml,
                                GWEN_IPCMSGLAYER_ACCEPT f);
+const char *GWEN_MsgLayer_GetStateString(GWEN_IPCMSGLAYER_STATE st);
 
 /*@}*/
 

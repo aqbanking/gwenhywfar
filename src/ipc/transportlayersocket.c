@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "transportlayersocket_p.h"
 #include <gwenhyfwar/inetsocket.h>
@@ -371,7 +373,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
     /* use bio's buffer when reading single bytes to speed up */
     int i;
 
-    DBG_INFO(0, "Reading single char");
+    DBG_DEBUG(0, "Reading single char");
     i=GWEN_BufferedIO_ReadChar(tlp->bio);
     if (i<0) {
       DBG_ERROR(0, "Could not read character (%d)", i);
@@ -385,7 +387,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
     return 0;
   }
   else {
-    DBG_INFO(0, "Reading raw (%d bytes)", *bsize);
+    DBG_DEBUG(0, "Reading raw (%d bytes)", *bsize);
     err=GWEN_BufferedIO_ReadRaw(tlp->bio,
                                 buffer,
                                 bsize);
@@ -393,7 +395,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
       DBG_INFO(0, "called from here");
     }
     else {
-      DBG_INFO(0, "Read %d bytes", *bsize);
+      DBG_DEBUG(0, "Read %d bytes", *bsize);
     }
     return err;
   }
@@ -420,7 +422,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Write(GWEN_IPCTRANSPORTLAYER *tl,
     DBG_INFO(0, "called from here");
   }
   else {
-    DBG_INFO(0, "Read %d bytes", *bsize);
+    DBG_DEBUG(0, "Read %d bytes", *bsize);
   }
   return err;
 }
@@ -438,7 +440,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_CanRead(GWEN_IPCTRANSPORTLAYER *tl){
   assert(tlp->bio);
   if (!GWEN_BufferedIO_ReadBufferEmpty(tlp->bio)) {
     /* reader buffer is not empty, so we can read */
-    DBG_INFO(0, "ReadBuffer is not empty, so reading is possible");
+    DBG_DEBUG(0, "ReadBuffer is not empty, so reading is possible");
     return 0;
   }
   assert(tlp->socket);

@@ -31,6 +31,7 @@
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
 
+#include <stdio.h>
 
 
 #define GWEN_BUFFER_MAX_BOOKMARKS 4
@@ -165,6 +166,8 @@ unsigned int GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf);
  */
 char *GWEN_Buffer_GetPosPointer(GWEN_BUFFER *bf);
 
+
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, int insert);
 
 
 

@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Tue Sep 16 2003
-    copyright   : (C) 2003 by Martin Preuss
-    email       : martin@libchipcard.de
+ -------------------
+ cvs         : $Id$
+ begin       : Wed Sep 24 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,50 +26,18 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_MSGLAYER_P_H
-#define GWENHYFWAR_MSGLAYER_P_H
+#ifndef GWENHYFWAR_VERSION_H
+#define GWENHYFWAR_VERSION_H
 
-#define GWEN_IPCMSGLAYER_MAXINCOMING_MSGS 32
-#define GWEN_IPCMSGLAYER_MAXOUTGOING_MSGS 1
-
-#include <gwenhyfwar/msglayer.h>
-#include <gwenhyfwar/transportlayer.h>
-#include <gwenhyfwar/error.h>
-
-
-
-struct GWEN_IPCMSG {
-  GWEN_IPCMSG *next;
-  GWEN_BUFFER *buffer;
-  unsigned int msgLayerId;
-  unsigned int msgId;
-  unsigned int refId;
-  void *data;
-  GWEN_IPCMSG_FREE freeDataFn;
-};
+#define GWEN_VERSION_MAJOR @GWENHYFWAR_VERSION_MAJOR@
+#define GWENHYFWAR_VERSION_MINOR @GWENHYFWAR_VERSION_MINOR@
+#define GWENHYFWAR_VERSION_PATCHLEVEL @GWENHYFWAR_VERSION_PATCHLEVEL@
+#define GWENHYFWAR_VERSION_BUILD @GWENHYFWAR_VERSION_BUILD@
+#define GWENHYFWAR_VERSION_TAG "@GWENHYFWAR_VERSION_TAG@"
+#define GWENHYFWAR_VERSION_FULLSTRING "@GWENHYFWAR_VERSION_FULLSTRING@"
+#define GWENHYFWAR_VERSION_STRING "@GWENHYFWAR_VERSION_STRING@"
 
 
 
-struct GWEN_IPCMSGLAYER {
-  GWEN_IPCMSGLAYER *next;
-  GWEN_IPCTRANSPORTLAYER *transportLayer;
-  unsigned int id;
-  GWEN_IPCMSGLAYER_STATE state;
-  GWEN_IPCMSG *incomingMsgs;
-  unsigned int nIncomingMsgs;
-  unsigned int maxIncomingMsgs;
-  GWEN_IPCMSG *outgoingMsgs;
-  unsigned int nOutgoingMsgs;
-  unsigned int maxOutgoingMsgs;
-  void *data;
-  GWEN_IPCMSGLAYER_WORK workFn;
-  GWEN_IPCMSGLAYER_FREE freeDataFn;
-  GWEN_IPCMSGLAYER_ACCEPT acceptFn;
-};
-
-
-
-#endif /* GWENHYFWAR_MSGLAYER_P_H */
-
-
+#endif /* GWENHYFWAR_VERSION_H */
 

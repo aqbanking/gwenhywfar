@@ -1,6 +1,18 @@
 $Id$
 
 
+2003/09/23 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- completed simple IPC protocol. Now a client can connect to a server
+  using a simple greeting exchange. Later the exchange of public and
+  session keys will be implemented as well.
+  For now I will not use encryption, this will be implemented as soon as
+  the rest works.
+- added a test routine to gwentest which allows connecting to another
+  gwentest which works as a server.
+- added a version header file
+
+
 2003/09/22 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - more work on IPC: Receiving messages and parsing them using msgEngine

@@ -29,6 +29,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 #include "path.h"
 #include "gwenhyfwar/debug.h"
 #include "gwenhyfwar/misc.h"
@@ -59,7 +61,7 @@ void *GWEN_Path_Handle(const char *path,
     i=0;
     while (*path && !(*path=='/' || *path=='\\')) {
       if (i>(sizeof(buffer)-1)) {
-        DBG_ERROR(0, "Path element too long");
+        DBG_DEBUG(0, "Path element too long");
         return 0;
       }
       buffer[i++]=*(path++);
@@ -87,7 +89,7 @@ void *GWEN_Path_Handle(const char *path,
            * supposed to be a group. If the flags indicate that an entry
            * is to be found then this would be an error, because the path
            * ends in a group instead of an entry */
-          DBG_ERROR(0, "Path ends with a group while an entry is wanted");
+          DBG_DEBUG(0, "Path ends with a group while an entry is wanted");
           return 0;
         }
         /* other wise simply mark this element as the last one */
@@ -108,7 +110,7 @@ void *GWEN_Path_Handle(const char *path,
     if (elementFunction) {
       data=(elementFunction)(buffer, data, flags);
       if (!data) {
-        DBG_ERROR(0, "Error on path element \"%s\"",
+        DBG_DEBUG(0, "Error on path element \"%s\"",
                   buffer);
         return 0;
       }

@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <gwenhyfwar/gwenhyfwar.h>
 #include <gwenhyfwar/debug.h>
 #include <gwenhyfwar/db.h>
@@ -139,7 +140,8 @@ int testMsg(int argc, char **argv) {
   }
 
   GWEN_Text_DumpString(GWEN_Buffer_GetStart(gbuf),
-                       GWEN_Buffer_GetUsedBytes(gbuf));
+                       GWEN_Buffer_GetUsedBytes(gbuf),
+                       stderr, 1);
 
   GWEN_Buffer_SetPos(gbuf, 0);
   if (GWEN_MsgEngine_ParseMessage(e,
@@ -184,9 +186,70 @@ int testService(int argc, char **argv) {
   }
   fprintf(stderr, "New listener added (id=%d)\n", connId);
 
-  for (i=0; i< 10; i++) {
+  for (i=0; 1; i++) {
     fprintf(stderr, "\n\nWorking (loop %d)...\n\n", i);
     err=GWEN_IPCServiceCmd_Work(s, 60*1000);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return 1;
+    }
+    fprintf(stderr, "Working done\n");
+  }
+
+  fprintf(stderr, "Deinitializing service\n");
+  err=GWEN_IPCServiceCmd_Fini(s);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 1;
+  }
+  GWEN_IPCServiceCmd_free(s);
+  fprintf(stderr, "Deinitializing service: done\n");
+
+  return 0;
+}
+
+
+
+int testClient(int argc, char **argv) {
+  GWEN_IPCSERVICECMD *s;
+  GWEN_ERRORCODE err;
+  unsigned int connId;
+  int i;
+  GWEN_IPCCONNLAYER *cl;
+
+  fprintf(stderr, "Initializing service\n");
+  s=GWEN_IPCServiceCmd_new();
+  err=GWEN_IPCServiceCmd_Init(s, "test.xml");
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 1;
+  }
+  fprintf(stderr, "Initializing service: done\n");
+
+
+  fprintf(stderr, "Adding peer\n");
+  connId=GWEN_IPCServiceCmd_AddPeer(s, "127.0.0.1", 44444, 1);
+  if (connId==0) {
+    fprintf(stderr, "Could not add peer\n");
+    return 2;
+  }
+  fprintf(stderr, "New peer added (id=%d)\n", connId);
+
+  cl=GWEN_IPCServiceLayerCmd_FindConnection(s, connId, 0);
+  if (!cl) {
+    fprintf(stderr, "Haeh ? Connection %d not found ?!\n", connId);
+    return 3;
+  }
+
+  err=GWEN_ConnectionLayer_Open(cl);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 3;
+  }
+
+  for (i=0; i< 12; i++) {
+    fprintf(stderr, "\n\nWorking (loop %d)...\n\n", i);
+    err=GWEN_IPCServiceCmd_Work(s, 10*1000);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return 1;
@@ -212,6 +275,11 @@ int main(int argc, char **argv) {
   GWEN_ERRORCODE err;
   int rv;
 
+  if (argc<2) {
+    fprintf(stderr, "Usage: %s client|server\n", argv[0]);
+    return 1;
+  }
+
   fprintf(stderr, "Initializing Gwenhywfar\n");
   err=GWEN_Init();
   if (!GWEN_Error_IsOk(err)) {
@@ -223,7 +291,14 @@ int main(int argc, char **argv) {
   //rv=testDB(argc, argv);
   //rv=testXML(argc, argv);
   //rv=testMsg(argc, argv);
-  rv=testService(argc, argv);
+  if (strcasecmp(argv[1], "server")==0)
+    rv=testService(argc, argv);
+  else if (strcasecmp(argv[1], "client")==0)
+    rv=testClient(argc, argv);
+  else {
+    fprintf(stderr, "Unknown command \"%s\"", argv[1]);
+    return 1;
+  }
 
   fprintf(stderr, "Deinitializing Gwenhywfar\n");
   err=GWEN_Fini();

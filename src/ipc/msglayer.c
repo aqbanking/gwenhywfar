@@ -148,6 +148,22 @@ void GWEN_Msg_SetFreeFn(GWEN_IPCMSG *m, GWEN_IPCMSG_FREE f){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+const char *GWEN_MsgLayer_GetStateString(GWEN_IPCMSGLAYER_STATE st) {
+  switch(st) {
+  case GWEN_IPCMsglayerStateUnconnected: return "Unconnected";
+  case GWEN_IPCMsglayerStateIdle:        return "Idle";
+  case GWEN_IPCMsglayerStateReading:     return "Reading";
+  case GWEN_IPCMsglayerStateWriting:     return "Writing";
+  case GWEN_IPCMsglayerStateConnecting:  return "Connecting";
+  case GWEN_IPCMsglayerStateListening:   return "Listening";
+  case GWEN_IPCMsglayerStateWaiting:     return "Waiting";
+  case GWEN_IPCMsglayerStateClosed:      return "Closed";
+  default:                               return "Unknown";
+  }
+}
+
+
 
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCMSGLAYER *GWEN_MsgLayer_new(GWEN_IPCTRANSPORTLAYER *tl,
@@ -224,6 +240,9 @@ GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml, int rd){
   assert(ml);
   if (ml->workFn)
     return ml->workFn(ml, rd);
+  else {
+    DBG_WARN(0, "No work function on msgLayer %d!", ml->id);
+  }
   return 0;
 }
 
@@ -273,6 +292,14 @@ GWEN_ERRORCODE GWEN_MsgLayer_AddOutgoingMsg(GWEN_IPCMSGLAYER *ml,
 int GWEN_MsgLayer_CheckAddOutgoingMsg(GWEN_IPCMSGLAYER *ml){
   assert(ml);
   return ((ml->maxOutgoingMsgs-ml->nOutgoingMsgs)>0);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_MsgLayer_CheckAddIncomingMsg(GWEN_IPCMSGLAYER *ml){
+  assert(ml);
+  return ((ml->maxIncomingMsgs-ml->nIncomingMsgs)>0);
 }
 
 
@@ -330,7 +357,11 @@ GWEN_IPCMSGLAYER_STATE GWEN_MsgLayer_GetState(GWEN_IPCMSGLAYER *ml){
 void GWEN_MsgLayer_SetState(GWEN_IPCMSGLAYER *ml,
                             GWEN_IPCMSGLAYER_STATE st){
   assert(ml);
-  DBG_INFO(0, "Changing state from %d to %d", ml->state, st);
+  DBG_INFO(0, "Changing state from \"%s\" (%d) to \"%s\" (%d)",
+           GWEN_MsgLayer_GetStateString(ml->state),
+           ml->state,
+           GWEN_MsgLayer_GetStateString(st),
+           st);
   ml->state=st;
 }
 
@@ -384,7 +415,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Connect(GWEN_IPCMSGLAYER *ml) {
   GWEN_ERRORCODE err;
 
   assert(ml);
-  if (ml->state!=GWEN_IPCMsglayerStateClosed) {
+  if (ml->state!=GWEN_IPCMsglayerStateUnconnected) {
     DBG_ERROR(0, "MsgLayer is not closed (state is %d)", ml->state);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -393,6 +424,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Connect(GWEN_IPCMSGLAYER *ml) {
   }
   assert(ml->transportLayer);
   tl=ml->transportLayer;
+  DBG_INFO(0, "Starting to connect %d", ml->id);
   err=GWEN_IPCTransportLayer_StartConnect(tl);
   if (!GWEN_Error_IsOk(err)) {
     DBG_DEBUG(0, "called from here");
@@ -419,6 +451,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Disconnect(GWEN_IPCMSGLAYER *ml) {
   }
   assert(ml->transportLayer);
   tl=ml->transportLayer;
+
   ml->state=GWEN_IPCMsglayerStateClosed;
   err=GWEN_IPCTransportLayer_Disconnect(tl);
   if (!GWEN_Error_IsOk(err)) {

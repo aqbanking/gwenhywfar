@@ -30,6 +30,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "bufferedio_p.h"
 #include <gwenhyfwar/misc.h>
 #include <stdlib.h>
@@ -585,7 +588,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     i=bt->readerBufferFilled-bt->readerBufferPos;
     if (i>*bsize)
       i=*bsize;
-    DBG_INFO(0, "Reading rest from buffer (%d at %d of %d)",
+    DBG_DEBUG(0, "Reading rest from buffer (%d at %d of %d)",
              i,bt->readerBufferPos, bt->readerBufferFilled);
 
     if (i) {
@@ -594,7 +597,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
       bt->readerBufferPos+=i;
     }
     *bsize=i;
-    DBG_INFO(0, "Read %d bytes from buffer", i);
+    DBG_DEBUG(0, "Read %d bytes from buffer", i);
     return 0;
   }
   else {
@@ -602,7 +605,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     GWEN_ERRORCODE err;
     int i;
 
-    DBG_INFO(0, "Reading directly from source");
+    DBG_DEBUG(0, "Reading directly from source");
     assert(bt->readPtr);
     i=*bsize;
     err=bt->readPtr(bt,
@@ -616,7 +619,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     }
     bt->readerEOF=(i==0);
     *bsize=i;
-    DBG_INFO(0, "Read %d bytes from source", i);
+    DBG_DEBUG(0, "Read %d bytes from source", i);
   }
   if (bt->readerEOF) {
     DBG_DEBUG(0, "EOF now met");
@@ -893,7 +896,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Read(GWEN_BUFFEREDIO *dm,
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
 
-  DBG_DEBUG(0, "Reading ok (%d bytes)", *size);
+  DBG_VERBOUS(0, "Reading ok (%d bytes)", *size);
   return 0;
 }
 
@@ -984,7 +987,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Socket__Write(GWEN_BUFFEREDIO *dm,
                           GWEN_BUFFEREDIO_ERROR_WRITE);
   }
 
-  DBG_DEBUG(0, "Writing ok");
+  DBG_VERBOUS(0, "Writing ok");
   return 0;
 }
 

@@ -26,11 +26,11 @@
  </SEGdef>
 
 
- <SEGdef id="MsgHead" code="AQMSGHEAD" version="1"
+ <SEGdef id="MsgHead" code="MSGHEAD" version="1"
          delimiter="+" terminator="'" >
    <GROUP type="SegHead" name="head" />
    <ELEM name="size" type="num" maxsize="12" leftfill="1" />
-   <ELEM name="version" type="ascii" maxsize="8"/>
+   <ELEM name="version" type="num" maxsize="12"/>
    <ELEM name="dialogId" type="num" maxsize="20" />
    <ELEM name="msgnum" type="num" maxsize="4" />
 
@@ -47,7 +47,7 @@
    <ELEM name="encrypt" type="num" maxsize="1" />
    <ELEM name="sign" type="num" maxsize="1" />
    <ELEM name="name" type="AN" maxsize="32"/>
-   <ELEM name="version" type="ascii" maxsize="16"/>
+   <ELEM name="version" type="ascii" maxsize="32"/>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -62,7 +62,7 @@
    <ELEM name="encrypt" type="num" maxsize="1" />
    <ELEM name="sign" type="num" maxsize="1" />
    <ELEM name="name" type="AN" maxsize="32"/>
-   <ELEM name="version" type="ascii" maxsize="16"/>
+   <ELEM name="version" type="ascii" maxsize="32"/>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

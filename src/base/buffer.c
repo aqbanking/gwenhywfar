@@ -33,6 +33,7 @@
 #include "buffer_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/text.h>
 
 
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
@@ -227,6 +228,7 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
     DBG_ERROR(0, "Buffer full (%d of %d bytes)", bf->pos, bf->bufferSize);
     return 1;
   }
+  DBG_INFO(0, "Adding %d bytes at %d", sf->bytesUsed, bf->pos);
   memmove(bf->ptr+bf->pos, sf->ptr, sf->bytesUsed);
   bf->pos+=sf->bytesUsed;
   bf->bytesUsed+=sf->bytesUsed;
@@ -273,6 +275,38 @@ void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
   bf->bookmarks[idx]=v;
 }
 
+
+
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, int insert) {
+  unsigned int k;
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Buffer:\n");
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Pos : %d\n", bf->pos);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Buffer Size : %d\n", bf->bufferSize);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Bytes Used  : %d\n", bf->bytesUsed);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Flags       : %08x\n", bf->flags);
+
+  if (bf->ptr && bf->bytesUsed) {
+    for (k=0; k<insert; k++)
+      fprintf(f, " ");
+    fprintf(f, "Data:\n");
+    GWEN_Text_DumpString(bf->ptr, bf->bytesUsed, f, insert+1);
+  }
+}
 
 
 

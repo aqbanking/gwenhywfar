@@ -29,6 +29,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 #include "xml_p.h"
 #include "gwenhyfwar/debug.h"
 #include "gwenhyfwar/misc.h"

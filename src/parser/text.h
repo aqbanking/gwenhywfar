@@ -32,6 +32,9 @@
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
 
+#include <stdio.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -126,7 +129,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
  * This is used for debugging purposes and it shows the given data as a
  * classical hexdump.
  */
-void GWEN_Text_DumpString(const char *s, int l);
+void GWEN_Text_DumpString(const char *s, int l, FILE *f, int insert);
 
 
 #ifdef __cplusplus

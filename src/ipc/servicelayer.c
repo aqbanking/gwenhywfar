@@ -71,81 +71,79 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
                GWEN_ConnectionLayer_GetId(curr));
       ml=GWEN_ConnectionLayer_GetMsgLayer(curr);
       assert(ml);
-      DBG_INFO(0, "MessageLayer is %08x", (unsigned int)ml);
       tl=GWEN_MsgLayer_GetTransportLayer(ml);
       state=GWEN_MsgLayer_GetState(ml);
 
-      DBG_INFO(0, "State=%d, msgs=%d",
+      DBG_INFO(0, "MsgLayerState=\"%s\" (%d), msgs=%d",
+               GWEN_MsgLayer_GetStateString(state),
                state,
                GWEN_MsgLayer_OutgoingMsgs(ml));
 
-      if (state!=GWEN_IPCMsglayerStateClosed) {
-        /* check for read sockets */
-        if (state==GWEN_IPCMsglayerStateReading ||
-            state==GWEN_IPCMsglayerStateListening ||
-            state==GWEN_IPCMsglayerStateIdle) {
-          GWEN_SOCKET *sock;
+      /* check for read sockets */
+      if (state==GWEN_IPCMsglayerStateReading ||
+          state==GWEN_IPCMsglayerStateListening ||
+          state==GWEN_IPCMsglayerStateIdle) {
+        GWEN_SOCKET *sock;
 
-          sock=GWEN_IPCTransportLayer_GetReadSocket(tl);
-          if (sock) {
-            DBG_VERBOUS(0, "Adding a socket to the read set");
-            err=GWEN_SocketSet_AddSocket(rset, sock);
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "Called from here");
-            }
-            else
-              socks++;
-          } /* if sock */
-          else {
-            DBG_VERBOUS(0, "No read socket, doing read work");
-            err=GWEN_ConnectionLayer_Work(curr, 1);
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "Called from here");
-            }
-            else
-              ndone++;
-          } /* if no socket */
-        } /* if readable state */
+        sock=GWEN_IPCTransportLayer_GetReadSocket(tl);
+        if (sock) {
+          DBG_VERBOUS(0, "Adding a socket to the read set");
+          err=GWEN_SocketSet_AddSocket(rset, sock);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "Called from here");
+          }
+          else
+            socks++;
+        } /* if sock */
+        else {
+          DBG_VERBOUS(0, "No read socket, doing read work");
+          err=GWEN_ConnectionLayer_Work(curr, 1);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "Called from here");
+          }
+          else
+            ndone++;
+        } /* if no socket */
+      } /* if readable state */
 
-        if (state==GWEN_IPCMsglayerStateWriting ||
-            state==GWEN_IPCMsglayerStateConnecting ||
-            (state==GWEN_IPCMsglayerStateIdle &&
-             GWEN_MsgLayer_OutgoingMsgs(ml))) {
-          GWEN_SOCKET *sock;
+      if (state==GWEN_IPCMsglayerStateWriting ||
+          state==GWEN_IPCMsglayerStateConnecting ||
+          (state==GWEN_IPCMsglayerStateIdle &&
+           GWEN_MsgLayer_OutgoingMsgs(ml))) {
+        GWEN_SOCKET *sock;
 
-          DBG_INFO(0, "Checking for writing...");
-          sock=GWEN_IPCTransportLayer_GetWriteSocket(tl);
-          if (sock) {
-            DBG_VERBOUS(0, "Adding a socket to the write set");
-            err=GWEN_SocketSet_AddSocket(wset, sock);
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "Called from here");
-            }
-            else
-              socks++;
-          } /* if sock */
-          else {
-            DBG_VERBOUS(0, "No write socket, doing read work");
-            err=GWEN_ConnectionLayer_Work(curr, 0);
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "Called from here");
-            }
-            else
-              ndone++;
-          } /* if no socket */
-        } /* if writeable state */
-      } /* if not closed */
+        DBG_INFO(0, "Checking for writing...");
+        sock=GWEN_IPCTransportLayer_GetWriteSocket(tl);
+        if (sock) {
+          DBG_VERBOUS(0, "Adding a socket to the write set");
+          err=GWEN_SocketSet_AddSocket(wset, sock);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "Called from here");
+          }
+          else
+            socks++;
+        } /* if sock */
+        else {
+          DBG_VERBOUS(0, "No write socket, doing read work");
+          err=GWEN_ConnectionLayer_Work(curr, 0);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "Called from here");
+          }
+          else
+            ndone++;
+        } /* if no socket */
+      } /* if writeable state */
       curr=curr->next;
     } /* while */
 
     if (!socks) {
       if (ndone) {
-	/* no socket but we did something, so sleep to reduce CPU usage */
-	if (timeout) {
+        /* no socket but we did something, so sleep to reduce CPU usage */
+        if (timeout) {
           /* well, only sleep if the caller wanted a timeout */
-	  DBG_VERBOUS(0, "Sleeping");
-	  GWEN_Socket_Select(0, 0, 0, GWEN_SERVICELAYER_CPU_TIMEOUT);
-	}
+          DBG_VERBOUS(0, "Sleeping");
+          GWEN_Socket_Select(0, 0, 0, GWEN_SERVICELAYER_CPU_TIMEOUT);
+        }
 	GWEN_SocketSet_free(rset);
 	GWEN_SocketSet_free(wset);
 	return 0;
@@ -154,6 +152,7 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
         /* nothing done, so simply return an error */
         GWEN_SocketSet_free(rset);
         GWEN_SocketSet_free(wset);
+        DBG_DEBUG(0, "nothing done, no connection");
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
                               GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
@@ -188,8 +187,7 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
       assert(tl);
       state=GWEN_MsgLayer_GetState(ml);
 
-      switch(state) {
-      case GWEN_IPCMsglayerStateListening:
+      if (state==GWEN_IPCMsglayerStateListening) {
         sock=GWEN_IPCTransportLayer_GetReadSocket(tl);
         if (sock) {
           if (GWEN_SocketSet_HasSocket(rset, sock)) {
@@ -213,11 +211,25 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
             }
           } /* if socket is readable */
         } /* if sock */
-        break;
+      }
 
-      case GWEN_IPCMsglayerStateIdle:
-        /* TODO: timeout for idle sockets */
-      case GWEN_IPCMsglayerStateReading:
+      if (state==GWEN_IPCMsglayerStateIdle ||
+          state==GWEN_IPCMsglayerStateWriting) {
+        sock=GWEN_IPCTransportLayer_GetWriteSocket(tl);
+        if (sock) {
+          if (GWEN_SocketSet_HasSocket(wset, sock)) {
+            DBG_INFO(0, "Idle/writing connection %d is writeable",
+                     GWEN_ConnectionLayer_GetId(curr));
+            err=GWEN_ConnectionLayer_Work(curr, 0);
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "Called from here");
+            }
+          } /* if socket is writeable */
+        } /* if sock */
+      }
+
+      if (state==GWEN_IPCMsglayerStateIdle ||
+          state==GWEN_IPCMsglayerStateReading) {
         sock=GWEN_IPCTransportLayer_GetReadSocket(tl);
         if (sock) {
           if (GWEN_SocketSet_HasSocket(rset, sock)) {
@@ -229,9 +241,9 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
             }
           } /* if socket is readable */
         } /* if sock */
-        break;
+      }
 
-      case GWEN_IPCMsglayerStateConnecting:
+      if (state==GWEN_IPCMsglayerStateConnecting) {
         sock=GWEN_IPCTransportLayer_GetWriteSocket(tl);
         if (sock) {
           if (GWEN_SocketSet_HasSocket(wset, sock)) {
@@ -243,14 +255,11 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
             }
           } /* if socket is writeable */
         } /* if sock */
-        break;
+      }
 
-      case GWEN_IPCMsglayerStateWaiting:
+      if (state==GWEN_IPCMsglayerStateWaiting) {
         /* TODO: timeout for waiting sockets */
-
-      default:
-        DBG_INFO(0, "Unhandled state %d", state);
-      } /* switch */
+      }
 
       /* check next connection layer */
       curr=curr->next;
@@ -344,10 +353,14 @@ void GWEN_GlobalServiceLayer_RemoveClosed() {
   cl=GWEN_Global_ServiceLayer->connections;
   while(cl) {
     GWEN_IPCCONNLAYER *nextcl;
+    GWEN_IPCCONNLAYER_STATE st;
 
-    DBG_INFO(0, "State of connection %d: %d",
+    st=GWEN_ConnectionLayer_GetState(cl);
+    DBG_INFO(0, "State of connection %d: \"%s\" (%d)",
              GWEN_ConnectionLayer_GetId(cl),
-             GWEN_ConnectionLayer_GetState(cl));
+             GWEN_ConnectionLayer_GetStateString(st),
+             st);
+
     nextcl=cl->next;
     ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
     assert(ml);
@@ -650,6 +663,18 @@ GWEN_ERRORCODE GWEN_ServiceLayer_SendMessage(GWEN_SERVICELAYER *sl,
     return err;
   }
   DBG_INFO(0, "Message successfully enqueued");
+  if (GWEN_ConnectionLayer_GetState(cl)==
+      GWEN_IPCConnectionLayerStateUnconnected){
+    /* automatically open connection */
+    DBG_INFO(0, "Connection %d is closed, opening it",
+             GWEN_ConnectionLayer_GetId(cl));
+    err=GWEN_ConnectionLayer_Open(cl);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO(0, "called from here");
+      return err;
+    }
+  }
+
   return 0;
 }
 

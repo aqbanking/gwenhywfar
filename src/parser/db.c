@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 #include "db_p.h"
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
@@ -1016,7 +1018,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
     /* dump children */
     cn=n->h.child;
     while(cn) {
-      GWEN_DB_Dump(cn, f, insert+2);
+      GWEN_DB_Dump(cn, f, insert+4);
       cn=cn->h.next;
     }
   }
