@@ -546,7 +546,7 @@ GWEN_NETTRANSPORTSSL_ASKADDCERT_FN GWEN_NetTransportSSL_GetAskAddCertFn(){
 int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
                                    X509 *cert) {
   FILE *f;
-  const char *fmode;
+  const char *fmode = "";
   char cn[256];
   GWEN_NETTRANSPORTSSL *skd;
   X509_NAME *nm;

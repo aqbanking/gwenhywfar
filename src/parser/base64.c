@@ -129,7 +129,7 @@ int GWEN_Base64_Encode(const unsigned char *src, unsigned int size,
 int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
                        GWEN_BUFFER *dst) {
   unsigned int i;
-  const char *p;
+  const char *p = "0";
   GWEN_TYPE_UINT32 v;
   int lastWasEq;
 
