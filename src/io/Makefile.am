@@ -6,6 +6,7 @@ noinst_HEADERS=\
  bio_buffer_p.h \
  bio_file_p.h \
  bio_socket_p.h \
+ bufferedio_l.h \
  bufferedio_p.h
 
 iheaderdir=${includedir}/gwenhywfar

@@ -4,6 +4,7 @@ noinst_LTLIBRARIES=libnet.la
 
 noinst_HEADERS=\
  netconnection_p.h \
+ net_l.h \
  netmsg_p.h \
  nettransport_p.h \
  nettransportsock_p.h

@@ -7,6 +7,7 @@ noinst_LTLIBRARIES=libparser.la
 noinst_HEADERS=\
  csv_p.h \
  db_p.h \
+ dbio_l.h \
  dbio_p.h \
  msgengine_p.h \
  xml_p.h

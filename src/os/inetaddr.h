@@ -99,25 +99,6 @@ GWENHYWFAR_API typedef struct GWEN_INETADDRESSSTRUCT GWEN_INETADDRESS;
 
 
 /**
- * @name Initializing
- *
- * These functions are converned with initialisation issues.
- */
-/*@{*/
-
-/**
- * Initialize this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleInit();
-
-/**
- * De-Initialize this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
-/*@}*/
-
-
-/**
  * @name Construction and destruction
  *
  * These functions allocate and free administrative data about IP addresses.

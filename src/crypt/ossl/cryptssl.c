@@ -44,6 +44,7 @@
 #include <openssl/ssl.h>
 
 
+
 GWEN_ERRORCODE GWEN_CryptImpl_Init(){
   GWEN_ERRORCODE err;
   GWEN_ERRORCODE lerr;
@@ -53,7 +54,6 @@ GWEN_ERRORCODE GWEN_CryptImpl_Init(){
   DBG_INFO(0, "Initializing OpenSSL");
   SSL_load_error_strings();
   SSL_library_init();
-
 
   /* register the various cryptkey types */
   DBG_INFO(0, "Registering RSA");
@@ -107,6 +107,10 @@ void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent) {
 }
 
 
+
+int GWEN_Crypt_IsAvailable() {
+  return 1;
+}
 
 
 

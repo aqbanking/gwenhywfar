@@ -49,8 +49,7 @@ GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
 }
 
 
-
-int GWEN_SSLConn_IsAvailable(){
+int GWEN_Crypt_IsAvailable() {
   return 0;
 }
 
@@ -61,9 +60,55 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             const char *capath,
                                             int secure,
                                             int relinquish){
-  DBG_ERROR(0, "SSL not available");
+  DBG_ERROR(0, "Crypto functions not supported");
   return 0;
 }
+
+
+
+void
+GWEN_NetTransportSSL_SetGetPasswordFn(GWEN_NETTRANSPORTSSL_GETPASSWD_FN fn){
+}
+
+
+
+GWEN_NETTRANSPORTSSL_GETPASSWD_FN
+GWEN_NetTransportSSL_GetGetPasswordFn(){
+  DBG_ERROR(0, "Crypto functions not supported");
+  return 0;
+}
+
+
+
+void
+GWEN_NetTransportSSL_SetAskAddCertFn(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN fn){
+}
+
+
+
+GWEN_NETTRANSPORTSSL_ASKADDCERT_FN
+GWEN_NetTransportSSL_GetAskAddCertFn(){
+  DBG_ERROR(0, "Crypto functions not supported");
+  return 0;
+}
+
+
+
+void GWEN_NetTransportSSL_SetCipherList(GWEN_NETTRANSPORT *tr,
+                                        const char *ciphers){
+  DBG_ERROR(0, "Crypto functions not supported");
+}
+
+
+
+GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList(){
+  DBG_ERROR(0, "Crypto functions not supported");
+  return 0;
+}
+
+
+
+
 
 
 

@@ -32,7 +32,7 @@
 #define GWENHYWFAR_DBIO_P_H
 
 
-#include <gwenhywfar/dbio.h>
+#include "dbio_l.h"
 #include <gwenhywfar/libloader.h>
 
 
@@ -50,10 +50,6 @@ struct GWEN_DBIO {
 
   GWEN_TYPE_UINT32 usage;
 };
-
-
-GWEN_ERRORCODE GWEN_DBIO_ModuleInit();
-GWEN_ERRORCODE GWEN_DBIO_ModuleFini();
 
 
 #endif /* GWENHYWFAR_DBIO_P_H */

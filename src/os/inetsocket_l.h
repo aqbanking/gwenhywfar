@@ -36,6 +36,16 @@ extern "C" {
 #endif
 
 /**
+ * Initializes this module.
+ */
+GWEN_ERRORCODE GWEN_Socket_ModuleInit();
+
+/**
+ * Deinitializes this module.
+ */
+GWEN_ERRORCODE GWEN_Socket_ModuleFini();
+
+/**
  * @internal
  * This is an internal function, it should not be used by an application.
  */

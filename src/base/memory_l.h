@@ -1,11 +1,10 @@
 /***************************************************************************
-  $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Fri Nov 22 2002
-    copyright   : (C) 2002 by Martin Preuss
-    email       : martin@libchipcard.de
-
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
+ begin       : Sat Jun 28 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -27,33 +26,13 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_LIBLOADER_P_H
-#define GWENHYWFAR_LIBLOADER_P_H "$Id"
+#ifndef GWENHYWFAR_MEMORY_L_H
+#define GWENHYWFAR_MEMORY_L_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/libloader.h>
-#include <gwenhywfar/error.h>
+#include <gwenhywfar/memory.h>
 
+GWEN_ERRORCODE GWEN_Memory_ModuleInit();
+GWEN_ERRORCODE GWEN_Memory_ModuleFini();
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
-  void *handle;
-};
-
-
-GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                                          const char *name);
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* GWENHYWFAR_LIBLOADER_P_H */
-
+#endif /* GWENHYWFAR_MEMORY_L_H */
 

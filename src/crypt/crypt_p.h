@@ -30,7 +30,7 @@
 #define GWENHYWFAR_CRYPT_P_H
 
 
-#include <gwenhywfar/crypt.h>
+#include "crypt_l.h"
 
 
 

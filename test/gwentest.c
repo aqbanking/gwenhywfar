@@ -733,12 +733,20 @@ int testSocketSSL(int argc, char **argv) {
   char buffer[8192];
   GWEN_TYPE_UINT32 bsize;
   int rv;
+  GWEN_DB_NODE *ciphers;
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
 
+  ciphers=GWEN_NetTransportSSL_GetCipherList();
+  if (ciphers) {
+    fprintf(stderr, "Available ciphers:\n");
+    GWEN_DB_Dump(ciphers, stderr, 2);
+    GWEN_DB_Group_free(ciphers);
+  }
+
   /* create transport layer */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  tr=GWEN_NetTransportSSL_new(sk, 0, "trusted", 0, 1);
+  tr=GWEN_NetTransportSSL_new(sk, 0, "trusted", 0, 1, 1);
   if (!tr) {
     fprintf(stderr, "SSL not supported.\n");
     return 2;
@@ -764,7 +772,7 @@ int testSocketSSL(int argc, char **argv) {
   }
   fprintf(stderr, "\nConnected.\n");
 
-  tstr="GET /\n";
+  tstr="GET / HTTP/1.0\n\n";
   bsize=strlen(tstr);
   fprintf(stderr, "Writing something to the peer...\n");
   if (GWEN_NetConnection_Write_Wait(conn, tstr, &bsize, 30)) {

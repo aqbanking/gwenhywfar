@@ -13,8 +13,11 @@ iheader_HEADERS=\
  process.h
 
 noinst_HEADERS= \
+ inetaddr_l.h \
  inetsocket_all_p.h \
- inetsocket_l.h
+ inetsocket_l.h \
+ libloader_l.h \
+ process_l.h
 
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\

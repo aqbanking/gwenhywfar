@@ -1,11 +1,10 @@
 /***************************************************************************
-  $RCSfile$
+ $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Fri Nov 22 2002
+    begin       : Tue Oct 02 2002
     copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
-
 
  ***************************************************************************
  *                                                                         *
@@ -26,34 +25,30 @@
  *                                                                         *
  ***************************************************************************/
 
+/**
+ * @file gwenhywfar/inetaddr.h
+ * @short This file contains the internet address handling module
+ */
 
-#ifndef GWENHYWFAR_LIBLOADER_P_H
-#define GWENHYWFAR_LIBLOADER_P_H "$Id"
+#ifndef GWEN_INETADDR_L_H
+#define GWEN_INETADDR_L_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/libloader.h>
-#include <gwenhywfar/error.h>
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <gwenhywfar/inetaddr.h>
 
 
-GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
-  void *handle;
-};
+/**
+ * Initialize this module.
+ */
+GWEN_ERRORCODE GWEN_InetAddr_ModuleInit();
+
+/**
+ * De-Initialize this module.
+ */
+GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
 
 
-GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                                          const char *name);
+#endif /* GWEN_INETADDR_L_H */
 
 
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* GWENHYWFAR_LIBLOADER_P_H */
 
 

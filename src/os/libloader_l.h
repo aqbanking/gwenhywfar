@@ -27,33 +27,16 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_LIBLOADER_P_H
-#define GWENHYWFAR_LIBLOADER_P_H "$Id"
+#ifndef GWENHYWFAR_LIBLOADER_L_H
+#define GWENHYWFAR_LIBLOADER_L_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/libloader.h>
-#include <gwenhywfar/error.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+GWEN_ERRORCODE GWEN_LibLoader_ModuleInit();
+GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
 
 
-GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
-  void *handle;
-};
-
-
-GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                                          const char *name);
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* GWENHYWFAR_LIBLOADER_P_H */
+#endif /* GWENHYWFAR_LIBLOADER_L_H */
 
 

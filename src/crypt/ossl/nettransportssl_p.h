@@ -40,11 +40,13 @@ typedef struct GWEN_NETTRANSPORTSSL {
 
   char *CAfile;
   char *CAdir;
+  char *ownCertFile;
   SSL_CTX *ssl_ctx;
   SSL *ssl;
   int secure;
   int isSecure;
   int active;
+  char *cipherList;
 } GWEN_NETTRANSPORTSSL;
 
 
@@ -85,6 +87,32 @@ GWEN_NETTRANSPORT_WORKRESULT
 
 
 const char *GWEN_NetTransportSSL_ErrorString(unsigned int e);
+
+int GWEN_NetTransportSSL__Check_Cert(GWEN_NETTRANSPORTSSL *skd,
+                                     const char *name);
+int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd);
+
+int GWEN_NetTransportSSL_GetPassword(GWEN_NETTRANSPORT *tr,
+                                     char *buffer, int num,
+                                     int rwflag);
+
+static int GWEN_NetTransportSSL_PasswordCB(char *buffer, int num,
+                                           int rwflag, void *userdata);
+
+GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+  GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
+                                   GWEN_DB_NODE *cert);
+
+int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
+                                   X509 *cert);
+
+void GWEN_NetTransportSSL__CertEntries2Db(X509_NAME *nm,
+                                          GWEN_DB_NODE *db,
+                                          int nid,
+                                          const char *name);
+GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert);
+
+
 
 
 #endif /* GWEN_NETTRANSPORTSSL_P_H */

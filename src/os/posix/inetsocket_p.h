@@ -63,18 +63,6 @@ GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
 };
 
 
-/**
- * Initializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
-
-/**
- * Deinitializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
-
-
-
 #ifdef __cplusplus
 }
 #endif

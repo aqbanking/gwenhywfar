@@ -1,3 +1,13 @@
+2004/05/06: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- more strict usage of *_p.h files. These files should nly be included by
+  their matching code file (and by no other file).
+  Therefore: created some *_l.h files for prototypes of functions private
+  to the library.
+- crypt/ossl/nettransportssl.{c,h}: improved this module a lot. It can now at
+  least be used for client connections.
+
+
 2004-05-05   Christian Stimming <stimming@tuhh.de>
 
 	* src/*: Remove trailing semicolons from macro calls where

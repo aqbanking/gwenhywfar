@@ -6,11 +6,13 @@ noinst_HEADERS=\
  args_p.h \
  buffer_p.h \
  debug_p.h \
+ error_l.h \
  error_p.h \
  idlist_p.h \
  inherit_p.h \
  list_p.h \
  logger_p.h \
+ memory_l.h \
  memory_p.h \
  ringbuffer_p.h \
  stringlist_p.h \

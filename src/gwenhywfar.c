@@ -33,18 +33,21 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/gwenhywfar.h>
 
-#include "base/error_p.h"
-#include "inetaddr_p.h"
-#include "inetsocket_p.h"
-#include "libloader_p.h"
-#include "io/bufferedio_p.h"
-#include "parser/dbio_p.h"
-#include "gwenhywfar/debug.h"
-#include "gwenhywfar/logger.h"
-#include "gwenhywfar/crypt.h"
-#include "gwenhywfar/process.h"
-#include "gwenhywfar/memory.h"
-#include "net/net.h"
+#include "base/debug.h"
+#include "base/logger.h"
+
+#include "base/error_l.h"
+#include "base/memory_l.h"
+
+#include "os/inetaddr_l.h"
+#include "os/inetsocket_l.h"
+#include "os/libloader_l.h"
+#include "os/process_l.h"
+
+#include "io/bufferedio_l.h"
+#include "parser/dbio_l.h"
+#include "crypt/crypt_l.h"
+#include "net/net_l.h"
 #include "base/waitcallback_l.h"
 
 

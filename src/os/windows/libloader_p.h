@@ -46,9 +46,6 @@ GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
 };
 
 
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleInit();
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
-
 GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
                                           const char *name);
 

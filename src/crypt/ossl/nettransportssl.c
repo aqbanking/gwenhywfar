@@ -37,11 +37,24 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inetsocket_l.h>
+
+#include <openssl/pem.h>
+
 #include <string.h>
 #include <errno.h>
+#include <sys/socket.h>
+
 
 
 GWEN_INHERIT(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL);
+
+
+static GWEN_NETTRANSPORTSSL_GETPASSWD_FN
+  gwen_netransportssl_getPasswordFn=0;
+
+static GWEN_NETTRANSPORTSSL_ASKADDCERT_FN
+  gwen_netransportssl_askAddCertFn=0;
+
 
 
 /* -------------------------------------------------------------- FUNCTION */
@@ -61,7 +74,8 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
       GWEN_Socket_free(skd->socket);
     free(skd->CAfile);
     free(skd->CAdir);
-
+    free(skd->ownCertFile);
+    free(skd->cipherList);
     free(skd);
   }
 }
@@ -72,6 +86,7 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             const char *cafile,
                                             const char *capath,
+                                            const char *ownCertFile,
                                             int secure,
                                             int relinquish){
   GWEN_NETTRANSPORT *tr;
@@ -88,6 +103,9 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
     skd->CAfile=strdup(cafile);
   if (capath)
     skd->CAdir=strdup(capath);
+  if (ownCertFile)
+    skd->ownCertFile=strdup(ownCertFile);
+
   skd->secure=secure;
 
   GWEN_NetTransport_SetStartConnectFn(tr,
@@ -104,6 +122,7 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                     GWEN_NetTransportSSL_AddSockets);
   GWEN_NetTransport_SetWorkFn(tr,
                               GWEN_NetTransportSSL_Work);
+
   return tr;
 }
 
@@ -273,6 +292,11 @@ GWEN_NetTransportSSL_StartDisconnect(GWEN_NETTRANSPORT *tr){
   }
 
   rv=SSL_shutdown(skd->ssl);
+  if (!rv) {
+    /* send a TCP_FIN to trigger the other side's close_notify */
+    shutdown(GWEN_Socket_GetSocketInt(skd->socket), 1);
+    rv=SSL_shutdown(skd->ssl);
+  }
   if (rv==1 || rv==-1) {
     /* connection closed */
     DBG_NOTICE(0, "Connection closed");
@@ -425,6 +449,283 @@ int GWEN_NetTransportSSL_AddSockets(GWEN_NETTRANSPORT *tr,
 }
 
 
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL__Check_Cert(GWEN_NETTRANSPORTSSL *skd,
+                                     const char *name){
+  X509 *peer;
+  char cn[256];
+
+  if (SSL_get_verify_result(skd->ssl)!=X509_V_OK) {
+    DBG_ERROR(0, "Invalid certificate");
+    return -1;
+  }
+  /* check common name */
+  peer=SSL_get_peer_certificate(skd->ssl);
+  X509_NAME_get_text_by_NID(X509_get_subject_name(peer),
+                            NID_commonName, cn, sizeof(cn));
+  if(strcasecmp(cn, name)) {
+    DBG_WARN(0, "Common name does not match (\"%s\" != \"%s\")",
+             cn, name);
+    return -1;
+  }
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL_GetPassword(GWEN_NETTRANSPORT *tr,
+                                     char *buffer, int num, int rwflag){
+  if (gwen_netransportssl_getPasswordFn)
+    return gwen_netransportssl_getPasswordFn(tr, buffer, num, rwflag);
+  else {
+    DBG_WARN(0, "No getPasswordFn set");
+    return 0;
+  }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void
+GWEN_NetTransportSSL_SetGetPasswordFn(GWEN_NETTRANSPORTSSL_GETPASSWD_FN fn){
+  gwen_netransportssl_getPasswordFn=fn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_NETTRANSPORTSSL_GETPASSWD_FN
+GWEN_NetTransportSSL_GetGetPasswordFn(){
+  return gwen_netransportssl_getPasswordFn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL_PasswordCB(char *buffer, int num,
+                                    int rwflag, void *userdata){
+  return GWEN_NetTransportSSL_GetPassword((GWEN_NETTRANSPORT*)userdata,
+                                          buffer, num, rwflag);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT
+GWEN_NetTransportSSL__AskAddCert(GWEN_NETTRANSPORT *tr,
+                                 GWEN_DB_NODE *cert){
+  /*
+  DBG_NOTICE(0, "Would ask user about this:");
+  GWEN_DB_Dump(cert, stderr, 2);
+  return GWEN_NetTransportSSL_AskAddCertResultTmp;
+  */
+  if (gwen_netransportssl_askAddCertFn)
+    return gwen_netransportssl_askAddCertFn(tr, cert);
+  else {
+    DBG_WARN(0, "No askAddCert function set");
+    return GWEN_NetTransportSSL_AskAddCertResultNo;
+  }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void
+GWEN_NetTransportSSL_SetAskAddCertFn(GWEN_NETTRANSPORTSSL_ASKADDCERT_FN fn){
+  gwen_netransportssl_askAddCertFn=fn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_NETTRANSPORTSSL_ASKADDCERT_FN GWEN_NetTransportSSL_GetAskAddCertFn(){
+  return gwen_netransportssl_askAddCertFn;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
+                                   X509 *cert) {
+  FILE *f;
+  const char *fname;
+  const char *fmode;
+  char cn[256];
+
+  X509_NAME_get_text_by_NID(X509_get_subject_name(cert),
+                            NID_commonName, cn, sizeof(cn));
+
+  f=fopen(fname, fmode);
+  if (!f) {
+    DBG_ERROR(0, "fopen(\"%s\", \"%s\"): %s",
+              fname, fmode, strerror(errno));
+    return -1;
+  }
+  if (!PEM_write_X509(f, cert)) {
+    DBG_ERROR(0, "Could not save certificate of \"%s\"", cn);
+    return 0;
+  }
+
+  DBG_INFO(0, "Certificate of \"%s\" added", cn);
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
+  int rv;
+  GWEN_NETTRANSPORTSSL *skd;
+
+  assert(tr);
+  skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
+  assert(skd);
+
+  /* set default password handler and data */
+  SSL_CTX_set_default_passwd_cb(skd->ssl_ctx,
+                                GWEN_NetTransportSSL_PasswordCB);
+  SSL_CTX_set_default_passwd_cb_userdata(skd->ssl_ctx,
+                                         tr);
+
+  /* setup locations of certificates */
+  rv=SSL_CTX_load_verify_locations(skd->ssl_ctx,
+                                   skd->CAfile,
+                                   skd->CAdir);
+  if (rv==0) {
+    int sslerr;
+
+    sslerr=SSL_get_error(skd->ssl, rv);
+    DBG_ERROR(0, "SSL error: %s (%d)",
+              GWEN_NetTransportSSL_ErrorString(sslerr),
+              sslerr);
+    return -1;
+  }
+
+  if (skd->ownCertFile) {
+    /* load own certificate file */
+    if (!(SSL_CTX_use_certificate_chain_file(skd->ssl_ctx,
+                                             skd->ownCertFile))){
+      int sslerr;
+
+      sslerr=SSL_get_error(skd->ssl, rv);
+      DBG_ERROR(0, "SSL error reading certfile: %s (%d)",
+                GWEN_NetTransportSSL_ErrorString(sslerr),
+                sslerr);
+      return -1;
+    }
+    /* load keys */
+    if(!(SSL_CTX_use_PrivateKey_file(skd->ssl_ctx,
+                                     skd->ownCertFile,
+                                     SSL_FILETYPE_PEM))) {
+      int sslerr;
+
+      sslerr=SSL_get_error(skd->ssl, rv);
+      DBG_ERROR(0, "SSL error reading keyfile: %s (%d)",
+                GWEN_NetTransportSSL_ErrorString(sslerr),
+                sslerr);
+      return -1;
+    }
+    if (!SSL_CTX_check_private_key(skd->ssl_ctx)) {
+      DBG_ERROR(0, "Private key does not match the certificate public key");
+      return -1;
+    }
+
+  }
+
+  if (skd->secure) {
+    SSL_CTX_set_verify(skd->ssl_ctx,
+                       SSL_VERIFY_PEER,
+                       0);
+  }
+  else {
+    SSL_CTX_set_verify(skd->ssl_ctx,
+                       SSL_VERIFY_NONE,
+                       0);
+  }
+  SSL_CTX_set_verify_depth(skd->ssl_ctx, 1);
+
+  /* tell SSL to use our socket */
+  rv=SSL_set_fd(skd->ssl, fd);
+  if (rv==0) {
+    int sslerr;
+
+    sslerr=SSL_get_error(skd->ssl, rv);
+    DBG_ERROR(0, "SSL error setting socket: %s (%d)",
+              GWEN_NetTransportSSL_ErrorString(sslerr),
+              sslerr);
+    return -1;
+  }
+
+  return 0;
+}
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetTransportSSL__CertEntries2Db(X509_NAME *nm,
+                                          GWEN_DB_NODE *dbCert,
+                                          int nid,
+                                          const char *name) {
+  X509_NAME_ENTRY *e;
+  const char *p;
+  int len;
+  int lastpos;
+  char *cpy;
+
+  lastpos=-1;
+  for (;;) {
+    lastpos=X509_NAME_get_index_by_NID(nm, nid, lastpos);
+    if (lastpos==-1)
+      break;
+    e=X509_NAME_get_entry(nm, lastpos);
+    assert(e);
+    p=e->value->data;
+    len=e->value->length;
+    if (p) {
+      cpy=(char*)malloc(len+1);
+      memmove(cpy, p, len);
+      cpy[len]=0;
+      GWEN_DB_SetCharValue(dbCert, GWEN_DB_FLAGS_DEFAULT,
+                           name, cpy);
+      free(cpy);
+    }
+  } /* for */
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert) {
+  GWEN_DB_NODE *dbCert;
+  X509_NAME *nm;
+
+  nm=X509_get_subject_name(cert);
+
+  /* setup certificate db */
+  dbCert=GWEN_DB_Group_new("cert");
+
+  GWEN_NetTransportSSL__CertEntries2Db(nm, dbCert,
+                                       NID_commonName,
+                                       "commonName");
+  GWEN_NetTransportSSL__CertEntries2Db(nm, dbCert,
+                                       NID_organizationName,
+                                       "organizationName");
+  GWEN_NetTransportSSL__CertEntries2Db(nm, dbCert,
+                                       NID_organizationalUnitName,
+                                       "organizationalUnitName");
+  GWEN_NetTransportSSL__CertEntries2Db(nm, dbCert,
+                                       NID_countryName,
+                                       "countryName");
+  GWEN_NetTransportSSL__CertEntries2Db(nm, dbCert,
+                                       NID_localityName,
+                                       "localityName");
+  GWEN_NetTransportSSL__CertEntries2Db(nm, dbCert,
+                                       NID_stateOrProvinceName,
+                                       "stateOrProvinceName");
+  return dbCert;
+}
+
+
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORT_WORKRESULT
@@ -490,46 +791,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     skd->ssl_ctx=SSL_CTX_new(SSLv23_client_method());
     skd->ssl=SSL_new(skd->ssl_ctx);
 
-    /* setup locations of certificates */
-    rv=SSL_CTX_load_verify_locations(skd->ssl_ctx,
-                                     skd->CAfile,
-                                     skd->CAdir);
-    if (rv==0) {
-      int sslerr;
-
-      sslerr=SSL_get_error(skd->ssl, rv);
-      DBG_ERROR(0, "SSL error: %s (%d)",
-                GWEN_NetTransportSSL_ErrorString(sslerr),
-                sslerr);
-      GWEN_Socket_Close(skd->socket);
-      SSL_free(skd->ssl);
-      skd->ssl=0;
-      SSL_CTX_free(skd->ssl_ctx);
-      skd->ssl_ctx=0;
-      GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
-      return GWEN_NetTransportWorkResult_Error;
-    }
-
-    if (skd->secure) {
-      SSL_CTX_set_verify(skd->ssl_ctx,
-                         SSL_VERIFY_PEER,
-                         0);
-    }
-    else {
-      SSL_CTX_set_verify(skd->ssl_ctx,
-                         SSL_VERIFY_NONE,
-                         0);
-    }
-
-    /* tell SSL to use our socket */
-    rv=SSL_set_fd(skd->ssl, fd);
-    if (rv==0) {
-      int sslerr;
-
-      sslerr=SSL_get_error(skd->ssl, rv);
-      DBG_ERROR(0, "SSL error: %s (%d)",
-                GWEN_NetTransportSSL_ErrorString(sslerr),
-                sslerr);
+    if (GWEN_NetTransportSSL__SetupSSL(tr, fd)) {
       GWEN_Socket_Close(skd->socket);
       SSL_free(skd->ssl);
       skd->ssl=0;
@@ -596,13 +858,66 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     }
     else {
       char *certbuf;
+      long vr;
 
       certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
 
       DBG_NOTICE(0, "Got a certificate: %s",
                  certbuf);
-      free(certbuf);
-      if (SSL_get_verify_result(skd->ssl)!=X509_V_OK) {
+      vr=SSL_get_verify_result(skd->ssl);
+      if (vr==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY) {
+        GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT res;
+        int isErr;
+        GWEN_DB_NODE *dbCert;
+
+        /* setup certificate */
+        dbCert=GWEN_NetTransportSSL__Cert2Db(cert);
+
+        /* ask user */
+        isErr=0;
+        DBG_INFO(0, "Unknown certificate \"%s\", asking user", certbuf);
+        res=GWEN_NetTransportSSL__AskAddCert(tr, dbCert);
+        switch(res) {
+        case GWEN_NetTransportSSL_AskAddCertResultError:
+          DBG_ERROR(0, "Error asking user");
+          isErr=1;
+          break;
+        case GWEN_NetTransportSSL_AskAddCertResultNo:
+          if (skd->secure) {
+            DBG_ERROR(0, "User doesn't trust the certificate");
+            isErr=1;
+          }
+          break;
+        case GWEN_NetTransportSSL_AskAddCertResultTmp:
+          DBG_INFO(0, "Temporarily trusting certificate");
+          break;
+        case GWEN_NetTransportSSL_AskAddCertResultPerm:
+          DBG_NOTICE(0, "Adding certificate to trusted certs");
+          if (GWEN_NetTransportSSL__SaveCert(tr, cert)) {
+            DBG_ERROR(0, "Error saving certificate");
+            isErr=1;
+          }
+          break;
+        default:
+          DBG_ERROR(0, "Unexpected result");
+          break;
+        } /* switch */
+
+        if (isErr) {
+          GWEN_Socket_Close(skd->socket);
+          SSL_free(skd->ssl);
+          skd->ssl=0;
+          SSL_CTX_free(skd->ssl_ctx);
+          skd->ssl_ctx=0;
+          GWEN_DB_Group_free(dbCert);
+          free(certbuf);
+          X509_free(cert);
+          return GWEN_NetTransportWorkResult_Error;
+        }
+
+        GWEN_DB_Group_free(dbCert);
+      }
+      else if (vr!=X509_V_OK) {
         if (skd->secure) {
           DBG_ERROR(0, "Invalid peer certificate, aborting");
           GWEN_Socket_Close(skd->socket);
@@ -610,6 +925,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
           skd->ssl=0;
           SSL_CTX_free(skd->ssl_ctx);
           skd->ssl_ctx=0;
+          free(certbuf);
+          X509_free(cert);
           return GWEN_NetTransportWorkResult_Error;
         }
         else {
@@ -618,8 +935,10 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       }
       else {
         DBG_NOTICE(0, "Peer certificate is valid");
+        /* TODO: check_cert? */
         skd->isSecure=1;
       }
+      free(certbuf);
       X509_free(cert);
     }
 
@@ -677,7 +996,10 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 
       /* create new transport layer, let it take over the new socket */
       newTr=GWEN_NetTransportSSL_new(newS,
-                                     skd->CAfile, skd->CAdir, skd->secure,
+                                     skd->CAfile,
+                                     skd->CAdir,
+                                     skd->ownCertFile,
+                                     skd->secure,
                                      1);
       GWEN_NetTransport_SetPeerAddr(newTr, iaddr);
       GWEN_InetAddr_free(iaddr);
@@ -768,6 +1090,78 @@ const char *GWEN_NetTransportSSL_ErrorString(unsigned int e) {
   default:                         s="SSL: Unknown error"; break;
   } /* switch */
   return s;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetTransportSSL_SetCipherList(GWEN_NETTRANSPORT *tr,
+                                        const char *ciphers){
+  GWEN_NETTRANSPORTSSL *skd;
+
+  assert(tr);
+  skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL, tr);
+  assert(skd);
+
+  free(skd->cipherList);
+  if (ciphers)
+    skd->cipherList=strdup(ciphers);
+  else
+    skd->cipherList=0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_DB_NODE *GWEN_NetTransportSSL_GetCipherList(){
+  STACK_OF(SSL_CIPHER) *ciphers;
+  SSL *ssl;
+  SSL_CTX *ctx;
+  const char *p;
+
+  ctx=SSL_CTX_new(SSLv23_client_method());
+  ssl=SSL_new(ctx);
+
+  ciphers=(STACK_OF(SSL_CIPHER)*)SSL_get_ciphers(ssl);
+  if (ciphers) {
+    GWEN_DB_NODE *dbCiphers;
+    SSL_CIPHER *curr;
+    int n;
+    char buffer[256];
+
+    dbCiphers=GWEN_DB_Group_new("ciphers");
+    for (n=0;n<sk_SSL_CIPHER_num(ciphers) ; n++) {
+      curr=sk_SSL_CIPHER_value(ciphers, n);
+      p=SSL_CIPHER_get_name(curr);
+      if (p) {
+        GWEN_DB_NODE *dbCurr;
+
+        dbCurr=GWEN_DB_GetGroup(dbCiphers, GWEN_PATH_FLAGS_CREATE_GROUP,
+                                "cipher");
+        GWEN_DB_SetCharValue(dbCurr, GWEN_DB_FLAGS_DEFAULT,
+                             "name", p);
+        GWEN_DB_SetIntValue(dbCurr, GWEN_DB_FLAGS_DEFAULT,
+                            "bits", SSL_CIPHER_get_bits(curr, 0));
+        p=SSL_CIPHER_get_version(curr);
+        if (p)
+          GWEN_DB_SetCharValue(dbCurr, GWEN_DB_FLAGS_DEFAULT,
+                               "version", p);
+        p=SSL_CIPHER_description(curr, buffer, sizeof(buffer));
+        if (p)
+          GWEN_DB_SetCharValue(dbCurr, GWEN_DB_FLAGS_DEFAULT,
+                               "description", p);
+      } /* if cipher name */
+    } /* for */
+    SSL_free(ssl);
+    SSL_CTX_free(ctx);
+    return dbCiphers;
+  } /* if ciphers */
+  else {
+    DBG_WARN(0, "No ciphers");
+    SSL_free(ssl);
+    SSL_CTX_free(ctx);
+    return 0;
+  }
 }
 
 

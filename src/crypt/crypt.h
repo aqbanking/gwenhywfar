@@ -53,96 +53,92 @@ extern "C" {
 #define GWEN_CRYPT_ERROR_GENERIC            11
 
 
-GWENHYWFAR_API
-GWEN_ERRORCODE GWEN_Crypt_ModuleInit();
-
-GWENHYWFAR_API
-GWEN_ERRORCODE GWEN_Crypt_ModuleFini();
+int GWEN_Crypt_IsAvailable();
 
 
-  /** @name Functions expected in implementation
-   *
-   */
-  /*@{*/
-  /**
-   * This function is expected to register all it's crypto service
-   * providers. It is called when the GWEN_Crypt module is initialized.
-   */
+/** @name Functions expected in implementation
+ *
+ */
+/*@{*/
+/**
+ * This function is expected to register all it's crypto service
+ * providers. It is called when the GWEN_Crypt module is initialized.
+ */
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptImpl_Init();
 
-  /**
-   * This function is called when the GWEN_Crypt module is deinitialized.
-   * It can be used to release allocated data. It MUST NOT unregister any
-   * crypt key type, this is done automatically.
-   */
+/**
+ * This function is called when the GWEN_Crypt module is deinitialized.
+ * It can be used to release allocated data. It MUST NOT unregister any
+ * crypt key type, this is done automatically.
+ */
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptImpl_Fini();
-  /*@}*/
+/*@}*/
 
 
 GWENHYWFAR_API
   typedef struct GWEN_CRYPTKEY GWEN_CRYPTKEY;
 
-  /** @name Function prototypes
-   *
-   */
-  /*@{*/
+/** @name Function prototypes
+ *
+ */
+/*@{*/
 GWENHYWFAR_API
   typedef GWEN_CRYPTKEY* (*GWEN_CRYPTKEY_DUP_FN)(const GWEN_CRYPTKEY *key);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_ENCRYPT_FN)(const GWEN_CRYPTKEY *key,
-                                                     GWEN_BUFFER *src,
-                                                     GWEN_BUFFER *dst);
+						     GWEN_BUFFER *src,
+						     GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_DECRYPT_FN)(const GWEN_CRYPTKEY *key,
-                                                     GWEN_BUFFER *src,
-                                                     GWEN_BUFFER *dst);
+						     GWEN_BUFFER *src,
+						     GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_SIGN_FN)(const GWEN_CRYPTKEY *key,
-                                                  GWEN_BUFFER *src,
-                                                  GWEN_BUFFER *dst);
+						  GWEN_BUFFER *src,
+						  GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_VERIFY_FN)(const GWEN_CRYPTKEY *key,
-                                                    GWEN_BUFFER *src,
-                                                    GWEN_BUFFER *dst);
+						    GWEN_BUFFER *src,
+						    GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   typedef unsigned int
-    (*GWEN_CRYPTKEY_GETCHUNKSIZE_FN)(const GWEN_CRYPTKEY *key);
+  (*GWEN_CRYPTKEY_GETCHUNKSIZE_FN)(const GWEN_CRYPTKEY *key);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_FROMDB_FN)(GWEN_CRYPTKEY *key,
-                                                    GWEN_DB_NODE *db);
+						    GWEN_DB_NODE *db);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_TODB_FN)(const GWEN_CRYPTKEY *key,
-                                               GWEN_DB_NODE *db,
-                                               int pub);
+						  GWEN_DB_NODE *db,
+						  int pub);
 
 GWENHYWFAR_API
   typedef void (*GWEN_CRYPTKEY_FREEKEYDATA_FN)(GWEN_CRYPTKEY *key);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_GENERATEKEY_FN)(GWEN_CRYPTKEY *key,
-                                                         unsigned keylength);
+							 unsigned keylength);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_OPEN_FN)(GWEN_CRYPTKEY *key);
 
 GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_CLOSE_FN)(GWEN_CRYPTKEY *key);
-  /*@}*/
+/*@}*/
 
 
 
-  /**
-   * @internal
-   */
+/**
+ * @internal
+ */
 GWENHYWFAR_API
   GWEN_CRYPTKEY *GWEN_CryptKey_new();
 
@@ -163,23 +159,23 @@ GWENHYWFAR_API
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Encrypt(const GWEN_CRYPTKEY *key,
-                                       GWEN_BUFFER *src,
-                                       GWEN_BUFFER *dst);
+				       GWEN_BUFFER *src,
+				       GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Decrypt(const GWEN_CRYPTKEY *key,
-                                       GWEN_BUFFER *src,
-                                       GWEN_BUFFER *dst);
+				       GWEN_BUFFER *src,
+				       GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Sign(const GWEN_CRYPTKEY *key,
-                                    GWEN_BUFFER *src,
-                                    GWEN_BUFFER *dst);
+				    GWEN_BUFFER *src,
+				    GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Verify(const GWEN_CRYPTKEY *key,
-                                      GWEN_BUFFER *src,
-                                      GWEN_BUFFER *dst);
+				      GWEN_BUFFER *src,
+				      GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
   unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key);
@@ -189,8 +185,8 @@ GWENHYWFAR_API
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
-                                    GWEN_DB_NODE *db,
-                                    int pub);
+				    GWEN_DB_NODE *db,
+				    int pub);
 
 /**
  * This is a conveniance function.
@@ -200,16 +196,16 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_SetData(GWEN_CRYPTKEY *key,
-                                       const char *buffer,
-                                       unsigned int bsize);
+				       const char *buffer,
+				       unsigned int bsize);
 
 /**
  * Creates a password from a given string. Depending on the size needed
  * a hash-algorithm is applied to the given password.
  */
 int GWEN_CryptKey_FromPassword(const char *password,
-                               unsigned char *buffer,
-                               unsigned int bsize);
+			       unsigned char *buffer,
+			       unsigned int bsize);
 
 /**
  * This is a conveniance function.
@@ -218,13 +214,13 @@ int GWEN_CryptKey_FromPassword(const char *password,
  * as most symmetric keys).
  */
 GWEN_ERRORCODE GWEN_CryptKey_GetData(GWEN_CRYPTKEY *key,
-                                     char *buffer,
-                                     unsigned int *bsize);
+				     char *buffer,
+				     unsigned int *bsize);
 
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Generate(GWEN_CRYPTKEY *key,
-                                        unsigned int keylength);
+					unsigned int keylength);
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Open(GWEN_CRYPTKEY *key);
@@ -232,10 +228,10 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Close(GWEN_CRYPTKEY *key);
 
-  /**
-   * Returns a pointer to the key's description.
-   * You MUST NOT free the returned pointer.
-   */
+/**
+ * Returns a pointer to the key's description.
+ * You MUST NOT free the returned pointer.
+ */
 GWENHYWFAR_API
   const GWEN_KEYSPEC *GWEN_CryptKey_GetKeySpec(const GWEN_CRYPTKEY *key);
 
@@ -243,29 +239,29 @@ GWENHYWFAR_API
   const char *GWEN_CryptKey_GetKeyType(const GWEN_CRYPTKEY *key);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetKeyType(GWEN_CRYPTKEY *key,
-                                const char *s);
+				const char *s);
 
 GWENHYWFAR_API
   const char *GWEN_CryptKey_GetKeyName(const GWEN_CRYPTKEY *key);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetKeyName(GWEN_CRYPTKEY *key,
-                                const char *s);
+				const char *s);
 
 GWENHYWFAR_API
   const char *GWEN_CryptKey_GetOwner(const GWEN_CRYPTKEY *key);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetOwner(GWEN_CRYPTKEY *key,
-                              const char *s);
+			      const char *s);
 GWENHYWFAR_API
   unsigned int GWEN_CryptKey_GetNumber(const GWEN_CRYPTKEY *key);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetNumber(GWEN_CRYPTKEY *key,
-                               unsigned int i);
+			       unsigned int i);
 GWENHYWFAR_API
   unsigned int GWEN_CryptKey_GetVersion(const GWEN_CRYPTKEY *key);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
-                                unsigned int i);
+				unsigned int i);
 
 #if (defined(GWEN_EXTEND_CRYPTKEY) || defined(DOXYGEN))
 /**
@@ -287,7 +283,7 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   void GWEN_CryptKey_SetKeyData(GWEN_CRYPTKEY *key,
-                                void *kd);
+				void *kd);
 #endif
 
 GWENHYWFAR_API
@@ -310,38 +306,38 @@ GWENHYWFAR_API
 				  GWEN_CRYPTKEY_ENCRYPT_FN encryptFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetDecryptFn(GWEN_CRYPTKEY *key,
-                                  GWEN_CRYPTKEY_DECRYPT_FN decryptFn);
+				  GWEN_CRYPTKEY_DECRYPT_FN decryptFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetSignFn(GWEN_CRYPTKEY *key,
-                               GWEN_CRYPTKEY_SIGN_FN signFn);
+			       GWEN_CRYPTKEY_SIGN_FN signFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetVerifyFn(GWEN_CRYPTKEY *key,
-                                 GWEN_CRYPTKEY_VERIFY_FN verifyFn);
+				 GWEN_CRYPTKEY_VERIFY_FN verifyFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetGetChunkSizeFn(GWEN_CRYPTKEY *key,
-                                       GWEN_CRYPTKEY_GETCHUNKSIZE_FN getChunkSizeFn);
+				       GWEN_CRYPTKEY_GETCHUNKSIZE_FN getChunkSizeFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetFromDbFn(GWEN_CRYPTKEY *key,
-                                 GWEN_CRYPTKEY_FROMDB_FN fromDbFn);
+				 GWEN_CRYPTKEY_FROMDB_FN fromDbFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetToDbFn(GWEN_CRYPTKEY *key,
-                               GWEN_CRYPTKEY_TODB_FN toDbFn);
+			       GWEN_CRYPTKEY_TODB_FN toDbFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetGenerateKeyFn(GWEN_CRYPTKEY *key,
-                        GWEN_CRYPTKEY_GENERATEKEY_FN generateKeyFn);
+				      GWEN_CRYPTKEY_GENERATEKEY_FN generateKeyFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetFreeKeyDataFn(GWEN_CRYPTKEY *key,
-                                      GWEN_CRYPTKEY_FREEKEYDATA_FN freeKeyDataFn);
+				      GWEN_CRYPTKEY_FREEKEYDATA_FN freeKeyDataFn);
 
 GWENHYWFAR_API
   void GWEN_CryptKey_SetOpenFn(GWEN_CRYPTKEY *key,
-                               GWEN_CRYPTKEY_OPEN_FN openKeyFn);
+			       GWEN_CRYPTKEY_OPEN_FN openKeyFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetCloseFn(GWEN_CRYPTKEY *key,
-                                GWEN_CRYPTKEY_CLOSE_FN closeKeyFn);
+				GWEN_CRYPTKEY_CLOSE_FN closeKeyFn);
 GWENHYWFAR_API
   void GWEN_CryptKey_SetDupFn(GWEN_CRYPTKEY *key,
-                              GWEN_CRYPTKEY_DUP_FN dupFn);
+			      GWEN_CRYPTKEY_DUP_FN dupFn);
 #endif
 /*@}*/
 
