@@ -360,14 +360,18 @@ lprefix=`( cd ${lprefix} ; pwd )`
 for d in ${GWEN_MODULES}; do
   rm -Rf gwenhywfar/$d &>/dev/null
   mkdir gwenhywfar/$d
-  hfiles=`( cd "${srcdir}/src/${d}" && ls *.h 2>/dev/null )`
+  # FIXME: This needs to be fixed again: The sources are in gwenui,
+  # but the headers will be installed in gwenhywfar/ui.
+  hfiledir="gwen${d}"
+  # originally: hfiledir="src/${d}"
+  hfiles=`( cd "${srcdir}/${hfiledir}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
     case ${f} in
       *_p.h | *_l.h)
       	 ;;
       *)
-         GWEN_HEADER_FILES="${GWEN_HEADER_FILES} src/${d}/${f}"
-    	 ln -s "${lprefix}/src/${d}/${f}" "gwenhywfar/${d}/${f}"
+         GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${hfiledir}/${f}"
+    	 ln -s "${lprefix}/${hfiledir}/${f}" "gwenhywfar/${d}/${f}"
          ;;
     esac
   done

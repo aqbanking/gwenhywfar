@@ -1,3 +1,9 @@
+2004-08-06   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Fix header links for gwenui directory.
+
+	* src/crypt/ossl/cryptssl.c (GWEN_CryptKey_FromPasswordSSL): Fix
+	wrong buffer size variable.
 
 2004/08/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

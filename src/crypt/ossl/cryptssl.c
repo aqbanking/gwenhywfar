@@ -121,7 +121,7 @@ int GWEN_CryptKey_FromPasswordSSL(const char *password,
   des_cblock left, right;
   int i;
 
-  if (i!=16) {
+  if (bsize!=16) {
     DBG_ERROR(0, "Buffer must be exact 16 bytes in length");
     return -1;
   }
