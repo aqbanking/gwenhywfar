@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/11/24 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added some testdata to continuously check IPC stuff ("test/testdata")
+
+
 2003/11/23 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - more work on IPC. I think I now have found the best method ;-)

@@ -1,0 +1,32 @@
+char localname="server"
+char remotename="client"
+int  localsignseq="1"
+int  remotesignseq="0"
+remotesignkey {
+  char type="RSA"
+  char name="B"
+  char owner="client"
+  int  number="0"
+  int  version="0"
+  data {
+    int  public="1"
+    bin  n="D6432D46A87681003F03067A8A5DDE784E7428C89046E80D1FEF66F662B6AFBA910974F1E2B814C9D7D823FA8945A3F7D9D46BFF77C0429F3C95698C1C066A946D696C8C366CB6BFAF4DCDAA763B8458321F87EDCF038064C2D589E272B8988B"
+    bin  e="010001"
+  } # data
+
+} # remotesignkey
+
+remotecryptkey {
+  char type="RSA"
+  char name="B"
+  char owner="client"
+  int  number="0"
+  int  version="0"
+  data {
+    int  public="1"
+    bin  n="D6432D46A87681003F03067A8A5DDE784E7428C89046E80D1FEF66F662B6AFBA910974F1E2B814C9D7D823FA8945A3F7D9D46BFF77C0429F3C95698C1C066A946D696C8C366CB6BFAF4DCDAA763B8458321F87EDCF038064C2D589E272B8988B"
+    bin  e="010001"
+  } # data
+
+} # remotecryptkey
+

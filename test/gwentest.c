@@ -423,7 +423,7 @@ int testDialog(int argc, char **argv) {
   GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
   GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 4554);
   GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 5555);
-  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
+  if (GWEN_SecContextMgr_AddContext(scm, sc, 1)) {
     fprintf(stderr, "Could not add context.\n");
     return 2;
   }
@@ -496,28 +496,21 @@ int testDialog(int argc, char **argv) {
 int testServer(int argc, char **argv) {
   GWEN_XMLNODE *n;
   GWEN_MSGENGINE *e;
-  /*GWEN_XMLNODE *sn;*/
   GWEN_DB_NODE *da;
   GWEN_DB_NODE *keydb;
-/*   GWEN_HBCIDIALOG *dlg; */
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
-/*   GWEN_HBCIMSG *hmsg; */
   GWEN_SECCTX_MANAGER *scm;
-  GWEN_SECCTX *sc;
-/*   unsigned int requestId; */
   GWEN_IPCXMLSERVICE *service;
   unsigned int serverId;
+  GWEN_DB_NODE *gr;
 
-  if (argc<4) {
-    fprintf(stderr, "Path of XML file and key file needed.\n");
-    return 1;
-  }
   e=GWEN_MsgEngine_new();
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
   da=GWEN_DB_Group_new("Data");
 
-  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+  if (GWEN_XML_ReadFile(n, "../src/impl/ipc/data/ipc.xml",
+			GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }
@@ -526,56 +519,44 @@ int testServer(int argc, char **argv) {
   GWEN_MsgEngine_SetProtocolVersion(e, 1);
   GWEN_MsgEngine_SetMode(e, "RDH");
 
-  scm=GWEN_SecContextMgr_new("TestService-1");
+  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", "./testdata/serverdir");
 
-  key=GWEN_CryptKey_Factory("RSA");
-  if (!key) {
-    fprintf(stderr, "Error creating key.\n");
-    return 1;
-  }
-
-  keydb=GWEN_DB_Group_new("key");
-  if (GWEN_DB_ReadFile(keydb, argv[3], GWEN_DB_FLAGS_DEFAULT)) {
-    fprintf(stderr, "Error reading file \"%s\"", argv[3]);
+  keydb=GWEN_DB_Group_new("keys");
+  if (GWEN_DB_ReadFile(keydb, "testdata/server.key",
+		       GWEN_DB_FLAGS_DEFAULT |
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    fprintf(stderr, "Error reading key file");
     return 2;
   }
 
-  key=GWEN_CryptKey_FromDb(keydb);
-  if (!key) {
-    fprintf(stderr, "Could not load key\n");
-    return 2;
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "signkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(scm, key);
   }
+
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "cryptkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(scm, key);
+  }
+
   GWEN_DB_Group_free(keydb);
   keydb=0;
-
-  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
-                           GWEN_CryptKey_GetOwner(key));
-  GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 1);
-  GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 0);
-  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
-    fprintf(stderr, "Could not add context.\n");
-    return 2;
-  }
-  fprintf(stderr, "Context added.\n");
-
-  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
-                           0);
-  GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 1);
-  GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 0);
-  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
-    fprintf(stderr, "Could not add context.\n");
-    return 2;
-  }
-  fprintf(stderr, "Context 2 added.\n");
-
 
   fprintf(stderr, "Creating service.\n");
   service=GWEN_IPCXMLService_new(e, scm);
@@ -586,7 +567,7 @@ int testServer(int argc, char **argv) {
   fprintf(stderr, "Creating server.\n");
   serverId=GWEN_IPCXMLService_AddServer(service,
                                         GWEN_IPCXMLServiceTypeTCP,
-                                        "martin",
+                                        "server",
                                         1,
                                         "192.168.115.2",
                                         44444,
@@ -626,28 +607,22 @@ int testServer(int argc, char **argv) {
 int testClient(int argc, char **argv) {
   GWEN_XMLNODE *n;
   GWEN_MSGENGINE *e;
-/*   GWEN_XMLNODE *sn; */
   GWEN_DB_NODE *da;
   GWEN_DB_NODE *keydb;
-/*   GWEN_HBCIDIALOG *dlg; */
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
-/*   GWEN_HBCIMSG *hmsg; */
   GWEN_SECCTX_MANAGER *scm;
-  GWEN_SECCTX *sc;
   unsigned int requestId;
   GWEN_IPCXMLSERVICE *service;
   unsigned int serverId;
+  GWEN_DB_NODE *gr;
 
-  if (argc<4) {
-    fprintf(stderr, "Path of XML file and key file needed.\n");
-    return 1;
-  }
   e=GWEN_MsgEngine_new();
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
   da=GWEN_DB_Group_new("Data");
 
-  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+  if (GWEN_XML_ReadFile(n, "../src/impl/ipc/data/ipc.xml",
+			GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }
@@ -656,42 +631,44 @@ int testClient(int argc, char **argv) {
   GWEN_MsgEngine_SetProtocolVersion(e, 1);
   GWEN_MsgEngine_SetMode(e, "RDH");
 
-  scm=GWEN_SecContextMgr_new("TestService-1");
+  scm=GWEN_IPCXMLSecCtxMgr_new("TestService-1", "testdata/clientdir");
 
-  key=GWEN_CryptKey_Factory("RSA");
-  if (!key) {
-    fprintf(stderr, "Error creating key.\n");
-    return 1;
-  }
-
-  keydb=GWEN_DB_Group_new("key");
-  if (GWEN_DB_ReadFile(keydb, argv[3], GWEN_DB_FLAGS_DEFAULT)) {
-    fprintf(stderr, "Error reading file \"%s\"", argv[3]);
+  keydb=GWEN_DB_Group_new("keys");
+  if (GWEN_DB_ReadFile(keydb, "testdata/client.key",
+		       GWEN_DB_FLAGS_DEFAULT |
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    fprintf(stderr, "Error reading key file");
     return 2;
   }
 
-  key=GWEN_CryptKey_FromDb(keydb);
-  if (!key) {
-    fprintf(stderr, "Could not load key\n");
-    return 2;
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "signkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(scm, key);
   }
+
+  gr=GWEN_DB_GetGroup(keydb,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      "cryptkey");
+  if (gr) {
+    key=GWEN_CryptKey_FromDb(gr);
+    if (!key) {
+      fprintf(stderr, "Could not load key\n");
+      return 2;
+    }
+    GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(scm, key);
+  }
+
   GWEN_DB_Group_free(keydb);
   keydb=0;
-
-  sc=GWEN_IPCXMLSecCtx_new(GWEN_CryptKey_GetOwner(key),
-                           GWEN_CryptKey_GetOwner(key));
-  GWEN_IPCXMLSecCtx_SetRemoteSignKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetRemoteCryptKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalSignKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalCryptKey(sc, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLSecCtx_SetLocalSignSeq(sc, 1);
-  GWEN_IPCXMLSecCtx_SetRemoteSignSeq(sc, 0);
-  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
-    fprintf(stderr, "Could not add context.\n");
-    return 2;
-  }
-
-  fprintf(stderr, "Context added.\n");
 
   fprintf(stderr, "Creating service.\n");
   service=GWEN_IPCXMLService_new(e, scm);
@@ -702,7 +679,7 @@ int testClient(int argc, char **argv) {
   fprintf(stderr, "Creating client.\n");
   serverId=GWEN_IPCXMLService_AddClient(service,
                                         GWEN_IPCXMLServiceTypeTCP,
-                                        "martin",
+					"client",
                                         1,
                                         "192.168.115.2",
                                         44444,
@@ -715,7 +692,7 @@ int testClient(int argc, char **argv) {
 
   GWEN_IPCXMLService_SetRemoteName(service,
                                    serverId,
-                                   "martin");
+				   "server");
   GWEN_IPCXMLService_SetSecurityFlags(service, serverId,
                                       GWEN_HBCIMSG_FLAGS_SIGN |
                                       GWEN_HBCIMSG_FLAGS_CRYPT);

@@ -37,6 +37,13 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/crypt.h>
+#include <gwenhywfar/directory.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 
 
@@ -54,6 +61,8 @@ void GWEN_IPCXMLSecCtxData_free(GWEN_IPCXMLSECCTXDATA *d){
     GWEN_CryptKey_free(d->sessionKey);
     free(d->serviceCode);
     free(d->securityId);
+    GWEN_CryptKey_free(d->localSignKey);
+    GWEN_CryptKey_free(d->localCryptKey);
     GWEN_CryptKey_free(d->remoteSignKey);
     GWEN_CryptKey_free(d->remoteCryptKey);
     free(d);
@@ -84,6 +93,30 @@ void GWEN_IPCXMLSecCtx_SetSessionKey(GWEN_SECCTX *sc,
 
   GWEN_CryptKey_free(scd->sessionKey);
   scd->sessionKey=k;
+}
+
+
+
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetLocalSignKey(GWEN_SECCTX *sc){
+  GWEN_IPCXMLSECCTXDATA *scd;
+
+  assert(sc);
+  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
+  assert(scd);
+
+  return scd->localSignKey;
+}
+
+
+
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetLocalCryptKey(GWEN_SECCTX *sc){
+  GWEN_IPCXMLSECCTXDATA *scd;
+
+  assert(sc);
+  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
+  assert(scd);
+
+  return scd->localCryptKey;
 }
 
 
@@ -786,7 +819,10 @@ void GWEN_IPCXMLSecCtx_SetLocalSignKey(GWEN_SECCTX *sc,
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
-  scd->localSignKey=key;
+  assert(key);
+  if (scd->localSignKey)
+    GWEN_CryptKey_free(scd->localSignKey);
+  scd->localSignKey=GWEN_CryptKey_dup(key);
 }
 
 
@@ -799,7 +835,10 @@ void GWEN_IPCXMLSecCtx_SetLocalCryptKey(GWEN_SECCTX *sc,
   scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
   assert(scd);
 
-  scd->localCryptKey=key;
+  assert(key);
+  if (scd->localCryptKey)
+    GWEN_CryptKey_free(scd->localCryptKey);
+  scd->localCryptKey=GWEN_CryptKey_dup(key);
 }
 
 
@@ -829,6 +868,591 @@ void GWEN_IPCXMLSecCtx_SetRemoteCryptKey(GWEN_SECCTX *sc,
   GWEN_CryptKey_free(scd->remoteCryptKey);
   scd->remoteCryptKey=key;
 }
+
+
+
+
+
+
+GWEN_SECCTX *GWEN_IPCXMLSecCtxtMgr_FindContext(GWEN_SECCTX_MANAGER *scm,
+                                               const char *localName,
+                                               const char *remoteName){
+  GWEN_LIST_ITERATOR *it;
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+
+  assert(scm);
+  assert(localName);
+  assert(remoteName);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+  assert(scmd->contextList);
+
+  DBG_WARN(0, "Looking for context \"%s:%s\"", localName, remoteName);
+  it=GWEN_List_First(scmd->contextList);
+  if (it) {
+    GWEN_SECCTX *sc;
+
+    sc=(GWEN_SECCTX*)GWEN_ListIterator_Data(it);
+    while(sc) {
+      if ((GWEN_Text_Compare(GWEN_SecContext_GetLocalName(sc),
+                             localName, 1)==0) &&
+          (GWEN_Text_Compare(GWEN_SecContext_GetRemoteName(sc),
+                             remoteName, 1)==0)){
+        GWEN_ListIterator_free(it);
+        return sc;
+      }
+      sc=(GWEN_SECCTX*)GWEN_ListIterator_Next(it);
+    } /* while */
+  }
+  GWEN_ListIterator_free(it);
+
+  DBG_INFO(0, "Context \"%s:%s\" not found.", localName, remoteName);
+  return 0;
+}
+
+
+
+int GWEN_IPCXMLSecCtxMgr_LockFile(const char *path) {
+  int fid;
+  struct flock fl;
+
+  if (GWEN_Directory_GetPath(path, GWEN_PATH_FLAGS_VARIABLE)) {
+    DBG_ERROR(0, "Could not create path \"%s\"", path);
+    return -1;
+  }
+
+  /* file exists, try to open it */
+  fid=open(path, O_RDWR);
+  if (fid==-1) {
+    DBG_ERROR(0, "Error on open(%s): %s",
+              path, strerror(errno));
+    return -1;
+  }
+
+  /* now lock it (wait for lock if necessary) */
+  fl.l_type=F_WRLCK;
+  fl.l_whence=SEEK_SET;
+  fl.l_start=0;
+  fl.l_len=0;
+  if (fcntl(fid, F_SETLKW, &fl)) {
+    close(fid);
+    DBG_ERROR(0, "Error on fcntl(%s, F_SETLKW): %s",
+              path, strerror(errno));
+    return -1;
+  }
+  return fid;
+}
+
+
+
+int GWEN_IPCXMLSecCtxMgr_UnlockFile(int fid) {
+  struct flock fl;
+
+  /* unlock file */
+  fl.l_type=F_UNLCK;
+  fl.l_whence=SEEK_SET;
+  fl.l_start=0;
+  fl.l_len=0;
+  if (fcntl(fid, F_SETLKW, &fl)) {
+    close(fid);
+    DBG_ERROR(0, "Error on fcntl(%d, F_SETLKW): %s",
+              fid, strerror(errno));
+    return -1;
+  }
+  if (close(fid)) {
+    DBG_ERROR(0, "Error on close(%d): %s",
+              fid, strerror(errno));
+    return -1;
+  }
+  return 0;
+}
+
+
+
+
+GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
+                                             const char *localName,
+                                             const char *remoteName){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+  char path[256];
+
+  assert(scm);
+  assert(localName);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+  assert(scmd->dir);
+
+  if (remoteName) {
+    /* try to read the file */
+    DBG_INFO(0, "Trying to read context \"%s:%s\"",
+             localName, remoteName);
+    if (strlen(scmd->dir)+
+        strlen(localName)+
+        strlen(remoteName)+
+        4>sizeof(path)) {
+      DBG_ERROR(0, "Path too long");
+      return 0;
+    }
+    strcpy(path, scmd->dir);
+    strcat(path, "/");
+    strcat(path, localName);
+    strcat(path, "/");
+    strcat(path, remoteName);
+    strcat(path, ".ctx");
+    if (GWEN_Directory_GetPath(path,
+                               GWEN_PATH_FLAGS_VARIABLE |
+                               GWEN_PATH_FLAGS_PATHMUSTEXIST)) {
+      GWEN_SECCTX *ctx;
+
+      DBG_INFO(0,
+               "File for context \"%s:%s\" not found, will check for tmp",
+               localName, remoteName);
+      ctx=GWEN_IPCXMLSecCtxtMgr_FindContext(scm,
+                                            localName,
+                                            remoteName);
+      if (!ctx) {
+        DBG_INFO(0, "Context \"%s:%s\" not found",
+                 localName, remoteName);
+        return 0;
+      }
+      GWEN_SecContext_SetFlags(ctx, GWEN_SECCTX_FLAGS_TEMP);
+      if (GWEN_IPCXMLSecCtx_GetLocalSignKey(ctx)==0 &&
+          scmd->localSignKey)
+        GWEN_IPCXMLSecCtx_SetLocalSignKey(ctx,scmd->localSignKey);
+      if (GWEN_IPCXMLSecCtx_GetLocalCryptKey(ctx)==0 &&
+          scmd->localCryptKey)
+        GWEN_IPCXMLSecCtx_SetLocalCryptKey(ctx,scmd->localCryptKey);
+      return ctx;
+    }
+    else {
+      GWEN_DB_NODE *db;
+      GWEN_SECCTX *ctx;
+      int fid;
+
+      DBG_INFO(0, "Trying to load file for context \"%s:%s\"",
+               localName, remoteName);
+      /* file exists, try to lock it */
+      fid=GWEN_IPCXMLSecCtxMgr_LockFile(path);
+      if (fid==-1) {
+        return 0;
+      }
+
+      /* try to read the file */
+      db=GWEN_DB_Group_new("context");
+      if (GWEN_DB_ReadFile(db, path,
+                           GWEN_DB_FLAGS_DEFAULT |
+                           GWEN_PATH_FLAGS_CREATE_GROUP)) {
+        DBG_ERROR(0, "Error reading file \"%s\"", path);
+        GWEN_DB_Group_free(db);
+        GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+        return 0;
+      }
+
+      /* create context */
+      ctx=GWEN_IPCXMLSecCtx_new(localName, remoteName);
+      if (GWEN_SecContext_FromDB(ctx, db)) {
+        GWEN_SecContext_free(ctx);
+        DBG_ERROR(0, "Could not read context \"%s:%s\"from DB",
+                  localName, remoteName);
+        GWEN_DB_Group_free(db);
+        GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+        return 0;
+      }
+      /* store lock id (which actually is the file descriptor) */
+      GWEN_SecContext_SetLockId(ctx, fid);
+
+      /* store local files if they are not already set */
+      if (GWEN_IPCXMLSecCtx_GetLocalSignKey(ctx)==0 &&
+          scmd->localSignKey)
+        GWEN_IPCXMLSecCtx_SetLocalSignKey(ctx,scmd->localSignKey);
+      if (GWEN_IPCXMLSecCtx_GetLocalCryptKey(ctx)==0 &&
+          scmd->localCryptKey)
+        GWEN_IPCXMLSecCtx_SetLocalCryptKey(ctx,scmd->localCryptKey);
+      /* done */
+      return ctx;
+    }
+  }
+  else {
+    GWEN_SECCTX *ctx;
+
+    /* create a local-only context */
+    DBG_INFO(0, "Creating local-only context");
+    ctx=GWEN_IPCXMLSecCtx_new(localName, remoteName);
+    if (scmd->localSignKey)
+      GWEN_IPCXMLSecCtx_SetLocalSignKey(ctx,scmd->localSignKey);
+    if (scmd->localCryptKey)
+      GWEN_IPCXMLSecCtx_SetLocalCryptKey(ctx,scmd->localCryptKey);
+    return ctx;
+  }
+}
+
+
+
+int GWEN_IPCXMLSecCtxMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
+                                    GWEN_SECCTX *sc,
+                                    int tmp){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+  char path[256];
+  const char *localName;
+  const char *remoteName;
+  GWEN_DB_NODE *db;
+  int fid;
+
+  assert(scm);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+
+  localName=GWEN_SecContext_GetLocalName(sc);
+  remoteName=GWEN_SecContext_GetRemoteName(sc);
+
+  if (!remoteName) {
+    DBG_ERROR(0, "Will not add local-only context \"%s\"",
+              localName);
+    return -1;
+  }
+
+  /* check for the existence of a file for the context */
+  DBG_INFO(0, "Trying to read context \"%s:%s\"",
+           localName, remoteName);
+  if (strlen(scmd->dir)+
+      strlen(localName)+
+      strlen(remoteName)+
+      4>sizeof(path)) {
+    DBG_ERROR(0, "Path too long");
+    return 0;
+  }
+  strcpy(path, scmd->dir);
+  strcat(path, "/");
+  strcat(path, localName);
+  strcat(path, "/");
+  strcat(path, remoteName);
+  strcat(path, ".ctx");
+  if (GWEN_Directory_GetPath(path,
+                             GWEN_PATH_FLAGS_VARIABLE |
+                             GWEN_PATH_FLAGS_PATHMUSTEXIST)==0) {
+    DBG_ERROR(0, "Context \"%s:%s\" already exists, not adding it",
+              localName, remoteName);
+    return -1;
+  }
+
+  if (GWEN_IPCXMLSecCtxtMgr_FindContext(scm, localName, remoteName)) {
+    DBG_ERROR(0, "Context \"%s:%s\" already exists locally, not adding it",
+              localName, remoteName);
+    return -1;
+  }
+
+  if (tmp) {
+    DBG_INFO(0, "Adding temporary context \"%s:%s\"",
+             localName, remoteName);
+    GWEN_List_PushBack(scmd->contextList, sc);
+    return 0;
+  }
+
+  fid=GWEN_IPCXMLSecCtxMgr_LockFile(path);
+  if (fid==-1) {
+    DBG_ERROR(0, "Could not lock context file for \"%s:%s\"",
+              localName, remoteName);
+    return -1;
+  }
+
+  db=GWEN_DB_Group_new("context");
+  if (GWEN_SecContext_ToDB(sc, db)) {
+    DBG_ERROR(0, "Could not write context \"%s:%s\" to DB",
+              localName, remoteName);
+    GWEN_DB_Group_free(db);
+    GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+    return -1;
+  }
+
+  if (GWEN_DB_WriteFile(db, path,
+                        GWEN_DB_FLAGS_DEFAULT |
+                        GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_ERROR(0, "Error writing file \"%s\"", path);
+    GWEN_DB_Group_free(db);
+    GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+    return -1;
+  }
+
+  GWEN_DB_Group_free(db);
+  GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+  GWEN_SecContext_free(sc);
+  return 0;
+}
+
+
+
+int GWEN_IPCXMLSecCtxMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
+                                    GWEN_SECCTX *sc){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+  char path[256];
+  const char *localName;
+  const char *remoteName;
+
+  assert(scm);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+
+  localName=GWEN_SecContext_GetLocalName(sc);
+  remoteName=GWEN_SecContext_GetRemoteName(sc);
+
+  /* try to read the file */
+  DBG_INFO(0, "Trying to read context \"%s:%s\"",
+           localName, remoteName);
+  if (strlen(scmd->dir)+
+      strlen(localName)+
+      strlen(remoteName)+
+      4>sizeof(path)) {
+    DBG_ERROR(0, "Path too long");
+    return 0;
+  }
+  strcpy(path, scmd->dir);
+  strcat(path, "/");
+  strcat(path, localName);
+  strcat(path, "/");
+  strcat(path, remoteName);
+  strcat(path, ".ctx");
+  if (GWEN_Directory_GetPath(path,
+                             GWEN_PATH_FLAGS_VARIABLE |
+                             GWEN_PATH_FLAGS_PATHMUSTEXIST)==0) {
+    int fid;
+
+    fid=GWEN_SecContext_GetLockId(sc);
+
+    /* file exists, remove it */
+    DBG_INFO(0, "Removing file for context \"%s:%s\"",
+             localName, remoteName);
+    if (unlink(path)) {
+      DBG_ERROR(0, "Error on unlink(%s): %s",
+                path, strerror(errno));
+      GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+      return -1;
+    }
+    GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+    GWEN_SecContext_free(sc);
+    return 0;
+  }
+  else {
+    GWEN_LIST_ITERATOR *it;
+
+    /* remove temporary context */
+    it=GWEN_List_First(scmd->contextList);
+    if (it) {
+      GWEN_SECCTX *ctx;
+
+      ctx=(GWEN_SECCTX*)GWEN_ListIterator_Data(it);
+      while(ctx) {
+        if ((GWEN_Text_Compare(GWEN_SecContext_GetLocalName(ctx),
+                               localName, 1)==0) &&
+            (GWEN_Text_Compare(GWEN_SecContext_GetRemoteName(ctx),
+                               remoteName, 1)==0)){
+          GWEN_ListIterator_free(it);
+          GWEN_SecContext_free(ctx);
+          return 0;
+        }
+        ctx=(GWEN_SECCTX*)GWEN_ListIterator_Next(it);
+      } /* while */
+    }
+    GWEN_ListIterator_free(it);
+    DBG_INFO(0, "Context \"%s:%s\" not found",
+             localName, remoteName);
+    return -1;
+  }
+}
+
+
+
+int GWEN_IPCXMLSecCtxMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
+                                        GWEN_SECCTX *sc,
+                                        int aban){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+  char path[256];
+  const char *localName;
+  const char *remoteName;
+
+  assert(scm);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+
+  localName=GWEN_SecContext_GetLocalName(sc);
+  remoteName=GWEN_SecContext_GetRemoteName(sc);
+
+  if (!remoteName) {
+    DBG_INFO(0, "Releasing local context \"%s\"", localName);
+    GWEN_SecContext_free(sc);
+    return 0;
+  }
+
+  if (GWEN_SecContext_GetFlags(sc) & GWEN_SECCTX_FLAGS_TEMP) {
+    if (GWEN_IPCXMLSecCtxtMgr_FindContext(scm, localName, remoteName)==0) {
+      DBG_ERROR(0, "Context \"%s:%s\" not found",
+                localName, remoteName);
+      return -1;
+    }
+    GWEN_SecContext_free(sc);
+    return 0;
+  }
+  else {
+    /* try to write the file */
+    if (strlen(scmd->dir)+
+        strlen(localName)+
+        strlen(remoteName)+
+        4>sizeof(path)) {
+      DBG_ERROR(0, "Path too long");
+      return 0;
+    }
+    strcpy(path, scmd->dir);
+    strcat(path, "/");
+    strcat(path, localName);
+    strcat(path, "/");
+    strcat(path, remoteName);
+    strcat(path, ".ctx");
+    if (GWEN_Directory_GetPath(path,
+                               GWEN_PATH_FLAGS_VARIABLE |
+                               GWEN_PATH_FLAGS_PATHMUSTEXIST)==0) {
+      int fid;
+
+      fid=GWEN_SecContext_GetLockId(sc);
+
+      /* file exists, save it */
+      if (!aban) {
+        GWEN_DB_NODE *db;
+
+        /* only write file if not in abandon mode */
+        db=GWEN_DB_Group_new("context");
+        if (GWEN_SecContext_ToDB(sc, db)) {
+          DBG_ERROR(0, "Could not write context \"%s:%s\" to DB",
+                    localName, remoteName);
+          GWEN_DB_Group_free(db);
+          GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+          return -1;
+        }
+
+        if (GWEN_DB_WriteFile(db, path,
+                              GWEN_DB_FLAGS_DEFAULT |
+                              GWEN_PATH_FLAGS_CREATE_GROUP)) {
+          DBG_ERROR(0, "Error writing file \"%s\"", path);
+          GWEN_DB_Group_free(db);
+          GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+          return -1;
+        }
+      } /* if not abandon */
+      else {
+        DBG_INFO(0, "Abandoning context \"%s:%s\"",
+                 localName, remoteName);
+      }
+
+      GWEN_IPCXMLSecCtxMgr_UnlockFile(fid);
+      DBG_INFO(0, "Context \"%s:%s\" released",
+               localName, remoteName);
+      GWEN_SecContext_free(sc);
+      return 0;
+    }
+    else {
+      /* file does not exist */
+      DBG_ERROR(0, "Context \"%s:%s\" not found",
+                localName, remoteName);
+      return -1;
+    }
+  }
+}
+
+
+
+GWEN_IPCXMLSECCTXMGRDATA *GWEN_IPCXMLSecCtxMgrData_new() {
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+
+  GWEN_NEW_OBJECT(GWEN_IPCXMLSECCTXMGRDATA, scmd);
+  scmd->contextList=GWEN_List_new();
+  return scmd;
+};
+
+
+
+void GWEN_IPCXMLSecCtxMgrData_free(GWEN_SECCTX_MANAGER *scm) {
+  if (scm) {
+    GWEN_IPCXMLSECCTXMGRDATA *scmd;
+    GWEN_LIST_ITERATOR *it;
+
+    scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+
+    free(scmd->dir);
+    GWEN_CryptKey_free(scmd->localSignKey);
+    GWEN_CryptKey_free(scmd->localCryptKey);
+
+    /* free all temporary contexts */
+    it=GWEN_List_First(scmd->contextList);
+    if (it) {
+      GWEN_SECCTX *sc;
+
+      sc=(GWEN_SECCTX*)GWEN_ListIterator_Data(it);
+      while(sc) {
+        GWEN_SecContext_free(sc);
+        sc=(GWEN_SECCTX*)GWEN_ListIterator_Next(it);
+      } /* while */
+      GWEN_ListIterator_free(it);
+    }
+    GWEN_List_free(scmd->contextList);
+  } /* if scm */
+}
+
+
+
+GWEN_SECCTX_MANAGER *GWEN_IPCXMLSecCtxMgr_new(const char *serviceCode,
+                                              const char *dir){
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+  GWEN_DB_NODE *db;
+
+  assert(serviceCode);
+  assert(dir);
+
+  scm=GWEN_SecContextMgr_new(serviceCode);
+  scmd=GWEN_IPCXMLSecCtxMgrData_new();
+  GWEN_SecContextMgr_SetData(scm, scmd);
+  scmd->dir=strdup(dir);
+
+  GWEN_SecContextMgr_SetGetFn(scm, GWEN_IPCXMLSecCtxMgr_GetContext);
+  GWEN_SecContextMgr_SetAddFn(scm, GWEN_IPCXMLSecCtxMgr_AddContext);
+  GWEN_SecContextMgr_SetDelFn(scm, GWEN_IPCXMLSecCtxMgr_DelContext);
+  GWEN_SecContextMgr_SetReleaseFn(scm, GWEN_IPCXMLSecCtxMgr_ReleaseContext);
+  GWEN_SecContextMgr_SetFreeDataFn(scm, GWEN_IPCXMLSecCtxMgrData_free);
+
+  return scm;
+}
+
+
+
+void GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(GWEN_SECCTX_MANAGER *scm,
+                                          const GWEN_CRYPTKEY *key){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+
+  assert(scm);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+
+  assert(key);
+  if (scmd->localSignKey)
+    GWEN_CryptKey_free(scmd->localSignKey);
+  scmd->localSignKey=GWEN_CryptKey_dup(key);
+}
+
+
+
+void GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(GWEN_SECCTX_MANAGER *scm,
+                                           const GWEN_CRYPTKEY *key){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+
+  assert(scm);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+
+  assert(key);
+  if (scmd->localCryptKey)
+    GWEN_CryptKey_free(scmd->localCryptKey);
+  scmd->localCryptKey=GWEN_CryptKey_dup(key);
+}
+
+
 
 
 

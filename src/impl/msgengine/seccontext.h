@@ -48,6 +48,10 @@ extern "C" {
  *
  */
 /*@{*/
+
+#define GWEN_SECCTX_FLAGS_TEMP 0x0001
+
+
 typedef struct GWEN_SECCTX GWEN_SECCTX;
 
 
@@ -139,6 +143,10 @@ void GWEN_SecContext_SetData(GWEN_SECCTX *sc,
 /*@{*/
 const char *GWEN_SecContext_GetLocalName(GWEN_SECCTX *sc);
 const char *GWEN_SecContext_GetRemoteName(GWEN_SECCTX *sc);
+
+unsigned int GWEN_SecContext_GetFlags(GWEN_SECCTX *sc);
+void GWEN_SecContext_SetFlags(GWEN_SECCTX *sc,
+                              unsigned int fl);
 /*@}*/
 
 
@@ -148,9 +156,9 @@ const char *GWEN_SecContext_GetRemoteName(GWEN_SECCTX *sc);
  * locking a context, it is not meant to be used by an application.
  */
 /*@{*/
-unsigned int GWEN_SecContext_GetLockId(GWEN_SECCTX *sc);
+int GWEN_SecContext_GetLockId(GWEN_SECCTX *sc);
 void GWEN_SecContext_SetLockId(GWEN_SECCTX *sc,
-                               unsigned int id);
+                               int id);
 /*@}*/
 
 
@@ -261,12 +269,18 @@ typedef GWEN_SECCTX*
 
 typedef int
   (*GWEN_SECCTXMGR_ADDCONTEXT_FN)(GWEN_SECCTX_MANAGER *scm,
-                                  GWEN_SECCTX *sc);
+                                  GWEN_SECCTX *sc,
+                                  int tmp);
 
 
 typedef int
   (*GWEN_SECCTXMGR_DELCONTEXT_FN)(GWEN_SECCTX_MANAGER *scm,
                                   GWEN_SECCTX *sc);
+
+typedef int
+  (*GWEN_SECCTXMGR_RELEASECONTEXT_FN)(GWEN_SECCTX_MANAGER *scm,
+                                      GWEN_SECCTX *sc,
+                                      int aban);
 
 typedef void
   (*GWEN_SECCTXMGR_FREEDATA_FN)(GWEN_SECCTX_MANAGER *scm);
@@ -293,6 +307,8 @@ void GWEN_SecContextMgr_SetAddFn(GWEN_SECCTX_MANAGER *scm,
 
 void GWEN_SecContextMgr_SetDelFn(GWEN_SECCTX_MANAGER *scm,
                                  GWEN_SECCTXMGR_DELCONTEXT_FN fn);
+void GWEN_SecContextMgr_SetReleaseFn(GWEN_SECCTX_MANAGER *scm,
+                                     GWEN_SECCTXMGR_RELEASECONTEXT_FN fn);
 
 void GWEN_SecContextMgr_SetFreeDataFn(GWEN_SECCTX_MANAGER *scm,
                                       GWEN_SECCTXMGR_FREEDATA_FN fn);
@@ -314,12 +330,21 @@ GWEN_SECCTX *GWEN_SecContextMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
                                            const char *localName,
                                            const char *remoteName);
 
+/**
+ * This function releases a context acquired via
+ * @ref GWEN_SecContextMgr_GetContext.
+ */
+int GWEN_SecContextMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
+                                      GWEN_SECCTX *sc,
+                                      int aban);
+
 
 /**
  * This function takes over ownership of the given context.
  */
 int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
-                                  GWEN_SECCTX *sc);
+                                  GWEN_SECCTX *sc,
+                                  int tmp);
 
 
 /**
@@ -328,6 +353,7 @@ int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
  */
 int GWEN_SecContextMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
                                   GWEN_SECCTX *sc);
+
 /*@}*/
 
 

@@ -165,6 +165,21 @@ void GWEN_SecContext_SetRemoteName(GWEN_SECCTX *sc,
 
 
 
+unsigned int GWEN_SecContext_GetFlags(GWEN_SECCTX *sc){
+  assert(sc);
+  return sc->flags;
+}
+
+
+
+void GWEN_SecContext_SetFlags(GWEN_SECCTX *sc,
+                              unsigned int fl){
+  assert(sc);
+  sc->flags=fl;
+}
+
+
+
 void *GWEN_SecContext_GetData(GWEN_SECCTX *sc){
   assert(sc);
   return sc->data;
@@ -178,6 +193,21 @@ void GWEN_SecContext_SetData(GWEN_SECCTX *sc,
   if (sc->data && sc->freeDataFn)
     sc->freeDataFn(sc);
   sc->data=d;
+}
+
+
+
+int GWEN_SecContext_GetLockId(GWEN_SECCTX *sc){
+  assert(sc);
+  return sc->lockId;
+}
+
+
+
+void GWEN_SecContext_SetLockId(GWEN_SECCTX *sc,
+                               int id){
+  assert(sc);
+  sc->lockId=id;
 }
 
 
@@ -450,7 +480,6 @@ GWEN_SECCTX_MANAGER *GWEN_SecContextMgr_new(const char *serviceCode){
 
   assert(serviceCode);
   GWEN_NEW_OBJECT(GWEN_SECCTX_MANAGER, scm);
-  scm->contextList=GWEN_List_new();
   scm->serviceCode=strdup(serviceCode);
   return scm;
 }
@@ -461,7 +490,6 @@ void GWEN_SecContextMgr_free(GWEN_SECCTX_MANAGER *scm){
   if (scm) {
     if (scm->data && scm->freeDataFn)
       scm->freeDataFn(scm);
-    GWEN_List_free(scm->contextList);
     free(scm->serviceCode);
     free(scm);
   }
@@ -489,6 +517,14 @@ void GWEN_SecContextMgr_SetDelFn(GWEN_SECCTX_MANAGER *scm,
                                  GWEN_SECCTXMGR_DELCONTEXT_FN fn){
   assert(scm);
   scm->delContextFn=fn;
+}
+
+
+
+void GWEN_SecContextMgr_SetReleaseFn(GWEN_SECCTX_MANAGER *scm,
+                                     GWEN_SECCTXMGR_RELEASECONTEXT_FN fn){
+  assert(scm);
+  scm->releaseContextFn=fn;
 }
 
 
@@ -521,49 +557,20 @@ void GWEN_SecContextMgr_SetData(GWEN_SECCTX_MANAGER *scm,
 GWEN_SECCTX *GWEN_SecContextMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
                                            const char *localName,
                                            const char *remoteName){
-  GWEN_LIST_ITERATOR *it;
-
   assert(scm);
   DBG_WARN(0, "Looking for context \"%s:%s\"", localName, remoteName);
-  it=GWEN_List_First(scm->contextList);
-  if (it) {
-    GWEN_SECCTX *sc;
-
-    sc=(GWEN_SECCTX*)GWEN_ListIterator_Data(it);
-    while(sc) {
-      if ((GWEN_Text_Compare(sc->localName, localName, 1)==0) &&
-          (GWEN_Text_Compare(sc->remoteName, remoteName, 1)==0)){
-        GWEN_ListIterator_free(it);
-        return sc;
-      }
-      sc=(GWEN_SECCTX*)GWEN_ListIterator_Next(it);
-    } /* while */
-  }
-  GWEN_ListIterator_free(it);
-
-  if (scm->getContextFn) {
-    DBG_INFO(0, "Context \"%s:%s\" not already known, trying function",
-             localName, remoteName);
-    return scm->getContextFn(scm, localName, remoteName);
-  }
-  DBG_INFO(0, "Context \"%s:%s\" not found.", localName, remoteName);
-  return 0;
+  assert(scm->getContextFn);
+  return scm->getContextFn(scm, localName, remoteName);
 }
 
 
 
 int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
-                                  GWEN_SECCTX *sc){
+                                  GWEN_SECCTX *sc,
+                                  int tmp){
   assert(scm);
-  if (scm->addContextFn) {
-    if (scm->addContextFn(scm, sc)) {
-      DBG_INFO(0, "here");
-      return -1;
-    }
-  }
-  DBG_INFO(0, "Pushing back context");
-  GWEN_List_PushBack(scm->contextList, sc);
-  return 0;
+  assert(scm->addContextFn);
+  return scm->addContextFn(scm, sc, tmp);
 }
 
 
@@ -571,10 +578,18 @@ int GWEN_SecContextMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
 int GWEN_SecContextMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
                                   GWEN_SECCTX *sc){
   assert(scm);
-  if (scm->delContextFn)
-    return scm->delContextFn(scm, sc);
-  DBG_ERROR(0, "Function not implemented.");
-  return -1;
+  assert(scm->delContextFn);
+  return scm->delContextFn(scm, sc);
+}
+
+
+
+int GWEN_SecContextMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
+                                      GWEN_SECCTX *sc,
+                                      int aban){
+  assert(scm);
+  assert(scm->releaseContextFn);
+  return scm->releaseContextFn(scm, sc, aban);
 }
 
 

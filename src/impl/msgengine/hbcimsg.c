@@ -408,6 +408,7 @@ unsigned int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
 int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
                                   GWEN_HBCICRYPTOCONTEXT *ctx,
                                   GWEN_DB_NODE *cfg,
+                                  int crypt,
                                   int createCtrlRef) {
   char sdate[9];
   char stime[7];
@@ -424,16 +425,31 @@ int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
   ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
   assert(ks);
 
-  /* check local context */
-  if (!GWEN_HBCIDialog_GetLocalName(hmsg->dialog)) {
-    DBG_ERROR(0, "No local name, aborting");
-    return -1;
+  /* check context */
+  if (!crypt) {
+    if (!GWEN_HBCIDialog_GetLocalName(hmsg->dialog)) {
+      DBG_ERROR(0, "No local name, aborting");
+      return -1;
+    }
+    else {
+      if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
+                            GWEN_KeySpec_GetOwner(ks),1)!=0) {
+        DBG_ERROR(0, "Key owner does not match local context");
+        return -1;
+      }
+    }
   }
   else {
-    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
-                          GWEN_KeySpec_GetOwner(ks),1)!=0) {
-      DBG_ERROR(0, "Key owner does not match local context");
+    if (!GWEN_HBCIDialog_GetRemoteName(hmsg->dialog)) {
+      DBG_ERROR(0, "No remote name, aborting");
       return -1;
+    }
+    else {
+      if (GWEN_Text_Compare(GWEN_HBCIDialog_GetRemoteName(hmsg->dialog),
+                            GWEN_KeySpec_GetOwner(ks),1)!=0) {
+        DBG_ERROR(0, "Key owner does not match remote context");
+        return -1;
+      }
     }
   }
 
@@ -573,7 +589,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   }
 
   /* prepare config for segment */
-  if (GWEN_HBCIMsg_PrepareCryptoSeg(hmsg, ctx, cfg, 1)) {
+  if (GWEN_HBCIMsg_PrepareCryptoSeg(hmsg, ctx, cfg, 0, 1)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_DB_Group_free(cfg);
@@ -773,7 +789,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "head/seq", 998);
 
-  if (GWEN_HBCIMsg_PrepareCryptoSeg(hmsg, ctx, cfg, 0)) {
+  if (GWEN_HBCIMsg_PrepareCryptoSeg(hmsg, ctx, cfg, 1, 0)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_Buffer_free(hbuf);
@@ -918,6 +934,8 @@ int GWEN_HBCIMsg_EncodeMsg(GWEN_HBCIMSG *hmsg) {
     rawBuf=GWEN_Buffer_dup(hmsg->buffer);
     ks=hmsg->signers;
     while (ks) {
+      DBG_INFO(0, "Signing with this key:");
+      GWEN_KeySpec_Dump(ks, stderr, 1);
       if (GWEN_HBCIMsg_SignMsg(hmsg, rawBuf, ks)) {
         GWEN_Buffer_free(rawBuf);
         DBG_INFO(0, "here");
@@ -1232,16 +1250,18 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
   }
   GWEN_KeySpec_SetKeyName(ks, s);
 
-  /* check local context */
-  if (!GWEN_HBCIDialog_GetLocalName(hmsg->dialog)) {
-    DBG_ERROR(0, "No local name, aborting");
-    return -1;
-  }
-  else {
-    if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
-                          GWEN_KeySpec_GetOwner(ks),1)!=0) {
-      DBG_ERROR(0, "Key owner does not match local name");
+  /* check context */
+  if (crypt) {
+    if (!GWEN_HBCIDialog_GetLocalName(hmsg->dialog)) {
+      DBG_ERROR(0, "No local name, aborting");
       return -1;
+    }
+    else {
+      if (GWEN_Text_Compare(GWEN_HBCIDialog_GetLocalName(hmsg->dialog),
+                            GWEN_KeySpec_GetOwner(ks),1)!=0) {
+        DBG_ERROR(0, "Key owner does not match local context");
+        return -1;
+      }
     }
   }
 

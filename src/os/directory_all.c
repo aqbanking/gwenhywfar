@@ -40,6 +40,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
+#include <stdlib.h>
 
 
 
@@ -50,12 +52,18 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
   struct stat st;
   int exists;
 
+  if (strcasecmp(entry, "..")==0) {
+    DBG_ERROR(0, "\"..\" detected");
+    return 0;
+  }
+
   p=(char*)data;
   if ((strlen(p)+strlen(entry)+2)>=256) {
     DBG_ERROR(0, "Buffer too small");
     return 0;
   }
-  strcat(p, "/");
+  if (*p)
+    strcat(p, "/");
   strcat(p, entry);
 
   // check for existence of the file/folder
@@ -130,12 +138,16 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
 
 int GWEN_Directory_GetPath(const char *path,
                            unsigned int flags) {
+  char *pbuffer;
   void *p;
 
-  p="";
-  p=GWEN_Path_Handle(path, p,
+  assert(path);
+  pbuffer=(char*)malloc(strlen(path)+10);
+  *pbuffer=0;
+  p=GWEN_Path_Handle(path, pbuffer,
                      flags,
                      GWEN_Directory_HandlePathElement);
+  free(pbuffer);
   if (!p) {
     DBG_INFO(0, "here");
     return -1;

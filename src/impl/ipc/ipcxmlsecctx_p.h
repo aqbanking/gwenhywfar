@@ -30,6 +30,7 @@
 #define GWENHYWFAR_IPCXMLSECCTX_P_H
 
 #include <gwenhywfar/ipcxmlsecctx.h>
+#include <gwenhywfar/list.h>
 
 
 struct GWEN_IPCXMLSECCTXDATA {
@@ -37,8 +38,8 @@ struct GWEN_IPCXMLSECCTXDATA {
   unsigned int localSignSeq;
   unsigned int remoteSignSeq;
 
-  const GWEN_CRYPTKEY *localSignKey;
-  const GWEN_CRYPTKEY *localCryptKey;
+  GWEN_CRYPTKEY *localSignKey;
+  GWEN_CRYPTKEY *localCryptKey;
 
   GWEN_CRYPTKEY *remoteSignKey;
   GWEN_CRYPTKEY *remoteCryptKey;
@@ -84,6 +85,51 @@ int GWEN_IPCXMLSecCtx_ToDB(GWEN_SECCTX *sc,
 const char *GWEN_IPCXMLSecCtx_GetSecurityId(GWEN_SECCTX *d);
 void GWEN_IPCXMLSecCtx_SetSecurityId(GWEN_SECCTX *d,
                                      const char *s);
+
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetLocalSignKey(GWEN_SECCTX *sc);
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetLocalCryptKey(GWEN_SECCTX *sc);
+
+
+
+typedef struct GWEN_IPCXMLSECCTXMGRDATA GWEN_IPCXMLSECCTXMGRDATA;
+
+struct GWEN_IPCXMLSECCTXMGRDATA {
+  GWEN_LIST *contextList; /* for temporary contexts */
+  GWEN_CRYPTKEY *localSignKey;
+  GWEN_CRYPTKEY *localCryptKey;
+  unsigned int flags;
+  char *dir;
+
+};
+
+
+GWEN_IPCXMLSECCTXMGRDATA *GWEN_IPCXMLSecCtxMgrData_new();
+void GWEN_IPCXMLSecCtxMgrData_free(GWEN_SECCTX_MANAGER *scm);
+
+
+
+int GWEN_IPCXMLSecCtxMgr_LockFile(const char *path);
+int GWEN_IPCXMLSecCtxMgr_UnlockFile(int fid);
+
+GWEN_SECCTX *GWEN_IPCXMLSecCtxtMgr_FindContext(GWEN_SECCTX_MANAGER *scm,
+                                               const char *localName,
+                                               const char *remoteName);
+
+
+GWEN_SECCTX *GWEN_IPCXMLSecCtxMgr_GetContext(GWEN_SECCTX_MANAGER *scm,
+                                             const char *localName,
+                                             const char *remoteName);
+int GWEN_IPCXMLSecCtxMgr_AddContext(GWEN_SECCTX_MANAGER *scm,
+                                    GWEN_SECCTX *sc,
+                                    int tmp);
+int GWEN_IPCXMLSecCtxMgr_DelContext(GWEN_SECCTX_MANAGER *scm,
+                                    GWEN_SECCTX *sc);
+
+int GWEN_IPCXMLSecCtxMgr_ReleaseContext(GWEN_SECCTX_MANAGER *scm,
+                                        GWEN_SECCTX *sc,
+                                        int aban);
+
+
 
 
 

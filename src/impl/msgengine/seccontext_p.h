@@ -42,7 +42,8 @@ struct GWEN_SECCTX {
   char *localName;
   char *remoteName;
   void *data;
-  unsigned int lockId;
+  unsigned int flags;
+  int lockId;
 
   GWEN_SECCTX_PREPARECTX_FN prepareFn;
   GWEN_SECCTX_SIGN_FN signFn;
@@ -58,12 +59,12 @@ struct GWEN_SECCTX {
 
 
 struct GWEN_SECCTX_MANAGER {
-  GWEN_LIST *contextList;
   char *serviceCode;
   void *data;
   GWEN_SECCTXMGR_GETCONTEXT_FN getContextFn;
   GWEN_SECCTXMGR_ADDCONTEXT_FN addContextFn;
   GWEN_SECCTXMGR_DELCONTEXT_FN delContextFn;
+  GWEN_SECCTXMGR_RELEASECONTEXT_FN releaseContextFn;
   GWEN_SECCTXMGR_FREEDATA_FN freeDataFn;
 
 };

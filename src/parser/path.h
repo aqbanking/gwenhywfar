@@ -42,7 +42,8 @@ extern "C" {
  * A path consists of a list of elements separated by a slash, like in
  * <i>/element1/element2/element3</i>.
  * An element can either be a <i>group</i> or an <i>item</i>.
- * Groups can contain multiple items, but an item can not contain anything.
+ * Groups can contain multiple items and groups, but an item can not contain
+ * anything.
  * So there can at most be <strong>one</strong> item, and it must be the
  * last element.
  * An example of how to use these functions is given in the module

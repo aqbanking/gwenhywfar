@@ -395,7 +395,7 @@ GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl) {
 
     ks=GWEN_KeySpec_new();
     GWEN_KeySpec_SetOwner(ks, GWEN_HBCIDialog_GetLocalName(ccd->dialog));
-    GWEN_HBCIMsg_SetCrypter(hmsg, ks);
+    GWEN_HBCIMsg_AddSigner(hmsg, ks);
     GWEN_KeySpec_free(ks);
   }
 
@@ -409,7 +409,7 @@ GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl) {
 
       ks=GWEN_KeySpec_new();
       GWEN_KeySpec_SetOwner(ks, p);
-      GWEN_HBCIMsg_AddSigner(hmsg, ks);
+      GWEN_HBCIMsg_SetCrypter(hmsg, ks);
       GWEN_KeySpec_free(ks);
     }
     else {

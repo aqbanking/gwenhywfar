@@ -63,6 +63,7 @@ struct GWEN_HBCIMSG {
 int GWEN_HBCIMsg_PrepareCryptoSeg(GWEN_HBCIMSG *hmsg,
                                   GWEN_HBCICRYPTOCONTEXT *ctx,
                                   GWEN_DB_NODE *cfg,
+                                  int crypt,
                                   int createCtrlRef);
 
 
