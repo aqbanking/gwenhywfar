@@ -443,10 +443,11 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     DBG_NOTICE(0, "Event: Key(%s)", w->name);
     key=GWEN_EventKey_GetKey(e);
     if (key==KEY_F(1)) {
-      GWEN_WIDGET *hw;
-
       DBG_NOTICE(0, "Help-Key pressed");
-      hw=w;
+      if (w->flags & GWEN_WIDGET_FLAGS_IGN_HELP) {
+        DBG_NOTICE(0, "Ignoring help string");
+        return GWEN_UIResult_Handled;
+      }
       if (w->helpText) {
         DBG_NOTICE(0, "Showing help-screen");
         GWEN_MessageBox(w,

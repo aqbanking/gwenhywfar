@@ -159,6 +159,7 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
                      GWEN_WIDGET_FLAGS_DEFAULT |
                      GWEN_WIDGET_FLAGS_BORDER |
                      GWEN_WIDGET_FLAGS_MODAL |
+                     GWEN_WIDGET_FLAGS_IGN_HELP |
                      GWEN_WINDOW_FLAGS_TITLE |
                      0,
                      "MessageWindow",

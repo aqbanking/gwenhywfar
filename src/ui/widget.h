@@ -52,6 +52,7 @@ typedef enum {
 #include <gwenhywfar/event.h>
 
 
+#define GWEN_WIDGET_FLAGS_IGN_HELP   0x00000001
 #define GWEN_WIDGET_FLAGS_KEYPAD     0x00000002
 #define GWEN_WIDGET_FLAGS_SCROLL     0x00000004
 #define GWEN_WIDGET_FLAGS_ACTIVE     0x00000008
