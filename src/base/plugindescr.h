@@ -40,15 +40,8 @@ extern "C" {
 
 typedef struct GWEN_PLUGIN_DESCRIPTION GWEN_PLUGIN_DESCRIPTION;
 
-/* FIXME: If the declarations from GWEN_LIST are written in a gwen
-   header file like here, then we need to add the GWENHYWFAR_API macro
-   in front of each function declaration. BUT if the GWEN_LIST macro
-   declarations are used in the application, we *must not* use the
-   GWENHYWFAR_API macro there... Hrmpf. Sometimes we need extra
-   BLA_API macros in front of the function declarations, sometimes we
-   don't need them. So what do we do?! */
-GWEN_LIST_FUNCTION_DEFS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription)
-GWEN_LIST2_FUNCTION_DEFS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription)
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription, GWENHYWFAR_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription, GWENHYWFAR_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */

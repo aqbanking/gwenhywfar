@@ -36,7 +36,7 @@
 extern "C" {
 #endif
   typedef struct GWEN_BUFFEREDIOSTRUCT GWEN_BUFFEREDIO;
-  GWEN_INHERIT_FUNCTION_DEFS(GWEN_BUFFEREDIO)
+  GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_BUFFEREDIO, GWENHYWFAR_API)
   /* No trailing semicolon because this is a macro call */
 #ifdef __cplusplus
 }

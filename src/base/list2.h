@@ -48,31 +48,40 @@
 extern "C" {
 #endif
 
-#define GWEN_LIST2_FUNCTION_DEFS(t, pr) \
+  /*
+   * This macro should be used in libraries with the
+   * __declspec(dllexport) declaration as the @c decl argument.
+   */
+#define GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef struct t##_LIST2 t##_LIST2; \
   typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
   typedef t* (t##_LIST2_FOREACH)(t *element); \
   \
-  t##_LIST2 *pr##_List2_new(); \
-  void pr##_List2_free(t##_LIST2 *l); \
-  void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent); \
-  void pr##_List2_PushBack(t##_LIST2 *l, t *p); \
-  void pr##_List2_PushFront(t##_LIST2 *l, t *p); \
-  t *pr##_List2_GetFront(t##_LIST2 *l); \
-  t *pr##_List2_GetBack(t##_LIST2 *l); \
-  void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it); \
-  unsigned int pr##_List2_GetSize(t##_LIST2 *l); \
-  void pr##_List2_PopBack(t##_LIST2 *l); \
-  void pr##_List2_PopFront(t##_LIST2 *l); \
-  void pr##_List2_Clear(t##_LIST2 *l); \
-  t##_LIST2_ITERATOR *pr##_List2_First(t##_LIST2 *l); \
-  t##_LIST2_ITERATOR *pr##_List2_Last(t##_LIST2 *l); \
-  t##_LIST2_ITERATOR *pr##_List2Iterator_new(t##_LIST2 *l); \
-  void pr##_List2Iterator_free(t##_LIST2_ITERATOR *li); \
-  t *pr##_List2Iterator_Previous(t##_LIST2_ITERATOR *li); \
-  t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
-  t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
-  t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH);
+  decl t##_LIST2 *pr##_List2_new(); \
+  decl void pr##_List2_free(t##_LIST2 *l); \
+  decl void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent); \
+  decl void pr##_List2_PushBack(t##_LIST2 *l, t *p); \
+  decl void pr##_List2_PushFront(t##_LIST2 *l, t *p); \
+  decl t *pr##_List2_GetFront(t##_LIST2 *l); \
+  decl t *pr##_List2_GetBack(t##_LIST2 *l); \
+  decl void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it); \
+  decl unsigned int pr##_List2_GetSize(t##_LIST2 *l); \
+  decl void pr##_List2_PopBack(t##_LIST2 *l); \
+  decl void pr##_List2_PopFront(t##_LIST2 *l); \
+  decl void pr##_List2_Clear(t##_LIST2 *l); \
+  decl t##_LIST2_ITERATOR *pr##_List2_First(t##_LIST2 *l); \
+  decl t##_LIST2_ITERATOR *pr##_List2_Last(t##_LIST2 *l); \
+  decl t##_LIST2_ITERATOR *pr##_List2Iterator_new(t##_LIST2 *l); \
+  decl void pr##_List2Iterator_free(t##_LIST2_ITERATOR *li); \
+  decl t *pr##_List2Iterator_Previous(t##_LIST2_ITERATOR *li); \
+  decl t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
+  decl t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
+  decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH);
+
+  /* This macro should be used in applications, not in libraries. In
+   * libraries please use the macro @ref GWEN_LIST2_FUNCTION_LIB_DEFS. */
+#define GWEN_LIST2_FUNCTION_DEFS(t, pr) \
+  GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, )
 
 
 #define GWEN_LIST2_FUNCTIONS(t, pr) \
@@ -176,29 +185,39 @@ extern "C" {
 
 
 
-#define GWEN_CONSTLIST2_FUNCTION_DEFS(t, pr) \
+  /*
+   * This macro should be used in libraries with the
+   * __declspec(dllexport) declaration as the @c decl argument.
+   */
+#define GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef struct t##_CONSTLIST2 t##_CONSTLIST2; \
   typedef struct t##_CONSTLIST2_ITERATOR t##_CONSTLIST2_ITERATOR; \
   typedef const t* (t##_CONSTLIST2_FOREACH)(const t *element); \
   \
-  t##_CONSTLIST2 *pr##_ConstList2_new(); \
-  void pr##_ConstList2_free(t##_CONSTLIST2 *l); \
-  void pr##_ConstList2_PushBack(t##_CONSTLIST2 *l, const t *p); \
-  void pr##_ConstList2_PushFront(t##_CONSTLIST2 *l, const t *p); \
-  const t *pr##_ConstList2_GetFront(t##_CONSTLIST2 *l); \
-  const t *pr##_ConstList2_GetBack(t##_CONSTLIST2 *l); \
-  unsigned int pr##_ConstList2_GetSize(t##_CONSTLIST2 *l); \
-  void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l); \
-  void pr##_ConstList2_PopFront(t##_CONSTLIST2 *l); \
-  void pr##_ConstList2_Clear(t##_CONSTLIST2 *l); \
-  t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(t##_CONSTLIST2 *l); \
-  t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(t##_CONSTLIST2 *l); \
-  t##_CONSTLIST2_ITERATOR *pr##_ConstList2Iterator_new(t##_CONSTLIST2 *l); \
-  void pr##_ConstList2Iterator_free(t##_CONSTLIST2_ITERATOR *li); \
-  const t *pr##_ConstList2Iterator_Previous(t##_CONSTLIST2_ITERATOR *li); \
-  const t *pr##_ConstList2Iterator_Next(t##_CONSTLIST2_ITERATOR *li); \
-  const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li); \
-  const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH);
+  decl t##_CONSTLIST2 *pr##_ConstList2_new(); \
+  decl void pr##_ConstList2_free(t##_CONSTLIST2 *l); \
+  decl void pr##_ConstList2_PushBack(t##_CONSTLIST2 *l, const t *p); \
+  decl void pr##_ConstList2_PushFront(t##_CONSTLIST2 *l, const t *p); \
+  decl const t *pr##_ConstList2_GetFront(t##_CONSTLIST2 *l); \
+  decl const t *pr##_ConstList2_GetBack(t##_CONSTLIST2 *l); \
+  decl unsigned int pr##_ConstList2_GetSize(t##_CONSTLIST2 *l); \
+  decl void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l); \
+  decl void pr##_ConstList2_PopFront(t##_CONSTLIST2 *l); \
+  decl void pr##_ConstList2_Clear(t##_CONSTLIST2 *l); \
+  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(t##_CONSTLIST2 *l); \
+  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(t##_CONSTLIST2 *l); \
+  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2Iterator_new(t##_CONSTLIST2 *l); \
+  decl void pr##_ConstList2Iterator_free(t##_CONSTLIST2_ITERATOR *li); \
+  decl const t *pr##_ConstList2Iterator_Previous(t##_CONSTLIST2_ITERATOR *li); \
+  decl const t *pr##_ConstList2Iterator_Next(t##_CONSTLIST2_ITERATOR *li); \
+  decl const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li); \
+  decl const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH);
+
+  /* This macro should be used in applications, not in libraries. In
+   * libraries please use the macro @ref
+   * GWEN_CONSTLIST2_FUNCTION_LIB_DEFS. */
+#define GWEN_CONSTLIST2_FUNCTION_DEFS(t, pr) \
+  GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(t, pr, )
 
 
 #define GWEN_CONSTLIST2_FUNCTIONS(t, pr) \

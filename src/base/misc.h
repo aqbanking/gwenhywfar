@@ -283,8 +283,11 @@ extern "C" {
    *    All objects inside the list are freed.
    *  </li>
    * </ul>
+   *
+   * This macro should be used in libraries with the
+   * __declspec(dllexport) declaration as the @c decl argument.
    */
-#define GWEN_LIST_FUNCTION_DEFS(t, pr) \
+#define GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef struct t##_LIST_ELEMENT {\
   GWEN_TYPE_UINT32 id;\
   t *nextObject;\
@@ -296,19 +299,63 @@ extern "C" {
   GWEN_TYPE_UINT32 id;\
   } t##_LIST; \
   \
-  void pr##_List_AddList(t##_LIST *dst, t##_LIST *l); \
-  void pr##_List_Add(t *element, t##_LIST *list); \
-  void pr##_List_Insert(t *element, t##_LIST *list); \
-  void pr##_List_Del(t *element); \
-  t* pr##_List_First(const t##_LIST *l); \
-  t* pr##_List_Last(const t##_LIST *l); \
-  void pr##_List_Clear(t##_LIST *l); \
-  t##_LIST* pr##_List_new(); \
-  void pr##_List_free(t##_LIST *l); \
-  t* pr##_List_Next(const t *element); \
-  t* pr##_List_Previous(const t *element); \
-  GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l);
+  decl void pr##_List_AddList(t##_LIST *dst, t##_LIST *l); \
+  decl void pr##_List_Add(t *element, t##_LIST *list); \
+  decl void pr##_List_Insert(t *element, t##_LIST *list); \
+  decl void pr##_List_Del(t *element); \
+  decl t* pr##_List_First(const t##_LIST *l); \
+  decl t* pr##_List_Last(const t##_LIST *l); \
+  decl void pr##_List_Clear(t##_LIST *l); \
+  decl t##_LIST* pr##_List_new(); \
+  decl void pr##_List_free(t##_LIST *l); \
+  decl t* pr##_List_Next(const t *element); \
+  decl t* pr##_List_Previous(const t *element); \
+  decl GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l);
 
+  /**
+   * Use this in public header files to define some prototypes for list
+   * functions.
+   * Let's assume the type of your list elements is "MYTYPE" and you want to
+   * use the prefix "MyType_" for the list functions.
+   * The following function prototypes will then be created:
+   * <ul>
+   *  <li>
+   *    void MyType_List_Add(MYTYPE *element, MYTYPE_LIST *list);<br>
+   *    Adds a MYTYPE struct to the given list.
+   *  </li>
+   *  <li>
+   *    void MyType_List_Del(MYTYPE *element);<br>
+   *    Removes a MyType struct from the list it is enlisted to.
+   *  </li>
+   *  <li>
+   *    MYTYPE *MyType_List_First(MYTYPE *element); <br>
+   *    Returns the first member of the given list.
+   *  </li>
+   *  <li>
+   *    MYTYPE* MyType_List_Next(const MYTYPE *element);<br>
+   *    Returns a pointer to the object followed by the given one.
+   *  </li>
+   *  <li>
+   *    void MyType_List_Clear(MYTYPE *element); <br>
+   *    Frees all entries of the given list.
+   *    This function assumes that there is a function Mytype_free().
+   *  </li>
+   *  <li>
+   *    MYTYPE_LIST *MyType_List_new(); <br>
+   *    Creates a new list of elements of MYTYPE type.
+   *  </li>
+   *  <li>
+   *    void MyType_List_free(MYTYPE_LIST *l); <br>
+   *    Clears and frees a list of elements of MYTYPE type.
+   *    All objects inside the list are freed.
+   *  </li>
+   * </ul>
+   *
+   * This macro should be used in applications, not in libraries. In
+   * libraries please use the macro @ref GWEN_LIST_FUNCTION_LIB_DEFS.
+   */
+#define GWEN_LIST_FUNCTION_DEFS(t, pr) \
+  GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, )
 
   /**
    * Use this inside your code files (*.c).

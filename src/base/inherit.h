@@ -53,7 +53,7 @@ extern "C" {
   typedef void (*GWEN_INHERIT_FREEDATAFN)(void *baseData,
                                           void *data);
 
-  GWEN_LIST_FUNCTION_DEFS(GWEN_INHERITDATA, GWEN_InheritData)
+  GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_INHERITDATA, GWEN_InheritData, GWENHYWFAR_API)
   /* No trailing semicolon because this is a macro call */
 
   GWENHYWFAR_API 
@@ -108,22 +108,38 @@ extern "C" {
 
   /**
    * Use this macro in the header file of the base class. This defines
-   * the prototypes of some inheritance functions.
+   * the prototypes of some inheritance functions. This macro should
+   * be used in libraries with the __declspec(dllexport) as the @c
+   * decl argument.
+   *
+   * You should not care about these functions here, since you should not use
+   * them directly. Please use @ref GWEN_INHERIT_GETDATA and
+   * @ref GWEN_INHERIT_SETDATA instead.
+   */
+#define GWEN_INHERIT_FUNCTION_LIB_DEFS(t, decl) \
+  decl void t##__INHERIT_SETDATA(t *element, \
+                                 const char *typeName,\
+                                 GWEN_TYPE_UINT32 id,\
+                                 void *data,\
+                                 GWEN_INHERIT_FREEDATAFN f);\
+  decl int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id);\
+  decl GWEN_INHERITDATA_LIST *t##__INHERIT_GETLIST(const t *element);\
+  decl void t##__INHERIT_UNLINK(t *element, \
+                                const char *typeName,\
+                                GWEN_TYPE_UINT32 id);
+
+  /**
+   * Use this macro in the header file of the base class. This defines
+   * the prototypes of some inheritance functions. This macro should
+   * be used in applications, not in libraries. In libraries please
+   * use the macro @ref GWEN_INHERIT_FUNCTION_LIB_DEFS.
+   *
    * You should not care about these functions here, since you should not use
    * them directly. Please use @ref GWEN_INHERIT_GETDATA and
    * @ref GWEN_INHERIT_SETDATA instead.
    */
 #define GWEN_INHERIT_FUNCTION_DEFS(t) \
-  void t##__INHERIT_SETDATA(t *element, \
-                            const char *typeName,\
-                            GWEN_TYPE_UINT32 id,\
-                            void *data,\
-                            GWEN_INHERIT_FREEDATAFN f);\
-  int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id);\
-  GWEN_INHERITDATA_LIST *t##__INHERIT_GETLIST(const t *element);\
-  void t##__INHERIT_UNLINK(t *element, \
-                           const char *typeName,\
-                           GWEN_TYPE_UINT32 id);\
+  GWEN_INHERIT_FUNCTION_LIB_DEFS(t, )
 
   /*@}*/
 

@@ -49,7 +49,7 @@ extern "C" {
 #endif
 
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_NETMSG, GWEN_NetMsg)
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_NETMSG, GWEN_NetMsg, GWENHYWFAR_API)
 /* No trailing semicolon here because this is a macro call */
 
 

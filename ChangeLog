@@ -1,4 +1,10 @@
+2004-08-09   Christian Stimming <stimming@tuhh.de>
 
+	* src/base/misc.h, list2.h: Introduce GWEN_LIST_FUNCTION_LIB_DEFS
+	macros that accept a third argument to specify the
+	__declspec(dllimport) function declarations where necessary. These
+	are necessary for all libraries that use these macros in their
+	public headers.
 
 2004/08/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
