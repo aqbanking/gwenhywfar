@@ -1,0 +1,10 @@
+aclocal.m4
+configure
+autom4te.cache
+config.h
+config.log
+config.status
+gwenhyfwar
+gwenhywfar-config.in
+libtool
+stamp-h1
