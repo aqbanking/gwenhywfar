@@ -24,11 +24,27 @@
 				SuppressStartupBanner="FALSE"
 				DebugInformationFormat="3"/>
 			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="gwenhywfar32.lib libmingwex.a"
 				AdditionalLibraryDirectories="&quot;..\src&quot;;C:\msys\1.0\mingw\lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(TargetDir)/$(ProjectName).pdb"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"

@@ -72,9 +72,14 @@ ressource.o: ressource.rc
 
 
 $(DLLNAME): $(DLLSRC_LIBLA) ressource.o
-	mkdir dlldir && \
+	mkdir -p dlldir && \
 	( \
-	 cd dlldir && ar x ../$(DLLSRC_LIB) && \
+	  if test -r $(DLLSRC_LIB); then \
+	    SRCLIB=$(DLLSRC_LIB); \
+	  else \
+	    SRCLIB=.libs/$(DLLSRC_LIB); \
+	  fi; \
+	  cd dlldir && ar x "../$${SRCLIB}" && \
 	 ( ls ../.libs/*.o && cp ../.libs/*.o .) && \
 	 $(DLLTOOL) -e ../exports.o *.o && \
 	 $(DLLWRAP) \

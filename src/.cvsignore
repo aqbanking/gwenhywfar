@@ -5,3 +5,5 @@ Makefile.palm
 gwenhywfar32.def
 gwenhywfar32.dll
 gwenhywfar32.lib
+dlldir
+gwenhywfar32.exp
