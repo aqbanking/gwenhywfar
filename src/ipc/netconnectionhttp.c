@@ -488,7 +488,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
   if (chttp->inMode==GWEN_NetConnHttpMsgModeBody) {
     /* read body */
-    GWEN_TYPE_UINT32 size, i, j, l;
+    GWEN_TYPE_UINT32 size, i = 0, j, l;
 
     if (chttp->state & GWEN_NETCONNHTTP_STATE_STOPBODYREAD) {
       DBG_DEBUG(0, "StopBodyRead state set, nothing to do");
@@ -780,7 +780,7 @@ GWEN_NETCONNECTION_WORKRESULT
 GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
   GWEN_BUFFER *mbuf;
   GWEN_NETCONNECTIONHTTP *chttp;
-  GWEN_TYPE_UINT32 i, j;
+  GWEN_TYPE_UINT32 i = 0, j;
   GWEN_RINGBUFFER *wbuf;
 
   assert(conn);

@@ -636,7 +636,7 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
 
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
-  int rv;
+  int rv = 0;
   GWEN_NETTRANSPORTSSL *skd;
 
   assert(tr);
