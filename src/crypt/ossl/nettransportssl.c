@@ -1027,10 +1027,14 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
   if (skd->CAdir || skd->CAfile) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate locations");
     rv=SSL_CTX_load_verify_locations(skd->ssl_ctx,
-                                     skd->CAfile,
-                                     skd->CAdir);
+				     skd->CAfile,
+				     skd->CAdir);
     if (rv==0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "SSL: Could not load certificate location");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"SSL: Could not load certificate location "
+		"(was: \"%d\" and \"%s\")",
+		skd->CAfile,
+		skd->CAdir);
       return -1;
     }
   }
