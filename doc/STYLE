@@ -118,6 +118,14 @@ Example: GWEN_DB_Values_Count, GWEN_Error_GetCode, GWEN_Error_new
 ---------------------
 Types are written in all-capitals, like in GWEN_DB_NODE.
 
+Do not export structs per se. It is important that the real structure of the
+structs used within Gwen is hidden. Members of structs must be accessed using
+getter and setter functions. 
+This make sure that applications always use pointers instead of creating 
+objects directly. This also reduces the number incompatible API changes (those
+changes make it necessary for every depending package to be recompiled and 
+thus should be avoided where possible).
+
 
 3.4. Enum Elements
 ------------------

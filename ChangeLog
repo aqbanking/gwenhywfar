@@ -1,7 +1,14 @@
+
+===========================================================================
+MARK: released gwenhywfar-1.0.1 (2004/09/10)
+===========================================================================
+
+
 2004-09-09   Christian Stimming <stimming@tuhh.de>
 
 	* src/base/logger.h: Enclose __attribute__deprecated into ifdefs
 	to hide it for non-gcc compilers.
+
 
 2004/09/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
