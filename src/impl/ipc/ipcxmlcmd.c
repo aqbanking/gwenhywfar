@@ -512,6 +512,33 @@ unsigned int GWEN_IPCXMLCmd_Request_SendPubKey(GWEN_IPCXMLSERVICE *xs,
 
 
 
+GWEN_ERRORCODE GWEN_IPCXMLCmd_Result_SendPubKey(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int rqid,
+                                                unsigned int *result){
+  GWEN_DB_NODE *db;
+  GWEN_ERRORCODE err;
+
+  db=GWEN_IPCXMLService_GetResponseData(xs, rqid);
+  if (!db) {
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_WARN,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_INQUEUE_EMPTY);
+  }
+
+  err=GWEN_IPCXMLCmd_Result_SegResult(xs, db, result);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_DB_Group_free(db);
+    return err;
+  }
+
+  GWEN_DB_Group_free(db);
+  return 0;
+}
+
+
+
 
 
 

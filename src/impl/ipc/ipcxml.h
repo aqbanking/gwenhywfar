@@ -458,6 +458,18 @@ GWEN_DB_NODE *GWEN_IPCXMLService_PeekResponseData(GWEN_IPCXMLSERVICE *xs,
  *
  */
 /*@{*/
+
+/**
+ * Tries to open a secure connection to a server.
+ * This is accomplished by connecting to the server and sending our
+ * public sign and crypt key to the server.
+ * If the server responds positively then the security flags will be set
+ * in order to allow signing and encryption.
+ */
+GWEN_ERRORCODE GWEN_IPCXMLService_SecureOpen(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid,
+                                             int timeout);
+
 /**
  * Set security flags on a given connection.
  * @param xs Pointer to the service to use
@@ -473,6 +485,12 @@ GWEN_DB_NODE *GWEN_IPCXMLService_PeekResponseData(GWEN_IPCXMLSERVICE *xs,
 GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityFlags(GWEN_IPCXMLSERVICE *xs,
                                                    unsigned int clid,
                                                    unsigned int flags);
+
+/**
+ * Returns the security flags
+ */
+unsigned int GWEN_IPCXMLService_GetSecurityFlags(GWEN_IPCXMLSERVICE *xs,
+                                                 unsigned int clid);
 
 /**
  * Returns the name of the service (e.g. for HBCI with banks this is the
@@ -543,6 +561,94 @@ const GWEN_CRYPTKEY *GWEN_IPCXMLService_GetSignKey(GWEN_IPCXMLSERVICE *xs,
 const GWEN_CRYPTKEY *GWEN_IPCXMLService_GetCryptKey(GWEN_IPCXMLSERVICE *xs,
                                                     unsigned int clid);
 
+/**
+ * Replaces the currently used local sign key with the given one.
+ * This function does NOT take over ownership for the given key.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param key new sign key
+ */
+void GWEN_IPCXMLService_SetSignKey(GWEN_IPCXMLSERVICE *xs,
+                                   unsigned int clid,
+                                   const GWEN_CRYPTKEY *key);
+
+/**
+ * Replaces the currently used local crypt key with the given one.
+ * This function does NOT take over ownership for the given key.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param key new crypt key
+ */
+void GWEN_IPCXMLService_SetCryptKey(GWEN_IPCXMLSERVICE *xs,
+                                    unsigned int clid,
+                                    const GWEN_CRYPTKEY *key);
+
+/**
+ * Retrieves a security context. Such a context contains the partner's keys,
+ * signature sequence counters etc.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param rname name of the partner (remote name)
+ * @param pctx pointer to a pointer to a security context. Upon successful
+ * return this will point to the security context. That pointer MUST NOT be
+ * freed ! It must be released instead by calling
+ *  @ref GWEN_IPCXMLService_ReleaseContext
+ */
+GWEN_ERRORCODE GWEN_IPCXMLService_GetContext(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid,
+                                             const char *rname,
+                                             GWEN_SECCTX **pctx);
+
+/**
+ * Releases a security context. Such a context contains the partner's keys,
+ * signature sequence counters etc.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param rname name of the partner (remote name)
+ * @param pctx pointer to a pointer to a security context. Upon successful
+ * return this will point to the security context. That pointer MUST NOT be
+ * freed ! It must be released instead by calling
+ *  @ref GWEN_IPCXMLService_ReleaseContext
+ * @param aban if not zero the context shall be abandoned. In this case
+ *  corresponding files will not be written to disc (for contexts which are
+ * stored in files).
+ */
+GWEN_ERRORCODE GWEN_IPCXMLService_ReleaseContext(GWEN_IPCXMLSERVICE *xs,
+                                                 unsigned int clid,
+                                                 GWEN_SECCTX *ctx,
+                                                 int aban);
+
+/**
+ * Adds a context to the internal context manager. After adding a context
+ * it will be available for signing and encryption.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param ctx context to add
+ * @param tmp if not zero then the context is only temporary. It will
+ * not be stored on disc.
+ */
+GWEN_ERRORCODE GWEN_IPCXMLService_AddContext(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid,
+                                             GWEN_SECCTX *ctx,
+                                             int tmp);
+
+/**
+ * Deletes a context obtained via @ref GWEN_IPCXMLService_GetContext
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ * @param ctx context to delete. You MUST NOT use that context after calling
+ * this function
+ */
+GWEN_ERRORCODE GWEN_IPCXMLService_DelContext(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid,
+                                             GWEN_SECCTX *ctx);
+
 
 /*@}*/
 
@@ -587,6 +693,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int userMark,
                                              unsigned int maxmsgs);
 /*@}*/ /* name */
+
 
 /** @name Extending IPC Service
  *

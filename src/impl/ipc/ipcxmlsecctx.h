@@ -83,10 +83,20 @@ void GWEN_IPCXMLSecCtx_SetLocalCryptKey(GWEN_SECCTX *sc,
                                         const GWEN_CRYPTKEY *key);
 
 /**
+ * Returns a pointer to the remote sign key, if any.
+ */
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetRemoteSignKey(GWEN_SECCTX *sc);
+
+/**
  * Takes over ownership of the given key.
  */
 void GWEN_IPCXMLSecCtx_SetRemoteSignKey(GWEN_SECCTX *sc,
                                         GWEN_CRYPTKEY *key);
+
+/**
+ * Returns a pointer to the remote crypt key, if any.
+ */
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetRemoteCryptKey(GWEN_SECCTX *sc);
 
 /**
  * Takes over ownership of the given key.

@@ -121,6 +121,30 @@ const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetLocalCryptKey(GWEN_SECCTX *sc){
 
 
 
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetRemoteSignKey(GWEN_SECCTX *sc){
+  GWEN_IPCXMLSECCTXDATA *scd;
+
+  assert(sc);
+  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
+  assert(scd);
+
+  return scd->remoteSignKey;
+}
+
+
+
+const GWEN_CRYPTKEY *GWEN_IPCXMLSecCtx_GetRemoteCryptKey(GWEN_SECCTX *sc){
+  GWEN_IPCXMLSECCTXDATA *scd;
+
+  assert(sc);
+  scd=(GWEN_IPCXMLSECCTXDATA*)GWEN_SecContext_GetData(sc);
+  assert(scd);
+
+  return scd->remoteCryptKey;
+}
+
+
+
 int GWEN_IPCXMLSecCtx_PrepareCTX(GWEN_SECCTX *sc,
                                  GWEN_HBCICRYPTOCONTEXT *ctx,
                                  int crypt){

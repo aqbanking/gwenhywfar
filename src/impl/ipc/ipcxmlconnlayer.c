@@ -763,6 +763,20 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_SetSecurityFlags(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_IPCXMLConnLayer_GetSecurityFlags(GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  return ccd->msgFlags;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCXMLConnLayer_Connected(GWEN_IPCCONNLAYER *cl){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
 
@@ -854,6 +868,22 @@ GWEN_IPCXMLConnLayer_GetSignKey(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+void GWEN_IPCXMLConnLayer_SetSignKey(GWEN_IPCCONNLAYER *cl,
+                                     const GWEN_CRYPTKEY *key){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  assert(ccd->securityManager);
+  GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(ccd->securityManager, key);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 const GWEN_CRYPTKEY*
 GWEN_IPCXMLConnLayer_GetCryptKey(GWEN_IPCCONNLAYER *cl){
   GWEN_IPCXMLCONNLAYERDATA *ccd;
@@ -865,6 +895,22 @@ GWEN_IPCXMLConnLayer_GetCryptKey(GWEN_IPCCONNLAYER *cl){
 
   assert(ccd->securityManager);
   return GWEN_IPCXMLSecCtxMgr_GetLocalSignKey(ccd->securityManager);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_IPCXMLConnLayer_SetCryptKey(GWEN_IPCCONNLAYER *cl,
+                                      const GWEN_CRYPTKEY *key){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  assert(ccd->securityManager);
+  GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(ccd->securityManager, key);
 }
 
 

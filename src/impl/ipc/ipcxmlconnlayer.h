@@ -102,6 +102,8 @@ void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,
 const char *GWEN_IPCXMLConnLayer_GetServiceCode(GWEN_IPCCONNLAYER *cl);
 
 
+unsigned int GWEN_IPCXMLConnLayer_GetSecurityFlags(GWEN_IPCCONNLAYER *cl);
+
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_SetSecurityFlags(GWEN_IPCCONNLAYER *cl,
                                                      unsigned int flags);
 
@@ -119,6 +121,11 @@ const GWEN_CRYPTKEY*
 
 const GWEN_CRYPTKEY*
   GWEN_IPCXMLConnLayer_GetCryptKey(GWEN_IPCCONNLAYER *cl);
+
+void GWEN_IPCXMLConnLayer_SetSignKey(GWEN_IPCCONNLAYER *cl,
+                                     const GWEN_CRYPTKEY *key);
+void GWEN_IPCXMLConnLayer_SetCryptKey(GWEN_IPCCONNLAYER *cl,
+                                      const GWEN_CRYPTKEY *key);
 
 
 /*@}*/
