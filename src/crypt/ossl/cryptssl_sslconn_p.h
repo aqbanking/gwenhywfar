@@ -2,8 +2,8 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Sat Jan 17 2004
+ copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,31 +26,25 @@
  ***************************************************************************/
 
 
+#ifndef GWEN_CRYPTSSL_SSL_CONNECTION_P_H
+#define GWEN_CRYPTSSL_SSL_CONNECTION_P_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+
+#include <gwenhywfar/inetsocket_l.h>
+#include <gwenhywfar/sslconnection.h>
+
+
+struct GWEN_SSL_CONNECTION {
+  GWEN_SOCKET *socket;
+  char *CAfile;
+  char *CAdir;
+  int isServer;
+};
+
+
+
+
+
 #endif
-
-
-#include "cryptnone_p.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  return 0;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
-
-
-
-int GWEN_SSLConn_IsAvailable(){
-  return -0;
-}
 
 

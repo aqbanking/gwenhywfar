@@ -75,6 +75,7 @@ DLL_OBJS= \
    os/windows/init.o \
    os/windows/libloader.o\
    os/directory_all.o\
+   os/inetsocket_all.o\
    os/windows/process.o\
    parser/db.o\
    parser/csv.o \

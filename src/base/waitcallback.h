@@ -230,6 +230,28 @@ void GWEN_WaitCallback_Leave();
 GWENHYWFAR_API
 time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx);
 
+
+/**
+ * Returns the proposed distance in milliseconds between two
+ * calls to the callback (defaults to 0).
+ * You can use the value returned here for a call to select(2).
+ * @param ctx context to inspect (if 0 then the currently active one will
+ * be inspected)
+ */
+GWENHYWFAR_API
+  int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK_CTX *ctx);
+
+
+/**
+ * Sets the proposed distance in milliseconds between two
+ * calls to the callback. This value is never enforced by the callback
+ * mechanism itself.
+ */
+GWENHYWFAR_API
+  void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK_CTX *ctx,
+                                     int d);
+
+
 /*@}*/
 
 

@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Thu Nov 06 2003
- copyright   : (C) 2003 by Martin Preuss
- email       : martin@libchipcard.de
+                             -------------------
+    cvs         : $Id$
+    begin       : Tue Oct 02 2002
+    copyright   : (C) 2002 by Martin Preuss
+    email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,31 +26,18 @@
  ***************************************************************************/
 
 
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-
-#include "cryptnone_p.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  return 0;
-}
+#ifndef GWEN_SOCKET_ALL_P_H
+#define GWEN_SOCKET_ALL_P_H
 
 
 
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
+GWEN_ERRORCODE GWEN_Socket__StartOpen(GWEN_SOCKET *sp,
+                                      const GWEN_INETADDRESS *addr);
+
+GWEN_ERRORCODE GWEN_Socket__CheckOpen(GWEN_SOCKET *sp,
+                                      int timeout);
 
 
 
-int GWEN_SSLConn_IsAvailable(){
-  return -0;
-}
-
+#endif /* GWEN_SOCKET_ALL_P_H */
 

@@ -2,8 +2,8 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Sat Jan 17 2004
+ copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,31 +26,58 @@
  ***************************************************************************/
 
 
+#ifndef GWEN_SSL_CONNECTION_H
+#define GWEN_SSL_CONNECTION_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+#include <gwenhywfar/inetsocket.h>
+
+
+typedef struct GWEN_SSL_CONNECTION GWEN_SSL_CONNECTION;
+
+
+GWENHYWFAR_API
+  int GWEN_SSLConn_IsAvailable();
+
+
+GWENHYWFAR_API
+  GWEN_SSL_CONNECTION *GWEN_SSLConn_new(int server,
+                                        const GWEN_INETADDRESS *addr,
+					const char *cafile,
+                                        const char *capath);
+GWENHYWFAR_API
+  void GWEN_SSLConn_free(GWEN_SSL_CONNECTION *conn);
+
+
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
+				      const GWEN_INETADDRESS *addr,
+				      int timeout);
+
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn);
+
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_SSLConn_Accept(GWEN_SSL_CONNECTION *conn,
+				     GWEN_INETADDRESS **addr,
+                                     int timeout);
+
+
+
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_SSLConn_Read(GWEN_SSL_CONNECTION *conn,
+				   char *buffer,
+				   int *bsize,
+				   int timeout);
+
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_SSLConn_Write(GWEN_SSL_CONNECTION *conn,
+				    const char *buffer,
+				    int *bsize,
+				    int timeout);
+
+
+
 #endif
 
-
-#include "cryptnone_p.h"
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/debug.h>
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  return 0;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
-
-
-
-int GWEN_SSLConn_IsAvailable(){
-  return -0;
-}
 
 

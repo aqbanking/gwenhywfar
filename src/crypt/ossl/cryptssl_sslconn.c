@@ -2,8 +2,8 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Sat Jan 17 2004
+ copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,32 +25,86 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-
-#include "cryptnone_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init(){
-  return 0;
-}
-
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
-  return 0;
-}
+#include "cryptssl_sslconn_p.h"
 
 
 
 int GWEN_SSLConn_IsAvailable(){
-  return -0;
+  return -1;
 }
+
+
+GWEN_SSL_CONNECTION *GWEN_SSLConn_new(int server,
+                                      const GWEN_INETADDRESS *addr,
+                                      const char *cafile,
+                                      const char *capath){
+  GWEN_SSL_CONNECTION *conn;
+
+  GWEN_NEW_OBJECT(GWEN_SSL_CONNECTION, conn);
+  if (cafile)
+    conn->CAfile=strdup(cafile);
+  if (capath)
+    conn->CAdir=strdup(capath);
+  conn->isServer=(server!=0);
+  return conn;
+}
+
+
+
+void GWEN_SSLConn_free(GWEN_SSL_CONNECTION *conn){
+  if (conn) {
+    free(conn->CAfile);
+    free(conn->CAdir);
+    GWEN_Socket_free(conn->socket);
+    free(conn);
+  }
+}
+
+
+
+GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
+                                    const GWEN_INETADDRESS *addr,
+                                    int timeout){
+}
+
+
+
+GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn){
+}
+
+
+
+GWEN_ERRORCODE GWEN_SSLConn_Accept(GWEN_SSL_CONNECTION *conn,
+                                   GWEN_INETADDRESS **addr,
+                                   int timeout){
+}
+
+
+
+GWEN_ERRORCODE GWEN_SSLConn_Read(GWEN_SSL_CONNECTION *conn,
+                                 char *buffer,
+                                 int *bsize,
+                                 int timeout){
+}
+
+
+
+GWEN_ERRORCODE GWEN_SSLConn_Write(GWEN_SSL_CONNECTION *conn,
+                                  const char *buffer,
+                                  int *bsize,
+                                  int timeout){
+}
+
+
+
+
+
 
 

@@ -1,17 +1,8 @@
 INCLUDES=@all_includes@
 
 SUBDIRS=@GWEN_CRYPTO@
+DIST_SUBDIRS=none ossl
 
-EXTRA_DIST=\
- ossl/Makefile.am \
- ossl/Makefile.in \
- ossl/cryptssl_p.h \
- ossl/cryptssl.c \
- none/Makefile.am \
- none/Makefile.in \
- none/cryptnone_p.h \
- none/cryptnone.c
- 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
  crypt.h \

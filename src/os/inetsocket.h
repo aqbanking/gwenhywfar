@@ -60,6 +60,7 @@ extern "C" {
 #define GWEN_SOCKET_ERROR_STARTUP        (-5)
 #define GWEN_SOCKET_ERROR_INTERRUPTED    (-6)
 #define GWEN_SOCKET_ERROR_UNSUPPORTED    (-7)
+#define GWEN_SOCKET_ERROR_ABORTED        (-8)
 /*@}*/
 
 
@@ -165,6 +166,22 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Close(GWEN_SOCKET *sp);
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_Socket_Connect(GWEN_SOCKET *sp,
                                      const GWEN_INETADDRESS *addr);
+
+/**
+ * Tries to connect to the given addres. This function calls
+ * @ref GWEN_WaitCallback.
+ * @param addr address to connect to
+ * @param timeout timeout in seconds, special values:
+ *  <ul>
+ *   <li>0: don ot wait</li>
+ *   <li-1: wait until hell freezes if necessary</li>
+ *  </ul>
+ */
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_Socket_Connect_Wait(GWEN_SOCKET *sp,
+                                          const GWEN_INETADDRESS *addr,
+                                          int timeout);
+
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_Socket_Bind(GWEN_SOCKET *sp,
                                   const GWEN_INETADDRESS *addr);
@@ -189,6 +206,12 @@ GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_Socket_Accept(GWEN_SOCKET *sp,
                                     GWEN_INETADDRESS **addr,
                                     GWEN_SOCKET **newsock);
+
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_Socket_Accept_Wait(GWEN_SOCKET *sp,
+                                         GWEN_INETADDRESS **addr,
+                                         GWEN_SOCKET **newsock,
+                                         int timeout);
 /*@}*/
 
 /**
@@ -268,6 +291,12 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Read(GWEN_SOCKET *sp,
                                                char *buffer,
                                                int *bsize);
 
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Read_Wait(GWEN_SOCKET *sp,
+                                                    char *buffer,
+                                                    int *bsize,
+                                                    int timeout,
+                                                    int force);
+
 /**
  * Write bytes to an open socket.
  * @param sp socket
@@ -279,6 +308,12 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Read(GWEN_SOCKET *sp,
 GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Write(GWEN_SOCKET *sp,
                                                 const char *buffer,
                                                 int *bsize);
+
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Write_Wait(GWEN_SOCKET *sp,
+                                                     const char *buffer,
+                                                     int *bsize,
+                                                     int timeout,
+                                                     int force);
 
 /**
  * Reads bytes from an UDP socket, which is connectionless.

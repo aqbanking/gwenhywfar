@@ -1,9 +1,18 @@
 
-2004/01/16 Martin Preuss <martin@libchipcard.de>
+2004/01/17 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added GWEN_WaitCallback:
   This allows for nesting callback contexts. This is now a generic way
   to inform the application about long term actions.
+- started working on SSL connections (needed for OpenHBCI in PIN/TAN mode)
+  Note: An abstraction is not that badly needed, but it would help when
+        porting to a platform which does not use OpenSSL for this purpose.
+        Well, my thoughts about porting Gwen to PalmOS (which has its own
+        SSL functions) is not completely dead as you can see ;-)
+        Anyway, the functions here will make it easier at least for me to
+        use SSL without the need of digging into the OpenSSL docs everytime,
+        so here it comes...
+- added conveniance functions for socket operations (needed for SSL functions)
 
 
 2004/01/15 Martin Preuss <martin@libchipcard.de>

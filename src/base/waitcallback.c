@@ -151,4 +151,34 @@ time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx){
 
 
 
+int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK_CTX *ctx){
+  if (ctx==0) {
+    if (!gwen_callbackstack) {
+      DBG_DEBUG(0, "No callbacks registered (1)");
+      return 0;
+    }
+    ctx=GWEN_List_GetBack(gwen_callbackstack);
+    if (!ctx) {
+      DBG_WARN(0, "No callbacks registered, should not happen here");
+      return 0;
+    }
+  }
+  return ctx->proposedDistance;
+}
+
+
+
+void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK_CTX *ctx,
+                                   int d){
+  assert(ctx);
+  ctx->proposedDistance=d;
+}
+
+
+
+
+
+
+
+
 
