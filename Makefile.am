@@ -9,7 +9,6 @@ EXTRA_DIST= \
  NEWS \
  README \
  README.W32 \
- RELEASES \
  gwenhywfar.m4 \
  gwenhywfar.spec.in 
 

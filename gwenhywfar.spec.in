@@ -65,17 +65,17 @@ LIBRARY_PATH=$RPM_BUILD_ROOT%{_libdir} make DESTDIR=$RPM_BUILD_ROOT \
 
 %files
 %defattr(-,root,root,0755)
-%doc README COPYING ChangeLog RELEASES
-%{_libdir}/*.a
+%doc README COPYING ChangeLog
 %{_libdir}/*.so
 %{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root,0755)
-%doc README COPYING ChangeLog RELEASES
+%doc README COPYING ChangeLog
 %{_bindir}/gwenhywfar-config
 %{_includedir}/*
 %{_libdir}/*.la
+%{_libdir}/*.a
 %{_datadir}/aclocal/gwenhywfar.m4
 
 
