@@ -178,7 +178,7 @@ int GWEN_IPCRequest_HasRequestMsg(GWEN_IPCREQUEST *r, GWEN_TYPE_UINT32 id){
 
   m=GWEN_IPCMsg_List_First(r->requestMsgs);
   while(m) {
-    if (m->refId==id)
+    if (m->id==id)
       return 1;
     m=GWEN_IPCMsg_List_Next(m);
   } /* while */
@@ -578,6 +578,7 @@ int GWEN_IPCManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
   while(r) {
     if (r->id==rid)
       break;
+    r=GWEN_IPCRequest_List_Next(r);
   } /* while */
   if (!r) {
     DBG_ERROR(0, "Request %08x not found", rid);
@@ -649,8 +650,10 @@ GWEN_DB_NODE *GWEN_IPCManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
   }
 
   m=GWEN_IPCMsg_List_First(r->responseMsgs);
-  assert(m);
-
+  if (!m) {
+    DBG_DEBUG(0, "No response yet");
+    return 0;
+  }
   db=m->db;
   assert(m->node);
   assert(m->node->id);
