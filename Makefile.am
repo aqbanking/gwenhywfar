@@ -92,11 +92,13 @@ win32:
 	 cp -r win32-tmp/bin win32-devel/ && \
 	 cp -r win32-tmp/include win32-devel/ && \
 	 cp -r win32-tmp/share win32-devel && \
+	 cp ../README.W32 win32-devel/ && \
 	 tar pczvf gwenhywfar-@rpm_version@-win32-devel.tgz win32-devel && \
 	 rm -Rf win32-devel && \
 	 rm -Rf win32-tmp
 	mkdir -p distribution/win32-bin && \
 	 cp -r src/gwenhywfar32.dll distribution/win32-bin/ && \
+	 cp ../README.W32 win32-bin/ && \
 	 strip distribution/win32-bin/*.dll && \
 	 cd distribution && tar pczvf gwenhywfar-@rpm_version@-win32-bin.tgz win32-bin && \
 	 rm -Rf win32-bin
