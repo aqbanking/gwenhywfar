@@ -71,27 +71,30 @@ if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_RESULT($enable_gwenhywfar_test)
   AC_MSG_CHECKING(for Gwenhywfar version >=$vma.$vmi.$vpl.$vbld)
   if test "$enable_gwenhywfar_test" != "no"; then
+    gwen_versionstring="`$gwenhywfar_dir/bin/gwenhywfar-config --vstring`.`$gwenhywfar_dir/bin/gwenhywfar-config --vbuild`"
+    AC_MSG_RESULT([found $gwen_versionstring])
     if test "$vma" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
       AC_MSG_ERROR([Your Gwenhywfar version is way too old.
-      Please update from www.aquamaniac.de])
+      Please update from http://sf.net/projects/gwenhywfar])
     elif test "$vma" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
       if test "$vmi" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
         AC_MSG_ERROR([Your Gwenhywfar version is too old.
-          Please update from www.aquamaniac.de])
+          Please update from http://sf.net/projects/gwenhywfar])
       elif test "$vmi" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
           if test "$vpl" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
             AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old.
-            Please update from www.aquamaniac.de])
+            Please update from http://sf.net/projects/gwenhywfar])
           elif test "$vpl" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
             if test "$vbld" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vbuild`"; then
-              AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old.
-              Please update from www.aquamaniac.de])
+              AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old. 
+  Please update to the latest CVS version. Instructions for accessing 
+  CVS can be found on http://sf.net/projects/gwenhywfar])
              fi
            fi
       fi
     fi
     have_gwenhywfar="yes"
-    AC_MSG_RESULT(yes)
+    #AC_MSG_RESULT(yes)
   else
     have_gwenhywfar="yes"
     AC_MSG_RESULT(assuming yes)
