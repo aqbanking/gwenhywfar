@@ -1,3 +1,7 @@
+2004-01-14  Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Fix typo -- $() is a variable in a Makefile, but
+	in configure it's a subshell.
 
 2004/01/14 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

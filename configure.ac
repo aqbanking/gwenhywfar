@@ -131,7 +131,7 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
         AQ_WINDOZE
-        gwenhywfar_libs="-L$(WIN_PATH_WINDOWS_MINGW) -lgwenhywfar32"
+        gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_sections=""
         gwenhywfar_os_lib="os/windows/libos.la"
