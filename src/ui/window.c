@@ -64,6 +64,8 @@ GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
   assert(win->previousHandler);
   GWEN_Widget_SetEventHandler(w, GWEN_Window_EventHandler);
 
+  width=GWEN_Widget_GetWidth(w);
+  height=GWEN_Widget_GetHeight(w);
   xoffs=0;
   yoffs=0;
   woffs=0;
@@ -90,12 +92,13 @@ GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
   if (flags & GWEN_WINDOW_FLAGS_HSLIDER) {
     DBG_NOTICE(0, "Creating horizontal slider");
     win->wHslider=GWEN_HSlider_new(w,
-                                   GWEN_WIDGET_FLAGS_DEFAULT,
+                                   GWEN_WIDGET_FLAGS_DEFAULT |
+                                   GWEN_WIDGET_FLAGS_HIGHLIGHT,
                                    "HSlider",
                                    xoffs,
                                    height-
                                    ((flags & GWEN_WIDGET_FLAGS_BORDER)?2:1),
-                                   width-woffs);
+                                   width-woffs-1);
     hoffs++;
     GWEN_Widget_SetColour(win->wHslider, GWEN_WidgetColour_Button);
   }
@@ -103,7 +106,8 @@ GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
   if (flags & GWEN_WINDOW_FLAGS_VSLIDER) {
     DBG_NOTICE(0, "Creating vertical slider");
     win->wVslider=GWEN_VSlider_new(w,
-                                   GWEN_WIDGET_FLAGS_DEFAULT,
+                                   GWEN_WIDGET_FLAGS_DEFAULT |
+                                   GWEN_WIDGET_FLAGS_HIGHLIGHT,
                                    "VSlider",
                                    width-
                                    ((flags & GWEN_WIDGET_FLAGS_BORDER)?2:1),
@@ -113,6 +117,7 @@ GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
     GWEN_Widget_SetColour(win->wVslider, GWEN_WidgetColour_Button);
   }
 
+  DBG_NOTICE(0, "Creating viewport");
   win->wView=GWEN_Widget_new(w, 0, "View", 0,
                              xoffs, yoffs, width-woffs, height-hoffs);
   DBG_NOTICE(0, "Viewport is at %d/%d", xoffs, yoffs);

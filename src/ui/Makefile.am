@@ -4,6 +4,7 @@ noinst_LTLIBRARIES=libui.la
 
 iheaderdir=${includedir}/gwenhywfar/ui
 iheader_HEADERS=\
+  button.h \
   event.h \
   hslider.h \
   tablewidget_p.h \
@@ -14,6 +15,7 @@ iheader_HEADERS=\
   window.h
 
 noinst_HEADERS=\
+  button_p.h \
   event_p.h \
   hslider_p.h \
   tablewidget.h \
@@ -26,6 +28,7 @@ noinst_HEADERS=\
   window_p.h
 
 libui_la_SOURCES=\
+  button.c \
   event.c \
   hslider.c \
   tablewidget.c \

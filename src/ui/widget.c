@@ -88,6 +88,9 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   w->y=y;
   w->width=width;
   w->height=height;
+  w->state=GWEN_WIDGET_STATE_ACTIVE;
+  w->cursorX=-1;
+  w->cursorY=-1;
 
   w->flags=flags;
   if (parent) {
@@ -132,8 +135,9 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   }
 
   keypad(w->window, (w->flags & GWEN_WIDGET_FLAGS_KEYPAD)?TRUE:FALSE);
-  scrollok(w->window, FALSE);
+  scrollok(w->window, (w->flags & GWEN_WIDGET_FLAGS_SCROLL)?TRUE:FALSE);
   w->colour=GWEN_WidgetColour_Default;
+  w->normalColour=GWEN_WidgetColour_Default;
 
   e=GWEN_EventCreated_new();
   assert(e);
@@ -215,6 +219,13 @@ GWEN_WIDGET *GWEN_Widget_GetParent(const GWEN_WIDGET *w){
 
 
 
+GWEN_WIDGET *GWEN_Widget_GetFirstChild(const GWEN_WIDGET *w){
+  assert(w);
+  return GWEN_Widget_List_First(w->children);
+}
+
+
+
 int GWEN_Widget_GetX(const GWEN_WIDGET *w){
   assert(w);
   return w->x;
@@ -260,6 +271,13 @@ const char *GWEN_Widget_GetName(const GWEN_WIDGET *w){
 GWEN_TYPE_UINT32 GWEN_Widget_GetFlags(const GWEN_WIDGET *w){
   assert(w);
   return w->flags;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_Widget_GetState(const GWEN_WIDGET *w){
+  assert(w);
+  return w->state;
 }
 
 
@@ -358,15 +376,25 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       return GWEN_UIResult_Error;
     return GWEN_UIResult_Handled;
 
-  case GWEN_EventType_SetColour:
-    DBG_INFO(0, "Event: SetColour(%s)", w->name);
-    wbkgd(w->window, COLOR_PAIR(GWEN_EventSetColour_GetColour(e)));
+  case GWEN_EventType_SetColour: {
+    GWEN_WIDGET_COLOUR col;
 
-    w->colour=GWEN_EventSetColour_GetColour(e);
-    wattr_set(w->window, 0, w->colour, 0);
-    if (GWEN_Widget_Update(w))
-      return GWEN_UIResult_Error;
+    DBG_INFO(0, "Event: SetColour(%s)", w->name);
+    col=GWEN_EventSetColour_GetColour(e);
+    w->normalColour=col;
+    if (!(w->state & GWEN_WIDGET_STATE_HIGHLIGHT)) {
+      DBG_NOTICE(0, "Setting colour: %d", col);
+      w->colour=col;
+      wbkgd(w->window, COLOR_PAIR(col));
+      wattr_set(w->window, 0, w->colour, 0);
+      if (GWEN_Widget_Update(w))
+        return GWEN_UIResult_Error;
+    }
+    else {
+      DBG_NOTICE(0, "Storing colour: %d", col);
+    }
     return GWEN_UIResult_Handled;
+  }
 
   case GWEN_EventType_Draw: {
     int x, y;
@@ -376,20 +404,34 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     y=0;
     if (w->text) {
       int length;
+      int nw, nh;
 
+      if (w->flags & GWEN_WIDGET_FLAGS_BORDER) nw=w->width-2;
+      else nw=w->width;
+      if (w->flags & GWEN_WIDGET_FLAGS_BORDER && w->height!=1) nh=w->height-2;
+      else nh=w->height;
       length=strlen(w->text);
       if (w->flags & GWEN_WIDGET_FLAGS_HCENTER)
-        x=(w->width-length)/2;
+        x=(nw-length)/2;
       if (w->flags & GWEN_WIDGET_FLAGS_VCENTER)
-        y=w->height/2;
+        y=nh/2;
     }
     wbkgd(w->window, COLOR_PAIR(w->colour));
     wattr_set(w->window, 0, w->colour, 0);
 
     if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
-      box(w->window, 0, 0);
-      x++;
-      y++;
+      if (w->height>1) {
+        box(w->window, 0, 0);
+        x++;
+        y++;
+      }
+      else if (w->height==1) {
+        wmove(w->window, 0, 0);
+        waddch(w->window, '[');
+        wmove(w->window, 0, w->width-1);
+        waddch(w->window, ']');
+        x++;
+      }
     }
     if (w->text)
       mvwprintw(w->window, y, x, w->text);
@@ -436,20 +478,22 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     hi=GWEN_EventHighlight_GetHi(e);
     maxc=w->width;
     if (w->flags & GWEN_WIDGET_FLAGS_BORDER) {
+      if (w->height>1)
+        y++;
       x++;
-      y++;
       maxc-=2;
     }
     if (maxc>len)
       maxc=len;
-    DBG_VERBOUS(0, "Highlighting %d, %d, %d bytes (true:%d)",
-                x, y, len, hi);
+    DBG_NOTICE(0, "Highlighting %d, %d, %d bytes (true:%d)",
+               x, y, len, hi);
     if (hi==0)
       hi=w->colour;
     mvwchgat(w->window, y, x, maxc, 0,
              hi, 0);
     touchline(w->window, y, 1);
-    wrefresh(w->window);
+    GWEN_Widget_Refresh(w);
+    //wrefresh(w->window);
     //doupdate();
     return GWEN_UIResult_Handled;
   }
@@ -581,7 +625,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       v=GWEN_EventScroll_GetYBy(e);
       if (v) {
         wscrl(w->window, v);
-        wrefresh(w->window);
+        //wrefresh(w->window);
+        GWEN_Widget_Refresh(w);
         GWEN_Widget_Scrolled(w, 0, v);
         //doupdate();
         return GWEN_UIResult_Handled;
@@ -601,7 +646,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     x=GWEN_EventClear_GetX(e);
     y=GWEN_EventClear_GetY(e);
     m=GWEN_EventClear_GetMode(e);
-    DBG_VERBOUS(0, "Clearing: %d/%d (%d)", x, y, m);
+    DBG_NOTICE(0, "Clearing dims: %d/%d (%d) [%s]", x, y, m, w->name);
     wmove(w->window, y, x);
     switch(m) {
     case GWEN_EventClearMode_All:
@@ -617,7 +662,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       DBG_DEBUG(0, "Unknown mode (%d)", m);
       return GWEN_UIResult_NotHandled;
     } /* switch */
-    wrefresh(w->window);
+    GWEN_Widget_Refresh(w);
+    //wrefresh(w->window);
     //doupdate();
     return GWEN_UIResult_Handled;
   }
@@ -647,17 +693,29 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     }
     else if (key==KEY_F(5)) {
       DBG_NOTICE(0, "Updating");
-      GWEN_Widget_Update(w);
+      doupdate();
     }
     else if (key==KEY_F(6)) {
       DBG_NOTICE(0, "Refreshing");
+      wrefresh(w->window);
       GWEN_Widget_Refresh(w);
     }
     else if (key==KEY_F(7)) {
       DBG_NOTICE(0, "Redrawing");
+      beep();
       GWEN_Widget_Redraw(w);
     }
-    return GWEN_UIResult_NotHandled;
+    else if (key==KEY_F(11)) {
+      beep();
+      GWEN_UI_DumpWidgets();
+    }
+    else if (key==9) {
+      if (GWEN_UI_FocusToNext(w)) {
+        beep();
+        return GWEN_UIResult_Handled;
+      }
+    }
+    return GWEN_UIResult_Handled;
   }
 
   case GWEN_EventType_Focus: {
@@ -665,10 +723,31 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
 
     DBG_INFO(0, "Event: Focus(%s)", w->name);
     ft=GWEN_EventFocus_GetFocusEventType(e);
-    if (ft==GWEN_EventFocusType_Got)
-      w->flags|=GWEN_WIDGET_FLAGS_HASFOCUS;
-    else
-      w->flags&=~GWEN_WIDGET_FLAGS_HASFOCUS;
+    if (ft==GWEN_EventFocusType_Got) {
+      w->state|=GWEN_WIDGET_STATE_HASFOCUS;
+      if (w->flags & GWEN_WIDGET_FLAGS_HIGHLIGHT) {
+        w->normalColour=w->colour;
+        w->colour=GWEN_WidgetColour_Selected;
+        wbkgd(w->window, COLOR_PAIR(w->colour));
+        wattr_set(w->window, 0, w->colour, 0);
+        w->state|=GWEN_WIDGET_STATE_HIGHLIGHT;
+        wrefresh(w->window);
+      }
+      else {
+        w->state&=~GWEN_WIDGET_STATE_HIGHLIGHT;
+      }
+    }
+    else {
+      DBG_NOTICE(0, "Focus lost");
+      w->state&=~GWEN_WIDGET_STATE_HASFOCUS;
+      if (w->state & GWEN_WIDGET_STATE_HIGHLIGHT) {
+        w->state&=~GWEN_WIDGET_STATE_HIGHLIGHT;
+        w->colour=w->normalColour;
+        wbkgd(w->window, COLOR_PAIR(w->colour));
+        wattr_set(w->window, 0, w->colour, 0);
+        wrefresh(w->window);
+      }
+    }
     return GWEN_UIResult_Handled;
   }
 
@@ -997,11 +1076,21 @@ WINDOW *GWEN_Widget_GetWindow(const GWEN_WIDGET *w){
 
 void GWEN_Widget_Dump(GWEN_WIDGET *w, int indent) {
   GWEN_WIDGET *sw;
+  GWEN_BUFFER *m;
 
-  DBG_NOTICE(0, "Level %d: %s: Dims: %d/%d %d/%d",
-             indent,
+  m=GWEN_Buffer_new(0, indent, 0, 1);
+  if (indent) {
+    int i;
+
+    for (i=0; i<indent; i++)
+      GWEN_Buffer_AppendByte(m, '-');
+  }
+
+  DBG_NOTICE(0, "%s %s: Dims: %d/%d %d/%d",
+             indent?GWEN_Buffer_GetStart(m):"",
              w->name, w->x, w->y,
              w->width, w->height);
+  GWEN_Buffer_free(m);
   sw=GWEN_Widget_List_First(w->children);
   while(sw) {
     GWEN_Widget_Dump(sw, indent+1);

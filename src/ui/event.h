@@ -77,7 +77,8 @@ typedef enum {
   GWEN_EventType_ChgAtts,
   GWEN_EventType_Clear,
   GWEN_EventType_Highlight,
-  GWEN_EventType_ContentChg
+  GWEN_EventType_ContentChg,
+  GWEN_EventType_Command
 } GWEN_EVENT_TYPE;
 
 
@@ -188,6 +189,10 @@ int GWEN_EventContentChg_GetContentWidth(const GWEN_EVENT *e);
 int GWEN_EventContentChg_GetContentHeight(const GWEN_EVENT *e);
 int GWEN_EventContentChg_GetWidth(const GWEN_EVENT *e);
 int GWEN_EventContentChg_GetHeight(const GWEN_EVENT *e);
+
+
+GWEN_EVENT *GWEN_EventCommand_new(GWEN_TYPE_UINT32 commandId);
+GWEN_TYPE_UINT32 GWEN_EventCommand_GetCommandId(const GWEN_EVENT *e);
 
 
 void GWEN_Event_Dump(const GWEN_EVENT *e);

@@ -402,12 +402,21 @@ GWEN_UI_RESULT GWEN_UI_Work() {
       }
       else {
         int ch;
+        int cx;
+        int cy;
 
         /* handle user interaction */
-        move(GWEN_Widget_GetCursorY(GWEN_UI__ui->focusWidget)+
-             GWEN_Widget_GetPhysicalY(GWEN_UI__ui->focusWidget),
-             GWEN_Widget_GetCursorX(GWEN_UI__ui->focusWidget)+
-             GWEN_Widget_GetPhysicalX(GWEN_UI__ui->focusWidget));
+        DBG_NOTICE(0, "Focus widget: %s",
+                   GWEN_Widget_GetName(GWEN_UI__ui->focusWidget));
+        cx=GWEN_Widget_GetCursorX(GWEN_UI__ui->focusWidget);
+        cy=GWEN_Widget_GetCursorY(GWEN_UI__ui->focusWidget);
+        if (cx!=-1 && cy!=-1)
+          move(cy+GWEN_Widget_GetPhysicalY(GWEN_UI__ui->focusWidget),
+               cx+GWEN_Widget_GetPhysicalX(GWEN_UI__ui->focusWidget));
+        else {
+          move(0, 0);
+        }
+        refresh();
         ch=getch();
         if (ch==ERR) {
           /* timeout */
@@ -427,6 +436,123 @@ GWEN_UI_RESULT GWEN_UI_Work() {
   return GWEN_UIResult_Quit;
 }
 
+
+
+
+GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w){
+  GWEN_WIDGET *wnext;
+  GWEN_WIDGET *wfocus;
+  GWEN_TYPE_UINT32 wf, ws;
+
+  wf=GWEN_Widget_GetFlags(w);
+  ws=GWEN_Widget_GetState(w);
+
+  DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(w));
+
+  if (!(ws & GWEN_WIDGET_STATE_ACTIVE)) {
+    DBG_NOTICE(0, "Widget \"%s\" inactive", GWEN_Widget_GetName(w));
+    return 0;
+  }
+
+  wnext=GWEN_Widget_GetFirstChild(w);
+  while (wnext) {
+    GWEN_TYPE_UINT32 wf, ws;
+
+    wf=GWEN_Widget_GetFlags(wnext);
+    ws=GWEN_Widget_GetState(wnext);
+    if (ws & GWEN_WIDGET_STATE_ACTIVE) {
+      wfocus=GWEN_UI_GetDeepestFocusable(wnext);
+      if (wfocus) {
+        DBG_NOTICE(0, "Widget \"%s\" found", GWEN_Widget_GetName(wfocus));
+        return wfocus;
+      }
+      if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
+          !(ws & GWEN_WIDGET_STATE_HASFOCUS))
+        return wnext;
+    }
+
+    wnext=GWEN_Widget_List_Next(wnext);
+  } /* while */
+
+  if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
+      !(ws & GWEN_WIDGET_STATE_HASFOCUS))
+    return w;
+
+  return 0;
+}
+
+
+
+GWEN_WIDGET *GWEN_UI__FocusToNext(GWEN_WIDGET *wlevel){
+  GWEN_WIDGET *wfocus;
+
+  assert(wlevel);
+  while(wlevel) {
+    GWEN_WIDGET *wnext;
+
+    DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wlevel));
+    wnext=GWEN_Widget_List_Next(wlevel);
+    if (!wnext) {
+      DBG_NOTICE(0, "No next widget");
+    }
+    while(wnext) {
+      DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wnext));
+      wfocus=GWEN_UI_GetDeepestFocusable(wnext);
+      if (wfocus) {
+        return wfocus;
+      }
+
+      wnext=GWEN_Widget_List_Next(wnext);
+    }
+    wlevel=GWEN_Widget_GetParent(wlevel);
+  }
+
+
+  return 0;
+}
+
+
+
+int GWEN_UI_FocusToNext(GWEN_WIDGET *w){
+  GWEN_WIDGET *wfocus;
+
+  wfocus=GWEN_UI__FocusToNext(GWEN_UI__ui->focusWidget);
+  if (!wfocus) {
+    GWEN_WIDGET *wc;
+
+    /* get first focus */
+    wc=GWEN_Widget_List_First(GWEN_UI__ui->rootWidgets);
+    while(wc) {
+      wfocus=GWEN_UI_GetDeepestFocusable(wc);
+      if (wfocus)
+        break;
+      wc=GWEN_Widget_List_Next(wc);
+    }
+  }
+
+  if (!wfocus)
+    return 1;
+
+  GWEN_UI_SetFocus(wfocus);
+  return 0;
+}
+
+
+
+void GWEN_UI_DumpWidgets(){
+  GWEN_WIDGET *w;
+
+  if (!GWEN_UI__ui) {
+    DBG_NOTICE(0, "Not initialized.");
+    return;
+  }
+
+  w=GWEN_Widget_List_First(GWEN_UI__ui->rootWidgets);
+  while(w) {
+    GWEN_Widget_Dump(w, 0);
+    w=GWEN_Widget_List_Next(w);
+  }
+}
 
 
 

@@ -35,6 +35,7 @@
 #include <gwenhywfar/window.h>
 #include <gwenhywfar/textwidget.h>
 #include <gwenhywfar/tablewidget.h>
+#include <gwenhywfar/button.h>
 
 
 int testDB(int argc, char **argv) {
@@ -1769,6 +1770,96 @@ int uitest8(int argc, char **argv) {
 
 
 
+int uitest9(int argc, char **argv) {
+  GWEN_WIDGET *mw;
+  GWEN_WIDGET *w;
+  GWEN_WIDGET *tv;
+  GWEN_WIDGET *but;
+  GWEN_UI_RESULT res;
+  int i, j;
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+  mw=GWEN_Window_new(0,
+                     GWEN_WIDGET_FLAGS_DEFAULT |
+                     GWEN_WIDGET_FLAGS_BORDER |
+                     GWEN_WINDOW_FLAGS_TITLE |
+                     0,
+                     "Main-Widget",
+                     "Ueberschrift",
+                     1, 1,
+                     60, 22);
+  w=GWEN_Window_new(GWEN_Window_GetViewPort(mw),
+                    GWEN_WIDGET_FLAGS_DEFAULT |
+                    GWEN_WINDOW_FLAGS_HSLIDER |
+                    GWEN_WINDOW_FLAGS_VSLIDER |
+                    0,
+                    "Test-View",
+                    "Test",
+                    0, 0,
+                    0, 0);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(w);
+
+  DBG_NOTICE(0, "Creating table");
+  tv=GWEN_TableWidget_new(GWEN_Window_GetViewPort(w),
+                          GWEN_WIDGET_FLAGS_DEFAULT |
+                          GWEN_TABLEWIDGET_FLAGS_COLBORDER,
+                          "Test-Tabelle",
+                          0, 0,
+                          0, 0);
+  GWEN_TextWidget_SetVirtualSize(tv, 200, 200);
+  GWEN_Widget_SetColour(tv, GWEN_WidgetColour_Default);
+
+  but=GWEN_Button_new(GWEN_Window_GetViewPort(mw),
+                      GWEN_WIDGET_FLAGS_DEFAULT |
+                      GWEN_WIDGET_FLAGS_BORDER |
+                      GWEN_WIDGET_FLAGS_HCENTER |
+                      GWEN_WIDGET_FLAGS_HIGHLIGHT,
+                      "Test-Button",
+                      "Button",
+                      0xdeadbeef, /* commandId */
+                      25, 21,
+                      10, 1);
+  GWEN_Widget_SetColour(but, GWEN_WidgetColour_Message);
+  GWEN_Widget_Redraw(mw);
+  GWEN_Widget_SetFocus(tv);
+  GWEN_UI_Flush();
+
+  GWEN_Widget_Dump(w, 1);
+
+  for (i=0; i<10; i++)
+    for (j=0; j<16; j++) {
+      char numbuf[32];
+      snprintf(numbuf, sizeof(numbuf), "%d/%d", i, j);
+      GWEN_TableWidget_SetText(tv, i, j, numbuf);
+    }
+  GWEN_Widget_Redraw(tv);
+  GWEN_UI_Flush();
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
 
 
 int main(int argc, char **argv) {
@@ -1838,6 +1929,8 @@ int main(int argc, char **argv) {
     rv=uitest7(argc, argv);
   else if (strcasecmp(argv[1], "u8")==0)
     rv=uitest8(argc, argv);
+  else if (strcasecmp(argv[1], "u9")==0)
+    rv=uitest9(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

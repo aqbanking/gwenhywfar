@@ -688,7 +688,7 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
     DBG_NOTICE(0, "Event: Draw(%s)", GWEN_Widget_GetName(w));
     win->previousHandler(w, e);
     GWEN_TableWidget_Update(w);
-    if (GWEN_Widget_GetFlags(w) & GWEN_WIDGET_FLAGS_HASFOCUS) {
+    if (GWEN_Widget_GetState(w) & GWEN_WIDGET_STATE_HASFOCUS) {
       GWEN_TABLE_FIELD *tf;
       tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
       if (tf) {
@@ -752,7 +752,7 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
       DBG_NOTICE(0, "Scrolled: x=%d, y=%d (top=%d, left=%d)",
                  byX, byY, win->top, win->left);
       GWEN_TableWidget_DrawBorder(w, 0, win->theight);
-      if (GWEN_Widget_GetFlags(w) & GWEN_WIDGET_FLAGS_HASFOCUS) {
+      if (GWEN_Widget_GetState(w) & GWEN_WIDGET_STATE_HASFOCUS) {
         GWEN_TABLE_FIELD *tf;
         tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
         if (tf) {

@@ -368,13 +368,14 @@ int GWEN_TextWidget_WriteLine(GWEN_WIDGET *w, int x, int y) {
     if (!*p) {
       DBG_NOTICE(0, "String ends.");
     }
-    DBG_NOTICE(0, "Writing this (i=%d, left=%d, length=%d):",
+    DBG_NOTICE(0, "Writing this (dims: i=%d, left=%d, length=%d):",
                i, win->left, length);
     DBG_NOTICE(0, "Positions: x=%d, y=%d (top=%d)",
                0, y-win->top, win->top);
     GWEN_Text_LogString(startPos, p-startPos, 0, GWEN_LoggerLevelNotice);
     GWEN_Widget_WriteAt(w, 0, y-win->top, startPos, p-startPos);
-    GWEN_Widget_Clear(w, length, y-win->top, GWEN_EventClearMode_ToEOL);
+
+    GWEN_Widget_Clear(w, length-1, y-win->top, GWEN_EventClearMode_ToEOL);
   } /* if p */
   else {
     DBG_NOTICE(0, "No text");
@@ -819,8 +820,9 @@ GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
   }
   case GWEN_EventType_Draw: {
     DBG_NOTICE(0, "Event: Draw(%s)", GWEN_Widget_GetName(w));
+    GWEN_Widget_Clear(w, 0, 0, GWEN_EventClearMode_All);
     GWEN_TextWidget_Draw(w);
-    if ((GWEN_Widget_GetFlags(w) & GWEN_WIDGET_FLAGS_HASFOCUS) &&
+    if ((GWEN_Widget_GetState(w) & GWEN_WIDGET_STATE_HASFOCUS) &&
         (GWEN_Widget_GetFlags(w) & GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT)) {
       GWEN_Widget_Highlight(w, 0, win->pos-win->top,
                             GWEN_Widget_GetWidth(w),
@@ -1146,7 +1148,7 @@ GWEN_TW_LINE *GWEN_TextWidget_LineOpen(GWEN_WIDGET *w, int n, int crea) {
 
       /* create it */
       for (k=0; k<j; k++) {
-        l=GWEN_TWLine_new(atts, "");
+        l=GWEN_TWLine_new(atts, " ");
         GWEN_TWLine_List_Add(l, win->lines);
       }
       if (win->dheight<GWEN_TWLine_List_GetCount(win->lines)) {
@@ -1527,18 +1529,19 @@ int GWEN_TextWidget_LineRedraw(GWEN_WIDGET *w, GWEN_TW_LINE *l) {
     left=win->left;
 
   right=l->rightBorder;
-  if (right-left>=GWEN_Widget_GetHeight(w))
-    right=GWEN_Widget_GetWidth(w)+left;
+  if ((right-win->left)>=GWEN_Widget_GetWidth(w))
+    right=win->left+GWEN_Widget_GetWidth(w)-1;
 
   len=right-left+1;
-  if (len<1)
+  if (len<1) {
+    DBG_NOTICE(0, "Not updating dims: %d/%d, %d (%d, %d) [%d, %d]",
+               x, y, len, left, right,
+               l->leftBorder, l->rightBorder);
     return 0;
-
+  }
   y-=win->top;
   x=left-win->left;
 
-  DBG_NOTICE(0, "Update dims: %d/%d, %d (%d, %d)",
-             x, y, len, left, right);
   tbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(l->chars), 0, 1);
   if (GWEN_TextWidget_CondenseLineArea(l,
                                        left,
@@ -1546,7 +1549,12 @@ int GWEN_TextWidget_LineRedraw(GWEN_WIDGET *w, GWEN_TW_LINE *l) {
                                        tbuf,
                                        0)) {
     DBG_ERROR(0, "Error condensing buffer");
+    abort();
   }
+
+  DBG_NOTICE(0, "Update dims: %d/%d, %d (%d, %d): %s",
+             x, y, len, left, right,
+             GWEN_Buffer_GetStart(tbuf));
 
   GWEN_Widget_WriteAt(w, x, y, GWEN_Buffer_GetStart(tbuf), len);
   GWEN_Widget_Refresh(w);

@@ -897,6 +897,43 @@ int GWEN_EventContentChg_GetHeight(const GWEN_EVENT *e){
 
 
 
+GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_COMMAND);
+
+
+GWEN_EVENT *GWEN_EventCommand_new(GWEN_TYPE_UINT32 commandId) {
+  GWEN_EVENT *e;
+  GWEN_EVENT_COMMAND *et;
+
+  e=GWEN_Event_new(GWEN_EventType_Command);
+  GWEN_NEW_OBJECT(GWEN_EVENT_COMMAND, et);
+  et->commandId=commandId;
+
+  GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_COMMAND,
+                       e, et,
+                       GWEN_EventCommand_freeData);
+  return e;
+}
+
+
+
+void GWEN_EventCommand_freeData(void *bp, void *p){
+  GWEN_EVENT_COMMAND *et;
+
+  et=(GWEN_EVENT_COMMAND*)p;
+  GWEN_FREE_OBJECT(et);
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_EventCommand_GetCommandId(const GWEN_EVENT *e){
+  GWEN_EVENT_COMMAND *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_COMMAND, e);
+  assert(et);
+
+  return et->commandId;
+}
 
 
 

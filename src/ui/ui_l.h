@@ -38,6 +38,8 @@
 void GWEN_UI_AddRootWidget(GWEN_WIDGET *w);
 void GWEN_UI_SetFocus(GWEN_WIDGET *w);
 
+int GWEN_UI_FocusToNext(GWEN_WIDGET *w);
+
 GWEN_EVENT *GWEN_UI_PeekNextEvent(GWEN_WIDGET *wRecipient);
 GWEN_EVENT *GWEN_UI_GetNextEvent(GWEN_WIDGET *wRecipient);
 
@@ -46,6 +48,7 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wSender,
                       GWEN_EVENT *e,
                       int withPriority);
 
+void GWEN_UI_DumpWidgets();
 
 
 #endif

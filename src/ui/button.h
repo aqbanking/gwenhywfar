@@ -25,31 +25,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_UI_UI_P_H
-#define GWEN_UI_UI_P_H
+#ifndef GWEN_UI_BUTTON_H
+#define GWEN_UI_BUTTON_H
 
-
-#include "ui_l.h"
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/inherit.h>
 #include <gwenhywfar/widget.h>
 
 
-typedef struct GWEN_UI GWEN_UI;
-struct GWEN_UI {
-  GWEN_WIDGET_LIST *rootWidgets;
-  GWEN_TYPE_UINT32 usage;
-  GWEN_WIDGET *focusWidget;
-  GWEN_EVENT_LIST *events;
-  GWEN_EVENT_LIST *newEvents;
-  GWEN_EVENT *currentEvent;
-};
+typedef struct GWEN_BUTTON GWEN_BUTTON;
 
 
-GWEN_UI_RESULT GWEN_UI_HandleEvents();
+GWEN_WIDGET *GWEN_Button_new(GWEN_WIDGET *parent,
+                             GWEN_TYPE_UINT32 flags,
+                             const char *name,
+                             const char *text,
+                             GWEN_TYPE_UINT32 commandId,
+                             int x, int y, int width, int height);
 
-GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w);
 
 
 #endif
+
+
 
 
 

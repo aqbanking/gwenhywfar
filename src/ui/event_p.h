@@ -142,6 +142,14 @@ struct GWEN_EVENT_CONTENTCHG {
 void GWEN_EventContentChg_freeData(void *bp, void *p);
 
 
+
+typedef struct GWEN_EVENT_COMMAND GWEN_EVENT_COMMAND;
+struct GWEN_EVENT_COMMAND {
+  GWEN_TYPE_UINT32 commandId;
+};
+void GWEN_EventCommand_freeData(void *bp, void *p);
+
+
 #endif
 
 

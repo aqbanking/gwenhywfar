@@ -51,6 +51,7 @@ struct GWEN_WIDGET {
   int width;
   int height;
   GWEN_WIDGET_COLOUR colour;
+  GWEN_WIDGET_COLOUR normalColour;
 
   int cursorX;
   int cursorY;
@@ -59,6 +60,7 @@ struct GWEN_WIDGET {
   char *text;
 
   GWEN_TYPE_UINT32 flags;
+  GWEN_TYPE_UINT32 state;
   GWEN_WIDGET_EVENTHANDLER_FN eventHandler;
 
   /* ncurses data */

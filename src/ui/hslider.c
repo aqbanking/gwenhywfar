@@ -137,7 +137,6 @@ int GWEN_HSlider_Draw(GWEN_WIDGET *w) {
                         GWEN_Buffer_GetUsedBytes(mbuf));
     GWEN_Buffer_free(mbuf);
   }
-  GWEN_Widget_Refresh(w);
   return 0;
 }
 
@@ -163,7 +162,6 @@ GWEN_UI_RESULT GWEN_HSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     win->previousHandler(w, e);
     GWEN_HSlider_Update(w);
     return GWEN_UIResult_Handled;
-    break;
 
   case GWEN_EventType_Scroll:
     if (GWEN_EventScroll_GetTodo(e)) {
@@ -183,9 +181,36 @@ GWEN_UI_RESULT GWEN_HSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     GWEN_Widget_Update(w);
     break;
 
+  case GWEN_EventType_Highlight: {
+    GWEN_WIDGET_COLOUR col;
+
+    DBG_NOTICE(0, "Event: Highlight (%s)", GWEN_Widget_GetName(w));
+    col=GWEN_EventHighlight_GetHi(e);
+    if (col!=0) {
+      DBG_NOTICE(0, "Setting colour %d", col);
+      GWEN_Widget_SetColour(w, col);
+    }
+    break;
+    if (col==0) {
+      beep();
+      DBG_NOTICE(0, "Setting default colour");
+      GWEN_Widget_SetColour(w, GWEN_WidgetColour_Button);
+    }
+    else {
+      DBG_NOTICE(0, "Setting colour %d", col);
+      GWEN_Widget_SetColour(w, col);
+    }
+    return GWEN_UIResult_Handled;
+  }
+
+  case GWEN_EventType_Refresh:
+    break;
+
   case GWEN_EventType_Update:
     GWEN_HSlider_Update(w);
+    GWEN_Widget_Refresh(w);
     return win->previousHandler(w, e);
+
   default:
     break;
   } /* switch */
