@@ -258,6 +258,9 @@ GWEN_TYPE_UINT32 GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf){
 int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
   assert(bf);
 
+  DBG_WARN(0,
+           "GWEN_Buffer_SetUsedBytes: Deprecated, "
+           "please use GWEN_Buffer_Crop instead.");
   if (i>bf->bufferSize) {
     DBG_ERROR(0, "Bytes used>buffer size (%d>%d bytes)",
               i, bf->bufferSize);

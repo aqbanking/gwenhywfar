@@ -671,7 +671,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
       int bsize;
       GWEN_NETTRANSPORT_RESULT res;
 
-      DBG_NOTICE(0, "Trying to write up to %d bytes", psize);
+      DBG_DEBUG(0, "Trying to write up to %d bytes", psize);
       bsize=psize;
       ptr=GWEN_RingBuffer_GetReadPointer(conn->writeBuffer);
       res=GWEN_NetTransport_Write(conn->transportLayer,
@@ -690,12 +690,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
       if (conn->lastResult==GWEN_NetTransportResultWantRead)
         conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
       else if (conn->lastResult==GWEN_NetTransportResultWantWrite) {
-        DBG_NOTICE(0, "\nAnswer was \"WANTWRITE\"");
         conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
-      }
-      else if (conn->lastResult==GWEN_NetTransportResultOk) {
-        conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_DIDWRITE;
-        DBG_NOTICE(0, "Written");
       }
     }
 
@@ -733,11 +728,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
         if (conn->lastResult==GWEN_NetTransportResultWantRead)
           conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
         else if (conn->lastResult==GWEN_NetTransportResultWantWrite) {
-          DBG_NOTICE(0, "\nAnswer was \"WANTWRITE\"");
           conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
-        }
-        else if (conn->lastResult==GWEN_NetTransportResultOk) {
-          conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_DIDREAD;
         }
       }
     } /* if not EOF met */
@@ -1395,11 +1386,11 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     /* no socket, so sleep to reduce CPU usage */
     if (timeout) {
       /* well, actually only sleep if the caller wanted a timeout */
-      DBG_NOTICE(0, "Sleeping");
+      DBG_DEBUG(0, "Sleeping");
       GWEN_Socket_Select(0, 0, 0, GWEN_NETCONNECTION_CPU_TIMEOUT);
       GWEN_SocketSet_free(rset);
       GWEN_SocketSet_free(wset);
-      DBG_INFO(0, "No socket");
+      DBG_DEBUG(0, "No socket");
       return GWEN_NetConnectionWorkResult_Error;
     }
   }

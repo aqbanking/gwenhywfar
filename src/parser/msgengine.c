@@ -651,7 +651,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
 
   if (e->binTypeWritePtr &&
-      strcasecmp(type, "bin")==0 &&
+      GWEN_MsgEngine__IsBinTyp(e, type) &&
       atoi(GWEN_XMLNode_GetProperty(node, "writebin", "1"))) {
     int rv;
 
@@ -668,6 +668,10 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
     }
     else if (rv==0) {
       handled=1;
+    }
+    else if (rv==1) {
+      GWEN_Buffer_free(data);
+      data=0;
     }
   }
 
@@ -689,8 +693,33 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
         n=GWEN_XMLNode_Next(n);
       } /* while */
       if (n) {
-        pdata=GWEN_XMLNode_GetData(n);
-        datasize=strlen(pdata);
+        if (GWEN_MsgEngine__IsBinTyp(e, type)) {
+          const char *dp;
+          unsigned int dplen;
+          const char *stype;
+
+          stype=GWEN_XMLNode_GetProperty(node, "storedAs", type);
+          if (GWEN_MsgEngine__IsBinTyp(e, stype)) {
+            dp=GWEN_XMLNode_GetData(n);
+            dplen=strlen(dp);
+            data=GWEN_Buffer_new(0, dplen/2, 0, 1);
+            if (GWEN_Text_FromHexBuffer(dp, data)) {
+              DBG_INFO(0, "here");
+              return -1;
+            }
+            pdata=GWEN_Buffer_GetStart(data);
+            datasize=GWEN_Buffer_GetUsedBytes(data);
+          } /* if stored as bin */
+          else {
+            /* stored as char */
+            pdata=GWEN_XMLNode_GetData(n);
+            datasize=strlen(pdata);
+          }
+        } /* if binType */
+        else {
+          pdata=GWEN_XMLNode_GetData(n);
+          datasize=strlen(pdata);
+        }
       }
       else {
         pdata="";
@@ -798,12 +827,12 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
         }
       }
     }
-  
-    GWEN_Buffer_free(data);
-    data=GWEN_Buffer_new((char*)pdata,
-                         datasize,
-                         datasize,
-                         0 /* dont take ownership*/ );
+
+    if (!data)
+      data=GWEN_Buffer_new((char*)pdata,
+                           datasize,
+                           datasize,
+                           0 /* dont take ownership*/ );
   }
 
 
@@ -1447,7 +1476,7 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 	    /* element is optional, not found */
             /* restore position */
             GWEN_Buffer_SetPos(gbuf, posBeforeElement);
-            GWEN_Buffer_SetUsedBytes(gbuf, posBeforeElement);
+            GWEN_Buffer_Crop(gbuf, 0, posBeforeElement);
 
 	    if (strcasecmp(addEmptyMode, "max")==0) {
 	      DBG_DEBUG(0, "Adding max empty");
@@ -1610,7 +1639,7 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
           if (groupIsEmpty) {
             DBG_DEBUG(0, "Empty Group");
             GWEN_Buffer_SetPos(gbuf, posBeforeGroup);
-            GWEN_Buffer_SetUsedBytes(gbuf, posBeforeGroup);
+            GWEN_Buffer_Crop(gbuf, 0, posBeforeGroup);
 
             if (loopNr>=minnum) {
               DBG_DEBUG(0, "No data for group \"%s[%d]\", omitting",

@@ -290,8 +290,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
   /* padd up to srclen */
   pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
   res=BN_bn2bin(bnresult, pdst);
-  GWEN_Buffer_SetUsedBytes(dst,
-                           GWEN_Buffer_GetUsedBytes(dst)+res);
+  GWEN_Buffer_Crop(dst, 0, GWEN_Buffer_GetUsedBytes(dst)+res);
   if (res<srclen) {
     unsigned int j;
 

@@ -1,4 +1,11 @@
 
+2004/05/30: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/text: GWEN_Text_FromHexBuffer now ignores blanks
+- parser/msgengine: added property "storedAs" which indicates the storage
+    type when reading bin-values from within the data of a tag
+
+
 2004/05/29: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - net/*: major speedup of IPC routines ;-)

@@ -592,7 +592,7 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
     pos=GWEN_Buffer_GetPos(nbuf);
     for (i=0; i<GWEN_NETTRANSPORTSSL_MAXCOLL; i++) {
       snprintf(numbuf, sizeof(numbuf), "%d", i);
-      GWEN_Buffer_SetUsedBytes(nbuf, pos);
+      GWEN_Buffer_Crop(nbuf, 0, pos);
       GWEN_Buffer_SetPos(nbuf, pos);
       GWEN_Buffer_AppendByte(nbuf, '.');
       GWEN_Buffer_AppendString(nbuf, numbuf);

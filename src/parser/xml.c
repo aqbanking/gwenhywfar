@@ -362,7 +362,7 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
     GWEN_TYPE_UINT32 s;
 
     s=GWEN_Buffer_GetUsedBytes(buf);
-    GWEN_Buffer_SetUsedBytes(buf, s-1);
+    GWEN_Buffer_Crop(buf, 0, s-1);
     GWEN_Buffer_SetPos(buf, s);
   }
   return chr;
@@ -506,7 +506,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             bstart=GWEN_Buffer_GetStart(bufComment);
             if (strncmp(bstart+comlen-3,"-->", 3)==0){
               /* comment finished */
-              GWEN_Buffer_SetUsedBytes(bufComment, comlen-3);
+              GWEN_Buffer_Crop(bufComment, 0, comlen-3);
               GWEN_Buffer_SetPos(bufComment, comlen-3);
               GWEN_Buffer_AppendByte(bufComment, 0);
               comlen-=3;
@@ -516,7 +516,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               if (!(flags & GWEN_XML_FLAGS_READ_COMMENTS)) {
                 DBG_VERBOUS(0, "Clipping comment to 2 bytes");
                 memmove(bstart, bstart+comlen-2, 2);
-                GWEN_Buffer_SetUsedBytes(bufComment, 2);
+                GWEN_Buffer_Crop(bufComment, 0, 2);
                 GWEN_Buffer_SetPos(bufComment, 2);
                 comlen=2;
               }

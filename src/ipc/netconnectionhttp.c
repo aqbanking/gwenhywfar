@@ -824,7 +824,7 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       DBG_DEBUG(0, "Writing command/status/header...");
       j=GWEN_RingBuffer_GetMaxUnsegmentedWrite(wbuf);
       if (!j) {
-        DBG_NOTICE(0, "Writebuffer full");
+        DBG_DEBUG(0, "Writebuffer full");
         return GWEN_NetConnectionWorkResult_NoChange;
       }
       if (j>i)
@@ -874,7 +874,7 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       DBG_DEBUG(0, "Writing body...");
       j=GWEN_RingBuffer_GetMaxUnsegmentedWrite(wbuf);
       if (!j) {
-	DBG_WARN(0, "Writebuffer full");
+	DBG_DEBUG(0, "Writebuffer full");
 	return GWEN_NetConnectionWorkResult_NoChange;
       }
 
@@ -893,7 +893,7 @@ GWEN_NetConnectionHTTP_WriteWork(GWEN_NETCONNECTION *conn){
       chttp->bodyBytesWritten+=j;
 
       if (j<jbak) {
-        DBG_NOTICE(0, "Read buffer empty");
+        DBG_DEBUG(0, "Read buffer empty");
         return GWEN_NetConnectionWorkResult_NoChange;
       }
     } /* while */
@@ -944,7 +944,7 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
     while(1) {
       rv1=GWEN_NetConnectionHTTP_WriteWork(conn);
       if (rv1==GWEN_NetConnectionWorkResult_Change) {
-        DBG_NOTICE(0, "Change while writing");
+        DBG_DEBUG(0, "Change while writing");
         changes++;
       }
       else if (rv1==GWEN_NetConnectionWorkResult_Error) {
@@ -980,7 +980,7 @@ GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn){
     }
   }
   if (changes) {
-    DBG_NOTICE(0, "There were some changes (%d)", changes);
+    DBG_DEBUG(0, "There were some changes (%d)", changes);
     return GWEN_NetConnectionWorkResult_Change;
   }
 
