@@ -257,7 +257,9 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
                      GWEN_LOGGER_LEVEL priority, const char *s){
   while(lg) {
     FILE *f;
+#ifdef HAVE_SYSLOG_H
     int pri;
+#endif /* HAVE_SYSLOG_H */
     char buffer[300];
     int rv;
 
@@ -336,7 +338,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
       } /* switch */
       syslog(pri,"%s",s);
       break;
-#endif
+#endif /* HAVE_SYSLOG_H */
 
     case GWEN_LoggerTypeFunction:
       if (lg->logFunction==0) {
