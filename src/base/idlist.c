@@ -130,6 +130,13 @@ int GWEN_IdTable_IsFull(const GWEN_IDTABLE *idt){
 
 
 
+unsigned int GWEN_IdTable_GetCount(const GWEN_IDTABLE *idt){
+  assert(idt);
+  return GWEN_IDTABLE_MAXENTRIES-idt->freeEntries;
+}
+
+
+
 GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt){
   unsigned int i;
 
@@ -159,9 +166,6 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt){
   } /* for */
   return 0;
 }
-
-
-
 
 
 
@@ -312,6 +316,74 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl){
     }
     idt=next;
   } /* while */
+
+  return 0;
+}
+
+
+
+int GWEN_IdList_Sort(GWEN_IDLIST *idl){
+  GWEN_IDTABLE *idt;
+  unsigned int cnt;
+  GWEN_TYPE_UINT32 *ptr;
+  unsigned int i;
+
+  assert(idl);
+
+  /* count ids */
+  idt=GWEN_IdTable_List_First(idl->idTables);
+  cnt=0;
+  while(idt) {
+    GWEN_IDTABLE *next;
+
+    next=GWEN_IdTable_List_Next(idt);
+    cnt+=GWEN_IdTable_GetCount(idt);
+    idt=next;
+  } /* while */
+
+  if (!cnt)
+    return 0;
+
+  /* move ids to a temporary list */
+  ptr=(GWEN_TYPE_UINT32*)malloc(sizeof(GWEN_TYPE_UINT32)*cnt);
+  assert(ptr);
+
+  for (i=0; i<cnt; i++) {
+    GWEN_TYPE_UINT32 id;
+
+    if (i==0)
+      id=GWEN_IdList_GetFirstId(idl);
+    else
+      id=GWEN_IdList_GetNextId(idl);
+
+    ptr[i]=id;
+  } /* for */
+  GWEN_IdList_Clean(idl);
+
+  /* sort temporary list */
+  while(1) {
+    int rpl;
+
+    rpl=0;
+    for (i=0; i<cnt; i++) {
+    GWEN_TYPE_UINT32 id;
+
+      if (ptr[i]>ptr[i+1]) {
+        id=ptr[i];
+        ptr[i]=ptr[i+1];
+        ptr[i+1]=id;
+        rpl=1;
+      }
+    } /* for */
+    if (!rpl)
+      break;
+  } /* while */
+
+  /* move back from temporary list */
+  for (i=0; i<cnt; i++) {
+    GWEN_IdList_AddId(idl, ptr[i]);
+  }
+  free(ptr);
 
   return 0;
 }

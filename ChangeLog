@@ -9,6 +9,9 @@
 - parser/db:
   - added functions GWEN_DB_FindFirstGroup and GWEN_DB_FindFirstGroup which
     simplify searching for groups by name.
+- base/idlist:
+  - added function GWEN_IdList_Clean() to clean a list
+  - added function GWEN_IdList_Sort() to sort an id list in ascending order
 
 
 2004/04/04: Martin Preuss<martin@libchipcard.de>

@@ -69,6 +69,11 @@ GWEN_IDLIST *GWEN_IdList_new();
 void GWEN_IdList_free(GWEN_IDLIST *idl);
 
 /**
+ * Removes all ids from the list thus leaving it empty.
+ */
+void GWEN_IdList_Clean(GWEN_IDLIST *idl);
+
+/**
  * Adds an id to the list. This function does no doublecheck.
  */
 int GWEN_IdList_AddId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
@@ -91,6 +96,12 @@ int GWEN_IdList_HasId(const GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
 GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl);
 
 GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
+
+/**
+ * Sorts the ids in ascending order
+ */
+int GWEN_IdList_Sort(GWEN_IDLIST *idl);
+
 /*@}*/
 
 
