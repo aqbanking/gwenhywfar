@@ -4,6 +4,8 @@
 - fixed a bug in gwenhywfar.m4
 - applied a patch submitted by Ronny Buchmann which turns the specfile into a 
   multi-distribution spec file.
+- applied another patch submitted by Ronny Buchmann which allows for building
+  distribution-specific RPMs (in conjunction with the patch above)
 
 
 2004/01/10 Martin Preuss <martin@libchipcard.de>
