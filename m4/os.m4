@@ -28,31 +28,37 @@ case "$target" in
     *-linux*)
 	OSYSTEM="linux"
 	AC_DEFINE(OS_LINUX,1,[if linux is used])
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
     *-solaris*)
 	OSYSTEM="solaris"
 	AC_DEFINE(OS_SOLARIS,1,[if Solaris is used])
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
     *-darwin*)
 	OSYSTEM="osx"
 	AC_DEFINE(OS_DARWIN,1,[if Apple Darwin is used])
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
     *-openbsd*)
 	OSYSTEM="openbsd"
 	AC_DEFINE(OS_OPENBSD,1,[if OpenBSD is used])
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
     *-freebsd*)
 	OSYSTEM="freebsd"
 	AC_DEFINE(OS_FREEBSD,1,[if FreeBSD is used])
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
     *-beos*)
 	OSYSTEM="beos"
 	AC_DEFINE(OS_BEOS,1,[if BeOS is used])
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
     *-win32*)
@@ -82,6 +88,7 @@ case "$target" in
         is a posix system and continue.])
 	OSYSTEM="unknown"
 	OS_TYPE="posix"
+	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	;;
 esac
 

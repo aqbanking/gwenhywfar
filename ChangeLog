@@ -2,7 +2,16 @@
 2004/06/16: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/db: added function GWEN_DB_InsertGroup
-
+- m4/os.m4: Define OS_POSIX if running on a POSIX system
+- os/posix/libloader: 
+  improved library loading. Now the following order is used when loading
+  a library:
+  1) the name given
+  2) the name given plus ".so"
+  3) the name given with prefix "lib"
+  4) the name given with prefix "lib" and ".so"
+  This now allows for files without ".so" to be loaded.
+  
 
 2004/06/11: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

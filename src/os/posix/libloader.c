@@ -101,15 +101,15 @@ void GWEN_LibLoader_free(GWEN_LIBLOADER *h){
 }
 
 
-
 GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 					  const char *name){
   const char *serr;
 
   assert(h);
 
-  DBG_INFO(0, "Loading library \"%s\"", name);
-  h->handle=dlopen(name,RTLD_LAZY);
+  DBG_DEBUG(0, "Loading library \"%s\"", name);
+
+  h->handle=dlopen(name, RTLD_LAZY);
   if (!h->handle) {
     serr=dlerror();
     DBG_INFO(0, "dlopen(%s): %s", name, serr);
@@ -127,10 +127,10 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 	      "GWEN: Error loading library: %s\n",
 	      serr);
       if (strstr(serr, name))
-	return GWEN_Error_new(0,
-			      GWEN_ERROR_SEVERITY_ERR,
-			      GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-			      GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE);
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
+                              GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE);
       else
 	return GWEN_Error_new(0,
 			      GWEN_ERROR_SEVERITY_ERR,
@@ -208,13 +208,16 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
 						  const char *name){
   GWEN_BUFFER *buffer;
   unsigned int pos;
+  unsigned int pos2;
   unsigned int i;
-  int withWhistlesAndBells;
+  int missingSoExt;
+  int missingLibPrefix;
   GWEN_ERRORCODE err;
 
   assert(h);
   assert(name);
-  withWhistlesAndBells=1;
+  missingSoExt=0;
+  missingLibPrefix=0;
   buffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   if (path) {
@@ -226,51 +229,104 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   /* append name of the library to load */
   GWEN_Buffer_AppendString(buffer, name);
   i=strlen(name);
+
+  /* check whether we have the ".so" extension */
   if ((i<=3) || (strcmp(name+i-3, ".so")!=0)) {
     /* no SO-extension, add it myself */
-    withWhistlesAndBells=0;
-    GWEN_Buffer_AppendString(buffer, ".so");
+    missingSoExt=1;
   }
 
-  /* append trailing null byte */
-  GWEN_Buffer_AppendByte(buffer, (char)0);
+  /* check whether we have the "lib" prefix */
+  if ((i<=3) || (strncmp(name, "lib", 3)!=0)) {
+    /* no SO-extension, add it myself */
+    missingLibPrefix=1;
+  }
 
   /* try to load the library */
   err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
-  if (!GWEN_Error_IsOk(err)) {
+  if (GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "Library \"%s\" loaded",
+             GWEN_Buffer_GetStart(buffer));
+    GWEN_Buffer_free(buffer);
+    return 0;
+  }
+
+  /* could not load, check why */
+  if (GWEN_Error_GetType(err)!=
+      GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
+      GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
+    DBG_INFO(0, "Could not load library \"%s\"",
+             GWEN_Buffer_GetStart(buffer));
+    GWEN_Buffer_free(buffer);
+    return err;
+  }
+
+  /* hmm, not found, try some variants */
+  if (missingSoExt) {
+    /* try again, this time with ".so" appended */
+    pos2=GWEN_Buffer_GetPos(buffer);
+    GWEN_Buffer_AppendString(buffer, ".so");
+    err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
+    if (GWEN_Error_IsOk(err)) {
+      DBG_INFO(0, "Library \"%s\" loaded",
+               GWEN_Buffer_GetStart(buffer));
+      GWEN_Buffer_free(buffer);
+      return 0;
+    }
+    GWEN_Buffer_Crop(buffer, 0, pos2);
+    GWEN_Buffer_SetPos(buffer, pos2);
+
     /* could not load, check why */
     if (GWEN_Error_GetType(err)!=
-	GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
-	GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
+        GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
+        GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
       DBG_INFO(0, "Could not load library \"%s\"",
-	       GWEN_Buffer_GetStart(buffer));
-      GWEN_Buffer_free(buffer);
-      return err;
-    }
-    /* hmm, not found, try to insert "lib" before name */
-    if (withWhistlesAndBells) {
-      /* name fully given, do not dare to modify it */
-      DBG_INFO(0, "Library \"%s\" not found",
-	       GWEN_Buffer_GetStart(buffer));
-      GWEN_Buffer_free(buffer);
-      return err;
-    }
-    GWEN_Buffer_SetPos(buffer, pos);
-    GWEN_Buffer_InsertString(buffer, "lib");
-    /* try again */
-    err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_INFO(0, "Library \"%s\" also not found, giving up",
-	       GWEN_Buffer_GetStart(buffer));
+               GWEN_Buffer_GetStart(buffer));
       GWEN_Buffer_free(buffer);
       return err;
     }
   }
 
-  DBG_INFO(0, "Library \"%s\" loaded",
-	   GWEN_Buffer_GetStart(buffer));
+  if (missingLibPrefix) {
+    GWEN_Buffer_SetPos(buffer, pos);
+    /* insert "lib" */
+    GWEN_Buffer_InsertString(buffer, "lib");
+    /* try again */
+    err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
+    if (GWEN_Error_IsOk(err)) {
+      DBG_INFO(0, "Library \"%s\" loaded",
+               GWEN_Buffer_GetStart(buffer));
+      GWEN_Buffer_free(buffer);
+      return 0;
+    }
+
+    /* could not load, check why */
+    if (GWEN_Error_GetType(err)!=
+        GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE) ||
+        GWEN_Error_GetCode(err)!=GWEN_LIBLOADER_ERROR_NOT_FOUND) {
+      DBG_INFO(0, "Could not load library \"%s\"",
+               GWEN_Buffer_GetStart(buffer));
+      GWEN_Buffer_free(buffer);
+      return err;
+    }
+
+    /* try again, this time with ".so" AND "lib" */
+    if (missingSoExt) {
+      GWEN_Buffer_AppendString(buffer, ".so");
+      err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
+      if (GWEN_Error_IsOk(err)) {
+        DBG_INFO(0, "Library \"%s\" loaded",
+                 GWEN_Buffer_GetStart(buffer));
+        GWEN_Buffer_free(buffer);
+        return 0;
+      }
+    }
+  }
+
+  DBG_INFO(0, "Library \"%s\" name (or variants) not found, giving up",
+           name);
   GWEN_Buffer_free(buffer);
-  return 0;
+  return err;
 }
 
 

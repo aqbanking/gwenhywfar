@@ -1020,10 +1020,10 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     fd=open(fullname, O_RDONLY);
     if (fd==-1) {
       if (!sl) {
-        DBG_ERROR(0, "open(%s): %s",
-                  fullname,
-                  strerror(errno));
-        free(fullname);
+	DBG_INFO(0, "open(%s): %s",
+		 fullname,
+		 strerror(errno));
+	free(fullname);
         return -1;
       }
       else {
@@ -1081,8 +1081,8 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
           se=GWEN_StringListEntry_Next(se);
         } /* while */
         if (!gotcha) {
-          DBG_ERROR(0, "Could not open file \"%s\".", file);
-          return -1;
+	  DBG_INFO(0, "Could not open file \"%s\".", file);
+	  return -1;
         }
         /* now fullname points to the full path */
       }
@@ -1103,9 +1103,9 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
   /* open file */
   fd=open(fullname, O_RDONLY);
   if (fd==-1) {
-    DBG_ERROR(0, "open(%s): %s",
-              fullname,
-              strerror(errno));
+    DBG_INFO(0, "open(%s): %s",
+	     fullname,
+	     strerror(errno));
     free(fullname);
     return -1;
   }
