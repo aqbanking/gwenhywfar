@@ -4,6 +4,12 @@
 
 $Id$
 
+2003/10/18 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- MsgEngine:
+  - fixed a bug concerning escaping
+  - MsgEngine now searches for the highest trustLevel
+
 
 2003/10/12 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

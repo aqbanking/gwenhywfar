@@ -53,6 +53,7 @@ GWEN_MSGENGINE *GWEN_MsgEngine_new(){
   e->charsToEscape=strdup(GWEN_MSGENGINE_CHARSTOESCAPE);
   e->delimiters=strdup(GWEN_MSGENGINE_DEFAULT_DELIMITERS);
   e->globalValues=GWEN_DB_Group_new("globalvalues");
+  e->escapeChar='\\';
   return e;
 }
 
@@ -557,12 +558,14 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   unsigned int minsize;
   unsigned int maxsize;
   const char *type;
+  const char *name;
   int rv;
 
   /* get some sizes */
   minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
   maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
   type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
+  name=GWEN_XMLNode_GetProperty(node, "name","<unnamed>");
 
   /* copy value to buffer */
   rv=1;
@@ -704,7 +707,10 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
                  pcount, GWEN_Buffer_GetUsedBytes(data));
       }
       if (*p) {
-        DBG_WARN(0, "String is longer than expected (no #0 at pos=%d)",
+	DBG_WARN(0,
+		 "String for \"%s\" (type %s) is longer than expected "
+		 "(no #0 at pos=%d)",
+		 name, type,
                  GWEN_Buffer_GetUsedBytes(data)-1);
       }
     } /* if type is not BIN */
@@ -894,7 +900,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
         return 1;
       }
       else {
-	DBG_INFO(0, "Value for element \"%s[%d]\" not found",
+	DBG_ERROR(0, "Value for element \"%s[%d]\" not found",
 		  name, loopNr);
 	return -1;
       }
@@ -1163,6 +1169,30 @@ const char *GWEN_MsgEngine_SearchForProperty(GWEN_XMLNODE *node,
     pn=GWEN_XMLNode_GetParent(pn);
   } /* while */
   return lastValue;
+}
+
+
+
+int GWEN_MsgEngine_GetHighestTrustLevel(GWEN_XMLNODE *node,
+					GWEN_XMLNODE *refnode) {
+  int value;
+  GWEN_XMLNODE *pn;
+  int highestTrust;
+
+  highestTrust=0;
+
+  value=atoi(GWEN_XMLNode_GetProperty(node, "trustlevel","0"));
+  if (value>highestTrust)
+    highestTrust=value;
+
+  pn=refnode;
+  while(pn) {
+    value=atoi(GWEN_XMLNode_GetProperty(pn, "trustlevel","0"));
+    if (value>highestTrust)
+      highestTrust=value;
+    pn=GWEN_XMLNode_GetParent(pn);
+  } /* while */
+  return highestTrust;
 }
 
 
@@ -2522,29 +2552,22 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	  }
 	}
 	if (c!=-1) {
-	  int needsEscape;
-
-	  if (!isEscaped && strchr(delimiters, c)==0) {
-	    needsEscape=0;
-	    if (c=='\\' || iscntrl(c))
-	      needsEscape=1;
-
-	    if (needsEscape) {
-	      /* write escape char */
-	      if (GWEN_Buffer_AppendByte(vbuf, '\\')) {
-		DBG_DEBUG(0, "Called from here");
-		return -1;
-	      }
+	  if (!isEscaped && strchr(delimiters, c)!=0) {
+	    /* delimiter found, step back */
+	    GWEN_Buffer_DecrementPos(msgbuf,1);
+	    break;
+	  }
+	  else {
+	    if (c=='\\' || iscntrl(c)) {
+	      DBG_WARN(0,
+		       "Found a bad character (%02x), converting to SPACE",
+		       (unsigned int)c);
+	      c=' ';
 	    }
 	    if (GWEN_Buffer_AppendByte(vbuf, c)) {
 	      DBG_DEBUG(0, "Called from here");
 	      return -1;
 	    }
-	  }
-	  else {
-	    /* delimiter found, step back */
-	    GWEN_Buffer_DecrementPos(msgbuf,1);
-	    break;
 	  }
 	}
       } /* while */
@@ -2590,13 +2613,8 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
     /* add trust data to msgEngine */
     GWEN_MSGENGINE_TRUSTEDDATA *td;
     const char *descr;
-    const char *tls;
 
-    tls=GWEN_MsgEngine_SearchForProperty(node, rnode, "trustlevel", 1);
-    if (tls)
-      trustLevel=atoi(tls);
-    else
-      trustLevel=GWEN_MsgEngineTrustLevelNone;
+    trustLevel=GWEN_MsgEngine_GetHighestTrustLevel(node, rnode);
     if (trustLevel) {
       descr=GWEN_XMLNode_GetProperty(node, "name",0);
       td=GWEN_MsgEngine_TrustedData_new(GWEN_Buffer_GetStart(vbuf),

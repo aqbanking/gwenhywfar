@@ -158,6 +158,9 @@ int GWEN_MsgEngine__IsCharTyp(const char *type);
 int GWEN_MsgEngine__IsIntTyp(const char *type);
 int GWEN_MsgEngine__IsBinTyp(const char *type);
 
+int GWEN_MsgEngine_GetHighestTrustLevel(GWEN_XMLNODE *node,
+                                        GWEN_XMLNODE *refnode);
+
 
 struct GWEN_MSGENGINE_TRUSTEDDATA {
   GWEN_MSGENGINE_TRUSTEDDATA *next;

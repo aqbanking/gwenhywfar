@@ -865,7 +865,8 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
 	      idx, path);
     return defVal;
   }
-  DBG_DEBUG(0, "Returning value from node");
+  DBG_DEBUG(0, "Returning value from node (\"%s\":%d)",
+            path, idx);
   return nn->val.i.data;
 }
 
