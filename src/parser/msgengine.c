@@ -525,7 +525,8 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
       else {
         /* create new element name including the loop number (e.g. var1) */
         if (strlen(name)+10>=sizeof(nbuffer)) {
-          DBG_ERROR(0, "Buffer too small");
+	  DBG_ERROR(0, "Buffer too small");
+          GWEN_Buffer_free(data);
           return -1;
         }
   
@@ -575,6 +576,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
             if (-1==GWEN_Text_NumToString(idata, numbuffer,
                                           sizeof(numbuffer),0)) {
               DBG_ERROR(0, "Buffer too small");
+	      GWEN_Buffer_free(data);
               return -1;
             }
             DBG_DEBUG(0, "Value of \"%s\" is %d", nptr, idata);
@@ -614,16 +616,19 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
         if (isOptional) {
           DBG_INFO(0, "Value not found, omitting element \"%s[%d]\"",
                    name, loopNr);
+	  GWEN_Buffer_free(data);
           return 1;
         }
         else {
           DBG_ERROR(0, "Value for element \"%s[%d]\" not found",
                     name, loopNr);
+	  GWEN_Buffer_free(data);
           return -1;
         }
       }
     }
   
+    GWEN_Buffer_free(data);
     data=GWEN_Buffer_new((char*)pdata,
                          datasize,
                          datasize,
@@ -2510,7 +2515,6 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 					   vbuf,
                                            ":+'",
                                            flags);
-              GWEN_Buffer_SetPos(vbuf, 0);
 	      if (rv==1) {
 		DBG_INFO(0, "Empty value");
 	      }
@@ -2520,7 +2524,17 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                          type);
 		GWEN_Buffer_free(vbuf);
 		return -1;
-	      }
+              }
+
+              /* add 0 just in case... */
+              if (!GWEN_Buffer_RoomLeft(vbuf)) {
+                  DBG_INFO(0, "Value buffer full.");
+                  GWEN_Buffer_free(vbuf);
+                  return -1;
+              }
+              *(GWEN_Buffer_GetPosPointer(vbuf))=0;
+
+              GWEN_Buffer_SetPos(vbuf, 0);
 
               /* special handling for binary data */
               dtype=GWEN_XMLNode_GetProperty(n, "type", "");
@@ -2912,8 +2926,14 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                            0,
                            0);
     if (!p) {
-      DBG_ERROR(0, "No segment code ? This seems to be a bad msg...");
+      DBG_ERROR(0, "No segment code for %s ? This seems to be a bad msg...",
+		gtype);
       GWEN_Buffer_SetPos(mbuf, posBak);
+      DBG_ERROR(0, "Full message (pos=%04x)", posBak);
+      GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf),
+			   GWEN_Buffer_GetUsedBytes(mbuf),
+			   stderr, 1);
+      GWEN_DB_Dump(tmpdb, stderr, 1);
       GWEN_DB_Group_free(tmpdb);
       return -1;
     }

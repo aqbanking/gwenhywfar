@@ -1,5 +1,16 @@
 $Id$
 
+
+2003/11/03 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in MsgEngine (did not add a trailing 0 to values read)
+
+
+===========================================================================
+MARK: released gwenhywfar-0.9beta3 (2003/11/02)
+===========================================================================
+
+
 2003/11/01 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - changed behaviour of GWEN_GetHomeDirectory: It now uses the effective
