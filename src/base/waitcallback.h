@@ -51,7 +51,7 @@ extern "C" {
  * </ul>
  * <p>
  * Wait callbacks are organized in callback-contexts which must be entered
- * and leaved.
+ * and left.
  * </p>
  * <p>
  * In an application you would map a context to a progress dialog or something
