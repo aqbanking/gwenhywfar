@@ -99,6 +99,22 @@ unsigned int GWEN_Msg_GetMsgId(GWEN_IPCMSG *m){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_Msg_GetReferenceId(GWEN_IPCMSG *m){
+  assert(m);
+  return m->refId;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_Msg_SetReferenceId(GWEN_IPCMSG *m, unsigned int i){
+  assert(m);
+  m->refId=i;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 void *GWEN_Msg_GetData(GWEN_IPCMSG *m){
   assert(m);
   return m->data;
@@ -196,10 +212,10 @@ void GWEN_MsgLayer_SetData(GWEN_IPCMSGLAYER *ml, void *d){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml){
+GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml, int rd){
   assert(ml);
   if (ml->workFn)
-    return ml->workFn(ml);
+    return ml->workFn(ml, rd);
   return 0;
 }
 

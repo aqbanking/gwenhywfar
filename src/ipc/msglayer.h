@@ -56,6 +56,9 @@ void GWEN_Msg_free(GWEN_IPCMSG *m);
 GWEN_BUFFER *GWEN_Msg_GetBuffer(GWEN_IPCMSG *m);
 void GWEN_Msg_SetBuffer(GWEN_IPCMSG *m, GWEN_BUFFER *buf);
 unsigned int GWEN_Msg_GetMsgLayerId(GWEN_IPCMSG *m);
+unsigned int GWEN_Msg_GetReferenceId(GWEN_IPCMSG *m);
+void GWEN_Msg_SetReferenceId(GWEN_IPCMSG *m, unsigned int i);
+
 
 /**
  * @name Internal functions not to be used by applications
@@ -69,12 +72,14 @@ void GWEN_Msg_SetFreeFn(GWEN_IPCMSG *m, GWEN_IPCMSG_FREE f);
 
 
 typedef void (*GWEN_IPCMSGLAYER_FREE)(GWEN_IPCMSGLAYER *ml);
-typedef GWEN_ERRORCODE (*GWEN_IPCMSGLAYER_WORK)(GWEN_IPCMSGLAYER *ml);
+typedef GWEN_ERRORCODE (*GWEN_IPCMSGLAYER_WORK)(GWEN_IPCMSGLAYER *ml,
+                                                int rd);
 typedef GWEN_ERRORCODE (*GWEN_IPCMSGLAYER_ACCEPT)(GWEN_IPCMSGLAYER *ml,
                                                   GWEN_IPCMSGLAYER **m);
 
 
-GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml);
+GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml,
+                                  int rd);
 
 GWEN_IPCMSG *GWEN_MsgLayer_GetIncomingMsg(GWEN_IPCMSGLAYER *ml);
 GWEN_ERRORCODE GWEN_MsgLayer_AddOutgoingMsg(GWEN_IPCMSGLAYER *ml,

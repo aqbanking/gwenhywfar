@@ -26,18 +26,49 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_IPC_H
-#define GWENHYFWAR_IPC_H
+
+#ifndef GWENHYFWAR_SERVICELAYER_P_H
+#define GWENHYFWAR_SERVICELAYER_P_H
+
+
+#include <gwenhyfwar/servicelayer.h>
+#include "connlayer_p.h"
+
+
+struct GWEN_GLOBAL_SERVICELAYER {
+  GWEN_IPCCONNLAYER *connections;
+
+};
+
+
+GWEN_GLOBAL_SERVICELAYER *GWEN_GlobalServiceLayer_new();
+void GWEN_GlobalServiceLayer_free(GWEN_GLOBAL_SERVICELAYER *gsl);
+
+
+GWEN_ERRORCODE
+GWEN_GlobalServiceLayer_AddConnection(GWEN_IPCCONNLAYER *conn);
+
+
+GWEN_IPCCONNLAYER*
+  GWEN_GlobalServiceLayer_FindConnection(unsigned int id,
+                                         unsigned int libMark,
+                                         unsigned int userMark);
+GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout);
+void GWEN_GlobalServiceLayer_CheckClosed();
+void GWEN_GlobalServiceLayer_RemoveClosed();
+void GWEN_GlobalServiceLayer_Close(unsigned int id,
+                                   unsigned int libMark,
+                                   unsigned int userMark,
+                                   int force);
 
 
 
-#define GWEN_IPC_ERROR_TYPE "IPC"
-#define GWEN_IPC_ERROR_INQUEUE_FULL   1
-#define GWEN_IPC_ERROR_OUTQUEUE_FULL  2
-#define GWEN_IPC_ERROR_BAD_STATE      3
-#define GWEN_IPC_ERROR_NO_CONNECTIONS 4
 
-#endif /* GWENHYFWAR_IPC_H */
+
+
+#endif /* GWENHYFWAR_SERVICELAYER_P_H */
+
+
 
 
 

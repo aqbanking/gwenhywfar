@@ -47,6 +47,11 @@ struct GWEN_IPCCONNLAYER {
   GWEN_IPCMSG *outgoingMsgs;
   unsigned int nOutgoingMsgs;
   unsigned int maxOutgoingMsgs;
+
+  unsigned int userMark;
+  unsigned int libMark;
+  unsigned int flags;
+
   char *info;
   void *data;
 

@@ -4,6 +4,7 @@ $Id$
 2003/09/17 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - worked on IPC stuff (still untested)
+- added serviceLayer
 
 
 2003/09/14 Martin Preuss <martin@libchipcard.de>

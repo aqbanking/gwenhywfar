@@ -43,6 +43,7 @@ struct GWEN_IPCMSG {
   GWEN_BUFFER *buffer;
   unsigned int msgLayerId;
   unsigned int msgId;
+  unsigned int refId;
   void *data;
   GWEN_IPCMSG_FREE freeDataFn;
 };
