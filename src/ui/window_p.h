@@ -35,9 +35,13 @@ typedef struct GWEN_WINDOW GWEN_WINDOW;
 struct GWEN_WINDOW {
   GWEN_WIDGET *wTitle;
   GWEN_WIDGET *wView;
-
+  GWEN_WIDGET *wHslider;
+  GWEN_WIDGET *wVslider;
+  GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
 };
 void GWEN_Window_freeData(void *bp, void *p);
+
+GWEN_UI_RESULT GWEN_Window_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
 
 
 

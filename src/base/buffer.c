@@ -311,7 +311,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
       }
       return 1;
     }
-    DBG_DEBUG(0, "Reallocating from %d to %d bytes", bf->bufferSize, nsize);
+    DBG_VERBOUS(0, "Reallocating from %d to %d bytes", bf->bufferSize, nsize);
     p=realloc(bf->realPtr, nsize);
     if (!p) {
       DBG_ERROR(0, "Realloc failed.");
@@ -420,7 +420,7 @@ int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf){
       }
     }
     else {
-      DBG_DEBUG(0, "End of used area reached (%d bytes)", bf->pos);
+      DBG_VERBOUS(0, "End of used area reached (%d bytes)", bf->pos);
       return -1;
     }
   }

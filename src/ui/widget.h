@@ -41,7 +41,10 @@ typedef enum {
   GWEN_WidgetColour_Message,
   GWEN_WidgetColour_Unselected,
   GWEN_WidgetColour_Selected,
-  GWEN_WidgetColour_Title
+  GWEN_WidgetColour_Chosen,
+  GWEN_WidgetColour_Title,
+  GWEN_WidgetColour_Button
+
 } GWEN_WIDGET_COLOUR;
 
 
@@ -75,6 +78,20 @@ typedef enum {
 #define GWEN_WIDGET_ATT_STANDOUT  0x01
 #define GWEN_WIDGET_ATT_UNDERLINE 0x02
 #define GWEN_WIDGET_ATT_REVERSE   0x04
+#define GWEN_WIDGET_ATT_CHAR      0x08
+
+#define GWEN_WIDGET_CHAR_ESC_CHAR 0xfe
+#define GWEN_WIDGET_CHAR_VLINE    0x01
+#define GWEN_WIDGET_CHAR_HLINE    0x02
+#define GWEN_WIDGET_CHAR_ULCORNER 0x03
+#define GWEN_WIDGET_CHAR_URCORNER 0x04
+#define GWEN_WIDGET_CHAR_LLCORNER 0x05
+#define GWEN_WIDGET_CHAR_LRCORNER 0x06
+#define GWEN_WIDGET_CHAR_LTEE     0x07
+#define GWEN_WIDGET_CHAR_RTEE     0x08
+#define GWEN_WIDGET_CHAR_TTEE     0x09
+#define GWEN_WIDGET_CHAR_BTEE     0x0a
+#define GWEN_WIDGET_CHAR_BLOCK    0x0b
 
 
 
@@ -140,10 +157,15 @@ int GWEN_Widget_ChangeAtts(GWEN_WIDGET *w,
                            GWEN_TYPE_UINT32 atts,
                            int set);
 int GWEN_Widget_Clear(GWEN_WIDGET *w, int x, int y, GWEN_EVENT_CLEAR_MODE m);
-int GWEN_Widget_Highlight(GWEN_WIDGET *w, int x, int y, int len, int yes);
+int GWEN_Widget_Highlight(GWEN_WIDGET *w, int x, int y, int len,
+                          GWEN_WIDGET_COLOUR hi);
+int GWEN_Widget_ContentChange(GWEN_WIDGET *w,
+                              int contentWidth,
+                              int contentHeight);
 
 
 int GWEN_Widget_IsChildOf(GWEN_WIDGET *wchild, GWEN_WIDGET *w);
+int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w);
 
 
 void GWEN_Widget_Dump(GWEN_WIDGET *w, int indent);

@@ -9,6 +9,7 @@ iheader_HEADERS=\
   tablewidget_p.h \
   textwidget_p.h \
   ui.h \
+  vslider.h \
   widget.h \
   window.h
 
@@ -19,6 +20,7 @@ noinst_HEADERS=\
   textwidget.h \
   ui_l.h \
   ui_p.h \
+  vslider_p.h \
   widget_l.h \
   widget_p.h \
   window_p.h
@@ -29,6 +31,7 @@ libui_la_SOURCES=\
   tablewidget.c \
   textwidget.c \
   ui.c \
+  vslider.c \
   widget.c \
   window.c
 

@@ -76,7 +76,8 @@ typedef enum {
   GWEN_EventType_WriteAt,
   GWEN_EventType_ChgAtts,
   GWEN_EventType_Clear,
-  GWEN_EventType_Highlight
+  GWEN_EventType_Highlight,
+  GWEN_EventType_ContentChg
 } GWEN_EVENT_TYPE;
 
 
@@ -172,12 +173,21 @@ GWEN_EVENT_CLEAR_MODE GWEN_EventClear_GetMode(const GWEN_EVENT *e);
 
 GWEN_EVENT *GWEN_EventHighlight_new(int x, int y,
                                     int len,
-                                    int hi);
+                                    GWEN_WIDGET_COLOUR hi);
 const char *GWEN_EventHighlight_GetText(const GWEN_EVENT *e);
 int GWEN_EventHighlight_GetX(const GWEN_EVENT *e);
 int GWEN_EventHighlight_GetY(const GWEN_EVENT *e);
 int GWEN_EventHighlight_GetLen(const GWEN_EVENT *e);
-int GWEN_EventHighlight_GetHi(const GWEN_EVENT *e);
+GWEN_WIDGET_COLOUR GWEN_EventHighlight_GetHi(const GWEN_EVENT *e);
+
+
+
+GWEN_EVENT *GWEN_EventContentChg_new(int contentWidth, int contentHeight,
+                                     int width, int height);
+int GWEN_EventContentChg_GetContentWidth(const GWEN_EVENT *e);
+int GWEN_EventContentChg_GetContentHeight(const GWEN_EVENT *e);
+int GWEN_EventContentChg_GetWidth(const GWEN_EVENT *e);
+int GWEN_EventContentChg_GetHeight(const GWEN_EVENT *e);
 
 
 void GWEN_Event_Dump(const GWEN_EVENT *e);

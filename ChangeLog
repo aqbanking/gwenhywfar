@@ -1,4 +1,10 @@
 
+2004/06/22: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui: added VSlider, fixed many bugs in UI code etc. It is still slow
+  but now it works ;-) I will have to optimize later...
+
+
 2004/06/20: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - started working on a ncurses GUI which will be used by Libchipcard's setup

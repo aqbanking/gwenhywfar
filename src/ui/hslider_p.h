@@ -34,10 +34,21 @@
 
 typedef struct GWEN_HSLIDER GWEN_HSLIDER;
 struct GWEN_HSLIDER {
-  int total;
-  int pos;
+  GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
+  int dsize;
+  int dpos;
+  int slength;
+  int spos;
 };
 void GWEN_HSlider_freeData(void *bp, void *p);
+
+
+
+GWEN_UI_RESULT GWEN_HSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
+
+int GWEN_HSlider_Calculate(GWEN_WIDGET *w);
+int GWEN_HSlider_Draw(GWEN_WIDGET *w);
+void GWEN_HSlider_Update(GWEN_WIDGET *w);
 
 
 

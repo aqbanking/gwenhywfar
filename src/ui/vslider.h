@@ -25,15 +25,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_UI_HSLIDER_H
-#define GWEN_UI_HSLIDER_H
+#ifndef GWEN_UI_VSLIDER_H
+#define GWEN_UI_VSLIDER_H
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/widget.h>
 
 
-GWEN_WIDGET *GWEN_HSlider_new(GWEN_WIDGET *parent,
+GWEN_WIDGET *GWEN_VSlider_new(GWEN_WIDGET *parent,
                               GWEN_TYPE_UINT32 flags,
                               const char *name,
                               int x, int y, int width);

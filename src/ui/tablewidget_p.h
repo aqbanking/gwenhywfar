@@ -86,8 +86,9 @@ GWEN_TABLE_FIELD *GWEN_TableWidget_LocateField(GWEN_WIDGET *w,
                                                int x, int y, int crea);
 void GWEN_TableWidget_Highlight(GWEN_WIDGET *w,
                                 GWEN_TABLE_FIELD *tf,
-                                int yes);
+                                GWEN_WIDGET_COLOUR colour);
 
+void GWEN_TableWidget_DrawBorder(GWEN_WIDGET *w, int y1, int y2);
 
 
 

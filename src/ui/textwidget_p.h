@@ -74,6 +74,9 @@ struct GWEN_TEXTWIDGET {
   int vwidth;
   int pos;
   int currentLine;
+
+  int dwidth;
+  int dheight;
 };
 void GWEN_TextWidget_freeData(void *bp, void *p);
 

@@ -296,6 +296,7 @@ extern "C" {
   GWEN_TYPE_UINT32 id;\
   } t##_LIST; \
   \
+  void pr##_List_AddList(t##_LIST *dst, t##_LIST *l); \
   void pr##_List_Add(t *element, t##_LIST *list); \
   void pr##_List_Insert(t *element, t##_LIST *list); \
   void pr##_List_Del(t *element); \
@@ -321,6 +322,24 @@ extern "C" {
     GWEN_LIST_ADD(t, element, &(l->first)) \
     element->listPtr=l;\
     l->count++;\
+  } \
+  \
+  void pr##_List_AddList(t##_LIST *dst, t##_LIST *l) { \
+    t *n; \
+    \
+    assert(dst);\
+    assert(l); \
+    if (l->first) {\
+      n=l->first; \
+      while(n) {\
+        n->listPtr=dst; \
+        dst->count++;\
+        n=n->next; \
+      } \
+      GWEN_LIST_ADD(t, l->first, &(dst->first)) \
+      l->count=0;\
+      l->first=0;\
+    } \
   } \
   \
   void pr##_List_Insert(t *element, t##_LIST *l) { \

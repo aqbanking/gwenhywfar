@@ -43,7 +43,8 @@ GWEN_EVENT *GWEN_UI_GetNextEvent(GWEN_WIDGET *wRecipient);
 
 int GWEN_UI_SendEvent(GWEN_WIDGET *wSender,
                       GWEN_WIDGET *wRecipient,
-                      GWEN_EVENT *e);
+                      GWEN_EVENT *e,
+                      int withPriority);
 
 
 

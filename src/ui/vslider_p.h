@@ -25,18 +25,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_UI_HSLIDER_H
-#define GWEN_UI_HSLIDER_H
+#ifndef GWEN_UI_VSLIDER_P_H
+#define GWEN_UI_VSLIDER_P_H
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/widget.h>
 
+typedef struct GWEN_VSLIDER GWEN_VSLIDER;
+struct GWEN_VSLIDER {
+  GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
+  int dsize;
+  int dpos;
+  int slength;
+  int spos;
+};
+void GWEN_VSlider_freeData(void *bp, void *p);
 
-GWEN_WIDGET *GWEN_HSlider_new(GWEN_WIDGET *parent,
-                              GWEN_TYPE_UINT32 flags,
-                              const char *name,
-                              int x, int y, int width);
+
+
+GWEN_UI_RESULT GWEN_VSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
+
+int GWEN_VSlider_Calculate(GWEN_WIDGET *w);
+int GWEN_VSlider_Draw(GWEN_WIDGET *w);
+void GWEN_VSlider_Update(GWEN_WIDGET *w);
 
 
 

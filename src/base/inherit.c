@@ -55,7 +55,7 @@ GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
   d->baseData=baseData;
   d->freeDataFn=freeDataFn;
 
-  DBG_INFO(0, "Created inheritance for type \"%s\" (%08x)", t, id);
+  DBG_VERBOUS(0, "Created inheritance for type \"%s\" (%08x)", t, id);
   return d;
 }
 
@@ -63,7 +63,7 @@ GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
 
 void GWEN_InheritData_free(GWEN_INHERITDATA *d) {
   if (d) {
-    DBG_DEBUG(0, "Freeing data for type \"%s\"",
+    DBG_VERBOUS(0, "Freeing data for type \"%s\"",
              d->typeName);
     if (d->freeDataFn)
       d->freeDataFn(d->baseData, d->data);
@@ -122,7 +122,7 @@ GWEN_TYPE_UINT32 GWEN_Inherit_MakeId(const char *typeName){
     result^=(unsigned char)(typeName[i]);
   }
 
-  DBG_DEBUG(0, "Id for type \"%s\" is \"%08x\"",
+  DBG_VERBOUS(0, "Id for type \"%s\" is \"%08x\"",
             typeName, result);
   return result;
 }
@@ -136,7 +136,7 @@ void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
 
   assert(l);
 
-  DBG_DEBUG(0, "Searching for inheritance id \"%08x\"", id);
+  DBG_VERBOUS(0, "Searching for inheritance id \"%08x\"", id);
   ih=GWEN_InheritData_List_First(l);
   while(ih) {
     DBG_VERBOUS(0, "Checking type \"%s\" (%08x) against %08x",

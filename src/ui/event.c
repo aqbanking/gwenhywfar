@@ -736,7 +736,7 @@ GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_HIGHLIGHT);
 
 GWEN_EVENT *GWEN_EventHighlight_new(int x, int y,
                                     int len,
-                                    int hi){
+                                    GWEN_WIDGET_COLOUR hi){
   GWEN_EVENT *e;
   GWEN_EVENT_HIGHLIGHT *et;
 
@@ -800,7 +800,7 @@ int GWEN_EventHighlight_GetLen(const GWEN_EVENT *e){
 
 
 
-int GWEN_EventHighlight_GetHi(const GWEN_EVENT *e){
+GWEN_WIDGET_COLOUR GWEN_EventHighlight_GetHi(const GWEN_EVENT *e){
   GWEN_EVENT_HIGHLIGHT *et;
 
   assert(e);
@@ -809,6 +809,91 @@ int GWEN_EventHighlight_GetHi(const GWEN_EVENT *e){
 
   return et->hi;
 }
+
+
+
+
+
+GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_CONTENTCHG);
+
+
+GWEN_EVENT *GWEN_EventContentChg_new(int contentWidth, int contentHeight,
+                                     int width, int height){
+  GWEN_EVENT *e;
+  GWEN_EVENT_CONTENTCHG *et;
+
+  e=GWEN_Event_new(GWEN_EventType_ContentChg);
+  GWEN_NEW_OBJECT(GWEN_EVENT_CONTENTCHG, et);
+  et->width=width;
+  et->height=height;
+  et->cwidth=contentWidth;
+  et->cheight=contentHeight;
+
+  GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_CONTENTCHG,
+                       e, et,
+                       GWEN_EventContentChg_freeData);
+  return e;
+}
+
+
+
+void GWEN_EventContentChg_freeData(void *bp, void *p){
+  GWEN_EVENT_CONTENTCHG *et;
+
+  et=(GWEN_EVENT_CONTENTCHG*)p;
+  GWEN_FREE_OBJECT(et);
+}
+
+
+
+int GWEN_EventContentChg_GetContentWidth(const GWEN_EVENT *e){
+  GWEN_EVENT_CONTENTCHG *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CONTENTCHG, e);
+  assert(et);
+
+  return et->cwidth;
+}
+
+
+
+int GWEN_EventContentChg_GetContentHeight(const GWEN_EVENT *e){
+  GWEN_EVENT_CONTENTCHG *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CONTENTCHG, e);
+  assert(et);
+
+  return et->cheight;
+}
+
+
+
+int GWEN_EventContentChg_GetWidth(const GWEN_EVENT *e){
+  GWEN_EVENT_CONTENTCHG *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CONTENTCHG, e);
+  assert(et);
+
+  return et->width;
+}
+
+
+
+int GWEN_EventContentChg_GetHeight(const GWEN_EVENT *e){
+  GWEN_EVENT_CONTENTCHG *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_CONTENTCHG, e);
+  assert(et);
+
+  return et->height;
+}
+
+
+
 
 
 

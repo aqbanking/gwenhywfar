@@ -39,7 +39,8 @@ struct GWEN_UI {
   GWEN_TYPE_UINT32 usage;
   GWEN_WIDGET *focusWidget;
   GWEN_EVENT_LIST *events;
-
+  GWEN_EVENT_LIST *newEvents;
+  GWEN_EVENT *currentEvent;
 };
 
 

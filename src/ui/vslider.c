@@ -30,62 +30,62 @@
 #endif
 
 
-#include "hslider_p.h"
+#include "vslider_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/event.h>
 #include <gwenhywfar/buffer.h>
 
 
-GWEN_INHERIT(GWEN_WIDGET, GWEN_HSLIDER)
+GWEN_INHERIT(GWEN_WIDGET, GWEN_VSLIDER)
 
 
 
-GWEN_WIDGET *GWEN_HSlider_new(GWEN_WIDGET *parent,
+GWEN_WIDGET *GWEN_VSlider_new(GWEN_WIDGET *parent,
                               GWEN_TYPE_UINT32 flags,
                               const char *name,
-                              int x, int y, int width){
+                              int x, int y, int height){
   GWEN_WIDGET *w;
-  GWEN_HSLIDER *win;
+  GWEN_VSLIDER *win;
 
   w=GWEN_Widget_new(parent,
-                    flags,
-                    name, 0,
-                    x,
-                    y,
-                    width,
-                    1);
-  GWEN_NEW_OBJECT(GWEN_HSLIDER, win);
-  GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_HSLIDER, w, win,
-                       GWEN_HSlider_freeData);
+		    flags,
+		    name, 0,
+		    x,
+		    y,
+		    1,
+		    height);
+  GWEN_NEW_OBJECT(GWEN_VSLIDER, win);
+  GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_VSLIDER, w, win,
+                       GWEN_VSlider_freeData);
 
   win->previousHandler=GWEN_Widget_GetEventHandler(w);
   assert(win->previousHandler);
-  GWEN_Widget_SetEventHandler(w, GWEN_HSlider_EventHandler);
+  GWEN_Widget_SetEventHandler(w, GWEN_VSlider_EventHandler);
 
   return w;
 }
 
 
 
-void GWEN_HSlider_freeData(void *bp, void *p) {
-  GWEN_HSLIDER *win;
+void GWEN_VSlider_freeData(void *bp, void *p) {
+  GWEN_VSLIDER *win;
 
-  win=(GWEN_HSLIDER*)p;
+  win=(GWEN_VSLIDER*)p;
   GWEN_FREE_OBJECT(win);
 }
 
 
 
-int GWEN_HSlider_Calculate(GWEN_WIDGET *w) {
-  GWEN_HSLIDER *win;
+int GWEN_VSlider_Calculate(GWEN_WIDGET *w) {
+  GWEN_VSLIDER *win;
   int k;
 
   assert(w);
-  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_HSLIDER, w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_VSLIDER, w);
   assert(win);
 
-  k=GWEN_Widget_GetWidth(w);
+  k=GWEN_Widget_GetHeight(w);
   if (win->dsize) {
     win->slength=(double)(k*k)/
       (double)(win->dsize);
@@ -107,35 +107,41 @@ int GWEN_HSlider_Calculate(GWEN_WIDGET *w) {
     win->spos=0;
   }
 
-  DBG_NOTICE(0, "H-Slider: %d, %d", win->spos, win->slength);
+  DBG_NOTICE(0, "V-Slider: %d, %d (%d, %d)",
+             win->spos, win->slength,
+             win->dpos, win->dsize);
   return 0;
 }
 
 
 
-int GWEN_HSlider_Draw(GWEN_WIDGET *w) {
-  GWEN_HSLIDER *win;
+int GWEN_VSlider_Draw(GWEN_WIDGET *w) {
+  GWEN_VSLIDER *win;
 
   assert(w);
-  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_HSLIDER, w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_VSLIDER, w);
   assert(win);
 
   if (win->slength) {
-    GWEN_BUFFER *mbuf;
-    unsigned int i;
+    int i;
+    int j;
+    int k;
     char cbuf[7];
 
     snprintf(cbuf, sizeof(cbuf), "%%fe%%%02x", GWEN_WIDGET_CHAR_BLOCK);
-    mbuf=GWEN_Buffer_new(0, GWEN_Widget_GetWidth(w), 0, 1);
-    GWEN_Widget_Clear(w, 0, 0, GWEN_EventClearMode_ToEOL);
-    for (i=0; i<win->slength; i++)
-      GWEN_Buffer_AppendString(mbuf, cbuf);
 
-    GWEN_Widget_WriteAt(w,
-                        win->spos, 0,
-                        GWEN_Buffer_GetStart(mbuf),
-                        GWEN_Buffer_GetUsedBytes(mbuf));
-    GWEN_Buffer_free(mbuf);
+    k=GWEN_Widget_GetHeight(w);
+    j=win->spos+win->slength;
+    for (i=0; i<k; i++) {
+      if (i<win->spos || i>=j) {
+        GWEN_Widget_WriteAt(w,
+                            0, i, " ", 1);
+      }
+      else {
+        GWEN_Widget_WriteAt(w,
+                            0, i, cbuf, 1);
+      }
+    }
   }
   GWEN_Widget_Refresh(w);
   return 0;
@@ -143,25 +149,25 @@ int GWEN_HSlider_Draw(GWEN_WIDGET *w) {
 
 
 
-void GWEN_HSlider_Update(GWEN_WIDGET *w) {
-  if (!GWEN_HSlider_Calculate(w))
-    GWEN_HSlider_Draw(w);
+void GWEN_VSlider_Update(GWEN_WIDGET *w) {
+  if (!GWEN_VSlider_Calculate(w))
+    GWEN_VSlider_Draw(w);
 }
 
 
 
-GWEN_UI_RESULT GWEN_HSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
-  GWEN_HSLIDER *win;
+GWEN_UI_RESULT GWEN_VSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
+  GWEN_VSLIDER *win;
 
   assert(w);
-  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_HSLIDER, w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_VSLIDER, w);
   assert(win);
   assert(e);
 
   switch(GWEN_Event_GetType(e)) {
   case GWEN_EventType_Draw:
     win->previousHandler(w, e);
-    GWEN_HSlider_Update(w);
+    GWEN_VSlider_Update(w);
     return GWEN_UIResult_Handled;
     break;
 
@@ -172,19 +178,19 @@ GWEN_UI_RESULT GWEN_HSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     }
     else {
       /* buddy has scrolled, we should adapt */
-      win->dpos+=GWEN_EventScroll_GetXBy(e);
+      win->dpos+=GWEN_EventScroll_GetYBy(e);
       GWEN_Widget_Update(w);
       return win->previousHandler(w, e);
     }
     break;
 
   case GWEN_EventType_ContentChg:
-    win->dsize=GWEN_EventContentChg_GetContentWidth(e);
+    win->dsize=GWEN_EventContentChg_GetContentHeight(e);
     GWEN_Widget_Update(w);
     break;
 
   case GWEN_EventType_Update:
-    GWEN_HSlider_Update(w);
+    GWEN_VSlider_Update(w);
     return win->previousHandler(w, e);
   default:
     break;

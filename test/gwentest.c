@@ -34,6 +34,7 @@
 #include <gwenhywfar/ui.h>
 #include <gwenhywfar/window.h>
 #include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/tablewidget.h>
 
 
 int testDB(int argc, char **argv) {
@@ -1558,12 +1559,202 @@ int uitest6(int argc, char **argv) {
                          2, 2,
                          40, 10);
   GWEN_TextWidget_SetVirtualSize(tv, 40, 20);
+  GWEN_Widget_SetColour(tv, GWEN_WidgetColour_Message);
+  GWEN_Widget_Redraw(tv);
+  GWEN_Widget_SetFocus(tv);
+  GWEN_UI_Flush();
+
+  GWEN_Widget_Dump(w, 1);
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
+int uitest7(int argc, char **argv) {
+  GWEN_WIDGET *w;
+  GWEN_WIDGET *tv;
+  GWEN_UI_RESULT res;
+  GWEN_TW_LINE *tl;
+  unsigned char buffer[]=
+    "<gwen>"
+    "<i>This</i> is a <b>test</b><br/>"
+    "And <strong>this here</strong>, tooAnd this line<br/>"
+    "is as good as a test<br/>"
+    "as the lines<br/>"
+    "above this one<br/>"
+    "<br/>"
+    "Well, I need to fill<br/>"
+    "this <b>space</b> here<br/>"
+    "but with what ?<br/>"
+    "Hmm, but I think...<br/>"
+    "this might be enough<br/>"
+    "At least now ;-)<br/>"
+    "</gwen>";
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+  w=GWEN_Window_new(0,
+                    GWEN_WIDGET_FLAGS_DEFAULT |
+                    GWEN_WIDGET_FLAGS_BORDER |
+                    GWEN_WINDOW_FLAGS_TITLE,
+                    "Test-Widget",
+                    "Ueberschrift",
+                    4, 4,
+                    50, 20);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(w);
+
+  tv=GWEN_TextWidget_new(GWEN_Window_GetViewPort(w),
+                         GWEN_WIDGET_FLAGS_DEFAULT |
+                         GWEN_TEXTWIDGET_FLAGS_LINEMODE |
+                         GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT,
+                         "Test-Liste",
+                         buffer,
+                         2, 2,
+                         40, 10);
+  GWEN_TextWidget_SetVirtualSize(tv, 40, 20);
+  GWEN_Widget_SetColour(tv, GWEN_WidgetColour_Message);
+  GWEN_Widget_Redraw(tv);
+  GWEN_Widget_SetFocus(tv);
+  GWEN_UI_Flush();
+
+  GWEN_Widget_Dump(w, 1);
+
+  tl=GWEN_TextWidget_LineOpen(tv, 18, 1);
+  if (!tl) {
+    DBG_ERROR(0, "Could not open");
+    GWEN_UI_End();
+    return 2;
+  }
+
+  if (GWEN_TextWidget_LineSetBorders(tv, tl, 3, 8)) {
+    DBG_ERROR(0, "Could not set borders");
+    GWEN_UI_End();
+    return 2;
+  }
+  GWEN_UI_Flush();
+
+  if (GWEN_TextWidget_LineClear(tv, tl)) {
+    DBG_ERROR(0, "Could not clear line");
+    GWEN_UI_End();
+    return 2;
+  }
+  GWEN_UI_Flush();
+
+  if (GWEN_TextWidget_LineSetPos(tv, tl, 3)) {
+    DBG_ERROR(0, "Could not set pos");
+    GWEN_UI_End();
+    return 2;
+  }
+  GWEN_UI_Flush();
+
+  if (GWEN_TextWidget_LineWriteText(tv, tl, "Pisskopp", 0)) {
+    DBG_ERROR(0, "Could not write text");
+    GWEN_UI_End();
+    return 2;
+  }
+  GWEN_UI_Flush();
+
+  if (GWEN_TextWidget_LineRedraw(tv, tl)) {
+    DBG_ERROR(0, "Could not redraw line");
+    GWEN_UI_End();
+    return 2;
+  }
+  GWEN_UI_Flush();
+
+  if (GWEN_TextWidget_LineClose(tv, tl, 0)) {
+    DBG_ERROR(0, "Could not close line");
+    GWEN_UI_End();
+    return 2;
+  }
+  GWEN_UI_Flush();
+
+  res=GWEN_UI_Work();
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
+
+int uitest8(int argc, char **argv) {
+  GWEN_WIDGET *w;
+  GWEN_WIDGET *tv;
+  GWEN_UI_RESULT res;
+  int i, j;
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+  w=GWEN_Window_new(0,
+                    GWEN_WIDGET_FLAGS_DEFAULT |
+                    GWEN_WIDGET_FLAGS_BORDER |
+                    GWEN_WINDOW_FLAGS_TITLE |
+                    GWEN_WINDOW_FLAGS_HSLIDER |
+                    GWEN_WINDOW_FLAGS_VSLIDER |
+                    0,
+                    "Test-Widget",
+                    "Ueberschrift",
+                    4, 4,
+                    50, 20);
+  assert(w);
+  GWEN_Widget_SetColour(w, GWEN_WidgetColour_Default);
+  GWEN_Widget_Redraw(w);
+
+  tv=GWEN_TableWidget_new(GWEN_Window_GetViewPort(w),
+                          GWEN_WIDGET_FLAGS_DEFAULT |
+                          GWEN_TABLEWIDGET_FLAGS_COLBORDER,
+                          "Test-Tabelle",
+                          0, 0,
+                          0, 0);
+  GWEN_TextWidget_SetVirtualSize(tv, 1200, 200);
   GWEN_Widget_SetColour(tv, GWEN_WidgetColour_Default);
   GWEN_Widget_Redraw(tv);
   GWEN_Widget_SetFocus(tv);
   GWEN_UI_Flush();
 
   GWEN_Widget_Dump(w, 1);
+
+  for (i=0; i<10; i++)
+    for (j=0; j<16; j++) {
+      char numbuf[32];
+      snprintf(numbuf, sizeof(numbuf), "%d/%d", i, j);
+      GWEN_TableWidget_SetText(tv, i, j, numbuf);
+    }
+  GWEN_Widget_Redraw(tv);
+  GWEN_UI_Flush();
 
   res=GWEN_UI_Work();
   DBG_NOTICE(0, "Deinitializing UI");
@@ -1643,6 +1834,10 @@ int main(int argc, char **argv) {
     rv=uitest5(argc, argv);
   else if (strcasecmp(argv[1], "u6")==0)
     rv=uitest6(argc, argv);
+  else if (strcasecmp(argv[1], "u7")==0)
+    rv=uitest7(argc, argv);
+  else if (strcasecmp(argv[1], "u8")==0)
+    rv=uitest8(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

@@ -64,11 +64,14 @@ int GWEN_UI_Begin() {
   init_pair(GWEN_WidgetColour_Message, COLOR_WHITE, COLOR_RED);
   init_pair(GWEN_WidgetColour_Unselected, COLOR_RED, COLOR_WHITE);
   init_pair(GWEN_WidgetColour_Selected, COLOR_RED, COLOR_CYAN);
+  init_pair(GWEN_WidgetColour_Chosen, COLOR_MAGENTA, COLOR_WHITE);
   init_pair(GWEN_WidgetColour_Title, COLOR_BLUE, COLOR_WHITE);
+  init_pair(GWEN_WidgetColour_Button, COLOR_BLACK, COLOR_WHITE);
 
   GWEN_NEW_OBJECT(GWEN_UI, GWEN_UI__ui);
   GWEN_UI__ui->rootWidgets=GWEN_Widget_List_new();
   GWEN_UI__ui->events=GWEN_Event_List_new();
+  GWEN_UI__ui->newEvents=GWEN_Event_List_new();
   GWEN_UI__ui->usage=1;
   return 0;
 }
@@ -79,6 +82,7 @@ int GWEN_UI_End() {
   assert(GWEN_UI__ui);
   if ((--GWEN_UI__ui->usage)==0) {
     GWEN_Event_List_free(GWEN_UI__ui->events);
+    GWEN_Event_List_free(GWEN_UI__ui->newEvents);
     if (GWEN_Widget_List_GetCount(GWEN_UI__ui->rootWidgets)) {
       DBG_WARN(0, "There are still %d widgets",
                GWEN_Widget_List_GetCount(GWEN_UI__ui->rootWidgets));
@@ -103,7 +107,8 @@ void GWEN_UI_AddRootWidget(GWEN_WIDGET *w){
 
 int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
                       GWEN_WIDGET *wSender,
-                      GWEN_EVENT *e){
+                      GWEN_EVENT *e,
+                      int withPriority){
   GWEN_EVENT_TYPE t;
   int delGraEvents;
   int delSameEvents;
@@ -129,10 +134,30 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
     break;
   }
 
+  if (delSameEvents && (withPriority || GWEN_UI__ui->currentEvent)) {
+    GWEN_EVENT *le;
+
+    /* do not add event if it already exists */
+    le=GWEN_Event_List_First(GWEN_UI__ui->events);
+    while(le) {
+      if (wRecipient==GWEN_Event_GetRecipient(le) ||
+          GWEN_Widget_IsAncestorOf(GWEN_Event_GetRecipient(le),
+                                   wRecipient)) {
+        if (GWEN_Event_GetType(le)==t) {
+          DBG_NOTICE(0, "Not adding event event");
+          GWEN_Event_free(e);
+          return 0;
+        }
+      } /* if match */
+      le=GWEN_Event_List_Next(le);
+    } /* while */
+  } /* if delSameEvent */
+
   if (delGraEvents || delSameEvents) {
     GWEN_EVENT *le;
 
-    le=GWEN_Event_List_First(GWEN_UI__ui->events);
+    /* remove all previous events of that type */
+    le=GWEN_Event_List_First(GWEN_UI__ui->newEvents);
     while(le) {
       GWEN_EVENT *nextE;
 
@@ -147,8 +172,8 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
           case GWEN_EventType_Refresh:
           case GWEN_EventType_WriteAt:
           case GWEN_EventType_Clear:
-            DBG_VERBOUS(0, "Removing event:");
-            //GWEN_Event_Dump(le);
+            DBG_NOTICE(0, "Removing event:");
+            GWEN_Event_Dump(le);
             GWEN_Event_List_Del(le);
             GWEN_Event_free(le);
             break;
@@ -158,7 +183,7 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
         }
         else if (delSameEvents) {
           if (GWEN_Event_GetType(le)==t) {
-            DBG_VERBOUS(0, "Removing same event:");
+            DBG_NOTICE(0, "Removing same event:");
             //GWEN_Event_Dump(le);
             GWEN_Event_List_Del(le);
             GWEN_Event_free(le);
@@ -172,7 +197,15 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
   if (wSender)
     GWEN_Event_SetSender(e, wSender);
   GWEN_Event_SetRecipient(e, wRecipient);
-  GWEN_Event_List_Add(e, GWEN_UI__ui->events);
+
+  if (withPriority || GWEN_UI__ui->currentEvent) {
+    DBG_NOTICE(0, "Adding as new event");
+    GWEN_Event_List_Add(e, GWEN_UI__ui->newEvents);
+  }
+  else {
+    DBG_NOTICE(0, "Adding as next event");
+    GWEN_Event_List_Add(e, GWEN_UI__ui->events);
+  }
 
   if (0) {
     GWEN_EVENT *le;
@@ -228,7 +261,7 @@ void GWEN_UI_SetFocus(GWEN_WIDGET *w) {
 
     e=GWEN_EventFocus_new(GWEN_EventFocusType_Lost);
     assert(e);
-    if (GWEN_UI_SendEvent(GWEN_UI__ui->focusWidget, 0, e)) {
+    if (GWEN_UI_SendEvent(GWEN_UI__ui->focusWidget, 0, e, 0)) {
       DBG_ERROR(0, "Could not send event");
       GWEN_Event_free(e);
     }
@@ -243,11 +276,43 @@ void GWEN_UI_SetFocus(GWEN_WIDGET *w) {
 
     e=GWEN_EventFocus_new(GWEN_EventFocusType_Got);
     assert(e);
-    if (GWEN_UI_SendEvent(w, 0, e)) {
+    if (GWEN_UI_SendEvent(w, 0, e, 0)) {
       DBG_ERROR(0, "Could not send event");
       GWEN_Event_free(e);
     }
   }
+}
+
+
+
+GWEN_UI_RESULT GWEN_UI_HandleEvent(GWEN_EVENT *e) {
+  GWEN_UI_RESULT res;
+  GWEN_WIDGET *wRec;
+  GWEN_EVENT_LIST *tmpel;
+
+  wRec=GWEN_Event_GetRecipient(e);
+  assert(wRec);
+
+  GWEN_UI__ui->currentEvent=e;
+
+  res=GWEN_Widget_HandleEvent(wRec, e);
+  if (res==GWEN_UIResult_NotHandled) {
+    GWEN_WIDGET *wParent;
+
+    wParent=GWEN_Widget_GetParent(wRec);
+    while(wParent) {
+      res=GWEN_Widget_HandleEvent(wParent, e);
+      if (res!=GWEN_UIResult_NotHandled)
+        break;
+      wParent=GWEN_Widget_GetParent(wParent);
+    }
+  }
+  GWEN_Event_List_AddList(GWEN_UI__ui->newEvents, GWEN_UI__ui->events);
+  tmpel=GWEN_UI__ui->newEvents;
+  GWEN_UI__ui->newEvents=GWEN_UI__ui->events;
+  GWEN_UI__ui->events=tmpel;
+  GWEN_UI__ui->currentEvent=0;
+  return res;
 }
 
 
@@ -263,22 +328,12 @@ GWEN_UI_RESULT GWEN_UI_HandleEvents() {
 
   while(1) {
     GWEN_UI_RESULT res;
-    GWEN_WIDGET *wRec;
 
     e=GWEN_Event_List_First(GWEN_UI__ui->events);
     if (!e)
       break;
-    wRec=GWEN_Event_GetRecipient(e);
-    assert(wRec);
-    res=GWEN_Widget_HandleEvent(wRec, e);
-    if (res==GWEN_UIResult_NotHandled) {
-      GWEN_WIDGET *wParent;
-
-      wParent=GWEN_Widget_GetParent(wRec);
-      if (wParent) {
-        res=GWEN_Widget_HandleEvent(wParent, e);
-      }
-    }
+    GWEN_Event_List_Del(e);
+    res=GWEN_UI_HandleEvent(e);
 
     switch(res) {
     case GWEN_UIResult_Handled:
@@ -290,7 +345,6 @@ GWEN_UI_RESULT GWEN_UI_HandleEvents() {
     default:
       break;
     } /* switch */
-    GWEN_Event_List_Del(e);
     GWEN_Event_free(e);
   } /* while e */
 
@@ -362,7 +416,7 @@ GWEN_UI_RESULT GWEN_UI_Work() {
         DBG_NOTICE(0, "Generating key event");
         e=GWEN_EventKey_new(ch);
         assert(e);
-        if (GWEN_UI_SendEvent(GWEN_UI__ui->focusWidget, 0, e)) {
+        if (GWEN_UI_SendEvent(GWEN_UI__ui->focusWidget, 0, e, 0)) {
           DBG_ERROR(0, "Could not send event");
           GWEN_Event_free(e);
         }

@@ -127,9 +127,19 @@ void GWEN_EventClear_freeData(void *bp, void *p);
 typedef struct GWEN_EVENT_HIGHLIGHT GWEN_EVENT_HIGHLIGHT;
 struct GWEN_EVENT_HIGHLIGHT {
   int x, y;
-  int len, hi;
+  int len;
+  GWEN_WIDGET_COLOUR hi;
 };
 void GWEN_EventHighlight_freeData(void *bp, void *p);
+
+
+
+typedef struct GWEN_EVENT_CONTENTCHG GWEN_EVENT_CONTENTCHG;
+struct GWEN_EVENT_CONTENTCHG {
+  int cwidth, cheight;
+  int width, height;
+};
+void GWEN_EventContentChg_freeData(void *bp, void *p);
 
 
 #endif
