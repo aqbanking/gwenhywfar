@@ -1,3 +1,7 @@
+2004/02/02: Ronny Buchmann <ronny-hbci@vlugnet.org>
+---------------------------------------------------
+- Makefile.cvs: make /usr/local in local: a variable
+
 2004-01-28  Christian Stimming <stimming@tuhh.de>
 
 	* test/gwentest.c, configure.ac: Add define to remove dependency

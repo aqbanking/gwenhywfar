@@ -20,8 +20,9 @@ all:
 	automake -f --add-missing $(COPY)
 	autoconf
 
+local: PREFIX=/usr/local
 local: all
-	./configure --prefix=/usr/local
+	./configure --prefix=$(PREFIX)
 
 mp:
 	libtoolize -f --automake
