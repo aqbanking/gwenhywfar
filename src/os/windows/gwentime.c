@@ -206,8 +206,6 @@ GWEN_TIME *GWEN_Time_new(int year,
                          int min,
                          int sec,
                          int inUtc){
-  int year, month, day;
-  int hour, min, sec;
   GWEN_TIME *gwt;
   time_t tt;
   struct tm ti;
