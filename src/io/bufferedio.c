@@ -123,14 +123,8 @@ void GWEN_BufferedIO_free(GWEN_BUFFEREDIO *bt){
     if (bt->freePtr) {
       bt->freePtr(bt->privateData);
     }
-    if (!(bt->readerBuffer)) {
-      DBG_WARN(0, "No readerbuffer");
-    }
     free(bt->readerBuffer);
     bt->readerBuffer=0;
-    if (!(bt->writerBuffer)) {
-      DBG_WARN(0, "No writerbuffer");
-    }
     free(bt->writerBuffer);
     bt->writerBuffer=0;
     free(bt);
