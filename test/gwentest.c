@@ -1302,7 +1302,7 @@ int testHTTPd(int argc, char **argv) {
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-
+#ifdef USE_NCURSES
 int uitest1(int argc, char **argv) {
   DBG_NOTICE(0, "Initializing UI");
   if (GWEN_UI_Begin()) {
@@ -1947,7 +1947,7 @@ int uitest10(int argc, char **argv) {
   DBG_NOTICE(0, "Result was: %d", res);
   return 0;
 }
-
+#endif /* USE_NCURSES */
 
 
 
@@ -2003,6 +2003,7 @@ int main(int argc, char **argv) {
     rv=testHTTPc(argc, argv);
   else if (strcasecmp(argv[1], "httpd")==0)
     rv=testHTTPd(argc, argv);
+#ifdef USE_NCURSES
   else if (strcasecmp(argv[1], "u1")==0)
     rv=uitest1(argc, argv);
   else if (strcasecmp(argv[1], "u2")==0)
@@ -2023,6 +2024,7 @@ int main(int argc, char **argv) {
     rv=uitest9(argc, argv);
   else if (strcasecmp(argv[1], "u10")==0)
     rv=uitest10(argc, argv);
+#endif /* USE_NCURSES */
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

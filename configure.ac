@@ -230,12 +230,12 @@ AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
 # check for ncurses
 #
 
-use_ncurses="yes"
-AC_CHECK_LIB(ncurses, newwin, [], [use_ncurses="no"])
-AC_CHECK_LIB(form, new_form, [], [use_ncurses="no"])
-AC_CHECK_HEADERS([ncurses.h], [], [use_ncurses="no"])
-AC_CHECK_HEADERS([form.h], [], [use_ncurses="no"])
-if test "$use_ncurses" != "yes"; then
+USE_NCURSES="yes"
+AC_CHECK_LIB(ncurses, newwin, [], [USE_NCURSES="no"])
+AC_CHECK_LIB(form, new_form, [], [USE_NCURSES="no"])
+AC_CHECK_HEADERS([ncurses.h], [], [USE_NCURSES="no"])
+AC_CHECK_HEADERS([form.h], [], [USE_NCURSES="no"])
+if test "$USE_NCURSES" != "yes"; then
   AC_MSG_WARN([
 *** ncurses not found, the text interface will not be available.])
   NCURSES_TOOLS=""
@@ -245,7 +245,8 @@ else
   NCURSES_TOOLS=""
 fi
 AC_SUBST(NCURSES_TOOLS)
-
+AC_SUBST(USE_NCURSES)
+AM_CONDITIONAL(USE_NCURSES, [test "$USE_NCURSES" = "yes"])
 
 
 #
