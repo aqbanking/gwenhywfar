@@ -1,4 +1,4 @@
-SUBDIRS=src test m4
+SUBDIRS=doc src test m4
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  gwenhywfar.m4 \

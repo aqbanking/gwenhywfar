@@ -38,6 +38,7 @@ extern "C" {
 #endif
 
 /** @defgroup MOD_MSGENGINE_ALL Message Engine
+ * @ingroup MOD_PARSER
  *
  * This group contains function providing creating and parsing messages
  * based on an XML-alike file.

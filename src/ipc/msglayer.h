@@ -37,6 +37,12 @@
 extern "C" {
 #endif
 
+/** @addtogroup MOD_IPC_MSGLAYER IPC Message Layer
+ * The message layer works on top of the @ref MOD_IPC_TRANSPORTLAYER
+ */
+/*@{*/
+
+
 typedef struct GWEN_IPCMSG GWEN_IPCMSG;
 typedef struct GWEN_IPCMSGLAYER GWEN_IPCMSGLAYER;
 
@@ -86,6 +92,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Work(GWEN_IPCMSGLAYER *ml,
                                   int rd);
 
 GWEN_IPCMSG *GWEN_MsgLayer_GetIncomingMsg(GWEN_IPCMSGLAYER *ml);
+unsigned int GWEN_MsgLayer_GetIncomingMsgCount(GWEN_IPCMSGLAYER *ml);
 GWEN_ERRORCODE GWEN_MsgLayer_AddOutgoingMsg(GWEN_IPCMSGLAYER *ml,
                                             GWEN_IPCMSG *msg);
 int GWEN_MsgLayer_CheckAddOutgoingMsg(GWEN_IPCMSGLAYER *ml);
@@ -117,6 +124,12 @@ GWEN_IPCMSG *GWEN_MsgLayer_GetOutgoingMsg(GWEN_IPCMSGLAYER *ml);
 unsigned int GWEN_MsgLayer_OutgoingMsgs(GWEN_IPCMSGLAYER *ml);
 GWEN_ERRORCODE GWEN_MsgLayer_AddIncomingMsg(GWEN_IPCMSGLAYER *ml,
                                             GWEN_IPCMSG *msg);
+
+/**
+ * Removes all incoming messages.
+ */
+void GWEN_MsgLayer_ClearIncomingMsg(GWEN_IPCMSGLAYER *ml);
+
 void GWEN_MsgLayer_SetState(GWEN_IPCMSGLAYER *ml,
                             GWEN_IPCMSGLAYER_STATE st);
 GWEN_IPCTRANSPORTLAYER *GWEN_MsgLayer_GetTransportLayer(GWEN_IPCMSGLAYER *ml);
@@ -135,6 +148,7 @@ const char *GWEN_MsgLayer_GetStateString(GWEN_IPCMSGLAYER_STATE st);
 
 /*@}*/
 
+/*@}*/ /* defgroup */
 
 #ifdef __cplusplus
 }

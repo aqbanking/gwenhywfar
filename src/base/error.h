@@ -43,6 +43,24 @@
 extern "C" {
 #endif
 
+/**
+ * @defgroup MOD_ERROR Error module
+ * @ingroup MOD_BASE
+ * @short This module does all error handling
+ * @author Martin Preuss<martin@libchipcard.de>
+ *
+ * All errors are grouped into error types. There is no predefined error
+ * type, all modules, which want to take advantage of this module should
+ * register their own error type.
+ * When registering an error type, this module learns about the new error
+ * type:
+ * <ul>
+ *  <li>name (like <i>Socket</i>, <i>InetAddress</i>, <i>Time</i> etc.)</li>
+ *  <li>function to create human readable error messages for this type</li>
+ * </ul>
+ */
+/*@{*/
+
 
 /**
  * An error code is 32 bits long and has the following bit format:
@@ -68,24 +86,6 @@ GWENHYFWAR_API typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
  * whole ERRORCODE itself !).
  */
 GWENHYFWAR_API typedef const char* (*GWEN_ERRORMESSAGEPTR)(int c);
-
-
-/**
- * @defgroup MOD_ERROR Error module
- * @short This module does all error handling
- * @author Martin Preuss<martin@libchipcard.de>
- *
- * All errors are grouped into error types. There is no predefined error
- * type, all modules, which want to take advantage of this module should
- * register their own error type.
- * When registering an error type, this module learns about the new error
- * type:
- * <ul>
- *  <li>name (like <i>Socket</i>, <i>InetAddress</i>, <i>Time</i> etc.)</li>
- *  <li>function to create human readable error messages for this type</li>
- * </ul>
- */
-/*@{*/
 
 
 int GWEN_ErrorType_GetType(GWEN_ERRORTYPEREGISTRATIONFORM *f);

@@ -41,6 +41,7 @@ extern "C" {
 #endif
 
 /** @defgroup MOD_DB Database
+ * @ingroup MOD_PARSER
  *
  * @brief This file contains the definition of a GWEN_DB database.
  *

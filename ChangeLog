@@ -8,6 +8,7 @@ $Id$
   connections
 - replaced COPYING file with one that includes the LGPL instead of the GPL
 - added license exception to satisfy Debian needs (the old OpenSSL problem)
+- removed unnecessary files, improved APIDOC
 
 
 2003/11/23 Martin Preuss <martin@libchipcard.de>

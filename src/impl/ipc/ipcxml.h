@@ -76,7 +76,8 @@ void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
 
 
 /**
- * @defgroup MOD_IPCXMLSERVICE IPC Service
+ * @defgroup MOD_IPCXMLSERVICE IPCXML Service
+ * @ingroup MOD_IPC_HIGHLEVEL
  * @short Provides secure interprocess communication
  * @author Martin Preuss<martin@libchipcard.de>
  *
@@ -89,19 +90,21 @@ void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
  * <p>The usual way of using this module is this:
  * <ol type="1" >
  *  <li>
- *   setup a @ref GWEN_MSGENGINE (create it, load appropriate XML files etc)
+ *   setup a @ref GWEN_MSGENGINE (create it, load appropriate XML files etc.
+ *   See @ref MOD_MSGENGINE for details)
  *  </li>
  *  <li>
  *   setup a @ref GWEN_SECCTX_MANAGER (create it, load and add security
- *   contexts etc)
+ *   contexts etc. See @ref MOD_SECCTX_MANAGER for details)
  *  </li>
  *  <li>
  *   call @ref GWEN_IPCXMLService_AddServer or
  *   @ref GWEN_IPCXMLService_AddClient as often as required
  *  </li>
  *  <li>
- *   call @ref GWEN_IPCXMLService_SetRemoteName as soon as you know to whom
- *   you are talking
+ *   Server: call @ref GWEN_IPCXMLService_SetRemoteName as soon as you know
+ *   to whom you are talking (when using @ref GWEN_IPCXMLService_AddClient
+ *   the remote name is already known)
  *  </li>
  *  <li>
  *   call @ref GWEN_IPCXMLService_SetSecurityFlags to choose whether you want
@@ -492,10 +495,15 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
 
 /** @name Extending IPC Service
  *
+ * Gwenhywfars IPC module provides some callback functions which can be used
+ * to inform the application about connections going up or down.
+ * Most server applications will need these functions too keep track of
+ * the state of the connections (e.g. to release ressources when the
+ * connection to a client is lost).
  */
 /*@{*/
 /**
- * You can setup a function that will be called whenever connection is
+ * You can setup a function that will be called whenever a connection is
  * established.
  */
 void GWEN_IPCXMLService_SetConnectionUpFn(GWEN_IPCXMLSERVICE *xs,

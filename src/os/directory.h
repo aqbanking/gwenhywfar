@@ -46,6 +46,7 @@ GWENHYFWAR_API typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
 
 /**
  * @defgroup MOD_DIRECTORY Directory Functions
+ * @ingroup MOD_OS
  * @short Provides secure interprocess communication
  * @author Martin Preuss<martin@libchipcard.de>
  */

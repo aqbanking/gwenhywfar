@@ -36,6 +36,7 @@ extern "C" {
 #endif
 
 /** @defgroup MOD_PATH Paths
+ * @ingroup MOD_PARSER
  *
  * @brief These functions work on general paths.
  *

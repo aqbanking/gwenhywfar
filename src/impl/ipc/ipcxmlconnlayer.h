@@ -40,7 +40,13 @@
 
 #include <gwenhywfar/ipcxml.h>
 
-
+/** @defgroup MOD_IPCXML_CONNLAYER IPCXML Connection Layer
+ * @ingroup MOD_IPC_MIDLEVEL
+ * @brief Extends @ref MOD_IPC_CONNLAYER
+ *
+ * This module works on top of @ref MOD_IPCXML_MSGLAYER.
+ */
+/*@{*/
 typedef struct GWEN_IPCXMLCONNLAYERDATA GWEN_IPCXMLCONNLAYERDATA;
 
 
@@ -103,6 +109,8 @@ void GWEN_IPCXMLConnLayer_SetConnectedFn(GWEN_IPCCONNLAYER *cl,
                                          GWEN_IPCXMLCONNLAYER_CONNECTED_FN f);
 void GWEN_IPCXMLConnLayer_SetDisconnectedFn(GWEN_IPCCONNLAYER *cl,
        GWEN_IPCXMLCONNLAYER_DISCONNECTED_FN f);
+
+/*@}*/
 
 #endif /* GWEN_IPCXMLCONNLAYER_H */
 

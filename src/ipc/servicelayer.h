@@ -45,6 +45,13 @@ typedef struct GWEN_SERVICELAYER GWEN_SERVICELAYER;
 extern "C" {
 #endif
 
+/** @addtogroup MOD_IPC_SERVICELAYER IPC Service Layer
+ *
+ * The service layer manages multiple connection layers
+ * (see @ref MOD_IPC_CONNLAYER)
+ */
+/*@{*/
+
 
 typedef void (*GWEN_SERVICELAYER_FREEDATA_FN)(GWEN_SERVICELAYER *sl);
 
@@ -114,6 +121,7 @@ void GWEN_ServiceLayer_Close(GWEN_SERVICELAYER *sl,
 GWEN_IPCMSG *GWEN_ServiceLayer_NextIncomingMsg(GWEN_SERVICELAYER *sl,
                                                unsigned int userMark);
 
+/*@}*/ /* defgroup */
 
 #ifdef __cplusplus
 }

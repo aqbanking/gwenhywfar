@@ -31,7 +31,14 @@
 
 #include <gwenhywfar/msgengine.h>
 #include <gwenhywfar/msglayer.h>
-#include <gwenhywfar/connlayer.h>
+
+
+/** @defgroup MOD_IPCXML_MSGLAYER IPCXML Message Layer
+ * @ingroup MOD_IPC_MIDLEVEL
+ * @brief Extends @ref MOD_IPC_MSGLAYER
+ *
+ */
+/*@{*/
 
 
 typedef struct GWEN_IPCXMLMSGLAYERDATA GWEN_IPCXMLMSGLAYERDATA;
@@ -40,6 +47,7 @@ typedef struct GWEN_IPCXMLMSGLAYERDATA GWEN_IPCXMLMSGLAYERDATA;
 GWEN_IPCMSGLAYER *GWEN_IPCXMLMsgLayer_new(GWEN_MSGENGINE *msgEngine,
                                           GWEN_IPCTRANSPORTLAYER *tl,
                                           GWEN_IPCMSGLAYER_STATE st);
+/*@}*/
 
 
 #endif

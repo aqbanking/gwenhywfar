@@ -259,6 +259,9 @@ void GWEN_IPCXMLConnLayer_Up(GWEN_IPCCONNLAYER *cl){
 
   ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
   assert(ml);
+  /* remove all incoming messages on this connection, because the security
+   * context might change now */
+  GWEN_MsgLayer_ClearIncomingMsg(ml);
   GWEN_MsgLayer_SetState(ml, GWEN_IPCMsglayerStateIdle);
   /* notify application */
   GWEN_IPCXMLConnLayer_Connected(cl);

@@ -37,6 +37,7 @@ extern "C" {
 #endif
 
 /** @defgroup MOD_XMLNODE_ALL XML Tree
+ * @ingroup MOD_PARSER
  *
  */
 /*@{*/

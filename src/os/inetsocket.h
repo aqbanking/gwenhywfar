@@ -44,6 +44,7 @@ extern "C" {
 
 /**
  * @defgroup MOD_SOCKETSANDSETS Sockets and Socket Sets
+ * @ingroup MOD_OS
  *
  * This module handles sockets and socket sets.
  * @{

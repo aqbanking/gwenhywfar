@@ -44,6 +44,18 @@ extern "C" {
 #endif
 
 
+/**
+ * @defgroup MOD_LIBLOADER Library Loading Funtions
+ * @ingroup MOD_OS
+ * @short This module allows loading of shared libraries
+ *
+ * This module can be used to load libraries and to lookup symbols inside
+ * them.
+ * @author Martin Preuss<martin@libchipcard.de>
+ */
+/*@{*/
+
+
 GWENHYFWAR_API typedef struct GWEN_LIBLOADERSTRUCT GWEN_LIBLOADER;
 
 
@@ -58,6 +70,8 @@ GWENHYFWAR_API
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
                                         const char *name, void **p);
+
+/*@}*/
 
 #ifdef __cplusplus
 }

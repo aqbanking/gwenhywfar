@@ -37,6 +37,15 @@
 extern "C" {
 #endif
 
+/** @addtogroup MOD_IPC_TRANSPORTLAYER IPC Transport Layer
+ * @brief Lowest IPC Layer (don't use it directly for applications or
+ * libraries)
+ *
+ * The transport layer is the lowest layer of the IPC infra structure.
+ * No application should use the function of this layer directly.
+ */
+/*@{*/
+
 
 typedef enum {
   GWEN_TransportLayerTypeSocket=0
@@ -121,6 +130,7 @@ GWENHYFWAR_API
 GWENHYFWAR_API
   GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerUnix_new();
 
+/*@}*/ /* defgroup */
 
 #ifdef __cplusplus
 }

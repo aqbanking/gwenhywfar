@@ -37,6 +37,14 @@
 extern "C" {
 #endif
 
+/** @defgroup MOD_BUFFER Buffer Management
+ * @ingroup MOD_BASE
+ *
+ * @brief This file contains the definition of a GWEN_DB database.
+ *
+ */
+/*@{*/
+
 #define GWEN_BUFFER_MAX_BOOKMARKS 4
 
 #define GWEN_BUFFER_MODE_DYNAMIC 0x0001
@@ -291,6 +299,8 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
 
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert);
 
+
+/*@}*/
 
 #ifdef __cplusplus
 }

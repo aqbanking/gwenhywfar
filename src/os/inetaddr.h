@@ -44,6 +44,7 @@ extern "C" {
 
 /**
  * @defgroup MOD_INETADDR Internet Address Module
+ * @ingroup MOD_OS
  * @short This module handles internet addresses
  *
  * This module allows using of internet IP addresses. It is also capable of

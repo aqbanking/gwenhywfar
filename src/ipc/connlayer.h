@@ -36,6 +36,10 @@
 extern "C" {
 #endif
 
+/** @addtogroup MOD_IPC_CONNLAYER IPC Connection Layer
+ * The connection layer works on top of the @ref MOD_IPC_MSGLAYER
+ */
+/*@{*/
 
 #define GWEN_IPCCONNLAYER_FLAGS_PERSISTENT 0x0001
 #define GWEN_IPCCONNLAYER_FLAGS_PASSIVE    0x0002
@@ -118,6 +122,7 @@ unsigned int GWEN_ConnectionLayer_GetType(GWEN_IPCCONNLAYER *cl);
 void GWEN_ConnectionLayer_SetType(GWEN_IPCCONNLAYER *cl,
                                   unsigned int i);
 
+/*@}*/ /* defgroup */
 
 
 #ifdef __cplusplus

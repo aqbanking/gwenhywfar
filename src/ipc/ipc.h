@@ -33,7 +33,15 @@
 extern "C" {
 #endif
 
+/** @addtogroup MOD_IPC
+ *
+ */
+/*@{*/
 
+/** @name Error Codes
+ *
+ */
+/*@{*/
 #define GWEN_IPC_ERROR_TYPE "IPC"
 #define GWEN_IPC_ERROR_INQUEUE_FULL          1
 #define GWEN_IPC_ERROR_OUTQUEUE_FULL         2
@@ -53,7 +61,23 @@ extern "C" {
 #define GWEN_IPC_ERROR_SOME_FAILED           16
 #define GWEN_IPC_ERROR_REQUEST_NOT_FOUND     17
 #define GWEN_IPC_ERROR_NO_DATA               18
+/*@}*/ /* name */
 
+  /** @defgroup MOD_IPC_LOWLEVEL Low Level IPC Functions
+   */
+  /*@{*/
+  /** @defgroup MOD_IPC_TRANSPORTLAYER IPC Transport Layer */
+  /** @defgroup MOD_IPC_MSGLAYER IPC Message Layer */
+  /** @defgroup MOD_IPC_CONNLAYER IPC Connection Layer */
+  /** @defgroup MOD_IPC_SERVICELAYER IPC Service Layer */
+  /*@}*/ /* addtogroup */
+
+  /** @defgroup MOD_IPC_MIDLEVEL Middle Level IPC Functions */
+  /** @defgroup MOD_IPC_HIGHLEVEL High Level IPC Functions */
+  /** @defgroup MOD_IPC_SECURITY Security Functions For IPC */
+
+
+/*@}*/ /* addtogroup */
 
 #ifdef __cplusplus
 }

@@ -39,6 +39,7 @@ extern "C" {
 #endif
 
 /** @defgroup MOD_SECCTX_ALL General Security Context
+ * @ingroup MOD_IPC_SECURITY
  *
  */
 /*@{*/

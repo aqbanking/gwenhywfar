@@ -308,6 +308,14 @@ GWEN_ERRORCODE GWEN_MsgLayer_AddIncomingMsg(GWEN_IPCMSGLAYER *ml,
 
 
 /* --------------------------------------------------------------- FUNCTION */
+unsigned int GWEN_MsgLayer_GetIncomingMsgCount(GWEN_IPCMSGLAYER *ml) {
+  assert(ml);
+  return ml->nIncomingMsgs;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCMSGLAYER_STATE GWEN_MsgLayer_GetState(GWEN_IPCMSGLAYER *ml){
   assert(ml);
   return ml->state;
@@ -498,6 +506,24 @@ unsigned int GWEN_MsgLayer_OutgoingMsgs(GWEN_IPCMSGLAYER *ml){
   return ml->nOutgoingMsgs;
 }
 
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_MsgLayer_ClearIncomingMsg(GWEN_IPCMSGLAYER *ml){
+  GWEN_IPCMSG *msg;
+
+  /* free all incoming msgs */
+  msg=ml->incomingMsgs;
+  while(msg) {
+    GWEN_IPCMSG *nextmsg;
+
+    nextmsg=msg->next;
+    GWEN_Msg_free(msg);
+    msg=nextmsg;
+  }
+  ml->incomingMsgs=0;
+  ml->nIncomingMsgs=0;
+}
 
 
 

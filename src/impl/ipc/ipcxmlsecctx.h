@@ -36,6 +36,18 @@
 #include <gwenhywfar/ipcxmlkeymanager.h>
 
 
+/** @defgroup MOD_IPCXML_SECCTX_ALL IPCXML Security Context Management
+ * @ingroup MOD_IPC_SECURITY
+ * @brief Extends @ref MOD_SECCTX
+ *
+ */
+/*@{*/
+
+/** @defgroup MOD_IPCXML_SECCTX IPCXML Security Context
+ *
+ */
+/*@{*/
+
 typedef struct GWEN_IPCXMLSECCTXDATA GWEN_IPCXMLSECCTXDATA;
 
 
@@ -82,7 +94,13 @@ void GWEN_IPCXMLSecCtx_SetRemoteSignKey(GWEN_SECCTX *sc,
 void GWEN_IPCXMLSecCtx_SetRemoteCryptKey(GWEN_SECCTX *sc,
                                          GWEN_CRYPTKEY *key);
 
+/*@}*/
 
+
+/** @defgroup MOD_IPCXML_SECCTXMGR IPCXML Security Context Manager
+ *
+ */
+/*@{*/
 
 
 GWEN_SECCTX_MANAGER *GWEN_IPCXMLSecCtxMgr_new(const char *serviceCode,
@@ -99,6 +117,9 @@ void GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(GWEN_SECCTX_MANAGER *scm,
  */
 void GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(GWEN_SECCTX_MANAGER *scm,
                                            const GWEN_CRYPTKEY *key);
+
+/*@}*/
+/*@}*/
 
 #endif
 
