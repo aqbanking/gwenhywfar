@@ -1,4 +1,10 @@
 
+2004/09/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- db: GWEN_GetIntValue: When converting a char value to int we now use
+  "%i" instead of "%d". This will allow the code to read hex values as well
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.2 (2004/09/26)
 ===========================================================================
