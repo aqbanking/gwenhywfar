@@ -20,7 +20,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYFWAR_VERSION_MAJOR=0
 GWENHYFWAR_VERSION_MINOR=9
 GWENHYFWAR_VERSION_PATCHLEVEL=3
-GWENHYFWAR_VERSION_BUILD=4
+GWENHYFWAR_VERSION_BUILD=5
 GWENHYFWAR_VERSION_TAG="cvs"
 GWENHYFWAR_VERSION_FULL_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL.$GWENHYFWAR_VERSION_BUILD($GWENHYFWAR_VERSION_TAG)"
 GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
@@ -179,6 +179,44 @@ ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h"
 
 
 #
+# check docpath
+#
+AC_MSG_CHECKING(docpath)
+AC_ARG_WITH(docpath, [  --with-docpath=DIR where to store the apidoc],
+  [docpath="$withval"],
+  [docpath="apidoc"])
+AC_SUBST(docpath)
+AC_MSG_RESULT($docpath)
+
+
+#
+# check for doc type
+#
+AC_MSG_CHECKING(if full docu should be created)
+AC_ARG_ENABLE(full-doc,
+  [  --enable-full-doc         enable creating full apidoc (default=no)],
+  [ case "${enableval}" in
+    yes) enable_fulldoc="yes";;
+    no)  enable_fulldoc="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-full-doc);;
+    esac
+  ],
+  enable_fulldoc="no")
+
+if test "$enable_fulldoc" = "yes"; then
+	DOXYGEN_INPUT="src"
+        DOXYGEN_DEFINE=""
+else
+	DOXYGEN_DEFINE="DOXYGEN_HIDE"
+	DOXYGEN_INPUT="gwenhywfar"
+fi
+AC_SUBST(DOXYGEN_INPUT)
+AC_SUBST(DOXYGEN_DEFINE)
+AC_MSG_RESULT($enable_fulldoc)
+
+
+
+#
 # check for MEMTRACE
 #
 AC_MSG_CHECKING(if MEMTRACE is wanted)
@@ -194,6 +232,7 @@ fi
 
 # Debug arguments for compilation
 ACX_COMPILE_WARN()
+
 
 #
 # substitute vars
@@ -216,7 +255,8 @@ AC_SUBST(all_libraries)
 #
 # list of files to create
 #
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([Doxyfile
+                 Makefile
                  m4/Makefile
                  gwenhywfar-config.in
 		 gwenhywfar.spec

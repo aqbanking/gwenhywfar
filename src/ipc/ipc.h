@@ -52,6 +52,7 @@ extern "C" {
 #define GWEN_IPC_ERROR_INQUEUE_EMPTY         15
 #define GWEN_IPC_ERROR_SOME_FAILED           16
 #define GWEN_IPC_ERROR_REQUEST_NOT_FOUND     17
+#define GWEN_IPC_ERROR_NO_DATA               18
 
 
 #ifdef __cplusplus

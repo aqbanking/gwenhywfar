@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file chameleon/inetaddr.h
+ * @file gwenhywfar/inetaddr.h
  * @short This file contains the internet address handling module
  */
 

@@ -2,7 +2,7 @@ SUBDIRS=src test m4
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  gwenhywfar.m4 \
- gwenhywfar.spec.in
+ gwenhywfar.spec.in DOXYFILE.in
 
 bin_SCRIPTS=gwenhywfar-config
 M4dir=@prefix@/share/aclocal
@@ -15,6 +15,9 @@ gwenhywfar-config: gwenhywfar-config.in
 	echo 'dir="@prefix@"' >>gwenhywfar-config && \
 	cat gwenhywfar-config.in >>gwenhywfar-config && \
 	chmod a+x gwenhywfar-config
+
+srcdoc: Doxyfile
+	doxygen
 
 
 rpm: gwenhywfar.spec

@@ -896,6 +896,52 @@ GWEN_ERRORCODE GWEN_IPCXMLService_DeleteRequest(GWEN_IPCXMLSERVICE *xs,
 
 
 
+GWEN_DB_NODE *GWEN_IPCXMLService_GetRequestData(GWEN_IPCXMLSERVICE *xs,
+                                                unsigned int requestId){
+  GWEN_IPCXMLREQUEST *rq;
+  GWEN_DB_NODE *gr;
+
+  rq=GWEN_IPCXMLService_GetInRequest(xs, requestId);
+  if (!rq) {
+    DBG_ERROR(0, "Request %d not found", requestId);
+    return 0;
+  }
+
+  assert(rq->db);
+  gr=GWEN_DB_GetFirstGroup(rq->db);
+  if (!gr) {
+    DBG_INFO(0, "No data for request %d", requestId);
+    return 0;
+  }
+  GWEN_DB_UnlinkGroup(gr);
+  return gr;
+}
+
+
+
+GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
+                                                 unsigned int requestId){
+  GWEN_IPCXMLREQUEST *rq;
+  GWEN_DB_NODE *gr;
+
+  rq=GWEN_IPCXMLService_GetOutRequest(xs, requestId);
+  if (!rq) {
+    DBG_ERROR(0, "Request %d not found", requestId);
+    return 0;
+  }
+
+  assert(rq->db);
+  gr=GWEN_DB_GetFirstGroup(rq->db);
+  if (!gr) {
+    DBG_INFO(0, "No data for request %d", requestId);
+    return 0;
+  }
+  GWEN_DB_UnlinkGroup(gr);
+  return gr;
+}
+
+
+
 
 
 

@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file chameleon/directory.h
+ * @file gwenhywfar/directory.h
  * @short This file contains the directory handling module
  */
 
@@ -60,7 +60,7 @@ GWENHYFWAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
  * @author Martin Preuss<martin@libchipcard.de>
  * @return 0 if ok, !=0 on error
  * @param d pointer to a directory data structure. This should be created
- * by calling @ref Directory_new().
+ * by calling @ref GWEN_Directory_new().
  * @param n path and name of the directory to open
  */
 GWENHYFWAR_API int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
@@ -70,7 +70,7 @@ GWENHYFWAR_API int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
  * @author Martin Preuss<martin@libchipcard.de>
  * @return 0 if ok, !=0 on error
  * @param d pointer to a directory data structure. This should be created
- * by calling @ref Directory_new().
+ * by calling @ref GWEN_Directory_new().
  */
 GWENHYFWAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
 
@@ -81,7 +81,7 @@ GWENHYFWAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
  * @author Martin Preuss<martin@libchipcard.de>
  * @return 0 if ok, !=0 on error
  * @param d pointer to a directory data structure. This should be created
- * by calling @ref Directory_new().
+ * by calling @ref GWEN_Directory_new().
  * @param buffer pointer to a buffer to receive the name
  * @param len size of the buffer
  */
@@ -92,10 +92,10 @@ GWENHYFWAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
 /**
  * Rewinds the internal pointers, so that the next call to
  * @author Martin Preuss<martin@libchipcard.de>
- * @ref Directory_Read will return the first entry of the open directory.
+ * @ref GWEN_Directory_Read will return the first entry of the open directory.
  * @return 0 if ok, !=0 on error
  * @param d pointer to a directory data structure. This should be created
- * by calling @ref Directory_new().
+ * by calling @ref GWEN_Directory_new().
  */
 GWENHYFWAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
 

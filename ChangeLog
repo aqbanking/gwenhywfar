@@ -8,6 +8,7 @@ $Id$
   a signature
 - removed some of Christian's FIXMEs in README, since he got it all
   perfectly right ;-)
+- added Doxyfile.in, started working on API documentation
 
 
 2003/11/22 Martin Preuss <martin@libchipcard.de>

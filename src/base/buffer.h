@@ -51,7 +51,7 @@ typedef struct GWEN_BUFFER GWEN_BUFFER;
 /**
  * @param buffer if !=0, then the given buffer will be used. Otherwise
  * a new buffer will be allocated (with <i>size</i> bytes)
- * @param size real size of the buffer (if @<i>buffer</i> is null, then
+ * @param size real size of the buffer (if <i>buffer</i> is null, then
  * this number of bytes will be allocated)
  * @param used number of bytes of the buffer actually used. This is
  * interesting when reading from a buffer

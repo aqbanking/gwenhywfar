@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file chameleon/socket.h
+ * @file gwenhywfar/inetsocket.h
  * @short This file contains sockets and socket sets.
  */
 
@@ -79,7 +79,7 @@ GWENHYFWAR_API typedef struct GWEN_SOCKETSETSTRUCT GWEN_SOCKETSET;
  * @defgroup socketset Socket Set Functions
  *
  * These functions operate on socket sets. A socket set is used by the socket
- * function @ref Socket_Select() to check on which socket changes in state
+ * function @ref GWEN_Socket_Select() to check on which socket changes in state
  * occurred.
  * @{
  */
@@ -89,7 +89,7 @@ GWENHYFWAR_API typedef struct GWEN_SOCKETSETSTRUCT GWEN_SOCKETSET;
  *
  * These functions initialize and de-initialize socket sets.
  * A socket set is a group of sockets. They are used for the function
- * @ref Socket_Select.
+ * @ref GWEN_Socket_Select.
  */
 /*@{*/
 GWENHYFWAR_API GWEN_SOCKETSET *GWEN_SocketSet_new();
@@ -169,7 +169,7 @@ GWENHYFWAR_API
 
 /**
  * This accepts a new connection on the given socket. This socket must be
- * listening (achieved by calling @ref GWEN_Socket_Listen).
+ * listening (achieved by calling @ref GWEN_GWEN_Socket_Listen).
  * @param sp socket which is listening
  * @param addr pointer to a pointer to an address. Upon return this pointer
  * will point to a newly allocated address containing the address of the
@@ -217,14 +217,14 @@ GWENHYFWAR_API
 
 /**
  * Wait until the given socket becomes readable or a timeout occurrs.
- * @param timout please see @ref Socket_Select for details
+ * @param timout please see @ref GWEN_Socket_Select for details
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout);
 
 /**
  * Wait until the given socket becomes writeable or a timeout occurrs.
- * @param timout please see @ref Socket_Select for details
+ * @param timout please see @ref GWEN_Socket_Select for details
  */
 GWENHYFWAR_API
   GWEN_ERRORCODE GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout);
