@@ -98,6 +98,7 @@ void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx){
       GWEN_WaitCallback_free(ctx->instantiatedFrom);
       GWEN_WaitCallback_List_free(ctx->registeredCallbacks);
       free(ctx->id);
+      free(ctx->enteredFromFile);
       GWEN_LIST_FINI(GWEN_WAITCALLBACK, ctx);
       GWEN_FREE_OBJECT(ctx);
     }

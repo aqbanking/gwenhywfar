@@ -66,6 +66,7 @@ void GWEN_NetTransport_free(GWEN_NETTRANSPORT *tr){
 
       GWEN_NetTransport_List_free(tr->incomingConnections);
       GWEN_InetAddr_free(tr->peerAddr);
+      GWEN_InetAddr_free(tr->localAddr);
 
       GWEN_LIST_FINI(GWEN_NETTRANSPORT, tr);
       free(tr);

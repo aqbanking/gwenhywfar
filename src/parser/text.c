@@ -1313,7 +1313,7 @@ void GWEN_Text_LogString(const char *s, unsigned l,
                          GWEN_LOGGER_LEVEL lv){
   GWEN_BUFFER *mbuf;
 
-  mbuf=GWEN_Buffer_new(0, l*10, 0, 1);
+  mbuf=GWEN_Buffer_new(0, ((l*16)<1024)?1024:l*16, 0, 1);
   GWEN_Text_DumpString2Buffer(s, l, mbuf, 0);
   GWEN_Logger_Log(logDomain, lv, GWEN_Buffer_GetStart(mbuf));
   GWEN_Buffer_free(mbuf);

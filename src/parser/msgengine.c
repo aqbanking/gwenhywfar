@@ -2720,7 +2720,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 		      msgbuf,
 		      node,
 		      vbuf,
-		      '\\',
+		      e->escapeChar,
 		      delimiters);
   }
   if (rv==-1) {

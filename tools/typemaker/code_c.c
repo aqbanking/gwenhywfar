@@ -916,7 +916,7 @@ int write_code_setget_c(ARGUMENTS *args,
         doCopy=atoi(get_property(n, "copy", "1"));
         mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
 
-        if (isPtr && strcasecmp(mode, "single")==0) {
+        if (isPtr && (strcasecmp(mode, "single")==0 || isConst)) {
           GWEN_BufferedIO_Write(bio, "const ");
         }
         GWEN_BufferedIO_Write(bio, typ);

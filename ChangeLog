@@ -1,4 +1,29 @@
 
+2005/01/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- valgrind session, fixed memory leaks in:
+  - GWEN_NetTransport_free()
+  - GWEN_WaitCallback_free()
+
+
+
+2005/01/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a minor bug in typemaker tool (was not honouring "const" property
+  for lists)
+
+
+===========================================================================
+MARK: released gwenhywfar-1.4.1 (2005/01/12)
+===========================================================================
+
+
+2005/01/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in msgengine.c: Was using hardcoded escape character in call to
+  typeRead function
+
+
 2005/01/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - lightened up SSL connection code: Now all errors will be presented to the
