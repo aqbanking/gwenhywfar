@@ -49,7 +49,7 @@ struct GWEN_PLUGIN_DESCRIPTION {
 GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node);
 
 GWEN_PLUGIN_DESCRIPTION*
-GWEN_PluginDescription_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd);
+GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd);
 
 
 #endif /* GWENHYWFAR_PLUGINDESCR_P_H */
