@@ -37,46 +37,6 @@
 
 
 
-void GWEN_HBCIDialog_SetPrepareCtxFn(GWEN_HBCIDIALOG *hdlg,
-                                     GWEN_HBCIDLG_PREPARECTX_FN fn){
-  assert(hdlg);
-  hdlg->prepareCtxFn=fn;
-}
-
-
-
-void GWEN_HBCIDialog_SetSignFn(GWEN_HBCIDIALOG *hdlg,
-                               GWEN_HBCIDLG_SIGN_FN fn){
-  assert(hdlg);
-  hdlg->signFn=fn;
-}
-
-
-
-void GWEN_HBCIDialog_SetVerifyFn(GWEN_HBCIDIALOG *hdlg,
-                                 GWEN_HBCIDLG_VERIFY_FN fn){
-  assert(hdlg);
-  hdlg->verifyFn=fn;
-}
-
-
-
-void GWEN_HBCIDialog_SetEncryptFn(GWEN_HBCIDIALOG *hdlg,
-                                  GWEN_HBCIDLG_ENCRYPT_FN fn){
-  assert(hdlg);
-  hdlg->encryptFn=fn;
-}
-
-
-
-void GWEN_HBCIDialog_SetDecrpytFn(GWEN_HBCIDIALOG *hdlg,
-                                  GWEN_HBCIDLG_DECRYPT_FN fn){
-  assert(hdlg);
-  hdlg->decryptFn=fn;
-}
-
-
-
 void GWEN_HBCIDialog_SetFreeDataFn(GWEN_HBCIDIALOG *hdlg,
                                    GWEN_HBCIDLG_FREEDATA_FN fn){
   assert(hdlg);
@@ -174,68 +134,16 @@ void GWEN_HBCIDialog_SetNextMsgNum(GWEN_HBCIDIALOG *hdlg,
 
 
 
-
-
-int GWEN_HBCIDialog_PrepareContext(GWEN_HBCIDIALOG *hdlg,
-                                   GWEN_HBCICRYPTOCONTEXT *ctx,
-                                   int crypt){
-  assert(hdlg);
-  assert(hdlg->prepareCtxFn);
-  return hdlg->prepareCtxFn(hdlg, ctx, crypt);
-}
-
-
-
-int GWEN_HBCIDialog_Sign(GWEN_HBCIDIALOG *hdlg,
-                         GWEN_BUFFER *msgbuf,
-                         GWEN_BUFFER *signbuf,
-                         GWEN_HBCICRYPTOCONTEXT *ctx){
-  assert(hdlg);
-  assert(hdlg->signFn);
-  return hdlg->signFn(hdlg, msgbuf, signbuf, ctx);
-}
-
-
-
-int GWEN_HBCIDialog_Verify(GWEN_HBCIDIALOG *hdlg,
-                           GWEN_BUFFER *msgbuf,
-                           GWEN_BUFFER *signbuf,
-                           GWEN_HBCICRYPTOCONTEXT *ctx){
-  assert(hdlg);
-  assert(hdlg->verifyFn);
-  return hdlg->verifyFn(hdlg, msgbuf, signbuf, ctx);
-}
-
-
-
-int GWEN_HBCIDialog_Encrypt(GWEN_HBCIDIALOG *hdlg,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *cryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx){
-  assert(hdlg);
-  assert(hdlg->encryptFn);
-  return hdlg->encryptFn(hdlg, msgbuf, cryptbuf, ctx);
-}
-
-
-
-int GWEN_HBCIDialog_Decrypt(GWEN_HBCIDIALOG *hdlg,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *decryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx){
-  assert(hdlg);
-  assert(hdlg->decryptFn);
-  return hdlg->decryptFn(hdlg, msgbuf, decryptbuf, ctx);
-}
-
-
-
-GWEN_HBCIDIALOG *GWEN_HBCIDialog_new(GWEN_MSGENGINE *e){
+GWEN_HBCIDIALOG *GWEN_HBCIDialog_new(GWEN_MSGENGINE *e,
+                                     GWEN_SECCTX_MANAGER *scm){
   GWEN_HBCIDIALOG *hdlg;
 
+  assert(e);
+  assert(scm);
   GWEN_NEW_OBJECT(GWEN_HBCIDIALOG, hdlg);
   hdlg->usage=1;
   hdlg->msgEngine=e;
+  hdlg->securityManager=scm;
 
   GWEN_HBCIDialog_Reset(hdlg);
   return hdlg;
@@ -250,144 +158,6 @@ void GWEN_HBCIDialog_free(GWEN_HBCIDIALOG *hdlg){
     free(hdlg->dialogId);
     free(hdlg);
   }
-}
-
-
-
-
-/*
- * This code has been taken from OpenHBCI (rsakey.cpp, written by Fabian
- * Kaiser)
- */
-unsigned char GWEN_HBCIDialog_permutate(unsigned char input) {
-  unsigned char leftNibble;
-  unsigned char rightNibble;
-  static const unsigned char lookUp[2][16] =
-    {{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},
-    {14,3,5,8,9,4,2,15,0,13,11,6,7,10,12,1}};
-
-  rightNibble = input & 15;
-  leftNibble = input & 240;
-  leftNibble = leftNibble / 16;
-  rightNibble = lookUp[1][rightNibble];
-  leftNibble = lookUp[1][leftNibble];
-  leftNibble = leftNibble * 16;
-
-  return leftNibble + rightNibble;
-}
-
-
-
-/*
- * The original code (in C++) has been written by Fabian Kaiser for OpenHBCI
- * (file rsakey.cpp). Moved to C by me (Martin Preuss)
- */
-int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src) {
-  char *p;
-  unsigned int l;
-  unsigned int i;
-  unsigned char buffer[GWEN_HBCIDIALOG_KEYSIZE];
-  unsigned char hash[20];
-  unsigned char c;
-
-  p=GWEN_Buffer_GetStart(src);
-  l=GWEN_Buffer_GetUsedBytes(src);
-  memmove(hash, p, l);
-
-  /* src+src+src */
-  if (GWEN_Buffer_AppendBytes(src, hash, l)) {
-    DBG_INFO(0, "here");
-    return -1;
-  }
-
-  if (GWEN_Buffer_AppendBytes(src, hash, l)) {
-    DBG_INFO(0, "here");
-    return -1;
-  }
-
-  /* src=src(20,40) */
-  if (GWEN_Buffer_Crop(src, 20, 40)) {
-    DBG_INFO(0, "here");
-    return -1;
-  }
-
-  memset(buffer, 0, sizeof(buffer));
-
-  /* append redundancy */
-  p=GWEN_Buffer_GetStart(src);
-  for (i=0; i<=47; i++) {
-    int j1, j2, j3;
-
-    j1=1 + sizeof(buffer) - (2*i);
-    j2=40-i;
-    j3=sizeof(buffer) - (2*i);
-
-    if (j1>=0 && j1<(int)sizeof(buffer) && j2>=0) {
-      buffer[j1]=p[j2];
-    }
-    if (j3>=0 && j3<(int)sizeof(buffer) && j2>=0) {
-      buffer[j3]=GWEN_HBCIDialog_permutate(p[j2]);
-    }
-  } /* for */
-
-  /* copy last 16 bytes to the beginning */
-  memmove(buffer, buffer+(sizeof(buffer)-16), 16);
-
-  p=buffer;
-  /* finish */
-  c=p[sizeof(buffer)-1];
-  c = (c & 15) * 16;
-  c += 6;
-  p[sizeof(buffer)-1]=c;
-  p[0] = p[0] & 127;
-  p[0] = p[0] | 64;
-  p[sizeof(buffer) - 40] = p[sizeof(buffer) - 40] ^ 1;
-
-  GWEN_Buffer_Reset(src);
-  if (GWEN_Buffer_AppendBytes(src, buffer, sizeof(buffer))) {
-    DBG_INFO(0, "here");
-    return -1;
-  }
-
-  return 0;
-}
-
-
-
-
-int GWEN_HBCIDialog_PaddWithANSIX9_23(GWEN_BUFFER *src) {
-  unsigned char paddLength;
-  unsigned int i;
-
-  paddLength=8-(GWEN_Buffer_GetUsedBytes(src) % 8);
-  for (i=0; i<paddLength; i++)
-    GWEN_Buffer_AppendByte(src, paddLength);
-  return 0;
-}
-
-
-
-int GWEN_HBCIDialog_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
-  const char *p;
-  unsigned int lastpos;
-  unsigned char paddLength;
-
-  lastpos=GWEN_Buffer_GetUsedBytes(src);
-  if (lastpos<8) {
-    DBG_ERROR(0, "Buffer too small");
-    return -1;
-  }
-  lastpos--;
-
-  p=GWEN_Buffer_GetStart(src)+lastpos;
-  paddLength=*p;
-  if (paddLength<1 || paddLength>8) {
-    DBG_ERROR(0, "Invalid padding (%d bytes ?)", paddLength);
-    return -1;
-  }
-  GWEN_Buffer_SetUsedBytes(src, GWEN_Buffer_GetUsedBytes(src)-paddLength);
-  GWEN_Buffer_SetPos(src, lastpos-paddLength);
-  return 0;
 }
 
 
@@ -450,6 +220,14 @@ void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg){
   free(hdlg->dialogId);
   hdlg->dialogId=strdup("0");
   hdlg->nextMsgNum=1;
+}
+
+
+
+GWEN_SECCTX_MANAGER*
+GWEN_HBCIDialog_GetSecurityManager(GWEN_HBCIDIALOG *hdlg){
+  assert(hdlg);
+  return hdlg->securityManager;
 }
 
 

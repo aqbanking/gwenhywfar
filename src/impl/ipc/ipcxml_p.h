@@ -30,13 +30,11 @@
 #define GWENHYWFAR_IPCXML_P_H
 
 #include <gwenhyfwar/ipcxml.h>
-#include <gwenhyfwar/servicelayer.h>
-
+#include <gwenhyfwar/db.h>
 
 
 struct GWEN_IPCXMLREQUEST {
   GWEN_IPCXMLREQUEST *next;
-
   unsigned int id;
   unsigned int msgLayerId;
   unsigned int dialogId;
@@ -48,11 +46,22 @@ struct GWEN_IPCXMLREQUEST {
 
 struct GWEN_IPCXMLSERVICE {
   GWEN_SERVICELAYER *serviceLayer;
+  GWEN_SECCTX_MANAGER *securityManager;
+  GWEN_MSGENGINE *msgEngine;
 
   GWEN_IPCXMLREQUEST *outgoingRequests;
   GWEN_IPCXMLREQUEST *incomingRequests;
 
 };
+
+
+
+GWEN_IPCCONNLAYER *GWEN_IPCXMLService_CreateCL(GWEN_IPCXMLSERVICE *xs,
+                                               GWEN_IPCXMLSERVICE_TYPE st,
+                                               unsigned int userMark,
+                                               const char *addr,
+                                               unsigned int port,
+                                               unsigned int flags);
 
 
 

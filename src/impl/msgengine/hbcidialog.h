@@ -31,9 +31,8 @@
 #define GWEN_HBCIDIALOG_FLAGS_INITIATOR 0x0001
 
 
-#include <gwenhyfwar/hbcicryptocontext.h>
-#include <gwenhyfwar/buffer.h>
 #include <gwenhyfwar/msgengine.h>
+#include <gwenhyfwar/seccontext.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,35 +42,6 @@ extern "C" {
 typedef struct GWEN_HBCIDIALOG GWEN_HBCIDIALOG;
 
 
-typedef int
-  (*GWEN_HBCIDLG_PREPARECTX_FN)(GWEN_HBCIDIALOG *hdlg,
-                                GWEN_HBCICRYPTOCONTEXT *ctx,
-                                int crypt);
-
-typedef int
-  (*GWEN_HBCIDLG_SIGN_FN)(GWEN_HBCIDIALOG *hdlg,
-                          GWEN_BUFFER *msgbuf,
-                          GWEN_BUFFER *signbuf,
-                          GWEN_HBCICRYPTOCONTEXT *ctx);
-
-typedef int
-  (*GWEN_HBCIDLG_VERIFY_FN)(GWEN_HBCIDIALOG *hdlg,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *signbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx);
-
-typedef int
-  (*GWEN_HBCIDLG_ENCRYPT_FN)(GWEN_HBCIDIALOG *hdlg,
-                             GWEN_BUFFER *msgbuf,
-                             GWEN_BUFFER *cryptbuf,
-                             GWEN_HBCICRYPTOCONTEXT *ctx);
-
-typedef int
-  (*GWEN_HBCIDLG_DECRYPT_FN)(GWEN_HBCIDIALOG *hdlg,
-                             GWEN_BUFFER *msgbuf,
-                             GWEN_BUFFER *decryptbuf,
-                             GWEN_HBCICRYPTOCONTEXT *ctx);
-
 typedef void
   (*GWEN_HBCIDLG_FREEDATA_FN)(GWEN_HBCIDIALOG *hdlg);
 
@@ -80,23 +50,12 @@ typedef void
 
 
 
-void GWEN_HBCIDialog_SetPrepareCtxFn(GWEN_HBCIDIALOG *hdlg,
-                                  GWEN_HBCIDLG_PREPARECTX_FN fn);
-void GWEN_HBCIDialog_SetSignFn(GWEN_HBCIDIALOG *hdlg,
-                            GWEN_HBCIDLG_SIGN_FN signFn);
-void GWEN_HBCIDialog_SetVerifyFn(GWEN_HBCIDIALOG *hdlg,
-                              GWEN_HBCIDLG_VERIFY_FN verifyFn);
-void GWEN_HBCIDialog_SetEncryptFn(GWEN_HBCIDIALOG *hdlg,
-                               GWEN_HBCIDLG_ENCRYPT_FN encryptFn);
-void GWEN_HBCIDialog_SetDecrpytFn(GWEN_HBCIDIALOG *hdlg,
-                               GWEN_HBCIDLG_DECRYPT_FN decryptFn);
 void GWEN_HBCIDialog_SetFreeDataFn(GWEN_HBCIDIALOG *hdlg,
                                    GWEN_HBCIDLG_FREEDATA_FN fn);
 void GWEN_HBCIDialog_SetResetFn(GWEN_HBCIDIALOG *hdlg,
                                 GWEN_HBCIDLG_RESET_FN fn);
 void GWEN_HBCIDialog_SetInheritorData(GWEN_HBCIDIALOG *hdlg,
                                       void *data);
-
 void *GWEN_HBCIDialog_GetInheritorData(GWEN_HBCIDIALOG *hdlg);
 
 GWEN_MSGENGINE *GWEN_HBCIDialog_GetMsgEngine(GWEN_HBCIDIALOG *hdlg);
@@ -120,58 +79,19 @@ void GWEN_HBCIDialog_SetOwner(GWEN_HBCIDIALOG *hdlg,
                               const char *s);
 
 
-
-int GWEN_HBCIDialog_PrepareContext(GWEN_HBCIDIALOG *hdlg,
-                                   GWEN_HBCICRYPTOCONTEXT *ctx,
-                                   int crypt);
-
-
-int GWEN_HBCIDialog_Sign(GWEN_HBCIDIALOG *hdlg,
-                         GWEN_BUFFER *msgbuf,
-                         GWEN_BUFFER *signbuf,
-                         GWEN_HBCICRYPTOCONTEXT *ctx);
-
-int GWEN_HBCIDialog_Verify(GWEN_HBCIDIALOG *hdlg,
-                           GWEN_BUFFER *msgbuf,
-                           GWEN_BUFFER *signbuf,
-                           GWEN_HBCICRYPTOCONTEXT *ctx);
-
-int GWEN_HBCIDialog_Encrypt(GWEN_HBCIDIALOG *hdlg,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *cryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx);
-
-int GWEN_HBCIDialog_Decrypt(GWEN_HBCIDIALOG *hdlg,
-                            GWEN_BUFFER *msgbuf,
-                            GWEN_BUFFER *decryptbuf,
-                            GWEN_HBCICRYPTOCONTEXT *ctx);
-
 void GWEN_HBCIDialog_Reset(GWEN_HBCIDIALOG *hdlg);
 
 
-GWEN_HBCIDIALOG *GWEN_HBCIDialog_new(GWEN_MSGENGINE *e);
+GWEN_HBCIDIALOG *GWEN_HBCIDialog_new(GWEN_MSGENGINE *e,
+                                     GWEN_SECCTX_MANAGER *scm);
 void GWEN_HBCIDialog_free(GWEN_HBCIDIALOG *hdlg);
 
 unsigned int GWEN_HBCIDialog_GetFlags(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIDialog_SetFlags(GWEN_HBCIDIALOG *hdlg,
                               unsigned int f);
 
-
-/**
- * The original code (in C++) has been written by Fabian Kaiser for OpenHBCI
- * (file rsakey.cpp). Moved to C by me (Martin Preuss)
- */
-int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src);
-
-
-/** @name Padding for DES
- * These functions are used for padding when encrypting/decrypting data
- * using 2-key-triple-DES.
- */
-/*@{*/
-int GWEN_HBCIDialog_PaddWithANSIX9_23(GWEN_BUFFER *src);
-int GWEN_HBCIDialog_UnpaddWithANSIX9_23(GWEN_BUFFER *src);
-/*@}*/
+GWEN_SECCTX_MANAGER*
+  GWEN_HBCIDialog_GetSecurityManager(GWEN_HBCIDIALOG *hdlg);
 
 
 void GWEN_HBCIDialog_Attach(GWEN_HBCIDIALOG *hdlg);

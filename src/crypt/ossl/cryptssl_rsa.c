@@ -56,8 +56,8 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *dst){
   unsigned int srclen;
   unsigned int dstlen;
-  char *psrc;
-  char *pdst;
+  unsigned char *psrc;
+  unsigned char *pdst;
 
   assert(key);
   assert(src);
@@ -76,8 +76,8 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BUFFER_FULL);
   }
-  psrc=GWEN_Buffer_GetStart(src);
-  pdst=GWEN_Buffer_GetPosPointer(dst);
+  psrc=(unsigned char*)GWEN_Buffer_GetStart(src);
+  pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
 
   dstlen=RSA_public_encrypt(srclen, psrc, pdst,
                             GWEN_CryptKey_GetKeyData(key),
@@ -100,8 +100,8 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *dst){
   unsigned int srclen;
   unsigned int dstlen;
-  char *psrc;
-  char *pdst;
+  unsigned char *psrc;
+  unsigned char *pdst;
 
   assert(key);
   assert(src);
@@ -120,8 +120,8 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Decrypt(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BUFFER_FULL);
   }
-  psrc=GWEN_Buffer_GetStart(src);
-  pdst=GWEN_Buffer_GetPosPointer(dst);
+  psrc=(unsigned char*)GWEN_Buffer_GetStart(src);
+  pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
 
   dstlen=RSA_private_decrypt(srclen, psrc, pdst,
                              GWEN_CryptKey_GetKeyData(key),
@@ -165,7 +165,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
-  psrc=GWEN_Buffer_GetStart(src);
+  psrc=(unsigned char*)GWEN_Buffer_GetStart(src);
 
   bnhash = BN_new();
   bnresult2 = BN_new();
@@ -236,7 +236,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BUFFER_FULL);
   }
-  pdst=GWEN_Buffer_GetPosPointer(dst);
+  pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
 
   bnresult = BN_new();
 
@@ -280,16 +280,16 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(GWEN_CRYPTKEY *key,
   assert(kd);
 
   srclen=GWEN_Buffer_GetUsedBytes(src);
-  psrc=GWEN_Buffer_GetStart(src);
+  psrc=(unsigned char*)GWEN_Buffer_GetStart(src);
   siglen=GWEN_Buffer_GetUsedBytes(signature);
-  psig=GWEN_Buffer_GetStart(signature);
+  psig=(unsigned char*)GWEN_Buffer_GetStart(signature);
 
   bnsig=BN_new();
   bndecsig=BN_new();
   bnhash=BN_new();
   bnctx=BN_CTX_new();
 
-  // decrypt the institutes signature
+  /* decrypt the institutes signature */
   bnsig = BN_bin2bn(psig, siglen, bnsig);
   BN_CTX_start(bnctx);
   BN_mod_exp(bndecsig, bnsig, kd->e, kd->n, bnctx);

@@ -29,7 +29,17 @@
 #ifndef GWENHYFWAR_IPCXMLMSGLAYER_H
 #define GWENHYFWAR_IPCXMLMSGLAYER_H
 
+#include <gwenhyfwar/msgengine.h>
+#include <gwenhyfwar/msglayer.h>
+#include <gwenhyfwar/connlayer.h>
+
+
 typedef struct GWEN_IPCXMLMSGLAYERDATA GWEN_IPCXMLMSGLAYERDATA;
+
+
+GWEN_IPCMSGLAYER *GWEN_IPCXMLMsgLayer_new(GWEN_MSGENGINE *msgEngine,
+                                          GWEN_IPCTRANSPORTLAYER *tl,
+                                          GWEN_IPCMSGLAYER_STATE st);
 
 
 #endif

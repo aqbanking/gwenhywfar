@@ -50,9 +50,6 @@ struct GWEN_IPCXMLMSGLAYERDATA {
 GWEN_IPCXMLMSGLAYERDATA *GWEN_IPCXMLMsgLayerData_new(GWEN_MSGENGINE *msgEngine);
 void GWEN_IPCXMLMsgLayerData_free(GWEN_IPCXMLMSGLAYERDATA *mcd);
 
-GWEN_IPCMSGLAYER *GWEN_IPCXMLMsgLayer_new(GWEN_MSGENGINE *msgEngine,
-                                          GWEN_IPCTRANSPORTLAYER *tl,
-                                          GWEN_IPCMSGLAYER_STATE st);
 void GWEN_IPCXMLMsgLayer_free(GWEN_IPCMSGLAYER *ml);
 GWEN_ERRORCODE GWEN_IPCXMLMsgLayer_Work(GWEN_IPCMSGLAYER *ml,
                                         int rd);

@@ -128,8 +128,8 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Crypt(GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_BUFFER_FULL);
   }
-  psrc=GWEN_Buffer_GetStart(src);
-  pdst=GWEN_Buffer_GetPosPointer(dst);
+  psrc=(unsigned char*)GWEN_Buffer_GetStart(src);
+  pdst=(unsigned char*)GWEN_Buffer_GetPosPointer(dst);
 
   memmove(left, kd, 8);
   memmove(right, kd+8, 8);

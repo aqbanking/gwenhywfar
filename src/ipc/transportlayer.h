@@ -86,12 +86,12 @@ GWENHYFWAR_API GWEN_SOCKET*
 GWENHYFWAR_API GWEN_ERRORCODE
   GWEN_IPCTransportLayer_Read(GWEN_IPCTRANSPORTLAYER *tl,
 			      char *buffer,
-			      int *bsize);
+                              unsigned int *bsize);
 
 GWENHYFWAR_API GWEN_ERRORCODE
   GWEN_IPCTransportLayer_Write(GWEN_IPCTRANSPORTLAYER *tl,
 			       const char *buffer,
-			       int *bsize);
+                               unsigned int *bsize);
 
 GWENHYFWAR_API GWEN_ERRORCODE
   GWEN_IPCTransportLayer_Flush(GWEN_IPCTRANSPORTLAYER *tl);

@@ -37,6 +37,8 @@
 #include <gwenhyfwar/keymanager.h>
 #include <gwenhyfwar/hbcimsg.h>
 
+#include <gwenhyfwar/ipcxml.h>
+
 
 typedef struct GWEN_IPCXMLCONNLAYERDATA GWEN_IPCXMLCONNLAYERDATA;
 
@@ -57,7 +59,7 @@ void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd);
 
 
 GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
-                                            GWEN_KEYMANAGER *keyManager,
+                                            GWEN_SECCTX_MANAGER *scm,
                                             GWEN_IPCMSGLAYER *ml,
                                             int active);
 
@@ -69,7 +71,6 @@ GWEN_CRYPTKEY *GWEN_IPCXMLConnLayer_GetLocalKey(GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLConnLayer_SetLocalKey(GWEN_IPCCONNLAYER *cl,
                                       GWEN_CRYPTKEY *k);
 
-GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl);
 
 
 
@@ -80,6 +81,10 @@ GWEN_ERRORCODE
 
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl);
 
+GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
+                                                    GWEN_XMLNODE *node,
+                                                    GWEN_DB_NODE *db,
+                                                    int flush);
 
 
 #endif /* GWEN_IPCXMLCONNLAYER_H */

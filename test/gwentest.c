@@ -14,7 +14,7 @@
 #include <gwenhyfwar/text.h>
 #include <gwenhyfwar/hbcidialog.h>
 #include <gwenhyfwar/hbcimsg.h>
-#include <gwenhyfwar/ipcxmldialog.h>
+#include <gwenhyfwar/ipcxmlsecctx.h>
 #include <gwenhyfwar/ipcxmlkeymanager.h>
 
 
@@ -377,7 +377,9 @@ int testDialog(int argc, char **argv) {
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
   GWEN_HBCIMSG *hmsg;
-  GWEN_KEYMANAGER *km;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_SECCTX *sc;
+  unsigned int requestId;
 
   if (argc<3) {
     fprintf(stderr, "Path of XML file needed.\n");
@@ -396,17 +398,15 @@ int testDialog(int argc, char **argv) {
   GWEN_MsgEngine_SetProtocolVersion(e, 1);
   GWEN_MsgEngine_SetMode(e, "RDH");
 
-  km=GWEN_IPCXMLKeyManager_new();
+  scm=GWEN_SecContextMgr_new("TestService-1");
 
-  dlg=GWEN_IPCXMLDialog_new(e, km);
-  GWEN_HBCIDialog_SetFlags(dlg, GWEN_HBCIDIALOG_FLAGS_INITIATOR);
   key=GWEN_CryptKey_Factory("RSA");
   if (!key) {
     fprintf(stderr, "Error creating key.\n");
     return 1;
   }
 
-  GWEN_CryptKey_SetOwner(key, "Martin");
+  GWEN_CryptKey_SetOwner(key, "martin");
   GWEN_CryptKey_SetKeyName(key, "B");
 
   fprintf(stderr, "Generating key.\n");
@@ -416,13 +416,19 @@ int testDialog(int argc, char **argv) {
     return 2;
   }
   fprintf(stderr, "Generating key done.\n");
-  if (GWEN_KeyManager_AddKey(km, key)) {
-    fprintf(stderr, "Could not add key\n");
+
+  sc=GWEN_IPCXMLSecCtx_new("martin");
+  GWEN_IPCXMLSecCtx_SetCryptKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetSignKey(sc, GWEN_CryptKey_dup(key));
+  GWEN_IPCXMLSecCtx_SetSignSeq(sc, 4554);
+  if (GWEN_SecContextMgr_AddContext(scm, sc)) {
+    fprintf(stderr, "Could not add context.\n");
     return 2;
   }
-  GWEN_IPCXMLDialog_SetLocalKey(dlg, GWEN_CryptKey_dup(key));
-  //GWEN_IPCXMLDialog_SetRemoteKey(dlg, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLDialog_SetServiceCode(dlg, "Test-Service");
+  fprintf(stderr, "Context added.\n");
+
+  dlg=GWEN_HBCIDialog_new(e, scm);
+  GWEN_HBCIDialog_SetFlags(dlg, GWEN_HBCIDIALOG_FLAGS_INITIATOR);
 
   hmsg=GWEN_HBCIMsg_new(dlg);
   GWEN_HBCIMsg_SetMsgNumber(hmsg, 1);
@@ -446,7 +452,10 @@ int testDialog(int argc, char **argv) {
   GWEN_HBCIMsg_SetCrypter(hmsg,
                           GWEN_CryptKey_GetKeySpec(key));
 
-  if (GWEN_HBCIMsg_AddNode(hmsg, sn, da)) {
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
+  requestId=GWEN_HBCIMsg_AddNode(hmsg, sn, da);
+  if (requestId==0) {
     fprintf(stderr, "Could not add node.\n");
     return 2;
   }
@@ -463,8 +472,6 @@ int testDialog(int argc, char **argv) {
   fprintf(stderr, "Buffer is: \n");
   GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
 
-  GWEN_IPCXMLDialog_SetRemoteKey(dlg, 0);
-
   GWEN_HBCIDialog_SetFlags(dlg, 0);
   fprintf(stderr, "Decoding message\n");
   if (GWEN_HBCIMsg_DecodeMsg(hmsg,
@@ -473,7 +480,7 @@ int testDialog(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "Decoding message: done\n");
-  //GWEN_DB_Dump(da, stderr, 2);
+  /* GWEN_DB_Dump(da, stderr, 2); */
 
   GWEN_MsgEngine_free(e);
   GWEN_DB_Group_free(da);

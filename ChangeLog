@@ -1,8 +1,15 @@
 $Id$
 
+2003/11/21 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed some compiler warnings
+- more work on IPC
+
+
 2003-11-19  Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Add compilation debug argument macro.
+
 
 2003/11/18 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

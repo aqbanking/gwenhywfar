@@ -43,7 +43,7 @@ typedef void (*GWEN_MD_FREEDATA_FN)(GWEN_MD *md);
 
 GWEN_MD *GWEN_MD_Factory(const char *t);
 void GWEN_MD_free(GWEN_MD *md);
-char *GWEN_MD_GetDigestPtr(GWEN_MD *md);
+unsigned char *GWEN_MD_GetDigestPtr(GWEN_MD *md);
 unsigned int GWEN_MD_GetDigestSize(GWEN_MD *md);
 
 int GWEN_MD_Begin(GWEN_MD *md);

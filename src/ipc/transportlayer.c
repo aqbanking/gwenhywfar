@@ -186,7 +186,7 @@ GWEN_IPCTransportLayer_GetWriteSocket(GWEN_IPCTRANSPORTLAYER *tl){
 GWEN_ERRORCODE
 GWEN_IPCTransportLayer_Read(GWEN_IPCTRANSPORTLAYER *tl,
 			    char *buffer,
-			    int *bsize){
+                            unsigned int *bsize){
   assert(tl);
   assert(tl->read);
   return tl->read(tl, buffer, bsize);
@@ -198,7 +198,7 @@ GWEN_IPCTransportLayer_Read(GWEN_IPCTRANSPORTLAYER *tl,
 GWEN_ERRORCODE
 GWEN_IPCTransportLayer_Write(GWEN_IPCTRANSPORTLAYER *tl,
 			     const char *buffer,
-			     int *bsize){
+                             unsigned int *bsize){
   assert(tl);
   assert(tl->write);
   return tl->write(tl, buffer, bsize);

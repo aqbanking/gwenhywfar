@@ -34,7 +34,7 @@
 
 
 struct GWEN_MD {
-  char *pDigest;
+  unsigned char *pDigest;
   unsigned int lDigest;
   void *data;
 

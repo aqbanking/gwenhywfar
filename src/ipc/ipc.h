@@ -46,6 +46,9 @@ extern "C" {
 #define GWEN_IPC_ERROR_HANDSHAKING           9
 #define GWEN_IPC_ERROR_BAD_DATA              10
 #define GWEN_IPC_ERROR_INTERNAL              11
+#define GWEN_IPC_ERROR_UNKNOWN_MSG           12
+#define GWEN_IPC_ERROR_INVALID               13
+#define GWEN_IPC_ERROR_GENERIC               14
 
 
 #ifdef __cplusplus

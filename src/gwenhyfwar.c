@@ -83,7 +83,7 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_Crypt_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    //add here more modules
+    /* add here more modules */
 
   }
   gwen_is_initialized++;
@@ -104,7 +104,7 @@ GWEN_ERRORCODE GWEN_Fini() {
 
   gwen_is_initialized--;
   if (gwen_is_initialized==0) {
-    //add here more modules
+    /* add here more modules */
     if (!GWEN_Error_IsOk(GWEN_Crypt_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,

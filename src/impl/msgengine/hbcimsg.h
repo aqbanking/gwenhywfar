@@ -101,9 +101,12 @@ GWEN_HBCIMSG *GWEN_HBCIMsg_Next(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_Add(GWEN_HBCIMSG *hmsg, GWEN_HBCIMSG **head);
 void GWEN_HBCIMsg_Del(GWEN_HBCIMSG *hmsg, GWEN_HBCIMSG **head);
 
-int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
-                         GWEN_XMLNODE *node,
-                         GWEN_DB_NODE *data);
+/**
+ * @return number of the segment used by this node
+ */
+unsigned int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
+                                  GWEN_XMLNODE *node,
+                                  GWEN_DB_NODE *data);
 
 unsigned int GWEN_HBCIMsg_GetCurrentSegmentNumber(GWEN_HBCIMSG *hmsg);
 

@@ -56,12 +56,12 @@ GWENHYFWAR_API typedef
 GWENHYFWAR_API typedef
   GWEN_ERRORCODE (*GWEN_IPCTRANS_READPTR)(GWEN_IPCTRANSPORTLAYER *tl,
                                           char *buffer,
-                                          int *bsize);
+                                          unsigned int *bsize);
 
 GWENHYFWAR_API typedef
   GWEN_ERRORCODE (*GWEN_IPCTRANS_WRITEPTR)(GWEN_IPCTRANSPORTLAYER *tl,
                                            const char *buffer,
-                                           int *bsize);
+                                           unsigned int *bsize);
 
 GWENHYFWAR_API typedef
   GWEN_ERRORCODE (*GWEN_IPCTRANS_FLUSHPTR)(GWEN_IPCTRANSPORTLAYER *tl);

@@ -36,7 +36,8 @@
 #include <gwenhyfwar/ipc.h>
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/debug.h>
-#include <gwenhyfwar/ipcxmldialog.h>
+#include <gwenhyfwar/ipcxmlsecctx.h>
+#include <gwenhyfwar/ipcxml.h>
 
 
 
@@ -66,7 +67,7 @@ void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd){
 
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
-                                            GWEN_KEYMANAGER *keyManager,
+                                            GWEN_SECCTX_MANAGER *scm,
                                             GWEN_IPCMSGLAYER *ml,
                                             int active){
   GWEN_IPCCONNLAYER *cl;
@@ -75,8 +76,8 @@ GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
   cl=GWEN_ConnectionLayer_new(ml);
   ccd=GWEN_IPCXMLConnLayerData_new();
   ccd->msgEngine=msgEngine;
-  ccd->keyManager=keyManager;
-  ccd->dialog=GWEN_IPCXMLDialog_new(msgEngine, keyManager);
+  ccd->securityManager=scm;
+  ccd->dialog=GWEN_HBCIDialog_new(msgEngine, scm);
   if (active)
     GWEN_HBCIDialog_SetFlags(ccd->dialog, GWEN_HBCIDIALOG_FLAGS_INITIATOR);
 
@@ -193,7 +194,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Accept(GWEN_IPCCONNLAYER *cl,
   assert(ccd);
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
 
-  newcl=GWEN_IPCXMLConnLayer_new(ccd->msgEngine, ccd->keyManager, ml, 0);
+  newcl=GWEN_IPCXMLConnLayer_new(ccd->msgEngine, ccd->securityManager, ml, 0);
   DBG_INFO(0, "Created new GWEN_IPCCONNLAYER for incoming connection");
   newccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(newcl);
   assert(newccd);
@@ -332,7 +333,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Work(GWEN_IPCCONNLAYER *cl, int rd){
       if (GWEN_Error_GetType(err)!=
           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
           GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_IN_PROGRESS) {
-        // real error, so return that error
+        /* real error, so return that error */
         DBG_INFO(0, "called from here");
         return err;
       }
@@ -508,7 +509,98 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl) {
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
+						    GWEN_XMLNODE *node,
+						    GWEN_DB_NODE *db,
+						    int flush) {
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+  GWEN_ERRORCODE err;
+  GWEN_IPCXMLREQUEST *rq;
+  unsigned int segnum;
 
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  /* check whether we have an open connection */
+  if (!ccd->connected) {
+    GWEN_IPCMSGLAYER *ml;
+
+    ml=GWEN_ConnectionLayer_GetMsgLayer(cl);
+    assert(ml);
+    if (GWEN_MsgLayer_GetState(ml)==GWEN_IPCMsglayerStateUnconnected) {
+      /* msglayer is unconnected, shall we try to auto-connect ? */
+      if (!(GWEN_ConnectionLayer_GetFlags(cl) &
+	    GWEN_IPCCONNLAYER_FLAGS_PASSIVE)){
+	/* active connection, so try it */
+	DBG_NOTICE(0, "Attempting auto-connect to server");
+	err=GWEN_ConnectionLayer_Open(cl);
+	if (!GWEN_Error_IsOk(err)) {
+	  DBG_INFO_ERR(0, err);
+	  return 0;
+	}
+	/* open succeeded, auto-connect now in progress */
+	DBG_INFO(0, "Auto-connect now in progress");
+      } /* if !passive */
+      else {
+	/* passive connection, we can not auto-connect */
+	DBG_ERROR(0, "Connection not open");
+	return 0;
+      }
+    } /* if unconnected */
+    else {
+      /* some other status... */
+      if (GWEN_MsgLayer_GetState(ml)==GWEN_IPCMsglayerStateConnecting) {
+	DBG_INFO(0, "Auto-connect already in progress");
+      }
+      else {
+	/* bad status */
+	DBG_ERROR(0,
+		  "Status of MsgLayer does not allow sending (%s)",
+		  GWEN_MsgLayer_GetStateString(GWEN_MsgLayer_GetState(ml)));
+	return 0;
+      }
+    }
+  } /* if !connected */
+
+  /* create message if there is none */
+  if (!ccd->currentMsg) {
+    ccd->currentMsg=GWEN_IPCXMLConnLayer_MsgFactory(cl);
+    if (!ccd->currentMsg) {
+      DBG_ERROR(0, "Could not create message");
+      return 0;
+    }
+  }
+
+  /* add node to message */
+  segnum=GWEN_HBCIMsg_AddNode(ccd->currentMsg, node, db);
+  if (segnum==0) {
+    DBG_INFO(0, "Could not add node");
+    return 0;
+  }
+
+  if (flush) {
+    /* directly encode and enqueue the message if requested */
+    err=GWEN_IPCXMLConnLayer_Flush(cl);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(0, err);
+      return 0;
+    }
+  }
+
+  /* create request, fill it */
+  rq=GWEN_IPCXMLRequest_new();
+  GWEN_IPCXMLRequest_SetMsgLayerId(rq, GWEN_ConnectionLayer_GetId(cl));
+  GWEN_IPCXMLRequest_SetDialogId(rq, ccd->dialogId);
+  GWEN_IPCXMLRequest_SetMessageNumber(rq,
+    GWEN_HBCIMsg_GetMsgNumber(ccd->currentMsg));
+  GWEN_IPCXMLRequest_SetSegmentNumber(rq, segnum);
+
+  /* finished */
+  return rq;
+}
 
 
 

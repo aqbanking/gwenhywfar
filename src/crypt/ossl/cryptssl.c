@@ -82,11 +82,11 @@ GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
 
 
 void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent) {
-  char *bnbuf;
+  unsigned char *bnbuf;
 
-  bnbuf=(char*)malloc(BN_num_bytes(bn));
+  bnbuf=(unsigned char*)malloc(BN_num_bytes(bn));
   BN_bn2bin(bn, bnbuf);
-  GWEN_Text_DumpString(bnbuf, BN_num_bytes(bn), f, indent);
+  GWEN_Text_DumpString((char*)bnbuf, BN_num_bytes(bn), f, indent);
   free(bnbuf);
 }
 

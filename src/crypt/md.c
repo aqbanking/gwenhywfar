@@ -54,7 +54,7 @@ GWEN_MD *GWEN_MD_new(unsigned int size){
   DBG_INFO(0, "New MD (now %d)", GWEN_MD_Count);
 #endif
   if (size) {
-    md->pDigest=(char*)malloc(size);
+    md->pDigest=(unsigned char*)malloc(size);
     md->lDigest=size;
   }
   return md;
@@ -78,7 +78,7 @@ void GWEN_MD_free(GWEN_MD *md){
 
 
 
-char *GWEN_MD_GetDigestPtr(GWEN_MD *md){
+unsigned char *GWEN_MD_GetDigestPtr(GWEN_MD *md){
   assert(md);
   return md->pDigest;
 }

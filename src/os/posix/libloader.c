@@ -125,7 +125,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
                           GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
   }
-#else // for linux and others
+#else /* for linux and others */
   h->handle=dlopen(name,RTLD_LAZY);
   if (!h->handle) {
     fprintf(stderr,
@@ -155,7 +155,6 @@ GWEN_ERRORCODE GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h){
                           GWEN_LIBLOADER_ERROR_NOT_OPEN);
 #ifndef OS_WIN32
   /* hmm, linux does not like this with libtowitoko.so and qlcsetup */
-  //result=(dlclose(_handle)==0);
   if (dlclose(h->handle)!=0) {
     fprintf(stderr,
 	    "LIBCHIPCARD: Error unloading library: %s\n",
@@ -243,7 +242,7 @@ const char *GWEN_LibLoader_ErrorString(int c){
     break;
   default:
     s=(const char*)0;
-  } // switch
+  } /* switch */
   return s;
 }
 

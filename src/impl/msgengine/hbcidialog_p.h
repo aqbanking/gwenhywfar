@@ -29,14 +29,12 @@
 #define GWENHYWFAR_HBCIDLG_P_H
 
 
-#define GWEN_HBCIDIALOG_KEYSIZE 96
-
-
 #include <gwenhyfwar/hbcidialog.h>
 
 
 struct GWEN_HBCIDIALOG {
   GWEN_MSGENGINE *msgEngine;
+  GWEN_SECCTX_MANAGER *securityManager;
   char *dialogId;
   unsigned int lastReceivedMsgNum;
   unsigned int nextMsgNum;
@@ -46,11 +44,6 @@ struct GWEN_HBCIDIALOG {
   unsigned int usage;
   void *inheritorData;
 
-  GWEN_HBCIDLG_PREPARECTX_FN prepareCtxFn;
-  GWEN_HBCIDLG_SIGN_FN signFn;
-  GWEN_HBCIDLG_VERIFY_FN verifyFn;
-  GWEN_HBCIDLG_ENCRYPT_FN encryptFn;
-  GWEN_HBCIDLG_DECRYPT_FN decryptFn;
   GWEN_HBCIDLG_FREEDATA_FN freeDataFn;
   GWEN_HBCIDLG_RESET_FN resetFn;
 };

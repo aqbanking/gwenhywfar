@@ -360,15 +360,15 @@ unsigned int GWEN_HBCIMsg_GetCurrentSegmentNumber(GWEN_HBCIMSG *hmsg) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
-                         GWEN_XMLNODE *node,
-                         GWEN_DB_NODE *data) {
+unsigned int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
+                                  GWEN_XMLNODE *node,
+                                  GWEN_DB_NODE *data) {
   int rv;
+  GWEN_MSGENGINE *e;
 
   assert(hmsg);
   assert(node);
   assert(data);
-  GWEN_MSGENGINE *e;
 
   assert(hmsg);
   e=GWEN_HBCIDialog_GetMsgEngine(hmsg->dialog);
@@ -390,12 +390,13 @@ int GWEN_HBCIMsg_AddNode(GWEN_HBCIMSG *hmsg,
                                           hmsg->buffer,
                                           data);
   if (rv) {
-    return -1;
+    DBG_INFO(0, "here");
+    return 0;
   }
   hmsg->lastSegment=GWEN_MsgEngine_GetIntValue(e,
                                                "SegmentNumber",
                                                1)-1;
-  return 0;
+  return hmsg->lastSegment;
 }
 
 
@@ -508,6 +509,8 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   unsigned int l;
   int rv;
   GWEN_HBCICRYPTOCONTEXT *ctx;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_SECCTX *sc;
   char ctrlref[15];
   const char *p;
   GWEN_MSGENGINE *e;
@@ -531,7 +534,21 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   /* prepare context */
   ctx=GWEN_HBCICryptoContext_new();
   GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
-  if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx, 0)) {
+  scm=GWEN_HBCIDialog_GetSecurityManager(hmsg->dialog);
+  assert(scm);
+  GWEN_HBCICryptoContext_SetServiceCode(ctx,
+                                        GWEN_SecContext_GetServiceCode(scm));
+  sc=GWEN_SecContextMgr_GetContext(scm, GWEN_KeySpec_GetOwner(ks));
+  if (!sc) {
+    DBG_ERROR(0,
+              "Unknown security context \"%s\"",
+              GWEN_KeySpec_GetOwner(ks));
+    GWEN_HBCICryptoContext_free(ctx);
+    GWEN_Buffer_free(hbuf);
+    GWEN_DB_Group_free(cfg);
+    return -1;
+  }
+  if (GWEN_SecContext_PrepareContext(sc, ctx, 0)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_Buffer_free(hbuf);
@@ -590,7 +607,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
 
   /* sign message */
   sigbuf=GWEN_Buffer_new(0, 512, 0, 1);
-  if (GWEN_HBCIDialog_Sign(hmsg->dialog, hbuf, sigbuf, ctx)) {
+  if (GWEN_SecContext_Sign(sc, hbuf, sigbuf, ctx)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(sigbuf);
     GWEN_HBCICryptoContext_free(ctx);
@@ -676,6 +693,8 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   GWEN_BUFFER *cryptbuf;
   GWEN_BUFFER *hbuf;
   int rv;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_SECCTX *sc;
   GWEN_HBCICRYPTOCONTEXT *ctx;
   GWEN_MSGENGINE *e;
 
@@ -698,7 +717,21 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   DBG_INFO(0, "Preparing context for encryption");
   ctx=GWEN_HBCICryptoContext_new();
   GWEN_HBCICryptoContext_SetKeySpec(ctx, hmsg->crypter);
-  if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx, 1)) {
+  scm=GWEN_HBCIDialog_GetSecurityManager(hmsg->dialog);
+  assert(scm);
+  GWEN_HBCICryptoContext_SetServiceCode(ctx,
+                                        GWEN_SecContext_GetServiceCode(scm));
+  sc=GWEN_SecContextMgr_GetContext(scm,
+                                   GWEN_KeySpec_GetOwner(hmsg->crypter));
+  if (!sc) {
+    DBG_ERROR(0,
+              "Unknown security context \"%s\"",
+              GWEN_KeySpec_GetOwner(hmsg->crypter));
+    GWEN_HBCICryptoContext_free(ctx);
+    GWEN_DB_Group_free(cfg);
+    return -1;
+  }
+  if (GWEN_SecContext_PrepareContext(sc, ctx, 1)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_DB_Group_free(cfg);
@@ -710,7 +743,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   DBG_INFO(0, "Encrypting message");
   cryptbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(hmsg->buffer)+256,0,1);
   GWEN_Buffer_Rewind(hmsg->buffer);
-  if (GWEN_HBCIDialog_Encrypt(hmsg->dialog, hmsg->buffer, cryptbuf, ctx)) {
+  if (GWEN_SecContext_Encrypt(sc, hmsg->buffer, cryptbuf, ctx)) {
     DBG_INFO(0, "here");
     GWEN_Buffer_free(cryptbuf);
     GWEN_HBCICryptoContext_free(ctx);
@@ -1181,8 +1214,6 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
                                                              "key/bankcode",
                                                              0,
                                                              ""));
-  //GWEN_KeySpec_free(hmsg->crypter);
-  //hmsg->crypter=ks;
   GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
   GWEN_KeySpec_free(ks);
 
@@ -1269,10 +1300,18 @@ int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr){
   GWEN_DB_NODE *ndata;
   GWEN_BUFFER *cdbuf;
   GWEN_BUFFER *ndbuf;
+  GWEN_SECCTX_MANAGER *scm;
+  GWEN_SECCTX *sc;
   int rv;
+  const GWEN_KEYSPEC *ks;
+
+  scm=GWEN_HBCIDialog_GetSecurityManager(hmsg->dialog);
+  assert(scm);
 
   /* decrypt */
   ctx=GWEN_HBCICryptoContext_new();
+  GWEN_HBCICryptoContext_SetServiceCode(ctx,
+                                        GWEN_SecContext_GetServiceCode(scm));
 
   nhead=GWEN_DB_GetGroup(gr,
                          GWEN_DB_FLAGS_DEFAULT |
@@ -1317,8 +1356,19 @@ int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr){
 
   ndbuf=GWEN_Buffer_new(0, GWEN_HBCIMSG_DEFAULTSIZE, 0, 1);
   GWEN_Buffer_SetStep(ndbuf, 512);
-
-  rv=GWEN_HBCIDialog_Decrypt(hmsg->dialog,
+  ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
+  assert(ks);
+  sc=GWEN_SecContextMgr_GetContext(scm, GWEN_KeySpec_GetOwner(ks));
+  if (!sc) {
+    DBG_ERROR(0,
+              "Unknown security context \"%s\"",
+              GWEN_KeySpec_GetOwner(ks));
+    GWEN_Buffer_free(cdbuf);
+    GWEN_Buffer_free(ndbuf);
+    GWEN_HBCICryptoContext_free(ctx);
+    return -1;
+  }
+  rv=GWEN_SecContext_Decrypt(sc,
                              cdbuf,
                              ndbuf,
                              ctx);
@@ -1398,8 +1448,12 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
   char *dataStart;
   unsigned int dataLength;
   unsigned int i;
+  GWEN_SECCTX_MANAGER *scm;
 
   sigheads=GWEN_List_new();
+
+  scm=GWEN_HBCIDialog_GetSecurityManager(hmsg->dialog);
+  assert(scm);
 
   /* enumerate signature heads */
   nonSigHeads=0;
@@ -1519,7 +1573,9 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
     const void *p;
     unsigned int size;
     int rv;
+    GWEN_SECCTX *sc;
     GWEN_HBCICRYPTOCONTEXT *ctx;
+    const GWEN_KEYSPEC *ks;
 
     /* get signature tail */
     sigtail=(GWEN_DB_NODE*)GWEN_List_GetBack(sigtails);
@@ -1582,6 +1638,8 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
 
     /* prepare context */
     ctx=GWEN_HBCICryptoContext_new();
+    GWEN_HBCICryptoContext_SetServiceCode(ctx,
+                                          GWEN_SecContext_GetServiceCode(scm));
     if (GWEN_HBCIMsg_PrepareCryptoSegDec(hmsg, ctx, sighead, 0)) {
       GWEN_HBCICryptoContext_free(ctx);
       GWEN_Buffer_free(sigbuf);
@@ -1592,8 +1650,23 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
       return -1;
     }
 
+    ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
+    assert(ks);
+    sc=GWEN_SecContextMgr_GetContext(scm, GWEN_KeySpec_GetOwner(ks));
+    if (!sc) {
+      DBG_ERROR(0,
+                "Unknown security context \"%s\"",
+                GWEN_KeySpec_GetOwner(ks));
+      GWEN_HBCICryptoContext_free(ctx);
+      GWEN_Buffer_free(sigbuf);
+      GWEN_Buffer_free(dbuf);
+      GWEN_List_free(sigheads);
+      GWEN_List_free(sigtails);
+      return -1;
+    }
+
     /* verify signature */
-    rv=GWEN_HBCIDialog_Verify(hmsg->dialog, dbuf, sigbuf, ctx);
+    rv=GWEN_SecContext_Verify(sc, dbuf, sigbuf, ctx);
     GWEN_Buffer_free(sigbuf);
     GWEN_Buffer_free(dbuf);
 

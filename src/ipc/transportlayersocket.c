@@ -85,10 +85,10 @@ GWEN_ERRORCODE
   /* actually start to connect */
   err=GWEN_Socket_Connect(tlp->socket,addr);
   GWEN_InetAddr_free(addr);
-  // not yet finished or real error ?
+  /* not yet finished or real error ? */
   if (GWEN_Error_GetType(err)!=GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
       GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_IN_PROGRESS) {
-    // real error, so return that error
+    /* real error, so return that error */
     return err;
   }
 
@@ -360,7 +360,7 @@ GWEN_IPCTransportLayerSocket_GetWriteSocket(GWEN_IPCTRANSPORTLAYER *tl){
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
                                                  char *buffer,
-                                                 int *bsize){
+                                                 unsigned int *bsize){
   GWEN_IPCTRANSSOCKET *tlp;
   GWEN_ERRORCODE err;
 
@@ -405,8 +405,8 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
 
 /* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Write(GWEN_IPCTRANSPORTLAYER *tl,
-                                               const char *buffer,
-                                               int *bsize){
+                                                  const char *buffer,
+                                                  unsigned int *bsize){
   GWEN_IPCTRANSSOCKET *tlp;
   GWEN_ERRORCODE err;
 

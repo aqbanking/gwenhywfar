@@ -29,7 +29,7 @@
 #ifndef GWEN_IPCXMLCONNLAYER_P_H
 #define GWEN_IPCXMLCONNLAYER_P_H
 
-#include "ipcxmlconnlayer.h"
+#include <gwenhyfwar/ipcxmlconnlayer.h>
 
 #include <gwenhyfwar/connlayer.h>
 #include <gwenhyfwar/transportlayer.h>
@@ -39,10 +39,6 @@
 
 #define GWEN_IPCXMLCONNLAYER_FLAGS_MUST_SIGN  0x0001
 #define GWEN_IPCXMLCONNLAYER_FLAGS_MUST_CRYPT 0x0002
-
-#define GWEN_IPCXMLCONNLAYER_SECSTATE_HAVE_ID    0x0001
-#define GWEN_IPCXMLCONNLAYER_SECSTATE_HAVE_PK    0x0002
-#define GWEN_IPCXMLCONNLAYER_SECSTATE_HAVE_SK    0x0004
 
 #define GWEN_IPCXMLCONNLAYER_MSGSIZE 1024
 #define GWEN_IPCXMLCONNLAYER_TYPE 0xbeef
@@ -58,7 +54,7 @@ struct GWEN_IPCXMLCONNLAYERDATA {
   GWEN_CRYPTKEY *localKey;
 
   GWEN_HBCIDIALOG *dialog;
-  GWEN_KEYMANAGER *keyManager;
+  GWEN_SECCTX_MANAGER *securityManager;
   unsigned int dialogId;
 
   unsigned int connected;
@@ -86,6 +82,8 @@ GWEN_IPCMSG *GWEN_IPCXMLConnLayer_HBCI2IPC(GWEN_IPCCONNLAYER *cl,
 
 void GWEN_IPCXMLConnLayer_Down(GWEN_IPCCONNLAYER *cl);
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Up(GWEN_IPCCONNLAYER *cl);
+
+GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl);
 
 
 #endif /* GWEN_IPCXMLCONNLAYER_P_H */

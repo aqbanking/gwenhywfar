@@ -500,7 +500,7 @@ int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
       a=toupper(a);
       b=toupper(b);
     }
-    // count matches
+    /* count matches */
     if (a==b)
       (*matches)++;
     if (a!=b && b!='?')
@@ -508,14 +508,14 @@ int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
     (*wpos)++;
     (*ppos)++;
   }
-  // both at end, would be ok
+  /* both at end, would be ok */
   if (*wpos==wlength && *ppos==plength)
     return 1;
-  // word ends, pattern doesnt, would be ok if pattern is '*' here
+  /* word ends, pattern doesnt, would be ok if pattern is '*' here */
   if (*wpos>=wlength && *ppos<plength)
     if (p[*ppos]=='*')
       return 1;
-  // otherwise no match ;-/
+  /* otherwise no match ;-/ */
   return 0;
 }
 
@@ -553,26 +553,26 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
   ppos=wpos=matches=0;
   plength=strlen(p);
 
-  // compare until first occurrence of '*'
+  /* compare until first occurrence of '*' */
   if (!GWEN_Text__cmpSegment(w,&wpos,p,&ppos,sensecase,&matches)) {
     return -1;
   }
 
   while(1) {
-    // if pattern ends we have done it
+    /* if pattern ends we have done it */
     if (ppos>=plength)
       return matches;
-    // skip '*' in pattern
+    /* skip '*' in pattern */
     ppos++;
-    // if pattern ends behind '*' the word matches
+    /* if pattern ends behind '*' the word matches */
     if (ppos>=plength)
       return matches;
-    // find next matching segment
+    /* find next matching segment */
     if (!GWEN_Text__findSegment(w,&wpos,p,&ppos,sensecase,&matches)) {
       return -1;
     }
-  } // while
-  // I know, we'll never get to here ;-)
+  } /* while */
+  /* I know, we'll never get to here ;-) */
   return -1;
 }
 
@@ -635,14 +635,14 @@ void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert) {
     if (j>=l)
       j=l;
 
-    // show hex dump
+    /* show hex dump */
     for (i=pos; i<j; i++) {
       fprintf(f,"%02x ",(unsigned char)s[i]);
     }
     if (j-pos<16)
       for (i=0; i<16-(j-pos); i++)
 	fprintf(f,"   ");
-    // show text
+    /* show text */
     for (i=pos; i<j; i++) {
       if (s[i]<32)
 	fprintf(f,".");

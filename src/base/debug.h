@@ -45,7 +45,6 @@ extern "C" {
 # define DBG_LEAVE
 #endif
 
-
 #ifndef HAVE_SNPRINTF
 # error Not using snprintf! Maybe "config.h" is not included?
 #endif
@@ -176,6 +175,7 @@ extern "C" {
 #define DBG_VERBOUS_ERR(dbg_logger, dbg_err)
 
 #endif /* DISABLE_DEBUGLOG */
+
 
 #ifdef __cplusplus
 }
