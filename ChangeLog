@@ -1,4 +1,13 @@
 
+2004/04/05: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added base/idlist: This is basically a list for GWEN_TYPE_UINT32 objects,
+  but since it uses tables instead of those list objects normally used
+  throughout Gwen it is less memory consuming. I used it in the current
+  development version of Libchipcard and found it usefull in another project
+  so I decided to move it to Gwen.
+
+
 2004/04/04: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - bufferedio: GWEN_BufferedIO_File__Close() no longer closes one of the
