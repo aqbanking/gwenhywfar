@@ -131,8 +131,13 @@ int testDBfile2(int argc, char **argv) {
 int testXML(int argc, char **argv) {
   GWEN_XMLNODE *n;
 
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
-  if (GWEN_XML_ReadFile(n, "test.xml", GWEN_XML_FLAGS_DEFAULT)) {
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }
@@ -527,6 +532,8 @@ int main(int argc, char **argv) {
     rv=testCopyKey(argc, argv);
   else if (strcasecmp(argv[1], "pw")==0)
     rv=testKeyFromPW(argc, argv);
+  else if (strcasecmp(argv[1], "xml")==0)
+    rv=testXML(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

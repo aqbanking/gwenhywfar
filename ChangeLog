@@ -9,6 +9,7 @@ $Id$
   carelessly using these functions.
 - added a conveniance function for hashing
 - added a function that creates keydata from a password by hashing it
+- improved XML parser: It can now read the XML files of Simthetic
 
 
 ===========================================================================

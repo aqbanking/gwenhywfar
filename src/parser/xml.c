@@ -29,7 +29,7 @@
 # include <config.h>
 #endif
 
-#define DISABLE_DEBUGLOG
+//#define DISABLE_DEBUGLOG
 
 #include "xml_p.h"
 #include "gwenhywfar/debug.h"
@@ -321,6 +321,8 @@ int GWEN_XML__ReadWord(GWEN_BUFFEREDIO *bio,
   } /* while */
   *buffer=0;
 
+  if (chr=='"')
+    return 0;
   return chr;
 }
 
@@ -515,6 +517,15 @@ int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
 	      return -1;
 	    }
 
+            if (strcmp(varname, "?")==0) {
+              if (*p=='?') {
+                DBG_DEBUG(0, "Found closing question mark");
+                break;
+              }
+              else {
+                DBG_DEBUG(0, "Node name is: %s", p);
+              }
+            }
 	    DBG_DEBUG(0, "Found property \"%s\"", varname);
 
 	    /* skip blanks */
@@ -895,11 +906,15 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	  /* this is a start tag */
 	  GWEN_XMLNODE *newNode;
 	  char varname[GWEN_XML_MAX_VARNAMELEN];
-	  char value[GWEN_XML_MAX_VALUELEN];
+          char value[GWEN_XML_MAX_VALUELEN];
+          int simpleTag;
 
+          simpleTag=0;
 	  if (*p) {
 	    int j;
 
+            if (*p=='!' || *p=='?')
+              simpleTag=1;
 	    j=strlen(p)-1;
 	    if (p[j]=='/') {
 	      if (chr!='>') {
@@ -911,23 +926,26 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    }
 	  }
 
-	  newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, p);
+          newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, p);
 	  while (chr!='>' && chr!='/') {
 	    varname[0]=0;
 	    value[0]=0;
 
-	    /* skip blanks */
-	    chr=0;
-	    while(!GWEN_BufferedIO_CheckEOF(bio)) {
-	      chr=GWEN_BufferedIO_ReadChar(bio);
-	      if (chr<0) {
-		GWEN_XMLNode_free(newNode);
-		return -1;
-	      }
-	      if (!isspace(chr) && !iscntrl(chr))
-		break;
-	    }
-	    if (chr==0) {
+            /* skip blanks */
+            //chr=0;
+            DBG_DEBUG(0, "Current char is: \"%c\"", chr);
+            if (chr==0 || isspace(chr)) {
+              while(!GWEN_BufferedIO_CheckEOF(bio)) {
+                chr=GWEN_BufferedIO_ReadChar(bio);
+                if (chr<0) {
+                  GWEN_XMLNode_free(newNode);
+                  return -1;
+                }
+                if (!isspace(chr) && !iscntrl(chr))
+                  break;
+              } /* while */
+            }
+            if (chr==0) {
 	      DBG_ERROR(0, "unexpected EOF");
 	      GWEN_XMLNode_free(newNode);
 	      return -1;
@@ -943,7 +961,13 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	      return -1;
 	    }
 
-	    DBG_DEBUG(0, "Found property \"%s\"", varname);
+            if (strcmp(varname, "?")==0) {
+              if (*p=='?') {
+                DBG_DEBUG(0, "Found closing question mark");
+                break;
+              }
+            }
+            DBG_DEBUG(0, "Found property \"%s\"", varname);
 
 	    /* skip blanks */
 	    if (isspace(chr)) {
@@ -1003,22 +1027,22 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    } /* if varname */
 	  } /* while vars follow */
 
-	  if (chr=='/') {
-	    isEndTag=1;
+          if (chr=='/') {
+            isEndTag=1;
 
-	    if (GWEN_BufferedIO_CheckEOF(bio)) {
-	      DBG_ERROR(0, "\">\" expected");
-	      GWEN_XMLNode_free(newNode);
-	      return -1;
-	    }
+            if (GWEN_BufferedIO_CheckEOF(bio)) {
+              DBG_ERROR(0, "\">\" expected");
+              GWEN_XMLNode_free(newNode);
+              return -1;
+            }
 
-	    chr=GWEN_BufferedIO_ReadChar(bio);
-	    if (chr<0) {
-	      DBG_ERROR(0, "Error on ReadChar");
-	      GWEN_XMLNode_free(newNode);
-	      return -1;
-	    }
-	  }
+            chr=GWEN_BufferedIO_ReadChar(bio);
+            if (chr<0) {
+              DBG_ERROR(0, "Error on ReadChar");
+              GWEN_XMLNode_free(newNode);
+              return -1;
+            }
+          }
 
 	  if (chr!='>') {
 	    DBG_ERROR(0, "\">\" expected");
@@ -1035,7 +1059,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	  GWEN_XMLNode_add(newNode, &(n->child));
           newNode->parent=n;
 	  DBG_DEBUG(0, "Added node \"%s\"", newNode->data);
-	  if (!isEndTag) {
+          if (!isEndTag && !simpleTag) {
 	    /* only dive if this tag is not immediately ended */
 	    path[currDepth++]=n;
 	    n=newNode;
@@ -1177,12 +1201,14 @@ void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind) {
   GWEN_XMLPROPERTY *p;
   GWEN_XMLNODE *c;
   int i;
+  int simpleTag;
 
   assert(n);
 
   for(i=0; i<ind; i++)
     fprintf(f, " ");
 
+  simpleTag=0;
   if (n->type==GWEN_XMLNodeTypeTag) {
     if (n->data)
       fprintf(f, "<%s", n->data);
@@ -1190,21 +1216,37 @@ void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind) {
       fprintf(f, "<UNKNOWN");
     p=n->properties;
     while (p) {
-      fprintf(f, " %s=\"%s\"", p->name, p->value);
+      if (p->value)
+        fprintf(f, " %s=\"%s\"", p->name, p->value);
+      else
+        fprintf(f, " %s", p->name);
       p=p->next;
     }
-    fprintf(f, ">\n");
-    c=n->child;
-    while(c) {
-      GWEN_XMLNode_Dump(c, f, ind+2);
-      c=c->next;
+
+    if (n->data) {
+      if (n->data[0]=='?') {
+        simpleTag=1;
+        fprintf(f, "?");
+      }
+      else if (n->data[0]=='!') {
+        simpleTag=1;
+      }
     }
-    for(i=0; i<ind; i++)
-      fprintf(f, " ");
-    if (n->data)
-      fprintf(f, "</%s>\n", n->data);
-    else
-      fprintf(f, "</UNKNOWN>\n");
+
+    fprintf(f, ">\n");
+    if (!simpleTag) {
+      c=n->child;
+      while(c) {
+        GWEN_XMLNode_Dump(c, f, ind+2);
+        c=c->next;
+      }
+      for(i=0; i<ind; i++)
+        fprintf(f, " ");
+      if (n->data)
+        fprintf(f, "</%s>\n", n->data);
+      else
+        fprintf(f, "</UNKNOWN>\n");
+    }
   }
   else if (n->type==GWEN_XMLNodeTypeData) {
     if (n->data) {
