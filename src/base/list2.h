@@ -81,7 +81,7 @@ extern "C" {
   /* This macro should be used in applications, not in libraries. In
    * libraries please use the macro @ref GWEN_LIST2_FUNCTION_LIB_DEFS. */
 #define GWEN_LIST2_FUNCTION_DEFS(t, pr) \
-  GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, )
+  GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
 
 #define GWEN_LIST2_FUNCTIONS(t, pr) \
@@ -217,7 +217,7 @@ extern "C" {
    * libraries please use the macro @ref
    * GWEN_CONSTLIST2_FUNCTION_LIB_DEFS. */
 #define GWEN_CONSTLIST2_FUNCTION_DEFS(t, pr) \
-  GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(t, pr, )
+  GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
 
 #define GWEN_CONSTLIST2_FUNCTIONS(t, pr) \

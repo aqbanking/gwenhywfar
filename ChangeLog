@@ -1,3 +1,8 @@
+2004-08-18   Christian Stimming <stimming@tuhh.de>
+
+	* src/base/misc.h, list2.h, inherit.h: Add extra macro for an
+	empty string because in the definition of GWEN_LIST_FUNCTION_DEFS,
+	the MSVC compiler does not accept an empty macro argument.
 
 2004/08/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

@@ -77,6 +77,11 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef GWEN_DUMMY_EMPTY_ARG
+/** Necessary for MSVC compiler because it does not accept a left-out
+    macro argument. */
+# define GWEN_DUMMY_EMPTY_ARG
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -355,7 +360,7 @@ extern "C" {
    * libraries please use the macro @ref GWEN_LIST_FUNCTION_LIB_DEFS.
    */
 #define GWEN_LIST_FUNCTION_DEFS(t, pr) \
-  GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, )
+  GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
   /**
    * Use this inside your code files (*.c).
