@@ -37,11 +37,6 @@
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/inetsocket.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
 
 
 #ifdef __cplusplus
@@ -56,7 +51,6 @@ GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
 
 
 GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
   int highest;
 };
 

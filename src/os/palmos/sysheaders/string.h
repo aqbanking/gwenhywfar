@@ -25,7 +25,16 @@ typedef void FILE;
 #define	memcmp(x,y,z)  (MemCmp(x,y,z))
 #define	index(x,y)     (StrChr(x,y))
 
+
+/* TODO */
+
 #define fopen(x, y) (0)
 #define fclose(x) (-1)
+
+
+#define strerror(x) ("ERROR")
+#define strdup(x) ("strdup not implemented")
+
+
 
 #endif

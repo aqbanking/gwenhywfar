@@ -37,6 +37,10 @@
 # define GWENHYWFAR_API
 #endif
 
+/* This is needed for PalmOS, because it define some functions needed */
+#include <string.h>
+
+
 #endif
 
 

@@ -40,8 +40,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
 #include <errno.h>
 #include <unistd.h>
 

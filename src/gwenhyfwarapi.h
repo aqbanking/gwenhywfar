@@ -27,6 +27,10 @@
 
 #ifndef GWENHYWFARAPI_H
 
+/* This is needed for PalmOS, because it define some functions needed */
+#include <string.h>
+
+
 #ifdef __declspec
 # if BUILDING_GWEN_DLL
 #  define GWENHYWFAR_API __declspec (dllexport)

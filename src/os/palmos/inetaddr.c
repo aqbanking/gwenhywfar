@@ -34,9 +34,7 @@
 #include <gwenhywfar/misc.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <netdb.h>
 #include <string.h>
-#include <sys/un.h>
 
 #include "gwenhywfar/debug.h"
 
@@ -49,6 +47,8 @@ const char *GWEN_InetAddr_ErrorString(int c);
 static int GWEN_INETADDR__Counter=0;
 #endif
 
+
+#if 0
 
 static int gwen_inetaddr_is_initialized=0;
 static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_inetaddr_errorform=0;
@@ -539,6 +539,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia, int port){
 
 
 
+#endif /* if 0 */
 
 
 

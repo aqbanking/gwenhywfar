@@ -96,7 +96,6 @@ AC_STRUCT_TM
 
 # Checks for library functions.
 AC_FUNC_CLOSEDIR_VOID
-AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([gethostbyaddr gethostbyname inet_ntoa isascii])

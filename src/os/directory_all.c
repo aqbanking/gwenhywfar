@@ -35,9 +35,13 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/path.h>
 #include <unistd.h>
-#include <sys/stat.h>
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
 #include <sys/types.h>
-#include <fcntl.h>
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
 #include <string.h>
 #include <errno.h>
 #include <assert.h>

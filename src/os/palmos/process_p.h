@@ -47,13 +47,6 @@ struct GWEN_PROCESS {
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w);
-void GWEN_Process_SignalHandler(int s);
-GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid);
-GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status);
-
-
-
 #endif
 
 

@@ -32,6 +32,7 @@
 #include "directory_p.h"
 
 #include <stdlib.h>
+#include <assert.h>
 #include <gwenhywfar/debug.h>
 
 
