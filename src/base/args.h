@@ -31,6 +31,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+GWENHYWFAR_API
 typedef struct GWEN_ARGS GWEN_ARGS;
 #ifdef __cplusplus
 }
@@ -54,11 +55,14 @@ extern "C" {
 
 #define GWEN_ARGS_RESULT_ERROR (-1)
 
+
+GWENHYWFAR_API
 typedef enum {
   GWEN_ArgsTypeChar=0,
   GWEN_ArgsTypeInt
 } GWEN_ARGS_TYPE;
 
+GWENHYWFAR_API
 typedef enum {
   GWEN_ArgsOutTypeTXT=0,
   GWEN_ArgsOutTypeHTML
@@ -71,6 +75,7 @@ typedef enum {
  * Developer's note: Please note that any change within this struct will
  * make it necessary to increment the SO_VERSION of the library !
  */
+GWENHYWFAR_API
 struct GWEN_ARGS {
   GWEN_TYPE_UINT32 flags;
   GWEN_ARGS_TYPE type;
@@ -85,15 +90,18 @@ struct GWEN_ARGS {
 };
 
 
+GWENHYWFAR_API
 int GWEN_Args_Check(int argc, char **argv,
 		    int startAt,
 		    GWEN_TYPE_UINT32 mode,
 		    GWEN_ARGS *args,
 		    GWEN_DB_NODE *db);
 
+GWENHYWFAR_API
 int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                     GWEN_ARGS_OUTTYPE ot);
 
+GWENHYWFAR_API
 int GWEN_Args_ShortUsage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                          GWEN_ARGS_OUTTYPE ot);
 
