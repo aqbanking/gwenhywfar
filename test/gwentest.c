@@ -2896,9 +2896,9 @@ GWEN_CONSTLIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec);
 
 int testList2(int argc, char **argv) {
   GWEN_CRYPTKEY_LIST2 *keyList;
-  GWEN_CRYPTKEY *key;
-  GWEN_KEYSPEC_LIST2 *specList;
-  GWEN_KEYSPEC *spec;
+/*   GWEN_CRYPTKEY *key; */
+/*   GWEN_KEYSPEC_LIST2 *specList; */
+/*   GWEN_KEYSPEC *spec; */
 
   keyList=GWEN_CryptKey_List2_new();
 
