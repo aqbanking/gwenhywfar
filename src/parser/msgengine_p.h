@@ -32,6 +32,7 @@
 #include <gwenhyfwar/msgengine.h>
 #include <gwenhyfwar/db.h>
 #include <gwenhyfwar/stringlist.h>
+#include <gwenhyfwar/buffer.h>
 
 
 #define GWEN_MSGENGINE_CHARSTOESCAPE ":+\"\'"
@@ -69,17 +70,12 @@ int GWEN_MsgEngine__CheckValue(GWEN_MSGENGINE *e,
                                char escapeChar);
 
 int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
-                               char *buffer,
-                               unsigned int size,
-                               unsigned int *pos,
-                               const char *value,
-                               unsigned int datasize,
+                               GWEN_BUFFER *gbuf,
+                               GWEN_BUFFER *data,
                                GWEN_XMLNODE *node);
 
 int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
-                                 char *buffer,
-                                 unsigned int size,
-                                 unsigned int *pos,
+                                 GWEN_BUFFER *gbuf,
                                  GWEN_XMLNODE *node,
                                  GWEN_XMLNODE *rnode,
                                  GWEN_DB_NODE *gr,
@@ -87,9 +83,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                                  int isOptional);
 
 int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
-                               char *buffer,
-                               unsigned int size,
-                               unsigned int *pos,
+                               GWEN_BUFFER *gbuf,
                                GWEN_XMLNODE *node,  /** format node */
                                GWEN_XMLNODE *rnode, /** reference node */
                                GWEN_DB_NODE *gr,

@@ -31,6 +31,7 @@
 #include <gwenhyfwar/gwenhyfwarapi.h>
 #include <gwenhyfwar/xml.h>
 #include <gwenhyfwar/db.h>
+#include <gwenhyfwar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,11 +62,8 @@ typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
  * @return 0 on success, -1 on error, 1 if unknown type
  */
 typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
-                                            char *buffer,
-                                            unsigned int size,
-                                            unsigned int *pos,
-                                            const char *value,
-                                            unsigned int datasize,
+                                            GWEN_BUFFER *gbuf,
+                                            GWEN_BUFFER *data,
                                             GWEN_XMLNODE *node);
 
 
@@ -183,16 +181,12 @@ int GWEN_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_CreateMessage(GWEN_MSGENGINE *e,
                                  const char *msgName,
                                  int msgVersion,
-                                 char *buffer,
-                                 unsigned int size,
-                                 unsigned int *pos,
+                                 GWEN_BUFFER *gbuf,
                                  GWEN_DB_NODE *msgData);
 
 int GWEN_MsgEngine_CreateMessageFromNode(GWEN_MSGENGINE *e,
                                          GWEN_XMLNODE *node,
-                                         char *buffer,
-                                         unsigned int size,
-                                         unsigned int *pos,
+                                         GWEN_BUFFER *gbuf,
                                          GWEN_DB_NODE *msgData);
 
 int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,

@@ -959,6 +959,14 @@ GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
 
 
 
+const char *GWEN_DB_GroupName(GWEN_DB_NODE *n){
+  assert(n);
+  if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
+    DBG_ERROR(0, "Node is not a group");
+    return 0;
+  }
+  return n->group.name;
+}
 
 
 

@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
- email       : martin@libchipcard.de
+                             -------------------
+    cvs         : $Id$
+    begin       : Fri Sep 12 2003
+    copyright   : (C) 2003 by Martin Preuss
+    email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -25,59 +25,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_MISC_H
-#define GWENHYFWAR_MISC_H
+
+#ifndef GWENHYFWAR_BUFFER_P_H
+#define GWENHYFWAR_BUFFER_P_H
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include <gwenhyfwar/buffer.h>
 
 
-#define GWEN_NEW_OBJECT(typ, varname) \
-  varname=(typ *)malloc(sizeof(typ)); \
-  assert(varname); \
-  memset(varname,0,sizeof(typ));
+#define GWEN_BUFFER_FLAGS_OWNED 0x0001
 
 
+struct GWEN_BUFFER {
+  char *ptr;
+  unsigned int pos;
+  unsigned int bufferSize;
+  unsigned bytesUsed;
+  unsigned int flags;
+};
 
-#define GWEN_LIST_ADD(typ, sr, head) {\
-  typ *curr;                \
-                            \
-  assert(sr);               \
-  assert(head);             \
-                            \
-  curr=*head;               \
-  if (!curr) {              \
-    *head=sr;               \
-  }                         \
-  else {                    \
-    while(curr->next) {     \
-      curr=curr->next;      \
-    }                       \
-    curr->next=sr;          \
-  }}
-
-
-#define GWEN_LIST_DEL(typ, sr, head) {\
-  typ *curr;                   \
-                               \
-  assert(sr);                  \
-  assert(head);                \
-  curr=*head;                  \
-  if (curr) {                  \
-    if (curr==sr) {            \
-      *head=curr->next;        \
-    }                          \
-    else {                     \
-      while(curr->next!=sr) {  \
-	curr=curr->next;       \
-      }                        \
-      if (curr)                \
-	curr->next=sr->next;   \
-    }                          \
-  }                            \
-  sr->next=0;}
 
 
 #endif

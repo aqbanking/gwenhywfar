@@ -134,6 +134,8 @@ GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
                                const char *path);
 
 
+const char *GWEN_DB_GroupName(GWEN_DB_NODE *n);
+
 #endif
 
 

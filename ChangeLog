@@ -1,4 +1,11 @@
 
+2003/09/12 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added module "buffer" to base
+- added some methods to db module
+- MsgEngine now uses the new "buffer" module
+
+
 2003/09/11 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - created libgwenhyfwar

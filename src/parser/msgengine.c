@@ -37,6 +37,7 @@
 #include <gwenhyfwar/misc.h>
 #include <gwenhyfwar/path.h>
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/buffer.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -537,11 +538,8 @@ int GWEN_MsgEngine__CheckValue(GWEN_MSGENGINE *e,
 
 
 int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
-                               char *buffer,
-                               unsigned int size,
-                               unsigned int *pos,
-                               const char *value,
-                               unsigned int datasize,
+                               GWEN_BUFFER *gbuf,
+                               GWEN_BUFFER *data,
                                GWEN_XMLNODE *node) {
   unsigned int minsize;
   unsigned int maxsize;
@@ -557,11 +555,8 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   rv=1;
   if (e->typeWritePtr) {
     rv=e->typeWritePtr(e,
-		       buffer,
-		       size,
-		       pos,
-                       value,
-                       datasize,
+                       gbuf,
+                       data,
                        node);
   }
   if (rv==-1) {
@@ -571,61 +566,64 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   else if (rv==1) {
     int i;
 
-    /* type not handled externally, so hanbdle it myself */
+    /* type not handled externally, so handle it myself */
     if (strcasecmp(type, "bin")==0) {
-      if (size-*pos<10+datasize) {
+      if (GWEN_Buffer_RoomLeft(gbuf)<10+GWEN_Buffer_GetUsedBytes(data)) {
         DBG_ERROR(0, "Buffer too small");
         return -1;
       }
-      sprintf(buffer+*pos, "@%d@", datasize);
-      i=strlen(buffer+*pos);
-      (*pos)+=i;
-      memmove(buffer+*pos,value, datasize);
-      (*pos)+=i+datasize;
+      sprintf(GWEN_Buffer_GetPosPointer(gbuf),
+              "@%d@",
+              GWEN_Buffer_GetUsedBytes(data));
+
+
+      i=strlen(GWEN_Buffer_GetPosPointer(gbuf));
+      GWEN_Buffer_IncrementPos(gbuf, i);
+      GWEN_Buffer_AppendBuffer(gbuf, data);
     } /* if type is "bin" */
     else if (strcasecmp(type, "num")==0) {
       int num;
       int len;
       int lj;
 
-      num=atoi(value);
-      len=strlen(value);
+      num=atoi(GWEN_Buffer_GetPosPointer(data));
+      len=strlen(GWEN_Buffer_GetPosPointer(data));
 
       if (atoi(GWEN_XMLNode_GetProperty(node, "leftfill","0"))) {
-	if ((maxsize+1)>=size-*pos) {
-	  DBG_ERROR(0, "Buffer too small");
-	  return -1;
-	}
+        if ((maxsize+1)>=GWEN_Buffer_RoomLeft(gbuf)) {
+          DBG_ERROR(0, "Buffer too small");
+          return -1;
+        }
 
         /* fill left */
-	for (lj=0; lj<(maxsize-len); lj++)
-	  buffer[(*pos)++]='0';
+        for (lj=0; lj<(maxsize-len); lj++)
+          GWEN_Buffer_AppendByte(gbuf, '0');
 
 	/* write value */
 	for (lj=0; lj<len; lj++)
-          buffer[(*pos)++]=value[lj];
+          GWEN_Buffer_AppendByte(gbuf, GWEN_Buffer_ReadByte(data));
       }
       else if (atoi(GWEN_XMLNode_GetProperty(node, "rightfill","0"))) {
-	if ((maxsize+1)>=size-*pos) {
-	  DBG_ERROR(0, "Buffer too small");
-	  return -1;
-	}
+        if ((maxsize+1)>=GWEN_Buffer_RoomLeft(gbuf)) {
+          DBG_ERROR(0, "Buffer too small");
+          return -1;
+        }
 
-	/* write value */
+        /* write value */
 	for (lj=0; lj<len; lj++)
-	  buffer[(*pos)++]=value[lj];
+          GWEN_Buffer_AppendByte(gbuf, GWEN_Buffer_ReadByte(data));
 
 	/* fill right */
 	for (lj=0; lj<(maxsize-len); lj++)
-	  buffer[(*pos)++]='0';
+          GWEN_Buffer_AppendByte(gbuf, '0');
       }
       else {
-	if ((maxsize+1)>=size-*pos) {
-	  DBG_ERROR(0, "Maxsize in XML file is higher than the buffer size");
-	  return -1;
-	}
-	for (lj=0; lj<len; lj++)
-	  buffer[(*pos)++]=value[lj];
+        if ((maxsize+1)>=GWEN_Buffer_RoomLeft(gbuf)) {
+          DBG_ERROR(0, "Maxsize in XML file is higher than the buffer size");
+          return -1;
+        }
+        for (lj=0; lj<len; lj++)
+          GWEN_Buffer_AppendByte(gbuf, GWEN_Buffer_ReadByte(data));
       }
     } /* if type is num */
     else {
@@ -634,10 +632,10 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
       int lastWasEscape;
       int pcount;
 
-      p=value;
+      p=GWEN_Buffer_GetPosPointer(data);
       pcount=0;
       lastWasEscape=0;
-      while(*p && pcount<datasize) {
+      while(*p && pcount<GWEN_Buffer_GetUsedBytes(data)) {
 	int c;
 
 	c=(unsigned char)*p;
@@ -671,29 +669,26 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
 		needsEscape=1;
 	  }
 	  if (needsEscape) {
-	    /* write escape char */
-	    if (*pos>=size) {
-	      DBG_ERROR(0, "Buffer too small (%d>%d)", *pos, size);
-	      return -1;
-	    }
-	    buffer[(*pos)++]=e->escapeChar;
-	  }
-	  if (*pos>=size) {
-	    DBG_ERROR(0, "Buffer too small (%d>%d)", *pos, size);
-	    return -1;
-	  }
-	  buffer[(*pos)++]=(unsigned char)c;
+            /* write escape char */
+            if (GWEN_Buffer_AppendByte(gbuf,
+                                       e->escapeChar)) {
+              return -1;
+            }
+          }
+          if (GWEN_Buffer_AppendByte(gbuf, c)) {
+            return -1;
+          }
 	}
         p++;
         pcount++;
       } /* while */
-      if (pcount<datasize) {
+      if (pcount<GWEN_Buffer_GetUsedBytes(data)) {
         DBG_WARN(0, "Premature end of string (%d<%d)",
-                 pcount, datasize);
+                 pcount, GWEN_Buffer_GetUsedBytes(data));
       }
       if (*p) {
-        DBG_WARN(0, "String is longer as expected (no #0 at pos=%d)",
-                 datasize-1);
+        DBG_WARN(0, "String is longer than expected (no #0 at pos=%d)",
+                 GWEN_Buffer_GetUsedBytes(data)-1);
       }
     } /* if type is not BIN */
   } /* if type not external */
@@ -727,9 +722,7 @@ int GWEN_MsgEngine__IsBinTyp(const char *type) {
 
 
 int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
-                                 char *buffer,
-                                 unsigned int size,
-                                 unsigned int *pos,
+                                 GWEN_BUFFER *gbuf,
                                  GWEN_XMLNODE *node,
                                  GWEN_XMLNODE *rnode,
                                  GWEN_DB_NODE *gr,
@@ -743,6 +736,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
 
   const char *pdata;
   unsigned int datasize;
+  GWEN_BUFFER *data;
 
   pdata=0;
 
@@ -843,17 +837,21 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
     }
   }
 
+  data=GWEN_Buffer_new((char*)pdata,
+                       datasize,
+                       datasize,
+                       0 /* dont take ownership*/ );
+
   /* write value */
   if (GWEN_MsgEngine__WriteValue(e,
-                                 buffer,
-                                 size,
-                                 pos,
-                                 pdata,
-                                 datasize,
+                                 gbuf,
+                                 data,
                                  node)!=0) {
     DBG_INFO(0, "Could not write value");
+    GWEN_Buffer_free(data);
     return -1;
   }
+  GWEN_Buffer_free(data);
 
   return 0;
 }
@@ -1148,9 +1146,7 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
 
 
 int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
-                               char *buffer,
-                               unsigned int size,
-                               unsigned int *pos,
+                               GWEN_BUFFER *gbuf,
                                GWEN_XMLNODE *node,
                                GWEN_XMLNODE *rnode,
                                GWEN_DB_NODE *gr,
@@ -1231,23 +1227,19 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 	for (loopNr=0; loopNr<maxnum; loopNr++) {
           unsigned int posBeforeElement;
 
-	  posBeforeElement=*pos;
+          posBeforeElement=GWEN_Buffer_GetPos(gbuf);
 
 	  /* write delimiter, if needed */
 	  if (!isFirstElement && delimiter) {
-	    for (j=0; j<omittedElements+1; j++) {
-	      if (*pos>=size) {
-		DBG_ERROR(0, "Buffer too small (%d>%d)", *pos, size);
+            for (j=0; j<omittedElements+1; j++) {
+              if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
 		return -1;
-	      }
-	      buffer[(*pos)++]=delimiter;
-	    }
-	  }
+              }
+            }
+          }
 
-	  rv=GWEN_MsgEngine__WriteElement(e,
-                                          buffer,
-                                          size,
-                                          pos,
+          rv=GWEN_MsgEngine__WriteElement(e,
+                                          gbuf,
                                           n,
                                           rnode,
                                           gr,
@@ -1267,9 +1259,9 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 	  else {
 	    /* element is optional, not found */
             /* restore position */
-	    *pos=posBeforeElement;
+            GWEN_Buffer_SetPos(gbuf, posBeforeElement);
+            GWEN_Buffer_SetUsedBytes(gbuf, posBeforeElement);
 
-             /* xxx */
 	    if (strcasecmp(addEmptyMode, "max")==0) {
 	      DBG_DEBUG(0, "Adding max empty");
 	      omittedElements+=(maxnum-loopNr);
@@ -1320,62 +1312,48 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 	  }
 	}
 
+        gname=0;
+        gcfg=0;
+        if (gr) {
+          gname=GWEN_XMLNode_GetProperty(n, "name",0);
+          if (gname)
+            gcfg=GWEN_DB_GetFirstGroup(gr);
+          else
+            gcfg=gr;
+        }
+
 	/* write group as often as needed */
 	for (loopNr=0; loopNr<maxnum; loopNr++) {
 	  int rv;
 
-	  posBeforeGroup=*pos;
+          posBeforeGroup=GWEN_Buffer_GetPos(gbuf);
+
+          /* find next matching group */
+          if (gname) {
+            while(gcfg) {
+              if (strcasecmp(GWEN_DB_GroupName(gcfg), gname)==0)
+                break;
+              gcfg=GWEN_DB_GetNextGroup(gcfg);
+            } /* while */
+          }
 
 	  /* write delimiter, if needed */
 	  if (!isFirstElement && delimiter) {
 	    int j;
 
-	    for (j=0; j<omittedElements+1; j++) {
-	      if (*pos>=size) {
-		DBG_ERROR(0, "Buffer too small (%d>%d)", *pos, size);
-		return -1;
-	      }
-	      buffer[(*pos)++]=delimiter;
-	    }
-	    omittedElements=0;
-	  }
-	  else
+            for (j=0; j<omittedElements+1; j++) {
+              if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
+                return -1;
+              }
+            }
+            omittedElements=0;
+          }
+          else
 	    isFirstElement=0;
 
-	  /* get new path */
-	  gname=GWEN_XMLNode_GetProperty(n, "name",0);
-	  gcfg=0;
-	  if (gr) {
-	    if (gname) {
-	      if (loopNr==0) {
-                gcfg=GWEN_DB_GetGroup(gr,
-                                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                      gname);
-              }
-	      else {
-		char nbuffer[256];
-
-		/* this is not the first one, so create new name */
-		if (strlen(gname)+10>=sizeof(nbuffer)) {
-		  DBG_ERROR(0, "Buffer too small");
-		  return -1;
-		}
-		sprintf(nbuffer, "%s%d", gname, loopNr);
-                gcfg=GWEN_DB_GetGroup(gr,
-                                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                      nbuffer);
-	      }
-	    } /* if name given */
-	    else {
-	      gcfg=gr;
-	    }
-	  }
-
 	  /* write group */
-	  rv=GWEN_MsgEngine__WriteGroup(e,
-                                        buffer,
-                                        size,
-                                        pos,
+          rv=GWEN_MsgEngine__WriteGroup(e,
+                                        gbuf,
                                         gn,
                                         n,
                                         gcfg,
@@ -1388,8 +1366,9 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
             hasEntries=1;
 	  }
 	  else {
-	    DBG_INFO(0, "Empty Group");
-	    *pos=posBeforeGroup;
+            DBG_INFO(0, "Empty Group");
+            GWEN_Buffer_SetPos(gbuf, posBeforeGroup);
+            GWEN_Buffer_SetUsedBytes(gbuf, posBeforeGroup);
 
 	    if (loopNr>=minnum) {
 	      DBG_INFO(0, "No data for group \"%s[%d]\", omitting",
@@ -1435,11 +1414,9 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 
   /* write terminating character, if any */
   if (terminator) {
-    if (*pos>=size) {
-      DBG_ERROR(0, "Buffer too small (%d>%d)", *pos, size);
+    if (GWEN_Buffer_AppendByte(gbuf, terminator)) {
       return -1;
     }
-    buffer[(*pos)++]=terminator;
   }
 
   return hasEntries?0:1;
@@ -1449,18 +1426,14 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 
 int GWEN_MsgEngine_CreateMessageFromNode(GWEN_MSGENGINE *e,
                                          GWEN_XMLNODE *node,
-                                         char *buffer,
-                                         unsigned int size,
-                                         unsigned int *pos,
+                                         GWEN_BUFFER *gbuf,
                                          GWEN_DB_NODE *msgData){
   assert(e);
   assert(node);
   assert(msgData);
 
   if (GWEN_MsgEngine__WriteGroup(e,
-                                 buffer,
-                                 size,
-                                 pos,
+                                 gbuf,
                                  node,
                                  0,
                                  msgData,
@@ -1485,9 +1458,7 @@ int GWEN_MsgEngine_CreateMessageFromNode(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_CreateMessage(GWEN_MSGENGINE *e,
                                  const char *msgName,
                                  int msgVersion,
-                                 char *buffer,
-                                 unsigned int size,
-                                 unsigned int *pos,
+                                 GWEN_BUFFER *gbuf,
                                  GWEN_DB_NODE *msgData) {
   GWEN_XMLNODE *group;
 
@@ -1498,9 +1469,7 @@ int GWEN_MsgEngine_CreateMessage(GWEN_MSGENGINE *e,
   }
   return GWEN_MsgEngine_CreateMessageFromNode(e,
                                               group,
-                                              buffer,
-                                              size,
-                                              pos,
+                                              gbuf,
                                               msgData);
 }
 
