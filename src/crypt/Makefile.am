@@ -3,8 +3,12 @@ INCLUDES=@all_includes@
 SUBDIRS=@GWEN_CRYPTO@
 
 EXTRA_DIST=\
+ ossl/Makefile.am \
+ ossl/Makefile.in \
  ossl/cryptssl_p.h \
  ossl/cryptssl.c \
+ none/Makefile.am \
+ none/Makefile.in \
  none/cryptnone_p.h \
  none/cryptnone.c
  
