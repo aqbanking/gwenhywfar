@@ -51,11 +51,8 @@ struct GWEN__MSGENGINE {
   char *charsToEscape;
   char *delimiters;
   char *secMode;
-  unsigned int cfgMode;
   unsigned int protocolVersion;
   GWEN_DB_NODE *globalValues;
-  GWEN_MSGENGINE_FORMAT msgFormat;
-  GWEN_MSGENGINE_TYPECHECK_PTR typeCheckPtr;
   GWEN_MSGENGINE_TYPEREAD_PTR typeReadPtr;
   GWEN_MSGENGINE_TYPEWRITE_PTR typeWritePtr;
 
@@ -66,11 +63,6 @@ struct GWEN__MSGENGINE {
   void *inheritorData;
 };
 
-
-int GWEN_MsgEngine__CheckValue(GWEN_MSGENGINE *e,
-                               const char *value,
-                               GWEN_XMLNODE *node,
-                               char escapeChar);
 
 int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
                                GWEN_BUFFER *gbuf,

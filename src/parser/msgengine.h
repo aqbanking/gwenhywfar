@@ -97,11 +97,6 @@ int
 
 
 
-typedef int (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
-				       const char *value,
-				       GWEN_XMLNODE *node,
-				       char escapeChar);
-
 typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
                                            GWEN_BUFFER *msgbuf,
                                            GWEN_XMLNODE *node,
@@ -129,16 +124,8 @@ typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
 
 
 
-typedef enum {
-  GWEN_MsgEngineFormatText=0
-} GWEN_MSGENGINE_FORMAT;
-
-
 GWEN_MSGENGINE *GWEN_MsgEngine_new();
 void GWEN_MsgEngine_free(GWEN_MSGENGINE *e);
-
-void GWEN_MsgEngine_SetFormat(GWEN_MSGENGINE *e, GWEN_MSGENGINE_FORMAT f);
-GWEN_MSGENGINE_FORMAT GWEN_MsgEngine_GetFormat(GWEN_MSGENGINE *e);
 
 void GWEN_MsgEngine_SetEscapeChar(GWEN_MSGENGINE *e, char c);
 char GWEN_MsgEngine_GetEscapeChar(GWEN_MSGENGINE *e);
@@ -155,19 +142,11 @@ void GWEN_MsgEngine_SetProtocolVersion(GWEN_MSGENGINE *e,
                                        unsigned int p);
 
 
-unsigned int GWEN_MsgEngine_GetConfigMode(GWEN_MSGENGINE *e);
-void GWEN_MsgEngine_SetConfigMode(GWEN_MSGENGINE *e, unsigned int m);
-
 GWEN_XMLNODE *GWEN_MsgEngine_GetDefinitions(GWEN_MSGENGINE *e);
 void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e, GWEN_XMLNODE *n);
 
 int GWEN_MsgEngine_AddDefinitions(GWEN_MSGENGINE *e,
                                   GWEN_XMLNODE *node);
-
-void GWEN_MsgEngine_SetTypeCheckFunction(GWEN_MSGENGINE *e,
-                                         GWEN_MSGENGINE_TYPECHECK_PTR p);
-GWEN_MSGENGINE_TYPECHECK_PTR
-  GWEN_MsgEngine_GetTypeCheckFunction(GWEN_MSGENGINE *e);
 
 void GWEN_MsgEngine_SetTypeReadFunction(GWEN_MSGENGINE *e,
                                         GWEN_MSGENGINE_TYPEREAD_PTR p);

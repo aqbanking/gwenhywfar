@@ -43,19 +43,19 @@ extern "C" {
  */
 /*@{*/
 /**
- * if this is set then all elements of the path except the last one
- * must exist.
+ * if this is set then all elements of the path must exist.
  */
 #define GWEN_PATH_FLAGS_PATHMUSTEXIST          0x00000001
 /**
- * if this is set then none of the elements of the path except the last
- * one must exist.
+ * if this is set then none of the elements of the path must exist.
  */
 #define GWEN_PATH_FLAGS_PATHMUSTNOTEXIST       0x00000002
 
 /**
- * if this bit is set then the whole path will be created. This may lead
- * to double entries at any part of the path.
+ * if this bit is set then the whole path (at any depth!) will be created.
+ * This may lead to double entries at any part of the path.
+ * You need this in very rare cases, most likely you want
+ * @ref GWEN_PATH_FLAGS_NAMEMUSTEXIST.
  */
 #define GWEN_PATH_FLAGS_PATHCREATE             0x00000004
 
@@ -83,7 +83,6 @@ extern "C" {
  * This may lead to double entries of the last element.
  */
 #define GWEN_PATH_FLAGS_CREATE_VAR              0x00000040
-
 
 /**
  * a variable is wanted (if this bit is 0 then a group is wanted).
@@ -115,6 +114,18 @@ GWENHYFWAR_API
 				       unsigned int flags);
 
 
+/**
+ * This function works on a path according to the given flags.
+ * For every element the given function is called.
+ * A path consists of multiple elements separated by a slash ("/"),
+ * e.g. "first/second/element".
+ * This function is used by the DB module but may also be used for any
+ * type of path handling (like creating all directories along a given path).
+ * This function simply calls the given function for any element as long as
+ * that function returns a non-zero value or the path ends.
+ * The type of the returned value completely depends on the function called.
+ * @return 0 on error, !=0 otherwise
+ */
 GWENHYFWAR_API
   void *GWEN_Path_Handle(const char *path,
 			 void *data,

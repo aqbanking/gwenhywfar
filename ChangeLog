@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/10/27 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- improved API documentation
+
+
 2003/10/25 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added call to binTypeWrite function in MessageEngine code

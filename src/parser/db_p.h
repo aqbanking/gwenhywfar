@@ -156,6 +156,10 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                                unsigned int dbflags,
                                int insert);
 
+const char *GWEN_DB_GetCharValueFromNode(GWEN_DB_NODE *n);
+int GWEN_DB_GetIntValueFromNode(GWEN_DB_NODE *n);
+const void *GWEN_DB_GetBinValueFromNode(GWEN_DB_NODE *n,
+                                        unsigned int *size);
 
 #endif
 
