@@ -1,3 +1,9 @@
+2004-02-13  Christian Stimming <stimming@tuhh.de>
+
+	* src/parser/xml.h: Improved documentation: Clarified the
+	comparison to XML notation/naming scheme, which is different from
+	Gwen's notation.
+
 2004-02-04  Christian Stimming <stimming@tuhh.de>
 
 	* src/os/windows/libloader.c, src/os/posix/libloader.c: Fix

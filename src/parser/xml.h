@@ -59,20 +59,20 @@ extern "C" {
 #define GWEN_XML_FLAGS_READ_COMMENTS  0x0001
 /**
  * if set then toplevel elements are shared across all files (even included
- * ones, if the include tag appears in the top level)
+ * ones, if the include tag/element appears in the top level)
  */
 #define GWEN_XML_FLAGS_SHARE_TOPLEVEL      0x0002
 
 /**
- * if set then the file given to the include tag are loaded to the root
- * of the XML tree regardless of the tag's location.
+ * if set then the file given to the include tag/element are loaded to
+ * the root of the XML tree regardless of the tag's location.
  */
 #define GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL 0x0004
 
 /**
- * if set then include tags are treated as any other tag (i.e. no automatic
- * file inclusion takes place. Instead the include tag is stored like any
- * other tag would be).
+ * if set then include tags/elements are treated as any other tag
+ * (i.e. no automatic file inclusion takes place. Instead the include
+ * tag is stored like any other tag would be).
  */
 #define GWEN_XML_FLAGS_IGNORE_INCLUDE      0x0008
 
@@ -82,7 +82,8 @@ extern "C" {
 #define GWEN_XML_FLAGS_DEFAULT 0
 /*@}*/
 
-
+/** The type of a property of a tag (in XML notation this would be
+    called the attribute of an element). */
 GWENHYWFAR_API
 typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 
@@ -91,8 +92,12 @@ typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
  */
 GWENHYWFAR_API
 typedef enum {
+  /** A node can be a tag (in XML notation these are called
+      elements). */
   GWEN_XMLNodeTypeTag=0,
+  /** A node can be some data. */
   GWEN_XMLNodeTypeData,
+  /** A node can be some XML comment. */
   GWEN_XMLNodeTypeComment
 } GWEN_XMLNODE_TYPE;
 
@@ -124,19 +129,23 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
 /*@}*/
 
 
-/** @name Managing Properties
+/** @name Managing Properties/Attributes
  *
- * A property is given within a tag, like in this example:
+ * A property (in XML notation this is called attribute) is given
+ * within a tag (in XML notation this is called element), like in this
+ * example:
+ *
  * @code
  * <tag property="1" />
  * @endcode
  */
 /*@{*/
 /**
- * Returns the value of the given property (or the default value if the
- * property does not exist or is empty).
- * @param n node (must be a tag)
- * @param name name of the property
+ * Returns the value of the given property/attribute (or the default
+ * value if the property/attribute does not exist or is empty).
+ *
+ * @param n node (must be a tag/element)
+ * @param name name of the property/attribute
  * @param defaultValue default value to be returned if no value could
  * be retrieved
  */
@@ -145,11 +154,11 @@ GWENHYWFAR_API
                                        const char *defaultValue);
 
 /**
- * Sets the value of a property. This property will be created if it does not
+ * Sets the value of a property/attribute. This property/attribute will be created if it does not
  * exist and overwritten if it does.
- * @param n node (must be a tag)
- * @param name name of the property
- * @param value new value of the property
+ * @param n node (must be a tag/element)
+ * @param name name of the property/attribute
+ * @param value new value of the property/attribute
  */
 GWENHYWFAR_API
   void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
@@ -157,11 +166,13 @@ GWENHYWFAR_API
                                 const char *value);
 
 /**
- * This function copies the properties of one tag to another one.
- * @param tn destination node (must be a tag)
- * @param sn source node (must be a tag)
- * @param overwrite if !=0 then existing properties in the destination node
- * will be overwritten.
+ * This function copies the properties/attributes of one tag/element
+ * to another one.
+ *
+ * @param tn destination node (must be a tag/element)
+ * @param sn source node (must be a tag/element)
+ * @param overwrite if !=0 then existing properties/attributes in the
+ * destination node will be overwritten.
  */
 GWENHYWFAR_API
   void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
@@ -185,21 +196,58 @@ void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
  *
  */
 /*@{*/
+/** INTERNAL. Iterates on the same level in the XML tree from the
+ * given node to the next one on the same level (i.e. the returned
+ * node has the same parent node as the given element). The returned
+ * node may be a tag/element node, or a property/attribute node, or a
+ * data node. You will probably prefer to use
+ * GWEN_XMLNode_GetNextTag() instead of this function.
+ *
+ * @return The next node on the same level, or NULL if no more element
+ * exists. */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
+
+/** INTERNAL. Descends in the XML tree to the first GWEN_XMLNODE below
+ * the given node. The returned node may be a tag/element node, or a
+ * property/attribute node, or a data node. You will probably prefer
+ * to use GWEN_XMLNode_GetFirstTag() instead of this function.
+ *
+ * @return The first children tag/element, or NULL if none exists. */
+ */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
 GWENHYWFAR_API
-  GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
 
+/** Descends in the XML tree to the first children tag (in XML
+ * notation they are called elements) below the given node.
+ *
+ * Different from GWEN_XMLNode_GetChild() this function only looks for
+ * another tag/element and not for a (more general) node. You will
+ * probably prefer this function instead of GWEN_XMLNode_GetChild().
+ *
+ * @return The first children tag/element, or NULL if none exists. */
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n);
+
+/** Iterates on the same level in the XML tree from the given tag (in
+ * XML notation they are called elements) to the next one on the same
+ * level (i.e. the returned element has the same parent node as the
+ * given element).
+ *
+ * Different from GWEN_XMLNode_Next() this function only looks for
+ * another tag/element and not for a (more general) node. You will
+ * probably prefer this function instead of GWEN_XMLNode_Next().
+ *
+ * @return The next tag/element on the same level, or NULL if no more
+ * element exists. */
 GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n);
 
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n);
 GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
 
 /**
- * Searches for the first matching tag below the given one.
+ * Searches for the first matching tag/element below the given one.
  * Lets say you have the following XML file:
  * @code
  *  <DEVICES>
@@ -212,14 +260,16 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
  * @code
  *   tag=GWEN_XMLNode_FindFirstTag(root, "DEVICE", "id", "dev2");
  * @endcode
- * @return pointer to the tag if found, 0 otherwise
- * @param n tag below which to search
- * @param tname tag type name (e.g. if the tag is "<TESTTAG>" then the
- * tag type name if "TESTTAG"). Wildcards (like "*") are allowed.
- * @param pname name of the property to check (if 0 then no property
- * comparison takes place). No wildcards allowed.
- * @param pvalue optional value of the property to compare against, wildcards
- * allowed.
+ * @return pointer to the tag/element if found, 0 otherwise
+ * @param n tag/element below which to search
+ * @param tname tag/element name (e.g. if the tag is "<TESTTAG>" then the
+ * tag name if "TESTTAG"). Wildcards (like "*") are allowed.
+ *
+ * @param pname name of the property/attribute to check (if 0 then no
+ * property/attribute comparison takes place). No wildcards allowed.
+ *
+ * @param pvalue optional value of the property/attribute to compare
+ * against, wildcards allowed.
  */
 GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
                                         const char *tname,
@@ -227,7 +277,9 @@ GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
                                         const char *pvalue);
 
 /**
- * Searches for the next matching tag after the given one.
+ * Searches for the next matching tag/element after the given one one
+ * the same level (i.e. the returned element has the same parent node
+ * as the given element).
  */
 GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(GWEN_XMLNODE *n,
                                        const char *tname,
@@ -264,14 +316,16 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
  */
 /*@{*/
 /**
- * Reads exactly ONE tag (and all its subtags) from the given bufferedIO.
+ * Reads exactly ONE tag/element (and all its subtags) from the given
+ * bufferedIO.
  */
 GWENHYWFAR_API
 int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
                    GWEN_TYPE_UINT32 flags);
 
 /**
- * Reads all tags from a file and adds them as children to the given node.
+ * Reads all tags/elements from a file and adds them as children to
+ * the given node.
  */
 GWENHYWFAR_API
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
@@ -281,7 +335,7 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
  * Reads the given file. If it the path is absolute it will be used directly.
  * If it is relative then the given search path will be searched if the
  * file with the given name could not be loaded without a search path.
- * @param n XML node to store the read tags in
+ * @param n XML node to store the read tags/elements in
  * @param filepath name (and optionally path) of the file to read
  * @param flags see @ref GWEN_XML_FLAGS_DEFAULT and others
  * @param searchPath a string list containing multiple multiple directories
