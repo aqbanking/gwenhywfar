@@ -3,6 +3,10 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/02/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in GWEN_LIST code (could crash the program)
+
 
 2005/02/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

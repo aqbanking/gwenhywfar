@@ -16,6 +16,12 @@ chosen by the installer if necessary, otherwise later Windows will not find
 the DLL).
 
 
+1.1.2. RegExp
+
+You can get it from http://gnuwin32.sf.net/
+Install the DLL to your Windows folder so that it can be found. 
+
+
 
 2. Compiling Gwenhywfar
 =======================
