@@ -1713,6 +1713,59 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusPDisconnected);
       return GWEN_NetTransportWorkResult_Change;
     }
+    else {
+      int sslerr;
+
+      /* check for timeout (maximum: 5 seconds) */
+      if (GWEN_NetTransport_GetIdleTime(tr)>5) {
+	DBG_NOTICE(GWEN_LOGDOMAIN, "Forcing connection close");
+	GWEN_Socket_Close(skd->socket);
+	SSL_free(skd->ssl);
+	skd->ssl=0;
+	SSL_CTX_free(skd->ssl_ctx);
+	skd->ssl_ctx=0;
+	GWEN_NetTransport_MarkActivity(tr);
+	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusPDisconnected);
+	return GWEN_NetTransportWorkResult_Change;
+      }
+
+      /* check for error and act accordingly */
+      sslerr=SSL_get_error(skd->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ)
+	return GWEN_NetTransportResultWantRead;
+      else if (sslerr==SSL_ERROR_WANT_WRITE)
+	return GWEN_NetTransportResultWantWrite;
+      else {
+	if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
+		   sslerr,
+		   GWEN_NetTransportSSL_ErrorString(sslerr));
+	}
+	else {
+	  if (sslerr==SSL_ERROR_ZERO_RETURN) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+	  }
+	  else {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+	    ERR_print_errors_fp(stderr); /* DEBUG */
+	    DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
+		      GWEN_NetTransportSSL_ErrorString(sslerr),
+		      sslerr);
+	  }
+	}
+
+	GWEN_Socket_Close(skd->socket);
+	SSL_free(skd->ssl);
+	skd->ssl=0;
+	SSL_CTX_free(skd->ssl_ctx);
+	skd->ssl_ctx=0;
+  
+	/* connection closed */
+	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusPDisconnected);
+	GWEN_NetTransport_MarkActivity(tr);
+	return GWEN_NetTransportResultOk;
+      }
+    }
     break;
   }
 

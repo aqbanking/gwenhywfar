@@ -1,4 +1,10 @@
 
+2005/01/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a timeout catcher on SSL connections waiting to be shut down
+  (why does SSL_shutdown not return 0 ???)
+- added eror checking for SSL_shutdown
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.7.0 (2005/01/26)
