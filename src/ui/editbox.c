@@ -182,6 +182,14 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     }
     return GWEN_UIResult_Handled;
 
+  case GWEN_EventType_SetText:
+    win->currX=0;
+    win->currY=0;
+    if (win->currLine)
+      GWEN_TextWidget_LineClose(w, win->currLine, 0);
+    win->currLine=0;
+    break;
+
   case GWEN_EventType_Key: {
     int key;
 
@@ -221,7 +229,6 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       win->clearAllFlag=0;
       if (win->flags & GWEN_EDITBOX_FLAGS_MULTILINE) {
         if (win->currY+1>=GWEN_Widget_GetHeight(w)) {
-          beep();
           return GWEN_UIResult_Handled;
         }
         win->currY++;
@@ -235,7 +242,6 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       win->clearAllFlag=0;
       if (win->flags & GWEN_EDITBOX_FLAGS_MULTILINE) {
         if (win->currY==0) {
-          beep();
           return GWEN_UIResult_Handled;
         }
         win->currY--;
@@ -321,22 +327,27 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT))
         return GWEN_UIResult_Handled;
       if (GWEN_EditBox_EnsureLine(w, win->currY)) {
-        beep();
         return GWEN_UIResult_Handled;
       }
+
       GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
                                     win->maxLen, 1);
       if (GWEN_TextWidget_LineSetPos(w, win->currLine, win->currX)) {
-        beep();
         return GWEN_UIResult_Handled;
       }
       if (win->clearAllFlag)
         GWEN_TextWidget_LineClear(w, win->currLine);
       win->clearAllFlag=0;
+      /* validate character */
+      if (win->dataType==GWEN_EditBoxType_Int) {
+        if (!isdigit(key)) {
+          beep();
+          return GWEN_UIResult_Handled;
+        }
+      }
       buffer[0]=key;
       buffer[1]=0;
       if (GWEN_TextWidget_LineWriteText(w, win->currLine, buffer, 1)) {
-        beep();
         return GWEN_UIResult_Handled;
       }
 
@@ -384,6 +395,15 @@ GWEN_BUFFER *GWEN_EditBox_GetText(const GWEN_WIDGET *w, int asAscii){
 
 
 
+void GWEN_EditBox_SetDataType(GWEN_WIDGET *w, GWEN_EDITBOX_TYPE d){
+  GWEN_EDITBOX *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_EDITBOX, w);
+  assert(win);
+
+  win->dataType=d;
+}
 
 
 

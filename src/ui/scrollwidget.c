@@ -51,6 +51,7 @@ GWEN_WIDGET *GWEN_ScrollWidget_new(GWEN_WIDGET *parent,
   GWEN_WIDGET *w;
   GWEN_SCROLLWIN *win;
   int xoffs, yoffs, woffs, hoffs;
+  GWEN_TYPE_UINT32 sliderFlags;
 
   w=GWEN_Widget_new(parent,
                     flags & ~GWEN_WIDGET_FLAGS_WINDOWFLAGS,
@@ -64,6 +65,14 @@ GWEN_WIDGET *GWEN_ScrollWidget_new(GWEN_WIDGET *parent,
   assert(win->previousHandler);
   GWEN_Widget_SetEventHandler(w, GWEN_ScrollWidget_EventHandler);
 
+  sliderFlags=
+    GWEN_WIDGET_FLAGS_DEFAULT |
+    GWEN_WIDGET_FLAGS_HIGHLIGHT;
+
+  if (flags & GWEN_SCROLLWIN_FLAGS_PASSIVE_SLIDERS)
+    sliderFlags&=
+      ~GWEN_WIDGET_FLAGS_FOCUSABLE &
+      ~GWEN_WIDGET_FLAGS_HIGHLIGHT;
   width=GWEN_Widget_GetWidth(w);
   height=GWEN_Widget_GetHeight(w);
   xoffs=0;
@@ -81,8 +90,7 @@ GWEN_WIDGET *GWEN_ScrollWidget_new(GWEN_WIDGET *parent,
   if (flags & GWEN_SCROLLWIN_FLAGS_HSLIDER) {
     DBG_NOTICE(0, "Creating horizontal slider");
     win->wHslider=GWEN_HSlider_new(w,
-                                   GWEN_WIDGET_FLAGS_DEFAULT |
-                                   GWEN_WIDGET_FLAGS_HIGHLIGHT,
+                                   sliderFlags,
                                    "HSlider",
                                    xoffs,
                                    height-
@@ -95,8 +103,7 @@ GWEN_WIDGET *GWEN_ScrollWidget_new(GWEN_WIDGET *parent,
   if (flags & GWEN_SCROLLWIN_FLAGS_VSLIDER) {
     DBG_NOTICE(0, "Creating vertical slider");
     win->wVslider=GWEN_VSlider_new(w,
-                                   GWEN_WIDGET_FLAGS_DEFAULT |
-                                   GWEN_WIDGET_FLAGS_HIGHLIGHT,
+                                   sliderFlags,
                                    "VSlider",
                                    width-
                                    ((flags & GWEN_WIDGET_FLAGS_BORDER)?2:1),

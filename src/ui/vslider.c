@@ -108,9 +108,6 @@ int GWEN_VSlider_Calculate(GWEN_WIDGET *w) {
     win->spos=0;
   }
 
-  DBG_NOTICE(0, "V-Slider: %d, %d (%d, %d)",
-             win->spos, win->slength,
-             win->dpos, win->dsize);
   return 0;
 }
 

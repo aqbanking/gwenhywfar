@@ -145,6 +145,9 @@ const char *GWEN_Event_TypeName(GWEN_EVENT_TYPE t) {
   case GWEN_EventType_Close: s="Close"; break;
   case GWEN_EventType_Closed: s="Closed"; break;
   case GWEN_EventType_LastClosed: s="LastClosed"; break;
+  case GWEN_EventType_Selected: s="Selected"; break;
+  case GWEN_EventType_Chosen: s="Chosen"; break;
+  case GWEN_EventType_Checked: s="Checked"; break;
   case GWEN_EventType_None: s="None"; break;
   default: s="Unknown"; break;
   }
@@ -1220,6 +1223,9 @@ int GWEN_EventChecked_GetStatus(const GWEN_EVENT *e){
 
 
 
+GWEN_EVENT *GWEN_EventChanged_new(){
+  return GWEN_Event_new(GWEN_EventType_Changed);
+}
 
 
 

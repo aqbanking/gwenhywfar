@@ -28,6 +28,11 @@
 #ifndef GWEN_UI_EDITBOX_H
 #define GWEN_UI_EDITBOX_H
 
+typedef enum {
+  GWEN_EditBoxType_Char=0,
+  GWEN_EditBoxType_Int
+} GWEN_EDITBOX_TYPE;
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/ui/widget.h>
@@ -50,6 +55,7 @@ GWEN_WIDGET *GWEN_EditBox_new(GWEN_WIDGET *parent,
 
 GWEN_BUFFER *GWEN_EditBox_GetText(const GWEN_WIDGET *w, int asAscii);
 
+void GWEN_EditBox_SetDataType(GWEN_WIDGET *w, GWEN_EDITBOX_TYPE d);
 
 #endif
 

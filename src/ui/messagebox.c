@@ -130,7 +130,7 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
     height=GWEN_UI_GetLines()-2;
   }
 
-  twidth=GWEN_TextWidget_GetMaxWidth(ll);
+  twidth=GWEN_TextWidget_GetMaxListWidth(ll);
   if (twidth>width)
     width=twidth;
   width+=2; /* take borders into account */
@@ -143,14 +143,9 @@ int GWEN_MessageBox(GWEN_WIDGET *parent,
              width, height, twidth, -twidth);
 
   prevFocus=GWEN_UI_GetFocusWidget();
-  if (parent) {
-    x=GWEN_Widget_GetX(parent)+(GWEN_Widget_GetWidth(parent)-width)/2;
-    y=GWEN_Widget_GetY(parent)+(GWEN_Widget_GetHeight(parent)-height)/2;
-  }
-  else {
-    x=(GWEN_UI_GetCols()-width)/2;
-    y=(GWEN_UI_GetLines()-height)/2;
-  }
+
+  x=(GWEN_UI_GetCols()-width)/2;
+  y=(GWEN_UI_GetLines()-height)/2;
 
   if (x<0) x=0;
   if (y<0) y=0;

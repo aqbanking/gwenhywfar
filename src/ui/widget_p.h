@@ -67,6 +67,7 @@ struct GWEN_WIDGET {
   GWEN_TYPE_UINT32 flags;
   GWEN_TYPE_UINT32 state;
   GWEN_WIDGET_EVENTHANDLER_FN eventHandler;
+  GWEN_WIDGET_RUN_FN runFn;
 
   GWEN_EVENT_SUBSCRIPTION_LIST *subscribers;
   GWEN_EVENT_SUBSCRIPTION_LIST *subscriptions;
@@ -86,7 +87,6 @@ GWEN_EVENT *GWEN_Widget_GetNextEvent(GWEN_WIDGET *w);
 GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
                                         GWEN_EVENT *e);
 void GWEN_Widget_UnsubscribeFromAll(GWEN_WIDGET *w);
-void GWEN_Widget_InformSubscribers(GWEN_WIDGET *w, GWEN_EVENT *e);
 
 
 

@@ -184,6 +184,7 @@ GWEN_UI_RESULT GWEN_DropDownBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
         GWEN_EVENT *newE;
 
         newE=GWEN_EventKey_new(key);
+        assert(newE);
         if (GWEN_Widget_SendEvent(win->wButton, w, newE)) {
           DBG_DEBUG(0, "Could not send event to button");
           GWEN_Event_free(newE);
@@ -192,6 +193,49 @@ GWEN_UI_RESULT GWEN_DropDownBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       }
       return win->previousHandler(w, e);
     }
+  }
+
+  case GWEN_EventType_SetText: {
+    const char *t;
+    int pos;
+
+    win->previousHandler(w, e);
+    t=GWEN_EventSetText_GetText(e);
+    pos=-1;
+    if (t) {
+      GWEN_STRINGLISTENTRY *se;
+      int i;
+
+      se=GWEN_StringList_FirstEntry(win->stringList);
+      while(se) {
+        const char *p;
+
+        p=GWEN_StringListEntry_Data(se);
+        if (p) {
+          if (strcasecmp(p, t)==0) {
+            pos=i;
+          }
+        }
+        i++;
+        se=GWEN_StringListEntry_Next(se);
+      }
+    } /* while */
+    if (pos!=-1) {
+      GWEN_EVENT *newE;
+
+      free(win->chosenText);
+      win->chosenText=0;
+      win->chosenText=strdup(t);
+      GWEN_Widget_SetText(win->wEdit, t,
+                          GWEN_EventSetText_GetMode(e));
+      newE=GWEN_EventChosen_new(t, 0, 0);
+      assert(newE);
+      if (GWEN_Widget_SendEvent(w, w, newE)) {
+        DBG_DEBUG(0, "Could not send event to button");
+        GWEN_Event_free(newE);
+      }
+    }
+    return GWEN_UIResult_Handled;
   }
 
   case GWEN_EventType_SetColour: {
@@ -229,6 +273,8 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
   GWEN_TYPE_UINT32 scrollerFlags;
   GWEN_WIDGET *prevFocus;
   int focusLost;
+  int i;
+  int pos;
 
   assert(w);
   win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_DROPDOWNBOX, w);
@@ -287,16 +333,28 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
 
   se=GWEN_StringList_FirstEntry(win->stringList);
   first=1;
+  i=0;
+  pos=0;
   while(se) {
     const char *p;
 
     p=GWEN_StringListEntry_Data(se);
     if (p) {
+      if (win->chosenText) {
+        DBG_NOTICE(0, "VVV: Checking %s against %s (pos=%d)",
+                   p, win->chosenText,
+                   pos);
+        if (strcasecmp(p, win->chosenText)==0) {
+          pos=i;
+          DBG_NOTICE(0, "VVV: Found matching text (pos=%d)", pos);
+        }
+      }
       if (!first)
         GWEN_Buffer_AppendString(buf, "<br>");
       GWEN_Buffer_AppendString(buf, p);
     }
     first=0;
+    i++;
     se=GWEN_StringListEntry_Next(se);
   } /* while */
   GWEN_Buffer_AppendString(buf, "</gwen>");
@@ -319,11 +377,13 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
                             GWEN_Buffer_GetStart(buf),
                             0, 0, 0, 0);
   GWEN_Buffer_free(buf);
-
   GWEN_Widget_Subscribe(wList, GWEN_EventType_Focus,
                         wScroller);
 
   GWEN_Widget_Redraw(wScroller);
+  GWEN_TextWidget_SetPos(wList, pos);
+  GWEN_TextWidget_EnsureVisible(wList, 0, pos,
+                                GWEN_Widget_GetWidth(wList), 1);
   GWEN_Widget_SetFocus(wList);
 
   focusLost=0;
@@ -334,8 +394,6 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
     if (!e) {
       break;
     }
-    DBG_NOTICE(0, "Got this event:");
-    GWEN_Event_Dump(e);
     if (GWEN_Event_GetType(e)==GWEN_EventType_Chosen) {
       const char *p;
 
@@ -344,7 +402,6 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
       win->chosenText=0;
       if (p) {
         win->chosenText=strdup(p);
-        DBG_NOTICE(0, "ZZZ: Setting text to this: %s", p);
       }
       else win->chosenText=0;
       GWEN_Widget_Close(wScroller);
@@ -367,7 +424,7 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
   }
 
   if (win->chosenText && !focusLost) {
-    GWEN_Widget_SetText(win->wEdit, win->chosenText,
+    GWEN_Widget_SetText(w, win->chosenText, // DEBUG
                         GWEN_EventSetTextMode_Replace);
   }
 
@@ -387,7 +444,6 @@ GWEN_BUFFER *GWEN_DropDownBox_GetText(const GWEN_WIDGET *w, int asAscii){
 
   return GWEN_EditBox_GetText(win->wEdit, asAscii);
 }
-
 
 
 

@@ -96,29 +96,36 @@ GWEN_UI_RESULT GWEN_Button_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
 
   switch(GWEN_Event_GetType(e)) {
   case GWEN_EventType_Draw: {
-    break;
+    win->previousHandler(w, e);
+    GWEN_Widget_Update(w);
+    return GWEN_UIResult_Handled;
   }
 
   case GWEN_EventType_Update:
-    break;
+    if (win->flags & GWEN_BUTTON_FLAGS_CHECKBOX) {
+      const char *c;
+
+      win->previousHandler(w, e);
+      if (win->isChecked)
+        c="X";
+      else
+        c=" ";
+      GWEN_Widget_WriteAt(w, 0, 0, c, strlen(c));
+      GWEN_Widget_Refresh(w);
+    }
+    return GWEN_UIResult_Handled;
 
   case GWEN_EventType_Key: {
     int key;
 
     DBG_NOTICE(0, "Event: Key(%s)", GWEN_Widget_GetName(w));
     key=GWEN_EventKey_GetKey(e);
-    if (key==32) {
-      const char *c;
+    if (key==32 || key==13) {
       GWEN_EVENT *newE;
 
       if (win->flags & GWEN_BUTTON_FLAGS_CHECKBOX) {
         win->isChecked=!win->isChecked;
-        if (win->isChecked)
-          c="X";
-        else
-          c=" ";
-        GWEN_Widget_WriteAt(w, 0, 0, c, strlen(c));
-        GWEN_Widget_Refresh(w);
+        GWEN_Widget_Update(w);
         newE=GWEN_EventChecked_new(win->isChecked);
         assert(newE);
         if (GWEN_Widget_SendEvent(w, w, newE)) {
@@ -168,11 +175,20 @@ int GWEN_Button_IsChecked(const GWEN_WIDGET *w){
 
 void GWEN_Button_SetChecked(GWEN_WIDGET *w, int b){
   GWEN_BUTTON *win;
+  const char *c;
 
   assert(w);
   win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_BUTTON, w);
   assert(win);
-  win->isChecked=b;
+  if (win->flags & GWEN_BUTTON_FLAGS_CHECKBOX) {
+    win->isChecked=b;
+    if (win->isChecked)
+      c="X";
+    else
+      c=" ";
+    GWEN_Widget_WriteAt(w, 0, 0, c, strlen(c));
+    GWEN_Widget_Refresh(w);
+  }
 }
 
 

@@ -1,4 +1,11 @@
 
+2004/06/27: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui: 
+  - started working on FileDialog
+  - more work/fixes in TableWidget and TextWidget
+
+
 2004/06/26: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ui: 

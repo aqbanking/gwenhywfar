@@ -46,6 +46,7 @@ struct GWEN_EDITBOX {
   int insertMode;
   int clearAllFlag;
   int maxLen;
+  GWEN_EDITBOX_TYPE dataType;
 };
 void GWEN_EditBox_freeData(void *bp, void *p);
 

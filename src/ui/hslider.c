@@ -108,7 +108,6 @@ int GWEN_HSlider_Calculate(GWEN_WIDGET *w) {
     win->spos=0;
   }
 
-  DBG_NOTICE(0, "H-Slider: %d, %d", win->spos, win->slength);
   return 0;
 }
 
@@ -188,16 +187,13 @@ GWEN_UI_RESULT GWEN_HSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     DBG_NOTICE(0, "Event: Highlight (%s)", GWEN_Widget_GetName(w));
     col=GWEN_EventHighlight_GetHi(e);
     if (col!=0) {
-      DBG_NOTICE(0, "Setting colour %d", col);
       GWEN_Widget_SetColour(w, col);
     }
     break;
     if (col==0) {
-      DBG_NOTICE(0, "Setting default colour");
       GWEN_Widget_SetColour(w, GWEN_WidgetColour_Button);
     }
     else {
-      DBG_NOTICE(0, "Setting colour %d", col);
       GWEN_Widget_SetColour(w, col);
     }
     return GWEN_UIResult_Handled;

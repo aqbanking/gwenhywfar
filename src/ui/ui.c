@@ -167,7 +167,6 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
           GWEN_Widget_IsAncestorOf(GWEN_Event_GetRecipient(le),
                                    wRecipient)) {
         if (GWEN_Event_GetType(le)==t) {
-          DBG_NOTICE(0, "Not adding event event");
           GWEN_Event_free(e);
           return 0;
         }
@@ -195,8 +194,6 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
           case GWEN_EventType_Refresh:
           case GWEN_EventType_WriteAt:
           case GWEN_EventType_Clear:
-            DBG_NOTICE(0, "Removing event:");
-            GWEN_Event_Dump(le);
             GWEN_Event_List_Del(le);
             GWEN_Event_free(le);
             break;
@@ -207,7 +204,6 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
         else if (delSameEvents) {
           if (GWEN_Event_GetType(le)==t) {
             DBG_NOTICE(0, "Removing same event:");
-            //GWEN_Event_Dump(le);
             GWEN_Event_List_Del(le);
             GWEN_Event_free(le);
           }
@@ -219,26 +215,10 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
 
   if ((withPriority || GWEN_UI__ui->currentEvent) &&
       t!=GWEN_EventType_ContentChg) {
-    DBG_NOTICE(0, "Adding as new event");
     GWEN_Event_List_Add(e, GWEN_UI__ui->newEvents);
   }
   else {
-    DBG_NOTICE(0, "Adding as next event");
     GWEN_Event_List_Add(e, GWEN_UI__ui->events);
-  }
-
-  if (0) {
-    GWEN_EVENT *le;
-
-    DBG_NOTICE(0, "Enqueued this event:");
-    GWEN_Event_Dump(e);
-
-    le=GWEN_Event_List_First(GWEN_UI__ui->events);
-    while(le) {
-
-      GWEN_Event_Dump(le);
-      le=GWEN_Event_List_Next(le);
-    }
   }
 
   return 0;
@@ -416,8 +396,6 @@ void GWEN_UI_SetFocus(GWEN_WIDGET *w) {
       DBG_ERROR(0, "Could not send event");
       GWEN_Event_free(e);
     }
-    DBG_NOTICE(0, "Freeing widget \"%s\"",
-               GWEN_Widget_GetName(GWEN_UI__ui->focusWidget));
     GWEN_Widget_free(GWEN_UI__ui->focusWidget);
     GWEN_UI__ui->focusWidget=0;
   }
@@ -456,24 +434,20 @@ GWEN_UI_RESULT GWEN_UI_DispatchEvent(GWEN_EVENT *e) {
     return GWEN_UIResult_Error;
   }
 
-  DBG_NOTICE(0, "Sending event to:");
-  GWEN_Event_Dump(e);
-  GWEN_Widget_Dump(wRec, 1);
   res=GWEN_Widget_HandleEvent(wRec, e);
   if (res==GWEN_UIResult_NotHandled) {
     GWEN_WIDGET *wParent;
 
-    DBG_NOTICE(0, "Sending to parent");
-    wParent=GWEN_Widget_GetParent(wRec);
-    while(wParent) {
-      DBG_NOTICE(0, "Really sending to parent");
-      GWEN_Event_Dump(e);
-      GWEN_Widget_Dump(wRec, 1);
-      res=GWEN_Widget_HandleEvent(wParent, e);
-      DBG_NOTICE(0, "Response is: %d", res);
-      if (res!=GWEN_UIResult_NotHandled)
-        break;
-      wParent=GWEN_Widget_GetParent(wParent);
+    if (!(GWEN_Widget_GetFlags(wRec) & GWEN_WIDGET_FLAGS_MODAL)) {
+      wParent=GWEN_Widget_GetParent(wRec);
+      while(wParent) {
+        res=GWEN_Widget_HandleEvent(wParent, e);
+        if (res!=GWEN_UIResult_NotHandled)
+          break;
+        if (GWEN_Widget_GetFlags(wParent) & GWEN_WIDGET_FLAGS_MODAL)
+          break;
+        wParent=GWEN_Widget_GetParent(wParent);
+      }
     }
   }
   GWEN_Event_List_AddList(GWEN_UI__ui->newEvents, GWEN_UI__ui->events);
@@ -634,12 +608,8 @@ GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w){
   wf=GWEN_Widget_GetFlags(w);
   ws=GWEN_Widget_GetState(w);
 
-  DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(w));
-
   if (!(ws & GWEN_WIDGET_STATE_ACTIVE) ||
       (ws & GWEN_WIDGET_STATE_CLOSED)) {
-    DBG_NOTICE(0, "Widget \"%s\" inactive or closed",
-               GWEN_Widget_GetName(w));
     return 0;
   }
 
@@ -653,7 +623,6 @@ GWEN_WIDGET *GWEN_UI_GetDeepestFocusable(GWEN_WIDGET *w){
         !(ws & GWEN_WIDGET_STATE_CLOSED)) {
       wfocus=GWEN_UI_GetDeepestFocusable(wnext);
       if (wfocus) {
-        DBG_NOTICE(0, "Widget \"%s\" found", GWEN_Widget_GetName(wfocus));
         return wfocus;
       }
       if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
@@ -681,12 +650,8 @@ GWEN_WIDGET *GWEN_UI_GetDeepestFocusableBackwards(GWEN_WIDGET *w){
   wf=GWEN_Widget_GetFlags(w);
   ws=GWEN_Widget_GetState(w);
 
-  DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(w));
-
   if (!(ws & GWEN_WIDGET_STATE_ACTIVE) ||
       (ws & GWEN_WIDGET_STATE_CLOSED)) {
-    DBG_NOTICE(0, "Widget \"%s\" inactive or closed",
-               GWEN_Widget_GetName(w));
     return 0;
   }
 
@@ -704,7 +669,6 @@ GWEN_WIDGET *GWEN_UI_GetDeepestFocusableBackwards(GWEN_WIDGET *w){
         !(ws & GWEN_WIDGET_STATE_CLOSED)) {
       wfocus=GWEN_UI_GetDeepestFocusableBackwards(wnext);
       if (wfocus) {
-        DBG_NOTICE(0, "Widget \"%s\" found", GWEN_Widget_GetName(wfocus));
         return wfocus;
       }
       if ((wf & GWEN_WIDGET_FLAGS_FOCUSABLE) &&
@@ -731,13 +695,8 @@ GWEN_WIDGET *GWEN_UI__FocusToNext(GWEN_WIDGET *wlevel){
   while(wlevel) {
     GWEN_WIDGET *wnext;
 
-    DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wlevel));
     wnext=GWEN_Widget_List_Next(wlevel);
-    if (!wnext) {
-      DBG_NOTICE(0, "No next widget");
-    }
     while(wnext) {
-      DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wnext));
       wfocus=GWEN_UI_GetDeepestFocusable(wnext);
       if (wfocus) {
         return wfocus;
@@ -804,13 +763,8 @@ GWEN_WIDGET *GWEN_UI__FocusToPrevious(GWEN_WIDGET *wlevel){
   while(wlevel) {
     GWEN_WIDGET *wnext;
 
-    DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wlevel));
     wnext=GWEN_Widget_List_Previous(wlevel);
-    if (!wnext) {
-      DBG_NOTICE(0, "No previous widget");
-    }
     while(wnext) {
-      DBG_NOTICE(0, "Checking this widget: %s", GWEN_Widget_GetName(wnext));
       wfocus=GWEN_UI_GetDeepestFocusableBackwards(wnext);
       if (wfocus) {
         return wfocus;

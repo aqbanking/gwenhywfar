@@ -40,6 +40,8 @@ GWEN_UI_RESULT GWEN_Widget_HandleEvent(GWEN_WIDGET *w,
 
 WINDOW *GWEN_Widget_GetWindow(const GWEN_WIDGET *w);
 
+void GWEN_Widget_InformSubscribers(GWEN_WIDGET *w, GWEN_EVENT *e);
+
 
 #endif
 

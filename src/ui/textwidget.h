@@ -42,6 +42,7 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_TW_LINE, GWEN_TWLine)
 #define GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT   0x00040000
 #define GWEN_TEXTWIDGET_FLAGS_DATACHANGE  0x00080000
 #define GWEN_TEXTWIDGET_FLAGS_FIXED       0x00100000
+#define GWEN_TEXTWIDGET_FLAGS_CONST       0x00200000
 
 
 GWEN_WIDGET *GWEN_TextWidget_new(GWEN_WIDGET *parent,
@@ -57,6 +58,8 @@ void GWEN_TextWidget_SetVirtualSize(GWEN_WIDGET *w,
 
 int GWEN_TextWidget_GetVirtualWidth(const GWEN_WIDGET *w);
 int GWEN_TextWidget_GetVirtualHeight(const GWEN_WIDGET *w);
+
+int GWEN_TextWidget_GetMaxWidth(const GWEN_WIDGET *w);
 
 
 GWEN_TW_LINE *GWEN_TextWidget_LineOpen(GWEN_WIDGET *w, int n, int cre);
@@ -102,9 +105,12 @@ int GWEN_TextWidget_SetPreparedText(GWEN_WIDGET *w,
                                     GWEN_TW_LINE_LIST *ll,
                                     GWEN_EVENT_SETTEXT_MODE m);
 
-int GWEN_TextWidget_GetMaxWidth(GWEN_TW_LINE_LIST *ll);
+int GWEN_TextWidget_GetMaxListWidth(GWEN_TW_LINE_LIST *ll);
+int GWEN_TextWidget_SetPos(GWEN_WIDGET *w, int n);
 
 GWEN_BUFFER *GWEN_TextWidget_GetText(const GWEN_WIDGET *w, int asAscii);
+
+void GWEN_TextWidget_Clear(GWEN_WIDGET *w);
 
 
 

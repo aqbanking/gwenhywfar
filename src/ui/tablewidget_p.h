@@ -40,6 +40,7 @@ struct GWEN_TABLE_FIELD {
   int y; /* updated by parents as soon as the position is known */
   int width;
   int height;
+  int selected;
   char *text;
   GWEN_TABLE_COLUMN *parent;
 };
@@ -89,6 +90,34 @@ void GWEN_TableWidget_Highlight(GWEN_WIDGET *w,
                                 GWEN_WIDGET_COLOUR colour);
 
 void GWEN_TableWidget_DrawBorder(GWEN_WIDGET *w, int y1, int y2);
+
+void GWEN_TableWidget__AddColumn(GWEN_WIDGET *w, GWEN_TABLE_COLUMN *tc);
+
+
+GWEN_TABLE_FIELD *GWEN_TableField_new(int width, int height, char *text);
+void GWEN_TableField_free(GWEN_TABLE_FIELD *tf);
+
+GWEN_TABLE_COLUMN *GWEN_TableField_GetParent(const GWEN_TABLE_FIELD *tf);
+int GWEN_TableField_GetWidth(const GWEN_TABLE_FIELD *tf);
+int GWEN_TableField_GetHeight(const GWEN_TABLE_FIELD *tf);
+const char *GWEN_TableField_GetText(const GWEN_TABLE_FIELD *tf);
+void GWEN_TableField_SetText(GWEN_TABLE_FIELD *tf,
+                             const char *s);
+void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf);
+
+
+
+
+
+GWEN_TABLE_COLUMN *GWEN_TableColumn_new(int width);
+void GWEN_TableColumn_free(GWEN_TABLE_COLUMN *tc);
+int GWEN_TableColumn_GetWidth(const GWEN_TABLE_COLUMN *tc);
+int GWEN_TableColumn_GetHeight(const GWEN_TABLE_COLUMN *tc);
+GWEN_WIDGET *GWEN_TableColumn_GetParent(const GWEN_TABLE_COLUMN *tc);
+GWEN_TABLE_FIELD_LIST*
+  GWEN_TableColumn_GetFields(const GWEN_TABLE_COLUMN *tc);
+void GWEN_TableColumn_Update(GWEN_TABLE_COLUMN *tc);
+void GWEN_TableColumn_AddField(GWEN_TABLE_COLUMN *tc, GWEN_TABLE_FIELD *tf);
 
 
 

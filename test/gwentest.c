@@ -42,6 +42,7 @@
 #include <gwenhywfar/ui/editbox.h>
 #include <gwenhywfar/ui/checkbox.h>
 #include <gwenhywfar/ui/dropdownbox.h>
+#include <gwenhywfar/ui/filedialog.h>
 
 
 int testDB(int argc, char **argv) {
@@ -2719,6 +2720,56 @@ int uitest17(int argc, char **argv) {
 }
 
 
+
+int uitest18(int argc, char **argv) {
+  int res;
+  GWEN_STRINGLIST *sl;
+  GWEN_WIDGET *mw;
+
+  GWEN_Logger_Open(0, "test", "gwentest.log",
+                   GWEN_LoggerTypeFile,
+                   GWEN_LoggerFacilityUser);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
+  DBG_NOTICE(0, "Initializing UI");
+  if (GWEN_UI_Begin()) {
+    DBG_ERROR(0, "Could not init UI");
+    return 2;
+  }
+
+  sl=GWEN_StringList_new();
+  GWEN_StringList_AppendString(sl, "C source code files;*.c", 0, 1);
+  GWEN_StringList_AppendString(sl, "C++ source code files;*.cpp", 0, 1);
+  GWEN_StringList_AppendString(sl, "C header files;*.h", 0, 1);
+  GWEN_StringList_AppendString(sl, "all files;*", 0, 1);
+
+  mw=GWEN_FileDialog_new(GWEN_WIDGET_FLAGS_DEFAULT,
+                         "FileDialog",
+                         "Open File",
+                         ".",
+                         "",
+                         sl);
+  GWEN_Widget_Redraw(mw);
+  GWEN_Widget_SetFocus(mw);
+  GWEN_Widget_Dump(mw, 1);
+
+  res=GWEN_Widget_Run(mw);
+  GWEN_Widget_Close(mw);
+  GWEN_UI_Flush();
+
+  GWEN_Widget_free(mw);
+
+  DBG_NOTICE(0, "Deinitializing UI");
+  if (GWEN_UI_End()) {
+    DBG_ERROR(0, "Could not deinit UI");
+    return 2;
+  }
+
+  DBG_NOTICE(0, "Result was: %d", res);
+  return 0;
+}
+
+
 #endif /* USE_NCURSES */
 
 
@@ -2810,6 +2861,8 @@ int main(int argc, char **argv) {
     rv=uitest16(argc, argv);
   else if (strcasecmp(argv[1], "u17")==0)
     rv=uitest17(argc, argv);
+  else if (strcasecmp(argv[1], "u18")==0)
+    rv=uitest18(argc, argv);
 #endif /* USE_NCURSES */
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

@@ -82,10 +82,11 @@ typedef enum {
 
 #define GWEN_WIDGET_ATT_ESC_CHAR  0xff
 #define GWEN_WIDGET_ATT_NORMAL    0x00
-#define GWEN_WIDGET_ATT_STANDOUT  0x01
-#define GWEN_WIDGET_ATT_UNDERLINE 0x02
-#define GWEN_WIDGET_ATT_REVERSE   0x04
-#define GWEN_WIDGET_ATT_CHAR      0x08
+#define GWEN_WIDGET_ATT_STANDOUT  0x10
+#define GWEN_WIDGET_ATT_UNDERLINE 0x20
+#define GWEN_WIDGET_ATT_REVERSE   0x40
+#define GWEN_WIDGET_ATT_CHAR      0x80
+#define GWEN_WIDGET_COLOUR_MASK   0x0f
 
 #define GWEN_WIDGET_CHAR_ESC_CHAR 0xfe
 #define GWEN_WIDGET_CHAR_VLINE    0x01
@@ -108,6 +109,8 @@ typedef enum {
 
 typedef GWEN_UI_RESULT (*GWEN_WIDGET_EVENTHANDLER_FN)(GWEN_WIDGET *w,
                                                       GWEN_EVENT *e);
+
+typedef int (*GWEN_WIDGET_RUN_FN)(GWEN_WIDGET *w);
 
 
 GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
@@ -141,6 +144,7 @@ GWEN_TYPE_UINT32 GWEN_Widget_GetState(const GWEN_WIDGET *w);
 GWEN_WIDGET_EVENTHANDLER_FN GWEN_Widget_GetEventHandler(const GWEN_WIDGET *w);
 void GWEN_Widget_SetEventHandler(GWEN_WIDGET *w,
                                  GWEN_WIDGET_EVENTHANDLER_FN f);
+void GWEN_Widget_SetRunFn(GWEN_WIDGET *w, GWEN_WIDGET_RUN_FN f);
 
 int GWEN_Widget_SendEvent(GWEN_WIDGET *wRecipient,
                           GWEN_WIDGET *wSender,
@@ -173,6 +177,8 @@ int GWEN_Widget_ContentChange(GWEN_WIDGET *w,
                               int contentHeight);
 int GWEN_Widget_Close(GWEN_WIDGET *w);
 
+int GWEN_Widget_Changed(GWEN_WIDGET *w);
+
 
 const char *GWEN_Widget_GetHelpText(const GWEN_WIDGET *w);
 void GWEN_Widget_SetHelpText(GWEN_WIDGET *w, const char *s);
@@ -181,7 +187,7 @@ int GWEN_Widget_IsChildOf(GWEN_WIDGET *wchild, GWEN_WIDGET *w);
 int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w);
 
 
-GWEN_UI_RESULT GWEN_Widget_Run(GWEN_WIDGET *w);
+int GWEN_Widget_Run(GWEN_WIDGET *w);
 
 
 void GWEN_Widget_Subscribe(GWEN_WIDGET *w,

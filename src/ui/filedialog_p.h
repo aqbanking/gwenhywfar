@@ -25,47 +25,42 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_UI_TABLEWIDGET_H
-#define GWEN_UI_TABLEWIDGET_H
+#ifndef GWEN_UI_FILEDIALOG_P_H
+#define GWEN_UI_FILEDIALOG_P_H
 
-#include <gwenhywfar/ui/widget.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/ui/widget.h>
+#include <gwenhywfar/ui/filedialog.h>
 
 
-#define GWEN_TABLEWIDGET_FLAGS_BREAKLINES  0x00010000
-#define GWEN_TABLEWIDGET_FLAGS_COLBORDER   0x00020000
-#define GWEN_TABLEWIDGET_FLAGS_ROWBORDER   0x00040000
-#define GWEN_TABLEWIDGET_FLAGS_LINEMODE    0x00080000
-#define GWEN_TABLEWIDGET_FLAGS_FIXED       0x00100000
-#define GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT   0x00200000
+typedef struct GWEN_FILEDIALOG GWEN_FILEDIALOG;
+struct GWEN_FILEDIALOG {
+  GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
 
-
-typedef struct GWEN_TABLE_FIELD GWEN_TABLE_FIELD;
-typedef struct GWEN_TABLE_ROW GWEN_TABLE_ROW;
-typedef struct GWEN_TABLE_COLUMN GWEN_TABLE_COLUMN;
-
-GWEN_LIST_FUNCTION_DEFS(GWEN_TABLE_FIELD, GWEN_TableField);
-GWEN_LIST_FUNCTION_DEFS(GWEN_TABLE_COLUMN, GWEN_TableColumn);
+  GWEN_WIDGET *wTable;
+  GWEN_WIDGET *wSelected;
+  GWEN_WIDGET *wPatterns;
+  int entries;
+  char *currentDir;
+  GWEN_DB_NODE *files;
+};
+void GWEN_FileDialog_freeData(void *bp, void *p);
 
 
 
-GWEN_WIDGET *GWEN_TableWidget_new(GWEN_WIDGET *parent,
-                                  GWEN_TYPE_UINT32 flags,
-                                  const char *name,
-                                  int x, int y,
-                                  int width, int height);
+GWEN_UI_RESULT GWEN_FileDialog_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
+int GWEN_FileDialog_ScanDir(GWEN_WIDGET *w, const char *s, GWEN_DB_NODE *db);
+int GWEN_FileDialog_Files2Table(GWEN_WIDGET *w, GWEN_DB_NODE *db);
+int GWEN_FileDialog_Update(GWEN_WIDGET *w);
+int GWEN_FileDialog_Run(GWEN_WIDGET *w);
 
-void GWEN_TableWidget_SetText(GWEN_WIDGET *w,
-                              int x, int y, const char *text);
-const char *GWEN_TableWidget_GetText(GWEN_WIDGET *w, int x, int y);
-
-
-int GWEN_TableWidget_AddColumn(GWEN_WIDGET *w, int width);
-int GWEN_TableWidget_GetColumns(const GWEN_WIDGET *w);
-
-int GWEN_TableWidget_Clear(GWEN_WIDGET *w);
 
 
 #endif
+
+
+
 
 
