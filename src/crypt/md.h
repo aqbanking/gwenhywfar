@@ -82,7 +82,7 @@ int GWEN_MD_Update(GWEN_MD *md,
  * @param bsize pointer to a variable that initially holds the size of the
  * buffer. Upon return it will hold the size of the hash data.
  */
-int GWEN_Md_Hash(const char *algo,
+int GWEN_MD_Hash(const char *algo,
                  const char *data,
                  unsigned int dsize,
                  char *buffer,
@@ -139,7 +139,7 @@ GWEN_ERRORCODE GWEN_MD_RegisterProvider(GWEN_MD_PROVIDER *pr);
 GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_MD_UnregisterProvider(GWEN_MD_PROVIDER *pr);
 GWENHYWFAR_API
-void GWEN_Md_UnregisterAllProviders();
+void GWEN_MD_UnregisterAllProviders();
 
 #ifdef __cplusplus
 }

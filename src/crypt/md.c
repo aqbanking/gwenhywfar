@@ -269,7 +269,7 @@ GWEN_MD *GWEN_MD_Factory(const char *t){
 
 
 
-void GWEN_Md_UnregisterAllProviders(){
+void GWEN_MD_UnregisterAllProviders(){
   GWEN_MD_PROVIDER *pr;
 
   pr=gwen_md_providers;
@@ -285,7 +285,7 @@ void GWEN_Md_UnregisterAllProviders(){
 
 
 
-int GWEN_Md_Hash(const char *typ,
+int GWEN_MD_Hash(const char *typ,
                  const char *data,
                  unsigned int dsize,
                  char *buffer,

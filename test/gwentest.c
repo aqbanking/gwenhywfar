@@ -516,7 +516,7 @@ int testKeyFromPW(int argc, char **argv) {
   GWEN_Text_DumpString(right, 8, stderr, 1);
 
   bsize=sizeof(buffer);
-  if (GWEN_Md_Hash("MD5",
+  if (GWEN_MD_Hash("MD5",
                    password,
                    strlen(password),
                    buffer,

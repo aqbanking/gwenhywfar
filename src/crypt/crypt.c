@@ -126,7 +126,7 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleFini(){
     GWEN_ERRORCODE err;
 
     GWEN_Crypt_UnregisterAllProviders();
-    GWEN_Md_UnregisterAllProviders();
+    GWEN_MD_UnregisterAllProviders();
 
     err=GWEN_CryptImpl_Fini();
     if (!GWEN_Error_IsOk(err))
@@ -426,7 +426,7 @@ int GWEN_CryptKey_FromPassword(const char *password,
   } /* switch */
 
   nsize=bsize;
-  if (GWEN_Md_Hash(algo,
+  if (GWEN_MD_Hash(algo,
                    password,
                    strlen(password),
                    buffer,
