@@ -1,4 +1,12 @@
 
+
+2004/11/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- csv plugin: 
+  - implemented checkFile function
+  - fixed a bug (now importing AqMoney2 CSV files works ;-)
+
+
 2004/11/21: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - typemaker:

@@ -32,6 +32,7 @@
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/dbio.h>
+#include <gwenhywfar/stringlist.h>
 
 
 GWEN_DBIO *csv_factory();
@@ -49,6 +50,11 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
 			 GWEN_DB_NODE *data,
 			 GWEN_DB_NODE *cfg);
 
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
+                                                   const char *fname);
+
+int GWEN_DBIO_CSV__ReadLine(GWEN_BUFFEREDIO *bio,
+                            GWEN_STRINGLIST *sl);
 
 
 #endif

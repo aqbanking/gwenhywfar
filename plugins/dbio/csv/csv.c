@@ -37,6 +37,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
 
 
 int GWEN_CSV_GetNameAndIndex(const char *name,
@@ -402,6 +407,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
       /* add db to data */
       GWEN_DB_AddGroup(data, n);
     } /* if this is not the title line */
+    GWEN_StringList_Clear(sl);
     lines++;
   } /* while */
 
@@ -413,12 +419,123 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
 
 
 
+int GWEN_DBIO_CSV__ReadLine(GWEN_BUFFEREDIO *bio,
+                            GWEN_STRINGLIST *sl) {
+  GWEN_ERRORCODE err;
+  const char *delimiters=";\t,";
+
+  assert(bio);
+
+  if(!GWEN_BufferedIO_CheckEOF(bio)) {
+    GWEN_BUFFER *lbuffer;
+    GWEN_BUFFER *wbuffer;
+    int rv;
+    const char *s;
+
+    /* read line */
+    lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_Reset(lbuffer);
+    err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuffer);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+      GWEN_Buffer_free(lbuffer);
+      return -1;
+    }
+
+    /* read columns */
+    wbuffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+    s=GWEN_Buffer_GetStart(lbuffer);
+    while(*s) {
+      rv=GWEN_Text_GetWordToBuffer(s, delimiters, wbuffer,
+				   GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+				   GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
+				   GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
+				   GWEN_TEXT_FLAGS_DEL_QUOTES,
+				   &s);
+      if (rv) {
+	GWEN_Buffer_free(wbuffer);
+	GWEN_Buffer_free(lbuffer);
+	return rv;
+      }
+      GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(wbuffer), 0, 0);
+      GWEN_Buffer_Reset(wbuffer);
+      if (*s) {
+	if (strchr(delimiters, *s))
+	  s++;
+      }
+    } /* while */
+    GWEN_Buffer_free(wbuffer);
+    GWEN_Buffer_free(lbuffer);
+  }
+
+  return 0;
+}
+
+
+
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
+                                                   const char *fname){
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+  int i;
+
+  fd=open(fname, O_RDONLY);
+  if (fd==-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
+              fname,
+	      strerror(errno));
+    return 0;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  assert(bio);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+
+  if (!GWEN_BufferedIO_CheckEOF(bio)) {
+    GWEN_STRINGLIST *sl;
+
+    /* read line into string list */
+    sl=GWEN_StringList_new();
+    if (GWEN_DBIO_CSV__ReadLine(bio, sl)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Error reading a line");
+      GWEN_BufferedIO_Abandon(bio);
+      GWEN_BufferedIO_free(bio);
+      return GWEN_DBIO_CheckFileResultNotOk;
+    }
+
+    /* first column: number */
+    i=GWEN_StringList_Count(sl);
+    GWEN_StringList_free(sl);
+    if (i) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Found %d columns, file supported", i);
+      GWEN_BufferedIO_Close(bio);
+      GWEN_BufferedIO_free(bio);
+      return GWEN_DBIO_CheckFileResultOk;
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Found no columns, file might not be supported");
+      GWEN_BufferedIO_Close(bio);
+      GWEN_BufferedIO_free(bio);
+      return GWEN_DBIO_CheckFileResultUnknown;
+    }
+  } /* if !EOF */
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty file");
+    return GWEN_DBIO_CheckFileResultNotOk;
+  }
+}
+
+
+
+
 GWEN_DBIO *csv_factory() {
   GWEN_DBIO *dbio;
 
   dbio=GWEN_DBIO_new("csv", "Imports and exports CSV data");
   GWEN_DBIO_SetImportFn(dbio, GWEN_DBIO_CSV_Import);
   GWEN_DBIO_SetExportFn(dbio, GWEN_DBIO_CSV_Export);
+  GWEN_DBIO_SetCheckFileFn(dbio, GWEN_DBIO_CSV_CheckFile);
   return dbio;
 }
 
