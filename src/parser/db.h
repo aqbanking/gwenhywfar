@@ -26,6 +26,38 @@
  ***************************************************************************/
 
 
+/** @file db.h
+ *
+ * @brief This file contains the definition of a GWEN_DB database.
+ *
+ * A GWEN_DB database consists of a tree of @ref GWEN_DB_NODE
+ * entries. FIXME: Describe "the big picture" here, please -- here's
+ * what I understood:
+ *
+ * Such a @ref GWEN_DB_NODE node can either be a group of nodes, or a
+ * variable, or a variable's value. Usually an application programmer
+ * will only get in touch with group nodes. Nevertheless first we
+ * explain the difference of the three cases. Depending on either of
+ * these cases, you can
+ *
+ * <ol>
+ * <li> Iterate through groups or get a variable with
+ *  e.g. GWEN_DB_GetNextGroup(), GWEN_DB_GetNextVar() 
+ * <li> Get the type of a variable with e.g. GWEN_DB_GetVariableType() 
+ *  -- the value of a variable is retrieved by the shortcut functions 
+ *  explained below.
+ * <li> Get the type of a value with GWEN_DB_GetValueType(). Again the
+ * value itself is retrieved with the shortcut functions below.
+ * </ol>
+ * 
+ * To retrieve or set the value of such a variable, the following
+ * "shortcut" functions for all three supported typed exist:
+ * GWEN_DB_GetIntValue(), GWEN_DB_GetCharValue(),
+ * GWEN_DB_GetBinValue(). These functions only accept a group (FIXME:
+ * is this correct? No varilable, no value?) and a "path" to the
+ * desired variable.
+ */
+
 #ifndef GWENHYFWAR_DB_H
 #define GWENHYFWAR_DB_H
 
@@ -104,7 +136,10 @@ extern "C" {
 
 /**
  * This is the type used to store a DB. Its contents are explicitly NOT
- * part of the API.
+ * part of the API. 
+ *
+ * A description of what can be done with this type can be found in
+ * @ref db.h
  */
 typedef union GWEN_DB_NODE GWEN_DB_NODE;
 
@@ -124,25 +159,30 @@ typedef enum {
 
 
 
-/** @name Contructing, Desctructing, Copying
+/** @name Constructing, Destructing, Copying
  *
  */
 /*@{*/
 
 /**
- * Creates a new (empty) group with the given name.
- * You should free it using @ref GWEN_DB_Group_free().
+ * Creates a new (empty) group with the given name. I.e. this is the
+ * constructor.  When finished using this group, you should free it
+ * using @ref GWEN_DB_Group_free() in order to avoid memory leaks.
  */
 GWEN_DB_NODE *GWEN_DB_Group_new(const char *name);
 
 /**
- * Frees a DB group. This is needed to avoid memory leaks.
+ * Frees a DB group. I.e. this is the destructor. This is needed to
+ * avoid memory leaks.
  */
 void GWEN_DB_Group_free(GWEN_DB_NODE *n);
 
 /**
- * Creates a deep copy of the given node. This copy MUST be freed after using
- * it by calling @ref GWEN_DB_Group_free().
+ * Creates a deep copy of the given node. This copy will then be owned
+ * by the caller and MUST be freed after using it by calling @ref
+ * GWEN_DB_Group_free().
+ *
+ * FIXME: Is is possible to make the argument const here?
  */
 GWEN_DB_NODE *GWEN_DB_Group_dup(GWEN_DB_NODE *n);
 /*@}*/
@@ -187,8 +227,9 @@ GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
                                           const char *p);
 
 /**
- * Returns the first value below the given group.
- * If there is no value then NULL is returned.
+ * Returns the first value below the given group. (FIXME: You really
+ * mean group here, not variable?)  If there is no value then NULL is
+ * returned.
  */
 GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
 
@@ -214,16 +255,19 @@ GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
 /*@{*/
 /**
  * Deletes the given variable by removing it and its values from the DB.
+ *
+ * FIXME: This means the value (char, binary) is also freed if necessary?
+ *
  * @param n root of the DB
  * @param path path to the variable to remove
- * @return 0 on success, !=0 on error
+ * @return Zero on success, nonzero on error
  */
 int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
                       const char *path);
 
 /**
  * Checks whether the given variable exists.
- * @return 0 if variable not found, !=0 otherwise
+ * @return Zero if variable not found, nonzero otherwise
  * @param n root of the DB
  * @param path path to the variable to check for
  */
@@ -248,17 +292,18 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
  *  specifying index 1 with a variable that has only one value)</li>
  *  <li>a string value is expected but the variable is not of that type.
  *  However, if you want an integer value but the variable only has a char
- *  value then the getter functions try to convert the cahr to an integer.
- *  Other conversion do not take place.</li>
+ *  value then the getter functions try to convert the char to an integer.
+ *  Other conversions do not take place.</li>
  * </ul>
  *
  * The setter functions either replace an existing variable, create a missing
- * variable or return an error if the variable does not exist (see description
- * of the flags). <BR>
- * All getter functions return the value got, all setter functions return 0
- * if ok and !=0 on error.
- * <br>
- * This module know about the following types:
+ * variable, or return an error if the variable does not exist (see description
+ * of the flags). 
+ *
+ * All getter functions return the variable's retrieved value. All
+ * setter functions return Zero if ok and Nonzero on error.
+ *
+ * This module knows about the following types (see @ref GWEN_DB_VALUETYPE):
  * <ul>
  *  <li>char (simple null terminated C strings)</li>
  *  <li>int (integer values)</li>
@@ -266,12 +311,19 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
  * </ul>
  */
 /*@{*/
+/** Returns the variable's retrieved value.
+ */
 const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
                                  const char *path,
                                  int idx,
                                  const char *defVal);
 /**
- * @return 0 on success, !=0 on error
+ *
+ * @param val The string value that is copied into the DB. (FIXME: Is
+ * this correct, i.e. the DB holds a separate copy? Or does the DB
+ * take over ownership of the val?)
+ *
+ * @return 0 on success, nonzero on error
  */
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          unsigned int flags,
@@ -279,13 +331,15 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          const char *val);
 
 
+/** Returns the variable's retrieved value.
+ */
 int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
                         const char *path,
                         int idx,
                         int defVal);
 
 /**
- * @return 0 on success, !=0 on error
+ * @return 0 on success, nonzero on error
  */
 int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
                         unsigned int flags,
@@ -293,6 +347,9 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
                         int val);
 
 
+/** Returns the variable's retrieved value. The size of the binary
+ * data is written into the int pointer argument returnValueSize.
+ */
 const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
                                 const char *path,
                                 int idx,
@@ -301,7 +358,12 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
                                 unsigned int *returnValueSize);
 
 /**
- * @return 0 on success, !=0 on error
+ * @param val The binary data that is copied into the DB. (FIXME: Is
+ * this correct, i.e. the DB holds a separate copy? Or does the DB
+ * take over ownership of the val?)
+ * @param valSize The number of bytes in the binary data value.
+ *
+ * @return 0 on success, nonzero on error
  */
 int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 			unsigned int flags,
@@ -338,21 +400,25 @@ void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname);
 
 /**
  * Adds the given group as a new child of the first given one.
- * This function takes over ownership of the new group, so you MUST NOT
- * free it.
+ *
+ * @note This function takes over the ownership of the new group, so
+ * you MUST NOT free it afterwards.
  */
 int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
 
 /**
  * This function adds all children of the second node as new children to
  * the first given one.
- * This function does NOT take over ownership of the new group.
+ *
+ * @note This function does NOT take over ownership of the new
+ * group. The caller is still the owner of the given group.
  */
 int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn);
 
 /**
  * Unlinks a group (and thereby all its children) from its parent and
  * brothers.
+ *
  * This function DOES NOT free the group, it just unlinks it. You can then use
  * it with e.g. @ref GWEN_DB_AddGroup or other functions to relink it at any
  * other position of even in other DBs.
@@ -361,13 +427,13 @@ void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n);
 
 /**
  * Locates and removes the group of the given name.
- * @return 0 on success, !=0 on error
+ * @return 0 on success, nonzero on error
  */
 int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
                         const char *path);
 /**
  * Frees all children of the given node thereby clearing it.
- * @return 0 on success, !=0 on error
+ * @return 0 on success, nonzero on error
  * @param path path to the group under the given node to clear
  * (if 0 then clear the given node)
  */
@@ -387,17 +453,26 @@ int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
  */
 /*@{*/
 
+/** Read a DB from GWEN_BUFFEREDIO.
+ */
 int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                            GWEN_BUFFEREDIO *bio,
                            unsigned int dbflags);
+
+/** Read a DB from a file.
+ */
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      const char *fname,
                      unsigned int dbflags);
 
+/** Write a DB to a GWEN_BUFFEREDIO.
+ */
 int GWEN_DB_WriteToStream(GWEN_DB_NODE *node,
                           GWEN_BUFFEREDIO *bio,
                           unsigned int dbflags);
 
+/** Write a DB to a file.
+ */
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
                       unsigned int dbflags);
