@@ -2997,7 +2997,36 @@ int testDBIO(int argc, char **argv) {
 
 
 
+int testTimeToString(int argc, char **argv) {
+  GWEN_TIME *t;
+  GWEN_BUFFER *tbuf;
+  const char *tmpl;
 
+  if (argc<3)
+    tmpl="YYYY/MM/DD hh:mm:ss";
+  else
+    tmpl=argv[2];
+
+  t=GWEN_CurrentTime();
+  assert(t);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Time_toString(t, tmpl, tbuf)) {
+    fprintf(stderr, "Could not convert time to string.\n");
+    return 2;
+  }
+  fprintf(stdout, "Current date/time: %s\n",
+          GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+  if (GWEN_Time_toUtcString(t, tmpl, tbuf)) {
+    fprintf(stderr, "Could not convert time to string.\n");
+    return 2;
+  }
+  fprintf(stdout, "Current UTC date/time: %s\n",
+          GWEN_Buffer_GetStart(tbuf));
+
+  return 0;
+}
 
 
 
@@ -3100,6 +3129,8 @@ int main(int argc, char **argv) {
     rv=testList2(argc, argv);
   else if (strcasecmp(argv[1], "dbio")==0)
     rv=testDBIO(argc, argv);
+  else if (strcasecmp(argv[1], "time1")==0)
+    rv=testTimeToString(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

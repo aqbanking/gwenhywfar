@@ -32,6 +32,7 @@
 #include "gwentime_l.h"
 
 
+#define GWEN_TIME_TMPL_MAX_COUNT 8
 
 struct GWEN_TIME {
   GWEN_TYPE_UINT32 secs;
@@ -46,6 +47,31 @@ GWEN_TYPE_UINT32 GWEN_Time__mktimeUtc(int year,
                                       int hour,
                                       int min,
                                       int sec);
+
+
+
+typedef struct GWEN_TIME_TMPLCHAR GWEN_TIME_TMPLCHAR;
+GWEN_LIST_FUNCTION_DEFS(GWEN_TIME_TMPLCHAR, GWEN_TimeTmplChar)
+struct GWEN_TIME_TMPLCHAR {
+  GWEN_LIST_ELEMENT(GWEN_TIME_TMPLCHAR)
+  char character;
+  int count;
+  int nextChar;
+  char *content;
+};
+GWEN_TIME_TMPLCHAR *GWEN_TimeTmplChar_new(char c);
+void GWEN_TimeTmplChar_free(GWEN_TIME_TMPLCHAR *e);
+
+GWEN_TIME_TMPLCHAR *GWEN_Time__findTmplChar(GWEN_TIME_TMPLCHAR_LIST *ll,
+                                            char c);
+void GWEN_Time__sampleTmplChars(const GWEN_TIME *t, const char *tmpl,
+				GWEN_BUFFER *buf,
+				GWEN_TIME_TMPLCHAR_LIST *ll);
+void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
+			      GWEN_TIME_TMPLCHAR_LIST *ll,
+			      int useUtc);
+int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
+			GWEN_BUFFER *buf, int useUtc);
 
 
 #endif

@@ -1,4 +1,14 @@
 
+2004/11/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions:
+  - GWEN_Time_toString
+  - GWEN_Time_toUtcString
+  ------------------------------------------------------------------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
 2004/11/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a build-problem (tools did not link against all needed libraries)

@@ -41,6 +41,9 @@
 #include <string.h>
 
 
+GWEN_LIST_FUNCTIONS(GWEN_TIME_TMPLCHAR, GWEN_TimeTmplChar)
+
+
 
 GWEN_TIME *GWEN_CurrentTime(){
   GWEN_TIME *t;
@@ -489,4 +492,171 @@ time_t GWEN_Time_toTime_t(const GWEN_TIME *t) {
   assert(t);
   return t->secs;
 }
+
+
+
+
+GWEN_TIME_TMPLCHAR *GWEN_TimeTmplChar_new(char c) {
+  GWEN_TIME_TMPLCHAR *e;
+
+  GWEN_NEW_OBJECT(GWEN_TIME_TMPLCHAR, e);
+  GWEN_LIST_INIT(GWEN_TIME_TMPLCHAR, e);
+  e->character=c;
+  return e;
+}
+
+
+
+void GWEN_TimeTmplChar_free(GWEN_TIME_TMPLCHAR *e) {
+  if (e) {
+    free(e->content);
+    GWEN_LIST_FINI(GWEN_TIME_TMPLCHAR, e);
+    GWEN_FREE_OBJECT(e);
+  }
+}
+
+
+GWEN_TIME_TMPLCHAR *GWEN_Time__findTmplChar(GWEN_TIME_TMPLCHAR_LIST *ll,
+                                            char c) {
+  GWEN_TIME_TMPLCHAR *e;
+
+  e=GWEN_TimeTmplChar_List_First(ll);
+  while(e) {
+    if (e->character==c)
+      break;
+    e=GWEN_TimeTmplChar_List_Next(e);
+  }
+
+  return e;
+}
+
+
+
+
+void GWEN_Time__sampleTmplChars(const GWEN_TIME *t, const char *tmpl,
+                                GWEN_BUFFER *buf,
+                                GWEN_TIME_TMPLCHAR_LIST *ll) {
+  const char *s;
+
+  s=tmpl;
+  while(*s) {
+    if (strchr("YMDhms", *s)) {
+      GWEN_TIME_TMPLCHAR *e;
+
+      e=GWEN_Time__findTmplChar(ll, *s);
+      if (!e) {
+        /* new entry, create it */
+        e=GWEN_TimeTmplChar_new(*s);
+        GWEN_TimeTmplChar_List_Add(e, ll);
+      }
+      assert(e);
+      e->count++;
+    }
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Unknown character in template (%02x)",
+                *s);
+    }
+    s++;
+  }
+}
+
+
+
+void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
+                              GWEN_TIME_TMPLCHAR_LIST *ll,
+                              int useUtc) {
+  GWEN_TIME_TMPLCHAR *e;
+  int year, month, day, hour, minute, second;
+
+  if (useUtc) {
+    GWEN_Time_GetBrokenDownUtcDate(t, &day, &month, &year);
+    GWEN_Time_GetBrokenDownUtcTime(t, &hour, &minute, &second);
+  }
+  else {
+    GWEN_Time_GetBrokenDownDate(t, &day, &month, &year);
+    GWEN_Time_GetBrokenDownTime(t, &hour, &minute, &second);
+  }
+
+  e=GWEN_TimeTmplChar_List_First(ll);
+  while(e) {
+    int v;
+    char buffer[32];
+
+    switch(e->character) {
+    case 'Y': v=year; break;
+    case 'M': v=month+1; break;
+    case 'D': v=day; break;
+    case 'h': v=hour; break;
+    case 'm': v=minute; break;
+    case 's': v=second; break;
+    default:  v=-1; break;
+    }
+    if (v==-1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unknown character, should not happen here");
+      abort();
+    }
+    buffer[0]=0;
+    snprintf(buffer, sizeof(buffer)-1, "%0*d", GWEN_TIME_TMPL_MAX_COUNT, v);
+    buffer[sizeof(buffer)-1]=0;
+    e->content=strdup(buffer);
+    e->nextChar=strlen(e->content)-(e->count);
+    e=GWEN_TimeTmplChar_List_Next(e);
+  }
+}
+
+
+
+
+int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
+                        GWEN_BUFFER *buf, int useUtc) {
+  GWEN_TIME_TMPLCHAR_LIST *ll;
+  const char *s;
+
+  ll=GWEN_TimeTmplChar_List_new();
+  GWEN_Time__sampleTmplChars(t, tmpl, buf, ll);
+  GWEN_Time__fillTmplChars(t, ll, useUtc);
+
+  s=tmpl;
+  while(*s) {
+    if (strchr("YMDhms", *s)) {
+      GWEN_TIME_TMPLCHAR *e;
+      char c;
+
+      e=GWEN_Time__findTmplChar(ll, *s);
+      assert(e);
+      assert(e->content);
+      c=e->content[e->nextChar++];
+      assert(c);
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    else
+      GWEN_Buffer_AppendByte(buf, *s);
+    s++;
+  }
+  GWEN_TimeTmplChar_List_free(ll);
+  return 0;
+}
+
+
+
+int GWEN_Time_toString(const GWEN_TIME *t, const char *tmpl,
+                       GWEN_BUFFER *buf) {
+  return GWEN_Time__toString(t, tmpl, buf, 0);
+}
+
+
+
+int GWEN_Time_toUtcString(const GWEN_TIME *t, const char *tmpl,
+                          GWEN_BUFFER *buf) {
+  return GWEN_Time__toString(t, tmpl, buf, 1);
+}
+
+
+
+
+
+
+
+
+
 
