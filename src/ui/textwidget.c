@@ -1902,7 +1902,9 @@ GWEN_TW_LINE_LIST *GWEN_TextWidget_TextToLines(const char *s,
   bio=GWEN_BufferedIO_Buffer2_new(buf, 1);
   GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
   xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "gwen");
-  if (GWEN_XML_Parse(xmlNode, bio, GWEN_XML_FLAGS_DEFAULT)) {
+  if (GWEN_XML_Parse(xmlNode, bio,
+                     GWEN_XML_FLAGS_DEFAULT|
+                     GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
     DBG_NOTICE(0, "here");
     GWEN_BufferedIO_free(bio);
     GWEN_XMLNode_free(xmlNode);

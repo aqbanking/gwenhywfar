@@ -1,8 +1,24 @@
 
+2004/06/29: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui:
+  - started working on a widget-loader (loads and creates widgets from an
+    XML file)
+- parser:
+  - xml: introduced a file-load flag which allows selecting whether some
+    unclosed HTML tags are accepted (like <br>) or not.
+    The default still is not to.
+  - db: introduced new value type PTR (allows portable storage of 
+    void* pointers)
+
+
 2004/06/28: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - configure.ac: fixed a bug (the headers from src/parser where not
   symlinked)
+- parser/xml:
+  - CONSTified some parameters of some functions
+  - added functions which simplify access to tags as variables
 
 
 2004/06/27: Martin Preuss<martin@libchipcard.de>

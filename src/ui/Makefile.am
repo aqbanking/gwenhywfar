@@ -11,6 +11,7 @@ iheader_HEADERS=\
   event.h \
   filedialog.h \
   hslider.h \
+  loader.h \
   messagebox.h \
   scrollwidget.h \
   tablewidget.h \
@@ -28,6 +29,7 @@ noinst_HEADERS=\
   event_p.h \
   filedialog_p.h \
   hslider_p.h \
+  loader_p.h \
   messagebox_p.h \
   scrollwidget_p.h \
   tablewidget_p.h \
@@ -47,6 +49,7 @@ libui_la_SOURCES=\
   event.c \
   filedialog.c \
   hslider.c \
+  loader.c \
   messagebox.c \
   scrollwidget.c \
   tablewidget.c \

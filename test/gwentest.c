@@ -43,6 +43,7 @@
 #include <gwenhywfar/ui/checkbox.h>
 #include <gwenhywfar/ui/dropdownbox.h>
 #include <gwenhywfar/ui/filedialog.h>
+#include <gwenhywfar/ui/loader.h>
 
 
 int testDB(int argc, char **argv) {
@@ -2771,6 +2772,47 @@ int uitest18(int argc, char **argv) {
 }
 
 
+
+int uitest19(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_XMLNODE *nn;
+  GWEN_DB_NODE *db;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  nn=GWEN_XMLNode_GetFirstTag(n);
+  if (!nn) {
+    DBG_ERROR(0, "No subtag");
+    return 1;
+  }
+
+  db=GWEN_UILoader_ParseWidget(nn,
+                               0, 0,
+                               80, 25);
+  if (db) {
+    DBG_NOTICE(0, "DB is:");
+    GWEN_DB_Dump(db, stdout, 2);
+    GWEN_DB_Group_free(db);
+  }
+  GWEN_XMLNode_free(n);
+  return 0;
+
+
+  return 0;
+}
+
+
 #endif /* USE_NCURSES */
 
 
@@ -2864,6 +2906,8 @@ int main(int argc, char **argv) {
     rv=uitest17(argc, argv);
   else if (strcasecmp(argv[1], "u18")==0)
     rv=uitest18(argc, argv);
+  else if (strcasecmp(argv[1], "u19")==0)
+    rv=uitest19(argc, argv);
 #endif /* USE_NCURSES */
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

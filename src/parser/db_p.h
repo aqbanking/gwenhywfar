@@ -39,8 +39,9 @@ typedef struct GWEN_DB_VAR GWEN_DB_VAR;
 typedef struct GWEN_DB_VALUE_HEADER GWEN_DB_VALUE_HEADER;
 typedef struct GWEN_DB_VALUE_CHAR GWEN_DB_VALUE_CHAR;
 typedef struct GWEN_DB_VALUE_INT GWEN_DB_VALUE_INT;
-
 typedef struct GWEN_DB_VALUE_BIN GWEN_DB_VALUE_BIN;
+typedef struct GWEN_DB_VALUE_PTR GWEN_DB_VALUE_PTR;
+
 typedef union GWEN_DB_VALUE GWEN_DB_VALUE;
 
 typedef enum {
@@ -100,11 +101,18 @@ struct GWEN_DB_VALUE_BIN {
 };
 
 
+struct GWEN_DB_VALUE_PTR {
+  GWEN_DB_VALUE_HEADER h;
+  void *data;
+};
+
+
 union GWEN_DB_VALUE {
   GWEN_DB_VALUE_HEADER h;
   GWEN_DB_VALUE_CHAR c;
   GWEN_DB_VALUE_INT i;
   GWEN_DB_VALUE_BIN b;
+  GWEN_DB_VALUE_PTR p;
 };
 
 
@@ -124,6 +132,9 @@ GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
 GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);
 
 GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data);
+
+GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data);
+
 
 GWEN_DB_NODE *GWEN_DB_Var_new(const char *name);
 
@@ -191,7 +202,6 @@ void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
 void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
                                 GWEN_DB_NODE *n);
 void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n);
-
 
 
 #endif

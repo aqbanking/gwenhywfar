@@ -34,6 +34,9 @@ Gwenhywfar includes the following features:
 - Support for interprocess communication (HTTP on top of SSL or plain
   TCP/UDP sockets)
 
+- Console user-interface (including a simple HTML parser) based on
+  ncurses
+
 
 Requirements
 ------------
@@ -61,9 +64,9 @@ supported:
 Documentation
 -------------
 
-Currently the documentation can only be found in the header
-files. Many header files already include extensive comments in
-doxygen-format (however some don't).
+Currently the documentation can be found in the header files. Many header 
+files already include extensive comments in doxygen-format (however some 
+don't).
 For a more or less complete API documentation use the command
 "make srcdoc"
 You will need the tool doxygen for this command to run.

@@ -57,36 +57,43 @@ extern "C" {
 /**
  * if set then comments are read. Otherwise they are ignored when reading
  * a file */
-#define GWEN_XML_FLAGS_READ_COMMENTS  0x0001
+#define GWEN_XML_FLAGS_READ_COMMENTS        0x0001
 /**
  * if set then toplevel elements are shared across all files (even included
  * ones, if the include tag/element appears in the top level)
  */
-#define GWEN_XML_FLAGS_SHARE_TOPLEVEL      0x0002
+#define GWEN_XML_FLAGS_SHARE_TOPLEVEL       0x0002
 
 /**
  * if set then the file given to the include tag/element are loaded to
  * the root of the XML tree regardless of the tag's location.
  */
-#define GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL 0x0004
+#define GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL  0x0004
 
 /**
  * if set then include tags/elements are treated as any other tag
  * (i.e. no automatic file inclusion takes place. Instead the include
  * tag is stored like any other tag would be).
  */
-#define GWEN_XML_FLAGS_IGNORE_INCLUDE      0x0008
+#define GWEN_XML_FLAGS_IGNORE_INCLUDE       0x0008
 
 /**
  * Also write comments when writing a node.
  */
-#define GWEN_XML_FLAGS_WRITE_COMMENTS      0x0010
+#define GWEN_XML_FLAGS_WRITE_COMMENTS       0x0010
 
 /**
  * Indent lines according to node level when writing nodes. This increases
  * the readability of the resulting file.
  */
-#define GWEN_XML_FLAGS_INDENT              0x0020
+#define GWEN_XML_FLAGS_INDENT               0x0020
+
+/**
+ * Let the parser accept some HTML which are known to be unclosed (e.g.
+ * the tag "BR" in HTML tags is never closed).
+ * If not set a "BR" tag without a corresponding "/BR" will produce an error.
+ */
+#define GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS 0x0040
 
 /**
  * combination of other flags resembling the default flags
@@ -299,7 +306,7 @@ GWENHYWFAR_API
  *
  * @return The first children tag/element, or NULL if none exists. */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(const GWEN_XMLNODE *n);
 
 /** Iterates on the same level in the XML tree from the given tag (in
  * XML notation they are called elements) to the next one on the same
@@ -313,7 +320,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n);
  * @return The next tag/element on the same level, or NULL if no more
  * element exists. */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(const GWEN_XMLNODE *n);
 
 /** Descends in the XML tree to the first children data node below the
  * given node. 
@@ -323,7 +330,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n);
  *
  * @return The first children data node, or NULL if none exists. */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(const GWEN_XMLNODE *n);
 
 /** Iterates on the same level in the XML tree from the given data
  * node to the next one on the same level (i.e. the returned element
@@ -337,7 +344,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n);
  * @return The next data node on the same level, or NULL if no more
  * data node exists. */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetNextData(const GWEN_XMLNODE *n);
 
 /**
  * Searches for the first matching tag/element below the given one.
@@ -365,7 +372,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
  * against, wildcards allowed.
  */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(const GWEN_XMLNODE *n,
                                         const char *tname,
                                         const char *pname,
                                         const char *pvalue);
@@ -376,7 +383,7 @@ GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
  * as the given element).
  */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(const GWEN_XMLNODE *n,
                                        const char *tname,
                                        const char *pname,
                                        const char *pvalue);
@@ -438,7 +445,7 @@ GWENHYWFAR_API
  * (i.e. if a node is returned it will be a child of the given one).
  */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *n,
                                     GWEN_XMLNODE_TYPE t,
                                     const char *data);
 /*@}*/
@@ -484,6 +491,7 @@ GWENHYWFAR_API
 /**
  * Writes a tag and all its subnodes to the given bufferedio.
  */
+GWENHYWFAR_API
 int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
                                GWEN_BUFFEREDIO *bio,
                                GWEN_TYPE_UINT32 flags);
@@ -491,9 +499,57 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
 /**
  * Writes a tag and all its subnodes to the given file.
  */
+GWENHYWFAR_API
 int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
                            const char *fname,
                            GWEN_TYPE_UINT32 flags);
+
+/*@}*/
+
+
+
+/** @name Handling Tags As Variables
+ *
+ * These functions look for a tag, read their first data element and
+ * return it as if it was a DB variable.
+ * This simplifies access to simple tags containing simple data tags only.
+ * E.g. if your XML structure is this:
+ * @code
+ * <test>
+ *   <X> 15 </X>
+ *   <Y> 10 </Y>
+ * </test>
+ * @endcode
+ * ... then you can access the value of X with the following call:
+ * @code
+ * x=GWEN_XMLNode_GetIntValue(testNode, "X", 0);
+ * @endcode
+ * If the given variables do not exist or have no value then the also given
+ * default value will be returned.
+ */
+/*@{*/
+
+/**
+ * @param n Node which is expected to contain a node of the specified name
+ * @param name name of the node below n to be looked up
+ * @param defValue default value to return if the tag did not exist
+ */
+GWENHYWFAR_API
+const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
+                                      const char *name,
+                                      const char *defValue);
+
+/**
+ * Internally calls @ref GWEN_XMLNode_GetCharValue and interpretes the
+ * data as an integer which is then returned.
+ * @param n Node which is expected to contain a node of the specified name
+ * @param name name of the node below n to be looked up
+ * @param defValue default value to return if the tag did not exist
+ */
+GWENHYWFAR_API
+int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
+			     const char *name,
+			     int defValue);
 
 /*@}*/
 

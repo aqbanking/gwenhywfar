@@ -103,6 +103,18 @@ GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data) {
 
 
 
+GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data) {
+  GWEN_DB_VALUE_PTR *v;
+
+  GWEN_NEW_OBJECT(GWEN_DB_VALUE_PTR, v);
+  v->h.h.typ=GWEN_DB_NODETYPE_VALUE;
+  v->h.typ=GWEN_DB_VALUETYPE_PTR;
+  v->data=data;
+  return (GWEN_DB_NODE*)v;
+}
+
+
+
 GWEN_DB_NODE *GWEN_DB_Group_new(const char *name){
   GWEN_DB_GROUP *node;
 
@@ -272,6 +284,11 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
         free(n->val.b.data);
         break;
 
+      case GWEN_DB_VALUETYPE_PTR:
+        /* no dynamic data, nothing to do */
+        DBG_VERBOUS(0, "Freeing dynamic data of ptr value");
+        break;
+
       default:
         DBG_WARN(0, "Unknown value type (%d)", n->val.h.typ);
       }
@@ -313,6 +330,10 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n){
     case GWEN_DB_VALUETYPE_BIN:
       nn=GWEN_DB_ValueBin_new(n->val.b.data,
                               n->val.b.dataSize);
+      break;
+
+    case GWEN_DB_VALUETYPE_PTR:
+      nn=GWEN_DB_ValuePtr_new(n->val.p.data);
       break;
 
     default:
@@ -1009,6 +1030,74 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 
 
 
+void *GWEN_DB_GetPtrValue(GWEN_DB_NODE *n,
+                          const char *path,
+                          int idx,
+                          void *defVal){
+  GWEN_DB_NODE *nn;
+
+  nn=GWEN_DB_GetValue(n, path, idx);
+  if (!nn){
+    DBG_VERBOUS(0, "Value for \"%s\" not found, returning default value",
+	      path);
+    return defVal;
+  }
+  if (nn->val.h.typ!=GWEN_DB_VALUETYPE_PTR) {
+    /* bad type */
+    DBG_VERBOUS(0, "Bad type for path \"%s\", returning default value",
+                path);
+    return defVal;
+  }
+  return nn->val.p.data;
+}
+
+
+
+int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
+                        GWEN_TYPE_UINT32 flags,
+                        const char *path,
+                        void *val){
+  GWEN_DB_NODE *nn;
+  GWEN_DB_NODE *nv;
+
+  /* select/create node */
+  nn=GWEN_DB_GetNode(n,
+		     path,
+		     flags | GWEN_PATH_FLAGS_VARIABLE);
+  if (!nn) {
+    DBG_VERBOUS(0, "Path \"%s\" not available",
+	      path);
+    return 1;
+  }
+
+  /* delete contents of this variable if wanted */
+  if (flags & GWEN_DB_FLAGS_OVERWRITE_VARS) {
+    DBG_VERBOUS(0, "Clearing variable \"%s\"", path);
+    GWEN_DB_ClearNode(nn);
+  }
+
+  nv=GWEN_DB_ValuePtr_new(val);
+  GWEN_DB_Node_Append(nn, nv);
+  DBG_VERBOUS(0, "Added ptr value to variable \"%s\"", path);
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
 			       GWEN_TYPE_UINT32 flags,
 			       const char *path) {
@@ -1090,6 +1179,11 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
           }
           free(buffer);
         }
+        break;
+
+      case GWEN_DB_VALUETYPE_PTR:
+        /* no dynamic data, nothing to do */
+        fprintf(f, "Value : %08x (ptr)\n", (unsigned int)(n->val.p.data));
         break;
 
       default:
@@ -1245,6 +1339,11 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               vt=GWEN_DB_VALUETYPE_BIN;
             else if (strcasecmp(p, "char")==0)
               vt=GWEN_DB_VALUETYPE_CHAR;
+            else if (strcasecmp(p, "ptr")==0){
+              DBG_ERROR(0, "Error in line %d, pos %d (invalid type)",
+                        lineno, pos-linebuf+1);
+              return -1;
+            }
             else {
               DBG_WARN(0, "Unknown type \"%s\", assuming \"char\"", p);
               vt=GWEN_DB_VALUETYPE_CHAR;
@@ -1549,279 +1648,292 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 
   n=node->h.child;
   while(n) {
-    DBG_VERBOUS(0, "Writing node");
-    switch(n->h.typ) {
-    case GWEN_DB_NODETYPE_GROUP:
-      if (dbflags & GWEN_DB_FLAGS_WRITE_SUBGROUPS) {
-        if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
-          if (lastWasVar) {
-            /* only insert newline if the last one before this group was a
-             * variable */
-            err=GWEN_BufferedIO_WriteLine(bio, "");
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "called from here");
-              return 1;
-            }
-          }
-        }
-
-        /* indend */
-        if (dbflags & GWEN_DB_FLAGS_INDEND) {
-          for (i=0; i<insert; i++) {
-            err=GWEN_BufferedIO_WriteChar(bio, ' ');
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "called from here");
-              return 1;
-            }
-          } /* for */
-        } /* if indend */
-        err=GWEN_BufferedIO_Write(bio, n->group.name);
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_INFO(0, "called from here");
-	  return 1;
-	}
-	err=GWEN_BufferedIO_WriteLine(bio, " {");
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_INFO(0, "called from here");
-	  return 1;
-	}
-	if (GWEN_DB_WriteGroupToStream(n, bio, dbflags, insert+2))
-          return 1;
-
-        /* indend */
-        if (dbflags & GWEN_DB_FLAGS_INDEND) {
-          for (i=0; i<insert; i++) {
-            err=GWEN_BufferedIO_WriteChar(bio, ' ');
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "called from here");
-              return 1;
-            }
-          } /* for */
-        } /* if indend */
-
-        if (dbflags & GWEN_DB_FLAGS_DETAILED_GROUPS) {
-          err=GWEN_BufferedIO_Write(bio, "} # ");
-          if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "called from here");
-            return 1;
-          }
-          err=GWEN_BufferedIO_WriteLine(bio, n->group.name);
-          if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "called from here");
-            return 1;
-          }
-        } /* if detailed groups */
-        else {
-          err=GWEN_BufferedIO_WriteLine(bio, "}");
-          if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "called from here");
-            return 1;
-          }
-        }
-        if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
-          if (n->h.next) {
-            /* only insert newline if a group is following on the same level
-             */
-            err=GWEN_BufferedIO_WriteLine(bio, "");
-            if (!GWEN_Error_IsOk(err)) {
-              DBG_INFO(0, "called from here");
-              return 1;
-            }
-          }
-        }
-      }
-      lastWasVar=0;
-      break;
-
-    case GWEN_DB_NODETYPE_VAR:
-      cn=n->h.child;
-      if (cn) {
-	char *typname;
-	int namewritten;
-	int values;
-
-	typname=0;
-	namewritten=0;
-	values=0;
-	while(cn) {
-          char numbuffer[32];
-          char *binbuffer;
-          unsigned int bbsize;
-          const char *pvalue;
-          GWEN_BUFFER *vbuf;
-
-          pvalue=0;
-          binbuffer=0;
-          vbuf=0;
-	  switch(cn->h.typ) {
-	  case GWEN_DB_NODETYPE_VALUE:
-	    switch(cn->val.h.typ) {
-	    case GWEN_DB_VALUETYPE_CHAR:
-	      typname="char ";
-              pvalue=cn->val.c.data;
-              if (dbflags & GWEN_DB_FLAGS_ESCAPE_CHARVALUES) {
-                vbuf=GWEN_Buffer_new(0, strlen(pvalue)+32, 0, 1);
-                if (GWEN_Text_EscapeToBufferTolerant(pvalue, vbuf)) {
-                  DBG_INFO(0, "called from here");
-                  GWEN_Buffer_free(vbuf);
-                  return 1;
-                }
-                pvalue=GWEN_Buffer_GetStart(vbuf);
-              }
-              break;
-
-	    case GWEN_DB_VALUETYPE_INT:
-	      typname="int  ";
-	      if (GWEN_Text_NumToString(cn->val.i.data,
-					numbuffer,
-					sizeof(numbuffer)-1,
-					0)<1) {
-		DBG_ERROR(0, "Error writing numeric value");
-		return 1;
-	      }
-	      pvalue=numbuffer;
-	      break;
-
-            case GWEN_DB_VALUETYPE_BIN:
-              bbsize=cn->val.b.dataSize*2+1;
-              binbuffer=(char*)malloc(bbsize);
-              assert(binbuffer);
-              typname="bin  ";
-              if (!GWEN_Text_ToHex(cn->val.b.data,
-                                   cn->val.b.dataSize,
-                                   binbuffer,
-                                   bbsize)) {
-                DBG_ERROR(0, "Error writing binary value");
+    if (!(n->h.nodeFlags & GWEN_DB_NODE_FLAGS_VOLATILE)) {
+      DBG_VERBOUS(0, "Writing node");
+      switch(n->h.typ) {
+      case GWEN_DB_NODETYPE_GROUP:
+        if (dbflags & GWEN_DB_FLAGS_WRITE_SUBGROUPS) {
+          if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
+            if (lastWasVar) {
+              /* only insert newline if the last one before this group was a
+               * variable */
+              err=GWEN_BufferedIO_WriteLine(bio, "");
+              if (!GWEN_Error_IsOk(err)) {
+                DBG_INFO(0, "called from here");
                 return 1;
               }
-              pvalue=binbuffer;
-              break;
+            }
+          }
 
-            default:
-              DBG_WARN(0, "Unknown value type (%d)\n", n->val.h.typ);
-              break;
-	    } /* switch value type */
+          /* indend */
+          if (dbflags & GWEN_DB_FLAGS_INDEND) {
+            for (i=0; i<insert; i++) {
+              err=GWEN_BufferedIO_WriteChar(bio, ' ');
+              if (!GWEN_Error_IsOk(err)) {
+                DBG_INFO(0, "called from here");
+                return 1;
+              }
+            } /* for */
+          } /* if indend */
+          err=GWEN_BufferedIO_Write(bio, n->group.name);
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "called from here");
+            return 1;
+          }
+          err=GWEN_BufferedIO_WriteLine(bio, " {");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "called from here");
+            return 1;
+          }
+          if (GWEN_DB_WriteGroupToStream(n, bio, dbflags, insert+2))
+            return 1;
 
-	    if (!namewritten) {
-	      /* write name */
-              /* indend */
-              if (dbflags & GWEN_DB_FLAGS_INDEND) {
-                for (i=0; i<insert; i++) {
-                  err=GWEN_BufferedIO_WriteChar(bio, ' ');
+          /* indend */
+          if (dbflags & GWEN_DB_FLAGS_INDEND) {
+            for (i=0; i<insert; i++) {
+              err=GWEN_BufferedIO_WriteChar(bio, ' ');
+              if (!GWEN_Error_IsOk(err)) {
+                DBG_INFO(0, "called from here");
+                return 1;
+              }
+            } /* for */
+          } /* if indend */
+
+          if (dbflags & GWEN_DB_FLAGS_DETAILED_GROUPS) {
+            err=GWEN_BufferedIO_Write(bio, "} # ");
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "called from here");
+              return 1;
+            }
+            err=GWEN_BufferedIO_WriteLine(bio, n->group.name);
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "called from here");
+              return 1;
+            }
+          } /* if detailed groups */
+          else {
+            err=GWEN_BufferedIO_WriteLine(bio, "}");
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "called from here");
+              return 1;
+            }
+          }
+          if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
+            if (n->h.next) {
+              /* only insert newline if a group is following on the same level
+               */
+              err=GWEN_BufferedIO_WriteLine(bio, "");
+              if (!GWEN_Error_IsOk(err)) {
+                DBG_INFO(0, "called from here");
+                return 1;
+              }
+            }
+          }
+        }
+        lastWasVar=0;
+        break;
+
+      case GWEN_DB_NODETYPE_VAR:
+        cn=n->h.child;
+        if (cn) {
+          char *typname;
+          int namewritten;
+          int values;
+
+          typname=0;
+          namewritten=0;
+          values=0;
+          while(cn) {
+            char numbuffer[32];
+            char *binbuffer;
+            unsigned int bbsize;
+            const char *pvalue;
+            GWEN_BUFFER *vbuf;
+
+            pvalue=0;
+            binbuffer=0;
+            vbuf=0;
+
+            switch(cn->h.typ) {
+            case GWEN_DB_NODETYPE_VALUE:
+              switch(cn->val.h.typ) {
+              case GWEN_DB_VALUETYPE_CHAR:
+                typname="char ";
+                pvalue=cn->val.c.data;
+                if (dbflags & GWEN_DB_FLAGS_ESCAPE_CHARVALUES) {
+                  vbuf=GWEN_Buffer_new(0, strlen(pvalue)+32, 0, 1);
+                  if (GWEN_Text_EscapeToBufferTolerant(pvalue, vbuf)) {
+                    DBG_INFO(0, "called from here");
+                    GWEN_Buffer_free(vbuf);
+                    return 1;
+                  }
+                  pvalue=GWEN_Buffer_GetStart(vbuf);
+                }
+                break;
+
+              case GWEN_DB_VALUETYPE_INT:
+                typname="int  ";
+                if (GWEN_Text_NumToString(cn->val.i.data,
+                                          numbuffer,
+                                          sizeof(numbuffer)-1,
+                                          0)<1) {
+                  DBG_ERROR(0, "Error writing numeric value");
+                  return 1;
+                }
+                pvalue=numbuffer;
+                break;
+
+              case GWEN_DB_VALUETYPE_BIN:
+                bbsize=cn->val.b.dataSize*2+1;
+                binbuffer=(char*)malloc(bbsize);
+                assert(binbuffer);
+                typname="bin  ";
+                if (!GWEN_Text_ToHex(cn->val.b.data,
+                                     cn->val.b.dataSize,
+                                     binbuffer,
+                                     bbsize)) {
+                  DBG_ERROR(0, "Error writing binary value");
+                  return 1;
+                }
+                pvalue=binbuffer;
+                break;
+
+              case GWEN_DB_VALUETYPE_PTR:
+                DBG_DEBUG(0, "Not writing ptr type");
+                break;
+
+              default:
+                DBG_WARN(0, "Unknown value type (%d)\n", n->val.h.typ);
+                break;
+              } /* switch value type */
+
+
+              if (pvalue) {
+                if (!namewritten) {
+                  /* write name */
+                  /* indend */
+                  if (dbflags & GWEN_DB_FLAGS_INDEND) {
+                    for (i=0; i<insert; i++) {
+                      err=GWEN_BufferedIO_WriteChar(bio, ' ');
+                      if (!GWEN_Error_IsOk(err)) {
+                        DBG_INFO(0, "called from here");
+                        free(binbuffer);
+                        GWEN_Buffer_free(vbuf);
+                        return 1;
+                      }
+                    } /* for */
+                  } /* if indend */
+                  if (!(dbflags & GWEN_DB_FLAGS_OMIT_TYPES)) {
+                    err=GWEN_BufferedIO_Write(bio, typname);
+                    if (!GWEN_Error_IsOk(err)) {
+                      DBG_INFO(0, "called from here");
+                      free(binbuffer);
+                      GWEN_Buffer_free(vbuf);
+                      return 1;
+                    }
+                  }
+                  if (dbflags & GWEN_DB_FLAGS_QUOTE_VARNAMES) {
+                    err=GWEN_BufferedIO_Write(bio, "\"");
+                    if (!GWEN_Error_IsOk(err)) {
+                      DBG_INFO(0, "called from here");
+                      free(binbuffer);
+                      GWEN_Buffer_free(vbuf);
+                      return 1;
+                    }
+                  }
+                  err=GWEN_BufferedIO_Write(bio, n->var.name);
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(0, "called from here");
                     free(binbuffer);
                     GWEN_Buffer_free(vbuf);
                     return 1;
                   }
-                } /* for */
-              } /* if indend */
-              if (!(dbflags & GWEN_DB_FLAGS_OMIT_TYPES)) {
-                err=GWEN_BufferedIO_Write(bio, typname);
+                  if (dbflags & GWEN_DB_FLAGS_QUOTE_VARNAMES) {
+                    err=GWEN_BufferedIO_Write(bio, "\"");
+                    if (!GWEN_Error_IsOk(err)) {
+                      DBG_INFO(0, "called from here");
+                      free(binbuffer);
+                      GWEN_Buffer_free(vbuf);
+                      return 1;
+                    }
+                  }
+                  err=GWEN_BufferedIO_Write(bio,
+                                            ((dbflags&
+                                              GWEN_DB_FLAGS_USE_COLON)?
+                                             ":":"="));
+                  if (!GWEN_Error_IsOk(err)) {
+                    DBG_INFO(0, "called from here");
+                    free(binbuffer);
+                    GWEN_Buffer_free(vbuf);
+                    return 1;
+                  }
+                  namewritten=1;
+                } /* if !namewritten */
+
+                if (values) {
+                  err=GWEN_BufferedIO_Write(bio, ", ");
+                  if (!GWEN_Error_IsOk(err)) {
+                    DBG_INFO(0, "called from here");
+                    free(binbuffer);
+                    GWEN_Buffer_free(vbuf);
+                    return 1;
+                  }
+                }
+                values++;
+                if (dbflags & GWEN_DB_FLAGS_QUOTE_VALUES) {
+                  err=GWEN_BufferedIO_Write(bio, "\"");
+                  if (!GWEN_Error_IsOk(err)) {
+                    DBG_INFO(0, "called from here");
+                    free(binbuffer);
+                    GWEN_Buffer_free(vbuf);
+                    return 1;
+                  }
+                }
+
+                err=GWEN_BufferedIO_Write(bio, pvalue);
                 if (!GWEN_Error_IsOk(err)) {
                   DBG_INFO(0, "called from here");
                   free(binbuffer);
                   GWEN_Buffer_free(vbuf);
                   return 1;
                 }
-              }
-	      if (dbflags & GWEN_DB_FLAGS_QUOTE_VARNAMES) {
-		err=GWEN_BufferedIO_Write(bio, "\"");
-		if (!GWEN_Error_IsOk(err)) {
-		  DBG_INFO(0, "called from here");
-                  free(binbuffer);
-                  GWEN_Buffer_free(vbuf);
-		  return 1;
-		}
-	      }
-	      err=GWEN_BufferedIO_Write(bio, n->var.name);
-	      if (!GWEN_Error_IsOk(err)) {
-		DBG_INFO(0, "called from here");
-                free(binbuffer);
-                GWEN_Buffer_free(vbuf);
-		return 1;
-	      }
-	      if (dbflags & GWEN_DB_FLAGS_QUOTE_VARNAMES) {
-		err=GWEN_BufferedIO_Write(bio, "\"");
-		if (!GWEN_Error_IsOk(err)) {
-		  DBG_INFO(0, "called from here");
-                  free(binbuffer);
-                  GWEN_Buffer_free(vbuf);
-		  return 1;
-		}
-              }
-              err=GWEN_BufferedIO_Write(bio,
-                                        ((dbflags&GWEN_DB_FLAGS_USE_COLON)?
-                                         ":":"="));
-	      if (!GWEN_Error_IsOk(err)) {
-		DBG_INFO(0, "called from here");
-                free(binbuffer);
-                GWEN_Buffer_free(vbuf);
-                return 1;
-	      }
-	      namewritten=1;
-	    } /* if !namewritten */
 
-	    if (values) {
-	      err=GWEN_BufferedIO_Write(bio, ", ");
-	      if (!GWEN_Error_IsOk(err)) {
-		DBG_INFO(0, "called from here");
-                free(binbuffer);
-                GWEN_Buffer_free(vbuf);
-		return 1;
-	      }
-	    }
-	    values++;
-	    if (dbflags & GWEN_DB_FLAGS_QUOTE_VALUES) {
-	      err=GWEN_BufferedIO_Write(bio, "\"");
-	      if (!GWEN_Error_IsOk(err)) {
-		DBG_INFO(0, "called from here");
-                free(binbuffer);
-                GWEN_Buffer_free(vbuf);
-		return 1;
-	      }
-            }
+                if (dbflags & GWEN_DB_FLAGS_QUOTE_VALUES) {
+                  err=GWEN_BufferedIO_Write(bio, "\"");
+                  if (!GWEN_Error_IsOk(err)) {
+                    DBG_INFO(0, "called from here");
+                    free(binbuffer);
+                    GWEN_Buffer_free(vbuf);
+                    return 1;
+                  }
+                }
+              } /* if pvalue */
+              break;
 
-            err=GWEN_BufferedIO_Write(bio, pvalue);
-	    if (!GWEN_Error_IsOk(err)) {
-	      DBG_INFO(0, "called from here");
-              free(binbuffer);
-              GWEN_Buffer_free(vbuf);
-	      return 1;
-            }
+            default:
+              break;
+            } /* switch */
 
-	    if (dbflags & GWEN_DB_FLAGS_QUOTE_VALUES) {
-	      err=GWEN_BufferedIO_Write(bio, "\"");
-	      if (!GWEN_Error_IsOk(err)) {
-		DBG_INFO(0, "called from here");
-                free(binbuffer);
-                GWEN_Buffer_free(vbuf);
-		return 1;
-	      }
-	    }
+            free(binbuffer);
+            GWEN_Buffer_free(vbuf);
+            cn=cn->h.next;
+          } /* while cn */
+          err=GWEN_BufferedIO_WriteLine(bio, "");
+          if (!GWEN_Error_IsOk(err)) {
+            DBG_INFO(0, "called from here");
+            return 1;
+          }
+        } /* if children */
+        lastWasVar=1;
+        break;
 
-	    break;
-	  default:
-	    break;
-	  } /* switch */
-
-          free(binbuffer);
-          GWEN_Buffer_free(vbuf);
-	  cn=cn->h.next;
-	} /* while cn */
-	err=GWEN_BufferedIO_WriteLine(bio, "");
-	if (!GWEN_Error_IsOk(err)) {
-	  DBG_INFO(0, "called from here");
-	  return 1;
-	}
-      } /* if children */
-      lastWasVar=1;
-      break;
-
-    default:
-      DBG_WARN(0, "[unhandled node type %d]\n", n->h.typ);
-    } /* switch */
-
+      default:
+        DBG_WARN(0, "[unhandled node type %d]\n", n->h.typ);
+      } /* switch */
+    } /* if not volatile */
+    else {
+      DBG_DEBUG(0, "Node is volatile, not writing it");
+    }
     n=n->h.next;
   } /* while */
   return 0;
@@ -1830,7 +1942,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 
 
 int GWEN_DB_WriteToStream(GWEN_DB_NODE *node,
-			  GWEN_BUFFEREDIO *bio,
+                          GWEN_BUFFEREDIO *bio,
 			  GWEN_TYPE_UINT32 dbflags) {
   return GWEN_DB_WriteGroupToStream(node, bio, dbflags, 0);
 }

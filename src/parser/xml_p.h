@@ -103,12 +103,12 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
                                 unsigned int ind);
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
                                           GWEN_XMLNODE_TYPE t);
-GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(const GWEN_XMLNODE *n,
                                          GWEN_XMLNODE_TYPE t);
 
-GWEN_XMLNODE *GWEN_XMLNode_FindTag(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
                                    const char *tname,
                                    const char *pname,
                                    const char *pvalue);

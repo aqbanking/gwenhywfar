@@ -190,7 +190,9 @@ extern "C" {
  */
 /*@{*/
 /** is set then this node has been altered */
-#define GWEN_DB_NODE_FLAGS_DIRTY 0x00000001
+#define GWEN_DB_NODE_FLAGS_DIRTY     0x00000001
+/** variable is volatile (will not be written) */
+#define GWEN_DB_NODE_FLAGS_VOLATILE  0x00000002
 
 /*@}*/
 
@@ -217,9 +219,10 @@ typedef enum {
   /** integer */
   GWEN_DB_VALUETYPE_INT,
   /** binary, user defined data */
-  GWEN_DB_VALUETYPE_BIN
+  GWEN_DB_VALUETYPE_BIN,
+  /** pointer , will not be stored or read to/from files */
+  GWEN_DB_VALUETYPE_PTR
 } GWEN_DB_VALUETYPE;
-
 
 
 /** @name Constructing, Destructing, Copying
@@ -512,7 +515,36 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 			GWEN_TYPE_UINT32 flags,
 			const char *path,
                         const void *val,
-			unsigned int valSize);
+                        unsigned int valSize);
+
+
+/**
+ * Returns the variable's retrieved value.
+ * @param n db node
+ * @param path path and name of the variable
+ * @param idx index number of the value to return
+ * @param defVal default value to return in case there is no real value
+ */
+GWENHYWFAR_API
+void *GWEN_DB_GetPtrValue(GWEN_DB_NODE *n,
+                          const char *path,
+                          int idx,
+                          void *defVal);
+
+/**
+ * @param n db node
+ * @param path path and name of the variable
+ * @param flags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
+ * @param val The pointer that is stored within the DB.
+ *
+ * @return 0 on success, nonzero on error
+ */
+GWENHYWFAR_API
+int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
+                        GWEN_TYPE_UINT32 flags,
+                        const char *path,
+                        void *val);
 /*@}*/
 
 

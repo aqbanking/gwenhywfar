@@ -1242,7 +1242,7 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind) {
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *node,
+GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *node,
                                     GWEN_XMLNODE_TYPE t, const char *data) {
   GWEN_XMLNODE *n;
 
@@ -1340,7 +1340,7 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
                                           GWEN_XMLNODE_TYPE t){
   GWEN_XMLNODE *nn;
 
@@ -1356,12 +1356,12 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(GWEN_XMLNODE *n,
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(const GWEN_XMLNODE *n,
                                          GWEN_XMLNODE_TYPE t){
   assert(n);
   while(n) {
     if (n->type==t)
-      return n;
+      return (GWEN_XMLNODE *)n;
     n=n->next;
   } /* while */
   return 0;
@@ -1369,13 +1369,13 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(GWEN_XMLNODE *n,
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n){
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(const GWEN_XMLNODE *n){
   return GWEN_XMLNode_GetFirstOfType(n, GWEN_XMLNodeTypeTag);
 }
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n){
+GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(const GWEN_XMLNODE *n){
   if (!n->next)
     return 0;
   return GWEN_XMLNode_GetNextOfType(n->next, GWEN_XMLNodeTypeTag);
@@ -1383,13 +1383,13 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n){
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n){
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(const GWEN_XMLNODE *n){
   return GWEN_XMLNode_GetFirstOfType(n, GWEN_XMLNodeTypeData);
 }
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n){
+GWEN_XMLNODE *GWEN_XMLNode_GetNextData(const GWEN_XMLNODE *n){
   if (!n->next)
     return 0;
   return GWEN_XMLNode_GetNextOfType(n->next, GWEN_XMLNodeTypeData);
@@ -1397,7 +1397,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n){
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_FindTag(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
                                    const char *tname,
                                    const char *pname,
                                    const char *pvalue){
@@ -1409,13 +1409,13 @@ GWEN_XMLNODE *GWEN_XMLNode_FindTag(GWEN_XMLNODE *n,
         p=GWEN_XMLNode_GetProperty(n, pname, 0);
         if (p) {
           if (!pvalue)
-            return n;
+            return (GWEN_XMLNODE*)n;
           if (-1!=GWEN_Text_ComparePattern(pvalue, p, 0))
-            return n;
+            return (GWEN_XMLNODE*)n;
         }
       } /* if pname */
       else
-        return n;
+        return (GWEN_XMLNODE*)n;
     }
     n=GWEN_XMLNode_GetNextTag(n);
   } /* while */
@@ -1424,7 +1424,7 @@ GWEN_XMLNODE *GWEN_XMLNode_FindTag(GWEN_XMLNODE *n,
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(const GWEN_XMLNODE *n,
                                         const char *tname,
                                         const char *pname,
                                         const char *pvalue){
@@ -1441,7 +1441,7 @@ GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(GWEN_XMLNODE *n,
+GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(const GWEN_XMLNODE *n,
                                        const char *tname,
                                        const char *pname,
                                        const char *pvalue){
@@ -1809,6 +1809,51 @@ int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
   GWEN_BufferedIO_free(bio);
   return rv;
 }
+
+
+
+
+const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
+                                      const char *name,
+                                      const char *defValue) {
+  GWEN_XMLNODE *nn;
+
+  nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
+  while(nn) {
+    GWEN_XMLNODE *dn;
+
+    dn=GWEN_XMLNode_GetFirstData(nn);
+    if (dn) {
+      if (dn->data)
+        return dn->data;
+    }
+    nn=GWEN_XMLNode_FindNextTag(nn, name, 0, 0);
+  }
+
+  return defValue;
+}
+
+
+
+int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
+                             const char *name,
+                             int defValue) {
+  const char *p;
+  int res;
+
+  p=GWEN_XMLNode_GetCharValue(n, name, 0);
+  if (!p)
+    return defValue;
+  if (1!=sscanf(p, "%i", &res))
+    return defValue;
+  return res;
+}
+
+
+
+
+
+
 
 
 
