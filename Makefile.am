@@ -1,12 +1,21 @@
 SUBDIRS=doc src test m4
 
-EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README README.W32 \
+EXTRA_DIST= \
+ AUTHORS \
+ COPYING \
+ ChangeLog \
+ Doxyfile.in \
+ INSTALL \
+ NEWS \
+ README \
+ README.W32 \
+ RELEASES \
  gwenhywfar.m4 \
- gwenhywfar.spec.in Doxyfile.in
+ gwenhywfar.spec.in 
 
-bin_SCRIPTS=gwenhywfar-config
-M4dir=$(prefix)/share/aclocal
-M4_DATA=gwenhywfar.m4
+bin_SCRIPTS = gwenhywfar-config
+M4dir = $(datadir)/aclocal
+M4_DATA = gwenhywfar.m4
 ACLOCAL_AMFLAGS = -I m4
 
 
