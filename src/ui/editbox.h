@@ -31,6 +31,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/widget.h>
+#include <gwenhywfar/buffer.h>
 
 #define GWEN_EDITBOX_FLAGS_MULTILINE 0x00010000
 #define GWEN_EDITBOX_FLAGS_DYNAMIC   0x00020000
@@ -47,6 +48,7 @@ GWEN_WIDGET *GWEN_EditBox_new(GWEN_WIDGET *parent,
                               int width, int height,
                               int maxLen);
 
+GWEN_BUFFER *GWEN_EditBox_GetText(const GWEN_WIDGET *w, int asAscii);
 
 
 #endif

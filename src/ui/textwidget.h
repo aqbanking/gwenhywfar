@@ -30,6 +30,7 @@
 
 #include <gwenhywfar/widget.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/buffer.h>
 
 
 typedef struct GWEN_TW_LINE GWEN_TW_LINE;
@@ -102,6 +103,8 @@ int GWEN_TextWidget_SetPreparedText(GWEN_WIDGET *w,
                                     GWEN_EVENT_SETTEXT_MODE m);
 
 int GWEN_TextWidget_GetMaxWidth(GWEN_TW_LINE_LIST *ll);
+
+GWEN_BUFFER *GWEN_TextWidget_GetText(const GWEN_WIDGET *w, int asAscii);
 
 
 

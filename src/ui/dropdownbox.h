@@ -32,6 +32,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/widget.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/buffer.h>
 
 
 #define GWEN_DROPDOWNBOX_FLAGS_EDIT 0x00010000
@@ -44,6 +45,8 @@ GWEN_WIDGET *GWEN_DropDownBox_new(GWEN_WIDGET *parent,
                                   int x, int y,
                                   int width, int height,
                                   const GWEN_STRINGLIST *sl);
+
+GWEN_BUFFER *GWEN_DropDownBox_GetText(const GWEN_WIDGET *w, int asAscii);
 
 
 #endif

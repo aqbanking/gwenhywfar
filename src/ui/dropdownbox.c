@@ -378,6 +378,15 @@ void GWEN_DropDownBox_ShowList(GWEN_WIDGET *w){
 
 
 
+GWEN_BUFFER *GWEN_DropDownBox_GetText(const GWEN_WIDGET *w, int asAscii){
+  GWEN_DROPDOWNBOX *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_DROPDOWNBOX, w);
+  assert(win);
+
+  return GWEN_EditBox_GetText(win->wEdit, asAscii);
+}
 
 
 

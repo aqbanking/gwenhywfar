@@ -2058,6 +2058,53 @@ int GWEN_TextWidget_GetVirtualHeight(const GWEN_WIDGET *w){
 
 
 
+GWEN_BUFFER *GWEN_TextWidget_GetText(const GWEN_WIDGET *w, int asAscii){
+  GWEN_TW_LINE *l;
+  GWEN_TEXTWIDGET *win;
+  GWEN_BUFFER *buf;
+  int first;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TEXTWIDGET, w);
+  assert(win);
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (!asAscii)
+    GWEN_Buffer_AppendString(buf, "<gwen>");
+
+  l=GWEN_TWLine_List_First(win->lines);
+  first=1;
+  while(l) {
+    if (!l->compressed) {
+      if (GWEN_TextWidget_CompressLine(l)) {
+        DBG_NOTICE(0, "Could not compress line");
+      }
+    }
+    assert(l->compressed);
+    assert(l->compressedText);
+
+    if (first) {
+      if (asAscii)
+        GWEN_Buffer_AppendString(buf, "\n");
+      else
+        GWEN_Buffer_AppendString(buf, "<br>");
+    }
+    if (GWEN_TextWidget_Ascify(l->compressedText, buf)) {
+      DBG_NOTICE(0, "Error in buffer");
+      GWEN_Buffer_free(buf);
+      return 0;
+    }
+
+    l=GWEN_TWLine_List_Next(l);
+    first=0;
+  }
+
+  if (!asAscii)
+    GWEN_Buffer_AppendString(buf, "</gwen>");
+
+  GWEN_Buffer_Rewind(buf);
+  return buf;
+}
 
 
 

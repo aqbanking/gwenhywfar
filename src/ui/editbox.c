@@ -372,6 +372,18 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
 
 
 
+GWEN_BUFFER *GWEN_EditBox_GetText(const GWEN_WIDGET *w, int asAscii){
+  GWEN_EDITBOX *win;
+
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_EDITBOX, w);
+  assert(win);
+
+  return GWEN_TextWidget_GetText(w, asAscii);
+}
+
+
+
 
 
 
