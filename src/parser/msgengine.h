@@ -229,6 +229,11 @@ GWENHYWFAR_API
 const char *GWEN_MsgEngine_GetCharsToEscape(GWEN_MSGENGINE *e);
 
 GWENHYWFAR_API
+void GWEN_MsgEngine_SetDelimiters(GWEN_MSGENGINE *e, const char *s);
+GWENHYWFAR_API
+const char *GWEN_MsgEngine_GetDelimiters(GWEN_MSGENGINE *e);
+
+GWENHYWFAR_API
 void GWEN_MsgEngine_SetMode(GWEN_MSGENGINE *e, const char *mode);
 GWENHYWFAR_API
 const char *GWEN_MsgEngine_GetMode(GWEN_MSGENGINE *e);

@@ -1,4 +1,10 @@
 
+2004/06/02: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/msgengine: added getter/setter for delimiters
+- crypt/ossl/cryptssl_rsa: fixed a severe bug which caused signing to fail
+
+
 2004/05/30: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/text: GWEN_Text_FromHexBuffer now ignores blanks

@@ -129,6 +129,24 @@ const char *GWEN_MsgEngine_GetCharsToEscape(GWEN_MSGENGINE *e){
 
 
 
+void GWEN_MsgEngine_SetDelimiters(GWEN_MSGENGINE *e, const char *s){
+  assert(e);
+  free(e->delimiters);
+  if (s)
+    e->delimiters=strdup(s);
+  else
+    e->delimiters=strdup(GWEN_MSGENGINE_DEFAULT_DELIMITERS);
+}
+
+
+
+const char *GWEN_MsgEngine_GetDelimiters(GWEN_MSGENGINE *e){
+  assert(e);
+  return e->delimiters;
+}
+
+
+
 void GWEN_MsgEngine_SetMode(GWEN_MSGENGINE *e, const char *mode){
   GWEN_DB_NODE *db;
 
@@ -784,8 +802,8 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
           break;
   
         case GWEN_DB_VALUETYPE_BIN:
-          DBG_DEBUG(0, "Type of \"%s\" is bin", name);
-          pdata=GWEN_DB_GetBinValue(gr, nptr, loopNr, 0, 0, &datasize);
+	  DBG_DEBUG(0, "Type of \"%s\" is bin", name);
+	  pdata=GWEN_DB_GetBinValue(gr, nptr, loopNr, 0, 0, &datasize);
           break;
 
         default:
@@ -2782,8 +2800,8 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                       c, delimiters);
           if (c && strchr(delimiters, c)) {
             abortLoop=1;
-            DBG_DEBUG(0, "Found delimiter (\"%02x\" is in \"%s\")",
-                      c, delimiters);
+            DBG_NOTICE(0, "Found delimiter (\"%02x\" is in \"%s\")",
+                       c, delimiters);
 	  } /* if delimiter found */
           else {
             /* current char is not a delimiter */
@@ -2821,15 +2839,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 		return -1;
               }
 
-              /* add 0 just in case... */
-              if (GWEN_Buffer_AllocRoom(vbuf, 1)) {
-                  DBG_INFO(0, "Value buffer full.");
-                  GWEN_Buffer_free(vbuf);
-                  return -1;
-              }
-              *(GWEN_Buffer_GetPosPointer(vbuf))=0;
-
-              GWEN_Buffer_SetPos(vbuf, 0);
+              GWEN_Buffer_Rewind(vbuf);
 
               /* special handling for binary data */
               dtype=GWEN_XMLNode_GetProperty(n, "type", "");
@@ -2890,7 +2900,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
           } /* if current char is not a delimiter */
 
 	  if (GWEN_Buffer_GetBytesLeft(msgbuf)) {
-	    if (delimiter) {
+            if (delimiter) {
 	      if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
 		GWEN_Buffer_IncrementPos(msgbuf,1);
 	      }

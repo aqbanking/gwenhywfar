@@ -132,11 +132,13 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
   const char *p = "0";
   GWEN_TYPE_UINT32 v;
   int lastWasEq;
+  int sizeGiven;
 
   /* first decode full triplets */
+  sizeGiven=(size!=0);
   lastWasEq=0;
   for (;;) {
-    if (size==0 || lastWasEq)
+    if ((sizeGiven && size==0) || lastWasEq || !*src)
       break;
     v=0;
     for (i=0; i<4; i++) {
@@ -161,23 +163,30 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
     } /* for */
 
     /* now we have a triplet */
-    switch(size) {
-    case 1:
-      GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
-      size--;
-      break;
-    case 2:
-      GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
-      GWEN_Buffer_AppendByte(dst, (v>>8) & 0xff);
-      size-=2;
-      break;
-    default:
+    if (sizeGiven) {
+      switch(size) {
+      case 1:
+        GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
+        size--;
+        break;
+      case 2:
+        GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
+        GWEN_Buffer_AppendByte(dst, (v>>8) & 0xff);
+        size-=2;
+        break;
+      default:
+        GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
+        GWEN_Buffer_AppendByte(dst, (v>>8) & 0xff);
+        GWEN_Buffer_AppendByte(dst, v & 0xff);
+        size-=3;
+        break;
+      } /* switch */
+    }
+    else {
       GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
       GWEN_Buffer_AppendByte(dst, (v>>8) & 0xff);
       GWEN_Buffer_AppendByte(dst, v & 0xff);
-      size-=3;
-      break;
-    } /* switch */
+    }
   } /* for full quadruplets */
 
   return 0;
