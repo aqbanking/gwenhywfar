@@ -219,6 +219,10 @@ GWENHYWFAR_API
 /*@}*/
 
 
+GWENHYWFAR_API
+  int GWEN_WaitCallback_Register(const char *id,
+                                 GWEN_WAITCALLBACK *ctx);
+
 
 #if (defined(GWEN_EXTEND_WAITCALLBACK) || defined(DOXYGEN))
 
@@ -226,6 +230,9 @@ GWENHYWFAR_API
  *
  */
 /*@{*/
+
+GWENHYWFAR_API
+  const char *GWEN_WaitCallback_GetId(GWEN_WAITCALLBACK *ctx);
 
 /**
  * Creates a new callback. This function should only be used by inheriting

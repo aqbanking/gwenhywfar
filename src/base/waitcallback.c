@@ -53,6 +53,9 @@ static GWEN_WAITCALLBACK_LIST *gwen_waitcallback__list=0;
 GWEN_ERRORCODE GWEN_WaitCallback_ModuleInit(){
   gwen_waitcallback__root=GWEN_WaitCallback_new("");
   gwen_waitcallback__list=GWEN_WaitCallback_List_new();
+  gwen_waitcallback__current=GWEN_WaitCallback_new("");
+  GWEN_WaitCallback_List_Add(gwen_waitcallback__current,
+                             gwen_waitcallback__list);
   return 0;
 }
 
@@ -355,6 +358,8 @@ void GWEN_WaitCallback_Leave(){
   GWEN_WAITCALLBACK *ctx;
 
   assert(gwen_waitcallback__current);
+  DBG_INFO(0, "Leaving callback context \"%s\"",
+           gwen_waitcallback__current->id);
   ctx=gwen_waitcallback__current->previousCtx;
   GWEN_WaitCallback_free(gwen_waitcallback__current);
   gwen_waitcallback__current=ctx;
@@ -424,6 +429,14 @@ void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK *ctx,
 time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->lastEntered;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+const char *GWEN_WaitCallback_GetId(GWEN_WAITCALLBACK *ctx){
+  assert(ctx);
+  return ctx->id;
 }
 
 
