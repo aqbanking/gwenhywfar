@@ -100,9 +100,7 @@ int GWEN_NetTransportSSL__GetPublicCaFile(GWEN_BUFFER *pbuf) {
   if (RegOpenKey(HKEY_CURRENT_USER, nbuffer, &hkey)){
     DBG_ERROR(GWEN_LOGDOMAIN,
               "RegOpenKey failed, returning compile-time value");
-    GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
-                             "/"
-                             GWEN_DBIO_FOLDER,
+    GWEN_Directory_OsifyPath(PUBLIC_CA_FILE,
                              pbuf,
                              1);
     return 1;

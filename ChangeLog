@@ -1,4 +1,8 @@
 
+2005/04/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a copy'n paste bug in netconnectionssl.c (only effected WIN32)
+
 
 2005/04/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
