@@ -15,6 +15,38 @@
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/msgengine.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/sslconnection.h>
+
+
+int testSSL(int argc, char **argv) {
+  GWEN_SSL_CONNECTION *conn;
+  GWEN_INETADDRESS *addr;
+  GWEN_ERRORCODE err;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  err=GWEN_InetAddr_SetName(addr, "www.hbci-kernel.de");
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  err=GWEN_InetAddr_SetPort(addr, 443);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  conn=GWEN_SSLConn_new(0, "trusted");
+  //conn=GWEN_SSLConn_new(0, "tmp");
+  err=GWEN_SSLConn_Connect(conn, addr, 1, 30);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  DBG_INFO(0, "Sleeping");
+  sleep(10);
+  return 0;
+}
 
 
 
@@ -538,6 +570,8 @@ int main(int argc, char **argv) {
     rv=testXML2(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
     rv=testSnprintf(argc, argv);
+  else if (strcasecmp(argv[1], "ssl")==0)
+    rv=testSSL(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;

@@ -46,7 +46,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count,
   time_t lct;
 
   if (!gwen_callbackstack) {
-    DBG_DEBUG(0, "No callbacks registered (1)");
+    DBG_VERBOUS(0, "No callbacks registered (1)");
     return GWEN_WaitCallbackResult_Continue;
   }
   ctx=GWEN_List_GetBack(gwen_callbackstack);
@@ -55,7 +55,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count,
     return GWEN_WaitCallbackResult_Continue;
   }
   if (!ctx->waitCallbackFn) {
-    DBG_WARN(0, "No callbacks set");
+    DBG_WARN(0, "No callback set");
     return GWEN_WaitCallbackResult_Continue;
   }
   lct=time(0);
@@ -154,7 +154,7 @@ time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx){
 int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK_CTX *ctx){
   if (ctx==0) {
     if (!gwen_callbackstack) {
-      DBG_DEBUG(0, "No callbacks registered (1)");
+      DBG_VERBOUS(0, "No callbacks registered (1)");
       return 0;
     }
     ctx=GWEN_List_GetBack(gwen_callbackstack);

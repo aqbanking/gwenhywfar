@@ -40,9 +40,7 @@ GWENHYWFAR_API
 
 
 GWENHYWFAR_API
-  GWEN_SSL_CONNECTION *GWEN_SSLConn_new(int server,
-                                        const GWEN_INETADDRESS *addr,
-					const char *cafile,
+  GWEN_SSL_CONNECTION *GWEN_SSLConn_new(const char *cafile,
                                         const char *capath);
 GWENHYWFAR_API
   void GWEN_SSLConn_free(GWEN_SSL_CONNECTION *conn);
@@ -50,7 +48,8 @@ GWENHYWFAR_API
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
-				      const GWEN_INETADDRESS *addr,
+                                      const GWEN_INETADDRESS *addr,
+                                      int secure,
 				      int timeout);
 
 GWENHYWFAR_API
@@ -58,7 +57,8 @@ GWENHYWFAR_API
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_SSLConn_Accept(GWEN_SSL_CONNECTION *conn,
-				     GWEN_INETADDRESS **addr,
+                                     GWEN_INETADDRESS **addr,
+                                     int secure,
                                      int timeout);
 
 

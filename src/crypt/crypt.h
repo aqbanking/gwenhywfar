@@ -49,6 +49,7 @@ extern "C" {
 #define GWEN_CRYPT_ERROR_SIGN               7
 #define GWEN_CRYPT_ERROR_VERIFY             8
 #define GWEN_CRYPT_ERROR_UNSUPPORTED        9
+#define GWEN_CRYPT_ERROR_SSL                10
 
 
 GWENHYWFAR_API

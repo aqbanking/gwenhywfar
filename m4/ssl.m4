@@ -48,9 +48,9 @@ dnl ******* openssl lib ***********
 AC_MSG_CHECKING(for openssl libs)
 AC_ARG_WITH(openssl-libname, [  --with-openssl-libname=NAME  specify the name of the openssl library],
   [ssl_search_lib_names="$withval"],
-  [ssl_search_lib_names="libcrypto.so \
-	                 libcrypto.so.* \
-	                 libcrypto.a"])
+  [ssl_search_lib_names="libssl.so \
+	                 libssl.so.* \
+	                 libssl.a"])
 
 AC_ARG_WITH(openssl-libs, [  --with-openssl-libs=DIR  adds openssl library path],
   [ssl_search_lib_dirs="$withval"],

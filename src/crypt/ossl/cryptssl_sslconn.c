@@ -29,10 +29,12 @@
 # include <config.h>
 #endif
 
+#include "cryptssl_sslconn_p.h"
+#include <gwenhywfar/crypt.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
-
-#include "cryptssl_sslconn_p.h"
+#include <openssl/err.h>
+#include <gwenhywfar/waitcallback.h>
 
 
 
@@ -41,9 +43,7 @@ int GWEN_SSLConn_IsAvailable(){
 }
 
 
-GWEN_SSL_CONNECTION *GWEN_SSLConn_new(int server,
-                                      const GWEN_INETADDRESS *addr,
-                                      const char *cafile,
+GWEN_SSL_CONNECTION *GWEN_SSLConn_new(const char *cafile,
                                       const char *capath){
   GWEN_SSL_CONNECTION *conn;
 
@@ -52,7 +52,7 @@ GWEN_SSL_CONNECTION *GWEN_SSLConn_new(int server,
     conn->CAfile=strdup(cafile);
   if (capath)
     conn->CAdir=strdup(capath);
-  conn->isServer=(server!=0);
+  conn->socket=GWEN_Socket_new();
   return conn;
 }
 
@@ -71,7 +71,267 @@ void GWEN_SSLConn_free(GWEN_SSL_CONNECTION *conn){
 
 GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
                                     const GWEN_INETADDRESS *addr,
+                                    int secure,
                                     int timeout){
+  GWEN_ERRORCODE err;
+  int rv;
+  int fd;
+  time_t startt;
+  int distance;
+  int count;
+  X509 *cert;
+
+  conn->isSecure=0;
+  startt=time(0);
+
+  /* create socket */
+  err=GWEN_Socket_Open(conn->socket, GWEN_SocketTypeTCP);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  /* connect to server */
+  err=GWEN_Socket_Connect_Wait(conn->socket,
+                               addr,
+                               timeout);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  /* set nonblocking again, so that we get a foot into to door of SSL */
+  err=GWEN_Socket_SetBlocking(conn->socket, 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    return err;
+  }
+
+  /* get socket handle (I know, it's ugly, but the function below is
+   * not exported to the outside) */
+  fd=GWEN_Socket_GetSocketInt(conn->socket);
+  if (fd==-1) {
+    DBG_ERROR(0, "No socket handle, cannot use this socket with SSL");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_UNSUPPORTED);
+  }
+
+  /* socket ready now setup SSL */
+  conn->ssl_ctx=SSL_CTX_new(SSLv23_client_method());
+  conn->ssl=SSL_new(conn->ssl_ctx);
+
+  /* setup locations of certificates */
+  rv=SSL_CTX_load_verify_locations(conn->ssl_ctx,
+                                   conn->CAfile,
+                                   conn->CAdir);
+  if (rv==0) {
+    int sslerr;
+
+    sslerr=SSL_get_error(conn->ssl, rv);
+    DBG_ERROR(0, "SSL error: %s (%d)",
+              GWEN_SSLConn_ErrorString(sslerr),
+              sslerr);
+    GWEN_Socket_Close(conn->socket);
+    SSL_free(conn->ssl);
+    conn->ssl=0;
+    SSL_CTX_free(conn->ssl_ctx);
+    conn->ssl_ctx=0;
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_SSL);
+  }
+
+  /* set verification mode */
+  if (secure) {
+    SSL_CTX_set_verify(conn->ssl_ctx,
+                       SSL_VERIFY_PEER,
+                       0);
+  }
+  else {
+    SSL_CTX_set_verify(conn->ssl_ctx,
+                       SSL_VERIFY_NONE,
+                       0);
+  }
+
+  /* tell SSL to use our socket */
+  rv=SSL_set_fd(conn->ssl, fd);
+  if (rv==0) {
+    int sslerr;
+
+    sslerr=SSL_get_error(conn->ssl, rv);
+    DBG_ERROR(0, "SSL error: %s (%d)",
+              GWEN_SSLConn_ErrorString(sslerr),
+              sslerr);
+    GWEN_Socket_Close(conn->socket);
+    SSL_free(conn->ssl);
+    conn->ssl=0;
+    SSL_CTX_free(conn->ssl_ctx);
+    conn->ssl_ctx=0;
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_SSL);
+  }
+
+  /* all setup, try to initiate a connection */
+  if (timeout==0)
+    distance=0;
+  else if (timeout==-1)
+    distance=-1;
+  else {
+    timeout-=(difftime(time(0), startt));
+    if (timeout<0)
+      timeout=1;
+    distance=GWEN_WaitCallback_GetDistance(0);
+    if (distance)
+      if ((distance/1000)>timeout)
+        distance=timeout/1000;
+    if (!distance)
+      distance=750;
+  }
+
+  for (count=0;;) {
+    if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
+      DBG_ERROR(0, "User aborted via waitcallback");
+      GWEN_Socket_Close(conn->socket);
+      SSL_free(conn->ssl);
+      conn->ssl=0;
+      SSL_CTX_free(conn->ssl_ctx);
+      conn->ssl_ctx=0;
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_ABORTED);
+    }
+    rv=SSL_connect(conn->ssl);
+    if (rv<1) {
+      int sslerr;
+
+      sslerr=SSL_get_error(conn->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ) {
+        err=GWEN_Socket_WaitForRead(conn->socket, distance);
+
+      }
+      else if (sslerr==SSL_ERROR_WANT_WRITE) {
+        err=GWEN_Socket_WaitForWrite(conn->socket, distance);
+      }
+      else {
+        DBG_ERROR(0, "SSL error: %s (%d)",
+                  GWEN_SSLConn_ErrorString(sslerr),
+                  sslerr);
+        GWEN_Socket_Close(conn->socket);
+        SSL_free(conn->ssl);
+        conn->ssl=0;
+        SSL_CTX_free(conn->ssl_ctx);
+        conn->ssl_ctx=0;
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                              GWEN_CRYPT_ERROR_SSL);
+      } /* if unhandled error */
+
+      /* check for socket error */
+      if (!GWEN_Error_IsOk(err)) {
+        if (GWEN_Error_GetType(err)==GWEN_Error_FindType("Socket")) {
+          if (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
+              GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED) {
+            DBG_ERROR_ERR(0, err);
+            GWEN_Socket_Close(conn->socket);
+            SSL_free(conn->ssl);
+            conn->ssl=0;
+            SSL_CTX_free(conn->ssl_ctx);
+            conn->ssl_ctx=0;
+            return err;
+          }
+        } /* if socket error */
+        else {
+          DBG_ERROR_ERR(0, err);
+          GWEN_Socket_Close(conn->socket);
+          SSL_free(conn->ssl);
+          conn->ssl=0;
+          SSL_CTX_free(conn->ssl_ctx);
+          conn->ssl_ctx=0;
+          return err;
+        }
+      }
+    } /* if SSL error */
+    else {
+      break;
+    }
+    if (timeout!=-1) {
+      if (difftime(time(0), startt)>timeout) {
+        DBG_INFO_ERR(0, err);
+        DBG_ERROR(0, "Could not connect within %d seconds, aborting",
+                  timeout);
+        GWEN_Socket_Close(conn->socket);
+        SSL_free(conn->ssl);
+        conn->ssl=0;
+        SSL_CTX_free(conn->ssl_ctx);
+        conn->ssl_ctx=0;
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                              GWEN_SOCKET_ERROR_TIMEOUT);
+      }
+    }
+  } /* for */
+
+  cert=SSL_get_peer_certificate(conn->ssl);
+  if (!cert) {
+    if (secure) {
+      DBG_ERROR(0, "Peer did not send a certificate, abort");
+      GWEN_Socket_Close(conn->socket);
+      SSL_free(conn->ssl);
+      conn->ssl=0;
+      SSL_CTX_free(conn->ssl_ctx);
+      conn->ssl_ctx=0;
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                            GWEN_CRYPT_ERROR_SSL);
+    }
+    else {
+      DBG_WARN(0, "Peer did not send a certificate");
+    }
+  }
+  else {
+    char *certbuf;
+
+    certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+
+    DBG_NOTICE(0, "Got a certificate: %s",
+               certbuf);
+    free(certbuf);
+    if (SSL_get_verify_result(conn->ssl)!=X509_V_OK) {
+      if (secure) {
+        DBG_ERROR(0, "Invalid peer certificate, aborting");
+        GWEN_Socket_Close(conn->socket);
+        SSL_free(conn->ssl);
+        conn->ssl=0;
+        SSL_CTX_free(conn->ssl_ctx);
+        conn->ssl_ctx=0;
+        return GWEN_Error_new(0,
+                              GWEN_ERROR_SEVERITY_ERR,
+                              GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                              GWEN_CRYPT_ERROR_SSL);
+      }
+      else {
+        DBG_WARN(0, "Invalid peer certificate, ignoring");
+      }
+    }
+    else {
+      DBG_NOTICE(0, "Peer certificate is valid");
+      conn->isSecure=1;
+    }
+    X509_free(cert);
+  }
+
+  DBG_NOTICE(0, "SSL connection established (%s)",
+             (conn->isSecure)?"verified":"not verified");
+  return 0;
 }
 
 
@@ -83,6 +343,7 @@ GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn){
 
 GWEN_ERRORCODE GWEN_SSLConn_Accept(GWEN_SSL_CONNECTION *conn,
                                    GWEN_INETADDRESS **addr,
+                                   int secure,
                                    int timeout){
 }
 
@@ -105,6 +366,22 @@ GWEN_ERRORCODE GWEN_SSLConn_Write(GWEN_SSL_CONNECTION *conn,
 
 
 
+const char *GWEN_SSLConn_ErrorString(unsigned int e) {
+  const char *s;
 
+  switch(e) {
+  case SSL_ERROR_NONE:             s="SSL: None"; break;
+  case SSL_ERROR_ZERO_RETURN:      s="SSL: connection closed"; break;
+  case SSL_ERROR_WANT_READ:        s="SSL: Want to read"; break;
+  case SSL_ERROR_WANT_WRITE:       s="SSL: Want to write"; break;
+  case SSL_ERROR_WANT_CONNECT:     s="SSL: Want to connect"; break;
+  case SSL_ERROR_WANT_ACCEPT:      s="SSL: Want to accept"; break;
+  case SSL_ERROR_WANT_X509_LOOKUP: s="SSL: Want to lookup certificate"; break;
+  case SSL_ERROR_SYSCALL:          s=strerror(errno); break;
+  case SSL_ERROR_SSL:              s="SSL: protocol error"; break;
+  default:                         s="SSL: Unknown error"; break;
+  } /* switch */
+  return s;
+}
 
 

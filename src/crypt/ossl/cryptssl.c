@@ -40,6 +40,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
+#include <openssl/err.h>
+#include <openssl/ssl.h>
 
 
 GWEN_ERRORCODE GWEN_CryptImpl_Init(){
@@ -47,6 +49,11 @@ GWEN_ERRORCODE GWEN_CryptImpl_Init(){
   GWEN_ERRORCODE lerr;
 
   err=0;
+
+  DBG_INFO(0, "Initializing OpenSSL");
+  SSL_load_error_strings();
+  SSL_library_init();
+
 
   /* register the various cryptkey types */
   DBG_INFO(0, "Registering RSA");
@@ -84,6 +91,7 @@ GWEN_ERRORCODE GWEN_CryptImpl_Init(){
 
 
 GWEN_ERRORCODE GWEN_CryptImpl_Fini(){
+  ERR_free_strings();
   return 0;
 }
 

@@ -30,6 +30,7 @@
 #define GWEN_CRYPTSSL_SSL_CONNECTION_P_H
 
 
+#include <openssl/ssl.h>
 #include <gwenhywfar/inetsocket_l.h>
 #include <gwenhywfar/sslconnection.h>
 
@@ -38,10 +39,13 @@ struct GWEN_SSL_CONNECTION {
   GWEN_SOCKET *socket;
   char *CAfile;
   char *CAdir;
-  int isServer;
+  SSL_CTX *ssl_ctx;
+  SSL *ssl;
+  int isSecure;
 };
 
 
+const char *GWEN_SSLConn_ErrorString(unsigned int e);
 
 
 
