@@ -7,7 +7,7 @@
 - ipc:
   - removed this module since it is replaced by the net module
 - Make system:
-  - fixed the warnign about LDD_LDFLAGS not being used
+  - fixed the warning about LDD_LDFLAGS not being used
   - changed SO version and library version
 
 
