@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/09/19 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added cmdlayer to impl/ipc
+
+
 2003/09/18 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added servicelayer to ipc

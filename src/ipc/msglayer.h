@@ -78,6 +78,7 @@ typedef void (*GWEN_IPCMSGLAYER_FREE)(GWEN_IPCMSGLAYER *ml);
 typedef GWEN_ERRORCODE (*GWEN_IPCMSGLAYER_WORK)(GWEN_IPCMSGLAYER *ml,
                                                 int rd);
 typedef GWEN_ERRORCODE (*GWEN_IPCMSGLAYER_ACCEPT)(GWEN_IPCMSGLAYER *ml,
+                                                  GWEN_IPCTRANSPORTLAYER *tl,
                                                   GWEN_IPCMSGLAYER **m);
 
 
@@ -118,6 +119,8 @@ void GWEN_MsgLayer_SetState(GWEN_IPCMSGLAYER *ml,
 GWEN_IPCTRANSPORTLAYER *GWEN_MsgLayer_GetTransportLayer(GWEN_IPCMSGLAYER *ml);
 GWEN_SOCKET *GWEN_IPCMsgLayer_GetReadSocket(GWEN_IPCMSGLAYER *ml);
 GWEN_SOCKET *GWEN_IPCMsgLayer_GetWriteSocket(GWEN_IPCMSGLAYER *ml);
+void *GWEN_MsgLayer_GetData(GWEN_IPCMSGLAYER *ml);
+void GWEN_MsgLayer_SetData(GWEN_IPCMSGLAYER *ml, void *d);
 
 
 void GWEN_MsgLayer_SetFreeDataFn(GWEN_IPCMSGLAYER *ml,

@@ -458,7 +458,7 @@ GWEN_ERRORCODE GWEN_MsgLayer_Accept(GWEN_IPCMSGLAYER *ml,
 
   /* let the msg layer accept the new connection */
   assert(ml->acceptFn);
-  err=ml->acceptFn(ml, &newml);
+  err=ml->acceptFn(ml, newtl, &newml);
   if (!GWEN_Error_IsOk(err)) {
     DBG_DEBUG(0, "called from here");
     return err;
@@ -493,6 +493,7 @@ GWEN_IPCMSG *GWEN_Msg_GetNext(GWEN_IPCMSG *m){
   assert(m);
   return m->next;
 }
+
 
 
 

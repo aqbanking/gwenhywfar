@@ -100,7 +100,9 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
           } /* if no socket */
         } /* if readable state */
         else if (state==GWEN_IPCMsglayerStateWriting ||
-                 state==GWEN_IPCMsglayerStateConnecting) {
+                 state==GWEN_IPCMsglayerStateConnecting ||
+                 (state==GWEN_IPCMsglayerStateIdle &&
+                  GWEN_ConnectionLayer_HasOutgoingMsg(curr))) {
           GWEN_SOCKET *sock;
 
           sock=GWEN_IPCTransportLayer_GetWriteSocket(tl);

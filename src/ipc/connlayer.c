@@ -201,7 +201,7 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Accept(GWEN_IPCCONNLAYER *cl,
 
   /* let the connection layer accept the new connection */
   assert(cl->acceptFn);
-  err=cl->acceptFn(cl, &newcl);
+  err=cl->acceptFn(cl, newml, &newcl);
   if (!GWEN_Error_IsOk(err)) {
     DBG_DEBUG(0, "called from here");
     return err;
@@ -386,6 +386,15 @@ GWEN_ConnectionLayer_GetState(GWEN_IPCCONNLAYER *cl){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayer_SetState(GWEN_IPCCONNLAYER *cl,
+                                   GWEN_IPCCONNLAYER_STATE st){
+  assert(cl);
+  cl->state=st;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 unsigned int GWEN_ConnectionLayer_GetFlags(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   return cl->flags;
@@ -406,6 +415,24 @@ void GWEN_ConnectionLayer_SetFlags(GWEN_IPCCONNLAYER *cl,
 GWEN_IPCCONNLAYER *GWEN_ConnectionLayer_GetNext(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   return cl->next;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int GWEN_ConnectionLayer_HasOutgoingMsg(GWEN_IPCCONNLAYER *cl){
+  assert(cl);
+  return (cl->nOutgoingMsgs!=0);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayer_Append(GWEN_IPCCONNLAYER *cl,
+                                 GWEN_IPCCONNLAYER *newcl){
+  assert(cl);
+  assert(newcl);
+  GWEN_LIST_ADD(GWEN_IPCCONNLAYER, newcl, &cl);
 }
 
 
