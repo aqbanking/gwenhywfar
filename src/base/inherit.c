@@ -96,7 +96,8 @@ void *GWEN_InheritData_GetData(const GWEN_INHERITDATA *d){
 
 
 
-void *GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d){
+GWEN_INHERIT_FREEDATAFN
+GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d){
   assert(d);
   return d->freeDataFn;
 }

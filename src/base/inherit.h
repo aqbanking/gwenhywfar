@@ -70,7 +70,8 @@ extern "C" {
   void *GWEN_InheritData_GetData(const GWEN_INHERITDATA *d);
 
   GWENHYWFAR_API 
-  void *GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d);
+    GWEN_INHERIT_FREEDATAFN
+    GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d);
 
   GWENHYWFAR_API 
   GWEN_TYPE_UINT32 GWEN_Inherit_MakeId(const char *typeName);
@@ -160,9 +161,10 @@ extern "C" {
    * class. This macro initializes the elements defined by the macro
    * @ref GWEN_INHERIT_ELEMENT.
    */
-#define GWEN_INHERIT_INIT(t, element) \
-  assert(element);\
-  element->INHERIT__list=GWEN_InheritData_List_new();
+#define GWEN_INHERIT_INIT(t, element) {\
+    assert(element);\
+    element->INHERIT__list=GWEN_InheritData_List_new();\
+  }
 
 
   /**
@@ -174,9 +176,10 @@ extern "C" {
    * least problems if inheriting classes free their data before the base
    * class does.
    */
-#define GWEN_INHERIT_FINI(t, element) \
-  assert(element);\
-  GWEN_InheritData_List_free(element->INHERIT__list);
+#define GWEN_INHERIT_FINI(t, element) {\
+    assert(element);\
+    GWEN_InheritData_List_free(element->INHERIT__list);\
+  }
 
   /*@}*/
 
@@ -198,7 +201,7 @@ extern "C" {
    * with an element of its base class.
    */
 #define GWEN_INHERIT_GETDATA(bt, t, element) \
-  ((t*)GWEN_Inherit_FindData(bt##__INHERIT_GETLIST(element),t##__INHERIT_ID,0));
+  ((t*)GWEN_Inherit_FindData(bt##__INHERIT_GETLIST(element),t##__INHERIT_ID,0))
 
   /**
    * This macro sets the private data of an inheriting class associated
@@ -218,10 +221,11 @@ extern "C" {
    * associated data will be freed by calling the function whose prototype
    * you've just learned.
    */
-#define GWEN_INHERIT_SETDATA(bt, t, element, data, fn) \
-  if (!t##__INHERIT_ID)\
-  t##__INHERIT_ID=GWEN_Inherit_MakeId(__STRING(t));\
-  bt##__INHERIT_SETDATA(element, __STRING(t), t##__INHERIT_ID, data, fn);
+#define GWEN_INHERIT_SETDATA(bt, t, element, data, fn) {\
+    if (!t##__INHERIT_ID)\
+      t##__INHERIT_ID=GWEN_Inherit_MakeId(__STRING(t));\
+    bt##__INHERIT_SETDATA(element, __STRING(t), t##__INHERIT_ID, data, fn);\
+  }
 
   /**
    * This macro checks whether the given element is of the given type.

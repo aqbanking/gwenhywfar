@@ -95,7 +95,7 @@ extern "C" {
   memset((void*)varname, 0, sizeof(typ));
 
 #define GWEN_FREE_OBJECT(varname) \
-  free(varname);
+  free(varname)
 
 
 #define GWEN_NEW(typ, function) \
@@ -109,13 +109,13 @@ extern "C" {
   GWEN_Memory_FreeObject((void*)varname,\
   GWEN_LOCATION_FUNCTION,\
   __FILE__,\
-  __LINE__);
+  __LINE__)
 
 #define GWEN_ATTACH(varname) \
   GWEN_Memory_AttachObject((void*)varname,\
   GWEN_LOCATION_FUNCTION,\
   __FILE__,\
-  __LINE__)\
+  __LINE__)
 
 
 #ifdef __cplusplus

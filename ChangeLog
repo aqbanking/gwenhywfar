@@ -16,11 +16,13 @@
 	definition in order to avoid warnings when compiling with
 	gcc and "-pedantic".
 
+
 2004/05/05: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed some bugs in args.c
 - modified the prototype of GWEN_WaitCallback_Log
 - fixed GWEN_TYPE_UINT64 for MSVC
+- removed some trailing semicolons from macros in inherit.h and misc.h
 
 
 2004/05/04: Martin Preuss<martin@libchipcard.de>

@@ -314,65 +314,66 @@ extern "C" {
    */
 #define GWEN_LIST_FUNCTIONS(t, pr) \
   static GWEN_TYPE_UINT32 pr##_List_NextId=0;\
+  \
   void pr##_List_Add(t *element, t##_LIST *l) { \
-  assert(l); \
-  assert(element->listPtr==0);/* element MUST NOT be in any list */ \
-  GWEN_LIST_ADD(t, element, &(l->first)) \
-  element->listPtr=l;\
-  l->count++;\
+    assert(l); \
+    assert(element->listPtr==0); /* element MUST NOT be in any list */ \
+    GWEN_LIST_ADD(t, element, &(l->first)) \
+    element->listPtr=l;\
+    l->count++;\
   } \
   \
   void pr##_List_Insert(t *element, t##_LIST *l) { \
-  assert(l); \
-  assert(element->listPtr==0); /* element MUST NOT be in any list */ \
-  GWEN_LIST_INSERT(t, element, &(l->first)) \
-  element->listPtr=l;\
-  l->count++;\
+    assert(l); \
+    assert(element->listPtr==0); /* element MUST NOT be in any list */ \
+    GWEN_LIST_INSERT(t, element, &(l->first)) \
+    element->listPtr=l;\
+    l->count++;\
   } \
   \
   void pr##_List_Del(t *element){ \
-  assert(element->listPtr);\
-  assert(element->listPtr->first); \
-  assert(element->listPtr->count);\
-  GWEN_LIST_DEL(t, element, &(element->listPtr->first)) \
-  element->listPtr->count--;\
-  element->listPtr=0;\
-  } \
+    assert(element->listPtr);\
+    assert(element->listPtr->first); \
+    assert(element->listPtr->count);\
+    GWEN_LIST_DEL(t, element, &(element->listPtr->first)) \
+    element->listPtr->count--;\
+    element->listPtr=0;\
+  }\
   \
   t* pr##_List_First(const t##_LIST *l) { \
-  if (l) return l->first;\
-  else return 0; \
+    if (l) return l->first;\
+    else return 0; \
   } \
   \
   void pr##_List_Clear(t##_LIST *l) { \
-  t* el; \
-  while(l->first) {\
-  el=l->first;\
-  pr##_List_Del(el);\
-  pr##_free(el);\
-  } /* while */ \
+    t* el; \
+    while(l->first) {\
+      el=l->first;\
+      pr##_List_Del(el);\
+      pr##_free(el);\
+    } /* while */ \
   } \
   \
   t##_LIST* pr##_List_new(){\
-  t##_LIST *l; \
-  GWEN_NEW_OBJECT(t##_LIST, l) \
-  l->id=++pr##_List_NextId;\
-  return l;\
-  } \
+    t##_LIST *l; \
+    GWEN_NEW_OBJECT(t##_LIST, l);\
+    l->id=++pr##_List_NextId;\
+    return l;\
+  }\
   \
   void pr##_List_free(t##_LIST *l) {\
-  if (l) pr##_List_Clear(l);\
-  free(l);\
+    if (l) pr##_List_Clear(l);\
+    free(l);\
   } \
   \
   t* pr##_List_Next(const t *element) { \
-  assert(element);\
-  return element->next;\
+    assert(element);\
+    return element->next;\
   } \
   \
   GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l){\
-  assert(l);\
-  return l->count;\
+    assert(l);\
+    return l->count;\
   }
 
 
