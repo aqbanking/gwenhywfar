@@ -74,13 +74,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/*.so.*
 %{_libdir}/*.so
 %{_libdir}/%{name}
+%{_datadir}/locale/*/LC_MESSAGES/gwenhywfar.mo
 
 %files devel
 %defattr(-,root,root,0755)
 %{_bindir}/gwenhywfar-config
 %{_bindir}/xmlmerge
 %{_bindir}/dlgtest
+%{_bindir}/mklistdoc
 %{_includedir}/gwenhywfar
+%{_includedir}/gwenpp
 %{_libdir}/*.la
 #%{_libdir}/*.a
 %{_datadir}/aclocal/gwenhywfar.m4
