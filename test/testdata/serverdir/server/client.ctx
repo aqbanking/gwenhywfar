@@ -1,7 +1,7 @@
 char localname="server"
 char remotename="client"
 int  localsignseq="1"
-int  remotesignseq="0"
+int  remotesignseq="15"
 remotesignkey {
   char type="RSA"
   char name="B"

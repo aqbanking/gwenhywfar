@@ -582,19 +582,39 @@ int testServer(int argc, char **argv) {
 
   for (;;) {
     int chr;
+    unsigned int reqid;
 
-    fprintf(stderr, "Hit ENTER to Work (or ESC and ENTER to abort)\n");
-    chr=getchar();
-    if (chr==27)
-      break;
-    err=GWEN_IPCXMLService_Work(service, 1000);
+    err=GWEN_IPCXMLService_Work(service, 10000);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
+      fprintf(stderr, "Hit ENTER to continue (or ESC and ENTER to abort)\n");
+      chr=getchar();
+      if (chr==27)
+        break;
     }
     err=GWEN_IPCXMLService_HandleMsgs(service, 0, 1);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
     }
+
+    /* handle requests, if any */
+    reqid=GWEN_IPCXMLService_GetNextRequest(service);
+    if (reqid) {
+      GWEN_DB_NODE *rqdata;
+
+      DBG_NOTICE(0, "Got a request (%d)", reqid);
+      for (;;) {
+        rqdata=GWEN_IPCXMLService_GetRequestData(service, reqid);
+        if (!rqdata) {
+          DBG_NOTICE(0, "Request finished");
+          GWEN_IPCXMLService_DeleteRequest(service, reqid);
+          break;
+        }
+        DBG_NOTICE(0, "Request data is this:");
+        GWEN_DB_Dump(rqdata, stderr, 1);
+        GWEN_DB_Group_free(rqdata);
+      } /* for */
+    } /* if reqid */
   } /* for */
 
   fprintf(stderr, "Exit.\n");
@@ -616,6 +636,7 @@ int testClient(int argc, char **argv) {
   GWEN_IPCXMLSERVICE *service;
   unsigned int serverId;
   GWEN_DB_NODE *gr;
+  int j;
 
   e=GWEN_MsgEngine_new();
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
@@ -708,18 +729,20 @@ int testClient(int argc, char **argv) {
     return 2;
   }
 
-  for (;;) {
-    int chr;
+  for (j=0;j<20;j++) {
+    /* int chr; */
 
-    fprintf(stderr, "Hit ENTER to Work (or ESC and ENTER to abort)\n");
+    /* fprintf(stderr, "Hit ENTER to Work (or ESC and ENTER to abort)\n");
     chr=getchar();
     if (chr==27)
-      break;
-    fprintf(stderr, "Working...\n");
-    err=GWEN_IPCXMLService_Work(service, 1000);
-    fprintf(stderr, "Working... done.\n");
+    break;
+    */
+    fprintf(stderr, "Working (%d) ...\n", j);
+    err=GWEN_IPCXMLService_Work(service, 2000);
+    fprintf(stderr, "Working (%d) ... done.\n", j);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
+      break;
     }
   } /* for */
 

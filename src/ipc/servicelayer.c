@@ -53,7 +53,11 @@ GWEN_ERRORCODE GWEN_GlobalServiceLayer_Work(int timeout){
   socks=0;
   curr=GWEN_Global_ServiceLayer->connections;
   if (!curr) {
-    DBG_WARN(0, "No connection layers.");
+    DBG_ERROR(0, "No connection layers.");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_IPC_ERROR_TYPE),
+                          GWEN_IPC_ERROR_NO_CONNECTIONS);
   }
   else {
     GWEN_SOCKETSET *rset, *wset;

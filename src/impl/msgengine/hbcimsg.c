@@ -583,6 +583,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   }
   if (GWEN_SecContext_PrepareContext(sc, ctx, 0)) {
     DBG_INFO(0, "here");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_DB_Group_free(cfg);
     return -1;
@@ -591,6 +592,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   /* prepare config for segment */
   if (GWEN_HBCIMsg_PrepareCryptoSeg(hmsg, ctx, cfg, 0, 1)) {
     DBG_INFO(0, "here");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_DB_Group_free(cfg);
     return -1;
@@ -598,6 +600,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   p=GWEN_DB_GetCharValue(cfg, "ctrlref", 0, "");
   if (strlen(p)>=sizeof(ctrlref)) {
     DBG_INFO(0, "Control reference too long (14 bytes maximum)");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_DB_Group_free(cfg);
     return -1;
@@ -617,6 +620,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
                                           cfg);
   if (rv) {
     DBG_INFO(0, "Could not create SigHead");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
@@ -629,6 +633,7 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   /* add raw data to to-sign data buffer */
   if (GWEN_Buffer_AppendBuffer(hbuf, rawBuf)) {
     DBG_INFO(0, "here");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
@@ -639,12 +644,14 @@ int GWEN_HBCIMsg_SignMsg(GWEN_HBCIMSG *hmsg,
   sigbuf=GWEN_Buffer_new(0, 512, 0, 1);
   if (GWEN_SecContext_Sign(sc, hbuf, sigbuf, ctx)) {
     DBG_INFO(0, "here");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_Buffer_free(sigbuf);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
+  GWEN_SecContextMgr_ReleaseContext(scm, sc, 0);
   DBG_INFO(0, "Signing done");
 
   /* insert new SigHead at beginning of message buffer */
@@ -764,6 +771,7 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   }
   if (GWEN_SecContext_PrepareContext(sc, ctx, 1)) {
     DBG_INFO(0, "here");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_DB_Group_free(cfg);
     return -1;
@@ -776,11 +784,13 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   GWEN_Buffer_Rewind(hmsg->buffer);
   if (GWEN_SecContext_Encrypt(sc, hmsg->buffer, cryptbuf, ctx)) {
     DBG_INFO(0, "here");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_Buffer_free(cryptbuf);
     GWEN_HBCICryptoContext_free(ctx);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
+  GWEN_SecContextMgr_ReleaseContext(scm, sc, 0);
   DBG_INFO(0, "Encrypting message: done");
 
   /* create CryptHead */
@@ -1433,11 +1443,14 @@ int GWEN_HBCIMsg_Decrypt(GWEN_HBCIMSG *hmsg, GWEN_DB_NODE *gr){
                              ctx);
   if (rv) {
     DBG_INFO(0, "here");
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
     GWEN_Buffer_free(cdbuf);
     GWEN_Buffer_free(ndbuf);
     GWEN_HBCICryptoContext_free(ctx);
     return -1;
   }
+  GWEN_SecContextMgr_ReleaseContext(scm, sc, 0);
+  DBG_INFO(0, "Decrypting done");
 
   /* store new buffer inside message */
   GWEN_Buffer_free(hmsg->origbuffer);
@@ -1733,11 +1746,14 @@ int GWEN_HBCIMsg_Verify(GWEN_HBCIMSG *hmsg,
 
     if (rv) {
       DBG_ERROR(0, "Invalid signature");
+      GWEN_SecContextMgr_ReleaseContext(scm, sc, 1);
       GWEN_HBCICryptoContext_free(ctx);
       GWEN_List_free(sigheads);
       GWEN_List_free(sigtails);
       return -1;
     }
+    GWEN_SecContextMgr_ReleaseContext(scm, sc, 0);
+    DBG_INFO(0, "Verification done");
 
     /* add signer */
     GWEN_HBCIMsg_AddSigner(hmsg, GWEN_HBCICryptoContext_GetKeySpec(ctx));
