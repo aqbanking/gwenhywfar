@@ -60,7 +60,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
     return 0;
   }
   pd->name=strdup(p);
-  p=GWEN_XMLNode_GetCharValue(node, "type", 0);
+  p=GWEN_XMLNode_GetProperty(node, "type", 0);
   if (!p) {
     DBG_ERROR(0, "Plugin has no type");
     GWEN_PluginDescription_free(pd);
