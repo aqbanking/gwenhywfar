@@ -81,12 +81,88 @@ static GWEN_NETTRANSPORTSSL_ASKADDCERT_FN2
 static void *gwen_netransportssl_askAddCertUserData=0;
 
 
+
+int GWEN_NetTransportSSL__GetPublicCaFile(GWEN_BUFFER *pbuf) {
+#ifdef OS_WIN32
+  HKEY hkey;
+  TCHAR nbuffer[MAX_PATH];
+  BYTE vbuffer[MAX_PATH];
+  DWORD nsize;
+  DWORD vsize;
+  DWORD typ;
+  int i;
+
+  snprintf(nbuffer, sizeof(nbuffer), "Software\\Gwenhywfar\\Paths");
+
+  /* open the key */
+  if (RegOpenKey(HKEY_CURRENT_USER, nbuffer, &hkey)){
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "RegOpenKey failed, returning compile-time value");
+    GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
+                             "/"
+                             GWEN_DBIO_FOLDER,
+                             pbuf,
+                             1);
+    return 1;
+  }
+
+  /* find the key for dbio-plugins */
+  for (i=0;; i++) {
+    nsize=sizeof(nbuffer);
+    vsize=sizeof(vbuffer);
+    if (ERROR_SUCCESS!=RegEnumValue(hkey,
+                                    i,    /* index */
+                                    nbuffer,
+                                    &nsize,
+                                    0,       /* reserved */
+                                    &typ,
+                                    vbuffer,
+                                    &vsize))
+      break;
+    if (strcasecmp(nbuffer, "public-ca-file")==0 &&
+        typ==REG_SZ) {
+      /* variable found */
+      RegCloseKey(hkey);
+      GWEN_Buffer_AppendBytes(pbuf, (char*)vbuffer, vsize-1);
+      return 0;
+    }
+  } /* for */
+
+  RegCloseKey(hkey);
+  DBG_INFO(GWEN_LOGDOMAIN,
+           "RegKey does not exist, returning compile-time value");
+  GWEN_Directory_OsifyPath(PUBLIC_CA_FILE,
+			   pbuf,
+			   1);
+  return 1;
+#else
+  GWEN_Directory_OsifyPath(PUBLIC_CA_FILE,
+			   pbuf,
+			   0);
+  return 0;
+#endif
+}
+
+
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETTRANSPORTSSL *GWEN_NetTransportSSLData_new(){
   GWEN_NETTRANSPORTSSL *skd;
+  GWEN_BUFFER *tbuf;
+  int rv;
 
   GWEN_NEW_OBJECT(GWEN_NETTRANSPORTSSL, skd);
   DBG_MEM_INC("GWEN_NETTRANSPORTSSL", 0);
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_NetTransportSSL__GetPublicCaFile(tbuf);
+  if (rv<0) {
+    DBG_ERROR(0, "Could not get the path and name of the public cert file");
+  }
+  else {
+    skd->CAfile=strdup(GWEN_Buffer_GetStart(tbuf));
+  }
+  GWEN_Buffer_free(tbuf);
+
   return skd;
 }
 
@@ -98,6 +174,7 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
     DBG_MEM_DEC("GWEN_NETTRANSPORTSSL");
     if (skd->ownSocket)
       GWEN_Socket_free(skd->socket);
+    free(skd->CAfile);
     free(skd->CAdir);
     free(skd->newCAdir);
     free(skd->ownCertFile);
@@ -898,9 +975,11 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
   }
 
   /* setup locations of certificates */
-  if (skd->CAdir) {
+  if (skd->CAdir || skd->CAfile) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate locations");
-    rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
+    rv=SSL_CTX_load_verify_locations(skd->ssl_ctx,
+                                     skd->CAfile,
+                                     skd->CAdir);
     if (rv==0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "SSL: Could not load certificate location");
       return -1;

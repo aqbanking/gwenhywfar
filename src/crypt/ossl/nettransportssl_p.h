@@ -45,6 +45,7 @@ typedef struct GWEN_NETTRANSPORTSSL {
   int ownSocket;
 
   char *CAdir;
+  char *CAfile;
   char *newCAdir;
   char *ownCertFile;
   char *dhfile;
@@ -128,6 +129,7 @@ static int GWEN_NetTransportSSL__VerifyCallBack(int preverify_ok,
 
 void GWEN_NetTransportSSL__InfoCallBack(SSL *s, int where, int ret);
 
+int GWEN_NetTransportSSL__GetPublicCaFile(GWEN_BUFFER *pbuf);
 
 
 #endif /* GWEN_NETTRANSPORTSSL_P_H */

@@ -2,15 +2,16 @@
 This is Gwenhywfar, a multi-platform helper library for networking and
 security applications and libraries. 
 It is used by 
- - libchipcard (http://www.libchipcard.de), 
+ - Libchipcard2 (http://www.libchipcard.de), 
  - OpenHBCI2 (http://www.openhbci.de), 
  - Simthetic, the simulation tool (http://simthetic.sourceforge.net)
  - AqBanking/AqHBCI (http://www.aquamaniac.de/aqbanking/).
  - and others by using one of the projects above
 
 
+
 Features
---------
+========
 
 This library is written in C, and it follows the object-oriented
 programming paradigm for most of its parts.  The header files can
@@ -48,16 +49,18 @@ Gwenhywfar includes the following features:
   and writing to GWEN_DBs (used by AqBanking to create the transaction class)
 
 
+
 Requirements
-------------
+============
 
 - OpenSSL >= 0.9.6x (0.9.7x recommended); this can optionally be
   disabled by the configure switch --disable-ssl
 - ncurses (optional, used for user interface library gwenui)
 
 
+
 Platforms
----------
+=========
 
 Gwenhywfar is being developed on Linux. But the following platforms are also
 supported:
@@ -76,10 +79,13 @@ On Windows, an .exe setup program is provided, created with the Inno
 Setup Compiler http://www.jrsoftware.org/isdl.php .
 
 
+
 Environment Variables
----------------------
+=====================
 
 "GWEN_MEMORY_DEBUG"
+-------------------
+
 This integer variable tells gwen whether (and how) to print the memory
 debugger statistic. This only works for sources compiled with the defined
 macro GWEN_MEMORY_DEBUG. 
@@ -87,8 +93,28 @@ macro GWEN_MEMORY_DEBUG.
 - "1" only shows those objects whose count is not 0
 
 
+
+Registry Keys
+=============
+
+On Windows platforms Gwen uses some keys below HKEY_CURRENT_USER to store
+information about file/folder locations:
+
+"Software\\Gwenhywfar\\Paths\\public-ca-file"
+---------------------------------------------
+Complete path and name of the public certificate file (containing known valid
+public certificates)
+
+
+"Software\\Gwenhywfar\\Paths\\dbio-plugins"
+-------------------------------------------
+
+Complete path to the folder containing GWENs DBIO plugins.
+
+
+
 Documentation
--------------
+=============
 
 The documentation can be found in the header files. Many header 
 files already include extensive comments in doxygen-format (however some 
@@ -98,8 +124,9 @@ For a more or less complete API documentation use the command
 You will need the tool doxygen for this command to run.
 
 
+
 Contact
--------
+=======
 
 For questions about this library please ask on the mailing list of the
 OpenHBCI project openhbci-general (subscriber-only, please subscribe
@@ -107,8 +134,9 @@ on http://lists.sourceforge.net/lists/listinfo/openhbci-general),
 since this is where the author(s) hang out. 
 
 
+
 Authors
--------
+=======
 
 This library is being written by and is being maintained by Martin
 Preuss <martin@libchipcard.de>. 
@@ -120,13 +148,13 @@ available on Windows).
 
 
 Name
-----
+====
 
 The name of this library was chosen to honour a very special person ;-)
 (that should suffice as an explanation)
 
 
 
-Hamburg, Germany 2004/09/02
+Hamburg, Germany 2005/02/15
 
 

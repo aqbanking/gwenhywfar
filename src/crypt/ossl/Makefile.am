@@ -1,3 +1,6 @@
+
+EXTRA_DIST=gwen-public-ca.crt
+
 INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
@@ -9,7 +12,10 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/ui
  
 localedir=$(datadir)/locale
-DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
+DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@ -DPUBLIC_CA_FILE=\"$(sysconfdir)/gwen-public-ca.crt\"
+
+certdir=$(sysconfdir)
+cert_DATA=gwen-public-ca.crt
 
 noinst_LTLIBRARIES=libcryptimpl.la
 

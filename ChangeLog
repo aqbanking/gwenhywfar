@@ -8,6 +8,7 @@
 -------------------------------------------------
 - now the fingerprint of a certificate is written to the DB when converting a
   certificate
+- added known public CA certificates which are now used by Gwens SSL code
 
 
 2005/02/14: Martin Preuss<martin@libchipcard.de>
