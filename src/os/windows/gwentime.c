@@ -34,18 +34,21 @@
 #include <gwenhywfar/debug.h>
 
 
-
+/* The idea of this function is taken from a posting by Anders Carlsson on the mailing list
+ * bug-gnu-chess (http://mail.gnu.org/archive/html/bug-gnu-chess/2004-01/msg00020.html)
+*/
 GWEN_TIME *GWEN_CurrentTime(){
   GWEN_TIME *t;
-  struct timezone tz;
+  union {
+       long long ns100; /*time since 1 Jan 1601 in 100ns units */
+       FILETIME ft;
+     } _date;
+
+  GetSystemTimeAsFileTime( &(date.ft));
 
   GWEN_NEW_OBJECT(GWEN_TIME, t);
-  if (gettimeofday(&(t->tv), &tz)) {
-    DBG_ERROR(0, "Could not get current time");
-    GWEN_FREE_OBJECT(t);
-    return 0;
-  }
-
+  t->usec=(long)((date.ns100 / 10LL) % 1000000LL );
+  t->sec=(long)((_now.ns100-(116444736000000000LL))/10000000LL);
   return t;
 }
 
@@ -61,12 +64,12 @@ void GWEN_Time_free(GWEN_TIME *t){
 
 double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0){
   double d;
-
+  
   assert(t1);
   assert(t0);
 
-  d=((t1->tv.tv_sec*1000)+(t1->tv.tv_usec/1000))-
-    ((t0->tv.tv_sec*1000)+(t0->tv.tv_usec/1000));
+   d=((t1->sec*1000)+(t1->usec/1000))-
+    ((t0->sec*1000)+(t0->usec/1000));
 
   return d;
 }
@@ -75,7 +78,7 @@ double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0){
 
 GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t){
   assert(t);
-  return t->tv.tv_sec;
+  return t->sec;
 }
 
 

@@ -33,13 +33,10 @@
 
 #include <gwenhywfar/gwentime.h>
 
-#include <sys/time.h>
-#include <time.h>
-
 
 struct GWEN_TIME {
-  struct timeval tv;
-
+  long sec;
+  long usec;
 };
 
 
