@@ -470,6 +470,8 @@ void GWEN_ServiceLayer_free(GWEN_SERVICELAYER *sl){
       DBG_ERROR(0, "Could not unregister local layer, aborting.");
       assert(GWEN_Error_IsOk(err));
     }
+    if (sl->data && sl->freeDataFn)
+      sl->freeDataFn(sl);
     free(sl);
   }
 }
@@ -527,7 +529,7 @@ GWEN_ERRORCODE GWEN_ServiceLayer_Work(GWEN_SERVICELAYER *sl, int timeout){
 /* --------------------------------------------------------------- FUNCTION */
 void GWEN_ServiceLayer_RemoveClosed(GWEN_SERVICELAYER *sl){
   assert(sl);
-  GWEN_GlobalServiceLayer_RemoveClosed();
+  GWEN_GlobalServiceLayer_RemoveClosed(sl);
 }
 
 
@@ -610,7 +612,30 @@ GWEN_IPCMSG *GWEN_ServiceLayer_NextIncomingMsg(GWEN_SERVICELAYER *sl,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ServiceLayer_SetFreeDataFn(GWEN_SERVICELAYER *sl,
+                                     GWEN_SERVICELAYER_FREEDATA_FN fn){
+  assert(sl);
+  sl->freeDataFn=fn;
+}
 
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void *GWEN_ServiceLayer_GetData(GWEN_SERVICELAYER *sl){
+  assert(sl);
+  return sl->data;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ServiceLayer_SetData(GWEN_SERVICELAYER *sl, void *data){
+  assert(sl);
+  if (sl->data && sl->freeDataFn)
+    sl->freeDataFn(sl);
+  sl->data=data;
+}
 
 
 

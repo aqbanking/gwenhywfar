@@ -149,6 +149,15 @@ void GWEN_ConnectionLayer_SetCloseFn(GWEN_IPCCONNLAYER *cl,
 
 
 /* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayer_SetUpFn(GWEN_IPCCONNLAYER *cl,
+                                  GWEN_IPCCONNLAYER_UP f){
+  assert(cl);
+  cl->upFn=f;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 void GWEN_ConnectionLayer_SetDownFn(GWEN_IPCCONNLAYER *cl,
                                     GWEN_IPCCONNLAYER_DOWN f){
   assert(cl);
@@ -187,6 +196,8 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Accept(GWEN_IPCCONNLAYER *cl,
   newcl->libMark=cl->libMark;
   newcl->userMark=cl->userMark;
   newcl->flags=cl->flags | GWEN_IPCCONNLAYER_FLAGS_PASSIVE;
+  /* notify connection layer */
+  GWEN_ConnectionLayer_Up(newcl);
   *c=newcl;
 
   DBG_INFO(0, "Connection accepted as %d",
@@ -260,6 +271,15 @@ void GWEN_ConnectionLayer_Down(GWEN_IPCCONNLAYER *cl){
   assert(cl);
   if (cl->downFn)
     cl->downFn(cl);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void GWEN_ConnectionLayer_Up(GWEN_IPCCONNLAYER *cl){
+  assert(cl);
+  if (cl->upFn)
+    cl->upFn(cl);
 }
 
 

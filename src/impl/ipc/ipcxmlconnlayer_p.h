@@ -49,6 +49,7 @@
 
 
 struct GWEN_IPCXMLCONNLAYERDATA {
+  GWEN_SERVICELAYER *serviceLayer; /* not owned */
   GWEN_MSGENGINE *msgEngine; /* not owned ! */
   unsigned int flags;
 
@@ -60,6 +61,9 @@ struct GWEN_IPCXMLCONNLAYERDATA {
 
   unsigned int connected;
   GWEN_HBCIMSG *currentMsg;
+
+  GWEN_IPCXMLCONNLAYER_CONNECTED_FN connectedFn;
+  GWEN_IPCXMLCONNLAYER_DISCONNECTED_FN disconnectedFn;
 };
 
 
@@ -77,7 +81,7 @@ GWEN_IPCMSG *GWEN_IPCXMLConnLayer_HBCI2IPC(GWEN_IPCCONNLAYER *cl,
                                            GWEN_HBCIMSG *hmsg);
 
 void GWEN_IPCXMLConnLayer_Down(GWEN_IPCCONNLAYER *cl);
-GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Up(GWEN_IPCCONNLAYER *cl);
+void GWEN_IPCXMLConnLayer_Up(GWEN_IPCCONNLAYER *cl);
 
 GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_MsgFactory(GWEN_IPCCONNLAYER *cl);
 

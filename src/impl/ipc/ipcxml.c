@@ -155,6 +155,10 @@ GWEN_IPCXMLSERVICE *GWEN_IPCXMLService_new(GWEN_MSGENGINE *msgEngine,
   xs->msgEngine=msgEngine;
   xs->securityManager=scm;
   xs->serviceLayer=GWEN_ServiceLayer_new();
+  /* store pointer to this service in service layer
+   * do not setup a freeDataFn for this, because the service layer
+   * will not own this ! */
+  GWEN_ServiceLayer_SetData(xs->serviceLayer, xs);
 
   return xs;
 }
@@ -235,7 +239,8 @@ GWEN_IPCCONNLAYER *GWEN_IPCXMLService_CreateCL(GWEN_IPCXMLSERVICE *xs,
     ml=GWEN_IPCXMLMsgLayer_new(xs->msgEngine, tl,
                                GWEN_IPCMsglayerStateUnconnected);
   }
-  cl=GWEN_IPCXMLConnLayer_new(xs->msgEngine,
+  cl=GWEN_IPCXMLConnLayer_new(xs->serviceLayer,
+                              xs->msgEngine,
                               localContext,
                               xs->securityManager,
                               ml,
@@ -244,7 +249,9 @@ GWEN_IPCCONNLAYER *GWEN_IPCXMLService_CreateCL(GWEN_IPCXMLSERVICE *xs,
   cid=GWEN_ConnectionLayer_GetId(cl);
   GWEN_ConnectionLayer_SetUserMark(cl, userMark);
   GWEN_ConnectionLayer_SetFlags(cl, flags);
-
+  GWEN_IPCXMLConnLayer_SetConnectedFn(cl, GWEN_IPCXMLService_ConnectionUp);
+  GWEN_IPCXMLConnLayer_SetDisconnectedFn(cl,
+                                         GWEN_IPCXMLService_ConnectionDown);
   return cl;
 }
 
@@ -276,7 +283,8 @@ unsigned int GWEN_IPCXMLService_AddServer(GWEN_IPCXMLSERVICE *xs,
 
 unsigned int GWEN_IPCXMLService_AddClient(GWEN_IPCXMLSERVICE *xs,
                                           GWEN_IPCXMLSERVICE_TYPE st,
-                                          const char *localContext,
+                                          const char *localName,
+                                          const char *remoteName,
                                           unsigned int userMark,
                                           const char *addr,
                                           unsigned int port,
@@ -284,7 +292,7 @@ unsigned int GWEN_IPCXMLService_AddClient(GWEN_IPCXMLSERVICE *xs,
   GWEN_IPCCONNLAYER *cl;
   GWEN_ERRORCODE err;
 
-  cl=GWEN_IPCXMLService_CreateCL(xs, st, localContext, userMark, addr, port,
+  cl=GWEN_IPCXMLService_CreateCL(xs, st, localName, userMark, addr, port,
                                  flags & ~GWEN_IPCCONNLAYER_FLAGS_PASSIVE);
   err=GWEN_ServiceLayer_AddConnection(xs->serviceLayer, cl);
   if (!GWEN_Error_IsOk(err)) {
@@ -292,7 +300,7 @@ unsigned int GWEN_IPCXMLService_AddClient(GWEN_IPCXMLSERVICE *xs,
     GWEN_ConnectionLayer_free(cl);
     return 0;
   }
-
+  GWEN_IPCXMLConnLayer_SetRemoteName(cl, remoteName);
   return GWEN_ConnectionLayer_GetId(cl);
 }
 
@@ -942,7 +950,53 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
 
 
 
+void GWEN_IPCXMLService_SetConnectionUpFn(GWEN_IPCXMLSERVICE *xs,
+                                          GWEN_IPCXMLSERVICE_CONNUP_FN fn){
+  assert(xs);
+  xs->connUpFn=fn;
+}
 
+
+
+void
+GWEN_IPCXMLService_SetConnectionDownFn(GWEN_IPCXMLSERVICE *xs,
+                                       GWEN_IPCXMLSERVICE_CONNDOWN_FN fn){
+  assert(xs);
+  xs->connDownFn=fn;
+}
+
+
+
+void GWEN_IPCXMLService_ConnectionUp(GWEN_SERVICELAYER *sl,
+                                     GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCXMLSERVICE *xs;
+
+  DBG_INFO(0, "Up");
+  assert(sl);
+  assert(cl);
+  xs=GWEN_ServiceLayer_GetData(sl);
+  assert(xs);
+  if (xs->connUpFn)
+    xs->connUpFn(xs, GWEN_ConnectionLayer_GetId(cl));
+  DBG_DEBUG(0, "Up: done");
+}
+
+
+
+void GWEN_IPCXMLService_ConnectionDown(GWEN_SERVICELAYER *sl,
+                                       GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCXMLSERVICE *xs;
+
+  DBG_INFO(0, "Down");
+
+  assert(sl);
+  assert(cl);
+  xs=GWEN_ServiceLayer_GetData(sl);
+  assert(xs);
+  if (xs->connDownFn)
+    xs->connDownFn(xs, GWEN_ConnectionLayer_GetId(cl));
+  DBG_DEBUG(0, "Down: done");
+}
 
 
 

@@ -30,6 +30,7 @@
 #define GWEN_IPCXMLCONNLAYER_H
 
 
+#include <gwenhywfar/servicelayer.h>
 #include <gwenhywfar/connlayer.h>
 #include <gwenhywfar/transportlayer.h>
 #include <gwenhywfar/msgengine.h>
@@ -43,14 +44,13 @@
 typedef struct GWEN_IPCXMLCONNLAYERDATA GWEN_IPCXMLCONNLAYERDATA;
 
 
-typedef GWEN_ERRORCODE
-  (*GWEN_IPCXMLCONNLAYER_ENCODE_FN)(GWEN_IPCCONNLAYER *cl,
-                                    GWEN_BUFFER **buffer,
-                                    int crypt, int sign);
+typedef void
+  (*GWEN_IPCXMLCONNLAYER_CONNECTED_FN)(GWEN_SERVICELAYER *sl,
+                                       GWEN_IPCCONNLAYER *cl);
 
-typedef GWEN_ERRORCODE
-  (*GWEN_IPCXMLCONNLAYER_DECODE_FN)(GWEN_IPCCONNLAYER *cl,
-                                    GWEN_DB_NODE *dn);
+typedef void
+  (*GWEN_IPCXMLCONNLAYER_DISCONNECTED_FN)(GWEN_SERVICELAYER *sl,
+                                          GWEN_IPCCONNLAYER *cl);
 
 
 
@@ -58,7 +58,8 @@ GWEN_IPCXMLCONNLAYERDATA *GWEN_IPCXMLConnLayerData_new();
 void GWEN_IPCXMLConnLayerData_free(GWEN_IPCXMLCONNLAYERDATA *ccd);
 
 
-GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_MSGENGINE *msgEngine,
+GWEN_IPCCONNLAYER *GWEN_IPCXMLConnLayer_new(GWEN_SERVICELAYER *sl,
+                                            GWEN_MSGENGINE *msgEngine,
                                             const char *localName,
                                             GWEN_SECCTX_MANAGER *scm,
                                             GWEN_IPCMSGLAYER *ml,
@@ -95,6 +96,13 @@ void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_SetSecurityFlags(GWEN_IPCCONNLAYER *cl,
                                                      unsigned int flags);
 
+void GWEN_IPCXMLConnLayer_Connected(GWEN_IPCCONNLAYER *cl);
+void GWEN_IPCXMLConnLayer_Disconnected(GWEN_IPCCONNLAYER *cl);
+
+void GWEN_IPCXMLConnLayer_SetConnectedFn(GWEN_IPCCONNLAYER *cl,
+                                         GWEN_IPCXMLCONNLAYER_CONNECTED_FN f);
+void GWEN_IPCXMLConnLayer_SetDisconnectedFn(GWEN_IPCCONNLAYER *cl,
+       GWEN_IPCXMLCONNLAYER_DISCONNECTED_FN f);
 
 #endif /* GWEN_IPCXMLCONNLAYER_H */
 

@@ -128,6 +128,24 @@ void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
 typedef struct GWEN_IPCXMLSERVICE GWEN_IPCXMLSERVICE;
 
 /**
+ * This function will be called whenever a connection is established.
+ * The application can use this function to keep track of connections.
+ * @param xs IPC service the connection belongs to
+ * @param clid connection id
+ */
+typedef void (*GWEN_IPCXMLSERVICE_CONNUP_FN)(GWEN_IPCXMLSERVICE *xs,
+                                             unsigned int clid);
+/**
+ * This function will be called whenever a connection is lost.
+ * The application can use this function to keep track of connections.
+ * @param xs IPC service the connection belongs to
+ * @param clid connection id
+ */
+typedef void (*GWEN_IPCXMLSERVICE_CONNDOWN_FN)(GWEN_IPCXMLSERVICE *xs,
+                                               unsigned int clid);
+
+
+/**
  * List of available transport layer types.
  */
 typedef enum {
@@ -240,6 +258,7 @@ unsigned int GWEN_IPCXMLService_AddServer(GWEN_IPCXMLSERVICE *xs,
 unsigned int GWEN_IPCXMLService_AddClient(GWEN_IPCXMLSERVICE *xs,
                                           GWEN_IPCXMLSERVICE_TYPE st,
                                           const char *localName,
+                                          const char *remoteName,
                                           unsigned int userMark,
                                           const char *addr,
                                           unsigned int port,
@@ -470,6 +489,26 @@ GWEN_ERRORCODE GWEN_IPCXMLService_HandleMsgs(GWEN_IPCXMLSERVICE *xs,
                                              unsigned int userMark,
                                              unsigned int maxmsgs);
 /*@}*/ /* name */
+
+/** @name Extending IPC Service
+ *
+ */
+/*@{*/
+/**
+ * You can setup a function that will be called whenever connection is
+ * established.
+ */
+void GWEN_IPCXMLService_SetConnectionUpFn(GWEN_IPCXMLSERVICE *xs,
+                                          GWEN_IPCXMLSERVICE_CONNUP_FN fn);
+/**
+ * You can setup a function that will be called whenever connection is
+ * lost.
+ */
+void
+  GWEN_IPCXMLService_SetConnectionDownFn(GWEN_IPCXMLSERVICE *xs,
+                                         GWEN_IPCXMLSERVICE_CONNDOWN_FN fn);
+/*@}*/ /* name */
+
 
 /*@}*/ /* defgroup */
 

@@ -4,6 +4,10 @@ $Id$
 2003/11/24 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added some testdata to continuously check IPC stuff ("test/testdata")
+- IPC: added some callbacks for applications to keep track of
+  connections
+- replaced COPYING file with one that includes the LGPL instead of the GPL
+- added license exception to satisfy Debian needs (the old OpenSSL problem)
 
 
 2003/11/23 Martin Preuss <martin@libchipcard.de>

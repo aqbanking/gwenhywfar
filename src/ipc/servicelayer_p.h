@@ -51,6 +51,8 @@ struct GWEN_GLOBAL_SERVICELAYER {
 struct GWEN_SERVICELAYER {
   unsigned int id;
   unsigned int lastCheckedMsgLayer;
+  void *data;
+  GWEN_SERVICELAYER_FREEDATA_FN freeDataFn;
 };
 
 
@@ -78,9 +80,6 @@ GWEN_ERRORCODE
   GWEN_GlobalServiceLayer_RegisterLocalLayer(GWEN_SERVICELAYER *sl);
 GWEN_ERRORCODE
   GWEN_GlobalServiceLayer_UnregisterLocalLayer(GWEN_SERVICELAYER *sl);
-
-
-
 
 
 

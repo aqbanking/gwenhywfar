@@ -53,6 +53,7 @@ typedef GWEN_ERRORCODE (*GWEN_IPCCONNLAYER_OPEN)(GWEN_IPCCONNLAYER *cl);
 typedef GWEN_ERRORCODE (*GWEN_IPCCONNLAYER_CLOSE)(GWEN_IPCCONNLAYER *cl,
                                                   int force);
 
+typedef void (*GWEN_IPCCONNLAYER_UP)(GWEN_IPCCONNLAYER *cl);
 typedef void (*GWEN_IPCCONNLAYER_DOWN)(GWEN_IPCCONNLAYER *cl);
 
 
@@ -63,6 +64,7 @@ GWEN_ERRORCODE GWEN_ConnectionLayer_Work(GWEN_IPCCONNLAYER *cl,
 GWEN_ERRORCODE GWEN_ConnectionLayer_Open(GWEN_IPCCONNLAYER *cl);
 GWEN_ERRORCODE GWEN_ConnectionLayer_Close(GWEN_IPCCONNLAYER *cl,
                                           int force);
+void GWEN_ConnectionLayer_Up(GWEN_IPCCONNLAYER *cl);
 void GWEN_ConnectionLayer_Down(GWEN_IPCCONNLAYER *cl);
 
 unsigned int GWEN_ConnectionLayer_GetId(GWEN_IPCCONNLAYER *cl);
@@ -102,6 +104,8 @@ void GWEN_ConnectionLayer_SetOpenFn(GWEN_IPCCONNLAYER *cl,
                                     GWEN_IPCCONNLAYER_OPEN f);
 void GWEN_ConnectionLayer_SetCloseFn(GWEN_IPCCONNLAYER *cl,
                                      GWEN_IPCCONNLAYER_CLOSE f);
+void GWEN_ConnectionLayer_SetUpFn(GWEN_IPCCONNLAYER *cl,
+                                  GWEN_IPCCONNLAYER_UP f);
 void GWEN_ConnectionLayer_SetDownFn(GWEN_IPCCONNLAYER *cl,
                                     GWEN_IPCCONNLAYER_DOWN f);
 

@@ -492,6 +492,26 @@ int testDialog(int argc, char **argv) {
 }
 
 
+void _connectionUp(GWEN_IPCXMLSERVICE *xs,
+                   unsigned int clid){
+  fprintf(stderr, "\n-----------------------------------\n");
+  fprintf(stderr, "Connection \"%d\" is up\n", clid);
+  fprintf(stderr, "-----------------------------------\n\n");
+}
+
+
+
+void _connectionDown(GWEN_IPCXMLSERVICE *xs,
+                     unsigned int clid){
+  fprintf(stderr, "\n-----------------------------------\n");
+  fprintf(stderr, "Connection \"%d\" is down\n", clid);
+  fprintf(stderr, "-----------------------------------\n\n");
+}
+
+
+
+
+
 
 int testServer(int argc, char **argv) {
   GWEN_XMLNODE *n;
@@ -580,6 +600,9 @@ int testServer(int argc, char **argv) {
 
   fprintf(stderr, "Creating service.\n");
   service=GWEN_IPCXMLService_new(e, scm);
+
+  GWEN_IPCXMLService_SetConnectionUpFn(service, _connectionUp);
+  GWEN_IPCXMLService_SetConnectionDownFn(service, _connectionDown);
   fprintf(stderr, "Creating service: done.\n");
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
@@ -740,7 +763,8 @@ int testClient(int argc, char **argv) {
   fprintf(stderr, "Creating client.\n");
   serverId=GWEN_IPCXMLService_AddClient(service,
                                         GWEN_IPCXMLServiceTypeTCP,
-					"client",
+                                        "client",
+                                        "server",
                                         1,
                                         "192.168.115.2",
                                         44444,
@@ -751,9 +775,6 @@ int testClient(int argc, char **argv) {
   }
   fprintf(stderr, "Creating client: done.\n");
 
-  GWEN_IPCXMLService_SetRemoteName(service,
-                                   serverId,
-				   "server");
   GWEN_IPCXMLService_SetSecurityFlags(service, serverId,
                                       GWEN_HBCIMSG_FLAGS_SIGN |
                                       GWEN_HBCIMSG_FLAGS_CRYPT);

@@ -29,6 +29,15 @@
 #ifndef GWENHYFWAR_SERVICELAYER_H
 #define GWENHYFWAR_SERVICELAYER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+typedef struct GWEN_SERVICELAYER GWEN_SERVICELAYER;
+#ifdef __cplusplus
+}
+#endif
+
+
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/connlayer.h>
 
@@ -36,12 +45,18 @@
 extern "C" {
 #endif
 
-typedef struct GWEN_SERVICELAYER GWEN_SERVICELAYER;
+
+typedef void (*GWEN_SERVICELAYER_FREEDATA_FN)(GWEN_SERVICELAYER *sl);
 
 
 GWEN_SERVICELAYER *GWEN_ServiceLayer_new();
 void GWEN_ServiceLayer_free(GWEN_SERVICELAYER *sl);
 
+
+void GWEN_ServiceLayer_SetFreeDataFn(GWEN_SERVICELAYER *sl,
+                                     GWEN_SERVICELAYER_FREEDATA_FN fn);
+void *GWEN_ServiceLayer_GetData(GWEN_SERVICELAYER *sl);
+void GWEN_ServiceLayer_SetData(GWEN_SERVICELAYER *sl, void *data);
 
 /**
  * Adds a connection to the service layer.

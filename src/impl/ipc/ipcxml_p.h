@@ -52,7 +52,8 @@ struct GWEN_IPCXMLSERVICE {
 
   GWEN_IPCXMLREQUEST *outgoingRequests;
   GWEN_IPCXMLREQUEST *incomingRequests;
-
+  GWEN_IPCXMLSERVICE_CONNUP_FN connUpFn;
+  GWEN_IPCXMLSERVICE_CONNDOWN_FN connDownFn;
 };
 
 
@@ -76,6 +77,11 @@ GWEN_IPCXMLREQUEST *GWEN_IPCXMLService_GetInRequest(GWEN_IPCXMLSERVICE *xs,
 GWEN_IPCXMLREQUEST *GWEN_IPCXMLService_GetOutRequest(GWEN_IPCXMLSERVICE *xs,
                                                      unsigned int id);
 
+
+void GWEN_IPCXMLService_ConnectionUp(GWEN_SERVICELAYER *sl,
+                                     GWEN_IPCCONNLAYER *cl);
+void GWEN_IPCXMLService_ConnectionDown(GWEN_SERVICELAYER *sl,
+                                       GWEN_IPCCONNLAYER *cl);
 
 
 #endif
