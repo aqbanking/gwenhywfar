@@ -117,7 +117,7 @@ void GWEN_WaitCallback_SetProgressPos(GWEN_TYPE_UINT64 pos){
 
   ctx=gwen_waitcallback__current;
   if (!ctx) {
-    DBG_INFO(0, "No callback active");
+    DBG_DEBUG(0, "No callback active");
   }
   else {
     ctx->pos=pos;
@@ -132,7 +132,7 @@ void GWEN_WaitCallback_SetProgressTotal(GWEN_TYPE_UINT64 total){
 
   ctx=gwen_waitcallback__current;
   if (!ctx) {
-    DBG_INFO(0, "No callback active");
+    DBG_DEBUG(0, "No callback active");
   }
   else {
     ctx->total=total;
@@ -255,7 +255,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
 
   ctx=gwen_waitcallback__current;
   if (!ctx){
-    DBG_INFO(0, "No callback currently selected");
+    DBG_DEBUG(0, "No callback currently selected");
     rv=GWEN_WaitCallbackResult_Continue;
   }
   else {
@@ -309,7 +309,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos){
 
   ctx=gwen_waitcallback__current;
   if (!ctx){
-    DBG_INFO(0, "No callback currently selected");
+    DBG_DEBUG(0, "No callback currently selected");
     return GWEN_WaitCallbackResult_Continue;
   }
   else {
@@ -330,7 +330,7 @@ void GWEN_WaitCallback_Enter_u(const char *id,
   ctx=GWEN_WaitCallback__FindCallback(id);
   if (!ctx) {
     if (gwen_waitcallback__current) {
-      DBG_INFO(0, "Callback \"%s\" not found, faking it", id);
+      DBG_DEBUG(0, "Callback \"%s\" not found, faking it", id);
 
       nctx=GWEN_WaitCallback_new(id);
       nctx->previousCtx=gwen_waitcallback__current;
@@ -347,9 +347,14 @@ void GWEN_WaitCallback_Enter_u(const char *id,
       GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
     }
     else {
-      DBG_INFO(0, "Callback \"%s\" not found and none is currently selected",
-               id);
-      nctx = 0;
+      DBG_DEBUG(0,
+		"Callback \"%s\" not found and none is\n"
+		"currently selected, faking it",
+		id);
+      nctx=GWEN_WaitCallback_new(id);
+      gwen_waitcallback__current=nctx;
+      nctx->lastEntered=time(0);
+      GWEN_WaitCallback_List_Add(nctx, gwen_waitcallback__list);
     }
   } /* if ctx not found */
   else {
@@ -378,7 +383,10 @@ void GWEN_WaitCallback_Enter_u(const char *id,
 void GWEN_WaitCallback_Leave(){
   GWEN_WAITCALLBACK *ctx;
 
-  assert(gwen_waitcallback__current);
+  if (!gwen_waitcallback__current) {
+    DBG_DEBUG(0, "No callback currently selected");
+    return;
+  }
   DBG_DEBUG(0, "Leaving callback context \"%s\"",
             gwen_waitcallback__current->id);
   ctx=gwen_waitcallback__current->previousCtx;
@@ -398,7 +406,7 @@ void GWEN_WaitCallback_Log(unsigned int loglevel, const char *s){
   DBG_DEBUG(0, "Callback Log: \"%s\"", s);
   ctx=gwen_waitcallback__current;
   if (!ctx){
-    DBG_INFO(0, "No callback currently selected");
+    DBG_DEBUG(0, "No callback currently selected");
   }
   else {
     if (ctx->originalCtx) {
@@ -414,7 +422,7 @@ void GWEN_WaitCallback_Log(unsigned int loglevel, const char *s){
     } /* if there is an original context */
     else {
       if (!ctx->logFn) {
-        DBG_INFO(0, "No log function set in \"%s\"", ctx->id);
+	DBG_DEBUG(0, "No log function set in \"%s\"", ctx->id);
       }
       else {
         ctx->logFn(ctx, 0, loglevel, s);

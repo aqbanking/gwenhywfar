@@ -1,4 +1,8 @@
 
+2004/08/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- base/waitcallback: fixed a severe bug
+
 
 2004/08/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -24,6 +28,7 @@
 
 	* configure.ac: Fix error in symlinking headers -- xml.h was
 	missed.
+
 
 2004/08/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
