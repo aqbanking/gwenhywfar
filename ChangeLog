@@ -6,6 +6,8 @@
 2005/02/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in GWEN_LIST code (could crash the program)
+- fixed a bug in XML code (iscntrl() also returns true for some characters
+  above 0x80 which makes this function useless for UTF-8)
 
 
 2005/02/15: Martin Preuss<martin@libchipcard.de>

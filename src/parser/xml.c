@@ -362,17 +362,20 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
 	return -1;
       }
     }
-    if (iscntrl(chr) && !(flags & GWEN_XML_FLAGS_KEEP_CNTRL))
+
+    if ((chr<32 || chr==127) && !(flags & GWEN_XML_FLAGS_KEEP_CNTRL)) {
       chr=' ';
+    }
 
     if (inQuote) {
       if (chr==lastQuoteChar) {
 	inQuote=0;
+	DBG_ERROR(0, "Matching quote character found");
         break;
       }
       else {
         lastWasSpace=0;
-        GWEN_Buffer_AppendByte(buf, chr);
+        GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
       }
     }
     else {
@@ -400,17 +403,18 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
 		lastWasSpace=0;
 	      else
 		lastWasSpace=1;
-	      GWEN_Buffer_AppendByte(buf, chr);
+	      GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
 	    }
           }
           else {
-            lastWasSpace=0;
-            GWEN_Buffer_AppendByte(buf, chr);
+	    lastWasSpace=0;
+
+            GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
           }
         }
         else {
           lastWasSpace=0;
-          GWEN_Buffer_AppendByte(buf, chr);
+          GWEN_Buffer_AppendByte(buf, (unsigned char)chr);
         }
       }
     }
@@ -576,7 +580,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	    }
           }
 
-          GWEN_Buffer_AppendByte(bufComment, chr);
+          GWEN_Buffer_AppendByte(bufComment, (unsigned char)chr);
           comlen++;
 
           if (comlen>=3) {
@@ -869,7 +873,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                   GWEN_Buffer_free(bufTagName);
                   return -1;
                 }
-                if (!isspace(chr) && !iscntrl(chr))
+		if (!isspace(chr) && !(chr<32 || chr==127))
                   break;
               } /* while */
             }
@@ -919,7 +923,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                   GWEN_Buffer_free(bufTagName);
 		  return -1;
 		}
-		if (!isspace(chr) && !iscntrl(chr))
+		if (!isspace(chr) && !(chr<32 || chr==127))
 		  break;
 	      }
 	    }
