@@ -181,11 +181,13 @@ void GWEN_Logger_Close(GWEN_LOGGER *lg){
 int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
                                GWEN_LOGGER_LEVEL priority, const char *s,
                                char *buffer, unsigned int bufsize) {
+#ifdef HAVE_SNPRINTF
   unsigned int i;
+#endif /* HAVE_SNPRINTF */
 #ifdef HAVE_TIME_H
   struct tm *t;
   time_t tt;
-#endif
+#endif /* HAVE_TIME_H */
 
   assert(lg);
   if (lg->logIdent) {
