@@ -44,6 +44,7 @@ style guide but we are working on it ;-)
 
 2. Names of Header Files
 ========================
+
 For every module there may optionally be these header files:
 - MODULENAME.h   prototypes and type definitions to be exported
 - MODULENAME_p.h prototypes and type definitions to be used by the module
@@ -82,7 +83,8 @@ Every function or type name has two prefixes:
 - a module name 
     This makes every function name unique within GWEN.
     The module name should be all-capitals if the name is shorter than two
-    characters. It should start with a capital otherwise.
+    characters or is an abbreviation. 
+    It should start with a capital otherwise.
 
 Please note that even internal functions (i.e. those which are not to be used
 outside the library) MUST have this prefixes.
