@@ -108,7 +108,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
     int werr;
 
     werr=GetLastError();
-    fprintf(stderr, "Error loading DLL: %d\n", werr); /* DEBUG */
+    fprintf(stderr, "Error loading DLL \"%s\": %d\n", name, werr); /* DEBUG */
     /* FIXME: Is this the correct code ? */
     if (werr==ERROR_FILE_NOT_FOUND) {
       DBG_INFO(0, "File \"%s\" not found", name);

@@ -76,3 +76,20 @@ rpm-mandrake90: gwenhywfar.spec
            `pwd`/distribution/gwenhywfar-@rpm_version@-@rpm_release@.i586.mandrake90.rpm
 	cp /usr/src/RPM/RPMS/i586/gwenhywfar-devel-@rpm_version@-@rpm_release@.i586.rpm \
            `pwd`/distribution/gwenhywfar-devel-@rpm_version@-@rpm_release@.i586.mandrake90.rpm
+
+win32:
+	mkdir -p distribution
+	make prefix="`pwd`/distribution/win32-tmp" install && \
+	 cd distribution && mkdir -p win32-devel && \
+	 cp -r win32-tmp/bin win32-devel/ && \
+	 cp -r win32-tmp/include win32-devel/ && \
+	 cp -r win32-tmp/share win32-devel && \
+	 tar pczvf gwenhywfar-@rpm_version@-win32-devel.tgz win32-devel && \
+	 rm -Rf win32-devel && \
+	 rm -Rf win32-tmp
+	mkdir -p distribution/win32-bin && \
+	 cp -r src/gwenhywfar32.dll distribution/win32-bin/ && \
+	 strip distribution/win32-bin/*.dll && \
+	 cd distribution && tar pczvf gwenhywfar-@rpm_version@-win32-bin.tgz -r win32-bin && \
+	 rm -Rf win32-bin
+
