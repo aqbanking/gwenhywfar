@@ -9,6 +9,7 @@
     be used to select a file. Otherwise not very usefull for now)
   - TableWidget now sends an event when activating a table field
 - gwenhywfar.m4: fixed a bug
+- parser/xml.c: fixed a newly introduced bug
 
 
 2004/06/26: Martin Preuss<martin@libchipcard.de>

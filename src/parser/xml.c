@@ -572,7 +572,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           /* check whether the tag is "include" */
           if (!(flags & GWEN_XML_FLAGS_IGNORE_INCLUDE) &&
               strcasecmp(n->data, "include")==0 &&
-              sl && fn) {
+              fn) {
             /* it is, we have to include something ;-) */
             GWEN_XMLNODE *inametag;
             const char *iname;
