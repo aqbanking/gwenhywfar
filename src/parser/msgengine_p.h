@@ -82,14 +82,16 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                                  GWEN_XMLNODE *rnode,
                                  GWEN_DB_NODE *gr,
                                  int loopNr,
-                                 int isOptional);
+                                 int isOptional,
+                                 GWEN_XMLNODE_PATH *nodePath);
 
 int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
                                GWEN_BUFFER *gbuf,
                                GWEN_XMLNODE *node,  /** format node */
                                GWEN_XMLNODE *rnode, /** reference node */
                                GWEN_DB_NODE *gr,
-                               int groupIsOptional);
+                               int groupIsOptional,
+                               GWEN_XMLNODE_PATH *nodePath);
 
 int GWEN_MsgEngine__ShowElement(GWEN_MSGENGINE *e,
                                 const char *path,
@@ -151,7 +153,7 @@ const char  *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
                                             unsigned int *datasize);
 const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
                                            GWEN_XMLNODE *node,
-                                           GWEN_XMLNODE *refnode,
+                                           GWEN_XMLNODE_PATH *nodePath,
                                            const char *name,
                                            unsigned int *datasize);
 int GWEN_MsgEngine__IsCharTyp(const char *type);

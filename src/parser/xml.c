@@ -844,3 +844,71 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
 
 
 
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new(){
+  GWEN_XMLNODE_PATH *p;
+
+  GWEN_NEW_OBJECT(GWEN_XMLNODE_PATH, p);
+  return p;
+}
+
+
+
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(GWEN_XMLNODE_PATH *np){
+  GWEN_XMLNODE_PATH *p;
+  unsigned int i;
+
+  GWEN_NEW_OBJECT(GWEN_XMLNODE_PATH, p);
+  p->pos=np->pos;
+  for (i=0; i<np->pos; i++) {
+    p->nodes[i]=np->nodes[i];
+  }
+  return p;
+}
+
+
+
+void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np){
+  free(np);
+}
+
+
+
+int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
+                           GWEN_XMLNODE *n){
+  if (np->pos>=GWEN_XML_MAX_DEPTH) {
+    DBG_ERROR(0, "Path too deep");
+    return 1;
+  }
+  np->nodes[np->pos++]=n;
+  DBG_DEBUG(0, "Dived to %d", np->pos);
+  return 0;
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np){
+  if (np->pos==0) {
+    DBG_DEBUG(0, "Root reached");
+    return 0;
+  }
+  DBG_DEBUG(0, "Surfaced to %d", np->pos-1);
+  return np->nodes[--np->pos];
+}
+
+
+
+void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np){
+  unsigned int i;
+
+  if (np->pos==0) {
+    DBG_NOTICE(0, "Empty path");
+  }
+  for (i=0; i<np->pos; i++) {
+    DBG_NOTICE(0, "Path entry %d:", i);
+    GWEN_XMLNode_Dump(np->nodes[i], stderr, 1);
+  }
+}
+
+
+
+

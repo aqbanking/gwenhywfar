@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-#define GWEN_XML_MAX_DEPTH 16
+#define GWEN_XML_MAX_DEPTH 32
 #define GWEN_XML_MAX_TAGNAMELEN 32
 #define GWEN_XML_MAX_VARNAMELEN 32
 #define GWEN_XML_MAX_VALUELEN   64
@@ -69,6 +69,12 @@ struct GWEN__XMLNODE {
 
 void GWEN_XMLNode_add(GWEN_XMLNODE *n, GWEN_XMLNODE **head);
 void GWEN_XMLNode_del(GWEN_XMLNODE *n, GWEN_XMLNODE **head);
+
+
+struct GWEN_XMLNODE_PATH {
+  unsigned int pos;
+  GWEN_XMLNODE *nodes[GWEN_XML_MAX_DEPTH];
+};
 
 
 /**

@@ -29,7 +29,7 @@
 # include <config.h>
 #endif
 
-#define DISABLE_DEBUGLOG
+//#define DISABLE_DEBUGLOG
 
 #include <gwenhyfwar/gwenhyfwarapi.h>
 #include <msgengine_p.h>
@@ -751,7 +751,8 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                                  GWEN_XMLNODE *rnode,
                                  GWEN_DB_NODE *gr,
                                  int loopNr,
-                                 int isOptional) {
+                                 int isOptional,
+                                 GWEN_XMLNODE_PATH *nodePath) {
   const char *name;
   const char *type;
   unsigned int minsize;
@@ -878,18 +879,18 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
     } /* if gr */
 
     if (!pdata) {
+      GWEN_XMLNODE_PATH *copyOfNodePath;
+
+      copyOfNodePath=GWEN_XMLNode_Path_dup(nodePath);
+
       /* still no data, try to get it from the XML file */
       DBG_DEBUG(0, "Searching for value of \"%s\"", name);
-      pdata=GWEN_MsgEngine__SearchForValue(e, node, rnode, nptr,
+      pdata=GWEN_MsgEngine__SearchForValue(e,
+                                           node, copyOfNodePath, nptr,
                                            &datasize);
+      GWEN_XMLNode_Path_free(copyOfNodePath);
       if (pdata) {
         DBG_DEBUG(0, "Found value of \"%s\"", name);
-        /*if (datasize>8192) {
-          DBG_ERROR(0, "dataSize not set !!");
-          GWEN_Text_DumpString(pdata, 128, stderr, 1);
-        }
-        else
-          GWEN_Text_DumpString(pdata, datasize, stderr, 1);*/
       }
     }
 
@@ -1199,7 +1200,7 @@ int GWEN_MsgEngine_GetHighestTrustLevel(GWEN_XMLNODE *node,
 
 const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
                                            GWEN_XMLNODE *node,
-                                           GWEN_XMLNODE *refnode,
+                                           GWEN_XMLNODE_PATH *nodePath,
                                            const char *name,
                                            unsigned int *datasize) {
   const char *pvalue;
@@ -1211,10 +1212,15 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
   unsigned int ldatasize;
 
   DBG_DEBUG(0, "Searching for value of \"%s\" in <VALUES>", name);
+  if (!node) {
+    DBG_WARN(0, "No node !");
+  }
   topDown=atoi(GWEN_XMLNode_GetProperty(node, "topdown","0"));
   lastValue=0;
 
   bufferPtr=0;
+
+  /*
   pn=GWEN_XMLNode_GetParent(node);
   pvalue=GWEN_MsgEngine__findInValues(e, pn, node, name, &ldatasize);
   if (pvalue) {
@@ -1226,34 +1232,17 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
     lastValue=pvalue;
     lastDataSize=ldatasize;
   }
-
-  pn=refnode;
+  */
+  pn=GWEN_XMLNode_GetParent(node);
   while(pn) {
     const char *ppath;
 
-    ppath=GWEN_XMLNode_GetProperty(pn, "name", "");
+    /*
+    if (GWEN_XMLNode_GetType(pn)==GWEN_XMLNodeTypeTag) {
+      DBG_NOTICE(0, "Checking node \"%s\"",
+                 GWEN_XMLNode_GetData(pn));
+                 }*/
 
-    if (*ppath) {
-      int i;
-      char *tmpptr;
-
-      if (bufferPtr) {
-	i=strlen(bufferPtr)+strlen(ppath)+2;
-	tmpptr=(char*)malloc(i);
-	assert(tmpptr);
-	sprintf(tmpptr, "%s/%s", ppath, bufferPtr);
-	free(bufferPtr);
-	bufferPtr=tmpptr;
-      }
-      else {
-	i=strlen(ppath)+strlen(name)+2;
-	tmpptr=(char*)malloc(i);
-	assert(tmpptr);
-	sprintf(tmpptr, "%s/%s", ppath, name);
-	bufferPtr=tmpptr;
-      }
-      name=bufferPtr;
-    }
     pvalue=GWEN_MsgEngine__findInValues(e, pn, node, name, &ldatasize);
 
     if (pvalue) {
@@ -1266,8 +1255,34 @@ const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
       lastValue=pvalue;
       lastDataSize=ldatasize;
     }
-    pn=GWEN_XMLNode_GetParent(pn);
+
+    ppath=GWEN_XMLNode_GetProperty(pn, "name", "");
+
+    if (*ppath) {
+      int i;
+      char *tmpptr;
+
+      if (bufferPtr) {
+        i=strlen(bufferPtr)+strlen(ppath)+2;
+        tmpptr=(char*)malloc(i);
+        assert(tmpptr);
+        sprintf(tmpptr, "%s/%s", ppath, bufferPtr);
+        free(bufferPtr);
+        bufferPtr=tmpptr;
+      }
+      else {
+        i=strlen(ppath)+strlen(name)+2;
+        tmpptr=(char*)malloc(i);
+        assert(tmpptr);
+        sprintf(tmpptr, "%s/%s", ppath, name);
+        bufferPtr=tmpptr;
+      }
+      name=bufferPtr;
+    }
+
+    pn=GWEN_XMLNode_Path_Surface(nodePath);
   } /* while */
+
   free(bufferPtr);
   if (!lastValue)
     *datasize=0;
@@ -1285,7 +1300,7 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
                                          unsigned int *datasize) {
   GWEN_XMLNODE *pn;
 
-  DBG_DEBUG(0, "Looking for value of \"%s\" in <VALUES>", name);
+  DBG_INFO(0, "Looking for value of \"%s\" in <VALUES>", name);
   pn=GWEN_XMLNode_GetChild(node);
 
   while(pn) {
@@ -1345,7 +1360,7 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
     pn=GWEN_XMLNode_Next(pn);
   } /* while node */
 
-  DBG_DEBUG(0, "No value found for \"%s\" in <VALUES>", name);
+  DBG_INFO(0, "No value found for \"%s\" in <VALUES>", name);
   return 0;
 }
 
@@ -1356,7 +1371,8 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
                                GWEN_XMLNODE *node,
                                GWEN_XMLNODE *rnode,
                                GWEN_DB_NODE *gr,
-                               int groupIsOptional) {
+                               int groupIsOptional,
+                               GWEN_XMLNODE_PATH *nodePath) {
   GWEN_XMLNODE *n;
   const char *p;
   char delimiter;
@@ -1456,7 +1472,8 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
                                           gr,
                                           loopNr,
                                           loopNr>=minnum ||
-                                          (groupIsOptional && !hasEntries));
+                                          (groupIsOptional && !hasEntries),
+                                          nodePath);
           if (rv==-1) {
             DBG_INFO(0, "Error writing element");
             DBG_INFO(0, "Node is:");
@@ -1586,12 +1603,23 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
               isFirstElement=0;
 
             /* write group */
+            if (GWEN_XMLNode_Path_Dive(nodePath, n)) {
+              DBG_INFO(0, "Called from here");
+              return -1;
+            }
+            if (GWEN_XMLNode_Path_Dive(nodePath, gn)) {
+              DBG_INFO(0, "Called from here");
+              return -1;
+            }
             rv=GWEN_MsgEngine__WriteGroup(e,
                                           gbuf,
                                           gn,
                                           n,
                                           gcfg,
-                                          loopNr>=minnum || groupIsOptional);
+                                          loopNr>=minnum || groupIsOptional,
+                                          nodePath);
+            GWEN_XMLNode_Path_Surface(nodePath);
+            GWEN_XMLNode_Path_Surface(nodePath);
             if (rv==-1){
               DBG_INFO(0, "Could not write group \"%s\"", gtype);
               DBG_INFO(0, "Node is:");
@@ -1676,16 +1704,24 @@ int GWEN_MsgEngine_CreateMessageFromNode(GWEN_MSGENGINE *e,
                                          GWEN_XMLNODE *node,
                                          GWEN_BUFFER *gbuf,
                                          GWEN_DB_NODE *msgData){
+  GWEN_XMLNODE_PATH *np;
+  int rv;
+
   assert(e);
   assert(node);
   assert(msgData);
 
-  if (GWEN_MsgEngine__WriteGroup(e,
-                                 gbuf,
-                                 node,
-                                 0,
-                                 msgData,
-                                 0)) {
+  np=GWEN_XMLNode_Path_new();
+  GWEN_XMLNode_Path_Dive(np, node);
+  rv=GWEN_MsgEngine__WriteGroup(e,
+                                gbuf,
+                                node,
+                                0,
+                                msgData,
+                                0,
+                                np);
+  GWEN_XMLNode_Path_free(np);
+  if (rv){
     const char *p;
 
     p=GWEN_XMLNode_GetData(node);
@@ -2332,7 +2368,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
         gtype=GWEN_XMLNode_GetProperty(n, "type",0);
 	if (!gtype) {
           /* no "type" property, so use this group directly */
-	  DBG_DEBUG(0, "<%s> tag has no \"type\" property", typ);
+          DBG_DEBUG(0, "<%s> tag has no \"type\" property", typ);
 	  gtype="";
 	  gn=n;
 	}
@@ -2362,7 +2398,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
           npath=path;
 
         nn=GWEN_XMLNode_dup(n);
-        if (gn)
+        if (gn!=n)
           GWEN_XMLNode_CopyProperties(nn, gn, 0);
         GWEN_XMLNode_SetProperty(nn, "GWEN_path", npath);
         GWEN_XMLNode_AddChild(listNode, nn);
@@ -2759,7 +2795,9 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 		DBG_INFO(0, "Empty value");
 	      }
 	      else if (rv==-1) {
-		DBG_INFO(0, "Error parsing node \"%s\"", type);
+                DBG_INFO(0, "Error parsing node \"%s\" (%s)",
+                         name,
+                         type);
 		GWEN_Buffer_free(vbuf);
 		return -1;
 	      }

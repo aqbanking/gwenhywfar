@@ -1,6 +1,14 @@
 $Id$
 
 
+2003/10/20 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a problem in MessageEngine: It now uses the correct path when
+  looking up a predefined value (it finally works even with the special
+  HBCI jobs containing <MESSAGE> tags)
+- XML: Added type "GWEN_XMLNODE_PATH". This type stores a XML node path. It
+  is used now by MessageEngine for <VALUE> lookups when creating a message
+
 
 2003/10/19 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

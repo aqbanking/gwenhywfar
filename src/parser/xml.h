@@ -95,6 +95,20 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
 void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind);
 
 
+
+typedef struct GWEN_XMLNODE_PATH GWEN_XMLNODE_PATH;
+
+
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new();
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(GWEN_XMLNODE_PATH *np);
+void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np);
+
+int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
+                           GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np);
+void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np);
+
+
 #ifdef __cplusplus
 }
 #endif
