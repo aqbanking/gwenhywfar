@@ -27,3 +27,5 @@ missing
 mkinstalldirs
 listdoc.h
 gwenhywfar.tag
+ABOUT-NLS
+config.rpath

@@ -15,7 +15,7 @@ cvsclean::
 
 all:
 	libtoolize -f --automake $(COPY)
-	autopoint -f
+	autopoint -f || echo "If autopoint complains about the wrong gettext version, then you should change the line AM_GNU_GETTEXT_VERSION(0.14.1) in configure.ac so that it uses the version of gettext that you have installed. Then run make -f Makefile.cvs again."
 	aclocal -I ./m4
 	autoheader
 	automake -f --add-missing $(COPY)

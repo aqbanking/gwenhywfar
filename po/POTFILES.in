@@ -61,7 +61,6 @@
 ./src/parser/base64.c
 ./src/parser/tlv.c
 ./src/parser/dbio.c
-./src/ui/vline.c
 ./test/gwentest.c
 ./gwenui/button.c
 ./gwenui/checkbox.c
