@@ -10,3 +10,6 @@ libtool
 stamp-h1
 gwenhywfar-config
 config.h.in
+gwenhywfar.spec
+distribution
+*.tar.gz

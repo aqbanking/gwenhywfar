@@ -1,5 +1,18 @@
 $Id$
 
+2003-11-21  Christian Stimming <stimming@tuhh.de>
+
+	* README: Add some explanation of this package. Martin's
+	proofreading still needed.
+
+	* configure.ac: Add variables for rpm version. Changed name in
+	AC_INIT_AUTOMAKE to conform to the package name and have the right
+	spelling gwenhyWFar.
+
+	* Makefile.am: Add targets for rpm packages.
+
+	* gwenhywfar.spec.in: Add rpm spec file.
+
 
 ===========================================================================
 MARK: released gwenhywfar-0.9beta5 (2003/11/21)

@@ -1,1 +1,82 @@
-Gwenhywfar
+This is Gwenhywfar, a multi-platform helper library for networking and
+security applications and libraries. It is heavily used by libchipcard
+www.libchipcard.de and OpenHBCI-TNG (The Next Generation)
+www.openhbci.de.
+
+
+Features
+--------
+
+This library is written in C, and it follows the object-oriented
+programming paradigm for most of its parts.  The header files can
+directly be used from C++, too.
+
+Gwenhywfar includes the following features:
+
+- Basic Data types for binary buffers, linked lists, error objects,
+  string lists (src/base/), buffered IO operations (src/io/)
+
+- OS abstraction functions for directory and Internet address handling
+  (src/os/)
+
+- extensive data type and function collections for Inter-Process
+  communication (IPC, in src/ipc/ and src/impl/ipc/)
+
+- High-level cryptographic functions on top of OpenSSL functionality
+  (src/crypt/)
+
+- High-level functions for parsing XML-like files and accessing them
+  like a hierarchical database (src/parser/)
+
+(FIXME: check whether this is correct)
+
+
+Requirements
+------------
+
+- OpenSSL >= 0.9.6x (0.9.7x recommended)
+
+
+Platforms
+---------
+
+Gwenhywfar is being developed on Linux. It should also run on Windows
+(under mingw) and Mac OS-X, but both of these ports still need more
+testing (FIXME: correct?).
+
+
+Documentation
+-------------
+
+Currently the documentation can only be found in the header
+files. Many header files already include extensive comments in
+doxygen-format (however some don't), but there is currently no setup
+to have a complete doxygen HTML documentation automatically
+generated. (FIXME: what are the plans?)
+
+
+Contact
+-------
+
+For questions about this library please ask on the mailing list of the
+OpenHBCI project openhbci-general (subscriber-only, please subscribe
+on http://lists.sourceforge.net/lists/listinfo/openhbci-general),
+since this is where the author(s) hang out. (FIXME: Choose whether you
+want it this way)
+
+
+Authors
+-------
+
+This library is being written by and is being maintained by Martin
+Preuss <martin@libchipcard.de>. Some minor work has been contributed
+by others including Christian Stimming <stimming@tuhh.de>.
+
+
+Name
+----
+
+The name of this library was chosen because of --- (FIXME?). WATCH
+OUT: Due to the complicated spelling, sometimes the letters `f' and
+`w' at the end are switched around. Officially, the name should be
+Gwenhywfar, i.e. first `w', the `f'. (FIXME: or the other way round?)
