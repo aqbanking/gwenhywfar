@@ -47,6 +47,9 @@
 
 #include <windows.h>
 
+#undef HAVE_LINK
+/* Win32/Mingw does not have link(2), so we have to keep this
+   undefined for now. */
 
 GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
   GWEN_FSLOCK *fl;
@@ -124,9 +127,11 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
     }
     linkCount=(int)(st.st_nlink);
 
+#ifdef HAVE_LINK
     /* create a hard link to the new unique file with the name of the
      * real lock file. This is guaranteed to be atomic even on NFS */
     if (link(fl->uniqueLockFilename, fl->baseLockFilename)) {
+      /* Nonzero returned, i.e. some error occurred */
       int lnerr;
 
       lnerr=errno;
@@ -135,7 +140,9 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
 	       fl->uniqueLockFilename,
 	       fl->baseLockFilename,
 	       strerror(errno));
-      if (lnerr==EPERM) {
+      if (lnerr==EPERM)
+#endif /* HAVE_LINK */
+      {
 	int fd;
 
 	/* link() is not supported on the destination filesystem, try it the
@@ -155,6 +162,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
 	}
 	close(fd);
       }
+#ifdef HAVE_LINK
       else {
 	/* link() generally is supported on the destination file system,
 	 * check whether the link count of the unique file has been
@@ -173,6 +181,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
 	}
       }
     } /* if error on link */
+#endif /* HAVE_LINK */
 
     DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock applied to %s", fl->entryName);
   }

@@ -33,7 +33,11 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
 
-#include "fslock.h"
+#include "../fslock.h"
+/* specify the include path here directly because when we add that
+   directory to the include path, our file process.h shadows the
+   mingw's version of that header file (process.h necessary for getpid
+   on mingw). */
 
 
 struct GWEN_FSLOCK {

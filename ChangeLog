@@ -1,3 +1,7 @@
+2004-12-06   Christian Stimming <stimming@tuhh.de>
+
+	* src/os/windows/fslock.c: Finish file lock support on
+	Win32/MinGW; unfortunately link() is unavailable there.
 
 2004/12/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

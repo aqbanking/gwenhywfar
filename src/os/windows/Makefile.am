@@ -4,10 +4,15 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/net \
- -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
- 
+
+# We need to skip -I$(top_srcdir)/src/os here and instead specify the
+# include path directly in the C files because when we add that
+# directory to the include path, our file process.h shadows the
+# mingw's version of that header file (process.h necessary for getpid
+# on mingw).
+
 localedir=$(datadir)/locale
 DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 
