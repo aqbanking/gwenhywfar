@@ -6,6 +6,9 @@
   data such as bytes, words, dwords etc which are used by 
   Libchipcard2)
 - fixed a bug in NetTransportSSL
+- Gwen now compiles on Solaris (tested with R220)
+- fixed some M4 macros (e.g. "find" on Solaris is not as powerfull as it is
+  on Linux)
 
 
 2004/05/25: Martin Preuss<martin@libchipcard.de>

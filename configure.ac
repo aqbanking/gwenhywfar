@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=9
-GWENHYWFAR_VERSION_BUILD=42
+GWENHYWFAR_VERSION_BUILD=43
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -165,6 +165,11 @@ case "$OS_TYPE" in
         AQ_TYPE_UINT64(unsigned long long)
         GWEN_TYPE_UINT64=$aq_type_uint64
         AC_SUBST(GWEN_TYPE_UINT64)
+        
+        # add special libraries for solaris
+        if test "$OSYSTEM" = "solaris"; then
+          all_libraries="${all_libraries} -lresolv -lsocket"
+        fi
     	;;
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])

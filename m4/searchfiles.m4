@@ -29,7 +29,7 @@ ls="$1"
 ld="$2"
 lf=""
 for li in $ld; do
-    lf2=`find "$ls" -maxdepth 1 -name "$li" 2>/dev/null`
+    lf2="`ls -d ${ls}/${li} 2>/dev/null`"
     lf="$lf $lf2"
 done
 for li in $lf; do

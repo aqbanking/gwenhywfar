@@ -71,14 +71,14 @@ AC_ARG_WITH(openssl-libs, [  --with-openssl-libs=DIR  adds openssl library path]
 dnl search for openssl libs
 if test "$OSYSTEM" != "windows" ; then
    for d in $ssl_search_lib_dirs; do
-     AQ_SEARCH_FILES("$d",$ssl_search_lib_names)
+     AQ_SEARCH_FILES("$d", [$ssl_search_lib_names])
      if test -n "$found_file" ; then
         ssl_libraries="-L$d"
         ssl_lib="-l`echo $found_file | sed 's/lib//;s/\.so*//;s/\.a//'`"
-        AC_MSG_RESULT($ssl_libraries ${ssl_lib})
         break
      fi
    done
+   AC_MSG_RESULT($ssl_libraries ${ssl_lib})
    else
      if test -z "$WIN_PATH_WINDOWS_MINGW"; then
        AC_ERROR([Error in configure.ac: The macro aq_windoze did not set a windows system path -- maybe this macro has not yet been called.])

@@ -3,3 +3,10 @@ Currently Solaris does not handle the "__attribute__ ((constructor))"
 entries in C files as it seems, so in your programs on Darwin you will
 have to call GWEN_Init() yourself before doing anything else...
 
+If programs linked against libgwenhywfar complain about unavailable libraries
+upon start (most likely they mention OpenSSL) you should try this:
+LD_LIBRARY_PATH="/usr/local/ssl/lib:/usr/local/lib" YOURPROGRAM
+
+The LD_LIBRARY_PATH variable tells the Solaris linker where to search for
+libraries in addition to the system folders.
+

@@ -1233,12 +1233,15 @@ int testHTTPd(int argc, char **argv) {
 int main(int argc, char **argv) {
   int rv;
 
+  GWEN_Init();
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
   if (argc<2) {
     fprintf(stderr, "Usage: %s <test>\n  where <test> is one of db, dbfile, dbfile2, list, key, mkkey, cpkey, xml, xml2, sn, ssl, accept, connect\n", argv[0]);
+    GWEN_Fini();
     return 1;
   }
 
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
 
   if (strcasecmp(argv[1], "dbfile")==0)
     rv=testDBfile(argc, argv);
@@ -1278,9 +1281,11 @@ int main(int argc, char **argv) {
     rv=testHTTPd(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
+    GWEN_Fini();
     return 1;
   }
 
+  GWEN_Fini();
   return rv;
 }
 
