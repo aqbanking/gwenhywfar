@@ -266,7 +266,7 @@ int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
 
 int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
   assert(bf);
-  DBG_VERBOUS(0, "Allocating %d bytes", size);
+  /*DBG_VERBOUS(0, "Allocating %d bytes", size);*/
   /*if (bf->pos+size>bf->bufferSize) {*/
   if (bf->bytesUsed+size>bf->bufferSize) {
     /* need to realloc */
@@ -397,7 +397,7 @@ int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf){
           return -1;
         }
         gerr=GWEN_BufferedIO_ReadRawForced(bf->bio,
-                                           bf->ptr+bf->pos,
+                                           bf->ptr+bf->bytesUsed,
                                            &toread);
         if (!GWEN_Error_IsOk(gerr)) {
           DBG_INFO_ERR(0, gerr);

@@ -6,7 +6,7 @@
 - base/buffer:
   - added GWEN_Buffer_SetSourceBIO and a mechanism, which reads missing
     data from a GWEN_BUFFEREDIO (if the buffer is in mode 
-    GWEN_BUFFER_MODE_ABORT_USE_BIO). Does work wor ReadChar and PeekChar.
+    GWEN_BUFFER_MODE_ABORT_USE_BIO).
 
 
 2004-04-28  Christian Stimming <stimming@tuhh.de>
