@@ -54,3 +54,10 @@ win32:
 	 cd distribution && tar pczvf gwenhywfar-@VERSION@-win32-bin.tgz win32-bin && \
 	 rm -Rf win32-bin
 
+# Extra rule instead of "all" which creates the auto-generated headers
+# *first* and only then starts "make all". This avoids duplicate
+# compilation.
+quick: config.h
+	make -C src version.h types.h
+	make -C src/os/$(GWEN_OS) system.h
+	make

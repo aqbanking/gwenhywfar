@@ -19,7 +19,6 @@
 
 
 int testSSL(int argc, char **argv) {
-  GWEN_SSL_CONNECTION *conn;
   GWEN_INETADDRESS *addr;
   GWEN_ERRORCODE err;
 
@@ -36,13 +35,19 @@ int testSSL(int argc, char **argv) {
     return 2;
   }
 
-  conn=GWEN_SSLConn_new(0, "trusted");
-  //conn=GWEN_SSLConn_new(0, "tmp");
-  err=GWEN_SSLConn_Connect(conn, addr, 1, 30);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(0, err);
-    return 2;
+#ifdef GWEN_SSL_CRYPTO
+  {
+    GWEN_SSL_CONNECTION *conn;
+    conn=GWEN_SSLConn_new(0, "trusted");
+    //conn=GWEN_SSLConn_new(0, "tmp");
+    err=GWEN_SSLConn_Connect(conn, addr, 1, 30);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return 2;
+    }
   }
+#endif /* GWEN_SSL_CRYPTO */
+
   DBG_INFO(0, "Sleeping");
   sleep(10);
   return 0;

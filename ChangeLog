@@ -1,5 +1,11 @@
 2004-01-28  Christian Stimming <stimming@tuhh.de>
 
+	* test/gwentest.c, configure.ac: Add define to remove dependency
+	on openssl in test program (for --disable-ssl).
+	
+	* Makefile.am: Add target "make quick" that generates the
+	auto-generated headers first. This saves duplicated compilation.
+
 	* m4/acx_windows_paths.m4: Renamed windoze.m4 to this file. Added
 	caching of the directory values because this saves a lot of time.
 	

@@ -185,6 +185,7 @@ if test "$ssl_available" = "yes"; then
   all_includes="$all_includes $ssl_includes"
   gwenhywfar_includes="$gwenhywfar_includes $ssl_includes"
   GWEN_CRYPTO="ossl"
+  AC_DEFINE_UNQUOTED(GWEN_SSL_CRYPTO, 1, [Defined if OpenSSL crypto module is built])
 else
   GWEN_CRYPTO="none"
 fi
