@@ -200,4 +200,3 @@ msgstr "Unbekannter Loglevel \"%s\"\n"
 #, c-format
 msgid "Unknown option \"%s\"\n"
 msgstr "Unbekannte Option \"%s\"\n"
-
