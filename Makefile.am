@@ -41,7 +41,9 @@ gwenhywfar-config: gwenhywfar-config.in
 listdoc.h:
 	admin/mklistdoc -v -I $(top_srcdir)/src/base @GWEN_HEADER_FILES@ >listdoc.h
 
-srcdoc: Doxyfile listdoc.h
+srcdoc: $(PACKAGE).tag
+
+$(PACKAGE).tag: Doxyfile listdoc.h
 	doxygen
 
 install-srcdoc: $(PACKAGE).tag
