@@ -21,6 +21,7 @@ iheader_HEADERS=\
 
 libbase_la_SOURCES=\
  buffer.c \
+ debug.c \
  error.c \
  list.c \
  logger.c \

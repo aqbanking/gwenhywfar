@@ -12,6 +12,7 @@ iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
   gwenhywfar.h \
   gwenhywfarapi.h \
+  types.h \
   version.h
 
 libgwenhywfar_la_SOURCES=\

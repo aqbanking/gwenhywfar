@@ -3,6 +3,12 @@
 ------------------------------------------------
 - added GWEN_TYPE_UINT32 (this is needed for crossplatform compilation,
   e.g. for PalmOS in short-mode)
+- file "types.h" now gets installed
+- macros in "debug.h" now use the builtin function GWEN_Debug_Snprintf.
+  This is a limited function imitating "snprintf" with a very very limited
+  set of conversions (for now only "s", "c", "d" and "c" are supported.
+  But this already is enough for debugging purposes). This is needed on
+  PalmOS since there is no snprintf.
 
 
 ===========================================================================

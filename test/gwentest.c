@@ -494,6 +494,21 @@ int testCopyKey(int argc, char **argv) {
 }
 
 
+int testSnprintf(int argc, char **argv) {
+  unsigned int i;
+  char buffer[256];
+  unsigned int p;
+
+  p=0xdeadbeef;
+  i=GWEN_Debug_Snprintf(buffer, sizeof(buffer),
+                        "Test %010x %s [%s]\n", p, "Suckme", 0);
+  buffer[sizeof(buffer)-1]=0;
+  fprintf(stderr, "Result: \"%s\" (%d)\n",
+          buffer, i);
+  return 0;
+}
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -521,6 +536,8 @@ int main(int argc, char **argv) {
     rv=testXML(argc, argv);
   else if (strcasecmp(argv[1], "xml2")==0)
     rv=testXML2(argc, argv);
+  else if (strcasecmp(argv[1], "sn")==0)
+    rv=testSnprintf(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", argv[1]);
     return 1;
