@@ -41,6 +41,7 @@
 #include <gwenhywfar/inetsocket_l.h>
 
 #include <openssl/pem.h>
+#include <openssl/err.h>
 
 #include <string.h>
 #include <errno.h>
@@ -76,6 +77,7 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
       GWEN_Socket_free(skd->socket);
     free(skd->CAdir);
     free(skd->ownCertFile);
+    free(skd->dhfile);
     free(skd->cipherList);
     free(skd);
   }
@@ -87,6 +89,7 @@ void GWEN_NetTransportSSLData_free(GWEN_NETTRANSPORTSSL *skd){
 GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
                                             const char *capath,
                                             const char *ownCertFile,
+					    const char *dhfile,
                                             int secure,
                                             int relinquish){
   GWEN_NETTRANSPORT *tr;
@@ -103,6 +106,8 @@ GWEN_NETTRANSPORT *GWEN_NetTransportSSL_new(GWEN_SOCKET *sk,
     skd->CAdir=strdup(capath);
   if (ownCertFile)
     skd->ownCertFile=strdup(ownCertFile);
+  if (dhfile)
+    skd->dhfile=strdup(dhfile);
 
   skd->secure=secure;
 
@@ -644,20 +649,9 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
   SSL_CTX_set_default_passwd_cb_userdata(skd->ssl_ctx,
                                          tr);
 
-  /* setup locations of certificates */
-  rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
-  if (rv==0) {
-    int sslerr;
-
-    sslerr=SSL_get_error(skd->ssl, rv);
-    DBG_ERROR(0, "SSL error: %s (%d)",
-              GWEN_NetTransportSSL_ErrorString(sslerr),
-              sslerr);
-    return -1;
-  }
-
   if (skd->ownCertFile) {
     /* load own certificate file */
+    DBG_NOTICE(0, "Loading certificate and keys");
     if (!(SSL_CTX_use_certificate_chain_file(skd->ssl_ctx,
                                              skd->ownCertFile))){
       int sslerr;
@@ -687,17 +681,57 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 
   }
 
-  if (skd->secure) {
-    SSL_CTX_set_verify(skd->ssl_ctx,
-                       SSL_VERIFY_PEER,
-                       0);
+  /* setup locations of certificates */
+  DBG_NOTICE(0, "Loading certificate locations");
+  rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
+  if (rv==0) {
+    int sslerr;
+
+    sslerr=SSL_get_error(skd->ssl, rv);
+    DBG_ERROR(0, "SSL error: %s (%d)",
+              GWEN_NetTransportSSL_ErrorString(sslerr),
+              sslerr);
+    return -1;
   }
-  else {
-    SSL_CTX_set_verify(skd->ssl_ctx,
-                       SSL_VERIFY_NONE,
-                       0);
+
+  /* always expect a certificate */
+  SSL_CTX_set_verify(skd->ssl_ctx,
+		     SSL_VERIFY_PEER,
+		     0);
+
+  //SSL_CTX_set_verify_depth(skd->ssl_ctx, 1);
+
+  /* setup server stuff */
+  if (!skd->active &&
+      GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusListening) {
+    FILE *f;
+
+    DBG_NOTICE(0, "Loading DH params");
+
+    f=fopen(skd->dhfile, "r");
+    if (!f) {
+      DBG_ERROR(0, "SSL: fopen(%s): %s", skd->dhfile, strerror(errno));
+      return -1;
+    }
+    else {
+      DH *dh_tmp;
+
+      dh_tmp=PEM_read_DHparams(f, NULL, NULL, NULL);
+      fclose(f);
+      if (dh_tmp==0) {
+	DBG_ERROR(0, "SSL: Error reading DH params");
+        return -1;
+      }
+      if (SSL_CTX_set_tmp_dh(skd->ssl_ctx, dh_tmp)<0) {
+	DBG_ERROR(0, "SSL: Could not set DH params");
+	DH_free(dh_tmp);
+	return -1;
+      }
+    }
   }
-  SSL_CTX_set_verify_depth(skd->ssl_ctx, 1);
+
+
+  skd->ssl=SSL_new(skd->ssl_ctx);
 
   /* tell SSL to use our socket */
   rv=SSL_set_fd(skd->ssl, fd);
@@ -841,8 +875,10 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     }
 
     /* socket ready now setup SSL */
-    skd->ssl_ctx=SSL_CTX_new(SSLv23_client_method());
-    skd->ssl=SSL_new(skd->ssl_ctx);
+    if (skd->active)
+      skd->ssl_ctx=SSL_CTX_new(SSLv23_client_method());
+    else
+      skd->ssl_ctx=SSL_CTX_new(SSLv23_server_method());
 
     if (GWEN_NetTransportSSL__SetupSSL(tr, fd)) {
       GWEN_Socket_Close(skd->socket);
@@ -865,33 +901,40 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
 
     /* check for established SSL */
     if (skd->active) {
+      DBG_VERBOUS(0, "Calling connect");
       rv=SSL_connect(skd->ssl);
-      if (rv<1) {
-        int sslerr;
-
-        sslerr=SSL_get_error(skd->ssl, rv);
-        if (sslerr!=SSL_ERROR_WANT_READ &&
-            sslerr!=SSL_ERROR_WANT_WRITE) {
-          DBG_ERROR(0, "SSL error: %s (%d)",
-                    GWEN_NetTransportSSL_ErrorString(sslerr),
-                    sslerr);
-          GWEN_Socket_Close(skd->socket);
-          SSL_free(skd->ssl);
-          skd->ssl=0;
-          SSL_CTX_free(skd->ssl_ctx);
-          skd->ssl_ctx=0;
-          GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
-          return GWEN_NetTransportWorkResult_Error;
-        }
-        else {
-          return GWEN_NetTransportWorkResult_NoChange;
-        }
-      }
     }
     else {
-      /* passive */
-      /* TODO */
-      return GWEN_NetTransportWorkResult_NoChange;
+      DBG_VERBOUS(0, "Calling accept");
+      rv=SSL_accept(skd->ssl);
+    }
+
+    if (rv<1) {
+      int sslerr;
+
+      sslerr=SSL_get_error(skd->ssl, rv);
+      if (sslerr!=SSL_ERROR_WANT_READ &&
+	  sslerr!=SSL_ERROR_WANT_WRITE) {
+	if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+          DBG_NOTICE(0, "Accept postponed");
+	  return GWEN_NetTransportWorkResult_NoChange;
+	}
+	DBG_ERROR(0, "SSL error: %s (%d)",
+		  GWEN_NetTransportSSL_ErrorString(sslerr),
+		  sslerr);
+	ERR_print_errors_fp(stderr);
+
+	GWEN_Socket_Close(skd->socket);
+	SSL_free(skd->ssl);
+	skd->ssl=0;
+	SSL_CTX_free(skd->ssl_ctx);
+	skd->ssl_ctx=0;
+	GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
+	return GWEN_NetTransportWorkResult_Error;
+      }
+      else {
+          return GWEN_NetTransportWorkResult_NoChange;
+      }
     }
 
     /* now logically connected */
@@ -1056,7 +1099,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       /* create new transport layer, let it take over the new socket */
       newTr=GWEN_NetTransportSSL_new(newS,
                                      skd->CAdir,
-                                     skd->ownCertFile,
+				     skd->ownCertFile,
+                                     skd->dhfile,
                                      skd->secure,
 				     1);
       GWEN_NetTransport_SetPeerAddr(newTr, iaddr);
@@ -1070,6 +1114,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
                                  GWEN_NETTRANSPORT_FLAGS_PASSIVE);
 
       /* add it to queue of incoming connections */
+      GWEN_NetTransport_MarkActivity(tr);
       GWEN_NetTransport_AddNextIncoming(tr, newTr);
       return GWEN_NetTransportWorkResult_Change;
     }

@@ -748,7 +748,7 @@ int testSocketSSL(int argc, char **argv) {
 
   /* create transport layer */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  tr=GWEN_NetTransportSSL_new(sk, "trusted", 0, 1, 1);
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", 0, "dh_1024.pem", 1, 1);
   //tr=GWEN_NetTransportSSL_new(sk, "trusted.pem", 0, 0, 1, 1);
   if (!tr) {
     fprintf(stderr, "SSL not supported.\n");
@@ -1044,14 +1044,18 @@ int testHTTPc(int argc, char **argv) {
 
   /* create transport layer */
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
-  tr=GWEN_NetTransportSSL_new(sk, "trusted", 0, 1, 1);
+  tr=GWEN_NetTransportSSL_new(sk, "trusted",
+                              0, //"lancelot.crt",
+                              "dh_1024.pem",
+                              1, 1);
   if (!tr) {
     fprintf(stderr, "SSL not supported.\n");
     return 2;
   }
   addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
   GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
-  GWEN_InetAddr_SetPort(addr, 443);
+  GWEN_InetAddr_SetPort(addr, 55555);
+  //GWEN_InetAddr_SetPort(addr, 443);
   //GWEN_InetAddr_SetPort(addr, 80);
   GWEN_NetTransport_SetPeerAddr(tr, addr);
   GWEN_InetAddr_free(addr);
@@ -1114,6 +1118,117 @@ int testHTTPc(int argc, char **argv) {
 
 
 
+int testHTTPd(int argc, char **argv) {
+  GWEN_NETTRANSPORT *tr;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETCONNECTION *conn, *conn2;
+  GWEN_NETTRANSPORT *incoming;
+  char addrBuffer[128];
+  const char *tstr;
+  char buffer[1024];
+  GWEN_TYPE_UINT32 bsize;
+  int rv;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  tr=GWEN_NetTransportSSL_new(sk, "trusted", "lancelot.crt",
+                              "dh_1024.pem",
+                              0, /* secure */
+                              1);
+  if (!tr) {
+    fprintf(stderr, "SSL not supported.\n");
+    return 2;
+  }
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
+  GWEN_InetAddr_SetPort(addr, 55555);
+  GWEN_NetTransport_SetLocalAddr(tr, addr);
+  GWEN_InetAddr_free(addr);
+
+  /* create connection layer */
+  /* create connection layer */
+  conn=GWEN_NetConnectionHTTP_new(tr,
+                                  1,     /* take */
+                                  0,     /* libId */
+                                  1,0);  /* protocol version */
+  GWEN_NetConnection_SetUpFn(conn, connection_Up);
+  GWEN_NetConnection_SetDownFn(conn, connection_Down);
+
+  fprintf(stderr, "Starting to listen\n");
+  if (GWEN_NetConnection_StartListen(conn)) {
+    fprintf(stderr, "Could not start to listen\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Wating for incoming connection...\n");
+  incoming=GWEN_NetConnection_GetNextIncoming_Wait(conn,
+                                                   60);
+  if (!incoming) {
+    fprintf(stderr, "No incoming connection, aborting.\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Got an incoming connection.\n");
+  conn2=GWEN_NetConnection_new(incoming, 1, 1);
+  GWEN_NetConnection_SetUpFn(conn2, connection_Up);
+  GWEN_NetConnection_SetDownFn(conn2, connection_Down);
+  GWEN_NetConnection_Up(conn2);
+  GWEN_InetAddr_GetAddress(GWEN_NetTransport_GetPeerAddr(incoming),
+                           addrBuffer, sizeof(addrBuffer));
+
+  DBG_INFO(0, "Peer is: %s (port %d)",
+           addrBuffer,
+           GWEN_InetAddr_GetPort(GWEN_NetTransport_GetPeerAddr(incoming)));
+
+  while(1) {
+    fprintf(stderr, "Waiting for peer`s speach...\n");
+    bsize=sizeof(buffer);
+    rv=GWEN_NetConnection_Read_Wait(conn2, buffer, &bsize, 30);
+    if (rv==-1) {
+      fprintf(stderr, "ERROR: Could not read\n");
+      return 2;
+    }
+    else if (rv==1) {
+      fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+      return 2;
+    }
+    if (bsize==0) {
+      fprintf(stderr, "EOF met, leaving\n");
+      break;
+    }
+    buffer[bsize]=0;
+    fprintf(stderr, "Speach was: \"%s\"\n", buffer);
+
+    tstr="Hello client";
+    bsize=strlen(tstr);
+    fprintf(stderr, "Writing answer to the peer...\n");
+    if (GWEN_NetConnection_Write_Wait(conn2, tstr, &bsize, 30)) {
+      fprintf(stderr, "ERROR: Could not write\n");
+      return 2;
+    }
+    if (bsize!=strlen(tstr)) {
+      fprintf(stderr, "ERROR: Could not write all (only %d bytes)\n", bsize);
+      return 2;
+    }
+  } /* while */
+
+  fprintf(stderr, "Shutting down incoming connection...\n");
+  GWEN_NetConnection_Disconnect_Wait(conn2, 30);
+  GWEN_NetConnection_free(conn2);
+
+  fprintf(stderr, "Shutting down listening connection...\n");
+  GWEN_NetConnection_Disconnect_Wait(conn, 30);
+  GWEN_NetConnection_free(conn);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -1158,6 +1273,8 @@ int main(int argc, char **argv) {
     rv=testBase64(argc, argv);
   else if (strcasecmp(argv[1], "httpc")==0)
     rv=testHTTPc(argc, argv);
+  else if (strcasecmp(argv[1], "httpd")==0)
+    rv=testHTTPd(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     return 1;

@@ -10,6 +10,7 @@
   - unencrypted using HTTP via TCP sockets
   - encrypted using HTTP via SSL
   - encrypted using HTTP via SSL while checking certificates
+- SSL server code works !!! ;-)
 
 
 2004/05/07: Martin Preuss<martin@libchipcard.de>

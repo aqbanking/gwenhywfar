@@ -42,6 +42,7 @@ typedef struct GWEN_NETTRANSPORTSSL {
 
   char *CAdir;
   char *ownCertFile;
+  char *dhfile;
   SSL_CTX *ssl_ctx;
   SSL *ssl;
   int secure;
