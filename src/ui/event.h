@@ -81,7 +81,7 @@ typedef enum {
 } GWEN_EVENT_TYPE;
 
 
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 
 
 GWEN_LIST_FUNCTION_DEFS(GWEN_EVENT, GWEN_Event)

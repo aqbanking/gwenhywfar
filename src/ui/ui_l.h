@@ -29,8 +29,8 @@
 #define GWEN_UI_UI_L_H
 
 
-#include <gwenhywfar/ui.h>
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/ui.h>
+#include <gwenhywfar/ui/widget.h>
 
 
 

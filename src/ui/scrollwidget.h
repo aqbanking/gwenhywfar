@@ -30,7 +30,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 
 
 #define GWEN_SCROLLWIN_FLAGS_TITLE   0x00010000

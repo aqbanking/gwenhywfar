@@ -35,7 +35,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/messagebox.h>
+#include <gwenhywfar/ui/messagebox.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>

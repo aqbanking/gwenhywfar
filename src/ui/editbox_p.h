@@ -28,11 +28,11 @@
 #ifndef GWEN_UI_EDITBOX_P_H
 #define GWEN_UI_EDITBOX_P_H
 
-#include <gwenhywfar/editbox.h>
+#include <gwenhywfar/ui/editbox.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/widget.h>
-#include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/ui/widget.h>
+#include <gwenhywfar/ui/textwidget.h>
 
 
 

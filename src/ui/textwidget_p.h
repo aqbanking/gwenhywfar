@@ -29,7 +29,7 @@
 #define GWEN_UI_TEXTWIDGET_P_H
 
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/ui/textwidget.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/buffer.h>
 

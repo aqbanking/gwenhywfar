@@ -28,11 +28,11 @@
 #ifndef GWEN_UI_CHECKBOX_P_H
 #define GWEN_UI_CHECKBOX_P_H
 
-#include <gwenhywfar/checkbox.h>
+#include <gwenhywfar/ui/checkbox.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/widget.h>
-#include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/ui/widget.h>
+#include <gwenhywfar/ui/textwidget.h>
 
 
 typedef struct GWEN_CHECKBOX GWEN_CHECKBOX;

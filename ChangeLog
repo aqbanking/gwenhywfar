@@ -20,10 +20,15 @@
     drop down)
   - TextWidget: Now sends a "Chosen" event when ENTER is pressed in line mode.
     This is interpreted e.g. by the DropDownBox.
+  - UI headers are now expected in "${prefix}/include/gwenhywfar/ui"
 - parser/xml: now accepts simple tags (like "<br>" or "<hr>") without
   ending tags (e.g. there is no more need for "<br/>").
   This allows to use simple HTML for texts in TextWidget and derived classes.
-  
+- configure.ac, gwenhywfar-config.in.in:
+  - added checks and switches to determine whether UI or crypto support is
+    compiled into Gwenhywfar
+  - UI headers are installed to ${prefix}/include/gwenhywfar/ui
+
 
 2004/06/25: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

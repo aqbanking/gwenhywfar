@@ -28,7 +28,7 @@
 #ifndef GWEN_UI_TEXTWIDGET_H
 #define GWEN_UI_TEXTWIDGET_H
 
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/buffer.h>
 

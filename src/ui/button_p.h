@@ -29,7 +29,7 @@
 #ifndef GWEN_UI_BUTTON_P_H
 #define GWEN_UI_BUTTON_P_H
 
-#include <gwenhywfar/button.h>
+#include <gwenhywfar/ui/button.h>
 
 
 struct GWEN_BUTTON {

@@ -30,7 +30,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 
 typedef struct GWEN_HSLIDER GWEN_HSLIDER;
 struct GWEN_HSLIDER {

@@ -28,7 +28,7 @@
 #ifndef GWEN_UI_WINDOW_P_H
 #define GWEN_UI_WINDOW_P_H
 
-#include <gwenhywfar/window.h>
+#include <gwenhywfar/ui/window.h>
 
 
 typedef struct GWEN_WINDOW GWEN_WINDOW;

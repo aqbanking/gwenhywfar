@@ -28,7 +28,7 @@
 #ifndef GWEN_UI_SCROLLWIN_P_H
 #define GWEN_UI_SCROLLWIN_P_H
 
-#include <gwenhywfar/scrollwidget.h>
+#include <gwenhywfar/ui/scrollwidget.h>
 
 
 typedef struct GWEN_SCROLLWIN GWEN_SCROLLWIN;

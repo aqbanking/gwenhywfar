@@ -28,7 +28,7 @@
 #ifndef GWEN_UI_TABLEWIDGET_H
 #define GWEN_UI_TABLEWIDGET_H
 
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 #include <gwenhywfar/misc.h>
 
 

@@ -30,7 +30,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/buffer.h>
 

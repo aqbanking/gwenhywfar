@@ -30,7 +30,7 @@
 
 
 #include "ui_l.h"
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 
 
 typedef struct GWEN_UI GWEN_UI;

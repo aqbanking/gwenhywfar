@@ -29,7 +29,7 @@
 #define GWEN_UI_MESSAGEBOX_H
 
 
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 
 int GWEN_MessageBox(GWEN_WIDGET *parent,
                     const char *name,

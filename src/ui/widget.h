@@ -48,8 +48,8 @@ typedef enum {
 } GWEN_WIDGET_COLOUR;
 
 
-#include <gwenhywfar/ui.h>
-#include <gwenhywfar/event.h>
+#include <gwenhywfar/ui/ui.h>
+#include <gwenhywfar/ui/event.h>
 
 
 #define GWEN_WIDGET_FLAGS_IGN_HELP   0x00000001

@@ -31,11 +31,11 @@
 
 
 #include "messagebox_p.h"
-#include <gwenhywfar/scrollwidget.h>
-#include <gwenhywfar/button.h>
-#include <gwenhywfar/window.h>
-#include <gwenhywfar/textwidget.h>
-#include <gwenhywfar/ui.h>
+#include <gwenhywfar/ui/scrollwidget.h>
+#include <gwenhywfar/ui/button.h>
+#include <gwenhywfar/ui/window.h>
+#include <gwenhywfar/ui/textwidget.h>
+#include <gwenhywfar/ui/ui.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
 

@@ -30,7 +30,7 @@
 #define GWEN_UI_EVENT_P_H
 
 
-#include <gwenhywfar/event_l.h>
+#include "event_l.h"
 #include <time.h>
 
 

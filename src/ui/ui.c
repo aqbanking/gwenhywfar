@@ -35,7 +35,7 @@
 #include "widget_l.h"
 
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>

@@ -34,7 +34,7 @@
 
 #define GWEN_MESSAGEBOX_MINWIDTH 30
 
-#include <gwenhywfar/messagebox.h>
+#include <gwenhywfar/ui/messagebox.h>
 
 
 typedef struct GWEN_MESSAGEBOX GWEN_MESSAGEBOX;

@@ -38,6 +38,12 @@ for d in $*; do
         --vstring)
 	    result="$result @GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@.@GWENHYWFAR_VERSION_PATCHLEVEL@"
             ;;
+        --has-ui)
+            result="$result @USE_NCURSES@"
+            ;;
+        --has-crypt)
+            result="$result @USE_CRYPT@"
+            ;;
 	*)
 	    echo "Usage:"
 	    echo "$0 --includes gives you the include flags"
@@ -50,6 +56,10 @@ for d in $*; do
 	    echo "$0 --vbuild gives the build number of LibGwenhywfar"
 	    echo "$0 --vtag gives the tag of LibGwenhywfar (cvs, beta or stable)"
 	    echo "$0 --vstring returns a version string"
+            echo "$0 --has-ui returns \"yes\" or \"no\" depending on whether"
+            echo "     there is UI support compiled into Gwen"
+            echo "$0 --has-crypt returns \"yes\" or \"no\" depending on whether"
+            echo "     there is cryto support compiled into Gwen"
 	    exit 1
 	    ;;
     esac

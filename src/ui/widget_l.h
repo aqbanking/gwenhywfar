@@ -29,7 +29,7 @@
 #define GWEN_UI_WIDGET_L_H
 
 
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 #include <ncurses.h>
 
 

@@ -31,7 +31,7 @@
 
 
 #include "tablewidget_p.h"
-#include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/ui/textwidget.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>

@@ -30,7 +30,7 @@
 #define GWEN_UI_EVENT_L_H
 
 
-#include <gwenhywfar/event.h>
+#include <gwenhywfar/ui/event.h>
 
 void GWEN_Event_SetSender(GWEN_EVENT *e, GWEN_WIDGET *w);
 void GWEN_Event_SetRecipient(GWEN_EVENT *e, GWEN_WIDGET *w);

@@ -30,7 +30,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/widget.h>
+#include <gwenhywfar/ui/widget.h>
 
 #define GWEN_BUTTON_FLAGS_CHECKBOX 0x00010000
 

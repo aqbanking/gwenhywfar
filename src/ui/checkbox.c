@@ -33,10 +33,10 @@
 #include "checkbox_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/event.h>
+#include <gwenhywfar/ui/event.h>
 #include <gwenhywfar/buffer.h>
-#include <gwenhywfar/button.h>
-#include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/ui/button.h>
+#include <gwenhywfar/ui/textwidget.h>
 
 #include <ctype.h>
 

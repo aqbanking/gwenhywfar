@@ -33,7 +33,7 @@
 #include "editbox_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/event.h>
+#include <gwenhywfar/ui/event.h>
 #include <gwenhywfar/buffer.h>
 
 #include <ctype.h>

@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=11
-GWENHYWFAR_VERSION_BUILD=14
+GWENHYWFAR_VERSION_BUILD=15
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -219,11 +219,13 @@ if test "$ssl_available" = "yes"; then
   gwenhywfar_includes="$gwenhywfar_includes $ssl_includes"
   GWEN_CRYPTO="ossl"
   AC_DEFINE_UNQUOTED(GWEN_SSL_CRYPTO, 1, [Defined if OpenSSL crypto module is built])
+  USE_CRYPT="yes"
 else
   GWEN_CRYPTO="none"
+  USE_CRYPT="no"
 fi
 AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
-
+AC_SUBST(USE_CRYPT)
 
 
 # ---------------------------------------------------------------------------
@@ -256,11 +258,12 @@ AM_CONDITIONAL(USE_NCURSES, [test "$USE_NCURSES" = "yes"])
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/ipc src/os src/os/${GWEN_OS} src/parser src/ui"
+GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/ipc src/os src/os/${GWEN_OS}"
+GWEN_MODULES="ui"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
-rm -Rf gwenhywfar
+rm -Rf gwenhywfar &>/dev/null
 mkdir gwenhywfar
 GWEN_HEADER_FILES=""
 for d in ${GWEN_HEADER_DIRS}; do
@@ -279,6 +282,26 @@ done
 test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" &>/dev/null
 test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" &>/dev/null
 test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" &>/dev/null
+
+
+GWEN_MODULES="ui"
+lprefix="${srcdir}"
+lprefix=`( cd ${lprefix} ; pwd )`
+for d in ${GWEN_MODULES}; do
+  rm -Rf gwenhywfar/$d &>/dev/null
+  mkdir gwenhywfar/$d
+  hfiles=`( cd "${srcdir}/src/${d}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${lprefix}/${d}/${f}"
+    case ${f} in
+      *_p.h | *_l.h)
+      		;;
+      *)
+    		ln -s "${lprefix}/src/${d}/${f}" "gwenhywfar/${d}/${f}"
+                ;;
+    esac
+  done
+done
 
 
 #

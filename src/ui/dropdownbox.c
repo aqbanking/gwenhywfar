@@ -33,12 +33,12 @@
 #include "dropdownbox_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/event.h>
+#include <gwenhywfar/ui/event.h>
 #include <gwenhywfar/buffer.h>
-#include <gwenhywfar/button.h>
-#include <gwenhywfar/editbox.h>
-#include <gwenhywfar/scrollwidget.h>
-#include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/ui/button.h>
+#include <gwenhywfar/ui/editbox.h>
+#include <gwenhywfar/ui/scrollwidget.h>
+#include <gwenhywfar/ui/textwidget.h>
 
 #include <ctype.h>
 

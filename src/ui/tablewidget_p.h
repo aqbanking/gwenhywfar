@@ -28,8 +28,8 @@
 #ifndef GWEN_UI_TABLEWIDGET_P_H
 #define GWEN_UI_TABLEWIDGET_P_H
 
-#include <gwenhywfar/tablewidget.h>
-#include <gwenhywfar/textwidget.h>
+#include <gwenhywfar/ui/tablewidget.h>
+#include <gwenhywfar/ui/textwidget.h>
 
 
 #define GWEN_TABLECOLUMN_DEFAULT_WIDTH 8

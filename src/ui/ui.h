@@ -42,7 +42,7 @@ typedef enum {
 } GWEN_UI_RESULT;
 
 
-#include <gwenhywfar/event.h>
+#include <gwenhywfar/ui/event.h>
 
 int GWEN_UI_Begin();
 int GWEN_UI_End();

@@ -31,17 +31,17 @@
 # define strcasecmp(a, b) strcmp(a, b)
 #endif
 
-#include <gwenhywfar/widget.h>
-#include <gwenhywfar/ui.h>
-#include <gwenhywfar/window.h>
-#include <gwenhywfar/textwidget.h>
-#include <gwenhywfar/tablewidget.h>
-#include <gwenhywfar/button.h>
-#include <gwenhywfar/scrollwidget.h>
-#include <gwenhywfar/messagebox.h>
-#include <gwenhywfar/editbox.h>
-#include <gwenhywfar/checkbox.h>
-#include <gwenhywfar/dropdownbox.h>
+#include <gwenhywfar/ui/widget.h>
+#include <gwenhywfar/ui/ui.h>
+#include <gwenhywfar/ui/window.h>
+#include <gwenhywfar/ui/textwidget.h>
+#include <gwenhywfar/ui/tablewidget.h>
+#include <gwenhywfar/ui/button.h>
+#include <gwenhywfar/ui/scrollwidget.h>
+#include <gwenhywfar/ui/messagebox.h>
+#include <gwenhywfar/ui/editbox.h>
+#include <gwenhywfar/ui/checkbox.h>
+#include <gwenhywfar/ui/dropdownbox.h>
 
 
 int testDB(int argc, char **argv) {

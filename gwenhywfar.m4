@@ -14,7 +14,8 @@ dnl          gwenhywfar_libs
 dnl          gwenhywfar_plugins
 dnl          gwenhywfar_includes
 dnl          gwenhywfar_headers
-dnl          gwenhywfar_sections
+dnl          gwenhywfar_has_ui
+dnl          gwenhywfar_has_crypt
 dnl          have_gwenhywfar
 
 if test -z "$1"; then vma="0"; else vma="$1"; fi
@@ -34,7 +35,8 @@ gwenhywfar_dir=""
 gwenhywfar_plugins=""
 gwenhywfar_libs=""
 gwenhywfar_includes=""
-gwenhywfar_sections=""
+gwenhywfar_has_ui="no"
+gwenhywfar_has_crypt="no"
 if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_CHECKING(for gwenhywfar)
   AC_ARG_WITH(gwen-dir, [  --with-gwen-dir=DIR
@@ -69,15 +71,18 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_CHECKING(for gwen includes)
       gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
       AC_MSG_RESULT($gwenhywfar_includes)
-      AC_MSG_CHECKING(for gwen sections)
-      gwenhywfar_sections="`$gwenhywfar_dir/bin/gwenhywfar-config --sections`"
-      AC_MSG_RESULT($gwenhywfar_sections)
       AC_MSG_CHECKING(for gwen plugins)
       gwenhywfar_plugins="`$gwenhywfar_dir/bin/gwenhywfar-config --plugins`"
       AC_MSG_RESULT($gwenhywfar_plugins)
       AC_MSG_CHECKING(for gwen headers)
       gwenhywfar_headers="`$gwenhywfar_dir/bin/gwenhywfar-config --headers`"
       AC_MSG_RESULT($gwenhywfar_headers)
+      AC_MSG_CHECKING(for gwen UI)
+      gwenhywfar_has_ui="`$gwenhywfar_dir/bin/gwenhywfar-config --has_ui`"
+      AC_MSG_RESULT($gwenhywfar_has_ui)
+      AC_MSG_CHECKING(for gwen Crypto)
+      gwenhywfar_has_crypt="`$gwenhywfar_dir/bin/gwenhywfar-config --has_crypt`"
+      AC_MSG_RESULT($gwenhywfar_has_crypt)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)
   AC_ARG_ENABLE(gwenhywfar,
@@ -122,6 +127,7 @@ AC_SUBST(gwenhywfar_dir)
 AC_SUBST(gwenhywfar_plugins)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_includes)
-AC_SUBST(gwenhywfar_sections)
 AC_SUBST(gwenhywfar_headers)
+AC_SUBST(gwenhywfar_has_ui)
+AC_SUBST(gwenhywfar_has_crypt)
 ])
