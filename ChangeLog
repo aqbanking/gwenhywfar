@@ -13,7 +13,10 @@
     pressed the current widget will popup a message box and show that help
     text in it. If the widget which currently possesses the focus does not
     have a help string the parents will be consulted.
-
+- parser/xml: now accepts simple tags (like "<br>" or "<hr>") without
+  ending tags (e.g. there is no more need for "<br/>").
+  This allows to use simple HTML for texts in TextWidget and derived classes.
+  
 
 2004/06/25: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

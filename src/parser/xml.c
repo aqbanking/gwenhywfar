@@ -704,6 +704,17 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 
             if (*p=='!' || *p=='?')
               simpleTag=1;
+
+            /* This XML parser is very simple, but I need it to be able to
+             * read tags such as "<br>" without the need of a trailing
+             * slash (like "<br/>" instead of "<br>").
+             * So therefore I just hardcoded the few known simple HTML tags
+             * here.
+             */
+            if (strcasecmp(p, "BR")==0 ||
+                strcasecmp(p, "HR")==0)
+              simpleTag=1;
+
 	    j=strlen(p)-1;
 	    if (p[j]=='/') {
 	      if (chr!='>') {
