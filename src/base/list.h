@@ -51,6 +51,8 @@ void GWEN_List_PushFront(GWEN_LIST *l, void *p);
 void *GWEN_List_GetFront(GWEN_LIST *l);
 void *GWEN_List_GetBack(GWEN_LIST *l);
 
+void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it);
+
 unsigned int GWEN_List_GetSize(GWEN_LIST *l);
 
 void GWEN_List_PopBack(GWEN_LIST *l);

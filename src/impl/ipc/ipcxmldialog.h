@@ -33,12 +33,19 @@
 #include <gwenhyfwar/keyspec.h>
 #include <gwenhyfwar/hbcidialog.h>
 #include <gwenhyfwar/msgengine.h>
+#include <gwenhyfwar/keymanager.h>
 
 
 typedef struct GWEN_IPCXMLDIALOGDATA GWEN_IPCXMLDIALOGDATA;
 
 
-GWEN_HBCIDIALOG *GWEN_IPCXMLDialog_new(GWEN_MSGENGINE *e);
+/**
+ * @param km keymanager, this one is used to lookup remote keys. If the
+ * remote key is explicitly set via @ref GWEN_IPCXMLDialog_SetRemoteKey
+ * then the keymanager is not used
+ */
+GWEN_HBCIDIALOG *GWEN_IPCXMLDialog_new(GWEN_MSGENGINE *e,
+                                       GWEN_KEYMANAGER *km);
 
 
 GWEN_CRYPTKEY *GWEN_IPCXMLDialog_GetLocalKey(GWEN_HBCIDIALOG *d);

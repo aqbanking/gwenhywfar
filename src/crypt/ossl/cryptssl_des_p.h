@@ -43,7 +43,7 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_Register();
 
 
 GWEN_CRYPTKEY *GWEN_CryptKeyDES_new();
-GWEN_CRYPTKEY *GWEN_CryptKeyDES_dup(GWEN_CRYPTKEY *key);
+GWEN_CRYPTKEY *GWEN_CryptKeyDES_dup(const GWEN_CRYPTKEY *key);
 void GWEN_CryptKeyDES_FreeKeyData(GWEN_CRYPTKEY *key);
 GWEN_ERRORCODE GWEN_CryptKeyDES_Encrypt(GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,

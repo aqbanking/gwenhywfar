@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 15 2003
+    begin       : Mon Nov 17 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -25,56 +25,30 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifndef GWENHYWFAR_IPCXMLDIALOG_P_H
-#define GWENHYWFAR_IPCXMLDIALOG_P_H
-
-#include <gwenhyfwar/ipcxmldialog.h>
+#ifndef GWENHYWFAR_IPCXMLKEYMANAGER_P_H
+#define GWENHYWFAR_IPCXMLKEYMANAGER_P_H
 
 
-struct GWEN_IPCXMLDIALOGDATA {
-  GWEN_KEYMANAGER *keyManager;
-  GWEN_CRYPTKEY *localKey;
-  unsigned int localSignSeq;
-  GWEN_CRYPTKEY *remoteKey;
-  unsigned int remoteSignSeq;
-  GWEN_CRYPTKEY *sessionKey;
-  unsigned int flags;
+#include <gwenhyfwar/ipcxmlkeymanager.h>
+#include <gwenhyfwar/list.h>
 
-  char *serviceCode;
-  char *securityId;
+
+typedef struct GWEN_IPCXMLKEYMANAGERDATA GWEN_IPCXMLKEYMANAGERDATA;
+
+struct GWEN_IPCXMLKEYMANAGERDATA {
+  GWEN_LIST *keys;
+
 };
 
-GWEN_IPCXMLDIALOGDATA *GWEN_IPCXMLDialogData_new();
-void GWEN_IPCXMLDialogData_free(GWEN_IPCXMLDIALOGDATA *d);
+const GWEN_CRYPTKEY *GWEN_IPCXMLKeyManager_GetKey(GWEN_KEYMANAGER *km,
+                                                  const GWEN_KEYSPEC *ks);
+int GWEN_IPCXMLKeyManager_AddKey(GWEN_KEYMANAGER *km,
+                                 const GWEN_CRYPTKEY *key);
+int GWEN_IPCXMLKeyManager_DeleteKey(GWEN_KEYMANAGER *km,
+                                    const GWEN_CRYPTKEY *key);
+void GWEN_IPCXMLKeyManager_FreeData(GWEN_KEYMANAGER *km);
 
-
-int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *hdlg,
-                                 GWEN_HBCICRYPTOCONTEXT *ctx,
-                                 int crypt);
-int GWEN_IPCXMLDialog_Sign(GWEN_HBCIDIALOG *hdlg,
-                           GWEN_BUFFER *msgbuf,
-                           GWEN_BUFFER *signbuf,
-                           GWEN_HBCICRYPTOCONTEXT *ctx);
-
-int GWEN_IPCXMLDialog_Verify(GWEN_HBCIDIALOG *hdlg,
-                             GWEN_BUFFER *msgbuf,
-                             GWEN_BUFFER *signbuf,
-                             GWEN_HBCICRYPTOCONTEXT *ctx);
-
-int GWEN_IPCXMLDialog_Encrypt(GWEN_HBCIDIALOG *hdlg,
-                              GWEN_BUFFER *msgbuf,
-                              GWEN_BUFFER *cryptbuf,
-                              GWEN_HBCICRYPTOCONTEXT *ctx);
-
-int GWEN_IPCXMLDialog_Decrypt(GWEN_HBCIDIALOG *hdlg,
-                              GWEN_BUFFER *msgbuf,
-                              GWEN_BUFFER *decryptbuf,
-                              GWEN_HBCICRYPTOCONTEXT *ctx);
-
-void GWEN_IPCXMLDialog_FreeData(GWEN_HBCIDIALOG *hdlg);
-
-
+GWEN_IPCXMLKEYMANAGERDATA *GWEN_IPCXMLKeyManagerData_new();
 
 #endif
 

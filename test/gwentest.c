@@ -16,6 +16,7 @@
 #include <gwenhyfwar/hbcidialog.h>
 #include <gwenhyfwar/hbcimsg.h>
 #include <gwenhyfwar/ipcxmldialog.h>
+#include <gwenhyfwar/ipcxmlkeymanager.h>
 
 
 int testDB(int argc, char **argv) {
@@ -567,6 +568,7 @@ int testDialog(int argc, char **argv) {
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
   GWEN_HBCIMSG *hmsg;
+  GWEN_KEYMANAGER *km;
 
   if (argc<3) {
     fprintf(stderr, "Path of XML file needed.\n");
@@ -585,7 +587,9 @@ int testDialog(int argc, char **argv) {
   GWEN_MsgEngine_SetProtocolVersion(e, 1);
   GWEN_MsgEngine_SetMode(e, "RDH");
 
-  dlg=GWEN_IPCXMLDialog_new(e);
+  km=GWEN_IPCXMLKeyManager_new();
+
+  dlg=GWEN_IPCXMLDialog_new(e, km);
   key=GWEN_CryptKey_Factory("RSA");
   if (!key) {
     fprintf(stderr, "Error creating key.\n");
@@ -593,6 +597,7 @@ int testDialog(int argc, char **argv) {
   }
 
   GWEN_CryptKey_SetOwner(key, "Martin");
+  GWEN_CryptKey_SetKeyName(key, "S");
 
   fprintf(stderr, "Generating key.\n");
   err=GWEN_CryptKey_Generate(key, 768);
@@ -601,6 +606,10 @@ int testDialog(int argc, char **argv) {
     return 2;
   }
   fprintf(stderr, "Generating key done.\n");
+  if (GWEN_KeyManager_AddKey(km, key)) {
+    fprintf(stderr, "Could not add key\n");
+    return 2;
+  }
   GWEN_IPCXMLDialog_SetLocalKey(dlg, GWEN_CryptKey_dup(key));
   GWEN_IPCXMLDialog_SetRemoteKey(dlg, GWEN_CryptKey_dup(key));
   GWEN_IPCXMLDialog_SetServiceCode(dlg, "Test-Service");
@@ -643,6 +652,8 @@ int testDialog(int argc, char **argv) {
 
   //fprintf(stderr, "Buffer is: \n");
   //GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(hmsg), stderr, 2);
+
+  GWEN_IPCXMLDialog_SetRemoteKey(dlg, 0);
 
   fprintf(stderr, "Decoding message\n");
   if (GWEN_HBCIMsg_DecodeMsg(hmsg,

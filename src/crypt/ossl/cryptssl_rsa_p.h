@@ -44,7 +44,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Register();
 
 
 GWEN_CRYPTKEY *GWEN_CryptKeyRSA_new();
-GWEN_CRYPTKEY *GWEN_CryptKeyRSA_dup(GWEN_CRYPTKEY *key);
+GWEN_CRYPTKEY *GWEN_CryptKeyRSA_dup(const GWEN_CRYPTKEY *key);
 void GWEN_CryptKeyRSA_FreeKeyData(GWEN_CRYPTKEY *key);
 GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,

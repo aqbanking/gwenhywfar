@@ -190,6 +190,30 @@ void GWEN_List_Clear(GWEN_LIST *l){
 
 
 
+void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
+  GWEN_LIST_ENTRY *current;
+
+  assert(l);
+  assert(it);
+  if (it->current) {
+    current=it->current;
+    /* unlink from next */
+    if (current->next) {
+      it->current=current->next;
+      current->next=current->previous;
+    }
+    else
+      it->current=0;
+    /* unlink from previous */
+    if (current->previous)
+      current->previous=current->next;
+    /* free */
+    GWEN_ListEntry_free(current);
+  }
+}
+
+
+
 GWEN_LIST_ITERATOR *GWEN_List_First(GWEN_LIST *l){
   GWEN_LIST_ITERATOR *li;
 
@@ -428,6 +452,30 @@ void GWEN_ConstList_PopFront(GWEN_CONSTLIST *l){
     }
     GWEN_ConstListEntry_free(le);
     l->size--;
+  }
+}
+
+
+
+void GWEN_ConstList_Erase(GWEN_CONSTLIST *l, GWEN_CONSTLIST_ITERATOR *it){
+  GWEN_CONSTLIST_ENTRY *current;
+
+  assert(l);
+  assert(it);
+  if (it->current) {
+    current=it->current;
+    /* unlink from next */
+    if (current->next) {
+      it->current=current->next;
+      current->next=current->previous;
+    }
+    else
+      it->current=0;
+    /* unlink from previous */
+    if (current->previous)
+      current->previous=current->next;
+    /* free */
+    GWEN_ConstListEntry_free(current);
   }
 }
 

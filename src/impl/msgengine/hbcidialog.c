@@ -281,8 +281,6 @@ int GWEN_HBCIDialog_PaddWithISO9796(GWEN_BUFFER *src) {
   unsigned char hash[20];
   unsigned char c;
 
-  DBG_ERROR(0, "Starting.");
-
   p=GWEN_Buffer_GetStart(src);
   l=GWEN_Buffer_GetUsedBytes(src);
   memmove(hash, p, l);

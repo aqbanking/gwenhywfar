@@ -648,7 +648,6 @@ int GWEN_HBCIMsg_EncryptMsg(GWEN_HBCIMSG *hmsg) {
   if (GWEN_HBCIDialog_PrepareContext(hmsg->dialog, ctx, 1)) {
     DBG_INFO(0, "here");
     GWEN_HBCICryptoContext_free(ctx);
-    GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
     return -1;
   }
@@ -1112,7 +1111,7 @@ int GWEN_HBCIMsg_PrepareCryptoSegDec(GWEN_HBCIMSG *hmsg,
   ks=GWEN_KeySpec_new();
 
   /* prepare context */
-  GWEN_KeySpec_SetOwner(ks, GWEN_DB_GetCharValue(n, "userid", 0, ""));
+  GWEN_KeySpec_SetOwner(ks, GWEN_DB_GetCharValue(n, "key/userid", 0, ""));
   GWEN_KeySpec_SetNumber(ks, GWEN_DB_GetIntValue(n, "key/keynum", 0, 0));
   GWEN_KeySpec_SetVersion(ks,
                           GWEN_DB_GetIntValue(n, "key/keyversion", 0, 0));

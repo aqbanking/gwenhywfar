@@ -80,7 +80,7 @@ extern "C" {
    *
    */
   /*@{*/
-  typedef GWEN_CRYPTKEY* (*GWEN_CRYPTKEY_DUP_FN)(GWEN_CRYPTKEY *key);
+  typedef GWEN_CRYPTKEY* (*GWEN_CRYPTKEY_DUP_FN)(const GWEN_CRYPTKEY *key);
   typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_ENCRYPT_FN)(GWEN_CRYPTKEY *key,
                                                      GWEN_BUFFER *src,
                                                      GWEN_BUFFER *dst);
@@ -128,7 +128,7 @@ extern "C" {
   GWEN_CRYPTKEY *GWEN_CryptKey_Factory(const char *t);
 
   void GWEN_CryptKey_free(GWEN_CRYPTKEY *key);
-  GWEN_CRYPTKEY *GWEN_CryptKey_dup(GWEN_CRYPTKEY *key);
+  GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key);
 
   GWEN_ERRORCODE GWEN_CryptKey_Encrypt(GWEN_CRYPTKEY *key,
                                        GWEN_BUFFER *src,

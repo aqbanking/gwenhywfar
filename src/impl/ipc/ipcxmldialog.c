@@ -232,6 +232,11 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
   if (crypt) {
     const GWEN_KEYSPEC *ks;
 
+    if (!(dd->remoteKey)) {
+      DBG_ERROR(0, "No remote key");
+      return -1;
+    }
+
     ks=GWEN_CryptKey_GetKeySpec(dd->remoteKey);
     assert(ks);
     GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
@@ -241,11 +246,6 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
       int i;
 
       /* generate session key, if possible */
-      if (!(dd->remoteKey)) {
-        DBG_ERROR(0, "No remote key");
-        return -1;
-      }
-
       DBG_NOTICE(0, "Generating session key");
       dd->sessionKey=GWEN_CryptKey_Factory("DES");
       assert(dd->sessionKey);
@@ -416,8 +416,17 @@ int GWEN_IPCXMLDialog_Verify(GWEN_HBCIDIALOG *d,
   assert(dd);
 
   if (!(dd->remoteKey)) {
-    DBG_ERROR(0, "No remote key");
-    return -1;
+    const GWEN_CRYPTKEY *tk;
+
+    /* no remote key, try to get it */
+    tk=GWEN_KeyManager_GetKey(dd->keyManager,
+                              GWEN_HBCICryptoContext_GetKeySpec(ctx));
+    if (!tk) {
+      /* still no remote key, error */
+      DBG_ERROR(0, "No remote key");
+      return -1;
+    }
+    dd->remoteKey=GWEN_CryptKey_dup(tk);
   }
 
   /* check signature sequence number */
@@ -505,7 +514,7 @@ int GWEN_IPCXMLDialog_Encrypt(GWEN_HBCIDIALOG *d,
   assert(dd);
 
   if (!(dd->sessionKey)) {
-    DBG_ERROR(0, "No remote key");
+    DBG_ERROR(0, "No session key");
     return -1;
   }
 
@@ -641,12 +650,14 @@ void GWEN_IPCXMLDialog_SetServiceCode(GWEN_HBCIDIALOG *d,
 
 
 
-GWEN_HBCIDIALOG *GWEN_IPCXMLDialog_new(GWEN_MSGENGINE *e){
+GWEN_HBCIDIALOG *GWEN_IPCXMLDialog_new(GWEN_MSGENGINE *e,
+                                       GWEN_KEYMANAGER *km){
   GWEN_HBCIDIALOG *d;
   GWEN_IPCXMLDIALOGDATA *dd;
 
   d=GWEN_HBCIDialog_new(e);
   dd=GWEN_IPCXMLDialogData_new();
+  dd->keyManager=km;
   GWEN_HBCIDialog_SetPrepareCtxFn(d, GWEN_IPCXMLDialog_PrepareCTX);
   GWEN_HBCIDialog_SetSignFn(d, GWEN_IPCXMLDialog_Sign);
   GWEN_HBCIDialog_SetVerifyFn(d, GWEN_IPCXMLDialog_Verify);

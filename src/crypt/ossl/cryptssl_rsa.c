@@ -528,7 +528,7 @@ GWEN_CRYPTKEY *GWEN_CryptKeyRSA_new(){
 
 
 
-GWEN_CRYPTKEY *GWEN_CryptKeyRSA_dup(GWEN_CRYPTKEY *key){
+GWEN_CRYPTKEY *GWEN_CryptKeyRSA_dup(const GWEN_CRYPTKEY *key){
   GWEN_CRYPTKEY *newKey;
   RSA *keyData;
   RSA *newKeyData;

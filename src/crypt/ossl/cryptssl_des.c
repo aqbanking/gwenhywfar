@@ -71,7 +71,7 @@ GWEN_CRYPTKEY *GWEN_CryptKeyDES_new(){
 
 
 
-GWEN_CRYPTKEY *GWEN_CryptKeyDES_dup(GWEN_CRYPTKEY *key){
+GWEN_CRYPTKEY *GWEN_CryptKeyDES_dup(const GWEN_CRYPTKEY *key){
   GWEN_CRYPTKEY *newKey;
   unsigned char *kd;
   unsigned char *newkd;

@@ -177,7 +177,7 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
 
 
 
-GWEN_CRYPTKEY *GWEN_CryptKey_dup(GWEN_CRYPTKEY *key){
+GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key){
   GWEN_CRYPTKEY *newKey;
 
   assert(key);
