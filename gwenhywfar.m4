@@ -65,7 +65,7 @@ if test "$enable_gwenhywfar" != "no"; then
       gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
       AC_MSG_RESULT($gwenhywfar_includes)
       AC_MSG_CHECKING(for gwen sections)
-      gwenhywfar_sections="$gwenhywfar_dir/bin/gwenhywfar-config --sections`"
+      gwenhywfar_sections="`$gwenhywfar_dir/bin/gwenhywfar-config --sections`"
       AC_MSG_RESULT($gwenhywfar_sections)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)

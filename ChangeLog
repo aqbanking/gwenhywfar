@@ -1,4 +1,9 @@
 
+2004/01/11 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in gwenhywfar.m4
+
+
 2004/01/10 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - logger: added function GWEN_Logger_AddLogger. This functions allows to
