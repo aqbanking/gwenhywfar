@@ -38,28 +38,31 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_TW_LINE, GWEN_TWLine)
 
 struct GWEN_TW_LINE {
   GWEN_LIST_ELEMENT(GWEN_TW_LINE)
-  int length;
-  char *text;
   GWEN_TYPE_UINT32 usage;
   GWEN_TYPE_UINT32 startAttributes;
   GWEN_TYPE_UINT32 endAttributes;
 
+  int length; /* only valid if decompressed */
+
   /* vars for edit mode */
-  int openCount;
   GWEN_BUFFER *attributes;
   GWEN_BUFFER *chars;
+  GWEN_BUFFER *compressedText;
+
   int leftBorder;
   int rightBorder;
   int insertOn;
   int changed;
   int currentPos;
+  int compressed;
+  int decompressed;
   GWEN_TYPE_UINT32 currentAtts;
 };
-GWEN_TW_LINE *GWEN_TWLine_new(GWEN_TYPE_UINT32 startAttributes,
-                              const char *s);
+GWEN_TW_LINE *GWEN_TWLine_new(GWEN_TYPE_UINT32 atts, const char *s);
 void GWEN_TWLine_free(GWEN_TW_LINE *l);
 void GWEN_TWLine_Attach(GWEN_TW_LINE *l);
-int GWEN_TWLine_SetText(GWEN_TW_LINE *l, GWEN_TYPE_UINT32 startAttributes,
+int GWEN_TWLine_SetText(GWEN_TW_LINE *l,
+                        GWEN_TYPE_UINT32 atts,
                         const char *s);
 
 
@@ -67,6 +70,7 @@ int GWEN_TWLine_SetText(GWEN_TW_LINE *l, GWEN_TYPE_UINT32 startAttributes,
 typedef struct GWEN_TEXTWIDGET GWEN_TEXTWIDGET;
 struct GWEN_TEXTWIDGET {
   GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
+  GWEN_TYPE_UINT32 flags;
   GWEN_TW_LINE_LIST *lines;
   int top;
   int vheight;
@@ -81,10 +85,6 @@ struct GWEN_TEXTWIDGET {
 void GWEN_TextWidget_freeData(void *bp, void *p);
 
 GWEN_UI_RESULT GWEN_TextWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
-int GWEN_TextWidget_WriteLine(GWEN_WIDGET *w, int x, int y);
-int GWEN_TextWidget_WriteArea(GWEN_WIDGET *w,
-                              int x, int y,
-                              int width, int height);
 
 int GWEN_TextWidget_ParseXMLSubNodes(GWEN_WIDGET *w,
                                      GWEN_XMLNODE *n,
@@ -115,6 +115,19 @@ int GWEN_TextWidget_CondenseLineArea(GWEN_TW_LINE *l,
                                      GWEN_TYPE_UINT32 *atts);
 
 void GWEN_TextWidget_Draw(GWEN_WIDGET *w);
+
+
+int GWEN_TextWidget__DrawLine(GWEN_WIDGET *w, GWEN_TW_LINE *l,
+                              int x, int y, int len);
+int GWEN_TextWidget__DrawArea(GWEN_WIDGET *w,
+                              int x, int len,
+                              int y, int height);
+
+int GWEN_TextWidget_DecompressLine(GWEN_WIDGET *w, GWEN_TW_LINE *l);
+int GWEN_TextWidget_CompressLine(GWEN_TW_LINE *l);
+
+int GWEN_TextWidget_SelectLine(GWEN_WIDGET *w, GWEN_TW_LINE *l);
+
 
 
 #endif

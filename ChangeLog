@@ -1,4 +1,13 @@
 
+2004/06/24: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ui: 
+  - added Close-events
+  - added ScrollWidget (which basically is a widget with optional vertical
+    and horizontal scroll bars)
+  - started working on GWEN_MessageBox
+
+
 2004/06/23: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ui: added Button and a command event emitted by buttons (or menus later)

@@ -59,6 +59,7 @@ GWEN_WIDGET *GWEN_Button_new(GWEN_WIDGET *parent,
                     y,
                     width,
                     height);
+  GWEN_Widget_SetTypeName(w, "Button");
   GWEN_NEW_OBJECT(GWEN_BUTTON, win);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_BUTTON, w, win,
                        GWEN_Button_freeData);

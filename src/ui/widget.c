@@ -61,6 +61,7 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
   GWEN_LIST_INIT(GWEN_WIDGET, w);
   w->usage=1;
   w->eventHandler=GWEN_Widget__HandleEvent;
+  w->typeName=strdup("Widget");
 
   if (GWEN_Widget_LastId==0)
     GWEN_Widget_LastId=time(0);
@@ -132,6 +133,8 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
 
   if (w->flags & GWEN_WIDGET_FLAGS_PANEL) {
     w->panel=new_panel(w->window);
+    update_panels();
+    top_panel(w->panel);
   }
 
   keypad(w->window, (w->flags & GWEN_WIDGET_FLAGS_KEYPAD)?TRUE:FALSE);
@@ -165,6 +168,9 @@ void GWEN_Widget_free(GWEN_WIDGET *w){
     assert(w->usage);
     if ((--w->usage)==0) {
       GWEN_INHERIT_FINI(GWEN_WIDGET, w);
+      free(w->name);
+      free(w->typeName);
+      free(w->text);
       GWEN_Widget_List_free(w->children);
       GWEN_LIST_FINI(GWEN_WIDGET, w);
       GWEN_FREE_OBJECT(w);
@@ -264,6 +270,33 @@ const char *GWEN_Widget_GetText(const GWEN_WIDGET *w){
 const char *GWEN_Widget_GetName(const GWEN_WIDGET *w){
   assert(w);
   return w->name;
+}
+
+
+
+const char *GWEN_Widget_GetTypeName(const GWEN_WIDGET *w){
+  assert(w);
+  return w->typeName;
+}
+
+
+
+void GWEN_Widget_SetTypeName(GWEN_WIDGET *w, const char *s){
+  assert(w);
+  if (s) {
+    char *nn;
+
+    nn=(char*)malloc(((w->typeName)?(strlen(w->typeName)+1):0)+
+                     strlen(s)+1);
+    *nn=0;
+    if (w->typeName) {
+      strcat(nn, w->typeName);
+      strcat(nn, "/");
+    }
+    strcat(nn, s);
+    free(w->typeName);
+    w->typeName=nn;
+  }
 }
 
 
@@ -440,6 +473,94 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     return GWEN_UIResult_Handled;
   }
 
+  case GWEN_EventType_Close: {
+    DBG_INFO(0, "Event: Close(%s)", w->name);
+    if (w->state & GWEN_WIDGET_STATE_CLOSED) {
+      DBG_NOTICE(0, "Widget already *is* closed");
+      return GWEN_UIResult_NotHandled;
+    }
+    w->state|=GWEN_WIDGET_STATE_CLOSED;
+    if (w->parent) {
+      GWEN_EVENT *eClosed;
+
+      /* send "Closed" event to parent.
+       * Since events are attached to both sender and recipient of an event
+       * this widget will not be deleted now, even though the function
+       * GWEN_Widget_free() is called below. That will just decrement the
+       * usage counter of this widget. When the "closed" event is handled
+       * and freed this widget will finally be deleted.
+       */
+      eClosed=GWEN_EventClosed_new();
+      assert(eClosed);
+      if (GWEN_Widget_SendEvent(w, w->parent, eClosed)) {
+        DBG_INFO(0, "Could not send event");
+        GWEN_Event_free(eClosed);
+      }
+    }
+    if (w->flags & GWEN_WIDGET_FLAGS_PANEL) {
+      wclear(w->window);
+      del_panel(w->panel);
+    }
+    GWEN_Widget_free(w);
+    refresh();
+    return GWEN_UIResult_Handled;
+  }
+
+  case GWEN_EventType_Closed: {
+    GWEN_WIDGET *wSender;
+
+    DBG_INFO(0, "Event: Closed(%s)", w->name);
+    wSender=GWEN_Event_GetSender(e);
+    if (wSender) {
+      if (GWEN_Widget_IsChildOf(wSender, w)) {
+        GWEN_WIDGET *cw;
+        int actives;
+
+        /* a child of ours closed */
+        actives=0;
+        cw=GWEN_Widget_List_First(w->children);
+        while(cw) {
+          if (cw!=wSender) {
+            if (!(w->state & GWEN_WIDGET_STATE_CLOSED))
+              actives++;
+          }
+          cw=GWEN_Widget_List_Next(cw);
+        }
+        if (!actives) {
+          GWEN_EVENT *eLast;
+
+          /* last child closed */
+          eLast=GWEN_EventLastClosed_new();
+          assert(eLast);
+          if (GWEN_Widget_SendEvent(w, w, eLast)) {
+            DBG_INFO(0, "Could not send event");
+            GWEN_Event_free(eLast);
+          }
+        }
+        return GWEN_UIResult_Handled;
+      }
+    }
+    return GWEN_UIResult_NotHandled;
+  }
+
+  case GWEN_EventType_LastClosed:
+    DBG_INFO(0, "Event: LastClosed(%s)", w->name);
+    GWEN_Widget_Close(w);
+    return GWEN_UIResult_Handled;
+
+  case GWEN_EventType_Command:
+    DBG_INFO(0, "Event: Command(%s)", w->name);
+    switch(GWEN_EventCommand_GetCommandId(e)) {
+    case GWEN_WIDGET_CMD_CLOSE:
+      GWEN_Widget_Close(w);
+      return GWEN_UIResult_Handled;
+    case GWEN_WIDGET_CMD_QUIT:
+      return GWEN_UIResult_Quit;
+    default:
+      break;
+    }
+    return GWEN_UIResult_NotHandled;
+
   case GWEN_EventType_ChgAtts: {
     GWEN_TYPE_UINT32 atts;
     int nattr;
@@ -470,6 +591,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     int maxc;
     int len;
     GWEN_WIDGET_COLOUR hi;
+    int i;
 
     DBG_INFO(0, "Event: Highlight(%s)", w->name);
     x=GWEN_EventHighlight_GetX(e);
@@ -489,9 +611,14 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
                x, y, len, hi);
     if (hi==0)
       hi=w->colour;
-    mvwchgat(w->window, y, x, maxc, 0,
-             hi, 0);
-    touchline(w->window, y, 1);
+
+    for (i=0; i<maxc; i++) {
+      chtype oldc;
+
+      oldc=(mvwinch(w->window, y, x+i) & ~A_COLOR);
+      oldc|=COLOR_PAIR(hi);
+      mvwaddch(w->window, y, x+i, oldc);
+    }
     GWEN_Widget_Refresh(w);
     //wrefresh(w->window);
     //doupdate();
@@ -518,44 +645,31 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       y++;
       maxc-=2;
     }
-    if (maxc>len)
-      maxc=len;
     p=(const unsigned char*)GWEN_EventWriteAt_GetText(e);
-    //DBG_NOTICE(0, "Writing at %d, %d, %d bytes: \"%s\"",
-    //           x, y, len, p);
+
     if (p) {
       int attrs;
-      GWEN_BUFFER *mbuf;
       int c;
 
-      mbuf=GWEN_Buffer_new(0, strlen(p), 0, 1);
-      //DBG_NOTICE(0, "Dump:");
-      //GWEN_Text_LogString(p , strlen(p), 0, GWEN_LoggerLevelNotice);
-      if (GWEN_Text_UnescapeToBufferTolerant(p, mbuf)) {
-        DBG_ERROR(0, "Bad string");
-        GWEN_Buffer_free(mbuf);
-        return GWEN_UIResult_Error;
-      }
-      GWEN_Buffer_Rewind(mbuf);
-      //GWEN_Text_LogString(GWEN_Buffer_GetStart(mbuf),
-      //                    GWEN_Buffer_GetUsedBytes(mbuf),
-      //                    0,
-      //                    GWEN_LoggerLevelNotice);
+      DBG_NOTICE(0, "Writing this at %d/%d [%d, %d]:", x, y, len, maxc);
+      GWEN_Text_LogString(p, len, 0, GWEN_LoggerLevelNotice);
       wmove(w->window, y, x);
       wbkgdset(w->window, COLOR_PAIR(w->colour));
       wattr_set(w->window, 0, w->colour, 0);
       attrs=COLOR_PAIR(w->colour);
-      while( (c=GWEN_Buffer_ReadByte(mbuf))!=-1) {
+      while(len) {
+        c=*p;
         if (maxc==0)
           break;
+
         if (c==GWEN_WIDGET_ATT_ESC_CHAR) {
-          c=GWEN_Buffer_ReadByte(mbuf);
-          if (c==-1) {
+          if (!--len) {
             DBG_ERROR(0, "Bad string");
-            GWEN_Buffer_free(mbuf);
+            abort();
             return GWEN_UIResult_Error;
           }
-          c=(unsigned char)c;
+          p++;
+          c=*p;
           DBG_VERBOUS(0, "Setting new attributes %02x", c);
           attrs=COLOR_PAIR(w->colour);
           if (c & GWEN_WIDGET_ATT_STANDOUT)
@@ -568,13 +682,13 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
         else if (c==GWEN_WIDGET_CHAR_ESC_CHAR) {
           chtype ch;
 
-          c=GWEN_Buffer_ReadByte(mbuf);
-          if (c==-1) {
+          if (!--len) {
             DBG_ERROR(0, "Bad string");
-            GWEN_Buffer_free(mbuf);
+            abort();
             return GWEN_UIResult_Error;
           }
-          c=(unsigned char)c;
+          p++;
+          c=*p;
           switch(c) {
           case GWEN_WIDGET_CHAR_VLINE: ch=ACS_VLINE; break;
           case GWEN_WIDGET_CHAR_HLINE: ch=ACS_HLINE; break;
@@ -600,19 +714,15 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
             DBG_VERBOUS(0, "Error writing to window (%02x)", c);
             break;
           }
-          //if (waddch(w->window, c & 0x7f)==ERR) {
-          //  DBG_INFO(0, "Error writing to window");
-          //  break;
-          //}
           maxc--;
         }
         else {
           DBG_NOTICE(0, "Unprintable character detected.");
           abort();
         }
+        p++;
+        len--;
       } /* while */
-      GWEN_Buffer_free(mbuf);
-      //wclrtoeol(w->window);
     }
     return GWEN_UIResult_Handled;
   }
@@ -1086,9 +1196,11 @@ void GWEN_Widget_Dump(GWEN_WIDGET *w, int indent) {
       GWEN_Buffer_AppendByte(m, '-');
   }
 
-  DBG_NOTICE(0, "%s %s: Dims: %d/%d %d/%d",
+  DBG_NOTICE(0, "%s %s[%s]: Dims: %d/%d %d/%d",
              indent?GWEN_Buffer_GetStart(m):"",
-             w->name, w->x, w->y,
+             w->name,
+             w->typeName,
+             w->x, w->y,
              w->width, w->height);
   GWEN_Buffer_free(m);
   sw=GWEN_Widget_List_First(w->children);
@@ -1117,6 +1229,22 @@ int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w) {
   assert(w);
   assert(wc);
   return GWEN_Widget_IsChildOf(w, wc);
+  return 0;
+}
+
+
+
+int GWEN_Widget_Close(GWEN_WIDGET *w) {
+  GWEN_EVENT *e;
+
+  assert(w);
+  e=GWEN_EventClose_new();
+  assert(e);
+  if (GWEN_Widget_SendEvent(w, w, e)) {
+    DBG_INFO(0, "Could not send event");
+    GWEN_Event_free(e);
+    return -1;
+  }
   return 0;
 }
 

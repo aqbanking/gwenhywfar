@@ -7,6 +7,8 @@ iheader_HEADERS=\
   button.h \
   event.h \
   hslider.h \
+  messagebox.h \
+  scrollwidget.h \
   tablewidget_p.h \
   textwidget_p.h \
   ui.h \
@@ -18,6 +20,8 @@ noinst_HEADERS=\
   button_p.h \
   event_p.h \
   hslider_p.h \
+  messagebox_p.h \
+  scrollwidget_p.h \
   tablewidget.h \
   textwidget.h \
   ui_l.h \
@@ -31,6 +35,8 @@ libui_la_SOURCES=\
   button.c \
   event.c \
   hslider.c \
+  messagebox.c \
+  scrollwidget.c \
   tablewidget.c \
   textwidget.c \
   ui.c \

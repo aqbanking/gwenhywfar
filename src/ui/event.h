@@ -78,7 +78,10 @@ typedef enum {
   GWEN_EventType_Clear,
   GWEN_EventType_Highlight,
   GWEN_EventType_ContentChg,
-  GWEN_EventType_Command
+  GWEN_EventType_Command,
+  GWEN_EventType_Close,
+  GWEN_EventType_Closed,
+  GWEN_EventType_LastClosed
 } GWEN_EVENT_TYPE;
 
 
@@ -135,6 +138,17 @@ GWEN_EVENT *GWEN_EventUpdate_new();
 
 
 GWEN_EVENT *GWEN_EventRefresh_new();
+
+
+GWEN_EVENT *GWEN_EventClose_new();
+
+GWEN_EVENT *GWEN_EventClosed_new();
+
+
+GWEN_EVENT *GWEN_EventLastClosed_new();
+
+
+GWEN_EVENT *GWEN_EventLastClosed_new();
 
 
 GWEN_EVENT *GWEN_EventKey_new(int key);

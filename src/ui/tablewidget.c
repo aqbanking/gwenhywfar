@@ -179,7 +179,6 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
 
       lh=GWEN_TextWidget_LineOpen(tw, wy, 1);
       if (!lh) {
-        DBG_INFO(0, "Could not update table entry");
         return;
       }
 
@@ -191,7 +190,9 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
       else
         len=p-lastStart;
       GWEN_TextWidget_LineWriteText(tw, lh, lastStart, len);
-      GWEN_TextWidget_LineRedraw(tw, lh);
+      if (!(GWEN_Widget_GetFlags(tf->parent->parent) &
+            GWEN_TABLEWIDGET_FLAGS_COLBORDER))
+        GWEN_TextWidget_LineRedraw(tw, lh);
       GWEN_TextWidget_LineClose(tw, lh, 0);
 
       y++;
@@ -411,6 +412,7 @@ GWEN_WIDGET *GWEN_TableWidget_new(GWEN_WIDGET *parent,
   w=GWEN_TextWidget_new(parent,
                         flags & ~GWEN_WIDGET_FLAGS_WINDOWFLAGS,
                         name, 0, x, y, width, height);
+  GWEN_Widget_SetTypeName(w, "TableWidget");
 
   GWEN_NEW_OBJECT(GWEN_TABLEWIDGET, win);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_TABLEWIDGET, w, win,
@@ -520,6 +522,7 @@ void GWEN_TableWidget_SetText(GWEN_WIDGET *w,
 
   tf=GWEN_TableWidget_LocateField(w, x, y, 1);
   assert(tf);
+
   GWEN_TableField_SetText(tf, text);
 
   nh=GWEN_TableField_Calculate_Height(tf, tf->width);

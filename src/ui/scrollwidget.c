@@ -30,7 +30,7 @@
 #endif
 
 
-#include "window_p.h"
+#include "scrollwidget_p.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
 #include "hslider.h"
@@ -40,30 +40,29 @@
 #include <ncurses.h> // for beep, DEBUG
 
 
-GWEN_INHERIT(GWEN_WIDGET, GWEN_WINDOW)
+GWEN_INHERIT(GWEN_WIDGET, GWEN_SCROLLWIN)
 
 
 
-GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
-                             GWEN_TYPE_UINT32 flags,
-                             const char *name,
-                             const char *title,
-                             int x, int y, int width, int height){
+GWEN_WIDGET *GWEN_ScrollWidget_new(GWEN_WIDGET *parent,
+                                   GWEN_TYPE_UINT32 flags,
+                                   const char *name,
+                                   int x, int y, int width, int height){
   GWEN_WIDGET *w;
-  GWEN_WINDOW *win;
+  GWEN_SCROLLWIN *win;
   int xoffs, yoffs, woffs, hoffs;
 
   w=GWEN_Widget_new(parent,
                     flags & ~GWEN_WIDGET_FLAGS_WINDOWFLAGS,
                     name, 0, x, y, width, height);
-  GWEN_Widget_SetTypeName(w, "Window");
-  GWEN_NEW_OBJECT(GWEN_WINDOW, win);
-  GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_WINDOW, w, win,
-                       GWEN_Window_freeData);
+  GWEN_Widget_SetTypeName(w, "ScrollWidget");
+  GWEN_NEW_OBJECT(GWEN_SCROLLWIN, win);
+  GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_SCROLLWIN, w, win,
+                       GWEN_ScrollWidget_freeData);
 
   win->previousHandler=GWEN_Widget_GetEventHandler(w);
   assert(win->previousHandler);
-  GWEN_Widget_SetEventHandler(w, GWEN_Window_EventHandler);
+  GWEN_Widget_SetEventHandler(w, GWEN_ScrollWidget_EventHandler);
 
   width=GWEN_Widget_GetWidth(w);
   height=GWEN_Widget_GetHeight(w);
@@ -78,19 +77,8 @@ GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
     woffs+=2;
     hoffs+=2;
   }
-  if (flags & GWEN_WINDOW_FLAGS_TITLE) {
-    DBG_NOTICE(0, "Creating title widget");
-    win->wTitle=GWEN_Widget_new(w,
-                                GWEN_WIDGET_FLAGS_HCENTER,
-                                "Title", title,
-                                xoffs, yoffs,
-                                width-woffs, 1);
-    GWEN_Widget_SetColour(win->wTitle, GWEN_WidgetColour_Title);
-    yoffs++;
-    hoffs++;
-  }
 
-  if (flags & GWEN_WINDOW_FLAGS_HSLIDER) {
+  if (flags & GWEN_SCROLLWIN_FLAGS_HSLIDER) {
     DBG_NOTICE(0, "Creating horizontal slider");
     win->wHslider=GWEN_HSlider_new(w,
                                    GWEN_WIDGET_FLAGS_DEFAULT |
@@ -104,7 +92,7 @@ GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
     GWEN_Widget_SetColour(win->wHslider, GWEN_WidgetColour_Button);
   }
 
-  if (flags & GWEN_WINDOW_FLAGS_VSLIDER) {
+  if (flags & GWEN_SCROLLWIN_FLAGS_VSLIDER) {
     DBG_NOTICE(0, "Creating vertical slider");
     win->wVslider=GWEN_VSlider_new(w,
                                    GWEN_WIDGET_FLAGS_DEFAULT |
@@ -127,20 +115,20 @@ GWEN_WIDGET *GWEN_Window_new(GWEN_WIDGET *parent,
 
 
 
-void GWEN_Window_freeData(void *bp, void *p) {
-  GWEN_WINDOW *win;
+void GWEN_ScrollWidget_freeData(void *bp, void *p) {
+  GWEN_SCROLLWIN *win;
 
-  win=(GWEN_WINDOW*)p;
+  win=(GWEN_SCROLLWIN*)p;
   GWEN_FREE_OBJECT(win);
 }
 
 
 
-GWEN_WIDGET *GWEN_Window_GetViewPort(GWEN_WIDGET *w){
-  GWEN_WINDOW *win;
+GWEN_WIDGET *GWEN_ScrollWidget_GetViewPort(GWEN_WIDGET *w){
+  GWEN_SCROLLWIN *win;
 
   assert(w);
-  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_WINDOW, w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_SCROLLWIN, w);
   assert(win);
 
   return win->wView;
@@ -148,12 +136,12 @@ GWEN_WIDGET *GWEN_Window_GetViewPort(GWEN_WIDGET *w){
 
 
 
-GWEN_UI_RESULT GWEN_Window_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
-  GWEN_WINDOW *win;
+GWEN_UI_RESULT GWEN_ScrollWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
+  GWEN_SCROLLWIN *win;
   GWEN_WIDGET *wSender;
 
   assert(w);
-  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_WINDOW, w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_SCROLLWIN, w);
   assert(win);
   assert(e);
 
@@ -191,7 +179,9 @@ GWEN_UI_RESULT GWEN_Window_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
 
       case GWEN_EventType_ContentChg: {
         int cw, ch;
+        GWEN_WIDGET *wSender;
 
+        wSender=GWEN_Event_GetSender(e);
         cw=GWEN_EventContentChg_GetContentWidth(e);
         ch=GWEN_EventContentChg_GetContentHeight(e);
         if (win->wHslider)

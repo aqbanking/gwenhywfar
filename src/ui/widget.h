@@ -76,6 +76,7 @@ typedef enum {
 #define GWEN_WIDGET_STATE_SELECTED  0x00000002
 #define GWEN_WIDGET_STATE_ACTIVE    0x00000004
 #define GWEN_WIDGET_STATE_HIGHLIGHT 0x00000008
+#define GWEN_WIDGET_STATE_CLOSED    0x00000010
 
 
 #define GWEN_WIDGET_ATT_ESC_CHAR  0xff
@@ -99,6 +100,9 @@ typedef enum {
 #define GWEN_WIDGET_CHAR_BLOCK    0x0b
 
 
+#define GWEN_WIDGET_CMD_CLOSE     0x80000001
+#define GWEN_WIDGET_CMD_QUIT      0x80000002
+
 
 typedef GWEN_UI_RESULT (*GWEN_WIDGET_EVENTHANDLER_FN)(GWEN_WIDGET *w,
                                                       GWEN_EVENT *e);
@@ -113,9 +117,6 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_WIDGET *parent,
 void GWEN_Widget_free(GWEN_WIDGET *w);
 void GWEN_Widget_Attach(GWEN_WIDGET *w);
 
-
-const char *GWEN_Widget_GetName(const GWEN_WIDGET *w);
-GWEN_TYPE_UINT32 GWEN_Widget_GetId(const GWEN_WIDGET *w);
 
 GWEN_WIDGET *GWEN_Widget_GetParent(const GWEN_WIDGET *w);
 GWEN_WIDGET *GWEN_Widget_GetFirstChild(const GWEN_WIDGET *w);
@@ -169,13 +170,25 @@ int GWEN_Widget_Highlight(GWEN_WIDGET *w, int x, int y, int len,
 int GWEN_Widget_ContentChange(GWEN_WIDGET *w,
                               int contentWidth,
                               int contentHeight);
+int GWEN_Widget_Close(GWEN_WIDGET *w);
 
 
 int GWEN_Widget_IsChildOf(GWEN_WIDGET *wchild, GWEN_WIDGET *w);
 int GWEN_Widget_IsAncestorOf(GWEN_WIDGET *wc, GWEN_WIDGET *w);
 
 
+
+/** @name Debugging
+ *
+ */
+/*@{*/
+const char *GWEN_Widget_GetName(const GWEN_WIDGET *w);
+GWEN_TYPE_UINT32 GWEN_Widget_GetId(const GWEN_WIDGET *w);
+void GWEN_Widget_SetTypeName(GWEN_WIDGET *w, const char *s);
+const char *GWEN_Widget_GetTypeName(const GWEN_WIDGET *w);
+
 void GWEN_Widget_Dump(GWEN_WIDGET *w, int indent);
+/*@}*/
 
 
 #endif

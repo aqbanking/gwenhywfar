@@ -55,6 +55,7 @@ GWEN_WIDGET *GWEN_HSlider_new(GWEN_WIDGET *parent,
                     y,
                     width,
                     1);
+  GWEN_Widget_SetTypeName(w, "HSlider");
   GWEN_NEW_OBJECT(GWEN_HSLIDER, win);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_HSLIDER, w, win,
                        GWEN_HSlider_freeData);
@@ -123,13 +124,13 @@ int GWEN_HSlider_Draw(GWEN_WIDGET *w) {
   if (win->slength) {
     GWEN_BUFFER *mbuf;
     unsigned int i;
-    char cbuf[7];
 
-    snprintf(cbuf, sizeof(cbuf), "%%fe%%%02x", GWEN_WIDGET_CHAR_BLOCK);
     mbuf=GWEN_Buffer_new(0, GWEN_Widget_GetWidth(w), 0, 1);
     GWEN_Widget_Clear(w, 0, 0, GWEN_EventClearMode_ToEOL);
-    for (i=0; i<win->slength; i++)
-      GWEN_Buffer_AppendString(mbuf, cbuf);
+    for (i=0; i<win->slength; i++) {
+      GWEN_Buffer_AppendByte(mbuf, GWEN_WIDGET_CHAR_ESC_CHAR);
+      GWEN_Buffer_AppendByte(mbuf, GWEN_WIDGET_CHAR_BLOCK);
+    }
 
     GWEN_Widget_WriteAt(w,
                         win->spos, 0,
@@ -192,7 +193,6 @@ GWEN_UI_RESULT GWEN_HSlider_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     }
     break;
     if (col==0) {
-      beep();
       DBG_NOTICE(0, "Setting default colour");
       GWEN_Widget_SetColour(w, GWEN_WidgetColour_Button);
     }

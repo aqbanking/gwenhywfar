@@ -55,6 +55,7 @@ GWEN_WIDGET *GWEN_VSlider_new(GWEN_WIDGET *parent,
 		    y,
 		    1,
 		    height);
+  GWEN_Widget_SetTypeName(w, "VSlider");
   GWEN_NEW_OBJECT(GWEN_VSLIDER, win);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, GWEN_VSLIDER, w, win,
                        GWEN_VSlider_freeData);
@@ -126,9 +127,10 @@ int GWEN_VSlider_Draw(GWEN_WIDGET *w) {
     int i;
     int j;
     int k;
-    char cbuf[7];
-
-    snprintf(cbuf, sizeof(cbuf), "%%fe%%%02x", GWEN_WIDGET_CHAR_BLOCK);
+    static const char cbuf[3]={
+      GWEN_WIDGET_CHAR_ESC_CHAR,
+      GWEN_WIDGET_CHAR_BLOCK
+    };
 
     k=GWEN_Widget_GetHeight(w);
     j=win->spos+win->slength;
@@ -139,7 +141,7 @@ int GWEN_VSlider_Draw(GWEN_WIDGET *w) {
       }
       else {
         GWEN_Widget_WriteAt(w,
-                            0, i, cbuf, 1);
+                            0, i, cbuf, 2);
       }
     }
   }

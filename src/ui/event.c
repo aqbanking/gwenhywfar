@@ -70,8 +70,9 @@ void GWEN_Event_SetSender(GWEN_EVENT *e, GWEN_WIDGET *w){
   assert(e);
   GWEN_Widget_free(e->sender);
   e->sender=w;
-  if (w)
+  if (w) {
     GWEN_Widget_Attach(e->sender);
+  }
 }
 
 
@@ -226,8 +227,10 @@ GWEN_EVENT *GWEN_EventWriteAt_new(int x, int y,
     et->len=strlen(text);
   else
     et->len=len;
-  if (text)
-    et->text=strdup(text);
+  if (text) {
+    et->text=(char*)malloc(len);
+    memmove(et->text, text, len);
+  }
 
   GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_WRITEAT,
                        e, et,
@@ -934,6 +937,32 @@ GWEN_TYPE_UINT32 GWEN_EventCommand_GetCommandId(const GWEN_EVENT *e){
 
   return et->commandId;
 }
+
+
+
+
+GWEN_EVENT *GWEN_EventClose_new(){
+  return GWEN_Event_new(GWEN_EventType_Close);
+}
+
+
+
+
+GWEN_EVENT *GWEN_EventClosed_new(){
+  return GWEN_Event_new(GWEN_EventType_Closed);
+}
+
+
+
+GWEN_EVENT *GWEN_EventLastClosed_new(){
+  return GWEN_Event_new(GWEN_EventType_LastClosed);
+}
+
+
+
+
+
+
 
 
 

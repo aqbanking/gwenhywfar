@@ -125,6 +125,7 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
   case GWEN_EventType_Draw:
   case GWEN_EventType_Update:
   case GWEN_EventType_Refresh:
+  case GWEN_EventType_ContentChg:
     delSameEvents=1;
     break;
   case GWEN_EventType_Destroy:
@@ -134,7 +135,8 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
     break;
   }
 
-  if (delSameEvents && (withPriority || GWEN_UI__ui->currentEvent)) {
+  if (delSameEvents && (withPriority || GWEN_UI__ui->currentEvent) &&
+      t!=GWEN_EventType_ContentChg) {
     GWEN_EVENT *le;
 
     /* do not add event if it already exists */
@@ -198,7 +200,8 @@ int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
     GWEN_Event_SetSender(e, wSender);
   GWEN_Event_SetRecipient(e, wRecipient);
 
-  if (withPriority || GWEN_UI__ui->currentEvent) {
+  if ((withPriority || GWEN_UI__ui->currentEvent) &&
+      t!=GWEN_EventType_ContentChg) {
     DBG_NOTICE(0, "Adding as new event");
     GWEN_Event_List_Add(e, GWEN_UI__ui->newEvents);
   }

@@ -25,61 +25,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_UI_WIDGET_P_H
-#define GWEN_UI_WIDGET_P_H
+#ifndef GWEN_UI_SCROLLWIN_H
+#define GWEN_UI_SCROLLWIN_H
+
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/widget.h>
 
 
-#include "widget_l.h"
-#include <panel.h>
-#include <ncurses.h>
+#define GWEN_SCROLLWIN_FLAGS_TITLE   0x00010000
+#define GWEN_SCROLLWIN_FLAGS_HSLIDER 0x00020000
+#define GWEN_SCROLLWIN_FLAGS_VSLIDER 0x00040000
 
 
-
-struct GWEN_WIDGET {
-  /* data administration */
-  GWEN_LIST_ELEMENT(GWEN_WIDGET)
-  GWEN_INHERIT_ELEMENT(GWEN_WIDGET)
-
-  char *name;
-  char *typeName;
-
-  GWEN_TYPE_UINT32 id;
-  GWEN_WIDGET_LIST *children;
-  GWEN_WIDGET *parent;
-  GWEN_TYPE_UINT32 usage;
-
-  /* window data */
-  int x;
-  int y;
-  int width;
-  int height;
-  GWEN_WIDGET_COLOUR colour;
-  GWEN_WIDGET_COLOUR normalColour;
-
-  int cursorX;
-  int cursorY;
-
-  /* content data */
-  char *text;
-
-  GWEN_TYPE_UINT32 flags;
-  GWEN_TYPE_UINT32 state;
-  GWEN_WIDGET_EVENTHANDLER_FN eventHandler;
-
-  /* ncurses data */
-  WINDOW *window;
-  PANEL *panel;
-
-};
+GWEN_WIDGET *GWEN_ScrollWidget_new(GWEN_WIDGET *parent,
+                                   GWEN_TYPE_UINT32 flags,
+                                   const char *name,
+                                   int x, int y, int width, int height);
 
 
-GWEN_EVENT *GWEN_Widget_PeekNextEvent(GWEN_WIDGET *w);
-GWEN_EVENT *GWEN_Widget_GetNextEvent(GWEN_WIDGET *w);
-GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
-                                        GWEN_EVENT *e);
-
+GWEN_WIDGET *GWEN_ScrollWidget_GetViewPort(GWEN_WIDGET *w);
 
 
 #endif
+
+
+
 
 
