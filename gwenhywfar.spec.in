@@ -36,8 +36,8 @@ Prereq: /sbin/ldconfig
 %description
 This is Gwenhywfar, a multi-platform helper library for networking and
 security applications and libraries. It is heavily used by libchipcard
-www.libchipcard.de and OpenHBCI-TNG (The Next Generation)
-www.openhbci.de.
+www.libchipcard.de and AqBanking/AqHBCI, the German online banking 
+libraries.
 
 %package devel
 Summary: Gwenhywfar development kit
