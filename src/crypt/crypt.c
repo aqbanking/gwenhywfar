@@ -328,11 +328,115 @@ GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
 
 
 
+GWEN_ERRORCODE GWEN_CryptKey_SetData(GWEN_CRYPTKEY *key,
+                                     const char *buffer,
+                                     unsigned int bsize) {
+  GWEN_DB_NODE *n;
+  GWEN_ERRORCODE err;
+
+  assert(key);
+  assert(buffer);
+  assert(bsize);
+  n=GWEN_DB_Group_new("data");
+  GWEN_DB_SetBinValue(n,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "keydata",
+                      buffer, bsize);
+  assert(key->fromDbFn);
+  err=key->fromDbFn(key, n);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_DB_Group_free(n);
+    return err;
+  }
+  GWEN_DB_Group_free(n);
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_CryptKey_GetData(GWEN_CRYPTKEY *key,
+                                     char *buffer,
+                                     unsigned int *bsize) {
+  GWEN_DB_NODE *n;
+  GWEN_ERRORCODE err;
+  const void *p;
+  unsigned int size;
+
+  assert(key);
+  assert(buffer);
+  assert(*bsize);
+  assert(key->toDbFn);
+  n=GWEN_DB_Group_new("data");
+  err=key->toDbFn(key, n, 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO_ERR(0, err);
+    GWEN_DB_Group_free(n);
+    return err;
+  }
+
+  p=GWEN_DB_GetBinValue(n, "keydata", 0, 0, 0, &size);
+  if (!p) {
+    DBG_INFO(0, "No key data");
+    GWEN_DB_Group_free(n);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_BAD_SIZE);
+  }
+  if (size>*bsize) {
+    DBG_INFO(0, "Buffer too small");
+    GWEN_DB_Group_free(n);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_BAD_SIZE);
+  }
+
+  memmove(buffer, p, size);
+  *bsize=size;
+  GWEN_DB_Group_free(n);
+  return 0;
+}
+
+
+
 GWEN_ERRORCODE GWEN_CryptKey_Generate(GWEN_CRYPTKEY *key,
                                       unsigned keylength){
   assert(key);
   assert(key->generateKeyFn);
   return key->generateKeyFn(key, keylength);
+}
+
+
+
+int GWEN_CryptKey_FromPassword(const char *password,
+                               unsigned char *buffer,
+                               unsigned int bsize){
+  const char *algo;
+  unsigned int nsize;
+
+  switch (bsize) {
+  case 16: algo="MD5"; break;
+  case 20: algo="RMD160"; break;
+  default:
+    DBG_ERROR(0, "Bad size (%d)", bsize);
+    return -1;
+  } /* switch */
+
+  nsize=bsize;
+  if (GWEN_Md_Hash(algo,
+                   password,
+                   strlen(password),
+                   buffer,
+                   &nsize)) {
+    DBG_INFO(0, "here");
+    return -1;
+  }
+
+  assert(nsize==bsize);
+  return 0;
 }
 
 

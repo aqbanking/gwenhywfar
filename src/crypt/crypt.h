@@ -190,6 +190,36 @@ GWENHYWFAR_API
                                     GWEN_DB_NODE *db,
                                     int pub);
 
+/**
+ * This is a conveniance function.
+ * Sets the key data. This can be used by the application for keys which
+ * use the variable "keydata" when calling @ref GWEN_CryptKey_FromDb (such
+ * as most symmetric keys).
+ */
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_CryptKey_SetData(GWEN_CRYPTKEY *key,
+                                       const char *buffer,
+                                       unsigned int bsize);
+
+/**
+ * Creates a password from a given string. Depending on the size needed
+ * a hash-algorithm is applied to the given password.
+ */
+int GWEN_CryptKey_FromPassword(const char *password,
+                               unsigned char *buffer,
+                               unsigned int bsize);
+
+/**
+ * This is a conveniance function.
+ * Gets the key data. This can be used by the application for keys which
+ * use the variable "keydata" when calling @ref GWEN_CryptKey_ToDb (such
+ * as most symmetric keys).
+ */
+GWEN_ERRORCODE GWEN_CryptKey_GetData(GWEN_CRYPTKEY *key,
+                                     char *buffer,
+                                     unsigned int *bsize);
+
+
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_Generate(GWEN_CRYPTKEY *key,
                                         unsigned int keylength);

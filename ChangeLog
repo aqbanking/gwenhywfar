@@ -8,6 +8,7 @@ $Id$
   "GWEN_EXTEND_CRYPTKEY" is defined. This prevents an application from
   carelessly using these functions.
 - added a conveniance function for hashing
+- added a function that creates keydata from a password by hashing it
 
 
 ===========================================================================
