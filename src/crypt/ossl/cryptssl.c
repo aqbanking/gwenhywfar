@@ -42,6 +42,7 @@
 
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <openssl/des.h>
 
 
 
@@ -111,6 +112,40 @@ void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent) {
 int GWEN_Crypt_IsAvailable() {
   return 1;
 }
+
+
+
+int GWEN_CryptKey_FromPasswordSSL(const char *password,
+                                  unsigned char *buffer,
+                                  unsigned int bsize){
+  des_cblock left, right;
+  int i;
+
+  if (i!=16) {
+    DBG_ERROR(0, "Buffer must be exact 16 bytes in length");
+    return -1;
+  }
+  des_string_to_2keys(password, &left, &right);
+  for (i=0; i<8; i++)
+    *(buffer++)=left[i];
+  for (i=0; i<8; i++)
+    *(buffer++)=right[i];
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -10,6 +10,11 @@
   -> SO_VERSION incremented, SO_AGE=0 (makes it effectively .so.16)
 - install an XML file for the CSV plugin
 - added TVL handling code to parser module
+- crypt: added a function which allows creating key data from a password using
+  the SSL method. However, this is only to be used for old, existing code and
+  data. New code is required to use the other function 
+  (GWEN_CryptKey_FromPassword()). This allows removing OpenSSL dependencies
+  from other projects (like AqHBCI's OpenHBCI medium plugin)
 
 
 2004/08/05: Martin Preuss<martin@libchipcard.de>

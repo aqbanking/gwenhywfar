@@ -145,12 +145,25 @@ int GWEN_NetTransportSSL_IsSecure(const GWEN_NETTRANSPORT *tr){
 
 
 int GWEN_NetTransportSSL_IsOfType(GWEN_NETTRANSPORT *tr) {
+  DBG_ERROR(0, "Crypto functions not supported");
   return 0;
 }
 
 
 
 
+int GWEN_CryptKey_FromPasswordSSL(const char *password,
+                                  unsigned char *buffer,
+                                  unsigned int bsize){
+  if (i!=16) {
+    DBG_ERROR(0,
+              "Buffer must be exact 16 bytes in length.\n"
+              "But this function is not supported, anyway (no OpenSSL)");
+    return -1;
+  }
+  DBG_ERROR(0, "Crypto functions not supported");
+  return -1;
+}
 
 
 

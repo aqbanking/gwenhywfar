@@ -86,35 +86,35 @@ typedef struct GWEN_CRYPTKEY GWEN_CRYPTKEY;
 typedef GWEN_CRYPTKEY* (*GWEN_CRYPTKEY_DUP_FN)(const GWEN_CRYPTKEY *key);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_ENCRYPT_FN)(const GWEN_CRYPTKEY *key,
-						     GWEN_BUFFER *src,
-						     GWEN_BUFFER *dst);
+                                                   GWEN_BUFFER *src,
+                                                   GWEN_BUFFER *dst);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_DECRYPT_FN)(const GWEN_CRYPTKEY *key,
-						     GWEN_BUFFER *src,
-						     GWEN_BUFFER *dst);
+                                                   GWEN_BUFFER *src,
+                                                   GWEN_BUFFER *dst);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_SIGN_FN)(const GWEN_CRYPTKEY *key,
-						  GWEN_BUFFER *src,
-						  GWEN_BUFFER *dst);
+                                                GWEN_BUFFER *src,
+                                                GWEN_BUFFER *dst);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_VERIFY_FN)(const GWEN_CRYPTKEY *key,
-						    GWEN_BUFFER *src,
-						    GWEN_BUFFER *dst);
+                                                  GWEN_BUFFER *src,
+                                                  GWEN_BUFFER *dst);
 
 typedef unsigned int
-  (*GWEN_CRYPTKEY_GETCHUNKSIZE_FN)(const GWEN_CRYPTKEY *key);
+    (*GWEN_CRYPTKEY_GETCHUNKSIZE_FN)(const GWEN_CRYPTKEY *key);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_FROMDB_FN)(GWEN_CRYPTKEY *key,
-						    GWEN_DB_NODE *db);
+                                                  GWEN_DB_NODE *db);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_TODB_FN)(const GWEN_CRYPTKEY *key,
-						  GWEN_DB_NODE *db,
-						  int pub);
+                                                GWEN_DB_NODE *db,
+                                                int pub);
 
 typedef void (*GWEN_CRYPTKEY_FREEKEYDATA_FN)(GWEN_CRYPTKEY *key);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_GENERATEKEY_FN)(GWEN_CRYPTKEY *key,
-							 unsigned keylength);
+                                                       unsigned keylength);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_OPEN_FN)(GWEN_CRYPTKEY *key);
 
@@ -193,6 +193,21 @@ GWENHYWFAR_API
 int GWEN_CryptKey_FromPassword(const char *password,
 			       unsigned char *buffer,
 			       unsigned int bsize);
+
+/**
+ * <p>
+ * Creates a password from a given string using the method of SSL.
+ * This allows removing direct OpenSSL dependendcies from other projects.
+ * </p>
+ * <p>
+ * @b Note: This function is not recommended ! It is only supported for
+ * existing code. New code MUST use @ref GWEN_CryptKey_FromPassword since that
+ * function uses very well documented algorithms to create key data.
+ * </p>
+ */
+int GWEN_CryptKey_FromPasswordSSL(const char *password,
+                                  unsigned char *buffer,
+                                  unsigned int bsize);
 
 /**
  * This is a conveniance function.
