@@ -417,8 +417,9 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
           st==GWEN_NetTransportStatusPDisconnected ||
           st==GWEN_NetTransportStatusDisabled ||
           st==GWEN_NetTransportStatusListening) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Connection is down");
-        return -1;
+	DBG_ERROR(GWEN_LOGDOMAIN, "Connection is down (%s)",
+		  GWEN_NetTransport_StatusName(st));
+	return -1;
       }
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
