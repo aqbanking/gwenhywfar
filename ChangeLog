@@ -1,8 +1,16 @@
+$Id$
+
+
+
+2003/10/19 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- minor fixes
+
+
 2003-10-18  Christian Stimming  <stimming@tuhh.de>
 
 	* Makefile.cvs: Add calling libtoolize.
 
-$Id$
 
 2003/10/18 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
