@@ -105,6 +105,5 @@ quick: config.h
 	make -C src/os/$(GWEN_OS) system.h
 	make
 
-CLEANFILES = gwennet-config 
-DISTCLEANFILES = gwennet-config.in
-
+CLEANFILES = gwenhywfar-config
+DISTCLEANFILES = gwenhywfar-config.in
