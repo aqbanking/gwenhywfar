@@ -90,6 +90,6 @@ win32:
 	mkdir -p distribution/win32-bin && \
 	 cp -r src/gwenhywfar32.dll distribution/win32-bin/ && \
 	 strip distribution/win32-bin/*.dll && \
-	 cd distribution && tar pczvf gwenhywfar-@rpm_version@-win32-bin.tgz -r win32-bin && \
+	 cd distribution && tar pczvf gwenhywfar-@rpm_version@-win32-bin.tgz win32-bin && \
 	 rm -Rf win32-bin
 
