@@ -1,4 +1,10 @@
 
+2004/06/28: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- configure.ac: fixed a bug (the headers from src/parser where not
+  symlinked)
+
+
 2004/06/27: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - ui: 
