@@ -143,7 +143,9 @@ void GWEN_MsgEngine_SetProtocolVersion(GWEN_MSGENGINE *e,
 
 
 GWEN_XMLNODE *GWEN_MsgEngine_GetDefinitions(GWEN_MSGENGINE *e);
-void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e, GWEN_XMLNODE *n);
+void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e,
+                                   GWEN_XMLNODE *n,
+                                   int take);
 
 int GWEN_MsgEngine_AddDefinitions(GWEN_MSGENGINE *e,
                                   GWEN_XMLNODE *node);

@@ -60,7 +60,8 @@ GWEN_MSGENGINE *GWEN_MsgEngine_new(){
 
 void GWEN_MsgEngine_free(GWEN_MSGENGINE *e){
   if (e) {
-    GWEN_XMLNode_free(e->defs);
+    if (e->ownDefs)
+      GWEN_XMLNode_free(e->defs);
     free(e->charsToEscape);
     free(e->delimiters);
     free(e->secMode);
@@ -149,10 +150,14 @@ GWEN_XMLNODE *GWEN_MsgEngine_GetDefinitions(GWEN_MSGENGINE *e){
 }
 
 
-void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e, GWEN_XMLNODE *n){
+void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e,
+                                   GWEN_XMLNODE *n,
+                                   int take){
   assert(e);
-  GWEN_XMLNode_free(e->defs);
+  if (e->ownDefs)
+    GWEN_XMLNode_free(e->defs);
   e->defs=n;
+  e->ownDefs=take;
 }
 
 
@@ -1489,6 +1494,7 @@ int GWEN_MsgEngine_AddDefinitions(GWEN_MSGENGINE *e,
 
   if (!e->defs) {
     e->defs=GWEN_XMLNode_dup(node);
+    e->ownDefs=1;
     return 0;
   }
 

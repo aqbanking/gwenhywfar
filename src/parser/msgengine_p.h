@@ -47,6 +47,7 @@
 
 struct GWEN__MSGENGINE {
   GWEN_XMLNODE *defs;
+  int ownDefs;
   char escapeChar;
   char *charsToEscape;
   char *delimiters;

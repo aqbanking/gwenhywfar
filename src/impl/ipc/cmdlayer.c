@@ -1293,7 +1293,7 @@ GWEN_ERRORCODE GWEN_IPCServiceCmd_Init(GWEN_IPCSERVICECMD *s,
   }
 
   s->msgEngine=GWEN_MsgEngine_new();
-  GWEN_MsgEngine_SetDefinitions(s->msgEngine, n);
+  GWEN_MsgEngine_SetDefinitions(s->msgEngine, n, 1);
 
   s->serviceLayer=GWEN_ServiceLayer_new();
   return 0;

@@ -159,7 +159,7 @@ int testMsg(int argc, char **argv) {
     return 1;
   }
 
-  GWEN_MsgEngine_SetDefinitions(e, n);
+  GWEN_MsgEngine_SetDefinitions(e, n, 1);
   sn=GWEN_MsgEngine_FindNodeByProperty(e,
                                        "SEG",
                                        "code",
@@ -233,7 +233,7 @@ int testListMsg(int argc, char **argv) {
     return 1;
   }
 
-  GWEN_MsgEngine_SetDefinitions(e, n);
+  GWEN_MsgEngine_SetDefinitions(e, n, 1);
 
   sn=GWEN_MsgEngine_ListMessage(e,
                                 "SEG",
