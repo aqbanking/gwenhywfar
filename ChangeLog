@@ -26,6 +26,9 @@
 - renamed DLL to gwenhywfar32_EFFECTIVE_SO_VERSION to imitate the very
   useful SO features of the GNU linker on windows
 - started working on a NetTransport module for SSL connections
+- removed sslconnection, it is now replaced by nettransportssl.
+  This now fits into the network framework. As soon as this is better
+  tested I will be able to release Gwenhywfar 1.0.
 
 
 2004/05/04: Martin Preuss<martin@libchipcard.de>

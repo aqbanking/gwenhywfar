@@ -10,7 +10,6 @@ iheader_HEADERS=\
  keyspec.h \
  md.h \
  padd.h \
- sslconnection.h \
  nettransportssl.h
 
 noinst_HEADERS=\

@@ -120,6 +120,7 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
   int distance;
   int count;
   GWEN_NETCONNECTION_WORKRESULT rv;
+  int lastHadNoWaitFlags;
 
   startt=time(0);
   assert(conn);
@@ -146,8 +147,8 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
   }
 
   GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  lastHadNoWaitFlags=0;
   for (count=0;;) {
-
     /* actually try to read */
     rv=GWEN_NetConnection_Read(conn, buffer, bsize);
     if (rv==0) {
@@ -163,6 +164,10 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
       *bsize=0;
       break;
     }
+
+    /* check whether we should abort */
+    if (lastHadNoWaitFlags)
+      break;
 
     /* let the connection work */
     rv=GWEN_NetConnection_Work(conn);
@@ -194,7 +199,9 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
           conn->lastResult==GWEN_NetTransportResultWantWrite)
         waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
-        DBG_WARN(0, "Nothing to wait on, should not happen");
+        DBG_WARN(0, "Nothing to wait on");
+        lastHadNoWaitFlags=1;
+        break;
       }
 
       /* wait */
@@ -262,6 +269,7 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
   int distance;
   int count;
   GWEN_NETCONNECTION_WORKRESULT rv;
+  int lastHadNoWaitFlags;
 
   startt=time(0);
   assert(conn);
@@ -280,6 +288,7 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
   }
 
   GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  lastHadNoWaitFlags=0;
   for (count=0;;) {
 
     /* actually try to write */
@@ -289,6 +298,10 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
       DBG_VERBOUS(0, "I have written %d bytes", *bsize);
       break;
     }
+
+    /* check whether we should abort */
+    if (lastHadNoWaitFlags)
+      break;
 
     /* let the connection work */
     rv=GWEN_NetConnection_Work(conn);
@@ -316,7 +329,9 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
           conn->lastResult==GWEN_NetTransportResultWantWrite)
         waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
-        DBG_WARN(0, "Nothing to wait on, should not happen");
+        DBG_WARN(0, "Nothing to wait on");
+        lastHadNoWaitFlags=1;
+        break;
       }
 
       /* wait */
@@ -741,7 +756,7 @@ int GWEN_NetConnection_Wait(GWEN_NETCONNECTION *conn, int timeout,
     GWEN_SocketSet_free(rset);
     GWEN_SocketSet_free(wset);
     DBG_INFO(0, "No socket");
-    return -1;
+    return -1; /* TODO: return 0 ? */
   }
   else {
     GWEN_ERRORCODE err;

@@ -337,7 +337,7 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
     }
   }
 
-  DBG_DEBUG(0, "Read %d bytes", rv);
+  DBG_NOTICE(0, "Read %d bytes", rv);
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
@@ -397,7 +397,7 @@ GWEN_NetTransportSSL_Write(GWEN_NETTRANSPORT *tr,
     return GWEN_NetTransportResultError;
   }
 
-  DBG_DEBUG(0, "Written %d bytes", rv);
+  DBG_NOTICE(0, "Written %d bytes", rv);
   *bsize=rv;
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
@@ -470,18 +470,19 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     DBG_INFO(0, "Physical connection established");
     GWEN_NetTransport_MarkActivity(tr);
     return GWEN_NetTransportWorkResult_Change;
-    break;
   }
 
   case GWEN_NetTransportStatusPConnected: {
     /* establish SSL */
     int fd;
 
+    DBG_NOTICE(0, "GWEN_NetTransportStatusPConnected");
     /* get socket handle (I know, it's ugly, but the function below is
      * not exported to the outside) */
     fd=GWEN_Socket_GetSocketInt(skd->socket);
     if (fd==-1) {
       DBG_ERROR(0, "No socket handle, cannot use this socket with SSL");
+      GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       return GWEN_NetTransportWorkResult_Error;
     }
 
@@ -505,6 +506,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       skd->ssl=0;
       SSL_CTX_free(skd->ssl_ctx);
       skd->ssl_ctx=0;
+      GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       return GWEN_NetTransportWorkResult_Error;
     }
 
@@ -533,40 +535,14 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
       skd->ssl=0;
       SSL_CTX_free(skd->ssl_ctx);
       skd->ssl_ctx=0;
+      GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       return GWEN_NetTransportWorkResult_Error;
     }
 
-    /* all setup, try to initiate a connection */
-    if (skd->active) {
-      rv=SSL_connect(skd->ssl);
-      if (rv<1) {
-        int sslerr;
-  
-        sslerr=SSL_get_error(skd->ssl, rv);
-        if (sslerr!=SSL_ERROR_WANT_READ &&
-            sslerr!=SSL_ERROR_WANT_WRITE) {
-          DBG_ERROR(0, "SSL error: %s (%d)",
-                    GWEN_NetTransportSSL_ErrorString(sslerr),
-                    sslerr);
-          GWEN_Socket_Close(skd->socket);
-          SSL_free(skd->ssl);
-          skd->ssl=0;
-          SSL_CTX_free(skd->ssl_ctx);
-          skd->ssl_ctx=0;
-          return GWEN_NetTransportWorkResult_Error;
-        }
-      }
-      else {
-        /* set to "logically connecting" */
-        GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusLConnecting);
-        GWEN_NetTransport_MarkActivity(tr);
-        return GWEN_NetTransportWorkResult_Change;
-      }
-    }
-    else {
-      /* passive */
-    }
-    break;
+    /* set to "logically connecting" */
+    GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusLConnecting);
+    GWEN_NetTransport_MarkActivity(tr);
+    return GWEN_NetTransportWorkResult_Change;
   }
 
   case GWEN_NetTransportStatusLConnecting: {

@@ -19,6 +19,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/sslconnection.h>
 #include <gwenhywfar/nettransportsock.h>
+#include <gwenhywfar/nettransportssl.h>
 #include <gwenhywfar/netconnection.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/args.h>
@@ -760,6 +761,79 @@ int testSocketConnect(int argc, char **argv) {
 
 
 
+int testSocketSSL(int argc, char **argv) {
+  GWEN_NETTRANSPORT *tr;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETCONNECTION *conn;
+  const char *tstr;
+  char buffer[8192];
+  GWEN_TYPE_UINT32 bsize;
+  int rv;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelDebug);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  tr=GWEN_NetTransportSSL_new(sk, 0, "trusted", 0, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
+  GWEN_InetAddr_SetPort(addr, 443);
+  GWEN_NetTransport_SetPeerAddr(tr, addr);
+  GWEN_InetAddr_free(addr);
+
+  /* create connection layer */
+  conn=GWEN_NetConnection_new(tr, 1, 1);
+  GWEN_NetConnection_SetUpFn(conn, connection_Up);
+  GWEN_NetConnection_SetDownFn(conn, connection_Down);
+
+  GWEN_NetConnection_Attach(conn);
+  GWEN_NetConnection_free(conn);
+
+  if (GWEN_NetConnection_Connect_Wait(conn, 30)) {
+    fprintf(stderr, "ERROR: Could not connect\n");
+    GWEN_NetConnection_free(conn);
+    return 2;
+  }
+  fprintf(stderr, "\nConnected.\n");
+
+  tstr="GET /\n";
+  bsize=strlen(tstr);
+  fprintf(stderr, "Writing something to the peer...\n");
+  if (GWEN_NetConnection_Write_Wait(conn, tstr, &bsize, 30)) {
+    fprintf(stderr, "ERROR: Could not write\n");
+    return 2;
+  }
+  if (bsize!=strlen(tstr)) {
+    fprintf(stderr, "ERROR: Could not write all (only %d bytes)\n", bsize);
+    return 2;
+  }
+
+  fprintf(stderr, "Waiting for response...\n");
+  bsize=sizeof(buffer);
+  rv=GWEN_NetConnection_Read_Wait(conn, buffer, &bsize, 30);
+  if (rv==-1) {
+    fprintf(stderr, "ERROR: Could not read\n");
+    return 2;
+  }
+  else if (rv==1) {
+    fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+    return 2;
+  }
+  buffer[bsize]=0;
+  fprintf(stderr, "Response was: \"%s\"\n", buffer);
+
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetConnection_Disconnect_Wait(conn, 30);
+  GWEN_NetConnection_free(conn);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 
 int testProcess(int argc, char **argv) {
 	GWEN_Logger_Open(0, "test", "gwentest.log", GWEN_LoggerTypeFile, 
@@ -932,7 +1006,7 @@ int main(int argc, char **argv) {
     rv=testXML2(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
     rv=testSnprintf(argc, argv);
-  else if (strcasecmp(argv[1], "ssl")==0)
+  else if (strcasecmp(argv[1], "ssl-old")==0)
     rv=testSSL(argc, argv);
   else if (strcasecmp(argv[1], "accept")==0)
     rv=testSocketAccept(argc, argv);
@@ -942,6 +1016,8 @@ int main(int argc, char **argv) {
     rv=testProcess(argc, argv);
   else if (strcasecmp(argv[1], "option")==0)
     rv=testOptions(argc, argv);
+  else if (strcasecmp(argv[1], "ssl")==0)
+    rv=testSocketSSL(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     return 1;
