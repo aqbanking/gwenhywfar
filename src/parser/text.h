@@ -85,14 +85,14 @@ char *GWEN_Text_Unescape(const char *src,
                          char *buffer,
                          unsigned int maxsize);
 
-char *GWEN_Text_ToHex(const char *src, int l, char *buffer, unsigned maxsize);
+char *GWEN_Text_ToHex(const char *src, unsigned l, char *buffer, unsigned maxsize);
 
 /**
  * Converts a string to Hex. After "groupsize" bytes the "delimiter" is
  * inserted.
  */
 char *GWEN_Text_ToHexGrouped(const char *src,
-                             int l,
+                             unsigned l,
                              char *buffer,
                              unsigned maxsize,
                              unsigned int groupsize,
@@ -132,7 +132,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
  * This is used for debugging purposes and it shows the given data as a
  * classical hexdump.
  */
-void GWEN_Text_DumpString(const char *s, int l, FILE *f, int insert);
+void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert);
 
 
 #ifdef __cplusplus

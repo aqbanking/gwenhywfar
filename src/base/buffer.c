@@ -300,7 +300,7 @@ void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
 
 
 
-void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, int insert) {
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert) {
   unsigned int k;
 
   for (k=0; k<insert; k++)

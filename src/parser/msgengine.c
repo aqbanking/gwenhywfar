@@ -604,7 +604,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
     else if (strcasecmp(type, "num")==0) {
       int num;
       int len;
-      int lj;
+      unsigned int lj;
 
       num=atoi(GWEN_Buffer_GetPosPointer(data));
       len=strlen(GWEN_Buffer_GetPosPointer(data));

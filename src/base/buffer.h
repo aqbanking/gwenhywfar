@@ -182,7 +182,7 @@ void GWEN_Buffer_Reset(GWEN_BUFFER *bf);
 void GWEN_Buffer_Rewind(GWEN_BUFFER *bf);
 
 
-void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, int insert);
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert);
 
 
 #ifdef __cplusplus

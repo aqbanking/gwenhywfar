@@ -287,7 +287,7 @@ char *GWEN_Text_Unescape(const char *src,
 }
 
 
-char *GWEN_Text_ToHex(const char *src, int l,
+char *GWEN_Text_ToHex(const char *src, unsigned l,
                       char *buffer, unsigned maxsize) {
   unsigned int pos;
   unsigned int size;
@@ -321,7 +321,7 @@ char *GWEN_Text_ToHex(const char *src, int l,
 
 
 char *GWEN_Text_ToHexGrouped(const char *src,
-                             int l,
+                             unsigned l,
                              char *buffer,
                              unsigned maxsize,
                              unsigned int groupsize,
@@ -581,7 +581,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
 int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
                           int fillchar){
   char lbuffer[128];
-  int i;
+  unsigned int i;
 
   sprintf(lbuffer,"%d", num);
   i=strlen(lbuffer);
@@ -617,7 +617,7 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
 
 
 
-void GWEN_Text_DumpString(const char *s, int l, FILE *f, int insert) {
+void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert) {
   unsigned int i;
   unsigned int j;
   unsigned int pos;
