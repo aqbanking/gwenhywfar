@@ -75,7 +75,7 @@ if test "$enable_gwenhywfar" != "no"; then
       gwenhywfar_libspp="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries++`"
       AC_MSG_RESULT($gwenhywfar_libspp)
       AC_MSG_CHECKING(for gwen UI libs)
-      gwenhywfar_libspp="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries-ui`"
+      gwenhywfar_libsui="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries-ui`"
       AC_MSG_RESULT($gwenhywfar_libsui)
       AC_MSG_CHECKING(for gwen includes)
       gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
