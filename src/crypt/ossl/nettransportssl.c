@@ -41,6 +41,7 @@
 #include <gwenhywfar/directory.h>
 #include "inetsocket_l.h"
 #include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/dbio.h>
 
 #include <openssl/pem.h>
 #include <openssl/err.h>
