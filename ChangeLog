@@ -1,4 +1,8 @@
+2005-02-14   Christian Stimming <stimming@tuhh.de>
 
+	* gwenhywfar.iss.in: Add Pascal scripting program that will adapt
+	the gwenhywfar-config at *installation time* according to the
+	local paths.
 
 2005/02/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
