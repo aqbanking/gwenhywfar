@@ -106,10 +106,27 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
   h->handle=(void*)LoadLibrary(name);
   if (!h->handle) {
     int werr;
+    char *lpMsgBuf; /* from: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/formatmessage.asp */
 
     werr=GetLastError();
-    fprintf(stderr, "Error loading DLL \"%s\": %d\n", name, werr); /* DEBUG */
-    if (werr==ERROR_DLL_NOT_FOUND) {
+
+    /* DEBUG */
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+		  FORMAT_MESSAGE_FROM_SYSTEM |
+		  FORMAT_MESSAGE_IGNORE_INSERTS,
+		  NULL,
+		  werr,
+		  MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT),
+		  (LPTSTR) &lpMsgBuf,
+		  0,
+		  NULL);
+    fprintf(stderr, "Error loading DLL \"%s\": %d\n%d = %s\n", 
+	    name, werr, werr, lpMsgBuf);
+    LocalFree(lpMsgBuf);
+
+    if ( (werr == ERROR_DLL_NOT_FOUND) ||
+	 (werr == ERROR_FILE_NOT_FOUND) ||
+	 (werr == ERROR_MOD_NOT_FOUND) ) {
       DBG_INFO(0, "File \"%s\" not found", name);
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
@@ -190,7 +207,7 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
 
   if (path) {
     GWEN_Buffer_AppendString(buffer, path);
-    GWEN_Buffer_AppendByte(buffer, '/');
+    GWEN_Buffer_AppendByte(buffer, '\\'); /* Use backslash: This is windows! */
   }
   /* remember current position */
   pos=GWEN_Buffer_GetPos(buffer);

@@ -1,3 +1,10 @@
+2004-02-24  Christian Stimming <stimming@tuhh.de>
+
+	* src/os/windows/libloader.c: Improve error message output.
+
+	* src/os/windows/libloader.c: Append paths by backslash -- this is
+	windows.
+
 ===========================================================================
 MARK: released gwenhywfar-0.9.7 (2004/02/18)
 ===========================================================================
