@@ -121,7 +121,7 @@ int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
 
 int GWEN_IdTable_IsEmpty(const GWEN_IDTABLE *idt){
   assert(idt);
-  return GWEN_IDTABLE_MAXENTRIES!=idt->freeEntries;
+  return GWEN_IDTABLE_MAXENTRIES==idt->freeEntries;
 }
 
 

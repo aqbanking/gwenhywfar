@@ -1,4 +1,8 @@
 
+2004/06/04: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base/idlist.c: fixed another stupid bug
+
 
 2004/06/03: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
