@@ -44,6 +44,15 @@ namespace GWEN {
   private:
     GWEN_WAITCALLBACK *_ctx;
 
+    static GWEN_WAITCALLBACK *_instantiate(GWEN_WAITCALLBACK *ctx);
+    static GWEN_WAITCALLBACK_RESULT _checkAbort(GWEN_WAITCALLBACK *ctx,
+                                                unsigned int level);
+    static void _log(GWEN_WAITCALLBACK *ctx,
+                     unsigned int level,
+                     unsigned int loglevel,
+                     const char *s);
+    static void _freeData(void *bp, void *p);
+
   protected:
     /**
      * Returns the current progress position (as set by
@@ -79,27 +88,6 @@ namespace GWEN {
      * mechanism itself.
      */
     void setDistance(int d);
-
-    /**
-     * Constructor.
-     */
-    WaitCallback(const char *id);
-
-  public:
-    virtual ~WaitCallback();
-
-    /**
-     * Registers this callback with Gwenhywfar.
-     * After having registered this callback its method @ref instantiate()
-     * will be called by Gwenhywfar whenever this a callback of this type
-     * is entered via @ref GWEN_WaitCallback_Enter.
-     */
-    int registerCallback(const char *id);
-
-    /**
-     * Returns the Id of this callback.
-     */
-    const char *getId();
 
     /** @name Functions Called by Gwenhywfar
      *
@@ -145,7 +133,27 @@ namespace GWEN {
 		     unsigned int loglevel,
 		     const char *s);
 
-    GWEN_WAITCALLBACK *Get_C_Context();
+    /**
+     * Constructor.
+     */
+    WaitCallback(const char *id);
+    virtual ~WaitCallback();
+
+  public:
+
+    /**
+     * Registers this callback with Gwenhywfar.
+     * After having registered this callback its method @ref instantiate()
+     * will be called by Gwenhywfar whenever this a callback of this type
+     * is entered via @ref GWEN_WaitCallback_Enter.
+     */
+    int registerCallback(const char *id);
+
+    /**
+     * Returns the Id of this callback.
+     */
+    const char *getId();
+
     /*@}*/
 
     int getDistance();

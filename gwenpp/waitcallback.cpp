@@ -37,23 +37,13 @@ typedef struct GWENPP_WAITCALLBACK GWENPP_WAITCALLBACK;
 GWEN_INHERIT(GWEN_WAITCALLBACK, GWENPP_WAITCALLBACK)
 
 
-extern "C" {
 
-  GWEN_WAITCALLBACK_RESULT
-    GWENPP_WaitCallback_CheckAbort(GWEN_WAITCALLBACK *ctx,
-                                   unsigned int level){
-      GWEN::WaitCallback *wcb;
 
-      wcb=(GWEN::WaitCallback*)GWEN_INHERIT_GETDATA(GWEN_WAITCALLBACK,
-                                                    GWENPP_WAITCALLBACK,
-                                                    ctx);
-      assert(wcb);
-      return wcb->checkAbort(level);
-    }
 
+namespace GWEN {
 
   GWEN_WAITCALLBACK*
-    GWENPP_WaitCallback_Instantiate(GWEN_WAITCALLBACK *ctx){
+    WaitCallback::_instantiate(GWEN_WAITCALLBACK *ctx){
       GWEN::WaitCallback *wcb;
       GWEN::WaitCallback *newwcb;
 
@@ -61,17 +51,29 @@ extern "C" {
                                                     GWENPP_WAITCALLBACK,
                                                     ctx);
       assert(wcb);
-
       newwcb=wcb->instantiate();
       assert(newwcb);
-      return newwcb->Get_C_Context();
+      return newwcb->_ctx;
     }
 
-
-  void GWENPP_WaitCallback_Log(GWEN_WAITCALLBACK *ctx,
-                               unsigned int level,
-                               unsigned int loglevel,
-                               const char *s){
+  GWEN_WAITCALLBACK_RESULT
+    WaitCallback::_checkAbort(GWEN_WAITCALLBACK *ctx,
+                              unsigned int level){
+      GWEN::WaitCallback *wcb;
+  
+      wcb=(GWEN::WaitCallback*)GWEN_INHERIT_GETDATA(GWEN_WAITCALLBACK,
+                                                    GWENPP_WAITCALLBACK,
+                                                    ctx);
+      assert(wcb);
+      return wcb->checkAbort(level);
+    }
+  
+  
+  
+  void WaitCallback::_log(GWEN_WAITCALLBACK *ctx,
+                          unsigned int level,
+                          unsigned int loglevel,
+                          const char *s){
     GWEN::WaitCallback *wcb;
 
     wcb=(GWEN::WaitCallback*)GWEN_INHERIT_GETDATA(GWEN_WAITCALLBACK,
@@ -80,18 +82,16 @@ extern "C" {
     assert(wcb);
     wcb->log(level, loglevel, s);
   }
-
-
-  void GWENPP_WaitCallback_freeData(void *bp, void *p) {
+  
+  
+  void WaitCallback::_freeData(void *bp, void *p) {
     assert(p);
     delete (GWEN::WaitCallback*)p;
   }
 
-} /* extern */
 
 
 
-namespace GWEN {
 
   WaitCallback::WaitCallback(const char *id){
     GWENPP_WAITCALLBACK *pp;
@@ -99,10 +99,10 @@ namespace GWEN {
     _ctx=GWEN_WaitCallback_new(id);
     pp=(GWENPP_WAITCALLBACK*)this;
     GWEN_INHERIT_SETDATA(GWEN_WAITCALLBACK, GWENPP_WAITCALLBACK,
-                         _ctx, pp, GWENPP_WaitCallback_freeData);
-    GWEN_WaitCallback_SetCheckAbortFn(_ctx, GWENPP_WaitCallback_CheckAbort);
-    GWEN_WaitCallback_SetInstantiateFn(_ctx, GWENPP_WaitCallback_Instantiate);
-    GWEN_WaitCallback_SetLogFn(_ctx, GWENPP_WaitCallback_Log);
+                         _ctx, pp, _freeData);
+    GWEN_WaitCallback_SetCheckAbortFn(_ctx, _checkAbort);
+    GWEN_WaitCallback_SetInstantiateFn(_ctx, _instantiate);
+    GWEN_WaitCallback_SetLogFn(_ctx, _log);
   }
 
 
@@ -114,12 +114,6 @@ namespace GWEN {
 
   WaitCallback *WaitCallback::instantiate(){
     return 0;
-  }
-
-
-
-  GWEN_WAITCALLBACK *WaitCallback::Get_C_Context(){
-    return _ctx;
   }
 
 
