@@ -1,5 +1,7 @@
 SUBDIRS=src test
 
+EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README gwenhywfar.m4
+
 bin_SCRIPTS=gwenhywfar-config
 M4dir=@prefix@/share/aclocal
 M4_DATA=gwenhywfar.m4

@@ -9,7 +9,7 @@ GWENHYFWAR_BUGREPORT_ADDR="<gwenhyfwar-bugs@libchipcard.de>"
 AC_PREREQ(2.57)
 AC_INIT
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(Gwenhyfwar, 0.9.0)
+AM_INIT_AUTOMAKE(Gwenhyfwar, 0.9)
 AC_CONFIG_SRCDIR([src/gwenhyfwarapi.h])
 AC_CONFIG_HEADER([config.h])
 
@@ -20,9 +20,9 @@ AC_CONFIG_HEADER([config.h])
 #
 GWENHYFWAR_VERSION_MAJOR=0
 GWENHYFWAR_VERSION_MINOR=9
-GWENHYFWAR_VERSION_PATCHLEVEL=0
-GWENHYFWAR_VERSION_BUILD=2
-GWENHYFWAR_VERSION_TAG="CVS"
+GWENHYFWAR_VERSION_PATCHLEVEL=1
+GWENHYFWAR_VERSION_BUILD=0
+GWENHYFWAR_VERSION_TAG="BETA1"
 GWENHYFWAR_VERSION_FULLSTRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL.$GWENHYFWAR_VERSION_BUILD($GWENHYFWAR_VERSION_TAG)"
 GWENHYFWAR_VERSION_STRING="$GWENHYFWAR_VERSION_MAJOR.$GWENHYFWAR_VERSION_MINOR.$GWENHYFWAR_VERSION_PATCHLEVEL($GWENHYFWAR_VERSION_TAG)"
 
@@ -156,7 +156,7 @@ for d in ${GWEN_HEADER_DIRS}; do
     esac
   done
 done
-
+ln -s "${lprefix}/src/version.h" "gwenhyfwar/version.h"
 
 #
 # substitute vars
@@ -189,7 +189,6 @@ AC_CONFIG_FILES([Makefile
                  src/ipc/Makefile
                  src/os/Makefile
                  src/os/posix/Makefile
-                 src/os/windows/Makefile
                  src/parser/Makefile
                  src/impl/Makefile
                  src/impl/ipc/Makefile
