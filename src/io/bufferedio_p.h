@@ -80,6 +80,7 @@ struct GWEN_BUFFEREDIOSTRUCT {
   int writerBufferLength;
   int writerBufferFilled;
   int writerBufferPos;
+  int writerBufferFlushPos;
 };
 
 

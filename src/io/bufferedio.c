@@ -239,7 +239,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt){
   }
   assert(bt->writerBuffer);
   assert(bt->writePtr);
-  written=0;
+  written=bt->writerBufferFlushPos;
   DBG_DEBUG(0, "Flushing %d bytes", bt->writerBufferFilled);
   while(written<bt->writerBufferFilled) {
     i=bt->writerBufferFilled-written;
@@ -256,8 +256,63 @@ GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt){
 
   bt->writerBufferPos=0;
   bt->writerBufferFilled=0;
+  bt->writerBufferFlushPos=0;
 
   return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt){
+  GWEN_ERRORCODE err;
+  int i;
+
+  assert(bt);
+  if (bt->writerBufferFilled==0) {
+    DBG_DEBUG(0, "WriteBuffer empty, nothing to flush.");
+    return 0;
+  }
+  assert(bt->writerBuffer);
+  assert(bt->writePtr);
+  i=bt->writerBufferFilled-bt->writerBufferFlushPos;
+  DBG_DEBUG(0, "Flushing %d bytes", i);
+  err=bt->writePtr(bt,
+		   &(bt->writerBuffer[bt->writerBufferFlushPos]),
+		   &i,
+		   bt->timeout);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return err;
+  }
+  if (i<bt->writerBufferFilled-bt->writerBufferFlushPos) {
+    /* partial flush */
+    bt->writerBufferFlushPos+=i;
+    return GWEN_Error_new(0,
+			  GWEN_ERROR_SEVERITY_WARN,
+			  GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+			  GWEN_BUFFEREDIO_ERROR_PARTIAL);
+  }
+  else {
+    /* all bytes written, flush finished */
+    bt->writerBufferFlushPos=0;
+    bt->writerBufferPos=0;
+    bt->writerBufferFilled=0;
+    return 0;
+  }
+}
+
+
+
+int GWEN_BufferedIO_ReadBufferEmpty(GWEN_BUFFEREDIO *bt) {
+  assert(bt);
+  return ((bt->readerBuffer==0)  || !bt->readerBufferFilled);
+}
+
+
+
+int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt) {
+  assert(bt);
+  return ((bt->writerBuffer==0)  || !bt->writerBufferFilled);
 }
 
 
@@ -457,6 +512,108 @@ void GWEN_BufferedIO_SetTimeout(GWEN_BUFFEREDIO *dm, int timeout){
 int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm){
   assert(dm);
   return dm->timeout;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
+                                        const char *buffer,
+                                        unsigned int *bsize){
+
+  GWEN_ERRORCODE err;
+  int i;
+
+  assert(bt);
+  assert(bsize);
+  assert(*bsize);
+
+  if (bt->writerBufferFilled) {
+    /* some data in the buffer, this must be flushed first */
+    err=GWEN_BufferedIO_ShortFlush(bt);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      return err;
+    }
+    if (GWEN_Error_GetType(err)==
+        GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE) &&
+        GWEN_Error_GetCode(err)==GWEN_BUFFEREDIO_ERROR_PARTIAL) {
+      /* still some bytes in the buffer, can not write right now */
+      *bsize=0;
+      return err;
+    }
+  }
+
+  /* try to write as many bytes as possible */
+  i=*bsize;
+  err=bt->writePtr(bt,
+                   buffer,
+                   &i,
+                   bt->timeout);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return err;
+  }
+  *bsize=i;
+  return err;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
+                                       char *buffer,
+                                       unsigned int *bsize){
+  assert(bt);
+
+  /* do some fast checks */
+  if (bt->readerError) {
+    DBG_DEBUG(0, "Error flagged");
+    return -1;
+  }
+  if (bt->readerEOF) {
+    DBG_DEBUG(0, "EOF flagged");
+    return -2;
+  }
+
+  if (bt->readerBufferPos<bt->readerBufferFilled) {
+    /* buffer not empty, so read from the buffer first */
+    int i;
+
+    i=bt->readerBufferPos<bt->readerBufferFilled;
+    if (i>*bsize)
+      i=*bsize;
+
+    if (i) {
+      /* copy as much bytes as needed, advance pointer */
+      memmove(buffer, bt->readerBuffer+bt->readerBufferPos, i);
+      bt->readerBufferPos+=i;
+    }
+    *bsize=i;
+    return 0;
+  }
+  else {
+    /* buffer empty, so read directly from source */
+    GWEN_ERRORCODE err;
+    int i;
+
+    assert(bt->readPtr);
+    i=*bsize;
+    err=bt->readPtr(bt,
+                    buffer,
+                    &i,
+                    bt->timeout);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      bt->readerError=1;
+      return -1;
+    }
+    bt->readerEOF=(i==0);
+    *bsize=i;
+  }
+  if (bt->readerEOF) {
+    DBG_DEBUG(0, "EOF now met");
+    return -2;
+  }
+  return 0;
 }
 
 

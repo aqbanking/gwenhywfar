@@ -191,6 +191,15 @@ GWEN_IPCTransportLayer_Write(GWEN_IPCTRANSPORTLAYER *tl,
 
 
 GWEN_ERRORCODE
+GWEN_IPCTransportLayer_Flush(GWEN_IPCTRANSPORTLAYER *tl){
+  assert(tl);
+  assert(tl->flush);
+  return tl->flush(tl);
+}
+
+
+
+GWEN_ERRORCODE
 GWEN_IPCTransportLayer_CanRead(GWEN_IPCTRANSPORTLAYER *tl){
   assert(tl);
   assert(tl->canRead);

@@ -105,15 +105,19 @@ GWEN_IPCTransportLayerSocket_FinishConnect(GWEN_IPCTRANSPORTLAYER *tl){
   assert(tl->type==GWEN_TransportLayerTypeSocket);
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
 
-  // get socket error
+  /* get socket error */
   err=GWEN_Socket_GetSocketError(tlp->socket);
   if (!GWEN_Error_IsOk(err))
     return err;
 
-  // make socket blocking again
+  /* make socket blocking again */
   err=GWEN_Socket_SetBlocking(tlp->socket,1);
   if (!GWEN_Error_IsOk(err))
     return err;
+
+  /* create buffered io */
+  tlp->bio=GWEN_BufferedIO_Socket_new(tlp->socket);
+  GWEN_BufferedIO_SetTimeout(tlp->bio, 0);
   return 0;
 }
 
@@ -169,6 +173,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Listen(GWEN_IPCTRANSPORTLAYER *tl){
   err=GWEN_Socket_Listen(tlp->socket, 10);
   if (!GWEN_Error_IsOk(err))
     return err;
+  tlp->listening=1;
   return 0;
 }
 
@@ -176,7 +181,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Listen(GWEN_IPCTRANSPORTLAYER *tl){
 
 GWEN_ERRORCODE
 GWEN_IPCTransportLayerSocket_Accept(GWEN_IPCTRANSPORTLAYER *tl,
-                                 GWEN_IPCTRANSPORTLAYER **t){
+                                    GWEN_IPCTRANSPORTLAYER **t){
   GWEN_SOCKET *s;
   GWEN_ERRORCODE err;
   GWEN_INETADDRESS *iaddr;
@@ -200,13 +205,18 @@ GWEN_IPCTransportLayerSocket_Accept(GWEN_IPCTRANSPORTLAYER *tl,
   }
   *t=GWEN_IPCTransportLayerSocket_new();
   tlp2=(GWEN_IPCTRANSSOCKET*)((*t)->privateData);
+  /* create buffered io */
   tlp2->socket=s;
+  tlp2->bio=GWEN_BufferedIO_Socket_new(s);
+  GWEN_BufferedIO_SetTimeout(tlp2->bio, 0);
+
   return 0;
 }
 
 
 
-GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
+GWEN_ERRORCODE
+GWEN_IPCTransportLayerSocket_Flush(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
   GWEN_IPCTRANSSOCKET *tlp;
 
@@ -215,7 +225,38 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *t
   assert(tl->type==GWEN_TransportLayerTypeSocket);
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
 
-  if (tlp->socket) {
+  if (tlp->bio) {
+    err=GWEN_BufferedIO_ShortFlush(tlp->bio);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_DEBUG(0, "called from here");
+    }
+    return err;
+  }
+  /* no bio, so nothing to flush */
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE
+GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
+  GWEN_ERRORCODE err;
+  GWEN_IPCTRANSSOCKET *tlp;
+
+  assert(tl);
+  assert(tl->privateData);
+  assert(tl->type==GWEN_TransportLayerTypeSocket);
+  tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
+
+  if (tlp->bio) {
+    /* if a bio exists then the socket gets by deleted by it */
+    GWEN_BufferedIO_Abandon(tlp->bio);
+    GWEN_BufferedIO_free(tlp->bio);
+    tlp->socket=0;
+    tlp->bio=0;
+  }
+  else {
+    /* bio does not exist, so delete the socket myself */
     err=GWEN_Socket_Close(tlp->socket);
     GWEN_Socket_free(tlp->socket);
     tlp->socket=0;
@@ -282,8 +323,27 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
   assert(tl->privateData);
   assert(tl->type==GWEN_TransportLayerTypeSocket);
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
-  assert(tlp->socket);
-  return GWEN_Socket_Read(tlp->socket,buffer,bsize);
+  assert(tlp->bio);
+  if (*bsize==1) {
+    /* use bio's buffer when reading single bytes to speed up */
+    int i;
+
+    i=GWEN_BufferedIO_ReadChar(tlp->bio);
+    if (i<0) {
+      DBG_ERROR(0, "Could not read character (%d)", i);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                            GWEN_BUFFEREDIO_ERROR_READ);
+    }
+    *buffer=(unsigned char)i;
+    *bsize=1;
+    return 0;
+  }
+  else
+    return GWEN_BufferedIO_ReadRaw(tlp->bio,
+                                   buffer,
+                                   bsize);
 }
 
 
@@ -297,8 +357,10 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Write(GWEN_IPCTRANSPORTLAYER *tl,
   assert(tl->privateData);
   assert(tl->type==GWEN_TransportLayerTypeSocket);
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
-  assert(tlp->socket);
-  return GWEN_Socket_Write(tlp->socket,buffer,bsize);
+  assert(tlp->bio);
+  return GWEN_BufferedIO_WriteRaw(tlp->bio,
+                                  buffer,
+                                  bsize);
 }
 
 
@@ -310,7 +372,12 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_CanRead(GWEN_IPCTRANSPORTLAYER *tl){
   assert(tl->privateData);
   assert(tl->type==GWEN_TransportLayerTypeSocket);
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
+  assert(tlp->bio);
+  if (!GWEN_BufferedIO_ReadBufferEmpty(tlp->bio))
+    /* reader buffer is not empty, so we can read */
+    return 0;
   assert(tlp->socket);
+  /* reader buffer is empty, so check the socket directly */
   return GWEN_Socket_WaitForRead(tlp->socket,0);
 }
 
@@ -419,7 +486,11 @@ GWEN_IPCTRANSSOCKET *GWEN_IPCTransportLayerSocket_Data_new(){
 
 void GWEN_IPCTransportLayerSocket_Data_free(GWEN_IPCTRANSSOCKET *tlsocket) {
   if (tlsocket) {
-    GWEN_Socket_free(tlsocket->socket);
+    if (tlsocket->bio)
+      GWEN_BufferedIO_free(tlsocket->bio);
+    else
+      /* only free the socket if it is not used by tlsocket->bio */
+      GWEN_Socket_free(tlsocket->socket);
     free(tlsocket);
   }
 }
@@ -448,6 +519,7 @@ GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerSocket_new(){
   t->getWriteSocket=GWEN_IPCTransportLayerSocket_GetWriteSocket;
   t->getPeerAddress=GWEN_IPCTransportLayerSocket_GetPeerAddress;
   t->getPeerPort=GWEN_IPCTransportLayerSocket_GetPeerPort;
+  t->flush=GWEN_IPCTransportLayerSocket_Flush;
   t->free=GWEN_IPCTransportLayerSocket_free;
   t->type=GWEN_TransportLayerTypeSocket;
   return t;

@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Sun Sep 14 2003
-    copyright   : (C) 2003 by Martin Preuss
-    email       : martin@libchipcard.de
+ -------------------
+ cvs         : $Id$
+ begin       : Thu Sep 11 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,34 +26,14 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_TRANSPORTLAYERSOCKET_P_H
-#define GWENHYFWAR_TRANSPORTLAYERSOCKET_P_H
+#ifndef GWENHYFWAR_GWENHYFWAR_H
+#define GWENHYFWAR_GWENHYFWAR_H
 
-#include "transportlayer_p.h"
-#include <gwenhyfwar/inetsocket.h>
-#include <gwenhyfwar/bufferedio.h>
+#include <gwenhyfwar/error.h>
 
 
-typedef struct GWEN_IPCTRANSSOCKET GWEN_IPCTRANSSOCKET;
-
-struct GWEN_IPCTRANSSOCKET {
-  GWEN_SOCKET *socket;
-  GWEN_BUFFEREDIO *bio;
-  GWEN_SOCKETTYPE socketType;
-  GWEN_AddressFamily addressFamily;
-  int listening;
-};
-
-
-GWEN_IPCTRANSSOCKET *GWEN_IPCTransportLayerSocket_Data_new();
-void GWEN_IPCTransportLayerSocket_Data_free(GWEN_IPCTRANSSOCKET *tlsocket);
-
-
-GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerSocket_new();
-
+GWEN_ERRORCODE GWEN_Init();
+GWEN_ERRORCODE GWEN_Fini();
 
 
 #endif
-
-
-

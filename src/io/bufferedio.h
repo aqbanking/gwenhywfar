@@ -39,6 +39,7 @@
 #define GWEN_BUFFEREDIO_ERROR_WRITE   2
 #define GWEN_BUFFEREDIO_ERROR_CLOSE   3
 #define GWEN_BUFFEREDIO_ERROR_TIMEOUT 4
+#define GWEN_BUFFEREDIO_ERROR_PARTIAL 5
 
 
 
@@ -131,6 +132,29 @@ GWENHYFWAR_API int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *dm);
 GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
 
 /**
+ * Really writes the content of the write buffer to the stream.
+ * This function only flushes as much bytes as possible. If after
+ * calling this function some bytes still remain inside the write
+ * buffer, a warning will be returned
+ * (error code=GWEN_BUFFEREDIO_ERROR_PARTIAL,
+ * severity=GWEN_ERROR_SEVERITY_WARN). You should then call this function as
+ * long as it returns this warning in order to really save the data.
+ * @author Martin Preuss<martin@aquamaniac.de>
+ */
+GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt);
+
+/*
+ * Returns !=0 if the read buffer is empty, 0 if it is not.
+ */
+GWENHYFWAR_API int GWEN_BufferedIO_ReadBufferEmpty(GWEN_BUFFEREDIO *bt);
+
+
+/*
+ * Returns !=0 if the write buffer is empty, 0 if it is not.
+ */
+GWENHYFWAR_API int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt);
+
+/**
  * Reads a line until a CR (in Unix mode) or a CRLF (DOS mode) is found
  * or the buffer is filled, whichever comes first.
  * The trailing CR or CRLF is not copied into the buffer.
@@ -212,6 +236,37 @@ int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm);
  */
 GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
 
+
+/**
+ * Writes the content of the given buffer. If there still is some data
+ * inside the internal buffer that data will be flushed first.
+ * This allows for mixing calls to this function with calls to the
+ * character based write functions.
+ * @param bsize pointer to a variable which holds the number of bytes
+ * to write. Upon return this variable shows the number of bytes actually
+ * written. Please note that if this function has to flush internal buffers
+ * the return value might be 0 (indicating that no error occurred, but the
+ * internal buffers still contain some bytes which will be flushed upon the
+ * next call to this function).
+ */
+GWENHYFWAR_API
+  GWEN_ERRORCODE GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
+                                          const char *buffer,
+                                          unsigned int *bsize);
+
+
+/**
+ * Reads multiple bytes. If there is some data inside the internal buffers
+ * then that data will be returned first. This allows for mixing with
+ * character based read functions.
+ * @param bsize pointer to a variable which holds the number of bytes
+ * to read. Upon return this variable shows the number of bytes actually
+ * read.
+ */
+GWENHYFWAR_API
+  GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
+                                         char *buffer,
+                                         unsigned int *bsize);
 
 
 
