@@ -34,7 +34,6 @@
 #include "memory_p.h"
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
-#include <gwenhywfar/debug.h>
 #include <gwenhywfar/stringlist.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,7 +59,7 @@ GWEN_ERRORCODE GWEN_Memory_ModuleInit(){
   if (s) {
     GWEN_MEMORY__OBJECT_LIST *l;
 
-    DBG_INFO(GWEN_LOGDOMAIN, "Memory debugging is enabled");
+    fprintf(stderr, "Memory debugging is enabled");
 
     l=GWEN_Memory__Object_List_new();
 

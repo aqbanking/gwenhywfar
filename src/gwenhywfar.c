@@ -59,9 +59,7 @@ GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
   if (gwen_is_initialized==0) {
-    DBG_DEBUG(0, "Initializing Error module");
     GWEN_Error_ModuleInit();
-    DBG_DEBUG(0, "Initializing Memory module");
     err=GWEN_Memory_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
