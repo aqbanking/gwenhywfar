@@ -1,3 +1,6 @@
+2004-06-07  Christian Stimming <stimming@tuhh.de>
+
+	* src/crypt/none/cryptnone.c: Fix function prototype SSL_new.
 
 2004/06/06: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
