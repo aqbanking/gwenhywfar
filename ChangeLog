@@ -7,6 +7,8 @@
 - crypt/ossl/nettransportssl.{c,h}: improved this module a lot. It can now at
   least be used for client connections.
 - ssl module is now able to save certificates if demanded by the user
+- added parser/base64. This is not an elegant implementation but it
+  works ;-) (Currently I don't have the time for a more elaborated version)
 
 
 2004-05-05   Christian Stimming <stimming@tuhh.de>

@@ -22,6 +22,7 @@
 #include <gwenhywfar/netconnection.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/args.h>
+#include <gwenhywfar/base64.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # define sleep(x) Sleep(x*1000)
@@ -950,6 +951,84 @@ int testOptions(int argc, char **argv) {
 
 
 
+int testBase64(int argc, char **argv) {
+  GWEN_BUFFER *dst;
+  GWEN_BUFFER *src;
+  GWEN_BUFFER *tmp;
+  FILE *f;
+  char buffer[1024];
+  int i;
+
+  if (argc<2) {
+    fprintf(stderr, "Name of a file needed\n");
+    return 1;
+  }
+
+  dst=GWEN_Buffer_new(0, 600000, 0, 1);
+  src=GWEN_Buffer_new(0, 600000, 0, 1);
+  f=fopen(argv[2], "r");
+  if (!f) {
+    perror(argv[2]);
+    return 1;
+  }
+  while(!feof(f)) {
+    i=fread(buffer, 1, sizeof(buffer), f);
+    if (i<1) {
+      perror("fread");
+      return 2;
+    }
+    GWEN_Buffer_AppendBytes(src, buffer, i);
+  } /* while */
+  fclose(f);
+
+  if (GWEN_Base64_Encode(GWEN_Buffer_GetStart(src),
+                         GWEN_Buffer_GetUsedBytes(src),
+                         dst, 76)) {
+    fprintf(stderr, "Error encoding file.\n");
+    return 3;
+  }
+
+  f=fopen("base64.out", "w+");
+  if (!f) {
+    perror(argv[2]);
+    return 1;
+  }
+  if (fwrite(GWEN_Buffer_GetStart(dst),
+             GWEN_Buffer_GetUsedBytes(dst), 1, f)!=1) {
+    perror("fwrite");
+    return 4;
+  }
+  if (fclose(f)) {
+    perror("fclose");
+    return 4;
+  }
+
+  tmp=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(src), 0, 1);
+  if (GWEN_Base64_Decode(GWEN_Buffer_GetStart(dst),
+                         GWEN_Buffer_GetUsedBytes(src),
+                         tmp)) {
+    fprintf(stderr, "Error decoding file.\n");
+    return 3;
+  }
+
+  f=fopen("base64.out.bin", "w+");
+  if (!f) {
+    perror(argv[2]);
+    return 1;
+  }
+  if (fwrite(GWEN_Buffer_GetStart(tmp),
+             GWEN_Buffer_GetUsedBytes(tmp), 1, f)!=1) {
+    perror("fwrite");
+    return 4;
+  }
+  if (fclose(f)) {
+    perror("fclose");
+    return 4;
+  }
+
+  return 0;
+}
+
 
 
 int main(int argc, char **argv) {
@@ -992,6 +1071,8 @@ int main(int argc, char **argv) {
     rv=testOptions(argc, argv);
   else if (strcasecmp(argv[1], "ssl")==0)
     rv=testSocketSSL(argc, argv);
+  else if (strcasecmp(argv[1], "base64")==0)
+    rv=testBase64(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     return 1;

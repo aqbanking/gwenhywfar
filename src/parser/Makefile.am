@@ -23,6 +23,7 @@ iheader_HEADERS=\
  xml.h
 
 libparser_la_SOURCES=\
+ base64.c \
  csv.c \
  db.c \
  dbio.c \
