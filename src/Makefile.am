@@ -1,4 +1,4 @@
-INCLUDES=@all_includes@ -Ios/@GWEN_OS@
+INCLUDES = $(all_includes) -I$(srcdir)/os/$(GWEN_OS)
 
 SUBDIRS=base crypt io ipc os parser net
 
