@@ -261,7 +261,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
   assert(bf);
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
   /*if (bf->pos+size>bf->bufferSize) {*/
-  if (bf->bytesUsed+size>bf->bufferSize) {
+  if (bf->bytesUsed+size > bf->bufferSize) {
     /* need to realloc */
     GWEN_TYPE_UINT32 nsize;
     GWEN_TYPE_UINT32 noffs;
@@ -348,26 +348,30 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
 
 
 int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
-  assert(bf);
+  /* In some applications (notably in simthetic), this function is
+     called *a lot*. It is quite worthy to spend some effort in making
+     this function call less costly. */
+  /* Because of this reason and as a single exception, we skip the
+     assertion here. */
+  /* assert(bf); */
 
-  if (GWEN_Buffer_AllocRoom(bf, 1+1)) { /* +1 for the trailing 0 */
+  if ((bf->bytesUsed+1+1 > bf->bufferSize) &&
+      GWEN_Buffer_AllocRoom(bf, 1+1)) { /* +1 for the trailing 0 */
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return 1;
   }
   /*if (bf->pos+1>bf->bufferSize) {*/
-  if (bf->bytesUsed+1>bf->bufferSize) {
-    /*DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d of %d bytes)",
-     bf->pos, bf->bufferSize);*/
+  /* if (bf->bytesUsed+1 > bf->bufferSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d of %d bytes)",
               bf->bytesUsed, bf->bufferSize);
     return 1;
-  }
+  } -- not necessary; is already checked in the condition before */
   bf->ptr[bf->bytesUsed]=c;
-  if (bf->pos==bf->bytesUsed)
+  if (bf->pos == bf->bytesUsed)
     bf->pos++;
-  bf->bytesUsed++;
+  /* bf->bytesUsed++; */
   /* append a NULL to allow using the buffer as ASCIIZ string */
-  bf->ptr[bf->bytesUsed]=0;
+  bf->ptr[++(bf->bytesUsed)]=0;
   return 0;
 }
 

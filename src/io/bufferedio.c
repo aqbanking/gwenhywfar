@@ -184,15 +184,26 @@ void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt, char *buffer, int len){
 
 
 
-int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *bt){
-  return (GWEN_BufferedIO_PeekChar(bt)==GWEN_BUFFEREDIO_CHAR_EOF);
+int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *bt)
+{
+  /* In some applications (notably in simthetic), this function is
+     called *a lot*. It is maybe possible to make this function less
+     costly? Maybe by simply checking bt->readerEOF but not calling
+     PeekChar? */
+  return (GWEN_BufferedIO_PeekChar(bt) == GWEN_BUFFEREDIO_CHAR_EOF);
 }
 
 
 
 int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
-  assert(bt);
-  assert(bt->readerBuffer);
+  /* In some applications (notably in simthetic), this function is
+     called *a lot*. It is quite worthy to spend some effort in making
+     this function call less costly. Is it maybe possible to skip even
+     the error checks? This would directly boost the performance. */
+  /* Because of this reason and as a single exception, we skip the
+     assertions here. */
+  /* assert(bt);
+     assert(bt->readerBuffer); */
 
   /* do some fast checks */
   if (bt->readerError) {
@@ -204,7 +215,7 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
     return GWEN_BUFFEREDIO_CHAR_EOF;
   }
 
-  if (bt->readerBufferPos>=bt->readerBufferFilled) {
+  if (bt->readerBufferPos >= bt->readerBufferFilled) {
     /* buffer empty, no EOF met, so fill it */
     GWEN_ERRORCODE err;
     int i;
@@ -229,10 +240,11 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
     bt->readerBufferFilled=i;
     bt->readerBufferPos=0;
     bt->readerEOF=(i==0);
-  }
-  if (bt->readerEOF) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF now met");
-    return GWEN_BUFFEREDIO_CHAR_EOF;
+
+    if (bt->readerEOF) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "EOF now met");
+      return GWEN_BUFFEREDIO_CHAR_EOF;
+    }
   }
   return (unsigned char)(bt->readerBuffer[bt->readerBufferPos]);
 }
@@ -242,6 +254,11 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bt){
   int i;
 
+  /* In some applications (notably in simthetic), this function is
+     called *a lot*. It is quite worthy to spend some effort in making
+     this function call less costly. Is it maybe possible to directly
+     read the character from the BufferedIO instead of calling
+     PeekChar?  This would directly boost the performance. */
   i=GWEN_BufferedIO_PeekChar(bt);
   if (i>=0) {
     bt->readerBufferPos++;

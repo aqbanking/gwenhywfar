@@ -1,3 +1,9 @@
+2005-03-04   Christian Stimming <stimming@tuhh.de>
+
+	* src/base/buffer.c, src/io/bufferedio.c: Add some small
+	performance improvements; add comments about further potential
+	performance improvements.
+
 ===========================================================================
 MARK: released gwenhywfar-1.9.0 (2005/02/19)
 ===========================================================================
