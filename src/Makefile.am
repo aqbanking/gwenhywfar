@@ -28,6 +28,8 @@ libgwenhywfar_la_LDFLAGS= \
   @STRIPALL@ -version-info \
    @GWENHYWFAR_SO_CURRENT@:@GWENHYWFAR_SO_REVISION@:@GWENHYWFAR_SO_AGE@
 
+# Before compiling the sources, first built these files
+BUILT_SOURCES = types.h version.h
 
 all-local: @GWEN_MAKE_DLL_TARGET@
 

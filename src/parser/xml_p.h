@@ -35,12 +35,18 @@
 extern "C" {
 #endif
 
+/* Watch out! These buffer length can easily be exceeded since XML
+   itself does not give you any limit on the length of particular
+   varilable or element names! This would mean that a valid XML file
+   is failed to be parsed. */
 #define GWEN_XML_MAX_DEPTH 32
-#define GWEN_XML_MAX_TAGNAMELEN 32
-#define GWEN_XML_MAX_VARNAMELEN 32
-#define GWEN_XML_MAX_VALUELEN   64
-#define GWEN_XML_MAX_DATALEN    1024
-#define GWEN_XML_MAX_REMARKLEN  8192
+#define GWEN_XML_MAX_TAGNAMELEN 64
+#define GWEN_XML_MAX_VARNAMELEN 128
+/* The above value was already exceeded (when it was 32) for a PUBLIC
+   identifier in the <!DOCTYPE> element */
+#define GWEN_XML_MAX_VALUELEN   128
+#define GWEN_XML_MAX_DATALEN    2048
+#define GWEN_XML_MAX_REMARKLEN  16384
 
 struct GWEN__XMLPROPERTY {
   GWEN_XMLPROPERTY *next;

@@ -1,3 +1,9 @@
+2004-02-17  Christian Stimming <stimming@tuhh.de>
+
+	* src/parser/xml_p.h (GWEN_XML_MAX_VARNAMELEN): Increased static
+	buffer sizes a *lot* since they already exceeded for perfectly
+	valid XML documents.
+
 ===========================================================================
 MARK: released gwenhywfar-0.9.6 (2004/02/15)
 ===========================================================================
