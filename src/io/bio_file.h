@@ -31,6 +31,10 @@
 
 #include <gwenhywfar/bufferedio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /**
  * Create a buffered IO context using an already open file.
@@ -39,6 +43,10 @@
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
 GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

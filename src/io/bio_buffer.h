@@ -32,6 +32,9 @@
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/buffer.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Create a buffered IO context using a GWEN_BUFFER.
@@ -40,6 +43,10 @@
  */
 GWENHYWFAR_API
   GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYWFAR_BIO_BUFFER_H */
