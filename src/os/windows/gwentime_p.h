@@ -29,6 +29,8 @@
 #ifndef GWEN_TIME_P_H
 #define GWEN_TIME_P_H
 
+#include <windows.h>
+
 #include <gwenhywfar/gwentime.h>
 
 #include <sys/time.h>

@@ -34,3 +34,11 @@ mp:
 
 win32:
 	./configure --with-openssl-includes=/more/include --prefix=/gwen
+
+mp-tu:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	automake --add-missing
+	autoconf
+	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --prefix=/home/preuss/install
