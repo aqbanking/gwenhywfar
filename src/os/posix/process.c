@@ -82,9 +82,9 @@ GWEN_ERRORCODE GWEN_Process_ModuleInit(){
   }
 
   if (original_sigchld_sa.sa_handler == SIG_DFL) {
-    DBG_NOTICE(0, "original_sigchld handler was SIG_DFL");
+    DBG_DEBUG(0, "original_sigchld handler was SIG_DFL");
   } else if (original_sigchld_sa.sa_handler == SIG_IGN) {
-    DBG_NOTICE(0, "original_sigchld handler was SIG_IGN");
+    DBG_DEBUG(0, "original_sigchld handler was SIG_IGN");
   }
   else if (original_sigchld_sa.sa_flags | SA_SIGINFO) {
     DBG_NOTICE(0,
