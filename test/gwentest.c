@@ -18,7 +18,10 @@
 #include <gwenhywfar/sslconnection.h>
 #include <gwenhywfar/nettransportsock.h>
 #include <gwenhywfar/netconnection.h>
-
+#ifdef OS_WIN32
+# include <windows.h>
+# define sleep(x) Sleep(x)
+#endif
 
 int testSSL(int argc, char **argv) {
   GWEN_INETADDRESS *addr;
@@ -754,7 +757,7 @@ int main(int argc, char **argv) {
   int rv;
 
   if (argc<2) {
-    fprintf(stderr, "Usage: %s client|server\n", argv[0]);
+    fprintf(stderr, "Usage: %s <test>\n  where <test> is one of dbfile, dbfile2, list, key, mkkey, cpkey, xml, xml2, sn, ssl, accept, connect\n", argv[0]);
     return 1;
   }
 

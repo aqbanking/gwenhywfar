@@ -1,3 +1,13 @@
+2004-03-24  Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac, src/base/debug.h, src/base/debug.c: Variadic
+	macros are not supported by Microsoft Visual Studio
+	compiler. Therefore the macro NO_VARIADIC_MACROS disables them,
+	and also the configure switch --enable-variadic-macros=no (default
+	is yes) lets gwen be compiled with replacement functions instead
+	of these macros. In other words the source code should still work
+	totally unchanged.
+
 2004-03-22  Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfarapi.h: Add macro declarations that are unavailable

@@ -185,6 +185,19 @@ esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
 #
+# check whether variadic macros should be supported
+#
+AC_MSG_CHECKING(if compiling with variadic macros)
+AC_ARG_ENABLE(variadic-macros,
+  [  --enable-variadic-macros         enable variadic macros (default=yes)],
+  enable_variadic_macros="$enableval",
+  enable_variadic_macros="yes")
+AC_MSG_RESULT($enable_variadic_macros)
+if test "x$enable_variadic_macros" == "xno"; then
+  AC_DEFINE(NO_VARIADIC_MACROS, 1, [Define if variadic macros should be disabled])
+fi
+
+#
 # check for encryption library
 #
 AQ_CHECK_SSL
