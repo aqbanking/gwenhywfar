@@ -329,30 +329,20 @@ GWEN_BUFFEREDIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
 
 
 
+GWEN_INHERIT(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE);
 
+GWEN_BUFFEREDIO_WINFILE *GWEN_BufferedIO_WinFile_Table__new() {
+  GWEN_BUFFEREDIO_WINFILE *bft;
 
-struct GWEN_BUFFEREDIO_WINFILE_STRUCT {
-  HANDLE fd;
-};
-typedef struct GWEN_BUFFEREDIO_WINFILE_STRUCT GWEN_BUFFEREDIO_WINFILE_TABLE;
-
-
-
-
-GWEN_BUFFEREDIO_WINFILE_TABLE *GWEN_BufferedIO_WinFile_Table__new() {
-  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
-
-  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)malloc(sizeof(GWEN_BUFFEREDIO_WINFILE_TABLE));
-  assert(bft);
-  memset(bft,0,sizeof(GWEN_BUFFEREDIO_WINFILE_TABLE));
+  GWEN_NEW_OBJECT(GWEN_BUFFEREDIO_WINFILE, bft);
   bft->fd=NULL;
   return bft;
 }
 
 
 
-void GWEN_BufferedIO_WinFile_Table__free(GWEN_BUFFEREDIO_WINFILE_TABLE *bft) {
-  free(bft);
+void GWEN_BufferedIO_WinFile_Table__free(GWEN_BUFFEREDIO_WINFILE *bft) {
+  GWEN_FREE_OBJECT(bft);
 }
 
 
@@ -363,11 +353,11 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
                                              char *buffer,
                                              int *size,
                                              int timeout){
-  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+  GWEN_BUFFEREDIO_WINFILE *bft;
   DWORD bytesRead;
 
   assert(dm);
-  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)(dm->privateData);
+  bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
   assert(bft);
   if (*size<1) {
     DBG_WARN(0, "Nothing to read");
@@ -375,14 +365,14 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
     return 0;
   }
   if (!ReadFile(bft->fd, buffer, *size, &bytesRead, 0)) {
-	  DWORD werr;
+    DWORD werr;
 
-	  werr=GetLastError();
-	  if (werr==ERROR_BROKEN_PIPE) {
-		  DBG_INFO(0, "EOF met (broken pipe)");
-		  *size=0;
-		  return 0;
-	  }
+    werr=GetLastError();
+    if (werr==ERROR_BROKEN_PIPE) {
+      DBG_INFO(0, "EOF met (broken pipe)");
+      *size=0;
+      return 0;
+    }
     DBG_ERROR(0, "Could not read (%ld)", werr);
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -403,14 +393,14 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
 
 
 GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
-                                           const char *buffer,
-                                           int *size,
-                                           int timeout){
-  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+                                              const char *buffer,
+                                              int *size,
+                                              int timeout){
+  GWEN_BUFFEREDIO_WINFILE *bft;
   DWORD written;
 
   assert(dm);
-  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)(dm->privateData);
+  bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
   assert(bft);
   if (*size<1) {
     DBG_WARN(0, "Nothing to write");
@@ -432,10 +422,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
 
 
 GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
-  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+  GWEN_BUFFEREDIO_WINFILE *bft;
 
   assert(dm);
-  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)(dm->privateData);
+  bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
   assert(bft);
   if (!CloseHandle(bft->fd)) {
     DBG_ERROR(0, "Could not close (%ld)", GetLastError());
@@ -449,27 +439,31 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
 
 
 
-void GWEN_BufferedIO_WinFile__free(void *p){
-  if (p)
-    GWEN_BufferedIO_WinFile_Table__free((GWEN_BUFFEREDIO_WINFILE_TABLE *)p);
+void GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p){
+  GWEN_BUFFEREDIO_WINFILE *bft;
+
+  bft=(GWEN_BUFFEREDIO_WINFILE *)p;
+  GWEN_BufferedIO_WinFile_Table__free(bft);
 }
 
 
 
 GWEN_BUFFEREDIO *GWEN_BufferedIO_WinFile_new(HANDLE fd){
   GWEN_BUFFEREDIO *bt;
-  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+  GWEN_BUFFEREDIO_WINFILE *bft;
 
   bt=GWEN_BufferedIO_new();
   bft=GWEN_BufferedIO_WinFile_Table__new();
-  bt->privateData=bft;
   bft->fd=fd;
-  bt->readPtr=GWEN_BufferedIO_WinFile__Read;
-  bt->writePtr=GWEN_BufferedIO_WinFile__Write;
-  bt->closePtr=GWEN_BufferedIO_WinFile__Close;
-  bt->freePtr=GWEN_BufferedIO_WinFile__free;
-  bt->iotype=GWEN_BufferedIOTypeFile;
-  bt->timeout=GWEN_BUFFEREDIO_WINFILE_TIMEOUT;
+
+  GWEN_INHERIT_SETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE,
+                       bt, bft,
+                       GWEN_BufferedIO_WinFile_FreeData);
+  GWEN_BufferedIO_SetReadFn(bt, GWEN_BufferedIO_WinFile__Read);
+  GWEN_BufferedIO_SetWriteFn(bt, GWEN_BufferedIO_WinFile__Write);
+  GWEN_BufferedIO_SetCloseFn(bt, GWEN_BufferedIO_WinFile__Close);
+  GWEN_BufferedIO_SetTimeout(bt, GWEN_BUFFEREDIO_WINFILE_TIMEOUT);
+
   return bt;
 }
 

@@ -30,14 +30,29 @@
 #define GWENHYWFAR_BUFFEREDIO_H "$Id$"
 
 #include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket.h>
-#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/inherit.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+  GWENHYWFAR_API typedef struct GWEN_BUFFEREDIOSTRUCT GWEN_BUFFEREDIO;
+  GWEN_INHERIT_FUNCTION_DEFS(GWEN_BUFFEREDIO);
+#ifdef __cplusplus
+}
+#endif
 
+#include <gwenhywfar/error.h>
+
+/* for compatibility only */
+#include <gwenhywfar/bio_file.h>
+#include <gwenhywfar/bio_socket.h>
+#include <gwenhywfar/bio_buffer.h>
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define GWEN_BUFFEREDIO_ERROR_TYPE    "BufferedIO"
 #define GWEN_BUFFEREDIO_ERROR_READ    1
@@ -54,8 +69,14 @@ extern "C" {
 #define GWEN_BUFFEREDIO_CHAR_NO_DATA (-3)
 
 
-GWENHYWFAR_API
-typedef struct GWEN_BUFFEREDIOSTRUCT GWEN_BUFFEREDIO;
+/** IF set then @ref BufferedIO_Close is enabled */
+#define GWEN_BUFFEREDIO_FLAGS_CLOSE   0x00000001
+
+#define GWEN_BUFFEREDIO_FLAGS_DEFAULT \
+  (\
+  GWEN_BUFFEREDIO_FLAGS_CLOSE\
+  \)
+
 
 
 GWENHYWFAR_API
@@ -66,13 +87,17 @@ typedef enum {
 
 
 GWENHYWFAR_API
-typedef enum {
-  GWEN_BufferedIOTypeNone=0,
-  GWEN_BufferedIOTypeFile,
-  GWEN_BufferedIOTypeSocket,
-  GWEN_BufferedIOTypeBuffer
-} GWEN_BUFFEREDIOTYPE;
-
+  typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOREADFN)(GWEN_BUFFEREDIO *dm,
+                                                  char *buffer,
+                                                  int *size,
+                                                  int timeout);
+GWENHYWFAR_API
+  typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOWRITEFN)(GWEN_BUFFEREDIO *dm,
+                                                   const char *buffer,
+                                                   int *size,
+                                                   int timeout);
+GWENHYWFAR_API
+  typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOCLOSEFN)(GWEN_BUFFEREDIO *dm);
 
 
 
@@ -209,6 +234,7 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
  */
 GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *dm);
 
+
 /**
  * Set the line mode to be used. Currently there are:
  * <ul>
@@ -220,6 +246,35 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *dm);
 GWENHYWFAR_API
 void GWEN_BufferedIO_SetLineMode(GWEN_BUFFEREDIO *dm,
                                  GWEN_BUFFEREDIOLINEMODE lm);
+
+/**
+ * Returns the current flags for this bufferedIO.
+ * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
+ */
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_BufferedIO_GetFlags(const GWEN_BUFFEREDIO *bt);
+
+/**
+ * Sets the flags for this bufferedIO.
+ * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
+ */
+GWENHYWFAR_API
+void GWEN_BufferedIO_SetFlags(GWEN_BUFFEREDIO *bt, GWEN_TYPE_UINT32 f);
+
+/**
+ * Adds the given flags to the current flags for this bufferedIO.
+ * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
+ */
+GWENHYWFAR_API
+void GWEN_BufferedIO_AddFlags(GWEN_BUFFEREDIO *bt, GWEN_TYPE_UINT32 f);
+
+/**
+ * Removes the given flags from the current flags for this bufferedIO.
+ * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
+ */
+GWENHYWFAR_API
+void GWEN_BufferedIO_SubFlags(GWEN_BUFFEREDIO *bt, GWEN_TYPE_UINT32 f);
+
 
 /**
  * Return the currently used line mode.
@@ -247,6 +302,14 @@ void GWEN_BufferedIO_SetTimeout(GWEN_BUFFEREDIO *dm, int timeout);
  */
 GWENHYWFAR_API
 int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm);
+
+
+void GWEN_BufferedIO_SetReadFn(GWEN_BUFFEREDIO *dm,
+                               GWEN_BUFFEREDIOREADFN fn);
+void GWEN_BufferedIO_SetWriteFn(GWEN_BUFFEREDIO *dm,
+                                GWEN_BUFFEREDIOWRITEFN fn);
+void GWEN_BufferedIO_SetCloseFn(GWEN_BUFFEREDIO *dm,
+                                GWEN_BUFFEREDIOCLOSEFN fn);
 
 
 /**
@@ -288,60 +351,6 @@ GWENHYWFAR_API
                                          char *buffer,
                                          unsigned int *bsize);
 
-
-
-/*_________________________________________________________________________
- *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
- *                           File Module
- *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
- */
-
-
-
-/**
- * Create a buffered IO context using an already open file.
- * This file will automatically be closed upon @ref GWEN_BufferedIO_Close
- * (unless it is stdin, stdout or stderr).
- * This context can be free'd using @ref GWEN_BufferedIO_free.
- */
-GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
-
-
-
-
-/*_________________________________________________________________________
- *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
- *                           Socket Module
- *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
- */
-
-
-
-/**
- * Create a buffered IO context using an already open socket.
- * This socket will automatically be closed upon @ref GWEN_BufferedIO_Close.
- * This function takes over ownership for that socket !
- * This context can be free'd using @ref GWEN_BufferedIO_free.
- */
-GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock);
-
-
-
-/*_________________________________________________________________________
- *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
- *                           Buffer Module
- *YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
- */
-
-
-
-/**
- * Create a buffered IO context using a GWEN_BUFFER.
- * This function takes over ownership for that buffer !
- * This context can be free'd using @ref GWEN_BufferedIO_free.
- */
-GWENHYWFAR_API
-  GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer);
 
 
 #ifdef __cplusplus

@@ -53,6 +53,11 @@ struct GWEN_PROCESS {
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status);
 
 
+struct GWEN_BUFFEREDIO_WINFILE {
+  HANDLE fd;
+};
+typedef struct GWEN_BUFFEREDIO_WINFILE GWEN_BUFFEREDIO_WINFILE;
+
 GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
                                              char *buffer,
                                              int *size,
@@ -63,7 +68,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
                                               int *size,
                                               int timeout);
 GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm);
-void GWEN_BufferedIO_WinFile__free(void *p);
+void GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p);
 
 GWEN_BUFFEREDIO *GWEN_BufferedIO_WinFile_new(HANDLE fd);
 

@@ -26,48 +26,23 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_BUFFEREDIO_P_H
-#define GWENHYWFAR_BUFFEREDIO_P_H "$Id$"
+#ifndef GWENHYWFAR_BIO_BUFFER_H
+#define GWENHYWFAR_BIO_BUFFER_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/bufferedio.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/buffer.h>
 
 
-#define GWEN_BUFFEREDIO_CR 13
-#define GWEN_BUFFEREDIO_LF 10
+/**
+ * Create a buffered IO context using a GWEN_BUFFER.
+ * This function takes over ownership for that buffer !
+ * This context can be free'd using @ref GWEN_BufferedIO_free.
+ */
+GWENHYWFAR_API
+  GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer);
 
 
-struct GWEN_BUFFEREDIOSTRUCT {
-  GWEN_INHERIT_ELEMENT(GWEN_BUFFEREDIO);
-  GWEN_BUFFEREDIOREADFN readPtr;
-  GWEN_BUFFEREDIOWRITEFN writePtr;
-  GWEN_BUFFEREDIOCLOSEFN closePtr;
-  GWEN_TYPE_UINT32 flags;
-
-  GWEN_BUFFEREDIOLINEMODE lineMode;
-  int timeout;
-  char *readerBuffer;
-  int readerBufferLength;
-  int readerBufferFilled;
-  int readerBufferPos;
-  int readerEOF;
-  int readerError;
-
-  char *writerBuffer;
-  int writerBufferLength;
-  int writerBufferFilled;
-  int writerBufferPos;
-  int writerBufferFlushPos;
-};
-
-
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit();
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini();
-
-
-#endif /* GWENHYWFAR_BUFFEREDIO_P_H */
+#endif /* GWENHYWFAR_BIO_BUFFER_H */
 
 
 

@@ -26,48 +26,41 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_BUFFEREDIO_P_H
-#define GWENHYWFAR_BUFFEREDIO_P_H "$Id$"
+#ifndef GWENHYWFAR_BIO_FILE_P_H
+#define GWENHYWFAR_BIO_FILE_P_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/bufferedio.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/bio_file.h>
 
-
-#define GWEN_BUFFEREDIO_CR 13
-#define GWEN_BUFFEREDIO_LF 10
+#define GWEN_BUFFEREDIO_FILE_TIMEOUT   20000
 
 
-struct GWEN_BUFFEREDIOSTRUCT {
-  GWEN_INHERIT_ELEMENT(GWEN_BUFFEREDIO);
-  GWEN_BUFFEREDIOREADFN readPtr;
-  GWEN_BUFFEREDIOWRITEFN writePtr;
-  GWEN_BUFFEREDIOCLOSEFN closePtr;
-  GWEN_TYPE_UINT32 flags;
-
-  GWEN_BUFFEREDIOLINEMODE lineMode;
-  int timeout;
-  char *readerBuffer;
-  int readerBufferLength;
-  int readerBufferFilled;
-  int readerBufferPos;
-  int readerEOF;
-  int readerError;
-
-  char *writerBuffer;
-  int writerBufferLength;
-  int writerBufferFilled;
-  int writerBufferPos;
-  int writerBufferFlushPos;
+struct GWEN_BUFFEREDIO_FILE {
+  int fd;
 };
+typedef struct GWEN_BUFFEREDIO_FILE GWEN_BUFFEREDIO_FILE;
 
 
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit();
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini();
+GWEN_BUFFEREDIO_FILE *GWEN_BufferedIO_File_Table__new();
+void GWEN_BufferedIO_File_Table__free(GWEN_BUFFEREDIO_FILE *bft);
+GWEN_ERRORCODE GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
+                                          char *buffer,
+                                          int *size,
+                                          int timeout);
+GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
+                                           const char *buffer,
+                                           int *size,
+                                           int timeout);
 
 
-#endif /* GWENHYWFAR_BUFFEREDIO_P_H */
+GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm);
+
+void GWEN_BufferedIO_File_FreeData(void *bp, void *p);
+
+
+
+
+
+#endif /* GWENHYWFAR_BIO_FILE_P_H */
 
 
 

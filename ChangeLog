@@ -1,4 +1,16 @@
 
+2004/04/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- io/bufferedio: 
+  - added flag functions to set/get flags which control the behaviour of a 
+    BufferedIO
+  - split into multiple object files for the different supported BufferedIOs
+  - now the GWEN_BUFFEREDIO type is opaque, its strcuture is no longer
+    exported to the supported BufferedIOs
+  - now uses the inherit module
+  The changes above now allow for new BufferedIOs to be created outside Gwen.
+
+
 2004/04/06: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - os/process:
