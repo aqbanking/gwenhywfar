@@ -144,7 +144,7 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt){
   unsigned int i;
 
   assert(idt);
-
+  idt->current=0;
   for (i=0; i<GWEN_IDTABLE_MAXENTRIES; i++) {
     if (idt->entries[i]!=0) {
       idt->current=i;
@@ -167,6 +167,7 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt){
       return idt->entries[i];
     }
   } /* for */
+  idt->current=GWEN_IDTABLE_MAXENTRIES;
   return 0;
 }
 
@@ -318,6 +319,11 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl){
       return id;
     }
     idt=next;
+    if (idt) {
+      id=GWEN_IdTable_GetFirstId(idt);
+      if (id)
+        return id;
+    }
   } /* while */
 
   return 0;
@@ -358,7 +364,7 @@ int GWEN_IdList_Sort(GWEN_IDLIST *idl){
       id=GWEN_IdList_GetFirstId(idl);
     else
       id=GWEN_IdList_GetNextId(idl);
-
+    assert(id);
     ptr[i]=id;
   } /* for */
   GWEN_IdList_Clean(idl);
@@ -368,10 +374,10 @@ int GWEN_IdList_Sort(GWEN_IDLIST *idl){
     int rpl;
 
     rpl=0;
-    for (i=0; i<cnt; i++) {
-    GWEN_TYPE_UINT32 id;
-
+    for (i=0; i<(cnt-1); i++) {
       if (ptr[i]>ptr[i+1]) {
+        GWEN_TYPE_UINT32 id;
+
         id=ptr[i];
         ptr[i]=ptr[i+1];
         ptr[i+1]=id;
