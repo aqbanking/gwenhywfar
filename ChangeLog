@@ -1,4 +1,11 @@
 
+2004/01/05 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added "system.h", which defines some system dependant macros on some
+  platforms
+- process.c: less verbous signal handler
+
+
 2004/01/04 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added GWEN_TYPE_UINT32 (this is needed for crossplatform compilation,

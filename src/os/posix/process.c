@@ -118,7 +118,7 @@ void GWEN_Process_SignalHandler(int s) {
     }
     else if (pid==0) {
       /* process still running ?! */
-      DBG_ERROR(0, "Got a SIGCHLD but no child terminated ??");
+      DBG_DEBUG(0, "Got a SIGCHLD but no child terminated ??");
     }
     else {
       GWEN_PROCESS *pr;
@@ -126,7 +126,7 @@ void GWEN_Process_SignalHandler(int s) {
       /* som process terminated */
       pr=GWEN_Process_FindProcess(pid);
       if (!pr) {
-	DBG_ERROR(0, "No infomation about process \"%d\" available", pid);
+	DBG_NOTICE(0, "No infomation about process \"%d\" available", pid);
       }
       else {
 	GWEN_Process_MakeState(pr, status);

@@ -20,7 +20,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=4
-GWENHYWFAR_VERSION_BUILD=26
+GWENHYWFAR_VERSION_BUILD=28
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD($GWENHYWFAR_VERSION_TAG)"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL($GWENHYWFAR_VERSION_TAG)"
@@ -200,6 +200,7 @@ for d in ${GWEN_HEADER_DIRS}; do
 done
 test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" &>/dev/null
 test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" &>/dev/null
+test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" &>/dev/null
 
 
 #
@@ -300,9 +301,16 @@ AC_CONFIG_FILES([Doxyfile
                  src/ipc/Makefile
                  src/os/Makefile
                  src/os/posix/Makefile
+                 src/os/posix/system.h
                  src/os/windows/Makefile
+                 src/os/windows/system.h
                  src/os/palmos/Makefile
+                 src/os/palmos/system.h
                  src/os/palmos/sysheaders/Makefile
                  src/parser/Makefile
-                 test/Makefile])
+                 test/Makefile
+                 test/Makefile.palm
+		])
 AC_OUTPUT
+
+

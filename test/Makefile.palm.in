@@ -1,0 +1,46 @@
+
+
+INCLUDES=-I.. -I. -Ios/palmos/sysheaders -I../ -I../../ -Ibase -Iparser -Ios/palmos
+
+CC=m68k-palmos-gcc
+CFLAGS=-palmos3.5 -DHAVE_CONFIG_H
+SED=sed
+MAKE=make
+MULTIGEN=m68k-palmos-multigen
+OBJRES=m68k-palmos-obj-res
+BUILDPRC=build-prc
+APID=TEST
+ICONTEXT='GwenTest'
+PRC=palmtest.prc
+PRG=palmtest
+DEF=gwen.def
+palmtest_SOURCES=palmtest.c
+palmtest_OBJECTS=palmtest.o
+
+$(PRC): $(palmtest_OBJECTS) gwen_sections.o
+	$(CC) -o $(PRG) $(palmtest_OBJECTS) -L../src/ -lgwenhywfar; \
+	$(BUILDPRC) $(PRC) $(ICONTEXT) $(APID) $(DEF)$(palmtest_OBJECTS) gwen_sections.o
+
+gwen_sections.o: gwen_sections.s
+	$(CC) -c gwen_sections.s
+
+gwen_sections.s gwen_sections.ld: $(DEF)
+	$(MULTIGEN) $(DEF) --base gwen_sections
+
+#config.h: os/palmos/palmconfig.h
+#	echo "/* Created by Makefile.palm */" >config.h ; \
+#	cat os/palmos/palmconfig.h >>config.h
+
+clean::
+	objs=`echo $(palmtest_SOURCES) | ${SED} -e "s/\.c/\.o/g"` ; \
+	for f in $$objs; do \
+	  rm -f $$f ;  \
+	done; \
+	rm -f palmtest *.grc *.bin *.prc *.o
+
+
+.c.o:
+	${CC} ${CFLAGS} ${INCLUDES} -c $< -o $@
+
+
+all: $(PRC)

@@ -4,11 +4,13 @@ INCLUDES=-I.. -I. -Ios/palmos/sysheaders -I../ -I../../ -Ibase -Iparser -Ios/pal
 
 CC=m68k-palmos-gcc
 CFLAGS=-palmos3.5 -DHAVE_CONFIG_H
+RANLIB=m68k-palmos-ranlib
 SED=sed
 MAKE=make
 
 libgwenhywfar_a_SOURCES=\
   base/buffer.c \
+  base/debug.c \
   base/error.c \
   base/list.c \
   base/logger.c \
@@ -33,7 +35,8 @@ libgwenhywfar.a: $(libgwenhywfar_a_SOURCES) #config.h
 	for f in $$objs; do \
 	  $(MAKE) -f Makefile.palm $$f || exit 1;  \
 	done ; \
-	ar -rs libgwenhywfar.a $$objs
+	ar -r libgwenhywfar.a $$objs ; \
+	$(RANLIB) libgwenhywfar.a
 
 #config.h: os/palmos/palmconfig.h
 #	echo "/* Created by Makefile.palm */" >config.h ; \

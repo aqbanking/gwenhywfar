@@ -11,6 +11,10 @@ noinst_HEADERS=\
  libloader_p.h \
  process_p.h
 
+iheaderdir=${includedir}/gwenhywfar
+iheader_HEADERS=\
+  system.h
+
 libosimpl_la_SOURCES=\
  directory.c \
  inetaddr.c \

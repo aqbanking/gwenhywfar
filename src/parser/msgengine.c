@@ -29,7 +29,7 @@
 # include <config.h>
 #endif
 
-/*#define DISABLE_DEBUGLOG */
+#define DISABLE_DEBUGLOG
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <msgengine_p.h>
@@ -54,6 +54,7 @@ GWEN_MSGENGINE *GWEN_MsgEngine_new(){
   e->delimiters=strdup(GWEN_MSGENGINE_DEFAULT_DELIMITERS);
   e->globalValues=GWEN_DB_Group_new("globalvalues");
   e->escapeChar='\\';
+
   return e;
 }
 

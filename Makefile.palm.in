@@ -1,6 +1,14 @@
 
+SUBDIRS=src test
 MAKE=make
 
 
 all:
-	$(MAKE) -C src -f Makefile.palm
+	for f in $(SUBDIRS); do \
+	  $(MAKE) -C $$f -f Makefile.palm; \
+	done
+
+clean:
+	for f in $(SUBDIRS); do \
+	  $(MAKE) -C $$f -f Makefile.palm clean ; \
+	done
