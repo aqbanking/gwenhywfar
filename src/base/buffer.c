@@ -348,24 +348,21 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
 
 
 int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
-  /* In some applications (notably in simthetic), this function is
-     called *a lot*. It is quite worthy to spend some effort in making
-     this function call less costly. */
-  /* Because of this reason and as a single exception, we skip the
-     assertion here. */
-  /* assert(bf); */
+  assert(bf);
 
   if ((bf->bytesUsed+1+1 > bf->bufferSize) &&
       GWEN_Buffer_AllocRoom(bf, 1+1)) { /* +1 for the trailing 0 */
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return 1;
   }
-  /*if (bf->pos+1>bf->bufferSize) {*/
-  /* if (bf->bytesUsed+1 > bf->bufferSize) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d of %d bytes)",
-              bf->bytesUsed, bf->bufferSize);
-    return 1;
-  } -- not necessary; is already checked in the condition before */
+  if (bf->pos+1>bf->bufferSize) {
+    if (bf->bytesUsed+1 > bf->bufferSize) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d of %d bytes)",
+		bf->bytesUsed, bf->bufferSize);
+      return 1;
+    }
+  }
+
   bf->ptr[bf->bytesUsed]=c;
   if (bf->pos == bf->bytesUsed)
     bf->pos++;

@@ -1,3 +1,11 @@
+
+2005/03/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- partially reverted cs' changes to base/buffer.c: Please dicuss *before*
+  making changes to this important class, it is widely used (especially
+  GWEN_Buffer_AppendByte).
+
+
 2005-03-04   Christian Stimming <stimming@tuhh.de>
 
 	* src/parser/text.c: Also some small performance improvements.
