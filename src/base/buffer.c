@@ -626,9 +626,9 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
 
 
 int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c){
-  assert(bf);
   char *p;
   unsigned int i;
+  assert(bf);
 
   if (bf->pos==0) {
     if ((bf->ptr-bf->realPtr)>=1) {
