@@ -33,6 +33,10 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+#include <time.h>
+#include <errno.h>
+#include <string.h>
+
 
 
 GWEN_TIME *GWEN_CurrentTime(){
@@ -76,6 +80,46 @@ double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0){
 GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t){
   assert(t);
   return t->tv.tv_sec;
+}
+
+
+
+int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
+                                int *hours,
+                                int *mins,
+                                int *secs){
+  struct tm *tb;
+
+  assert(t);
+  tb=localtime(&(t->tv.tv_sec));
+  if (!tb) {
+    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    return -1;
+  }
+  *hours=tb->tm_hour;
+  *mins=tb->tm_min;
+  *secs=tb->tm_sec;
+  return 0;
+}
+
+
+
+int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
+                                int *days,
+                                int *month,
+                                int *year){
+  struct tm *tb;
+
+  assert(t);
+  tb=localtime(&(t->tv.tv_sec));
+  if (!tb) {
+    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    return -1;
+  }
+  *days=tb->tm_mday;
+  *month=tb->tm_mon;
+  *year=tb->tm_year+1900;
+  return 0;
 }
 
 

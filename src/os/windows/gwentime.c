@@ -33,6 +33,11 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+#include <time.h>
+#include <errno.h>
+#include <string.h>
+
+
 
 /* The idea of this function is taken from a posting by Anders Carlsson on the mailing list
  * bug-gnu-chess (http://mail.gnu.org/archive/html/bug-gnu-chess/2004-01/msg00020.html)
@@ -79,6 +84,46 @@ double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0){
 GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t){
   assert(t);
   return t->sec;
+}
+
+
+
+int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
+                                int *hours,
+                                int *mins,
+                                int *secs){
+  struct tm *tb;
+
+  assert(t);
+  tb=localtime(&(t->sec));
+  if (!tb) {
+    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    return -1;
+  }
+  *hours=tb->tm_hour;
+  *mins=tb->tm_min;
+  *secs=tb->tm_sec;
+  return 0;
+}
+
+
+
+int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
+                                int *days,
+                                int *month,
+                                int *year){
+  struct tm *tb;
+
+  assert(t);
+  tb=localtime(&(t->sec));
+  if (!tb) {
+    DBG_ERROR(0, "localtime(): %s", strerror(errno));
+    return -1;
+  }
+  *days=tb->tm_mday;
+  *month=tb->tm_mon;
+  *year=tb->tm_year+1900;
+  return 0;
 }
 
 

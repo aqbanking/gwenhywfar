@@ -48,6 +48,15 @@ GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_Time_Seconds(GWEN_TIME *t);
 
 GWENHYWFAR_API double GWEN_Time_Diff(GWEN_TIME *t1, GWEN_TIME *t0);
 
+GWENHYWFAR_API int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
+                                               int *hours,
+                                               int *mins,
+                                               int *secs);
+GWENHYWFAR_API int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
+                                               int *days,
+                                               int *month,
+                                               int *year);
+
 
 #ifdef __cplusplus
 }
