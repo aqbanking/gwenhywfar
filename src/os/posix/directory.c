@@ -43,6 +43,9 @@
 #include <gwenhywfar/debug.h>
 
 
+static char gwen_directory_posix__homedir[256];
+static int gwen_directory_posix__home_set=0;
+
 
 GWEN_DIRECTORYDATA *GWEN_Directory_new(){
   GWEN_DIRECTORYDATA *d;
@@ -117,18 +120,33 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
 
 
 int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
-  struct passwd *p;
+  if (!gwen_directory_posix__home_set) {
+    struct passwd *p;
 
-  p=getpwuid(geteuid());
-  if (!p) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "%s at getpwuid", strerror(errno));
+    p=getpwuid(geteuid());
+    if (!p) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "%s at getpwuid", strerror(errno));
+      endpwent();
+      return -1;
+    }
+    if (sizeof(gwen_directory_posix__homedir)<strlen(p->pw_dir)+1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Internal: Buffer too small (need %d bytes)",
+		strlen(p->pw_dir)+1);
+      endpwent();
+      return -1;
+    }
+    strcpy(gwen_directory_posix__homedir, p->pw_dir);
+    gwen_directory_posix__home_set=1;
+    endpwent();
+  }
+
+  if (size<strlen(gwen_directory_posix__homedir)+1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (need %d bytes)",
+	      strlen(gwen_directory_posix__homedir)+1);
     return -1;
   }
-  if (size<strlen(p->pw_dir)+1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (need %d bytes)", strlen(p->pw_dir)+1);
-    return -1;
-  }
-  strcpy(buffer, p->pw_dir);
+  strcpy(buffer, gwen_directory_posix__homedir);
+
   return 0;
 }
 

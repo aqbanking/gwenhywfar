@@ -123,9 +123,9 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
       }
     }
     else if (strstr(serr, "undefined symbol:")) {
-      fprintf(stderr,
-	      "GWEN: Error loading library: %s\n",
-	      serr);
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "GWEN: Error loading library: %s",
+               serr);
       if (strstr(serr, name))
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
@@ -137,9 +137,9 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 			      GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
 			      GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
     }
-    fprintf(stderr,
-	    "GWEN: Error loading library: %s\n",
-	    serr);
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "GWEN: Error loading library: %s",
+             serr);
     return GWEN_Error_new(0,
 			  GWEN_ERROR_SEVERITY_ERR,
 			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
@@ -162,9 +162,9 @@ GWEN_ERRORCODE GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h){
                           GWEN_LIBLOADER_ERROR_NOT_OPEN);
   /* hmm, linux does not like this with libtowitoko.so and qlcsetup */
   if (dlclose(h->handle)!=0) {
-    fprintf(stderr,
-	    "GWEN: Error unloading library: %s\n",
-	    dlerror());
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "GWEN: Error unloading library: %s",
+              dlerror());
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),

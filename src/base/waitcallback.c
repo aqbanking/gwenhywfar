@@ -94,6 +94,7 @@ void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx){
     if (--(ctx->usage)==0) {
       GWEN_INHERIT_FINI(GWEN_WAITCALLBACK, ctx);
       GWEN_WaitCallback_free(ctx->instantiatedFrom);
+      GWEN_WaitCallback_List_free(ctx->registeredCallbacks);
       free(ctx->id);
       GWEN_LIST_FINI(GWEN_WAITCALLBACK, ctx);
       GWEN_FREE_OBJECT(ctx);

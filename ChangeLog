@@ -1,4 +1,13 @@
 
+2004/08/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- valgrind session: 
+  - the system is now asked for the home dir only the first
+    time a program issues such a request. It is then copied to an internal
+    buffer.
+  - fixed some other memory leaks
+- replaced fprintf with DBG_INFO in posix/libloader.c
+
 
 2004/08/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
