@@ -25,12 +25,12 @@ Name: gwenhywfar
 Version: @VERSION@
 Release: 1.%{disttag}%{distver}
 Source: http://download.sourceforge.net/gwenhywfar/%{name}-%{version}.tar.gz
-BuildRequires: openssl-devel
 Group: System Environment/Libraries
 License: LGPL
 Packager: Martin Preuss <martin@libchipcard.de>
 URL: http://sourceforge.net/projects/gwenhywfar
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
+BuildRequires: openssl-devel ncurses-devel gettext
 Prereq: /sbin/ldconfig
 
 %description

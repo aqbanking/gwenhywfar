@@ -1,3 +1,7 @@
+2005-01-11   Christian Stimming <stimming@tuhh.de>
+
+	* gwenhywfar.spec.in: Add BuildRequires to ensure a sane rpm
+	building environment.
 
 ===========================================================================
 MARK: released gwenhywfar-1.4 (2004/12/30)
