@@ -153,6 +153,7 @@ win32-cs-start: dist
 quick: config.h
 	make -C src version.h types.h
 	make -C src/os/$(GWEN_OS) system.h
+	make -C po stamp-po
 	make
 
 CLEANFILES = gwenhywfar-config
