@@ -57,6 +57,7 @@ typedef enum {
 typedef struct {
   GWEN_TYPE_UINT32 flags;
   GWEN_ARGS_TYPE type;
+  const char *name;
   unsigned int minNum;
   unsigned int maxNum;
   unsigned int count;

@@ -52,6 +52,14 @@ int GWEN_Args_Check(int argc, char **argv,
 
   i=startAt;
 
+  /* reset count fields of all options */
+  for(tmpArgs=args;;tmpArgs++) {
+    tmpArgs->count=0;
+
+    if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST)
+      break;
+  } /* for */
+
   while(i<argc) {
     GWEN_ARGS_ELEMENT_TYPE t;
     char *tmpBuf;
@@ -108,7 +116,7 @@ int GWEN_Args_Check(int argc, char **argv,
       if (tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT) {
         /* argument needed */
         if (i>=argc) {
-          DBG_ERROR(0, "Argument needed for short option \"%s\"", p);
+          DBG_ERROR(0, "Argument needed for option \"%s\"", tmpArgs->name);
           return GWEN_ARGS_RESULT_ERROR;
         }
         switch(tmpArgs->type) {
@@ -116,7 +124,7 @@ int GWEN_Args_Check(int argc, char **argv,
           GWEN_DB_SetCharValue(db,
                                GWEN_DB_FLAGS_DEFAULT |
                                GWEN_PATH_FLAGS_CREATE_VAR,
-                               p, argv[i]);
+                               tmpArgs->name, argv[i]);
           break;
 
         case GWEN_ArgsTypeInt:
@@ -127,7 +135,7 @@ int GWEN_Args_Check(int argc, char **argv,
           GWEN_DB_SetIntValue(db,
                               GWEN_DB_FLAGS_DEFAULT |
                               GWEN_PATH_FLAGS_CREATE_VAR,
-                              p, value);
+                              tmpArgs->name, value);
           break;
 
         default:
@@ -139,7 +147,7 @@ int GWEN_Args_Check(int argc, char **argv,
       else {
         GWEN_DB_SetIntValue(db,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            p, tmpArgs->count);
+                            tmpArgs->name, tmpArgs->count);
       }
       break;
 
@@ -175,7 +183,7 @@ int GWEN_Args_Check(int argc, char **argv,
       if (tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT) {
         /* argument needed */
         if (*v==0) {
-          DBG_ERROR(0, "Argument needed for long option \"%s\"", tmpBuf);
+          DBG_ERROR(0, "Argument needed for option \"%s\"", tmpArgs->name);
           free(tmpBuf);
           return GWEN_ARGS_RESULT_ERROR;
         }
@@ -184,7 +192,7 @@ int GWEN_Args_Check(int argc, char **argv,
           GWEN_DB_SetCharValue(db,
                                GWEN_DB_FLAGS_DEFAULT |
                                GWEN_PATH_FLAGS_CREATE_VAR,
-                               p, v);
+                               tmpArgs->name, v);
           break;
 
         case GWEN_ArgsTypeInt:
@@ -197,7 +205,7 @@ int GWEN_Args_Check(int argc, char **argv,
           GWEN_DB_SetIntValue(db,
                               GWEN_DB_FLAGS_DEFAULT |
                               GWEN_PATH_FLAGS_CREATE_VAR,
-                              p, value);
+                              tmpArgs->name, value);
           break;
 
         default:
@@ -208,7 +216,7 @@ int GWEN_Args_Check(int argc, char **argv,
       else {
         GWEN_DB_SetIntValue(db,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            p, tmpArgs->count);
+                            tmpArgs->name, tmpArgs->count);
       }
       free(tmpBuf);
 
