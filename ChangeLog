@@ -1,3 +1,7 @@
+2004-04-01  Christian Stimming <stimming@tuhh.de>
+
+	* src/parser/db.c: Fix errornous function argument to
+	GWEN_DBIO_GetPlugin.
 
 2004/04/01: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

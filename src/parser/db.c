@@ -2053,7 +2053,7 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
   int fd;
   int rv;
 
-  dbio=GWEN_DBIO_GetPlugin(dbio);
+  dbio=GWEN_DBIO_GetPlugin(type);
   if (!dbio) {
     DBG_ERROR(0, "Plugin \"%s\" is not supported", type);
     return -1;
@@ -2093,7 +2093,7 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
   int fd;
   int rv;
 
-  dbio=GWEN_DBIO_GetPlugin(dbio);
+  dbio=GWEN_DBIO_GetPlugin(type);
   if (!dbio) {
     DBG_ERROR(0, "Plugin \"%s\" is not supported", type);
     return -1;
