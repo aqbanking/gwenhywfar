@@ -9,6 +9,10 @@
   - added EditBox
   - added CheckBox
   - fixed some bugs
+  - added a help string which can be assigned to a widget. Whenever F1 is
+    pressed the current widget will popup a message box and show that help
+    text in it. If the widget which currently possesses the focus does not
+    have a help string the parents will be consulted.
 
 
 2004/06/25: Martin Preuss<martin@libchipcard.de>
