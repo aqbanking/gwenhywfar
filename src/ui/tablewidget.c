@@ -118,13 +118,15 @@ void GWEN_TableField_SetText(GWEN_TABLE_FIELD *tf,
 void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
   assert(tf);
 
+  DBG_NOTICE(0, "Updating table field");
   if (tf->text) {
     const char *p;
     const char *lastStart;
     const char *lastSpace;
     int y;
 
-    DBG_VERBOUS(0, "Field contains data");
+
+    DBG_NOTICE(0, "Field contains data");
     y=0;
     p=tf->text;
     while(*p) {
@@ -145,18 +147,18 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
           //DBG_INFO(0, "Line break");
           lastSpace=p;
           breakLine=1;
-          DBG_NOTICE(0, "ZZZ: Breaking line");
+          DBG_NOTICE(0, "Breaking line");
           break;
         }
         else {
           if (i>tf->width) {
             //DBG_INFO(0, "Line too long, checking for break (%d)", i);
             if (!lastSpace) {
-              DBG_NOTICE(0, "ZZZ: Field does not fit");
+              DBG_NOTICE(0, "Field does not fit");
               lastSpace=p;
             }
             breakLine=1;
-            DBG_NOTICE(0, "ZZZ: Breaking line (%d)", i);
+            DBG_NOTICE(0, "Breaking line (%d)", i);
             break;
           }
           else {
@@ -171,7 +173,7 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
 
       DBG_VERBOUS(0, "Writing line");
       if (y>=tf->height) {
-        //DBG_INFO(0, "Field line %d is not visible", y);
+        DBG_NOTICE(0, "Field line %d is not visible", y);
         return;
       }
       if (!tf->parent)
@@ -185,11 +187,12 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
 
       lh=GWEN_TextWidget_LineOpen(tw, wy, 1);
       if (!lh) {
+        DBG_NOTICE(0, "Error opening line %d", wy);
         return;
       }
 
-      DBG_NOTICE(0, "ZZZ: Setting borders: %d-%d",
-                 wx, wx+tf->width-1);
+      //DBG_NOTICE(0, "Setting borders: %d-%d",
+      //           wx, wx+tf->width-1);
       GWEN_TextWidget_LineSetBorders(tw, lh, wx, wx+tf->width-1);
       GWEN_TextWidget_LineClear(tw, lh);
       GWEN_TextWidget_LineSetPos(tw, lh, wx);
@@ -202,7 +205,7 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
       else {
         len=p-lastStart;
       }
-      DBG_NOTICE(0, "ZZZ: Writing line: %d", len);
+      DBG_NOTICE(0, "Writing line: %d", len);
       if (tf->selected)
         GWEN_TextWidget_LineSetAttributes(tw, lh,
                                           (GWEN_WidgetColour_Chosen &0x0f));
@@ -333,7 +336,8 @@ void GWEN_TableColumn_free(GWEN_TABLE_COLUMN *tc){
 void GWEN_TableColumn_Update(GWEN_TABLE_COLUMN *tc){
   GWEN_TABLE_FIELD *tf;
 
-  DBG_NOTICE(0, "Updating table column");
+  DBG_NOTICE(0, "Updating table column (%d fields)",
+             GWEN_TableField_List_GetCount(tc->fields));
   tf=GWEN_TableField_List_First(tc->fields);
   while(tf) {
     GWEN_TableField_Update(tf);
@@ -474,7 +478,8 @@ void GWEN_TableWidget__AddColumn(GWEN_WIDGET *w, GWEN_TABLE_COLUMN *tc) {
   tc->y=win->ty;
   tc->x=win->tx+win->twidth;
   win->twidth+=tc->width;
-  if (win->flags & GWEN_TABLEWIDGET_FLAGS_COLBORDER) {
+  if (win->flags & GWEN_TABLEWIDGET_FLAGS_COLBORDER &&
+      tc->x) {
     tc->x++;
     win->twidth++;
   }
@@ -501,16 +506,17 @@ GWEN_TABLE_FIELD *GWEN_TableWidget_LocateField(GWEN_WIDGET *w,
   while(tc && i--) tc=GWEN_TableColumn_List_Next(tc);
   if (!tc) {
     if (!crea) {
-      DBG_INFO(0, "Column %d not found", x);
+      DBG_NOTICE(0, "Column %d not found", x);
       return 0;
     }
     else {
       i++;
-      DBG_INFO(0, "Column %d not found, creating %d", x, i);
+      DBG_NOTICE(0, "Column %d not found, creating %d", x, i);
       while(i--) {
         tc=GWEN_TableColumn_new(GWEN_TABLECOLUMN_DEFAULT_WIDTH);
         GWEN_TableWidget__AddColumn(w, tc);
       }
+      win->changed=1;
     }
   }
 
@@ -523,11 +529,13 @@ GWEN_TABLE_FIELD *GWEN_TableWidget_LocateField(GWEN_WIDGET *w,
     }
     else {
       i++;
+      DBG_NOTICE(0, "Field not found, creating %d", i);
       while(i--) {
         tf=GWEN_TableField_new(tc->width, 1, "");
         GWEN_TableColumn_AddField(tc, tf);
         tf->height=1;
       }
+      win->changed=1;
     }
   }
 
@@ -542,7 +550,7 @@ void GWEN_TableWidget_SetText(GWEN_WIDGET *w,
   int nh;
   GWEN_TABLEWIDGET *win;
 
-  DBG_NOTICE(0, "Drawing border");
+  DBG_NOTICE(0, "Setting text of field %d/%d to %s", x, y, text);
   assert(w);
   win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TABLEWIDGET, w);
 
@@ -554,6 +562,7 @@ void GWEN_TableWidget_SetText(GWEN_WIDGET *w,
   nh=GWEN_TableField_Calculate_Height(tf, tf->width);
   if (nh<1) tf->height=1;
   else tf->height=nh;
+  win->changed=1;
   GWEN_Widget_Changed(w);
 }
 
@@ -638,6 +647,31 @@ void GWEN_TableWidget_Update(GWEN_WIDGET *w){
     tc=GWEN_TableColumn_List_Next(tc);
   }
   GWEN_TableWidget_DrawBorder(w, 0, win->theight);
+  win->changed=0;
+}
+
+
+
+void GWEN_TableWidget_Refresh(GWEN_WIDGET *w){
+  GWEN_TABLE_COLUMN *tc;
+  GWEN_TABLEWIDGET *win;
+
+  DBG_NOTICE(0, "Refreshing table");
+  assert(w);
+  win=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GWEN_TABLEWIDGET, w);
+  assert(win);
+
+  if (!win->changed)
+    return;
+
+  beep();
+  tc=GWEN_TableColumn_List_First(win->columns);
+  while(tc) {
+    GWEN_TableColumn_Update(tc);
+    tc=GWEN_TableColumn_List_Next(tc);
+  }
+  GWEN_TableWidget_DrawBorder(w, 0, win->theight);
+  win->changed=0;
 }
 
 
@@ -689,7 +723,7 @@ void GWEN_TableWidget_Highlight(GWEN_WIDGET *w,
     for (i=0; i<tf->height; i++) {
       if ((y+i)>=win->top &&
           (y+i<(win->top+GWEN_Widget_GetHeight(w)))) {
-        //DBG_NOTICE(0, "ZZZ: Highlighting %d/%d, %d  (%d) [%08x]",
+        //DBG_NOTICE(0, "Highlighting %d/%d, %d  (%d) [%08x]",
         //           x, y+i-win->top, tf->width, colour, (unsigned int)tf);
         GWEN_Widget_Highlight(w, x, y+i-win->top, ww, colour);
       }
@@ -737,30 +771,46 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
   }
 
   case GWEN_EventType_Highlight: {
-    int x, y;
     GWEN_WIDGET_COLOUR hi;
-    GWEN_TABLE_FIELD *tf;
 
     DBG_NOTICE(0, "Event: Highlight(%s)", GWEN_Widget_GetName(w));
 
-    x=GWEN_EventHighlight_GetX(e);
-    y=GWEN_EventHighlight_GetY(e);
-    y+=win->top;
     hi=GWEN_EventHighlight_GetHi(e);
     win->previousHandler(w, e);
-    //return GWEN_UIResult_Handled;
 
     if (!hi) {
-      if (GWEN_Widget_GetFlags(w) & GWEN_WIDGET_FLAGS_BORDER) {
-        x++;
-        y++;
+      int x, y;
+      int len;
+      GWEN_TABLE_COLUMN *tc;
+      int updated;
+
+      x=GWEN_EventHighlight_GetX(e);
+      y=GWEN_EventHighlight_GetY(e);
+      len=GWEN_EventHighlight_GetLen(e);
+      y+=win->top;
+
+      updated=0;
+      tc=GWEN_TableColumn_List_First(win->columns);
+      while(tc) {
+        GWEN_TABLE_FIELD *tf;
+
+        if (tc->x>=x && (tc->x+tc->width)<=(x+len)) {
+          tf=GWEN_TableField_List_First(tc->fields);
+          while(tf) {
+            if (y>=tf->y && y<(tf->y+tf->height)) {
+              /* found Y line */
+              GWEN_TableField_Update(tf);
+              updated=1;
+              break;
+            }
+            tf=GWEN_TableField_List_Next(tf);
+          }
+        }
+        tc=GWEN_TableColumn_List_Next(tc);
       }
-      //DBG_NOTICE(0, "Rewriting line %d/%d", x, y);
-      tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
-      if (tf) {
-        GWEN_TableField_Update(tf);
-      }
-      GWEN_Widget_Refresh(w);
+
+      if (updated)
+        GWEN_Widget_Refresh(w);
       return GWEN_UIResult_Handled;
     }
     else {
@@ -807,8 +857,13 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
 
   case GWEN_EventType_Update: {
     DBG_NOTICE(0, "Event: Update(%s)", GWEN_Widget_GetName(w));
+    GWEN_TableWidget_Refresh(w);
     return win->previousHandler(w, e);
   }
+
+  case GWEN_EventType_Refresh:
+    GWEN_TableWidget_Refresh(w);
+    return win->previousHandler(w, e);
 
   case GWEN_EventType_Key: {
     int key;
@@ -838,7 +893,7 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
         win->my++;
         GWEN_Widget_SetCursorX(w, ntf->x-win->left);
         GWEN_Widget_SetCursorY(w, ntf->y-win->top);
-        GWEN_Widget_Refresh(w);
+        //GWEN_Widget_Refresh(w);
       }
       else {
         if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
@@ -872,7 +927,7 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
           win->my--;
           GWEN_Widget_SetCursorX(w, tf->x-win->left);
           GWEN_Widget_SetCursorY(w, tf->y-win->top);
-          GWEN_Widget_Refresh(w);
+          //GWEN_Widget_Refresh(w);
         }
         else {
           if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
@@ -907,7 +962,7 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
         win->mx++;
         GWEN_Widget_SetCursorX(w, ntf->x-win->left);
         GWEN_Widget_SetCursorY(w, ntf->y-win->top);
-        GWEN_Widget_Refresh(w);
+        //GWEN_Widget_Refresh(w);
       }
       else {
         if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
@@ -941,7 +996,7 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
           win->mx--;
           GWEN_Widget_SetCursorX(w, tf->x-win->left);
           GWEN_Widget_SetCursorY(w, tf->y-win->top);
-          GWEN_Widget_Refresh(w);
+          //GWEN_Widget_Refresh(w);
         }
         else {
           if (win->flags & GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT)
@@ -952,13 +1007,44 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
       }
       return GWEN_UIResult_Handled;
     }
-    else if (key==32) {
+    else if (key==32 && (win->flags & GWEN_TABLEWIDGET_FLAGS_SELECTION)) {
       GWEN_TABLE_FIELD *tf;
 
       tf=GWEN_TableWidget_LocateField(w, win->mx, win->my, 0);
       if (tf) {
+        GWEN_EVENT *newE;
+
         tf->selected=!tf->selected;
         GWEN_TableField_Update(tf);
+        newE=GWEN_EventSelected_new(tf->text, win->mx, win->my,
+                                    tf->selected);
+        assert(newE);
+        if (GWEN_Widget_SendEvent(w, w, newE)) {
+          DBG_INFO(0, "Could not send event");
+          GWEN_Event_free(newE);
+        }
+        GWEN_Widget_Refresh(w);
+      }
+      return GWEN_UIResult_Handled;
+    }
+    else if (key==13) {
+      GWEN_TABLE_FIELD *tf;
+      int x;
+
+      if (win->flags & GWEN_TABLEWIDGET_FLAGS_LINEMODE)
+        x=0;
+      else
+        x=win->mx;
+      tf=GWEN_TableWidget_LocateField(w, x, win->my, 0);
+      if (tf) {
+        GWEN_EVENT *newE;
+
+        newE=GWEN_EventChosen_new(tf->text, x, win->my);
+        assert(newE);
+        if (GWEN_Widget_SendEvent(w, w, newE)) {
+          DBG_INFO(0, "Could not send event");
+          GWEN_Event_free(newE);
+        }
       }
       return GWEN_UIResult_Handled;
     }
@@ -1017,7 +1103,7 @@ GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e){
     break;
   } /* switch */
 
-  return rv;;
+  return rv;
 }
 
 
@@ -1069,9 +1155,9 @@ int GWEN_TableWidget_Clear(GWEN_WIDGET *w){
   win->left=0;
   win->mx=0;
   win->my=0;
-  win->tx=0;
   win->ty=0;
   win->theight=0;
+  win->changed=1;
   GWEN_TextWidget_Clear(w);
   return 0;
 }

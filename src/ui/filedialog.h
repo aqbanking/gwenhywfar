@@ -28,6 +28,11 @@
 #ifndef GWEN_UI_FILEDIALOG_H
 #define GWEN_UI_FILEDIALOG_H
 
+
+#define GWEN_FILEDIALOG_FLAGS_WANTDIR 0x00010000
+#define GWEN_FILEDIALOG_FLAGS_MULTI   0x00020000
+
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/ui/widget.h>

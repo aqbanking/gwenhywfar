@@ -73,7 +73,7 @@ GWEN_WIDGET *GWEN_FileDialog_new(GWEN_TYPE_UINT32 flags,
   int x, y;
 
   mw=GWEN_Window_new(0,
-                     (flags & GWEN_WIDGET_FLAGS_WINDOWFLAGS)|
+                     (flags & ~GWEN_WIDGET_FLAGS_WINDOWFLAGS)|
                      GWEN_WIDGET_FLAGS_MODAL |
                      GWEN_WIDGET_FLAGS_BORDER,
                      name,
@@ -91,9 +91,16 @@ GWEN_WIDGET *GWEN_FileDialog_new(GWEN_TYPE_UINT32 flags,
   assert(win->previousHandler);
   GWEN_Widget_SetEventHandler(mw, GWEN_FileDialog_EventHandler);
   GWEN_Widget_SetRunFn(mw, GWEN_FileDialog_Run);
+  win->flags=flags;
 
-  if (dir)
+  if (dir) {
     win->currentDir=strdup(dir);
+    win->startDir=strdup(dir);
+  }
+  else {
+    win->currentDir=strdup(".");
+    win->startDir=strdup(".");
+  }
 
   wScroller=GWEN_ScrollWidget_new(GWEN_Window_GetViewPort(mw),
                                   GWEN_WIDGET_FLAGS_DEFAULT |
@@ -108,9 +115,12 @@ GWEN_WIDGET *GWEN_FileDialog_new(GWEN_TYPE_UINT32 flags,
                          GWEN_TABLEWIDGET_FLAGS_COLBORDER |
                          GWEN_TABLEWIDGET_FLAGS_FIXED |
                          GWEN_TABLEWIDGET_FLAGS_HIGHLIGHT |
+                         ((flags & GWEN_FILEDIALOG_FLAGS_MULTI)
+                          ?GWEN_TABLEWIDGET_FLAGS_SELECTION:0) |
                          GWEN_TABLEWIDGET_FLAGS_LINEMODE,
                          "FileTable",
                          0, 0, 0, 0);
+  //GWEN_Widget_Subscribe(w, GWEN_EventType_Chosen, mw);
   win->wTable=w;
   GWEN_TextWidget_SetVirtualSize(w, 200, 200);
   GWEN_TableWidget_AddColumn(w, 30); /* file name */
@@ -145,6 +155,7 @@ GWEN_WIDGET *GWEN_FileDialog_new(GWEN_TYPE_UINT32 flags,
                          GWEN_Widget_GetWidth(mwp)-2-x, 1,
                          patterns);
   GWEN_Widget_Subscribe(w, GWEN_EventType_Changed, mw);
+  
   y+=GWEN_Widget_GetHeight(w);
   x=0;
   win->wPatterns=w;
@@ -167,7 +178,7 @@ GWEN_WIDGET *GWEN_FileDialog_new(GWEN_TYPE_UINT32 flags,
                      fileName,
                      x, y,
                      GWEN_Widget_GetWidth(mwp)-2-x,
-                     1, GWEN_Widget_GetWidth(mwp)-2-x);
+                     1, 256);
   y+=GWEN_Widget_GetHeight(w);
   x=0;
   win->wSelected=w;
@@ -209,6 +220,8 @@ void GWEN_FileDialog_freeData(void *bp, void *p) {
   GWEN_FILEDIALOG *win;
 
   win=(GWEN_FILEDIALOG*)p;
+  free(win->currentDir);
+  free(win->startDir);
   GWEN_FREE_OBJECT(win);
 }
 
@@ -254,6 +267,87 @@ GWEN_UI_RESULT GWEN_FileDialog_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
   case GWEN_EventType_Update:
     break;
 
+  case GWEN_EventType_Chosen: {
+    const char *text;
+    GWEN_WIDGET *wSender;
+
+    wSender=GWEN_Event_GetSender(e);
+    if (wSender) {
+      if (wSender==win->wTable ||
+          GWEN_Widget_IsChildOf(wSender, win->wTable)) {
+        text=GWEN_EventChosen_GetText(e);
+        if (text) {
+          int x;
+          int y;
+          GWEN_BUFFER *buf;
+          struct stat st;
+
+          if (strcasecmp(text, ".")==0)
+            break;
+
+          x=GWEN_EventChosen_GetX(e);
+          y=GWEN_EventChosen_GetY(e);
+          buf=GWEN_Buffer_new(0, 256, 0, 1);
+
+          if (strcasecmp(text, "..")==0) {
+            char *p;
+
+            p=strrchr(win->currentDir, '/');
+            if (p) {
+              /* shorten name by last element */
+              *p=0;
+              p=win->currentDir;
+            }
+            else {
+              p=win->startDir;
+            }
+            GWEN_Buffer_AppendString(buf, p);
+          }
+          else {
+            GWEN_Buffer_AppendString(buf, win->currentDir);
+            GWEN_Buffer_AppendByte(buf, '/');
+            GWEN_Buffer_AppendString(buf, text);
+          }
+          DBG_NOTICE(0, "Chosen: %s (%d, %d)", text, x, y);
+          DBG_NOTICE(0, "Checking dir %s",
+                     GWEN_Buffer_GetStart(buf));
+
+          if (!stat(GWEN_Buffer_GetStart(buf), &st)) {
+            if (S_ISDIR(st.st_mode)) {
+              GWEN_DB_NODE *db;
+
+              db=GWEN_DB_Group_new("files");
+              if (!GWEN_FileDialog_ScanDir(w, GWEN_Buffer_GetStart(buf), db)) {
+                GWEN_FileDialog_Files2Table(w, db);
+                GWEN_DB_Group_free(win->files);
+                win->files=db;
+                free(win->currentDir);
+                win->currentDir=strdup(GWEN_Buffer_GetStart(buf));
+                GWEN_Widget_Redraw(win->wTable);
+              }
+              else {
+                GWEN_DB_Group_free(db);
+              }
+            } /* if dir */
+            else {
+              /* filr */
+              if (!(win->flags & GWEN_FILEDIALOG_FLAGS_WANTDIR) &&
+                  !(win->flags & GWEN_FILEDIALOG_FLAGS_MULTI)) {
+                /* user wanted a single file, we got one */
+                GWEN_Widget_SetText(win->wSelected, text,
+                                    GWEN_EventSetTextMode_Replace);
+                GWEN_Buffer_free(buf);
+                return GWEN_UIResult_Finished;
+              }
+            }
+          } /* if stat succeeded */
+          GWEN_Buffer_free(buf);
+        }
+      }
+    }
+    break;
+  }
+
   default:
     break;
   } /* switch */
@@ -298,84 +392,89 @@ int GWEN_FileDialog_ScanDir(GWEN_WIDGET *w, const char *s, GWEN_DB_NODE *db){
     char buffer[256];
 
     while(!GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
-      GWEN_BUFFER *fbuf;
-      struct stat st;
-      GWEN_DB_NODE *dbEntry;
+      if (strcasecmp(buffer, ".")) {
+        GWEN_BUFFER *fbuf;
+        struct stat st;
+        GWEN_DB_NODE *dbEntry;
 
-      fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      GWEN_Buffer_AppendString(fbuf, s);
-      GWEN_Buffer_AppendByte(fbuf, '/');
-      GWEN_Buffer_AppendString(fbuf, buffer);
-      if (!stat(GWEN_Buffer_GetStart(fbuf), &st)) {
-        struct tm *lt;
+        fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        GWEN_Buffer_AppendString(fbuf, s);
+        GWEN_Buffer_AppendByte(fbuf, '/');
+        GWEN_Buffer_AppendString(fbuf, buffer);
+        if (!stat(GWEN_Buffer_GetStart(fbuf), &st)) {
+          struct tm *lt;
 
-        if (S_ISDIR(st.st_mode)) {
-          dbEntry=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP,
-                                   "dir");
-        }
-        else {
-          char numbuf[32];
-          const char *suffixes=" KMGT";
-          const char *p;
-          size_t rest;
+          if (S_ISDIR(st.st_mode)) {
+            dbEntry=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP,
+                                     "dir");
+            DBG_NOTICE(0, "Dir: %s", buffer);
+          }
+          else {
+            char numbuf[32];
+            const char *suffixes=" KMGT";
+            const char *p;
+            size_t rest;
 
-          dbEntry=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP,
-                                   "file");
-          p=suffixes;
-          rest=st.st_size;
-          if (rest/1024) {
-            p++;         /* KB */
-            rest/=1024;
+            DBG_NOTICE(0, "File: %s", buffer);
+            dbEntry=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP,
+                                     "file");
+            p=suffixes;
+            rest=st.st_size;
             if (rest/1024) {
-              p++;       /* MB */
+              p++;         /* KB */
               rest/=1024;
               if (rest/1024) {
-                p++;       /* GB */
+                p++;       /* MB */
                 rest/=1024;
                 if (rest/1024) {
-                  p++;       /* TB */
+                  p++;       /* GB */
                   rest/=1024;
+                  if (rest/1024) {
+                    p++;       /* TB */
+                    rest/=1024;
+                  }
                 }
               }
             }
+
+            if (isspace(*p))
+              snprintf(numbuf, sizeof(numbuf), " %7d",
+                       rest);
+            else
+              snprintf(numbuf, sizeof(numbuf), "%7d%c",
+                       rest, *p);
+            GWEN_DB_SetCharValue(dbEntry,
+                                 GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                 "size",
+                                 numbuf);
           }
-
-          if (isspace(*p))
-            snprintf(numbuf, sizeof(numbuf), " %7d",
-                     rest);
-          else
-            snprintf(numbuf, sizeof(numbuf), "%7d%c",
-                     rest, *p);
           GWEN_DB_SetCharValue(dbEntry,
                                GWEN_DB_FLAGS_OVERWRITE_VARS,
-                               "size",
-                               numbuf);
-        }
-        GWEN_DB_SetCharValue(dbEntry,
-                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "name", buffer);
-        lt=localtime(&st.st_mtime);
-        if (lt) {
-          char numbuf[64];
+                               "name", buffer);
+          lt=localtime(&st.st_mtime);
+          if (lt) {
+            char numbuf[64];
 
-          snprintf(numbuf, sizeof(numbuf),
-                   "%04d/%02d/%02d %02d:%02d",
-                   lt->tm_year+1900,
-                   lt->tm_mon+1,
-                   lt->tm_mday,
-                   lt->tm_hour,
-                   lt->tm_min);
-          DBG_NOTICE(0, "Date: %s", numbuf);
-          GWEN_DB_SetCharValue(dbEntry,
-                               GWEN_DB_FLAGS_OVERWRITE_VARS,
-                               "date", numbuf);
-        }
-      } /* if stat succeeded */
+            snprintf(numbuf, sizeof(numbuf),
+                     "%04d/%02d/%02d %02d:%02d",
+                     lt->tm_year+1900,
+                     lt->tm_mon+1,
+                     lt->tm_mday,
+                     lt->tm_hour,
+                     lt->tm_min);
+            DBG_NOTICE(0, "Date: %s", numbuf);
+            GWEN_DB_SetCharValue(dbEntry,
+                                 GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                 "date", numbuf);
+          }
+        } /* if stat succeeded */
+      }
     } /* if entry read */
 
     GWEN_Directory_Close(d);
   }
-
+  else
+    return -1;
   return 0;
 }
 
@@ -417,7 +516,7 @@ int GWEN_FileDialog_Files2Table(GWEN_WIDGET *w, GWEN_DB_NODE *db){
     GWEN_TableWidget_SetText(win->wTable, 0, i,
                              GWEN_DB_GetCharValue(dbEntry, "name",
                                                   0, "(unnamed)"));
-    GWEN_TableWidget_SetText(win->wTable, 1, i, "<DIR>");
+    GWEN_TableWidget_SetText(win->wTable, 1, i, " DIR");
     GWEN_TableWidget_SetText(win->wTable, 2, i,
                              GWEN_DB_GetCharValue(dbEntry,
                                                   "date",
@@ -488,6 +587,10 @@ int GWEN_FileDialog_Run(GWEN_WIDGET *w) {
     else
       res=GWEN_UI_DispatchEvent(e);
     GWEN_Event_free(e);
+    if (res==GWEN_UIResult_Finished) {
+      response=1;
+      break;
+    }
   } /* for */
 
   return response;

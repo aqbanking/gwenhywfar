@@ -145,6 +145,8 @@ int GWEN_TextWidget__ParseXMLSubNodes(GWEN_XMLNODE *n,
 
 int GWEN_TextWidget_Ascify(GWEN_BUFFER *src, GWEN_BUFFER *dst);
 
+int GWEN_TextWidget_Refresh(GWEN_WIDGET *w);
+
 
 
 

@@ -39,11 +39,13 @@ typedef struct GWEN_FILEDIALOG GWEN_FILEDIALOG;
 struct GWEN_FILEDIALOG {
   GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
 
+  GWEN_TYPE_UINT32 flags;
   GWEN_WIDGET *wTable;
   GWEN_WIDGET *wSelected;
   GWEN_WIDGET *wPatterns;
   int entries;
   char *currentDir;
+  char *startDir;
   GWEN_DB_NODE *files;
 };
 void GWEN_FileDialog_freeData(void *bp, void *p);

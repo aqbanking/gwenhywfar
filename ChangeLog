@@ -4,6 +4,9 @@
 - ui: 
   - started working on FileDialog
   - more work/fixes in TableWidget and TextWidget
+  - even more work/fixes
+  - fixed more bugs in EditBox, more work on FileDialog (can now at least 
+    be used to select a file. Otherwise not very usefull for now)
 
 
 2004/06/26: Martin Preuss<martin@libchipcard.de>

@@ -1044,7 +1044,7 @@ GWEN_EVENT *GWEN_EventLastClosed_new(){
 
 GWEN_INHERIT(GWEN_EVENT, GWEN_EVENT_SELECTED);
 
-GWEN_EVENT *GWEN_EventSelected_new(const char *text, int x, int y){
+GWEN_EVENT *GWEN_EventSelected_new(const char *text, int x, int y, int b){
   GWEN_EVENT *e;
   GWEN_EVENT_SELECTED *et;
 
@@ -1054,6 +1054,7 @@ GWEN_EVENT *GWEN_EventSelected_new(const char *text, int x, int y){
     et->text=strdup(text);
   et->x=x;
   et->y=y;
+  et->state=b;
 
   GWEN_INHERIT_SETDATA(GWEN_EVENT, GWEN_EVENT_SELECTED,
                        e, et,
@@ -1105,6 +1106,18 @@ int GWEN_EventSelected_GetY(const GWEN_EVENT *e){
   assert(et);
 
   return et->y;
+}
+
+
+
+int GWEN_EventSelected_GetState(const GWEN_EVENT *e){
+  GWEN_EVENT_SELECTED *et;
+
+  assert(e);
+  et=GWEN_INHERIT_GETDATA(GWEN_EVENT, GWEN_EVENT_SELECTED, e);
+  assert(et);
+
+  return et->state;
 }
 
 
@@ -1179,8 +1192,6 @@ int GWEN_EventChosen_GetY(const GWEN_EVENT *e){
 
   return et->y;
 }
-
-
 
 
 

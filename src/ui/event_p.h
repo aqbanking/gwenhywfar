@@ -163,6 +163,7 @@ typedef struct GWEN_EVENT_SELECTED GWEN_EVENT_SELECTED;
 struct GWEN_EVENT_SELECTED {
   char *text;
   int x, y;
+  int state;
 };
 void GWEN_EventSelected_freeData(void *bp, void *p);
 

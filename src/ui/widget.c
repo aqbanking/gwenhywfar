@@ -670,8 +670,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     }
     if (maxc>len)
       maxc=len;
-    DBG_VERBOUS(0, "Highlighting %d, %d, %d bytes (true:%d)",
-                x, y, len, hi);
+    DBG_NOTICE(0, "Highlighting %d, %d, %d bytes (true:%d)",
+               x, y, len, hi);
     if (hi==0)
       hi=w->colour;
 
@@ -682,7 +682,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       oldc|=COLOR_PAIR(hi);
       mvwaddch(w->window, y, x+i, oldc);
     }
-    GWEN_Widget_Refresh(w);
+    update_panels();
     return GWEN_UIResult_Handled;
   }
 
@@ -708,8 +708,8 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       int attrs;
       unsigned int c;
 
-      DBG_NOTICE(0, "YYY: Writing this at %d/%d [%d, %d]:",
-                 x, y, len, maxc);
+      //DBG_NOTICE(0, "Writing this at %d/%d [%d, %d]:",
+      //           x, y, len, maxc);
       GWEN_Text_LogString(p, len, 0, GWEN_LoggerLevelNotice);
       wmove(w->window, y, x);
       wbkgdset(w->window, COLOR_PAIR(w->colour));
@@ -871,7 +871,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
       DBG_DEBUG(0, "Unknown mode (%d)", m);
       return GWEN_UIResult_NotHandled;
     } /* switch */
-    GWEN_Widget_Refresh(w);
+    update_panels();
     //wrefresh(w->window);
     //doupdate();
     return GWEN_UIResult_Handled;
@@ -896,11 +896,13 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     if (key==KEY_F(5)) {
       DBG_NOTICE(0, "Updating");
       //doupdate();
-      update_panels();
+      beep();
+      GWEN_Widget_Update(w);
     }
     else if (key==KEY_F(6)) {
       DBG_NOTICE(0, "Refreshing");
       //wrefresh(w->window);
+      beep();
       GWEN_Widget_Refresh(w);
     }
     else if (key==KEY_F(7)) {
@@ -947,8 +949,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
         wbkgd(w->window, COLOR_PAIR(w->colour));
         wattr_set(w->window, 0, w->colour, 0);
         w->state|=GWEN_WIDGET_STATE_HIGHLIGHT;
-        GWEN_Widget_Refresh(w);
-        //wrefresh(w->window);
+        GWEN_Widget_Update(w);
       }
       else {
         w->state&=~GWEN_WIDGET_STATE_HIGHLIGHT;
@@ -962,7 +963,6 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
         wbkgd(w->window, COLOR_PAIR(w->colour));
         wattr_set(w->window, 0, w->colour, 0);
         GWEN_Widget_Refresh(w);
-        //wrefresh(w->window);
       }
     }
     return GWEN_UIResult_Handled;

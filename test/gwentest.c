@@ -2743,7 +2743,8 @@ int uitest18(int argc, char **argv) {
   GWEN_StringList_AppendString(sl, "C header files;*.h", 0, 1);
   GWEN_StringList_AppendString(sl, "all files;*", 0, 1);
 
-  mw=GWEN_FileDialog_new(GWEN_WIDGET_FLAGS_DEFAULT,
+  mw=GWEN_FileDialog_new(GWEN_WIDGET_FLAGS_DEFAULT |
+                         GWEN_FILEDIALOG_FLAGS_MULTI,
                          "FileDialog",
                          "Open File",
                          ".",

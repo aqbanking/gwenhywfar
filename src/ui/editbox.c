@@ -54,6 +54,7 @@ GWEN_WIDGET *GWEN_EditBox_new(GWEN_WIDGET *parent,
   GWEN_WIDGET *w;
   GWEN_EDITBOX *win;
   GWEN_TYPE_UINT32 wflags;
+  int vh, vw;
 
   wflags=(flags & ~GWEN_WIDGET_FLAGS_WINDOWFLAGS);
   wflags|=
@@ -83,6 +84,17 @@ GWEN_WIDGET *GWEN_EditBox_new(GWEN_WIDGET *parent,
     win->insertMode=1;
   assert(win->previousHandler);
   GWEN_Widget_SetEventHandler(w, GWEN_EditBox_EventHandler);
+
+  vh=1;
+  if (flags & GWEN_EDITBOX_FLAGS_MULTILINE) {
+    vh=height;
+    if ((flags & GWEN_WIDGET_FLAGS_BORDER) &&
+        GWEN_Widget_GetHeight(w)>1)
+      vh-=2;
+  }
+  vw=maxLen;
+
+  GWEN_TextWidget_SetVirtualSize(w, vw, vh);
 
   return w;
 }
@@ -202,11 +214,10 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       ww=GWEN_Widget_GetWidth(w);
       if (win->flags & GWEN_WIDGET_FLAGS_BORDER)
         ww-=2;
-      if (win->currX+1<ww &&
-          (win->maxLen==0 || win->currX+1<win->maxLen)) {
+      if (win->maxLen==0 || win->currX+1<win->maxLen) {
         win->currX++;
         GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
-                                      GWEN_Widget_GetWidth(w), 1);
+                                      1, 1);
         GWEN_EditBox_AdjustCursor(w);
       }
       else {
@@ -222,6 +233,18 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
         return GWEN_UIResult_Handled;
       }
       win->currX--;
+      if (GWEN_EditBox_EnsureLine(w, win->currY)) {
+        beep();
+        DBG_NOTICE(0, "here");
+        return GWEN_UIResult_Handled;
+      }
+      GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
+                                    1, 1);
+      if (GWEN_TextWidget_LineSetPos(w, win->currLine, win->currX)) {
+        beep();
+        DBG_NOTICE(0, "here");
+        return GWEN_UIResult_Handled;
+      }
       GWEN_EditBox_AdjustCursor(w);
       return GWEN_UIResult_Handled;
     }
@@ -232,8 +255,13 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
           return GWEN_UIResult_Handled;
         }
         win->currY++;
+        if (GWEN_EditBox_EnsureLine(w, win->currY)) {
+          beep();
+          DBG_NOTICE(0, "here");
+          return GWEN_UIResult_Handled;
+        }
         GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
-                                      GWEN_Widget_GetWidth(w), 1);
+                                      1, 1);
         GWEN_EditBox_AdjustCursor(w);
         return GWEN_UIResult_Handled;
       }
@@ -245,6 +273,13 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
           return GWEN_UIResult_Handled;
         }
         win->currY--;
+        if (GWEN_EditBox_EnsureLine(w, win->currY)) {
+          beep();
+          DBG_NOTICE(0, "here");
+          return GWEN_UIResult_Handled;
+        }
+        GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
+                                      1, 1);
         GWEN_EditBox_AdjustCursor(w);
         return GWEN_UIResult_Handled;
       }
@@ -260,16 +295,16 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
     else if (key==GWEN_UI_KEY_DELETE) {
       if (!(win->flags & GWEN_EDITBOX_FLAGS_EDIT))
         return GWEN_UIResult_Handled;
-      if (win->clearAllFlag)
-        GWEN_TextWidget_LineClear(w, win->currLine);
-      win->clearAllFlag=0;
       if (GWEN_EditBox_EnsureLine(w, win->currY)) {
         beep();
         DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
+      if (win->clearAllFlag)
+        GWEN_TextWidget_LineClear(w, win->currLine);
+      win->clearAllFlag=0;
       GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
-                                    win->maxLen, 1);
+                                    1, 1);
       if (GWEN_TextWidget_LineSetPos(w, win->currLine, win->currX)) {
         beep();
         DBG_NOTICE(0, "here");
@@ -285,6 +320,7 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
         DBG_NOTICE(0, "here");
         return GWEN_UIResult_Handled;
       }
+      GWEN_Widget_Refresh(w);
       return GWEN_UIResult_Handled;
     }
     else if (key==KEY_BACKSPACE) {
@@ -297,7 +333,7 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
         return GWEN_UIResult_Handled;
       }
       GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
-                                    win->maxLen, 1);
+                                    1, 1);
       if (win->currX==0)
         return GWEN_UIResult_Handled;
 
@@ -318,6 +354,7 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
         return GWEN_UIResult_Handled;
       }
       GWEN_EditBox_AdjustCursor(w);
+      GWEN_Widget_Refresh(w);
       return GWEN_UIResult_Handled;
     }
     else if (isprint(key)) {
@@ -331,7 +368,7 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
       }
 
       GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
-                                    win->maxLen, 1);
+                                    1, 1);
       if (GWEN_TextWidget_LineSetPos(w, win->currLine, win->currX)) {
         return GWEN_UIResult_Handled;
       }
@@ -359,16 +396,17 @@ GWEN_UI_RESULT GWEN_EditBox_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e) {
         win->currX++;
         if (win->maxLen)
           GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
-                                        win->maxLen, 1);
+                                        1, 1);
         else
           GWEN_TextWidget_EnsureVisible(w, win->currX, win->currY,
-                                        GWEN_Widget_GetWidth(w), 1);
+                                        1, 1);
       }
       if (GWEN_TextWidget_LineRedraw(w, win->currLine)) {
         beep();
         return GWEN_UIResult_Handled;
       }
       GWEN_EditBox_AdjustCursor(w);
+      GWEN_Widget_Refresh(w);
       return GWEN_UIResult_Handled;
     }
     return win->previousHandler(w, e);

@@ -73,6 +73,7 @@ struct GWEN_TABLEWIDGET {
   int my;
   int top;
   int left;
+  int changed;
 
   GWEN_TYPE_UINT32 flags;
 };
@@ -119,6 +120,9 @@ GWEN_TABLE_FIELD_LIST*
 void GWEN_TableColumn_Update(GWEN_TABLE_COLUMN *tc);
 void GWEN_TableColumn_AddField(GWEN_TABLE_COLUMN *tc, GWEN_TABLE_FIELD *tf);
 
+
+
+void GWEN_TableWidget_Refresh(GWEN_WIDGET *w);
 
 
 #endif

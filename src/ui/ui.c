@@ -68,7 +68,7 @@ int GWEN_UI_Begin() {
   init_pair(GWEN_WidgetColour_Message, COLOR_WHITE, COLOR_RED);
   init_pair(GWEN_WidgetColour_Unselected, COLOR_RED, COLOR_WHITE);
   init_pair(GWEN_WidgetColour_Selected, COLOR_RED, COLOR_CYAN);
-  init_pair(GWEN_WidgetColour_Chosen, COLOR_MAGENTA, COLOR_WHITE);
+  init_pair(GWEN_WidgetColour_Chosen, COLOR_GREEN, COLOR_BLUE);
   init_pair(GWEN_WidgetColour_Title, COLOR_BLUE, COLOR_WHITE);
   init_pair(GWEN_WidgetColour_Button, COLOR_BLACK, COLOR_WHITE);
 

@@ -217,7 +217,7 @@ GWEN_EVENT *GWEN_EventCommand_new(GWEN_TYPE_UINT32 commandId);
 GWEN_TYPE_UINT32 GWEN_EventCommand_GetCommandId(const GWEN_EVENT *e);
 
 
-GWEN_EVENT *GWEN_EventSelected_new(const char *text, int x, int y);
+GWEN_EVENT *GWEN_EventSelected_new(const char *text, int x, int y, int state);
 const char *GWEN_EventSelected_GetText(const GWEN_EVENT *e);
 int GWEN_EventSelected_GetX(const GWEN_EVENT *e);
 int GWEN_EventSelected_GetY(const GWEN_EVENT *e);
