@@ -77,7 +77,7 @@ These headers are only needed if you want to compile Gwenhywfar itself !
 ---------------
 
 If you retrieved gwenhywfar from CVS, first do a 
-"make -f Makefile.dist". Then:
+"make -f Makefile.cvs". Then:
 
 - ./configure
 

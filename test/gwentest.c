@@ -20,9 +20,10 @@
 #include <gwenhywfar/sslconnection.h>
 #include <gwenhywfar/nettransportsock.h>
 #include <gwenhywfar/netconnection.h>
+#include <gwenhywfar/process.h>
 #ifdef OS_WIN32
 # include <windows.h>
-# define sleep(x) Sleep(x)
+# define sleep(x) Sleep(x*1000)
 # define strcasecmp(a, b) strcmp(a, b)
 #endif
 
@@ -759,6 +760,80 @@ int testSocketConnect(int argc, char **argv) {
 
 
 
+int testProcess(int argc, char **argv) {
+	GWEN_Logger_Open(0, "test", "gwentest.log", GWEN_LoggerTypeFile, 
+		GWEN_LoggerFacilityUser);
+	GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+
+  if (argc<3) {
+    fprintf(stderr, "%s process client|server\n", argv[0]);
+    return 1;
+  }
+  fprintf(stderr, "Ping...\n");
+  fprintf(stderr, "argv2 is \"%s\"\n", argv[2]);
+  if (strcasecmp(argv[2], "server")==0) {
+    GWEN_PROCESS *pr;
+    GWEN_PROCESS_STATE pst;
+    GWEN_BUFFEREDIO *bio;
+    GWEN_ERRORCODE err;
+	
+	fprintf(stderr, "Creating process\n");
+    pr=GWEN_Process_new();
+	fprintf(stderr, "Creating process: done\n");
+	fprintf(stderr, "Setting flags\n");
+    GWEN_Process_AddFlags(pr, GWEN_PROCESS_FLAGS_REDIR_STDOUT);
+	fprintf(stderr, "Setting flags: done\n");
+	
+	fprintf(stderr, "Starting process\n");
+    pst=GWEN_Process_Start(pr, argv[0], "process client");
+	//pst=GWEN_ProcessStateNotStarted;
+    if (pst!=GWEN_ProcessStateRunning) {
+      fprintf(stderr, "Bad process state \"%d\"", pst);
+      return 2;
+    }
+	fprintf(stderr, "Started process\n");
+	//Sleep(15000);
+	//return 0;
+
+    bio=GWEN_Process_GetStdout(pr);
+    assert(bio);
+    while(!GWEN_BufferedIO_CheckEOF(bio)) {
+      char buffer[256];
+
+	  fprintf(stderr, "Will read from client\n");
+      buffer[0]=0;
+      err=GWEN_BufferedIO_ReadLine(bio, buffer, sizeof(buffer)-1);
+      if (!GWEN_Error_IsOk(err)) {
+        fprintf(stderr, "ERROR: Reading from clients output\n");
+        return 2;
+      }
+      fprintf(stderr, "DATA: %s\n", buffer);
+    } /* while */
+    err=GWEN_BufferedIO_Close(bio);
+    if (!GWEN_Error_IsOk(err)) {
+      fprintf(stderr, "ERROR: Closing clients output stream\n");
+      return 2;
+    }
+
+    fprintf(stderr, "INFO: Client disconnected.\n");
+    return 0;
+  } /* if server */
+  else {
+    fprintf(stderr, "Hello, I'm the client...\n");
+    if (fprintf(stdout, "Hello, I'm the client...\n")<1) {
+		fprintf(stderr, "ERROR: Client could not write.\n");
+	}
+    sleep(10);
+    fprintf(stderr, "Client exiting\n");
+    return 0;
+  }
+}
+
+
+
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -795,8 +870,10 @@ int main(int argc, char **argv) {
     rv=testSocketAccept(argc, argv);
   else if (strcasecmp(argv[1], "connect")==0)
     rv=testSocketConnect(argc, argv);
+  else if (strcasecmp(argv[1], "process")==0)
+    rv=testProcess(argc, argv);
   else {
-    fprintf(stderr, "Unknown command \"%s\"", argv[1]);
+    fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     return 1;
   }
 

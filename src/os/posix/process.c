@@ -202,6 +202,7 @@ GWEN_PROCESS *GWEN_Process_new(){
   GWEN_NEW_OBJECT(GWEN_PROCESS, pr);
   pr->state=GWEN_ProcessStateNotStarted;
   pr->pid=-1;
+  pr->pflags=GWEN_PROCESS_FLAGS_DEFAULT;
   pr->usage=1;
   GWEN_LIST_ADD(GWEN_PROCESS, pr, &GWEN_Process_ProcessList);
   return pr;
@@ -212,13 +213,14 @@ GWEN_PROCESS *GWEN_Process_new(){
 void GWEN_Process_free(GWEN_PROCESS *pr){
   if (pr) {
     assert(pr->usage);
-    if (pr->usage==1) {
+    if (--(pr->usage)==0) {
       /* unlink from list */
       GWEN_LIST_DEL(GWEN_PROCESS, pr, &GWEN_Process_ProcessList);
+      GWEN_BufferedIO_free(pr->stdIn);
+      GWEN_BufferedIO_free(pr->stdOut);
+      GWEN_BufferedIO_free(pr->stdErr);
       free(pr);
     }
-    else
-      pr->usage--;
   }
 }
 
@@ -235,11 +237,33 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   assert(pr);
 
+  if (GWEN_Process_Redirect(pr)) {
+    DBG_ERROR(0, "Could not setup redirections");
+    pr->state=GWEN_ProcessStateNotStarted;
+    pr->pid=-1;
+    return GWEN_ProcessStateNotStarted;
+  }
+
   pid=fork();
   if (pid==-1) {
     /* error in fork */
     pr->state=GWEN_ProcessStateNotStarted;
     pr->pid=-1;
+
+    /* close all pipes */
+    if (pr->filesStdin[0]!=-1) {
+      close(pr->filesStdin[0]);
+      close(pr->filesStdin[1]);
+    }
+    if (pr->filesStdout[0]!=-1) {
+      close(pr->filesStdout[0]);
+      close(pr->filesStdout[1]);
+    }
+    if (pr->filesStderr[0]!=-1) {
+      close(pr->filesStderr[0]);
+      close(pr->filesStderr[1]);
+    }
+
     return GWEN_ProcessStateNotStarted;
   }
   else if (pid!=0) {
@@ -247,12 +271,54 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
     DBG_NOTICE(0, "Process started with id %d", pid);
     pr->state=GWEN_ProcessStateRunning;
     pr->pid=pid;
+
+    /* setup redirections */
+    if (pr->filesStdin[0]!=-1) {
+      close(pr->filesStdin[1]);
+      pr->stdIn=GWEN_BufferedIO_File_new(pr->filesStdin[0]);
+      GWEN_BufferedIO_SetWriteBuffer(pr->stdIn, 0, 128);
+    }
+    if (pr->filesStdout[0]!=-1) {
+      close(pr->filesStdout[1]);
+      pr->stdOut=GWEN_BufferedIO_File_new(pr->filesStdout[0]);
+      GWEN_BufferedIO_SetReadBuffer(pr->stdOut, 0, 128);
+    }
+    if (pr->filesStderr[0]!=-1) {
+      close(pr->filesStderr[1]);
+      pr->stdErr=GWEN_BufferedIO_File_new(pr->filesStdout[0]);
+      GWEN_BufferedIO_SetReadBuffer(pr->stdErr, 0, 128);
+    }
+
     return GWEN_ProcessStateRunning;
   }
   /* child, build arguments */
   argc=0;
 
   DBG_NOTICE(0, "I'm the child process");
+
+  /* setup redirections */
+  if (pr->filesStdin[0]!=-1) {
+    close(pr->filesStdin[0]);
+    close(0);
+    if (dup(pr->filesStdin[1])==-1) {
+      DBG_ERROR(0, "Could not setup redirection");
+    }
+  }
+  if (pr->filesStdout[0]!=-1) {
+    close(pr->filesStdout[0]);
+    close(1);
+    if (dup(pr->filesStdout[1])==-1) {
+      DBG_ERROR(0, "Could not setup redirection");
+    }
+  }
+  if (pr->filesStderr[0]!=-1) {
+    close(pr->filesStderr[0]);
+    close(2);
+    if (dup(pr->filesStderr[1])==-1) {
+      DBG_ERROR(0, "Could not setup redirection");
+    }
+  }
+
   argv[0]=strdup(prg);
   argc++;
   p=args;
@@ -412,6 +478,107 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
   /* wait for process to respond to kill signal (should not take long) */
   return GWEN_Process_Wait(pr);
 }
+
+
+
+GWEN_TYPE_UINT32 GWEN_Process_GetFlags(const GWEN_PROCESS *pr){
+  assert(pr);
+  return pr->pflags;
+}
+
+
+
+void GWEN_Process_SetFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+  assert(pr);
+  pr->pflags=f;
+}
+
+
+
+void GWEN_Process_AddFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+  assert(pr);
+  pr->pflags|=f;
+}
+
+
+
+void GWEN_Process_SubFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+  assert(pr);
+  pr->pflags&=~f;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
+  assert(pr);
+  return pr->stdIn;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
+  assert(pr);
+  return pr->stdOut;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
+  assert(pr);
+  return pr->stdErr;
+}
+
+
+
+int GWEN_Process_Redirect(GWEN_PROCESS *pr) {
+  assert(pr);
+
+  pr->filesStdin[0]=-1;
+  pr->filesStdout[0]=-1;
+  pr->filesStderr[0]=-1;
+
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDIN) {
+    int filedes[2];
+
+    DBG_DEBUG(0, "Redirecting stdin");
+    if (pipe(filedes)) {
+      DBG_ERROR(0, "pipe(): %s", strerror(errno));
+      return -1;
+    }
+    pr->filesStdin[0]=filedes[1];
+    pr->filesStdin[1]=filedes[0];
+  }
+
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDOUT) {
+    int filedes[2];
+
+    DBG_DEBUG(0, "Redirecting stdout");
+    if (pipe(filedes)) {
+      DBG_ERROR(0, "pipe(): %s", strerror(errno));
+      return -1;
+    }
+    pr->filesStdout[0]=filedes[0];
+    pr->filesStdout[1]=filedes[1];
+  }
+
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDERR) {
+    int filedes[2];
+
+    DBG_DEBUG(0, "Redirecting stderr");
+    if (pipe(filedes)) {
+      DBG_ERROR(0, "pipe(): %s", strerror(errno));
+      return -1;
+    }
+    pr->filesStderr[0]=filedes[0];
+    pr->filesStderr[1]=filedes[1];
+  }
+
+  return 0;
+}
+
+
+
+
 
 
 

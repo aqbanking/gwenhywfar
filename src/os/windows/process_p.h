@@ -36,15 +36,41 @@
 
 #define GWEN_PROCESS_EXITCODE_ABORT 253
 
+#define GWEN_BUFFEREDIO_WINFILE_TIMEOUT 20000
+
 
 struct GWEN_PROCESS {
   PROCESS_INFORMATION processInfo;
   GWEN_PROCESS_STATE state;
   int result;
   int finished;
+  GWEN_TYPE_UINT32 pflags;
+  GWEN_BUFFEREDIO *stdIn;
+  GWEN_BUFFEREDIO *stdOut;
+  GWEN_BUFFEREDIO *stdErr;
 };
 
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status);
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
+                                             char *buffer,
+                                             int *size,
+                                             int timeout);
+
+GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
+                                              const char *buffer,
+                                              int *size,
+                                              int timeout);
+GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm);
+void GWEN_BufferedIO_WinFile__free(void *p);
+
+GWEN_BUFFEREDIO *GWEN_BufferedIO_WinFile_new(HANDLE fd);
+
+
+
+
+
 
 
 

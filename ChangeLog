@@ -1,4 +1,19 @@
 
+2004/04/06: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- os/process:
+  - added functions to set/retrieve flags to modify the behaviour of the 
+    GWEN_PROCESS code.
+    The most important (and for now the only) flags are:
+    - GWEN_PROCESS_FLAGS_REDIR_STDIN
+    - GWEN_PROCESS_FLAGS_REDIR_STDOUT
+    - GWEN_PROCESS_FLAGS_REDIR_STDERR
+    These flags make Gwen redirect the corresponding std stream so that the
+    calling process may intercept the input/output of the started process.
+  - added functions which return a GWEN_BUFFEREDIO which can be used to
+    read/write from/to redirected child streams.
+
+
 2004/04/05: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added base/idlist: This is basically a list for GWEN_TYPE_UINT32 objects,

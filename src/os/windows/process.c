@@ -39,6 +39,8 @@
 #include <gwenhywfar/text.h>
 #include <windows.h>
 
+#include "../../io/bufferedio_p.h" /* very ugly */
+
 
 
 GWEN_ERRORCODE GWEN_Process_ModuleInit(){
@@ -58,6 +60,7 @@ GWEN_PROCESS *GWEN_Process_new(){
 
   GWEN_NEW_OBJECT(GWEN_PROCESS, pr);
   pr->state=GWEN_ProcessStateNotStarted;
+  pr->pflags=GWEN_PROCESS_FLAGS_DEFAULT;
   return pr;
 }
 
@@ -68,6 +71,9 @@ void GWEN_Process_free(GWEN_PROCESS *pr){
     /* close handles */
     CloseHandle(pr->processInfo.hThread);
     CloseHandle(pr->processInfo.hProcess);
+    GWEN_BufferedIO_free(pr->stdIn);
+    GWEN_BufferedIO_free(pr->stdOut);
+    GWEN_BufferedIO_free(pr->stdErr);
     free(pr);
   }
 }
@@ -78,12 +84,71 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                                       const char *prg,
                                       const char *args){
   STARTUPINFO si;
+  SECURITY_ATTRIBUTES saAttr;
   char *cmdline;
+  HANDLE hChildStdinRd, hChildStdinWr;
+  HANDLE hChildStdoutRd, hChildStdoutWr;
+  HANDLE hChildStderrRd, hChildStderrWr;
+  GWEN_PROCESS_STATE pst;
 
   memset(&si, 0, sizeof(si));
   si.cb=sizeof(si);
   GetStartupInfo(&si);
 
+  si.dwFlags|=STARTF_USESTDHANDLES;
+
+  /* set the bInheritHandle flag so pipe handles are inherited */
+  saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+  saAttr.bInheritHandle = TRUE;
+  saAttr.lpSecurityDescriptor = NULL;
+
+  /* create a pipe for the child process's STDOUT */
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDOUT) {
+    DBG_INFO(0, "Redirecting stdout");
+    if (!CreatePipe(&hChildStdoutRd, &hChildStdoutWr, &saAttr, 0)) {
+      DBG_ERROR(0, "Could not create stdout pipe");
+      return -1;
+    }
+    si.hStdOutput=hChildStdoutWr;
+    DBG_INFO(0, "Creating WinFile");
+    pr->stdOut=GWEN_BufferedIO_WinFile_new(hChildStdoutRd);
+    GWEN_BufferedIO_SetReadBuffer(pr->stdOut, 0, 128);
+  }
+  else
+    si.hStdOutput=GetStdHandle(STD_OUTPUT_HANDLE);
+
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDIN) {
+    /* create a pipe for the child process's STDIN */
+    DBG_INFO(0, "Redirecting stdin");
+    if (!CreatePipe(&hChildStdinRd, &hChildStdinWr, &saAttr, 0)) {
+      DBG_ERROR(0, "Could not create stdin pipe");
+      return -1;
+    }
+    si.hStdInput=hChildStdinRd;
+    pr->stdIn=GWEN_BufferedIO_WinFile_new(hChildStdinWr);
+    DBG_INFO(0, "Creating WinFile");
+    GWEN_BufferedIO_SetWriteBuffer(pr->stdIn, 0, 128);
+  }
+  else
+    si.hStdInput=GetStdHandle(STD_INPUT_HANDLE);
+
+  /* create a pipe for the child process's STDERR */
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDERR) {
+    DBG_INFO(0, "Redirecting stderr");
+    if (!CreatePipe(&hChildStderrRd, &hChildStderrWr, &saAttr, 0)) {
+      DBG_ERROR(0, "Could not create stderr pipe");
+      return -1;
+    }
+    si.hStdError=hChildStderrWr;
+    pr->stdErr=GWEN_BufferedIO_WinFile_new(hChildStderrRd);
+    DBG_INFO(0, "Creating WinFile");
+    GWEN_BufferedIO_SetReadBuffer(pr->stdErr, 0, 128);
+  }
+  else
+    si.hStdError=GetStdHandle(STD_ERROR_HANDLE);
+
+  /* create the child process */
+  DBG_INFO(0, "Creating Command line");
   cmdline=(char*)malloc(strlen(prg)+strlen(args)+2);
   strcpy(cmdline, prg);
   strcat(cmdline, " ");
@@ -91,6 +156,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   pr->finished=0;
 
+  DBG_INFO(0, "Starting process");
   if (CreateProcess(NULL,              /* lpszApplicationName */
                     cmdline,           /* lpszCommandLine */
                     NULL,              /* lpsaProcess */
@@ -104,13 +170,36 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                    )!=TRUE) {
     DBG_ERROR(0, "Error executing \"%s\" (%d)",
               cmdline, (int)GetLastError());
-    free(cmdline);
-    return GWEN_ProcessStateNotStarted;
+    pst=GWEN_ProcessStateNotStarted;
+    /* error, close our end of the pipe. The other end will be closed
+     * after this block */
+    if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDOUT)
+      CloseHandle(hChildStdoutRd);
+    if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDIN)
+      CloseHandle(hChildStdinWr);
+    if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDERR)
+      CloseHandle(hChildStderrRd);
   }
-  pr->state=GWEN_ProcessStateRunning;
+  else {
+    DBG_INFO(0, "Process started");
+    pst=GWEN_ProcessStateRunning;
+  }
+
+  pr->state=pst;
   free(cmdline);
+
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDOUT)
+    CloseHandle(hChildStdoutWr);
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDIN)
+    CloseHandle(hChildStdinRd);
+  if (pr->pflags & GWEN_PROCESS_FLAGS_REDIR_STDERR)
+    CloseHandle(hChildStderrWr);
+
   return pr->state;
 }
+
+
+
 
 
 
@@ -179,7 +268,6 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr){
 
 
 int GWEN_Process_Terminate(GWEN_PROCESS *pr){
-
   if (TerminateProcess(pr->processInfo.hProcess,
                        GWEN_PROCESS_EXITCODE_ABORT)!=TRUE) {
     DBG_ERROR(0, "Error terminating process (%d)", (int)GetLastError());
@@ -191,6 +279,210 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
 
   return 0;
 }
+
+
+
+void GWEN_Process_SetFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+  assert(pr);
+  pr->pflags=f;
+}
+
+
+
+void GWEN_Process_AddFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+  assert(pr);
+  pr->pflags|=f;
+}
+
+
+
+void GWEN_Process_SubFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+  assert(pr);
+  pr->pflags&=~f;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
+  assert(pr);
+  return pr->stdIn;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
+  assert(pr);
+  return pr->stdOut;
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
+  assert(pr);
+  return pr->stdErr;
+}
+
+
+
+
+
+
+
+
+
+
+struct GWEN_BUFFEREDIO_WINFILE_STRUCT {
+  HANDLE fd;
+};
+typedef struct GWEN_BUFFEREDIO_WINFILE_STRUCT GWEN_BUFFEREDIO_WINFILE_TABLE;
+
+
+
+
+GWEN_BUFFEREDIO_WINFILE_TABLE *GWEN_BufferedIO_WinFile_Table__new() {
+  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+
+  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)malloc(sizeof(GWEN_BUFFEREDIO_WINFILE_TABLE));
+  assert(bft);
+  memset(bft,0,sizeof(GWEN_BUFFEREDIO_WINFILE_TABLE));
+  bft->fd=NULL;
+  return bft;
+}
+
+
+
+void GWEN_BufferedIO_WinFile_Table__free(GWEN_BUFFEREDIO_WINFILE_TABLE *bft) {
+  free(bft);
+}
+
+
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
+                                             char *buffer,
+                                             int *size,
+                                             int timeout){
+  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+  DWORD bytesRead;
+
+  assert(dm);
+  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)(dm->privateData);
+  assert(bft);
+  if (*size<1) {
+    DBG_WARN(0, "Nothing to read");
+    *size=0;
+    return 0;
+  }
+  if (!ReadFile(bft->fd, buffer, *size, &bytesRead, 0)) {
+	  DWORD werr;
+
+	  werr=GetLastError();
+	  if (werr==ERROR_BROKEN_PIPE) {
+		  DBG_INFO(0, "EOF met (broken pipe)");
+		  *size=0;
+		  return 0;
+	  }
+    DBG_ERROR(0, "Could not read (%ld)", werr);
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_READ);
+  }
+  if (bytesRead==0) {
+    DBG_DEBUG(0, "EOF met");
+    *size=0;
+    return 0;
+  }
+
+  DBG_INFO(0, "%ld bytes read", bytesRead);
+  *size=bytesRead;
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
+                                           const char *buffer,
+                                           int *size,
+                                           int timeout){
+  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+  DWORD written;
+
+  assert(dm);
+  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)(dm->privateData);
+  assert(bft);
+  if (*size<1) {
+    DBG_WARN(0, "Nothing to write");
+    *size=0;
+    return 0;
+  }
+  if (!WriteFile(bft->fd, buffer, *size, &written, 0)) {
+    DBG_ERROR(0, "Could not write (%ld)", GetLastError());
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_WRITE);
+  }
+  DBG_INFO(0, "%ld bytes written", written);
+  *size=written;
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
+  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+
+  assert(dm);
+  bft=(GWEN_BUFFEREDIO_WINFILE_TABLE *)(dm->privateData);
+  assert(bft);
+  if (!CloseHandle(bft->fd)) {
+    DBG_ERROR(0, "Could not close (%ld)", GetLastError());
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_CLOSE);
+  }
+  return 0;
+}
+
+
+
+void GWEN_BufferedIO_WinFile__free(void *p){
+  if (p)
+    GWEN_BufferedIO_WinFile_Table__free((GWEN_BUFFEREDIO_WINFILE_TABLE *)p);
+}
+
+
+
+GWEN_BUFFEREDIO *GWEN_BufferedIO_WinFile_new(HANDLE fd){
+  GWEN_BUFFEREDIO *bt;
+  GWEN_BUFFEREDIO_WINFILE_TABLE *bft;
+
+  bt=GWEN_BufferedIO_new();
+  bft=GWEN_BufferedIO_WinFile_Table__new();
+  bt->privateData=bft;
+  bft->fd=fd;
+  bt->readPtr=GWEN_BufferedIO_WinFile__Read;
+  bt->writePtr=GWEN_BufferedIO_WinFile__Write;
+  bt->closePtr=GWEN_BufferedIO_WinFile__Close;
+  bt->freePtr=GWEN_BufferedIO_WinFile__free;
+  bt->iotype=GWEN_BufferedIOTypeFile;
+  bt->timeout=GWEN_BUFFEREDIO_WINFILE_TIMEOUT;
+  return bt;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

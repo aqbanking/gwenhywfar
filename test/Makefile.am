@@ -6,10 +6,7 @@ gwentest_SOURCES=gwentest.c
 gwentest_LDADD=-L/mingw/lib -L../src @gwenhywfar_libs@
 
 EXTRA_DIST = README.MSVC gwentest.vcproj
-
 else
-
 EXTRA_DIST = README.MSVC gwentest.vcproj gwentest.c
-
 endif
 

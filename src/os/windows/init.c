@@ -59,7 +59,7 @@ BOOL APIENTRY DllMain(HINSTANCE hInst,
     break;
 
   case DLL_PROCESS_DETACH:
-    err=GWEN_Init();
+    err=GWEN_Fini();
     if (!GWEN_Error_IsOk(err)) {
       fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
     }

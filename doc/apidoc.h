@@ -74,10 +74,6 @@
  <a href="mailto:Martin Preuss <martin@libchipcard.de>">Martin Preuss</a>
  Some minor work has been contributed by others including
  <a href="mailto:Christian Stimming <stimming@tuhh.de>">Christian Stimming</a>.
- Some functions in <i>src/impl/msgengine/seccontext.c</i> have originally been
- written by Fabian Kaiser in C++ for the project OpenHBCI.
- I simply transformed them to plain C.
-
  */
 
 

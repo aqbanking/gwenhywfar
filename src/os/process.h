@@ -28,10 +28,22 @@
 
 
 #ifndef GWENHYWFAR_PROCESS_H
-#define GWENHYWFAR_PROCESS_H "$Id"
+#define GWENHYWFAR_PROCESS_H "$Id$"
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/error.h>
+
+/** redirect the child processes stdin channel */
+#define GWEN_PROCESS_FLAGS_REDIR_STDIN  0x00000001
+/** redirect the child processes stdout channel */
+#define GWEN_PROCESS_FLAGS_REDIR_STDOUT 0x00000002
+/** redirect the child processes stderr channel */
+#define GWEN_PROCESS_FLAGS_REDIR_STDERR 0x00000004
+
+#define GWEN_PROCESS_FLAGS_DEFAULT 0
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,6 +97,34 @@ extern "C" {
   GWENHYWFAR_API void GWEN_Process_free(GWEN_PROCESS *pr);
 
   /**
+   * Returns the current process flags
+   * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
+   */
+  GWENHYWFAR_API
+    GWEN_TYPE_UINT32 GWEN_Process_GetFlags(const GWEN_PROCESS *pr);
+
+  /**
+   * Sets the process flags to the given value
+   * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
+   */
+  GWENHYWFAR_API
+    void GWEN_Process_SetFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f);
+
+  /**
+   * Adds the given flag to the current process flags
+   * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
+   */
+  GWENHYWFAR_API
+    void GWEN_Process_AddFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f);
+
+  /**
+   * Removes the given flag from the current process flags
+   * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
+   */
+  GWENHYWFAR_API
+    void GWEN_Process_SubFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f);
+
+  /**
    * Starts the given process.
    * @param pr pointer to process data
    * @param prg path and name of the program to start
@@ -118,6 +158,29 @@ extern "C" {
    */
   GWENHYWFAR_API int GWEN_Process_Terminate(GWEN_PROCESS *pr);
 
+  /**
+   * Returns a GWEN_BUFFEREDIO which can be used to write data to be
+   * received by the process via stdin. Returns 0 if the process does not
+   * have the flag @ref GWEN_PROCESS_FLAGS_REDIR_STDIN set.
+   */
+  GWENHYWFAR_API
+    GWEN_BUFFEREDIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr);
+
+  /**
+   * Returns a GWEN_BUFFEREDIO which can be used to read data written by
+   * the process via stdout. Returns 0 if the process does not
+   * have the flag @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT set.
+   */
+  GWENHYWFAR_API
+    GWEN_BUFFEREDIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr);
+
+  /**
+   * Returns a GWEN_BUFFEREDIO which can be used to read data written by
+   * the process via stderr. Returns 0 if the process does not
+   * have the flag @ref GWEN_PROCESS_FLAGS_REDIR_STDERR set.
+   */
+  GWENHYWFAR_API
+    GWEN_BUFFEREDIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr);
 
 
 #ifdef __cplusplus
