@@ -495,16 +495,16 @@ int testDialog(int argc, char **argv) {
 int testServer(int argc, char **argv) {
   GWEN_XMLNODE *n;
   GWEN_MSGENGINE *e;
-  GWEN_XMLNODE *sn;
+  /*GWEN_XMLNODE *sn;*/
   GWEN_DB_NODE *da;
   GWEN_DB_NODE *keydb;
-  GWEN_HBCIDIALOG *dlg;
+/*   GWEN_HBCIDIALOG *dlg; */
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
-  GWEN_HBCIMSG *hmsg;
+/*   GWEN_HBCIMSG *hmsg; */
   GWEN_SECCTX_MANAGER *scm;
   GWEN_SECCTX *sc;
-  unsigned int requestId;
+/*   unsigned int requestId; */
   GWEN_IPCXMLSERVICE *service;
   unsigned int serverId;
 
@@ -619,13 +619,13 @@ int testServer(int argc, char **argv) {
 int testClient(int argc, char **argv) {
   GWEN_XMLNODE *n;
   GWEN_MSGENGINE *e;
-  GWEN_XMLNODE *sn;
+/*   GWEN_XMLNODE *sn; */
   GWEN_DB_NODE *da;
   GWEN_DB_NODE *keydb;
-  GWEN_HBCIDIALOG *dlg;
+/*   GWEN_HBCIDIALOG *dlg; */
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
-  GWEN_HBCIMSG *hmsg;
+/*   GWEN_HBCIMSG *hmsg; */
   GWEN_SECCTX_MANAGER *scm;
   GWEN_SECCTX *sc;
   unsigned int requestId;
