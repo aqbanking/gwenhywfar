@@ -5,6 +5,10 @@ $Id$
 2003/10/19 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - minor fixes
+- added function to XML module which allows copying properties from one
+  node to another one
+- this new function is now used by GWEN_MsgEngine__ListGroup when adding
+  a node to the list of used nodes
 
 
 2003-10-18  Christian Stimming  <stimming@tuhh.de>

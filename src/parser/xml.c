@@ -799,3 +799,48 @@ void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n){
 
 
 
+void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
+                                 GWEN_XMLNODE *sn,
+                                 int overwrite){
+  GWEN_XMLPROPERTY *sp;
+  GWEN_XMLPROPERTY *tp;
+
+  assert(tn);
+  assert(sn);
+
+  sp=sn->properties;
+  while(sp) {
+    GWEN_XMLPROPERTY *np;
+
+    assert(sp->name);
+    tp=tn->properties;
+    /* lookup property in target */
+    while(tp) {
+
+      assert(tp->name);
+      if (strcasecmp(tp->name, sp->name)==0) {
+	/* property already exists */
+	if (overwrite) {
+          /* overwrite old property */
+	  free(tp->value);
+	  tp->value=0;
+	  if (sp->value)
+	    tp->value=strdup(sp->value);
+	}
+	break;
+      }
+      tp=tp->next;
+    } /* while */
+
+    if (!tp) {
+      /* property not found, simply copy and add it */
+      np=GWEN_XMLProperty_dup(sp);
+      GWEN_XMLProperty_add(np, &(tn->properties));
+    }
+
+    sp=sp->next;
+  } /* while */
+}
+
+
+

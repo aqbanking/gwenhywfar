@@ -2268,7 +2268,8 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
 		  if (*path)
 		    sprintf(pbuffer, "%s/%s", path, pname);
 		  else
-		    sprintf(pbuffer, "%s", pname);
+                      sprintf(pbuffer, "%s", pname);
+                  DBG_INFO(0, "Found preset value for %s", pbuffer);
                   GWEN_StringList_AppendString(sl,
                                                pbuffer,
                                                0,
@@ -2361,6 +2362,8 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
           npath=path;
 
         nn=GWEN_XMLNode_dup(n);
+        if (gn)
+          GWEN_XMLNode_CopyProperties(nn, gn, 0);
         GWEN_XMLNode_SetProperty(nn, "GWEN_path", npath);
         GWEN_XMLNode_AddChild(listNode, nn);
 

@@ -60,6 +60,9 @@ GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
 const char *GWEN_XMLNode_GetProperty(GWEN_XMLNODE *n, const char *name,
                                      const char *defaultValue);
 void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n, const char *name, const char *value);
+void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
+                                 GWEN_XMLNODE *sn,
+                                 int overwrite);
 
 GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(GWEN_XMLNODE *n);
 
