@@ -49,10 +49,20 @@ MACRO_DEF macroDefs[]= {
 {
   "GWEN_LIST2_FUNCTION_DEFS",
   "list2.tmpl",
+  "_list2p"
+},
+{
+  "GWEN_LIST2_FUNCTION_LIB_DEFS",
+  "list2.tmpl",
   "_list2"
 },
 {
   "GWEN_LIST_FUNCTION_DEFS",
+  "list1.tmpl",
+  "_listp"
+},
+{
+  "GWEN_LIST_FUNCTION_LIB_DEFS",
   "list1.tmpl",
   "_list"
 },
@@ -145,7 +155,7 @@ int scanLine(MACRO_DEF *macroDef,
 
             /* find closing bracket */
             while(*p) {
-              if (*p==')') {
+              if (*p==')' || *p==',') {
                 MACRO_STRUCT *lm;
                 MACRO_STRUCT *sm;
                 char *s;

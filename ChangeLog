@@ -1,4 +1,10 @@
 
+
+2004/08/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- adapted mklistdoc to new macro names
+
+
 2004/08/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - BufferedIO: Added function GWEN_BufferedIO_WriteRawForced
