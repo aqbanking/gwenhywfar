@@ -31,10 +31,10 @@ srcdoc: Doxyfile
 	doxygen
 
 
-rpm:    dist
+rpm:    $(PACKAGE).spec dist
 	rpmbuild="rpm" && \
-	if [ `rpm --version | awk '{ print $$3 }'` > 4 ]; then rpmbuild="rpmbuild"; fi && \
-	$$rpmbuild -ta gwenhywfar-@VERSION@.tar.gz
+	if [ `rpm --version | awk '{ print $$3 }'` > /dev/null ]; then rpmbuild="rpmbuild"; fi && \
+	$$rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
 win32:
 	mkdir -p distribution

@@ -18,3 +18,10 @@ apidoc
 Doxyfile
 Makefile.palm
 conf.uint32
+config.guess
+config.sub
+depcomp
+install-sh
+ltmain.sh
+missing
+mkinstalldirs
