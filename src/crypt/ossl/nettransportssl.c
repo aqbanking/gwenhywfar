@@ -620,7 +620,7 @@ int GWEN_NetTransportSSL__SaveCert(GWEN_NETTRANSPORT *tr,
     GWEN_Buffer_free(nbuf);
   }
   else {
-    DBG_INFO(0, "Don't know where to save the file...");
+    DBG_ERROR(0, "Don't know where to save the file...");
     return -1;
   }
 
@@ -684,22 +684,15 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
   }
 
   /* setup locations of certificates */
-  DBG_NOTICE(0, "Loading certificate locations");
-  rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
-  if (rv==0) {
-    int sslerr;
-
-    sslerr=SSL_get_error(skd->ssl, rv);
-    DBG_ERROR(0, "SSL error: %s (%d)",
-              GWEN_NetTransportSSL_ErrorString(sslerr),
-              sslerr);
-    return -1;
+  if (skd->CAdir) {
+    DBG_NOTICE(0, "Loading certificate locations");
+    rv=SSL_CTX_load_verify_locations(skd->ssl_ctx, 0, skd->CAdir);
+    if (rv==0) {
+      DBG_ERROR(0, "SSL: Could not load certificate location");
+      return -1;
+    }
   }
 
-  /* always expect a certificate */
-  SSL_CTX_set_verify(skd->ssl_ctx,
-		     SSL_VERIFY_PEER,
-		     0);
 
   //SSL_CTX_set_verify_depth(skd->ssl_ctx, 1);
 
@@ -729,9 +722,29 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
 	DH_free(dh_tmp);
 	return -1;
       }
+
+      /* always expect peer certificate */
+      if (skd->secure)
+        SSL_CTX_set_verify(skd->ssl_ctx,
+                           SSL_VERIFY_PEER |
+                           SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+                           0);
+      else
+        SSL_CTX_set_verify(skd->ssl_ctx,
+                           SSL_VERIFY_PEER,
+                           0);
     }
   }
-
+  else {
+    if (skd->secure)
+      SSL_CTX_set_verify(skd->ssl_ctx,
+                         SSL_VERIFY_PEER,
+                         0);
+    else
+      SSL_CTX_set_verify(skd->ssl_ctx,
+                         SSL_VERIFY_NONE,
+                         0);
+  }
 
   skd->ssl=SSL_new(skd->ssl_ctx);
 

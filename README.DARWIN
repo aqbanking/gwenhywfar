@@ -8,7 +8,7 @@ running "./configure":
 You can combine this with the configure command like
  CFLAGS="-I/sw/include" LDFLAGS="-L/sw/lib" ./configure
 
-Currently Darwin does not handle the "__attribute__ ((constructor))" entries
-in C files as it seems, so in your programs on Darwin you will have to call
-GWEN_Init() yourself before doing anything else...
+Currently Darwin does not handle the "__attribute__ ((constructor))" 
+entries in C files as it seems, so in your programs on Darwin you will
+have to call GWEN_Init() yourself before doing anything else...
 

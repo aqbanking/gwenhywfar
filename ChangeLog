@@ -5,6 +5,7 @@
   searched for is \0, which is a valid character when reading binary
   data such as bytes, words, dwords etc which are used by 
   Libchipcard2)
+- fixed a bug in NetTransportSSL
 
 
 2004/05/25: Martin Preuss<martin@libchipcard.de>

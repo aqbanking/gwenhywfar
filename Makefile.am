@@ -14,6 +14,7 @@ EXTRA_DIST= \
  README \
  README.W32 \
  README.DARWIN \
+ README.SOLARIS \
  gwenhywfar.m4 \
  gwenhywfar.spec \
  gwenhywfar.spec.in 

@@ -1,0 +1,5 @@
+
+Currently Solaris does not handle the "__attribute__ ((constructor))" 
+entries in C files as it seems, so in your programs on Darwin you will
+have to call GWEN_Init() yourself before doing anything else...
+
