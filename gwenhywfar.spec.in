@@ -82,6 +82,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_bindir}/xmlmerge
 %{_bindir}/dlgtest
 %{_bindir}/mklistdoc
+%{_bindir}/typemaker
 %{_includedir}/gwenhywfar
 %{_includedir}/gwenpp
 %{_libdir}/*.la
