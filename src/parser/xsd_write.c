@@ -790,6 +790,244 @@ int GWEN_XSD__WriteElementType(GWEN_XSD_ENGINE *e,
 
 
 
+int GWEN_XSD__WriteNode(GWEN_XSD_ENGINE *e,
+                        GWEN_XMLNODE *nn,
+                        GWEN_DB_NODE *dbNode,
+                        GWEN_XMLNODE *nStore) {
+  const char *tagName;
+  const char *tName;
+  int minOccur;
+  int maxOccur;
+  const char *x;
+  int idx;
+  GWEN_XMLNODE *nNextStore;
+  int nodeCreated;
+
+  assert(nn);
+  nNextStore=nStore;
+  nodeCreated=0;
+  tName=GWEN_XMLNode_GetProperty(nn, "name", 0);
+  x=GWEN_XMLNode_GetProperty(nn, "minOccurs", "1");
+  if (1!=sscanf(x, "%i", &minOccur)) {
+    if (strcasecmp(x, "unbounded")==0)
+      minOccur=0;
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad minOccurrs property");
+      return -1;
+    }
+  }
+  x=GWEN_XMLNode_GetProperty(nn, "maxOccurs", "1");
+  if (1!=sscanf(x, "%i", &maxOccur)) {
+    if (strcasecmp(x, "unbounded")==0)
+      maxOccur=0;
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad maxOccurrs property");
+      return -1;
+    }
+  }
+
+  idx=0;
+
+  tagName=GWEN_XMLNode_GetData(nn);
+  assert(tagName);
+
+  if (strcasecmp(tagName, "element")==0) {
+    int rv;
+    const char *xType;
+    const char *xName;
+    GWEN_DB_NODE *gnode;
+    int isComplex;
+
+    if (!tName)
+      xName=GWEN_XMLNode_GetProperty(nn, "ref", 0);
+    else
+      xName=tName;
+    x=strchr(xName, ':');
+    if (x)
+      xName=x+1;
+
+    xType=GWEN_XMLNode_GetProperty(nn, "type", 0);
+    isComplex=atoi(GWEN_XMLNode_GetProperty(nn, "_isComplex", "0"));
+
+    if (isComplex && xName) {
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting group \"%s\"", xName);
+      gnode=GWEN_DB_FindFirstGroup(dbNode, xName);
+      if (!gnode) {
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "DB group \"%s\" not found",
+                 xName);
+      }
+    }
+    else
+      gnode=dbNode;
+
+    if (gnode) {
+      idx=0;
+      for (;;) {
+        if (maxOccur && idx>maxOccur)
+          break;
+
+        rv=GWEN_XSD__WriteElementTypes(e, nn, gnode, idx, nNextStore);
+        if (rv) {
+          if (rv==-1) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here");
+            return rv;
+          }
+          else
+            break;
+        }
+        idx++;
+        if (isComplex && xName) {
+          /* get next data group */
+          DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting next group \"%s\"",
+                     xName);
+          gnode=GWEN_DB_FindNextGroup(gnode, xName);
+          if (!gnode) {
+            DBG_INFO(GWEN_LOGDOMAIN,
+                     "No next DB group \"%s\"",
+                     xName);
+            break;
+          }
+        } /* if xName && !xType */
+      } /* for */
+    } /* if gnode */
+  } /* if element */
+
+  else if (strcasecmp(tagName, "group")==0) {
+    int rv;
+    GWEN_DB_NODE *gnode;
+    const char *xName;
+    int isComplex;
+
+    xName=tName;
+    x=strchr(xName, ':');
+    if (x)
+      xName=++x;
+
+    isComplex=atoi(GWEN_XMLNode_GetProperty(nn, "_isComplex", "0"));
+
+    if (tName && isComplex) {
+      x=strchr(tName, ':');
+      assert(x);
+      x++;
+      nNextStore=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, x);
+      if (1) {
+        char debugbuf[256];
+        snprintf(debugbuf, sizeof(debugbuf)-1,
+                 "%s:%d:%s",
+                 __FILE__, __LINE__, __FUNCTION__);
+        GWEN_XMLNode_SetProperty(nNextStore, "_debug", debugbuf);
+      }
+      nodeCreated=1;
+    }
+
+    if (isComplex && xName) {
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting group \"%s\"", xName);
+      gnode=GWEN_DB_FindFirstGroup(dbNode, xName);
+      if (!gnode) {
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "DB group \"%s\" not found",
+                 xName);
+      }
+    }
+    else
+      gnode=dbNode;
+
+    if (gnode) {
+      idx=0;
+      for (;;) {
+        if (maxOccur && idx>maxOccur)
+          break;
+
+        rv=GWEN_XSD__WriteGroupTypes(e, nn, gnode, idx, nNextStore);
+        if (rv) {
+          if (rv==-1) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here");
+            if (nodeCreated)
+              GWEN_XMLNode_free(nNextStore);
+            return rv;
+          }
+          else
+            break;
+        }
+        idx++;
+        if (x) {
+          /* get next data group */
+          DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting next group \"%s\"",
+                     x);
+          gnode=GWEN_DB_FindNextGroup(gnode, x);
+          if (!gnode) {
+            DBG_INFO(GWEN_LOGDOMAIN,
+                     "No next DB group \"%s\"",
+                     x);
+            break;
+          }
+        } /* if xName && !xType */
+      } /* for */
+    } /* if gnode */
+  } /* if group */
+
+  else if (strcasecmp(tagName, "sequence")==0) {
+    int rv;
+
+    rv=GWEN_XSD__WriteSequence(e, nn, dbNode, nStore);
+    if (rv==-1) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      return rv;
+    }
+  }
+
+  else if (strcasecmp(tagName, "choice")==0) {
+    int rv;
+
+    rv=GWEN_XSD__WriteChoice(e, nn, dbNode, nStore);
+    if (rv==-1) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      return rv;
+    }
+  }
+  else if (strcasecmp(tagName, "any")==0) {
+    /* TODO: get data from variable "data" */
+  }
+
+  /* check occurrences */
+  if (minOccur==0 && !idx) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "No occurrences of %s \"%s\", omitting it",
+              tagName, tName);
+    if (nodeCreated) {
+      GWEN_XMLNode_free(nNextStore);
+      nNextStore=0;
+      nodeCreated=0;
+    }
+  }
+  else {
+    if (minOccur && idx<minOccur) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Too few occurrences of %s \"%s\" (%d<%d)",
+                tagName, tName, idx, minOccur);
+      if (nodeCreated)
+        GWEN_XMLNode_free(nNextStore);
+      return -1;
+    }
+    if (maxOccur && idx>maxOccur) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Too many occurrences of %s \"%s\" (%d>%d)",
+                tagName, tName, idx, maxOccur);
+      if (nodeCreated)
+        GWEN_XMLNode_free(nNextStore);
+      return -1;
+    }
+  }
+
+  if (nodeCreated)
+    GWEN_XMLNode_AddChild(nStore, nNextStore);
+
+  return 0;
+}
+
+
+
 int GWEN_XSD__WriteSequence(GWEN_XSD_ENGINE *e,
                             GWEN_XMLNODE *n,
                             GWEN_DB_NODE *dbNode,
@@ -798,238 +1036,11 @@ int GWEN_XSD__WriteSequence(GWEN_XSD_ENGINE *e,
 
   nn=GWEN_XMLNode_GetFirstTag(n);
   while(nn) {
-    const char *tagName;
-    const char *tName;
-    int minOccur;
-    int maxOccur;
-    const char *x;
-    int idx;
-    GWEN_XMLNODE *nNextStore;
-    int nodeCreated;
+    int rv;
 
-    assert(n);
-    nNextStore=nStore;
-    nodeCreated=0;
-    tName=GWEN_XMLNode_GetProperty(nn, "name", 0);
-    x=GWEN_XMLNode_GetProperty(nn, "minOccurs", "1");
-    if (1!=sscanf(x, "%i", &minOccur)) {
-      if (strcasecmp(x, "unbounded")==0)
-        minOccur=0;
-      else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad minOccurrs property");
-        return -1;
-      }
-    }
-    x=GWEN_XMLNode_GetProperty(n, "maxOccurs", "1");
-    if (1!=sscanf(x, "%i", &maxOccur)) {
-      if (strcasecmp(x, "unbounded")==0)
-        maxOccur=0;
-      else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad maxOccurrs property");
-        return -1;
-      }
-    }
-
-    tagName=GWEN_XMLNode_GetData(nn);
-    assert(tagName);
-
-    idx=0;
-    if (strcasecmp(tagName, "element")==0) {
-      int rv;
-      const char *xType;
-      const char *xName;
-      GWEN_DB_NODE *gnode;
-      int isComplex;
-
-      if (!tName)
-        xName=GWEN_XMLNode_GetProperty(nn, "ref", 0);
-      else
-        xName=tName;
-      x=strchr(xName, ':');
-      if (x)
-        xName=x+1;
-
-      xType=GWEN_XMLNode_GetProperty(nn, "type", 0);
-      isComplex=atoi(GWEN_XMLNode_GetProperty(nn, "_isComplex", "0"));
-
-      if (isComplex && xName) {
-        DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting group \"%s\"", xName);
-        gnode=GWEN_DB_FindFirstGroup(dbNode, xName);
-        if (!gnode) {
-          DBG_INFO(GWEN_LOGDOMAIN,
-                   "DB group \"%s\" not found",
-                   xName);
-        }
-      }
-      else
-        gnode=dbNode;
-
-      if (gnode) {
-        idx=0;
-        for (;;) {
-          if (maxOccur && idx>maxOccur)
-            break;
-
-          rv=GWEN_XSD__WriteElementTypes(e, nn, gnode, idx, nNextStore);
-          if (rv) {
-            if (rv==-1) {
-              DBG_INFO(GWEN_LOGDOMAIN, "here");
-              return rv;
-            }
-            else
-              break;
-          }
-          idx++;
-          if (isComplex && xName) {
-            /* get next data group */
-            DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting next group \"%s\"",
-                       xName);
-            gnode=GWEN_DB_FindNextGroup(gnode, xName);
-            if (!gnode) {
-              DBG_INFO(GWEN_LOGDOMAIN,
-                       "No next DB group \"%s\"",
-                       xName);
-              break;
-            }
-          } /* if xName && !xType */
-        } /* for */
-      } /* if gnode */
-    } /* if element */
-
-    else if (strcasecmp(tagName, "group")==0) {
-      int rv;
-      GWEN_DB_NODE *gnode;
-      const char *xName;
-      int isComplex;
-
-      xName=tName;
-      x=strchr(xName, ':');
-      if (x)
-        xName=++x;
-
-      isComplex=atoi(GWEN_XMLNode_GetProperty(nn, "_isComplex", "0"));
-
-      if (tName && isComplex) {
-        x=strchr(tName, ':');
-        assert(x);
-        x++;
-        nNextStore=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, x);
-        if (1) {
-          char debugbuf[256];
-          snprintf(debugbuf, sizeof(debugbuf)-1,
-                   "%s:%d:%s",
-                   __FILE__, __LINE__, __FUNCTION__);
-          GWEN_XMLNode_SetProperty(nNextStore, "_debug", debugbuf);
-        }
-        nodeCreated=1;
-      }
-
-      if (isComplex && xName) {
-        DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting group \"%s\"", xName);
-        gnode=GWEN_DB_FindFirstGroup(dbNode, xName);
-        if (!gnode) {
-          DBG_INFO(GWEN_LOGDOMAIN,
-                   "DB group \"%s\" not found",
-                   xName);
-        }
-      }
-      else
-        gnode=dbNode;
-
-      if (gnode) {
-        idx=0;
-        for (;;) {
-          if (maxOccur && idx>maxOccur)
-            break;
-
-          rv=GWEN_XSD__WriteGroupTypes(e, nn, gnode, idx, nNextStore);
-          if (rv) {
-            if (rv==-1) {
-              DBG_INFO(GWEN_LOGDOMAIN, "here");
-              if (nodeCreated)
-                GWEN_XMLNode_free(nNextStore);
-              return rv;
-            }
-            else
-              break;
-          }
-          idx++;
-          if (x) {
-            /* get next data group */
-            DBG_NOTICE(GWEN_LOGDOMAIN, "Selecting next group \"%s\"",
-                       x);
-            gnode=GWEN_DB_FindNextGroup(gnode, x);
-            if (!gnode) {
-              DBG_INFO(GWEN_LOGDOMAIN,
-                       "No next DB group \"%s\"",
-                       x);
-              break;
-            }
-          } /* if xName && !xType */
-        } /* for */
-      } /* if gnode */
-    } /* if group */
-
-    else if (strcasecmp(tagName, "sequence")==0) {
-      int rv;
-
-      rv=GWEN_XSD__WriteSequence(e, nn, dbNode, nStore);
-      if (rv==0)
-        break;
-      if (rv==-1) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        return rv;
-      }
-    }
-
-    else if (strcasecmp(tagName, "choice")==0) {
-      int rv;
-
-      rv=GWEN_XSD__WriteChoice(e, nn, dbNode, nStore);
-      if (rv==0)
-        break;
-      if (rv==-1) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        return rv;
-      }
-    }
-    else if (strcasecmp(tagName, "any")==0) {
-      /* TODO: get data from variable "data" */
-    }
-
-    /* check occurrences */
-    if (minOccur==0 && !idx) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "No occurrences of %s \"%s\", omitting it",
-                tagName, tName);
-      if (nodeCreated) {
-        GWEN_XMLNode_free(nNextStore);
-        nNextStore=0;
-        nodeCreated=0;
-      }
-    }
-    else {
-      if (minOccur && idx<minOccur) {
-        DBG_ERROR(GWEN_LOGDOMAIN,
-                  "Too few occurrences of %s \"%s\" (%d<%d)",
-                  tagName, tName, idx, minOccur);
-        if (nodeCreated)
-          GWEN_XMLNode_free(nNextStore);
-        return -1;
-      }
-      if (maxOccur && idx>maxOccur) {
-        DBG_ERROR(GWEN_LOGDOMAIN,
-                  "Too many occurrences of %s \"%s\" (%d>%d)",
-                  tagName, tName, idx, maxOccur);
-        if (nodeCreated)
-          GWEN_XMLNode_free(nNextStore);
-        return -1;
-      }
-    }
-
-    if (nodeCreated)
-      GWEN_XMLNode_AddChild(nStore, nNextStore);
-
+    rv=GWEN_XSD__WriteNode(e, nn, dbNode, nStore);
+    if (rv)
+      return rv;
     nn=GWEN_XMLNode_GetNextTag(nn);
   }
 
@@ -1043,86 +1054,17 @@ int GWEN_XSD__WriteChoice(GWEN_XSD_ENGINE *e,
                           GWEN_DB_NODE *dbNode,
                           GWEN_XMLNODE *nStore) {
   GWEN_XMLNODE *nn;
-  int first;
 
   nn=GWEN_XMLNode_GetFirstTag(nn);
-  first=1;
   while(nn) {
-    const char *tagName;
-    int minOccur;
-    int maxOccur;
-    const char *x;
-  
-    assert(n);
-    x=GWEN_XMLNode_GetProperty(n, "minOccurs", "1");
-    if (1!=sscanf(x, "%i", &minOccur)) {
-      if (strcasecmp(x, "unbounded")==0)
-        minOccur=0;
-      else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad minOccurrs property");
-        return -1;
-      }
-    }
-    x=GWEN_XMLNode_GetProperty(n, "maxOccurs", "1");
-    if (1!=sscanf(x, "%i", &maxOccur)) {
-      if (strcasecmp(x, "unbounded")==0)
-        maxOccur=0;
-      else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad maxOccurrs property");
-        return -1;
-      }
-    }
+    int rv;
 
-    tagName=GWEN_XMLNode_GetData(nn);
-    assert(tagName);
-
-    if (strcasecmp(tagName, "element")==0) {
-      int rv;
-
-      rv=GWEN_XSD__WriteElementTypes(e, nn, dbNode, 0 /* idx */, nStore);
-      if (rv==0)
-        break;
-      if (rv==-1) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        return rv;
-      }
-    }
-    else if (strcasecmp(tagName, "group")==0) {
-      int rv;
-
-      rv=GWEN_XSD__WriteGroupTypes(e, nn, dbNode, 0 /*idx*/, nStore);
-      if (rv==0)
-        break;
-      if (rv==-1) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        return rv;
-      }
-    }
-    else if (strcasecmp(tagName, "sequence")==0) {
-      int rv;
-
-      rv=GWEN_XSD__WriteSequence(e, nn, dbNode, nStore);
-      if (rv==0)
-        break;
-      if (rv==-1) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        return rv;
-      }
-    }
-    else if (strcasecmp(tagName, "choice")==0) {
-      int rv;
-
-      rv=GWEN_XSD__WriteChoice(e, nn, dbNode, nStore);
-      if (rv==0)
-        break;
-      if (rv==-1) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        return rv;
-      }
-    }
-    else if (strcasecmp(tagName, "any")==0) {
-      /* TODO: get data from variable "data" */
-    }
+    /* try to write this node */
+    rv=GWEN_XSD__WriteNode(e, nn, dbNode, nStore);
+    if (rv!=1)
+      /* either an error or successfully written, so the choice is done */
+      return rv;
+    /* try next one */
     nn=GWEN_XMLNode_GetNextTag(nn);
   } /* while nn */
 
