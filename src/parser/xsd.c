@@ -77,7 +77,7 @@ GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_new(const char *id,
     ns->url=strdup(url);
   if (localUrl)
     ns->localUrl=strdup(localUrl);
-  ns->xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "namespace");
+  ns->outId=strdup(id);
   return ns;
 }
 
@@ -85,13 +85,44 @@ GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_new(const char *id,
 
 void GWEN_XSD_NameSpace_free(GWEN_XSD_NAMESPACE *ns){
   if (ns) {
+    free(ns->outId);
     free(ns->localUrl);
     free(ns->url);
     free(ns->id);
-    GWEN_XMLNode_free(ns->xmlNode);
     GWEN_LIST_FINI(GWEN_XSD_NAMESPACE, ns);
     GWEN_FREE_OBJECT(ns);
   }
+}
+
+
+
+int GWEN_XSD_NameSpace_toXml(GWEN_XSD_NAMESPACE *ns, GWEN_XMLNODE *n){
+  GWEN_XMLNode_SetCharValue(n, "id", ns->id);
+  GWEN_XMLNode_SetCharValue(n, "outId", ns->outId);
+  GWEN_XMLNode_SetCharValue(n, "name", ns->name);
+  GWEN_XMLNode_SetCharValue(n, "url", ns->url);
+  GWEN_XMLNode_SetCharValue(n, "localUrl", ns->localUrl);
+
+  return 0;
+}
+
+
+
+GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_fromXml(GWEN_XMLNODE *n){
+  GWEN_XSD_NAMESPACE *ns;
+  const char *s;
+
+  ns=GWEN_XSD_NameSpace_new(GWEN_XMLNode_GetCharValue(n, "id", 0),
+                            GWEN_XMLNode_GetCharValue(n, "name", 0),
+                            GWEN_XMLNode_GetCharValue(n, "url", 0),
+                            GWEN_XMLNode_GetCharValue(n, "localUrl", 0));
+  assert(ns);
+  s=GWEN_XMLNode_GetCharValue(n, "outId", 0);
+  if (!s)
+    s=ns->id;
+  assert(s);
+  ns->outId=strdup(s);
+  return ns;
 }
 
 
@@ -132,7 +163,6 @@ GWEN_XSD_ENGINE *GWEN_XSD_new() {
   GWEN_NEW_OBJECT(GWEN_XSD_ENGINE, e);
   e->rootNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   e->nameSpaces=GWEN_XSD_NameSpace_List_new();
-  e->userNameSpaces=GWEN_XSD_NameSpace_List_new();
 
   return e;
 }
@@ -143,7 +173,6 @@ void GWEN_XSD_free(GWEN_XSD_ENGINE *e){
   if (e) {
     free(e->currentTargetNameSpace);
     GWEN_XMLNode_free(e->rootNode);
-    GWEN_XSD_NameSpace_List_free(e->userNameSpaces);
     GWEN_XSD_NameSpace_List_free(e->nameSpaces);
     GWEN_FREE_OBJECT(e);
   }
@@ -204,7 +233,7 @@ int GWEN_XSD__RemoveNamespace(GWEN_XSD_ENGINE *e,
 
 	  save=strdup(p+1);
 	  /* remove name space name */
-	  DBG_INFO(GWEN_LOGDOMAIN, "Removing namespace from tag \"%s\"", s);
+          DBG_VERBOUS(GWEN_LOGDOMAIN, "Removing namespace from tag \"%s\"", s);
 	  GWEN_XMLNode_SetData(n, save);
 	  free(save);
 	}
@@ -252,10 +281,10 @@ int GWEN_XSD__ExchangeNamespaceOnProperty(GWEN_XSD_ENGINE *e,
 	  GWEN_Buffer_AppendString(tbuf, p+1);
   
 	  /* convert name space name */
-	  DBG_INFO(GWEN_LOGDOMAIN,
-		   "Changing namespace for tag \"%s\"",
-		   GWEN_XMLNode_GetData(n));
-	  GWEN_XMLNode_SetProperty(n, name, GWEN_Buffer_GetStart(tbuf));
+	  DBG_DEBUG(GWEN_LOGDOMAIN,
+                    "Changing namespace for tag \"%s\"",
+                    GWEN_XMLNode_GetData(n));
+          GWEN_XMLNode_SetProperty(n, name, GWEN_Buffer_GetStart(tbuf));
 	  GWEN_Buffer_free(tbuf);
 	}
       } /* if newPrefix */
@@ -270,10 +299,10 @@ int GWEN_XSD__ExchangeNamespaceOnProperty(GWEN_XSD_ENGINE *e,
 	GWEN_Buffer_AppendString(tbuf, pname);
   
 	/* convert name space name */
-	DBG_INFO(GWEN_LOGDOMAIN,
-		 "Changing namespace for tag \"%s\"",
-		 GWEN_XMLNode_GetData(n));
-	GWEN_XMLNode_SetProperty(n, name, GWEN_Buffer_GetStart(tbuf));
+        DBG_DEBUG(GWEN_LOGDOMAIN,
+                  "Changing namespace for tag \"%s\"",
+                  GWEN_XMLNode_GetData(n));
+        GWEN_XMLNode_SetProperty(n, name, GWEN_Buffer_GetStart(tbuf));
 	GWEN_Buffer_free(tbuf);
       }
     }
@@ -1075,44 +1104,6 @@ int GWEN_XSD_SetCurrentTargetNameSpace(GWEN_XSD_ENGINE *e, const char *s){
 
 
 
-int GWEN_XSD__FinalizeNameSpaces(GWEN_XSD_ENGINE *e) {
-  GWEN_XSD_NAMESPACE *ns1;
-
-  assert(e);
-  ns1=GWEN_XSD_NameSpace_List_First(e->userNameSpaces);
-  while(ns1) {
-    GWEN_XSD_NAMESPACE *ns2;
-    GWEN_XSD_NAMESPACE *ns1n;
-
-    ns1n=GWEN_XSD_NameSpace_List_Next(ns1);
-    GWEN_XSD_NameSpace_List_Del(ns1);
-    if (GWEN_XSD__FindNameSpaceByName(e, ns1->id)) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "A namespace with prefix \"%s\" already exists",
-                ns1->id);
-      GWEN_XSD_NameSpace_free(ns1);
-    }
-    else {
-      ns2=GWEN_XSD__FindNameSpaceByName(e, ns1->name);
-      if (ns2) {
-        if (ns1->id && ns2->id) {
-          GWEN_XSD__ExchangeNamespace(e, ns2->id, ns1->id, e->rootNode, 0);
-          free(ns2->id);
-          ns2->id=strdup(ns1->id);
-        }
-        GWEN_XSD_NameSpace_free(ns1);
-      }
-      else {
-        GWEN_XSD_NameSpace_List_Add(ns1, e->nameSpaces);
-      }
-    }
-    ns1=ns1n;
-  }
-  return 0;
-}
-
-
-
 int GWEN_XSD__ImportDerivedTypes(GWEN_XSD_ENGINE *e) {
   GWEN_XMLNODE *tNode;
 
@@ -1148,11 +1139,6 @@ int GWEN_XSD_ImportEnd(GWEN_XSD_ENGINE *e) {
   int rv;
 
   assert(e);
-  rv=GWEN_XSD__FinalizeNameSpaces(e);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here");
-    return rv;
-  }
 
   rv=GWEN_XSD__FinishXsdDoc(e);
   if (rv) {
@@ -1165,41 +1151,155 @@ int GWEN_XSD_ImportEnd(GWEN_XSD_ENGINE *e) {
 
 
 
-int GWEN_XSD_AddNameSpace(GWEN_XSD_ENGINE *e,
+int GWEN_XSD_SetNamespace(GWEN_XSD_ENGINE *e,
                           const char *prefix,
                           const char *name,
                           const char *url,
                           const char *localUrl){
   GWEN_XSD_NAMESPACE *ns;
 
-  if (GWEN_XSD_NameSpace_List_GetCount(e->nameSpaces)) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Schema import already started, "
-              "please setup namespace before.");
-    return -1;
-  }
+  assert(prefix || name);
 
-  ns=GWEN_XSD_NameSpace_List_First(e->userNameSpaces);
+  if (prefix) {
+    ns=GWEN_XSD__FindNameSpaceById(e, prefix);
+    if (ns) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "A namespace with prefix \"%s\" already exists",
+                prefix);
+      return -1;
+    }
+  }
+  if (name) {
+    ns=GWEN_XSD__FindNameSpaceByName(e, name);
+    if (ns) {
+      /* namespace already exists, modify it */
+      if (prefix) {
+        free(ns->outId);
+        ns->outId=strdup(prefix);
+      }
+
+      if (url) {
+        free(ns->url);
+        ns->url=strdup(url);
+      }
+
+      if (localUrl) {
+        free(ns->localUrl);
+        ns->localUrl=strdup(localUrl);
+      }
+
+    }
+    else {
+      char idbuf[32];
+
+      snprintf(idbuf, sizeof(idbuf), "_ns%d", ++(e->nextNameSpaceId));
+      ns=GWEN_XSD_NameSpace_new(idbuf, name, url, localUrl);
+      if (prefix) {
+        free(ns->outId);
+        ns->outId=strdup(prefix);
+      }
+      GWEN_XSD_NameSpace_List_Add(ns, e->nameSpaces);
+    }
+  }
+  return 0;
+}
+
+
+
+int GWEN_XSD_ProfileToXml(GWEN_XSD_ENGINE *e,
+                          GWEN_XMLNODE *nRoot) {
+  GWEN_XMLNODE *n;
+  GWEN_XSD_NAMESPACE *ns;
+
+  GWEN_XMLNode_SetCharValue(nRoot, "currentTargetNameSpace",
+                            e->currentTargetNameSpace);
+  GWEN_XMLNode_SetIntValue(nRoot, "derivedTypesImported",
+                           e->derivedTypesImported);
+  GWEN_XMLNode_SetIntValue(nRoot, "nextNameSpaceId",
+                           e->nextNameSpaceId);
+
+  /* write namespaces */
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "namespaces");
+  GWEN_XMLNode_AddChild(nRoot, n);
+  ns=GWEN_XSD_NameSpace_List_First(e->nameSpaces);
   while(ns) {
-    if (strcasecmp(prefix, ns->id)==0)
-      break;
-    ns=GWEN_XSD_NameSpace_List_Next(ns);
-  }
-  if (ns) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "A namespace with prefix \"%s\" already exists",
-              prefix);
-  }
+    GWEN_XMLNODE *nn;
 
-  ns=GWEN_XSD_NameSpace_new(prefix, name, url, localUrl);
-  GWEN_XSD_NameSpace_List_Add(ns, e->userNameSpaces);
+    nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "namespace");
+    if (GWEN_XSD_NameSpace_toXml(ns, nn)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not save namespace \"%s\"",
+                ns->id);
+      GWEN_XMLNode_free(nn);
+    }
+    else {
+      GWEN_XMLNode_AddChild(n, nn);
+    }
+    ns=GWEN_XSD_NameSpace_List_Next(ns);
+  } /* while */
+
+  /* write files */
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "files");
+  GWEN_XMLNode_AddChild(nRoot, n);
+
+  /* add all files */
+  GWEN_XMLNode_AddChildrenOnly(n, e->rootNode, 1);
 
   return 0;
 }
 
 
 
+int GWEN_XSD_ProfileFromXml(GWEN_XSD_ENGINE *e,
+                            GWEN_XMLNODE *nRoot) {
+  GWEN_XMLNODE *n;
+  const char *s;
 
+  /* reset */
+  GWEN_XSD_NameSpace_List_Clear(e->nameSpaces);
+  GWEN_XMLNode_free(e->rootNode);
+  e->rootNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  free(e->currentTargetNameSpace);
+  e->currentTargetNameSpace=0;
+
+  /* read some free variables */
+  s=GWEN_XMLNode_GetCharValue(nRoot, "currentTargetNameSpace", 0);
+  if (s)
+    e->currentTargetNameSpace=strdup(s);
+  e->derivedTypesImported=GWEN_XMLNode_GetIntValue(nRoot,
+                                                   "derivedTypesImported",
+                                                   0);
+  e->nextNameSpaceId=GWEN_XMLNode_GetIntValue(nRoot, "nextNameSpaceId", 0);
+
+  /* read namespaces */
+  n=GWEN_XMLNode_FindFirstTag(nRoot, "namespaces", 0, 0);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    DBG_INFO(GWEN_LOGDOMAIN, "Loading namespace data");
+    nn=GWEN_XMLNode_FindFirstTag(n, "namespace", 0, 0);
+    while(nn) {
+      GWEN_XSD_NAMESPACE *ns;
+
+      ns=GWEN_XSD_NameSpace_fromXml(nn);
+      if (ns)
+        GWEN_XSD_NameSpace_List_Add(ns, e->nameSpaces);
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad namespace found");
+        return -1;
+      }
+      nn=GWEN_XMLNode_FindNextTag(nn, "namespace", 0, 0);
+    } /* while */
+  }
+
+  /* read files */
+  n=GWEN_XMLNode_FindFirstTag(nRoot, "files", 0, 0);
+  if (n) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Loading file data");
+    GWEN_XMLNode_AddChildrenOnly(e->rootNode, n, 1);
+  }
+
+  return 0;
+}
 
 
 

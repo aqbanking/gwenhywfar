@@ -132,6 +132,7 @@ void GWEN_XMLNode_free(GWEN_XMLNODE *n){
     GWEN_XMLProperty_freeAll(n->properties);
     free(n->data);
     GWEN_XMLNode_freeAll(n->child);
+    GWEN_XMLNode_freeAll(n->header);
     free(n);
   }
 }
@@ -660,7 +661,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
           GWEN_Buffer_free(tbuf);
 
           /* check whether the tag is "descr" */
-          if (!(flags & GWEN_XML_FLAGS_IGNORE_DESCR) &&
+          if ((flags & GWEN_XML_FLAGS_IGNORE_DESCR) &&
               strcasecmp(n->data, "descr")==0) {
             GWEN_XMLNODE *nparent;
 
@@ -1045,22 +1046,50 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 	  }
 
           /* ok, now the tag is complete, add it */
-          if ((flags & GWEN_XML_FLAGS_SHARE_TOPLEVEL) &&
-              currDepth==0) {
-            GWEN_XMLNODE *oldNode;
+          /* check for headers */
+          if ((flags & GWEN_XML_FLAGS_HANDLE_HEADERS) &&
+              (newNode->data[0]=='?' || newNode->data[0]=='!')) {
+            if (currDepth==0) {
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Adding header \"%s\"",
+                        newNode->data);
+              /* unlink header tag and add it as header */
+              GWEN_XMLNode_AddHeader(n, newNode);
+            }
+          }
+          else {
+            /* ok, add the tag */
 
-            oldNode=GWEN_XMLNode_FindFirstTag(n, newNode->data, 0, 0);
-            if (oldNode) {
-              /* use old node, copy properties */
-              DBG_INFO(GWEN_LOGDOMAIN, "Line %d: Using old toplevel node for \"%s\"",
-                       GWEN_BufferedIO_GetLines(bio),
-                       newNode->data);
-              GWEN_XMLNode_CopyProperties(oldNode, newNode, 0);
-              GWEN_XMLNode_free(newNode);
-              newNode=oldNode;
+            if ((flags & GWEN_XML_FLAGS_SHARE_TOPLEVEL) &&
+                currDepth==0) {
+              GWEN_XMLNODE *oldNode;
+  
+              oldNode=GWEN_XMLNode_FindFirstTag(n, newNode->data, 0, 0);
+              if (oldNode) {
+                /* use old node, copy properties */
+                DBG_INFO(GWEN_LOGDOMAIN, "Line %d: Using old toplevel node for \"%s\"",
+                         GWEN_BufferedIO_GetLines(bio),
+                         newNode->data);
+                GWEN_XMLNode_CopyProperties(oldNode, newNode, 0);
+                GWEN_XMLNode_free(newNode);
+                newNode=oldNode;
+              }
+              else {
+                /* otherwise add new tag */
+                if (currDepth>=GWEN_XML_MAX_DEPTH) {
+                  DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: Maximum depth exceeded",
+                            GWEN_BufferedIO_GetLines(bio));
+                  GWEN_XMLNode_free(newNode);
+                  GWEN_Buffer_free(bufValue);
+                  GWEN_Buffer_free(bufVarName);
+                  GWEN_Buffer_free(bufTagName);
+                  return -1;
+                }
+                GWEN_XMLNode_add(newNode, &(n->child));
+                newNode->parent=n;
+                DBG_DEBUG(GWEN_LOGDOMAIN, "Added node \"%s\"", newNode->data);
+              }
             }
             else {
-              /* otherwise add new tag */
               if (currDepth>=GWEN_XML_MAX_DEPTH) {
                 DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: Maximum depth exceeded",
                           GWEN_BufferedIO_GetLines(bio));
@@ -1074,36 +1103,22 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               newNode->parent=n;
               DBG_DEBUG(GWEN_LOGDOMAIN, "Added node \"%s\"", newNode->data);
             }
-          }
-          else {
-            if (currDepth>=GWEN_XML_MAX_DEPTH) {
-              DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: Maximum depth exceeded",
-                        GWEN_BufferedIO_GetLines(bio));
-              GWEN_XMLNode_free(newNode);
-              GWEN_Buffer_free(bufValue);
-              GWEN_Buffer_free(bufVarName);
-              GWEN_Buffer_free(bufTagName);
-              return -1;
+            if (!isEndTag && !simpleTag) {
+              /* only dive if this tag is not immediately ended */
+              path[currDepth++]=n;
+              n=newNode;
             }
-            GWEN_XMLNode_add(newNode, &(n->child));
-            newNode->parent=n;
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Added node \"%s\"", newNode->data);
+            else {
+              /* immediate endTag, if depth is 0: done */
+              if (currDepth==0) {
+                DBG_DEBUG(GWEN_LOGDOMAIN, "One node done");
+                GWEN_Buffer_free(bufValue);
+                GWEN_Buffer_free(bufVarName);
+                GWEN_Buffer_free(bufTagName);
+                return 0;
+              }
+            }
           }
-          if (!isEndTag && !simpleTag) {
-	    /* only dive if this tag is not immediately ended */
-	    path[currDepth++]=n;
-	    n=newNode;
-          }
-          else {
-	    /* immediate endTag, if depth is 0: done */
-	    if (currDepth==0) {
-	      DBG_DEBUG(GWEN_LOGDOMAIN, "One node done");
-              GWEN_Buffer_free(bufValue);
-              GWEN_Buffer_free(bufVarName);
-              GWEN_Buffer_free(bufTagName);
-	      return 0;
-	    }
-	  }
           GWEN_Buffer_free(bufValue);
           GWEN_Buffer_free(bufVarName);
         } /* if start tag */
@@ -2002,6 +2017,36 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
                                GWEN_TYPE_UINT32 flags){
   const GWEN_XMLNODE *nn;
 
+  if (n->header && (flags & GWEN_XML_FLAGS_HANDLE_HEADERS)) {
+    GWEN_TYPE_UINT32 lflags;
+    lflags=flags & ~GWEN_XML_FLAGS_HANDLE_HEADERS;
+    nn=n->header;
+    while(nn) {
+      if (GWEN_XMLNode__WriteToStream(nn, bio, lflags, 0))
+        return -1;
+      if (nn->next) {
+        GWEN_ERRORCODE err;
+
+        err=GWEN_BufferedIO_WriteLine(bio, "");
+        if (!GWEN_Error_IsOk(err)) {
+          DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+          return -1;
+        }
+      }
+
+      nn=nn->next;
+    }
+    if (n->child) {
+      GWEN_ERRORCODE err;
+
+      err=GWEN_BufferedIO_WriteLine(bio, "");
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+        return -1;
+      }
+    }
+  }
+
   nn=n->child;
   while(nn) {
     if (GWEN_XMLNode__WriteToStream(nn, bio, flags, 0))
@@ -2078,6 +2123,23 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
 
 
 
+void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
+                               const char *name,
+                               const char *value){
+  GWEN_XMLNODE *nn;
+
+  nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, name);
+  if (value) {
+    GWEN_XMLNODE *nnn;
+
+    nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, value);
+    GWEN_XMLNode_AddChild(nn, nnn);
+  }
+  GWEN_XMLNode_AddChild(n, nn);
+}
+
+
+
 int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
                              const char *name,
                              int defValue) {
@@ -2090,6 +2152,18 @@ int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
   if (1!=sscanf(p, "%i", &res))
     return defValue;
   return res;
+}
+
+
+
+void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
+                              const char *name,
+                              int value){
+  char numbuf[32];
+
+  snprintf(numbuf, sizeof(numbuf)-1, "%d", value);
+  numbuf[sizeof(numbuf)-1]=0;
+  GWEN_XMLNode_SetCharValue(n, name, numbuf);
 }
 
 
@@ -2404,6 +2478,45 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
                                          flags,
                                          GWEN_XMLNode_HandlePath);
 }
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_GetHeader(const GWEN_XMLNODE *n){
+  assert(n);
+  return n->header;
+}
+
+
+
+void GWEN_XMLNode_AddHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh){
+  assert(n);
+  assert(nh);
+  GWEN_XMLNode_add(nh, &(n->header));
+}
+
+
+
+void GWEN_XMLNode_DelHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh){
+  assert(n);
+  assert(nh);
+  GWEN_XMLNode_del(nh, &(n->header));
+}
+
+
+
+void GWEN_XMLNode_ClearHeaders(GWEN_XMLNODE *n){
+  assert(n);
+  GWEN_XMLNode_freeAll(n->header);
+  n->header=0;
+}
+
+
+
+
+
+
+
+
 
 
 

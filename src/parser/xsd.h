@@ -83,7 +83,7 @@ int GWEN_XSD_ImportSchema(GWEN_XSD_ENGINE *e,
 const char *GWEN_XSD_GetCurrentTargetNameSpace(const GWEN_XSD_ENGINE *e);
 int GWEN_XSD_SetCurrentTargetNameSpace(GWEN_XSD_ENGINE *e, const char *s);
 
-int GWEN_XSD_AddNameSpace(GWEN_XSD_ENGINE *e,
+int GWEN_XSD_SetNamespace(GWEN_XSD_ENGINE *e,
                           const char *prefix,
                           const char *name,
                           const char *url,
@@ -91,6 +91,13 @@ int GWEN_XSD_AddNameSpace(GWEN_XSD_ENGINE *e,
 
 int GWEN_XSD_ImportStart(GWEN_XSD_ENGINE *e);
 int GWEN_XSD_ImportEnd(GWEN_XSD_ENGINE *e);
+
+
+int GWEN_XSD_ProfileToXml(GWEN_XSD_ENGINE *e,
+                          GWEN_XMLNODE *n);
+
+int GWEN_XSD_ProfileFromXml(GWEN_XSD_ENGINE *e,
+                            GWEN_XMLNODE *nRoot);
 
 
 #endif

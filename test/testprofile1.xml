@@ -1,0 +1,2807 @@
+<?xml version="1.0" encoding="utf-8"?/>
+<profile>
+<currentTargetNameSpace/>
+<derivedTypesImported>1</derivedTypesImported>
+<nextNameSpaceId>5</nextNameSpaceId>
+<namespaces>
+<namespace>
+<id>_ns1</id>
+<outId>fintstrans</outId>
+<name>http://www.fints.org/spec/xmlschema/4.0/final/transactions</name>
+<url/>
+<localUrl/>
+</namespace>
+<namespace>
+<id>_ns2</id>
+<outId>fintstypes</outId>
+<name>http://www.fints.org/spec/xmlschema/4.0/final/types</name>
+<url/>
+<localUrl/>
+</namespace>
+<namespace>
+<id>_ns3</id>
+<outId>_ns3</outId>
+<name>http://www.w3.org/2001/XMLSchema</name>
+<url/>
+<localUrl/>
+</namespace>
+<namespace>
+<id>_ns4</id>
+<outId>_ns4</outId>
+<name>http://www.w3.org/2001/04/xmlenc#</name>
+<url/>
+<localUrl/>
+</namespace>
+<namespace>
+<id>_ns5</id>
+<outId>_ns5</outId>
+<name>http://www.w3.org/2000/09/xmldsig#</name>
+<url/>
+<localUrl/>
+</namespace>
+</namespaces>
+<files>
+<file filename="xsdtypes.xsd" namespaceprefix="_ns3" filenamespace="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<simpleType name="_ns3:normalizedString" id="normalizedString">
+<restriction base="_ns3:string">
+<whiteSpace value="replace" id="normalizedString.whiteSpace"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:token" id="token">
+<restriction base="_ns3:normalizedString">
+<whiteSpace value="collapse" id="token.whiteSpace"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:language" id="language">
+<restriction base="_ns3:token">
+<pattern value="[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*" id="language.pattern"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:IDREFS" id="IDREFS">
+<restriction>
+<simpleType>
+<list itemType="xs:IDREF"/>
+</simpleType>
+<minLength value="1" id="IDREFS.minLength"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:ENTITIES" id="ENTITIES">
+<restriction>
+<simpleType>
+<list itemType="xs:ENTITY"/>
+</simpleType>
+<minLength value="1" id="ENTITIES.minLength"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:NMTOKEN" id="NMTOKEN">
+<restriction base="_ns3:token">
+<pattern value="c+" id="NMTOKEN.pattern"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:NMTOKENS" id="NMTOKENS">
+<restriction>
+<simpleType>
+<list itemType="xs:NMTOKEN"/>
+</simpleType>
+<minLength value="1" id="NMTOKENS.minLength"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:Name" id="Name">
+<restriction base="_ns3:token">
+<pattern value="ic*" id="Name.pattern"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:NCName" id="NCName">
+<restriction base="_ns3:Name">
+<pattern value="[i-[:]][c-[:]]*" id="NCName.pattern"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:ID" id="ID">
+<restriction base="_ns3:NCName"/>
+</simpleType>
+<simpleType name="_ns3:IDREF" id="IDREF">
+<restriction base="_ns3:NCName"/>
+</simpleType>
+<simpleType name="_ns3:ENTITY" id="ENTITY">
+<restriction base="_ns3:NCName"/>
+</simpleType>
+<simpleType name="_ns3:integer" id="integer">
+<restriction base="_ns3:decimal">
+<fractionDigits value="0" fixed="true" id="integer.fractionDigits"/>
+<pattern value="[-+]?[0-9]+"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:nonPositiveInteger" id="nonPositiveInteger">
+<restriction base="_ns3:integer">
+<maxInclusive value="0" id="nonPositiveInteger.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:negativeInteger" id="negativeInteger">
+<restriction base="_ns3:nonPositiveInteger">
+<maxInclusive value="-1" id="negativeInteger.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:long" id="long">
+<restriction base="_ns3:integer">
+<minInclusive value="-9223372036854775808" id="long.minInclusive"/>
+<maxInclusive value="9223372036854775807" id="long.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:int" id="int">
+<restriction base="_ns3:long">
+<minInclusive value="-2147483648" id="int.minInclusive"/>
+<maxInclusive value="2147483647" id="int.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:short" id="short">
+<restriction base="_ns3:int">
+<minInclusive value="-32768" id="short.minInclusive"/>
+<maxInclusive value="32767" id="short.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:byte" id="byte">
+<restriction base="_ns3:short">
+<minInclusive value="-128" id="byte.minInclusive"/>
+<maxInclusive value="127" id="byte.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:nonNegativeInteger" id="nonNegativeInteger">
+<restriction base="_ns3:integer">
+<minInclusive value="0" id="nonNegativeInteger.minInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:unsignedLong" id="unsignedLong">
+<restriction base="_ns3:nonNegativeInteger">
+<maxInclusive value="18446744073709551615" id="unsignedLong.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:unsignedInt" id="unsignedInt">
+<restriction base="_ns3:unsignedLong">
+<maxInclusive value="4294967295" id="unsignedInt.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:unsignedShort" id="unsignedShort">
+<restriction base="_ns3:unsignedInt">
+<maxInclusive value="65535" id="unsignedShort.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:unsignedByte" id="unsignedByte">
+<restriction base="_ns3:unsignedShort">
+<maxInclusive value="255" id="unsignedByte.maxInclusive"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns3:positiveInteger" id="positiveInteger">
+<restriction base="_ns3:nonNegativeInteger">
+<minInclusive value="1" id="positiveInteger.minInclusive"/>
+</restriction>
+</simpleType>
+</file>
+<file filename="AcctBal-1.xsd" namespaceprefix="_ns1" filenamespace="http://www.fints.org/spec/xmlschema/4.0/final/transactions" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<import namespace="http://www.fints.org/spec/xmlschema/4.0/final/types" schemaLocation="../types/common.xsd"/>
+<complexType name="_ns1:AcctBal_1_Req">
+<complexContent>
+<extension base="_ns2:Order">
+<sequence>
+<element name="_ns1:OrderingCustAcct" type="_ns2:acct" _isComplex="1"/>
+<element name="_ns1:All_Acct" type="_ns2:yn"/>
+<element minOccurs="0" name="_ns1:MaxNo_Entries">
+<simpleType>
+<restriction base="_ns2:num">
+<minInclusive value="1"/>
+<maxInclusive value="9999"/>
+</restriction>
+</simpleType>
+</element>
+<element minOccurs="0" name="_ns1:ScrollRef">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns1:AcctBal_1_Req" substitutionGroup="_ns2:Order" type="_ns1:AcctBal_1_Req" _isComplex="1"/>
+<complexType name="_ns1:AcctBal_1_Resp">
+<complexContent>
+<extension base="_ns2:ResponseData">
+<sequence>
+<element maxOccurs="999" name="_ns1:RespRec" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns1:OrderingCustAcct" type="_ns2:acct" _isComplex="1"/>
+<element name="_ns1:AcctName">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="30"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns1:AcctCcy" type="_ns2:ccy"/>
+<element name="_ns1:Current_ValutaBal" type="_ns2:bal" _isComplex="1"/>
+<element minOccurs="0" name="_ns1:IncludingPendingTrans_Bal" type="_ns2:bal" _isComplex="1"/>
+<element minOccurs="0" name="_ns1:OverdraftLim" type="_ns2:amt" _isComplex="1"/>
+<element minOccurs="0" name="_ns1:AvailableFunds" type="_ns2:amt" _isComplex="1"/>
+<element minOccurs="0" name="_ns1:AlreadyDrawnOn_Amt" type="_ns2:amt" _isComplex="1"/>
+<element minOccurs="0" name="_ns1:Overdraft" type="_ns2:amt" _isComplex="1"/>
+<element minOccurs="0" name="_ns1:Booking_Time" type="_ns2:timestamp" _isComplex="1"/>
+<element minOccurs="0" name="_ns1:MaturityDate" type="_ns2:dat"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns1:AcctBal_1_Resp" substitutionGroup="_ns2:ResponseData" type="_ns1:AcctBal_1_Resp" _isComplex="1"/>
+<complexType name="_ns1:AcctBal_1_Par">
+<complexContent>
+<extension base="_ns2:ParameterData"/>
+</complexContent>
+</complexType>
+<element name="_ns1:AcctBal_1_Par" substitutionGroup="_ns2:ParameterData" type="_ns1:AcctBal_1_Par" _isComplex="1"/>
+</file>
+<file filename="common.xsd" namespaceprefix="_ns2" filenamespace="http://www.fints.org/spec/xmlschema/4.0/final/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<include schemaLocation="patterns.xsd"/>
+<complexType name="_ns2:Segm" abstract="true"/>
+<element name="_ns2:Segm" abstract="true"/>
+<complexType name="_ns2:Order" abstract="true">
+<complexContent>
+<extension base="_ns2:Segm"/>
+</complexContent>
+</complexType>
+<element name="_ns2:Order" type="_ns2:Order" abstract="true" _isComplex="1"/>
+<complexType name="_ns2:ResponseData" abstract="true">
+<complexContent>
+<extension base="_ns2:Segm"/>
+</complexContent>
+</complexType>
+<element name="_ns2:ResponseData" type="_ns2:ResponseData" abstract="true" _isComplex="1"/>
+<complexType name="_ns2:ParameterData" abstract="true">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:MaxNoOrders" type="_ns2:num"/>
+<element name="_ns2:MinNoSig" type="_ns2:num"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:ParameterData" type="_ns2:ParameterData" abstract="true" _isComplex="1"/>
+<complexType name="_ns2:Response">
+<sequence>
+<element name="_ns2:RequestRef" type="_ns2:an"/>
+<element name="_ns2:RequestRespState" type="_ns2:ResponseState" maxOccurs="unbounded" _isComplex="1"/>
+<any namespace="##any" processContents="lax" minOccurs="0"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:ResponseState">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:RespCode">
+<simpleType>
+<restriction base="_ns2:dig">
+<pattern value="[039][0-9]\d{2}"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:ElementRef" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an"/>
+</simpleType>
+</element>
+<element name="_ns2:RespText">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="80"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:RespParam" minOccurs="0" maxOccurs="unbounded">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:SecurityMethodRDH">
+<sequence>
+<element name="_ns2:Option">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="1"/>
+<enumeration value="2"/>
+<enumeration value="3"/>
+<enumeration value="4"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</complexType>
+<complexType name="_ns2:SecurityMethodDDV">
+<sequence>
+<element name="_ns2:Option">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="1"/>
+<enumeration value="2"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</complexType>
+<complexType name="_ns2:SecurityMethodOTP">
+<sequence>
+<element name="_ns2:Option">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="1.1"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</complexType>
+<complexType name="_ns2:SecurityMethodUDS">
+<sequence>
+<element name="_ns2:Option" type="_ns2:code"/>
+<element name="_ns2:Method" type="_ns2:an"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:CommunicationService">
+<choice>
+<element name="_ns2:HTTP" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:URI" type="_ns2:uri"/>
+<element name="_ns2:MinTimeout" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:MaxTimeout" type="_ns2:num" minOccurs="0"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:HTTPS" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:URI" type="_ns2:uri"/>
+<element name="_ns2:MinTimeout" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:MaxTimeout" type="_ns2:num" minOccurs="0"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:SOAPHTTP" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:URI" type="_ns2:uri"/>
+<element name="_ns2:MinTimeout" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:MaxTimeout" type="_ns2:num" minOccurs="0"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:SMTP" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:EmailAddress" type="_ns2:email"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:UserDefinedCommServ" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax"/>
+</sequence>
+</complexType>
+</element>
+</choice>
+</complexType>
+<group name="_ns2:CommAddressChoice">
+<choice>
+<element name="_ns2:EmailAddress" type="_ns2:email"/>
+<element name="_ns2:UserDefinedAddress" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax"/>
+</sequence>
+</complexType>
+</element>
+</choice>
+</group>
+<complexType name="_ns2:BusinessTransList">
+<sequence>
+<element name="_ns2:NamespaceURI" type="_ns2:uri"/>
+<element name="_ns2:ID" type="_ns2:an" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+<simpleType name="_ns2:FlagType">
+<restriction base="_ns3:string">
+<maxLength value="0"/>
+</restriction>
+</simpleType>
+</file>
+<file filename="formats.xsd" namespaceprefix="_ns2" filenamespace="http://www.fints.org/spec/xmlschema/4.0/final/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<simpleType name="_ns2:an">
+<restriction base="_ns3:string">
+<whiteSpace value="preserve"/>
+<pattern value="\S(([^\n\r\t])*\S)?"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:txt">
+<restriction base="_ns3:string">
+<minLength value="1"/>
+<whiteSpace value="preserve"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:dta">
+<restriction base="_ns3:string">
+<pattern value="[&amp;#x24;-&amp;#x26;&amp;#x2A;-&amp;#x2F;&amp;#x30;-&amp;#x39;&amp;#x41;-&amp;#x5A;&amp;#xC4;&amp;#xD6;&amp;#xDC;&amp;#xDF;](([&amp;#x20;&amp;#x24;-&amp;#x26;&amp;#x2A;-&amp;#x2F;&amp;#x30;-&amp;#x39;&amp;#x41;-&amp;#x5A;&amp;#xC4;&amp;#xD6;&amp;#xDC;&amp;#xDF;])*[&amp;#x24;-&amp;#x26;&amp;#x2A;-&amp;#x2F;&amp;#x30;-&amp;#x39;&amp;#x41;-&amp;#x5A;&amp;#xC4;&amp;#xD6;&amp;#xDC;&amp;#xDF;])?"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:num">
+<restriction base="_ns3:nonNegativeInteger">
+<pattern value="(0)|([1-9]\d*)"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:dig">
+<restriction base="_ns2:an">
+<pattern value="\d+"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:float">
+<restriction base="_ns3:decimal">
+<pattern value="(0|[1-9]\d*)\.(\d*[1-9])?"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:bin">
+<restriction base="_ns3:base64Binary">
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:yn">
+<restriction base="_ns3:boolean">
+<pattern value="(true)|(false)"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:dat">
+<restriction base="_ns3:date">
+<pattern value="\d{4}-\d{2}-\d{2}"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:vdat">
+<restriction base="_ns3:string">
+<pattern value="\d{4}-((0[1-9])|(1[0-2]))-((0[1-9])|((1|2)\d)|(30|31))"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:tim">
+<restriction base="_ns3:time">
+<pattern value="\d{2}:\d{2}:\d{2}"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:id">
+<restriction base="_ns3:string">
+<minLength value="1"/>
+<maxLength value="30"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:ctr">
+<restriction base="_ns3:string">
+<pattern value="[0-9]{3}"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:ccy">
+<restriction base="_ns3:string">
+<pattern value="[A-Z]{3}"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:val">
+<restriction base="_ns2:float">
+<totalDigits value="14"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:code">
+<restriction base="_ns3:string"/>
+</simpleType>
+<simpleType name="_ns2:lang">
+<restriction base="_ns3:string">
+<pattern value="[a-z]{2}"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:email">
+<restriction base="_ns2:an">
+<minLength value="1"/>
+<maxLength value="80"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:uri">
+<restriction base="_ns3:anyURI"/>
+</simpleType>
+<simpleType name="_ns2:iban">
+<restriction base="_ns3:string">
+<pattern value="[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}"/>
+</restriction>
+</simpleType>
+<simpleType name="_ns2:bic">
+<restriction base="_ns3:string">
+<pattern value="[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?"/>
+</restriction>
+</simpleType>
+</file>
+<file filename="message.xsd" namespaceprefix="_ns2" filenamespace="http://www.fints.org/spec/xmlschema/4.0/final/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
+<import namespace="http://www.w3.org/2001/04/xmlenc#" schemaLocation="http://www.w3.org/TR/xmlenc-core/xenc-schema.xsd"/>
+<include schemaLocation="structures.xsd"/>
+<complexType name="_ns2:Msg" abstract="true"/>
+<complexType name="_ns2:ReqMsg">
+<complexContent>
+<extension base="_ns2:Msg">
+<sequence>
+<element ref="_ns2:ReqMsgHeader"/>
+<choice>
+<element ref="_ns2:ReqMsgBody"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:ReqMsg" type="_ns2:ReqMsg" _isComplex="1"/>
+<complexType name="_ns2:RespMsg">
+<complexContent>
+<extension base="_ns2:Msg">
+<sequence>
+<element ref="_ns2:RespMsgHeader"/>
+<choice>
+<element ref="_ns2:RespMsgBody"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:RespMsg" type="_ns2:RespMsg" _isComplex="1"/>
+<complexType name="_ns2:ReqMsgHeader">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:UserRef" type="_ns2:id"/>
+<element name="_ns2:UserTextRef">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="80"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:BankRef" type="_ns2:id" minOccurs="0"/>
+<element name="_ns2:MsgNo" type="_ns2:num"/>
+<element name="_ns2:AsyncReplyAddress" minOccurs="0" _isComplex="1">
+<complexType>
+<choice>
+<element name="_ns2:AddressRef" type="_ns2:id"/>
+<group ref="_ns2:CommAddressChoice"/>
+</choice>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:ReqMsgHeader" type="_ns2:ReqMsgHeader" _isComplex="1"/>
+<complexType name="_ns2:RespMsgHeader">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:UserRef" type="_ns2:id" minOccurs="0"/>
+<element name="_ns2:UserTextRef" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="80"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:BankRef" type="_ns2:id" minOccurs="0"/>
+<element name="_ns2:MsgNo" type="_ns2:num"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:RespMsgHeader" type="_ns2:RespMsgHeader" _isComplex="1"/>
+<complexType name="_ns2:ReqMsgBody">
+<choice>
+<element name="_ns2:KeepAliveReq" type="_ns2:KeepAliveReq" _isComplex="1"/>
+<element name="_ns2:AnonymousReq" type="_ns2:AnonymousReq" _isComplex="1"/>
+<element name="_ns2:BankKeyReq" type="_ns2:BankKeyReq" _isComplex="1"/>
+<sequence>
+<element name="_ns2:MessengerSig" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceReq"/>
+</complexType>
+</element>
+<choice>
+<element name="_ns2:StandardReq" type="_ns2:StandardReq" _isComplex="1"/>
+<element name="_ns2:SynchronisationReq" type="_ns2:SynchronisationReq" _isComplex="1"/>
+<element name="_ns2:UserKeyTransmissionReq" type="_ns2:UserKeyTransmissionReq" _isComplex="1"/>
+<element name="_ns2:KeyChangeReq" type="_ns2:KeyChangeReq" _isComplex="1"/>
+<element name="_ns2:KeyBlockReq" type="_ns2:KeyBlockReq" _isComplex="1"/>
+</choice>
+</sequence>
+</choice>
+</complexType>
+<element name="_ns2:ReqMsgBody" type="_ns2:ReqMsgBody" _isComplex="1"/>
+<complexType name="_ns2:RespMsgBody">
+<sequence>
+<element name="_ns2:MessengerSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<choice>
+<element name="_ns2:KeepAliveResp" type="_ns2:KeepAliveResp" _isComplex="1"/>
+<element name="_ns2:AnonymousResp" type="_ns2:AnonymousResp" _isComplex="1"/>
+<element name="_ns2:BankKeyResp" type="_ns2:BankKeyResp" _isComplex="1"/>
+<element name="_ns2:StandardResp" type="_ns2:StandardResp" _isComplex="1"/>
+<element name="_ns2:SynchronisationResp" type="_ns2:SynchronisationResp" _isComplex="1"/>
+<element name="_ns2:UserKeyTransmissionResp" type="_ns2:UserKeyTransmissionResp" _isComplex="1"/>
+<element name="_ns2:KeyChangeResp" type="_ns2:KeyChangeResp" _isComplex="1"/>
+<element name="_ns2:KeyBlockResp" type="_ns2:KeyBlockResp" _isComplex="1"/>
+</choice>
+</sequence>
+</complexType>
+<element name="_ns2:RespMsgBody" type="_ns2:RespMsgBody" _isComplex="1"/>
+<complexType name="_ns2:BasicReqList" abstract="true">
+<sequence>
+<element name="_ns2:RequestSigList" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ReqListMsgr" type="_ns2:an" minOccurs="0"/>
+<group ref="_ns2:SigChoiceReq" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:Orders" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+<complexType name="_ns2:BasicReq" abstract="true">
+<sequence>
+<element name="_ns2:InitReq" type="_ns2:InitReq" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType" minOccurs="0"/>
+<choice minOccurs="0" maxOccurs="unbounded">
+<element name="_ns2:RequestList" type="_ns2:BasicReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</complexType>
+<complexType name="_ns2:AnonymousReqList">
+<complexContent>
+<restriction base="_ns2:BasicReqList">
+<sequence>
+<element name="_ns2:RequestSigList" minOccurs="0" maxOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ReqListMsgr" type="_ns2:an" minOccurs="0"/>
+<group ref="_ns2:SigChoiceReq" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:Orders" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:AnonymousReq">
+<complexContent>
+<restriction base="_ns2:BasicReq">
+<sequence>
+<element name="_ns2:InitReq" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:AnonymousIdentification"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice minOccurs="0">
+<element name="_ns2:RequestList" type="_ns2:AnonymousReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:StandardReqList">
+<complexContent>
+<restriction base="_ns2:BasicReqList">
+<sequence>
+<element name="_ns2:RequestSigList" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ReqListMsgr" type="_ns2:an" minOccurs="0"/>
+<group ref="_ns2:SigChoiceReq" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:Orders" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:StandardReq">
+<complexContent>
+<restriction base="_ns2:BasicReq">
+<sequence>
+<element name="_ns2:InitReq" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:PersonalizedIdentification"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType" minOccurs="0"/>
+<choice minOccurs="0" maxOccurs="unbounded">
+<element name="_ns2:RequestList" type="_ns2:StandardReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:AdminReqList">
+<sequence>
+<element name="_ns2:RequestSig" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<group ref="_ns2:SigChoiceReq"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:Segm"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:AdminReq" abstract="true">
+<sequence>
+<element name="_ns2:InitReq" type="_ns2:InitReq" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType" minOccurs="0"/>
+<choice minOccurs="0">
+<element name="_ns2:RequestList" type="_ns2:AdminReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</complexType>
+<complexType name="_ns2:KeepAliveReq">
+<complexContent>
+<restriction base="_ns2:AdminReq">
+<sequence>
+<element name="_ns2:InitReq" type="_ns2:InitReq" minOccurs="0" maxOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType" minOccurs="0" maxOccurs="0"/>
+<choice minOccurs="0" maxOccurs="0">
+<element name="_ns2:RequestList" type="_ns2:AdminReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BankKeyReqList">
+<complexContent>
+<restriction base="_ns2:AdminReqList">
+<sequence>
+<element name="_ns2:RequestSig" minOccurs="0" maxOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<group ref="_ns2:SigChoiceReq" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:BankKeyRequest" type="_ns2:BankKeyRequest" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BankKeyReq">
+<complexContent>
+<restriction base="_ns2:AdminReq">
+<sequence>
+<element name="_ns2:InitReq" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:AnonymousIdentification"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice>
+<element name="_ns2:RequestList" type="_ns2:BankKeyReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:SynchronisationReqList">
+<complexContent>
+<restriction base="_ns2:AdminReqList">
+<sequence>
+<element name="_ns2:RequestSig" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<group ref="_ns2:SigChoiceReq"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:Synchronisation" type="_ns2:Synchronisation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:SynchronisationReq">
+<complexContent>
+<restriction base="_ns2:AdminReq">
+<sequence>
+<element name="_ns2:InitReq" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:PersonalizedIdentification"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice>
+<element name="_ns2:RequestList" type="_ns2:SynchronisationReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:UserKeyTransmissionReqList">
+<complexContent>
+<restriction base="_ns2:AdminReqList">
+<sequence>
+<element name="_ns2:RequestSig" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<group ref="_ns2:SigChoiceReq"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:UserKeyTransmission" type="_ns2:UserKeyTransmission" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:UserKeyTransmissionReq">
+<complexContent>
+<restriction base="_ns2:AdminReq">
+<sequence>
+<element name="_ns2:InitReq" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:PersonalizedIdentification"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice>
+<element name="_ns2:RequestList" type="_ns2:UserKeyTransmissionReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyChangeReqList">
+<complexContent>
+<restriction base="_ns2:AdminReqList">
+<sequence>
+<element name="_ns2:RequestSig" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<group ref="_ns2:SigChoiceReq"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:KeyChange" type="_ns2:KeyChange" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyChangeReq">
+<complexContent>
+<restriction base="_ns2:AdminReq">
+<sequence>
+<element name="_ns2:InitReq" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:PersonalizedIdentification"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice>
+<element name="_ns2:RequestList" type="_ns2:KeyChangeReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyBlockReqList">
+<complexContent>
+<restriction base="_ns2:AdminReqList">
+<sequence>
+<element name="_ns2:RequestSig" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<group ref="_ns2:SigChoiceReq"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:KeyBlock" type="_ns2:KeyBlock" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyBlockReq">
+<complexContent>
+<restriction base="_ns2:AdminReq">
+<sequence>
+<element name="_ns2:InitReq" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:PersonalizedIdentification"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice>
+<element name="_ns2:RequestList" type="_ns2:KeyBlockReqList" _isComplex="1"/>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" type="_ns2:InitResp" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType" minOccurs="0"/>
+<choice minOccurs="0" maxOccurs="unbounded">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" type="_ns2:Response" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</complexType>
+<complexType name="_ns2:KeepAliveResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" minOccurs="0" maxOccurs="0" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="0" _isComplex="1"/>
+<element name="_ns2:InitResp" type="_ns2:InitResp" minOccurs="0" maxOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType" minOccurs="0" maxOccurs="0"/>
+<choice minOccurs="0" maxOccurs="0">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence minOccurs="0">
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" type="_ns2:Response" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:AnonymousResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitResp">
+<sequence>
+<element ref="_ns2:BankParamData" minOccurs="0"/>
+<element ref="_ns2:UserParamData" minOccurs="0"/>
+<element name="_ns2:PublicKey" type="_ns2:BankKey" minOccurs="0" maxOccurs="0" _isComplex="1"/>
+<element name="_ns2:BankMessage" type="_ns2:BankMessage" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice minOccurs="0">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence minOccurs="0">
+<element name="_ns2:ResponseSig" minOccurs="0" maxOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" type="_ns2:Response" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BankKeyResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitResp">
+<sequence>
+<element ref="_ns2:BankParamData" minOccurs="0"/>
+<element ref="_ns2:UserParamData" minOccurs="0" maxOccurs="0"/>
+<element name="_ns2:PublicKey" type="_ns2:BankKey" minOccurs="0" maxOccurs="0" _isComplex="1"/>
+<element name="_ns2:BankMessage" type="_ns2:BankMessage" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice minOccurs="0">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:Response">
+<sequence>
+<element name="_ns2:RequestRef" type="_ns2:an"/>
+<element name="_ns2:RequestRespState" type="_ns2:ResponseState" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:BankKeyResponse" type="_ns2:BankKeyResponse" minOccurs="0" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:StandardResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" type="_ns2:InitResp" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType" minOccurs="0"/>
+<choice minOccurs="0" maxOccurs="unbounded">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" type="_ns2:Response" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:SynchronisationResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" type="_ns2:InitResp" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice minOccurs="0">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:Response">
+<sequence>
+<element name="_ns2:RequestRef" type="_ns2:an"/>
+<element name="_ns2:RequestRespState" type="_ns2:ResponseState" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:SynchronisationResponse" type="_ns2:SynchronisationResponse" minOccurs="0" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:UserKeyTransmissionResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:InitResp">
+<sequence>
+<element ref="_ns2:BankParamData" minOccurs="0"/>
+<element ref="_ns2:UserParamData" minOccurs="0" maxOccurs="0"/>
+<element name="_ns2:PublicKey" type="_ns2:BankKey" minOccurs="0" maxOccurs="2" _isComplex="1"/>
+<element name="_ns2:BankMessage" type="_ns2:BankMessage" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice minOccurs="0">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:Response">
+<sequence>
+<element name="_ns2:RequestRef" type="_ns2:an"/>
+<element name="_ns2:RequestRespState" type="_ns2:ResponseState" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyChangeResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" type="_ns2:InitResp" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice minOccurs="0">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:Response">
+<sequence>
+<element name="_ns2:RequestRef" type="_ns2:an"/>
+<element name="_ns2:RequestRespState" type="_ns2:ResponseState" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyBlockResp">
+<complexContent>
+<restriction base="_ns2:BasicResp">
+<sequence>
+<element name="_ns2:MsgTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:MsgRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:InitResp" type="_ns2:InitResp" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:TermSession" type="_ns2:FlagType"/>
+<choice minOccurs="0">
+<element name="_ns2:ResponseList" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ResponseSig" minOccurs="0" _isComplex="1">
+<complexType>
+<group ref="_ns2:SigChoiceResp"/>
+</complexType>
+</element>
+<element name="_ns2:ReqListTotalState" type="_ns2:TotalState" _isComplex="1"/>
+<element name="_ns2:ReqListRespState" type="_ns2:ResponseState" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:Response" minOccurs="0" _isComplex="1">
+<complexType>
+<complexContent>
+<restriction base="_ns2:Response">
+<sequence>
+<element name="_ns2:RequestRef" type="_ns2:an"/>
+<element name="_ns2:RequestRespState" type="_ns2:ResponseState" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element ref="_ns4:EncryptedData"/>
+</choice>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</file>
+<file filename="paramdata.xsd" namespaceprefix="_ns2" filenamespace="http://www.fints.org/spec/xmlschema/4.0/final/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<include schemaLocation="common.xsd"/>
+<complexType name="_ns2:BankParamData">
+<sequence>
+<element name="_ns2:GenericBankParam" type="_ns2:GenericBankParam" _isComplex="1"/>
+<element name="_ns2:CommSettingsReply" type="_ns2:CommSettingsReply" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:SecurityMethodParam" type="_ns2:SecurityMethodParam" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:CompressionMethod" type="_ns2:CompressionMethod" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:BusinessTransParams" type="_ns2:BusinessTransParams" minOccurs="0" _isComplex="1"/>
+</sequence>
+</complexType>
+<element name="_ns2:BankParamData" type="_ns2:BankParamData" _isComplex="1"/>
+<complexType name="_ns2:GenericBankParam">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:BpdVersion" type="_ns2:num"/>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:BIC" type="_ns2:bic" minOccurs="0"/>
+<element name="_ns2:BankName">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="60"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:SupportedLanguages" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:SupportedLang" type="_ns2:lang" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:SupportedVersions" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:Version" type="_ns2:code" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:MaxNoOrderTypes" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:MaxMsgSize" type="_ns2:num" minOccurs="0"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:CommSettingsReply">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:StdLang">
+<simpleType>
+<restriction base="_ns2:lang"/>
+</simpleType>
+</element>
+<element name="_ns2:CommunicationService" type="_ns2:CommunicationService" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:SecurityMethodParam">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:MixingAllowed" type="_ns2:FlagType" minOccurs="0"/>
+<element name="_ns2:SupportedMethod" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<choice>
+<element name="_ns2:RDH" _isComplex="1">
+<complexType>
+<complexContent>
+<extension base="_ns2:SecurityMethodRDH">
+<choice>
+<element name="_ns2:BusinessTransAllowed" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:NamespaceURI" type="_ns2:uri"/>
+<element name="_ns2:BusinessTrans" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ID" type="_ns2:an"/>
+<element name="_ns2:SecClass" type="_ns2:SecurityClass" minOccurs="0"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:BusinessTransAll" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:SecClass" type="_ns2:SecurityClass" minOccurs="0"/>
+</sequence>
+</complexType>
+</element>
+</choice>
+</extension>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:DDV" _isComplex="1">
+<complexType>
+<complexContent>
+<extension base="_ns2:SecurityMethodDDV">
+<choice>
+<element name="_ns2:BusinessTransAllowed" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:NamespaceURI" type="_ns2:uri"/>
+<element name="_ns2:BusinessTrans" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ID" type="_ns2:an"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:BusinessTransAll" _isComplex="1">
+<complexType/>
+</element>
+</choice>
+</extension>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:OTP" _isComplex="1">
+<complexType>
+<complexContent>
+<extension base="_ns2:SecurityMethodOTP">
+<sequence>
+<choice>
+<element name="_ns2:BusinessTransAllowed" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:NamespaceURI" type="_ns2:uri"/>
+<element name="_ns2:BusinessTrans" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ID" type="_ns2:an"/>
+<element name="_ns2:TANReq" type="_ns2:FlagType" minOccurs="0"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:BusinessTransAll" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:TANReq" type="_ns2:FlagType" minOccurs="0"/>
+</sequence>
+</complexType>
+</element>
+</choice>
+<element name="_ns2:OneTimePasswordParam" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:MinLenPIN" type="_ns2:num"/>
+<element name="_ns2:MaxLenPIN" type="_ns2:num"/>
+<element name="_ns2:MaxLenTAN" type="_ns2:num"/>
+<element name="_ns2:TextUserID" type="_ns2:txt"/>
+<element name="_ns2:TextCustID" type="_ns2:txt"/>
+<element name="_ns2:TANConfirmSupported" type="_ns2:yn"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+</element>
+<element name="_ns2:UDS" _isComplex="1">
+<complexType>
+<complexContent>
+<extension base="_ns2:SecurityMethodUDS">
+<sequence>
+<choice>
+<element name="_ns2:BusinessTransAllowed" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:NamespaceURI" type="_ns2:uri"/>
+<element name="_ns2:BusinessTrans" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:ID" type="_ns2:an"/>
+<any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:BusinessTransAll" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</choice>
+<element name="_ns2:UserDefinedSignatureParam" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+</element>
+</choice>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:CompressionMethod">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:SupportedFunction" type="_ns2:uri" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BusinessTransParams">
+<sequence>
+<any namespace="##other" processContents="lax" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+<simpleType name="_ns2:SecurityClass">
+<restriction base="_ns2:num">
+<enumeration value="1"/>
+<enumeration value="2"/>
+<enumeration value="3"/>
+<enumeration value="4"/>
+</restriction>
+</simpleType>
+<complexType name="_ns2:UserParamData">
+<sequence>
+<element name="_ns2:GenericUserParam" type="_ns2:GenericUserParam" _isComplex="1"/>
+<element name="_ns2:AcctInfo" type="_ns2:AcctInfo" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+<element name="_ns2:AcctlessInfo" type="_ns2:AcctlessInfo" minOccurs="0" _isComplex="1"/>
+</sequence>
+</complexType>
+<element name="_ns2:UserParamData" type="_ns2:UserParamData" _isComplex="1"/>
+<complexType name="_ns2:GenericUserParam">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:UserID" type="_ns2:id" minOccurs="0"/>
+<element name="_ns2:InterID" type="_ns2:id" minOccurs="0"/>
+<element name="_ns2:UpdVersion" type="_ns2:num"/>
+<element name="_ns2:UpdUsage">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="0"/>
+<enumeration value="1"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:UserName" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:UserParam" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:AcctInfo">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:Acct" type="_ns2:acct" _isComplex="1"/>
+<element name="_ns2:IBAN" type="_ns2:iban" minOccurs="0"/>
+<element name="_ns2:CustID" type="_ns2:id"/>
+<element name="_ns2:AcctType" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:num">
+<minInclusive value="1"/>
+<maxInclusive value="99"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:AcctCcy" type="_ns2:ccy" minOccurs="0"/>
+<element name="_ns2:AcctHolder_Name_1">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:AcctHolder_Name_2" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:AcctName" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="30"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:SpendingLim" type="_ns2:Limit" minOccurs="0" _isComplex="1"/>
+<element name="_ns2:AcctParam" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+<element name="_ns2:BusinessTransAllowed" minOccurs="0" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:NamespaceURI" type="_ns2:uri"/>
+<element name="_ns2:BusinessTrans" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:Name" type="_ns2:an"/>
+<element name="_ns2:MinNoSig" type="_ns2:num"/>
+<element name="_ns2:Limit" type="_ns2:Limit" minOccurs="0" _isComplex="1"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:AcctlessInfo">
+<sequence>
+<element name="_ns2:BusinessTransAllowed" minOccurs="0" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:NamespaceURI" type="_ns2:uri"/>
+<element name="_ns2:BusinessTrans" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:Name" type="_ns2:an"/>
+<element name="_ns2:MinNoSig" type="_ns2:num"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+<complexType name="_ns2:Limit">
+<sequence>
+<choice>
+<element name="_ns2:Cyclic">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="single"/>
+<enumeration value="day"/>
+<enumeration value="week"/>
+<enumeration value="month"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Rolling" type="_ns2:num"/>
+</choice>
+<element name="_ns2:LimAmt" type="_ns2:amt" _isComplex="1"/>
+</sequence>
+</complexType>
+</file>
+<file filename="patterns.xsd" namespaceprefix="_ns2" filenamespace="http://www.fints.org/spec/xmlschema/4.0/final/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<include schemaLocation="formats.xsd"/>
+<complexType name="_ns2:pattern" abstract="true"/>
+<complexType name="_ns2:amt">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:Value" type="_ns2:val"/>
+<element name="_ns2:Currency" type="_ns2:ccy"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:bank">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:CountryCode" type="_ns2:ctr"/>
+<element name="_ns2:BankCode" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="30"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:acct">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:AcctNo" type="_ns2:id"/>
+<element name="_ns2:SubAcctCharacteristic" type="_ns2:id" minOccurs="0"/>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:bal">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:DebitCreditFlag">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="C"/>
+<enumeration value="D"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Amount" type="_ns2:amt" _isComplex="1"/>
+<element name="_ns2:Date" type="_ns2:dat"/>
+<element name="_ns2:Time" type="_ns2:tim" minOccurs="0"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:addr">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:Name_1">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Name_2" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Street">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:ZIPCode">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="10"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:City">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Country" type="_ns2:ctr" minOccurs="0"/>
+<element name="_ns2:PhoneNo" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:FaxNo" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:EmailAddress" type="_ns2:email" minOccurs="0"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:rate">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:Price" type="_ns2:val"/>
+<element name="_ns2:PriceQuoteCcy" type="_ns2:ccy" minOccurs="0"/>
+<element name="_ns2:PriceExt" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="5"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Date" type="_ns2:dat"/>
+<element name="_ns2:Time" type="_ns2:tim" minOccurs="0"/>
+<element name="_ns2:StockExch" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<length value="4"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:timestamp">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:Date" type="_ns2:dat"/>
+<element name="_ns2:Time" type="_ns2:tim" minOccurs="0"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:datetime">
+<complexContent>
+<extension base="_ns2:pattern">
+<sequence>
+<element name="_ns2:Date" type="_ns2:dat"/>
+<element name="_ns2:Time" type="_ns2:tim"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+</file>
+<file filename="structures.xsd" namespaceprefix="_ns2" filenamespace="http://www.fints.org/spec/xmlschema/4.0/final/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
+<import namespace="http://www.w3.org/2001/04/xmlenc#" schemaLocation="http://www.w3.org/TR/xmlenc-core/xenc-schema.xsd"/>
+<include schemaLocation="paramdata.xsd"/>
+<complexType name="_ns2:BankKeyRequest">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element ref="_ns2:RDH"/>
+<element name="_ns2:KeyName" type="_ns2:BankKeyName" _isComplex="1"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BankKeyResponse">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:PublicKey" type="_ns2:BankKey" maxOccurs="2" _isComplex="1"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:Synchronisation">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:SyncMode">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="0"/>
+<enumeration value="1"/>
+<enumeration value="2"/>
+<enumeration value="3"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:UserRef" type="_ns2:id" minOccurs="0"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:SynchronisationResponse">
+<complexContent>
+<extension base="_ns2:Segm">
+<choice>
+<element name="_ns2:CustSysID" type="_ns2:id"/>
+<element name="_ns2:MsgNo">
+<simpleType>
+<restriction base="_ns2:num">
+<minInclusive value="1"/>
+</restriction>
+</simpleType>
+</element>
+<sequence>
+<element name="_ns2:SignatureID">
+<simpleType>
+<restriction base="_ns2:dig">
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:SignatureIDDS" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:dig">
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+<element name="_ns2:UserRefProcessed" type="_ns2:yn"/>
+</choice>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:UserKeyTransmission">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element ref="_ns2:RDH"/>
+<element name="_ns2:Key" type="_ns2:UserKey" minOccurs="2" maxOccurs="3" _isComplex="1"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyChange">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element ref="_ns2:RDH"/>
+<element name="_ns2:Key" type="_ns2:UserKey" maxOccurs="2" _isComplex="1"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:KeyBlock">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:BlockingCode">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="1"/>
+<enumeration value="501"/>
+<enumeration value="999"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:RevocationTime" type="_ns2:timestamp" minOccurs="0" _isComplex="1"/>
+<choice>
+<element ref="_ns2:RDH"/>
+<element ref="_ns2:DDV"/>
+</choice>
+<element name="_ns2:UserKeyName" type="_ns2:UserKeyName" _isComplex="1"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:InitReq">
+<sequence>
+<element ref="_ns2:Identification" minOccurs="0"/>
+<element name="_ns2:ProcPreparation" type="_ns2:ProcPreparation" minOccurs="0" _isComplex="1"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:InitResp">
+<sequence>
+<element ref="_ns2:BankParamData" minOccurs="0"/>
+<element ref="_ns2:UserParamData" minOccurs="0"/>
+<element name="_ns2:PublicKey" type="_ns2:BankKey" minOccurs="0" maxOccurs="2" _isComplex="1"/>
+<element name="_ns2:BankMessage" type="_ns2:BankMessage" minOccurs="0" maxOccurs="unbounded" _isComplex="1"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:Identification" abstract="true">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:CustID" type="_ns2:id" minOccurs="0"/>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:Identification" type="_ns2:Identification" abstract="true" substitutionGroup="_ns2:Segm" _isComplex="1"/>
+<complexType name="_ns2:AnonymousIdentification">
+<complexContent>
+<restriction base="_ns2:Identification">
+<sequence>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:CustID" type="_ns2:id" minOccurs="0" maxOccurs="0"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<element name="_ns2:AnonymousIdentification" type="_ns2:AnonymousIdentification" substitutionGroup="_ns2:Identification" _isComplex="1"/>
+<complexType name="_ns2:PersonalizedIdentification">
+<complexContent>
+<restriction base="_ns2:Identification">
+<sequence>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:CustID" type="_ns2:id"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<element name="_ns2:PersonalizedIdentification" type="_ns2:PersonalizedIdentification" substitutionGroup="_ns2:Identification" _isComplex="1"/>
+<complexType name="_ns2:ProcPreparation">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:BpdVersion" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:UpdVersion" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:SessionLang" type="_ns2:lang" minOccurs="0"/>
+<element name="_ns2:ProductName" type="_ns2:an"/>
+<element name="_ns2:ProductVersion" type="_ns2:an"/>
+<element name="_ns2:ProductID" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:bin">
+<maxLength value="2048"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BankMessage">
+<complexContent>
+<extension base="_ns2:Segm">
+<sequence>
+<element name="_ns2:Subject">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:PlainTextMessage">
+<simpleType>
+<restriction base="_ns2:txt">
+<maxLength value="2048"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<complexType name="_ns2:TotalState">
+<complexContent>
+<restriction base="_ns2:ResponseState">
+<sequence>
+<element name="_ns2:RespCode">
+<simpleType>
+<restriction base="_ns2:dig">
+<pattern value="[039][0-9]\d{2}"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:ElementRef" minOccurs="0" maxOccurs="0">
+<simpleType>
+<restriction base="_ns2:an"/>
+</simpleType>
+</element>
+<element name="_ns2:RespText">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="80"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:RespParam" minOccurs="0" maxOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<group name="_ns2:SigChoiceReq">
+<choice>
+<element ref="_ns5:Signature"/>
+<element name="_ns2:OneTimePassword" type="_ns2:OneTimePassword" _isComplex="1"/>
+<element name="_ns2:UserDefinedSignature" type="_ns2:UserDefinedSignature" _isComplex="1"/>
+</choice>
+</group>
+<group name="_ns2:SigChoiceResp">
+<choice>
+<element ref="_ns5:Signature"/>
+<element name="_ns2:OneTimePasswordReply" type="_ns2:OneTimePasswordReply" _isComplex="1"/>
+<element name="_ns2:UserDefinedSignature" type="_ns2:UserDefinedSignature" _isComplex="1"/>
+</choice>
+</group>
+<complexType name="_ns2:OneTimePassword">
+<sequence>
+<element name="_ns2:FinTSProperty" type="_ns2:FinTSProperty" _isComplex="1"/>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:UserID" type="_ns2:id"/>
+<element name="_ns2:CustSysID" type="_ns2:id" minOccurs="0"/>
+<sequence minOccurs="0">
+<element name="_ns2:PIN">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="99"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:TANRef" minOccurs="0" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:TAN">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="99"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:XPath" type="_ns2:an"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</sequence>
+</complexType>
+<complexType name="_ns2:OneTimePasswordReply">
+<sequence>
+<element name="_ns2:FinTSProperty" type="_ns2:FinTSProperty" _isComplex="1"/>
+<sequence minOccurs="0">
+<element name="_ns2:PIN">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="99"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:TANConfirm" minOccurs="0" maxOccurs="unbounded" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:TAN">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="99"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:BEN" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:an">
+<maxLength value="99"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</sequence>
+</complexType>
+<complexType name="_ns2:UserDefinedSignature">
+<sequence>
+<element name="_ns2:FinTSProperty" type="_ns2:FinTSProperty" _isComplex="1"/>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:UserID" type="_ns2:id"/>
+<element name="_ns2:Method" type="_ns2:an"/>
+<element name="_ns2:Option" type="_ns2:code"/>
+<element name="_ns2:UDSData" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+<complexType name="_ns2:FinTSProperty">
+<sequence>
+<element name="_ns2:SignerRole">
+<simpleType>
+<restriction base="_ns2:an">
+<enumeration value="ISS"/>
+<enumeration value="WIT"/>
+<enumeration value="MSG"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Timestamp" type="_ns2:timestamp" minOccurs="0" _isComplex="1"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:HBCIProperty" abstract="true">
+<sequence>
+<element name="_ns2:FinTSProperty" type="_ns2:FinTSProperty" _isComplex="1"/>
+<element name="_ns2:SignatureID">
+<simpleType>
+<restriction base="_ns2:dig">
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</complexType>
+<complexType name="_ns2:DDVProperty">
+<complexContent>
+<extension base="_ns2:HBCIProperty">
+<sequence>
+<element name="_ns2:Option">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="1"/>
+<enumeration value="2"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:DDVProperty" type="_ns2:DDVProperty" _isComplex="1"/>
+<element name="_ns2:DDV" type="_ns2:SecurityMethodDDV" _isComplex="1"/>
+<complexType name="_ns2:RDHProperty">
+<complexContent>
+<extension base="_ns2:HBCIProperty">
+<sequence>
+<element name="_ns2:Option">
+<simpleType>
+<restriction base="_ns2:code">
+<enumeration value="1"/>
+<enumeration value="2"/>
+<enumeration value="3"/>
+<enumeration value="4"/>
+</restriction>
+</simpleType>
+</element>
+<choice>
+<element name="_ns2:CID">
+<simpleType>
+<restriction base="_ns2:bin">
+<maxLength value="256"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:CustSysID" type="_ns2:id"/>
+</choice>
+<element name="_ns2:RespSigningKey" minOccurs="0" _isComplex="1">
+<complexType>
+<sequence>
+<element name="_ns2:Number" type="_ns2:num"/>
+<element name="_ns2:Version" type="_ns2:num"/>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns2:RDHProperty" type="_ns2:RDHProperty" _isComplex="1"/>
+<element name="_ns2:RDH" type="_ns2:SecurityMethodRDH" _isComplex="1"/>
+<complexType name="_ns2:DDVKeyInfo">
+<sequence>
+<choice>
+<element name="_ns2:UserKeyName" type="_ns2:UserKeyName" _isComplex="1"/>
+<element name="_ns2:BankKeyName" type="_ns2:BankKeyName" _isComplex="1"/>
+</choice>
+<element name="_ns2:CID">
+<simpleType>
+<restriction base="_ns2:bin">
+<maxLength value="256"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</complexType>
+<element name="_ns2:DDVKeyInfo" type="_ns2:DDVKeyInfo" _isComplex="1"/>
+<complexType name="_ns2:RDHKeyInfo">
+<choice>
+<element name="_ns2:UserKeyName" type="_ns2:UserKeyName" _isComplex="1"/>
+<element name="_ns2:BankKeyName" type="_ns2:BankKeyName" _isComplex="1"/>
+</choice>
+</complexType>
+<element name="_ns2:RDHKeyInfo" type="_ns2:RDHKeyInfo" _isComplex="1"/>
+<simpleType name="_ns2:KeyType">
+<restriction base="_ns2:code">
+<enumeration value="S"/>
+<enumeration value="C"/>
+<enumeration value="D"/>
+</restriction>
+</simpleType>
+<complexType name="_ns2:KeyName" abstract="true">
+<sequence>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:UserID" type="_ns2:id" minOccurs="0"/>
+<element name="_ns2:Number" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:Version" type="_ns2:num" minOccurs="0"/>
+<element name="_ns2:Type" type="_ns2:KeyType"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:UserKeyName">
+<complexContent>
+<restriction base="_ns2:KeyName">
+<sequence>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:UserID" type="_ns2:id"/>
+<element name="_ns2:Number">
+<simpleType>
+<restriction base="_ns2:num">
+<maxInclusive value="999"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Version">
+<simpleType>
+<restriction base="_ns2:num">
+<maxInclusive value="999"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Type" type="_ns2:KeyType"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BankKeyName">
+<complexContent>
+<restriction base="_ns2:KeyName">
+<sequence>
+<element name="_ns2:BankID" type="_ns2:bank" _isComplex="1"/>
+<element name="_ns2:UserID" type="_ns2:id" minOccurs="0" maxOccurs="0"/>
+<element name="_ns2:Number" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:num">
+<maxInclusive value="999"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Version" minOccurs="0">
+<simpleType>
+<restriction base="_ns2:num">
+<maxInclusive value="999"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:Type" type="_ns2:KeyType"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:Key" abstract="true">
+<sequence>
+<element name="_ns2:KeyName" type="_ns2:KeyName" _isComplex="1"/>
+<element name="_ns2:ModulusValue" type="_ns2:bin"/>
+<element name="_ns2:ExponentValue" type="_ns2:bin"/>
+<element ref="_ns5:X509Data" minOccurs="0"/>
+</sequence>
+</complexType>
+<complexType name="_ns2:UserKey">
+<complexContent>
+<restriction base="_ns2:Key">
+<sequence>
+<element name="_ns2:KeyName" type="_ns2:UserKeyName" _isComplex="1"/>
+<element name="_ns2:ModulusValue">
+<simpleType>
+<restriction base="_ns2:bin">
+<maxLength value="512"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:ExponentValue">
+<simpleType>
+<restriction base="_ns2:bin">
+<enumeration value="AQAB"/>
+</restriction>
+</simpleType>
+</element>
+<element ref="_ns5:X509Data" minOccurs="0"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+<complexType name="_ns2:BankKey">
+<complexContent>
+<restriction base="_ns2:Key">
+<sequence>
+<element name="_ns2:KeyName" type="_ns2:BankKeyName" _isComplex="1"/>
+<element name="_ns2:ModulusValue">
+<simpleType>
+<restriction base="_ns2:bin">
+<maxLength value="512"/>
+</restriction>
+</simpleType>
+</element>
+<element name="_ns2:ExponentValue">
+<simpleType>
+<restriction base="_ns2:bin">
+<enumeration value="AQAB"/>
+</restriction>
+</simpleType>
+</element>
+<element ref="_ns5:X509Data" minOccurs="0"/>
+</sequence>
+</restriction>
+</complexContent>
+</complexType>
+</file>
+<file filename="xenc-schema.xsd" namespaceprefix="_ns4" filenamespace="http://www.w3.org/2001/04/xmlenc#" elementFormDefault="qualified">
+<import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
+<complexType name="_ns4:EncryptedType" abstract="true">
+<sequence>
+<element name="_ns4:EncryptionMethod" type="_ns4:EncryptionMethodType" minOccurs="0" _isComplex="1"/>
+<element ref="_ns5:KeyInfo" minOccurs="0"/>
+<element ref="_ns4:CipherData"/>
+<element ref="_ns4:EncryptionProperties" minOccurs="0"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+<attribute name="Type" type="anyURI" use="optional"/>
+<attribute name="MimeType" type="string" use="optional"/>
+<attribute name="Encoding" type="anyURI" use="optional"/>
+</complexType>
+<complexType name="_ns4:EncryptionMethodType" mixed="true">
+<sequence>
+<element name="_ns4:KeySize" minOccurs="0" type="_ns4:KeySizeType"/>
+<element name="_ns4:OAEPparams" minOccurs="0" type="_ns3:base64Binary"/>
+<any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Algorithm" type="anyURI" use="required"/>
+</complexType>
+<simpleType name="_ns4:KeySizeType">
+<restriction base="_ns3:integer"/>
+</simpleType>
+<element name="_ns4:CipherData" type="_ns4:CipherDataType" _isComplex="1"/>
+<complexType name="_ns4:CipherDataType">
+<choice>
+<element name="_ns4:CipherValue" type="_ns3:base64Binary"/>
+<element ref="_ns4:CipherReference"/>
+</choice>
+</complexType>
+<element name="_ns4:CipherReference" type="_ns4:CipherReferenceType" _isComplex="1"/>
+<complexType name="_ns4:CipherReferenceType">
+<choice>
+<element name="_ns4:Transforms" type="_ns4:TransformsType" minOccurs="0" _isComplex="1"/>
+</choice>
+<attribute name="URI" type="anyURI" use="required"/>
+</complexType>
+<complexType name="_ns4:TransformsType">
+<sequence>
+<element ref="_ns5:Transform" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+<element name="_ns4:EncryptedData" type="_ns4:EncryptedDataType" _isComplex="1"/>
+<complexType name="_ns4:EncryptedDataType">
+<complexContent>
+<extension base="_ns4:EncryptedType"/>
+</complexContent>
+</complexType>
+<element name="_ns4:EncryptedKey" type="_ns4:EncryptedKeyType" _isComplex="1"/>
+<complexType name="_ns4:EncryptedKeyType">
+<complexContent>
+<extension base="_ns4:EncryptedType">
+<sequence>
+<element ref="_ns4:ReferenceList" minOccurs="0"/>
+<element name="_ns4:CarriedKeyName" type="_ns3:string" minOccurs="0"/>
+</sequence>
+<attribute name="Recipient" type="string" use="optional"/>
+</extension>
+</complexContent>
+</complexType>
+<element name="_ns4:AgreementMethod" type="_ns4:AgreementMethodType" _isComplex="1"/>
+<complexType name="_ns4:AgreementMethodType" mixed="true">
+<sequence>
+<element name="_ns4:KA-Nonce" minOccurs="0" type="_ns3:base64Binary"/>
+<any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+<element name="_ns4:OriginatorKeyInfo" minOccurs="0" type="_ns5:KeyInfoType" _isComplex="1"/>
+<element name="_ns4:RecipientKeyInfo" minOccurs="0" type="_ns5:KeyInfoType" _isComplex="1"/>
+</sequence>
+<attribute name="Algorithm" type="anyURI" use="required"/>
+</complexType>
+<element name="_ns4:ReferenceList" _isComplex="1">
+<complexType>
+<choice minOccurs="1" maxOccurs="unbounded">
+<element name="_ns4:DataReference" type="_ns4:ReferenceType" _isComplex="1"/>
+<element name="_ns4:KeyReference" type="_ns4:ReferenceType" _isComplex="1"/>
+</choice>
+</complexType>
+</element>
+<complexType name="_ns4:ReferenceType">
+<sequence>
+<any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="URI" type="anyURI" use="required"/>
+</complexType>
+<element name="_ns4:EncryptionProperties" type="_ns4:EncryptionPropertiesType" _isComplex="1"/>
+<complexType name="_ns4:EncryptionPropertiesType">
+<sequence>
+<element ref="_ns4:EncryptionProperty" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+</complexType>
+<element name="_ns4:EncryptionProperty" type="_ns4:EncryptionPropertyType" _isComplex="1"/>
+<complexType name="_ns4:EncryptionPropertyType" mixed="true">
+<choice maxOccurs="unbounded">
+<any namespace="##other" processContents="lax"/>
+</choice>
+<attribute name="Target" type="anyURI" use="optional"/>
+<attribute name="Id" type="ID" use="optional"/>
+<anyAttribute namespace="http://www.w3.org/XML/1998/namespace"/>
+</complexType>
+</file>
+<file filename="xmldsig-core-schema.xsd" namespaceprefix="_ns5" filenamespace="http://www.w3.org/2000/09/xmldsig#" elementFormDefault="qualified">
+<simpleType name="_ns5:CryptoBinary">
+<restriction base="_ns3:base64Binary"/>
+</simpleType>
+<element name="_ns5:Signature" type="_ns5:SignatureType" _isComplex="1"/>
+<complexType name="_ns5:SignatureType">
+<sequence>
+<element ref="_ns5:SignedInfo"/>
+<element ref="_ns5:SignatureValue"/>
+<element ref="_ns5:KeyInfo" minOccurs="0"/>
+<element ref="_ns5:Object" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+</complexType>
+<element name="_ns5:SignatureValue" type="_ns5:SignatureValueType" _isComplex="1"/>
+<complexType name="_ns5:SignatureValueType">
+<simpleContent>
+<extension base="_ns3:base64Binary">
+<attribute name="Id" type="ID" use="optional"/>
+</extension>
+</simpleContent>
+</complexType>
+<element name="_ns5:SignedInfo" type="_ns5:SignedInfoType" _isComplex="1"/>
+<complexType name="_ns5:SignedInfoType">
+<sequence>
+<element ref="_ns5:CanonicalizationMethod"/>
+<element ref="_ns5:SignatureMethod"/>
+<element ref="_ns5:Reference" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+</complexType>
+<element name="_ns5:CanonicalizationMethod" type="_ns5:CanonicalizationMethodType" _isComplex="1"/>
+<complexType name="_ns5:CanonicalizationMethodType" mixed="true">
+<sequence>
+<any namespace="##any" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Algorithm" type="anyURI" use="required"/>
+</complexType>
+<element name="_ns5:SignatureMethod" type="_ns5:SignatureMethodType" _isComplex="1"/>
+<complexType name="_ns5:SignatureMethodType" mixed="true">
+<sequence>
+<element name="_ns5:HMACOutputLength" minOccurs="0" type="_ns5:HMACOutputLengthType"/>
+<any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Algorithm" type="anyURI" use="required"/>
+</complexType>
+<element name="_ns5:Reference" type="_ns5:ReferenceType" _isComplex="1"/>
+<complexType name="_ns5:ReferenceType">
+<sequence>
+<element ref="_ns5:Transforms" minOccurs="0"/>
+<element ref="_ns5:DigestMethod"/>
+<element ref="_ns5:DigestValue"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+<attribute name="URI" type="anyURI" use="optional"/>
+<attribute name="Type" type="anyURI" use="optional"/>
+</complexType>
+<element name="_ns5:Transforms" type="_ns5:TransformsType" _isComplex="1"/>
+<complexType name="_ns5:TransformsType">
+<sequence>
+<element ref="_ns5:Transform" maxOccurs="unbounded"/>
+</sequence>
+</complexType>
+<element name="_ns5:Transform" type="_ns5:TransformType" _isComplex="1"/>
+<complexType name="_ns5:TransformType" mixed="true">
+<choice minOccurs="0" maxOccurs="unbounded">
+<any namespace="##other" processContents="lax"/>
+<element name="_ns5:XPath" type="_ns3:string"/>
+</choice>
+<attribute name="Algorithm" type="anyURI" use="required"/>
+</complexType>
+<element name="_ns5:DigestMethod" type="_ns5:DigestMethodType" _isComplex="1"/>
+<complexType name="_ns5:DigestMethodType" mixed="true">
+<sequence>
+<any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Algorithm" type="anyURI" use="required"/>
+</complexType>
+<element name="_ns5:DigestValue" type="_ns5:DigestValueType"/>
+<simpleType name="_ns5:DigestValueType">
+<restriction base="_ns3:base64Binary"/>
+</simpleType>
+<element name="_ns5:KeyInfo" type="_ns5:KeyInfoType" _isComplex="1"/>
+<complexType name="_ns5:KeyInfoType" mixed="true">
+<choice maxOccurs="unbounded">
+<element ref="_ns5:KeyName"/>
+<element ref="_ns5:KeyValue"/>
+<element ref="_ns5:RetrievalMethod"/>
+<element ref="_ns5:X509Data"/>
+<element ref="_ns5:PGPData"/>
+<element ref="_ns5:SPKIData"/>
+<element ref="_ns5:MgmtData"/>
+<any processContents="lax" namespace="##other"/>
+</choice>
+<attribute name="Id" type="ID" use="optional"/>
+</complexType>
+<element name="_ns5:KeyName" type="_ns3:string"/>
+<element name="_ns5:MgmtData" type="_ns3:string"/>
+<element name="_ns5:KeyValue" type="_ns5:KeyValueType" _isComplex="1"/>
+<complexType name="_ns5:KeyValueType" mixed="true">
+<choice>
+<element ref="_ns5:DSAKeyValue"/>
+<element ref="_ns5:RSAKeyValue"/>
+<any namespace="##other" processContents="lax"/>
+</choice>
+</complexType>
+<element name="_ns5:RetrievalMethod" type="_ns5:RetrievalMethodType" _isComplex="1"/>
+<complexType name="_ns5:RetrievalMethodType">
+<sequence>
+<element ref="_ns5:Transforms" minOccurs="0"/>
+</sequence>
+<attribute name="URI" type="anyURI"/>
+<attribute name="Type" type="anyURI" use="optional"/>
+</complexType>
+<element name="_ns5:X509Data" type="_ns5:X509DataType" _isComplex="1"/>
+<complexType name="_ns5:X509DataType">
+<sequence maxOccurs="unbounded">
+<choice>
+<element name="_ns5:X509IssuerSerial" type="_ns5:X509IssuerSerialType" _isComplex="1"/>
+<element name="_ns5:X509SKI" type="_ns3:base64Binary"/>
+<element name="_ns5:X509SubjectName" type="_ns3:string"/>
+<element name="_ns5:X509Certificate" type="_ns3:base64Binary"/>
+<element name="_ns5:X509CRL" type="_ns3:base64Binary"/>
+<any namespace="##other" processContents="lax"/>
+</choice>
+</sequence>
+</complexType>
+<complexType name="_ns5:X509IssuerSerialType">
+<sequence>
+<element name="_ns5:X509IssuerName" type="_ns3:string"/>
+<element name="_ns5:X509SerialNumber" type="_ns3:integer"/>
+</sequence>
+</complexType>
+<element name="_ns5:PGPData" type="_ns5:PGPDataType" _isComplex="1"/>
+<complexType name="_ns5:PGPDataType">
+<choice>
+<sequence>
+<element name="_ns5:PGPKeyID" type="_ns3:base64Binary"/>
+<element name="_ns5:PGPKeyPacket" type="_ns3:base64Binary" minOccurs="0"/>
+<any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+<sequence>
+<element name="_ns5:PGPKeyPacket" type="_ns3:base64Binary"/>
+<any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+</sequence>
+</choice>
+</complexType>
+<element name="_ns5:SPKIData" type="_ns5:SPKIDataType" _isComplex="1"/>
+<complexType name="_ns5:SPKIDataType">
+<sequence maxOccurs="unbounded">
+<element name="_ns5:SPKISexp" type="_ns3:base64Binary"/>
+<any namespace="##other" processContents="lax" minOccurs="0"/>
+</sequence>
+</complexType>
+<element name="_ns5:Object" type="_ns5:ObjectType" _isComplex="1"/>
+<complexType name="_ns5:ObjectType" mixed="true">
+<sequence minOccurs="0" maxOccurs="unbounded">
+<any namespace="##any" processContents="lax"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+<attribute name="MimeType" type="string" use="optional"/>
+<attribute name="Encoding" type="anyURI" use="optional"/>
+</complexType>
+<element name="_ns5:Manifest" type="_ns5:ManifestType" _isComplex="1"/>
+<complexType name="_ns5:ManifestType">
+<sequence>
+<element ref="_ns5:Reference" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+</complexType>
+<element name="_ns5:SignatureProperties" type="_ns5:SignaturePropertiesType" _isComplex="1"/>
+<complexType name="_ns5:SignaturePropertiesType">
+<sequence>
+<element ref="_ns5:SignatureProperty" maxOccurs="unbounded"/>
+</sequence>
+<attribute name="Id" type="ID" use="optional"/>
+</complexType>
+<element name="_ns5:SignatureProperty" type="_ns5:SignaturePropertyType" _isComplex="1"/>
+<complexType name="_ns5:SignaturePropertyType" mixed="true">
+<choice maxOccurs="unbounded">
+<any namespace="##other" processContents="lax"/>
+</choice>
+<attribute name="Target" type="anyURI" use="required"/>
+<attribute name="Id" type="ID" use="optional"/>
+</complexType>
+<simpleType name="_ns5:HMACOutputLengthType">
+<restriction base="_ns3:integer"/>
+</simpleType>
+<element name="_ns5:DSAKeyValue" type="_ns5:DSAKeyValueType" _isComplex="1"/>
+<complexType name="_ns5:DSAKeyValueType">
+<sequence>
+<sequence minOccurs="0">
+<element name="_ns5:P" type="_ns5:CryptoBinary"/>
+<element name="_ns5:Q" type="_ns5:CryptoBinary"/>
+</sequence>
+<element name="_ns5:G" type="_ns5:CryptoBinary" minOccurs="0"/>
+<element name="_ns5:Y" type="_ns5:CryptoBinary"/>
+<element name="_ns5:J" type="_ns5:CryptoBinary" minOccurs="0"/>
+<sequence minOccurs="0">
+<element name="_ns5:Seed" type="_ns5:CryptoBinary"/>
+<element name="_ns5:PgenCounter" type="_ns5:CryptoBinary"/>
+</sequence>
+</sequence>
+</complexType>
+<element name="_ns5:RSAKeyValue" type="_ns5:RSAKeyValueType" _isComplex="1"/>
+<complexType name="_ns5:RSAKeyValueType">
+<sequence>
+<element name="_ns5:Modulus" type="_ns5:CryptoBinary"/>
+<element name="_ns5:Exponent" type="_ns5:CryptoBinary"/>
+</sequence>
+</complexType>
+</file>
+</files>
+</profile>

@@ -1506,15 +1506,15 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len) {
     int i;
 
     c=(unsigned char)*s;
-    if ((c & 0xfc)==0xfc)
+    if ((c & 0xfe)==0xfc)
       i=5;
-    else if ((c & 0xf8)==0xf8)
+    else if ((c & 0xfc)==0xf8)
       i=4;
-    else if ((c & 0xf0)==0xf0)
+    else if ((c & 0xf8)==0xf0)
       i=3;
-    else if ((c & 0xe0)==0xe0)
+    else if ((c & 0xf0)==0xe0)
       i=2;
-    else if ((c & 0xc0)==0xc0)
+    else if ((c & 0xe0)==0xc0)
       i=1;
     else if (c & 0x80) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Invalid UTF8 character at pos %d", handled);

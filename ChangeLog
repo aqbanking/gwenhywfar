@@ -1,4 +1,37 @@
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2004/12/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_XSD:
+  - added support for precompiled profiles
+    - added function GWEN_XSD_ProfileToXml()
+    - added function GWEN_XSD_ProfileFromXml()
+  - fixed some functions to not modify the profile once it is complete
+- GWEN_XML:
+  - added function GWEN_XMLNode_SetCharValue()
+  - added function GWEN_XMLNode_SetIntValue()
+  - added optional handling of header tags (such as <?xml?> or <!DOCTYPE>).
+    These tags can now be extracted and stored as headers (instead of normal
+    tags) with the root node of a file. When using the flag 
+    GWEN_XML_FLAGS_HANDLE_HEADERS on both reading and writing of a file it
+    still looks the same as it did before. 
+    Since this new flag is off by default this new feature is completely
+    optional.
+    - added flag GWEN_XML_FLAGS_HANDLE_HEADERS
+    - added function GWEN_XMLNode_GetHeader()
+    - added function GWEN_XMLNode_AddHeader()
+    - added function GWEN_XMLNode_DelHeader()
+    - added function GWEN_XMLNode_ClearHeaders()
+- GWEN_TEXT:
+  - fixed a bug in GWEN_Text_CountUtf8Chars()
+- added a test profile which can be used with "gwentest xsd3"
+- Christian established that the current CVS compiles under MinGW32.
+
+
 2004/12/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 Please note: The changes below are not checked on WIN32 !!
@@ -7,7 +40,6 @@ around this for WIN32 (or does MinGW already support it?)
   ------------------------------------------------------------------------
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
-
 
 - GWEN_XSD:
   - started working on XSD module (not complete !!!)
@@ -2319,3 +2351,15 @@ MARK: released gwenhywfar-0.9beta1 (2003/10/27)
 ------------------------------------------------
 - added module db, worked on xml and msgengine modules, fixed some bugs
   in os code
+
+
+
+-----------------------------------------------------------------------------
+Below are some templates to be copied to the top of this file when needed.
+
+- API version modifications
+
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+

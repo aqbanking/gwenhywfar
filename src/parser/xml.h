@@ -100,22 +100,27 @@ extern "C" {
  * If set then data will not be condensed (e.g. multiple spaces will not
  * be replaced by a single one).
  */
-#define GWEN_XML_FLAGS_NO_CONDENSE 0x0080
+#define GWEN_XML_FLAGS_NO_CONDENSE          0x0080
 
 /**
  * If set then control characters (such as CR, LF) will not be removed from
  * data.
  */
-#define GWEN_XML_FLAGS_KEEP_CNTRL  0x0100
+#define GWEN_XML_FLAGS_KEEP_CNTRL           0x0100
 
 /**
  * If set then DESCR tags are ignored when reading XML files.
  */
-#define GWEN_XML_FLAGS_IGNORE_DESCR 0x0200
+#define GWEN_XML_FLAGS_IGNORE_DESCR         0x0200
 
-#define GWEN_XML_FLAGS_KEEP_BLANKS  0x0400
+#define GWEN_XML_FLAGS_KEEP_BLANKS          0x0400
 
-#define GWEN_XML_FLAGS_SIMPLE       0x0800
+#define GWEN_XML_FLAGS_SIMPLE               0x0800
+
+/**
+ * apply special treatment to toplevel header tags (such as &lt;?xml&gt;)
+ */
+#define GWEN_XML_FLAGS_HANDLE_HEADERS       0x1000
 
 /**
  * combination of other flags resembling the default flags
@@ -189,6 +194,57 @@ GWENHYWFAR_API
   GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s,
                                         int len,
                                         GWEN_TYPE_UINT32 flags);
+
+/*@}*/
+
+
+/** @name Managing Headers
+ *
+ * <p>
+ * Headers are special tags in XML files which describe the document (such as
+ * &lt;?xml?&gt; or &lt;!DOCTYPE&gt;).
+ * </p>
+ * <p>
+ * If the flag @ref GWEN_XML_FLAGS_HANDLE_HEADERS is on upon reading of
+ * files these special toplevel tags are added to the current node's header
+ * list instead of the normal children node list.
+ * </p>
+ * <p>
+ * If the same flag is given when writing files the header tags of the given
+ * root node are written to the output stream before its children.
+ * </p>
+ * <p>
+ * Header nodes are identified as nodes whose name begins with '?' or '!'.
+ * </p>
+ */
+/*@{*/
+
+/**
+ * Returns the first header tag of the given node.
+ * Use @ref GWEN_XMLNode_Next to get the next header tag.
+ */
+GWENHYWFAR_API
+GWEN_XMLNODE *GWEN_XMLNode_GetHeader(const GWEN_XMLNODE *n);
+
+/**
+ * Adds a node as a header to the given root node.
+ */
+GWENHYWFAR_API
+void GWEN_XMLNode_AddHeader(GWEN_XMLNODE *root, GWEN_XMLNODE *nh);
+
+/**
+ * Removes a node from the given root nodes' header list. The header node is
+ * just removed from the list, not freed !
+ */
+GWENHYWFAR_API
+void GWEN_XMLNode_DelHeader(GWEN_XMLNODE *root, GWEN_XMLNODE *nh);
+
+/**
+ * Clears the given root nodes' list of headers. All the tags in the header
+ * list are also freed.
+ */
+GWENHYWFAR_API
+void GWEN_XMLNode_ClearHeaders(GWEN_XMLNODE *root);
 
 /*@}*/
 
@@ -600,6 +656,11 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
                                       const char *name,
                                       const char *defValue);
 
+GWENHYWFAR_API
+  void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
+                                 const char *name,
+                                 const char *value);
+
 /**
  * Internally calls @ref GWEN_XMLNode_GetCharValue and interpretes the
  * data as an integer which is then returned.
@@ -611,6 +672,11 @@ GWENHYWFAR_API
 int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
 			     const char *name,
 			     int defValue);
+
+GWENHYWFAR_API
+void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
+                              const char *name,
+                              int value);
 
 /*@}*/
 

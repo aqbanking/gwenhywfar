@@ -52,10 +52,10 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_XSD_FACETS, GWEN_XSD_Facets)
 struct GWEN_XSD_NAMESPACE {
   GWEN_LIST_ELEMENT(GWEN_XSD_NAMESPACE)
   char *id;
+  char *outId;
   char *name;
   char *url;
   char *localUrl;
-  GWEN_XMLNODE *xmlNode;
 };
 
 
@@ -257,16 +257,12 @@ void GWEN_XSD_Facets_free(GWEN_XSD_FACETS *xf);
 struct GWEN_XSD_ENGINE {
   GWEN_XMLNODE *rootNode;
   GWEN_XSD_NAMESPACE_LIST *nameSpaces;
-  GWEN_XSD_NAMESPACE_LIST *userNameSpaces;
-  char *xsdNamespace;
-  GWEN_XSD_GETCHARVALUE_FN getCharValueFn;
-  GWEN_XSD_GETINTVALUE_FN getIntValueFn;
-  GWEN_XSD_GETBINVALUE_FN getBinValueFn;
-
   GWEN_TYPE_UINT32 nextNameSpaceId;
-
-  char *currentTargetNameSpace;
   int derivedTypesImported;
+  char *currentTargetNameSpace;
+
+  /* runtime */
+
 };
 
 
@@ -276,6 +272,8 @@ GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_new(const char *id,
                                            const char *url,
                                            const char *localUrl);
 void GWEN_XSD_NameSpace_free(GWEN_XSD_NAMESPACE *ns);
+int GWEN_XSD_NameSpace_toXml(GWEN_XSD_NAMESPACE *ns, GWEN_XMLNODE *n);
+GWEN_XSD_NAMESPACE *GWEN_XSD_NameSpace_fromXml(GWEN_XMLNODE *n);
 
 
 
@@ -326,9 +324,6 @@ int GWEN_XSD__ImportSchema(GWEN_XSD_ENGINE *e,
 
 int GWEN_XSD__FinishNode(GWEN_XSD_ENGINE *e, GWEN_XMLNODE *n);
 int GWEN_XSD__FinishXsdDoc(GWEN_XSD_ENGINE *e);
-
-int GWEN_XSD__FinalizeNameSpaces(GWEN_XSD_ENGINE *e);
-
 
 int GWEN_XSD__GetSimpleTypeNodes(GWEN_XSD_ENGINE *e,
                                  GWEN_XMLNODE_LIST2 *nodeList,

@@ -56,6 +56,8 @@ struct GWEN__XMLNODE {
   GWEN_XMLNODE *child;
   GWEN_XMLNODE *parent;
 
+  GWEN_XMLNODE *header;
+
   GWEN_XMLNODE_TYPE type;
   GWEN_XMLPROPERTY *properties;
   GWEN_TYPE_UINT32 usage;

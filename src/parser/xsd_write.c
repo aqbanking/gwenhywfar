@@ -623,27 +623,45 @@ GWEN_XMLNODE *GWEN_XSD__CreateXmlNodeInNameSpace(GWEN_XSD_ENGINE *e,
                                                  const char *name) {
   GWEN_XMLNODE *newNode;
   const char *sName;
-  const char *nsName;
+  int doQualify;
 
   /* remove target namespace from name (if match) */
-  nsName=GWEN_XSD_GetCurrentTargetNameSpace(e);
+  doQualify=1;
   sName=strchr(name, ':');
   if (sName) {
+    const char *nsName;
+
+    nsName=GWEN_XSD_GetCurrentTargetNameSpace(e);
     if (nsName) {
-      if (strncasecmp(nsName, name, sName-name)==0)
-	sName++;
-      else
-	sName=name;
-    }
-    else {
-      sName=name;
+      if (strncasecmp(nsName, name, sName-name)==0) {
+	doQualify=0;
+	name=sName+1;
+      }
     }
   }
-  else
-    sName=name;
-  newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, sName);
 
-  return newNode;
+  /* sName is either 0 or a pointer to the ":" */
+
+  if (doQualify) {
+    GWEN_BUFFER *nbuf;
+    GWEN_XSD_NAMESPACE *ns;
+  
+    nbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Buffer_AppendBytes(nbuf, name, sName-name);
+    ns=GWEN_XSD__FindNameSpaceById(e, GWEN_Buffer_GetStart(nbuf));
+    assert(ns);
+    GWEN_Buffer_Reset(nbuf);
+    GWEN_Buffer_AppendString(nbuf, ns->outId);
+    GWEN_Buffer_AppendString(nbuf, sName); /* include the ":" */
+    newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,
+			     GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+    return newNode;
+  }
+  else {
+    newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, name);
+    return newNode;
+  }
 }
 
 
@@ -1297,7 +1315,7 @@ int GWEN_XSD_WriteElement(GWEN_XSD_ENGINE *e,
 
           nsBuf=GWEN_Buffer_new(0, 32, 0, 1);
           GWEN_Buffer_AppendString(nsBuf, "xmlns:");
-          GWEN_Buffer_AppendString(nsBuf, ns->id);
+          GWEN_Buffer_AppendString(nsBuf, ns->outId);
           GWEN_XMLNode_SetProperty(nNew, GWEN_Buffer_GetStart(nsBuf),
                                    ns->name);
           GWEN_Buffer_free(nsBuf);
