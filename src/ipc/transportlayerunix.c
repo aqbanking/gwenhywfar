@@ -37,6 +37,7 @@
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerUnix_new(){
   GWEN_IPCTRANSPORTLAYER *t;
   GWEN_IPCTRANSSOCKET *tlsocket;

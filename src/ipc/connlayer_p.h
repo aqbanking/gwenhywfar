@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sun Sep 14 2003
+    begin       : Tue Sep 16 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -26,30 +26,40 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#ifndef GWENHYFWAR_CONNLAYER_P_H
+#define GWENHYFWAR_CONNLAYER_P_H
+
+#define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
+#define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
 
 
-#include "transportlayersocket_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/connlayer.h>
 
 
+struct GWEN_IPCCONNLAYER {
+  GWEN_IPCCONNLAYER *next;
 
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerTCP_new(){
-  GWEN_IPCTRANSPORTLAYER *t;
-  GWEN_IPCTRANSSOCKET *tlsocket;
+  GWEN_IPCMSGLAYER *msgLayer;
+  GWEN_IPCCONNLAYER_STATE state;
+  GWEN_IPCMSG *incomingMsgs;
+  unsigned int nIncomingMsgs;
+  unsigned int maxIncomingMsgs;
+  GWEN_IPCMSG *outgoingMsgs;
+  unsigned int nOutgoingMsgs;
+  unsigned int maxOutgoingMsgs;
+  char *info;
+  void *data;
 
-  t=GWEN_IPCTransportLayerSocket_new();
-  tlsocket=(GWEN_IPCTRANSSOCKET*)t->privateData;
-  free(t->address);
-  t->address=strdup("0.0.0.0");
-  tlsocket->socketType=GWEN_SocketTypeTCP;
-  tlsocket->addressFamily=GWEN_AddressFamilyIP;
-  return t;
-}
+  GWEN_IPCCONNLAYER_FREE freeDataFn;
+  GWEN_IPCCONNLAYER_OPEN openFn;
+  GWEN_IPCCONNLAYER_CLOSE closeFn;
+  GWEN_IPCCONNLAYER_WORK workFn;
+  GWEN_IPCCONNLAYER_ACCEPT acceptFn;
+};
+
+
+#endif /* GWENHYFWAR_CONNLAYER_P_H */
+
 
 
 

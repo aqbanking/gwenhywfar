@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sun Sep 14 2003
+    begin       : Tue Sep 16 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -26,30 +26,20 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#ifndef GWENHYFWAR_IPC_P_H
+#define GWENHYFWAR_IPC_P_H
+
+#include <gwenhyfwar/ipc.h>
+#include <gwenhyfwar/error.h>
 
 
-#include "transportlayersocket_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerTCP_new(){
-  GWEN_IPCTRANSPORTLAYER *t;
-  GWEN_IPCTRANSSOCKET *tlsocket;
-
-  t=GWEN_IPCTransportLayerSocket_new();
-  tlsocket=(GWEN_IPCTRANSSOCKET*)t->privateData;
-  free(t->address);
-  t->address=strdup("0.0.0.0");
-  tlsocket->socketType=GWEN_SocketTypeTCP;
-  tlsocket->addressFamily=GWEN_AddressFamilyIP;
-  return t;
-}
+GWEN_ERRORCODE GWEN_IPC_ModuleInit();
+GWEN_ERRORCODE GWEN_IPC_ModuleFini();
+const char *GWEN_IPC_ErrorString(int c);
 
 
 
+
+
+
+#endif /* GWENHYFWAR_IPC_P_H */

@@ -38,6 +38,7 @@
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE
   GWEN_IPCTransportLayerSocket_StartConnect(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
@@ -95,6 +96,7 @@ GWEN_ERRORCODE
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE
 GWEN_IPCTransportLayerSocket_FinishConnect(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
@@ -123,6 +125,7 @@ GWEN_IPCTransportLayerSocket_FinishConnect(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Listen(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
   GWEN_INETADDRESS *addr;
@@ -179,6 +182,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Listen(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE
 GWEN_IPCTransportLayerSocket_Accept(GWEN_IPCTRANSPORTLAYER *tl,
                                     GWEN_IPCTRANSPORTLAYER **t){
@@ -215,6 +219,7 @@ GWEN_IPCTransportLayerSocket_Accept(GWEN_IPCTRANSPORTLAYER *tl,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE
 GWEN_IPCTransportLayerSocket_Flush(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
@@ -238,6 +243,7 @@ GWEN_IPCTransportLayerSocket_Flush(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE
 GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
@@ -268,6 +274,7 @@ GWEN_IPCTransportLayerSocket_Disconnect(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_SOCKET*
 GWEN_IPCTransportLayerSocket_GetReadSocket(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
@@ -291,6 +298,7 @@ GWEN_IPCTransportLayerSocket_GetReadSocket(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_SOCKET*
 GWEN_IPCTransportLayerSocket_GetWriteSocket(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
@@ -314,6 +322,7 @@ GWEN_IPCTransportLayerSocket_GetWriteSocket(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
                                                  char *buffer,
                                                  int *bsize){
@@ -348,6 +357,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Read(GWEN_IPCTRANSPORTLAYER *tl,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Write(GWEN_IPCTRANSPORTLAYER *tl,
                                                const char *buffer,
                                                int *bsize){
@@ -365,6 +375,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Write(GWEN_IPCTRANSPORTLAYER *tl,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_CanRead(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_IPCTRANSSOCKET *tlp;
 
@@ -383,6 +394,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_CanRead(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_CanWrite(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_IPCTRANSSOCKET *tlp;
 
@@ -397,6 +409,7 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_CanWrite(GWEN_IPCTRANSPORTLAYER *tl)
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE
 GWEN_IPCTransportLayerSocket_GetPeerAddress(GWEN_IPCTRANSPORTLAYER *tl,
                                          char *buffer, unsigned int bsize) {
@@ -431,6 +444,7 @@ GWEN_IPCTransportLayerSocket_GetPeerAddress(GWEN_IPCTRANSPORTLAYER *tl,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 int GWEN_IPCTransportLayerSocket_GetPeerPort(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_ERRORCODE err;
   GWEN_INETADDRESS *addr;
@@ -460,6 +474,7 @@ int GWEN_IPCTransportLayerSocket_GetPeerPort(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCTransportLayerSocket_free(GWEN_IPCTRANSPORTLAYER *tl){
   GWEN_IPCTRANSSOCKET *tlp;
 
@@ -475,6 +490,7 @@ void GWEN_IPCTransportLayerSocket_free(GWEN_IPCTRANSPORTLAYER *tl){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCTRANSSOCKET *GWEN_IPCTransportLayerSocket_Data_new(){
   GWEN_IPCTRANSSOCKET *tlsocket;
 
@@ -484,6 +500,7 @@ GWEN_IPCTRANSSOCKET *GWEN_IPCTransportLayerSocket_Data_new(){
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 void GWEN_IPCTransportLayerSocket_Data_free(GWEN_IPCTRANSSOCKET *tlsocket) {
   if (tlsocket) {
     if (tlsocket->bio)
@@ -497,6 +514,7 @@ void GWEN_IPCTransportLayerSocket_Data_free(GWEN_IPCTRANSSOCKET *tlsocket) {
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
 GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerSocket_new(){
   GWEN_IPCTRANSPORTLAYER *t;
   GWEN_IPCTRANSSOCKET *tlsocket;

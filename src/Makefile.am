@@ -13,6 +13,7 @@ libgwenhyfwar_la_SOURCES=\
 libgwenhyfwar_la_LIBADD=\
   base/libbase.la \
   io/libio.la \
+  ipc/libipc.la \
   os/@GWEN_OS@/libos.la \
   parser/libparser.la
 libgwenhyfwar_la_LDFLAGS= \

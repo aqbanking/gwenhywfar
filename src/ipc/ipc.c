@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sun Sep 14 2003
+    begin       : Tue Sep 16 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -30,26 +30,73 @@
 # include <config.h>
 #endif
 
-
-#include "transportlayersocket_p.h"
-#include <gwenhyfwar/misc.h>
+#include "ipc_p.h"
 #include <gwenhyfwar/debug.h>
+#include <gwenhyfwar/error.h>
+
+
+
+
+static int gwen_ipc_is_initialized=0;
+static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_ipc_errorform=0;
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerTCP_new(){
-  GWEN_IPCTRANSPORTLAYER *t;
-  GWEN_IPCTRANSSOCKET *tlsocket;
+const char *GWEN_IPC_ErrorString(int c){
+  const char *s;
 
-  t=GWEN_IPCTransportLayerSocket_new();
-  tlsocket=(GWEN_IPCTRANSSOCKET*)t->privateData;
-  free(t->address);
-  t->address=strdup("0.0.0.0");
-  tlsocket->socketType=GWEN_SocketTypeTCP;
-  tlsocket->addressFamily=GWEN_AddressFamilyIP;
-  return t;
+  switch(c) {
+  case GWEN_IPC_ERROR_INQUEUE_FULL:
+    s="Incoming message queue full";
+    break;
+  case GWEN_IPC_ERROR_OUTQUEUE_FULL:
+    s="Outgoing message queue full";
+    break;
+  default:
+    s=0;
+  } /* switch */
+
+  return s;
 }
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_IPC_ModuleInit(){
+  if (!gwen_ipc_is_initialized) {
+    GWEN_ERRORCODE err;
+
+    gwen_ipc_errorform=GWEN_ErrorType_new();
+    GWEN_ErrorType_SetName(gwen_ipc_errorform,
+                           GWEN_IPC_ERROR_TYPE);
+    GWEN_ErrorType_SetMsgPtr(gwen_ipc_errorform,
+                             GWEN_IPC_ErrorString);
+    err=GWEN_Error_RegisterType(gwen_ipc_errorform);
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    gwen_ipc_is_initialized=1;
+  }
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+GWEN_ERRORCODE GWEN_IPC_ModuleFini(){
+  if (gwen_ipc_is_initialized) {
+    GWEN_ERRORCODE err;
+
+    err=GWEN_Error_UnregisterType(gwen_ipc_errorform);
+    GWEN_ErrorType_free(gwen_ipc_errorform);
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    gwen_ipc_is_initialized=0;
+  }
+  return 0;
+}
+
+
 
 
 

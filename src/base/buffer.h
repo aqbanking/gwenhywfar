@@ -33,6 +33,10 @@
 
 
 
+#define GWEN_BUFFER_MAX_BOOKMARKS 4
+
+
+
 typedef struct GWEN_BUFFER GWEN_BUFFER;
 
 
@@ -79,9 +83,23 @@ unsigned int GWEN_Buffer_GetPos(GWEN_BUFFER *bf);
 int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, unsigned int i);
 
 /**
- * @return 0 if ok, !=0 on error
  */
 unsigned int GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf);
+
+
+/**
+ * Returns the given bookmark
+ */
+unsigned int GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx);
+
+
+/**
+ * Set a bookmark. These bookmarks are not used by the GWEN_BUFFER functions,
+ * but may be usefull for an application.
+ */
+void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
+                             unsigned int v);
+
 
 /**
  * @return 0 if ok, !=0 on error
@@ -146,6 +164,9 @@ unsigned int GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf);
  * Returns a pointer to the current position within the buffer.
  */
 char *GWEN_Buffer_GetPosPointer(GWEN_BUFFER *bf);
+
+
+
 
 #endif
 

@@ -33,7 +33,7 @@
 #include <gwenhyfwar/buffer.h>
 
 
-#define GWEN_BUFFER_FLAGS_OWNED 0x0001
+#define GWEN_BUFFER_FLAGS_OWNED   0x0001
 
 
 struct GWEN_BUFFER {
@@ -42,6 +42,7 @@ struct GWEN_BUFFER {
   unsigned int bufferSize;
   unsigned bytesUsed;
   unsigned int flags;
+  unsigned int bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
 };
 
 

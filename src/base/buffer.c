@@ -258,3 +258,23 @@ char *GWEN_Buffer_GetPosPointer(GWEN_BUFFER *bf){
 
 
 
+unsigned int GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx){
+  assert(bf);
+  assert(idx<GWEN_BUFFER_MAX_BOOKMARKS);
+  return bf->bookmarks[idx];
+}
+
+
+
+void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
+                             unsigned int v){
+  assert(bf);
+  assert(idx<GWEN_BUFFER_MAX_BOOKMARKS);
+  bf->bookmarks[idx]=v;
+}
+
+
+
+
+
+

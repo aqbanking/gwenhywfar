@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sun Sep 14 2003
+    begin       : Tue Sep 16 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -26,30 +26,50 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#ifndef GWENHYFWAR_MSGLAYER_P_H
+#define GWENHYFWAR_MSGLAYER_P_H
+
+#define GWEN_IPCMSGLAYER_MAXINCOMING_MSGS 32
+#define GWEN_IPCMSGLAYER_MAXOUTGOING_MSGS 64
+
+#include <gwenhyfwar/msglayer.h>
+#include <gwenhyfwar/transportlayer.h>
+#include <gwenhyfwar/error.h>
 
 
-#include "transportlayersocket_p.h"
-#include <gwenhyfwar/misc.h>
-#include <gwenhyfwar/debug.h>
+
+struct GWEN_IPCMSG {
+  GWEN_IPCMSG *next;
+  GWEN_BUFFER *buffer;
+  unsigned int msgLayerId;
+  unsigned int msgId;
+  void *data;
+  GWEN_IPCMSG_FREE freeDataFn;
+};
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerTCP_new(){
-  GWEN_IPCTRANSPORTLAYER *t;
-  GWEN_IPCTRANSSOCKET *tlsocket;
+struct GWEN_IPCMSGLAYER {
+  GWEN_IPCMSGLAYER *next;
+  GWEN_IPCTRANSPORTLAYER *transportLayer;
+  unsigned int id;
+  GWEN_IPCMSGLAYER_STATE state;
+  GWEN_IPCMSG *incomingMsgs;
+  unsigned int nIncomingMsgs;
+  unsigned int maxIncomingMsgs;
+  GWEN_IPCMSG *outgoingMsgs;
+  unsigned int nOutgoingMsgs;
+  unsigned int maxOutgoingMsgs;
+  void *data;
+  GWEN_IPCMSGLAYER_WORK workFn;
+  GWEN_IPCMSGLAYER_FREE freeDataFn;
+  GWEN_IPCMSGLAYER_ACCEPT acceptFn;
+};
 
-  t=GWEN_IPCTransportLayerSocket_new();
-  tlsocket=(GWEN_IPCTRANSSOCKET*)t->privateData;
-  free(t->address);
-  t->address=strdup("0.0.0.0");
-  tlsocket->socketType=GWEN_SocketTypeTCP;
-  tlsocket->addressFamily=GWEN_AddressFamilyIP;
-  return t;
-}
+
+
+
+#endif /* GWENHYFWAR_MSGLAYER_P_H */
 
 
 

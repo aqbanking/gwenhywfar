@@ -1,6 +1,11 @@
 $Id$
 
 
+2003/09/17 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- worked on IPC stuff (still untested)
+
+
 2003/09/14 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added transport layers (socket: TCP and Unix) to IPC module

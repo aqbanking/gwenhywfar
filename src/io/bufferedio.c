@@ -76,7 +76,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit(){
 
     gwen_bufferedio_errorform=GWEN_ErrorType_new();
     GWEN_ErrorType_SetName(gwen_bufferedio_errorform,
-                           GWEN_INETADDR_ERROR_TYPE);
+                           GWEN_BUFFEREDIO_ERROR_TYPE);
     GWEN_ErrorType_SetMsgPtr(gwen_bufferedio_errorform,
                              GWEN_BufferedIO_ErrorString);
     err=GWEN_Error_RegisterType(gwen_bufferedio_errorform);
