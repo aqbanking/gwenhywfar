@@ -38,6 +38,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h> /* DEBUG ! */
+#include <gwenhywfar/waitcallback.h>
 
 #include <openssl/rsa.h>
 #include <openssl/objects.h>
@@ -262,10 +263,10 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
   /* FIXME: The description is quite the opposite of the code, while the
    * code seems to be working (at least when verifying my own signatures)
    * the iso9796-appendix is as follows:
-   * if (the calculated signature - the modulus) < (the calculated signature)
-   * use (the calculated signature - the modulus) as signature
+   * if ((the calculated signature - the modulus) <
+   *    (the calculated signature))
+   * then use (the calculated signature - the modulus) as signature
    */
-
   if (!BN_sub(bnresult2, kd->n, bnresult)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Math error");
     BN_free(bnresult2);
@@ -276,9 +277,19 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
                           GWEN_CRYPT_ERROR_SIGN);
   }
 
-  if (BN_cmp(bnresult2, bnresult) < 0) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Using smaller signature");
-    BN_copy(bnresult, bnresult2);
+  if (!(GWEN_CryptKey_GetFlags(key) &
+        GWEN_CRYPT_FLAG_DISABLE_SMALLER_SIGNATURE)) {
+    if (BN_cmp(bnresult2, bnresult) < 0) {
+      GWEN_WaitCallback_Log(0, "Using smaller signature");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Using smaller signature");
+      BN_copy(bnresult, bnresult2);
+    }
+    else {
+      GWEN_WaitCallback_Log(0, "Using normal signature");
+    }
+  }
+  else {
+    GWEN_WaitCallback_Log(0, "Always using normal signature");
   }
 
   BN_free(bnresult2);

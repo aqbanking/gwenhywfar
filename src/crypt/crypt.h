@@ -55,6 +55,12 @@ extern "C" {
 #define GWEN_CRYPT_ERROR_GENERIC            11
 
 
+/**
+ * If this flag is set then signing with an RSA key will not choose the
+ * smaller signature according iso9796-appendix. The default is to allow it.
+ */
+#define GWEN_CRYPT_FLAG_DISABLE_SMALLER_SIGNATURE 0x00000001
+
 int GWEN_Crypt_IsAvailable();
 
 
@@ -181,6 +187,16 @@ GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
 				    GWEN_DB_NODE *db,
 				    int pub);
+
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_CryptKey_GetFlags(const GWEN_CRYPTKEY *key);
+GWENHYWFAR_API
+void GWEN_CryptKey_SetFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl);
+GWENHYWFAR_API
+void GWEN_CryptKey_AddFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl);
+GWENHYWFAR_API
+void GWEN_CryptKey_SubFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl);
+
 
 /**
  * This is a conveniance function.

@@ -1634,6 +1634,11 @@ GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
           if (-1!=GWEN_Text_ComparePattern(pvalue, p, 0))
             return (GWEN_XMLNODE*)n;
         }
+        else {
+          /* return this node if pvalue is 0 an the property does not exist */
+          if (!pvalue)
+            return (GWEN_XMLNODE*)n;
+        }
       } /* if pname */
       else
         return (GWEN_XMLNODE*)n;

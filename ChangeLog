@@ -2,6 +2,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/03/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added flags to GWEN_CRYPTKEY which will be used to influence the behaviour
+  of some functions (namely the sign function of RSA keys)
+- introduced flag GWEN_CRYPT_FLAG_DISABLE_SMALLER_SIGNATURE which will disable
+  selecting the smaller signature when signing data (might help solve a 
+  special bug in AqHBCI which has not yet been fixed).
+
 2005-03-07   Christian Stimming <stimming@tuhh.de>
 
 	* src/parser/xml.c (GWEN_XML__ReadWordBuf): Rearrange some checks

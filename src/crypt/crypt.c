@@ -275,6 +275,9 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
     GWEN_CryptKey_free(key);
     return 0;
   }
+
+  key->flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT,
                       "data");
@@ -303,6 +306,9 @@ GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
                           GWEN_CRYPT_ERROR_GENERIC);
   }
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "flags", key->flags);
+  /* save key specific data */
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT |
                       GWEN_DB_FLAGS_OVERWRITE_GROUPS,
@@ -831,6 +837,37 @@ void GWEN_CryptKey_List2_freeAll(GWEN_CRYPTKEY_LIST2 *stl) {
     GWEN_CryptKey_List2_free(stl); 
   }
 }
+
+
+
+GWEN_TYPE_UINT32 GWEN_CryptKey_GetFlags(const GWEN_CRYPTKEY *key){
+  assert(key);
+  return key->flags;
+}
+
+
+
+void GWEN_CryptKey_SetFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl){
+  assert(key);
+  key->flags=fl;
+}
+
+
+
+void GWEN_CryptKey_AddFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl){
+  assert(key);
+  key->flags|=fl;
+}
+
+
+
+void GWEN_CryptKey_SubFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl){
+  assert(key);
+  key->flags&=~fl;
+}
+
+
+
 
 
 

@@ -40,6 +40,7 @@ struct GWEN_CRYPTKEY {
   void *keyData;
   int openCount;
   int pub;
+  GWEN_TYPE_UINT32 flags;
 
   GWEN_CRYPTKEY_DUP_FN dupFn;
   GWEN_CRYPTKEY_ENCRYPT_FN encryptFn;
