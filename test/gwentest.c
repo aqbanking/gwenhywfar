@@ -3455,7 +3455,7 @@ int testXSD3(int argc, char **argv) {
   GWEN_XSD_ENGINE *e;
   GWEN_XSD_NAMESPACE *ns;
   int rv;
-  int i, j;
+  int i; /* , j; */
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbT;
   GWEN_XMLNODE *nStore;
@@ -3473,7 +3473,7 @@ int testXSD3(int argc, char **argv) {
                         GWEN_XML_FLAGS_IGNORE_INCLUDE |
                         GWEN_XML_FLAGS_NO_CONDENSE |
                         GWEN_XML_FLAGS_KEEP_BLANKS*/)) {
-    fprintf(stderr, "Could not read file \"%s\"\n", argv[j]);
+    fprintf(stderr, "Could not read file \"%s\"\n", "testprofile1.xml");
     return 2;
   }
 
