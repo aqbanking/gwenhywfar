@@ -46,6 +46,7 @@ DLL_EXP_DEF=gwenhywfar32.def
 DLL_OBJS= \
    base/stringlist.o \
    base/buffer.o\
+   base/debug.o\
    base/error.o\
    base/list.o\
    base/logger.o\
