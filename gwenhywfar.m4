@@ -78,10 +78,10 @@ if test "$enable_gwenhywfar" != "no"; then
       gwenhywfar_headers="`$gwenhywfar_dir/bin/gwenhywfar-config --headers`"
       AC_MSG_RESULT($gwenhywfar_headers)
       AC_MSG_CHECKING(for gwen UI)
-      gwenhywfar_has_ui="`$gwenhywfar_dir/bin/gwenhywfar-config --has_ui`"
+      gwenhywfar_has_ui="`$gwenhywfar_dir/bin/gwenhywfar-config --has-ui`"
       AC_MSG_RESULT($gwenhywfar_has_ui)
       AC_MSG_CHECKING(for gwen Crypto)
-      gwenhywfar_has_crypt="`$gwenhywfar_dir/bin/gwenhywfar-config --has_crypt`"
+      gwenhywfar_has_crypt="`$gwenhywfar_dir/bin/gwenhywfar-config --has-crypt`"
       AC_MSG_RESULT($gwenhywfar_has_crypt)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)
