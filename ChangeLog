@@ -1,6 +1,7 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released gwenhywfar-1.4 (2004/12/30)
+===========================================================================
 
 
 2004/12/29: Martin Preuss<martin@libchipcard.de>
@@ -119,9 +120,6 @@
 Please note: The changes below are not checked on WIN32 !!
 I sometimes used the function strncasecmp(), maybe we have to find a way
 around this for WIN32 (or does MinGW already support it?)
-  ------------------------------------------------------------------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
 
 - GWEN_XSD:
   - started working on XSD module (not complete !!!)
@@ -217,9 +215,6 @@ around this for WIN32 (or does MinGW already support it?)
 - started working on filters for GWEN_BUFFEREDIO. I used these kind of filters
   in AqBackup, but they weren't as sophisticated as the current ones are ;-)
   Fortunately I can now use the GWEN_RINGBUFFER functions...
-  ------------------------------------------------------------------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
 
 
 2004/11/26: Martin Preuss<martin@libchipcard.de>
