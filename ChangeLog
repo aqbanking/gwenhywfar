@@ -1,4 +1,9 @@
 
+2004/06/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ipc/ipc.c: added GWEN_IPCManager_Attach() and usage counter
+
+
 2004/06/08: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/db: increased size of the word buffer used (I'm still looking

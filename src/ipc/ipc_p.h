@@ -112,6 +112,7 @@ struct GWEN_IPCMANAGER {
   GWEN_IPCREQUEST_LIST *newInRequests;
   GWEN_IPCREQUEST_LIST *oldInRequests;
   unsigned int sendTimeOut;
+  GWEN_TYPE_UINT32 usage;
 };
 
 GWEN_IPCREQUEST *GWEN_IPCManager__FindRequest(GWEN_IPCMANAGER *mgr,

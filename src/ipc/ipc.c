@@ -219,7 +219,16 @@ GWEN_IPCMANAGER *GWEN_IPCManager_new(){
   mgr->newInRequests=GWEN_IPCRequest_List_new();
   mgr->oldInRequests=GWEN_IPCRequest_List_new();
 
+  mgr->usage=1;
   return mgr;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_IPCManager_Attach(GWEN_IPCMANAGER *mgr){
+  assert(mgr);
+  mgr->usage++;
 }
 
 
@@ -228,12 +237,15 @@ GWEN_IPCMANAGER *GWEN_IPCManager_new(){
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr){
   if (mgr) {
-    GWEN_IPCRequest_List_free(mgr->oldInRequests);
-    GWEN_IPCRequest_List_free(mgr->newInRequests);
-    GWEN_IPCRequest_List_free(mgr->outRequests);
-    GWEN_IPCNode_List_free(mgr->nodes);
+    assert(mgr->usage);
+    if (--(mgr->usage)==0) {
+      GWEN_IPCRequest_List_free(mgr->oldInRequests);
+      GWEN_IPCRequest_List_free(mgr->newInRequests);
+      GWEN_IPCRequest_List_free(mgr->outRequests);
+      GWEN_IPCNode_List_free(mgr->nodes);
 
-    GWEN_FREE_OBJECT(mgr);
+      GWEN_FREE_OBJECT(mgr);
+    }
   }
 }
 

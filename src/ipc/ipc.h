@@ -48,6 +48,9 @@ GWEN_IPCMANAGER *GWEN_IPCManager_new();
 GWENHYWFAR_API
 void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr);
 
+GWENHYWFAR_API
+void GWEN_IPCManager_Attach(GWEN_IPCMANAGER *mgr);
+
 
 /**
  * Sets a callback function which is called for every network connection that
