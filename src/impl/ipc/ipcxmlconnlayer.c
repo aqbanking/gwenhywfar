@@ -499,7 +499,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl) {
 GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
 						    GWEN_XMLNODE *node,
 						    GWEN_DB_NODE *db,
-						    int flush) {
+                                                    unsigned int flags) {
   GWEN_IPCXMLCONNLAYERDATA *ccd;
   GWEN_ERRORCODE err;
   GWEN_IPCXMLREQUEST *rq;
@@ -581,7 +581,7 @@ GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
      GWEN_HBCIMsg_GetMsgNumber(ccd->currentMsg));
   GWEN_IPCXMLRequest_SetSegmentNumber(rq, segnum);
 
-  if (flush) {
+  if (flags & GWEN_IPCXML_REQUESTFLAGS_FLUSH) {
     DBG_INFO(0, "Flushing message");
     /* directly encode and enqueue the message if requested */
     err=GWEN_IPCXMLConnLayer_Flush(cl);
@@ -603,7 +603,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_AddResponse(GWEN_IPCCONNLAYER *cl,
                                                 GWEN_IPCXMLREQUEST *rq,
                                                 GWEN_XMLNODE *node,
                                                 GWEN_DB_NODE *db,
-                                                int flush) {
+                                                unsigned int flags) {
   GWEN_IPCXMLCONNLAYERDATA *ccd;
   GWEN_ERRORCODE err;
   unsigned int segnum;
@@ -676,7 +676,7 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_AddResponse(GWEN_IPCCONNLAYER *cl,
   DBG_INFO(0, "Node added as segment %d", segnum);
   GWEN_Buffer_Dump(GWEN_HBCIMsg_GetBuffer(ccd->currentMsg), stderr, 2);
 
-  if (flush) {
+  if (flags & GWEN_IPCXML_REQUESTFLAGS_FLUSH) {
     DBG_INFO(0, "Flushing message");
     /* directly encode and enqueue the message if requested */
     err=GWEN_IPCXMLConnLayer_Flush(cl);
@@ -817,6 +817,55 @@ void GWEN_IPCXMLConnLayer_SetDisconnectedFn(GWEN_IPCCONNLAYER *cl,
   assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
   ccd->disconnectedFn=f;
 }
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const char *GWEN_IPCXMLConnLayer_GetServiceCode(GWEN_IPCCONNLAYER *cl) {
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  assert(ccd->securityManager);
+  return GWEN_SecContextMgr_GetServiceCode(ccd->securityManager);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const GWEN_CRYPTKEY*
+GWEN_IPCXMLConnLayer_GetSignKey(GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  assert(ccd->securityManager);
+  return GWEN_IPCXMLSecCtxMgr_GetLocalSignKey(ccd->securityManager);
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const GWEN_CRYPTKEY*
+GWEN_IPCXMLConnLayer_GetCryptKey(GWEN_IPCCONNLAYER *cl){
+  GWEN_IPCXMLCONNLAYERDATA *ccd;
+
+  assert(cl);
+  ccd=(GWEN_IPCXMLCONNLAYERDATA*)GWEN_ConnectionLayer_GetData(cl);
+  assert(ccd);
+  assert(GWEN_ConnectionLayer_GetType(cl)==GWEN_IPCXMLCONNLAYER_TYPE);
+
+  assert(ccd->securityManager);
+  return GWEN_IPCXMLSecCtxMgr_GetLocalSignKey(ccd->securityManager);
+}
+
+
 
 
 

@@ -97,6 +97,8 @@ unsigned int GWEN_HBCIMsg_GetDialogNumber(GWEN_HBCIMSG *hmsg);
 void GWEN_HBCIMsg_SetDialogNumber(GWEN_HBCIMSG *hmsg,
                                   unsigned int did);
 
+const char *GWEN_HBCIMsg_GetDialogId(GWEN_HBCIMSG *hmsg);
+
 GWEN_HBCIMSG *GWEN_HBCIMsg_new(GWEN_HBCIDIALOG *hdlg);
 void GWEN_HBCIMsg_free(GWEN_HBCIMSG *hmsg);
 

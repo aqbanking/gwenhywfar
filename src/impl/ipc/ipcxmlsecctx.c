@@ -1453,6 +1453,30 @@ void GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(GWEN_SECCTX_MANAGER *scm,
 
 
 
+const GWEN_CRYPTKEY*
+GWEN_IPCXMLSecCtxMgr_GetLocalSignKey(GWEN_SECCTX_MANAGER *scm){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+
+  assert(scm);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+
+  return scmd->localSignKey;
+}
+
+
+
+const GWEN_CRYPTKEY*
+GWEN_IPCXMLSecCtxMgr_GetLocalCryptKey(GWEN_SECCTX_MANAGER *scm){
+  GWEN_IPCXMLSECCTXMGRDATA *scmd;
+
+  assert(scm);
+  scmd=(GWEN_IPCXMLSECCTXMGRDATA*)GWEN_SecContextMgr_GetData(scm);
+  assert(scmd);
+
+  return scmd->localCryptKey;
+}
+
 
 
 

@@ -1945,6 +1945,12 @@ void GWEN_HBCIMsg_SetDialogNumber(GWEN_HBCIMSG *hmsg,
 
 
 
+const char *GWEN_HBCIMsg_GetDialogId(GWEN_HBCIMSG *hmsg){
+  assert(hmsg);
+  assert(hmsg->dialog);
+  return GWEN_HBCIDialog_GetDialogId(hmsg->dialog);
+}
+
 
 
 

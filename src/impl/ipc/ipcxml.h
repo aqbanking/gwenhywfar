@@ -124,6 +124,37 @@ void GWEN_IPCXMLRequest_SetDb(GWEN_IPCXMLREQUEST *r,
 /*@{*/
 
 /**
+ * This request id will be returned by @ref GWEN_IPCXMLService_AddRequest if
+ * the flag @ref GWEN_IPCXML_REQUESTFLAGS_FORGET is given. This is just to
+ * return a value different from zero if there is no error.
+ * With this flag set no request will really be created, but we need to
+ * return something to the application ;-)
+ */
+#define GWEN_IPCXML_REQUEST_ANYID 0xffffffff
+
+
+/** @name Request Flags
+ *
+ */
+/*@{*/
+/**
+ * if this is set then the output queue will be flushed thus effectively
+ * sending the request to the peer. Otherwisethe request will only be
+ * enqueued but not send. You can flush the queue by calling
+ * @ref GWEN_IPCXMLService_Flush.
+ */
+#define GWEN_IPCXML_REQUESTFLAGS_FLUSH  0x0001
+/**
+ * If this bit is set then the request will be created but not remembered.
+ * Use this for requests for which you don't expect responses. Please note
+ * that the request id returned by @ref GWEN_IPCXMLService_AddRequest will
+ * not be a usable, it will only be @ref GWEN_IPCXML_REQUEST_ANYID
+ */
+#define GWEN_IPCXML_REQUESTFLAGS_FORGET 0x0002
+/*@}*/
+
+
+/**
  * This is the type expected by all functions of this group.
  * You should not bother about the data which is behind this type, it
  * is not part of the API.
@@ -289,6 +320,7 @@ void GWEN_IPCXMLService_Close(GWEN_IPCXMLSERVICE *xs,
 /*@{*/
 /**
  * Creates a new request and enqueues it for sending to the peer.
+ * @return id of the new request, 0 on error or @ref GWEN_IPCXML_REQUEST_ANYID
  * @param xs Pointer to the service to use
  * @param clid Id of the client/server retrieved via
  * @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
@@ -298,17 +330,14 @@ void GWEN_IPCXMLService_Close(GWEN_IPCXMLSERVICE *xs,
  * the correct version of the message to create.
  * @param db GWEN_DB_NODE containing the parameters belonging to the given
  * request
- * @param flush if not zero then the output queue will be flushed thus
- * effectively sending the request to the peer. If zero then the request
- * will only be enqueued but not send. You can flush the queue by calling
- * @ref GWEN_IPCXMLService_Flush.
+ * @param flags see @ref GWEN_IPCXML_REQUESTFLAGS_FLUSH
  */
 unsigned int GWEN_IPCXMLService_AddRequest(GWEN_IPCXMLSERVICE *xs,
                                            unsigned int clid,
                                            const char *requestName,
                                            unsigned int requestVersion,
                                            GWEN_DB_NODE *db,
-                                           int flush);
+                                           unsigned int flags);
 
 /**
  * Creates a response to an incoming request and enqueues it for sending to
@@ -323,17 +352,15 @@ unsigned int GWEN_IPCXMLService_AddRequest(GWEN_IPCXMLSERVICE *xs,
  * the correct version of the message to create.
  * @param db GWEN_DB_NODE containing the parameters belonging to the given
  * request
- * @param flush if not zero then the output queue will be flushed thus
- * effectively sending the request to the peer. If zero then the request
- * will only be enqueued but not send. You can flush the queue by calling
- * @ref GWEN_IPCXMLService_Flush.
+ * @param flags see @ref GWEN_IPCXML_REQUESTFLAGS_FLUSH
+
  */
 GWEN_ERRORCODE GWEN_IPCXMLService_AddResponse(GWEN_IPCXMLSERVICE *xs,
                                               unsigned int requestId,
                                               const char *name,
                                               unsigned int version,
                                               GWEN_DB_NODE *db,
-                                              int flush);
+                                              unsigned int flags);
 /**
  * Sends all pending requests/responses for the given connection to the peer.
  * @param xs Pointer to the service to use
@@ -349,6 +376,15 @@ GWEN_ERRORCODE GWEN_IPCXMLService_Flush(GWEN_IPCXMLSERVICE *xs,
  * @param xs Pointer to the service to use
  */
 unsigned int GWEN_IPCXMLService_GetNextRequest(GWEN_IPCXMLSERVICE *xs);
+
+
+/**
+ * Returns the id of the connection via which the given request reached us.
+ * @param xs Pointer to the service to use
+ * @param requestId id retrieved via @ref GWEN_IPCXMLService_GetNextRequest
+ */
+unsigned int GWEN_IPCXMLService_GetRequestConnection(GWEN_IPCXMLSERVICE *xs,
+                                                     unsigned int rqid);
 
 /**
  * Removes a given request.
@@ -384,6 +420,20 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
                                                  unsigned int requestId);
 
 
+/**
+ * Returns the first DB group from the given request without
+ * unlinking it from that request.
+ * This DB group is a part of the response returned by the peer (to which
+ * the request has originally been sent).
+ * The object returned MUST NOT be freed !
+ * @ref GWEN_DB_Group_free.
+ * @param xs Pointer to the service to use
+ * @param requestId id retrieved via @ref GWEN_IPCXMLService_GetNextRequest
+ */
+GWEN_DB_NODE *GWEN_IPCXMLService_PeekResponseData(GWEN_IPCXMLSERVICE *xs,
+                                                  unsigned int requestId);
+
+
 /*@}*/
 
 
@@ -408,6 +458,14 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
 GWEN_ERRORCODE GWEN_IPCXMLService_SetSecurityFlags(GWEN_IPCXMLSERVICE *xs,
                                                    unsigned int clid,
                                                    unsigned int flags);
+
+/**
+ * Returns the name of the service (e.g. for HBCI with banks this is the
+ * bank code. Applications such as servers will use a name such as
+ * <i>chipcardd</i> for Libchipcards chipcard daemon.
+ */
+const char *GWEN_IPCXMLService_GetServiceCode(GWEN_IPCXMLSERVICE *xs,
+                                              unsigned int clid);
 
 /**
  * Returns the local name for the given connection.
@@ -449,6 +507,28 @@ const char *GWEN_IPCXMLService_GetRemoteName(GWEN_IPCXMLSERVICE *xs,
 void GWEN_IPCXMLService_SetRemoteName(GWEN_IPCXMLSERVICE *xs,
                                       unsigned int clid,
                                       const char *s);
+
+/**
+ * Returns a pointer to the local sign key currently used by the given
+ * connection.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ */
+const GWEN_CRYPTKEY *GWEN_IPCXMLService_GetSignKey(GWEN_IPCXMLSERVICE *xs,
+                                                   unsigned int clid);
+
+/**
+ * Returns a pointer to the local crypt key currently used by the given
+ * connection.
+ * @param xs Pointer to the service to use
+ * @param clid Id of the client/server retrieved via
+ *  @ref GWEN_IPCXMLService_AddClient or @ref GWEN_IPCXMLService_AddServer
+ */
+const GWEN_CRYPTKEY *GWEN_IPCXMLService_GetCryptKey(GWEN_IPCXMLSERVICE *xs,
+                                                    unsigned int clid);
+
+
 /*@}*/
 
 

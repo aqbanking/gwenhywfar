@@ -6,6 +6,7 @@ $Id$
   the size of static buffers. I will have to think about storing binary
   data anyway, because a 1024 bytes big binary is not easy to store within
   a single line ;-)
+- added a module with handlers for some often needed IPC requests
 
 
 2003/11/24 Martin Preuss <martin@libchipcard.de>

@@ -37,6 +37,8 @@
 #include <gwenhywfar/ipcxmlmsglayer.h>
 #include <gwenhywfar/ipcxmlconnlayer.h>
 #include <gwenhywfar/ipc.h>
+#include <gwenhywfar/hbcimsg.h>
+#include <gwenhywfar/hbcidialog.h>
 
 
 static unsigned int GWEN_IPCXMLRequest_LastId=0;
@@ -313,7 +315,7 @@ unsigned int GWEN_IPCXMLService_AddRequest(GWEN_IPCXMLSERVICE *xs,
                                            const char *requestName,
                                            unsigned int requestVersion,
                                            GWEN_DB_NODE *db,
-                                           int flush){
+                                           unsigned int flags){
   GWEN_IPCCONNLAYER *cl;
   GWEN_XMLNODE *node;
   GWEN_IPCXMLREQUEST *rq;
@@ -341,7 +343,7 @@ unsigned int GWEN_IPCXMLService_AddRequest(GWEN_IPCXMLSERVICE *xs,
                           GWEN_IPC_ERROR_UNKNOWN_MSG);
   }
 
-  rq=GWEN_IPCXMLConnLayer_AddRequest(cl, node, db, flush);
+  rq=GWEN_IPCXMLConnLayer_AddRequest(cl, node, db, flags);
   if (!rq) {
     DBG_ERROR(0, "Could not add request \"%s\" (version %d)",
               requestName, requestVersion);
@@ -541,6 +543,11 @@ int GWEN_IPCXMLService_AddSecurityGroup(GWEN_HBCIMSG *hmsg,
                       GWEN_DB_FLAGS_DEFAULT,
                       "msglayerid",
                       GWEN_HBCIMsg_GetMsgLayerId(hmsg));
+
+  GWEN_DB_SetCharValue(ngr,
+                       GWEN_DB_FLAGS_DEFAULT,
+                       "dialogid",
+                       GWEN_HBCIMsg_GetDialogId(hmsg));
 
   return 0;
 }
@@ -776,7 +783,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_AddResponse(GWEN_IPCXMLSERVICE *xs,
                                               const char *requestName,
                                               unsigned int requestVersion,
                                               GWEN_DB_NODE *db,
-                                              int flush){
+                                              unsigned int flags){
   GWEN_IPCCONNLAYER *cl;
   GWEN_IPCXMLREQUEST *rq;
   GWEN_ERRORCODE err;
@@ -820,7 +827,7 @@ GWEN_ERRORCODE GWEN_IPCXMLService_AddResponse(GWEN_IPCXMLSERVICE *xs,
                                        rq,
                                        node,
                                        db,
-                                       flush);
+                                       flags);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(0, err);
     return err;
@@ -927,6 +934,28 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetRequestData(GWEN_IPCXMLSERVICE *xs,
 
 
 
+GWEN_DB_NODE *GWEN_IPCXMLService_PeekResponseData(GWEN_IPCXMLSERVICE *xs,
+                                                  unsigned int requestId){
+  GWEN_IPCXMLREQUEST *rq;
+  GWEN_DB_NODE *gr;
+
+  rq=GWEN_IPCXMLService_GetOutRequest(xs, requestId);
+  if (!rq) {
+    DBG_ERROR(0, "Request %d not found", requestId);
+    return 0;
+  }
+
+  assert(rq->db);
+  gr=GWEN_DB_GetFirstGroup(rq->db);
+  if (!gr) {
+    DBG_INFO(0, "No data for request %d", requestId);
+    return 0;
+  }
+  return gr;
+}
+
+
+
 GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
                                                  unsigned int requestId){
   GWEN_IPCXMLREQUEST *rq;
@@ -946,6 +975,20 @@ GWEN_DB_NODE *GWEN_IPCXMLService_GetResponseData(GWEN_IPCXMLSERVICE *xs,
   }
   GWEN_DB_UnlinkGroup(gr);
   return gr;
+}
+
+
+
+unsigned int GWEN_IPCXMLService_GetRequestConnection(GWEN_IPCXMLSERVICE *xs,
+                                                     unsigned int rqid){
+  GWEN_IPCXMLREQUEST *rq;
+
+  rq=GWEN_IPCXMLService_GetOutRequest(xs, rqid);
+  if (!rq) {
+    DBG_ERROR(0, "Request %d not found", rqid);
+    return 0;
+  }
+  return rq->msgLayerId;
 }
 
 
@@ -1000,6 +1043,50 @@ void GWEN_IPCXMLService_ConnectionDown(GWEN_SERVICELAYER *sl,
 
 
 
+const char *GWEN_IPCXMLService_GetServiceCode(GWEN_IPCXMLSERVICE *xs,
+                                              unsigned int clid){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(xs);
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return 0;
+  }
+  return GWEN_IPCXMLConnLayer_GetServiceCode(cl);
+}
+
+
+
+const GWEN_CRYPTKEY *GWEN_IPCXMLService_GetSignKey(GWEN_IPCXMLSERVICE *xs,
+                                                   unsigned int clid){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(xs);
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return 0;
+  }
+
+  return GWEN_IPCXMLConnLayer_GetSignKey(cl);
+}
+
+
+
+const GWEN_CRYPTKEY *GWEN_IPCXMLService_GetCryptKey(GWEN_IPCXMLSERVICE *xs,
+                                                    unsigned int clid){
+  GWEN_IPCCONNLAYER *cl;
+
+  assert(xs);
+  cl=GWEN_ServiceLayer_FindConnection(xs->serviceLayer, clid, 0);
+  if (!cl) {
+    DBG_ERROR(0, "Connection not found (%d)", clid);
+    return 0;
+  }
+
+  return GWEN_IPCXMLConnLayer_GetCryptKey(cl);
+}
 
 
 

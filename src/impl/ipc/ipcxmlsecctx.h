@@ -112,11 +112,18 @@ GWEN_SECCTX_MANAGER *GWEN_IPCXMLSecCtxMgr_new(const char *serviceCode,
 void GWEN_IPCXMLSecCtxMgr_SetLocalSignKey(GWEN_SECCTX_MANAGER *scm,
                                           const GWEN_CRYPTKEY *key);
 
+
+const GWEN_CRYPTKEY*
+  GWEN_IPCXMLSecCtxMgr_GetLocalSignKey(GWEN_SECCTX_MANAGER *scm);
+
 /**
  * Does NOT take over ownership of the given key.
  */
 void GWEN_IPCXMLSecCtxMgr_SetLocalCryptKey(GWEN_SECCTX_MANAGER *scm,
                                            const GWEN_CRYPTKEY *key);
+
+const GWEN_CRYPTKEY*
+  GWEN_IPCXMLSecCtxMgr_GetLocalCryptKey(GWEN_SECCTX_MANAGER *scm);
 
 /*@}*/
 /*@}*/

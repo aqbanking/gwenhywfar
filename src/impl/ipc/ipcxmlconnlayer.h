@@ -82,13 +82,13 @@ GWEN_ERRORCODE GWEN_IPCXMLConnLayer_Flush(GWEN_IPCCONNLAYER *cl);
 GWEN_IPCXMLREQUEST *GWEN_IPCXMLConnLayer_AddRequest(GWEN_IPCCONNLAYER *cl,
                                                     GWEN_XMLNODE *node,
                                                     GWEN_DB_NODE *db,
-                                                    int flush);
+                                                    unsigned int flags);
 
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_AddResponse(GWEN_IPCCONNLAYER *cl,
                                                 GWEN_IPCXMLREQUEST *rq,
                                                 GWEN_XMLNODE *node,
                                                 GWEN_DB_NODE *db,
-                                                int flush);
+                                                unsigned int flags);
 
 GWEN_HBCIMSG *GWEN_IPCXMLConnLayer_IPC2HBCI(GWEN_IPCCONNLAYER *cl,
                                             GWEN_IPCMSG *msg);
@@ -98,6 +98,9 @@ const char *GWEN_IPCXMLConnLayer_GetLocalName(GWEN_IPCCONNLAYER *cl);
 const char *GWEN_IPCXMLConnLayer_GetRemoteName(GWEN_IPCCONNLAYER *cl);
 void GWEN_IPCXMLConnLayer_SetRemoteName(GWEN_IPCCONNLAYER *cl,
                                         const char *s);
+
+const char *GWEN_IPCXMLConnLayer_GetServiceCode(GWEN_IPCCONNLAYER *cl);
+
 
 GWEN_ERRORCODE GWEN_IPCXMLConnLayer_SetSecurityFlags(GWEN_IPCCONNLAYER *cl,
                                                      unsigned int flags);
@@ -109,6 +112,14 @@ void GWEN_IPCXMLConnLayer_SetConnectedFn(GWEN_IPCCONNLAYER *cl,
                                          GWEN_IPCXMLCONNLAYER_CONNECTED_FN f);
 void GWEN_IPCXMLConnLayer_SetDisconnectedFn(GWEN_IPCCONNLAYER *cl,
        GWEN_IPCXMLCONNLAYER_DISCONNECTED_FN f);
+
+
+const GWEN_CRYPTKEY*
+  GWEN_IPCXMLConnLayer_GetSignKey(GWEN_IPCCONNLAYER *cl);
+
+const GWEN_CRYPTKEY*
+  GWEN_IPCXMLConnLayer_GetCryptKey(GWEN_IPCCONNLAYER *cl);
+
 
 /*@}*/
 
