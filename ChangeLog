@@ -1,6 +1,12 @@
 $Id$
 
 
+2003/10/25 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added call to binTypeWrite function in MessageEngine code
+- improved trustlevel handling in msgengine
+
+
 2003/10/24 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added dynamic mode to GWEN_BUFFER (in this mode more memeory is allocated

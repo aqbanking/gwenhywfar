@@ -1096,6 +1096,10 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
       return -1;
     }
 
+    /* eventually stop if empty line */
+    if (!*pos && (dbflags&GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE)) {
+      return 0;
+    }
 
     /* skip blanks */
     while(*pos && isspace(*pos))
@@ -1135,7 +1139,8 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
           /* get first word */
           *wbuf=(char)0;
           p=GWEN_Text_GetWord(pos,
-                              "}{= #,",
+                              (dbflags&GWEN_DB_FLAGS_USE_COLON)?
+                              "}{: #,":"}{= #,",
                               wbuf,
                               sizeof(wbuf)-1,
                               GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
@@ -1170,7 +1175,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             currVar=0;
             depth++;
           }
-          else if (*pos=='=') {
+          else if (*pos==((dbflags&GWEN_DB_FLAGS_USE_COLON)?':':'=')) {
             /* found a variable */
             DBG_DEBUG(0, "Found a variable \"%s\", handle it later", wbuf);
             isVar=1;
@@ -1185,7 +1190,8 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             /* get the variable name */
             wbuf[0]=(char)0;
             p=GWEN_Text_GetWord(pos,
-                                "}{= #",
+                                (dbflags&GWEN_DB_FLAGS_USE_COLON)?
+                                "}{: #":"}{= #",
                                 wbuf,
                                 sizeof(wbuf)-1,
                                 GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
@@ -1201,7 +1207,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             /* skip blanks */
             while(*pos && isspace(*pos))
               pos++;
-            if (*pos!='=') {
+            if (*pos!=((dbflags&GWEN_DB_FLAGS_USE_COLON)?':':'=')) {
               DBG_ERROR(0, "Expected \"=\" in line %d at %d",
                         lineno, pos-linebuf+1);
               return -1;
@@ -1234,7 +1240,8 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
             DBG_DEBUG(0, "Reading value");
             /* get next value */
             p=GWEN_Text_GetWord(pos,
-                                "}{= #,",
+                                (dbflags&GWEN_DB_FLAGS_USE_COLON)?
+                                "}{: #":"}{= #,",
                                 wbuf,
                                 sizeof(wbuf)-1,
                                 GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
@@ -1386,7 +1393,7 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
 
   nn=nn->h.child;
   while (nn) {
-    DBG_INFO(0, "Duplicating node");
+    DBG_DEBUG(0, "Duplicating node");
     cpn=GWEN_DB_Node_dup(nn);
     GWEN_DB_Node_Append(n, cpn);
     nn=nn->h.next;
@@ -1524,7 +1531,8 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	      typname="bin  ";
 	      /* TODO: convert bin2hex */
 	      DBG_WARN(0 , "Bin value (%d bytes) not supported\n",
-		       cn->val.b.dataSize);
+                       cn->val.b.dataSize);
+              pvalue="writing type BIN not yet supported";
 	      break;
 
 	    default:
@@ -1544,11 +1552,13 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                   }
                 } /* for */
               } /* if indend */
-              err=GWEN_BufferedIO_Write(bio, typname);
-	      if (!GWEN_Error_IsOk(err)) {
-		DBG_INFO(0, "called from here");
-		return 1;
-	      }
+              if (!(dbflags & GWEN_DB_FLAGS_OMIT_TYPES)) {
+                err=GWEN_BufferedIO_Write(bio, typname);
+                if (!GWEN_Error_IsOk(err)) {
+                  DBG_INFO(0, "called from here");
+                  return 1;
+                }
+              }
 	      if (dbflags & GWEN_DB_FLAGS_QUOTE_VARNAMES) {
 		err=GWEN_BufferedIO_Write(bio, "\"");
 		if (!GWEN_Error_IsOk(err)) {
@@ -1567,8 +1577,10 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 		  DBG_INFO(0, "called from here");
 		  return 1;
 		}
-	      }
-	      err=GWEN_BufferedIO_Write(bio, "=");
+              }
+              err=GWEN_BufferedIO_Write(bio,
+                                        ((dbflags&GWEN_DB_FLAGS_USE_COLON)?
+                                         ":":"="));
 	      if (!GWEN_Error_IsOk(err)) {
 		DBG_INFO(0, "called from here");
 		return 1;
@@ -1646,11 +1658,14 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
   int fd;
   int rv;
 
-  fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  if (dbflags & GWEN_DB_FLAGS_APPEND_FILE)
+    fd=open(fname, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
+  else
+    fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
   if (fd==-1) {
     DBG_ERROR(0, "Error opening file \"%s\": %s",
-	      fname,
-	      strerror(errno));
+              fname,
+              strerror(errno));
     return -1;
   }
 

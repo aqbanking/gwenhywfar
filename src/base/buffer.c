@@ -168,7 +168,7 @@ int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, unsigned int i){
 
 int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size) {
   assert(bf);
-  DBG_INFO(0, "Allocating %d bytes", size);
+  DBG_DEBUG(0, "Allocating %d bytes", size);
   if (bf->pos+size>bf->bufferSize) {
     /* need to realloc */
     unsigned int nsize;
@@ -181,20 +181,16 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, unsigned int size) {
     }
     /* this is the raw number of bytes we need */
     nsize=bf->pos+size-bf->bufferSize;
-    DBG_NOTICE(0, "nsize: %d", nsize);
     /* round it up */
     nsize=(nsize+(GWEN_BUFFER_DYNAMIC_STEP-1));
-    DBG_NOTICE(0, "nsize: %d", nsize);
     nsize&=~(GWEN_BUFFER_DYNAMIC_STEP-1);
-    DBG_NOTICE(0, "nsize: %d", nsize);
     /* add current size to it */
     nsize+=bf->bufferSize;
-    DBG_NOTICE(0, "nsize: %d", nsize);
     if (nsize>bf->hardLimit) {
       DBG_ERROR(0, "Size is beyond hard limit (%d>%d)", nsize, bf->hardLimit);
       return 1;
     }
-    DBG_NOTICE(0, "Reallocating from %d to %d bytes", bf->bufferSize, nsize);
+    DBG_DEBUG(0, "Reallocating from %d to %d bytes", bf->bufferSize, nsize);
     p=realloc(bf->ptr, nsize);
     if (!p) {
       DBG_ERROR(0, "Realloc failed.");
@@ -343,7 +339,7 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
     DBG_ERROR(0, "Buffer full (%d of %d bytes)", bf->pos, bf->bufferSize);
     return 1;
   }
-  DBG_INFO(0, "Adding %d bytes at %d", sf->bytesUsed, bf->pos);
+  DBG_DEBUG(0, "Adding %d bytes at %d", sf->bytesUsed, bf->pos);
   memmove(bf->ptr+bf->pos, sf->ptr, sf->bytesUsed);
   bf->pos+=sf->bytesUsed;
   bf->bytesUsed+=sf->bytesUsed;

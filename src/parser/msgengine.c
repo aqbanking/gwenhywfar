@@ -139,6 +139,21 @@ const char *GWEN_MsgEngine_GetMode(GWEN_MSGENGINE *e){
 }
 
 
+unsigned int GWEN_MsgEngine_GetProtocolVersion(GWEN_MSGENGINE *e){
+  assert(e);
+  return e->protocolVersion;
+}
+
+
+
+void GWEN_MsgEngine_SetProtocolVersion(GWEN_MSGENGINE *e,
+                                       unsigned int p){
+  assert(e);
+  e->protocolVersion=p;
+}
+
+
+
 
 
 unsigned int GWEN_MsgEngine_GetConfigMode(GWEN_MSGENGINE *e){
@@ -715,7 +730,10 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
       }
     } /* if type is not BIN */
   } /* if type not external */
-
+  else {
+    DBG_INFO(0, "Type \"%s\" (for %s) is external (write)",
+             type, name);
+  }
   return 0;
 }
 
@@ -758,12 +776,14 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   unsigned int minsize;
   unsigned int maxsize;
   char numbuffer[256];
-
   const char *pdata;
   unsigned int datasize;
   GWEN_BUFFER *data;
+  int handled;
 
   pdata=0;
+  handled=0;
+  data=0;
 
   /* get type */
   type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
@@ -772,148 +792,171 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
   maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
 
-  /* get name */
-  name=GWEN_XMLNode_GetProperty(node, "name", 0);
-  if (!name) {
-    /* get data from within the XML node */
-    GWEN_XMLNODE *n;
+  if (e->binTypeWritePtr && strcasecmp(type, "bin")==0) {
+    int rv;
 
-    DBG_DEBUG(0, "Getting data of type \"%s\" from within XML file", type);
-    n=GWEN_XMLNode_GetChild(node);
-    DBG_DEBUG(0, "Current node is %8x (new node is %8x)",
-	     (unsigned int)node,
-	     (unsigned int)n);
-    if (!n) {
-      DBG_DEBUG(0, "No child");
+    data=GWEN_Buffer_new(0,
+                         64,
+                         0,
+                         1);
+    GWEN_Buffer_SetMode(data,
+                        GWEN_BUFFER_MODE_DEFAULT | GWEN_BUFFER_MODE_DYNAMIC);
+
+    rv=e->binTypeWritePtr(e, node, gr, data);
+    if (rv==-1) {
+      /* error */
+      DBG_INFO(0, "called from here");
+      return -1;
     }
-    while(n) {
-      if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeData)
-	break;
-      n=GWEN_XMLNode_Next(n);
-    } /* while */
-    if (n) {
-      pdata=GWEN_XMLNode_GetData(n);
-      datasize=strlen(pdata);
-    }
-    else {
-      pdata="";
-      datasize=strlen(pdata);
-    }
-  } /* if (!name) */
-  else {
-    char nbuffer[256];
-    const char *nptr;
-
-    DBG_DEBUG(0, "Name provided (%s), loop is %d", name, loopNr);
-    if (loopNr==0) {
-      nptr=name;
-    }
-    else {
-      /* create new element name including the loop number (e.g. var1) */
-      if (strlen(name)+10>=sizeof(nbuffer)) {
-	DBG_ERROR(0, "Buffer too small");
-	return -1;
-      }
-
-      sprintf(nbuffer, "%s%d", name, loopNr);
-      nptr=nbuffer;
-    }
-
-    if (gr) {
-      GWEN_DB_VALUETYPE vt;
-      int idata;
-
-      /* Variable type of DB takes precedence
-       */
-      vt=GWEN_DB_GetVariableType(gr, nptr);
-      if (vt==GWEN_DB_VALUETYPE_UNKNOWN) {
-        if (GWEN_MsgEngine__IsCharTyp(type))
-          vt=GWEN_DB_VALUETYPE_CHAR;
-        else if (GWEN_MsgEngine__IsIntTyp(type))
-          vt=GWEN_DB_VALUETYPE_INT;
-        else if (GWEN_MsgEngine__IsBinTyp(type))
-          vt=GWEN_DB_VALUETYPE_BIN;
-        else {
-          DBG_INFO(0,
-                   "Unable to determine parameter "
-                   "type (%s), assuming \"char\" for this matter", type);
-          vt=GWEN_DB_VALUETYPE_CHAR;
-        }
-      }
-
-      /* get the value of the given var from the db */
-      switch(vt) {
-      case GWEN_DB_VALUETYPE_CHAR:
-        DBG_DEBUG(0, "Type of \"%s\" is char", name);
-        pdata=GWEN_DB_GetCharValue(gr, nptr, 0, 0);
-        if (pdata) {
-          DBG_DEBUG(0, "Value of \"%s\" is %s", nptr, pdata);
-          datasize=strlen(pdata);
-        }
-        else
-          datasize=0;
-        break;
-
-      case GWEN_DB_VALUETYPE_INT:
-        DBG_DEBUG(0, "Type of \"%s\" is int", name);
-        if (GWEN_DB_VariableExists(gr, nptr)) {
-          idata=GWEN_DB_GetIntValue(gr, nptr, 0, 0);
-          if (-1==GWEN_Text_NumToString(idata, numbuffer,
-                                        sizeof(numbuffer),0)) {
-            DBG_ERROR(0, "Buffer too small");
-            return -1;
-          }
-          DBG_DEBUG(0, "Value of \"%s\" is %d", nptr, idata);
-          pdata=numbuffer;
-          datasize=strlen(numbuffer);
-        }
-        break;
-
-      case GWEN_DB_VALUETYPE_BIN:
-        DBG_DEBUG(0, "Type of \"%s\" is bin", name);
-        pdata=GWEN_DB_GetBinValue(gr, nptr, 0, 0, 0, &datasize);
-        break;
-
-      default:
-        DBG_WARN(0, "Unsupported parameter type (%d)", vt);
-        break;
-      } /* switch vt */
-    } /* if gr */
-
-    if (!pdata) {
-      GWEN_XMLNODE_PATH *copyOfNodePath;
-
-      copyOfNodePath=GWEN_XMLNode_Path_dup(nodePath);
-
-      /* still no data, try to get it from the XML file */
-      DBG_DEBUG(0, "Searching for value of \"%s\"", name);
-      pdata=GWEN_MsgEngine__SearchForValue(e,
-                                           node, copyOfNodePath, nptr,
-                                           &datasize);
-      GWEN_XMLNode_Path_free(copyOfNodePath);
-      if (pdata) {
-        DBG_DEBUG(0, "Found value of \"%s\"", name);
-      }
-    }
-
-    if (pdata==0) {
-      if (isOptional) {
-        DBG_INFO(0, "Value not found, omitting element \"%s[%d]\"",
-                 name, loopNr);
-        return 1;
-      }
-      else {
-	DBG_ERROR(0, "Value for element \"%s[%d]\" not found",
-		  name, loopNr);
-	return -1;
-      }
+    else if (rv==0) {
+      handled=1;
     }
   }
 
-  data=GWEN_Buffer_new((char*)pdata,
-                       datasize,
-                       datasize,
-                       0 /* dont take ownership*/ );
+  if (!handled) {
+    /* get name */
+    name=GWEN_XMLNode_GetProperty(node, "name", 0);
+    if (!name) {
+      /* get data from within the XML node */
+      GWEN_XMLNODE *n;
+  
+      DBG_DEBUG(0, "Getting data of type \"%s\" from within XML file", type);
+      n=GWEN_XMLNode_GetChild(node);
+      DBG_DEBUG(0, "Current node is %8x (new node is %8x)",
+               (unsigned int)node,
+               (unsigned int)n);
+      if (!n) {
+        DBG_DEBUG(0, "No child");
+      }
+      while(n) {
+        if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeData)
+          break;
+        n=GWEN_XMLNode_Next(n);
+      } /* while */
+      if (n) {
+        pdata=GWEN_XMLNode_GetData(n);
+        datasize=strlen(pdata);
+      }
+      else {
+        pdata="";
+        datasize=strlen(pdata);
+      }
+    } /* if (!name) */
+    else {
+      char nbuffer[256];
+      const char *nptr;
+  
+      DBG_DEBUG(0, "Name provided (%s), loop is %d", name, loopNr);
+      if (loopNr==0) {
+        nptr=name;
+      }
+      else {
+        /* create new element name including the loop number (e.g. var1) */
+        if (strlen(name)+10>=sizeof(nbuffer)) {
+          DBG_ERROR(0, "Buffer too small");
+          return -1;
+        }
+  
+        sprintf(nbuffer, "%s%d", name, loopNr);
+        nptr=nbuffer;
+      }
+  
+      if (gr) {
+        GWEN_DB_VALUETYPE vt;
+        int idata;
+  
+        /* Variable type of DB takes precedence
+         */
+        vt=GWEN_DB_GetVariableType(gr, nptr);
+        if (vt==GWEN_DB_VALUETYPE_UNKNOWN) {
+          if (GWEN_MsgEngine__IsCharTyp(type))
+            vt=GWEN_DB_VALUETYPE_CHAR;
+          else if (GWEN_MsgEngine__IsIntTyp(type))
+            vt=GWEN_DB_VALUETYPE_INT;
+          else if (GWEN_MsgEngine__IsBinTyp(type))
+            vt=GWEN_DB_VALUETYPE_BIN;
+          else {
+            DBG_INFO(0,
+                     "Unable to determine parameter "
+                     "type (%s), assuming \"char\" for this matter", type);
+            vt=GWEN_DB_VALUETYPE_CHAR;
+          }
+        }
+  
+        /* get the value of the given var from the db */
+        switch(vt) {
+        case GWEN_DB_VALUETYPE_CHAR:
+          DBG_DEBUG(0, "Type of \"%s\" is char", name);
+          pdata=GWEN_DB_GetCharValue(gr, nptr, 0, 0);
+          if (pdata) {
+            DBG_DEBUG(0, "Value of \"%s\" is %s", nptr, pdata);
+            datasize=strlen(pdata);
+          }
+          else
+            datasize=0;
+          break;
+  
+        case GWEN_DB_VALUETYPE_INT:
+          DBG_DEBUG(0, "Type of \"%s\" is int", name);
+          if (GWEN_DB_VariableExists(gr, nptr)) {
+            idata=GWEN_DB_GetIntValue(gr, nptr, 0, 0);
+            if (-1==GWEN_Text_NumToString(idata, numbuffer,
+                                          sizeof(numbuffer),0)) {
+              DBG_ERROR(0, "Buffer too small");
+              return -1;
+            }
+            DBG_DEBUG(0, "Value of \"%s\" is %d", nptr, idata);
+            pdata=numbuffer;
+            datasize=strlen(numbuffer);
+          }
+          break;
+  
+        case GWEN_DB_VALUETYPE_BIN:
+          DBG_DEBUG(0, "Type of \"%s\" is bin", name);
+          pdata=GWEN_DB_GetBinValue(gr, nptr, 0, 0, 0, &datasize);
+          break;
+  
+        default:
+          DBG_WARN(0, "Unsupported parameter type (%d)", vt);
+          break;
+        } /* switch vt */
+      } /* if gr */
+  
+      if (!pdata) {
+        GWEN_XMLNODE_PATH *copyOfNodePath;
+  
+        copyOfNodePath=GWEN_XMLNode_Path_dup(nodePath);
+  
+        /* still no data, try to get it from the XML file */
+        DBG_DEBUG(0, "Searching for value of \"%s\"", name);
+        pdata=GWEN_MsgEngine__SearchForValue(e,
+                                             node, copyOfNodePath, nptr,
+                                             &datasize);
+        GWEN_XMLNode_Path_free(copyOfNodePath);
+        if (pdata) {
+          DBG_DEBUG(0, "Found value of \"%s\"", name);
+        }
+      }
+  
+      if (pdata==0) {
+        if (isOptional) {
+          DBG_INFO(0, "Value not found, omitting element \"%s[%d]\"",
+                   name, loopNr);
+          return 1;
+        }
+        else {
+          DBG_ERROR(0, "Value for element \"%s[%d]\" not found",
+                    name, loopNr);
+          return -1;
+        }
+      }
+    }
+  
+    data=GWEN_Buffer_new((char*)pdata,
+                         datasize,
+                         datasize,
+                         0 /* dont take ownership*/ );
+  }
 
   /* write value */
   if (GWEN_MsgEngine__WriteValue(e,
@@ -949,6 +992,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
   const char *p;
   int i;
   char *mode;
+  unsigned int proto;
   char buffer[256];
 
   if ((strlen(t)+4)>sizeof(buffer)) {
@@ -957,6 +1001,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
   }
 
   mode=e->secMode;
+  proto=e->protocolVersion;
   if (!e->defs) {
     DBG_INFO(0, "No definitions available");
     return 0;
@@ -1000,17 +1045,20 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
       assert(p);
       if (strcasecmp(p, buffer)==0) {
 	p=GWEN_XMLNode_GetProperty(n, pname,"");
-	if (strcasecmp(p, pvalue)==0) {
-	  i=atoi(GWEN_XMLNode_GetProperty(n, "version" ,"0"));
-	  if (version==0 || version==i) {
-	    p=GWEN_XMLNode_GetProperty(n, "mode","");
-	    if (strcasecmp(p, mode)==0 || !*p) {
-	      DBG_DEBUG(0, "Group definition for \"%s=%s\" found",
-			pname, pvalue);
-	      return n;
-	    }
-	  }
-	}
+        if (strcasecmp(p, pvalue)==0) {
+          i=atoi(GWEN_XMLNode_GetProperty(n, "pversion" ,"0"));
+          if (proto==0 || proto==i || i==0) {
+            i=atoi(GWEN_XMLNode_GetProperty(n, "version" ,"0"));
+            if (version==0 || version==i) {
+              p=GWEN_XMLNode_GetProperty(n, "mode","");
+              if (strcasecmp(p, mode)==0 || !*p) {
+                DBG_DEBUG(0, "Group definition for \"%s=%s\" found",
+                          pname, pvalue);
+                return n;
+              }
+            }
+          }
+        }
       }
     }
     n=GWEN_XMLNode_Next(n);
@@ -2612,6 +2660,9 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
       *(GWEN_Buffer_GetPosPointer(vbuf))=0;
     } /* if !bin */
   } /* if type not external */
+  else {
+    DBG_DEBUG(0, "Type \"%s\" is external (read)", type);
+  }
 
   realSize=GWEN_Buffer_GetUsedBytes(vbuf);
   /* check the value */
@@ -2646,20 +2697,23 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 
   if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
     /* add trust data to msgEngine */
-    GWEN_MSGENGINE_TRUSTEDDATA *td;
     const char *descr;
 
     trustLevel=GWEN_MsgEngine_GetHighestTrustLevel(node, rnode);
     if (trustLevel) {
+      unsigned int ustart;
+
+      ustart=GWEN_Buffer_GetPos(msgbuf)-realSize;
       descr=GWEN_XMLNode_GetProperty(node, "name",0);
-      td=GWEN_MsgEngine_TrustedData_new(GWEN_Buffer_GetStart(vbuf),
-                                        realSize,
-                                        descr,
-                                        trustLevel);
-      GWEN_MsgEngine_TrustedData_AddPos(td, posInMsg);
-      DBG_INFO(0, "Adding trust info about \"%s\" at pos %d (level %d)",
-               descr, posInMsg, trustLevel);
-      GWEN_LIST_ADD(GWEN_MSGENGINE_TRUSTEDDATA, td, &(e->trustInfos));
+      if (GWEN_MsgEngine_AddTrustInfo(e,
+                                      GWEN_Buffer_GetStart(vbuf),
+                                      realSize,
+                                      descr,
+                                      trustLevel,
+                                      ustart)) {
+        DBG_INFO(0, "called from here");
+        return -1;
+      }
     }
   }
 
@@ -3201,6 +3255,9 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                            0,
                                            p);
     if (node==0) {
+      unsigned int ustart;
+
+      ustart=GWEN_Buffer_GetPos(mbuf);
       /* node not found, skip it */
       DBG_WARN(0,
                "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
@@ -3213,6 +3270,21 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
         GWEN_DB_Group_free(tmpdb);
         return -1;
       }
+      if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
+        unsigned int usize;
+
+        usize=GWEN_Buffer_GetPos(mbuf)-ustart;
+        if (GWEN_MsgEngine_AddTrustInfo(e,
+                                        GWEN_Buffer_GetStart(mbuf)+ustart,
+                                        usize,
+                                        p,
+                                        GWEN_MsgEngineTrustLevelHigh,
+                                        ustart)) {
+          DBG_INFO(0, "called from here");
+          GWEN_DB_Group_free(tmpdb);
+          return -1;
+        }
+      } /* if trustInfo handling wanted */
     }
     else {
       /* ok, node available, get the corresponding description and parse
@@ -3297,6 +3369,7 @@ GWEN_MsgEngine_TrustedData_new(const char *data,
   if (description)
     td->description=strdup(description);
   td->trustLevel=trustLevel;
+  td->size=size;
   return td;
 }
 
@@ -3392,9 +3465,52 @@ int GWEN_MsgEngine_TrustedData_GetNextPos(GWEN_MSGENGINE_TRUSTEDDATA *td){
 int
 GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
                                               *td){
+  unsigned int nextNr;
+  GWEN_MSGENGINE_TRUSTEDDATA *ntd;
+  unsigned int count;
+
   assert(td);
-  DBG_WARN(0, "Not yet implemented");
-  return -1;
+  count=0;
+  ntd=td;
+  while(ntd) {
+    count++;
+    ntd=ntd->next;
+  }
+
+  if (count<0x10)
+    nextNr=0x01;
+  else
+    nextNr=0x11;
+
+  ntd=td;
+  while(ntd) {
+    unsigned int i;
+    char numbuffer[32];
+    char *rp;
+
+    rp=(char*)malloc(ntd->size+1);
+    assert(rp);
+    if (ntd->size==1) {
+      if (count>=0x10)
+        nextNr+=0x10;
+    }
+    sprintf(numbuffer, "%02X", nextNr++);
+    for (i=0; i<ntd->size; i++) {
+      if (count<0x10)
+        rp[i]=numbuffer[1];
+      else
+        rp[i]=numbuffer[i&1];
+    } /* for */
+    rp[i]=0;
+    DBG_INFO(0, "Replacement: \"%s\" for \"%s\" (%d)", rp,
+             ntd->description,
+             ntd->size);
+    free(ntd->replacement);
+    ntd->replacement=rp;
+
+    ntd=ntd->next;
+  } /* while */
+  return 0;
 }
 
 
@@ -3411,6 +3527,64 @@ GWEN_MSGENGINE_TRUSTEDDATA *GWEN_MsgEngine_TakeTrustInfo(GWEN_MSGENGINE *e){
 
 
 
+int GWEN_MsgEngine_AddTrustInfo(GWEN_MSGENGINE *e,
+                                const char *data,
+                                unsigned int size,
+                                const char *description,
+                                GWEN_MSGENGINE_TRUSTLEVEL trustLevel,
+                                unsigned int pos) {
+  GWEN_MSGENGINE_TRUSTEDDATA *td;
+  int match;
+
+  assert(e);
+  assert(data);
+  assert(size);
+
+  if (!description)
+    description="";
+
+  td=e->trustInfos;
+  while(td) {
+    unsigned int i;
+
+    /* compare data */
+    if (td->size==size &&
+        *description &&
+        *(td->description) &&
+        trustLevel==td->trustLevel &&
+        strcasecmp(description, td->description)==0) {
+      match=1;
+      for (i=0; i<td->size; i++) {
+        if (td->data[i]!=data[i]) {
+          match=0;
+          break;
+        }
+      } /* for */
+    }
+    else
+      match=0;
+
+    if (match)
+      break;
+    td=td->next;
+  } /* while */
+
+  if (!td) {
+    DBG_INFO(0, "Creating new trustInfo for \"%s\" (%d)",
+             description, size);
+    td=GWEN_MsgEngine_TrustedData_new(data,
+                                      size,
+                                      description,
+                                      trustLevel);
+    GWEN_LIST_ADD(GWEN_MSGENGINE_TRUSTEDDATA, td, &(e->trustInfos));
+  }
+  else {
+    DBG_INFO(0, "Reusing trustInfo for \"%s\" (%d)",
+             description, size);
+  }
+  GWEN_MsgEngine_TrustedData_AddPos(td, pos);
+  return 0;
+}
 
 
 

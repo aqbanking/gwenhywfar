@@ -149,6 +149,12 @@ const char *GWEN_MsgEngine_GetCharsToEscape(GWEN_MSGENGINE *e);
 void GWEN_MsgEngine_SetMode(GWEN_MSGENGINE *e, const char *mode);
 const char *GWEN_MsgEngine_GetMode(GWEN_MSGENGINE *e);
 
+
+unsigned int GWEN_MsgEngine_GetProtocolVersion(GWEN_MSGENGINE *e);
+void GWEN_MsgEngine_SetProtocolVersion(GWEN_MSGENGINE *e,
+                                       unsigned int p);
+
+
 unsigned int GWEN_MsgEngine_GetConfigMode(GWEN_MSGENGINE *e);
 void GWEN_MsgEngine_SetConfigMode(GWEN_MSGENGINE *e, unsigned int m);
 
@@ -343,6 +349,16 @@ const char *GWEN_MsgEngine_SearchForProperty(GWEN_XMLNODE *node,
  */
 GWEN_MSGENGINE_TRUSTEDDATA *GWEN_MsgEngine_TakeTrustInfo(GWEN_MSGENGINE *e);
 
+
+/**
+ *
+ */
+int GWEN_MsgEngine_AddTrustInfo(GWEN_MSGENGINE *e,
+                                const char *data,
+                                unsigned int size,
+                                const char *description,
+                                GWEN_MSGENGINE_TRUSTLEVEL trustLevel,
+                                unsigned int pos);
 
 #ifdef __cplusplus
 }
