@@ -287,7 +287,7 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_BufferedIO_Write(bio, "_Has");
             GWEN_BufferedIO_WriteChar(bio, toupper(*name));;
             GWEN_BufferedIO_Write(bio, name+1);
-            GWEN_BufferedIO_Write(bio, "(");
+            GWEN_BufferedIO_Write(bio, "(const ");
             GWEN_BufferedIO_Write(bio, styp);
             GWEN_BufferedIO_WriteLine(bio, " *st, const char *d);");
           }

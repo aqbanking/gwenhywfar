@@ -8,6 +8,12 @@ Please do not use the stuff from src/crypts2 until the next release.
 ===========================================================================
 
 
+2005/03/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- typemaker: function for stringlists "*_Has*" now expects a const rather
+  than a non-const pointer as first argument
+
+
 2005/03/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added option "--header" to tool xmlmerge. With this given the resulting
