@@ -1,6 +1,6 @@
 INCLUDES=@all_includes@ -Ios/@GWEN_OS@
 
-SUBDIRS=base crypt io ipc os parser
+SUBDIRS=base crypt io ipc os parser net
 
 EXTRA_DIST=\
  types.h.in \

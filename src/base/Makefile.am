@@ -8,6 +8,7 @@ noinst_HEADERS=\
  error_p.h \
  list_p.h \
  logger_p.h \
+ ringbuffer_p.h \
  stringlist_p.h \
  waitcallback_p.h
 
@@ -19,6 +20,7 @@ iheader_HEADERS=\
  list.h \
  logger.h \
  misc.h \
+ ringbuffer.h \
  stringlist.h \
  waitcallback.h
 
@@ -28,6 +30,7 @@ libbase_la_SOURCES=\
  error.c \
  list.c \
  logger.c \
+ ringbuffer.c \
  stringlist.c \
  waitcallback.c
 

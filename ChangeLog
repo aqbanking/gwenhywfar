@@ -1,4 +1,10 @@
 
+2004/01/25: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added new base module: GWEN_RingBuffer; this module introduces a
+  circular read/write buffer.
+
+
 2004/01/22: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - msgengine: added properties "readbin" and "writebin" to <ELEM> tags.

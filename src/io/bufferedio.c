@@ -41,7 +41,7 @@
 #include <string.h>
 #include <errno.h>
 
-#include "gwenhywfar/debug.h"
+#include <gwenhywfar/debug.h>
 
 
 const char *GWEN_BufferedIO_ErrorString(int c){
