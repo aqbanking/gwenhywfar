@@ -970,6 +970,29 @@ int GWEN_XSD__WriteSequence(GWEN_XSD_ENGINE *e,
       } /* if gnode */
     } /* if group */
 
+    else if (strcasecmp(tagName, "sequence")==0) {
+      int rv;
+
+      rv=GWEN_XSD__WriteSequence(e, nn, dbNode, nStore);
+      if (rv==0)
+        break;
+      if (rv==-1) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+
+    else if (strcasecmp(tagName, "choice")==0) {
+      int rv;
+
+      rv=GWEN_XSD__WriteChoice(e, nn, dbNode, nStore);
+      if (rv==0)
+        break;
+      if (rv==-1) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
     else if (strcasecmp(tagName, "any")==0) {
       /* TODO: get data from variable "data" */
     }
@@ -1068,6 +1091,28 @@ int GWEN_XSD__WriteChoice(GWEN_XSD_ENGINE *e,
       int rv;
 
       rv=GWEN_XSD__WriteGroupTypes(e, nn, dbNode, 0 /*idx*/, nStore);
+      if (rv==0)
+        break;
+      if (rv==-1) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "sequence")==0) {
+      int rv;
+
+      rv=GWEN_XSD__WriteSequence(e, nn, dbNode, nStore);
+      if (rv==0)
+        break;
+      if (rv==-1) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+        return rv;
+      }
+    }
+    else if (strcasecmp(tagName, "choice")==0) {
+      int rv;
+
+      rv=GWEN_XSD__WriteChoice(e, nn, dbNode, nStore);
       if (rv==0)
         break;
       if (rv==-1) {
