@@ -1165,6 +1165,11 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
     DBG_ERROR(GWEN_LOGDOMAIN, "Line %d: %d tags are still open",
               GWEN_BufferedIO_GetLines(bio),
               currDepth);
+    for (chr = currDepth; chr > 0; chr--) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "  still open: <%s>",
+		n->data);
+      n=path[chr-1];
+    }
     return -1;
   }
 
