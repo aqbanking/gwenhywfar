@@ -44,6 +44,10 @@
 typedef struct GWEN_RINGBUFFER GWEN_RINGBUFFER;
 
 
+/** @name Constructor And Destructor
+ *
+ */
+/*@{*/
 /**
  * Creates a new ring buffer
  * @param size maximum size of the ring buffer
@@ -56,6 +60,10 @@ GWEN_RINGBUFFER *GWEN_RingBuffer_new(unsigned int size);
 void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb);
 
 
+/** @name Reading And Writing
+ *
+ */
+/*@{*/
 /**
  * Writes the given bytes into the ring buffer.
  * @param rb ring buffer
@@ -90,7 +98,13 @@ int Gwen_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
  * Reads a single byte from the ring buffer.
  */
 int GWEN_RingBuffer_ReadByte(GWEN_RINGBUFFER *rb);
+/*@}*/
 
+
+/** @name Informational Functions
+ *
+ */
+/*@{*/
 /**
  * Returns the number of bytes stored inside the ring buffer.
  */
@@ -101,6 +115,61 @@ GWEN_TYPE_UINT32 GWEN_RingBuffer_GetUsedBytes(const GWEN_RINGBUFFER *rb);
  * buffer.
  */
 GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBytesLeft(const GWEN_RINGBUFFER *rb);
+
+/**
+ * Returns the size of the ring buffer.
+ */
+GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb);
+/*@}*/
+
+
+
+/** @name Statistical Functions
+ *
+ */
+/*@{*/
+/**
+ * Returns the number of times the buffer was empty.
+ */
+GWEN_TYPE_UINT32 GWEN_RingBuffer_GetEmptyCounter(const GWEN_RINGBUFFER *rb);
+
+void GWEN_RingBuffer_ResetEmptyCounter(GWEN_RINGBUFFER *rb);
+
+
+/**
+ * Returns the number of times the buffer was full.
+ */
+GWEN_TYPE_UINT32 GWEN_RingBuffer_GetFullCounter(const GWEN_RINGBUFFER *rb);
+
+void GWEN_RingBuffer_ResetFullCounter(GWEN_RINGBUFFER *rb);
+
+
+/**
+ * Returns the number of bytes which have passed through this buffer (i.e.
+ * bytes that have been written to <strong>and</strong> read from the buffer.
+ */
+GWEN_TYPE_UINT32 GWEN_RingBuffer_GetThroughput(GWEN_RINGBUFFER *rb);
+
+/**
+ * Resets the buffers throughput counter to zero.
+ */
+void GWEN_RingBuffer_ResetThroughput(GWEN_RINGBUFFER *rb);
+
+
+
+/**
+ * Returns the maximum number of bytes which has been stored in the buffer.
+ */
+GWEN_TYPE_UINT32 GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb);
+
+/**
+ * Resets the counter for the maximum number of bytes stored in the
+ * buffer.
+ */
+void GWEN_RingBuffer_ResetMaxUsedBytes(GWEN_RINGBUFFER *rb);
+/*@}*/ /* name */
+
+
 
 /*@}*/ /* group */
 

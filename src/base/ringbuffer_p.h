@@ -40,7 +40,10 @@ struct GWEN_RINGBUFFER {
   GWEN_TYPE_UINT32 readPos;
   GWEN_TYPE_UINT32 writePos;
   GWEN_TYPE_UINT32 bytesUsed;
-
+  GWEN_TYPE_UINT32 maxBytesUsed;
+  GWEN_TYPE_UINT32 emptyCounter;
+  GWEN_TYPE_UINT32 fullCounter;
+  GWEN_TYPE_UINT32 throughput;
 };
 
 
