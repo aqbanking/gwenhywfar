@@ -34,6 +34,7 @@
 #include "xml_p.h"
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"
+#include "gwenhywfar/text.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -1128,8 +1129,10 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     assert(fullname);
     fullname[0]=0;
     if (path) {
-      strcat(fullname, path);
-      strcat(fullname, "/");
+      if (*path) {
+        strcat(fullname, path);
+        strcat(fullname, "/");
+      }
     }
     strcat(fullname, file);
 
@@ -1364,6 +1367,134 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
 
 
 
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(GWEN_XMLNODE *n,
+                                          GWEN_XMLNODE_TYPE t){
+  GWEN_XMLNODE *nn;
+
+  assert(n);
+  nn=n->child;
+  while(nn) {
+    if (nn->type==t)
+      return nn;
+    nn=nn->next;
+  } /* while */
+  return 0;
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(GWEN_XMLNODE *n,
+                                         GWEN_XMLNODE_TYPE t){
+  assert(n);
+  while(n) {
+    if (n->type==t)
+      return n;
+    n=n->next;
+  } /* while */
+  return 0;
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n){
+  return GWEN_XMLNode_GetFirstOfType(n, GWEN_XMLNodeTypeTag);
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n){
+  return GWEN_XMLNode_GetNextOfType(n, GWEN_XMLNodeTypeTag);
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n){
+  return GWEN_XMLNode_GetFirstOfType(n, GWEN_XMLNodeTypeData);
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n){
+  return GWEN_XMLNode_GetNextOfType(n, GWEN_XMLNodeTypeData);
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_FindTag(GWEN_XMLNODE *n,
+                                   const char *tname,
+                                   const char *pname,
+                                   const char *pvalue){
+  while(n) {
+    if (-1!=GWEN_Text_ComparePattern(n->data, tname, 0)) {
+      if (pname) {
+        const char *p;
+
+        p=GWEN_XMLNode_GetProperty(n, pname, 0);
+        if (p) {
+          if (!pvalue)
+            return n;
+          if (-1!=GWEN_Text_ComparePattern(pvalue, p, 0))
+            return n;
+        }
+      } /* if pname */
+      else
+        return n;
+    }
+    n=GWEN_XMLNode_GetNextTag(n);
+  } /* while */
+  return 0;
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
+                                        const char *tname,
+                                        const char *pname,
+                                        const char *pvalue){
+  GWEN_XMLNODE *nn;
+
+  nn=GWEN_XMLNode_GetFirstTag(n);
+  if (!nn)
+    return 0;
+  return GWEN_XMLNode_FindTag(nn,
+                              tname,
+                              pname,
+                              pvalue);
+}
+
+
+
+GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(GWEN_XMLNODE *n,
+                                       const char *tname,
+                                       const char *pname,
+                                       const char *pvalue){
+  GWEN_XMLNODE *nn;
+
+  nn=GWEN_XMLNode_GetNextTag(n);
+  if (!nn)
+    return 0;
+  return GWEN_XMLNode_FindTag(nn,
+                              tname,
+                              pname,
+                              pvalue);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new(){
   GWEN_XMLNODE_PATH *p;
 
@@ -1436,6 +1567,10 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np){
     GWEN_XMLNode_Dump(np->nodes[i], stderr, 1);
   }
 }
+
+
+
+
 
 
 

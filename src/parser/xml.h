@@ -132,7 +132,52 @@ GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
+  GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
+
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n);
+
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
+
+/**
+ * Searches for the first matching tag below the given one.
+ * Lets say you have the following XML file:
+ * @code
+ *  <DEVICES>
+ *    <DEVICE id="dev1" />
+ *    <DEVICE id="dev2" />
+ *  </DEVICES>
+ * @endcode
+ * If you are looking for a device called "dev2" then you should call this
+ * function like this:
+ * @code
+ *   tag=GWEN_XMLNode_FindFirstTag(root, "DEVICE", "id", "dev2");
+ * @endcode
+ * @return pointer to the tag if found, 0 otherwise
+ * @param n tag below which to search
+ * @param tname tag type name (e.g. if the tag is "<TESTTAG>" then the
+ * tag type name if "TESTTAG"). Wildcards (like "*") are allowed.
+ * @param pname name of the property to check (if 0 then no property
+ * comparison takes place). No wildcards allowed.
+ * @param pvalue optional value of the property to compare against, wildcards
+ * allowed.
+ */
+GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
+                                        const char *tname,
+                                        const char *pname,
+                                        const char *pvalue);
+
+/**
+ * Searches for the next matching tag after the given one.
+ */
+GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(GWEN_XMLNODE *n,
+                                       const char *tname,
+                                       const char *pname,
+                                       const char *pvalue);
+
+
+
 /*@}*/
 
 

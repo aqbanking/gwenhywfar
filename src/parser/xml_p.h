@@ -101,6 +101,16 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
                          unsigned int flags);
 
 
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(GWEN_XMLNODE *n,
+                                          GWEN_XMLNODE_TYPE t);
+GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(GWEN_XMLNODE *n,
+                                         GWEN_XMLNODE_TYPE t);
+
+GWEN_XMLNODE *GWEN_XMLNode_FindTag(GWEN_XMLNODE *n,
+                                   const char *tname,
+                                   const char *pname,
+                                   const char *pvalue);
+
 
 
 #ifdef __cplusplus

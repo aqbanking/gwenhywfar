@@ -10,6 +10,8 @@ $Id$
 - added a conveniance function for hashing
 - added a function that creates keydata from a password by hashing it
 - improved XML parser: It can now read the XML files of Simthetic
+- improved XML parser: Added some functions for tree navigation and for
+  locating tags inside the XML tree (GWEN_XMLNode_FindFirstTag() etc)
 
 
 ===========================================================================
