@@ -45,7 +45,7 @@ DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 # You should not have to make any modifications below this point
 #
 
-DLLNAME=$(LIBRARY_NAME)32.dll
+DLLNAME=$(LIBRARY_NAME)32_$(GWENHYWFAR_SO_EFFECTIVE).dll
 DLLEXP_LIB=$(LIBRARY_NAME)32.lib
 DLLEXP_DEF=$(LIBRARY_NAME)32.def
 DLLSRC_LIB=lib$(LIBRARY_NAME).a

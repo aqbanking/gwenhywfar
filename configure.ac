@@ -18,7 +18,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=9
-GWENHYWFAR_VERSION_BUILD=14
+GWENHYWFAR_VERSION_BUILD=15
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -169,7 +169,7 @@ case "$OS_TYPE" in
     windows)
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
-        gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32"
+        gwenhywfar_libs="-L${WIN_PATH_WINDOWS_MINGW} -lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
         gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""

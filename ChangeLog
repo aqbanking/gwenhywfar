@@ -23,6 +23,8 @@
 - modified the prototype of GWEN_WaitCallback_Log
 - fixed GWEN_TYPE_UINT64 for MSVC
 - removed some trailing semicolons from macros in inherit.h and misc.h
+- renamed DLL to gwenhywfar32_EFFECTIVE_SO_VERSION to imitate the very
+  useful SO features of the GNU linker on windows
 
 
 2004/05/04: Martin Preuss<martin@libchipcard.de>

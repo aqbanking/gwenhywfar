@@ -57,7 +57,7 @@ win32:
 	 rm -Rf win32-devel && \
 	 rm -Rf win32-tmp )
 	mkdir -p distribution/win32-bin && \
-	 cp -r src/gwenhywfar32.dll distribution/win32-bin/ && \
+	 cp -r src/gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).dll distribution/win32-bin/ && \
 	 cp AUTHORS ChangeLog README README.W32 COPYING distribution/win32-bin/ && \
 	 strip distribution/win32-bin/*.dll && \
 	 ( cd distribution && tar pczvf gwenhywfar-@VERSION@-win32-bin.tgz win32-bin && \
@@ -81,7 +81,7 @@ win32-cs: dist
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) check \
 	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && cp src/$(PACKAGE)32.dll ../../$(win_buildroot)/$(win_bindir) \
+	  && cp src/$(PACKAGE)32_$(GWENHYWFAR_SO_EFFECTIVE).dll ../../$(win_buildroot)/$(win_bindir) \
 	  && cp src/$(PACKAGE)32.lib ../../$(win_buildroot)/$(win_develdir) \
 	  && cd ../../$(win_buildroot) \
 	  && cp -r "$$dc_install_base"/bin $(win_develdir) \
