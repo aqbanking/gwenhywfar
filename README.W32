@@ -73,5 +73,24 @@ You will then need to give that path to the configure script via the option
 These headers are only needed if you want to compile Gwenhywfar itself !
 
 
+2.2. Make Order
+---------------
 
+If you retrieved gwenhywfar from CVS, first do a "make -f
+Makefile.dist". Then:
 
+- ./configure
+
+  Common options in this step are 
+  ./configure --enable-static --enable-shared \
+    --with-openssl-includes=/openssl_prefix/include \
+    LDFLAGS="-L/mingw/lib"  
+
+  --enable-static and --enable-shared let the blabla.o object files be
+  created, necessary for linking the dll. The LDFLAGS are needed if
+  your local mingw installation has some libraries in the specified
+  directory.
+
+- make     (this creates the dll)
+- make install (this installs the headers to the specified prefix)
+- then copy the DLL src/gwenhywfar32.dll to your windows folder.

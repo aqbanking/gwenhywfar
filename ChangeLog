@@ -1,3 +1,13 @@
+2004-01-28  Christian Stimming <stimming@tuhh.de>
+
+	* m4/acx_windows_paths.m4: Renamed windoze.m4 to this file. Added
+	caching of the directory values because this saves a lot of time.
+	
+	* README.W32: Add explanation of helpful configure options.
+
+	* src/Makefile.am: Add LDFLAGS to DLLFLAGS since this is needed on
+	some windows configurations.
+
 2004-01-27  Christian Stimming <stimming@tuhh.de>
 
 	* m4/ssl.m4: Use WIN_PATH_SYSTEM_MINGW for windows.

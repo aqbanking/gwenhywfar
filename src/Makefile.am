@@ -87,8 +87,8 @@ DLL_OBJS= \
    gwenhywfar.o
 
 
-DLL_LDLIBS=-lstdc++ $(ssl_libraries) $(ssl_lib) -lwsock32
-DLL_LDFLAGS=@STRIPALL@
+DLL_LDLIBS = -lstdc++ $(ssl_libraries) $(ssl_lib) -lwsock32
+DLL_LDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLL_WRAP_FLAGS=--export-all --output-def $(DLL_EXP_DEF) \
 	--implib $(DLL_EXP_LIB) \
 	--driver-name $(CXX)
