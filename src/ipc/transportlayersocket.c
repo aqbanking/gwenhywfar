@@ -53,8 +53,8 @@ GWEN_ERRORCODE
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
 
   if (tlp->socket==0) {
-    tlp->socket=GWEN_Socket_new();
-    err=GWEN_Socket_Open(tlp->socket, tlp->socketType);
+    tlp->socket=GWEN_Socket_new(tlp->socketType);
+    err=GWEN_Socket_Open(tlp->socket);
     if (!GWEN_Error_IsOk(err))
       return err;
   }
@@ -145,8 +145,8 @@ GWEN_ERRORCODE GWEN_IPCTransportLayerSocket_Listen(GWEN_IPCTRANSPORTLAYER *tl){
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
 
   if (tlp->socket==0) {
-    tlp->socket=GWEN_Socket_new();
-    err=GWEN_Socket_Open(tlp->socket, tlp->socketType);
+    tlp->socket=GWEN_Socket_new(tlp->socketType);
+    err=GWEN_Socket_Open(tlp->socket);
     if (!GWEN_Error_IsOk(err))
       return err;
   }
@@ -318,8 +318,8 @@ GWEN_IPCTransportLayerSocket_GetReadSocket(GWEN_IPCTRANSPORTLAYER *tl){
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
 
   if (tlp->socket==0) {
-    tlp->socket=GWEN_Socket_new();
-    err=GWEN_Socket_Open(tlp->socket, tlp->socketType);
+    tlp->socket=GWEN_Socket_new(tlp->socketType);
+    err=GWEN_Socket_Open(tlp->socket);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return 0;
@@ -343,8 +343,8 @@ GWEN_IPCTransportLayerSocket_GetWriteSocket(GWEN_IPCTRANSPORTLAYER *tl){
   tlp=(GWEN_IPCTRANSSOCKET*)tl->privateData;
 
   if (tlp->socket==0) {
-    tlp->socket=GWEN_Socket_new();
-    err=GWEN_Socket_Open(tlp->socket, tlp->socketType);
+    tlp->socket=GWEN_Socket_new(tlp->socketType);
+    err=GWEN_Socket_Open(tlp->socket);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       return 0;

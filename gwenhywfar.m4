@@ -11,7 +11,9 @@ dnl   $3: patchlevel version minimum
 dnl   $4: build version minimum
 dnl Returns: gwenhywfar_dir
 dnl          gwenhywfar_libs
+dnl          gwenhywfar_plugins
 dnl          gwenhywfar_includes
+dnl          gwenhywfar_headers
 dnl          gwenhywfar_sections
 dnl          have_gwenhywfar
 
@@ -29,6 +31,7 @@ AC_MSG_RESULT($enable_gwenhywfar)
 
 have_gwenhywfar="no"
 gwenhywfar_dir=""
+gwenhywfar_plugins=""
 gwenhywfar_libs=""
 gwenhywfar_includes=""
 gwenhywfar_sections=""
@@ -68,6 +71,12 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_CHECKING(for gwen sections)
       gwenhywfar_sections="`$gwenhywfar_dir/bin/gwenhywfar-config --sections`"
       AC_MSG_RESULT($gwenhywfar_sections)
+      AC_MSG_CHECKING(for gwen plugins)
+      gwenhywfar_plugins="`$gwenhywfar_dir/bin/gwenhywfar-config --plugins`"
+      AC_MSG_RESULT($gwenhywfar_plugins)
+      AC_MSG_CHECKING(for gwen headers)
+      gwenhywfar_headers="`$gwenhywfar_dir/bin/gwenhywfar-config --headers`"
+      AC_MSG_RESULT($gwenhywfar_headers)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)
   AC_ARG_ENABLE(gwenhywfar,
@@ -109,7 +118,9 @@ dnl end of "if enable-gwenhywfar"
 fi
 
 AC_SUBST(gwenhywfar_dir)
+AC_SUBST(gwenhywfar_plugins)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_sections)
+AC_SUBST(gwenhywfar_headers)
 ])

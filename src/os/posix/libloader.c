@@ -108,9 +108,11 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 
   assert(h);
 
+  DBG_INFO(0, "Loading library \"%s\"", name);
   h->handle=dlopen(name,RTLD_LAZY);
   if (!h->handle) {
     serr=dlerror();
+    DBG_INFO(0, "dlopen(%s): %s", name, serr);
     /* FIXME: What about internationalization ? */
     if (strstr(serr, "No such file")) {
       if (strstr(serr, name)) {
@@ -143,6 +145,7 @@ GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
 			  GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
   }
+  DBG_INFO(0, "Loaded library \"%s\"", name);
   return 0;
 }
 

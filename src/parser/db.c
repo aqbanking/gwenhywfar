@@ -648,7 +648,7 @@ void* GWEN_DB_HandlePath(const char *entry,
   if (!nn) {
     /* node not found, check, if we are allowed to create it */
     if (
-        (!(flags & GWEN_PATH_FLAGS_LAST) &
+        (!(flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_PATHMUSTEXIST)) ||
         (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST)
        ) {
@@ -1340,12 +1340,18 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
               int binsize;
 
               binsize=GWEN_Text_FromHex(wbuf, binbuffer, sizeof(binbuffer));
-              if (binsize<1) {
+              if (binsize<0) {
                 DBG_ERROR(0, "Error in line %d, pos %d (no binary)",
                           lineno, pos-linebuf+1);
                 return -1;
               }
-              tmpn=GWEN_DB_ValueBin_new(binbuffer, binsize);
+              if (binsize)
+                tmpn=GWEN_DB_ValueBin_new(binbuffer, binsize);
+              else {
+                tmpn=0;
+                DBG_WARN(0, "Line %d, pos %d: empty binary value",
+                         lineno, pos-linebuf+1);
+              }
               break;
             }
             default:
@@ -1353,7 +1359,8 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
                         lineno, pos-linebuf+1);
               return -1;
             } /* switch */
-            GWEN_DB_Node_Append(currVar, tmpn);
+            if (tmpn)
+              GWEN_DB_Node_Append(currVar, tmpn);
 
             /* skip blanks */
             while(*pos && isspace(*pos))
@@ -1790,6 +1797,14 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
 
 
 
+int GWEN_DB_ValueExists(GWEN_DB_NODE *n,
+                        const char *path,
+                        unsigned int i){
+  return (GWEN_DB_GetValue(n, path, i)!=0);
+}
+
+
+
 GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
                                           const char *p){
   GWEN_DB_NODE *nn;
@@ -1803,6 +1818,18 @@ GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
   return GWEN_DB_GetValueType(nn);
 }
 
+
+
+GWEN_DB_VALUETYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
+                                             const char *path,
+                                             unsigned int i){
+  GWEN_DB_NODE *nn;
+
+  nn=GWEN_DB_GetValue(n, path, i);
+  if (!nn)
+    return GWEN_DB_VALUETYPE_UNKNOWN;
+  return GWEN_DB_GetValueType(nn);
+}
 
 
 void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname){

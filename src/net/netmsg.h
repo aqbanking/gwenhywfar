@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Mon Feb 09 2004
+    copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,60 +25,66 @@
  *                                                                         *
  ***************************************************************************/
 
-/**
- * @file chameleon/socket.h
- * @short This file contains sockets and socket sets.
- */
 
-#ifndef GWEN_SOCKET_P_H
-#define GWEN_SOCKET_P_H
+#ifndef GWEN_NETMSG_H
+#define GWEN_NETMSG_H
 
-#include <windows.h>
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket.h>
+typedef struct GWEN_NETMSG GWEN_NETMSG;
+
+#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/db.h>
 #include <gwenhywfar/types.h>
-#include <sys/types.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
+#include <gwenhywfar/misc.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+GWEN_LIST_FUNCTION_DEFS(GWEN_NETMSG, GWEN_NetMsg);
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
-  int socket;
-  GWEN_SOCKETTYPE type;
-};
+/** @name Constructors And Destructors
+ *
+ */
+/*@{*/
+GWEN_NETMSG *GWEN_NetMsg_new(GWEN_TYPE_UINT32 bufferSize);
+void GWEN_NetMsg_free(GWEN_NETMSG *msg);
+void GWEN_NetMsg_Attach(GWEN_NETMSG *msg);
+/*@}*/
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
-  int highest;
-  GWEN_TYPE_UINT32 count;
-};
+/** @name Getters And Setters
+ *
+ */
+/*@{*/
+/**
+ * Returns a pointer to the buffer belonging to a message.
+ * This function does NOT relinquish ownership.
+ */
+GWEN_BUFFER *GWEN_NetMsg_GetBuffer(const GWEN_NETMSG *msg);
 
+GWEN_BUFFER *GWEN_NetMsg_TakeBuffer(GWEN_NETMSG *msg);
 
 /**
- * Initializes this module.
+ * Replaces the internal buffer with the given one.
+ * Takes over ownership of the buffer.
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
+void GWEN_NetMsg_SetBuffer(GWEN_NETMSG *msg,
+                           GWEN_BUFFER *buf);
 
 /**
- * Deinitializes this module.
+ * Returns the value of the size variable. The meaning of this variable
+ * depends on the protocol this message belongs to.
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
+GWEN_TYPE_UINT32 GWEN_NetMsg_GetSize(const GWEN_NETMSG *msg);
+void GWEN_NetMsg_SetSize(GWEN_NETMSG *msg,
+                         GWEN_TYPE_UINT32 size);
+
+/**
+ * Returns a pointer to the DB belonging to a message.
+ * This function does NOT relinquish ownership.
+ */
+GWEN_DB_NODE *GWEN_NetMsg_GetDB(const GWEN_NETMSG *msg);
+
+/*@}*/
 
 
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* GWEN_SOCKET_P_H */
-
-
-

@@ -2,7 +2,7 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Jan 24 2004
+    begin       : Mon Feb 09 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -26,40 +26,105 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_NETTRANSPORT_P_H
-#define GWEN_NETTRANSPORT_P_H
+#include "netmsg_p.h"
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
+
+#include <stdlib.h>
+#include <assert.h>
 
 
-#include <gwenhywfar/nettransport.h>
-
-
-struct GWEN_NETTRANSPORT {
-  GWEN_LIST_ELEMENT(GWEN_NETTRANSPORT);
-  GWEN_INHERIT_ELEMENT(GWEN_NETTRANSPORT);
-
-  GWEN_NETTRANSPORT_LIST *incomingConnections;
-
-  GWEN_NETTRANSPORT_STARTCONNECT startConnectFn;
-  GWEN_NETTRANSPORT_STARTACCEPT startAcceptFn;
-  GWEN_NETTRANSPORT_STARTDISCONNECT startDisconnectFn;
-  GWEN_NETTRANSPORT_READ readFn;
-  GWEN_NETTRANSPORT_WRITE writeFn;
-  GWEN_NETTRANSPORT_ADDSOCKETS addSocketsFn;
-  GWEN_NETTRANSPORT_WORK workFn;
-
-  GWEN_NETTRANSPORT_STATUS status;
-  GWEN_TYPE_UINT32 flags;
-
-  GWEN_INETADDRESS *localAddr;
-  GWEN_INETADDRESS *peerAddr;
-
-  GWEN_TYPE_UINT32 usage;
-};
+GWEN_LIST_FUNCTIONS(GWEN_NETMSG, GWEN_NetMsg);
 
 
 
+GWEN_NETMSG *GWEN_NetMsg_new(GWEN_TYPE_UINT32 bufferSize){
+  GWEN_NETMSG *msg;
+
+  GWEN_NEW_OBJECT(GWEN_NETMSG, msg);
+  GWEN_LIST_INIT(GWEN_NETMSG, msg);
+  if (bufferSize)
+    msg->buffer=GWEN_Buffer_new(0, bufferSize, 0, 1);
+  msg->node=GWEN_DB_Group_new("NetMsg");
+
+  msg->usage=1;
+  return msg;
+}
 
 
 
-#endif /* GWEN_NETTRANSPORT_P_H */
+void GWEN_NetMsg_free(GWEN_NETMSG *msg){
+  if (msg) {
+    assert(msg->usage);
+    if (--(msg->usage)==0) {
+      GWEN_DB_Group_free(msg->node);
+      GWEN_Buffer_free(msg->buffer);
+
+      GWEN_LIST_FINI(GWEN_NETMSG, msg);
+      free(msg);
+    }
+  }
+}
+
+
+
+void GWEN_NetMsg_Attach(GWEN_NETMSG *msg){
+  assert(msg);
+  msg->usage++;
+}
+
+
+
+GWEN_BUFFER *GWEN_NetMsg_GetBuffer(const GWEN_NETMSG *msg){
+  assert(msg);
+  return msg->buffer;
+}
+
+
+
+GWEN_BUFFER *GWEN_NetMsg_TakeBuffer(GWEN_NETMSG *msg){
+  GWEN_BUFFER *buf;
+
+  assert(msg);
+  buf=msg->buffer;
+  msg->buffer=0;
+  return buf;
+}
+
+
+
+void GWEN_NetMsg_SetBuffer(GWEN_NETMSG *msg,
+                           GWEN_BUFFER *buf){
+  assert(msg);
+  assert(buf);
+  GWEN_Buffer_free(msg->buffer);
+  msg->buffer=buf;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_NetMsg_GetSize(const GWEN_NETMSG *msg){
+  assert(msg);
+  return msg->size;
+}
+
+
+
+void GWEN_NetMsg_SetSize(GWEN_NETMSG *msg,
+                         GWEN_TYPE_UINT32 size){
+  assert(msg);
+  msg->size=size;
+}
+
+
+
+GWEN_DB_NODE *GWEN_NetMsg_GetDB(const GWEN_NETMSG *msg){
+  assert(msg);
+  return msg->node;
+}
+
+
+
+
+
 

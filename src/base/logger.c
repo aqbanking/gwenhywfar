@@ -327,7 +327,9 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
       case GWEN_LoggerLevelInfo:
         pri=LOG_NOTICE;
         break;
+
       case GWEN_LoggerLevelDebug:
+      case GWEN_LoggerLevelVerbous:
       default:
         pri=LOG_DEBUG;
         break;
@@ -466,6 +468,103 @@ void GWEN_Logger_SetFilename(GWEN_LOGGER *lg, const char *name){
   else
     lg->logFile=strdup("");
 }
+
+
+
+GWEN_LOGGER_LEVEL GWEN_Logger_Name2Level(const char *name) {
+  if (strcasecmp(name, "emergency")==0)
+    return GWEN_LoggerLevelEmergency;
+  else if (strcasecmp(name, "alert")==0)
+    return GWEN_LoggerLevelAlert;
+  else if (strcasecmp(name, "critical")==0)
+    return GWEN_LoggerLevelCritical;
+  else if (strcasecmp(name, "error")==0)
+    return GWEN_LoggerLevelError;
+  else if (strcasecmp(name, "warning")==0)
+    return GWEN_LoggerLevelWarning;
+  else if (strcasecmp(name, "notice")==0)
+    return GWEN_LoggerLevelNotice;
+  else if (strcasecmp(name, "info")==0)
+    return GWEN_LoggerLevelInfo;
+  else if (strcasecmp(name, "debug")==0)
+    return GWEN_LoggerLevelDebug;
+  else if (strcasecmp(name, "verbous")==0)
+    return GWEN_LoggerLevelVerbous;
+  else {
+    return GWEN_LoggerLevelUnknown;
+  }
+}
+
+
+
+const char *GWEN_Logger_Level2Name(GWEN_LOGGER_LEVEL level) {
+  const char *s;
+
+  switch(level) {
+  case GWEN_LoggerLevelEmergency:
+    s="emergency"; break;
+  case GWEN_LoggerLevelAlert:
+    s="alert"; break;
+  case GWEN_LoggerLevelCritical:
+    s="critical"; break;
+  case GWEN_LoggerLevelError:
+    s="error"; break;
+  case GWEN_LoggerLevelWarning:
+    s="warning"; break;
+  case GWEN_LoggerLevelNotice:
+    s="notice"; break;
+  case GWEN_LoggerLevelInfo:
+    s="info"; break;
+  case GWEN_LoggerLevelDebug:
+    s="debug"; break;
+  case GWEN_LoggerLevelVerbous:
+    s="verbous"; break;
+  case GWEN_LoggerLevelUnknown:
+  default:
+    s="unknown"; break;
+  } /* switch */
+  return s;
+}
+
+
+
+GWEN_LOGGER_LOGTYPE GWEN_Logger_Name2Logtype(const char *name) {
+  if (strcasecmp(name, "console")==0)
+    return GWEN_LoggerTypeConsole;
+  else if (strcasecmp(name, "file")==0)
+    return GWEN_LoggerTypeFile;
+  else if (strcasecmp(name, "syslog")==0)
+    return GWEN_LoggerTypeSyslog;
+  else if (strcasecmp(name, "function")==0)
+    return GWEN_LoggerTypeFunction;
+  else {
+    return GWEN_LoggerTypeUnknown;
+  }
+}
+
+
+
+const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt) {
+  const char *s;
+
+  switch(lt) {
+  case GWEN_LoggerTypeConsole:
+    s="console"; break;
+  case GWEN_LoggerTypeFile:
+    s="file"; break;
+  case GWEN_LoggerTypeSyslog:
+    s="syslog"; break;
+  case GWEN_LoggerTypeFunction:
+    s="function"; break;
+  default:
+    s="unknown"; break;
+  } /* switch */
+  return s;
+}
+
+
+
+
 
 
 

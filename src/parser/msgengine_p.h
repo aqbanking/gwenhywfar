@@ -51,8 +51,8 @@ struct GWEN__MSGENGINE {
   char escapeChar;
   char *charsToEscape;
   char *delimiters;
-  char *secMode;
-  unsigned int protocolVersion;
+  //char *secMode;
+  //unsigned int protocolVersion;
   GWEN_DB_NODE *globalValues;
   GWEN_MSGENGINE_TYPEREAD_PTR typeReadPtr;
   GWEN_MSGENGINE_TYPEWRITE_PTR typeWritePtr;
@@ -64,8 +64,14 @@ struct GWEN__MSGENGINE {
   GWEN_MSGENGINE_GETCHARVALUE_PTR getCharValuePtr;
   GWEN_MSGENGINE_GETINTVALUE_PTR getIntValuePtr;
 
+  GWEN_MSGENGINE_GETGLOBALVALUES_PTR getGlobalValuesPtr;
+
+  GWEN_MSGENGINE_FREEDATA_PTR freeDataPtr;
+
   GWEN_MSGENGINE_TRUSTEDDATA *trustInfos;
   void *inheritorData;
+
+  GWEN_TYPE_UINT32 usage;
 };
 
 
@@ -160,6 +166,8 @@ int GWEN_MsgEngine__IsBinTyp(GWEN_MSGENGINE *e, const char *type);
 
 int GWEN_MsgEngine_GetHighestTrustLevel(GWEN_XMLNODE *node,
                                         GWEN_XMLNODE *refnode);
+
+GWEN_DB_NODE *GWEN_MsgEngine__GetGlobalValues(GWEN_MSGENGINE *e);
 
 
 struct GWEN_MSGENGINE_TRUSTEDDATA {

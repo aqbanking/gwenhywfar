@@ -149,22 +149,22 @@ GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,
 
 
 #define DBG_VERBOUS(dbg_logger, format, args...) \
- if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {\
+ if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelVerbous) {\
  char dbg_buffer[256]; \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: " format  , __LINE__ , ## args); \
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
- GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelDebug, dbg_buffer);};
+ GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelVerbous, dbg_buffer);};
 
 #define DBG_VERBOUS_ERR(dbg_logger, dbg_err) \
- if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {\
+ if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelVerbous) {\
  char dbg_buffer[256]; \
  char dbg_errbuff[256]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
- GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelDebug, dbg_buffer);};
+ GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelVerbous, dbg_buffer);};
 
 
 

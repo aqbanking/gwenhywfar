@@ -30,6 +30,7 @@
 #define GWEN_KEYSPEC_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/db.h>
 #include <stdio.h>
 /* This is needed for PalmOS, because it define some functions needed */
 #include <string.h>
@@ -52,54 +53,58 @@ GWENHYWFAR_API
 void GWEN_KeySpec_free(GWEN_KEYSPEC *ks);
 
 GWENHYWFAR_API
-const char *GWEN_KeySpec_GetKeyType(const GWEN_KEYSPEC *ks);
+  const char *GWEN_KeySpec_GetKeyType(const GWEN_KEYSPEC *ks);
 GWENHYWFAR_API
-void GWEN_KeySpec_SetKeyType(GWEN_KEYSPEC *ks,
-                                    const char *s);
+  void GWEN_KeySpec_SetKeyType(GWEN_KEYSPEC *ks,
+                               const char *s);
 
 GWENHYWFAR_API
-const char *GWEN_KeySpec_GetKeyName(const GWEN_KEYSPEC *ks);
+  const char *GWEN_KeySpec_GetKeyName(const GWEN_KEYSPEC *ks);
 GWENHYWFAR_API
-void GWEN_KeySpec_SetKeyName(GWEN_KEYSPEC *ks,
-                                    const char *s);
+  void GWEN_KeySpec_SetKeyName(GWEN_KEYSPEC *ks,
+                               const char *s);
 
 GWENHYWFAR_API
-const char *GWEN_KeySpec_GetOwner(const GWEN_KEYSPEC *ks);
+  const char *GWEN_KeySpec_GetOwner(const GWEN_KEYSPEC *ks);
 GWENHYWFAR_API
-void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks,
-                           const char *s);
+  void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks,
+                             const char *s);
 
 GWENHYWFAR_API
-unsigned int GWEN_KeySpec_GetNumber(const GWEN_KEYSPEC *ks);
+  unsigned int GWEN_KeySpec_GetNumber(const GWEN_KEYSPEC *ks);
 GWENHYWFAR_API
-void GWEN_KeySpec_SetNumber(GWEN_KEYSPEC *ks,
-                                   unsigned int i);
+  void GWEN_KeySpec_SetNumber(GWEN_KEYSPEC *ks,
+                              unsigned int i);
 
 GWENHYWFAR_API
-unsigned int GWEN_KeySpec_GetVersion(const GWEN_KEYSPEC *ks);
+  unsigned int GWEN_KeySpec_GetVersion(const GWEN_KEYSPEC *ks);
 GWENHYWFAR_API
-void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
-                             unsigned int i);
-
-
-GWENHYWFAR_API
-GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks);
-GWENHYWFAR_API
-const GWEN_KEYSPEC *GWEN_KeySpec_ConstNext(const GWEN_KEYSPEC *ks);
-
-GWENHYWFAR_API
-void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
-                             GWEN_KEYSPEC **head);
-GWENHYWFAR_API
-void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
-                             GWEN_KEYSPEC **head);
-
-GWENHYWFAR_API
-void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head);
+  void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
+                               unsigned int i);
 
 
 GWENHYWFAR_API
-void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent);
+  GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks);
+GWENHYWFAR_API
+  const GWEN_KEYSPEC *GWEN_KeySpec_ConstNext(const GWEN_KEYSPEC *ks);
+
+GWENHYWFAR_API
+  void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
+                        GWEN_KEYSPEC **head);
+GWENHYWFAR_API
+  void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
+                        GWEN_KEYSPEC **head);
+
+GWENHYWFAR_API
+  void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head);
+
+
+GWENHYWFAR_API
+  void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent);
+
+
+int GWEN_KeySpec_ToDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n);
+int GWEN_KeySpec_FromDb(GWEN_KEYSPEC *ks, GWEN_DB_NODE *n);
 
 
 #ifdef __cplusplus

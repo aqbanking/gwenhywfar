@@ -494,27 +494,37 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert) {
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Pos : %d (%04x)\n", bf->pos, bf->pos);
+  fprintf(f, "Pos            : %d (%04x)\n", bf->pos, bf->pos);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Buffer Size : %d\n", bf->bufferSize);
+  fprintf(f, "Buffer Size    : %d\n", bf->bufferSize);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Hard limit  : %d\n", bf->hardLimit);
+  fprintf(f, "Hard limit     : %d\n", bf->hardLimit);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Bytes Used  : %d\n", bf->bytesUsed);
+  fprintf(f, "Bytes Used     : %d\n", bf->bytesUsed);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Flags       : %08x\n", bf->flags);
+  fprintf(f, "Bytes Reserved : %d\n", bf->ptr-bf->realPtr);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Mode        : %08x\n", bf->mode);
+  fprintf(f, "Flags          : %08x ( ", bf->flags);
+  if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
+    fprintf(f, "OWNED ");
+  fprintf(f, ")\n");
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Mode           : %08x ( ", bf->mode);
+  if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
+    fprintf(f, "DYNAMIC ");
+  fprintf(f, ")\n");
 
   if (bf->ptr && bf->bytesUsed) {
     for (k=0; k<insert; k++)

@@ -34,6 +34,7 @@
 #include "path.h"
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"
+#include "gwenhywfar/text.h"
 #include <ctype.h>
 
 
@@ -43,6 +44,8 @@ void *GWEN_Path_Handle(const char *path,
                        GWEN_TYPE_UINT32 flags,
                        GWEN_PATHHANDLERPTR elementFunction) {
   char buffer[256];
+  char buffer2[256];
+  const char *bptr;
   int i;
   unsigned int origflags;
 
@@ -106,21 +109,82 @@ void *GWEN_Path_Handle(const char *path,
       }
     }
 
+    /* escape or unescape if wanted */
+    if (!(flags & GWEN_PATH_FLAGS_LAST) ||
+        ((flags & GWEN_PATH_FLAGS_LAST) &&
+         (flags & GWEN_PATH_FLAGS_CONVERT_LAST))) {
+      if (flags & GWEN_PATH_FLAGS_ESCAPE) {
+        if (0==GWEN_Text_Escape(buffer, buffer2, sizeof(buffer2))) {
+          DBG_ERROR(0, "Path element too long");
+          return 0;
+        }
+        bptr=buffer2;
+      }
+      else if (flags & GWEN_PATH_FLAGS_UNESCAPE) {
+        if (0==GWEN_Text_Unescape(buffer, buffer2, sizeof(buffer2))) {
+          DBG_ERROR(0, "Path element too long");
+          return 0;
+        }
+        bptr=buffer2;
+      }
+      else
+        bptr=buffer;
+    }
+    else
+      bptr=buffer;
+
     /* call function */
     if (elementFunction) {
-      data=(elementFunction)(buffer, data, flags);
+      data=(elementFunction)(bptr, data, flags);
       if (!data) {
         DBG_DEBUG(0, "Error on path element \"%s\"",
-                  buffer);
+                  bptr);
         return 0;
       }
     }
     DBG_DEBUG(0, "Successfully handled element \"%s\"",
-              buffer);
+              bptr);
   } /* while (*path) */
 
   return data;
 }
+
+
+
+void *GWEN_Path_AppendPathElement(const char *entry,
+                                  void *data,
+                                  unsigned int flags){
+  GWEN_BUFFER *ebuf;
+
+  ebuf=(GWEN_BUFFER*)data;
+
+  GWEN_Buffer_AppendString(ebuf, entry);
+  if (!(flags & GWEN_PATH_FLAGS_LAST) ||
+      !(flags & GWEN_PATH_FLAGS_VARIABLE))
+    GWEN_Buffer_AppendByte(ebuf, '/');
+  GWEN_Buffer_AllocRoom(ebuf, 1);
+  GWEN_Buffer_GetPosPointer(ebuf)[0]=0;
+  return data;
+}
+
+
+
+int GWEN_Path_Convert(const char *path,
+                      GWEN_BUFFER *buffer,
+                      GWEN_TYPE_UINT32 flags) {
+  void *p;
+
+  p=GWEN_Path_Handle(path,
+                     buffer,
+                     flags,
+                     GWEN_Path_AppendPathElement);
+  if (!p) {
+    return -1;
+  }
+  return 0;
+}
+
+
 
 
 

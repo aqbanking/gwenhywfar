@@ -22,6 +22,7 @@ libgwenhywfar_la_LIBADD=\
   crypt/libcrypt.la \
   io/libio.la \
   ipc/libipc.la \
+  net/libnet.la \
   os/libos.la \
   parser/libparser.la @all_libraries@
 libgwenhywfar_la_LDFLAGS= \

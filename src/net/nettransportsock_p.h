@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Sat Jan 24 2004
+    copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,60 +25,55 @@
  *                                                                         *
  ***************************************************************************/
 
-/**
- * @file chameleon/socket.h
- * @short This file contains sockets and socket sets.
- */
 
-#ifndef GWEN_SOCKET_P_H
-#define GWEN_SOCKET_P_H
-
-#include <windows.h>
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket.h>
-#include <gwenhywfar/types.h>
-#include <sys/types.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
+#ifndef GWEN_NETTRANSPORTSOCK_P_H
+#define GWEN_NETTRANSPORTSOCK_P_H
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <gwenhywfar/nettransportsock.h>
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
-  int socket;
-  GWEN_SOCKETTYPE type;
-};
+typedef struct GWEN_NETTRANSPORTSOCKET {
+  GWEN_SOCKET *socket;
+  int ownSocket;
+} GWEN_NETTRANSPORTSOCKET;
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
-  int highest;
-  GWEN_TYPE_UINT32 count;
-};
+GWEN_NETTRANSPORTSOCKET *GWEN_NetTransportSocketData_new();
+
+void GWEN_NetTransportSocket_FreeData(void *bp, void *p);
 
 
-/**
- * Initializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSocket_StartConnect(GWEN_NETTRANSPORT *tr);
 
-/**
- * Deinitializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSocket_StartAccept(GWEN_NETTRANSPORT *tr);
+
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSocket_StartDisconnect(GWEN_NETTRANSPORT *tr);
 
 
 
-#ifdef __cplusplus
-}
-#endif
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSocket_Read(GWEN_NETTRANSPORT *tr,
+                               char *buffer,
+                               int *bsize);
 
-#endif /* GWEN_SOCKET_P_H */
+GWEN_NETTRANSPORT_RESULT
+  GWEN_NetTransportSocket_Write(GWEN_NETTRANSPORT *tr,
+                                const char *buffer,
+                                int *bsize);
 
 
+
+int GWEN_NetTransportSocket_AddSockets(GWEN_NETTRANSPORT *tr,
+                                       GWEN_SOCKETSET *sset,
+                                       int forReading);
+
+int GWEN_NetTransportSocket_Work(GWEN_NETTRANSPORT *tr);
+
+
+
+#endif /* GWEN_NETTRANSPORTSOCK_P_H */
 

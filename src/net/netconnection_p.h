@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Mon Feb 09 2004
+    copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,60 +25,63 @@
  *                                                                         *
  ***************************************************************************/
 
-/**
- * @file chameleon/socket.h
- * @short This file contains sockets and socket sets.
- */
 
-#ifndef GWEN_SOCKET_P_H
-#define GWEN_SOCKET_P_H
+#ifndef GWEN_NETCONNECTION_P_H
+#define GWEN_NETCONNECTION_P_H
 
-#include <windows.h>
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket.h>
-#include <gwenhywfar/types.h>
-#include <sys/types.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
+/** ringbuffer size */
+#define GWEN_NETCONNECTION_BUFFERSIZE 512
+/** sleep 200 ms in wait function when there are no sockets to select */
+#define GWEN_NETCONNECTION_CPU_TIMEOUT 200
+
+#include <gwenhywfar/netconnection.h>
+#include <gwenhywfar/netmsg.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define GWEN_NETCONNECTION_NOTIFIED_UP   0x0001
+#define GWEN_NETCONNECTION_NOTIFIED_DOWN 0x0002
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
-  int socket;
-  GWEN_SOCKETTYPE type;
+struct GWEN_NETCONNECTION {
+  GWEN_LIST_ELEMENT(GWEN_NETCONNECTION);
+  GWEN_INHERIT_ELEMENT(GWEN_NETCONNECTION);
+
+  GWEN_TYPE_UINT32 usage;
+
+  GWEN_RINGBUFFER *readBuffer;
+  GWEN_RINGBUFFER *writeBuffer;
+  GWEN_NETTRANSPORT_RESULT lastResult;
+  GWEN_NETTRANSPORT *transportLayer;
+  int takeTransport;
+  GWEN_NETCONNECTION_WORKFN workFn;
+  GWEN_NETCONNECTION_UPFN upFn;
+  GWEN_NETCONNECTION_DOWNFN downFn;
+
+  GWEN_TYPE_UINT32 notified;
+
+  GWEN_NETMSG_LIST *inMsgs;
+  GWEN_NETMSG_LIST *outMsgs;
 };
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
-  int highest;
-  GWEN_TYPE_UINT32 count;
-};
-
+/**
+ * Waits up to given amount of milliseconds for activity/availability.
+ *
+ * @return 0 if there is activity on any socket, -1 on error and 1 on timeout
+ * @param timeout timeout in seconds (or a special timeout value, see
+ * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
+ * @param waitFlags see @ref GWEN_NETCONNECTION_WAIT_READ
+ */
+int GWEN_NetConnection_Wait(GWEN_NETCONNECTION *conn,
+                            int timeout,
+                            GWEN_TYPE_UINT32 waitFlags);
 
 /**
- * Initializes this module.
+ * Lets a list of connections work.
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
-
-/**
- * Deinitializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
+GWEN_NETCONNECTION_WORKRESULT
+  GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
+                           int timeout);
 
 
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* GWEN_SOCKET_P_H */
-
-
-

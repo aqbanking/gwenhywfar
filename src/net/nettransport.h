@@ -28,111 +28,349 @@
 #ifndef GWEN_NETTRANSPORT_H
 #define GWEN_NETTRANSPORT_H
 
-#include <gwenhywfar/inetaddr.h>
-#include <gwenhywfar/inetsocket.h>
-
-
 typedef struct GWEN_NETTRANSPORT GWEN_NETTRANSPORT;
 
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/inetaddr.h>
+#include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/inherit.h>
 
+
+GWEN_LIST_FUNCTION_DEFS(GWEN_NETTRANSPORT, GWEN_NetTransport);
+GWEN_INHERIT_FUNCTION_DEFS(GWEN_NETTRANSPORT);
+
+
+/** @defgroup MOD_NETTRANSPORT Network Transport Layer
+ * @ingroup MOD_NET
+ *
+ * @brief This file contains the definition of a GWEN_NETTRANSPORT.
+ *
+ * All functions in this group are expected to be non-blocking. If any of the
+ * functions is unable to momentarily perform the action it is supposed to
+ * perform it should return either @ref GWEN_NetTransportResultWantRead or
+ * @ref GWEN_NetTransportResultWantWrite.
+ */
+/*@{*/
+
+
+
+/** @name Transport Layer Flags
+ *
+ */
+/*@{*/
+#define GWEN_NETTRANSPORT_FLAGS_PASSIVE 0x0001
+#define GWEN_NETTRANSPORT_FLAGS_EOF_IN  0x0002
+#define GWEN_NETTRANSPORT_FLAGS_EOF_OUT 0x0004
+/*@}*/
+
+
+/**
+ * These are the result codes to be returned by functions of this group.
+ */
 typedef enum {
+  /** Function succeeded */
   GWEN_NetTransportResultOk=0,
+  /** Function failed */
   GWEN_NetTransportResultError,
+  /**
+   * The transport layer needs to read in order to perform the called
+   * function. The caller may then use this information for a call to select.
+   */
   GWEN_NetTransportResultWantRead,
+  /**
+   * The transport layer needs to write in order to perform the called
+   * function. The caller may then use this information for a call to select.
+   */
   GWEN_NetTransportResultWantWrite,
+  /**
+   * The called function has been aborted by the user (via the WaitCallBack
+   * mechanism)
+   */
   GWEN_NetTransportResultAborted
 } GWEN_NETTRANSPORT_RESULT;
 
 
+/**
+ * This is the status of the transport layer.
+ */
 typedef enum {
+  /** neither connected nor listening, this is the initial state */
   GWEN_NetTransportStatusUnconnected=0,
+  /** physically connecting */
   GWEN_NetTransportStatusPConnecting,
+  /** physically connected */
   GWEN_NetTransportStatusPConnected,
+  /** logically connecting */
   GWEN_NetTransportStatusLConnecting,
+  /** logically connected */
   GWEN_NetTransportStatusLConnected,
+  /** logically disconnecting */
   GWEN_NetTransportStatusLDisconnecting,
+  /** logically disconnected */
   GWEN_NetTransportStatusLDisconnected,
+  /** physically disconnecting */
   GWEN_NetTransportStatusPDisconnecting,
+  /** physically disconnected */
   GWEN_NetTransportStatusPDisconnected,
+  /** listening */
+  GWEN_NetTransportStatusListening,
+  /** disabled */
   GWEN_NetTransportStatusDisabled
 } GWEN_NETTRANSPORT_STATUS;
 
 
+/** @name Prototypes For Virtual Functions
+ *
+ */
+/*@{*/
+/**
+ * This function starts to actively connect to another host.
+ * Please note that this function MUST set the status accordingly (using
+ * @ref GWEN_NetTransport_SetStatus).
+ */
 typedef GWEN_NETTRANSPORT_RESULT
 (*GWEN_NETTRANSPORT_STARTCONNECT)(GWEN_NETTRANSPORT *tr);
 
 
+/**
+ * This function starts to passively await connections from other hosts.
+ * Please note that this function MUST set the status accordingly (using
+ * @ref GWEN_NetTransport_SetStatus).
+ */
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_STARTACCEPT)(GWEN_NETTRANSPORT *tr);
 
+/**
+ * This function starts to disconnect from another host.
+ * Please note that this function MUST set the status accordingly (using
+ * @ref GWEN_NetTransport_SetStatus).
+ */
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_STARTDISCONNECT)(GWEN_NETTRANSPORT *tr);
 
+/**
+ * This function tries to read data.
+ * @param buffer pointer to a buffer for the data
+ * @param bsize pointer to a variable which holds the maxmimum number of
+ * bytes to read. Upon return this variable contains the number of bytes
+ * actually read.
+ */
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_READ)(GWEN_NETTRANSPORT *tr,
                             char *buffer,
                             int *bsize);
 
+/**
+ * This function tries to write data.
+ * @param buffer pointer to a buffer with the data
+ * @param bsize pointer to a variable which holds the maxmimum number of
+ * bytes to write. Upon return this variable contains the number of bytes
+ * actually written.
+ */
 typedef GWEN_NETTRANSPORT_RESULT
   (*GWEN_NETTRANSPORT_WRITE)(GWEN_NETTRANSPORT *tr,
                              const char *buffer,
                              int *bsize);
 
+/**
+ * This function is called when a connection manager tries to gather sockets
+ * to be used with @ref GWEN_Socket_Select.
+ * Transport which actually do not use GWEN_Sockets should return
+ * @ref GWEN_NetTransportResultOk without doing anything.
+ * @param sset pointer to the socket set to which sockets should be added
+ * @param forReading if !=0 then readable sockets are requested
+ */
 typedef int
   (*GWEN_NETTRANSPORT_ADDSOCKETS)(GWEN_NETTRANSPORT *tr,
                                   GWEN_SOCKETSET *sset,
                                   int forReading);
 
+/**
+ * Allows the transport layer to do some work.
+ */
 typedef int
-  (*GWEN_NETTRANSPORT_CHECKSOCKETS)(GWEN_NETTRANSPORT *tr,
-                                    GWEN_SOCKETSET *sset,
-                                    int forReading);
+  (*GWEN_NETTRANSPORT_WORK)(GWEN_NETTRANSPORT *tr);
 
-typedef void
-  (*GWEN_NETTRANSPORT_FREEDATA)(GWEN_NETTRANSPORT *tr);
+/*@}*/
 
 
 
 
 
-GWEN_NETTRANSPORT *GWEN_NetTransport_new(const GWEN_INETADDRESS *addr);
+/** @name Constructor And Destructor
+ *
+ */
+/*@{*/
+GWEN_NETTRANSPORT *GWEN_NetTransport_new();
 void GWEN_NetTransport_free(GWEN_NETTRANSPORT *tr);
+/*@}*/
 
 
+/** @name Connect And Disconnect
+ *
+ */
+/*@{*/
+/**
+ * This function starts to actively connect to another host.
+ * Please note that this function MUST set the status accordingly (using
+ * @ref GWEN_NetTransport_SetStatus).
+ */
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_StartConnect(GWEN_NETTRANSPORT *tr);
 
+/**
+ * This function starts to passively await connections from other hosts.
+ * Please note that this function MUST set the status accordingly (using
+ * @ref GWEN_NetTransport_SetStatus).
+ */
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_StartAccept(GWEN_NETTRANSPORT *tr);
 
+/**
+ * This function starts to disconnect from another host.
+ * Please note that this function MUST set the status accordingly (using
+ * @ref GWEN_NetTransport_SetStatus).
+ */
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_StartDisconnect(GWEN_NETTRANSPORT *tr);
 
+/**
+ * Returns the next incoming connection if the transport layer is in
+ * listening state (or 0 if there is none).
+ */
+GWEN_NETTRANSPORT *GWEN_NetTransport_GetNextIncoming(GWEN_NETTRANSPORT *tr);
+/*@}*/
 
 
+
+/** @name Reading And Writing
+ *
+ */
+/*@{*/
+/**
+ * This function tries to read data.
+ * @param buffer pointer to a buffer for the data
+ * @param bsize pointer to a variable which holds the maxmimum number of
+ * bytes to read. Upon return this variable contains the number of bytes
+ * actually read.
+ */
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_Read(GWEN_NETTRANSPORT *tr,
                          char *buffer,
                          int *bsize);
 
+/**
+ * This function tries to write data.
+ * @param buffer pointer to a buffer with the data
+ * @param bsize pointer to a variable which holds the maxmimum number of
+ * bytes to write. Upon return this variable contains the number of bytes
+ * actually written.
+ */
 GWEN_NETTRANSPORT_RESULT
   GWEN_NetTransport_Write(GWEN_NETTRANSPORT *tr,
                           const char *buffer,
                           int *bsize);
+/*@}*/
 
 
 
+/** @name Working
+ *
+ */
+/*@{*/
+/**
+ * This function is called when a connection manager tries to gather sockets
+ * to be used with @ref GWEN_Socket_Select.
+ * Transport which actually do not use GWEN_Sockets should return
+ * @ref GWEN_NetTransportResultOk without doing anything.
+ * @param sset pointer to the socket set to which sockets should be added
+ * @param forReading if !=0 then readable sockets are requested
+ */
 int GWEN_NetTransport_AddSockets(GWEN_NETTRANSPORT *tr,
                                  GWEN_SOCKETSET *sset,
                                  int forReading);
 
-int GWEN_NetTransport_CheckSockets(GWEN_NETTRANSPORT *tr,
-                                   GWEN_SOCKETSET *sset,
-                                   int forReading);
+/**
+ * Allows the transport layer to do some work.
+ */
+int GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr);
+/*@}*/
+
+
+/** @name Informational Functions
+ *
+ */
+/*@{*/
+GWEN_NETTRANSPORT_STATUS
+  GWEN_NetTransport_GetStatus(const GWEN_NETTRANSPORT *tr);
+
+void GWEN_NetTransport_SetStatus(GWEN_NETTRANSPORT *tr,
+                                 GWEN_NETTRANSPORT_STATUS st);
+
+GWEN_TYPE_UINT32
+  GWEN_NetTransport_GetFlags(const GWEN_NETTRANSPORT *tr);
+
+void GWEN_NetTransport_SetFlags(GWEN_NETTRANSPORT *tr,
+                                GWEN_TYPE_UINT32 flags);
+
+const GWEN_INETADDRESS*
+  GWEN_NetTransport_GetLocalAddr(const GWEN_NETTRANSPORT *tr);
+void GWEN_NetTransport_SetLocalAddr(GWEN_NETTRANSPORT *tr,
+                                    const GWEN_INETADDRESS *addr);
+
+const GWEN_INETADDRESS*
+  GWEN_NetTransport_GetPeerAddr(const GWEN_NETTRANSPORT *tr);
+void GWEN_NetTransport_SetPeerAddr(GWEN_NETTRANSPORT *tr,
+                                   const GWEN_INETADDRESS *addr);
+
+const char *GWEN_NetTransport_StatusName(GWEN_NETTRANSPORT_STATUS st);
+const char *GWEN_NetTransport_ResultName(GWEN_NETTRANSPORT_RESULT res);
+/*@}*/
+
+
+/** @name Functions For Inheritors
+ *
+ */
+/*@{*/
+void GWEN_NetTransport_AddNextIncoming(GWEN_NETTRANSPORT *tr,
+                                       GWEN_NETTRANSPORT *newTr);
+/*@}*/
 
 
 
+/** @name Getters And Setters For Inheritors
+ *
+ */
+/*@{*/
+void
+  GWEN_NetTransport_SetStartConnectFn(GWEN_NETTRANSPORT *tr,
+                                      GWEN_NETTRANSPORT_STARTCONNECT fn);
 
+void
+  GWEN_NetTransport_SetStartAcceptFn(GWEN_NETTRANSPORT *tr,
+                                     GWEN_NETTRANSPORT_STARTACCEPT fn);
+
+void
+  GWEN_NetTransport_SetStartDisconnectFn(GWEN_NETTRANSPORT *tr,
+                                         GWEN_NETTRANSPORT_STARTDISCONNECT fn);
+
+
+void GWEN_NetTransport_SetReadFn(GWEN_NETTRANSPORT *tr,
+                                 GWEN_NETTRANSPORT_READ fn);
+
+void GWEN_NetTransport_SetWriteFn(GWEN_NETTRANSPORT *tr,
+                                  GWEN_NETTRANSPORT_WRITE fn);
+
+void GWEN_NetTransport_SetAddSocketsFn(GWEN_NETTRANSPORT *tr,
+                                       GWEN_NETTRANSPORT_ADDSOCKETS fn);
+
+void GWEN_NetTransport_SetWorkFn(GWEN_NETTRANSPORT *tr,
+                                 GWEN_NETTRANSPORT_WORK fn);
+
+/*@}*/
+
+/*@}*/ /* defgroup */
 
 
 #endif /* GWEN_NETTRANSPORT_H */

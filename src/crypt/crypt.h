@@ -50,6 +50,7 @@ extern "C" {
 #define GWEN_CRYPT_ERROR_VERIFY             8
 #define GWEN_CRYPT_ERROR_UNSUPPORTED        9
 #define GWEN_CRYPT_ERROR_SSL                10
+#define GWEN_CRYPT_ERROR_GENERIC            11
 
 
 GWENHYWFAR_API
@@ -266,7 +267,7 @@ GWENHYWFAR_API
   void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
                                 unsigned int i);
 
-#ifdef GWEN_EXTEND_CRYPTKEY
+#if (defined(GWEN_EXTEND_CRYPTKEY) || defined(DOXYGEN))
 /**
  * This function is only available if you define <i>GWEN_EXTEND_CRYPTKEY</i>
  * to protect it against careless calls by the application.
@@ -292,7 +293,7 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   int GWEN_CryptKey_GetOpenCount(const GWEN_CRYPTKEY *key);
 
-#ifdef GWEN_EXTEND_CRYPTKEY
+#if (defined(GWEN_EXTEND_CRYPTKEY) || defined(DOXYGEN))
 GWENHYWFAR_API
   void GWEN_CryptKey_IncrementOpenCount(GWEN_CRYPTKEY *key);
 GWENHYWFAR_API
@@ -303,7 +304,7 @@ GWENHYWFAR_API
  *
  */
 /*@{*/
-#ifdef GWEN_EXTEND_CRYPTKEY
+#if (defined(GWEN_EXTEND_CRYPTKEY) || defined(DOXYGEN))
 GWENHYWFAR_API
   void GWEN_CryptKey_SetEncryptFn(GWEN_CRYPTKEY *key,
 				  GWEN_CRYPTKEY_ENCRYPT_FN encryptFn);

@@ -35,6 +35,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
+#include <gwenhywfar/types.h>
 #include <gwenhywfar/inetsocket_l.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -51,13 +52,14 @@ extern "C" {
 
 GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
   int socket;
-  int type;
+  GWEN_SOCKETTYPE type;
 };
 
 
 GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
   fd_set set;
   int highest;
+  GWEN_TYPE_UINT32 count;
 };
 
 

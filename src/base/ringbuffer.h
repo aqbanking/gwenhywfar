@@ -76,7 +76,7 @@ void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb);
  * to write. Upon return this variable contains the number of bytes actually
  * copied.
  */
-int Gwen_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
+int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
                                const char *buffer,
                                GWEN_TYPE_UINT32 *size);
 
@@ -94,7 +94,7 @@ int GWEN_RingBuffer_WriteByte(GWEN_RINGBUFFER *rb, char c);
  * to read. Upon return this variable contains the number of bytes actually
  * copied.
  */
-int Gwen_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
+int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
                               char *buffer,
                               GWEN_TYPE_UINT32 *size);
 
@@ -173,6 +173,71 @@ GWEN_TYPE_UINT32 GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb);
 void GWEN_RingBuffer_ResetMaxUsedBytes(GWEN_RINGBUFFER *rb);
 /*@}*/ /* name */
 
+
+
+/** @name Functions For Direct Manipulation Of The Buffer
+ *
+ * Please use these functions with care. These function are supported in order
+ * to avoid unnecessary copying.
+ */
+/*@{*/
+/**
+ * Returns the maximum number of bytes which can be read with a following
+ * call to @ref GWEN_RingBuffer_ReadBytes. This value (if not 0) can be
+ * used for @ref GWEN_RingBuffer_SkipBytesRead.
+ */
+GWEN_TYPE_UINT32
+  GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb);
+
+/**
+ * Returns the maximum number of bytes which can be written with a following
+ * call to @ref GWEN_RingBuffer_WriteBytes. This value (if not 0) can be
+ * used for @ref GWEN_RingBuffer_SkipBytesWrite.
+ */
+GWEN_TYPE_UINT32
+  GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb);
+
+/**
+ * Adjusts the internal pointers and statistical data as if
+ * @ref GWEN_RingBuffer_ReadBytes had been called. Please note that the
+ * size value given here MUST be <= the value returned by
+ * @ref GWEN_RingBuffer_GetMaxUnsegmentedRead !
+ */
+void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
+                                   GWEN_TYPE_UINT32 psize);
+
+/**
+ * Adjusts the internal pointers and statistical data as if
+ * @ref GWEN_RingBuffer_WriteBytes had been called. Please note that the
+ * size value given here MUST be <= the value returned by
+ * @ref GWEN_RingBuffer_GetMaxUnsegmentedWrite !
+ */
+void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
+                                    GWEN_TYPE_UINT32 psize);
+
+/**
+ * Returne the current read pointer. Please note that the return value of
+ * @ref GWEN_RingBuffer_GetMaxUnsegmentedRead indicates the maximum number
+ * of bytes at this position available! Trying to access bytes beyond that
+ * boundary will most likely result in segmentation faults.
+ * Please make sure that you call @ref GWEN_RingBuffer_SkipBytesRead after
+ * taking data from the buffer in order to keep the internal structure
+ * intact.
+ */
+const char *GWEN_RingBuffer_GetReadPointer(const GWEN_RINGBUFFER *rb);
+
+/**
+ * Returne the current write pointer. Please note that the return value of
+ * @ref GWEN_RingBuffer_GetMaxUnsegmentedWrite indicates the maximum number
+ * of bytes at this position available! Trying to access bytes beyond that
+ * boundary will most likely result in segmentation faults.
+ * Please make sure that you call @ref GWEN_RingBuffer_SkipBytesWrite after
+ * writing data to the buffer in order to keep the internal structure
+ * intact.
+ */
+char *GWEN_RingBuffer_GetWritePointer(const GWEN_RINGBUFFER *rb);
+
+/*@}*/ /* name */
 
 
 /*@}*/ /* group */

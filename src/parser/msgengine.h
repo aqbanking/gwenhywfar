@@ -188,6 +188,13 @@ GWENHYWFAR_API
                                                 const char *name,
                                                 int defValue);
 
+GWENHYWFAR_API
+  typedef GWEN_DB_NODE*
+  (*GWEN_MSGENGINE_GETGLOBALVALUES_PTR)(GWEN_MSGENGINE *e);
+
+GWENHYWFAR_API
+  typedef void (*GWEN_MSGENGINE_FREEDATA_PTR)(GWEN_MSGENGINE *e);
+
 /*@}*/
 
 
@@ -199,6 +206,9 @@ GWENHYWFAR_API
 GWEN_MSGENGINE *GWEN_MsgEngine_new();
 GWENHYWFAR_API
 void GWEN_MsgEngine_free(GWEN_MSGENGINE *e);
+
+GWENHYWFAR_API
+void GWEN_MsgEngine_Attach(GWEN_MSGENGINE *e);
 /*@}*/
 
 /** @name Setters And Getters
@@ -273,6 +283,14 @@ GWENHYWFAR_API
 GWEN_MSGENGINE_TYPECHECK_PTR
 GWEN_MsgEngine_GetTypeCheckFunction(GWEN_MSGENGINE *e);
 
+GWENHYWFAR_API void
+  GWEN_MsgEngine_SetGetGlobalValuesFunction(GWEN_MSGENGINE *e,
+                                            GWEN_MSGENGINE_GETGLOBALVALUES_PTR p);
+
+GWENHYWFAR_API
+  GWEN_MSGENGINE_GETGLOBALVALUES_PTR
+  GWEN_MsgEngine_GetGetGlobalValuesFunction(GWEN_MSGENGINE *e);
+
 /*@}*/ /* Extending Data Type Handling */
 
 
@@ -313,9 +331,13 @@ void GWEN_MsgEngine_SetGetIntValueFunction(GWEN_MSGENGINE *e,
  */
 /*@{*/
 GWENHYWFAR_API
-void *GWEN_MsgEngine_GetInheritorData(GWEN_MSGENGINE *e);
+void *GWEN_MsgEngine_GetInheritorData(const GWEN_MSGENGINE *e);
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetInheritorData(GWEN_MSGENGINE *e, void *d);
+GWENHYWFAR_API
+void GWEN_MsgEngine_SetFreeDataFunction(GWEN_MSGENGINE *e,
+                                        GWEN_MSGENGINE_FREEDATA_PTR p);
+
 /*@}*/
 
 /** @name Locating XML Nodes And Properties

@@ -74,7 +74,7 @@ void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p){
 
 
 
-GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(GWEN_XMLPROPERTY *p){
+GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(const GWEN_XMLPROPERTY *p){
   return GWEN_XMLProperty_new(p->name, p->value);
 }
 
@@ -137,9 +137,9 @@ void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n){
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n){
+GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n){
   GWEN_XMLNODE *nn, *cn, *ncn;
-  GWEN_XMLPROPERTY *p;
+  const GWEN_XMLPROPERTY *p;
 
   /* duplicate node itself */
   nn=GWEN_XMLNode_new(n->type, n->data);
@@ -178,7 +178,7 @@ void GWEN_XMLNode_del(GWEN_XMLNODE *n, GWEN_XMLNODE **head){
 }
 
 
-const char *GWEN_XMLNode_GetProperty(GWEN_XMLNODE *n, const char *name,
+const char *GWEN_XMLNode_GetProperty(const GWEN_XMLNODE *n, const char *name,
                                      const char *defaultValue){
   GWEN_XMLPROPERTY *p;
 
@@ -226,7 +226,7 @@ void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
 }
 
 
-const char *GWEN_XMLNode_GetData(GWEN_XMLNODE *n){
+const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n){
   assert(n);
   return n->data;
 }
@@ -242,13 +242,13 @@ void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data){
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n){
+GWEN_XMLNODE *GWEN_XMLNode_GetChild(const GWEN_XMLNODE *n){
   assert(n);
   return n->child;
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n){
+GWEN_XMLNODE *GWEN_XMLNode_GetParent(const GWEN_XMLNODE *n){
   assert(n);
   return n->parent;
 }
@@ -1336,19 +1336,19 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
 
 
 
-GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(GWEN_XMLNODE *n){
+GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(const GWEN_XMLNODE *n){
   assert(n);
   return n->type;
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_Next(const GWEN_XMLNODE *n) {
   assert(n);
   return n->next;
 }
 
 
-void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind) {
+void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind) {
   GWEN_XMLPROPERTY *p;
   GWEN_XMLNODE *c;
   int i;
@@ -1471,9 +1471,9 @@ void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n){
 
 
 void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
-                                 GWEN_XMLNODE *sn,
+                                 const GWEN_XMLNODE *sn,
                                  int overwrite){
-  GWEN_XMLPROPERTY *sp;
+  const GWEN_XMLPROPERTY *sp;
   GWEN_XMLPROPERTY *tp;
 
   assert(tn);
@@ -1656,7 +1656,7 @@ GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new(){
 
 
 
-GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(GWEN_XMLNODE_PATH *np){
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(const GWEN_XMLNODE_PATH *np){
   GWEN_XMLNODE_PATH *p;
   unsigned int i;
 

@@ -45,7 +45,7 @@ GWEN_ERRORCODE GWEN_Socket__StartOpen(GWEN_SOCKET *sp,
                                       const GWEN_INETADDRESS *addr){
   GWEN_ERRORCODE err;
 
-  err=GWEN_Socket_Open(sp, GWEN_SocketTypeTCP);
+  err=GWEN_Socket_Open(sp);
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);
     return err;

@@ -1,13 +1,74 @@
+
+2004/03/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- db:
+  - added function GWEN_DB_ValueExists which checks for the existence of a 
+    value of a variable by index
+  - added function GWEN_DB_GetValueTypeByPath which does the same as
+    GWEN_DB_GetValueType does but this function takes the value's index
+    number into account
+- msgengine:
+  - now uses the functions mentioned above. Now if multiple elements are
+    allowed the names of the elements are not transformed anymore.
+    Example: Before this change when using multiple elements you had to give
+    the names as (e.g. for the supported HBCI versions)
+      version=201
+      version1=210
+      version2=220
+    etc. Now you simply give them as
+      version=201, 210, 220
+
+
+2004/03/09: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- msgengine: 
+  - added attach-mechanism (this module now uses a usage counter which is
+    honoured upon GWEN_MsgEngine_free().
+
+
+2004/03/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- misc: added macros to typesafely work with lists (since there is no
+    "list<xyz>" template stuff in C I decided to create these macros).
+    This makes it much easier to work with lists in C...
+    I know, macros are very bad, but the code in GWEN_List is not typesafe,
+    and that could lead to problems which are difficult to detect.
+
+
+2004/03/07: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- msgengine: added function "freeData", now inheriting a message engine
+  works as inheriting other "classes" does
+
+
 2004-03-06  Christian Stimming  <stimming@tuhh.de>
 
 	* src/os/posix/process.c: Try to fix SIGCHLD problem some
 	more. Still doesn't work with gnucash, though.
 
+
 2004-03-05  Christian Stimming <stimming@tuhh.de>
 
 	* src/os/posix/process.c: Remember old SIGCHLD handler and call it
 	if there was one. This is vital for gnucash, where guile installs
-	its own SIGCHLD handler.
+    its own SIGCHLD handler.
+
+
+2004/03/05: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- configure.ac/gwenhywfar.m4: 
+  - added "gwenhywfar_plugins"
+  - added "gwenhywfar_headers"
+- path: 
+  - added flag GWEN_PATH_FLAGS_ESCAPE
+  - added flag GWEN_PATH_FLAGS_UNESCAPE
+  - added function GWEN_Path_Convert
+
+
+2004/03/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- keyspec: added functions to read/write a keyspec from/to a DB
+
 
 2004-02-28  Ronny Buchmann <ronny-vlug@vlugnet.org>
 
@@ -21,6 +82,24 @@
 
 	* src/os/windows/libloader.c: Append paths by backslash -- this is
 	windows.
+
+
+2004/02/20: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- Logger: 
+  - added log level "verbous"
+  - added functions for conversion from some enum types to ASCII and back
+
+
+2004/02/15: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- InetAddress: added a dup function
+- InetSocket: added function GWEN_SocketSet_GetSocketCount and a counter
+  for the number of sockets in a socket set
+- RingBuffer: added functions for direct buffer manipulation in order to
+  avoid unnecessary copying
+- BufferedIO: fixed a bug
+
 
 ===========================================================================
 MARK: released gwenhywfar-0.9.7 (2004/02/18)
@@ -46,6 +125,7 @@ MARK: released gwenhywfar-0.9.6 (2004/02/15)
 
 	* src/os/windows/libloader.c, src/os/posix/libloader.c: Fix
 	errornous query for .so/.dll suffix.
+
 
 2004/02/02: Ronny Buchmann <ronny-hbci@vlugnet.org>
 ---------------------------------------------------
@@ -96,7 +176,7 @@ MARK: released gwenhywfar-0.9.6 (2004/02/15)
 2004/01/22: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - msgengine: added properties "readbin" and "writebin" to <ELEM> tags.
-  If "type" is "bin" then these properties are checked (default to "1").
+  If "type" is "bin" then these properties are checked (defaults to "1").
   If "0" then the binary data will not be parsed (this is needed to fix a
   problem in OpenHBCI with banks, which send partial SWIFT MT942 which
   have to be combined AFTER receiving all parts. So this parsing clearly can

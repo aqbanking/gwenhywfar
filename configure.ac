@@ -76,12 +76,15 @@ AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_TAG,$GWENHYWFAR_VERSION_TAG, [tag])
 #
 # SO version
 #
-GWENHYWFAR_SO_CURRENT=4
-GWENHYWFAR_SO_REVISION=0
-GWENHYWFAR_SO_AGE=2
+GWENHYWFAR_SO_CURRENT="4"
+GWENHYWFAR_SO_REVISION="0"
+GWENHYWFAR_SO_AGE="2"
+GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
+
 AC_SUBST(GWENHYWFAR_SO_CURRENT)
 AC_SUBST(GWENHYWFAR_SO_REVISION)
 AC_SUBST(GWENHYWFAR_SO_AGE)
+AC_SUBST(GWENHYWFAR_SO_EFFECTIVE)
 
 AM_INIT_AUTOMAKE(gwenhywfar, $GWENHYWFAR_VERSION_RELEASE_STRING)
 
@@ -149,7 +152,9 @@ case "$OS_TYPE" in
     posix)
         gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
+        gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
+        gwenhywfar_plugins="`eval echo $prefix/share`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
         # check for some types
@@ -162,7 +167,9 @@ case "$OS_TYPE" in
         ACX_WINDOWS_PATHS
         gwenhywfar_libs="-L${WIN_PATH_SYSTEM_MINGW} -lgwenhywfar32"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
+        gwenhywfar_headers="`eval echo $prefix/include/gwenhywfar`"
         gwenhywfar_sections=""
+        gwenhywfar_plugins="`eval echo $prefix/share`/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_MAKE_DLL_TARGET="dll"
         GWEN_INSTALL_DLL_TARGET="dll-install"
@@ -306,6 +313,8 @@ ACX_COMPILE_WARN()
 AS_SCRUB_INCLUDE(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_plugins)
+AC_SUBST(gwenhywfar_headers)
 AC_SUBST(gwenhywfar_sections)
 AC_SUBST(gwenhywfar_needed_libs)
 AC_SUBST(GWEN_OS)

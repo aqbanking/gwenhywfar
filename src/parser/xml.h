@@ -135,7 +135,7 @@ void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n);
 
 /** Create and return a deep copy of the given node. */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n);
 /*@}*/
 
 
@@ -160,7 +160,8 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(GWEN_XMLNODE *n);
  * be retrieved
  */
 GWENHYWFAR_API
-  const char *GWEN_XMLNode_GetProperty(GWEN_XMLNODE *n, const char *name,
+  const char *GWEN_XMLNode_GetProperty(const GWEN_XMLNODE *n,
+                                       const char *name,
                                        const char *defaultValue);
 
 /**
@@ -186,7 +187,7 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
-                                   GWEN_XMLNODE *sn,
+                                   const GWEN_XMLNODE *sn,
                                    int overwrite);
 /*@}*/
 
@@ -196,11 +197,11 @@ GWENHYWFAR_API
 /*@{*/
 /** Returns the type of the given node. */
 GWENHYWFAR_API
-GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(GWEN_XMLNODE *n);
+GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(const GWEN_XMLNODE *n);
 
 /** Returns the character data of the given node. */
 GWENHYWFAR_API
-const char *GWEN_XMLNode_GetData(GWEN_XMLNODE *n);
+const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n);
 
 /** Set the character data of the given node to the given value. This
  * function will create a deep copy of the character data. */
@@ -222,7 +223,7 @@ void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
  * @return The next node on the same level, or NULL if no more element
  * exists. */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_Next(const GWEN_XMLNODE *n);
 
 /** INTERNAL. Descends in the XML tree to the first GWEN_XMLNODE below
  * the given node. The returned node may be a tag/element node, or a
@@ -232,12 +233,12 @@ GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
  * @return The first children tag/element, or NULL if none exists.
  */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetChild(const GWEN_XMLNODE *n);
 
 /** Returns the parent node of the given node, or NULL if it already
  * is the root node. */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_GetParent(GWEN_XMLNODE *n);
+  GWEN_XMLNODE *GWEN_XMLNode_GetParent(const GWEN_XMLNODE *n);
 
 /** Descends in the XML tree to the first children tag (in XML
  * notation they are called elements) below the given node.
@@ -393,7 +394,7 @@ GWENHYWFAR_API
  */
 /*@{*/
 GWENHYWFAR_API
-void GWEN_XMLNode_Dump(GWEN_XMLNODE *n, FILE *f, int ind);
+void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind);
 /*@}*/
 
 /*@}*/ /* defgroup */
@@ -411,7 +412,7 @@ typedef struct GWEN_XMLNODE_PATH GWEN_XMLNODE_PATH;
 GWENHYWFAR_API
 GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new();
 GWENHYWFAR_API
-GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(GWEN_XMLNODE_PATH *np);
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(const GWEN_XMLNODE_PATH *np);
 GWENHYWFAR_API
 void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np);
 

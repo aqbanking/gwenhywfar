@@ -60,6 +60,12 @@ const char *GWEN_BufferedIO_ErrorString(int c){
   case GWEN_BUFFEREDIO_ERROR_TIMEOUT:
     s="Transaction timout";
     break;
+  case GWEN_BUFFEREDIO_ERROR_EOF:
+    s="EOF met";
+    break;
+  case GWEN_BUFFEREDIO_ERROR_NO_DATA:
+    s="Could not read/write data";
+    break;
   default:
     s=0;
   } /* switch */
@@ -175,7 +181,7 @@ void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt, char *buffer, int len){
 
 
 int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *bt){
-  return (GWEN_BufferedIO_PeekChar(bt)==-2);
+  return (GWEN_BufferedIO_PeekChar(bt)==GWEN_BUFFEREDIO_CHAR_EOF);
 }
 
 
@@ -187,11 +193,11 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
   /* do some fast checks */
   if (bt->readerError) {
     DBG_DEBUG(0, "Error flagged");
-    return -1;
+    return GWEN_BUFFEREDIO_CHAR_ERROR;
   }
   if (bt->readerEOF) {
     DBG_DEBUG(0, "EOF flagged");
-    return -2;
+    return GWEN_BUFFEREDIO_CHAR_EOF;
   }
 
   if (bt->readerBufferPos>=bt->readerBufferFilled) {
@@ -206,9 +212,15 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 		    &i,
 		    bt->timeout);
     if (!GWEN_Error_IsOk(err)) {
+      if (GWEN_Error_GetType(err)==
+          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE) &&
+          GWEN_Error_GetCode(err)==GWEN_BUFFEREDIO_ERROR_NO_DATA) {
+        DBG_INFO(0, "Could not fill input buffer, no data");
+        return GWEN_BUFFEREDIO_CHAR_NO_DATA;
+      }
       DBG_ERROR_ERR(0, err);
       bt->readerError=1;
-      return -1;
+      return GWEN_BUFFEREDIO_CHAR_ERROR;
     }
     bt->readerBufferFilled=i;
     bt->readerBufferPos=0;
@@ -216,7 +228,7 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
   }
   if (bt->readerEOF) {
     DBG_DEBUG(0, "EOF now met");
-    return -2;
+    return GWEN_BUFFEREDIO_CHAR_EOF;
   }
   return (unsigned char)(bt->readerBuffer[bt->readerBufferPos]);
 }
@@ -264,7 +276,6 @@ GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt){
   bt->writerBufferPos=0;
   bt->writerBufferFilled=0;
   bt->writerBufferFlushPos=0;
-
   return 0;
 }
 
@@ -413,6 +424,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
       break;
     }
     c=GWEN_BufferedIO_ReadChar(bt);
+    if (c==GWEN_BUFFEREDIO_CHAR_NO_DATA) {
+      DBG_INFO(0, "No more data for now");
+      break;
+    }
     if (c<0) {
       DBG_ERROR(0, "Error while reading");
       return GWEN_Error_new(0,
@@ -578,11 +593,17 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
   /* do some fast checks */
   if (bt->readerError) {
     DBG_INFO(0, "Error flagged");
-    return -1;
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_WARN,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_READ);
   }
   if (bt->readerEOF) {
     DBG_INFO(0, "EOF flagged");
-    return -2;
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_WARN,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_READ);
   }
 
   if (bt->readerBufferPos<bt->readerBufferFilled) {
@@ -619,7 +640,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       bt->readerError=1;
-      return -1;
+      return err;
     }
     bt->readerEOF=(i==0);
     *bsize=i;
@@ -627,7 +648,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
   }
   if (bt->readerEOF) {
     DBG_DEBUG(0, "EOF now met");
-    return -2;
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_WARN,
+                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
+                          GWEN_BUFFEREDIO_ERROR_EOF);
   }
   return 0;
 }

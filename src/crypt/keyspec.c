@@ -240,6 +240,49 @@ void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent){
 
 
 
+int GWEN_KeySpec_ToDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n) {
+  GWEN_DB_SetCharValue(n,
+                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "type", ks->keyType);
+  GWEN_DB_SetCharValue(n,
+                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "name", ks->keyName);
+  GWEN_DB_SetCharValue(n,
+                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "owner", ks->owner);
+  GWEN_DB_SetIntValue(n,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "number", ks->number);
+  GWEN_DB_SetIntValue(n,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "version", ks->version);
+
+  return 0;
+}
+
+
+
+int GWEN_KeySpec_FromDb(GWEN_KEYSPEC *ks, GWEN_DB_NODE *db){
+  assert(ks);
+  assert(db);
+  GWEN_KeySpec_SetKeyName(ks,
+                          GWEN_DB_GetCharValue(db, "name", 0, ""));
+  GWEN_KeySpec_SetOwner(ks,
+                        GWEN_DB_GetCharValue(db, "owner", 0, ""));
+  GWEN_KeySpec_SetNumber(ks,
+                         GWEN_DB_GetIntValue(db, "number", 0, 0));
+  GWEN_KeySpec_SetVersion(ks,
+                          GWEN_DB_GetIntValue(db, "version", 0, 0));
+  return 0;
+}
+
+
+
+
+
+
+
+
 
 
 

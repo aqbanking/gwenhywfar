@@ -192,6 +192,20 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
 
 
 
+GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa){
+  GWEN_INETADDRESS *ia;
+
+  GWEN_NEW_OBJECT(GWEN_INETADDRESS, ia);
+  ia->af=oa->af;
+  ia->size=oa->size;
+  ia->address=(struct sockaddr *)malloc(sizeof(struct sockaddr));
+  assert(ia->address);
+  memmove(ia->address, oa->address, sizeof(struct sockaddr));
+  return ia;
+}
+
+
+
 void GWEN_InetAddr_free(GWEN_INETADDRESS *ia){
   if (ia) {
 #ifdef MEMTRACE

@@ -771,6 +771,18 @@ GWENHYWFAR_API
 int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
                            const char *path);
 
+/**
+ * Checks whether the given variable and value exists.
+ * @return Zero if variable not found, nonzero otherwise
+ * @param n root of the DB
+ * @param path path to the variable to check for
+ * @param idx index number of the variable's value to check for
+ */
+GWENHYWFAR_API
+  int GWEN_DB_ValueExists(GWEN_DB_NODE *n,
+                          const char *path,
+                          unsigned int idx);
+
 /** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
  * NODE is a Variable or not. Usually the Application does not get in
  * touch with such Nodes but only with nodes that are Groups.
@@ -853,6 +865,11 @@ unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node);
  */
 GWENHYWFAR_API 
 GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
+
+GWENHYWFAR_API
+GWEN_DB_VALUETYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
+                                             const char *p,
+                                             unsigned int i);
 
 /** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
  * NODE is a Value or not. Usually the Application does not get in

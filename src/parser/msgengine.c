@@ -55,31 +55,43 @@ GWEN_MSGENGINE *GWEN_MsgEngine_new(){
   e->globalValues=GWEN_DB_Group_new("globalvalues");
   e->escapeChar='\\';
 
+  e->usage=1;
   return e;
 }
 
 
 void GWEN_MsgEngine_free(GWEN_MSGENGINE *e){
   if (e) {
-    if (e->ownDefs)
-      GWEN_XMLNode_free(e->defs);
-    free(e->charsToEscape);
-    free(e->delimiters);
-    free(e->secMode);
-    GWEN_DB_Group_free(e->globalValues);
-    if (e->trustInfos) {
-      /* free trustInfos */
-      GWEN_MSGENGINE_TRUSTEDDATA *td, *tdn;
+    assert(e->usage);
+    if (--(e->usage)==0) {
+      if (e->inheritorData && e->freeDataPtr)
+	e->freeDataPtr(e);
+      if (e->ownDefs)
+	GWEN_XMLNode_free(e->defs);
+      free(e->charsToEscape);
+      free(e->delimiters);
+      GWEN_DB_Group_free(e->globalValues);
+      if (e->trustInfos) {
+	/* free trustInfos */
+	GWEN_MSGENGINE_TRUSTEDDATA *td, *tdn;
 
-      td=e->trustInfos;
-      while(td) {
-        tdn=td->next;
-        GWEN_MsgEngine_TrustedData_free(td);
-        td=tdn;
-      } /* while */
+	td=e->trustInfos;
+	while(td) {
+	  tdn=td->next;
+	  GWEN_MsgEngine_TrustedData_free(td);
+	  td=tdn;
+	} /* while */
+      }
+      free(e);
     }
-    free(e);
   }
+}
+
+
+
+void GWEN_MsgEngine_Attach(GWEN_MSGENGINE *e){
+  assert(e);
+  e->usage++;
 }
 
 
@@ -113,35 +125,71 @@ const char *GWEN_MsgEngine_GetCharsToEscape(GWEN_MSGENGINE *e){
 
 
 void GWEN_MsgEngine_SetMode(GWEN_MSGENGINE *e, const char *mode){
+  GWEN_DB_NODE *db;
+
   assert(e);
-  free(e->secMode);
+  db=GWEN_MsgEngine__GetGlobalValues(e);
+
   if (mode)
-    e->secMode=strdup(mode);
+    GWEN_DB_SetCharValue(db,
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "engine/secmode",
+                         mode);
   else
-    e->secMode=0;
+    GWEN_DB_DeleteVar(db, "engine/secmode");
 }
 
 
 const char *GWEN_MsgEngine_GetMode(GWEN_MSGENGINE *e){
+  GWEN_DB_NODE *db;
+
   assert(e);
-  return e->secMode;
+  db=GWEN_MsgEngine__GetGlobalValues(e);
+  return GWEN_DB_GetCharValue(db, "engine/secmode", 0, 0);
 }
 
 
-unsigned int GWEN_MsgEngine_GetProtocolVersion(GWEN_MSGENGINE *e){
+
+GWEN_DB_NODE *GWEN_MsgEngine__GetGlobalValues(GWEN_MSGENGINE *e){
+  GWEN_DB_NODE *globalValues;
+
   assert(e);
-  return e->protocolVersion;
+  if (e->getGlobalValuesPtr) {
+    globalValues=e->getGlobalValuesPtr(e);
+    if (!globalValues)
+      globalValues=e->globalValues;
+  }
+  else {
+    globalValues=e->globalValues;
+  }
+  assert(globalValues);
+  return globalValues;
+}
+
+
+
+unsigned int GWEN_MsgEngine_GetProtocolVersion(GWEN_MSGENGINE *e){
+  GWEN_DB_NODE *db;
+
+  assert(e);
+  db=GWEN_MsgEngine__GetGlobalValues(e);
+  return GWEN_DB_GetIntValue(db, "engine/pversion", 0, 0);
 }
 
 
 
 void GWEN_MsgEngine_SetProtocolVersion(GWEN_MSGENGINE *e,
                                        unsigned int p){
+  GWEN_DB_NODE *db;
+
   assert(e);
-  e->protocolVersion=p;
+  db=GWEN_MsgEngine__GetGlobalValues(e);
+
+  GWEN_DB_SetIntValue(db,
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "engine/pversion",
+                      p);
 }
-
-
 
 
 
@@ -159,6 +207,23 @@ void GWEN_MsgEngine_SetDefinitions(GWEN_MSGENGINE *e,
     GWEN_XMLNode_free(e->defs);
   e->defs=n;
   e->ownDefs=take;
+}
+
+
+
+void
+GWEN_MsgEngine_SetGetGlobalValuesFunction(GWEN_MSGENGINE *e,
+                                          GWEN_MSGENGINE_GETGLOBALVALUES_PTR p){
+  assert(e);
+  e->getGlobalValuesPtr=p;
+}
+
+
+
+GWEN_MSGENGINE_GETGLOBALVALUES_PTR
+GWEN_MsgEngine_GetGetGlobalValuesFunction(GWEN_MSGENGINE *e){
+  assert(e);
+  return e->getGlobalValuesPtr;
 }
 
 
@@ -265,10 +330,16 @@ GWEN_MsgEngine_SetGetIntValueFunction(GWEN_MSGENGINE *e,
 
 
 
+void
+GWEN_MsgEngine_SetFreeDataFunction(GWEN_MSGENGINE *e,
+                                   GWEN_MSGENGINE_FREEDATA_PTR p){
+  assert(e);
+  e->freeDataPtr=p;
+}
 
 
 
-void *GWEN_MsgEngine_GetInheritorData(GWEN_MSGENGINE *e){
+void *GWEN_MsgEngine_GetInheritorData(const GWEN_MSGENGINE *e){
   assert(e);
   return e->inheritorData;
 }
@@ -277,6 +348,8 @@ void *GWEN_MsgEngine_GetInheritorData(GWEN_MSGENGINE *e){
 
 void GWEN_MsgEngine_SetInheritorData(GWEN_MSGENGINE *e, void *d){
   assert(e);
+  if (e->inheritorData && e->freeDataPtr)
+    e->freeDataPtr(e);
   e->inheritorData=d;
 }
 
@@ -588,32 +661,18 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
       }
     } /* if (!name) */
     else {
-      char nbuffer[256];
       const char *nptr;
   
       DBG_DEBUG(0, "Name provided (%s), loop is %d", name, loopNr);
-      if (loopNr==0) {
-        nptr=name;
-      }
-      else {
-        /* create new element name including the loop number (e.g. var1) */
-        if (strlen(name)+10>=sizeof(nbuffer)) {
-	  DBG_ERROR(0, "Buffer too small");
-          GWEN_Buffer_free(data);
-          return -1;
-        }
-  
-        sprintf(nbuffer, "%s%d", name, loopNr);
-        nptr=nbuffer;
-      }
-  
+      nptr=name;
+
       if (gr) {
         GWEN_DB_VALUETYPE vt;
         int idata;
-  
+
         /* Variable type of DB takes precedence
          */
-        vt=GWEN_DB_GetVariableType(gr, nptr);
+        vt=GWEN_DB_GetValueTypeByPath(gr, nptr, loopNr);
         if (vt==GWEN_DB_VALUETYPE_UNKNOWN) {
           if (GWEN_MsgEngine__IsCharTyp(e, type))
             vt=GWEN_DB_VALUETYPE_CHAR;
@@ -633,7 +692,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
         switch(vt) {
         case GWEN_DB_VALUETYPE_CHAR:
           DBG_DEBUG(0, "Type of \"%s\" is char", name);
-          pdata=GWEN_DB_GetCharValue(gr, nptr, 0, 0);
+          pdata=GWEN_DB_GetCharValue(gr, nptr, loopNr, 0);
           if (pdata) {
             DBG_DEBUG(0, "Value of \"%s\" is %s", nptr, pdata);
             datasize=strlen(pdata);
@@ -644,8 +703,8 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   
         case GWEN_DB_VALUETYPE_INT:
           DBG_DEBUG(0, "Type of \"%s\" is int", name);
-          if (GWEN_DB_VariableExists(gr, nptr)) {
-            idata=GWEN_DB_GetIntValue(gr, nptr, 0, 0);
+          if (GWEN_DB_ValueExists(gr, nptr, loopNr)) {
+            idata=GWEN_DB_GetIntValue(gr, nptr, loopNr, 0);
             if (-1==GWEN_Text_NumToString(idata, numbuffer,
                                           sizeof(numbuffer),0)) {
               DBG_ERROR(0, "Buffer too small");
@@ -660,9 +719,9 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   
         case GWEN_DB_VALUETYPE_BIN:
           DBG_DEBUG(0, "Type of \"%s\" is bin", name);
-          pdata=GWEN_DB_GetBinValue(gr, nptr, 0, 0, 0, &datasize);
+          pdata=GWEN_DB_GetBinValue(gr, nptr, loopNr, 0, 0, &datasize);
           break;
-  
+
         default:
           DBG_WARN(0, "Unsupported parameter type (%d)", vt);
           break;
@@ -693,8 +752,10 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
           return 1;
         }
         else {
-          DBG_ERROR(0, "Value for element \"%s[%d]\" not found",
-                    name, loopNr);
+          DBG_ERROR(0,
+                    "Value for element \"%s[%d]\" (mode \"%s\") not found",
+                    name, loopNr,
+                    GWEN_MsgEngine_GetMode(e));
 	  GWEN_Buffer_free(data);
           return -1;
         }
@@ -741,7 +802,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
   GWEN_XMLNODE *n;
   const char *p;
   int i;
-  char *mode;
+  const char *mode;
   unsigned int proto;
   char buffer[256];
 
@@ -750,8 +811,8 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
     return 0;
   }
 
-  mode=e->secMode;
-  proto=e->protocolVersion;
+  mode=GWEN_MsgEngine_GetMode(e);
+  proto=GWEN_MsgEngine_GetProtocolVersion(e);
   if (!e->defs) {
     DBG_INFO(0, "No definitions available");
     return 0;
@@ -830,6 +891,10 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
                                            unsigned int *datasize) {
   const char *p;
   static char pbuffer[256];
+  GWEN_DB_NODE *globalValues;
+
+  globalValues=GWEN_MsgEngine__GetGlobalValues(e);
+  assert(globalValues);
 
   if (pvalue) {
     DBG_DEBUG(0, "Transforming value \"%s\"", pvalue);
@@ -848,7 +913,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
       if (incr) {
         int z;
 
-        z=GWEN_DB_GetIntValue(e->globalValues, p, 0, 0);
+        z=GWEN_DB_GetIntValue(globalValues, p, 0, 0);
         DBG_DEBUG(0, "Incrementing global property \"%s\" (%d)",
                   p, z);
         if (GWEN_Text_NumToString(z, pbuffer, sizeof(pbuffer),0)<1) {
@@ -858,7 +923,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
 
 	z++;
         DBG_DEBUG(0, "Setting global property \"%s\"=%d", p, z);
-        GWEN_DB_SetIntValue(e->globalValues,
+        GWEN_DB_SetIntValue(globalValues,
                             GWEN_DB_FLAGS_DEFAULT |
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             p, z);
@@ -872,9 +937,9 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
 	/* default value; otherwise the compiler issues a warning */
 
         DBG_DEBUG(0, "Getting global property \"%s\"", p);
-        vt=GWEN_DB_GetVariableType(e->globalValues, p);
+        vt=GWEN_DB_GetVariableType(globalValues, p);
         if (vt==GWEN_DB_VALUETYPE_UNKNOWN) {
-          if (!GWEN_DB_VariableExists(e->globalValues, p)) {
+          if (!GWEN_DB_VariableExists(globalValues, p)) {
             DBG_ERROR(0, "Unable to determine type of \"%s\"", p);
             return 0;
           }
@@ -894,12 +959,12 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
 
         switch(vt) {
         case GWEN_DB_VALUETYPE_CHAR:
-          pvalue=GWEN_DB_GetCharValue(e->globalValues, p, 0, "");
+          pvalue=GWEN_DB_GetCharValue(globalValues, p, 0, "");
           *datasize=strlen(pvalue);
           break;
 
         case GWEN_DB_VALUETYPE_INT:
-          z=GWEN_DB_GetIntValue(e->globalValues, p, 0, 0);
+          z=GWEN_DB_GetIntValue(globalValues, p, 0, 0);
           if (GWEN_Text_NumToString(z, pbuffer, sizeof(pbuffer),0)<1) {
             DBG_ERROR(0, "Error converting num to string");
             return 0;
@@ -909,7 +974,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
           break;
 
         case GWEN_DB_VALUETYPE_BIN:
-          pvalue=GWEN_DB_GetBinValue(e->globalValues, p, 0,
+          pvalue=GWEN_DB_GetBinValue(globalValues, p, 0,
                                      0,0,
                                      datasize);
           break;
@@ -2911,9 +2976,12 @@ int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_SetValue(GWEN_MSGENGINE *e,
                             const char *path,
                             const char *value){
+  GWEN_DB_NODE *globalValues;
+
   assert(e);
-  assert(e->globalValues);
-  return GWEN_DB_SetCharValue(e->globalValues,
+  globalValues=GWEN_MsgEngine__GetGlobalValues(e);
+  assert(globalValues);
+  return GWEN_DB_SetCharValue(globalValues,
                               GWEN_DB_FLAGS_DEFAULT |
                               GWEN_DB_FLAGS_OVERWRITE_VARS,
                               path, value);
@@ -2924,9 +2992,12 @@ int GWEN_MsgEngine_SetValue(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_SetIntValue(GWEN_MSGENGINE *e,
                                const char *path,
                                int value){
+  GWEN_DB_NODE *globalValues;
+
   assert(e);
-  assert(e->globalValues);
-  return GWEN_DB_SetIntValue(e->globalValues,
+  globalValues=GWEN_MsgEngine__GetGlobalValues(e);
+  assert(globalValues);
+  return GWEN_DB_SetIntValue(globalValues,
                              GWEN_DB_FLAGS_DEFAULT |
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
                              path, value);
@@ -2937,9 +3008,12 @@ int GWEN_MsgEngine_SetIntValue(GWEN_MSGENGINE *e,
 const char *GWEN_MsgEngine_GetValue(GWEN_MSGENGINE *e,
                                     const char *path,
                                     const char *defValue){
+  GWEN_DB_NODE *globalValues;
+
   assert(e);
-  assert(e->globalValues);
-  return GWEN_DB_GetCharValue(e->globalValues,
+  globalValues=GWEN_MsgEngine__GetGlobalValues(e);
+  assert(globalValues);
+  return GWEN_DB_GetCharValue(globalValues,
                               path, 0, defValue);
 }
 
@@ -2948,9 +3022,12 @@ const char *GWEN_MsgEngine_GetValue(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
                                const char *path,
                                int defValue){
+  GWEN_DB_NODE *globalValues;
+
   assert(e);
-  assert(e->globalValues);
-  return GWEN_DB_GetIntValue(e->globalValues,
+  globalValues=GWEN_MsgEngine__GetGlobalValues(e);
+  assert(globalValues);
+  return GWEN_DB_GetIntValue(globalValues,
                              path, 0, defValue);
 }
 

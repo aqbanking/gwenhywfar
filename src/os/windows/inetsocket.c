@@ -59,6 +59,7 @@ GWEN_ERRORCODE GWEN_Socket_ModuleInit(){
 
   if (!gwen_socket_is_initialized) {
     GWEN_ERRORCODE err;
+    int rv;
 
     /* register error type */
     gwen_socket_errorform=GWEN_ErrorType_new();
@@ -72,13 +73,13 @@ GWEN_ERRORCODE GWEN_Socket_ModuleInit(){
 
     /* setup WINSOCK (request version 1.1) */
     wVersionRequested=MAKEWORD(1,1);
-    err=WSAStartup(wVersionRequested,&wsaData);
-    if (err) {
+    rv=WSAStartup(wVersionRequested,&wsaData);
+    if (rv) {
       DBG_INFO(0, "Error on WSAStartup");
       return GWEN_Error_new(0,
                             GWEN_ERROR_SEVERITY_ERR,
                             GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                            err);
+                            rv);
     }
     /* check if the version returned is that we requested */
     if (LOBYTE(wsaData.wVersion)!=1 ||
@@ -147,6 +148,7 @@ GWEN_ERRORCODE GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
   assert(sp);
   ssp->highest=(ssp->highest<sp->socket)?sp->socket:ssp->highest;
   FD_SET(sp->socket,&(ssp->set));
+  ssp->count++;
   return 0;
 }
 
@@ -158,6 +160,7 @@ GWEN_ERRORCODE GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
   assert(sp);
   ssp->highest=(ssp->highest<sp->socket)?sp->socket:ssp->highest;
   FD_CLR(sp->socket,&(ssp->set));
+  ssp->count--;
   return 0;
 }
 
@@ -172,10 +175,20 @@ int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
 
 
 
-GWEN_SOCKET *GWEN_Socket_new(){
+int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp){
+  assert(ssp);
+  return ssp->count;
+}
+
+
+
+
+
+GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType){
   GWEN_SOCKET *sp;
 
   GWEN_NEW_OBJECT(GWEN_SOCKET, sp);
+  sp->type=socketType;
   return sp;
 }
 
@@ -188,12 +201,11 @@ void GWEN_Socket_free(GWEN_SOCKET *sp){
 
 
 
-GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp, GWEN_SOCKETTYPE socketType){
+GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp){
   int s;
 
   assert(sp);
-  sp->type=socketType;
-  switch(socketType) {
+  switch(sp->type) {
   case GWEN_SocketTypeTCP:
 #ifdef PF_INET
     s=socket(PF_INET, SOCK_STREAM,0);
@@ -355,10 +367,16 @@ GWEN_ERRORCODE GWEN_Socket_Accept(GWEN_SOCKET *sp,
   if (localSocket->socket==-1) {
     GWEN_InetAddr_free(localAddr);
     GWEN_Socket_free(localSocket);
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                          errno);
+    if (errno==EAGAIN)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_TIMEOUT);
+    else
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            errno);
   }
   localSocket->type=sp->type;
   localAddr->size=addrlen;
@@ -479,11 +497,23 @@ GWEN_ERRORCODE GWEN_Socket_Read(GWEN_SOCKET *sp,
   assert(buffer);
   assert(bsize);
   i=recv(sp->socket,buffer, *bsize,0);
-  if (i<0)
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                          errno);
+  if (i<0) {
+    if (errno==EAGAIN)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_TIMEOUT);
+    else if (errno==EINTR)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_INTERRUPTED);
+    else
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            errno);
+  }
   *bsize=i;
   return 0;
 }
@@ -503,11 +533,23 @@ GWEN_ERRORCODE GWEN_Socket_Write(GWEN_SOCKET *sp,
 #else
   i=send(sp->socket,buffer, *bsize, MSG_NOSIGNAL);
 #endif
-  if (i<0)
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                          errno);
+  if (i<0) {
+    if (errno==EAGAIN)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_TIMEOUT);
+    else if (errno==EINTR)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_INTERRUPTED);
+    else
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            errno);
+  }
   *bsize=i;
   return 0;
 }
@@ -554,10 +596,21 @@ GWEN_ERRORCODE GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
              &addrlen);
   if (i<0) {
     GWEN_InetAddr_free(localAddr);
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                          errno);
+    if (errno==EAGAIN)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_TIMEOUT);
+    else if (errno==EINTR)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_INTERRUPTED);
+    else
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            errno);
   }
   *bsize=i;
   localAddr->size=addrlen;
@@ -587,11 +640,23 @@ GWEN_ERRORCODE GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
 #endif
            addr->address,
            addr->size);
-  if (i<0)
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
-                          errno);
+  if (i<0) {
+    if (errno==EAGAIN)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_TIMEOUT);
+    else if (errno==EINTR)
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            GWEN_SOCKET_ERROR_INTERRUPTED);
+    else
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
+                            errno);
+  }
   *bsize=i;
   return 0;
 }

@@ -6,6 +6,7 @@ noinst_HEADERS=\
  buffer_p.h \
  debug_p.h \
  error_p.h \
+ inherit_p.h \
  list_p.h \
  logger_p.h \
  ringbuffer_p.h \
@@ -17,6 +18,7 @@ iheader_HEADERS=\
  buffer.h \
  debug.h \
  error.h \
+ inherit.h \
  list.h \
  logger.h \
  misc.h \
@@ -28,6 +30,7 @@ libbase_la_SOURCES=\
  buffer.c \
  debug.c \
  error.c \
+ inherit.c \
  list.c \
  logger.c \
  ringbuffer.c \

@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Mon Feb 09 2004
+    copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,60 +25,23 @@
  *                                                                         *
  ***************************************************************************/
 
-/**
- * @file chameleon/socket.h
- * @short This file contains sockets and socket sets.
- */
 
-#ifndef GWEN_SOCKET_P_H
-#define GWEN_SOCKET_P_H
-
-#include <windows.h>
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/inetsocket.h>
-#include <gwenhywfar/types.h>
-#include <sys/types.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
+#ifndef GWEN_NETMSG_P_H
+#define GWEN_NETMSG_P_H
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <gwenhywfar/netmsg.h>
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
-  int socket;
-  GWEN_SOCKETTYPE type;
+struct GWEN_NETMSG {
+  GWEN_LIST_ELEMENT(GWEN_NETMSG);
+
+  GWEN_BUFFER *buffer;
+  GWEN_TYPE_UINT32 size;
+  GWEN_DB_NODE *node;
+
+  GWEN_TYPE_UINT32 usage;
 };
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
-  int highest;
-  GWEN_TYPE_UINT32 count;
-};
-
-
-/**
- * Initializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
-
-/**
- * Deinitializes this module.
- */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
-
-
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* GWEN_SOCKET_P_H */
-
-
-

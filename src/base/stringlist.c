@@ -241,30 +241,71 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
 
 
 
-GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(GWEN_STRINGLIST *sl){
+GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(const GWEN_STRINGLIST *sl){
   assert(sl);
   return sl->first;
 }
 
 
 
-GWEN_STRINGLISTENTRY *GWEN_StringListEntry_Next(GWEN_STRINGLISTENTRY *se){
+GWEN_STRINGLISTENTRY *GWEN_StringListEntry_Next(const GWEN_STRINGLISTENTRY *se){
   assert(se);
   return se->next;
 }
 
 
 
-const char *GWEN_StringListEntry_Data(GWEN_STRINGLISTENTRY *se){
+const char *GWEN_StringListEntry_Data(const GWEN_STRINGLISTENTRY *se){
   assert(se);
   return se->data;
 }
 
 
-unsigned int GWEN_StringList_Count(GWEN_STRINGLIST *sl){
+unsigned int GWEN_StringList_Count(const GWEN_STRINGLIST *sl){
   assert(sl);
   return sl->count;
 }
+
+
+
+int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
+                              const char *s){
+  GWEN_STRINGLISTENTRY *se;
+
+  assert(sl);
+  se=sl->first;
+  while(se) {
+    if (strcmp(se->data, s)==0) {
+      return 1;
+    }
+    se=se->next;
+  } /* while */
+
+  return 0;
+}
+
+
+
+GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl){
+  GWEN_STRINGLISTENTRY *se;
+  GWEN_STRINGLIST *newsl;
+
+  assert(sl);
+  newsl=GWEN_StringList_new();
+
+  se=sl->first;
+  while(se) {
+    GWEN_STRINGLISTENTRY *newse;
+
+    newse=GWEN_StringListEntry_new(se->data, 0);
+    GWEN_StringList_AppendEntry(newsl, newse);
+    se=se->next;
+  } /* while */
+
+  return newsl;
+}
+
+
 
 
 

@@ -32,6 +32,8 @@
 extern "C" {
 #endif
 
+#include <gwenhywfar/gwenhywfarapi.h>
+
 GWENHYWFAR_API
 typedef struct GWEN_LOGGER GWEN_LOGGER;
 
@@ -44,7 +46,9 @@ GWENHYWFAR_API typedef enum {
   GWEN_LoggerTypeConsole,
   GWEN_LoggerTypeFile,
   GWEN_LoggerTypeSyslog,
-  GWEN_LoggerTypeFunction
+  GWEN_LoggerTypeFunction,
+
+  GWEN_LoggerTypeUnknown=9999
 } GWEN_LOGGER_LOGTYPE;
 
 
@@ -53,7 +57,9 @@ GWENHYWFAR_API typedef enum {
   GWEN_LoggerFacilityDaemon,
   GWEN_LoggerFacilityMail,
   GWEN_LoggerFacilityNews,
-  GWEN_LoggerFacilityUser
+  GWEN_LoggerFacilityUser,
+
+  GWEN_LoggerFacilityUnknown=9999
 } GWEN_LOGGER_FACILITY;
 
 
@@ -65,7 +71,10 @@ GWENHYWFAR_API typedef enum {
   GWEN_LoggerLevelWarning,
   GWEN_LoggerLevelNotice,
   GWEN_LoggerLevelInfo,
-  GWEN_LoggerLevelDebug
+  GWEN_LoggerLevelDebug,
+  GWEN_LoggerLevelVerbous,
+
+  GWEN_LoggerLevelUnknown=9999
 } GWEN_LOGGER_LEVEL;
 
 
@@ -182,6 +191,35 @@ void GWEN_Logger_SetFilename(GWEN_LOGGER *lg, const char *name);
 GWENHYWFAR_API
   GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(GWEN_LOGGER *lg,
                                                     GWEN_LOGGERFUNCTIONLOG fn);
+
+/**
+ * Transforms an ASCII string to a level value.
+ */
+GWENHYWFAR_API
+  GWEN_LOGGER_LEVEL GWEN_Logger_Name2Level(const char *name);
+
+
+/**
+ * Transforms a logger level to an ASCII string (for config files,
+ * command line options etc).
+ */
+GWENHYWFAR_API
+  const char *GWEN_Logger_Level2Name(GWEN_LOGGER_LEVEL level);
+
+
+/**
+ * Transforms an ASCII string into the corresponding log type.
+ */
+GWENHYWFAR_API
+  GWEN_LOGGER_LOGTYPE GWEN_Logger_Name2Logtype(const char *name);
+
+/**
+ * Transforms a log type into an ASCII string.
+ */
+GWENHYWFAR_API
+  const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt);
+
+
 
 #ifdef __cplusplus
 }

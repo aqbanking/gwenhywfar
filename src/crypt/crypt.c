@@ -88,6 +88,9 @@ const char *GWEN_Crypt_ErrorString(int c){
   case GWEN_CRYPT_ERROR_UNSUPPORTED:
     s="Function not supported.";
     break;
+  case GWEN_CRYPT_ERROR_GENERIC:
+    s="Generic crypto error.";
+    break;
   default:
     s=0;
   } /* switch */
@@ -269,18 +272,13 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
 
-  /*DBG_ERROR(0, "Reading key from here:");
-  GWEN_DB_Dump(db, stderr, 2);*/
   key=GWEN_CryptKey_Factory(GWEN_DB_GetCharValue(db, "type", 0, ""));
   assert(key);
-  GWEN_KeySpec_SetKeyName(key->keyspec,
-                          GWEN_DB_GetCharValue(db, "name", 0, ""));
-  GWEN_KeySpec_SetOwner(key->keyspec,
-                        GWEN_DB_GetCharValue(db, "owner", 0, ""));
-  GWEN_KeySpec_SetNumber(key->keyspec,
-                         GWEN_DB_GetIntValue(db, "number", 0, 0));
-  GWEN_KeySpec_SetVersion(key->keyspec,
-                          GWEN_DB_GetIntValue(db, "version", 0, 0));
+  if (GWEN_KeySpec_FromDb(key->keyspec, db)) {
+    DBG_ERROR(0, "Could not create keyspec from DB");
+    GWEN_CryptKey_free(key);
+    return 0;
+  }
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT,
                       "data");
@@ -302,22 +300,13 @@ GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
   GWEN_DB_NODE *gr;
 
   assert(key);
-  GWEN_DB_SetCharValue(db,
-                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "type", GWEN_KeySpec_GetKeyType(key->keyspec));
-  GWEN_DB_SetCharValue(db,
-                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "name", GWEN_KeySpec_GetKeyName(key->keyspec));
-  GWEN_DB_SetCharValue(db,
-                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "owner", GWEN_KeySpec_GetOwner(key->keyspec));
-  GWEN_DB_SetIntValue(db,
-                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "number", GWEN_KeySpec_GetNumber(key->keyspec));
-  GWEN_DB_SetIntValue(db,
-                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "version", GWEN_KeySpec_GetVersion(key->keyspec));
-
+  if (GWEN_KeySpec_ToDb(key->keyspec, db)) {
+    DBG_ERROR(0, "Could not store keyspec in DB");
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_GENERIC);
+  }
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT |
                       GWEN_DB_FLAGS_OVERWRITE_GROUPS,

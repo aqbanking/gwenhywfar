@@ -154,7 +154,7 @@ time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK_CTX *ctx){
 int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK_CTX *ctx){
   if (ctx==0) {
     if (!gwen_callbackstack) {
-      DBG_VERBOUS(0, "No callbacks registered (1)");
+      DBG_VERBOUS(0, "No callbacks registered");
       return 0;
     }
     ctx=GWEN_List_GetBack(gwen_callbackstack);

@@ -118,6 +118,8 @@ GWENHYWFAR_API
                                              const GWEN_SOCKET *sp);
 GWENHYWFAR_API int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
                                             const GWEN_SOCKET *sp);
+GWENHYWFAR_API int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp);
+
 /*@}*/
 /*end of group socketset */
 /*@}*/
@@ -138,7 +140,7 @@ GWENHYWFAR_API int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
 /**
  * Constructor. You should always use this to create socket variables.
  */
-GWENHYWFAR_API GWEN_SOCKET *GWEN_Socket_new();
+GWENHYWFAR_API GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType);
 
 /**
  * Destructor.
@@ -149,8 +151,7 @@ GWENHYWFAR_API void GWEN_Socket_free(GWEN_SOCKET *sp);
  * Arms the socket so that it can be used. This really creates a system
  * socket.
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp,
-                                               GWEN_SOCKETTYPE socketType);
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_Open(GWEN_SOCKET *sp);
 
 /**
  * Unarms a socket thus closing any connection associated with this socket.

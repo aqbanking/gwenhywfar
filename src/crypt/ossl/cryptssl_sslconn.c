@@ -52,7 +52,7 @@ GWEN_SSL_CONNECTION *GWEN_SSLConn_new(const char *cafile,
     conn->CAfile=strdup(cafile);
   if (capath)
     conn->CAdir=strdup(capath);
-  conn->socket=GWEN_Socket_new();
+  conn->socket=GWEN_Socket_new(GWEN_SocketTypeTCP);
   return conn;
 }
 
@@ -85,7 +85,7 @@ GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
   startt=time(0);
 
   /* create socket */
-  err=GWEN_Socket_Open(conn->socket, GWEN_SocketTypeTCP);
+  err=GWEN_Socket_Open(conn->socket);
   if (!GWEN_Error_IsOk(err)) {
     DBG_INFO_ERR(0, err);
     return err;
@@ -188,7 +188,7 @@ GWEN_ERRORCODE GWEN_SSLConn_Connect(GWEN_SSL_CONNECTION *conn,
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
       if ((distance/1000)>timeout)
-        distance=timeout/1000;
+        distance=timeout*1000;
     if (!distance)
       distance=750;
   }
@@ -355,7 +355,7 @@ GWEN_ERRORCODE GWEN_SSLConn_Disconnect(GWEN_SSL_CONNECTION *conn,
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
       if ((distance/1000)>timeout)
-        distance=timeout/1000;
+        distance=timeout*1000;
     if (!distance)
       distance=750;
   }
@@ -500,7 +500,7 @@ GWEN_ERRORCODE GWEN_SSLConn__ReadOrWrite(GWEN_SSL_CONNECTION *conn,
     distance=GWEN_WaitCallback_GetDistance(0);
     if (distance)
       if ((distance/1000)>timeout)
-        distance=timeout/1000;
+        distance=timeout*1000;
     if (!distance)
       distance=750;
   }

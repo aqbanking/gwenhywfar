@@ -31,6 +31,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/buffer.h>
 
 
 #ifdef __cplusplus
@@ -112,6 +113,24 @@ extern "C" {
  */
 #define GWEN_PATH_FLAGS_VARIABLE                0x00000080
 
+
+/**
+ * all elements of the path are to be escaped.
+ * This is usefull when used with file names etc. It makes sure that the
+ * path elements presented to the path element handler function only
+ * consist of alphanumeric characters. All other characters are escaped
+ * using @ref GWEN_Text_Escape.
+ */
+#define GWEN_PATH_FLAGS_ESCAPE                  0x00000100
+
+#define GWEN_PATH_FLAGS_UNESCAPE                0x00000200
+
+/**
+ * Allow to also escape/unescape the last path element (otherwise it will
+ * not be escaped/unescaped).
+ */
+#define GWEN_PATH_FLAGS_CONVERT_LAST            0x00000400
+
 /**
  * @internal
  */
@@ -151,6 +170,18 @@ GWENHYWFAR_API
 			 void *data,
 			 GWEN_TYPE_UINT32 flags,
 			 GWEN_PATHHANDLERPTR elementFunction);
+
+
+/**
+ * Converts the given path according to the given flags.
+ * You can use this function to escape, unescape or simply store  all path
+ * elements within a buffer. The converted path will simply be appended to
+ * the given buffer (without any leading slash).
+ */
+GWENHYWFAR_API
+  int GWEN_Path_Convert(const char *path,
+                        GWEN_BUFFER *buffer,
+                        GWEN_TYPE_UINT32 flags);
 
 
 /*@}*/ /* defgroup */

@@ -57,7 +57,7 @@ struct GWEN__XMLPROPERTY {
 
 GWEN_XMLPROPERTY *GWEN_XMLProperty_new(const char *name, const char *value);
 void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p);
-GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(GWEN_XMLPROPERTY *p);
+GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(const GWEN_XMLPROPERTY *p);
 void GWEN_XMLProperty_freeAll(GWEN_XMLPROPERTY *p);
 
 void GWEN_XMLProperty_add(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);

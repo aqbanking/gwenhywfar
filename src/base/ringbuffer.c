@@ -58,7 +58,7 @@ void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb){
 
 
 
-int Gwen_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
+int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
                                const char *buffer,
                                GWEN_TYPE_UINT32 *size){
   GWEN_TYPE_UINT32 psize;
@@ -78,6 +78,8 @@ int Gwen_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
       psize=rb->bufferSize-rb->writePos;
     else
       psize=rb->readPos-rb->writePos;
+    if (psize>bytesLeft)
+      psize=bytesLeft;
 
     memmove(rb->ptr+rb->writePos, buffer, psize);
     rb->writePos+=psize;
@@ -95,7 +97,85 @@ int Gwen_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
 
 
 
-int Gwen_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
+GWEN_TYPE_UINT32
+GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb) {
+  GWEN_TYPE_UINT32 psize;
+
+  assert(rb);
+  if (rb->bytesUsed==0) {
+    DBG_INFO(0, "Buffer empty");
+    rb->emptyCounter++;
+    return 0;
+  }
+
+  if (rb->readPos>=rb->writePos)
+    psize=rb->bufferSize-rb->readPos;
+  else
+    psize=rb->writePos-rb->readPos;
+
+  return psize;
+}
+
+
+
+GWEN_TYPE_UINT32
+GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb) {
+  GWEN_TYPE_UINT32 psize;
+
+  assert(rb);
+  if ((rb->bufferSize-rb->bytesUsed)==0) {
+    DBG_INFO(0, "Buffer full");
+    rb->fullCounter++;
+    return 0;
+  }
+
+  if (rb->writePos>=rb->readPos)
+    psize=rb->bufferSize-rb->writePos;
+  else
+    psize=rb->readPos-rb->writePos;
+
+  return psize;
+}
+
+
+
+void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
+                                   GWEN_TYPE_UINT32 psize) {
+  assert(rb);
+
+  if (rb->bytesUsed<psize) {
+    DBG_ERROR(0, "Asked to skip more bytes than available");
+    abort();
+  }
+  rb->readPos+=psize;
+  if (rb->readPos>=rb->bufferSize)
+    rb->readPos=0;
+  rb->bytesUsed-=psize;
+  rb->throughput+=psize;
+}
+
+
+
+void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
+                                    GWEN_TYPE_UINT32 psize) {
+  assert(rb);
+
+  if ((rb->bufferSize-rb->bytesUsed)<psize) {
+    DBG_ERROR(0, "Asked to skip more bytes than possible");
+    abort();
+  }
+
+  rb->writePos+=psize;
+  if (rb->writePos>=rb->bufferSize)
+    rb->writePos=0;
+  rb->bytesUsed+=psize;
+  if (rb->bytesUsed>rb->maxBytesUsed)
+    rb->maxBytesUsed=rb->bytesUsed;
+}
+
+
+
+int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
                               char *buffer,
                               GWEN_TYPE_UINT32 *size){
   GWEN_TYPE_UINT32 psize;
@@ -115,6 +195,8 @@ int Gwen_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
       psize=rb->bufferSize-rb->readPos;
     else
       psize=rb->writePos-rb->readPos;
+    if (psize>bytesLeft)
+      psize=bytesLeft;
 
     memmove(buffer, rb->ptr+rb->readPos, psize);
     rb->readPos+=psize;
@@ -250,6 +332,17 @@ void GWEN_RingBuffer_ResetEmptyCounter(GWEN_RINGBUFFER *rb) {
 
 
 
+const char *GWEN_RingBuffer_GetReadPointer(const GWEN_RINGBUFFER *rb) {
+  assert(rb);
+  return rb->ptr+rb->readPos;
+}
+
+
+
+char *GWEN_RingBuffer_GetWritePointer(const GWEN_RINGBUFFER *rb) {
+  assert(rb);
+  return rb->ptr+rb->writePos;
+}
 
 
 
