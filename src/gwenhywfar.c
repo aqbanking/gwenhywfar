@@ -78,10 +78,10 @@ GWEN_ERRORCODE GWEN_Init() {
     setlocale(LC_ALL,"");
     s=bindtextdomain("gwenhywfar",  LOCALEDIR);
     if (!s) {
-      fprintf(stderr," Error bindtextdomain()\n");
+      DBG_WARN(GWEN_LOGDOMAIN, " Error bindtextdomain()\n");
     }
     else {
-      fprintf(stderr, "Textdomain bound (%s).\n", s);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Textdomain bound (%s).\n", s);
       bind_textdomain_codeset("gwenhywfar", "UTF-8");
     }
 #endif
