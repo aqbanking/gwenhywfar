@@ -611,7 +611,7 @@ int testDialog(int argc, char **argv) {
     return 2;
   }
   GWEN_IPCXMLDialog_SetLocalKey(dlg, GWEN_CryptKey_dup(key));
-  GWEN_IPCXMLDialog_SetRemoteKey(dlg, GWEN_CryptKey_dup(key));
+  //GWEN_IPCXMLDialog_SetRemoteKey(dlg, GWEN_CryptKey_dup(key));
   GWEN_IPCXMLDialog_SetServiceCode(dlg, "Test-Service");
 
   hmsg=GWEN_HBCIMsg_new(dlg);

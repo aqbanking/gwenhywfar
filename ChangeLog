@@ -5,6 +5,7 @@ $Id$
 - module "db" can now read/write binary values from/to streams
 - added KeyManager
 - added IPCXMLKeyManager, adapted IPCXMLDialog to use it
+- fixed a bug in LIST code
 
 
 2003/11/16 Martin Preuss <martin@libchipcard.de>

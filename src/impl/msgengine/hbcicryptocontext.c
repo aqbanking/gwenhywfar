@@ -103,6 +103,7 @@ GWEN_HBCICryptoContext_GetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx){
 void GWEN_HBCICryptoContext_SetKeySpec(GWEN_HBCICRYPTOCONTEXT *ctx,
                                        const GWEN_KEYSPEC *ks){
   assert(ctx);
+  assert(ks);
   if (ctx->key)
     GWEN_KeySpec_free(ctx->key);
   ctx->key=GWEN_KeySpec_dup(ks);

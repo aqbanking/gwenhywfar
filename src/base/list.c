@@ -53,7 +53,7 @@ void GWEN_ListEntry_free(GWEN_LIST_ENTRY *le){
       le->previous=0;
       le->next=0;
       le->usage--;
-      if (le->usage) {
+      if (le->usage==0) {
         /* really free */
         free(le);
       }
@@ -186,6 +186,7 @@ void GWEN_List_Clear(GWEN_LIST *l){
     GWEN_ListEntry_free(le);
     le=nle;
   } /* while */
+  l->size=0;
 }
 
 
@@ -200,6 +201,7 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
     /* unlink from next */
     if (current->next) {
       it->current=current->next;
+      current->next->usage++;
       current->next=current->previous;
     }
     else
@@ -208,6 +210,7 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
     if (current->previous)
       current->previous=current->next;
     /* free */
+    current->usage--;
     GWEN_ListEntry_free(current);
   }
 }
@@ -220,8 +223,9 @@ GWEN_LIST_ITERATOR *GWEN_List_First(GWEN_LIST *l){
   assert(l);
   li=GWEN_ListIterator_new(l);
   li->current=l->first;
-  if (li->current)
+  if (li->current) {
     li->current->usage++;
+  }
   return li;
 }
 
@@ -336,7 +340,7 @@ void GWEN_ConstListEntry_free(GWEN_CONSTLIST_ENTRY *le){
       le->previous=0;
       le->next=0;
       le->usage--;
-      if (le->usage) {
+      if (le->usage==0) {
         /* really free */
         free(le);
       }

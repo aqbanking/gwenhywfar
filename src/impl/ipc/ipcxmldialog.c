@@ -231,15 +231,21 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
 
   if (crypt) {
     const GWEN_KEYSPEC *ks;
+    const GWEN_CRYPTKEY *tk;
 
-    if (!(dd->remoteKey)) {
+    ks=GWEN_HBCICryptoContext_GetKeySpec(ctx);
+    assert(ks);
+    tk=GWEN_KeyManager_GetKey(dd->keyManager, ks);
+    if (!tk) {
       DBG_ERROR(0, "No remote key");
       return -1;
     }
+    if (tk!=dd->remoteKey) {
+      GWEN_CryptKey_free(dd->remoteKey);
+      dd->remoteKey=GWEN_CryptKey_dup(tk);
+    }
 
-    ks=GWEN_CryptKey_GetKeySpec(dd->remoteKey);
     assert(ks);
-    GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
     if (!(dd->sessionKey)) {
       GWEN_BUFFER *kbuf;
       GWEN_BUFFER *sbuf;
@@ -300,9 +306,11 @@ int GWEN_IPCXMLDialog_PrepareCTX(GWEN_HBCIDIALOG *d,
     const GWEN_KEYSPEC *ks;
 
     /* sign */
-    ks=GWEN_CryptKey_GetKeySpec(dd->localKey);
+    if (!dd->localKey) {
+      DBG_ERROR(0, "No local key");
+      return -1;
+    }
     assert(ks);
-    GWEN_HBCICryptoContext_SetKeySpec(ctx, ks);
     GWEN_HBCICryptoContext_SetSequenceNum(ctx, dd->localSignSeq+1); /* DEBUG*/
   }
 
