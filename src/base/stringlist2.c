@@ -115,9 +115,9 @@ int GWEN_StringList2_AppendString(GWEN_STRINGLIST2 *sl2,
     }
   }
 
+  rp=GWEN_RefPtr_new((void*)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
   if (take)
     GWEN_RefPtr_AddFlags(rp, GWEN_REFPTR_FLAGS_AUTODELETE);
-  rp=GWEN_RefPtr_new((void*)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
   GWEN_List_PushBackRefPtr(sl2->listPtr, rp);
   return 1;
 }
