@@ -1,4 +1,4 @@
-EXTRA_DIST=README
+#EXTRA_DIST=README
 
 dbioplugindir=@gwenhywfar_plugins@/dbio
 
