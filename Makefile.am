@@ -1,4 +1,4 @@
-SUBDIRS=doc src gwenpp m4 plugins tools test
+SUBDIRS=admin doc src gwenpp m4 plugins tools test
 #DIST_SUBDIRS=test
 
 
@@ -31,7 +31,10 @@ gwenhywfar-config: gwenhywfar-config.in
 	cat gwenhywfar-config.in >>gwenhywfar-config && \
 	chmod a+x gwenhywfar-config
 
-srcdoc: Doxyfile
+listdoc.h:
+	admin/mklistdoc -v -I $(top_srcdir)/src/base @GWEN_HEADER_FILES@ >listdoc.h
+
+srcdoc: Doxyfile listdoc.h
 	doxygen
 
 install-srcdoc: $(PACKAGE).tag

@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=13
-GWENHYWFAR_VERSION_BUILD=15
+GWENHYWFAR_VERSION_BUILD=18
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -336,7 +336,7 @@ for d in ${GWEN_MODULES}; do
     esac
   done
 done
-
+AC_SUBST(GWEN_HEADER_FILES)
 
 
 ###-------------------------------------------------------------------------
@@ -367,11 +367,11 @@ AC_ARG_ENABLE(full-doc,
   enable_fulldoc="no")
 
 if test "$enable_fulldoc" = "yes"; then
-	DOXYGEN_INPUT="src"
+	DOXYGEN_INPUT="listdoc.h src"
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="${GWEN_HEADER_FILES}"
+	DOXYGEN_INPUT="listdoc.h ${GWEN_HEADER_FILES}"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
@@ -491,6 +491,7 @@ AC_SUBST(all_libraries)
 #
 AC_CONFIG_FILES([Doxyfile
                  Makefile
+                 admin/Makefile
                  m4/Makefile
                  gwenhywfar-config.in
 		 gwenhywfar.spec

@@ -1,3 +1,14 @@
+
+
+2004/08/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a tool which can automatically create header files appropriate for
+  doxygen (this is because normally a list defined by GWEN_LIST_FUNCTION_DEFS
+  is not documented): mklistdoc.
+  Gwen now uses this tool to include API doc for all list functions defined
+  this way.
+
+
 2004-08-02   Christian Stimming <stimming@tuhh.de>
 
 	* src/base/Makefile.am: Remove -I$(top_srcdir)/src/os because its

@@ -40,6 +40,12 @@ extern "C" {
 #include <stdio.h>
 
 
+/** @defgroup GWEN_LIST Generic List Handling
+ *  @ingroup MOD_BASE
+ * The macros of this group facilitates typesafe use of lists.
+ */
+/*@{*/
+
 typedef struct GWEN_LIST GWEN_LIST;
 
 typedef struct GWEN_CONSTLIST GWEN_CONSTLIST;
@@ -160,6 +166,10 @@ const void *GWEN_ConstListIterator_Next(GWEN_CONSTLIST_ITERATOR *li);
 
 GWENHYWFAR_API
 const void *GWEN_ConstListIterator_Data(GWEN_CONSTLIST_ITERATOR *li);
+
+
+
+/*@}*/ /* defgroup */
 
 
 #ifdef __cplusplus
