@@ -1,4 +1,9 @@
 
+2004/08/01: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base/waitcallback: fixed a bug (was unable to find callbacks by id).
+
+
 2004/07/31: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - gwenhywfar.m4: fixed a buf (was always using libgwen_pp instead of 

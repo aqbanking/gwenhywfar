@@ -54,7 +54,7 @@ static GWEN_WAITCALLBACK_LIST *gwen_waitcallback__list=0;
 GWEN_ERRORCODE GWEN_WaitCallback_ModuleInit(){
   gwen_waitcallback__root=GWEN_WaitCallback_new("");
   gwen_waitcallback__list=GWEN_WaitCallback_List_new();
-  gwen_waitcallback__current=GWEN_WaitCallback_new("");
+  gwen_waitcallback__current=gwen_waitcallback__root;
   GWEN_WaitCallback_List_Add(gwen_waitcallback__current,
                              gwen_waitcallback__list);
   return 0;
@@ -65,7 +65,6 @@ GWEN_ERRORCODE GWEN_WaitCallback_ModuleInit(){
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_ERRORCODE GWEN_WaitCallback_ModuleFini(){
   GWEN_WaitCallback_List_free(gwen_waitcallback__list);
-  GWEN_WaitCallback_free(gwen_waitcallback__root);
   return 0;
 }
 
@@ -226,16 +225,17 @@ GWEN_WAITCALLBACK *GWEN_WaitCallback__FindCallback(const char *s) {
   GWEN_WAITCALLBACK *ctx;
   void *p;
 
-  assert(gwen_waitcallback__current);
-  ctx=gwen_waitcallback__current;
+  /* always start at root */
+  assert(gwen_waitcallback__root);
+  ctx=gwen_waitcallback__root;
   if (ctx->instantiatedFrom)
     ctx=ctx->instantiatedFrom;
 
   p=GWEN_Path_Handle(s,
-                     (void*)ctx,
-                     GWEN_PATH_FLAGS_CHECKROOT,
-                     GWEN_WaitCallback__HandlePathElement);
-  if (!p){
+		     (void*)ctx,
+		     GWEN_PATH_FLAGS_CHECKROOT,
+		     GWEN_WaitCallback__HandlePathElement);
+  if (!p) {
     DBG_DEBUG(0, "Callback \"%s\" not found", s);
     return 0;
   }
@@ -344,7 +344,8 @@ void GWEN_WaitCallback_Enter(const char *id){
   ctx=GWEN_WaitCallback__FindCallback(id);
   if (!ctx) {
     if (gwen_waitcallback__current) {
-      DBG_DEBUG(0, "Callback \"%s\" not found, faking it", id);
+      DBG_INFO(0, "Callback \"%s\" not found, faking it", id);
+
       nctx=GWEN_WaitCallback_new(id);
       nctx->previousCtx=gwen_waitcallback__current;
       if (gwen_waitcallback__current->originalCtx) {
