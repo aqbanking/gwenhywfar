@@ -1447,7 +1447,8 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
         }
       }
       else {
-        DBG_NOTICE(GWEN_LOGDOMAIN, "Not adding read socket");
+	DBG_NOTICE(GWEN_LOGDOMAIN, "Not adding read socket:");
+	GWEN_NetConnection_Dump(curr);
       }
 
       /*if ((conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE) ||
@@ -1466,9 +1467,14 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
         }
       }
       else {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Not adding write socket (last result was %d)",
+	DBG_ERROR(GWEN_LOGDOMAIN,
+		  "Not adding write socket (last result was %d)",
                   curr->lastResult);
       }
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Inactive conntection:");
+      GWEN_NetConnection_Dump(curr);
     }
     curr=GWEN_NetConnection_List_Next(curr);
   } /* while */
@@ -1592,10 +1598,21 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
 
     rv=GWEN_NetConnection__Walk(connList, distance);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here");
-      GWEN_Time_free(t0);
-      GWEN_WaitCallback_Leave();
-      return rv;
+      if (count==0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here");
+	GWEN_Time_free(t0);
+	GWEN_WaitCallback_Leave();
+	return rv;
+      }
+      else {
+	/* not the first call, so this doesn't need to be an error
+	 * However, this means previous calls yielded no error, so there must
+	 * have been any kind of change if we now got an error.
+	 */
+	GWEN_Time_free(t0);
+	GWEN_WaitCallback_Leave();
+	return GWEN_NetConnectionWorkResult_Change;
+      }
     }
     else if (rv==GWEN_NetConnectionWorkResult_Change) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Walk done");

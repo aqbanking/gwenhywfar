@@ -2911,6 +2911,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
   char terminator;
   GWEN_XMLNODE *n;
   int abortLoop;
+  GWEN_BUFFER *delimBuffer=0;
 
   /* get some settings */
   if (rnode) {
@@ -2942,6 +2943,13 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
     terminator=*p;
   }
 
+  delimBuffer=GWEN_Buffer_new(0, strlen(delimiters)+2, 0, 1);
+  GWEN_Buffer_AppendString(delimBuffer, delimiters);
+  if (delimiter)
+    GWEN_Buffer_AppendByte(delimBuffer, delimiter);
+  if (terminator)
+    GWEN_Buffer_AppendByte(delimBuffer, terminator);
+
   DBG_DEBUG(GWEN_LOGDOMAIN, "Delimiters are \"%s\" and \"%c\"",
 	    delimiters, delimiter);
 
@@ -2962,7 +2970,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                            GWEN_Buffer_GetUsedBytes(msgbuf)-
                            GWEN_Buffer_GetPos(msgbuf),
                            stderr, 3);
-                           */
+      */
       if (strcasecmp(type, "ELEM")==0) {
 	unsigned int loopNr;
 
@@ -2978,49 +2986,57 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	while((maxnum==0 || loopNr<maxnum) && !abortLoop) {
           int c;
 
-          DBG_DEBUG(GWEN_LOGDOMAIN, "Reading %s", name);
+	  DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading %s", name);
           if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
             break;
 	  c=GWEN_Buffer_PeekByte(msgbuf);
 	  if (c==-1) {
 	    DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
+	    GWEN_Buffer_free(delimBuffer);
 	    return -1;
 	  }
 
           DBG_VERBOUS(GWEN_LOGDOMAIN,
-                      "Checking delimiter "
-                      "(whether \"%c\" is in \"%s\")",
-                      c, delimiters);
-          if (c && strchr(delimiters, c)) {
-            abortLoop=1;
-            DBG_VERBOUS(GWEN_LOGDOMAIN, "Found delimiter (\"%02x\" is in \"%s\")",
-                        c, delimiters);
+		      "Checking delimiter at pos %x "
+		      "(whether \"%c\" is in \"%s\")",
+		      GWEN_Buffer_GetPos(msgbuf),
+		      c, GWEN_Buffer_GetStart(delimBuffer));
+	  if (c && strchr(GWEN_Buffer_GetStart(delimBuffer), c)) {
+	    abortLoop=1;
+	    DBG_VERBOUS(GWEN_LOGDOMAIN,
+			"Found delimiter (\"%c\" is in \"%s\")",
+			c, GWEN_Buffer_GetStart(delimBuffer));
 	  } /* if delimiter found */
           else {
             /* current char is not a delimiter */
 	    if (name==0) {
-            }
+	      DBG_VERBOUS(GWEN_LOGDOMAIN, "no name");
+	    }
             else {
               /* name is given */
 	      int rv;
               const char *dtype;
-              GWEN_BUFFER *vbuf;
+	      GWEN_BUFFER *vbuf;
 
+	      DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading value from pos %x",
+			  GWEN_Buffer_GetPos(msgbuf));
 	      vbuf=GWEN_Buffer_new(0,
 				   GWEN_MSGENGINE_MAX_VALUE_LEN,
 				   0,0);
-              /*DBG_DEBUG(GWEN_LOGDOMAIN, "Reading value from here:\n");
-               GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
-                                   GWEN_Buffer_GetBytesLeft(msgbuf),
-                                   stderr, 1);*/
+              /*
+	      DBG_ERROR(GWEN_LOGDOMAIN, "Reading value from here:\n");
+	      GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
+				   GWEN_Buffer_GetBytesLeft(msgbuf),
+				   stderr, 1);*/
 
 	      rv=GWEN_MsgEngine__ReadValue(e,
-                                           msgbuf,
-                                           n,
-                                           rnode,
+					   msgbuf,
+					   n,
+					   rnode,
 					   vbuf,
-                                           ":+'",
-                                           flags);
+                                           GWEN_Buffer_GetStart(delimBuffer),
+					   //":+'",
+					   flags);
 	      if (rv==1) {
 		DBG_INFO(GWEN_LOGDOMAIN, "Empty value");
 	      }
@@ -3029,6 +3045,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                          name,
                          type);
 		GWEN_Buffer_free(vbuf);
+		GWEN_Buffer_free(delimBuffer);
 		return -1;
               }
 
@@ -3046,6 +3063,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                 if (rv==-1) {
                   DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
 		  GWEN_Buffer_free(vbuf);
+		  GWEN_Buffer_free(delimBuffer);
                   return -1;
                 }
                 else if (rv==1) {
@@ -3057,6 +3075,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 					  GWEN_Buffer_GetUsedBytes(vbuf))) {
 		    DBG_INFO(GWEN_LOGDOMAIN, "Could not set value for \"%s\"", name);
 		    GWEN_Buffer_free(vbuf);
+		    GWEN_Buffer_free(delimBuffer);
 		    return -1;
 		  }
 		}
@@ -3067,12 +3086,14 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 		if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
 		  DBG_INFO(GWEN_LOGDOMAIN, "Value for \"%s\" is not an integer",
 			   name);
+		  GWEN_Buffer_free(delimBuffer);
 		  return -1;
 		}
 		if (GWEN_DB_SetIntValue(gr,
                                         GWEN_DB_FLAGS_DEFAULT,
 					name, z)) {
                   DBG_INFO(GWEN_LOGDOMAIN, "Could not set int value for \"%s\"", name);
+		  GWEN_Buffer_free(delimBuffer);
                   return -1;
                 }
               } /* if type is int */
@@ -3084,6 +3105,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 					 name,
 					 GWEN_Buffer_GetStart(vbuf))){
 		  DBG_INFO(GWEN_LOGDOMAIN, "Could not set value for \"%s\"", name);
+		  GWEN_Buffer_free(delimBuffer);
 		  return -1;
 		}
               } /* if !bin */
@@ -3104,6 +3126,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	if (loopNr<minnum) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (too few ELEM repeats)");
           GWEN_XMLNode_Dump(n, stderr, 2);
+	  GWEN_Buffer_free(delimBuffer);
 	  return -1;
 	}
 	n=GWEN_XMLNode_Next(n);
@@ -3138,6 +3161,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                                                gversion, gtype);
 	  if (!gn) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Definition for type \"%s\" not found", type);
+	    GWEN_Buffer_free(delimBuffer);
 	    return -1;
 	  }
 	}
@@ -3152,7 +3176,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
             break;
           c=GWEN_Buffer_PeekByte(msgbuf);
-          if (c && strchr(delimiters, c)) {
+	  if (c && strchr(GWEN_Buffer_GetStart(delimBuffer), c)) {
             abortLoop=1;
           }
           else {
@@ -3165,6 +3189,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	      if (!gcfg) {
 		DBG_ERROR(GWEN_LOGDOMAIN, "Could not select group \"%s\"",
 			  gname);
+		GWEN_Buffer_free(delimBuffer);
 		return -1;
               }
               DBG_DEBUG(GWEN_LOGDOMAIN, "Created group \"%s\"", gname);
@@ -3179,9 +3204,10 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 					  gn,
 					  n,
 					  gcfg,
-                                          delimiters,
-                                          flags)) {
+					  GWEN_Buffer_GetStart(delimBuffer),
+					  flags)) {
 	      DBG_INFO(GWEN_LOGDOMAIN, "Could not read group \"%s\"", gtype);
+	      GWEN_Buffer_free(delimBuffer);
 	      return -1;
 	    }
 	  }
@@ -3196,6 +3222,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	} /* while */
 	if (loopNr<minnum) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (too few group repeats)");
+	  GWEN_Buffer_free(delimBuffer);
 	  return -1;
 	}
 	n=GWEN_XMLNode_Next(n);
@@ -3217,6 +3244,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	if (i) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (still tags to parse)");
           GWEN_XMLNode_Dump(n, stderr, 2);
+	  GWEN_Buffer_free(delimBuffer);
 	  return -1;
 	}
       }
@@ -3232,18 +3260,26 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
         GWEN_Buffer_IncrementPos(msgbuf, 1);
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Terminating character missing (pos=%d)",
-		  GWEN_Buffer_GetPos(msgbuf));
+	DBG_ERROR(GWEN_LOGDOMAIN,
+		  "Terminating character missing (pos=%d [%x]) "
+		  "expecting \"%c\", got \"%c\")",
+		  GWEN_Buffer_GetPos(msgbuf),
+		  GWEN_Buffer_GetPos(msgbuf),
+                  terminator,
+		  GWEN_Buffer_PeekByte(msgbuf));
 	GWEN_XMLNode_Dump(node, stderr, 1);
+	GWEN_Buffer_free(delimBuffer);
 	return -1;
       }
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Terminating character missing");
+      GWEN_Buffer_free(delimBuffer);
       return -1;
     }
   }
 
+  GWEN_Buffer_free(delimBuffer);
   return 0;
 }
 
@@ -3537,12 +3573,17 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                       mbuf,
                                       storegrp,
                                       flags)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing segment \"%s\"",p);
-        GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
-                             GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
-                             stderr, 1);
-        GWEN_DB_Group_free(tmpdb);
-        return -1;
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing segment \"%s\" at %d (%x)",
+		  p,
+		  GWEN_Buffer_GetPos(mbuf)-startPos,
+		  GWEN_Buffer_GetPos(mbuf)-startPos);
+	GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
+			     GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
+			     stderr, 1);
+	DBG_ERROR(GWEN_LOGDOMAIN, "Stored data so far:");
+	GWEN_DB_Dump(storegrp, stderr, 2);
+	GWEN_DB_Group_free(tmpdb);
+	return -1;
       }
 
       /* store segment size within DB */

@@ -2,6 +2,28 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/03/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added message digest SHA1
+- simplified GWEN_Buffer functions for inserting bytes
+- added functions
+  - GWEN_Buffer_InsertRoom()
+  - GWEN_Buffer_FillLeftWithBytes()
+  - GWEN_MD_HashToBuffer()
+  - GWEN_Padd_PaddWithPkcs1Bt1()
+  - GWEN_Padd_UnpaddWithPkcs1Bt1()
+  - GWEN_Padd_PaddWithPkcs1Bt2()
+  - GWEN_Padd_UnpaddWithPkcs1Bt2()
+- added GWEN_CryptToken framework (generic interface to cryptographic tokens,
+  like keyfiles or chipcards)
+
+
+2005/03/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in MsgEngine (was not taking all delimiters and terminators
+  into account)
+
+
 2005/03/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - GWEN_Netconnection_Walk() now returns a timeout rather than an error when 

@@ -320,5 +320,48 @@ int GWEN_MD_Hash(const char *typ,
 
 
 
+int GWEN_MD_HashToBuffer(const char *typ,
+                         const char *data,
+                         unsigned int dsize,
+                         GWEN_BUFFER *dstBuf){
+  GWEN_MD *md;
+  unsigned int i;
+
+  md=GWEN_MD_Factory(typ);
+  if (!md) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    return -1;
+  }
+
+  if (GWEN_MD_Begin(md)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_MD_free(md);
+    return -1;
+  }
+
+  if (GWEN_MD_Update(md, data, dsize)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_MD_free(md);
+    return -1;
+  }
+
+  if (GWEN_MD_End(md)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_MD_free(md);
+    return -1;
+  }
+
+  i=GWEN_MD_GetDigestSize(md);
+  assert(i);
+  GWEN_Buffer_AppendBytes(dstBuf, GWEN_MD_GetDigestPtr(md), i);
+  GWEN_MD_free(md);
+  return 0;
+}
+
+
+
+
+
+
 
 

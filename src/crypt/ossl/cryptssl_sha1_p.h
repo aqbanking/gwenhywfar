@@ -2,8 +2,8 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Mon Jan 05 2004
- copyright   : (C) 2004 by Martin Preuss
+ begin       : Thu Dec 18 2003
+ copyright   : (C) 2003 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,20 +25,39 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_PADD_P_H
-#define GWEN_PADD_P_H
+
+#ifndef GWENHYWFAR_CRYPTSSL_SHA1_P_H
+#define GWENHYWFAR_CRYPTSSL_SHA1_P_H
 
 
-#define GWEN_PADD_ISO9796_KEYSIZE 96
+#define GWEN_MD_SHA1_NAME "SHA1"
+
+#include <gwenhywfar/md.h>
+#include <openssl/sha.h>
+#include <openssl/objects.h>
 
 
-#include <gwenhywfar/padd.h>
+GWEN_ERRORCODE GWEN_MdSha1_Register();
+
+GWEN_MD *GWEN_MdSha1_new();
+void GWEN_MdSha1_FreeData(GWEN_MD *md);
+
+int GWEN_MdSha1_Begin(GWEN_MD *md);
+int GWEN_MdSha1_End(GWEN_MD *md);
+int GWEN_MdSha1_Update(GWEN_MD *md,
+                       const char *buf,
+                       unsigned int l);
 
 
-unsigned char GWEN_Padd_permutate(unsigned char input);
-
-int GWEN_Padd__UnpaddWithPkcs1Bt1Or2(GWEN_BUFFER *buf);
 
 
-#endif /* GWEN_PADD_P_H */
+
+
+
+
+
+
+
+#endif
+
 

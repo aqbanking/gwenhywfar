@@ -71,6 +71,9 @@ extern "C" {
 #define GWEN_ERROR_GENERIC              (-1)
 #define GWEN_ERROR_ABORTED              (-2)
 #define GWEN_ERROR_NOT_AVAILABLE        (-3)
+#define GWEN_ERROR_USER_ABORTED         (-4)
+#define GWEN_ERROR_OPEN                 (-5)
+#define GWEN_ERROR_INVALID              (-6)
 /* socket errors */
 #define GWEN_ERROR_BAD_SOCKETTYPE       (-32)
 #define GWEN_ERROR_NOT_OPEN             (-33)

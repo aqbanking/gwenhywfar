@@ -34,6 +34,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/crypt.h>
+#include <gwenhywfar/error.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -174,6 +175,151 @@ int GWEN_Padd_UnpaddWithANSIX9_23(GWEN_BUFFER *src) {
   GWEN_Buffer_SetPos(src, lastpos-paddLength);
   return 0;
 }
+
+
+
+int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *buf, int dstSize){
+  unsigned int diff;
+  unsigned char *p;
+
+  if (dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
+    return GWEN_ERROR_INVALID;
+  }
+  diff=dstSize-GWEN_Buffer_GetUsedBytes(buf);
+  if (diff<11) {
+    /* honour minimum padding length for BT 1 of 8 bytes, plus the
+     * leading and the trailing zero and the block type identifier */
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Buffer contains too many bytes (diff is <11)");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* reset position to 0 */
+  GWEN_Buffer_Rewind(buf);
+  if (GWEN_Buffer_InsertRoom(buf, diff)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not insert room for %d bytes", diff);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  p=GWEN_Buffer_GetStart(buf);
+  *(p++)=0x00;
+  *(p++)=0x01; /* block type 01 */
+  if (diff>11) {
+    memset(p, 0xff, diff-11);
+    p+=diff-11;
+  }
+  *(p++)=0x00;
+
+  return 0;
+}
+
+
+
+int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize){
+  unsigned int diff;
+  unsigned char *p;
+  unsigned int i;
+
+  if (dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
+    return GWEN_ERROR_INVALID;
+  }
+  diff=dstSize-GWEN_Buffer_GetUsedBytes(buf);
+  if (diff<11) {
+    /* honour minimum padding length for BT 1 of 8 bytes, plus the
+     * leading and the trailing zero and the block type identifier */
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Buffer contains too many bytes (diff is <11)");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* reset position to 0 */
+  GWEN_Buffer_Rewind(buf);
+  if (GWEN_Buffer_InsertRoom(buf, diff)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not insert room for %d bytes", diff);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  p=GWEN_Buffer_GetStart(buf);
+  *(p++)=0x00;
+  *(p++)=0x02; /* block type 02 */
+  for (i=0; i<diff-11; i++) {
+    int r;
+
+    while((r=random() & 0xff)==0);
+    *(p++)=(unsigned char)r;
+  }
+  *(p++)=0x00;
+
+  return 0;
+}
+
+
+
+int GWEN_Padd__UnpaddWithPkcs1Bt1Or2(GWEN_BUFFER *buf) {
+  unsigned char *p;
+  GWEN_TYPE_UINT32 len;
+  GWEN_TYPE_UINT32 paddBytes;
+
+  assert(buf);
+  len=GWEN_Buffer_GetUsedBytes(buf);
+  assert(len);
+
+  p=GWEN_Buffer_GetStart(buf);
+  if  (*p==0) {
+    p++;
+    len--;
+  }
+  if (len<11) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes left (%d)", len);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (*p!=0x01 && *p!=0x02) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unsupported block type %02x", *p);
+    return GWEN_ERROR_INVALID;
+  }
+  p++; len--;
+
+  /* skip padding bytes */
+  paddBytes=0;
+  while(*p!=0x00 && len) {
+    p++; len--;
+    paddBytes++;
+  }
+
+  if (*p!=0x00) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding");
+    return GWEN_ERROR_INVALID;
+  }
+  p++; len--;
+
+  if (paddBytes<8) {
+    /* at least 8 padding bytes are needed */
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (too few padding bytes)");
+    return GWEN_ERROR_INVALID;
+  }
+
+  GWEN_Buffer_Crop(buf, GWEN_Buffer_GetUsedBytes(buf)-len, len);
+
+  return 0;
+}
+
+
+
+int GWEN_Padd_UnpaddWithPkcs1Bt1(GWEN_BUFFER *src){
+  return GWEN_Padd__UnpaddWithPkcs1Bt1Or2(src);
+}
+
+
+
+int GWEN_Padd_UnpaddWithPkcs1Bt2(GWEN_BUFFER *src){
+  return GWEN_Padd__UnpaddWithPkcs1Bt1Or2(src);
+}
+
+
+
 
 
 

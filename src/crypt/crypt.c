@@ -42,6 +42,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 static int gwen_crypt_is_initialized=0;
@@ -115,6 +116,10 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleInit(){
       GWEN_Error_UnregisterType(gwen_crypt_errorform);
       return err;
     }
+    /* seed random */
+    srandom((unsigned int)time(0));
+    srand((unsigned int)time(0));
+
     gwen_crypt_is_initialized=1;
   }
   return 0;

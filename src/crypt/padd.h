@@ -50,22 +50,45 @@ extern "C" {
  * This function padds the given buffer according to ISO9796.
  * The given buffer is expected to contain a 20 byte hash created using
  * RIPEMD 160. This is padded to 96 bytes according to ISO 9796 (including
- * appendices).
+ * appendix A4).
  */
+GWENHYWFAR_API
 int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src);
 
 /**
  * This function is used to pad the plain text data to a multiple of 8 bytes
  * size before encrypting it.
+ * This is done by adding bytes to the buffer until its length is multiple of
+ * 8 bytes. The byte added is the number of padding bytes appended.
+ * Example: Buffer initially contains 5 bytes, so 3 bytes are needed to make
+ * the buffer length a multiple of 8. So the number "3" is added three times.
+ * Please note that if the buffer initially has a multiple of 8 bytes then
+ * 8 bytes are added (this is needed to make sure the unpadd function can
+ * always recover data padded in this manner).
+ *
  */
+GWENHYWFAR_API
 int GWEN_Padd_PaddWithANSIX9_23(GWEN_BUFFER *src);
 
 /**
  * This function is used to remove padding from plain text data after
  * decrypting it.
  */
+GWENHYWFAR_API
 int GWEN_Padd_UnpaddWithANSIX9_23(GWEN_BUFFER *src);
 
+
+GWENHYWFAR_API
+int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *src, int dstSize);
+
+GWENHYWFAR_API
+int GWEN_Padd_UnpaddWithPkcs1Bt1(GWEN_BUFFER *src);
+
+GWENHYWFAR_API
+int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *src, int dstSize);
+
+GWENHYWFAR_API
+int GWEN_Padd_UnpaddWithPkcs1Bt2(GWEN_BUFFER *src);
 
 /*@}*/
 

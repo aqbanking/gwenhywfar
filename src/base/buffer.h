@@ -241,6 +241,11 @@ int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
                               unsigned char c,
                               GWEN_TYPE_UINT32 size);
 
+GWENHYWFAR_API
+int GWEN_Buffer_FillLeftWithBytes(GWEN_BUFFER *bf,
+                                  unsigned char c,
+                                  GWEN_TYPE_UINT32 size);
+
 
 /**
  * Appends a string to the buffer (without the trailing null char!)
@@ -275,10 +280,27 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
                             const char *buffer,
                             GWEN_TYPE_UINT32 size);
 
+/**
+ * This function makes room for the given number of bytes at the current
+ * buffer position. It moves any existing data at the current position
+ * out of the way.
+ * The position pointer will not be altered, but after calling this function
+ * at that position there is the begin of the newly inserted room.
+ * All pointers obtained from this module (e.g. via
+ * @ref GWEN_Buffer_GetStart) become invalid !
+ */
+GWENHYWFAR_API
+int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
+                           GWEN_TYPE_UINT32 size);
+
 
 /**
  * Inserts the given string at the current position (without the trailing
  * null byte)
+ * The position pointer will not be altered, but after calling this function
+ * at that position there is the begin of the newly inserted string.
+ * All pointers obtained from this module (e.g. via
+ * @ref GWEN_Buffer_GetStart) become invalid !
  */
 GWENHYWFAR_API
 int GWEN_Buffer_InsertString(GWEN_BUFFER *bf,
@@ -290,8 +312,10 @@ int GWEN_Buffer_InsertString(GWEN_BUFFER *bf,
  * of the buffer then that space will be used.
  * Otherwise the data at the current position will be moved out of the way
  * and the new byte inserted.
- * The position pointer will not be altered, but all pointers obtained from
- * this module (e.g. via @ref GWEN_Buffer_GetStart) become invalid !
+ * The position pointer will not be altered, but after calling this function
+ * at that position there is the begin of the newly inserted byte.
+ * All pointers obtained from this module (e.g. via
+ * @ref GWEN_Buffer_GetStart) become invalid !
  */
 GWENHYWFAR_API
 int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c);

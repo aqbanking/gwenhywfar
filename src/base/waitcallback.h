@@ -32,6 +32,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/logger.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -197,7 +198,7 @@ GWENHYWFAR_API
  * Internally calls @ref GWEN_WAITCALLBACK_LOGFN.
  */
 GWENHYWFAR_API
-  void GWEN_WaitCallback_Log(unsigned int loglevel,
+  void GWEN_WaitCallback_Log(GWEN_LOGGER_LEVEL logLevel,
                              const char *s);
 /*@}*/
 

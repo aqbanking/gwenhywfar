@@ -31,6 +31,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,11 +78,18 @@ int GWEN_MD_Update(GWEN_MD *md,
  * @param bsize pointer to a variable that initially holds the size of the
  * buffer. Upon return it will hold the size of the hash data.
  */
+GWENHYWFAR_API
 int GWEN_MD_Hash(const char *algo,
                  const char *data,
                  unsigned int dsize,
                  char *buffer,
                  unsigned int *bsize);
+
+GWENHYWFAR_API
+int GWEN_MD_HashToBuffer(const char *typ,
+                         const char *data,
+                         unsigned int dsize,
+                         GWEN_BUFFER *dstBuf);
 
 
 /** @name Functions for Inheriting Modules

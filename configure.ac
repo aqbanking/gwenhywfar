@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=5
+GWENHYWFAR_VERSION_BUILD=7
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -355,7 +355,7 @@ AM_GNU_GETTEXT_VERSION(0.14.1)
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/io src/ipc src/os src/os/${GWEN_OS}"
+GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/os src/os/${GWEN_OS}"
 GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
@@ -590,6 +590,7 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  src/crypt/Makefile
                  src/crypt/ossl/Makefile
                  src/crypt/none/Makefile
+                 src/crypt2/Makefile
                  src/io/Makefile
                  src/ipc/Makefile
                  src/os/Makefile

@@ -35,6 +35,7 @@
 #include "cryptssl_des_p.h"
 #include "cryptssl_rsa_p.h"
 #include "cryptssl_md5_p.h"
+#include "cryptssl_sha1_p.h"
 #include "cryptssl_rmd160_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -81,6 +82,13 @@ GWEN_ERRORCODE GWEN_CryptImpl_Init(){
 
   DBG_INFO(GWEN_LOGDOMAIN, "Registering MD5");
   lerr=GWEN_MdMd5_Register();
+  if (!GWEN_Error_IsOk(lerr)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    err=lerr;
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Registering SHA1");
+  lerr=GWEN_MdSha1_Register();
   if (!GWEN_Error_IsOk(lerr)) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     err=lerr;

@@ -725,9 +725,8 @@ void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
 
 
 
-int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
-                            const char *buffer,
-                            GWEN_TYPE_UINT32 size){
+int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
+                           GWEN_TYPE_UINT32 size){
   char *p;
   int i;
 
@@ -736,23 +735,19 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
   if (bf->pos==0) {
     if (bf->bytesUsed==0) {
       int rv;
-      GWEN_TYPE_UINT32 pos;
 
-      /* no bytes used, simply append data */
-      pos=bf->pos;
-      rv=GWEN_Buffer_AppendBytes(bf, buffer, size);
+      /* no bytes used, simply return */
+      rv=GWEN_Buffer_AllocRoom(bf, size);
       if (rv) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "here");
+        DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
         return rv;
       }
-      bf->pos=pos;
       return 0;
     }
     else {
       if ( (bf->ptr - bf->realPtr) >= (int)size ) {
-        /* we can simply insert it by occupying the reserved space */
+        /* simply occupy the reserved space */
         bf->ptr-=size;
-        memmove(bf->ptr, buffer, size);
         bf->bytesUsed+=size;
         bf->bufferSize+=size;
         GWEN_Buffer_AdjustBookmarks(bf, bf->pos, size);
@@ -776,8 +771,6 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
   if (i>0)
     /* move current data at pos out of the way */
     memmove(p+size, p, i);
-  /* copy in new data */
-  memmove(bf->ptr+bf->pos, buffer, size);
   bf->bytesUsed+=size;
   GWEN_Buffer_AdjustBookmarks(bf, bf->pos, size);
   return 0;
@@ -785,45 +778,28 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
 
 
 
+int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
+                            const char *buffer,
+                            GWEN_TYPE_UINT32 size){
+  assert(bf);
+  assert(buffer);
+
+  if (GWEN_Buffer_InsertRoom(bf, size)) {
+    return -1;
+  }
+  memmove(bf->ptr+bf->pos, buffer, size);
+  return 0;
+}
+
+
+
 int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c){
-  char *p;
-  int i;
   assert(bf);
 
-  if (bf->pos==0) {
-    if ((bf->ptr-bf->realPtr)>=1) {
-      /* we can simply insert it by occupying the reserved space */
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Using reserved space");
-      bf->ptr--;
-      bf->ptr[bf->pos]=c;
-      bf->bytesUsed++;
-      bf->bufferSize++;
-      GWEN_Buffer_AdjustBookmarks(bf, bf->pos, 1);
-      return 0;
-    }
-  }
-
-  if (GWEN_Buffer_AllocRoom(bf, 1)) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
+  if (GWEN_Buffer_InsertRoom(bf, 1)) {
     return -1;
   }
-  if (bf->pos+1>bf->bufferSize) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Buffer full (%d [%d] of %d bytes)",
-              bf->pos, 1,
-              bf->bufferSize);
-    return -1;
-  }
-  p=bf->ptr+bf->pos;
-  i=bf->bytesUsed-bf->pos;
-  if (i>0)
-    /* move current data at pos out of the way */
-    memmove(p+1, p, i);
-
-  /* copy in new data */
   bf->ptr[bf->pos]=c;
-  bf->bytesUsed++;
-  GWEN_Buffer_AdjustBookmarks(bf, bf->pos, 1);
   return 0;
 }
 
@@ -919,6 +895,20 @@ int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
   bf->bytesUsed+=size;
   /* append a NULL to allow using the buffer as ASCIIZ string */
   bf->ptr[bf->bytesUsed]=0;
+  return 0;
+}
+
+
+
+int GWEN_Buffer_FillLeftWithBytes(GWEN_BUFFER *bf,
+                                  unsigned char c,
+                                  GWEN_TYPE_UINT32 size){
+  assert(bf);
+
+  if (GWEN_Buffer_InsertRoom(bf, size)) {
+    return -1;
+  }
+  memset(bf->ptr+bf->pos, c, size);
   return 0;
 }
 
