@@ -802,7 +802,7 @@ int GWEN_NetTransportSSL__SetupSSL(GWEN_NETTRANSPORT *tr, int fd){
       }
 
       /* check for usability */
-      if (DH_check(dh_tmp, &codes)){
+      if (!DH_check(dh_tmp, &codes)){
 	int sslerr;
 
 	sslerr=SSL_get_error(skd->ssl, rv);
@@ -1723,8 +1723,7 @@ int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits) {
   FILE *f;
 
 #ifdef GWEN_RANDOM_DEVICE
-  if (!RAND_load_file(GWEN_RANDOM_DEVICE
-		      "/dev/urandom", 40)) {
+  if (!RAND_load_file(GWEN_RANDOM_DEVICE, 40)) {
     DBG_ERROR(0, "Could not seed random (maybe \"%s\" is missing?)",
 	      GWEN_RANDOM_DEVICE);
     return -1;
