@@ -59,12 +59,11 @@ GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
   if (gwen_is_initialized==0) {
-    GWEN_Error_ModuleInit();
-    err=GWEN_Memory_ModuleInit();
+    err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(0, "Initializing Logger module");
-    err=GWEN_Logger_ModuleInit();
+    GWEN_Error_ModuleInit();
+    err=GWEN_Memory_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     DBG_DEBUG(0, "Initializing InetAddr module");

@@ -107,6 +107,7 @@ GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_Find(const char *name) {
   while(ld) {
     if (strcasecmp(ld->name, name)==0)
       break;
+    ld=ld->next;
   }
 
   return ld;
