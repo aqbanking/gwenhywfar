@@ -213,7 +213,7 @@ GWEN_XMLNODE *GWEN_XMLNode_Next(GWEN_XMLNODE *n);
  * property/attribute node, or a data node. You will probably prefer
  * to use GWEN_XMLNode_GetFirstTag() instead of this function.
  *
- * @return The first children tag/element, or NULL if none exists. */
+ * @return The first children tag/element, or NULL if none exists.
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetChild(GWEN_XMLNODE *n);
