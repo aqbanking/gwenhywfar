@@ -192,7 +192,27 @@ void GWEN_List_Clear(GWEN_LIST *l){
   l->size=0;
 }
 
+void *GWEN_List_ForEach(GWEN_LIST *l, 
+			GWEN_LIST_FOREACH_CB fn, void *user_data){
+  GWEN_LIST_ITERATOR *it;
+  void *el;
+  assert(l);
 
+  it = GWEN_List_First(l);
+  if (!it)
+    return 0;
+  el = GWEN_ListIterator_Data(it);
+  while(el) {
+    el = fn(el, user_data);
+    if (el) {
+      GWEN_ListIterator_free(it);
+      return el;
+    }
+    el = GWEN_ListIterator_Next(it);
+  }
+  GWEN_ListIterator_free(it);
+  return 0;
+}
 
 void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
   GWEN_LIST_ENTRY *current;
@@ -545,6 +565,28 @@ void GWEN_ConstList_Clear(GWEN_CONSTLIST *l){
 }
 
 
+const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *l, 
+				   GWEN_CONSTLIST_FOREACH_CB fn,
+				   void *user_data){
+  GWEN_CONSTLIST_ITERATOR *it;
+  const void *el;
+  assert(l);
+
+  it = GWEN_ConstList_First(l);
+  if (!it)
+    return 0;
+  el = GWEN_ConstListIterator_Data(it);
+  while(el) {
+    el = fn(el, user_data);
+    if (el) {
+      GWEN_ConstListIterator_free(it);
+      return el;
+    }
+    el = GWEN_ConstListIterator_Next(it);
+  }
+  GWEN_ConstListIterator_free(it);
+  return 0;
+}
 
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_First(GWEN_CONSTLIST *l){
   GWEN_CONSTLIST_ITERATOR *li;

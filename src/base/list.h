@@ -48,7 +48,12 @@ extern "C" {
 
 typedef struct GWEN_LIST GWEN_LIST;
 
+typedef void *(*GWEN_LIST_FOREACH_CB)(void *element, void *user_data);
+
 typedef struct GWEN_CONSTLIST GWEN_CONSTLIST;
+
+typedef const void *(*GWEN_CONSTLIST_FOREACH_CB)(const void *element,
+						 void *user_data);
 
 typedef struct GWEN_LIST_ITERATOR GWEN_LIST_ITERATOR;
 
@@ -90,6 +95,9 @@ void GWEN_List_PopFront(GWEN_LIST *l);
 
 GWENHYWFAR_API
 void GWEN_List_Clear(GWEN_LIST *l);
+
+GWENHYWFAR_API
+void *GWEN_List_ForEach(GWEN_LIST *l, GWEN_LIST_FOREACH_CB fn, void *user_data);
 
 GWENHYWFAR_API
 GWEN_LIST_ITERATOR *GWEN_List_First(GWEN_LIST *l);
@@ -145,6 +153,11 @@ void GWEN_ConstList_PopFront(GWEN_CONSTLIST *l);
 
 GWENHYWFAR_API
 void GWEN_ConstList_Clear(GWEN_CONSTLIST *l);
+
+GWENHYWFAR_API
+const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *l, 
+				   GWEN_CONSTLIST_FOREACH_CB fn,
+				   void *user_data);
 
 GWENHYWFAR_API
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_First(GWEN_CONSTLIST *l);

@@ -55,7 +55,7 @@ extern "C" {
 #define GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef struct t##_LIST2 t##_LIST2; \
   typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
-  typedef t* (t##_LIST2_FOREACH)(t *element); \
+  typedef t* (t##_LIST2_FOREACH)(t *element, void *user_data); \
   \
   decl t##_LIST2 *pr##_List2_new(); \
   decl void pr##_List2_free(t##_LIST2 *l); \
@@ -76,7 +76,7 @@ extern "C" {
   decl t *pr##_List2Iterator_Previous(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
-  decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH);
+  decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH, void *user_data);
 
   /* This macro should be used in applications, not in libraries. In
    * libraries please use the macro @ref GWEN_LIST2_FUNCTION_LIB_DEFS. */
@@ -162,7 +162,7 @@ extern "C" {
     return (t*) GWEN_ListIterator_Data((GWEN_LIST_ITERATOR*)li); \
   } \
   \
-  t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH fn){ \
+  t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH fn, void *user_data){ \
     t##_LIST2_ITERATOR *it; \
     t *el; \
     \
@@ -171,7 +171,7 @@ extern "C" {
       return 0; \
     el=pr##_List2Iterator_Data(it); \
     while(el) { \
-      el=fn(el); \
+      el=fn(el, user_data); \
       if (el) { \
         pr##_List2Iterator_free(it); \
         return el; \
@@ -192,7 +192,7 @@ extern "C" {
 #define GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef struct t##_CONSTLIST2 t##_CONSTLIST2; \
   typedef struct t##_CONSTLIST2_ITERATOR t##_CONSTLIST2_ITERATOR; \
-  typedef const t* (t##_CONSTLIST2_FOREACH)(const t *element); \
+  typedef const t* (t##_CONSTLIST2_FOREACH)(const t *element, void *user_data); \
   \
   decl t##_CONSTLIST2 *pr##_ConstList2_new(); \
   decl void pr##_ConstList2_free(t##_CONSTLIST2 *l); \
@@ -211,7 +211,7 @@ extern "C" {
   decl const t *pr##_ConstList2Iterator_Previous(t##_CONSTLIST2_ITERATOR *li); \
   decl const t *pr##_ConstList2Iterator_Next(t##_CONSTLIST2_ITERATOR *li); \
   decl const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li); \
-  decl const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH);
+  decl const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH, void *user_data);
 
   /* This macro should be used in applications, not in libraries. In
    * libraries please use the macro @ref
@@ -291,7 +291,7 @@ extern "C" {
     return (t*) GWEN_ConstListIterator_Data((GWEN_CONSTLIST_ITERATOR*)li); \
   } \
   \
-  const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH fn){ \
+  const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH fn, void *user_data){ \
     t##_CONSTLIST2_ITERATOR *it; \
     const t *el; \
     \
@@ -300,7 +300,7 @@ extern "C" {
       return 0; \
     el=pr##_ConstList2Iterator_Data(it); \
     while(el) { \
-      el=fn(el); \
+      el=fn(el, user_data); \
       if (el) { \
         pr##_ConstList2Iterator_free(it); \
         return el; \

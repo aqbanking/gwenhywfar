@@ -102,7 +102,8 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
 
 
 GWEN_PLUGIN_DESCRIPTION*
-GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd) {
+GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd, 
+					void *user_data) {
   GWEN_PluginDescription_free(pd);
   return 0;
 }
@@ -112,8 +113,8 @@ GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd) {
 void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
   GWEN_PluginDescription_List2_ForEach
     (pdl,
-     GWEN_PluginDescription_List2_freeAll_cb
-    );
+     GWEN_PluginDescription_List2_freeAll_cb, 
+     0);
 }
 
 
