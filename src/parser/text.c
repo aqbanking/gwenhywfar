@@ -577,21 +577,31 @@ int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf) {
+  unsigned int l;
+  int fakeByte;
+
+  l=strlen(src);
+  fakeByte=(l%2);
   while(*src) {
     unsigned char d1, d2;
     unsigned char c;
 
-    /* read first digit */
-    if (!isdigit(*src)) {
-      DBG_ERROR(0, "Bad char in bcd string");
-      return -1;
+    if (fakeByte) {
+      d1=0;
+      fakeByte=0;
     }
-    d1=(unsigned char)(*src);
-
+    else {
+      /* read first digit */
+      if (!isdigit(*src)) {
+        DBG_ERROR(0, "Bad char in bcd string");
+        return -1;
+      }
+      d1=(unsigned char)(*src);
+      src++;
+    }
     /* get second digit */
-    src++;
     if (!(*src) || !isxdigit(*src)) {
-      DBG_ERROR(0, "Incomplete hex byte (only 1 digit)");
+      DBG_ERROR(0, "Incomplete BCD byte (only 1 digit)");
       return -1;
     }
     d2=(unsigned char)(*src);

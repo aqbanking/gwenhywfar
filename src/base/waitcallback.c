@@ -37,6 +37,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/text.h>
 #include <gwenhywfar/path.h>
 
 
@@ -209,7 +210,7 @@ void *GWEN_WaitCallback__HandlePathElement(const char *entry,
   tctx=GWEN_WaitCallback_List_First(ctx->registeredCallbacks);
   while(tctx) {
     if (tctx->id)
-      if (strcasecmp(tctx->id, entry)==0)
+      if (-1!=GWEN_Text_ComparePattern(entry, tctx->id, 0))
         return (void*)tctx;
     tctx=GWEN_WaitCallback_List_Next(tctx);
   } /* while */

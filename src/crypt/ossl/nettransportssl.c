@@ -394,9 +394,16 @@ GWEN_NetTransportSSL_Read(GWEN_NETTRANSPORT *tr,
     else if (sslerr==SSL_ERROR_WANT_WRITE)
       return GWEN_NetTransportResultWantWrite;
     else {
-      DBG_ERROR(0, "SSL error: %s (%d)",
-                GWEN_NetTransportSSL_ErrorString(sslerr),
-                sslerr);
+      if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+        DBG_INFO(0, "Connection just went down (%d: %s)",
+                 sslerr,
+                 GWEN_NetTransportSSL_ErrorString(sslerr));
+      }
+      else {
+        DBG_ERROR(0, "SSL error: %s (%d)",
+                  GWEN_NetTransportSSL_ErrorString(sslerr),
+                  sslerr);
+      }
       GWEN_Socket_Close(skd->socket);
       SSL_free(skd->ssl);
       skd->ssl=0;

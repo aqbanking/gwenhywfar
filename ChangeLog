@@ -5,6 +5,7 @@
 - os/gwentime: added function to retrieve the time in milliseconds
 - base/idlist: fixed two severe bugs
 - crypt/ossl/nettransportssl: added functions to retrieve the peer certificate
+- parser/text: improved BCD reading
 
 
 2004/06/02: Martin Preuss<martin@libchipcard.de>

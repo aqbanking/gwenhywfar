@@ -160,7 +160,7 @@ int GWEN_IPCManager_SendResponse(GWEN_IPCMANAGER *mgr,
  *   @ref GWEN_IPCManager_SendRequest or
  *   @ref GWEN_IPCManager_SendMultiRequest)
  * @param outbound if 0 then an incoming request is to be removed, otherwise
- *   an incoming request is to be deleted
+ *   an outgoing request is to be deleted
  */
 GWENHYWFAR_API
 int GWEN_IPCManager_RemoveRequest(GWEN_IPCMANAGER *mgr,

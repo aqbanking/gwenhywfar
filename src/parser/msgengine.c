@@ -2800,8 +2800,8 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                       c, delimiters);
           if (c && strchr(delimiters, c)) {
             abortLoop=1;
-            DBG_NOTICE(0, "Found delimiter (\"%02x\" is in \"%s\")",
-                       c, delimiters);
+            DBG_VERBOUS(0, "Found delimiter (\"%02x\" is in \"%s\")",
+                        c, delimiters);
 	  } /* if delimiter found */
           else {
             /* current char is not a delimiter */
