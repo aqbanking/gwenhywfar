@@ -532,6 +532,45 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
 
 
 
+int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char d1, d2;
+    unsigned char c;
+
+    /* read first digit */
+    if (!isxdigit(*src)) {
+      DBG_ERROR(0, "Bad char in hex string");
+      return -1;
+    }
+    d1=(unsigned char)(toupper(*src));
+
+    /* get second digit */
+    src++;
+    if (!(*src) || !isxdigit(*src)) {
+      DBG_ERROR(0, "Incomplete hex byte (only 1 digit)");
+      return -1;
+    }
+    d2=(unsigned char)(toupper(*src));
+    src++;
+
+    /* compute character */
+    d1-='0';
+    if (d1>9)
+      d1-=7;
+    c=(d1<<4)&0xf0;
+    d2-='0';
+    if (d2>9)
+      d2-=7;
+    c+=(d2&0xf);
+    /* store character */
+    GWEN_Buffer_AppendByte(buf, (char)c);
+  } /* while */
+
+  return 0;
+}
+
+
+
 int GWEN_Text_Compare(const char *s1, const char *s2, int ign) {
   if (s1)
     if (*s1==0)

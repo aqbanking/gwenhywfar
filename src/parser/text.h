@@ -148,6 +148,12 @@ GWENHYWFAR_API
 int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize);
 
 /**
+ * Reads hex bytes and stores them in the given buffer.
+ */
+GWENHYWFAR_API
+int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf);
+
+/**
  * @return number of bytes in the buffer (-1 on error)
  * @param fillchar if 0 then no filling takes place, positive values
  * extend to the right, negative values to the left.

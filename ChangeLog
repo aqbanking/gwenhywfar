@@ -1,4 +1,10 @@
 
+
+2004/05/24: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- parser/text: added function GWEN_Text_FromHexBuffer
+
+
 2004/05/21: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - base/logger.c: fixed a severe bug (trapped into endless loop when
