@@ -51,8 +51,9 @@
 
 #include <string.h>
 #include <errno.h>
-#include <sys/socket.h>
-
+#ifdef HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#endif /* HAVE_SYS_SOCKET_H */
 
 
 GWEN_INHERIT(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSSL);
