@@ -99,7 +99,9 @@ int write_h_setget_c(ARGUMENTS *args,
   int rv;
   const char *prefix;
   const char *styp;
+  const char *sacc;
 
+  sacc=get_struct_property(node, "access", "public");
   prefix=get_struct_property(node, "prefix", 0);
   if (!prefix) {
     DBG_ERROR(0, "No prefix in struct");
@@ -144,9 +146,9 @@ int write_h_setget_c(ARGUMENTS *args,
 
       }
       else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0) {
-        if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", "public"),
-                       acc)==0) {
-          int isPtr;
+	if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", sacc),
+		       acc)==0) {
+	  int isPtr;
           const char *typ;
           const char *name;
   

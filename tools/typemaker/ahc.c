@@ -252,20 +252,20 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_dup(const ");
     GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, "*st);");
+    GWEN_BufferedIO_WriteLine(bio, "*st);");
 
     /* FromDb */
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_Write(bio, " *");
     GWEN_BufferedIO_Write(bio, prefix);
-    GWEN_BufferedIO_Write(bio, "_fromDb(GWEN_DB_NODE *db);");
+    GWEN_BufferedIO_WriteLine(bio, "_fromDb(GWEN_DB_NODE *db);");
 
     /* ToDb */
     GWEN_BufferedIO_Write(bio, "int ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_toDb(const ");
     GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, "*st, GWEN_DB_NODE *db);");
+    GWEN_BufferedIO_WriteLine(bio, "*st, GWEN_DB_NODE *db);");
 
     GWEN_BufferedIO_Write(bio, "int ");
     GWEN_BufferedIO_Write(bio, prefix);
