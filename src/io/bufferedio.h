@@ -158,10 +158,16 @@ GWENHYWFAR_API int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *dm);
 
 /**
  * Reads the next character from the stream.
+ *
+ * @note For performance reasons, the given argument is @e not checked
+ * for sanity. During initial development, you should do this for
+ * yourself, e.g. by adding @c assert(bio); before you call this
+ * function.
+ *
  * @author Martin Preuss<martin@aquamaniac.de>
  * @return -1 on error, character otherwise
  */
-GWENHYWFAR_API int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *dm);
+GWENHYWFAR_API int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bio);
 
 /**
  * Really writes the content of the write buffer to the stream. This is

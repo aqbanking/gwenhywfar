@@ -404,8 +404,8 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
       }
     }
     else {
-      if (((chr=='[' || chr=='"' || chr=='\'') &&
-           !(flags & GWEN_XML_FLAGS__DATA))) {
+      if (!(flags & GWEN_XML_FLAGS__DATA) &&
+	  (chr=='"' || chr=='\'' || chr=='[')) {
         lastWasSpace=0;
         inQuote=1;
         if (chr=='[')

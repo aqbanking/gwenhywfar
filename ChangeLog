@@ -2,7 +2,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-03-07   Christian Stimming <stimming@tuhh.de>
 
+	* src/parser/xml.c (GWEN_XML__ReadWordBuf): Rearrange some checks
+	to improve performance. I tried to improve some flags-checks by
+	introducing extra variables, but that gave no improvements.
+
+	* src/io/bufferedio.c (GWEN_BufferedIO_ReadChar): Because this
+	function is called for every character read, we skip the assert
+	check in this function.
+
+	
 2005/03/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - partially reverted cs' changes to base/buffer.c: Please dicuss *before*

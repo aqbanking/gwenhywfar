@@ -253,8 +253,10 @@ int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
 int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bt){
   int i;
 
-  assert(bt);
-  assert(bt->readerBuffer);
+  /* As an exception, we skip these checks here for performance
+     reasons. */
+  /* assert(bt); */
+  /* assert(bt->readerBuffer); */
 
   /* do some fast checks */
   if (bt->readerError) {
