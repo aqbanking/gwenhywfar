@@ -1,4 +1,15 @@
 
+
+===========================================================================
+MARK: released gwenhywfar-0.9.4rc2 (2004/01/03)
+===========================================================================
+
+
+2004/01/03 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- prepared next release
+
+
 2003/12/29 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - started working on PalmOS port (just a small start, there still is very

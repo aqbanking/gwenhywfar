@@ -15,7 +15,6 @@
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/msgengine.h>
 #include <gwenhywfar/text.h>
-#include <openssl/des.h>
 
 
 
@@ -496,41 +495,6 @@ int testCopyKey(int argc, char **argv) {
 
 
 
-int testKeyFromPW(int argc, char **argv) {
-  des_cblock left, right;
-  char buffer[256];
-  char *password;
-  unsigned int bsize;
-
-  if (argc<3) {
-    fprintf(stderr, "Password needed.\n");
-    return 1;
-  }
-  password=argv[2];
-  // transform password to 2 keys
-  fprintf(stderr, "Password: %s\n", password);
-  des_string_to_2keys(password, &left, &right);
-  fprintf(stderr, "Left password:\n");
-  GWEN_Text_DumpString(left, 8, stderr, 1);
-  fprintf(stderr, "Right password:\n");
-  GWEN_Text_DumpString(right, 8, stderr, 1);
-
-  bsize=sizeof(buffer);
-  if (GWEN_MD_Hash("MD5",
-                   password,
-                   strlen(password),
-                   buffer,
-                   &bsize)) {
-    fprintf(stderr, "Error creating hash.\n");
-    return 1;
-  }
-  fprintf(stderr, "MD5 password:\n");
-  GWEN_Text_DumpString(buffer, bsize, stderr, 1);
-  return 0;
-}
-
-
-
 int main(int argc, char **argv) {
   int rv;
 
@@ -553,8 +517,6 @@ int main(int argc, char **argv) {
     rv=testMkKey(argc, argv);
   else if (strcasecmp(argv[1], "cpkey")==0)
     rv=testCopyKey(argc, argv);
-  else if (strcasecmp(argv[1], "pw")==0)
-    rv=testKeyFromPW(argc, argv);
   else if (strcasecmp(argv[1], "xml")==0)
     rv=testXML(argc, argv);
   else if (strcasecmp(argv[1], "xml2")==0)

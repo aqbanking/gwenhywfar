@@ -35,4 +35,4 @@ all:
 	#./configure --enable-maintainer-mode
 
 palm:
-	CFLAGS="${CFLAGS} -mnoshort" CXXFLAGS="${CXXFLAGS} -mnoshort" ./configure.palmos --enable-maintainer-mode --build=i686-pc-linux-gnu --host=m68k-palmos --prefix=/usr/m68k-palmos
+	CFLAGS="${CFLAGS} -mnoshort -palmos3.5" CXXFLAGS="${CXXFLAGS} -mnoshort -palmos3.5" ./configure.palmos --enable-maintainer-mode --build=i686-pc-linux-gnu --host=m68k-palmos --prefix=/usr/m68k-palmos

@@ -26,6 +26,13 @@ EXTRA_DIST=\
  posix/libloader.c \
  posix/process.c \
  posix/process_p.h \
+ palmos/sysheaders/Makefile.am \
+ palmos/sysheaders/Makefile.in \
+ palmos/sysheaders/README \
+ palmos/sysheaders/assert.h \
+ palmos/sysheaders/string.h \
+ palmos/sysheaders/time.h \
+ palmos/sysheaders/unistd.h \
  palmos/Makefile.am \
  palmos/Makefile.in \
  palmos/directory_p.h \
