@@ -190,6 +190,15 @@ void GWEN_DB_Group_free(GWEN_DB_NODE *n);
  */
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n);
+
+/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
+ * NODE is a Group or not. Usually these are the only nodes that the
+ * application gets in touch with.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+int GWEN_DB_isGroup(const GWEN_DB_NODE *n);
 /*@}*/
 
 
@@ -291,6 +300,24 @@ int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
 GWENHYWFAR_API
 int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
                            const char *path);
+
+/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
+ * NODE is a Variable or not. Usually the Application does not get in
+ * touch with such Nodes but only with nodes that are Groups.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+int GWEN_DB_isVariable(const GWEN_DB_NODE *n);
+    
+/** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
+ * NODE is a Value or not. Usually the Application does not get in
+ * touch with such Nodes but only with nodes that are Groups.
+ *
+ * @param n db node
+ */
+GWENHYWFAR_API
+int GWEN_DB_isValue(const GWEN_DB_NODE *n);
 /*@}*/
 
 
