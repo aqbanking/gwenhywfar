@@ -28,6 +28,7 @@ iheader_HEADERS=\
  idlist.h \
  inherit.h \
  list.h \
+ list2.h \
  logger.h \
  memory.h \
  misc.h \

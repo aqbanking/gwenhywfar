@@ -1391,8 +1391,87 @@ int GWEN_Text_StringToDouble(const char *s, double *num){
 
 
 
+double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign){
+  int nboth;
+  int nmatch;
+  double pc;
+
+  nboth=strlen(s1)+strlen(s2);
+  nmatch=0;
+  if (ign) {
+    while(*s1 && *s2) {
+      const char *t;
+      int lmatch;
+
+      /* find next equal in s2 */
+      t=s2;
+      lmatch=0;
+      while(*t) {
+        if (toupper(*s1)==toupper(*t)) {
+          lmatch==2;
+          break;
+        }
+        if (isalnum(*s1) && isalnum(*t)) {
+          lmatch=1;
+          break;
+        }
+      } /* while */
+
+      if (lmatch) {
+        nmatch+=lmatch;
+        s2=t+1;
+      }
+
+      s1++;
+    } /* while */
+  }
+  else {
+    while(*s1 && *s2) {
+      const char *t;
+      int lmatch;
+
+      /* find next equal in s2 */
+      t=s2;
+      lmatch=0;
+      while(*t) {
+        if (*s1==*t) {
+          lmatch==2;
+          break;
+        }
+        if (toupper(*s1)==toupper(*t)) {
+          lmatch==1;
+          break;
+        }
+        if (isalnum(*s1) && isalnum(*t)) {
+          lmatch=1;
+          break;
+        }
+      } /* while */
+
+      if (lmatch) {
+        nmatch+=lmatch;
+        s2=t+1;
+      }
+
+      s1++;
+    } /* while */
+  }
+
+  pc=(nmatch*100)/nboth;
+  return pc;
+}
 
 
+
+double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign){
+  double pc1, pc2;
+
+  pc1=GWEN_Text__CheckSimilarity(s1, s2, ign);
+  pc2=GWEN_Text__CheckSimilarity(s2, s1, ign);
+  if (pc2>pc1)
+    return pc2;
+  return pc1;
+}
 
 
 

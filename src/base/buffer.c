@@ -597,6 +597,13 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert) {
     fprintf(f, "ABORT_ON_MEMFULL ");
   fprintf(f, ")\n");
 
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Bookmarks      :");
+  for (k=0; k<GWEN_BUFFER_MAX_BOOKMARKS; k++)
+    fprintf(f, " %d", bf->bookmarks[k]);
+  fprintf(f, "\n");
+
   if (bf->ptr && bf->bytesUsed) {
     for (k=0; k<insert; k++)
       fprintf(f, " ");

@@ -262,6 +262,26 @@ void GWEN_Text_LogString(const char *s, unsigned l,
 GWENHYWFAR_API
   void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf);
 
+
+/**
+ * Compares two strings and returns the percentage of their equality.
+ * It is calculated by this formula:
+ *  matches*100 / ((length of s1)+(length of s2))
+ * Each match is weight like this:
+ *  <ul>
+ *   <li>*s1==*s2: 2</li>
+ *   <li>toupper(*s1)==toupper(*s2): 2 if ign, 1 otherwise</li>
+ *   <li>isalnum(*s1)==isalnum(*s2): 1
+ *  </ul>
+ * @return percentage of equality between both strings
+ * @param s1 1st of two strings to compare
+ * @param s2 2nd of two strings to compare
+ * @param ign if !=0 then the cases are ignored
+ */
+GWENHYWFAR_API
+  double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign);
+
+
 #ifdef __cplusplus
 }
 #endif
