@@ -2365,6 +2365,9 @@ GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
   GWEN_XMLNODE *listNode;
 
   group=GWEN_MsgEngine_FindNodeByProperty(e, typ, "id", msgVersion, msgName);
+  if (!group)
+    group=GWEN_MsgEngine_FindNodeByProperty(e, typ, "code",
+                                            msgVersion, msgName);
   if (!group) {
     DBG_ERROR(0, "Group \"%s\" (version %d) not found\n",
               msgName, msgVersion);
