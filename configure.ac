@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=2
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=1
+GWENHYWFAR_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -514,9 +514,18 @@ ACX_COMPILE_WARN()
 
 ###-------------------------------------------------------------------------
 #
+# compile program flagss
+#
+
+PROG_LIBRARIES="${ssl_libraries} ${ssl_lib} ${ncurses_libs}"
+
+
+###-------------------------------------------------------------------------
+#
 # substitute vars
 #
 AS_SCRUB_INCLUDE(gwenhywfar_includes)
+AC_SUBST(PROG_LIBRARIES)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_libspp)

@@ -1,4 +1,9 @@
 
+2004/11/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a build-problem (tools did not link against all needed libraries)
+
+
 2004/11/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - src/os/directory_all.c: Improved path handling for WIN32

@@ -264,7 +264,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
   else {
     if (ctx->originalCtx) {
       if (!ctx->originalCtx->checkAbortFn) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "No checkAbort function set");
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
         rv=GWEN_WaitCallbackResult_Continue;
       }
       else {
@@ -276,7 +276,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
     } /* if there is an original context */
     else {
       if (!ctx->checkAbortFn) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "No checkAbort function set");
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
         rv=GWEN_WaitCallbackResult_Continue;
       }
       else {
@@ -345,6 +345,7 @@ void GWEN_WaitCallback_Enter_u(const char *id,
   GWEN_WAITCALLBACK *nctx;
 
   nctx=0;
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Entering callback \"%s\"", id);
   ctx=GWEN_WaitCallback__FindTemplate(id);
   if (!ctx) {
     if (gwen_waitcallback__current) {
