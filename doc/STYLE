@@ -121,8 +121,8 @@ Types are written in all-capitals, like in GWEN_DB_NODE.
 
 3.4. Enum Elements
 ------------------
-New enum elements should consist of multiple words which are concatenated (like
-in GWEN_LoggerLevelError).
+New enum elements should consist of multiple words which are concatenated 
+(like in GWEN_LoggerLevelError).
 Unfortunately the enum definitions inside the GWEN_DB module do not follow
 this guideline in this regard. Since changing this would produce many problems
 this rule only applies to new enum definitions.

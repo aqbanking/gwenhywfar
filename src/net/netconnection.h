@@ -492,6 +492,14 @@ const GWEN_INETADDRESS*
  */
 GWEN_TYPE_UINT32 GWEN_NetConnection_GetFlags(const GWEN_NETCONNECTION *conn);
 
+
+/**
+ * This is just a conveniance function to retrieve the status of the
+ * underlying transport layer.
+ */
+GWEN_NETTRANSPORT_STATUS
+  GWEN_NetConnection_GetStatus(const GWEN_NETCONNECTION *conn);
+
 /**
  * This is just a conveniance function to set the flags of the underlying
  * transport layer.

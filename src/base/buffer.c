@@ -247,7 +247,7 @@ int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
 
 int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
   assert(bf);
-  DBG_DEBUG(0, "Allocating %d bytes", size);
+  DBG_VERBOUS(0, "Allocating %d bytes", size);
   /*if (bf->pos+size>bf->bufferSize) {*/
   if (bf->bytesUsed+size>bf->bufferSize) {
     /* need to realloc */
@@ -499,7 +499,7 @@ void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
 
 
 
-void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert) {
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert) {
   GWEN_TYPE_UINT32 k;
 
   for (k=0; k<insert; k++)

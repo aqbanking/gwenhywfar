@@ -117,12 +117,13 @@ GWEN_TYPE_UINT32 GWEN_Inherit_MakeId(const char *typeName){
     unsigned char c;
 
     tmpResult=result<<8;
-    c=(result>>24);
-    tmpResult|=c;
-    result^=tmpResult;
-    result^=*(typeName++);
+    c=((result>>24)&0xff);
+    result=tmpResult|c;
+    result^=(unsigned char)(typeName[i]);
   }
 
+  DBG_DEBUG(0, "Id for type \"%s\" is \"%08x\"",
+            typeName, result);
   return result;
 }
 
@@ -135,6 +136,7 @@ void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
 
   assert(l);
 
+  DBG_DEBUG(0, "Searching for inheritance id \"%08x\"", id);
   ih=GWEN_InheritData_List_First(l);
   while(ih) {
     DBG_VERBOUS(0, "Checking type \"%s\" (%08x) against %08x",

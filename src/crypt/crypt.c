@@ -273,7 +273,10 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
   GWEN_ERRORCODE err;
 
   key=GWEN_CryptKey_Factory(GWEN_DB_GetCharValue(db, "type", 0, ""));
-  assert(key);
+  if (!key) {
+    DBG_INFO(0, "Could not create key");
+    return 0;
+  }
   if (GWEN_KeySpec_FromDb(key->keyspec, db)) {
     DBG_ERROR(0, "Could not create keyspec from DB");
     GWEN_CryptKey_free(key);

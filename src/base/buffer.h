@@ -372,7 +372,7 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
 
 
 GWENHYWFAR_API
-void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned insert);
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert);
 
 
 /*@}*/

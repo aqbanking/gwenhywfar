@@ -84,6 +84,90 @@ extern "C" {
 
   /** @defgroup GWEN_MACRO_LIST Macros For Typesafe List Handling
    *
+   * The macros of this group facilitates typesafe use of lists.
+   *
+   * <p>
+   * Let's assume you have a structure type called MYSTRUCT and you want
+   * to manage lists of them. Let's further assume that you want the
+   * functions dealing with that struct have prefixes like MyStruct (as in
+   * @i MyStruct_new)
+   * </p>
+   * The header file would look like this:
+   *
+   * @code
+   *
+   * / * mystruct.h * /
+   *
+   * #ifndef MYSTRUCT_H
+   * #define MYSTRUCT_H
+   *
+   * typedef struct MYSTRUCT MYSTRUCT;
+   *
+   * GWEN_LIST_FUNCTION_DEFS(MYSTRUCT, MyStruct);
+   *
+   * struct {
+   *   GWEN_LIST_ELEMENT(MYSTRUCT);
+   *   int myData;
+   * }
+   *
+   *
+   * MYSTRUCT *MyStruct_new(int myData);
+   * void MyStruct_free(MYSTRUCT *myStruct);
+   *
+   * #endif
+   * @endcode
+   * <p>
+   * This defines all necessary data and function prototypes needed for
+   * list management.
+   * </p>
+   *
+   * <p>
+   * The code file would look quite similar to the following:
+   * </p>
+   *
+   * @code
+   *
+   * / * mystruct.c * /
+   *
+   * GWEN_LIST_FUNCTIONS(MYSTRUCT, MyStruct);
+   *
+   * MYSTRUCT *MyStruct_new(int myData) {
+   *   MYSTRUCT *pMyStruct;
+   *
+   *   pMyStruct=(MYSTRUCT*)malloc(sizeof(MYSTRUCT));
+   *   memset(pMyStruct, 0, sizeof(MYSTRUCT));
+   *
+   *   GWEN_LIST_INIT(MYSTRUCT, pMyStruct);
+   *
+   *   pMyStruct->myData=myData;
+   *   return pMyStruct;
+   * }
+   *
+   * void MyStruct_free(MYSTRUCT *pMyStruct) {
+   *   if (pMyStruct) {
+   *     pMyStruct->myData=0;
+   *     GWEN_LIST_FINI(MYSTRUCT, pMyStruct);
+   *     free(pMyStruct);
+   *   }
+   * }
+   *
+   * @endcode
+   * Please note the three macros used in the code file:
+   * <ul>
+   *   <li>@ref GWEN_LIST_FUNCTIONS creates the functions for the list
+   *       management</li>
+   *   <li>@ref GWEN_LIST_INIT initializes the list data inside your
+   *       struct to defined values </li>
+   *   <li>@ref GWEN_LIST_FINI frees all ressources occupied by the list
+   *       management code. Please note that this macro should be the last
+   *       statement inside the destructor function before @b free()</li>
+   * </ul>
+   * <p>
+   * The list management code assumes that there is a function called
+   * (in this example) @b MyStruct_free() (or generally: TYPEPREFIX_free).
+   * This is used when destroying a list of MYSTRUCT elements. In this case
+   * all elements still enlisted are destroyed upon destruction of the list.
+   * </p>
    */
   /*@{*/
 #define GWEN_LIST_ADD(typ, sr, head) {\
@@ -192,10 +276,17 @@ extern "C" {
    * </ul>
    */
 #define GWEN_LIST_FUNCTION_DEFS(t, pr) \
+  typedef struct t##_LIST_ELEMENT {\
+  GWEN_TYPE_UINT32 id;\
+  t *nextObject;\
+  } t##_LIST__ELEMENT;\
+  \
   typedef struct t##_LIST {\
   t *first;\
   GWEN_TYPE_UINT32 count;\
+  GWEN_TYPE_UINT32 id;\
   } t##_LIST; \
+  \
   void pr##_List_Add(t *element, t##_LIST *list); \
   void pr##_List_Insert(t *element, t##_LIST *list); \
   void pr##_List_Del(t *element); \
@@ -213,6 +304,7 @@ extern "C" {
    * defined via @ref GWEN_LIST_FUNCTION_DEFS.
    */
 #define GWEN_LIST_FUNCTIONS(t, pr) \
+  static GWEN_TYPE_UINT32 pr##_List_NextId=0;\
   void pr##_List_Add(t *element, t##_LIST *l) { \
   assert(l); \
   assert(element->listPtr==0);/* element MUST NOT be in any list */ \
@@ -255,6 +347,7 @@ extern "C" {
   t##_LIST* pr##_List_new(){\
   t##_LIST *l; \
   GWEN_NEW_OBJECT(t##_LIST, l);\
+  l->id=++pr##_List_NextId;\
   return l;\
   }\
   \
@@ -290,8 +383,11 @@ extern "C" {
    */
 #define GWEN_LIST_FINI(t, element) \
   if (element) { \
-  if (element->listPtr)\
+  if (element->listPtr) {\
   GWEN_LIST_DEL(t, element, &(element->listPtr->first)); \
+  element->listPtr->count--;\
+  element->listPtr=0;\
+  }\
   }
   /*@}*/ /* defgroup */
 

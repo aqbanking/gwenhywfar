@@ -34,6 +34,8 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/path.h>
+#include <gwenhywfar/buffer.h>
+
 #include <unistd.h>
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -55,23 +57,20 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
   char *p;
   struct stat st;
   int exists;
+  GWEN_BUFFER *buf;
 
   if (strcasecmp(entry, "..")==0) {
     DBG_ERROR(0, "\"..\" detected");
     return 0;
   }
 
-  p=(char*)data;
-  if ((strlen(p)+strlen(entry)+2)>=256) {
-    DBG_ERROR(0, "Buffer too small");
-    return 0;
-  }
-  if (*p)
-    strcat(p, "/");
-  strcat(p, entry);
+  buf=(GWEN_BUFFER*)data;
+  if (GWEN_Buffer_GetUsedBytes(buf))
+    GWEN_Buffer_AppendByte(buf, '/');
+  GWEN_Buffer_AppendString(buf, entry);
 
   // check for existence of the file/folder
-
+  p=GWEN_Buffer_GetStart(buf);
   DBG_DEBUG(0, "Checking entry \"%s\"", p);
   if (stat(p, &st)) {
     exists=0;
@@ -135,27 +134,27 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     DBG_DEBUG(0, "Entry \"%s\" exists", p);
   }
   DBG_DEBUG(0, "Returning this: %s", p);
-  return p;
+  return buf;
 }
 
 
 
 int GWEN_Directory_GetPath(const char *path,
                            unsigned int flags) {
-  char *pbuffer;
+  GWEN_BUFFER *buf;
   void *p;
 
   assert(path);
-  pbuffer=(char*)malloc(strlen(path)+10);
-  *pbuffer=0;
-  p=GWEN_Path_Handle(path, pbuffer,
-                     flags,
+  buf=GWEN_Buffer_new(0, strlen(path)+10, 0, 1);
+  p=GWEN_Path_Handle(path, buf,
+                     flags | GWEN_PATH_FLAGS_CHECKROOT,
                      GWEN_Directory_HandlePathElement);
-  free(pbuffer);
   if (!p) {
-    DBG_INFO(0, "here");
+    DBG_INFO(0, "Path so far: \"%s\"", GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
     return -1;
   }
+  GWEN_Buffer_free(buf);
   return 0;
 }
 

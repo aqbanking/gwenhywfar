@@ -100,6 +100,51 @@ GWEN_NETCONNECTION_LIST *GWEN_Net_GetConnectionPool() {
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_Net_HasActiveConnections(){
+  GWEN_NETCONNECTION *conn;
+  unsigned int count;
+
+  count=0;
+  conn=GWEN_NetConnection_List_First(gwen_netconnection__list);
+  while(conn) {
+    GWEN_NETTRANSPORT_STATUS st;
+
+    st=GWEN_NetConnection_GetStatus(conn);
+    if (st!=GWEN_NetTransportStatusUnconnected &&
+        st!=GWEN_NetTransportStatusPDisconnected &&
+        st!=GWEN_NetTransportStatusDisabled &&
+        st!=GWEN_NetTransportStatusListening) {
+      count++;
+    }
+    conn=GWEN_NetConnection_List_Next(conn);
+  } /* while */
+  return (count!=0);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_Net_HasListeningConnections(){
+  GWEN_NETCONNECTION *conn;
+  unsigned int count;
+
+  count=0;
+  conn=GWEN_NetConnection_List_First(gwen_netconnection__list);
+  while(conn) {
+    GWEN_NETTRANSPORT_STATUS st;
+
+    st=GWEN_NetConnection_GetStatus(conn);
+    if (st==GWEN_NetTransportStatusListening) {
+      count++;
+    }
+    conn=GWEN_NetConnection_List_Next(conn);
+  } /* while */
+  return (count!=0);
+}
+
+
+
 
 
 

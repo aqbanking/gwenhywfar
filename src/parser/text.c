@@ -658,3 +658,101 @@ void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert) {
 
 
 
+
+
+int GWEN_Text_EscapeToBuffer(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char x;
+
+    x=(unsigned char)*src;
+    if (!(
+          (x>='A' && x<='Z') ||
+          (x>='a' && x<='z') ||
+          (x>='0' && x<='9'))) {
+      unsigned char c;
+
+      GWEN_Buffer_AppendByte(buf, '%');
+      c=(((unsigned char)(*src))>>4)&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+      c=((unsigned char)(*src))&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    else
+      GWEN_Buffer_AppendByte(buf, *src);
+
+    src++;
+  } /* while */
+
+  return 0;
+}
+
+
+
+int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char x;
+
+    x=(unsigned char)*src;
+    if (
+	(x>='A' && x<='Z') ||
+	(x>='a' && x<='z') ||
+	(x>='0' && x<='9')) {
+      GWEN_Buffer_AppendByte(buf, *src);
+    }
+    else {
+      if (*src=='%') {
+	unsigned char d1, d2;
+	unsigned char c;
+
+	/* skip '%' */
+	src++;
+	if (!(*src) || !isxdigit(*src)) {
+	  DBG_ERROR(0, "Incomplete escape sequence (no digits)");
+	  return 0;
+	}
+	/* read first digit */
+	d1=(unsigned char)(toupper(*src));
+
+	/* get second digit */
+	src++;
+	if (!(*src) || !isxdigit(*src)) {
+	  DBG_ERROR(0, "Incomplete escape sequence (only 1 digit)");
+	  return 0;
+	}
+	d2=(unsigned char)(toupper(*src));
+	/* compute character */
+	d1-='0';
+	if (d1>9)
+	  d1-=7;
+	c=(d1<<4)&0xf0;
+	d2-='0';
+	if (d2>9)
+	  d2-=7;
+	c+=(d2&0xf);
+	/* store character */
+        GWEN_Buffer_AppendByte(buf, (char)c);
+      }
+      else {
+        DBG_ERROR(0, "Found non-alphanum "
+                  "characters in escaped string (\"%s\")",
+                  src);
+        return -1;
+      }
+    }
+    src++;
+  } /* while */
+
+  return 0;
+}
+
+
+
+
+
+

@@ -132,16 +132,33 @@ extern "C" {
 #define GWEN_PATH_FLAGS_CONVERT_LAST            0x00000400
 
 /**
+ * Allows checking for root. If the path begins with a slash ('/') and this
+ * flags is set the slash will be included in the first path element
+ * passed to the element handler function. Additionally the flag
+ * @ref GWEN_PATH_FLAGS_ROOT will be set. Otherwise there will be no check
+ * and special treatment of root entries.
+ */
+#define GWEN_PATH_FLAGS_CHECKROOT               0x00000800
+
+/**
  * @internal
  */
-#define GWEN_PATH_FLAGS_INTERNAL               0x0000f000
+#define GWEN_PATH_FLAGS_INTERNAL                0x0000f000
 
 /**
  * @internal
  * this is flagged for the path function. If this is set then the
  * element given is the last one, otherwise it is not.
  */
-#define GWEN_PATH_FLAGS_LAST                   0x00001000
+#define GWEN_PATH_FLAGS_LAST                    0x00001000
+
+/**
+ * @internal
+ * this is flagged for the path function. If this is set then the
+ * element given is within root (in this case the element passed to the
+ * element handler funcion will start with a slash), otherwise it is not.
+ */
+#define GWEN_PATH_FLAGS_ROOT                    0x00002000
 
 /*@}*/
 

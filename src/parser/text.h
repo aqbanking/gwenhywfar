@@ -32,6 +32,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/buffer.h>
 #include <stdio.h>
 
 
@@ -87,6 +88,13 @@ GWENHYWFAR_API
 char *GWEN_Text_Unescape(const char *src,
                          char *buffer,
                          unsigned int maxsize);
+
+GWENHYWFAR_API
+int GWEN_Text_EscapeToBuffer(const char *src, GWEN_BUFFER *buf);
+
+GWENHYWFAR_API
+int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf);
+
 
 GWENHYWFAR_API
 char *GWEN_Text_ToHex(const char *src, unsigned l, char *buffer,

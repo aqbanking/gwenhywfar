@@ -37,6 +37,7 @@
 struct GWEN_WAITCALLBACK_CTX {
   GWEN_WAITCALLBACK_FN waitCallbackFn;
   time_t lastCalled;
+  time_t lastEntered;
   int proposedDistance;
   unsigned int usage;
   void *data;

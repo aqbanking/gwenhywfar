@@ -376,6 +376,16 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
 
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
+      GWEN_NETTRANSPORT_STATUS st;
+
+      st=GWEN_NetTransport_GetStatus(conn->transportLayer);
+      if (st==GWEN_NetTransportStatusUnconnected ||
+          st==GWEN_NetTransportStatusPDisconnected ||
+          st==GWEN_NetTransportStatusDisabled ||
+          st==GWEN_NetTransportStatusListening) {
+        DBG_ERROR(0, "Connection is down");
+        return -1;
+      }
 
       if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(0, "User aborted via waitcallback");
@@ -697,7 +707,8 @@ int GWEN_NetConnection_Wait(GWEN_NETCONNECTION *conn, int timeout,
     }
     GWEN_SocketSet_free(rset);
     GWEN_SocketSet_free(wset);
-    return 0;
+    DBG_INFO(0, "No socket");
+    return -1;
   }
   else {
     GWEN_ERRORCODE err;
@@ -1199,7 +1210,6 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     if (st!=GWEN_NetTransportStatusUnconnected &&
         st!=GWEN_NetTransportStatusPDisconnected &&
         st!=GWEN_NetTransportStatusDisabled) {
-
       if (!GWEN_RingBuffer_GetBytesLeft(curr->readBuffer) ||
           !GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer)) {
         rv=GWEN_NetConnection_Work(curr);
@@ -1208,7 +1218,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
           errors++;
         }
         else if (rv==GWEN_NetConnectionWorkResult_Change) {
-          DBG_DEBUG(0, "There is a change in this connection");
+          DBG_NOTICE(0, "There is a change in this connection");
           return rv;
         }
       }
@@ -1261,7 +1271,8 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       GWEN_Socket_Select(0, 0, 0, GWEN_NETCONNECTION_CPU_TIMEOUT);
       GWEN_SocketSet_free(rset);
       GWEN_SocketSet_free(wset);
-      return GWEN_NetConnectionWorkResult_NoChange;
+      DBG_INFO(0, "No socket");
+      return GWEN_NetConnectionWorkResult_Error;
     }
   }
   else {
@@ -1301,11 +1312,11 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       DBG_DEBUG(0, "Working on connection...");
       rv=GWEN_NetConnection_Work(curr);
       if (rv==GWEN_NetConnectionWorkResult_Error) {
-        DBG_INFO(0, "Error working (result was %d)", rv);
+        DBG_NOTICE(0, "Error working (result was %d)", rv);
         errors++;
       }
       else if (rv==GWEN_NetConnectionWorkResult_Change) {
-        DBG_DEBUG(0, "Change in connection");
+        DBG_NOTICE(0, "Change in connection");
         return rv;
       }
     }
@@ -1351,7 +1362,7 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
   for (count=0;;count++) {
     if (GWEN_WaitCallback(count)==GWEN_WaitCallbackResult_Abort) {
       DBG_ERROR(0, "User aborted via waitcallback");
-      return -1;
+      return GWEN_NetConnectionWorkResult_Error;
     }
 
     rv=GWEN_NetConnection__Walk(connList, distance);
@@ -1360,8 +1371,8 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
       return rv;
     }
     else if (rv==GWEN_NetConnectionWorkResult_Change) {
-      DBG_VERBOUS(0, "Walk done");
-      return 0;
+      DBG_DEBUG(0, "Walk done");
+      return rv;
     }
     else {
       /* check timeout */
@@ -1434,7 +1445,13 @@ void GWEN_NetConnection_SetUserMark(GWEN_NETCONNECTION *conn,
 
 
 
-
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_NETTRANSPORT_STATUS
+GWEN_NetConnection_GetStatus(const GWEN_NETCONNECTION *conn){
+  assert(conn);
+  assert(conn->transportLayer);
+  return GWEN_NetTransport_GetStatus(conn->transportLayer);
+}
 
 
 

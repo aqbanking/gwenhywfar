@@ -1,4 +1,45 @@
 
+2004/03/19: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- waitcallback:
+  - added function GWEN_WaitCallback_LastEntered which returns the
+    time the callback context was last entered. This can be used by the
+    callback function to decide whether a window is to be opened (for
+    short operations it might be smoother to wait for one or two seconds
+    before opening a window. This way a window would only be opened if
+    the operation takes longer)
+- msgengine:
+  - is now ignoring <DESCR> tags when encoding/decoding a message. This
+    allows for descriptions inside the segment/group/job definitions
+- db:
+  - only insert a newline after writing groups if there is another node
+    following on the same level or if the last node before a group was
+    a variable. This improves readability.
+- cryptkey:
+  - removed an "assert": If the key could not be created simply return
+    "0" (that function did exactly that a few lines later ;-)
+- inherit: 
+  - fixed a bug in MakeId code (result wasn't too unique)
+- text:
+  - added functions GWEN_Text_EscapeToBuffer and GWEN_Text_UnescapeToBuffer
+    which use GWEN_BUFFERs to store the result instead of char arrays (like
+    the equivalent non-buffer-functions GWEN_Text_Escape and 
+    GWEN_Text_Unescape do)
+- path:
+  - added flag "GWEN_PATH_FLAGS_CHECKROOT" which allows special treatment
+    of root entries. For now this only affects the function 
+    GWEN_Directory_GetPath. This allows especially for this function to
+    work with absolute paths.
+
+
+2004/03/18: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- xml:
+  - documented some still undocumented functions
+- netconnection:
+  - fixed some minor bugs
+
+
 2004/03/17: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - netconnection, nettransport:

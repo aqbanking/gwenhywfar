@@ -46,6 +46,8 @@ GWEN_NETCONNECTION_WORKRESULT GWEN_Net_HeartBeat(int timeout);
 GWEN_NETCONNECTION_LIST *GWEN_Net_GetConnectionPool();
 
 
+int GWEN_Net_HasActiveConnections();
+int GWEN_Net_HasListeningConnections();
 
 
 

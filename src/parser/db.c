@@ -1507,6 +1507,9 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
   GWEN_DB_NODE *cn;
   int i;
   GWEN_ERRORCODE err;
+  int lastWasVar;
+
+  lastWasVar=0;
 
   n=node->h.child;
   while(n) {
@@ -1514,6 +1517,18 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
     switch(n->h.typ) {
     case GWEN_DB_NODETYPE_GROUP:
       if (dbflags & GWEN_DB_FLAGS_WRITE_SUBGROUPS) {
+        if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
+          if (lastWasVar) {
+            /* only insert newline if the last one before this group was a
+             * variable */
+            err=GWEN_BufferedIO_WriteLine(bio, "");
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "called from here");
+              return 1;
+            }
+          }
+        }
+
         /* indend */
         if (dbflags & GWEN_DB_FLAGS_INDEND) {
           for (i=0; i<insert; i++) {
@@ -1568,13 +1583,18 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
           }
         }
         if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
-          err=GWEN_BufferedIO_WriteLine(bio, "");
-          if (!GWEN_Error_IsOk(err)) {
-            DBG_INFO(0, "called from here");
-            return 1;
+          if (n->h.next) {
+            /* only insert newline if a group is following on the same level
+             */
+            err=GWEN_BufferedIO_WriteLine(bio, "");
+            if (!GWEN_Error_IsOk(err)) {
+              DBG_INFO(0, "called from here");
+              return 1;
+            }
           }
         }
       }
+      lastWasVar=0;
       break;
 
     case GWEN_DB_NODETYPE_VAR:
@@ -1735,11 +1755,12 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 	  return 1;
 	}
       } /* if children */
+      lastWasVar=1;
       break;
 
     default:
       DBG_WARN(0, "[unhandled node type %d]\n", n->h.typ);
-    }
+    } /* switch */
 
     n=n->h.next;
   } /* while */

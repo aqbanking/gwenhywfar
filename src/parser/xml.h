@@ -124,16 +124,23 @@ typedef int
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data);
 
-/** Free the given node (but not its children nodes, FIXME: is this
- * correct?) */
+/**
+ * Free the given node (including its children nodes)
+ */
 GWENHYWFAR_API
 void GWEN_XMLNode_free(GWEN_XMLNODE *n);
 
-/** Free the given node and all of its children nodes. */
+/**
+ * Free the given node and all nodes besides this one.
+ * Hmm, this function should not be public, I think I will move it
+ * to xml_p.h.
+ */
 GWENHYWFAR_API
 void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n);
 
-/** Create and return a deep copy of the given node. */
+/**
+ * Create and return a deep copy of the given node.
+ */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n);
 /*@}*/
@@ -248,6 +255,7 @@ GWENHYWFAR_API
  * probably prefer this function instead of GWEN_XMLNode_GetChild().
  *
  * @return The first children tag/element, or NULL if none exists. */
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n);
 
 /** Iterates on the same level in the XML tree from the given tag (in
@@ -261,6 +269,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(GWEN_XMLNODE *n);
  *
  * @return The next tag/element on the same level, or NULL if no more
  * element exists. */
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n);
 
 /** Descends in the XML tree to the first children data node below the
@@ -270,6 +279,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(GWEN_XMLNODE *n);
  * another data node and not for a (more general) node. 
  *
  * @return The first children data node, or NULL if none exists. */
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n);
 
 /** Iterates on the same level in the XML tree from the given data
@@ -283,6 +293,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(GWEN_XMLNODE *n);
  *
  * @return The next data node on the same level, or NULL if no more
  * data node exists. */
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
 
 /**
@@ -302,7 +313,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
  * @return pointer to the tag/element if found, 0 otherwise
  * @param n tag/element below which to search
  * @param tname tag/element name (e.g. if the tag is "<TESTTAG>" then the
- * tag name if "TESTTAG"). Wildcards (like "*") are allowed.
+ * tag name is "TESTTAG"). Wildcards (like "*") are allowed.
  *
  * @param pname name of the property/attribute to check (if 0 then no
  * property/attribute comparison takes place). No wildcards allowed.
@@ -310,6 +321,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextData(GWEN_XMLNODE *n);
  * @param pvalue optional value of the property/attribute to compare
  * against, wildcards allowed.
  */
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
                                         const char *tname,
                                         const char *pname,
@@ -320,6 +332,7 @@ GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(GWEN_XMLNODE *n,
  * the same level (i.e. the returned element has the same parent node
  * as the given element).
  */
+GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(GWEN_XMLNODE *n,
                                        const char *tname,
                                        const char *pname,
@@ -334,16 +347,53 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(GWEN_XMLNODE *n,
  *
  */
 /*@{*/
+
+/**
+ * Adds a node as a child to another one. This function does not make deep
+ * copies. Instead it takes over ownership of the new child.
+ * @param n node to which the new node is to be added (i.e. the node which
+ * becomes the parent of the second argument)
+ * @param child child which is to be added (this function takes over ownership
+ * of that node, so you MUST NOT free the node yourself)
+ */
 GWENHYWFAR_API
-void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+  void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+
+/**
+ * Unlinks the given child node from its parent without freeing it.
+ * This function relinquishes the ownership of the child to the caller who
+ * thereby becomes responsible for freeing this node.
+ * @param n node which is suspected to be the parent of the second argument
+ * @param child node which is to be unlinked
+ */
 GWENHYWFAR_API
-void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+  void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+
+/**
+ * Unlinks and frees @b all children of the given node.
+ */
 GWENHYWFAR_API
-void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n);
+  void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n);
+
+/**
+ * Adds the children of the second argument as new children to the first
+ * one.
+ * @param n node which is to become parent of the second argument's children
+ * @param nn node whose children are to be moved.
+ * @param copythem if 0 then the children will be moved (leaving the node of
+ * the second argument without children), otherwise deep copies will be made
+ * and the node from the second argument will not be altered.
+ * co
+ */
 GWENHYWFAR_API
   void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
                                     int copythem);
 
+/**
+ * This is a very primitive function. It looks for a node of the given type
+ * and data matching the given one (case-insensitive) @b below the given node
+ * (i.e. if a node is returned it will be a child of the given one).
+ */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_FindNode(GWEN_XMLNODE *n,
                                     GWEN_XMLNODE_TYPE t, const char *data);
@@ -371,8 +421,9 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
                       GWEN_TYPE_UINT32 flags);
 
 /**
- * Reads the given file. If it the path is absolute it will be used directly.
- * If it is relative then the given search path will be searched if the
+ * Reads the given file. If the path is an absolute one it will be used
+ * directly.
+ * If it is a relative one the given search path will be searched in case the
  * file with the given name could not be loaded without a search path.
  * @param n XML node to store the read tags/elements in
  * @param filepath name (and optionally path) of the file to read
@@ -393,6 +444,10 @@ GWENHYWFAR_API
  *
  */
 /*@{*/
+
+/**
+ * Dumps the content of the given XML node and all its children.
+ */
 GWENHYWFAR_API
 void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind);
 /*@}*/
@@ -402,11 +457,14 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind);
 
 /** @defgroup MOD_XMLNODE_PATH XML Node Path
  *
+ * This is used by the message engine module (@ref MOD_MSGENGINE_ALL).
+ * A path consists of a list of nodes which are used while decoding/encoding
+ * a message. A GWEN_XMLNODE_PATH serves as a LIFO stack (last-in-first-out).
  */
 /*@{*/
 
 GWENHYWFAR_API
-typedef struct GWEN_XMLNODE_PATH GWEN_XMLNODE_PATH;
+  typedef struct GWEN_XMLNODE_PATH GWEN_XMLNODE_PATH;
 
 
 GWENHYWFAR_API
@@ -416,11 +474,23 @@ GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(const GWEN_XMLNODE_PATH *np);
 GWENHYWFAR_API
 void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np);
 
+/**
+ * Adds a node to the path.
+ */
 GWENHYWFAR_API
 int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
                            GWEN_XMLNODE *n);
+
+/**
+ * Removes and returns the last added node (or 0 if that would bring us
+ * beyond the root).
+ */
 GWENHYWFAR_API
-GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np);
+  GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np);
+
+/**
+ * Dumps the contents of all XML nodes in the path.
+ */
 GWENHYWFAR_API
 void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np);
 /*@}*/ /* defgroup */

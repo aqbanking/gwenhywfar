@@ -1437,6 +1437,8 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
       }
       else if (strcasecmp(typ, "VALUES")==0) {
       }
+      else if (strcasecmp(typ, "DESCR")==0) {
+      }
       else {
 	/* group tag found */
 	GWEN_XMLNODE *gn;
@@ -1546,8 +1548,14 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
               GWEN_XMLNode_Path_Surface(nodePath);
             if (rv==-1){
               DBG_INFO(0, "Could not write group \"%s\"", gtype);
-              DBG_INFO(0, "Node is:");
-              GWEN_XMLNode_Dump(n, stderr, 1);
+              if (gn) {
+                DBG_INFO(0, "Node is:");
+                GWEN_XMLNode_Dump(gn, stderr, 1);
+              }
+              if (n) {
+                DBG_INFO(0, "Referring node is:");
+                GWEN_XMLNode_Dump(n, stderr, 1);
+              }
               if (gr) {
                 DBG_INFO(0, "Data is:");
                 GWEN_DB_Dump(gr, stderr, 1);
@@ -1963,6 +1971,8 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
       }
       else if (strcasecmp(typ, "VALUES")==0) {
       }
+      else if (strcasecmp(typ, "DESCR")==0) {
+      }
       else {
 	/* group tag found */
 	GWEN_XMLNODE *gn;
@@ -2283,6 +2293,8 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
 	  return -1;
       }
       else if (strcasecmp(typ, "VALUES")==0) {
+      }
+      else if (strcasecmp(typ, "DESCR")==0) {
       }
       else {
 	/* group tag found */
@@ -2819,6 +2831,9 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
       } /* if ELEM */
       else if (strcasecmp(type, "VALUES")==0) {
 	n=GWEN_XMLNode_Next(n);
+      }
+      else if (strcasecmp(type, "DESCR")==0) {
+        n=GWEN_XMLNode_Next(n);
       }
       else {
 	/* group tag found */

@@ -124,11 +124,10 @@ extern "C" {
   \
   d=GWEN_Inherit_FindData(element->INHERIT__list, id, 1);\
   if (d) {\
-  fprintf(stderr,\
-  "ERROR: Type \"%s\" already inherits base type\n",\
-  GWEN_InheritData_GetTypeName(d));\
-  abort();\
-  \
+    fprintf(stderr,\
+            "ERROR: Type \"%s\" already inherits base type\n",\
+            typeName);\
+    abort();\
   }\
   d=GWEN_InheritData_new(typeName, id, data, (void*)element, f);\
   GWEN_InheritData_List_Insert(d, element->INHERIT__list);\

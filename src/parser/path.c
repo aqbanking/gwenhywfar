@@ -43,39 +43,42 @@ void *GWEN_Path_Handle(const char *path,
                        void *data,
                        GWEN_TYPE_UINT32 flags,
                        GWEN_PATHHANDLERPTR elementFunction) {
-  char buffer[256];
-  char buffer2[256];
-  const char *bptr;
+  GWEN_BUFFER *buf1;
   int i;
   unsigned int origflags;
+  int startAtRoot;
 
   origflags=flags;
+
+  buf1=GWEN_Buffer_new(0, 128, 0, 1);
 
   /* skip leading blanks */
   while (*path && isspace(*path))
     path++;
 
   /* skip leading slashes */
-  while (*path && (*path=='/' || *path=='\\'))
+  startAtRoot=0;
+  while (*path && (*path=='/' || *path=='\\')) {
+    if (origflags & GWEN_PATH_FLAGS_CHECKROOT)
+      startAtRoot=1;
     path++;
+  } /* while */
 
   while (*path) {
-    /* copy element into buffer */
-    i=0;
-    while (*path && !(*path=='/' || *path=='\\')) {
-      if (i>((int)sizeof(buffer)-1)) {
-        DBG_ERROR(0, "Path element too long");
-        return 0;
-      }
-      buffer[i++]=*(path++);
-    }
-    /* end element buffer */
-    buffer[i]=0;
+    GWEN_Buffer_Reset(buf1);
 
-    /* check for the element type */
     flags=origflags &
       ~GWEN_PATH_FLAGS_INTERNAL &
       ~GWEN_PATH_FLAGS_VARIABLE;
+
+    /* copy element into buffer */
+    i=0;
+    if (startAtRoot) {
+      GWEN_Buffer_AppendByte(buf1, '/');
+      flags|=GWEN_PATH_FLAGS_ROOT;
+    }
+    while (*path && !(*path=='/' || *path=='\\'))
+      GWEN_Buffer_AppendByte(buf1, *(path++));
 
     /* check for group or entry */
     if (*path) {
@@ -114,38 +117,64 @@ void *GWEN_Path_Handle(const char *path,
         ((flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_CONVERT_LAST))) {
       if (flags & GWEN_PATH_FLAGS_ESCAPE) {
-        if (0==GWEN_Text_Escape(buffer, buffer2, sizeof(buffer2))) {
-          DBG_ERROR(0, "Path element too long");
+        GWEN_BUFFER *buf2;
+        const char *p;
+
+        buf2=GWEN_Buffer_new(0, 64, 0, 1);
+        GWEN_Buffer_SetStep(buf2, 128);
+        p=GWEN_Buffer_GetStart(buf1);
+        if (startAtRoot) {
+          p++;
+          GWEN_Buffer_AppendByte(buf2, '/');
+        }
+        if (GWEN_Text_EscapeToBuffer(p, buf2)) {
+          DBG_ERROR(0, "Could not escape path element");
+          GWEN_Buffer_free(buf2);
+          GWEN_Buffer_free(buf1);
           return 0;
         }
-        bptr=buffer2;
+        GWEN_Buffer_free(buf1);
+        buf1=buf2;
       }
       else if (flags & GWEN_PATH_FLAGS_UNESCAPE) {
-        if (0==GWEN_Text_Unescape(buffer, buffer2, sizeof(buffer2))) {
-          DBG_ERROR(0, "Path element too long");
+        GWEN_BUFFER *buf2;
+        const char *p;
+
+        buf2=GWEN_Buffer_new(0, 64, 0, 1);
+        GWEN_Buffer_SetStep(buf2, 128);
+        p=GWEN_Buffer_GetStart(buf1);
+        if (startAtRoot) {
+          p++;
+          GWEN_Buffer_AppendByte(buf2, '/');
+        }
+        if (GWEN_Text_UnescapeToBuffer(p, buf2)) {
+          DBG_ERROR(0, "Could not unescape path element");
+          GWEN_Buffer_free(buf2);
+          GWEN_Buffer_free(buf1);
           return 0;
         }
-        bptr=buffer2;
+        GWEN_Buffer_free(buf1);
+        buf1=buf2;
       }
-      else
-        bptr=buffer;
     }
-    else
-      bptr=buffer;
 
     /* call function */
     if (elementFunction) {
-      data=(elementFunction)(bptr, data, flags);
+      data=(elementFunction)(GWEN_Buffer_GetStart(buf1), data, flags);
       if (!data) {
         DBG_DEBUG(0, "Error on path element \"%s\"",
-                  bptr);
+                  GWEN_Buffer_GetStart(buf1));
+        GWEN_Buffer_free(buf1);
         return 0;
       }
     }
     DBG_DEBUG(0, "Successfully handled element \"%s\"",
-              bptr);
+              GWEN_Buffer_GetStart(buf1));
+    if (startAtRoot)
+      startAtRoot=0;
   } /* while (*path) */
 
+  GWEN_Buffer_free(buf1);
   return data;
 }
 

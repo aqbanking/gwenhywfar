@@ -239,15 +239,18 @@ GWEN_NETTRANSPORT_RESULT
 GWEN_NetTransportSocket_StartDisconnect(GWEN_NETTRANSPORT *tr){
   GWEN_NETTRANSPORTSOCKET *skd;
   GWEN_ERRORCODE err;
+  GWEN_NETTRANSPORT_STATUS st;
 
   assert(tr);
   skd=GWEN_INHERIT_GETDATA(GWEN_NETTRANSPORT, GWEN_NETTRANSPORTSOCKET, tr);
 
   /* check status */
-  if (GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusLConnected &&
-      GWEN_NetTransport_GetStatus(tr)!=GWEN_NetTransportStatusListening) {
+  st=GWEN_NetTransport_GetStatus(tr);
+  if (st==GWEN_NetTransportStatusUnconnected ||
+      st==GWEN_NetTransportStatusPDisconnected ||
+      st==GWEN_NetTransportStatusDisabled) {
     DBG_ERROR(0,
-              "Socket is neither connected nor listening: %s (%d)",
+              "Socket is inactive: %s (%d)",
               GWEN_NetTransport_StatusName(GWEN_NetTransport_GetStatus(tr)),
               GWEN_NetTransport_GetStatus(tr));
     return GWEN_NetTransportResultError;

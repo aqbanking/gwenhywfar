@@ -13,14 +13,16 @@ directly be used from C++, too.
 
 Gwenhywfar includes the following features:
 
-- Basic Data types for binary buffers, linked lists, error objects,
-  string lists (src/base/), buffered IO operations (src/io/)
+- Basic Data types for binary buffers, ring buffers, linked lists, 
+  error objects, string lists (src/base/), buffered IO operations (src/io/)
+
+- Macros for typesafe list management
 
 - OS abstraction functions for directory and Internet address handling
   (src/os/)
 
-- extensive data type and function collections for Inter-Process
-  communication (IPC, in src/ipc/ and src/impl/ipc/)
+- Networking functions which allow to manage many connections to be used
+  economically even in single threaded applications
 
 - High-level cryptographic functions on top of OpenSSL functionality
   (src/crypt/)
@@ -54,9 +56,10 @@ Documentation
 
 Currently the documentation can only be found in the header
 files. Many header files already include extensive comments in
-doxygen-format (however some don't), but there is currently no setup
-to have a complete doxygen HTML documentation automatically
-generated. (FIXME: what are the plans?)
+doxygen-format (however some don't).
+For a more or less complete API documentation use the command
+"make srcdoc"
+You wil need the tool doxygen.
 
 
 Contact
@@ -74,9 +77,6 @@ Authors
 This library is being written by and is being maintained by Martin
 Preuss <martin@libchipcard.de>. Some minor work has been contributed
 by others including Christian Stimming <stimming@tuhh.de>.
-Some functions in "src/impl/msgengine/seccontext.c" have originally been 
-written by Fabian Kaiser in C++ for the project OpenHBCI. I simply transformed
-them to plain C.
 
 
 Name

@@ -114,6 +114,7 @@ void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx){
   ctx->usage++;
   GWEN_List_PushBack(gwen_callbackstack, ctx);
   GWEN_WaitCallback_internal(0, GWEN_WaitCallbackMode_Enter);
+  ctx->lastEntered=time(0);
 }
 
 
@@ -176,6 +177,10 @@ void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK_CTX *ctx,
 
 
 
+time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK_CTX *ctx){
+  assert(ctx);
+  return ctx->lastEntered;
+}
 
 
 
