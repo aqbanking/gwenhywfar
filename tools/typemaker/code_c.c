@@ -363,7 +363,7 @@ int write_code_fromdbArg_c(ARGUMENTS *args,
         GWEN_BufferedIO_Write(bio, ")");
       }
       else {
-        DBG_ERROR(0, "No toDb function for type \"%s\"", typ);
+        DBG_ERROR(0, "No fromDb function for type \"%s\"", typ);
         return -1;
       }
     }
@@ -1167,19 +1167,24 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
           GWEN_BufferedIO_WriteLine(bio, "  }");
         }
         else {
-          isPtr=atoi(get_property(n, "ptr", "0"));
+
+	  isPtr=atoi(get_property(n, "ptr", "0"));
+
+
           if (isPtr) {
-            GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
-            GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
-            GWEN_BufferedIO_WriteLine(bio, "");
-            GWEN_BufferedIO_Write(bio,
-                                  "    dbT=GWEN_DB_GetGroup(db, "
-                                  "GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
-            GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-            GWEN_BufferedIO_Write(bio, name+1);
-            GWEN_BufferedIO_WriteLine(bio, "\");");
-            GWEN_BufferedIO_Write(bio, "    if (dbT)");
-          }
+	    if (strcasecmp(typ, "char")!=0) {
+	      GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
+	      GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
+	      GWEN_BufferedIO_WriteLine(bio, "");
+	      GWEN_BufferedIO_Write(bio,
+				    "    dbT=GWEN_DB_GetGroup(db, "
+				    "GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
+	      GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	      GWEN_BufferedIO_Write(bio, name+1);
+	      GWEN_BufferedIO_WriteLine(bio, "\");");
+	      GWEN_BufferedIO_Write(bio, "    if (dbT)");
+	    }
+	  }
           GWEN_BufferedIO_Write(bio, "  ");
           GWEN_BufferedIO_Write(bio, prefix);
           GWEN_BufferedIO_Write(bio, "_Set");
@@ -1191,9 +1196,9 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
           if (rv)
             return rv;
           GWEN_BufferedIO_WriteLine(bio, ");");
-          if (isPtr) {
-            GWEN_BufferedIO_WriteLine(bio, "  }");
-          }
+	  if (isPtr && strcasecmp(typ, "char")!=0) {
+	    GWEN_BufferedIO_WriteLine(bio, "  }");
+	  }
         }
       }
     }
