@@ -74,19 +74,20 @@ extern "C" {
   void @FN_PREFIX@_List2_PushBack(@TYPENAME@_LIST2 *l, @TYPENAME@ *p); 
    
   /**
-   * Inserts an element into a list making it the new first element.
+   * Inserts an element at the start of the list, making it the new
+   * first element.
    */
   void @FN_PREFIX@_List2_PushFront(@TYPENAME@_LIST2 *l, @TYPENAME@ *p); 
 
   /**
-   * Returns the first member of the list (does not remove it from that list,
-   * though).
+   * Returns the first element of the list. (The element is not
+   * removed from the list.)
    */
   @TYPENAME@ *@FN_PREFIX@_List2_GetFront(@TYPENAME@_LIST2 *l); 
    
   /**
-   * Returns the last member of the list (does not remove it from that list,
-   * though).
+   * Returns the last element of the list. (The element is not
+   * removed from the list.)
    */
   @TYPENAME@ *@FN_PREFIX@_List2_GetBack(@TYPENAME@_LIST2 *l); 
 
@@ -97,23 +98,27 @@ extern "C" {
   void @FN_PREFIX@_List2_Erase(@TYPENAME@_LIST2 *l,
 			       @TYPENAME@_LIST2_ITERATOR *it);
 
-  /**
-   * Returns the number of elements in the list.
-   */
+ /** Returns the size of this list, i.e. the number of elements in this
+   * list. 
+   *
+   * This number is counted in the list metadata, so this is a cheap
+   * operation. */
   unsigned int @FN_PREFIX@_List2_GetSize(@TYPENAME@_LIST2 *l); 
 
   /**
-   * Removes the last entry from the list (does not free it, though).
+   * Removes the list's last element from the list. (The element is not
+   * freed.)
    */
   void @FN_PREFIX@_List2_PopBack(@TYPENAME@_LIST2 *l); 
    
   /**
-   * Removes the first entry from the list (does not free it, though).
+   * Removes the list's first element from the list. (The element is not
+   * freed.)
    */
   void @FN_PREFIX@_List2_PopFront(@TYPENAME@_LIST2 *l); 
 
   /**
-   * Removes all elements from the list (does not free those elements, though).
+   * Removes all list elements from the list. (The elements are not freed.)
    */
   void @FN_PREFIX@_List2_Clear(@TYPENAME@_LIST2 *l); 
 
@@ -139,13 +144,13 @@ extern "C" {
 
   /**
    * Moves the list iterator to the predecessor of the currenty selected
-   * element.
+   * element and returns that predecessor element.
    */
   @TYPENAME@ *@FN_PREFIX@_List2Iterator_Previous(@TYPENAME@_LIST2_ITERATOR *li); 
    
   /**
    * Moves the list iterator to the successor of the currenty selected
-   * element.
+   * element and returns that successor element.
    */
   @TYPENAME@ *@FN_PREFIX@_List2Iterator_Next(@TYPENAME@_LIST2_ITERATOR *li); 
 
