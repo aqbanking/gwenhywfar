@@ -135,6 +135,8 @@ namespace GWEN {
 
     /**
      * Constructor.
+     * Please note that this callback is freed by Gwenhywfar, you should never
+     * try to free this callback yourself once it has been registered.
      */
     WaitCallback(const char *id);
     virtual ~WaitCallback();
@@ -144,7 +146,7 @@ namespace GWEN {
     /**
      * Registers this callback with Gwenhywfar.
      * After having registered this callback its method @ref instantiate()
-     * will be called by Gwenhywfar whenever this a callback of this type
+     * will be called by Gwenhywfar whenever a callback of this type
      * is entered via @ref GWEN_WaitCallback_Enter.
      */
     int registerCallback(const char *id);

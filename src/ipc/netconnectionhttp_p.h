@@ -66,6 +66,8 @@ struct GWEN_NETCONNECTIONHTTP {
   GWEN_NETMSG *currentOutMsg;
   GWEN_TYPE_UINT32 bodyBytesWritten;
 
+  char *defaultUrl;
+
   GWEN_NETCONNHTTP_WRITEBODY_FN writeBodyFn;
 };
 

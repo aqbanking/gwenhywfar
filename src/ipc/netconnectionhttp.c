@@ -74,6 +74,7 @@ void GWEN_NetConnectionHTTP_FreeData(void *bp, void *p){
   assert(chttp);
   GWEN_NetMsg_free(chttp->currentInMsg);
   GWEN_NetMsg_free(chttp->currentOutMsg);
+  free(chttp->defaultUrl);
   free(chttp);
 }
 
@@ -1196,9 +1197,9 @@ int GWEN_NetConnectionHTTP_WriteCommand(GWEN_NETCONNECTION *conn,
 
   /* append URL */
   GWEN_Buffer_AppendByte(buf, ' ');
-  p=GWEN_DB_GetCharValue(db, "url", 0, 0);
+  p=GWEN_DB_GetCharValue(db, "url", 0, chttp->defaultUrl);
   if (!p) {
-    DBG_ERROR(0, "URL missing");
+    DBG_ERROR(0, "URL missing and no default URL set");
     return -1;
   }
   GWEN_Buffer_AppendString(buf, p);
@@ -1516,6 +1517,38 @@ GWEN_NetConnectionHTTP_GetCurrentInMsg(GWEN_NETCONNECTION *conn){
 
   return chttp->currentInMsg;
 }
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+const char*
+GWEN_NetConnectionHTTP_GetDefaultURL(const GWEN_NETCONNECTION *conn){
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  return chttp->defaultUrl;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnectionHTTP_SetDefaultURL(GWEN_NETCONNECTION *conn,
+                                          const char *s){
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+  free(chttp->defaultUrl);
+  if (s) chttp->defaultUrl=strdup(s);
+  else chttp->defaultUrl=0;
+}
+
+
+
 
 
 

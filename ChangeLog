@@ -1,6 +1,14 @@
+
+2004/07/22: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ipc/netconnectionhttp: added defaultUrl. This is used when no URL is given
+  in a request. This very much simplifies using this class.
+
+
 2004-07-20   Christian Stimming <stimming@tuhh.de>
 
 	* Makefile.am: Fix win32-cs target with wrong .lib filename.
+
 
 2004/07/20: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

@@ -178,6 +178,12 @@ GWENHYWFAR_API
 void GWEN_NetConnectionHTTP_SubMode(GWEN_NETCONNECTION *conn,
                                     GWEN_TYPE_UINT32 m);
 
+const char*
+  GWEN_NetConnectionHTTP_GetDefaultURL(const GWEN_NETCONNECTION *conn);
+void GWEN_NetConnectionHTTP_SetDefaultURL(GWEN_NETCONNECTION *conn,
+                                          const char *s);
+
+
 /**
  * You can use this function to check whether the connection needs the
  * program's attention.
@@ -237,7 +243,7 @@ GWEN_TYPE_UINT32 GWEN_NetConnectionHTTP_GetState(GWEN_NETCONNECTION *conn);
  * </p>
  * <p>
  * <b>Note:</b>This function takes over the ownership of the GWEN_BUFFER (if
- * any) and the GWEN_BUFFER (if given) regardless of the result.
+ * any) and the GWEN_BUFFEREDIO (if given) regardless of the result.
  * </p>
  * @param conn HTTP connection to use
  * @param dbRequest command and optional header as described above
