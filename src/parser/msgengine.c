@@ -3199,7 +3199,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       unsigned int ustart;
 
       ustart=GWEN_Buffer_GetPos(mbuf);
-      ustart++; // skip delimiter
+      ustart++; /* skip delimiter */
 
       /* node not found, skip it */
       DBG_NOTICE(0,

@@ -147,7 +147,7 @@ GWEN_ERRORCODE GWEN_Error_RegisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr){
   assert(tptr);
 
   GWEN_LIST_ADD(GWEN_ERRORTYPEREGISTRATIONFORM, tptr,
-                &gwen_error_errorformlist);
+                &gwen_error_errorformlist)
 
   DBG_DEBUG(0, "Registered type \"%s\" (%d)\n",
             tptr->name, tptr->typ);

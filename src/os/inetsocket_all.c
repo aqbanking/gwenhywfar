@@ -57,12 +57,12 @@ GWEN_ERRORCODE GWEN_Socket__StartOpen(GWEN_SOCKET *sp,
   }
 
   err=GWEN_Socket_Connect(sp, addr);
-  // not yet finished or real error ?
+  /* not yet finished or real error ? */
   if (!GWEN_Error_IsOk(err)) {
     if (GWEN_Error_GetType(err)!=GWEN_Error_FindType("Socket") ||
         GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_IN_PROGRESS) {
-      // real error, so return that error
-      DBG_ERROR_ERR(0, err);
+      /* real error, so return that error */
+      DBG_ERROR_ERR(0, err)
       return err;
     }
   }
@@ -107,14 +107,14 @@ GWEN_ERRORCODE GWEN_Socket__CheckOpen(GWEN_SOCKET *sp,
     }
   } /* if error */
 
-  // get socket error
+  /* get socket error */
   err=GWEN_Socket_GetSocketError(sp);
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);
     return err;
   }
 
-  // make socket blocking again
+  /* make socket blocking again */
   err=GWEN_Socket_SetBlocking(sp, 1);
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(0, err);

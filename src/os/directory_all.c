@@ -69,7 +69,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     GWEN_Buffer_AppendByte(buf, '/');
   GWEN_Buffer_AppendString(buf, entry);
 
-  // check for existence of the file/folder
+  /* check for existence of the file/folder */
   p=GWEN_Buffer_GetStart(buf);
   DBG_DEBUG(0, "Checking entry \"%s\"", p);
   if (stat(p, &st)) {
@@ -103,12 +103,12 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
       DBG_INFO(0, "Path \"%s\" does not exist (it should)", p);
       return 0;
     }
-  } // if stat is ok
+  } /* if stat is ok */
 
   if (!exists) {
     DBG_DEBUG(0, "Entry \"%s\" does not exist", p);
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-      // create file
+      /* create file */
       int fd;
 
       DBG_DEBUG(0, "Creating file \"%s\"", p);
@@ -121,7 +121,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
       DBG_DEBUG(0, "Sucessfully created");
     }
     else {
-      // create dir
+      /* create dir */
       DBG_DEBUG(0, "Creating folder \"%s\"", p);
 
       if (GWEN_Directory_Create(p)) {
@@ -129,7 +129,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
         return 0;
       }
     }
-  } // if exists
+  } /* if exists */
   else {
     DBG_DEBUG(0, "Entry \"%s\" exists", p);
   }

@@ -221,10 +221,10 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 
 #if 1
     if (addr) {
-      // ok, address to be set
+      /* ok, address to be set */
       aptr->sin_addr.s_addr=inet_addr(addr);
       if (aptr->sin_addr.s_addr==INADDR_NONE)
-        // bad address, so maybe it rather is a name
+        /* bad address, so maybe it rather is a name */
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
                               GWEN_Error_FindType(GWEN_INETADDR_ERROR_TYPE),
@@ -265,7 +265,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 }
 
 
-// internal function
+/* internal function */
 int GWEN_InetAddr_TranslateHError(int herr) {
   int rv;
 
@@ -285,7 +285,7 @@ int GWEN_InetAddr_TranslateHError(int herr) {
   default:
     rv=GWEN_INETADDR_ERROR_UNKNOWN_DNS_ERROR;
     break;
-  } // switch
+  } /* switch */
   return rv;
 }
 

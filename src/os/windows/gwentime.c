@@ -45,7 +45,7 @@
 GWEN_TIME *GWEN_CurrentTime(){
   GWEN_TIME *t;
   union {
-       long long ns100; /*time since 1 Jan 1601 in 100ns units */
+       GWEN_TYPE_UINT64 ns100; /*time since 1 Jan 1601 in 100ns units */
        FILETIME ft;
      } current_date;
 

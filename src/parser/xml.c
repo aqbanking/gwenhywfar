@@ -679,7 +679,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             value=0;
 
             /* skip blanks */
-            //chr=0;
+            /*chr=0; */
             DBG_DEBUG(0, "Current char is: \"%c\"", chr);
             if (chr==0 || isspace(chr)) {
               while(!GWEN_BufferedIO_CheckEOF(bio)) {

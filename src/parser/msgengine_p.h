@@ -51,8 +51,8 @@ struct GWEN__MSGENGINE {
   char escapeChar;
   char *charsToEscape;
   char *delimiters;
-  //char *secMode;
-  //unsigned int protocolVersion;
+  /*char *secMode; */
+  /*unsigned int protocolVersion; */
   GWEN_DB_NODE *globalValues;
 
   GWEN_MSGENGINE_TYPEREAD_PTR typeReadPtr;
