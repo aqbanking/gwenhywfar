@@ -35,6 +35,8 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+/*#define GWEN_MEMTRACE*/
+
 #ifdef GWEN_MEMTRACE
 static unsigned int GWEN_KeySpec_Count=0;
 #endif

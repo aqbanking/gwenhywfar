@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 15 2003
-    copyright   : (C) 2003 by Martin Preuss
+    begin       : Sun Jan 25 2004
+    copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,84 +26,43 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_LIST_P_H
-#define GWENHYWFAR_LIST_P_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <gwenhywfar/list.h>
+#ifndef GWEN_REFPTR_P_H
+#define GWEN_REFPTR_P_H
 
 
-typedef struct GWEN_LIST_ENTRY GWEN_LIST_ENTRY;
-typedef struct GWEN_CONSTLIST_ENTRY GWEN_CONSTLIST_ENTRY;
-typedef struct GWEN__LISTPTR GWEN__LISTPTR;
-
-struct GWEN_LIST_ENTRY {
-  GWEN_LIST_ENTRY *previous;
-  GWEN_LIST_ENTRY *next;
-  GWEN_REFPTR *dataPtr;
-  unsigned int usage;
-};
+#include <gwenhywfar/refptr.h>
 
 
-struct GWEN_CONSTLIST_ENTRY {
-  GWEN_CONSTLIST_ENTRY *previous;
-  GWEN_CONSTLIST_ENTRY *next;
-  const void *data;
-  unsigned int usage;
-};
+typedef struct GWEN_REFPTR_POBJECT GWEN_REFPTR_POBJECT;
 
 
-struct GWEN__LISTPTR {
+struct GWEN_REFPTR_INFO {
   GWEN_TYPE_UINT32 refCount;
-  GWEN_LIST_ENTRY *first;
-  GWEN_LIST_ENTRY *last;
-  unsigned int size;
-  GWEN_REFPTR_INFO *refPtrInfo;
-};
-
-
-GWEN__LISTPTR *GWEN__ListPtr_new();
-void GWEN__ListPtr_free(GWEN__LISTPTR *lp);
-void GWEN__ListPtr_Attach(GWEN__LISTPTR *lp);
-void GWEN__ListPtr_Clear(GWEN__LISTPTR *lp);
-GWEN__LISTPTR *GWEN__ListPtr_dup(GWEN__LISTPTR *lp);
-
-
-struct GWEN_LIST {
-  GWEN__LISTPTR *listPtr;
-  GWEN_REFPTR_INFO *refPtrInfo;
-};
-
-
-struct GWEN_CONSTLIST {
-  GWEN_CONSTLIST_ENTRY *first;
-  GWEN_CONSTLIST_ENTRY *last;
-  unsigned int size;
+  GWEN_TYPE_UINT32 flags;
+  GWEN_REFPTR_INFO_FREE_FN freeFn;
+  GWEN_REFPTR_INFO_DUP_FN dupFn;
 };
 
 
 
-struct GWEN_LIST_ITERATOR {
-  const GWEN_LIST *list;
-
-  GWEN_LIST_ENTRY *current;
-};
-
-
-struct GWEN_CONSTLIST_ITERATOR {
-  const GWEN_CONSTLIST *list;
-
-  GWEN_CONSTLIST_ENTRY *current;
+struct GWEN_REFPTR_POBJECT {
+  GWEN_TYPE_UINT32 refCount;
+  GWEN_TYPE_UINT32 flags;
+  GWEN_REFPTR_INFO *infoPtr;
+  void *ptr;
 };
 
 
 
-#ifdef __cplusplus
-}
-#endif
+struct GWEN_REFPTR {
+  GWEN_REFPTR_POBJECT *objectPtr;
+};
+
+
+
+GWEN_REFPTR_POBJECT *GWEN_RefPtrObject_new(void *dp, GWEN_REFPTR_INFO *rpi);
+void GWEN_RefPtrObject_free(GWEN_REFPTR_POBJECT *rpo);
+void GWEN_RefPtrObject_Attach(GWEN_REFPTR_POBJECT *rpo);
 
 
 #endif

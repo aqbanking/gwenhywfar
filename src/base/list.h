@@ -35,6 +35,7 @@ extern "C" {
 #endif
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/refptr.h>
 /* This is needed for PalmOS, because it define some functions needed */
 #include <string.h>
 #include <stdio.h>
@@ -67,25 +68,46 @@ GWENHYWFAR_API
 void GWEN_List_free(GWEN_LIST *l);
 
 GWENHYWFAR_API
-void GWEN_List_Dump(GWEN_LIST *l, FILE *f, unsigned int indent);
+GWEN_LIST *GWEN_List_dup(const GWEN_LIST *l);
+
+GWENHYWFAR_API
+void GWEN_List_Dump(const GWEN_LIST *l, FILE *f, unsigned int indent);
 
 GWENHYWFAR_API
 void GWEN_List_PushBack(GWEN_LIST *l, void *p);
 
 GWENHYWFAR_API
+void GWEN_List_PushBackRefPtr(GWEN_LIST *l, GWEN_REFPTR *rp);
+
+GWENHYWFAR_API
 void GWEN_List_PushFront(GWEN_LIST *l, void *p);
 
 GWENHYWFAR_API
-void *GWEN_List_GetFront(GWEN_LIST *l);
+void GWEN_List_PushFrontRefPtr(GWEN_LIST *l, GWEN_REFPTR *rp);
 
 GWENHYWFAR_API
-void *GWEN_List_GetBack(GWEN_LIST *l);
+void *GWEN_List_GetFront(const GWEN_LIST *l);
+
+GWENHYWFAR_API
+GWEN_REFPTR *GWEN_List_GetFrontRefPtr(const GWEN_LIST *l);
+
+GWENHYWFAR_API
+void *GWEN_List_GetBack(const GWEN_LIST *l);
+
+GWENHYWFAR_API
+GWEN_REFPTR *GWEN_List_GetBackRefPtr(const GWEN_LIST *l);
 
 GWENHYWFAR_API
 void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it);
 
 GWENHYWFAR_API
-unsigned int GWEN_List_GetSize(GWEN_LIST *l);
+unsigned int GWEN_List_GetSize(const GWEN_LIST *l);
+
+GWENHYWFAR_API
+GWEN_REFPTR_INFO *GWEN_List_GetRefPtrInfo(const GWEN_LIST *l);
+
+GWENHYWFAR_API
+void GWEN_List_SetRefPtrInfo(GWEN_LIST *l, GWEN_REFPTR_INFO *rpi);
 
 GWENHYWFAR_API
 void GWEN_List_PopBack(GWEN_LIST *l);
@@ -115,10 +137,19 @@ GWENHYWFAR_API
 void *GWEN_ListIterator_Previous(GWEN_LIST_ITERATOR *li);
 
 GWENHYWFAR_API
+GWEN_REFPTR *GWEN_ListIterator_PreviousRefPtr(GWEN_LIST_ITERATOR *li);
+
+GWENHYWFAR_API
 void *GWEN_ListIterator_Next(GWEN_LIST_ITERATOR *li);
 
 GWENHYWFAR_API
+GWEN_REFPTR *GWEN_ListIterator_NextRefPtr(GWEN_LIST_ITERATOR *li);
+
+GWENHYWFAR_API
 void *GWEN_ListIterator_Data(GWEN_LIST_ITERATOR *li);
+
+GWENHYWFAR_API
+GWEN_REFPTR *GWEN_ListIterator_DataRefPtr(GWEN_LIST_ITERATOR *li);
 
 
 

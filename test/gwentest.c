@@ -30,6 +30,7 @@
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/fslock.h>
 #include <gwenhywfar/xsd.h>
+#include <gwenhywfar/refptr.h>
 #include "../src/parser/xsd_p.h"
 #ifdef OS_WIN32
 # include <windows.h>
@@ -2925,15 +2926,113 @@ GWEN_CONSTLIST2_FUNCTION_DEFS(GWEN_KEYSPEC, GWEN_KeySpec);
 GWEN_CONSTLIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec);
 
 int testList2(int argc, char **argv) {
-  GWEN_CRYPTKEY_LIST2 *keyList;
-/*   GWEN_CRYPTKEY *key; */
-/*   GWEN_KEYSPEC_LIST2 *specList; */
-/*   GWEN_KEYSPEC *spec; */
+  GWEN_KEYSPEC_LIST2 *specList;
+  GWEN_KEYSPEC_LIST2 *specList2;
+  GWEN_KEYSPEC_LIST2_ITERATOR *kit;
+  GWEN_KEYSPEC *spec;
+  GWEN_REFPTR_INFO *rpi;
 
-  keyList=GWEN_CryptKey_List2_new();
+  specList=GWEN_KeySpec_List2_new();
+  rpi=GWEN_RefPtrInfo_new();
+  GWEN_RefPtrInfo_AddFlags(rpi, GWEN_REFPTR_FLAGS_AUTODELETE);
+  GWEN_RefPtrInfo_SetFreeFn(rpi,
+                            (GWEN_REFPTR_INFO_FREE_FN)GWEN_KeySpec_free);
+  GWEN_List_SetRefPtrInfo((GWEN_LIST*)specList, rpi);
+  spec=GWEN_KeySpec_new();
+  GWEN_KeySpec_SetOwner(spec, "User1");
+  GWEN_KeySpec_List2_PushBack(specList, spec);
 
-  GWEN_CryptKey_List2_free(keyList);
+  spec=GWEN_KeySpec_new();
+  GWEN_KeySpec_SetOwner(spec, "User2");
+  GWEN_KeySpec_List2_PushBack(specList, spec);
 
+  spec=GWEN_KeySpec_new();
+  GWEN_KeySpec_SetOwner(spec, "User3");
+  GWEN_KeySpec_List2_PushBack(specList, spec);
+
+  kit=GWEN_KeySpec_List2_First(specList);
+  if (kit) {
+    GWEN_KEYSPEC *ks;
+
+    ks=GWEN_KeySpec_List2Iterator_Data(kit);
+    while(ks) {
+      GWEN_KeySpec_Dump(ks, stderr, 2);
+      ks=GWEN_KeySpec_List2Iterator_Next(kit);
+    }
+    GWEN_KeySpec_List2Iterator_free(kit);
+  }
+
+  GWEN_KeySpec_List2_PopFront(specList);
+  fprintf(stderr, "List1 after 1st POP:\n");
+  kit=GWEN_KeySpec_List2_First(specList);
+  if (kit) {
+    GWEN_KEYSPEC *ks;
+
+    ks=GWEN_KeySpec_List2Iterator_Data(kit);
+    while(ks) {
+      GWEN_KeySpec_Dump(ks, stderr, 2);
+      ks=GWEN_KeySpec_List2Iterator_Next(kit);
+    }
+    GWEN_KeySpec_List2Iterator_free(kit);
+  }
+
+  specList2=GWEN_KeySpec_List2_dup(specList);
+
+  fprintf(stderr, "List1 before POP:\n");
+  kit=GWEN_KeySpec_List2_First(specList);
+  if (kit) {
+    GWEN_KEYSPEC *ks;
+
+    ks=GWEN_KeySpec_List2Iterator_Data(kit);
+    while(ks) {
+      GWEN_KeySpec_Dump(ks, stderr, 2);
+      ks=GWEN_KeySpec_List2Iterator_Next(kit);
+    }
+    GWEN_KeySpec_List2Iterator_free(kit);
+  }
+  fprintf(stderr, "List2 before POP:\n");
+  kit=GWEN_KeySpec_List2_First(specList2);
+  if (kit) {
+    GWEN_KEYSPEC *ks;
+
+    ks=GWEN_KeySpec_List2Iterator_Data(kit);
+    while(ks) {
+      GWEN_KeySpec_Dump(ks, stderr, 2);
+      ks=GWEN_KeySpec_List2Iterator_Next(kit);
+    }
+    GWEN_KeySpec_List2Iterator_free(kit);
+  }
+
+  GWEN_KeySpec_List2_PopFront(specList2);
+
+  fprintf(stderr, "List1 after POP:\n");
+  kit=GWEN_KeySpec_List2_First(specList);
+  if (kit) {
+    GWEN_KEYSPEC *ks;
+
+    ks=GWEN_KeySpec_List2Iterator_Data(kit);
+    while(ks) {
+      GWEN_KeySpec_Dump(ks, stderr, 2);
+      ks=GWEN_KeySpec_List2Iterator_Next(kit);
+    }
+    GWEN_KeySpec_List2Iterator_free(kit);
+  }
+
+  fprintf(stderr, "List2 after POP:\n");
+  kit=GWEN_KeySpec_List2_First(specList2);
+  if (kit) {
+    GWEN_KEYSPEC *ks;
+
+    ks=GWEN_KeySpec_List2Iterator_Data(kit);
+    while(ks) {
+      GWEN_KeySpec_Dump(ks, stderr, 2);
+      ks=GWEN_KeySpec_List2Iterator_Next(kit);
+    }
+    GWEN_KeySpec_List2Iterator_free(kit);
+  }
+
+
+  GWEN_KeySpec_List2_free(specList);
   return 0;
 }
 
@@ -3569,6 +3668,35 @@ int testXSD3(int argc, char **argv) {
 
 
 
+int testPtr(int argc, char **argv) {
+  GWEN_REFPTR *rp;
+  GWEN_REFPTR *rp2;
+  char *dp1;
+  char *dp2;
+
+  dp1=strdup("Hello, World");
+  dp2=strdup("Goodbye ;-)");
+  rp=GWEN_RefPtr_new(dp1, 0);
+
+  fprintf(stderr, "Data is: %s\n",
+          (char*)GWEN_RefPtr_GetData(rp));
+  GWEN_RefPtr_SetData(rp, dp2, 0);
+  fprintf(stderr, "Data is now: %s\n",
+          (char*)GWEN_RefPtr_GetData(rp));
+
+  rp2=GWEN_RefPtr_dup(rp);
+  fprintf(stderr, "Data2 is: %s\n",
+          (char*)GWEN_RefPtr_GetData(rp2));
+  GWEN_RefPtr_SetData(rp2, dp2, 0);
+  fprintf(stderr, "Data2 is now: %s\n",
+          (char*)GWEN_RefPtr_GetData(rp2));
+
+  GWEN_RefPtr_free(rp);
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3688,6 +3816,8 @@ int main(int argc, char **argv) {
     rv=testXSD2(argc, argv);
   else if (strcasecmp(argv[1], "xsd3")==0)
     rv=testXSD3(argc, argv);
+  else if (strcasecmp(argv[1], "ptr")==0)
+    rv=testPtr(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

@@ -4,6 +4,30 @@
   ------------------------------------------------------------------------
 
 
+2004/12/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added new class GWEN_REFPTR (a type of smart pointer with reference counter)
+- GWEN_LIST: 
+  - now internally uses GWEN_REFPTR to store objects. This allows
+    for shallow copies of lists (as needed for the read-code of GWEN_XSD).
+  - fixed a severe bug (list became nearly unusable after PopFront/PopBack)
+  - added function GWEN_List_dup() which makes a shallow copy of a list.
+    When either of the referencing lists wants to modify the list (adding or
+    removing entries) the list really gets copied (but still the elements are
+    shared as long as possible)
+  - added function GWEN_List_PushBackRefPtr()
+  - added function GWEN_List_PushFrontRefPtr()
+  - added function GWEN_List_GetFrontRefPtr()
+  - added function GWEN_List_GetBackRefPtr()
+  - added function GWEN_List_GetRefPtrInfo()
+  - added function GWEN_List_SetRefPtrInfo()
+    The two latter functions can be used to inform the list code about
+    _free() and _dup() functions of the elements stored in the list. This
+    is used when copying lists. It can also be used to set the list into
+    AUTODELETE mode (which is off by default to maintain compatibility with
+    existing code).
+
+
 2004/12/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - GWEN_XSD:

@@ -39,6 +39,7 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/refptr.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +60,8 @@ extern "C" {
   \
   decl t##_LIST2 *pr##_List2_new(); \
   decl void pr##_List2_free(t##_LIST2 *l); \
+  decl t##_LIST2 *pr##_List2_dup(const t##_LIST2 *l); \
+  decl GWEN_TYPE_UINT32 pr##_List2_GetFlags(const t##_LIST2 *l); \
   decl void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent); \
   decl void pr##_List2_PushBack(t##_LIST2 *l, t *p); \
   decl void pr##_List2_PushFront(t##_LIST2 *l, t *p); \
@@ -78,12 +81,15 @@ extern "C" {
   decl t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH, void *user_data);
 
-  /* This macro should be used in applications, not in libraries. In
+  /** This macro should be used in applications, not in libraries. In
    * libraries please use the macro @ref GWEN_LIST2_FUNCTION_LIB_DEFS. */
 #define GWEN_LIST2_FUNCTION_DEFS(t, pr) \
   GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
 
+  /** This macro actually implements the functions. Please use it in your
+   * source file (*.c) after the includes.
+   */
 #define GWEN_LIST2_FUNCTIONS(t, pr) \
   t##_LIST2 *pr##_List2_new() { \
     return (t##_LIST2*)GWEN_List_new(); \
@@ -92,6 +98,10 @@ extern "C" {
   void pr##_List2_free(t##_LIST2 *l) { \
     GWEN_List_free((GWEN_LIST*)l); \
   } \
+  \
+  t##_LIST2 *pr##_List2_dup(const t##_LIST2 *l) {\
+    return (t##_LIST2*)GWEN_List_dup((GWEN_LIST*)l); \
+  }\
   \
   void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent) { \
     GWEN_List_Dump((GWEN_LIST*) l, f, indent); \
@@ -181,9 +191,6 @@ extern "C" {
     pr##_List2Iterator_free(it); \
     return 0; \
   }
-
-
-
 
   /*
    * This macro should be used in libraries with the
