@@ -75,7 +75,9 @@ rpm:    $(PACKAGE).spec dist
 ISCC = "C:\Programme\Inno Setup 4\iscc.exe"
 setup: gwenhywfar.iss
 	mkdir -p distribution
-	make prefix="`pwd`/distribution/win32-tmp" install \
+	make prefix="`pwd`/distribution/win32-tmp" \
+	     WIN_PATH_WINDOWS_MINGW="`pwd`/distribution/win32-tmp/windows" \
+	     install \
 	 && $(ISCC) gwenhywfar.iss \
 	 && rm -rf distribution/win32-tmp
 
