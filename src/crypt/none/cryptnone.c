@@ -122,6 +122,13 @@ int GWEN_NetTransportSSL_GenerateCertAndKeyFile(const char *fname,
 
 
 
+int GWEN_NetTransportSSL_GenerateDhFile(const char *fname, int bits) {
+  DBG_ERROR(0, "Crypto functions not supported");
+  return -1;
+}
+
+
+
 GWEN_DB_NODE*
 GWEN_NetTransportSSL_GetPeerCertificate(const GWEN_NETTRANSPORT *tr){
   DBG_ERROR(0, "Crypto functions not supported");
