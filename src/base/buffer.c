@@ -720,6 +720,21 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
 
 
 
+int GWEN_Buffer_AppendString(GWEN_BUFFER *bf,
+                             const char *buffer){
+  assert(bf);
+  assert(buffer);
+  return GWEN_Buffer_AppendBytes(bf, buffer, strlen(buffer));
+}
+
+
+
+int GWEN_Buffer_InsertString(GWEN_BUFFER *bf,
+                             const char *buffer){
+  assert(bf);
+  assert(buffer);
+  return GWEN_Buffer_InsertBytes(bf, buffer, strlen(buffer));
+}
 
 
 

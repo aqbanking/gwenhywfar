@@ -14,4 +14,6 @@ libosimpl_la_SOURCES=\
  directory.c \
  inetaddr.c \
  inetsocket.c \
+ init.c \
  libloader.c
+

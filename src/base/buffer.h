@@ -207,6 +207,16 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
                             unsigned int size);
 
 /**
+ * Appends a string to the buffer (without the trailing null char!)
+ * The position pointer is adjusted accordingly.
+ * @return 0 if ok, !=0 on error
+ */
+GWENHYWFAR_API
+  int GWEN_Buffer_AppendString(GWEN_BUFFER *bf,
+                               const char *buffer);
+
+
+/**
  * Appends a single byte to this GWEN_BUFFER, if there is
  * enough room.
  * The position pointer is adjusted accordingly.
@@ -228,6 +238,15 @@ GWENHYWFAR_API
 int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
                             const char *buffer,
                             unsigned int size);
+
+
+/**
+ * Inserts the given string at the current position (without the trailing
+ * null byte)
+ */
+GWENHYWFAR_API
+int GWEN_Buffer_InsertString(GWEN_BUFFER *bf,
+                             const char *buffer);
 
 /**
  * Inserts a byte at the current position.

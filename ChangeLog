@@ -1,5 +1,14 @@
 $Id$
 
+2003/12/13 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- added string functions to base/buffer module
+- improved library loader
+- added code for DLL init
+- Gwen now initializes itself upon loading
+- added README.W32 for people who want to compile Gwenhywfar on Windoze
+
+
 2003/12/10 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - started porting Gwen to Windoze

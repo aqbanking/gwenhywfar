@@ -2,4 +2,4 @@ INCLUDES=@all_includes@
 
 noinst_PROGRAMS=gwentest
 gwentest_SOURCES=gwentest.c
-gwentest_LDADD=-L../src -lgwenhywfar
+gwentest_LDADD=-L../src @gwenhywfar_libs@

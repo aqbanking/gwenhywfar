@@ -1,0 +1,77 @@
+
+
+
+1. Using Gwenhywfar
+===================
+
+1.1. Needed Components
+----------------------
+
+1.1.1. OpenSSL
+
+You can get it from http://gnuwin32.sf.net/
+Please install the package openssl-0.9.7c-bin.exe, and make sure, that the 
+included DLLs exist in your windows directory (copy it from the location
+chosen by the installer if necessary, otherwise later Windows will not find
+the DLL).
+
+
+
+2. Compiling Gwenhywfar
+=======================
+
+2.1. Needed Components
+----------------------
+
+2.1.1. MinGW32
+
+Gwenhywfar uses MinGW32 on Windows platforms.
+MinGW32 is a project with the goal to provide a free compiler system and a
+nearly complete shell environment which allows to execute the configure 
+script. The resulting DLLs and EXEs only link against Windows libraries, so
+there are no licence issues when releasing binary packages.
+The compiler itself is the very well known GCC.
+
+MinGW creates an environment just like under Linux (with quite the same
+file hierarchie, including a home directory).
+Paths including hard drive identifiers are used like this:
+c:\SOMEPATH -> /c/SOMEPATH
+d:\SOMEPATH -> /d/SOMEPATH
+and so on.
+
+The root directory of MinGW is a a subdirectory of the one you installed
+mingw to, in most cases "c:\msys\1.0". So "/" from inside the shell actually 
+refers to that directory.
+
+You can get MinGW from http://www.mingw.org/
+
+Install instructions:
+- download and install MSYS 1.0.9 
+  (there is an executable, which wants to install itself to "c:/msys". 
+  This is a good choice, so from here on I assume you have choosen this path,
+  too)
+- download and install  MinGW-3.1.0-1.exe (when asked for the install path
+  please make sure you use "c:/msys/1.0/mingw" !!)
+- download and install msysDTK-1.0.1.exe (it finds its install path by itself)
+
+There are many more packages on their download site, but you don't need them, 
+since most of them are already included in the packages we just installed.
+
+
+
+2.1.2. OpenSSL
+
+You can get it from http://gnuwin32.sf.net/
+Please additionally install the package openssl-0.9.7c-lib.exe which contains
+all headers needed.
+I recommend installing the content of that package to
+"c:\msys\1.0\openssl"
+
+You will then need to give that path to the configure script via the option
+"--with-openssl-includes=/openssl".
+
+These headers are only needed if you want to compile Gwenhywfar itself !
+
+
+
+

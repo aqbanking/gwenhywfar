@@ -31,10 +31,11 @@
 #define GWENHYWFAR_LIBLOADER_H "$Id"
 
 #define GWEN_LIBLOADER_ERROR_TYPE "LIBLOADER"
-#define GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD  1
-#define GWEN_LIBLOADER_ERROR_NOT_OPEN        2
-#define GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE 3
-#define GWEN_LIBLOADER_ERROR_COULD_RESOLVE   4
+#define GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD    1
+#define GWEN_LIBLOADER_ERROR_NOT_OPEN          2
+#define GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE   3
+#define GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE 4
+#define GWEN_LIBLOADER_ERROR_NOT_FOUND         5
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
@@ -60,11 +61,23 @@ GWENHYWFAR_API typedef struct GWEN_LIBLOADERSTRUCT GWEN_LIBLOADER;
 
 
 GWENHYWFAR_API GWEN_LIBLOADER *GWEN_LibLoader_new();
+
+/**
+ * Frees the libloader. This does NOT automatically unload the library
+ * loaded using this loader ! But after freeing the loader you
+ * can not resolve more symbols. However, already resolved symbols
+ * remain accessible.
+ */
 GWENHYWFAR_API void GWEN_LibLoader_free(GWEN_LIBLOADER *h);
 
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
                                             const char *name);
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
+                                                    const char *path,
+                                                    const char *name);
+
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h);
 GWENHYWFAR_API

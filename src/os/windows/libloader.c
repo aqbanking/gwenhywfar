@@ -33,6 +33,7 @@
 #include "libloader_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/buffer.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -98,17 +99,32 @@ void GWEN_LibLoader_free(GWEN_LIBLOADER *h){
 
 
 
-GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
+GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
                                           const char *name){
   assert(h);
 
   h->handle=(void*)LoadLibrary(name);
   if (!h->handle) {
-    DBG_INFO(0, "Error loading library \"%s\"", name);
-    return GWEN_Error_new(0,
-			  GWEN_ERROR_SEVERITY_ERR,
-			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-			  GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
+    int werr;
+
+    werr=GetLastError();
+    fprintf(stderr, "Error loading DLL: %d\n", werr); /* DEBUG */
+    /* FIXME: Is this the correct code ? */
+    if (werr==ERROR_FILE_NOT_FOUND) {
+      DBG_INFO(0, "File \"%s\" not found", name);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
+                            GWEN_LIBLOADER_ERROR_NOT_FOUND);
+    }
+    /* TODO: Find the code for resolve errors */
+    else {
+      DBG_INFO(0, "Error loading library \"%s\" (%d)", name, werr);
+      return GWEN_Error_new(0,
+                            GWEN_ERROR_SEVERITY_ERR,
+                            GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
+                            GWEN_LIBLOADER_ERROR_COULD_NOT_LOAD);
+    }
   }
   return 0;
 }
@@ -152,11 +168,67 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
-                          GWEN_LIBLOADER_ERROR_COULD_RESOLVE);
+                          GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE);
   }
   DBG_VERBOUS(0, "Resolved symbol \"%s\": %08x\n",
 	      name, (int)*p);
   return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
+                                                  const char *path,
+						  const char *name){
+  GWEN_BUFFER *buffer;
+  unsigned int pos;
+  unsigned int i;
+  GWEN_ERRORCODE err;
+
+  assert(h);
+  assert(name);
+  buffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (path) {
+    GWEN_Buffer_AppendString(buffer, path);
+    GWEN_Buffer_AppendByte(buffer, '/');
+  }
+  /* remember current position */
+  pos=GWEN_Buffer_GetPos(buffer);
+  /* append name of the library to load */
+  GWEN_Buffer_AppendString(buffer, name);
+  i=strlen(name);
+  if (i>4) {
+    if (strcmp(name+i-4, ".dll")!=0) {
+      /* no DLL-extension, add it myself */
+      GWEN_Buffer_AppendString(buffer, ".dll");
+    }
+  }
+
+  /* append trailing null byte */
+  GWEN_Buffer_AppendByte(buffer, (char)0);
+
+  /* try to load the library */
+  err=GWEN_LibLoader_LoadLibrary(h, GWEN_Buffer_GetStart(buffer));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_INFO(0, "Could not load library \"%s\"",
+             GWEN_Buffer_GetStart(buffer));
+    DBG_INFO_ERR(0, err);
+    GWEN_Buffer_free(buffer);
+    return err;
+  }
+
+  DBG_INFO(0, "Library \"%s\" loaded",
+	   GWEN_Buffer_GetStart(buffer));
+  GWEN_Buffer_free(buffer);
+  return 0;
+}
+
+
+
+GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
+					  const char *name){
+  return GWEN_LibLoader_OpenLibraryWithPath(h, 0, name);
 }
 
 
@@ -178,18 +250,17 @@ const char *GWEN_LibLoader_ErrorString(int c){
   case GWEN_LIBLOADER_ERROR_COULD_NOT_CLOSE:
     s="Could not close library";
     break;
-  case GWEN_LIBLOADER_ERROR_COULD_RESOLVE:
+  case GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE:
     s="Could not resolve symbol";
+    break;
+  case GWEN_LIBLOADER_ERROR_NOT_FOUND:
+    s="Library not found";
     break;
   default:
     s=(const char*)0;
-  } // switch
+  } /* switch */
   return s;
 }
-
-
-
-
 
 
 

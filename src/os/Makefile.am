@@ -9,6 +9,7 @@ EXTRA_DIST=\
  windows/inetaddr_p.h \
  windows/inetsocket.c \
  windows/inetsocket_p.h \
+ windows/init.c \
  windows/libloader.c \
  windows/libloader_p.h \
  posix/Makefile.am \

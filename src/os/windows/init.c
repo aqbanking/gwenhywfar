@@ -1,11 +1,10 @@
 /***************************************************************************
-  $RCSfile$
+ $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Fri Nov 22 2002
+    begin       : Wed Mar 27 2002
     copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
-
 
  ***************************************************************************
  *                                                                         *
@@ -26,38 +25,55 @@
  *                                                                         *
  ***************************************************************************/
 
+/*
+ Changes
 
-#ifndef GWENHYWFAR_LIBLOADER_P_H
-#define GWENHYWFAR_LIBLOADER_P_H "$Id"
+ */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include <gwenhywfar/gwenhywfar.h>
 #include <windows.h>
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/libloader.h>
+#include <stdio.h>
 
+/**
+ * This is a simple initialisation function. It really does nothing (for
+ * now).
+ */
+BOOL APIENTRY DllMain(HINSTANCE hInst,
+                      DWORD reason,
+                      LPVOID reserved) {
+  GWEN_ERRORCODE err;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+  switch (reason) {
+  case DLL_PROCESS_ATTACH:
+    err=GWEN_Init();
+    if (!GWEN_Error_IsOk(err)) {
+      fprintf(stderr, "Could not initialize Gwenhywfar, aborting\n");
+      return FALSE;
+    }
+    fprintf(stderr, "Gwenhywfar initialized.\n"); /* DEBUG */
+    break;
 
+  case DLL_PROCESS_DETACH:
+    err=GWEN_Init();
+    if (!GWEN_Error_IsOk(err)) {
+      fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
+    }
+    fprintf(stderr, "Gwenhywfar deinitialized.\n"); /* DEBUG */
+    break;
 
-GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
-  void *handle;
-};
+  case DLL_THREAD_ATTACH:
+    break;
 
-
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleInit();
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
-
-GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                                          const char *name);
-
-
-#ifdef __cplusplus
+  case DLL_THREAD_DETACH:
+    break;
+  }
+  return TRUE;
 }
-#endif
 
-
-#endif /* GWENHYWFAR_LIBLOADER_P_H */
 
 

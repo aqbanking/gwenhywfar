@@ -30,4 +30,4 @@ all:
 	autoheader
 	automake --add-missing
 	autoconf
-	#./configure --enable-maintainer-mode
+	./configure --enable-maintainer-mode

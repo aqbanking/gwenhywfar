@@ -1,11 +1,10 @@
 /***************************************************************************
-  $RCSfile$
+ $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Fri Nov 22 2002
+    begin       : Wed Mar 27 2002
     copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
-
 
  ***************************************************************************
  *                                                                         *
@@ -27,37 +26,40 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_LIBLOADER_P_H
-#define GWENHYWFAR_LIBLOADER_P_H "$Id"
 
-#include <windows.h>
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/libloader.h>
-
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+# include <config.h>
 #endif
 
 
-GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
-  void *handle;
-};
+#include <gwenhywfar/gwenhywfar.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleInit();
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
-
-GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                                          const char *name);
+static void GWEN_LibInit() __attribute__((constructor));
+static void GWEN_LibFini() __attribute__((destructor));
 
 
-#ifdef __cplusplus
+void GWEN_LibInit() {
+  GWEN_ERRORCODE err;
+
+  err=GWEN_Init();
+  if (!GWEN_Error_IsOk(err)) {
+    fprintf(stderr, "Could not initialize Gwenhywfar, aborting\n");
+    abort();
+  }
+  fprintf(stderr, "Gwenhywfar initialized.\n");
 }
-#endif
 
 
-#endif /* GWENHYWFAR_LIBLOADER_P_H */
+void GWEN_LibFini() {
+  GWEN_ERRORCODE err;
 
+  err=GWEN_Init();
+  if (!GWEN_Error_IsOk(err)) {
+    fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
+  }
+  fprintf(stderr, "Gwenhywfar deinitialized.\n");
+}
 
