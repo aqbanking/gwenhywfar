@@ -4,6 +4,8 @@
 - added new functions to GWEN_Time:
   - GWEN_Time_GetBrokenDownTime
   - GWEN_Time_GetBrokenDownDate
+- fixed a bug in base/buffer (did not abort when mode
+  GWEN_BUFFER_MODE_ABORT_ON_MEMFULL was given)
 
 
 2004/05/01: Martin Preuss<martin@libchipcard.de>

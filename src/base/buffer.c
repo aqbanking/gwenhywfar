@@ -278,7 +278,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
     /* check for dynamic mode */
     if (!(bf->mode & GWEN_BUFFER_MODE_DYNAMIC)) {
       DBG_ERROR(0, "Not in dynamic mode");
-      if (bf->flags & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
         abort();
       }
       return 1;
@@ -298,7 +298,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
     nsize+=bf->realBufferSize;
     if (nsize>bf->hardLimit) {
       DBG_ERROR(0, "Size is beyond hard limit (%d>%d)", nsize, bf->hardLimit);
-      if (bf->flags & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
         abort();
       }
       return 1;
@@ -307,7 +307,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
     p=realloc(bf->realPtr, nsize);
     if (!p) {
       DBG_ERROR(0, "Realloc failed.");
-      if (bf->flags & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
         abort();
       }
       return 1;
