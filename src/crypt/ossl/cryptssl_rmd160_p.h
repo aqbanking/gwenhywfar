@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CRYPTSSL_RMD160_P_H
-#define GWENHYFWAR_CRYPTSSL_RMD160_P_H
+#ifndef GWENHYWFAR_CRYPTSSL_RMD160_P_H
+#define GWENHYWFAR_CRYPTSSL_RMD160_P_H
 
 
 #define GWEN_MD_RMD160_NAME "RMD160"

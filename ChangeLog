@@ -1,5 +1,13 @@
 $Id$
 
+2003/12/04 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- removed IPC stuff from Gwenhywfar. You can find the IPC stuff in
+  the same CVS repository as Gwenhywfar. The module name is "gwenipc".
+- finally fixed last typos regarding Gwen's name ;-)
+  Now I addresses GWENHYFWAR (written in all-capitals).
+
+
 2003/12/02 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - removed usage of libefence from test program

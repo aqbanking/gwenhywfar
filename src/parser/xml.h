@@ -25,8 +25,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_XML_H
-#define GWENHYFWAR_XML_H
+#ifndef GWENHYWFAR_XML_H
+#define GWENHYWFAR_XML_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/bufferedio.h>

@@ -27,8 +27,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_LIBLOADER_P_H
-#define GWENHYFWAR_LIBLOADER_P_H "$Id"
+#ifndef GWENHYWFAR_LIBLOADER_P_H
+#define GWENHYWFAR_LIBLOADER_P_H "$Id"
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
@@ -40,13 +40,13 @@ extern "C" {
 #endif
 
 
-GWENHYFWAR_API struct GWEN_LIBLOADERSTRUCT {
+GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
   void *handle;
 };
 
 
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleInit();
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleInit();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
 
 
 #ifdef __cplusplus
@@ -54,6 +54,6 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
 #endif
 
 
-#endif /* GWENHYFWAR_LIBLOADER_P_H */
+#endif /* GWENHYWFAR_LIBLOADER_P_H */
 
 

@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_PATH_H
-#define GWENHYFWAR_PATH_H
+#ifndef GWENHYWFAR_PATH_H
+#define GWENHYWFAR_PATH_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
@@ -126,7 +126,7 @@ extern "C" {
 
 
 
-GWENHYFWAR_API
+GWENHYWFAR_API
   typedef void* (*GWEN_PATHHANDLERPTR)(const char *entry,
 				       void *data,
 				       unsigned int flags);
@@ -144,7 +144,7 @@ GWENHYFWAR_API
  * The type of the returned value completely depends on the function called.
  * @return 0 on error, !=0 otherwise
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   void *GWEN_Path_Handle(const char *path,
 			 void *data,
 			 unsigned int flags,
@@ -159,5 +159,5 @@ GWENHYFWAR_API
 #endif
 
 
-#endif /* GWENHYFWAR_PATH_H */
+#endif /* GWENHYWFAR_PATH_H */
 

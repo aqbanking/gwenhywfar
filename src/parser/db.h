@@ -28,8 +28,8 @@
 
 /** @file gwenhywfar/db.h */
 
-#ifndef GWENHYFWAR_DB_H
-#define GWENHYFWAR_DB_H
+#ifndef GWENHYWFAR_DB_H
+#define GWENHYWFAR_DB_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/path.h>

@@ -1,6 +1,6 @@
 INCLUDES=@all_includes@ -Ios/@GWEN_OS@
 
-SUBDIRS=base crypt io ipc os parser impl
+SUBDIRS=base crypt io ipc os parser
 
 EXTRA_DIST=\
  version.h.in
@@ -21,10 +21,8 @@ libgwenhywfar_la_LIBADD=\
   io/libio.la \
   ipc/libipc.la \
   os/libos.la \
-  parser/libparser.la \
-  impl/ipc/libimplipc.la \
-  impl/msgengine/libimplmsg.la  @all_libraries@
+  parser/libparser.la @all_libraries@
 libgwenhywfar_la_LDFLAGS= \
   -version-info \
-   @GWENHYFWAR_SO_CURRENT@:@GWENHYFWAR_SO_REVISION@:@GWENHYFWAR_SO_AGE@
+   @GWENHYWFAR_SO_CURRENT@:@GWENHYWFAR_SO_REVISION@:@GWENHYWFAR_SO_AGE@
 

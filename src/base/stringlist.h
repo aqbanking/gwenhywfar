@@ -25,8 +25,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_STRINGLIST_H
-#define GWENHYFWAR_STRINGLIST_H
+#ifndef GWENHYWFAR_STRINGLIST_H
+#define GWENHYWFAR_STRINGLIST_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
@@ -36,35 +36,35 @@ extern "C" {
 #endif
 
 
-GWENHYFWAR_API typedef struct GWEN_STRINGLISTENTRYSTRUCT GWEN_STRINGLISTENTRY;
+GWENHYWFAR_API typedef struct GWEN_STRINGLISTENTRYSTRUCT GWEN_STRINGLISTENTRY;
 
 
-GWENHYFWAR_API typedef struct GWEN_STRINGLISTSTRUCT GWEN_STRINGLIST;
+GWENHYWFAR_API typedef struct GWEN_STRINGLISTSTRUCT GWEN_STRINGLIST;
 
 
-GWENHYFWAR_API GWEN_STRINGLIST *GWEN_StringList_new();
-GWENHYFWAR_API void GWEN_StringList_free(GWEN_STRINGLIST *sl);
-GWENHYFWAR_API void GWEN_StringList_Clear(GWEN_STRINGLIST *sl);
+GWENHYWFAR_API GWEN_STRINGLIST *GWEN_StringList_new();
+GWENHYWFAR_API void GWEN_StringList_free(GWEN_STRINGLIST *sl);
+GWENHYWFAR_API void GWEN_StringList_Clear(GWEN_STRINGLIST *sl);
 
-GWENHYFWAR_API
+GWENHYWFAR_API
   unsigned int GWEN_StringList_Count(GWEN_STRINGLIST *sl);
 
-GWENHYFWAR_API GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s,
+GWENHYWFAR_API GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s,
                                                               int take);
-GWENHYFWAR_API void GWEN_StringListEntry_ReplaceString(GWEN_STRINGLISTENTRY *e,
+GWENHYWFAR_API void GWEN_StringListEntry_ReplaceString(GWEN_STRINGLISTENTRY *e,
                                                        const char *s,
                                                        int take);
-GWENHYFWAR_API void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl);
-GWENHYFWAR_API void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
+GWENHYWFAR_API void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl);
+GWENHYWFAR_API void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
                                                 GWEN_STRINGLISTENTRY *se);
-GWENHYFWAR_API void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
+GWENHYWFAR_API void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
                                                 GWEN_STRINGLISTENTRY *se);
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(GWEN_STRINGLIST *sl);
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_STRINGLISTENTRY *GWEN_StringListEntry_Next(GWEN_STRINGLISTENTRY *se);
 
-GWENHYFWAR_API
+GWENHYWFAR_API
   const char *GWEN_StringListEntry_Data(GWEN_STRINGLISTENTRY *se);
 
 /**
@@ -74,7 +74,7 @@ GWENHYFWAR_API
  * @param checkDouble if true the the string will only be appended if it
  * does not already exist
  */
-GWENHYFWAR_API int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
+GWENHYWFAR_API int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
                                                 const char *s,
                                                 int take,
                                                 int checkDouble);
@@ -86,7 +86,7 @@ GWENHYFWAR_API int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
  * @param checkDouble if true the the string will only be appended if it
  * does not already exist
  */
-GWENHYFWAR_API int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
+GWENHYWFAR_API int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
                                                 const char *s,
                                                 int take,
                                                 int checkDouble);
@@ -95,7 +95,7 @@ GWENHYFWAR_API int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
  * Removes a given string from the stringlist.
  * @return 0 if not found, !=0 if found and removed
  */
-GWENHYFWAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
+GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
                                                 const char *s);
 
 

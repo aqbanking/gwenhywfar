@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_MSGLAYER_H
-#define GWENHYFWAR_MSGLAYER_H
+#ifndef GWENHYWFAR_MSGLAYER_H
+#define GWENHYWFAR_MSGLAYER_H
 
 
 #include <gwenhywfar/transportlayer.h>
@@ -154,4 +154,4 @@ const char *GWEN_MsgLayer_GetStateString(GWEN_IPCMSGLAYER_STATE st);
 }
 #endif
 
-#endif /* GWENHYFWAR_MSGLAYER_H */
+#endif /* GWENHYWFAR_MSGLAYER_H */

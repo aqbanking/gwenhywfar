@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_IPC_H
-#define GWENHYFWAR_IPC_H
+#ifndef GWENHYWFAR_IPC_H
+#define GWENHYWFAR_IPC_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -84,7 +84,7 @@ extern "C" {
 #endif
 
 
-#endif /* GWENHYFWAR_IPC_H */
+#endif /* GWENHYWFAR_IPC_H */
 
 
 

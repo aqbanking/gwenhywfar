@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_BUFFEREDIO_P_H
-#define GWENHYFWAR_BUFFEREDIO_P_H "$Id$"
+#ifndef GWENHYWFAR_BUFFEREDIO_P_H
+#define GWENHYWFAR_BUFFEREDIO_P_H "$Id$"
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/bufferedio.h>
@@ -43,19 +43,19 @@
 #define GWEN_BUFFEREDIO_SOCKET_TRIES   3
 
 
-GWENHYFWAR_API
+GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOREADPTR)(GWEN_BUFFEREDIO *dm,
                                                    char *buffer,
                                                    int *size,
                                                    int timeout);
-GWENHYFWAR_API
+GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOWRITEPTR)(GWEN_BUFFEREDIO *dm,
                                                     const char *buffer,
                                                     int *size,
                                                     int timeout);
-GWENHYFWAR_API
+GWENHYWFAR_API
   typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOCLOSEPTR)(GWEN_BUFFEREDIO *dm);
-GWENHYFWAR_API typedef void (*GWEN_BUFFEREDIOFREEPTR)(void *p);
+GWENHYWFAR_API typedef void (*GWEN_BUFFEREDIOFREEPTR)(void *p);
 
 
 
@@ -84,11 +84,11 @@ struct GWEN_BUFFEREDIOSTRUCT {
 };
 
 
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit();
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini();
 
 
-#endif /* GWENHYFWAR_BUFFEREDIO_P_H */
+#endif /* GWENHYWFAR_BUFFEREDIO_P_H */
 
 
 

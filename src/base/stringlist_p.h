@@ -25,8 +25,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_STRINGLIST_P_H
-#define GWENHYFWAR_STRINGLIST_P_H
+#ifndef GWENHYWFAR_STRINGLIST_P_H
+#define GWENHYWFAR_STRINGLIST_P_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/stringlist.h>

@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_TRANSPORTLAYERSOCKET_P_H
-#define GWENHYFWAR_TRANSPORTLAYERSOCKET_P_H
+#ifndef GWENHYWFAR_TRANSPORTLAYERSOCKET_P_H
+#define GWENHYWFAR_TRANSPORTLAYERSOCKET_P_H
 
 #include "transportlayer_p.h"
 #include <gwenhywfar/inetsocket.h>

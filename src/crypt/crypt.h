@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CRYPT_H
-#define GWENHYFWAR_CRYPT_H
+#ifndef GWENHYWFAR_CRYPT_H
+#define GWENHYWFAR_CRYPT_H
 
 
 #include <gwenhywfar/error.h>

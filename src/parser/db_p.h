@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_DB_P_H
-#define GWENHYFWAR_DB_P_H
+#ifndef GWENHYWFAR_DB_P_H
+#define GWENHYWFAR_DB_P_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/db.h>

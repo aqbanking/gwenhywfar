@@ -30,8 +30,8 @@
  * @short This file contains the module for error handling.
  */
 
-#ifndef GWENHYFWAR_ERROR_H
-#define GWENHYFWAR_ERROR_H
+#ifndef GWENHYWFAR_ERROR_H
+#define GWENHYWFAR_ERROR_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
@@ -74,9 +74,9 @@ extern "C" {
  * <tr><td>15-0</td>  <td>Code (16 bit error code)</td></tr>
  * </table>
  */
-GWENHYFWAR_API typedef unsigned long GWEN_ERRORCODE;
+GWENHYWFAR_API typedef unsigned long GWEN_ERRORCODE;
 
-GWENHYFWAR_API typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
+GWENHYWFAR_API typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
   GWEN_ERRORTYPEREGISTRATIONFORM;
 
 /**
@@ -85,7 +85,7 @@ GWENHYFWAR_API typedef struct GWEN_ERRORTYPEREGISTRATIONFORM
  * readable text (please note that this code is PART of a ERRORCODE, not the
  * whole ERRORCODE itself !).
  */
-GWENHYFWAR_API typedef const char* (*GWEN_ERRORMESSAGEPTR)(int c);
+GWENHYWFAR_API typedef const char* (*GWEN_ERRORMESSAGEPTR)(int c);
 
 
 int GWEN_ErrorType_GetType(GWEN_ERRORTYPEREGISTRATIONFORM *f);
@@ -154,7 +154,7 @@ GWEN_ERRORMESSAGEPTR
  * to register a unique type value for itself.
  * @return 0 on error (success otherwise)
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_Error_RegisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr);
 
 /**
@@ -162,7 +162,7 @@ GWENHYFWAR_API
  * type to avoid segfaultes (due to pointers pointing to nowhere).
  * @return 0 on error (success otherwise)
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_Error_UnregisterType(GWEN_ERRORTYPEREGISTRATIONFORM *tptr);
 /*@}*/
 
@@ -176,7 +176,7 @@ GWENHYFWAR_API
  * This function returns the type number for the given type name.
  * @return type number (-1 on error)
  */
-GWENHYFWAR_API int GWEN_Error_FindType(const char *name);
+GWENHYWFAR_API int GWEN_Error_FindType(const char *name);
 
 /**
  * Returns the name of the type referenced by the its type number.
@@ -184,7 +184,7 @@ GWENHYFWAR_API int GWEN_Error_FindType(const char *name);
  * @return name of the type (0 on error)
  * @param t type number
  */
-GWENHYFWAR_API const char *GWEN_Error_GetTypename(int t);
+GWENHYWFAR_API const char *GWEN_Error_GetTypename(int t);
 /*@}*/
 
 
@@ -207,7 +207,7 @@ GWENHYFWAR_API const char *GWEN_Error_GetTypename(int t);
  * @param code error code. This needs only to be unique within the error
  * type (in fact that was the reason to introduce the "error type")
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_Error_new(int iscustom, int severity,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Error_new(int iscustom, int severity,
                                              int typ, int code);
 
 /**
@@ -215,17 +215,17 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_Error_new(int iscustom, int severity,
  * debug/info/warn code then it will be treaten as "ok".
  * @return !=0 if ok, 0 if it really is an error
  */
-GWENHYFWAR_API int GWEN_Error_IsOk(GWEN_ERRORCODE c);
+GWENHYWFAR_API int GWEN_Error_IsOk(GWEN_ERRORCODE c);
 
 /**
  * Returns the severity of the error
  */
-GWENHYFWAR_API int GWEN_Error_GetSeverity(GWEN_ERRORCODE c);
+GWENHYWFAR_API int GWEN_Error_GetSeverity(GWEN_ERRORCODE c);
 
 /**
  * Sets the severity level.
  */
-GWENHYFWAR_API void GWEN_Error_SetSeverity(GWEN_ERRORCODE *c, int v);
+GWENHYWFAR_API void GWEN_Error_SetSeverity(GWEN_ERRORCODE *c, int v);
 
 /**
  * Checks whether this is a custom error code (which means that the error
@@ -233,32 +233,32 @@ GWENHYFWAR_API void GWEN_Error_SetSeverity(GWEN_ERRORCODE *c, int v);
  * in programs).
  * @return !=0 if it is a custom code, 0 otherwise
  */
-GWENHYFWAR_API int GWEN_Error_IsCustom(GWEN_ERRORCODE c);
+GWENHYWFAR_API int GWEN_Error_IsCustom(GWEN_ERRORCODE c);
 
 /**
  * Sets the custom flag.
  */
-GWENHYFWAR_API void GWEN_Error_SetIsCustom(GWEN_ERRORCODE *c, int iscustom);
+GWENHYWFAR_API void GWEN_Error_SetIsCustom(GWEN_ERRORCODE *c, int iscustom);
 
 /**
  * Returns the error type.
  */
-GWENHYFWAR_API int GWEN_Error_GetType(GWEN_ERRORCODE c);
+GWENHYWFAR_API int GWEN_Error_GetType(GWEN_ERRORCODE c);
 
 /**
  * Sets the error type.
  */
-GWENHYFWAR_API void GWEN_Error_SetType(GWEN_ERRORCODE *c, int v);
+GWENHYWFAR_API void GWEN_Error_SetType(GWEN_ERRORCODE *c, int v);
 
 /**
  * Returns the 16 bit error code value.
  */
-GWENHYFWAR_API int GWEN_Error_GetCode(GWEN_ERRORCODE c);
+GWENHYWFAR_API int GWEN_Error_GetCode(GWEN_ERRORCODE c);
 
 /**
  * Sets the error code.
  */
-GWENHYFWAR_API void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v);
+GWENHYWFAR_API void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v);
 /*@}*/
 
 
@@ -276,7 +276,7 @@ GWENHYFWAR_API void GWEN_Error_SetCode(GWEN_ERRORCODE *c, int v);
  * @param buffer pointer to a buffer to receive the message
  * @param bsize size of that buffer in bytes
  */
-GWENHYFWAR_API int GWEN_Error_ToString(GWEN_ERRORCODE c,
+GWENHYWFAR_API int GWEN_Error_ToString(GWEN_ERRORCODE c,
                                        char *buffer,
                                        int bsize);
 /*@}*/

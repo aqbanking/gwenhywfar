@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_TRANSPORTLAYERTCP_H
-#define GWENHYFWAR_TRANSPORTLAYERTCP_H
+#ifndef GWENHYWFAR_TRANSPORTLAYERTCP_H
+#define GWENHYWFAR_TRANSPORTLAYERTCP_H
 
 #include <gwenhywfar/transportlayer.h>
 
@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_IPCTRANSPORTLAYER *GWEN_IPCTransportLayerTCP_new();
 
 

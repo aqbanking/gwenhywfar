@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_BUFFEREDIO_H
-#define GWENHYFWAR_BUFFEREDIO_H "$Id$"
+#ifndef GWENHYWFAR_BUFFEREDIO_H
+#define GWENHYWFAR_BUFFEREDIO_H "$Id$"
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
@@ -72,13 +72,13 @@ typedef enum {
  * code (e.g. @ref GWEN_BufferedIO_File_new).
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_new();
+GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_new();
 
 /**
  * Frees a buffered IO context no matter of what type it is.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API void GWEN_BufferedIO_free(GWEN_BUFFEREDIO *dm);
+GWENHYWFAR_API void GWEN_BufferedIO_free(GWEN_BUFFEREDIO *dm);
 
 /**
  * Set the read buffer to be used. This is only needed if you want to read
@@ -90,7 +90,7 @@ GWENHYFWAR_API void GWEN_BufferedIO_free(GWEN_BUFFEREDIO *dm);
  * buffer, this will be done by this module itself.
  * @param len length of the buffer (in bytes)
  */
-GWENHYFWAR_API void GWEN_BufferedIO_SetReadBuffer(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API void GWEN_BufferedIO_SetReadBuffer(GWEN_BUFFEREDIO *bt,
                                                   char *buffer,
                                                   int len);
 
@@ -103,7 +103,7 @@ GWENHYFWAR_API void GWEN_BufferedIO_SetReadBuffer(GWEN_BUFFEREDIO *bt,
  * of this buffer in any case !
  * @param len length of the buffer (in bytes)
  */
-GWENHYFWAR_API void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt,
                                                    char *buffer,
                                                    int len);
 
@@ -112,7 +112,7 @@ GWENHYFWAR_API void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt,
  * @author Martin Preuss<martin@aquamaniac.de>
  * @return 0 if not, !=0 otherwise
  */
-GWENHYFWAR_API int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *dm);
+GWENHYWFAR_API int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *dm);
 
 /**
  * Peeks at the next character in the stream. This functions reads the
@@ -121,21 +121,21 @@ GWENHYFWAR_API int GWEN_BufferedIO_CheckEOF(GWEN_BUFFEREDIO *dm);
  * @author Martin Preuss<martin@aquamaniac.de>
  * @return -1 on error, character otherwise
  */
-GWENHYFWAR_API int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *dm);
+GWENHYWFAR_API int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *dm);
 
 /**
  * Reads the next character from the stream.
  * @author Martin Preuss<martin@aquamaniac.de>
  * @return -1 on error, character otherwise
  */
-GWENHYFWAR_API int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *dm);
+GWENHYWFAR_API int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *dm);
 
 /**
  * Really writes the content of the write buffer to the stream. This is
  * automatically called upon @ref GWEN_BufferedIO_Close.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
 
 /**
  * Really writes the content of the write buffer to the stream.
@@ -147,18 +147,18 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
  * long as it returns this warning in order to really save the data.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt);
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt);
 
 /*
  * Returns !=0 if the read buffer is empty, 0 if it is not.
  */
-GWENHYFWAR_API int GWEN_BufferedIO_ReadBufferEmpty(GWEN_BUFFEREDIO *bt);
+GWENHYWFAR_API int GWEN_BufferedIO_ReadBufferEmpty(GWEN_BUFFEREDIO *bt);
 
 
 /*
  * Returns !=0 if the write buffer is empty, 0 if it is not.
  */
-GWENHYFWAR_API int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt);
+GWENHYWFAR_API int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt);
 
 /**
  * Reads a line until a CR (in Unix mode) or a CRLF (DOS mode) is found
@@ -166,7 +166,7 @@ GWENHYFWAR_API int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt);
  * The trailing CR or CRLF is not copied into the buffer.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
                                                        char *buffer,
                                                        unsigned int s);
 
@@ -174,7 +174,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
  * Writes a character into the stream.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *dm,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *dm,
                                                         char c);
 
 /**
@@ -182,7 +182,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *dm,
  * found.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
                                                     const char *buffer);
 
 /**
@@ -191,14 +191,14 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
  * Please note that the buffer should not contain CR or CR/LF characters.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
                                                         const char *buffer);
 
 /**
  * Closes the stream after flushing the output buffer (if needed).
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *dm);
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *dm);
 
 /**
  * Set the line mode to be used. Currently there are:
@@ -255,7 +255,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
  * internal buffers still contain some bytes which will be flushed upon the
  * next call to this function).
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
                                           const char *buffer,
                                           unsigned int *bsize);
@@ -269,7 +269,7 @@ GWENHYFWAR_API
  * to read. Upon return this variable shows the number of bytes actually
  * read.
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
                                          char *buffer,
                                          unsigned int *bsize);
@@ -289,7 +289,7 @@ GWENHYFWAR_API
  * This file will automatically be closed upon @ref GWEN_BufferedIO_Close.
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
-GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
+GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
 
 
 
@@ -308,7 +308,7 @@ GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
  * This function takes over ownership for that socket !
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
-GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock);
+GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock);
 
 
 
@@ -325,7 +325,7 @@ GWENHYFWAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_Socket_new(GWEN_SOCKET *sock);
  * This function takes over ownership for that buffer !
  * This context can be free'd using @ref GWEN_BufferedIO_free.
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_BUFFEREDIO *GWEN_BufferedIO_Buffer_new(GWEN_BUFFER *buffer);
 
 
@@ -334,7 +334,7 @@ GWENHYFWAR_API
 #endif
 
 
-#endif /* GWENHYFWAR_BUFFEREDIO_H */
+#endif /* GWENHYWFAR_BUFFEREDIO_H */
 
 
 

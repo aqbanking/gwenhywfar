@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-GWENHYFWAR_API typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
+GWENHYWFAR_API typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
 
 
 /**
@@ -55,12 +55,12 @@ GWENHYFWAR_API typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
 /**
  * Constructor.
  */
-GWENHYFWAR_API GWEN_DIRECTORYDATA *GWEN_Directory_new();
+GWENHYWFAR_API GWEN_DIRECTORYDATA *GWEN_Directory_new();
 
 /**
  * Destructor
  */
-GWENHYFWAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
+GWENHYWFAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
 
 /**
  * Opens a directory. This allows calling "Directory_Read" to succeed.
@@ -70,7 +70,7 @@ GWENHYFWAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
  * by calling @ref GWEN_Directory_new().
  * @param n path and name of the directory to open
  */
-GWENHYFWAR_API int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
+GWENHYWFAR_API int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
 
 /**
  * Closes a previously opened directory.
@@ -79,7 +79,7 @@ GWENHYFWAR_API int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
  * @param d pointer to a directory data structure. This should be created
  * by calling @ref GWEN_Directory_new().
  */
-GWENHYFWAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
+GWENHYWFAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
 
 /**
  * Reads the next entry from a directory and stores the name of that
@@ -92,7 +92,7 @@ GWENHYFWAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
  * @param buffer pointer to a buffer to receive the name
  * @param len size of the buffer
  */
-GWENHYFWAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
+GWENHYWFAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
                                        char *buffer,
                                        unsigned int len);
 
@@ -104,7 +104,7 @@ GWENHYFWAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
  * @param d pointer to a directory data structure. This should be created
  * by calling @ref GWEN_Directory_new().
  */
-GWENHYFWAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
+GWENHYWFAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
 
 
 /**

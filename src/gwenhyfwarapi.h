@@ -25,16 +25,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWARAPI_H
+#ifndef GWENHYWFARAPI_H
 
 #ifdef __declspec
-# if BUILDING_GWENHYFWAR_DLL
-#  define GWENHYFWAR_API __declspec (dllexport)
-# else /* Not BUILDING_GWENHYFWAR_DLL */
-#  define GWENHYFWAR_API __declspec (dllimport)
-# endif /* Not BUILDING_GWENHYFWAR_DLL */
+# if BUILDING_GWENHYWFAR_DLL
+#  define GWENHYWFAR_API __declspec (dllexport)
+# else /* Not BUILDING_GWENHYWFAR_DLL */
+#  define GWENHYWFAR_API __declspec (dllimport)
+# endif /* Not BUILDING_GWENHYWFAR_DLL */
 #else
-# define GWENHYFWAR_API
+# define GWENHYWFAR_API
 #endif
 
 #endif

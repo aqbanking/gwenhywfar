@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_SERVICELAYER_H
-#define GWENHYFWAR_SERVICELAYER_H
+#ifndef GWENHYWFAR_SERVICELAYER_H
+#define GWENHYWFAR_SERVICELAYER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -128,7 +128,7 @@ GWEN_IPCMSG *GWEN_ServiceLayer_NextIncomingMsg(GWEN_SERVICELAYER *sl,
 #endif
 
 
-#endif /* GWENHYFWAR_SERVICELAYER_H */
+#endif /* GWENHYWFAR_SERVICELAYER_H */
 
 
 

@@ -223,7 +223,7 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
 
 
 
-GWENHYFWAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
+GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
                                                 const char *s){
   GWEN_STRINGLISTENTRY *se;
 

@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_GWENHYFWAR_H
-#define GWENHYFWAR_GWENHYFWAR_H
+#ifndef GWENHYWFAR_GWENHYWFAR_H
+#define GWENHYWFAR_GWENHYWFAR_H
 
 #include <gwenhywfar/error.h>
 

@@ -27,8 +27,8 @@
 
 
 
-#ifndef GWENHYFWAR_SERVICELAYER_P_H
-#define GWENHYFWAR_SERVICELAYER_P_H
+#ifndef GWENHYWFAR_SERVICELAYER_P_H
+#define GWENHYWFAR_SERVICELAYER_P_H
 
 
 #include <gwenhywfar/servicelayer.h>
@@ -83,7 +83,7 @@ GWEN_ERRORCODE
 
 
 
-#endif /* GWENHYFWAR_SERVICELAYER_P_H */
+#endif /* GWENHYWFAR_SERVICELAYER_P_H */
 
 
 

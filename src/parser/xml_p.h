@@ -25,8 +25,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_XML_P_H
-#define GWENHYFWAR_XML_P_H
+#ifndef GWENHYWFAR_XML_P_H
+#define GWENHYWFAR_XML_P_H
 
 #include <gwenhywfar/xml.h>
 

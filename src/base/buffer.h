@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_BUFFER_H
-#define GWENHYFWAR_BUFFER_H
+#ifndef GWENHYWFAR_BUFFER_H
+#define GWENHYWFAR_BUFFER_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 

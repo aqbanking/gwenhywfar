@@ -53,7 +53,7 @@ extern "C" {
 /**
  * @internal
  */
-GWENHYFWAR_API struct GWEN_INETADDRESSSTRUCT {
+GWENHYWFAR_API struct GWEN_INETADDRESSSTRUCT {
   GWEN_AddressFamily af;
   int size;
   struct sockaddr *address;

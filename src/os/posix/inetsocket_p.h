@@ -49,13 +49,13 @@ extern "C" {
 #endif
 
 
-GWENHYFWAR_API struct GWEN_SOCKETSTRUCT {
+GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
   int socket;
   int type;
 };
 
 
-GWENHYFWAR_API struct GWEN_SOCKETSETSTRUCT {
+GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
   fd_set set;
   int highest;
 };
@@ -64,12 +64,12 @@ GWENHYFWAR_API struct GWEN_SOCKETSETSTRUCT {
 /**
  * Initializes this module.
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleInit();
 
 /**
  * Deinitializes this module.
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Socket_ModuleFini();
 
 
 

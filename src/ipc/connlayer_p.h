@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CONNLAYER_P_H
-#define GWENHYFWAR_CONNLAYER_P_H
+#ifndef GWENHYWFAR_CONNLAYER_P_H
+#define GWENHYWFAR_CONNLAYER_P_H
 
 #define GWEN_IPCCONNLAYER_MAXINCOMING_MSGS 32
 #define GWEN_IPCCONNLAYER_MAXOUTGOING_MSGS 32
@@ -59,7 +59,7 @@ struct GWEN_IPCCONNLAYER {
 };
 
 
-#endif /* GWENHYFWAR_CONNLAYER_P_H */
+#endif /* GWENHYWFAR_CONNLAYER_P_H */
 
 
 

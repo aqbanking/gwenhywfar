@@ -30,8 +30,8 @@
  * @short This file contains the module for error handling.
  */
 
-#ifndef GWENHYFWAR_ERROR_P_H
-#define GWENHYFWAR_ERROR_P_H
+#ifndef GWENHYWFAR_ERROR_P_H
+#define GWENHYWFAR_ERROR_P_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
@@ -101,12 +101,12 @@ struct GWEN_ERRORTYPEREGISTRATIONFORM {
 /**
  * Initializes this module.
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_Error_ModuleInit();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Error_ModuleInit();
 
 /**
  * Deinitializes this module.
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_Error_ModuleFini();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_Error_ModuleFini();
 
 /*@}*/
 

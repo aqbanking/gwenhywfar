@@ -166,10 +166,10 @@ void GWEN_Version(int *major,
                   int *minor,
                   int *patchlevel,
                   int *build){
-  *major=GWENHYFWAR_VERSION_MAJOR;
-  *minor=GWENHYFWAR_VERSION_MINOR;
-  *patchlevel=GWENHYFWAR_VERSION_PATCHLEVEL;
-  *build=GWENHYFWAR_VERSION_BUILD;
+  *major=GWENHYWFAR_VERSION_MAJOR;
+  *minor=GWENHYWFAR_VERSION_MINOR;
+  *patchlevel=GWENHYWFAR_VERSION_PATCHLEVEL;
+  *build=GWENHYWFAR_VERSION_BUILD;
 }
 
 

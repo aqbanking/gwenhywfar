@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CONNLAYER_H
-#define GWENHYFWAR_CONNLAYER_H
+#ifndef GWENHYWFAR_CONNLAYER_H
+#define GWENHYWFAR_CONNLAYER_H
 
 #include <gwenhywfar/msglayer.h>
 #include <gwenhywfar/error.h>
@@ -130,5 +130,5 @@ void GWEN_ConnectionLayer_SetType(GWEN_IPCCONNLAYER *cl,
 #endif
 
 
-#endif /* GWENHYFWAR_CONNLAYER_H */
+#endif /* GWENHYWFAR_CONNLAYER_H */
 

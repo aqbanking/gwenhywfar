@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_BUFFER_P_H
-#define GWENHYFWAR_BUFFER_P_H
+#ifndef GWENHYWFAR_BUFFER_P_H
+#define GWENHYWFAR_BUFFER_P_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/buffer.h>

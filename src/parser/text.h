@@ -27,8 +27,8 @@
 
 
 
-#ifndef GWENHYFWAR_TEXT_H
-#define GWENHYFWAR_TEXT_H
+#ifndef GWENHYWFAR_TEXT_H
+#define GWENHYWFAR_TEXT_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 

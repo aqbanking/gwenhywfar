@@ -83,7 +83,7 @@ typedef enum {
  * You shoukd treat this type as opaque. Its members are not part of the API,
  * i.e. they are subject to changes without notice !
  */
-GWENHYFWAR_API typedef struct GWEN_INETADDRESSSTRUCT GWEN_INETADDRESS;
+GWENHYWFAR_API typedef struct GWEN_INETADDRESSSTRUCT GWEN_INETADDRESS;
 
 
 /**
@@ -96,12 +96,12 @@ GWENHYFWAR_API typedef struct GWEN_INETADDRESSSTRUCT GWEN_INETADDRESS;
 /**
  * Initialize this module.
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleInit();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleInit();
 
 /**
  * De-Initialize this module.
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
 /*@}*/
 
 
@@ -112,8 +112,8 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
  */
 /*@{*/
 
-GWENHYFWAR_API GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af);
-GWENHYFWAR_API void GWEN_InetAddr_free(GWEN_INETADDRESS *ia);
+GWENHYWFAR_API GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af);
+GWENHYWFAR_API void GWEN_InetAddr_free(GWEN_INETADDRESS *ia);
 
 /*@}*/
 
@@ -132,7 +132,7 @@ GWENHYFWAR_API void GWEN_InetAddr_free(GWEN_INETADDRESS *ia);
  * @param ia INETADDRESS to manipulate
  * @param addr IP address in 3-dot-notation ("1.2.3.4")
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
                                                        const char *addr);
 
 /**
@@ -141,7 +141,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
  * @param ia INETADDRESS to manipulate
  * @param name hostname whose address is to be resolved in 3-dot-notation
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia,
                                                     const char *name);
 
 /**
@@ -151,7 +151,7 @@ GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia,
  * @param buffer pointer to a buffer to receive the address
  * @param bsize size of the buffer in bytes
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
                                           char *buffer, unsigned int bsize);
 
@@ -163,7 +163,7 @@ GWENHYFWAR_API
  * @param buffer pointer to a buffer to receive the name
  * @param bsize size of the buffer in bytes
  */
-GWENHYFWAR_API
+GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
                                        char *buffer, unsigned int bsize);
 /*@}*/
@@ -179,7 +179,7 @@ GWENHYFWAR_API
  * Return the port stored in the INETADDRESS
  * @param ia INETADDRESS to use
  */
-GWENHYFWAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
+GWENHYWFAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
 
 /**
  * Set the port in the given INETADDRESS.
@@ -187,7 +187,7 @@ GWENHYFWAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
  * @param ia INETADDRESS to manipulate
  * @param port port to set (0-65535)
  */
-GWENHYFWAR_API GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
+GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
                                                     int port);
 /*@}*/
 

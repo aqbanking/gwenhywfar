@@ -25,8 +25,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_MSGENGINE_P_H
-#define GWENHYFWAR_MSGENGINE_P_H
+#ifndef GWENHYWFAR_MSGENGINE_P_H
+#define GWENHYWFAR_MSGENGINE_P_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/msgengine.h>

@@ -25,8 +25,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_CSV_H
-#define GWENHYFWAR_CSV_H
+#ifndef GWENHYWFAR_CSV_H
+#define GWENHYWFAR_CSV_H
 
 
 #include <gwenhywfar/bufferedio.h>

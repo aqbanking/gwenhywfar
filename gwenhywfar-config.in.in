@@ -12,22 +12,22 @@ for d in $*; do
 	    result="$result @gwenhywfar_libs@"
 	    ;;
 	--vmajor)
-	    result="$result @GWENHYFWAR_VERSION_MAJOR@"
+	    result="$result @GWENHYWFAR_VERSION_MAJOR@"
 	    ;;
 	--vminor)
-	    result="$result @GWENHYFWAR_VERSION_MINOR@"
+	    result="$result @GWENHYWFAR_VERSION_MINOR@"
 	    ;;
 	--vpatchlevel)
-	    result="$result @GWENHYFWAR_VERSION_PATCHLEVEL@"
+	    result="$result @GWENHYWFAR_VERSION_PATCHLEVEL@"
 	    ;;
 	--vbuild)
-	    result="$result @GWENHYFWAR_VERSION_BUILD@"
+	    result="$result @GWENHYWFAR_VERSION_BUILD@"
 	    ;;
 	--vtag)
-	    result="$result @GWENHYFWAR_VERSION_TAG@"
+	    result="$result @GWENHYWFAR_VERSION_TAG@"
 	    ;;
         --vstring)
-	    result="$result @GWENHYFWAR_VERSION_MAJOR@.@GWENHYFWAR_VERSION_MINOR@.@GWENHYFWAR_VERSION_PATCHLEVEL@"
+	    result="$result @GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@.@GWENHYWFAR_VERSION_PATCHLEVEL@"
             ;;
 	*)
 	    echo "Usage:"

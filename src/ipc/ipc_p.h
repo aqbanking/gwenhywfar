@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_IPC_P_H
-#define GWENHYFWAR_IPC_P_H
+#ifndef GWENHYWFAR_IPC_P_H
+#define GWENHYWFAR_IPC_P_H
 
 #include <gwenhywfar/ipc.h>
 #include <gwenhywfar/error.h>
@@ -42,4 +42,4 @@ const char *GWEN_IPC_ErrorString(int c);
 
 
 
-#endif /* GWENHYFWAR_IPC_P_H */
+#endif /* GWENHYWFAR_IPC_P_H */

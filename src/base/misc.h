@@ -25,8 +25,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYFWAR_MISC_H
-#define GWENHYFWAR_MISC_H
+#ifndef GWENHYWFAR_MISC_H
+#define GWENHYWFAR_MISC_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <stdlib.h>

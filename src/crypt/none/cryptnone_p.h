@@ -26,8 +26,8 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYFWAR_CRYPTNONE_P_H
-#define GWENHYFWAR_CRYPTNONE_P_H
+#ifndef GWENHYWFAR_CRYPTNONE_P_H
+#define GWENHYWFAR_CRYPTNONE_P_H
 
 
 #include <gwenhywfar/crypt.h>
