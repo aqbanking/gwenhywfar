@@ -348,4 +348,20 @@ char *GWEN_RingBuffer_GetWritePointer(const GWEN_RINGBUFFER *rb) {
 
 
 
+void GWEN_RingBuffer_Reset(GWEN_RINGBUFFER *rb){
+  assert(rb);
+
+  rb->readPos=0;
+  rb->writePos=0;
+  rb->bytesUsed=0;
+  rb->maxBytesUsed=0;
+  rb->emptyCounter=0;
+  rb->fullCounter=0;
+  rb->throughput=0;
+}
+
+
+
+
+
 

@@ -214,6 +214,22 @@ void GWEN_NetTransport_SetFlags(GWEN_NETTRANSPORT *tr,
 
 
 
+void GWEN_NetTransport_AddFlags(GWEN_NETTRANSPORT *tr,
+                                GWEN_TYPE_UINT32 flags){
+  assert(tr);
+  tr->flags|=flags;
+}
+
+
+
+void GWEN_NetTransport_DelFlags(GWEN_NETTRANSPORT *tr,
+                                GWEN_TYPE_UINT32 flags){
+  assert(tr);
+  tr->flags&=~flags;
+}
+
+
+
 GWEN_NETTRANSPORT_WORKRESULT GWEN_NetTransport_Work(GWEN_NETTRANSPORT *tr) {
   assert(tr);
   assert(tr->workFn);

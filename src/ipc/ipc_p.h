@@ -37,6 +37,7 @@ struct GWEN_IPCNODE {
   GWEN_TYPE_UINT32 id;
   GWEN_TYPE_UINT32 mark;
   GWEN_TYPE_UINT32 usage;
+  GWEN_TYPE_UINT32 flags;
   char *baseAuth;
 
   GWEN_TYPE_UINT32 nextMsgId;

@@ -641,8 +641,19 @@ int GWEN_IPCManager__SendMsg(GWEN_IPCMANAGER *mgr,
 
   /* check for connection state, connect if necessary */
   if (GWEN_NetConnection_GetStatus(m->node->connection)==
+      GWEN_NetTransportStatusPDisconnected) {
+    if (GWEN_NetConnection_GetFlags(m->node->connection) &
+	GWEN_NETTRANSPORT_FLAGS_RESTARTABLE) {
+      /* reenable disconnected connection */
+      DBG_INFO(GWEN_LOGDOMAIN, "Re-enabling disconnected connection");
+      GWEN_NetConnection_SetStatus(m->node->connection,
+				   GWEN_NetTransportStatusUnconnected);
+    }
+  }
+
+  if (GWEN_NetConnection_GetStatus(m->node->connection)==
       GWEN_NetTransportStatusUnconnected) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Starting connection");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Starting connection");
     if (GWEN_NetConnection_StartConnect(m->node->connection)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Could not start connection");
       GWEN_DB_Group_free(dbReq);
@@ -664,6 +675,32 @@ int GWEN_IPCManager__SendMsg(GWEN_IPCMANAGER *mgr,
   m->sendTime=time(0);
   GWEN_DB_Group_free(dbReq);
   return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_NETTRANSPORT_STATUS
+GWEN_IPCManager_CheckConnection(GWEN_IPCMANAGER *mgr,
+				GWEN_TYPE_UINT32 nid) {
+  GWEN_NETCONNECTION_WORKRESULT res;
+  GWEN_IPCNODE *n;
+
+  n=GWEN_IPCNode_List_First(mgr->nodes);
+  while(n) {
+    if (n->id==nid)
+      break;
+    n=GWEN_IPCNode_List_Next(n);
+  } /* while */
+  if (!n) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
+    return GWEN_NetTransportStatusDisabled;
+  }
+  res=GWEN_NetConnection_WorkIO(n->connection);
+  if (res==GWEN_NetConnectionWorkResult_Error) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "WorkIO reported an error");
+  }
+  return GWEN_NetConnection_GetStatus(n->connection);
 }
 
 
@@ -1305,6 +1342,7 @@ void GWEN_IPCManager_SetDownFn(GWEN_IPCMANAGER *mgr,
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid){
   GWEN_IPCNODE *n;
+  int rv;
 
   n=GWEN_IPCNode_List_First(mgr->nodes);
   while(n) {
@@ -1317,7 +1355,20 @@ int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid){
     return -1;
   }
 
-  return GWEN_NetConnection_StartDisconnect(n->connection);
+  n->nextMsgId=0;
+  n->lastMsgId=0;
+
+  /* remove all messages of this client in any request */
+  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->outRequests,
+                                             "outRequest");
+  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->newInRequests,
+                                             "newInRequest");
+  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests,
+                                             "newOutRequest");
+
+  rv=GWEN_NetConnection_StartDisconnect(n->connection);
+  GWEN_NetConnection_Reset(n->connection);
+  return rv;
 }
 
 

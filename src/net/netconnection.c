@@ -552,7 +552,21 @@ int GWEN_NetConnection_StartListen(GWEN_NETCONNECTION *conn){
 
 
 /* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnection_Reset(GWEN_NETCONNECTION *conn) {
+  assert(conn);
+
+  GWEN_NetMsg_List_Clear(conn->inMsgs);
+  GWEN_RingBuffer_Reset(conn->readBuffer);
+  GWEN_RingBuffer_Reset(conn->writeBuffer);
+  GWEN_NetMsg_List_Clear(conn->outMsgs);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetConnection_StartDisconnect(GWEN_NETCONNECTION *conn){
+  int rv=0;
+
   assert(conn);
   if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
       GWEN_NetTransportStatusDisabled) {
@@ -567,11 +581,11 @@ int GWEN_NetConnection_StartDisconnect(GWEN_NETCONNECTION *conn){
   if (conn->lastResult==GWEN_NetTransportResultError ||
       conn->lastResult==GWEN_NetTransportResultAborted) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
-    return -1;
+    rv=-1;
   }
 
   if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
-      GWEN_NetTransportStatusPDisconnected) {
+      GWEN_NetTransportStatusPDisconnected && rv==0) {
     GWEN_NetConnection_Down(conn);
   }
 
@@ -1458,7 +1472,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       GWEN_Socket_Select(0, 0, 0, GWEN_NETCONNECTION_CPU_TIMEOUT);
       GWEN_SocketSet_free(rset);
       GWEN_SocketSet_free(wset);
-      DBG_DEBUG(GWEN_LOGDOMAIN, "No socket");
+      DBG_ERROR(GWEN_LOGDOMAIN, "No socket");
       return GWEN_NetConnectionWorkResult_Error;
     }
   }
@@ -1473,6 +1487,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
 	DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
 	GWEN_SocketSet_free(rset);
 	GWEN_SocketSet_free(wset);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on socket");
 	return GWEN_NetConnectionWorkResult_Error;
       }
       else {

@@ -79,6 +79,14 @@ void GWEN_IPCManager_SetDownFn(GWEN_IPCMANAGER *mgr,
 GWENHYWFAR_API
 int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid);
 
+/**
+ * Updates the connection status and returns it.
+ * You can use this function to check whether a connection is broken.
+ */
+GWENHYWFAR_API
+GWEN_NETTRANSPORT_STATUS
+GWEN_IPCManager_CheckConnection(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid);
+
 
 /**
  * Adds a server to the IPC manager. The IPC manager will immediately

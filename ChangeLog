@@ -1,4 +1,20 @@
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/01/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_IPCManager_CheckConnection()
+- added NetTransport flag GWEN_NETTRANSPORT_FLAGS_RESTARTABLE which is
+  used by IPC code to restart a connection if it is down
+- GWEN_IPCManager_Disconnect() now does clean up an IPC node
+- added function GWEN_RingBuffer_Reset()
+- added function GWEN_NetTransport_AddFlags()
+- added function GWEN_NetTransport_SubFlags()
+
+
 2005/01/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added missing translations

@@ -188,6 +188,11 @@ GWEN_TYPE_UINT32 GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb);
  */
 GWENHYWFAR_API
 void GWEN_RingBuffer_ResetMaxUsedBytes(GWEN_RINGBUFFER *rb);
+
+GWENHYWFAR_API
+void GWEN_RingBuffer_Reset(GWEN_RINGBUFFER *rb);
+
+
 /*@}*/ /* name */
 
 

@@ -80,7 +80,13 @@ void GWEN_Net_AddConnectionToPool(GWEN_NETCONNECTION *conn) {
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETCONNECTION_WORKRESULT GWEN_Net_HeartBeat(int timeout){
   if (GWEN_NetConnection_List_GetCount(gwen_netconnection__list)) {
-    return GWEN_NetConnection_Walk(gwen_netconnection__list, timeout);
+    GWEN_NETCONNECTION_WORKRESULT rv;
+
+    rv=GWEN_NetConnection_Walk(gwen_netconnection__list, timeout);
+    if (rv==GWEN_NetConnectionWorkResult_Error) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+    }
+    return rv;
   }
   else {
     /* no connections, but wait for 750 ms to avoid CPU overload */

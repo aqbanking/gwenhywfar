@@ -633,6 +633,9 @@ void GWEN_NetConnection_SetDownAfterSend(GWEN_NETCONNECTION *conn, int i);
 GWENHYWFAR_API
 int GWEN_NetConnection_GetDownAfterSend(GWEN_NETCONNECTION *conn);
 
+GWENHYWFAR_API
+void GWEN_NetConnection_Reset(GWEN_NETCONNECTION *conn);
+
 /*@}*/
 
 GWENHYWFAR_API
