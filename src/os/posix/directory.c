@@ -117,7 +117,7 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
 int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
   struct passwd *p;
 
-  p=getpwuid(getuid());
+  p=getpwuid(geteuid());
   if (!p) {
     DBG_ERROR(0, "%s at getpwuid", strerror(errno));
     return -1;

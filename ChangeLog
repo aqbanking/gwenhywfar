@@ -1,5 +1,11 @@
 $Id$
 
+2003/11/01 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- changed behaviour of GWEN_GetHomeDirectory: It now uses the effective
+  user id instead of the real user id.
+
+
 ===========================================================================
 MARK: released gwenhywfar-0.9beta2 (2003/11/01)
 ===========================================================================
