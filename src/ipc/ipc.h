@@ -29,7 +29,8 @@ extern "C" {
 /** @name Error codes
  *
  */
-/*@{*/
+  /*@{*/
+#define GWEN_IPC_ERROR_CODES   0x00000000
 #define GWEN_IPC_ERROR_GENERIC 0x80000001
 #define GWEN_IPC_ERROR_CONNERR 0x80000002
 #define GWEN_IPC_ERROR_TIMEOUT 0x80000003

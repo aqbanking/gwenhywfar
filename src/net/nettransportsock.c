@@ -305,8 +305,8 @@ GWEN_NetTransportSocket_Read(GWEN_NETTRANSPORT *tr,
     return GWEN_NetTransportResultWantRead;
   }
 
-  DBG_NOTICE(0, "Read %d bytes", *bsize);
-  GWEN_Text_LogString(buffer, *bsize, 0, GWEN_LoggerLevelNotice);
+  DBG_DEBUG(0, "Read %d bytes", *bsize);
+  GWEN_Text_LogString(buffer, *bsize, 0, GWEN_LoggerLevelDebug);
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
 }
@@ -345,8 +345,8 @@ GWEN_NetTransportSocket_Write(GWEN_NETTRANSPORT *tr,
     }
     return GWEN_NetTransportResultWantWrite;
   }
-  DBG_NOTICE(0, "Written %d bytes", *bsize);
-  GWEN_Text_LogString(buffer, *bsize, 0, GWEN_LoggerLevelNotice);
+  DBG_DEBUG(0, "Written %d bytes", *bsize);
+  GWEN_Text_LogString(buffer, *bsize, 0, GWEN_LoggerLevelDebug);
   GWEN_NetTransport_MarkActivity(tr);
   return GWEN_NetTransportResultOk;
 }

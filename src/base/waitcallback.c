@@ -376,7 +376,7 @@ void GWEN_WaitCallback_Leave(){
   GWEN_WaitCallback_free(gwen_waitcallback__current);
   gwen_waitcallback__current=ctx;
   if (ctx) {
-    DBG_NOTICE(0, "Returned to callback \"%s\"", ctx->id);
+    DBG_VERBOUS(0, "Returned to callback \"%s\"", ctx->id);
   }
 }
 
@@ -394,7 +394,7 @@ void GWEN_WaitCallback_Log(unsigned int loglevel, const char *s){
   else {
     if (ctx->originalCtx) {
       if (!ctx->originalCtx->logFn) {
-        DBG_NOTICE(0, "No log function set in \"%s\"", ctx->originalCtx->id);
+        DBG_INFO(0, "No log function set in \"%s\"", ctx->originalCtx->id);
       }
       else {
         ctx->originalCtx->logFn(ctx->originalCtx,
@@ -405,7 +405,7 @@ void GWEN_WaitCallback_Log(unsigned int loglevel, const char *s){
     } /* if there is an original context */
     else {
       if (!ctx->logFn) {
-        DBG_NOTICE(0, "No log function set in \"%s\"", ctx->id);
+        DBG_INFO(0, "No log function set in \"%s\"", ctx->id);
       }
       else {
         ctx->logFn(ctx, 0, loglevel, s);
