@@ -2,6 +2,13 @@
 ------------------------------------------------
 - plugin/dbio/csv: fixed factory function
 - base/buffer: changed hardlimit from 64kb to 2mb
+- base/waitcallback: 
+  - callback function is now able to monitor the progress
+    of an action (typedef has changed !)
+  - added GWEN_WaitCallbackProgress() which should be called instead of
+    GWEN_WaitCallback() (the latter function internally now calls 
+    GWEN_WaitCallbackProgress() anyway).
+- base/buffer: increased hard limit even more (now 8 mb to be safe)
 
 
 2004-04-01  Christian Stimming <stimming@tuhh.de>

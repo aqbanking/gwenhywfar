@@ -39,8 +39,10 @@
 static GWEN_LIST *gwen_callbackstack=0;
 
 
-GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count,
-                                                    GWEN_WAITCALLBACK_MODE m){
+GWEN_WAITCALLBACK_RESULT
+GWEN_WaitCallback_internal(GWEN_TYPE_UINT32 pos,
+                           GWEN_TYPE_UINT32 total,
+                           GWEN_WAITCALLBACK_MODE m){
   GWEN_WAITCALLBACK_CTX *ctx;
   GWEN_WAITCALLBACK_RESULT res;
   time_t lct;
@@ -54,12 +56,14 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count,
     DBG_WARN(0, "No callbacks registered, should not happen here");
     return GWEN_WaitCallbackResult_Continue;
   }
+
   if (!ctx->waitCallbackFn) {
     DBG_WARN(0, "No callback set");
     return GWEN_WaitCallbackResult_Continue;
   }
+
   lct=time(0);
-  res=ctx->waitCallbackFn(count, m, ctx);
+  res=ctx->waitCallbackFn(pos, total, m, ctx);
   ctx->lastCalled=lct;
   return res;
 }
@@ -67,8 +71,17 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback_internal(int count,
 
 
 GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(int count) {
-  return GWEN_WaitCallback_internal(count, GWEN_WaitCallbackMode_Normal);
+  return GWEN_WaitCallbackProgress(count, 0);
 }
+
+
+
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT32 pos,
+                                                   GWEN_TYPE_UINT32 total) {
+  return GWEN_WaitCallback_internal(pos, total,
+                                    GWEN_WaitCallbackMode_Normal);
+}
+
 
 
 GWEN_WAITCALLBACK_CTX *GWEN_WaitCallback_Context_new(GWEN_WAITCALLBACK_FN fn,
@@ -113,7 +126,7 @@ void GWEN_WaitCallback_Enter(GWEN_WAITCALLBACK_CTX *ctx){
   }
   ctx->usage++;
   GWEN_List_PushBack(gwen_callbackstack, ctx);
-  GWEN_WaitCallback_internal(0, GWEN_WaitCallbackMode_Enter);
+  GWEN_WaitCallback_internal(0, 0, GWEN_WaitCallbackMode_Enter);
   ctx->lastEntered=time(0);
 }
 
@@ -128,7 +141,7 @@ void GWEN_WaitCallback_Leave(){
     DBG_WARN(0, "No callbacks registered, should not happen here");
   }
   else {
-    GWEN_WaitCallback_internal(0, GWEN_WaitCallbackMode_Leave);
+    GWEN_WaitCallback_internal(0, 0, GWEN_WaitCallbackMode_Leave);
     GWEN_List_PopBack(gwen_callbackstack);
     if (ctx->usage<2) {
       DBG_WARN(0, "Bad usage in WaitCallback context (%d)", ctx->usage);

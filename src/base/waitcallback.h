@@ -30,6 +30,7 @@
 #define GWEN_WAIT_CALLBACK_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
 
 
 #ifdef __cplusplus
@@ -155,17 +156,23 @@ GWENHYWFAR_API
 typedef struct GWEN_WAITCALLBACK_CTX GWEN_WAITCALLBACK_CTX;
 
 /**
- * This is the callback function of a context.
- * @param count the number of the call to this function.
+ * This is the callback function of a context. The values of the paramaters
+ * pos and total can be used to show a progress bar. E.g. if you are
+ * copying a file you could set @i pos to the current write position and
+ * @i total to the size of the file.
+ * @param pos current position
+ * @param total total size
  * @param m callback mode (see @ref GWEN_WaitCallbackMode_Normal and
  * following)
  * @param ctx callback context used. The application can store private
  * data within such a context
  */
 GWENHYWFAR_API typedef
-GWEN_WAITCALLBACK_RESULT (*GWEN_WAITCALLBACK_FN)(int count,
-                                                 GWEN_WAITCALLBACK_MODE m,
-                                                 GWEN_WAITCALLBACK_CTX *ctx);
+  GWEN_WAITCALLBACK_RESULT
+  (*GWEN_WAITCALLBACK_FN)(GWEN_TYPE_UINT32 pos,
+                          GWEN_TYPE_UINT32 total,
+                          GWEN_WAITCALLBACK_MODE m,
+                          GWEN_WAITCALLBACK_CTX *ctx);
 
 
 /**
@@ -173,11 +180,22 @@ GWEN_WAITCALLBACK_RESULT (*GWEN_WAITCALLBACK_FN)(int count,
  * The callback function of the last callback context entered will be
  * called. This allows for the caller to be independant of the context
  * actually used.
+ * This function is deprecated, it internally calls
+ * @ref GWEN_WaitCallbackProgress (with pos=count and total=0).
  * @param count optional number, the value is only interpreted by the
  * implemented callback function
  */
 GWENHYWFAR_API
 GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(int count);
+
+
+/**
+ * This callback function does the same as @ref GWEN_WaitCallback, but
+ * this one is better suited to show progress reports.
+ */
+GWENHYWFAR_API
+GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT32 pos,
+						   GWEN_TYPE_UINT32 total);
 
 
 /**
