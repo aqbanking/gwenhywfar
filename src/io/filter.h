@@ -58,7 +58,6 @@ GWEN_RINGBUFFER *GWEN_Filter_GetOutBuffer(const GWEN_FILTER *f);
 
 GWEN_FILTER_RESULT GWEN_Filter_Work(GWEN_FILTER *f, int oneLoop);
 
-
 void GWEN_Filter_SetWorkFn(GWEN_FILTER *f, GWEN_FILTER_WORKFN fn);
 
 
