@@ -835,6 +835,7 @@ int testProcess(int argc, char **argv) {
 int testOptions(int argc, char **argv) {
   int rv;
   GWEN_DB_NODE *db;
+  GWEN_BUFFER *ubuf;
   GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -858,7 +859,9 @@ int testOptions(int argc, char **argv) {
     "b",                          /* short option */
     "bool",                       /* long option */
     "bool option",                /* short description */
-    "this is a bool option"       /* long description */
+    "This is a bool option.\n"    /* long description */
+    "It is used to show how the mere existence of an option is interpreted\n"
+    "by the command line argument parser"
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -887,6 +890,13 @@ int testOptions(int argc, char **argv) {
   }
 
   GWEN_DB_Group_free(db);
+
+  ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    fprintf(stderr, "ERROR: Could not create help string\n");
+    return 1;
+  }
+  fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
 
   return 0;
 }

@@ -38,6 +38,12 @@ typedef enum {
 } GWEN_ARGS_ELEMENT_TYPE;
 
 
+int GWEN_Args_UsageTXT(GWEN_ARGS *args, GWEN_BUFFER *ubuf);
+int GWEN_Args_UsageHTML(GWEN_ARGS *args, GWEN_BUFFER *ubuf);
+int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins);
+
+
+
 #endif /* GWENHYWFAR_ARGS_P */
 
 

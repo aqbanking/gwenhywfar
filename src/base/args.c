@@ -272,10 +272,122 @@ int GWEN_Args_Check(int argc, char **argv,
 }
 
 
+int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins){
+  unsigned int i;
 
-int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf){
+  while(*s) {
+    for (i=0; i<ins; i++) GWEN_Buffer_AppendByte(ubuf, ' ');
+    while(*s) {
+      char c;
+
+      c=*s;
+      s++;
+      GWEN_Buffer_AppendByte(ubuf, c);
+      if (c=='\n')
+        break;
+    } /* while */
+  } /* while */
+
   return 0;
 }
+
+
+
+int GWEN_Args_UsageTXT(GWEN_ARGS *args, GWEN_BUFFER *ubuf){
+  GWEN_ARGS *tmpArgs;
+
+  for(tmpArgs=args;;tmpArgs++) {
+    const char *s;
+
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    if (tmpArgs->shortOption || tmpArgs->longOption) {
+      if (tmpArgs->shortOption) {
+        GWEN_Buffer_AppendString(ubuf, " ");
+        if (tmpArgs->minNum==0)
+          GWEN_Buffer_AppendString(ubuf, "[");
+        else
+          GWEN_Buffer_AppendString(ubuf, " ");
+        GWEN_Buffer_AppendString(ubuf, "-");
+        GWEN_Buffer_AppendString(ubuf, tmpArgs->shortOption);
+        if (tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT)
+          GWEN_Buffer_AppendString(ubuf, " PARAM");
+        if (tmpArgs->minNum==0)
+          GWEN_Buffer_AppendString(ubuf, "]");
+        GWEN_Buffer_AppendString(ubuf, "\n");
+      } /* if short option */
+
+      if (tmpArgs->longOption) {
+        GWEN_Buffer_AppendString(ubuf, " ");
+        if (tmpArgs->minNum==0)
+          GWEN_Buffer_AppendString(ubuf, "[");
+        else
+          GWEN_Buffer_AppendString(ubuf, " ");
+        GWEN_Buffer_AppendString(ubuf, "--");
+        GWEN_Buffer_AppendString(ubuf, tmpArgs->longOption);
+        if (tmpArgs->flags & GWEN_ARGS_FLAGS_HAS_ARGUMENT)
+          GWEN_Buffer_AppendString(ubuf, "=PARAM");
+        if (tmpArgs->minNum==0)
+          GWEN_Buffer_AppendString(ubuf, "]");
+        GWEN_Buffer_AppendString(ubuf, "\n");
+      } /* if short option */
+
+      s=tmpArgs->longDescription;
+      if (!s)
+        s=tmpArgs->shortDescription;
+
+      if (s) {
+        GWEN_Args__AppendTXT(ubuf, s, 3);
+        GWEN_Buffer_AppendString(ubuf, "\n");
+      }
+    } /* if any option */
+    else {
+      DBG_ERROR(0, "Option \"%s\" has neither a long nor a short name",
+                tmpArgs->name);
+      return -1;
+    }
+
+    if (tmpArgs->flags & GWEN_ARGS_FLAGS_LAST)
+      break;
+  } /* for */
+
+  return 0;
+}
+
+
+
+int GWEN_Args_UsageHTML(GWEN_ARGS *args, GWEN_BUFFER *ubuf){
+  return 0;
+}
+
+
+
+int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf, GWEN_ARGS_OUTTYPE ot){
+  int rv;
+
+  switch(ot) {
+  case GWEN_ArgsOutTypeTXT:
+    rv=GWEN_Args_UsageTXT(args, ubuf);
+    break;
+  case GWEN_ArgsOutTypeHTML:
+    rv=GWEN_Args_UsageHTML(args, ubuf);
+    break;
+  default:
+    DBG_ERROR(0, "Unknown output type %d", ot);
+    rv=-1;
+  } /* switch */
+
+  return rv;
+}
+
+
+
+int GWEN_Args_ShortUsage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
+                         GWEN_ARGS_OUTTYPE ot){
+  return 0;
+}
+
+
+
 
 
 

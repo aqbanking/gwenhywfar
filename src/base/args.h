@@ -47,6 +47,11 @@ typedef enum {
   GWEN_ArgsTypeInt
 } GWEN_ARGS_TYPE;
 
+typedef enum {
+  GWEN_ArgsOutTypeTXT=0,
+  GWEN_ArgsOutTypeHTML
+} GWEN_ARGS_OUTTYPE;
+
 
 /**
  * This is one of the very few structs inside Gwenhywfar whose
@@ -74,7 +79,11 @@ int GWEN_Args_Check(int argc, char **argv,
 		    GWEN_ARGS *args,
 		    GWEN_DB_NODE *db);
 
-int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf);
+int GWEN_Args_Usage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
+                    GWEN_ARGS_OUTTYPE ot);
+
+int GWEN_Args_ShortUsage(GWEN_ARGS *args, GWEN_BUFFER *ubuf,
+                         GWEN_ARGS_OUTTYPE ot);
 
 
 #endif /* GWENHYWFAR_ARGS_H */
