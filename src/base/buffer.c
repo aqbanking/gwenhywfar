@@ -260,6 +260,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
       DBG_ERROR(0, "Not in dynamic mode");
       return 1;
     }
+
     /* calculate reserved bytes (to set ptr later) */
     reserved=bf->ptr-bf->realPtr;
     /* this is the raw number of bytes we need */

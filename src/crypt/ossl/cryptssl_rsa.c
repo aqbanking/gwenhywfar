@@ -68,6 +68,8 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
 
   srclen=GWEN_Buffer_GetUsedBytes(src);
   if (srclen!=GWEN_CryptKey_GetChunkSize(key)) {
+    DBG_ERROR(0, "Size %d!=%d",
+              srclen, GWEN_CryptKey_GetChunkSize(key));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
