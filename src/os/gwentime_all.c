@@ -126,7 +126,7 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
   day=month=year=0;
   hour=min=sec=0;
 
-  inUtc=GWEN_DB_GetIntValue(db, "inUtc", 0, 1);
+  inUtc=GWEN_DB_GetIntValue(db, "inUtc", 0, 0);
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
   if (dbT) {
     day=GWEN_DB_GetIntValue(dbT, "day", 0, 0);
@@ -279,7 +279,7 @@ GWEN_TIME *GWEN_Time_new(int year,
       year+=1900;
     }
     ti.tm_year=year-1900;
-    ti.tm_mon=month-1;
+    ti.tm_mon=month;
     ti.tm_mday=day;
     ti.tm_yday=0;
     ti.tm_wday=0;

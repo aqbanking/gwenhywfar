@@ -5,6 +5,7 @@
   and a local version of mktime (to make the time from UTC time instead
   of local time). This leaves only one function which the OS layer has to 
   provide.
+- decreased debugging level in GWEN_DB_ReadFromStream
 
 
 2004/08/16: Martin Preuss<martin@libchipcard.de>
