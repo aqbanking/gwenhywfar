@@ -37,13 +37,24 @@
 #include <gwenhywfar/keyspec.h>
 
 
-/** @defgroup MOD_IPCXMLCMD
+/** @defgroup MOD_IPCXMLCMD IPC XML Request Creators And Handlers
  * @ingroup MOD_IPC_HIGHLEVEL
+ * @brief This group contains some often needed generic IPC commands.
  *
+ * There are 3 functions for every request type:
+ * <ul>
+ *   <li><strong>Request</strong>: Creates a request and enqueues it</li>
+ *   <li><strong>Handle</strong>: Handles an incoming request of that type
+ *       and returns a response</li>
+ *   <li><strong>Result</strong>: Checks whether there is a response for a
+ *       request of that type (called after the request function, if a
+ *       response is expected)</li>
+ * </ul>
  */
 /*@{*/
 
 /** @name Getting Public Keys
+ * @brief Requests a public key or handles such a request
  *
  */
 /*@{*/
