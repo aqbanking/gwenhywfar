@@ -25,53 +25,69 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_UI_WIDGET_P_H
-#define GWEN_UI_WIDGET_P_H
+#ifndef GWEN_UI_TABLEWIDGET_P_H
+#define GWEN_UI_TABLEWIDGET_P_H
+
+#include <gwenhywfar/tablewidget.h>
+#include <gwenhywfar/textwidget.h>
 
 
-#include "widget_l.h"
-#include <panel.h>
-#include <ncurses.h>
+#define GWEN_TABLECOLUMN_DEFAULT_WIDTH 8
+
+struct GWEN_TABLE_FIELD {
+  GWEN_LIST_ELEMENT(GWEN_TABLE_FIELD);
+  int x; /* updated by parents as soon as the position is known */
+  int y; /* updated by parents as soon as the position is known */
+  int width;
+  int height;
+  char *text;
+  GWEN_TABLE_COLUMN *parent;
+};
 
 
 
-struct GWEN_WIDGET {
-  /* data administration */
-  GWEN_LIST_ELEMENT(GWEN_WIDGET)
-  GWEN_INHERIT_ELEMENT(GWEN_WIDGET)
-  char *name;
-  GWEN_TYPE_UINT32 id;
-  GWEN_WIDGET_LIST *children;
-  GWEN_WIDGET *parent;
-  GWEN_TYPE_UINT32 usage;
-
-  /* window data */
+struct GWEN_TABLE_COLUMN {
+  GWEN_LIST_ELEMENT(GWEN_TABLE_COLUMN);
   int x;
   int y;
   int width;
   int height;
-  GWEN_WIDGET_COLOUR colour;
-
-  int cursorX;
-  int cursorY;
-
-  /* content data */
-  char *text;
-
-  GWEN_TYPE_UINT32 flags;
-  GWEN_WIDGET_EVENTHANDLER_FN eventHandler;
-
-  /* ncurses data */
-  WINDOW *window;
-  PANEL *panel;
-
+  GWEN_WIDGET *parent;
+  GWEN_TABLE_FIELD_LIST *fields;
 };
 
 
-GWEN_EVENT *GWEN_Widget_PeekNextEvent(GWEN_WIDGET *w);
-GWEN_EVENT *GWEN_Widget_GetNextEvent(GWEN_WIDGET *w);
-GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
-                                        GWEN_EVENT *e);
+
+typedef struct GWEN_TABLEWIDGET GWEN_TABLEWIDGET;
+struct GWEN_TABLEWIDGET {
+  GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
+  GWEN_TABLE_COLUMN_LIST *columns;
+
+  int tx;
+  int ty;
+  int twidth;
+  int theight;
+
+  int mx;
+  int my;
+  int top;
+  int left;
+
+  GWEN_TYPE_UINT32 flags;
+};
+void GWEN_TableWidget_freeData(void *bp, void *p);
+
+GWEN_UI_RESULT GWEN_TableWidget_EventHandler(GWEN_WIDGET *w, GWEN_EVENT *e);
+
+
+int GWEN_TableField_Calculate_MinWidth(const GWEN_TABLE_FIELD *tf);
+int GWEN_TableField_Calculate_Height(const GWEN_TABLE_FIELD *tf, int width);
+GWEN_TABLE_FIELD *GWEN_TableWidget_LocateField(GWEN_WIDGET *w,
+                                               int x, int y, int crea);
+void GWEN_TableWidget_Highlight(GWEN_WIDGET *w,
+                                GWEN_TABLE_FIELD *tf,
+                                int yes);
+
 
 
 

@@ -31,6 +31,7 @@
 
 
 #include <gwenhywfar/event.h>
+#include <time.h>
 
 
 
@@ -40,6 +41,8 @@ struct GWEN_EVENT {
   GWEN_EVENT_TYPE type;
   GWEN_WIDGET *sender;
   GWEN_WIDGET *recipient;
+  time_t posted;
+  GWEN_TYPE_UINT32 id;
 };
 
 

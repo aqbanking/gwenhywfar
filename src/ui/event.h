@@ -180,6 +180,9 @@ int GWEN_EventHighlight_GetLen(const GWEN_EVENT *e);
 int GWEN_EventHighlight_GetHi(const GWEN_EVENT *e);
 
 
+void GWEN_Event_Dump(const GWEN_EVENT *e);
+
+
 #endif
 
 

@@ -6,6 +6,7 @@ iheaderdir=${includedir}/gwenhywfar/ui
 iheader_HEADERS=\
   event.h \
   hslider.h \
+  tablewidget_p.h \
   textwidget_p.h \
   ui.h \
   widget.h \
@@ -14,6 +15,7 @@ iheader_HEADERS=\
 noinst_HEADERS=\
   event_p.h \
   hslider_p.h \
+  tablewidget.h \
   textwidget.h \
   ui_l.h \
   ui_p.h \
@@ -24,6 +26,7 @@ noinst_HEADERS=\
 libui_la_SOURCES=\
   event.c \
   hslider.c \
+  tablewidget.c \
   textwidget.c \
   ui.c \
   widget.c \

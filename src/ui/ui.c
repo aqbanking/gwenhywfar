@@ -100,17 +100,94 @@ void GWEN_UI_AddRootWidget(GWEN_WIDGET *w){
 }
 
 
+
 int GWEN_UI_SendEvent(GWEN_WIDGET *wRecipient,
                       GWEN_WIDGET *wSender,
                       GWEN_EVENT *e){
+  GWEN_EVENT_TYPE t;
+  int delGraEvents;
+  int delSameEvents;
+
   assert(GWEN_UI__ui);
   assert(e);
   assert(wRecipient);
+
+  t=GWEN_Event_GetType(e);
+  delGraEvents=0;
+  delSameEvents=0;
+
+  switch(GWEN_Event_GetType(e)) {
+  case GWEN_EventType_Draw:
+  case GWEN_EventType_Update:
+  case GWEN_EventType_Refresh:
+    delSameEvents=1;
+    break;
+  case GWEN_EventType_Destroy:
+    delGraEvents=1;
+    break;
+  default:
+    break;
+  }
+
+  if (delGraEvents || delSameEvents) {
+    GWEN_EVENT *le;
+
+    le=GWEN_Event_List_First(GWEN_UI__ui->events);
+    while(le) {
+      GWEN_EVENT *nextE;
+
+      nextE=GWEN_Event_List_Next(le);
+      if (wRecipient==GWEN_Event_GetRecipient(le) ||
+          GWEN_Widget_IsChildOf(GWEN_Event_GetRecipient(le),
+                                wRecipient)) {
+        if (delGraEvents) {
+          switch(GWEN_Event_GetType(le)) {
+          case GWEN_EventType_Draw:
+          case GWEN_EventType_Update:
+          case GWEN_EventType_Refresh:
+          case GWEN_EventType_WriteAt:
+          case GWEN_EventType_Clear:
+            DBG_VERBOUS(0, "Removing event:");
+            //GWEN_Event_Dump(le);
+            GWEN_Event_List_Del(le);
+            GWEN_Event_free(le);
+            break;
+          default:
+            break;
+          }
+        }
+        else if (delSameEvents) {
+          if (GWEN_Event_GetType(le)==t) {
+            DBG_VERBOUS(0, "Removing same event:");
+            //GWEN_Event_Dump(le);
+            GWEN_Event_List_Del(le);
+            GWEN_Event_free(le);
+          }
+        }
+      }
+      le=nextE;
+    }
+  }
 
   if (wSender)
     GWEN_Event_SetSender(e, wSender);
   GWEN_Event_SetRecipient(e, wRecipient);
   GWEN_Event_List_Add(e, GWEN_UI__ui->events);
+
+  if (0) {
+    GWEN_EVENT *le;
+
+    DBG_NOTICE(0, "Enqueued this event:");
+    GWEN_Event_Dump(e);
+
+    le=GWEN_Event_List_First(GWEN_UI__ui->events);
+    while(le) {
+
+      GWEN_Event_Dump(le);
+      le=GWEN_Event_List_Next(le);
+    }
+  }
+
   return 0;
 }
 
@@ -273,9 +350,10 @@ GWEN_UI_RESULT GWEN_UI_Work() {
         int ch;
 
         /* handle user interaction */
-        if (!(GWEN_Widget_GetFlags(GWEN_UI__ui->focusWidget) &
-              GWEN_WIDGET_FLAGS_NEEDCURSOR))
-          move(0, 0);
+        move(GWEN_Widget_GetCursorY(GWEN_UI__ui->focusWidget)+
+             GWEN_Widget_GetPhysicalY(GWEN_UI__ui->focusWidget),
+             GWEN_Widget_GetCursorX(GWEN_UI__ui->focusWidget)+
+             GWEN_Widget_GetPhysicalX(GWEN_UI__ui->focusWidget));
         ch=getch();
         if (ch==ERR) {
           /* timeout */

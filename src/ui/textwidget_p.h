@@ -34,35 +34,46 @@
 #include <gwenhywfar/buffer.h>
 
 
-typedef struct GWEN_TW_LINE GWEN_TW_LINE;
 GWEN_LIST_FUNCTION_DEFS(GWEN_TW_LINE, GWEN_TWLine)
 
 struct GWEN_TW_LINE {
   GWEN_LIST_ELEMENT(GWEN_TW_LINE)
-  int offset;
   int length;
   char *text;
+  GWEN_TYPE_UINT32 usage;
   GWEN_TYPE_UINT32 startAttributes;
   GWEN_TYPE_UINT32 endAttributes;
+
+  /* vars for edit mode */
+  int openCount;
+  GWEN_BUFFER *attributes;
+  GWEN_BUFFER *chars;
+  int leftBorder;
+  int rightBorder;
+  int insertOn;
+  int changed;
+  int currentPos;
+  GWEN_TYPE_UINT32 currentAtts;
 };
 GWEN_TW_LINE *GWEN_TWLine_new(GWEN_TYPE_UINT32 startAttributes,
-                              int offset, const char *s);
+                              const char *s);
 void GWEN_TWLine_free(GWEN_TW_LINE *l);
+void GWEN_TWLine_Attach(GWEN_TW_LINE *l);
 int GWEN_TWLine_SetText(GWEN_TW_LINE *l, GWEN_TYPE_UINT32 startAttributes,
-                        int offset, const char *s);
+                        const char *s);
 
 
 
 typedef struct GWEN_TEXTWIDGET GWEN_TEXTWIDGET;
 struct GWEN_TEXTWIDGET {
   GWEN_WIDGET_EVENTHANDLER_FN previousHandler;
-  int offset;
   GWEN_TW_LINE_LIST *lines;
   int top;
   int vheight;
   int left;
   int vwidth;
   int pos;
+  int currentLine;
 };
 void GWEN_TextWidget_freeData(void *bp, void *p);
 
@@ -93,6 +104,14 @@ int GWEN_TextWidget_ParseXMLTag(GWEN_WIDGET *w,
 int GWEN_TextWidget_SetText(GWEN_WIDGET *w,
                             const char *text,
                             GWEN_EVENT_SETTEXT_MODE m);
+
+int GWEN_TextWidget_CondenseLineArea(GWEN_TW_LINE *l,
+                                     int leftBorder,
+                                     int rightBorder,
+                                     GWEN_BUFFER *tbuf,
+                                     GWEN_TYPE_UINT32 *atts);
+
+void GWEN_TextWidget_Draw(GWEN_WIDGET *w);
 
 
 #endif

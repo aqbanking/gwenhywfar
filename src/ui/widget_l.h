@@ -30,6 +30,7 @@
 
 
 #include <gwenhywfar/widget.h>
+#include <ncurses.h>
 
 
 GWEN_EVENT *GWEN_Widget_PeekNextEvent(GWEN_WIDGET *w);
@@ -37,6 +38,9 @@ GWEN_EVENT *GWEN_Widget_GetNextEvent(GWEN_WIDGET *w);
 GWEN_UI_RESULT GWEN_Widget_HandleEvent(GWEN_WIDGET *w,
                                        GWEN_EVENT *e);
 
+WINDOW *GWEN_Widget_GetWindow(const GWEN_WIDGET *w);
+int GWEN_Widget_GetPhysicalX(const GWEN_WIDGET *w);
+int GWEN_Widget_GetPhysicalY(const GWEN_WIDGET *w);
 
 
 #endif

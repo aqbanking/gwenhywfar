@@ -30,9 +30,11 @@
 
 #include <gwenhywfar/widget.h>
 
+typedef struct GWEN_TW_LINE GWEN_TW_LINE;
+
 #define GWEN_TEXTWIDGET_FLAGS_BREAKLINES  0x00010000
 #define GWEN_TEXTWIDGET_FLAGS_LINEMODE    0x00020000
-
+#define GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT   0x00040000
 
 
 GWEN_WIDGET *GWEN_TextWidget_new(GWEN_WIDGET *parent,
@@ -45,6 +47,34 @@ GWEN_WIDGET *GWEN_TextWidget_new(GWEN_WIDGET *parent,
 void GWEN_TextWidget_SetVirtualSize(GWEN_WIDGET *w,
                                     int vwidth,
                                     int vheight);
+
+
+GWEN_TW_LINE *GWEN_TextWidget_LineOpen(GWEN_WIDGET *w, int n, int cre);
+int GWEN_TextWidget_LineClose(GWEN_WIDGET *w,
+                              GWEN_TW_LINE *l,
+                              int force);
+int GWEN_TextWidget_LineSetBorders(GWEN_WIDGET *w,
+                                   GWEN_TW_LINE *l,
+                                   int leftBorder,
+                                   int rightBorder);
+
+int GWEN_TextWidget_LineSetInsert(GWEN_WIDGET *w,
+                                  GWEN_TW_LINE *l,
+                                  int insert);
+int GWEN_TextWidget_LineSetAttributes(GWEN_WIDGET *w,
+                                      GWEN_TW_LINE *l,
+                                      GWEN_TYPE_UINT32 atts);
+int GWEN_TextWidget_LineSetPos(GWEN_WIDGET *w, GWEN_TW_LINE *l, int pos);
+int GWEN_TextWidget_LineClear(GWEN_WIDGET *w, GWEN_TW_LINE *l);
+int GWEN_TextWidget_LineRedraw(GWEN_WIDGET *w, GWEN_TW_LINE *l);
+int GWEN_TextWidget_LineWriteText(GWEN_WIDGET *w,
+                                  GWEN_TW_LINE *l,
+                                  const char *text,
+                                  int len);
+
+int GWEN_TextWidget_EnsureVisible(GWEN_WIDGET *w,
+                                  int x, int y,
+                                  int width, int height);
 
 
 

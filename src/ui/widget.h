@@ -61,6 +61,8 @@ typedef enum {
 #define GWEN_WIDGET_FLAGS_HCENTER   0x00000100
 #define GWEN_WIDGET_FLAGS_VCENTER   0x00000200
 
+#define GWEN_WIDGET_FLAGS_WINDOWFLAGS 0xffff0000
+
 #define GWEN_WIDGET_FLAGS_DEFAULT (\
   GWEN_WIDGET_FLAGS_KEYPAD |\
   GWEN_WIDGET_FLAGS_ACTIVE |\
@@ -102,6 +104,12 @@ int GWEN_Widget_GetWidth(const GWEN_WIDGET *w);
 int GWEN_Widget_GetHeight(const GWEN_WIDGET *w);
 const char *GWEN_Widget_GetText(const GWEN_WIDGET *w);
 
+int GWEN_Widget_GetCursorX(const GWEN_WIDGET *w);
+void GWEN_Widget_SetCursorX(GWEN_WIDGET *w, int x);
+int GWEN_Widget_GetCursorY(const GWEN_WIDGET *w);
+void GWEN_Widget_SetCursorY(GWEN_WIDGET *w, int y);
+
+
 GWEN_TYPE_UINT32 GWEN_Widget_GetFlags(const GWEN_WIDGET *w);
 
 GWEN_WIDGET_EVENTHANDLER_FN GWEN_Widget_GetEventHandler(const GWEN_WIDGET *w);
@@ -134,6 +142,8 @@ int GWEN_Widget_ChangeAtts(GWEN_WIDGET *w,
 int GWEN_Widget_Clear(GWEN_WIDGET *w, int x, int y, GWEN_EVENT_CLEAR_MODE m);
 int GWEN_Widget_Highlight(GWEN_WIDGET *w, int x, int y, int len, int yes);
 
+
+int GWEN_Widget_IsChildOf(GWEN_WIDGET *wchild, GWEN_WIDGET *w);
 
 
 void GWEN_Widget_Dump(GWEN_WIDGET *w, int indent);

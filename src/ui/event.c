@@ -30,6 +30,7 @@
 #endif
 
 
+#include <gwenhywfar/debug.h>
 
 #include "event_p.h"
 
@@ -37,6 +38,7 @@
 GWEN_LIST_FUNCTIONS(GWEN_EVENT, GWEN_Event)
 GWEN_INHERIT_FUNCTIONS(GWEN_EVENT)
 
+static GWEN_TYPE_UINT32 GWEN_EVENT__lastId=0;
 
 
 GWEN_EVENT *GWEN_Event_new(GWEN_EVENT_TYPE t) {
@@ -46,6 +48,7 @@ GWEN_EVENT *GWEN_Event_new(GWEN_EVENT_TYPE t) {
   GWEN_INHERIT_INIT(GWEN_EVENT, e);
   GWEN_LIST_INIT(GWEN_EVENT, e);
   e->type=t;
+  e->id=++GWEN_EVENT__lastId;
   return e;
 }
 
@@ -79,6 +82,7 @@ void GWEN_Event_SetRecipient(GWEN_EVENT *e, GWEN_WIDGET *w){
   e->recipient=w;
   if (w)
     GWEN_Widget_Attach(e->recipient);
+  e->posted=time(0);
 }
 
 
@@ -101,6 +105,50 @@ GWEN_WIDGET *GWEN_Event_GetRecipient(const GWEN_EVENT *e){
   assert(e);
   return e->recipient;
 }
+
+
+
+const char *GWEN_Event_TypeName(GWEN_EVENT_TYPE t) {
+  const char *s;
+
+  switch(t) {
+  case GWEN_EventType_Key: s="Key"; break;
+  case GWEN_EventType_SetText: s="SetText"; break;
+  case GWEN_EventType_Move: s="Move"; break;
+  case GWEN_EventType_Draw: s="Draw"; break;
+  case GWEN_EventType_SetColour: s="SetColour"; break;
+  case GWEN_EventType_Focus: s="Focus"; break;
+  case GWEN_EventType_Created: s="Created"; break;
+  case GWEN_EventType_Destroy: s="Destroy"; break;
+  case GWEN_EventType_Update: s="Update"; break;
+  case GWEN_EventType_Refresh: s="Refresh"; break;
+  case GWEN_EventType_Scroll: s="Scroll"; break;
+  case GWEN_EventType_WriteAt: s="WriteAt"; break;
+  case GWEN_EventType_ChgAtts: s="ChgAtts"; break;
+  case GWEN_EventType_Clear: s="Clear"; break;
+  case GWEN_EventType_Highlight: s="Highlight"; break;
+  case GWEN_EventType_None: s="None"; break;
+  default: s="Unknown"; break;
+  }
+
+  return s;
+}
+
+
+
+void GWEN_Event_Dump(const GWEN_EVENT *e){
+  assert(e);
+
+  DBG_NOTICE(0, "Event[%02d] %9.9s at %04x (sender=\"%s\", recipient=\"%s\")",
+             e->id,
+             GWEN_Event_TypeName(e->type),
+             (unsigned int)e->posted,
+             (e->sender)?GWEN_Widget_GetName(e->sender):"<none>",
+             (e->recipient)?GWEN_Widget_GetName(e->recipient):"<none>");
+}
+
+
+
 
 
 
@@ -761,6 +809,7 @@ int GWEN_EventHighlight_GetHi(const GWEN_EVENT *e){
 
   return et->hi;
 }
+
 
 
 
