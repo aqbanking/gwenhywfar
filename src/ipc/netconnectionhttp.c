@@ -473,6 +473,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
   if (chttp->state & GWEN_NETCONNHTTP_STATE_STOPREAD) {
     DBG_DEBUG(0, "StopRead state set, nothing to do");
+    chttp->state|=GWEN_NETCONNHTTP_STATE_WAITINGFORREAD;
     return GWEN_NetConnectionWorkResult_NoChange;
   }
 
@@ -491,6 +492,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 
     if (chttp->state & GWEN_NETCONNHTTP_STATE_STOPBODYREAD) {
       DBG_DEBUG(0, "StopBodyRead state set, nothing to do");
+      chttp->state|=GWEN_NETCONNHTTP_STATE_WAITINGFORBODYREAD;
       return GWEN_NetConnectionWorkResult_NoChange;
     }
     size=GWEN_NetMsg_GetSize(chttp->currentInMsg);
