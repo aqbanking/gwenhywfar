@@ -33,6 +33,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
+#include <time.h>
 
 
 #ifdef __cplusplus

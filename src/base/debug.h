@@ -62,7 +62,7 @@ GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelError, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
 GWENHYWFAR_API 
-void DBG_ERROR(GWEN_LOGGER *dbg_logger, const char *format, ...);
+void DBG_ERROR(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
 #define DBG_ERROR_ERR(dbg_logger, dbg_err) {\
@@ -83,7 +83,7 @@ void DBG_ERROR(GWEN_LOGGER *dbg_logger, const char *format, ...);
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelWarning, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
 GWENHYWFAR_API 
-void DBG_WARN(GWEN_LOGGER *dbg_logger, const char *format, ...);
+void DBG_WARN(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
 #define DBG_WARN_ERR(dbg_logger, dbg_err) {\
@@ -106,7 +106,7 @@ void DBG_WARN(GWEN_LOGGER *dbg_logger, const char *format, ...);
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelNotice, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
 GWENHYWFAR_API 
-void DBG_NOTICE(GWEN_LOGGER *dbg_logger, const char *format, ...);
+void DBG_NOTICE(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
 #define DBG_NOTICE_ERR(dbg_logger, dbg_err) \
@@ -130,7 +130,7 @@ void DBG_NOTICE(GWEN_LOGGER *dbg_logger, const char *format, ...);
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevelInfo, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
 GWENHYWFAR_API 
-void DBG_INFO(GWEN_LOGGER *dbg_logger, const char *format, ...);
+void DBG_INFO(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
 #define DBG_INFO_ERR(dbg_logger, dbg_err) \
@@ -202,9 +202,9 @@ void DBG_INFO(GWEN_LOGGER *dbg_logger, const char *format, ...);
 
 #ifdef NO_VARIADIC_MACROS
 GWENHYWFAR_API 
-void DBG_DEBUG(GWEN_LOGGER *dbg_logger, const char *format, ...);
+void DBG_DEBUG(const char *logdomain, const char *format, ...);
 GWENHYWFAR_API 
-void DBG_VERBOUS(GWEN_LOGGER *dbg_logger, const char *format, ...);
+void DBG_VERBOUS(const char *logdomain, const char *format, ...);
 #endif /* #ifdef NO_VARIADIC_MACROS */
 
 

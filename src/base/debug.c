@@ -310,7 +310,7 @@ void GWEN_Debug_Error_Err(GWEN_LOGGER *lg, GWEN_ERRORCODE err) {
 
 
 #ifdef NO_VARIADIC_MACROS
-void DBG_ERROR(GWEN_LOGGER *dbg_logger, const char *format, ...) {
+void DBG_ERROR(const char *dbg_logger, const char *format, ...) {
   va_list args;
   char dbg_buffer[256]; 
   va_start(args, format);
@@ -320,7 +320,7 @@ void DBG_ERROR(GWEN_LOGGER *dbg_logger, const char *format, ...) {
   va_end(args);
 }
 
-void DBG_WARN(GWEN_LOGGER *dbg_logger, const char *format, ...) {
+void DBG_WARN(const char *dbg_logger, const char *format, ...) {
   va_list args;
   char dbg_buffer[256]; 
   va_start(args, format);
@@ -330,7 +330,7 @@ void DBG_WARN(GWEN_LOGGER *dbg_logger, const char *format, ...) {
   va_end(args);
 }
 
-void DBG_NOTICE(GWEN_LOGGER *dbg_logger, const char *format, ...) {
+void DBG_NOTICE(const char *dbg_logger, const char *format, ...) {
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelNotice) {
     va_list args;
     char dbg_buffer[256]; 
@@ -342,7 +342,7 @@ void DBG_NOTICE(GWEN_LOGGER *dbg_logger, const char *format, ...) {
   }
 }
 
-void DBG_INFO(GWEN_LOGGER *dbg_logger, const char *format, ...) {
+void DBG_INFO(const char *dbg_logger, const char *format, ...) {
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelInfo) {
     va_list args;
     char dbg_buffer[256]; 
@@ -354,7 +354,7 @@ void DBG_INFO(GWEN_LOGGER *dbg_logger, const char *format, ...) {
   }
 }
 
-void DBG_DEBUG(GWEN_LOGGER *dbg_logger, const char *format, ...) {
+void DBG_DEBUG(const char *dbg_logger, const char *format, ...) {
 # ifndef DISABLE_DEBUGLOG
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {
     va_list args;
@@ -368,7 +368,7 @@ void DBG_DEBUG(GWEN_LOGGER *dbg_logger, const char *format, ...) {
 # endif /* DISABLE_DEBUGLOG */
 }
 
-void DBG_VERBOUS(GWEN_LOGGER *dbg_logger, const char *format, ...) {
+void DBG_VERBOUS(const char *dbg_logger, const char *format, ...) {
 # ifndef DISABLE_DEBUGLOG
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelVerbous) {
     va_list args;

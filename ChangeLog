@@ -1,5 +1,11 @@
 2004-08-23   Christian Stimming <stimming@tuhh.de>
 
+	* src/os/gwentime.h: Include time.h.
+	
+	* src/base/debug.h: Adapted the non-variadic-macro function
+	declarations to the change from GWEN_LOGGER to const char*
+	logdomain.
+	
 	* src/base/stringlist.h: Add GWEN_StringList_ForEach function.
 
 2004/08/23: Martin Preuss<martin@libchipcard.de>

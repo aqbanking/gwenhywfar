@@ -61,6 +61,8 @@ supported:
 - OpenBSD  (untested, but most likely to work)
 - Mac OS-X (untested)
 
+On Windows, an .exe setup program is provided, created with the Inno
+Setup Compiler http://www.jrsoftware.org/isdl.php .
 
 
 Documentation
