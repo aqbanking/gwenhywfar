@@ -2904,6 +2904,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
     unsigned int posBak;
     const char *p;
     GWEN_DB_NODE *tmpdb;
+    int segVer;
 
     /* find head segment description */
     tmpdb=GWEN_DB_Group_new("tmpdb");
@@ -2930,10 +2931,14 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
     }
 
     /* get segment code */
+    segVer=GWEN_DB_GetIntValue(tmpdb,
+                               "version",
+                               0,
+                               0);
     p=GWEN_DB_GetCharValue(tmpdb,
                            "code",
                            0,
-                           0);
+			   0);
     if (!p) {
       DBG_ERROR(0, "No segment code for %s ? This seems to be a bad msg...",
 		gtype);
@@ -2951,7 +2956,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
     node=GWEN_MsgEngine_FindNodeByProperty(e,
                                            gtype,
                                            "code",
-                                           0,
+					   segVer,
                                            p);
     if (node==0) {
       unsigned int ustart;
@@ -2959,11 +2964,11 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       ustart=GWEN_Buffer_GetPos(mbuf);
       /* node not found, skip it */
       DBG_WARN(0,
-               "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
-               p,
-               GWEN_DB_GetIntValue(tmpdb, "seq", 0, -1),
-               GWEN_DB_GetIntValue(tmpdb, "version", 0, -1),
-               GWEN_DB_GetIntValue(tmpdb, "ref", 0, -1));
+	       "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d)",
+	       p,
+	       GWEN_DB_GetIntValue(tmpdb, "seq", 0, -1),
+	       GWEN_DB_GetIntValue(tmpdb, "version", 0, -1),
+	       GWEN_DB_GetIntValue(tmpdb, "ref", 0, -1));
       if (GWEN_MsgEngine_SkipSegment(e, mbuf, '?', '\'')) {
         DBG_ERROR(0, "Error skipping segment \"%s\"", p);
         GWEN_DB_Group_free(tmpdb);
@@ -2972,9 +2977,12 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
         unsigned int usize;
 
-        usize=GWEN_Buffer_GetPos(mbuf)-ustart;
+	usize=GWEN_Buffer_GetPos(mbuf)-(ustart+1)-1;
+	GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart+1,
+			     usize,
+			     stderr, 1);
         if (GWEN_MsgEngine_AddTrustInfo(e,
-                                        GWEN_Buffer_GetStart(mbuf)+ustart,
+					GWEN_Buffer_GetStart(mbuf)+ustart,
                                         usize,
                                         p,
                                         GWEN_MsgEngineTrustLevelHigh,

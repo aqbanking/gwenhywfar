@@ -1,6 +1,12 @@
 $Id$
 
 
+2003/11/05 Martin Preuss <martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in MsgEngine (ReadMessage was not taking segment version into
+  account)
+
+
 ===========================================================================
 MARK: released gwenhywfar-0.9beta4 (2003/11/05)
 ===========================================================================
