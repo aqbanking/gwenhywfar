@@ -9,6 +9,7 @@
   again ;-)
   -> SO_VERSION incremented, SO_AGE=0 (makes it effectively .so.16)
 - install an XML file for the CSV plugin
+- added TVL handling code to parser module
 
 
 2004/08/05: Martin Preuss<martin@libchipcard.de>

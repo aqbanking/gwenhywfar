@@ -19,6 +19,7 @@ noinst_HEADERS=\
  dbio_l.h \
  dbio_p.h \
  msgengine_p.h \
+ tlv_p.h \
  xml_p.h
 
 iheaderdir=${includedir}/gwenhywfar
@@ -30,6 +31,7 @@ iheader_HEADERS=\
  msgengine.h \
  path.h \
  text.h \
+ tlv.h \
  xml.h
 
 libparser_la_SOURCES=\
@@ -40,5 +42,6 @@ libparser_la_SOURCES=\
  msgengine.c \
  path.c \
  text.c \
+ tlv.c \
  xml.c
 
