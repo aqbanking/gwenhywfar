@@ -2,6 +2,15 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/03/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_NetTransportSSL_StartConnect() no returns 
+  GWEN_NetTransportResultWantRead instead of GWEN_NetTransportResultOk when
+  the connect is in progress.
+- same with GWEN_NetTransportSocket_StartConnect()
+- GWEN_WaitCallback() now checks all currently entered callbacks
+
+
 2005/03/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added flag GWEN_DB_FLAGS_LOCKFILE to GWEN_DB. This is used when reading

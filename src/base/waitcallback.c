@@ -253,9 +253,42 @@ int GWEN_WaitCallback_Unregister(GWEN_WAITCALLBACK *ctx){
 
 
 /* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK_RESULT GWEN__WaitCallback(GWEN_WAITCALLBACK *ctx){
+  GWEN_WAITCALLBACK_RESULT rv;
+
+  assert(ctx);
+  if (ctx->originalCtx) {
+    if (!ctx->originalCtx->checkAbortFn) {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
+      rv=GWEN_WaitCallbackResult_Continue;
+    }
+    else {
+      rv=ctx->originalCtx->checkAbortFn(ctx->originalCtx,
+                                        ctx->level);
+      ctx->originalCtx->lastCalled=time(0);
+      ctx->lastCalled=time(0);
+    }
+  } /* if there is an original context */
+  else {
+    if (!ctx->checkAbortFn) {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
+      rv=GWEN_WaitCallbackResult_Continue;
+    }
+    else {
+      rv=ctx->checkAbortFn(ctx, 0);
+      ctx->lastCalled=time(0);
+    }
+  }
+
+  return rv;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
   GWEN_WAITCALLBACK *ctx;
-  GWEN_WAITCALLBACK_RESULT rv;
+  GWEN_WAITCALLBACK_RESULT rv=GWEN_WaitCallbackResult_Continue;
 
   ctx=gwen_waitcallback__current;
   if (!ctx){
@@ -263,29 +296,14 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
     rv=GWEN_WaitCallbackResult_Continue;
   }
   else {
-    if (ctx->originalCtx) {
-      if (!ctx->originalCtx->checkAbortFn) {
-        DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
-        rv=GWEN_WaitCallbackResult_Continue;
-      }
-      else {
-        rv=ctx->originalCtx->checkAbortFn(ctx->originalCtx,
-                                          ctx->level);
-        ctx->originalCtx->lastCalled=time(0);
-        ctx->lastCalled=time(0);
-      }
-    } /* if there is an original context */
-    else {
-      if (!ctx->checkAbortFn) {
-        DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
-        rv=GWEN_WaitCallbackResult_Continue;
-      }
-      else {
-        rv=ctx->checkAbortFn(ctx, 0);
-        ctx->lastCalled=time(0);
-      }
+    while(ctx) {
+      rv=GWEN__WaitCallback(ctx);
+      if (rv!=GWEN_WaitCallbackResult_Continue)
+        return rv;
+      ctx=ctx->previousCtx;
     }
   }
+
   return rv;
 }
 

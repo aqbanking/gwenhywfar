@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "gwentime_p.h"
 #include <gwenhywfar/gwentime.h>
@@ -148,9 +150,9 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
     sec=GWEN_DB_GetIntValue(dbT, "sec", 0, 0);
   }
 
-  DBG_NOTICE(GWEN_LOGDOMAIN,
-             "Creating time from this: %04d/%02d/%02d - %02d:%02d:%02d (%d)",
-             year, month, day, hour, min, sec, inUtc);
+  DBG_VERBOUS(GWEN_LOGDOMAIN,
+              "Creating time from this: %04d/%02d/%02d - %02d:%02d:%02d (%d)",
+              year, month, day, hour, min, sec, inUtc);
   t=GWEN_Time_new(year, month, day, hour, min, sec, inUtc);
   if (!t) {
     DBG_INFO(GWEN_LOGDOMAIN, "Bad date/time");

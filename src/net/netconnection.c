@@ -495,6 +495,7 @@ int GWEN_NetConnection_StartConnect(GWEN_NETCONNECTION *conn){
 
   if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
       GWEN_NetTransportStatusLConnected) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Connection immediately up");
     GWEN_NetConnection_Up(conn);
   }
 
@@ -660,8 +661,14 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
       DBG_DEBUG(GWEN_LOGDOMAIN, "No change in transport layer");
       /* return GWEN_NetConnectionWorkResult_NoChange; */
     }
-    else
+    else if (rv==GWEN_NetTransportWorkResult_Change) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Could do something");
+      conn->lastResult=GWEN_NetTransportResultOk;
       doneSomething=1;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled transport result %d", rv);
+    }
   }
 
   /* check for important status changes */
@@ -676,8 +683,10 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
     GWEN_NetConnection_Down(conn);
   }
 
-  if (doneSomething)
+  if (doneSomething) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Done something, will return");
     return GWEN_NetConnectionWorkResult_Change;
+  }
 
   /* do some IO (only if logically connected) */
   if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
@@ -897,12 +906,14 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
       /* prepare waitflags */
       waitFlags=0;
       if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD ||
-          conn->lastResult==GWEN_NetTransportResultOk)
+          conn->lastResult==GWEN_NetTransportResultOk ||
+          conn->lastResult==GWEN_NetTransportResultWantRead)
         waitFlags|=GWEN_NETCONNECTION_WAIT_READ;
       /* don't change the following rule unless you really know what you
        * are doing! */
       if (conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE ||
-          conn->lastResult==GWEN_NetTransportResultOk)
+          conn->lastResult==GWEN_NetTransportResultOk ||
+          conn->lastResult==GWEN_NetTransportResultWantWrite)
         waitFlags|=GWEN_NETCONNECTION_WAIT_WRITE;
       if (!waitFlags) {
         DBG_WARN(GWEN_LOGDOMAIN, "Unexpected last result %d", conn->lastResult);
@@ -924,7 +935,8 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
 	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
 	    difftime(time(0), startt)>timeout) {
           DBG_INFO(GWEN_LOGDOMAIN,
-                   "Timeout while waiting for status %d, giving up (%d)",
+                   "Timeout (%d) while waiting for status %d, giving up (%d)",
+                   timeout,
                    expStatus,
                    GWEN_NetConnection_GetStatus(conn));
           GWEN_WaitCallback_Leave();

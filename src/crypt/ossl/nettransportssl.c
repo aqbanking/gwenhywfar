@@ -331,6 +331,8 @@ GWEN_NetTransportSSL_StartConnect(GWEN_NETTRANSPORT *tr){
 
     /* adjust status (physically connecting) */
     GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusPConnecting);
+    GWEN_NetTransport_MarkActivity(tr);
+    return GWEN_NetTransportResultWantRead;
   }
   else {
     /* connection succeeded */
@@ -1376,6 +1378,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     /* establish SSL */
     int fd;
 
+    DBG_INFO(GWEN_LOGDOMAIN, "Physically connected, connecting logically");
     /* reset security */
     GWEN_DB_Group_free(skd->peerCertificate);
     skd->peerCertificate=0;
@@ -1385,7 +1388,8 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
      * not exported to the outside) */
     fd=GWEN_Socket_GetSocketInt(skd->socket);
     if (fd==-1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "No socket handle, cannot use this socket with SSL");
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "No socket handle, cannot use this socket with SSL");
       GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusDisabled);
       return GWEN_NetTransportWorkResult_Error;
     }
@@ -1456,6 +1460,7 @@ GWEN_NetTransportSSL_Work(GWEN_NETTRANSPORT *tr) {
     }
 
     /* now logically connected */
+    DBG_INFO(GWEN_LOGDOMAIN, "Logically connected");
     GWEN_DB_Group_free(skd->peerCertificate);
     skd->peerCertificate=0;
 

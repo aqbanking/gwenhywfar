@@ -155,6 +155,8 @@ GWEN_NetTransportSocket_StartConnect(GWEN_NETTRANSPORT *tr){
 
     /* adjust status (physically connecting) */
     GWEN_NetTransport_SetStatus(tr, GWEN_NetTransportStatusPConnecting);
+    GWEN_NetTransport_MarkActivity(tr);
+    return GWEN_NetTransportResultWantRead;
   }
   else {
     /* connection succeeded */
