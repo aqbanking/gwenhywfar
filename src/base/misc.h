@@ -129,7 +129,7 @@ extern "C" {
    *
    * / * mystruct.c * /
    *
-   * GWEN_LIST_FUNCTIONS(MYSTRUCT, MyStruct);
+   * GWEN_LIST_FUNCTIONS(MYSTRUCT, MyStruct)
    *
    * MYSTRUCT *MyStruct_new(int myData) {
    *   MYSTRUCT *pMyStruct;
@@ -137,7 +137,7 @@ extern "C" {
    *   pMyStruct=(MYSTRUCT*)malloc(sizeof(MYSTRUCT));
    *   memset(pMyStruct, 0, sizeof(MYSTRUCT));
    *
-   *   GWEN_LIST_INIT(MYSTRUCT, pMyStruct);
+   *   GWEN_LIST_INIT(MYSTRUCT, pMyStruct)
    *
    *   pMyStruct->myData=myData;
    *   return pMyStruct;
@@ -146,7 +146,7 @@ extern "C" {
    * void MyStruct_free(MYSTRUCT *pMyStruct) {
    *   if (pMyStruct) {
    *     pMyStruct->myData=0;
-   *     GWEN_LIST_FINI(MYSTRUCT, pMyStruct);
+   *     GWEN_LIST_FINI(MYSTRUCT, pMyStruct)
    *     free(pMyStruct);
    *   }
    * }
@@ -162,6 +162,15 @@ extern "C" {
    *       management code. Please note that this macro should be the last
    *       statement inside the destructor function before @b free()</li>
    * </ul>
+   *
+   * <p>Note: When writing these macro code lines, the original ISO
+   * C89 standard for the C language does not allow terminating the
+   * macro statement with a semicolon ';'. Any recent compiler will
+   * probably silently ignore such an extra ';', but you should be
+   * aware that this can cause problems once one of your users tries
+   * to compile this with a different compiler. Therefore these code
+   * lines should end directly with the closing parentheses.</p>
+   * 
    * <p>
    * The list management code assumes that there is a function called
    * (in this example) @b MyStruct_free() (or generally: TYPEPREFIX_free).
@@ -308,32 +317,32 @@ extern "C" {
   void pr##_List_Add(t *element, t##_LIST *l) { \
   assert(l); \
   assert(element->listPtr==0);/* element MUST NOT be in any list */ \
-  GWEN_LIST_ADD(t, element, &(l->first)); \
+  GWEN_LIST_ADD(t, element, &(l->first)) \
   element->listPtr=l;\
   l->count++;\
-  }; \
+  } \
   \
   void pr##_List_Insert(t *element, t##_LIST *l) { \
   assert(l); \
   assert(element->listPtr==0); /* element MUST NOT be in any list */ \
-  GWEN_LIST_INSERT(t, element, &(l->first)); \
+  GWEN_LIST_INSERT(t, element, &(l->first)) \
   element->listPtr=l;\
   l->count++;\
-  }; \
+  } \
   \
   void pr##_List_Del(t *element){ \
   assert(element->listPtr);\
   assert(element->listPtr->first); \
   assert(element->listPtr->count);\
-  GWEN_LIST_DEL(t, element, &(element->listPtr->first)); \
+  GWEN_LIST_DEL(t, element, &(element->listPtr->first)) \
   element->listPtr->count--;\
   element->listPtr=0;\
-  };\
+  } \
   \
   t* pr##_List_First(const t##_LIST *l) { \
   if (l) return l->first;\
   else return 0; \
-  }; \
+  } \
   \
   void pr##_List_Clear(t##_LIST *l) { \
   t* el; \
@@ -342,14 +351,14 @@ extern "C" {
   pr##_List_Del(el);\
   pr##_free(el);\
   } /* while */ \
-  }; \
+  } \
   \
   t##_LIST* pr##_List_new(){\
   t##_LIST *l; \
-  GWEN_NEW_OBJECT(t##_LIST, l);\
+  GWEN_NEW_OBJECT(t##_LIST, l) \
   l->id=++pr##_List_NextId;\
   return l;\
-  }\
+  } \
   \
   void pr##_List_free(t##_LIST *l) {\
   if (l) pr##_List_Clear(l);\
@@ -359,7 +368,7 @@ extern "C" {
   t* pr##_List_Next(const t *element) { \
   assert(element);\
   return element->next;\
-  }; \
+  } \
   \
   GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l){\
   assert(l);\
@@ -384,7 +393,7 @@ extern "C" {
 #define GWEN_LIST_FINI(t, element) \
   if (element) { \
   if (element->listPtr) {\
-  GWEN_LIST_DEL(t, element, &(element->listPtr->first)); \
+  GWEN_LIST_DEL(t, element, &(element->listPtr->first)) \
   element->listPtr->count--;\
   element->listPtr=0;\
   }\
