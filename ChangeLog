@@ -4,6 +4,10 @@ $Id$
 2003/12/18 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------
 - added MD algorithm: MD5
+- GWEN_CryptKey_{G,S}etKeyData: These are now only defined if the macro
+  "GWEN_EXTEND_CRYPTKEY" is defined. This prevents an application from
+  carelessly using these functions.
+- added a conveniance function for hashing
 
 
 ===========================================================================

@@ -71,6 +71,23 @@ int GWEN_MD_Update(GWEN_MD *md,
                    const char *buf,
                    unsigned int l);
 
+/**
+ * This is a conveniance function. It hashes a given data buffer using
+ * the given hash algo.
+ * @return 0 if ok, !=0 on error
+ * @param algo algorithm name (like "RMD160", "MD5")
+ * @param data pointer to the data to hash
+ * @param dsize size of the data to hash
+ * @param buffer pointer to a buffer for the hash
+ * @param bsize pointer to a variable that initially holds the size of the
+ * buffer. Upon return it will hold the size of the hash data.
+ */
+int GWEN_Md_Hash(const char *algo,
+                 const char *data,
+                 unsigned int dsize,
+                 char *buffer,
+                 unsigned int *bsize);
+
 
 /** @name Functions for Inheriting Modules
  *

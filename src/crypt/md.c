@@ -285,6 +285,50 @@ void GWEN_Md_UnregisterAllProviders(){
 
 
 
+int GWEN_Md_Hash(const char *typ,
+                 const char *data,
+                 unsigned int dsize,
+                 char *buffer,
+                 unsigned int *bsize) {
+  GWEN_MD *md;
+  unsigned int i;
+
+  md=GWEN_MD_Factory(typ);
+  if (!md) {
+    DBG_INFO(0, "here");
+    return -1;
+  }
+
+  if (GWEN_MD_Begin(md)) {
+    DBG_INFO(0, "here");
+    GWEN_MD_free(md);
+    return -1;
+  }
+
+  if (GWEN_MD_Update(md, data, dsize)) {
+    DBG_INFO(0, "here");
+    GWEN_MD_free(md);
+    return -1;
+  }
+
+  if (GWEN_MD_End(md)) {
+    DBG_INFO(0, "here");
+    GWEN_MD_free(md);
+    return -1;
+  }
+
+  i=GWEN_MD_GetDigestSize(md);
+  if (i>*bsize) {
+    DBG_ERROR(0, "Buffer too small");
+    GWEN_MD_free(md);
+    return -1;
+  }
+
+  memmove(buffer, GWEN_MD_GetDigestPtr(md), i);
+  *bsize=i;
+  GWEN_MD_free(md);
+  return 0;
+}
 
 
 
