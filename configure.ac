@@ -20,7 +20,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=0
 GWENHYWFAR_VERSION_MINOR=9
 GWENHYWFAR_VERSION_PATCHLEVEL=4
-GWENHYWFAR_VERSION_BUILD=19
+GWENHYWFAR_VERSION_BUILD=20
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD($GWENHYWFAR_VERSION_TAG)"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL($GWENHYWFAR_VERSION_TAG)"
@@ -134,19 +134,31 @@ case "$OS_TYPE" in
         GWEN_INSTALL_DLL_TARGET="dll-install"
         GWEN_OS="windows"
     	;;
+    palmos)
+        gwenhywfar_libs="-L`eval echo $prefix/lib` -lgwenhywfar"
+        gwenhywfar_includes="-I`eval echo $prefix/include`"
+        gwenhywfar_os_lib="os/palmos/libos.la"
+        all_includes="$all_includes -I\${top_srcdir}/src/os/palmos/sysheaders"
+        GWEN_OS="palmos"
+    	;;
 esac
 
 
 #
 # check for encryption library
 #
-AQ_CHECK_SSL
-if test "$ssl_available" = "yes"; then
-  all_libraries="${all_libraries} ${ssl_libraries} ${ssl_lib}"
-  all_includes="$all_includes $ssl_includes"
-  gwenhywfar_includes="$gwenhywfar_includes $ssl_includes"
-  GWEN_CRYPTO="ossl"
+if test "$OS_TYPE" != "palmos"; then
+  AQ_CHECK_SSL
+  if test "$ssl_available" = "yes"; then
+    all_libraries="${all_libraries} ${ssl_libraries} ${ssl_lib}"
+    all_includes="$all_includes $ssl_includes"
+    gwenhywfar_includes="$gwenhywfar_includes $ssl_includes"
+    GWEN_CRYPTO="ossl"
+  else
+    GWEN_CRYPTO="none"
+  fi
 else
+# TODO: select crypto library for PalmOS
   GWEN_CRYPTO="none"
 fi
 
@@ -274,6 +286,8 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/Makefile
                  src/os/posix/Makefile
                  src/os/windows/Makefile
+                 src/os/palmos/Makefile
+                 src/os/palmos/sysheaders/Makefile
                  src/parser/Makefile
                  test/Makefile])
 AC_OUTPUT

@@ -1,5 +1,6 @@
 aclocal.m4
 configure
+configure.palmos
 autom4te.cache
 config.h
 config.log

@@ -61,6 +61,11 @@ case "$target" in
 	MAKE_DLL_TARGET="dll"
 	INSTALL_DLL_TARGET="dll-install"
 	;;
+    *-palmos*)
+    	OSYSTEM="palmos"
+	AC_DEFINE(OS_PALMOS,1,[if PalmOS is used])
+	OS_TYPE="palmos"
+        ;;
     *)
 	AC_MSG_WARN([Sorry, but target $target is not supported.
         Please report if it works anyway. We will assume that your system

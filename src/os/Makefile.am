@@ -25,7 +25,19 @@ EXTRA_DIST=\
  posix/inetsocket.c \
  posix/libloader.c \
  posix/process.c \
- posix/process_p.h
+ posix/process_p.h \
+ palmos/Makefile.am \
+ palmos/Makefile.in \
+ palmos/directory_p.h \
+ palmos/inetaddr_p.h \
+ palmos/inetsocket_p.h \
+ palmos/libloader_p.h \
+ palmos/directory.c \
+ palmos/inetaddr.c \
+ palmos/inetsocket.c \
+ palmos/libloader.c \
+ palmos/process.c \
+ palmos/process_p.h
 
 SUBDIRS=@GWEN_OS@
 

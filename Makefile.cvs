@@ -30,4 +30,5 @@ all:
 	autoheader
 	automake --add-missing
 	autoconf
-	./configure --enable-maintainer-mode
+	sed -e "s/main ()/PilotMain ()/g" configure >configure.palmos
+	#./configure --enable-maintainer-mode
