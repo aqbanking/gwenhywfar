@@ -868,7 +868,8 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
       else {
         int z;
         GWEN_DB_VALUETYPE vt;
-        const char *type;
+        const char *type = "should_be_known";
+	/* default value; otherwise the compiler issues a warning */
 
         DBG_DEBUG(0, "Getting global property \"%s\"", p);
         vt=GWEN_DB_GetVariableType(e->globalValues, p);
