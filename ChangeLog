@@ -1,3 +1,5 @@
+
+
 2004-09-24   Christian Stimming <stimming@tuhh.de>
 
 	* gwenpp/Makefile.am, tools/*/Makefile.am: Fix LIBADD flags so
@@ -5,10 +7,15 @@
 	currently compiled libgwen instead of the potentially installed
 	one. Necessary for e.g. building new rpms.
 
+
 2004/09/24: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - xml: added flag GWEN_XML_FLAGS_IGNORE_DESCR. This flag makes the XML code
   ignore <DESCR> tags when reading a file.
+- args: fixed a silly bug (flags are binary, and flag help falsely contained
+  two other flags). Normally this change would mean to break conmpatibility.
+  However, since I'm the only one currently using GWEN_ARGS I will still
+  increment SO_AGE for the next release.
 
 
 2004/09/23: Martin Preuss<martin@libchipcard.de>

@@ -49,7 +49,7 @@ extern "C" {
 
 #define GWEN_ARGS_FLAGS_HAS_ARGUMENT     0x00000001
 #define GWEN_ARGS_FLAGS_LAST             0x00000002
-#define GWEN_ARGS_FLAGS_HELP             0x00000003
+#define GWEN_ARGS_FLAGS_HELP             0x00000004
 
 #define GWEN_ARGS_MODE_ALLOW_FREEPARAM   0x00000001
 #define GWEN_ARGS_MODE_STOP_AT_FREEPARAM 0x00000002
@@ -89,6 +89,12 @@ struct GWEN_ARGS {
 };
 
 
+/**
+ * This function parses the given argument list.
+ * Known options are stored within the given DB under their respective name.
+ * Free parameters (which are arguments without leading "-"'s) are stored in
+ * the variable "params" of the given db.
+ */
 GWENHYWFAR_API
 int GWEN_Args_Check(int argc, char **argv,
 		    int startAt,
