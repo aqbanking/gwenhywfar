@@ -746,7 +746,10 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
     n=GWEN_XMLNode_Next(n);
   } /* while */
 
-  DBG_INFO(0, "Group definition for \"%s=%s\" not found", pname, pvalue);
+  DBG_INFO(0, "Group definition for \"%s=%s\"(%d) not found",
+           pname,
+           pvalue,
+           version);
   return 0;
 }
 
