@@ -18,6 +18,7 @@ noinst_LTLIBRARIES=libosimpl.la
 
 noinst_HEADERS=\
  directory_p.h \
+ fslock_p.h \
  gwentime_p.h \
  inetaddr_p.h \
  inetsocket_p.h \
@@ -30,6 +31,7 @@ iheader_HEADERS=\
 
 libosimpl_la_SOURCES=\
  directory.c \
+ fslock.c \
  gwentime.c \
  inetaddr.c \
  inetsocket.c \

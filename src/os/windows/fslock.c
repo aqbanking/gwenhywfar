@@ -45,6 +45,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include <windows.h>
+
 
 GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
   GWEN_FSLOCK *fl;
@@ -67,6 +69,13 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
   GWEN_Buffer_AppendString(nbuf, fname);
   GWEN_Buffer_AppendString(nbuf, s);
   fl->baseLockFilename=strdup(GWEN_Buffer_GetStart(nbuf));
+
+  if (GWEN_FSLock__UnifyLockFileName(nbuf)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not create unique lockfile name");
+    GWEN_Buffer_free(nbuf);
+    abort();
+  }
+  fl->uniqueLockFilename=strdup(GWEN_Buffer_GetStart(nbuf));
   GWEN_Buffer_free(nbuf);
 
   return fl;
@@ -93,22 +102,43 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
 
   if (fl->lockCount==0) {
     int fd;
+    int linkCount;
+    struct stat st;
 
-    fd=open(fl->baseLockFilename, O_CREAT|O_EXCL|O_RDWR, S_IRUSR|S_IWUSR);
+    fd=open(fl->uniqueLockFilename, O_CREAT|O_TRUNC|O_RDWR, S_IRUSR|S_IWUSR);
     if (fd==-1) {
-      if (errno==EEXIST) {
-        return GWEN_FSLock_ResultBusy;
+      DBG_DEBUG(GWEN_LOGDOMAIN,
+		"open(%s): %s",
+		fl->baseLockFilename,
+		strerror(errno));
+      return GWEN_FSLock_ResultError;
+    }
+    close(fd);
+
+    if (stat(fl->uniqueLockFilename, &st)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
+		fl->uniqueLockFilename, strerror(errno));
+    }
+    linkCount=(int)(st.st_nlink);
+
+    if (link(fl->uniqueLockFilename, fl->baseLockFilename)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "link(%s, %s): %s",
+	       fl->uniqueLockFilename,
+	       fl->baseLockFilename,
+	       strerror(errno));
+      if (stat(fl->uniqueLockFilename, &st)) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
+		  fl->uniqueLockFilename, strerror(errno));
       }
-      else {
-        DBG_DEBUG(GWEN_LOGDOMAIN,
-                  "open(%s): %s",
-                  fl->baseLockFilename,
-                  strerror(errno));
-        return GWEN_FSLock_ResultError;
+      if ((int)(st.st_nlink)!=linkCount+1) {
+	DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
+		 fl->entryName);
+	remove(fl->uniqueLockFilename);
+	return GWEN_FSLock_ResultBusy;
       }
     }
+
     DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock applied to %s", fl->entryName);
-    close(fd);
   }
   fl->lockCount++;
   return GWEN_FSLock_ResultOk;
@@ -126,13 +156,8 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl){
   }
   fl->lockCount--;
   if (fl->lockCount<1) {
-    if (remove(fl->baseLockFilename)) {
-      DBG_DEBUG(GWEN_LOGDOMAIN,
-                "remove(%s): %s",
-                fl->baseLockFilename,
-                strerror(errno));
-      return GWEN_FSLock_ResultError;
-    }
+    remove(fl->baseLockFilename);
+    remove(fl->uniqueLockFilename);
     DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock released from %s", fl->entryName);
   }
   return GWEN_FSLock_ResultOk;
@@ -221,6 +246,30 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout){
 
 
 
+}
+
+
+
+int GWEN_FSLock__UnifyLockFileName(GWEN_BUFFER *nbuf) {
+  char buffer[256];
+
+  GWEN_Buffer_AppendString(nbuf, ".");
+
+  buffer[0]=0;
+  if (gethostname(buffer, sizeof(buffer)-1)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "gethostname: %s", strerror(errno));
+    return -1;
+  }
+  buffer[sizeof(buffer)-1]=0;
+  GWEN_Buffer_AppendString(nbuf, buffer);
+  GWEN_Buffer_AppendString(nbuf, "-");
+
+  buffer[0]=0;
+  snprintf(buffer, sizeof(buffer)-1, "%i", getpid());
+  buffer[sizeof(buffer)-1]=0;
+  GWEN_Buffer_AppendString(nbuf, buffer);
+
+  return 0;
 }
 
 

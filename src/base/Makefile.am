@@ -31,6 +31,8 @@ noinst_HEADERS=\
  memory_l.h \
  memory_p.h \
  plugindescr_p.h \
+ plugin_l.h \
+ plugin_p.h \
  ringbuffer_p.h \
  stringlist_p.h \
  waitcallback_l.h \
@@ -52,6 +54,7 @@ iheader_HEADERS=\
  memory.h \
  misc.h \
  misc2.h \
+ plugin.h \
  plugindescr.h \
  ringbuffer.h \
  stringlist.h \
@@ -67,6 +70,7 @@ libbase_la_SOURCES=\
  list.c \
  logger.c \
  memory.c \
+ plugin.c \
  plugindescr.c \
  ringbuffer.c \
  stringlist.c \

@@ -1,4 +1,10 @@
 
+2004/12/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- implemented FSLock at least for POSIX the way "man 2 open" suggests.
+  This should now also work on NFS shares.
+
+
 2004/12/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added simple file/folder locking mechanism

@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Wed Mar 24 2004
-    copyright   : (C) 2004 by Martin Preuss
+    begin       : Fri Sep 12 2003
+    copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,14 +26,42 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_TIME_P_H
-#define GWEN_TIME_P_H
+#ifndef GWENHYWFAR_PLUGIN_P_H
+#define GWENHYWFAR_PLUGIN_P_H
 
-#include <gwenhywfar/gwentime.h>
+#include "plugin_l.h"
+#include <gwenhywfar/stringlist.h>
 
-#include <sys/time.h>
-#include <time.h>
+
+
+struct GWEN_PLUGIN_MANAGER {
+  GWEN_INHERIT_ELEMENT(GWEN_PLUGIN_MANAGER)
+  GWEN_LIST_ELEMENT(GWEN_PLUGIN_MANAGER)
+  char *name;
+  GWEN_STRINGLIST *paths;
+  GWEN_PLUGIN_LIST *plugins;
+};
+
+
+
+struct GWEN_PLUGIN {
+  GWEN_INHERIT_ELEMENT(GWEN_PLUGIN)
+  GWEN_LIST_ELEMENT(GWEN_PLUGIN)
+  GWEN_PLUGIN_MANAGER *manager;
+  char *name;
+  char *fileName;
+  GWEN_LIBLOADER *libLoader;
+};
+
+
+
+
+
+
+
+
 
 
 #endif
+
 

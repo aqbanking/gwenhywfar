@@ -3130,7 +3130,7 @@ int testFsLock(int argc, char **argv) {
 
   fl=GWEN_FSLock_new(argv[2], GWEN_FSLock_TypeFile);
   fprintf(stderr, "Locking %s\n", argv[2]);
-  res=GWEN_FSLock_Lock(fl, 3000);
+  res=GWEN_FSLock_Lock(fl, 30000);
   if (res!=GWEN_FSLock_ResultOk) {
     fprintf(stderr, "Error locking %s: %d\n", argv[2], res);
     return 2;

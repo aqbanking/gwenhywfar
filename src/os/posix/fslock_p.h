@@ -26,14 +26,29 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_TIME_P_H
-#define GWEN_TIME_P_H
+#ifndef GWEN_FSLOCK_P_H
+#define GWEN_FSLOCK_P_H
 
-#include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/db.h>
 
-#include <sys/time.h>
-#include <time.h>
+#include "fslock.h"
+
+
+struct GWEN_FSLOCK {
+  GWEN_FSLOCK_TYPE type;
+  char *entryName;
+  char *baseLockFilename;
+  char *uniqueLockFilename;
+  int lockCount;
+};
+
+
+GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl);
+int GWEN_FSLock__UnifyLockFileName(GWEN_BUFFER *nbuf);
 
 
 #endif
+
 
