@@ -17,8 +17,8 @@
  (Please duplicate the single hyphens above)
 -->
 
-<xs:schema xmlns="http://www.aquamaniac.de/gwenhywfar/"
-  targetNamespace="http://www.aquamaniac.de/gwenhywfar/"
+<xs:schema xmlns="http://www.aquamaniac.de/gwenhywfar/PluginDescr"
+  targetNamespace="http://www.aquamaniac.de/gwenhywfar/PluginDescr"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <xs:simpleType name="country" >
