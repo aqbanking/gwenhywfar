@@ -113,6 +113,15 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_AddClient(GWEN_IPCMANAGER *mgr,
                                            const char *userName,
                                            const char *passwd,
                                            GWEN_TYPE_UINT32 mark);
+/**
+ * Removes a client which was previously added using
+ *  @ref GWEN_IPCManager_AddClient.
+ * This function removes all pending messages and/or requests for/from this
+ * client.
+ */
+GWENHYWFAR_API
+int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
+				 GWEN_TYPE_UINT32 nid);
 
 /**
  * Sends a request via the given connection.

@@ -33,6 +33,7 @@ struct GWEN_IPCNODE {
   GWEN_LIST_ELEMENT(GWEN_IPCNODE);
   GWEN_NETCONNECTION *connection;
   int isServer;
+  int isPassiveClient;
   GWEN_TYPE_UINT32 id;
   GWEN_TYPE_UINT32 mark;
   GWEN_TYPE_UINT32 usage;
@@ -135,6 +136,9 @@ void GWEN_IPCManager__Connection_Up(GWEN_NETCONNECTION *conn);
 void GWEN_IPCManager__Connection_Down(GWEN_NETCONNECTION *conn);
 
 
+void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
+                                                GWEN_IPCNODE *n,
+                                                GWEN_IPCREQUEST_LIST *rl);
 
 
 #endif /* GWEN_IPC_P_H */
