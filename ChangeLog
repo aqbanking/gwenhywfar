@@ -1,5 +1,10 @@
 $Id$
 
+2003-10-20  Christian Stimming <stimming@tuhh.de>
+
+	* src/parser/msgengine.c: Improve some signed/unsigned compiler
+	warnings.
+
 
 2003/10/20 Martin Preuss <martin@libchipcard.de>
 ------------------------------------------------

@@ -650,7 +650,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
       /* TODO: Check for valids */
       const char *p;
       int lastWasEscape;
-      int pcount;
+      unsigned int pcount;
 
       p=GWEN_Buffer_GetPosPointer(data);
       pcount=0;
@@ -1410,7 +1410,7 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
     unsigned int maxnum;
     int gversion;
     const char *addEmptyMode;
-    int loopNr;
+    unsigned int loopNr;
 
     minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum","1"));
     maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum","1"));
@@ -1991,7 +1991,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
     unsigned int maxnum;
     int gversion;
     const char *addEmptyMode;
-    int loopNr;
+    unsigned int loopNr;
     unsigned int lflags;
 
     minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum","1"));
@@ -2547,7 +2547,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 		 l,
 		 GWEN_Buffer_GetPos(msgbuf),
 		 GWEN_Buffer_GetUsedBytes(msgbuf));
-	if (GWEN_Buffer_BytesLeft(msgbuf)<l) {
+	if (GWEN_Buffer_BytesLeft(msgbuf) < (unsigned) l) {
 	  DBG_ERROR(0, "Premature end of message (binary beyond end)");
 	  return -1;
 	}
@@ -2877,7 +2877,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	const char *gname;
 	const char *gtype;
 	unsigned int gversion;
-	int loopNr;
+	unsigned int loopNr;
 
 	minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum","1"));
 	maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum","1"));
@@ -3120,7 +3120,8 @@ int GWEN_MsgEngine_SkipSegment(GWEN_MSGENGINE *e,
           DBG_ERROR(0, "Bad number format");
           return -1;
         }
-        if (GWEN_Buffer_GetUsedBytes(msgbuf)-GWEN_Buffer_GetPos(msgbuf)<l) {
+        if (GWEN_Buffer_GetUsedBytes(msgbuf)-GWEN_Buffer_GetPos(msgbuf) 
+	    < (unsigned) l) {
           DBG_ERROR(0, "Premature end of message (binary beyond end)");
           return -1;
         }
