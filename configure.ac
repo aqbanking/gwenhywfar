@@ -9,7 +9,7 @@ GWENHYWFAR_BUGREPORT_ADDR="<gwenhywfar-bugs@libchipcard.de>"
 AC_PREREQ(2.57)
 AC_INIT
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(gwenhywfar, 0.9.5rc1)
+AM_INIT_AUTOMAKE(gwenhywfar, 0.9.4rc1)
 AC_CONFIG_SRCDIR([src/gwenhywfarapi.h])
 AC_CONFIG_HEADER([config.h])
 
