@@ -280,16 +280,16 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
   if (!(GWEN_CryptKey_GetFlags(key) &
         GWEN_CRYPT_FLAG_DISABLE_SMALLER_SIGNATURE)) {
     if (BN_cmp(bnresult2, bnresult) < 0) {
-      GWEN_WaitCallback_Log(0, "Using smaller signature");
+      /* GWEN_WaitCallback_Log(0, "Using smaller signature"); */
       DBG_DEBUG(GWEN_LOGDOMAIN, "Using smaller signature");
       BN_copy(bnresult, bnresult2);
     }
     else {
-      GWEN_WaitCallback_Log(0, "Using normal signature");
+      /* GWEN_WaitCallback_Log(0, "Using normal signature"); */
     }
   }
   else {
-    GWEN_WaitCallback_Log(0, "Always using normal signature");
+    /* GWEN_WaitCallback_Log(0, "Always using normal signature"); */
   }
 
   BN_free(bnresult2);
