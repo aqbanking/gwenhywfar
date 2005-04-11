@@ -49,6 +49,7 @@ if test "$enable_gwenhywfar" != "no"; then
 	     /usr/local \
              /usr \
 	     /gwen \
+             /sw \
              /"])
 
   for li in $lcc_dir; do

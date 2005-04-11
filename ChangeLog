@@ -1,4 +1,9 @@
 
+2005/04/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added "/sw" prefix when searching for Gwen (used by Fink on MacOSX)
+
+
 2005/04/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - merged in Herbert's InetSocket corrections for Gwen (thanks a lot!!)
