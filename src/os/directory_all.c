@@ -144,13 +144,34 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
   } /* if stat is ok */
 
   if (!exists) {
+    int isPublic;
+
     DBG_DEBUG(GWEN_LOGDOMAIN, "Entry \"%s\" does not exist", p);
+
+    isPublic=(
+              ((flags & GWEN_PATH_FLAGS_LAST) &&
+               (flags & GWEN_DIR_FLAGS_PUBLIC_NAME)) ||
+              (!(flags & GWEN_PATH_FLAGS_LAST) &&
+               (flags & GWEN_DIR_FLAGS_PUBLIC_PATH))
+             );
+
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
       /* create file */
       int fd;
 
       DBG_DEBUG(GWEN_LOGDOMAIN, "Creating file \"%s\"", p);
-      fd=open(p, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+      if (isPublic)
+	fd=open(p, O_RDWR | O_CREAT | O_TRUNC,
+		S_IRUSR | S_IWUSR
+#ifdef S_IRGRP
+		| S_IRGRP
+#endif
+#ifdef S_IROTH
+		| S_IROTH
+#endif
+	       );
+      else
+	fd=open(p, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
       if (fd==-1) {
         DBG_ERROR(GWEN_LOGDOMAIN, "open: %s (%s)", strerror(errno), p);
 	GWEN_Buffer_free(ebuf);
@@ -163,10 +184,19 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
       /* create dir */
       DBG_DEBUG(GWEN_LOGDOMAIN, "Creating folder \"%s\"", p);
 
-      if (GWEN_Directory_Create(p)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Could not create directory \"%s\"", p);
-	GWEN_Buffer_free(ebuf);
-        return 0;
+      if (isPublic) {
+	if (GWEN_Directory_CreatePublic(p)) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Could not create directory \"%s\"", p);
+	  GWEN_Buffer_free(ebuf);
+	  return 0;
+	}
+      }
+      else {
+	if (GWEN_Directory_Create(p)) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Could not create directory \"%s\"", p);
+	  GWEN_Buffer_free(ebuf);
+	  return 0;
+	}
       }
     }
   } /* if exists */

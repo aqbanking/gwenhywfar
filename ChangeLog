@@ -1,4 +1,17 @@
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/04/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added flags for GWEN_Directory_GetPath()
+  - GWEN_DIR_FLAGS_PUBLIC_PATH
+  - GWEN_DIR_FLAGS_PUBLIC_NAME
+- added function GWEN_Directory_CreatePublic()
+
+
 2005/04/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added "/sw" prefix when searching for Gwen (used by Fink on MacOSX)

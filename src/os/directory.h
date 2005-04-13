@@ -49,9 +49,8 @@ typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
  *
  */
 /*@{*/
-#define GWEN_DIR_FLAGS_USER_READ  0x0001
-#define GWEN_DIR_FLAGS_USER_WRITE 0x0002
-#define GWEN_DIR_FLAGS_USER_EXEC  0x0004
+#define GWEN_DIR_FLAGS_PUBLIC_PATH 0x00010000
+#define GWEN_DIR_FLAGS_PUBLIC_NAME 0x00020000
 /*@}*/
 
 
@@ -143,6 +142,13 @@ int GWEN_Directory_GetPath(const char *path, unsigned int flags);
  */
 GWENHYWFAR_API
 int GWEN_Directory_Create(const char *path);
+
+/**
+ * Creates a public directory (a folder which can be listed and entered
+ * by anyone)
+ */
+GWENHYWFAR_API
+int GWEN_Directory_CreatePublic(const char *path);
 
 /**
  * Takes a path and translates it into a path that the running platform

@@ -152,6 +152,13 @@ int GWEN_Directory_Create(const char *path){
 
 
 
+int GWEN_Directory_CreatePublic(const char *path){
+  /* same as above, since on WIN32 all folders are public (gulp) */
+  return GWEN_Directory_Create(path);
+}
+
+
+
 int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
   int rv;
 
