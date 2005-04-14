@@ -4,6 +4,12 @@
   ------------------------------------------------------------------------
 
 
+2005/04/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_PluginManager_LoadPlugin() now uses lowercased module names when
+  loading
+
+
 2005/04/13: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added flags for GWEN_Directory_GetPath()
