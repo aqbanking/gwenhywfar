@@ -294,6 +294,8 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   char delimiters[2];
   int lines;
   int ignoreLines;
+  int fixedWidth;
+  int condense;
 
   assert(dbio);
   assert(bio);
@@ -316,6 +318,8 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   delimiters[0]=delimiter;
   delimiters[1]=0;
   quote=GWEN_DB_GetIntValue(cfg, "quote", 0, 1);
+  fixedWidth=GWEN_DB_GetIntValue(cfg, "fixedWidth", 0, 0);
+  condense=GWEN_DB_GetIntValue(cfg, "condense", 0, 0);
   groupName=GWEN_DB_GetCharValue(cfg, "group", 0, "line");
   title=GWEN_DB_GetIntValue(cfg, "title", 0, 1);
   ignoreLines=GWEN_DB_GetIntValue(cfg, "ignoreLines", 0, 0);
@@ -353,26 +357,66 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
       wbuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
       s=GWEN_Buffer_GetStart(lbuffer);
-      while(*s) {
-        rv=GWEN_Text_GetWordToBuffer(s, delimiters, wbuffer,
-                                     GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
-                                     GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
-                                     GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
-                                     GWEN_TEXT_FLAGS_DEL_QUOTES,
-                                     &s);
-        if (rv) {
-          GWEN_Buffer_free(wbuffer);
-          GWEN_Buffer_free(lbuffer);
-          GWEN_StringList_free(sl);
-          return rv;
-        }
-        GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(wbuffer), 0, 0);
-        GWEN_Buffer_Reset(wbuffer);
-        if (*s) {
-          if (strchr(delimiters, *s))
-            s++;
-        }
-      } /* while */
+      if (fixedWidth) {
+	int i;
+        unsigned int llength;
+	unsigned int lpos=0;
+
+	llength=strlen(s);
+	for (i=0; ; i++) {
+	  int w;
+	  char *t=0;
+          int left;
+
+	  left=llength-lpos;
+	  w=GWEN_DB_GetIntValue(cfg, "width", i, -1);
+	  if (w<1)
+	    break;
+	  if (w>left)
+	    w=left;
+	  if (w<1)
+            break;
+	  t=(char*)malloc(w+1);
+	  memmove(t, s, w);
+	  t[w]=0;
+	  if (condense) {
+	    int j;
+
+	    for(j=w-1; j>=0; j--) {
+	      if ((unsigned char)(t[j])>32) {
+		break;
+	      }
+	      t[j]=0;
+	    }
+	  }
+	  /* take over new string */
+	  GWEN_StringList_AppendString(sl, t, 1, 0);
+	  s+=w;
+	  lpos+=w;
+	}
+      }
+      else {
+	while(*s) {
+	  rv=GWEN_Text_GetWordToBuffer(s, delimiters, wbuffer,
+				       GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+				       GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
+				       GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
+				       GWEN_TEXT_FLAGS_DEL_QUOTES,
+				       &s);
+	  if (rv) {
+	    GWEN_Buffer_free(wbuffer);
+	    GWEN_Buffer_free(lbuffer);
+	    GWEN_StringList_free(sl);
+	    return rv;
+	  }
+	  GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(wbuffer), 0, 0);
+	  GWEN_Buffer_Reset(wbuffer);
+	  if (*s) {
+	    if (strchr(delimiters, *s))
+	      s++;
+	  }
+	} /* while */
+      }
       GWEN_Buffer_free(wbuffer);
   
       /* store columns to db */

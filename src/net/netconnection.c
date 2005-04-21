@@ -105,7 +105,7 @@ int GWEN_NetConnection_Read(GWEN_NETCONNECTION *conn,
   assert(conn);
   if (GWEN_NetTransport_GetStatus(conn->transportLayer)==
       GWEN_NetTransportStatusDisabled) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Connection disabled");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Connection disabled");
     return -1;
   }
   return GWEN_RingBuffer_ReadBytes(conn->readBuffer,
@@ -742,6 +742,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
             GWEN_NetTransport_SetStatus(conn->transportLayer,
                                         GWEN_NetTransportStatusPDisconnected);
             GWEN_NetConnection_Down(conn);
+            doneSomething=1;
           }
           else {
             DBG_DEBUG(GWEN_LOGDOMAIN, "Adding %d bytes to read buffer", bsize);
@@ -1422,30 +1423,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     if (st!=GWEN_NetTransportStatusUnconnected &&
         st!=GWEN_NetTransportStatusPDisconnected &&
         st!=GWEN_NetTransportStatusDisabled) {
-      /*
-      if (!GWEN_RingBuffer_GetBytesLeft(curr->readBuffer) ||
-          !GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer)) {
-        rv=GWEN_NetConnection_Work(curr);
-        if (rv==GWEN_NetConnectionWorkResult_Error) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Error while working on connection");
-          errors++;
-        }
-        else if (rv==GWEN_NetConnectionWorkResult_Change) {
-          DBG_INFO(GWEN_LOGDOMAIN, "There is a change in this connection");
-          changes++;
-        }
-        else {
-          DBG_DEBUG(GWEN_LOGDOMAIN, "No changes, status is: toREAD=%d, toWRITE=%d",
-                    GWEN_RingBuffer_GetBytesLeft(curr->readBuffer),
-                    GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer));
-        }
-      }
-      */
       connCheckValue=GWEN_NetConnection_Check(curr);
-
-      /*if ((curr->lastResult==GWEN_NetTransportResultWantRead ||
-           curr->lastResult==GWEN_NetTransportResultOk) &&
-          GWEN_RingBuffer_GetBytesLeft(curr->readBuffer)) {*/
 
       if (GWEN_RingBuffer_GetBytesLeft(curr->readBuffer) ||
           (curr->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD) ||
@@ -1461,24 +1439,8 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       }
       else {
         DBG_VERBOUS(GWEN_LOGDOMAIN, "Not adding read socket:");
-        /*
-        if (GWEN_RingBuffer_GetBytesLeft(curr->readBuffer)==0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "No space left in incoming buffer");
-        }
-        if ((curr->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTREAD)==0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "IOFLAG does not contain WANTREAD");
-        }
-        if ((connCheckValue & GWEN_NETCONNECTION_CHECK_WANTREAD)==0) {
-          DBG_ERROR(GWEN_LOGDOMAIN,
-                    "checkValue does not contain WANTREAD (%x)",
-                    connCheckValue);
-        }
-        GWEN_NetConnection_Dump(curr);*/
       }
 
-      /*if ((conn->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE) ||
-          curr->lastResult==GWEN_NetTransportResultOk ||
-          GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer)) {*/
       if (GWEN_RingBuffer_GetUsedBytes(curr->writeBuffer) ||
           (curr->ioFlags & GWEN_NETCONNECTION_IOFLAG_WANTWRITE) ||
           GWEN_NetMsg_List_GetCount(curr->outMsgs) ||
@@ -1499,7 +1461,6 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
     }
     else {
       DBG_VERBOUS(GWEN_LOGDOMAIN, "Inactive connection:");
-      /*GWEN_NetConnection_Dump(curr);*/
     }
     curr=GWEN_NetConnection_List_Next(curr);
   } /* while */
@@ -1560,7 +1521,7 @@ GWEN_NetConnection__Walk(GWEN_NETCONNECTION_LIST *connList,
       DBG_DEBUG(GWEN_LOGDOMAIN, "Working on connection...");
       rv=GWEN_NetConnection_Work(curr);
       if (rv==GWEN_NetConnectionWorkResult_Error) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error working (result was %d)", rv);
+        DBG_INFO(GWEN_LOGDOMAIN, "Error working (result was %d)", rv);
         errors++;
       }
       else if (rv==GWEN_NetConnectionWorkResult_Change) {

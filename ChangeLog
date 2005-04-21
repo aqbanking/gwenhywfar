@@ -3,6 +3,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/04/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some more bugs in netconnection code (now also works with my 
+  OFX direct connect backend for AqBanking)
+  This results in an extreme speedup !!!
+  
 
 2005/04/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

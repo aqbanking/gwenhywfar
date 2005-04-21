@@ -579,8 +579,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 				~GWEN_XML_FLAGS_KEEP_CNTRL,
 				0, " ><", bufTagName);
       if (chr<0) {
-        GWEN_Buffer_free(bufTagName);
-        return -1;
+	GWEN_Buffer_free(bufTagName);
+	DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading word");
+	return -1;
       }
       GWEN_Buffer_AppendByte(bufTagName, 0);
       p=GWEN_Buffer_GetStart(bufTagName);
@@ -613,6 +614,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               }
               GWEN_Buffer_free(bufComment);
               GWEN_Buffer_free(bufTagName);
+	      DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading char");
 	      return -1;
 	    }
           }
@@ -911,6 +913,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                   GWEN_Buffer_free(bufValue);
                   GWEN_Buffer_free(bufVarName);
                   GWEN_Buffer_free(bufTagName);
+		  DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading char");
                   return -1;
                 }
 		if (!isspace(chr) && !(chr<32 || chr==127))
@@ -941,6 +944,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
               GWEN_Buffer_free(bufVarName);
               GWEN_Buffer_free(bufTagName);
 	      return -1;
+	      DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading word");
 	    }
             GWEN_Buffer_AppendByte(bufVarName, 0);
             varname=GWEN_Buffer_GetStart(bufVarName);
@@ -963,6 +967,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                   GWEN_Buffer_free(bufValue);
                   GWEN_Buffer_free(bufVarName);
                   GWEN_Buffer_free(bufTagName);
+		  DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading char");
 		  return -1;
 		}
 		if (!isspace(chr) && !(chr<32 || chr==127))
@@ -983,6 +988,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                   GWEN_Buffer_free(bufValue);
                   GWEN_Buffer_free(bufVarName);
                   GWEN_Buffer_free(bufTagName);
+		  DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading char");
 		  return -1;
 		}
 		if (!isspace(chr))
@@ -1023,6 +1029,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
                 GWEN_Buffer_free(bufValue);
                 GWEN_Buffer_free(bufVarName);
                 GWEN_Buffer_free(bufTagName);
+		DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading word");
                 return -1;
               }
               GWEN_Buffer_AppendByte(bufValue, 0);
@@ -1087,6 +1094,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
             GWEN_Buffer_free(bufValue);
             GWEN_Buffer_free(bufVarName);
             GWEN_Buffer_free(bufTagName);
+	    DBG_ERROR(GWEN_LOGDOMAIN, "\">\" expected");
 	    return -1;
 	  }
 
@@ -1182,8 +1190,9 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
       chr=GWEN_XML__ReadWordBuf(bio, flags | GWEN_XML_FLAGS__DATA,
 				chr, "<", bufData);
       if (chr<0) {
-        GWEN_Buffer_free(bufData);
-        return -1;
+	GWEN_Buffer_free(bufData);
+	DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading word");
+	return -1;
       }
 
       tbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(bufData), 0, 1);
