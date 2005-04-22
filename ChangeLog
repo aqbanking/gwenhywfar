@@ -1,3 +1,9 @@
+2005-04-22   Christian Stimming <stimming@tuhh.de>
+
+	* src/base/buffer.c, src/crypt/padd.c, src/parser/text.c,
+	src/parser/xml.c, test/gwentest.c: Change the signedness of
+	variables to fix gcc4 warnings about "pointer differ in
+	signedness".
 
 ===========================================================================
 MARK: released gwenhywfar-1.12.0 (2005/04/21)

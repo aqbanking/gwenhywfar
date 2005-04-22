@@ -346,7 +346,7 @@ int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
   int inQuote;
   int lastQuoteChar = '\0';
   int lastWasSpace;
-  unsigned char *pdst;
+  char *pdst;
   GWEN_TYPE_UINT32 roomLeft;
   GWEN_TYPE_UINT32 bytesAdded;
 

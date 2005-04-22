@@ -1105,7 +1105,7 @@ int testBase64(int argc, char **argv) {
   } /* while */
   fclose(f);
 
-  if (GWEN_Base64_Encode(GWEN_Buffer_GetStart(src),
+  if (GWEN_Base64_Encode(/* GCC4 pointer-signedness fix: */ (unsigned char*)GWEN_Buffer_GetStart(src),
                          GWEN_Buffer_GetUsedBytes(src),
                          dst, 76)) {
     fprintf(stderr, "Error encoding file.\n");
@@ -1128,7 +1128,7 @@ int testBase64(int argc, char **argv) {
   }
 
   tmp=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(src), 0, 1);
-  if (GWEN_Base64_Decode(GWEN_Buffer_GetStart(dst),
+  if (GWEN_Base64_Decode(/* GCC4 pointer-signedness fix: */ (unsigned char*)GWEN_Buffer_GetStart(dst),
                          GWEN_Buffer_GetUsedBytes(src),
                          tmp)) {
     fprintf(stderr, "Error decoding file.\n");
@@ -1183,7 +1183,7 @@ int testBase64_2(int argc, char **argv) {
   } /* while */
   fclose(f);
 
-  if (GWEN_Base64_Decode(GWEN_Buffer_GetStart(src),
+  if (GWEN_Base64_Decode(/* GCC4 pointer-signedness fix: */ (unsigned char*)GWEN_Buffer_GetStart(src),
                          0,
                          dst)) {
     fprintf(stderr, "Error decoding file.\n");
@@ -1602,7 +1602,9 @@ int uitest4(int argc, char **argv) {
   GWEN_Widget_SetColour(w, GWEN_WidgetColour_Message);
   GWEN_Widget_Redraw(w);
 
-  GWEN_Widget_WriteAt(GWEN_Window_GetViewPort(w), 4, 4, buffer, 0);
+  GWEN_Widget_WriteAt(GWEN_Window_GetViewPort(w), 4, 4,
+		      /* GCC4 pointer-signedness fix: */ (char*)buffer, 
+		      0);
   GWEN_Widget_Update(GWEN_Window_GetViewPort(w));
   GWEN_UI_Flush();
 
@@ -1654,7 +1656,7 @@ int uitest5(int argc, char **argv) {
                         GWEN_WIDGET_FLAGS_DEFAULT |
                         GWEN_TEXTWIDGET_FLAGS_LINEMODE,
                         "Test-Widget",
-                        buffer,
+                        /* GCC4 pointer-signedness fix: */ (char*)buffer,
                         4, 4,
                         40, 10);
   GWEN_TextWidget_SetVirtualSize(w, 40, 20);
@@ -1723,7 +1725,7 @@ int uitest6(int argc, char **argv) {
                          GWEN_WIDGET_FLAGS_DEFAULT |
                          GWEN_TEXTWIDGET_FLAGS_LINEMODE,
                          "Test-Liste",
-                         buffer,
+                         /* GCC4 pointer-signedness fix: */ (char*)buffer,
                          2, 2,
                          40, 10);
   GWEN_TextWidget_SetVirtualSize(tv, 40, 20);
@@ -1796,7 +1798,7 @@ int uitest7(int argc, char **argv) {
                          GWEN_TEXTWIDGET_FLAGS_LINEMODE |
                          GWEN_TEXTWIDGET_FLAGS_HIGHLIGHT,
                          "Test-Liste",
-                         buffer,
+                         /* GCC4 pointer-signedness fix: */ (char*)buffer,
                          2, 2,
                          40, 10);
   GWEN_TextWidget_SetVirtualSize(tv, 40, 20);
@@ -2487,7 +2489,7 @@ int uitest14(int argc, char **argv) {
         rv=GWEN_MessageBox(mw,
                            "TestMessage",
                            "Test-Message",
-                           buffer,
+                           /* GCC4 pointer-signedness fix: */ (char*)buffer,
                            "Ok", "Abort", "Do whatever you like");
         DBG_NOTICE(0, "Result of message box: %d", rv);
       }
@@ -2554,7 +2556,7 @@ int uitest15(int argc, char **argv) {
                       GWEN_EDITBOX_FLAGS_EDIT |
                       GWEN_WIDGET_FLAGS_BORDER,
                       "EditBox",
-                      buffer,
+                      /* GCC4 pointer-signedness fix: */ (char*)buffer,
                       0, 0, 18, 3, 16);
   GWEN_Widget_SetColour(ev, GWEN_WidgetColour_Default);
 

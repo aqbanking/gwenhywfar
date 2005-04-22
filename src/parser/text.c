@@ -1571,7 +1571,7 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len) {
 
 
 int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
-  unsigned char *pdst;
+  char *pdst;
   GWEN_TYPE_UINT32 roomLeft;
   GWEN_TYPE_UINT32 bytesAdded;
 

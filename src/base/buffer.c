@@ -659,7 +659,7 @@ int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
 #else
   /* optimized for speed */
   GWEN_TYPE_UINT32 i;
-  unsigned char *pdst;
+  char *pdst;
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "About to copy up to %d bytes", *size);
   i=0;
