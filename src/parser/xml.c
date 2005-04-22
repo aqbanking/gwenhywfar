@@ -1191,7 +1191,7 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
 				chr, "<", bufData);
       if (chr<0) {
 	GWEN_Buffer_free(bufData);
-	DBG_ERROR(GWEN_LOGDOMAIN, "Eror reading word");
+	DBG_INFO(GWEN_LOGDOMAIN, "Eror reading word");
 	return -1;
       }
 
