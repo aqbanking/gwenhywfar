@@ -1154,7 +1154,7 @@ void GWEN_NetTransportSSL__CertEntries2Db(X509_NAME *nm,
                                           int nid,
                                           const char *name) {
   X509_NAME_ENTRY *e;
-  const char *p;
+  const unsigned char *p;
   int len;
   int lastpos;
   char *cpy;
@@ -1338,7 +1338,8 @@ GWEN_DB_NODE *GWEN_NetTransportSSL__Cert2Db(X509 *cert) {
 			"fingerprint", md, md_size);
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Text_ToHexBuffer(md, md_size, dbuf, 2, ':', 0)) {
+    if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char*)md,
+			      md_size, dbuf, 2, ':', 0)) {
       DBG_ERROR(GWEN_LOGDOMAIN,
 		"Could not convert fingerprint to hex");
     }

@@ -1,3 +1,13 @@
+2005-04-26   Christian Stimming <stimming@tuhh.de>
+
+	* src/crypt/crypt.c, src/crypt/md.c,
+	src/crypt/ossl/nettransportssl.c, src/ipc/ipc.c,
+	src/parser/xsd_write.c: Add casts from and to unsigned char to fix
+	gcc4 warnings about "pointer differ in signedness". Since those
+	casts are accepted implicitly in earlier gccs, we expect that this
+	doesn't change the behaviour. The casts are clearly marked with
+	"GCC4".
+
 2005-04-22   Christian Stimming <stimming@tuhh.de>
 
 	* src/base/buffer.c, src/crypt/padd.c, src/parser/text.c,

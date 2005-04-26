@@ -508,7 +508,7 @@ int GWEN_XSD__GetElementData(GWEN_XSD_ENGINE *e,
     retrieved=1;
     /* convert to base64 */
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Base64_Encode(GWEN_Buffer_GetStart(vbuf),
+    if (GWEN_Base64_Encode(/* GCC4 pointer-signedness fix: */ (const unsigned char*) GWEN_Buffer_GetStart(vbuf),
                            GWEN_Buffer_GetUsedBytes(vbuf),
                            tbuf, 0)) {
       DBG_ERROR(GWEN_LOGDOMAIN,

@@ -439,7 +439,7 @@ int GWEN_CryptKey_FromPassword(const char *password,
   if (GWEN_MD_Hash(algo,
                    password,
                    strlen(password),
-                   buffer,
+                   /* GCC4 pointer-signedness fix: */ (char*) buffer,
                    &nsize)) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;

@@ -445,7 +445,7 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_AddClient(GWEN_IPCMANAGER *mgr,
     GWEN_Buffer_AppendString(abuf, passwd);
     ebuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(abuf)*4/3+16, 0, 1);
     GWEN_Buffer_AppendString(ebuf, "BASIC ");
-    if (GWEN_Base64_Encode(GWEN_Buffer_GetStart(abuf),
+    if (GWEN_Base64_Encode(/* GCC4 pointer-signedness fix: */ (const unsigned char*)GWEN_Buffer_GetStart(abuf),
                            GWEN_Buffer_GetUsedBytes(abuf),
                            ebuf, 0)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Could not encode authorization data");

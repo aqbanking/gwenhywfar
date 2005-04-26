@@ -353,7 +353,9 @@ int GWEN_MD_HashToBuffer(const char *typ,
 
   i=GWEN_MD_GetDigestSize(md);
   assert(i);
-  GWEN_Buffer_AppendBytes(dstBuf, GWEN_MD_GetDigestPtr(md), i);
+  GWEN_Buffer_AppendBytes(dstBuf, 
+			  /* GCC4 pointer-signedness fix: */ (char*)GWEN_MD_GetDigestPtr(md), 
+			  i);
   GWEN_MD_free(md);
   return 0;
 }
