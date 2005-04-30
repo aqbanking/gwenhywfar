@@ -113,6 +113,13 @@ extern "C" {
 #define GWEN_ERROR_SIGN                 (-64)
 #define GWEN_ERROR_VERIFY               (-65)
 #define GWEN_ERROR_SSL                  (-66)
+
+/* crypt token errors */
+#define GWEN_ERROR_CT_NOT_IMPLEMENTED   (-67)
+#define GWEN_ERROR_CT_NOT_SUPPORTED     (-68)
+#define GWEN_ERROR_CT_BAD_NAME          (-69)
+#define GWEN_ERROR_CT_IO_ERROR          (-70)
+
 /*@}*/
 
 

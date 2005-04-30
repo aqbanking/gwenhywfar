@@ -1,3 +1,24 @@
+
+
+2005/04/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_NetConnectionHTTP:
+  - added state GWEN_NETCONNHTTP_STATE_IGNOREMSG which is used to ignore
+    intermediate HTTP responses (like 100)
+  - added mode GWEN_NETCONN_MODE_RAW. If this is on then all messages received
+    are forwarded to the application. If it is off (default) then intermediate
+    messages (like 100) are ignored. This should make the OFX plugin of
+    AqBanking work.
+
+
+2005/04/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_CryptToken_fromXml()
+  Since the CryptToken stuff is not yet officially part of the API SO_CURRENT
+  doesn't have to be incremented.
+- added definition GWEN_WAITCALLBACK_PROGRESS_NONE to GWEN_WaitCallback
+
+
 2005-04-26   Christian Stimming <stimming@tuhh.de>
 
 	* src/crypt/crypt.c, src/crypt/md.c,
@@ -8,12 +29,14 @@
 	doesn't change the behaviour. The casts are clearly marked with
 	"GCC4".
 
+
 2005-04-22   Christian Stimming <stimming@tuhh.de>
 
 	* src/base/buffer.c, src/crypt/padd.c, src/parser/text.c,
 	src/parser/xml.c, test/gwentest.c: Change the signedness of
 	variables to fix gcc4 warnings about "pointer differ in
 	signedness".
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.12.0 (2005/04/21)

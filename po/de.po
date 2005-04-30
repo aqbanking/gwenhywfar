@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-04-08 02:09+0200\n"
+"POT-Creation-Date: 2005-04-30 09:56+0200\n"
 "PO-Revision-Date: 2005-02-20 20:56+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -169,99 +169,99 @@ msgstr "Fehler bei der Signaturüberprüfung"
 msgid "Generic SSL error"
 msgstr "Allgemeiner SSL Fehler"
 
-#: src/crypt/ossl/nettransportssl.c:1581
+#: src/crypt/ossl/nettransportssl.c:1582
 msgid "New certificate"
 msgstr "Neues Zertifikat"
 
-#: src/crypt/ossl/nettransportssl.c:1585
+#: src/crypt/ossl/nettransportssl.c:1586
 msgid "Unable to get issuer certificate"
 msgstr "Zertifikat nicht verfügbar"
 
-#: src/crypt/ossl/nettransportssl.c:1589
+#: src/crypt/ossl/nettransportssl.c:1590
 msgid "Unable to decrypt cert signature"
 msgstr "Zertifikat konnte nicht dekodiert werden"
 
-#: src/crypt/ossl/nettransportssl.c:1593
+#: src/crypt/ossl/nettransportssl.c:1594
 msgid "Unable to decode issuer public key"
 msgstr "Öffentlicher Schlüssel konnte nicht dekodiert werden"
 
-#: src/crypt/ossl/nettransportssl.c:1597
+#: src/crypt/ossl/nettransportssl.c:1598
 msgid "Cert signature failure"
 msgstr "Fehlerhaftes Zertifikat"
 
-#: src/crypt/ossl/nettransportssl.c:1601
+#: src/crypt/ossl/nettransportssl.c:1602
 msgid "Cert not yet valid"
 msgstr "Zertifikat ist noch nicht gültig"
 
-#: src/crypt/ossl/nettransportssl.c:1605
+#: src/crypt/ossl/nettransportssl.c:1606
 msgid "Cert has expired"
 msgstr "Zertifikat ist nicht mehr gültig"
 
-#: src/crypt/ossl/nettransportssl.c:1609
+#: src/crypt/ossl/nettransportssl.c:1610
 msgid "Self-signed root cert"
 msgstr "Selbst-signiertes Root-Zertifikat"
 
-#: src/crypt/ossl/nettransportssl.c:1613
+#: src/crypt/ossl/nettransportssl.c:1614
 msgid "Self-signed cert"
 msgstr "Selbst-signiertes Zertifikat"
 
-#: src/crypt/ossl/nettransportssl.c:1617
+#: src/crypt/ossl/nettransportssl.c:1618
 msgid "Unable to verify leaf signature"
 msgstr "Zertifikat konnte nicht überprüft werden"
 
-#: src/crypt/ossl/nettransportssl.c:1621
+#: src/crypt/ossl/nettransportssl.c:1622
 msgid "Cert chain too long"
 msgstr "Enthält zu viele Unter-Zertifikate"
 
-#: src/crypt/ossl/nettransportssl.c:1625
+#: src/crypt/ossl/nettransportssl.c:1626
 msgid "Cert revoked"
 msgstr "Zertifikat wurde zurückgenommen (ist nicht mehr gültig)"
 
-#: src/crypt/ossl/nettransportssl.c:1629
+#: src/crypt/ossl/nettransportssl.c:1630
 msgid "Invalid CA"
 msgstr "Ungültiges Zertifizierungs-Institut"
 
-#: src/crypt/ossl/nettransportssl.c:1633
+#: src/crypt/ossl/nettransportssl.c:1634
 msgid "Cert untrusted"
 msgstr "Zertifikat ist nicht vertrauenswürdig"
 
-#: src/crypt/ossl/nettransportssl.c:1637
+#: src/crypt/ossl/nettransportssl.c:1638
 msgid "Cert rejected"
 msgstr "Zertifikat abgelehnt"
 
-#: src/crypt/ossl/nettransportssl.c:1647
+#: src/crypt/ossl/nettransportssl.c:1648
 msgid "Formal error in certificate"
 msgstr "Formaler Fehler im Zertifikat"
 
-#: src/crypt/ossl/nettransportssl.c:1652
+#: src/crypt/ossl/nettransportssl.c:1653
 msgid "Out of memory"
 msgstr "Kein Speicher für Zertifikat (interner Fehler)"
 
-#: src/crypt/ossl/nettransportssl.c:1656
+#: src/crypt/ossl/nettransportssl.c:1657
 msgid "Unable to get CRL"
 msgstr "CRL konnte nicht abgerufen werden"
 
-#: src/crypt/ossl/nettransportssl.c:1660
+#: src/crypt/ossl/nettransportssl.c:1661
 msgid "Unable to decrypt CRL signature"
 msgstr "CRL Signatur konnte nicht dekodiert werden"
 
-#: src/crypt/ossl/nettransportssl.c:1664
+#: src/crypt/ossl/nettransportssl.c:1665
 msgid "CRL signature failure"
 msgstr "Fehlerhafte CRL-Signatur"
 
-#: src/crypt/ossl/nettransportssl.c:1668
+#: src/crypt/ossl/nettransportssl.c:1669
 msgid "CRL not yet valid"
 msgstr "CRL ist noch nicht gültig"
 
-#: src/crypt/ossl/nettransportssl.c:1672
+#: src/crypt/ossl/nettransportssl.c:1673
 msgid "CRL has expired"
 msgstr "CRL ist nicht mehr gültig"
 
-#: src/crypt/ossl/nettransportssl.c:1676
+#: src/crypt/ossl/nettransportssl.c:1677
 msgid "Certificate is valid"
 msgstr "Zertifikat ist gültig"
 
-#: src/crypt/ossl/nettransportssl.c:1679
+#: src/crypt/ossl/nettransportssl.c:1680
 msgid "Unknown SSL error"
 msgstr "Unbekannter SSL-Fehler"
 

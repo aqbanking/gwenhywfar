@@ -76,6 +76,8 @@ extern "C" {
 
 #include <time.h>
 
+#define GWEN_WAITCALLBACK_PROGRESS_NONE ((GWEN_TYPE_UINT64)(0xffffffffffffffff))
+
 /**
  * Result of @ref GWEN_WAITCALLBACK_CHECKABORTFN.
  */

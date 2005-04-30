@@ -28,6 +28,8 @@ extern "C" {
 /*@{*/
 #define GWEN_NETCONN_MODE_WAITBEFOREREAD     0x00000001
 #define GWEN_NETCONN_MODE_WAITBEFOREBODYREAD 0x00000002
+#define GWEN_NETCONN_MODE_RAW                0x00000004
+
 /**
  * <p>
  * Always act as if this were a passive connection as opposed to an active
