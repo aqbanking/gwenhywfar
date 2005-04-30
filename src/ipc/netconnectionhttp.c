@@ -482,7 +482,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     }
 
     chttp->currentInMsg=GWEN_NetMsg_new(GWEN_NETCONNHTTP_MSGBUFSIZE);
-    chttp->state&=~GWEN_NETCONNHTTP_STATE_IGNOREMSG;
+    chttp->state&=~GWEN_NETCONNHTTP_STATE_100MSG;
     chttp->bodyBytesRead=0;
     chttp->headerPos=0;
     chttp->inLast4Bytes=0;
@@ -602,7 +602,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
         l=j;
 
       lbak=l;
-      if (!(chttp->state & GWEN_NETCONNHTTP_STATE_IGNOREMSG) &&
+      if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG) &&
 	  GWEN_NetConnectionHTTP_WriteBody
 	  (conn,
 	   GWEN_RingBuffer_GetReadPointer(rbuf),
@@ -637,7 +637,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     }
 
     /* tell the writer function about the end of the body */
-    if (!(chttp->state & GWEN_NETCONNHTTP_STATE_IGNOREMSG) &&
+    if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG) &&
         GWEN_NetConnectionHTTP_WriteBody(conn, 0, 0,
 					 GWEN_NetConnHttp_WriteBodyModeStop)){
       DBG_ERROR(GWEN_LOGDOMAIN, "Error storing body (STOP)");
@@ -649,7 +649,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
     /* append message to connection's queue */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
     /*GWEN_NetMsg_Dump(chttp->currentInMsg);*/
-    if (!(chttp->state & GWEN_NETCONNHTTP_STATE_IGNOREMSG)) {
+    if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG)) {
       GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
       /* check whether the connection is to be disconnected */
@@ -661,13 +661,13 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 				   0,
 				   goDown?"close":"keep-alive");
       if (strcasecmp(hdrConn, "close")==0) {
-	DBG_INFO(GWEN_LOGDOMAIN,
+	DBG_ERROR(GWEN_LOGDOMAIN,
 		 "Closing connection after receiving a message");
 	if (GWEN_NetConnection_StartDisconnect(conn)) {
 	  DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
 	}
       }
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Added incoming message");
     }
     else
       GWEN_NetMsg_free(chttp->currentInMsg);
@@ -748,9 +748,9 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
 	    else {
               /* no body, message complete */
-              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
+              DBG_ERROR(GWEN_LOGDOMAIN, "Got a message");
 	      /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
-	      if (!(chttp->state & GWEN_NETCONNHTTP_STATE_IGNOREMSG)) {
+	      if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG)) {
 		GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
 		/* check whether the connection is to be disconnected */
@@ -809,7 +809,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	  if (!(chttp->mode & GWEN_NETCONN_MODE_RAW) &&
 	      GWEN_DB_GetIntValue(dbStatus, "code", 0, 0)==100) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Ignoring message with code 100");
-	    chttp->state|=GWEN_NETCONNHTTP_STATE_IGNOREMSG;
+	    chttp->state|=GWEN_NETCONNHTTP_STATE_100MSG;
 	  }
 
 	  chttp->headerPos=GWEN_Buffer_GetPos(mbuf);
@@ -846,7 +846,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
             GWEN_Buffer_SetBookmark(mbuf, 1, GWEN_Buffer_GetPos(mbuf));
 
-	    hasBody=0;
+            hasBody=0;
 	    if ((GWEN_NetConnection_GetFlags(conn) &
 		 GWEN_NETTRANSPORT_FLAGS_PASSIVE) ||
 		(chttp->mode & GWEN_NETCONN_MODE_IPC)) {
@@ -858,6 +858,9 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
 	    else
 	      hasBody=1;
+
+            if (chttp->state & GWEN_NETCONNHTTP_STATE_100MSG)
+              hasBody=0;
 
             if (hasBody) {
               DBG_DEBUG(GWEN_LOGDOMAIN, "Message has a body");
@@ -879,7 +882,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
                   /* no body, message complete */
                   DBG_VERBOUS(GWEN_LOGDOMAIN, "Got a message (no body)");
 		  /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
-		  if (!(chttp->state & GWEN_NETCONNHTTP_STATE_IGNOREMSG)) {
+		  if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG)) {
 		    GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
 		    /* check whether the connection is to be disconnected */
@@ -916,10 +919,10 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
             else {
               /* no body, message complete */
-              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message, no body");
+              DBG_ERROR(GWEN_LOGDOMAIN, "Got a message, no body");
               /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
-	      if (!(chttp->state & GWEN_NETCONNHTTP_STATE_IGNOREMSG)) {
-		GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
+              if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG)) {
+                GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
 
 		/* check whether the connection is to be disconnected */
 		if (chttp->pmajor==1 && chttp->pminor==0)
@@ -936,7 +939,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 		    DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
 		  }
 		}
-		DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
+                DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
 	      }
 	      else
                 GWEN_NetMsg_free(chttp->currentInMsg);

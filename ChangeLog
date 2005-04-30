@@ -9,6 +9,7 @@
     are forwarded to the application. If it is off (default) then intermediate
     messages (like 100) are ignored. This should make the OFX plugin of
     AqBanking work.
+  - fixed a bug in this new code (now works)
 
 
 2005/04/27: Martin Preuss<martin@libchipcard.de>
