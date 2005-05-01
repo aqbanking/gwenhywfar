@@ -151,6 +151,10 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   GWEN_BufferedIO_WriteLine(bio, "#endif");
   GWEN_BufferedIO_WriteLine(bio, "");
 
+  if (write_h_enums(args, node, bio, "public")) {
+    DBG_ERROR(0, "Error writing enum types");
+    return -1;
+  }
 
   if (strcasecmp(nacc, "public")==0) {
     GWEN_BufferedIO_Write(bio, "typedef struct ");

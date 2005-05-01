@@ -19,6 +19,13 @@ int write_h_setget_c(ARGUMENTS *args,
 
 int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
                    GWEN_BUFFEREDIO *bio);
+
+int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
+                  GWEN_BUFFEREDIO *bio, const char *acc);
+
+int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
+                  GWEN_BUFFEREDIO *bio);
+
 int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                    GWEN_BUFFEREDIO *bio);
 int write_h_struct_c(ARGUMENTS *args, GWEN_XMLNODE *node,
@@ -80,7 +87,6 @@ int write_code_fromdbArg_c(ARGUMENTS *args,
 int write_code_fromdb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                         GWEN_BUFFEREDIO *bio);
 
-GWEN_XMLNODE *find_type_node(GWEN_XMLNODE *node, const char *name);
 const char *get_function_name(GWEN_XMLNODE *node, const char *ftype);
 const char *get_function_name2(GWEN_XMLNODE *node, const char *ftype,
                                const char *name);
@@ -96,6 +102,10 @@ const char *get_property(GWEN_XMLNODE *node,
 const char *get_struct_property(GWEN_XMLNODE *node,
                                 const char *pname,
                                 const char *defval);
+
+GWEN_XMLNODE *get_struct_node(GWEN_XMLNODE *node);
+
+
 int write_apidoc_c(ARGUMENTS *args,
                    GWEN_XMLNODE *node,
                    GWEN_BUFFEREDIO *bio,

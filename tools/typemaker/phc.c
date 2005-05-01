@@ -39,6 +39,9 @@ int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 		   GWEN_BUFFEREDIO *bio) {
   const char *name;
   const char *typ;
+  const char *mode;
+  GWEN_XMLNODE *tnode;
+  const char *tmode;
   GWEN_ERRORCODE err;
   int isPtr;
 
@@ -54,25 +57,43 @@ int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
     return -1;
   }
 
+  mode=GWEN_XMLNode_GetProperty(node, "mode", "single");
+
+  tnode=get_typedef(node, typ);
+  if (tnode)
+    tmode=GWEN_XMLNode_GetProperty(tnode, "mode", "single");
+  else
+    tmode=mode;
+
   isPtr=atoi(get_property(node, "ptr", "0"));
 
   err=GWEN_BufferedIO_Write(bio, "  ");
   if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
 
-  err=GWEN_BufferedIO_Write(bio, typ);
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  err=GWEN_BufferedIO_Write(bio, " ");
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  if (isPtr) {
-    err=GWEN_BufferedIO_Write(bio, "*");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+  if (strcasecmp(tmode, "enum")!=0)
+    GWEN_BufferedIO_Write(bio, typ);
+  else {
+    GWEN_BUFFER *tid;
+    const char *s;
+
+    tid=GWEN_Buffer_new(0, 64, 0, 1);
+    s=get_struct_property(node, "id", 0);
+    assert(s);
+    GWEN_Buffer_AppendString(tid, s);
+    GWEN_Buffer_AppendString(tid, "_");
+    GWEN_Buffer_AppendString(tid, typ);
+    GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tid));
+    GWEN_Buffer_free(tid);
   }
 
-  err=GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  err=GWEN_BufferedIO_Write(bio, name+1);
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  err=GWEN_BufferedIO_WriteLine(bio, ";");
+  GWEN_BufferedIO_Write(bio, " ");
+  if (isPtr) {
+    GWEN_BufferedIO_Write(bio, "*");
+  }
+
+  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+  GWEN_BufferedIO_Write(bio, name+1);
+  GWEN_BufferedIO_WriteLine(bio, ";");
 
   return 0;
 }
@@ -98,8 +119,12 @@ int write_h_struct_c(ARGUMENTS *args, GWEN_XMLNODE *node,
     return -1;
   }
 
-  acc=get_struct_property(node, "access", "public");
+  if (write_h_enums(args, node, bio, "private")) {
+    DBG_ERROR(0, "Error writing enum types");
+    return -1;
+  }
 
+  acc=get_struct_property(node, "access", "public");
   if (strcasecmp(acc, "private")==0) {
     err=GWEN_BufferedIO_Write(bio, "typedef struct ");
     if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}

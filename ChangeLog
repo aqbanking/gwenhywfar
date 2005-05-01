@@ -1,4 +1,10 @@
 
+2005/05/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- typemaker is now able to create enums (including _toString and _fromString
+  functions, reading and writing values as strings from/to GWEN_DBs)
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.12.1 (2005/04/30)
 ===========================================================================

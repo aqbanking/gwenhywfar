@@ -35,6 +35,166 @@
 
 
 
+int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
+		  GWEN_BUFFEREDIO *bio) {
+  GWEN_XMLNODE *n;
+
+  n=GWEN_XMLNode_FindFirstTag(node, "subtypes", 0, 0);
+  if (n)
+    n=GWEN_XMLNode_FindFirstTag(n, "type", "mode", "enum");
+  if (n) {
+    GWEN_BUFFER *tprefix;
+    GWEN_BUFFER *tid;
+    GWEN_TYPE_UINT32 ppos;
+    GWEN_TYPE_UINT32 tpos;
+    const char *s;
+
+    tprefix=GWEN_Buffer_new(0, 64, 0, 1);
+    tid=GWEN_Buffer_new(0, 64, 0, 1);
+
+    s=get_struct_property(node, "prefix", 0);
+    assert(s);
+    GWEN_Buffer_AppendString(tprefix, s);
+    GWEN_Buffer_AppendString(tprefix, "_");
+    ppos=GWEN_Buffer_GetPos(tprefix);
+
+    s=get_struct_property(node, "id", 0);
+    assert(s);
+    GWEN_Buffer_AppendString(tid, s);
+    GWEN_Buffer_AppendString(tid, "_");
+    tpos=GWEN_Buffer_GetPos(tid);
+
+    while(n) {
+      GWEN_XMLNODE *nn;
+      s=GWEN_XMLNode_GetProperty(n, "access", "public");
+
+      s=GWEN_XMLNode_GetProperty(n, "id", 0);
+      assert(s);
+      GWEN_Buffer_AppendString(tid, s);
+      s=GWEN_XMLNode_GetProperty(n, "prefix", 0);
+      assert(s);
+      GWEN_Buffer_AppendString(tprefix, s);
+
+      GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tid));
+      GWEN_BufferedIO_Write(bio, " ");
+      GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
+      GWEN_BufferedIO_WriteLine(bio, "_fromString(const char *s) {");
+      GWEN_BufferedIO_WriteLine(bio, "  if (s) {");
+
+      nn=GWEN_XMLNode_FindFirstTag(n, "values", 0, 0);
+      if (nn)
+        nn=GWEN_XMLNode_FindFirstTag(nn, "value", 0, 0);
+      if (nn) {
+        GWEN_TYPE_UINT32 vpos;
+        int first=1;
+
+        vpos=GWEN_Buffer_GetPos(tprefix);
+        while(nn) {
+          GWEN_XMLNODE *nnn;
+
+          nnn=GWEN_XMLNode_GetFirstData(nn);
+          if (!nnn) {
+            DBG_ERROR(0, "No values in enum description for \"%s\"",
+                      GWEN_Buffer_GetStart(tid));
+            GWEN_Buffer_free(tid);
+            GWEN_Buffer_free(tprefix);
+            return -1;
+          }
+          if (first)
+            GWEN_BufferedIO_Write(bio, "    if (strcasecmp(s, \"");
+          else
+            GWEN_BufferedIO_Write(bio, "    else if (strcasecmp(s, \"");
+          s=GWEN_XMLNode_GetData(nnn);
+          assert(s);
+          GWEN_BufferedIO_Write(bio, s);
+          GWEN_BufferedIO_WriteLine(bio, "\")==0)");
+          GWEN_BufferedIO_Write(bio, "      return ");
+
+          GWEN_Buffer_AppendByte(tprefix, toupper(*s));
+          GWEN_Buffer_AppendString(tprefix, s+1);
+          GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
+          GWEN_BufferedIO_WriteLine(bio, ";");
+
+          GWEN_Buffer_Crop(tprefix, 0, vpos);
+          GWEN_Buffer_SetPos(tprefix, vpos);
+          first=0;
+          nn=GWEN_XMLNode_FindNextTag(nn, "value", 0, 0);
+        }
+      }
+      GWEN_BufferedIO_WriteLine(bio, "  }");
+      GWEN_BufferedIO_Write(bio, "  return ");
+      GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
+      GWEN_BufferedIO_WriteLine(bio, "Unknown;");
+      GWEN_BufferedIO_WriteLine(bio, "}");
+      GWEN_BufferedIO_WriteLine(bio, "");
+      GWEN_BufferedIO_WriteLine(bio, "");
+
+      GWEN_BufferedIO_Write(bio, "const char *");
+      GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
+      GWEN_BufferedIO_Write(bio, "_toString(");
+      GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tid));
+      GWEN_BufferedIO_WriteLine(bio, " v) {");
+      GWEN_BufferedIO_WriteLine(bio, "  switch(v) {");
+
+      nn=GWEN_XMLNode_FindFirstTag(n, "values", 0, 0);
+      if (nn)
+        nn=GWEN_XMLNode_FindFirstTag(nn, "value", 0, 0);
+      if (nn) {
+        GWEN_TYPE_UINT32 vpos;
+
+        vpos=GWEN_Buffer_GetPos(tprefix);
+        while(nn) {
+          GWEN_XMLNODE *nnn;
+
+          nnn=GWEN_XMLNode_GetFirstData(nn);
+          if (!nnn) {
+            DBG_ERROR(0, "No values in enum description for \"%s\"",
+                      GWEN_Buffer_GetStart(tid));
+            GWEN_Buffer_free(tid);
+            GWEN_Buffer_free(tprefix);
+            return -1;
+          }
+          s=GWEN_XMLNode_GetData(nnn);
+          assert(s);
+          GWEN_Buffer_AppendByte(tprefix, toupper(*s));
+          GWEN_Buffer_AppendString(tprefix, s+1);
+
+          GWEN_BufferedIO_Write(bio, "    case ");
+          GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
+          GWEN_BufferedIO_WriteLine(bio, ":");
+          GWEN_BufferedIO_Write(bio, "      return \"");
+          GWEN_BufferedIO_Write(bio, s);
+          GWEN_BufferedIO_WriteLine(bio, "\";");
+          GWEN_BufferedIO_WriteLine(bio, "");
+
+          GWEN_Buffer_Crop(tprefix, 0, vpos);
+          GWEN_Buffer_SetPos(tprefix, vpos);
+          nn=GWEN_XMLNode_FindNextTag(nn, "value", 0, 0);
+        }
+      }
+      GWEN_BufferedIO_WriteLine(bio, "    default:");
+      GWEN_BufferedIO_WriteLine(bio, "      return \"unknown\";");
+
+
+      GWEN_BufferedIO_WriteLine(bio, "  } /* switch */");
+      GWEN_BufferedIO_WriteLine(bio, "} ");
+      GWEN_BufferedIO_WriteLine(bio, "");
+      GWEN_BufferedIO_WriteLine(bio, "");
+
+      GWEN_Buffer_Crop(tprefix, 0, ppos);
+      GWEN_Buffer_Crop(tid, 0, tpos);
+      n=GWEN_XMLNode_FindNextTag(n, "type", "mode", "enum");
+    } /* while n */
+
+    GWEN_Buffer_free(tid);
+    GWEN_Buffer_free(tprefix);
+  } /* if enum types found */
+
+  return 0;
+}
+
+
+
 int write_code_freeElem_c(ARGUMENTS *args,
                           GWEN_XMLNODE *node,
                           GWEN_BUFFEREDIO *bio){
@@ -207,7 +367,8 @@ int write_code_todbArg_c(ARGUMENTS *args,
 
   /* "single" as opposed to "list" or "list2" */
   mode=GWEN_XMLNode_GetProperty(node, "mode", "single");
-  if (strcasecmp(mode, "single")!=0)
+  if (strcasecmp(mode, "list")==0 ||
+      strcasecmp(mode, "list2")==0)
     /* all list modes operate on pointers */
     isPtr=1;
 
@@ -475,8 +636,67 @@ int write_code_todbArg_c(ARGUMENTS *args,
                                 "GWEN_DB_FLAGS_OVERWRITE_VARS, \"");
     }
     else {
-      DBG_ERROR(0, "Unknown base type \"%s\"", btype);
-      return -1;
+      GWEN_XMLNODE *tnode;
+      const char *tmode;
+
+      tnode=get_typedef(node, typ);
+      if (!tnode) {
+        DBG_ERROR(0, "Undefined type %s", typ);
+        return -1;
+      }
+      tmode=GWEN_XMLNode_GetProperty(tnode, "mode", "single");
+      if (strcasecmp(tmode, "enum")==0) {
+        GWEN_XMLNODE *tnode;
+        const char *tmode;
+  
+        tnode=get_typedef(node, typ);
+        if (!tnode) {
+          DBG_ERROR(0, "Undefined type %s", typ);
+          return -1;
+        }
+        tmode=GWEN_XMLNode_GetProperty(tnode, "mode", "single");
+        if (strcasecmp(tmode, "enum")==0) {
+          GWEN_BUFFER *tprefix;
+          const char *s;
+      
+          tprefix=GWEN_Buffer_new(0, 64, 0, 1);
+      
+          s=get_struct_property(node, "prefix", 0);
+          assert(s);
+          GWEN_Buffer_AppendString(tprefix, s);
+          GWEN_Buffer_AppendString(tprefix, "_");
+
+          s=GWEN_XMLNode_GetProperty(tnode, "prefix", 0);
+          assert(s);
+          GWEN_BufferedIO_Write(bio, "  if (GWEN_DB_SetCharValue(db, ");
+          GWEN_BufferedIO_Write(bio, "GWEN_DB_FLAGS_OVERWRITE_VARS, \"");
+          GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+          GWEN_BufferedIO_Write(bio, name+1);
+          GWEN_BufferedIO_Write(bio, "\", ");
+
+          GWEN_Buffer_AppendString(tprefix, s);
+          GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
+          GWEN_BufferedIO_Write(bio, "_toString(st->");
+          GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+          GWEN_BufferedIO_Write(bio, name+1);
+          GWEN_BufferedIO_Write(bio, ")");
+          GWEN_BufferedIO_Write(bio, ")");
+          GWEN_BufferedIO_WriteLine(bio, ") ");
+          GWEN_BufferedIO_WriteLine(bio, "    return -1;");
+
+          GWEN_Buffer_free(tprefix);
+          return 0;
+        } /* if enum */
+        else {
+          DBG_ERROR(0, "Bad non-pointer type \"%s\" (not a base type)", typ);
+          return -1;
+        }
+
+      }
+      else {
+        DBG_ERROR(0, "Bad non-pointer type \"%s\" (not a base type)", typ);
+        return -1;
+      }
     }
 
     GWEN_BufferedIO_WriteChar(bio, tolower(*name));
@@ -597,8 +817,51 @@ int write_code_fromdbArg_c(ARGUMENTS *args,
       GWEN_BufferedIO_Write(bio, ")");
     }
     else {
-      DBG_ERROR(0, "Unknown base type \"%s\"", btype);
-      return -1;
+      GWEN_XMLNODE *tnode;
+      const char *tmode;
+
+      tnode=get_typedef(node, typ);
+      if (!tnode) {
+        DBG_ERROR(0, "Undefined type %s", typ);
+        return -1;
+      }
+      tmode=GWEN_XMLNode_GetProperty(tnode, "mode", "single");
+      if (strcasecmp(tmode, "enum")==0) {
+        GWEN_BUFFER *tprefix;
+        const char *s;
+    
+        tprefix=GWEN_Buffer_new(0, 64, 0, 1);
+    
+        s=get_struct_property(node, "prefix", 0);
+        assert(s);
+        GWEN_Buffer_AppendString(tprefix, s);
+        GWEN_Buffer_AppendString(tprefix, "_");
+
+        s=GWEN_XMLNode_GetProperty(tnode, "prefix", 0);
+        assert(s);
+        GWEN_Buffer_AppendString(tprefix, s);
+        GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
+        GWEN_BufferedIO_Write(bio, "_fromString(");
+        GWEN_BufferedIO_Write(bio, "GWEN_DB_GetCharValue(db, \"");
+        GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+        GWEN_BufferedIO_Write(bio, name+1);
+        GWEN_BufferedIO_Write(bio, "\", 0, ");
+        if (defval) {
+          GWEN_BufferedIO_Write(bio, "\"");
+          GWEN_BufferedIO_Write(bio, defval);
+          GWEN_BufferedIO_Write(bio, "\"");
+        }
+        else {
+          GWEN_BufferedIO_Write(bio, "0");
+        }
+        GWEN_BufferedIO_Write(bio, ")");
+        GWEN_BufferedIO_Write(bio, ")");
+        GWEN_Buffer_free(tprefix);
+      } /* if enum */
+      else {
+        DBG_ERROR(0, "Bad non-pointer type \"%s\" (not a base type)", typ);
+        return -1;
+      }
     }
   }
 
@@ -658,6 +921,7 @@ int write_code_constrec_c(ARGUMENTS *args,
 	setval=GWEN_XMLNode_GetProperty(n, "preset", 0);
         isPtr=atoi(get_property(n, "ptr", "0"));
         mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
+
         if (strcasecmp(mode, "single")!=0)
           /* lists always use pointers */
           isPtr=1;
@@ -701,7 +965,8 @@ int write_code_constrec_c(ARGUMENTS *args,
           }
 	}
 	else {
-	  if (setval) {
+          if (setval) {
+            /* TODO: check for enum values */
 	    GWEN_BufferedIO_Write(bio, "  st->");
 	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
 	    GWEN_BufferedIO_Write(bio, name+1);
@@ -893,6 +1158,8 @@ int write_code_setget_c(ARGUMENTS *args,
         const char *typ;
         const char *name;
         const char *mode;
+        GWEN_XMLNODE *tnode;
+        const char *tmode;
         int isConst;
         int doCopy;
 
@@ -916,10 +1183,30 @@ int write_code_setget_c(ARGUMENTS *args,
         doCopy=atoi(get_property(n, "copy", "1"));
         mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
 
+        tnode=get_typedef(node, typ);
+        if (tnode)
+          tmode=GWEN_XMLNode_GetProperty(tnode, "mode", "single");
+        else
+          tmode=mode;
+
         if (isPtr && (strcasecmp(mode, "single")==0 || isConst)) {
           GWEN_BufferedIO_Write(bio, "const ");
         }
-        GWEN_BufferedIO_Write(bio, typ);
+        if (strcasecmp(tmode, "enum")!=0)
+          GWEN_BufferedIO_Write(bio, typ);
+        else {
+          GWEN_BUFFER *tid;
+          const char *s;
+
+          tid=GWEN_Buffer_new(0, 64, 0, 1);
+          s=get_struct_property(node, "id", 0);
+          assert(s);
+          GWEN_Buffer_AppendString(tid, s);
+          GWEN_Buffer_AppendString(tid, "_");
+          GWEN_Buffer_AppendString(tid, typ);
+          GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tid));
+          GWEN_Buffer_free(tid);
+        }
         if (isPtr) {
           GWEN_BufferedIO_Write(bio, " *");
         }
@@ -957,7 +1244,21 @@ int write_code_setget_c(ARGUMENTS *args,
         if (isPtr && isConst) {
           GWEN_BufferedIO_Write(bio, "const ");
         }
-        GWEN_BufferedIO_Write(bio, typ);
+        if (strcasecmp(tmode, "enum")!=0)
+          GWEN_BufferedIO_Write(bio, typ);
+        else {
+          GWEN_BUFFER *tid;
+          const char *s;
+
+          tid=GWEN_Buffer_new(0, 64, 0, 1);
+          s=get_struct_property(node, "id", 0);
+          assert(s);
+          GWEN_Buffer_AppendString(tid, s);
+          GWEN_Buffer_AppendString(tid, "_");
+          GWEN_Buffer_AppendString(tid, typ);
+          GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tid));
+          GWEN_Buffer_free(tid);
+        }
         if (isPtr) {
           GWEN_BufferedIO_Write(bio, " *");
         }
@@ -2341,6 +2642,13 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   GWEN_BufferedIO_WriteLine(bio, "");
   GWEN_BufferedIO_WriteLine(bio, "");
+
+  rv=write_c_enums(args, node, bio);
+  if (rv) {
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    return rv;
+  }
 
   rv=write_code_const_c(args, node, bio);
   if (rv) {
