@@ -1,4 +1,9 @@
 
+2005/05/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- decreased verbosity in HTTP code
+
+
 2005/05/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - typemaker is now able to create enums (including _toString and _fromString

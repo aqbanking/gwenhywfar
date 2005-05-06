@@ -661,13 +661,13 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 				   0,
 				   goDown?"close":"keep-alive");
       if (strcasecmp(hdrConn, "close")==0) {
-	DBG_ERROR(GWEN_LOGDOMAIN,
-		 "Closing connection after receiving a message");
+	DBG_INFO(GWEN_LOGDOMAIN,
+                 "Closing connection after receiving a message");
 	if (GWEN_NetConnection_StartDisconnect(conn)) {
 	  DBG_WARN(GWEN_LOGDOMAIN, "Could not disconnect");
 	}
       }
-      DBG_ERROR(GWEN_LOGDOMAIN, "Added incoming message");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Added incoming message");
     }
     else
       GWEN_NetMsg_free(chttp->currentInMsg);
@@ -748,7 +748,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
 	    else {
               /* no body, message complete */
-              DBG_ERROR(GWEN_LOGDOMAIN, "Got a message");
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message");
 	      /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
 	      if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG)) {
 		GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
@@ -919,7 +919,7 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	    }
             else {
               /* no body, message complete */
-              DBG_ERROR(GWEN_LOGDOMAIN, "Got a message, no body");
+              DBG_DEBUG(GWEN_LOGDOMAIN, "Got a message, no body");
               /* GWEN_NetMsg_Dump(chttp->currentInMsg); */
               if (!(chttp->state & GWEN_NETCONNHTTP_STATE_100MSG)) {
                 GWEN_NetConnection_AddInMsg(conn, chttp->currentInMsg);
@@ -1247,7 +1247,8 @@ int GWEN_NetConnectionHTTP_Unescape(const char *src, GWEN_BUFFER *buf) {
 	/* skip '%' */
 	src++;
 	if (!(*src) || !isxdigit((int)(*src))) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
+	  DBG_ERROR(GWEN_LOGDOMAIN,
+		    "Incomplete escape sequence (no digits)");
 	  return -1;
 	}
 	/* read first digit */
@@ -1256,7 +1257,8 @@ int GWEN_NetConnectionHTTP_Unescape(const char *src, GWEN_BUFFER *buf) {
 	/* get second digit */
 	src++;
 	if (!(*src) || !isxdigit((int)(*src))) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (only 1 digit)");
+	  DBG_ERROR(GWEN_LOGDOMAIN,
+		    "Incomplete escape sequence (only 1 digit)");
 	  return -1;
 	}
 	d2=(unsigned char)(toupper(*src));
