@@ -831,6 +831,10 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
   }
   bf->bytesUsed=l;
   GWEN_Buffer_AdjustBookmarks(bf, pos, -pos);
+  /* adjust position after possible truncation */
+  if (bf->pos>bf->bytesUsed)
+      bf->pos=bf->bytesUsed;
+
   bf->ptr[bf->bytesUsed]=0;
 
   return 0;

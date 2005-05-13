@@ -1,4 +1,10 @@
 
+2005/05/13: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_Buffer_Crop() now adjusts the pos pointer if it is left behind the end
+  of the buffer by truncating
+
+
 2005/05/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - decreased verbosity in HTTP code

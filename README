@@ -79,6 +79,24 @@ On Windows, an .exe setup program is provided, created with the Inno
 Setup Compiler http://www.jrsoftware.org/isdl.php .
 
 
+Architectures
+=============
+
+According to Debian Gwen runs on the following platforms:
+- alpha
+- amd64
+- arm
+- hppa
+- i386
+- ia64
+- m68k
+- mips
+- mipsel
+- powerpc
+- s390
+- sparc
+
+
 
 Environment Variables
 =====================
