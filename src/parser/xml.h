@@ -662,6 +662,23 @@ GWENHYWFAR_API
                                  const char *value);
 
 /**
+ * This function does the same as @ref GWEN_XMLNode_GetCharValue, but it
+ * looks for an element with the attribute "lang" which matches the currently
+ * selected locale (e.g. "lang=de" for Germany).
+ * If there is no localized version of the given element then the first
+ * element of that name is used (withouth "lang" attribute).
+ * Therefore XML documents used with this function should contain unlocalized
+ * elements along with localized ones to provide a fallback.
+ * @param n Node which is expected to contain a node of the specified name
+ * @param name name of the node below n to be looked up
+ * @param defValue default value to return if the tag did not exist
+ */
+GWENHYWFAR_API
+const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
+                                               const char *name,
+                                               const char *defValue);
+
+/**
  * Internally calls @ref GWEN_XMLNode_GetCharValue and interpretes the
  * data as an integer which is then returned.
  * @param n Node which is expected to contain a node of the specified name

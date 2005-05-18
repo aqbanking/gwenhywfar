@@ -36,6 +36,7 @@
 #include "gwenhywfar/misc.h"
 #include "gwenhywfar/text.h"
 #include "gwenhywfar/path.h"
+#include "i18n_l.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -2173,6 +2174,56 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
                                       const char *defValue) {
   GWEN_XMLNODE *nn;
 
+  nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
+  while(nn) {
+    GWEN_XMLNODE *dn;
+
+    dn=GWEN_XMLNode_GetFirstData(nn);
+    if (dn) {
+      if (dn->data)
+        return dn->data;
+    }
+    nn=GWEN_XMLNode_FindNextTag(nn, name, 0, 0);
+  }
+
+  return defValue;
+}
+
+
+
+const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
+                                               const char *name,
+                                               const char *defValue) {
+  GWEN_XMLNODE *nn=0;
+  GWEN_STRINGLIST *langl;
+
+  langl=GWEN_I18N_GetCurrentLocaleList();
+  if (langl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(langl);
+    while(se) {
+      const char *l;
+
+      l=GWEN_StringListEntry_Data(se);
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
+      assert(l);
+      nn=GWEN_XMLNode_FindFirstTag(n, name, "lang", l);
+      while(nn) {
+	GWEN_XMLNODE *dn;
+
+	dn=GWEN_XMLNode_GetFirstData(nn);
+	if (dn) {
+	  if (dn->data && *(dn->data))
+	    return dn->data;
+	}
+	nn=GWEN_XMLNode_FindNextTag(nn, name, "lang", l);
+      } /* while nn */
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  } /* if language list available */
+
+  /* otherwise try without locale */
   nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
   while(nn) {
     GWEN_XMLNODE *dn;

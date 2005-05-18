@@ -71,16 +71,16 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
     return 0;
   }
   pd->type=strdup(p);
-  p=GWEN_XMLNode_GetCharValue(node, "version", 0);
+  p=GWEN_XMLNode_GetLocalizedCharValue(node, "version", 0);
   if (p)
     pd->version=strdup(p);
-  p=GWEN_XMLNode_GetCharValue(node, "author", 0);
+  p=GWEN_XMLNode_GetLocalizedCharValue(node, "author", 0);
   if (p)
     pd->author=strdup(p);
-  p=GWEN_XMLNode_GetCharValue(node, "short", 0);
+  p=GWEN_XMLNode_GetLocalizedCharValue(node, "short", 0);
   if (p)
     pd->shortDescr=strdup(p);
-  p=GWEN_XMLNode_GetCharValue(node, "descr", 0);
+  p=GWEN_XMLNode_GetLocalizedCharValue(node, "descr", 0);
   if (p)
     pd->longDescr=strdup(p);
   return pd;
@@ -388,7 +388,7 @@ int GWEN_LoadPluginDescrsByType(const char *path,
                 }
                 else {
                   DBG_WARN(GWEN_LOGDOMAIN,
-                           "File \"%s\" does not contain plugin "
+                           "File \"%s\" does not contain a plugin "
                            "description",
                            GWEN_Buffer_GetStart(nbuf));
                 }
