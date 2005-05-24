@@ -212,12 +212,15 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
       for (column=1; ; column++) {
         int idx;
         char namebuffer[64];
-        char numbuffer[16];
+	char numbuffer[16];
+	GWEN_DB_VALUETYPE vt;
+	char valbuffer[64];
+        int iv;
 
         /* create name for column */
         GWEN_Text_NumToString(column, numbuffer, sizeof(numbuffer), 0);
         p=GWEN_DB_GetCharValue(colgr, numbuffer, 0, 0);
-        if (!p) {
+	if (!p) {
           /* no value. finished */
           err=GWEN_BufferedIO_WriteLine(bio, "");
           if (!GWEN_Error_IsOk(err)) {
@@ -226,7 +229,8 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
           }
           DBG_VERBOUS(0, "No colums left, line finished");
           break;
-        }
+	}
+
         /* break down to name and index */
         idx=GWEN_CSV_GetNameAndIndex(p, namebuffer, sizeof(namebuffer));
         if (idx==-1) {
@@ -235,9 +239,27 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
           return -1;
         }
         /* get data */
-        DBG_DEBUG(0, "Checking value of %s[%d]", namebuffer, idx);
-        p=GWEN_DB_GetCharValue(n, namebuffer, idx, "");
-        if (column!=1) {
+	DBG_ERROR(0, "Checking value of %s[%d]", namebuffer, idx);
+	if (GWEN_DB_VariableExists(n, namebuffer)) {
+	  vt=GWEN_DB_GetVariableType(n, namebuffer);
+	  switch(vt) {
+	  case GWEN_DB_VALUETYPE_CHAR:
+	    p=GWEN_DB_GetCharValue(n, namebuffer, idx, "");
+	    break;
+	  case GWEN_DB_VALUETYPE_INT:
+	    iv=GWEN_DB_GetIntValue(n, namebuffer, idx, 0);
+	    snprintf(valbuffer, sizeof(valbuffer), "%d", iv);
+	    p=valbuffer;
+	    break;
+	  default:
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled value type %d", vt);
+	    return -1;
+	  }
+	}
+	else
+          p="";
+
+	if (column!=1) {
           /* write delimiter */
           err=GWEN_BufferedIO_WriteChar(bio, delimiter);
           if (!GWEN_Error_IsOk(err)) {
