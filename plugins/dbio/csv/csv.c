@@ -239,9 +239,9 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
           return -1;
         }
         /* get data */
-	DBG_ERROR(0, "Checking value of %s[%d]", namebuffer, idx);
+        DBG_VERBOUS(0, "Checking value of %s[%d]", namebuffer, idx);
 	if (GWEN_DB_VariableExists(n, namebuffer)) {
-	  vt=GWEN_DB_GetVariableType(n, namebuffer);
+	  vt=GWEN_DB_GetValueTypeByPath(n, namebuffer, idx);
 	  switch(vt) {
 	  case GWEN_DB_VALUETYPE_CHAR:
 	    p=GWEN_DB_GetCharValue(n, namebuffer, idx, "");
@@ -250,10 +250,10 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
 	    iv=GWEN_DB_GetIntValue(n, namebuffer, idx, 0);
 	    snprintf(valbuffer, sizeof(valbuffer), "%d", iv);
 	    p=valbuffer;
-	    break;
+            break;
 	  default:
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled value type %d", vt);
-	    return -1;
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Unhandled value type %d", vt);
+            p="";
 	  }
 	}
 	else

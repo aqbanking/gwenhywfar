@@ -2237,9 +2237,22 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
 
 
 
-int GWEN_DB_VariableExists(GWEN_DB_NODE *n,
-                           const char *path){
-  return (GWEN_DB_FindVar(n, path, 0)!=0);
+int GWEN_DB_VariableExists(GWEN_DB_NODE *n, const char *path){
+  GWEN_DB_NODE *nn;
+
+  /* find corresponding node */
+  assert(n);
+  nn=GWEN_DB_GetNode(n,
+		     path,
+		     GWEN_PATH_FLAGS_PATHMUSTEXIST |
+		     GWEN_PATH_FLAGS_NAMEMUSTEXIST |
+		     GWEN_PATH_FLAGS_VARIABLE);
+  if (!nn) {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Path \"%s\" not found", path);
+    return 0;
+  }
+
+  return 1;
 }
 
 
