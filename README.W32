@@ -102,4 +102,16 @@ If you retrieved gwenhywfar from CVS, first do a
 - then copy the DLL src/gwenhywfar32.dll to your windows folder 
   (or alternatively do a "make dll-install" which does the same)
 
-
+Note: Some other programs and libraries that depend on gwenhywfar
+(notably aqbanking) are provided both in source tarballs and in
+self-installing setup.exe files on win32. The setup.exe files require
+not only the installation of gwenhywfar as obtained by "make install",
+but they additionally require some registry keys to be set correctly
+(notably CURRENT_USER\Softwawenhywfar\Paths) which is most easily done
+by using the gwenhywfar-setup.exe as created by the ISCC compiler. In
+other words, if you want to use the setup.exe files of the derived
+applications, then you *have* to install gwenhywfar through the
+gwenhywfar-setup.exe program instead of "make install". On the other
+hand, if you intend to compile for yourself all derived programs, then
+you don't need to use the setup files and you don't need to care about
+the registry keys.
