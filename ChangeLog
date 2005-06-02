@@ -1,4 +1,11 @@
 
+2005/06/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in GWEN_Buffer_InsertRoom: Was not adjusting usedBytes field
+- fixed a bug in GWEN_Buffer_AllocRoom: Was not adding +1 for trailing NULL
+  byte
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.13.2 (2005/05/25)
 ===========================================================================

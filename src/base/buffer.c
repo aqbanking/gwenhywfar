@@ -300,7 +300,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
     }
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes",
                 bf->bufferSize, nsize);
-    p=realloc(bf->realPtr, nsize);
+    p=realloc(bf->realPtr, nsize+1); /* we always add a NULL character */
     if (!p) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Realloc failed.");
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
@@ -742,6 +742,9 @@ int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
         DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
         return rv;
       }
+      bf->bytesUsed+=size;
+      /* append "0" behind buffer */
+      bf->ptr[bf->bytesUsed]=0;
       return 0;
     }
     else {
@@ -772,6 +775,8 @@ int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
     /* move current data at pos out of the way */
     memmove(p+size, p, i);
   bf->bytesUsed+=size;
+  /* append "0" behind buffer */
+  bf->ptr[bf->bytesUsed]=0;
   GWEN_Buffer_AdjustBookmarks(bf, bf->pos, size);
   return 0;
 }
