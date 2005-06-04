@@ -3,6 +3,7 @@
 -------------------------------------------------
 - replaced "&>" by "2>" in configure.ac (should fix problems with BSD shell
   reported by Sam Lawrance)
+- args.c: Removed use of flag GWEN_PATH_FLAGS_CREATE_VAR
 
 
 2005/06/03: Martin Preuss<martin@libchipcard.de>

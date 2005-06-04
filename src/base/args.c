@@ -127,8 +127,7 @@ int GWEN_Args_Check(int argc, char **argv,
         switch(tmpArgs->type) {
         case GWEN_ArgsTypeChar:
           GWEN_DB_SetCharValue(db,
-                               GWEN_DB_FLAGS_DEFAULT |
-                               GWEN_PATH_FLAGS_CREATE_VAR,
+                               GWEN_DB_FLAGS_DEFAULT,
                                tmpArgs->name, argv[i]);
           break;
 
@@ -139,8 +138,7 @@ int GWEN_Args_Check(int argc, char **argv,
             return GWEN_ARGS_RESULT_ERROR;
           }
           GWEN_DB_SetIntValue(db,
-                              GWEN_DB_FLAGS_DEFAULT |
-                              GWEN_PATH_FLAGS_CREATE_VAR,
+                              GWEN_DB_FLAGS_DEFAULT,
                               tmpArgs->name, value);
           break;
 
@@ -217,8 +215,7 @@ int GWEN_Args_Check(int argc, char **argv,
         switch(tmpArgs->type) {
         case GWEN_ArgsTypeChar:
           GWEN_DB_SetCharValue(db,
-                               GWEN_DB_FLAGS_DEFAULT |
-                               GWEN_PATH_FLAGS_CREATE_VAR,
+                               GWEN_DB_FLAGS_DEFAULT,
                                tmpArgs->name, v);
           break;
 
@@ -231,8 +228,7 @@ int GWEN_Args_Check(int argc, char **argv,
             return GWEN_ARGS_RESULT_ERROR;
           }
           GWEN_DB_SetIntValue(db,
-                              GWEN_DB_FLAGS_DEFAULT |
-                              GWEN_PATH_FLAGS_CREATE_VAR,
+                              GWEN_DB_FLAGS_DEFAULT,
                               tmpArgs->name, value);
           break;
 
