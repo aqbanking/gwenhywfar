@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=13
 GWENHYWFAR_VERSION_PATCHLEVEL=2
-GWENHYWFAR_VERSION_BUILD=1
+GWENHYWFAR_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -361,7 +361,7 @@ GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
-rm -Rf gwenhywfar &>/dev/null
+rm -Rf gwenhywfar 2>/dev/null
 mkdir gwenhywfar
 GWEN_HEADER_FILES="doc/apidoc.h"
 for d in ${GWEN_HEADER_DIRS}; do
@@ -377,16 +377,16 @@ for d in ${GWEN_HEADER_DIRS}; do
     esac
   done
 done
-test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" &>/dev/null
-test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" &>/dev/null
-test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" &>/dev/null
+test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" 2>/dev/null
+test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" 2>/dev/null
+test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" 2>/dev/null
 
 
 GWEN_MODULES="ui"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 for d in ${GWEN_MODULES}; do
-  rm -Rf gwenhywfar/$d &>/dev/null
+  rm -Rf gwenhywfar/$d 2>/dev/null
   mkdir gwenhywfar/$d
   # FIXME: This needs to be fixed again: The sources are in gwenui,
   # but the headers will be installed in gwenhywfar/ui.

@@ -1,4 +1,10 @@
 
+2005/06/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- replaced "&>" by "2>" in configure.ac (should fix problems with BSD shell
+  reported by Sam Lawrance)
+
+
 2005/06/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in GWEN_Buffer_InsertRoom: Was not adjusting usedBytes field
