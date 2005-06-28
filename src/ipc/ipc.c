@@ -1398,7 +1398,6 @@ int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-/* -------------------------------------------------------------- FUNCTION */
 void GWEN_IPCManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent){
   int i;
   GWEN_IPCNODE *n;

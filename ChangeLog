@@ -1,4 +1,15 @@
 
+2005/06/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added configure-switch "--enable-gwenui" (defaults to yes)
+  This is needed for OpenZaurus (will disable GWENUI there).
+
+
+2005/06/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed order for typemaker tool: define struct before including headers
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.13.3 (2005/06/14)
 ===========================================================================

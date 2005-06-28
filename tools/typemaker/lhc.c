@@ -114,6 +114,24 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   if (rv)
     return rv;
 
+  if (strcasecmp(nacc, "lib")==0) {
+    GWEN_BufferedIO_WriteLine(bio, "#ifdef __cplusplus");
+    GWEN_BufferedIO_WriteLine(bio, "extern \"C\" {");
+    GWEN_BufferedIO_WriteLine(bio, "#endif");
+    GWEN_BufferedIO_WriteLine(bio, "");
+    GWEN_BufferedIO_Write(bio, "typedef struct ");
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_Write(bio, " ");
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_WriteLine(bio, ";");
+    GWEN_BufferedIO_WriteLine(bio, "");
+    GWEN_BufferedIO_WriteLine(bio, "#ifdef __cplusplus");
+    GWEN_BufferedIO_WriteLine(bio, "} /* __cplusplus */");
+    GWEN_BufferedIO_WriteLine(bio, "#endif");
+    GWEN_BufferedIO_WriteLine(bio, "");
+  }
+
+
   if (strcasecmp(get_struct_property(node, "inherit", ""),
                  "lib")==0) {
     GWEN_BufferedIO_WriteLine(bio, "#include <gwenhywfar/inherit.h>");
@@ -173,15 +191,6 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   if (write_h_enums(args, node, bio, "lib")) {
     DBG_ERROR(0, "Error writing enum types");
     return -1;
-  }
-
-  if (strcasecmp(nacc, "lib")==0) {
-    GWEN_BufferedIO_Write(bio, "typedef struct ");
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, " ");
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_WriteLine(bio, ";");
-    GWEN_BufferedIO_WriteLine(bio, "");
   }
 
   if (strcasecmp(get_struct_property(node, "inherit", ""),

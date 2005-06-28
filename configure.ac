@@ -19,9 +19,9 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=13
 GWENHYWFAR_VERSION_PATCHLEVEL=3
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
@@ -320,23 +320,37 @@ AC_SUBST(USE_CRYPT)
 # check for ncurses
 #
 USE_NCURSES="yes"
-AC_CHECK_LIB(ncurses, newwin, [], [USE_NCURSES="no"])
-AC_CHECK_LIB(panel, new_panel, [], [USE_NCURSES="no"])
-AC_CHECK_HEADERS([ncurses.h], [], [USE_NCURSES="no"])
-AC_CHECK_HEADERS([panel.h], [], [USE_NCURSES="no"])
-if test "$USE_NCURSES" != "yes"; then
-  AC_MSG_WARN([
-*** ncurses not found, the text interface will not be available.
-*** It is strongly recommended to compile Gwenhywfar with ncurses support
-*** since at least my projects (Libchipcard, AqHBCI) will rely on it...
-***
-*** Please make sure that the ncurses-devel packages are also installed.])
-  ncurses_libs=""
+
+AC_MSG_CHECKING(if GWENUI should be compiled)
+AC_ARG_ENABLE(gwenui,
+  [  --enable-gwenui             enable GWENUI (default=yes)],
+  enable_gwenui="$enableval",
+  enable_gwenui="yes")
+AC_MSG_RESULT($enable_gwenui)
+
+if test "$enable_gwenui" != "no"; then
+  AC_CHECK_LIB(ncurses, newwin, [], [USE_NCURSES="no"])
+  AC_CHECK_LIB(panel, new_panel, [], [USE_NCURSES="no"])
+  AC_CHECK_HEADERS([ncurses.h], [], [USE_NCURSES="no"])
+  AC_CHECK_HEADERS([panel.h], [], [USE_NCURSES="no"])
+  if test "$USE_NCURSES" != "yes"; then
+    AC_MSG_WARN([
+  *** ncurses not found, the text interface will not be available.
+  *** It is strongly recommended to compile Gwenhywfar with ncurses support
+  *** since at least my projects (Libchipcard, AqHBCI) will rely on it...
+  ***
+  *** Please make sure that the ncurses-devel packages are also installed.])
+    ncurses_libs=""
+  else
+    AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
+    all_libraries="$all_libraries"
+    ncurses_libs="-lpanel -lncurses"
+    NCURSES_TOOLS="dlgtest"
+  fi
 else
-  AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
-  all_libraries="$all_libraries"
-  ncurses_libs="-lpanel -lncurses"
-  NCURSES_TOOLS="dlgtest"
+  USE_NCURSES="no"
+  ncurses_libs=""
+  NCURSES_TOOLS=""
 fi
 AC_SUBST(ncurses_libs)
 AC_SUBST(NCURSES_TOOLS)
