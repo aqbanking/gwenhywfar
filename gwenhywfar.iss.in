@@ -43,7 +43,7 @@ Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.dll"; DestDir: "{win}"; Flags
 Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
 
 ; The config-script. It is post-processed by the Pascal script below.
-Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig('{app}\bin\@PACKAGE@-config')
+Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\@PACKAGE@-config'))
 
 ; The tools executables
 Source: "distribution\win32-tmp\bin\*.exe"; DestDir: "{app}\bin"; Flags: ignoreversion; Components: devel
