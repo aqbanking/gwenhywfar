@@ -72,7 +72,7 @@ rpm:    $(PACKAGE).spec dist
 
 # Rule for using the Inno Setup compiler. The path to iscc.exe is set
 # manually here for now.
-ISCC = "C:\Programme\Inno Setup 4\iscc.exe"
+ISCC = "C:\Programme\Inno Setup 5\iscc.exe"
 setup: gwenhywfar.iss
 	mkdir -p distribution
 	make prefix="`pwd`/distribution/win32-tmp" \

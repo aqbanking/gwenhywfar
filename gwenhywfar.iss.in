@@ -16,7 +16,6 @@ AppUpdatesURL=http://sourceforge.net/project/showfiles.php?group_id=88769
 DefaultDirName={pf}\@PACKAGE@
 LicenseFile=COPYING
 Compression=lzma
-SolidCompression=yes
 OutputDir=.
 OutputBaseFilename=@PACKAGE@-@VERSION@-setup
 UninstallFilesDir={app}\uninstall\@PACKAGE@
@@ -44,7 +43,7 @@ Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.dll"; DestDir: "{win}"; Flags
 Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
 
 ; The config-script. It is post-processed by the Pascal script below.
-Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig({app}\bin\@PACKAGE@-config)
+Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig('{app}\bin\@PACKAGE@-config')
 
 ; The tools executables
 Source: "distribution\win32-tmp\bin\*.exe"; DestDir: "{app}\bin"; Flags: ignoreversion; Components: devel
@@ -75,6 +74,11 @@ Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "dbio-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"
 
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Delete the created config script on uninstall
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[UninstallDelete]
+Type: files; Name: "{app}\bin\@PACKAGE@-config"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This large section is a Pascal scripting program that will modify
@@ -102,7 +106,7 @@ var
 begin
 
   { Load the unchanged original file }
-  Res := LoadStringFromFile(Format1('%s.in.in',FileName), FileString);
+  Res := LoadStringFromFile(Format('%s.in.in',[FileName]), FileString);
   if Res = False then
     MsgBox('Error on loading '+FileName+'.in.in for final adaptation', mbInformation, MB_OK);
 
@@ -147,7 +151,7 @@ end;
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
-Name: "pt"; MessagesFile: "compiler:Languages\PortugueseStd.isl"
+Name: "pt"; MessagesFile: "compiler:Languages\Portuguese.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
