@@ -4108,6 +4108,41 @@ int testFuzzy(int argc, char **argv) {
 
 
 
+int testSort(int argc, char **argv) {
+  GWEN_STRINGLIST *sl;
+  GWEN_STRINGLISTENTRY *se;
+  unsigned int j;
+  char *x;
+
+  if (argc<3) {
+    fprintf(stderr, "At least one argument for stringlist needed.\n");
+    return 1;
+  }
+  sl=GWEN_StringList_new();
+  GWEN_StringList_SetSenseCase(sl, 1);
+  for (j=2; j<argc; j++) {
+    GWEN_StringList_AppendString(sl, argv[j], 0, 1);
+    fprintf(stderr, "Adding string \"%s\"\n", argv[j]);
+  }
+  GWEN_StringList_Sort(sl, 0, 0);
+
+  se=GWEN_StringList_FirstEntry(sl);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    fprintf(stderr, "- %s\n", s);
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  x=strdup("Simple test");
+  free(x);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4239,6 +4274,8 @@ int main(int argc, char **argv) {
     rv=testSSLC(argc, argv);
   else if (strcasecmp(argv[1], "fuzzy")==0)
     rv=testFuzzy(argc, argv);
+  else if (strcasecmp(argv[1], "sort")==0)
+    rv=testSort(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

@@ -145,6 +145,12 @@ void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
 GWENHYWFAR_API
 const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l);
 
+
+GWENHYWFAR_API
+void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
+                          int ascending,
+                          int senseCase);
+
 #ifdef __cplusplus
 }
 #endif

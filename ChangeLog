@@ -1,4 +1,9 @@
 
+2005/07/08: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_StringList_Sort()
+
+
 2005/06/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added configure-switch "--enable-gwenui" (defaults to yes)
