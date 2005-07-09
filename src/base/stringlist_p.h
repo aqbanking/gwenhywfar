@@ -48,6 +48,17 @@ struct GWEN_STRINGLISTSTRUCT {
 };
 
 
+static int GWEN_StringList__compar_asc_nocase(const void *a, const void *b);
+static int GWEN_StringList__compar_desc_nocase(const void *a, const void *b);
+static int GWEN_StringList__compar_asc_case(const void *a, const void *b);
+static int GWEN_StringList__compar_desc_case(const void *a, const void *b);
+static int GWEN_StringList__compar_asc_int(const void *a, const void *b);
+static int GWEN_StringList__compar_desc_int(const void *a, const void *b);
+
+
+
+
+
 #endif
 
 

@@ -68,12 +68,12 @@ supported:
 - Windows (98, NT and newer; for using this library from Microsoft
   Visual Studio C please see the explanations in test/README.MSVC)
 
+- FreeBSD   
 - Linux     (i386, amd64, alpha)
-- FreeBSD   (untested, but most likely to work)
+- Mac OS-X  
 - NetBSD    (untested, but most likely to work)
 - OpenBSD   (untested, but most likely to work)
 - SunOS 5.9 (compiles, untested, but most likely to work)
-- Mac OS-X  (compiles, untested, but most likely to work)
 
 On Windows, an .exe setup program is provided, created with the Inno
 Setup Compiler http://www.jrsoftware.org/isdl.php .

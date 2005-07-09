@@ -36,6 +36,17 @@ extern "C" {
 #endif
 
 
+typedef enum {
+  /** case-insensitive, i.e. using strcasecmp(3). */
+  GWEN_StringList_SortModeNoCase=0,
+  /** case-sensitive, i.e. using strcmp(3). */
+  GWEN_StringList_SortModeCase,
+  /** handle string list entries as integers (-> correct sorting of ASCII
+   * coded values like "10", "1") */
+  GWEN_StringList_SortModeInt
+} GWEN_STRINGLIST_SORT_MODE;
+
+
 typedef struct GWEN_STRINGLISTENTRYSTRUCT GWEN_STRINGLISTENTRY;
 
 
@@ -157,14 +168,12 @@ const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l);
  * i.e. smallest string first, according to strcmp(3) rules. If zero,
  * the list is sorted descending.
  *
- * @param senseCase If non-zero, then the sorting is done
- * case-sensitive, i.e. using strcmp(3). If zero, the sorting is done
- * case-insensitive, i.e. using strcasecmp(3).
+ * @param sortMode See @ref GWEN_StringList_SortModeNoCase and following
  */
 GWENHYWFAR_API
 void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
                           int ascending,
-                          int senseCase);
+                          GWEN_STRINGLIST_SORT_MODE sortMode);
 
 #ifdef __cplusplus
 }

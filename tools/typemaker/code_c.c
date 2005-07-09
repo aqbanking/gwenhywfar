@@ -1189,7 +1189,8 @@ int write_code_setget_c(ARGUMENTS *args,
         else
           tmode=mode;
 
-        if (isPtr && (strcasecmp(mode, "single")==0 || isConst)) {
+        if (isPtr &&
+            (/*strcasecmp(mode, "single")==0 ||*/ isConst)) {
           GWEN_BufferedIO_Write(bio, "const ");
         }
         if (strcasecmp(tmode, "enum")!=0)

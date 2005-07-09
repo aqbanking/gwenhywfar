@@ -89,7 +89,7 @@ Every function or type name has two prefixes:
     It should start with a capital otherwise.
 
 Please note that even internal functions (i.e. those which are not to be used
-outside the library) MUST have this prefixes.
+outside the library) MUST have these prefixes.
 
 Examples: GWEN_DB_Values_Count, GWEN_Error_GetType
 
@@ -121,10 +121,10 @@ Types are written in all-capitals, like in GWEN_DB_NODE.
 Do not export structs per se. It is important that the real structure of the
 structs used within Gwen is hidden. Members of structs must be accessed using
 getter and setter functions. 
-This make sure that applications always use pointers instead of creating 
-objects directly. This also reduces the number incompatible API changes (those
-changes make it necessary for every depending package to be recompiled and 
-thus should be avoided where possible).
+This makes sure that applications always use pointers instead of creating 
+objects directly. This also reduces the number of incompatible API changes 
+(those changes make it necessary for every depending package to be recompiled
+and thus should be avoided where possible).
 
 
 3.4. Enum Elements

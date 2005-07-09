@@ -126,6 +126,12 @@ GWENHYWFAR_API double GWEN_Time_Diff(const GWEN_TIME *t1,
                                      const GWEN_TIME *t0);
 
 /**
+ * Returns the difference between t1 and t2 in seconds
+ */
+GWENHYWFAR_API double GWEN_Time_DiffSeconds(const GWEN_TIME *t1,
+                                            const GWEN_TIME *t0);
+
+/**
  * Adds the given number of seconds to the given GWEN_TIME.
  * @return 0 if ok, !=0 on error (see @ref MOD_ERROR_SIMPLE)
  */

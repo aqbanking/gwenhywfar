@@ -410,6 +410,20 @@ double GWEN_Time_Diff(const GWEN_TIME *t1, const GWEN_TIME *t0){
 
 
 
+double GWEN_Time_DiffSeconds(const GWEN_TIME *t1, const GWEN_TIME *t0){
+  double d;
+
+  assert(t1);
+  assert(t0);
+
+  d=(double)(t1->secs)-(double)(t0->secs);
+  d+=((double)((double)(t1->msecs)-(double)(t0->msecs)))/1000.0;
+
+  return d;
+}
+
+
+
 double GWEN_Time_Milliseconds(const GWEN_TIME *t){
   assert(t);
   return (double)((t->secs*1000)+(t->msecs));

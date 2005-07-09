@@ -1646,7 +1646,12 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 
           posBeforeElement=GWEN_Buffer_GetPos(gbuf);
 
-	  /* write delimiter, if needed */
+          /* write delimiter, if needed */
+
+          /*
+           Replaced the following code because it did not work correctly
+           with segment HKDAN... (aquamaniac, 2005/07/09)
+
           if (!isFirstElement && delimiter) {
             DBG_VERBOUS(GWEN_LOGDOMAIN, "Appending %d delimiters", omittedElements+1);
             for (j=0; j<omittedElements+1; j++) {
@@ -1655,6 +1660,22 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 		return -1;
               }
             }
+          }*/
+
+          if (delimiter) {
+            DBG_VERBOUS(GWEN_LOGDOMAIN, "Appending %d delimiters",
+                        omittedElements);
+            for (j=0; j<omittedElements; j++) {
+              if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
+                DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+		return -1;
+              }
+            }
+            if (!isFirstElement)
+              if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
+                DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+                return -1;
+              }
           }
 
           rv=GWEN_MsgEngine__WriteElement(e,

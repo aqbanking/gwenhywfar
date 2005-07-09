@@ -418,7 +418,7 @@ const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l){
 
 
 
-static int compar_asc_nocase(const void *a, const void *b) {
+static int GWEN_StringList__compar_asc_nocase(const void *a, const void *b) {
   const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
@@ -426,7 +426,7 @@ static int compar_asc_nocase(const void *a, const void *b) {
   else
     return 0;
 }
-static int compar_desc_nocase(const void *a, const void *b) {
+static int GWEN_StringList__compar_desc_nocase(const void *a, const void *b) {
   const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
@@ -434,7 +434,7 @@ static int compar_desc_nocase(const void *a, const void *b) {
   else
     return 0;
 }
-static int compar_asc_case(const void *a, const void *b) {
+static int GWEN_StringList__compar_asc_case(const void *a, const void *b) {
   const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
@@ -442,7 +442,7 @@ static int compar_asc_case(const void *a, const void *b) {
   else
     return 0;
 }
-static int compar_desc_case(const void *a, const void *b) {
+static int GWEN_StringList__compar_desc_case(const void *a, const void *b) {
   const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
@@ -451,9 +451,29 @@ static int compar_desc_case(const void *a, const void *b) {
     return 0;
 }
 
+static int GWEN_StringList__compar_asc_int(const void *a, const void *b) {
+  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+  const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
+  if (se1 && se2 && se1->data && se2->data)
+    return (atoi(se1->data)<atoi(se2->data));
+  else
+    return 0;
+}
+
+static int GWEN_StringList__compar_desc_int(const void *a, const void *b) {
+  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+  const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
+  if (se1 && se2 && se1->data && se2->data)
+    return (atoi(se1->data)>atoi(se2->data));
+  else
+    return 0;
+}
+
+
+
 void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
 			  int ascending,
-			  int senseCase) {
+                          GWEN_STRINGLIST_SORT_MODE sortMode) {
   GWEN_STRINGLISTENTRY **tmpEntries;
   GWEN_STRINGLISTENTRY *sentry;
   GWEN_STRINGLISTENTRY **psentry;
@@ -478,17 +498,36 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
   *psentry=0;
 
   /* sort */
-  if (!ascending && !senseCase) {
-    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_desc_nocase);
-  }
-  else if (!ascending && senseCase) {
-    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_desc_case);
-  }
-  else if (ascending && !senseCase) {
-    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_asc_nocase);
-  }
-  else {
-    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_asc_case);
+  switch(sortMode) {
+  case GWEN_StringList_SortModeNoCase:
+    if (ascending)
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+            GWEN_StringList__compar_desc_nocase);
+    else
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+            GWEN_StringList__compar_asc_nocase);
+    break;
+
+  case GWEN_StringList_SortModeCase:
+    if (ascending)
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+            GWEN_StringList__compar_desc_case);
+    else
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+            GWEN_StringList__compar_asc_case);
+    break;
+
+  case GWEN_StringList_SortModeInt:
+    if (ascending)
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+            GWEN_StringList__compar_desc_int);
+    else
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+            GWEN_StringList__compar_asc_int);
+    break;
+
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown sortmode %d", sortMode);
   }
 
   /* sort entries back into GWEN_STRINGLIST */
