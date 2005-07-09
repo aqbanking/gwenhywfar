@@ -48,6 +48,7 @@ GWENHYWFAR_API
   GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl);
 GWENHYWFAR_API void GWEN_StringList_Clear(GWEN_STRINGLIST *sl);
 
+/** Returns the number of elements in this list. */
 GWENHYWFAR_API
   unsigned int GWEN_StringList_Count(const GWEN_STRINGLIST *sl);
 
@@ -142,10 +143,24 @@ void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
 			      void *(*func)(const char *s, void *u), 
 			      void *user_data);
 
+/** Returns the first string in this list. */
 GWENHYWFAR_API
 const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l);
 
 
+/** Sorts this list. Internally this uses qsort(3), so the sorting
+ * should be reasonably fast even for large lists.
+ *
+ * @param l The list to sort.
+ *
+ * @param ascending If non-zero, the list is sorted ascending,
+ * i.e. smallest string first, according to strcmp(3) rules. If zero,
+ * the list is sorted descending.
+ *
+ * @param senseCase If non-zero, then the sorting is done
+ * case-sensitive, i.e. using strcmp(3). If zero, the sorting is done
+ * case-insensitive, i.e. using strcasecmp(3).
+ */
 GWENHYWFAR_API
 void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
                           int ascending,

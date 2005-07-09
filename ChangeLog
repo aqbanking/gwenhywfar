@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-07-09  Christian Stimming  <stimming@tuhh.de>
+
+	* src/base/stringlist.c: Use qsort(3) in
+	GWEN_StringList_Sort(). Improved documentation.
+
 
 2005/07/08: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

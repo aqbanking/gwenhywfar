@@ -418,149 +418,90 @@ const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l){
 
 
 
+static int compar_asc_nocase(const void *a, const void *b) {
+  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+  const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
+  if (se1 && se2 && se1->data && se2->data)
+    return strcmp(se1->data, se2->data);
+  else
+    return 0;
+}
+static int compar_desc_nocase(const void *a, const void *b) {
+  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+  const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
+  if (se1 && se2 && se1->data && se2->data)
+    return strcmp(se2->data, se1->data);
+  else
+    return 0;
+}
+static int compar_asc_case(const void *a, const void *b) {
+  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+  const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
+  if (se1 && se2 && se1->data && se2->data)
+    return strcasecmp(se1->data, se2->data);
+  else
+    return 0;
+}
+static int compar_desc_case(const void *a, const void *b) {
+  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+  const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
+  if (se1 && se2 && se1->data && se2->data)
+    return strcasecmp(se2->data, se1->data);
+  else
+    return 0;
+}
+
 void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
 			  int ascending,
 			  int senseCase) {
   GWEN_STRINGLISTENTRY **tmpEntries;
-  GWEN_STRINGLISTENTRY *se;
-  GWEN_STRINGLISTENTRY **pse;
+  GWEN_STRINGLISTENTRY *sentry;
+  GWEN_STRINGLISTENTRY **psentry;
 
   if (l->count<1)
     return;
 
   /* sort entries into a linear pointer list */
   tmpEntries=(GWEN_STRINGLISTENTRY **)malloc((l->count+1)*
-					     sizeof(GWEN_STRINGLISTENTRY*));
+					    sizeof(GWEN_STRINGLISTENTRY*));
   assert(tmpEntries);
-  se=l->first;
-  pse=tmpEntries;
-  while(se) {
-    GWEN_STRINGLISTENTRY *nse;
+  sentry=l->first;
+  psentry=tmpEntries;
+  while(sentry) {
+    GWEN_STRINGLISTENTRY *nsentry;
 
-    *(pse++)=se;
-    nse=se->next;
-    se->next=0;
-    se=nse;
+    *(psentry++)=sentry;
+    nsentry=sentry->next;
+    sentry->next=0;
+    sentry=nsentry;
   } /* while */
-  *pse=0;
+  *psentry=0;
 
   /* sort */
   if (!ascending && !senseCase) {
-    while(1) {
-      int exchanged=0;
-  
-      pse=tmpEntries;
-      while(*pse) {
-	GWEN_STRINGLISTENTRY *se1, *se2;
-	const char *s1, *s2;
-  
-	se1=pse[0];
-	se2=pse[1];
-	if (se2==0)
-	  break;
-	s1=se1->data;
-	s2=se2->data;
-	if (strcasecmp(s1, s2)<0) {
-	  pse[0]=se2;
-	  pse[1]=se1;
-	  exchanged=1;
-	}
-	pse++;
-      } /* while */
-      if (!exchanged)
-	break;
-    } /* while */
+    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_desc_nocase);
   }
   else if (!ascending && senseCase) {
-    while(1) {
-      int exchanged=0;
-  
-      pse=tmpEntries;
-      while(*pse) {
-	GWEN_STRINGLISTENTRY *se1, *se2;
-	const char *s1, *s2;
-  
-	se1=pse[0];
-	se2=pse[1];
-	if (se2==0)
-	  break;
-	s1=se1->data;
-	s2=se2->data;
-	if (strcmp(s1, s2)<0) {
-	  pse[0]=se2;
-	  pse[1]=se1;
-	  exchanged=1;
-	}
-	pse++;
-      } /* while */
-      if (!exchanged)
-	break;
-    } /* while */
+    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_desc_case);
   }
   else if (ascending && !senseCase) {
-    while(1) {
-      int exchanged=0;
-  
-      pse=tmpEntries;
-      while(*pse) {
-	GWEN_STRINGLISTENTRY *se1, *se2;
-	const char *s1, *s2;
-  
-	se1=pse[0];
-	se2=pse[1];
-	if (se2==0)
-	  break;
-	s1=se1->data;
-	s2=se2->data;
-	if (strcasecmp(s1, s2)>0) {
-	  pse[0]=se2;
-	  pse[1]=se1;
-	  exchanged=1;
-	}
-	pse++;
-      } /* while */
-      if (!exchanged)
-	break;
-    } /* while */
+    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_asc_nocase);
   }
   else {
-    while(1) {
-      int exchanged=0;
-  
-      pse=tmpEntries;
-      while(*pse) {
-	GWEN_STRINGLISTENTRY *se1, *se2;
-	const char *s1, *s2;
-  
-	se1=pse[0];
-	se2=pse[1];
-	if (se2==0)
-	  break;
-	s1=se1->data;
-	s2=se2->data;
-	if (strcmp(s1, s2)>0) {
-	  pse[0]=se2;
-	  pse[1]=se1;
-	  exchanged=1;
-	}
-	pse++;
-      } /* while */
-      if (!exchanged)
-	break;
-    } /* while */
+    qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*), compar_asc_case);
   }
 
   /* sort entries back into GWEN_STRINGLIST */
-  pse=tmpEntries;
-  se=0;
-  while(*pse) {
-    (*pse)->next=0;
-    if (se)
-      se->next=*pse;
+  psentry=tmpEntries;
+  sentry=0;
+  while(*psentry) {
+    (*psentry)->next=0;
+    if (sentry)
+      sentry->next=*psentry;
     else
-      l->first=*pse;
-    se=*pse;
-    pse++;
+      l->first=*psentry;
+    sentry=*psentry;
+    psentry++;
   } /* while */
 
   free(tmpEntries);
