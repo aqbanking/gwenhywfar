@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-04-30 09:56+0200\n"
-"PO-Revision-Date: 2005-02-20 20:56+0100\n"
+"POT-Creation-Date: 2005-05-31 14:45+0200\n"
+"PO-Revision-Date: 2005-07-20 09:45+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -123,7 +123,7 @@ msgstr "Fehler beim Schreiben"
 
 #: src/base/error.c:653
 msgid "Could not close"
-msgstr "Fehler beim Schliessen"
+msgstr "Fehler beim Schließen"
 
 #: src/base/error.c:655
 msgid "No data"
@@ -147,7 +147,7 @@ msgstr "Nicht registriert"
 
 #: src/base/error.c:665
 msgid "Bad size"
-msgstr "Fehlerhafte Groesse"
+msgstr "Fehlerhafte Größe"
 
 #: src/base/error.c:667
 msgid "Could not encrypt"
