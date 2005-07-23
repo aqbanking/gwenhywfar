@@ -29,10 +29,31 @@ GWENHYWFAR_API
 void GWEN_TLV_free(GWEN_TLV *tlv);
 
 GWENHYWFAR_API
+GWEN_TLV *GWEN_TLV_create(unsigned int tagType,
+                          unsigned int tagMode,
+                          const void *p,
+                          unsigned int dlen,
+                          int isBerTlv);
+
+
+GWENHYWFAR_API
 GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv);
 
 GWENHYWFAR_API
+int GWEN_TLV_toBuffer(GWEN_TLV *tlv, GWEN_BUFFER *mbuf);
+
+GWENHYWFAR_API
+int GWEN_TLV_DirectlyToBuffer(unsigned int tagType,
+                              unsigned int tagMode,
+                              const void *tagData,
+                              int tagLength,
+                              int isBerTlv,
+                              GWEN_BUFFER *mbuf);
+
+
+GWENHYWFAR_API
 int GWEN_TLV_IsBerTlv(const GWEN_TLV *tlv);
+
 GWENHYWFAR_API
 unsigned int GWEN_TLV_GetTagType(const GWEN_TLV *tlv);
 GWENHYWFAR_API

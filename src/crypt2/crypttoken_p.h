@@ -15,6 +15,7 @@
 #define GWEN_CRYPTTOKEN_P_H
 
 #include <gwenhywfar/crypttoken.h>
+#include "crypttoken_user_l.h"
 
 
 
@@ -37,8 +38,10 @@ struct GWEN_CRYPTTOKEN_CRYPTINFO {
 struct GWEN_CRYPTTOKEN_KEYINFO {
   GWEN_LIST_ELEMENT(GWEN_CRYPTTOKEN_KEYINFO)
   int keyId;
-  int keySize;   /** key size in bits */
-  int chunkSize; /** chunk size in bytes on which this key operates */
+  int keySize;      /** key size in bits */
+  int minKeySize;   /** minimum key size in bits */
+  int maxKeySize;   /** maximum key size in bits */
+  int chunkSize;    /** chunk size in bytes on which this key operates */
   GWEN_CRYPTTOKEN_CRYPTALGO cryptAlgo;
   char *keyDescription;
   GWEN_TYPE_UINT32 keyFlags;
@@ -71,37 +74,46 @@ struct GWEN_CRYPTTOKEN {
   char *tokenType;
   char *tokenSubType;
   char *tokenName;
+  char *descriptiveName;
   GWEN_CRYPTTOKEN_DEVICE deviceType;
   GWEN_TYPE_UINT32 flags;
 
   GWEN_CRYPTTOKEN_OPEN_FN openFn;
+  GWEN_CRYPTTOKEN_CREATE_FN createFn;
   GWEN_CRYPTTOKEN_CLOSE_FN closeFn;
+
+  GWEN_CRYPTTOKEN_CHANGEPIN_FN changePinFn;
+
   GWEN_CRYPTTOKEN_SIGN_FN signFn;
   GWEN_CRYPTTOKEN_VERIFY_FN verifyFn;
   GWEN_CRYPTTOKEN_ENCRYPT_FN encryptFn;
   GWEN_CRYPTTOKEN_DECRYPT_FN decryptFn;
   GWEN_CRYPTTOKEN_READKEY_FN readKeyFn;
   GWEN_CRYPTTOKEN_WRITEKEY_FN writeKeyFn;
+  GWEN_CRYPTTOKEN_READKEYSPEC_FN readKeySpecFn;
+  GWEN_CRYPTTOKEN_WRITEKEYSPEC_FN writeKeySpecFn;
   GWEN_CRYPTTOKEN_GENERATEKEY_FN generateKeyFn;
-  GWEN_CRYPTTOKEN_ADDCONTEXT_FN addContextFn;
   GWEN_CRYPTTOKEN_FILLCONTEXTLIST_FN fillContextListFn;
   GWEN_CRYPTTOKEN_FILLSIGNINFOLIST_FN fillSignInfoListFn;
   GWEN_CRYPTTOKEN_FILLCRYPTINFOLIST_FN fillCryptInfoListFn;
   GWEN_CRYPTTOKEN_FILLKEYINFOLIST_FN fillKeyInfoListFn;
+  GWEN_CRYPTTOKEN_FILLUSERLIST_FN fillUserListFn;
   GWEN_CRYPTTOKEN_GETSIGNSEQ_FN getSignSeqFn;
+  GWEN_CRYPTTOKEN_MODIFYUSER_FN modifyUserFn;
 
   /* runtime data */
   GWEN_CRYPTTOKEN_CONTEXT_LIST *contextList;
   GWEN_CRYPTTOKEN_SIGNINFO_LIST *signInfoList;
   GWEN_CRYPTTOKEN_CRYPTINFO_LIST *cryptInfoList;
   GWEN_CRYPTTOKEN_KEYINFO_LIST *keyInfoList;
+
+  GWEN_CRYPTTOKEN_USER_LIST *userList;
 };
 
 
 
 typedef struct GWEN_CRYPTTOKEN_PLUGIN GWEN_CRYPTTOKEN_PLUGIN;
 struct GWEN_CRYPTTOKEN_PLUGIN {
-  GWEN_PLUGIN_MANAGER *cryptManager;
   GWEN_CRYPTTOKEN_DEVICE devType;
   GWEN_CRYPTTOKEN_PLUGIN_CREATETOKEN_FN createTokenFn;
   GWEN_CRYPTTOKEN_PLUGIN_CHECKTOKEN_FN checkTokenFn;
@@ -120,7 +132,6 @@ struct GWEN_CRYPTMANAGER {
   GWEN_CRYPTMANAGER_SHOW_MESSAGE_FN showMessageFn;
 };
 void GWEN_CryptManager_FreeData(void *bp, void *p);
-
 
 
 

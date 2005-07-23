@@ -864,9 +864,10 @@ int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
              * So therefore I just hardcoded the few known simple HTML tags
              * here.
              */
-            if (strcasecmp(p, "BR")==0 ||
-                strcasecmp(p, "HR")==0)
-              simpleTag=1;
+	    if ((flags & GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS) &&
+		(strcasecmp(p, "BR")==0 ||
+		 strcasecmp(p, "HR")==0))
+	      simpleTag=1;
 
 	    j=strlen(p)-1;
 	    if (p[j]=='/') {
@@ -1935,7 +1936,10 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     }
 
     if (n->child==0) {
-      err=GWEN_BufferedIO_Write(bio, "/>");
+      if (n->data[0]=='?')
+	err=GWEN_BufferedIO_Write(bio, ">");
+      else
+	err=GWEN_BufferedIO_Write(bio, "/>");
       if (!GWEN_Error_IsOk(err)) {
         DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
         return -1;

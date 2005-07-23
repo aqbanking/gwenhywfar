@@ -580,10 +580,12 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
     i=GWEN_StringList_Count(sl);
     GWEN_StringList_free(sl);
     if (i) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Found %d columns, file supported", i);
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Found %d columns, file might be supported", i);
       GWEN_BufferedIO_Close(bio);
       GWEN_BufferedIO_free(bio);
-      return GWEN_DBIO_CheckFileResultOk;
+      /*return GWEN_DBIO_CheckFileResultOk; */
+      return GWEN_DBIO_CheckFileResultUnknown;
     }
     else {
       DBG_INFO(GWEN_LOGDOMAIN,

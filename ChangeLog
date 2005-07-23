@@ -1,3 +1,35 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+2005/07/21: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_TLV_create()
+- added function GWEN_TLV_toBuffer()
+- added function GWEN_TLV_DirectlyToBuffer()
+- added function GWEN_PluginDescription_dup()
+- added function GWEN_PluginManager_GetPluginDescr()
+- csv-plugin: Now returns GWEN_DBIO_CheckFileResultUnknown instead of
+  GWEN_DBIO_CheckFileResultOk. This will allow AqBanking to also present
+  other plugins when searching for importers
+- added crypttoken plugin for OpenHBCI key files
+
+
+2005/07/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- continued work on crypt token
+- added function GWEN_GetInstallPath()
+- added function GWEN_GetPluginPath()
+- stuff from crypt2 is now included into the main lib
+
+
+2005/07/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in XML writing code (don't write "/>" for header tags)
+- XML parser flag GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS is now
+  honoured again
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.14.0 (2005/07/10)
 ===========================================================================

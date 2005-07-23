@@ -1,0 +1,197 @@
+<plugin type="crypttoken" name="ohbci" device="file" >
+  <version>@AQHBCI_VERSION_STRING@</version>
+  <author>Martin Preuss (martin@libchipcard.de)</author>
+  <short>OpenHBCI Keyfile Medium</short>
+
+  <descr>
+    This plugins provides support for keyfiles created with OpenHBCI1
+    and OpenHBCI2.
+
+    <text format="html" >
+      <p>
+        This plugin supports key files created with <b>OpenHBCI</b> or
+        <b>OpenHBCI2</b> in <b>RDH</b> mode.  The file is encrypted
+        with a password using the 3DES algorithm and it stores the
+        private and public RSA keys.
+      </p>
+      <p>
+        This plugin automatically detects the version of the key file
+        upon loading and uses a backward-compatible format when
+        writing the file.  As a result, the key file can still be used
+        by OpenHBCI and OpenHBCI2 in parallel to AqBanking/AqHBCI.
+      </p>
+    </text>
+
+  </descr>
+
+  <crypttoken typeName="ohbci" subTypeName="ohbci" name="OHBCI">
+
+    <flags>
+      <flag>manages_signseq</flag>
+      <flag>predef_context_only</flag>
+      <flag>context_management</flag>
+      <flag>context_ro_keys</flag>
+      <flag>context_ro_descr</flag>
+      <flag>context_ro_signdescr</flag>
+      <flag>context_ro_cryptdescr</flag>
+      <flag>context_ro_keydescrs</flag>
+    </flags>
+
+    <signinfos>
+      <signinfo>
+        <id>1</id>
+        <hashalgo>rmd160</hashalgo>
+        <paddalgo>iso9796_1a4</paddalgo>
+      </signinfo>
+    </signinfos>
+    
+    <cryptinfos>
+      <cryptinfo>
+        <id>1</id>
+        <cryptalgo>rsa</cryptalgo>
+        <paddalgo>ansix9_23</paddalgo>
+      </cryptinfo>
+    </cryptinfos>
+    
+    <keyinfos>
+      <keyinfo>
+        <keyId>1</keyId>
+        <keySize>768</keySize>
+        <minKeySize>768</minKeySize>
+        <maxKeySize>768</maxKeySize>
+        <chunksize>96</chunksize>
+        <cryptalgo>rsa</cryptalgo>
+        <keyDescription>Local Sign Key</keyDescription>
+        <keyFlags>
+          <flag>canSign</flag>
+          <flag>canVerify</flag>
+          <flag>hasSignSeq</flag>
+        </keyFlags>
+      </keyinfo>
+
+      <keyinfo>
+        <keyId>2</keyId>
+        <keySize>768</keySize>
+        <minKeySize>768</minKeySize>
+        <maxKeySize>768</maxKeySize>
+        <chunksize>96</chunksize>
+        <cryptalgo>rsa</cryptalgo>
+        <keyDescription>Local Crypt Key</keyDescription>
+        <keyFlags>
+          <flag>canEncrypt</flag>
+          <flag>canDecrypt</flag>
+        </keyFlags>
+      </keyinfo>
+
+      <keyinfo>
+        <keyId>3</keyId>
+        <keySize>768</keySize>
+        <minKeySize>768</minKeySize>
+        <maxKeySize>768</maxKeySize>
+        <chunksize>96</chunksize>
+        <cryptalgo>rsa</cryptalgo>
+        <keyDescription>Remote Sign Key</keyDescription>
+        <keyFlags>
+          <flag>canVerify</flag>
+        </keyFlags>
+      </keyinfo>
+
+      <keyinfo>
+        <keyId>4</keyId>
+        <keySize>768</keySize>
+        <minKeySize>768</minKeySize>
+        <maxKeySize>768</maxKeySize>
+        <chunksize>96</chunksize>
+        <cryptalgo>rsa</cryptalgo>
+        <keyDescription>Remote Crypt Key</keyDescription>
+        <keyFlags>
+          <flag>canEncrypt</flag>
+          <flag>canDecrypt</flag>
+        </keyFlags>
+      </keyinfo>
+      
+    </keyinfos>
+
+    <contexts>
+      <!-- There only is one context, and it is the context for HBCI -->
+      <context>
+        <id>1</id>
+        <description>Context for HBCI operations</description>
+        
+        <signkeyinfo>
+          <keyId>1</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>768</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>rsa</cryptalgo>
+          <keyDescription>Local Sign Key</keyDescription>
+          <keyFlags>
+            <flag>canSign</flag>
+            <flag>canVerify</flag>
+            <flag>hasSignSeq</flag>
+          </keyFlags>
+        </signkeyinfo>
+        
+        <verifykeyinfo>
+          <keyId>3</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>768</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>rsa</cryptalgo>
+          <keyDescription>Remote Sign Key</keyDescription>
+          <keyFlags>
+            <flag>canVerify</flag>
+          </keyFlags>
+        </verifykeyinfo>
+
+        <signinfo>
+          <id>1</id>
+          <hashalgo>rmd160</hashalgo>
+          <paddalgo>iso9796_1a4</paddalgo>
+        </signinfo>
+
+        <encryptKeyInfo>
+          <keyId>4</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>768</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>rsa</cryptalgo>
+          <keyDescription>Remote Crypt Key</keyDescription>
+          <keyFlags>
+            <flag>canEncrypt</flag>
+            <flag>canDecrypt</flag>
+          </keyFlags>
+        </encryptKeyInfo>
+
+        <decryptKeyInfo>
+          <keyId>2</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>768</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>rsa</cryptalgo>
+          <keyDescription>Local Crypt Key</keyDescription>
+          <keyFlags>
+            <flag>canEncrypt</flag>
+            <flag>canDecrypt</flag>
+          </keyFlags>
+        </decryptKeyInfo>
+
+        <cryptinfo>
+          <id>1</id>
+          <cryptalgo>rsa</cryptalgo>
+          <paddalgo>ansix9_23</paddalgo>
+        </cryptinfo>
+        
+      </context>
+    </contexts>
+    
+  </crypttoken>
+  
+  
+</plugin>
+
+

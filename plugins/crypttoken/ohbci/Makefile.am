@@ -1,4 +1,6 @@
-INCLUDES = $(all_includes) \
+EXTRA_DIST=README ressource.rc.in
+
+INCLUDES = \
  -I$(top_srcdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
@@ -7,56 +9,28 @@ INCLUDES = $(all_includes) \
  -I$(top_srcdir)/src/net \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
- -I$(top_srcdir)/gwenui
+ $(all_includes)
 
-
-SUBDIRS = base crypt io ipc os parser net crypt2
+crypttokenplugindir = $(gwenhywfar_plugindir)/crypttoken
 
 localedir=$(datadir)/locale
-DEFS=-DLOCALEDIR=\"$(localedir)\" -DGWEN_INSTALL_DIR=\"$(prefix)\" \
- -DGWEN_EFFECTIVE_VERSTR=\"${GWENHYWFAR_SO_EFFECTIVE}\" @DEFS@
+DEFS += -D LOCALEDIR=\"$(localedir)\"
 
+crypttokenplugin_LTLIBRARIES=ohbci.la
+crypttokenplugin_DATA=ohbci.xml
+noinst_HEADERS=ohbci_l.h ohbci_p.h tag16_l.h tag16_p.h
 
-EXTRA_DIST=\
- types.h.in \
- version.h.in
-
-iheaderdir=${includedir}/gwenhywfar
-iheader_HEADERS=\
-  gwenhywfar.h \
-  gwenhywfarapi.h \
-  types.h \
-  version.h
-
-lib_LTLIBRARIES=libgwenhywfar.la
-
-libgwenhywfar_la_SOURCES=\
-  gwenhywfar.c
-
-libgwenhywfar_la_LIBADD=\
-  base/libbase.la \
-  crypt/libcrypt.la \
-  crypt2/libcrypt2.la \
-  io/libio.la \
-  ipc/libipc.la \
-  net/libnet.la \
-  os/libos.la \
-  parser/libparser.la @all_libraries@ @ssl_libraries@ @ssl_lib@
-
-libgwenhywfar_la_LDFLAGS= \
-  @STRIPALL@ -version-info \
-   @GWENHYWFAR_SO_CURRENT@:@GWENHYWFAR_SO_REVISION@:@GWENHYWFAR_SO_AGE@
-
-# Before compiling the sources, first built these files
-BUILT_SOURCES = types.h version.h
+ohbci_la_SOURCES=ohbci.c tag16.c
+ohbci_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
+ohbci_la_LDFLAGS = $(STRIPALL) -module -version-info 0:1:0
 
 
 # dll stuff
 if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(ssl_libraries) $(ssl_lib) -lwsock32 -lregex
+LIBRARY_NAME = ohbci
+DLLLDLIBS = -L/mingw/lib -L$(top_builddir)/src -lgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 
@@ -67,7 +41,7 @@ DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 DLLNAME = $(LIBRARY_NAME).dll
 DLLEXP_LIB = $(LIBRARY_NAME).lib
 DLLEXP_DEF = $(LIBRARY_NAME).def
-DLLSRC_LIB = $(lib_LTLIBRARIES:.la=.a)
+DLLSRC_LIB = $(crypttokenplugin_LTLIBRARIES:.la=.a)
 DLLSRC_LIBLA = $(lib_LTLIBRARIES)
 
 all-local: dll
@@ -84,7 +58,7 @@ WINDRES=windres
 dll: $(DLLNAME)
 
 dll-install: dll
-	$(INSTALL) -D $(DLLNAME) $(DESTDIR)$(WIN_PATH_WINDOWS_MINGW)/$(DLLNAME)
+	$(INSTALL) -D $(DLLNAME) $(DESTDIR)$(crypttokenplugindir)/$(DLLNAME)
 
 ressource.o: ressource.rc
 	$(WINDRES) -i $< -o $@

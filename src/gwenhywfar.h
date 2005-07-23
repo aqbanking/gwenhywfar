@@ -30,6 +30,7 @@
 #define GWENHYWFAR_GWENHYWFAR_H
 
 #include <gwenhywfar/error.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,6 +49,21 @@ void GWEN_Version(int *major,
                   int *minor,
                   int *patchlevel,
                   int *build);
+
+/**
+ * Returns the installation prefix of gwenhywfar.
+ * On WIN32 systems this value is taken from the Registry (key is
+ * "Software\\Gwenhywfar\\Paths\\prefix"). On POSIX systems (or when this
+ * key does not exist) the hardcoded installation prefix is returned
+ * ($prefix).
+ */
+GWENHYWFAR_API
+int GWEN_GetInstallPath(GWEN_BUFFER *pbuf);
+
+
+GWENHYWFAR_API
+int GWEN_GetPluginPath(GWEN_BUFFER *pbuf);
+
 
 #ifdef __cplusplus
 }

@@ -149,6 +149,11 @@ GWEN_PLUGIN_DESCRIPTION_LIST2*
 GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm);
 
 
+GWEN_PLUGIN_DESCRIPTION*
+GWEN_PluginManager_GetPluginDescr(GWEN_PLUGIN_MANAGER *pm,
+                                  const char *modName);
+
+
 #ifdef __cplusplus
 }
 #endif

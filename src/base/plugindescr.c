@@ -107,6 +107,40 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
 
 
 GWEN_PLUGIN_DESCRIPTION*
+GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd) {
+  GWEN_PLUGIN_DESCRIPTION *np;
+  const char *s;
+
+  assert(pd);
+  GWEN_NEW_OBJECT(GWEN_PLUGIN_DESCRIPTION, np);
+  DBG_MEM_INC("GWEN_PLUGIN_DESCRIPTION", 0);
+  GWEN_LIST_INIT(GWEN_PLUGIN_DESCRIPTION, np);
+
+  s=pd->fileName;
+  if (s) np->fileName=strdup(s);
+
+  s=pd->name;
+  if (s) np->name=strdup(s);
+  s=pd->type;
+  if (s) np->type=strdup(s);
+  s=pd->shortDescr;
+  if (s) np->shortDescr=strdup(s);
+  s=pd->author;
+  if (s) np->author=strdup(s);
+  s=pd->version;
+  if (s) np->version=strdup(s);
+  s=pd->longDescr;
+  if (s) np->longDescr=strdup(s);
+  np->isActive=pd->isActive;
+  if (pd->xmlNode)
+    np->xmlNode=GWEN_XMLNode_dup(pd->xmlNode);
+
+  return np;
+}
+
+
+
+GWEN_PLUGIN_DESCRIPTION*
 GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd, 
 					void *user_data) {
   GWEN_PluginDescription_free(pd);

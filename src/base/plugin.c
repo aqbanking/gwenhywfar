@@ -427,7 +427,7 @@ GWEN_PLUGIN *GWEN_PluginManager_GetPlugin(GWEN_PLUGIN_MANAGER *pm,
     GWEN_Plugin_List_Add(p, pm->plugins);
     return p;
   }
-  DBG_ERROR(GWEN_LOGDOMAIN, "Plugin \"%s\" not found", s);
+  DBG_INFO(GWEN_LOGDOMAIN, "Plugin \"%s\" not found", s);
   return 0;
 }
 
@@ -533,6 +533,40 @@ GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm)
 
 
 
+GWEN_PLUGIN_DESCRIPTION*
+GWEN_PluginManager_GetPluginDescr(GWEN_PLUGIN_MANAGER *pm,
+                                  const char *modName) {
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *dl;
+
+  dl=GWEN_PluginManager_GetPluginDescrs(pm);
+  if (dl==0)
+    return 0;
+  else {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *dit;
+
+    dit=GWEN_PluginDescription_List2_First(dl);
+    if (dit) {
+      GWEN_PLUGIN_DESCRIPTION *d;
+
+      d=GWEN_PluginDescription_List2Iterator_Data(dit);
+      while(d) {
+        if (strcasecmp(GWEN_PluginDescription_GetName(d), modName)==0)
+          break;
+        d=GWEN_PluginDescription_List2Iterator_Next(dit);
+      }
+      GWEN_PluginDescription_List2Iterator_free(dit);
+
+      if (d) {
+        d=GWEN_PluginDescription_dup(d);
+        GWEN_PluginDescription_List2_freeAll(dl);
+        return d;
+      }
+    }
+    GWEN_PluginDescription_List2_freeAll(dl);
+  }
+
+  return 0;
+}
 
 
 

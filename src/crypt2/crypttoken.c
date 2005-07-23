@@ -623,6 +623,8 @@ GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromDb(GWEN_DB_NODE *db){
   ki=GWEN_CryptToken_KeyInfo_new();
   ki->keyId=GWEN_DB_GetIntValue(db, "keyId", 0, 0);
   ki->keySize=GWEN_DB_GetIntValue(db, "keySize", 0, 0);
+  ki->minKeySize=GWEN_DB_GetIntValue(db, "minKeySize", 0, 0);
+  ki->maxKeySize=GWEN_DB_GetIntValue(db, "maxKeySize", 0, 0);
   ki->chunkSize=GWEN_DB_GetIntValue(db, "chunkSize", 0, 0);
   s=GWEN_DB_GetCharValue(db, "cryptAlgo", 0, 0);
   if (s)
@@ -670,6 +672,10 @@ void GWEN_CryptToken_KeyInfo_toDb(const GWEN_CRYPTTOKEN_KEYINFO *ki,
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "keySize", ki->keySize);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "minKeySize", ki->minKeySize);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "maxKeySize", ki->maxKeySize);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "chunkSize", ki->chunkSize);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "cryptAlgo",
@@ -713,6 +719,8 @@ GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromXml(GWEN_XMLNODE *n){
   ki=GWEN_CryptToken_KeyInfo_new();
   ki->keyId=GWEN_XMLNode_GetIntValue(n, "keyId", 0);
   ki->keySize=GWEN_XMLNode_GetIntValue(n, "keySize", 0);
+  ki->minKeySize=GWEN_XMLNode_GetIntValue(n, "minKeySize", 0);
+  ki->maxKeySize=GWEN_XMLNode_GetIntValue(n, "maxKeySize", 0);
   ki->chunkSize=GWEN_XMLNode_GetIntValue(n, "chunkSize", 0);
   s=GWEN_XMLNode_GetCharValue(n, "cryptAlgo", 0);
   if (s)
@@ -771,6 +779,8 @@ GWEN_CryptToken_KeyInfo_dup(const GWEN_CRYPTTOKEN_KEYINFO *ki){
   nki=GWEN_CryptToken_KeyInfo_new();
   nki->keyId=ki->keyId;
   nki->keySize=ki->keySize;
+  nki->minKeySize=ki->minKeySize;
+  nki->maxKeySize=ki->maxKeySize;
   nki->chunkSize=ki->chunkSize;
   nki->cryptAlgo=ki->cryptAlgo;
   nki->keyFlags=ki->keyFlags;
@@ -808,6 +818,36 @@ void GWEN_CryptToken_KeyInfo_SetKeySize(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                         int i){
   assert(ki);
   ki->keySize=i;
+}
+
+
+
+int GWEN_CryptToken_KeyInfo_GetMinKeySize(const GWEN_CRYPTTOKEN_KEYINFO *ki){
+  assert(ki);
+  return ki->minKeySize;
+}
+
+
+
+void GWEN_CryptToken_KeyInfo_SetMinKeySize(GWEN_CRYPTTOKEN_KEYINFO *ki,
+                                           int i) {
+  assert(ki);
+  ki->minKeySize=i;
+}
+
+
+
+int GWEN_CryptToken_KeyInfo_GetMaxKeySize(const GWEN_CRYPTTOKEN_KEYINFO *ki){
+  assert(ki);
+  return ki->maxKeySize;
+}
+
+
+
+void GWEN_CryptToken_KeyInfo_SetMaxKeySize(GWEN_CRYPTTOKEN_KEYINFO *ki,
+                                           int i) {
+  assert(ki);
+  ki->maxKeySize=i;
 }
 
 
@@ -1209,6 +1249,40 @@ void GWEN_CryptToken_Context_SetDescription(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
+const GWEN_CRYPTTOKEN_SIGNINFO*
+GWEN_CryptToken_Context_GetSignInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx) {
+  assert(ctx);
+  return ctx->signInfo;
+}
+
+
+
+void GWEN_CryptToken_Context_SetSignInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                         const GWEN_CRYPTTOKEN_SIGNINFO *si){
+  assert(ctx);
+  GWEN_CryptToken_SignInfo_free(ctx->signInfo);
+  if (si) ctx->signInfo=GWEN_CryptToken_SignInfo_dup(si);
+  else ctx->signInfo=0;
+}
+
+
+
+const GWEN_CRYPTTOKEN_CRYPTINFO*
+GWEN_CryptToken_Context_GetCryptInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx) {
+  assert(ctx);
+  return ctx->cryptInfo;
+}
+
+
+
+void
+GWEN_CryptToken_Context_SetCryptInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                     const GWEN_CRYPTTOKEN_CRYPTINFO *ci) {
+  assert(ctx);
+  GWEN_CryptToken_CryptInfo_free(ctx->cryptInfo);
+  if (ci) ctx->cryptInfo=GWEN_CryptToken_CryptInfo_dup(ci);
+  else ctx->cryptInfo=0;
+}
 
 
 
@@ -1246,6 +1320,12 @@ GWEN_CRYPTTOKEN *GWEN_CryptToken_new(GWEN_PLUGIN_MANAGER *pm,
   if (subTypeName)
     ct->tokenSubType=strdup(subTypeName);
 
+  ct->contextList=GWEN_CryptToken_Context_List_new();
+  ct->signInfoList=GWEN_CryptToken_SignInfo_List_new();
+  ct->cryptInfoList=GWEN_CryptToken_CryptInfo_List_new();
+  ct->keyInfoList=GWEN_CryptToken_KeyInfo_List_new();
+  ct->userList=GWEN_CryptToken_User_List_new();
+
   return ct;
 }
 
@@ -1258,6 +1338,8 @@ void GWEN_CryptToken_free(GWEN_CRYPTTOKEN *ct){
     free(ct->tokenName);
     free(ct->tokenSubType);
     free(ct->tokenType);
+    free(ct->descriptiveName);
+    GWEN_CryptToken_User_List_free(ct->userList);
     GWEN_CryptToken_Context_List_free(ct->contextList);
     GWEN_CryptToken_SignInfo_List_free(ct->signInfoList);
     GWEN_CryptToken_CryptInfo_List_free(ct->cryptInfoList);
@@ -1470,6 +1552,50 @@ GWEN_CryptToken_GetDeviceType(const GWEN_CRYPTTOKEN *ct){
 
 
 
+const char *GWEN_CryptToken_GetDescriptiveName(const GWEN_CRYPTTOKEN *ct) {
+  assert(ct);
+  return ct->descriptiveName;
+}
+
+
+
+void GWEN_CryptToken_SetDescriptiveName(GWEN_CRYPTTOKEN *ct, const char *s) {
+  assert(ct);
+  free(ct->descriptiveName);
+  if (s) ct->descriptiveName=strdup(s);
+  else ct->descriptiveName=0;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_CryptToken_GetFlags(const GWEN_CRYPTTOKEN *ct) {
+  assert(ct);
+  return ct->flags;
+}
+
+
+
+void GWEN_CryptToken_SetFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl) {
+  assert(ct);
+  ct->flags=fl;
+}
+
+
+
+void GWEN_CryptToken_AddFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl) {
+  assert(ct);
+  ct->flags|=fl;
+}
+
+
+
+void GWEN_CryptToken_SubFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl) {
+  assert(ct);
+  ct->flags&=~fl;
+}
+
+
+
 void GWEN_CryptToken_SetOpenFn(GWEN_CRYPTTOKEN *ct,
                                GWEN_CRYPTTOKEN_OPEN_FN fn){
   assert(ct);
@@ -1478,10 +1604,50 @@ void GWEN_CryptToken_SetOpenFn(GWEN_CRYPTTOKEN *ct,
 
 
 
+GWEN_CRYPTTOKEN_OPEN_FN
+GWEN_CryptToken_GetOpenFn(const GWEN_CRYPTTOKEN *ct) {
+  assert(ct);
+  return ct->openFn;
+}
+
+
+
+void GWEN_CryptToken_SetCreateFn(GWEN_CRYPTTOKEN *ct,
+                                 GWEN_CRYPTTOKEN_CREATE_FN fn){
+  assert(ct);
+  ct->createFn=fn;
+}
+
+
+
+GWEN_CRYPTTOKEN_CREATE_FN
+GWEN_CryptToken_GetCreateFn(const GWEN_CRYPTTOKEN *ct) {
+  assert(ct);
+  return ct->createFn;
+}
+
+
+
 void GWEN_CryptToken_SetCloseFn(GWEN_CRYPTTOKEN *ct,
-                                GWEN_CRYPTTOKEN_CLOSE_FN fn){
+                                GWEN_CRYPTTOKEN_CLOSE_FN fn) {
   assert(ct);
   ct->closeFn=fn;
+}
+
+
+
+GWEN_CRYPTTOKEN_CLOSE_FN
+GWEN_CryptToken_GetCloseFn(const GWEN_CRYPTTOKEN *ct) {
+  assert(ct);
+  return ct->closeFn;
+}
+
+
+
+void GWEN_CryptToken_SetChangePinFn(GWEN_CRYPTTOKEN *ct,
+                                    GWEN_CRYPTTOKEN_CHANGEPIN_FN fn){
+  assert(ct);
+  ct->changePinFn=fn;
 }
 
 
@@ -1534,18 +1700,26 @@ void GWEN_CryptToken_SetWriteKeyFn(GWEN_CRYPTTOKEN *ct,
 
 
 
-void GWEN_CryptToken_SetGenerateKeyFn(GWEN_CRYPTTOKEN *ct,
-                                      GWEN_CRYPTTOKEN_GENERATEKEY_FN fn){
+void GWEN_CryptToken_SetReadKeySpecFn(GWEN_CRYPTTOKEN *ct,
+                                      GWEN_CRYPTTOKEN_READKEYSPEC_FN fn){
   assert(ct);
-  ct->generateKeyFn=fn;
+  ct->readKeySpecFn=fn;
 }
 
 
 
-void GWEN_CryptToken_SetAddContextFn(GWEN_CRYPTTOKEN *ct,
-                                     GWEN_CRYPTTOKEN_ADDCONTEXT_FN fn){
+void GWEN_CryptToken_SetWriteKeySpecFn(GWEN_CRYPTTOKEN *ct,
+                                       GWEN_CRYPTTOKEN_WRITEKEYSPEC_FN fn){
   assert(ct);
-  ct->addContextFn=fn;
+  ct->writeKeySpecFn=fn;
+}
+
+
+
+void GWEN_CryptToken_SetGenerateKeyFn(GWEN_CRYPTTOKEN *ct,
+                                      GWEN_CRYPTTOKEN_GENERATEKEY_FN fn){
+  assert(ct);
+  ct->generateKeyFn=fn;
 }
 
 
@@ -1582,10 +1756,26 @@ void GWEN_CryptToken_SetFillKeyInfoListFn(GWEN_CRYPTTOKEN *ct,
 
 
 
+void GWEN_CryptToken_SetFillUserListFn(GWEN_CRYPTTOKEN *ct,
+                                       GWEN_CRYPTTOKEN_FILLUSERLIST_FN fn){
+  assert(ct);
+  ct->fillUserListFn=fn;
+}
+
+
+
 void GWEN_CryptToken_SetGetSignSeqFn(GWEN_CRYPTTOKEN *ct,
                                      GWEN_CRYPTTOKEN_GETSIGNSEQ_FN fn){
   assert(ct);
   ct->getSignSeqFn=fn;
+}
+
+
+
+void GWEN_CryptToken_SetModifyUserFn(GWEN_CRYPTTOKEN *ct,
+                                     GWEN_CRYPTTOKEN_MODIFYUSER_FN fn) {
+  assert(ct);
+  ct->modifyUserFn=fn;
 }
 
 
@@ -1610,6 +1800,25 @@ int GWEN_CryptToken_Open(GWEN_CRYPTTOKEN *ct, int manage){
 
 
 
+int GWEN_CryptToken_Create(GWEN_CRYPTTOKEN *ct){
+  int rv;
+
+  assert(ct);
+  if (ct->isOpen) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Already open");
+    return GWEN_ERROR_OPEN;
+  }
+  if (ct->createFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  rv=ct->createFn(ct);
+  if (rv)
+    return rv;
+  ct->isOpen=1;
+  return 0;
+}
+
+
+
 int GWEN_CryptToken_Close(GWEN_CRYPTTOKEN *ct){
   assert(ct);
   if (ct->isOpen==0) {
@@ -1619,6 +1828,19 @@ int GWEN_CryptToken_Close(GWEN_CRYPTTOKEN *ct){
   if (ct->closeFn==0)
     return GWEN_ERROR_UNSUPPORTED;
   return ct->closeFn(ct);
+}
+
+
+
+int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct){
+  assert(ct);
+  if (ct->isOpen==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    return GWEN_ERROR_NOT_OPEN;
+  }
+  if (ct->changePinFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  return ct->changePinFn(ct);
 }
 
 
@@ -1717,6 +1939,36 @@ int GWEN_CryptToken_WriteKey(GWEN_CRYPTTOKEN *ct,
 
 
 
+int GWEN_CryptToken_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
+                                GWEN_TYPE_UINT32 kid,
+                                GWEN_KEYSPEC **ks) {
+  assert(ct);
+  if (ct->isOpen==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    return GWEN_ERROR_NOT_OPEN;
+  }
+  if (ct->readKeySpecFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  return ct->readKeySpecFn(ct, kid, ks);
+}
+
+
+
+int GWEN_CryptToken_WriteKeySpec(GWEN_CRYPTTOKEN *ct,
+                                 GWEN_TYPE_UINT32 kid,
+                                 const GWEN_KEYSPEC *ks) {
+  assert(ct);
+  if (ct->isOpen==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    return GWEN_ERROR_NOT_OPEN;
+  }
+  if (ct->writeKeySpecFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  return ct->writeKeySpecFn(ct, kid, ks);
+}
+
+
+
 int GWEN_CryptToken_GetSignSeq(GWEN_CRYPTTOKEN *ct,
                                GWEN_TYPE_UINT32 kid,
                                GWEN_TYPE_UINT32 *signSeq){
@@ -1739,9 +1991,9 @@ int GWEN_CryptToken_AddContext(GWEN_CRYPTTOKEN *ct,
     DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
     return GWEN_ERROR_NOT_OPEN;
   }
-  if (ct->addContextFn==0)
-    return GWEN_ERROR_UNSUPPORTED;
-  return ct->addContextFn(ct, ctx);
+  GWEN_CryptToken_Context_List_Add(GWEN_CryptToken_Context_dup(ctx),
+                                   ct->contextList);
+  return 0;
 }
 
 
@@ -1755,11 +2007,12 @@ int GWEN_CryptToken_FillContextList(GWEN_CRYPTTOKEN *ct,
     DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
     return GWEN_ERROR_NOT_OPEN;
   }
-  if (ct->fillContextListFn==0)
-    return GWEN_ERROR_UNSUPPORTED;
+
   if (GWEN_CryptToken_Context_List_GetCount(ct->contextList)==0) {
     int rv;
 
+    if (ct->fillContextListFn==0)
+      return GWEN_ERROR_UNSUPPORTED;
     rv=ct->fillContextListFn(ct, ct->contextList);
     if (rv)
       return rv;
@@ -2044,6 +2297,108 @@ GWEN_CryptToken_GetContextById(GWEN_CRYPTTOKEN *ct,
 
 
 
+int GWEN_CryptToken_FillUserList(GWEN_CRYPTTOKEN *ct,
+                                 GWEN_CRYPTTOKEN_USER_LIST *ul) {
+  GWEN_CRYPTTOKEN_USER *u;
+
+  assert(ct);
+  if (ct->isOpen==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    return GWEN_ERROR_NOT_OPEN;
+  }
+
+  if (GWEN_CryptToken_User_List_GetCount(ct->userList)==0) {
+    int rv;
+
+    if (ct->fillUserListFn==0)
+      return GWEN_ERROR_UNSUPPORTED;
+    rv=ct->fillUserListFn(ct, ct->userList);
+    if (rv)
+      return rv;
+  }
+
+  if (ul) {
+    u=GWEN_CryptToken_User_List_First(ct->userList);
+    while(u) {
+      GWEN_CryptToken_User_List_Add(GWEN_CryptToken_User_dup(u), ul);
+      u=GWEN_CryptToken_User_List_Next(u);
+    }
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptToken_ModifyUser(GWEN_CRYPTTOKEN *ct,
+                               const GWEN_CRYPTTOKEN_USER *u) {
+  int rv;
+  GWEN_TYPE_UINT32 id;
+  GWEN_CRYPTTOKEN_USER *ou;
+  const char *s;
+  int i;
+
+  assert(ct);
+  if (ct->isOpen==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    return 0;
+  }
+  assert(u);
+
+  id=GWEN_CryptToken_User_GetId(u);
+  if (id==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid id");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* make sure we have a valid list of users */
+  GWEN_CryptToken_FillUserList(ct, 0);
+
+  ou=GWEN_CryptToken_User_List_First(ct->userList);
+  while(ou) {
+    if (id==GWEN_CryptToken_User_GetId(ou))
+      break;
+  }
+  if (!ou) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown user");
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (ct->modifyUserFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  rv=ct->modifyUserFn(ct, u);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    return rv;
+  }
+
+  /* copy data to stored user */
+  s=GWEN_CryptToken_User_GetUserId(u);
+  GWEN_CryptToken_User_SetUserId(ou, s);
+
+  s=GWEN_CryptToken_User_GetUserName(u);
+  GWEN_CryptToken_User_SetUserName(ou, s);
+
+  s=GWEN_CryptToken_User_GetPeerId(u);
+  GWEN_CryptToken_User_SetPeerId(ou, s);
+
+  s=GWEN_CryptToken_User_GetPeerName(u);
+  GWEN_CryptToken_User_SetPeerName(ou, s);
+
+  s=GWEN_CryptToken_User_GetAddress(u);
+  GWEN_CryptToken_User_SetAddress(ou, s);
+
+  i=GWEN_CryptToken_User_GetPort(u);
+  GWEN_CryptToken_User_SetPort(ou, i);
+
+  id=GWEN_CryptToken_User_GetContextId(u);
+  GWEN_CryptToken_User_SetContextId(ou, id);
+
+  return 0;
+}
+
+
+
 int GWEN_CryptToken_Hash(GWEN_CRYPTTOKEN_HASHALGO algo,
                          const char *src,
                          unsigned int slen,
@@ -2089,26 +2444,29 @@ int GWEN_CryptToken_Hash(GWEN_CRYPTTOKEN_HASHALGO algo,
 
 
 int GWEN_CryptToken_Padd(GWEN_CRYPTTOKEN_PADDALGO algo,
-                         unsigned int dstSize,
+                         unsigned int chunkSize,
                          GWEN_BUFFER *buf) {
   int rv;
   unsigned int diff;
+  unsigned bsize;
+  unsigned dstSize;
 
   assert(buf);
-  if (dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
-    return GWEN_ERROR_INVALID;
-  }
+  bsize=GWEN_Buffer_GetUsedBytes(buf);
+  dstSize=bsize+(chunkSize-1);
+  dstSize=(dstSize/chunkSize)*chunkSize;
   diff=dstSize-GWEN_Buffer_GetUsedBytes(buf);
+
   switch(algo) {
   case GWEN_CryptToken_PaddAlgo_None:
     rv=0;
     break;
 
   case GWEN_CryptToken_PaddAlgo_ISO9796_1A4:
-    if (dstSize!=96) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Padding size must be 96 bytes (is %d)",
-                dstSize);
+    if (dstSize>96) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Padding size must be <=96 bytes (is %d)",
+		dstSize);
       return GWEN_ERROR_INVALID;
     }
     rv=GWEN_Padd_PaddWithISO9796(buf);
@@ -2302,19 +2660,6 @@ int GWEN_CryptToken_Plugin_CheckToken(GWEN_PLUGIN *pl,
 
 
 
-GWEN_PLUGIN_MANAGER*
-GWEN_CryptToken_Plugin_GetCryptManager(const GWEN_PLUGIN *pl){
-  GWEN_CRYPTTOKEN_PLUGIN *ctp;
-
-  assert(pl);
-  ctp=GWEN_INHERIT_GETDATA(GWEN_PLUGIN, GWEN_CRYPTTOKEN_PLUGIN, pl);
-  assert(ctp);
-
-  return ctp->cryptManager;
-}
-
-
-
 void GWEN_CryptToken_Plugin_SetCreateTokenFn(GWEN_PLUGIN *pl,
 					     GWEN_CRYPTTOKEN_PLUGIN_CREATETOKEN_FN fn){
   GWEN_CRYPTTOKEN_PLUGIN *ctp;
@@ -2467,8 +2812,9 @@ void GWEN_CryptManager_SetShowMessageFn(GWEN_PLUGIN_MANAGER *pm,
 
 int GWEN_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *pm,
                              GWEN_CRYPTTOKEN *token,
-                             GWEN_CRYPTTOKEN_PINTYPE pt,
-                             GWEN_CRYPTTOKEN_PINENCODING *pe,
+			     GWEN_CRYPTTOKEN_PINTYPE pt,
+                             GWEN_CRYPTTOKEN_PINENCODING pe,
+			     GWEN_TYPE_UINT32 flags,
                              unsigned char *buffer,
                              unsigned int minLength,
                              unsigned int maxLength,
@@ -2481,7 +2827,7 @@ int GWEN_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *pm,
 
   if (cm->getPinFn==0)
     return GWEN_ERROR_UNSUPPORTED;
-  return cm->getPinFn(pm, token, pt, pe, buffer,
+  return cm->getPinFn(pm, token, pt, pe, flags, buffer,
                       minLength, maxLength, pinLength);
 }
 
@@ -2553,6 +2899,7 @@ int GWEN_CryptManager_InsertCorrectToken(GWEN_PLUGIN_MANAGER *pm,
 
 int GWEN_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *pm,
                                   GWEN_CRYPTTOKEN *token,
+				  const char *title,
                                   const char *msg){
   GWEN_CRYPTMANAGER *cm;
 
@@ -2562,7 +2909,7 @@ int GWEN_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *pm,
 
   if (cm->showMessageFn==0)
     return GWEN_ERROR_UNSUPPORTED;
-  return cm->showMessageFn(pm, token, msg);
+  return cm->showMessageFn(pm, token, title, msg);
 }
 
 

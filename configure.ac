@@ -19,9 +19,9 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=14
 GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
@@ -178,7 +178,7 @@ AC_CHECK_HEADERS([stdlib.h string.h sys/socket.h sys/time.h])
 AC_CHECK_HEADERS([syslog.h unistd.h])
 AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_HEADERS([dlfcn.h])
-AC_CHECK_HEADERS([signal.h])
+AC_CHECK_HEADERS([signal.h termios.h iconv.h])
 AC_CHECK_HEADERS([time.h locale.h])
 AC_CHECK_HEADERS([syslog.h])
 AC_CHECK_HEADERS([sys/stat.h])
@@ -623,10 +623,14 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  plugins/dbio/olddb/Makefile
                  plugins/dbio/olddb/olddb.xml
                  plugins/dbio/olddb/ressource.rc
+                 plugins/crypttoken/Makefile
+                 plugins/crypttoken/ohbci/Makefile
+                 plugins/crypttoken/ohbci/ohbci.xml
                  tools/Makefile
                  tools/xmlmerge/Makefile
                  tools/dlgtest/Makefile
                  tools/typemaker/Makefile
+                 tools/gct-tool/Makefile
                  test/Makefile
 		])
 AC_OUTPUT

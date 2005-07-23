@@ -119,6 +119,10 @@ extern "C" {
 #define GWEN_ERROR_CT_NOT_SUPPORTED     (-68)
 #define GWEN_ERROR_CT_BAD_NAME          (-69)
 #define GWEN_ERROR_CT_IO_ERROR          (-70)
+#define GWEN_ERROR_CT_BAD_PIN           (-71)
+#define GWEN_ERROR_CT_BAD_PIN_0_LEFT    (-72)
+#define GWEN_ERROR_CT_BAD_PIN_1_LEFT    (-73)
+#define GWEN_ERROR_CT_BAD_PIN_2_LEFT    (-74)
 
 /*@}*/
 

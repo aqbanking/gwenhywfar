@@ -400,8 +400,8 @@ int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf){
     }
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN,
-             "End of used area reached (%d bytes)", bf->pos);
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+              "End of used area reached (%d bytes)", bf->pos);
     return -1;
   }
   return 0;

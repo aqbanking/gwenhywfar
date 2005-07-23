@@ -72,6 +72,11 @@ GWENHYWFAR_API
 void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd);
 
 
+GWENHYWFAR_API
+GWEN_PLUGIN_DESCRIPTION*
+GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd);
+
+
 /**
  * Returns the XML node this description consists of (the "plugin" node).
  * It may contain additional information used by programs.

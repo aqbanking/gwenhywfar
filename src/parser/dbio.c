@@ -33,6 +33,7 @@
 #define DISABLE_DEBUGLOG
 
 #include "dbio_p.h"
+#include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/path.h>
@@ -49,7 +50,10 @@
 #include <ctype.h>
 
 #ifdef OS_WIN32
+# define DIRSEP "\\"
 # include <windows.h>
+#else
+# define DIRSEP "/"
 #endif
 
 
@@ -320,68 +324,14 @@ GWEN_DBIO *GWEN_DBIO_LoadPluginFile(const char *modname, const char *fname){
 
 
 int GWEN_DBIO_GetPluginPath(GWEN_BUFFER *pbuf) {
-#ifdef OS_WIN32
-  HKEY hkey;
-  TCHAR nbuffer[MAX_PATH];
-  BYTE vbuffer[MAX_PATH];
-  DWORD nsize;
-  DWORD vsize;
-  DWORD typ;
-  int i;
+  int rv;
 
-  snprintf(nbuffer, sizeof(nbuffer), "Software\\Gwenhywfar\\Paths");
+  rv=GWEN_GetPluginPath(pbuf);
+  if (rv)
+    return rv;
 
-  /* open the key */
-  if (RegOpenKey(HKEY_CURRENT_USER, nbuffer, &hkey)){
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "RegOpenKey failed, returning compile-time value");
-    GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
-                             "/"
-                             GWEN_DBIO_FOLDER,
-                             pbuf,
-                             1);
-    return 1;
-  }
-
-  /* find the key for dbio-plugins */
-  for (i=0;; i++) {
-    nsize=sizeof(nbuffer);
-    vsize=sizeof(vbuffer);
-    if (ERROR_SUCCESS!=RegEnumValue(hkey,
-                                    i,    /* index */
-                                    nbuffer,
-                                    &nsize,
-                                    0,       /* reserved */
-                                    &typ,
-                                    vbuffer,
-                                    &vsize))
-      break;
-    if (strcasecmp(nbuffer, "dbio-plugins")==0 &&
-        typ==REG_SZ) {
-      /* variable found */
-      RegCloseKey(hkey);
-      GWEN_Buffer_AppendBytes(pbuf, (char*)vbuffer, vsize-1);
-      return 0;
-    }
-  } /* for */
-
-  RegCloseKey(hkey);
-  DBG_INFO(GWEN_LOGDOMAIN,
-           "RegKey does not exist, returning compile-time value");
-  GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
-                           "/"
-                           GWEN_DBIO_FOLDER,
-                           pbuf,
-                           1);
-  return 1;
-#else
-  GWEN_Directory_OsifyPath(GWENHYWFAR_PLUGINS
-                           "/"
-                           GWEN_DBIO_FOLDER,
-                           pbuf,
-                           0);
+  GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_DBIO_FOLDER);
   return 0;
-#endif
 }
 
 

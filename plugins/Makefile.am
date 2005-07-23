@@ -1,1 +1,1 @@
-SUBDIRS=dbio
+SUBDIRS=dbio crypttoken

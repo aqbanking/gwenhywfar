@@ -172,7 +172,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
       }
     } /* if error on link */
 
-    DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock applied to %s", fl->entryName);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "FS-Lock applied to %s", fl->entryName);
   }
   fl->lockCount++;
   return GWEN_FSLock_ResultOk;
@@ -192,7 +192,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl){
   if (fl->lockCount<1) {
     remove(fl->baseLockFilename);
     remove(fl->uniqueLockFilename);
-    DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock released from %s", fl->entryName);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "FS-Lock released from %s", fl->entryName);
   }
   return GWEN_FSLock_ResultOk;
 }

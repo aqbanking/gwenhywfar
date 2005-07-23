@@ -50,6 +50,49 @@ void GWEN_TLV_free(GWEN_TLV *tlv) {
 
 
 
+GWEN_TLV *GWEN_TLV_create(unsigned int tagType,
+                          unsigned int tagMode,
+                          const void *p,
+                          unsigned int dlen,
+                          int isBerTlv) {
+  GWEN_TLV *tlv;
+
+  /* some checks first */
+  if (tagType>255) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Tag type too high");
+    abort();
+  }
+  if (isBerTlv) {
+    if (dlen>65535) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Data too long");
+      abort();
+    }
+  }
+  else {
+    if (dlen>255) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Data too long");
+      abort();
+    }
+  }
+
+  /* limits ok, create TLV */
+  tlv=GWEN_TLV_new();
+  tlv->tagType=tagType;
+  tlv->tagMode=tagMode;
+  tlv->isBerTlv=isBerTlv;
+
+  tlv->tagLength=dlen;
+  if (dlen) {
+    tlv->tagData=malloc(dlen);
+    assert(tlv->tagData);
+    memmove(tlv->tagData, p, dlen);
+  }
+
+  return tlv;
+}
+
+
+
 int GWEN_TLV_IsBerTlv(const GWEN_TLV *tlv){
   assert(tlv);
   return tlv->isBerTlv;
@@ -221,6 +264,76 @@ unsigned int GWEN_TLV_GetClass(const GWEN_TLV *tlv){
 
 
 
+int GWEN_TLV_toBuffer(GWEN_TLV *tlv, GWEN_BUFFER *mbuf) {
+  assert(tlv);
+  return GWEN_TLV_DirectlyToBuffer(tlv->tagType,
+                                   tlv->tagMode,
+                                   tlv->tagData,
+                                   tlv->tagLength,
+                                   tlv->isBerTlv,
+                                   mbuf);
+}
+
+
+
+int GWEN_TLV_DirectlyToBuffer(unsigned int tagType,
+                              unsigned int tagMode,
+                              const void *tagData,
+                              int tagLength,
+                              int isBerTlv,
+                              GWEN_BUFFER *mbuf) {
+  if (tagLength==-1)
+    tagLength=strlen(tagData);
+
+  if (isBerTlv) {
+    unsigned char j;
+
+    /* write tag type */
+    j=tagMode;
+    if (tagType>=0x1f) {
+      j|=0x1f;
+      GWEN_Buffer_AppendByte(mbuf, j);
+      GWEN_Buffer_AppendByte(mbuf, (unsigned char)tagType);
+    }
+    else {
+      j|=tagType;
+      GWEN_Buffer_AppendByte(mbuf, j);
+    }
+
+    /* write tag length */
+    if (tagLength>255) {
+      /* two byte size */
+      GWEN_Buffer_AppendByte(mbuf, 0x82);
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>8) && 0xff));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+    }
+    else if (tagLength>127) {
+      /* one byte size */
+      GWEN_Buffer_AppendByte(mbuf, 0x81);
+      GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+    }
+    else {
+      GWEN_Buffer_AppendByte(mbuf, (tagLength && 0x7f));
+    }
+
+    /* write tag data */
+    if (tagLength)
+      GWEN_Buffer_AppendBytes(mbuf, tagData, tagLength);
+  }
+  else {
+    /* write tag type */
+    GWEN_Buffer_AppendByte(mbuf, (unsigned char)tagType);
+
+    /* write tag length */
+    GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+
+    /* write tag data */
+    if (tagLength)
+      GWEN_Buffer_AppendBytes(mbuf, tagData, tagLength);
+  }
+
+  return 0;
+}
 
 
 

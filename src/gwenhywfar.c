@@ -39,6 +39,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/gwenhywfar.h>
+#include <gwenhywfar/directory.h>
 
 #include "base/debug.h"
 #include "base/logger_l.h"
@@ -60,7 +61,17 @@
 #include "base/waitcallback_l.h"
 
 
+/* for regkey stuff */
+#ifdef OS_WIN32
+# define DIRSEP "\\"
+# include <windows.h>
+#else
+# define DIRSEP "/"
+#endif
+
+
 static unsigned int gwen_is_initialized=0;
+
 
 
 GWEN_ERRORCODE GWEN_Init() {
@@ -274,6 +285,98 @@ void GWEN_Version(int *major,
   *patchlevel=GWENHYWFAR_VERSION_PATCHLEVEL;
   *build=GWENHYWFAR_VERSION_BUILD;
 }
+
+
+
+
+
+
+
+int GWEN__GetValueFromWinReg(const char *keyPath,
+                             const char *varName,
+                             GWEN_BUFFER *nbuf){
+#ifdef OS_WIN32
+  HKEY hkey;
+  TCHAR nbuffer[MAX_PATH];
+  BYTE vbuffer[MAX_PATH];
+  DWORD nsize;
+  DWORD vsize;
+  DWORD typ;
+  int i;
+
+  assert(pm);
+
+  snprintf(nbuffer, sizeof(nbuffer), keyPath);
+
+  /* open the key */
+  if (RegOpenKey(HKEY_CURRENT_USER,
+                 keypath,
+                 &hkey)){
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "RegOpenKey \"%s\" failed.", keyPath);
+    return -1;
+  }
+
+  /* find the variablename  */
+  for (i=0;; i++) {
+    nsize=sizeof(nbuffer);
+    vsize=sizeof(vbuffer);
+    if (ERROR_SUCCESS!=RegEnumValue(hkey,
+                                    i,    /* index */
+                                    nbuffer,
+                                    &nsize,
+                                    0,       /* reserved */
+                                    &typ,
+                                    vbuffer,
+                                    &vsize))
+      break;
+    if (strcasecmp(nbuffer, varName)==0 && typ==REG_SZ) {
+      /* variable found */
+      RegCloseKey(hkey);
+      GWEN_Buffer_AppendString(nbuf, (char*)vbuffer);
+      return 0;
+    }
+  } /* for */
+
+  RegCloseKey(hkey);
+  return -1;
+
+#else /* OS_WIN32 */
+  return -1;
+#endif /* OS_WIN32 */
+}
+
+
+
+int GWEN_GetInstallPath(GWEN_BUFFER *pbuf) {
+  if (GWEN__GetValueFromWinReg("Software\\Gwenhywfar\\Paths",
+                               "prefix", pbuf)!=0) {
+    GWEN_Directory_OsifyPath(GWEN_INSTALL_DIR, pbuf, 1);
+  }
+  return 0;
+}
+
+
+
+int GWEN_GetPluginPath(GWEN_BUFFER *pbuf) {
+  int rv;
+
+  rv=GWEN_GetInstallPath(pbuf);
+  if (rv)
+    return rv;
+
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, "lib");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, "gwenhywfar");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, "plugins");
+  GWEN_Buffer_AppendString(pbuf, DIRSEP);
+  GWEN_Buffer_AppendString(pbuf, GWEN_EFFECTIVE_VERSTR);
+
+  return 0;
+}
+
 
 
 
