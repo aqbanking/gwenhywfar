@@ -13,6 +13,7 @@
   GWEN_DBIO_CheckFileResultOk. This will allow AqBanking to also present
   other plugins when searching for importers
 - added crypttoken plugin for OpenHBCI key files
+- added tool "gct-tool" for administration of ctypt tokens
 
 
 2005/07/19: Martin Preuss<martin@libchipcard.de>
