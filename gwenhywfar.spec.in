@@ -75,6 +75,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/*.so
 %{_libdir}/%{name}
 %{_datadir}/locale/*/LC_MESSAGES/gwenhywfar.mo
+%{_bindir}/gct-tool
 
 %files devel
 %defattr(-,root,root)
