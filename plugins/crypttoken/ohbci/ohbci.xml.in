@@ -27,7 +27,7 @@
   </descr>
 
   <crypttokens>
-    <crypttoken typeName="ohbci" subTypeName="rdh1" name="OHBCI">
+    <crypttoken typeName="ohbci" subTypeName="rdh1">
   
       <flags>
         <flag>manages_signseq</flag>

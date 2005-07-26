@@ -124,12 +124,13 @@ void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
 
 /**
  * <p>
- * Seeks for a long description with the given format and appends it to the
- * data in the given buffer.
+ * Seeks for a long description with the given format and the currently
+ * selected locale and appends it to the data in the given buffer.
  * </p>
  * <p>
  * The DESCR tag of the plugin description is expected to contain sub tags
- * named TEXT with the property "FORMAT" describing the format.
+ * named TEXT with the property "FORMAT" describing the format and "LANG"
+ * containing the language of the element.
  * </p>
  * <p>
  * Currently supported format is "html".

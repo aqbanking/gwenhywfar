@@ -205,9 +205,9 @@ GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd){
 
 
 int
-GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                            const char *s,
-                                            GWEN_BUFFER *buf){
+GWEN_PluginDescription__GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                             const char *s,
+                                             GWEN_BUFFER *buf){
   GWEN_XMLNODE *n;
 
   assert(pd);
@@ -216,31 +216,121 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
   n=GWEN_XMLNode_FindFirstTag(pd->xmlNode, "descr", 0, 0);
   if (n) {
     n=GWEN_XMLNode_FindFirstTag(n, "text", "format", s);
-    if (n) {
-      GWEN_BUFFEREDIO *bio;
+    while (n) {
+      if (0==GWEN_XMLNode_GetProperty(n, "lang", 0)) {
+        GWEN_BUFFEREDIO *bio;
 
-      bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
-      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-      if (GWEN_XMLNode_WriteToStream(n, bio,
-                                     GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        GWEN_BufferedIO_Abandon(bio);
+        bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
+        GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
+        if (GWEN_XMLNode_WriteToStream(n, bio,
+                                       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
+          GWEN_BufferedIO_Abandon(bio);
+          GWEN_BufferedIO_free(bio);
+          return -1;
+        }
+        if (GWEN_BufferedIO_Close(bio)) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
+          GWEN_BufferedIO_free(bio);
+          return -1;
+        }
         GWEN_BufferedIO_free(bio);
-        return -1;
+        return 0;
       }
-      if (GWEN_BufferedIO_Close(bio)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        GWEN_BufferedIO_free(bio);
-        return -1;
-      }
-      GWEN_BufferedIO_free(bio);
-      return 0;
-    }
+      n=GWEN_XMLNode_FindNextTag(n, "text", "format", s);
+    } /* while */
   }
 
   return -1;
 }
 
+
+
+int
+GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                                      const char *s,
+                                                      const char *lang,
+                                                      GWEN_BUFFER *buf){
+  GWEN_XMLNODE *n;
+
+  assert(pd);
+  assert(pd->xmlNode);
+
+  n=GWEN_XMLNode_FindFirstTag(pd->xmlNode, "descr", 0, 0);
+  if (n) {
+    n=GWEN_XMLNode_FindFirstTag(n, "text", "lang", lang);
+    while (n) {
+      const char *fmt;
+
+      fmt=GWEN_XMLNode_GetProperty(n, "format", 0);
+      if (fmt && strcasecmp(fmt, s)==0) {
+        GWEN_BUFFEREDIO *bio;
+
+        bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
+        GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
+        if (GWEN_XMLNode_WriteToStream(n, bio,
+                                       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
+          GWEN_BufferedIO_Abandon(bio);
+          GWEN_BufferedIO_free(bio);
+          return -1;
+        }
+        if (GWEN_BufferedIO_Close(bio)) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
+          GWEN_BufferedIO_free(bio);
+          return -1;
+        }
+        GWEN_BufferedIO_free(bio);
+        return 0;
+      }
+      n=GWEN_XMLNode_FindNextTag(n, "text", "lang", lang);
+    } /* while */
+  }
+
+  return -1;
+}
+
+
+
+int
+GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                            const char *s,
+                                            GWEN_BUFFER *buf){
+  GWEN_STRINGLIST *langl;
+  int rv;
+
+  langl=GWEN_I18N_GetCurrentLocaleList();
+  if (langl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(langl);
+    while(se) {
+      const char *l;
+
+      l=GWEN_StringListEntry_Data(se);
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
+      assert(l);
+
+      rv=GWEN_PluginDescription__GetLocalizedLongDescrByFormat(pd,
+                                                               s,
+                                                               l,
+                                                               buf);
+      if (rv==0)
+        return rv;
+
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  } /* if language list available */
+
+  /* no localized version found, return text for default language */
+  rv=GWEN_PluginDescription__GetLongDescrByFormat(pd, s, buf);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv)
+      return rv;
+  }
+
+  return 0;
+}
 
 
 const char*
