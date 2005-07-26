@@ -24,6 +24,22 @@
       </p>
     </text>
 
+    <text format="html" lang="de" >
+      <p>
+        Diese Erweiterung unterstuetzt Schluesseldateien die mit
+        <b>OpenHBCI</b> oder <b>OpenHBCI2</b> im <b>RDH-Modus</b>
+        erstellt wurden. Die Datei wird mit einem Passwort mit dem 
+        3-Key-Triple-DES Algorithmus verschluesselt und speichert private
+        und oeffentlich RSA-Schluessel.
+      </p>
+      <p>
+        Dabei wird die Version der OpenHBCI-Schluesseldatei beim Laden 
+        automatisch erkannt und beim Speichern ebenfalls verwendet.
+        Dadurch bleibt die geschriebene Schluesseldatei weiterhin mit aelteren
+        OpenHBCI1- oder OpenHBCI2-basierten Programmen lesbar.
+      </p>
+    </text>
+
   </descr>
 
   <crypttokens>
