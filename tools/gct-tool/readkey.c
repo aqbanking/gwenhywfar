@@ -26,55 +26,38 @@
 
 
 
-static void _dumpKeyInfo(const GWEN_CRYPTTOKEN_KEYINFO *ki, const char *name){
-  GWEN_TYPE_UINT32 flags;
-  const char *s;
-
-  fprintf(stdout, "  %s: %d, %d bits, %d bytes, %s [",
-          name,
-          GWEN_CryptToken_KeyInfo_GetKeyId(ki),
-          GWEN_CryptToken_KeyInfo_GetKeySize(ki),
-          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
-          GWEN_CryptToken_CryptAlgo_toString(GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki)));
-  flags=GWEN_CryptToken_KeyInfo_GetKeyFlags(ki);
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_SIGN)
-    fprintf(stdout, "S");
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_VERIFY)
-    fprintf(stdout, "V");
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_ENCRYPT)
-    fprintf(stdout, "E");
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_DECRYPT)
-    fprintf(stdout, "D");
-  fprintf(stdout, "]");
-  s=GWEN_CryptToken_KeyInfo_GetDescription(ki);
-  if (s)
-    fprintf(stdout, " (%s)", s);
-  fprintf(stdout, "\n");
-}
-
-
-
-int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_CRYPTTOKEN *ct;
-  unsigned int cid;
-  int shown=0;
+  GWEN_TYPE_UINT32 kid;
   int rv;
+  const char *outFile;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsTypeInt,             /* type */
-    "contextId",                  /* name */
-    0,                            /* minnum */
+    "keyId",                      /* name */
+    1,                            /* minnum */
     1,                            /* maxnum */
     "i",                          /* short option */
     "id",                         /* long option */
-    "Context id (0 for any)",     /* short description */
-    "Context id (0 for any)"      /* long description */
+    "Key id",                     /* short description */
+    "Key id"                      /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsTypeChar,            /* type */
+    "outFile",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "o",                          /* short option */
+    "outfile",                    /* long option */
+    "Specify the output file",    /* short description */
+    "Specify the output file"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -133,7 +116,9 @@ int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 0;
   }
 
-  cid=GWEN_DB_GetIntValue(db, "contextId", 0, 0);
+  kid=GWEN_DB_GetIntValue(db, "keyId", 0, 0);
+
+  outFile=GWEN_DB_GetCharValue(db, "outfile", 0, 0);
 
   ttype=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
   assert(ttype);
@@ -167,89 +152,84 @@ int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
   else {
-    GWEN_CRYPTTOKEN_CONTEXT_LIST *l;
-    GWEN_CRYPTTOKEN_CONTEXT *ctx;
+    GWEN_CRYPTKEY *key=0;
+    GWEN_DB_NODE *db;
+    GWEN_ERRORCODE err;
+    int fd;
 
-    l=GWEN_CryptToken_Context_List_new();
-    rv=GWEN_CryptToken_FillContextList(ct, l);
+    /* get key */
+    rv=GWEN_CryptToken_ReadKey(ct, kid, &key);
     if (rv) {
-      DBG_ERROR(0, "Error filling context list");
-      GWEN_CryptToken_Context_List_free(l);
-      GWEN_CryptToken_Close(ct);
+      if (rv==GWEN_ERROR_NO_DATA) {
+        DBG_ERROR(0, "No data for key %d", kid);
+        return 3;
+      }
+      else {
+        DBG_ERROR(0, "Could not read key (%d)", rv);
+        return 3;
+      }
+    }
+    assert(key);
+
+    db=GWEN_DB_Group_new("key");
+    err=GWEN_CryptKey_ToDb(key, db, 1);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(0, err);
+      GWEN_DB_Group_free(db);
       return 3;
     }
 
-    ctx=GWEN_CryptToken_Context_List_First(l);
-    while(ctx) {
-      if (cid==0 || cid==GWEN_CryptToken_Context_GetId(ctx)) {
-        const char *s;
-        const GWEN_CRYPTTOKEN_KEYINFO *ki;
-        const GWEN_CRYPTTOKEN_SIGNINFO *si;
-        const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+    /* write key to file */
+    if (outFile==0)
+      fd=fileno(stdout);
+    else
+      fd=open(outFile, O_RDWR | O_CREAT | O_TRUNC,
+              S_IRUSR | S_IWUSR
+#ifdef S_IRGRP
+              | S_IRGRP
+#endif
+#ifdef S_IWGRP
+              | S_IWGRP
+#endif
+             );
+    if (fd<0) {
+      DBG_ERROR(0, "Error selecting output file: %s",
+                strerror(errno));
+      return 3;
+    }
+    else {
+      GWEN_BUFFEREDIO *bio;
 
-        fprintf(stdout, "-------------------------------------------------\n");
-         fprintf(stdout, "Context %u",
-                (unsigned int)GWEN_CryptToken_Context_GetId(ctx));
-        s=GWEN_CryptToken_Context_GetDescription(ctx);
-        if (s)
-          fprintf(stdout, " (%s)", s);
-        fprintf(stdout, "\n");
-  
-        ki=GWEN_CryptToken_Context_GetSignKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Sign Key   ");
-  
-        ki=GWEN_CryptToken_Context_GetVerifyKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Verify Key ");
-  
-        ki=GWEN_CryptToken_Context_GetEncryptKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Encrypt Key");
-  
-        ki=GWEN_CryptToken_Context_GetDecryptKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Decrypt Key");
-  
-        si=GWEN_CryptToken_Context_GetSignInfo(ctx);
-        if (si) {
-          fprintf(stdout, "  Sign Info: %d, %s, %s\n",
-                  (unsigned int)GWEN_CryptToken_SignInfo_GetId(si),
-                  GWEN_CryptToken_HashAlgo_toString(GWEN_CryptToken_SignInfo_GetHashAlgo(si)),
-                  GWEN_CryptToken_PaddAlgo_toString(GWEN_CryptToken_SignInfo_GetPaddAlgo(si)));
-        }
-  
-        ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
-        if (ci) {
-          fprintf(stdout, "  Crypt Info: %d, %s, %s\n",
-                  (unsigned int)GWEN_CryptToken_CryptInfo_GetId(ci),
-                  GWEN_CryptToken_CryptAlgo_toString(GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci)),
-                  GWEN_CryptToken_PaddAlgo_toString(GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci)));
-        }
-        shown++;
+      /* write key */
+      bio=GWEN_BufferedIO_File_new(fd);
+      if (!outFile)
+        GWEN_BufferedIO_SubFlags(bio, GWEN_BUFFEREDIO_FLAGS_CLOSE);
+      GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
+      if (GWEN_DB_WriteToStream(db, bio, GWEN_DB_FLAGS_DEFAULT)) {
+        DBG_ERROR(0, "Error writing key");
+        GWEN_DB_Group_free(db);
+        GWEN_BufferedIO_Abandon(bio);
+        GWEN_BufferedIO_free(bio);
+        return 3;
       }
-
-      ctx=GWEN_CryptToken_Context_List_Next(ctx);
-    } /* while */
-    GWEN_CryptToken_Context_List_free(l);
+      err=GWEN_BufferedIO_Close(bio);
+      if (!GWEN_Error_IsOk(err)) {
+        DBG_ERROR_ERR(0, err);
+        GWEN_DB_Group_free(db);
+        GWEN_BufferedIO_Abandon(bio);
+        GWEN_BufferedIO_free(bio);
+        return 3;
+      }
+      GWEN_BufferedIO_free(bio);
+    }
+    GWEN_DB_Group_free(db);
   }
-
 
   /* close crypt token */
   rv=GWEN_CryptToken_Close(ct);
   if (rv) {
     DBG_ERROR(0, "Could not close token");
     return 3;
-  }
-
-  if (!shown) {
-    if (cid==0) {
-      DBG_ERROR(0, "No context found");
-    }
-    else {
-      DBG_ERROR(0, "Context %u not found", cid);
-    }
-    return 1;
   }
 
   return 0;

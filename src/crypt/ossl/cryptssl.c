@@ -32,6 +32,7 @@
 
 
 #include "cryptssl_p.h"
+#include "cryptssl_bf_p.h"
 #include "cryptssl_des_p.h"
 #include "cryptssl_rsa_p.h"
 #include "cryptssl_md5_p.h"
@@ -67,6 +68,13 @@ GWEN_ERRORCODE GWEN_CryptImpl_Init(){
 
   DBG_INFO(GWEN_LOGDOMAIN, "Registering DES");
   lerr=GWEN_CryptKeyDES_Register();
+  if (!GWEN_Error_IsOk(lerr)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    err=lerr;
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Registering BF");
+  lerr=GWEN_CryptKeyBF_Register();
   if (!GWEN_Error_IsOk(lerr)) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     err=lerr;

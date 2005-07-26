@@ -15,7 +15,7 @@
 # include <config.h>
 #endif
 
-//#define DEBUG_OHBCI_MODULE
+/*#define DEBUG_OHBCI_MODULE */
 
 
 
@@ -92,7 +92,7 @@ GWEN_CRYPTTOKEN *GWEN_CryptTokenOHBCI_Plugin_CreateToken(GWEN_PLUGIN *pl,
   pm=GWEN_Plugin_GetManager(pl);
   assert(pm);
 
-  ct=GWEN_CryptTokenOHBCI_new(pm, name);
+  ct=GWEN_CryptTokenOHBCI_new(pm, subTypeName, name);
   assert(ct);
 
   return ct;
@@ -112,11 +112,12 @@ int GWEN_CryptTokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
 
 
 GWEN_CRYPTTOKEN *GWEN_CryptTokenOHBCI_new(GWEN_PLUGIN_MANAGER *pm,
+                                          const char *subTypeName,
                                           const char *name){
   GWEN_CRYPTTOKEN *ct;
   GWEN_CRYPTTOKEN_OHBCI *lct;
 
-  ct=GWEN_CryptTokenFile_new(pm, "ohbci", 0, name);
+  ct=GWEN_CryptTokenFile_new(pm, "ohbci", subTypeName, name);
 
   GWEN_NEW_OBJECT(GWEN_CRYPTTOKEN_OHBCI, lct);
   GWEN_INHERIT_SETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI,
@@ -596,6 +597,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
   GWEN_DB_NODE *dbKey;
   GWEN_CT_FILE_CONTEXT *fct;
   GWEN_CRYPTTOKEN_USER *user;
+  const char *peerId=0;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI, ct);
@@ -738,15 +740,18 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_TEMP_PUBSIGNKEY:
     case GWEN_CRYPTTOKEN_OHBCI_TAG_TEMP_PRIVSIGNKEY:
-      GWEN_CryptTokenOHBCI__DecodeKey(ct, tlv, dbKeys, "localSignKeyBak");
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Ignoring temporary sign keys");
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_TEMP_PUBCRYPTKEY:
     case GWEN_CRYPTTOKEN_OHBCI_TAG_TEMP_PRIVCRYPTKEY:
-      GWEN_CryptTokenOHBCI__DecodeKey(ct, tlv, dbKeys, "localCryptKeyBak");
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "Ignoring temporary crypt keys");
       break;
     default:
-      DBG_WARN(GWEN_LOGDOMAIN, "Unknown tag %02x", GWEN_TAG16_GetTagType(tlv));
+      DBG_WARN(GWEN_LOGDOMAIN, "Unknown tag %02x",
+	       GWEN_TAG16_GetTagType(tlv));
       break;
     } /* switch */
 
@@ -773,7 +778,6 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CryptTokenFile_Context_SetLocalSignKey(fct, key);
-      GWEN_CryptKey_free(key);
     }
   }
 
@@ -792,7 +796,6 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CryptTokenFile_Context_SetLocalCryptKey(fct, key);
-      GWEN_CryptKey_free(key);
     }
   }
 
@@ -810,8 +813,9 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
     }
     else {
+      if (peerId==0)
+        peerId=GWEN_CryptKey_GetOwner(key);
       GWEN_CryptTokenFile_Context_SetRemoteSignKey(fct, key);
-      GWEN_CryptKey_free(key);
     }
   }
 
@@ -829,13 +833,19 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
     }
     else {
+      if (peerId==0)
+        peerId=GWEN_CryptKey_GetOwner(key);
       GWEN_CryptTokenFile_Context_SetRemoteCryptKey(fct, key);
-      GWEN_CryptKey_free(key);
     }
   }
 
-  /* clear context list, add new context */
+  /* finalize user and file context */
+  GWEN_CryptToken_User_SetId(user, 1);            /* only one user */
+  GWEN_CryptToken_User_SetContextId(user, 1);     /* only one context */
+  GWEN_CryptToken_User_SetPeerId(user, peerId); /* only one user */
   GWEN_CryptTokenFile_Context_SetUser(fct, user);
+
+  /* clear context list, add new context */
   GWEN_CryptTokenFile_ClearFileContextList(ct);
   GWEN_CryptTokenFile_AddFileContext(ct, fct);
 
@@ -959,7 +969,7 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
   GWEN_CT_FILE_CONTEXT_LIST *fctl;
   GWEN_CT_FILE_CONTEXT *fct;
   GWEN_CRYPTTOKEN_USER *user;
-  const GWEN_CRYPTKEY *key;
+  GWEN_CRYPTKEY *key;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI, ct);
@@ -1001,6 +1011,7 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 			      numbuf, -1, dbuf);
 
   key=GWEN_CryptTokenFile_Context_GetLocalSignKey(fct);
+
   if (GWEN_CryptTokenOHBCI__EncodeKey(key,
 				      GWEN_CRYPTTOKEN_OHBCI_TAG_USER_PUBSIGNKEY,
 				      1, 0, dbuf)) {
@@ -1036,6 +1047,8 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 				p, -1, dbuf);
 
   key=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fct);
+  if (key && GWEN_CryptKey_GetOwner(key)==0)
+    GWEN_CryptKey_SetOwner(key, GWEN_CryptToken_User_GetPeerId(user));
   if (GWEN_CryptTokenOHBCI__EncodeKey(key,
 				      GWEN_CRYPTTOKEN_OHBCI_TAG_INST_PUBSIGNKEY,
 				      1, 0, dbuf)) {
@@ -1044,6 +1057,8 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
   }
 
   key=GWEN_CryptTokenFile_Context_GetRemoteCryptKey(fct);
+  if (key && GWEN_CryptKey_GetOwner(key)==0)
+    GWEN_CryptKey_SetOwner(key, GWEN_CryptToken_User_GetPeerId(user));
   if (GWEN_CryptTokenOHBCI__EncodeKey(key,
 				      GWEN_CRYPTTOKEN_OHBCI_TAG_INST_PUBCRYPTKEY,
 				      1, 1, dbuf)) {
@@ -1401,11 +1416,24 @@ int GWEN_CryptTokenOHBCI_Open(GWEN_CRYPTTOKEN *ct, int manage){
   assert(pm);
   pd=GWEN_PluginManager_GetPluginDescr(pm, GWEN_CryptToken_GetTokenType(ct));
   if (pd) {
-    GWEN_XMLNODE *ctNode;
+    GWEN_XMLNODE *n;
+    GWEN_XMLNODE *ctNode=0;
 
-    ctNode=GWEN_PluginDescription_GetXmlNode(pd);
-    assert(ctNode);
-    ctNode=GWEN_XMLNode_FindFirstTag(ctNode, "crypttoken", 0, 0);
+    n=GWEN_PluginDescription_GetXmlNode(pd);
+    assert(n);
+    n=GWEN_XMLNode_FindFirstTag(n, "crypttokens", 0, 0);
+    if (n) {
+      const char *st;
+
+      st=GWEN_CryptToken_GetTokenSubType(ct);
+      if (st && *st)
+        ctNode=GWEN_XMLNode_FindFirstTag(n,
+                                         "crypttoken",
+                                         "subTypeName",
+                                         st);
+      if (ctNode==0)
+        ctNode=GWEN_XMLNode_FindFirstTag(n, "crypttoken", 0, 0);
+    }
     if (ctNode) {
       rv=GWEN_CryptToken_ReadXml(ct, ctNode);
       if (rv) {

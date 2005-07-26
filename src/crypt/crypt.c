@@ -590,6 +590,18 @@ const GWEN_KEYSPEC *GWEN_CryptKey_GetKeySpec(const GWEN_CRYPTKEY *key){
 }
 
 
+
+void GWEN_CryptKey_SetKeySpec(GWEN_CRYPTKEY *key,
+                              const GWEN_KEYSPEC *cks){
+  assert(key);
+  assert(key->keyspec);
+  assert(cks);
+  GWEN_KeySpec_free(key->keyspec);
+  key->keyspec=GWEN_KeySpec_dup(cks);
+}
+
+
+
 int GWEN_CryptKey_GetOpenCount(const GWEN_CRYPTKEY *key){
   assert(key);
   return key->openCount;

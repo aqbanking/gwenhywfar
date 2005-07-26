@@ -17,6 +17,8 @@ gct_tool_SOURCES=\
   signfiles.c \
   create.c \
   showctx.c \
+  readkey.c \
+  showuser.c \
   main.c
 
 gct_tool_LDADD = \

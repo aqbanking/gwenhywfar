@@ -65,12 +65,19 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Error binding locale\n");
 #endif
 
-  GWEN_Logger_Open("aqhbci-tool", "aqhbci-tool", 0,
+  GWEN_Logger_Open("gct-tool", "gct-tool", 0,
                    GWEN_LoggerTypeConsole,
                    GWEN_LoggerFacilityUser);
-  GWEN_Logger_SetLevel("aqhbci-tool", GWEN_LoggerLevelNotice);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
 
+#ifdef DEBUG_GCT_TOOL
+  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevelInfo);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+#else
+  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevelNotice);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelNotice);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+#endif
 
 #ifdef GCT_IS_EXPERIMENTAL
   fprintf(stderr, "\n");
@@ -164,6 +171,12 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "showctx")==0) {
     rv=showCtx(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "readkey")==0) {
+    rv=readKey(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "showuser")==0) {
+    rv=showUser(db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

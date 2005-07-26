@@ -25,6 +25,7 @@
  */
 /*@{*/
 GWEN_CRYPTTOKEN *GWEN_CryptTokenOHBCI_new(GWEN_PLUGIN_MANAGER *pm,
+                                          const char *subTypeName,
                                           const char *name);
 /*@}*/
 

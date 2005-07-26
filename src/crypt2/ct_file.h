@@ -18,6 +18,23 @@
 #include <gwenhywfar/crypttoken_user.h>
 
 
+/**
+ * <p>A crypt token file may contain mutliple user contexts.</p>
+ * <p>Every user context contains the local signature sequence counter,
+ * 4 keys and a GWEN_CRYPTTOKEN_USER.</p>
+ * <p>The key ids must be chosen according to the following table:</p>
+ * <table>
+ * <tr><th>Key id</th><th>Description</th></tr>
+ * <tr><td>XXXXXX01</td><td>LocalSignKey</td></tr>
+ * <tr><td>XXXXXX02</td><td>LocalCryptKey</td></tr>
+ * <tr><td>XXXXXX03</td><td>RemoteSignKey</td></tr>
+ * <tr><td>XXXXXX04</td><td>RemoteCryptKey</td></tr>
+ * </table>
+ * <p>This table shows that the lower 8 bits are predefined. The other 24 bits
+ * can be freely chosen by the implementation of the plugin.</p>
+ */
+
+
 typedef struct GWEN_CT_FILE_CONTEXT GWEN_CT_FILE_CONTEXT;
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CT_FILE_CONTEXT, GWENHYWFAR_API)

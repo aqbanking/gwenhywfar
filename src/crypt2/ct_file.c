@@ -201,6 +201,16 @@ GWEN_CRYPTTOKEN *GWEN_CryptTokenFile_new(GWEN_PLUGIN_MANAGER *pm,
   GWEN_CryptToken_SetOpenFn(ct, GWEN_CryptTokenFile_Open);
   GWEN_CryptToken_SetCloseFn(ct, GWEN_CryptTokenFile_Close);
   GWEN_CryptToken_SetCreateFn(ct, GWEN_CryptTokenFile_Create);
+  GWEN_CryptToken_SetSignFn(ct, GWEN_CryptTokenFile_Sign);
+  GWEN_CryptToken_SetVerifyFn(ct, GWEN_CryptTokenFile_Verify);
+  GWEN_CryptToken_SetEncryptFn(ct, GWEN_CryptTokenFile_Encrypt);
+  GWEN_CryptToken_SetDecryptFn(ct, GWEN_CryptTokenFile_Decrypt);
+  GWEN_CryptToken_SetReadKeyFn(ct, GWEN_CryptTokenFile_ReadKey);
+  GWEN_CryptToken_SetWriteKeyFn(ct, GWEN_CryptTokenFile_WriteKey);
+  GWEN_CryptToken_SetReadKeySpecFn(ct, GWEN_CryptTokenFile_ReadKeySpec);
+  GWEN_CryptToken_SetWriteKeySpecFn(ct, GWEN_CryptTokenFile_WriteKeySpec);
+  GWEN_CryptToken_SetGenerateKeyFn(ct, GWEN_CryptTokenFile_GenerateKey);
+  GWEN_CryptToken_SetFillUserListFn(ct, GWEN_CryptTokenFile_FillUserList);
 
   return ct;
 }
@@ -670,6 +680,425 @@ int GWEN_CryptTokenFile_Close(GWEN_CRYPTTOKEN *ct){
   return rv;
 }
 
+
+
+
+GWEN_CT_FILE_CONTEXT*
+GWEN_CryptTokenFile__GetFileContextByKeyId(GWEN_CRYPTTOKEN *ct,
+                                           GWEN_TYPE_UINT32 kid,
+                                           const GWEN_CRYPTTOKEN_CONTEXT **pctx,
+                                           const GWEN_CRYPTTOKEN_KEYINFO **pki) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CT_FILE_CONTEXT *fc;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  fc=GWEN_CryptTokenFile_Context_List_First(lct->fileContextList);
+  if (fc==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No context");
+  }
+  while(fc) {
+    GWEN_CRYPTTOKEN_USER *u;
+
+    u=GWEN_CryptTokenFile_Context_GetUser(fc);
+    if (u) {
+      GWEN_TYPE_UINT32 cid;
+
+      cid=GWEN_CryptToken_User_GetContextId(u);
+      if (cid) {
+        const GWEN_CRYPTTOKEN_CONTEXT *ctx;
+
+        ctx=GWEN_CryptToken_GetContextById(ct, cid);
+        if (ctx) {
+          const GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+          ki=GWEN_CryptToken_Context_GetSignKeyInfo(ctx);
+          if (ki && GWEN_CryptToken_KeyInfo_GetKeyId(ki)==kid) {
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Context found");
+            if (pctx)
+              *pctx=ctx;
+            if (pki)
+              *pki=ki;
+            return fc;
+          }
+
+          ki=GWEN_CryptToken_Context_GetVerifyKeyInfo(ctx);
+          if (ki && GWEN_CryptToken_KeyInfo_GetKeyId(ki)==kid) {
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Context found");
+            if (pctx)
+              *pctx=ctx;
+            if (pki)
+              *pki=ki;
+            return fc;
+          }
+
+          ki=GWEN_CryptToken_Context_GetEncryptKeyInfo(ctx);
+          if (ki && GWEN_CryptToken_KeyInfo_GetKeyId(ki)==kid) {
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Context found");
+            if (pctx)
+              *pctx=ctx;
+            if (pki)
+              *pki=ki;
+            return fc;
+          }
+
+          ki=GWEN_CryptToken_Context_GetDecryptKeyInfo(ctx);
+          if (ki && GWEN_CryptToken_KeyInfo_GetKeyId(ki)==kid) {
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Context found");
+            if (pctx)
+              *pctx=ctx;
+            if (pki)
+              *pki=ki;
+            return fc;
+          }
+        }
+      }
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "No context id in user data");
+      }
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No user in context");
+    }
+    fc=GWEN_CryptTokenFile_Context_List_Next(fc);
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_GetSignSeq(GWEN_CRYPTTOKEN *ct,
+                                   GWEN_TYPE_UINT32 kid,
+                                   GWEN_TYPE_UINT32 *signSeq) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CT_FILE_CONTEXT *fctx;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+  *signSeq=GWEN_CryptTokenFile_Context_GetLocalSignSeq(fctx);
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_ReadKey(GWEN_CRYPTTOKEN *ct,
+                                GWEN_TYPE_UINT32 kid,
+                                GWEN_CRYPTKEY **key) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CRYPTKEY *k;
+  GWEN_CT_FILE_CONTEXT *fctx;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  assert(key);
+
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key %d not found", kid);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  switch(kid & 0xff) {
+  case 1: k=GWEN_CryptTokenFile_Context_GetLocalSignKey(fctx); break;
+  case 2: k=GWEN_CryptTokenFile_Context_GetLocalCryptKey(fctx); break;
+  case 3: k=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fctx); break;
+  case 4: k=GWEN_CryptTokenFile_Context_GetRemoteCryptKey(fctx); break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid key id %d", kid);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (k) {
+    GWEN_DB_NODE *db;
+    GWEN_ERRORCODE err;
+
+    /* make sure we always export the public part only */
+    db=GWEN_DB_Group_new("key");
+    err=GWEN_CryptKey_ToDb(k, db, 1);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+      GWEN_DB_Group_free(db);
+      return GWEN_ERROR_GENERIC;
+    }
+  
+    *key=GWEN_CryptKey_FromDb(db);
+    if (!*key) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not create key from previous export");
+      GWEN_DB_Group_free(db);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    GWEN_DB_Group_free(db);
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "No data for key id %d", kid);
+    return GWEN_ERROR_NO_DATA;
+  }
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_WriteKey(GWEN_CRYPTTOKEN *ct,
+                                 GWEN_TYPE_UINT32 kid,
+                                 const GWEN_CRYPTKEY *key) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CRYPTKEY *k;
+  GWEN_CT_FILE_CONTEXT *fctx;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  assert(key);
+
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  k=GWEN_CryptKey_dup(key);
+
+  switch(kid & 0xff) {
+  case 1: GWEN_CryptTokenFile_Context_SetLocalSignKey(fctx, k); break;
+  case 2: GWEN_CryptTokenFile_Context_SetLocalCryptKey(fctx, k); break;
+  case 3: GWEN_CryptTokenFile_Context_SetRemoteSignKey(fctx, k); break;
+  case 4: GWEN_CryptTokenFile_Context_SetRemoteCryptKey(fctx, k); break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid key id %d", kid);
+    GWEN_CryptKey_free(k);
+    return GWEN_ERROR_INVALID;
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
+                                    GWEN_TYPE_UINT32 kid,
+                                    GWEN_KEYSPEC **ks) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CRYPTKEY *k;
+  GWEN_CT_FILE_CONTEXT *fctx;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  assert(ks);
+
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  switch(kid & 0xff) {
+  case 1: k=GWEN_CryptTokenFile_Context_GetLocalSignKey(fctx); break;
+  case 2: k=GWEN_CryptTokenFile_Context_GetLocalCryptKey(fctx); break;
+  case 3: k=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fctx); break;
+  case 4: k=GWEN_CryptTokenFile_Context_GetRemoteCryptKey(fctx); break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid key id %d", kid);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (k) {
+    const GWEN_KEYSPEC *cks;
+
+    cks=GWEN_CryptKey_GetKeySpec(k);
+    assert(cks);
+    *ks=GWEN_KeySpec_dup(cks);
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "No data for key id %d", kid);
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_WriteKeySpec(GWEN_CRYPTTOKEN *ct,
+                                     GWEN_TYPE_UINT32 kid,
+                                     const GWEN_KEYSPEC *ks) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CRYPTKEY *k;
+  GWEN_CT_FILE_CONTEXT *fctx;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  assert(ks);
+
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  switch(kid & 0xff) {
+  case 1: k=GWEN_CryptTokenFile_Context_GetLocalSignKey(fctx); break;
+  case 2: k=GWEN_CryptTokenFile_Context_GetLocalCryptKey(fctx); break;
+  case 3: k=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fctx); break;
+  case 4: k=GWEN_CryptTokenFile_Context_GetRemoteCryptKey(fctx); break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid key id %d", kid);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (k) {
+    GWEN_CryptKey_SetKeySpec(k, ks);
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "No data for key id %d", kid);
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_GenerateKey(GWEN_CRYPTTOKEN *ct,
+                                    const GWEN_CRYPTTOKEN_KEYINFO *ki,
+                                    GWEN_CRYPTKEY **key) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CRYPTKEY *k;
+  GWEN_CT_FILE_CONTEXT *fctx;
+  GWEN_TYPE_UINT32 kid;
+  GWEN_ERRORCODE err;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  assert(ki);
+
+  kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
+  if (kid<1 || kid>4) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id (%d)", kid);
+    return GWEN_ERROR_INVALID;
+  }
+
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  k=GWEN_CryptKey_new();
+
+  err=GWEN_CryptKey_Generate(k, GWEN_CryptToken_KeyInfo_GetKeySize(ki));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    GWEN_CryptKey_free(k);
+    return GWEN_ERROR_CT_IO_ERROR;
+  }
+
+  switch(kid & 0xff) {
+  case 1: GWEN_CryptTokenFile_Context_SetLocalSignKey(fctx, k); break;
+  case 2: GWEN_CryptTokenFile_Context_SetLocalCryptKey(fctx, k); break;
+  case 3: GWEN_CryptTokenFile_Context_SetRemoteSignKey(fctx, k); break;
+  case 4: GWEN_CryptTokenFile_Context_SetRemoteCryptKey(fctx, k); break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid key id %d", kid);
+    GWEN_CryptKey_free(k);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (key)
+    *key=GWEN_CryptKey_dup(k);
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_FillUserList(GWEN_CRYPTTOKEN *ct,
+                                     GWEN_CRYPTTOKEN_USER_LIST *ul) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CT_FILE_CONTEXT *fc;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  fc=GWEN_CryptTokenFile_Context_List_First(lct->fileContextList);
+  while(fc) {
+    GWEN_CRYPTTOKEN_USER *u;
+
+    u=GWEN_CryptTokenFile_Context_GetUser(fc);
+    if (!u) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "File context has no user");
+      return GWEN_ERROR_GENERIC;
+    }
+    else {
+      GWEN_CRYPTTOKEN_USER *nu;
+
+      nu=GWEN_CryptToken_User_dup(u);
+      GWEN_CryptToken_User_List_Add(nu, ul);
+    }
+    fc=GWEN_CryptTokenFile_Context_List_Next(fc);
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
+                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                             GWEN_BUFFER *src,
+                             GWEN_BUFFER *dst) {
+}
+
+
+
+int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
+                               const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                               GWEN_BUFFER *src,
+                               GWEN_BUFFER *dst) {
+}
+
+
+
+int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
+                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                GWEN_BUFFER *src,
+                                GWEN_BUFFER *dst) {
+}
+
+
+
+int GWEN_CryptTokenFile_Decrypt(GWEN_CRYPTTOKEN *ct,
+                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                GWEN_BUFFER *src,
+                                GWEN_BUFFER *dst) {
+}
 
 
 

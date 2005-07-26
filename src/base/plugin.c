@@ -456,13 +456,13 @@ int GWEN_PluginManager_Register(GWEN_PLUGIN_MANAGER *pm){
   tpm=GWEN_PluginManager_FindPluginManager(pm->name);
   if (tpm) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-              "Plugin \"%s\" already registered",
+              "Plugin type \"%s\" already registered",
               pm->name);
     return -1;
   }
   GWEN_PluginManager_List_Add(pm, gwen_plugin_manager__list);
   DBG_INFO(GWEN_LOGDOMAIN,
-           "Plugin \"%s\" registered",
+           "Plugin type \"%s\" registered",
            pm->name);
   return 0;
 }
@@ -477,13 +477,13 @@ int GWEN_PluginManager_Unregister(GWEN_PLUGIN_MANAGER *pm){
   tpm=GWEN_PluginManager_FindPluginManager(pm->name);
   if (!tpm) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-              "Plugin \"%s\" not registered",
+              "Plugin type \"%s\" not registered",
               pm->name);
     return -1;
   }
   GWEN_PluginManager_List_Del(pm);
   DBG_INFO(GWEN_LOGDOMAIN,
-           "Plugin \"%s\" unregistered",
+           "Plugin type \"%s\" unregistered",
            pm->name);
   return 0;
 }

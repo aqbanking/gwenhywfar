@@ -30,6 +30,17 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_CRYPTTOKEN_CONTEXT,
                             GWENHYWFAR_API)
 
 
+typedef enum {
+  GWEN_CryptToken_ContextType_Unknown=0,
+  GWEN_CryptToken_ContextType_HBCI
+} GWEN_CRYPTTOKEN_CONTEXTTYPE;
+
+
+GWEN_CRYPTTOKEN_CONTEXTTYPE GWEN_CryptToken_ContextType_fromString(const char *s);
+const char *GWEN_CryptToken_ContextType_toString(GWEN_CRYPTTOKEN_CONTEXTTYPE t);
+
+
+
 /** @name Context
  *
  */
@@ -48,6 +59,12 @@ GWEN_TYPE_UINT32
   GWEN_CryptToken_Context_GetId(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 void GWEN_CryptToken_Context_SetId(GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                    GWEN_TYPE_UINT32 id);
+
+GWEN_CRYPTTOKEN_CONTEXTTYPE
+  GWEN_CryptToken_Context_GetContextType(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
+void GWEN_CryptToken_Context_SetContextType(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+					    GWEN_CRYPTTOKEN_CONTEXTTYPE t);
+
 
 const char*
   GWEN_CryptToken_Context_GetDescription(const GWEN_CRYPTTOKEN_CONTEXT *ctx);

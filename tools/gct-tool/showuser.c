@@ -26,55 +26,27 @@
 
 
 
-static void _dumpKeyInfo(const GWEN_CRYPTTOKEN_KEYINFO *ki, const char *name){
-  GWEN_TYPE_UINT32 flags;
-  const char *s;
-
-  fprintf(stdout, "  %s: %d, %d bits, %d bytes, %s [",
-          name,
-          GWEN_CryptToken_KeyInfo_GetKeyId(ki),
-          GWEN_CryptToken_KeyInfo_GetKeySize(ki),
-          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
-          GWEN_CryptToken_CryptAlgo_toString(GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki)));
-  flags=GWEN_CryptToken_KeyInfo_GetKeyFlags(ki);
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_SIGN)
-    fprintf(stdout, "S");
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_VERIFY)
-    fprintf(stdout, "V");
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_ENCRYPT)
-    fprintf(stdout, "E");
-  if (flags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_DECRYPT)
-    fprintf(stdout, "D");
-  fprintf(stdout, "]");
-  s=GWEN_CryptToken_KeyInfo_GetDescription(ki);
-  if (s)
-    fprintf(stdout, " (%s)", s);
-  fprintf(stdout, "\n");
-}
-
-
-
-int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int showUser(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_CRYPTTOKEN *ct;
-  unsigned int cid;
+  unsigned int ucid;
   int shown=0;
   int rv;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsTypeInt,             /* type */
-    "contextId",                  /* name */
+    "userContextId",              /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
     "i",                          /* short option */
     "id",                         /* long option */
-    "Context id (0 for any)",     /* short description */
-    "Context id (0 for any)"      /* long description */
+    "User context id (0 for any)",/* short description */
+    "User context id (0 for any)" /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -133,7 +105,7 @@ int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 0;
   }
 
-  cid=GWEN_DB_GetIntValue(db, "contextId", 0, 0);
+  ucid=GWEN_DB_GetIntValue(db, "userContextId", 0, 0);
 
   ttype=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
   assert(ttype);
@@ -167,71 +139,71 @@ int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
   else {
-    GWEN_CRYPTTOKEN_CONTEXT_LIST *l;
-    GWEN_CRYPTTOKEN_CONTEXT *ctx;
+    GWEN_CRYPTTOKEN_USER_LIST *l;
+    GWEN_CRYPTTOKEN_USER *u;
 
-    l=GWEN_CryptToken_Context_List_new();
-    rv=GWEN_CryptToken_FillContextList(ct, l);
+    l=GWEN_CryptToken_User_List_new();
+    rv=GWEN_CryptToken_FillUserList(ct, l);
     if (rv) {
-      DBG_ERROR(0, "Error filling context list");
-      GWEN_CryptToken_Context_List_free(l);
+      DBG_ERROR(0, "Error filling user list (%d)", rv);
+      GWEN_CryptToken_User_List_free(l);
       GWEN_CryptToken_Close(ct);
       return 3;
     }
 
-    ctx=GWEN_CryptToken_Context_List_First(l);
-    while(ctx) {
-      if (cid==0 || cid==GWEN_CryptToken_Context_GetId(ctx)) {
+    u=GWEN_CryptToken_User_List_First(l);
+    while(u) {
+      if (ucid==0 || ucid==GWEN_CryptToken_User_GetId(u)) {
         const char *s;
-        const GWEN_CRYPTTOKEN_KEYINFO *ki;
-        const GWEN_CRYPTTOKEN_SIGNINFO *si;
-        const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
 
         fprintf(stdout, "-------------------------------------------------\n");
-         fprintf(stdout, "Context %u",
-                (unsigned int)GWEN_CryptToken_Context_GetId(ctx));
-        s=GWEN_CryptToken_Context_GetDescription(ctx);
+        fprintf(stdout, "User %u\n",
+                (unsigned int)GWEN_CryptToken_User_GetId(u));
+
+        s=GWEN_CryptToken_User_GetServiceId(u);
         if (s)
-          fprintf(stdout, " (%s)", s);
-        fprintf(stdout, "\n");
-  
-        ki=GWEN_CryptToken_Context_GetSignKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Sign Key   ");
-  
-        ki=GWEN_CryptToken_Context_GetVerifyKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Verify Key ");
-  
-        ki=GWEN_CryptToken_Context_GetEncryptKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Encrypt Key");
-  
-        ki=GWEN_CryptToken_Context_GetDecryptKeyInfo(ctx);
-        if (ki)
-          _dumpKeyInfo(ki, "Decrypt Key");
-  
-        si=GWEN_CryptToken_Context_GetSignInfo(ctx);
-        if (si) {
-          fprintf(stdout, "  Sign Info: %d, %s, %s\n",
-                  (unsigned int)GWEN_CryptToken_SignInfo_GetId(si),
-                  GWEN_CryptToken_HashAlgo_toString(GWEN_CryptToken_SignInfo_GetHashAlgo(si)),
-                  GWEN_CryptToken_PaddAlgo_toString(GWEN_CryptToken_SignInfo_GetPaddAlgo(si)));
+          fprintf(stdout, "Service Id  : %s\n", s);
+
+        s=GWEN_CryptToken_User_GetUserId(u);
+        if (s)
+          fprintf(stdout, "User Id     : %s\n", s);
+
+        s=GWEN_CryptToken_User_GetUserName(u);
+        if (s)
+          fprintf(stdout, "User Name   : %s\n", s);
+
+        s=GWEN_CryptToken_User_GetPeerId(u);
+        if (s)
+          fprintf(stdout, "Peer Id     : %s\n", s);
+
+        s=GWEN_CryptToken_User_GetPeerName(u);
+        if (s)
+          fprintf(stdout, "Peer Name   : %s\n", s);
+
+        s=GWEN_CryptToken_User_GetAddress(u);
+        if (s) {
+          int i;
+
+          fprintf(stdout, "Address     : %s", s);
+          i=GWEN_CryptToken_User_GetPort(u);
+          if (i)
+            fprintf(stdout, " (port %d)", i);
+          fprintf(stdout, "\n");
         }
-  
-        ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
-        if (ci) {
-          fprintf(stdout, "  Crypt Info: %d, %s, %s\n",
-                  (unsigned int)GWEN_CryptToken_CryptInfo_GetId(ci),
-                  GWEN_CryptToken_CryptAlgo_toString(GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci)),
-                  GWEN_CryptToken_PaddAlgo_toString(GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci)));
-        }
+
+        s=GWEN_CryptToken_User_GetSystemId(u);
+        if (s)
+          fprintf(stdout, "System Id   : %s\n", s);
+
+        fprintf(stdout, "Context Id  : %d\n",
+                GWEN_CryptToken_User_GetContextId(u));
+
         shown++;
       }
 
-      ctx=GWEN_CryptToken_Context_List_Next(ctx);
+      u=GWEN_CryptToken_User_List_Next(u);
     } /* while */
-    GWEN_CryptToken_Context_List_free(l);
+    GWEN_CryptToken_User_List_free(l);
   }
 
 
@@ -243,11 +215,11 @@ int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   }
 
   if (!shown) {
-    if (cid==0) {
-      DBG_ERROR(0, "No context found");
+    if (ucid==0) {
+      DBG_ERROR(0, "No user found");
     }
     else {
-      DBG_ERROR(0, "Context %u not found", cid);
+      DBG_ERROR(0, "User %u not found", ucid);
     }
     return 1;
   }

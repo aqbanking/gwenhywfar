@@ -25,6 +25,7 @@ noinst_LTLIBRARIES=libcryptimpl.la
 
 noinst_HEADERS=\
  cryptssl_p.h \
+ cryptssl_bf_p.h \
  cryptssl_des_p.h \
  cryptssl_md5_p.h \
  cryptssl_sha1_p.h \
@@ -33,6 +34,7 @@ noinst_HEADERS=\
  nettransportssl_p.h
 
 libcryptimpl_la_SOURCES=\
+ cryptssl_bf.c \
  cryptssl_des.c \
  cryptssl_md5.c \
  cryptssl_sha1.c \

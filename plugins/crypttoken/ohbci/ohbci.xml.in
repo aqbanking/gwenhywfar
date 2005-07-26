@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf8"?>
+
 <plugin type="crypttoken" name="ohbci" device="file" >
   <version>@AQHBCI_VERSION_STRING@</version>
   <author>Martin Preuss (martin@libchipcard.de)</author>
@@ -24,101 +26,38 @@
 
   </descr>
 
-  <crypttoken typeName="ohbci" subTypeName="ohbci" name="OHBCI">
-
-    <flags>
-      <flag>manages_signseq</flag>
-      <flag>predef_context_only</flag>
-      <flag>context_management</flag>
-      <flag>context_ro_keys</flag>
-      <flag>context_ro_descr</flag>
-      <flag>context_ro_signdescr</flag>
-      <flag>context_ro_cryptdescr</flag>
-      <flag>context_ro_keydescrs</flag>
-    </flags>
-
-    <signinfos>
-      <signinfo>
-        <id>1</id>
-        <hashalgo>rmd160</hashalgo>
-        <paddalgo>iso9796_1a4</paddalgo>
-      </signinfo>
-    </signinfos>
-    
-    <cryptinfos>
-      <cryptinfo>
-        <id>1</id>
-        <cryptalgo>rsa</cryptalgo>
-        <paddalgo>ansix9_23</paddalgo>
-      </cryptinfo>
-    </cryptinfos>
-    
-    <keyinfos>
-      <keyinfo>
-        <keyId>1</keyId>
-        <keySize>768</keySize>
-        <minKeySize>768</minKeySize>
-        <maxKeySize>768</maxKeySize>
-        <chunksize>96</chunksize>
-        <cryptalgo>rsa</cryptalgo>
-        <keyDescription>Local Sign Key</keyDescription>
-        <keyFlags>
-          <flag>canSign</flag>
-          <flag>canVerify</flag>
-          <flag>hasSignSeq</flag>
-        </keyFlags>
-      </keyinfo>
-
-      <keyinfo>
-        <keyId>2</keyId>
-        <keySize>768</keySize>
-        <minKeySize>768</minKeySize>
-        <maxKeySize>768</maxKeySize>
-        <chunksize>96</chunksize>
-        <cryptalgo>rsa</cryptalgo>
-        <keyDescription>Local Crypt Key</keyDescription>
-        <keyFlags>
-          <flag>canEncrypt</flag>
-          <flag>canDecrypt</flag>
-        </keyFlags>
-      </keyinfo>
-
-      <keyinfo>
-        <keyId>3</keyId>
-        <keySize>768</keySize>
-        <minKeySize>768</minKeySize>
-        <maxKeySize>768</maxKeySize>
-        <chunksize>96</chunksize>
-        <cryptalgo>rsa</cryptalgo>
-        <keyDescription>Remote Sign Key</keyDescription>
-        <keyFlags>
-          <flag>canVerify</flag>
-        </keyFlags>
-      </keyinfo>
-
-      <keyinfo>
-        <keyId>4</keyId>
-        <keySize>768</keySize>
-        <minKeySize>768</minKeySize>
-        <maxKeySize>768</maxKeySize>
-        <chunksize>96</chunksize>
-        <cryptalgo>rsa</cryptalgo>
-        <keyDescription>Remote Crypt Key</keyDescription>
-        <keyFlags>
-          <flag>canEncrypt</flag>
-          <flag>canDecrypt</flag>
-        </keyFlags>
-      </keyinfo>
+  <crypttokens>
+    <crypttoken typeName="ohbci" subTypeName="rdh1" name="OHBCI">
+  
+      <flags>
+        <flag>manages_signseq</flag>
+        <flag>predef_context_only</flag>
+        <flag>context_management</flag>
+        <flag>context_ro_keys</flag>
+        <flag>context_ro_descr</flag>
+        <flag>context_ro_signdescr</flag>
+        <flag>context_ro_cryptdescr</flag>
+        <flag>context_ro_keydescrs</flag>
+      </flags>
+  
+      <signinfos>
+        <signinfo>
+          <id>1</id>
+          <hashalgo>rmd160</hashalgo>
+          <paddalgo>iso9796_1a4</paddalgo>
+        </signinfo>
+      </signinfos>
       
-    </keyinfos>
-
-    <contexts>
-      <!-- There only is one context, and it is the context for HBCI -->
-      <context>
-        <id>1</id>
-        <description>Context for HBCI operations</description>
-        
-        <signkeyinfo>
+      <cryptinfos>
+        <cryptinfo>
+          <id>1</id>
+          <cryptalgo>rsa</cryptalgo>
+          <paddalgo>ansix9_23</paddalgo>
+        </cryptinfo>
+      </cryptinfos>
+      
+      <keyinfos>
+        <keyinfo>
           <keyId>1</keyId>
           <keySize>768</keySize>
           <minKeySize>768</minKeySize>
@@ -131,42 +70,9 @@
             <flag>canVerify</flag>
             <flag>hasSignSeq</flag>
           </keyFlags>
-        </signkeyinfo>
-        
-        <verifykeyinfo>
-          <keyId>3</keyId>
-          <keySize>768</keySize>
-          <minKeySize>768</minKeySize>
-          <maxKeySize>768</maxKeySize>
-          <chunksize>96</chunksize>
-          <cryptalgo>rsa</cryptalgo>
-          <keyDescription>Remote Sign Key</keyDescription>
-          <keyFlags>
-            <flag>canVerify</flag>
-          </keyFlags>
-        </verifykeyinfo>
-
-        <signinfo>
-          <id>1</id>
-          <hashalgo>rmd160</hashalgo>
-          <paddalgo>iso9796_1a4</paddalgo>
-        </signinfo>
-
-        <encryptKeyInfo>
-          <keyId>4</keyId>
-          <keySize>768</keySize>
-          <minKeySize>768</minKeySize>
-          <maxKeySize>768</maxKeySize>
-          <chunksize>96</chunksize>
-          <cryptalgo>rsa</cryptalgo>
-          <keyDescription>Remote Crypt Key</keyDescription>
-          <keyFlags>
-            <flag>canEncrypt</flag>
-            <flag>canDecrypt</flag>
-          </keyFlags>
-        </encryptKeyInfo>
-
-        <decryptKeyInfo>
+        </keyinfo>
+  
+        <keyinfo>
           <keyId>2</keyId>
           <keySize>768</keySize>
           <minKeySize>768</minKeySize>
@@ -178,18 +84,117 @@
             <flag>canEncrypt</flag>
             <flag>canDecrypt</flag>
           </keyFlags>
-        </decryptKeyInfo>
-
-        <cryptinfo>
-          <id>1</id>
+        </keyinfo>
+  
+        <keyinfo>
+          <keyId>3</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>768</maxKeySize>
+          <chunksize>96</chunksize>
           <cryptalgo>rsa</cryptalgo>
-          <paddalgo>ansix9_23</paddalgo>
-        </cryptinfo>
+          <keyDescription>Remote Sign Key</keyDescription>
+          <keyFlags>
+            <flag>canVerify</flag>
+          </keyFlags>
+        </keyinfo>
+  
+        <keyinfo>
+          <keyId>4</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>768</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>rsa</cryptalgo>
+          <keyDescription>Remote Crypt Key</keyDescription>
+          <keyFlags>
+            <flag>canEncrypt</flag>
+            <flag>canDecrypt</flag>
+          </keyFlags>
+        </keyinfo>
         
-      </context>
-    </contexts>
-    
-  </crypttoken>
+      </keyinfos>
+  
+      <contexts>
+        <!-- There only is one context, and it is the context for HBCI -->
+        <context>
+          <id>1</id>
+          <contextType>hbci</contextType>
+          <description>Context for HBCI operations</description>
+          
+          <signkeyinfo>
+            <keyId>1</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>rsa</cryptalgo>
+            <keyDescription>Local Sign Key</keyDescription>
+            <keyFlags>
+              <flag>canSign</flag>
+              <flag>canVerify</flag>
+              <flag>hasSignSeq</flag>
+            </keyFlags>
+          </signkeyinfo>
+          
+          <verifykeyinfo>
+            <keyId>3</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>rsa</cryptalgo>
+            <keyDescription>Remote Sign Key</keyDescription>
+            <keyFlags>
+              <flag>canVerify</flag>
+            </keyFlags>
+          </verifykeyinfo>
+  
+          <signinfo>
+            <id>1</id>
+            <hashalgo>rmd160</hashalgo>
+            <paddalgo>iso9796_1a4</paddalgo>
+          </signinfo>
+  
+          <encryptKeyInfo>
+            <keyId>4</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>rsa</cryptalgo>
+            <keyDescription>Remote Crypt Key</keyDescription>
+            <keyFlags>
+              <flag>canEncrypt</flag>
+              <flag>canDecrypt</flag>
+            </keyFlags>
+          </encryptKeyInfo>
+  
+          <decryptKeyInfo>
+            <keyId>2</keyId>
+            <keySize>768</keySize>
+            <minKeySize>768</minKeySize>
+            <maxKeySize>768</maxKeySize>
+            <chunksize>96</chunksize>
+            <cryptalgo>rsa</cryptalgo>
+            <keyDescription>Local Crypt Key</keyDescription>
+            <keyFlags>
+              <flag>canEncrypt</flag>
+              <flag>canDecrypt</flag>
+            </keyFlags>
+          </decryptKeyInfo>
+  
+          <cryptinfo>
+            <id>1</id>
+            <cryptalgo>rsa</cryptalgo>
+            <paddalgo>ansix9_23</paddalgo>
+          </cryptinfo>
+          
+        </context>
+      </contexts>
+      
+    </crypttoken>
+  </crypttokens>
   
   
 </plugin>

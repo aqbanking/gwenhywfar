@@ -270,6 +270,40 @@ GWEN_CryptToken_PinEncoding_toString(GWEN_CRYPTTOKEN_PINENCODING pe){
 
 
 
+GWEN_CRYPTTOKEN_CONTEXTTYPE
+GWEN_CryptToken_ContextType_fromString(const char *s) {
+  assert(s);
+  if (strcasecmp(s, "unknown")==0)
+    return GWEN_CryptToken_ContextType_Unknown;
+  else if (strcasecmp(s, "hbci")==0)
+    return GWEN_CryptToken_ContextType_HBCI;
+  else {
+    DBG_WARN(GWEN_LOGDOMAIN, "Unknown context type \"%s\"", s);
+    return GWEN_CryptToken_ContextType_Unknown;
+  }
+}
+
+
+
+const char*
+GWEN_CryptToken_ContextType_toString(GWEN_CRYPTTOKEN_CONTEXTTYPE t) {
+  switch(t) {
+  case GWEN_CryptToken_ContextType_Unknown:
+    return "unknown";
+  case GWEN_CryptToken_ContextType_HBCI:
+    return "hbci";
+
+  default:
+    DBG_WARN(GWEN_LOGDOMAIN, "Unhandled context type %d", t);
+    return "unknown";
+  }
+}
+
+
+
+
+
+
 
 
 
@@ -997,6 +1031,8 @@ GWEN_CryptToken_Context_dup(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
   if (ctx->description)
     nctx->description=strdup(ctx->description);
 
+  nctx->contextType=ctx->contextType;
+
   return nctx;
 }
 
@@ -1011,6 +1047,11 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromDb(GWEN_DB_NODE *db){
 
   ctx=GWEN_CryptToken_Context_new();
   ctx->id=GWEN_DB_GetIntValue(db, "id", 0, 0);
+  s=GWEN_DB_GetCharValue(db, "contextType", 0, 0);
+  if (s)
+    ctx->contextType=GWEN_CryptToken_ContextType_fromString(s);
+  else
+    ctx->contextType=GWEN_CryptToken_ContextType_Unknown;
   s=GWEN_DB_GetCharValue(db, "description", 0, 0);
   if (s)
     ctx->description=strdup(s);
@@ -1046,6 +1087,9 @@ void GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
   assert(ctx);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "id", ctx->id);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "contextType",
+                       GWEN_CryptToken_ContextType_toString(ctx->contextType));
   if (ctx->description)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "description", ctx->description);
@@ -1099,6 +1143,11 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromXml(GWEN_XMLNODE *n){
 
   ctx=GWEN_CryptToken_Context_new();
   ctx->id=GWEN_XMLNode_GetIntValue(n, "id", 0);
+  s=GWEN_XMLNode_GetCharValue(n, "contextType", 0);
+  if (s)
+    ctx->contextType=GWEN_CryptToken_ContextType_fromString(s);
+  else
+    ctx->contextType=GWEN_CryptToken_ContextType_Unknown;
   s=GWEN_XMLNode_GetCharValue(n, "description", 0);
   if (s)
     ctx->description=strdup(s);
@@ -1141,6 +1190,22 @@ void GWEN_CryptToken_Context_SetId(GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                    GWEN_TYPE_UINT32 id){
   assert(ctx);
   ctx->id=id;
+}
+
+
+
+GWEN_CRYPTTOKEN_CONTEXTTYPE
+GWEN_CryptToken_Context_GetContextType(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
+  assert(ctx);
+  return ctx->contextType;
+}
+
+
+
+void GWEN_CryptToken_Context_SetContextType(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                            GWEN_CRYPTTOKEN_CONTEXTTYPE t){
+  assert(ctx);
+  ctx->contextType=t;
 }
 
 

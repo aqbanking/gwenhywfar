@@ -321,7 +321,6 @@ int signFiles(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     ctx=GWEN_CryptToken_Context_dup(cctx);
   }
   else {
-    GWEN_CRYPTTOKEN_CONTEXT *ctx;
     const GWEN_CRYPTTOKEN_CONTEXT *cctx;
 
     cctx=GWEN_CryptToken_GetContextById(ct, context);

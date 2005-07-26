@@ -71,12 +71,56 @@ int GWEN_CryptTokenFile__WriteFile(GWEN_CRYPTTOKEN *ct);
 int GWEN_CryptTokenFile__ReloadIfNeeded(GWEN_CRYPTTOKEN *ct);
 
 
+GWEN_CT_FILE_CONTEXT*
+GWEN_CryptTokenFile__GetFileContextByKeyId(GWEN_CRYPTTOKEN *ct,
+                                           GWEN_TYPE_UINT32 kid,
+                                           const GWEN_CRYPTTOKEN_CONTEXT **pctx,
+                                           const GWEN_CRYPTTOKEN_KEYINFO **pki);
+
+
 int GWEN_CryptTokenFile_Create(GWEN_CRYPTTOKEN *ct);
 int GWEN_CryptTokenFile_Open(GWEN_CRYPTTOKEN *ct, int managed);
 int GWEN_CryptTokenFile_Close(GWEN_CRYPTTOKEN *ct);
 
 
+int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
+                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                             GWEN_BUFFER *src,
+                             GWEN_BUFFER *dst);
+int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
+                               const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                               GWEN_BUFFER *src,
+                               GWEN_BUFFER *dst);
+int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
+                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                GWEN_BUFFER *src,
+                                GWEN_BUFFER *dst);
+int GWEN_CryptTokenFile_Decrypt(GWEN_CRYPTTOKEN *ct,
+                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                GWEN_BUFFER *src,
+                                GWEN_BUFFER *dst);
+int GWEN_CryptTokenFile_ReadKey(GWEN_CRYPTTOKEN *ct,
+                                GWEN_TYPE_UINT32 kid,
+                                GWEN_CRYPTKEY **key);
+int GWEN_CryptTokenFile_WriteKey(GWEN_CRYPTTOKEN *ct,
+                                 GWEN_TYPE_UINT32 kid,
+                                 const GWEN_CRYPTKEY *key);
+int GWEN_CryptTokenFile_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
+                                    GWEN_TYPE_UINT32 kid,
+                                    GWEN_KEYSPEC **ks);
+int GWEN_CryptTokenFile_WriteKeySpec(GWEN_CRYPTTOKEN *ct,
+                                     GWEN_TYPE_UINT32 kid,
+                                     const GWEN_KEYSPEC *ks);
+int GWEN_CryptTokenFile_GenerateKey(GWEN_CRYPTTOKEN *ct,
+                                    const GWEN_CRYPTTOKEN_KEYINFO *ki,
+                                    GWEN_CRYPTKEY **key);
 
+int GWEN_CryptTokenFile_GetSignSeq(GWEN_CRYPTTOKEN *ct,
+                                   GWEN_TYPE_UINT32 kid,
+                                   GWEN_TYPE_UINT32 *signSeq);
+
+int GWEN_CryptTokenFile_FillUserList(GWEN_CRYPTTOKEN *ct,
+                                     GWEN_CRYPTTOKEN_USER_LIST *ul);
 
 
 
