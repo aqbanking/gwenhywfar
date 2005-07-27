@@ -2,6 +2,23 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/07/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_BufferedIO_ReadRawForced() now returns an error (not a warning) when
+  only partial data has been read
+- GWEN_MsgEngine: removed '"' from list of default delimiters
+- GWEN_MsgEngine: removed '"' from list of characters to escape
+- improved structure of new OHBCI keyfiles:
+   c3 xx xx 16 00 05 "OHBCI" VMAJOR VMINOR CRYPT
+   -> new tags:
+     GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM            0xc3
+       GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_INVALID   0xc1 (was old DES)
+      (GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_DES)      0xc2
+       GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_BF        0xc3
+  The plugin should still read old files and write them as they have been
+  read, but new files will be in the new format.
+
+
 2005-07-27   Christian Stimming <stimming@tuhh.de>
 
 	* plugins/crypttoken/ohbci/ohbci.c: Fix more signedness warnings:
@@ -13,13 +30,6 @@
 	* gwenui/tablewidget.c, textwidget.c, widget.c: Fix gcc4 warnings
 	about different pointer signedness by adapting char* and unsigned
 	char* pointers to the actual function prototypes.
-
-2005/07/27: Martin Preuss<martin@libchipcard.de>
--------------------------------------------------
-- GWEN_BufferedIO_ReadRawForced() now returns an error (not a warning) when
-  only partial data has been read
-- GWEN_MsgEngine: removed '"' from list of default delimiters
-- GWEN_MsgEngine: removed '"' from list of characters to escape
 
 
 2005/07/26: Martin Preuss<martin@libchipcard.de>

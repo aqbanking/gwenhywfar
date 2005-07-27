@@ -550,7 +550,7 @@ int GWEN_CryptTokenFile__ReloadIfNeeded(GWEN_CRYPTTOKEN *ct){
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
-  if (fstat(lct->fd, &st)) {
+  if (stat(GWEN_CryptToken_GetTokenName(ct), &st)) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "stat(%s): %s",
               GWEN_CryptToken_GetTokenName(ct),
@@ -572,7 +572,7 @@ int GWEN_CryptTokenFile__ReloadIfNeeded(GWEN_CRYPTTOKEN *ct){
     }
   }
   else {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Keyfile unchanged, not reloading");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Keyfile unchanged, not reloading");
   }
   return 0;
 }

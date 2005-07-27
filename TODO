@@ -17,3 +17,13 @@ xml:
   - create an XML loader/saver context. This may contain callbacks for
     postprocessing of tags when reading an XML file. It may also contain
     some conversion settings etc.
+
+
+ohbci:
+ - implement new structure:
+   c3 xx xx 16 00 05 "OHBCI" VMAJOR VMINOR CRYPT
+   -> new tags:
+     GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM            0xc3
+       GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_INVALID   0xc1 (was old DES)
+      (GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_DES)      0xc2
+       GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_BF        0xc3

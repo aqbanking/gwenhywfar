@@ -18,16 +18,22 @@
 
 #define GWEN_CRYPTTOKEN_OHBCI_NAME         "OHBCI"
 #define GWEN_CRYPTTOKEN_OHBCI_VMAJOR       1
-#define GWEN_CRYPTTOKEN_OHBCI_VMINOR       5
+#define GWEN_CRYPTTOKEN_OHBCI_VMINOR       6
 
 #define GWEN_CRYPTTOKEN_OHBCI_KEYLEN       768
 #define GWEN_CRYPTTOKEN_OHBCI_PINMINLENGTH 4 /* temporary, should be 5 or more */
 
 #define GWEN_CRYPTTOKEN_OHBCI_MAX_PIN_TRY 10
 
-#define GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_OLD          (unsigned char)0xc1
-#define GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT              (unsigned char)0xc2
+/* new in 1.6 */
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM1            (unsigned char)0xc1
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM2            (unsigned char)0xc2
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM3            (unsigned char)0xc3
 
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_OLD          GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM1
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT              GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM2
+/* new in 1.6 */
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_BF           GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM3
 
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_VERSION_MAJOR      (unsigned char)0x02
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_VERSION_MINOR      (unsigned char)0x03
@@ -55,6 +61,9 @@
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_SERVER_ADDR        (unsigned char)0xd3
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_SERVER_PORT        (unsigned char)0xd4
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_REMOTE_SEQ         (unsigned char)0xd5
+
+/* new in version 1.6 */
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_HEADER             (unsigned char)0x16
 
 /* keydata */
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_ISPUBLIC      (unsigned char) 0x01
@@ -106,7 +115,9 @@ struct GWEN_CRYPTTOKEN_OHBCI {
   GWEN_CRYPTTOKEN_CREATE_FN createFn;
   GWEN_CRYPTTOKEN_CLOSE_FN closeFn;
 
+  unsigned int mediumTag;
   unsigned int cryptoTag;
+  unsigned int vminor;
 
   char password[16];
   int passWordIsSet;
@@ -121,11 +132,15 @@ void GWEN_CryptTokenOHBCI_FreeData(void *bp, void *p);
 int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,
                                       GWEN_BUFFER *fbuf,
                                       int trynum);
+int GWEN_CryptTokenOHBCI__DecryptFile16(GWEN_CRYPTTOKEN *ct,
+                                        GWEN_BUFFER *fbuf,
+                                        int trynum);
 void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
                                      GWEN_TAG16 *keyTlv,
                                      GWEN_DB_NODE *dbKeys,
                                      const char *keyName);
 int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf);
+
 
 
 int GWEN_CryptTokenOHBCI__EncodeKey(const GWEN_CRYPTKEY *key,

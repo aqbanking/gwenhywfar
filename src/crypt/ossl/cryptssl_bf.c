@@ -118,6 +118,9 @@ GWEN_ERRORCODE GWEN_CryptKeyBF_Crypt(const GWEN_CRYPTKEY *key,
 
   srclen=GWEN_Buffer_GetUsedBytes(src);
   if (srclen % GWEN_CryptKey_GetChunkSize(key)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Modulo found (srclen=%d, chunk size=%d",
+              srclen, GWEN_CryptKey_GetChunkSize(key));
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
