@@ -7,6 +7,7 @@
 - GWEN_BufferedIO_ReadRawForced() now returns an error (not a warning) when
   only partial data has been read
 - GWEN_MsgEngine: removed '"' from list of default delimiters
+- GWEN_MsgEngine: removed '"' from list of characters to escape
 
 
 2005/07/26: Martin Preuss<martin@libchipcard.de>
