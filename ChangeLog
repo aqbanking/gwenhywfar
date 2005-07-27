@@ -9,6 +9,7 @@
 - added blowfish encryption/decryption when using OpenSSL
 - function GWEN_PluginDescription_GetLongDescrByFormat() now tries to find
   the localized version of the long description
+- added gct-tool command "changepin"
 
 
 2005/07/24: Martin Preuss<martin@libchipcard.de>

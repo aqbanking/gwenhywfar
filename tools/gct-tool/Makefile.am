@@ -19,6 +19,7 @@ gct_tool_SOURCES=\
   showctx.c \
   readkey.c \
   showuser.c \
+  changepin.c \
   main.c
 
 gct_tool_LDADD = \
