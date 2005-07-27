@@ -775,10 +775,17 @@ int GWEN_CryptTokenFile_GetSignSeq(GWEN_CRYPTTOKEN *ct,
                                    GWEN_TYPE_UINT32 *signSeq) {
   GWEN_CRYPTTOKEN_FILE *lct;
   GWEN_CT_FILE_CONTEXT *fctx;
+  int rv;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
+
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
 
   fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
   if (!fctx) {
@@ -798,12 +805,19 @@ int GWEN_CryptTokenFile_ReadKey(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_FILE *lct;
   GWEN_CRYPTKEY *k;
   GWEN_CT_FILE_CONTEXT *fctx;
+  int rv;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
   assert(key);
+
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
 
   fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
   if (!fctx) {
@@ -860,12 +874,19 @@ int GWEN_CryptTokenFile_WriteKey(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_FILE *lct;
   GWEN_CRYPTKEY *k;
   GWEN_CT_FILE_CONTEXT *fctx;
+  int rv;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
   assert(key);
+
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
 
   fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
   if (!fctx) {
@@ -898,12 +919,19 @@ int GWEN_CryptTokenFile_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_FILE *lct;
   GWEN_CRYPTKEY *k;
   GWEN_CT_FILE_CONTEXT *fctx;
+  int rv;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
   assert(ks);
+
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
 
   fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
   if (!fctx) {
@@ -945,12 +973,19 @@ int GWEN_CryptTokenFile_WriteKeySpec(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_FILE *lct;
   GWEN_CRYPTKEY *k;
   GWEN_CT_FILE_CONTEXT *fctx;
+  int rv;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
   assert(ks);
+
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
 
   fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
   if (!fctx) {
@@ -990,12 +1025,19 @@ int GWEN_CryptTokenFile_GenerateKey(GWEN_CRYPTTOKEN *ct,
   GWEN_CT_FILE_CONTEXT *fctx;
   GWEN_TYPE_UINT32 kid;
   GWEN_ERRORCODE err;
+  int rv;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
   assert(ki);
+
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
 
   kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
   if (kid<1 || kid>4) {
@@ -1042,10 +1084,17 @@ int GWEN_CryptTokenFile_FillUserList(GWEN_CRYPTTOKEN *ct,
                                      GWEN_CRYPTTOKEN_USER_LIST *ul) {
   GWEN_CRYPTTOKEN_FILE *lct;
   GWEN_CT_FILE_CONTEXT *fc;
+  int rv;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
+
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
 
   fc=GWEN_CryptTokenFile_Context_List_First(lct->fileContextList);
   while(fc) {
@@ -1074,6 +1123,116 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
                              const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                              GWEN_BUFFER *src,
                              GWEN_BUFFER *dst) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CT_FILE_CONTEXT *fctx;
+  const GWEN_CRYPTTOKEN_KEYINFO *ki;
+  const GWEN_CRYPTTOKEN_SIGNINFO *si;
+  int rv;
+  GWEN_BUFFER *hbuf;
+  GWEN_ERRORCODE err;
+  GWEN_TYPE_UINT32 kid;
+  GWEN_CRYPTKEY *key;
+  unsigned int ui;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  /* get sign info */
+  si=GWEN_CryptToken_Context_GetSignInfo(ctx);
+  assert(si);
+
+  /* get keyinfo and perform some checks */
+  ki=GWEN_CryptToken_Context_GetSignKeyInfo(ctx);
+  assert(ki);
+  kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
+  if ((kid & 0xff)!=1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id");
+    return GWEN_ERROR_INVALID;
+  }
+  if (!(GWEN_CryptToken_KeyInfo_GetKeyFlags(ki) &
+	GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_SIGN)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Key can not be used for signing");
+    return GWEN_ERROR_INVALID;
+  }
+  if (GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki)!=
+      GWEN_CryptToken_CryptAlgo_RSA) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid crypt algo");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* get user context */
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* check for existence of the key */
+  key=GWEN_CryptTokenFile_Context_GetLocalSignKey(fctx);
+  if (key==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No key");
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* hash data */
+  hbuf=GWEN_Buffer_new(0, GWEN_CryptToken_KeyInfo_GetChunkSize(ki), 0, 1);
+  rv=GWEN_CryptToken_Hash(GWEN_CryptToken_SignInfo_GetHashAlgo(si),
+			  GWEN_Buffer_GetStart(src),
+			  GWEN_Buffer_GetUsedBytes(src),
+			  hbuf);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_Buffer_free(hbuf);
+    return rv;
+  }
+
+  /* padd hash */
+  GWEN_Buffer_Rewind(hbuf);
+  rv=GWEN_CryptToken_Padd(GWEN_CryptToken_SignInfo_GetPaddAlgo(si),
+                          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+                          hbuf);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_Buffer_free(hbuf);
+    return rv;
+  }
+  if (GWEN_Buffer_GetUsedBytes(hbuf)!=
+      GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes)",
+              GWEN_CryptToken_KeyInfo_GetChunkSize(ki));
+    GWEN_Buffer_free(hbuf);
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* sign padded hash */
+  GWEN_Buffer_Rewind(hbuf);
+  err=GWEN_CryptKey_Sign(key, hbuf, dst);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    GWEN_Buffer_free(hbuf);
+    return GWEN_ERROR_CT_IO_ERROR;
+  }
+  GWEN_Buffer_free(hbuf);
+
+  /* TODO: Lock file */
+
+  /* increment signature sequence counter */
+  ui=GWEN_CryptTokenFile_Context_GetRemoteSignSeq(fctx);
+  ui++;
+  GWEN_CryptTokenFile_Context_SetRemoteSignSeq(fctx, ui);
+
+  /* write file */
+  rv=GWEN_CryptTokenFile__WriteFile(ct);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error writing file (%d)", rv);
+    return GWEN_ERROR_CT_IO_ERROR;
+  }
+
+  /* TODO: Unlock file */
+
+  /* done */
+  return 0;
 }
 
 

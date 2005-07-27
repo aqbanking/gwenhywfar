@@ -10,6 +10,8 @@
 - function GWEN_PluginDescription_GetLongDescrByFormat() now tries to find
   the localized version of the long description
 - added gct-tool command "changepin"
+- changed behaviour of GWEN_Error_GetSimpleCode(): It now only returns
+  success only if the error code was "0" (thus disregarding severity)
 
 
 2005/07/24: Martin Preuss<martin@libchipcard.de>

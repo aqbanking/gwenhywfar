@@ -467,12 +467,18 @@ int GWEN_Error_GetSimpleCode(GWEN_ERRORCODE c){
   const char *t;
   int r;
 
-  if (GWEN_Error_IsOk(c))
+  if (c==0)
     return GWEN_SUCCESS;
 
   code=GWEN_Error_GetCode(c);
   t=GWEN_Error_GetTypename(GWEN_Error_GetType(c));
   r=GWEN_ERROR_GENERIC;
+
+  if (t==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid error type %d",
+              GWEN_Error_GetType(c));
+    return GWEN_ERROR_GENERIC;
+  }
 
   if (strcasecmp(t, GWEN_SOCKET_ERROR_TYPE)==0) {
     switch(code) {
