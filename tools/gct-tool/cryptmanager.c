@@ -344,9 +344,9 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
       break;
   } /* while */
 
-  strcpy(pwbuffer, lpwbuffer1);
+  strcpy((char*)(pwbuffer), lpwbuffer1);
   memset(lpwbuffer1, 0, sizeof(lpwbuffer1));
-  *pinLength=strlen(pwbuffer);
+  *pinLength=strlen((char*)(pwbuffer));
   return 0;
 }
 

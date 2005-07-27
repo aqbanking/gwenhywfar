@@ -81,7 +81,7 @@ static int signFile(GWEN_CRYPTTOKEN *ct,
   GWEN_Buffer_free(fbuf);
 
   b64buf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_Base64_Encode(GWEN_Buffer_GetStart(sigbuf),
+  rv=GWEN_Base64_Encode((unsigned char*)(GWEN_Buffer_GetStart(sigbuf)),
                         GWEN_Buffer_GetUsedBytes(sigbuf),
                         b64buf, 0);
   if (rv) {

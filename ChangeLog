@@ -4,6 +4,12 @@
 
 2005-07-27   Christian Stimming <stimming@tuhh.de>
 
+	* plugins/crypttoken/ohbci/ohbci.c: Fix more signedness warnings:
+	When using GWEN_CryptManager_GetPin, the password is returned in a
+	'unsigned char*' buffer but has to be used in a 'char*' buffer
+	afterwards. Added temporary buffer and copying so that the correct
+	signedness is used where needed.
+
 	* gwenui/tablewidget.c, textwidget.c, widget.c: Fix gcc4 warnings
 	about different pointer signedness by adapting char* and unsigned
 	char* pointers to the actual function prototypes.
