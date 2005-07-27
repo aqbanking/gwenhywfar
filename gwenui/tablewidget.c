@@ -590,7 +590,7 @@ void GWEN_TableWidget_DrawBorder(GWEN_WIDGET *w, int y1, int y2){
 
   if (win->flags & GWEN_TABLEWIDGET_FLAGS_COLBORDER) {
     unsigned int i;
-    unsigned char vert[3]={
+    /*unsigned -- see below*/ char vert[3]={
       GWEN_WIDGET_CHAR_ESC_CHAR,
       GWEN_WIDGET_CHAR_VLINE,
       0};
@@ -618,6 +618,9 @@ void GWEN_TableWidget_DrawBorder(GWEN_WIDGET *w, int y1, int y2){
           if (GWEN_TextWidget_LineSetPos(w, lh, x)) {
             DBG_NOTICE(0, "Could not set pos %d", x);
           }
+	  /* The 'vert' argument is expected to be 'char*', not
+	     'unsigned char*', therefore the definition above has
+	     been changed. */
           GWEN_TextWidget_LineWriteText(w, lh,
                                         vert, 0);
         }

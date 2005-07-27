@@ -529,7 +529,7 @@ void GWEN_TextWidget_Draw(GWEN_WIDGET *w){
 
 int GWEN_TextWidget_Ascify(GWEN_BUFFER *src, GWEN_BUFFER *dst) {
   GWEN_TYPE_UINT32 len;
-  const unsigned char *p;
+  const char *p;
   int lastWasEscape;
 
   p=GWEN_Buffer_GetStart(src);
@@ -540,7 +540,10 @@ int GWEN_TextWidget_Ascify(GWEN_BUFFER *src, GWEN_BUFFER *dst) {
     if (lastWasEscape)
       lastWasEscape=0;
     else {
-      if (*p>=0xf0)
+      /* This assignment involves the type conversion from 'char'
+	 to 'unsigned char'.*/
+      unsigned char p_unsigned = *p;
+      if (p_unsigned >= 0xf0)
         lastWasEscape=1;
       else
         GWEN_Buffer_AppendByte(dst, *p);
@@ -961,7 +964,7 @@ int GWEN_TextWidget_DecompressLine(GWEN_TW_LINE *l){
   unsigned int i;
   int lastWasEsc;
   int lastEscape;
-  const unsigned char *p;
+  const char *p;
 
   assert(l);
 
@@ -1271,8 +1274,8 @@ int GWEN_TextWidget_LineClear(GWEN_WIDGET *w,
 int GWEN_TextWidget__DrawLine(GWEN_WIDGET *w, GWEN_TW_LINE *l,
                               int x, int y, int len) {
   GWEN_TEXTWIDGET *win;
-  const unsigned char *p;
-  const unsigned char *startPtr;
+  const char *p;
+  const char *startPtr;
   int i, j, pos;
   int lastWasEsc, lastEsc = GWEN_WIDGET_ATT_ESC_CHAR;
 
@@ -1342,11 +1345,12 @@ int GWEN_TextWidget__DrawLine(GWEN_WIDGET *w, GWEN_TW_LINE *l,
       }
     }
     else {
-      if (*p==GWEN_WIDGET_ATT_ESC_CHAR) {
+      unsigned char p_unsigned = *p;
+      if (p_unsigned == GWEN_WIDGET_ATT_ESC_CHAR) {
         lastWasEsc=1;
         lastEsc=GWEN_WIDGET_ATT_ESC_CHAR;
       }
-      else if (*p==GWEN_WIDGET_CHAR_ESC_CHAR) {
+      else if (p_unsigned == GWEN_WIDGET_CHAR_ESC_CHAR) {
         lastWasEsc=1;
         lastEsc=GWEN_WIDGET_CHAR_ESC_CHAR;
       }
@@ -1551,8 +1555,8 @@ int GWEN_TextWidget_LineWriteText_OV(GWEN_WIDGET *w,
                                      int len) {
   GWEN_TEXTWIDGET *win;
   unsigned int i;
-  unsigned char *pAtts;
-  unsigned char *pChars;
+  char *pAtts;
+  char *pChars;
   GWEN_TYPE_UINT32 currentAtts;
   unsigned int j;
 

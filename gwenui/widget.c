@@ -691,7 +691,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
     int x, y;
     int maxc;
     int len;
-    const unsigned char *p;
+    const char *p;
 
     x=GWEN_EventWriteAt_GetX(e);
     y=GWEN_EventWriteAt_GetY(e);
@@ -703,7 +703,7 @@ GWEN_UI_RESULT GWEN_Widget__HandleEvent(GWEN_WIDGET *w,
         y++;
       maxc-=2;
     }
-    p=(const unsigned char*)GWEN_EventWriteAt_GetText(e);
+    p = GWEN_EventWriteAt_GetText(e);
 
     if (p) {
       int attrs;

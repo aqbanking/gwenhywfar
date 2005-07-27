@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-07-27   Christian Stimming <stimming@tuhh.de>
+
+	* gwenui/tablewidget.c, textwidget.c, widget.c: Fix gcc4 warnings
+	about different pointer signedness by adapting char* and unsigned
+	char* pointers to the actual function prototypes.
+
 2005/07/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - GWEN_BufferedIO_ReadRawForced() now returns an error (not a warning) when
