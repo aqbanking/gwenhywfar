@@ -386,6 +386,11 @@ GWENHYWFAR_API
 
 /**
  * Reads exactly the amount of bytes given or returns an error.
+ * If less bytes are read than requested the GWN_BUFFEREDIO error
+ * @ref GWEN_BUFFEREDIO_ERROR_PARTIAL is returned (which corresponds
+ * to the GWEN_ERROR code @ref GWEN_ERROR_PARTIAL when converted via
+ * @ref GWEN_Error_GetSimpleCode).
+ * The parameter bsize will be updated in any case.
  */
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
@@ -394,6 +399,11 @@ GWENHYWFAR_API
 
 /**
  * Writes exactly the amount of bytes given or returns an error.
+ * If less bytes are written than requested the GWN_BUFFEREDIO error
+ * @ref GWEN_BUFFEREDIO_ERROR_PARTIAL is returned (which corresponds
+ * to the GWEN_ERROR code @ref GWEN_ERROR_PARTIAL when converted via
+ * @ref GWEN_Error_GetSimpleCode).
+ * The parameter bsize will be updated in any case.
  */
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_BufferedIO_WriteRawForced(GWEN_BUFFEREDIO *bt,

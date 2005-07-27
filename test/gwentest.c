@@ -4143,6 +4143,91 @@ int testSort(int argc, char **argv) {
 
 
 
+int testBIO(int argc, char **argv) {
+  GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
+  int fd;
+  FILE *f;
+  char buf[128];
+  char buf2[512];
+  unsigned int bread;
+
+  f=fopen("testfile.128", "w+");
+  if (!f) {
+    DBG_ERROR(0, "fopen: %s", strerror(errno));
+    return 1;
+  }
+
+  memset(buf, 0xa5, 128);
+  if (1!=fwrite(buf, 128, 1, f)) {
+    DBG_ERROR(0, "fwrite: %s", strerror(errno));
+    return 1;
+  }
+
+  if (fclose(f)) {
+    DBG_ERROR(0, "fclose: %s", strerror(errno));
+    return 1;
+  }
+
+  fd=open("testfile.128", O_RDONLY);
+  if (fd==-1) {
+    DBG_ERROR(0, "open: %s", strerror(errno));
+    return 1;
+  }
+
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+
+  memset(buf2, 0, sizeof(buf2));
+  bread=128;
+  err=GWEN_BufferedIO_ReadRawForced(bio, buf2, &bread);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR(0, "Got an error (%d bytes read): %d",
+              bread,
+              GWEN_Error_GetSimpleCode(err));
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  else {
+    DBG_ERROR(0, "Got this return value (%d bytes read):", bread);
+    DBG_ERROR_ERR(0, err);
+  }
+
+  bread=128;
+  err=GWEN_BufferedIO_ReadRawForced(bio, buf2+128, &bread);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR(0, "Got an error (%d bytes read): %d",
+              bread,
+              GWEN_Error_GetSimpleCode(err));
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  else {
+    DBG_ERROR(0, "Got this return value (%d bytes read):", bread);
+    DBG_ERROR_ERR(0, err);
+  }
+
+  f=fopen("testfile.out", "w+");
+  if (!f) {
+    DBG_ERROR(0, "fopen: %s", strerror(errno));
+    return 1;
+  }
+
+  if (1!=fwrite(buf2, bread+128, 1, f)) {
+    DBG_ERROR(0, "fwrite: %s", strerror(errno));
+    return 1;
+  }
+
+  if (fclose(f)) {
+    DBG_ERROR(0, "fclose: %s", strerror(errno));
+    return 1;
+  }
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4276,6 +4361,8 @@ int main(int argc, char **argv) {
     rv=testFuzzy(argc, argv);
   else if (strcasecmp(argv[1], "sort")==0)
     rv=testSort(argc, argv);
+  else if (strcasecmp(argv[1], "bio")==0)
+    rv=testBIO(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

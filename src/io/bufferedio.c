@@ -70,6 +70,9 @@ const char *GWEN_BufferedIO_ErrorString(int c){
   case GWEN_BUFFEREDIO_ERROR_NO_DATA:
     s="Could not read/write data";
     break;
+  case GWEN_BUFFEREDIO_ERROR_PARTIAL:
+    s="Partial data read/written";
+    break;
   default:
     s=0;
   } /* switch */
@@ -782,6 +785,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
     err=GWEN_BufferedIO_ReadRaw(bt, lbuffer, &lsize);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+      *bsize=bytesRead;
       GWEN_WaitCallback_Leave();
       return err;
     }
@@ -799,6 +803,8 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
   } /* while */
   GWEN_WaitCallback_Leave();
 
+  /* no need to update bsize here, because it already contains the correct
+   * value */
   return 0;
 }
 
