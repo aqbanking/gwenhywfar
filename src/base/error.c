@@ -467,7 +467,7 @@ int GWEN_Error_GetSimpleCode(GWEN_ERRORCODE c){
   const char *t;
   int r;
 
-  if (GWEN_Error_IsOk(c))
+  if (GWEN_Error_GetSeverity(c)<GWEN_ERROR_SEVERITY_WARN)
     return GWEN_SUCCESS;
 
   code=GWEN_Error_GetCode(c);

@@ -12,6 +12,7 @@
 - added gct-tool command "changepin"
 - bufferedio: Now uses severity "error" instead of "warn" in some places
 - fixed a bug in error.c
+- GWEN_Error_GetSimpleCode() now reacts on warnings, too
 
 
 2005/07/24: Martin Preuss<martin@libchipcard.de>
