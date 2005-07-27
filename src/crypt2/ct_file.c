@@ -1218,9 +1218,9 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   /* TODO: Lock file */
 
   /* increment signature sequence counter */
-  ui=GWEN_CryptTokenFile_Context_GetRemoteSignSeq(fctx);
+  ui=GWEN_CryptTokenFile_Context_GetLocalSignSeq(fctx);
   ui++;
-  GWEN_CryptTokenFile_Context_SetRemoteSignSeq(fctx, ui);
+  GWEN_CryptTokenFile_Context_SetLocalSignSeq(fctx, ui);
 
   /* write file */
   rv=GWEN_CryptTokenFile__WriteFile(ct);

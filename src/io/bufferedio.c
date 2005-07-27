@@ -687,14 +687,14 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
   if (bt->readerError) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error flagged");
     return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_WARN,
+                          GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
   if (bt->readerEOF) {
     DBG_INFO(GWEN_LOGDOMAIN, "EOF flagged");
     return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_WARN,
+                          GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
                           GWEN_BUFFEREDIO_ERROR_READ);
   }
