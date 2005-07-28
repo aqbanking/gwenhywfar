@@ -492,6 +492,9 @@ int GWEN_CryptTokenOHBCI_Read(GWEN_CRYPTTOKEN *ct, int fd){
       lct->cryptoTag=0;
       rv=GWEN_CryptTokenOHBCI__DecryptFile16(ct, fbuf, i);
       break;
+    default:
+      rv = GWEN_ERROR_CT_NOT_SUPPORTED;
+      /* otherwise 'rv' might be uninitialized */
     }
     if (rv==0)
       break;
