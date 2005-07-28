@@ -1241,6 +1241,7 @@ int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                GWEN_BUFFER *src,
                                GWEN_BUFFER *dst) {
+  return 0;
 }
 
 
@@ -1249,6 +1250,7 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                 GWEN_BUFFER *src,
                                 GWEN_BUFFER *dst) {
+  return 0;
 }
 
 
@@ -1257,6 +1259,7 @@ int GWEN_CryptTokenFile_Decrypt(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                 GWEN_BUFFER *src,
                                 GWEN_BUFFER *dst) {
+  return 0;
 }
 
 
