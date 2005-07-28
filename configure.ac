@@ -164,7 +164,8 @@ AC_CHECK_PROG(SED,sed,sed)
 #
 # Checks for libraries.
 #
-AC_CHECK_LIB(dl,dlopen)
+AC_CHECK_LIB(dl, dlopen)
+# note: this AC_CHECK_LIB will also add -ldl to LIBS.
 
 
 ###-------------------------------------------------------------------------
@@ -329,8 +330,8 @@ AC_ARG_ENABLE(gwenui,
 AC_MSG_RESULT($enable_gwenui)
 
 if test "$enable_gwenui" != "no"; then
-  AC_CHECK_LIB(ncurses, newwin, [], [USE_NCURSES="no"])
-  AC_CHECK_LIB(panel, new_panel, [], [USE_NCURSES="no"])
+  AC_CHECK_LIB(ncurses, newwin, [USE_NCURSES="yes"], [USE_NCURSES="no"])
+  AC_CHECK_LIB(panel, new_panel, [USE_NCURSES="$USE_NCURSES"], [USE_NCURSES="no"])
   AC_CHECK_HEADERS([ncurses.h], [], [USE_NCURSES="no"])
   AC_CHECK_HEADERS([panel.h], [], [USE_NCURSES="no"])
   if test "$USE_NCURSES" != "yes"; then

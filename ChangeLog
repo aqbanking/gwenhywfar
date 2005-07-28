@@ -2,6 +2,12 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-07-28   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Fix AC_CHECK_LIB usage -- it *must* have a
+	ACTION_IF_FOUND or otherwise the -lLIB command is added to LIBS
+	automatically.
+
 2005/07/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - GWEN_BufferedIO_ReadRawForced() now returns an error (not a warning) when
