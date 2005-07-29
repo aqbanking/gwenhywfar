@@ -27,6 +27,8 @@
   necessarily the case for 64 bit architectures...
 - redefined GWEN_WAITCALLBACK_PROGRESS_NONE as "-1". FIXME: Does this result
   in 0xffffffffffffffff ??
+- no longer enter or leave waitcallbacks in netconnection.c (because we are
+  working with milliseconds here)
 
 
 2005-07-28   Christian Stimming <stimming@tuhh.de>

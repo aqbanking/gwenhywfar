@@ -212,7 +212,7 @@ GWEN_WAITCALLBACK *GWEN_WaitCallback__FindTemplate(const char *s) {
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_WaitCallback_Register(GWEN_WAITCALLBACK *ctx){
   assert(ctx);
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Registering Callback %s", ctx->id);
+  DBG_INFO(GWEN_LOGDOMAIN, "Registering Callback %s", ctx->id);
   GWEN_WaitCallback_List_Insert(ctx, gwen_waitcallback__templates);
   return 0;
 }
@@ -347,10 +347,7 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
   ctx=gwen_waitcallback__current;
   if (!ctx){
     DBG_DEBUG(GWEN_LOGDOMAIN, "No callback currently selected");
-    if (ctx->aborted)
-      rv=GWEN_WaitCallbackResult_Abort;
-    else
-      rv=GWEN_WaitCallbackResult_Continue;
+    return GWEN_WaitCallbackResult_Continue;
   }
   else {
     rv=GWEN__WaitCallback_r(ctx);
@@ -534,14 +531,13 @@ void GWEN_WaitCallback_Leave(){
     DBG_DEBUG(GWEN_LOGDOMAIN, "No callback currently selected");
     return;
   }
-  DBG_NOTICE(GWEN_LOGDOMAIN, "Leaving callback context \"%s\"",
-             gwen_waitcallback__current->id);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Leaving callback context \"%s\"",
+            gwen_waitcallback__current->id);
   ctx=gwen_waitcallback__current->previousCtx;
   GWEN_WaitCallback_free(gwen_waitcallback__current);
   gwen_waitcallback__current=ctx;
   if (ctx) {
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Returned to callback \"%s\"", ctx->id);
-    GWEN_WaitCallback_Dump();
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Returned to callback \"%s\"", ctx->id);
   }
   gwen_waitcallback__nesting_level--;
 }
