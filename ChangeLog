@@ -25,6 +25,8 @@
   let configure determine this type (like the other stuff), because the
   suffix "LL" tells the compiler that this is a "long long" value, which isn't
   necessarily the case for 64 bit architectures...
+- redefined GWEN_WAITCALLBACK_PROGRESS_NONE as "-1". FIXME: Does this result
+  in 0xffffffffffffffff ??
 
 
 2005-07-28   Christian Stimming <stimming@tuhh.de>

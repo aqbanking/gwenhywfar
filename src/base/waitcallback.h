@@ -80,8 +80,11 @@ extern "C" {
  * This value tells the callback mechanism that there has been no progress.
  * It is used for keep-alive calls.
  */
+//#define GWEN_WAITCALLBACK_PROGRESS_NONE
+//  ((GWEN_TYPE_UINT64)(0xffffffffffffffffLL))
+
 #define GWEN_WAITCALLBACK_PROGRESS_NONE \
-  ((GWEN_TYPE_UINT64)(0xffffffffffffffffLL))
+  ((GWEN_TYPE_UINT64)(-1))
 
 
 /**
