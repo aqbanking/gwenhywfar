@@ -76,7 +76,47 @@ extern "C" {
 
 #include <time.h>
 
-#define GWEN_WAITCALLBACK_PROGRESS_NONE ((GWEN_TYPE_UINT64)(0xffffffffffffffff))
+/**
+ * This value tells the callback mechanism that there has been no progress.
+ * It is used for keep-alive calls.
+ */
+#define GWEN_WAITCALLBACK_PROGRESS_NONE \
+  ((GWEN_TYPE_UINT64)(0xffffffffffffffffLL))
+
+
+/**
+ * This depth level is used upon entering of a waitcallback which is reused
+ * (because there already is a waitcallback with the enter-id).
+ * In such a case Gwen calls the the log callback function with this level
+ * and the text given to @ref @GWEN_WaitCallback_EnterWithText.
+ */
+#define GWEN_WAITCALLBACK_LEVEL_REUSED 9999
+
+/**
+ * Normally Gwen tries to reuse already open WaitCallbacks instead of
+ * creating new ones. If this flag is given then a new WaitCallback will be
+ * created in any case.
+ */
+#define GWEN_WAITCALLBACK_FLAGS_NO_REUSE 0x00000001
+
+
+/**
+ * This id can be used for any simple progress operation.
+ * GUI implementations for this callback might choose to show the associated
+ * text (@ref GWEN_WaitCallback_GetText) and provide a simple progress bar.
+ */
+#define GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS \
+  "GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS"
+
+
+/**
+ * Use this callback id for operations which do not need a GUI.
+ * Applications should implement this callback without opening a window.
+ */
+#define GWEN_WAITCALLBACK_ID_FAST \
+  "GWEN_WAITCALLBACK_ID_FAST"
+
+
 
 /**
  * Result of @ref GWEN_WAITCALLBACK_CHECKABORTFN.
@@ -129,7 +169,9 @@ typedef
  * open window.
  * This function is optional.
  * @param ctx context
- * @param level see @ref GWEN_WAITCALLBACK_CHECKABORTFN
+ * @param level see @ref GWEN_WAITCALLBACK_CHECKABORTFN. If the level value
+ * is GWEN_WAITCALLBACK_LEVEL_REUSED then the log message is the text
+ * given to @ref GWEN_WaitCallback_EnterWithText for reused callbacks.
  * @param loglevel a higher level results in a more detailed output. Loglevels
  * are defined from 0 (the most important level) and 10 (the least important
  * level). Libgwenhywfar itself does not use this function.
@@ -170,10 +212,26 @@ GWENHYWFAR_API
   GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos);
 
 
+/**
+ * Don't call this function directly, better use the macro
+ * @ref GWEN_WaitCallback_Enter
+ */
 GWENHYWFAR_API
   void GWEN_WaitCallback_Enter_u(const char *id,
                                  const char *file,
                                  int line);
+
+/**
+ * Don't call this function directly, better use the macro
+ * @ref GWEN_WaitCallback_EnterWithText
+ */
+GWENHYWFAR_API
+  void GWEN_WaitCallback_EnterWithText_u(const char *id,
+                                         const char *txt,
+                                         const char *units,
+                                         GWEN_TYPE_UINT32 flags,
+					 const char *file,
+					 int line);
 
 /**
  * Enters the callback of the given name. If there is no callback of that name
@@ -186,6 +244,16 @@ GWENHYWFAR_API
  */
 #define GWEN_WaitCallback_Enter(id) \
   GWEN_WaitCallback_Enter_u(id, __FILE__, __LINE__)
+
+
+/**
+ * This macro internally calls @ref GWEN_WaitCallback_EnterWithText_u.
+ * It therefore does the same as @ref GWEN_WaitCallback_Enter, but it
+ * stores the given text internally to be retrieved by the implemention of
+ * a specific callback and presented to the user.
+ */
+#define GWEN_WaitCallback_EnterWithText(id, txt, units, flags) \
+  GWEN_WaitCallback_EnterWithText_u(id, txt, units, flags, __FILE__, __LINE__)
 
 
 /**
@@ -213,6 +281,9 @@ GWENHYWFAR_API
 /**
  * You can use this to initialize a progress dialog. This value can later be
  * used by the callback function to properly display a progress bar.
+ * if the special value GWEN_WAITCALLBACK_PROGRESS_NONE is used here then
+ * no progress bar is requested. Instead a text box might be implemented by
+ * the application which shows the ProgressPos as an absolute number.
  */
 GWENHYWFAR_API
   void GWEN_WaitCallback_SetProgressTotal(GWEN_TYPE_UINT64 total);
@@ -233,7 +304,7 @@ GWENHYWFAR_API
  * be inspected)
  */
 GWENHYWFAR_API
-  int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK *ctx);
+  int GWEN_WaitCallback_GetDistance(const GWEN_WAITCALLBACK *ctx);
 
 /**
  * Resturns the nesting level of the given context
@@ -260,7 +331,7 @@ GWENHYWFAR_API
 /*@{*/
 
 GWENHYWFAR_API
-  const char *GWEN_WaitCallback_GetId(GWEN_WAITCALLBACK *ctx);
+  const char *GWEN_WaitCallback_GetId(const GWEN_WAITCALLBACK *ctx);
 
 /**
  * Creates a new callback. This function should only be used by inheriting
@@ -277,7 +348,7 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   GWEN_TYPE_UINT64
-  GWEN_WaitCallback_GetProgressPos(GWEN_WAITCALLBACK *ctx);
+  GWEN_WaitCallback_GetProgressPos(const GWEN_WAITCALLBACK *ctx);
 
 /**
  * Returns the progress total (as set by
@@ -287,7 +358,19 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   GWEN_TYPE_UINT64
-  GWEN_WaitCallback_GetProgressTotal(GWEN_WAITCALLBACK *ctx);
+  GWEN_WaitCallback_GetProgressTotal(const GWEN_WAITCALLBACK *ctx);
+
+/**
+ *
+ */
+GWENHYWFAR_API
+  const char *GWEN_WaitCallback_GetText(const GWEN_WAITCALLBACK *ctx);
+
+/**
+ *
+ */
+GWENHYWFAR_API
+  const char *GWEN_WaitCallback_GetUnits(const GWEN_WAITCALLBACK *ctx);
 
 /**
  * Sets the checkAbort function (see @ref GWEN_WAITCALLBACK_CHECKABORTFN).
@@ -318,7 +401,7 @@ GWENHYWFAR_API
  * (or 0 if it has never been called)
  */
 GWENHYWFAR_API
-  time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK *ctx);
+  time_t GWEN_WaitCallback_LastCalled(const GWEN_WAITCALLBACK *ctx);
 
 
 /**
@@ -326,7 +409,7 @@ GWENHYWFAR_API
  * it never has been).
  */
 GWENHYWFAR_API
-  time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK *ctx);
+  time_t GWEN_WaitCallback_LastEntered(const GWEN_WAITCALLBACK *ctx);
 
 
 /**
@@ -340,7 +423,6 @@ GWENHYWFAR_API
 /*@}*/
 
 #endif
-
 
 
 /*@}*/

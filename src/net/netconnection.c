@@ -36,6 +36,7 @@
 #define GWEN_EXTEND_NETCONNECTION
 
 #include "netconnection_p.h"
+#include "i18n_l.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/waitcallback.h>
@@ -150,7 +151,12 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Reading from network..."),
+                                  I18N("second(s)"),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
+
   lastHadNoWaitFlags=0;
   for (count=0;;) {
     /* actually try to read */
@@ -183,6 +189,7 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
 
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
+      double d;
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
@@ -219,15 +226,20 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
 	/* found activity, break */
 	break;
 
+      d=difftime(time(0), startt);
+      GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+
       /* check timeout */
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
-	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
-	    difftime(time(0), startt)>timeout) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Could not read within %d seconds, giving up",
-		   timeout);
+        if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
+            d>timeout) {
+          DBG_INFO(GWEN_LOGDOMAIN,
+                   "Could not read within %d seconds, giving up",
+                   timeout);
           GWEN_WaitCallback_Leave();
-	  return 1;
-	}
+          return 1;
+        }
+        GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
       }
     } /* for */
 
@@ -291,7 +303,11 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Writing to network..."),
+                                  I18N("second(s)"),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
   lastHadNoWaitFlags=0;
   for (count=0;;) {
     /* actually try to write */
@@ -316,6 +332,7 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
 
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
+      double d;
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
@@ -348,10 +365,13 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
 	/* found activity, break */
 	break;
 
+      d=difftime(time(0), startt);
+      GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+
       /* check timeout */
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
-	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
-	    difftime(time(0), startt)>timeout) {
+        if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
+            d>timeout) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "Could not read within %d seconds, giving up",
 		   timeout);
           GWEN_WaitCallback_Leave();
@@ -392,7 +412,12 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Flushing connection data..."),
+                                  I18N("second(s)"),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
+
   for (count=0;;) {
     /* let the connection work */
     rv=GWEN_NetConnection_Work(conn);
@@ -411,6 +436,7 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
       GWEN_NETTRANSPORT_STATUS st;
+      double d;
 
       st=GWEN_NetTransport_GetStatus(conn->transportLayer);
       if (st==GWEN_NetTransportStatusUnconnected ||
@@ -451,10 +477,13 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
 	/* found activity, break */
 	break;
 
+      d=difftime(time(0), startt);
+      GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+
       /* check timeout */
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
 	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
-	    difftime(time(0), startt)>timeout) {
+            d>timeout) {
           DBG_INFO(GWEN_LOGDOMAIN, "Could not write within %d seconds, giving up (%d)",
                    waitFlags,
                    timeout);
@@ -866,9 +895,13 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
-  for (count=0;;) {
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Waiting for connection status change..."),
+                                  I18N("second(s)"),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
 
+  for (count=0;;) {
     /* let the connection work */
     rv=GWEN_NetConnection_Work(conn);
     if (rv==GWEN_NetConnectionWorkResult_Error) {
@@ -880,6 +913,7 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
       GWEN_NETTRANSPORT_STATUS st;
+      double d;
 
       st=GWEN_NetConnection_GetStatus(conn);
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
@@ -931,10 +965,13 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
 	/* found activity, break */
 	break;
 
+      d=difftime(time(0), startt);
+      GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+
       /* check timeout */
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
-	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
-	    difftime(time(0), startt)>timeout) {
+        if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
+            d>timeout) {
           DBG_INFO(GWEN_LOGDOMAIN,
                    "Timeout (%d) while waiting for status %d, giving up (%d)",
                    timeout,
@@ -989,10 +1026,16 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
       distance=750;
   }
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Waiting for incoming messages..."),
+                                  I18N("second(s)"),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
+
   for (count=0;;) {
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
+      double d;
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
@@ -1031,10 +1074,13 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
 	/* found activity, break */
 	break;
 
+      d=difftime(time(0), startt);
+      GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+
       /* check timeout */
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
-	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
-	    difftime(time(0), startt)>timeout) {
+        if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
+            d>timeout) {
           DBG_INFO(GWEN_LOGDOMAIN, "Timeout while waiting for connection, giving up");
           GWEN_WaitCallback_Leave();
           return 0;
@@ -1225,10 +1271,16 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
     return 0;
   }
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Waiting for incoming message..."),
+                                  I18N("second(s)"),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
+
   for (count=0;;) {
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
+      double d;
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
@@ -1276,10 +1328,13 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
 	break;
 #endif
 
+      d=difftime(time(0), startt);
+      GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+
       /* check timeout */
       if (timeout!=GWEN_NETCONNECTION_TIMEOUT_FOREVER) {
 	if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE ||
-	    difftime(time(0), startt)>timeout) {
+            d>timeout) {
           DBG_INFO(GWEN_LOGDOMAIN, "Timeout while waiting for connection, giving up");
           GWEN_WaitCallback_Leave();
           return 0;
@@ -1556,11 +1611,18 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
   int distance;
   int count;
   GWEN_NETCONNECTION_WORKRESULT rv;
+  time_t startt;
 
   t0=GWEN_CurrentTime();
   assert(t0);
 
-  GWEN_WaitCallback_Enter(GWEN_NETCONNECTION_CBID_IO);
+  startt=time(0);
+
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Waiting for network traffic..."),
+                                  I18N("second(s)"),
+                                  0);
+  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
 
   if (timeout==GWEN_NETCONNECTION_TIMEOUT_NONE)
     distance=GWEN_NETCONNECTION_TIMEOUT_NONE;
@@ -1624,12 +1686,20 @@ GWEN_NetConnection_Walk(GWEN_NETCONNECTION_LIST *connList,
         GWEN_Time_free(t1);
 
         if (d>=timeout) {
-	  DBG_DEBUG(GWEN_LOGDOMAIN, "Could not walk within %d milliseconds, giving up",
+          DBG_DEBUG(GWEN_LOGDOMAIN,
+                    "Could not walk within %d milliseconds, giving up",
 		    timeout);
           GWEN_Time_free(t0);
           GWEN_WaitCallback_Leave();
           return GWEN_NetConnectionWorkResult_NoChange;
         }
+        GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+      }
+      else {
+        double d;
+
+        d=difftime(time(0), startt);
+        GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
       }
     }
   } /* for */

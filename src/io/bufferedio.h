@@ -27,7 +27,7 @@
 
 
 #ifndef GWENHYWFAR_BUFFEREDIO_H
-#define GWENHYWFAR_BUFFEREDIO_H "$Id$"
+#define GWENHYWFAR_BUFFEREDIO_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/inherit.h>
@@ -79,8 +79,6 @@ extern "C" {
   GWEN_BUFFEREDIO_FLAGS_CLOSE\
   )
 
-
-#define GWEN_BUFFEREDIO_CBID_IO "GWEN_BUFFEREDIO_CBID_IO"
 
 
 typedef enum {

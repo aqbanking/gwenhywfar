@@ -139,6 +139,30 @@ Complete path to the folder containing GWENs DBIO plugins.
 
 
 
+WaitCallback Ids
+================
+
+GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS
+------------------------------------
+This id is not used by Gwenhywfar itself, but it may be used for applications
+or plugins which want to display a simple progress widget.
+Applications implementing such a callback should display a widget which shows
+the text (retrieved via GWEN_WaitCallback_GetText) and a progress bar.
+
+
+GWEN_WAITCALLBACK_ID_FAST
+--------------------------
+This id is also not used internally, but it might be used by applications or
+plugins for operations which normally do not need a GUI widget.
+Implementations might choose to display a widget only after a certain period
+of time. E.g. some operations (like network operations) are supposed to be
+too fast to show a widget (e.g. normally there is no widget to be displayed).
+However, if the operations takes longer than expected the application should
+show a widget which contains the text retrieved via GWEN_WaitCallback_GetText
+and an abort button.
+
+
+
 Documentation
 =============
 

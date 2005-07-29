@@ -56,6 +56,9 @@ struct GWEN_WAITCALLBACK {
   GWEN_TYPE_UINT64 pos;
   GWEN_TYPE_UINT64 total;
 
+  char *text;
+  char *units;
+
   GWEN_WAITCALLBACK_LIST *registeredCallbacks;
 
   time_t lastCalled;
@@ -63,6 +66,8 @@ struct GWEN_WAITCALLBACK {
   int proposedDistance;
 
   int nestingLevel;
+
+  int aborted;
 
   GWEN_TYPE_UINT32 usage;
 };
@@ -79,6 +84,12 @@ GWEN_WAITCALLBACK *GWEN_WaitCallback_Instantiate(GWEN_WAITCALLBACK *ctx);
 GWEN_WAITCALLBACK *GWEN_WaitCallback__GetTemplateOf(GWEN_WAITCALLBACK *ctx);
 
 GWEN_WAITCALLBACK_RESULT GWEN__WaitCallback(GWEN_WAITCALLBACK *ctx);
+
+GWEN_WAITCALLBACK_RESULT GWEN__WaitCallback_r(GWEN_WAITCALLBACK *ctx);
+
+void GWEN_WaitCallback__Dump_r(GWEN_WAITCALLBACK *ctx, int ins);
+void GWEN_WaitCallback__Dump(GWEN_WAITCALLBACK *ctx);
+
 
 #endif
 

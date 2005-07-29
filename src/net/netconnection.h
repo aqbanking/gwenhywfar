@@ -64,9 +64,6 @@
 /*@}*/
 
 
-#define GWEN_NETCONNECTION_CBID_IO "GWEN_NETCONNECTION_CBID_IO"
-
-
 /**
  * This is the data type for a connection.
  * It should be handled as a black box for maximum compatibility.

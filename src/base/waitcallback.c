@@ -97,6 +97,8 @@ void GWEN_WaitCallback_free(GWEN_WAITCALLBACK *ctx){
       GWEN_INHERIT_FINI(GWEN_WAITCALLBACK, ctx);
       GWEN_WaitCallback_free(ctx->instantiatedFrom);
       GWEN_WaitCallback_List_free(ctx->registeredCallbacks);
+      free(ctx->units);
+      free(ctx->text);
       free(ctx->id);
       free(ctx->enteredFromFile);
       GWEN_LIST_FINI(GWEN_WAITCALLBACK, ctx);
@@ -147,7 +149,7 @@ void GWEN_WaitCallback_SetProgressTotal(GWEN_TYPE_UINT64 total){
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_TYPE_UINT64
-GWEN_WaitCallback_GetProgressPos(GWEN_WAITCALLBACK *ctx){
+GWEN_WaitCallback_GetProgressPos(const GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->pos;
 }
@@ -156,7 +158,7 @@ GWEN_WaitCallback_GetProgressPos(GWEN_WAITCALLBACK *ctx){
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_TYPE_UINT64
-GWEN_WaitCallback_GetProgressTotal(GWEN_WAITCALLBACK *ctx){
+GWEN_WaitCallback_GetProgressTotal(const GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->total;
 }
@@ -255,30 +257,81 @@ int GWEN_WaitCallback_Unregister(GWEN_WAITCALLBACK *ctx){
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_WAITCALLBACK_RESULT GWEN__WaitCallback(GWEN_WAITCALLBACK *ctx){
-  GWEN_WAITCALLBACK_RESULT rv;
+  GWEN_WAITCALLBACK_RESULT rv=GWEN_WaitCallbackResult_Continue;
 
   assert(ctx);
+
   if (ctx->originalCtx) {
+    if (ctx->originalCtx->aborted) {
+      ctx->aborted=1;
+      return GWEN_WaitCallbackResult_Abort;
+    }
     if (!ctx->originalCtx->checkAbortFn) {
-      DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "No checkAbort function set");
       rv=GWEN_WaitCallbackResult_Continue;
+      if (ctx->aborted)
+        rv=GWEN_WaitCallbackResult_Abort;
+      else
+        rv=GWEN_WaitCallbackResult_Continue;
     }
     else {
-      rv=ctx->originalCtx->checkAbortFn(ctx->originalCtx,
-                                        ctx->level);
+      if (ctx->aborted) {
+        ctx->originalCtx->checkAbortFn(ctx->originalCtx, ctx->level);
+        rv=GWEN_WaitCallbackResult_Abort;
+      }
+      else {
+        rv=ctx->originalCtx->checkAbortFn(ctx->originalCtx, ctx->level);
+      }
       ctx->originalCtx->lastCalled=time(0);
       ctx->lastCalled=time(0);
+      if (rv!=GWEN_WaitCallbackResult_Continue) {
+        ctx->originalCtx->aborted=1;
+      }
     }
   } /* if there is an original context */
   else {
     if (!ctx->checkAbortFn) {
       DBG_VERBOUS(GWEN_LOGDOMAIN, "No checkAbort function set");
-      rv=GWEN_WaitCallbackResult_Continue;
+      if (ctx->aborted)
+        rv=GWEN_WaitCallbackResult_Abort;
+      else
+        rv=GWEN_WaitCallbackResult_Continue;
     }
     else {
-      rv=ctx->checkAbortFn(ctx, 0);
+      if (ctx->aborted) {
+        ctx->checkAbortFn(ctx, 0);
+        rv=GWEN_WaitCallbackResult_Abort;
+      }
+      else {
+        rv=ctx->checkAbortFn(ctx, 0);
+      }
       ctx->lastCalled=time(0);
     }
+  }
+
+  if (rv!=GWEN_WaitCallbackResult_Continue)
+    ctx->aborted=1;
+
+  return rv;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_WAITCALLBACK_RESULT GWEN__WaitCallback_r(GWEN_WAITCALLBACK *ctx){
+  GWEN_WAITCALLBACK_RESULT rv=GWEN_WaitCallbackResult_Continue;
+
+  if (ctx->previousCtx) {
+    rv=GWEN__WaitCallback_r(ctx->previousCtx);
+    if (rv!=GWEN_WaitCallbackResult_Continue)
+      ctx->aborted=1;
+  }
+
+  rv=GWEN__WaitCallback(ctx);
+  if (rv!=GWEN_WaitCallbackResult_Continue) {
+    ctx->aborted=1;
+    return rv;
   }
 
   return rv;
@@ -294,16 +347,17 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallback(){
   ctx=gwen_waitcallback__current;
   if (!ctx){
     DBG_DEBUG(GWEN_LOGDOMAIN, "No callback currently selected");
-    rv=GWEN_WaitCallbackResult_Continue;
+    if (ctx->aborted)
+      rv=GWEN_WaitCallbackResult_Abort;
+    else
+      rv=GWEN_WaitCallbackResult_Continue;
   }
   else {
-    while(ctx) {
-      rv=GWEN__WaitCallback(ctx);
-      if (rv!=GWEN_WaitCallbackResult_Continue)
-        return rv;
-      ctx=ctx->previousCtx;
-    }
+    rv=GWEN__WaitCallback_r(ctx);
   }
+
+  if (rv!=GWEN_WaitCallbackResult_Continue)
+    ctx->aborted=1;
 
   return rv;
 }
@@ -358,9 +412,12 @@ GWEN_WAITCALLBACK *GWEN_WaitCallback__GetTemplateOf(GWEN_WAITCALLBACK *ctx) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_WaitCallback_Enter_u(const char *id,
-                               const char *file,
-                               int line){
+void GWEN_WaitCallback_EnterWithText_u(const char *id,
+                                       const char *txt,
+                                       const char *units,
+                                       GWEN_TYPE_UINT32 flags,
+                                       const char *file,
+                                       int line){
   GWEN_WAITCALLBACK *ctx;
   GWEN_WAITCALLBACK *nctx;
 
@@ -410,7 +467,7 @@ void GWEN_WaitCallback_Enter_u(const char *id,
       nc=nc->previousCtx;
     }
 
-    if (nc) {
+    if (nc && !(flags & GWEN_WAITCALLBACK_FLAGS_NO_REUSE)) {
       DBG_DEBUG(GWEN_LOGDOMAIN,
                 "Callback \"%s\" already entered, reusing it (%d)",
                 id, nc->level);
@@ -423,6 +480,13 @@ void GWEN_WaitCallback_Enter_u(const char *id,
         nctx->originalCtx=nc;
         nctx->level=1;
       }
+
+      if (txt)
+        /* inform the original context about the attachment */
+        ctx->originalCtx->logFn(ctx->originalCtx,
+                                GWEN_WAITCALLBACK_LEVEL_REUSED,
+                                GWEN_LoggerLevelNotice,
+                                txt);
     }
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Instantiating from callback \"%s\"", id);
@@ -444,7 +508,20 @@ void GWEN_WaitCallback_Enter_u(const char *id,
     if (file)
       nctx->enteredFromFile=strdup(file);
     nctx->enteredFromLine=line;
+    if (txt)
+      nctx->text=strdup(txt);
+    if (units)
+      nctx->units=strdup(units);
   }
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_Enter_u(const char *id,
+                               const char *file,
+                               int line) {
+  GWEN_WaitCallback_EnterWithText_u(id, 0, 0, 0, file, line);
 }
 
 
@@ -457,13 +534,14 @@ void GWEN_WaitCallback_Leave(){
     DBG_DEBUG(GWEN_LOGDOMAIN, "No callback currently selected");
     return;
   }
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Leaving callback context \"%s\"",
-            gwen_waitcallback__current->id);
+  DBG_NOTICE(GWEN_LOGDOMAIN, "Leaving callback context \"%s\"",
+             gwen_waitcallback__current->id);
   ctx=gwen_waitcallback__current->previousCtx;
   GWEN_WaitCallback_free(gwen_waitcallback__current);
   gwen_waitcallback__current=ctx;
   if (ctx) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Returned to callback \"%s\"", ctx->id);
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Returned to callback \"%s\"", ctx->id);
+    GWEN_WaitCallback_Dump();
   }
   gwen_waitcallback__nesting_level--;
 }
@@ -505,7 +583,7 @@ void GWEN_WaitCallback_Log(unsigned int loglevel, const char *s){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK *ctx){
+time_t GWEN_WaitCallback_LastCalled(const GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->lastCalled;
 }
@@ -513,7 +591,7 @@ time_t GWEN_WaitCallback_LastCalled(GWEN_WAITCALLBACK *ctx){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_WaitCallback_GetDistance(GWEN_WAITCALLBACK *ctx){
+int GWEN_WaitCallback_GetDistance(const GWEN_WAITCALLBACK *ctx){
   if (ctx==0) {
     ctx=gwen_waitcallback__current;
     if (!ctx) {
@@ -536,7 +614,7 @@ void GWEN_WaitCallback_SetDistance(GWEN_WAITCALLBACK *ctx,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK *ctx){
+time_t GWEN_WaitCallback_LastEntered(const GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->lastEntered;
 }
@@ -544,7 +622,7 @@ time_t GWEN_WaitCallback_LastEntered(GWEN_WAITCALLBACK *ctx){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-const char *GWEN_WaitCallback_GetId(GWEN_WAITCALLBACK *ctx){
+const char *GWEN_WaitCallback_GetId(const GWEN_WAITCALLBACK *ctx){
   assert(ctx);
   return ctx->id;
 }
@@ -565,6 +643,64 @@ int GWEN_WaitCallback_GetNestingLevel(const GWEN_WAITCALLBACK *ctx){
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
+const char *GWEN_WaitCallback_GetText(const GWEN_WAITCALLBACK *ctx) {
+  assert(ctx);
+  return ctx->text;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+const char *GWEN_WaitCallback_GetUnits(const GWEN_WAITCALLBACK *ctx) {
+  assert(ctx);
+  return ctx->units;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback__Dump_r(GWEN_WAITCALLBACK *ctx, int ins) {
+  int i;
+
+  if (ctx->previousCtx)
+    GWEN_WaitCallback__Dump_r(ctx->previousCtx, ins-2);
+
+  for (i=0; i<ins; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "%s %s\n", ctx->id, (ctx->aborted)?"(aborted)":"");
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback__Dump(GWEN_WAITCALLBACK *ctx) {
+  int ins=0;
+  GWEN_WAITCALLBACK *pctx;
+
+  pctx=ctx->previousCtx;
+  while(pctx) {
+    ins+=2;
+    pctx=pctx->previousCtx;
+  }
+  GWEN_WaitCallback__Dump_r(ctx, ins);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_WaitCallback_Dump() {
+  GWEN_WAITCALLBACK *ctx;
+
+  ctx=gwen_waitcallback__current;
+  if (!ctx){
+    fprintf(stderr, "No callbacks currently active\n");
+  }
+  else {
+    fprintf(stderr, "Currently active callbacks:\n");
+    GWEN_WaitCallback__Dump(ctx);
+  }
+}
 
 
 

@@ -32,6 +32,7 @@
 
 
 #include "fslock_p.h"
+#include "i18n_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inetsocket.h> /* for select */
 #include <gwenhywfar/waitcallback.h>
@@ -219,7 +220,10 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout){
   t0=GWEN_CurrentTime();
   assert(t0);
 
-  GWEN_WaitCallback_Enter(GWEN_FSLOCK_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Waiting for lock to become "
+                                       "available..."),
+                                  0);
 
   if (timeout==GWEN_FSLOCK_TIMEOUT_NONE)
     distance=GWEN_FSLOCK_TIMEOUT_NONE;

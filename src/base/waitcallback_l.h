@@ -35,6 +35,8 @@
 GWEN_ERRORCODE GWEN_WaitCallback_ModuleInit();
 GWEN_ERRORCODE GWEN_WaitCallback_ModuleFini();
 
+void GWEN_WaitCallback_Dump();
+
 
 #endif
 

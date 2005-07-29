@@ -34,6 +34,7 @@
 
 
 #include "bufferedio_p.h"
+#include "i18n_l.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/waitcallback.h>
@@ -768,7 +769,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
   lbuffer=buffer;
   bytesRead=0;
 
-  GWEN_WaitCallback_Enter(GWEN_BUFFEREDIO_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Reading from buffered IO..."),
+                                  I18N("byte(s)"),
+                                  0);
   GWEN_WaitCallback_SetProgressTotal(*bsize);
   while(bytesRead<*bsize) {
     cbres=GWEN_WaitCallbackProgress(bytesRead);
@@ -822,7 +826,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_WriteRawForced(GWEN_BUFFEREDIO *bt,
   lbuffer=buffer;
   bytesWritten=0;
 
-  GWEN_WaitCallback_Enter(GWEN_BUFFEREDIO_CBID_IO);
+  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
+                                  I18N("Writing to buffered IO..."),
+                                  I18N("byte(s)"),
+                                  0);
   GWEN_WaitCallback_SetProgressTotal(*bsize);
   while(bytesWritten<*bsize) {
     cbres=GWEN_WaitCallbackProgress(bytesWritten);

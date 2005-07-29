@@ -2,11 +2,37 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2005/07/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_WAITCALLBACK:
+  - added text field to waitcallback
+  - added function/macro GWEN_WaitCallback_EnterWithText
+  - fixed GWEN_WaitCallback: If any previously activated callback returns
+    GWEN_WaitCallbackResult_Abort then all following callbacks will return
+    this code as well. Also the condition of returning this code is stored.
+  - introduced GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS
+  - introduced GWEN_WAITCALLBACK_ID_FAST
+  - introduced flags:
+    - defined flag GWEN_WAITCALLBACK_FLAGS_NO_REUSE
+  - defined depth level GWEN_WAITCALLBACK_LEVEL_REUSED
+- replaced GWEN_BUFFEREDIO_CBID_IO with GWEN_WAITCALLBACK_ID_FAST
+- replaced GWEN_NETCONNECTION_CBID_IO with GWEN_WAITCALLBACK_ID_FAST
+- replaced GWEN_FSLOCK_CBID_IO with GWEN_WAITCALLBACK_ID_FAST
+- README: Added listing of waitcallback ids
+- added "LL" to GWEN_WAITCALLBACK_PROGRESS_NONE. 
+  FIXME: We should better define a MAXVALUE, like GWEN_MAXVAL_UINT64 and
+  let configure determine this type (like the other stuff), because the
+  suffix "LL" tells the compiler that this is a "long long" value, which isn't
+  necessarily the case for 64 bit architectures...
+
+
 2005-07-28   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Fix AC_CHECK_LIB usage -- it *must* have a
 	ACTION_IF_FOUND or otherwise the -lLIB command is added to LIBS
 	automatically.
+
 
 2005/07/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
