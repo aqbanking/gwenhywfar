@@ -76,6 +76,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/%{name}
 %{_datadir}/locale/*/LC_MESSAGES/gwenhywfar.mo
 %{_bindir}/gct-tool
+%{_sysconfdir}/*.crt
 
 %files devel
 %defattr(-,root,root)
@@ -89,6 +90,5 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/*.la
 #%{_libdir}/*.a
 %{_datadir}/aclocal/gwenhywfar.m4
-%{_sysconfdir}/*.crt
 
 %changelog
