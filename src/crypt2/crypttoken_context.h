@@ -50,8 +50,8 @@ void GWEN_CryptToken_Context_free(GWEN_CRYPTTOKEN_CONTEXT *ctx);
 GWEN_CRYPTTOKEN_CONTEXT*
   GWEN_CryptToken_Context_dup(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromDb(GWEN_DB_NODE *db);
-void GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                                  GWEN_DB_NODE *db);
+int GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                 GWEN_DB_NODE *db);
 GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromXml(GWEN_XMLNODE *n);
 
 

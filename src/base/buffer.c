@@ -103,8 +103,16 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
     newbf->realBufferSize=bf->realBufferSize;
     newbf->bufferSize=bf->bufferSize;
     newbf->bytesUsed=bf->bytesUsed;
-    if (newbf->bytesUsed)
-      memmove(newbf->ptr, bf->ptr, bf->bytesUsed);
+    if (newbf->bytesUsed) {
+      int toCopy;
+
+      toCopy=bf->bytesUsed+1;
+      if (toCopy>(newbf->bufferSize)) {
+        fprintf(stderr, "Panic: Too many bytes in buffer");
+        abort();
+      }
+      memmove(newbf->ptr, bf->ptr, toCopy);
+    }
     newbf->pos=bf->pos;
   }
   newbf->flags=bf->flags | GWEN_BUFFER_FLAGS_OWNED;

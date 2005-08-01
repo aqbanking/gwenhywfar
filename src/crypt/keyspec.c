@@ -311,6 +311,28 @@ void GWEN_KeySpec_List2_freeAll(GWEN_KEYSPEC_LIST2 *stl) {
 
 
 
+int GWEN_KeySpec_toDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n) {
+  return GWEN_KeySpec_ToDb(ks, n);
+}
+
+
+
+GWEN_KEYSPEC *GWEN_KeySpec_fromDb(GWEN_DB_NODE *n) {
+  GWEN_KEYSPEC *ks;
+  int rv;
+
+  ks=GWEN_KeySpec_new();
+  rv=GWEN_KeySpec_FromDb(ks, n);
+  if (rv) {
+    GWEN_KeySpec_free(ks);
+    return 0;
+  }
+
+  return ks;
+}
+
+
+
 
 
 

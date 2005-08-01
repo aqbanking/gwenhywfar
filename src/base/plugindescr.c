@@ -445,7 +445,8 @@ int GWEN_LoadPluginDescrsByType(const char *path,
               if (GWEN_XML_ReadFile(fileNode,
 				    GWEN_Buffer_GetStart(nbuf),
                                     GWEN_XML_FLAGS_DEFAULT |
-                                    GWEN_XML_FLAGS_HANDLE_HEADERS)) {
+                                    GWEN_XML_FLAGS_HANDLE_HEADERS |
+                                    GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
                 DBG_WARN(GWEN_LOGDOMAIN,
                          "Bad file \"%s\"", GWEN_Buffer_GetStart(nbuf));
               }

@@ -2,10 +2,23 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2005/08/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_KeySpec_toDb()
+- added function GWEN_KeySpec_fromDb()
+- fixed a bug in PluginDescr loading code
+- fixed a bug in GWEN_Buffer_dup()
+- added GWEN_CryptManager_CheckToken()
+- added the command "checktoken" to gct-tool (checks whether a given token
+  is supported by any plugin)
+
+
 2005-07-31  Christian Stimming  <stimming@tuhh.de>
 
 	* gwenhywfar.spec.in: Move /etc/*.crt from -devel rpm to binary
 	rpm. While missing, Pin/Tan connections were impossible.
+
 
 2005/07/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

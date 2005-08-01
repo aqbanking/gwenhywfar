@@ -63,10 +63,10 @@ GWEN_CryptToken_Plugin_CreateToken(GWEN_PLUGIN *pl,
  * <ul>
  *  <li>GWEN_SUCCESS: CryptToken is supported by this plugin, the buffers
  *   for typeName, subTypeName and name are updated accordingly</li>
- *  <li>GWEN_ERROR_CT_NOT_IMPLEMENTED: function not implmeneted</li>
+ *  <li>GWEN_ERROR_CT_NOT_IMPLEMENTED: function not implmented</li>
  *  <li>GWEN_ERROR_CT_NOT_SUPPORTED: medium not supported by this plugin</li>
  *  <li>GWEN_ERROR_CT_BAD_NAME: Medium is supported but the name doesn't
- *      match of the currently checked medium</li>
+ *      match that of the currently checked medium</li>
  *  <li>GWEN_ERROR_CT_IO_ERROR: any type of IO error occurred</li>
  *  <li>other codes as appropriate</li>
  * </ul>
@@ -125,6 +125,16 @@ typedef int (*GWEN_CRYPTMANAGER_SHOW_MESSAGE_FN)(GWEN_PLUGIN_MANAGER *mgr,
 
 GWEN_PLUGIN_MANAGER *GWEN_CryptManager_new();
 
+/**
+ * This function tries to find a token plugin which is able to handle the
+ * token given by the device type and name.
+ */
+int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *cm,
+                                 GWEN_CRYPTTOKEN_DEVICE devt,
+                                 GWEN_BUFFER *typeName,
+                                 GWEN_BUFFER *subTypeName,
+                                 GWEN_BUFFER *tokenName);
+
 
 void GWEN_CryptManager_SetGetPinFn(GWEN_PLUGIN_MANAGER *cm,
                                    GWEN_CRYPTMANAGER_GETPIN_FN fn);
@@ -169,6 +179,12 @@ int GWEN_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *cm,
                                   GWEN_CRYPTTOKEN *token,
                                   const char *title,
                                   const char *msg);
+
+int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *cm,
+                                 GWEN_CRYPTTOKEN_DEVICE devt,
+                                 GWEN_BUFFER *typeName,
+                                 GWEN_BUFFER *subTypeName,
+                                 GWEN_BUFFER *tokenName);
 /*@}*/
 
 

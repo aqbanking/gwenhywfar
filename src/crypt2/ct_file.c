@@ -1138,6 +1138,13 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
+  /* reload if necessary */
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
+
   /* get sign info */
   si=GWEN_CryptToken_Context_GetSignInfo(ctx);
   assert(si);
@@ -1199,8 +1206,9 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   }
   if (GWEN_Buffer_GetUsedBytes(hbuf)!=
       GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes)",
-              GWEN_CryptToken_KeyInfo_GetChunkSize(ki));
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes, it is %d)",
+              GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+              GWEN_Buffer_GetUsedBytes(hbuf));
     GWEN_Buffer_free(hbuf);
     return GWEN_ERROR_INVALID;
   }
@@ -1211,7 +1219,7 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     GWEN_Buffer_free(hbuf);
-    return GWEN_ERROR_CT_IO_ERROR;
+    return GWEN_Error_GetSimpleCode(err);
   }
   GWEN_Buffer_free(hbuf);
 
@@ -1240,7 +1248,107 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
 int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                GWEN_BUFFER *src,
-                               GWEN_BUFFER *dst) {
+                               GWEN_BUFFER *signature) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CT_FILE_CONTEXT *fctx;
+  const GWEN_CRYPTTOKEN_KEYINFO *ki;
+  const GWEN_CRYPTTOKEN_SIGNINFO *si;
+  int rv;
+  GWEN_BUFFER *hbuf;
+  GWEN_ERRORCODE err;
+  GWEN_TYPE_UINT32 kid;
+  GWEN_CRYPTKEY *key;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  /* reload if necessary */
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
+
+  /* get sign info */
+  si=GWEN_CryptToken_Context_GetSignInfo(ctx);
+  assert(si);
+
+  /* get keyinfo and perform some checks */
+  ki=GWEN_CryptToken_Context_GetVerifyKeyInfo(ctx);
+  assert(ki);
+  kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
+  if ((kid & 0xff)!=3) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id");
+    return GWEN_ERROR_INVALID;
+  }
+  if (!(GWEN_CryptToken_KeyInfo_GetKeyFlags(ki) &
+        GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_VERIFY)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Key can not be used for verification");
+    return GWEN_ERROR_INVALID;
+  }
+  if (GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki)!=
+      GWEN_CryptToken_CryptAlgo_RSA) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid crypt algo");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* get user context */
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* check for existence of the key */
+  key=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fctx);
+  if (key==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No key");
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* hash data */
+  hbuf=GWEN_Buffer_new(0, GWEN_CryptToken_KeyInfo_GetChunkSize(ki), 0, 1);
+  rv=GWEN_CryptToken_Hash(GWEN_CryptToken_SignInfo_GetHashAlgo(si),
+			  GWEN_Buffer_GetStart(src),
+			  GWEN_Buffer_GetUsedBytes(src),
+			  hbuf);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_Buffer_free(hbuf);
+    return rv;
+  }
+
+  /* padd hash */
+  GWEN_Buffer_Rewind(hbuf);
+  rv=GWEN_CryptToken_Padd(GWEN_CryptToken_SignInfo_GetPaddAlgo(si),
+                          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+                          hbuf);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_Buffer_free(hbuf);
+    return rv;
+  }
+  if (GWEN_Buffer_GetUsedBytes(hbuf)!=
+      GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes, it is %d)",
+              GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+              GWEN_Buffer_GetUsedBytes(hbuf));
+    GWEN_Buffer_free(hbuf);
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* verify padded hash */
+  GWEN_Buffer_Rewind(hbuf);
+  err=GWEN_CryptKey_Verify(key, hbuf, signature);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    GWEN_Buffer_free(hbuf);
+    return GWEN_Error_GetSimpleCode(err);
+  }
+  GWEN_Buffer_free(hbuf);
+
+  /* done */
   return 0;
 }
 
@@ -1250,6 +1358,98 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                 GWEN_BUFFER *src,
                                 GWEN_BUFFER *dst) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CT_FILE_CONTEXT *fctx;
+  const GWEN_CRYPTTOKEN_KEYINFO *ki;
+  const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+  int rv;
+  GWEN_BUFFER *hbuf;
+  GWEN_ERRORCODE err;
+  GWEN_TYPE_UINT32 kid;
+  GWEN_CRYPTKEY *key;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  /* reload if necessary */
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
+
+  /* get crypt info */
+  ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
+  assert(ci);
+
+  /* get keyinfo and perform some checks */
+  ki=GWEN_CryptToken_Context_GetEncryptKeyInfo(ctx);
+  assert(ki);
+  kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
+  if ((kid & 0xff)!=4) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id");
+    return GWEN_ERROR_INVALID;
+  }
+  if (!(GWEN_CryptToken_KeyInfo_GetKeyFlags(ki) &
+        GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_ENCRYPT)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Key can not be used for encrypting");
+    return GWEN_ERROR_INVALID;
+  }
+  if (GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki)!=
+      GWEN_CryptToken_CryptAlgo_RSA) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid crypt algo");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* get user context */
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* check for existence of the key */
+  key=GWEN_CryptTokenFile_Context_GetRemoteCryptKey(fctx);
+  if (key==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No key");
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* copy data */
+  hbuf=GWEN_Buffer_new(0, GWEN_CryptToken_KeyInfo_GetChunkSize(ki), 0, 1);
+  GWEN_Buffer_AppendBuffer(hbuf, src);
+
+  /* padd source data */
+  GWEN_Buffer_Rewind(hbuf);
+  rv=GWEN_CryptToken_Padd(GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci),
+                          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+                          hbuf);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    GWEN_Buffer_free(hbuf);
+    return rv;
+  }
+  if (GWEN_Buffer_GetUsedBytes(hbuf)!=
+      GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes, it is %d)",
+              GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+              GWEN_Buffer_GetUsedBytes(hbuf));
+    GWEN_Buffer_free(hbuf);
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* encrypt padded data */
+  GWEN_Buffer_Rewind(hbuf);
+  err=GWEN_CryptKey_Encrypt(key, hbuf, dst);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    GWEN_Buffer_free(hbuf);
+    return GWEN_ERROR_CT_IO_ERROR;
+  }
+  GWEN_Buffer_free(hbuf);
+
+  /* done */
   return 0;
 }
 
@@ -1259,6 +1459,80 @@ int GWEN_CryptTokenFile_Decrypt(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                 GWEN_BUFFER *src,
                                 GWEN_BUFFER *dst) {
+  GWEN_CRYPTTOKEN_FILE *lct;
+  GWEN_CT_FILE_CONTEXT *fctx;
+  const GWEN_CRYPTTOKEN_KEYINFO *ki;
+  const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+  int rv;
+  GWEN_ERRORCODE err;
+  GWEN_TYPE_UINT32 kid;
+  GWEN_CRYPTKEY *key;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
+  assert(lct);
+
+  /* reload if necessary */
+  rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
+    return rv;
+  }
+
+  /* get crypt info */
+  ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
+  assert(ci);
+
+  /* get keyinfo and perform some checks */
+  ki=GWEN_CryptToken_Context_GetDecryptKeyInfo(ctx);
+  assert(ki);
+  kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
+  if ((kid & 0xff)!=2) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id");
+    return GWEN_ERROR_INVALID;
+  }
+  if (!(GWEN_CryptToken_KeyInfo_GetKeyFlags(ki) &
+        GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_DECRYPT)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Key can not be used for decrypting");
+    return GWEN_ERROR_INVALID;
+  }
+  if (GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki)!=
+      GWEN_CryptToken_CryptAlgo_RSA) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid crypt algo");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* get user context */
+  fctx=GWEN_CryptTokenFile__GetFileContextByKeyId(ct, kid, 0, 0);
+  if (!fctx) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "File context for key not found");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* check for existence of the key */
+  key=GWEN_CryptTokenFile_Context_GetLocalCryptKey(fctx);
+  if (key==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No key");
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* decrypt data */
+  err=GWEN_CryptKey_Decrypt(key, src, dst);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    return GWEN_ERROR_CT_IO_ERROR;
+  }
+
+  /* unpadd decrypted data */
+  GWEN_Buffer_Rewind(dst);
+  rv=GWEN_CryptToken_Unpadd(GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci),
+                            dst);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    return rv;
+  }
+
+  /* done */
   return 0;
 }
 

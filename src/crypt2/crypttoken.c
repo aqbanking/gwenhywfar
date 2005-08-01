@@ -32,10 +32,12 @@
 
 
 #include "crypttoken_p.h"
+#include "i18n_l.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/padd.h>
+#include <gwenhywfar/waitcallback.h>
 
 
 
@@ -376,8 +378,8 @@ GWEN_CRYPTTOKEN_SIGNINFO *GWEN_CryptToken_SignInfo_fromDb(GWEN_DB_NODE *db){
 
 
 
-void GWEN_CryptToken_SignInfo_toDb(const GWEN_CRYPTTOKEN_SIGNINFO *si,
-				   GWEN_DB_NODE *db){
+int GWEN_CryptToken_SignInfo_toDb(const GWEN_CRYPTTOKEN_SIGNINFO *si,
+                                  GWEN_DB_NODE *db){
   assert(si);
   assert(db);
 
@@ -388,7 +390,8 @@ void GWEN_CryptToken_SignInfo_toDb(const GWEN_CRYPTTOKEN_SIGNINFO *si,
 		       GWEN_CryptToken_HashAlgo_toString(si->hashAlgo));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		       "paddAlgo",
-		       GWEN_CryptToken_PaddAlgo_toString(si->paddAlgo));
+                       GWEN_CryptToken_PaddAlgo_toString(si->paddAlgo));
+  return 0;
 }
 
 
@@ -696,8 +699,8 @@ GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromDb(GWEN_DB_NODE *db){
 
 
 
-void GWEN_CryptToken_KeyInfo_toDb(const GWEN_CRYPTTOKEN_KEYINFO *ki,
-				  GWEN_DB_NODE *db){
+int GWEN_CryptToken_KeyInfo_toDb(const GWEN_CRYPTTOKEN_KEYINFO *ki,
+                                 GWEN_DB_NODE *db){
   assert(ki);
   assert(db);
 
@@ -740,7 +743,8 @@ void GWEN_CryptToken_KeyInfo_toDb(const GWEN_CRYPTTOKEN_KEYINFO *ki,
 			 "keyFlags", "writeable");
   if (ki->keyFlags & GWEN_CRYPTTOKEN_KEYINFO_FLAGS_HAS_SIGNSEQ)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
-			 "keyFlags", "hasSignSeq");
+                         "keyFlags", "hasSignSeq");
+  return 0;
 }
 
 
@@ -1080,8 +1084,8 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromDb(GWEN_DB_NODE *db){
 
 
 
-void GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-				  GWEN_DB_NODE *db){
+int GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                 GWEN_DB_NODE *db){
   GWEN_DB_NODE *dbT;
 
   assert(ctx);
@@ -1130,6 +1134,8 @@ void GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
     assert(dbT);
     GWEN_CryptToken_CryptInfo_toDb(ctx->cryptInfo, dbT);
   }
+
+  return 0;
 }
 
 
@@ -2473,6 +2479,9 @@ int GWEN_CryptToken_Hash(GWEN_CRYPTTOKEN_HASHALGO algo,
   assert(src);
   assert(slen);
 
+  DBG_ERROR(GWEN_LOGDOMAIN, "Hashing with algo \"%s\"",
+            GWEN_CryptToken_HashAlgo_toString(algo));
+
   switch(algo) {
   case GWEN_CryptToken_HashAlgo_None:
     GWEN_Buffer_AppendBytes(dstBuf, src, slen);
@@ -2515,6 +2524,9 @@ int GWEN_CryptToken_Padd(GWEN_CRYPTTOKEN_PADDALGO algo,
   unsigned int diff;
   unsigned bsize;
   unsigned dstSize;
+
+  DBG_ERROR(GWEN_LOGDOMAIN, "Padding with algo \"%s\"",
+            GWEN_CryptToken_PaddAlgo_toString(algo));
 
   assert(buf);
   bsize=GWEN_Buffer_GetUsedBytes(buf);
@@ -2975,6 +2987,160 @@ int GWEN_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *pm,
   if (cm->showMessageFn==0)
     return GWEN_ERROR_UNSUPPORTED;
   return cm->showMessageFn(pm, token, title, msg);
+}
+
+
+
+int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
+                                 GWEN_CRYPTTOKEN_DEVICE devt,
+                                 GWEN_BUFFER *typeName,
+                                 GWEN_BUFFER *subTypeName,
+                                 GWEN_BUFFER *tokenName) {
+  GWEN_CRYPTMANAGER *cm;
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl;
+
+  assert(pm);
+  cm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, GWEN_CRYPTMANAGER, pm);
+  assert(cm);
+
+  pdl=GWEN_PluginManager_GetPluginDescrs(pm);
+  if (pdl==0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No plugin descriptions found");
+    return GWEN_ERROR_NOT_FOUND;
+  }
+  else {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *pit;
+
+    pit=GWEN_PluginDescription_List2_First(pdl);
+    if (pit) {
+      GWEN_PLUGIN_DESCRIPTION *pd;
+
+      pd=GWEN_PluginDescription_List2Iterator_Data(pit);
+      assert(pd);
+      while(pd) {
+        GWEN_XMLNODE *n;
+        const char *p;
+        GWEN_CRYPTTOKEN_DEVICE currentDevt;
+
+        n=GWEN_PluginDescription_GetXmlNode(pd);
+        assert(n);
+        p=GWEN_XMLNode_GetProperty(n, "device", "file");
+        if (strcasecmp(p, "file")==0)
+          currentDevt=GWEN_CryptToken_Device_File;
+        else if (strcasecmp(p, "card")==0)
+          currentDevt=GWEN_CryptToken_Device_Card;
+        else if (strcasecmp(p, "none")==0)
+          currentDevt=GWEN_CryptToken_Device_None;
+        else
+          currentDevt=GWEN_CryptToken_Device_Unknown;
+
+        if (currentDevt==devt) {
+          GWEN_PLUGIN *pl;
+          char logbuffer[256];
+
+          snprintf(logbuffer, sizeof(logbuffer)-1,
+                   I18N("Loading plugin \"%s\""),
+                   GWEN_PluginDescription_GetName(pd));
+          logbuffer[sizeof(logbuffer)-1]=0;
+          GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+
+          /* device type matches, check this plugin */
+          pl=GWEN_PluginManager_GetPlugin(pm,
+                                          GWEN_PluginDescription_GetName(pd));
+          if (pl) {
+            GWEN_BUFFER *lSubTypeName;
+            GWEN_BUFFER *lTokenName;
+            int rv;
+
+            lSubTypeName=GWEN_Buffer_dup(subTypeName);
+            lTokenName=GWEN_Buffer_dup(tokenName);
+
+            snprintf(logbuffer, sizeof(logbuffer)-1,
+                     I18N("Checking plugin \"%s\""),
+                     GWEN_Plugin_GetName(pl));
+            logbuffer[sizeof(logbuffer)-1]=0;
+            GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, logbuffer);
+
+            DBG_ERROR(GWEN_LOGDOMAIN,
+                      "Checking plugin \"%s\"",
+                      GWEN_Plugin_GetName(pl));
+
+            rv=GWEN_CryptToken_Plugin_CheckToken(pl,
+                                                 lSubTypeName,
+                                                 lTokenName);
+            switch(rv) {
+            case 0:
+              /* responsive plugin found */
+              snprintf(logbuffer, sizeof(logbuffer)-1,
+                       I18N("Plugin \"%s\" supports this token"),
+                       GWEN_Plugin_GetName(pl));
+              logbuffer[sizeof(logbuffer)-1]=0;
+              GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, logbuffer);
+
+              GWEN_Buffer_Reset(typeName);
+              GWEN_Buffer_AppendString(typeName, GWEN_Plugin_GetName(pl));
+              GWEN_Buffer_Reset(subTypeName);
+              GWEN_Buffer_AppendBuffer(subTypeName, lSubTypeName);
+              GWEN_Buffer_Reset(tokenName);
+              GWEN_Buffer_AppendBuffer(tokenName, lTokenName);
+              GWEN_Buffer_free(lTokenName);
+              GWEN_Buffer_free(lSubTypeName);
+              GWEN_PluginDescription_List2Iterator_free(pit);
+              GWEN_PluginDescription_List2_freeAll(pdl);
+              return 0;
+
+            case GWEN_ERROR_CT_NOT_IMPLEMENTED:
+              snprintf(logbuffer, sizeof(logbuffer)-1,
+                       I18N("Plugin \"%s\": Function not implemented"),
+                       GWEN_Plugin_GetName(pl));
+              logbuffer[sizeof(logbuffer)-1]=0;
+              GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, logbuffer);
+              break;
+
+            case GWEN_ERROR_CT_NOT_SUPPORTED:
+              snprintf(logbuffer, sizeof(logbuffer)-1,
+                       I18N("Plugin \"%s\" does not support this token"),
+                       GWEN_Plugin_GetName(pl));
+              logbuffer[sizeof(logbuffer)-1]=0;
+              GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+              break;
+
+            case GWEN_ERROR_CT_BAD_NAME:
+              snprintf(logbuffer, sizeof(logbuffer)-1,
+                       I18N("Plugin \"%s\" supports this token, but the name"
+                            "did not match"),
+                       GWEN_Plugin_GetName(pl));
+              logbuffer[sizeof(logbuffer)-1]=0;
+              GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+              break;
+
+            default:
+              snprintf(logbuffer, sizeof(logbuffer)-1,
+                       I18N("Plugin \"%s\": Unexpected error (%d)"),
+                       GWEN_Plugin_GetName(pl), rv);
+              logbuffer[sizeof(logbuffer)-1]=0;
+              GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+              break;
+            } /* switch */
+          } /* if plugin loaded */
+          else {
+            snprintf(logbuffer, sizeof(logbuffer)-1,
+                     I18N("Could not load plugin \"%s\""),
+                     GWEN_PluginDescription_GetName(pd));
+            logbuffer[sizeof(logbuffer)-1]=0;
+            GWEN_WaitCallback_Log(GWEN_LoggerLevelWarning, logbuffer);
+          }
+        }
+
+        pd=GWEN_PluginDescription_List2Iterator_Next(pit);
+      }
+
+      GWEN_PluginDescription_List2Iterator_free(pit);
+    }
+    GWEN_PluginDescription_List2_freeAll(pdl);
+  }
+
+  return GWEN_ERROR_CT_NOT_SUPPORTED;
 }
 
 
