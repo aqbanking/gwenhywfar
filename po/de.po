@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-05-31 14:45+0200\n"
-"PO-Revision-Date: 2005-07-20 09:45+0200\n"
+"POT-Creation-Date: 2005-08-01 15:51+0200\n"
+"PO-Revision-Date: 2005-08-02 16:15+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,155 +17,155 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/base/error.c:601
+#: src/base/error.c:607
 msgid "Ok"
 msgstr "Ok"
 
-#: src/base/error.c:603
+#: src/base/error.c:609
 msgid "Generic error"
 msgstr "Allgemeiner Fehler"
 
-#: src/base/error.c:605
+#: src/base/error.c:611
 msgid "Aborted"
 msgstr "Abgebrochen"
 
-#: src/base/error.c:607
+#: src/base/error.c:613
 msgid "Not available"
 msgstr "Nicht verfügbar"
 
-#: src/base/error.c:609
+#: src/base/error.c:615
 msgid "Bad socket type"
 msgstr "Falscher Socket-Typ"
 
-#: src/base/error.c:611
+#: src/base/error.c:617
 msgid "Not open"
 msgstr "Nicht offen"
 
-#: src/base/error.c:613
+#: src/base/error.c:619
 msgid "Timeout"
 msgstr "Zeit abgelaufen"
 
-#: src/base/error.c:615
+#: src/base/error.c:621
 msgid "In Progress"
 msgstr "In Bearbeitung"
 
-#: src/base/error.c:617
+#: src/base/error.c:623
 msgid "Startup error"
 msgstr "Initialisierungsfehler"
 
-#: src/base/error.c:619
+#: src/base/error.c:625
 msgid "Interrupted system call"
 msgstr "Unterbrochener System-Aufruf"
 
-#: src/base/error.c:621
+#: src/base/error.c:627
 msgid "Unsupported"
 msgstr "Nicht unterstützt"
 
-#: src/base/error.c:623
+#: src/base/error.c:629
 msgid "Broken pipe"
 msgstr "Leitung unterbrochen"
 
-#: src/base/error.c:625
+#: src/base/error.c:631
 msgid "Memory full"
 msgstr "Speicher voll"
 
-#: src/base/error.c:627
+#: src/base/error.c:633
 msgid "Bad address"
 msgstr "Fehlerhafte Adresse"
 
-#: src/base/error.c:629
+#: src/base/error.c:635
 msgid "Buffer overflow"
 msgstr "Pufferüberlauf"
 
-#: src/base/error.c:631
+#: src/base/error.c:637
 msgid "Host not found"
 msgstr "Host nicht gefunden"
 
-#: src/base/error.c:633
+#: src/base/error.c:639
 msgid "No address"
 msgstr "Fehlende Adresse"
 
-#: src/base/error.c:635
+#: src/base/error.c:641
 msgid "No recovery"
 msgstr "Keine Wiederherstellung"
 
-#: src/base/error.c:637
+#: src/base/error.c:643
 msgid "Try again"
 msgstr "Versuchen Sie es erneut"
 
-#: src/base/error.c:639
+#: src/base/error.c:645
 msgid "Unknown DNS error"
 msgstr "Unbekannter DNS-Fehler"
 
-#: src/base/error.c:641
+#: src/base/error.c:647
 msgid "Bad address family"
 msgstr "Fehlerhafte Adress-Familie"
 
-#: src/base/error.c:643
+#: src/base/error.c:649
 msgid "Could not load"
 msgstr "Fehler beim Laden"
 
-#: src/base/error.c:645
+#: src/base/error.c:651
 msgid "Could not resolve a symbol"
 msgstr "Symbol konnte nicht aufgelöst werden"
 
-#: src/base/error.c:647
+#: src/base/error.c:653
 msgid "Not found"
 msgstr "Nicht gefunden"
 
-#: src/base/error.c:649
+#: src/base/error.c:655
 msgid "Could not read"
 msgstr "Fehler beim Lesen"
 
-#: src/base/error.c:651
+#: src/base/error.c:657
 msgid "Could not write"
 msgstr "Fehler beim Schreiben"
 
-#: src/base/error.c:653
+#: src/base/error.c:659
 msgid "Could not close"
 msgstr "Fehler beim Schließen"
 
-#: src/base/error.c:655
+#: src/base/error.c:661
 msgid "No data"
 msgstr "Keine Daten"
 
-#: src/base/error.c:657
+#: src/base/error.c:663
 msgid "Partial data"
 msgstr "Teildaten"
 
-#: src/base/error.c:659
+#: src/base/error.c:665
 msgid "EOF met"
 msgstr "Dateiende erreicht"
 
-#: src/base/error.c:661
+#: src/base/error.c:667
 msgid "Already registered"
 msgstr "Bereits registriert"
 
-#: src/base/error.c:663
+#: src/base/error.c:669
 msgid "Not registered"
 msgstr "Nicht registriert"
 
-#: src/base/error.c:665
+#: src/base/error.c:671
 msgid "Bad size"
 msgstr "Fehlerhafte Größe"
 
-#: src/base/error.c:667
+#: src/base/error.c:673
 msgid "Could not encrypt"
 msgstr "Fehler beim Verschlüsseln"
 
-#: src/base/error.c:669
+#: src/base/error.c:675
 msgid "Could not decrypt"
 msgstr "Fehler beim Entschlüsseln"
 
-#: src/base/error.c:671
+#: src/base/error.c:677
 msgid "Could not sign"
 msgstr "Fehler beim Signieren"
 
-#: src/base/error.c:673
+#: src/base/error.c:679
 msgid "Could not verify"
 msgstr "Fehler bei der Signaturüberprüfung"
 
-#: src/base/error.c:675
+#: src/base/error.c:681
 msgid "Generic SSL error"
 msgstr "Allgemeiner SSL Fehler"
 
@@ -199,11 +199,11 @@ msgstr "Zertifikat ist nicht mehr gültig"
 
 #: src/crypt/ossl/nettransportssl.c:1610
 msgid "Self-signed root cert"
-msgstr "Selbst-signiertes Root-Zertifikat"
+msgstr "Selbstsigniertes Root-Zertifikat"
 
 #: src/crypt/ossl/nettransportssl.c:1614
 msgid "Self-signed cert"
-msgstr "Selbst-signiertes Zertifikat"
+msgstr "Selbstsigniertes Zertifikat"
 
 #: src/crypt/ossl/nettransportssl.c:1618
 msgid "Unable to verify leaf signature"
@@ -264,6 +264,18 @@ msgstr "Zertifikat ist gültig"
 #: src/crypt/ossl/nettransportssl.c:1680
 msgid "Unknown SSL error"
 msgstr "Unbekannter SSL-Fehler"
+
+#: src/io/bufferedio.c:773
+msgid "Reading from buffered IO..."
+msgstr "Aus Ein/Ausgabe-Puffer lesen..."
+
+#: src/io/bufferedio.c:774 src/io/bufferedio.c:831
+msgid "byte(s)"
+msgstr "Byte"
+
+#: src/io/bufferedio.c:830
+msgid "Writing to buffered IO..."
+msgstr "In Ein/Ausgabe-Puffer schreiben..."
 
 #: tools/xmlmerge/args.c:117
 msgid ""
