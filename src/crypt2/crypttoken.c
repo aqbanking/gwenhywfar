@@ -3132,7 +3132,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
 
             case GWEN_ERROR_CT_BAD_NAME:
               snprintf(logbuffer, sizeof(logbuffer)-1,
-                       I18N("Plugin \"%s\" supports this token, but the name"
+                       I18N("Plugin \"%s\" supports this token, but the name "
                             "did not match"),
                        GWEN_Plugin_GetName(pl));
               logbuffer[sizeof(logbuffer)-1]=0;

@@ -8,14 +8,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-08-01 15:51+0200\n"
-"PO-Revision-Date: 2005-08-02 16:15+0200\n"
+"POT-Creation-Date: 2005-08-02 16:35+0200\n"
+"PO-Revision-Date: 2005-08-02 16:36+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
+
+#: plugins/crypttoken/ohbci/ohbci.c:476
+msgid "No valid PIN (tried too often), aborting."
+msgstr "Keine gültige PIN erhalten (zu oft versucht). Abbruch."
+
+#: plugins/crypttoken/ohbci/ohbci.c:510
+msgid "Bad PIN, will try again"
+msgstr "Falsche PIN erhalten. Erneut versuchen"
 
 #: src/base/error.c:607
 msgid "Ok"
@@ -91,7 +99,7 @@ msgstr "Keine Wiederherstellung"
 
 #: src/base/error.c:643
 msgid "Try again"
-msgstr "Versuchen Sie es erneut"
+msgstr "Erneut versuchen"
 
 #: src/base/error.c:645
 msgid "Unknown DNS error"
@@ -168,6 +176,47 @@ msgstr "Fehler bei der Signaturüberprüfung"
 #: src/base/error.c:681
 msgid "Generic SSL error"
 msgstr "Allgemeiner SSL Fehler"
+
+#: src/crypt2/crypttoken.c:3067
+#, c-format
+msgid "Loading plugin \"%s\""
+msgstr "Plugin \"%s\" laden"
+
+#: src/crypt2/crypttoken.c:3084
+#, c-format
+msgid "Checking plugin \"%s\""
+msgstr "Plugin \"%s\" prüfen"
+
+#: src/crypt2/crypttoken.c:3100
+#, c-format
+msgid "Plugin \"%s\" supports this token"
+msgstr "Plugin \"%s\" unterstützt dieses Token"
+
+#: src/crypt2/crypttoken.c:3119
+#, c-format
+msgid "Plugin \"%s\": Function not implemented"
+msgstr "Plugin \"%s\": Funktion nicht implementiert"
+
+#: src/crypt2/crypttoken.c:3127
+#, c-format
+msgid "Plugin \"%s\" does not support this token"
+msgstr "Plugin \"%s\" unterstützt dieses Token nicht"
+
+#: src/crypt2/crypttoken.c:3135
+#, c-format
+msgid "Plugin \"%s\" supports this token, but the name did not match"
+msgstr ""
+"Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
+
+#: src/crypt2/crypttoken.c:3144
+#, c-format
+msgid "Plugin \"%s\": Unexpected error (%d)"
+msgstr "Plugin \"%s\": Unerwarteter Fehler (%d)"
+
+#: src/crypt2/crypttoken.c:3153
+#, c-format
+msgid "Could not load plugin \"%s\""
+msgstr "Fehler beim Laden des Plugins \"%s\""
 
 #: src/crypt/ossl/nettransportssl.c:1582
 msgid "New certificate"
@@ -277,6 +326,161 @@ msgstr "Byte"
 msgid "Writing to buffered IO..."
 msgstr "In Ein/Ausgabe-Puffer schreiben..."
 
+#: src/os/posix/fslock.c:213 src/os/windows/fslock.c:224
+msgid "Waiting for lock to become available..."
+msgstr "Warten auf exklusiven Schreibzugriff..."
+
+#: src/os/posix/fslock.c:215
+msgid "second(s)"
+msgstr "Sekunde(n)"
+
+#: tools/gct-tool/cryptmanager.c:281
+msgid " You must only enter numbers, not letters."
+msgstr " Es dürfen nur Zahlen eingegeben werden, keine Buchstaben."
+
+#: tools/gct-tool/cryptmanager.c:285
+msgid "(correct) "
+msgstr "(korrekte) "
+
+#: tools/gct-tool/cryptmanager.c:290
+#, c-format
+msgid ""
+"Please enter a new password for \n"
+"  \"%s\"\n"
+"The password must be at least %d characters long.%s"
+msgstr ""
+"Bitte geben Sie ein neues Passwort für\n"
+"  \"%s\"\n"
+"ein. Das Passwort muß mindestens %d Zeichen lang sein.%s"
+
+#: tools/gct-tool/cryptmanager.c:299
+#, c-format
+msgid ""
+"Please enter the %spassword for \n"
+"  \"%s\"\n"
+"%s"
+msgstr ""
+"Bitte geben Sie das %sPasswort für\n"
+"  \"%s\"\n"
+"ein.%s"
+
+#. TRANSLATORS: The field here should be as long as the "Repeat:" field
+#. * to have the PIN entries begin at the same column for both the first and
+#. * the second pin entry.
+#: tools/gct-tool/cryptmanager.c:314
+msgid "Input : "
+msgstr "Eingabe    :"
+
+#. TRANSLATORS: The field here should be as long as the "Input :" field
+#. * to have the PIN entries begin at the same column for both the first
+#. * and the second pin entry.
+#: tools/gct-tool/cryptmanager.c:328
+msgid "Repeat: "
+msgstr "Wiederholen:"
+
+#: tools/gct-tool/cryptmanager.c:370
+msgid "Please enter your PIN into the card reader."
+msgstr "Bitte geben Sie Ihre PIN am Kartenleser ein."
+
+#: tools/gct-tool/cryptmanager.c:409
+#, c-format
+msgid ""
+"Please insert the security disc\n"
+"for %s"
+msgstr ""
+"Bitte legen Sie die Schlüsseldiskette \n"
+"für %s ins Laufwerk."
+
+#: tools/gct-tool/cryptmanager.c:413
+#, c-format
+msgid ""
+"Please insert the chip card\n"
+"for %s"
+msgstr ""
+"Bitte legen Sie die Chipkarte \n"
+"für %s in den Kartenleser."
+
+#: tools/gct-tool/cryptmanager.c:444
+#, c-format
+msgid ""
+"Please insert the correct security disc\n"
+"for %s"
+msgstr ""
+"Bitte legen Sie die korrekte Schlüsseldiskette\n"
+"für %s ins Laufwerk."
+
+#: tools/gct-tool/cryptmanager.c:448
+#, c-format
+msgid ""
+"Please insert the correct chip card\n"
+"for %s"
+msgstr ""
+"Bitte legen Sie die korrekte Chipkarte\n"
+"für %s in den Kartenleser."
+
+#: tools/gct-tool/main.c:108
+msgid "Usage: "
+msgstr "Benutzung: "
+
+#: tools/gct-tool/main.c:111
+msgid " [GLOBAL OPTIONS] COMMAND [LOCAL OPTIONS]\n"
+msgstr ""
+
+#: tools/gct-tool/main.c:114
+msgid ""
+"\n"
+"Global Options:\n"
+msgstr ""
+
+#: tools/gct-tool/main.c:120
+msgid ""
+"\n"
+"Commands:\n"
+"\n"
+msgstr ""
+
+#: tools/gct-tool/main.c:122
+msgid ""
+"  sign:\n"
+"    This command signs the given files\n"
+"\n"
+msgstr ""
+
+#: tools/typemaker/args.c:116
+#, fuzzy
+msgid ""
+"-v               verbous\n"
+"--logfile ARG    name of the logfile\n"
+"--logtype ARG    log type\n"
+"--loglevel ARG   log level\n"
+"-d ARG           use ARG as domain prefix macro for function declarations\n"
+"-o ARG           name of output file (stdout if omitted)\n"
+"--compact        write a more compact file\n"
+"-V | --version   print version of this tool and exit\n"
+msgstr ""
+"-v               gibt mehr Logmeldungen aus\n"
+"--logfile ARG    Name der Logdatei\n"
+"--logtype ARG    Logtyp\n"
+"--loglevel ARG   Loglevel\n"
+"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
+"angegeben)\n"
+"--compact        schreibe eine kompakte Datei\n"
+
+#: tools/typemaker/args.c:148 tools/xmlmerge/args.c:147
+#, c-format
+msgid "Unknown log type \"%s\"\n"
+msgstr "Unbekannter Logtyp \"%s\"\n"
+
+#: tools/typemaker/args.c:160 tools/xmlmerge/args.c:159
+#, c-format
+msgid "Unknown log level \"%s\"\n"
+msgstr "Unbekannter Loglevel \"%s\"\n"
+
+#: tools/typemaker/args.c:194 tools/xmlmerge/args.c:190
+#, c-format
+msgid "Unknown option \"%s\"\n"
+msgstr "Unbekannte Option \"%s\"\n"
+
 #: tools/xmlmerge/args.c:117
 msgid ""
 "-v               verbous\n"
@@ -294,17 +498,482 @@ msgstr ""
 "angegeben)\n"
 "--compact        schreibe eine kompakte Datei\n"
 
-#: tools/xmlmerge/args.c:147
-#, c-format
-msgid "Unknown log type \"%s\"\n"
-msgstr "Unbekannter Logtyp \"%s\"\n"
+#~ msgid "Connection established with %s (port %d)"
+#~ msgstr "Verbindung hergestellt mit %s (Port %d)"
 
-#: tools/xmlmerge/args.c:159
-#, c-format
-msgid "Unknown log level \"%s\"\n"
-msgstr "Unbekannter Loglevel \"%s\"\n"
+#~ msgid "Connection established"
+#~ msgstr "Verbindung hergestellt"
 
-#: tools/xmlmerge/args.c:190
-#, c-format
-msgid "Unknown option \"%s\"\n"
-msgstr "Unbekannte Option \"%s\"\n"
+#~ msgid "Connection closed to %s (port %d)"
+#~ msgstr "Verbindung beendet mit %s (Port %d)"
+
+#~ msgid "Connection closed"
+#~ msgstr "Verbindung beendet"
+
+#~ msgid "No status, bad HTTP response, assuming HTTP 0.9 response"
+#~ msgstr "Kein Status, fehlerhafte HTTP-Antwort, HTTP 0.9 vermutet"
+
+#~ msgid "HTTP-Error: %d %s"
+#~ msgstr "HTTP-Fehler: %d %s"
+
+#~ msgid "HTTP-Status: %d %s"
+#~ msgstr "HTTP-Status: %d %s"
+
+#~ msgid "Answer too small to be a HBCI message"
+#~ msgstr "Antwort ist für HBCI-Daten nicht groß genug"
+
+#~ msgid "Answer does not contain a HBCI message"
+#~ msgstr "Antwort enthält keine HBCI-Daten"
+
+#~ msgid "Waiting for incoming message..."
+#~ msgstr "Auf Antwort warten..."
+
+#~ msgid "Restarting connection"
+#~ msgstr "Verbinde erneut"
+
+#~ msgid "Sending message..."
+#~ msgstr "Aufträge werden gesendet..."
+
+#~ msgid "AqHBCI-Notice"
+#~ msgstr "AqHBCI-Anmerkung"
+
+#~ msgid ""
+#~ "Since version 1.0.3.9 AqHBCI no longer\n"
+#~ "stores the PIN in your private logfiles when\n"
+#~ "logging PIN/TAN connections.\n"
+#~ "Because previous versions did, you should\n"
+#~ "delete all logfiles in your local AqBanking\n"
+#~ "Logfolder (usually something like\n"
+#~ "$HOME/.banking/backends/aqhbci/data/...)\n"
+#~ "\n"
+#~ "Logfiles have the extension \".log\", \n"
+#~ "please do only delete those files!\n"
+#~ "This only affects PIN/TAN mode, all other modes\n"
+#~ "are not affected.\n"
+#~ "<html><p>Since version 1.0.3.9 AqHBCI no longer\n"
+#~ "stores the PIN in your private logfiles when\n"
+#~ "logging <b>PIN/TAN</b> connections.\n"
+#~ "</p><p>Because previous versions did, you should\n"
+#~ "delete all logfiles in your local \n"
+#~ "AqBanking Logfolder (usually something like\n"
+#~ "<i>$HOME/.banking/backends/aqhbci/data/...\n"
+#~ "</i>)</p><p>Logfiles have the extension \".log\", \n"
+#~ "<font color=red>please do only delete <b>those</b> files!</font></"
+#~ "p><p>This only affects <b>PIN/TAN mode,</b> all other modes\n"
+#~ "are not affected.\n"
+#~ "</p></html>"
+#~ msgstr ""
+#~ "Seit AqHBCI 1.0.4 wird die PIN bei PIN/TAN-Verbindungen nicht mehr in\n"
+#~ "den persönlichen Logfiles gespeichert.  Weil die vorherigen Versionen\n"
+#~ "das aber gemacht haben, sollten Sie diese Logfiles nun manuell\n"
+#~ "löschen.  (Normalerweise sind diese in Unterverzeichnissen von\n"
+#~ "$HOME/.banking/backends/aqhbci/data/... abgespeichert.) Logfiles haben\n"
+#~ "die Endung \".log\", bitte nur diese Dateien löschen!\n"
+#~ "\n"
+#~ "Diese Meldung betrifft nur den PIN/TAN-Modus. Alle anderen\n"
+#~ "Sicherheitsmedien sind nicht betroffen.\n"
+#~ "<html><p>Seit AqHBCI 1.0.4 wird die PIN bei PIN/TAN-Verbindungen nicht "
+#~ "mehr in\n"
+#~ "den persönlichen Logfiles gespeichert.  Weil die vorherigen Versionen\n"
+#~ "das aber gemacht haben, sollten Sie diese Logfiles nun manuell\n"
+#~ "löschen.  (Normalerweise sind diese in Unterverzeichnissen von\n"
+#~ "<i>$HOME/.banking/backends/aqhbci/data/...</i> abgespeichert.) Logfiles "
+#~ "haben\n"
+#~ "die Endung \".log\", bitte <b>nur</b> diese Dateien löschen!</p>\n"
+#~ "<p>\n"
+#~ "Diese Meldung betrifft <b>nur den PIN/TAN-Modus</b>. Alle anderen\n"
+#~ "Sicherheitsmedien sind nicht betroffen.\n"
+#~ "</p></html>"
+
+#~ msgid "Continue"
+#~ msgstr "Weiter"
+
+#~ msgid "Checking Medium"
+#~ msgstr "Medium prüfen"
+
+#~ msgid ""
+#~ "We are now checking for a plugin which supports\n"
+#~ "this medium..."
+#~ msgstr "Es wird ein Modul gesucht, das das Medium unterstützt..."
+
+#~ msgid "Trying plugin \"%s\""
+#~ msgstr "Modul \"%s\" wird geprüft"
+
+#~ msgid "--> error loading plugin"
+#~ msgstr "--> Fehler beim Laden des Modules"
+
+#~ msgid "--> supported"
+#~ msgstr "--> unterstützt dieses Medium"
+
+#~ msgid "--> no media check function"
+#~ msgstr "--> das Modul verfügt über keine Funktion zur Medienprüfung"
+
+#~ msgid "--> possible support, but wrong name"
+#~ msgstr ""
+#~ "--> möglicherweise durch das Modul unterstützt, aber der Name ist "
+#~ "fehlerhaft"
+
+#~ msgid "--> not supported"
+#~ msgstr "--> nicht durch dieses Modul unterstützt"
+
+#~ msgid "--> generic error"
+#~ msgstr "--> allgemeiner Fehler"
+
+#~ msgid "No plugin found for this medium."
+#~ msgstr "Es wurde kein Modul gefunden, das dieses Medium unterstützt."
+
+#~ msgid "Resolving hostname \"%s\" ..."
+#~ msgstr "Ermittle Adresse von \"%s\" ..."
+
+#~ msgid "Unknown hostname \"%s\""
+#~ msgstr "Unbekannter Rechner \"%s\""
+
+#~ msgid "IP address is %s"
+#~ msgstr "Ermittelte IP Adresse ist %s"
+
+#~ msgid ""
+#~ "Please enter a new password for \n"
+#~ "%s\n"
+#~ "The password must be at least %d characters long.%s<html>Please enter a "
+#~ "new password for <i>%s</i>. The password must be at least %d characters "
+#~ "long.%s</html>"
+#~ msgstr ""
+#~ "Bitte geben Sie ein neues Passwort für \n"
+#~ "%s \n"
+#~ "ein. Das Passwort muß mindestens %d Zeichen enthalten.%s\n"
+#~ "<html>Bitte geben Sie ein neues Passwort für <i>%s</i> ein. Das Passwort "
+#~ "muß mindestens %d Zeichen enthalten.%s</html>"
+
+#~ msgid ""
+#~ "Please enter the password for \n"
+#~ "%s\n"
+#~ "%s<html>Please enter the password for <i>%s</i>.%s</html>"
+#~ msgstr ""
+#~ "Bitte geben Sie das Passwort für \n"
+#~ "%s \n"
+#~ "ein%s<html>Bitte geben Sie das Passwort für <i>%s</i> ein.%s</html>"
+
+#~ msgid "Enter Password"
+#~ msgstr "Passwort eingeben"
+
+#~ msgid ""
+#~ "Please enter the next TAN\n"
+#~ "for %s<html>Please enter the next TAN for <i>%s</i></html>"
+#~ msgstr ""
+#~ "Bitte geben Sie die nächste TAN\n"
+#~ "für %s ein <html> Bitte geben Sie die nächste TAN für <i>%s</i> ein. </"
+#~ "html>"
+
+#~ msgid "Enter TAN"
+#~ msgstr "TAN eingeben"
+
+#~ msgid ""
+#~ "Please insert the security disc\n"
+#~ "for %s<html>Please insert the security disc for <i>%s</i></html>"
+#~ msgstr ""
+#~ "Bitte legen Sie die Sicherheitsdiskette\n"
+#~ "für %s ein <html> Bitte legen Sie die Sicherheitsdiskette für <i>%s</i> "
+#~ "ein</html>"
+
+#~ msgid ""
+#~ "Please insert the chip card\n"
+#~ "for %s<html>Please insert the chip card for <i>%s</i></html>"
+#~ msgstr ""
+#~ "Bitte legen Sie die Chipkarte\n"
+#~ "für %s ein <html> Bitte legen Sie die Chipkarte für <i>%s</i> ein</html>"
+
+#~ msgid ""
+#~ "Please insert the correct security disc\n"
+#~ "for %s<html>Please insert the correct security disc for <i>%s</i></html>"
+#~ msgstr ""
+#~ "Bitte legen Sie die richtige Sicherheitsdiskette\n"
+#~ "für %s ein <html> Bitte legen Sie die <b>richtige</b> Sicherheitsdiskette "
+#~ "für <i>%s</i> ein</html>"
+
+#~ msgid ""
+#~ "Please insert the correct chip card\n"
+#~ "for %s<html>Please insert the correct chip card for <i>%s</i></html>"
+#~ msgstr ""
+#~ "Bitte legen Sie die richtige Chipkarte\n"
+#~ "für %s ein <html> Bitte legen Sie die <b>richtige</b> Chipkarte für <i>%"
+#~ "s</i> ein</html>"
+
+#~ msgid "Insert Medium"
+#~ msgstr "Das Medium fehlt. Bitte legen Sie das Medium ein."
+
+#~ msgid "OK"
+#~ msgstr "Ok"
+
+#~ msgid "Abort"
+#~ msgstr "Abbrechen"
+
+#~ msgid "User Abort"
+#~ msgstr "Auf Benutzerwunsch abgebrochen"
+
+#~ msgid "Action aborted by user."
+#~ msgstr "Diese Aktion wurde durch den Benutzer abgebrochen."
+
+#~ msgid "Dismiss"
+#~ msgstr "Schließen"
+
+#~ msgid "Error"
+#~ msgstr "Fehler"
+
+#~ msgid "An internal error occurred."
+#~ msgstr "Ein interner Fehler ist aufgetreten."
+
+#~ msgid ""
+#~ "Please enter your PIN into the card reader.<html>Please enter your PIN "
+#~ "into the card reader.</html>"
+#~ msgstr ""
+#~ "Bitte geben Sie Ihre PIN in den Kartenleser ein. <html> Bitte geben Sie "
+#~ "Ihre PIN in den Kartenleser ein.</html>"
+
+#~ msgid "Secure PIN Input"
+#~ msgstr "Sichere PIN-Eingabe"
+
+#~ msgid "BankId in received message does not match, ignoring"
+#~ msgstr ""
+#~ "BLZ im empfangenen Schlüssel passt nicht zur erwarteten BLZ (ignoriert)"
+
+#~ msgid "Security Warning"
+#~ msgstr "Sicherheitswarnung"
+
+#~ msgid ""
+#~ "The HBCI response of the bank has an invalid signature counter,\n"
+#~ "contrary to what has been expected. This can be the case because the \n"
+#~ "bank just stopped using the signature counter. This error message \n"
+#~ "would also occur if there were a replay attack against your computer \n"
+#~ "in progress right now, which is probably quite unlikely. \n"
+#~ " \n"
+#~ "Please contact your bank and ask them whether their HBCI server \n"
+#~ "stopped using the signature counter in HBCI responses. \n"
+#~ "\n"
+#~ "Do you nevertheless want to accept this response this time or always?"
+#~ "<html><p>The HBCI response of the bank has an invalid signature counter, "
+#~ "contrary to what has been expected. This can be the case because the\n"
+#~ "bank just stopped using the signature counter. This error message\n"
+#~ "would also occur if there were a replay attack against your computer\n"
+#~ "in progress right now, which is probably quite unlikely.\n"
+#~ "</p><p>Please contact your bank and ask them whether their HBCI server\n"
+#~ "stopped using the signature counter in HBCI responses.\n"
+#~ "</p><p>Do you nevertheless want to accept this response this time or "
+#~ "always?</p></html>"
+#~ msgstr ""
+#~ "Die HBCI-Antwort der Bank hat einen fehlerhaften Signaturzähler,\n"
+#~ "anders als erwartet. Dies kann der Fall sein, wenn die Bank soeben\n"
+#~ "ihre Einstellungen geändert hat und nun keinen Signaturzähler mehr\n"
+#~ "verwendet. Diese Meldung erscheint ebenfalls, wenn in diesem Moment\n"
+#~ "ein Angreifer versucht, ihre Sicherheit durch »replay attacks«\n"
+#~ "(mehrfache Zusendung der Bank-Antwort) zu kompromittieren, was\n"
+#~ "allerdings ein unwahrscheinlicher Fall ist.\n"
+#~ "\n"
+#~ "Bitte kontaktieren Sie Ihre Bank und fragen nach, ob der HBCI-Server\n"
+#~ "aufgehört hat, einen Signaturzähler zu verwenden. Wenn Ihre Bank um\n"
+#~ "Ihre Sicherheit besorgt ist, sollte der HBCI-Server nicht aufhören,\n"
+#~ "einen Signaturzähler zu verwenden.\n"
+#~ "\n"
+#~ "Wollen Sie trotzdem die Antwort dieses Mal oder für immer akzeptieren?\n"
+#~ "<html><p>\n"
+#~ "Die HBCI-Antwort der Bank hat einen fehlerhaften Signaturzähler,\n"
+#~ "anders als erwartet. Dies kann der Fall sein, wenn die Bank soeben\n"
+#~ "ihre Einstellungen geändert hat und nun keinen Signaturzähler mehr\n"
+#~ "verwendet. Diese Meldung erscheint ebenfalls, wenn in diesem Moment\n"
+#~ "ein Angreifer versucht, ihre Sicherheit durch »replay attacks«\n"
+#~ "(mehrfache Zusendung der Bank-Antwort) zu kompromittieren, was\n"
+#~ "allerdings ein unwahrscheinlicher Fall ist.\n"
+#~ "</p><p>\n"
+#~ "Bitte kontaktieren Sie Ihre Bank und fragen nach, ob der HBCI-Server\n"
+#~ "aufgehört hat, einen Signaturzähler zu verwenden. Wenn Ihre Bank um\n"
+#~ "Ihre Sicherheit besorgt ist, sollte der HBCI-Server nicht aufhören,\n"
+#~ "einen Signaturzähler zu verwenden.\n"
+#~ "</p><p>\n"
+#~ "Wollen Sie trotzdem die Antwort dieses Mal oder für immer akzeptieren?\n"
+#~ "</p></html>"
+
+#~ msgid "Accept this time"
+#~ msgstr "Dieses Mal akzeptieren"
+
+#~ msgid "Accept always"
+#~ msgstr "Für immer akzeptieren"
+
+#~ msgid "User accepts this response with an invalid signature counter"
+#~ msgstr "Benutzer hat die Antwort mit ungültigem Signaturzähler akzeptiert"
+
+#~ msgid "User accepts all further responses with an invalid signature counter"
+#~ msgstr ""
+#~ "Benutzer akzeptiert dauerhaft Antworten mit ungültigem Signaturzähler"
+
+#~ msgid "Bad message number, ignoring"
+#~ msgstr "Fehlerhafte Nachrichten-Nummer (ignoriert)"
+
+#~ msgid "Bad message reference number, ignoring"
+#~ msgstr "Fehlerhafte Nachrichtenreferenz (ignoriert)"
+
+#~ msgid "Response without security info (internal)"
+#~ msgstr ""
+#~ "Empfangene Antwort hat keine Sicherheitsinformationen (interne Nachricht)"
+
+#~ msgid "Response encrypted with invalid key"
+#~ msgstr "Empfangene Antwort ist mit ungültigem Schlüssel verschlüsselt"
+
+#~ msgid "Response is not encrypted as expected"
+#~ msgstr "Empfangene Antwort ist auf unerwartete Art verschlüsselt"
+
+#~ msgid "Response not signed by the bank"
+#~ msgstr "Empfangene Antwort ist von der Bank nicht signiert"
+
+#~ msgid ""
+#~ "The HBCI response of the bank has not been signed by the bank, \n"
+#~ "contrary to what has been expected. This can be the case because the \n"
+#~ "bank just stopped signing their HBCI responses. This error message \n"
+#~ "would also occur if there were a replay attack against your computer \n"
+#~ "in progress right now, which is probably quite unlikely. \n"
+#~ " \n"
+#~ "Please contact your bank and ask them whether their HBCI server \n"
+#~ "stopped signing the HBCI responses. If the bank is concerned about \n"
+#~ "your security, it should not stop signing the HBCI responses. \n"
+#~ " \n"
+#~ "Do you nevertheless want to accept this response this time or always?"
+#~ "<html><p>The HBCI response of the bank has not been signed by the bank, \n"
+#~ "contrary to what has been expected. This can be the case because the \n"
+#~ "bank just stopped signing their HBCI responses. This error message \n"
+#~ "would also occur if there were a replay attack against your computer \n"
+#~ "in progress right now, which is probably quite unlikely. \n"
+#~ "</p><p>Please contact your bank and ask them whether their HBCI server \n"
+#~ "stopped signing the HBCI responses. If the bank is concerned about \n"
+#~ "your security, it should not stop signing the HBCI responses. \n"
+#~ "</p><p>Do you nevertheless want to accept this response this time or "
+#~ "always?</p></html>"
+#~ msgstr ""
+#~ "Die HBCI-Antwort der Bank ist nicht von der Bank signiert, anders als\n"
+#~ "erwartet. Dies kann der Fall sein, wenn die Bank soeben ihre\n"
+#~ "Einstellungen geändert hat und nun keine Antworten mehr\n"
+#~ "signiert. Diese Meldung erscheint ebenfalls, wenn in diesem Moment ein\n"
+#~ "Angreifer versucht, ihre Sicherheit durch »replay attacks« (mehrfache\n"
+#~ "Zusendung der Bank-Antwort) zu kompromittieren, was allerdings ein\n"
+#~ "unwahrscheinlicher Fall ist.\n"
+#~ "\n"
+#~ "Bitte kontaktieren Sie Ihre Bank und fragen nach, ob der HBCI-Server\n"
+#~ "aufgehört hat, die Antworten zu signieren. Wenn Ihre Bank um Ihre\n"
+#~ "Sicherheit besorgt ist, sollte der HBCI-Server nicht aufhören, die\n"
+#~ "Antworten zu signieren.\n"
+#~ "\n"
+#~ "Wollen Sie trotzdem die Antwort dieses Mal oder für immer akzeptieren?\n"
+#~ "<html><p>\n"
+#~ "Die HBCI-Antwort der Bank ist nicht von der Bank signiert, anders als\n"
+#~ "erwartet. Dies kann der Fall sein, wenn die Bank soeben ihre\n"
+#~ "Einstellungen geändert hat und nun keine Antworten mehr\n"
+#~ "signiert. Diese Meldung erscheint ebenfalls, wenn in diesem Moment ein\n"
+#~ "Angreifer versucht, ihre Sicherheit durch »replay attacks« (mehrfache\n"
+#~ "Zusendung der Bank-Antwort) zu kompromittieren, was allerdings ein\n"
+#~ "unwahrscheinlicher Fall ist.\n"
+#~ "</p><p>\n"
+#~ "Bitte kontaktieren Sie Ihre Bank und fragen nach, ob der HBCI-Server\n"
+#~ "aufgehört hat, die Antworten zu signieren. Wenn Ihre Bank um Ihre\n"
+#~ "Sicherheit besorgt ist, sollte der HBCI-Server nicht aufhören, die\n"
+#~ "Antworten zu signieren.\n"
+#~ "</p><p>\n"
+#~ "Wollen Sie trotzdem die Antwort dieses Mal oder für immer akzeptieren?\n"
+#~ "</p></html>"
+
+#~ msgid "User accepts this unsigned response"
+#~ msgstr "Benutzer hat die unsignierte Antwort akzeptiert"
+
+#~ msgid "User accepts all further unsigned responses"
+#~ msgstr "Benutzer akzeptiert unsignierte Antworten dauerhaft"
+
+#~ msgid "Encoding queue"
+#~ msgstr "Aufträge werden vorbereitet"
+
+#~ msgid "Unable to encode"
+#~ msgstr "Aufträge konnten nicht vorbereitet werden"
+
+#~ msgid "Sending queue"
+#~ msgstr "Aufträge werden gesendet"
+
+#~ msgid "Unable to send (network error)"
+#~ msgstr "Fehler beim Senden (Netzwerk-Fehler)"
+
+#~ msgid "Waiting for response"
+#~ msgstr "Auf Antwort warten"
+
+#~ msgid "No response (timeout)"
+#~ msgstr "Keine Antwort (Wartezeit ist abgelaufen)"
+
+#~ msgid "Response received"
+#~ msgstr "Antwort erhalten"
+
+#~ msgid "Bad response (unable to decode)"
+#~ msgstr "Fehlerhafte Antwort (konnte nicht dekodiert werden)"
+
+#~ msgid "Bad response (bad message reference)"
+#~ msgstr "Fehlerhafte Antwort (falsche Nachrichtenreferenz)"
+
+#~ msgid "Dialog aborted by server"
+#~ msgstr "Dialog wurde durch den Server abgebrochen."
+
+#~ msgid "Bad response (unable to dispatch)"
+#~ msgstr "Fehlerhafte Antwort (konnte nicht den Aufträgen zugeordnet werden)"
+
+#~ msgid "Opening dialog"
+#~ msgstr "Dialog mit dem Server eröffnen"
+
+#~ msgid "Closing dialog"
+#~ msgstr "Dialog mit dem Server beenden"
+
+#~ msgid "Error processing job %s"
+#~ msgstr "Fehler bei der Bearbeitung des Auftrags %s"
+
+#~ msgid "AqHBCI started"
+#~ msgstr "AqHBCI gestartet"
+
+#~ msgid "AqHBCI finished."
+#~ msgstr "AqHBCI abgeschlossen."
+
+#~ msgid "Importing transactions ..."
+#~ msgstr "Buchungen importieren..."
+
+#~ msgid "transaction(s)"
+#~ msgstr "Buchung(en)"
+
+#~ msgid ""
+#~ "Please enter a new pin for \n"
+#~ "%s\n"
+#~ "The pin must be at least %d characters long.<html>Please enter a new pin "
+#~ "for <i>%s</i>. The pin must be at least %d characters long.</html>"
+#~ msgstr ""
+#~ "Bitte geben Sie eine neue PIN für \n"
+#~ "%s \n"
+#~ "ein. Die PIN muß mindestens %d Zeichen enthalten.<html>Bitte geben Sie "
+#~ "eine neue PIN für <i>%s</i> ein. Die PIN muß mindestens %d Zeichen "
+#~ "enthalten.</html>"
+
+#~ msgid ""
+#~ "Please enter the pin for \n"
+#~ "%s\n"
+#~ "<html>Please enter the pin for <i>%s</i>.</html>"
+#~ msgstr ""
+#~ "Bitte geben Sie die PIN für \n"
+#~ "%s\n"
+#~ "ein.<html>Bitte geben Sie die PIN für <i>%s</i> ein. </html>"
+
+#~ msgid "Enter HBCI Pin"
+#~ msgstr "HBCI-PIN eingeben"
+
+#~ msgid ""
+#~ "No valid PIN (tried too often).\n"
+#~ "Aborting."
+#~ msgstr ""
+#~ "Keine gültige PIN erhalten (zu oft versucht).\n"
+#~ "Aktion abgebrochen."
+
+#~ msgid "Wrong PIN"
+#~ msgstr "Falsche PIN"
+
+#~ msgid ""
+#~ "You entered a wrong PIN.\n"
+#~ "Do you want to try again?"
+#~ msgstr ""
+#~ "Sie haben eine falsche PIN eingegeben.\n"
+#~ "Wollen Sie erneut versuchen?"
