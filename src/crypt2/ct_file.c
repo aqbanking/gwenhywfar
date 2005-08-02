@@ -205,6 +205,7 @@ GWEN_CRYPTTOKEN *GWEN_CryptTokenFile_new(GWEN_PLUGIN_MANAGER *pm,
   GWEN_CryptToken_SetVerifyFn(ct, GWEN_CryptTokenFile_Verify);
   GWEN_CryptToken_SetEncryptFn(ct, GWEN_CryptTokenFile_Encrypt);
   GWEN_CryptToken_SetDecryptFn(ct, GWEN_CryptTokenFile_Decrypt);
+  GWEN_CryptToken_SetGetSignSeqFn(ct, GWEN_CryptTokenFile_GetSignSeq);
   GWEN_CryptToken_SetReadKeyFn(ct, GWEN_CryptTokenFile_ReadKey);
   GWEN_CryptToken_SetWriteKeyFn(ct, GWEN_CryptTokenFile_WriteKey);
   GWEN_CryptToken_SetReadKeySpecFn(ct, GWEN_CryptTokenFile_ReadKeySpec);
@@ -880,8 +881,6 @@ int GWEN_CryptTokenFile_WriteKey(GWEN_CRYPTTOKEN *ct,
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
-  assert(key);
-
   rv=GWEN_CryptTokenFile__ReloadIfNeeded(ct);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error reloading (%d)", rv);
@@ -894,7 +893,8 @@ int GWEN_CryptTokenFile_WriteKey(GWEN_CRYPTTOKEN *ct,
     return GWEN_ERROR_GENERIC;
   }
 
-  k=GWEN_CryptKey_dup(key);
+  if (key) k=GWEN_CryptKey_dup(key);
+  else k=0;
 
   switch(kid & 0xff) {
   case 1: GWEN_CryptTokenFile_Context_SetLocalSignKey(fctx, k); break;
@@ -1051,7 +1051,12 @@ int GWEN_CryptTokenFile_GenerateKey(GWEN_CRYPTTOKEN *ct,
     return GWEN_ERROR_GENERIC;
   }
 
-  k=GWEN_CryptKey_new();
+  k=GWEN_CryptKey_Factory("rsa");
+  if (!k) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Key type \"rsa\" not available");
+    return GWEN_ERROR_GENERIC;
+  }
 
   err=GWEN_CryptKey_Generate(k, GWEN_CryptToken_KeyInfo_GetKeySize(ki));
   if (!GWEN_Error_IsOk(err)) {
@@ -1179,7 +1184,7 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   key=GWEN_CryptTokenFile_Context_GetLocalSignKey(fctx);
   if (key==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No key");
-    return GWEN_ERROR_NO_DATA;
+    return GWEN_ERROR_CT_NO_KEY;
   }
 
   /* hash data */
@@ -1304,7 +1309,7 @@ int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
   key=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fctx);
   if (key==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No key");
-    return GWEN_ERROR_NO_DATA;
+    return GWEN_ERROR_CT_NO_KEY;
   }
 
   /* hash data */
@@ -1413,7 +1418,7 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
   key=GWEN_CryptTokenFile_Context_GetRemoteCryptKey(fctx);
   if (key==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No key");
-    return GWEN_ERROR_NO_DATA;
+    return GWEN_ERROR_CT_NO_KEY;
   }
 
   /* copy data */
@@ -1513,7 +1518,7 @@ int GWEN_CryptTokenFile_Decrypt(GWEN_CRYPTTOKEN *ct,
   key=GWEN_CryptTokenFile_Context_GetLocalCryptKey(fctx);
   if (key==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No key");
-    return GWEN_ERROR_NO_DATA;
+    return GWEN_ERROR_CT_NO_KEY;
   }
 
   /* decrypt data */

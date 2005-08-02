@@ -12,6 +12,8 @@
 - added GWEN_CryptManager_CheckToken()
 - added the command "checktoken" to gct-tool (checks whether a given token
   is supported by any plugin)
+- added virtual function GWEN_CryptToken_GetTokenIdData()
+- fixed some bugs in OpenHBCI keyfile code
 
 
 2005-07-31  Christian Stimming  <stimming@tuhh.de>

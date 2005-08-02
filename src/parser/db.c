@@ -994,15 +994,18 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
     return 1;
   }
 
+  nv=GWEN_DB_ValueChar_new(val);
+
   /* delete contents of this variable if wanted */
   if (flags & GWEN_DB_FLAGS_OVERWRITE_VARS) {
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Clearing variable \"%s\"", path);
     GWEN_DB_ClearNode(nn);
   }
 
-  nv=GWEN_DB_ValueChar_new(val);
+  /* add püreviously created value */
   GWEN_DB_Node_Append(nn, nv);
-  DBG_VERBOUS(GWEN_LOGDOMAIN, "Added char value \"%s\" to variable \"%s\"", val, path);
+  DBG_VERBOUS(GWEN_LOGDOMAIN,
+              "Added char value \"%s\" to variable \"%s\"", val, path);
 
   return 0;
 }

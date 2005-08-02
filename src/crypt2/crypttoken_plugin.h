@@ -185,6 +185,11 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *cm,
                                  GWEN_BUFFER *typeName,
                                  GWEN_BUFFER *subTypeName,
                                  GWEN_BUFFER *tokenName);
+
+GWEN_PLUGIN_DESCRIPTION_LIST2*
+  GWEN_CryptManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm,
+                                    GWEN_CRYPTTOKEN_DEVICE devt);
+
 /*@}*/
 
 

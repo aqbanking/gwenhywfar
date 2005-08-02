@@ -123,6 +123,7 @@ extern "C" {
 #define GWEN_ERROR_CT_BAD_PIN_0_LEFT    (-72)
 #define GWEN_ERROR_CT_BAD_PIN_1_LEFT    (-73)
 #define GWEN_ERROR_CT_BAD_PIN_2_LEFT    (-74)
+#define GWEN_ERROR_CT_NO_KEY            (-75)
 
 /*@}*/
 

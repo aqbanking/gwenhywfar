@@ -188,6 +188,8 @@ GWEN_CRYPTTOKEN_DEVICE GWEN_CryptToken_Device_fromString(const char *s){
     return GWEN_CryptToken_Device_File;
   else if (strcasecmp(s, "card")==0)
     return GWEN_CryptToken_Device_Card;
+  else if (strcasecmp(s, "any")==0)
+    return GWEN_CryptToken_Device_Any;
   return GWEN_CryptToken_Device_Unknown;
 }
 
@@ -201,6 +203,8 @@ const char *GWEN_CryptToken_Device_toString(GWEN_CRYPTTOKEN_DEVICE d){
     return "file";
   case GWEN_CryptToken_Device_Card:
     return "card";
+  case GWEN_CryptToken_Device_Any:
+    return "any";
   default:
     return "unknown";
   }
@@ -1851,6 +1855,14 @@ void GWEN_CryptToken_SetModifyUserFn(GWEN_CRYPTTOKEN *ct,
 
 
 
+void GWEN_CryptToken_SetGetTokenIdDataFn(GWEN_CRYPTTOKEN *ct,
+                                         GWEN_CRYPTTOKEN_GETTOKENIDDATA_FN fn){
+  assert(ct);
+  ct->getTokenIdDataFn=fn;
+}
+
+
+
 
 int GWEN_CryptToken_Open(GWEN_CRYPTTOKEN *ct, int manage){
   int rv;
@@ -2466,6 +2478,19 @@ int GWEN_CryptToken_ModifyUser(GWEN_CRYPTTOKEN *ct,
   GWEN_CryptToken_User_SetContextId(ou, id);
 
   return 0;
+}
+
+
+
+int GWEN_CryptToken_GetTokenIdData(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *buf) {
+  assert(ct);
+  assert(buf);
+
+  if (ct->getTokenIdDataFn==0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No getTokenIdData function set");
+    return GWEN_ERROR_UNSUPPORTED;
+  }
+  return ct->getTokenIdDataFn(ct, buf);
 }
 
 
@@ -3145,6 +3170,68 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
 
 
 
+GWEN_PLUGIN_DESCRIPTION_LIST2*
+GWEN_CryptManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm,
+                                  GWEN_CRYPTTOKEN_DEVICE devt) {
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *pl1;
+
+  pl1=GWEN_PluginManager_GetPluginDescrs(pm);
+  if (pl1) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *pit;
+    GWEN_PLUGIN_DESCRIPTION_LIST2 *pl2;
+
+    pl2=GWEN_PluginDescription_List2_new();
+    pit=GWEN_PluginDescription_List2_First(pl1);
+    if (pit) {
+      GWEN_PLUGIN_DESCRIPTION *pd;
+      const char *ts;
+
+      if (devt==GWEN_CryptToken_Device_Any)
+        ts=0;
+      else
+        ts=GWEN_CryptToken_Device_toString(devt);
+      pd=GWEN_PluginDescription_List2Iterator_Data(pit);
+      while(pd) {
+        GWEN_XMLNODE *node;
+        const char *nts;
+        int match=0;
+
+        node=GWEN_PluginDescription_GetXmlNode(pd);
+        assert(node);
+        nts=GWEN_XMLNode_GetProperty(node, "device", 0);
+        if (nts) {
+          if (!ts || (ts && strcasecmp(ts, nts)==0))
+            match=1;
+        }
+        else if (!ts)
+          match=1;
+
+        if (match) {
+          GWEN_PLUGIN_DESCRIPTION *pd2;
+
+          pd2=GWEN_PluginDescription_dup(pd);
+          GWEN_PluginDescription_List2_PushBack(pl2, pd2);
+        }
+
+        pd=GWEN_PluginDescription_List2Iterator_Next(pit);
+      }
+      GWEN_PluginDescription_List2Iterator_free(pit);
+    }
+    GWEN_PluginDescription_List2_freeAll(pl2);
+
+    if (GWEN_PluginDescription_List2_GetSize(pl2)==0) {
+      GWEN_PluginDescription_List2_freeAll(pl2);
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "No matching plugin descriptions for the given device type");
+      return 0;
+    }
+    return pl2;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No plugin descriptions at all");
+  }
+  return 0;
+}
 
 
 

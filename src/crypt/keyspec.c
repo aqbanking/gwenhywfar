@@ -157,12 +157,11 @@ const char *GWEN_KeySpec_GetOwner(const GWEN_KEYSPEC *ks){
 
 
 
-void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks,
-                                  const char *s){
+void GWEN_KeySpec_SetOwner(GWEN_KEYSPEC *ks, const char *s){
   assert(ks);
-  assert(s);
   free(ks->owner);
-  ks->owner=strdup(s);
+  if (s) ks->owner=strdup(s);
+  else ks->owner=0;
 }
 
 

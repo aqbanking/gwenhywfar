@@ -524,7 +524,6 @@ const char *GWEN_CryptKey_GetOwner(const GWEN_CRYPTKEY *key){
 void GWEN_CryptKey_SetOwner(GWEN_CRYPTKEY *key,
                             const char *s){
   assert(key);
-  assert(s);
   assert(key->keyspec);
   GWEN_KeySpec_SetOwner(key->keyspec, s);
 }

@@ -150,7 +150,8 @@ typedef enum {
   GWEN_CryptToken_Device_Unknown=-1,
   GWEN_CryptToken_Device_None=0,
   GWEN_CryptToken_Device_File,
-  GWEN_CryptToken_Device_Card
+  GWEN_CryptToken_Device_Card,
+  GWEN_CryptToken_Device_Any=999
 } GWEN_CRYPTTOKEN_DEVICE;
 
 GWEN_CRYPTTOKEN_DEVICE GWEN_CryptToken_Device_fromString(const char *s);
@@ -269,6 +270,9 @@ typedef int
   (*GWEN_CRYPTTOKEN_MODIFYUSER_FN)(GWEN_CRYPTTOKEN *ct,
                                    const GWEN_CRYPTTOKEN_USER *u);
 
+typedef int (*GWEN_CRYPTTOKEN_GETTOKENIDDATA_FN)(GWEN_CRYPTTOKEN *ct,
+                                                 GWEN_BUFFER *buf);
+
 
 GWEN_CRYPTTOKEN *GWEN_CryptToken_new(GWEN_PLUGIN_MANAGER *pm,
                                      GWEN_CRYPTTOKEN_DEVICE devType,
@@ -349,6 +353,9 @@ void GWEN_CryptToken_SetGetSignSeqFn(GWEN_CRYPTTOKEN *ct,
                                      GWEN_CRYPTTOKEN_GETSIGNSEQ_FN fn);
 void GWEN_CryptToken_SetModifyUserFn(GWEN_CRYPTTOKEN *ct,
                                      GWEN_CRYPTTOKEN_MODIFYUSER_FN fn);
+void
+  GWEN_CryptToken_SetGetTokenIdDataFn(GWEN_CRYPTTOKEN *ct,
+                                      GWEN_CRYPTTOKEN_GETTOKENIDDATA_FN fn);
 
 
 
@@ -419,6 +426,7 @@ int GWEN_CryptToken_FillUserList(GWEN_CRYPTTOKEN *ct,
 int GWEN_CryptToken_ModifyUser(GWEN_CRYPTTOKEN *ct,
                                const GWEN_CRYPTTOKEN_USER *u);
 
+int GWEN_CryptToken_GetTokenIdData(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *buf);
 
 
 const GWEN_CRYPTTOKEN_SIGNINFO*

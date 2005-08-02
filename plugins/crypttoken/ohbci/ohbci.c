@@ -596,6 +596,7 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_ISCRYPT:
+      assert(p);
       if (strcasecmp(p, "yes")==0)
         GWEN_DB_SetCharValue(node,
                              GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -609,27 +610,30 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_OWNER: {
-      GWEN_BUFFER *obuf;
-      const char *s;
+      if (p) {
+        GWEN_BUFFER *obuf;
+        const char *s;
 
-      /* workaround for a bug in older OpenHBCI versions: here the escape
-       * character "?" was falsely included for the owner name */
-      obuf=GWEN_Buffer_new(0, 32, 0, 1);
-      s=p;
-      while(*s) {
-        if (*s!='?')
-          GWEN_Buffer_AppendByte(obuf, *s);
-        s++;
-      } /* while */
-      GWEN_DB_SetCharValue(node,
-                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "owner",
-                           GWEN_Buffer_GetStart(obuf));
-      GWEN_Buffer_free(obuf);
+        /* workaround for a bug in older OpenHBCI versions: here the escape
+         * character "?" was falsely included for the owner name */
+        obuf=GWEN_Buffer_new(0, 32, 0, 1);
+        s=p;
+        while(*s) {
+          if (*s!='?')
+            GWEN_Buffer_AppendByte(obuf, *s);
+          s++;
+        } /* while */
+        GWEN_DB_SetCharValue(node,
+                             GWEN_DB_FLAGS_OVERWRITE_VARS,
+                             "owner",
+                             GWEN_Buffer_GetStart(obuf));
+        GWEN_Buffer_free(obuf);
+      }
       break;
     }
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_VERSION:
+      assert(p);
       GWEN_DB_SetIntValue(node,
                           GWEN_DB_FLAGS_OVERWRITE_VARS,
                           "version",
@@ -637,6 +641,7 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_NUMBER:
+      assert(p);
       GWEN_DB_SetIntValue(node,
                           GWEN_DB_FLAGS_OVERWRITE_VARS,
                           "number",
@@ -644,70 +649,80 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_MODULUS:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/n",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/n",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_EXP_OLD:
-      DBG_INFO(GWEN_LOGDOMAIN, "Ignoring old exponent (%d), keeping default", l);
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Ignoring old exponent (%d), keeping default", l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_EXP:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/e",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/e",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_N:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/n",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/n",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_P:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/p",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/p",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_Q:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/q",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/q",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_D:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/d",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/d",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_DMP1:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/dmp1",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/dmp1",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_DMQ1:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/dmq1",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/dmq1",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_IQMP:
-      GWEN_DB_SetBinValue(node,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "data/iqmp",
-                          p, l);
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/iqmp",
+                            p, l);
       break;
 
     default:
@@ -785,6 +800,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 
     switch(GWEN_TAG16_GetTagType(tlv)) {
     case GWEN_CRYPTTOKEN_OHBCI_TAG_VERSION_MAJOR:
+      assert(p);
       i=atoi(p);
       if (i!=GWEN_CRYPTTOKEN_OHBCI_VMAJOR) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Unsupported keyfile version (%d)", i);
@@ -799,7 +815,9 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
         return -1;
       }
       break;
+
     case GWEN_CRYPTTOKEN_OHBCI_TAG_VERSION_MINOR:
+      assert(p);
       i=atoi(p);
       if (i>GWEN_CRYPTTOKEN_OHBCI_VMINOR) {
         DBG_WARN(GWEN_LOGDOMAIN,
@@ -821,6 +839,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_SEQ:
+      assert(p);
       GWEN_CryptTokenFile_Context_SetLocalSignSeq(fct, atoi(p));
       break;
 
@@ -1162,11 +1181,11 @@ int GWEN_CryptTokenOHBCI__EncodeKey(const GWEN_CRYPTKEY *key,
                              -1,
                              dbuf);
   s=GWEN_CryptKey_GetOwner(key);
-  if (s)
+  if (s && *s)
     GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_OWNER,
-                               s,
-                               -1,
-                               dbuf);
+                                s,
+                                -1,
+                                dbuf);
 
   snprintf(numbuf, sizeof(numbuf), "%d", GWEN_CryptKey_GetNumber(key));
   GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_NUMBER,
@@ -1283,7 +1302,6 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 			      numbuf, -1, dbuf);
 
   key=GWEN_CryptTokenFile_Context_GetLocalSignKey(fct);
-
   if (GWEN_CryptTokenOHBCI__EncodeKey(key,
 				      GWEN_CRYPTTOKEN_OHBCI_TAG_USER_PUBSIGNKEY,
 				      1, 0, dbuf)) {
@@ -1314,9 +1332,9 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
   }
 
   p=GWEN_CryptToken_User_GetUserId(user);
-  if (p)
+  if (p && *p)
     GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_USER_ID,
-				p, -1, dbuf);
+                                p, -1, dbuf);
 
   key=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fct);
   if (key && GWEN_CryptKey_GetOwner(key)==0)
@@ -1343,18 +1361,18 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 			      numbuf, -1, dbuf);
 
   p=GWEN_CryptToken_User_GetServiceId(user);
-  if (p)
+  if (p && *p)
     GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_INST_CODE,
 				p, -1, dbuf);
 
   p=GWEN_CryptToken_User_GetSystemId(user);
-  if (p)
+  if (p && *p)
     GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_INST_SYSTEMID,
 				p, -1, dbuf);
 
   /* new in 1.4 */
   p=GWEN_CryptToken_User_GetAddress(user);
-  if (p) {
+  if (p && *p) {
     GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_SERVER_ADDR,
 				p, -1, dbuf);
     snprintf(numbuf, sizeof(numbuf), "%d",
