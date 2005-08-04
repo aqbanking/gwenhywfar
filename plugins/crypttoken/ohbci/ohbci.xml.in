@@ -48,12 +48,6 @@
       <flags>
         <flag>manages_signseq</flag>
         <flag>predef_context_only</flag>
-        <flag>context_management</flag>
-        <flag>context_ro_keys</flag>
-        <flag>context_ro_descr</flag>
-        <flag>context_ro_signdescr</flag>
-        <flag>context_ro_cryptdescr</flag>
-        <flag>context_ro_keydescrs</flag>
       </flags>
   
       <signinfos>
