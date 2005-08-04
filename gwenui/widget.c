@@ -189,7 +189,7 @@ void GWEN_Widget_free(GWEN_WIDGET *w){
       }
 
       DBG_NOTICE(0, "Freeing widget \"%s\" [%p]",
-                 w->name, w);
+                 w->name, (void*)w);
 
       GWEN_INHERIT_FINI(GWEN_WIDGET, w);
 

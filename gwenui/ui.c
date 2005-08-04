@@ -514,7 +514,7 @@ GWEN_UI_RESULT GWEN_UI_HandleEvents() {
     GWEN_Event_free(e);
   } /* while e */
 
-  //doupdate();
+  /* doupdate(); */
   update_panels();
   if (quit)
     return GWEN_UIResult_Quit;

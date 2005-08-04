@@ -303,7 +303,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Sign(const GWEN_CRYPTKEY *key,
   res=BN_bn2bin(bnresult, pdst);
   GWEN_Buffer_IncrementPos(dst, res);
   GWEN_Buffer_AdjustUsedBytes(dst);
-  if (res<srclen) {
+  if ((unsigned int)res<srclen) {
     unsigned int j;
 
     if (GWEN_Buffer_ReserveBytes(dst, srclen-res)) {

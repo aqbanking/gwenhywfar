@@ -43,6 +43,7 @@
 # include <syslog.h>
 #endif
 #include <string.h>
+#include <strings.h>
 #ifdef HAVE_TIME_H
 # include <time.h>
 #endif

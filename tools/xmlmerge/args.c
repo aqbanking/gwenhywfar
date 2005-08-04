@@ -185,7 +185,7 @@ int checkArgs(ARGUMENTS *args, int argc, char **argv) {
       args->verbous=1;
     }
     else {
-      // otherwise add param
+      /* otherwise add param */
       if (argv[i][0]=='-') {
         fprintf(stderr,I18N("Unknown option \"%s\"\n"),argv[i]);
         return RETURNVALUE_PARAM;

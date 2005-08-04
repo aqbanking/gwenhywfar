@@ -138,6 +138,11 @@ void GWEN_CryptManager_FreeData(void *bp, void *p);
 
 
 
+GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_fromXml(GWEN_XMLNODE *n);
+GWEN_CRYPTTOKEN_SIGNINFO *GWEN_CryptToken_SignInfo_fromXml(GWEN_XMLNODE *n);
+GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromXml(GWEN_XMLNODE *n);
+GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context__fromXml(GWEN_CRYPTTOKEN *ct,
+                                                          GWEN_XMLNODE *n);
 
 
 #endif /* GWEN_CRYPTTOKEN_P_H */

@@ -81,17 +81,8 @@ char CON_CryptManager___readCharFromStdin(int waitFor) {
   struct termios OldAttr, NewAttr;
   int AttrChanged = 0;
 #endif
-#ifdef HAVE_SIGNAL_H
-  //sigset_t snew, sold;
-#endif
 
-  // disable canonical mode to receive a single character
-#ifdef HAVE_SIGNAL_H
-  //sigemptyset(&snew);
-  //sigaddset(&snew, SIGINT);
-  //sigaddset(&snew, SIGSTOP);
-  //sigprocmask(SIG_BLOCK, &snew, &sold);
-#endif
+  /* disable canonical mode to receive a single character */
 #ifdef HAVE_TERMIOS_H
   if (0 == tcgetattr (fileno (stdin), &OldAttr)){
     NewAttr = OldAttr;
@@ -121,10 +112,6 @@ char CON_CryptManager___readCharFromStdin(int waitFor) {
     tcsetattr (fileno (stdin), TCSADRAIN, &OldAttr);
 #endif
 
-#ifdef HAVE_SIGNAL_H
-  //sigprocmask(SIG_BLOCK, &sold, 0);
-#endif
-
   return chr;
 }
 
@@ -143,19 +130,9 @@ int CON_CryptManager__input(GWEN_TYPE_UINT32 flags,
   int chr;
   unsigned int pos;
   int rv;
-#ifdef HAVE_SIGNAL_H
-  //sigset_t snew, sold;
-#endif
 
   /* if possible, disable echo from stdin to stderr during password
    * entry */
-#ifdef HAVE_SIGNAL_H
-  //sigemptyset(&snew);
-  //sigaddset(&snew, SIGINT);
-  //sigaddset(&snew, SIGSTOP);
-  //sigprocmask(SIG_BLOCK, &snew, &sold);
-#endif
-
 #ifdef HAVE_TERMIOS_H
   if (0 == tcgetattr (fileno (stdin), &OldInAttr)){
     NewInAttr = OldInAttr;
@@ -183,9 +160,32 @@ int CON_CryptManager__input(GWEN_TYPE_UINT32 flags,
       }
     }
     else if (chr==CON_CRYPTMANAGER_CHAR_ENTER) {
-      if (minLen && pos<minLen) {
-        /* too few characters */
-        fprintf(stderr, "\007");
+      if (minLen && (int)pos<minLen) {
+        if (pos==0 && (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT)) {
+          fprintf(stderr, "%s\n",
+                  I18N("Your input was empty.\n"
+                       "Do you want to use the default pin?"));
+          while(1) {
+            chr=getchar();
+            /* TRANSLATORS: This string contains a list of characters which
+             * are to be accepted as a positive response to the question. */
+            if (strchr(I18N("Y"), toupper(chr))) {
+              fprintf(stderr, "Using default value.\n");
+              rv=GWEN_ERROR_CT_DEFAULT_PIN;
+              break;
+            }
+            else if (strchr(I18N("N"), toupper(chr))) {
+              DBG_ERROR(0, "Aborting");
+              rv=GWEN_ERROR_USER_ABORTED;
+              break;
+            }
+          } /* while */
+          break;
+        }
+        else {
+          /* too few characters */
+          fprintf(stderr, "\007");
+        }
       }
       else {
         fprintf(stderr, "\n");
@@ -195,7 +195,7 @@ int CON_CryptManager__input(GWEN_TYPE_UINT32 flags,
       }
     }
     else {
-      if (pos<maxLen) {
+      if ((int)pos<maxLen) {
         if (chr==CON_CRYPTMANAGER_CHAR_ABORT) {
           DBG_INFO(0, "User aborted");
           rv=GWEN_ERROR_USER_ABORTED;
@@ -232,9 +232,6 @@ int CON_CryptManager__input(GWEN_TYPE_UINT32 flags,
     tcsetattr (fileno (stdin), TCSADRAIN, &OldInAttr);
 #endif
 
-#ifdef HAVE_SIGNAL_H
-  //sigprocmask(SIG_BLOCK, &sold, 0);
-#endif
   return rv;
 }
 
@@ -307,6 +304,11 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   fprintf(stderr, "----- PIN INPUT -----\n");
   fprintf(stderr, "%s\n", buffer);
 
+  if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT)
+    fprintf(stderr,
+            I18N("Hit just the ENTER key (with no other input) to use the "
+                 "default pin.\n"));
+
   while(1) {
     /* TRANSLATORS: The field here should be as long as the "Repeat:" field
      * to have the PIN entries begin at the same column for both the first and
@@ -314,7 +316,9 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
     fprintf(stderr, I18N("Input : "));
     rv=CON_CryptManager__input(flags, lpwbuffer1, minLength, maxLength);
     if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      if (rv!=GWEN_ERROR_CT_DEFAULT_PIN) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here");
+      }
       return rv;
     }
 
@@ -326,7 +330,8 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
        * to have the PIN entries begin at the same column for both the first
        * and the second pin entry. */
       fprintf(stderr, I18N("Repeat: "));
-      rv=CON_CryptManager__input(flags, lpwbuffer2, minLength, maxLength);
+      rv=CON_CryptManager__input(flags & ~GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT,
+                                 lpwbuffer2, minLength, maxLength);
       if (rv) {
         DBG_INFO(GWEN_LOGDOMAIN, "here");
         return rv;
@@ -354,8 +359,8 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
 
 
 int CON_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,
-				  GWEN_CRYPTTOKEN *token,
-				  GWEN_CRYPTTOKEN_PINTYPE pt) {
+                                   GWEN_CRYPTTOKEN *token,
+                                   GWEN_CRYPTTOKEN_PINTYPE pt) {
   CON_CRYPTMANAGER *bcm;
   char buffer[512];
 
@@ -377,9 +382,9 @@ int CON_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,
 
 
 int CON_CryptManager_EndEnterPin(GWEN_PLUGIN_MANAGER *cm,
-                                GWEN_CRYPTTOKEN *token,
-                                GWEN_CRYPTTOKEN_PINTYPE pt,
-				int ok) {
+                                 GWEN_CRYPTTOKEN *token,
+                                 GWEN_CRYPTTOKEN_PINTYPE pt,
+                                 int ok) {
   CON_CRYPTMANAGER *bcm;
 
   assert(cm);
@@ -392,7 +397,7 @@ int CON_CryptManager_EndEnterPin(GWEN_PLUGIN_MANAGER *cm,
 
 
 int CON_CryptManager_InsertToken(GWEN_PLUGIN_MANAGER *cm,
-				GWEN_CRYPTTOKEN *token) {
+                                 GWEN_CRYPTTOKEN *token) {
   CON_CRYPTMANAGER *bcm;
   char buffer[512];
   char c;
@@ -427,7 +432,7 @@ int CON_CryptManager_InsertToken(GWEN_PLUGIN_MANAGER *cm,
 
 
 int CON_CryptManager_InsertCorrectToken(GWEN_PLUGIN_MANAGER *cm,
-				       GWEN_CRYPTTOKEN *token) {
+                                        GWEN_CRYPTTOKEN *token) {
   CON_CRYPTMANAGER *bcm;
   char buffer[512];
   char c;
@@ -462,9 +467,9 @@ int CON_CryptManager_InsertCorrectToken(GWEN_PLUGIN_MANAGER *cm,
 
 
 int CON_CryptManager_ShowMessage(GWEN_PLUGIN_MANAGER *cm,
-				GWEN_CRYPTTOKEN *token,
-				const char *title,
-				const char *msg) {
+                                 GWEN_CRYPTTOKEN *token,
+                                 const char *title,
+                                 const char *msg) {
   CON_CRYPTMANAGER *bcm;
 
   assert(cm);

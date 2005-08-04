@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <strings.h>
 
 
 GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){

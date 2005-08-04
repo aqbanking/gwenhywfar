@@ -1599,7 +1599,7 @@ GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
   GWEN_WIDGET *newParent;
 
   DBG_NOTICE(0, "Loading child of %p (%s)",
-             parent, GWEN_DB_GroupName(db));
+             (void*)parent, GWEN_DB_GroupName(db));
   widget=0;
   newParent=0;
   if (strcasecmp(GWEN_DB_GroupName(db), "widget")==0) {
@@ -1666,8 +1666,8 @@ GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
                            "type", typeName);
       DBG_NOTICE(0, "Loaded a widget (%p, %p)",
-                 widget,
-                 newParent);
+                 (void*)widget,
+                 (void*)newParent);
     }
     if (!widget) {
       DBG_ERROR(0, "Could not load widget");
@@ -1684,7 +1684,7 @@ GWEN_WIDGET *GWEN_UILoader_LoadWidget(GWEN_WIDGET *parent,
 
   /* load all children */
   DBG_NOTICE(0, "Loading children of widget %p (%s)",
-             widget,
+             (void*)widget,
              GWEN_DB_GroupName(db));
   dbW=GWEN_DB_GetFirstGroup(db);
   while(dbW) {

@@ -35,6 +35,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <stdio.h>
+#include <strings.h>
 #include <gwenhywfar/misc.h>
 
 

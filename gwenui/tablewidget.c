@@ -41,11 +41,11 @@
 
 
 
-GWEN_INHERIT(GWEN_WIDGET, GWEN_TABLEWIDGET);
+GWEN_INHERIT(GWEN_WIDGET, GWEN_TABLEWIDGET)
 
 
-GWEN_LIST_FUNCTIONS(GWEN_TABLE_FIELD, GWEN_TableField);
-GWEN_LIST_FUNCTIONS(GWEN_TABLE_COLUMN, GWEN_TableColumn);
+GWEN_LIST_FUNCTIONS(GWEN_TABLE_FIELD, GWEN_TableField)
+GWEN_LIST_FUNCTIONS(GWEN_TABLE_COLUMN, GWEN_TableColumn)
 
 
 
@@ -144,7 +144,6 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
       breakLine=0;
       while(*p) {
         if (*p=='\n') {
-          //DBG_INFO(0, "Line break");
           lastSpace=p;
           breakLine=1;
           DBG_NOTICE(0, "Breaking line");
@@ -152,7 +151,6 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
         }
         else {
           if (i>tf->width) {
-            //DBG_INFO(0, "Line too long, checking for break (%d)", i);
             if (!lastSpace) {
               DBG_NOTICE(0, "Field does not fit");
               lastSpace=p;
@@ -191,8 +189,6 @@ void GWEN_TableField_Update(const GWEN_TABLE_FIELD *tf){
         return;
       }
 
-      //DBG_NOTICE(0, "Setting borders: %d-%d",
-      //           wx, wx+tf->width-1);
       GWEN_TextWidget_LineSetBorders(tw, lh, wx, wx+tf->width-1);
       GWEN_TextWidget_LineClear(tw, lh);
       GWEN_TextWidget_LineSetPos(tw, lh, wx);
@@ -591,8 +587,8 @@ void GWEN_TableWidget_DrawBorder(GWEN_WIDGET *w, int y1, int y2){
   if (win->flags & GWEN_TABLEWIDGET_FLAGS_COLBORDER) {
     unsigned int i;
     /*unsigned -- see below*/ char vert[3]={
-      GWEN_WIDGET_CHAR_ESC_CHAR,
-      GWEN_WIDGET_CHAR_VLINE,
+      (char)GWEN_WIDGET_CHAR_ESC_CHAR,
+      (char)GWEN_WIDGET_CHAR_VLINE,
       0};
 
     for (i=y1; i<y2; i++) {

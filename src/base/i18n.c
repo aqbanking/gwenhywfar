@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <strings.h>
 
 #ifdef ENABLE_NLS
 # include <libintl.h>

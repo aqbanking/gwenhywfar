@@ -46,8 +46,8 @@
 
 
 
-GWEN_LIST_FUNCTIONS(GWEN_NETCONNECTION, GWEN_NetConnection);
-GWEN_INHERIT_FUNCTIONS(GWEN_NETCONNECTION);
+GWEN_LIST_FUNCTIONS(GWEN_NETCONNECTION, GWEN_NetConnection)
+GWEN_INHERIT_FUNCTIONS(GWEN_NETCONNECTION)
 
 
 
@@ -183,6 +183,7 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
       double d;
+      int res;
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
@@ -208,14 +209,14 @@ int GWEN_NetConnection_Read_Wait(GWEN_NETCONNECTION *conn,
       }
 
       /* wait */
-      rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
-      if (rv==-1) {
+      res=GWEN_NetConnection_Wait(conn, distance, waitFlags);
+      if (res==-1) {
 	DBG_INFO(GWEN_LOGDOMAIN, "Error while waiting");
 	return -1;
       }
-      if (rv==0)
-	/* found activity, break */
-	break;
+      if (res==0)
+        /* found activity, break */
+        break;
 
       d=difftime(time(0), startt);
 
@@ -292,9 +293,11 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
 
   lastHadNoWaitFlags=0;
   for (count=0;;) {
+    int res;
+
     /* actually try to write */
-    rv=GWEN_NetConnection_Write(conn, buffer, bsize);
-    if (rv==0) {
+    res=GWEN_NetConnection_Write(conn, buffer, bsize);
+    if (res==0) {
       /* write was successfull, break */
       DBG_VERBOUS(GWEN_LOGDOMAIN, "I have written %d bytes", *bsize);
       break;
@@ -335,12 +338,12 @@ int GWEN_NetConnection_Write_Wait(GWEN_NETCONNECTION *conn,
       }
 
       /* wait */
-      rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
-      if (rv==-1) {
+      res=GWEN_NetConnection_Wait(conn, distance, waitFlags);
+      if (res==-1) {
 	DBG_INFO(GWEN_LOGDOMAIN, "Error while waiting");
 	return -1;
       }
-      if (rv==0)
+      if (res==0)
 	/* found activity, break */
 	break;
 
@@ -406,6 +409,7 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
       GWEN_TYPE_UINT32 waitFlags;
       GWEN_NETTRANSPORT_STATUS st;
       double d;
+      int res;
 
       st=GWEN_NetTransport_GetStatus(conn->transportLayer);
       if (st==GWEN_NetTransportStatusUnconnected ||
@@ -435,12 +439,12 @@ int GWEN_NetConnection_Flush(GWEN_NETCONNECTION *conn,
       }
 
       /* wait */
-      rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
-      if (rv==-1) {
+      res=GWEN_NetConnection_Wait(conn, distance, waitFlags);
+      if (res==-1) {
 	DBG_INFO(GWEN_LOGDOMAIN, "Error while waiting");
 	return -1;
       }
-      if (rv==0)
+      if (res==0)
 	/* found activity, break */
 	break;
 
@@ -871,6 +875,7 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
       GWEN_TYPE_UINT32 waitFlags;
       GWEN_NETTRANSPORT_STATUS st;
       double d;
+      int res;
 
       st=GWEN_NetConnection_GetStatus(conn);
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
@@ -909,12 +914,12 @@ int GWEN_NetConnection_WaitForStatus(GWEN_NETCONNECTION *conn,
       }
 
       /* wait */
-      rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
-      if (rv==-1) {
+      res=GWEN_NetConnection_Wait(conn, distance, waitFlags);
+      if (res==-1) {
 	DBG_INFO(GWEN_LOGDOMAIN, "Error while waiting");
 	return -1;
       }
-      if (rv==0)
+      if (res==0)
 	/* found activity, break */
 	break;
 
@@ -980,6 +985,7 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
       double d;
+      int res;
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
@@ -1006,12 +1012,12 @@ GWEN_NetConnection_GetNextIncoming_Wait(GWEN_NETCONNECTION *conn,
       }
 
       /* wait */
-      rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
-      if (rv==-1) {
+      res=GWEN_NetConnection_Wait(conn, distance, waitFlags);
+      if (res==-1) {
 	DBG_INFO(GWEN_LOGDOMAIN, "Error while waiting");
 	return 0;
       }
-      if (rv==0)
+      if (res==0)
 	/* found activity, break */
 	break;
 
@@ -1087,8 +1093,8 @@ void GWEN_NetConnection_Up(GWEN_NETCONNECTION *conn){
   if (!(conn->notified & GWEN_NETCONNECTION_NOTIFIED_UP)) {
     DBG_INFO(GWEN_LOGDOMAIN,
              "Connection %p (%p) is up",
-             conn,
-             GWEN_NetConnection_GetTransportLayer(conn));
+             (void*)conn,
+             (void*)GWEN_NetConnection_GetTransportLayer(conn));
     if (conn->upFn) {
       conn->upFn(conn);
       /* set UP notified flag, remove DOWN notify flag */
@@ -1111,8 +1117,8 @@ void GWEN_NetConnection_Down(GWEN_NETCONNECTION *conn){
      * about that connection */
     DBG_INFO(GWEN_LOGDOMAIN,
              "Connection %p (%p) is down",
-             conn,
-             GWEN_NetConnection_GetTransportLayer(conn));
+             (void*)conn,
+             (void*)GWEN_NetConnection_GetTransportLayer(conn));
     if (conn->downFn) {
       conn->downFn(conn);
       /* set DOWN notified flag, remove UP notify flag */
@@ -1211,6 +1217,7 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
     for (;;count++) {
       GWEN_TYPE_UINT32 waitFlags;
       double d;
+      int res;
 
       if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
@@ -1245,12 +1252,12 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
       }
 
       /* wait */
-      rv=GWEN_NetConnection_Wait(conn, distance, waitFlags);
-      if (rv==-1) {
+      res=GWEN_NetConnection_Wait(conn, distance, waitFlags);
+      if (res==-1) {
 	DBG_INFO(GWEN_LOGDOMAIN, "Error while waiting");
 	return 0;
       }
-      if (rv==0)
+      if (res==0)
 	/* found activity, break */
 	break;
 #endif
@@ -1737,7 +1744,7 @@ void GWEN_NetConnection_Dump(const GWEN_NETCONNECTION *conn) {
 
     fprintf(stderr, "--------------------------------\n");
     fprintf(stderr, "Net Connection\n");
-    fprintf(stderr, "Pointer        : %p\n", conn);
+    fprintf(stderr, "Pointer        : %p\n", (void*)conn);
     fprintf(stderr, "Usage          : %d\n", conn->usage);
     fprintf(stderr, "Library mark   : %d\n", conn->libraryMark);
     fprintf(stderr, "User mark      : %d\n", conn->userMark);

@@ -37,6 +37,10 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwenhywfarapi.h>
 
+#include <string.h>
+
+
+
 GWEN_LIST_FUNCTIONS(GWEN_INHERITDATA, GWEN_InheritData)
 
 

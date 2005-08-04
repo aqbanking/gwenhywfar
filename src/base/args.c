@@ -274,7 +274,7 @@ int GWEN_Args_Check(int argc, char **argv,
     c=GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0);
 
     /* check minnum */
-    if (tmpArgs->minNum && (c<tmpArgs->minNum)) {
+    if (tmpArgs->minNum && ((unsigned int)c<tmpArgs->minNum)) {
       if (tmpArgs->minNum>1) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Option \"%s\" needed %d times (have %d)",
                   s, tmpArgs->minNum, c);
@@ -287,7 +287,7 @@ int GWEN_Args_Check(int argc, char **argv,
     }
 
     /* check maxnum */
-    if (tmpArgs->maxNum && (c>tmpArgs->maxNum)) {
+    if (tmpArgs->maxNum && ((unsigned int)c>tmpArgs->maxNum)) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Option \"%s\" needed at most %d times (have %d)",
                 s, tmpArgs->maxNum, c);

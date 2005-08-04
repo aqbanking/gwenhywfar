@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#include <strings.h>
+
 
 #include "keyspec_p.h"
 #include <gwenhywfar/misc.h>

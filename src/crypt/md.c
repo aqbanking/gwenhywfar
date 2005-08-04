@@ -35,6 +35,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/crypt.h>
 #include <stdlib.h>
+#include <strings.h>
 
 
 static GWEN_MD_PROVIDER *gwen_md_providers=0;

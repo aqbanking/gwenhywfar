@@ -93,7 +93,7 @@ extern "C" {
 typedef enum {
   GWEN_NetConnectionWorkResult_NoChange=0,
   GWEN_NetConnectionWorkResult_Change,
-  GWEN_NetConnectionWorkResult_Error,
+  GWEN_NetConnectionWorkResult_Error
 } GWEN_NETCONNECTION_WORKRESULT;
 
 

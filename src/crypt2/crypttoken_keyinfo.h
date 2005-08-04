@@ -50,7 +50,6 @@ GWEN_CRYPTTOKEN_KEYINFO*
 GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromDb(GWEN_DB_NODE *db);
 int GWEN_CryptToken_KeyInfo_toDb(const GWEN_CRYPTTOKEN_KEYINFO *ki,
                                  GWEN_DB_NODE *db);
-GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromXml(GWEN_XMLNODE *n);
 
 int GWEN_CryptToken_KeyInfo_GetKeyId(const GWEN_CRYPTTOKEN_KEYINFO *ki);
 void GWEN_CryptToken_KeyInfo_SetKeyId(GWEN_CRYPTTOKEN_KEYINFO *ki,

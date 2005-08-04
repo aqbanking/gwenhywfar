@@ -30,9 +30,9 @@ static void _dumpKeyInfo(const GWEN_CRYPTTOKEN_KEYINFO *ki, const char *name){
   GWEN_TYPE_UINT32 flags;
   const char *s;
 
-  fprintf(stdout, "  %s: %d, %d bits, %d bytes, %s [",
+  fprintf(stdout, "  %s: %04x, %d bits, %d bytes, %s [",
           name,
-          GWEN_CryptToken_KeyInfo_GetKeyId(ki),
+          (unsigned int)GWEN_CryptToken_KeyInfo_GetKeyId(ki),
           GWEN_CryptToken_KeyInfo_GetKeySize(ki),
           GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
           GWEN_CryptToken_CryptAlgo_toString(GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki)));

@@ -183,7 +183,7 @@ int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *buf, int dstSize){
   unsigned int diff;
   char *p;
 
-  if (dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
+  if ((unsigned int)dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
     return GWEN_ERROR_INVALID;
   }
@@ -222,7 +222,7 @@ int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize){
   char *p;
   unsigned int i;
 
-  if (dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
+  if ((unsigned int)dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
     return GWEN_ERROR_INVALID;
   }

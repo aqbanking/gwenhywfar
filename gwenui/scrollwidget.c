@@ -37,7 +37,7 @@
 #include "vslider.h"
 
 
-#include <ncurses.h> // for beep, DEBUG
+#include <ncurses.h> /* for beep, DEBUG */
 
 
 GWEN_INHERIT(GWEN_WIDGET, GWEN_SCROLLWIN)

@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 
 
@@ -677,7 +678,6 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
   } /* if in body mode */
   else {
     /* in command or header mode */
-    //while(GWEN_RingBuffer_GetUsedBytes(rbuf)) {
     while(1) {
       int c;
 
@@ -948,7 +948,6 @@ GWEN_NetConnectionHTTP_ReadWork(GWEN_NETCONNECTION *conn){
 	      return GWEN_NetConnectionWorkResult_Change;
 	    }
 	  }
-	  //break;
 	}
       }
     } /* while */

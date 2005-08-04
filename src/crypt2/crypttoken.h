@@ -26,53 +26,29 @@
 #define GWEN_CRYPTMANAGER_NAME "crypttoken"
 
 
-#define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_MANAGEMENT        0x00000001
-#define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_ALLOW_ADD         0x00000002
-#define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_KEYS           0x00000004
-#define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_DESCR          0x00000008
-#define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_SIGNDESCR      0x00000010
-#define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_CRYPTDESCR     0x00000020
-#define GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_KEYDESCRS      0x00000040
+#define GWEN_CRYPTTOKEN_FLAGS_MANAGES_SIGNSEQ           0x00000001
+#define GWEN_CRYPTTOKEN_FLAGS_PREDEF_CONTEXT_ONLY       0x00000002
 
-#define GWEN_CRYPTTOKEN_FLAGS_MANAGES_SIGNSEQ           0x00010000
-#define GWEN_CRYPTTOKEN_FLAGS_PREDEF_CONTEXT_ONLY       0x00020000
-
-#define GWEN_CRYPTTOKEN_FLAGS_DISABLE_SMALLER_SIGNATURE 0x00040000
+#define GWEN_CRYPTTOKEN_FLAGS_DISABLE_SMALLER_SIGNATURE 0x00000004
+/** this is used when checking for the pin status */
+#define GWEN_CRYPTTOKEN_FLAGS_FORCE_PIN_ENTRY           0x00000008
 
 
 #define GWEN_CRYPTTOKEN_GETPIN_FLAGS_CONFIRM            0x00000001
 #define GWEN_CRYPTTOKEN_GETPIN_FLAGS_NUMERIC            0x00000002
 #define GWEN_CRYPTTOKEN_GETPIN_FLAGS_SHOW               0x00000004
 #define GWEN_CRYPTTOKEN_GETPIN_FLAGS_RETRY              0x00000008
+#define GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT      0x00000010
 
-
-#if 0 /* commented out for now */
-
-#define GWEN_CRYPTTOKEN_HASHALGO_BIT_NONE           0x00000000
-#define GWEN_CRYPTTOKEN_HASHALGO_BIT_ANY            0xffffffff
-#define GWEN_CRYPTTOKEN_HASHALGO_BIT_SHA1           0x00000001
-#define GWEN_CRYPTTOKEN_HASHALGO_BIT_RMD160         0x00000002
-#define GWEN_CRYPTTOKEN_HASHALGO_BIT_MD5            0x00000004
-
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_NONE           0x00000000
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_ANY            0xffffffff
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_ISO9796_1      0x00000001
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_ISO9796_1A4    0x00000002
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_ISO9796_2      0x00000004
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_PKCS1_1        0x00000008
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_PKCS1_2        0x00000010
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_LEFTZERO       0x00000020
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_RIGHTZERO      0x00000040
-#define GWEN_CRYPTTOKEN_PADDALGO_BIT_ANSIX9_23      0x00000080
-
-#define GWEN_CRYPTTOKEN_CRYPTALGO_BIT_NONE          0x00000000
-#define GWEN_CRYPTTOKEN_CRYPTALGO_BIT_ANY           0xffffffff
-#define GWEN_CRYPTTOKEN_CRYPTALGO_BIT_RSA           0x00000001
-#define GWEN_CRYPTTOKEN_CRYPTALGO_BIT_DSA           0x00000002
-#define GWEN_CRYPTTOKEN_CRYPTALGO_BIT_DES           0x00000004
-#define GWEN_CRYPTTOKEN_CRYPTALGO_BIT_DES_3K        0x00000008
-
-#endif /* if 0 */
+/**
+ * This is a list of status values used by GWEN_CRYPTTOKEN in key specs.
+ */
+/*@{*/
+#define GWEN_CRYPTTOKEN_KEYSTATUS_FREE     0
+#define GWEN_CRYPTTOKEN_KEYSTATUS_NEW      1
+#define GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE   2
+#define GWEN_CRYPTTOKEN_KEYSTATUS_UNKNOWN  99
+/*@}*/
 
 
 typedef struct GWEN_CRYPTTOKEN GWEN_CRYPTTOKEN;
@@ -85,6 +61,14 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPTTOKEN,
                                GWENHYWFAR_API)
 
 
+GWEN_TYPE_UINT32 GWEN_CryptToken_Flag_fromString(const char *s);
+GWEN_TYPE_UINT32 GWEN_CryptToken_Flags_fromDb(GWEN_DB_NODE *db,
+                                              const char *n);
+void GWEN_CryptToken_Flags_toDb(GWEN_DB_NODE *db,
+                                const char *n,
+                                GWEN_TYPE_UINT32 flags);
+
+
 typedef enum {
   GWEN_CryptToken_HashAlgo_Unknown=-1,
   GWEN_CryptToken_HashAlgo_None=0,
@@ -94,7 +78,7 @@ typedef enum {
   /** Ripemd 160 */
   GWEN_CryptToken_HashAlgo_RMD160,
   /** MD-5 */
-  GWEN_CryptToken_HashAlgo_MD5
+  GWEN_CryptToken_HashAlgo_MD5,
 } GWEN_CRYPTTOKEN_HASHALGO;
 
 GWEN_CRYPTTOKEN_HASHALGO GWEN_CryptToken_HashAlgo_fromString(const char *s);
@@ -120,7 +104,7 @@ typedef enum {
   /** fill right with zeroes */
   GWEN_CryptToken_PaddAlgo_RightZero,
   /** ANSI X9.23 */
-  GWEN_CryptToken_PaddAlgo_ANSIX9_23
+  GWEN_CryptToken_PaddAlgo_ANSIX9_23,
 } GWEN_CRYPTTOKEN_PADDALGO;
 
 GWEN_CRYPTTOKEN_PADDALGO GWEN_CryptToken_PaddAlgo_fromString(const char *s);
@@ -212,19 +196,24 @@ typedef int (*GWEN_CRYPTTOKEN_CHANGEPIN_FN)(GWEN_CRYPTTOKEN *ct);
 
 typedef int (*GWEN_CRYPTTOKEN_SIGN_FN)(GWEN_CRYPTTOKEN *ct,
                                        const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                                       GWEN_BUFFER *src,
+                                       const char *ptr,
+                                       unsigned int len,
                                        GWEN_BUFFER *dst);
 typedef int (*GWEN_CRYPTTOKEN_VERIFY_FN)(GWEN_CRYPTTOKEN *ct,
                                          const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                                         GWEN_BUFFER *src,
-                                         GWEN_BUFFER *dst);
+                                         const char *ptr,
+                                         unsigned int len,
+                                         const char *sigptr,
+                                         unsigned int siglen);
 typedef int (*GWEN_CRYPTTOKEN_ENCRYPT_FN)(GWEN_CRYPTTOKEN *ct,
                                           const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                                          GWEN_BUFFER *src,
+                                          const char *ptr,
+                                          unsigned int len,
                                           GWEN_BUFFER *dst);
 typedef int (*GWEN_CRYPTTOKEN_DECRYPT_FN)(GWEN_CRYPTTOKEN *ct,
                                           const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                                          GWEN_BUFFER *src,
+                                          const char *ptr,
+                                          unsigned int len,
                                           GWEN_BUFFER *dst);
 typedef int (*GWEN_CRYPTTOKEN_READKEY_FN)(GWEN_CRYPTTOKEN *ct,
                                           GWEN_TYPE_UINT32 kid,
@@ -375,19 +364,24 @@ int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct);
 
 int GWEN_CryptToken_Sign(GWEN_CRYPTTOKEN *ct,
                          const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                         GWEN_BUFFER *src,
+                         const char *ptr,
+                         unsigned int len,
                          GWEN_BUFFER *dst);
 int GWEN_CryptToken_Verify(GWEN_CRYPTTOKEN *ct,
                            const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                           GWEN_BUFFER *src,
-                           GWEN_BUFFER *dst);
+                           const char *ptr,
+                           unsigned int len,
+                           const char *sigptr,
+                           unsigned int siglen);
 int GWEN_CryptToken_Encrypt(GWEN_CRYPTTOKEN *ct,
                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                            GWEN_BUFFER *src,
+                            const char *ptr,
+                            unsigned int len,
                             GWEN_BUFFER *dst);
 int GWEN_CryptToken_Decrypt(GWEN_CRYPTTOKEN *ct,
                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                            GWEN_BUFFER *src,
+                            const char *ptr,
+                            unsigned int len,
                             GWEN_BUFFER *dst);
 int GWEN_CryptToken_ReadKey(GWEN_CRYPTTOKEN *ct,
                             GWEN_TYPE_UINT32 kid,
@@ -434,10 +428,19 @@ const GWEN_CRYPTTOKEN_SIGNINFO*
                                      GWEN_CRYPTTOKEN_HASHALGO hashAlgo,
                                      GWEN_CRYPTTOKEN_PADDALGO paddAlgo);
 
+const GWEN_CRYPTTOKEN_SIGNINFO*
+  GWEN_CryptToken_GetSignInfoById(GWEN_CRYPTTOKEN *ct,
+                                  GWEN_TYPE_UINT32 id);
+
 const GWEN_CRYPTTOKEN_CRYPTINFO*
   GWEN_CryptToken_GetCryptInfoByAlgos(GWEN_CRYPTTOKEN *ct,
                                       GWEN_CRYPTTOKEN_CRYPTALGO cryptAlgo,
                                       GWEN_CRYPTTOKEN_PADDALGO paddAlgo);
+
+const GWEN_CRYPTTOKEN_CRYPTINFO*
+  GWEN_CryptToken_GetCryptInfoById(GWEN_CRYPTTOKEN *ct,
+                                   GWEN_TYPE_UINT32 id);
+
 
 const GWEN_CRYPTTOKEN_KEYINFO*
   GWEN_CryptToken_GetKeyInfoById(GWEN_CRYPTTOKEN *ct,

@@ -184,6 +184,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "checktoken")==0) {
     rv=checkToken(db, argc, argv);
   }
+  else if (strcasecmp(cmd, "disablekey")==0) {
+    rv=disableKey(db, argc, argv);
+  }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
     rv=1;

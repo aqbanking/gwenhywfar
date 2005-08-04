@@ -52,6 +52,7 @@
 #include <openssl/x509v3.h>
 
 #include <string.h>
+#include <strings.h>
 #include <errno.h>
 #include <stdlib.h>
 #ifdef HAVE_SYS_SOCKET_H

@@ -40,6 +40,7 @@
 #include <gwenhywfar/debug.h>
 
 #include <string.h>
+#include <strings.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>

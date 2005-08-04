@@ -34,10 +34,12 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+#include <sys/time.h>
 #include <time.h>
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+
 
 
 int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){

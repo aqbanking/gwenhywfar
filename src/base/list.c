@@ -557,15 +557,15 @@ void GWEN_List_Dump(const GWEN_LIST *l, FILE *f, unsigned int indent){
   le=l->listPtr->first;
   while(le) {
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, "List entry %p\n", le);
+    fprintf(f, "List entry %p\n", (void*)le);
     for (i=0; i<indent; i++) fprintf(f, " ");
     fprintf(f, " Usage   : %d\n", le->usage);
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, " Previous: %p\n", le->previous);
+    fprintf(f, " Previous: %p\n", (void*)le->previous);
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, " Next    : %p\n", le->next);
+    fprintf(f, " Next    : %p\n", (void*)le->next);
     for (i=0; i<indent; i++) fprintf(f, " ");
-    fprintf(f, " Data    : %p\n", GWEN_RefPtr_GetData(le->dataPtr));
+    fprintf(f, " Data    : %p\n", (void*)GWEN_RefPtr_GetData(le->dataPtr));
     le=le->next;
   } /* while */
 }

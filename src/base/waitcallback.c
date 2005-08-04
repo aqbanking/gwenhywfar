@@ -40,6 +40,9 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/path.h>
 
+#include <strings.h>
+
+
 
 GWEN_LIST_FUNCTIONS(GWEN_WAITCALLBACK, GWEN_WaitCallback)
 GWEN_INHERIT_FUNCTIONS(GWEN_WAITCALLBACK)

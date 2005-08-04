@@ -220,8 +220,6 @@ int testDBfile2(int argc, char **argv) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }
-  //fprintf(stderr, "DB is:\n");
-  //GWEN_DB_Dump(db, stderr, 2);
 
   if (GWEN_DB_WriteFile(db, argv[3],
                         GWEN_DB_FLAGS_DEFAULT
@@ -270,7 +268,7 @@ int testXML2(int argc, char **argv) {
     return 1;
   }
   sl=GWEN_StringList_new();
-  for (j=3; j<argc; j++)
+  for (j=3; j<(unsigned int)argc; j++)
     GWEN_StringList_AppendString(sl, argv[j], 0, 1);
 
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
@@ -3040,8 +3038,8 @@ int uitest20(int argc, char **argv) {
 #endif /* USE_NCURSES */
 
 
-GWEN_CONSTLIST2_FUNCTION_DEFS(GWEN_KEYSPEC, GWEN_KeySpec);
-GWEN_CONSTLIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec);
+GWEN_CONSTLIST2_FUNCTION_DEFS(GWEN_KEYSPEC, GWEN_KeySpec)
+GWEN_CONSTLIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec)
 
 int testList2(int argc, char **argv) {
   GWEN_KEYSPEC_LIST2 *specList;

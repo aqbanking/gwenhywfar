@@ -21,6 +21,7 @@ gct_tool_SOURCES=\
   showuser.c \
   changepin.c \
   checktoken.c \
+  disablekey.c \
   main.c
 
 gct_tool_LDADD = \

@@ -104,7 +104,7 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
     newbf->bufferSize=bf->bufferSize;
     newbf->bytesUsed=bf->bytesUsed;
     if (newbf->bytesUsed) {
-      int toCopy;
+      unsigned int toCopy;
 
       toCopy=bf->bytesUsed+1;
       if (toCopy>(newbf->bufferSize)) {
@@ -481,7 +481,7 @@ int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf){
 int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
   assert(bf);
 
-  if (bf->pos-i<0) {
+  if (bf->pos<i) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Position %d outside buffer boundaries (%d bytes)",
               bf->pos-i, bf->bufferSize);

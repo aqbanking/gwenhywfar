@@ -124,6 +124,8 @@ extern "C" {
 #define GWEN_ERROR_CT_BAD_PIN_1_LEFT    (-73)
 #define GWEN_ERROR_CT_BAD_PIN_2_LEFT    (-74)
 #define GWEN_ERROR_CT_NO_KEY            (-75)
+#define GWEN_ERROR_CT_REMOVED           (-76)
+#define GWEN_ERROR_CT_DEFAULT_PIN       (-77)
 
 /*@}*/
 

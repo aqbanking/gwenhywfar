@@ -48,6 +48,8 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 int checkToken(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
+int disableKey(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
 
 #endif /* GCT_TOOL_GLOBALS_H */
 

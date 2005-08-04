@@ -85,19 +85,24 @@ int GWEN_CryptTokenFile_Close(GWEN_CRYPTTOKEN *ct);
 
 int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
                              const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                             GWEN_BUFFER *src,
+                             const char *ptr,
+                             unsigned int len,
                              GWEN_BUFFER *dst);
 int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                               GWEN_BUFFER *src,
-                               GWEN_BUFFER *dst);
+                               const char *ptr,
+                               unsigned int len,
+                               const char *sigptr,
+                               unsigned int siglen);
 int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                                GWEN_BUFFER *src,
+                                const char *ptr,
+                                unsigned int len,
                                 GWEN_BUFFER *dst);
 int GWEN_CryptTokenFile_Decrypt(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                                GWEN_BUFFER *src,
+                                const char *ptr,
+                                unsigned int len,
                                 GWEN_BUFFER *dst);
 int GWEN_CryptTokenFile_ReadKey(GWEN_CRYPTTOKEN *ct,
                                 GWEN_TYPE_UINT32 kid,

@@ -125,8 +125,8 @@ int GWEN_VSlider_Draw(GWEN_WIDGET *w) {
     int j;
     int k;
     static const char cbuf[3]={
-      GWEN_WIDGET_CHAR_ESC_CHAR,
-      GWEN_WIDGET_CHAR_BLOCK
+      (char)GWEN_WIDGET_CHAR_ESC_CHAR,
+      (char)GWEN_WIDGET_CHAR_BLOCK
     };
 
     k=GWEN_Widget_GetHeight(w);

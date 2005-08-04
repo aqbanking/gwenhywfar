@@ -1,3 +1,8 @@
+
+#MY_CFLAGS=-W -pedantic -std=c99 -ggdb -Wall -O -ggdb
+MY_CFLAGS=-ggdb -Wall -O
+
+
 default: all
 
 dist: COPY=--copy
@@ -33,7 +38,7 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static
+	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static
 
 mp-debug:
 	libtoolize -f --automake

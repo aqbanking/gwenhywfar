@@ -3,6 +3,14 @@
   ------------------------------------------------------------------------
 
 
+2005/08/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- more work on crypttoken
+- removed some crypttoken flags
+- added crypttoken flag GWEN_CRYPTTOKEN_FLAGS_FORCE_PIN_ENTRY
+- added getpin flag GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT
+
+
 2005/08/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added function GWEN_KeySpec_toDb()
@@ -13,7 +21,6 @@
 - added the command "checktoken" to gct-tool (checks whether a given token
   is supported by any plugin)
 - added virtual function GWEN_CryptToken_GetTokenIdData()
-- fixed some bugs in OpenHBCI keyfile code
 
 
 2005-07-31  Christian Stimming  <stimming@tuhh.de>

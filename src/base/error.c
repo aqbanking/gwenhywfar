@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <strings.h>
 #include "error_p.h"
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"

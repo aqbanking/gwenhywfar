@@ -35,7 +35,7 @@
 #define GWEN_TABLECOLUMN_DEFAULT_WIDTH 8
 
 struct GWEN_TABLE_FIELD {
-  GWEN_LIST_ELEMENT(GWEN_TABLE_FIELD);
+  GWEN_LIST_ELEMENT(GWEN_TABLE_FIELD)
   int x; /* updated by parents as soon as the position is known */
   int y; /* updated by parents as soon as the position is known */
   int width;
@@ -48,7 +48,7 @@ struct GWEN_TABLE_FIELD {
 
 
 struct GWEN_TABLE_COLUMN {
-  GWEN_LIST_ELEMENT(GWEN_TABLE_COLUMN);
+  GWEN_LIST_ELEMENT(GWEN_TABLE_COLUMN)
   int x;
   int y;
   int width;

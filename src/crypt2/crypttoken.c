@@ -68,6 +68,8 @@ GWEN_CRYPTTOKEN_HASHALGO GWEN_CryptToken_HashAlgo_fromString(const char *s){
     return GWEN_CryptToken_HashAlgo_RMD160;
   else if (strcasecmp(s, "md5")==0)
     return GWEN_CryptToken_HashAlgo_MD5;
+  else if (strcasecmp(s, "any")==0)
+    return GWEN_CryptToken_HashAlgo_Any;
   return GWEN_CryptToken_HashAlgo_Unknown;
 }
 
@@ -83,6 +85,8 @@ const char *GWEN_CryptToken_HashAlgo_toString(GWEN_CRYPTTOKEN_HASHALGO a){
     return "rmd160";
   case GWEN_CryptToken_HashAlgo_MD5:
     return "md5";
+  case GWEN_CryptToken_HashAlgo_Any:
+    return "any";
   default:
     return "unknown";
   }
@@ -110,6 +114,8 @@ GWEN_CRYPTTOKEN_PADDALGO GWEN_CryptToken_PaddAlgo_fromString(const char *s){
     return GWEN_CryptToken_PaddAlgo_RightZero;
   else if (strcasecmp(s, "ansix9_23")==0)
     return GWEN_CryptToken_PaddAlgo_ANSIX9_23;
+  else if (strcasecmp(s, "any")==0)
+    return GWEN_CryptToken_PaddAlgo_Any;
   return GWEN_CryptToken_PaddAlgo_Unknown;
 }
 
@@ -135,6 +141,8 @@ const char *GWEN_CryptToken_PaddAlgo_toString(GWEN_CRYPTTOKEN_PADDALGO a){
     return "rightzero";
   case GWEN_CryptToken_PaddAlgo_ANSIX9_23:
     return "ansix9_23";
+  case GWEN_CryptToken_PaddAlgo_Any:
+    return "any";
   default:
     return "unknown";
   }
@@ -155,6 +163,8 @@ GWEN_CRYPTTOKEN_CRYPTALGO GWEN_CryptToken_CryptAlgo_fromString(const char *s){
     return GWEN_CryptToken_CryptAlgo_DES;
   else if (strcasecmp(s, "des_3k")==0)
     return GWEN_CryptToken_CryptAlgo_DES_3K;
+  else if (strcasecmp(s, "any")==0)
+    return GWEN_CryptToken_CryptAlgo_Any;
   return GWEN_CryptToken_CryptAlgo_Unknown;
 }
 
@@ -172,6 +182,8 @@ const char *GWEN_CryptToken_CryptAlgo_toString(GWEN_CRYPTTOKEN_CRYPTALGO a){
     return "des";
   case GWEN_CryptToken_CryptAlgo_DES_3K:
     return "des_3k";
+  case GWEN_CryptToken_CryptAlgo_Any:
+    return "any";
   default:
     return "unknown";
   }
@@ -1144,10 +1156,12 @@ int GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
-GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromXml(GWEN_XMLNODE *n){
+GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context__fromXml(GWEN_CRYPTTOKEN *ct,
+                                                          GWEN_XMLNODE *n){
   GWEN_CRYPTTOKEN_CONTEXT *ctx;
   GWEN_XMLNODE *nn;
   const char *s;
+  int j;
 
   assert(n);
 
@@ -1161,25 +1175,109 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromXml(GWEN_XMLNODE *n){
   s=GWEN_XMLNode_GetCharValue(n, "description", 0);
   if (s)
     ctx->description=strdup(s);
+
   nn=GWEN_XMLNode_FindFirstTag(n, "signKeyInfo", 0, 0);
-  if (nn)
-    ctx->signKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->signKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+      assert(ctx->signKeyInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+      sscanf(s, "%i", &j);
+      ki=GWEN_CryptToken_GetKeyInfoById(ct, j);
+      assert(ki);
+      ctx->signKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+    }
+  }
+
   nn=GWEN_XMLNode_FindFirstTag(n, "verifyKeyInfo", 0, 0);
-  if (nn)
-    ctx->verifyKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->verifyKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+      assert(ctx->verifyKeyInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+      sscanf(s, "%i", &j);
+      ki=GWEN_CryptToken_GetKeyInfoById(ct, j);
+      assert(ki);
+      ctx->verifyKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+    }
+  }
+
   nn=GWEN_XMLNode_FindFirstTag(n, "signInfo", 0, 0);
-  if (nn)
-    ctx->signInfo=GWEN_CryptToken_SignInfo_fromXml(nn);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->signInfo=GWEN_CryptToken_SignInfo_fromXml(nn);
+      assert(ctx->signInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_SIGNINFO *si;
+
+      sscanf(s, "%i", &j);
+      si=GWEN_CryptToken_GetSignInfoById(ct, j);
+      assert(si);
+      ctx->signInfo=GWEN_CryptToken_SignInfo_dup(si);
+    }
+  }
 
   nn=GWEN_XMLNode_FindFirstTag(n, "encryptKeyInfo", 0, 0);
-  if (nn)
-    ctx->encryptKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->encryptKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+      assert(ctx->encryptKeyInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+      sscanf(s, "%i", &j);
+      ki=GWEN_CryptToken_GetKeyInfoById(ct, j);
+      assert(ki);
+      ctx->encryptKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+    }
+  }
+
+
   nn=GWEN_XMLNode_FindFirstTag(n, "decryptKeyInfo", 0, 0);
-  if (nn)
-    ctx->decryptKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->decryptKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+      assert(ctx->decryptKeyInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+      sscanf(s, "%i", &j);
+      ki=GWEN_CryptToken_GetKeyInfoById(ct, j);
+      assert(ki);
+      ctx->decryptKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+    }
+  }
+
   nn=GWEN_XMLNode_FindFirstTag(n, "cryptInfo", 0, 0);
-  if (nn)
-    ctx->cryptInfo=GWEN_CryptToken_CryptInfo_fromXml(nn);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->cryptInfo=GWEN_CryptToken_CryptInfo_fromXml(nn);
+      assert(ctx->cryptInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+
+      sscanf(s, "%i", &j);
+      ci=GWEN_CryptToken_GetCryptInfoById(ct, j);
+      assert(ci);
+      ctx->cryptInfo=GWEN_CryptToken_CryptInfo_dup(ci);
+    }
+  }
 
   return ctx;
 }
@@ -1453,6 +1551,64 @@ GWEN_CRYPTTOKEN *GWEN_CryptToken_fromXml(GWEN_PLUGIN_MANAGER *pm,
 
 
 
+GWEN_TYPE_UINT32 GWEN_CryptToken_Flag_fromString(const char *s) {
+  assert(s);
+  if (strcasecmp(s, "manages_signseq")==0)
+    return GWEN_CRYPTTOKEN_FLAGS_MANAGES_SIGNSEQ;
+  else if (strcasecmp(s, "predef_context_only")==0)
+    return GWEN_CRYPTTOKEN_FLAGS_PREDEF_CONTEXT_ONLY;
+  else if (strcasecmp(s, "disable_smaller_signature")==0)
+    return GWEN_CRYPTTOKEN_FLAGS_DISABLE_SMALLER_SIGNATURE;
+  else if (strcasecmp(s, "force_pin_entry")==0)
+    return GWEN_CRYPTTOKEN_FLAGS_FORCE_PIN_ENTRY;
+  else {
+    DBG_WARN(GWEN_LOGDOMAIN, "Unknown flag \"%s\"", s);
+    return 0;
+  }
+}
+
+
+
+void GWEN_CryptToken_Flags_toDb(GWEN_DB_NODE *db,
+                                const char *n,
+                                GWEN_TYPE_UINT32 flags) {
+  GWEN_DB_DeleteVar(db, n);
+
+  if (flags & GWEN_CRYPTTOKEN_FLAGS_MANAGES_SIGNSEQ)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
+                         n, "manages_signseq");
+  if (flags & GWEN_CRYPTTOKEN_FLAGS_PREDEF_CONTEXT_ONLY)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
+                         n, "predef_context_only");
+  if (flags & GWEN_CRYPTTOKEN_FLAGS_DISABLE_SMALLER_SIGNATURE)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
+                         n, "disable_smaller_signature");
+  if (flags & GWEN_CRYPTTOKEN_FLAGS_FORCE_PIN_ENTRY)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
+                         n, "force_pin_entry");
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_CryptToken_Flags_fromDb(GWEN_DB_NODE *db,
+                                              const char *n) {
+  int i;
+  GWEN_TYPE_UINT32 flags=0;
+  const char *s;
+
+  for (i=0; ; i++) {
+    s=GWEN_DB_GetCharValue(db, n, i, 0);
+    if (!s)
+      break;
+    flags|=GWEN_CryptToken_Flag_fromString(s);
+  }
+  flags=flags;
+
+  return flags;
+}
+
+
+
 int GWEN_CryptToken_ReadXml(GWEN_CRYPTTOKEN *ct, GWEN_XMLNODE *n) {
   GWEN_XMLNODE *nn;
   const char *s;
@@ -1476,27 +1632,7 @@ int GWEN_CryptToken_ReadXml(GWEN_CRYPTTOKEN *ct, GWEN_XMLNODE *n) {
       if (nd) {
         s=GWEN_XMLNode_GetData(nd);
         assert(s);
-	if (strcasecmp(s, "context_management")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_CONTEXT_MANAGEMENT;
-	else if (strcasecmp(s, "context_allow_add")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_CONTEXT_ALLOW_ADD;
-	else if (strcasecmp(s, "context_ro_keys")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_KEYS;
-	else if (strcasecmp(s, "context_ro_descr")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_DESCR;
-	else if (strcasecmp(s, "context_ro_signdescr")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_SIGNDESCR;
-	else if (strcasecmp(s, "context_ro_cryptdescr")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_CRYPTDESCR;
-	else if (strcasecmp(s, "context_ro_keydescrs")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_CONTEXT_RO_KEYDESCRS;
-	else if (strcasecmp(s, "manages_signseq")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_MANAGES_SIGNSEQ;
-	else if (strcasecmp(s, "predef_context_only")==0)
-	  ct->flags|=GWEN_CRYPTTOKEN_FLAGS_PREDEF_CONTEXT_ONLY;
-	else {
-	  DBG_WARN(GWEN_LOGDOMAIN, "Unknown flag \"%s\"", s);
-	}
+        ct->flags|=GWEN_CryptToken_Flag_fromString(s);
       }
       nnn=GWEN_XMLNode_FindNextTag(nnn, "flag", 0, 0);
     } /* while */
@@ -1566,7 +1702,7 @@ int GWEN_CryptToken_ReadXml(GWEN_CRYPTTOKEN *ct, GWEN_XMLNODE *n) {
     while(nnn) {
       GWEN_CRYPTTOKEN_CONTEXT *ctx;
 
-      ctx=GWEN_CryptToken_Context_fromXml(nnn);
+      ctx=GWEN_CryptToken_Context__fromXml(ct, nnn);
       assert(ctx);
       GWEN_CryptToken_Context_List_Add(ctx, ct->contextList);
       nnn=GWEN_XMLNode_FindNextTag(nnn, "context", 0, 0);
@@ -1930,7 +2066,8 @@ int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct){
 
 int GWEN_CryptToken_Sign(GWEN_CRYPTTOKEN *ct,
                          const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                         GWEN_BUFFER *src,
+                         const char *ptr,
+                         unsigned int len,
                          GWEN_BUFFER *dst){
   assert(ct);
   if (ct->isOpen==0) {
@@ -1939,15 +2076,17 @@ int GWEN_CryptToken_Sign(GWEN_CRYPTTOKEN *ct,
   }
   if (ct->signFn==0)
     return GWEN_ERROR_UNSUPPORTED;
-  return ct->signFn(ct, ctx, src, dst);
+  return ct->signFn(ct, ctx, ptr, len, dst);
 }
 
 
 
 int GWEN_CryptToken_Verify(GWEN_CRYPTTOKEN *ct,
                            const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                           GWEN_BUFFER *src,
-                           GWEN_BUFFER *dst){
+                           const char *ptr,
+                           unsigned int len,
+                           const char *sigptr,
+                           unsigned int siglen) {
   assert(ct);
   if (ct->isOpen==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
@@ -1955,14 +2094,15 @@ int GWEN_CryptToken_Verify(GWEN_CRYPTTOKEN *ct,
   }
   if (ct->verifyFn==0)
     return GWEN_ERROR_UNSUPPORTED;
-  return ct->verifyFn(ct, ctx, src, dst);
+  return ct->verifyFn(ct, ctx, ptr, len, sigptr, siglen);
 }
 
 
 
 int GWEN_CryptToken_Encrypt(GWEN_CRYPTTOKEN *ct,
                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                            GWEN_BUFFER *src,
+                            const char *ptr,
+                            unsigned int len,
                             GWEN_BUFFER *dst){
   assert(ct);
   if (ct->isOpen==0) {
@@ -1971,14 +2111,15 @@ int GWEN_CryptToken_Encrypt(GWEN_CRYPTTOKEN *ct,
   }
   if (ct->encryptFn==0)
     return GWEN_ERROR_UNSUPPORTED;
-  return ct->encryptFn(ct, ctx, src, dst);
+  return ct->encryptFn(ct, ctx, ptr, len, dst);
 }
 
 
 
 int GWEN_CryptToken_Decrypt(GWEN_CRYPTTOKEN *ct,
                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
-                            GWEN_BUFFER *src,
+                            const char *ptr,
+                            unsigned int len,
                             GWEN_BUFFER *dst){
   assert(ct);
   if (ct->isOpen==0) {
@@ -1987,7 +2128,7 @@ int GWEN_CryptToken_Decrypt(GWEN_CRYPTTOKEN *ct,
   }
   if (ct->decryptFn==0)
     return GWEN_ERROR_UNSUPPORTED;
-  return ct->decryptFn(ct, ctx, src, dst);
+  return ct->decryptFn(ct, ctx, ptr, len, dst);
 }
 
 
@@ -2225,10 +2366,6 @@ GWEN_CryptToken_GetSignInfoByAlgos(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_SIGNINFO *si;
 
   assert(ct);
-  if (ct->isOpen==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
-    return 0;
-  }
 
   if (GWEN_CryptToken_SignInfo_List_GetCount(ct->signInfoList)==0) {
     if (ct->fillSignInfoListFn==0) {
@@ -2259,6 +2396,41 @@ GWEN_CryptToken_GetSignInfoByAlgos(GWEN_CRYPTTOKEN *ct,
 
 
 
+const GWEN_CRYPTTOKEN_SIGNINFO*
+GWEN_CryptToken_GetSignInfoById(GWEN_CRYPTTOKEN *ct,
+                                GWEN_TYPE_UINT32 id) {
+  GWEN_CRYPTTOKEN_SIGNINFO *si;
+
+  assert(ct);
+
+  if (GWEN_CryptToken_SignInfo_List_GetCount(ct->signInfoList)==0) {
+    if (ct->fillSignInfoListFn==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "fillSignInfoListFn not set");
+      return 0;
+    }
+    else {
+      int rv;
+
+      rv=ct->fillSignInfoListFn(ct, ct->signInfoList);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return 0;
+      }
+    }
+  }
+
+  si=GWEN_CryptToken_SignInfo_List_First(ct->signInfoList);
+  while(si) {
+    if (id==0 || id==GWEN_CryptToken_SignInfo_GetId(si))
+      return si;
+    si=GWEN_CryptToken_SignInfo_List_Next(si);
+  }
+
+  return 0;
+}
+
+
+
 const GWEN_CRYPTTOKEN_CRYPTINFO*
 GWEN_CryptToken_GetCryptInfoByAlgos(GWEN_CRYPTTOKEN *ct,
                                     GWEN_CRYPTTOKEN_CRYPTALGO cryptAlgo,
@@ -2266,10 +2438,6 @@ GWEN_CryptToken_GetCryptInfoByAlgos(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_CRYPTINFO *ci;
 
   assert(ct);
-  if (ct->isOpen==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
-    return 0;
-  }
 
   if (GWEN_CryptToken_CryptInfo_List_GetCount(ct->cryptInfoList)==0) {
     if (ct->fillCryptInfoListFn==0) {
@@ -2301,16 +2469,47 @@ GWEN_CryptToken_GetCryptInfoByAlgos(GWEN_CRYPTTOKEN *ct,
 
 
 
+const GWEN_CRYPTTOKEN_CRYPTINFO*
+GWEN_CryptToken_GetCryptInfoById(GWEN_CRYPTTOKEN *ct,
+                                 GWEN_TYPE_UINT32 id) {
+  GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+
+  assert(ct);
+
+  if (GWEN_CryptToken_CryptInfo_List_GetCount(ct->cryptInfoList)==0) {
+    if (ct->fillCryptInfoListFn==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "fillCryptInfoListFn not set");
+      return 0;
+    }
+    else {
+      int rv;
+
+      rv=ct->fillCryptInfoListFn(ct, ct->cryptInfoList);
+      if (rv) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return 0;
+      }
+    }
+  }
+
+  ci=GWEN_CryptToken_CryptInfo_List_First(ct->cryptInfoList);
+  while(ci) {
+    if (id==0 || id==GWEN_CryptToken_CryptInfo_GetId(ci))
+      return ci;
+    ci=GWEN_CryptToken_CryptInfo_List_Next(ci);
+  }
+
+  return 0;
+}
+
+
+
 const GWEN_CRYPTTOKEN_KEYINFO*
 GWEN_CryptToken_GetKeyInfoById(GWEN_CRYPTTOKEN *ct,
                                GWEN_TYPE_UINT32 kid){
   GWEN_CRYPTTOKEN_KEYINFO *ki;
 
   assert(ct);
-  if (ct->isOpen==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
-    return 0;
-  }
 
   if (GWEN_CryptToken_KeyInfo_List_GetCount(ct->keyInfoList)==0) {
     if (ct->fillKeyInfoListFn==0) {
@@ -2330,7 +2529,7 @@ GWEN_CryptToken_GetKeyInfoById(GWEN_CRYPTTOKEN *ct,
 
   ki=GWEN_CryptToken_KeyInfo_List_First(ct->keyInfoList);
   while(ki) {
-    if (kid==0 || kid==GWEN_CryptToken_KeyInfo_GetKeyId(ki))
+    if (kid==0 || kid==(GWEN_TYPE_UINT32)GWEN_CryptToken_KeyInfo_GetKeyId(ki))
       return ki;
     ki=GWEN_CryptToken_KeyInfo_List_Next(ki);
   }
@@ -2346,10 +2545,6 @@ GWEN_CryptToken_GetContextById(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_CONTEXT *ctx;
 
   assert(ct);
-  if (ct->isOpen==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
-    return 0;
-  }
 
   if (GWEN_CryptToken_Context_List_GetCount(ct->contextList)==0) {
     if (ct->fillContextListFn==0) {

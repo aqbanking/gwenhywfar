@@ -62,14 +62,17 @@
           <hashalgo>rmd160</hashalgo>
           <paddalgo>iso9796_1a4</paddalgo>
         </signinfo>
+
       </signinfos>
+
       
       <cryptinfos>
         <cryptinfo>
           <id>1</id>
           <cryptalgo>rsa</cryptalgo>
-          <paddalgo>ansix9_23</paddalgo>
+          <paddalgo>leftzero</paddalgo>
         </cryptinfo>
+
       </cryptinfos>
       
       <keyinfos>
@@ -138,72 +141,22 @@
           <contextType>hbci</contextType>
           <description>Context for HBCI operations</description>
           
-          <signkeyinfo>
-            <keyId>1</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>rsa</cryptalgo>
-            <keyDescription>Local Sign Key</keyDescription>
-            <keyFlags>
-              <flag>canSign</flag>
-              <flag>canVerify</flag>
-              <flag>hasSignSeq</flag>
-            </keyFlags>
-          </signkeyinfo>
+          <signkeyinfo id="1" />
+          <verifykeyinfo id="3" />
           
-          <verifykeyinfo>
-            <keyId>3</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>rsa</cryptalgo>
-            <keyDescription>Remote Sign Key</keyDescription>
-            <keyFlags>
-              <flag>canVerify</flag>
-            </keyFlags>
-          </verifykeyinfo>
-  
           <signinfo>
             <id>1</id>
-            <hashalgo>rmd160</hashalgo>
-            <paddalgo>iso9796_1a4</paddalgo>
+            <hashalgo>any</hashalgo>
+            <paddalgo>any</paddalgo>
           </signinfo>
   
-          <encryptKeyInfo>
-            <keyId>4</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>rsa</cryptalgo>
-            <keyDescription>Remote Crypt Key</keyDescription>
-            <keyFlags>
-              <flag>canEncrypt</flag>
-              <flag>canDecrypt</flag>
-            </keyFlags>
-          </encryptKeyInfo>
-  
-          <decryptKeyInfo>
-            <keyId>2</keyId>
-            <keySize>768</keySize>
-            <minKeySize>768</minKeySize>
-            <maxKeySize>768</maxKeySize>
-            <chunksize>96</chunksize>
-            <cryptalgo>rsa</cryptalgo>
-            <keyDescription>Local Crypt Key</keyDescription>
-            <keyFlags>
-              <flag>canEncrypt</flag>
-              <flag>canDecrypt</flag>
-            </keyFlags>
-          </decryptKeyInfo>
+          <encryptKeyInfo id="4" />
+          <decryptKeyInfo id="2" />
   
           <cryptinfo>
             <id>1</id>
             <cryptalgo>rsa</cryptalgo>
-            <paddalgo>leftZero</paddalgo>
+            <paddalgo>any</paddalgo>
           </cryptinfo>
           
         </context>

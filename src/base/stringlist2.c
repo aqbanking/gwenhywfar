@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <strings.h>
 
 
 GWEN_STRINGLIST2 *GWEN_StringList2_new(){

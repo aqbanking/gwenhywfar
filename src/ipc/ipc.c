@@ -14,6 +14,8 @@
 # include <config.h>
 #endif
 
+#include <strings.h>
+
 #include "ipc_p.h"
 #include <gwenhywfar/net.h>
 #include <gwenhywfar/debug.h>
@@ -22,9 +24,9 @@
 #include <gwenhywfar/nettransportssl.h>
 
 
-GWEN_LIST_FUNCTIONS(GWEN_IPCNODE, GWEN_IPCNode);
-GWEN_LIST_FUNCTIONS(GWEN_IPCMSG, GWEN_IPCMsg);
-GWEN_LIST_FUNCTIONS(GWEN_IPCREQUEST, GWEN_IPCRequest);
+GWEN_LIST_FUNCTIONS(GWEN_IPCNODE, GWEN_IPCNode)
+GWEN_LIST_FUNCTIONS(GWEN_IPCMSG, GWEN_IPCMsg)
+GWEN_LIST_FUNCTIONS(GWEN_IPCREQUEST, GWEN_IPCRequest)
 
 
 static GWEN_TYPE_UINT32 gwen_ipc__lastid=0;

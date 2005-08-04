@@ -42,7 +42,6 @@ GWEN_CRYPTTOKEN_CRYPTINFO*
 GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_fromDb(GWEN_DB_NODE *db);
 void GWEN_CryptToken_CryptInfo_toDb(const GWEN_CRYPTTOKEN_CRYPTINFO *ci,
                                     GWEN_DB_NODE *db);
-GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_fromXml(GWEN_XMLNODE *n);
 
 
 GWEN_TYPE_UINT32

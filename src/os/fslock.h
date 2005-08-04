@@ -61,7 +61,7 @@ typedef struct GWEN_FSLOCK GWEN_FSLOCK;
 typedef enum {
   GWEN_FSLock_TypeUnknown=0,
   GWEN_FSLock_TypeFile,
-  GWEN_FSLock_TypeDir,
+  GWEN_FSLock_TypeDir
 } GWEN_FSLOCK_TYPE;
 
 

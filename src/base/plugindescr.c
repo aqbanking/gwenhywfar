@@ -41,11 +41,12 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <strings.h>
 
 
 
-GWEN_LIST_FUNCTIONS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription);
-GWEN_LIST2_FUNCTIONS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription);
+GWEN_LIST_FUNCTIONS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription)
+GWEN_LIST2_FUNCTIONS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription)
 
 
 

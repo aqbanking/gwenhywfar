@@ -73,7 +73,10 @@ static int signFile(GWEN_CRYPTTOKEN *ct,
   GWEN_Buffer_Rewind(fbuf);
 
   sigbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_CryptToken_Sign(ct, ctx, fbuf, sigbuf);
+  rv=GWEN_CryptToken_Sign(ct, ctx,
+                          GWEN_Buffer_GetStart(fbuf),
+                          GWEN_Buffer_GetUsedBytes(fbuf),
+                          sigbuf);
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not sign file data");
     return 3;

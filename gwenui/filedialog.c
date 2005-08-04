@@ -120,7 +120,6 @@ GWEN_WIDGET *GWEN_FileDialog_new(GWEN_TYPE_UINT32 flags,
                          GWEN_TABLEWIDGET_FLAGS_LINEMODE,
                          "FileTable",
                          0, 0, 0, 0);
-  //GWEN_Widget_Subscribe(w, GWEN_EventType_Chosen, mw);
   win->wTable=w;
   GWEN_TextWidget_SetVirtualSize(w, 200, 200);
   GWEN_TableWidget_AddColumn(w, 30); /* file name */
