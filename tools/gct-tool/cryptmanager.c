@@ -306,8 +306,9 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
 
   if (flags & GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT)
     fprintf(stderr,
+	    "%s\n",
             I18N("Hit just the ENTER key (with no other input) to use the "
-                 "default pin.\n"));
+                 "default pin."));
 
   while(1) {
     /* TRANSLATORS: The field here should be as long as the "Repeat:" field
