@@ -326,8 +326,8 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
   /* no localized version found, return text for default language */
   rv=GWEN_PluginDescription__GetLongDescrByFormat(pd, s, buf);
   if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv)
-      return rv;
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   return 0;

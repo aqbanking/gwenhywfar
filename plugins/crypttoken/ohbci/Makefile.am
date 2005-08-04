@@ -1,4 +1,4 @@
-#EXTRA_DIST=README ressource.rc.in
+EXTRA_DIST = ressource.rc.in
 
 INCLUDES = \
  -I$(top_srcdir) \

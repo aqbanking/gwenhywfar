@@ -627,6 +627,7 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  plugins/crypttoken/Makefile
                  plugins/crypttoken/ohbci/Makefile
                  plugins/crypttoken/ohbci/ohbci.xml
+                 plugins/crypttoken/ohbci/ressource.rc
                  tools/Makefile
                  tools/xmlmerge/Makefile
                  tools/dlgtest/Makefile

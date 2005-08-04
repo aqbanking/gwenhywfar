@@ -223,6 +223,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout){
   GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
                                   I18N("Waiting for lock to become "
                                        "available..."),
+                                  I18N("second(s)"),
                                   0);
 
   if (timeout==GWEN_FSLOCK_TIMEOUT_NONE)

@@ -1,1 +1,5 @@
 ohbci.xml
+ressource.rc
+*.dll
+*.def
+*.lib

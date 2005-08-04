@@ -304,13 +304,11 @@ int GWEN__GetValueFromWinReg(const char *keyPath,
   DWORD typ;
   int i;
 
-  assert(pm);
-
   snprintf(nbuffer, sizeof(nbuffer), keyPath);
 
   /* open the key */
   if (RegOpenKey(HKEY_CURRENT_USER,
-                 keypath,
+                 keyPath,
                  &hkey)){
     DBG_ERROR(GWEN_LOGDOMAIN,
               "RegOpenKey \"%s\" failed.", keyPath);

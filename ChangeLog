@@ -2,6 +2,9 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005-08-04  Christian Stimming <stimming@tuhh.de>
+
+	* src/os/windows/fslock.c: Update windows code to latest changes.
 
 2005/08/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
