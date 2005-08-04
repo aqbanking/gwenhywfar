@@ -931,6 +931,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
     }
     else {
+      GWEN_CryptKey_SetStatus(key, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
       GWEN_CryptTokenFile_Context_SetLocalSignKey(fct, key);
     }
   }
@@ -949,6 +950,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
     }
     else {
+      GWEN_CryptKey_SetStatus(key, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
       GWEN_CryptTokenFile_Context_SetLocalCryptKey(fct, key);
     }
   }
@@ -969,6 +971,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
     else {
       if (peerId==0)
         peerId=GWEN_CryptKey_GetOwner(key);
+      GWEN_CryptKey_SetStatus(key, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
       GWEN_CryptTokenFile_Context_SetRemoteSignKey(fct, key);
     }
   }
@@ -989,6 +992,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
     else {
       if (peerId==0)
         peerId=GWEN_CryptKey_GetOwner(key);
+      GWEN_CryptKey_SetStatus(key, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
       GWEN_CryptTokenFile_Context_SetRemoteCryptKey(fct, key);
     }
   }
