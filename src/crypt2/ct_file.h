@@ -17,6 +17,10 @@
 #include <gwenhywfar/crypttoken.h>
 #include <gwenhywfar/crypttoken_user.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /**
  * <p>A crypt token file may contain mutliple user contexts.</p>
@@ -118,6 +122,9 @@ void GWEN_CryptTokenFile_AddFileContext(GWEN_CRYPTTOKEN *ct,
 void GWEN_CryptTokenFile_ClearFileContextList(GWEN_CRYPTTOKEN *ct);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWEN_CRYPTTOKEN_FILE_H */

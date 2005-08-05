@@ -22,6 +22,10 @@
 #include <gwenhywfar/plugin.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_SIGN      0x00000001
 #define GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_VERIFY    0x00000002
 #define GWEN_CRYPTTOKEN_KEYINFO_FLAGS_CAN_ENCRYPT   0x00000004
@@ -92,6 +96,10 @@ void GWEN_CryptToken_KeyInfo_SetDescription(GWEN_CRYPTTOKEN_KEYINFO *ki,
 
 /*@}*/
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GWEN_CRYPTTOKEN_KEYINFO_H */
 

@@ -23,6 +23,10 @@
 
 #include <gwenhywfar/crypttoken_user.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define GWEN_CRYPTMANAGER_NAME "crypttoken"
 
 
@@ -169,6 +173,9 @@ const char*
   GWEN_CryptToken_PinEncoding_toString(GWEN_CRYPTTOKEN_PINENCODING pe);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #include <gwenhywfar/crypttoken_signinfo.h>
 #include <gwenhywfar/crypttoken_cryptinfo.h>
@@ -177,6 +184,9 @@ const char*
 #include <gwenhywfar/crypttoken_plugin.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
@@ -469,6 +479,9 @@ int GWEN_CryptToken_AddContext(GWEN_CRYPTTOKEN *ct,
 /*@}*/
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 

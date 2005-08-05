@@ -22,6 +22,11 @@
 #include <gwenhywfar/plugin.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct GWEN_CRYPTTOKEN_CRYPTINFO GWEN_CRYPTTOKEN_CRYPTINFO;
 
 
@@ -61,6 +66,9 @@ void GWEN_CryptToken_CryptInfo_SetPaddAlgo(GWEN_CRYPTTOKEN_CRYPTINFO *ci,
 /*@}*/
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 

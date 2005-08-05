@@ -22,6 +22,11 @@
 #include <gwenhywfar/plugin.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct GWEN_CRYPTTOKEN_CONTEXT GWEN_CRYPTTOKEN_CONTEXT;
 
 
@@ -106,6 +111,9 @@ void GWEN_CryptToken_Context_SetCryptInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 /*@}*/
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWEN_CRYPTTOKEN_CONTEXT_H */

@@ -22,6 +22,10 @@
 #include <gwenhywfar/plugin.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /** @name CryptToken_Plugin
  *
@@ -192,6 +196,10 @@ GWEN_PLUGIN_DESCRIPTION_LIST2*
 
 /*@}*/
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 
