@@ -129,7 +129,10 @@ void GWEN_WaitCallback_SetProgressPos(GWEN_TYPE_UINT64 pos){
     DBG_DEBUG(GWEN_LOGDOMAIN, "No callback active");
   }
   else {
-    ctx->pos=pos;
+    if (pos==GWEN_WAITCALLBACK_PROGRESS_ONE)
+      ctx->pos++;
+    else
+      ctx->pos=pos;
   }
 }
 
@@ -391,7 +394,10 @@ GWEN_WAITCALLBACK_RESULT GWEN_WaitCallbackProgress(GWEN_TYPE_UINT64 pos){
     return GWEN_WaitCallbackResult_Continue;
   }
   else {
-    ctx->pos=pos;
+    if (pos==GWEN_WAITCALLBACK_PROGRESS_ONE)
+      ctx->pos++;
+    else
+      ctx->pos=pos;
     return GWEN_WaitCallback();
   }
 }

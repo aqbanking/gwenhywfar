@@ -84,6 +84,12 @@ extern "C" {
 #define GWEN_WAITCALLBACK_PROGRESS_NONE \
   ((GWEN_TYPE_UINT64)(-1))
 
+/**
+ * This value increments the progress counter by one.
+ */
+#define GWEN_WAITCALLBACK_PROGRESS_ONE \
+  ((GWEN_TYPE_UINT64)(-2))
+
 
 /**
  * This depth level is used upon entering of a waitcallback which is reused

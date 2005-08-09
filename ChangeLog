@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/08/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added definition GWEN_WAITCALLBACK_PROGRESS_ONE
+
+
 2005/08/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added extern "C" to crypttoken header files
