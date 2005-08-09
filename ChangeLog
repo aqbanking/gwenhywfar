@@ -5,6 +5,7 @@
 2005/08/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added definition GWEN_WAITCALLBACK_PROGRESS_ONE
+- waitcallback flags are now stored within the waitcallback upon enter
 
 
 2005/08/05: Martin Preuss<martin@libchipcard.de>

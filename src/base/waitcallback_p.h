@@ -56,6 +56,8 @@ struct GWEN_WAITCALLBACK {
   GWEN_TYPE_UINT64 pos;
   GWEN_TYPE_UINT64 total;
 
+  GWEN_TYPE_UINT32 flags;
+
   char *text;
   char *units;
 

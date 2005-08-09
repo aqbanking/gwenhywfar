@@ -104,7 +104,13 @@ extern "C" {
  * creating new ones. If this flag is given then a new WaitCallback will be
  * created in any case.
  */
-#define GWEN_WAITCALLBACK_FLAGS_NO_REUSE 0x00000001
+#define GWEN_WAITCALLBACK_FLAGS_NO_REUSE    0x00000001
+
+/**
+ * Show the progress window immediately (normally some GUIs hold back the
+ * windows until after a few seconds to avoid flickering).
+ */
+#define GWEN_WAITCALLBACK_FLAGS_IMMEDIATELY 0x00000002
 
 
 /**
@@ -319,6 +325,14 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
 int GWEN_WaitCallback_GetNestingLevel(const GWEN_WAITCALLBACK *ctx);
+
+
+/**
+ * Returns the flags which were given upon entering of the given
+ * context.
+ */
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_WaitCallback_GetFlags(const GWEN_WAITCALLBACK *ctx);
 
 /*@}*/
 

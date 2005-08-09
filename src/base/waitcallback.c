@@ -518,6 +518,7 @@ void GWEN_WaitCallback_EnterWithText_u(const char *id,
       nctx->text=strdup(txt);
     if (units)
       nctx->units=strdup(units);
+    nctx->flags=flags;
   }
 }
 
@@ -660,6 +661,14 @@ const char *GWEN_WaitCallback_GetText(const GWEN_WAITCALLBACK *ctx) {
 const char *GWEN_WaitCallback_GetUnits(const GWEN_WAITCALLBACK *ctx) {
   assert(ctx);
   return ctx->units;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_TYPE_UINT32 GWEN_WaitCallback_GetFlags(const GWEN_WAITCALLBACK *ctx) {
+  assert(ctx);
+  return ctx->flags;
 }
 
 
