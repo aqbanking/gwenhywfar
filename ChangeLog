@@ -2,6 +2,13 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2005/08/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- msgengine now honours the attribute "size" in generic types
+- fixed a bug in GWEN_Time_fromString (error when using only two digits for
+  the year)
+
+
 2005/08/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added definition GWEN_WAITCALLBACK_PROGRESS_ONE

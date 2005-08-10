@@ -29,7 +29,7 @@
 # include <config.h>
 #endif
 
-#define DISABLE_DEBUGLOG
+//#define DISABLE_DEBUGLOG
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <msgengine_p.h>
@@ -2720,6 +2720,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
                               GWEN_TYPE_UINT32 flags) {
   unsigned int minsize;
   unsigned int maxsize;
+  unsigned int size;
   unsigned int minnum;
   GWEN_MSGENGINE_TRUSTLEVEL trustLevel;
   unsigned int posInMsg;
@@ -2730,6 +2731,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   /* get some sizes */
   posInMsg=GWEN_Buffer_GetPos(msgbuf);
   realSize=0;
+  size=atoi(GWEN_XMLNode_GetProperty(node, "size","0"));
   minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
   maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
   minnum=atoi(GWEN_XMLNode_GetProperty(node, "minnum","1"));
@@ -2809,11 +2811,14 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
       /* type is not bin */
       int lastWasEscape;
       int isEscaped;
+      int br;
 
       isEscaped=0;
       lastWasEscape=0;
 
-      while(GWEN_Buffer_GetBytesLeft(msgbuf)) {
+      br=0;
+      while(GWEN_Buffer_GetBytesLeft(msgbuf) &&
+	    (size==0 || br<size)) {
 	int c;
 
 	c=GWEN_Buffer_ReadByte(msgbuf);
@@ -2847,6 +2852,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 	      DBG_DEBUG(GWEN_LOGDOMAIN, "Called from here");
 	      return -1;
 	    }
+            br++;
 	  }
 	}
       } /* while */

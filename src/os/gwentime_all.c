@@ -264,6 +264,9 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
     p++;
   } /* while */
 
+  if (year<100)
+    year+=2000;
+
   /* get time in local time */
   gwt=GWEN_Time_new(year, month-1, day, hour, min, sec, inUtc);
   if (!gwt) {
