@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-08-04 11:55+0200\n"
+"POT-Creation-Date: 2005-08-11 12:19+0200\n"
 "PO-Revision-Date: 2005-08-04 11:57+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -384,7 +384,9 @@ msgstr ""
 
 #: tools/gct-tool/cryptmanager.c:310
 msgid "Hit just the ENTER key (with no other input) to use the default pin."
-msgstr "Um die voreingestellte PIN zu verwenden, drücken Sie die EINGABE-Taste (ohne weitere Eingaben)."
+msgstr ""
+"Um die voreingestellte PIN zu verwenden, drücken Sie die EINGABE-Taste (ohne "
+"weitere Eingaben)."
 
 #. TRANSLATORS: The field here should be as long as the "Repeat:" field
 #. * to have the PIN entries begin at the same column for both the first and

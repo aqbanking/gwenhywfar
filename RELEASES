@@ -1,0 +1,8 @@
+===========================================================================
+MARK: released gwenhywfar-1.15.0 (2005/08/11)
+===========================================================================
+
+This release fixes some important bugs, enables the crypttoken code (used by
+AqHBCI), adds the tool gct-tool for admimistration of crypttoken, adds
+blowfish encryption, improves the waitcallback code and compiles warningless
+with gcc4.

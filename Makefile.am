@@ -22,6 +22,7 @@ EXTRA_DIST= config.rpath  \
  README.W32 \
  README.DARWIN \
  README.SOLARIS \
+ RELEASES \
  gwenhywfar.m4 \
  gwenhywfar.spec \
  gwenhywfar.spec.in \
