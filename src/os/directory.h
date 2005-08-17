@@ -181,6 +181,11 @@ int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
                                    const char *filePath,
                                    GWEN_BUFFER *fbuf);
 
+GWENHYWFAR_API
+int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
+                                   const char *filePath,
+                                   GWEN_BUFFER *fbuf);
+
 /*@}*/ /* defgroup */
 
 

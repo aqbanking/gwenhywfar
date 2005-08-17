@@ -29,6 +29,7 @@
   - GWEN_PathManager_RemovePaths()
   - GWEN_PathManager_PathChanged()
   - GWEN_PathManager_GetPaths()
+  - GWEN_Directory_FindPathForFile()
 - added flag GWEN_DB_FLAGS_INSERT (this allows inserting groups/vars/values
   rather than appending them upon creation)
 

@@ -306,6 +306,45 @@ int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
       GWEN_Buffer_free(tbuf);
       return 0;
     }
+    GWEN_Buffer_free(tbuf);
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  DBG_ERROR(GWEN_LOGDOMAIN, "File \"%s\" not found", filePath);
+  return GWEN_ERROR_NOT_FOUND;
+}
+
+
+
+int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
+                                   const char *filePath,
+                                   GWEN_BUFFER *fbuf) {
+  GWEN_STRINGLISTENTRY *se;
+
+  se=GWEN_StringList_FirstEntry(paths);
+  while(se) {
+    GWEN_BUFFER *tbuf;
+    FILE *f;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, GWEN_StringListEntry_Data(se));
+    GWEN_Buffer_AppendString(tbuf, DIRSEP);
+    GWEN_Buffer_AppendString(tbuf, filePath);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Trying \"%s\"",
+              GWEN_Buffer_GetStart(tbuf));
+    f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
+    if (f) {
+      fclose(f);
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "File \"%s\" found in folder \"%s\"",
+                filePath,
+                GWEN_StringListEntry_Data(se));
+      GWEN_Buffer_AppendString(fbuf, GWEN_StringListEntry_Data(se));
+      GWEN_Buffer_free(tbuf);
+      return 0;
+    }
+    GWEN_Buffer_free(tbuf);
 
     se=GWEN_StringListEntry_Next(se);
   }
