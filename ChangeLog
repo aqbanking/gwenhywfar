@@ -16,7 +16,11 @@
   Normally these changes should lead to an increased major version number,
   but until now only AqBanking uses GWEN_DBIOs so we just increment the minor
   version number and hope to get away with it (which we will if nobody else
-  is using GWEN_DBIOs)
+  is using GWEN_DBIOs. Most of the removed functions were used internally
+  only, anyway)
+- added functions 
+  - GWEN_PluginManager_InsertPath()
+  - GWEN_PluginManager_RemovePath()
 
 
 ===========================================================================

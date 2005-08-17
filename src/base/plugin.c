@@ -209,7 +209,22 @@ int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-GWENHYWFAR_API
+int GWEN_PluginManager_InsertPath(GWEN_PLUGIN_MANAGER *pm,
+                                  const char *s) {
+  assert(pm);
+  return GWEN_StringList_InsertString(pm->paths, s, 0, 1);
+}
+
+
+
+int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
+                                  const char *s) {
+  assert(pm);
+  return GWEN_StringList_RemoveString(pm->paths, s);
+}
+
+
+
 int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
 					 const char *keypath,
 					 const char *varname)

@@ -92,6 +92,14 @@ const char *GWEN_PluginManager_GetName(const GWEN_PLUGIN_MANAGER *pm);
 GWENHYWFAR_API
 int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
                                const char *s);
+GWENHYWFAR_API
+int GWEN_PluginManager_InsertPath(GWEN_PLUGIN_MANAGER *pm,
+                                  const char *s);
+
+GWENHYWFAR_API
+int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
+                                  const char *s);
+
 /** Add a directory path from the windows registry HKEY_CURRENT_USER,
  * to lookup plugins from. On Non-Windows systems, this function does
  * nothing and returns zero.
