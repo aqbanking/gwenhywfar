@@ -30,7 +30,8 @@
 #define GWENHYWFAR_PLUGIN_P_H
 
 #include "plugin_l.h"
-#include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/misc.h>
 
 
 

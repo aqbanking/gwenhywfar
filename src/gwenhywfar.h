@@ -29,8 +29,22 @@
 #ifndef GWENHYWFAR_GWENHYWFAR_H
 #define GWENHYWFAR_GWENHYWFAR_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/stringlist.h>
+
+
+/**
+ * This is used as the destLib name for paths of Gwenhywfar when used
+ * with @ref GWEN_PathManager_AddPath and other functions of that group.
+ */
+#define GWEN_PM_LIBNAME "gwenhywfar"
+
+#define GWEN_PM_INSTALLDIR   "installdir"
+#define GWEN_PM_SYSCONFDIR   "sysconfdir"
+
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,6 +77,8 @@ int GWEN_GetInstallPath(GWEN_BUFFER *pbuf);
 
 GWENHYWFAR_API
 int GWEN_GetPluginPath(GWEN_BUFFER *pbuf);
+
+
 
 
 #ifdef __cplusplus

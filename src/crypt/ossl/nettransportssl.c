@@ -34,7 +34,10 @@
 #define DEBUG_SSL_LOG
 
 #include "nettransportssl_p.h"
+#include "gwenhywfar_l.h"
+#include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/buffer.h>
@@ -85,64 +88,25 @@ static void *gwen_netransportssl_askAddCertUserData=0;
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetTransportSSL__GetPublicCaFile(GWEN_BUFFER *pbuf) {
-#ifdef OS_WIN32
-  HKEY hkey;
-  TCHAR nbuffer[MAX_PATH];
-  BYTE vbuffer[MAX_PATH];
-  DWORD nsize;
-  DWORD vsize;
-  DWORD typ;
-  int i;
+  GWEN_STRINGLIST *sl;
+  int rv;
 
-  snprintf(nbuffer, sizeof(nbuffer), "Software\\Gwenhywfar\\Paths");
-
-  /* open the key */
-  if (RegOpenKey(HKEY_CURRENT_USER, nbuffer, &hkey)){
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "RegOpenKey failed, returning compile-time value");
-    GWEN_Directory_OsifyPath(PUBLIC_CA_FILE,
-                             pbuf,
-                             1);
-    return 1;
+  sl=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME,
+                               GWEN_PM_SYSCONFDIR);
+  assert(sl);
+  rv=GWEN_Directory_FindFileInPaths(sl,
+                                    "gwen-public-ca.crt",
+                                    pbuf);
+  GWEN_StringList_free(sl);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
-
-  /* find the key for dbio-plugins */
-  for (i=0;; i++) {
-    nsize=sizeof(nbuffer);
-    vsize=sizeof(vbuffer);
-    if (ERROR_SUCCESS!=RegEnumValue(hkey,
-                                    i,    /* index */
-                                    nbuffer,
-                                    &nsize,
-                                    0,       /* reserved */
-                                    &typ,
-                                    vbuffer,
-                                    &vsize))
-      break;
-    if (strcasecmp(nbuffer, "public-ca-file")==0 &&
-        typ==REG_SZ) {
-      /* variable found */
-      RegCloseKey(hkey);
-      GWEN_Buffer_AppendBytes(pbuf, (char*)vbuffer, vsize-1);
-      return 0;
-    }
-  } /* for */
-
-  RegCloseKey(hkey);
-  DBG_INFO(GWEN_LOGDOMAIN,
-           "RegKey does not exist, returning compile-time value");
-  GWEN_Directory_OsifyPath(PUBLIC_CA_FILE,
-			   pbuf,
-			   1);
-  return 1;
-#else
-  GWEN_Directory_OsifyPath(PUBLIC_CA_FILE,
-			   pbuf,
-			   0);
   return 0;
-#endif
 }
+
 
 
 /* -------------------------------------------------------------- FUNCTION */

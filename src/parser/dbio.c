@@ -77,6 +77,7 @@ GWEN_ERRORCODE GWEN_DBIO_ModuleInit(){
                           GWEN_ERROR_UNSPECIFIED);
   }
   pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
   if (GWEN_GetPluginPath(pbuf)) {
     GWEN_Buffer_free(pbuf);
     GWEN_PluginManager_free(pm);

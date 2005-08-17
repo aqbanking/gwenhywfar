@@ -2,6 +2,7 @@
 #EXTRA_DIST = 
 
 INCLUDES= $(all_includes) -I$(top_srcdir) \
+ -I$(top_srcdir)/src \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \

@@ -31,6 +31,8 @@ noinst_HEADERS=\
  logger_p.h \
  memory_l.h \
  memory_p.h \
+ pathmanager_l.h \
+ pathmanager_p.h \
  plugindescr_p.h \
  plugin_l.h \
  plugin_p.h \
@@ -58,6 +60,7 @@ iheader_HEADERS=\
  memory.h \
  misc.h \
  misc2.h \
+ pathmanager.h \
  plugin.h \
  plugindescr.h \
  refptr.h \
@@ -77,6 +80,7 @@ libbase_la_SOURCES=\
  list.c \
  logger.c \
  memory.c \
+ pathmanager.c \
  plugin.c \
  plugindescr.c \
  refptr.c \

@@ -29,22 +29,33 @@
 #ifndef GWENHYWFAR_PLUGIN_H
 #define GWENHYWFAR_PLUGIN_H
 
-
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/misc.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct GWEN_PLUGIN GWEN_PLUGIN;
+typedef struct GWEN_PLUGIN_MANAGER GWEN_PLUGIN_MANAGER;
+
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_PLUGIN, GWENHYWFAR_API)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_PLUGIN_MANAGER, GWENHYWFAR_API)
+
+#ifdef __cplusplus
+}
+#endif
+
+#include <gwenhywfar/error.h>
 #include <gwenhywfar/libloader.h>
 #include <gwenhywfar/plugindescr.h>
+#include <gwenhywfar/stringlist.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-typedef struct GWEN_PLUGIN GWEN_PLUGIN;
-typedef struct GWEN_PLUGIN_MANAGER GWEN_PLUGIN_MANAGER;
-
-
-GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_PLUGIN, GWENHYWFAR_API)
-GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_PLUGIN_MANAGER, GWENHYWFAR_API)
 
 
 typedef GWEN_PLUGIN* (*GWEN_PLUGIN_FACTORYFN)(GWEN_PLUGIN_MANAGER *pm,

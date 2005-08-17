@@ -154,7 +154,13 @@ extern "C" {
 /** locks a file before reading from or writing to it
  * This is used by @ref GWEN_DB_ReadFile and @ref GWEN_DB_WriteFile */
 #define GWEN_DB_FLAGS_LOCKFILE               0x20000000
-/** These are the default flags which you use in most cases */
+
+/**
+ * When setting a value or getting a group insert newly created
+ * values/groups rather than appending them.*/
+#define GWEN_DB_FLAGS_INSERT                 0x40000000
+
+  /** These are the default flags which you use in most cases */
 #define GWEN_DB_FLAGS_DEFAULT \
   (\
   GWEN_DB_FLAGS_QUOTE_VALUES | \
@@ -471,6 +477,22 @@ int GWEN_DB_AddCharValue(GWEN_DB_NODE *n,
                          const char *val,
                          int senseCase,
                          int check);
+
+
+/**
+ * Removes the given char value from the given variable if it exists
+ * (depending on the arguments senseCase and check).
+ * @return 0 on success, nonzero on error
+ * @param n db node
+ * @param path path and name of the variable
+ * @param val The string value to be removed
+ * @param senseCase if 0 then the case of the value is ignored while checking
+ */
+GWENHYWFAR_API 
+int GWEN_DB_RemoveCharValue(GWEN_DB_NODE *n,
+                            const char *path,
+                            const char *val,
+                            int senseCase);
 
 
 /**

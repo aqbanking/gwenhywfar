@@ -37,15 +37,16 @@
 #endif
 
 
-#include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/pathmanager.h>
 
 #include "base/debug.h"
 #include "base/logger_l.h"
 
 #include "base/error_l.h"
 #include "base/memory_l.h"
+#include "base/pathmanager_l.h"
 #include "base/plugin_l.h"
 #include "base/i18n_l.h"
 
@@ -70,18 +71,40 @@
 #endif
 
 
-static unsigned int gwen_is_initialized=0;
+#define GWEN_REGKEY_PATHS       "Software\\Gwenhywfar\\Paths"
+#define GWEN_REGKEY_PREFIX      "gwen_prefix"
 
+
+static unsigned int gwen_is_initialized=0;
 
 
 GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
   if (gwen_is_initialized==0) {
+
+    GWEN_Error_ModuleInit();
+
+    err=GWEN_PathManager_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
+
+    /* define some paths used by gwenhywfar */
+    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_INSTALLDIR);
+    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_INSTALLDIR,
+                             GWEN_INSTALL_DIR);
+
+    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSCONFDIR);
+    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_SYSCONFDIR,
+                             GWEN_SYSCONF_DIR);
+
     err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    GWEN_Error_ModuleInit();
     err=GWEN_Memory_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
@@ -249,6 +272,16 @@ GWEN_ERRORCODE GWEN_Fini() {
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module I18N");
     }
+
+    if (!GWEN_Error_IsOk(GWEN_PathManager_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
+                "Could not deinitialze module PathManager");
+    }
+
     GWEN_Error_ModuleFini();
 
     s=getenv("GWEN_MEMORY_DEBUG");
@@ -268,9 +301,9 @@ GWEN_ERRORCODE GWEN_Fini() {
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Logger");
     }
+    GWEN_MemoryDebug_CleanUp();
   }
 
-  GWEN_MemoryDebug_CleanUp();
   return err;
 }
 

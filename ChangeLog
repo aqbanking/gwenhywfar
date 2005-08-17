@@ -21,6 +21,16 @@
 - added functions 
   - GWEN_PluginManager_InsertPath()
   - GWEN_PluginManager_RemovePath()
+  - GWEN_Directory_FindFileInPaths()
+  - GWEN_DB_RemoveCharValue()
+  - GWEN_PathManager_AddPath()
+  - GWEN_PathManager_InsertPath()
+  - GWEN_PathManager_RemovePath()
+  - GWEN_PathManager_RemovePaths()
+  - GWEN_PathManager_PathChanged()
+  - GWEN_PathManager_GetPaths()
+- added flag GWEN_DB_FLAGS_INSERT (this allows inserting groups/vars/values
+  rather than appending them upon creation)
 
 
 ===========================================================================

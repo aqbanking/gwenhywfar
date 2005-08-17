@@ -34,16 +34,24 @@
 #ifndef GWEN_DIRECTORY_H
 #define GWEN_DIRECTORY_H
 
-
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/buffer.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
 
+#ifdef __cplusplus
+}
+#endif
+
+
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/stringlist.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  *
@@ -167,6 +175,11 @@ GWENHYWFAR_API
 int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
                              int transformDriveElement);
 
+
+GWENHYWFAR_API
+int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
+                                   const char *filePath,
+                                   GWEN_BUFFER *fbuf);
 
 /*@}*/ /* defgroup */
 

@@ -749,14 +749,20 @@ void* GWEN_DB_HandlePath(const char *entry,
       DBG_VERBOUS(GWEN_LOGDOMAIN,
                   "Unconditionally creating variable \"%s\"", entry);
       nn=GWEN_DB_Var_new(entry);
-      GWEN_DB_Node_Append(n, nn);
+      if (flags & GWEN_DB_FLAGS_INSERT)
+        GWEN_DB_Node_Insert(n, nn);
+      else
+        GWEN_DB_Node_Append(n, nn);
       return nn;
     }
     else {
       DBG_VERBOUS(GWEN_LOGDOMAIN,
                   "Unconditionally creating group \"%s\"", entry);
       nn=GWEN_DB_Group_new(entry);
-      GWEN_DB_Node_Append(n, nn);
+      if (flags & GWEN_DB_FLAGS_INSERT)
+        GWEN_DB_Node_Insert(n, nn);
+      else
+        GWEN_DB_Node_Append(n, nn);
       return nn;
     }
   }
@@ -796,13 +802,19 @@ void* GWEN_DB_HandlePath(const char *entry,
       DBG_VERBOUS(GWEN_LOGDOMAIN,
                   "Variable \"%s\" not found, creating", entry);
       nn=GWEN_DB_Var_new(entry);
-      GWEN_DB_Node_Append(n, nn);
+      if (flags & GWEN_DB_FLAGS_INSERT)
+        GWEN_DB_Node_Insert(n, nn);
+      else
+        GWEN_DB_Node_Append(n, nn);
     }
     else {
       DBG_VERBOUS(GWEN_LOGDOMAIN,
                   "Group \"%s\" not found, creating", entry);
       nn=GWEN_DB_Group_new(entry);
-      GWEN_DB_Node_Append(n, nn);
+      if (flags & GWEN_DB_FLAGS_INSERT)
+        GWEN_DB_Node_Insert(n, nn);
+      else
+        GWEN_DB_Node_Append(n, nn);
     }
   } /* if node not found */
   else {
@@ -1002,8 +1014,11 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
     GWEN_DB_ClearNode(nn);
   }
 
-  /* add püreviously created value */
-  GWEN_DB_Node_Append(nn, nv);
+  /* add previously created value */
+  if (flags & GWEN_DB_FLAGS_INSERT)
+    GWEN_DB_Node_Insert(nn, nv);
+  else
+    GWEN_DB_Node_Append(nn, nv);
   DBG_VERBOUS(GWEN_LOGDOMAIN,
               "Added char value \"%s\" to variable \"%s\"", val, path);
 
@@ -1060,6 +1075,49 @@ int GWEN_DB_AddCharValue(GWEN_DB_NODE *n,
               "Added char value \"%s\" to variable \"%s\"", val, path);
 
   return 0;
+}
+
+
+
+int GWEN_DB_RemoveCharValue(GWEN_DB_NODE *n,
+                            const char *path,
+                            const char *val,
+                            int senseCase){
+  GWEN_DB_NODE *nn;
+  GWEN_DB_NODE *nv;
+
+  /* select/create node */
+  nn=GWEN_DB_GetNode(n,
+                     path,
+                     GWEN_DB_FLAGS_DEFAULT | GWEN_PATH_FLAGS_VARIABLE);
+  if (!nn) {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Path \"%s\" not available",
+                path);
+    return -1;
+  }
+
+  nv=nn->h.child;
+  while(nv) {
+    if (nv->h.typ==GWEN_DB_NODETYPE_VALUE) {
+      if (nv->val.h.typ==GWEN_DB_VALUETYPE_CHAR) {
+        int res;
+
+        assert(nv->val.c.data);
+        if (senseCase)
+          res=strcasecmp(nv->val.c.data, val)==0;
+        else
+          res=strcmp(nv->val.c.data, val)==0;
+        if (res) {
+          GWEN_DB_Node_Unlink(nv);
+          GWEN_DB_Node_free(nv);
+          return 0;
+        }
+      }
+    }
+    nv=nv->h.next;
+  } /* while nc */
+
+  return 1;
 }
 
 
@@ -1127,7 +1185,10 @@ int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
   }
 
   nv=GWEN_DB_ValueInt_new(val);
-  GWEN_DB_Node_Append(nn, nv);
+  if (flags & GWEN_DB_FLAGS_INSERT)
+    GWEN_DB_Node_Insert(nn, nv);
+  else
+    GWEN_DB_Node_Append(nn, nv);
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Added int value \"%d\" to variable \"%s\"", val, path);
   return 0;
 }
@@ -1189,7 +1250,10 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
   }
 
   nv=GWEN_DB_ValueBin_new(val, valSize);
-  GWEN_DB_Node_Append(nn, nv);
+  if (flags & GWEN_DB_FLAGS_INSERT)
+    GWEN_DB_Node_Insert(nn, nv);
+  else
+    GWEN_DB_Node_Append(nn, nv);
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Added bin value to variable \"%s\"", path);
   return 0;
 }
@@ -1243,7 +1307,10 @@ int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
   }
 
   nv=GWEN_DB_ValuePtr_new(val);
-  GWEN_DB_Node_Append(nn, nv);
+  if (flags & GWEN_DB_FLAGS_INSERT)
+    GWEN_DB_Node_Insert(nn, nv);
+  else
+    GWEN_DB_Node_Append(nn, nv);
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Added ptr value to variable \"%s\"", path);
 
   return 0;
