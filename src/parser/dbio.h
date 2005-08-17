@@ -34,6 +34,7 @@
 #define GWENHYWFAR_DBIO_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/plugin.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,7 +77,6 @@ typedef enum {
   GWEN_DBIO_CheckFileResultUnknown
 } GWEN_DBIO_CHECKFILE_RESULT;
 
-typedef GWEN_DBIO* (*GWEN_DBIO_FACTORYFN)(void);
 
 typedef int (*GWEN_DBIO_IMPORTFN)(GWEN_DBIO *dbio,
 				  GWEN_BUFFEREDIO *bio,
@@ -92,6 +92,23 @@ typedef int (*GWEN_DBIO_EXPORTFN)(GWEN_DBIO *dbio,
 
 typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio,
                                      const char *fname);
+
+
+
+/** @name GWEN_DBIO plugins
+ *
+ */
+/*@{*/
+typedef GWEN_DBIO* (*GWEN_DBIO_PLUGIN_FACTORYFN)(GWEN_PLUGIN *pl);
+
+GWEN_PLUGIN *GWEN_DBIO_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
+                                  const char *name,
+                                  const char *fileName);
+void GWEN_DBIO_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
+                                   GWEN_DBIO_PLUGIN_FACTORYFN f);
+GWEN_DBIO *GWEN_DBIO_Plugin_Factory(GWEN_PLUGIN *pl);
+/*@}*/
+
 
 
 /** @name Functions To Be Used By Applications
@@ -155,24 +172,6 @@ const char *GWEN_DBIO_GetName(const GWEN_DBIO *dbio);
 GWENHYWFAR_API
 const char *GWEN_DBIO_GetDescription(const GWEN_DBIO *dbio);
 
-/**
- * Returns the GWEN_DBIO of the given name if it has already been
- * registered.
- */
-GWENHYWFAR_API
-GWEN_DBIO *GWEN_DBIO_Find(const char *name);
-
-/**
- * Returns the path to DBIO plugins. On Windows this path is looked upon
- * from the registry key "Software\\Gwenhywfar\\Paths" in HKEY_CURRENT_USER.
- * If this key does not exist or this is called on a non-win32 platform the
- * compile-time value is returned.
- * @return 0 if value found, 1 if on win32 and the key did not exist, -1 on error
- * @param pbuf Buffer to which the path is appended.
- */
-GWENHYWFAR_API
-int GWEN_DBIO_GetPluginPath(GWEN_BUFFER *pbuf);
-
 /*@}*/
 
 
@@ -214,52 +213,11 @@ void GWEN_DBIO_SetCheckFileFn(GWEN_DBIO *dbio, GWEN_DBIO_CHECKFILEFN f);
 /*@{*/
 
 /**
- * If the GWEN_DBIO has been dynamically loaded (as is the case with plugins)
- * then the GWEN_LIBLOADER used can be stored within the GWEN_DBIO.
- * That way as soon as the GWEN_DBIO is released the associated dynamic
- * library is automatically unloaded.
- */
-GWENHYWFAR_API
-GWEN_LIBLOADER *GWEN_DBIO_GetLibLoader(const GWEN_DBIO *dbio);
-
-/**
- * If the GWEN_DBIO has been dynamically loaded (as is the case with plugins)
- * then the GWEN_LIBLOADER used can be stored within the GWEN_DBIO.
- * That way as soon as the GWEN_DBIO is released the associated dynamic
- * library is automatically unloaded.
- */
-GWENHYWFAR_API
-void GWEN_DBIO_SetLibLoader(GWEN_DBIO *dbio, GWEN_LIBLOADER *ll);
-
-/**
- * Register a new GWEN_DBIO with Gwenhywfar. This always inserts the new
- * GWEN_DBIO at the beginning of the internal list thus replacing an
- * eventually existing GWEN_DBIO with the same name.
- */
-GWENHYWFAR_API
-int GWEN_DBIO_Register(GWEN_DBIO *dbio);
-
-/**
- * This function only loads the given plugin file, it does not register it.
- */
-GWENHYWFAR_API
-GWEN_DBIO *GWEN_DBIO_LoadPluginFile(const char *modname, const char *fname);
-
-/**
- * This functions searches for a plugin which supports the given type in
- * the usual place ("GWENHYWFAR_PLUGIN/dbio/"). It does not register the
- * plugin.
- */
-GWENHYWFAR_API
-GWEN_DBIO *GWEN_DBIO_LoadPlugin(const char *modname);
-
-/**
- * This functions returns the DBIO of the given name. If it already is
- * registered, then simply the registered one is returned. Otherwise this
- * function tries to load the appropriate plugin and registers it before
- * returning it to the caller.
- * The caller MUST NOT free the plugin returned, this module keeps the
- * ownership of the plugin.
+ * This function creates a GWEN_DBIO of the given name. It therefore loads
+ * the appropriate plugin if necessary.
+ * The caller becomes the owner of the object returned, so he/she is
+ * responsible for freeing it (Note: Previous version kept the ownership
+ * so that the caller was not allowed to free the object. This has changed).
  */
 GWENHYWFAR_API
 GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname);

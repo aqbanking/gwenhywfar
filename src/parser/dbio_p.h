@@ -36,13 +36,18 @@
 #include <gwenhywfar/libloader.h>
 
 
+typedef struct GWEN_DBIO_PLUGIN GWEN_DBIO_PLUGIN;
+struct GWEN_DBIO_PLUGIN {
+  GWEN_DBIO_PLUGIN_FACTORYFN factoryFn;
+};
+void GWEN_DBIO_Plugin_FreeData(void *bp, void *p);
+
 
 
 struct GWEN_DBIO {
   GWEN_LIST_ELEMENT(GWEN_DBIO)
   GWEN_INHERIT_ELEMENT(GWEN_DBIO)
   /* No trailing semicolon here because this is a macro call */
-  GWEN_LIBLOADER *libLoader;
   GWEN_DBIO_IMPORTFN importFn;
   GWEN_DBIO_EXPORTFN exportFn;
   GWEN_DBIO_CHECKFILEFN checkFileFn;

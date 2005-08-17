@@ -1,3 +1,23 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE==0 before next release     !
+  ------------------------------------------------------------------------
+
+2005/08/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_DBIO now finally uses the plugin mechanism
+- removed functions 
+  - GWEN_DBIO_Find 
+  - GWEN_DBIO_GetPluginPath
+  - GWEN_DBIO_GetLibLoader
+  - GWEN_DBIO_SetLibLoader
+  - GWEN_DBIO_Register
+  - GWEN_DBIO_LoadPluginFile
+  - GWEN_DBIO_LoadPlugin
+  Normally these changes should lead to an increased major version number,
+  but until now only AqBanking uses GWEN_DBIOs so we just increment the minor
+  version number and hope to get away with it (which we will if nobody else
+  is using GWEN_DBIOs)
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.15.0 (2005/08/11)

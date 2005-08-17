@@ -346,7 +346,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio,
 
 
 
-GWEN_DBIO *olddb_factory() {
+GWEN_DBIO *GWEN_DBIO_OldDb_Factory(GWEN_PLUGIN *pl) {
   GWEN_DBIO *dbio;
 
   dbio=GWEN_DBIO_new("OldDb", "Imports and exports Old OpenHBCI data");
@@ -358,6 +358,19 @@ GWEN_DBIO *olddb_factory() {
 
 
 
+GWEN_PLUGIN *dbio_olddb_factory(GWEN_PLUGIN_MANAGER *pm,
+                                const char *modName,
+                                const char *fileName) {
+  GWEN_PLUGIN *pl;
+
+  pl=GWEN_DBIO_Plugin_new(pm, modName, fileName);
+  assert(pl);
+
+  GWEN_DBIO_Plugin_SetFactoryFn(pl, GWEN_DBIO_OldDb_Factory);
+
+  return pl;
+
+}
 
 
 

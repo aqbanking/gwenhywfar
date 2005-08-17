@@ -35,7 +35,11 @@
 #include <gwenhywfar/stringlist.h>
 
 
-GWEN_DBIO *csv_factory();
+GWEN_PLUGIN *dbio_csv_factory(GWEN_PLUGIN_MANAGER *pm,
+                              const char *modName,
+                              const char *fileName);
+
+GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl);
 
 
 int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,

@@ -603,8 +603,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
 
 
 
-
-GWEN_DBIO *csv_factory() {
+GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl) {
   GWEN_DBIO *dbio;
 
   dbio=GWEN_DBIO_new("csv", "Imports and exports CSV data");
@@ -612,6 +611,22 @@ GWEN_DBIO *csv_factory() {
   GWEN_DBIO_SetExportFn(dbio, GWEN_DBIO_CSV_Export);
   GWEN_DBIO_SetCheckFileFn(dbio, GWEN_DBIO_CSV_CheckFile);
   return dbio;
+}
+
+
+
+GWEN_PLUGIN *dbio_csv_factory(GWEN_PLUGIN_MANAGER *pm,
+                              const char *modName,
+                              const char *fileName) {
+  GWEN_PLUGIN *pl;
+
+  pl=GWEN_DBIO_Plugin_new(pm, modName, fileName);
+  assert(pl);
+
+  GWEN_DBIO_Plugin_SetFactoryFn(pl, GWEN_DBIO_CSV_Factory);
+
+  return pl;
+
 }
 
 

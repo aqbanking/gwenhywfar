@@ -58,19 +58,16 @@
 
 
 
-GWEN_LIST_FUNCTIONS(GWEN_DBIO, GWEN_DBIO);
-GWEN_INHERIT_FUNCTIONS(GWEN_DBIO);
+GWEN_LIST_FUNCTIONS(GWEN_DBIO, GWEN_DBIO)
+GWEN_INHERIT_FUNCTIONS(GWEN_DBIO)
 
-
-
-static GWEN_DBIO_LIST *gwen_dbio__list=0;
+GWEN_INHERIT(GWEN_PLUGIN, GWEN_DBIO_PLUGIN)
 
 
 GWEN_ERRORCODE GWEN_DBIO_ModuleInit(){
-  /* TODO: GWEN_PLUGIN_MANAGER *pm; */
+  GWEN_PLUGIN_MANAGER *pm;
+  GWEN_BUFFER *pbuf;
 
-  gwen_dbio__list=GWEN_DBIO_List_new();
-  /* TODO:
   pm=GWEN_PluginManager_new("dbio");
   if (GWEN_PluginManager_Register(pm)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not register DBIO plugin manager");
@@ -79,16 +76,98 @@ GWEN_ERRORCODE GWEN_DBIO_ModuleInit(){
                           GWEN_ERROR_TYPE_ERROR,
                           GWEN_ERROR_UNSPECIFIED);
   }
-  */
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_GetPluginPath(pbuf)) {
+    GWEN_Buffer_free(pbuf);
+    GWEN_PluginManager_free(pm);
+    return GWEN_Error_new(0,
+			  GWEN_ERROR_SEVERITY_ERR,
+			  GWEN_ERROR_TYPE_ERROR,
+			  GWEN_ERROR_UNSPECIFIED);
+  }
+
+  GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_DBIO_FOLDER);
+  GWEN_PluginManager_AddPath(pm, GWEN_Buffer_GetStart(pbuf));
+  GWEN_Buffer_free(pbuf);
+
   return 0;
 }
 
 
 
 GWEN_ERRORCODE GWEN_DBIO_ModuleFini(){
-  GWEN_DBIO_List_free(gwen_dbio__list);
+  GWEN_PLUGIN_MANAGER *pm;
+
+  pm=GWEN_PluginManager_FindPluginManager("dbio");
+  if (pm) {
+    int rv;
+
+    rv=GWEN_PluginManager_Unregister(pm);
+    if (rv) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Could not unregister DBIO plugin manager (%d)", rv);
+    }
+    else
+      GWEN_PluginManager_free(pm);
+  }
+
   return 0;
 }
+
+
+
+
+
+GWEN_PLUGIN *GWEN_DBIO_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
+				  const char *name,
+				  const char *fileName) {
+  GWEN_PLUGIN *pl;
+  GWEN_DBIO_PLUGIN *pldbio;
+
+  pl=GWEN_Plugin_new(pm, name, fileName);
+  GWEN_NEW_OBJECT(GWEN_DBIO_PLUGIN, pldbio);
+  GWEN_INHERIT_SETDATA(GWEN_PLUGIN, GWEN_DBIO_PLUGIN, pl, pldbio,
+		       GWEN_DBIO_Plugin_FreeData);
+
+  return pl;
+}
+
+
+
+void GWEN_DBIO_Plugin_FreeData(void *bp, void *p) {
+  GWEN_DBIO_PLUGIN *pldbio;
+
+  pldbio=(GWEN_DBIO_PLUGIN*)p;
+  GWEN_FREE_OBJECT(pldbio);
+}
+
+
+
+GWEN_DBIO *GWEN_DBIO_Plugin_Factory(GWEN_PLUGIN *pl) {
+  GWEN_DBIO_PLUGIN *pldbio;
+
+  assert(pl);
+  pldbio=GWEN_INHERIT_GETDATA(GWEN_PLUGIN, GWEN_DBIO_PLUGIN, pl);
+  assert(pldbio);
+
+  assert(pldbio->factoryFn);
+  return pldbio->factoryFn(pl);
+}
+
+
+
+void GWEN_DBIO_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
+				   GWEN_DBIO_PLUGIN_FACTORYFN f) {
+  GWEN_DBIO_PLUGIN *pldbio;
+
+  assert(pl);
+  pldbio=GWEN_INHERIT_GETDATA(GWEN_PLUGIN, GWEN_DBIO_PLUGIN, pl);
+  assert(pldbio);
+
+  pldbio->factoryFn=f;
+}
+
+
 
 
 
@@ -119,10 +198,6 @@ void GWEN_DBIO_free(GWEN_DBIO *dbio){
       GWEN_INHERIT_FINI(GWEN_DBIO, dbio);
       GWEN_LIST_FINI(GWEN_DBIO, dbio);
 
-      if (dbio->libLoader) {
-        GWEN_LibLoader_CloseLibrary(dbio->libLoader);
-        GWEN_LibLoader_free(dbio->libLoader);
-      }
       free(dbio->name);
       free(dbio->descr);
 
@@ -207,51 +282,6 @@ const char *GWEN_DBIO_GetDescription(const GWEN_DBIO *dbio){
 
 
 
-GWEN_LIBLOADER *GWEN_DBIO_GetLibLoader(const GWEN_DBIO *dbio){
-  assert(dbio);
-  return dbio->libLoader;
-}
-
-
-
-void GWEN_DBIO_SetLibLoader(GWEN_DBIO *dbio, GWEN_LIBLOADER *ll){
-  assert(dbio);
-  assert(dbio->libLoader==0);
-  dbio->libLoader=ll;
-}
-
-
-
-
-int GWEN_DBIO_Register(GWEN_DBIO *dbio) {
-  assert(gwen_dbio__list);
-  assert(dbio);
-
-  GWEN_DBIO_List_Insert(dbio, gwen_dbio__list);
-
-  return 0;
-}
-
-
-
-GWEN_DBIO *GWEN_DBIO_Find(const char *name) {
-  GWEN_DBIO *dbio;
-
-  assert(gwen_dbio__list);
-  assert(name);
-
-  dbio=GWEN_DBIO_List_First(gwen_dbio__list);
-  while(dbio) {
-    if (strcasecmp(GWEN_DBIO_GetName(dbio), name)==0)
-      return dbio;
-    dbio=GWEN_DBIO_List_Next(dbio);
-  } /* while */
-
-  return 0;
-}
-
-
-
 void GWEN_DBIO_SetImportFn(GWEN_DBIO *dbio, GWEN_DBIO_IMPORTFN f){
   assert(dbio);
   dbio->importFn=f;
@@ -272,148 +302,28 @@ void GWEN_DBIO_SetCheckFileFn(GWEN_DBIO *dbio, GWEN_DBIO_CHECKFILEFN f){
 
 
 
-GWEN_DBIO *GWEN_DBIO_LoadPluginFile(const char *modname, const char *fname){
-  GWEN_LIBLOADER *ll;
-  GWEN_DBIO *dbio;
-  GWEN_DBIO_FACTORYFN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-
-  ll=GWEN_LibLoader_new();
-  if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not load DBIO plugin \"%s\" (%s)", modname, fname);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  fn=(GWEN_DBIO_FACTORYFN)p;
-  assert(fn);
-  dbio=fn();
-  if (!dbio) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error in plugin: No DBIO created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  GWEN_DBIO_SetLibLoader(dbio, ll);
-
-  return dbio;
-}
-
-
-
-int GWEN_DBIO_GetPluginPath(GWEN_BUFFER *pbuf) {
-  int rv;
-
-  rv=GWEN_GetPluginPath(pbuf);
-  if (rv)
-    return rv;
-
-  GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_DBIO_FOLDER);
-  return 0;
-}
-
-
-
-GWEN_DBIO *GWEN_DBIO_LoadPlugin(const char *modname){
-  GWEN_LIBLOADER *ll;
-  GWEN_DBIO *dbio;
-  GWEN_DBIO_FACTORYFN fn;
-  void *p;
-  GWEN_BUFFER *nbuf;
-  const char *s;
-  GWEN_ERRORCODE err;
-  GWEN_BUFFER *pbuf;
-
-  ll=GWEN_LibLoader_new();
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_DBIO_GetPluginPath(pbuf);
-  if (GWEN_LibLoader_OpenLibraryWithPath(ll,
-                                         GWEN_Buffer_GetStart(pbuf),
-                                         modname)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not load DBIO plugin \"%s\"", modname);
-    GWEN_Buffer_free(pbuf);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(pbuf);
-
-  /* create name of init function */
-  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  s=modname;
-  while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  GWEN_Buffer_AppendString(nbuf, "_factory");
-
-  /* resolve name of factory function */
-  err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-    GWEN_Buffer_free(nbuf);
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-  GWEN_Buffer_free(nbuf);
-
-  fn=(GWEN_DBIO_FACTORYFN)p;
-  assert(fn);
-  dbio=fn();
-  if (!dbio) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error in plugin: No DBIO created");
-    GWEN_LibLoader_CloseLibrary(ll);
-    GWEN_LibLoader_free(ll);
-    return 0;
-  }
-
-  /* store libloader */
-  GWEN_DBIO_SetLibLoader(dbio, ll);
-
-  return dbio;
-}
-
-
-
 GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname){
+  GWEN_PLUGIN_MANAGER *pm;
+  GWEN_PLUGIN *pl;
   GWEN_DBIO *dbio;
 
-  dbio=GWEN_DBIO_Find(modname);
-  if (dbio) {
-    GWEN_DBIO_Attach(dbio);
-    return dbio;
-  }
-  dbio=GWEN_DBIO_LoadPlugin(modname);
-  if (!dbio)
+  pm=GWEN_PluginManager_FindPluginManager("dbio");
+  if (!pm) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No plugin manager for \"dbio\" found");
     return 0;
+  }
 
-  if (strcasecmp(GWEN_DBIO_GetName(dbio), modname)!=0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Plugin \"%s\" does not support the expected DBIO \"%s\"",
-              GWEN_DBIO_GetName(dbio), modname);
-    GWEN_DBIO_free(dbio);
+  pl=GWEN_PluginManager_GetPlugin(pm, modname);
+  if (!pl) {
+    DBG_INFO(GWEN_LOGDOMAIN, "DBIO-Plugin \"%s\" not found", modname);
     return 0;
   }
-  GWEN_DBIO_Register(dbio);
-  GWEN_DBIO_Attach(dbio);
+
+  dbio=GWEN_DBIO_Plugin_Factory(pl);
+  if (!dbio) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Plugin did not create a GWEN_DBIO");
+  }
   return dbio;
 }
 
