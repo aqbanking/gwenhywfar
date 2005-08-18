@@ -30,6 +30,7 @@
 ./src/base/list.c
 ./src/base/logger.c
 ./src/base/memory.c
+./src/base/pathmanager.c
 ./src/base/plugin.c
 ./src/base/plugindescr.c
 ./src/base/refptr.c
