@@ -2,11 +2,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE==0 before next release     !
   ------------------------------------------------------------------------
 
+2005/08/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in crypttoken
+
+
 2005-08-18   Christian Stimming <stimming@tuhh.de>
 
 	* src/crypt2/crypttoken.c (GWEN_CryptManager_GetPluginDescrs): Fix
 	returning an accidentally free'd object -- this error caused the
 	aqhbci-qt-wizard to crash.
+
 
 2005/08/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
