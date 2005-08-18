@@ -4,7 +4,7 @@
 
 2005/08/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- fixed a bug in crypttoken
+- fixed some bugs in crypttoken (especially in OpenHBCI crypttoken)
 
 
 2005-08-18   Christian Stimming <stimming@tuhh.de>

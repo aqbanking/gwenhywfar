@@ -157,11 +157,13 @@ int GWEN_CryptTokenOHBCI_Create(GWEN_CRYPTTOKEN *ct);
 int GWEN_CryptTokenOHBCI_Open(GWEN_CRYPTTOKEN *ct, int manage);
 int GWEN_CryptTokenOHBCI_Close(GWEN_CRYPTTOKEN *ct);
 
-int GWEN_CryptTokenOHBCI_Write(GWEN_CRYPTTOKEN *ct, int fd);
+int GWEN_CryptTokenOHBCI_Write(GWEN_CRYPTTOKEN *ct, int fd, int cre);
 int GWEN_CryptTokenOHBCI_Read(GWEN_CRYPTTOKEN *ct, int fd);
 
 
 int GWEN_CryptTokenOHBCI_ChangePin(GWEN_CRYPTTOKEN *ct);
+
+int GWEN_CryptTokenOHBCI__ReadXml(GWEN_CRYPTTOKEN *ct);
 
 
 

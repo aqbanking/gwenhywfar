@@ -100,7 +100,7 @@ typedef int (*GWEN_CRYPTTOKEN_FILE_READ_FN)(GWEN_CRYPTTOKEN *ct,
                                             int fd);
 
 typedef int (*GWEN_CRYPTTOKEN_FILE_WRITE_FN)(GWEN_CRYPTTOKEN *ct,
-                                             int fd);
+                                             int fd, int cre);
 
 
 GWEN_CRYPTTOKEN *GWEN_CryptTokenFile_new(GWEN_PLUGIN_MANAGER *pm,

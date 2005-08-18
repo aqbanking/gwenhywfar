@@ -1012,7 +1012,6 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 }
 
 
-
 int GWEN_CryptTokenOHBCI__DecryptFile16(GWEN_CRYPTTOKEN *ct,
                                         GWEN_BUFFER *dbuf,
                                         int tryNum) {
@@ -1396,7 +1395,7 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 
 
 
-int GWEN_CryptTokenOHBCI_Write(GWEN_CRYPTTOKEN *ct, int fd){
+int GWEN_CryptTokenOHBCI_Write(GWEN_CRYPTTOKEN *ct, int fd, int cre){
   GWEN_CRYPTTOKEN_OHBCI *lct;
   int rv;
   GWEN_BUFFER *fbuf;
@@ -1413,6 +1412,21 @@ int GWEN_CryptTokenOHBCI_Write(GWEN_CRYPTTOKEN *ct, int fd){
   if (!GWEN_CryptToken_GetTokenName(ct)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No medium name given");
     return -1;
+  }
+
+  if (cre) {
+    GWEN_CT_FILE_CONTEXT *fct;
+    GWEN_CRYPTTOKEN_USER *user;
+
+    fct=GWEN_CryptTokenFile_Context_new();
+    user=GWEN_CryptToken_User_new();
+
+    /* create user and file context */
+    GWEN_CryptToken_User_SetId(user, 1);            /* only one user */
+    GWEN_CryptToken_User_SetContextId(user, 1);     /* only one context */
+    GWEN_CryptTokenFile_Context_SetUser(fct, user);
+    GWEN_CryptTokenFile_ClearFileContextList(ct);
+    GWEN_CryptTokenFile_AddFileContext(ct, fct);
   }
 
   /* create raw data */
@@ -1718,53 +1732,9 @@ int GWEN_CryptTokenOHBCI_ChangePin(GWEN_CRYPTTOKEN *ct){
 
 
 
-int GWEN_CryptTokenOHBCI_Create(GWEN_CRYPTTOKEN *ct){
-  GWEN_CRYPTTOKEN_OHBCI *lct;
-  int rv;
-  GWEN_CT_FILE_CONTEXT *fct;
-  GWEN_CRYPTTOKEN_USER *user;
-
-  assert(ct);
-  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI, ct);
-  assert(lct);
-
-  lct->justCreated=1;
-
-  fct=GWEN_CryptTokenFile_Context_new();
-  user=GWEN_CryptToken_User_new();
-
-  GWEN_CryptTokenFile_Context_SetUser(fct, user);
-  GWEN_CryptTokenFile_ClearFileContextList(ct);
-  GWEN_CryptTokenFile_AddFileContext(ct, fct);
-
-  assert(lct->createFn);
-  rv=lct->createFn(ct);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here");
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int GWEN_CryptTokenOHBCI_Open(GWEN_CRYPTTOKEN *ct, int manage){
-  GWEN_CRYPTTOKEN_OHBCI *lct;
-  int rv;
+int GWEN_CryptTokenOHBCI__ReadXml(GWEN_CRYPTTOKEN *ct){
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN_DESCRIPTION *pd;
-
-  assert(ct);
-  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI, ct);
-  assert(lct);
-
-  assert(lct->openFn);
-  rv=lct->openFn(ct, manage);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here");
-    return rv;
-  }
 
   pm=GWEN_CryptToken_GetCryptManager(ct);
   assert(pm);
@@ -1789,6 +1759,8 @@ int GWEN_CryptTokenOHBCI_Open(GWEN_CRYPTTOKEN *ct, int manage){
         ctNode=GWEN_XMLNode_FindFirstTag(n, "crypttoken", 0, 0);
     }
     if (ctNode) {
+      int rv;
+
       rv=GWEN_CryptToken_ReadXml(ct, ctNode);
       if (rv) {
 	DBG_ERROR(GWEN_LOGDOMAIN,
@@ -1813,6 +1785,70 @@ int GWEN_CryptTokenOHBCI_Open(GWEN_CRYPTTOKEN *ct, int manage){
 	      GWEN_CryptToken_GetTokenType(ct));
     return GWEN_ERROR_INVALID;
   }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenOHBCI_Create(GWEN_CRYPTTOKEN *ct){
+  GWEN_CRYPTTOKEN_OHBCI *lct;
+  int rv;
+  GWEN_CT_FILE_CONTEXT *fct;
+  GWEN_CRYPTTOKEN_USER *user;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI, ct);
+  assert(lct);
+
+  lct->justCreated=1;
+
+  fct=GWEN_CryptTokenFile_Context_new();
+  user=GWEN_CryptToken_User_new();
+
+  GWEN_CryptTokenFile_Context_SetUser(fct, user);
+  GWEN_CryptTokenFile_ClearFileContextList(ct);
+  GWEN_CryptTokenFile_AddFileContext(ct, fct);
+
+  assert(lct->createFn);
+  rv=lct->createFn(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=GWEN_CryptTokenOHBCI__ReadXml(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_CryptTokenOHBCI_Open(GWEN_CRYPTTOKEN *ct, int manage){
+  GWEN_CRYPTTOKEN_OHBCI *lct;
+  int rv;
+
+  assert(ct);
+  lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI, ct);
+  assert(lct);
+
+  assert(lct->openFn);
+  rv=lct->openFn(ct, manage);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    return rv;
+  }
+
+  rv=GWEN_CryptTokenOHBCI__ReadXml(ct);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
   return 0;
 }
 

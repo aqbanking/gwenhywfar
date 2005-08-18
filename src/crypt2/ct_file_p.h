@@ -63,10 +63,10 @@ int GWEN_CryptTokenFile__OpenFile(GWEN_CRYPTTOKEN *ct, int wr);
 int GWEN_CryptTokenFile__CloseFile(GWEN_CRYPTTOKEN *ct);
 
 int GWEN_CryptTokenFile__Read(GWEN_CRYPTTOKEN *ct);
-int GWEN_CryptTokenFile__Write(GWEN_CRYPTTOKEN *ct);
+int GWEN_CryptTokenFile__Write(GWEN_CRYPTTOKEN *ct, int cre);
 
 int GWEN_CryptTokenFile__ReadFile(GWEN_CRYPTTOKEN *ct);
-int GWEN_CryptTokenFile__WriteFile(GWEN_CRYPTTOKEN *ct);
+int GWEN_CryptTokenFile__WriteFile(GWEN_CRYPTTOKEN *ct, int cre);
 
 int GWEN_CryptTokenFile__ReloadIfNeeded(GWEN_CRYPTTOKEN *ct);
 

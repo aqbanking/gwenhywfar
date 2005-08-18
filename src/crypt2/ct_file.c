@@ -387,7 +387,7 @@ int GWEN_CryptTokenFile__Read(GWEN_CRYPTTOKEN *ct){
 
 
 
-int GWEN_CryptTokenFile__Write(GWEN_CRYPTTOKEN *ct){
+int GWEN_CryptTokenFile__Write(GWEN_CRYPTTOKEN *ct, int cr){
   GWEN_CRYPTTOKEN_FILE *lct;
 
   assert(ct);
@@ -407,7 +407,7 @@ int GWEN_CryptTokenFile__Write(GWEN_CRYPTTOKEN *ct){
               strerror(errno));
     return GWEN_ERROR_CT_IO_ERROR;
   }
-  return lct->writeFn(ct, lct->fd);
+  return lct->writeFn(ct, lct->fd, cr);
 }
 
 
@@ -509,7 +509,7 @@ int GWEN_CryptTokenFile__ReadFile(GWEN_CRYPTTOKEN *ct){
 
 
 
-int GWEN_CryptTokenFile__WriteFile(GWEN_CRYPTTOKEN *ct){
+int GWEN_CryptTokenFile__WriteFile(GWEN_CRYPTTOKEN *ct, int cr){
   GWEN_CRYPTTOKEN_FILE *lct;
   int rv;
 
@@ -525,8 +525,8 @@ int GWEN_CryptTokenFile__WriteFile(GWEN_CRYPTTOKEN *ct){
     return rv;
   }
 
-  /* read file */
-  rv=GWEN_CryptTokenFile__Write(ct);
+  /* write file */
+  rv=GWEN_CryptTokenFile__Write(ct, cr);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error writing keyfile");
     GWEN_CryptTokenFile__CloseFile(ct);
@@ -635,7 +635,7 @@ int GWEN_CryptTokenFile_Create(GWEN_CRYPTTOKEN *ct){
 
   close(fd);
 
-  rv=GWEN_CryptTokenFile__WriteFile(ct);
+  rv=GWEN_CryptTokenFile__WriteFile(ct, 1);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return rv;
@@ -673,7 +673,7 @@ int GWEN_CryptTokenFile_Close(GWEN_CRYPTTOKEN *ct){
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
   assert(lct);
 
-  rv=GWEN_CryptTokenFile__WriteFile(ct);
+  rv=GWEN_CryptTokenFile__WriteFile(ct, 0);
 
   /* free/reset all data */
   GWEN_CryptTokenFile_ClearFileContextList(ct);
@@ -1238,7 +1238,7 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   GWEN_CryptTokenFile_Context_SetLocalSignSeq(fctx, ui);
 
   /* write file */
-  rv=GWEN_CryptTokenFile__WriteFile(ct);
+  rv=GWEN_CryptTokenFile__WriteFile(ct, 0);
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error writing file (%d)", rv);
     return GWEN_ERROR_CT_IO_ERROR;
