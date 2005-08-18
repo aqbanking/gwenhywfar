@@ -34,7 +34,6 @@
 #define DEBUG_SSL_LOG
 
 #include "nettransportssl_p.h"
-#include "gwenhywfar_l.h"
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/pathmanager.h>

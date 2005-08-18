@@ -355,8 +355,6 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
   DWORD typ;
   int i;
 
-  assert(pm);
-
   snprintf(nbuffer, sizeof(nbuffer), keypath);
 
   /* open the key */
