@@ -3412,7 +3412,7 @@ GWEN_CryptManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm,
       }
       GWEN_PluginDescription_List2Iterator_free(pit);
     }
-    GWEN_PluginDescription_List2_freeAll(pl2);
+    /* GWEN_PluginDescription_List2_freeAll(pl2); */
 
     if (GWEN_PluginDescription_List2_GetSize(pl2)==0) {
       GWEN_PluginDescription_List2_freeAll(pl2);
