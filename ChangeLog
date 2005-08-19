@@ -1,3 +1,8 @@
+2005-08-19   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac, plugins/crypttoken/ohbci/ohbci.xml.in: Add version
+	string OHBCI_VERSION_STRING for the xml plugin file.
+
 ===========================================================================
 MARK: released gwenhywfar-1.16.0 (2005/08/19)
 ===========================================================================
