@@ -573,7 +573,7 @@ GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n){
 
 
 
-const char *GWEN_DB_GetCharValueFromNode(GWEN_DB_NODE *n){
+const char *GWEN_DB_GetCharValueFromNode(const GWEN_DB_NODE *n){
   assert(n);
   if (n->h.typ!=GWEN_DB_NODETYPE_VALUE) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a value");
@@ -588,7 +588,25 @@ const char *GWEN_DB_GetCharValueFromNode(GWEN_DB_NODE *n){
 
 
 
-int GWEN_DB_GetIntValueFromNode(GWEN_DB_NODE *n){
+int GWEN_DB_SetCharValueInNode(GWEN_DB_NODE *n, const char *s) {
+  assert(n);
+  assert(s);
+  if (n->h.typ!=GWEN_DB_NODETYPE_VALUE) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a value");
+    return GWEN_ERROR_INVALID;
+  }
+  if (n->val.h.typ!=GWEN_DB_VALUETYPE_CHAR) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a char value");
+    return GWEN_ERROR_INVALID;
+  }
+  free(n->val.c.data);
+  n->val.c.data=strdup(s);
+  return 0;
+}
+
+
+
+int GWEN_DB_GetIntValueFromNode(const GWEN_DB_NODE *n){
   assert(n);
   if (n->h.typ!=GWEN_DB_NODETYPE_VALUE) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a value");
@@ -617,7 +635,7 @@ int GWEN_DB_GetIntValueFromNode(GWEN_DB_NODE *n){
 
 
 
-const void *GWEN_DB_GetBinValueFromNode(GWEN_DB_NODE *n,
+const void *GWEN_DB_GetBinValueFromNode(const GWEN_DB_NODE *n,
                                         unsigned int *size){
   assert(n);
   if (n->h.typ!=GWEN_DB_NODETYPE_VALUE) {
@@ -2686,6 +2704,17 @@ const char *GWEN_DB_VariableName(GWEN_DB_NODE *n){
   }
   return n->var.name;
 }
+
+
+
+void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname){
+  assert(n);
+  assert(newname);
+  assert(n->h.typ==GWEN_DB_NODETYPE_VAR);
+  free(n->var.name);
+  n->var.name=strdup(newname);
+}
+
 
 
 

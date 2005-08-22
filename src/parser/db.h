@@ -902,6 +902,10 @@ GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n);
 GWENHYWFAR_API 
 const char *GWEN_DB_VariableName(GWEN_DB_NODE *n);
 
+
+GWENHYWFAR_API 
+void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname);
+
 /** Iterates through all variable nodes that are @e direct children
  * of the given node, calling the callback function 'func' on each
  * variable node.  Traversal will stop when 'func' returns a non-NULL
@@ -997,17 +1001,9 @@ GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n);
  * Returns the next value node following the given one, which has the
  * same parent node.
  *
- * This function works absolutely independently of the value nodes'
- * names (FIXME: is there such thing as a value name? If not, then
- * this paragraph should be removed) -- the returned node may or may
- * not have the same name as the specified node. The only guarantee is
- * that the returned node will be a value node.
- *
  * If there is no value node then NULL is returned. This can either
  * mean that the parent node does not have any further children, or
- * that the other children are variables instead of values (FIXME: Is
- * the last sentence true? If this can't be the case then it can be
- * deleted.)
+ * that the other children aren't values.
  *
  * @note This is the only function where the returned node is @e not
  * the child of the specified node, but instead it is the next node
@@ -1057,6 +1053,28 @@ GWENHYWFAR_API
 GWEN_DB_VALUETYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
                                              const char *p,
                                              unsigned int i);
+
+/**
+ * Returns the value data of the given value node.
+ * If the given node is not a char-value node then 0 is returned.
+ */
+GWENHYWFAR_API
+const char *GWEN_DB_GetCharValueFromNode(const GWEN_DB_NODE *n);
+
+/**
+ * Replaces the current value data of the given node by the new string.
+ * @return 0 if ok, error code otherwise
+ */
+GWENHYWFAR_API
+int GWEN_DB_SetCharValueInNode(GWEN_DB_NODE *n, const char *s);
+
+GWENHYWFAR_API
+int GWEN_DB_GetIntValueFromNode(const GWEN_DB_NODE *n);
+
+GWENHYWFAR_API
+const void *GWEN_DB_GetBinValueFromNode(const GWEN_DB_NODE *n,
+                                        unsigned int *size);
+
 
 /** Predicate: Returns nonzero (TRUE) or zero (FALSE) if the given
  * NODE is a Value or not. Usually the Application does not get in

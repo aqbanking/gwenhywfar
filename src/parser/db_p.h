@@ -204,14 +204,6 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                                int insert);
 
 
-const char *GWEN_DB_GetCharValueFromNode(GWEN_DB_NODE *n);
-
-int GWEN_DB_GetIntValueFromNode(GWEN_DB_NODE *n);
-
-const void *GWEN_DB_GetBinValueFromNode(GWEN_DB_NODE *n,
-                                        unsigned int *size);
-
-
 static void *GWEN_DB_count_cb(GWEN_DB_NODE *node, void *user_data);
 
 void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
