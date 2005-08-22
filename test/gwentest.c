@@ -3274,6 +3274,40 @@ int testTimeToString(int argc, char **argv) {
 
 
 
+int testTimeFromString(int argc, char **argv) {
+  GWEN_TIME *t;
+  const char *s;
+  const char *tmpl;
+  GWEN_BUFFER *tbuf;
+
+  if (argc!=4) {
+    fprintf(stderr, "Arguments needed: %s %s TEMPLATE DATA\n",
+	    argv[0], argv[1]);
+    return 1;
+  }
+
+  tmpl=argv[2];
+  s=argv[3];
+
+  t=GWEN_Time_fromUtcString(s, tmpl);
+  if (!t) {
+    fprintf(stderr, "Could not convert string to time.\n");
+    return 2;
+  }
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Time_toUtcString(t, "YYYY/MM/DD-hh:mm:ss", tbuf)) {
+    fprintf(stderr, "Could not convert time to string.\n");
+    return 2;
+  }
+  fprintf(stdout, "UTC date/time \"%s\": %s\n",
+          s, GWEN_Buffer_GetStart(tbuf));
+
+  return 0;
+}
+
+
+
 int testCsvExport(int argc, char **argv) {
   GWEN_BUFFEREDIO *bio;
   GWEN_DBIO *dbio;
@@ -4285,6 +4319,8 @@ int main(int argc, char **argv) {
     rv=testHTTPd(argc, argv);
   else if (strcasecmp(argv[1], "time")==0)
     rv=testTime(argc, argv);
+  else if (strcasecmp(argv[1], "time2")==0)
+    rv=testTimeFromString(argc, argv);
 #ifdef USE_NCURSES
   else if (strcasecmp(argv[1], "u1")==0)
     rv=uitest1(argc, argv);

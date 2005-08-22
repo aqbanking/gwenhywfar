@@ -213,10 +213,30 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
   while(*t && *p) {
     int i;
 
-    if (isdigit((int)*p))
-      i=(*p)-'0';
-    else
-      i=-1;
+    if (*t=='*') {
+      t++;
+      if (!*t) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Bad pattern: Must not end with \"*\"");
+        return 0;
+      }
+      i=0;
+      while(*p) {
+        if (!isdigit((int)*p))
+          break;
+        if (*p==*t)
+          break;
+        i*=10;
+        i+=(*p)-'0';
+        p++;
+      } /* while */
+    }
+    else {
+      if (isdigit((int)*p))
+	i=(*p)-'0';
+      else
+	i=-1;
+      p++;
+    }
 
     switch(*t) {
     case 'Y':
@@ -261,7 +281,6 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
       break;
     }
     t++;
-    p++;
   } /* while */
 
   if (year<100)

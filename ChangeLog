@@ -1,7 +1,17 @@
+
+2005/08/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- no longer define gct-tool as experimental (disables warning)
+- GWEN_Time_fromString now accepts constructs like "*D.*M.YYYY" (i.e.
+  day and month may consist of multiple digits. This is needed to support
+  old AqMoney1's export format)
+
+
 2005-08-19   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, plugins/crypttoken/ohbci/ohbci.xml.in: Add version
 	string OHBCI_VERSION_STRING for the xml plugin file.
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.16.0 (2005/08/19)
