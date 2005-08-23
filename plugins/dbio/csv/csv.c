@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 #include "csv_p.h"
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
@@ -361,7 +363,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
     GWEN_DB_NODE *n;
 
     /* read line */
-    DBG_NOTICE(0, "Reading line %d", lines);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Reading line %d", lines);
     GWEN_Buffer_Reset(lbuffer);
     err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuffer);
     if (!GWEN_Error_IsOk(err)) {
@@ -449,7 +451,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
         char nbuff[16];
         const char *vcol;
   
-        DBG_NOTICE(0, "Handling column %d", col);
+        DBG_DEBUG(0, "Handling column %d", col);
         nbuff[0]=0;
         snprintf(nbuff, sizeof(nbuff)-1, "%i", col);
         nbuff[sizeof(nbuff)-1]=0;

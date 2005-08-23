@@ -14,7 +14,7 @@
 # include <config.h>
 #endif
 
-#define GCT_IS_EXPERIMENTAL 0
+/*#define GCT_IS_EXPERIMENTAL */
 
 
 #include <gwenhywfar/debug.h>
