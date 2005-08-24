@@ -1618,6 +1618,13 @@ int GWEN_CryptToken_ReadXml(GWEN_CRYPTTOKEN *ct, GWEN_XMLNODE *n) {
   const char *s;
 
   assert(ct);
+  assert(n);
+
+  s=GWEN_XMLNode_GetProperty(n, "subTypeName", 0);
+  if (s) {
+    free(ct->tokenSubType);
+    ct->tokenSubType=strdup(s);
+  }
   GWEN_CryptToken_Context_List_Clear(ct->contextList);
   GWEN_CryptToken_SignInfo_List_Clear(ct->signInfoList);
   GWEN_CryptToken_CryptInfo_List_Clear(ct->cryptInfoList);

@@ -295,6 +295,7 @@ void GWEN_CryptToken_SetTokenName(GWEN_CRYPTTOKEN *ct, const char *s);
 
 const char *GWEN_CryptToken_GetTokenType(const GWEN_CRYPTTOKEN *ct);
 const char *GWEN_CryptToken_GetTokenSubType(const GWEN_CRYPTTOKEN *ct);
+
 GWEN_CRYPTTOKEN_DEVICE
 GWEN_CryptToken_GetDeviceType(const GWEN_CRYPTTOKEN *ct);
 

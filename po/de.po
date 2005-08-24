@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-08-19 02:59+0200\n"
-"PO-Revision-Date: 2005-08-18 14:21+0200\n"
+"POT-Creation-Date: 2005-08-24 15:58+0200\n"
+"PO-Revision-Date: 2005-08-24 16:04+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -177,43 +177,42 @@ msgstr "Fehler bei der Signaturüberprüfung"
 msgid "Generic SSL error"
 msgstr "Allgemeiner SSL Fehler"
 
-#: src/crypt2/crypttoken.c:3262
+#: src/crypt2/crypttoken.c:3274
 #, c-format
 msgid "Loading plugin \"%s\""
 msgstr "Plugin \"%s\" laden"
 
-#: src/crypt2/crypttoken.c:3279
+#: src/crypt2/crypttoken.c:3291
 #, c-format
 msgid "Checking plugin \"%s\""
 msgstr "Plugin \"%s\" prüfen"
 
-#: src/crypt2/crypttoken.c:3295
+#: src/crypt2/crypttoken.c:3307
 #, c-format
 msgid "Plugin \"%s\" supports this token"
 msgstr "Plugin \"%s\" unterstützt dieses Token"
 
-#: src/crypt2/crypttoken.c:3314
+#: src/crypt2/crypttoken.c:3326
 #, c-format
 msgid "Plugin \"%s\": Function not implemented"
 msgstr "Plugin \"%s\": Funktion nicht implementiert"
 
-#: src/crypt2/crypttoken.c:3322
+#: src/crypt2/crypttoken.c:3334
 #, c-format
 msgid "Plugin \"%s\" does not support this token"
 msgstr "Plugin \"%s\" unterstützt dieses Token nicht"
 
-#: src/crypt2/crypttoken.c:3330
+#: src/crypt2/crypttoken.c:3342
 #, c-format
 msgid "Plugin \"%s\" supports this token, but the name did not match"
-msgstr ""
-"Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
+msgstr "Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
 
-#: src/crypt2/crypttoken.c:3339
+#: src/crypt2/crypttoken.c:3351
 #, c-format
 msgid "Plugin \"%s\": Unexpected error (%d)"
 msgstr "Plugin \"%s\": Unerwarteter Fehler (%d)"
 
-#: src/crypt2/crypttoken.c:3348
+#: src/crypt2/crypttoken.c:3360
 #, c-format
 msgid "Could not load plugin \"%s\""
 msgstr "Fehler beim Laden des Plugins \"%s\""
@@ -352,15 +351,19 @@ msgstr "YyJjZz"
 msgid "N"
 msgstr "Nn"
 
-#: tools/gct-tool/cryptmanager.c:278
+#: tools/gct-tool/cryptmanager.c:266
+msgid "crypt token"
+msgstr "Crypt-Token"
+
+#: tools/gct-tool/cryptmanager.c:274
 msgid " You must only enter numbers, not letters."
 msgstr " Es dürfen nur Zahlen eingegeben werden, keine Buchstaben."
 
-#: tools/gct-tool/cryptmanager.c:282
+#: tools/gct-tool/cryptmanager.c:278
 msgid "(correct) "
 msgstr "(korrekte) "
 
-#: tools/gct-tool/cryptmanager.c:287
+#: tools/gct-tool/cryptmanager.c:283
 #, c-format
 msgid ""
 "Please enter a new password for \n"
@@ -371,7 +374,7 @@ msgstr ""
 "  \"%s\"\n"
 "ein. Das Passwort muß mindestens %d Zeichen lang sein.%s"
 
-#: tools/gct-tool/cryptmanager.c:296
+#: tools/gct-tool/cryptmanager.c:292
 #, c-format
 msgid ""
 "Please enter the %spassword for \n"
@@ -382,7 +385,7 @@ msgstr ""
 "  \"%s\"\n"
 "ein.%s"
 
-#: tools/gct-tool/cryptmanager.c:310
+#: tools/gct-tool/cryptmanager.c:306
 msgid "Hit just the ENTER key (with no other input) to use the default pin."
 msgstr ""
 "Um die voreingestellte PIN zu verwenden, drücken Sie die EINGABE-Taste (ohne "
@@ -391,22 +394,22 @@ msgstr ""
 #. TRANSLATORS: The field here should be as long as the "Repeat:" field
 #. * to have the PIN entries begin at the same column for both the first and
 #. * the second pin entry.
-#: tools/gct-tool/cryptmanager.c:317
+#: tools/gct-tool/cryptmanager.c:313
 msgid "Input : "
 msgstr "Eingabe    :"
 
 #. TRANSLATORS: The field here should be as long as the "Input :" field
 #. * to have the PIN entries begin at the same column for both the first
 #. * and the second pin entry.
-#: tools/gct-tool/cryptmanager.c:333
+#: tools/gct-tool/cryptmanager.c:329
 msgid "Repeat: "
 msgstr "Wiederholen:"
 
-#: tools/gct-tool/cryptmanager.c:376
+#: tools/gct-tool/cryptmanager.c:385
 msgid "Please enter your PIN into the card reader."
 msgstr "Bitte geben Sie Ihre PIN am Kartenleser ein."
 
-#: tools/gct-tool/cryptmanager.c:415
+#: tools/gct-tool/cryptmanager.c:424
 #, c-format
 msgid ""
 "Please insert the security disc\n"
@@ -415,7 +418,7 @@ msgstr ""
 "Bitte legen Sie die Schlüsseldiskette \n"
 "für %s ins Laufwerk."
 
-#: tools/gct-tool/cryptmanager.c:419
+#: tools/gct-tool/cryptmanager.c:428
 #, c-format
 msgid ""
 "Please insert the chip card\n"
@@ -424,7 +427,7 @@ msgstr ""
 "Bitte legen Sie die Chipkarte \n"
 "für %s in den Kartenleser."
 
-#: tools/gct-tool/cryptmanager.c:450
+#: tools/gct-tool/cryptmanager.c:459
 #, c-format
 msgid ""
 "Please insert the correct security disc\n"
@@ -433,7 +436,7 @@ msgstr ""
 "Bitte legen Sie die korrekte Schlüsseldiskette\n"
 "für %s ins Laufwerk."
 
-#: tools/gct-tool/cryptmanager.c:454
+#: tools/gct-tool/cryptmanager.c:463
 #, c-format
 msgid ""
 "Please insert the correct chip card\n"
@@ -442,33 +445,91 @@ msgstr ""
 "Bitte legen Sie die korrekte Chipkarte\n"
 "für %s in den Kartenleser."
 
-#: tools/gct-tool/main.c:108
+#: tools/gct-tool/main.c:115
 msgid "Usage: "
 msgstr "Benutzung: "
 
-#: tools/gct-tool/main.c:111
+#: tools/gct-tool/main.c:118
 msgid " [GLOBAL OPTIONS] COMMAND [LOCAL OPTIONS]\n"
-msgstr ""
+msgstr "[GLOBALE OPTIONEN] KOMMANDO [LOCALE OPTIONEN]\n"
 
-#: tools/gct-tool/main.c:114
+#: tools/gct-tool/main.c:121
 msgid ""
 "\n"
 "Global Options:\n"
 msgstr ""
+"\n"
+"Globale Optionen:\n"
 
-#: tools/gct-tool/main.c:120
+#: tools/gct-tool/main.c:127
 msgid ""
 "\n"
 "Commands:\n"
 "\n"
 msgstr ""
+"\n"
+"Kommandos:\n"
+"\n"
 
-#: tools/gct-tool/main.c:122
+#: tools/gct-tool/main.c:129
 msgid ""
-"  sign:\n"
-"    This command signs the given files\n"
+"  create:\n"
+"    This command creates a crypt token\n"
 "\n"
 msgstr ""
+"  create:\n"
+"    Dieser Befehl erzeugt ein CryptToken\n"
+"\n"
+
+#: tools/gct-tool/main.c:133
+msgid ""
+"  showctx:\n"
+"    Display crypto contexts stored on the token\n"
+"\n"
+msgstr ""
+"  showctx:\n"
+"    Zeigt kryptographische Kontexte des CryptTokens an\n"
+"\n"
+
+#: tools/gct-tool/main.c:137
+msgid ""
+"  showuser:\n"
+"    Display user data stored on the token\n"
+"\n"
+msgstr ""
+"  showuser:\n"
+"    Zeige auf dem CryptToken gespeicherte Benutzer an\n"
+"\n"
+
+#: tools/gct-tool/main.c:141
+msgid ""
+"  changepin:\n"
+"    Change the access-pin of the crypt token\n"
+"\n"
+msgstr ""
+"  changepin:\n"
+"    Ändert die Zugriffs-PIN eines CryptTokens\n"
+"\n"
+
+#: tools/gct-tool/main.c:145
+msgid ""
+"  disablekey:\n"
+"    Disable the given crypt key on the crypt token\n"
+"\n"
+msgstr ""
+"  disablekey:\n"
+"    Deaktiviert einen angegeben Schlüssel auf dem CryptToken\n"
+"\n"
+
+#: tools/gct-tool/main.c:149
+msgid ""
+"  checktoken:\n"
+"    Tries to determine the type of the  crypt token\n"
+"\n"
+msgstr ""
+"  checktoken:\n"
+"    Versucht den Typen eines CryptTokens zu ermitteln\n"
+"\n"
 
 #: tools/typemaker/args.c:116
 msgid ""
@@ -523,3 +584,4 @@ msgstr ""
 "-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
 "angegeben)\n"
 "--compact        schreibe eine kompakte Datei\n"
+
