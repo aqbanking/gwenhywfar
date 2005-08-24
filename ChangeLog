@@ -1,3 +1,17 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2005/08/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_CryptToken_TransformPin()
+- added encoding type FPIN2
+- added an argument to GWEN_CryptToken_ChangePin: Pin type
+  This is an API change, but so far only Gwen itself and Libchipcard2
+  use this function.
+- gct-tool has now an improved help screen and is less verbous otherwise
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.17.0 (2005/08/23)

@@ -265,6 +265,8 @@ GWEN_CryptToken_PinEncoding_fromString(const char *s){
     return GWEN_CryptToken_PinEncoding_BCD;
   else if (strcasecmp(s, "ascii")==0)
     return GWEN_CryptToken_PinEncoding_ASCII;
+  else if (strcasecmp(s, "fpin2")==0)
+    return GWEN_CryptToken_PinEncoding_FPIN2;
   return GWEN_CryptToken_PinEncoding_Unknown;
 }
 
@@ -281,6 +283,8 @@ GWEN_CryptToken_PinEncoding_toString(GWEN_CRYPTTOKEN_PINENCODING pe){
     return "bcd";
   case GWEN_CryptToken_PinEncoding_ASCII:
     return "ascii";
+  case GWEN_CryptToken_PinEncoding_FPIN2:
+    return "fpin2";
   default:
     return "unknown";
   }
@@ -2051,7 +2055,8 @@ int GWEN_CryptToken_Close(GWEN_CRYPTTOKEN *ct){
 
 
 
-int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct){
+int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct,
+			      GWEN_CRYPTTOKEN_PINTYPE pt){
   assert(ct);
   if (ct->isOpen==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
@@ -2059,7 +2064,7 @@ int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct){
   }
   if (ct->changePinFn==0)
     return GWEN_ERROR_UNSUPPORTED;
-  return ct->changePinFn(ct);
+  return ct->changePinFn(ct, pt);
 }
 
 
@@ -3428,6 +3433,376 @@ GWEN_CryptManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm,
   return 0;
 }
 
+
+
+int GWEN_CryptToken__TransformFromBCD(unsigned char *buffer,
+				      unsigned int bufLength,
+				      unsigned int *pinLength) {
+  unsigned char *newBuf;
+  unsigned char *p;
+  unsigned int newSize;
+  unsigned int i;
+  unsigned int cnt=0;
+
+  if (*pinLength==0)
+    return 0;
+
+  newSize=*pinLength*2;
+  newBuf=(unsigned char*)malloc(newSize);
+  p=newBuf;
+  for (i=0; i<*pinLength; i++) {
+    unsigned char c1;
+    unsigned char c2;
+
+    c1=buffer[i];
+    /* 1st digit */
+    c2=(c1 & 0xf0)>>4;
+    if (c2==0x0f)
+      break;
+    *(p++)=c2+'0';
+    cnt++;
+    /* 2nd digit */
+    c2=(c1 & 0x0f);
+    if (c2==0x0f)
+      break;
+    *(p++)=c2+'0';
+    cnt++;
+  }
+
+  if (cnt>bufLength) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (%d>%d)",
+	      cnt, bufLength);
+    free(newBuf);
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
+  memset(buffer, 0, bufLength);
+  memmove(buffer, newBuf, cnt);
+  *pinLength=cnt;
+  free(newBuf);
+  return 0;
+}
+
+
+
+int GWEN_CryptToken__TransformFromFPIN2(unsigned char *buffer,
+					unsigned int bufLength,
+					unsigned int *pinLength) {
+  unsigned char *newBuf;
+  unsigned char *p;
+  unsigned int newSize;
+  unsigned int i;
+  unsigned int cnt=0;
+  unsigned int len;
+
+  if (*pinLength<8) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Pin too small to be a FPIN2 (%d)", *pinLength);
+    return GWEN_ERROR_INVALID;
+  }
+  len=(buffer[0] & 0x0f);
+  newSize=len*2;
+  newBuf=(unsigned char*)malloc(newSize);
+  p=newBuf;
+  for (i=1; i<8; i++) {
+    unsigned char c1;
+    unsigned char c2;
+
+    if (cnt>=len)
+      break;
+
+    c1=buffer[i];
+    /* 1st digit */
+    c2=(c1 & 0xf0)>>4;
+    if (c2==0x0f)
+      break;
+    *(p++)=c2+'0';
+    cnt++;
+    if (cnt>=len)
+      break;
+
+    /* 2nd digit */
+    c2=(c1 & 0x0f);
+    if (c2==0x0f)
+      break;
+    *(p++)=c2+'0';
+    cnt++;
+  }
+
+  if (cnt>bufLength) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (%d>%d)",
+	      cnt, bufLength);
+    free(newBuf);
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
+  memset(buffer, 0, bufLength);
+  memmove(buffer, newBuf, cnt);
+  *pinLength=cnt;
+  return 0;
+}
+
+
+
+int GWEN_CryptToken__TransformFromBin(unsigned char *buffer,
+				      unsigned int bufLength,
+				      unsigned int *pinLength) {
+  unsigned int i;
+  unsigned char *newBuf;
+  unsigned char *p;
+  unsigned int newSize;
+
+  if (*pinLength==0)
+    return 0;
+
+  newSize=*pinLength;
+  newBuf=(unsigned char*)malloc(newSize);
+  p=newBuf;
+
+  for (i=0; i<*pinLength; i++) {
+    unsigned char c;
+
+    c=buffer[i];
+    if (c>9) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      free(newBuf);
+      return GWEN_ERROR_INVALID;
+    }
+    *p=c+'0';
+  }
+  memset(buffer, 0, bufLength);
+  memmove(buffer, newBuf, *pinLength);
+  free(newBuf);
+
+  return 0;
+}
+
+
+
+int GWEN_CryptToken__TransformToBCD(unsigned char *buffer,
+				    unsigned int bufLength,
+				    unsigned int *pinLength) {
+  unsigned char *newBuf;
+  unsigned char *p;
+  unsigned int newSize;
+  unsigned int i;
+  unsigned int cnt=0;
+
+  newSize=*pinLength/2+1;
+  newBuf=(unsigned char*)malloc(newSize);
+  memset(newBuf, 0xff, newSize);
+  p=newBuf;
+  i=0;
+  while (i<*pinLength) {
+    unsigned char c1;
+    unsigned char c2;
+
+    /* 1st digit */
+    c1=buffer[i];
+    if (c1<'0' || c1>'9') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      free(newBuf);
+      return GWEN_ERROR_INVALID;
+    }
+    c1-='0';
+    c1=c1<<4;
+    *p=c1+0x0f; /* don't incement yet */
+    cnt++; /* only increment once !! */
+    i++;
+    if (i>=*pinLength)
+      break;
+
+    /* 2nd digit */
+    c2=buffer[i];
+    if (c2<'0' || c2>'9') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      free(newBuf);
+      return GWEN_ERROR_INVALID;
+    }
+    c2-='0';
+    c1|=(c2 & 0x0f);
+    *(p++)=c1;
+    i++;
+  }
+
+  if (cnt>bufLength) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (%d>%d)",
+	      cnt, bufLength);
+    free(newBuf);
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
+  memset(buffer, 0, bufLength);
+  for (i=0; i<cnt; i++)
+    buffer[i]=newBuf[i];
+  *pinLength=cnt;
+  free(newBuf);
+  return 0;
+}
+
+
+
+int GWEN_CryptToken__TransformToFPIN2(unsigned char *buffer,
+				      unsigned int bufLength,
+				      unsigned int *pinLength) {
+  unsigned char *newBuf;
+  unsigned char *p;
+  unsigned int newSize;
+  unsigned int i;
+
+  if (*pinLength>14) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Pin too long for FPIN2 (%d>14)",
+	      *pinLength);
+    return GWEN_ERROR_INVALID;
+  }
+  if (8>bufLength) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (8>%d)",
+	      bufLength);
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
+  newSize=8;
+  newBuf=(unsigned char*)malloc(newSize);
+  memset(newBuf, 0xff, newSize);
+  p=newBuf;
+  *(p++)=0x20+*pinLength;
+  i=0;
+  while (i<*pinLength) {
+    unsigned char c1;
+    unsigned char c2;
+
+    /* 1st digit */
+    c1=buffer[i];
+    if (c1<'0' || c1>'9') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      free(newBuf);
+      return GWEN_ERROR_INVALID;
+    }
+    c1-='0';
+    c1=c1<<4;
+    *p=c1+0x0f; /* don't incement yet */
+    i++;
+    if (i>=*pinLength)
+      break;
+
+    /* 2nd digit */
+    c2=buffer[i];
+    if (c2<'0' || c2>'9') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      free(newBuf);
+      return GWEN_ERROR_INVALID;
+    }
+    c2-='0';
+    c1|=(c2 & 0x0f);
+    *(p++)=c1;
+    i++;
+  }
+
+  memset(buffer, 0, bufLength);
+  for (i=0; i<8; i++)
+    buffer[i]=newBuf[i];
+  *pinLength=8;
+  free(newBuf);
+  return 0;
+
+}
+
+
+
+int GWEN_CryptToken__TransformToBin(unsigned char *buffer,
+				    unsigned int bufLength,
+				    unsigned int *pinLength) {
+  unsigned int i;
+  unsigned char *newBuf;
+  unsigned char *p;
+  unsigned int newSize;
+
+  if (*pinLength==0)
+    return 0;
+
+  newSize=*pinLength;
+  newBuf=(unsigned char*)malloc(newSize);
+  p=newBuf;
+
+  for (i=0; i<*pinLength; i++) {
+    unsigned char c;
+
+    c=buffer[i];
+    if (c<'0' || c>'9') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      free(newBuf);
+      return GWEN_ERROR_INVALID;
+    }
+    *(p++)=c-'0';
+  }
+  memset(buffer, 0, bufLength);
+  memmove(buffer, newBuf, *pinLength);
+  free(newBuf);
+
+  return 0;
+}
+
+
+
+int GWEN_CryptToken_TransformPin(GWEN_CRYPTTOKEN_PINENCODING peSrc,
+				 GWEN_CRYPTTOKEN_PINENCODING peDst,
+				 unsigned char *buffer,
+				 unsigned int bufLength,
+				 unsigned int *pinLength) {
+  int rv;
+
+  if (peSrc==peDst)
+    return 0;
+
+  switch(peSrc) {
+  case GWEN_CryptToken_PinEncoding_Bin:
+    rv=GWEN_CryptToken__TransformFromBin(buffer, bufLength, pinLength);
+    break;
+  case GWEN_CryptToken_PinEncoding_BCD:
+    rv=GWEN_CryptToken__TransformFromBCD(buffer, bufLength, pinLength);
+    break;
+  case GWEN_CryptToken_PinEncoding_ASCII:
+    rv=0;
+    break;
+  case GWEN_CryptToken_PinEncoding_FPIN2:
+    rv=GWEN_CryptToken__TransformFromFPIN2(buffer, bufLength, pinLength);
+    break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Unhandled source encoding \"%s\"",
+	      GWEN_CryptToken_PinEncoding_toString(peSrc));
+    return GWEN_ERROR_INVALID;
+  }
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  switch(peDst) {
+  case GWEN_CryptToken_PinEncoding_Bin:
+    rv=GWEN_CryptToken__TransformToBin(buffer, bufLength, pinLength);
+    break;
+  case GWEN_CryptToken_PinEncoding_BCD:
+    rv=GWEN_CryptToken__TransformToBCD(buffer, bufLength, pinLength);
+    break;
+  case GWEN_CryptToken_PinEncoding_ASCII:
+    rv=0;
+    break;
+  case GWEN_CryptToken_PinEncoding_FPIN2:
+    rv=GWEN_CryptToken__TransformToFPIN2(buffer, bufLength, pinLength);
+    break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Unhandled destination encoding \"%s\"",
+	      GWEN_CryptToken_PinEncoding_toString(peDst));
+    return GWEN_ERROR_INVALID;
+  }
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
 
 
 

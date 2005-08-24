@@ -259,15 +259,11 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   bcm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, CON_CRYPTMANAGER, cm);
   assert(bcm);
 
-  if (pe!=GWEN_CryptToken_PinEncoding_ASCII) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Unhandled pin encoding %d", pe);
-    return GWEN_ERROR_INVALID;
-  }
-
   name=GWEN_CryptToken_GetDescriptiveName(token);
   if (!name || !*name)
     name=GWEN_CryptToken_GetTokenName(token);
+  if (!name || !*name)
+    name=I18N("crypt token");
 
   if (maxLength>=sizeof(lpwbuffer1))
     maxLength=sizeof(lpwbuffer1)-1;
@@ -353,6 +349,19 @@ int CON_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
   strcpy((char*)(pwbuffer), lpwbuffer1);
   memset(lpwbuffer1, 0, sizeof(lpwbuffer1));
   *pinLength=strlen((char*)(pwbuffer));
+
+  if (pe!=GWEN_CryptToken_PinEncoding_ASCII) {
+    rv=GWEN_CryptToken_TransformPin(GWEN_CryptToken_PinEncoding_ASCII,
+                                    pe,
+                                    pwbuffer,
+                                    maxLength,
+                                    pinLength);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
   return 0;
 }
 

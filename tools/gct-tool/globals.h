@@ -14,7 +14,7 @@
 #ifndef GCT_TOOL_GLOBALS_H
 #define GCT_TOOL_GLOBALS_H
 
-#define DEBUG_GCT_TOOL 1
+/*#define DEBUG_GCT_TOOL 1*/
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/args.h>

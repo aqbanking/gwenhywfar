@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
   const char *cmd;
   int rv;
   GWEN_PLUGIN_MANAGER *cm;
+  GWEN_ERRORCODE err;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -65,6 +66,12 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Error binding locale\n");
 #endif
 
+  err=GWEN_Init();
+  if (!GWEN_Error_IsOk(err)) {
+    fprintf(stderr, "Could not initialize Gwenhywfar.\n");
+    return 2;
+  }
+
   GWEN_Logger_Open("gct-tool", "gct-tool", 0,
                    GWEN_LoggerTypeConsole,
                    GWEN_LoggerFacilityUser);
@@ -74,9 +81,9 @@ int main(int argc, char **argv) {
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
 #else
-  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevelNotice);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelNotice);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevelWarning);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelWarning);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelWarning);
 #endif
 
 #ifdef GCT_IS_EXPERIMENTAL
@@ -119,9 +126,29 @@ int main(int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
                              I18N("\nCommands:\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-                             I18N("  sign:\n"
-                                  "    This command signs the given files"
+                             I18N("  create:\n"
+                                  "    This command creates a crypt token"
                                   "\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  showctx:\n"
+                                  "    Display crypto contexts stored on the "
+                                  "token\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  showuser:\n"
+                                  "    Display user data stored on the "
+                                  "token\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  changepin:\n"
+                                  "    Change the access-pin of the crypt "
+                                  "token\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  disablekey:\n"
+                                  "    Disable the given crypt key on the "
+                                  "crypt token\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+                             I18N("  checktoken:\n"
+                                  "    Tries to determine the type of the "
+                                  " crypt token\n\n"));
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
@@ -163,10 +190,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  if (strcasecmp(cmd, "sign")==0) {
-    rv=signFiles(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "create")==0) {
+  if (strcasecmp(cmd, "create")==0) {
     rv=createToken(db, argc, argv);
   }
   else if (strcasecmp(cmd, "showctx")==0) {
@@ -197,6 +221,12 @@ int main(int argc, char **argv) {
 	      "Could not unregister crypttoken plugin manager");
   }
   GWEN_PluginManager_free(cm);
+
+  err=GWEN_Fini();
+  if (!GWEN_Error_IsOk(err)) {
+    fprintf(stderr,
+            "WARNING: Could not deinitialize Gwenhywfar.\n");
+  }
 
   return rv;
 }

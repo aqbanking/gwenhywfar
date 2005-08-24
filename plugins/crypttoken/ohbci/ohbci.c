@@ -1658,7 +1658,8 @@ int GWEN_CryptTokenOHBCI_Write(GWEN_CRYPTTOKEN *ct, int fd, int cre){
 
 
 
-int GWEN_CryptTokenOHBCI_ChangePin(GWEN_CRYPTTOKEN *ct){
+int GWEN_CryptTokenOHBCI_ChangePin(GWEN_CRYPTTOKEN *ct,
+                                   GWEN_CRYPTTOKEN_PINTYPE pt){
   unsigned char password_unsigned[64];
   char password[64];
   GWEN_CRYPTTOKEN_OHBCI *lct;

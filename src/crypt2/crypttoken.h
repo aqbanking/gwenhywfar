@@ -164,7 +164,8 @@ typedef enum {
   GWEN_CryptToken_PinEncoding_None=0,
   GWEN_CryptToken_PinEncoding_Bin,
   GWEN_CryptToken_PinEncoding_BCD,
-  GWEN_CryptToken_PinEncoding_ASCII
+  GWEN_CryptToken_PinEncoding_ASCII,
+  GWEN_CryptToken_PinEncoding_FPIN2
 } GWEN_CRYPTTOKEN_PINENCODING;
 
 GWEN_CRYPTTOKEN_PINENCODING
@@ -202,7 +203,8 @@ typedef int (*GWEN_CRYPTTOKEN_OPEN_FN)(GWEN_CRYPTTOKEN *ct,
 typedef int (*GWEN_CRYPTTOKEN_CREATE_FN)(GWEN_CRYPTTOKEN *ct);
 typedef int (*GWEN_CRYPTTOKEN_CLOSE_FN)(GWEN_CRYPTTOKEN *ct);
 
-typedef int (*GWEN_CRYPTTOKEN_CHANGEPIN_FN)(GWEN_CRYPTTOKEN *ct);
+typedef int (*GWEN_CRYPTTOKEN_CHANGEPIN_FN)(GWEN_CRYPTTOKEN *ct,
+                                            GWEN_CRYPTTOKEN_PINTYPE pt);
 
 typedef int (*GWEN_CRYPTTOKEN_SIGN_FN)(GWEN_CRYPTTOKEN *ct,
                                        const GWEN_CRYPTTOKEN_CONTEXT *ctx,
@@ -370,7 +372,8 @@ int GWEN_CryptToken_Create(GWEN_CRYPTTOKEN *ct);
 
 int GWEN_CryptToken_Close(GWEN_CRYPTTOKEN *ct);
 
-int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct);
+int GWEN_CryptToken_ChangePin(GWEN_CRYPTTOKEN *ct,
+                              GWEN_CRYPTTOKEN_PINTYPE pt);
 
 int GWEN_CryptToken_Sign(GWEN_CRYPTTOKEN *ct,
                          const GWEN_CRYPTTOKEN_CONTEXT *ctx,
@@ -478,6 +481,19 @@ int GWEN_CryptToken_AddContext(GWEN_CRYPTTOKEN *ct,
 
 /*@}*/
 
+
+/** @name CryptToken Helper Functions
+ *
+ */
+/*@{*/
+
+int GWEN_CryptToken_TransformPin(GWEN_CRYPTTOKEN_PINENCODING peSrc,
+                                 GWEN_CRYPTTOKEN_PINENCODING peDst,
+                                 unsigned char *buffer,
+                                 unsigned int bufLength,
+                                 unsigned int *pinLength);
+
+/*@}*/
 
 #ifdef __cplusplus
 }

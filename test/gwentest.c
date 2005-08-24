@@ -32,6 +32,7 @@
 #include <gwenhywfar/xsd.h>
 #include <gwenhywfar/refptr.h>
 #include <gwenhywfar/stringlist2.h>
+#include <gwenhywfar/crypttoken.h>
 #include "../src/parser/xsd_p.h"
 #ifdef OS_WIN32
 # include <windows.h>
@@ -4260,6 +4261,41 @@ int testBIO(int argc, char **argv) {
 
 
 
+int testTransformPin(int argc, char **argv) {
+  GWEN_CRYPTTOKEN_PINENCODING peSrc;
+  GWEN_CRYPTTOKEN_PINENCODING peDst;
+  unsigned char buffer[1024];
+  unsigned int pinLength;
+  int rv;
+
+  if (argc<5) {
+    fprintf(stderr, "Usage: %s %s SOURCE_ENCODING DEST_ENCODING PIN\n",
+            argv[0], argv[1]);
+    return 1;
+  }
+
+  memset(buffer, 0, sizeof(buffer));
+  strcpy(buffer, argv[4]);
+  pinLength=strlen(buffer);
+
+  peSrc=GWEN_CryptToken_PinEncoding_fromString(argv[2]);
+  peDst=GWEN_CryptToken_PinEncoding_fromString(argv[3]);
+  rv=GWEN_CryptToken_TransformPin(peSrc, peDst,
+                                  buffer,
+                                  sizeof(buffer),
+                                  &pinLength);
+  if (rv) {
+    DBG_ERROR(0, "Could not transform pin: %d", rv);
+    return 2;
+  }
+
+  GWEN_Text_DumpString(buffer, pinLength, stderr, 1);
+
+
+  return 0;
+}
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4397,6 +4433,8 @@ int main(int argc, char **argv) {
     rv=testSort(argc, argv);
   else if (strcasecmp(argv[1], "bio")==0)
     rv=testBIO(argc, argv);
+  else if (strcasecmp(argv[1], "transformpin")==0)
+    rv=testTransformPin(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

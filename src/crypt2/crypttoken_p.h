@@ -144,6 +144,31 @@ GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromXml(GWEN_XMLNODE *n);
 GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context__fromXml(GWEN_CRYPTTOKEN *ct,
                                                           GWEN_XMLNODE *n);
 
+int GWEN_CryptToken__TransformFromBCD(unsigned char *buffer,
+                                      unsigned int bufLength,
+                                      unsigned int *pinLength);
+
+int GWEN_CryptToken__TransformFromFPIN2(unsigned char *buffer,
+					unsigned int bufLength,
+                                        unsigned int *pinLength);
+
+int GWEN_CryptToken__TransformFromBin(unsigned char *buffer,
+                                      unsigned int bufLength,
+                                      unsigned int *pinLength);
+
+int GWEN_CryptToken__TransformToBCD(unsigned char *buffer,
+				    unsigned int bufLength,
+                                    unsigned int *pinLength);
+int GWEN_CryptToken__TransformToFPIN2(unsigned char *buffer,
+				      unsigned int bufLength,
+                                      unsigned int *pinLength);
+int GWEN_CryptToken__TransformToBin(unsigned char *buffer,
+                                    unsigned int bufLength,
+                                    unsigned int *pinLength);
+
+
+
+
 
 #endif /* GWEN_CRYPTTOKEN_P_H */
 

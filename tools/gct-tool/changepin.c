@@ -134,7 +134,7 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
   else {
-    rv=GWEN_CryptToken_ChangePin(ct);
+    rv=GWEN_CryptToken_ChangePin(ct, GWEN_CryptToken_PinType_Access);
     if (rv) {
       DBG_ERROR(0, "Error changing pin (%d)", rv);
       GWEN_CryptToken_Close(ct);
