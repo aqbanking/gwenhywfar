@@ -205,7 +205,8 @@ msgstr "Plugin \"%s\" unterstützt dieses Token nicht"
 #: src/crypt2/crypttoken.c:3342
 #, c-format
 msgid "Plugin \"%s\" supports this token, but the name did not match"
-msgstr "Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
+msgstr ""
+"Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
 
 #: src/crypt2/crypttoken.c:3351
 #, c-format
@@ -584,4 +585,3 @@ msgstr ""
 "-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
 "angegeben)\n"
 "--compact        schreibe eine kompakte Datei\n"
-
