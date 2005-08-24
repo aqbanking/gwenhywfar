@@ -4275,8 +4275,8 @@ int testTransformPin(int argc, char **argv) {
   }
 
   memset(buffer, 0, sizeof(buffer));
-  strcpy(buffer, argv[4]);
-  pinLength=strlen(buffer);
+  strcpy((char*)buffer, argv[4]);
+  pinLength=strlen((const char*)buffer);
 
   peSrc=GWEN_CryptToken_PinEncoding_fromString(argv[2]);
   peDst=GWEN_CryptToken_PinEncoding_fromString(argv[3]);
@@ -4289,7 +4289,7 @@ int testTransformPin(int argc, char **argv) {
     return 2;
   }
 
-  GWEN_Text_DumpString(buffer, pinLength, stderr, 1);
+  GWEN_Text_DumpString((const char*)buffer, pinLength, stderr, 1);
 
 
   return 0;
