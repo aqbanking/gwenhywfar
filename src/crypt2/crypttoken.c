@@ -2016,7 +2016,7 @@ int GWEN_CryptToken_Open(GWEN_CRYPTTOKEN *ct, int manage){
 
   assert(ct);
   if (ct->isOpen) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Already open");
+    DBG_WARN(GWEN_LOGDOMAIN, "Already open");
     return GWEN_ERROR_OPEN;
   }
   if (ct->openFn==0)
@@ -2035,7 +2035,7 @@ int GWEN_CryptToken_Create(GWEN_CRYPTTOKEN *ct){
 
   assert(ct);
   if (ct->isOpen) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Already open");
+    DBG_WARN(GWEN_LOGDOMAIN, "Already open");
     return GWEN_ERROR_OPEN;
   }
   if (ct->createFn==0)
@@ -2052,7 +2052,7 @@ int GWEN_CryptToken_Create(GWEN_CRYPTTOKEN *ct){
 int GWEN_CryptToken_Close(GWEN_CRYPTTOKEN *ct){
   assert(ct);
   if (ct->isOpen==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    DBG_WARN(GWEN_LOGDOMAIN, "Not open");
     return GWEN_ERROR_NOT_OPEN;
   }
   if (ct->closeFn==0)
@@ -2637,7 +2637,7 @@ int GWEN_CryptToken_ModifyUser(GWEN_CRYPTTOKEN *ct,
 
   id=GWEN_CryptToken_User_GetId(u);
   if (id==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid id");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid NULL user id");
     return GWEN_ERROR_INVALID;
   }
 
@@ -2650,7 +2650,7 @@ int GWEN_CryptToken_ModifyUser(GWEN_CRYPTTOKEN *ct,
       break;
   }
   if (!ou) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown user");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown user (id=%d)", (int)id);
     return GWEN_ERROR_INVALID;
   }
 
@@ -2658,7 +2658,7 @@ int GWEN_CryptToken_ModifyUser(GWEN_CRYPTTOKEN *ct,
     return GWEN_ERROR_UNSUPPORTED;
   rv=ct->modifyUserFn(ct, u);
   if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "modityUserFn returned nonzero.");
     return rv;
   }
 
@@ -2711,8 +2711,8 @@ int GWEN_CryptToken_Hash(GWEN_CRYPTTOKEN_HASHALGO algo,
   assert(src);
   assert(slen);
 
-  DBG_ERROR(GWEN_LOGDOMAIN, "Hashing with algo \"%s\"",
-            GWEN_CryptToken_HashAlgo_toString(algo));
+  DBG_INFO(GWEN_LOGDOMAIN, "Hashing with algo \"%s\"",
+	   GWEN_CryptToken_HashAlgo_toString(algo));
 
   switch(algo) {
   case GWEN_CryptToken_HashAlgo_None:
@@ -2757,8 +2757,8 @@ int GWEN_CryptToken_Padd(GWEN_CRYPTTOKEN_PADDALGO algo,
   unsigned bsize;
   unsigned dstSize;
 
-  DBG_ERROR(GWEN_LOGDOMAIN, "Padding with algo \"%s\"",
-            GWEN_CryptToken_PaddAlgo_toString(algo));
+  DBG_INFO(GWEN_LOGDOMAIN, "Padding with algo \"%s\"",
+	   GWEN_CryptToken_PaddAlgo_toString(algo));
 
   assert(buf);
   bsize=GWEN_Buffer_GetUsedBytes(buf);
@@ -3293,9 +3293,9 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
             logbuffer[sizeof(logbuffer)-1]=0;
             GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, logbuffer);
 
-            DBG_ERROR(GWEN_LOGDOMAIN,
-                      "Checking plugin \"%s\"",
-                      GWEN_Plugin_GetName(pl));
+            DBG_INFO(GWEN_LOGDOMAIN,
+		     "Checking plugin \"%s\"",
+		     GWEN_Plugin_GetName(pl));
 
             rv=GWEN_CryptToken_Plugin_CheckToken(pl,
                                                  lSubTypeName,
@@ -3503,7 +3503,7 @@ int GWEN_CryptToken__TransformFromFPIN2(unsigned char *buffer,
   unsigned int len;
 
   if (*pinLength<8) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Pin too small to be a FPIN2 (%d)", *pinLength);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Pin too small to be a FPIN2 (%d<8)", *pinLength);
     return GWEN_ERROR_INVALID;
   }
   len=(buffer[0] & 0x0f);
@@ -3570,7 +3570,7 @@ int GWEN_CryptToken__TransformFromBin(unsigned char *buffer,
 
     c=buffer[i];
     if (c>9) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin (a digit > 9)");
       free(newBuf);
       return GWEN_ERROR_INVALID;
     }
@@ -3606,7 +3606,7 @@ int GWEN_CryptToken__TransformToBCD(unsigned char *buffer,
     /* 1st digit */
     c1=buffer[i];
     if (c1<'0' || c1>'9') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin (a non-number character)");
       free(newBuf);
       return GWEN_ERROR_INVALID;
     }
@@ -3621,7 +3621,7 @@ int GWEN_CryptToken__TransformToBCD(unsigned char *buffer,
     /* 2nd digit */
     c2=buffer[i];
     if (c2<'0' || c2>'9') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin (a non-number character)");
       free(newBuf);
       return GWEN_ERROR_INVALID;
     }
@@ -3680,7 +3680,7 @@ int GWEN_CryptToken__TransformToFPIN2(unsigned char *buffer,
     /* 1st digit */
     c1=buffer[i];
     if (c1<'0' || c1>'9') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin (a non-number character)");
       free(newBuf);
       return GWEN_ERROR_INVALID;
     }
@@ -3694,7 +3694,7 @@ int GWEN_CryptToken__TransformToFPIN2(unsigned char *buffer,
     /* 2nd digit */
     c2=buffer[i];
     if (c2<'0' || c2>'9') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin (a non-number character)");
       free(newBuf);
       return GWEN_ERROR_INVALID;
     }
@@ -3735,7 +3735,7 @@ int GWEN_CryptToken__TransformToBin(unsigned char *buffer,
 
     c=buffer[i];
     if (c<'0' || c>'9') {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid element in pin (a non-number character)");
       free(newBuf);
       return GWEN_ERROR_INVALID;
     }

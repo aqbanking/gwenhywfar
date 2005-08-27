@@ -1,3 +1,7 @@
+2005-08-27  Christian Stimming  <stimming@tuhh.de>
+
+	* src/crypt2/crypttoken.c, ct_file.c: Decrease verbosity in
+	non-critical messages; increased verbosity in some error messages.
 
 2005/08/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

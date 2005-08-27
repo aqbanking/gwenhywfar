@@ -570,12 +570,12 @@ int GWEN_CryptTokenFile__ReloadIfNeeded(GWEN_CRYPTTOKEN *ct){
     /* read file */
     rv=GWEN_CryptTokenFile__ReadFile(ct);
     if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Error reloading keyfile");
+      DBG_WARN(GWEN_LOGDOMAIN, "Error reloading keyfile");
       return rv;
     }
   }
   else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Keyfile unchanged, not reloading");
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Keyfile unchanged, not reloading");
   }
   return 0;
 }
