@@ -1602,21 +1602,35 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
     match=0;
     x=(unsigned char)*src;
     if (x=='&') {
-      const GWEN_TEXT_ESCAPE_ENTRY *e;
-      e=gwen_text__xml_escape_chars;
-      while(e->replace) {
-        int l;
+      if (0 && src[1]=='#') { /* disabled */
+	unsigned char num=0;
 
-        l=strlen(e->replace);
-        if (strncasecmp(src, e->replace, l)==0) {
-          GWEN_TEXT__APPENDCHAR(e->character);
-          //GWEN_Buffer_AppendByte(buf, e->character);
-          src+=l;
-          match=1;
-          break;
-        }
-        e++;
-      } /* while */
+	src++;
+	while(isdigit(*src)) {
+	  num*=10;
+	  num+=(*src)-'0';
+	  src++;
+	}
+        src++;
+	GWEN_TEXT__APPENDCHAR(num);
+      }
+      else {
+	const GWEN_TEXT_ESCAPE_ENTRY *e;
+	e=gwen_text__xml_escape_chars;
+	while(e->replace) {
+	  int l;
+
+	  l=strlen(e->replace);
+	  if (strncasecmp(src, e->replace, l)==0) {
+	    GWEN_TEXT__APPENDCHAR(e->character);
+	    //GWEN_Buffer_AppendByte(buf, e->character);
+	    src+=l;
+	    match=1;
+	    break;
+	  }
+	  e++;
+	} /* while */
+      }
     }
     if (!match) {
       GWEN_TEXT__APPENDCHAR(*(src++));
@@ -1653,7 +1667,14 @@ int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
     } /* while */
 
     if (!match) {
-      GWEN_Buffer_AppendByte(buf, *src);
+      if (0 && x>127) { /* disabled */
+	char numbuf[32];
+
+	snprintf(numbuf, sizeof(numbuf), "&#%d;", x);
+        GWEN_Buffer_AppendString(buf, numbuf);
+      }
+      else
+	GWEN_Buffer_AppendByte(buf, *src);
     }
     src++;
   } /* while */

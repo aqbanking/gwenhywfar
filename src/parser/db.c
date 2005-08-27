@@ -288,7 +288,8 @@ void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n) {
   GWEN_DB_Node_Unlink_UnDirty(n);
   GWEN_DB_ModifyBranchFlagsUp(parent,
 			      GWEN_DB_NODE_FLAGS_DIRTY,
-			      GWEN_DB_NODE_FLAGS_DIRTY);
+                              GWEN_DB_NODE_FLAGS_DIRTY);
+  n->h.parent=0;
 }
 
 

@@ -193,7 +193,7 @@ int testDBfile(int argc, char **argv) {
   db=GWEN_DB_Group_new("Config");
 
   fprintf(stderr,"Reading file\n");
-  if (GWEN_DB_ReadFile(db, "test.db", 0)) {
+  if (GWEN_DB_ReadFile(db, "test.db", GWEN_DB_FLAGS_DEFAULT)) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }

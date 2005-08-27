@@ -1,4 +1,8 @@
 
+2005/08/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug (GWEN_DB_Node_Unlink was not setting parent to 0)
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.18.0 (2005/08/24)
