@@ -8,7 +8,7 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
 
-EXTRA_DIST = xsdtypes.inc xsdtypes.xsd
+EXTRA_DIST = xsdtypes.inc xsdtypes.xsd mkxsdtypes.sh
 
 localedir=$(datadir)/locale
 DEFS += \
