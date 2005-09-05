@@ -1870,5 +1870,8 @@ int GWEN_CryptTokenOHBCI_Close(GWEN_CRYPTTOKEN *ct){
     return rv;
   }
 
+  memset(lct->password, 0, sizeof(lct->password));
+  lct->passWordIsSet=0;
+
   return 0;
 }
