@@ -40,6 +40,9 @@ gwenhywfar-config: gwenhywfar-config.in
 	cat gwenhywfar-config.in >>gwenhywfar-config && \
 	chmod a+x gwenhywfar-config
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = gwenhywfar.pc
+
 listdoc.h:
 	admin/mklistdoc -v -I $(top_srcdir)/src/base @GWEN_HEADER_FILES@ >listdoc.h
 

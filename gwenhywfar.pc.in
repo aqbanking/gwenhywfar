@@ -1,0 +1,30 @@
+# pkg-config configuration for gwenhywfar
+# For information about the syntax, see pkg-config(1)
+
+# General installation directories
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+pkgincludedir=@includedir@/gwenhywfar
+datadir=@datadir@
+bindir=@bindir@
+sysconfdir=@sysconfdir@
+
+# Particular variables of gwenhywfar
+plugindir=@gwenhywfar_plugindir@
+has-ui=@USE_NCURSES@
+has-crypt=@USE_CRYPT@
+sections=@gwenhywfar_sections@
+libraries-ui=@gwenhywfar_ldflags@ @gwenhywfar_libsui@
+librariespp=@gwenhywfar_ldflags@ @gwenhywfar_libspp@
+
+# Human-readable name
+Name: gwenhywfar
+# Human-readable description
+Description: A multi-platform helper library for other libraries
+
+Version: @VERSION@
+Libs: @gwenhywfar_ldflags@ @gwenhywfar_libs@
+Cflags: @gwenhywfar_includes@
+
