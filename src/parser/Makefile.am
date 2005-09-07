@@ -1,4 +1,6 @@
-INCLUDES=@all_includes@ -I$(top_srcdir) \
+INCLUDES= \
+ $(all_includes) \
+ -I$(top_srcdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
@@ -9,11 +11,6 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/ui
 
 EXTRA_DIST = xsdtypes.inc xsdtypes.xsd mkxsdtypes.sh
-
-localedir=$(datadir)/locale
-DEFS += \
-  -DLOCALEDIR=\"$(localedir)\" \
-  -DGWENHYWFAR_PLUGINS=\"$(gwenhywfar_plugindir)\"
 
 noinst_LTLIBRARIES=libparser.la
 

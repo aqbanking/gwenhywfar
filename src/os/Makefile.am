@@ -7,13 +7,9 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
- 
 
 SUBDIRS=@GWEN_OS@
 DIST_SUBDIRS=posix windows
-
-localedir=$(datadir)/locale
-DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS=\
@@ -39,6 +35,6 @@ libos_la_SOURCES=\
  directory_all.c \
  gwentime_all.c \
  inetsocket_all.c
- 
+
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la
 

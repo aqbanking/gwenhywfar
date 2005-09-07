@@ -2,9 +2,6 @@ EXTRA_DIST=README ressource.rc.in
 
 dbioplugindir = $(gwenhywfar_plugindir)/dbio
 
-localedir=$(datadir)/locale
-DEFS += -D LOCALEDIR=\"$(localedir)\"
-
 dbioplugin_LTLIBRARIES=csv.la
 dbioplugin_DATA=csv.xml
 noinst_HEADERS=csv_p.h

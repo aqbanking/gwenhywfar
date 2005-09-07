@@ -1,8 +1,5 @@
 INCLUDES=@all_includes@ -I$(top_builddir)
 
-localedir=$(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
-
 bin_PROGRAMS=xmlmerge
 noinst_HEADERS=args.h
 xmlmerge_SOURCES=args.c main.c

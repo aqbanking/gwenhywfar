@@ -13,9 +13,6 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 # mingw's version of that header file (process.h necessary for getpid
 # on mingw).
 
-localedir=$(datadir)/locale
-DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
-
 noinst_LTLIBRARIES=libosimpl.la
 
 noinst_HEADERS=\

@@ -13,9 +13,6 @@ INCLUDES = \
 
 crypttokenplugindir = $(gwenhywfar_plugindir)/crypttoken
 
-localedir=$(datadir)/locale
-DEFS += -D LOCALEDIR=\"$(localedir)\"
-
 crypttokenplugin_LTLIBRARIES=ohbci.la
 crypttokenplugin_DATA=ohbci.xml
 noinst_HEADERS=ohbci_l.h ohbci_p.h tag16_l.h tag16_p.h

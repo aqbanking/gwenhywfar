@@ -7,9 +7,6 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
- 
-localedir=$(datadir)/locale
-DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 noinst_LTLIBRARIES=libnet.la
 

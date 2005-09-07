@@ -2,9 +2,6 @@ EXTRA_DIST=ressource.rc.in
 
 dbioplugindir = $(gwenhywfar_plugindir)/dbio
 
-localedir=$(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
-
 dbioplugin_LTLIBRARIES=olddb.la
 dbioplugin_DATA=olddb.xml
 noinst_HEADERS=olddb_p.h

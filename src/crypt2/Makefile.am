@@ -10,10 +10,7 @@ INCLUDES=-I$(top_srcdir) \
 typefiles=crypttoken.xml
 
 
-localedir=$(datadir)/locale
-DEFS=-DLOCALEDIR=\"$(localedir)\" @DEFS@
-
-iheaderdir=${includedir}/gwenhywfar
+iheaderdir=$(pkgincludedir)
 iheader_HEADERS=\
   crypttoken.h \
   crypttoken_context.h \

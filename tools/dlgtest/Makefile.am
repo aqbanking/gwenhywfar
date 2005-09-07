@@ -1,8 +1,5 @@
 INCLUDES=@all_includes@ -I$(top_builddir)
 
-localedir=$(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
-
 bin_PROGRAMS=dlgtest
 #noinst_HEADERS=args.h
 dlgtest_SOURCES=main.c

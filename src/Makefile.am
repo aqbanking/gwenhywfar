@@ -12,13 +12,10 @@ INCLUDES = $(all_includes) \
 
 SUBDIRS = base crypt io ipc os parser net crypt2
 
-localedir=$(datadir)/locale
-DEFS=\
-  -DLOCALEDIR=\"$(localedir)\" \
+DEFS += \
   -DGWEN_INSTALL_DIR=\"$(prefix)\" \
   -DGWEN_EFFECTIVE_VERSTR=\"${GWENHYWFAR_SO_EFFECTIVE}\" \
-  -DGWEN_PLUGIN_DIR=\"$(gwenhywfar_plugindir)\" \
-  -DGWEN_SYSCONF_DIR=\"$(sysconfdir)\" @DEFS@
+  -DGWEN_SYSCONF_DIR=\"$(sysconfdir)\"
 
 
 EXTRA_DIST=\
