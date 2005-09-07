@@ -23,6 +23,9 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
 
+#include <gwenhywfar/httpcookie.h>
+#include <gwenhywfar/httpurl.h>
+
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -60,6 +63,10 @@ GWEN_NETCONNECTION *GWEN_NetConnectionHTTP_new(GWEN_NETTRANSPORT *tr,
   }
   chttp->pmajor=pmajor;
   chttp->pminor=pminor;
+
+  chttp->cookies=GWEN_HttpCookie_List_new();
+  chttp->dbHeader=GWEN_DB_Group_new("header");
+
   return conn;
 }
 
@@ -76,7 +83,11 @@ void GWEN_NetConnectionHTTP_FreeData(void *bp, void *p){
   assert(chttp);
   GWEN_NetMsg_free(chttp->currentInMsg);
   GWEN_NetMsg_free(chttp->currentOutMsg);
+  GWEN_HttpCookie_List_free(chttp->cookies);
+  GWEN_DB_Group_free(chttp->dbHeader);
   free(chttp->defaultUrl);
+  free(chttp->virtualServer);
+  free(chttp->lastResultMsg);
   free(chttp);
 }
 
@@ -1764,6 +1775,296 @@ void GWEN_NetConnectionHTTP_SetDefaultURL(GWEN_NETCONNECTION *conn,
   free(chttp->defaultUrl);
   if (s) chttp->defaultUrl=strdup(s);
   else chttp->defaultUrl=0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+const char *
+GWEN_NetConnectionHTTP_GetVirtualServer(const GWEN_NETCONNECTION *conn){
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  return chttp->virtualServer;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnectionHTTP_SetVirtualServer(GWEN_NETCONNECTION *conn,
+					     const char *s) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  free(chttp->virtualServer);
+  if (s) chttp->virtualServer=strdup(s);
+  else chttp->virtualServer=0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetConnectionHTTP_GetVirtualPort(const GWEN_NETCONNECTION *conn) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  return chttp->virtualPort;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnectionHTTP_SetVirtualPort(GWEN_NETCONNECTION *conn, int port) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  chttp->virtualPort=port;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+const char *
+GWEN_NetConnectionHTTP_GetLastResultMsg(const GWEN_NETCONNECTION *conn) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  return chttp->lastResultMsg;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetConnectionHTTP_GetLastResultCode(const GWEN_NETCONNECTION *conn){
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  return chttp->lastResultCode;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_DB_NODE*
+GWEN_NetConnectionHTTP_GetHeaders(const GWEN_NETCONNECTION *conn) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  return chttp->dbHeader;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnectionHTTP_SetHeaders(GWEN_NETCONNECTION *conn,
+                                       GWEN_DB_NODE *db) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  if (db!=chttp->dbHeader)
+    GWEN_DB_Group_free(chttp->dbHeader);
+  chttp->dbHeader=db;
+}
+
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_HTTP_COOKIE_LIST*
+GWEN_NetConnectionHTTP_GetCookies(const GWEN_NETCONNECTION *conn) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  return chttp->cookies;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetConnectionHTTP_SetCookies(GWEN_NETCONNECTION *conn,
+                                       GWEN_HTTP_COOKIE_LIST *cookies) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  if (cookies!=chttp->cookies)
+    GWEN_HttpCookie_List_free(chttp->cookies);
+  chttp->cookies=cookies;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetConnHttp_Request(GWEN_NETCONNECTION *conn,
+                             const char *command,
+                             const char *arg,
+			     const char *body,
+			     unsigned int size,
+                             GWEN_DB_NODE *dbResultHeader,
+                             GWEN_BUFFER *bufResult) {
+  GWEN_NETCONNECTIONHTTP *chttp;
+  GWEN_DB_NODE *dbRequest;
+  GWEN_DB_NODE *dbT;
+  GWEN_BUFFER *bufBody=0;
+  int rv;
+  GWEN_NETMSG *msgResponse;
+  GWEN_DB_NODE *dbResponse;
+  const char *s;
+  GWEN_TYPE_UINT32 pos;
+
+  assert(conn);
+  chttp=GWEN_INHERIT_GETDATA(GWEN_NETCONNECTION, GWEN_NETCONNECTIONHTTP, conn);
+  assert(chttp);
+
+  dbRequest=GWEN_DB_Group_new("request");
+  /* create command */
+  dbT=GWEN_DB_GetGroup(dbRequest, GWEN_DB_FLAGS_DEFAULT, "command");
+  assert(dbT);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS, "cmd",
+                       command);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS, "url",
+                       arg);
+
+  /* copy header */
+  dbT=GWEN_DB_GetGroup(dbRequest, GWEN_DB_FLAGS_DEFAULT, "header");
+  assert(dbT);
+  GWEN_DB_AddGroupChildren(dbT, chttp->dbHeader);
+
+  /* copy cookies */
+  if (GWEN_HttpCookie_List_GetCount(chttp->cookies)) {
+    GWEN_HTTP_COOKIE *co;
+
+    co=GWEN_HttpCookie_List_First(chttp->cookies);
+    while(co) {
+      const char *name;
+      const char *value;
+
+      /* TODO: check for "secure" */
+      name=GWEN_HttpCookie_GetName(co);
+      value=GWEN_HttpCookie_GetValue(co);
+      if (name && *name && value && *value) {
+        GWEN_BUFFER *buf;
+
+        buf=GWEN_Buffer_new(0, 32, 0, 1);
+        GWEN_Buffer_AppendString(buf, name);
+        GWEN_Buffer_AppendString(buf, "=");
+        GWEN_Buffer_AppendString(buf, value);
+        GWEN_DB_SetCharValue(dbT, GWEN_PATH_FLAGS_CREATE_VAR,
+                             "cookie",
+                             GWEN_Buffer_GetStart(buf));
+        GWEN_Buffer_free(buf);
+      }
+      co=GWEN_HttpCookie_List_Next(co);
+    }
+  }
+
+  /* prepare body */
+  if (body && size)
+    bufBody=GWEN_Buffer_new((char*)body, size, size, 0);
+
+  /* enqueue request */
+  rv=GWEN_NetConnectionHTTP_AddRequest(conn,
+                                       dbRequest, bufBody, 0);
+  GWEN_DB_Group_free(dbRequest);
+  GWEN_Buffer_free(bufBody);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* write outgoing request */
+  rv=GWEN_NetConnection_Flush(conn, 60);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* wait for response */
+  msgResponse=GWEN_NetConnection_GetInMsg_Wait(conn, 60);
+  if (msgResponse==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No response");
+    return GWEN_ERROR_TIMEOUT;
+  }
+
+  dbResponse=GWEN_NetMsg_GetDB(msgResponse);
+  assert(dbResponse);
+  dbT=GWEN_DB_GetGroup(dbResponse, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "header");
+  if (dbT) {
+    /* copy header */
+    if (dbResultHeader)
+      GWEN_DB_AddGroupChildren(dbResultHeader, dbT);
+
+    /* check header for cookies */
+    dbT=GWEN_DB_FindFirstVar(dbT, "set-cookie");
+    while(dbT) {
+      GWEN_DB_NODE *dbValue;
+
+      dbValue=GWEN_DB_GetFirstValue(dbT);
+      while(dbValue) {
+        const char *s;
+
+        s=GWEN_DB_GetCharValueFromNode(dbValue);
+        if (s) {
+          /* TODO: create cookie */
+        }
+        dbValue=GWEN_DB_GetNextValue(dbValue);
+      }
+      dbT=GWEN_DB_FindNextVar(dbT, "set-cookie");
+    }
+  }
+
+  /* store result msg and code */
+  rv=GWEN_DB_GetIntValue(dbResponse, "status/code", 0, -1);
+  chttp->lastResultCode=rv;
+  s=GWEN_DB_GetCharValue(dbResponse, "status/text", 0, 0);
+  free(chttp->lastResultMsg);
+  if (s) chttp->lastResultMsg=strdup(s);
+  else chttp->lastResultMsg=0;
+
+  /* get body */
+  bufBody=GWEN_NetMsg_GetBuffer(msgResponse);
+  pos=GWEN_Buffer_GetBookmark(bufBody, 1);
+  if (pos) {
+    GWEN_TYPE_UINT32 len;
+
+    len=GWEN_Buffer_GetUsedBytes(bufBody)-pos;
+    GWEN_Buffer_AppendBytes(bufResult,
+                            GWEN_Buffer_GetStart(bufBody)+pos,
+                            len);
+  }
+
+  GWEN_NetMsg_free(msgResponse);
+
+  return rv;
 }
 
 

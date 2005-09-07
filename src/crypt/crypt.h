@@ -88,6 +88,7 @@ GWENHYWFAR_API
 typedef struct GWEN_CRYPTKEY GWEN_CRYPTKEY;
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWENHYWFAR_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWEN_CryptKey, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWEN_CryptKey, GWENHYWFAR_API)
 void GWEN_CryptKey_List2_freeAll(GWEN_CRYPTKEY_LIST2 *stl);
 
@@ -127,7 +128,7 @@ typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_TODB_FN)(const GWEN_CRYPTKEY *key,
 typedef void (*GWEN_CRYPTKEY_FREEKEYDATA_FN)(GWEN_CRYPTKEY *key);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_GENERATEKEY_FN)(GWEN_CRYPTKEY *key,
-                                                       unsigned keylength);
+                                                       unsigned int keylength);
 
 typedef GWEN_ERRORCODE (*GWEN_CRYPTKEY_OPEN_FN)(GWEN_CRYPTKEY *key);
 
@@ -178,7 +179,11 @@ GWENHYWFAR_API
 				      GWEN_BUFFER *dst);
 
 GWENHYWFAR_API
-  unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key);
+unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key);
+
+GWENHYWFAR_API
+void GWEN_CryptKey_SetChunkSize(GWEN_CRYPTKEY *key,
+				unsigned int i);
 
 GWENHYWFAR_API
   GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db);

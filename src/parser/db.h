@@ -982,6 +982,43 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API 
 int GWEN_DB_IsVariable(const GWEN_DB_NODE *n);
+
+
+/**
+ * Returns the first variable node below the given one by name.
+ *
+ * If there is no matching variable node then NULL is returned. This can
+ * either mean that this node does not have any children or the only
+ * children are groups/values instead of variables or their is no variable of
+ * the given name.
+ *
+ * @param n db node
+ * @param name name to look for (joker and wildcards allowed)
+ */
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_DB_FindFirstVar(GWEN_DB_NODE *n, const char *name);
+
+/**
+ * Returns the next variable node following the given one, which has the
+ * same parent node, by name.
+ *
+ * If there is no matching variable node then NULL is returned. This can
+ * either mean that this node does not have any children or the only
+ * children are groups/values instead of variables or their is no variable of
+ * the given name.
+ *
+ * @note This is one of the few functions where the returned node is @e not
+ * the child of the specified node, but instead it is the next node
+ * with the same parent node. In other words, this function is an
+ * exception. In most other functions the returned node is a child of
+ * the specified node.
+ *
+ * @param n db node
+ * @param name name to look for (joker and wildcards allowed)
+ */
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_DB_FindNextVar(GWEN_DB_NODE *n, const char *name);
+
 /*@}*/
 
 

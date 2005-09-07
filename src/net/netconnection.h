@@ -78,6 +78,7 @@ typedef struct GWEN_NETCONNECTION GWEN_NETCONNECTION;
 #endif
 
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/list2.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/nettransport.h>
 #include <gwenhywfar/netmsg.h>
@@ -98,6 +99,7 @@ typedef enum {
 
 
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_NETCONNECTION, GWEN_NetConnection, GWENHYWFAR_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_NETCONNECTION, GWEN_NetConnection, GWENHYWFAR_API)
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_NETCONNECTION, GWENHYWFAR_API)
 /* No trailing semicolon here because this is a macro call */
 
@@ -505,7 +507,7 @@ GWEN_NETMSG *GWEN_NetConnection_GetInMsg(GWEN_NETCONNECTION *conn);
  */
 GWENHYWFAR_API
 GWEN_NETMSG *GWEN_NetConnection_GetInMsg_Wait(GWEN_NETCONNECTION *conn,
-                                             int timeout);
+                                              int timeout);
 
 /**
  * Returns the next message from the input queue (if any) but keeps it in

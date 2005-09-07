@@ -1,7 +1,25 @@
+
+
 2005-09-07   Christian Stimming <stimming@tuhh.de>
 
 	* gwenhywfar.pc.in: Add configuration file for pkg-config, let
 	this also be installed.
+
+
+2005/09/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions
+  - GWEN_DB_FindFirstVar()
+  - GWEN_DB_FindNextVar()
+- started working on HTTP session stuff
+- added debug code to spot the problem with "size 96!=xx"
+
+
+2005/09/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added property "chunkSize" to crypt keys
+- fixed a memory leak in typemaker constructed code (_fromDb functions)
+
 
 2005/09/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

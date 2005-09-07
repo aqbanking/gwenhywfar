@@ -2204,19 +2204,31 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 	      GWEN_BufferedIO_WriteLine(bio, "\");");
 	      GWEN_BufferedIO_Write(bio, "    if (dbT)");
 	    }
-	  }
-          GWEN_BufferedIO_Write(bio, "  ");
-          GWEN_BufferedIO_Write(bio, prefix);
-          GWEN_BufferedIO_Write(bio, "_Set");
-          GWEN_BufferedIO_WriteChar(bio, toupper(*name));
-          GWEN_BufferedIO_Write(bio, name+1);
-          GWEN_BufferedIO_Write(bio, "(st, ");
+          }
+          if (isPtr && strcasecmp(typ, "char")!=0) {
+            GWEN_BufferedIO_Write(bio, " st->");
+            GWEN_BufferedIO_Write(bio, name);
+            GWEN_BufferedIO_Write(bio, "=");
+            rv=write_code_fromdbArg_c(args, n, bio);
+            if (rv)
+              return rv;
+            GWEN_BufferedIO_WriteLine(bio, ";");
+          }
+          else {
+            GWEN_BufferedIO_Write(bio, "  ");
+            GWEN_BufferedIO_Write(bio, prefix);
+            GWEN_BufferedIO_Write(bio, "_Set");
+            GWEN_BufferedIO_WriteChar(bio, toupper(*name));
+            GWEN_BufferedIO_Write(bio, name+1);
+            GWEN_BufferedIO_Write(bio, "(st, ");
 
-          rv=write_code_fromdbArg_c(args, n, bio);
-          if (rv)
-            return rv;
-          GWEN_BufferedIO_WriteLine(bio, ");");
-	  if (isPtr && strcasecmp(typ, "char")!=0) {
+            rv=write_code_fromdbArg_c(args, n, bio);
+            if (rv)
+              return rv;
+            GWEN_BufferedIO_WriteLine(bio, ");");
+          }
+
+          if (isPtr && strcasecmp(typ, "char")!=0) {
 	    GWEN_BufferedIO_WriteLine(bio, "  }");
 	  }
         }

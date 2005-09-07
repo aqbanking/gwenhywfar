@@ -1875,3 +1875,6 @@ int GWEN_CryptTokenOHBCI_Close(GWEN_CRYPTTOKEN *ct){
 
   return 0;
 }
+
+
+

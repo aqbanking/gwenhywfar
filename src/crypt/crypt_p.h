@@ -36,11 +36,13 @@
 
 struct GWEN_CRYPTKEY {
   GWEN_INHERIT_ELEMENT(GWEN_CRYPTKEY)
+  GWEN_LIST_ELEMENT(GWEN_CRYPTKEY)
   GWEN_KEYSPEC *keyspec;
   void *keyData;
   int openCount;
   int pub;
   GWEN_TYPE_UINT32 flags;
+  unsigned int chunkSize;
 
   GWEN_CRYPTKEY_DUP_FN dupFn;
   GWEN_CRYPTKEY_ENCRYPT_FN encryptFn;

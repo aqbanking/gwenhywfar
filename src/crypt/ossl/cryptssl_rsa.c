@@ -72,6 +72,23 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
   if (srclen!=GWEN_CryptKey_GetChunkSize(key)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Size %d!=%d",
               srclen, GWEN_CryptKey_GetChunkSize(key));
+    if (1) {
+      GWEN_DB_NODE *dbDebug;
+      GWEN_ERRORCODE lerr;
+
+      dbDebug=GWEN_DB_Group_new("key");
+      lerr=GWEN_CryptKey_ToDb(key, dbDebug, 1);
+      if (!GWEN_Error_IsOk(lerr)) {
+	DBG_ERROR_ERR(GWEN_LOGDOMAIN, lerr);
+      }
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN,
+		  "Offending key follows:");
+	GWEN_DB_Dump(dbDebug, stderr, 2);
+      }
+      GWEN_DB_Group_free(dbDebug);
+    }
+
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
@@ -183,9 +200,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(const GWEN_CRYPTKEY *key,
   BN_CTX_start(bnctx);
   res=BN_mod_exp(bnresult, bnhash, kd->d, kd->n, bnctx);
 
-  /* FIXME: The description is quite the opposite of the code, while the
-   * code seems to be working (at least when verifying my own signatures)
-   * the iso9796-appendix is as follows:
+  /* the iso9796-appendix is as follows:
    * if (the calculated signature - the modulus) < (the calculated signature)
    * use (the calculated signature - the modulus) as signature
    */
@@ -393,11 +408,15 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Verify(const GWEN_CRYPTKEY *key,
 
 unsigned int GWEN_CryptKeyRSA_GetChunkSize(const GWEN_CRYPTKEY *key){
   RSA *kd;
+  unsigned int i;
 
   assert(key);
   kd=(RSA*)GWEN_CryptKey_GetKeyData(key);
   assert(kd);
-  return RSA_size(kd);
+  i=RSA_size(kd);
+  if (i<96)
+    i=96;
+  return i;
 }
 
 
@@ -580,7 +599,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_ToDb(const GWEN_CRYPTKEY *key,
 
 
 GWEN_ERRORCODE GWEN_CryptKeyRSA_Generate(GWEN_CRYPTKEY *key,
-                                         unsigned keylength){
+                                         unsigned int keylength){
   RSA *newKey;
 
   assert(key);
@@ -591,7 +610,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Generate(GWEN_CRYPTKEY *key,
                           NULL, NULL);
   assert(newKey);
   GWEN_CryptKey_SetKeyData(key, newKey);
-
+  GWEN_CryptKey_SetChunkSize(key, keylength/8);
   return 0;
 }
 

@@ -2697,6 +2697,50 @@ GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name){
 
 
 
+GWEN_DB_NODE *GWEN_DB_FindFirstVar(GWEN_DB_NODE *n, const char *name) {
+  GWEN_DB_NODE *nn;
+
+  assert(n);
+  if (n->h.typ!=GWEN_DB_NODETYPE_GROUP) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
+    return 0;
+  }
+  nn=n->h.child;
+  while(nn) {
+    if (nn->h.typ==GWEN_DB_NODETYPE_VAR) {
+      if (-1!=GWEN_Text_ComparePattern(nn->var.name, name, 0))
+        break;
+    }
+    nn=nn->h.next;
+  } /* while node */
+  return nn;
+}
+
+
+
+GWEN_DB_NODE *GWEN_DB_FindNextVar(GWEN_DB_NODE *n, const char *name) {
+  GWEN_DB_NODE *og;
+
+  og=n;
+  assert(n);
+  if (n->h.typ!=GWEN_DB_NODETYPE_VAR) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
+    return 0;
+  }
+  n=n->h.next;
+  while(n) {
+    if (n->h.typ==GWEN_DB_NODETYPE_VAR) {
+      if (-1!=GWEN_Text_ComparePattern(n->var.name, name, 0))
+        break;
+    }
+    n=n->h.next;
+  } /* while node */
+  assert(n!=og);
+  return n;
+}
+
+
+
 const char *GWEN_DB_VariableName(GWEN_DB_NODE *n){
   assert(n);
   if (n->h.typ!=GWEN_DB_NODETYPE_VAR) {

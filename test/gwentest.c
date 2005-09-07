@@ -4297,6 +4297,99 @@ int testTransformPin(int argc, char **argv) {
 
 
 
+int testHttpRequest(int argc, char **argv) {
+  GWEN_NETTRANSPORT *tr;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETCONNECTION *conn;
+  GWEN_BUFFER *bufResult;
+  int rv;
+  GWEN_DB_NODE *dbResultHeader;
+  GWEN_DB_NODE *dbT;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  tr=GWEN_NetTransportSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
+  GWEN_InetAddr_SetPort(addr, 55555);
+  GWEN_NetTransport_SetLocalAddr(tr, addr);
+  GWEN_InetAddr_free(addr);
+
+  if (!tr) {
+    fprintf(stderr, "Socket not supported.\n");
+    return 2;
+  }
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.1");
+  //GWEN_InetAddr_SetName(addr, "www.strato.de");
+  GWEN_InetAddr_SetPort(addr, 80);
+  //GWEN_InetAddr_SetPort(addr, 443);
+  //GWEN_InetAddr_SetPort(addr, 80);
+  GWEN_NetTransport_SetPeerAddr(tr, addr);
+  GWEN_InetAddr_free(addr);
+
+  /* create connection layer */
+  conn=GWEN_NetConnectionHTTP_new(tr,
+                                  1,     /* take */
+                                  0,     /* libId */
+                                  1,1);  /* protocol version */
+  GWEN_NetConnection_SetUpFn(conn, connection_Up);
+  GWEN_NetConnection_SetDownFn(conn, connection_Down);
+  GWEN_NetConnectionHTTP_SubMode(conn,
+                                 GWEN_NETCONN_MODE_WAITBEFOREREAD |
+                                 GWEN_NETCONN_MODE_WAITBEFOREBODYREAD);
+
+  dbT=GWEN_NetConnectionHTTP_GetHeaders(conn);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "connection",
+                       "keep-alive");
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "Accept",
+                       "*/*");
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "Host",
+                       "192.168.115.1");
+
+  if (GWEN_NetConnection_Connect_Wait(conn, 30)) {
+    fprintf(stderr, "ERROR: Could not connect\n");
+    GWEN_NetConnection_free(conn);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  bufResult=GWEN_Buffer_new(0, 1024, 0, 1);
+  dbResultHeader=GWEN_DB_Group_new("header");
+  rv=GWEN_NetConnHttp_Request(conn,
+                              "get",
+                              "/?var1=val1",
+                              0, 0,
+                              dbResultHeader,
+                              bufResult);
+  if (rv<0) {
+    DBG_ERROR(0, "Error: %d", rv);
+  }
+  else {
+    DBG_ERROR(0, "Code: %d", rv);
+  }
+
+  fprintf(stderr, "Response was:\n");
+  GWEN_DB_Dump(dbResultHeader, stderr, 2);
+  GWEN_Buffer_Dump(bufResult, stderr, 2);
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetConnection_Disconnect_Wait(conn, 30);
+  GWEN_NetConnection_free(conn);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4435,6 +4528,8 @@ int main(int argc, char **argv) {
     rv=testBIO(argc, argv);
   else if (strcasecmp(argv[1], "transformpin")==0)
     rv=testTransformPin(argc, argv);
+  else if (strcasecmp(argv[1], "httpr")==0)
+    rv=testHttpRequest(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

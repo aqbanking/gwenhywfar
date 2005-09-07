@@ -16,6 +16,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/netconnection.h>
 #include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/httpcookie.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,6 +93,30 @@ typedef enum {
   /** aborting reception of the message body (due to an error) */
   GWEN_NetConnHttp_WriteBodyModeAbort
 } GWEN_NETCONNHTTP_WRITEBODY_MODE;
+
+
+typedef enum {
+  /** accept cookie even for insecure connections */
+  GWEN_NetConnHttp_CheckCookieResult_Accept=0,
+  /** accept cookie only for secure connections */
+  GWEN_NetConnHttp_CheckCookieResult_Secure,
+  /** reject */
+  GWEN_NetConnHttp_CheckCookieResult_Reject,
+  /** abort session */
+  GWEN_NetConnHttp_CheckCookieResult_Abort
+} GWEN_NETCONNHTTP_CHECK_COOKIE_RESULT;
+
+
+typedef enum {
+  GWEN_NetConnHttp_AuthType_Basic=0,
+  GWEN_NetConnHttp_AuthType_Digest
+} GWEN_NETCONNHTTP_AUTH_TYPE;
+
+
+typedef GWEN_NETCONNHTTP_CHECK_COOKIE_RESULT
+(*GWEN_NETCONNHTTP_CHECK_COOKIE_FN)(GWEN_NETCONNECTION *conn,
+                                     GWEN_HTTP_COOKIE *cookie);
+
 
 
 GWENHYWFAR_API
@@ -183,13 +208,72 @@ const char*
 void GWEN_NetConnectionHTTP_SetDefaultURL(GWEN_NETCONNECTION *conn,
                                           const char *s);
 
-
 /**
  * You can use this function to check whether the connection needs the
  * program's attention.
  */
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetConnectionHTTP_GetState(GWEN_NETCONNECTION *conn);
+
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_NetConnHttp_GetHeaders(const GWEN_NETCONNECTION *conn);
+
+
+GWENHYWFAR_API
+const char *
+GWEN_NetConnectionHTTP_GetLastResultMsg(const GWEN_NETCONNECTION *conn);
+GWENHYWFAR_API
+int GWEN_NetConnectionHTTP_GetLastResultCode(const GWEN_NETCONNECTION *conn);
+
+
+/*@}*/
+
+
+/** @name Functions used for session management
+ *
+ * The virtual server functions are used e.g. by GWEN_HttpSession to
+ * store the name of the server derived from the URL (e.g. this is not
+ * necessariliy the host's primary IP address or name, it is just what was
+ * given as argument to a HTTP command).
+ * These values are only stored here, changing them will have no effect on
+ * GWEN_NetConnectionHTTP's code.
+ *
+ * The remaining functions are used for the simplified HTTP request interface.
+ */
+/*@{*/
+const char *
+  GWEN_NetConnectionHTTP_GetVirtualServer(const GWEN_NETCONNECTION *conn);
+void GWEN_NetConnectionHTTP_SetVirtualServer(GWEN_NETCONNECTION *conn,
+                                             const char *s);
+int GWEN_NetConnectionHTTP_GetVirtualPort(const GWEN_NETCONNECTION *conn);
+void GWEN_NetConnectionHTTP_SetVirtualPort(GWEN_NETCONNECTION *conn, int port);
+
+GWEN_DB_NODE*
+  GWEN_NetConnectionHTTP_GetHeaders(const GWEN_NETCONNECTION *conn);
+
+/**
+ * Takes over ownership of the db.
+ */
+void GWEN_NetConnectionHTTP_SetHeaders(GWEN_NETCONNECTION *conn,
+                                       GWEN_DB_NODE *db);
+
+GWEN_HTTP_COOKIE_LIST*
+  GWEN_NetConnectionHTTP_GetCookies(const GWEN_NETCONNECTION *conn);
+
+/**
+ * Takes over ownership of the given list.
+ */
+void GWEN_NetConnectionHTTP_SetCookies(GWEN_NETCONNECTION *conn,
+                                       GWEN_HTTP_COOKIE_LIST *cookies);
+
+int GWEN_NetConnHttp_Request(GWEN_NETCONNECTION *conn,
+                             const char *command,
+                             const char *arg,
+                             const char *body,
+                             unsigned int size,
+                             GWEN_DB_NODE *dbResultHeader,
+                             GWEN_BUFFER *bufResult);
+
 /*@}*/
 
 
@@ -263,6 +347,7 @@ int GWEN_NetConnectionHTTP_AddResponse(GWEN_NETCONNECTION *conn,
                                        GWEN_DB_NODE *dbResponse,
                                        GWEN_BUFFER *body,
                                        GWEN_BUFFEREDIO *bio);
+
 /*@}*/
 
 

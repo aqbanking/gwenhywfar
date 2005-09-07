@@ -70,6 +70,22 @@ struct GWEN_NETCONNECTIONHTTP {
   char *defaultUrl;
 
   GWEN_NETCONNHTTP_WRITEBODY_FN writeBodyFn;
+
+  /* for session management */
+  char *virtualServer;
+  int virtualPort;
+
+  GWEN_DB_NODE *dbHeader;
+  char *userName;
+  char *password;
+  GWEN_NETCONNHTTP_AUTH_TYPE authType;
+
+  GWEN_HTTP_COOKIE_LIST *cookies;
+
+  GWEN_NETCONNHTTP_CHECK_COOKIE_FN checkCookieFn;
+
+  int lastResultCode;
+  char *lastResultMsg;
 };
 
 

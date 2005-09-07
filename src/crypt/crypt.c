@@ -59,6 +59,7 @@ static char gwen_random_state[GWEN_RANDSTATE_BUFSIZE];
 
 
 GWEN_INHERIT_FUNCTIONS(GWEN_CRYPTKEY)
+GWEN_LIST_FUNCTIONS(GWEN_CRYPTKEY, GWEN_CryptKey)
 GWEN_LIST2_FUNCTIONS(GWEN_CRYPTKEY, GWEN_CryptKey)
 
 
@@ -176,6 +177,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
 
   GWEN_NEW_OBJECT(GWEN_CRYPTKEY, ck);
   GWEN_INHERIT_INIT(GWEN_CRYPTKEY, ck);
+  GWEN_LIST_INIT(GWEN_CRYPTKEY, ck);
   DBG_MEM_INC("GWEN_CRYPTKEY", 0);
 
   ck->keyspec=GWEN_KeySpec_new();
@@ -186,6 +188,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
 void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
   if (key) {
     DBG_MEM_DEC("GWEN_CRYPTKEY");
+    GWEN_LIST_FINI(GWEN_CRYPTKEY, key);
     GWEN_INHERIT_FINI(GWEN_CRYPTKEY, key);
     if (key->freeKeyDataFn)
       key->freeKeyDataFn(key);
@@ -219,6 +222,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key){
   GWEN_KeySpec_free(newKey->keyspec);
   newKey->keyspec=GWEN_KeySpec_dup(key->keyspec);
   newKey->pub=key->pub;
+  newKey->chunkSize=key->chunkSize;
   return newKey;
 }
 
@@ -274,8 +278,17 @@ GWEN_ERRORCODE GWEN_CryptKey_Verify(const GWEN_CRYPTKEY *key,
 
 unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key){
   assert(key);
-  assert(key->getChunkSizeFn);
-  return key->getChunkSizeFn(key);
+  if (key->getChunkSizeFn)
+    return key->getChunkSizeFn(key);
+  else
+    return key->chunkSize;
+}
+
+
+
+void GWEN_CryptKey_SetChunkSize(GWEN_CRYPTKEY *key, unsigned int i) {
+  assert(key);
+  key->chunkSize=i;
 }
 
 
@@ -297,6 +310,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
   }
 
   key->flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
+  key->chunkSize=GWEN_DB_GetIntValue(db, "chunkSize", 0, 0);
 
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT,
@@ -328,6 +342,9 @@ GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
   }
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "flags", key->flags);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "chunkSize", key->chunkSize);
+
   /* save key specific data */
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT |
@@ -414,10 +431,15 @@ GWEN_ERRORCODE GWEN_CryptKey_GetData(GWEN_CRYPTKEY *key,
 
 
 GWEN_ERRORCODE GWEN_CryptKey_Generate(GWEN_CRYPTKEY *key,
-                                      unsigned keylength){
+                                      unsigned int keylength){
+  GWEN_ERRORCODE err;
+
   assert(key);
   assert(key->generateKeyFn);
-  return key->generateKeyFn(key, keylength);
+  err=key->generateKeyFn(key, keylength);
+  if (GWEN_Error_IsOk(err) && key->chunkSize==0)
+    key->chunkSize=keylength/8;
+  return err;
 }
 
 
@@ -858,7 +880,7 @@ void GWEN_Crypt_UnregisterAllProviders(){
 
 GWEN_CRYPTKEY *GWEN_CryptKey_List2__freeAll_cb(GWEN_CRYPTKEY *st, void *user_data) {
   GWEN_CryptKey_free(st);
-return 0;
+  return 0;
 }
 
 
@@ -898,8 +920,7 @@ void GWEN_CryptKey_SubFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl){
 }
 
 
-long int GWEN_Random()
-{
+long int GWEN_Random(){
   long int result;
 #ifdef HAVE_RANDOM
   char* prev_randstate = setstate(gwen_random_state);
@@ -910,3 +931,6 @@ long int GWEN_Random()
 #endif
   return result;
 }
+
+
+
