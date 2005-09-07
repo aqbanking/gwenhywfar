@@ -55,6 +55,8 @@ Source: "distribution\win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignorev
 ; The plugins
 Source: "distribution\win32-tmp\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
 
+; The certificate file
+Source: "distribution\win32-tmp\etc\gwen-public-ca.crt"; DestDir: "{app}\etc"; Components: main
 
 ; And all the documentation
 Source: "README"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
@@ -74,6 +76,7 @@ Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "dbio-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "crypttoken-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\crypttoken"
+Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Delete the created config script on uninstall
