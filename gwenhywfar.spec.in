@@ -90,6 +90,6 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/*.la
 #%{_libdir}/*.a
 %{_datadir}/aclocal/gwenhywfar.m4
-%{_libdir)/pkgconfig/gwenhywfar.pc
+%{_libdir}/pkgconfig/gwenhywfar.pc
 
 %changelog
