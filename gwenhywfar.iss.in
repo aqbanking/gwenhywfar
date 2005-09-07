@@ -53,7 +53,7 @@ Source: "distribution\win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ign
 Source: "distribution\win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
 
 ; The plugins
-Source: "distribution\win32-tmp\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "distribution\win32-tmp\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
 
 
 ; And all the documentation
@@ -73,6 +73,7 @@ Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "dbio-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"
+Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "crypttoken-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\crypttoken"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Delete the created config script on uninstall
