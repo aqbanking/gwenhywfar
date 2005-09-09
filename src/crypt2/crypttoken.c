@@ -1511,7 +1511,7 @@ GWEN_CRYPTTOKEN *GWEN_CryptToken_new(GWEN_PLUGIN_MANAGER *pm,
 void GWEN_CryptToken_free(GWEN_CRYPTTOKEN *ct){
   if (ct) {
     assert(ct->usage);
-    if (--(ct->usage)==0) {
+    if (ct->usage==1) {
       GWEN_INHERIT_FINI(GWEN_CRYPTTOKEN, ct);
       GWEN_LIST_FINI(GWEN_CRYPTTOKEN, ct);
       free(ct->tokenName);
@@ -1525,6 +1525,8 @@ void GWEN_CryptToken_free(GWEN_CRYPTTOKEN *ct){
       GWEN_CryptToken_KeyInfo_List_free(ct->keyInfoList);
       GWEN_FREE_OBJECT(ct);
     }
+    else
+      ct->usage--;
   }
 }
 

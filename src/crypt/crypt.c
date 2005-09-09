@@ -190,7 +190,7 @@ GWEN_CRYPTKEY *GWEN_CryptKey_new(){
 void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
   if (key) {
     assert(key->usage);
-    if (--(key->usage)==0) {
+    if (key->usage==1) {
       DBG_MEM_DEC("GWEN_CRYPTKEY");
       GWEN_LIST_FINI(GWEN_CRYPTKEY, key);
       GWEN_INHERIT_FINI(GWEN_CRYPTKEY, key);
@@ -199,6 +199,8 @@ void GWEN_CryptKey_free(GWEN_CRYPTKEY *key){
       GWEN_KeySpec_free(key->keyspec);
       GWEN_FREE_OBJECT(key);
     }
+    else
+      key->usage--;
   }
 }
 
