@@ -74,7 +74,7 @@ int GWEN_HttpSession__Request(GWEN_HTTP_SESSION *sess,
                               const char *body,
                               unsigned int size,
                               GWEN_BUFFER *result) {
-
+  return 0; /* Added to surpress gcc4 -O2 warnings. Martin is still at work.*/
 }
 
 
@@ -85,6 +85,7 @@ int GWEN_HttpSession_Request(GWEN_HTTP_SESSION *sess,
 			     const char *body,
 			     unsigned int size,
 			     GWEN_BUFFER *result) {
+  return 0; /* Added to surpress gcc4 -O2 warnings. Martin is still at work.*/
 }
 
 
