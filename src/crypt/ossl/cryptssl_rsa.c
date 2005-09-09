@@ -82,9 +82,15 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
 	DBG_ERROR_ERR(GWEN_LOGDOMAIN, lerr);
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN,
-		  "Offending key follows:");
-	GWEN_DB_Dump(dbDebug, stderr, 2);
+        const void *p;
+        unsigned int len;
+
+        p=GWEN_DB_GetBinValue(dbDebug, "data/n", 0, 0, 0, &len);
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Offending key follows (%d bytes):", len);
+        GWEN_DB_Dump(dbDebug, stderr, 2);
+        if (p && len)
+          GWEN_Text_DumpString((const char*)p, len, stderr, 2);
       }
       GWEN_DB_Group_free(dbDebug);
     }
@@ -510,6 +516,9 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   }
 
   GWEN_CryptKey_SetKeyData(key, kd);
+  if (GWEN_CryptKey_GetChunkSize(key)==0)
+    GWEN_CryptKey_SetChunkSize(key, RSA_size(kd));
+
   return 0;
 }
 

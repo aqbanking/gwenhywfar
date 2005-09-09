@@ -4390,6 +4390,35 @@ int testHttpRequest(int argc, char **argv) {
 
 
 
+int testDbKey(int argc, char **argv) {
+  GWEN_DB_NODE *db;
+  GWEN_CRYPTKEY *key;
+
+  fprintf(stderr,"Creating DB\n");
+  db=GWEN_DB_Group_new("Config");
+
+  fprintf(stderr,"Reading file\n");
+  if (GWEN_DB_ReadFile(db, "server.key", GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr,"Error reading file.\n");
+    return 1;
+  }
+
+  key=GWEN_CryptKey_FromDb(db);
+  if (key==0) {
+    fprintf(stderr,"No key.\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Chunk size: %u\n",
+          GWEN_CryptKey_GetChunkSize(key));
+
+  fprintf(stderr,"Releasing DB\n");
+  GWEN_DB_Group_free(db);
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4530,6 +4559,8 @@ int main(int argc, char **argv) {
     rv=testTransformPin(argc, argv);
   else if (strcasecmp(argv[1], "httpr")==0)
     rv=testHttpRequest(argc, argv);
+  else if (strcasecmp(argv[1], "dbkey")==0)
+    rv=testDbKey(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

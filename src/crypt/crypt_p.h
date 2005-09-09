@@ -38,6 +38,7 @@ struct GWEN_CRYPTKEY {
   GWEN_INHERIT_ELEMENT(GWEN_CRYPTKEY)
   GWEN_LIST_ELEMENT(GWEN_CRYPTKEY)
   GWEN_KEYSPEC *keyspec;
+  GWEN_TYPE_UINT32 usage;
   void *keyData;
   int openCount;
   int pub;

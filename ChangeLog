@@ -1,4 +1,9 @@
 
+2005/09/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added usage counters to GWEN_CryptKey and GWEN_CryptToken (to detect the
+  case when an already freed object is still used)
+
 
 2005-09-07   Christian Stimming <stimming@tuhh.de>
 
