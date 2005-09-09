@@ -55,12 +55,21 @@ static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
 
 
 GWEN_ERRORCODE GWEN_Logger_ModuleInit(){
+  const char *s;
+  GWEN_LOGGER_LEVEL ll=GWEN_LoggerLevelWarning;
+
   GWEN_Logger_Open(GWEN_LOGDOMAIN,
                    "gwen",
                    0,
                    GWEN_LoggerTypeConsole,
                    GWEN_LoggerFacilityUser);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelWarning);
+  s=getenv("GWEN_LOGLEVEL");
+  if (s) {
+    ll=GWEN_Logger_Name2Level(s);
+    if (ll==GWEN_LoggerLevelUnknown)
+      ll=GWEN_LoggerLevelWarning;
+  }
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, ll);
   return 0;
 }
 

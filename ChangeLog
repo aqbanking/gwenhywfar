@@ -3,6 +3,8 @@
 -------------------------------------------------
 - added usage counters to GWEN_CryptKey and GWEN_CryptToken (to detect the
   case when an already freed object is still used)
+- GWEN_Logger_ModuleInit() now uses the envrionment variable "GWEN_LOGLEVEL"
+  to determine the initial loglevel for Gwen
 
 
 2005-09-07   Christian Stimming <stimming@tuhh.de>
