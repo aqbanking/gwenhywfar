@@ -139,6 +139,8 @@ MARK: released gwenhywfar-1.16.0 (2005/08/19)
 
 ===========================================================================
 MARK: released gwenhywfar-1.15.0 (2005/08/11)
+  WATCH OUT: The new ohbci keyfiles of this version CANNOT BE READ by older
+  ohbci-crypttoken versions!
 ===========================================================================
 
 
@@ -240,7 +242,9 @@ MARK: released gwenhywfar-1.15.0 (2005/08/11)
       (GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT)          0xc2 (DES)
        GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_BF        0xc3
   The plugin should still read old files and write them as they have been
-  read, but new files will be in the new format.
+  read, but new files will be in the new format. 
+  WATCH OUT: THIS MEANS that new ohbci-keyfiles CANNOT BE READ by older
+  ohbci-crypttoken versions!
 
 
 2005-07-27   Christian Stimming <stimming@tuhh.de>
