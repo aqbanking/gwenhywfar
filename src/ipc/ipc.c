@@ -947,6 +947,27 @@ GWEN_NETCONNECTION *GWEN_IPCManager_GetConnection(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
+GWEN_TYPE_UINT32
+GWEN_IPCManager_GetClientForConnection(const GWEN_IPCMANAGER *mgr,
+                                       const GWEN_NETCONNECTION *conn) {
+  GWEN_IPCNODE *n;
+
+  n=GWEN_IPCNode_List_First(mgr->nodes);
+  while(n) {
+    if (n->connection==conn)
+      break;
+    n=GWEN_IPCNode_List_Next(n);
+  } /* while */
+  if (!n) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No node found for connection");
+    return 0;
+  }
+  return n->id;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_DB_NODE *GWEN_IPCManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
                                                GWEN_TYPE_UINT32 rid){
   GWEN_IPCREQUEST *r;

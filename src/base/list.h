@@ -167,6 +167,11 @@ GWEN_REFPTR *GWEN_List_GetBackRefPtr(const GWEN_LIST *l);
 GWENHYWFAR_API
 void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it);
 
+
+GWENHYWFAR_API
+void GWEN_List_Remove(GWEN_LIST *l, const void *p);
+
+
 /** Returns the size of this list, i.e. the number of elements in this
  * list. 
  *

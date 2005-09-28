@@ -516,6 +516,27 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
 
 
 
+void GWEN_List_Remove(GWEN_LIST *l, const void *p) {
+  GWEN_LIST_ITERATOR *li;
+
+  li=GWEN_List_First(l);
+  if (li) {
+    void *d;
+
+    d=GWEN_ListIterator_Data(li);
+    while(d) {
+      if (d==p) {
+        GWEN_List_Erase(l, li);
+        break;
+      }
+      d=GWEN_ListIterator_Next(li);
+    }
+    GWEN_ListIterator_free(li);
+  }
+}
+
+
+
 GWEN_LIST_ITERATOR *GWEN_List_First(const GWEN_LIST *l){
   GWEN_LIST_ITERATOR *li;
 

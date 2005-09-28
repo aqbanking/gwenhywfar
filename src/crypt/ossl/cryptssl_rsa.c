@@ -42,6 +42,7 @@
 
 #include <openssl/rsa.h>
 #include <openssl/objects.h>
+#include <openssl/err.h>
 
 #include "cryptssl_p.h"
 
@@ -56,11 +57,36 @@ void GWEN_CryptKeyRSA_FreeKeyData(GWEN_CRYPTKEY *key){
 
 
 
+void GWEN_CryptKeyRSA_DumpPubKey(const GWEN_CRYPTKEY *key){
+  GWEN_DB_NODE *dbDebug;
+  GWEN_ERRORCODE lerr;
+
+  dbDebug=GWEN_DB_Group_new("key");
+  lerr=GWEN_CryptKey_ToDb(key, dbDebug, 1);
+  if (!GWEN_Error_IsOk(lerr)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, lerr);
+  }
+  else {
+    const void *p;
+    unsigned int len;
+
+    p=GWEN_DB_GetBinValue(dbDebug, "data/n", 0, 0, 0, &len);
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Key data follows (%d bytes):", len);
+    GWEN_DB_Dump(dbDebug, stderr, 2);
+    if (p && len)
+      GWEN_Text_DumpString((const char*)p, len, stderr, 2);
+  }
+  GWEN_DB_Group_free(dbDebug);
+}
+
+
+
 GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
                                         GWEN_BUFFER *src,
                                         GWEN_BUFFER *dst){
   unsigned int srclen;
-  unsigned int dstlen;
+  int dstlen;
   unsigned char *psrc;
   unsigned char *pdst;
 
@@ -73,26 +99,9 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
     DBG_ERROR(GWEN_LOGDOMAIN, "Size %d!=%d",
               srclen, GWEN_CryptKey_GetChunkSize(key));
     if (1) {
-      GWEN_DB_NODE *dbDebug;
-      GWEN_ERRORCODE lerr;
-
-      dbDebug=GWEN_DB_Group_new("key");
-      lerr=GWEN_CryptKey_ToDb(key, dbDebug, 1);
-      if (!GWEN_Error_IsOk(lerr)) {
-	DBG_ERROR_ERR(GWEN_LOGDOMAIN, lerr);
-      }
-      else {
-        const void *p;
-        unsigned int len;
-
-        p=GWEN_DB_GetBinValue(dbDebug, "data/n", 0, 0, 0, &len);
-        DBG_ERROR(GWEN_LOGDOMAIN,
-                  "Offending key follows (%d bytes):", len);
-        GWEN_DB_Dump(dbDebug, stderr, 2);
-        if (p && len)
-          GWEN_Text_DumpString((const char*)p, len, stderr, 2);
-      }
-      GWEN_DB_Group_free(dbDebug);
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Offending key follows");
+      GWEN_CryptKeyRSA_DumpPubKey(key);
     }
 
     return GWEN_Error_new(0,
@@ -112,7 +121,32 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Encrypt(const GWEN_CRYPTKEY *key,
   dstlen=RSA_public_encrypt(srclen, psrc, pdst,
                             GWEN_CryptKey_GetKeyData(key),
                             RSA_NO_PADDING);
-  if (dstlen!=srclen) {
+  if (dstlen==-1) {
+    char errbuf[256];
+
+    ERR_error_string_n(ERR_get_error(), errbuf, sizeof(errbuf));
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "OpenSSL error: %s", errbuf);
+    ERR_print_errors_fp(stderr);
+    if (1) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Offending key follows");
+      GWEN_CryptKeyRSA_DumpPubKey(key);
+    }
+    return GWEN_Error_new(0,
+                          GWEN_ERROR_SEVERITY_ERR,
+                          GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),
+                          GWEN_CRYPT_ERROR_ENCRYPT);
+  }
+  if ((unsigned int)dstlen!=srclen) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "ERROR: Unexpected dstlen (%d != %u)\n",
+              dstlen, srclen);
+    if (1) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Offending key follows");
+      GWEN_CryptKeyRSA_DumpPubKey(key);
+    }
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_CRYPT_ERROR_TYPE),

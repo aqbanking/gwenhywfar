@@ -276,6 +276,10 @@ GWENHYWFAR_API
 GWEN_NETCONNECTION *GWEN_IPCManager_GetConnection(GWEN_IPCMANAGER *mgr,
                                                   GWEN_TYPE_UINT32 nid);
 
+GWENHYWFAR_API
+GWEN_TYPE_UINT32
+GWEN_IPCManager_GetClientForConnection(const GWEN_IPCMANAGER *mgr,
+				       const GWEN_NETCONNECTION *conn);
 #ifdef __cplusplus
 }
 #endif

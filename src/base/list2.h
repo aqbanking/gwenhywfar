@@ -68,6 +68,7 @@ extern "C" {
   decl t *pr##_List2_GetFront(t##_LIST2 *l); \
   decl t *pr##_List2_GetBack(t##_LIST2 *l); \
   decl void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it); \
+  decl void pr##_List2_Remove(t##_LIST2 *l, const t *p); \
   decl unsigned int pr##_List2_GetSize(t##_LIST2 *l); \
   decl void pr##_List2_PopBack(t##_LIST2 *l); \
   decl void pr##_List2_PopFront(t##_LIST2 *l); \
@@ -130,6 +131,10 @@ extern "C" {
   \
   void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it) { \
     GWEN_List_Erase((GWEN_LIST*) l, (GWEN_LIST_ITERATOR*) it); \
+  } \
+  \
+  void pr##_List2_Remove(t##_LIST2 *l, const t *p){ \
+    GWEN_List_Remove((GWEN_LIST*) l, p); \
   } \
   \
   unsigned int pr##_List2_GetSize(t##_LIST2 *l){ \

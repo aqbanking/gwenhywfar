@@ -29,6 +29,12 @@ struct GWEN_HTTP_SESSION {
   int pmajor;
   int pminor;
 
+  char *trustedCertDir;
+  char *newTrustedCertDir;
+  char *certFile;
+
+  int connectTimeout;
+
   GWEN_DB_NODE *dbHeader;
 
   GWEN_TYPE_UINT32 flags;
@@ -39,6 +45,22 @@ struct GWEN_HTTP_SESSION {
 
   GWEN_NETCONNECTION_LIST2 *connections;
 };
+
+
+
+static void GWEN_HttpSession__SetResult(GWEN_HTTP_SESSION *sess,
+                                        int code, const char *txt);
+
+
+static GWEN_NETCONNECTION*
+GWEN_HttpSession__FindConnection(GWEN_HTTP_SESSION *sess,
+                                 const char *server,
+                                 int port);
+static GWEN_NETCONNECTION*
+GWEN_HttpSession__CreateConnection(GWEN_HTTP_SESSION *sess,
+                                   const char *proto,
+                                   const char *server,
+				   int port);
 
 
 

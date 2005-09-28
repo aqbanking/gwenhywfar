@@ -74,6 +74,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_SignBigNum(const GWEN_CRYPTKEY *key,
                                            GWEN_BUFFER *src,
                                            BIGNUM *bnresult);
 
+void GWEN_CryptKeyRSA_DumpPubKey(const GWEN_CRYPTKEY *key);
 
 
 
