@@ -167,6 +167,12 @@ int GWEN_CryptTokenOHBCI_ChangePin(GWEN_CRYPTTOKEN *ct,
 int GWEN_CryptTokenOHBCI__ReadXml(GWEN_CRYPTTOKEN *ct);
 
 
+void GWEN_CryptTokenOHBCI__Store96(const char *p,
+                                   unsigned int l,
+                                   GWEN_DB_NODE *node,
+                                   const char *name);
+
+
 
 
 #endif /* GWEN_CRYPTTOKEN_OHBCI_P_H */

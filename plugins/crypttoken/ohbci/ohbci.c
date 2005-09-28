@@ -527,6 +527,37 @@ int GWEN_CryptTokenOHBCI_Read(GWEN_CRYPTTOKEN *ct, int fd){
 
 
 
+void GWEN_CryptTokenOHBCI__Store96(const char *p,
+				   unsigned int l,
+				   GWEN_DB_NODE *node,
+				   const char *name) {
+  if (p && l) {
+    if (l>=96) {
+      GWEN_DB_SetBinValue(node,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  name,
+			  p, l);
+    }
+    else {
+      GWEN_BUFFER *nbuf;
+
+      DBG_ERROR(GWEN_LOGDOMAIN, "Expanding %s from %d to 96 bytes",
+		name, l);
+      nbuf=GWEN_Buffer_new(0, 96, 0, 1);
+      GWEN_Buffer_FillWithBytes(nbuf, 0, 96-l);
+      GWEN_Buffer_AppendBytes(nbuf, p, l);
+      GWEN_DB_SetBinValue(node,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          name,
+			  GWEN_Buffer_GetStart(nbuf),
+			  GWEN_Buffer_GetUsedBytes(nbuf));
+      GWEN_Buffer_free(nbuf);
+    }
+  }
+}
+
+
+
 void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
                                      GWEN_TAG16 *keyTlv,
                                      GWEN_DB_NODE *dbKeys,
@@ -670,59 +701,51 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_N:
-      if (p && l)
-        GWEN_DB_SetBinValue(node,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "data/n",
-                            p, l);
+      GWEN_CryptTokenOHBCI__Store96(p, l, node, "data/n");
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_P:
       if (p && l)
-        GWEN_DB_SetBinValue(node,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "data/p",
-                            p, l);
+	GWEN_DB_SetBinValue(node,
+			    GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    "data/p",
+			    p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_Q:
       if (p && l)
-        GWEN_DB_SetBinValue(node,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "data/q",
-                            p, l);
+	GWEN_DB_SetBinValue(node,
+			    GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    "data/q",
+			    p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_D:
-      if (p && l)
-        GWEN_DB_SetBinValue(node,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "data/d",
-                            p, l);
+      GWEN_CryptTokenOHBCI__Store96(p, l, node, "data/d");
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_DMP1:
       if (p && l)
-        GWEN_DB_SetBinValue(node,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "data/dmp1",
-                            p, l);
+	GWEN_DB_SetBinValue(node,
+			    GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    "data/dmp1",
+			    p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_DMQ1:
       if (p && l)
-        GWEN_DB_SetBinValue(node,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "data/dmq1",
-                            p, l);
+	GWEN_DB_SetBinValue(node,
+			    GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    "data/dmq1",
+			    p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_IQMP:
       if (p && l)
-        GWEN_DB_SetBinValue(node,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "data/iqmp",
-                            p, l);
+	GWEN_DB_SetBinValue(node,
+			    GWEN_DB_FLAGS_OVERWRITE_VARS,
+			    "data/iqmp",
+			    p, l);
       break;
 
     default:

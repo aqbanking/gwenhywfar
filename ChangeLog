@@ -3,6 +3,12 @@
 -------------------------------------------------
 - added function GWEN_IPCManager_GetClientForConnection()
 - added some more debugging to cryptssl_rsa.c
+- probably fixed ohbci-crypttoken: When reading modulus and some other key
+  values expand them to 96 bytes if they are shorter
+
+  =======================================================================
+  WARNING: PLEASE MAKE BACKUPS OF YOUR KEYFILES BEFORE TRYING THIS !!!
+  =======================================================================
 
  
 2005/09/10: Martin Preuss<martin@libchipcard.de>
