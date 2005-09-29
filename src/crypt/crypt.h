@@ -182,10 +182,6 @@ GWENHYWFAR_API
 unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key);
 
 GWENHYWFAR_API
-void GWEN_CryptKey_SetChunkSize(GWEN_CRYPTKEY *key,
-				unsigned int i);
-
-GWENHYWFAR_API
   GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db);
 
 GWENHYWFAR_API

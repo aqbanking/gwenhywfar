@@ -454,8 +454,6 @@ unsigned int GWEN_CryptKeyRSA_GetChunkSize(const GWEN_CRYPTKEY *key){
   kd=(RSA*)GWEN_CryptKey_GetKeyData(key);
   assert(kd);
   i=RSA_size(kd);
-  if (i<96)
-    i=96;
   return i;
 }
 
@@ -550,8 +548,6 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   }
 
   GWEN_CryptKey_SetKeyData(key, kd);
-  if (GWEN_CryptKey_GetChunkSize(key)==0)
-    GWEN_CryptKey_SetChunkSize(key, RSA_size(kd));
 
   return 0;
 }
@@ -653,7 +649,6 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_Generate(GWEN_CRYPTKEY *key,
                           NULL, NULL);
   assert(newKey);
   GWEN_CryptKey_SetKeyData(key, newKey);
-  GWEN_CryptKey_SetChunkSize(key, keylength/8);
   return 0;
 }
 

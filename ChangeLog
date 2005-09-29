@@ -1,16 +1,17 @@
 
+2005/09/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed ohbci-crypttoken: Can now work even if the key length is smaller than
+  96 bytes: Uses the result of GWEN_CryptKey_GetChunkSize() instead of the
+  fixed size given in the CryptToken-Context.
+
+
 2005/09/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added function GWEN_IPCManager_GetClientForConnection()
 - added some more debugging to cryptssl_rsa.c
-- probably fixed ohbci-crypttoken: When reading modulus and some other key
-  values expand them to 96 bytes if they are shorter
 
-  =======================================================================
-  WARNING: PLEASE MAKE BACKUPS OF YOUR KEYFILES BEFORE TRYING THIS !!!
-  =======================================================================
 
- 
 2005/09/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added function GWEN_List_Remove() (and a corresponding list2 macro)

@@ -230,7 +230,6 @@ GWEN_CRYPTKEY *GWEN_CryptKey_dup(const GWEN_CRYPTKEY *key){
   GWEN_KeySpec_free(newKey->keyspec);
   newKey->keyspec=GWEN_KeySpec_dup(key->keyspec);
   newKey->pub=key->pub;
-  newKey->chunkSize=key->chunkSize;
   return newKey;
 }
 
@@ -293,15 +292,7 @@ unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key){
   assert(key->usage);
   if (key->getChunkSizeFn)
     return key->getChunkSizeFn(key);
-  return key->chunkSize;
-}
-
-
-
-void GWEN_CryptKey_SetChunkSize(GWEN_CRYPTKEY *key, unsigned int i) {
-  assert(key);
-  assert(key->usage);
-  key->chunkSize=i;
+  return 0;
 }
 
 
@@ -323,7 +314,6 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
   }
 
   key->flags=GWEN_DB_GetIntValue(db, "flags", 0, 0);
-  key->chunkSize=GWEN_DB_GetIntValue(db, "chunkSize", 0, 0);
 
   gr=GWEN_DB_GetGroup(db,
                       GWEN_DB_FLAGS_DEFAULT,
@@ -356,8 +346,6 @@ GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
   }
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "flags", key->flags);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "chunkSize", key->chunkSize);
 
   /* save key specific data */
   gr=GWEN_DB_GetGroup(db,
@@ -454,8 +442,6 @@ GWEN_ERRORCODE GWEN_CryptKey_Generate(GWEN_CRYPTKEY *key,
   assert(key->usage);
   assert(key->generateKeyFn);
   err=key->generateKeyFn(key, keylength);
-  if (GWEN_Error_IsOk(err) && key->chunkSize==0)
-    key->chunkSize=keylength/8;
   return err;
 }
 

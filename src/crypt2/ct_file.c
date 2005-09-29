@@ -1141,6 +1141,7 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   GWEN_TYPE_UINT32 kid;
   GWEN_CRYPTKEY *key;
   unsigned int ui;
+  int chunkSize;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
@@ -1190,8 +1191,15 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
     return GWEN_ERROR_CT_NO_KEY;
   }
 
+  chunkSize=GWEN_CryptKey_GetChunkSize(key);
+  if (chunkSize!=GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+             "ChunkSize of key != ChunkSize in CryptToken (%d!=%d)",
+             chunkSize, GWEN_CryptToken_KeyInfo_GetChunkSize(ki));
+  }
+
   /* hash data */
-  hbuf=GWEN_Buffer_new(0, GWEN_CryptToken_KeyInfo_GetChunkSize(ki), 0, 1);
+  hbuf=GWEN_Buffer_new(0, chunkSize, 0, 1);
   rv=GWEN_CryptToken_Hash(GWEN_CryptToken_SignInfo_GetHashAlgo(si),
                           ptr, len,
 			  hbuf);
@@ -1204,17 +1212,16 @@ int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
   /* padd hash */
   GWEN_Buffer_Rewind(hbuf);
   rv=GWEN_CryptToken_Padd(GWEN_CryptToken_SignInfo_GetPaddAlgo(si),
-                          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+                          chunkSize,
                           hbuf);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_Buffer_free(hbuf);
     return rv;
   }
-  if ((int)GWEN_Buffer_GetUsedBytes(hbuf)!=
-      GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+  if ((int)GWEN_Buffer_GetUsedBytes(hbuf)!=chunkSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes, it is %d)",
-              GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+              chunkSize,
               GWEN_Buffer_GetUsedBytes(hbuf));
     GWEN_Buffer_free(hbuf);
     return GWEN_ERROR_INVALID;
@@ -1268,6 +1275,7 @@ int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
   GWEN_ERRORCODE err;
   GWEN_TYPE_UINT32 kid;
   GWEN_CRYPTKEY *key;
+  int chunkSize;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
@@ -1317,11 +1325,18 @@ int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
     return GWEN_ERROR_CT_NO_KEY;
   }
 
+  chunkSize=GWEN_CryptKey_GetChunkSize(key);
+  if (chunkSize!=GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+             "ChunkSize of key != ChunkSize in CryptToken (%d!=%d)",
+             chunkSize, GWEN_CryptToken_KeyInfo_GetChunkSize(ki));
+  }
+
   /* hash data */
-  hbuf=GWEN_Buffer_new(0, GWEN_CryptToken_KeyInfo_GetChunkSize(ki), 0, 1);
+  hbuf=GWEN_Buffer_new(0, chunkSize, 0, 1);
   rv=GWEN_CryptToken_Hash(GWEN_CryptToken_SignInfo_GetHashAlgo(si),
                           ptr, len,
-			  hbuf);
+                          hbuf);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_Buffer_free(hbuf);
@@ -1331,17 +1346,16 @@ int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
   /* padd hash */
   GWEN_Buffer_Rewind(hbuf);
   rv=GWEN_CryptToken_Padd(GWEN_CryptToken_SignInfo_GetPaddAlgo(si),
-                          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+                          chunkSize,
                           hbuf);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_Buffer_free(hbuf);
     return rv;
   }
-  if ((int)GWEN_Buffer_GetUsedBytes(hbuf)!=
-      GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+  if ((int)GWEN_Buffer_GetUsedBytes(hbuf)!=chunkSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes, it is %d)",
-              GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+              chunkSize,
               GWEN_Buffer_GetUsedBytes(hbuf));
     GWEN_Buffer_free(hbuf);
     return GWEN_ERROR_INVALID;
@@ -1380,6 +1394,7 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
   GWEN_ERRORCODE err;
   GWEN_TYPE_UINT32 kid;
   GWEN_CRYPTKEY *key;
+  int chunkSize;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_FILE, ct);
@@ -1429,24 +1444,31 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
     return GWEN_ERROR_CT_NO_KEY;
   }
 
+  chunkSize=GWEN_CryptKey_GetChunkSize(key);
+  DBG_ERROR(GWEN_LOGDOMAIN, "ChunkSize: %d", chunkSize);
+  if (chunkSize!=GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+             "ChunkSize of key != ChunkSize in CryptToken (%d!=%d)",
+             chunkSize, GWEN_CryptToken_KeyInfo_GetChunkSize(ki));
+  }
+
   /* copy data */
-  hbuf=GWEN_Buffer_new(0, GWEN_CryptToken_KeyInfo_GetChunkSize(ki), 0, 1);
+  hbuf=GWEN_Buffer_new(0, chunkSize, 0, 1);
   GWEN_Buffer_AppendBytes(hbuf, ptr, len);
 
   /* padd source data */
   GWEN_Buffer_Rewind(hbuf);
   rv=GWEN_CryptToken_Padd(GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci),
-                          GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+                          chunkSize,
                           hbuf);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_Buffer_free(hbuf);
     return rv;
   }
-  if ((int)GWEN_Buffer_GetUsedBytes(hbuf)!=
-      GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
+  if ((int)GWEN_Buffer_GetUsedBytes(hbuf)!=chunkSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding (result!=%d bytes, it is %d)",
-              GWEN_CryptToken_KeyInfo_GetChunkSize(ki),
+              chunkSize,
               GWEN_Buffer_GetUsedBytes(hbuf));
     GWEN_Buffer_free(hbuf);
     return GWEN_ERROR_INVALID;
@@ -1454,6 +1476,8 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
 
   /* encrypt padded data */
   GWEN_Buffer_Rewind(hbuf);
+  DBG_ERROR(GWEN_LOGDOMAIN, "Encrypting %d bytes",
+            GWEN_Buffer_GetUsedBytes(hbuf));
   err=GWEN_CryptKey_Encrypt(key, hbuf, dst);
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);

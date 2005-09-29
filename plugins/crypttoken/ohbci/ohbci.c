@@ -27,6 +27,7 @@
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/ct_file.h>
+#include <gwenhywfar/text.h> /* DEBUG */
 
 #include <stdlib.h>
 #include <assert.h>
@@ -527,37 +528,6 @@ int GWEN_CryptTokenOHBCI_Read(GWEN_CRYPTTOKEN *ct, int fd){
 
 
 
-void GWEN_CryptTokenOHBCI__Store96(const char *p,
-				   unsigned int l,
-				   GWEN_DB_NODE *node,
-				   const char *name) {
-  if (p && l) {
-    if (l>=96) {
-      GWEN_DB_SetBinValue(node,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  name,
-			  p, l);
-    }
-    else {
-      GWEN_BUFFER *nbuf;
-
-      DBG_ERROR(GWEN_LOGDOMAIN, "Expanding %s from %d to 96 bytes",
-		name, l);
-      nbuf=GWEN_Buffer_new(0, 96, 0, 1);
-      GWEN_Buffer_FillWithBytes(nbuf, 0, 96-l);
-      GWEN_Buffer_AppendBytes(nbuf, p, l);
-      GWEN_DB_SetBinValue(node,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          name,
-			  GWEN_Buffer_GetStart(nbuf),
-			  GWEN_Buffer_GetUsedBytes(nbuf));
-      GWEN_Buffer_free(nbuf);
-    }
-  }
-}
-
-
-
 void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
                                      GWEN_TAG16 *keyTlv,
                                      GWEN_DB_NODE *dbKeys,
@@ -701,7 +671,11 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_N:
-      GWEN_CryptTokenOHBCI__Store96(p, l, node, "data/n");
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/n",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_P:
@@ -721,7 +695,11 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_D:
-      GWEN_CryptTokenOHBCI__Store96(p, l, node, "data/d");
+      if (p && l)
+        GWEN_DB_SetBinValue(node,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "data/d",
+                            p, l);
       break;
 
     case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_DMP1:
