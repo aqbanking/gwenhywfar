@@ -1445,7 +1445,7 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
   }
 
   chunkSize=GWEN_CryptKey_GetChunkSize(key);
-  DBG_ERROR(GWEN_LOGDOMAIN, "ChunkSize: %d", chunkSize);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "ChunkSize: %d", chunkSize);
   if (chunkSize!=GWEN_CryptToken_KeyInfo_GetChunkSize(ki)) {
     DBG_WARN(GWEN_LOGDOMAIN,
              "ChunkSize of key != ChunkSize in CryptToken (%d!=%d)",
@@ -1476,7 +1476,7 @@ int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
 
   /* encrypt padded data */
   GWEN_Buffer_Rewind(hbuf);
-  DBG_ERROR(GWEN_LOGDOMAIN, "Encrypting %d bytes",
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Encrypting %d bytes",
             GWEN_Buffer_GetUsedBytes(hbuf));
   err=GWEN_CryptKey_Encrypt(key, hbuf, dst);
   if (!GWEN_Error_IsOk(err)) {
