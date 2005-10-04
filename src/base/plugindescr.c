@@ -93,6 +93,7 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
   if (pd) {
     DBG_MEM_DEC("GWEN_PLUGIN_DESCRIPTION");
     GWEN_LIST_FINI(GWEN_PLUGIN_DESCRIPTION, pd);
+    free(pd->path);
     GWEN_XMLNode_free(pd->xmlNode);
     free(pd->fileName);
     free(pd->longDescr);
@@ -120,6 +121,8 @@ GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd) {
   s=pd->fileName;
   if (s) np->fileName=strdup(s);
 
+  s=pd->path;
+  if (s) np->path=strdup(s);
   s=pd->name;
   if (s) np->name=strdup(s);
   s=pd->type;
@@ -155,6 +158,23 @@ void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
     (pdl,
      GWEN_PluginDescription_List2_freeAll_cb, 
      0);
+}
+
+
+
+const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd){
+  assert(pd);
+  return pd->path;
+}
+
+
+
+void GWEN_PluginDescription_SetPath(GWEN_PLUGIN_DESCRIPTION *pd,
+                                    const char *s){
+  assert(pd);
+  free(pd->path);
+  if (s) pd->path=strdup(s);
+  else pd->path=0;
 }
 
 
@@ -502,6 +522,10 @@ int GWEN_LoadPluginDescrsByType(const char *path,
                     }
                     else {
                       GWEN_PluginDescription_SetFileName
+                        (pd, GWEN_Buffer_GetStart(nbuf));
+                      GWEN_Buffer_Crop(nbuf, 0, pathLen);
+                      GWEN_Buffer_SetPos(nbuf, pathLen);
+                      GWEN_PluginDescription_SetPath
                         (pd, GWEN_Buffer_GetStart(nbuf));
                       GWEN_PluginDescription_List2_PushBack(pdl, pd);
                     }

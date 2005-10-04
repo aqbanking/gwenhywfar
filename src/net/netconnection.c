@@ -632,7 +632,7 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
   assert(conn);
 
   doneSomething=0;
-  conn->ioFlags=0;
+  /* TEST-20051003 conn->ioFlags=0; */
   startStatus=GWEN_NetTransport_GetStatus(conn->transportLayer);
 
   /* check for disabled connection */
@@ -712,10 +712,13 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
       }
       conn->lastResult=res;
       if (conn->lastResult==GWEN_NetTransportResultWantRead)
-        conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
+          conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTREAD;
       else if (conn->lastResult==GWEN_NetTransportResultWantWrite) {
-        conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
+	conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
       }
+      else /*TEST-20051003 */
+	conn->ioFlags&=~(GWEN_NETCONNECTION_IOFLAG_WANTWRITE |
+			 GWEN_NETCONNECTION_IOFLAG_WANTREAD);
     }
 
     if (!(GWEN_NetTransport_GetFlags(conn->transportLayer) &
@@ -755,6 +758,9 @@ GWEN_NetConnection_WorkIO(GWEN_NETCONNECTION *conn){
         else if (conn->lastResult==GWEN_NetTransportResultWantWrite) {
           conn->ioFlags|=GWEN_NETCONNECTION_IOFLAG_WANTWRITE;
         }
+	else /*TEST-20051003 */
+	  conn->ioFlags&=~(GWEN_NETCONNECTION_IOFLAG_WANTWRITE |
+			   GWEN_NETCONNECTION_IOFLAG_WANTREAD);
       }
     } /* if not EOF met */
   }

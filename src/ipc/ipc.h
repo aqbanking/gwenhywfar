@@ -19,6 +19,8 @@
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/nettransport.h>
 #include <gwenhywfar/netconnection.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/list2.h>
 
 #include <time.h>
 #include <stdio.h>
@@ -40,6 +42,10 @@ extern "C" {
 
 
 typedef struct GWEN_IPCMANAGER GWEN_IPCMANAGER;
+typedef struct GWEN_IPCREQUEST GWEN_IPCREQUEST;
+
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_IPCREQUEST, GWENHYWFAR_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_IPCREQUEST, GWEN_IPCRequest, GWENHYWFAR_API)
 
 
 GWENHYWFAR_API
@@ -280,6 +286,138 @@ GWENHYWFAR_API
 GWEN_TYPE_UINT32
 GWEN_IPCManager_GetClientForConnection(const GWEN_IPCMANAGER *mgr,
 				       const GWEN_NETCONNECTION *conn);
+
+
+
+
+/**
+ * Creates a new request for the given IPC node (client/server).
+ * This request is not yet enqueued. The caller becomes
+ * the owner of the object returned (if any). He/she must call
+ * @ref GWEN_IPCManager_DestroyRequestR on it later (or let the IPC manager
+ * take over the object via @ref GWEN_IPCManager_SendRequestR).
+ * This function takes over the ownership of the given GWEN_DB_NODE in any
+ * case.
+ */
+GWENHYWFAR_API
+GWEN_IPCREQUEST *GWEN_IPCManager_CreateRequestR(GWEN_IPCMANAGER *mgr,
+                                                GWEN_DB_NODE *dbReq);
+
+/**
+ * Destroys a request which is owned by the caller.
+ * You MUST NOT call this function for requests which you don't own.
+ */
+GWENHYWFAR_API
+void GWEN_IPCManager_DestroyRequestR(GWEN_IPCMANAGER *mgr,
+                                     GWEN_IPCREQUEST *r);
+
+/**
+ * This function increments an internal reference counter of the given
+ * request. As a result you will need an additional call to
+ * @ref GWEN_IPCManager_DestroyRequestR to actually free the request.
+ * Use this function if you refer to this request in different parts of
+ * your code.
+ * Obviously for every call to this function a matching number of
+ * calls to @ref GWEN_IPCManager_DestroyRequestR is necessary to really
+ * free this request.
+ */
+GWENHYWFAR_API
+void GWEN_IPCManager_AttachRequestR(GWEN_IPCMANAGER *mgr,
+                                    GWEN_IPCREQUEST *r);
+
+
+/**
+ * Sends a request previously created by @ref GWEN_IPCManager_CreateRequestR.
+ * The caller still remains the owner of the request.
+ * However, even if the owner calls @ref GWEN_IPCManager_DestroyRequestR()
+ * on this request to delete it the IPC manager keeps it around as long as
+ * it needs to. So if you really want to remove the request from the reach
+ * of the IPC manager you will have to call
+ * @ref GWEN_IPCManager_TakeRequestR() before calling
+ * @ref GWEN_IPCManager_DestroyRequestR().
+ */
+GWENHYWFAR_API
+int GWEN_IPCManager_SendRequestR(GWEN_IPCMANAGER *mgr,
+                                 GWEN_TYPE_UINT32 nid,
+                                 GWEN_IPCREQUEST *r);
+
+/**
+ * Sends a response to request received using
+ * @ref GWEN_IPCManager_GetNextInRequestR.
+ */
+GWENHYWFAR_API
+int GWEN_IPCManager_SendResponseR(GWEN_IPCMANAGER *mgr,
+                                  GWEN_IPCREQUEST *r,
+                                  GWEN_DB_NODE *rsp);
+
+
+/**
+ * This action removes the request from the reach of the IPC manager,
+ * so no further responses to this request will be received afterwards.
+ * So obviously you should only use this function with incoming requests
+ * (obtained via @ref GWEN_IPCManager_GetNextInRequestR) or with finished
+ * outgoing requests.
+ * This function makes the caller responsible for calling
+ * @ref GWEN_IPCManager_DestroyRequestR to free it (thus preventing
+ * memory leaks).
+ */
+GWENHYWFAR_API
+int GWEN_IPCManager_TakeRequestR(GWEN_IPCMANAGER *mgr,
+                                 GWEN_IPCREQUEST *r);
+
+/**
+ * Returns the next incoming request which comes from an IPC node (client,
+ * server) with the given mark (or from any node if mark is 0).
+ * The caller becomes the new owner of the request returned (if any), but
+ * the IPC manager still holds a handle on the request returned.
+ * You can remove the request returned from the reach of the IPC manager
+ * by calling @ref GWEN_IPCManager_TakeRequestR().
+ * The caller is in any case responsible for calling
+ * @ref GWEN_IPCManager_DestroyRequestR when he/she is finished with that
+ * object.
+ */
+GWENHYWFAR_API
+GWEN_IPCREQUEST *GWEN_IPCManager_GetNextInRequestR(GWEN_IPCMANAGER *mgr,
+                                                   GWEN_TYPE_UINT32 mark);
+
+
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_IPCManager_GetInRequestDataR(GWEN_IPCMANAGER *mgr,
+                                                GWEN_IPCREQUEST *r);
+
+GWEN_TYPE_UINT32
+GWEN_IPCManager_GetInRequestSenderR(GWEN_IPCMANAGER *mgr,
+                                    const GWEN_IPCREQUEST *r);
+
+
+/**
+ * Returns the next response to the given outbound request. The data returned
+ * is taken off the list of responses, so any call to this function will
+ * return the next response (if any).
+ * The caller takes over ownership of the data returned.
+ * @param mgr pointer to the IPC manager object
+ * @param rid request id returned by @ref GWEN_IPCManager_SendRequest or
+ *        @ref GWEN_IPCManager_SendMultiRequest
+ */
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_IPCManager_GetResponseDataR(GWEN_IPCMANAGER *mgr,
+                                               GWEN_IPCREQUEST *r);
+
+/**
+ * Returns the next response to the given outbound request. The data returned
+ * is not taken off the list of responses, so the next call to this function
+ * will return the same response (if any).
+ * The caller does NOT take over ownership of the data returned.
+ * @param mgr pointer to the IPC manager object
+ * @param rid request id returned by @ref GWEN_IPCManager_SendRequest or
+ *        @ref GWEN_IPCManager_SendMultiRequest
+ */
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_IPCManager_PeekResponseDataR(GWEN_IPCMANAGER *mgr,
+                                               GWEN_IPCREQUEST *r);
+
+
+
 #ifdef __cplusplus
 }
 #endif

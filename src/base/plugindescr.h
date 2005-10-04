@@ -89,6 +89,12 @@ GWENHYWFAR_API
 GWEN_XMLNODE*
   GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd);
 
+GWENHYWFAR_API
+const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd);
+
+GWENHYWFAR_API
+void GWEN_PluginDescription_SetPath(GWEN_PLUGIN_DESCRIPTION *pd,
+                                    const char *s);
 
 GWENHYWFAR_API
 const char *GWEN_PluginDescription_GetName(const GWEN_PLUGIN_DESCRIPTION *pd);

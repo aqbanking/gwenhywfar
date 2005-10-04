@@ -1,4 +1,32 @@
 
+2005/10/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- worked on a timing problem in network code
+
+
+2005/09/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed GWEN_IPCManager_GetNextInRequest: Was not taking the argument "mark"
+  into account
+- added Request-API to IPC code, which gives the caller more access to the
+  IPC requests. Therefore the following functions have been added:
+  - GWEN_IPCManager_CreateRequestR()
+  - GWEN_IPCManager_DestroyRequestR()
+  - GWEN_IPCManager_AttachRequestR()
+  - GWEN_IPCManager_SendRequestR()
+  - GWEN_IPCManager_SendResponseR()
+  - GWEN_IPCManager_TakeRequestR()
+  - GWEN_IPCManager_GetNextInRequestR()
+  - GWEN_IPCManager_GetInRequestDataR()
+  - GWEN_IPCManager_GetResponseDataR()
+  - GWEN_IPCManager_PeekResponseDataR()
+  - GWEN_IPCManager_GetInRequestSenderR()
+- make GWEN_IPCREQUESTs inheritable
+- added functions
+  - GWEN_PluginDescription_GetPath()
+  - GWEN_PluginDescription_SetPath()
+
+
 2005/09/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed ohbci-crypttoken: Can now work even if the key length is smaller than
