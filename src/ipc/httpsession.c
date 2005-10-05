@@ -183,8 +183,11 @@ GWEN_HttpSession__CreateConnection(GWEN_HTTP_SESSION *sess,
 }
 
 
-
-static GWEN_NETCONNECTION*
+/* FIXME: The "static" is commented out as long as this function
+   is unused to prevent an annoying compiler warning. Can and
+   should be commented back in again as soon as the function is
+   used somewhere */
+/* static */ GWEN_NETCONNECTION*
 GWEN_HttpSession__GetConnection(GWEN_HTTP_SESSION *sess,
 				const char *proto,
 				const char *server,
