@@ -12,6 +12,8 @@ INCLUDES= $(all_includes) -I$(top_srcdir) \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 certdir=$(sysconfdir)
 dist_cert_DATA=gwen-public-ca.crt
 

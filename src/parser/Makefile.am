@@ -10,6 +10,8 @@ INCLUDES= \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 EXTRA_DIST = xsdtypes.inc xsdtypes.xsd mkxsdtypes.sh
 
 noinst_LTLIBRARIES=libparser.la

@@ -1,5 +1,7 @@
 EXTRA_DIST=ressource.rc.in
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 dbioplugindir = $(gwenhywfar_plugindir)/dbio
 
 dbioplugin_LTLIBRARIES=olddb.la
@@ -8,7 +10,7 @@ noinst_HEADERS=olddb_p.h
 
 olddb_la_SOURCES=olddb.c
 olddb_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
-olddb_la_LDFLAGS = $(STRIPALL) -module -version-info 0:1:0
+olddb_la_LDFLAGS = $(STRIPALL) @PROFILING_LDFLAGS@ -module -version-info 0:1:0
 
 # dll stuff
 if IS_WINDOWS

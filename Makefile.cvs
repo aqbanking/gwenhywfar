@@ -47,7 +47,7 @@ mp-debug:
 	autoheader
 	automake --add-missing
 	autoconf
-	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static --enable-memtrace
+	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static --enable-memtrace --enable-profiling
 
 mp-darwin:
 	CFLAGS="-I/sw/include -ggdb -Wall" LDFLAGS="-L/sw/lib" ./configure

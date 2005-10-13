@@ -8,6 +8,8 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 noinst_LTLIBRARIES=libnet.la
 
 noinst_HEADERS=\

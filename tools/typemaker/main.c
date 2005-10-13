@@ -334,6 +334,145 @@ int write_h_setget_c(ARGUMENTS *args,
 
         }
       }
+      else if (strcasecmp(GWEN_XMLNode_GetData(n), "func")==0) {
+	if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", sacc),
+		       acc)==0) {
+          const char *typ;
+          const char *name;
+          const char *rettype;
+          GWEN_XMLNODE *anode;
+          int isPtr;
+          int isVoid;
+          int idx;
+
+          name=GWEN_XMLNode_GetProperty(n, "name", 0);
+          if (!name) {
+            DBG_ERROR(0, "No name for element");
+            return -1;
+          }
+  
+          typ=GWEN_XMLNode_GetProperty(n, "type", 0);
+          if (!typ) {
+            DBG_ERROR(0, "No type for element");
+            return -1;
+          }
+
+          rettype=GWEN_XMLNode_GetProperty(n, "return", 0);
+          if (!rettype) {
+              DBG_ERROR(0, "No return type for function");
+              return -1;
+          }
+
+          isPtr=atoi(get_property(n, "ptr", "0"));
+          isVoid=(!isPtr && strcasecmp(rettype, "void")==0);
+
+          /* getter */
+          GWEN_BufferedIO_WriteLine(bio, "/**");
+          GWEN_BufferedIO_Write(bio, "* Returns the property @ref ");
+          GWEN_BufferedIO_Write(bio, styp);
+          GWEN_BufferedIO_Write(bio, "_");
+          GWEN_BufferedIO_WriteChar(bio, toupper(*name));
+          GWEN_BufferedIO_WriteLine(bio, name+1);
+          GWEN_BufferedIO_WriteLine(bio, "*/");
+          if (args->domain) {
+            GWEN_BufferedIO_Write(bio, args->domain);
+            GWEN_BufferedIO_Write(bio, " ");
+          }
+
+          GWEN_BufferedIO_Write(bio, styp);
+          GWEN_BufferedIO_Write(bio, "_");
+          GWEN_BufferedIO_Write(bio, typ);
+          GWEN_BufferedIO_Write(bio, " ");
+          GWEN_BufferedIO_Write(bio, prefix);
+          GWEN_BufferedIO_Write(bio, "_Get");
+          GWEN_BufferedIO_WriteChar(bio, toupper(*name));;
+          GWEN_BufferedIO_Write(bio, name+1);
+          GWEN_BufferedIO_Write(bio, "(const ");
+          GWEN_BufferedIO_Write(bio, styp);
+          GWEN_BufferedIO_WriteLine(bio, " *st);");
+
+          /* setter */
+          GWEN_BufferedIO_WriteLine(bio, "/**");
+          GWEN_BufferedIO_Write(bio, "* Set the property @ref ");
+          GWEN_BufferedIO_Write(bio, styp);
+          GWEN_BufferedIO_Write(bio, "_");
+          GWEN_BufferedIO_WriteChar(bio, toupper(*name));
+          GWEN_BufferedIO_WriteLine(bio, name+1);
+          GWEN_BufferedIO_WriteLine(bio, "*/");
+          if (args->domain) {
+            GWEN_BufferedIO_Write(bio, args->domain);
+            GWEN_BufferedIO_Write(bio, " ");
+          }
+          GWEN_BufferedIO_Write(bio, "void ");
+          GWEN_BufferedIO_Write(bio, prefix);
+          GWEN_BufferedIO_Write(bio, "_Set");
+          GWEN_BufferedIO_WriteChar(bio, toupper(*name));;
+          GWEN_BufferedIO_Write(bio, name+1);
+          GWEN_BufferedIO_Write(bio, "(");
+
+          GWEN_BufferedIO_Write(bio, styp);
+          GWEN_BufferedIO_Write(bio, " *st, ");
+          GWEN_BufferedIO_Write(bio, styp);
+          GWEN_BufferedIO_Write(bio, "_");
+          GWEN_BufferedIO_Write(bio, typ);
+          GWEN_BufferedIO_WriteLine(bio, " d);");
+
+          /* function call */
+          GWEN_BufferedIO_WriteLine(bio, "/**");
+          /* TODO: Write API doc for this function */
+          GWEN_BufferedIO_WriteLine(bio, "*/");
+          if (args->domain) {
+            GWEN_BufferedIO_Write(bio, args->domain);
+            GWEN_BufferedIO_Write(bio, " ");
+          }
+          GWEN_BufferedIO_Write(bio, rettype);
+          if (isPtr)
+            GWEN_BufferedIO_Write(bio, "*");
+          GWEN_BufferedIO_Write(bio, " ");
+          GWEN_BufferedIO_Write(bio, prefix);
+          GWEN_BufferedIO_Write(bio, "_");
+          GWEN_BufferedIO_WriteChar(bio, toupper(*name));
+          GWEN_BufferedIO_Write(bio, name+1);
+          GWEN_BufferedIO_Write(bio, "(");
+  
+          GWEN_BufferedIO_Write(bio, styp);
+          GWEN_BufferedIO_Write(bio, " *st");
+  
+          anode=GWEN_XMLNode_FindFirstTag(n, "arg", 0, 0);
+          idx=0;
+          while(anode) {
+            const char *aname;
+            const char *atype;
+            int aisPtr;
+      
+            GWEN_BufferedIO_Write(bio, ", ");
+  
+            aisPtr=atoi(GWEN_XMLNode_GetProperty(anode, "ptr", "0"));
+            aname=GWEN_XMLNode_GetProperty(anode, "name", 0);
+            if (!aname || !*aname) {
+              DBG_ERROR(0, "No name for argument %d in function %s", idx, name);
+              return -1;
+            }
+            atype=GWEN_XMLNode_GetProperty(anode, "type", 0);
+            if (!atype || !*atype) {
+              DBG_ERROR(0, "No type for argument %d in function %s", idx, name);
+              return -1;
+            }
+      
+            GWEN_BufferedIO_Write(bio, atype);
+            if (aisPtr)
+              GWEN_BufferedIO_Write(bio, "*");
+            GWEN_BufferedIO_Write(bio, " ");
+            GWEN_BufferedIO_Write(bio, aname);
+      
+            idx++;
+            anode=GWEN_XMLNode_FindNextTag(anode, "arg", 0, 0);
+          }
+  
+          GWEN_BufferedIO_WriteLine(bio, ");");
+
+        }
+      }
     }
     GWEN_BufferedIO_WriteLine(bio, "");
     n=GWEN_XMLNode_GetNextTag(n);
@@ -464,6 +603,117 @@ int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
     GWEN_Buffer_free(tid);
     GWEN_Buffer_free(tprefix);
   } /* if enum types found */
+
+  return 0;
+}
+
+
+
+int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
+                  GWEN_BUFFEREDIO *bio,
+                  const char *acc) {
+  GWEN_XMLNODE *n;
+  const char *styp;
+
+  styp=get_struct_property(node, "id", 0);
+  if (!styp) {
+    DBG_ERROR(0, "No id in struct");
+    return -1;
+  }
+
+  n=GWEN_XMLNode_FindFirstTag(node, "func", 0, 0);
+  while(n) {
+    const char *sacc;
+
+    sacc=get_struct_property(n, "access", "public");
+    assert(sacc);
+    if (strcasecmp(sacc, acc)==0) {
+      const char *prefix;
+      const char *name;
+      const char *rettype;
+      const char *typ;
+      GWEN_XMLNODE *anode;
+      int isPtr;
+      int idx;
+
+      name=GWEN_XMLNode_GetProperty(n, "name", 0);
+      if (!name) {
+        DBG_ERROR(0, "No name for function");
+        return -1;
+      }
+  
+      rettype=GWEN_XMLNode_GetProperty(n, "return", 0);
+      if (!rettype) {
+        DBG_ERROR(0, "No return type for function");
+        return -1;
+      }
+  
+      prefix=get_struct_property(n, "prefix", 0);
+      if (!prefix) {
+        DBG_ERROR(0, "No prefix in struct");
+        return -1;
+      }
+  
+      isPtr=atoi(get_property(n, "ptr", "0"));
+  
+      typ=GWEN_XMLNode_GetProperty(n, "type", 0);
+      if (!typ) {
+        DBG_ERROR(0, "No type for function");
+        return -1;
+      }
+
+      /* typdef rettype (*typ)(args) */
+      GWEN_BufferedIO_Write(bio, "typedef ");
+      GWEN_BufferedIO_Write(bio, rettype);
+      if (isPtr)
+        GWEN_BufferedIO_Write(bio, "*");
+      GWEN_BufferedIO_Write(bio, " (*");
+      GWEN_BufferedIO_Write(bio, styp);
+      GWEN_BufferedIO_Write(bio, "_");
+      GWEN_BufferedIO_Write(bio, typ);
+      GWEN_BufferedIO_Write(bio, ")(");
+
+      GWEN_BufferedIO_Write(bio, styp);
+      GWEN_BufferedIO_Write(bio, " *st");
+
+      anode=GWEN_XMLNode_FindFirstTag(n, "arg", 0, 0);
+      idx=0;
+      while(anode) {
+        const char *aname;
+        const char *atype;
+        int aisPtr;
+  
+        GWEN_BufferedIO_Write(bio, ", ");
+
+        aisPtr=atoi(GWEN_XMLNode_GetProperty(anode, "ptr", "0"));
+        aname=GWEN_XMLNode_GetProperty(anode, "name", 0);
+        if (!aname || !*aname) {
+          DBG_ERROR(0, "No name for argument %d in function %s", idx, name);
+          return -1;
+        }
+        atype=GWEN_XMLNode_GetProperty(anode, "type", 0);
+        if (!atype || !*atype) {
+          DBG_ERROR(0, "No type for argument %d in function %s", idx, name);
+          return -1;
+        }
+  
+        GWEN_BufferedIO_Write(bio, atype);
+        GWEN_BufferedIO_Write(bio, " ");
+        if (aisPtr)
+          GWEN_BufferedIO_Write(bio, "*");
+        GWEN_BufferedIO_Write(bio, aname);
+  
+        idx++;
+        anode=GWEN_XMLNode_FindNextTag(anode, "arg", 0, 0);
+      }
+  
+      GWEN_BufferedIO_WriteLine(bio, ");");
+    }
+
+    n=GWEN_XMLNode_FindNextTag(n, "func", 0, 0);
+  } /* while functions */
+
+  GWEN_BufferedIO_WriteLine(bio, "");
 
   return 0;
 }

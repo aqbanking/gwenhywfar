@@ -11,6 +11,8 @@ INCLUDES = \
  -I$(top_srcdir)/src/parser \
  $(all_includes)
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 crypttokenplugindir = $(gwenhywfar_plugindir)/crypttoken
 
 crypttokenplugin_LTLIBRARIES=ohbci.la
@@ -19,7 +21,7 @@ noinst_HEADERS=ohbci_l.h ohbci_p.h tag16_l.h tag16_p.h
 
 ohbci_la_SOURCES=ohbci.c tag16.c
 ohbci_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
-ohbci_la_LDFLAGS = $(STRIPALL) -module -version-info 0:1:0
+ohbci_la_LDFLAGS = $(STRIPALL) @PROFILING_LDFLAGS@ -module -version-info 0:1:0
 
 
 # dll stuff

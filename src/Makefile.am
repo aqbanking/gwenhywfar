@@ -10,6 +10,8 @@ INCLUDES = $(all_includes) \
  -I$(top_srcdir)/gwenui
 
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 SUBDIRS = base crypt io ipc os parser net crypt2
 
 DEFS += \
@@ -45,7 +47,7 @@ libgwenhywfar_la_LIBADD=\
   parser/libparser.la @all_libraries@ @ssl_libraries@ @ssl_lib@
 
 libgwenhywfar_la_LDFLAGS= \
-  @STRIPALL@ -version-info \
+  @STRIPALL@ @PROFILING_LDFLAGS@ -version-info \
    @GWENHYWFAR_SO_CURRENT@:@GWENHYWFAR_SO_REVISION@:@GWENHYWFAR_SO_AGE@
 
 # Before compiling the sources, first built these files

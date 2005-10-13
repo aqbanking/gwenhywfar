@@ -1,5 +1,7 @@
 EXTRA_DIST=README ressource.rc.in
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 dbioplugindir = $(gwenhywfar_plugindir)/dbio
 
 dbioplugin_LTLIBRARIES=csv.la
@@ -8,7 +10,7 @@ noinst_HEADERS=csv_p.h
 
 csv_la_SOURCES=csv.c
 csv_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
-csv_la_LDFLAGS = $(STRIPALL) -module -version-info 0:1:0
+csv_la_LDFLAGS = $(STRIPALL) @PROFILING_LDFLAGS@ -module -version-info 0:1:0
 
 
 # dll stuff

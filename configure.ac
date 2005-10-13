@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=18
 GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=9
+GWENHYWFAR_VERSION_BUILD=11
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -302,6 +302,28 @@ if test "x$enable_variadic_macros" == "xno"; then
 fi
 
 
+
+###-------------------------------------------------------------------------
+#
+# check whether profiling is to be supported
+#
+AC_MSG_CHECKING(if profiling is to be supported)
+AC_ARG_ENABLE(profiling,
+  [  --enable-profiling         enable profiling (default=no)],
+  enable_profiling="$enableval",
+  enable_profiling="no")
+AC_MSG_RESULT($enable_profiling)
+if test "x$enable_profiling" == "xyes"; then
+  PROFILING_CFLAGS="-pg"
+  PROFILING_LDFLAGS="-pg"
+else
+  PROFILING_CFLAGS=""
+  PROFILING_LDFLAGS=""
+fi
+AC_SUBST(PROFILING_CFLAGS)
+AC_SUBST(PROFILING_LDFLAGS)
+
+
 ###-------------------------------------------------------------------------
 #
 # check for encryption library
@@ -374,7 +396,7 @@ AM_GNU_GETTEXT_VERSION(0.14.1)
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/os src/os/${GWEN_OS}"
+GWEN_HEADER_DIRS="src src/base src/net src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/ipc/request src/os src/os/${GWEN_OS}"
 GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
@@ -613,6 +635,7 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  src/crypt2/Makefile
                  src/io/Makefile
                  src/ipc/Makefile
+                 src/ipc/request/Makefile
                  src/os/Makefile
                  src/os/posix/Makefile
                  src/os/posix/system.h

@@ -99,6 +99,47 @@ int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 }
 
 
+
+int write_h_func_c(ARGUMENTS *args, GWEN_XMLNODE *node,
+                   GWEN_BUFFEREDIO *bio) {
+  const char *name;
+  const char *typ;
+  const char *styp;
+
+  styp=get_struct_property(node, "id", 0);
+  if (!styp) {
+    DBG_ERROR(0, "No id in struct");
+    return -1;
+  }
+
+  name=GWEN_XMLNode_GetProperty(node, "name", 0);
+  if (!name) {
+    DBG_ERROR(0, "No name for function");
+    return -1;
+  }
+
+  typ=GWEN_XMLNode_GetProperty(node, "type", 0);
+  if (!typ) {
+    DBG_ERROR(0, "No type for function");
+    return -1;
+  }
+
+  GWEN_BufferedIO_Write(bio, "  ");
+
+  /* rettype name; */
+  GWEN_BufferedIO_Write(bio, styp);
+  GWEN_BufferedIO_Write(bio, "_");
+  GWEN_BufferedIO_Write(bio, typ);
+  GWEN_BufferedIO_Write(bio, " ");
+  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+  GWEN_BufferedIO_Write(bio, name+1);
+  GWEN_BufferedIO_WriteLine(bio, ";");
+
+  return 0;
+}
+
+
+
 int write_h_struct_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 		     GWEN_BUFFEREDIO *bio) {
   GWEN_XMLNODE *n;
@@ -120,6 +161,11 @@ int write_h_struct_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
   if (write_h_enums(args, node, bio, "private")) {
     DBG_ERROR(0, "Error writing enum types");
+    return -1;
+  }
+
+  if (write_h_funcs(args, node, bio, "private")) {
+    DBG_ERROR(0, "Error writing function types");
     return -1;
   }
 
@@ -178,6 +224,9 @@ int write_hp_group_c(ARGUMENTS *args, GWEN_XMLNODE *node,
       return write_h_struct_c(args, node, bio);
     else if (strcasecmp(GWEN_XMLNode_GetData(node), "elem")==0) {
       return write_h_elem_c(args, node, bio);
+    }
+    else if (strcasecmp(GWEN_XMLNode_GetData(node), "func")==0) {
+      return write_h_func_c(args, node, bio);
     }
     else if (strcasecmp(GWEN_XMLNode_GetData(node), "header")==0) {
       return write_h_header(args, node, bio);

@@ -1,5 +1,3 @@
-SUBDIRS=request
-
 INCLUDES=@all_includes@ -I$(top_srcdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
@@ -12,36 +10,25 @@ INCLUDES=@all_includes@ -I$(top_srcdir) \
 
 AM_CFLAGS=@PROFILING_CFLAGS@
 
-typefiles=httpcookie.xml httpurl.xml
+typefiles=request.xml
 EXTRA_DIST=$(typefiles)
 
-noinst_LTLIBRARIES=libipc.la
+
+noinst_LTLIBRARIES=libipcrequest.la
 
 noinst_HEADERS=\
- ipc_p.h \
- netconnectionhttp_p.h \
- httpsession_p.h \
- httpcookie_l.h \
- httpcookie_p.h \
- httpurl_l.h \
- httpurl_p.h
+  request_l.h \
+  request_p.h \
+  requestmgr_p.h
 
 iheaderdir=$(pkgincludedir)
 iheader_HEADERS=\
- ipc.h \
- netconnectionhttp.h \
- httpsession.h \
- httpcookie.h \
- httpurl.h \
- httpurlfns.h
+  request.h \
+  requestmgr.h
 
-libipc_la_SOURCES=\
- ipc.c \
- netconnectionhttp.c \
- httpsession.c \
- httpcookie.c \
- httpurl.c \
- httpurlfns.c
+libipcrequest_la_SOURCES=\
+  request.c \
+  requestmgr.c
 
 
 types: $(typefiles)

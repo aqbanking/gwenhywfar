@@ -23,11 +23,18 @@ int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
 int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
                   GWEN_BUFFEREDIO *bio, const char *acc);
 
+int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
+                  GWEN_BUFFEREDIO *bio,
+                  const char *acc);
+
 int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
                   GWEN_BUFFEREDIO *bio);
 
 int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                    GWEN_BUFFEREDIO *bio);
+int write_h_func_c(ARGUMENTS *args, GWEN_XMLNODE *node,
+                   GWEN_BUFFEREDIO *bio);
+
 int write_h_struct_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                      GWEN_BUFFEREDIO *bio);
 int write_hp_group_c(ARGUMENTS *args, GWEN_XMLNODE *node,

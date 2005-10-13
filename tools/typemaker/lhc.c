@@ -193,6 +193,11 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     return -1;
   }
 
+  if (write_h_funcs(args, node, bio, "lib")) {
+    DBG_ERROR(0, "Error writing function types");
+    return -1;
+  }
+
   if (strcasecmp(get_struct_property(node, "inherit", ""),
                  "lib")==0) {
     GWEN_BufferedIO_Write(bio, "GWEN_INHERIT_FUNCTION_DEFS(");

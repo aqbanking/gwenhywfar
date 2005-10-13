@@ -7,6 +7,8 @@ INCLUDES=-I$(top_srcdir) \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/ui @all_includes@
 
+AM_CFLAGS=@PROFILING_CFLAGS@
+
 typefiles=crypttoken.xml
 
 

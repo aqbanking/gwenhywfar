@@ -1,0 +1,91 @@
+<typedefs>
+  <type id="GWEN_TIME" >
+    <functions>
+      <function type="todb" name="GWEN_Time_toDb" />
+      <function type="fromdb" name="GWEN_Time_fromDb" />
+      <function type="dup" name="GWEN_Time_dup" />
+      <function type="free" name="GWEN_Time_free" />
+    </functions>
+  </type>
+  <type id="GWEN_TYPE_UINT32" dbtype="int" />
+
+  <type id="GWEN_IPC_REQUEST_LIST" >
+    <functions>
+      <function type="new" name="GWEN_IpcRequest_List_new" />
+      <function type="free" name="GWEN_IpcRequest_List_free" />
+      <function type="dup" name="GWEN_IpcRequest_List_dup" />
+    </functions>
+  </type>
+
+  <type id="GWEN_IPC_REQUEST_WORK_FN" dbtype="int" />
+
+</typedefs>
+
+
+
+<types>
+  <type id="GWEN_IPC_REQUEST" 
+        prefix="GWEN_IpcRequest"
+        class="IpcRequest"
+        access="public"
+        filename="request"
+        list="public"
+        list2="public"
+        inherit="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+      <header type="sys" >gwenhywfar/gwentime.h</header>
+    </headers>
+
+    <subtypes>
+      <type id="STATUS" prefix="Status" mode="enum" access="public" >
+        <values>
+          <value value="0">new
+            <descr>
+              New request.
+            </descr>
+          </value>
+          <value>sent
+            <descr>
+              Request has been sent, no answer has been received.
+            </descr>
+          </value>
+          <value>partial
+            <descr>
+              Request has been answered partially.
+            </descr>
+          </value>
+          <value>answered
+            <descr>
+              Request has been answered completely..
+            </descr>
+          </value>
+          <value>finished
+            <descr>
+              Request has been finished.
+            </descr>
+          </value>
+        </values>
+      </type>
+    </subtypes>
+    
+    <elem name="id" type="GWEN_TYPE_UINT32" />
+    <elem name="name" type="char" ptr="1" />
+    <elem name="ipcId" type="GWEN_TYPE_UINT32" />
+    <elem name="expires" type="GWEN_TIME" ptr="1" />
+    <elem name="subRequests" type="GWEN_IPC_REQUEST_LIST"
+          mode="list" elemType="GWEN_IPC_REQUEST"
+          init="1" copy="1" const="0" ptr="1" />
+    <elem name="status" type="STATUS" >
+      <descr>
+        Status of the request.
+      </descr>
+    </elem>
+
+    <func name="workFn" type="WORK_FN" return="int" default="-1">
+    </func>
+  </type>
+  
+  
+  
+</types>

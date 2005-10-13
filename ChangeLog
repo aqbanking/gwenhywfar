@@ -1,4 +1,17 @@
 
+2005/10/12: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- worked on typemaker:
+  - write_code_fromdbArg_c() no longer handles volatile elements
+  - now defining virtual functions is allowed. Typemaker declares the
+    type and getter/setter/exec functions (see src/ipc/request/request.xml)
+- worked on IPC:
+  - undid the latest changes (do not export the internal GWEN_IPCREQUEST
+    class)
+  - added a new request wrapper class (GWEN_IPC_REQUEST) which uses the
+    normal GWEN_IPCMANAGER function calls
+
+
 2005/10/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - worked on a timing problem in network code
