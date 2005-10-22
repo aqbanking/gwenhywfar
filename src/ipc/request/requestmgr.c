@@ -27,6 +27,7 @@ GWEN_IPC_REQUEST_MANAGER *GWEN_IpcRequestManager_new(GWEN_IPCMANAGER *ipcMgr){
 
   GWEN_NEW_OBJECT(GWEN_IPC_REQUEST_MANAGER, rm);
   rm->ipcManager=ipcMgr;
+  rm->requests=GWEN_IpcRequest_List_new();
 
   return rm;
 }
@@ -35,6 +36,7 @@ GWEN_IPC_REQUEST_MANAGER *GWEN_IpcRequestManager_new(GWEN_IPCMANAGER *ipcMgr){
 
 void GWEN_IpcRequestManager_free(GWEN_IPC_REQUEST_MANAGER *rm){
   if (rm) {
+    GWEN_IpcRequest_List_free(rm->requests);
     GWEN_FREE_OBJECT(rm);
   }
 }

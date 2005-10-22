@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-08-24 15:58+0200\n"
+"POT-Creation-Date: 2005-10-22 00:31+0200\n"
 "PO-Revision-Date: 2005-08-24 16:04+0200\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: plugins/crypttoken/ohbci/ohbci.c:476
+#: plugins/crypttoken/ohbci/ohbci.c:477
 msgid "No valid PIN (tried too often), aborting."
 msgstr "Keine gültige PIN erhalten (zu oft versucht). Abbruch."
 
-#: plugins/crypttoken/ohbci/ohbci.c:510
+#: plugins/crypttoken/ohbci/ohbci.c:511
 msgid "Bad PIN, will try again"
 msgstr "Falsche PIN erhalten. Erneut versuchen"
 
@@ -177,43 +177,43 @@ msgstr "Fehler bei der Signaturüberprüfung"
 msgid "Generic SSL error"
 msgstr "Allgemeiner SSL Fehler"
 
-#: src/crypt2/crypttoken.c:3274
+#: src/crypt2/crypttoken.c:3344
 #, c-format
 msgid "Loading plugin \"%s\""
 msgstr "Plugin \"%s\" laden"
 
-#: src/crypt2/crypttoken.c:3291
+#: src/crypt2/crypttoken.c:3361
 #, c-format
 msgid "Checking plugin \"%s\""
 msgstr "Plugin \"%s\" prüfen"
 
-#: src/crypt2/crypttoken.c:3307
+#: src/crypt2/crypttoken.c:3377
 #, c-format
 msgid "Plugin \"%s\" supports this token"
 msgstr "Plugin \"%s\" unterstützt dieses Token"
 
-#: src/crypt2/crypttoken.c:3326
+#: src/crypt2/crypttoken.c:3396
 #, c-format
 msgid "Plugin \"%s\": Function not implemented"
 msgstr "Plugin \"%s\": Funktion nicht implementiert"
 
-#: src/crypt2/crypttoken.c:3334
+#: src/crypt2/crypttoken.c:3404
 #, c-format
 msgid "Plugin \"%s\" does not support this token"
 msgstr "Plugin \"%s\" unterstützt dieses Token nicht"
 
-#: src/crypt2/crypttoken.c:3342
+#: src/crypt2/crypttoken.c:3412
 #, c-format
 msgid "Plugin \"%s\" supports this token, but the name did not match"
 msgstr ""
 "Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
 
-#: src/crypt2/crypttoken.c:3351
+#: src/crypt2/crypttoken.c:3421
 #, c-format
 msgid "Plugin \"%s\": Unexpected error (%d)"
 msgstr "Plugin \"%s\": Unerwarteter Fehler (%d)"
 
-#: src/crypt2/crypttoken.c:3360
+#: src/crypt2/crypttoken.c:3430
 #, c-format
 msgid "Could not load plugin \"%s\""
 msgstr "Fehler beim Laden des Plugins \"%s\""

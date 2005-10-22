@@ -9,7 +9,7 @@ dbioplugin_DATA=csv.xml
 noinst_HEADERS=csv_p.h
 
 csv_la_SOURCES=csv.c
-csv_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
+csv_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
 csv_la_LDFLAGS = $(STRIPALL) @PROFILING_LDFLAGS@ -module -version-info 0:1:0
 
 
@@ -18,7 +18,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = csv
-DLLLDLIBS = -L/mingw/lib -L$(top_builddir)/src -lgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
+DLLLDLIBS = $(top_builddir)/src/libgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).la
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 

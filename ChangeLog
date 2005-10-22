@@ -1,3 +1,15 @@
+===========================================================================
+MARK: released gwenhywfar-1.19.0 (2005/10/22)
+===========================================================================
+
+
+2005/10/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed some bugs in typemaker (regarding "volatile" property)
+- applied and extended a patch by Stanislav Brabec (SuSE) which fixes 
+  the LIBADDs of the libraries/tools/plugins
+- added property "takeOver" to typemaker
+
 
 2005/10/12: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

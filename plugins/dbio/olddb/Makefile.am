@@ -9,7 +9,7 @@ dbioplugin_DATA=olddb.xml
 noinst_HEADERS=olddb_p.h
 
 olddb_la_SOURCES=olddb.c
-olddb_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
+olddb_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
 olddb_la_LDFLAGS = $(STRIPALL) @PROFILING_LDFLAGS@ -module -version-info 0:1:0
 
 # dll stuff
@@ -17,7 +17,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = olddb
-DLLLDLIBS = -L/mingw/lib -L$(top_builddir)/src -lgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
+DLLLDLIBS = $(top_builddir)/src/libgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).la
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 

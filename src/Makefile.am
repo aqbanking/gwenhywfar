@@ -59,7 +59,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
-DLLLDLIBS = -L/mingw/lib $(ssl_libraries) $(ssl_lib) -lwsock32 -lregex
+DLLLDLIBS = $(ssl_libraries) $(ssl_lib) -lwsock32 -lregex
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 

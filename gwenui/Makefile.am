@@ -75,12 +75,12 @@ libgwenui_la_SOURCES=\
   window.c
 
 if IS_WINDOWS
-  PROVIDED_GWEN_LIB=-lgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
+  PROVIDED_GWEN_LIB=libgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).la
 else
-  PROVIDED_GWEN_LIB=-lgwenhywfar
+  PROVIDED_GWEN_LIB=libgwenhywfar.la
 endif
 
-libgwenui_la_LIBADD=-L/mingw/lib -L$(top_builddir)/src $(PROVIDED_GWEN_LIB) @ncurses_libs@
+libgwenui_la_LIBADD=$(top_builddir)/src/$(PROVIDED_GWEN_LIB) @ncurses_libs@
 
 libgwenui_la_LDFLAGS= \
   @STRIPALL@ -version-info \

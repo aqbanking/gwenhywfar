@@ -20,7 +20,7 @@ crypttokenplugin_DATA=ohbci.xml
 noinst_HEADERS=ohbci_l.h ohbci_p.h tag16_l.h tag16_p.h
 
 ohbci_la_SOURCES=ohbci.c tag16.c
-ohbci_la_LIBADD=-L$(top_builddir)/src -lgwenhywfar
+ohbci_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
 ohbci_la_LDFLAGS = $(STRIPALL) @PROFILING_LDFLAGS@ -module -version-info 0:1:0
 
 
@@ -29,7 +29,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = ohbci
-DLLLDLIBS = -L/mingw/lib -L$(top_builddir)/src -lgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE)
+DLLLDLIBS = $(top_builddir)/src/libgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).la
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 

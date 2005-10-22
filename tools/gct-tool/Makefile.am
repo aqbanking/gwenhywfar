@@ -25,6 +25,6 @@ gct_tool_SOURCES=\
   main.c
 
 gct_tool_LDADD = \
-  -L$(top_builddir)/src $(gwenhywfar_libs) \
-  -L/mingw/lib $(PROG_LIBRARIES)
+  $(top_builddir)/src/libgwenhywfar.la \
+  $(PROG_LIBRARIES)
 

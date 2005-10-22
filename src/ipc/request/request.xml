@@ -82,7 +82,7 @@
       </descr>
     </elem>
 
-    <func name="workFn" type="WORK_FN" return="int" default="-1">
+    <func name="workFn" type="WORK_FN" return="int" default="1">
     </func>
   </type>
   

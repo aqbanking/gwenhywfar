@@ -76,12 +76,6 @@ void GWEN_IpcRequest_free(GWEN_IPC_REQUEST *st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
   GWEN_INHERIT_FINI(GWEN_IPC_REQUEST, st)
-  if (st->name)
-    free(st->name);
-  if (st->expires)
-    GWEN_Time_free(st->expires);
-  if (st->subRequests)
-    GWEN_IpcRequest_List_free(st->subRequests);
   GWEN_LIST_FINI(GWEN_IPC_REQUEST, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -207,8 +201,6 @@ const char *GWEN_IpcRequest_GetName(const GWEN_IPC_REQUEST *st) {
 
 void GWEN_IpcRequest_SetName(GWEN_IPC_REQUEST *st, const char *d) {
   assert(st);
-  if (st->name)
-    free(st->name);
   if (d)
     st->name=strdup(d);
   else
@@ -242,8 +234,6 @@ const GWEN_TIME *GWEN_IpcRequest_GetExpires(const GWEN_IPC_REQUEST *st) {
 
 void GWEN_IpcRequest_SetExpires(GWEN_IPC_REQUEST *st, const GWEN_TIME *d) {
   assert(st);
-  if (st->expires)
-    GWEN_Time_free(st->expires);
   if (d)
     st->expires=GWEN_Time_dup(d);
   else
@@ -262,8 +252,6 @@ GWEN_IPC_REQUEST_LIST *GWEN_IpcRequest_GetSubRequests(const GWEN_IPC_REQUEST *st
 
 void GWEN_IpcRequest_SetSubRequests(GWEN_IPC_REQUEST *st, GWEN_IPC_REQUEST_LIST *d) {
   assert(st);
-  if (st->subRequests)
-    GWEN_IpcRequest_List_free(st->subRequests);
   if (d) {
     GWEN_IPC_REQUEST *e;
 
@@ -315,7 +303,7 @@ int GWEN_IpcRequest_WorkFn(GWEN_IPC_REQUEST *st) {
   assert(st);
   if (st->workFn)
     return st->workFn(st);
-return -1;
+return 1;
 }
 
 

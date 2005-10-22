@@ -4,5 +4,5 @@ bin_PROGRAMS=xmlmerge
 noinst_HEADERS=args.h
 xmlmerge_SOURCES=args.c main.c
 xmlmerge_LDADD=\
-  -L$(top_builddir)/src $(gwenhywfar_libs) \
-  -L/mingw/lib $(PROG_LIBRARIES)
+  $(top_builddir)/src/libgwenhywfar.la \
+  $(PROG_LIBRARIES)

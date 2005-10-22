@@ -205,6 +205,9 @@ int write_code_freeElem_c(ARGUMENTS *args,
   if (atoi(get_property(node, "ptr", "0"))==0)
     return 0;
 
+  if (atoi(GWEN_XMLNode_GetProperty(node, "takeOver", "0"))==0)
+    return 0;
+
   typ=GWEN_XMLNode_GetProperty(node, "type", 0);
   if (!typ) {
     DBG_ERROR(0, "No type for element");
@@ -271,8 +274,9 @@ int write_code_freeElems_c(ARGUMENTS *args,
 
       if (strcasecmp(GWEN_XMLNode_GetData(n), "group")==0)
         rv=write_code_freeElems_c(args, n, bio);
-      else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0)
-        rv=write_code_freeElem_c(args, n, bio);
+      else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0) {
+	rv=write_code_freeElem_c(args, n, bio);
+      }
       else {
         rv=0;
       }
@@ -350,12 +354,6 @@ int write_code_todbArg_c(ARGUMENTS *args,
   const char *name;
   const char *mode;
   int isPtr;
-  int isVolatile;
-
-  isVolatile=atoi(GWEN_XMLNode_GetProperty(node, "volatile", "0"));
-  if (isVolatile)
-    /* don't save volatile data */
-    return 0;
 
   isPtr=atoi(get_property(node, "ptr", "0"));
 
@@ -1981,33 +1979,39 @@ int write_code_todbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
         }
       }
       else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0) {
-        int isPtr;
-        const char *typ;
-        const char *name;
+        int isVolatile;
+      
+        isVolatile=atoi(GWEN_XMLNode_GetProperty(n, "volatile", "0"));
+        if (isVolatile==0) {
+	  int isPtr;
+	  const char *typ;
+	  const char *name;
 
-        name=GWEN_XMLNode_GetProperty(n, "name", 0);
-        if (!name) {
-          DBG_ERROR(0, "No name for element");
-          return -1;
-        }
-
-        typ=GWEN_XMLNode_GetProperty(n, "type", 0);
-        if (!typ) {
-          DBG_ERROR(0, "No type for element");
-          return -1;
-        }
-
-        isPtr=atoi(get_property(n, "ptr", "0"));
-        if (isPtr) {
-          GWEN_BufferedIO_Write(bio, "  if (st->");
-          GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-          GWEN_BufferedIO_Write(bio, name+1);
-          GWEN_BufferedIO_WriteLine(bio, ")");
-        }
-        rv=write_code_todbArg_c(args, n, bio);
-	if (rv) {
-          DBG_ERROR(0, "Error in toDb function");
-	  return rv;
+	  name=GWEN_XMLNode_GetProperty(n, "name", 0);
+	  if (!name) {
+	    DBG_ERROR(0, "No name for element");
+	    return -1;
+	  }
+  
+	  typ=GWEN_XMLNode_GetProperty(n, "type", 0);
+	  if (!typ) {
+	    DBG_ERROR(0, "No type for element");
+	    return -1;
+	  }
+  
+	  isPtr=atoi(get_property(n, "ptr", "0"));
+	  if (isPtr) {
+	    GWEN_BufferedIO_Write(bio, "  if (st->");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_WriteLine(bio, ")");
+	  }
+  
+	  rv=write_code_todbArg_c(args, n, bio);
+	  if (rv) {
+	    DBG_ERROR(0, "Error in toDb function");
+	    return rv;
+	  }
 	}
       }
     }
@@ -2092,293 +2096,298 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
         }
       }
       else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0) {
-        int isPtr;
-        const char *typ;
-	const char *name;
-        const char *mode;
+        int isVolatile;
+      
+        isVolatile=atoi(GWEN_XMLNode_GetProperty(n, "volatile", "0"));
+        if (isVolatile==0) {
+	  int isPtr;
+	  const char *typ;
+	  const char *name;
+	  const char *mode;
 
-        name=GWEN_XMLNode_GetProperty(n, "name", 0);
-        if (!name) {
-          DBG_ERROR(0, "No name for element");
-          return -1;
-        }
-
-	mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
-
-        typ=GWEN_XMLNode_GetProperty(n, "type", 0);
-        if (!typ) {
-          DBG_ERROR(0, "No type for element");
-          return -1;
-        }
-
-	if (strcasecmp(mode, "list")==0) {
-	  const char *prefix;
-	  const char *elemType;
-	  const char *elemPrefix;
-	  GWEN_XMLNODE *elemNode;
-
-	  prefix=get_struct_property(node, "prefix", 0);
-	  assert(prefix);
-  
-	  /* create list code */
-	  elemType=GWEN_XMLNode_GetProperty(n, "elemType", 0);
-	  if (!elemType) {
-	    DBG_ERROR(0, "No \"type\" for list type \"%s\"", typ);
+	  name=GWEN_XMLNode_GetProperty(n, "name", 0);
+	  if (!name) {
+	    DBG_ERROR(0, "No name for element");
 	    return -1;
 	  }
   
-	  elemNode=get_typedef(n, elemType);
-	  if (!elemNode) {
-	    DBG_ERROR(0, "Undefined type %s", elemType);
-	    return -1;
-	  }
-	  elemPrefix=GWEN_XMLNode_GetProperty(elemNode, "prefix", 0);
-	  if (!elemPrefix) {
-	    DBG_ERROR(0, "No \"prefix\" for type \"%s\" (within %s)",
-		      elemType, typ);
+	  mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
+  
+	  typ=GWEN_XMLNode_GetProperty(n, "type", 0);
+	  if (!typ) {
+	    DBG_ERROR(0, "No type for element");
 	    return -1;
 	  }
   
-	  /* actually generate the code */
-	  GWEN_BufferedIO_Write(bio, "  st->");
-	  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-	  GWEN_BufferedIO_Write(bio, name+1);
-	  GWEN_BufferedIO_Write(bio, "=");
-	  GWEN_BufferedIO_Write(bio, elemPrefix);
-	  GWEN_BufferedIO_WriteLine(bio, "_List_new();");
-
-	  GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
-	  GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
-	  GWEN_BufferedIO_Write(bio, "    ");
-	  GWEN_BufferedIO_Write(bio, elemType);
-	  GWEN_BufferedIO_WriteLine(bio, " *e;");
-	  GWEN_BufferedIO_WriteLine(bio, "");
-	  GWEN_BufferedIO_Write(bio,
-				"    dbT=GWEN_DB_GetGroup(db, "
-				"GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
-	  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-	  GWEN_BufferedIO_Write(bio, name+1);
-	  GWEN_BufferedIO_WriteLine(bio, "\");");
-	  GWEN_BufferedIO_WriteLine(bio, "    if (dbT) {");
-	  GWEN_BufferedIO_WriteLine(bio, "      GWEN_DB_NODE *dbT2;");
-	  GWEN_BufferedIO_WriteLine(bio, "");
+	  if (strcasecmp(mode, "list")==0) {
+	    const char *prefix;
+	    const char *elemType;
+	    const char *elemPrefix;
+	    GWEN_XMLNODE *elemNode;
   
-	  GWEN_BufferedIO_Write(bio,
-				"      dbT2=GWEN_DB_FindFirstGroup(dbT, \"");
-	  GWEN_BufferedIO_Write(bio, "element");
-	  GWEN_BufferedIO_WriteLine(bio, "\");");
-  
-	  /* while (e) */
-	  GWEN_BufferedIO_WriteLine(bio, "      while(dbT2) {");
-  
-	  /* e=ElemType_fromDb(e) */
-	  GWEN_BufferedIO_Write(bio, "        e=");
-	  GWEN_BufferedIO_Write(bio, elemPrefix);
-	  GWEN_BufferedIO_WriteLine(bio, "_fromDb(dbT2);");
-  
-	  /* if (!e) */
-	  GWEN_BufferedIO_WriteLine(bio, "        if (!e) {");
-	  GWEN_BufferedIO_Write(bio, "          "
-                                "DBG_ERROR(0, \"Bad element for type \\\"");
-          GWEN_BufferedIO_Write(bio, elemType);
-          GWEN_BufferedIO_WriteLine(bio, "\\\"\");");
-	  GWEN_BufferedIO_WriteLine(bio, "          "
-				    "if (GWEN_Logger_GetLevel(0)>="
-				    "GWEN_LoggerLevelDebug)");
-	  GWEN_BufferedIO_WriteLine(bio, "            "
-				    "GWEN_DB_Dump(dbT2, stderr, 2);");
-	  GWEN_BufferedIO_Write(bio, "          ");
-	  GWEN_BufferedIO_Write(bio, prefix);
-	  GWEN_BufferedIO_WriteLine(bio, "_free(st);");
-	  GWEN_BufferedIO_WriteLine(bio, "          return 0;");
-	  GWEN_BufferedIO_WriteLine(bio, "        }");
-  
-	  /* ElemType_List_Add(e, st->NAME); */
-	  GWEN_BufferedIO_Write(bio, "        ");
-	  GWEN_BufferedIO_Write(bio, elemPrefix);
-	  GWEN_BufferedIO_Write(bio, "_List_Add(e, st->");
-	  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-	  GWEN_BufferedIO_Write(bio, name+1);
-	  GWEN_BufferedIO_Write(bio, ");");
-  
-	  GWEN_BufferedIO_Write(bio,
-				"    dbT2=GWEN_DB_FindNextGroup(dbT2, \"");
-	  GWEN_BufferedIO_Write(bio, "element");
-	  GWEN_BufferedIO_WriteLine(bio, "\");");
-  
-	  GWEN_BufferedIO_WriteLine(bio, "      } /* while */");
-  
-	  GWEN_BufferedIO_WriteLine(bio, "    } /* if (dbT) */");
-  
-	  GWEN_BufferedIO_WriteLine(bio, "  } /* if (1) */");
-	}
-	else if (strcasecmp(mode, "list2")==0) {
-	  const char *prefix;
-	  const char *elemType;
-	  const char *elemPrefix;
-	  GWEN_XMLNODE *elemNode;
-
-	  prefix=get_struct_property(node, "prefix", 0);
-	  assert(prefix);
-  
-	  /* create list code */
-	  elemType=GWEN_XMLNode_GetProperty(n, "elemType", 0);
-	  if (!elemType) {
-	    DBG_ERROR(0, "No \"type\" for list type \"%s\"", typ);
-	    return -1;
-	  }
-  
-	  elemNode=get_typedef(node, elemType);
-	  if (!elemNode) {
-	    DBG_ERROR(0, "Undefined type %s", elemType);
-	    return -1;
-	  }
-	  elemPrefix=GWEN_XMLNode_GetProperty(elemNode, "prefix", 0);
-	  if (!elemPrefix) {
-	    DBG_ERROR(0, "No \"prefix\" for type \"%s\" (within %s)",
-		      elemType, typ);
-	    return -1;
-	  }
-  
-	  /* actually generate the code */
-	  GWEN_BufferedIO_Write(bio, "  st->");
-	  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-	  GWEN_BufferedIO_Write(bio, name+1);
-	  GWEN_BufferedIO_Write(bio, "=");
-	  GWEN_BufferedIO_Write(bio, elemPrefix);
-	  GWEN_BufferedIO_WriteLine(bio, "_List2_new();");
-
-	  GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
-	  GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
-	  GWEN_BufferedIO_Write(bio, "    ");
-	  GWEN_BufferedIO_Write(bio, elemType);
-	  GWEN_BufferedIO_WriteLine(bio, " *e;");
-	  GWEN_BufferedIO_WriteLine(bio, "");
-	  GWEN_BufferedIO_Write(bio,
-				"    dbT=GWEN_DB_GetGroup(db, "
-				"GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
-	  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-	  GWEN_BufferedIO_Write(bio, name+1);
-	  GWEN_BufferedIO_WriteLine(bio, "\");");
-	  GWEN_BufferedIO_WriteLine(bio, "    if (dbT) {");
-	  GWEN_BufferedIO_WriteLine(bio, "      GWEN_DB_NODE *dbT2;");
-	  GWEN_BufferedIO_WriteLine(bio, "");
-  
-	  GWEN_BufferedIO_Write(bio,
-				"    dbT2=GWEN_DB_FindFirstGroup(dbT, \"");
-	  GWEN_BufferedIO_Write(bio, "element");
-	  GWEN_BufferedIO_WriteLine(bio, "\");");
-  
-	  /* while (e) */
-	  GWEN_BufferedIO_WriteLine(bio, "      while(dbT2) {");
-  
-	  /* e=ElemType_fromDb(e) */
-	  GWEN_BufferedIO_Write(bio, "        e=");
-	  GWEN_BufferedIO_Write(bio, elemPrefix);
-	  GWEN_BufferedIO_WriteLine(bio, "_fromDb(dbT2);");
-  
-	  /* if (!e) */
-	  GWEN_BufferedIO_WriteLine(bio, "        if (!e) {");
-	  GWEN_BufferedIO_Write(bio, "          "
-                                "DBG_ERROR(0, \"Bad element for type \\\"");
-          GWEN_BufferedIO_Write(bio, elemType);
-          GWEN_BufferedIO_WriteLine(bio, "\\\"\");");
-	  GWEN_BufferedIO_WriteLine(bio, "          "
-				    "if (GWEN_Logger_GetLevel(0)>="
-                                    "GWEN_LoggerLevelDebug)");
-	  GWEN_BufferedIO_WriteLine(bio, "            "
-				    "GWEN_DB_Dump(dbT2, stderr, 2);");
-	  GWEN_BufferedIO_Write(bio, "          ");
-	  GWEN_BufferedIO_Write(bio, prefix);
-	  GWEN_BufferedIO_WriteLine(bio, "_free(st);");
-	  GWEN_BufferedIO_WriteLine(bio, "          return 0;");
-	  GWEN_BufferedIO_WriteLine(bio, "        } /* if !e */");
-  
-	  /* ElemType_List_Add(e, st->NAME); */
-	  GWEN_BufferedIO_Write(bio, "        ");
-	  GWEN_BufferedIO_Write(bio, elemPrefix);
-	  GWEN_BufferedIO_Write(bio, "_List2_PushBack(st->");
-	  GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-	  GWEN_BufferedIO_Write(bio, name+1);
-	  GWEN_BufferedIO_WriteLine(bio, ", e);");
-
-	  GWEN_BufferedIO_Write(bio,"        "
-                                "dbT2=GWEN_DB_FindNextGroup(dbT2, \"");
-	  GWEN_BufferedIO_Write(bio, "element");
-	  GWEN_BufferedIO_WriteLine(bio, "\");");
-  
-	  GWEN_BufferedIO_WriteLine(bio, "      } /* while */");
-  
-	  GWEN_BufferedIO_WriteLine(bio, "    } /* if (dbT) */");
-  
-	  GWEN_BufferedIO_WriteLine(bio, "  } /* if (1) */");
-	}
-	else if (strcasecmp(typ, "GWEN_STRINGLIST")==0) {
-          GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
-          GWEN_BufferedIO_WriteLine(bio, "    int i;");
-          GWEN_BufferedIO_WriteLine(bio, "");
-          GWEN_BufferedIO_WriteLine(bio, "    for (i=0; ; i++) {");
-          GWEN_BufferedIO_WriteLine(bio, "      const char *s;");
-          GWEN_BufferedIO_WriteLine(bio, "");
-          GWEN_BufferedIO_Write(bio, "      s=GWEN_DB_GetCharValue(db, \"");
-          GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-          GWEN_BufferedIO_Write(bio, name+1);
-          GWEN_BufferedIO_WriteLine(bio, "\", i, 0);");
-          GWEN_BufferedIO_WriteLine(bio, "      if (!s)");
-          GWEN_BufferedIO_WriteLine(bio, "        break;");
-          GWEN_BufferedIO_Write(bio, "      ");
-          GWEN_BufferedIO_Write(bio, prefix);
-          GWEN_BufferedIO_Write(bio, "_Add");
-          GWEN_BufferedIO_WriteChar(bio, toupper(*name));
-          GWEN_BufferedIO_Write(bio, name+1);
-          GWEN_BufferedIO_WriteLine(bio, "(st, s, 0);");
-          GWEN_BufferedIO_WriteLine(bio, "    } /* for */");
-          GWEN_BufferedIO_WriteLine(bio, "  }");
-	}
-        else {
-	  isPtr=atoi(get_property(n, "ptr", "0"));
-
-          if (isPtr) {
-	    if (strcasecmp(typ, "char")!=0) {
-	      GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
-	      GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
-	      GWEN_BufferedIO_WriteLine(bio, "");
-	      GWEN_BufferedIO_Write(bio,
-				    "    dbT=GWEN_DB_GetGroup(db, "
-				    "GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
-	      GWEN_BufferedIO_WriteChar(bio, tolower(*name));
-	      GWEN_BufferedIO_Write(bio, name+1);
-	      GWEN_BufferedIO_WriteLine(bio, "\");");
-	      GWEN_BufferedIO_Write(bio, "    if (dbT)");
+	    prefix=get_struct_property(node, "prefix", 0);
+	    assert(prefix);
+    
+	    /* create list code */
+	    elemType=GWEN_XMLNode_GetProperty(n, "elemType", 0);
+	    if (!elemType) {
+	      DBG_ERROR(0, "No \"type\" for list type \"%s\"", typ);
+	      return -1;
 	    }
-          }
-          if (isPtr && strcasecmp(typ, "char")!=0) {
-            GWEN_BufferedIO_Write(bio, " st->");
-            GWEN_BufferedIO_Write(bio, name);
-            GWEN_BufferedIO_Write(bio, "=");
-            rv=write_code_fromdbArg_c(args, n, bio);
-            if (rv)
-              return rv;
-            GWEN_BufferedIO_WriteLine(bio, ";");
-          }
-          else {
-            GWEN_BufferedIO_Write(bio, "  ");
-            GWEN_BufferedIO_Write(bio, prefix);
-            GWEN_BufferedIO_Write(bio, "_Set");
-            GWEN_BufferedIO_WriteChar(bio, toupper(*name));
-            GWEN_BufferedIO_Write(bio, name+1);
-            GWEN_BufferedIO_Write(bio, "(st, ");
-
-            rv=write_code_fromdbArg_c(args, n, bio);
-            if (rv)
-              return rv;
-            GWEN_BufferedIO_WriteLine(bio, ");");
-          }
-
-          if (isPtr && strcasecmp(typ, "char")!=0) {
+    
+	    elemNode=get_typedef(n, elemType);
+	    if (!elemNode) {
+	      DBG_ERROR(0, "Undefined type %s", elemType);
+	      return -1;
+	    }
+	    elemPrefix=GWEN_XMLNode_GetProperty(elemNode, "prefix", 0);
+	    if (!elemPrefix) {
+	      DBG_ERROR(0, "No \"prefix\" for type \"%s\" (within %s)",
+			elemType, typ);
+	      return -1;
+	    }
+    
+	    /* actually generate the code */
+	    GWEN_BufferedIO_Write(bio, "  st->");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_Write(bio, "=");
+	    GWEN_BufferedIO_Write(bio, elemPrefix);
+	    GWEN_BufferedIO_WriteLine(bio, "_List_new();");
+  
+	    GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
+	    GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
+	    GWEN_BufferedIO_Write(bio, "    ");
+	    GWEN_BufferedIO_Write(bio, elemType);
+	    GWEN_BufferedIO_WriteLine(bio, " *e;");
+	    GWEN_BufferedIO_WriteLine(bio, "");
+	    GWEN_BufferedIO_Write(bio,
+				  "    dbT=GWEN_DB_GetGroup(db, "
+				  "GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_WriteLine(bio, "\");");
+	    GWEN_BufferedIO_WriteLine(bio, "    if (dbT) {");
+	    GWEN_BufferedIO_WriteLine(bio, "      GWEN_DB_NODE *dbT2;");
+	    GWEN_BufferedIO_WriteLine(bio, "");
+    
+	    GWEN_BufferedIO_Write(bio,
+				  "      dbT2=GWEN_DB_FindFirstGroup(dbT, \"");
+	    GWEN_BufferedIO_Write(bio, "element");
+	    GWEN_BufferedIO_WriteLine(bio, "\");");
+    
+	    /* while (e) */
+	    GWEN_BufferedIO_WriteLine(bio, "      while(dbT2) {");
+    
+	    /* e=ElemType_fromDb(e) */
+	    GWEN_BufferedIO_Write(bio, "        e=");
+	    GWEN_BufferedIO_Write(bio, elemPrefix);
+	    GWEN_BufferedIO_WriteLine(bio, "_fromDb(dbT2);");
+    
+	    /* if (!e) */
+	    GWEN_BufferedIO_WriteLine(bio, "        if (!e) {");
+	    GWEN_BufferedIO_Write(bio, "          "
+				  "DBG_ERROR(0, \"Bad element for type \\\"");
+	    GWEN_BufferedIO_Write(bio, elemType);
+	    GWEN_BufferedIO_WriteLine(bio, "\\\"\");");
+	    GWEN_BufferedIO_WriteLine(bio, "          "
+				      "if (GWEN_Logger_GetLevel(0)>="
+				      "GWEN_LoggerLevelDebug)");
+	    GWEN_BufferedIO_WriteLine(bio, "            "
+				      "GWEN_DB_Dump(dbT2, stderr, 2);");
+	    GWEN_BufferedIO_Write(bio, "          ");
+	    GWEN_BufferedIO_Write(bio, prefix);
+	    GWEN_BufferedIO_WriteLine(bio, "_free(st);");
+	    GWEN_BufferedIO_WriteLine(bio, "          return 0;");
+	    GWEN_BufferedIO_WriteLine(bio, "        }");
+    
+	    /* ElemType_List_Add(e, st->NAME); */
+	    GWEN_BufferedIO_Write(bio, "        ");
+	    GWEN_BufferedIO_Write(bio, elemPrefix);
+	    GWEN_BufferedIO_Write(bio, "_List_Add(e, st->");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_Write(bio, ");");
+    
+	    GWEN_BufferedIO_Write(bio,
+				  "    dbT2=GWEN_DB_FindNextGroup(dbT2, \"");
+	    GWEN_BufferedIO_Write(bio, "element");
+	    GWEN_BufferedIO_WriteLine(bio, "\");");
+    
+	    GWEN_BufferedIO_WriteLine(bio, "      } /* while */");
+    
+	    GWEN_BufferedIO_WriteLine(bio, "    } /* if (dbT) */");
+    
+	    GWEN_BufferedIO_WriteLine(bio, "  } /* if (1) */");
+	  }
+	  else if (strcasecmp(mode, "list2")==0) {
+	    const char *prefix;
+	    const char *elemType;
+	    const char *elemPrefix;
+	    GWEN_XMLNODE *elemNode;
+  
+	    prefix=get_struct_property(node, "prefix", 0);
+	    assert(prefix);
+    
+	    /* create list code */
+	    elemType=GWEN_XMLNode_GetProperty(n, "elemType", 0);
+	    if (!elemType) {
+	      DBG_ERROR(0, "No \"type\" for list type \"%s\"", typ);
+	      return -1;
+	    }
+    
+	    elemNode=get_typedef(node, elemType);
+	    if (!elemNode) {
+	      DBG_ERROR(0, "Undefined type %s", elemType);
+	      return -1;
+	    }
+	    elemPrefix=GWEN_XMLNode_GetProperty(elemNode, "prefix", 0);
+	    if (!elemPrefix) {
+	      DBG_ERROR(0, "No \"prefix\" for type \"%s\" (within %s)",
+			elemType, typ);
+	      return -1;
+	    }
+    
+	    /* actually generate the code */
+	    GWEN_BufferedIO_Write(bio, "  st->");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_Write(bio, "=");
+	    GWEN_BufferedIO_Write(bio, elemPrefix);
+	    GWEN_BufferedIO_WriteLine(bio, "_List2_new();");
+  
+	    GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
+	    GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
+	    GWEN_BufferedIO_Write(bio, "    ");
+	    GWEN_BufferedIO_Write(bio, elemType);
+	    GWEN_BufferedIO_WriteLine(bio, " *e;");
+	    GWEN_BufferedIO_WriteLine(bio, "");
+	    GWEN_BufferedIO_Write(bio,
+				  "    dbT=GWEN_DB_GetGroup(db, "
+				  "GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_WriteLine(bio, "\");");
+	    GWEN_BufferedIO_WriteLine(bio, "    if (dbT) {");
+	    GWEN_BufferedIO_WriteLine(bio, "      GWEN_DB_NODE *dbT2;");
+	    GWEN_BufferedIO_WriteLine(bio, "");
+    
+	    GWEN_BufferedIO_Write(bio,
+				  "    dbT2=GWEN_DB_FindFirstGroup(dbT, \"");
+	    GWEN_BufferedIO_Write(bio, "element");
+	    GWEN_BufferedIO_WriteLine(bio, "\");");
+    
+	    /* while (e) */
+	    GWEN_BufferedIO_WriteLine(bio, "      while(dbT2) {");
+    
+	    /* e=ElemType_fromDb(e) */
+	    GWEN_BufferedIO_Write(bio, "        e=");
+	    GWEN_BufferedIO_Write(bio, elemPrefix);
+	    GWEN_BufferedIO_WriteLine(bio, "_fromDb(dbT2);");
+    
+	    /* if (!e) */
+	    GWEN_BufferedIO_WriteLine(bio, "        if (!e) {");
+	    GWEN_BufferedIO_Write(bio, "          "
+				  "DBG_ERROR(0, \"Bad element for type \\\"");
+	    GWEN_BufferedIO_Write(bio, elemType);
+	    GWEN_BufferedIO_WriteLine(bio, "\\\"\");");
+	    GWEN_BufferedIO_WriteLine(bio, "          "
+				      "if (GWEN_Logger_GetLevel(0)>="
+				      "GWEN_LoggerLevelDebug)");
+	    GWEN_BufferedIO_WriteLine(bio, "            "
+				      "GWEN_DB_Dump(dbT2, stderr, 2);");
+	    GWEN_BufferedIO_Write(bio, "          ");
+	    GWEN_BufferedIO_Write(bio, prefix);
+	    GWEN_BufferedIO_WriteLine(bio, "_free(st);");
+	    GWEN_BufferedIO_WriteLine(bio, "          return 0;");
+	    GWEN_BufferedIO_WriteLine(bio, "        } /* if !e */");
+    
+	    /* ElemType_List_Add(e, st->NAME); */
+	    GWEN_BufferedIO_Write(bio, "        ");
+	    GWEN_BufferedIO_Write(bio, elemPrefix);
+	    GWEN_BufferedIO_Write(bio, "_List2_PushBack(st->");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_WriteLine(bio, ", e);");
+  
+	    GWEN_BufferedIO_Write(bio,"        "
+				  "dbT2=GWEN_DB_FindNextGroup(dbT2, \"");
+	    GWEN_BufferedIO_Write(bio, "element");
+	    GWEN_BufferedIO_WriteLine(bio, "\");");
+    
+	    GWEN_BufferedIO_WriteLine(bio, "      } /* while */");
+    
+	    GWEN_BufferedIO_WriteLine(bio, "    } /* if (dbT) */");
+    
+	    GWEN_BufferedIO_WriteLine(bio, "  } /* if (1) */");
+	  }
+	  else if (strcasecmp(typ, "GWEN_STRINGLIST")==0) {
+	    GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
+	    GWEN_BufferedIO_WriteLine(bio, "    int i;");
+	    GWEN_BufferedIO_WriteLine(bio, "");
+	    GWEN_BufferedIO_WriteLine(bio, "    for (i=0; ; i++) {");
+	    GWEN_BufferedIO_WriteLine(bio, "      const char *s;");
+	    GWEN_BufferedIO_WriteLine(bio, "");
+	    GWEN_BufferedIO_Write(bio, "      s=GWEN_DB_GetCharValue(db, \"");
+	    GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_WriteLine(bio, "\", i, 0);");
+	    GWEN_BufferedIO_WriteLine(bio, "      if (!s)");
+	    GWEN_BufferedIO_WriteLine(bio, "        break;");
+	    GWEN_BufferedIO_Write(bio, "      ");
+	    GWEN_BufferedIO_Write(bio, prefix);
+	    GWEN_BufferedIO_Write(bio, "_Add");
+	    GWEN_BufferedIO_WriteChar(bio, toupper(*name));
+	    GWEN_BufferedIO_Write(bio, name+1);
+	    GWEN_BufferedIO_WriteLine(bio, "(st, s, 0);");
+	    GWEN_BufferedIO_WriteLine(bio, "    } /* for */");
 	    GWEN_BufferedIO_WriteLine(bio, "  }");
 	  }
-        }
+	  else {
+	    isPtr=atoi(get_property(n, "ptr", "0"));
+  
+	    if (isPtr) {
+	      if (strcasecmp(typ, "char")!=0) {
+		GWEN_BufferedIO_WriteLine(bio, "  if (1) {");
+		GWEN_BufferedIO_WriteLine(bio, "    GWEN_DB_NODE *dbT;");
+		GWEN_BufferedIO_WriteLine(bio, "");
+		GWEN_BufferedIO_Write(bio,
+				      "    dbT=GWEN_DB_GetGroup(db, "
+				      "GWEN_PATH_FLAGS_NAMEMUSTEXIST, \"");
+		GWEN_BufferedIO_WriteChar(bio, tolower(*name));
+		GWEN_BufferedIO_Write(bio, name+1);
+		GWEN_BufferedIO_WriteLine(bio, "\");");
+		GWEN_BufferedIO_Write(bio, "    if (dbT)");
+	      }
+	    }
+	    if (isPtr && strcasecmp(typ, "char")!=0) {
+	      GWEN_BufferedIO_Write(bio, " st->");
+	      GWEN_BufferedIO_Write(bio, name);
+	      GWEN_BufferedIO_Write(bio, "=");
+	      rv=write_code_fromdbArg_c(args, n, bio);
+	      if (rv)
+		return rv;
+	      GWEN_BufferedIO_WriteLine(bio, ";");
+	    }
+	    else {
+	      GWEN_BufferedIO_Write(bio, "  ");
+	      GWEN_BufferedIO_Write(bio, prefix);
+	      GWEN_BufferedIO_Write(bio, "_Set");
+	      GWEN_BufferedIO_WriteChar(bio, toupper(*name));
+	      GWEN_BufferedIO_Write(bio, name+1);
+	      GWEN_BufferedIO_Write(bio, "(st, ");
+  
+	      rv=write_code_fromdbArg_c(args, n, bio);
+	      if (rv)
+		return rv;
+	      GWEN_BufferedIO_WriteLine(bio, ");");
+	    }
+  
+	    if (isPtr && strcasecmp(typ, "char")!=0) {
+	      GWEN_BufferedIO_WriteLine(bio, "  }");
+	    }
+	  }
+	}
       }
     }
     n=GWEN_XMLNode_GetNextTag(n);

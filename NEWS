@@ -1,0 +1,20 @@
+===========================================================================
+MARK: released gwenhywfar-1.19.0 (2005/10/22)
+===========================================================================
+
+The changes in this release are as follows:
+Some problems in GWEN_CryptToken when keys smaller than 96 bytes are used
+were fixed (this allows AqBanking/AqHBCI to work with some banks again!).
+This version also fixes some bugs thus making network-timeout problems less
+likely to occurr.
+A request wrapper around existing IPC code was added.
+
+
+===========================================================================
+MARK: released gwenhywfar-1.15.0 (2005/08/11)
+===========================================================================
+
+This release fixes some important bugs, enables the crypttoken code (used by
+AqHBCI), adds the tool gct-tool for admimistration of crypttoken, adds
+blowfish encryption, improves the waitcallback code and compiles warningless
+with gcc4.

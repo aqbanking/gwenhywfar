@@ -43,6 +43,7 @@ libipc_la_SOURCES=\
  httpurl.c \
  httpurlfns.c
 
+libipc_la_LIBADD=request/libipcrequest.la
 
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)
