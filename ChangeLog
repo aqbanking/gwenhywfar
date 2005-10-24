@@ -1,3 +1,10 @@
+2005-10-24   Christian Stimming <stimming@tuhh.de>
+
+	* gwenpp/Makefile.am, plugins/dbio/olddb/Makefile.am,
+	plugins/dbio/csv/Makefile.am,
+	plugins/crypttoken/ohbci/Makefile.am: Fix broken win32 linker
+	arguments in last LIBADD change.
+
 ===========================================================================
 MARK: released gwenhywfar-1.19.0 (2005/10/22)
 ===========================================================================

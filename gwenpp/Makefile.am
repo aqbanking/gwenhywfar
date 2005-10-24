@@ -8,9 +8,9 @@ libgwenpp_la_SOURCES=\
   waitcallback.cpp
 
 if IS_WINDOWS
-  PROVIDED_GWEN_LIB=libgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).la
+  PROVIDED_GWEN_LIB=$(top_builddir)/src/gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).dll
 else
-  PROVIDED_GWEN_LIB=libgwenhywfar.la
+  PROVIDED_GWEN_LIB=$(top_builddir)/src/libgwenhywfar.la
 endif
 
 libgwenpp_la_LDFLAGS= \
@@ -18,5 +18,5 @@ libgwenpp_la_LDFLAGS= \
   @GWENPP_SO_CURRENT@:@GWENPP_SO_REVISION@:@GWENPP_SO_AGE@
 
 libgwenpp_la_LIBADD=\
-  -lstdc++ $(top_builddir)/src/$(PROVIDED_GWEN_LIB)
+  -lstdc++ $(PROVIDED_GWEN_LIB)
 

@@ -29,7 +29,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = ohbci
-DLLLDLIBS = $(top_builddir)/src/libgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).la
+DLLLDLIBS = $(top_builddir)/src/gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).dll
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 
