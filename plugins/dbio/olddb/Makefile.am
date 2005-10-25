@@ -17,7 +17,7 @@ if IS_WINDOWS
 
 # you only need to setup these variables here, the rest is done automatically
 LIBRARY_NAME = olddb
-DLLLDLIBS = $(top_builddir)/src/gwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).dll
+DLLLDLIBS = $(top_builddir)/src/$(gwenhywfar_internal_libname)
 DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
 
 
@@ -32,10 +32,8 @@ DLLSRC_LIB = $(dbioplugin_LTLIBRARIES:.la=.a)
 DLLSRC_LIBLA = $(lib_LTLIBRARIES)
 
 all-local: dll
-#@GWEN_MAKE_DLL_TARGET@
 
 install-exec-local: dll-install
-#@GWEN_INSTALL_DLL_TARGET@
 
 DLLTOOL=dlltool
 DLLWRAP=dllwrap

@@ -74,13 +74,9 @@ libgwenui_la_SOURCES=\
   widget.c \
   window.c
 
-if IS_WINDOWS
-  PROVIDED_GWEN_LIB=libgwenhywfar32_$(GWENHYWFAR_SO_EFFECTIVE).la
-else
-  PROVIDED_GWEN_LIB=libgwenhywfar.la
-endif
-
-libgwenui_la_LIBADD=$(top_builddir)/src/$(PROVIDED_GWEN_LIB) @ncurses_libs@
+libgwenui_la_LIBADD = \
+  $(top_builddir)/src/$(gwenhywfar_internal_libname) \
+  $(ncurses_libs)
 
 libgwenui_la_LDFLAGS= \
   @STRIPALL@ -version-info \

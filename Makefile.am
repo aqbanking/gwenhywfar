@@ -11,26 +11,17 @@ SUBDIRS_DIST=admin doc m4 src gwenpp gwenui plugins tools test
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST= config.rpath  \
- AUTHORS \
- COPYING \
- ChangeLog \
- Doxyfile.in \
- INSTALL \
- NEWS \
- README \
+EXTRA_DIST = \
  README.W32 \
  README.DARWIN \
  README.SOLARIS \
  RELEASES \
- gwenhywfar.m4 \
  gwenhywfar.spec \
- gwenhywfar.spec.in \
  Makefile.cvs
 
 bin_SCRIPTS = gwenhywfar-config
 M4dir = $(datadir)/aclocal
-M4_DATA = gwenhywfar.m4
+dist_M4_DATA = gwenhywfar.m4
 ACLOCAL_AMFLAGS = -I m4
 
 

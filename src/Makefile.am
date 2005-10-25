@@ -74,10 +74,8 @@ DLLSRC_LIB = $(lib_LTLIBRARIES:.la=.a)
 DLLSRC_LIBLA = $(lib_LTLIBRARIES)
 
 all-local: dll
-#@GWEN_MAKE_DLL_TARGET@
 
 install-exec-local: dll-install
-#@GWEN_INSTALL_DLL_TARGET@
 
 DLLTOOL=dlltool
 DLLWRAP=dllwrap

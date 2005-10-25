@@ -225,6 +225,7 @@ case "$OS_TYPE" in
     posix)
         gwenhywfar_ldflags="-L\${libdir}"
         gwenhywfar_libs="-lgwenhywfar"
+	gwenhywfar_internal_libname="libgwenhywfar.la"
         gwenhywfar_libspp="-lgwenpp"
         gwenhywfar_libsui="-lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
@@ -252,6 +253,7 @@ case "$OS_TYPE" in
         ACX_WINDOWS_PATHS
         gwenhywfar_ldflags="-L${WIN_PATH_WINDOWS_MINGW}"
         gwenhywfar_libs="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
+	gwenhywfar_internal_libname="gwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}.dll"
         gwenhywfar_libspp="-lgwenpp"
         gwenhywfar_libsui="-lgwenui"
         gwenhywfar_includes="-I`eval echo $prefix/include`"
@@ -259,8 +261,6 @@ case "$OS_TYPE" in
         gwenhywfar_sections=""
         gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
-        GWEN_MAKE_DLL_TARGET="dll"
-        GWEN_INSTALL_DLL_TARGET="dll-install"
         GWEN_OS="windows"
         PROG_LIBRARIES="-L/mingw/lib ${PROG_LIBRARIES}"
     	;;
@@ -591,8 +591,6 @@ AS_SCRUB_INCLUDE(all_includes)
 #
 AC_SUBST(GWEN_CRYPTO)
 AC_SUBST(GWEN_HEADER_FILES)
-AC_SUBST(GWEN_INSTALL_DLL_TARGET)
-AC_SUBST(GWEN_MAKE_DLL_TARGET)
 AC_SUBST(GWEN_OS)
 AC_SUBST(PROG_LIBRARIES)
 AC_SUBST(all_includes)
@@ -601,6 +599,7 @@ AC_SUBST(gwenhywfar_crypt_lib)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_ldflags)
 AC_SUBST(gwenhywfar_libs)
+AC_SUBST(gwenhywfar_internal_libname)
 AC_SUBST(gwenhywfar_libspp)
 AC_SUBST(gwenhywfar_libsui)
 AC_SUBST(gwenhywfar_os_lib)

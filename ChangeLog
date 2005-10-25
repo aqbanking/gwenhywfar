@@ -1,3 +1,9 @@
+2005-10-25   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac, plugins/*/Makefile.am: Clean up linker arguments
+	by specifying one libname in configure.ac and reusing this
+	throughout the project.
+
 2005-10-24   Christian Stimming <stimming@tuhh.de>
 
 	* gwenpp/Makefile.am, plugins/dbio/olddb/Makefile.am,
