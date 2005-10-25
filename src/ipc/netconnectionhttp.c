@@ -1924,13 +1924,13 @@ void GWEN_NetConnectionHTTP_SetCookies(GWEN_NETCONNECTION *conn,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_NetConnHttp_Request(GWEN_NETCONNECTION *conn,
-                             const char *command,
-                             const char *arg,
-			     const char *body,
-			     unsigned int size,
-                             GWEN_DB_NODE *dbResultHeader,
-                             GWEN_BUFFER *bufResult) {
+int GWEN_NetConnectionHTTP_Request(GWEN_NETCONNECTION *conn,
+                                   const char *command,
+                                   const char *arg,
+                                   const char *body,
+                                   unsigned int size,
+                                   GWEN_DB_NODE *dbResultHeader,
+                                   GWEN_BUFFER *bufResult) {
   GWEN_NETCONNECTIONHTTP *chttp;
   GWEN_DB_NODE *dbRequest;
   GWEN_DB_NODE *dbT;

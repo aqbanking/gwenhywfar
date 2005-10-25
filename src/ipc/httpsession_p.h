@@ -43,6 +43,9 @@ struct GWEN_HTTP_SESSION {
   int lastStatusCode;
   char *lastStatusMsg;
 
+  GWEN_HTTPSESSION_ASKFOLLOW_FN askFollowFn;
+  GWEN_HTTPSESSION_GETAUTH_FN getAuthFn;
+
   GWEN_NETCONNECTION_LIST2 *connections;
 };
 
@@ -62,6 +65,30 @@ GWEN_HttpSession__CreateConnection(GWEN_HTTP_SESSION *sess,
                                    const char *server,
 				   int port);
 
+static GWEN_NETCONNECTION*
+GWEN_HttpSession__GetConnection(GWEN_HTTP_SESSION *sess,
+                                const char *proto,
+                                const char *server,
+                                int port);
+
+static int GWEN_HttpSession__Request(GWEN_HTTP_SESSION *sess,
+                                     const GWEN_HTTP_URL *url,
+                                     const char *command,
+                                     const char *arg,
+                                     const char *body,
+                                     unsigned int size,
+                                     GWEN_DB_NODE *dbResultHeader,
+                                     GWEN_BUFFER *result);
+
+static int GWEN_HttpSession_AskFollow(GWEN_HTTP_SESSION *sess,
+                                      const char *oldLocation,
+                                      const char *newLocation);
+
+static int GWEN_HttpSession__Handle_AuthReq(GWEN_HTTP_SESSION *sess,
+                                            const GWEN_HTTP_URL *url,
+                                            const char *arg,
+                                            GWEN_DB_NODE *dbResultHeader,
+                                            int forceAsk);
 
 
 #endif /*GWEN_HTTP_SESSION_P_H */

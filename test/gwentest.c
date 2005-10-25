@@ -23,6 +23,7 @@
 #include <gwenhywfar/nettransportssl.h>
 #include <gwenhywfar/netconnection.h>
 #include <gwenhywfar/netconnectionhttp.h>
+#include <gwenhywfar/httpsession.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/base64.h>
@@ -4362,12 +4363,12 @@ int testHttpRequest(int argc, char **argv) {
 
   bufResult=GWEN_Buffer_new(0, 1024, 0, 1);
   dbResultHeader=GWEN_DB_Group_new("header");
-  rv=GWEN_NetConnHttp_Request(conn,
-                              "get",
-                              "/?var1=val1",
-                              0, 0,
-                              dbResultHeader,
-                              bufResult);
+  rv=GWEN_NetConnectionHTTP_Request(conn,
+                                    "get",
+                                    "/?var1=val1",
+                                    0, 0,
+                                    dbResultHeader,
+                                    bufResult);
   if (rv<0) {
     DBG_ERROR(0, "Error: %d", rv);
   }
@@ -4386,6 +4387,116 @@ int testHttpRequest(int argc, char **argv) {
   fprintf(stderr, "done.\n");
   return 0;
 
+}
+
+
+
+int _askFollow(GWEN_HTTP_SESSION *sess,
+               const char *oldLocation,
+               const char *newLocation) {
+  fprintf(stderr, "Would ask to follow this:\n");
+  fprintf(stderr, "  Old location: %s\n", oldLocation);
+  fprintf(stderr, "  New location: %s\n", newLocation);
+  return 1;
+}
+
+
+int _getAuth(GWEN_HTTP_SESSION *sess,
+             const GWEN_HTTP_URL *url,
+             const char *authScheme,
+             const char *realm,
+             char *buffer,
+             unsigned int size,
+             int forceAsk) {
+  const unsigned char *s;
+  int rv;
+  GWEN_BUFFER *buf;
+
+  fprintf(stderr, "Would ask for authorization:\n");
+  fprintf(stderr, "  URL        : \n");
+  fprintf(stderr, "    Protocol : %s\n", GWEN_HttpUrl_GetProtocol(url));
+  fprintf(stderr, "    Server   : %s\n", GWEN_HttpUrl_GetServer(url));
+  fprintf(stderr, "    Path     : %s\n", GWEN_HttpUrl_GetPath(url));
+  fprintf(stderr, "  Auth-Scheme: %s\n", authScheme);
+  fprintf(stderr, "  Realm      : %s\n", realm);
+  fprintf(stderr, "  Forced     : %d\n", forceAsk);
+
+  s=(const unsigned char*)"testuser:secret";
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_Base64_Encode(s, strlen((const char*)s), buf, 0);
+  if (rv) {
+    fprintf(stderr, "Error while encoding (%d)\n", rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+  if (GWEN_Buffer_GetUsedBytes(buf)>size) {
+    fprintf(stderr, "Buffer too small\n");
+    GWEN_Buffer_free(buf);
+    return -1;
+  }
+
+  memmove(buffer, GWEN_Buffer_GetStart(buf),
+          GWEN_Buffer_GetUsedBytes(buf));
+  GWEN_Buffer_free(buf);
+  return 0;
+}
+
+
+
+
+int testHttpSession(int argc, char **argv) {
+  GWEN_HTTP_SESSION *sess;
+  GWEN_BUFFER *bufResult;
+  int rv;
+  GWEN_DB_NODE *dbResultHeader;
+  GWEN_DB_NODE *dbT;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
+  sess=GWEN_HttpSession_new("192.168.115.1", 80,
+                            0,
+                            1, 1);
+  GWEN_HttpSession_SetAskFollowFn(sess, _askFollow);
+  GWEN_HttpSession_SetGetAuthFn(sess, _getAuth);
+
+  dbT=GWEN_HttpSession_GetHeaders(sess);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "connection",
+                       "keep-alive");
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "Accept",
+                       "*/*");
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "Host",
+                       "192.168.115.1");
+
+  dbResultHeader=GWEN_DB_Group_new("result");
+  bufResult=GWEN_Buffer_new(0, 1024, 0, 1);
+  rv=GWEN_HttpSession_Request(sess, "GET",
+                              "http://192.168.115.1:80/?var1=val1",
+                              0, 0, /* body */
+                              dbResultHeader,
+                              bufResult);
+
+  if (rv<0) {
+    DBG_ERROR(0, "Error: %d", rv);
+  }
+  else {
+    DBG_ERROR(0, "Code: %d", rv);
+  }
+
+  fprintf(stderr, "Response was:\n");
+  GWEN_DB_Dump(dbResultHeader, stderr, 2);
+  GWEN_Buffer_Dump(bufResult, stderr, 2);
+
+  GWEN_Buffer_free(bufResult);
+  GWEN_DB_Group_free(dbResultHeader);
+
+  GWEN_HttpSession_Close(sess);
+  GWEN_HttpSession_free(sess);
+
+  fprintf(stderr, "done.\n");
+  return 0;
 }
 
 
@@ -4559,6 +4670,8 @@ int main(int argc, char **argv) {
     rv=testTransformPin(argc, argv);
   else if (strcasecmp(argv[1], "httpr")==0)
     rv=testHttpRequest(argc, argv);
+  else if (strcasecmp(argv[1], "httpsession")==0)
+    rv=testHttpSession(argc, argv);
   else if (strcasecmp(argv[1], "dbkey")==0)
     rv=testDbKey(argc, argv);
   else {

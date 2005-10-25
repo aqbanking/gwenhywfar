@@ -32,16 +32,6 @@ void GWEN_HttpUrl_free(GWEN_HTTP_URL *st) {
   if (st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
-  if (st->protocol)
-    free(st->protocol);
-  if (st->server)
-    free(st->server);
-  if (st->path)
-    free(st->path);
-  if (st->vars)
-    GWEN_DB_Group_free(st->vars);
-  if (st->url)
-    free(st->url);
   GWEN_LIST_FINI(GWEN_HTTP_URL, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -123,14 +113,14 @@ const char *GWEN_HttpUrl_GetProtocol(const GWEN_HTTP_URL *st) {
 
 void GWEN_HttpUrl_SetProtocol(GWEN_HTTP_URL *st, const char *d) {
   assert(st);
-  if (st->protocol)
-    free(st->protocol);
   if (d)
     st->protocol=strdup(d);
   else
     st->protocol=0;
   st->_modified=1;
 }
+
+
 
 
 const char *GWEN_HttpUrl_GetServer(const GWEN_HTTP_URL *st) {
@@ -141,14 +131,14 @@ const char *GWEN_HttpUrl_GetServer(const GWEN_HTTP_URL *st) {
 
 void GWEN_HttpUrl_SetServer(GWEN_HTTP_URL *st, const char *d) {
   assert(st);
-  if (st->server)
-    free(st->server);
   if (d)
     st->server=strdup(d);
   else
     st->server=0;
   st->_modified=1;
 }
+
+
 
 
 int GWEN_HttpUrl_GetPort(const GWEN_HTTP_URL *st) {
@@ -164,6 +154,8 @@ void GWEN_HttpUrl_SetPort(GWEN_HTTP_URL *st, int d) {
 }
 
 
+
+
 const char *GWEN_HttpUrl_GetPath(const GWEN_HTTP_URL *st) {
   assert(st);
   return st->path;
@@ -172,14 +164,14 @@ const char *GWEN_HttpUrl_GetPath(const GWEN_HTTP_URL *st) {
 
 void GWEN_HttpUrl_SetPath(GWEN_HTTP_URL *st, const char *d) {
   assert(st);
-  if (st->path)
-    free(st->path);
   if (d)
     st->path=strdup(d);
   else
     st->path=0;
   st->_modified=1;
 }
+
+
 
 
 GWEN_DB_NODE *GWEN_HttpUrl_GetVars(const GWEN_HTTP_URL *st) {
@@ -190,14 +182,14 @@ GWEN_DB_NODE *GWEN_HttpUrl_GetVars(const GWEN_HTTP_URL *st) {
 
 void GWEN_HttpUrl_SetVars(GWEN_HTTP_URL *st, GWEN_DB_NODE *d) {
   assert(st);
-  if (st->vars)
-    GWEN_DB_Group_free(st->vars);
   if (d)
     st->vars=GWEN_DB_Group_dup(d);
   else
     st->vars=0;
   st->_modified=1;
 }
+
+
 
 
 const char *GWEN_HttpUrl_GetUrl(const GWEN_HTTP_URL *st) {
@@ -208,14 +200,14 @@ const char *GWEN_HttpUrl_GetUrl(const GWEN_HTTP_URL *st) {
 
 void GWEN_HttpUrl_SetUrl(GWEN_HTTP_URL *st, const char *d) {
   assert(st);
-  if (st->url)
-    free(st->url);
   if (d)
     st->url=strdup(d);
   else
     st->url=0;
   st->_modified=1;
 }
+
+
 
 
 int GWEN_HttpUrl_IsModified(const GWEN_HTTP_URL *st) {

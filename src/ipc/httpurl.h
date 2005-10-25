@@ -72,6 +72,7 @@ typedef struct GWEN_HTTP_URL GWEN_HTTP_URL;
 extern "C" {
 #endif
 
+
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_HTTP_URL, GWEN_HttpUrl, GWENHYWFAR_API)
 GWEN_HTTP_URL_LIST *GWEN_HttpUrl_List_dup(const GWEN_HTTP_URL_LIST *stl);
 

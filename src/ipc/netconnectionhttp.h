@@ -216,8 +216,15 @@ GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetConnectionHTTP_GetState(GWEN_NETCONNECTION *conn);
 
 GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_NetConnHttp_GetHeaders(const GWEN_NETCONNECTION *conn);
+GWEN_DB_NODE*
+GWEN_NetConnectionHTTP_GetHeaders(const GWEN_NETCONNECTION *conn);
 
+/**
+ * Takes over the ownership of the given DB group.
+ */
+GWENHYWFAR_API
+void GWEN_NetConnectionHTTP_SetHeaders(GWEN_NETCONNECTION *conn,
+                                       GWEN_DB_NODE *dbHeader);
 
 GWENHYWFAR_API
 const char *
@@ -266,13 +273,13 @@ GWEN_HTTP_COOKIE_LIST*
 void GWEN_NetConnectionHTTP_SetCookies(GWEN_NETCONNECTION *conn,
                                        GWEN_HTTP_COOKIE_LIST *cookies);
 
-int GWEN_NetConnHttp_Request(GWEN_NETCONNECTION *conn,
-                             const char *command,
-                             const char *arg,
-                             const char *body,
-                             unsigned int size,
-                             GWEN_DB_NODE *dbResultHeader,
-                             GWEN_BUFFER *bufResult);
+int GWEN_NetConnectionHTTP_Request(GWEN_NETCONNECTION *conn,
+                                   const char *command,
+                                   const char *arg,
+                                   const char *body,
+                                   unsigned int size,
+                                   GWEN_DB_NODE *dbResultHeader,
+                                   GWEN_BUFFER *bufResult);
 
 /*@}*/
 

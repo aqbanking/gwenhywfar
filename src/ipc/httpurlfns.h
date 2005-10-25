@@ -14,6 +14,7 @@
 #define HTTPURLFNS_H
 
 #include <gwenhywfar/httpurl.h>
+#include <gwenhywfar/buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +25,10 @@ extern "C" {
  * Parses the given string and returns an URL object (if the string is ok).
  */
 GWEN_HTTP_URL *GWEN_HttpUrl_fromString(const char *str);
-const char *GWEN_HttpUrl_toString(const GWEN_HTTP_URL *url);
+int GWEN_HttpUrl_toString(const GWEN_HTTP_URL *url, GWEN_BUFFER *buf);
+
+int GWEN_HttpUrl_toCommandString(const GWEN_HTTP_URL *url,
+                                 GWEN_BUFFER *buf);
 
 #ifdef __cplusplus
 } /* __cplusplus */

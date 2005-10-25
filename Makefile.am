@@ -5,8 +5,8 @@ else
 gwenui_subdir = 
 endif
 
-SUBDIRS=admin doc m4 src gwenpp $(gwenui_subdir) plugins tools test po
-SUBDIRS_DIST=admin doc m4 src gwenpp gwenui plugins tools test
+SUBDIRS=admin m4 src gwenpp $(gwenui_subdir) plugins tools test po doc
+SUBDIRS_DIST=admin m4 src gwenpp gwenui plugins tools test doc po
 
 
 AUTOMAKE_OPTIONS = foreign

@@ -26,6 +26,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/netconnectionhttp.h>
+#include <gwenhywfar/httpurl.h>
 
 
 typedef struct GWEN_HTTP_SESSION GWEN_HTTP_SESSION;
@@ -33,6 +34,20 @@ typedef struct GWEN_HTTP_SESSION GWEN_HTTP_SESSION;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWEN_HttpSession,
                             GWENHYWFAR_API)
+
+
+typedef int (*GWEN_HTTPSESSION_ASKFOLLOW_FN)(GWEN_HTTP_SESSION *sess,
+                                             const char *oldLocation,
+                                             const char *newLocation);
+
+typedef int (*GWEN_HTTPSESSION_GETAUTH_FN)(GWEN_HTTP_SESSION *sess,
+                                           const GWEN_HTTP_URL *url,
+                                           const char *authScheme,
+                                           const char *realm,
+                                           char *buffer,
+                                           unsigned int size,
+                                           int forceAsk);
+
 
 
 GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *addr,
@@ -44,12 +59,21 @@ GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *addr,
 void GWEN_HttpSession_free(GWEN_HTTP_SESSION *sess);
 
 
+void GWEN_HttpSession_SetAskFollowFn(GWEN_HTTP_SESSION *sess,
+                                     GWEN_HTTPSESSION_ASKFOLLOW_FN fn);
+
+void GWEN_HttpSession_SetGetAuthFn(GWEN_HTTP_SESSION *sess,
+                                   GWEN_HTTPSESSION_GETAUTH_FN fn);
+
 int GWEN_HttpSession_Request(GWEN_HTTP_SESSION *sess,
 			     const char *command,
 			     const char *arg,
 			     const char *body,
 			     unsigned int size,
+                             GWEN_DB_NODE *dbResultHeader,
 			     GWEN_BUFFER *result);
+
+void GWEN_HttpSession_Close(GWEN_HTTP_SESSION *sess);
 
 const char *GWEN_HttpSession_GetLastStatusMsg(const GWEN_HTTP_SESSION *sess);
 int GWEN_HttpSession_GetLastStatusCode(const GWEN_HTTP_SESSION *sess);

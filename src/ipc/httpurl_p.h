@@ -6,6 +6,7 @@
 
 #include "httpurl_l.h"
 
+
 struct GWEN_HTTP_URL {
   GWEN_LIST_ELEMENT(GWEN_HTTP_URL)
   int _usage;

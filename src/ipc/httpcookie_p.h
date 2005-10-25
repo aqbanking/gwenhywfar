@@ -6,6 +6,7 @@
 
 #include "httpcookie_l.h"
 
+
 struct GWEN_HTTP_COOKIE {
   GWEN_LIST_ELEMENT(GWEN_HTTP_COOKIE)
   int _usage;

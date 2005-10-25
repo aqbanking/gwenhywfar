@@ -1,0 +1,89 @@
+
+
+This folder contains an example of how to use GWEN's inheritance functions.
+
+
+The Problem
+===========
+GWEN follows the object oriented pragma as far as possible. There are structs
+on which groups of functions operate.
+
+The module defined in "src/net/netconnection*.{c,h}" consists of a struct
+and functions which create a network connection.
+
+However, this module is very basic, i.e. it only nows ow to deal with network
+connections in general, but it doesn't have a clue about special protocols
+like HTTP, HBCI etc.
+
+These protocols are implemented by extending the base module via GWEN's 
+inherit module.
+
+
+
+Traditional Approach
+====================
+
+The easiest and therefore traditional way is to define a private pointer
+to user data stored within the struct and get this pointer by setter and
+getter functions, as in:
+
+  myData=GetPrivateData(BASECLASS *baseClass);
+
+This approach only works if there is only one module extending an existing
+one. If there are multiple modules which extend a base module then each
+extending code has to know about the other module.
+
+This is not always possible with base modules, because in many cases we don't
+know how many other modules will extend a base module.
+
+Things get even more complicated if the private data is to be freed by using
+callbacks.
+
+
+
+GWEN's Approach
+===============
+
+Inheritance in GWEN is established by assigning private data to an already
+existing struct (like in the traditional approach). 
+However, GWEN stores the type of the data pointer along with the data itself.
+It also stores an optional pointer to a function which frees this private 
+data. 
+
+So inheritance data in GWEN consists of these elements:
+- pointer to private data
+- type of that pointer
+- optional pointer to a cleanup function
+
+GWEN keeps a list of those triplets with every element that is prepared for
+inheritance (see example definition in "baseclass_p.h").
+
+For every module which wants to extend an existing object (and therefore needs
+to assign private data to that base object) one of those triplets is stored
+in the object's internal list.
+
+If the cleanup function of the base object is called (in our example this is
+BaseClass_free()) then all registered cleanup functions are called in reversed
+order.
+
+This has certain advantages: 
+1) we always use the pointer to the base module.
+   Every module that extends another one also has access to the base module 
+   and may call the functions of that base module.
+2) the caller of the base modules cleanup function (as well as that function
+   itself) doesn't have to know how many private data pointers are stored
+   with the object to be cleaned up, nor how to cleanup these pointers.
+   This is all done transparently.
+
+
+This folder contains an example of how inheritance works practically.
+The files "baseclass*.{,c,h}" contain the declaration and implementation of
+a fictional base class, which "derivedclass*.{c,h}" implement a module
+which extends the module "BaseClass".
+
+
+
+
+Hamburg, Germany, 2005/10/25
+
+

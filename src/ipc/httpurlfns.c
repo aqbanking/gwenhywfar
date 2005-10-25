@@ -22,10 +22,16 @@
 
 GWEN_HTTP_URL *GWEN_HttpUrl_fromString(const char *str) {
   GWEN_HTTP_URL *url;
+  GWEN_DB_NODE *dbVars;
   const char *s;
   const char *p;
 
   url=GWEN_HttpUrl_new();
+  dbVars=GWEN_DB_Group_new("vars");
+  GWEN_HttpUrl_SetVars(url, dbVars);
+  GWEN_DB_Group_free(dbVars);
+  dbVars=0;
+
   s=str;
   /* read protocol (if any) */
   p=strchr(s, ':');
@@ -55,7 +61,7 @@ GWEN_HTTP_URL *GWEN_HttpUrl_fromString(const char *str) {
     return 0;
   }
   p=s;
-  while(*p && *p!='/' && *p!='?')
+  while(*p && *p!=':' && *p!='/' && *p!='?')
     p++;
   if (p!=s) {
     char *buf;
@@ -70,6 +76,40 @@ GWEN_HTTP_URL *GWEN_HttpUrl_fromString(const char *str) {
     s=p;
   }
 
+  /* get port */
+  if (*s==':') {
+    p=++s;
+    while(*p && *p!='?' && *p!='/')
+      p++;
+    if (p!=s) {
+      char *buf;
+      int port;
+
+      /* got port */
+      buf=(char*)malloc(p-s+1);
+      assert(buf);
+      memmove(buf, s, p-s+1);
+      buf[p-s]=0;
+      if (sscanf(buf, "%d", &port)!=1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad port (%s)", buf);
+        free(buf);
+        abort();
+      }
+      url->port=port;
+      free(buf);
+      s=p;
+    }
+  }
+  else {
+    if (url->protocol) {
+      if (strcasecmp(url->protocol, "http")==0)
+        url->port=80;
+      else if (strcasecmp(url->protocol, "https")==0)
+        url->port=443;
+    }
+  }
+
+  /* get path */
   if (*s=='/') {
     p=s;
     while(*p && *p!='?')
@@ -77,7 +117,7 @@ GWEN_HTTP_URL *GWEN_HttpUrl_fromString(const char *str) {
     if (p!=s) {
       char *buf;
 
-      /* got server */
+      /* got path */
       buf=(char*)malloc(p-s+1);
       assert(buf);
       memmove(buf, s, p-s+1);
@@ -133,13 +173,11 @@ GWEN_HTTP_URL *GWEN_HttpUrl_fromString(const char *str) {
 
 
 
-const char *GWEN_HttpUrl_toString(const GWEN_HTTP_URL *url) {
+int GWEN_HttpUrl_toString(const GWEN_HTTP_URL *url, GWEN_BUFFER *buf) {
   assert(url);
   if (!url->_modified && (url->url==0 || url->url[0]==0)) {
-    GWEN_BUFFER *buf;
     GWEN_DB_NODE *dbV;
 
-    buf=GWEN_Buffer_new(0, 64, 0, 1);
     if (url->protocol) {
       GWEN_Buffer_AppendString(buf, url->protocol);
       GWEN_Buffer_AppendString(buf, "://");
@@ -179,7 +217,43 @@ const char *GWEN_HttpUrl_toString(const GWEN_HTTP_URL *url) {
       dbV=GWEN_DB_GetNextVar(dbV);
     }
   }
-  return url->url;
+  return 0;
+}
+
+
+
+int GWEN_HttpUrl_toCommandString(const GWEN_HTTP_URL *url,
+                                 GWEN_BUFFER *buf) {
+  GWEN_DB_NODE *dbV;
+
+  assert(url);
+
+  if (url->path) {
+    GWEN_Buffer_AppendString(buf, url->path);
+  }
+  dbV=GWEN_DB_GetFirstVar(url->vars);
+  while(dbV) {
+    const char *s;
+
+    s=GWEN_DB_VariableName(dbV);
+    if (s) {
+      GWEN_DB_NODE *dbVal;
+
+      GWEN_Buffer_AppendString(buf, "?");
+      GWEN_Buffer_AppendString(buf, s);
+      dbVal=GWEN_DB_GetFirstValue(dbV);
+      if (dbVal) {
+        s=GWEN_DB_GetCharValueFromNode(dbVal);
+        if (s) {
+          GWEN_Buffer_AppendString(buf, "=");
+          GWEN_Buffer_AppendString(buf, s);
+        }
+      }
+    }
+    dbV=GWEN_DB_GetNextVar(dbV);
+  }
+
+  return 0;
 }
 
 

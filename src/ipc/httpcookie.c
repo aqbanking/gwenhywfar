@@ -32,16 +32,6 @@ void GWEN_HttpCookie_free(GWEN_HTTP_COOKIE *st) {
   if (st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
-  if (st->name)
-    free(st->name);
-  if (st->value)
-    free(st->value);
-  if (st->expires)
-    GWEN_Time_free(st->expires);
-  if (st->path)
-    free(st->path);
-  if (st->domain)
-    free(st->domain);
   GWEN_LIST_FINI(GWEN_HTTP_COOKIE, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -123,14 +113,14 @@ const char *GWEN_HttpCookie_GetName(const GWEN_HTTP_COOKIE *st) {
 
 void GWEN_HttpCookie_SetName(GWEN_HTTP_COOKIE *st, const char *d) {
   assert(st);
-  if (st->name)
-    free(st->name);
   if (d)
     st->name=strdup(d);
   else
     st->name=0;
   st->_modified=1;
 }
+
+
 
 
 const char *GWEN_HttpCookie_GetValue(const GWEN_HTTP_COOKIE *st) {
@@ -141,14 +131,14 @@ const char *GWEN_HttpCookie_GetValue(const GWEN_HTTP_COOKIE *st) {
 
 void GWEN_HttpCookie_SetValue(GWEN_HTTP_COOKIE *st, const char *d) {
   assert(st);
-  if (st->value)
-    free(st->value);
   if (d)
     st->value=strdup(d);
   else
     st->value=0;
   st->_modified=1;
 }
+
+
 
 
 const GWEN_TIME *GWEN_HttpCookie_GetExpires(const GWEN_HTTP_COOKIE *st) {
@@ -159,14 +149,14 @@ const GWEN_TIME *GWEN_HttpCookie_GetExpires(const GWEN_HTTP_COOKIE *st) {
 
 void GWEN_HttpCookie_SetExpires(GWEN_HTTP_COOKIE *st, const GWEN_TIME *d) {
   assert(st);
-  if (st->expires)
-    GWEN_Time_free(st->expires);
   if (d)
     st->expires=GWEN_Time_dup(d);
   else
     st->expires=0;
   st->_modified=1;
 }
+
+
 
 
 const char *GWEN_HttpCookie_GetPath(const GWEN_HTTP_COOKIE *st) {
@@ -177,14 +167,14 @@ const char *GWEN_HttpCookie_GetPath(const GWEN_HTTP_COOKIE *st) {
 
 void GWEN_HttpCookie_SetPath(GWEN_HTTP_COOKIE *st, const char *d) {
   assert(st);
-  if (st->path)
-    free(st->path);
   if (d)
     st->path=strdup(d);
   else
     st->path=0;
   st->_modified=1;
 }
+
+
 
 
 const char *GWEN_HttpCookie_GetDomain(const GWEN_HTTP_COOKIE *st) {
@@ -195,14 +185,14 @@ const char *GWEN_HttpCookie_GetDomain(const GWEN_HTTP_COOKIE *st) {
 
 void GWEN_HttpCookie_SetDomain(GWEN_HTTP_COOKIE *st, const char *d) {
   assert(st);
-  if (st->domain)
-    free(st->domain);
   if (d)
     st->domain=strdup(d);
   else
     st->domain=0;
   st->_modified=1;
 }
+
+
 
 
 int GWEN_HttpCookie_GetSecure(const GWEN_HTTP_COOKIE *st) {
@@ -216,6 +206,8 @@ void GWEN_HttpCookie_SetSecure(GWEN_HTTP_COOKIE *st, int d) {
   st->secure=d;
   st->_modified=1;
 }
+
+
 
 
 int GWEN_HttpCookie_IsModified(const GWEN_HTTP_COOKIE *st) {
