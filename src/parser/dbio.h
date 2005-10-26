@@ -101,11 +101,14 @@ typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio,
 /*@{*/
 typedef GWEN_DBIO* (*GWEN_DBIO_PLUGIN_FACTORYFN)(GWEN_PLUGIN *pl);
 
+GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_DBIO_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
                                   const char *name,
                                   const char *fileName);
+GWENHYWFAR_API
 void GWEN_DBIO_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
                                    GWEN_DBIO_PLUGIN_FACTORYFN f);
+GWENHYWFAR_API
 GWEN_DBIO *GWEN_DBIO_Plugin_Factory(GWEN_PLUGIN *pl);
 /*@}*/
 
