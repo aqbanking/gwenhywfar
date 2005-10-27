@@ -35,6 +35,7 @@
 	plugins/crypttoken/ohbci/Makefile.am: Fix broken win32 linker
 	arguments in last LIBADD change.
 
+
 ===========================================================================
 MARK: released gwenhywfar-1.19.0 (2005/10/22)
 ===========================================================================
