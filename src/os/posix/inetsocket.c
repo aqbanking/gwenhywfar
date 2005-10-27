@@ -422,15 +422,15 @@ GWEN_ERRORCODE GWEN_Socket_Select(GWEN_SOCKETSET *rs,
   s1=s2=s3=0;
   h1=h2=h3=0;
 
-  if (rs) {
+  if (rs && rs->count) {
     h1=rs->highest;
     s1=&rs->set;
   }
-  if (ws) {
+  if (ws && ws->count) {
     h2=ws->highest;
     s2=&ws->set;
   }
-  if (xs) {
+  if (xs && xs->count) {
     h3=xs->highest;
     s3=&xs->set;
   }
@@ -445,6 +445,7 @@ GWEN_ERRORCODE GWEN_Socket_Select(GWEN_SOCKETSET *rs,
     tv.tv_usec=timeout*1000;
     rv=select(h+1,s1,s2,s3,&tv);
   }
+
   if (rv<0) {
     /* error */
     if (errno==EINTR)

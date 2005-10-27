@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
- email       : martin@libchipcard.de
+                             -------------------
+    cvs         : $Id$
+    begin       : Sat Jan 24 2004
+    copyright   : (C) 2004 by Martin Preuss
+    email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,47 +26,61 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_FILTER_P_H
-#define GWENHYWFAR_FILTER_P_H
+#ifndef GWEN_NETLAYER_P_H
+#define GWEN_NETLAYER_P_H
+
+#include "netlayer_l.h"
+
+#define GWEN_NETLAYER_CPU_TIMEOUT 200
 
 
-#define GWEN_FILTER_BUFFERSIZE 1024
+struct GWEN_NETLAYER {
+  GWEN_INHERIT_ELEMENT(GWEN_NETLAYER)
+  GWEN_LIST_ELEMENT(GWEN_NETLAYER)
 
-#include "filter.h"
-#include <gwenhywfar/misc.h>
+  char *typeName;
+  GWEN_NETLAYER_STATUS status;
+  time_t lastStatusChange;
 
+  GWEN_TYPE_UINT32 flags;
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_FILTER, GWEN_Filter)
+  GWEN_NETLAYER_LIST *incomingLayers;
 
+  GWEN_NETLAYER *baseLayer;
+  GWEN_NETLAYER *parentLayer;
 
-struct GWEN_FILTER {
-  GWEN_INHERIT_ELEMENT(GWEN_FILTER)
-  GWEN_LIST_ELEMENT(GWEN_FILTER)
-  char *filterName;
-  GWEN_FILTER_LIST *nextElements;
-  GWEN_RINGBUFFER *inBuffer;
-  GWEN_RINGBUFFER *outBuffer;
+  GWEN_NETLAYER_WORK_FN workFn;
+  GWEN_NETLAYER_READ_FN readFn;
+  GWEN_NETLAYER_WRITE_FN writeFn;
 
-  GWEN_FILTER_WORKFN workFn;
+  GWEN_NETLAYER_CONNECT_FN connectFn;
+  GWEN_NETLAYER_DISCONNECT_FN disconnectFn;
+  GWEN_NETLAYER_LISTEN_FN listenFn;
+
+  GWEN_NETLAYER_ADDSOCKETS_FN addSocketsFn;
+  GWEN_NETLAYER_BASESTATUS_CHG_FN baseStatusChangeFn;
+
+  GWEN_NETLAYER_BEGIN_OUT_PACKET_FN beginOutPacketFn;
+  GWEN_NETLAYER_END_OUT_PACKET_FN endOutPacketFn;
+  GWEN_NETLAYER_BEGIN_IN_PACKET_FN beginInPacketFn;
+  GWEN_NETLAYER_CHECK_IN_PACKET_FN checkInPacketFn;
+
+  GWEN_INETADDRESS *localAddr;
+  GWEN_INETADDRESS *peerAddr;
+
+  int backLog;
+
+  int usage;
 };
 
 
+GWEN_NETLAYER_RESULT GWEN_NetLayer__Wait(GWEN_NETLAYER_LIST *nll,
+                                         int timeout);
 
-GWEN_FILTER_RESULT GWEN_Filter__Work(GWEN_FILTER *f);
-
-GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter);
-
-
-
-
-#endif
+GWEN_NETLAYER_RESULT GWEN_NetLayer__WorkAll(GWEN_NETLAYER_LIST *nll);
 
 
 
-
-
-
-
-
+#endif /* GWEN_NETLAYER_P_H */
 
 

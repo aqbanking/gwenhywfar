@@ -1,0 +1,250 @@
+/***************************************************************************
+ $RCSfile$
+                             -------------------
+    cvs         : $Id$
+    begin       : Sat Jan 24 2004
+    copyright   : (C) 2004 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU Lesser General Public            *
+ *   License as published by the Free Software Foundation; either          *
+ *   version 2.1 of the License, or (at your option) any later version.    *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston,                 *
+ *   MA  02111-1307  USA                                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+
+#ifndef GWEN_NETLAYER_H
+#define GWEN_NETLAYER_H
+
+
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/list2.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/inetaddr.h>
+#include <gwenhywfar/inetsocket.h>
+
+#include <time.h>
+
+
+typedef struct GWEN_NETLAYER GWEN_NETLAYER;
+
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_NETLAYER, GWEN_NetLayer, GWENHYWFAR_API)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_NETLAYER, GWENHYWFAR_API)
+
+#define GWEN_NETLAYER_FLAGS_EOFMET     0x00010000
+#define GWEN_NETLAYER_FLAGS_BROKENPIPE 0x00020000
+#define GWEN_NETLAYER_FLAGS_WANTREAD   0x00040000
+#define GWEN_NETLAYER_FLAGS_WANTWRITE  0x00080000
+#define GWEN_NETLAYER_FLAGS_PASSIVE    0x00100000
+#define GWEN_NETLAYER_FLAGS_PKG_BASED  0x00200000
+#define GWEN_NETLAYER_FLAGS_INPKG      0x00400000
+#define GWEN_NETLAYER_FLAGS_OUTPKG     0x00800000
+
+
+#define GWEN_NETLAYER_DEF_BACKLOG 10
+
+
+typedef enum {
+  GWEN_NetLayerStatus_Unconnected=0,
+  GWEN_NetLayerStatus_Connecting,
+  GWEN_NetLayerStatus_Connected,
+  GWEN_NetLayerStatus_Disconnecting,
+  GWEN_NetLayerStatus_Disconnected,
+  GWEN_NetLayerStatus_Listening,
+  GWEN_NetLayerStatus_Disabled,
+  GWEN_NetLayerStatus_Unknown=999
+} GWEN_NETLAYER_STATUS;
+
+GWEN_NETLAYER_STATUS GWEN_NetLayerStatus_fromString(const char *s);
+const char *GWEN_NetLayerStatus_toString(GWEN_NETLAYER_STATUS st);
+
+
+typedef enum {
+  GWEN_NetLayerResult_Idle=0,
+  GWEN_NetLayerResult_Changed,
+  GWEN_NetLayerResult_WouldBlock,
+  GWEN_NetLayerResult_Error,
+  GWEN_NetLayerResult_Unknown=999
+} GWEN_NETLAYER_RESULT;
+
+GWEN_NETLAYER_RESULT GWEN_NetLayerResult_fromString(const char *s);
+const char *GWEN_NetLayerResult_toString(GWEN_NETLAYER_RESULT res);
+
+
+
+typedef GWEN_NETLAYER_RESULT (*GWEN_NETLAYER_WORK_FN)(GWEN_NETLAYER *nl);
+
+typedef int (*GWEN_NETLAYER_READ_FN)(GWEN_NETLAYER *nl,
+                                     char *buffer,
+                                     int *bsize);
+
+typedef int (*GWEN_NETLAYER_WRITE_FN)(GWEN_NETLAYER *nl,
+                                      const char *buffer,
+                                      int *bsize);
+
+typedef int (*GWEN_NETLAYER_CONNECT_FN)(GWEN_NETLAYER *nl);
+
+typedef int (*GWEN_NETLAYER_DISCONNECT_FN)(GWEN_NETLAYER *nl);
+
+typedef int (*GWEN_NETLAYER_LISTEN_FN)(GWEN_NETLAYER *nl);
+
+typedef int (*GWEN_NETLAYER_ADDSOCKETS_FN)(GWEN_NETLAYER *nl,
+                                           GWEN_SOCKETSET *readSet,
+                                           GWEN_SOCKETSET *writeSet,
+                                           GWEN_SOCKETSET *exSet);
+
+typedef void (*GWEN_NETLAYER_BASESTATUS_CHG_FN)(GWEN_NETLAYER *nl,
+                                                GWEN_NETLAYER_STATUS newst);
+
+typedef int (*GWEN_NETLAYER_BEGIN_OUT_PACKET_FN)(GWEN_NETLAYER *nl,
+                                                  int totalSize);
+
+typedef int (*GWEN_NETLAYER_END_OUT_PACKET_FN)(GWEN_NETLAYER *nl);
+
+typedef int (*GWEN_NETLAYER_BEGIN_IN_PACKET_FN)(GWEN_NETLAYER *nl);
+typedef int (*GWEN_NETLAYER_CHECK_IN_PACKET_FN)(GWEN_NETLAYER *nl);
+
+
+GWEN_NETLAYER *GWEN_NetLayer_new(const char *typeName);
+void GWEN_NetLayer_free(GWEN_NETLAYER *nl);
+void GWEN_NetLayer_Attach(GWEN_NETLAYER *nl);
+
+GWEN_NETLAYER_STATUS GWEN_NetLayer_GetStatus(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetStatus(GWEN_NETLAYER *nl, GWEN_NETLAYER_STATUS st);
+time_t GWEN_NetLayer_GetLastStatusChangeTime(const GWEN_NETLAYER *nl);
+
+GWEN_TYPE_UINT32 GWEN_NetLayer_GetFlags(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetFlags(GWEN_NETLAYER *nl, GWEN_TYPE_UINT32 fl);
+void GWEN_NetLayer_AddFlags(GWEN_NETLAYER *nl, GWEN_TYPE_UINT32 fl);
+void GWEN_NetLayer_SubFlags(GWEN_NETLAYER *nl, GWEN_TYPE_UINT32 fl);
+
+GWEN_NETLAYER *GWEN_NetLayer_GetBaseLayer(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetBaseLayer(GWEN_NETLAYER *nl, GWEN_NETLAYER *baseLayer);
+
+GWEN_NETLAYER *GWEN_NetLayer_GetParentLayer(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetParentLayer(GWEN_NETLAYER *nl, GWEN_NETLAYER *pLayer);
+
+void GWEN_NetLayer_AddIncomingLayer(GWEN_NETLAYER *nl, GWEN_NETLAYER *newnl);
+GWEN_NETLAYER *GWEN_NetLayer_PeekIncomingLayer(const GWEN_NETLAYER *nl);
+GWEN_NETLAYER *GWEN_NetLayer_GetIncomingLayer(GWEN_NETLAYER *nl);
+GWEN_NETLAYER *GWEN_NetLayer_GetIncomingLayer_Wait(GWEN_NETLAYER *nl,
+                                                   int timeout);
+int GWEN_NetLayer_GetIncomingLayerCount(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_DelIncomingLayers(GWEN_NETLAYER *nl);
+
+
+const GWEN_INETADDRESS *GWEN_NetLayer_GetLocalAddr(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetLocalAddr(GWEN_NETLAYER *nl,
+                                const GWEN_INETADDRESS *addr);
+
+const GWEN_INETADDRESS *GWEN_NetLayer_GetPeerAddr(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetPeerAddr(GWEN_NETLAYER *nl,
+                               const GWEN_INETADDRESS *addr);
+
+int GWEN_NetLayer_GetBackLog(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetBackLog(GWEN_NETLAYER *nl, int i);
+
+
+void GWEN_NetLayer_SetWorkFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_WORK_FN f);
+void GWEN_NetLayer_SetReadFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_READ_FN f);
+void GWEN_NetLayer_SetWriteFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_WRITE_FN f);
+void GWEN_NetLayer_SetConnectFn(GWEN_NETLAYER *nl,
+                                GWEN_NETLAYER_CONNECT_FN f);
+void GWEN_NetLayer_SetDisconnectFn(GWEN_NETLAYER *nl,
+                                   GWEN_NETLAYER_DISCONNECT_FN f);
+void GWEN_NetLayer_SetListenFn(GWEN_NETLAYER *nl,
+                               GWEN_NETLAYER_LISTEN_FN f);
+
+void GWEN_NetLayer_SetAddSocketsFn(GWEN_NETLAYER *nl,
+                                   GWEN_NETLAYER_ADDSOCKETS_FN f);
+void GWEN_NetLayer_SetBaseStatusChangeFn(GWEN_NETLAYER *nl,
+                                         GWEN_NETLAYER_BASESTATUS_CHG_FN f);
+
+void GWEN_NetLayer_SetBeginOutPacketFn(GWEN_NETLAYER *nl,
+                                        GWEN_NETLAYER_BEGIN_OUT_PACKET_FN f);
+void GWEN_NetLayer_SetEndOutPacketFn(GWEN_NETLAYER *nl,
+                                      GWEN_NETLAYER_END_OUT_PACKET_FN f);
+void GWEN_NetLayer_SetBeginInPacketFn(GWEN_NETLAYER *nl,
+                                       GWEN_NETLAYER_BEGIN_IN_PACKET_FN f);
+void GWEN_NetLayer_SetCheckInPacketFn(GWEN_NETLAYER *nl,
+                                       GWEN_NETLAYER_CHECK_IN_PACKET_FN f);
+
+
+
+/** @name Virtual IO functions
+ *
+ * All functions in this group - except @ref GWEN_NetLayer_Work - return
+ * a negative value on error, 0 on success and 1 if the operation would
+ * block (and thus needs to wait for IO to occurr on this object).
+ */
+/*@{*/
+GWEN_NETLAYER_RESULT GWEN_NetLayer_Work(GWEN_NETLAYER *nl);
+
+int GWEN_NetLayer_Read(GWEN_NETLAYER *nl,
+                       char *buffer,
+                       int *bsize);
+int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
+                            char *buffer, int *bsize,
+                            int timeout);
+
+int GWEN_NetLayer_Write(GWEN_NETLAYER *nl,
+                        const char *buffer,
+                        int *bsize);
+int GWEN_NetLayer_Write_Wait(GWEN_NETLAYER *nl,
+                             const char *buffer, int *bsize,
+                             int timeout);
+
+int GWEN_NetLayer_Connect(GWEN_NETLAYER *nl);
+int GWEN_NetLayer_Connect_Wait(GWEN_NETLAYER *nl, int timeout);
+
+int GWEN_NetLayer_Disconnect(GWEN_NETLAYER *nl);
+int GWEN_NetLayer_Disconnect_Wait(GWEN_NETLAYER *nl, int timeout);
+
+int GWEN_NetLayer_Listen(GWEN_NETLAYER *nl);
+
+int GWEN_NetLayer_AddSockets(GWEN_NETLAYER *nl,
+                             GWEN_SOCKETSET *readSet,
+                             GWEN_SOCKETSET *writeSet,
+                             GWEN_SOCKETSET *exSet);
+
+/**
+ * This function is called just before the status of the base layer changes.
+ */
+void GWEN_NetLayer_BaseStatusChange(GWEN_NETLAYER *nl,
+                                    GWEN_NETLAYER_STATUS newst);
+/*@}*/
+
+
+/** @name Virtual Packet IO functions
+ *
+ */
+/*@{*/
+
+int GWEN_NetLayer_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize);
+int GWEN_NetLayer_EndOutPacket(GWEN_NETLAYER *nl);
+int GWEN_NetLayer_EndOutPacket_Wait(GWEN_NETLAYER *nl, int timeout);
+
+int GWEN_NetLayer_BeginInPacket(GWEN_NETLAYER *nl);
+int GWEN_NetLayer_CheckInPacket(GWEN_NETLAYER *nl);
+/*@}*/
+
+
+
+#endif /* GWEN_NETLAYER_H */
+
+
+
+

@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
- email       : martin@libchipcard.de
+                             -------------------
+    cvs         : $Id$
+    begin       : Sat Jan 24 2004
+    copyright   : (C) 2004 by Martin Preuss
+    email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,47 +26,39 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_FILTER_P_H
-#define GWENHYWFAR_FILTER_P_H
+#ifndef GWEN_NL_SOCKET_P_H
+#define GWEN_NL_SOCKET_P_H
+
+#include "nl_socket.h"
 
 
-#define GWEN_FILTER_BUFFERSIZE 1024
 
-#include "filter.h"
-#include <gwenhywfar/misc.h>
-
-
-GWEN_LIST_FUNCTION_DEFS(GWEN_FILTER, GWEN_Filter)
-
-
-struct GWEN_FILTER {
-  GWEN_INHERIT_ELEMENT(GWEN_FILTER)
-  GWEN_LIST_ELEMENT(GWEN_FILTER)
-  char *filterName;
-  GWEN_FILTER_LIST *nextElements;
-  GWEN_RINGBUFFER *inBuffer;
-  GWEN_RINGBUFFER *outBuffer;
-
-  GWEN_FILTER_WORKFN workFn;
+typedef struct GWEN_NL_SOCKET GWEN_NL_SOCKET;
+struct GWEN_NL_SOCKET {
+  GWEN_SOCKET *socket;
+  int ownSocket;
 };
 
+void GWEN_NetLayerSocket_FreeData(void *bp, void *p);
+
+int GWEN_NetLayerSocket_Connect(GWEN_NETLAYER *nl);
+int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl);
+int GWEN_NetLayerSocket_Listen(GWEN_NETLAYER *nl);
+
+int GWEN_NetLayerSocket_Read(GWEN_NETLAYER *nl, char *buffer,
+                             int *bsize);
+int GWEN_NetLayerSocket_Write(GWEN_NETLAYER *nl,
+                              const char *buffer,
+                              int *bsize);
+
+int GWEN_NetLayerSocket_AddSockets(GWEN_NETLAYER *nl,
+                                   GWEN_SOCKETSET *readSet,
+                                   GWEN_SOCKETSET *writeSet,
+                                   GWEN_SOCKETSET *exSet);
+
+GWEN_NETLAYER_RESULT GWEN_NetLayerSocket_Work(GWEN_NETLAYER *nl);
 
 
-GWEN_FILTER_RESULT GWEN_Filter__Work(GWEN_FILTER *f);
-
-GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter);
-
-
-
-
-#endif
-
-
-
-
-
-
-
-
+#endif /* GWEN_NL_SOCKET_P_H */
 
 

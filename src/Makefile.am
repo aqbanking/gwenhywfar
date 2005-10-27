@@ -12,7 +12,7 @@ INCLUDES = $(all_includes) \
 
 AM_CFLAGS=@PROFILING_CFLAGS@
 
-SUBDIRS = base crypt io ipc os parser net crypt2
+SUBDIRS = base crypt io ipc os parser net crypt2 net2
 
 DEFS += \
   -DGWEN_INSTALL_DIR=\"$(prefix)\" \
@@ -43,6 +43,7 @@ libgwenhywfar_la_LIBADD=\
   io/libio.la \
   ipc/libipc.la \
   net/libnet.la \
+  net2/libnet2.la \
   os/libos.la \
   parser/libparser.la @all_libraries@ @ssl_libraries@ @ssl_lib@
 

@@ -41,6 +41,10 @@
 # define strcasecmp(a, b) strcmp(a, b)
 #endif
 
+#include <gwenhywfar/nl_socket.h>
+#include <gwenhywfar/nl_http.h>
+#include <gwenhywfar/net2.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -4530,6 +4534,814 @@ int testDbKey(int argc, char **argv) {
 
 
 
+GWEN_NETTRANSPORTSSL_ASKADDCERT_RESULT _askAddCert(GWEN_NETTRANSPORT *tr,
+                                                   GWEN_DB_NODE *cert) {
+
+  return GWEN_NetTransportSSL_AskAddCertResultTmp;
+}
+
+
+
+int testHttpSession2(int argc, char **argv) {
+  GWEN_HTTP_SESSION *sess;
+  GWEN_BUFFER *bufResult;
+  int rv;
+  GWEN_DB_NODE *dbResultHeader;
+  GWEN_DB_NODE *dbT;
+  const char *command;
+  const char *urlstring;
+  GWEN_HTTP_URL *url;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelNotice);
+
+  if (argc<4) {
+    fprintf(stderr, "%s %s COMMAND URL\n",
+            argv[0], argv[1]);
+    return -1;
+  }
+  command=argv[2];
+  urlstring=argv[3];
+
+  GWEN_NetTransportSSL_SetAskAddCertFn(_askAddCert);
+
+  url=GWEN_HttpUrl_fromString(urlstring);
+  assert(url);
+
+  sess=GWEN_HttpSession_new(GWEN_HttpUrl_GetServer(url),
+                            GWEN_HttpUrl_GetPort(url),
+                            0,
+                            1, 1);
+  GWEN_HttpSession_SetAskFollowFn(sess, _askFollow);
+  GWEN_HttpSession_SetGetAuthFn(sess, _getAuth);
+
+  dbT=GWEN_HttpSession_GetHeaders(sess);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "connection",
+                       "keep-alive");
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "Accept",
+                       "*/*");
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "Host",
+                       GWEN_HttpUrl_GetServer(url));
+
+  dbResultHeader=GWEN_DB_Group_new("result");
+  bufResult=GWEN_Buffer_new(0, 1024, 0, 1);
+  rv=GWEN_HttpSession_Request(sess,
+                              command,
+                              urlstring,
+                              0, 0, /* body */
+                              dbResultHeader,
+                              bufResult);
+
+  if (rv<0) {
+    DBG_ERROR(0, "Error: %d", rv);
+  }
+  else {
+    DBG_ERROR(0, "Code: %d", rv);
+  }
+
+  fprintf(stderr, "Response was:\n");
+  GWEN_DB_Dump(dbResultHeader, stderr, 2);
+  GWEN_Buffer_Dump(bufResult, stderr, 2);
+
+  GWEN_Buffer_free(bufResult);
+  GWEN_DB_Group_free(dbResultHeader);
+
+  GWEN_HttpSession_Close(sess);
+  GWEN_HttpSession_free(sess);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlSocketConnect(int argc, char **argv) {
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *nl;
+  const char *tstr;
+  char buffer[4096];
+  int bsize;
+  int rv;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  nl=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.1");
+  GWEN_InetAddr_SetPort(addr, 80);
+  GWEN_NetLayer_SetPeerAddr(nl, addr);
+  GWEN_InetAddr_free(addr);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  /* create connection layer */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  tstr="GET / HTTP/1.0\r\n";
+  bsize=strlen(tstr);
+  fprintf(stderr, "Writing something to the peer...\n");
+  rv=GWEN_NetLayer_Write(nl, tstr, &bsize);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not write (%d)\n", rv);
+    return 2;
+  }
+  if (bsize!=strlen(tstr)) {
+    fprintf(stderr, "ERROR: Could not write all (only %d bytes)\n", bsize);
+    return 2;
+  }
+
+  fprintf(stderr, "Waiting for response...\n");
+  bsize=sizeof(buffer);
+  rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, 30);
+  if (rv==-1) {
+    fprintf(stderr, "ERROR: Could not read\n");
+    return 2;
+  }
+  else if (rv==1) {
+    fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+    return 2;
+  }
+  buffer[bsize]=0;
+  fprintf(stderr, "Response was: \"%s\"\n", buffer);
+
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlSocketAccept(int argc, char **argv) {
+  GWEN_NETLAYER *nl, *incoming;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  char addrBuffer[128];
+  const char *tstr;
+  char buffer[1024];
+  int bsize;
+  int rv;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  nl=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
+  GWEN_InetAddr_SetPort(addr, 55555);
+  GWEN_NetLayer_SetLocalAddr(nl, addr);
+  GWEN_InetAddr_free(addr);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  fprintf(stderr, "Starting to listen\n");
+  rv=GWEN_NetLayer_Listen(nl);
+  if (rv) {
+    fprintf(stderr, "Could not start to listen (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Waiting for incoming connection...\n");
+  incoming=GWEN_NetLayer_GetIncomingLayer_Wait(nl, 60);
+  if (!incoming) {
+    fprintf(stderr, "No incoming connection, aborting.\n");
+    return 2;
+  }
+
+  GWEN_Net2_AddConnectionToPool(incoming);
+
+  fprintf(stderr, "Got an incoming connection.\n");
+  GWEN_InetAddr_GetAddress(GWEN_NetLayer_GetPeerAddr(incoming),
+                           addrBuffer, sizeof(addrBuffer));
+
+  DBG_INFO(0, "Peer is: %s (port %d)",
+           addrBuffer,
+           GWEN_InetAddr_GetPort(GWEN_NetLayer_GetPeerAddr(incoming)));
+
+  while(1) {
+    fprintf(stderr, "Waiting for peer`s speach...\n");
+    bsize=sizeof(buffer);
+    rv=GWEN_NetLayer_Read_Wait(incoming, buffer, &bsize, 30);
+    if (rv==-1) {
+      fprintf(stderr, "ERROR: Could not read\n");
+      return 2;
+    }
+    else if (rv==1) {
+      fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+      return 2;
+    }
+    if (bsize==0) {
+      fprintf(stderr, "EOF met, leaving\n");
+      break;
+    }
+    buffer[bsize]=0;
+    fprintf(stderr, "Speach was: \"%s\"\n", buffer);
+
+    tstr="Hello client";
+    bsize=strlen(tstr);
+    fprintf(stderr, "Writing answer to the peer...\n");
+    rv=GWEN_NetLayer_Write_Wait(incoming, tstr, &bsize, 30);
+    if (rv) {
+      fprintf(stderr, "ERROR: Could not write (%d)\n", rv);
+      return 2;
+    }
+    if (bsize!=strlen(tstr)) {
+      fprintf(stderr, "ERROR: Could not write all (only %d bytes)\n", bsize);
+      return 2;
+    }
+  } /* while */
+
+  fprintf(stderr, "Shutting down incoming connection...\n");
+  GWEN_NetLayer_Disconnect_Wait(incoming, 30);
+  GWEN_NetLayer_free(incoming);
+
+  fprintf(stderr, "Shutting down listening connection...\n");
+  GWEN_NetLayer_Disconnect_Wait(nl, 30);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlHttpConnect1(int argc, char **argv) {
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  char buffer[4096];
+  int bsize;
+  int rv;
+  GWEN_URL *url;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.1");
+  GWEN_InetAddr_SetPort(addr, 80);
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  /* create connection layer */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  url=GWEN_Url_fromString("http://192.168.115.1/");
+  assert(url);
+
+  GWEN_NetLayerHttp_SetOutCommand(nl, "GET", url);
+  rv=GWEN_NetLayer_BeginOutPacket(nl, 0); /* no body */
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not begin packet (%d)\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_NetLayer_EndOutPacket_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not end packet (%d)\n", rv);
+    return 2;
+  }
+
+#if 0
+  fprintf(stderr, "Waiting for response...\n");
+  bsize=sizeof(buffer);
+  rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, 30);
+  if (rv==-1) {
+    fprintf(stderr, "ERROR: Could not read\n");
+    return 2;
+  }
+  else if (rv==1) {
+    fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+    return 2;
+  }
+  buffer[bsize]=0;
+  fprintf(stderr, "Response was: \"%s\"\n", buffer);
+#endif
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlHttpConnect2(int argc, char **argv) {
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  const char *tstr;
+  char buffer[4096];
+  int bsize;
+  int rv;
+  GWEN_URL *url;
+  GWEN_BUFFER *rbuf;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetName(addr, "www.aquamaniac.de");
+  GWEN_InetAddr_SetPort(addr, 80);
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  /* create connection layer */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  url=GWEN_Url_fromString("http://www.aquamaniac.de/aqbanking/");
+  assert(url);
+
+  tstr="Some data";
+  bsize=strlen(tstr);
+  GWEN_NetLayerHttp_SetOutCommand(nl, "GET", url);
+  rv=GWEN_NetLayer_BeginOutPacket(nl, bsize);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not begin packet (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Writing something to the peer...\n");
+  rv=GWEN_NetLayer_Write_Wait(nl, tstr, &bsize, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not write (%d)\n", rv);
+    return 2;
+  }
+  if (bsize!=strlen(tstr)) {
+    fprintf(stderr, "ERROR: Could not write all (only %d bytes)\n", bsize);
+    return 2;
+  }
+
+  rv=GWEN_NetLayer_EndOutPacket_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not end packet (%d)\n", rv);
+    return 2;
+  }
+
+  rbuf=GWEN_Buffer_new(0, 512, 0, 1);
+  rv=GWEN_NetLayer_BeginInPacket(nl);
+  if (rv) {
+    fprintf(stderr, "Could not start to read (%d)\n", rv);
+    return 2;
+  }
+
+  for (;;) {
+    rv=GWEN_NetLayer_CheckInPacket(nl);
+    fprintf(stderr, "Check-Result: %d\n", rv);
+    if (rv<0) {
+      fprintf(stderr, "Error checking packet (%d)\n", rv);
+      return 2;
+    }
+    else if (rv==1) {
+      fprintf(stderr, "Reading...\n");
+      bsize=sizeof(buffer);
+      rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, 30);
+      if (rv==-1) {
+        fprintf(stderr, "ERROR: Could not read\n");
+        return 2;
+      }
+      else if (rv==1) {
+        fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+        return 2;
+      }
+      else {
+        if (bsize!=0) {
+          buffer[bsize]=0;
+          GWEN_Buffer_AppendBytes(rbuf, buffer, bsize);
+        }
+      }
+    }
+    else
+      break;
+  }
+
+  fprintf(stderr, "Response was: \"%s\"\n",
+          GWEN_Buffer_GetStart(rbuf));
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlHttpConnect3(int argc, char **argv) {
+  const char *urlString;
+  const char *outFile=0;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  const char *tstr;
+  char buffer[4096];
+  int bsize;
+  int rv;
+  GWEN_URL *url;
+  GWEN_BUFFER *rbuf;
+  GWEN_DB_NODE *dbT;
+  GWEN_ERRORCODE err;
+
+  if (argc<3) {
+    fprintf(stderr, "%s %s URL [FILE]\n", argv[0], argv[1]);
+    return 1;
+  }
+  if (argc==4)
+    outFile=argv[3];
+  urlString=argv[2];
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelDebug);
+
+  url=GWEN_Url_fromString(urlString);
+  assert(url);
+
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  err=GWEN_InetAddr_SetAddress(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err))
+    err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  GWEN_InetAddr_SetPort(addr, GWEN_Url_GetPort(url));
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  /* connect */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  dbT=GWEN_NetLayerHttp_GetOutHeader(nl);
+  assert(dbT);
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "host",
+                       GWEN_Url_GetServer(url));
+
+  GWEN_NetLayerHttp_SetOutCommand(nl, "GET", url);
+  rv=GWEN_NetLayer_BeginOutPacket(nl, 0);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not begin packet (%d)\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_NetLayer_EndOutPacket_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not end packet (%d)\n", rv);
+    return 2;
+  }
+
+  rbuf=GWEN_Buffer_new(0, 512, 0, 1);
+  rv=GWEN_NetLayer_BeginInPacket(nl);
+  if (rv) {
+    fprintf(stderr, "Could not start to read (%d)\n", rv);
+    return 2;
+  }
+
+  for (;;) {
+    rv=GWEN_NetLayer_CheckInPacket(nl);
+    fprintf(stderr, "Check-Result: %d\n", rv);
+    if (rv<0) {
+      fprintf(stderr, "Error checking packet (%d)\n", rv);
+      return 2;
+    }
+    else if (rv==1) {
+      fprintf(stderr, "Reading...\n");
+      bsize=sizeof(buffer);
+      rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, 30);
+      if (rv<0) {
+        fprintf(stderr, "ERROR: Could not read (%d)\n", rv);
+        return 2;
+      }
+      else if (rv==1) {
+        fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+        return 2;
+      }
+      else {
+        if (bsize==0) {
+          fprintf(stderr, "INFO: EOF met\n");
+          break;
+        }
+        else {
+          buffer[bsize]=0;
+          GWEN_Buffer_AppendBytes(rbuf, buffer, bsize);
+        }
+      }
+    }
+    else
+      break;
+  }
+
+  if (GWEN_Buffer_GetUsedBytes(rbuf) && outFile) {
+    FILE *f;
+
+    f=fopen(outFile, "w+");
+    if (!f) {
+      fprintf(stderr, "ERROR: Could not open outfile.\n");
+      return 3;
+    }
+    if (1!=fwrite(GWEN_Buffer_GetStart(rbuf),
+                  GWEN_Buffer_GetUsedBytes(rbuf),
+                  1, f)) {
+      fprintf(stderr, "ERROR: Could not write to outfile.\n");
+      fclose(f);
+      return 3;
+    }
+    if (fclose(f)) {
+      fprintf(stderr, "ERROR: Could not close outfile.\n");
+      return 3;
+    }
+  }
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlHttpConnect4(int argc, char **argv) {
+  const char *urlString;
+  const char *outFile=0;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  const char *tstr;
+  char buffer[4096];
+  int bsize;
+  int rv;
+  GWEN_URL *url;
+  GWEN_BUFFER *rbuf;
+  GWEN_DB_NODE *dbT;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+
+  if (argc<4) {
+    fprintf(stderr, "%s %s URL FILE\n", argv[0], argv[1]);
+    return 1;
+  }
+  outFile=argv[3];
+  urlString=argv[2];
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelDebug);
+
+  url=GWEN_Url_fromString(urlString);
+  assert(url);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  err=GWEN_InetAddr_SetAddress(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err))
+    err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  GWEN_InetAddr_SetPort(addr, GWEN_Url_GetPort(url));
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  /* connect */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  fd=open(outFile, O_CREAT | O_WRONLY);
+  if (fd==-1) {
+    fprintf(stderr, "Could not create outFile\n");
+    return 2;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  rv=GWEN_NetLayerHttp_Request(nl, "GET", url,
+                               0, /* dbHeader */
+                               0, 0, /* body */
+                               bio);
+  fprintf(stderr, "INFO: Result of request: %d\n", rv);
+  if (rv<0) {
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    return 3;
+  }
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 3;
+  }
+  GWEN_BufferedIO_free(bio);
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlHttpAccept1(int argc, char **argv) {
+  GWEN_NETLAYER *baseLayer, *nl, *incoming;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  char addrBuffer[128];
+  const char *tstr;
+  char buffer[4096];
+  int bsize;
+  int rv;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.2");
+  GWEN_InetAddr_SetPort(addr, 55555);
+  GWEN_NetLayer_SetLocalAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  fprintf(stderr, "Starting to listen\n");
+  rv=GWEN_NetLayer_Listen(nl);
+  if (rv) {
+    fprintf(stderr, "Could not start to listen (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Waiting for incoming connection...\n");
+  incoming=GWEN_NetLayer_GetIncomingLayer_Wait(nl, 60);
+  if (!incoming) {
+    fprintf(stderr, "No incoming connection, aborting.\n");
+    return 2;
+  }
+
+  GWEN_Net2_AddConnectionToPool(incoming);
+
+  fprintf(stderr, "Got an incoming connection.\n");
+  GWEN_InetAddr_GetAddress(GWEN_NetLayer_GetPeerAddr(incoming),
+                           addrBuffer, sizeof(addrBuffer));
+
+  DBG_INFO(0, "Peer is: %s (port %d)",
+           addrBuffer,
+           GWEN_InetAddr_GetPort(GWEN_NetLayer_GetPeerAddr(incoming)));
+
+  fprintf(stderr, "Waiting for peer`s speach...\n");
+  rv=GWEN_NetLayer_BeginInPacket(incoming);
+  if (rv) {
+    fprintf(stderr, "Could not start to read (%d)\n", rv);
+    return 2;
+  }
+
+  for (;;) {
+    rv=GWEN_NetLayer_CheckInPacket(incoming);
+    fprintf(stderr, "Check-Result: %d\n", rv);
+    if (rv<0) {
+      fprintf(stderr, "Error checking packet (%d)\n", rv);
+      return 2;
+    }
+    else if (rv==1) {
+      fprintf(stderr, "Reading...\n");
+      bsize=sizeof(buffer);
+      rv=GWEN_NetLayer_Read_Wait(incoming, buffer, &bsize, 30);
+      if (rv==-1) {
+        fprintf(stderr, "ERROR: Could not read\n");
+        return 2;
+      }
+      else if (rv==1) {
+        fprintf(stderr, "ERROR: Could not read due to a timeout\n");
+        return 2;
+      }
+      else {
+        if (bsize!=0) {
+          buffer[bsize]=0;
+          fprintf(stderr, "Speach was: \"%s\"\n", buffer);
+        }
+      }
+    }
+    else
+      break;
+  }
+
+  tstr="Hi, this is the result :-)";
+  bsize=strlen(tstr);
+  GWEN_NetLayerHttp_SetOutStatus(incoming, 200, "Ok, hello client");
+  rv=GWEN_NetLayer_BeginOutPacket(incoming, bsize);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not begin packet (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Writing something to the peer...\n");
+  rv=GWEN_NetLayer_Write_Wait(incoming, tstr, &bsize, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not write (%d)\n", rv);
+    return 2;
+  }
+  if (bsize!=strlen(tstr)) {
+    fprintf(stderr, "ERROR: Could not write all (only %d bytes)\n", bsize);
+    return 2;
+  }
+
+  rv=GWEN_NetLayer_EndOutPacket_Wait(incoming, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not end packet (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Shutting down incoming connection...\n");
+  GWEN_NetLayer_Disconnect_Wait(incoming, 30);
+  GWEN_NetLayer_free(incoming);
+
+  fprintf(stderr, "Shutting down listening connection...\n");
+  GWEN_NetLayer_Disconnect_Wait(nl, 30);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4672,8 +5484,24 @@ int main(int argc, char **argv) {
     rv=testHttpRequest(argc, argv);
   else if (strcasecmp(argv[1], "httpsession")==0)
     rv=testHttpSession(argc, argv);
+  else if (strcasecmp(argv[1], "httpsession2")==0)
+    rv=testHttpSession2(argc, argv);
   else if (strcasecmp(argv[1], "dbkey")==0)
     rv=testDbKey(argc, argv);
+  else if (strcasecmp(argv[1], "nlsocketconnect")==0)
+    rv=testNlSocketConnect(argc, argv);
+  else if (strcasecmp(argv[1], "nlsocketaccept")==0)
+    rv=testNlSocketAccept(argc, argv);
+  else if (strcasecmp(argv[1], "nlhttpconnect1")==0)
+    rv=testNlHttpConnect1(argc, argv);
+  else if (strcasecmp(argv[1], "nlhttpconnect2")==0)
+    rv=testNlHttpConnect2(argc, argv);
+  else if (strcasecmp(argv[1], "nlhttpconnect3")==0)
+    rv=testNlHttpConnect3(argc, argv);
+  else if (strcasecmp(argv[1], "nlhttpconnect4")==0)
+    rv=testNlHttpConnect4(argc, argv);
+  else if (strcasecmp(argv[1], "nlhttpaccept1")==0)
+    rv=testNlHttpAccept1(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

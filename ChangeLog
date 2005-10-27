@@ -1,4 +1,19 @@
 
+2005/10/27: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started rewriting network code
+- db.{h,c}:
+  - when writing a db with GWEN_DB_FLAGS_USE_COLON then insert a space
+    after the colon
+  - added functions:
+    - GWEN_DB_ReadFromString()
+    - GWEN_DB_WriteToBuffer()
+  - added flag GWEN_DB_FLAGS_DOSMODE
+  - modified GWEN_DB_FLAGS_HTTP:
+    - include GWEN_DB_FLAGS_OMIT_TYPES
+    - include GWEN_DB_FLAGS_DOSMODE
+
+
 2005/10/25: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - worked on GWEN_HttpSession: Now requesting a document works (including

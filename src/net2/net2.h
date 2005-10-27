@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
- email       : martin@libchipcard.de
+                             -------------------
+    cvs         : $Id$
+    begin       : Mon Feb 09 2004
+    copyright   : (C) 2004 by Martin Preuss
+    email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -25,48 +25,54 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifndef GWENHYWFAR_FILTER_P_H
-#define GWENHYWFAR_FILTER_P_H
-
-
-#define GWEN_FILTER_BUFFERSIZE 1024
-
-#include "filter.h"
-#include <gwenhywfar/misc.h>
+#ifndef GWEN_NET2_H
+#define GWEN_NET2_H
 
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_FILTER, GWEN_Filter)
+#include <gwenhywfar/netlayer.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** @name Special Timeout Values
+ *
+ * These special timeout values can be used whenever a timeout parameter
+ * is expected.
+ * Positive timeout values specify a limit for the number of seconds to wait.
+ */
+/*@{*/
+/** don't wait at all */
+#define GWEN_NET2_TIMEOUT_NONE    (0)
+/** wait forever */
+#define GWEN_NET2_TIMEOUT_FOREVER (-1)
+/*@}*/
 
 
-struct GWEN_FILTER {
-  GWEN_INHERIT_ELEMENT(GWEN_FILTER)
-  GWEN_LIST_ELEMENT(GWEN_FILTER)
-  char *filterName;
-  GWEN_FILTER_LIST *nextElements;
-  GWEN_RINGBUFFER *inBuffer;
-  GWEN_RINGBUFFER *outBuffer;
+GWENHYWFAR_API
+void GWEN_Net2_AddConnectionToPool(GWEN_NETLAYER *nl);
 
-  GWEN_FILTER_WORKFN workFn;
-};
+/**
+ * @param timeout timeout in milliseconds (or a special timeout value, see
+ * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)
+ */
 
-
-
-GWEN_FILTER_RESULT GWEN_Filter__Work(GWEN_FILTER *f);
-
-GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter);
+GWENHYWFAR_API
+GWEN_NETLAYER_RESULT GWEN_Net2_HeartBeat(int timeout);
 
 
+GWENHYWFAR_API
+int GWEN_Net2_HasActiveConnections();
+
+GWENHYWFAR_API
+int GWEN_Net2_HasListeningConnections();
 
 
+
+#ifdef __cplusplus
+}
 #endif
 
 
-
-
-
-
-
-
-
+#endif /* GWEN_NET_H */
 

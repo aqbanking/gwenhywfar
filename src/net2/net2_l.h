@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
- email       : martin@libchipcard.de
+                             -------------------
+    cvs         : $Id$
+    begin       : Mon Feb 09 2004
+    copyright   : (C) 2004 by Martin Preuss
+    email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -25,48 +25,18 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifndef GWENHYWFAR_FILTER_P_H
-#define GWENHYWFAR_FILTER_P_H
-
-
-#define GWEN_FILTER_BUFFERSIZE 1024
-
-#include "filter.h"
-#include <gwenhywfar/misc.h>
+#ifndef GWEN_NET2_L_H
+#define GWEN_NET2_L_H
 
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_FILTER, GWEN_Filter)
+#include <gwenhywfar/net2.h>
+#include "netlayer_l.h"
 
 
-struct GWEN_FILTER {
-  GWEN_INHERIT_ELEMENT(GWEN_FILTER)
-  GWEN_LIST_ELEMENT(GWEN_FILTER)
-  char *filterName;
-  GWEN_FILTER_LIST *nextElements;
-  GWEN_RINGBUFFER *inBuffer;
-  GWEN_RINGBUFFER *outBuffer;
+GWEN_ERRORCODE GWEN_Net2_ModuleInit();
 
-  GWEN_FILTER_WORKFN workFn;
-};
+GWEN_ERRORCODE GWEN_Net2_ModuleFini();
 
 
-
-GWEN_FILTER_RESULT GWEN_Filter__Work(GWEN_FILTER *f);
-
-GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter);
-
-
-
-
-#endif
-
-
-
-
-
-
-
-
-
+#endif /* GWEN_NET2_L_H */
 

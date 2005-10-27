@@ -160,6 +160,12 @@ extern "C" {
  * values/groups rather than appending them.*/
 #define GWEN_DB_FLAGS_INSERT                 0x40000000
 
+/**
+ * Then automatically creating BufferedIOs to write to or to read from
+ * then the line mode is set to DOS instead of Unix.
+ */
+#define GWEN_DB_FLAGS_DOSMODE                0x80000000
+
   /** These are the default flags which you use in most cases */
 #define GWEN_DB_FLAGS_DEFAULT \
   (\
@@ -189,7 +195,9 @@ extern "C" {
 #define GWEN_DB_FLAGS_HTTP \
   (\
   GWEN_DB_FLAGS_USE_COLON |\
-  GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE\
+  GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |\
+  GWEN_DB_FLAGS_OMIT_TYPES | \
+  GWEN_DB_FLAGS_DOSMODE \
   )
 /*@}*/
 
@@ -798,6 +806,14 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      GWEN_TYPE_UINT32 dbflags);
 
 /**
+ * This is a convenience function which reads a DB from a string.
+ */
+GWENHYWFAR_API
+int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
+                           const char *str,
+                           GWEN_TYPE_UINT32 dbflags);
+
+/**
  * Write a DB to a GWEN_BUFFEREDIO.
  * @param n db node
  * @param bio buffered IO to use
@@ -821,6 +837,15 @@ GWENHYWFAR_API
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
                       const char *fname,
                       GWEN_TYPE_UINT32 dbflags);
+
+/**
+ * This is a convenience function which writes a DB to a GWEN_BUFFER.
+ */
+GWENHYWFAR_API 
+int GWEN_DB_WriteToBuffer(GWEN_DB_NODE *n,
+                          GWEN_BUFFER *buf,
+                          GWEN_TYPE_UINT32 dbflags);
+
 
 /**
  * Imports a file into a DB using a GWEN_DBIO importer.

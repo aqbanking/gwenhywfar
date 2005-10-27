@@ -729,7 +729,6 @@ int GWEN_IPCManager__SendMsg(GWEN_IPCMANAGER *mgr,
 GWEN_NETTRANSPORT_STATUS
 GWEN_IPCManager_CheckConnection(GWEN_IPCMANAGER *mgr,
 				GWEN_TYPE_UINT32 nid) {
-  GWEN_NETCONNECTION_WORKRESULT res;
   GWEN_IPCNODE *n;
 
   n=GWEN_IPCNode_List_First(mgr->nodes);
@@ -742,10 +741,11 @@ GWEN_IPCManager_CheckConnection(GWEN_IPCMANAGER *mgr,
     DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
     return GWEN_NetTransportStatusDisabled;
   }
-  res=GWEN_NetConnection_WorkIO(n->connection);
+  // TODO: Reenable this code !!
+  /*res=GWEN_NetConnection_WorkIO(n->connection);
   if (res==GWEN_NetConnectionWorkResult_Error) {
     DBG_ERROR(GWEN_LOGDOMAIN, "WorkIO reported an error");
-  }
+  }*/
   return GWEN_NetConnection_GetStatus(n->connection);
 }
 

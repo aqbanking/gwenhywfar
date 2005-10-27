@@ -120,63 +120,84 @@ void GWEN_Filter_AppendNext(GWEN_FILTER *fPredecessor, GWEN_FILTER *fNew){
 
 
 
+GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter) {
+  GWEN_FILTER *f;
+  GWEN_TYPE_UINT32 maxFree;
+  const char *p;
+
+  /* get maximum of bytes for the next level (least number of writeable
+   * bytes) */
+  maxFree=GWEN_RingBuffer_GetMaxUnsegmentedRead(filter->outBuffer);
+  if (maxFree) {
+    f=GWEN_Filter_List_First(filter->nextElements);
+    while(f) {
+      GWEN_TYPE_UINT32 currFree;
+
+      currFree=GWEN_RingBuffer_GetMaxUnsegmentedWrite(f->inBuffer);
+      if (currFree<maxFree)
+        maxFree=currFree;
+      f=GWEN_Filter_List_Next(f);
+    } /* while */
+
+    if (!maxFree) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Buffers are full");
+      return GWEN_Filter_ResultFull;
+    }
+
+    /* write to every next element */
+    p=GWEN_RingBuffer_GetReadPointer(filter->outBuffer);
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Writing "GWEN_TYPE_TMPL_UINT32" bytes",
+             maxFree);
+    assert(p);
+    f=GWEN_Filter_List_First(filter->nextElements);
+    while(f) {
+      GWEN_TYPE_UINT32 written;
+
+      written=maxFree;
+      if (GWEN_RingBuffer_WriteBytes(f->inBuffer, p, &written)) {
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Error writing bytes to inbuffer of filter \"%s\"",
+                  f->filterName);
+        return GWEN_Filter_ResultError;
+      }
+      /* here the number of bytes written must also equal the number of
+       * bytes to write */
+      assert(written==maxFree);
+
+      f=GWEN_Filter_List_Next(f);
+    } /* while */
+    GWEN_RingBuffer_SkipBytesRead(filter->outBuffer, maxFree);
+  } /* if there is something to write */
+
+  return GWEN_Filter_ResultOk;
+}
+
+
+
 GWEN_FILTER_RESULT GWEN_Filter_Work(GWEN_FILTER *filter, int oneLoop) {
+  int wasFull=0;
+
   for (;;) {
     GWEN_FILTER *f;
-    GWEN_TYPE_UINT32 maxFree;
     GWEN_FILTER_RESULT res;
-    const char *p;
-    int allNeedData;
+    int allNeedData=0;
 
     /* let only this element work */
     res=GWEN_Filter__Work(filter);
     if (res==GWEN_Filter_ResultError)
       return res;
 
-    /* get maximum of bytes for the next level (least number of writeable
-     * bytes) */
-    maxFree=GWEN_RingBuffer_GetMaxUnsegmentedRead(filter->outBuffer);
-    if (maxFree) {
-      f=GWEN_Filter_List_First(filter->nextElements);
-      while(f) {
-        GWEN_TYPE_UINT32 currFree;
-
-        currFree=GWEN_RingBuffer_GetMaxUnsegmentedWrite(f->inBuffer);
-        if (currFree<maxFree)
-          maxFree=currFree;
-        f=GWEN_Filter_List_Next(f);
-      } /* while */
-
-      if (!maxFree) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Buffers are full");
-        return GWEN_Filter_ResultFull;
-      }
-
-      /* write to every next element */
-      p=GWEN_RingBuffer_GetReadPointer(filter->outBuffer);
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "Writing "GWEN_TYPE_TMPL_UINT32" bytes",
-               maxFree);
-      assert(p);
-      f=GWEN_Filter_List_First(filter->nextElements);
-      while(f) {
-        GWEN_TYPE_UINT32 written;
-
-        written=maxFree;
-        if (GWEN_RingBuffer_WriteBytes(f->inBuffer, p, &written)) {
-          DBG_ERROR(GWEN_LOGDOMAIN,
-                    "Error writing bytes to inbuffer of filter \"%s\"",
-                    f->filterName);
-          return GWEN_Filter_ResultError;
-        }
-        /* here the number of bytes written must also equal the number of
-         * bytes to write */
-        assert(written==maxFree);
-
-        f=GWEN_Filter_List_Next(f);
-      } /* while */
-      GWEN_RingBuffer_SkipBytesRead(filter->outBuffer, maxFree);
-    } /* if there is something to write */
+    /* write to all next elements */
+    res=GWEN_Filter__WriteToAllNext(filter);
+    if (res==GWEN_Filter_ResultFull) {
+      if (wasFull)
+        /* was already full the last time we tried, return */
+        return res;
+      wasFull=1;
+    }
+    else if (res!=GWEN_Filter_ResultOk)
+      return res;
 
     /* let all next elements flush */
     allNeedData=1;
@@ -190,11 +211,12 @@ GWEN_FILTER_RESULT GWEN_Filter_Work(GWEN_FILTER *filter, int oneLoop) {
       f=GWEN_Filter_List_Next(f);
     } /* while */
 
-    if (allNeedData && maxFree==0) {
+    if (allNeedData && wasFull) {
       DBG_INFO(GWEN_LOGDOMAIN,
                "All elements need data, finished");
       return GWEN_Filter_ResultNeedMore;
     }
+
     if (oneLoop)
       return GWEN_Filter_ResultOk;
   } /* for */

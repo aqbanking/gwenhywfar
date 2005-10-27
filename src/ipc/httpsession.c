@@ -54,6 +54,8 @@ GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *addr,
   sess->connections=GWEN_NetConnection_List2_new();
   sess->dbHeader=GWEN_DB_Group_new("header");
 
+  sess->connectTimeout=GWEN_HTTP_SESSION_DEF_CONNECT_TIMEOUT;
+
   return sess;
 }
 
@@ -135,7 +137,9 @@ GWEN_HttpSession__CreateConnection(GWEN_HTTP_SESSION *sess,
 				sess->trustedCertDir,
 				sess->newTrustedCertDir,
 				sess->certFile,
-				0, 1, 1);
+                                0,
+                                0, /* don't use secure mode for passv */
+                                1);
   else
     tr=GWEN_NetTransportSocket_new(sk, 1);
 

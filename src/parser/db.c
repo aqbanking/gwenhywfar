@@ -2160,7 +2160,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                   err=GWEN_BufferedIO_Write(bio,
                                             ((dbflags&
                                               GWEN_DB_FLAGS_USE_COLON)?
-                                             ":":"="));
+                                             ": ":"="));
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
                     free(binbuffer);
@@ -2929,6 +2929,74 @@ void GWEN_DB_HashMechanism_SetGetNodeFn(GWEN_DB_HASH_MECHANISM *hm,
                                         GWEN_DB_HASH_GETNODE_FN f){
   assert(hm);
   hm->getNodeFn=f;
+}
+
+
+
+int GWEN_DB_WriteToBuffer(GWEN_DB_NODE *n,
+                          GWEN_BUFFER *buf,
+                          GWEN_TYPE_UINT32 dbflags) {
+  GWEN_BUFFEREDIO *bio;
+  int rv;
+
+  bio=GWEN_BufferedIO_Buffer2_new(buf, 0); /* don't take over the buffer */
+  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 512);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeDOS);
+  else
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeUnix);
+  rv=GWEN_DB_WriteToStream(n, bio, dbflags);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_BufferedIO_Abandon(bio);
+  }
+  else {
+    GWEN_ERRORCODE err;
+
+    err=GWEN_BufferedIO_Close(bio);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+      rv=GWEN_Error_GetSimpleCode(err);
+    }
+  }
+  GWEN_BufferedIO_free(bio);
+  return rv;
+}
+
+
+
+int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
+			   const char *str,
+			   GWEN_TYPE_UINT32 dbflags) {
+  GWEN_BUFFEREDIO *bio;
+  GWEN_BUFFER *buf;
+  int rv;
+  int slen;
+
+  slen=strlen(str);
+  buf=GWEN_Buffer_new((char*)str, slen+1, slen+1, 0);
+  bio=GWEN_BufferedIO_Buffer2_new(buf, 1); /* take over the buffer */
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 512);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeDOS);
+  else
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeUnix);
+  rv=GWEN_DB_ReadFromStream(n, bio, dbflags);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_BufferedIO_Abandon(bio);
+  }
+  else {
+    GWEN_ERRORCODE err;
+
+    err=GWEN_BufferedIO_Close(bio);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+      rv=GWEN_Error_GetSimpleCode(err);
+    }
+  }
+  GWEN_BufferedIO_free(bio);
+  return rv;
 }
 
 

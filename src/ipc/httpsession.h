@@ -22,6 +22,8 @@
 #define GWEN_HTTP_SESSION_FLAGS_CLEAR_COOKIES_REDIR 0x00000020
 
 
+#define GWEN_HTTP_SESSION_DEF_CONNECT_TIMEOUT 10
+
 #include <gwenhywfar/httpcookie.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
