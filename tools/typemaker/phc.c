@@ -216,7 +216,7 @@ int write_h_struct_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 
 int write_hp_group_c(ARGUMENTS *args, GWEN_XMLNODE *node,
-		    GWEN_BUFFEREDIO *bio) {
+                     GWEN_BUFFEREDIO *bio) {
   int rv;
 
   if (GWEN_XMLNode_GetType(node)==GWEN_XMLNodeTypeTag) {
@@ -229,7 +229,7 @@ int write_hp_group_c(ARGUMENTS *args, GWEN_XMLNODE *node,
       return write_h_func_c(args, node, bio);
     }
     else if (strcasecmp(GWEN_XMLNode_GetData(node), "header")==0) {
-      return write_h_header(args, node, bio);
+      return write_h_header(args, node, bio, "header");
     }
     else if (strcasecmp(GWEN_XMLNode_GetData(node), "group")==0) {
       GWEN_XMLNODE *n;

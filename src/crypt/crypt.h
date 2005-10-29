@@ -41,6 +41,7 @@
 extern "C" {
 #endif
 
+
 #define GWEN_CRYPT_ERROR_TYPE "Crypt"
 #define GWEN_CRYPT_ERROR_ALREADY_REGISTERED 1
 #define GWEN_CRYPT_ERROR_NOT_REGISTERED     2
@@ -83,6 +84,7 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_CryptImpl_Fini();
 /*@}*/
+
 
 
 typedef struct GWEN_CRYPTKEY GWEN_CRYPTKEY;

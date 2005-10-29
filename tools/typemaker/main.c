@@ -46,44 +46,49 @@
 
 
 int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
-		   GWEN_BUFFEREDIO *bio) {
+                   GWEN_BUFFEREDIO *bio,
+		   const char *where) {
   int isSys;
   GWEN_ERRORCODE err;
   const char *d;
   GWEN_XMLNODE *dn;
+  const char *nwhere;
 
-  dn=GWEN_XMLNode_GetFirstData(node);
-  if (!dn) {
-    DBG_ERROR(0, "Empty <header>");
-    return -1;
-  }
-  d=GWEN_XMLNode_GetData(dn);
-  if (!d) {
-    DBG_ERROR(0, "Empty <header>");
-    return -1;
-  }
-  isSys=(strcasecmp(GWEN_XMLNode_GetProperty(node, "type", ""),
-		    "sys")==0);
-
-  err=GWEN_BufferedIO_Write(bio, "#include ");
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  if (isSys) {
-    err=GWEN_BufferedIO_Write(bio, "<");
+  nwhere=GWEN_XMLNode_GetProperty(node, "out", "header");
+  if (strcasecmp(nwhere, where)==0) {
+    dn=GWEN_XMLNode_GetFirstData(node);
+    if (!dn) {
+      DBG_ERROR(0, "Empty <header>");
+      return -1;
+    }
+    d=GWEN_XMLNode_GetData(dn);
+    if (!d) {
+      DBG_ERROR(0, "Empty <header>");
+      return -1;
+    }
+    isSys=(strcasecmp(GWEN_XMLNode_GetProperty(node, "type", ""),
+		      "sys")==0);
+  
+    err=GWEN_BufferedIO_Write(bio, "#include ");
     if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  }
-  else {
-    err=GWEN_BufferedIO_Write(bio, "\"");
+    if (isSys) {
+      err=GWEN_BufferedIO_Write(bio, "<");
+      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    }
+    else {
+      err=GWEN_BufferedIO_Write(bio, "\"");
+      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    }
+    err=GWEN_BufferedIO_Write(bio, d);
     if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  }
-  err=GWEN_BufferedIO_Write(bio, d);
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  if (isSys) {
-    err=GWEN_BufferedIO_WriteLine(bio, ">");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
-  }
-  else {
-    err=GWEN_BufferedIO_WriteLine(bio, "\"");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (isSys) {
+      err=GWEN_BufferedIO_WriteLine(bio, ">");
+      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    }
+    else {
+      err=GWEN_BufferedIO_WriteLine(bio, "\"");
+      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    }
   }
 
   return 0;

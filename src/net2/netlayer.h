@@ -84,8 +84,23 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerResult_fromString(const char *s);
 const char *GWEN_NetLayerResult_toString(GWEN_NETLAYER_RESULT res);
 
 
+/**
+ * This is the prototype for the callback function which asks the user
+ * for a password.
+ * @param nl GWEN_NetLayer involved
+ * @param buffer destination buffer for the password
+ * @param num size of the password buffer
+ * @param rwflag if 1 then the password is to be created (in this case
+ * the function should let the user verify the password before writing
+ * it into the buffer).
+ */
+typedef int (*GWEN_NETLAYER_GETPASSWD_FN)(GWEN_NETLAYER *nl,
+                                          char *buffer, int num,
+                                          int rwflag);
+
 
 typedef GWEN_NETLAYER_RESULT (*GWEN_NETLAYER_WORK_FN)(GWEN_NETLAYER *nl);
+
 
 typedef int (*GWEN_NETLAYER_READ_FN)(GWEN_NETLAYER *nl,
                                      char *buffer,
@@ -157,6 +172,8 @@ void GWEN_NetLayer_SetPeerAddr(GWEN_NETLAYER *nl,
 int GWEN_NetLayer_GetBackLog(const GWEN_NETLAYER *nl);
 void GWEN_NetLayer_SetBackLog(GWEN_NETLAYER *nl, int i);
 
+void GWEN_NetLayer_SetGetPasswordFn(GWEN_NETLAYER *nl,
+                                    GWEN_NETLAYER_GETPASSWD_FN f);
 
 void GWEN_NetLayer_SetWorkFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_WORK_FN f);
 void GWEN_NetLayer_SetReadFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_READ_FN f);
@@ -191,6 +208,12 @@ void GWEN_NetLayer_SetCheckInPacketFn(GWEN_NETLAYER *nl,
  * block (and thus needs to wait for IO to occurr on this object).
  */
 /*@{*/
+
+int GWEN_NetLayer_GetPassword(GWEN_NETLAYER *nl,
+                              char *buffer, int num,
+                              int rwflag);
+
+
 GWEN_NETLAYER_RESULT GWEN_NetLayer_Work(GWEN_NETLAYER *nl);
 
 int GWEN_NetLayer_Read(GWEN_NETLAYER *nl,

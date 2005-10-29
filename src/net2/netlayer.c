@@ -128,6 +128,19 @@ const char *GWEN_NetLayerResult_toString(GWEN_NETLAYER_RESULT res) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_GetPassword(GWEN_NETLAYER *nl,
+                              char *buffer, int num,
+                              int rwflag) {
+  assert(nl);
+  if (nl->getPasswordFn)
+    return nl->getPasswordFn(nl, buffer, num, rwflag);
+  else
+    return GWEN_ERROR_UNSUPPORTED;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_NETLAYER_RESULT GWEN_NetLayer_Work(GWEN_NETLAYER *nl) {
   assert(nl);
   assert(nl->workFn);
@@ -655,6 +668,15 @@ int GWEN_NetLayer_CheckInPacket(GWEN_NETLAYER *nl) {
   if (nl->checkInPacketFn)
     return nl->checkInPacketFn(nl);
   return GWEN_ERROR_UNSUPPORTED;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetLayer_SetGetPasswordFn(GWEN_NETLAYER *nl,
+                                    GWEN_NETLAYER_GETPASSWD_FN f) {
+  assert(nl);
+  nl->getPasswordFn=f;
 }
 
 
@@ -1244,11 +1266,6 @@ GWEN_NETLAYER_RESULT GWEN_NetLayer_Walk(GWEN_NETLAYER_LIST *nll,
   res=GWEN_NetLayer__WorkAll(nll);
   return res;
 }
-
-
-
-
-
 
 
 

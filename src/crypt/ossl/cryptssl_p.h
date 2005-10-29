@@ -29,22 +29,7 @@
 #ifndef GWENHYWFAR_CRYPTSSL_P_H
 #define GWENHYWFAR_CRYPTSSL_P_H
 
-
-#define GWEN_CRYPT_RSA_DEFAULT_KEY_LENGTH  1024
-#define GWEN_CRYPT_RSA_MAX_KEY_LENGTH      4096
-#define GWEN_CRYPT_RSA_DEFAULT_EXPONENT    65537
-
-
-#include <gwenhywfar/crypt.h>
-#include <stdio.h>
-
-#include <openssl/bn.h>
-
-
-GWEN_ERRORCODE GWEN_CryptImpl_Init();
-GWEN_ERRORCODE GWEN_CryptImpl_Fini();
-
-void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent);
+#include "cryptssl_l.h"
 
 
 #endif

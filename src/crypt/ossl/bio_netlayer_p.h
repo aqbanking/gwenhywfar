@@ -2,8 +2,8 @@
  $RCSfile$
  -------------------
  cvs         : $Id$
- begin       : Thu Nov 06 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Wed May 05 2004
+ copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,27 +26,21 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_CRYPT_L_H
-#define GWENHYWFAR_CRYPT_L_H
+#ifndef GWEN_BIO_NETLAYER_P_H
+#define GWEN_BIO_NETLAYER_P_H
+
+#include "bio_netlayer_l.h"
 
 
-#include <gwenhywfar/crypt.h>
-
-GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_Crypt_ModuleInit();
-
-GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_Crypt_ModuleFini();
-
-GWENHYWFAR_API
-  long int GWEN_Random();
+int BIO_netlayer_write(BIO *bio, const char *out, int outl);
+int BIO_netlayer_read(BIO *bio, char *in, int inl);
+int BIO_netlayer_puts(BIO *bio, const char *str);
+int BIO_netlayer_create(BIO *bio);
+int BIO_netlayer_destroy(BIO *bio);
+long BIO_netlayer_ctrl(BIO *bio, int cmd, long num, void *ptr);
 
 
-/* always exports the public key */
-int GWEN_Crypt_KeyToDb(const GWEN_CRYPTKEY *key, GWEN_DB_NODE *db);
 
-
-#endif /* GWENHYWFAR_CRYPT_L_H */
-
+#endif /* GWEN_BIO_NETLAYER_P_H */
 
 

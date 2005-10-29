@@ -1,4 +1,24 @@
 
+2005/10/29: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- typemaker: added property "out" to "header" element (if value is "source"
+  then the corresponding include will be written to the created source file,
+  otherwise it will be written to the created header files).
+  Possible values: "header", "source"
+- implemented GWEN_NetLayerSsl (will replace GWEN_NetTransportSSL)
+  Tested the following chains:
+  - NetLayerSocket
+  - NetLayerHttp->NetLayerSocket
+  - NetLayerSsl->NetLayerSocket
+  - NetLayerHttp->NetLayerSsl->NetLayerSocket
+- src/crypt/*: added definition for structs which deal with SSL certificates
+  and SSL ciphers. No longer use GWEN_DB_NODE for those things, because
+  the tool typemaker makes it too easy to create real classes instead of the
+  ugly hack with GWEN_DB_NODEs :-)
+  - GWEN_SslCipher    : Cipher description (name, bits, description etc)
+  - GWEN_SslCertDescr : representation of an SSL certificate
+
+
 2005/10/27: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - started rewriting network code

@@ -49,7 +49,6 @@
 static int gwen_crypt_is_initialized=0;
 static GWEN_ERRORTYPEREGISTRATIONFORM *gwen_crypt_errorform=0;
 
-
 static GWEN_CRYPTKEY_PROVIDER *gwen_crypt_providers=0;
 
 #define GWEN_RANDSTATE_BUFSIZE 256
@@ -167,6 +166,8 @@ GWEN_ERRORCODE GWEN_Crypt_ModuleFini(){
   }
   return 0;
 }
+
+
 
 
 
@@ -976,6 +977,12 @@ void GWEN_CryptKey_List2_freeAll(GWEN_CRYPTKEY_LIST2 *stl) {
     GWEN_CryptKey_List2_ForEach(stl, GWEN_CryptKey_List2__freeAll_cb, 0);
     GWEN_CryptKey_List2_free(stl); 
   }
+}
+
+
+
+int GWEN_Crypt_KeyToDb(const GWEN_CRYPTKEY *key, GWEN_DB_NODE *db) {
+  return GWEN_CryptKey_ToDb(key, db, 1);
 }
 
 

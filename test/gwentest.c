@@ -21,6 +21,7 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/nettransportsock.h>
 #include <gwenhywfar/nettransportssl.h>
+#include <gwenhywfar/nl_ssl.h>
 #include <gwenhywfar/netconnection.h>
 #include <gwenhywfar/netconnectionhttp.h>
 #include <gwenhywfar/httpsession.h>
@@ -5342,6 +5343,169 @@ int testNlHttpAccept1(int argc, char **argv) {
 
 
 
+GWEN_NL_SSL_ASKADDCERT_RESULT _nlAskAddCert(GWEN_NETLAYER *nl,
+                                            const GWEN_SSLCERTDESCR *cd,
+                                            void *user_data) {
+  GWEN_DB_NODE *dbCert;
+
+  dbCert=GWEN_DB_Group_new("cert");
+  GWEN_SslCertDescr_toDb(cd, dbCert);
+  fprintf(stderr, "Got this certificate:");
+  GWEN_DB_Dump(dbCert, stderr, 2);
+  GWEN_DB_Group_free(dbCert);
+  return GWEN_NetTransportSSL_AskAddCertResultTmp;
+}
+
+
+
+int testNlSslConnect1(int argc, char **argv) {
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  int rv;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  GWEN_InetAddr_SetAddress(addr, "192.168.115.1");
+  GWEN_InetAddr_SetPort(addr, 443);
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerSsl_new(baseLayer,
+                          "trusted",
+                          "newtrusted",
+                          0, //"lancelot.crt",
+                          "dh_1024.pem",
+                          0);
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_NetLayerSSL_SetAskAddCertFn(nl, _nlAskAddCert, 0);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  /* create connection layer */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testNlSslConnect2(int argc, char **argv) {
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nlssl, *nl;
+  int rv;
+  const char *tstr;
+  char buffer[4096];
+  int bsize;
+  GWEN_URL *url;
+  GWEN_BUFFER *rbuf;
+  GWEN_DB_NODE *dbT;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+  const char *urlString;
+  const char *outFile=0;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelVerbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+
+  if (argc<4) {
+    fprintf(stderr, "%s %s URL FILE\n", argv[0], argv[1]);
+    return 1;
+  }
+  outFile=argv[3];
+  urlString=argv[2];
+
+  url=GWEN_Url_fromString(urlString);
+  assert(url);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  err=GWEN_InetAddr_SetAddress(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err))
+    err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  GWEN_InetAddr_SetPort(addr, GWEN_Url_GetPort(url));
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nlssl=GWEN_NetLayerSsl_new(baseLayer,
+                             "trusted",
+                             "newtrusted",
+                             0, //"lancelot.crt",
+                             "dh_1024.pem",
+                             0);
+  GWEN_NetLayer_free(baseLayer);
+  GWEN_NetLayerSSL_SetAskAddCertFn(nlssl, _nlAskAddCert, 0);
+
+  nl=GWEN_NetLayerHttp_new(nlssl);
+  GWEN_NetLayer_free(nlssl);
+
+  GWEN_Net2_AddConnectionToPool(nl);
+
+  /* connect */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  fd=open(outFile, O_CREAT | O_WRONLY);
+  if (fd==-1) {
+    fprintf(stderr, "Could not create outFile\n");
+    return 2;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  rv=GWEN_NetLayerHttp_Request(nl, "GET", url,
+                               0, /* dbHeader */
+                               0, 0, /* body */
+                               bio);
+  fprintf(stderr, "INFO: Result of request: %d\n", rv);
+  if (rv<0) {
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    return 3;
+  }
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 3;
+  }
+  GWEN_BufferedIO_free(bio);
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -5502,6 +5666,10 @@ int main(int argc, char **argv) {
     rv=testNlHttpConnect4(argc, argv);
   else if (strcasecmp(argv[1], "nlhttpaccept1")==0)
     rv=testNlHttpAccept1(argc, argv);
+  else if (strcasecmp(argv[1], "nlsslconnect1")==0)
+    rv=testNlSslConnect1(argc, argv);
+  else if (strcasecmp(argv[1], "nlsslconnect2")==0)
+    rv=testNlSslConnect2(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

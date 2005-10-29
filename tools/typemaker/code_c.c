@@ -2719,6 +2719,7 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   GWEN_ERRORCODE err;
   const char *id;
   const char *prefix;
+  GWEN_XMLNODE *n;
 
   id=get_struct_property(node, "id", 0);
   if (!id) {
@@ -2785,6 +2786,18 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   GWEN_BufferedIO_WriteLine(bio, "#include <assert.h>");
   GWEN_BufferedIO_WriteLine(bio, "#include <stdlib.h>");
   GWEN_BufferedIO_WriteLine(bio, "#include <strings.h>");
+  GWEN_BufferedIO_WriteLine(bio, "");
+
+  /* write headers */
+  n=GWEN_XMLNode_FindFirstTag(node, "headers", 0, 0);
+  if (n) {
+    n=GWEN_XMLNode_FindFirstTag(n, "header", 0, 0);
+    while(n) {
+      write_h_header(args, n, bio, "source");
+      n=GWEN_XMLNode_FindNextTag(n, "header", 0, 0);
+    }
+  }
+
   GWEN_BufferedIO_WriteLine(bio, "");
   GWEN_BufferedIO_WriteLine(bio, "");
 

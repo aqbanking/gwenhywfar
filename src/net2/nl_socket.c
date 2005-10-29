@@ -237,6 +237,7 @@ int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl){
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_SOCKET, nl);
+  assert(nld);
 
   /* check status */
   st=GWEN_NetLayer_GetStatus(nl);
@@ -245,8 +246,7 @@ int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl){
       st==GWEN_NetLayerStatus_Disabled) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Socket is inactive: %s (%d)",
-              GWEN_NetLayerStatus_toString(GWEN_NetLayer_GetStatus(nl)),
-              GWEN_NetLayer_GetStatus(nl));
+              GWEN_NetLayerStatus_toString(st), st);
     return GWEN_ERROR_INVALID;
   }
 

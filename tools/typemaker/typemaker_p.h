@@ -18,7 +18,8 @@ int write_h_setget_c(ARGUMENTS *args,
                      const char *acc);
 
 int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
-                   GWEN_BUFFEREDIO *bio);
+                   GWEN_BUFFEREDIO *bio,
+                   const char *where);
 
 int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
                   GWEN_BUFFEREDIO *bio, const char *acc);

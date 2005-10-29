@@ -1,0 +1,21 @@
+
+<types>
+  <type id="GWEN_SSLCIPHER" 
+        prefix="GWEN_SslCipher"
+        class="SslCipher"
+        access="public"
+        filename="ssl_cipher"
+        list="public"
+        list2="public" >
+    <headers>
+    </headers>
+    
+    <elem name="name" type="char" ptr="1" />
+    <elem name="version" type="char" ptr="1" />
+    <elem name="description" type="char" ptr="1" />
+    <elem name="bits" type="int" />
+  </type>
+  
+  
+  
+</types>
