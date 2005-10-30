@@ -57,6 +57,12 @@ GWEN_NETLAYER *GWEN_NetLayerHttp_new(GWEN_NETLAYER *baseLayer) {
   GWEN_NetLayer_SetStatus(nl, GWEN_NetLayer_GetStatus(baseLayer));
   GWEN_NetLayer_SetParentLayer(baseLayer, nl);
 
+  GWEN_NetLayer_SetLocalAddr(nl, GWEN_NetLayer_GetLocalAddr(baseLayer));
+  GWEN_NetLayer_SetPeerAddr(nl, GWEN_NetLayer_GetPeerAddr(baseLayer));
+
+  /* this protocol is packet based */
+  GWEN_NetLayer_AddFlags(nl, GWEN_NETLAYER_FLAGS_PKG_BASED);
+
   GWEN_NetLayer_SetWorkFn(nl, GWEN_NetLayerHttp_Work);
   GWEN_NetLayer_SetReadFn(nl, GWEN_NetLayerHttp_Read);
   GWEN_NetLayer_SetWriteFn(nl, GWEN_NetLayerHttp_Write);
@@ -166,6 +172,7 @@ int GWEN_NetLayerHttp_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
     lsize=nld->inChunkSize-nld->inChunkRead;
     if (*bsize<lsize)
       lsize=*bsize;
+
     rv=GWEN_NetLayer_Read(baseLayer, buffer, &lsize);
     if (rv==0) {
       *bsize=lsize;
@@ -543,6 +550,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
 
       /* read next char */
       memset(buffer, 0, sizeof(buffer));
+
       bsize=1;
       rv=GWEN_NetLayer_Read(baseLayer, buffer, &bsize);
       if (rv==1)
@@ -741,9 +749,6 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
       GWEN_NETLAYER *newNlHttp;
 
       newNlHttp=GWEN_NetLayerHttp_new(newNl);
-      GWEN_NetLayer_SetLocalAddr(newNlHttp,
-                                 GWEN_NetLayer_GetLocalAddr(newNl));
-      GWEN_NetLayer_SetPeerAddr(newNlHttp, GWEN_NetLayer_GetPeerAddr(newNl));
       GWEN_NetLayer_AddFlags(newNlHttp, GWEN_NETLAYER_FLAGS_PASSIVE);
       GWEN_NetLayer_free(newNl);
       GWEN_NetLayer_AddIncomingLayer(nl, newNlHttp);
@@ -792,11 +797,19 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
 
 int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   GWEN_NL_HTTP *nld;
+  GWEN_NETLAYER *baseLayer;
   int rv;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
   assert(nld);
+
+  baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
+  assert(baseLayer);
+
+  rv=GWEN_NetLayer_BeginOutPacket(baseLayer, -1);
+  if (rv && rv!=GWEN_ERROR_UNSUPPORTED)
+    return rv;
 
   GWEN_Buffer_Reset(nld->outBuffer);
   nld->outBodySize=totalSize;
@@ -874,6 +887,13 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   /* append an empty line (marks the end of the header) */
   GWEN_Buffer_AppendString(nld->outBuffer, "\r\n");
 
+  /* the outbody size is now known, set it */
+  if (totalSize!=-1) {
+    GWEN_NetLayer_SetOutBodySize(baseLayer,
+                                 GWEN_Buffer_GetUsedBytes(nld->outBuffer)+
+                                 totalSize);
+  }
+
   DBG_NOTICE(GWEN_LOGDOMAIN, "Outgoing packet started");
   GWEN_Buffer_Rewind(nld->outBuffer);
   GWEN_Buffer_Dump(nld->outBuffer, stderr, 2);
@@ -884,15 +904,31 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
 
 int GWEN_NetLayerHttp_EndOutPacket(GWEN_NETLAYER *nl) {
   GWEN_NL_HTTP *nld;
+  GWEN_NETLAYER *baseLayer;
+  int rv;
+  int done=0;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
   assert(nld);
 
-  if (GWEN_Buffer_GetBytesLeft(nld->outBuffer)) {
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Still data to write");
-    return 1; /* would block, needs work */
+  baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
+  assert(baseLayer);
+
+  if (GWEN_Buffer_GetBytesLeft(nld->outBuffer)==0) {
+    rv=GWEN_NetLayer_EndOutPacket(baseLayer);
+    DBG_INFO(GWEN_LOGDOMAIN, "Result of base->endOutPacket: %d", rv);
+    if (rv<0 && rv!=GWEN_ERROR_UNSUPPORTED)
+      return rv;
+    if (rv!=1)
+      done++;
   }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "More data to be written");
+  }
+
+  if (done==0)
+    return 1;
 
   return 0;
 }
@@ -953,10 +989,19 @@ void GWEN_NetLayerHttp_BaseStatusChange(GWEN_NETLAYER *nl,
 
 int GWEN_NetLayerHttp_BeginInPacket(GWEN_NETLAYER *nl) {
   GWEN_NL_HTTP *nld;
+  GWEN_NETLAYER *baseLayer;
+  int rv;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
   assert(nld);
+
+  baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
+  assert(baseLayer);
+
+  rv=GWEN_NetLayer_BeginInPacket(baseLayer);
+  if (rv && rv!=GWEN_ERROR_UNSUPPORTED)
+    return rv;
 
   if (GWEN_NetLayer_GetFlags(nl) & GWEN_NETLAYER_FLAGS_PASSIVE) {
     nld->inMode=GWEN_NetLayerHttpInMode_ReadCommand;
@@ -967,7 +1012,7 @@ int GWEN_NetLayerHttp_BeginInPacket(GWEN_NETLAYER *nl) {
 
   GWEN_Buffer_Reset(nld->inBuffer);
   GWEN_DB_ClearGroup(nld->dbInHeader, 0);
-  nld->inBodySize=0;
+  nld->inBodySize=-1;
   nld->inBodyRead=0;
   free(nld->inCommand);
   nld->inCommand=0;

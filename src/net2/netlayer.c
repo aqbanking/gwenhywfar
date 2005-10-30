@@ -151,7 +151,22 @@ GWEN_NETLAYER_RESULT GWEN_NetLayer_Work(GWEN_NETLAYER *nl) {
 
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetLayer_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize) {
+  int rv;
+
   assert(nl);
+
+  /* check whether layer is prepared to read body */
+  rv=GWEN_NetLayer_CheckInPacket(nl);
+  if (rv<0 && rv!=GWEN_ERROR_UNSUPPORTED) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  if (rv==0) {
+    /* EOF */
+    *bsize=0;
+    return 0;
+  }
+
   if (nl->readFn)
     return nl->readFn(nl, buffer, bsize);
   return GWEN_ERROR_UNSUPPORTED;
@@ -555,6 +570,7 @@ void GWEN_NetLayer_BaseStatusChange(GWEN_NETLAYER *nl,
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetLayer_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   assert(nl);
+  nl->outBodySize=totalSize;
   if (nl->beginOutPacketFn)
     return nl->beginOutPacketFn(nl, totalSize);
   return GWEN_ERROR_UNSUPPORTED;
@@ -655,6 +671,7 @@ int GWEN_NetLayer_EndOutPacket_Wait(GWEN_NETLAYER *nl, int timeout) {
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetLayer_BeginInPacket(GWEN_NETLAYER *nl) {
   assert(nl);
+  nl->inBodySize=-1;
   if (nl->beginInPacketFn)
     return nl->beginInPacketFn(nl);
   return GWEN_ERROR_UNSUPPORTED;
@@ -824,6 +841,8 @@ void GWEN_NetLayer_free(GWEN_NETLAYER *nl) {
       GWEN_InetAddr_free(nl->peerAddr);
       GWEN_InetAddr_free(nl->localAddr);
       GWEN_NetLayer_List_free(nl->incomingLayers);
+      if (nl->baseLayer)
+        nl->baseLayer->parentLayer=0;
       GWEN_NetLayer_free(nl->baseLayer);
       free(nl->typeName);
       DBG_MEM_DEC("GWEN_NETLAYER");
@@ -842,6 +861,14 @@ void GWEN_NetLayer_Attach(GWEN_NETLAYER *nl) {
   assert(nl->usage);
   DBG_MEM_INC("GWEN_NETLAYER", 1);
   nl->usage++;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+const char *GwenNetLayer_GetTypeName(const GWEN_NETLAYER *nl) {
+  assert(nl);
+  return nl->typeName;
 }
 
 
@@ -1134,6 +1161,38 @@ void GWEN_NetLayer_SetBackLog(GWEN_NETLAYER *nl, int i) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_GetInBodySize(const GWEN_NETLAYER *nl) {
+  assert(nl);
+  return nl->inBodySize;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetLayer_SetInBodySize(GWEN_NETLAYER *nl, int i) {
+  assert(nl);
+  nl->inBodySize=i;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_GetOutBodySize(const GWEN_NETLAYER *nl) {
+  assert(nl);
+  return nl->outBodySize;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetLayer_SetOutBodySize(GWEN_NETLAYER *nl, int i) {
+  assert(nl);
+  nl->outBodySize=i;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_NETLAYER_RESULT GWEN_NetLayer__Wait(GWEN_NETLAYER_LIST *nll,
                                          int timeout) {
   GWEN_NETLAYER *nl;
@@ -1269,7 +1328,21 @@ GWEN_NETLAYER_RESULT GWEN_NetLayer_Walk(GWEN_NETLAYER_LIST *nll,
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
+GWEN_NETLAYER *GWEN_NetLayer_FindBaseLayer(const GWEN_NETLAYER *nl,
+					   const char *tname) {
+  GWEN_NETLAYER *x;
 
+  assert(nl);
+  x=nl->baseLayer;
+  while(x) {
+    if (strcasecmp(x->typeName, tname)==0)
+      break;
+    x=x->baseLayer;
+  } /* while */
+
+  return x;
+}
 
 
 

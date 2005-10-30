@@ -1,4 +1,13 @@
 
+2005/10/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added GWEN_NetLayerHbci:
+  This is to be used by AqHBCI. It determines the size of incoming messages
+  and also encodes/decodes them to/from BASE64 if requested.
+  This layer only handles the transport of HBCI messages, it neither parses
+  nor generates HBCI messages.
+
+
 2005/10/29: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - typemaker: added property "out" to "header" element (if value is "source"

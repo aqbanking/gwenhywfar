@@ -26,66 +26,35 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_NETLAYER_P_H
-#define GWEN_NETLAYER_P_H
+#ifndef GWEN_NL_HBCI_H
+#define GWEN_NL_HBCI_H
 
-#include "netlayer_l.h"
-
-#define GWEN_NETLAYER_CPU_TIMEOUT 200
-
-
-struct GWEN_NETLAYER {
-  GWEN_INHERIT_ELEMENT(GWEN_NETLAYER)
-  GWEN_LIST_ELEMENT(GWEN_NETLAYER)
-
-  char *typeName;
-  GWEN_NETLAYER_STATUS status;
-  time_t lastStatusChange;
-
-  GWEN_TYPE_UINT32 flags;
-
-  GWEN_NETLAYER_LIST *incomingLayers;
-
-  GWEN_NETLAYER *baseLayer;
-  GWEN_NETLAYER *parentLayer;
-
-  GWEN_NETLAYER_GETPASSWD_FN getPasswordFn;
-
-  GWEN_NETLAYER_WORK_FN workFn;
-  GWEN_NETLAYER_READ_FN readFn;
-  GWEN_NETLAYER_WRITE_FN writeFn;
-
-  GWEN_NETLAYER_CONNECT_FN connectFn;
-  GWEN_NETLAYER_DISCONNECT_FN disconnectFn;
-  GWEN_NETLAYER_LISTEN_FN listenFn;
-
-  GWEN_NETLAYER_ADDSOCKETS_FN addSocketsFn;
-  GWEN_NETLAYER_BASESTATUS_CHG_FN baseStatusChangeFn;
-
-  GWEN_NETLAYER_BEGIN_OUT_PACKET_FN beginOutPacketFn;
-  GWEN_NETLAYER_END_OUT_PACKET_FN endOutPacketFn;
-  GWEN_NETLAYER_BEGIN_IN_PACKET_FN beginInPacketFn;
-  GWEN_NETLAYER_CHECK_IN_PACKET_FN checkInPacketFn;
-
-  GWEN_INETADDRESS *localAddr;
-  GWEN_INETADDRESS *peerAddr;
-
-  int backLog;
-
-  int inBodySize;
-  int outBodySize;
-
-  int usage;
-};
+#include <gwenhywfar/netlayer.h>
+#include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/url.h>
 
 
-GWEN_NETLAYER_RESULT GWEN_NetLayer__Wait(GWEN_NETLAYER_LIST *nll,
-                                         int timeout);
+#define GWEN_NL_HBCI_NAME "Hbci"
 
-GWEN_NETLAYER_RESULT GWEN_NetLayer__WorkAll(GWEN_NETLAYER_LIST *nll);
+/**
+ * If this flag is given then written messages are encoded in BASE64 before
+ * sending them via the next lower layer. Received messages will be checked
+ * whether they are BASE64 encoded and will be decoded transparently as
+ * needed.
+ */
+#define GWEN_NL_HBCI_FLAGS_BASE64   0x00000001
 
 
+/*
+ * This module handles sending and reception of HBCI mesages via any
+ * other netlayer.
+ */
 
-#endif /* GWEN_NETLAYER_P_H */
+
+GWEN_NETLAYER *GWEN_NetLayerHbci_new(GWEN_NETLAYER *baseLayer);
+
+
+#endif /* GWEN_NL_HBCI_H */
 
 

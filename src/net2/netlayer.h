@@ -44,14 +44,23 @@ typedef struct GWEN_NETLAYER GWEN_NETLAYER;
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_NETLAYER, GWEN_NetLayer, GWENHYWFAR_API)
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_NETLAYER, GWENHYWFAR_API)
 
-#define GWEN_NETLAYER_FLAGS_EOFMET     0x00010000
-#define GWEN_NETLAYER_FLAGS_BROKENPIPE 0x00020000
-#define GWEN_NETLAYER_FLAGS_WANTREAD   0x00040000
-#define GWEN_NETLAYER_FLAGS_WANTWRITE  0x00080000
-#define GWEN_NETLAYER_FLAGS_PASSIVE    0x00100000
-#define GWEN_NETLAYER_FLAGS_PKG_BASED  0x00200000
-#define GWEN_NETLAYER_FLAGS_INPKG      0x00400000
-#define GWEN_NETLAYER_FLAGS_OUTPKG     0x00800000
+/** @name Flags
+ *
+ * The upper 16 bits of the flags are used by this module. The lower 16 bits
+ * can be used by each inheriting netlayer. These bits are considered specific
+ * to the inheriting netlayers, so e.g. bit 0 might have a different meaning
+ * for HTTP netlayers than it does for HBCI netlayers.
+ */
+/*@{*/
+#define GWEN_NETLAYER_FLAGS_EOFMET     0x80000000
+#define GWEN_NETLAYER_FLAGS_BROKENPIPE 0x40000000
+#define GWEN_NETLAYER_FLAGS_WANTREAD   0x20000000
+#define GWEN_NETLAYER_FLAGS_WANTWRITE  0x10000000
+#define GWEN_NETLAYER_FLAGS_PASSIVE    0x08000000
+#define GWEN_NETLAYER_FLAGS_PKG_BASED  0x04000000
+#define GWEN_NETLAYER_FLAGS_INPKG      0x02000000
+#define GWEN_NETLAYER_FLAGS_OUTPKG     0x01000000
+/*@}*/
 
 
 #define GWEN_NETLAYER_DEF_BACKLOG 10
@@ -137,6 +146,8 @@ GWEN_NETLAYER *GWEN_NetLayer_new(const char *typeName);
 void GWEN_NetLayer_free(GWEN_NETLAYER *nl);
 void GWEN_NetLayer_Attach(GWEN_NETLAYER *nl);
 
+const char *GwenNetLayer_GetTypeName(const GWEN_NETLAYER *nl);
+
 GWEN_NETLAYER_STATUS GWEN_NetLayer_GetStatus(const GWEN_NETLAYER *nl);
 void GWEN_NetLayer_SetStatus(GWEN_NETLAYER *nl, GWEN_NETLAYER_STATUS st);
 time_t GWEN_NetLayer_GetLastStatusChangeTime(const GWEN_NETLAYER *nl);
@@ -171,6 +182,13 @@ void GWEN_NetLayer_SetPeerAddr(GWEN_NETLAYER *nl,
 
 int GWEN_NetLayer_GetBackLog(const GWEN_NETLAYER *nl);
 void GWEN_NetLayer_SetBackLog(GWEN_NETLAYER *nl, int i);
+
+int GWEN_NetLayer_GetInBodySize(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetInBodySize(GWEN_NETLAYER *nl, int i);
+
+int GWEN_NetLayer_GetOutBodySize(const GWEN_NETLAYER *nl);
+void GWEN_NetLayer_SetOutBodySize(GWEN_NETLAYER *nl, int i);
+
 
 void GWEN_NetLayer_SetGetPasswordFn(GWEN_NETLAYER *nl,
                                     GWEN_NETLAYER_GETPASSWD_FN f);
@@ -261,8 +279,15 @@ int GWEN_NetLayer_EndOutPacket(GWEN_NETLAYER *nl);
 int GWEN_NetLayer_EndOutPacket_Wait(GWEN_NETLAYER *nl, int timeout);
 
 int GWEN_NetLayer_BeginInPacket(GWEN_NETLAYER *nl);
+/**
+ * @return <0 on error, 1 if there still is body data, 0 if not
+ */
 int GWEN_NetLayer_CheckInPacket(GWEN_NETLAYER *nl);
 /*@}*/
+
+
+GWEN_NETLAYER *GWEN_NetLayer_FindBaseLayer(const GWEN_NETLAYER *nl,
+                                           const char *tname);
 
 
 

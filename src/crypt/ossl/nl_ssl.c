@@ -86,6 +86,7 @@ GWEN_NETLAYER *GWEN_NetLayerSsl_new(GWEN_NETLAYER *baseLayer,
 
   GWEN_NetLayer_SetBaseLayer(nl, baseLayer);
   GWEN_NetLayer_SetParentLayer(baseLayer, nl);
+
   GWEN_NetLayer_SetLocalAddr(nl, GWEN_NetLayer_GetLocalAddr(baseLayer));
   GWEN_NetLayer_SetPeerAddr(nl, GWEN_NetLayer_GetPeerAddr(baseLayer));
 
@@ -1646,9 +1647,6 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSsl_Work(GWEN_NETLAYER *nl) {
                                     nld->ownCertFile,
                                     nld->dhFolder,
                                     nld->secure);
-      GWEN_NetLayer_SetLocalAddr(newNlSsl,
-                                 GWEN_NetLayer_GetLocalAddr(newNl));
-      GWEN_NetLayer_SetPeerAddr(newNlSsl, GWEN_NetLayer_GetPeerAddr(newNl));
       GWEN_NetLayer_AddFlags(newNlSsl, GWEN_NETLAYER_FLAGS_PASSIVE);
       GWEN_NetLayer_SetStatus(newNlSsl, GWEN_NetLayerStatus_Connecting);
       GWEN_NetLayerSsl_SetMode(newNlSsl, GWEN_NetLayerSslMode_PConnected);
