@@ -4841,8 +4841,8 @@ int testNlHttpConnect1(int argc, char **argv) {
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
   GWEN_NETLAYER *baseLayer, *nl;
-  char buffer[4096];
-  int bsize;
+/*   char buffer[4096]; */
+/*   int bsize; */
   int rv;
   GWEN_URL *url;
 
@@ -5034,7 +5034,6 @@ int testNlHttpConnect3(int argc, char **argv) {
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
   GWEN_NETLAYER *baseLayer, *nl;
-  const char *tstr;
   char buffer[4096];
   int bsize;
   int rv;
@@ -5184,13 +5183,8 @@ int testNlHttpConnect4(int argc, char **argv) {
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
   GWEN_NETLAYER *baseLayer, *nl;
-  const char *tstr;
-  char buffer[4096];
-  int bsize;
   int rv;
   GWEN_URL *url;
-  GWEN_BUFFER *rbuf;
-  GWEN_DB_NODE *dbT;
   GWEN_ERRORCODE err;
   GWEN_BUFFEREDIO *bio;
   int fd;
@@ -5467,12 +5461,7 @@ int testNlSslConnect2(int argc, char **argv) {
   GWEN_INETADDRESS *addr;
   GWEN_NETLAYER *baseLayer, *nlssl, *nl;
   int rv;
-  const char *tstr;
-  char buffer[4096];
-  int bsize;
   GWEN_URL *url;
-  GWEN_BUFFER *rbuf;
-  GWEN_DB_NODE *dbT;
   GWEN_ERRORCODE err;
   GWEN_BUFFEREDIO *bio;
   int fd;
