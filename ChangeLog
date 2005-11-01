@@ -1,4 +1,9 @@
 
+2005/11/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed a fprintf() from netlayer.c
+
+
 2005/10/31: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added functions to GWEN_NetLayer:

@@ -1409,7 +1409,6 @@ int GWEN_NetLayer_RecvPacket(GWEN_NETLAYER *nl, GWEN_BUFFER *mbuf,
     else
       tLeft=timeout;
     rv=GWEN_NetLayer_CheckInPacket(nl);
-    fprintf(stderr, "Check-Result: %d\n", rv);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error checking packet (%d)", rv);
       return rv;
