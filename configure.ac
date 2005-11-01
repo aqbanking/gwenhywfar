@@ -263,6 +263,7 @@ case "$OS_TYPE" in
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
         PROG_LIBRARIES="-L/mingw/lib ${PROG_LIBRARIES}"
+	all_libraries="${all_libraries} -lregex -lwsock32"
     	;;
     *)
     	AC_MSG_ERROR(**** Unknown operating system type)

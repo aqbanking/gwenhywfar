@@ -87,7 +87,7 @@ dnl Windoze systems
          break
       fi
    done
-   ssl_lib="-llibeay32 -llibssl32"
+   ssl_lib="-leay32 -lssl32"
    AC_MSG_RESULT($ssl_libraries ${ssl_lib})
 fi
 
