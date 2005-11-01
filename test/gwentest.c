@@ -1215,6 +1215,62 @@ int testBase64_2(int argc, char **argv) {
 
 
 
+int testBase64_3(int argc, char **argv) {
+  GWEN_BUFFER *dst;
+  GWEN_BUFFER *src;
+  FILE *f;
+  char buffer[1024];
+  int i;
+
+  if (argc<2) {
+    fprintf(stderr, "Name of a file needed\n");
+    return 1;
+  }
+
+  dst=GWEN_Buffer_new(0, 600000, 0, 1);
+  src=GWEN_Buffer_new(0, 600000, 0, 1);
+  f=fopen(argv[2], "r");
+  if (!f) {
+    perror(argv[2]);
+    return 1;
+  }
+  while(!feof(f)) {
+    i=fread(buffer, 1, sizeof(buffer), f);
+    if (i<1) {
+      perror("fread");
+      return 2;
+    }
+    GWEN_Buffer_AppendBytes(src, buffer, i);
+  } /* while */
+  fclose(f);
+
+  if (GWEN_Base64_Decode(/* GCC4 pointer-signedness fix: */ (unsigned char*)GWEN_Buffer_GetStart(src),
+                         0,
+                         dst)) {
+    fprintf(stderr, "Error decoding file.\n");
+    return 3;
+  }
+
+  f=fopen("base64.out.bin", "w+");
+  if (!f) {
+    perror(argv[2]);
+    return 1;
+  }
+  if (fwrite(GWEN_Buffer_GetStart(dst),
+             GWEN_Buffer_GetUsedBytes(dst), 1, f)!=1) {
+    perror("fwrite");
+    return 4;
+  }
+  if (fclose(f)) {
+    perror("fclose");
+    return 4;
+  }
+
+  return 0;
+}
+
+
+
 int testHTTPc(int argc, char **argv) {
   GWEN_NETTRANSPORT *tr;
   GWEN_SOCKET *sk;
@@ -5384,7 +5440,7 @@ int testNlSslConnect1(int argc, char **argv) {
                           0);
   GWEN_NetLayer_free(baseLayer);
 
-  GWEN_NetLayerSSL_SetAskAddCertFn(nl, _nlAskAddCert, 0);
+  GWEN_NetLayerSsl_SetAskAddCertFn(nl, _nlAskAddCert, 0);
 
   GWEN_Net2_AddConnectionToPool(nl);
 
@@ -5458,7 +5514,7 @@ int testNlSslConnect2(int argc, char **argv) {
                              "dh_1024.pem",
                              0);
   GWEN_NetLayer_free(baseLayer);
-  GWEN_NetLayerSSL_SetAskAddCertFn(nlssl, _nlAskAddCert, 0);
+  GWEN_NetLayerSsl_SetAskAddCertFn(nlssl, _nlAskAddCert, 0);
 
   nl=GWEN_NetLayerHttp_new(nlssl);
   GWEN_NetLayer_free(nlssl);

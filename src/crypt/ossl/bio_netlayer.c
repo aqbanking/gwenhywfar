@@ -77,7 +77,7 @@ BIO *BIO_netlayer_new(GWEN_NETLAYER *nl){
 
 
 int BIO_netlayer_create(BIO *bio) {
-  DBG_INFO(GWEN_LOGDOMAIN, "BIO method: Create");
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Create");
   bio->init=1;
   bio->num=0;
   bio->flags=0;
@@ -87,7 +87,7 @@ int BIO_netlayer_create(BIO *bio) {
 
 
 int BIO_netlayer_destroy(BIO *bio){
-  DBG_INFO(GWEN_LOGDOMAIN, "BIO method: Destroy");
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Destroy");
   if (bio) {
     GWEN_NETLAYER *nl;
 
@@ -108,7 +108,7 @@ int BIO_netlayer_destroy(BIO *bio){
 
 
 int BIO_netlayer_read(BIO *bio, char *in, int inl){
-  DBG_INFO(GWEN_LOGDOMAIN, "BIO method: Read(%d)", inl);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Read(%d)", inl);
   if (in!=NULL) {
     GWEN_NETLAYER *nl;
     int bsize;
@@ -141,7 +141,7 @@ int BIO_netlayer_read(BIO *bio, char *in, int inl){
 
 
 int BIO_netlayer_write(BIO *bio, const char *out, int outl){
-  DBG_INFO(GWEN_LOGDOMAIN, "BIO method: Write(%d)", outl);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Write(%d)", outl);
   if (out!=NULL) {
     GWEN_NETLAYER *nl;
     int bsize;
@@ -176,7 +176,7 @@ int BIO_netlayer_write(BIO *bio, const char *out, int outl){
 long BIO_netlayer_ctrl(BIO *bio, int cmd, long num, void *ptr){
   long rv=1;
 
-  DBG_INFO(GWEN_LOGDOMAIN, "BIO method: Ctl(%d, %li)", cmd, num);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Ctl(%d, %li)", cmd, num);
   switch (cmd){
 
   case BIO_C_GET_FD:
@@ -215,7 +215,7 @@ long BIO_netlayer_ctrl(BIO *bio, int cmd, long num, void *ptr){
 int BIO_netlayer_puts(BIO *bp, const char *str){
   int l, rv;
 
-  DBG_INFO(GWEN_LOGDOMAIN, "BIO method: Puts(\"%s\")", str);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Puts(\"%s\")", str);
   l=strlen(str);
   rv=BIO_netlayer_write(bp, str, l);
   if (rv) {

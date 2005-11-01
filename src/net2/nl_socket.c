@@ -277,6 +277,8 @@ int GWEN_NetLayerSocket_Read(GWEN_NETLAYER *nl,
   GWEN_NL_SOCKET *nld;
   GWEN_ERRORCODE err;
 
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading %d bytes", *bsize);
+
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_SOCKET, nl);
   assert(nld);
@@ -382,7 +384,7 @@ int GWEN_NetLayerSocket_AddSockets(GWEN_NETLAYER *nl,
   flags=GWEN_NetLayer_GetFlags(nl);
 
   if (flags & GWEN_NETLAYER_FLAGS_WANTREAD) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Adding socket to readSet");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding socket to readSet");
     err=GWEN_SocketSet_AddSocket(readSet, nld->socket);
     if (!GWEN_Error_IsOk(err)) {
       DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
@@ -391,7 +393,7 @@ int GWEN_NetLayerSocket_AddSockets(GWEN_NETLAYER *nl,
   }
 
   if (flags & GWEN_NETLAYER_FLAGS_WANTWRITE) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Adding socket to writeSet");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding socket to writeSet");
     err=GWEN_SocketSet_AddSocket(writeSet, nld->socket);
     if (!GWEN_Error_IsOk(err)) {
       DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
@@ -415,8 +417,8 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSocket_Work(GWEN_NETLAYER *nl) {
   assert(nld);
 
   st=GWEN_NetLayer_GetStatus(nl);
-  DBG_INFO(GWEN_LOGDOMAIN, "Working with status \"%s\" (%d)",
-           GWEN_NetLayerStatus_toString(st), st);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Working with status \"%s\" (%d)",
+              GWEN_NetLayerStatus_toString(st), st);
 
   switch(st) {
 

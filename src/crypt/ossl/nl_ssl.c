@@ -291,8 +291,8 @@ int GWEN_NetLayerSsl_Setup(GWEN_NETLAYER *nl) {
   SSL_set_tmp_dh_callback(nld->ssl, GWEN_NetLayerSsl_tmp_dh_callback);
 
   if (nld->cipherList) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Setting cipher list to \"%s\"",
-             nld->cipherList);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Setting cipher list to \"%s\"",
+              nld->cipherList);
     SSL_set_cipher_list(nld->ssl, nld->cipherList);
   }
 
@@ -339,7 +339,7 @@ int GWEN_NetLayerSsl_Connect(GWEN_NETLAYER *nl) {
 
   nld->mode=GWEN_NetLayerSslMode_PConnecting;
   rv=GWEN_NetLayer_Connect(baseLayer);
-  DBG_INFO(GWEN_LOGDOMAIN, "Result of BaseLayer Connect: %d", rv);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Result of BaseLayer Connect: %d", rv);
   if (rv<0) {
     GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disabled);
     nld->mode=GWEN_NetLayerSslMode_Idle;
@@ -419,6 +419,8 @@ int GWEN_NetLayerSsl_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
+
+  assert(*bsize>=0);
 
   /* check status */
   st=GWEN_NetLayer_GetStatus(nl);
@@ -510,7 +512,7 @@ int GWEN_NetLayerSsl_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
   if (getenv("GWEN_SSL_DEBUG")) {
     FILE *f;
 
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Saving...");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Saving...");
     f=fopen("/tmp/read.bin", "a+");
     if (!f) {
       DBG_ERROR(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
@@ -629,8 +631,8 @@ int GWEN_NetLayerSsl_Write(GWEN_NETLAYER *nl, const char *buffer,int *bsize) {
   if (getenv("GWEN_SSL_DEBUG")) {
     FILE *f;
 
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Saving...");
-    f=fopen("/tmp/read.bin", "a+");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Saving...");
+    f=fopen("/tmp/written.bin", "a+");
     if (!f) {
       DBG_ERROR(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
     }
@@ -712,20 +714,20 @@ void GWEN_NetLayerSsl_InfoCallBack(SSL *s, int where, int ret){
     str="undefined";
 
   if (where & SSL_CB_LOOP){
-    DBG_INFO(GWEN_LOGDOMAIN,"%s: %s", str, SSL_state_string_long(s));
+    DBG_DEBUG(GWEN_LOGDOMAIN,"%s: %s", str, SSL_state_string_long(s));
   }
   else if (where & SSL_CB_ALERT){
     str=(where & SSL_CB_READ)?"read":"write";
-    DBG_INFO(GWEN_LOGDOMAIN, "SSL3 alert %s: %s: %s",
-             str,
-             SSL_alert_type_string_long(ret),
-             SSL_alert_desc_string_long(ret));
+    DBG_DEBUG(GWEN_LOGDOMAIN, "SSL3 alert %s: %s: %s",
+              str,
+              SSL_alert_type_string_long(ret),
+              SSL_alert_desc_string_long(ret));
   }
   else if (where & SSL_CB_EXIT){
     if (ret==0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "%s: failed in \"%s\"",
-               str,
-               SSL_state_string_long(s));
+      DBG_DEBUG(GWEN_LOGDOMAIN, "%s: failed in \"%s\"",
+                str,
+                SSL_state_string_long(s));
     }
     else if (ret<0){
       DBG_DEBUG(GWEN_LOGDOMAIN, "%s: error in \"%s\"",
@@ -744,12 +746,12 @@ int GWEN_NetLayerSsl_VerifyCallBack(int preverify_ok,
 
   err=X509_STORE_CTX_get_error(ctx);
   if (!preverify_ok) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Verify error %d: \"%s\"",
-             err, X509_verify_cert_error_string(err));
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Verify error %d: \"%s\"",
+              err, X509_verify_cert_error_string(err));
     if (err==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
         err==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
         err==X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Unknown certificate, will not abort yet");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Unknown certificate, will not abort yet");
       return 1;
     }
   }
@@ -1105,7 +1107,6 @@ int GWEN_NetLayerSsl_HandleInCert(GWEN_NETLAYER *nl, X509 *cert) {
   assert(nld);
 
   certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
-
   DBG_INFO(GWEN_LOGDOMAIN, "Got a certificate: %s", certbuf);
 
   /* setup certificate */
@@ -1269,9 +1270,9 @@ int GWEN_NetLayerSsl_HandleInCert(GWEN_NETLAYER *nl, X509 *cert) {
 
   /* ask user */
   isErr=0;
-  DBG_INFO(GWEN_LOGDOMAIN,
-           "Unknown certificate \"%s\", asking user",
-           certbuf);
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+            "Unknown certificate \"%s\", asking user",
+            certbuf);
   res=GWEN_NetLayerSsl_AskAddCert(nl, cd);
 
   switch(res) {
@@ -1333,7 +1334,7 @@ int GWEN_NetLayerSsl_HandleInCert(GWEN_NETLAYER *nl, X509 *cert) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_NetLayerSSL_SetAskAddCertFn(GWEN_NETLAYER *nl,
+void GWEN_NetLayerSsl_SetAskAddCertFn(GWEN_NETLAYER *nl,
                                       GWEN_NL_SSL_ASKADDCERT_FN fn,
                                       void *user_data) {
   GWEN_NL_SSL *nld;
@@ -1392,9 +1393,9 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSsl_Work(GWEN_NETLAYER *nl) {
   assert(baseLayer);
 
   res=GWEN_NetLayer_Work(baseLayer);
-  DBG_INFO(GWEN_LOGDOMAIN,
-           "Result of BaseLayer work: %s",
-           GWEN_NetLayerResult_toString(res));
+  DBG_VERBOUS(GWEN_LOGDOMAIN,
+              "Result of BaseLayer work: %s",
+              GWEN_NetLayerResult_toString(res));
   if (res==GWEN_NetLayerResult_Error) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return res;

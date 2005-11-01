@@ -269,7 +269,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
   assert(bf);
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
   /*if (bf->pos+size>bf->bufferSize) {*/
-  if (bf->bytesUsed+size > bf->bufferSize) {
+  if (bf->bytesUsed+(size+1) > bf->bufferSize) {
     /* need to realloc */
     GWEN_TYPE_UINT32 nsize;
     GWEN_TYPE_UINT32 noffs;
@@ -289,7 +289,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
     reserved=bf->ptr-bf->realPtr;
     /* this is the raw number of bytes we need */
     /*nsize=bf->pos+size-bf->bufferSize;*/
-    nsize=bf->bytesUsed+size-bf->bufferSize;
+    nsize=bf->bytesUsed+(size+1)-bf->bufferSize;
     /* round it up */
     nsize=(nsize+(bf->step-1));
     nsize&=~(bf->step-1);

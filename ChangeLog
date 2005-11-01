@@ -1,4 +1,15 @@
 
+2005/10/31: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions to GWEN_NetLayer:
+  - GWEN_NetLayer_RecvPacket()
+  - GWEN_NetLayer_SendPacket()
+  - GWEN_NetLayer_RecvPacketBio()
+  - GWEN_NetLayer_SendPacketBio() (this is now used for HTTP requests)
+- fixed a bug in nl_http.c (error in handling of chunked transfers)
+- AqHBCI now works with the latest changes !!
+
+
 2005/10/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added GWEN_NetLayerHbci:

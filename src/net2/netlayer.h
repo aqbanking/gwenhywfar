@@ -35,6 +35,8 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/inetaddr.h>
 #include <gwenhywfar/inetsocket.h>
+#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/bufferedio.h>
 
 #include <time.h>
 
@@ -289,6 +291,19 @@ int GWEN_NetLayer_CheckInPacket(GWEN_NETLAYER *nl);
 GWEN_NETLAYER *GWEN_NetLayer_FindBaseLayer(const GWEN_NETLAYER *nl,
                                            const char *tname);
 
+
+int GWEN_NetLayer_RecvPacket(GWEN_NETLAYER *nl, GWEN_BUFFER *mbuf,
+                             int timeout);
+int GWEN_NetLayer_RecvPacketBio(GWEN_NETLAYER *nl,
+                                GWEN_BUFFEREDIO *bio,
+                                int timeout);
+
+int GWEN_NetLayer_SendPacket(GWEN_NETLAYER *nl,
+                             const char *dPtr, int dLen,
+                             int timeout);
+int GWEN_NetLayer_SendPacketBio(GWEN_NETLAYER *nl,
+                                GWEN_BUFFEREDIO *bio,
+                                int timeout);
 
 
 #endif /* GWEN_NETLAYER_H */

@@ -24,6 +24,7 @@ iheader_HEADERS=\
  md.h \
  padd.h \
  nettransportssl.h \
+ nl_ssl.h \
  ssl_cipher.h \
  ssl_cert_descr.h
 

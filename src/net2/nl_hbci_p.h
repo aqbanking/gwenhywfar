@@ -45,6 +45,7 @@ typedef enum {
   GWEN_NetLayerHbciInMode_ReadMsg,
   GWEN_NetLayerHbciInMode_HasMsg,
   GWEN_NetLayerHbciInMode_Done,
+  GWEN_NetLayerHbciInMode_ReadError,
   GWEN_NetLayerHbciInMode_Aborted
 } GWEN_NL_HBCI_INMODE;
 
@@ -66,6 +67,7 @@ struct GWEN_NL_HBCI {
   GWEN_BUFFER *inBuffer;
   int inBodyRead;
   int inIsBase64;
+  int inHttpStatusCode;
 
   /* outgoing */
   GWEN_NL_HBCI_OUTMODE outMode;

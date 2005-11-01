@@ -157,8 +157,13 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
           src++;
       }
       if (!*src) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Premature end reached");
-        return -1;
+        if (i==0 && !sizeGiven) {
+          return 0;
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Premature end reached (%d)", i);
+          return -1;
+        }
       }
       if (*src=='=')
         lastWasEq=1;

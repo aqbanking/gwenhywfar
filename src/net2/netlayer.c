@@ -203,6 +203,12 @@ int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
     GWEN_NETLAYER_STATUS st;
     GWEN_NETLAYER_RESULT res;
     double d;
+    int lsize;
+
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      return GWEN_ERROR_USER_ABORTED;
+    }
 
     st=GWEN_NetLayer_GetStatus(nl);
     if (st!=GWEN_NetLayerStatus_Connected) {
@@ -211,13 +217,16 @@ int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
       return GWEN_ERROR_GENERIC;
     }
 
-    rv=GWEN_NetLayer_Read(nl, buffer, bsize);
+    lsize=*bsize;
+    rv=GWEN_NetLayer_Read(nl, buffer, &lsize);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-    else if (rv==0)
+    else if (rv==0) {
+      *bsize=lsize;
       return rv;
+    }
 
     res=GWEN_Net2_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
@@ -297,6 +306,11 @@ int GWEN_NetLayer_Write_Wait(GWEN_NETLAYER *nl,
     GWEN_NETLAYER_STATUS st;
     GWEN_NETLAYER_RESULT res;
     double d;
+
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      return GWEN_ERROR_USER_ABORTED;
+    }
 
     st=GWEN_NetLayer_GetStatus(nl);
     if (st!=GWEN_NetLayerStatus_Connected) {
@@ -394,6 +408,11 @@ int GWEN_NetLayer_Connect_Wait(GWEN_NETLAYER *nl, int timeout) {
     GWEN_NETLAYER_RESULT res;
     double d;
 
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      return GWEN_ERROR_USER_ABORTED;
+    }
+
     st=GWEN_NetLayer_GetStatus(nl);
     if (st==GWEN_NetLayerStatus_Connected)
       return 0;
@@ -485,6 +504,11 @@ int GWEN_NetLayer_Disconnect_Wait(GWEN_NETLAYER *nl, int timeout) {
     GWEN_NETLAYER_STATUS st;
     GWEN_NETLAYER_RESULT res;
     double d;
+
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      return GWEN_ERROR_USER_ABORTED;
+    }
 
     st=GWEN_NetLayer_GetStatus(nl);
     if (st==GWEN_NetLayerStatus_Disconnected)
@@ -616,6 +640,11 @@ int GWEN_NetLayer_EndOutPacket_Wait(GWEN_NETLAYER *nl, int timeout) {
     GWEN_NETLAYER_RESULT res;
     double d;
 
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      return GWEN_ERROR_USER_ABORTED;
+    }
+
     st=GWEN_NetLayer_GetStatus(nl);
     if (st!=GWEN_NetLayerStatus_Connected) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad status of netlayer: %s",
@@ -682,6 +711,7 @@ int GWEN_NetLayer_BeginInPacket(GWEN_NETLAYER *nl) {
 /* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetLayer_CheckInPacket(GWEN_NETLAYER *nl) {
   assert(nl);
+  assert(nl->usage);
   if (nl->checkInPacketFn)
     return nl->checkInPacketFn(nl);
   return GWEN_ERROR_UNSUPPORTED;
@@ -845,6 +875,7 @@ void GWEN_NetLayer_free(GWEN_NETLAYER *nl) {
         nl->baseLayer->parentLayer=0;
       GWEN_NetLayer_free(nl->baseLayer);
       free(nl->typeName);
+      nl->usage=0;
       DBG_MEM_DEC("GWEN_NETLAYER");
       GWEN_FREE_OBJECT(nl);
     }
@@ -967,6 +998,11 @@ GWEN_NETLAYER *GWEN_NetLayer_GetIncomingLayer_Wait(GWEN_NETLAYER *nl,
     GWEN_NETLAYER_RESULT res;
     GWEN_NETLAYER *newNl;
     double d;
+
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      return 0;
+    }
 
     st=GWEN_NetLayer_GetStatus(nl);
     if (st!=GWEN_NetLayerStatus_Listening) {
@@ -1343,6 +1379,309 @@ GWEN_NETLAYER *GWEN_NetLayer_FindBaseLayer(const GWEN_NETLAYER *nl,
 
   return x;
 }
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_RecvPacket(GWEN_NETLAYER *nl, GWEN_BUFFER *mbuf,
+			     int timeout) {
+  static char buffer[512];
+  int bsize;
+  int rv;
+  time_t startt;
+  int tLeft;
+
+  startt=time(0);
+
+  rv=GWEN_NetLayer_BeginInPacket(nl);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not start to read (%d)", rv);
+    return rv;
+  }
+
+  for (;;) {
+    if (timeout!=GWEN_NET2_TIMEOUT_NONE &&
+	timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+      tLeft=timeout-(difftime(time(0), startt));
+      if (tLeft<1)
+	tLeft=1;
+    }
+    else
+      tLeft=timeout;
+    rv=GWEN_NetLayer_CheckInPacket(nl);
+    fprintf(stderr, "Check-Result: %d\n", rv);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error checking packet (%d)", rv);
+      return rv;
+    }
+    else if (rv==1) {
+      bsize=sizeof(buffer)-1;
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Reading %d bytes", bsize);
+      rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, tLeft);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not read (%d)", rv);
+        return rv;
+      }
+      else if (rv==1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not read due to a timeout");
+        return GWEN_ERROR_TIMEOUT;
+      }
+      else {
+        if (bsize==0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "INFO: EOF met");
+	  break;
+	}
+        else {
+          buffer[bsize]=0;
+	  if (bsize) {
+	    GWEN_Buffer_AppendBytes(mbuf, buffer, bsize);
+	  }
+	}
+      }
+    }
+    else
+      break;
+  } /* for */
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Packet received");
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_SendPacket(GWEN_NETLAYER *nl,
+			     const char *dPtr, int dLen,
+			     int timeout) {
+  int rv;
+  time_t startt;
+  int tLeft;
+
+  startt=time(0);
+
+  rv=GWEN_NetLayer_BeginOutPacket(nl, dLen);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not begin packet (%d)", rv);
+    return rv;
+  }
+  if (dLen>0) {
+    const char *p;
+    int bLeft;
+
+    p=dPtr;
+    bLeft=dLen;
+    while(bLeft>0) {
+      int bsize;
+
+      if (timeout!=GWEN_NET2_TIMEOUT_NONE &&
+	  timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+	tLeft=timeout-(difftime(time(0), startt));
+	if (tLeft<1)
+	  tLeft=1;
+      }
+      else
+        tLeft=timeout;
+
+      bsize=bLeft;
+      rv=GWEN_NetLayer_Write_Wait(nl, p, &bsize, tLeft);
+      if (rv) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not write (%d)", rv);
+	return rv;
+      }
+      bLeft-=bsize;
+      p+=bsize;
+    } /* while */
+  }
+
+  if (timeout!=GWEN_NET2_TIMEOUT_NONE &&
+      timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+    tLeft=timeout-(difftime(time(0), startt));
+    if (tLeft<1)
+      tLeft=1;
+  }
+  else
+    tLeft=timeout;
+
+  rv=GWEN_NetLayer_EndOutPacket_Wait(nl, tLeft);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not end packet (%d)", rv);
+    return rv;
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Packet sent.");
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_RecvPacketBio(GWEN_NETLAYER *nl,
+                                GWEN_BUFFEREDIO *bio,
+				int timeout) {
+  static char buffer[512];
+  int bsize;
+  int rv;
+  time_t startt;
+  int tLeft;
+  GWEN_ERRORCODE err;
+
+  startt=time(0);
+
+  rv=GWEN_NetLayer_BeginInPacket(nl);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not start to read (%d)", rv);
+    return rv;
+  }
+
+  for (;;) {
+    if (timeout!=GWEN_NET2_TIMEOUT_NONE &&
+	timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+      tLeft=timeout-(difftime(time(0), startt));
+      if (tLeft<1)
+	tLeft=1;
+    }
+    else
+      tLeft=timeout;
+    rv=GWEN_NetLayer_CheckInPacket(nl);
+    DBG_INFO(GWEN_LOGDOMAIN, "Check-Result: %d", rv);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error checking packet (%d)", rv);
+      return rv;
+    }
+    else if (rv==1) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Reading");
+      bsize=sizeof(buffer);
+      rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, tLeft);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not read (%d)", rv);
+        return rv;
+      }
+      else if (rv==1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not read due to a timeout");
+        return GWEN_ERROR_TIMEOUT;
+      }
+      else {
+        if (bsize==0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "INFO: EOF met");
+	  break;
+	}
+        else {
+	  if (bsize) {
+            const char *p;
+            int wLeft;
+
+            wLeft=bsize;
+            p=buffer;
+            while(wLeft) {
+              unsigned int wsize;
+
+              wsize=wLeft;
+              err=GWEN_BufferedIO_WriteRaw(bio, p, &wsize);
+              if (!GWEN_Error_IsOk(err)) {
+                DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+                return GWEN_Error_GetSimpleCode(err);
+              }
+              p+=wsize;
+              wLeft-=wsize;
+	    } /* while */
+	  }
+	}
+      }
+    }
+    else
+      break;
+  } /* for */
+
+  err=GWEN_BufferedIO_Flush(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    return GWEN_Error_GetSimpleCode(err);
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Packet received");
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_SendPacketBio(GWEN_NETLAYER *nl,
+				GWEN_BUFFEREDIO *bio,
+				int timeout) {
+  int rv;
+  time_t startt;
+  int tLeft;
+  char buffer[512];
+
+  startt=time(0);
+
+  rv=GWEN_NetLayer_BeginOutPacket(nl, -1); /* size unknown */
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not begin packet (%d)", rv);
+    return rv;
+  }
+
+  for (;;) {
+    unsigned int rsize;
+    int wsize;
+    const char *p;
+    GWEN_ERRORCODE err;
+
+    /* read from BIO */
+    rsize=sizeof(buffer);
+    err=GWEN_BufferedIO_ReadRaw(bio, buffer, &rsize);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+      return GWEN_Error_GetSimpleCode(err);
+    }
+    if (rsize==0)
+      break;
+
+    /* write to netlayer */
+    p=buffer;
+    wsize=rsize;
+    while(wsize>0) {
+      int bsize;
+
+      if (timeout!=GWEN_NET2_TIMEOUT_NONE &&
+	  timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+	tLeft=timeout-(difftime(time(0), startt));
+	if (tLeft<1)
+	  tLeft=1;
+      }
+      else
+	tLeft=timeout;
+
+      bsize=wsize;
+      rv=GWEN_NetLayer_Write_Wait(nl, p, &bsize, tLeft);
+      if (rv) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not write (%d)", rv);
+	return rv;
+      }
+      wsize-=bsize;
+      p+=bsize;
+    } /* while */
+  }
+
+  if (timeout!=GWEN_NET2_TIMEOUT_NONE &&
+      timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+    tLeft=timeout-(difftime(time(0), startt));
+    if (tLeft<1)
+      tLeft=1;
+  }
+  else
+    tLeft=timeout;
+
+  rv=GWEN_NetLayer_EndOutPacket_Wait(nl, tLeft);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not end packet (%d)", rv);
+    return rv;
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Packet sent.");
+  return 0;
+}
+
 
 
 

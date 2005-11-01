@@ -58,7 +58,7 @@ typedef GWEN_NL_SSL_ASKADDCERT_RESULT
                              void *user_data);
 
 GWENHYWFAR_API
-void GWEN_NetLayerSSL_SetAskAddCertFn(GWEN_NETLAYER *nl,
+void GWEN_NetLayerSsl_SetAskAddCertFn(GWEN_NETLAYER *nl,
                                       GWEN_NL_SSL_ASKADDCERT_FN fn,
                                       void *user_data);
 
