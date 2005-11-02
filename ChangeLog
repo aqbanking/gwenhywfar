@@ -2,6 +2,8 @@
 2005/11/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed a fprintf() from netlayer.c
+- added nl_packets.{c,h}: This is a simple layer which enqueues incoming and
+  outgoing packets.
 
 
 2005/10/31: Martin Preuss<martin@libchipcard.de>
