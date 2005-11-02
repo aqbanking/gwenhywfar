@@ -157,6 +157,9 @@ AC_ENABLE_SHARED(yes)
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
+
+#AC_LIBTOOL_WIN32_DLL
+#^^ -- enable this when libtool is verified to build the correct win32 DLL.
 AC_PROG_LIBTOOL
 AC_PROG_AWK
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
