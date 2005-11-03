@@ -66,9 +66,13 @@ typedef struct GWEN_REFPTR GWEN_REFPTR;
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_REFPTR *GWEN_RefPtr_new(void *dp, GWEN_REFPTR_INFO *rpi);
+GWENHYWFAR_API
 GWEN_REFPTR *GWEN_RefPtr_dup(const GWEN_REFPTR *rp);
+GWENHYWFAR_API
 GWEN_REFPTR *GWEN_RefPtr_copy(const GWEN_REFPTR *rp);
+GWENHYWFAR_API
 void GWEN_RefPtr_free(GWEN_REFPTR *rp);
 /*@}*/
 
@@ -76,7 +80,9 @@ void GWEN_RefPtr_free(GWEN_REFPTR *rp);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void *GWEN_RefPtr_GetData(const GWEN_REFPTR *rp);
+GWENHYWFAR_API
 void GWEN_RefPtr_SetData(GWEN_REFPTR *rp, void *dp, GWEN_REFPTR_INFO *rpi);
 /*@}*/
 
@@ -85,9 +91,13 @@ void GWEN_RefPtr_SetData(GWEN_REFPTR *rp, void *dp, GWEN_REFPTR_INFO *rpi);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RefPtr_GetFlags(const GWEN_REFPTR *rp);
+GWENHYWFAR_API
 void GWEN_RefPtr_SetFlags(GWEN_REFPTR *rp, GWEN_TYPE_UINT32 fl);
+GWENHYWFAR_API
 void GWEN_RefPtr_AddFlags(GWEN_REFPTR *rp, GWEN_TYPE_UINT32 fl);
+GWENHYWFAR_API
 void GWEN_RefPtr_DelFlags(GWEN_REFPTR *rp, GWEN_TYPE_UINT32 fl);
 /*@}*/
 
@@ -107,8 +117,11 @@ void GWEN_RefPtr_DelFlags(GWEN_REFPTR *rp, GWEN_TYPE_UINT32 fl);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new();
+GWENHYWFAR_API
 void GWEN_RefPtrInfo_free(GWEN_REFPTR_INFO *rpi);
+GWENHYWFAR_API
 void GWEN_RefPtrInfo_Attach(GWEN_REFPTR_INFO *rpi);
 /*@}*/
 
@@ -120,9 +133,13 @@ void GWEN_RefPtrInfo_Attach(GWEN_REFPTR_INFO *rpi);
  * following.
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_RefPtrInfo_GetFlags(const GWEN_REFPTR_INFO *rpi);
+GWENHYWFAR_API
 void GWEN_RefPtrInfo_SetFlags(GWEN_REFPTR_INFO *rpi, GWEN_TYPE_UINT32 fl);
+GWENHYWFAR_API
 void GWEN_RefPtrInfo_AddFlags(GWEN_REFPTR_INFO *rpi, GWEN_TYPE_UINT32 fl);
+GWENHYWFAR_API
 void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, GWEN_TYPE_UINT32 fl);
 /*@}*/
 
@@ -140,8 +157,10 @@ typedef void* (*GWEN_REFPTR_INFO_DUP_FN)(void *dp);
  *
  */
 /*@{*/
+GWENHYWFAR_API
 void GWEN_RefPtrInfo_SetFreeFn(GWEN_REFPTR_INFO *rpi,
                                GWEN_REFPTR_INFO_FREE_FN f);
+GWENHYWFAR_API
 void GWEN_RefPtrInfo_SetDupFn(GWEN_REFPTR_INFO *rpi,
                               GWEN_REFPTR_INFO_DUP_FN f);
 

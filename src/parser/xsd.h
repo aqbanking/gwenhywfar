@@ -54,21 +54,26 @@ typedef const void* (*GWEN_XSD_GETBINVALUE_FN)(GWEN_XSD_ENGINE *e,
                                                unsigned int defValSize,
                                                unsigned int *returnValueSize);
 
+GWENHYWFAR_API
 GWEN_XSD_ENGINE *GWEN_XSD_new();
+GWENHYWFAR_API
 void GWEN_XSD_free(GWEN_XSD_ENGINE *e);
 
 
 
 
 
+GWENHYWFAR_API
 const char* GWEN_XSD_GetCharValue(GWEN_XSD_ENGINE *e,
                                   const char *path,
                                   int idx,
                                   const char *defVal);
+GWENHYWFAR_API
 int GWEN_XSD_GetIntValue(GWEN_XSD_ENGINE *e,
                          const char *path,
                          int idx,
                          int defVal);
+GWENHYWFAR_API
 const void *GWEN_XSD_GetBinValue(GWEN_XSD_ENGINE *e,
                                  const char *path,
                                  int idx,
@@ -76,29 +81,38 @@ const void *GWEN_XSD_GetBinValue(GWEN_XSD_ENGINE *e,
                                  unsigned int defValSize,
                                  unsigned int *returnValueSize);
 
+GWENHYWFAR_API
 int GWEN_XSD_ImportSchema(GWEN_XSD_ENGINE *e,
                           GWEN_XMLNODE *xmlNode,
                           const char *fname);
 
+GWENHYWFAR_API
 const char *GWEN_XSD_GetCurrentTargetNameSpace(const GWEN_XSD_ENGINE *e);
+GWENHYWFAR_API
 int GWEN_XSD_SetCurrentTargetNameSpace(GWEN_XSD_ENGINE *e, const char *s);
 
+GWENHYWFAR_API
 int GWEN_XSD_SetNamespace(GWEN_XSD_ENGINE *e,
                           const char *prefix,
                           const char *name,
                           const char *url,
                           const char *localUrl);
 
+GWENHYWFAR_API
 int GWEN_XSD_ImportStart(GWEN_XSD_ENGINE *e);
+GWENHYWFAR_API
 int GWEN_XSD_ImportEnd(GWEN_XSD_ENGINE *e);
 
 
+GWENHYWFAR_API
 int GWEN_XSD_ProfileToXml(GWEN_XSD_ENGINE *e,
                           GWEN_XMLNODE *n);
 
+GWENHYWFAR_API
 int GWEN_XSD_ProfileFromXml(GWEN_XSD_ENGINE *e,
                             GWEN_XMLNODE *nRoot);
 
+GWENHYWFAR_API
 int GWEN_XSD_GlobalizeNode(GWEN_XSD_ENGINE *e,
                            GWEN_XMLNODE *node);
 

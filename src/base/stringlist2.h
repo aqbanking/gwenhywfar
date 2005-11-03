@@ -49,8 +49,11 @@ typedef enum {
 } GWEN_STRINGLIST2_INSERTMODE;
 
 
+GWENHYWFAR_API
 GWEN_STRINGLIST2 *GWEN_StringList2_new();
+GWENHYWFAR_API
 void GWEN_StringList2_free(GWEN_STRINGLIST2 *sl2);
+GWENHYWFAR_API
 GWEN_STRINGLIST2 *GWEN_StringList2_dup(GWEN_STRINGLIST2 *sl2);
 
 
@@ -60,6 +63,7 @@ GWEN_STRINGLIST2 *GWEN_StringList2_dup(GWEN_STRINGLIST2 *sl2);
  * @param sl2 string list
  * @param i if 0 then cases are ignored
  */
+GWENHYWFAR_API
 void GWEN_StringList2_SetSenseCase(GWEN_STRINGLIST2 *sl2, int i);
 
 /**
@@ -69,6 +73,7 @@ void GWEN_StringList2_SetSenseCase(GWEN_STRINGLIST2 *sl2, int i);
  * @param sl2 string list
  * @param i if 0 then reference counters are honoured
  */
+GWENHYWFAR_API
 void GWEN_StringList2_SetIgnoreRefCount(GWEN_STRINGLIST2 *sl2, int i);
 
 /**
@@ -115,27 +120,35 @@ GWENHYWFAR_API int GWEN_StringList2_HasString(const GWEN_STRINGLIST2 *sl2,
 
 
 
+GWENHYWFAR_API
 GWEN_STRINGLIST2_ITERATOR *GWEN_StringList2_First(const GWEN_STRINGLIST2 *l);
 
 
+GWENHYWFAR_API
 GWEN_STRINGLIST2_ITERATOR *GWEN_StringList2_Last(const GWEN_STRINGLIST2 *l);
 
 
+GWENHYWFAR_API
 void GWEN_StringList2Iterator_free(GWEN_STRINGLIST2_ITERATOR *li);
 
 
+GWENHYWFAR_API
 const char *GWEN_StringList2Iterator_Previous(GWEN_STRINGLIST2_ITERATOR *li);
 
 
+GWENHYWFAR_API
 const char *GWEN_StringList2Iterator_Next(GWEN_STRINGLIST2_ITERATOR *li);
 
 
+GWENHYWFAR_API
 const char *GWEN_StringList2Iterator_Data(GWEN_STRINGLIST2_ITERATOR *li);
 
+GWENHYWFAR_API
 unsigned int
   GWEN_StringList2Iterator_GetLinkCount(const GWEN_STRINGLIST2_ITERATOR *li);
 
 
+GWENHYWFAR_API
 GWEN_REFPTR*
 GWEN_StringList2Iterator_DataRefPtr(GWEN_STRINGLIST2_ITERATOR *li);
 
