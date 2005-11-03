@@ -51,25 +51,33 @@ typedef enum {
 } GWEN_NETLAYER_HTTP_VERSION;
 
 
+GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayerHttp_new(GWEN_NETLAYER *baseLayer);
 
 
 
+GWENHYWFAR_API
 void GWEN_NetLayerHttp_SetOutCommand(GWEN_NETLAYER *nl,
                                      const char *command,
                                      const GWEN_URL *url);
 
+GWENHYWFAR_API
 void GWEN_NetLayerHttp_SetOutStatus(GWEN_NETLAYER *nl,
                                     int code,
                                     const char *text);
 
+GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_NetLayerHttp_GetOutHeader(const GWEN_NETLAYER *nl);
+GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_NetLayerHttp_GetInHeader(const GWEN_NETLAYER *nl);
 
+GWENHYWFAR_API
 int GWEN_NetLayerHttp_GetInStatusCode(const GWEN_NETLAYER *nl);
+GWENHYWFAR_API
 const char *GWEN_NetLayerHttp_GetInStatusText(const GWEN_NETLAYER *nl);
 
 
+GWENHYWFAR_API
 int GWEN_NetLayerHttp_Request(GWEN_NETLAYER *nl,
                               const char *command,
                               const GWEN_URL *url,

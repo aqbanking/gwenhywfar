@@ -52,6 +52,7 @@
  */
 
 
+GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayerHbci_new(GWEN_NETLAYER *baseLayer);
 
 

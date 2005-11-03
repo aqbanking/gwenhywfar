@@ -55,24 +55,37 @@ typedef struct GWEN_NL_PACKET GWEN_NL_PACKET;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_NL_PACKET, GWENHYWFAR_API)
 
 
+GWENHYWFAR_API
 GWEN_NL_PACKET *GWEN_NL_Packet_new();
+GWENHYWFAR_API
 void GWEN_NL_Packet_free(GWEN_NL_PACKET *pk);
+GWENHYWFAR_API
 void GWEN_NL_Packet_Attach(GWEN_NL_PACKET *pk);
 
+GWENHYWFAR_API
 GWEN_NL_PACKET_STATUS GWEN_NL_Packet_GetStatus(const GWEN_NL_PACKET *pk);
+GWENHYWFAR_API
 GWEN_BUFFER *GWEN_NL_Packet_GetBuffer(const GWEN_NL_PACKET *pk);
+GWENHYWFAR_API
 GWEN_BUFFER *GWEN_NL_Packet_TakeBuffer(GWEN_NL_PACKET *pk);
+GWENHYWFAR_API
 void GWEN_NL_Packet_SetBuffer(GWEN_NL_PACKET *pk, GWEN_BUFFER *buf);
 
 
+GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayerPackets_new(GWEN_NETLAYER *baseLayer);
 
+GWENHYWFAR_API
 int GWEN_NetLayerPackets_SendPacket(GWEN_NETLAYER *nl,
                                     GWEN_NL_PACKET *packet);
+GWENHYWFAR_API
 int GWEN_NetLayerPackets_Flush(GWEN_NETLAYER *nl, int timeout);
 
+GWENHYWFAR_API
 int GWEN_NetLayerPackets_HasNextPacket(const GWEN_NETLAYER *nl);
+GWENHYWFAR_API
 GWEN_NL_PACKET *GWEN_NetLayerPackets_GetNextPacket(GWEN_NETLAYER *nl);
+GWENHYWFAR_API
 GWEN_NL_PACKET *GWEN_NetLayerPackets_GetNextPacket_Wait(GWEN_NETLAYER *nl,
                                                         int timeout);
 

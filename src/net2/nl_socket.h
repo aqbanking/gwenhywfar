@@ -36,6 +36,7 @@
 #define GWEN_NL_SOCKET_NAME "Socket"
 
 
+GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayerSocket_new(GWEN_SOCKET *sk, int takeOver);
 
 
