@@ -610,7 +610,6 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
             return GWEN_NetLayerResult_Error;
           }
           GWEN_Buffer_Reset(nld->inBuffer);
-          GWEN_DB_Dump(nld->dbInHeader, stderr, 2);
           nld->inBodySize=-1;
           nld->inBodySize=GWEN_DB_GetIntValue(nld->dbInHeader,
                                               "Content-Length", 0,
@@ -772,6 +771,8 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
 
       newNlHttp=GWEN_NetLayerHttp_new(newNl);
       GWEN_NetLayer_AddFlags(newNlHttp, GWEN_NETLAYER_FLAGS_PASSIVE);
+      if (GWEN_NetLayer_GetFlags(nl) & GWEN_NL_HTTP_FLAGS_IPC)
+        GWEN_NetLayer_AddFlags(newNlHttp, GWEN_NL_HTTP_FLAGS_IPC);
       GWEN_NetLayer_free(newNl);
       GWEN_NetLayer_AddIncomingLayer(nl, newNlHttp);
       bres=GWEN_NetLayerResult_Changed;
@@ -838,7 +839,8 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   nld->outBodyWritten=0;
 
   /* prepare first line (either status or command) */
-  if (GWEN_NetLayer_GetFlags(nl) & GWEN_NETLAYER_FLAGS_PASSIVE) {
+  if ((GWEN_NetLayer_GetFlags(nl) & GWEN_NETLAYER_FLAGS_PASSIVE) &&
+      !(GWEN_NetLayer_GetFlags(nl) & GWEN_NL_HTTP_FLAGS_IPC)) {
     char numbuf[32];
 
     /* passive, prepare status line */
@@ -1022,7 +1024,8 @@ int GWEN_NetLayerHttp_BeginInPacket(GWEN_NETLAYER *nl) {
   if (rv && rv!=GWEN_ERROR_UNSUPPORTED)
     return rv;
 
-  if (GWEN_NetLayer_GetFlags(nl) & GWEN_NETLAYER_FLAGS_PASSIVE) {
+  if ((GWEN_NetLayer_GetFlags(nl) & GWEN_NETLAYER_FLAGS_PASSIVE) &&
+      !(GWEN_NetLayer_GetFlags(nl) & GWEN_NL_HTTP_FLAGS_IPC)) {
     nld->inMode=GWEN_NetLayerHttpInMode_ReadCommand;
   }
   else {
@@ -1055,7 +1058,7 @@ int GWEN_NetLayerHttp_CheckInPacket(GWEN_NETLAYER *nl) {
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
   assert(nld);
 
-  DBG_ERROR(GWEN_LOGDOMAIN, "Read mode (%d)", nld->inMode);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Read mode (%d)", nld->inMode);
 
   switch(nld->inMode) {
   case GWEN_NetLayerHttpInMode_Idle:

@@ -5,6 +5,11 @@ This current CVS version might not yet work with all libraries/programs which
 use Gwenhywfar! Do not install it on production systems !!
 =============================================================================
 
+2005/11/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- some fixes in network/IPC code (now works with Libchipcard2, so the IPC 
+  stuff now works again
+
 
 2005/11/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

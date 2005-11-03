@@ -1297,7 +1297,9 @@ int GWEN_IpcManager__HandlePacket(GWEN_IPCMANAGER *mgr,
     /* this is a new incoming request */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Got an incoming request (%08x)",
               msgId);
-    GWEN_DB_Dump(dbReq, stderr, 2);
+    if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+      GWEN_DB_Dump(dbReq, stderr, 2);
+    }
     m=GWEN_IpcMsg_new(n);
     m->db=dbReq;
     m->id=msgId;
@@ -1322,11 +1324,14 @@ int GWEN_IpcManager__Work(GWEN_IPCMANAGER *mgr) {
   n=GWEN_IpcNode_List_First(mgr->nodes);
   while(n) {
     GWEN_IPCNODE *next;
+#if 0
     GWEN_NETLAYER_STATUS st;
+#endif
 
     next=GWEN_IpcNode_List_Next(n);
     DBG_DEBUG(GWEN_LOGDOMAIN, "Checking node");
 
+#if 0
     st=GWEN_NetLayer_GetStatus(n->netLayer);
     if (st==GWEN_NetLayerStatus_Disabled) {
       DBG_INFO(GWEN_LOGDOMAIN,
@@ -1347,6 +1352,7 @@ int GWEN_IpcManager__Work(GWEN_IPCMANAGER *mgr) {
 	}
       }
     }
+#endif
 
     if (n->isServer) {
       GWEN_NETLAYER *nl;

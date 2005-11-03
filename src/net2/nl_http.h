@@ -45,6 +45,12 @@
  */
 
 
+/**
+ * Use a connection for IPC purposes.
+ */
+#define GWEN_NL_HTTP_FLAGS_IPC   0x00000001
+
+
 typedef enum {
   GWEN_NetLayerHttpVersion_1_0=0,
   GWEN_NetLayerHttpVersion_1_1
