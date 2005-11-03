@@ -63,11 +63,13 @@ void GWEN_NetLayerSsl_SetAskAddCertFn(GWEN_NETLAYER *nl,
                                       void *user_data);
 
 
+GWENHYWFAR_API
 GWEN_NL_SSL_ASKADDCERT_RESULT
   GWEN_NetLayerSsl_AskAddCert(GWEN_NETLAYER *nl,
                               const GWEN_SSLCERTDESCR *cd);
 
 
+GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayerSsl_new(GWEN_NETLAYER *baseLayer,
                                     const char *capath,
                                     const char *newcapath,
@@ -75,13 +77,23 @@ GWEN_NETLAYER *GWEN_NetLayerSsl_new(GWEN_NETLAYER *baseLayer,
                                     const char *dhFolder,
                                     int secure);
 
+GWENHYWFAR_API
+const GWEN_SSLCERTDESCR*
+  GWEN_NetLayerSsl_GetPeerCertificate(const GWEN_NETLAYER *nl);
 
+GWENHYWFAR_API
+int GWEN_NetLayerSsl_GetIsSecure(const GWEN_NETLAYER *nl);
 
+GWENHYWFAR_API
 void GWEN_NetLayerSsl_SetCiphers(GWEN_NETLAYER *nl, const char *ciphers);
+
+GWENHYWFAR_API
 GWEN_SSLCIPHER_LIST *GWEN_NetLayerSsl_GetCipherList();
 
+GWENHYWFAR_API
 int GWEN_NetLayerSsl_GenerateDhFile(const char *fname, int bits);
 
+GWENHYWFAR_API
 int GWEN_NetLayerSsl_GenerateCertAndKeyFile(const char *fname,
                                             int bits,
                                             int serial,

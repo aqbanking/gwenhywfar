@@ -67,6 +67,8 @@ struct GWEN_NETLAYER {
   GWEN_NETLAYER_BEGIN_IN_PACKET_FN beginInPacketFn;
   GWEN_NETLAYER_CHECK_IN_PACKET_FN checkInPacketFn;
 
+  GWEN_NETLAYER_STATUS_CHG_FN statusChangeFn;
+
   GWEN_INETADDRESS *localAddr;
   GWEN_INETADDRESS *peerAddr;
 
@@ -84,6 +86,8 @@ GWEN_NETLAYER_RESULT GWEN_NetLayer__Wait(GWEN_NETLAYER_LIST *nll,
 
 GWEN_NETLAYER_RESULT GWEN_NetLayer__WorkAll(GWEN_NETLAYER_LIST *nll);
 
+void GWEN_NetLayer_StatusChange(GWEN_NETLAYER *nl,
+                                GWEN_NETLAYER_STATUS newst);
 
 
 #endif /* GWEN_NETLAYER_P_H */

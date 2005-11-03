@@ -1296,7 +1296,8 @@ int GWEN_IpcManager__HandlePacket(GWEN_IPCMANAGER *mgr,
 
     /* this is a new incoming request */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Got an incoming request (%08x)",
-	      msgId);
+              msgId);
+    GWEN_DB_Dump(dbReq, stderr, 2);
     m=GWEN_IpcMsg_new(n);
     m->db=dbReq;
     m->id=msgId;

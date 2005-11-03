@@ -259,6 +259,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__WriteWork(GWEN_NETLAYER *nl) {
   GWEN_NETLAYER *baseLayer;
   int rv;
   int bsize;
+  GWEN_NETLAYER_STATUS st;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
@@ -266,6 +267,10 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__WriteWork(GWEN_NETLAYER *nl) {
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
+
+  st=GWEN_NetLayer_GetStatus(nl);
+  if (st==GWEN_NetLayerStatus_Listening)
+    return GWEN_NetLayerResult_Idle;
 
   bsize=GWEN_Buffer_GetBytesLeft(nld->outBuffer);
   if (bsize==0)
@@ -456,6 +461,10 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
   for (line=1;;line++) {
     if (!isspace(*s)) {
       if (GWEN_Buffer_GetUsedBytes(vbuf) && varName) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Got header: %s=%s",
+                  varName,
+                  GWEN_Buffer_GetStart(vbuf));
+
         GWEN_DB_SetCharValue(nld->dbInHeader,
                              GWEN_DB_FLAGS_DEFAULT,
                              varName,
@@ -488,8 +497,17 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
     else {
       while(*s && isspace(*s))
         s++;
-      if (*s==0)
+      if (*s==0) {
+        if (GWEN_Buffer_GetUsedBytes(vbuf) && varName) {
+          GWEN_DB_SetCharValue(nld->dbInHeader,
+                               GWEN_DB_FLAGS_DEFAULT,
+                               varName,
+                               GWEN_Buffer_GetStart(vbuf));
+          GWEN_Buffer_Reset(vbuf);
+          varName=0;
+        }
         return 0;
+      }
     }
 
     p=strchr(s, '\r');
@@ -528,6 +546,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
   GWEN_NETLAYER *baseLayer;
   char buffer[2];
   int rv;
+  GWEN_NETLAYER_STATUS st;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
@@ -535,6 +554,10 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
+
+  st=GWEN_NetLayer_GetStatus(nl);
+  if (st==GWEN_NetLayerStatus_Listening)
+    return GWEN_NetLayerResult_Idle;
 
   if (nld->inMode==GWEN_NetLayerHttpInMode_ReadBody ||
       nld->inMode==GWEN_NetLayerHttpInMode_Idle ||
@@ -587,12 +610,8 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
             return GWEN_NetLayerResult_Error;
           }
           GWEN_Buffer_Reset(nld->inBuffer);
-
-          if ((GWEN_NetLayer_GetFlags(nl) & GWEN_NETLAYER_FLAGS_PASSIVE) &&
-              strcasecmp(nld->inCommand, "GET")==0)
-            nld->inBodySize=0;
-          else
-            nld->inBodySize=-1;
+          GWEN_DB_Dump(nld->dbInHeader, stderr, 2);
+          nld->inBodySize=-1;
           nld->inBodySize=GWEN_DB_GetIntValue(nld->dbInHeader,
                                               "Content-Length", 0,
                                               nld->inBodySize);
@@ -823,6 +842,7 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
     char numbuf[32];
 
     /* passive, prepare status line */
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Passive connection");
     GWEN_Buffer_AppendString(nld->outBuffer, "HTTP/");
     switch(nld->pversion) {
     case GWEN_NetLayerHttpVersion_1_0:
@@ -841,6 +861,7 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   }
   else {
     /* prepare command line */
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Active connection");
     assert(nld->outCommand);
     GWEN_Buffer_AppendString(nld->outBuffer, nld->outCommand);
     GWEN_Buffer_AppendString(nld->outBuffer, " ");
@@ -856,7 +877,6 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
     else
       GWEN_Buffer_AppendString(nld->outBuffer, "/");
 
-    GWEN_Buffer_AppendString(nld->outBuffer,  " ");
     GWEN_Buffer_AppendString(nld->outBuffer, " HTTP/");
     switch(nld->pversion) {
     case GWEN_NetLayerHttpVersion_1_0:
@@ -871,12 +891,10 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
 
   /* prepare header */
   GWEN_DB_DeleteVar(nld->dbOutHeader, "Content-Length");
-  if (strcasecmp(nld->outCommand, "GET")!=0) {
-    if (totalSize>=0)
-      GWEN_DB_SetIntValue(nld->dbOutHeader,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "Content-Length", totalSize);
-  }
+  if (totalSize>=0)
+    GWEN_DB_SetIntValue(nld->dbOutHeader,
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "Content-Length", totalSize);
 
   /* write header to buffer */
   if (GWEN_DB_Variables_Count(nld->dbOutHeader)) {
@@ -1037,6 +1055,7 @@ int GWEN_NetLayerHttp_CheckInPacket(GWEN_NETLAYER *nl) {
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
   assert(nld);
 
+  DBG_ERROR(GWEN_LOGDOMAIN, "Read mode (%d)", nld->inMode);
 
   switch(nld->inMode) {
   case GWEN_NetLayerHttpInMode_Idle:
@@ -1058,6 +1077,9 @@ int GWEN_NetLayerHttp_CheckInPacket(GWEN_NETLAYER *nl) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "Body complete.");
         return 0;
       }
+    }
+    else {
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Unknown incoming size");
     }
     return 1;
 

@@ -164,6 +164,9 @@ GWEN_NETLAYER *GWEN_NetLayerPackets_new(GWEN_NETLAYER *baseLayer) {
   GWEN_NetLayer_SetListenFn(nl, GWEN_NetLayerPackets_Listen);
   GWEN_NetLayer_SetAddSocketsFn(nl, GWEN_NetLayerPackets_AddSockets);
 
+  nld->outPackets=GWEN_NL_Packet_List_new();
+  nld->inPackets=GWEN_NL_Packet_List_new();
+
   return nl;
 }
 
@@ -253,6 +256,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__WriteWork(GWEN_NETLAYER *nl) {
   GWEN_NL_PACKET *pk;
   char *p;
   int bsize;
+  GWEN_NETLAYER_STATUS st;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_PACKETS, nl);
@@ -260,6 +264,10 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__WriteWork(GWEN_NETLAYER *nl) {
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
+
+  st=GWEN_NetLayer_GetStatus(nl);
+  if (st==GWEN_NetLayerStatus_Listening)
+    return GWEN_NetLayerResult_Idle;
 
   pk=nld->currentOutPacket;
   if (!pk) {
@@ -275,6 +283,8 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__WriteWork(GWEN_NETLAYER *nl) {
 
   switch(pk->status) {
 
+  case GWEN_NL_PacketStatus_New:
+  case GWEN_NL_PacketStatus_Enqueued:
   case GWEN_NL_PacketStatus_StartWriteMsg:
     rv=GWEN_NetLayer_BeginOutPacket(baseLayer,
                                     GWEN_Buffer_GetUsedBytes(pk->buffer));
@@ -324,8 +334,6 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__WriteWork(GWEN_NETLAYER *nl) {
     nld->currentOutPacket=0;
     return GWEN_NetLayerResult_Changed;
 
-  case GWEN_NL_PacketStatus_New:
-  case GWEN_NL_PacketStatus_Enqueued:
   case GWEN_NL_PacketStatus_StartReadMsg:
   case GWEN_NL_PacketStatus_ReadMsg:
   case GWEN_NL_PacketStatus_Finished:
@@ -346,6 +354,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__ReadWork(GWEN_NETLAYER *nl) {
   GWEN_NL_PACKET *pk;
   char *p;
   int bsize;
+  GWEN_NETLAYER_STATUS st;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_PACKETS, nl);
@@ -353,6 +362,10 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__ReadWork(GWEN_NETLAYER *nl) {
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
+
+  st=GWEN_NetLayer_GetStatus(nl);
+  if (st==GWEN_NetLayerStatus_Listening)
+    return GWEN_NetLayerResult_Idle;
 
   pk=nld->currentInPacket;
   if (!pk) {
@@ -373,7 +386,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__ReadWork(GWEN_NETLAYER *nl) {
       nld->currentInPacket=GWEN_NL_Packet_new();
       return GWEN_NetLayerResult_Error;
     }
-    pk->status=GWEN_NL_PacketStatus_StartReadMsg;
+    pk->status=GWEN_NL_PacketStatus_ReadMsg;
     return GWEN_NetLayerResult_Changed;
 
   case GWEN_NL_PacketStatus_ReadMsg:
@@ -390,6 +403,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__ReadWork(GWEN_NETLAYER *nl) {
       return GWEN_NetLayerResult_Error;
     }
     if (bsize==0) {
+      DBG_NOTICE(GWEN_LOGDOMAIN, "Message finished");
       pk->status=GWEN_NL_PacketStatus_Finished;
       GWEN_NL_Packet_List_Add(pk, nld->inPackets);
       nld->currentInPacket=GWEN_NL_Packet_new();
@@ -446,6 +460,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets_Work(GWEN_NETLAYER *nl) {
     if (newNl) {
       GWEN_NETLAYER *newNlPackets;
 
+      DBG_INFO(GWEN_LOGDOMAIN, "Incoming connection");
       newNlPackets=GWEN_NetLayerPackets_new(newNl);
       GWEN_NetLayer_AddFlags(newNlPackets, GWEN_NETLAYER_FLAGS_PASSIVE);
       GWEN_NetLayer_free(newNl);
@@ -488,6 +503,10 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets_Work(GWEN_NETLAYER *nl) {
 #undef GWEN_NL_PACKETS_MERGE_RESULTS
 
   /* return cumulated result */
+  DBG_VERBOUS(GWEN_LOGDOMAIN,
+              "Overall result of Work: %s",
+              GWEN_NetLayerResult_toString(bres));
+
   return bres;
 }
 
@@ -518,7 +537,7 @@ int GWEN_NetLayerPackets_HasNextPacket(const GWEN_NETLAYER *nl) {
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_PACKETS, nl);
   assert(nld);
 
-  if (GWEN_NL_Packet_List_First(nld->outPackets))
+  if (GWEN_NL_Packet_List_First(nld->inPackets))
     return 1;
 
   return 0;
@@ -535,7 +554,7 @@ GWEN_NL_PACKET *GWEN_NetLayerPackets_GetNextPacket(GWEN_NETLAYER *nl) {
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_PACKETS, nl);
   assert(nld);
 
-  pk=GWEN_NL_Packet_List_First(nld->outPackets);
+  pk=GWEN_NL_Packet_List_First(nld->inPackets);
   if (pk) {
     GWEN_NL_Packet_List_Del(pk);
     return pk;

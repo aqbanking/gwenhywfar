@@ -2037,4 +2037,32 @@ int GWEN_NetLayerSsl_GenerateDhFile(const char *fname, int bits) {
 
 
 
+const GWEN_SSLCERTDESCR*
+GWEN_NetLayerSsl_GetPeerCertificate(const GWEN_NETLAYER *nl) {
+  GWEN_NL_SSL *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_SSL, nl);
+  assert(nld);
+
+  return nld->peerCertificate;
+}
+
+
+
+int GWEN_NetLayerSsl_GetIsSecure(const GWEN_NETLAYER *nl) {
+  GWEN_NL_SSL *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_SSL, nl);
+  assert(nld);
+
+  return nld->isSecure;
+}
+
+
+
+
+
+
 

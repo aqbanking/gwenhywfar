@@ -592,6 +592,16 @@ void GWEN_NetLayer_BaseStatusChange(GWEN_NETLAYER *nl,
 
 
 /* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetLayer_StatusChange(GWEN_NETLAYER *nl,
+                                GWEN_NETLAYER_STATUS newst) {
+  assert(nl);
+  if (nl->statusChangeFn)
+    nl->statusChangeFn(nl, newst);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetLayer_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   assert(nl);
   nl->outBodySize=totalSize;
@@ -793,6 +803,15 @@ GWEN_NetLayer_SetBaseStatusChangeFn(GWEN_NETLAYER *nl,
                                     GWEN_NETLAYER_BASESTATUS_CHG_FN f){
   assert(nl);
   nl->baseStatusChangeFn=f;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+void GWEN_NetLayer_SetStatusChangeFn(GWEN_NETLAYER *nl,
+                                     GWEN_NETLAYER_STATUS_CHG_FN f) {
+  assert(nl);
+  nl->statusChangeFn=f;
 }
 
 
@@ -1086,6 +1105,8 @@ void GWEN_NetLayer_SetStatus(GWEN_NETLAYER *nl, GWEN_NETLAYER_STATUS st) {
              GWEN_NetLayerStatus_toString(nl->status),
              GWEN_NetLayerStatus_toString(st));
     nl->lastStatusChange=time(0);
+    /* inform callback functions */
+    GWEN_NetLayer_StatusChange(nl, st);
     if (nl->parentLayer)
       GWEN_NetLayer_BaseStatusChange(nl->parentLayer, st);
     nl->status=st;

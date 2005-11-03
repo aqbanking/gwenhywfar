@@ -22,6 +22,7 @@
 #include <gwenhywfar/nl_ssl.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/args.h>
+#include <gwenhywfar/ipc.h>
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/misc2.h>
 #include <gwenhywfar/gwentime.h>
@@ -3067,6 +3068,170 @@ int testNlSslConnect2(int argc, char **argv) {
 
 
 
+int testIpcServer1(int argc, char **argv) {
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  int rv;
+  GWEN_URL *url;
+  GWEN_DB_NODE *dbUrl;
+  GWEN_ERRORCODE err;
+  GWEN_IPCMANAGER *ipcManager;
+  GWEN_TYPE_UINT32 sid;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  url=GWEN_Url_fromString("/tmp/test.comm");
+  assert(url);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeUnix);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyUnix);
+  dbUrl=GWEN_DB_Group_new("URL");
+  GWEN_Url_toDb(url, dbUrl);
+  GWEN_DB_Dump(dbUrl, stderr, 2);
+
+  err=GWEN_InetAddr_SetAddress(addr, "/tmp/test.comm");
+  if (!GWEN_Error_IsOk(err))
+    err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  GWEN_NetLayer_SetLocalAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+  GWEN_Url_SetServer(url, "/tmp/test.comm");
+  GWEN_Url_SetPath(url, "/ipc");
+  GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
+
+  ipcManager=GWEN_IpcManager_new();
+  sid=GWEN_IpcManager_AddServer(ipcManager, nl, 1);
+  fprintf(stderr, "Server id: %08x\n", sid);
+
+  for(;;) {
+    GWEN_TYPE_UINT32 rid;
+
+    rid=GWEN_IpcManager_GetNextInRequest(ipcManager, 1);
+    if (rid==0) {
+      GWEN_Net_HeartBeat(750);
+      rv=GWEN_IpcManager_Work(ipcManager);
+      if (rv<0) {
+        fprintf(stderr, "ERROR: Could not work\n");
+        break;
+      }
+    }
+    else {
+      GWEN_DB_NODE *dbRequest;
+      GWEN_DB_NODE *dbResponse;
+
+      fprintf(stderr, "Got an incoming request.\n");
+      dbRequest=GWEN_IpcManager_GetInRequestData(ipcManager, rid);
+      GWEN_DB_Dump(dbRequest, stderr, 2);
+      dbResponse=GWEN_DB_Group_new("Test-Response");
+      GWEN_DB_SetCharValue(dbResponse, GWEN_DB_FLAGS_DEFAULT,
+                           "Response", "Hi :-)");
+      rv=GWEN_IpcManager_SendResponse(ipcManager, rid, dbResponse);
+      if (rv) {
+        fprintf(stderr, "ERROR: Could not send response\n");
+        break;
+      }
+    }
+  }
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
+int testIpcClient1(int argc, char **argv) {
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  int rv;
+  GWEN_URL *url;
+  GWEN_DB_NODE *dbUrl;
+  GWEN_ERRORCODE err;
+  GWEN_IPCMANAGER *ipcManager;
+  GWEN_TYPE_UINT32 sid;
+  GWEN_TYPE_UINT32 rid;
+  GWEN_DB_NODE *dbRequest;
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  url=GWEN_Url_fromString("/tmp/test.comm");
+  assert(url);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeUnix);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyUnix);
+  dbUrl=GWEN_DB_Group_new("URL");
+  GWEN_Url_toDb(url, dbUrl);
+  GWEN_DB_Dump(dbUrl, stderr, 2);
+
+  err=GWEN_InetAddr_SetAddress(addr, "/tmp/test.comm");
+  if (!GWEN_Error_IsOk(err))
+    err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+  GWEN_Url_SetServer(url, "/tmp/test.comm");
+  GWEN_Url_SetPath(url, "/ipc");
+  GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
+
+  ipcManager=GWEN_IpcManager_new();
+  sid=GWEN_IpcManager_AddClient(ipcManager, nl, 1);
+  fprintf(stderr, "Server id: %08x\n", sid);
+
+  dbRequest=GWEN_DB_Group_new("Test-Request");
+  GWEN_DB_SetCharValue(dbRequest, GWEN_DB_FLAGS_DEFAULT,
+                       "TestVar", "TestValue");
+  rid=GWEN_IpcManager_SendRequest(ipcManager, sid, dbRequest);
+  if (rid==0) {
+    fprintf(stderr, "Could not send request.\n");
+    return 2;
+  }
+
+  for(;;) {
+    GWEN_DB_NODE *dbResponse;
+
+    dbResponse=GWEN_IpcManager_GetResponseData(ipcManager, rid);
+    if (dbResponse) {
+      fprintf(stderr, "INFO: Response was:\n");
+      GWEN_DB_Dump(dbResponse, stderr, 2);
+      break;
+    }
+    else {
+      GWEN_Net_HeartBeat(750);
+      rv=GWEN_IpcManager_Work(ipcManager);
+      if (rv<0) {
+        fprintf(stderr, "ERROR: Coukld not work\n");
+        break;
+      }
+    }
+  }
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -3171,6 +3336,10 @@ int main(int argc, char **argv) {
     rv=testNlSslConnect1(argc, argv);
   else if (strcasecmp(argv[1], "nlsslconnect2")==0)
     rv=testNlSslConnect2(argc, argv);
+  else if (strcasecmp(argv[1], "ipcserver1")==0)
+    rv=testIpcServer1(argc, argv);
+  else if (strcasecmp(argv[1], "ipcclient1")==0)
+    rv=testIpcClient1(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

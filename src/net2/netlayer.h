@@ -135,6 +135,9 @@ typedef int (*GWEN_NETLAYER_ADDSOCKETS_FN)(GWEN_NETLAYER *nl,
 typedef void (*GWEN_NETLAYER_BASESTATUS_CHG_FN)(GWEN_NETLAYER *nl,
                                                 GWEN_NETLAYER_STATUS newst);
 
+typedef void (*GWEN_NETLAYER_STATUS_CHG_FN)(GWEN_NETLAYER *nl,
+                                            GWEN_NETLAYER_STATUS newst);
+
 typedef int (*GWEN_NETLAYER_BEGIN_OUT_PACKET_FN)(GWEN_NETLAYER *nl,
                                                   int totalSize);
 
@@ -209,6 +212,8 @@ void GWEN_NetLayer_SetAddSocketsFn(GWEN_NETLAYER *nl,
                                    GWEN_NETLAYER_ADDSOCKETS_FN f);
 void GWEN_NetLayer_SetBaseStatusChangeFn(GWEN_NETLAYER *nl,
                                          GWEN_NETLAYER_BASESTATUS_CHG_FN f);
+void GWEN_NetLayer_SetStatusChangeFn(GWEN_NETLAYER *nl,
+                                     GWEN_NETLAYER_STATUS_CHG_FN f);
 
 void GWEN_NetLayer_SetBeginOutPacketFn(GWEN_NETLAYER *nl,
                                         GWEN_NETLAYER_BEGIN_OUT_PACKET_FN f);
