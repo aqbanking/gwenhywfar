@@ -1,3 +1,9 @@
+*-config
+*-config.in
+*.iss
+*.pc
+*.spec
+*.tag
 *.tar.gz
 ABOUT-NLS
 Doxyfile
@@ -19,11 +25,7 @@ depcomp
 distribution
 gwenhywfar
 gwenhywfar-*.*.*
-gwenhywfar-config
-gwenhywfar-config.in
-gwenhywfar.iss
-gwenhywfar.spec
-gwenhywfar.tag
+gwenhywfar2
 install-sh
 libtool
 listdoc.h
@@ -31,4 +33,3 @@ ltmain.sh
 missing
 mkinstalldirs
 stamp-h1
-gwenhywfar.pc
