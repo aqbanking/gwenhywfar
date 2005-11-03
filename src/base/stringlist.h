@@ -87,6 +87,7 @@ GWENHYWFAR_API
  * @param sl string list
  * @param i if 0 then cases are ignored
  */
+GWENHYWFAR_API
 void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i);
 
 /**
@@ -96,6 +97,7 @@ void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i);
  * @param sl string list
  * @param i if 0 then reference counters are honoured
  */
+GWENHYWFAR_API
 void GWEN_StringList_SetIgnoreRefCount(GWEN_STRINGLIST *sl, int i);
 
 /**
