@@ -537,6 +537,10 @@ int GWEN_IpcManager_RemoveClient(GWEN_IPCMANAGER *mgr,
   GWEN_IpcManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests,
                                              "newOutRequest");
   /* remove node */
+  DBG_NOTICE(GWEN_LOGDOMAIN, "Disconnecting netLayer");
+  GWEN_NetLayer_Disconnect(n->netLayer);
+  GWEN_Net_DelConnectionFromPool(n->netLayer);
+  DBG_NOTICE(GWEN_LOGDOMAIN, "Removing client %08x", n->id);
   GWEN_IpcNode_List_Del(n);
   GWEN_IpcNode_free(n);
 

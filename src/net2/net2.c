@@ -70,6 +70,15 @@ void GWEN_Net_AddConnectionToPool(GWEN_NETLAYER *nl) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
+void GWEN_Net_DelConnectionFromPool(GWEN_NETLAYER *nl) {
+  assert(nl);
+  assert(gwen_netlayer__list);
+  GWEN_NetLayer_List_Del(nl);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_NETLAYER_RESULT GWEN_Net_HeartBeat(int timeout){
   if (GWEN_NetLayer_List_GetCount(gwen_netlayer__list)) {
     GWEN_NETLAYER_RESULT rv;

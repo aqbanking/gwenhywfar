@@ -3166,7 +3166,7 @@ int testIpcClient1(int argc, char **argv) {
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Verbous);
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
 
-  url=GWEN_Url_fromString("/tmp/test.comm");
+  url=GWEN_Url_fromString("/var/run/chipcard2.comm");
   assert(url);
 
   /* create transport layer */
@@ -3177,7 +3177,7 @@ int testIpcClient1(int argc, char **argv) {
   GWEN_Url_toDb(url, dbUrl);
   GWEN_DB_Dump(dbUrl, stderr, 2);
 
-  err=GWEN_InetAddr_SetAddress(addr, "/tmp/test.comm");
+  err=GWEN_InetAddr_SetAddress(addr, "/var/run/chipcard2.comm");
   if (!GWEN_Error_IsOk(err))
     err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
   if (!GWEN_Error_IsOk(err)) {
@@ -3190,7 +3190,7 @@ int testIpcClient1(int argc, char **argv) {
 
   nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
   GWEN_NetLayer_free(baseLayer);
-  GWEN_Url_SetServer(url, "/tmp/test.comm");
+  GWEN_Url_SetServer(url, "/var/run/chipcard2.comm");
   GWEN_Url_SetPath(url, "/ipc");
   GWEN_NetLayerHttp_SetOutCommand(nl, "POST", url);
 
@@ -3217,7 +3217,10 @@ int testIpcClient1(int argc, char **argv) {
       break;
     }
     else {
-      GWEN_Net_HeartBeat(750);
+      if (GWEN_Net_HeartBeat(750)==GWEN_NetLayerResult_Error) {
+        fprintf(stderr, "ERROR (heartbeat).\n");
+        break;
+      }
       rv=GWEN_IpcManager_Work(ipcManager);
       if (rv<0) {
         fprintf(stderr, "ERROR: Coukld not work\n");

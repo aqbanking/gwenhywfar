@@ -436,9 +436,10 @@ GWEN_ERRORCODE GWEN_Socket_Select(GWEN_SOCKETSET *rs,
   }
   h=(h1>h2)?h1:h2;
   h=(h>h3)?h:h3;
-  if (timeout<0)
+  if (timeout<0) {
     /* wait for ever */
     rv=select(h+1,s1,s2,s3,0);
+  }
   else {
     /* return immediately */
     tv.tv_sec=0;

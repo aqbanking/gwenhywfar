@@ -52,6 +52,9 @@ extern "C" {
 GWENHYWFAR_API
 void GWEN_Net_AddConnectionToPool(GWEN_NETLAYER *nl);
 
+GWENHYWFAR_API
+void GWEN_Net_DelConnectionFromPool(GWEN_NETLAYER *nl);
+
 /**
  * @param timeout timeout in milliseconds (or a special timeout value, see
  * @ref GWEN_NETCONNECTION_TIMEOUT_NONE)

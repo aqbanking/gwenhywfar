@@ -233,12 +233,15 @@ int GWEN_NetLayerSocket_Listen(GWEN_NETLAYER *nl){
 int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl){
   GWEN_NL_SOCKET *nld;
   GWEN_ERRORCODE err;
+#if 0
   GWEN_NETLAYER_STATUS st;
+#endif
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_SOCKET, nl);
   assert(nld);
 
+#if 0
   /* check status */
   st=GWEN_NetLayer_GetStatus(nl);
   if (st==GWEN_NetLayerStatus_Unconnected ||
@@ -249,6 +252,7 @@ int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl){
               GWEN_NetLayerStatus_toString(st), st);
     return GWEN_ERROR_INVALID;
   }
+#endif
 
   /* close socket */
   err=GWEN_Socket_Close(nld->socket);
