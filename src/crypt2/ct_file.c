@@ -845,14 +845,14 @@ int GWEN_CryptTokenFile_ReadKey(GWEN_CRYPTTOKEN *ct,
 
     /* make sure we always export the public part only */
     db=GWEN_DB_Group_new("key");
-    err=GWEN_CryptKey_ToDb(k, db, 1);
+    err=GWEN_CryptKey_toDb(k, db, 1);
     if (!GWEN_Error_IsOk(err)) {
       DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
       GWEN_DB_Group_free(db);
       return GWEN_ERROR_GENERIC;
     }
   
-    *key=GWEN_CryptKey_FromDb(db);
+    *key=GWEN_CryptKey_fromDb(db);
     if (!*key) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Could not create key from previous export");

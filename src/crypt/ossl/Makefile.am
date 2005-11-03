@@ -1,16 +1,10 @@
-
-#EXTRA_DIST = 
-
-INCLUDES= $(all_includes) -I$(top_srcdir) \
- -I$(top_srcdir)/src \
+INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/ipc \
- -I$(top_srcdir)/src/net \
- -I$(top_srcdir)/src/os \
- -I$(top_srcdir)/src/parser \
- -I$(top_srcdir)/src/ui
+ -I$(top_srcdir)/src/net2 \
+ -I$(top_srcdir)/src/parser @all_includes@
 
 AM_CFLAGS=@PROFILING_CFLAGS@
 
@@ -28,7 +22,6 @@ noinst_HEADERS=\
  cryptssl_sha1_p.h \
  cryptssl_rmd160_p.h \
  cryptssl_rsa_p.h \
- nettransportssl_p.h \
  bio_netlayer_l.h \
  nl_ssl_p.h
 
@@ -40,7 +33,6 @@ libcryptimpl_la_SOURCES=\
  cryptssl_rmd160.c \
  cryptssl_rsa.c \
  cryptssl.c \
- nettransportssl.c \
  bio_netlayer.c \
  nl_ssl.c
 

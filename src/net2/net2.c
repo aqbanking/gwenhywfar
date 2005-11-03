@@ -45,7 +45,7 @@ static GWEN_NETLAYER_LIST *gwen_netlayer__list=0;
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE GWEN_Net2_ModuleInit(){
+GWEN_ERRORCODE GWEN_Net_ModuleInit(){
   gwen_netlayer__list=GWEN_NetLayer_List_new();
   return 0;
 }
@@ -53,7 +53,7 @@ GWEN_ERRORCODE GWEN_Net2_ModuleInit(){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_ERRORCODE GWEN_Net2_ModuleFini(){
+GWEN_ERRORCODE GWEN_Net_ModuleFini(){
   GWEN_NetLayer_List_free(gwen_netlayer__list);
   return 0;
 }
@@ -61,7 +61,7 @@ GWEN_ERRORCODE GWEN_Net2_ModuleFini(){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_Net2_AddConnectionToPool(GWEN_NETLAYER *nl) {
+void GWEN_Net_AddConnectionToPool(GWEN_NETLAYER *nl) {
   assert(nl);
   assert(gwen_netlayer__list);
   GWEN_NetLayer_List_Add(nl, gwen_netlayer__list);
@@ -70,7 +70,7 @@ void GWEN_Net2_AddConnectionToPool(GWEN_NETLAYER *nl) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_NETLAYER_RESULT GWEN_Net2_HeartBeat(int timeout){
+GWEN_NETLAYER_RESULT GWEN_Net_HeartBeat(int timeout){
   if (GWEN_NetLayer_List_GetCount(gwen_netlayer__list)) {
     GWEN_NETLAYER_RESULT rv;
 
@@ -91,7 +91,7 @@ GWEN_NETLAYER_RESULT GWEN_Net2_HeartBeat(int timeout){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_Net2_HasActiveConnections(){
+int GWEN_Net_HasActiveConnections(){
   GWEN_NETLAYER *nl;
   unsigned int count;
 
@@ -115,7 +115,7 @@ int GWEN_Net2_HasActiveConnections(){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_Net2_HasListeningConnections(){
+int GWEN_Net_HasListeningConnections(){
   GWEN_NETLAYER *nl;
   unsigned int count;
 

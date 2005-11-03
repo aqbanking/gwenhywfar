@@ -319,7 +319,7 @@ int GWEN_NetLayerSocket_Read(GWEN_NETLAYER *nl,
   else {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes", *bsize);
     GWEN_Text_LogString(buffer, *bsize, GWEN_LOGDOMAIN,
-                        GWEN_LoggerLevelVerbous);
+                        GWEN_LoggerLevel_Verbous);
   }
   GWEN_NetLayer_SubFlags(nl, GWEN_NETLAYER_FLAGS_WANTREAD);
   return 0;
@@ -361,7 +361,7 @@ int GWEN_NetLayerSocket_Write(GWEN_NETLAYER *nl,
     return 1;
   }
   DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes", *bsize);
-  GWEN_Text_LogString(buffer, *bsize, 0, GWEN_LoggerLevelVerbous);
+  GWEN_Text_LogString(buffer, *bsize, 0, GWEN_LoggerLevel_Verbous);
   GWEN_NetLayer_SubFlags(nl, GWEN_NETLAYER_FLAGS_WANTWRITE);
   return 0;
 }

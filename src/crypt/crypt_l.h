@@ -42,6 +42,27 @@ GWENHYWFAR_API
   long int GWEN_Random();
 
 
+/** @name Functions expected in implementation
+ *
+ */
+/*@{*/
+/**
+ * This function is expected to register all it's crypto service
+ * providers. It is called when the GWEN_Crypt module is initialized.
+ */
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_CryptImpl_Init();
+
+/**
+ * This function is called when the GWEN_Crypt module is deinitialized.
+ * It can be used to release allocated data. It MUST NOT unregister any
+ * crypt key type, this is done automatically.
+ */
+GWENHYWFAR_API
+  GWEN_ERRORCODE GWEN_CryptImpl_Fini();
+/*@}*/
+
+
 /* always exports the public key */
 int GWEN_Crypt_KeyToDb(const GWEN_CRYPTKEY *key, GWEN_DB_NODE *db);
 

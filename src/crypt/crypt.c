@@ -298,7 +298,7 @@ unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key){
 
 
 
-GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
+GWEN_CRYPTKEY *GWEN_CryptKey_fromDb(GWEN_DB_NODE *db){
   GWEN_DB_NODE *gr;
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
@@ -308,7 +308,8 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
     DBG_INFO(GWEN_LOGDOMAIN, "Could not create key");
     return 0;
   }
-  if (GWEN_KeySpec_FromDb(key->keyspec, db)) {
+  key->keyspec=GWEN_KeySpec_fromDb(db);
+  if (!key->keyspec) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not create keyspec from DB");
     GWEN_CryptKey_free(key);
     return 0;
@@ -331,14 +332,14 @@ GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db){
 
 
 
-GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
+GWEN_ERRORCODE GWEN_CryptKey_toDb(const GWEN_CRYPTKEY *key,
                                   GWEN_DB_NODE *db,
                                   int pub){
   GWEN_DB_NODE *gr;
 
   assert(key);
   assert(key->usage);
-  if (GWEN_KeySpec_ToDb(key->keyspec, db)) {
+  if (GWEN_KeySpec_toDb(key->keyspec, db)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not store keyspec in DB");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
@@ -982,7 +983,7 @@ void GWEN_CryptKey_List2_freeAll(GWEN_CRYPTKEY_LIST2 *stl) {
 
 
 int GWEN_Crypt_KeyToDb(const GWEN_CRYPTKEY *key, GWEN_DB_NODE *db) {
-  return GWEN_CryptKey_ToDb(key, db, 1);
+  return GWEN_CryptKey_toDb(key, db, 1);
 }
 
 

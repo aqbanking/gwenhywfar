@@ -1,18 +1,13 @@
-INCLUDES = $(all_includes) \
- -I$(top_srcdir) \
+INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
- -I$(top_srcdir)/src/ipc \
- -I$(top_srcdir)/src/net \
  -I$(top_srcdir)/src/os \
- -I$(top_srcdir)/src/parser \
- -I$(top_srcdir)/gwenui
+ -I$(top_srcdir)/src/ipc \
+ -I$(top_srcdir)/src/net2 \
+ -I$(top_srcdir)/src/parser @all_includes@
 
-
-AM_CFLAGS=$(PROFILING_CFLAGS)
-
-SUBDIRS = base crypt io ipc os parser net crypt2 net2
+SUBDIRS = base crypt io ipc os parser crypt2 net2
 
 DEFS += \
   -DGWEN_INSTALL_DIR=\"$(prefix)\" \
@@ -24,7 +19,7 @@ EXTRA_DIST=\
  types.h.in \
  version.h.in
 
-iheaderdir=${includedir}/gwenhywfar
+iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
   gwenhywfar.h \
   gwenhywfarapi.h \
@@ -42,7 +37,6 @@ libgwenhywfar_la_LIBADD=\
   crypt2/libcrypt2.la \
   io/libio.la \
   ipc/libipc.la \
-  net/libnet.la \
   net2/libnet2.la \
   os/libos.la \
   parser/libparser.la $(ssl_libraries) $(ssl_lib) $(all_libraries)

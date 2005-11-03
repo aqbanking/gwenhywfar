@@ -154,7 +154,7 @@ GWEN_SSLCERTDESCR *st;
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "publicKey");
-    if (dbT) st->publicKey=GWEN_CryptKey_FromDb(dbT);
+    if (dbT) st->publicKey=GWEN_CryptKey_fromDb(dbT);
   }
   GWEN_SslCertDescr_SetIpAddress(st, GWEN_DB_GetCharValue(db, "ipAddress", 0, 0));
   GWEN_SslCertDescr_SetFingerPrint(st, GWEN_DB_GetCharValue(db, "fingerPrint", 0, 0));

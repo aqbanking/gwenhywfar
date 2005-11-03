@@ -65,28 +65,6 @@ extern "C" {
 int GWEN_Crypt_IsAvailable();
 
 
-/** @name Functions expected in implementation
- *
- */
-/*@{*/
-/**
- * This function is expected to register all it's crypto service
- * providers. It is called when the GWEN_Crypt module is initialized.
- */
-GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_CryptImpl_Init();
-
-/**
- * This function is called when the GWEN_Crypt module is deinitialized.
- * It can be used to release allocated data. It MUST NOT unregister any
- * crypt key type, this is done automatically.
- */
-GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_CryptImpl_Fini();
-/*@}*/
-
-
-
 typedef struct GWEN_CRYPTKEY GWEN_CRYPTKEY;
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWENHYWFAR_API)
@@ -184,10 +162,10 @@ GWENHYWFAR_API
 unsigned int GWEN_CryptKey_GetChunkSize(const GWEN_CRYPTKEY *key);
 
 GWENHYWFAR_API
-  GWEN_CRYPTKEY *GWEN_CryptKey_FromDb(GWEN_DB_NODE *db);
+  GWEN_CRYPTKEY *GWEN_CryptKey_fromDb(GWEN_DB_NODE *db);
 
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_CryptKey_ToDb(const GWEN_CRYPTKEY *key,
+  GWEN_ERRORCODE GWEN_CryptKey_toDb(const GWEN_CRYPTKEY *key,
 				    GWEN_DB_NODE *db,
 				    int pub);
 

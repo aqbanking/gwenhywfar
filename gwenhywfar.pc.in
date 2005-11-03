@@ -13,11 +13,7 @@ sysconfdir=@sysconfdir@
 
 # Particular variables of gwenhywfar
 plugindir=@gwenhywfar_plugindir@
-has-ui=@USE_NCURSES@
 has-crypt=@USE_CRYPT@
-sections=@gwenhywfar_sections@
-libraries-ui=@gwenhywfar_ldflags@ @gwenhywfar_libsui@
-librariespp=@gwenhywfar_ldflags@ @gwenhywfar_libspp@
 
 # Human-readable name
 Name: gwenhywfar

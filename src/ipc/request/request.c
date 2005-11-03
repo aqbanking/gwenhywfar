@@ -163,7 +163,7 @@ GWEN_IPC_REQUEST *st;
         e=GWEN_IpcRequest_fromDb(dbT2);
         if (!e) {
           DBG_ERROR(0, "Bad element for type \"GWEN_IPC_REQUEST\"");
-          if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+          if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
             GWEN_DB_Dump(dbT2, stderr, 2);
           GWEN_IpcRequest_free(st);
           return 0;

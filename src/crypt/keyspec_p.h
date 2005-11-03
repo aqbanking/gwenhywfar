@@ -33,7 +33,7 @@
 
 struct GWEN_KEYSPEC {
   GWEN_INHERIT_ELEMENT(GWEN_KEYSPEC)
-  GWEN_KEYSPEC *next;
+  GWEN_LIST_ELEMENT(GWEN_KEYSPEC)
   int status;
   char *keyType;
   char *keyName;

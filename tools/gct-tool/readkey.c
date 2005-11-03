@@ -39,7 +39,7 @@ int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,             /* type */
     "keyId",                      /* name */
     1,                            /* minnum */
     1,                            /* maxnum */
@@ -50,7 +50,7 @@ int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,            /* type */
     "outFile",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -61,7 +61,7 @@ int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,            /* type */
     "tokenType",                  /* name */
     1,                            /* minnum */
     1,                            /* maxnum */
@@ -72,7 +72,7 @@ int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,            /* type */
     "tokenName",                  /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -83,7 +83,7 @@ int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -107,7 +107,7 @@ int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
@@ -172,7 +172,7 @@ int readKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     assert(key);
 
     db=GWEN_DB_Group_new("key");
-    err=GWEN_CryptKey_ToDb(key, db, 1);
+    err=GWEN_CryptKey_toDb(key, db, 1);
     if (!GWEN_Error_IsOk(err)) {
       DBG_ERROR_ERR(0, err);
       GWEN_DB_Group_free(db);

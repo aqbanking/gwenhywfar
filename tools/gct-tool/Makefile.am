@@ -1,4 +1,4 @@
-INCLUDES=@all_includes@ -I$(top_builddir)
+INCLUDES=@all_includes@ -I$(top_builddir)/gwenhywfar2
 
 #EXTRA_DIST=
 
@@ -14,7 +14,6 @@ noinst_HEADERS=\
 
 gct_tool_SOURCES=\
   cryptmanager.c \
-  signfiles.c \
   create.c \
   showctx.c \
   readkey.c \

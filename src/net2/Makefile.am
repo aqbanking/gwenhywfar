@@ -1,14 +1,10 @@
-INCLUDES=@all_includes@ -I$(top_srcdir) \
+INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/ipc \
- -I$(top_srcdir)/src/net \
- -I$(top_srcdir)/src/os \
- -I$(top_srcdir)/src/parser \
- -I$(top_srcdir)/src/ui
-
-AM_CFLAGS=@PROFILING_CFLAGS@
+ -I$(top_srcdir)/src/net2 \
+ -I$(top_srcdir)/src/parser @all_includes@
 
 typefiles=url.xml
 EXTRA_DIST=$(typefiles)
@@ -25,7 +21,7 @@ noinst_HEADERS=\
   nl_hbci_p.h \
   nl_packets_p.h
 
-iheaderdir=${includedir}/gwenhywfar
+iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
   netlayer.h \
   nl_socket.h \

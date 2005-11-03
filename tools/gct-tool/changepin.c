@@ -33,7 +33,7 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,            /* type */
     "tokenType",                  /* name */
     1,                            /* minnum */
     1,                            /* maxnum */
@@ -44,7 +44,7 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,            /* type */
     "tokenName",                  /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -55,7 +55,7 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     0,                            /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,             /* type */
     "administrate",               /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -67,7 +67,7 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -91,7 +91,7 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }

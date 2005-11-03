@@ -1,4 +1,45 @@
 
+=============================================================================
+                                  WARNING
+This current CVS version might not yet work with all libraries/programs which
+use Gwenhywfar! Do not install it on production systems !!
+=============================================================================
+
+
+2005/11/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- started on Gwenhywfar2:
+  - src/ipc/*:
+    - removed netconnectionhttp*.{c,h}
+    - renamed all function GWEN_IPCxxx to GWEN_IpcXxx (according to coding
+      style of GWEN)
+  - removed src/net
+    This has now been replaced by src/net2.
+  - removed ui/
+  - removed gwenpp/
+  - GWEN_CryptKey: Renamed function _FromDb and _ToTb to _fromDb and _toDb
+    according to coding style document
+  - GWEN_KeySpec: removed proprietary list functions, added GWEN_KeySpec_List
+  - GWEN_StringList2, GWEN_Args, GWEN_Logger: Renamed enums according to
+    coding style document
+  - removed gwenhywfar-config.in.in, added gwenhywfar2-config.in.in
+  
+  These changes break the API, so SO_CURRENT has been incremented and SO_AGE 
+  is 0 !
+  This means that all depending applications must be recompiled in order to
+  use the new version of GWEN (all not-recompiled applications still use the
+  old version). Some depending libraries/tools will have to be adapted to
+  these changes (AqBanking, Libchipcard2).
+  For some enums which might be used by Gnucash there are compatibility
+  macros (if there are some missing please tell me. At least Gnucash MUST
+  compile without modifications!).
+
+
+===========================================================================
+MARK: Started working on Gwenhywfar2 (2005/11/02)
+===========================================================================
+
+
 2005/11/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed a fprintf() from netlayer.c

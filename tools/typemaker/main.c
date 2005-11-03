@@ -1150,7 +1150,7 @@ int main(int argc, char **argv) {
   GWEN_Logger_Open(0, "typemaker",
                    args->logFile,
                    args->logType,
-                   GWEN_LoggerFacilityUser);
+                   GWEN_LoggerFacility_User);
   GWEN_Logger_SetLevel(0, args->logLevel);
 
   inFile=args->params;

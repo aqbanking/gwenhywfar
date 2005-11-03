@@ -80,13 +80,12 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 %files devel
 %defattr(-,root,root)
-%{_bindir}/gwenhywfar-config
+%{_bindir}/gwenhywfar2-config
 %{_bindir}/xmlmerge
 %{_bindir}/dlgtest
 %{_bindir}/mklistdoc
 %{_bindir}/typemaker
-%{_includedir}/gwenhywfar
-%{_includedir}/gwenpp
+%{_includedir}/gwenhywfar2/gwenhywfar
 %{_libdir}/*.la
 #%{_libdir}/*.a
 %{_datadir}/aclocal/gwenhywfar.m4

@@ -50,7 +50,7 @@ extern "C" {
 
 
 GWENHYWFAR_API
-void GWEN_Net2_AddConnectionToPool(GWEN_NETLAYER *nl);
+void GWEN_Net_AddConnectionToPool(GWEN_NETLAYER *nl);
 
 /**
  * @param timeout timeout in milliseconds (or a special timeout value, see
@@ -58,14 +58,14 @@ void GWEN_Net2_AddConnectionToPool(GWEN_NETLAYER *nl);
  */
 
 GWENHYWFAR_API
-GWEN_NETLAYER_RESULT GWEN_Net2_HeartBeat(int timeout);
+GWEN_NETLAYER_RESULT GWEN_Net_HeartBeat(int timeout);
 
 
 GWENHYWFAR_API
-int GWEN_Net2_HasActiveConnections();
+int GWEN_Net_HasActiveConnections();
 
 GWENHYWFAR_API
-int GWEN_Net2_HasListeningConnections();
+int GWEN_Net_HasListeningConnections();
 
 
 

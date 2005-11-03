@@ -33,9 +33,9 @@
 #include "netlayer_l.h"
 
 
-GWEN_ERRORCODE GWEN_Net2_ModuleInit();
+GWEN_ERRORCODE GWEN_Net_ModuleInit();
 
-GWEN_ERRORCODE GWEN_Net2_ModuleFini();
+GWEN_ERRORCODE GWEN_Net_ModuleFini();
 
 
 #endif /* GWEN_NET2_L_H */

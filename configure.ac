@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=19
 GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=5
+GWENHYWFAR_VERSION_BUILD=6
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -32,8 +32,8 @@ OHBCI_VERSION_STRING="0.1.0"
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="36"
-GWENHYWFAR_SO_AGE="19"
+GWENHYWFAR_SO_CURRENT="37"
+GWENHYWFAR_SO_AGE="0"
 GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
@@ -229,11 +229,8 @@ case "$OS_TYPE" in
         gwenhywfar_ldflags="-L\${libdir}"
         gwenhywfar_libs="-lgwenhywfar"
 	gwenhywfar_internal_libname="libgwenhywfar.la"
-        gwenhywfar_libspp="-lgwenpp"
-        gwenhywfar_libsui="-lgwenui"
-        gwenhywfar_includes="-I`eval echo $prefix/include`"
-        gwenhywfar_pkgincludedir="`eval echo $prefix/include/gwenhywfar`"
-        gwenhywfar_sections=""
+        gwenhywfar_headerdir_am="\$(includedir)/gwenhywfar2"
+        gwenhywfar_headerdir="\${includedir}/gwenhywfar2"
         gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
@@ -257,12 +254,9 @@ case "$OS_TYPE" in
         gwenhywfar_ldflags="-L${WIN_PATH_WINDOWS_MINGW}"
         gwenhywfar_libs="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
 	gwenhywfar_internal_libname="gwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}.dll"
-        gwenhywfar_libspp="-lgwenpp"
-        gwenhywfar_libsui="-lgwenui"
-        gwenhywfar_includes="-I`eval echo $prefix/include`"
-        gwenhywfar_pkgincludedir="`eval echo $prefix/include/gwenhywfar`"
-        gwenhywfar_sections=""
-        gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_headerdir_am="\$(includedir)/gwenhywfar2"
+        gwenhywfar_headerdir="\${includedir}/gwenhywfar2/gwenhywfar"
+        gwenhywfar_plugindir_am="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
         PROG_LIBRARIES="-L/mingw/lib ${PROG_LIBRARIES}"
@@ -347,49 +341,6 @@ AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
 AC_SUBST(USE_CRYPT)
 
 
-# ---------------------------------------------------------------------------
-# check for ncurses
-#
-USE_NCURSES="yes"
-
-AC_MSG_CHECKING(if GWENUI should be compiled)
-AC_ARG_ENABLE(gwenui,
-  [  --enable-gwenui             enable GWENUI (default=yes)],
-  enable_gwenui="$enableval",
-  enable_gwenui="yes")
-AC_MSG_RESULT($enable_gwenui)
-
-if test "$enable_gwenui" != "no"; then
-  AC_CHECK_LIB(ncurses, newwin, [USE_NCURSES="yes"], [USE_NCURSES="no"])
-  AC_CHECK_LIB(panel, new_panel, [USE_NCURSES="$USE_NCURSES"], [USE_NCURSES="no"])
-  AC_CHECK_HEADERS([ncurses.h], [], [USE_NCURSES="no"])
-  AC_CHECK_HEADERS([panel.h], [], [USE_NCURSES="no"])
-  if test "$USE_NCURSES" != "yes"; then
-    AC_MSG_WARN([
-  *** ncurses not found, the text interface will not be available.
-  *** It is strongly recommended to compile Gwenhywfar with ncurses support
-  *** since at least my projects (Libchipcard, AqHBCI) will rely on it...
-  ***
-  *** Please make sure that the ncurses-devel packages are also installed.])
-    ncurses_libs=""
-  else
-    AC_DEFINE(USE_NCURSES, 1, [whether to use ncurses])
-    all_libraries="$all_libraries"
-    ncurses_libs="-lpanel -lncurses"
-    NCURSES_TOOLS="dlgtest"
-  fi
-else
-  USE_NCURSES="no"
-  ncurses_libs=""
-  NCURSES_TOOLS=""
-fi
-AC_SUBST(ncurses_libs)
-AC_SUBST(NCURSES_TOOLS)
-AC_SUBST(USE_NCURSES)
-AM_CONDITIONAL(USE_NCURSES, [test "$USE_NCURSES" = "yes"])
-
-
-
 ###-------------------------------------------------------------------------
 # check for gettext
 #
@@ -407,7 +358,9 @@ lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
 rm -Rf gwenhywfar 2>/dev/null
-mkdir gwenhywfar
+rm -Rf gwenhywfar2 2>/dev/null
+mkdir gwenhywfar2
+mkdir gwenhywfar2/gwenhywfar
 GWEN_HEADER_FILES="doc/apidoc.h"
 for d in ${GWEN_HEADER_DIRS}; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
@@ -417,38 +370,15 @@ for d in ${GWEN_HEADER_DIRS}; do
       	 ;;
       *)
          GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${d}/${f}"
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar2/gwenhywfar/${f}"
          ;;
     esac
   done
 done
-test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" 2>/dev/null
-test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" 2>/dev/null
-test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" 2>/dev/null
+test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar2/gwenhywfar/version.h" 2>/dev/null
+test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar2/gwenhywfar/types.h" 2>/dev/null
+test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar2/gwenhywfar/system.h" 2>/dev/null
 
-
-GWEN_MODULES="ui"
-lprefix="${srcdir}"
-lprefix=`( cd ${lprefix} ; pwd )`
-for d in ${GWEN_MODULES}; do
-  rm -Rf gwenhywfar/$d 2>/dev/null
-  mkdir gwenhywfar/$d
-  # FIXME: This needs to be fixed again: The sources are in gwenui,
-  # but the headers will be installed in gwenhywfar/ui.
-  hfiledir="gwen${d}"
-  # originally: hfiledir="src/${d}"
-  hfiles=`( cd "${srcdir}/${hfiledir}" && ls *.h 2>/dev/null )`
-  for f in ${hfiles}; do
-    case ${f} in
-      *_p.h | *_l.h)
-      	 ;;
-      *)
-         GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${hfiledir}/${f}"
-    	 ln -s "${lprefix}/${hfiledir}/${f}" "gwenhywfar/${d}/${f}"
-         ;;
-    esac
-  done
-done
 AC_SUBST(GWEN_HEADER_FILES)
 
 
@@ -600,7 +530,6 @@ AC_SUBST(PROG_LIBRARIES)
 AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
 AC_SUBST(gwenhywfar_crypt_lib)
-AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_ldflags)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_internal_libname)
@@ -609,7 +538,8 @@ AC_SUBST(gwenhywfar_libsui)
 AC_SUBST(gwenhywfar_os_lib)
 AC_SUBST(gwenhywfar_pkgincludedir)
 AC_SUBST(gwenhywfar_plugindir)
-AC_SUBST(gwenhywfar_sections)
+AC_SUBST(gwenhywfar_headerdir_am)
+AC_SUBST(gwenhywfar_headerdir)
 
 
 ###-------------------------------------------------------------------------
@@ -620,7 +550,7 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  Makefile
                  admin/Makefile
                  m4/Makefile
-                 gwenhywfar-config.in
+                 gwenhywfar2-config.in
 		 gwenhywfar.pc
 		 gwenhywfar.spec
 		 gwenhywfar.iss
@@ -647,7 +577,6 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  src/os/windows/Makefile
                  src/os/windows/system.h
                  src/parser/Makefile
-                 src/net/Makefile
                  src/net2/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile

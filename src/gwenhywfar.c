@@ -58,7 +58,6 @@
 #include "io/bufferedio_l.h"
 #include "parser/dbio_l.h"
 #include "crypt/crypt_l.h"
-#include "net/net_l.h"
 #include "net2/net2_l.h"
 #include "base/waitcallback_l.h"
 
@@ -137,12 +136,8 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_Process_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Network module");
-    err=GWEN_Net_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
-      return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Network2 module");
-    err=GWEN_Net2_ModuleInit();
+    err=GWEN_Net_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Plugin module");
@@ -203,14 +198,6 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Plugin");
-    }
-    if (!GWEN_Error_IsOk(GWEN_Net2_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Net2");
     }
     if (!GWEN_Error_IsOk(GWEN_Net_ModuleFini())) {
       err=GWEN_Error_new(0,

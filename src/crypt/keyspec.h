@@ -45,6 +45,7 @@ extern "C" {
 typedef struct GWEN_KEYSPEC GWEN_KEYSPEC;
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_KEYSPEC, GWENHYWFAR_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_KEYSPEC, GWEN_KeySpec, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_KEYSPEC, GWEN_KeySpec, GWENHYWFAR_API)
 void GWEN_KeySpec_List2_freeAll(GWEN_KEYSPEC_LIST2 *ksl);
 
@@ -97,35 +98,12 @@ GWENHYWFAR_API
                                unsigned int i);
 
 
-/** @TODO These functions should be removed in 2.0 */
-/*@{*/
 GWENHYWFAR_API
-  GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks);
-GWENHYWFAR_API
-  const GWEN_KEYSPEC *GWEN_KeySpec_ConstNext(const GWEN_KEYSPEC *ks);
-
-GWENHYWFAR_API
-  void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
-                        GWEN_KEYSPEC **head);
-GWENHYWFAR_API
-  void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
-                        GWEN_KEYSPEC **head);
-
-GWENHYWFAR_API
-  void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head);
-/*@}*/
+void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent);
 
 
-GWENHYWFAR_API
-  void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent);
-
-
-int GWEN_KeySpec_ToDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n);
-int GWEN_KeySpec_FromDb(GWEN_KEYSPEC *ks, GWEN_DB_NODE *n);
-
-
-int GWEN_KeySpec_toDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n);
-GWEN_KEYSPEC *GWEN_KeySpec_fromDb(GWEN_DB_NODE *n);
+GWENHYWFAR_API int GWEN_KeySpec_toDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n);
+GWENHYWFAR_API GWEN_KEYSPEC *GWEN_KeySpec_fromDb(GWEN_DB_NODE *n);
 
 
 #ifdef __cplusplus

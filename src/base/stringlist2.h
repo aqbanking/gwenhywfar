@@ -43,9 +43,9 @@ typedef GWEN_LIST_ITERATOR GWEN_STRINGLIST2_ITERATOR;
 
 
 typedef enum {
-  GWEN_StringList2_IntertModeAlwaysAdd=0,
-  GWEN_StringList2_IntertModeNoDouble,
-  GWEN_StringList2_IntertModeReuse
+  GWEN_StringList2_IntertMode_AlwaysAdd=0,
+  GWEN_StringList2_IntertMode_NoDouble,
+  GWEN_StringList2_IntertMode_Reuse
 } GWEN_STRINGLIST2_INSERTMODE;
 
 

@@ -228,7 +228,7 @@ int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
       return rv;
     }
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;
@@ -327,7 +327,7 @@ int GWEN_NetLayer_Write_Wait(GWEN_NETLAYER *nl,
     else if (rv==0)
       return rv;
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;
@@ -423,7 +423,7 @@ int GWEN_NetLayer_Connect_Wait(GWEN_NETLAYER *nl, int timeout) {
       return GWEN_ERROR_GENERIC;
     }
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;
@@ -520,7 +520,7 @@ int GWEN_NetLayer_Disconnect_Wait(GWEN_NETLAYER *nl, int timeout) {
       return GWEN_ERROR_GENERIC;
     }
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;
@@ -660,7 +660,7 @@ int GWEN_NetLayer_EndOutPacket_Wait(GWEN_NETLAYER *nl, int timeout) {
     else if (rv==0)
       return rv;
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;
@@ -1015,7 +1015,7 @@ GWEN_NETLAYER *GWEN_NetLayer_GetIncomingLayer_Wait(GWEN_NETLAYER *nl,
     if (newNl)
       return newNl;
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return 0;

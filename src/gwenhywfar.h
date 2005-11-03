@@ -80,7 +80,6 @@ int GWEN_GetPluginPath(GWEN_BUFFER *pbuf);
 
 
 
-
 #ifdef __cplusplus
 }
 #endif

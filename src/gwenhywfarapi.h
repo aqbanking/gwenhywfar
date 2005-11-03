@@ -68,6 +68,45 @@
 #endif /* __GNUC__ */
 
 
+#ifndef GWEN_NO_COMPAT
+
+#define GWEN_ArgsTypeChar GWEN_ArgsType_Char
+#define GWEN_ArgsTypeInt GWEN_ArgsType_Int
+
+#define GWEN_ArgsOutTypeTXT GWEN_ArgsOutType_Txt
+#define GWEN_ArgsOutTypeHTML GWEN_ArgsOutType_Html
+
+#define GWEN_StringList2_IntertModeAlwaysAdd GWEN_StringList2_IntertMode_AlwaysAdd
+#define GWEN_StringList2_IntertModeNoDouble GWEN_StringList2_IntertMode_NoDouble
+#define GWEN_StringList2_IntertModeReuse GWEN_StringList2_IntertMode_Reuse
+
+#define GWEN_LoggerTypeConsole GWEN_LoggerType_Console
+#define GWEN_LoggerTypeFile GWEN_LoggerType_File
+#define GWEN_LoggerTypeSyslog GWEN_LoggerType_Syslog
+#define GWEN_LoggerTypeFunction GWEN_LoggerType_Function
+#define GWEN_LoggerTypeUnknown GWEN_LoggerType_Unknown
+
+#define GWEN_LoggerFacilityAuth GWEN_LoggerFacility_Auth
+#define GWEN_LoggerFacilityDaemon GWEN_LoggerFacility_Daemon
+#define GWEN_LoggerFacilityMail GWEN_LoggerFacility_Mail
+#define GWEN_LoggerFacilityNews GWEN_LoggerFacility_News
+#define GWEN_LoggerFacilityUser GWEN_LoggerFacility_User
+#define GWEN_LoggerFacilityUnknown GWEN_LoggerFacility_Unknown
+
+#define GWEN_LoggerLevelEmergency GWEN_LoggerLevel_Emergency
+#define GWEN_LoggerLevelAlert GWEN_LoggerLevel_Alert
+#define GWEN_LoggerLevelCritical GWEN_LoggerLevel_Critical
+#define GWEN_LoggerLevelError GWEN_LoggerLevel_Error
+#define GWEN_LoggerLevelWarning GWEN_LoggerLevel_Warning
+#define GWEN_LoggerLevelNotice GWEN_LoggerLevel_Notice
+#define GWEN_LoggerLevelInfo GWEN_LoggerLevel_Info
+#define GWEN_LoggerLevelDebug GWEN_LoggerLevel_Debug
+#define GWEN_LoggerLevelVerbous GWEN_LoggerLevel_Verbous
+#define GWEN_LoggerLevelUnknown GWEN_LoggerLevel_Unknown
+
+#endif
+
+
 #endif
 
 

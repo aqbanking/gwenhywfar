@@ -1,6 +1,14 @@
 EXTRA_DIST=README ressource.rc.in
 
-AM_CFLAGS=@PROFILING_CFLAGS@
+INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
+ -I$(top_srcdir)/src/base \
+ -I$(top_srcdir)/src/crypt \
+ -I$(top_srcdir)/src/io \
+ -I$(top_srcdir)/src/ipc \
+ -I$(top_srcdir)/src/net2 \
+ -I$(top_srcdir)/src/os \
+ -I$(top_srcdir)/src/parser @all_includes@
+
 
 dbioplugindir = $(gwenhywfar_plugindir)/dbio
 

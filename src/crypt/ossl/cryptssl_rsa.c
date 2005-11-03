@@ -62,7 +62,7 @@ void GWEN_CryptKeyRSA_DumpPubKey(const GWEN_CRYPTKEY *key){
   GWEN_ERRORCODE lerr;
 
   dbDebug=GWEN_DB_Group_new("key");
-  lerr=GWEN_CryptKey_ToDb(key, dbDebug, 1);
+  lerr=GWEN_CryptKey_toDb(key, dbDebug, 1);
   if (!GWEN_Error_IsOk(lerr)) {
     DBG_ERROR_ERR(GWEN_LOGDOMAIN, lerr);
   }
@@ -471,7 +471,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   assert(kd);
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Reading this key:");
-  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
     GWEN_DB_Dump(db, stderr, 2);
 
   pub=GWEN_DB_GetIntValue(db, "public", 0, 1);

@@ -40,8 +40,8 @@ ARGUMENTS *Arguments_new() {
   assert(ar);
   memset(ar, 0, sizeof(ARGUMENTS));
   ar->verbous=0;
-  ar->logLevel=GWEN_LoggerLevelNotice;
-  ar->logType=GWEN_LoggerTypeConsole;
+  ar->logLevel=GWEN_LoggerLevel_Notice;
+  ar->logType=GWEN_LoggerType_Console;
   ar->compact=0;
   return ar;
 }
@@ -143,7 +143,7 @@ int checkArgs(ARGUMENTS *args, int argc, char **argv) {
       if (i>=argc)
         return RETURNVALUE_PARAM;
       args->logType=GWEN_Logger_Name2Logtype(argv[i]);
-      if (args->logType==GWEN_LoggerTypeUnknown) {
+      if (args->logType==GWEN_LoggerType_Unknown) {
         fprintf(stderr,
                 I18N("Unknown log type \"%s\"\n"),
                 argv[i]);
@@ -155,7 +155,7 @@ int checkArgs(ARGUMENTS *args, int argc, char **argv) {
       if (i>=argc)
         return RETURNVALUE_PARAM;
       args->logLevel=GWEN_Logger_Name2Level(argv[i]);
-      if (args->logLevel==GWEN_LoggerLevelUnknown) {
+      if (args->logLevel==GWEN_LoggerLevel_Unknown) {
         fprintf(stderr,
                 I18N("Unknown log level \"%s\"\n"),
                 argv[i]);

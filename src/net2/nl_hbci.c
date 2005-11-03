@@ -239,11 +239,11 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHbci__ReadWork(GWEN_NETLAYER *nl) {
         if (code<200 || code>299) {
           if (code!=100) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Got an error response");
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelError,
+            GWEN_WaitCallback_Log(GWEN_LoggerLevel_Error,
                                   GWEN_Buffer_GetStart(lbuf));
           }
           else {
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
+            GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info,
                                   GWEN_Buffer_GetStart(lbuf));
           }
           GWEN_Buffer_free(lbuf);
@@ -251,7 +251,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHbci__ReadWork(GWEN_NETLAYER *nl) {
           return GWEN_NetLayerResult_Changed;
         }
         else {
-          GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
+          GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info,
                                 GWEN_Buffer_GetStart(lbuf));
           GWEN_Buffer_free(lbuf);
         }

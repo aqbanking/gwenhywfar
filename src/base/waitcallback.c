@@ -491,7 +491,7 @@ void GWEN_WaitCallback_EnterWithText_u(const char *id,
         /* inform the original context about the attachment */
         ctx->originalCtx->logFn(ctx->originalCtx,
                                 GWEN_WAITCALLBACK_LEVEL_REUSED,
-                                GWEN_LoggerLevelNotice,
+                                GWEN_LoggerLevel_Notice,
                                 txt);
     }
     else {

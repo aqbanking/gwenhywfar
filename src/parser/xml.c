@@ -2654,7 +2654,7 @@ int GWEN_XML_AddNameSpace(GWEN_STRINGLIST2 *sl,
   GWEN_Buffer_AppendByte(nbuf, ':');
   GWEN_Buffer_AppendString(nbuf, name);
   rv=GWEN_StringList2_AppendString(sl, GWEN_Buffer_GetStart(nbuf), 0,
-                                   GWEN_StringList2_IntertModeNoDouble);
+                                   GWEN_StringList2_IntertMode_NoDouble);
   GWEN_Buffer_free(nbuf);
   return rv;
 }

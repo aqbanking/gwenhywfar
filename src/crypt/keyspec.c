@@ -39,6 +39,7 @@
 
 
 GWEN_INHERIT_FUNCTIONS(GWEN_KEYSPEC)
+GWEN_LIST_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec)
 GWEN_LIST2_FUNCTIONS(GWEN_KEYSPEC, GWEN_KeySpec)
 
 
@@ -83,37 +84,6 @@ GWEN_KEYSPEC *GWEN_KeySpec_dup(const GWEN_KEYSPEC *ks){
   newKs->version=ks->version;
   newKs->status=ks->status;
   return newKs;
-}
-
-
-
-GWEN_KEYSPEC *GWEN_KeySpec_Next(GWEN_KEYSPEC *ks){
-  assert(ks);
-  return ks->next;
-}
-
-
-const GWEN_KEYSPEC *GWEN_KeySpec_ConstNext(const GWEN_KEYSPEC *ks){
-  assert(ks);
-  return ks->next;
-}
-
-
-
-void GWEN_KeySpec_Add(GWEN_KEYSPEC *ks,
-                             GWEN_KEYSPEC **head){
-  assert(ks);
-  assert(head);
-  GWEN_LIST_ADD(GWEN_KEYSPEC, ks, head);
-}
-
-
-
-void GWEN_KeySpec_Del(GWEN_KEYSPEC *ks,
-                             GWEN_KEYSPEC **head){
-  assert(ks);
-  assert(head);
-  GWEN_LIST_DEL(GWEN_KEYSPEC, ks, head);
 }
 
 
@@ -208,24 +178,6 @@ int GWEN_KeySpec_GetStatus(const GWEN_KEYSPEC *ks){
 void GWEN_KeySpec_SetStatus(GWEN_KEYSPEC *ks, int i){
   assert(ks);
   ks->status=i;
-}
-
-
-
-void GWEN_KeySpec_Clear(GWEN_KEYSPEC **head){
-  GWEN_KEYSPEC *ks;
-
-  ks=*head;
-  DBG_INFO(GWEN_LOGDOMAIN, "Clearing list of KeySpecs");
-  while(ks) {
-    GWEN_KEYSPEC *nks;
-
-    nks=ks->next;
-    GWEN_KeySpec_free(ks);
-    ks=nks;
-  } /* while */
-  DBG_INFO(GWEN_LOGDOMAIN, "Clearing list of KeySpecs: done");
-  *head=0;
 }
 
 

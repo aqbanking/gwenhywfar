@@ -41,38 +41,38 @@ typedef struct GWEN_LOGGER GWEN_LOGGER;
 typedef void (*GWEN_LOGGERFUNCTIONLOG)(const char *s);
 
 typedef enum {
-  GWEN_LoggerTypeConsole,
-  GWEN_LoggerTypeFile,
-  GWEN_LoggerTypeSyslog,
-  GWEN_LoggerTypeFunction,
+  GWEN_LoggerType_Console,
+  GWEN_LoggerType_File,
+  GWEN_LoggerType_Syslog,
+  GWEN_LoggerType_Function,
 
-  GWEN_LoggerTypeUnknown=9999
+  GWEN_LoggerType_Unknown=9999
 } GWEN_LOGGER_LOGTYPE;
 
 
 typedef enum {
-  GWEN_LoggerFacilityAuth=0,
-  GWEN_LoggerFacilityDaemon,
-  GWEN_LoggerFacilityMail,
-  GWEN_LoggerFacilityNews,
-  GWEN_LoggerFacilityUser,
+  GWEN_LoggerFacility_Auth=0,
+  GWEN_LoggerFacility_Daemon,
+  GWEN_LoggerFacility_Mail,
+  GWEN_LoggerFacility_News,
+  GWEN_LoggerFacility_User,
 
-  GWEN_LoggerFacilityUnknown=9999
+  GWEN_LoggerFacility_Unknown=9999
 } GWEN_LOGGER_FACILITY;
 
 
 typedef enum {
-  GWEN_LoggerLevelEmergency=0,
-  GWEN_LoggerLevelAlert,
-  GWEN_LoggerLevelCritical,
-  GWEN_LoggerLevelError,
-  GWEN_LoggerLevelWarning,
-  GWEN_LoggerLevelNotice,
-  GWEN_LoggerLevelInfo,
-  GWEN_LoggerLevelDebug,
-  GWEN_LoggerLevelVerbous,
+  GWEN_LoggerLevel_Emergency=0,
+  GWEN_LoggerLevel_Alert,
+  GWEN_LoggerLevel_Critical,
+  GWEN_LoggerLevel_Error,
+  GWEN_LoggerLevel_Warning,
+  GWEN_LoggerLevel_Notice,
+  GWEN_LoggerLevel_Info,
+  GWEN_LoggerLevel_Debug,
+  GWEN_LoggerLevel_Verbous,
 
-  GWEN_LoggerLevelUnknown=9999
+  GWEN_LoggerLevel_Unknown=9999
 } GWEN_LOGGER_LEVEL;
 
 

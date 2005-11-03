@@ -1,12 +1,10 @@
-INCLUDES=@all_includes@ -I$(top_srcdir) \
+INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/ipc \
- -I$(top_srcdir)/src/net \
- -I$(top_srcdir)/src/os \
- -I$(top_srcdir)/src/parser \
- -I$(top_srcdir)/src/ui
+ -I$(top_srcdir)/src/net2 \
+ -I$(top_srcdir)/src/parser @all_includes@
 
 AM_CFLAGS=@PROFILING_CFLAGS@
 
@@ -16,14 +14,13 @@ DIST_SUBDIRS=none ossl
 typefiles=ssl_cipher.xml ssl_cert_descr.xml
 EXTRA_DIST=$(typefiles)
 
-iheaderdir=${includedir}/gwenhywfar
+iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
  crypt.h \
  keymanager.h \
  keyspec.h \
  md.h \
  padd.h \
- nettransportssl.h \
  nl_ssl.h \
  ssl_cipher.h \
  ssl_cert_descr.h

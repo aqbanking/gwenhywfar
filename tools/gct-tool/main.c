@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
+    GWEN_ArgsType_Char,            /* type */
     "cfgfile",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
+    GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
     0,                            /* minnum */
     0,                            /* maxnum */
@@ -73,17 +73,17 @@ int main(int argc, char **argv) {
   }
 
   GWEN_Logger_Open("gct-tool", "gct-tool", 0,
-                   GWEN_LoggerTypeConsole,
-                   GWEN_LoggerFacilityUser);
+                   GWEN_LoggerType_Console,
+                   GWEN_LoggerFacility_User);
 
 #ifdef DEBUG_GCT_TOOL
-  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevelInfo);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelInfo);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelInfo);
+  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevel_Info);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
 #else
-  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevelWarning);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevelWarning);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevelWarning);
+  GWEN_Logger_SetLevel("gct-tool", GWEN_LoggerLevel_Warning);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Warning);
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Warning);
 #endif
 
 #ifdef GCT_IS_EXPERIMENTAL
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
                                   "[LOCAL OPTIONS]\n"));
     GWEN_Buffer_AppendString(ubuf,
                              I18N("\nGlobal Options:\n"));
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }

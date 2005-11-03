@@ -17,8 +17,7 @@
 
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
-#include <gwenhywfar/nettransport.h>
-#include <gwenhywfar/netconnection.h>
+#include <gwenhywfar/netlayer.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list2.h>
 
@@ -45,58 +44,31 @@ typedef struct GWEN_IPCMANAGER GWEN_IPCMANAGER;
 
 
 GWENHYWFAR_API
-GWEN_IPCMANAGER *GWEN_IPCManager_new();
+GWEN_IPCMANAGER *GWEN_IpcManager_new();
 
 GWENHYWFAR_API
-void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr);
+void GWEN_IpcManager_free(GWEN_IPCMANAGER *mgr);
 
 GWENHYWFAR_API
-void GWEN_IPCManager_Attach(GWEN_IPCMANAGER *mgr);
+void GWEN_IpcManager_Attach(GWEN_IPCMANAGER *mgr);
 
 GWENHYWFAR_API
-void GWEN_IPCManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent);
+void GWEN_IpcManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent);
 
 
 GWENHYWFAR_API
-const char *GWEN_IPCManager_GetApplicationName(const GWEN_IPCMANAGER *mgr);
+const char *GWEN_IpcManager_GetApplicationName(const GWEN_IPCMANAGER *mgr);
 
 GWENHYWFAR_API
-void GWEN_IPCManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
+void GWEN_IpcManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
                                         const char *name);
 
-
-/**
- * Sets a callback function which is called for every network connection that
- * went up.
- */
-GWENHYWFAR_API
-void GWEN_IPCManager_SetUpFn(GWEN_IPCMANAGER *mgr,
-                             GWEN_TYPE_UINT32 id,
-                             GWEN_NETCONNECTION_UPFN fn);
-
-/**
- * Sets a callback function which is called for every network connection that
- * went down.
- */
-GWENHYWFAR_API
-void GWEN_IPCManager_SetDownFn(GWEN_IPCMANAGER *mgr,
-                               GWEN_TYPE_UINT32 id,
-                               GWEN_NETCONNECTION_DOWNFN fn);
 
 /**
  * Starts disconnecting the given client/server.
  */
 GWENHYWFAR_API
-int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid);
-
-/**
- * Updates the connection status and returns it.
- * You can use this function to check whether a connection is broken.
- */
-GWENHYWFAR_API
-GWEN_NETTRANSPORT_STATUS
-GWEN_IPCManager_CheckConnection(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid);
-
+int GWEN_IpcManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid);
 
 /**
  * Adds a server to the IPC manager. The IPC manager will immediately
@@ -106,13 +78,13 @@ GWEN_IPCManager_CheckConnection(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid);
  * @param tr transport layer to be used (this MUST not be connected or in
  *  listening state)
  * @param mark a value assigned to the new connection. This value can be used
- *   for functions @ref GWEN_IPCManager_GetNextInRequest and
- *   @ref GWEN_IPCManager_SendMultiRequest, it is not otherwise used by
+ *   for functions @ref GWEN_IpcManager_GetNextInRequest and
+ *   @ref GWEN_IpcManager_SendMultiRequest, it is not otherwise used by
  *   the IPC manager
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IPCManager_AddServer(GWEN_IPCMANAGER *mgr,
-                                           GWEN_NETTRANSPORT *tr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_AddServer(GWEN_IPCMANAGER *mgr,
+                                           GWEN_NETLAYER *nlBase,
                                            GWEN_TYPE_UINT32 mark);
 
 /**
@@ -125,24 +97,22 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_AddServer(GWEN_IPCMANAGER *mgr,
  * @param userName if given this name will be used for HTTP authorization
  * @param passwd if given this password will be used for HTTP authorization
  * @param mark a value assigned to the new connection. This value can be used
- *   for functions @ref GWEN_IPCManager_GetNextInRequest and
- *   @ref GWEN_IPCManager_SendMultiRequest, it is not otherwise used by
+ *   for functions @ref GWEN_IpcManager_GetNextInRequest and
+ *   @ref GWEN_IpcManager_SendMultiRequest, it is not otherwise used by
  *   the IPC manager
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IPCManager_AddClient(GWEN_IPCMANAGER *mgr,
-                                           GWEN_NETTRANSPORT *tr,
-                                           const char *userName,
-                                           const char *passwd,
+GWEN_TYPE_UINT32 GWEN_IpcManager_AddClient(GWEN_IPCMANAGER *mgr,
+                                           GWEN_NETLAYER *nlBase,
                                            GWEN_TYPE_UINT32 mark);
 /**
  * Removes a client which was previously added using
- *  @ref GWEN_IPCManager_AddClient.
+ *  @ref GWEN_IpcManager_AddClient.
  * This function removes all pending messages and/or requests for/from this
  * client.
  */
 GWENHYWFAR_API
-int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
+int GWEN_IpcManager_RemoveClient(GWEN_IPCMANAGER *mgr,
 				 GWEN_TYPE_UINT32 nid);
 
 /**
@@ -150,12 +120,12 @@ int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
  * It takes over the ownership of the given GWEN_DB in any case.
  * @return request id of the request created (0 on error)
  * @param mgr pointer to the IPC manager object
- * @param nid value returned by @ref GWEN_IPCManager_AddClient or by
- *   @ref GWEN_IPCManager_GetInRequestData (in variable "ipc/nodeId");
+ * @param nid value returned by @ref GWEN_IpcManager_AddClient or by
+ *   @ref GWEN_IpcManager_GetInRequestData (in variable "ipc/nodeId");
  * @param req DB containing the request
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IPCManager_SendRequest(GWEN_IPCMANAGER *mgr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_SendRequest(GWEN_IPCMANAGER *mgr,
                                              GWEN_TYPE_UINT32 nid,
                                              GWEN_DB_NODE *req);
 
@@ -163,12 +133,12 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_SendRequest(GWEN_IPCMANAGER *mgr,
  * Sends a request to any connection of the given mark.
  * @return request id of the request created (0 on error)
  * @param mgr pointer to the IPC manager object
- * @param mark mark (as given to @ref GWEN_IPCManager_AddClient or
- *   @ref GWEN_IPCManager_AddServer), 0 matches all
+ * @param mark mark (as given to @ref GWEN_IpcManager_AddClient or
+ *   @ref GWEN_IpcManager_AddServer), 0 matches all
  * @param req DB containing the request
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IPCManager_SendMultiRequest(GWEN_IPCMANAGER *mgr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_SendMultiRequest(GWEN_IPCMANAGER *mgr,
                                                   GWEN_TYPE_UINT32 mark,
                                                   GWEN_DB_NODE *req);
 
@@ -177,11 +147,11 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_SendMultiRequest(GWEN_IPCMANAGER *mgr,
  * @return 0 if ok, !=0 on error
  * @param mgr pointer to the IPC manager object
  * @param rid id of the request to which this is a response (as returned
- *   by @ref GWEN_IPCManager_GetNextInRequest)
+ *   by @ref GWEN_IpcManager_GetNextInRequest)
  * @param rsp DB containing the response
  */
 GWENHYWFAR_API
-int GWEN_IPCManager_SendResponse(GWEN_IPCMANAGER *mgr,
+int GWEN_IpcManager_SendResponse(GWEN_IPCMANAGER *mgr,
                                  GWEN_TYPE_UINT32 rid,
                                  GWEN_DB_NODE *rsp);
 
@@ -189,14 +159,14 @@ int GWEN_IPCManager_SendResponse(GWEN_IPCMANAGER *mgr,
  * Removes a request.
  * @param mgr pointer to the IPC manager object
  * @param rid id of the request to which this is a response (as returned
- *   by @ref GWEN_IPCManager_GetNextInRequest,
- *   @ref GWEN_IPCManager_SendRequest or
- *   @ref GWEN_IPCManager_SendMultiRequest)
+ *   by @ref GWEN_IpcManager_GetNextInRequest,
+ *   @ref GWEN_IpcManager_SendRequest or
+ *   @ref GWEN_IpcManager_SendMultiRequest)
  * @param outbound if 0 then an incoming request is to be removed, otherwise
  *   an outgoing request is to be deleted
  */
 GWENHYWFAR_API
-int GWEN_IPCManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
+int GWEN_IpcManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
                                   GWEN_TYPE_UINT32 rid,
                                   int outbound);
 
@@ -207,10 +177,10 @@ int GWEN_IPCManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
  * is none left). So you will have to preserve the id returned in order to
  * use it.
  * @param mgr pointer to the IPC manager object
- * @param mark, 0 matches any (see @ref GWEN_IPCManager_AddServer)
+ * @param mark, 0 matches any (see @ref GWEN_IpcManager_AddServer)
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IPCManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
                                                   GWEN_TYPE_UINT32 mark);
 
 /**
@@ -228,10 +198,10 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
  * </ul>
  * </p>
  * @param mgr pointer to the IPC manager object
- * @param rid request id returned by @ref GWEN_IPCManager_GetNextInRequest
+ * @param rid request id returned by @ref GWEN_IpcManager_GetNextInRequest
  */
 GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_IPCManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
+GWEN_DB_NODE *GWEN_IpcManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
                                                GWEN_TYPE_UINT32 rid);
 
 
@@ -241,11 +211,11 @@ GWEN_DB_NODE *GWEN_IPCManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
  * return the next response (if any).
  * The caller takes over ownership of the data returned.
  * @param mgr pointer to the IPC manager object
- * @param rid request id returned by @ref GWEN_IPCManager_SendRequest or
- *        @ref GWEN_IPCManager_SendMultiRequest
+ * @param rid request id returned by @ref GWEN_IpcManager_SendRequest or
+ *        @ref GWEN_IpcManager_SendMultiRequest
  */
 GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_IPCManager_GetResponseData(GWEN_IPCMANAGER *mgr,
+GWEN_DB_NODE *GWEN_IpcManager_GetResponseData(GWEN_IPCMANAGER *mgr,
                                               GWEN_TYPE_UINT32 rid);
 
 /**
@@ -254,34 +224,34 @@ GWEN_DB_NODE *GWEN_IPCManager_GetResponseData(GWEN_IPCMANAGER *mgr,
  * will return the same response (if any).
  * The caller does NOT take over ownership of the data returned.
  * @param mgr pointer to the IPC manager object
- * @param rid request id returned by @ref GWEN_IPCManager_SendRequest or
- *        @ref GWEN_IPCManager_SendMultiRequest
+ * @param rid request id returned by @ref GWEN_IpcManager_SendRequest or
+ *        @ref GWEN_IpcManager_SendMultiRequest
  */
 GWENHYWFAR_API
-GWEN_DB_NODE *GWEN_IPCManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
+GWEN_DB_NODE *GWEN_IpcManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
                                                GWEN_TYPE_UINT32 rid);
 
 
 /**
  * Lets the IPC manager do its work.
- * You need to call @ref GWEN_Net_HeartBeat before this function to
+ * You need to call @ref GWEN_Net2_HeartBeat before this function to
  * catch changes in the network connections used.
  */
 GWENHYWFAR_API
-int GWEN_IPCManager_Work(GWEN_IPCMANAGER *mgr, int maxmsg);
+int GWEN_IpcManager_Work(GWEN_IPCMANAGER *mgr);
 
 
 /**
  * Returns a pointer to the connection used by the given node.
  */
 GWENHYWFAR_API
-GWEN_NETCONNECTION *GWEN_IPCManager_GetConnection(GWEN_IPCMANAGER *mgr,
-                                                  GWEN_TYPE_UINT32 nid);
+GWEN_NETLAYER *GWEN_IpcManager_GetNetLayer(GWEN_IPCMANAGER *mgr,
+                                           GWEN_TYPE_UINT32 nid);
 
 GWENHYWFAR_API
 GWEN_TYPE_UINT32
-GWEN_IPCManager_GetClientForConnection(const GWEN_IPCMANAGER *mgr,
-				       const GWEN_NETCONNECTION *conn);
+GWEN_IpcManager_GetClientForNetLayer(const GWEN_IPCMANAGER *mgr,
+                                     const GWEN_NETLAYER *nl);
 
 
 

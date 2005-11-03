@@ -3344,7 +3344,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                    I18N("Loading plugin \"%s\""),
                    GWEN_PluginDescription_GetName(pd));
           logbuffer[sizeof(logbuffer)-1]=0;
-          GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+          GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info, logbuffer);
 
           /* device type matches, check this plugin */
           pl=GWEN_PluginManager_GetPlugin(pm,
@@ -3361,7 +3361,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                      I18N("Checking plugin \"%s\""),
                      GWEN_Plugin_GetName(pl));
             logbuffer[sizeof(logbuffer)-1]=0;
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, logbuffer);
+            GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice, logbuffer);
 
             DBG_INFO(GWEN_LOGDOMAIN,
 		     "Checking plugin \"%s\"",
@@ -3377,7 +3377,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                        I18N("Plugin \"%s\" supports this token"),
                        GWEN_Plugin_GetName(pl));
               logbuffer[sizeof(logbuffer)-1]=0;
-              GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, logbuffer);
+              GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice, logbuffer);
 
               GWEN_Buffer_Reset(typeName);
               GWEN_Buffer_AppendString(typeName, GWEN_Plugin_GetName(pl));
@@ -3396,7 +3396,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                        I18N("Plugin \"%s\": Function not implemented"),
                        GWEN_Plugin_GetName(pl));
               logbuffer[sizeof(logbuffer)-1]=0;
-              GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice, logbuffer);
+              GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice, logbuffer);
               break;
 
             case GWEN_ERROR_CT_NOT_SUPPORTED:
@@ -3404,7 +3404,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                        I18N("Plugin \"%s\" does not support this token"),
                        GWEN_Plugin_GetName(pl));
               logbuffer[sizeof(logbuffer)-1]=0;
-              GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+              GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info, logbuffer);
               break;
 
             case GWEN_ERROR_CT_BAD_NAME:
@@ -3413,7 +3413,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                             "did not match"),
                        GWEN_Plugin_GetName(pl));
               logbuffer[sizeof(logbuffer)-1]=0;
-              GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+              GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info, logbuffer);
               break;
 
             default:
@@ -3421,7 +3421,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                        I18N("Plugin \"%s\": Unexpected error (%d)"),
                        GWEN_Plugin_GetName(pl), rv);
               logbuffer[sizeof(logbuffer)-1]=0;
-              GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, logbuffer);
+              GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info, logbuffer);
               break;
             } /* switch */
           } /* if plugin loaded */
@@ -3430,7 +3430,7 @@ int GWEN_CryptManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                      I18N("Could not load plugin \"%s\""),
                      GWEN_PluginDescription_GetName(pd));
             logbuffer[sizeof(logbuffer)-1]=0;
-            GWEN_WaitCallback_Log(GWEN_LoggerLevelWarning, logbuffer);
+            GWEN_WaitCallback_Log(GWEN_LoggerLevel_Warning, logbuffer);
           }
         }
 

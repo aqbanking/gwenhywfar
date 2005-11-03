@@ -59,13 +59,13 @@ extern "C" {
 
 
 typedef enum {
-  GWEN_ArgsTypeChar=0,
-  GWEN_ArgsTypeInt
+  GWEN_ArgsType_Char=0,
+  GWEN_ArgsType_Int
 } GWEN_ARGS_TYPE;
 
 typedef enum {
-  GWEN_ArgsOutTypeTXT=0,
-  GWEN_ArgsOutTypeHTML
+  GWEN_ArgsOutType_Txt=0,
+  GWEN_ArgsOutType_Html
 } GWEN_ARGS_OUTTYPE;
 
 

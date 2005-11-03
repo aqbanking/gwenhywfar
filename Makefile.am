@@ -1,12 +1,5 @@
-
-if USE_NCURSES
-gwenui_subdir = gwenui
-else
-gwenui_subdir = 
-endif
-
-SUBDIRS=admin m4 src gwenpp $(gwenui_subdir) plugins tools test po doc
-SUBDIRS_DIST=admin m4 src gwenpp gwenui plugins tools test doc po
+SUBDIRS=admin m4 src plugins tools test po doc
+SUBDIRS_DIST=admin m4 src plugins tools test doc po
 
 
 AUTOMAKE_OPTIONS = foreign
@@ -19,17 +12,17 @@ EXTRA_DIST = \
  gwenhywfar.spec \
  Makefile.cvs
 
-bin_SCRIPTS = gwenhywfar-config
+bin_SCRIPTS = gwenhywfar2-config
 M4dir = $(datadir)/aclocal
 dist_M4_DATA = gwenhywfar.m4
 ACLOCAL_AMFLAGS = -I m4
 
 
-gwenhywfar-config: gwenhywfar-config.in
-	echo "#! /bin/sh" >gwenhywfar-config && \
-	echo 'dir="@prefix@"' >>gwenhywfar-config && \
-	cat gwenhywfar-config.in >>gwenhywfar-config && \
-	chmod a+x gwenhywfar-config
+gwenhywfar2-config: gwenhywfar2-config.in
+	echo "#! /bin/sh" >gwenhywfar2-config && \
+	echo 'dir="@prefix@"' >>gwenhywfar2-config && \
+	cat gwenhywfar2-config.in >>gwenhywfar2-config && \
+	chmod a+x gwenhywfar2-config
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwenhywfar.pc
@@ -153,8 +146,8 @@ quick: config.h
 	make -C po stamp-po
 	make
 
-CLEANFILES = gwenhywfar-config
-DISTCLEANFILES = gwenhywfar-config.in
+CLEANFILES = gwenhywfar2-config
+DISTCLEANFILES = gwenhywfar2-config.in
 
 # Rule for only building the source rpm
 srpm: $(PACKAGE).spec dist

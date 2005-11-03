@@ -112,6 +112,18 @@ GWEN_BUFFER *GWEN_NL_Packet_GetBuffer(const GWEN_NL_PACKET *pk) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
+GWEN_BUFFER *GWEN_NL_Packet_TakeBuffer(GWEN_NL_PACKET *pk) {
+  GWEN_BUFFER *buf;
+
+  assert(pk);
+  buf=pk->buffer;
+  pk->buffer=0;
+  return buf;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 void GWEN_NL_Packet_SetBuffer(GWEN_NL_PACKET *pk, GWEN_BUFFER *buf) {
   assert(pk);
   GWEN_Buffer_free(pk->buffer);
@@ -499,6 +511,22 @@ int GWEN_NetLayerPackets_SendPacket(GWEN_NETLAYER *nl,
 
 
 /* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayerPackets_HasNextPacket(const GWEN_NETLAYER *nl) {
+  GWEN_NL_PACKETS *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_PACKETS, nl);
+  assert(nld);
+
+  if (GWEN_NL_Packet_List_First(nld->outPackets))
+    return 1;
+
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 GWEN_NL_PACKET *GWEN_NetLayerPackets_GetNextPacket(GWEN_NETLAYER *nl) {
   GWEN_NL_PACKETS *nld;
   GWEN_NL_PACKET *pk;
@@ -563,7 +591,7 @@ GWEN_NL_PACKET *GWEN_NetLayerPackets_GetNextPacket_Wait(GWEN_NETLAYER *nl,
     if (pk)
       return pk;
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return 0;
@@ -648,7 +676,7 @@ int GWEN_NetLayerPackets_Flush(GWEN_NETLAYER *nl, int timeout) {
         GWEN_NL_Packet_List_GetCount(nld->outPackets)==0)
       return 0;
 
-    res=GWEN_Net2_HeartBeat(distance);
+    res=GWEN_Net_HeartBeat(distance);
     if (res==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;

@@ -56,18 +56,18 @@ static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
 
 GWEN_ERRORCODE GWEN_Logger_ModuleInit(){
   const char *s;
-  GWEN_LOGGER_LEVEL ll=GWEN_LoggerLevelWarning;
+  GWEN_LOGGER_LEVEL ll=GWEN_LoggerLevel_Warning;
 
   GWEN_Logger_Open(GWEN_LOGDOMAIN,
                    "gwen",
                    0,
-                   GWEN_LoggerTypeConsole,
-                   GWEN_LoggerFacilityUser);
+                   GWEN_LoggerType_Console,
+                   GWEN_LoggerFacility_User);
   s=getenv("GWEN_LOGLEVEL");
   if (s) {
     ll=GWEN_Logger_Name2Level(s);
-    if (ll==GWEN_LoggerLevelUnknown)
-      ll=GWEN_LoggerLevelWarning;
+    if (ll==GWEN_LoggerLevel_Unknown)
+      ll=GWEN_LoggerLevel_Warning;
   }
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, ll);
   return 0;
@@ -161,8 +161,8 @@ GWEN_LOGGER *GWEN_Logger_new(){
   GWEN_NEW_OBJECT(GWEN_LOGGER, lg);
   lg->usage=1;
   lg->enabled=1;
-  lg->logType=GWEN_LoggerTypeConsole;
-  lg->logLevel=GWEN_LoggerLevelError;
+  lg->logType=GWEN_LoggerType_Console;
+  lg->logLevel=GWEN_LoggerLevel_Error;
   return lg;
 }
 
@@ -217,37 +217,37 @@ int GWEN_Logger_Open(const char *logDomain,
   GWEN_Logger_SetIdent(logDomain, ident);
   GWEN_Logger_SetFilename(logDomain, file);
 
-  if (logtype==GWEN_LoggerTypeFile) {
+  if (logtype==GWEN_LoggerType_File) {
     /* logging to a file */
     if (file==0) {
-      lg->logType=GWEN_LoggerTypeConsole;
+      lg->logType=GWEN_LoggerType_Console;
       lg->enabled=1;
       fprintf(stderr,"LOGGER: No filename given, will log to console.\n");
     }
     else {
-      lg->logType=GWEN_LoggerTypeFile;
+      lg->logType=GWEN_LoggerType_File;
       lg->enabled=1;
     }
   }
 #ifdef HAVE_SYSLOG_H
-  else if (logtype==GWEN_LoggerTypeSyslog) {
+  else if (logtype==GWEN_LoggerType_Syslog) {
     /* caller wants to log via syslog */
     int fac;
 
     switch(facility) {
-    case GWEN_LoggerFacilityAuth:
+    case GWEN_LoggerFacility_Auth:
       fac=LOG_AUTH;
       break;
-    case GWEN_LoggerFacilityDaemon:
+    case GWEN_LoggerFacility_Daemon:
       fac=LOG_DAEMON;
       break;
-    case GWEN_LoggerFacilityMail:
+    case GWEN_LoggerFacility_Mail:
       fac=LOG_MAIL;
       break;
-    case GWEN_LoggerFacilityNews:
+    case GWEN_LoggerFacility_News:
       fac=LOG_NEWS;
       break;
-    case GWEN_LoggerFacilityUser:
+    case GWEN_LoggerFacility_User:
     default:
       fac=LOG_USER;
       break;
@@ -257,20 +257,20 @@ int GWEN_Logger_Open(const char *logDomain,
 	    LOG_CONS |
 	    LOG_PID,
 	    fac);
-    lg->logType=GWEN_LoggerTypeSyslog;
+    lg->logType=GWEN_LoggerType_Syslog;
     lg->enabled=1;
   } /* if syslog */
 #endif /* ifdef HAVE_SYSLOG_H */
 
   else {
     /* console */
-    lg->logType=GWEN_LoggerTypeConsole;
+    lg->logType=GWEN_LoggerType_Console;
     lg->enabled=1;
   }
 
   lg->open=1;
 
-  return GWEN_Logger_Log(logDomain, GWEN_LoggerLevelDebug, "started");
+  return GWEN_Logger_Log(logDomain, GWEN_LoggerLevel_Debug, "started");
 }
 
 
@@ -280,8 +280,8 @@ void GWEN_Logger_Close(const char *logDomain){
 
   lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
-  GWEN_Logger_Log(logDomain, GWEN_LoggerLevelDebug, "stopped");
-  lg->logType=GWEN_LoggerTypeConsole;
+  GWEN_Logger_Log(logDomain, GWEN_LoggerLevel_Debug, "stopped");
+  lg->logType=GWEN_LoggerType_Console;
   lg->enabled=0;
 #ifdef HAVE_SYSLOG_H
   closelog();
@@ -398,7 +398,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 
     mbuf=GWEN_Buffer_new(0, 256, 0, 1);
     switch(lg->logType) {
-    case GWEN_LoggerTypeFile:
+    case GWEN_LoggerType_File:
       rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
       if (rv) {
         GWEN_Buffer_free(mbuf);
@@ -411,7 +411,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
                 "LOGGER: Unable to open file \"%s\" (%s)\n",
                 lg->logFile,
                 strerror(errno));
-        lg->logType=GWEN_LoggerTypeConsole;
+        lg->logType=GWEN_LoggerType_Console;
         GWEN_Buffer_free(mbuf);
         return 1;
       }
@@ -423,7 +423,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
                 lg->logFile,
                 strerror(errno));
         fclose(f);
-        lg->logType=GWEN_LoggerTypeConsole;
+        lg->logType=GWEN_LoggerType_Console;
         GWEN_Buffer_free(mbuf);
         return 1;
       }
@@ -432,39 +432,39 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
                 "LOGGER: Unable to close file \"%s\" (%s)\n",
                 lg->logFile,
                 strerror(errno));
-        lg->logType=GWEN_LoggerTypeConsole;
+        lg->logType=GWEN_LoggerType_Console;
         GWEN_Buffer_free(mbuf);
         return 1;
       }
       break;
 
 #ifdef HAVE_SYSLOG_H
-    case GWEN_LoggerTypeSyslog:
+    case GWEN_LoggerType_Syslog:
       switch(priority) {
-      case GWEN_LoggerLevelEmergency:
+      case GWEN_LoggerLevel_Emergency:
         pri=LOG_EMERG;
         break;
-      case GWEN_LoggerLevelAlert:
+      case GWEN_LoggerLevel_Alert:
         pri=LOG_ALERT;
         break;
-      case GWEN_LoggerLevelCritical:
+      case GWEN_LoggerLevel_Critical:
         pri=LOG_CRIT;
         break;
-      case GWEN_LoggerLevelError:
+      case GWEN_LoggerLevel_Error:
         pri=LOG_ERR;
         break;
-      case GWEN_LoggerLevelWarning:
+      case GWEN_LoggerLevel_Warning:
         pri=LOG_WARNING;
         break;
-      case GWEN_LoggerLevelNotice:
+      case GWEN_LoggerLevel_Notice:
         pri=LOG_NOTICE;
         break;
-      case GWEN_LoggerLevelInfo:
+      case GWEN_LoggerLevel_Info:
         pri=LOG_NOTICE;
         break;
 
-      case GWEN_LoggerLevelDebug:
-      case GWEN_LoggerLevelVerbous:
+      case GWEN_LoggerLevel_Debug:
+      case GWEN_LoggerLevel_Verbous:
       default:
         pri=LOG_DEBUG;
         break;
@@ -473,7 +473,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
       break;
 #endif /* HAVE_SYSLOG_H */
 
-    case GWEN_LoggerTypeFunction:
+    case GWEN_LoggerType_Function:
       if (lg->logFunction==0) {
         fprintf(stderr,
                 "LOGGER: Logtype is \"Function\", but no function is set.\n");
@@ -488,7 +488,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
       (lg->logFunction)(GWEN_Buffer_GetStart(mbuf));
       break;
 
-    case GWEN_LoggerTypeConsole:
+    case GWEN_LoggerType_Console:
     default:
       rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
       if (rv) {
@@ -627,25 +627,25 @@ void GWEN_Logger_SetFilename(const char *logDomain, const char *name){
 
 GWEN_LOGGER_LEVEL GWEN_Logger_Name2Level(const char *name) {
   if (strcasecmp(name, "emergency")==0)
-    return GWEN_LoggerLevelEmergency;
+    return GWEN_LoggerLevel_Emergency;
   else if (strcasecmp(name, "alert")==0)
-    return GWEN_LoggerLevelAlert;
+    return GWEN_LoggerLevel_Alert;
   else if (strcasecmp(name, "critical")==0)
-    return GWEN_LoggerLevelCritical;
+    return GWEN_LoggerLevel_Critical;
   else if (strcasecmp(name, "error")==0)
-    return GWEN_LoggerLevelError;
+    return GWEN_LoggerLevel_Error;
   else if (strcasecmp(name, "warning")==0)
-    return GWEN_LoggerLevelWarning;
+    return GWEN_LoggerLevel_Warning;
   else if (strcasecmp(name, "notice")==0)
-    return GWEN_LoggerLevelNotice;
+    return GWEN_LoggerLevel_Notice;
   else if (strcasecmp(name, "info")==0)
-    return GWEN_LoggerLevelInfo;
+    return GWEN_LoggerLevel_Info;
   else if (strcasecmp(name, "debug")==0)
-    return GWEN_LoggerLevelDebug;
+    return GWEN_LoggerLevel_Debug;
   else if (strcasecmp(name, "verbous")==0)
-    return GWEN_LoggerLevelVerbous;
+    return GWEN_LoggerLevel_Verbous;
   else {
-    return GWEN_LoggerLevelUnknown;
+    return GWEN_LoggerLevel_Unknown;
   }
 }
 
@@ -655,25 +655,25 @@ const char *GWEN_Logger_Level2Name(GWEN_LOGGER_LEVEL level) {
   const char *s;
 
   switch(level) {
-  case GWEN_LoggerLevelEmergency:
+  case GWEN_LoggerLevel_Emergency:
     s="emergency"; break;
-  case GWEN_LoggerLevelAlert:
+  case GWEN_LoggerLevel_Alert:
     s="alert"; break;
-  case GWEN_LoggerLevelCritical:
+  case GWEN_LoggerLevel_Critical:
     s="critical"; break;
-  case GWEN_LoggerLevelError:
+  case GWEN_LoggerLevel_Error:
     s="error"; break;
-  case GWEN_LoggerLevelWarning:
+  case GWEN_LoggerLevel_Warning:
     s="warning"; break;
-  case GWEN_LoggerLevelNotice:
+  case GWEN_LoggerLevel_Notice:
     s="notice"; break;
-  case GWEN_LoggerLevelInfo:
+  case GWEN_LoggerLevel_Info:
     s="info"; break;
-  case GWEN_LoggerLevelDebug:
+  case GWEN_LoggerLevel_Debug:
     s="debug"; break;
-  case GWEN_LoggerLevelVerbous:
+  case GWEN_LoggerLevel_Verbous:
     s="verbous"; break;
-  case GWEN_LoggerLevelUnknown:
+  case GWEN_LoggerLevel_Unknown:
   default:
     s="unknown"; break;
   } /* switch */
@@ -684,15 +684,15 @@ const char *GWEN_Logger_Level2Name(GWEN_LOGGER_LEVEL level) {
 
 GWEN_LOGGER_LOGTYPE GWEN_Logger_Name2Logtype(const char *name) {
   if (strcasecmp(name, "console")==0)
-    return GWEN_LoggerTypeConsole;
+    return GWEN_LoggerType_Console;
   else if (strcasecmp(name, "file")==0)
-    return GWEN_LoggerTypeFile;
+    return GWEN_LoggerType_File;
   else if (strcasecmp(name, "syslog")==0)
-    return GWEN_LoggerTypeSyslog;
+    return GWEN_LoggerType_Syslog;
   else if (strcasecmp(name, "function")==0)
-    return GWEN_LoggerTypeFunction;
+    return GWEN_LoggerType_Function;
   else {
-    return GWEN_LoggerTypeUnknown;
+    return GWEN_LoggerType_Unknown;
   }
 }
 
@@ -702,13 +702,13 @@ const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt) {
   const char *s;
 
   switch(lt) {
-  case GWEN_LoggerTypeConsole:
+  case GWEN_LoggerType_Console:
     s="console"; break;
-  case GWEN_LoggerTypeFile:
+  case GWEN_LoggerType_File:
     s="file"; break;
-  case GWEN_LoggerTypeSyslog:
+  case GWEN_LoggerType_Syslog:
     s="syslog"; break;
-  case GWEN_LoggerTypeFunction:
+  case GWEN_LoggerType_Function:
     s="function"; break;
   default:
     s="unknown"; break;

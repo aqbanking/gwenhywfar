@@ -3,6 +3,7 @@
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
+includedir=@includedir@
 
 libdir=@libdir@
 
@@ -11,7 +12,7 @@ result=""
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @ssl_includes@ @gwenhywfar_includes@"
+	    result="$result -I@gwenhywfar_headerdir@"
 	    ;;
 	--libraries)
 	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libs@"
@@ -23,13 +24,10 @@ for d in $*; do
 	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libsui@"
 	    ;;
 	--headers)
-	    result="$result @gwenhywfar_pkgincludedir@"
+	    result="$result @gwenhywfar_headerdir@/gwenhywfar"
 	    ;;
 	--plugins)
 	    result="$result @gwenhywfar_plugindir@"
-	    ;;
-	--sections)
-	    result="$result @gwenhywfar_sections@"
 	    ;;
 	--vmajor)
 	    result="$result @GWENHYWFAR_VERSION_MAJOR@"
@@ -49,9 +47,6 @@ for d in $*; do
         --vstring)
 	    result="$result @GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@.@GWENHYWFAR_VERSION_PATCHLEVEL@"
             ;;
-        --has-ui)
-            result="$result @USE_NCURSES@"
-            ;;
         --has-crypt)
             result="$result @USE_CRYPT@"
             ;;
@@ -62,15 +57,12 @@ for d in $*; do
 	    echo "$0 --libraries++ gives you the library flags for GwenPP"
 	    echo "$0 --libraries-ui returns the library flags for GwenUI"
 	    echo "$0 --headers gives you the location of the header files"
-	    echo "$0 --sections returns a string containing all sections of gwen"
 	    echo "$0 --vmajor gives the major version of LibGwenhywfar"
 	    echo "$0 --vminor gives the minor version of LibGwenhywfar"
 	    echo "$0 --vpatchlevel gives the patchlevel of LibGwenhywfar"
 	    echo "$0 --vbuild gives the build number of LibGwenhywfar"
 	    echo "$0 --vtag gives the tag of LibGwenhywfar (cvs, beta or stable)"
 	    echo "$0 --vstring returns a version string"
-            echo "$0 --has-ui returns \"yes\" or \"no\" depending on whether"
-            echo "     there is UI support compiled into Gwen"
             echo "$0 --has-crypt returns \"yes\" or \"no\" depending on whether"
             echo "     there is cryto support compiled into Gwen"
 	    exit 1

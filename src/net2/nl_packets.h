@@ -61,6 +61,7 @@ void GWEN_NL_Packet_Attach(GWEN_NL_PACKET *pk);
 
 GWEN_NL_PACKET_STATUS GWEN_NL_Packet_GetStatus(const GWEN_NL_PACKET *pk);
 GWEN_BUFFER *GWEN_NL_Packet_GetBuffer(const GWEN_NL_PACKET *pk);
+GWEN_BUFFER *GWEN_NL_Packet_TakeBuffer(GWEN_NL_PACKET *pk);
 void GWEN_NL_Packet_SetBuffer(GWEN_NL_PACKET *pk, GWEN_BUFFER *buf);
 
 
@@ -70,6 +71,7 @@ int GWEN_NetLayerPackets_SendPacket(GWEN_NETLAYER *nl,
                                     GWEN_NL_PACKET *packet);
 int GWEN_NetLayerPackets_Flush(GWEN_NETLAYER *nl, int timeout);
 
+int GWEN_NetLayerPackets_HasNextPacket(const GWEN_NETLAYER *nl);
 GWEN_NL_PACKET *GWEN_NetLayerPackets_GetNextPacket(GWEN_NETLAYER *nl);
 GWEN_NL_PACKET *GWEN_NetLayerPackets_GetNextPacket_Wait(GWEN_NETLAYER *nl,
                                                         int timeout);

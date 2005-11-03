@@ -11,11 +11,9 @@ dnl   $3: patchlevel version minimum
 dnl   $4: build version minimum
 dnl Returns: gwenhywfar_dir
 dnl          gwenhywfar_libs
-dnl          gwenhywfar_libspp
 dnl          gwenhywfar_plugins
 dnl          gwenhywfar_includes
 dnl          gwenhywfar_headers
-dnl          gwenhywfar_has_ui
 dnl          gwenhywfar_has_crypt
 dnl          have_gwenhywfar
 
@@ -36,9 +34,7 @@ gwenhywfar_dir=""
 gwenhywfar_plugins=""
 gwenhywfar_libs=""
 gwenhywfar_libspp=""
-gwenhywfar_libsui=""
 gwenhywfar_includes=""
-gwenhywfar_has_ui="no"
 gwenhywfar_has_crypt="no"
 if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_CHECKING(for gwenhywfar)
@@ -53,7 +49,7 @@ if test "$enable_gwenhywfar" != "no"; then
              /"])
 
   for li in $lcc_dir; do
-      if test -x "$li/bin/gwenhywfar-config"; then
+      if test -x "$li/bin/gwenhywfar2-config"; then
           gwenhywfar_dir="$li";
           break
       fi
@@ -70,28 +66,19 @@ if test "$enable_gwenhywfar" != "no"; then
   else
       AC_MSG_RESULT($gwenhywfar_dir)
       AC_MSG_CHECKING(for gwen libs)
-      gwenhywfar_libs="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries`"
+      gwenhywfar_libs="`$gwenhywfar_dir/bin/gwenhywfar2-config --libraries`"
       AC_MSG_RESULT($gwenhywfar_libs)
-      AC_MSG_CHECKING(for gwen C++ libs)
-      gwenhywfar_libspp="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries++`"
-      AC_MSG_RESULT($gwenhywfar_libspp)
-      AC_MSG_CHECKING(for gwen UI libs)
-      gwenhywfar_libsui="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries-ui`"
-      AC_MSG_RESULT($gwenhywfar_libsui)
       AC_MSG_CHECKING(for gwen includes)
-      gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
+      gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar2-config --includes`"
       AC_MSG_RESULT($gwenhywfar_includes)
       AC_MSG_CHECKING(for gwen plugins)
-      gwenhywfar_plugins="`$gwenhywfar_dir/bin/gwenhywfar-config --plugins`"
+      gwenhywfar_plugins="`$gwenhywfar_dir/bin/gwenhywfar2-config --plugins`"
       AC_MSG_RESULT($gwenhywfar_plugins)
       AC_MSG_CHECKING(for gwen headers)
-      gwenhywfar_headers="`$gwenhywfar_dir/bin/gwenhywfar-config --headers`"
+      gwenhywfar_headers="`$gwenhywfar_dir/bin/gwenhywfar2-config --headers`"
       AC_MSG_RESULT($gwenhywfar_headers)
-      AC_MSG_CHECKING(for gwen UI)
-      gwenhywfar_has_ui="`$gwenhywfar_dir/bin/gwenhywfar-config --has-ui`"
-      AC_MSG_RESULT($gwenhywfar_has_ui)
       AC_MSG_CHECKING(for gwen Crypto)
-      gwenhywfar_has_crypt="`$gwenhywfar_dir/bin/gwenhywfar-config --has-crypt`"
+      gwenhywfar_has_crypt="`$gwenhywfar_dir/bin/gwenhywfar2-config --has-crypt`"
       AC_MSG_RESULT($gwenhywfar_has_crypt)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)
@@ -102,21 +89,21 @@ if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_RESULT($enable_gwenhywfar_test)
   AC_MSG_CHECKING(for Gwenhywfar version >=$vma.$vmi.$vpl.$vbld)
   if test "$enable_gwenhywfar_test" != "no"; then
-    gwen_versionstring="`$gwenhywfar_dir/bin/gwenhywfar-config --vstring`.`$gwenhywfar_dir/bin/gwenhywfar-config --vbuild`"
+    gwen_versionstring="`$gwenhywfar_dir/bin/gwenhywfar2-config --vstring`.`$gwenhywfar_dir/bin/gwenhywfar2-config --vbuild`"
     AC_MSG_RESULT([found $gwen_versionstring])
-    if test "$vma" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
+    if test "$vma" -gt "`$gwenhywfar_dir/bin/gwenhywfar2-config --vmajor`"; then
       AC_MSG_ERROR([Your Gwenhywfar version is way too old.
       Please update from http://sf.net/projects/gwenhywfar])
-    elif test "$vma" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
-      if test "$vmi" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
+    elif test "$vma" = "`$gwenhywfar_dir/bin/gwenhywfar2-config --vmajor`"; then
+      if test "$vmi" -gt "`$gwenhywfar_dir/bin/gwenhywfar2-config --vminor`"; then
         AC_MSG_ERROR([Your Gwenhywfar version is too old.
           Please update from http://sf.net/projects/gwenhywfar])
-      elif test "$vmi" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
-          if test "$vpl" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
+      elif test "$vmi" = "`$gwenhywfar_dir/bin/gwenhywfar2-config --vminor`"; then
+          if test "$vpl" -gt "`$gwenhywfar_dir/bin/gwenhywfar2-config --vpatchlevel`"; then
             AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old.
             Please update from http://sf.net/projects/gwenhywfar])
-          elif test "$vpl" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
-            if test "$vbld" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vbuild`"; then
+          elif test "$vpl" = "`$gwenhywfar_dir/bin/gwenhywfar2-config --vpatchlevel`"; then
+            if test "$vbld" -gt "`$gwenhywfar_dir/bin/gwenhywfar2-config --vbuild`"; then
               AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old. 
   Please update to the latest CVS version. Instructions for accessing 
   CVS can be found on http://sf.net/projects/gwenhywfar])
@@ -136,10 +123,7 @@ fi
 AC_SUBST(gwenhywfar_dir)
 AC_SUBST(gwenhywfar_plugins)
 AC_SUBST(gwenhywfar_libs)
-AC_SUBST(gwenhywfar_libspp)
-AC_SUBST(gwenhywfar_libsui)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_headers)
-AC_SUBST(gwenhywfar_has_ui)
 AC_SUBST(gwenhywfar_has_crypt)
 ])

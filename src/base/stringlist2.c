@@ -94,18 +94,18 @@ int GWEN_StringList2_AppendString(GWEN_STRINGLIST2 *sl2,
   assert(sl2);
   assert(s);
 
-  if (m!=GWEN_StringList2_IntertModeAlwaysAdd) {
+  if (m!=GWEN_StringList2_IntertMode_AlwaysAdd) {
     GWEN_STRINGLIST2_ITERATOR *it;
 
     it=GWEN_StringList2__GetString(sl2, s);
     if (it) {
-      if (m==GWEN_StringList2_IntertModeNoDouble) {
+      if (m==GWEN_StringList2_IntertMode_NoDouble) {
         if (take)
           free((void*)s);
         GWEN_StringList2Iterator_free(it);
         return 0;
       }
-      if (m==GWEN_StringList2_IntertModeReuse) {
+      if (m==GWEN_StringList2_IntertMode_Reuse) {
         GWEN_ListIterator_IncLinkCount((GWEN_LIST_ITERATOR*)it);
         if (take)
           free((void*)s);
@@ -136,18 +136,18 @@ int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
   assert(sl2);
   assert(s);
 
-  if (m!=GWEN_StringList2_IntertModeAlwaysAdd) {
+  if (m!=GWEN_StringList2_IntertMode_AlwaysAdd) {
     GWEN_STRINGLIST2_ITERATOR *it;
 
     it=GWEN_StringList2__GetString(sl2, s);
     if (it) {
-      if (m==GWEN_StringList2_IntertModeNoDouble) {
+      if (m==GWEN_StringList2_IntertMode_NoDouble) {
         if (take)
           free((void*)s);
         GWEN_StringList2Iterator_free(it);
         return 0;
       }
-      if (m==GWEN_StringList2_IntertModeReuse) {
+      if (m==GWEN_StringList2_IntertMode_Reuse) {
         GWEN_ListIterator_IncLinkCount((GWEN_LIST_ITERATOR*)it);
         if (take)
           free((void*)s);

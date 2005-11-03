@@ -117,13 +117,13 @@ int GWEN_CryptTokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
   p=GWEN_Buffer_GetStart(name);
   if (access(p, F_OK)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "File does not exist");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo, "File does not exist");
+    GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info, "File does not exist");
     return GWEN_ERROR_CT_BAD_NAME;
   }
 
   if (access(p, R_OK | W_OK)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "File exists but I have no writes on it");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
+    GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info,
                           "File exists but I have no writes on it");
     return GWEN_ERROR_CT_IO_ERROR;
   }
@@ -132,7 +132,7 @@ int GWEN_CryptTokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
   if (!f) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "File exists, I have all rights but still can't open it");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+    GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice,
                           "File exists, I have all rights but "
                           "still can't open it");
     return GWEN_ERROR_CT_IO_ERROR;
@@ -142,14 +142,14 @@ int GWEN_CryptTokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
   fclose(f);
   if (rv!=1) {
     DBG_INFO(GWEN_LOGDOMAIN, "This seems not to be an OpenHBCI keyfile");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelInfo,
+    GWEN_WaitCallback_Log(GWEN_LoggerLevel_Info,
                           "This seems not to be an OpenHBCI keyfile");
     return GWEN_ERROR_CT_NOT_SUPPORTED;
   }
 
   if (rv!=1) {
     DBG_INFO(GWEN_LOGDOMAIN, "This seems not to be an OpenHBCI keyfile (bad size)");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+    GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice,
                           "This seems not to be an OpenHBCI keyfile "
                           "(bad size)");
     return GWEN_ERROR_CT_NOT_SUPPORTED;
@@ -158,14 +158,14 @@ int GWEN_CryptTokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
   if ((unsigned char)(buffer[0])==GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM1) {
     DBG_INFO(GWEN_LOGDOMAIN,
              "Old OpenHBCI file detected");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+    GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice,
                           "Old OpenHBCI file detected");
     return 0;
   }
   else if ((unsigned char)(buffer[0])==GWEN_CRYPTTOKEN_OHBCI_TAG_MEDIUM2) {
     DBG_INFO(GWEN_LOGDOMAIN,
              "OpenHBCI file (<1.6) detected");
-    GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+    GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice,
              "OpenHBCI file (<1.6) detected");
     return 0;
   }
@@ -176,7 +176,7 @@ int GWEN_CryptTokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
                 strlen(GWEN_CRYPTTOKEN_OHBCI_NAME))==0) {
       DBG_INFO(GWEN_LOGDOMAIN,
                "New OpenHBCI file (>=1.6) detected");
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+      GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice,
                             "New OpenHBCI file (>=1.6) detected");
       return 0;
     }
@@ -184,7 +184,7 @@ int GWEN_CryptTokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
 
   DBG_INFO(GWEN_LOGDOMAIN,
            "This seems not to be an OpenHBCI keyfile");
-  GWEN_WaitCallback_Log(GWEN_LoggerLevelNotice,
+  GWEN_WaitCallback_Log(GWEN_LoggerLevel_Notice,
                         "This seems not to be an OpenHBCI keyfile");
   return GWEN_ERROR_CT_NOT_SUPPORTED;
 }
@@ -473,7 +473,7 @@ int GWEN_CryptTokenOHBCI_Read(GWEN_CRYPTTOKEN *ct, int fd){
     if (i>GWEN_CRYPTTOKEN_OHBCI_MAX_PIN_TRY) {
       DBG_ERROR(GWEN_LOGDOMAIN,
 		"No valid PIN within %d tries, giving up", i);
-      GWEN_WaitCallback_Log(GWEN_LoggerLevelCritical,
+      GWEN_WaitCallback_Log(GWEN_LoggerLevel_Critical,
                             I18N("No valid PIN (tried too often), "
 				 "aborting."));
       GWEN_Buffer_free(fbuf);
@@ -507,7 +507,7 @@ int GWEN_CryptTokenOHBCI_Read(GWEN_CRYPTTOKEN *ct, int fd){
         return rv;
       case GWEN_ERROR_CT_BAD_PIN:
         DBG_ERROR(GWEN_LOGDOMAIN, "Bad pin.");
-	GWEN_WaitCallback_Log(GWEN_LoggerLevelCritical,
+	GWEN_WaitCallback_Log(GWEN_LoggerLevel_Critical,
 			      I18N("Bad PIN, will try again"));
 	break;
 
@@ -824,7 +824,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
         DBG_WARN(GWEN_LOGDOMAIN,
                  "Keyfile version is higher than mine (%d).\n",
                  i);
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelWarning,
+        GWEN_WaitCallback_Log(GWEN_LoggerLevel_Warning,
                               "This key file file has been created with a "
                               "newer library version.\n");
         free(p);
@@ -926,7 +926,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "data/public", 0);
-    key=GWEN_CryptKey_FromDb(dbKey);
+    key=GWEN_CryptKey_fromDb(dbKey);
     if (!key) {
       rv=-1;
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
@@ -945,7 +945,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "data/public", 0);
-    key=GWEN_CryptKey_FromDb(dbKey);
+    key=GWEN_CryptKey_fromDb(dbKey);
     if (!key) {
       rv=-1;
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
@@ -964,7 +964,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "data/public", 1);
-    key=GWEN_CryptKey_FromDb(dbKey);
+    key=GWEN_CryptKey_fromDb(dbKey);
     if (!key) {
       rv=-1;
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
@@ -985,7 +985,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "data/public", 1);
-    key=GWEN_CryptKey_FromDb(dbKey);
+    key=GWEN_CryptKey_fromDb(dbKey);
     if (!key) {
       rv=-1;
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
@@ -1092,7 +1092,7 @@ int GWEN_CryptTokenOHBCI__DecryptFile16(GWEN_CRYPTTOKEN *ct,
         DBG_WARN(GWEN_LOGDOMAIN,
                  "Keyfile version is higher than mine (%d).\n",
                  i);
-        GWEN_WaitCallback_Log(GWEN_LoggerLevelWarning,
+        GWEN_WaitCallback_Log(GWEN_LoggerLevel_Warning,
                               "This key file file has been created with a "
                               "newer library version.\n");
         free(p);
@@ -1162,7 +1162,7 @@ int GWEN_CryptTokenOHBCI__EncodeKey(const GWEN_CRYPTKEY *key,
     return 0;
   }
   dbKey=GWEN_DB_Group_new("key");
-  err=GWEN_CryptKey_ToDb(key, dbKey, wantPublic);
+  err=GWEN_CryptKey_toDb(key, dbKey, wantPublic);
   if (!GWEN_Error_IsOk(err)) {
     DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     GWEN_DB_Group_free(dbKey);

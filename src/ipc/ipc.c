@@ -17,16 +17,14 @@
 #include <strings.h>
 
 #include "ipc_p.h"
-#include <gwenhywfar/net.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/base64.h>
-#include <gwenhywfar/nettransportsock.h>
-#include <gwenhywfar/nettransportssl.h>
+#include <gwenhywfar/nl_packets.h>
+#include <gwenhywfar/net2.h>
 
 
-GWEN_LIST_FUNCTIONS(GWEN_IPCNODE, GWEN_IPCNode)
-GWEN_LIST_FUNCTIONS(GWEN_IPCMSG, GWEN_IPCMsg)
-GWEN_LIST_FUNCTIONS(GWEN_IPC__REQUEST, GWEN_IPC__Request)
+GWEN_LIST_FUNCTIONS(GWEN_IPCNODE, GWEN_IpcNode)
+GWEN_LIST_FUNCTIONS(GWEN_IPCMSG, GWEN_IpcMsg)
+GWEN_LIST_FUNCTIONS(GWEN_IPC__REQUEST, GWEN_Ipc__Request)
 
 
 static GWEN_TYPE_UINT32 gwen_ipc__lastid=0;
@@ -40,7 +38,7 @@ static GWEN_TYPE_UINT32 gwen_ipc__lastid=0;
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_IPCNODE *GWEN_IPCNode_new(){
+GWEN_IPCNODE *GWEN_IpcNode_new(){
   GWEN_IPCNODE *n;
 
   GWEN_NEW_OBJECT(GWEN_IPCNODE, n);
@@ -57,13 +55,12 @@ GWEN_IPCNODE *GWEN_IPCNode_new(){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCNode_free(GWEN_IPCNODE *n){
+void GWEN_IpcNode_free(GWEN_IPCNODE *n){
   if (n) {
     DBG_MEM_DEC("GWEN_IPCNODE");
     assert(n->usage);
     if (--(n->usage)==0) {
-      GWEN_NetConnection_free(n->connection);
-      free(n->baseAuth);
+      GWEN_NetLayer_free(n->netLayer);
       GWEN_LIST_FINI(GWEN_IPCNODE, n);
       GWEN_FREE_OBJECT(n);
     }
@@ -73,7 +70,7 @@ void GWEN_IPCNode_free(GWEN_IPCNODE *n){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCNode_Attach(GWEN_IPCNODE *n){
+void GWEN_IpcNode_Attach(GWEN_IPCNODE *n){
   assert(n);
   DBG_MEM_INC("GWEN_IPCNODE", 1);
   n->usage++;
@@ -82,7 +79,7 @@ void GWEN_IPCNode_Attach(GWEN_IPCNODE *n){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCNode_Dump(GWEN_IPCNODE *n, FILE *f, int indent){
+void GWEN_IpcNode_Dump(GWEN_IPCNODE *n, FILE *f, int indent){
   int i;
 
   assert(n);
@@ -115,9 +112,6 @@ void GWEN_IPCNode_Dump(GWEN_IPCNODE *n, FILE *f, int indent){
     fprintf(f, "yes\n");
   else
     fprintf(f, "no\n");
-  for (i=0; i<indent; i++)
-    fprintf(f, " ");
-  fprintf(f, "Base Auth        : %s\n", n->baseAuth);
 }
 
 
@@ -133,7 +127,7 @@ void GWEN_IPCNode_Dump(GWEN_IPCNODE *n, FILE *f, int indent){
  */
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_IPCMsg_new(GWEN_IPCNODE *n){
+GWEN_IPCMSG *GWEN_IpcMsg_new(GWEN_IPCNODE *n){
   GWEN_IPCMSG *m;
 
   assert(n);
@@ -141,17 +135,18 @@ GWEN_IPCMSG *GWEN_IPCMsg_new(GWEN_IPCNODE *n){
   DBG_MEM_INC("GWEN_IPCMSG", 0);
   GWEN_LIST_INIT(GWEN_IPCMSG, m);
   m->node=n;
-  GWEN_IPCNode_Attach(m->node);
+  GWEN_IpcNode_Attach(m->node);
   return m;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCMsg_free(GWEN_IPCMSG *m){
+void GWEN_IpcMsg_free(GWEN_IPCMSG *m){
   if (m) {
     DBG_MEM_DEC("GWEN_IPCMSG");
-    GWEN_IPCNode_free(m->node);
+    GWEN_NL_Packet_free(m->packet);
+    GWEN_IpcNode_free(m->node);
     GWEN_DB_Group_free(m->db);
     GWEN_LIST_FINI(GWEN_IPCMSG, m);
     GWEN_FREE_OBJECT(m);
@@ -161,7 +156,7 @@ void GWEN_IPCMsg_free(GWEN_IPCMSG *m){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCMsg_Dump(GWEN_IPCMSG *m, FILE *f, int indent){
+void GWEN_IpcMsg_Dump(GWEN_IPCMSG *m, FILE *f, int indent){
   int i;
 
   assert(m);
@@ -207,15 +202,15 @@ void GWEN_IPCMsg_Dump(GWEN_IPCMSG *m, FILE *f, int indent){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_IPC__REQUEST *GWEN_IPC__Request_new(){
+GWEN_IPC__REQUEST *GWEN_Ipc__Request_new(){
   GWEN_IPC__REQUEST *r;
 
   GWEN_NEW_OBJECT(GWEN_IPC__REQUEST, r);
   DBG_MEM_INC("GWEN_IPC__REQUEST", 0);
   GWEN_LIST_INIT(GWEN_IPC__REQUEST, r);
 
-  r->requestMsgs=GWEN_IPCMsg_List_new();
-  r->responseMsgs=GWEN_IPCMsg_List_new();
+  r->requestMsgs=GWEN_IpcMsg_List_new();
+  r->responseMsgs=GWEN_IpcMsg_List_new();
   r->usage=1;
   return r;
 }
@@ -223,13 +218,13 @@ GWEN_IPC__REQUEST *GWEN_IPC__Request_new(){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPC__Request_free(GWEN_IPC__REQUEST *r){
+void GWEN_Ipc__Request_free(GWEN_IPC__REQUEST *r){
   if (r) {
     assert(r->usage);
     if (--(r->usage)==0) {
       DBG_MEM_DEC("GWEN_IPC__REQUEST");
-      GWEN_IPCMsg_List_free(r->responseMsgs);
-      GWEN_IPCMsg_List_free(r->requestMsgs);
+      GWEN_IpcMsg_List_free(r->responseMsgs);
+      GWEN_IpcMsg_List_free(r->requestMsgs);
       GWEN_LIST_FINI(GWEN_IPC__REQUEST, r);
       GWEN_FREE_OBJECT(r);
     }
@@ -239,7 +234,7 @@ void GWEN_IPC__Request_free(GWEN_IPC__REQUEST *r){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPC__Request_Attach(GWEN_IPC__REQUEST *r){
+void GWEN_Ipc__Request_Attach(GWEN_IPC__REQUEST *r){
   assert(r);
   assert(r->usage);
   r->usage++;
@@ -248,16 +243,16 @@ void GWEN_IPC__Request_Attach(GWEN_IPC__REQUEST *r){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPC__Request_AddRequestMsg(GWEN_IPC__REQUEST *r, GWEN_IPCMSG *m){
+void GWEN_Ipc__Request_AddRequestMsg(GWEN_IPC__REQUEST *r, GWEN_IPCMSG *m){
   assert(r);
   assert(m);
-  GWEN_IPCMsg_List_Add(m, r->requestMsgs);
+  GWEN_IpcMsg_List_Add(m, r->requestMsgs);
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG_LIST *GWEN_IPC__Request_GetRequestMsgList(const GWEN_IPC__REQUEST *r){
+GWEN_IPCMSG_LIST *GWEN_Ipc__Request_GetRequestMsgList(const GWEN_IPC__REQUEST *r){
   assert(r);
   return r->requestMsgs;
 }
@@ -265,29 +260,29 @@ GWEN_IPCMSG_LIST *GWEN_IPC__Request_GetRequestMsgList(const GWEN_IPC__REQUEST *r
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPC__Request_AddResponseMsg(GWEN_IPC__REQUEST *r, GWEN_IPCMSG *m){
+void GWEN_Ipc__Request_AddResponseMsg(GWEN_IPC__REQUEST *r, GWEN_IPCMSG *m){
   assert(r);
   assert(m);
-  GWEN_IPCMsg_List_Add(m, r->responseMsgs);
+  GWEN_IpcMsg_List_Add(m, r->responseMsgs);
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPC__Request_HasRequestMsg(GWEN_IPC__REQUEST *r,
-                                  GWEN_TYPE_UINT32 nid,
-				  GWEN_TYPE_UINT32 id){
+int GWEN_Ipc__Request_HasRequestMsg(GWEN_IPC__REQUEST *r,
+				    GWEN_TYPE_UINT32 nid,
+				    GWEN_TYPE_UINT32 id){
   GWEN_IPCMSG *m;
 
   assert(r);
   assert(id);
 
-  m=GWEN_IPCMsg_List_First(r->requestMsgs);
+  m=GWEN_IpcMsg_List_First(r->requestMsgs);
   while(m) {
     if (m->node->id==nid &&
 	m->id==id)
       return 1;
-    m=GWEN_IPCMsg_List_Next(m);
+    m=GWEN_IpcMsg_List_Next(m);
   } /* while */
 
   return 0;
@@ -296,7 +291,7 @@ int GWEN_IPC__Request_HasRequestMsg(GWEN_IPC__REQUEST *r,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPC__Request_Dump(GWEN_IPC__REQUEST *r, FILE *f, int indent){
+void GWEN_Ipc__Request_Dump(GWEN_IPC__REQUEST *r, FILE *f, int indent){
   int i;
   GWEN_IPCMSG *m;
 
@@ -313,28 +308,28 @@ void GWEN_IPC__Request_Dump(GWEN_IPC__REQUEST *r, FILE *f, int indent){
   for (i=0; i<indent; i++)
     fprintf(f, " ");
   fprintf(f, "Request Message(s)\n");
-  m=GWEN_IPCMsg_List_First(r->requestMsgs);
+  m=GWEN_IpcMsg_List_First(r->requestMsgs);
   if (!m) {
     for (i=0; i<indent+4; i++)
       fprintf(f, " ");
     fprintf(f, "none\n");
   }
   while(m) {
-    GWEN_IPCMsg_Dump(m, f, indent+4);
-    m=GWEN_IPCMsg_List_Next(m);
+    GWEN_IpcMsg_Dump(m, f, indent+4);
+    m=GWEN_IpcMsg_List_Next(m);
   }
   for (i=0; i<indent; i++)
     fprintf(f, " ");
   fprintf(f, "Response Message(s)\n");
-  m=GWEN_IPCMsg_List_First(r->responseMsgs);
+  m=GWEN_IpcMsg_List_First(r->responseMsgs);
   if (!m) {
     for (i=0; i<indent+4; i++)
       fprintf(f, " ");
     fprintf(f, "none\n");
   }
   while(m) {
-    GWEN_IPCMsg_Dump(m, f, indent+4);
-    m=GWEN_IPCMsg_List_Next(m);
+    GWEN_IpcMsg_Dump(m, f, indent+4);
+    m=GWEN_IpcMsg_List_Next(m);
   }
 }
 
@@ -354,16 +349,15 @@ void GWEN_IPC__Request_Dump(GWEN_IPC__REQUEST *r, FILE *f, int indent){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_IPCMANAGER *GWEN_IPCManager_new(){
+GWEN_IPCMANAGER *GWEN_IpcManager_new(){
   GWEN_IPCMANAGER *mgr;
 
   GWEN_NEW_OBJECT(GWEN_IPCMANAGER, mgr);
   DBG_MEM_INC("GWEN_IPCMANAGER", 0);
-  mgr->libId=GWEN_Net_GetLibraryId();
-  mgr->nodes=GWEN_IPCNode_List_new();
-  mgr->outRequests=GWEN_IPC__Request_List_new();
-  mgr->newInRequests=GWEN_IPC__Request_List_new();
-  mgr->oldInRequests=GWEN_IPC__Request_List_new();
+  mgr->nodes=GWEN_IpcNode_List_new();
+  mgr->outRequests=GWEN_Ipc__Request_List_new();
+  mgr->newInRequests=GWEN_Ipc__Request_List_new();
+  mgr->oldInRequests=GWEN_Ipc__Request_List_new();
 
   mgr->usage=1;
   return mgr;
@@ -372,7 +366,7 @@ GWEN_IPCMANAGER *GWEN_IPCManager_new(){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager_Attach(GWEN_IPCMANAGER *mgr){
+void GWEN_IpcManager_Attach(GWEN_IPCMANAGER *mgr){
   assert(mgr);
   DBG_MEM_INC("GWEN_IPCMANAGER", 1);
   mgr->usage++;
@@ -382,16 +376,16 @@ void GWEN_IPCManager_Attach(GWEN_IPCMANAGER *mgr){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr){
+void GWEN_IpcManager_free(GWEN_IPCMANAGER *mgr){
   if (mgr) {
     DBG_MEM_DEC("GWEN_IPCMANAGER");
     assert(mgr->usage);
     if (--(mgr->usage)==0) {
       free(mgr->application);
-      GWEN_IPC__Request_List_free(mgr->oldInRequests);
-      GWEN_IPC__Request_List_free(mgr->newInRequests);
-      GWEN_IPC__Request_List_free(mgr->outRequests);
-      GWEN_IPCNode_List_free(mgr->nodes);
+      GWEN_Ipc__Request_List_free(mgr->oldInRequests);
+      GWEN_Ipc__Request_List_free(mgr->newInRequests);
+      GWEN_Ipc__Request_List_free(mgr->outRequests);
+      GWEN_IpcNode_List_free(mgr->nodes);
 
       GWEN_FREE_OBJECT(mgr);
     }
@@ -401,14 +395,14 @@ void GWEN_IPCManager_free(GWEN_IPCMANAGER *mgr){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-const char *GWEN_IPCManager_GetApplicationName(const GWEN_IPCMANAGER *mgr) {
+const char *GWEN_IpcManager_GetApplicationName(const GWEN_IPCMANAGER *mgr) {
   assert(mgr);
   return mgr->application;
 }
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
+void GWEN_IpcManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
                                         const char *s){
   assert(mgr);
   if (s) mgr->application=strdup(s);
@@ -418,128 +412,96 @@ void GWEN_IPCManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_TYPE_UINT32 GWEN_IPCManager_AddServer(GWEN_IPCMANAGER *mgr,
-                                           GWEN_NETTRANSPORT *tr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_AddServer(GWEN_IPCMANAGER *mgr,
+					   GWEN_NETLAYER *nlBase,
                                            GWEN_TYPE_UINT32 mark){
-  GWEN_NETCONNECTION *conn;
   GWEN_IPCNODE *n;
+  GWEN_NETLAYER *nl;
+  int rv;
 
   /* create connection layer */
-  conn=GWEN_NetConnectionHTTP_new(tr,
-                                  1,              /* take */
-                                  mgr->libId,     /* libId */
-                                  1,0);           /* protocol version */
-  GWEN_NetConnectionHTTP_AddMode(conn, GWEN_NETCONN_MODE_IPC);
-  GWEN_Net_AddConnectionToPool(conn);
-  if (GWEN_NetConnection_StartListen(conn)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not start server");
-    GWEN_NetConnection_free(conn);
+  nl=GWEN_NetLayerPackets_new(nlBase);
+  GWEN_Net_AddConnectionToPool(nl);
+  rv=GWEN_NetLayer_Listen(nl);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not start server (%d)", rv);
+    GWEN_NetLayer_free(nl);
     return 0;
   }
 
-  n=GWEN_IPCNode_new();
-  n->connection=conn;
+  n=GWEN_IpcNode_new();
+  n->netLayer=nl;
   n->mark=mark;
   n->isServer=1;
-  GWEN_IPCNode_List_Add(n, mgr->nodes);
+  GWEN_IpcNode_List_Add(n, mgr->nodes);
   return n->id;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_TYPE_UINT32 GWEN_IPCManager_AddClient(GWEN_IPCMANAGER *mgr,
-                                           GWEN_NETTRANSPORT *tr,
-                                           const char *userName,
-                                           const char *passwd,
-                                           GWEN_TYPE_UINT32 mark){
-  GWEN_NETCONNECTION *conn;
+GWEN_TYPE_UINT32 GWEN_IpcManager_AddClient(GWEN_IPCMANAGER *mgr,
+					   GWEN_NETLAYER *nlBase,
+					   GWEN_TYPE_UINT32 mark){
   GWEN_IPCNODE *n;
+  GWEN_NETLAYER *nl;
 
-  n=GWEN_IPCNode_new();
-  if (userName) {
-    GWEN_BUFFER *abuf;
-    GWEN_BUFFER *ebuf;
+  n=GWEN_IpcNode_new();
 
-    abuf=GWEN_Buffer_new(0, strlen(userName)+strlen(passwd)+2, 0, 1);
-    GWEN_Buffer_AppendString(abuf, userName);
-    GWEN_Buffer_AppendByte(abuf, ':');
-    GWEN_Buffer_AppendString(abuf, passwd);
-    ebuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(abuf)*4/3+16, 0, 1);
-    GWEN_Buffer_AppendString(ebuf, "BASIC ");
-    if (GWEN_Base64_Encode(/* GCC4 pointer-signedness fix: */ (const unsigned char*)GWEN_Buffer_GetStart(abuf),
-                           GWEN_Buffer_GetUsedBytes(abuf),
-                           ebuf, 0)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Could not encode authorization data");
-      GWEN_Buffer_free(ebuf);
-      GWEN_Buffer_free(abuf);
-      GWEN_IPCNode_free(n);
-      return 0;
-    }
-    n->baseAuth=strdup(GWEN_Buffer_GetStart(ebuf));
-    GWEN_Buffer_free(ebuf);
-    GWEN_Buffer_free(abuf);
-  }
-  /* create connection layer */
-  conn=GWEN_NetConnectionHTTP_new(tr,
-                                  1,              /* take */
-                                  mgr->libId,     /* libId */
-                                  1,0);           /* protocol version */
-  GWEN_NetConnectionHTTP_AddMode(conn, GWEN_NETCONN_MODE_IPC);
-  GWEN_Net_AddConnectionToPool(conn);
-  GWEN_NetConnection_SetUpFn(conn, GWEN_IPCManager__Connection_Up);
-  GWEN_NetConnection_SetDownFn(conn, GWEN_IPCManager__Connection_Down);
-  n->connection=conn;
+  nl=GWEN_NetLayerPackets_new(nlBase);
+  GWEN_Net_AddConnectionToPool(nl);
+
+  n->netLayer=nl;
   n->mark=mark;
   n->isServer=0;
-  GWEN_IPCNode_List_Add(n, mgr->nodes);
+  GWEN_IpcNode_List_Add(n, mgr->nodes);
   return n->id;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
+void GWEN_IpcManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
 						GWEN_IPCNODE *n,
                                                 GWEN_IPC__REQUEST_LIST *rl,
                                                 const char *msgType) {
   GWEN_IPC__REQUEST *r;
 
   /* remove all messages for/of this client from request */
-  r=GWEN_IPC__Request_List_First(rl);
+  r=GWEN_Ipc__Request_List_First(rl);
   while(r) {
     GWEN_IPC__REQUEST *rnext;
     GWEN_IPCMSG *msg;
 
-    rnext=GWEN_IPC__Request_List_Next(r);
-    msg=GWEN_IPCMsg_List_First(r->requestMsgs);
+    rnext=GWEN_Ipc__Request_List_Next(r);
+    msg=GWEN_IpcMsg_List_First(r->requestMsgs);
     while(msg) {
       GWEN_IPCMSG *nextmsg;
 
-      nextmsg=GWEN_IPCMsg_List_Next(msg);
+      nextmsg=GWEN_IpcMsg_List_Next(msg);
       assert(msg->node);
       if (msg->node==n) {
         /* same node, remove msg */
 	DBG_INFO(GWEN_LOGDOMAIN, "Removing %s message for/from node %08x",
 		 msgType, n->id);
-	if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevelInfo) {
+	if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info) {
 	  if (msg->db) {
 	    GWEN_DB_Dump(msg->db, stderr, 2);
 	  }
 	}
-	GWEN_IPCMsg_List_Del(msg);
-	GWEN_IPCMsg_free(msg);
+	GWEN_IpcMsg_List_Del(msg);
+	GWEN_IpcMsg_free(msg);
       }
       msg=nextmsg;
     } /* while msg */
 
     /* check whether the request is empty */
-    if (GWEN_IPCMsg_List_First(r->requestMsgs)==0) {
+    if (GWEN_IpcMsg_List_First(r->requestMsgs)==0) {
       /* it is, remove the request */
       DBG_INFO(GWEN_LOGDOMAIN, "Removing %s request %08x for/from node %08x",
 	       msgType, r->id, n->id);
-      GWEN_IPC__Request_List_Del(r);
-      GWEN_IPC__Request_free(r);
+      GWEN_Ipc__Request_List_Del(r);
+      GWEN_Ipc__Request_free(r);
     }
     r=rnext;
   } /* while r */
@@ -548,7 +510,7 @@ void GWEN_IPCManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
+int GWEN_IpcManager_RemoveClient(GWEN_IPCMANAGER *mgr,
 				 GWEN_TYPE_UINT32 nid) {
   GWEN_IPCNODE *n;
 
@@ -556,11 +518,11 @@ int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
   assert(mgr);
 
   /* get client node */
-  n=GWEN_IPCNode_List_First(mgr->nodes);
+  n=GWEN_IpcNode_List_First(mgr->nodes);
   while(n) {
     if (n->id==nid)
       break;
-    n=GWEN_IPCNode_List_Next(n);
+    n=GWEN_IpcNode_List_Next(n);
   } /* while */
   if (!n) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
@@ -568,15 +530,15 @@ int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
   }
 
   /* remove all messages of this client in any request */
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->outRequests,
+  GWEN_IpcManager__RemoveNodeRequestMessages(mgr, n, mgr->outRequests,
                                              "outRequest");
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->newInRequests,
+  GWEN_IpcManager__RemoveNodeRequestMessages(mgr, n, mgr->newInRequests,
                                              "newInRequest");
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests,
+  GWEN_IpcManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests,
                                              "newOutRequest");
   /* remove node */
-  GWEN_IPCNode_List_Del(n);
-  GWEN_IPCNode_free(n);
+  GWEN_IpcNode_List_Del(n);
+  GWEN_IpcNode_free(n);
 
   return 0;
 }
@@ -584,16 +546,16 @@ int GWEN_IPCManager_RemoveClient(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_IPC__REQUEST *GWEN_IPCManager__FindRequest(GWEN_IPCMANAGER *mgr,
-                                              GWEN_TYPE_UINT32 rid,
-					      GWEN_IPC__REQUEST *r) {
+GWEN_IPC__REQUEST *GWEN_IpcManager__FindRequest(GWEN_IPCMANAGER *mgr,
+						GWEN_TYPE_UINT32 rid,
+						GWEN_IPC__REQUEST *r) {
   assert(mgr);
   assert(r);
 
   while(r) {
     if (r->id==rid)
       return r;
-    r=GWEN_IPC__Request_List_Next(r);
+    r=GWEN_Ipc__Request_List_Next(r);
   }
   return 0;
 }
@@ -601,231 +563,82 @@ GWEN_IPC__REQUEST *GWEN_IPCManager__FindRequest(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager__SendMsg(GWEN_IPCMANAGER *mgr,
-                             GWEN_IPCMSG *m) {
-  GWEN_BUFFER *buf;
-  GWEN_BUFFEREDIO *bio;
-  GWEN_ERRORCODE err;
-  GWEN_DB_NODE *dbReq;
-  GWEN_DB_NODE *dbCmd;
-  GWEN_DB_NODE *dbVars;
-  GWEN_DB_NODE *dbHeader;
-  char numbuf[16];
-
-  buf=GWEN_Buffer_new(0, 512, 0, 1);
-  bio=GWEN_BufferedIO_Buffer2_new(buf, 0); /* don't relinquish buffer */
-
-  /* encode db */
-  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 128);
-  if (GWEN_DB_WriteToStream(m->db, bio, GWEN_DB_FLAGS_COMPACT)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not encode db");
-    GWEN_BufferedIO_Abandon(bio);
-    GWEN_BufferedIO_free(bio);
-    GWEN_Buffer_free(buf);
-    return -1;
-  }
-
-  err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-    GWEN_BufferedIO_free(bio);
-    GWEN_Buffer_free(buf);
-    return -1;
-  }
-  GWEN_BufferedIO_free(bio);
-
-  dbReq=GWEN_DB_Group_new("request");
-  /* prepare command */
-  dbCmd=GWEN_DB_GetGroup(dbReq, GWEN_DB_FLAGS_DEFAULT, "command");
-  assert(dbCmd);
-
-  GWEN_DB_SetCharValue(dbCmd, GWEN_DB_FLAGS_DEFAULT,
-                       "cmd", "put");
-  if (mgr->application && *(mgr->application))
-    GWEN_DB_SetCharValue(dbCmd, GWEN_DB_FLAGS_DEFAULT,
-                         "url", mgr->application);
-  else
-    GWEN_DB_SetCharValue(dbCmd, GWEN_DB_FLAGS_DEFAULT,
-                         "url", "/gwenipc/unspecified");
-
-  /* prepare vars */
-  dbVars=GWEN_DB_GetGroup(dbCmd, GWEN_DB_FLAGS_DEFAULT, "vars");
-  assert(dbVars);
-  snprintf(numbuf, sizeof(numbuf), "%d", m->id);
-  GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_DEFAULT,
-                       "id", numbuf);
-  if (m->refId) {
-    snprintf(numbuf, sizeof(numbuf), "%d", m->refId);
-    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_DEFAULT,
-                         "refid", numbuf);
-  }
-
-  GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_DEFAULT,
-                       "cmd", GWEN_DB_GroupName(m->db));
-
-  /* prepare header */
-  dbHeader=GWEN_DB_GetGroup(dbReq, GWEN_DB_FLAGS_DEFAULT, "header");
-  assert(dbHeader);
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_DEFAULT,
-                       "connection", "keep-alive");
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_DEFAULT,
-                       "cache-control", "no-store");
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_DEFAULT,
-                       "user-agent", "Gwenhywfar v"
-                       GWENHYWFAR_VERSION_FULL_STRING);
-  if (m->node->baseAuth)
-    GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_DEFAULT,
-                         "authorization", m->node->baseAuth);
-
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_DEFAULT,
-                       "content-type",
-                       "application/gwenipc");
-  snprintf(numbuf, sizeof(numbuf), "%d", GWEN_Buffer_GetUsedBytes(buf));
-  GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_DEFAULT,
-                       "content-length",
-                       numbuf);
-
-  /* check for connection state, connect if necessary */
-  if (GWEN_NetConnection_GetStatus(m->node->connection)==
-      GWEN_NetTransportStatusPDisconnected) {
-    if (GWEN_NetConnection_GetFlags(m->node->connection) &
-	GWEN_NETTRANSPORT_FLAGS_RESTARTABLE) {
-      /* reenable disconnected connection */
-      DBG_INFO(GWEN_LOGDOMAIN, "Re-enabling disconnected connection");
-      GWEN_NetConnection_SetStatus(m->node->connection,
-				   GWEN_NetTransportStatusUnconnected);
-    }
-  }
-
-  if (GWEN_NetConnection_GetStatus(m->node->connection)==
-      GWEN_NetTransportStatusUnconnected) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Starting connection");
-    if (GWEN_NetConnection_StartConnect(m->node->connection)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Could not start connection");
-      GWEN_DB_Group_free(dbReq);
-      return -1;
-    }
-  }
-
-  /* send message */
-  if (GWEN_NetConnectionHTTP_AddRequest(m->node->connection,
-                                        dbReq,
-                                        buf,
-                                        0)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not send message");
-    GWEN_DB_Group_free(dbReq);
-    return -1;
-  }
-
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Message is on its way");
-  m->sendTime=time(0);
-  GWEN_DB_Group_free(dbReq);
-  return 0;
-}
-
-
-
-/* -------------------------------------------------------------- FUNCTION */
-GWEN_NETTRANSPORT_STATUS
-GWEN_IPCManager_CheckConnection(GWEN_IPCMANAGER *mgr,
-				GWEN_TYPE_UINT32 nid) {
-  GWEN_IPCNODE *n;
-
-  n=GWEN_IPCNode_List_First(mgr->nodes);
-  while(n) {
-    if (n->id==nid)
-      break;
-    n=GWEN_IPCNode_List_Next(n);
-  } /* while */
-  if (!n) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
-    return GWEN_NetTransportStatusDisabled;
-  }
-  // TODO: Reenable this code !!
-  /*res=GWEN_NetConnection_WorkIO(n->connection);
-  if (res==GWEN_NetConnectionWorkResult_Error) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "WorkIO reported an error");
-  }*/
-  return GWEN_NetConnection_GetStatus(n->connection);
-}
-
-
-
-/* -------------------------------------------------------------- FUNCTION */
-GWEN_TYPE_UINT32 GWEN_IPCManager_SendRequest(GWEN_IPCMANAGER *mgr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_SendRequest(GWEN_IPCMANAGER *mgr,
                                              GWEN_TYPE_UINT32 nid,
                                              GWEN_DB_NODE *req){
   GWEN_IPCNODE *n;
   GWEN_IPC__REQUEST *r;
   GWEN_IPCMSG *m;
 
-  n=GWEN_IPCNode_List_First(mgr->nodes);
+  n=GWEN_IpcNode_List_First(mgr->nodes);
   while(n) {
     if (n->id==nid)
       break;
-    n=GWEN_IPCNode_List_Next(n);
+    n=GWEN_IpcNode_List_Next(n);
   } /* while */
   if (!n) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
     return 0;
   }
 
-  m=GWEN_IPCMsg_new(n);
+  m=GWEN_IpcMsg_new(n);
   m->db=req;
   m->id=++(n->nextMsgId);
 
-  if (GWEN_IPCManager__SendMsg(mgr, m)) {
+  if (GWEN_IpcManager__SendMsg(mgr, m)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not send request");
-    GWEN_IPCMsg_free(m);
+    GWEN_IpcMsg_free(m);
     return 0;
   }
 
-  r=GWEN_IPC__Request_new();
+  r=GWEN_Ipc__Request_new();
   r->id=++gwen_ipc__lastid;
-  GWEN_IPC__Request_AddRequestMsg(r, m);
-  GWEN_IPC__Request_List_Add(r, mgr->outRequests);
+  GWEN_Ipc__Request_AddRequestMsg(r, m);
+  GWEN_Ipc__Request_List_Add(r, mgr->outRequests);
   return r->id;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_TYPE_UINT32 GWEN_IPCManager_SendMultiRequest(GWEN_IPCMANAGER *mgr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_SendMultiRequest(GWEN_IPCMANAGER *mgr,
                                                   GWEN_TYPE_UINT32 mark,
                                                   GWEN_DB_NODE *req){
   GWEN_IPCNODE *n;
   GWEN_IPC__REQUEST *r;
 
   r=0;
-  n=GWEN_IPCNode_List_First(mgr->nodes);
+  n=GWEN_IpcNode_List_First(mgr->nodes);
   while(n) {
     if (mark==0 || mark==n->mark) {
-      GWEN_NETTRANSPORT_STATUS st;
+      GWEN_NETLAYER_STATUS st;
 
-      st=GWEN_NetConnection_GetStatus(n->connection);
-      if (st!=GWEN_NetTransportStatusListening &&
-          st!=GWEN_NetTransportStatusDisabled) {
-        GWEN_IPCMSG *m;
+      st=GWEN_NetLayer_GetStatus(n->netLayer);
+      if (st!=GWEN_NetLayerStatus_Listening &&
+	  st!=GWEN_NetLayerStatus_Disabled) {
+	GWEN_IPCMSG *m;
 
-        m=GWEN_IPCMsg_new(n);
+        m=GWEN_IpcMsg_new(n);
         m->db=GWEN_DB_Group_dup(req);
         m->id=--(n->nextMsgId);
 
-        if (GWEN_IPCManager__SendMsg(mgr, m)) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Could not send request to node %08x", n->id);
-          GWEN_IPCMsg_free(m);
+        if (GWEN_IpcManager__SendMsg(mgr, m)) {
+	  DBG_ERROR(GWEN_LOGDOMAIN,
+		    "Could not send request to node %08x",
+		    n->id);
+          GWEN_IpcMsg_free(m);
         }
         else {
           if (r==0) {
-            r=GWEN_IPC__Request_new();
+            r=GWEN_Ipc__Request_new();
 	    r->id=++gwen_ipc__lastid;
-            GWEN_IPC__Request_List_Add(r, mgr->outRequests);
+            GWEN_Ipc__Request_List_Add(r, mgr->outRequests);
           }
-          GWEN_IPC__Request_AddRequestMsg(r, m);
+          GWEN_Ipc__Request_AddRequestMsg(r, m);
         }
       }
     } /* if mark matches */
-    n=GWEN_IPCNode_List_Next(n);
+    n=GWEN_IpcNode_List_Next(n);
   } /* while */
 
   if (r) {
@@ -838,28 +651,28 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_SendMultiRequest(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager_SendResponse(GWEN_IPCMANAGER *mgr,
+int GWEN_IpcManager_SendResponse(GWEN_IPCMANAGER *mgr,
                                  GWEN_TYPE_UINT32 rid,
                                  GWEN_DB_NODE *rsp){
   GWEN_IPC__REQUEST *r;
   GWEN_IPCMSG *m;
   GWEN_IPCMSG *om;
 
-  r=GWEN_IPC__Request_List_First(mgr->oldInRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->oldInRequests);
   while(r) {
     if (r->id==rid)
       break;
-    r=GWEN_IPC__Request_List_Next(r);
+    r=GWEN_Ipc__Request_List_Next(r);
   } /* while */
   if (!r) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Request %08x not found", rid);
     return -1;
   }
 
-  om=GWEN_IPCMsg_List_First(r->requestMsgs);
+  om=GWEN_IpcMsg_List_First(r->requestMsgs);
   assert(om);
 
-  m=GWEN_IPCMsg_new(om->node);
+  m=GWEN_IpcMsg_new(om->node);
   m->refId=om->id;
   m->db=rsp;
   m->id=++(om->node->nextMsgId);
@@ -867,68 +680,68 @@ int GWEN_IPCManager_SendResponse(GWEN_IPCMANAGER *mgr,
   DBG_DEBUG(GWEN_LOGDOMAIN, "Sending response %08x for request %08x",
 	    m->id, m->refId);
 
-  if (GWEN_IPCManager__SendMsg(mgr, m)) {
+  if (GWEN_IpcManager__SendMsg(mgr, m)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not send response");
-    GWEN_IPCMsg_free(m);
+    GWEN_IpcMsg_free(m);
     return -1;
   }
 
-  GWEN_IPC__Request_AddResponseMsg(r, m);
+  GWEN_Ipc__Request_AddResponseMsg(r, m);
   return 0;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
+int GWEN_IpcManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
                                   GWEN_TYPE_UINT32 rid,
                                   int inOrOut){
   GWEN_IPC__REQUEST *r;
 
   if (inOrOut==0)
-    r=GWEN_IPC__Request_List_First(mgr->oldInRequests);
+    r=GWEN_Ipc__Request_List_First(mgr->oldInRequests);
   else
-    r=GWEN_IPC__Request_List_First(mgr->outRequests);
+    r=GWEN_Ipc__Request_List_First(mgr->outRequests);
   while(r) {
     if (r->id==rid)
       break;
-    r=GWEN_IPC__Request_List_Next(r);
+    r=GWEN_Ipc__Request_List_Next(r);
   } /* while */
   if (!r) {
     DBG_ERROR(GWEN_LOGDOMAIN, "%s request %08x not found",
 	      inOrOut?"Outgoing":"Incoming", rid);
     return -1;
   }
-  GWEN_IPC__Request_List_Del(r);
-  GWEN_IPC__Request_free(r);
+  GWEN_Ipc__Request_List_Del(r);
+  GWEN_Ipc__Request_free(r);
   return 0;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_TYPE_UINT32 GWEN_IPCManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
+GWEN_TYPE_UINT32 GWEN_IpcManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
                                                   GWEN_TYPE_UINT32 mark){
   GWEN_IPC__REQUEST *r;
 
-  r=GWEN_IPC__Request_List_First(mgr->newInRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->newInRequests);
   while(r) {
     GWEN_IPCMSG *om;
 
     if (mark==0)
       break;
 
-    om=GWEN_IPCMsg_List_First(r->requestMsgs);
+    om=GWEN_IpcMsg_List_First(r->requestMsgs);
     assert(om);
     assert(om->node);
     if (om->node->mark==mark)
       break;
-    r=GWEN_IPC__Request_List_Next(r);
+    r=GWEN_Ipc__Request_List_Next(r);
   }
 
   if (r) {
-    GWEN_IPC__Request_List_Del(r);
-    GWEN_IPC__Request_List_Add(r, mgr->oldInRequests);
+    GWEN_Ipc__Request_List_Del(r);
+    GWEN_Ipc__Request_List_Add(r, mgr->oldInRequests);
     return r->id;
   }
   return 0;
@@ -937,23 +750,23 @@ GWEN_TYPE_UINT32 GWEN_IPCManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_DB_NODE *GWEN_IPCManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
+GWEN_DB_NODE *GWEN_IpcManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
                                                GWEN_TYPE_UINT32 rid){
   GWEN_IPC__REQUEST *r;
   GWEN_IPCMSG *om;
 
-  r=GWEN_IPC__Request_List_First(mgr->oldInRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->oldInRequests);
   while(r) {
     if (r->id==rid)
       break;
-    r=GWEN_IPC__Request_List_Next(r);
+    r=GWEN_Ipc__Request_List_Next(r);
   } /* while */
   if (!r) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Request %08x not found", rid);
     return 0;
   }
 
-  om=GWEN_IPCMsg_List_First(r->requestMsgs);
+  om=GWEN_IpcMsg_List_First(r->requestMsgs);
   assert(om);
 
   return om->db;
@@ -962,37 +775,37 @@ GWEN_DB_NODE *GWEN_IPCManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_NETCONNECTION *GWEN_IPCManager_GetConnection(GWEN_IPCMANAGER *mgr,
-                                                  GWEN_TYPE_UINT32 nid){
+GWEN_NETLAYER *GWEN_IpcManager_GetNetLayer(GWEN_IPCMANAGER *mgr,
+					   GWEN_TYPE_UINT32 nid){
   GWEN_IPCNODE *n;
 
-  n=GWEN_IPCNode_List_First(mgr->nodes);
+  n=GWEN_IpcNode_List_First(mgr->nodes);
   while(n) {
     if (n->id==nid)
       break;
-    n=GWEN_IPCNode_List_Next(n);
+    n=GWEN_IpcNode_List_Next(n);
   } /* while */
   if (!n) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
     return 0;
   }
 
-  return n->connection;
+  return n->netLayer;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_TYPE_UINT32
-GWEN_IPCManager_GetClientForConnection(const GWEN_IPCMANAGER *mgr,
-                                       const GWEN_NETCONNECTION *conn) {
+GWEN_IpcManager_GetClientForNetLayer(const GWEN_IPCMANAGER *mgr,
+				     const GWEN_NETLAYER *nl) {
   GWEN_IPCNODE *n;
 
-  n=GWEN_IPCNode_List_First(mgr->nodes);
+  n=GWEN_IpcNode_List_First(mgr->nodes);
   while(n) {
-    if (n->connection==conn)
+    if (n->netLayer==nl)
       break;
-    n=GWEN_IPCNode_List_Next(n);
+    n=GWEN_IpcNode_List_Next(n);
   } /* while */
   if (!n) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No node found for connection");
@@ -1004,24 +817,24 @@ GWEN_IPCManager_GetClientForConnection(const GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_DB_NODE *GWEN_IPCManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
+GWEN_DB_NODE *GWEN_IpcManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
                                                GWEN_TYPE_UINT32 rid){
   GWEN_IPC__REQUEST *r;
   GWEN_IPCMSG *m;
   GWEN_DB_NODE *db;
 
-  r=GWEN_IPC__Request_List_First(mgr->outRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->outRequests);
   while(r) {
     if (r->id==rid)
       break;
-    r=GWEN_IPC__Request_List_Next(r);
+    r=GWEN_Ipc__Request_List_Next(r);
   } /* while */
   if (!r) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Request %08x not found", rid);
     return 0;
   }
 
-  m=GWEN_IPCMsg_List_First(r->responseMsgs);
+  m=GWEN_IpcMsg_List_First(r->responseMsgs);
   if (!m) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "No response yet");
     return 0;
@@ -1035,24 +848,24 @@ GWEN_DB_NODE *GWEN_IPCManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_DB_NODE *GWEN_IPCManager_GetResponseData(GWEN_IPCMANAGER *mgr,
+GWEN_DB_NODE *GWEN_IpcManager_GetResponseData(GWEN_IPCMANAGER *mgr,
                                               GWEN_TYPE_UINT32 rid){
   GWEN_IPC__REQUEST *r;
   GWEN_IPCMSG *m;
   GWEN_DB_NODE *db;
 
-  r=GWEN_IPC__Request_List_First(mgr->outRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->outRequests);
   while(r) {
     if (r->id==rid)
       break;
-    r=GWEN_IPC__Request_List_Next(r);
+    r=GWEN_Ipc__Request_List_Next(r);
   } /* while */
   if (!r) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Request %08x not found", rid);
     return 0;
   }
 
-  m=GWEN_IPCMsg_List_First(r->responseMsgs);
+  m=GWEN_IpcMsg_List_First(r->responseMsgs);
   if (!m) {
     DBG_VERBOUS(GWEN_LOGDOMAIN, "No response yet");
     return 0;
@@ -1062,190 +875,15 @@ GWEN_DB_NODE *GWEN_IPCManager_GetResponseData(GWEN_IPCMANAGER *mgr,
   assert(m->node);
   assert(m->node->id);
   m->db=0;
-  GWEN_IPCMsg_List_Del(m);
-  GWEN_IPCMsg_free(m);
+  GWEN_IpcMsg_List_Del(m);
+  GWEN_IpcMsg_free(m);
   return db;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager__Collect(GWEN_IPCMANAGER *mgr, int maxMsg) {
-  GWEN_IPCNODE *n;
-  int msgs;
-
-  msgs=0;
-  n=GWEN_IPCNode_List_First(mgr->nodes);
-  while(n && (maxMsg==0 || msgs<maxMsg)) {
-    GWEN_NETMSG *nm;
-
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Checking node");
-    if (n->isServer) {
-      GWEN_NETTRANSPORT *tr;
-
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Node is a server");
-      /* collect connections */
-      tr=GWEN_NetConnection_GetNextIncoming(n->connection);
-      if (tr) {
-        GWEN_NETCONNECTION *newconn;
-        GWEN_IPCNODE *newnode;
-
-        DBG_INFO(GWEN_LOGDOMAIN, "Got an incoming connection");
-        newconn=GWEN_NetConnectionHTTP_new(tr,
-                                           1,          /* take */
-                                           mgr->libId, /* libId */
-                                           1,0);       /* protocol version */
-        GWEN_NetConnectionHTTP_AddMode(newconn, GWEN_NETCONN_MODE_IPC);
-        GWEN_NetConnection_SetUserMark(newconn,
-                                       GWEN_NetConnection_GetUserMark
-                                       (n->connection));
-        GWEN_NetConnection_SetUpFn(newconn, GWEN_IPCManager__Connection_Up);
-        GWEN_NetConnection_SetDownFn(newconn,
-				     GWEN_IPCManager__Connection_Down);
-        newnode=GWEN_IPCNode_new();
-        newnode->connection=newconn;
-	newnode->mark=n->mark;
-	newnode->isPassiveClient=1;
-        GWEN_IPCNode_List_Add(newnode, mgr->nodes);
-        GWEN_Net_AddConnectionToPool(newconn);
-        GWEN_NetConnection_Up(newconn);
-      }
-      else {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "No incoming connection");
-      }
-    }
-    else {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Node is NOT a server");
-      nm=GWEN_NetConnection_GetInMsg(n->connection);
-      if (nm) {
-        GWEN_DB_NODE *dbCmd;
-        GWEN_TYPE_UINT32 msgId;
-        GWEN_TYPE_UINT32 refId;
-
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Got an incoming message");
-        if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelDebug)
-          GWEN_DB_Dump(GWEN_NetMsg_GetDB(nm), stderr, 10);
-        dbCmd=GWEN_DB_GetGroup(GWEN_NetMsg_GetDB(nm),
-                               GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                               "command");
-        assert(dbCmd);
-        msgId=GWEN_DB_GetIntValue(dbCmd, "vars/id", 0, 0);
-        refId=GWEN_DB_GetIntValue(dbCmd, "vars/refId", 0, 0);
-
-        if (msgId<=n->lastMsgId) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Bad message id (%d<=%d)",
-		    msgId, n->lastMsgId);
-	}
-	else {
-	  GWEN_DB_NODE *dbMsg;
-	  GWEN_DB_NODE *dbBody;
-	  GWEN_BUFFER *mbuf;
-	  GWEN_TYPE_UINT32 pos;
-          int msgError;
-
-          msgError=0;
-          n->lastMsgId=msgId;
-	  dbMsg=GWEN_DB_Group_new("msg");
-	  GWEN_DB_AddGroupChildren(dbMsg, GWEN_NetMsg_GetDB(nm));
-	  GWEN_DB_SetIntValue(dbMsg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			      "ipc/nodeId", n->id);
-	  GWEN_DB_SetIntValue(dbMsg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			      "ipc/msgId", msgId);
-	  dbBody=GWEN_DB_GetGroup(dbMsg, GWEN_DB_FLAGS_DEFAULT, "body");
-
-          mbuf=GWEN_NetMsg_GetBuffer(nm);
-          assert(mbuf);
-          pos=GWEN_Buffer_GetBookmark(mbuf, 1);
-	  if (pos && pos<GWEN_Buffer_GetUsedBytes(mbuf)) {
-	    GWEN_BUFFEREDIO *bio;
-
-	    GWEN_Buffer_SetPos(mbuf, pos);
-	    GWEN_Buffer_SetPos(mbuf, pos);
-	    bio=GWEN_BufferedIO_Buffer2_new(mbuf, 0);
-	    GWEN_BufferedIO_SetReadBuffer(bio, 0, 128);
-
-	    if (GWEN_DB_ReadFromStream(dbBody, bio,
-				       GWEN_DB_FLAGS_DEFAULT|
-				       GWEN_PATH_FLAGS_CREATE_GROUP)){
-	      DBG_WARN(GWEN_LOGDOMAIN, "Bad message received (invalid body)");
-              GWEN_DB_Group_free(dbMsg);
-	      msgError=1;
-	    }
-	    GWEN_BufferedIO_free(bio);
-	  }
-
-	  if (msgError) {
-	    DBG_WARN(GWEN_LOGDOMAIN, "Bad message received (invalid body)");
-          }
-	  else {
-	    /* found a valid body */
-	    if (refId) {
-	      GWEN_IPC__REQUEST *r;
-
-	      /* it pretends to be a response, check it */
-	      GWEN_DB_SetIntValue(dbMsg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-				  "ipc/refId", refId);
-	      r=GWEN_IPC__Request_List_First(mgr->outRequests);
-	      while(r) {
-		if (GWEN_IPC__Request_HasRequestMsg(r, n->id, refId))
-		  break;
-		r=GWEN_IPC__Request_List_Next(r);
-	      } /* while r */
-	      if (!r) {
-		DBG_WARN(GWEN_LOGDOMAIN,
-			 "Got a response for invalid request (%08x)",
-			 refId);
-		GWEN_DB_Group_free(dbMsg);
-	      }
-	      else {
-		GWEN_IPCMSG *m;
-
-		DBG_DEBUG(GWEN_LOGDOMAIN, "Got a response for request %08x",
-			  r->id);
-		m=GWEN_IPCMsg_new(n);
-		m->db=dbMsg;
-		m->id=msgId;
-		m->refId=refId;
-		m->receivedTime=time(0);
-		GWEN_IPC__Request_AddResponseMsg(r, m);
-	      }
-	    }
-	    else {
-	      GWEN_IPC__REQUEST *r;
-	      GWEN_IPCMSG *m;
-
-	      /* this is a new incoming request */
-	      DBG_DEBUG(GWEN_LOGDOMAIN, "Got an incoming request (%08x)",
-			msgId);
-	      m=GWEN_IPCMsg_new(n);
-	      m->db=dbMsg;
-	      m->id=msgId;
-	      m->refId=refId;
-	      m->receivedTime=time(0);
-	      r=GWEN_IPC__Request_new();
-	      r->id=++gwen_ipc__lastid;
-	      GWEN_IPC__Request_AddRequestMsg(r, m);
-	      GWEN_IPC__Request_List_Add(r, mgr->newInRequests);
-	    }
-	  } /* if body is valid */
-	} /* if message id is ok */
-	GWEN_NetMsg_free(nm);
-        msgs++;
-      } /* if there was a netmessage */
-      else {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "No message");
-      }
-    } /* if listening */
-    n=GWEN_IPCNode_List_Next(n);
-  } /* while */
-
-  return msgs;
-}
-
-
-
-/* -------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_IPCManager__MakeErrorResponse(GWEN_IPCMANAGER *mgr,
+GWEN_IPCMSG *GWEN_IpcManager__MakeErrorResponse(GWEN_IPCMANAGER *mgr,
                                                 GWEN_IPCMSG *m,
                                                 int code,
                                                 const char *txt) {
@@ -1259,7 +897,7 @@ GWEN_IPCMSG *GWEN_IPCManager__MakeErrorResponse(GWEN_IPCMANAGER *mgr,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
                          "text", txt);
 
-  newm=GWEN_IPCMsg_new(m->node);
+  newm=GWEN_IpcMsg_new(m->node);
   newm->db=db;
   return newm;
 }
@@ -1267,37 +905,37 @@ GWEN_IPCMSG *GWEN_IPCManager__MakeErrorResponse(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager__CheckRequests(GWEN_IPCMANAGER *mgr) {
+int GWEN_IpcManager__CheckRequests(GWEN_IPCMANAGER *mgr) {
   GWEN_IPC__REQUEST *r;
 
-  r=GWEN_IPC__Request_List_First(mgr->outRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->outRequests);
   while(r) {
     GWEN_IPCMSG *m;
     GWEN_IPC__REQUEST *nextr;
 
-    nextr=GWEN_IPC__Request_List_Next(r);
-    m=GWEN_IPCMsg_List_First(r->requestMsgs);
+    nextr=GWEN_Ipc__Request_List_Next(r);
+    m=GWEN_IpcMsg_List_First(r->requestMsgs);
     while(m) {
       GWEN_IPCMSG *nextm;
       int removeIt;
 
-      nextm=GWEN_IPCMsg_List_Next(m);
+      nextm=GWEN_IpcMsg_List_Next(m);
       removeIt=0;
       assert(m->node);
 
       /* check connection status */
-      assert(m->node->connection);
-      if (GWEN_NetConnection_GetStatus(m->node->connection)==
-          GWEN_NetTransportStatusDisabled) {
-        GWEN_IPCMSG *errm;
+      assert(m->node->netLayer);
+      if (GWEN_NetLayer_GetStatus(m->node->netLayer)==
+	  GWEN_NetLayerStatus_Disabled) {
+	GWEN_IPCMSG *errm;
 
-        /* connection broken, remove msg */
+	/* connection broken, remove msg */
         DBG_INFO(GWEN_LOGDOMAIN, "Connection broken");
-        errm=GWEN_IPCManager__MakeErrorResponse(mgr,
+        errm=GWEN_IpcManager__MakeErrorResponse(mgr,
                                                 m,
-                                                GWEN_IPC_ERROR_CONNERR,
+						GWEN_IPC_ERROR_CONNERR,
                                                 "Connection down");
-        GWEN_IPCMsg_List_Add(errm, r->responseMsgs);
+        GWEN_IpcMsg_List_Add(errm, r->responseMsgs);
         removeIt=1;
       }
 
@@ -1307,18 +945,18 @@ int GWEN_IPCManager__CheckRequests(GWEN_IPCMANAGER *mgr) {
           GWEN_IPCMSG *errm;
 
           DBG_INFO(GWEN_LOGDOMAIN, "Message timed out");
-          errm=GWEN_IPCManager__MakeErrorResponse(mgr,
+          errm=GWEN_IpcManager__MakeErrorResponse(mgr,
                                                   m,
                                                   GWEN_IPC_ERROR_TIMEOUT,
                                                   "Message timed out");
-          GWEN_IPCMsg_List_Add(errm, r->responseMsgs);
+          GWEN_IpcMsg_List_Add(errm, r->responseMsgs);
           removeIt=1;
         }
       }
 
       if (removeIt) {
-        GWEN_IPCMsg_List_Del(m);
-        GWEN_IPCMsg_free(m);
+        GWEN_IpcMsg_List_Del(m);
+        GWEN_IpcMsg_free(m);
       }
       m=nextm;
     } /* while */
@@ -1332,107 +970,33 @@ int GWEN_IPCManager__CheckRequests(GWEN_IPCMANAGER *mgr) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager__Connection_Up(GWEN_NETCONNECTION *conn){
-  char addrBuffer[128];
-
-  GWEN_InetAddr_GetAddress(GWEN_NetConnection_GetPeerAddr(conn),
-                           addrBuffer, sizeof(addrBuffer));
-
-  DBG_INFO(GWEN_LOGDOMAIN, "Connection to %s (port %d) up",
-           addrBuffer,
-           GWEN_InetAddr_GetPort(GWEN_NetConnection_GetPeerAddr(conn)));
-}
-
-
-
-/* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager__Connection_Down(GWEN_NETCONNECTION *conn){
-  char addrBuffer[128];
-
-  GWEN_InetAddr_GetAddress(GWEN_NetConnection_GetPeerAddr(conn),
-                           addrBuffer, sizeof(addrBuffer));
-
-  DBG_INFO(GWEN_LOGDOMAIN, "Connection to %s (port %d) down",
-           addrBuffer,
-           GWEN_InetAddr_GetPort(GWEN_NetConnection_GetPeerAddr(conn)));
-}
-
-
-
-/* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager_Work(GWEN_IPCMANAGER *mgr, int maxmsg) {
-  int msgs;
+int GWEN_IpcManager_Work(GWEN_IPCMANAGER *mgr) {
+  int done=0;
 
   assert(mgr);
 
-  msgs=GWEN_IPCManager__Collect(mgr, maxmsg);
-  if (msgs) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Collected %d messages", msgs);
-  }
+  if (GWEN_IpcManager__Work(mgr)==0)
+    done++;
 
-  if (GWEN_IPCManager__CheckRequests(mgr)) {
+  if (GWEN_IpcManager__CheckRequests(mgr)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error checking requests");
   }
 
-  return msgs?0:1;
+  return done?0:1;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager_SetUpFn(GWEN_IPCMANAGER *mgr,
-                             GWEN_TYPE_UINT32 nid,
-                             GWEN_NETCONNECTION_UPFN fn){
-  GWEN_IPCNODE *n;
-
-  n=GWEN_IPCNode_List_First(mgr->nodes);
-  while(n) {
-    if (n->id==nid)
-      break;
-    n=GWEN_IPCNode_List_Next(n);
-  } /* while */
-  if (!n) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
-    return;
-  }
-
-  GWEN_NetConnection_SetUpFn(n->connection, fn);
-}
-
-
-
-/* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager_SetDownFn(GWEN_IPCMANAGER *mgr,
-			       GWEN_TYPE_UINT32 nid,
-			       GWEN_NETCONNECTION_DOWNFN fn){
-  GWEN_IPCNODE *n;
-
-  n=GWEN_IPCNode_List_First(mgr->nodes);
-  while(n) {
-    if (n->id==nid)
-      break;
-    n=GWEN_IPCNode_List_Next(n);
-  } /* while */
-  if (!n) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
-    return;
-  }
-
-  GWEN_NetConnection_SetDownFn(n->connection, fn);
-}
-
-
-
-/* -------------------------------------------------------------- FUNCTION */
-int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid){
+int GWEN_IpcManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid){
   GWEN_IPCNODE *n;
   int rv;
 
-  n=GWEN_IPCNode_List_First(mgr->nodes);
+  n=GWEN_IpcNode_List_First(mgr->nodes);
   while(n) {
     if (n->id==nid)
       break;
-    n=GWEN_IPCNode_List_Next(n);
+    n=GWEN_IpcNode_List_Next(n);
   } /* while */
   if (!n) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node %08x not found", nid);
@@ -1443,22 +1007,21 @@ int GWEN_IPCManager_Disconnect(GWEN_IPCMANAGER *mgr, GWEN_TYPE_UINT32 nid){
   n->lastMsgId=0;
 
   /* remove all messages of this client in any request */
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->outRequests,
+  GWEN_IpcManager__RemoveNodeRequestMessages(mgr, n, mgr->outRequests,
                                              "outRequest");
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->newInRequests,
+  GWEN_IpcManager__RemoveNodeRequestMessages(mgr, n, mgr->newInRequests,
                                              "newInRequest");
-  GWEN_IPCManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests,
+  GWEN_IpcManager__RemoveNodeRequestMessages(mgr, n, mgr->oldInRequests,
                                              "newOutRequest");
 
-  rv=GWEN_NetConnection_StartDisconnect(n->connection);
-  GWEN_NetConnection_Reset(n->connection);
+  rv=GWEN_NetLayer_Disconnect(n->netLayer);
   return rv;
 }
 
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IPCManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent){
+void GWEN_IpcManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent){
   int i;
   GWEN_IPCNODE *n;
   GWEN_IPC__REQUEST *r;
@@ -1487,66 +1050,350 @@ void GWEN_IPCManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent){
   fprintf(f, "Application      : %s\n", mgr->application);
   for (i=0; i<indent; i++)
     fprintf(f, " ");
-  fprintf(f, "Library Id       : %08x\n", mgr->libId);
-  for (i=0; i<indent; i++)
-    fprintf(f, " ");
   fprintf(f, "Nodes(s)\n");
-  n=GWEN_IPCNode_List_First(mgr->nodes);
+  n=GWEN_IpcNode_List_First(mgr->nodes);
   if (!n) {
     for (i=0; i<indent+4; i++)
       fprintf(f, " ");
     fprintf(f, "none\n");
   }
   while(n) {
-    GWEN_IPCNode_Dump(n, f, indent+4);
-    n=GWEN_IPCNode_List_Next(n);
+    GWEN_IpcNode_Dump(n, f, indent+4);
+    n=GWEN_IpcNode_List_Next(n);
   }
   for (i=0; i<indent; i++)
     fprintf(f, " ");
   fprintf(f, "Outgoing Request(s)\n");
-  r=GWEN_IPC__Request_List_First(mgr->outRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->outRequests);
   if (!r) {
     for (i=0; i<indent+4; i++)
       fprintf(f, " ");
     fprintf(f, "none\n");
   }
   while(r) {
-    GWEN_IPC__Request_Dump(r, f, indent+4);
-    r=GWEN_IPC__Request_List_Next(r);
+    GWEN_Ipc__Request_Dump(r, f, indent+4);
+    r=GWEN_Ipc__Request_List_Next(r);
   }
   for (i=0; i<indent; i++)
     fprintf(f, " ");
   fprintf(f, "Unhandled Incoming Request(s)\n");
-  r=GWEN_IPC__Request_List_First(mgr->newInRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->newInRequests);
   if (!r) {
     for (i=0; i<indent+4; i++)
       fprintf(f, " ");
     fprintf(f, "none\n");
   }
   while(r) {
-    GWEN_IPC__Request_Dump(r, f, indent+4);
-    r=GWEN_IPC__Request_List_Next(r);
+    GWEN_Ipc__Request_Dump(r, f, indent+4);
+    r=GWEN_Ipc__Request_List_Next(r);
   }
   for (i=0; i<indent; i++)
     fprintf(f, " ");
   fprintf(f, "Incoming Request(s) in Work\n");
-  r=GWEN_IPC__Request_List_First(mgr->oldInRequests);
+  r=GWEN_Ipc__Request_List_First(mgr->oldInRequests);
   if (!r) {
     for (i=0; i<indent+4; i++)
       fprintf(f, " ");
     fprintf(f, "none\n");
   }
   while(r) {
-    GWEN_IPC__Request_Dump(r, f, indent+4);
-    r=GWEN_IPC__Request_List_Next(r);
+    GWEN_Ipc__Request_Dump(r, f, indent+4);
+    r=GWEN_Ipc__Request_List_Next(r);
   }
 }
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_IpcManager__SendMsg(GWEN_IPCMANAGER *mgr,
+                             GWEN_IPCMSG *m) {
+  GWEN_BUFFER *buf;
+  GWEN_BUFFEREDIO *bio;
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *dbReq;
+  GWEN_DB_NODE *dbIpc;
+  GWEN_DB_NODE *dbData;
+  char numbuf[16];
+  GWEN_NETLAYER_STATUS nst;
+  int rv;
+  GWEN_NL_PACKET *pk;
+
+  nst=GWEN_NetLayer_GetStatus(m->node->netLayer);
+  if (nst==GWEN_NetLayerStatus_Disabled) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "NetLayer is disabled");
+    return -1;
+  }
+
+  /* check for connection state, connect if necessary */
+  if (nst==GWEN_NetLayerStatus_Unconnected) {
+    if (m->node->isPassiveClient) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Passive IPC client \"%08x\" is down, "
+		"not sending message", m->node->id);
+      return -1;
+    }
+    rv=GWEN_NetLayer_Connect(m->node->netLayer);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not connect");
+      return rv;
+    }
+  }
+
+  dbReq=GWEN_DB_Group_new("request");
+  /* prepare IPC group */
+  dbIpc=GWEN_DB_GetGroup(dbReq, GWEN_DB_FLAGS_DEFAULT, "ipc");
+  snprintf(numbuf, sizeof(numbuf), "%d", m->id);
+  GWEN_DB_SetCharValue(dbIpc, GWEN_DB_FLAGS_DEFAULT,
+		       "id", numbuf);
+  if (m->refId) {
+    snprintf(numbuf, sizeof(numbuf), "%d", m->refId);
+    GWEN_DB_SetCharValue(dbIpc, GWEN_DB_FLAGS_DEFAULT,
+			 "refid", numbuf);
+  }
+  GWEN_DB_SetCharValue(dbIpc, GWEN_DB_FLAGS_DEFAULT,
+		       "cmd", GWEN_DB_GroupName(m->db));
+
+  dbData=GWEN_DB_GetGroup(dbReq, GWEN_DB_FLAGS_DEFAULT, "data");
+  GWEN_DB_AddGroupChildren(dbData, m->db);
+
+  buf=GWEN_Buffer_new(0, 512, 0, 1);
+  bio=GWEN_BufferedIO_Buffer2_new(buf, 0); /* don't relinquish buffer */
+
+  /* encode db */
+  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 128);
+  if (GWEN_DB_WriteToStream(dbReq, bio, GWEN_DB_FLAGS_COMPACT)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not encode db");
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    GWEN_Buffer_free(buf);
+    GWEN_DB_Group_free(dbReq);
+    return -1;
+  }
+  GWEN_DB_Group_free(dbReq);
+
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    GWEN_BufferedIO_free(bio);
+    GWEN_Buffer_free(buf);
+    return -1;
+  }
+  GWEN_BufferedIO_free(bio);
+
+  /* create packet */
+  pk=GWEN_NL_Packet_new();
+  GWEN_Buffer_Rewind(buf);
+  GWEN_NL_Packet_SetBuffer(pk, buf);
+
+  /* send message */
+  rv=GWEN_NetLayerPackets_SendPacket(m->node->netLayer, pk);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not send package");
+    GWEN_NL_Packet_free(pk);
+    return rv;
+  }
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Message is on its way");
+  m->sendTime=time(0);
+  return 0;
+}
 
 
 
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_IpcManager__HandlePacket(GWEN_IPCMANAGER *mgr,
+				  GWEN_IPCNODE *n,
+				  GWEN_NL_PACKET *pk) {
+  GWEN_DB_NODE *dbReq;
+  GWEN_DB_NODE *dbIpc;
+  GWEN_TYPE_UINT32 msgId;
+  GWEN_TYPE_UINT32 refId;
+  GWEN_BUFFER *buf;
+  GWEN_BUFFEREDIO *bio;
+  int rv;
+
+  /* read and decode message */
+  buf=GWEN_NL_Packet_GetBuffer(pk);
+  assert(buf);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Got an incoming message");
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
+    GWEN_Buffer_Dump(buf, stderr, 2);
+  GWEN_Buffer_Rewind(buf);
+  bio=GWEN_BufferedIO_Buffer2_new(buf, 0); /* don't tak over */
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 128);
+  dbReq=GWEN_DB_Group_new("request");
+  rv=GWEN_DB_ReadFromStream(dbReq, bio,
+			    GWEN_DB_FLAGS_DEFAULT |
+			    GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid incoming request");
+    GWEN_Buffer_Dump(buf, stderr, 2);
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_DB_Group_free(dbReq);
+    GWEN_BufferedIO_free(bio);
+    return rv;
+  }
+  GWEN_BufferedIO_Close(bio);
+  GWEN_BufferedIO_free(bio);
+
+  /* parse decoded message */
+  dbIpc=GWEN_DB_GetGroup(dbReq,
+			 GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+			 "ipc");
+  if (dbIpc==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid incoming request");
+    GWEN_DB_Dump(dbReq, stderr, 2);
+    GWEN_DB_Group_free(dbReq);
+    return -1;
+  }
+  msgId=GWEN_DB_GetIntValue(dbIpc, "id", 0, 0);
+  refId=GWEN_DB_GetIntValue(dbIpc, "refId", 0, 0);
+
+  if (msgId<=n->lastMsgId) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad message id (%d<=%d)",
+	      msgId, n->lastMsgId);
+    GWEN_DB_Group_free(dbReq);
+    return -1;
+  }
+
+  n->lastMsgId=msgId;
+  GWEN_DB_SetIntValue(dbIpc, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "nodeId", n->id);
+  /* got a valid message */
+  if (refId) {
+    GWEN_IPC__REQUEST *r;
+    GWEN_IPCMSG *m;
+
+    /* it pretends to be a response, check it */
+    r=GWEN_Ipc__Request_List_First(mgr->outRequests);
+    while(r) {
+      if (GWEN_Ipc__Request_HasRequestMsg(r, n->id, refId))
+	break;
+      r=GWEN_Ipc__Request_List_Next(r);
+    } /* while r */
+    if (!r) {
+      DBG_WARN(GWEN_LOGDOMAIN,
+	       "Got a response for invalid request (%08x)",
+	       refId);
+      GWEN_DB_Group_free(dbReq);
+      return -1;
+    }
+
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "Got a response for request %08x",
+	      r->id);
+    m=GWEN_IpcMsg_new(n);
+    m->db=dbReq;
+    m->id=msgId;
+    m->refId=refId;
+    m->receivedTime=time(0);
+    GWEN_Ipc__Request_AddResponseMsg(r, m);
+  }
+  else {
+    GWEN_IPC__REQUEST *r;
+    GWEN_IPCMSG *m;
+
+    /* this is a new incoming request */
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Got an incoming request (%08x)",
+	      msgId);
+    m=GWEN_IpcMsg_new(n);
+    m->db=dbReq;
+    m->id=msgId;
+    m->refId=refId;
+    m->receivedTime=time(0);
+    r=GWEN_Ipc__Request_new();
+    r->id=++gwen_ipc__lastid;
+    GWEN_Ipc__Request_AddRequestMsg(r, m);
+    GWEN_Ipc__Request_List_Add(r, mgr->newInRequests);
+  } /* if refId found */
+
+  return 0;
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_IpcManager__Work(GWEN_IPCMANAGER *mgr) {
+  GWEN_IPCNODE *n;
+  int done=0;
+
+  n=GWEN_IpcNode_List_First(mgr->nodes);
+  while(n) {
+    GWEN_IPCNODE *next;
+    GWEN_NETLAYER_STATUS st;
+
+    next=GWEN_IpcNode_List_Next(n);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Checking node");
+
+    st=GWEN_NetLayer_GetStatus(n->netLayer);
+    if (st==GWEN_NetLayerStatus_Disabled) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "NetLayer for passive IPC client \"%0x8\" "
+	       "is disabled, removing it", n->id);
+      GWEN_IpcManager_RemoveClient(mgr, n->id);
+      return 0;
+    }
+
+    if (st==GWEN_NetLayerStatus_Disconnected) {
+      if (n->isPassiveClient) {
+	if (!GWEN_NetLayerPackets_HasNextPacket(n->netLayer)) {
+	  DBG_INFO(GWEN_LOGDOMAIN,
+		   "NetLayer for passive IPC client \"%0x8\" "
+		   "is disconnected, removing it", n->id);
+	  GWEN_IpcManager_RemoveClient(mgr, n->id);
+	  return 0;
+	}
+      }
+    }
+
+    if (n->isServer) {
+      GWEN_NETLAYER *nl;
+
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Node is a server");
+      /* collect connections */
+      nl=GWEN_NetLayer_GetIncomingLayer(n->netLayer);
+      if (nl) {
+        GWEN_IPCNODE *newnode;
+
+        DBG_INFO(GWEN_LOGDOMAIN, "Got an incoming connection");
+	newnode=GWEN_IpcNode_new();
+	newnode->netLayer=nl;
+	newnode->mark=n->mark;
+	newnode->isPassiveClient=1;
+	GWEN_IpcNode_List_Add(newnode, mgr->nodes);
+	GWEN_Net_AddConnectionToPool(nl);
+        done++;
+      }
+      else {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "No incoming connection");
+      }
+    } /* if isServer */
+    else {
+      GWEN_NL_PACKET *pk;
+      int rv;
+
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Node is NOT a server");
+      pk=GWEN_NetLayerPackets_GetNextPacket(n->netLayer);
+      if (pk) {
+        rv=GWEN_IpcManager__HandlePacket(mgr, n, pk);
+	GWEN_NL_Packet_free(pk);
+	if (rv) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	}
+	done++;
+      }
+      else {
+	DBG_DEBUG(GWEN_LOGDOMAIN, "No message");
+      }
+    } /* if client */
+    n=next;
+  } /* while */
+
+  if (done)
+    return 0;
+  return 1;
+}
 
 
 

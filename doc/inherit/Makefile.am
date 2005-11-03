@@ -1,3 +1,4 @@
+INCLUDES= -I$(top_srcdir)/gwenhywfar2
 
 EXTRA_DIST=README
 

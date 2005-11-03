@@ -125,13 +125,13 @@ int GWEN_Args_Check(int argc, char **argv,
           return GWEN_ARGS_RESULT_ERROR;
         }
         switch(tmpArgs->type) {
-        case GWEN_ArgsTypeChar:
+        case GWEN_ArgsType_Char:
           GWEN_DB_SetCharValue(db,
                                GWEN_DB_FLAGS_DEFAULT,
                                tmpArgs->name, argv[i]);
           break;
 
-        case GWEN_ArgsTypeInt:
+        case GWEN_ArgsType_Int:
           if (sscanf(argv[i], "%i", &value)!=1) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Non-integer argument for short option \"%s\"", p);
             GWEN_DB_Group_free(counts);
@@ -213,13 +213,13 @@ int GWEN_Args_Check(int argc, char **argv,
           return GWEN_ARGS_RESULT_ERROR;
         }
         switch(tmpArgs->type) {
-        case GWEN_ArgsTypeChar:
+        case GWEN_ArgsType_Char:
           GWEN_DB_SetCharValue(db,
                                GWEN_DB_FLAGS_DEFAULT,
                                tmpArgs->name, v);
           break;
 
-        case GWEN_ArgsTypeInt:
+        case GWEN_ArgsType_Int:
           if (sscanf(v, "%i", &value)!=1) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Non-integer argument for long option \"%s\"",
                       tmpBuf);
@@ -399,10 +399,10 @@ int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
   int rv;
 
   switch(ot) {
-  case GWEN_ArgsOutTypeTXT:
+  case GWEN_ArgsOutType_Txt:
     rv=GWEN_Args_UsageTXT(args, ubuf);
     break;
-  case GWEN_ArgsOutTypeHTML:
+  case GWEN_ArgsOutType_Html:
     rv=GWEN_Args_UsageHTML(args, ubuf);
     break;
   default:

@@ -507,7 +507,7 @@ int GWEN_NetLayerSsl_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
   }
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes:", rv);
-  GWEN_Text_LogString(buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+  GWEN_Text_LogString(buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
 
   if (getenv("GWEN_SSL_DEBUG")) {
     FILE *f;
@@ -626,7 +626,7 @@ int GWEN_NetLayerSsl_Write(GWEN_NETLAYER *nl, const char *buffer,int *bsize) {
   }
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes:", rv);
-  GWEN_Text_LogString(buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevelVerbous);
+  GWEN_Text_LogString(buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
 
   if (getenv("GWEN_SSL_DEBUG")) {
     FILE *f;
@@ -950,7 +950,7 @@ GWEN_SSLCERTDESCR *GWEN_NetLayerSsl_Cert2Descr(X509 *cert) {
                             "e", buffer, l);
       }
       RSA_free(kd);
-      key=GWEN_CryptKey_FromDb(dbKey);
+      key=GWEN_CryptKey_fromDb(dbKey);
       if (key) {
         GWEN_SslCertDescr_SetPublicKey(cd, key);
         GWEN_CryptKey_free(key);
@@ -1553,7 +1553,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSsl_Work(GWEN_NETLAYER *nl) {
       nld->peerCertificate=0;
 
       /* show info about used cipher */
-      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevelNotice) {
+      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Notice) {
         SSL_CIPHER *ci;
         char buffer[256];
         const char *p;
