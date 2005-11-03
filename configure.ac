@@ -557,8 +557,6 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  doc/Makefile
                  doc/inherit/Makefile
 		 doc/plugindescr.xsd
-                 gwenpp/Makefile
-                 gwenui/Makefile
                  src/Makefile
                  src/types.h
                  src/ressource.rc
