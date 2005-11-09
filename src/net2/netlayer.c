@@ -916,7 +916,7 @@ void GWEN_NetLayer_Attach(GWEN_NETLAYER *nl) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-const char *GwenNetLayer_GetTypeName(const GWEN_NETLAYER *nl) {
+const char *GWEN_NetLayer_GetTypeName(const GWEN_NETLAYER *nl) {
   assert(nl);
   return nl->typeName;
 }

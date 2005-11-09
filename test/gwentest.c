@@ -39,6 +39,7 @@
 #endif
 
 #include <gwenhywfar/nl_socket.h>
+#include <gwenhywfar/nl_file.h>
 #include <gwenhywfar/nl_http.h>
 #include <gwenhywfar/net2.h>
 
@@ -3235,6 +3236,93 @@ int testIpcClient1(int argc, char **argv) {
 
 
 
+int testNlFileConnect1(int argc, char **argv) {
+  const char *urlString;
+  const char *outFile=0;
+  int fdRead;
+  int fdWrite;
+  GWEN_NETLAYER *baseLayer, *nl;
+  int rv;
+  GWEN_URL *url;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+
+  if (argc<4) {
+    fprintf(stderr, "%s %s URL FILE\n", argv[0], argv[1]);
+    return 1;
+  }
+  outFile=argv[3];
+  urlString=argv[2];
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Debug);
+
+  url=GWEN_Url_fromString(urlString);
+  assert(url);
+
+  /* create transport layer */
+  fdRead=open("test.read", O_RDONLY);
+  if (fdRead==-1) {
+    fprintf(stderr, "File \"test.read\" does not exist.\n");
+    return 2;
+  }
+  fdWrite=open("test.write",
+               O_RDWR | O_APPEND | O_CREAT,
+               S_IRUSR | S_IWUSR);
+  if (fdWrite==-1) {
+    fprintf(stderr, "File \"test.write\" is not available.\n");
+    return 2;
+  }
+
+  baseLayer=GWEN_NetLayerFile_new(fdRead, fdWrite, 1);
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_Net_AddConnectionToPool(nl);
+
+  /* connect */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  fd=open(outFile, O_CREAT | O_WRONLY);
+  if (fd==-1) {
+    fprintf(stderr, "Could not create outFile\n");
+    return 2;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  rv=GWEN_NetLayerHttp_Request(nl, "GET", url,
+                               0, /* dbHeader */
+                               0, 0, /* body */
+                               bio);
+  fprintf(stderr, "INFO: Result of request: %d\n", rv);
+  if (rv<0) {
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    return 3;
+  }
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 3;
+  }
+  GWEN_BufferedIO_free(bio);
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -3343,6 +3431,8 @@ int main(int argc, char **argv) {
     rv=testIpcServer1(argc, argv);
   else if (strcasecmp(argv[1], "ipcclient1")==0)
     rv=testIpcClient1(argc, argv);
+  else if (strcasecmp(argv[1], "nlfileconnect1")==0)
+    rv=testNlFileConnect1(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

@@ -159,7 +159,7 @@ GWENHYWFAR_API
 void GWEN_NetLayer_Attach(GWEN_NETLAYER *nl);
 
 GWENHYWFAR_API
-const char *GwenNetLayer_GetTypeName(const GWEN_NETLAYER *nl);
+const char *GWEN_NetLayer_GetTypeName(const GWEN_NETLAYER *nl);
 
 GWENHYWFAR_API
 GWEN_NETLAYER_STATUS GWEN_NetLayer_GetStatus(const GWEN_NETLAYER *nl);
