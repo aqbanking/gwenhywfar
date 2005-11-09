@@ -9,6 +9,9 @@ use Gwenhywfar! Do not install it on production systems !!
 -------------------------------------------------
 - added NetLayerFile (used for debugging, can be used instead of real sockets
   when testing new code)
+- added NetLayerLog (used for debugging, loggs data read and written from
+  netlayers below itself. The output of this layer can be used for 
+  NetLayerFile)
 
 
 2005/11/08: Martin Preuss<martin@libchipcard.de>

@@ -20,7 +20,8 @@ noinst_HEADERS=\
   net2_l.h \
   nl_hbci_p.h \
   nl_packets_p.h \
-  nl_file_p.h
+  nl_file_p.h \
+  nl_log_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -31,7 +32,8 @@ iheader_HEADERS=\
   net2.h \
   nl_hbci.h \
   nl_packets.h \
-  nl_file.h
+  nl_file.h \
+  nl_log.h
 
 libnet2_la_SOURCES=\
   netlayer.c \
@@ -41,7 +43,8 @@ libnet2_la_SOURCES=\
   net2.c \
   nl_hbci.c \
   nl_packets.c \
-  nl_file.c
+  nl_file.c \
+  nl_log.c
 
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)

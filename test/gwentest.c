@@ -41,6 +41,7 @@
 #include <gwenhywfar/nl_socket.h>
 #include <gwenhywfar/nl_file.h>
 #include <gwenhywfar/nl_http.h>
+#include <gwenhywfar/nl_log.h>
 #include <gwenhywfar/net2.h>
 
 #include <sys/types.h>
@@ -3323,6 +3324,97 @@ int testNlFileConnect1(int argc, char **argv) {
 
 
 
+int testNlLogConnect1(int argc, char **argv) {
+  const char *urlString;
+  const char *outFile=0;
+  GWEN_SOCKET *sk;
+  GWEN_INETADDRESS *addr;
+  GWEN_NETLAYER *baseLayer, *nl;
+  int rv;
+  GWEN_URL *url;
+  GWEN_ERRORCODE err;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+
+  if (argc<4) {
+    fprintf(stderr, "%s %s URL FILE\n", argv[0], argv[1]);
+    return 1;
+  }
+  outFile=argv[3];
+  urlString=argv[2];
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Debug);
+
+  url=GWEN_Url_fromString(urlString);
+  assert(url);
+
+  /* create transport layer */
+  sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  baseLayer=GWEN_NetLayerSocket_new(sk, 1);
+  addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  err=GWEN_InetAddr_SetAddress(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err))
+    err=GWEN_InetAddr_SetName(addr, GWEN_Url_GetServer(url));
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  GWEN_InetAddr_SetPort(addr, GWEN_Url_GetPort(url));
+  GWEN_NetLayer_SetPeerAddr(baseLayer, addr);
+  GWEN_InetAddr_free(addr);
+
+  nl=GWEN_NetLayerLog_new(baseLayer, "testlog");
+  GWEN_NetLayer_free(baseLayer);
+  baseLayer=nl;
+
+  nl=GWEN_NetLayerHttp_new(baseLayer); /* attaches to baseLayer */
+  GWEN_NetLayer_free(baseLayer);
+
+  GWEN_Net_AddConnectionToPool(nl);
+
+  /* connect */
+  rv=GWEN_NetLayer_Connect_Wait(nl, 30);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Connected.\n");
+
+  fd=open(outFile, O_CREAT | O_WRONLY, S_IRUSR|S_IWUSR);
+  if (fd==-1) {
+    fprintf(stderr, "Could not create outFile\n");
+    return 2;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  rv=GWEN_NetLayerHttp_Request(nl, "GET", url,
+                               0, /* dbHeader */
+                               0, 0, /* body */
+                               bio);
+  fprintf(stderr, "INFO: Result of request: %d\n", rv);
+  if (rv<0) {
+    GWEN_BufferedIO_Abandon(bio);
+    GWEN_BufferedIO_free(bio);
+    return 3;
+  }
+  err=GWEN_BufferedIO_Close(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 3;
+  }
+  GWEN_BufferedIO_free(bio);
+
+  fprintf(stderr, "Shutting down connection...\n");
+  GWEN_NetLayer_Disconnect(nl);
+  GWEN_NetLayer_free(nl);
+
+  fprintf(stderr, "done.\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -3433,6 +3525,8 @@ int main(int argc, char **argv) {
     rv=testIpcClient1(argc, argv);
   else if (strcasecmp(argv[1], "nlfileconnect1")==0)
     rv=testNlFileConnect1(argc, argv);
+  else if (strcasecmp(argv[1], "nllogconnect1")==0)
+    rv=testNlLogConnect1(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
