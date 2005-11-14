@@ -20,7 +20,7 @@ AC_REQUIRE([AQ_CHECK_OS])
 dnl check if ssl is desired
 AC_MSG_CHECKING(if OpenSSL should be used)
 AC_ARG_ENABLE(ssl,
-  [  --enable-ssl             enable encryption (default=yes)],
+  [  --enable-ssl             enable SSL features (default=yes)],
   enable_ssl="$enableval",
   enable_ssl="yes")
 AC_MSG_RESULT($enable_ssl)
@@ -29,7 +29,7 @@ if test "$enable_ssl" != "no"; then
 
 dnl ******* openssl includes ***********
 AC_MSG_CHECKING(for openssl includes)
-AC_ARG_WITH(openssl-includes, [  --with-openssl-includes=DIR adds openssl include path],
+AC_ARG_WITH(openssl-include, [  --with-openssl-include=DIR specify include directory for openssl includes],
   [ssl_search_inc_dirs="$withval"],
   [ssl_search_inc_dirs="/usr/include\
     		       /usr/local/include\
@@ -51,7 +51,7 @@ fi
 
 dnl ******* openssl lib ***********
 AC_MSG_CHECKING(for openssl libs)
-AC_ARG_WITH(openssl-libs, [  --with-openssl-libs=DIR  adds openssl library path],
+AC_ARG_WITH(openssl-libs, [  --with-openssl-libs=DIR    specify lib directory for openssl libraries],
   [ssl_search_lib_dirs="$withval"],
   [ssl_search_lib_dirs="/usr/lib \
 		       /usr/local/lib \

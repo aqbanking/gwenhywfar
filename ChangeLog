@@ -1,9 +1,13 @@
-
 =============================================================================
                                   WARNING
 This current CVS version might not yet work with all libraries/programs which
 use Gwenhywfar! Do not install it on production systems !!
 =============================================================================
+
+2005-11-14   Christian Stimming <stimming@tuhh.de>
+
+	* m4/ssl.m4: Change configure argument name to
+	--with-openssl-include (no s at the end); improve documentation.
 
 2005/11/09: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
