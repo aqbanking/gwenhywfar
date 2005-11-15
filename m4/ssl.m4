@@ -29,7 +29,7 @@ if test "$enable_ssl" != "no"; then
 
 dnl ******* openssl includes ***********
 AC_MSG_CHECKING(for openssl includes)
-AC_ARG_WITH(openssl-include, [  --with-openssl-include=DIR specify include directory for openssl includes],
+AC_ARG_WITH(openssl-includes, [  --with-openssl-includes=DIR specify include directory for openssl includes],
   [ssl_search_inc_dirs="$withval"],
   [ssl_search_inc_dirs="/usr/include\
     		       /usr/local/include\

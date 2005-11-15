@@ -6,6 +6,10 @@ use Gwenhywfar! Do not install it on production systems !!
 
 2005-11-15   Christian Stimming <stimming@tuhh.de>
 
+	* m4/ssl.m4: Revert the configure argument name change; maybe this
+	is not so unconventional after all and it is at least consistent
+	with the rest of the configure arguments in aqbanking.
+
 	* configure.ac, README.DARWIN: Add -L/sw/lib to linker flags on
 	darwin, but don't use that in test/Makefile.am.
 
