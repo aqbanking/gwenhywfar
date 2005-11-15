@@ -234,6 +234,8 @@ int GWEN_KeySpec_ToDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n) {
 int GWEN_KeySpec_FromDb(GWEN_KEYSPEC *ks, GWEN_DB_NODE *db){
   assert(ks);
   assert(db);
+  GWEN_KeySpec_SetKeyType(ks,
+                          GWEN_DB_GetCharValue(db, "type", 0, ""));
   GWEN_KeySpec_SetKeyName(ks,
                           GWEN_DB_GetCharValue(db, "name", 0, ""));
   GWEN_KeySpec_SetOwner(ks,

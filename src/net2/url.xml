@@ -28,7 +28,8 @@
     <elem name="server" type="char" ptr="1" />
     <elem name="port" type="int" />
     <elem name="path" type="char" ptr="1" />
-    <elem name="vars" type="GWEN_DB_NODE" ptr="1" const="0" />
+    <elem name="vars" type="GWEN_DB_NODE" ptr="1" const="0" copy="1"
+          preset='GWEN_DB_Group_new("vars")'/>
     <elem name="url" type="char" ptr="1" access="private" />
   </type>
   

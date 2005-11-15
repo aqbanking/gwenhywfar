@@ -195,26 +195,28 @@ int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
     if (url->path) {
       GWEN_Buffer_AppendString(buf, url->path);
     }
-    dbV=GWEN_DB_GetFirstVar(url->vars);
-    while(dbV) {
-      const char *s;
-
-      s=GWEN_DB_VariableName(dbV);
-      if (s) {
-        GWEN_DB_NODE *dbVal;
-
-        GWEN_Buffer_AppendString(buf, "?");
-        GWEN_Buffer_AppendString(buf, s);
-        dbVal=GWEN_DB_GetFirstValue(dbV);
-        if (dbVal) {
-          s=GWEN_DB_GetCharValueFromNode(dbVal);
-          if (s) {
-            GWEN_Buffer_AppendString(buf, "=");
-            GWEN_Buffer_AppendString(buf, s);
+    if (url->vars) {
+      dbV=GWEN_DB_GetFirstVar(url->vars);
+      while(dbV) {
+        const char *s;
+  
+        s=GWEN_DB_VariableName(dbV);
+        if (s) {
+          GWEN_DB_NODE *dbVal;
+  
+          GWEN_Buffer_AppendString(buf, "?");
+          GWEN_Buffer_AppendString(buf, s);
+          dbVal=GWEN_DB_GetFirstValue(dbV);
+          if (dbVal) {
+            s=GWEN_DB_GetCharValueFromNode(dbVal);
+            if (s) {
+              GWEN_Buffer_AppendString(buf, "=");
+              GWEN_Buffer_AppendString(buf, s);
+            }
           }
         }
-      }
-      dbV=GWEN_DB_GetNextVar(dbV);
+        dbV=GWEN_DB_GetNextVar(dbV);
+      } /* while */
     }
   }
   return 0;
@@ -308,26 +310,28 @@ int GWEN_Url_toCommandString(const GWEN_URL *url, GWEN_BUFFER *buf) {
   if (url->path) {
     GWEN_Buffer_AppendString(buf, url->path);
   }
-  dbV=GWEN_DB_GetFirstVar(url->vars);
-  while(dbV) {
-    const char *s;
-
-    s=GWEN_DB_VariableName(dbV);
-    if (s) {
-      GWEN_DB_NODE *dbVal;
-
-      GWEN_Buffer_AppendString(buf, "?");
-      GWEN_Buffer_AppendString(buf, s);
-      dbVal=GWEN_DB_GetFirstValue(dbV);
-      if (dbVal) {
-        s=GWEN_DB_GetCharValueFromNode(dbVal);
-        if (s) {
-          GWEN_Buffer_AppendString(buf, "=");
-          GWEN_Buffer_AppendString(buf, s);
+  if (url->vars) {
+    dbV=GWEN_DB_GetFirstVar(url->vars);
+    while(dbV) {
+      const char *s;
+  
+      s=GWEN_DB_VariableName(dbV);
+      if (s) {
+        GWEN_DB_NODE *dbVal;
+  
+        GWEN_Buffer_AppendString(buf, "?");
+        GWEN_Buffer_AppendString(buf, s);
+        dbVal=GWEN_DB_GetFirstValue(dbV);
+        if (dbVal) {
+          s=GWEN_DB_GetCharValueFromNode(dbVal);
+          if (s) {
+            GWEN_Buffer_AppendString(buf, "=");
+            GWEN_Buffer_AppendString(buf, s);
+          }
         }
       }
+      dbV=GWEN_DB_GetNextVar(dbV);
     }
-    dbV=GWEN_DB_GetNextVar(dbV);
   }
 
   return 0;

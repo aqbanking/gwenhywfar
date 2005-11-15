@@ -14,6 +14,7 @@
 #include <strings.h>
 
 
+
 GWEN_LIST_FUNCTIONS(GWEN_URL, GWEN_Url)
 GWEN_LIST2_FUNCTIONS(GWEN_URL, GWEN_Url)
 
@@ -24,6 +25,7 @@ GWEN_URL *GWEN_Url_new() {
   GWEN_NEW_OBJECT(GWEN_URL, st)
   st->_usage=1;
   GWEN_LIST_INIT(GWEN_URL, st)
+  st->vars=GWEN_DB_Group_new("vars");
   return st;
 }
 
@@ -32,6 +34,16 @@ void GWEN_Url_free(GWEN_URL *st) {
   if (st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
+  if (st->protocol)
+    free(st->protocol);
+  if (st->server)
+    free(st->server);
+  if (st->path)
+    free(st->path);
+  if (st->vars)
+    GWEN_DB_Group_free(st->vars);
+  if (st->url)
+    free(st->url);
   GWEN_LIST_FINI(GWEN_URL, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -113,6 +125,8 @@ const char *GWEN_Url_GetProtocol(const GWEN_URL *st) {
 
 void GWEN_Url_SetProtocol(GWEN_URL *st, const char *d) {
   assert(st);
+  if (st->protocol)
+    free(st->protocol);
   if (d)
     st->protocol=strdup(d);
   else
@@ -131,6 +145,8 @@ const char *GWEN_Url_GetServer(const GWEN_URL *st) {
 
 void GWEN_Url_SetServer(GWEN_URL *st, const char *d) {
   assert(st);
+  if (st->server)
+    free(st->server);
   if (d)
     st->server=strdup(d);
   else
@@ -164,6 +180,8 @@ const char *GWEN_Url_GetPath(const GWEN_URL *st) {
 
 void GWEN_Url_SetPath(GWEN_URL *st, const char *d) {
   assert(st);
+  if (st->path)
+    free(st->path);
   if (d)
     st->path=strdup(d);
   else
@@ -182,6 +200,8 @@ GWEN_DB_NODE *GWEN_Url_GetVars(const GWEN_URL *st) {
 
 void GWEN_Url_SetVars(GWEN_URL *st, GWEN_DB_NODE *d) {
   assert(st);
+  if (st->vars)
+    GWEN_DB_Group_free(st->vars);
   if (d)
     st->vars=GWEN_DB_Group_dup(d);
   else
@@ -200,6 +220,8 @@ const char *GWEN_Url_GetUrl(const GWEN_URL *st) {
 
 void GWEN_Url_SetUrl(GWEN_URL *st, const char *d) {
   assert(st);
+  if (st->url)
+    free(st->url);
   if (d)
     st->url=strdup(d);
   else

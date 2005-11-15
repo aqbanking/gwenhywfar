@@ -200,12 +200,17 @@ int write_code_freeElem_c(ARGUMENTS *args,
                           GWEN_BUFFEREDIO *bio){
   const char *typ;
   const char *name;
+  int doCopy;
+  int takeOver;
   GWEN_ERRORCODE err;
 
   if (atoi(get_property(node, "ptr", "0"))==0)
     return 0;
 
-  if (atoi(GWEN_XMLNode_GetProperty(node, "takeOver", "0"))==0)
+  doCopy=atoi(GWEN_XMLNode_GetProperty(node, "copy", "1"));
+  takeOver=atoi(GWEN_XMLNode_GetProperty(node, "takeOver", "0"));
+
+  if (!doCopy && !takeOver)
     return 0;
 
   typ=GWEN_XMLNode_GetProperty(node, "type", 0);
