@@ -3,10 +3,17 @@
 For Darwin 6.x you need to setup some environment variables before
 running "./configure":
  CFLAGS="-I/sw/include"
- LDFLAGS="-L/sw/lib"
+ LDFLAGS=""
 
 You can combine this with the configure command like
- CFLAGS="-I/sw/include" LDFLAGS="-L/sw/lib" ./configure
+ CFLAGS="-I/sw/include" LDFLAGS="" ./configure
+
+Note: Previously you were advised to set LDFLAGS="-L/sw/lib"
+here. This setting is now added automatically during
+./configure. Instead, this variable should now be set empty
+because otherwise linking the test program in test/ might fail
+(due to linking against an already installed libgwenhywfar instead
+of the newly compiled one).
 
 Currently Darwin does not handle the "__attribute__ ((constructor))" 
 entries in C files as it seems, so in your programs on Darwin you will

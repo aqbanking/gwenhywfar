@@ -243,8 +243,11 @@ case "$OS_TYPE" in
         
         # add special libraries for darwin
         if test "$OSYSTEM" = "osx"; then
+	  # Add -L/sw/lib here since it is needed on darwin, but
+	  # it should be avoided when linking the test program in
+	  # test/.
+          all_libraries="-L/sw/lib ${all_libraries} -lintl"
           # hmm, this should be detected by the GETTEXT macro...
-          all_libraries="${all_libraries} -lintl"
           PROG_LIBRARIES="${PROG_LIBRARIES} -lintl"
         fi
     	;;
