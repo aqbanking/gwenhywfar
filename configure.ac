@@ -593,7 +593,6 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  plugins/crypttoken/ohbci/ressource.rc
                  tools/Makefile
                  tools/xmlmerge/Makefile
-                 tools/dlgtest/Makefile
                  tools/typemaker/Makefile
                  tools/gct-tool/Makefile
                  test/Makefile
