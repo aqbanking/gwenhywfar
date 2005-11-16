@@ -72,7 +72,6 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %defattr(-,root,root)
 %doc AUTHORS README COPYING ChangeLog
 %{_libdir}/*.so.*
-%{_libdir}/*.so
 %{_libdir}/%{name}
 %{_datadir}/locale/*/LC_MESSAGES/gwenhywfar.mo
 %{_bindir}/gct-tool
@@ -82,10 +81,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %defattr(-,root,root)
 %{_bindir}/gwenhywfar2-config
 %{_bindir}/xmlmerge
-%{_bindir}/dlgtest
 %{_bindir}/mklistdoc
 %{_bindir}/typemaker
 %{_includedir}/gwenhywfar2/gwenhywfar
+%{_libdir}/*.so
 %{_libdir}/*.la
 #%{_libdir}/*.a
 %{_datadir}/aclocal/gwenhywfar.m4

@@ -12,16 +12,17 @@ EXTRA_DIST=$(typefiles)
 noinst_LTLIBRARIES=libnet2.la
 
 noinst_HEADERS=\
+  net2_l.h \
   netlayer_l.h \
   netlayer_p.h \
-  nl_socket_p.h \
-  nl_http_p.h \
-  url_p.h \
-  net2_l.h \
-  nl_hbci_p.h \
-  nl_packets_p.h \
   nl_file_p.h \
-  nl_log_p.h
+  nl_hbci_p.h \
+  nl_http_p.h \
+  nl_log_p.h \
+  nl_packets_p.h \
+  nl_socket_p.h \
+  url_l.h \
+  url_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
