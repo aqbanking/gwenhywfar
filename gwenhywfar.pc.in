@@ -22,5 +22,5 @@ Description: A multi-platform helper library for other libraries
 
 Version: @VERSION@
 Libs: @gwenhywfar_ldflags@ @gwenhywfar_libs@
-Cflags: @gwenhywfar_includes@
+Cflags: -I@gwenhywfar_headerdir@
 
