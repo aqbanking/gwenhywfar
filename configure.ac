@@ -259,7 +259,7 @@ case "$OS_TYPE" in
 	gwenhywfar_internal_libname="gwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}.dll"
         gwenhywfar_headerdir_am="\$(includedir)"
         gwenhywfar_headerdir="\${includedir}"
-        gwenhywfar_plugindir_am="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+        gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
         PROG_LIBRARIES="-L/mingw/lib ${PROG_LIBRARIES}"
