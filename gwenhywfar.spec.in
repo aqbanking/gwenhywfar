@@ -79,7 +79,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 %files devel
 %defattr(-,root,root)
-%{_bindir}/gwenhywfar2-config
+%{_bindir}/gwenhywfar-config
 %{_bindir}/xmlmerge
 %{_bindir}/mklistdoc
 %{_bindir}/typemaker

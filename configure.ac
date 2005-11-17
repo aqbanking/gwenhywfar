@@ -17,9 +17,9 @@ AC_CONFIG_HEADER([config.h])
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=1
-GWENHYWFAR_VERSION_MINOR=19
+GWENHYWFAR_VERSION_MINOR=98
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=13
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -229,8 +229,8 @@ case "$OS_TYPE" in
         gwenhywfar_ldflags="-L\${libdir}"
         gwenhywfar_libs="-lgwenhywfar"
 	gwenhywfar_internal_libname="libgwenhywfar.la"
-        gwenhywfar_headerdir_am="\$(includedir)/gwenhywfar2"
-        gwenhywfar_headerdir="\${includedir}/gwenhywfar2"
+        gwenhywfar_headerdir_am="\$(includedir)"
+        gwenhywfar_headerdir="\${includedir}"
         gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
@@ -257,8 +257,8 @@ case "$OS_TYPE" in
         gwenhywfar_ldflags="-L${WIN_PATH_WINDOWS_MINGW}"
         gwenhywfar_libs="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
 	gwenhywfar_internal_libname="gwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}.dll"
-        gwenhywfar_headerdir_am="\$(includedir)/gwenhywfar2"
-        gwenhywfar_headerdir="\${includedir}/gwenhywfar2/gwenhywfar"
+        gwenhywfar_headerdir_am="\$(includedir)"
+        gwenhywfar_headerdir="\${includedir}"
         gwenhywfar_plugindir_am="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
@@ -361,9 +361,7 @@ lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
 rm -Rf gwenhywfar 2>/dev/null
-rm -Rf gwenhywfar2 2>/dev/null
-mkdir gwenhywfar2
-mkdir gwenhywfar2/gwenhywfar
+mkdir gwenhywfar
 GWEN_HEADER_FILES="doc/apidoc.h"
 for d in ${GWEN_HEADER_DIRS}; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
@@ -373,14 +371,14 @@ for d in ${GWEN_HEADER_DIRS}; do
       	 ;;
       *)
          GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${d}/${f}"
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar2/gwenhywfar/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar/${f}"
          ;;
     esac
   done
 done
-test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar2/gwenhywfar/version.h" 2>/dev/null
-test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar2/gwenhywfar/types.h" 2>/dev/null
-test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar2/gwenhywfar/system.h" 2>/dev/null
+test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" 2>/dev/null
+test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" 2>/dev/null
+test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" 2>/dev/null
 
 AC_SUBST(GWEN_HEADER_FILES)
 
@@ -553,7 +551,7 @@ AC_CONFIG_FILES([Doxyfile po/Makefile.in
                  Makefile
                  admin/Makefile
                  m4/Makefile
-                 gwenhywfar2-config.in
+                 gwenhywfar-config.in
 		 gwenhywfar.pc
 		 gwenhywfar.spec
 		 gwenhywfar.iss

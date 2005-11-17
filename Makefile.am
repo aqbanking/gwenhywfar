@@ -12,17 +12,17 @@ EXTRA_DIST = \
  gwenhywfar.spec \
  Makefile.cvs
 
-bin_SCRIPTS = gwenhywfar2-config
+bin_SCRIPTS = gwenhywfar-config
 M4dir = $(datadir)/aclocal
 dist_M4_DATA = gwenhywfar.m4
 ACLOCAL_AMFLAGS = -I m4
 
 
-gwenhywfar2-config: gwenhywfar2-config.in
-	echo "#! /bin/sh" >gwenhywfar2-config && \
-	echo 'dir="@prefix@"' >>gwenhywfar2-config && \
-	cat gwenhywfar2-config.in >>gwenhywfar2-config && \
-	chmod a+x gwenhywfar2-config
+gwenhywfar-config: gwenhywfar-config.in
+	echo "#! /bin/sh" >gwenhywfar-config && \
+	echo 'dir="@prefix@"' >>gwenhywfar-config && \
+	cat gwenhywfar-config.in >>gwenhywfar-config && \
+	chmod a+x gwenhywfar-config
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwenhywfar.pc
@@ -146,8 +146,8 @@ quick: config.h
 	make -C po stamp-po
 	make
 
-CLEANFILES = gwenhywfar2-config
-DISTCLEANFILES = gwenhywfar2-config.in
+CLEANFILES = gwenhywfar-config
+DISTCLEANFILES = gwenhywfar-config.in
 
 # Rule for only building the source rpm
 srpm: $(PACKAGE).spec dist
