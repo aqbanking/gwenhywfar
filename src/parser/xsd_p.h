@@ -45,7 +45,7 @@ typedef struct GWEN_XSD_NAMESPACE GWEN_XSD_NAMESPACE;
 typedef struct GWEN_XSD_CONTEXT GWEN_XSD_CONTEXT;
 typedef struct GWEN_XSD_FACETS GWEN_XSD_FACETS;
 
-GWEN_LIST_FUNCTION_DEFS(GWEN_XSD_NAMESPACE, GWEN_XSD_NameSpace)
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_XSD_NAMESPACE, GWEN_XSD_NameSpace, GWENHYWFAR_API)
 GWEN_LIST_FUNCTION_DEFS(GWEN_XSD_FACETS, GWEN_XSD_Facets)
 
 
@@ -341,6 +341,7 @@ GWEN_XMLNODE *GWEN_XSD_GetGroupNode(GWEN_XSD_ENGINE *e,
 
 
 
+GWENHYWFAR_API
 int GWEN_XSD_ListTypes(GWEN_XSD_ENGINE *e,
                        const char *nameSpace,
                        const char *name,
@@ -446,6 +447,7 @@ int GWEN_XSD__WriteGroupTypes(GWEN_XSD_ENGINE *e,
                               int idx,
                               GWEN_XMLNODE *nStore);
 
+GWENHYWFAR_API
 int GWEN_XSD_WriteElement(GWEN_XSD_ENGINE *e,
                           const char *nameSpace,
                           const char *name,
