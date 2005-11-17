@@ -355,7 +355,7 @@ AM_GNU_GETTEXT_VERSION(0.14.1)
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/net src/net2 src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/ipc/request src/os src/os/${GWEN_OS}"
+GWEN_HEADER_DIRS="src src/base src/net2 src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/ipc/request src/os src/os/${GWEN_OS}"
 GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
