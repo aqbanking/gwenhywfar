@@ -56,6 +56,12 @@
 
 #include <errno.h>
 
+#ifdef OS_WIN32
+# define DIRSEP "\\"
+#else
+# define DIRSEP "/"
+#endif
+
 
 GWEN_INHERIT(GWEN_NETLAYER, GWEN_NL_SSL)
 
@@ -998,7 +1004,6 @@ int GWEN_NetLayerSsl_SaveCert(GWEN_NETLAYER *nl,
                               int overwrite) {
   GWEN_NL_SSL *nld;
   FILE *f;
-  const char *fmode = "";
   char cn[256];
   X509_NAME *nm;
 
@@ -1030,7 +1035,7 @@ int GWEN_NetLayerSsl_SaveCert(GWEN_NETLAYER *nl,
       GWEN_Buffer_free(nbuf);
       return -1;
     }
-    GWEN_Buffer_AppendByte(nbuf, '/');
+    GWEN_Buffer_AppendString(nbuf, DIRSEP);
     GWEN_Buffer_AppendString(nbuf, numbuf);
     pos=GWEN_Buffer_GetPos(nbuf);
     for (i=0; i<GWEN_NL_SSL_MAXCOLL; i++) {
@@ -1058,8 +1063,8 @@ int GWEN_NetLayerSsl_SaveCert(GWEN_NETLAYER *nl,
     DBG_DEBUG(GWEN_LOGDOMAIN, "Saving file as \"%s\"", GWEN_Buffer_GetStart(nbuf));
     f=fopen(GWEN_Buffer_GetStart(nbuf), "w+");
     if (!f) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "fopen(\"%s\", \"%s\"): %s",
-                GWEN_Buffer_GetStart(nbuf), fmode, strerror(errno));
+      DBG_ERROR(GWEN_LOGDOMAIN, "fopen(\"%s\", \"w+\"): %s",
+		GWEN_Buffer_GetStart(nbuf), strerror(errno));
       GWEN_Buffer_free(nbuf);
       return -1;
     }
@@ -2037,6 +2042,7 @@ int GWEN_NetLayerSsl_GenerateDhFile(const char *fname, int bits) {
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
 const GWEN_SSLCERTDESCR*
 GWEN_NetLayerSsl_GetPeerCertificate(const GWEN_NETLAYER *nl) {
   GWEN_NL_SSL *nld;
@@ -2050,6 +2056,7 @@ GWEN_NetLayerSsl_GetPeerCertificate(const GWEN_NETLAYER *nl) {
 
 
 
+/* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetLayerSsl_GetIsSecure(const GWEN_NETLAYER *nl) {
   GWEN_NL_SSL *nld;
 
@@ -2060,6 +2067,82 @@ int GWEN_NetLayerSsl_GetIsSecure(const GWEN_NETLAYER *nl) {
   return nld->isSecure;
 }
 
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayerSsl_ImportCertFile(const char *fname,
+				    const char *dname,
+				    int overwrite) {
+  X509 *cert;
+  X509_NAME *nm;
+  FILE *f;
+  GWEN_BUFFER *nbuf;
+  unsigned long hash;
+  char numbuf[32];
+  int i;
+  GWEN_TYPE_UINT32 pos;
+
+  /* read certificate file */
+  f=fopen(fname, "r");
+  if (!f) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s): %s", fname, strerror(errno));
+    return -1;
+  }
+  cert=PEM_read_X509(f, NULL, NULL, NULL);
+  fclose(f);
+  if (!cert) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "file \"%s\" does not contain a valid certificate",
+	      fname);
+    return -1;
+  }
+
+  nm=X509_get_subject_name(cert);
+  hash=X509_NAME_hash(nm);
+  snprintf(numbuf, sizeof(numbuf), "%08lx", hash);
+  nbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  GWEN_Buffer_AppendString(nbuf, dname);
+  GWEN_Buffer_AppendString(nbuf, DIRSEP);
+  GWEN_Buffer_AppendString(nbuf, numbuf);
+  pos=GWEN_Buffer_GetPos(nbuf);
+  for (i=0; i<GWEN_NL_SSL_MAXCOLL; i++) {
+    snprintf(numbuf, sizeof(numbuf), "%d", i);
+    GWEN_Buffer_Crop(nbuf, 0, pos);
+    GWEN_Buffer_SetPos(nbuf, pos);
+    GWEN_Buffer_AppendByte(nbuf, '.');
+    GWEN_Buffer_AppendString(nbuf, numbuf);
+    if (overwrite)
+      /* overwrite older incoming certificates */
+      break;
+    if (GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+			       GWEN_PATH_FLAGS_NAMEMUSTEXIST|
+			       GWEN_PATH_FLAGS_VARIABLE|
+			       GWEN_PATH_FLAGS_CHECKROOT)) {
+      break;
+    }
+  }
+  if (i>=GWEN_NL_SSL_MAXCOLL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Maximum number of hash collisions reached!");
+    GWEN_Buffer_free(nbuf);
+    X509_free(cert);
+    return -1;
+  }
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Saving file as \"%s\"",
+	    GWEN_Buffer_GetStart(nbuf));
+  f=fopen(GWEN_Buffer_GetStart(nbuf), "w+");
+  if (!f) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fopen(\"%s\", \"w+\"): %s",
+	      GWEN_Buffer_GetStart(nbuf), strerror(errno));
+    GWEN_Buffer_free(nbuf);
+    X509_free(cert);
+    return -1;
+  }
+  GWEN_Buffer_free(nbuf);
+  X509_free(cert);
+
+  return 0;
+}
 
 
 

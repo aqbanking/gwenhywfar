@@ -4,6 +4,12 @@ This current CVS version might not yet work with all libraries/programs which
 use Gwenhywfar! Do not install it on production systems !!
 =============================================================================
 
+2005/11/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_NetLayerSsl_ImportCertFile() (this will make it easier
+  to import certificate files)
+
+
 2005/11/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - reverted change of filename for gwenhywfar-config script

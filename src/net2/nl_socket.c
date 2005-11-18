@@ -527,9 +527,6 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSocket_Work(GWEN_NETLAYER *nl) {
   }
 
   case GWEN_NetLayerStatus_Connected:
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Active connection, nothing to do");
-    /* TODO: check whether read/write are possible, return code
-     * accordingly */
     break;
 
   case GWEN_NetLayerStatus_Unconnected:
