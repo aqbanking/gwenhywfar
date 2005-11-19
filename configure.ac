@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=98
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=2
+GWENHYWFAR_VERSION_BUILD=5
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -158,8 +158,8 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 
-#AC_LIBTOOL_WIN32_DLL
-#^^ -- enable this when libtool is verified to build the correct win32 DLL.
+AC_LIBTOOL_WIN32_DLL
+AC_LIBTOOL_RC
 AC_PROG_LIBTOOL
 AC_PROG_AWK
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
@@ -255,8 +255,13 @@ case "$OS_TYPE" in
         AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
         ACX_WINDOWS_PATHS
         gwenhywfar_ldflags="-L${WIN_PATH_WINDOWS_MINGW}"
-        gwenhywfar_libs="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
-	gwenhywfar_internal_libname="gwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}.dll"
+
+        #gwenhywfar_libs="-lgwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}"
+	#gwenhywfar_internal_libname="gwenhywfar32_${GWENHYWFAR_SO_EFFECTIVE}.dll"
+
+        gwenhywfar_libs="-lgwenhywfar-${GWENHYWFAR_SO_EFFECTIVE}"
+	gwenhywfar_internal_libname="libgwenhywfar.la"
+
         gwenhywfar_headerdir_am="\$(includedir)"
         gwenhywfar_headerdir="\${includedir}"
         gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
@@ -344,11 +349,29 @@ AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
 AC_SUBST(USE_CRYPT)
 
 
+
 ###-------------------------------------------------------------------------
-# check for gettext
 #
-AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION(0.14.1)
+# check for I18N
+#
+HAVE_I18N="yes"
+AC_CHECK_PROG(MSGFMT,msgfmt,msgfmt,missing)
+AC_CHECK_PROG(XGETTEXT,xgettext,xgettext, missing)
+
+if test "$XGETTEXT" != "missing" -a "$MSGFMT" != "missing" ; then
+  AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
+  AC_SEARCH_LIBS(gettext, intl, [], [HAVE_I18N="no"])
+else
+  HAVE_I18N="no"
+  AC_MSG_WARN([xgettext or msgfmt is missing. Locale suport is disabled.])
+fi
+AC_SUBST(HAVE_I18N)
+if test "$HAVE_I18N" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
+  AC_DEFINE_UNQUOTED(ENABLE_NLS, 1, [whether I18N is available])
+fi
+AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
+
 
 
 ###-------------------------------------------------------------------------
@@ -547,10 +570,11 @@ AC_SUBST(gwenhywfar_headerdir)
 #
 # list of files to create
 #
-AC_CONFIG_FILES([Doxyfile po/Makefile.in
+AC_CONFIG_FILES([Doxyfile
                  Makefile
                  admin/Makefile
                  m4/Makefile
+                 po/Makefile
                  gwenhywfar-config.in
 		 gwenhywfar.pc
 		 gwenhywfar.spec

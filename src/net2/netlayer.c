@@ -246,7 +246,7 @@ int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
       }
     }
 
-    if (count && d) {
+    if (res==GWEN_NetLayerResult_Idle && count && d) {
       int ratio;
 
       ratio=count/d;
@@ -255,7 +255,8 @@ int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
          * the user from aborting a program running wild */
         DBG_WARN(GWEN_LOGDOMAIN,
                  "WARNING: Inserting sleep cycle, "
-                 "please check the code! (%d)", ratio);
+                 "please check the code! (%d, count=%d, dt=%lf, distance=%d)",
+                 ratio, count, d, distance);
         GWEN_Socket_Select(0, 0, 0, 750);
       }
     }
@@ -1476,8 +1477,20 @@ int GWEN_NetLayer_SendPacket(GWEN_NETLAYER *nl,
   int rv;
   time_t startt;
   int tLeft;
+  GWEN_NETLAYER_RESULT res;
 
   startt=time(0);
+
+  res=GWEN_NetLayer_Work(nl);
+  if (res==GWEN_NetLayerResult_Error) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    return -1;
+  }
+
+  if (nl->status!=GWEN_NetLayerStatus_Connected) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not connected");
+    return GWEN_ERROR_NOT_CONNECTED;
+  }
 
   rv=GWEN_NetLayer_BeginOutPacket(nl, dLen);
   if (rv) {

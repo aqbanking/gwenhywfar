@@ -58,6 +58,9 @@ int GWEN_NetLayerSocket_AddSockets(GWEN_NETLAYER *nl,
 
 GWEN_NETLAYER_RESULT GWEN_NetLayerSocket_Work(GWEN_NETLAYER *nl);
 
+#if 0
+int GWEN_NetLayerSocket_CheckConnection(GWEN_NETLAYER *nl);
+#endif
 
 #endif /* GWEN_NL_SOCKET_P_H */
 

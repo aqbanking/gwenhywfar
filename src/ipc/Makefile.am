@@ -22,3 +22,11 @@ libipc_la_SOURCES=\
 
 libipc_la_LIBADD=request/libipcrequest.la
 
+sources:
+	for f in $(libipc_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+

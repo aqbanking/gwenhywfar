@@ -54,3 +54,11 @@ libcrypt_la_LIBADD=@GWEN_CRYPTO@/libcryptimpl.la
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)
 
+sources:
+	for f in $(libcrypt_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+

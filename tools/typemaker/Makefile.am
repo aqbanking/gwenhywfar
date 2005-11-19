@@ -8,3 +8,12 @@ typemaker_SOURCES=args.c main.c phc.c lhc.c ahc.c code_c.c
 typemaker_LDADD = \
   $(top_builddir)/src/$(gwenhywfar_internal_libname) \
   $(PROG_LIBRARIES)
+
+sources:
+	for f in $(typemaker_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+

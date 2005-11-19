@@ -67,6 +67,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPTTOKEN,
 
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_CryptToken_Flag_fromString(const char *s);
+
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_CryptToken_Flags_fromDb(GWEN_DB_NODE *db,
                                               const char *n);
@@ -90,6 +91,7 @@ typedef enum {
 
 GWENHYWFAR_API
 GWEN_CRYPTTOKEN_HASHALGO GWEN_CryptToken_HashAlgo_fromString(const char *s);
+
 GWENHYWFAR_API
 const char *GWEN_CryptToken_HashAlgo_toString(GWEN_CRYPTTOKEN_HASHALGO a);
 
@@ -118,6 +120,7 @@ typedef enum {
 
 GWENHYWFAR_API
 GWEN_CRYPTTOKEN_PADDALGO GWEN_CryptToken_PaddAlgo_fromString(const char *s);
+
 GWENHYWFAR_API
 const char *GWEN_CryptToken_PaddAlgo_toString(GWEN_CRYPTTOKEN_PADDALGO a);
 
@@ -138,6 +141,7 @@ typedef enum {
 
 GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CRYPTALGO GWEN_CryptToken_CryptAlgo_fromString(const char *s);
+
 GWENHYWFAR_API
 const char *GWEN_CryptToken_CryptAlgo_toString(GWEN_CRYPTTOKEN_CRYPTALGO a);
 
@@ -153,6 +157,7 @@ typedef enum {
 
 GWENHYWFAR_API
 GWEN_CRYPTTOKEN_DEVICE GWEN_CryptToken_Device_fromString(const char *s);
+
 GWENHYWFAR_API
 const char *GWEN_CryptToken_Device_toString(GWEN_CRYPTTOKEN_DEVICE d);
 
@@ -165,7 +170,10 @@ typedef enum {
   GWEN_CryptToken_PinType_Manage
 } GWEN_CRYPTTOKEN_PINTYPE;
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_PINTYPE GWEN_CryptToken_PinType_fromString(const char *s);
+
+GWENHYWFAR_API
 const char *GWEN_CryptToken_PinType_toString(GWEN_CRYPTTOKEN_PINTYPE pt);
 
 
@@ -182,6 +190,7 @@ typedef enum {
 GWENHYWFAR_API
 GWEN_CRYPTTOKEN_PINENCODING
 GWEN_CryptToken_PinEncoding_fromString(const char *s);
+
 GWENHYWFAR_API
 const char*
   GWEN_CryptToken_PinEncoding_toString(GWEN_CRYPTTOKEN_PINENCODING pe);
@@ -294,6 +303,7 @@ GWEN_CRYPTTOKEN *GWEN_CryptToken_new(GWEN_PLUGIN_MANAGER *pm,
                                      const char *typeName,
                                      const char *subTypeName,
                                      const char *name);
+
 GWENHYWFAR_API
 void GWEN_CryptToken_free(GWEN_CRYPTTOKEN *ct);
 
@@ -308,13 +318,16 @@ int GWEN_CryptToken_ReadXml(GWEN_CRYPTTOKEN *ct, GWEN_XMLNODE *n);
 GWENHYWFAR_API
 GWEN_PLUGIN_MANAGER*
 GWEN_CryptToken_GetCryptManager(const GWEN_CRYPTTOKEN *ct);
+
 GWENHYWFAR_API
 const char *GWEN_CryptToken_GetTokenName(const GWEN_CRYPTTOKEN *ct);
+
 GWENHYWFAR_API
 void GWEN_CryptToken_SetTokenName(GWEN_CRYPTTOKEN *ct, const char *s);
 
 GWENHYWFAR_API
 const char *GWEN_CryptToken_GetTokenType(const GWEN_CRYPTTOKEN *ct);
+
 GWENHYWFAR_API
 const char *GWEN_CryptToken_GetTokenSubType(const GWEN_CRYPTTOKEN *ct);
 
@@ -324,66 +337,112 @@ GWEN_CryptToken_GetDeviceType(const GWEN_CRYPTTOKEN *ct);
 
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_CryptToken_GetFlags(const GWEN_CRYPTTOKEN *ct);
+
 GWENHYWFAR_API
 void GWEN_CryptToken_SetFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
+
 GWENHYWFAR_API
 void GWEN_CryptToken_AddFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
+
 GWENHYWFAR_API
 void GWEN_CryptToken_SubFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
 
 GWENHYWFAR_API
 const char *GWEN_CryptToken_GetDescriptiveName(const GWEN_CRYPTTOKEN *ct);
+
 GWENHYWFAR_API
 void GWEN_CryptToken_SetDescriptiveName(GWEN_CRYPTTOKEN *ct, const char *s);
 
+GWENHYWFAR_API
 void GWEN_CryptToken_SetOpenFn(GWEN_CRYPTTOKEN *ct,
                                GWEN_CRYPTTOKEN_OPEN_FN fn);
+
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_OPEN_FN GWEN_CryptToken_GetOpenFn(const GWEN_CRYPTTOKEN *ct);
 
+GWENHYWFAR_API
 void GWEN_CryptToken_SetCreateFn(GWEN_CRYPTTOKEN *ct,
                                  GWEN_CRYPTTOKEN_CREATE_FN fn);
+
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CREATE_FN GWEN_CryptToken_GetCreateFn(const GWEN_CRYPTTOKEN *ct);
 
+GWENHYWFAR_API
 void GWEN_CryptToken_SetCloseFn(GWEN_CRYPTTOKEN *ct,
                                 GWEN_CRYPTTOKEN_CLOSE_FN fn);
+
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CLOSE_FN
   GWEN_CryptToken_GetCloseFn(const GWEN_CRYPTTOKEN *ct);
 
+GWENHYWFAR_API
 void GWEN_CryptToken_SetChangePinFn(GWEN_CRYPTTOKEN *ct,
                                     GWEN_CRYPTTOKEN_CHANGEPIN_FN fn);
 
+GWENHYWFAR_API
 void GWEN_CryptToken_SetSignFn(GWEN_CRYPTTOKEN *ct,
                                GWEN_CRYPTTOKEN_SIGN_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetVerifyFn(GWEN_CRYPTTOKEN *ct,
                                  GWEN_CRYPTTOKEN_VERIFY_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetEncryptFn(GWEN_CRYPTTOKEN *ct,
                                   GWEN_CRYPTTOKEN_ENCRYPT_FN fn);
+GWENHYWFAR_API
 void GWEN_CryptToken_SetDecryptFn(GWEN_CRYPTTOKEN *ct,
                                   GWEN_CRYPTTOKEN_DECRYPT_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetReadKeyFn(GWEN_CRYPTTOKEN *ct,
                                   GWEN_CRYPTTOKEN_READKEY_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetWriteKeyFn(GWEN_CRYPTTOKEN *ct,
                                    GWEN_CRYPTTOKEN_WRITEKEY_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetReadKeySpecFn(GWEN_CRYPTTOKEN *ct,
                                       GWEN_CRYPTTOKEN_READKEYSPEC_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetWriteKeySpecFn(GWEN_CRYPTTOKEN *ct,
                                        GWEN_CRYPTTOKEN_WRITEKEYSPEC_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetGenerateKeyFn(GWEN_CRYPTTOKEN *ct,
                                       GWEN_CRYPTTOKEN_GENERATEKEY_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetFillContextListFn(GWEN_CRYPTTOKEN *ct,
                                           GWEN_CRYPTTOKEN_FILLCONTEXTLIST_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetFillSignInfoListFn(GWEN_CRYPTTOKEN *ct,
                                            GWEN_CRYPTTOKEN_FILLSIGNINFOLIST_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetFillCryptInfoListFn(GWEN_CRYPTTOKEN *ct,
                                             GWEN_CRYPTTOKEN_FILLCRYPTINFOLIST_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetFillKeyInfoListFn(GWEN_CRYPTTOKEN *ct,
                                           GWEN_CRYPTTOKEN_FILLKEYINFOLIST_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetFillUserListFn(GWEN_CRYPTTOKEN *ct,
                                        GWEN_CRYPTTOKEN_FILLUSERLIST_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetGetSignSeqFn(GWEN_CRYPTTOKEN *ct,
                                      GWEN_CRYPTTOKEN_GETSIGNSEQ_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetModifyUserFn(GWEN_CRYPTTOKEN *ct,
                                      GWEN_CRYPTTOKEN_MODIFYUSER_FN fn);
+
+GWENHYWFAR_API
 void
   GWEN_CryptToken_SetGetTokenIdDataFn(GWEN_CRYPTTOKEN *ct,
                                       GWEN_CRYPTTOKEN_GETTOKENIDDATA_FN fn);
@@ -415,6 +474,7 @@ int GWEN_CryptToken_Sign(GWEN_CRYPTTOKEN *ct,
                          const char *ptr,
                          unsigned int len,
                          GWEN_BUFFER *dst);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_Verify(GWEN_CRYPTTOKEN *ct,
                            const GWEN_CRYPTTOKEN_CONTEXT *ctx,
@@ -422,34 +482,41 @@ int GWEN_CryptToken_Verify(GWEN_CRYPTTOKEN *ct,
                            unsigned int len,
                            const char *sigptr,
                            unsigned int siglen);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_Encrypt(GWEN_CRYPTTOKEN *ct,
                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                             const char *ptr,
                             unsigned int len,
                             GWEN_BUFFER *dst);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_Decrypt(GWEN_CRYPTTOKEN *ct,
                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                             const char *ptr,
                             unsigned int len,
                             GWEN_BUFFER *dst);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_ReadKey(GWEN_CRYPTTOKEN *ct,
                             GWEN_TYPE_UINT32 kid,
                             GWEN_CRYPTKEY **key);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_WriteKey(GWEN_CRYPTTOKEN *ct,
                              GWEN_TYPE_UINT32 kid,
                              const GWEN_CRYPTKEY *key);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_ReadKeySpec(GWEN_CRYPTTOKEN *ct,
                                 GWEN_TYPE_UINT32 kid,
                                 GWEN_KEYSPEC **ks);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_WriteKeySpec(GWEN_CRYPTTOKEN *ct,
                                  GWEN_TYPE_UINT32 kid,
                                  const GWEN_KEYSPEC *ks);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_GenerateKey(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_KEYINFO *ki,
@@ -463,6 +530,7 @@ int GWEN_CryptToken_GetSignSeq(GWEN_CRYPTTOKEN *ct,
 GWENHYWFAR_API
 int GWEN_CryptToken_FillContextList(GWEN_CRYPTTOKEN *ct,
                                     GWEN_CRYPTTOKEN_CONTEXT_LIST *l);
+
 GWENHYWFAR_API
 int GWEN_CryptToken_FillSignInfoList(GWEN_CRYPTTOKEN *ct,
                                      GWEN_CRYPTTOKEN_SIGNINFO_LIST *l);

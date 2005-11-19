@@ -49,6 +49,10 @@ GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
 GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
                                           const char *name);
 
+GWEN_ERRORCODE GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
+                                                   const char *path,
+                                                   const char *name);
+
 
 #ifdef __cplusplus
 }

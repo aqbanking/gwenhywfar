@@ -84,6 +84,7 @@ typedef enum {
 
 GWENHYWFAR_API
 GWEN_NETLAYER_STATUS GWEN_NetLayerStatus_fromString(const char *s);
+
 GWENHYWFAR_API
 const char *GWEN_NetLayerStatus_toString(GWEN_NETLAYER_STATUS st);
 
@@ -98,6 +99,7 @@ typedef enum {
 
 GWENHYWFAR_API
 GWEN_NETLAYER_RESULT GWEN_NetLayerResult_fromString(const char *s);
+
 GWENHYWFAR_API
 const char *GWEN_NetLayerResult_toString(GWEN_NETLAYER_RESULT res);
 
@@ -156,8 +158,10 @@ typedef int (*GWEN_NETLAYER_CHECK_IN_PACKET_FN)(GWEN_NETLAYER *nl);
 
 GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayer_new(const char *typeName);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_free(GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_Attach(GWEN_NETLAYER *nl);
 
@@ -166,69 +170,86 @@ const char *GWEN_NetLayer_GetTypeName(const GWEN_NETLAYER *nl);
 
 GWENHYWFAR_API
 GWEN_NETLAYER_STATUS GWEN_NetLayer_GetStatus(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetStatus(GWEN_NETLAYER *nl, GWEN_NETLAYER_STATUS st);
+
 GWENHYWFAR_API
 time_t GWEN_NetLayer_GetLastStatusChangeTime(const GWEN_NETLAYER *nl);
 
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_NetLayer_GetFlags(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetFlags(GWEN_NETLAYER *nl, GWEN_TYPE_UINT32 fl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_AddFlags(GWEN_NETLAYER *nl, GWEN_TYPE_UINT32 fl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SubFlags(GWEN_NETLAYER *nl, GWEN_TYPE_UINT32 fl);
 
 GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayer_GetBaseLayer(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetBaseLayer(GWEN_NETLAYER *nl, GWEN_NETLAYER *baseLayer);
 
 GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayer_GetParentLayer(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetParentLayer(GWEN_NETLAYER *nl, GWEN_NETLAYER *pLayer);
 
 GWENHYWFAR_API
 void GWEN_NetLayer_AddIncomingLayer(GWEN_NETLAYER *nl, GWEN_NETLAYER *newnl);
+
 GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayer_PeekIncomingLayer(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayer_GetIncomingLayer(GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayer_GetIncomingLayer_Wait(GWEN_NETLAYER *nl,
                                                    int timeout);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_GetIncomingLayerCount(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_DelIncomingLayers(GWEN_NETLAYER *nl);
 
 
 GWENHYWFAR_API
 const GWEN_INETADDRESS *GWEN_NetLayer_GetLocalAddr(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetLocalAddr(GWEN_NETLAYER *nl,
                                 const GWEN_INETADDRESS *addr);
 
 GWENHYWFAR_API
 const GWEN_INETADDRESS *GWEN_NetLayer_GetPeerAddr(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetPeerAddr(GWEN_NETLAYER *nl,
                                const GWEN_INETADDRESS *addr);
 
 GWENHYWFAR_API
 int GWEN_NetLayer_GetBackLog(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetBackLog(GWEN_NETLAYER *nl, int i);
 
 GWENHYWFAR_API
 int GWEN_NetLayer_GetInBodySize(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetInBodySize(GWEN_NETLAYER *nl, int i);
 
 GWENHYWFAR_API
 int GWEN_NetLayer_GetOutBodySize(const GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetOutBodySize(GWEN_NETLAYER *nl, int i);
 
@@ -239,16 +260,21 @@ void GWEN_NetLayer_SetGetPasswordFn(GWEN_NETLAYER *nl,
 
 GWENHYWFAR_API
 void GWEN_NetLayer_SetWorkFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_WORK_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetReadFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_READ_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetWriteFn(GWEN_NETLAYER *nl, GWEN_NETLAYER_WRITE_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetConnectFn(GWEN_NETLAYER *nl,
                                 GWEN_NETLAYER_CONNECT_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetDisconnectFn(GWEN_NETLAYER *nl,
                                    GWEN_NETLAYER_DISCONNECT_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetListenFn(GWEN_NETLAYER *nl,
                                GWEN_NETLAYER_LISTEN_FN f);
@@ -256,9 +282,11 @@ void GWEN_NetLayer_SetListenFn(GWEN_NETLAYER *nl,
 GWENHYWFAR_API
 void GWEN_NetLayer_SetAddSocketsFn(GWEN_NETLAYER *nl,
                                    GWEN_NETLAYER_ADDSOCKETS_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetBaseStatusChangeFn(GWEN_NETLAYER *nl,
                                          GWEN_NETLAYER_BASESTATUS_CHG_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetStatusChangeFn(GWEN_NETLAYER *nl,
                                      GWEN_NETLAYER_STATUS_CHG_FN f);
@@ -266,12 +294,15 @@ void GWEN_NetLayer_SetStatusChangeFn(GWEN_NETLAYER *nl,
 GWENHYWFAR_API
 void GWEN_NetLayer_SetBeginOutPacketFn(GWEN_NETLAYER *nl,
                                         GWEN_NETLAYER_BEGIN_OUT_PACKET_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetEndOutPacketFn(GWEN_NETLAYER *nl,
                                       GWEN_NETLAYER_END_OUT_PACKET_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetBeginInPacketFn(GWEN_NETLAYER *nl,
                                        GWEN_NETLAYER_BEGIN_IN_PACKET_FN f);
+
 GWENHYWFAR_API
 void GWEN_NetLayer_SetCheckInPacketFn(GWEN_NETLAYER *nl,
                                        GWEN_NETLAYER_CHECK_IN_PACKET_FN f);
@@ -299,6 +330,7 @@ GWENHYWFAR_API
 int GWEN_NetLayer_Read(GWEN_NETLAYER *nl,
                        char *buffer,
                        int *bsize);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
                             char *buffer, int *bsize,
@@ -308,6 +340,7 @@ GWENHYWFAR_API
 int GWEN_NetLayer_Write(GWEN_NETLAYER *nl,
                         const char *buffer,
                         int *bsize);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_Write_Wait(GWEN_NETLAYER *nl,
                              const char *buffer, int *bsize,
@@ -315,11 +348,13 @@ int GWEN_NetLayer_Write_Wait(GWEN_NETLAYER *nl,
 
 GWENHYWFAR_API
 int GWEN_NetLayer_Connect(GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_Connect_Wait(GWEN_NETLAYER *nl, int timeout);
 
 GWENHYWFAR_API
 int GWEN_NetLayer_Disconnect(GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_Disconnect_Wait(GWEN_NETLAYER *nl, int timeout);
 
@@ -348,8 +383,10 @@ void GWEN_NetLayer_BaseStatusChange(GWEN_NETLAYER *nl,
 
 GWENHYWFAR_API
 int GWEN_NetLayer_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_EndOutPacket(GWEN_NETLAYER *nl);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_EndOutPacket_Wait(GWEN_NETLAYER *nl, int timeout);
 
@@ -371,6 +408,7 @@ GWEN_NETLAYER *GWEN_NetLayer_FindBaseLayer(const GWEN_NETLAYER *nl,
 GWENHYWFAR_API
 int GWEN_NetLayer_RecvPacket(GWEN_NETLAYER *nl, GWEN_BUFFER *mbuf,
                              int timeout);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_RecvPacketBio(GWEN_NETLAYER *nl,
                                 GWEN_BUFFEREDIO *bio,
@@ -380,6 +418,7 @@ GWENHYWFAR_API
 int GWEN_NetLayer_SendPacket(GWEN_NETLAYER *nl,
                              const char *dPtr, int dLen,
                              int timeout);
+
 GWENHYWFAR_API
 int GWEN_NetLayer_SendPacketBio(GWEN_NETLAYER *nl,
                                 GWEN_BUFFEREDIO *bio,

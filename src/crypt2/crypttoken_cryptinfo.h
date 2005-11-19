@@ -39,28 +39,45 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_CRYPTTOKEN_CRYPTINFO,
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_new();
+
+GWENHYWFAR_API
 void GWEN_CryptToken_CryptInfo_free(GWEN_CRYPTTOKEN_CRYPTINFO *ci);
+
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CRYPTINFO*
   GWEN_CryptToken_CryptInfo_dup(const GWEN_CRYPTTOKEN_CRYPTINFO *ci);
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_fromDb(GWEN_DB_NODE *db);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_CryptInfo_toDb(const GWEN_CRYPTTOKEN_CRYPTINFO *ci,
                                     GWEN_DB_NODE *db);
 
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_CryptToken_CryptInfo_GetId(const GWEN_CRYPTTOKEN_CRYPTINFO *ci);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_CryptInfo_SetId(GWEN_CRYPTTOKEN_CRYPTINFO *ci,
                                      GWEN_TYPE_UINT32 id);
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CRYPTALGO
   GWEN_CryptToken_CryptInfo_GetCryptAlgo(const GWEN_CRYPTTOKEN_CRYPTINFO *ci);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_CryptInfo_SetCryptAlgo(GWEN_CRYPTTOKEN_CRYPTINFO *ci,
                                             GWEN_CRYPTTOKEN_CRYPTALGO a);
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_PADDALGO
   GWEN_CryptToken_CryptInfo_GetPaddAlgo(const GWEN_CRYPTTOKEN_CRYPTINFO *ci);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_CryptInfo_SetPaddAlgo(GWEN_CRYPTTOKEN_CRYPTINFO *ci,
                                            GWEN_CRYPTTOKEN_PADDALGO a);
 /*@}*/

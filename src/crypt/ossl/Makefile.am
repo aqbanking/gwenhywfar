@@ -39,4 +39,14 @@ libcryptimpl_la_SOURCES=\
  nl_ssl.c
 
 
+sources:
+	for f in $(libcryptimpl_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+ 
+
+
 

@@ -34,3 +34,12 @@ libosimpl_la_SOURCES=\
  libloader.c \
  process.c 
 
+sources:
+	for f in $(libosimpl_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+
+

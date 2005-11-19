@@ -20,7 +20,6 @@ cvsclean::
 
 all:
 	libtoolize -f --automake $(COPY)
-	autopoint -f || (echo "If autopoint complains about the wrong gettext version, then you should change the line AM_GNU_GETTEXT_VERSION(0.14.1) in configure.ac so that it uses the version of gettext that you have installed. Then run make -f Makefile.cvs again." && exit 1)
 	aclocal -I ./m4
 	autoheader
 	automake -f --add-missing $(COPY)
@@ -33,7 +32,6 @@ local: all
 
 mp:
 	libtoolize -f --automake
-	autopoint -f
 	aclocal -I ./m4
 	autoheader
 	automake --add-missing
@@ -42,7 +40,6 @@ mp:
 
 mp-debug:
 	libtoolize -f --automake
-	autopoint -f
 	aclocal -I ./m4
 	autoheader
 	automake --add-missing
@@ -53,15 +50,5 @@ mp-darwin:
 	CFLAGS="-I/sw/include -ggdb -Wall" LDFLAGS="-L/sw/lib" ./configure
 
 mp-w32:
-	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --prefix=/c/posix --with-openssl-includes=/c/posix/include --enable-release
-
-mp-tu:
-	libtoolize -f --automake
-	autopoint -f
-	aclocal -I ./m4
-	autoheader
-	automake --add-missing
-	autoconf
-	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --prefix=/home/preuss/install
-
+	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --enable-release
 

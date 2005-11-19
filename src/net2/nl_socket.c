@@ -37,6 +37,12 @@
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/text.h>
 
+#if 0 /* disabled, doesn't work on WIN32 (no poll) */
+#include "inetsocket_l.h" /* for GWEN_Socket_GetSocketInt() */
+#include <poll.h>
+#include <string.h>
+#include <errno.h>
+#endif
 
 GWEN_INHERIT(GWEN_NETLAYER, GWEN_NL_SOCKET)
 
@@ -408,6 +414,46 @@ int GWEN_NetLayerSocket_AddSockets(GWEN_NETLAYER *nl,
   return 0;
 }
 
+
+
+#if 0
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayerSocket_CheckConnection(GWEN_NETLAYER *nl) {
+  GWEN_NL_SOCKET *nld;
+  struct pollfd fds;
+  int rv;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_SOCKET, nl);
+  assert(nld);
+
+  fds.fd=GWEN_Socket_GetSocketInt(nld->socket);
+  fds.events=POLLHUP;
+  rv=poll(&fds, 1, 0); /* return immediately */
+  if (rv>0) {
+    if (fds.revents & POLLHUP) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Connection closed by peer");
+      GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnected);
+      return 0;
+    }
+    else if (fds.revents & POLLERR) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Connection error");
+      GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnected);
+      return -1;
+    }
+  }
+  else if (rv<0) {
+    if (errno!=EAGAIN && errno!=EINTR) {
+      DBG_INFO(GWEN_LOGDOMAIN, "poll(): %s",
+               strerror(errno));
+      GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnected);
+      return -1;
+    }
+  }
+
+  return 0;
+}
+#endif
 
 
 /* -------------------------------------------------------------- FUNCTION */

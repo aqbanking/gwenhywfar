@@ -193,9 +193,9 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
 
 
 
-GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
-                                                  const char *path,
-						  const char *name){
+GWEN_ERRORCODE GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
+                                                   const char *path,
+                                                   const char *name){
   GWEN_BUFFER *buffer;
   unsigned int pos;
   unsigned int i;
@@ -238,6 +238,41 @@ GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
   return 0;
 }
 
+
+
+GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
+                                                  const char *path,
+						  const char *name){
+  GWEN_ERRORCODE err;
+
+  assert(h);
+  assert(name);
+
+  err=GWEN_LibLoader__OpenLibraryWithPath(h, path, name);
+  if (GWEN_Error_IsOk(err))
+    return err;
+  else {
+    GWEN_BUFFER *buffer;
+
+    DBG_INFO(GWEN_LOGDOMAIN, "Trying MinGW scheme for library names");
+    buffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+    /* append name of the library to load plus "-0" (used for modules) */
+    GWEN_Buffer_AppendString(buffer, name);
+    GWEN_Buffer_AppendString(buffer, "-0");
+
+    /* try to load the library */
+    err=GWEN_LibLoader__OpenLibraryWithPath(h, path,
+                                            GWEN_Buffer_GetStart(buffer));
+    GWEN_Buffer_free(buffer);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+      return err;
+    }
+
+    return 0;
+  }
+}
 
 
 GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,

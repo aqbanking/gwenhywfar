@@ -2,6 +2,7 @@ INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
+ -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/parser @all_includes@
@@ -49,4 +50,13 @@ libnet2_la_SOURCES=\
 
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)
+
+sources:
+	for f in $(libnet2_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+
 

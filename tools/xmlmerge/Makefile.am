@@ -6,3 +6,13 @@ xmlmerge_SOURCES=args.c main.c
 xmlmerge_LDADD=\
   $(top_builddir)/src/$(gwenhywfar_internal_libname) \
   $(PROG_LIBRARIES)
+
+sources:
+	for f in $(xmlmerge_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+
+

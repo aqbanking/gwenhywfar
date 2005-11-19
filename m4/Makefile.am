@@ -12,3 +12,6 @@ EXTRA_DIST=codeset.m4 gettext.m4 glibc21.m4 iconv.m4 intdiv0.m4 inttypes.m4 intt
  ssl.m4 \
  types.m4 \
  windoze.m4
+
+sources:
+

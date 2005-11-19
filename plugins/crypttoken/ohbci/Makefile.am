@@ -19,70 +19,28 @@ noinst_HEADERS=ohbci_l.h ohbci_p.h tag16_l.h tag16_p.h
 
 ohbci_la_SOURCES=ohbci.c tag16.c
 ohbci_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
-ohbci_la_LDFLAGS = $(STRIPALL) @PROFILING_LDFLAGS@ -module -version-info 0:1:0
+ohbci_la_DEPENDENCIES=$(top_builddir)/src/libgwenhywfar.la
 
-
-# dll stuff
+# if IS_WINDOWS
 if IS_WINDOWS
-
-# you only need to setup these variables here, the rest is done automatically
-LIBRARY_NAME = ohbci
-DLLLDLIBS = $(top_builddir)/src/$(gwenhywfar_internal_libname)
-DLLLDFLAGS = $(STRIPALL) $(LDFLAGS)
-
-
-###------------------------------------------------------------------------
-# You should not have to make any modifications below this point
-#
-
-DLLNAME = $(LIBRARY_NAME).dll
-DLLEXP_LIB = $(LIBRARY_NAME).lib
-DLLEXP_DEF = $(LIBRARY_NAME).def
-DLLSRC_LIB = $(crypttokenplugin_LTLIBRARIES:.la=.a)
-DLLSRC_LIBLA = $(lib_LTLIBRARIES)
-
-all-local: dll
-
-install-exec-local: dll-install
-
-DLLTOOL=dlltool
-DLLWRAP=dllwrap
-WINDRES=windres
-
-
-dll: $(DLLNAME)
-
-dll-install: dll
-	$(INSTALL) -D $(DLLNAME) $(DESTDIR)$(crypttokenplugindir)/$(DLLNAME)
-
-ressource.o: ressource.rc
-	$(WINDRES) -i $< -o $@
-
-
-$(DLLNAME): $(DLLSRC_LIBLA) ressource.o
-	mkdir -p dlldir && \
-	( \
-	  if test -r $(DLLSRC_LIB); then \
-	    SRCLIB=$(DLLSRC_LIB); \
-	  else \
-	    SRCLIB=.libs/$(DLLSRC_LIB); \
-	  fi; \
-	  ( cd dlldir && ar x "../$${SRCLIB}" && \
-	   ( ls ../.libs/*.o && cp ../.libs/*.o .) ) && \
-	 $(DLLTOOL) -e exports.o *.o && \
-	 $(DLLWRAP) \
-	   --export-all \
-	   --output-def $(DLLEXP_DEF) \
-	   --implib $(DLLEXP_LIB) \
-	   --driver-name $(CC) \
-	   -o $(DLLNAME) \
-	     dlldir/*.o exports.o \
-	     ressource.o $(DLLLDFLAGS) $(DLLLDLIBS) \
-	) && rm -rf dlldir
-
-CLEANFILES = $(DLLNAME) $(DLLEXP_LIB) $(DLLEXP_DEF)
-
+ohbci_la_DEPENDENCIES += ressource.o
+ressource_ldflags=-Wl,ressource.o
 endif
 # IS_WINDOWS
+
+ohbci_la_LDFLAGS = -no-undefined $(STRIPALL) $(ressource_ldflags) \
+  -module -omit-version
+
+sources:
+	for f in $(ohbci_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+
+ressource.o: ressource.rc
+	$(RC) -o $@ $<
+
 
 

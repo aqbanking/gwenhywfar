@@ -51,41 +51,65 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_CT_FILE_CONTEXT,
 
 
 
+GWENHYWFAR_API
 GWEN_CT_FILE_CONTEXT *GWEN_CryptTokenFile_Context_new();
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_free(GWEN_CT_FILE_CONTEXT *fc);
 
+GWENHYWFAR_API
 unsigned int
   GWEN_CryptTokenFile_Context_GetLocalSignSeq(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetLocalSignSeq(GWEN_CT_FILE_CONTEXT *fc,
                                          unsigned int i);
 
+GWENHYWFAR_API
 unsigned int
   GWEN_CryptTokenFile_Context_GetRemoteSignSeq(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetRemoteSignSeq(GWEN_CT_FILE_CONTEXT *fc,
                                           unsigned int i);
 
+GWENHYWFAR_API
 GWEN_CRYPTKEY*
   GWEN_CryptTokenFile_Context_GetLocalSignKey(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetLocalSignKey(GWEN_CT_FILE_CONTEXT *fc,
                                          GWEN_CRYPTKEY *key);
 
+GWENHYWFAR_API
 GWEN_CRYPTKEY*
   GWEN_CryptTokenFile_Context_GetLocalCryptKey(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetLocalCryptKey(GWEN_CT_FILE_CONTEXT *fc,
                                           GWEN_CRYPTKEY *key);
 
+GWENHYWFAR_API
 GWEN_CRYPTKEY*
   GWEN_CryptTokenFile_Context_GetRemoteSignKey(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetRemoteSignKey(GWEN_CT_FILE_CONTEXT *fc,
                                           GWEN_CRYPTKEY *key);
 
+GWENHYWFAR_API
 GWEN_CRYPTKEY*
   GWEN_CryptTokenFile_Context_GetRemoteCryptKey(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetRemoteCryptKey(GWEN_CT_FILE_CONTEXT *fc,
                                                    GWEN_CRYPTKEY *key);
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_USER*
   GWEN_CryptTokenFile_Context_GetUser(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetUser(GWEN_CT_FILE_CONTEXT *fc,
                                          GWEN_CRYPTTOKEN_USER *u);
 
@@ -103,22 +127,31 @@ typedef int (*GWEN_CRYPTTOKEN_FILE_WRITE_FN)(GWEN_CRYPTTOKEN *ct,
                                              int fd, int cre);
 
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN *GWEN_CryptTokenFile_new(GWEN_PLUGIN_MANAGER *pm,
                                          const char *typeName,
                                          const char *subTypeName,
                                          const char *name);
 
 
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_SetReadFn(GWEN_CRYPTTOKEN *ct,
                                    GWEN_CRYPTTOKEN_FILE_READ_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_SetWriteFn(GWEN_CRYPTTOKEN *ct,
                                     GWEN_CRYPTTOKEN_FILE_WRITE_FN fn);
 
 
+GWENHYWFAR_API
 GWEN_CT_FILE_CONTEXT_LIST*
   GWEN_CryptTokenFile_GetFileContextList(GWEN_CRYPTTOKEN *ct);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_AddFileContext(GWEN_CRYPTTOKEN *ct,
                                         GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
 void GWEN_CryptTokenFile_ClearFileContextList(GWEN_CRYPTTOKEN *ct);
 
 

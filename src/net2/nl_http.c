@@ -254,11 +254,51 @@ int GWEN_NetLayerHttp_AddSockets(GWEN_NETLAYER *nl,
 
 
 
-GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__WriteWork(GWEN_NETLAYER *nl) {
+int GWEN_NetLayerHttp__WriteBuffer(GWEN_NETLAYER *nl) {
   GWEN_NL_HTTP *nld;
   GWEN_NETLAYER *baseLayer;
   int rv;
   int bsize;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
+  assert(nld);
+
+  baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
+  assert(baseLayer);
+
+  bsize=GWEN_Buffer_GetBytesLeft(nld->outBuffer);
+  if (bsize==0)
+    return 0;
+
+  if (bsize>1024)
+    bsize=1024;
+
+  rv=GWEN_NetLayer_Write(baseLayer,
+			 GWEN_Buffer_GetPosPointer(nld->outBuffer),
+			 &bsize);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  else if (rv==1)
+    return rv;
+
+  if (bsize==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Nothing written");
+    return GWEN_ERROR_BROKEN_PIPE;
+  }
+  GWEN_Buffer_IncrementPos(nld->outBuffer, bsize);
+
+  return 0;
+}
+
+
+
+GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__WriteWork(GWEN_NETLAYER *nl) {
+  GWEN_NL_HTTP *nld;
+  GWEN_NETLAYER *baseLayer;
+  int rv;
   GWEN_NETLAYER_STATUS st;
 
   assert(nl);
@@ -272,29 +312,15 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__WriteWork(GWEN_NETLAYER *nl) {
   if (st==GWEN_NetLayerStatus_Listening)
     return GWEN_NetLayerResult_Idle;
 
-  bsize=GWEN_Buffer_GetBytesLeft(nld->outBuffer);
-  if (bsize==0)
-    return GWEN_NetLayerResult_Idle;
-
-  if (bsize>1024)
-    bsize=1024;
-
-  rv=GWEN_NetLayer_Write(baseLayer,
-                         GWEN_Buffer_GetPosPointer(nld->outBuffer),
-                         &bsize);
+  rv=GWEN_NetLayerHttp__WriteBuffer(nl);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return GWEN_NetLayerResult_Error;
   }
   else if (rv==1)
     return GWEN_NetLayerResult_WouldBlock;
-
-  if (bsize==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Nothing written");
-    return GWEN_NetLayerResult_Error;
-  }
-  GWEN_Buffer_IncrementPos(nld->outBuffer, bsize);
-  return GWEN_NetLayerResult_Changed;
+  else
+    return GWEN_NetLayerResult_Changed;
 }
 
 
@@ -821,6 +847,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
 int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   GWEN_NL_HTTP *nld;
   GWEN_NETLAYER *baseLayer;
+  GWEN_NETLAYER_STATUS st;
   int rv;
 
   assert(nl);
@@ -829,6 +856,18 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
+
+  st=GWEN_NetLayer_GetStatus(nl);
+  if (st==GWEN_NetLayerStatus_Unconnected ||
+      st==GWEN_NetLayerStatus_Disconnected) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Not connected");
+    return GWEN_ERROR_NOT_CONNECTED;
+  }
+
+  if (st!=GWEN_NetLayerStatus_Connected) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not connected");
+    return GWEN_ERROR_INVALID;
+  }
 
   rv=GWEN_NetLayer_BeginOutPacket(baseLayer, -1);
   if (rv && rv!=GWEN_ERROR_UNSUPPORTED)
@@ -917,8 +956,21 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
                                  totalSize);
   }
 
-  DBG_NOTICE(GWEN_LOGDOMAIN, "Outgoing packet started");
   GWEN_Buffer_Rewind(nld->outBuffer);
+
+  /* try to write buffer content to detect when the connection is down */
+  rv=GWEN_NetLayerHttp__WriteBuffer(nl);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_BROKEN_PIPE) {
+      DBG_NOTICE(GWEN_LOGDOMAIN,
+		 "Connection is down, caller will have to reconnect");
+      return GWEN_ERROR_NOT_CONNECTED;
+    }
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  DBG_NOTICE(GWEN_LOGDOMAIN, "Outgoing packet started");
   return 0;
 }
 

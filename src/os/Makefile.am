@@ -36,3 +36,11 @@ libos_la_SOURCES=\
 
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la
 
+sources:
+	for f in $(libos_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+

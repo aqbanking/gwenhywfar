@@ -116,6 +116,8 @@ int GWEN_NetLayerHttp__ParseStatus(GWEN_NETLAYER *nl, const char *buffer);
 
 int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer);
 
+int GWEN_NetLayerHttp__WriteBuffer(GWEN_NETLAYER *nl);
+
 
 #endif /* GWEN_NL_HTTP_P_H */
 

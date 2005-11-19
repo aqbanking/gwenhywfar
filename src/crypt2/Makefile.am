@@ -35,3 +35,11 @@ libcrypt2_la_SOURCES=\
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)
 
+sources:
+	for f in $(libcrypt2_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+

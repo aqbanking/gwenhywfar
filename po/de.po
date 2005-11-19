@@ -1,29 +1,21 @@
 # translation of de.po to deutsch
 # Translations for Gwenhywfar.
 # This file is distributed under the same license as the Gwenhywfar package.
-# Copyright (C) YEAR Martin Preuss<martin@libchipcard.de>.
+# Copyright (C) 2005 Martin Preuss<martin@libchipcard.de>.
 # Martin Preuss <martin@libchipcard.de>, 2004, 2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
-"Report-Msgid-Bugs-To: Martin Preuss<martin@libchipcard.de>\n"
-"POT-Creation-Date: 2005-10-22 00:31+0200\n"
-"PO-Revision-Date: 2005-08-24 16:04+0200\n"
+"Report-Msgid-Bugs-To: openhbci-general@lists.sourceforge.net\n"
+"POT-Creation-Date: 2005-11-18 20:09+0100\n"
+"PO-Revision-Date: 2005-11-18 20:53+0100\n"
 "Last-Translator: Martin Preuss <martin@libchipcard.de>\n"
 "Language-Team: deutsch <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
-
-#: plugins/crypttoken/ohbci/ohbci.c:477
-msgid "No valid PIN (tried too often), aborting."
-msgstr "Keine gültige PIN erhalten (zu oft versucht). Abbruch."
-
-#: plugins/crypttoken/ohbci/ohbci.c:511
-msgid "Bad PIN, will try again"
-msgstr "Falsche PIN erhalten. Erneut versuchen"
+"X-Generator: KBabel 1.10.2\n"
 
 #: src/base/error.c:608
 msgid "Ok"
@@ -177,6 +169,122 @@ msgstr "Fehler bei der Signaturüberprüfung"
 msgid "Generic SSL error"
 msgstr "Allgemeiner SSL Fehler"
 
+#: src/crypt/ossl/nl_ssl.c:1141
+msgid "New certificate"
+msgstr "Neues Zertifikat"
+
+#: src/crypt/ossl/nl_ssl.c:1146
+msgid "Unable to get issuer certificate"
+msgstr "Zertifikat nicht verfügbar"
+
+#: src/crypt/ossl/nl_ssl.c:1151
+msgid "Unable to decrypt cert signature"
+msgstr "Zertifikat konnte nicht dekodiert werden"
+
+#: src/crypt/ossl/nl_ssl.c:1156
+msgid "Unable to decode issuer public key"
+msgstr "Öffentlicher Schlüssel konnte nicht dekodiert werden"
+
+#: src/crypt/ossl/nl_ssl.c:1161
+msgid "Cert signature failure"
+msgstr "Fehlerhaftes Zertifikat"
+
+#: src/crypt/ossl/nl_ssl.c:1166
+msgid "Cert not yet valid"
+msgstr "Zertifikat ist noch nicht gültig"
+
+#: src/crypt/ossl/nl_ssl.c:1171
+msgid "Cert has expired"
+msgstr "Zertifikat ist nicht mehr gültig"
+
+#: src/crypt/ossl/nl_ssl.c:1176
+msgid "Self-signed root cert"
+msgstr "Selbstsigniertes Root-Zertifikat"
+
+#: src/crypt/ossl/nl_ssl.c:1181
+msgid "Self-signed cert"
+msgstr "Selbstsigniertes Zertifikat"
+
+#: src/crypt/ossl/nl_ssl.c:1186
+msgid "Unable to verify leaf signature"
+msgstr "Zertifikat konnte nicht überprüft werden"
+
+#: src/crypt/ossl/nl_ssl.c:1191
+msgid "Cert chain too long"
+msgstr "Enthält zu viele Unter-Zertifikate"
+
+#: src/crypt/ossl/nl_ssl.c:1196
+msgid "Cert revoked"
+msgstr "Zertifikat wurde zurückgenommen (ist nicht mehr gültig)"
+
+#: src/crypt/ossl/nl_ssl.c:1201
+msgid "Invalid CA"
+msgstr "Ungültiges Zertifizierungs-Institut"
+
+#: src/crypt/ossl/nl_ssl.c:1206
+msgid "Cert untrusted"
+msgstr "Zertifikat ist nicht vertrauenswürdig"
+
+#: src/crypt/ossl/nl_ssl.c:1211
+msgid "Cert rejected"
+msgstr "Zertifikat abgelehnt"
+
+#: src/crypt/ossl/nl_ssl.c:1221
+msgid "Formal error in certificate"
+msgstr "Formaler Fehler im Zertifikat"
+
+#: src/crypt/ossl/nl_ssl.c:1226
+msgid "Out of memory"
+msgstr "Kein Speicher für Zertifikat (interner Fehler)"
+
+#: src/crypt/ossl/nl_ssl.c:1231
+msgid "Unable to get CRL"
+msgstr "CRL konnte nicht abgerufen werden"
+
+#: src/crypt/ossl/nl_ssl.c:1236
+msgid "Unable to decrypt CRL signature"
+msgstr "CRL Signatur konnte nicht dekodiert werden"
+
+#: src/crypt/ossl/nl_ssl.c:1241
+msgid "CRL signature failure"
+msgstr "Fehlerhafte CRL-Signatur"
+
+#: src/crypt/ossl/nl_ssl.c:1246
+msgid "CRL not yet valid"
+msgstr "CRL ist noch nicht gültig"
+
+#: src/crypt/ossl/nl_ssl.c:1251
+msgid "CRL has expired"
+msgstr "CRL ist nicht mehr gültig"
+
+#: src/crypt/ossl/nl_ssl.c:1256
+msgid "Certificate is valid"
+msgstr "Zertifikat ist gültig"
+
+#: src/crypt/ossl/nl_ssl.c:1260
+msgid "Unknown SSL error"
+msgstr "Unbekannter SSL-Fehler"
+
+#: src/io/bufferedio.c:773
+msgid "Reading from buffered IO..."
+msgstr "Aus Ein/Ausgabe-Puffer lesen..."
+
+#: src/io/bufferedio.c:774 src/io/bufferedio.c:831
+msgid "byte(s)"
+msgstr "Byte"
+
+#: src/io/bufferedio.c:830
+msgid "Writing to buffered IO..."
+msgstr "In Ein/Ausgabe-Puffer schreiben..."
+
+#: src/os/posix/fslock.c:214
+msgid "Waiting for lock to become available..."
+msgstr "Warten auf exklusiven Schreibzugriff..."
+
+#: src/os/posix/fslock.c:216
+msgid "second(s)"
+msgstr "Sekunde(n)"
+
 #: src/crypt2/crypttoken.c:3344
 #, c-format
 msgid "Loading plugin \"%s\""
@@ -205,8 +313,7 @@ msgstr "Plugin \"%s\" unterstützt dieses Token nicht"
 #: src/crypt2/crypttoken.c:3412
 #, c-format
 msgid "Plugin \"%s\" supports this token, but the name did not match"
-msgstr ""
-"Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
+msgstr "Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
 
 #: src/crypt2/crypttoken.c:3421
 #, c-format
@@ -218,121 +325,67 @@ msgstr "Plugin \"%s\": Unerwarteter Fehler (%d)"
 msgid "Could not load plugin \"%s\""
 msgstr "Fehler beim Laden des Plugins \"%s\""
 
-#: src/crypt/ossl/nettransportssl.c:1546
-msgid "New certificate"
-msgstr "Neues Zertifikat"
+#: plugins/crypttoken/ohbci/ohbci.c:477
+msgid "No valid PIN (tried too often), aborting."
+msgstr "Keine gültige PIN erhalten (zu oft versucht). Abbruch."
 
-#: src/crypt/ossl/nettransportssl.c:1550
-msgid "Unable to get issuer certificate"
-msgstr "Zertifikat nicht verfügbar"
+#: plugins/crypttoken/ohbci/ohbci.c:511
+msgid "Bad PIN, will try again"
+msgstr "Falsche PIN erhalten. Erneut versuchen"
 
-#: src/crypt/ossl/nettransportssl.c:1554
-msgid "Unable to decrypt cert signature"
-msgstr "Zertifikat konnte nicht dekodiert werden"
+#: tools/xmlmerge/args.c:117
+msgid ""
+"-v               verbous\n"
+"--logfile ARG    name of the logfile\n"
+"--logtype ARG    log type\n"
+"--loglevel ARG   log level\n"
+"-o ARG           name of output file (stdout if omitted)\n"
+"--compact        write a more compact file\n"
+msgstr ""
+"-v               gibt mehr Logmeldungen aus\n"
+"--logfile ARG    Name der Logdatei\n"
+"--logtype ARG    Logtyp\n"
+"--loglevel ARG   Loglevel\n"
+"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
+"angegeben)\n"
+"--compact        schreibe eine kompakte Datei\n"
 
-#: src/crypt/ossl/nettransportssl.c:1558
-msgid "Unable to decode issuer public key"
-msgstr "Öffentlicher Schlüssel konnte nicht dekodiert werden"
+#: tools/xmlmerge/args.c:147 tools/typemaker/args.c:148
+#, c-format
+msgid "Unknown log type \"%s\"\n"
+msgstr "Unbekannter Logtyp \"%s\"\n"
 
-#: src/crypt/ossl/nettransportssl.c:1562
-msgid "Cert signature failure"
-msgstr "Fehlerhaftes Zertifikat"
+#: tools/xmlmerge/args.c:159 tools/typemaker/args.c:160
+#, c-format
+msgid "Unknown log level \"%s\"\n"
+msgstr "Unbekannter Loglevel \"%s\"\n"
 
-#: src/crypt/ossl/nettransportssl.c:1566
-msgid "Cert not yet valid"
-msgstr "Zertifikat ist noch nicht gültig"
+#: tools/xmlmerge/args.c:190 tools/typemaker/args.c:194
+#, c-format
+msgid "Unknown option \"%s\"\n"
+msgstr "Unbekannte Option \"%s\"\n"
 
-#: src/crypt/ossl/nettransportssl.c:1570
-msgid "Cert has expired"
-msgstr "Zertifikat ist nicht mehr gültig"
-
-#: src/crypt/ossl/nettransportssl.c:1574
-msgid "Self-signed root cert"
-msgstr "Selbstsigniertes Root-Zertifikat"
-
-#: src/crypt/ossl/nettransportssl.c:1578
-msgid "Self-signed cert"
-msgstr "Selbstsigniertes Zertifikat"
-
-#: src/crypt/ossl/nettransportssl.c:1582
-msgid "Unable to verify leaf signature"
-msgstr "Zertifikat konnte nicht überprüft werden"
-
-#: src/crypt/ossl/nettransportssl.c:1586
-msgid "Cert chain too long"
-msgstr "Enthält zu viele Unter-Zertifikate"
-
-#: src/crypt/ossl/nettransportssl.c:1590
-msgid "Cert revoked"
-msgstr "Zertifikat wurde zurückgenommen (ist nicht mehr gültig)"
-
-#: src/crypt/ossl/nettransportssl.c:1594
-msgid "Invalid CA"
-msgstr "Ungültiges Zertifizierungs-Institut"
-
-#: src/crypt/ossl/nettransportssl.c:1598
-msgid "Cert untrusted"
-msgstr "Zertifikat ist nicht vertrauenswürdig"
-
-#: src/crypt/ossl/nettransportssl.c:1602
-msgid "Cert rejected"
-msgstr "Zertifikat abgelehnt"
-
-#: src/crypt/ossl/nettransportssl.c:1612
-msgid "Formal error in certificate"
-msgstr "Formaler Fehler im Zertifikat"
-
-#: src/crypt/ossl/nettransportssl.c:1617
-msgid "Out of memory"
-msgstr "Kein Speicher für Zertifikat (interner Fehler)"
-
-#: src/crypt/ossl/nettransportssl.c:1621
-msgid "Unable to get CRL"
-msgstr "CRL konnte nicht abgerufen werden"
-
-#: src/crypt/ossl/nettransportssl.c:1625
-msgid "Unable to decrypt CRL signature"
-msgstr "CRL Signatur konnte nicht dekodiert werden"
-
-#: src/crypt/ossl/nettransportssl.c:1629
-msgid "CRL signature failure"
-msgstr "Fehlerhafte CRL-Signatur"
-
-#: src/crypt/ossl/nettransportssl.c:1633
-msgid "CRL not yet valid"
-msgstr "CRL ist noch nicht gültig"
-
-#: src/crypt/ossl/nettransportssl.c:1637
-msgid "CRL has expired"
-msgstr "CRL ist nicht mehr gültig"
-
-#: src/crypt/ossl/nettransportssl.c:1641
-msgid "Certificate is valid"
-msgstr "Zertifikat ist gültig"
-
-#: src/crypt/ossl/nettransportssl.c:1644
-msgid "Unknown SSL error"
-msgstr "Unbekannter SSL-Fehler"
-
-#: src/io/bufferedio.c:773
-msgid "Reading from buffered IO..."
-msgstr "Aus Ein/Ausgabe-Puffer lesen..."
-
-#: src/io/bufferedio.c:774 src/io/bufferedio.c:831
-msgid "byte(s)"
-msgstr "Byte"
-
-#: src/io/bufferedio.c:830
-msgid "Writing to buffered IO..."
-msgstr "In Ein/Ausgabe-Puffer schreiben..."
-
-#: src/os/posix/fslock.c:214 src/os/windows/fslock.c:224
-msgid "Waiting for lock to become available..."
-msgstr "Warten auf exklusiven Schreibzugriff..."
-
-#: src/os/posix/fslock.c:216 src/os/windows/fslock.c:226
-msgid "second(s)"
-msgstr "Sekunde(n)"
+#: tools/typemaker/args.c:116
+msgid ""
+"-v               verbous\n"
+"--logfile ARG    name of the logfile\n"
+"--logtype ARG    log type\n"
+"--loglevel ARG   log level\n"
+"-d ARG           use ARG as domain prefix macro for function declarations\n"
+"-o ARG           name of output file (stdout if omitted)\n"
+"--compact        write a more compact file\n"
+"-V | --version   print version of this tool and exit\n"
+msgstr ""
+"-v               gibt mehr Logmeldungen aus\n"
+"--logfile ARG    Name der Logdatei\n"
+"--logtype ARG    Logtyp\n"
+"--loglevel ARG   Loglevel\n"
+"-d ARG           ARG als Domain-Prefix aller Funktionsdeklarationen "
+"benutzen\n"
+"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
+"angegeben)\n"
+"--compact        schreibe eine kompakte Datei\n"
+"-V | --version   Versionsnummer ausgeben und abbrechen\n"
 
 #: tools/gct-tool/cryptmanager.c:166
 msgid ""
@@ -446,15 +499,15 @@ msgstr ""
 "Bitte legen Sie die korrekte Chipkarte\n"
 "für %s in den Kartenleser."
 
-#: tools/gct-tool/main.c:115
+#: tools/gct-tool/main.c:122
 msgid "Usage: "
 msgstr "Benutzung: "
 
-#: tools/gct-tool/main.c:118
+#: tools/gct-tool/main.c:125
 msgid " [GLOBAL OPTIONS] COMMAND [LOCAL OPTIONS]\n"
 msgstr "[GLOBALE OPTIONEN] KOMMANDO [LOCALE OPTIONEN]\n"
 
-#: tools/gct-tool/main.c:121
+#: tools/gct-tool/main.c:128
 msgid ""
 "\n"
 "Global Options:\n"
@@ -462,7 +515,7 @@ msgstr ""
 "\n"
 "Globale Optionen:\n"
 
-#: tools/gct-tool/main.c:127
+#: tools/gct-tool/main.c:134
 msgid ""
 "\n"
 "Commands:\n"
@@ -472,7 +525,7 @@ msgstr ""
 "Kommandos:\n"
 "\n"
 
-#: tools/gct-tool/main.c:129
+#: tools/gct-tool/main.c:136
 msgid ""
 "  create:\n"
 "    This command creates a crypt token\n"
@@ -482,7 +535,7 @@ msgstr ""
 "    Dieser Befehl erzeugt ein CryptToken\n"
 "\n"
 
-#: tools/gct-tool/main.c:133
+#: tools/gct-tool/main.c:140
 msgid ""
 "  showctx:\n"
 "    Display crypto contexts stored on the token\n"
@@ -492,7 +545,7 @@ msgstr ""
 "    Zeigt kryptographische Kontexte des CryptTokens an\n"
 "\n"
 
-#: tools/gct-tool/main.c:137
+#: tools/gct-tool/main.c:144
 msgid ""
 "  showuser:\n"
 "    Display user data stored on the token\n"
@@ -502,7 +555,7 @@ msgstr ""
 "    Zeige auf dem CryptToken gespeicherte Benutzer an\n"
 "\n"
 
-#: tools/gct-tool/main.c:141
+#: tools/gct-tool/main.c:148
 msgid ""
 "  changepin:\n"
 "    Change the access-pin of the crypt token\n"
@@ -512,7 +565,7 @@ msgstr ""
 "    Ändert die Zugriffs-PIN eines CryptTokens\n"
 "\n"
 
-#: tools/gct-tool/main.c:145
+#: tools/gct-tool/main.c:152
 msgid ""
 "  disablekey:\n"
 "    Disable the given crypt key on the crypt token\n"
@@ -522,7 +575,7 @@ msgstr ""
 "    Deaktiviert einen angegeben Schlüssel auf dem CryptToken\n"
 "\n"
 
-#: tools/gct-tool/main.c:149
+#: tools/gct-tool/main.c:156
 msgid ""
 "  checktoken:\n"
 "    Tries to determine the type of the  crypt token\n"
@@ -532,56 +585,3 @@ msgstr ""
 "    Versucht den Typen eines CryptTokens zu ermitteln\n"
 "\n"
 
-#: tools/typemaker/args.c:116
-msgid ""
-"-v               verbous\n"
-"--logfile ARG    name of the logfile\n"
-"--logtype ARG    log type\n"
-"--loglevel ARG   log level\n"
-"-d ARG           use ARG as domain prefix macro for function declarations\n"
-"-o ARG           name of output file (stdout if omitted)\n"
-"--compact        write a more compact file\n"
-"-V | --version   print version of this tool and exit\n"
-msgstr ""
-"-v               gibt mehr Logmeldungen aus\n"
-"--logfile ARG    Name der Logdatei\n"
-"--logtype ARG    Logtyp\n"
-"--loglevel ARG   Loglevel\n"
-"-d ARG           ARG als Domain-Prefix aller Funktionsdeklarationen "
-"benutzen\n"
-"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
-"angegeben)\n"
-"--compact        schreibe eine kompakte Datei\n"
-"-V | --version   Versionsnummer ausgeben und abbrechen\n"
-
-#: tools/typemaker/args.c:148 tools/xmlmerge/args.c:147
-#, c-format
-msgid "Unknown log type \"%s\"\n"
-msgstr "Unbekannter Logtyp \"%s\"\n"
-
-#: tools/typemaker/args.c:160 tools/xmlmerge/args.c:159
-#, c-format
-msgid "Unknown log level \"%s\"\n"
-msgstr "Unbekannter Loglevel \"%s\"\n"
-
-#: tools/typemaker/args.c:194 tools/xmlmerge/args.c:190
-#, c-format
-msgid "Unknown option \"%s\"\n"
-msgstr "Unbekannte Option \"%s\"\n"
-
-#: tools/xmlmerge/args.c:117
-msgid ""
-"-v               verbous\n"
-"--logfile ARG    name of the logfile\n"
-"--logtype ARG    log type\n"
-"--loglevel ARG   log level\n"
-"-o ARG           name of output file (stdout if omitted)\n"
-"--compact        write a more compact file\n"
-msgstr ""
-"-v               gibt mehr Logmeldungen aus\n"
-"--logfile ARG    Name der Logdatei\n"
-"--logtype ARG    Logtyp\n"
-"--loglevel ARG   Loglevel\n"
-"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
-"angegeben)\n"
-"--compact        schreibe eine kompakte Datei\n"

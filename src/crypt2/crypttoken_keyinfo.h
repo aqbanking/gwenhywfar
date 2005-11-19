@@ -46,51 +46,87 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_CRYPTTOKEN_KEYINFO,
  *
  */
 /*@{*/
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_new();
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_free(GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_KEYINFO*
   GWEN_CryptToken_KeyInfo_dup(const GWEN_CRYPTTOKEN_KEYINFO *ki);
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromDb(GWEN_DB_NODE *db);
+
+GWENHYWFAR_API
 int GWEN_CryptToken_KeyInfo_toDb(const GWEN_CRYPTTOKEN_KEYINFO *ki,
                                  GWEN_DB_NODE *db);
 
+GWENHYWFAR_API
 int GWEN_CryptToken_KeyInfo_GetKeyId(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetKeyId(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                       int id);
 
+GWENHYWFAR_API
 int GWEN_CryptToken_KeyInfo_GetKeySize(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetKeySize(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                         int i);
 
+GWENHYWFAR_API
 int GWEN_CryptToken_KeyInfo_GetMinKeySize(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetMinKeySize(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                            int i);
 
+GWENHYWFAR_API
 int GWEN_CryptToken_KeyInfo_GetMaxKeySize(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetMaxKeySize(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                            int i);
 
+GWENHYWFAR_API
 int GWEN_CryptToken_KeyInfo_GetChunkSize(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetChunkSize(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                           int i);
 
+GWENHYWFAR_API
 GWEN_CRYPTTOKEN_CRYPTALGO
   GWEN_CryptToken_KeyInfo_GetCryptAlgo(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetCryptAlgo(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                           GWEN_CRYPTTOKEN_CRYPTALGO a);
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32
   GWEN_CryptToken_KeyInfo_GetKeyFlags(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetKeyFlags(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                          GWEN_TYPE_UINT32 fl);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_AddKeyFlags(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                          GWEN_TYPE_UINT32 fl);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SubKeyFlags(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                          GWEN_TYPE_UINT32 fl);
 
+GWENHYWFAR_API
 const char*
   GWEN_CryptToken_KeyInfo_GetDescription(const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_KeyInfo_SetDescription(GWEN_CRYPTTOKEN_KEYINFO *ki,
                                             const char *s);
 

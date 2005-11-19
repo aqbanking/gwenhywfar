@@ -30,8 +30,7 @@
 
 #define GCT_LOGDOMAIN "gct-tool"
 
-
-#define I18N(x) x
+#include "src/base/i18n_l.h"
 
 
 int signFiles(GWEN_DB_NODE *dbArgs, int argc, char **argv);

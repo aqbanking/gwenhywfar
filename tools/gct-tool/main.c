@@ -28,6 +28,11 @@
 # define DIRSEP "/"
 #endif
 
+#ifdef HAVE_I18N
+# include <libintl.h>
+# include <locale.h>
+#endif
+
 
 int main(int argc, char **argv) {
   GWEN_DB_NODE *db;

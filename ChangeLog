@@ -8,6 +8,24 @@ use Gwenhywfar! Do not install it on production systems !!
 -------------------------------------------------
 - added function GWEN_NetLayerSsl_ImportCertFile() (this will make it easier
   to import certificate files)
+- implemented poll()-based code which checks whether a connection is down
+  (as suggested by Thomas Baumgart)
+- changed HTTP code: Now tries to detect when a connection is broken while
+  trying to send a packet (detects the special condition when the connection
+  is broken while sending the first byte of a packet. In such a case a
+  reconnect would be in order, while a broken pipe after having written some
+  bytes is still an error)
+- switched from autopoint to what we use in AqBanking: autopoint doesn't
+  exist on WIN32 and I didn't like it anyway (uses way too many files)
+- added GWENHYWFAR_API where missing
+- removed all selfmade DLL-creation stuff: Current libtool is able to do
+  that for us now (I hate libtool, it took me over 10 hours to figure out how
+  to use it for DLLs with version info. If they only had documented this 
+  stuff!)
+- mingw adds a "-<NUM>" to the DLL name, I couldn't find a way to make it omit
+  the major version number for the plugins. Therefore I added code to the
+  libloader under windows which checks for modules with the major number
+  "0" (so we for now just use "0" for every plugin)
 
 
 2005/11/17: Martin Preuss<martin@libchipcard.de>

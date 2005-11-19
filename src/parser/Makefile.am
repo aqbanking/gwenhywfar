@@ -52,4 +52,12 @@ libparser_la_SOURCES=\
 xsdtypes.inc: xsdtypes.xsd
 	./mkxsdtypes.sh $< > $@
 
+sources:
+	for f in $(libparser_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
+
 

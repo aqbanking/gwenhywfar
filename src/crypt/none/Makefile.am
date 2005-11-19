@@ -15,4 +15,12 @@ noinst_HEADERS=\
 
 libcryptimpl_la_SOURCES=\
  cryptnone.c
+
+sources:
+	for f in $(libcryptimpl_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for d in $(SUBDIRS); do \
+	  make -C $$d sources; \
+	done
  
