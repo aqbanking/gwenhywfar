@@ -157,8 +157,6 @@ srpm: $(PACKAGE).spec dist
 	$$rpmbuild --nodeps -ts $(PACKAGE)-$(VERSION).tar.gz
 
 
-i18nsources: sources
-
 
 if USE_I18N
 
@@ -202,7 +200,6 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 # List of mo files. Only necessary for cleanup. For old make programs,
 # you would simply set this to an empty variable.
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
-I18NCATALOGS += $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).qm)
 
 po/$(PACKAGE).pot: $(I18NFILES)
 	if test -n "$(I18NFILES)"; then \
@@ -239,18 +236,16 @@ catalogs: $(I18NLINGUAS)
 	@for i in $(ALL_LINGUAS); do \
 	  filelingua=$(srcdir)/po/$$i.po; \
 	  filecat=$(top_builddir)/po/$$i.mo; \
-	  fileqm=$(top_builddir)/po/$$i.qm; \
 	  echo "Creating translation catalogs for language \"$$i\""; \
 	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
 	done
 
-
+CLEANFILES += $(I18NCATALOGS)
 
 localedir = $(datadir)/locale
 install-mo-catalogs: catalogs
 	@for i in $(ALL_LINGUAS); do \
 	  filecat=$(top_builddir)/po/$$i.mo; \
-	  fileqm=$(top_builddir)/po/$$i.qm; \
           echo "Installing translation catalog for language \"$$i\""; \
           $(mkinstalldirs) "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES"; \
           $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \

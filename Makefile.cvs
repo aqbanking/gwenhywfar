@@ -22,6 +22,7 @@ all:
 	libtoolize -f --automake $(COPY)
 	aclocal -I ./m4
 	autoheader
+	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake -f --add-missing $(COPY)
 	autoconf
 
