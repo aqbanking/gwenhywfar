@@ -262,6 +262,8 @@ uninstall-mo-catalogs:
 	  rm -f "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
 	done
 
+install-data-local: install-mo-catalogs
+uninstall-local: uninstall-mo-catalogs
 
 
 endif

@@ -3,3 +3,4 @@ Makefile.in
 *.gmo
 gwenhywfar.pot
 stamp-po
+*.mo
