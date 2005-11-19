@@ -12,3 +12,5 @@ gwentest_SOURCES=gwentest.c
 gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la
 
 EXTRA_DIST = README.MSVC gwentest.vcproj
+
+sources:
