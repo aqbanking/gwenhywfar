@@ -1,4 +1,4 @@
-INCLUDES=@all_includes@ -I$(top_builddir)
+INCLUDES= $(all_includes) -I$(top_builddir) -I$(top_srcdir)
 
 #EXTRA_DIST=
 
