@@ -119,6 +119,15 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer);
 int GWEN_NetLayerHttp__WriteBuffer(GWEN_NETLAYER *nl);
 
 
+/**
+ * @return 0 if packet received but body ignored due to status,
+ * <0 on error, HTTP code otherwise.
+ */
+int GWEN_NetLayerHttp__RecvPacketBio(GWEN_NETLAYER *nl,
+                                     GWEN_BUFFEREDIO *bio,
+                                     int timeout);
+
+
 #endif /* GWEN_NL_HTTP_P_H */
 
 

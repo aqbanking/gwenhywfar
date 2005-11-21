@@ -36,6 +36,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/waitcallback.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/net2.h>
 
 #include <ctype.h>
 
@@ -1205,6 +1206,111 @@ const char *GWEN_NetLayerHttp_GetInStatusText(const GWEN_NETLAYER *nl) {
 
 
 
+int GWEN_NetLayerHttp__RecvPacketBio(GWEN_NETLAYER *nl,
+                                     GWEN_BUFFEREDIO *bio,
+                                     int timeout) {
+  GWEN_NL_HTTP *nld;
+  static char buffer[512];
+  int bsize;
+  int rv;
+  time_t startt;
+  int tLeft;
+  GWEN_ERRORCODE err;
+  int bodyStarted=0;
+  int ignoreBody=0;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
+  assert(nld);
+
+  startt=time(0);
+
+  rv=GWEN_NetLayer_BeginInPacket(nl);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not start to read (%d)", rv);
+    return rv;
+  }
+
+  for (;;) {
+    if (timeout!=GWEN_NET2_TIMEOUT_NONE &&
+	timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+      tLeft=timeout-(difftime(time(0), startt));
+      if (tLeft<1)
+	tLeft=1;
+    }
+    else
+      tLeft=timeout;
+    rv=GWEN_NetLayer_CheckInPacket(nl);
+    DBG_INFO(GWEN_LOGDOMAIN, "Check-Result: %d", rv);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error checking packet (%d)", rv);
+      return rv;
+    }
+    else if (rv==1) {
+      if (!bodyStarted) {
+        if (nld->inStatusCode>=100 && nld->inStatusCode<200)
+          ignoreBody=1;
+        else
+          ignoreBody=0;
+        bodyStarted=1;
+      }
+      DBG_INFO(GWEN_LOGDOMAIN, "Reading");
+      bsize=sizeof(buffer);
+      rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, tLeft);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not read (%d)", rv);
+        return rv;
+      }
+      else if (rv==1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "ERROR: Could not read due to a timeout");
+        return GWEN_ERROR_TIMEOUT;
+      }
+      else {
+        if (bsize==0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "INFO: EOF met");
+	  break;
+	}
+        else {
+          if (!ignoreBody && bsize) {
+            const char *p;
+            int wLeft;
+
+            wLeft=bsize;
+            p=buffer;
+            while(wLeft) {
+              unsigned int wsize;
+
+              wsize=wLeft;
+              err=GWEN_BufferedIO_WriteRaw(bio, p, &wsize);
+              if (!GWEN_Error_IsOk(err)) {
+                DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+                return GWEN_Error_GetSimpleCode(err);
+              }
+              p+=wsize;
+              wLeft-=wsize;
+	    } /* while */
+	  }
+	}
+      }
+    }
+    else
+      break;
+  } /* for */
+
+  err=GWEN_BufferedIO_Flush(bio);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    return GWEN_Error_GetSimpleCode(err);
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Packet received");
+  if (ignoreBody)
+    return 0;
+  return nld->inStatusCode;
+}
+
+
+
 
 int GWEN_NetLayerHttp_Request(GWEN_NETLAYER *nl,
                               const char *command,
@@ -1216,6 +1322,8 @@ int GWEN_NetLayerHttp_Request(GWEN_NETLAYER *nl,
   GWEN_NL_HTTP *nld;
   GWEN_DB_NODE *dbT;
   int rv;
+  int doClose=0;
+  const char *s;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
@@ -1241,14 +1349,51 @@ int GWEN_NetLayerHttp_Request(GWEN_NETLAYER *nl,
   }
 
   /* receive response to BIO */
-  rv=GWEN_NetLayer_RecvPacketBio(nl, bio, 30);
-  if (rv) {
+  rv=GWEN_NetLayerHttp__RecvPacketBio(nl, bio, 30);
+  if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
+  if (rv==0) {
+    /* intermediate message, body ignored, read real packet */
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Ignoring intermediate message (%d: %s)",
+             nld->inStatusCode, nld->inStatusText);
+    rv=GWEN_NetLayerHttp__RecvPacketBio(nl, bio, 30);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    if (rv==0) {
+      /* one intermedate message is enough */
+      DBG_ERROR(GWEN_LOGDOMAIN, "Received too many intermediate messages");
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  if (nld->pversion==GWEN_NetLayerHttpVersion_1_0)
+    doClose=1;
+  else
+    doClose=0;
+
+  s=GWEN_DB_GetCharValue(nld->dbInHeader, "Connection", 0, 0);
+  if (s && strcasecmp(s, "close")!=0)
+    doClose=0;
+
+  if (doClose) {
+    int disrv;
+
+    disrv=GWEN_NetLayer_Disconnect_Wait(nl, 2);
+    if (disrv) {
+      /* just an info, this isn't treated as error, since we want to close
+       * the connection anyway */
+      DBG_INFO(GWEN_LOGDOMAIN, "Could not disconnect (%d)", disrv);
+    }
+  }
+
   DBG_INFO(GWEN_LOGDOMAIN, "Request completed");
-  return nld->inStatusCode;
+  return rv;
 }
 
 

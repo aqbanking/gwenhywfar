@@ -127,8 +127,9 @@ extern "C" {
 #define GWEN_ERROR_CT_REMOVED           (-76)
 #define GWEN_ERROR_CT_DEFAULT_PIN       (-77)
 
-/* new error codes */
+/* new error codes in GWEN2 */
 #define GWEN_ERROR_NOT_CONNECTED        (-100)
+#define GWEN_ERROR_BAD_DATA             (-101)
 
 /*@}*/
 
