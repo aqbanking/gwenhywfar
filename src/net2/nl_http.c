@@ -526,14 +526,17 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
         s++;
       if (*s==0) {
         if (GWEN_Buffer_GetUsedBytes(vbuf) && varName) {
-          GWEN_DB_SetCharValue(nld->dbInHeader,
-                               GWEN_DB_FLAGS_DEFAULT,
-                               varName,
-                               GWEN_Buffer_GetStart(vbuf));
-          GWEN_Buffer_Reset(vbuf);
-          varName=0;
-        }
-        return 0;
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Got header: %s=%s",
+		    varName,
+		    GWEN_Buffer_GetStart(vbuf));
+	  GWEN_DB_SetCharValue(nld->dbInHeader,
+			       GWEN_DB_FLAGS_DEFAULT,
+			       varName,
+			       GWEN_Buffer_GetStart(vbuf));
+	  GWEN_Buffer_Reset(vbuf);
+	  varName=0;
+	}
+	return 0;
       }
     }
 
@@ -1372,18 +1375,37 @@ int GWEN_NetLayerHttp_Request(GWEN_NETLAYER *nl,
     }
   }
 
-  if (nld->pversion==GWEN_NetLayerHttpVersion_1_0)
+  if (nld->pversion==GWEN_NetLayerHttpVersion_1_0) {
     doClose=1;
-  else
+    DBG_INFO(GWEN_LOGDOMAIN, "HTTP/1.0: Default is to close connection");
+  }
+  else {
     doClose=0;
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "HTTP/1.1: Default is to keep connection alive");
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Received header:");
+  GWEN_DB_Dump(nld->dbInHeader, stderr, 2);
 
   s=GWEN_DB_GetCharValue(nld->dbInHeader, "Connection", 0, 0);
-  if (s && strcasecmp(s, "close")!=0)
-    doClose=0;
+  if (s) {
+    if (strcasecmp(s, "close")!=0) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "Header indicates not to close the connection");
+      doClose=0;
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "Header indicates to close connection");
+      doClose=1;
+    }
+  }
 
   if (doClose) {
     int disrv;
 
+    DBG_INFO(GWEN_LOGDOMAIN, "Closing connection (indicated by header)");
     disrv=GWEN_NetLayer_Disconnect_Wait(nl, 2);
     if (disrv) {
       /* just an info, this isn't treated as error, since we want to close
