@@ -1,4 +1,13 @@
 ===========================================================================
+MARK: released gwenhywfar-1.99.0beta (2005/11/22)
+===========================================================================
+
+This is the first release of the gwen2 series. It features a complete rewrite
+of the network code which fixes problems with some HBCI servers.
+Only the latest version of AqBanking works with this version of gwen.
+
+
+===========================================================================
 MARK: released gwenhywfar-1.19.0 (2005/10/22)
 ===========================================================================
 
