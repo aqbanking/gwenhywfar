@@ -116,6 +116,10 @@ int GWEN_NetLayerHttp__ParseStatus(GWEN_NETLAYER *nl, const char *buffer);
 
 int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer);
 
+/**
+ * @return 0 if something has been written, <0 on error, 1 if writing would
+ * block, 2 if buffer empty
+ */
 int GWEN_NetLayerHttp__WriteBuffer(GWEN_NETLAYER *nl);
 
 

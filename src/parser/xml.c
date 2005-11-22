@@ -1824,6 +1824,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
         return -1;
       }
       err=GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
     }
     else
       err=GWEN_BufferedIO_Write(bio, "UNKNOWN");
@@ -1999,6 +2000,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
             return -1;
           }
           err=GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
         }
         else
           err=GWEN_BufferedIO_Write(bio, "UNKNOWN");

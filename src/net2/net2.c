@@ -37,11 +37,13 @@
 #include <gwenhywfar/waitcallback.h>
 #include <time.h>
 
+#define GWEN_NET2_MAX_HEARTBEATS_PER_SEC 500
 
 
 static GWEN_NETLAYER_LIST *gwen_netlayer__list=0;
-
-
+static time_t gwen_net__lastcall=0;
+static int gwen_net__callspersec=0;
+static int gwen_netlayer__isworkdebugmode=0;
 
 
 /* -------------------------------------------------------------- FUNCTION */
@@ -82,6 +84,24 @@ void GWEN_Net_DelConnectionFromPool(GWEN_NETLAYER *nl) {
 GWEN_NETLAYER_RESULT GWEN_Net_HeartBeat(int timeout){
   if (GWEN_NetLayer_List_GetCount(gwen_netlayer__list)) {
     GWEN_NETLAYER_RESULT rv;
+    time_t ti;
+  
+    ti=time(0);
+    if (ti==gwen_net__lastcall) {
+      gwen_net__callspersec++;
+      if (gwen_net__callspersec>GWEN_NET2_MAX_HEARTBEATS_PER_SEC) {
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "Too many heartbeats per second, "
+                 "sleeping to avoid CPU overload");
+        GWEN_Socket_Select(0, 0, 0, 500);
+        gwen_net__callspersec=0;
+        gwen_netlayer__isworkdebugmode=1;
+      }
+    }
+    else {
+      gwen_net__callspersec=0;
+      gwen_net__lastcall=ti;
+    }
 
     rv=GWEN_NetLayer_Walk(gwen_netlayer__list, timeout);
     if (rv==GWEN_NetLayerResult_Error) {
@@ -140,6 +160,13 @@ int GWEN_Net_HasListeningConnections(){
     nl=GWEN_NetLayer_List_Next(nl);
   } /* while */
   return (count!=0);
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
+int GWEN_Net_GetIsWorkDebugMode() {
+  return gwen_netlayer__isworkdebugmode;
 }
 
 

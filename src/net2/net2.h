@@ -71,6 +71,8 @@ GWENHYWFAR_API
 int GWEN_Net_HasListeningConnections();
 
 
+GWENHYWFAR_API
+int GWEN_Net_GetIsWorkDebugMode();
 
 #ifdef __cplusplus
 }

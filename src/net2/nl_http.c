@@ -93,6 +93,23 @@ GWEN_NETLAYER *GWEN_NetLayerHttp_new(GWEN_NETLAYER *baseLayer) {
 
 
 void GWEN_NetLayerHttp_FreeData(void *bp, void *p) {
+  GWEN_NL_HTTP *nld;
+
+  nld=(GWEN_NL_HTTP*)p;
+
+  GWEN_DB_Group_free(nld->dbInHeader);
+  GWEN_Buffer_free(nld->inBuffer);
+  free(nld->inCommand);
+  GWEN_Url_free(nld->inUrl);
+  free(nld->inStatusText);
+
+  GWEN_Buffer_free(nld->outBuffer);
+  free(nld->outCommand);
+  GWEN_Url_free(nld->outUrl);
+  free(nld->outStatusText);
+  GWEN_DB_Group_free(nld->dbOutHeader);
+
+  GWEN_FREE_OBJECT(nld);
 }
 
 
@@ -313,15 +330,19 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__WriteWork(GWEN_NETLAYER *nl) {
   if (st==GWEN_NetLayerStatus_Listening)
     return GWEN_NetLayerResult_Idle;
 
-  rv=GWEN_NetLayerHttp__WriteBuffer(nl);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return GWEN_NetLayerResult_Error;
+  if (GWEN_Buffer_GetBytesLeft(nld->outBuffer)) {
+    rv=GWEN_NetLayerHttp__WriteBuffer(nl);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return GWEN_NetLayerResult_Error;
+    }
+    else if (rv==1)
+      return GWEN_NetLayerResult_WouldBlock;
+    else
+      return GWEN_NetLayerResult_Changed;
   }
-  else if (rv==1)
-    return GWEN_NetLayerResult_WouldBlock;
   else
-    return GWEN_NetLayerResult_Changed;
+    return GWEN_NetLayerResult_Idle;
 }
 
 
@@ -488,7 +509,7 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
   for (line=1;;line++) {
     if (!isspace(*s)) {
       if (GWEN_Buffer_GetUsedBytes(vbuf) && varName) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Got header: %s=%s",
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Got header: %s=%s",
                   varName,
                   GWEN_Buffer_GetStart(vbuf));
 
@@ -526,16 +547,18 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
         s++;
       if (*s==0) {
         if (GWEN_Buffer_GetUsedBytes(vbuf) && varName) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Got header: %s=%s",
-		    varName,
-		    GWEN_Buffer_GetStart(vbuf));
-	  GWEN_DB_SetCharValue(nld->dbInHeader,
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "Got header: %s=%s",
+                    varName,
+                    GWEN_Buffer_GetStart(vbuf));
+          GWEN_DB_SetCharValue(nld->dbInHeader,
 			       GWEN_DB_FLAGS_DEFAULT,
 			       varName,
 			       GWEN_Buffer_GetStart(vbuf));
 	  GWEN_Buffer_Reset(vbuf);
 	  varName=0;
 	}
+        GWEN_Buffer_free(vbuf);
+        free(tmp);
 	return 0;
       }
     }
@@ -630,7 +653,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
         if (i==0x0d0a0d0a) {
           const char *p;
 
-          DBG_INFO(GWEN_LOGDOMAIN, "Header complete");
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Header complete");
           p=GWEN_Buffer_GetStart(nld->inBuffer);
           rv=GWEN_NetLayerHttp__ParseHeader(nl, p);
           if (rv) {
@@ -669,7 +692,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
           if (nld->inMode==GWEN_NetLayerHttpInMode_ReadCommand) {
             const char *p;
 
-            DBG_INFO(GWEN_LOGDOMAIN, "Command line complete");
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Command line complete");
             p=GWEN_Buffer_GetStart(nld->inBuffer);
             rv=GWEN_NetLayerHttp__ParseCommand(nl, p);
             if (rv) {
@@ -685,7 +708,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
           else if (nld->inMode==GWEN_NetLayerHttpInMode_ReadStatus) {
             const char *p;
 
-            DBG_INFO(GWEN_LOGDOMAIN, "status line complete");
+            DBG_DEBUG(GWEN_LOGDOMAIN, "status line complete");
             p=GWEN_Buffer_GetStart(nld->inBuffer);
             rv=GWEN_NetLayerHttp__ParseStatus(nl, p);
             if (rv) {
@@ -709,7 +732,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
               p++;
             }
             if (*p) {
-              DBG_INFO(GWEN_LOGDOMAIN, "chunk size line complete (\"%s\")",
+              DBG_DEBUG(GWEN_LOGDOMAIN, "chunk size line complete (\"%s\")",
                        p);
               if (1!=sscanf(p, "%x", &i)) {
                 DBG_ERROR(GWEN_LOGDOMAIN, "Bad chunk size (\"%s\")", p);
@@ -718,7 +741,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
               }
               if (i==0) {
                 /* no more chunks */
-                DBG_INFO(GWEN_LOGDOMAIN, "Last chunk finished");
+                DBG_DEBUG(GWEN_LOGDOMAIN, "Last chunk finished");
                 nld->inMode=GWEN_NetLayerHttpInMode_ReadChunkTrailer;
                 return GWEN_NetLayerResult_Changed;
               }
@@ -740,7 +763,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
             }
           }
           else if (nld->inMode==GWEN_NetLayerHttpInMode_ReadChunkTrailer) {
-            DBG_INFO(GWEN_LOGDOMAIN, "chunk trailer finished");
+            DBG_DEBUG(GWEN_LOGDOMAIN, "chunk trailer finished");
             nld->inMode=GWEN_NetLayerHttpInMode_ReadDone;
             GWEN_Buffer_Reset(nld->inBuffer);
             nld->inLast4Bytes=0;
@@ -811,9 +834,12 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
 
   res=GWEN_NetLayer_Work(baseLayer);
   GWEN_NetLayer_SetStatus(nl, GWEN_NetLayer_GetStatus(baseLayer));
-  DBG_VERBOUS(GWEN_LOGDOMAIN,
-              "Result of BaseLayer work: %s",
-              GWEN_NetLayerResult_toString(res));
+  if (GWEN_Net_GetIsWorkDebugMode()) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+             "Result of BaseLayer work (%s): %s",
+             GWEN_NetLayer_GetTypeName(baseLayer),
+             GWEN_NetLayerResult_toString(res));
+  }
   if (res==GWEN_NetLayerResult_Error) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return res;
@@ -821,9 +847,12 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
   GWEN_NL_HTTP_MERGE_RESULTS(bres, res);
 
   res=GWEN_NetLayerHttp__WriteWork(nl);
-  DBG_VERBOUS(GWEN_LOGDOMAIN,
-              "Result of WriteWork: %s",
-              GWEN_NetLayerResult_toString(res));
+  if (GWEN_Net_GetIsWorkDebugMode()) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+             "Result of WriteWork (%s): %s",
+             GWEN_NetLayer_GetTypeName(nl),
+             GWEN_NetLayerResult_toString(res));
+  }
   if (res==GWEN_NetLayerResult_Error) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return res;
@@ -831,9 +860,12 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
   GWEN_NL_HTTP_MERGE_RESULTS(bres, res);
 
   res=GWEN_NetLayerHttp__ReadWork(nl);
-  DBG_VERBOUS(GWEN_LOGDOMAIN,
-              "Result of ReadWork: %s",
-              GWEN_NetLayerResult_toString(res));
+  if (GWEN_Net_GetIsWorkDebugMode()) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+             "Result of ReadWork (%s): %s",
+             GWEN_NetLayer_GetTypeName(nl),
+             GWEN_NetLayerResult_toString(res));
+  }
   if (res==GWEN_NetLayerResult_Error) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return res;
@@ -843,6 +875,12 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp_Work(GWEN_NETLAYER *nl) {
 #undef GWEN_NL_HTTP_MERGE_RESULTS
 
   /* return cumulated result */
+  if (GWEN_Net_GetIsWorkDebugMode()) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+             "Result of Work (%s): %s",
+             GWEN_NetLayer_GetTypeName(nl),
+             GWEN_NetLayerResult_toString(bres));
+  }
   return bres;
 }
 
@@ -887,7 +925,7 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
     char numbuf[32];
 
     /* passive, prepare status line */
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Passive connection");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Passive connection");
     GWEN_Buffer_AppendString(nld->outBuffer, "HTTP/");
     switch(nld->pversion) {
     case GWEN_NetLayerHttpVersion_1_0:
@@ -906,7 +944,7 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   }
   else {
     /* prepare command line */
-    DBG_NOTICE(GWEN_LOGDOMAIN, "Active connection");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Active connection");
     assert(nld->outCommand);
     GWEN_Buffer_AppendString(nld->outBuffer, nld->outCommand);
     GWEN_Buffer_AppendString(nld->outBuffer, " ");
@@ -966,15 +1004,15 @@ int GWEN_NetLayerHttp_BeginOutPacket(GWEN_NETLAYER *nl, int totalSize) {
   rv=GWEN_NetLayerHttp__WriteBuffer(nl);
   if (rv<0) {
     if (rv==GWEN_ERROR_BROKEN_PIPE) {
-      DBG_NOTICE(GWEN_LOGDOMAIN,
-		 "Connection is down, caller will have to reconnect");
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Connection is down, caller will have to reconnect");
       return GWEN_ERROR_NOT_CONNECTED;
     }
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  DBG_NOTICE(GWEN_LOGDOMAIN, "Outgoing packet started");
+  DBG_INFO(GWEN_LOGDOMAIN, "Outgoing packet started");
   return 0;
 }
 
@@ -1059,7 +1097,7 @@ void GWEN_NetLayerHttp_BaseStatusChange(GWEN_NETLAYER *nl,
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
   assert(nld);
 
-  DBG_NOTICE(GWEN_LOGDOMAIN, "Base has changed its status");
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Base has changed its status");
 }
 
 
@@ -1138,7 +1176,7 @@ int GWEN_NetLayerHttp_CheckInPacket(GWEN_NETLAYER *nl) {
       }
     }
     else {
-      DBG_NOTICE(GWEN_LOGDOMAIN, "Unknown incoming size");
+      DBG_INFO(GWEN_LOGDOMAIN, "Unknown incoming size");
     }
     return 1;
 
@@ -1244,7 +1282,7 @@ int GWEN_NetLayerHttp__RecvPacketBio(GWEN_NETLAYER *nl,
     else
       tLeft=timeout;
     rv=GWEN_NetLayer_CheckInPacket(nl);
-    DBG_INFO(GWEN_LOGDOMAIN, "Check-Result: %d", rv);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Check-Result: %d", rv);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error checking packet (%d)", rv);
       return rv;
@@ -1257,7 +1295,7 @@ int GWEN_NetLayerHttp__RecvPacketBio(GWEN_NETLAYER *nl,
           ignoreBody=0;
         bodyStarted=1;
       }
-      DBG_INFO(GWEN_LOGDOMAIN, "Reading");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Reading");
       bsize=sizeof(buffer);
       rv=GWEN_NetLayer_Read_Wait(nl, buffer, &bsize, tLeft);
       if (rv<0) {
@@ -1377,26 +1415,23 @@ int GWEN_NetLayerHttp_Request(GWEN_NETLAYER *nl,
 
   if (nld->pversion==GWEN_NetLayerHttpVersion_1_0) {
     doClose=1;
-    DBG_INFO(GWEN_LOGDOMAIN, "HTTP/1.0: Default is to close connection");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "HTTP/1.0: Default is to close connection");
   }
   else {
     doClose=0;
-    DBG_INFO(GWEN_LOGDOMAIN,
+    DBG_DEBUG(GWEN_LOGDOMAIN,
 	     "HTTP/1.1: Default is to keep connection alive");
   }
-
-  DBG_INFO(GWEN_LOGDOMAIN, "Received header:");
-  GWEN_DB_Dump(nld->dbInHeader, stderr, 2);
 
   s=GWEN_DB_GetCharValue(nld->dbInHeader, "Connection", 0, 0);
   if (s) {
     if (strcasecmp(s, "close")!=0) {
-      DBG_INFO(GWEN_LOGDOMAIN,
+      DBG_DEBUG(GWEN_LOGDOMAIN,
 	       "Header indicates not to close the connection");
       doClose=0;
     }
     else {
-      DBG_INFO(GWEN_LOGDOMAIN,
+      DBG_DEBUG(GWEN_LOGDOMAIN,
 	       "Header indicates to close connection");
       doClose=1;
     }

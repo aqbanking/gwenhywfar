@@ -15,6 +15,13 @@ use Gwenhywfar! Do not install it on production systems !!
     check for the connection status before sending packets, so in this case
     they will just reopen the connection. We should now finally get rid of the
     ominous "timeout" problem in AqHBCI
+- fixed a bug in HTTP write work function: Was always returning "Changed",
+  even if there was nothing to write. This caused up to 100% CPU 
+  consumption
+- introduced brake to avoid CPU overload by GWEN_Net_HeartBeat()
+- entered cleanup phasis:
+  - implemented destructors for netlayers
+  - fixed memory leaks found by valgrind
 
 
 2005/11/18: Martin Preuss<martin@libchipcard.de>

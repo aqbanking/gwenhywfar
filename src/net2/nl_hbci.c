@@ -86,6 +86,12 @@ GWEN_NETLAYER *GWEN_NetLayerHbci_new(GWEN_NETLAYER *baseLayer) {
 
 
 void GWEN_NetLayerHbci_FreeData(void *bp, void *p) {
+  GWEN_NL_HBCI *nld;
+
+  nld=(GWEN_NL_HBCI*)p;
+  GWEN_Buffer_free(nld->inBuffer);
+  GWEN_Buffer_free(nld->outBuffer);
+  GWEN_FREE_OBJECT(nld);
 }
 
 

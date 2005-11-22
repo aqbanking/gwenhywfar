@@ -1196,6 +1196,7 @@ int GWEN_IpcManager__SendMsg(GWEN_IPCMANAGER *mgr,
     GWEN_NL_Packet_free(pk);
     return rv;
   }
+  GWEN_NL_Packet_free(pk);
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Message is on its way");
   m->sendTime=time(0);

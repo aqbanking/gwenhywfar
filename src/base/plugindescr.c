@@ -158,6 +158,7 @@ void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
     (pdl,
      GWEN_PluginDescription_List2_freeAll_cb, 
      0);
+  GWEN_PluginDescription_List2_free(pdl);
 }
 
 

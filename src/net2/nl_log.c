@@ -97,6 +97,11 @@ GWEN_NETLAYER *GWEN_NetLayerLog_new(GWEN_NETLAYER *baseLayer,
 
 
 void GWEN_NetLayerLog_FreeData(void *bp, void *p) {
+  GWEN_NL_LOG *nld;
+
+  nld=(GWEN_NL_LOG*)p;
+  free(nld->nameBase);
+  GWEN_FREE_OBJECT(nld);
 }
 
 
