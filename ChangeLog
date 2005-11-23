@@ -1,3 +1,10 @@
+2005-11-23  Christian Stimming <stimming@tuhh.de>
+
+	* gwenhywfar-config.in.in: Re-introduce the old --has-ui argument
+	but print a single-line error message, because if the "usage" text
+	is printed then the old gwenhywfar.m4 macro breaks with very weird
+	error messages.
+
 ===========================================================================
 MARK: released gwenhywfar-1.99.0 (2005/11/22)
 ===========================================================================

@@ -50,6 +50,11 @@ for d in $*; do
         --has-crypt)
             result="$result @USE_CRYPT@"
             ;;
+	--has-ui)
+	    # Keep this argument in order not to completely break
+	    # the old gwenhywfar.m4 macro.
+	    result="This argument is obsolete. See $0 --help for current arguments."
+	    ;;
 	*)
 	    echo "Usage:"
 	    echo "$0 --includes gives you the include flags"
