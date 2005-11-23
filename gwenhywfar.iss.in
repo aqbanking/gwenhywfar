@@ -37,10 +37,11 @@ Name: "doc"; Description: "{cm:DocFiles}"; Types: full
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [Files]
 ; The main DLL
-Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
+Source: "distribution\win32-tmp\bin\*.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
 
 ; The lib file for linking against it
-Source: "src\@PACKAGE@32_@GWENHYWFAR_SO_EFFECTIVE@.lib"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
+Source: "distribution\win32-tmp\lib\lib@PACKAGE@.la"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
+Source: "distribution\win32-tmp\lib\*.dll.a"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
 
 ; The config-script. It is post-processed by the Pascal script below.
 Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\@PACKAGE@-config'))
@@ -135,13 +136,11 @@ begin
   StringChange(FileString, '@'+'gwenhywfar_libsui@', '@gwenhywfar_libsui@');
   StringChange(FileString, '@'+'gwenhywfar_pkgincludedir@', includedir+'/@PACKAGE@');
   StringChange(FileString, '@'+'gwenhywfar_plugindir@', plugindir);
-  StringChange(FileString, '@'+'gwenhywfar_sections@', '@gwenhywfar_sections@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_MAJOR@', '@GWENHYWFAR_VERSION_MAJOR@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_MINOR@', '@GWENHYWFAR_VERSION_MINOR@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_PATCHLEVEL@', '@GWENHYWFAR_VERSION_PATCHLEVEL@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_BUILD@', '@GWENHYWFAR_VERSION_BUILD@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_TAG@', '@GWENHYWFAR_VERSION_TAG@');
-  StringChange(FileString, '@'+'USE_NCURSES@', '@USE_NCURSES@');
   StringChange(FileString, '@'+'USE_CRYPT@', '@USE_CRYPT@');
 
   { Save the final file }
