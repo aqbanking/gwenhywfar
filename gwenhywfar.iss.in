@@ -37,27 +37,27 @@ Name: "doc"; Description: "{cm:DocFiles}"; Types: full
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [Files]
 ; The main DLL
-Source: "distribution\win32-tmp\bin\*.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
+Source: "distribution\usr\bin\*.dll"; DestDir: "{win}"; Flags: sharedfile; Components: main
 
 ; The lib file for linking against it
-Source: "distribution\win32-tmp\lib\lib@PACKAGE@.la"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
-Source: "distribution\win32-tmp\lib\*.dll.a"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
+Source: "distribution\usr\lib\lib@PACKAGE@.la"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
+Source: "distribution\usr\lib\*.dll.a"; DestDir: "{app}\lib"; Flags: sharedfile; Components: devel
 
 ; The config-script. It is post-processed by the Pascal script below.
 Source: "@PACKAGE@-config.in.in"; DestDir: "{app}\bin"; Flags: recursesubdirs; Components: devel; AfterInstall: MyAfterInstallConfig(ExpandConstant('{app}\bin\@PACKAGE@-config'))
 
 ; The tools executables
-Source: "distribution\win32-tmp\bin\*.exe"; DestDir: "{app}\bin"; Flags: ignoreversion; Components: devel
+Source: "distribution\usr\bin\*.exe"; DestDir: "{app}\bin"; Flags: ignoreversion; Components: devel
 
 ; The headers, and the aclocal macro. 
-Source: "distribution\win32-tmp\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
-Source: "distribution\win32-tmp\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
+Source: "distribution\usr\include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdirs; Components: devel
+Source: "distribution\usr\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs; Components: devel
 
 ; The plugins
-Source: "distribution\win32-tmp\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "distribution\usr\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\*"; DestDir: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"; Flags: ignoreversion recursesubdirs; Components: main
 
 ; The certificate file
-Source: "distribution\win32-tmp\etc\gwen-public-ca.crt"; DestDir: "{app}\etc"; Components: main
+Source: "distribution\usr\etc\gwen-public-ca.crt"; DestDir: "{app}\etc"; Components: main
 
 ; And all the documentation
 Source: "README"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc

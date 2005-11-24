@@ -64,11 +64,11 @@ rpm:    $(PACKAGE).spec dist
 ISCC = "C:\Programme\Inno Setup 5\iscc.exe"
 setup: gwenhywfar.iss
 	mkdir -p distribution
-	make prefix="`pwd`/distribution/win32-tmp" \
-	     WIN_PATH_WINDOWS_MINGW="`pwd`/distribution/win32-tmp/windows" \
+	make prefix="`pwd`/distribution/usr" \
+	     WIN_PATH_WINDOWS_MINGW="`pwd`/distribution/usr/windows" \
 	     install \
 	 && $(ISCC) gwenhywfar.iss \
-	 && rm -rf distribution/win32-tmp
+	 && rm -rf distribution
 
 # Extra rule for easy generation of Win32 archives with headers and
 # DLLs. The helper directories are configured by the following
