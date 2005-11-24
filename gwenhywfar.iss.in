@@ -129,7 +129,7 @@ begin
   StringChange(FileString, '@'+'prefix@', appdir);
   StringChange(FileString, '@'+'libdir@', windir);
   StringChange(FileString, '@'+'ssl_includes@', '@ssl_includes@');
-  StringChange(FileString, '@'+'gwenhywfar_includes@', '-I'+includedir);
+  StringChange(FileString, '@'+'gwenhywfar_headerdir@', includedir);
   StringChange(FileString, '@'+'gwenhywfar_ldflags@', '-L'+windir);
   StringChange(FileString, '@'+'gwenhywfar_libs@', '@gwenhywfar_libs@');
   StringChange(FileString, '@'+'gwenhywfar_libspp@', '@gwenhywfar_libspp@');
