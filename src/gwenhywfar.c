@@ -397,7 +397,8 @@ int GWEN_GetPluginPath(GWEN_BUFFER *pbuf) {
     return rv;
 
   GWEN_Buffer_AppendString(pbuf, DIRSEP);
-  GWEN_Buffer_AppendString(pbuf, "lib");
+  /* Watch out: need to use "lib64" on x64 */
+  GWEN_Buffer_AppendString(pbuf, "lib" LIBDIRSUFFIX);
   GWEN_Buffer_AppendString(pbuf, DIRSEP);
   GWEN_Buffer_AppendString(pbuf, "gwenhywfar");
   GWEN_Buffer_AppendString(pbuf, DIRSEP);
