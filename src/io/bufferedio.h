@@ -405,7 +405,7 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
   GWEN_ERRORCODE GWEN_BufferedIO_WriteRawForced(GWEN_BUFFEREDIO *bt,
-						char *buffer,
+                                                const char *buffer,
 						unsigned int *bsize);
 
 

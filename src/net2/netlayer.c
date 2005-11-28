@@ -596,8 +596,18 @@ void GWEN_NetLayer_BaseStatusChange(GWEN_NETLAYER *nl,
 void GWEN_NetLayer_StatusChange(GWEN_NETLAYER *nl,
                                 GWEN_NETLAYER_STATUS newst) {
   assert(nl);
-  if (nl->statusChangeFn)
-    nl->statusChangeFn(nl, newst);
+  if (nl->status!=newst) {
+    if (nl->statusChangeFn) {
+      if (nl->inStatusChangeFn) {
+	DBG_WARN(GWEN_LOGDOMAIN,
+		 "Recursion detected, not calling callback-function");
+      }
+      else {
+	nl->inStatusChangeFn=1;
+	nl->statusChangeFn(nl, newst);
+      }
+    }
+  }
 }
 
 

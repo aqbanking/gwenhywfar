@@ -1,9 +1,32 @@
+
+2005/11/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- worked on nl_ssl: 
+  - now GWEN_NetLayerSsl_Disconnect() also disconnects the
+    SSL layer, not only the underlying layer
+  - fixed a severe bug (double free of peer certificate)
+
+
+2005/11/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed another bug in XML writing code (could segfault when writing empty 
+  data of properties)
+- fixed a bug where netlayer status changes would cause infinite recursions
+
+
+2005/11/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in XML writing code (could segfault when writing empty data
+  of data elements)
+
+
 2005-11-23  Christian Stimming <stimming@tuhh.de>
 
 	* gwenhywfar-config.in.in: Re-introduce the old --has-ui argument
 	but print a single-line error message, because if the "usage" text
 	is printed then the old gwenhywfar.m4 macro breaks with very weird
 	error messages.
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.99.0 (2005/11/22)

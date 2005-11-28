@@ -403,9 +403,16 @@ int GWEN_NetLayerSsl_Disconnect(GWEN_NETLAYER *nl) {
   GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnecting);
   rv=GWEN_NetLayer_Disconnect(baseLayer);
   if (rv<0) {
-    GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disabled);
-    nld->mode=GWEN_NetLayerSslMode_Idle;
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
   }
+
+  SSL_free(nld->ssl);
+  nld->ssl=0;
+  SSL_CTX_free(nld->ssl_ctx);
+  nld->ssl_ctx=0;
+  nld->bio=0; /* FIXME: Does SSL_free free this ? */
+  nld->mode=GWEN_NetLayerSslMode_Idle;
+  GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnected);
 
   return rv;
 }
@@ -1438,7 +1445,6 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSsl_Work(GWEN_NETLAYER *nl) {
 
     if (nld->mode==GWEN_NetLayerSslMode_PConnected) {
       handled=1;
-      GWEN_SslCertDescr_free(nld->peerCertificate);
       GWEN_SslCertDescr_free(nld->peerCertificate);
       nld->peerCertificate=0;
       nld->isSecure=0;

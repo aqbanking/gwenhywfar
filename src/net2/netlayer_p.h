@@ -78,6 +78,8 @@ struct GWEN_NETLAYER {
   int outBodySize;
 
   int usage;
+
+  int inStatusChangeFn;
 };
 
 

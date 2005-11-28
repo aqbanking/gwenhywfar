@@ -815,10 +815,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
 
 
 GWEN_ERRORCODE GWEN_BufferedIO_WriteRawForced(GWEN_BUFFEREDIO *bt,
-                                              char *buffer,
+                                              const char *buffer,
                                               unsigned int *bsize){
   GWEN_ERRORCODE err;
-  char *lbuffer;
+  const char *lbuffer;
   unsigned int lsize;
   unsigned int bytesWritten;
   GWEN_WAITCALLBACK_RESULT cbres;

@@ -1877,7 +1877,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
           return -1;
         }
   
-        if (p->value) {
+        if (p->value && *(p->value)) {
           err=GWEN_BufferedIO_Write(bio, "=\"");
           if (!GWEN_Error_IsOk(err)) {
             DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
@@ -2025,7 +2025,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     } /* if tag has children */
   } /* if tag */
   else if (n->type==GWEN_XMLNodeTypeData) {
-    if (n->data) {
+    if (n->data && *(n->data)) {
       GWEN_BUFFER *tbuf;
 
       tbuf=GWEN_Buffer_new(0, strlen(n->data), 0, 1);
@@ -2054,7 +2054,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
         return -1;
       }
 
-      if (n->data) {
+      if (n->data && *(n->data)) {
         GWEN_BUFFER *tbuf;
   
         tbuf=GWEN_Buffer_new(0, strlen(n->data), 0, 1);

@@ -263,8 +263,8 @@ int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl){
   /* close socket */
   err=GWEN_Socket_Close(nld->socket);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-    return GWEN_Error_GetSimpleCode(err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
+    /*return GWEN_Error_GetSimpleCode(err); */
   }
 
   /* adjust status (Disconnected) */
