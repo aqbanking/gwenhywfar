@@ -1,6 +1,9 @@
+
+
 2005-11-28  Christian Stimming  <stimming@tuhh.de>
 
 	* src/gwenhywfar.c: Add header define for x86_64 libdir suffix.
+
 
 2005/11/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
