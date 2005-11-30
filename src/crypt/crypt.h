@@ -72,7 +72,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWENHYWFAR_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWEN_CryptKey, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_CRYPTKEY, GWEN_CryptKey, GWENHYWFAR_API)
 
-  GWENHYWFAR_API
+GWENHYWFAR_API
 void GWEN_CryptKey_List2_freeAll(GWEN_CRYPTKEY_LIST2 *stl);
 
 
@@ -228,6 +228,7 @@ int GWEN_CryptKey_FromPasswordSSL(const char *password,
  * use the variable "keydata" when calling @ref GWEN_CryptKey_ToDb (such
  * as most symmetric keys).
  */
+GWENHYWFAR_API
 GWEN_ERRORCODE GWEN_CryptKey_GetData(GWEN_CRYPTKEY *key,
 				     char *buffer,
 				     unsigned int *bsize);
