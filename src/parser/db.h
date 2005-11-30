@@ -751,6 +751,7 @@ GWENHYWFAR_API
  * @param mask only those flags which are set in this mask are modified
  *  according to newflags
  */
+GWENHYWFAR_API 
 void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
                                  GWEN_TYPE_UINT32 newflags,
                                  GWEN_TYPE_UINT32 mask);
@@ -763,6 +764,7 @@ void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
  * @param mask only those flags which are set in this mask are modified
  *  according to newflags
  */
+GWENHYWFAR_API 
 void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
                                    GWEN_TYPE_UINT32 newflags,
                                    GWEN_TYPE_UINT32 mask);
