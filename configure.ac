@@ -18,10 +18,10 @@ AC_CONFIG_HEADER([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=99
-GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=4
+GWENHYWFAR_VERSION_PATCHLEVEL=1
+GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="cvs"
+GWENHYWFAR_VERSION_TAG="stable"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
@@ -286,6 +286,7 @@ else
 fi
 AC_DEFINE_UNQUOTED(LIBDIRSUFFIX, ["$libdirsuffix"], [Defined to the suffix string of the library directory])
 
+
 ###-------------------------------------------------------------------------
 #
 # check for some types and printf-templates
@@ -379,7 +380,6 @@ if test "$HAVE_I18N" = "yes"; then
   AC_DEFINE_UNQUOTED(ENABLE_NLS, 1, [whether I18N is available])
 fi
 AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
-
 
 
 ###-------------------------------------------------------------------------

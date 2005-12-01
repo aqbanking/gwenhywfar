@@ -61,13 +61,27 @@ rpm:    $(PACKAGE).spec dist
 
 # Rule for using the Inno Setup compiler. The path to iscc.exe is set
 # manually here for now.
-ISCC = "C:\Programme\Inno Setup 5\iscc.exe"
-setup: gwenhywfar.iss
+
+setup: setup-cs
+
+# Rule for Christian
+ISCC_CS = "C:\Programme\Inno Setup 5\iscc.exe"
+setup-cs: gwenhywfar.iss
 	mkdir -p distribution
 	make prefix="`pwd`/distribution/usr" \
 	     WIN_PATH_WINDOWS_MINGW="`pwd`/distribution/usr/windows" \
 	     install \
-	 && $(ISCC) gwenhywfar.iss \
+	 && $(ISCC_CS) gwenhywfar.iss \
+	 && rm -rf distribution
+
+# Rule for Martin
+ISCC_MP = "C:\Program Files\Inno Setup 5\iscc.exe"
+setup-mp: gwenhywfar.iss
+	mkdir -p distribution
+	make prefix="`pwd`/distribution/usr" \
+	     WIN_PATH_WINDOWS_MINGW="`pwd`/distribution/usr/windows" \
+	     install \
+	 && $(ISCC_MP) gwenhywfar.iss \
 	 && rm -rf distribution
 
 # Extra rule for easy generation of Win32 archives with headers and

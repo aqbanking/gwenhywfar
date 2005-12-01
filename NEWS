@@ -1,5 +1,14 @@
+
 ===========================================================================
-MARK: released gwenhywfar-1.99.0beta (2005/11/22)
+                    gwenhywfar-1.99.1 (2005/12/01)
+===========================================================================
+
+This release chiefly fixes some bugs in network and XML code. It also prepares
+Gwenhywfar to be used in 64 bit environments.
+
+
+===========================================================================
+                    gwenhywfar-1.99.0beta (2005/11/22)
 ===========================================================================
 
 This is the first release of the gwen2 series. It features a complete rewrite
@@ -8,7 +17,7 @@ Only the latest version of AqBanking works with this version of gwen.
 
 
 ===========================================================================
-MARK: released gwenhywfar-1.19.0 (2005/10/22)
+                    gwenhywfar-1.19.0 (2005/10/22)
 ===========================================================================
 
 The changes in this release are as follows:
@@ -20,7 +29,7 @@ A request wrapper around existing IPC code was added.
 
 
 ===========================================================================
-MARK: released gwenhywfar-1.15.0 (2005/08/11)
+                    gwenhywfar-1.15.0 (2005/08/11)
 ===========================================================================
 
 This release fixes some important bugs, enables the crypttoken code (used by
