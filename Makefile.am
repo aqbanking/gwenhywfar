@@ -59,30 +59,18 @@ rpm:    $(PACKAGE).spec dist
 	if [ `rpm --version | awk '{ print $$3 }'` > /dev/null ]; then rpmbuild="rpmbuild"; fi && \
 	$$rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
-# Rule for using the Inno Setup compiler. The path to iscc.exe is set
-# manually here for now.
-
-setup: setup-cs
-
-# Rule for Christian
-ISCC_CS = "C:\Programme\Inno Setup 5\iscc.exe"
-setup-cs: gwenhywfar.iss
-	mkdir -p distribution
-	make prefix="`pwd`/distribution/usr" \
-	     WIN_PATH_WINDOWS_MINGW="`pwd`/distribution/usr/windows" \
+# Rule for using the Inno Setup compiler. The path to iscc.exe is
+# set manually here for now and can be overridden if you set an
+# env variable with the same name.
+ISCC = "C:\Program Files\Inno Setup 5\iscc.exe"
+wintmpdir = distribution
+setup: gwenhywfar.iss
+	mkdir -p $(wintmpdir)
+	make prefix="`pwd`/$(wintmpdir)/usr" \
+	     WIN_PATH_WINDOWS_MINGW="`pwd`/$(wintmpdir)/usr/windows" \
 	     install \
-	 && $(ISCC_CS) gwenhywfar.iss \
-	 && rm -rf distribution
-
-# Rule for Martin
-ISCC_MP = "C:\Program Files\Inno Setup 5\iscc.exe"
-setup-mp: gwenhywfar.iss
-	mkdir -p distribution
-	make prefix="`pwd`/distribution/usr" \
-	     WIN_PATH_WINDOWS_MINGW="`pwd`/distribution/usr/windows" \
-	     install \
-	 && $(ISCC_MP) gwenhywfar.iss \
-	 && rm -rf distribution
+	 && $(ISCC) gwenhywfar.iss \
+	 && rm -rf $(wintmpdir)
 
 # Extra rule for easy generation of Win32 archives with headers and
 # DLLs. The helper directories are configured by the following
