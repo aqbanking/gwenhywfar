@@ -14,6 +14,7 @@
   program to crash.
   As soon as the next release of Gnucash is out we reenable this function
   call thus finally fixing this bug.
+- completed documentation of pathmanager
 
 
 2005-12-05   Christian Stimming <stimming@tuhh.de>

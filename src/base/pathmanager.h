@@ -143,8 +143,11 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
 
 /**
  * Insert a directory path entry to a registered path entry in the
- * global GWEN_PathManager. FIXME: What is the difference to
- * AddPath() ???
+ * global GWEN_PathManager. While @ref GWEN_PathManager_AddPath adds a path
+ * to the end of the list for this particular @c pathName this function
+ * here inserts it at the beginning of the list. This can be used e.g. to
+ * ensure that plugins/files from a given path take precedence over already
+ * added paths.
  *
  * @callingLib The name of the library that adds this path entry.
  *
@@ -158,9 +161,9 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
  */
 GWENHYWFAR_API
 int GWEN_PathManager_InsertPath(const char *callingLib,
-                    const char *destLib,
-                    const char *pathName,
-                    const char *pathValue);
+                                const char *destLib,
+                                const char *pathName,
+                                const char *pathValue);
 
 /**
  * Removes a directory path entry from a registered path entry in
@@ -181,9 +184,9 @@ int GWEN_PathManager_InsertPath(const char *callingLib,
  */
 GWENHYWFAR_API
 int GWEN_PathManager_RemovePath(const char *callingLib,
-                    const char *destLib,
-                    const char *pathName,
-                    const char *pathValue);
+                                const char *destLib,
+                                const char *pathName,
+                                const char *pathValue);
 
 /**
  * Removes all directory path entries that were registered by the
@@ -198,7 +201,9 @@ int GWEN_PathManager_RemovePaths(const char *callingLib);
 
 
 /**
- * DOCUMENTME: What does this do?
+ * This function checks whether the path list for @c pathName has changed
+ * since the last call to this function (i.e. whether paths have been
+ * added, inserted or removed).
  *
  * @destLib The name of the library that this path is supposed to
  * belong to.
@@ -223,7 +228,7 @@ int GWEN_PathManager_PathChanged(const char *destLib,
  *
  * @return A newly allocated @ref GWEN_STRINGLIST with all added
  * path entries, or NULL if no path entry or no registered @c
- * pathName exists. Delete this list with GWEN_StringList_free()
+ * pathName exists. Delete this list with @ref GWEN_StringList_free()
  * when no longer needed.
  */
 GWENHYWFAR_API
