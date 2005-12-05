@@ -156,9 +156,14 @@ GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd,
 void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
   GWEN_PluginDescription_List2_ForEach
     (pdl,
-     GWEN_PluginDescription_List2_freeAll_cb, 
+     GWEN_PluginDescription_List2_freeAll_cb,
      0);
-  GWEN_PluginDescription_List2_free(pdl);
+  /* The following line has been disabled to allow GnuCash 1.8.12 to work with
+   * this version of Gwen. As soon as the next Gnucash release appears we will
+   * enable this line again.
+   * Martin Preuss, 2005/12/05
+   GWEN_PluginDescription_List2_free(pdl);
+   */
 }
 
 

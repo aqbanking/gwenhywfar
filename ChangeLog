@@ -1,3 +1,21 @@
+
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  ! Remember to enable the _free()-function in plugindescr.c (freeAll()) !
+  ! as soon as the next release of GnuCash is out !                      !
+  ------------------------------------------------------------------------
+
+2005/12/05: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- temporarily disabled call to GWEN_PluginDescription_List2_free() from
+  within GWEN_PluginDescription_List2_freeAll(): This causes Gnucash to
+  crash because it contains a workaround for an old memory leak which had been
+  fixed in the last release of Gwen. However, the bugfix in gwen and the
+  workaround in Gnucash together lead to a double free which causes the
+  program to crash.
+  As soon as the next release of Gnucash is out we reenable this function
+  call thus finally fixing this bug.
+
+
 2005-12-05   Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfar.c: Register GWEN_PathManager entries for
