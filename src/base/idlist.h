@@ -61,11 +61,13 @@ extern "C" {
 /**
  * Constructor.
  */
+GWENHYWFAR_API
 GWEN_IDLIST *GWEN_IdList_new();
 
 /**
  * Destructor.
  */
+GWENHYWFAR_API
 void GWEN_IdList_free(GWEN_IDLIST *idl);
 
 
@@ -74,41 +76,49 @@ void GWEN_IdList_free(GWEN_IDLIST *idl);
  * in the same order. However, the list returned is compact (i.e. it has no
  * wholes).
  */
+GWENHYWFAR_API
 GWEN_IDLIST *GWEN_IdList_dup(const GWEN_IDLIST *idl);
 
 
 /**
  * Removes all ids from the list thus leaving it empty.
  */
+GWENHYWFAR_API
 void GWEN_IdList_Clear(GWEN_IDLIST *idl);
 
 /**
  * Adds an id to the list. This function does no doublecheck.
  */
+GWENHYWFAR_API
 int GWEN_IdList_AddId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
 
 /**
  * Removes the first occurrence of the given id.
  * @return 0 if deleted, !=0 if the id wasn't found
  */
+GWENHYWFAR_API
 int GWEN_IdList_DelId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
 
 /**
  * Checks whether the given id exists in the idlist.
  * @return 0 if found, !=0 otherwise
  */
+GWENHYWFAR_API
 int GWEN_IdList_HasId(const GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
 
 /**
  * Returns the first id from the list.
  */
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl);
 
+GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
 
 /**
  * Sorts the ids in ascending order
  */
+GWENHYWFAR_API
 int GWEN_IdList_Sort(GWEN_IDLIST *idl);
 
 /*@}*/
