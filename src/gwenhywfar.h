@@ -41,8 +41,18 @@
  */
 #define GWEN_PM_LIBNAME "gwenhywfar"
 
+/** Path identifier for the installation prefix of this gwenhywfar
+    installation, which might point to e.g. "/usr" */
 #define GWEN_PM_INSTALLDIR   "installdir"
+/** Path identifier for the system-wide configuration directory of
+    this gwenhywfar installation, which might point to e.g. "/etc" */
 #define GWEN_PM_SYSCONFDIR   "sysconfdir"
+/** Path identifier for the locale data directory of this gwenhywfar
+    installation, which might point to e.g. "/usr/share/locale" */
+#define GWEN_PM_LOCALEDIR    "localedir"
+/** Path identifier for the library files of this gwenhywfar
+    installation, which point to e.g.  "/usr/lib" */
+#define GWEN_PM_LIBDIR    "libdir"
 
 
 

@@ -1,3 +1,9 @@
+2005-12-05   Christian Stimming <stimming@tuhh.de>
+
+	* src/gwenhywfar.c: Register GWEN_PathManager entries for
+	localedir and libdir as well. Intended to prepare for integration
+	of autopackage's binreloc tools, hence providing even more
+	platform independence.
 
 ===========================================================================
 MARK: released gwenhywfar-1.99.1 (2005/12/01)

@@ -94,13 +94,25 @@ GWEN_ERRORCODE GWEN_Init() {
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_INSTALLDIR,
-                             GWEN_INSTALL_DIR);
+                             GWEN_PREFIX_DIR);
 
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSCONFDIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_SYSCONFDIR,
                              GWEN_SYSCONF_DIR);
+
+    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
+    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_LOCALEDIR,
+                             LOCALEDIR);
+
+    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LIBDIR);
+    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_LIBDIR,
+                             LIBDIR);
 
     err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
@@ -382,7 +394,7 @@ int GWEN__GetValueFromWinReg(const char *keyPath,
 int GWEN_GetInstallPath(GWEN_BUFFER *pbuf) {
   if (GWEN__GetValueFromWinReg("Software\\Gwenhywfar\\Paths",
                                "prefix", pbuf)!=0) {
-    GWEN_Directory_OsifyPath(GWEN_INSTALL_DIR, pbuf, 1);
+    GWEN_Directory_OsifyPath(GWEN_PREFIX_DIR, pbuf, 1);
   }
   return 0;
 }
