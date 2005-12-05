@@ -95,6 +95,13 @@ int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
 }
 
 
+void write_if_nonnull(GWEN_BUFFEREDIO *bio, const char *str) {
+  if (str) {
+    GWEN_BufferedIO_Write(bio, str);
+    GWEN_BufferedIO_Write(bio, " ");
+  }
+}
+
 
 int write_h_setget_c(ARGUMENTS *args,
                      GWEN_XMLNODE *node,
@@ -197,10 +204,7 @@ int write_h_setget_c(ARGUMENTS *args,
           GWEN_BufferedIO_WriteChar(bio, toupper(*name));
           GWEN_BufferedIO_WriteLine(bio, name+1);
           GWEN_BufferedIO_WriteLine(bio, "*/");
-          if (args->domain) {
-            GWEN_BufferedIO_Write(bio, args->domain);
-            GWEN_BufferedIO_Write(bio, " ");
-          }
+          write_if_nonnull(bio, args->domain);
           if (isPtr &&
               (/*strcasecmp(mode, "single")==0 ||*/ isConst)) {
             GWEN_BufferedIO_Write(bio, "const ");
@@ -242,10 +246,7 @@ int write_h_setget_c(ARGUMENTS *args,
           GWEN_BufferedIO_WriteChar(bio, toupper(*name));
           GWEN_BufferedIO_WriteLine(bio, name+1);
           GWEN_BufferedIO_WriteLine(bio, "*/");
-          if (args->domain) {
-            GWEN_BufferedIO_Write(bio, args->domain);
-            GWEN_BufferedIO_Write(bio, " ");
-          }
+          write_if_nonnull(bio, args->domain);
           GWEN_BufferedIO_Write(bio, "void ");
           GWEN_BufferedIO_Write(bio, prefix);
           GWEN_BufferedIO_Write(bio, "_Set");
@@ -284,10 +285,7 @@ int write_h_setget_c(ARGUMENTS *args,
 
           if (strcasecmp(typ, "GWEN_STRINGLIST")==0) {
             /* special functions for string lists */
-            if (args->domain) {
-              GWEN_BufferedIO_Write(bio, args->domain);
-              GWEN_BufferedIO_Write(bio, " ");
-            }
+	    write_if_nonnull(bio, args->domain);
             GWEN_BufferedIO_Write(bio, "void ");
             GWEN_BufferedIO_Write(bio, prefix);
             GWEN_BufferedIO_Write(bio, "_Add");
@@ -297,10 +295,7 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_BufferedIO_Write(bio, styp);
             GWEN_BufferedIO_WriteLine(bio, " *st, const char *d, int chk);");
 
-            if (args->domain) {
-              GWEN_BufferedIO_Write(bio, args->domain);
-              GWEN_BufferedIO_Write(bio, " ");
-            }
+	    write_if_nonnull(bio, args->domain);
             GWEN_BufferedIO_Write(bio, "void ");
             GWEN_BufferedIO_Write(bio, prefix);
             GWEN_BufferedIO_Write(bio, "_Remove");
@@ -310,10 +305,7 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_BufferedIO_Write(bio, styp);
             GWEN_BufferedIO_WriteLine(bio, " *st, const char *d);");
 
-            if (args->domain) {
-              GWEN_BufferedIO_Write(bio, args->domain);
-              GWEN_BufferedIO_Write(bio, " ");
-            }
+	    write_if_nonnull(bio, args->domain);
             GWEN_BufferedIO_Write(bio, "void ");
             GWEN_BufferedIO_Write(bio, prefix);
             GWEN_BufferedIO_Write(bio, "_Clear");
@@ -323,10 +315,7 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_BufferedIO_Write(bio, styp);
             GWEN_BufferedIO_WriteLine(bio, " *st);");
 
-            if (args->domain) {
-              GWEN_BufferedIO_Write(bio, args->domain);
-              GWEN_BufferedIO_Write(bio, " ");
-            }
+	    write_if_nonnull(bio, args->domain);
             GWEN_BufferedIO_Write(bio, "int ");
             GWEN_BufferedIO_Write(bio, prefix);
             GWEN_BufferedIO_Write(bio, "_Has");
@@ -379,10 +368,7 @@ int write_h_setget_c(ARGUMENTS *args,
           GWEN_BufferedIO_WriteChar(bio, toupper(*name));
           GWEN_BufferedIO_WriteLine(bio, name+1);
           GWEN_BufferedIO_WriteLine(bio, "*/");
-          if (args->domain) {
-            GWEN_BufferedIO_Write(bio, args->domain);
-            GWEN_BufferedIO_Write(bio, " ");
-          }
+          write_if_nonnull(bio, args->domain);
 
           GWEN_BufferedIO_Write(bio, styp);
           GWEN_BufferedIO_Write(bio, "_");
@@ -404,10 +390,7 @@ int write_h_setget_c(ARGUMENTS *args,
           GWEN_BufferedIO_WriteChar(bio, toupper(*name));
           GWEN_BufferedIO_WriteLine(bio, name+1);
           GWEN_BufferedIO_WriteLine(bio, "*/");
-          if (args->domain) {
-            GWEN_BufferedIO_Write(bio, args->domain);
-            GWEN_BufferedIO_Write(bio, " ");
-          }
+          write_if_nonnull(bio, args->domain);
           GWEN_BufferedIO_Write(bio, "void ");
           GWEN_BufferedIO_Write(bio, prefix);
           GWEN_BufferedIO_Write(bio, "_Set");
@@ -426,10 +409,7 @@ int write_h_setget_c(ARGUMENTS *args,
           GWEN_BufferedIO_WriteLine(bio, "/**");
           /* TODO: Write API doc for this function */
           GWEN_BufferedIO_WriteLine(bio, "*/");
-          if (args->domain) {
-            GWEN_BufferedIO_Write(bio, args->domain);
-            GWEN_BufferedIO_Write(bio, " ");
-          }
+          write_if_nonnull(bio, args->domain);
           GWEN_BufferedIO_Write(bio, rettype);
           if (isPtr)
             GWEN_BufferedIO_Write(bio, "*");
@@ -588,11 +568,13 @@ int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
 	GWEN_BufferedIO_WriteLine(bio, ";");
 	GWEN_BufferedIO_WriteLine(bio, "");
 
+	write_if_nonnull(bio, args->domain);
 	GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tid));
 	GWEN_BufferedIO_Write(bio, " ");
 	GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
 	GWEN_BufferedIO_WriteLine(bio, "_fromString(const char *s);");
 
+	write_if_nonnull(bio, args->domain);
 	GWEN_BufferedIO_Write(bio, "const char *");
 	GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(tprefix));
 	GWEN_BufferedIO_Write(bio, "_toString(");
