@@ -5,6 +5,10 @@
 
 2005-12-06   Christian Stimming <stimming@tuhh.de>
 
+	* src/gwenhywfar.c: Use only GWEN_PathManager for path
+	lookups. Make sure the PathManager entries are initialized with
+	windows registry, if this is windows.
+
 	* src/gwenhywfar.c: Use windows registry and GWEN_PathManager for
 	all path lookups in gwen. Replaces literal LOCALEDIR macro and
 	LIBSUFFIX macro for lib64 library paths.

@@ -11,11 +11,11 @@ SUBDIRS = base crypt io ipc os parser crypt2 net2
 
 localedir=$(datadir)/locale
 DEFS += \
-  -DGWEN_EFFECTIVE_VERSTR=\"${GWENHYWFAR_SO_EFFECTIVE}\" \
   -DGWEN_PREFIX_DIR=\"$(prefix)\" \
   -DGWEN_SYSCONF_DIR=\"$(sysconfdir)\" \
   -DLOCALEDIR=\"$(localedir)\" \
-  -DLIBDIR=\"$(libdir)\"
+  -DLIBDIR=\"$(libdir)\" \
+  -DPLUGINDIR=\"$(gwenhywfar_plugindir)\"
 
 
 EXTRA_DIST=\

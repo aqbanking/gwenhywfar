@@ -53,6 +53,10 @@
 /** Path identifier for the library files of this gwenhywfar
     installation, which point to e.g.  "/usr/lib" */
 #define GWEN_PM_LIBDIR    "libdir"
+/** Path identifier for the plugin library files of this
+    gwenhywfar installation, which point to e.g.
+    "/usr/lib/gwenhywfar/plugins/0" */
+#define GWEN_PM_PLUGINDIR    "plugindir"
 
 
 
