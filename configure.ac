@@ -278,13 +278,14 @@ esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
 
-# Check for x86_64 architecture; potentially set lib-directory suffix
-if test "$target_cpu" = "x86_64"; then
-  libdirsuffix="64"
-else
-  libdirsuffix=""
-fi
-AC_DEFINE_UNQUOTED(LIBDIRSUFFIX, ["$libdirsuffix"], [Defined to the suffix string of the library directory])
+dnl # Check for x86_64 architecture; potentially set lib-directory suffix
+dnl if test "$target_cpu" = "x86_64"; then
+dnl   libdirsuffix="64"
+dnl else
+dnl   libdirsuffix=""
+dnl fi
+dnl AC_DEFINE_UNQUOTED(LIBDIRSUFFIX, ["$libdirsuffix"], [Defined to the suffix string of the library directory])
+dnl --- no longer needed since $libdir is used directly
 
 
 ###-------------------------------------------------------------------------

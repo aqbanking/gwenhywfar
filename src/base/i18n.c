@@ -33,6 +33,8 @@
 #include "i18n_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/pathmanager.h>
+#include <gwenhywfar/gwenhywfar.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -51,16 +53,21 @@ static char *gwen_i18n__currentlocale=0;
 
 GWEN_ERRORCODE GWEN_I18N_ModuleInit(){
   const char *s;
+  const char *localedir;
+  GWEN_STRINGLIST *slist;
 
   gwen_i18n__localelist=GWEN_StringList_new();
-#ifdef ENABLE_NLS
-  s=setlocale(LC_ALL, "");
-  if (bindtextdomain("gwenhywfar",  LOCALEDIR)==0) {
+
+  slist = GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
+  assert(GWEN_StringList_Count(slist) > 0);
+  localedir = GWEN_StringList_FirstString(slist);
+#ifdef HAVE_I18N
+  s = setlocale(LC_ALL,"");
+  if (bindtextdomain(PACKAGE, localedir)==0) {
     DBG_WARN(GWEN_LOGDOMAIN, " Error bindtextdomain()\n");
-  }
-  else {
+  } else {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Textdomain bound.");
-    bind_textdomain_codeset("gwenhywfar", "UTF-8");
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
   }
 #else
   s="C";
@@ -70,6 +77,7 @@ GWEN_ERRORCODE GWEN_I18N_ModuleInit(){
       DBG_ERROR(GWEN_LOGDOMAIN, "Could not set locale");
     }
   }
+  GWEN_StringList_free(slist);
   return 0;
 }
 

@@ -239,6 +239,7 @@ catalogs: $(I18NLINGUAS)
 	  filelingua=$(srcdir)/po/$$i.po; \
 	  filecat=$(top_builddir)/po/$$i.mo; \
 	  echo "Creating translation catalogs for language \"$$i\""; \
+	  echo $(MSGFMT) -o $${filecat} $${filelingua} ; \
 	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
 	done
 
@@ -250,6 +251,7 @@ install-mo-catalogs: catalogs
 	  filecat=$(top_builddir)/po/$$i.mo; \
           echo "Installing translation catalog for language \"$$i\""; \
           $(mkinstalldirs) "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES"; \
+          echo $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
           $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
         done
 uninstall-mo-catalogs:

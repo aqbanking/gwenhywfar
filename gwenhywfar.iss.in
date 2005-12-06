@@ -78,6 +78,7 @@ Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "dbio-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "crypttoken-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\crypttoken"
 Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
+Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "localedir"; ValueData: "{app}\share\locale"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Delete the created config script on uninstall

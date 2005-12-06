@@ -18,6 +18,7 @@
 
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/pathmanager.h>
 
 #include "globals.h"
 #include "cryptmanager_l.h"
@@ -65,16 +66,25 @@ int main(int argc, char **argv) {
   }
   };
 
-#ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
-  if (bindtextdomain(PACKAGE,  LOCALEDIR)==0)
-    fprintf(stderr, "Error binding locale\n");
-#endif
-
   err=GWEN_Init();
   if (!GWEN_Error_IsOk(err)) {
     fprintf(stderr, "Could not initialize Gwenhywfar.\n");
     return 2;
+  }
+
+  {
+    const char *localedir;
+    GWEN_STRINGLIST *slist =
+      GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
+
+    assert(GWEN_StringList_Count(slist) > 0);
+    localedir = GWEN_StringList_FirstString(slist);
+#ifdef HAVE_I18N
+    setlocale(LC_ALL,"");
+    if (bindtextdomain(PACKAGE, localedir)==0)
+      fprintf(stderr, "Error binding locale\n");
+#endif
+    GWEN_StringList_free(slist);
   }
 
   GWEN_Logger_Open("gct-tool", "gct-tool", 0,

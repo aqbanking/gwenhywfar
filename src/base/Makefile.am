@@ -12,10 +12,6 @@ INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
 
 AM_CFLAGS=@PROFILING_CFLAGS@
 
-localedir=$(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
-
-
 noinst_LTLIBRARIES=libbase.la
 
 noinst_HEADERS=\

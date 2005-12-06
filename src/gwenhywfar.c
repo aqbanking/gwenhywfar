@@ -71,8 +71,14 @@
 #endif
 
 
-#define GWEN_REGKEY_PATHS       "Software\\Gwenhywfar\\Paths"
-#define GWEN_REGKEY_PREFIX      "gwen_prefix"
+/* Watch out: Make sure these are identical with the identifiers
+   in gwenhywfar.iss.in ! */
+#define GWEN_REGKEY_PATHS        "Software\\Gwenhywfar\\Paths"
+#define GWEN_REGNAME_PREFIX      "prefix"
+#define GWEN_REGNAME_LIBDIR      "libdir"
+#define GWEN_REGNAME_PLUGINDIR   "plugindir"
+#define GWEN_REGNAME_SYSCONFDIR  "sysconfdir"
+#define GWEN_REGNAME_LOCALEDIR   "localedir"
 
 
 static unsigned int gwen_is_initialized=0;
@@ -89,31 +95,61 @@ GWEN_ERRORCODE GWEN_Init() {
     if (!GWEN_Error_IsOk(err))
       return err;
 
-    /* define some paths used by gwenhywfar */
+    /* Define some paths used by gwenhywfar; add the windows
+       registry entries first, because on Unix those functions
+       simply do nothing and on windows they will ensure that the
+       most valid paths (which are those from the registry) are
+       first in the path lists. */
+
+    /* $prefix e.g. "/usr" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_INSTALLDIR);
+    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
+				       GWEN_PM_LIBNAME,
+				       GWEN_PM_INSTALLDIR,
+				       GWEN_REGKEY_PATHS,
+				       GWEN_REGNAME_PREFIX);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_INSTALLDIR,
                              GWEN_PREFIX_DIR);
 
+    /* $sysconfdir e.g. "/etc" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSCONFDIR);
+    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
+				       GWEN_PM_LIBNAME,
+				       GWEN_PM_SYSCONFDIR,
+				       GWEN_REGKEY_PATHS,
+				       GWEN_REGNAME_SYSCONFDIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_SYSCONFDIR,
                              GWEN_SYSCONF_DIR);
 
+    /* $localedir e.g. "/usr/share/locale" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
+    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
+				       GWEN_PM_LIBNAME,
+				       GWEN_PM_LOCALEDIR,
+				       GWEN_REGKEY_PATHS,
+				       GWEN_REGNAME_LOCALEDIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_LOCALEDIR,
                              LOCALEDIR);
 
+    /* $libdir e.g. "/usr/lib" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LIBDIR);
+    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
+				       GWEN_PM_LIBNAME,
+				       GWEN_PM_LIBDIR,
+				       GWEN_REGKEY_PATHS,
+				       GWEN_REGNAME_LIBDIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_LIBDIR,
                              LIBDIR);
 
+    /* Initialize other modules. */
     err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
@@ -392,9 +428,20 @@ int GWEN__GetValueFromWinReg(const char *keyPath,
 
 
 int GWEN_GetInstallPath(GWEN_BUFFER *pbuf) {
-  if (GWEN__GetValueFromWinReg("Software\\Gwenhywfar\\Paths",
-                               "prefix", pbuf)!=0) {
-    GWEN_Directory_OsifyPath(GWEN_PREFIX_DIR, pbuf, 1);
+  /* Do we get a path from the windows registry? */
+  if (GWEN__GetValueFromWinReg(GWEN_REGKEY_PATHS, 
+                               GWEN_REGNAME_PREFIX, pbuf)!=0) {
+    /* No windows registry, so use the GWEN_PathManager */
+    const char *prefix;
+    GWEN_STRINGLIST *slist =
+      GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_INSTALLDIR);
+
+    assert(GWEN_StringList_Count(slist) > 0);
+    prefix = GWEN_StringList_FirstString(slist);
+    GWEN_StringList_free(slist);
+
+    /* and copy the retrieved path into the return buffer */
+    GWEN_Directory_OsifyPath(prefix, pbuf, 1);
   }
   return 0;
 }
@@ -402,15 +449,30 @@ int GWEN_GetInstallPath(GWEN_BUFFER *pbuf) {
 
 
 int GWEN_GetPluginPath(GWEN_BUFFER *pbuf) {
-  int rv;
+  /* Do we get the full path from the windows registry? */
+  if (GWEN__GetValueFromWinReg(GWEN_REGKEY_PATHS, 
+                               GWEN_REGNAME_PLUGINDIR, pbuf)==0)
+    /* Yes, then we're done here */
+    return 0;
 
-  rv=GWEN_GetInstallPath(pbuf);
-  if (rv)
-    return rv;
+  /* No, not the full path; do we get $libdir? */
+  if (GWEN__GetValueFromWinReg(GWEN_REGKEY_PATHS, 
+                               GWEN_REGNAME_LIBDIR, pbuf)!=0) {
+    /* No windows registry at all, so use the GWEN_PathManager */
+    const char *libdir;
+    GWEN_STRINGLIST *slist =
+      GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_LIBDIR);
 
-  GWEN_Buffer_AppendString(pbuf, DIRSEP);
-  /* Watch out: need to use "lib64" on x64 */
-  GWEN_Buffer_AppendString(pbuf, "lib" LIBDIRSUFFIX);
+    assert(GWEN_StringList_Count(slist) > 0);
+    libdir = GWEN_StringList_FirstString(slist);
+
+    /* and copy the retrieved path into the return buffer */
+    GWEN_Directory_OsifyPath(libdir, pbuf, 1);
+    GWEN_StringList_free(slist);
+  }
+
+  /* We already got $libdir, so append the rest of the plugin
+     path */
   GWEN_Buffer_AppendString(pbuf, DIRSEP);
   GWEN_Buffer_AppendString(pbuf, "gwenhywfar");
   GWEN_Buffer_AppendString(pbuf, DIRSEP);

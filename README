@@ -123,20 +123,16 @@ connection to /tmp/written.bin".
 Registry Keys
 =============
 
-On Windows platforms Gwen uses some keys below HKEY_CURRENT_USER to store
-information about file/folder locations:
-
-"Software\\Gwenhywfar\\Paths\\public-ca-file"
----------------------------------------------
-Complete path and name of the public certificate file (containing known valid
-public certificates)
-
+On Windows platforms Gwen uses some keys below HKEY_CURRENT_USER
+to store information about file/folder locations. The keys are set
+in the Inno Setup file gwenhywfar.iss, so please check the
+[Registry] section in gwenyhwfar.iss.in for the authoritative
+source of available registry keys.
 
 "Software\\Gwenhywfar\\Paths\\dbio-plugins"
 -------------------------------------------
-
 Complete path to the folder containing GWENs DBIO plugins.
-
+(and some more keys. See gwenhywfar.iss.in)
 
 
 WaitCallback Ids

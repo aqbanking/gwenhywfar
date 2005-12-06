@@ -2,9 +2,6 @@ INCLUDES= $(all_includes) -I$(top_builddir) -I$(top_srcdir)
 
 #EXTRA_DIST=
 
-localedir=$(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
-
 bin_PROGRAMS=gct-tool
 
 noinst_HEADERS=\

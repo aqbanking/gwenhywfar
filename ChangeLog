@@ -1,8 +1,13 @@
-
   -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
   ! Remember to enable the _free()-function in plugindescr.c (freeAll()) !
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
+
+2005-12-06   Christian Stimming <stimming@tuhh.de>
+
+	* src/gwenhywfar.c: Use windows registry and GWEN_PathManager for
+	all path lookups in gwen. Replaces literal LOCALEDIR macro and
+	LIBSUFFIX macro for lib64 library paths.
 
 2005/12/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
