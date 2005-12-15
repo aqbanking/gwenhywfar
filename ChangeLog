@@ -3,6 +3,20 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released gwenhywfar-1.99.2 (2005/12/15)
+===========================================================================
+
+
+2005/12/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- GWEN_NetLayer_Work(): 
+  - if the work function of a netlayer returns an  error
+    the connection will be abandoned.
+  - introduced a loop around the work function of a netlayer (makes it less
+    often necessary to call GWEN_Net_Heartbeat())
+
+
 2005-12-06   Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfar.c: Use only GWEN_PathManager for path
@@ -12,6 +26,7 @@
 	* src/gwenhywfar.c: Use windows registry and GWEN_PathManager for
 	all path lookups in gwen. Replaces literal LOCALEDIR macro and
 	LIBSUFFIX macro for lib64 library paths.
+
 
 2005/12/05: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -32,6 +47,7 @@
 	localedir and libdir as well. Intended to prepare for integration
 	of autopackage's binreloc tools, hence providing even more
 	platform independence.
+
 
 ===========================================================================
 MARK: released gwenhywfar-1.99.1 (2005/12/01)

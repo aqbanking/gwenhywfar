@@ -142,9 +142,24 @@ int GWEN_NetLayer_GetPassword(GWEN_NETLAYER *nl,
 
 /* -------------------------------------------------------------- FUNCTION */
 GWEN_NETLAYER_RESULT GWEN_NetLayer_Work(GWEN_NETLAYER *nl) {
+  GWEN_NETLAYER_RESULT res;
+
   assert(nl);
   assert(nl->workFn);
-  return nl->workFn(nl);
+  res=nl->workFn(nl);
+  if (res==GWEN_NetLayerResult_Error) {
+    if (nl->status==GWEN_NetLayerStatus_Connected) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "WorkFunction of layer \"%s\" returned an error, "
+               "abandoning connection",
+               nl->typeName);
+      GWEN_NetLayer_Disconnect(nl);
+      if (nl->status==GWEN_NetLayerStatus_Connected)
+        nl->status=GWEN_NetLayerStatus_Disabled;
+    }
+  }
+
+  return res;
 }
 
 
@@ -1346,22 +1361,32 @@ GWEN_NETLAYER_RESULT GWEN_NetLayer__WorkAll(GWEN_NETLAYER_LIST *nll) {
     if (st!=GWEN_NetLayerStatus_Unconnected &&
         st!=GWEN_NetLayerStatus_Disconnecting &&
         st!=GWEN_NetLayerStatus_Disabled) {
-      GWEN_NETLAYER_RESULT res;
+      int j;
 
-      res=GWEN_NetLayer_Work(nl);
-      if (res==GWEN_NetLayerResult_Error) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here");
-        errors++;
-      }
-      else {
-        /* merge in new result */
-        if (bres==GWEN_NetLayerResult_Idle)
-          bres=res;
-        else if (bres!=GWEN_NetLayerResult_Changed) {
-          if (res==GWEN_NetLayerResult_Changed)
-            bres=GWEN_NetLayerResult_Changed;
+      for (j=0; j<GWEN_NETLAYER_WORK_MAXLOOP; j++) {
+        GWEN_NETLAYER_RESULT res;
+
+        res=GWEN_NetLayer_Work(nl);
+        if (res==GWEN_NetLayerResult_Error) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
+          errors++;
+          break;
         }
-      }
+        else {
+          /* merge in new result */
+          if (bres==GWEN_NetLayerResult_Idle) {
+            bres=res;
+            break;
+          }
+          else if (bres!=GWEN_NetLayerResult_Changed) {
+            if (res==GWEN_NetLayerResult_Changed)
+              bres=GWEN_NetLayerResult_Changed;
+          }
+        }
+        /* check for abort criterium */
+        if (res!=GWEN_NetLayerResult_Changed)
+          break;
+      } /* for */
     }
     nl=GWEN_NetLayer_List_Next(nl);
   }

@@ -107,6 +107,9 @@ GWEN_NETLAYER_RESULT GWEN_Net_HeartBeat(int timeout){
     if (rv==GWEN_NetLayerResult_Error) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
     }
+    else if (rv==GWEN_NetLayerResult_Changed)
+      /* if there was a change here then it is probably ok to call often */
+      gwen_net__callspersec/=4;
     return rv;
   }
   else {

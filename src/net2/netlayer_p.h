@@ -31,7 +31,8 @@
 
 #include "netlayer_l.h"
 
-#define GWEN_NETLAYER_CPU_TIMEOUT 200
+#define GWEN_NETLAYER_CPU_TIMEOUT  200
+#define GWEN_NETLAYER_WORK_MAXLOOP 20
 
 
 struct GWEN_NETLAYER {

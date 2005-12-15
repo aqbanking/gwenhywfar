@@ -637,7 +637,12 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
       if (rv==1)
         return GWEN_NetLayerResult_WouldBlock;
       else if (rv<0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	if (GWEN_Net_GetIsWorkDebugMode()) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	}
         nld->inMode=GWEN_NetLayerHttpInMode_Aborted;
         return GWEN_NetLayerResult_Error;
       }
@@ -712,7 +717,12 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
             p=GWEN_Buffer_GetStart(nld->inBuffer);
             rv=GWEN_NetLayerHttp__ParseStatus(nl, p);
             if (rv) {
-              DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      if (GWEN_Net_GetIsWorkDebugMode()) {
+		DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      }
+	      else {
+		DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      }
               nld->inMode=GWEN_NetLayerHttpInMode_Aborted;
               return GWEN_NetLayerResult_Error;
             }
