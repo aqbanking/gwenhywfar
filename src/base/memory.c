@@ -29,6 +29,8 @@
 # include <config.h>
 #endif
 
+/*#define ENABLE_MY_SMALL_BLOCK_ALLOC*/
+
 
 
 #include "memory_p.h"
@@ -44,42 +46,73 @@
 #include <unistd.h>
 
 
-static GWEN_MEMORY__OBJECT_LIST *GWEN_Memory__Objects=0;
-static int GWEN_Memory__DoubleCheck=0;
-
-
-GWEN_LIST_FUNCTIONS(GWEN_MEMORY__OBJECT, GWEN_Memory__Object)
-GWEN_LIST_FUNCTIONS(GWEN_MEMORY__OBJECT_STRING, GWEN_Memory__Object_String)
+static GWEN_MEMORY_TABLE *gwen_memory__first_table=0;
+static int gwen_memory__debug=0;
+static int gwen_memory__nofree=0;
+static int gwen_memory__verbous=0;
+static size_t gwen_memory__allocated_bytes=0;
+static size_t gwen_memory__allocated_calls=0;
+static size_t gwen_memory__allocated_reused=0;
+static size_t gwen_memory__released_since_collect=0;
 
 
 
 GWEN_ERRORCODE GWEN_Memory_ModuleInit(){
-#if 0
   const char *s;
 
   s=getenv(GWEN_MEMORY_ENV_DEBUG);
   if (s) {
-    GWEN_MEMORY__OBJECT_LIST *l;
-
-    fprintf(stderr, "Memory debugging is enabled");
-
-    l=GWEN_Memory__Object_List_new();
-
-    GWEN_Memory__DoubleCheck=(getenv(GWEN_MEMORY_ENV_DOUBLE_CHECK)!=0);
-
-    GWEN_Memory__Objects=l;
-
+    fprintf(stderr, "Memory debugging is enabled\n");
+    gwen_memory__debug=1;
+    gwen_memory__nofree=(getenv(GWEN_MEMORY_ENV_NO_FREE)!=0);
+    gwen_memory__verbous=(getenv(GWEN_MEMORY_ENV_VERBOUS)!=0);
   }
-#endif
   return 0;
 }
 
 
 
 GWEN_ERRORCODE GWEN_Memory_ModuleFini(){
-  GWEN_Memory_Report();
-  GWEN_Memory__Object_List_free(GWEN_Memory__Objects);
-  GWEN_Memory__Objects=0;
+  GWEN_MEMORY_TABLE *mt;
+
+  mt=gwen_memory__first_table;
+  while(mt) {
+    GWEN_MEMORY_TABLE *next;
+
+    next=mt->next;
+    GWEN_Memory_Table_free(mt);
+    mt=next;
+  }
+
+  if (gwen_memory__verbous) {
+    size_t avg=0;
+    size_t bytes;
+    const char *suffix;
+
+    if (gwen_memory__allocated_calls)
+      avg=gwen_memory__allocated_bytes/gwen_memory__allocated_calls;
+
+    if (gwen_memory__allocated_bytes>(1024*1024)) {
+      bytes=gwen_memory__allocated_bytes/(1024*1024);
+      suffix="mb";
+    }
+    else if (gwen_memory__allocated_bytes>1024) {
+      bytes=gwen_memory__allocated_bytes/1024;
+      suffix="kb";
+    }
+    else {
+      bytes=gwen_memory__allocated_bytes;
+      suffix="bytes";
+    }
+
+    fprintf(stderr,
+            "GWEN info: %u %s allocated in %u calls "
+            "(%u times reused, average %u bytes)\n",
+            bytes, suffix,
+            gwen_memory__allocated_calls,
+            gwen_memory__allocated_reused,
+            avg);
+  }
 
   return 0;
 }
@@ -87,353 +120,447 @@ GWEN_ERRORCODE GWEN_Memory_ModuleFini(){
 
 
 void GWEN_Memory_Report(){
-#if 0
-  if (GWEN_Memory__Objects) {
-    int dumpAll;
-    GWEN_MEMORY__OBJECT_LIST *l;
-    GWEN_MEMORY__OBJECT *o;
-    GWEN_STRINGLIST *sl;
-    GWEN_STRINGLISTENTRY *se;
+  return;
+}
 
-    l=GWEN_Memory__Objects;
-    GWEN_Memory__Objects=0;
 
-    fprintf(stderr, "Memory Debugging is enabled, list follows\n");
-    fprintf(stderr, "=================================================\n");
 
-    dumpAll=(getenv(GWEN_MEMORY_ENV_DUMP_ALL)!=0);
-    o=GWEN_Memory__Object_List_First(l);
-    if (!o) {
-      fprintf(stderr, "No objects.\n");
-    }
 
-    sl=GWEN_StringList_new();
-    /* sample type names */
-    while(o) {
-      if (o->typeName)
-        GWEN_StringList_AppendString(sl, o->typeName, 0, 1);
-      else
-        GWEN_StringList_AppendString(sl, "", 0, 1);
-      o=GWEN_Memory__Object_List_Next(o);
-    } /* while */
 
-    se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
-      const char *s;
-      int headerShown;
-      GWEN_TYPE_UINT32 constr;
-      GWEN_TYPE_UINT32 destr;
+GWEN_MEMORY_TABLE *GWEN_Memory_Table_new() {
+  GWEN_MEMORY_TABLE *mt;
+  unsigned char *p;
+  unsigned short dsize;
 
-      headerShown=0;
-      constr=0;
-      destr=0;
-      s=GWEN_StringListEntry_Data(se);
-      o=GWEN_Memory__Object_List_First(l);
-      while(o) {
-        int gotcha;
+  if (gwen_memory__verbous)
+    fprintf(stderr, "GWEN info: allocating memory table\n");
+  mt=(GWEN_MEMORY_TABLE*)malloc(sizeof(GWEN_MEMORY_TABLE));
+  assert(mt);
+  memset(mt, 0, sizeof(GWEN_MEMORY_TABLE));
+  dsize=GWEN_MEMORY_MAXBLOCK;
+  p=mt->data;
+  GWEN_MEMORY_WRITESIZE(p, dsize);
 
-        gotcha=0;
-        if (o->typeName==0) {
-          if (*s==0)
-            gotcha=1;
+  return mt;
+}
+
+
+
+void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt) {
+  if (mt) {
+    if (gwen_memory__debug) {
+      unsigned char *p;
+      unsigned char *end;
+  
+      p=mt->data;
+      end=p+GWEN_MEMORY_TABLE_LEN;
+      while(p<end) {
+        unsigned short bsize;
+        unsigned short rsize;
+  
+        bsize=GWEN_MEMORY_READSIZE(p);
+        rsize=bsize & GWEN_MEMORY_MASK_LEN;
+        if (bsize & GWEN_MEMORY_MASK_MALLOCED) {
+          fprintf(stderr,
+                  "GWEN warning: Block %p still allocated (%d bytes)\n",
+                  GWEN_MEMORY_GETDATA(p),
+                  rsize);
         }
-        else if (strcmp(s, o->typeName)==0)
-          gotcha=1;
-
-        if (gotcha) {
-          constr++;
-          if (o->usage<1)
-            destr++;
-
-          /* now really print */
-          if (o->usage!=0 || dumpAll) {
-            if (!headerShown) {
-              if (*s)
-                fprintf(stderr, "Objects of type \"%s\":\n", s);
-              else
-                fprintf(stderr, "Objects of unspecified Type :\n");
-              fprintf(stderr,
-                      "-------------------------------------------------\n");
-              headerShown=1;
-            }
-            fprintf(stderr, "%p ",
-                    o->object);
-            if (o->usage>0)
-              fprintf(stderr,
-                      "(not freed, usage left is %d, should be 0) ",
-                      o->usage);
-            else if (o->usage==0)
-              fprintf(stderr, "(freed normally) ");
-            else
-              fprintf(stderr, "(usage counter is %d, should be 0) ",
-                      o->usage);
-            fprintf(stderr, "\n");
-            if (o->locationNew)
-              fprintf(stderr, " Created at   : %s\n", o->locationNew);
-            if (GWEN_Memory__Object_String_List_GetCount(o->locationsAttach)){
-              GWEN_MEMORY__OBJECT_STRING *so;
-              int first;
-
-              first=1;
-              so=GWEN_Memory__Object_String_List_First(o->locationsAttach);
-              while(so) {
-                if (first) {
-                  fprintf(stderr, " Attached at  : %s\n", so->text);
-                  first=0;
-                }
-                else
-                  fprintf(stderr, "                %s\n", so->text);
-                so=GWEN_Memory__Object_String_List_Next(so);
-              }
-            } /* if locationsFree list not empty */
-            if (GWEN_Memory__Object_String_List_GetCount(o->locationsFree)){
-              GWEN_MEMORY__OBJECT_STRING *so;
-              int first;
-
-              first=1;
-              so=GWEN_Memory__Object_String_List_First(o->locationsFree);
-              while(so) {
-                if (first) {
-                  fprintf(stderr, " Destroyed at : %s\n", so->text);
-                  first=0;
-                }
-                else
-                  fprintf(stderr, "                %s\n", so->text);
-                so=GWEN_Memory__Object_String_List_Next(so);
-              }
-            } /* if locationsFree list not empty */
-          } /* if object should be dumped */
-        } /* if object type matches currently selected one */
-
-        o=GWEN_Memory__Object_List_Next(o);
-      } /* while */
-
-      if (headerShown) {
-        fprintf(stderr,
-                "-------------------------------------------------\n");
-        fprintf(stderr,
-                "Type summary: %d created, %d destroyed\n",
-                constr, destr);
-        fprintf(stderr, "\n");
+        p+=rsize+GWEN_MEMORY_SIZELEN;
       }
-      else {
-        fprintf(stderr,
-                "Type \"%s\": %d created, %d destroyed\n",
-                (s?s:"unspecified"), constr, destr);
-      }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while there still are types to dump */
-
-    fprintf(stderr, "=================================================\n");
-    fprintf(stderr, "Summary: %d objects\n",
-            GWEN_Memory__Object_List_GetCount(l));
-    GWEN_Memory__Objects=l;
+    }
+    free(mt);
   }
+}
+
+
+
+void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head, GWEN_MEMORY_TABLE *mt){
+  GWEN_MEMORY_TABLE *last;
+
+  assert(head);
+  assert(mt);
+
+  last=head;
+  while(last->next)
+    last=last->next;
+  last->next=mt;
+}
+
+
+
+void GWEN_Memory_Table_Insert(GWEN_MEMORY_TABLE *mt){
+  mt->next=gwen_memory__first_table;
+  gwen_memory__first_table=mt;
+}
+
+
+
+unsigned char *GWEN_Memory_Table__FindFreeBlock(GWEN_MEMORY_TABLE *mt,
+                                                unsigned short dsize) {
+  unsigned char *end;
+  unsigned char *p;
+
+  end=mt->data+GWEN_MEMORY_TABLE_LEN;
+  p=mt->data;
+  while(p<end) {
+    unsigned short bsize;
+    unsigned short rsize;
+
+    bsize=GWEN_MEMORY_READSIZE(p);
+    rsize=bsize & GWEN_MEMORY_MASK_LEN;
+    /*fprintf(stderr, "GWEN debug: at %u: found block with %u bytes (%s)\n",
+            p-mt->data,
+            rsize,
+            (bsize & GWEN_MEMORY_MASK_INUSE)?"used":"free");*/
+    if (rsize && !(bsize & GWEN_MEMORY_MASK_INUSE)) {
+      /* unused block */
+      if (rsize==dsize ||
+          rsize>=(dsize+GWEN_MEMORY_SIZELEN+GWEN_MEMORY_MINREMAIN)) {
+        return p;
+      }
+    }
+    p+=rsize+GWEN_MEMORY_SIZELEN;
+  }
+
+  return 0;
+}
+
+
+
+void GWEN_Memory_Table__CollectAt(GWEN_MEMORY_TABLE *mt,
+                                  unsigned char *p) {
+  unsigned char *end;
+  unsigned short nsize=0;
+  unsigned char *np;
+  int cnt=0;
+
+  np=p;
+  end=mt->data+GWEN_MEMORY_TABLE_LEN;
+
+  while(np<end) {
+    unsigned short bsize;
+    unsigned short rsize;
+
+    bsize=GWEN_MEMORY_READSIZE(np);
+    rsize=bsize & GWEN_MEMORY_MASK_LEN;
+    if (rsize && !(bsize & GWEN_MEMORY_MASK_INUSE)) {
+      nsize+=rsize;
+      if (cnt)
+        nsize+=GWEN_MEMORY_SIZELEN;
+      cnt++;
+    }
+    else
+      break;
+
+    np+=rsize+GWEN_MEMORY_SIZELEN;
+  }
+
+  if (cnt>1) {
+    fprintf(stderr, "GWEN info: collected %u bytes\n", nsize);
+    GWEN_MEMORY_WRITESIZE(p, nsize);
+  }
+
+
+}
+
+
+
+void GWEN_Memory_Table__Collect(GWEN_MEMORY_TABLE *mt) {
+  unsigned char *p;
+  unsigned char *end;
+
+  end=mt->data+GWEN_MEMORY_TABLE_LEN;
+  p=mt->data;
+  while(p<end) {
+    unsigned short bsize;
+    unsigned short rsize;
+
+    GWEN_Memory_Table__CollectAt(mt, p);
+    bsize=GWEN_MEMORY_READSIZE(p);
+    rsize=bsize & GWEN_MEMORY_MASK_LEN;
+    p+=rsize+GWEN_MEMORY_SIZELEN;
+  }
+}
+
+
+
+void GWEN_Memory_Table__Dump(GWEN_MEMORY_TABLE *mt) {
+  unsigned char *p;
+  unsigned char *end;
+
+  p=mt->data;
+  end=p+GWEN_MEMORY_TABLE_LEN;
+  while(p<end) {
+    unsigned short bsize;
+    unsigned short rsize;
+
+    bsize=GWEN_MEMORY_READSIZE(p);
+    rsize=bsize & GWEN_MEMORY_MASK_LEN;
+    fprintf(stderr,
+            "GWEN debug: at %5u: found block with %5u bytes [%p] (%s)\n",
+            p-mt->data,
+            rsize,
+            p,
+            (bsize & GWEN_MEMORY_MASK_INUSE)?"used":"free");
+    p+=rsize+GWEN_MEMORY_SIZELEN;
+  }
+}
+
+
+
+unsigned char *GWEN_Memory__FindFreeBlock(unsigned short dsize) {
+  GWEN_MEMORY_TABLE *mt;
+  unsigned char *p=0;
+
+  if (dsize>GWEN_MEMORY_MAXBLOCK) {
+    fprintf(stderr, "GWEN error: Memory block too big (%d>%d)\n",
+            dsize, GWEN_MEMORY_MAXBLOCK);
+    abort();
+  }
+  if (gwen_memory__first_table==0)
+    gwen_memory__first_table=GWEN_Memory_Table_new();
+
+  mt=gwen_memory__first_table;
+  assert(mt);
+
+  while(mt) {
+    p=GWEN_Memory_Table__FindFreeBlock(mt, dsize);
+    if (p)
+      return p;
+    mt=mt->next;
+  }
+
+  mt=GWEN_Memory_Table_new();
+  //GWEN_Memory_Table_Append(gwen_memory__first_table, mt);
+  GWEN_Memory_Table_Insert(mt);
+  p=GWEN_Memory_Table__FindFreeBlock(mt, dsize);
+  assert(p);
+
+  return p;
+}
+
+
+
+void *GWEN_Memory__Malloc(unsigned short dsize) {
+  unsigned char *p;
+  unsigned short bsize;
+  unsigned short rsize;
+
+  p=GWEN_Memory__FindFreeBlock(dsize);
+  assert(p);
+
+  bsize=GWEN_MEMORY_READSIZE(p);
+  rsize=bsize & GWEN_MEMORY_MASK_LEN;
+
+  if (rsize>dsize) {
+    unsigned char *np;
+    unsigned short nsize;
+
+    /* write header for next block */
+    nsize=rsize-dsize-GWEN_MEMORY_SIZELEN;
+    np=p+GWEN_MEMORY_SIZELEN+dsize;
+    /*fprintf(stderr,
+            "Splitting block from %u to %u/%u (relpos %u)\n",
+            rsize, dsize, nsize, np-p); */
+    GWEN_MEMORY_WRITESIZE(np, (nsize & GWEN_MEMORY_MASK_LEN));
+  }
+  else
+    gwen_memory__allocated_reused++;
+
+  GWEN_MEMORY_WRITESIZE(p, (dsize |
+                            GWEN_MEMORY_MASK_INUSE |
+                            GWEN_MEMORY_MASK_MALLOCED));
+  /* fprintf(stderr, "GWEN debug: allocated block internally (%p).\n", p); */
+
+  return (void*)GWEN_MEMORY_GETDATA(p);
+}
+
+
+
+void *GWEN_Memory_malloc(size_t wsize) {
+#if ENABLE_MY_SMALL_BLOCK_ALLOC
+  void *p;
+  size_t dsize;
+#endif
+
+  if (wsize==0) {
+    fprintf(stderr,
+            "GWEN error: allocating 0 bytes, maybe a program error\n");
+    abort();
+  }
+
+#if ENABLE_MY_SMALL_BLOCK_ALLOC
+  dsize=(wsize+GWEN_MEMORY_GRANULARITY-1) & ~(GWEN_MEMORY_GRANULARITY-1);
+
+  if (dsize<GWEN_MEMORY_MAXBLOCK) {
+    /* allocate a small block */
+    /*if (gwen_memory__verbous)
+      fprintf(stderr, "GWEN info: Allocating %u bytes internally\n",
+              dsize);*/
+    p=GWEN_Memory__Malloc(dsize & GWEN_MEMORY_MASK_LEN);
+  }
+  else {
+    unsigned char *pc;
+
+    /* allocate big block via system */
+    if (gwen_memory__verbous)
+      fprintf(stderr, "GWEN info: Allocating %u bytes externally\n",
+              dsize);
+    pc=(unsigned char*)malloc(dsize+GWEN_MEMORY_SIZELEN);
+    assert(pc);
+    GWEN_MEMORY_WRITESIZE(pc, GWEN_MEMORY_EXTERNAL);
+    p=GWEN_MEMORY_GETDATA(pc);
+  }
+
+  gwen_memory__allocated_bytes+=dsize;
+  gwen_memory__allocated_calls++;
+  /*fprintf(stderr, "GWEN debug: allocated block (%p).\n", p);*/
+  return p;
+#else
+  return malloc(wsize);
 #endif
 }
 
 
 
-GWEN_MEMORY__OBJECT_STRING *GWEN_Memory__Object_String_new(const char *s) {
-  GWEN_MEMORY__OBJECT_STRING *p;
-  GWEN_MEMORY__OBJECT_LIST *l;
+void *GWEN_Memory_realloc(void *oldp, size_t nsize) {
+#if ENABLE_MY_SMALL_BLOCK_ALLOC
+  void *p;
+  unsigned char *pc;
+  unsigned short dsize;
+  unsigned short rsize;
+#endif
 
-  p=(GWEN_MEMORY__OBJECT_STRING*)malloc(sizeof(GWEN_MEMORY__OBJECT_STRING));
+  assert(oldp);
+  assert(nsize);
+
+#if ENABLE_MY_SMALL_BLOCK_ALLOC
+  pc=GWEN_MEMORY_GETSTART(oldp);
+  dsize=GWEN_MEMORY_READSIZE(pc);
+  rsize=dsize & GWEN_MEMORY_MASK_LEN;
+
+  if (!(dsize & GWEN_MEMORY_MASK_MALLOCED)) {
+    fprintf(stderr, "GWEN error: Block %p already free'd\n", oldp);
+    abort();
+  }
+
+  if (!(dsize & GWEN_MEMORY_MASK_INUSE)) {
+    fprintf(stderr, "GWEN error: Block %p not in use\n", oldp);
+    abort();
+  }
+
+  p=GWEN_Memory_malloc(nsize);
+  memmove(p, oldp, rsize);
+  GWEN_Memory_dealloc(oldp);
+  return p;
+#else
+  return realloc(oldp, nsize);
+#endif
+}
+
+
+
+void GWEN_Memory_dealloc(void *p) {
+#if ENABLE_MY_SMALL_BLOCK_ALLOC
+  if (p) {
+    unsigned char *pc;
+    unsigned short dsize;
+
+    pc=GWEN_MEMORY_GETSTART(p);
+    dsize=GWEN_MEMORY_READSIZE(pc);
+
+    if (!(dsize & GWEN_MEMORY_MASK_MALLOCED)) {
+      fprintf(stderr, "GWEN error: Block %p already free'd\n", p);
+      abort();
+    }
+
+    if (!(dsize & GWEN_MEMORY_MASK_INUSE)) {
+      fprintf(stderr, "GWEN error: Block %p not in use\n", p);
+      abort();
+    }
+
+    if (gwen_memory__nofree==0) {
+      GWEN_MEMORY_WRITESIZE(pc,
+                            (dsize &
+                            ~GWEN_MEMORY_MASK_MALLOCED &
+                            ~GWEN_MEMORY_MASK_INUSE));
+    }
+    else {
+      GWEN_MEMORY_WRITESIZE(pc,
+                            (dsize &
+                            ~GWEN_MEMORY_MASK_MALLOCED));
+    }
+
+    if (dsize==GWEN_MEMORY_EXTERNAL) {
+      /*fprintf(stderr,
+              "GWEN debug: deallocating block at %p externally\n", p); */
+
+      if (gwen_memory__nofree==0)
+        free((void*)pc);
+    }
+    else {
+      /*fprintf(stderr,
+              "GWEN debug: deallocating %u bytes at %p internally\n",
+              (dsize & GWEN_MEMORY_MASK_LEN), p); */
+      //gwen_memory__released_since_collect+=dsize;
+      if (gwen_memory__released_since_collect>GWEN_MEMORY_COLLECT_AFTER){
+        fprintf(stderr, "GWEN info: collecting free blocks\n");
+        GWEN_Memory_Collect();
+        gwen_memory__released_since_collect=0;
+      }
+    }
+  }
+#else
+  if (gwen_memory__nofree==0)
+    free(p);
+#endif
+}
+
+
+
+char *GWEN_Memory_strdup(const char *s) {
+#if ENABLE_MY_SMALL_BLOCK_ALLOC
+  unsigned int dsize;
+  char *p;
+#endif
+
+  assert(s);
+#if ENABLE_MY_SMALL_BLOCK_ALLOC
+  dsize=strlen(s);
+
+  p=(char*)GWEN_Memory_malloc(dsize+1);
   assert(p);
-  memset(p, 0, sizeof(GWEN_MEMORY__OBJECT_STRING));
-  l=GWEN_Memory__Objects;
-  GWEN_Memory__Objects=0;
-  GWEN_LIST_INIT(GWEN_MEMORY__OBJECT_STRING, p);
-  GWEN_Memory__Objects=l;
-  if (s)
-    p->text=strdup(s);
+  memmove(p, s, dsize+1);
   return p;
+#else
+  return strdup(s);
+#endif
 }
 
 
 
-void GWEN_Memory__Object_String_free(GWEN_MEMORY__OBJECT_STRING *s) {
-  if (s) {
-    free(s->text);
-    GWEN_LIST_FINI(GWEN_MEMORY__OBJECT_STRING, s);
-    free(s);
+void GWEN_Memory_Dump() {
+  GWEN_MEMORY_TABLE *mt;
+
+  mt=gwen_memory__first_table;
+  while(mt) {
+    GWEN_Memory_Table__Dump(mt);
+    mt=mt->next;
   }
 }
 
 
 
+void GWEN_Memory_Collect() {
+  GWEN_MEMORY_TABLE *mt;
 
-GWEN_MEMORY__OBJECT *GWEN_Memory__Object_new(void *ptr,
-                                             const char *typeName,
-                                             const char *location) {
-  GWEN_MEMORY__OBJECT *o;
-  GWEN_MEMORY__OBJECT_LIST *l;
-
-  o=(GWEN_MEMORY__OBJECT*)malloc(sizeof(GWEN_MEMORY__OBJECT));
-  assert(o);
-  memset(o, 0, sizeof(GWEN_MEMORY__OBJECT));
-  l=GWEN_Memory__Objects;
-  GWEN_Memory__Objects=0;
-  GWEN_LIST_INIT(GWEN_MEMORY__OBJECT, o);
-
-  o->object=ptr;
-  if (typeName)
-    o->typeName=strdup(typeName);
-  if (location)
-    o->locationNew=strdup(location);
-  o->locationsFree=GWEN_Memory__Object_String_List_new();
-  o->locationsAttach=GWEN_Memory__Object_String_List_new();
-
-  o->usage=1;
-  GWEN_Memory__Objects=l;
-
-  return o;
-}
-
-
-
-void GWEN_Memory__Object_free(GWEN_MEMORY__OBJECT *o) {
-  if (o) {
-    GWEN_MEMORY__OBJECT_LIST *l;
-
-    if (GWEN_Memory__Objects==0) {
-      fprintf(stderr, "No memory object list.\n");
-      abort();
-    }
-    l=GWEN_Memory__Objects;
-    GWEN_Memory__Objects=0;
-    GWEN_Memory__Object_String_List_free(o->locationsFree);
-    GWEN_Memory__Object_String_List_free(o->locationsAttach);
-    GWEN_LIST_FINI(GWEN_MEMORY__OBJECT, o);
-    GWEN_Memory__Objects=l;
-    free(o);
+  mt=gwen_memory__first_table;
+  while(mt) {
+    GWEN_Memory_Table__Collect(mt);
+    mt=mt->next;
   }
 }
-
-
-
-void *GWEN_Memory_NewObject(void *p,
-                            const char *typeName,
-                            const char *function,
-                            const char *file,
-                            int line){
-  if (GWEN_Memory__Objects!=0) {
-    GWEN_MEMORY__OBJECT *o;
-    GWEN_MEMORY__OBJECT_LIST *l;
-    char buffer[256];
-
-    if (strncmp(typeName, "GWEN_MEMORY", 11)==0) {
-      abort();
-    }
-
-    l=GWEN_Memory__Objects;
-    GWEN_Memory__Objects=0;
-
-    snprintf(buffer, sizeof(buffer)-1,
-             "%s:%-5d (%s)", file, line, function);
-    buffer[sizeof(buffer)-1]=0;
-
-    o=GWEN_Memory__Object_new(p,
-                              typeName,
-                              buffer);
-    GWEN_Memory__Object_List_Insert(o, l);
-    /*fprintf(stderr,
-            "INFO at %s: Object \"%s\" created (%d)\n",
-            buffer, o->varName, GWEN_Memory__Object_List_GetCount(l));
-            */
-    GWEN_Memory__Objects=l;
-  }
-  return p;
-}
-
-
-
-void GWEN_Memory_FreeObject(void *object,
-                            const char *function,
-                            const char *file,
-                            int line){
-  if (GWEN_Memory__Objects!=0) {
-    GWEN_MEMORY__OBJECT *o;
-    GWEN_MEMORY__OBJECT_LIST *l;
-    char buffer[256];
-
-    l=GWEN_Memory__Objects;
-    GWEN_Memory__Objects=0;
-
-    snprintf(buffer, sizeof(buffer)-1,
-             "%s:%-5d (%s)", file, line, function);
-    buffer[sizeof(buffer)-1]=0;
-    o=GWEN_Memory__Object_List_First(l);
-    while (o) {
-      if (o->object==object) {
-        if (GWEN_Memory__DoubleCheck || o->usage==1) {
-          if (function || file || line) {
-            GWEN_MEMORY__OBJECT_STRING *s;
-
-            s=GWEN_Memory__Object_String_new(buffer);
-            GWEN_Memory__Object_String_List_Add(s, o->locationsFree);
-          }
-          o->usage--;
-          if (o->usage<0) {
-            fprintf(stderr,
-                    "WARNING at %s: Object from \"%s\" already freed (%d)\n",
-                    buffer, o->locationNew, o->usage);
-          }
-        }
-        break;
-      }
-      o=GWEN_Memory__Object_List_Next(o);
-    }
-    if (!o)
-      fprintf(stderr, "WARNING at %s: Object does not exist\n",
-              buffer);
-    GWEN_Memory__Objects=l;
-  }
-}
-
-
-
-void GWEN_Memory_AttachObject(void *object,
-                              const char *function,
-                              const char *file,
-                              int line){
-  if (GWEN_Memory__Objects!=0) {
-    GWEN_MEMORY__OBJECT *o;
-    GWEN_MEMORY__OBJECT_LIST *l;
-    char buffer[256];
-
-    l=GWEN_Memory__Objects;
-    GWEN_Memory__Objects=0;
-
-    snprintf(buffer, sizeof(buffer)-1,
-             "%s:%-5d (%s)", file, line, function);
-    buffer[sizeof(buffer)-1]=0;
-    o=GWEN_Memory__Object_List_First(l);
-    while (o) {
-      if (o->object==object) {
-        if (GWEN_Memory__DoubleCheck  && o->usage>0) {
-          if (function || file || line) {
-            if (GWEN_Memory__DoubleCheck) {
-              GWEN_MEMORY__OBJECT_STRING *s;
-
-              s=GWEN_Memory__Object_String_new(buffer);
-              GWEN_Memory__Object_String_List_Add(s, o->locationsAttach);
-            }
-          }
-          o->usage++;
-        }
-        break;
-      }
-      o=GWEN_Memory__Object_List_Next(o);
-    }
-    if (!o)
-      fprintf(stderr, "WARNING at %s: Object does not exist\n",
-              buffer);
-    GWEN_Memory__Objects=l;
-  }
-}
-
-
 
 
 

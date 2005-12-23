@@ -174,7 +174,7 @@ void GWEN_Logger_free(GWEN_LOGGER *lg){
     if (--(lg->usage)==0) {
       free(lg->logFile);
       free(lg->logIdent);
-      free(lg);
+      GWEN_FREE_OBJECT(lg);
     }
   }
 }

@@ -62,9 +62,9 @@ GWEN_XMLPROPERTY *GWEN_XMLProperty_new(const char *name, const char *value){
 
   GWEN_NEW_OBJECT(GWEN_XMLPROPERTY, p);
   if (name)
-    p->name=strdup(name);
+    p->name=GWEN_Memory_strdup(name);
   if (value)
-    p->value=strdup(value);
+    p->value=GWEN_Memory_strdup(value);
   return p;
 }
 
@@ -72,9 +72,9 @@ GWEN_XMLPROPERTY *GWEN_XMLProperty_new(const char *name, const char *value){
 
 void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p){
   if (p) {
-    free(p->name);
-    free(p->value);
-    free(p);
+    GWEN_Memory_dealloc(p->name);
+    GWEN_Memory_dealloc(p->value);
+    GWEN_FREE_OBJECT(p);
   }
 }
 
@@ -118,12 +118,10 @@ void GWEN_XMLProperty_freeAll(GWEN_XMLPROPERTY *p) {
 GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data){
   GWEN_XMLNODE *n;
 
-  n=(GWEN_XMLNODE *)malloc(sizeof(GWEN_XMLNODE));
-  assert(n);
-  memset(n,0,sizeof(GWEN_XMLNODE));
+  GWEN_NEW_OBJECT(GWEN_XMLNODE, n);
   n->type=t;
   if (data)
-    n->data=strdup(data);
+    n->data=GWEN_Memory_strdup(data);
   return n;
 }
 
@@ -131,10 +129,10 @@ GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data){
 void GWEN_XMLNode_free(GWEN_XMLNODE *n){
   if (n) {
     GWEN_XMLProperty_freeAll(n->properties);
-    free(n->data);
+    GWEN_Memory_dealloc(n->data);
     GWEN_XMLNode_freeAll(n->child);
     GWEN_XMLNode_freeAll(n->header);
-    free(n);
+    GWEN_FREE_OBJECT(n);
   }
 }
 
@@ -255,9 +253,9 @@ void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
   } /* while */
 
   if (p) {
-    free(p->value);
+    GWEN_Memory_dealloc(p->value);
     if (value)
-      p->value=strdup(value);
+      p->value=GWEN_Memory_strdup(value);
     else
       p->value=0;
   }
@@ -312,9 +310,9 @@ const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n){
 
 void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data){
   assert(n);
-  free(n->data);
+  GWEN_Memory_dealloc(n->data);
   if (data)
-    n->data=strdup(data);
+    n->data=GWEN_Memory_strdup(data);
   else
     n->data=0;
 }
@@ -1257,7 +1255,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     if (path)
       i+=strlen(path)+1;
     i+=strlen(file)+1;
-    fullname=(char*)malloc(i);
+    fullname=(char*)GWEN_Memory_malloc(i);
     assert(fullname);
     fullname[0]=0;
     if (path) {
@@ -1286,7 +1284,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
         DBG_INFO(GWEN_LOGDOMAIN, "open(%s): %s",
                  fullname,
                  strerror(errno));
-        free(fullname);
+        GWEN_Memory_dealloc(fullname);
         fullname=0;
         gotcha=0;
 
@@ -1309,7 +1307,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
           i=0;
           i+=strlen(sp)+1;
           i+=strlen(file)+1;
-          fullname=(char*)malloc(i);
+          fullname=(char*)GWEN_Memory_malloc(i);
           assert(fullname);
           fullname[0]=0;
           strcpy(fullname, sp);
@@ -1329,7 +1327,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
                      strerror(errno));
           }
 
-          free(fullname);
+          GWEN_Memory_dealloc(fullname);
           fullname=0;
           se=GWEN_StringListEntry_Next(se);
         } /* while */
@@ -1347,7 +1345,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     /* create full name from file name only, since it is absolute */
     i=0;
     i+=strlen(file)+1;
-    fullname=(char*)malloc(i);
+    fullname=(char*)GWEN_Memory_malloc(i);
     assert(fullname);
     fullname[0]=0;
     strcat(fullname, file);
@@ -1359,7 +1357,7 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
     DBG_INFO(GWEN_LOGDOMAIN, "open(%s): %s",
 	     fullname,
 	     strerror(errno));
-    free(fullname);
+    GWEN_Memory_dealloc(fullname);
     return -1;
   }
 
@@ -1377,14 +1375,14 @@ int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
   while(!GWEN_BufferedIO_CheckEOF(dm)) {
     if (GWEN_XML_ReadBIO(n, dm, flags, path, sl, GWEN_XML_ReadFileInt)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing");
-      free(fullname);
+      GWEN_Memory_dealloc(fullname);
       GWEN_BufferedIO_Close(dm);
       GWEN_BufferedIO_free(dm);
       return -1;
     }
   } /* while */
 
-  free(fullname);
+  GWEN_Memory_dealloc(fullname);
   GWEN_BufferedIO_Close(dm);
   GWEN_BufferedIO_free(dm);
 
@@ -1550,10 +1548,10 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
 	/* property already exists */
 	if (overwrite) {
           /* overwrite old property */
-	  free(tp->value);
+	  GWEN_Memory_dealloc(tp->value);
 	  tp->value=0;
 	  if (sp->value)
-	    tp->value=strdup(sp->value);
+	    tp->value=GWEN_Memory_strdup(sp->value);
 	}
 	break;
       }
@@ -1733,7 +1731,7 @@ GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(const GWEN_XMLNODE_PATH *np){
 
 
 void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np){
-  free(np);
+  GWEN_FREE_OBJECT(np);
 }
 
 
@@ -2475,7 +2473,7 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
   }
 
   idx=1;
-  tag=strdup(entry);
+  tag=GWEN_Memory_strdup(entry);
   assert(tag);
   p=strchr(tag, '[');
   if (p) {
@@ -2484,13 +2482,13 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
     if (1!=sscanf(p, "%d]", &idx)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad path entry \"%s\" (bad index)",
                 entry);
-      free(tag);
+      GWEN_Memory_dealloc(tag);
       return 0;
     }
     if (idx<1) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad index %d in path element \"%s\"",
                 idx, entry);
-      free(tag);
+      GWEN_Memory_dealloc(tag);
       return 0;
     }
   }
@@ -2510,21 +2508,21 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
     /* simply create the new variable/group */
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
       /* not allowed for now */
-      free(tag);
+      GWEN_Memory_dealloc(tag);
       return 0;
     }
     else {
       if (idx!=1) {
         DBG_ERROR(GWEN_LOGDOMAIN,
                   "Can not create tag with index!=1 (%s)", entry);
-        free(tag);
+        GWEN_Memory_dealloc(tag);
         return 0;
       }
       DBG_VERBOUS(GWEN_LOGDOMAIN,
                   "Unconditionally creating tag \"%s\"", entry);
       nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, tag);
       GWEN_XMLNode_AddChild(n, nn);
-      free(tag);
+      GWEN_Memory_dealloc(tag);
       return nn;
     }
   }
@@ -2558,13 +2556,13 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
         DBG_VERBOUS(GWEN_LOGDOMAIN,
                     "Tag \"%s\" does not exist", entry);
       }
-      free(tag);
+      GWEN_Memory_dealloc(tag);
       return 0;
     }
     /* create the new variable/group */
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
       /* variable not allowed */
-      free(tag);
+      GWEN_Memory_dealloc(tag);
       return 0;
     }
     else {
@@ -2583,12 +2581,12 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
          (flags & GWEN_PATH_FLAGS_PATHMUSTNOTEXIST))
        ) {
       DBG_VERBOUS(GWEN_LOGDOMAIN, "Entry \"%s\" already exists", entry);
-      free(tag);
+      GWEN_Memory_dealloc(tag);
       return 0;
     }
   }
 
-  free(tag);
+  GWEN_Memory_dealloc(tag);
   return nn;
 }
 
@@ -2783,8 +2781,8 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
         }
         else {
           /* current namespace changed */
-          free(localNameSpace);
-          localNameSpace=strdup(pr->value);
+          GWEN_Memory_dealloc(localNameSpace);
+          localNameSpace=GWEN_Memory_strdup(pr->value);
         }
       }
       else if (currentNameSpace) {
@@ -2795,14 +2793,14 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
         }
         else {
           /* current namespace changed */
-          free(localNameSpace);
-          localNameSpace=strdup(pr->value);
+          GWEN_Memory_dealloc(localNameSpace);
+          localNameSpace=GWEN_Memory_strdup(pr->value);
         }
       }
       else {
         /* set current namespace */
-        free(localNameSpace);
-        localNameSpace=strdup(pr->value);
+        GWEN_Memory_dealloc(localNameSpace);
+        localNameSpace=GWEN_Memory_strdup(pr->value);
       }
     }
     else if (strncasecmp(pr->name, "xmlns:", 6)==0) {
@@ -2855,13 +2853,13 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
                                           localNameSpace?localNameSpace:
                                           currentNameSpace);
     if (rv) {
-      free(localNameSpace);
+      GWEN_Memory_dealloc(localNameSpace);
       return rv;
     }
     nn=GWEN_XMLNode_GetNextTag(nn);
   }
 
-  free(localNameSpace);
+  GWEN_Memory_dealloc(localNameSpace);
   return 0;
 }
 

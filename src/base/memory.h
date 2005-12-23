@@ -64,58 +64,40 @@ extern "C" {
   GWENHYWFAR_API 
   GWEN_ERRORCODE GWEN_Memory_ModuleFini();
 
-  GWENHYWFAR_API 
-  void GWEN_Memory_Report();
 
+  GWENHYWFAR_API
+  void *GWEN_Memory_malloc(size_t dsize);
+  GWENHYWFAR_API
+  void GWEN_Memory_dealloc(void *p);
 
-  GWENHYWFAR_API 
-  void *GWEN_Memory_NewObject(void *p,
-                              const char *typeName,
-                              const char *function,
-                              const char *file,
-                              int line);
+  GWENHYWFAR_API
+  void *GWEN_Memory_realloc(void *oldp, size_t nsize);
 
   GWENHYWFAR_API 
-  void GWEN_Memory_FreeObject(void *object,
-                              const char *function,
-                              const char *file,
-                              int line);
+  char *GWEN_Memory_strdup(const char *s);
 
   GWENHYWFAR_API 
-  void GWEN_Memory_AttachObject(void *object,
-                                const char *function,
-                                const char *file,
-                                int line);
+  void GWEN_Memory_Collect();
+
+  GWENHYWFAR_API 
+  void GWEN_Memory_Dump();
 
 
+#define GWEN_MEM_NEW(typ, memptr) \
+  memptr=(typ*)GWEN_Memory_malloc(sizeof(typ));
 
-#define GWEN_NEW_OBJECT(typ, varname) \
-  varname=(typ*)malloc(sizeof(typ));\
-  assert(varname); \
-  memset((void*)varname, 0, sizeof(typ));
+#define GWEN_MEM_FREE(varname) \
+  GWEN_Memory_dealloc((void*)varname);
+
+
+#define GWEN_NEW_OBJECT(typ, varname)\
+  {\
+    varname=(typ*)GWEN_Memory_malloc(sizeof(typ)); \
+    memset(varname, 0, sizeof(typ));\
+  }
 
 #define GWEN_FREE_OBJECT(varname) \
-  free(varname)
-
-
-#define GWEN_NEW(typ, function) \
-  ((typ*)GWEN_Memory_NewObject(function,\
-  __STRING(typ),\
-  GWEN_LOCATION_FUNCTION, \
-  __FILE__,\
-  __LINE__))
-
-#define GWEN_FREE(varname) \
-  GWEN_Memory_FreeObject((void*)varname,\
-  GWEN_LOCATION_FUNCTION,\
-  __FILE__,\
-  __LINE__)
-
-#define GWEN_ATTACH(varname) \
-  GWEN_Memory_AttachObject((void*)varname,\
-  GWEN_LOCATION_FUNCTION,\
-  __FILE__,\
-  __LINE__)
+  GWEN_Memory_dealloc((void*)varname);
 
 
 #ifdef __cplusplus

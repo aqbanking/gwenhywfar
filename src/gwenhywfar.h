@@ -73,6 +73,10 @@ GWEN_ERRORCODE GWEN_Fini();
 
 
 GWENHYWFAR_API
+GWEN_ERRORCODE GWEN_Fini_Forced();
+
+
+GWENHYWFAR_API
 void GWEN_Version(int *major,
                   int *minor,
                   int *patchlevel,

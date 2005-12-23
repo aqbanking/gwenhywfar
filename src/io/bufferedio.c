@@ -141,7 +141,7 @@ void GWEN_BufferedIO_free(GWEN_BUFFEREDIO *bt){
     bt->readerBuffer=0;
     free(bt->writerBuffer);
     bt->writerBuffer=0;
-    free(bt);
+    GWEN_FREE_OBJECT(bt);
   }
 }
 

@@ -93,7 +93,7 @@ GWEN_LIBLOADER *GWEN_LibLoader_new(){
 
 void GWEN_LibLoader_free(GWEN_LIBLOADER *h){
   if (h) {
-    free(h);
+    GWEN_FREE_OBJECT(h);
   }
 }
 

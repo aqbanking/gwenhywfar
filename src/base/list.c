@@ -60,7 +60,7 @@ void GWEN_ListEntry_free(GWEN_LIST_ENTRY *le){
         DBG_DEBUG(GWEN_LOGDOMAIN, "Freeing entry");
         GWEN_RefPtr_free(le->dataPtr);
         /* really free */
-        free(le);
+        GWEN_FREE_OBJECT(le);
       }
     }
   }
@@ -168,7 +168,7 @@ void GWEN_List_free(GWEN_LIST *l){
     GWEN_INHERIT_FINI(GWEN_LIST, l);
     GWEN__ListPtr_free(l->listPtr);
     GWEN_RefPtrInfo_free(l->refPtrInfo);
-    free(l);
+    GWEN_FREE_OBJECT(l);
   }
 }
 
@@ -608,7 +608,7 @@ void GWEN_ListIterator_free(GWEN_LIST_ITERATOR *li){
   if (li) {
     if (li->current)
       GWEN_ListEntry_free(li->current);
-    free(li);
+    GWEN_FREE_OBJECT(li);
   }
 }
 

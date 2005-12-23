@@ -859,7 +859,7 @@ GWEN_SOCKETSET *GWEN_SocketSet_new() {
 void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp) {
   if (ssp) {
     FD_ZERO(&(ssp->set));
-    free(ssp);
+    GWEN_FREE_OBJECT(ssp);
   }
 }
 
@@ -925,8 +925,9 @@ GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType){
 
 
 void GWEN_Socket_free(GWEN_SOCKET *sp){
-  if (sp)
-    free(sp);
+  if (sp) {
+    GWEN_FREE_OBJECT(sp);
+  }
 }
 
 

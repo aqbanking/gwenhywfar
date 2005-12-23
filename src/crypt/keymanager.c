@@ -99,7 +99,7 @@ void GWEN_KeyManager_free(GWEN_KEYMANAGER *km){
   if (km) {
     if (km->data && km->freeDataFn)
       km->freeDataFn(km);
-    free(km);
+    GWEN_FREE_OBJECT(km);
   }
 }
 

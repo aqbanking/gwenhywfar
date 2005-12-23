@@ -63,7 +63,7 @@ void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
     free(ks->keyType);
     free(ks->keyName);
     free(ks->owner);
-    free(ks);
+    GWEN_FREE_OBJECT(ks);
   }
 }
 

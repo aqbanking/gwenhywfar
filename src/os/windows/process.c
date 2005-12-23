@@ -74,7 +74,7 @@ void GWEN_Process_free(GWEN_PROCESS *pr){
     GWEN_BufferedIO_free(pr->stdIn);
     GWEN_BufferedIO_free(pr->stdOut);
     GWEN_BufferedIO_free(pr->stdErr);
-    free(pr);
+    GWEN_FREE_OBJECT(pr);
   }
 }
 

@@ -78,8 +78,9 @@ GWEN_ERRORTYPEREGISTRATIONFORM *GWEN_ErrorType_new(){
 
 
 void GWEN_ErrorType_free(GWEN_ERRORTYPEREGISTRATIONFORM *f){
-  if (f)
-    free(f);
+  if (f) {
+    GWEN_FREE_OBJECT(f);
+  }
 }
 
 

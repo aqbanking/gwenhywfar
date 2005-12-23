@@ -59,7 +59,7 @@
 
 
 GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
-                                    unsigned int datasize){
+                                   unsigned int datasize){
   GWEN_DB_VALUE_BIN *v;
 
   GWEN_NEW_OBJECT(GWEN_DB_VALUE_BIN, v);
@@ -68,7 +68,7 @@ GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
   if (datasize) {
     assert(data);
     v->dataSize=datasize;
-    v->data=(char*)malloc(datasize);
+    v->data=(char*)GWEN_Memory_malloc(datasize);
     assert(v->data);
     memmove(v->data, data, datasize);
   }
@@ -96,9 +96,9 @@ GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data) {
   v->h.h.typ=GWEN_DB_NODETYPE_VALUE;
   v->h.typ=GWEN_DB_VALUETYPE_CHAR;
   if (data)
-    v->data=strdup(data);
+    v->data=GWEN_Memory_strdup(data);
   else
-    v->data=strdup("");
+    v->data=GWEN_Memory_strdup("");
   return (GWEN_DB_NODE*)v;
 }
 
@@ -122,7 +122,7 @@ GWEN_DB_NODE *GWEN_DB_Group_new(const char *name){
   assert(name);
   GWEN_NEW_OBJECT(GWEN_DB_GROUP, node);
   node->h.typ=GWEN_DB_NODETYPE_GROUP;
-  node->name=strdup(name);
+  node->name=GWEN_Memory_strdup(name);
   return (GWEN_DB_NODE*)node;
 }
 
@@ -134,7 +134,7 @@ GWEN_DB_NODE *GWEN_DB_Var_new(const char *name){
   assert(name);
   GWEN_NEW_OBJECT(GWEN_DB_VAR, node);
   node->h.typ=GWEN_DB_NODETYPE_VAR;
-  node->name=strdup(name);
+  node->name=GWEN_Memory_strdup(name);
   return (GWEN_DB_NODE*)node;
 }
 
@@ -145,6 +145,7 @@ void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
 
   assert(parent);
   assert(n);
+  assert(parent!=n);
 
   curr=parent->h.child;
   if (!curr) {
@@ -195,6 +196,7 @@ void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
 
   assert(parent);
   assert(n);
+  assert(parent!=n);
 
   curr=parent->h.child;
   if (!curr) {
@@ -314,20 +316,20 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
       DBG_VERBOUS(GWEN_LOGDOMAIN,
                   "Freeing dynamic data of group \"%s\"", n->group.name);
       GWEN_DB_Group_SetHashMechanism(n, 0);
-      free(n->group.name);
+      GWEN_Memory_dealloc(n->group.name);
       break;
 
     case GWEN_DB_NODETYPE_VAR:
       DBG_VERBOUS(GWEN_LOGDOMAIN,
                   "Freeing dynamic data of var \"%s\"", n->var.name);
-      free(n->var.name);
+      GWEN_Memory_dealloc(n->var.name);
       break;
 
     case GWEN_DB_NODETYPE_VALUE:
       switch(n->val.h.typ) {
       case GWEN_DB_VALUETYPE_CHAR:
         DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing dynamic data of char value");
-        free(n->val.c.data);
+        GWEN_Memory_dealloc(n->val.c.data);
         break;
 
       case GWEN_DB_VALUETYPE_INT:
@@ -337,7 +339,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
 
       case GWEN_DB_VALUETYPE_BIN:
         DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing dynamic data of bin value");
-        free(n->val.b.data);
+        GWEN_Memory_dealloc(n->val.b.data);
         break;
 
       case GWEN_DB_VALUETYPE_PTR:
@@ -600,8 +602,8 @@ int GWEN_DB_SetCharValueInNode(GWEN_DB_NODE *n, const char *s) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a char value");
     return GWEN_ERROR_INVALID;
   }
-  free(n->val.c.data);
-  n->val.c.data=strdup(s);
+  GWEN_Memory_dealloc(n->val.c.data);
+  n->val.c.data=GWEN_Memory_strdup(s);
   return 0;
 }
 
@@ -1420,7 +1422,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
         if (1) {
           char *buffer;
 
-          buffer=(char*)malloc((n->val.b.dataSize*2)+1);
+          buffer=(char*)GWEN_Memory_malloc((n->val.b.dataSize*2)+1);
           assert(buffer);
           if (GWEN_Text_ToHex(n->val.b.data, n->val.b.dataSize,
                               buffer, (n->val.b.dataSize*2)+1)==0) {
@@ -1429,7 +1431,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
           else {
             fprintf(f, "Value : %s (bin)\n", buffer);
           }
-          free(buffer);
+          GWEN_Memory_dealloc(buffer);
         }
         break;
 
@@ -2085,7 +2087,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
 
               case GWEN_DB_VALUETYPE_BIN:
                 bbsize=cn->val.b.dataSize*2+1;
-                binbuffer=(char*)malloc(bbsize);
+                binbuffer=(char*)GWEN_Memory_malloc(bbsize);
                 assert(binbuffer);
                 typname="bin  ";
                 if (!GWEN_Text_ToHex(cn->val.b.data,
@@ -2117,7 +2119,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                       err=GWEN_BufferedIO_WriteChar(bio, ' ');
                       if (!GWEN_Error_IsOk(err)) {
                         DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                        free(binbuffer);
+                        GWEN_Memory_dealloc(binbuffer);
                         GWEN_Buffer_free(vbuf);
                         return 1;
                       }
@@ -2127,7 +2129,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                     err=GWEN_BufferedIO_Write(bio, typname);
                     if (!GWEN_Error_IsOk(err)) {
                       DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                      free(binbuffer);
+                      GWEN_Memory_dealloc(binbuffer);
                       GWEN_Buffer_free(vbuf);
                       return 1;
                     }
@@ -2136,7 +2138,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                     err=GWEN_BufferedIO_Write(bio, "\"");
                     if (!GWEN_Error_IsOk(err)) {
                       DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                      free(binbuffer);
+                      GWEN_Memory_dealloc(binbuffer);
                       GWEN_Buffer_free(vbuf);
                       return 1;
                     }
@@ -2144,7 +2146,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                   err=GWEN_BufferedIO_Write(bio, n->var.name);
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                    free(binbuffer);
+                    GWEN_Memory_dealloc(binbuffer);
                     GWEN_Buffer_free(vbuf);
                     return 1;
                   }
@@ -2152,7 +2154,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                     err=GWEN_BufferedIO_Write(bio, "\"");
                     if (!GWEN_Error_IsOk(err)) {
                       DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                      free(binbuffer);
+                      GWEN_Memory_dealloc(binbuffer);
                       GWEN_Buffer_free(vbuf);
                       return 1;
                     }
@@ -2163,7 +2165,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                                              ": ":"="));
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                    free(binbuffer);
+                    GWEN_Memory_dealloc(binbuffer);
                     GWEN_Buffer_free(vbuf);
                     return 1;
                   }
@@ -2174,7 +2176,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                   err=GWEN_BufferedIO_Write(bio, ", ");
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                    free(binbuffer);
+                    GWEN_Memory_dealloc(binbuffer);
                     GWEN_Buffer_free(vbuf);
                     return 1;
                   }
@@ -2184,7 +2186,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                   err=GWEN_BufferedIO_Write(bio, "\"");
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                    free(binbuffer);
+                    GWEN_Memory_dealloc(binbuffer);
                     GWEN_Buffer_free(vbuf);
                     return 1;
                   }
@@ -2193,7 +2195,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                 err=GWEN_BufferedIO_Write(bio, pvalue);
                 if (!GWEN_Error_IsOk(err)) {
                   DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                  free(binbuffer);
+                  GWEN_Memory_dealloc(binbuffer);
                   GWEN_Buffer_free(vbuf);
                   return 1;
                 }
@@ -2202,7 +2204,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
                   err=GWEN_BufferedIO_Write(bio, "\"");
                   if (!GWEN_Error_IsOk(err)) {
                     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-                    free(binbuffer);
+                    GWEN_Memory_dealloc(binbuffer);
                     GWEN_Buffer_free(vbuf);
                     return 1;
                   }
@@ -2214,7 +2216,7 @@ int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
               break;
             } /* switch */
 
-            free(binbuffer);
+            GWEN_Memory_dealloc(binbuffer);
             GWEN_Buffer_free(vbuf);
             cn=cn->h.next;
           } /* while cn */
@@ -2385,8 +2387,8 @@ void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname){
   assert(n);
   assert(newname);
   assert(n->h.typ==GWEN_DB_NODETYPE_GROUP);
-  free(n->group.name);
-  n->group.name=strdup(newname);
+  GWEN_Memory_dealloc(n->group.name);
+  n->group.name=GWEN_Memory_strdup(newname);
 }
 
 
@@ -2756,8 +2758,8 @@ void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname){
   assert(n);
   assert(newname);
   assert(n->h.typ==GWEN_DB_NODETYPE_VAR);
-  free(n->var.name);
-  n->var.name=strdup(newname);
+  GWEN_Memory_dealloc(n->var.name);
+  n->var.name=GWEN_Memory_strdup(newname);
 }
 
 

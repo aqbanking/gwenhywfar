@@ -61,7 +61,7 @@ void GWEN_MD_free(GWEN_MD *md){
     if (md->data && md->freeDataFn)
       md->freeDataFn(md);
     free(md->pDigest);
-    free(md);
+    GWEN_FREE_OBJECT(md);
   }
 }
 
@@ -165,7 +165,7 @@ GWEN_MD_PROVIDER *GWEN_MdProvider_new(){
 void GWEN_MdProvider_free(GWEN_MD_PROVIDER *pr){
   if (pr) {
     free(pr->name);
-    free(pr);
+    GWEN_FREE_OBJECT(pr);
   }
 }
 

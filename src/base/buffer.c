@@ -48,7 +48,7 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
   if (!buffer) {
     /* allocate buffer */
     if (size) {
-      bf->realPtr=(char*)malloc(size+1);
+      bf->realPtr=(char*)GWEN_Memory_malloc(size+1);
       assert(bf->realPtr);
       bf->ptr=bf->realPtr;
       bf->realBufferSize=size+1;
@@ -80,7 +80,7 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
 void GWEN_Buffer_free(GWEN_BUFFER *bf){
   if (bf) {
     if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
-      free(bf->realPtr);
+      GWEN_Memory_dealloc(bf->realPtr);
     if (bf->bio) {
       if (bf->flags & GWEN_BUFFER_FLAGS_OWN_BIO) {
         GWEN_BufferedIO_free(bf->bio);
@@ -98,7 +98,7 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, newbf);
   if (bf->realPtr && bf->realBufferSize) {
-    newbf->realPtr=(char*)malloc(bf->realBufferSize);
+    newbf->realPtr=(char*)GWEN_Memory_malloc(bf->realBufferSize);
     newbf->ptr=newbf->realPtr+(bf->ptr-bf->realPtr);
     newbf->realBufferSize=bf->realBufferSize;
     newbf->bufferSize=bf->bufferSize;
@@ -308,7 +308,8 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
     }
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes",
                 bf->bufferSize, nsize);
-    p=realloc(bf->realPtr, nsize+1); /* we always add a NULL character */
+    /* we always add a NULL character */
+    p=GWEN_Memory_realloc(bf->realPtr, nsize+1);
     if (!p) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Realloc failed.");
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {

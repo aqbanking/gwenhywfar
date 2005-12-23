@@ -56,7 +56,7 @@ void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb){
   if (rb) {
     DBG_MEM_DEC("GWEN_RINGBUFFER");
     free(rb->ptr);
-    free(rb);
+    GWEN_FREE_OBJECT(rb);
   }
 }
 

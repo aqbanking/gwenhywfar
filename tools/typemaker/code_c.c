@@ -1266,7 +1266,10 @@ int write_code_setget_c(ARGUMENTS *args,
 
           /* copy argument if any */
           if (strcasecmp(mode, "single")==0) {
-            GWEN_BufferedIO_WriteLine(bio, "  if (d)");
+            if (strcasecmp(typ, "char")==0)
+              GWEN_BufferedIO_WriteLine(bio, "  if (d && *d)");
+            else
+              GWEN_BufferedIO_WriteLine(bio, "  if (d)");
 
             GWEN_BufferedIO_Write(bio, "    st->");
             GWEN_BufferedIO_WriteChar(bio, tolower(*name));

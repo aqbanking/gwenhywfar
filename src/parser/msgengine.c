@@ -3668,7 +3668,7 @@ void GWEN_MsgEngine_TrustedData_free(GWEN_MSGENGINE_TRUSTEDDATA *td){
     free(td->data);
     free(td->description);
     free(td->replacement);
-    free(td);
+    GWEN_FREE_OBJECT(td);
   }
 }
 

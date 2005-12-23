@@ -53,7 +53,7 @@ void GWEN_Directory_free(GWEN_DIRECTORYDATA *d){
     if (d->handle!=INVALID_HANDLE_VALUE)
       FindClose(d->handle);
     d->handle=INVALID_HANDLE_VALUE;
-    free(d);
+    GWEN_FREE_OBJECT(d);
   }
 }
 

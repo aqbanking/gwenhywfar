@@ -61,7 +61,7 @@ GWEN_BUFFEREDIO_SOCKET *GWEN_BufferedIO_Socket_Table__new() {
 void GWEN_BufferedIO_Socket_Table__free(GWEN_BUFFEREDIO_SOCKET *bft) {
   if (bft) {
     GWEN_Socket_free(bft->sock);
-    free(bft);
+    GWEN_FREE_OBJECT(bft);
   }
 }
 

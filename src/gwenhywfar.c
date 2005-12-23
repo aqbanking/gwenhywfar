@@ -88,7 +88,12 @@ GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
   if (gwen_is_initialized==0) {
-
+    err=GWEN_Memory_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
+    err=GWEN_Logger_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
     GWEN_Error_ModuleInit();
 
     err=GWEN_PathManager_ModuleInit();
@@ -162,12 +167,6 @@ GWEN_ERRORCODE GWEN_Init() {
                              PLUGINDIR);
 
     /* Initialize other modules. */
-    err=GWEN_Logger_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
-      return err;
-    err=GWEN_Memory_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
-      return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing I18N module");
     err=GWEN_I18N_ModuleInit();
     if (!GWEN_Error_IsOk(err))
@@ -225,7 +224,6 @@ GWEN_ERRORCODE GWEN_Init() {
 
 GWEN_ERRORCODE GWEN_Fini() {
   GWEN_ERRORCODE err;
-  const char *s;
 
   err=0;
 
@@ -316,14 +314,6 @@ GWEN_ERRORCODE GWEN_Fini() {
                 "Could not deinitialze module InetAddr");
     }
 
-    if (!GWEN_Error_IsOk(GWEN_Memory_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Memory");
-    }
     if (!GWEN_Error_IsOk(GWEN_I18N_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,
@@ -344,15 +334,7 @@ GWEN_ERRORCODE GWEN_Fini() {
 
     GWEN_Error_ModuleFini();
 
-    s=getenv("GWEN_MEMORY_DEBUG");
-    if (s) {
-      int i;
-
-      if (1==sscanf(s, "%i", &i))
-        GWEN_MemoryDebug_Dump(i);
-    }
-
-    /* must be deinitialized at last */
+    /* these two modules must be deinitialized at last */
     if (!GWEN_Error_IsOk(GWEN_Logger_ModuleFini())) {
       err=GWEN_Error_new(0,
                          GWEN_ERROR_SEVERITY_ERR,
@@ -361,10 +343,27 @@ GWEN_ERRORCODE GWEN_Fini() {
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Logger");
     }
-    GWEN_MemoryDebug_CleanUp();
+
+    if (!GWEN_Error_IsOk(GWEN_Memory_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
+                "Could not deinitialze module Memory");
+    }
+
   }
 
   return err;
+}
+
+
+
+GWEN_ERRORCODE GWEN_Fini_Forced() {
+  if (gwen_is_initialized)
+    gwen_is_initialized=1;
+  return GWEN_Fini();
 }
 
 

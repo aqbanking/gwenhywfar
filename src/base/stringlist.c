@@ -62,7 +62,7 @@ void GWEN_StringList_free(GWEN_STRINGLIST *sl){
       GWEN_StringListEntry_free(curr);
       curr=next;
     } /* while */
-    free(sl);
+    GWEN_FREE_OBJECT(sl);
   }
 }
 
@@ -117,7 +117,7 @@ void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl){
   if (sl) {
     if (sl->data)
       free((void*)(sl->data));
-    free(sl);
+    GWEN_FREE_OBJECT(sl);
   }
 }
 

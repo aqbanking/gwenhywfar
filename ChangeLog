@@ -3,6 +3,31 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+2005/12/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- worked on memory allocation stuff:
+  - calls to GWEN_NEW_OBJECT and GWEN_FREE_OBJECT MUST be matched
+  - added optional code for allocation of small memory blocks without
+    having to bother the heap for every 4 byte data (disabled for now,
+    since it is much less effective than the glibc heap functions. However,
+    my functions speed up things when working with dmalloc or efence)
+  - removed the memory tracker stuff, since it always showed the constructors
+    of all objects as the caller, however, we would more need to see who was
+    calling the constructor function... Currently there is no way to trace
+    back in runtime. Anyway, valgrind is much better in that capacity.
+
+
+2005/12/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- typemaker: added check for empty strings to setters
+
+
+2005/12/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added debugging code to GWEN_NEW_OBJECT() and GWEN_FREE_OBJECT() to find
+  the mysterious double free...
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.99.2 (2005/12/15)
 ===========================================================================

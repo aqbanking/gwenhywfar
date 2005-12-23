@@ -861,7 +861,7 @@ GWEN_CRYPTKEY_PROVIDER *GWEN_CryptProvider_new(){
 void GWEN_CryptProvider_free(GWEN_CRYPTKEY_PROVIDER *pr){
   if (pr) {
     free(pr->name);
-    free(pr);
+    GWEN_FREE_OBJECT(pr);
   }
 }
 

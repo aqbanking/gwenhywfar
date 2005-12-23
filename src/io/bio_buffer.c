@@ -61,7 +61,7 @@ void GWEN_BufferedIO_Buffer_Table__free(GWEN_BUFFEREDIO_BUFFER *bft) {
   if (bft) {
     if (bft->own)
       GWEN_Buffer_free(bft->buffer);
-    free(bft);
+    GWEN_FREE_OBJECT(bft);
   }
 }
 

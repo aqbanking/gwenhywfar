@@ -238,6 +238,13 @@ int testXML(int argc, char **argv) {
   fprintf(stderr, "XML file:\n");
   GWEN_XMLNode_Dump(n, stderr, 2);
   GWEN_XMLNode_free(n);
+
+  fprintf(stderr, "Memory before collection:\n");
+  GWEN_Memory_Dump();
+  GWEN_Memory_Collect();
+  fprintf(stderr, "Memory after collection:\n");
+  GWEN_Memory_Dump();
+
   return 0;
 }
 
@@ -3516,6 +3523,25 @@ int testNlLogConnect2(int argc, char **argv) {
 
 
 
+int testMem(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  char *s;
+
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  s=strdup("test");
+  fprintf(stderr, "String: %s\n", s);
+  free(s);
+  GWEN_XMLNode_free(n);
+  fprintf(stderr, "Memory before collection:\n");
+  GWEN_Memory_Dump();
+  GWEN_Memory_Collect();
+  fprintf(stderr, "Memory after collection:\n");
+  GWEN_Memory_Dump();
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -3630,6 +3656,8 @@ int main(int argc, char **argv) {
     rv=testNlLogConnect1(argc, argv);
   else if (strcasecmp(argv[1], "nllogconnect2")==0)
     rv=testNlLogConnect2(argc, argv);
+  else if (strcasecmp(argv[1], "mem")==0)
+    rv=testMem(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

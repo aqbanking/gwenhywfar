@@ -88,7 +88,7 @@ void GWEN_NetConnectionHTTP_FreeData(void *bp, void *p){
   free(chttp->defaultUrl);
   free(chttp->virtualServer);
   free(chttp->lastResultMsg);
-  free(chttp);
+  GWEN_FREE_OBJECT(chttp);
 }
 
 

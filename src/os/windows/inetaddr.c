@@ -195,7 +195,7 @@ void GWEN_InetAddr_free(GWEN_INETADDRESS *ia){
     DBG_INFO(GWEN_LOGDOMAIN, "Free InetAddr, makes %d",GWEN_INETADDR__Counter);
 #endif
     free(ia->address);
-    free(ia);
+    GWEN_FREE_OBJECT(ia);
   }
 }
 

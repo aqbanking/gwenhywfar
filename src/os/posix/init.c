@@ -56,7 +56,7 @@ void GWEN_LibInit() {
 void GWEN_LibFini() {
   GWEN_ERRORCODE err;
 
-  err=GWEN_Fini();
+  err=GWEN_Fini_Forced();
   if (!GWEN_Error_IsOk(err)) {
     fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
   }

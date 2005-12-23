@@ -50,9 +50,7 @@ static int gwen_directory_posix__home_set=0;
 GWEN_DIRECTORYDATA *GWEN_Directory_new(){
   GWEN_DIRECTORYDATA *d;
 
-  d=(GWEN_DIRECTORYDATA *)malloc(sizeof(GWEN_DIRECTORYDATA));
-  assert(d);
-  memset(d,0,sizeof(GWEN_DIRECTORYDATA));
+  GWEN_NEW_OBJECT(GWEN_DIRECTORYDATA, d);
   return d;
 }
 
@@ -62,7 +60,7 @@ void GWEN_Directory_free(GWEN_DIRECTORYDATA *d){
     if (d->handle)
       closedir(d->handle);
     d->handle=0;
-    free(d);
+    GWEN_FREE_OBJECT(d);
   }
 }
 

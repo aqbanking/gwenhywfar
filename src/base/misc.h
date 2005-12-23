@@ -448,7 +448,7 @@ extern "C" {
   \
   void pr##_List_free(t##_LIST *l) {\
     if (l) pr##_List_Clear(l);\
-    free(l);\
+    GWEN_FREE_OBJECT(l);\
   } \
   \
   t* pr##_List_Next(const t *element) { \
