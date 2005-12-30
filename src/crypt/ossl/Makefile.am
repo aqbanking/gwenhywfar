@@ -6,7 +6,7 @@ INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/parser @all_includes@
 
-AM_CFLAGS=@PROFILING_CFLAGS@
+AM_CFLAGS=@PROFILING_CFLAGS@ @visibility_cflags@ -DBUILDING_GWENHYWFAR
 
 certdir=$(sysconfdir)
 dist_cert_DATA=gwen-public-ca.crt

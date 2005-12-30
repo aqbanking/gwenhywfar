@@ -19,7 +19,7 @@ AC_CONFIG_HEADER([config.h])
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=99
 GWENHYWFAR_VERSION_PATCHLEVEL=2
-GWENHYWFAR_VERSION_BUILD=2
+GWENHYWFAR_VERSION_BUILD=3
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="cvs"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
@@ -34,7 +34,7 @@ OHBCI_VERSION_STRING="0.1.0"
 #
 GWENHYWFAR_SO_CURRENT="37"
 GWENHYWFAR_SO_AGE="0"
-GWENHYWFAR_SO_REVISION="2"
+GWENHYWFAR_SO_REVISION="3"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -226,6 +226,7 @@ AC_CHECK_FUNCS([srandom random])
 
 case "$OS_TYPE" in
     posix)
+        gwenhywfar_sys_is_windows=0
         gwenhywfar_ldflags="-L\${libdir}"
         gwenhywfar_libs="-lgwenhywfar"
 	gwenhywfar_internal_libname="libgwenhywfar.la"
@@ -252,7 +253,7 @@ case "$OS_TYPE" in
         fi
     	;;
     windows)
-        AC_DEFINE_UNQUOTED(BUILDING_GWEN_DLL,1, [Define if DLL is built])
+        gwenhywfar_sys_is_windows=1
         ACX_WINDOWS_PATHS
         gwenhywfar_ldflags="-L${WIN_PATH_WINDOWS_MINGW}"
 
@@ -276,6 +277,7 @@ case "$OS_TYPE" in
 esac
 
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+AC_SUBST(gwenhywfar_sys_is_windows)
 
 
 dnl # Check for x86_64 architecture; potentially set lib-directory suffix
@@ -516,6 +518,34 @@ else
 fi
 AC_SUBST(STRIPALL)
 AC_MSG_RESULT($enable_release)
+
+
+
+###-------------------------------------------------------------------------
+#
+# GCC version (check for usability)
+#
+AC_MSG_CHECKING(if symbol visibility is supported)
+case `basename $CC` in 
+  gcc*)
+     gccversion=`$CC --version | { read x1 x2 x3; echo $x3; }`
+     case $gccversion in
+       0.* | 1.* | 2.* | 3.1.* | 3.2.* | 3.3.*)
+         visibility_supported="no (needs gcc >=3.4, you have $gccversion)"
+         ;;
+       *)
+         visibility_supported="yes"
+         AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
+         visibility_cflags="-fvisibility=hidden"
+         ;;
+      esac
+      ;;
+  *)
+    visibility_supported="no (needs gcc >=3.4, you use $CC)"
+    ;;
+esac
+AC_MSG_RESULT(${visibility_supported})
+AC_SUBST(visibility_cflags)
 
 
 ###-------------------------------------------------------------------------

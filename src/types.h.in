@@ -64,5 +64,10 @@ typedef @GWEN_TYPE_UINT32@ GWEN_TYPE_UINT32;
   typedef ULONG64 GWEN_TYPE_UINT64;
 #endif /* __GNUC__ */
 
+
+#define GWENHYWFAR_SYS_IS_WINDOWS @gwenhywfar_sys_is_windows@
+
+
+
 #endif
 

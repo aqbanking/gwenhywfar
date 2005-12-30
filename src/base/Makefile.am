@@ -10,7 +10,7 @@ INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
 # system's <process.h>, at least for gcc3.2 on mingw32
 # -I$(top_srcdir)/src/os 
 
-AM_CFLAGS=@PROFILING_CFLAGS@
+AM_CFLAGS=@PROFILING_CFLAGS@ @visibility_cflags@  -DBUILDING_GWENHYWFAR
 
 noinst_LTLIBRARIES=libbase.la
 

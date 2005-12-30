@@ -53,6 +53,7 @@ static int gwen_memory__verbous=0;
 static size_t gwen_memory__allocated_bytes=0;
 static size_t gwen_memory__allocated_calls=0;
 static size_t gwen_memory__allocated_reused=0;
+
 #if ENABLE_MY_SMALL_BLOCK_ALLOC
 static size_t gwen_memory__released_since_collect=0;
 #endif

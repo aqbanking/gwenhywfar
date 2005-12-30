@@ -7,6 +7,8 @@ INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/parser @all_includes@
 
+AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+
 EXTRA_DIST = xsdtypes.inc xsdtypes.xsd mkxsdtypes.sh
 
 noinst_LTLIBRARIES=libparser.la

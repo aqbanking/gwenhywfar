@@ -27,15 +27,42 @@
 
 #ifndef GWENHYWFARAPI_H
 
-#ifdef __declspec
-# if BUILDING_GWEN_DLL
-#  define GWENHYWFAR_API __declspec (dllexport)
-# else /* Not BUILDING_GWENHYWFAR_DLL */
-#  define GWENHYWFAR_API __declspec (dllimport)
-# endif /* Not BUILDING_GWENHYWFAR_DLL */
+#include <gwenhywfar/types.h>
+
+
+#ifdef BUILDING_GWENHYWFAR
+# /* building Gwenhywfar */
+# if GWENHYWFAR_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define GWENHYWFAR_API __declspec (dllexport)
+#   else /* if __declspec */
+#     define GWENHYWFAR_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+#     define GWENHYWFAR_API __attribute__((visibility("default")))
+#   else
+#     define GWENHYWFAR_API
+#   endif
+# endif
 #else
-# define GWENHYWFAR_API
+# /* not building Gwenhywfar */
+# if GWENHYWFAR_SYS_IS_WINDOWS
+#   /* for windows */
+#   ifdef __declspec
+#     define GWENHYWFAR_API __declspec (dllimport)
+#   else /* if __declspec */
+#     define GWENHYWFAR_API
+#   endif /* if NOT __declspec */
+# else
+#   /* for non-win32 */
+#   define GWENHYWFAR_API
+# endif
 #endif
+
+
 
 /* Convenience macros to test the versions of glibc and gcc. Taken
    from <features.h> which does not contain this on MinGW systems.  */

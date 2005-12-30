@@ -44,6 +44,12 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   const char *s;
   int fd;
   const char *nacc;
+  const char *constAcc;
+  const char *constName;
+  const char *fromDbAcc;
+  const char *fromDbName;
+  const char *dupAcc;
+  const char *dupName;
   GWEN_BUFFEREDIO *bio;
   GWEN_ERRORCODE err;
   GWEN_XMLNODE *n;
@@ -69,6 +75,12 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   }
 
   nacc=get_struct_property(node, "access", "public");
+  constAcc=get_struct_property(node, "constructor-access", nacc);
+  constName=get_struct_property(node, "constructor-name", 0);
+  fromDbAcc=get_struct_property(node, "fromdb-access", nacc);
+  fromDbName=get_struct_property(node, "fromdb-name", 0);
+  dupAcc=get_struct_property(node, "dup-access", nacc);
+  dupName=get_struct_property(node, "fromdb-name", 0);
 
   fname=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(fname, f);
@@ -129,6 +141,7 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_WriteLine(bio, "} /* __cplusplus */");
     GWEN_BufferedIO_WriteLine(bio, "#endif");
     GWEN_BufferedIO_WriteLine(bio, "");
+
   }
 
 
@@ -146,7 +159,6 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
                  "lib")==0) {
     GWEN_BufferedIO_WriteLine(bio, "#include <gwenhywfar/list2.h>");
   }
-
 
   if (strcasecmp(nacc, "public")==0) {
     fname=GWEN_Buffer_new(0, 256, 0, 1);
@@ -167,6 +179,21 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   if (strcasecmp(nacc, "lib")==0) {
     GWEN_BufferedIO_WriteLine(bio, "#include <gwenhywfar/db.h>");
 
+    n=GWEN_XMLNode_FindFirstTag(node, "pre-headers", 0, 0);
+    if (n) {
+      GWEN_XMLNODE *nn;
+  
+      nn=GWEN_XMLNode_GetFirstTag(n);
+      while(nn) {
+        rv=write_hp_group_c(args, nn, bio);
+        if (rv) {
+          GWEN_Buffer_free(hbuf);
+          return -1;
+        }
+        nn=GWEN_XMLNode_GetNextTag(nn);
+      } /* while */
+    }
+
     n=GWEN_XMLNode_FindFirstTag(node, "headers", 0, 0);
     if (n) {
       GWEN_XMLNODE *nn;
@@ -181,6 +208,22 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
         nn=GWEN_XMLNode_GetNextTag(nn);
       } /* while */
     }
+
+    n=GWEN_XMLNode_FindFirstTag(node, "post-headers", 0, 0);
+    if (n) {
+      GWEN_XMLNODE *nn;
+  
+      nn=GWEN_XMLNode_GetFirstTag(n);
+      while(nn) {
+        rv=write_hp_group_c(args, nn, bio);
+        if (rv) {
+          GWEN_Buffer_free(hbuf);
+          return -1;
+        }
+        nn=GWEN_XMLNode_GetNextTag(nn);
+      } /* while */
+    }
+
   }
   GWEN_BufferedIO_WriteLine(bio, "");
   GWEN_BufferedIO_WriteLine(bio, "#ifdef __cplusplus");
@@ -213,13 +256,15 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_WriteLine(bio, ")");
 
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, "_LIST *");
-    GWEN_BufferedIO_Write(bio, prefix);
-    GWEN_BufferedIO_Write(bio, "_List_dup(const ");
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_WriteLine(bio, "_LIST *stl);");
-
+    if (dupAcc && strcasecmp(dupAcc, "none")!=0) {
+      GWEN_BufferedIO_Write(bio, id);
+      GWEN_BufferedIO_Write(bio, "_LIST *");
+      GWEN_BufferedIO_Write(bio, prefix);
+      GWEN_BufferedIO_Write(bio, "_List_dup(const ");
+      GWEN_BufferedIO_Write(bio, id);
+      GWEN_BufferedIO_WriteLine(bio, "_LIST *stl);");
+      GWEN_BufferedIO_WriteLine(bio, "");
+    }
   }
 
   if (strcasecmp(get_struct_property(node, "list2", ""),
@@ -237,22 +282,47 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, "_LIST2 *stl);");
 
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, "_LIST2 *");
-    GWEN_BufferedIO_Write(bio, prefix);
-    GWEN_BufferedIO_Write(bio, "_List2_dup(const ");
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_WriteLine(bio, "_LIST2 *stl);");
-
     GWEN_BufferedIO_WriteLine(bio, "");
   }
 
-  if (strcasecmp(nacc, "lib")==0) {
+  if (strcasecmp(constAcc, "lib")==0) {
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_Write(bio, " *");
     GWEN_BufferedIO_Write(bio, prefix);
-    GWEN_BufferedIO_WriteLine(bio, "_new();");
+    if (constName)
+      GWEN_BufferedIO_Write(bio, constName);
+    else
+      GWEN_BufferedIO_Write(bio, "_new");
+    GWEN_BufferedIO_WriteLine(bio, "();");
+  }
 
+  /* FromDb */
+  if (strcasecmp(fromDbAcc, "lib")==0) {
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_Write(bio, " *");
+    GWEN_BufferedIO_Write(bio, prefix);
+    if (fromDbName)
+      GWEN_BufferedIO_Write(bio, fromDbName);
+    else
+      GWEN_BufferedIO_Write(bio, "_fromDb");
+    GWEN_BufferedIO_WriteLine(bio, "(GWEN_DB_NODE *db);");
+  }
+
+  /* dup */
+  if (strcasecmp(dupAcc, "lib")==0) {
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_Write(bio, " *");
+    GWEN_BufferedIO_Write(bio, prefix);
+    if (dupName)
+      GWEN_BufferedIO_Write(bio, dupName);
+    else
+      GWEN_BufferedIO_Write(bio, "_dup");
+    GWEN_BufferedIO_Write(bio, "(const ");
+    GWEN_BufferedIO_Write(bio, id);
+    GWEN_BufferedIO_WriteLine(bio, "*st);");
+  }
+
+  if (strcasecmp(nacc, "lib")==0) {
     GWEN_BufferedIO_Write(bio, "void ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_free(");
@@ -265,26 +335,19 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_BufferedIO_Write(bio, id);
     GWEN_BufferedIO_WriteLine(bio, " *st);");
 
-    /* dup */
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, " *");
+    /* ReadDb */
+    GWEN_BufferedIO_Write(bio, "int ");
     GWEN_BufferedIO_Write(bio, prefix);
-    GWEN_BufferedIO_Write(bio, "_dup(const ");
+    GWEN_BufferedIO_Write(bio, "_ReadDb(");
     GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, "*st);");
-
-    /* FromDb */
-    GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, " *");
-    GWEN_BufferedIO_Write(bio, prefix);
-    GWEN_BufferedIO_Write(bio, "_fromDb(GWEN_DB_NODE *db);");
+    GWEN_BufferedIO_WriteLine(bio, " *st, GWEN_DB_NODE *db);");
 
     /* ToDb */
     GWEN_BufferedIO_Write(bio, "int ");
     GWEN_BufferedIO_Write(bio, prefix);
     GWEN_BufferedIO_Write(bio, "_toDb(const ");
     GWEN_BufferedIO_Write(bio, id);
-    GWEN_BufferedIO_Write(bio, "*st, GWEN_DB_NODE *db);");
+    GWEN_BufferedIO_WriteLine(bio, "*st, GWEN_DB_NODE *db);");
 
     GWEN_BufferedIO_Write(bio, "int ");
     GWEN_BufferedIO_Write(bio, prefix);

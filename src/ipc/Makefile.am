@@ -1,5 +1,7 @@
 SUBDIRS=request
 
+AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+
 INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \

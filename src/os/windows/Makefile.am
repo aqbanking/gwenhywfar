@@ -6,6 +6,8 @@ INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/parser @all_includes@
 
+AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+
 # We need to skip -I$(top_srcdir)/src/os here and instead specify the
 # include path directly in the C files because when we add that
 # directory to the include path, our file process.h shadows the

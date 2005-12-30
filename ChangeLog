@@ -3,6 +3,22 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+2005/12/30: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- worked on typemaker:
+  - fixed some bugs (e.g. missing DOMAIN before List_dup-functions)
+  - added "c-headers", "pre-headers" and "post-headers"
+  - added some struct-properties
+    - constructor-name
+    - constructor-access
+    - fromdb-access
+    - dup-access
+- make use of GCC's new visibility features: Now we only export symbols which
+  are part of the API (so marked by AQBANKING_API. Gladly we had to add this
+  macro for WIN32 long ago, so we just redefine this macro for GCC).
+  For Gwenhywfar this removes about 700 (!!) symbols from the symboltable !
+
+
 2005/12/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - worked on memory allocation stuff:

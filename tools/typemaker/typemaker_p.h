@@ -95,6 +95,10 @@ int write_code_fromdbArg_c(ARGUMENTS *args,
 int write_code_fromdb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                         GWEN_BUFFEREDIO *bio);
 
+int write_code_readdb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
+                        GWEN_BUFFEREDIO *bio);
+
+
 const char *get_function_name(GWEN_XMLNODE *node, const char *ftype);
 const char *get_function_name2(GWEN_XMLNODE *node, const char *ftype,
                                const char *name);
