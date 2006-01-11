@@ -3,6 +3,17 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+2006/01/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in gct-tool
+- added a missing GWENHYWFAR_API
+
+
+===========================================================================
+MARK: released gwenhywfar-1.99.3 (2006/01/11)
+===========================================================================
+
+
 2006/01/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added missing GWENHYWFAR_API in requestmgr.h
@@ -19,9 +30,9 @@
     - fromdb-access
     - dup-access
 - make use of GCC's new visibility features: Now we only export symbols which
-  are part of the API (so marked by AQBANKING_API. Gladly we had to add this
+  are part of the API (so marked by GWENHYWFAR_API. Gladly we had to add this
   macro for WIN32 long ago, so we just redefine this macro for GCC).
-  For Gwenhywfar this removes about 700 (!!) symbols from the symboltable !
+  For Gwenhywfar this removes about 700 (!!) symbols from the symbol table !
 
 
 2005/12/23: Martin Preuss<martin@libchipcard.de>

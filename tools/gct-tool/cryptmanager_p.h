@@ -23,6 +23,7 @@
 
 typedef struct CON_CRYPTMANAGER CON_CRYPTMANAGER;
 struct CON_CRYPTMANAGER {
+  int dummy;
 };
 void CON_CryptManager_FreeData(void *bp, void *p);
 
