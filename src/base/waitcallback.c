@@ -519,6 +519,12 @@ void GWEN_WaitCallback_EnterWithText_u(const char *id,
     if (units)
       nctx->units=strdup(units);
     nctx->flags=flags;
+    if (GWEN__WaitCallback(nctx)==GWEN_WaitCallbackResult_Abort) {
+      DBG_WARN(GWEN_LOGDOMAIN,
+	       "Callback \"%s\" immediately wants to abort, "
+	       "please check your implementation.",
+	       nctx->id);
+    }
   }
 }
 
