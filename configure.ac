@@ -18,10 +18,10 @@ AC_CONFIG_HEADER([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=1
 GWENHYWFAR_VERSION_MINOR=99
-GWENHYWFAR_VERSION_PATCHLEVEL=3
-GWENHYWFAR_VERSION_BUILD=2
+GWENHYWFAR_VERSION_PATCHLEVEL=4
+GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="cvs"
+GWENHYWFAR_VERSION_TAG="stable"
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
@@ -34,7 +34,7 @@ OHBCI_VERSION_STRING="0.1.0"
 #
 GWENHYWFAR_SO_CURRENT="38"
 GWENHYWFAR_SO_AGE="0"
-GWENHYWFAR_SO_REVISION="0"
+GWENHYWFAR_SO_REVISION="1"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -544,6 +544,20 @@ case `basename $CC` in
     visibility_supported="no (needs gcc >=4.0, you use $CC)"
     ;;
 esac
+
+# -fvisibility is at least not available on MinGW/gcc-3.4.4 (will
+# give an "unrecognized cmdline option"). Also, unfortunately I
+# don't know an easy way to ask the compiler here. Maybe
+# http://autoconf-archive.cryp.to/ax_cflags_gcc_option.html
+case "$OS_TYPE" in
+  windows)
+        visibility_supported="no (not yet on MinGW/Windows)"
+        visibility_cflags=""
+	;;
+  *)
+	;;
+esac
+
 AC_MSG_RESULT(${visibility_supported})
 AC_SUBST(visibility_cflags)
 
