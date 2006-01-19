@@ -26,21 +26,22 @@
  ***************************************************************************/
 
 #ifndef GWENHYWFARAPI_H
+#define GWENHYWFARAPI_H
 
 #include <gwenhywfar/types.h>
 
 
 #ifdef BUILDING_GWENHYWFAR
-# /* building Gwenhywfar */
+  /* building Gwenhywfar */
 # if GWENHYWFAR_SYS_IS_WINDOWS
-#   /* for windows */
+    /* for windows */
 #   ifdef __declspec
 #     define GWENHYWFAR_API __declspec (dllexport)
 #   else /* if __declspec */
 #     define GWENHYWFAR_API
 #   endif /* if NOT __declspec */
 # else
-#   /* for non-win32 */
+    /* for non-win32 */
 #   ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
 #     define GWENHYWFAR_API __attribute__((visibility("default")))
 #   else
@@ -48,16 +49,16 @@
 #   endif
 # endif
 #else
-# /* not building Gwenhywfar */
+  /* not building Gwenhywfar */
 # if GWENHYWFAR_SYS_IS_WINDOWS
-#   /* for windows */
+    /* for windows */
 #   ifdef __declspec
 #     define GWENHYWFAR_API __declspec (dllimport)
 #   else /* if __declspec */
 #     define GWENHYWFAR_API
 #   endif /* if NOT __declspec */
 # else
-#   /* for non-win32 */
+    /* for non-win32 */
 #   define GWENHYWFAR_API
 # endif
 #endif
