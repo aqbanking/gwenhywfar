@@ -1836,6 +1836,38 @@ void GWEN_CryptToken_SubFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl) {
 
 
 
+GWEN_TYPE_UINT32 GWEN_CryptToken_GetModes(const GWEN_CRYPTTOKEN *ct) {
+  assert(ct);
+  assert(ct->usage);
+  return ct->modes;
+}
+
+
+
+void GWEN_CryptToken_SetModes(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl) {
+  assert(ct);
+  assert(ct->usage);
+  ct->modes=fl;
+}
+
+
+
+void GWEN_CryptToken_AddModes(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl) {
+  assert(ct);
+  assert(ct->usage);
+  ct->modes|=fl;
+}
+
+
+
+void GWEN_CryptToken_SubModes(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl) {
+  assert(ct);
+  assert(ct->usage);
+  ct->modes&=~fl;
+}
+
+
+
 void GWEN_CryptToken_SetOpenFn(GWEN_CRYPTTOKEN *ct,
                                GWEN_CRYPTTOKEN_OPEN_FN fn){
   assert(ct);
@@ -3123,6 +3155,19 @@ void GWEN_CryptManager_SetGetPinFn(GWEN_PLUGIN_MANAGER *pm,
 
 
 
+void
+GWEN_CryptManager_SetSetPinStatusFn(GWEN_PLUGIN_MANAGER *pm,
+                                    GWEN_CRYPTMANAGER_SETPINSTATUS_FN fn){
+  GWEN_CRYPTMANAGER *cm;
+
+  assert(pm);
+  cm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, GWEN_CRYPTMANAGER, pm);
+  assert(cm);
+  cm->setPinStatusFn=fn;
+}
+
+
+
 
 void GWEN_CryptManager_SetBeginEnterPinFn(GWEN_PLUGIN_MANAGER *pm,
                                           GWEN_CRYPTMANAGER_BEGIN_ENTER_PIN_FN fn){
@@ -3208,6 +3253,28 @@ int GWEN_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *pm,
     return GWEN_ERROR_UNSUPPORTED;
   return cm->getPinFn(pm, token, pt, pe, flags, buffer,
                       minLength, maxLength, pinLength);
+}
+
+
+
+int GWEN_CryptManager_SetPinStatus(GWEN_PLUGIN_MANAGER *pm,
+                                   GWEN_CRYPTTOKEN *token,
+                                   GWEN_CRYPTTOKEN_PINTYPE pt,
+                                   GWEN_CRYPTTOKEN_PINENCODING pe,
+                                   GWEN_TYPE_UINT32 flags,
+                                   unsigned char *buffer,
+                                   unsigned int pinLength,
+                                   int isOk){
+  GWEN_CRYPTMANAGER *cm;
+
+  assert(pm);
+  cm=GWEN_INHERIT_GETDATA(GWEN_PLUGIN_MANAGER, GWEN_CRYPTMANAGER, pm);
+  assert(cm);
+
+  if (cm->setPinStatusFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  return cm->setPinStatusFn(pm, token, pt, pe, flags, buffer,
+                            pinLength, isOk);
 }
 
 

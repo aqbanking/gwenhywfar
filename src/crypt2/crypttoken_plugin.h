@@ -115,6 +115,16 @@ typedef int (*GWEN_CRYPTMANAGER_GETPIN_FN)(GWEN_PLUGIN_MANAGER *mgr,
                                            unsigned int maxLength,
                                            unsigned int *pinLength);
 
+typedef
+  int (*GWEN_CRYPTMANAGER_SETPINSTATUS_FN)(GWEN_PLUGIN_MANAGER *mgr,
+					   GWEN_CRYPTTOKEN *token,
+					   GWEN_CRYPTTOKEN_PINTYPE pt,
+					   GWEN_CRYPTTOKEN_PINENCODING pe,
+					   GWEN_TYPE_UINT32 flags,
+					   unsigned char *buffer,
+					   unsigned int pinLength,
+					   int isOk);
+
 typedef int (*GWEN_CRYPTMANAGER_BEGIN_ENTER_PIN_FN)(GWEN_PLUGIN_MANAGER *mgr,
                                                     GWEN_CRYPTTOKEN *token,
                                                     GWEN_CRYPTTOKEN_PINTYPE pt);
@@ -153,6 +163,10 @@ GWENHYWFAR_API
 void GWEN_CryptManager_SetGetPinFn(GWEN_PLUGIN_MANAGER *cm,
                                    GWEN_CRYPTMANAGER_GETPIN_FN fn);
 
+GWENHYWFAR_API void
+GWEN_CryptManager_SetSetPinStatusFn(GWEN_PLUGIN_MANAGER *cm,
+				    GWEN_CRYPTMANAGER_SETPINSTATUS_FN fn);
+
 GWENHYWFAR_API
 void GWEN_CryptManager_SetBeginEnterPinFn(GWEN_PLUGIN_MANAGER *cm,
                                           GWEN_CRYPTMANAGER_BEGIN_ENTER_PIN_FN fn);
@@ -185,6 +199,17 @@ int GWEN_CryptManager_GetPin(GWEN_PLUGIN_MANAGER *cm,
                              unsigned int minLength,
                              unsigned int maxLength,
                              unsigned int *pinLength);
+
+GWENHYWFAR_API
+int GWEN_CryptManager_SetPinStatus(GWEN_PLUGIN_MANAGER *mgr,
+				   GWEN_CRYPTTOKEN *token,
+				   GWEN_CRYPTTOKEN_PINTYPE pt,
+				   GWEN_CRYPTTOKEN_PINENCODING pe,
+				   GWEN_TYPE_UINT32 flags,
+				   unsigned char *buffer,
+				   unsigned int pinLength,
+				   int isOk);
+
 
 GWENHYWFAR_API
 int GWEN_CryptManager_BeginEnterPin(GWEN_PLUGIN_MANAGER *cm,

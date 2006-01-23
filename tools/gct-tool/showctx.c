@@ -160,6 +160,9 @@ int showCtx(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
 
+  if (GWEN_DB_GetIntValue(dbArgs, "forcePin", 0, 0))
+    GWEN_CryptToken_AddModes(ct, GWEN_CRYPTTOKEN_MODES_FORCE_PIN_ENTRY);
+
   /* open crypt token for use */
   rv=GWEN_CryptToken_Open(ct, 0);
   if (rv) {

@@ -54,6 +54,17 @@ int main(int argc, char **argv) {
     "Specify the configuration file"      /* long description */
   },
   {
+    0, /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "forcePin",                   /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "forcepin",                   /* long option */
+    "force pin entry",     /* short description */
+    "force pin entry even if the error counter is not zero"
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */

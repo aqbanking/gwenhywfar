@@ -34,7 +34,7 @@ extern "C" {
 #define GWEN_CRYPTTOKEN_FLAGS_PREDEF_CONTEXT_ONLY       0x00000002
 
 #define GWEN_CRYPTTOKEN_FLAGS_DISABLE_SMALLER_SIGNATURE 0x00000004
-/** this is used when checking for the pin status */
+/** @deprecated */
 #define GWEN_CRYPTTOKEN_FLAGS_FORCE_PIN_ENTRY           0x00000008
 
 
@@ -43,6 +43,10 @@ extern "C" {
 #define GWEN_CRYPTTOKEN_GETPIN_FLAGS_SHOW               0x00000004
 #define GWEN_CRYPTTOKEN_GETPIN_FLAGS_RETRY              0x00000008
 #define GWEN_CRYPTTOKEN_GETPIN_FLAGS_ALLOW_DEFAULT      0x00000010
+
+
+/** this is used when checking for the pin status */
+#define GWEN_CRYPTTOKEN_MODES_FORCE_PIN_ENTRY           0x00000001
 
 /**
  * This is a list of status values used by GWEN_CRYPTTOKEN in key specs.
@@ -346,6 +350,19 @@ void GWEN_CryptToken_AddFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
 
 GWENHYWFAR_API
 void GWEN_CryptToken_SubFlags(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
+
+
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_CryptToken_GetModes(const GWEN_CRYPTTOKEN *ct);
+
+GWENHYWFAR_API
+void GWEN_CryptToken_SetModes(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
+
+GWENHYWFAR_API
+void GWEN_CryptToken_AddModes(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
+
+GWENHYWFAR_API
+void GWEN_CryptToken_SubModes(GWEN_CRYPTTOKEN *ct, GWEN_TYPE_UINT32 fl);
 
 GWENHYWFAR_API
 const char *GWEN_CryptToken_GetDescriptiveName(const GWEN_CRYPTTOKEN *ct);

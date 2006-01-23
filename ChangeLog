@@ -3,6 +3,25 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+2006/01/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- work on CryptToken-API: 
+  - added virtual function GWEN_CryptManager_SetPinStatus()
+    This function is now used by some crypttokens (mainly chipcards) and
+    intercepted by AqBanking's CryptManager. This is another step in making
+    working with crypttokens safer.
+  - added modes (change the behaviour for crypt tokens, e.g. allow the user
+    to enter the pin even though the error counter isn't zero
+  - moved 
+      GWEN_CRYPTTOKEN_FLAGS_FORCE_PIN_ENTRY
+    to
+      GWEN_CRYPTTOKEN_MODES_FORCE_PIN_ENTRY
+
+
 2006-01-19   Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfarapi.h: Add #define GWENHYWFARAPI_H to avoid
