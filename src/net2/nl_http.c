@@ -611,6 +611,10 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
   st=GWEN_NetLayer_GetStatus(nl);
   if (st==GWEN_NetLayerStatus_Listening)
     return GWEN_NetLayerResult_Idle;
+  else if (st==GWEN_NetLayerStatus_Connecting) {
+    return GWEN_NetLayerResult_Idle;
+  }
+
 
   if (nld->inMode==GWEN_NetLayerHttpInMode_ReadBody ||
       nld->inMode==GWEN_NetLayerHttpInMode_Idle ||
