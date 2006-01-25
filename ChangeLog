@@ -7,6 +7,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/01/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in GWEN_Url_toString (was not writing an unchanged string)
+
+
 2006/01/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - work on CryptToken-API: 
@@ -20,6 +25,8 @@
       GWEN_CRYPTTOKEN_FLAGS_FORCE_PIN_ENTRY
     to
       GWEN_CRYPTTOKEN_MODES_FORCE_PIN_ENTRY
+- fixed a bug in nl_http.c (was trying to read from a connection which is
+  not yet established)
 
 
 2006-01-19   Christian Stimming <stimming@tuhh.de>

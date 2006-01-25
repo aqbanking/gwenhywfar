@@ -176,6 +176,9 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
 int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
   assert(url);
   if (!url->_modified && (url->url==0 || url->url[0]==0)) {
+    GWEN_Buffer_AppendString(ubuf, url->url);
+  }
+  else {
     GWEN_DB_NODE *dbV;
 
     if (url->protocol) {
