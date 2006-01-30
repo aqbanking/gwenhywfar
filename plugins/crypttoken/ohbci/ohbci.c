@@ -244,23 +244,21 @@ int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,
   GWEN_CRYPTTOKEN_OHBCI *lct;
   GWEN_CRYPTKEY *key;
   GWEN_ERRORCODE err;
-  unsigned char password_unsigned[64];
   char password[64];
   GWEN_BUFFER *rawbuf;
   int rv;
+  GWEN_PLUGIN_MANAGER *pm;
+  unsigned int pinLength=0;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPTTOKEN, GWEN_CRYPTTOKEN_OHBCI, ct);
   assert(lct);
 
-  if (lct->passWordIsSet==0) {
-    GWEN_PLUGIN_MANAGER *pm;
-    int mres;
-    unsigned int pinLength;
-    unsigned int k;
+  pm=GWEN_CryptToken_GetCryptManager(ct);
+  assert(pm);
 
-    pm=GWEN_CryptToken_GetCryptManager(ct);
-    assert(pm);
+  if (lct->passWordIsSet==0) {
+    int mres;
 
     /* create key from password */
     memset(lct->password, 0, sizeof(lct->password));
@@ -270,20 +268,14 @@ int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,
 				  GWEN_CryptToken_PinType_Access,
 				  GWEN_CryptToken_PinEncoding_ASCII,
 				  (trynum?GWEN_CRYPTTOKEN_GETPIN_FLAGS_RETRY:0),
-				  password_unsigned,
-				  GWEN_CRYPTTOKEN_OHBCI_PINMINLENGTH,
-				  sizeof(password_unsigned)-1,
-				  &pinLength);
+                                  (unsigned char*)password,
+                                  GWEN_CRYPTTOKEN_OHBCI_PINMINLENGTH,
+				  sizeof(password)-1,
+                                  &pinLength);
     if (mres) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error asking for PIN, aborting");
       return mres;
     }
-
-    /* Convert the 'unsigned char' buffer to the 'char' buffer */
-    for (k=0; k < pinLength; ++k)
-      password[k] = password_unsigned[k];
-    password[k] = '\0';
-    memset(password_unsigned, '\0', pinLength);
 
     if (strlen(password)<GWEN_CRYPTTOKEN_OHBCI_PINMINLENGTH) {
       DBG_ERROR(GWEN_LOGDOMAIN,
@@ -295,7 +287,8 @@ int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,
     if (lct->cryptoTag==GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT) {
       DBG_NOTICE(GWEN_LOGDOMAIN, "New OpenHBCI file detected");
       if (GWEN_CryptKey_FromPassword(password,
-                                     (unsigned char*)lct->password, sizeof(lct->password))) {
+                                     (unsigned char*)lct->password,
+                                     sizeof(lct->password))) {
 	DBG_ERROR(GWEN_LOGDOMAIN,
 		  "Could not create key data from password");
         return GWEN_ERROR_GENERIC;
@@ -365,6 +358,16 @@ int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,
     DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     GWEN_Buffer_free(rawbuf);
     GWEN_CryptKey_free(key);
+    if (pinLength)
+      GWEN_CryptManager_SetPinStatus(pm,
+				     ct,
+				     GWEN_CryptToken_PinType_Access,
+				     GWEN_CryptToken_PinEncoding_ASCII,
+				     (trynum
+				      ?GWEN_CRYPTTOKEN_GETPIN_FLAGS_RETRY:0),
+				     (unsigned char*)password,
+				     pinLength,
+				     0);
     memset(password, 0, sizeof(password));
     lct->passWordIsSet=0;
     return GWEN_ERROR_CT_BAD_PIN;
@@ -377,8 +380,18 @@ int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,
     GWEN_Buffer_free(rawbuf);
     GWEN_CryptKey_free(key);
     /* TODO: Set Pin status */
-    memset(password, 0, sizeof(password));
     lct->passWordIsSet=0;
+    if (pinLength)
+      GWEN_CryptManager_SetPinStatus(pm,
+				     ct,
+				     GWEN_CryptToken_PinType_Access,
+				     GWEN_CryptToken_PinEncoding_ASCII,
+				     (trynum
+				      ?GWEN_CRYPTTOKEN_GETPIN_FLAGS_RETRY:0),
+				     (unsigned char*)password,
+				     pinLength,
+				     0);
+    memset(password, 0, sizeof(password));
     return GWEN_ERROR_CT_BAD_PIN;
   }
   GWEN_CryptKey_free(key);
@@ -391,13 +404,34 @@ int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(rawbuf);
-    /* TODO: Set Pin status */
+    /* Set Pin status */
+    if (pinLength)
+      GWEN_CryptManager_SetPinStatus(pm,
+				     ct,
+				     GWEN_CryptToken_PinType_Access,
+				     GWEN_CryptToken_PinEncoding_ASCII,
+				     (trynum
+				      ?GWEN_CRYPTTOKEN_GETPIN_FLAGS_RETRY:0),
+				     (unsigned char*)password,
+				     pinLength,
+				     0);
     memset(password, 0, sizeof(password));
     lct->passWordIsSet=0;
     return GWEN_ERROR_CT_BAD_PIN;
   }
   GWEN_Buffer_free(rawbuf);
-  /* TODO: Set Pin status */
+  /* Set Pin status */
+  if (pinLength)
+    GWEN_CryptManager_SetPinStatus(pm,
+				   ct,
+				   GWEN_CryptToken_PinType_Access,
+				   GWEN_CryptToken_PinEncoding_ASCII,
+				   (trynum
+				    ?GWEN_CRYPTTOKEN_GETPIN_FLAGS_RETRY:0),
+				   (unsigned char*)password,
+				   pinLength,
+				   1);
+  memset(password, 0, sizeof(password));
   return 0;
 }
 
@@ -904,6 +938,9 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
       DBG_INFO(GWEN_LOGDOMAIN,
 	       "Ignoring temporary crypt keys");
       break;
+    case GWEN_CRYPTTOKEN_OHBCI_TAG_HEADER:
+      /* ignore header here */
+      break;
     default:
       DBG_WARN(GWEN_LOGDOMAIN, "Unknown tag %02x",
 	       GWEN_TAG16_GetTagType(tlv));
@@ -1001,7 +1038,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
   /* finalize user and file context */
   GWEN_CryptToken_User_SetId(user, 1);            /* only one user */
   GWEN_CryptToken_User_SetContextId(user, 1);     /* only one context */
-  GWEN_CryptToken_User_SetPeerId(user, peerId); /* only one user */
+  GWEN_CryptToken_User_SetPeerId(user, peerId);   /* only one user */
   GWEN_CryptTokenFile_Context_SetUser(fct, user);
 
   /* clear context list, add new context */
