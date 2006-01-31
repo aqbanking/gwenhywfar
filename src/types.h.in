@@ -28,8 +28,6 @@
 #ifndef GWENHYWFAR_TYPES_H
 #define GWENHYWFAR_TYPES_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-
 /** define type templates */
 #define GWEN_TYPE_TMPL_UINT32 "@GWEN_TYPE_TMPL_UINT32@"
 #define GWEN_TYPE_TMPL_UINT64 "@GWEN_TYPE_TMPL_UINT64@"
@@ -67,6 +65,10 @@ typedef @GWEN_TYPE_UINT32@ GWEN_TYPE_UINT32;
 
 #define GWENHYWFAR_SYS_IS_WINDOWS @gwenhywfar_sys_is_windows@
 
+/* Watch out: This include *must* come after the definition of
+GWENHYWFAR_SYS_IS_WINDOWS or else the dllimport/export attributes
+will easily be messed up! */
+#include <gwenhywfar/gwenhywfarapi.h>
 
 
 #endif

@@ -3,6 +3,11 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+2006-01-31   Christian Stimming <stimming@tuhh.de>
+
+	* src/types.h.in: Fix bad include order between gwenhywfarapi.h
+	and this file.
+
 2006/01/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - OpenHBCI CryptToken now signals a bad pin to the CryptManager (UI, which
