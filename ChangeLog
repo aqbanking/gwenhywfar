@@ -3,16 +3,29 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released gwenhywfar-1.99.6 (2006/01/30)
+===========================================================================
+
+
 2006-01-31   Christian Stimming <stimming@tuhh.de>
 
 	* src/types.h.in: Fix bad include order between gwenhywfarapi.h
 	and this file.
 
+
 2006/01/30: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- OpenHBCI CryptToken now signals a bad pin to the CryptManager (UI, which
-  is implemented e.g. in AqBanking). Now when entering a bad pin in a
-  AqBanking environment leads to the expected behaviour.
+- OpenHBCI CryptToken:
+  - now signals a bad pin to the CryptManager (UI, which
+    is implemented e.g. in AqBanking). Now when entering a bad pin in a
+    AqBanking environment leads to the expected behaviour.
+  - no longer show the message "unknown tag 16"
+
+
+===========================================================================
+MARK: released gwenhywfar-1.99.5 (2006/01/26)
+===========================================================================
 
 
 2006/01/25: Martin Preuss<martin@libchipcard.de>
