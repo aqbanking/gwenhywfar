@@ -66,7 +66,8 @@ dnl search for openssl libs
 if test "$OSYSTEM" != "windows" ; then
 dnl POSIX systems
    for d in $ssl_search_lib_dirs; do
-     AQ_SEARCH_FILES("$d", [libssl.so libssl.so.* libssl.a])
+     # Look for the library files; the dylib one is for Darwin/Mac OS.
+     AQ_SEARCH_FILES("$d", [libssl.so libssl.so.* libssl.a libssl.dylib])
      if test -n "$found_file" ; then
         ssl_libraries="-L$d"
         ssl_lib="-lssl -lcrypto"
