@@ -114,6 +114,32 @@ void GWEN_NetLayerHttp_FreeData(void *bp, void *p) {
 
 
 
+void GWEN_NetLayerHttp_SetHttpVersion(GWEN_NETLAYER *nl,
+                                      GWEN_NETLAYER_HTTP_VERSION v) {
+  GWEN_NL_HTTP *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
+  assert(nld);
+
+  nld->pversion=v;
+}
+
+
+
+GWEN_NETLAYER_HTTP_VERSION
+GWEN_NetLayerHttp_GetHttpVersion(const GWEN_NETLAYER *nl) {
+  GWEN_NL_HTTP *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_HTTP, nl);
+  assert(nld);
+
+  return nld->pversion;
+}
+
+
+
 int GWEN_NetLayerHttp_Connect(GWEN_NETLAYER *nl) {
   GWEN_NETLAYER *baseLayer;
   int rv;

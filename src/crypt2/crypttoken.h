@@ -253,6 +253,19 @@ typedef int (*GWEN_CRYPTTOKEN_DECRYPT_FN)(GWEN_CRYPTTOKEN *ct,
                                           const char *ptr,
                                           unsigned int len,
                                           GWEN_BUFFER *dst);
+typedef int (*GWEN_CRYPTTOKEN_AUTHSIGN_FN)(GWEN_CRYPTTOKEN *ct,
+                                           const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                           const char *ptr,
+                                           unsigned int len,
+                                           GWEN_BUFFER *dst);
+typedef int
+  (*GWEN_CRYPTTOKEN_AUTHVERIFY_FN)(GWEN_CRYPTTOKEN *ct,
+                                   const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                   const char *ptr,
+                                   unsigned int len,
+                                   const char *sigptr,
+                                   unsigned int siglen);
+
 typedef int (*GWEN_CRYPTTOKEN_READKEY_FN)(GWEN_CRYPTTOKEN *ct,
                                           GWEN_TYPE_UINT32 kid,
                                           GWEN_CRYPTKEY **key);
@@ -412,6 +425,14 @@ void GWEN_CryptToken_SetDecryptFn(GWEN_CRYPTTOKEN *ct,
                                   GWEN_CRYPTTOKEN_DECRYPT_FN fn);
 
 GWENHYWFAR_API
+void GWEN_CryptToken_SetAuthSignFn(GWEN_CRYPTTOKEN *ct,
+                                   GWEN_CRYPTTOKEN_AUTHSIGN_FN fn);
+
+GWENHYWFAR_API
+void GWEN_CryptToken_SetAuthVerifyFn(GWEN_CRYPTTOKEN *ct,
+                                     GWEN_CRYPTTOKEN_AUTHVERIFY_FN fn);
+
+GWENHYWFAR_API
 void GWEN_CryptToken_SetReadKeyFn(GWEN_CRYPTTOKEN *ct,
                                   GWEN_CRYPTTOKEN_READKEY_FN fn);
 
@@ -499,6 +520,21 @@ int GWEN_CryptToken_Verify(GWEN_CRYPTTOKEN *ct,
                            unsigned int len,
                            const char *sigptr,
                            unsigned int siglen);
+
+GWENHYWFAR_API
+int GWEN_CryptToken_AuthSign(GWEN_CRYPTTOKEN *ct,
+                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                             const char *ptr,
+                             unsigned int len,
+                             GWEN_BUFFER *dst);
+
+GWENHYWFAR_API
+int GWEN_CryptToken_AuthVerify(GWEN_CRYPTTOKEN *ct,
+                               const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                               const char *ptr,
+                               unsigned int len,
+                               const char *sigptr,
+                               unsigned int siglen);
 
 GWENHYWFAR_API
 int GWEN_CryptToken_Encrypt(GWEN_CRYPTTOKEN *ct,

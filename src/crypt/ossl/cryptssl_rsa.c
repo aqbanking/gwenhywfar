@@ -474,6 +474,10 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
     GWEN_DB_Dump(db, stderr, 2);
 
+  /* needed because older versions of GWEN did not store the keylength */
+  if (GWEN_CryptKey_GetKeyLength(key)==0)
+    GWEN_CryptKey_SetKeyLength(key, 768);
+
   pub=GWEN_DB_GetIntValue(db, "public", 0, 1);
   GWEN_CryptKey_SetPublic(key, pub);
 

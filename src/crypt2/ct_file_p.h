@@ -23,18 +23,25 @@
 #include "crypttoken_user_l.h"
 
 
+#define GWEN_CT_FILE_MAX_KID 6
+
+
 struct GWEN_CT_FILE_CONTEXT {
   GWEN_INHERIT_ELEMENT(GWEN_CT_FILE_CONTEXT)
   GWEN_LIST_ELEMENT(GWEN_CT_FILE_CONTEXT)
 
   unsigned int localSignSeq;
   unsigned int remoteSignSeq;
+  unsigned int localAuthSeq;
 
   GWEN_CRYPTKEY *localSignKey;
   GWEN_CRYPTKEY *localCryptKey;
 
   GWEN_CRYPTKEY *remoteSignKey;
   GWEN_CRYPTKEY *remoteCryptKey;
+
+  GWEN_CRYPTKEY *localAuthKey;
+  GWEN_CRYPTKEY *remoteAuthKey;
 
   GWEN_CRYPTTOKEN_USER *user;
 };
@@ -70,7 +77,6 @@ int GWEN_CryptTokenFile__WriteFile(GWEN_CRYPTTOKEN *ct, int cre);
 
 int GWEN_CryptTokenFile__ReloadIfNeeded(GWEN_CRYPTTOKEN *ct);
 
-
 GWEN_CT_FILE_CONTEXT*
 GWEN_CryptTokenFile__GetFileContextByKeyId(GWEN_CRYPTTOKEN *ct,
                                            GWEN_TYPE_UINT32 kid,
@@ -82,18 +88,45 @@ int GWEN_CryptTokenFile_Create(GWEN_CRYPTTOKEN *ct);
 int GWEN_CryptTokenFile_Open(GWEN_CRYPTTOKEN *ct, int managed);
 int GWEN_CryptTokenFile_Close(GWEN_CRYPTTOKEN *ct);
 
+int GWEN_CryptTokenFile__Sign(GWEN_CRYPTTOKEN *ct,
+                              const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                              int auth,
+                              const char *ptr,
+                              unsigned int len,
+                              GWEN_BUFFER *dst);
 
 int GWEN_CryptTokenFile_Sign(GWEN_CRYPTTOKEN *ct,
                              const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                              const char *ptr,
                              unsigned int len,
                              GWEN_BUFFER *dst);
+int GWEN_CryptTokenFile_AuthSign(GWEN_CRYPTTOKEN *ct,
+                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                 const char *ptr,
+                                 unsigned int len,
+                                 GWEN_BUFFER *dst);
+
+int GWEN_CryptTokenFile__Verify(GWEN_CRYPTTOKEN *ct,
+                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                int auth,
+                                const char *ptr,
+                                unsigned int len,
+                                const char *sigptr,
+                                unsigned int siglen);
+
 int GWEN_CryptTokenFile_Verify(GWEN_CRYPTTOKEN *ct,
                                const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                const char *ptr,
                                unsigned int len,
                                const char *sigptr,
                                unsigned int siglen);
+int GWEN_CryptTokenFile_AuthVerify(GWEN_CRYPTTOKEN *ct,
+                                   const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                   const char *ptr,
+                                   unsigned int len,
+                                   const char *sigptr,
+                                   unsigned int siglen);
+
 int GWEN_CryptTokenFile_Encrypt(GWEN_CRYPTTOKEN *ct,
                                 const GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                 const char *ptr,

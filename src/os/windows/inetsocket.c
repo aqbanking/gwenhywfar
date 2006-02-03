@@ -856,6 +856,14 @@ GWEN_SOCKETSET *GWEN_SocketSet_new() {
 
 
 
+GWEN_SOCKET *GWEN_Socket_fromFile(int fd) {
+  DBG_ERROR(GWEN_LOGDOMAIN,
+            "No file sockets available for this system");
+  return 0;
+}
+
+
+
 void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp) {
   if (ssp) {
     FD_ZERO(&(ssp->set));

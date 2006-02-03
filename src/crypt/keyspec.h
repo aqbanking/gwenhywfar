@@ -97,6 +97,12 @@ GWENHYWFAR_API
   void GWEN_KeySpec_SetVersion(GWEN_KEYSPEC *ks,
                                unsigned int i);
 
+GWENHYWFAR_API
+unsigned int GWEN_KeySpec_GetKeyLength(const GWEN_KEYSPEC *ks);
+
+GWENHYWFAR_API
+void GWEN_KeySpec_SetKeyLength(GWEN_KEYSPEC *ks, unsigned int i);
+
 
 GWENHYWFAR_API
 void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent);

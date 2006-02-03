@@ -83,6 +83,7 @@ GWEN_KEYSPEC *GWEN_KeySpec_dup(const GWEN_KEYSPEC *ks){
   newKs->number=ks->number;
   newKs->version=ks->version;
   newKs->status=ks->status;
+  newKs->keyLength=ks->keyLength;
   return newKs;
 }
 
@@ -182,6 +183,21 @@ void GWEN_KeySpec_SetStatus(GWEN_KEYSPEC *ks, int i){
 
 
 
+unsigned int GWEN_KeySpec_GetKeyLength(const GWEN_KEYSPEC *ks) {
+  assert(ks);
+  return ks->keyLength;
+}
+
+
+
+void GWEN_KeySpec_SetKeyLength(GWEN_KEYSPEC *ks, unsigned int i) {
+  assert(ks);
+  ks->keyLength=i;
+}
+
+
+
+
 void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent){
   unsigned int i;
 
@@ -191,17 +207,19 @@ void GWEN_KeySpec_Dump(const GWEN_KEYSPEC *ks, FILE *f, unsigned int indent){
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(f, "--------------------------------------------------\n");
   for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Status : %02x\n", ks->status);
+  fprintf(f, "Status    : %02x\n", ks->status);
   for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "KeyType : %s\n", ks->keyType);
+  fprintf(f, "KeyType   : %s\n", ks->keyType);
   for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "KeyName : %s\n", ks->keyName);
+  fprintf(f, "KeyName   : %s\n", ks->keyName);
   for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Owner   : %s\n", ks->owner);
+  fprintf(f, "Owner     : %s\n", ks->owner);
   for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Number  : %d\n", ks->number);
+  fprintf(f, "Number    : %d\n", ks->number);
   for (i=0; i<indent; i++) fprintf(f, " ");
-  fprintf(f, "Version : %d\n", ks->version);
+  fprintf(f, "Version   : %d\n", ks->version);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(f, "KeyLength : %d\n", ks->keyLength);
 }
 
 
@@ -225,7 +243,9 @@ int GWEN_KeySpec_ToDb(const GWEN_KEYSPEC *ks, GWEN_DB_NODE *n) {
   GWEN_DB_SetIntValue(n,
                       GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "status", ks->status);
-
+  GWEN_DB_SetIntValue(n,
+                      GWEN_DB_FLAGS_DEFAULT | GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "keyLength", ks->keyLength);
   return 0;
 }
 
@@ -246,6 +266,8 @@ int GWEN_KeySpec_FromDb(GWEN_KEYSPEC *ks, GWEN_DB_NODE *db){
                           GWEN_DB_GetIntValue(db, "version", 0, 0));
   GWEN_KeySpec_SetStatus(ks,
                          GWEN_DB_GetIntValue(db, "status", 0, 0));
+  GWEN_KeySpec_SetKeyLength(ks,
+                            GWEN_DB_GetIntValue(db, "keyLength", 0, 0));
   return 0;
 }
 

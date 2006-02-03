@@ -444,6 +444,8 @@ GWEN_ERRORCODE GWEN_CryptKey_Generate(GWEN_CRYPTKEY *key,
   assert(key->usage);
   assert(key->generateKeyFn);
   err=key->generateKeyFn(key, keylength);
+  if (GWEN_Error_IsOk(err))
+    GWEN_CryptKey_SetKeyLength(key, keylength);
   return err;
 }
 
@@ -602,6 +604,24 @@ void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
   assert(key->usage);
   assert(key->keyspec);
   GWEN_KeySpec_SetVersion(key->keyspec, i);
+}
+
+
+
+unsigned int GWEN_CryptKey_GetKeyLength(const GWEN_CRYPTKEY *key) {
+  assert(key);
+  assert(key->usage);
+  assert(key->keyspec);
+  return GWEN_KeySpec_GetKeyLength(key->keyspec);
+}
+
+
+
+void GWEN_CryptKey_SetKeyLength(GWEN_CRYPTKEY *key, unsigned int i) {
+  assert(key);
+  assert(key->usage);
+  assert(key->keyspec);
+  GWEN_KeySpec_SetKeyLength(key->keyspec, i);
 }
 
 

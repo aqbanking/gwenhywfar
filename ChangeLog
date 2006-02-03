@@ -3,6 +3,41 @@
   ! as soon as the next release of GnuCash is out !                      !
   ------------------------------------------------------------------------
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+2006/02/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions GWEN_NetLayerHttp_GetHttpVersion()
+  and GWEN_NetLayerHttp_SetHttpVersion()
+
+
+2006/02/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- OpenHBCI CryptToken:
+  - now supports keylength of up to 2048 bits
+  - now accepts key ids up to 6 (including the new auth keys)
+- CryptToken: Context functions now return non-const pointers, because
+  otherweise we would also have to copy all that stuff even for objects
+  we own
+- src/os/inetsocket.h: 
+  - added socket type GWEN_SocketTypeFile
+  - added constructor GWEN_Socket_fromFile()
+- added GWEN_NetLayer_Stdio which uses stdin and stdout on non-WIN32 systems
+
+
+2006/02/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added auth-key to GWEN_CryptToken_Context
+- OpenHBCI CryptToken:
+  - implemented additional keys and keyLength. Additional tags:
+    - GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_LEN
+    - GWEN_CRYPTTOKEN_OHBCI_TAG_USER_PRIVAUTHKEY
+    - GWEN_CRYPTTOKEN_OHBCI_TAG_INST_PUBAUTHKEY
+  - updated version to 1.7 (still compatible to older versions)
+
+
 ===========================================================================
 MARK: released gwenhywfar-1.99.6 (2006/01/30)
 ===========================================================================

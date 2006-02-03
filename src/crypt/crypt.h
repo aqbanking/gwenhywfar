@@ -187,7 +187,7 @@ void GWEN_CryptKey_SubFlags(GWEN_CRYPTKEY *key, GWEN_TYPE_UINT32 fl);
 
 
 /**
- * This is a conveniance function.
+ * This is a convenience function.
  * Sets the key data. This can be used by the application for keys which
  * use the variable "keydata" when calling @ref GWEN_CryptKey_FromDb (such
  * as most symmetric keys).
@@ -300,6 +300,10 @@ GWENHYWFAR_API
   void GWEN_CryptKey_SetVersion(GWEN_CRYPTKEY *key,
 				unsigned int i);
 
+GWENHYWFAR_API
+unsigned int GWEN_CryptKey_GetKeyLength(const GWEN_CRYPTKEY *key);
+
+
 #if (defined(GWEN_EXTEND_CRYPTKEY) || defined(DOXYGEN))
 /**
  * This function is only available if you define <i>GWEN_EXTEND_CRYPTKEY</i>
@@ -321,6 +325,10 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   void GWEN_CryptKey_SetKeyData(GWEN_CRYPTKEY *key,
 				void *kd);
+
+GWENHYWFAR_API
+void GWEN_CryptKey_SetKeyLength(GWEN_CRYPTKEY *key, unsigned int i);
+
 #endif
 
 GWENHYWFAR_API

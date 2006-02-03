@@ -18,9 +18,8 @@
 
 #define GWEN_CRYPTTOKEN_OHBCI_NAME         "OHBCI"
 #define GWEN_CRYPTTOKEN_OHBCI_VMAJOR       1
-#define GWEN_CRYPTTOKEN_OHBCI_VMINOR       6
+#define GWEN_CRYPTTOKEN_OHBCI_VMINOR       7
 
-#define GWEN_CRYPTTOKEN_OHBCI_KEYLEN       768
 #define GWEN_CRYPTTOKEN_OHBCI_PINMINLENGTH 4 /* temporary, should be 5 or more */
 
 #define GWEN_CRYPTTOKEN_OHBCI_MAX_PIN_TRY 10
@@ -65,6 +64,10 @@
 /* new in version 1.6 */
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_HEADER             (unsigned char)0x16
 
+/* new in version 1.7 */
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_USER_PRIVAUTHKEY   (unsigned char)0xd6
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_INST_PUBAUTHKEY    (unsigned char)0xd7
+
 /* keydata */
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_ISPUBLIC      (unsigned char) 0x01
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_ISCRYPT       (unsigned char) 0x02
@@ -84,6 +87,8 @@
 /* new in version 1.3 */
 #define GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_EXP           (unsigned char) 0x0f
 
+/* new in version 1.7 */
+#define GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_LEN           (unsigned char) 0x10
 
 
 

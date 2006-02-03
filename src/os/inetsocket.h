@@ -72,7 +72,8 @@ typedef enum {
   GWEN_SocketTypeTCP=1,
   GWEN_SocketTypeUDP,
   GWEN_SocketTypeRAW,
-  GWEN_SocketTypeUnix
+  GWEN_SocketTypeUnix,
+  GWEN_SocketTypeFile
 } GWEN_SOCKETTYPE;
 
 
@@ -141,6 +142,8 @@ GWENHYWFAR_API int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp);
  * Constructor. You should always use this to create socket variables.
  */
 GWENHYWFAR_API GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType);
+
+GWENHYWFAR_API GWEN_SOCKET *GWEN_Socket_fromFile(int fd);
 
 /**
  * Destructor.

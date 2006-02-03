@@ -86,6 +86,14 @@ const char *GWEN_NetLayerHttp_GetInStatusText(const GWEN_NETLAYER *nl);
 
 
 GWENHYWFAR_API
+void GWEN_NetLayerHttp_SetHttpVersion(GWEN_NETLAYER *nl,
+                                      GWEN_NETLAYER_HTTP_VERSION v);
+
+GWENHYWFAR_API
+GWEN_NETLAYER_HTTP_VERSION
+  GWEN_NetLayerHttp_GetHttpVersion(const GWEN_NETLAYER *nl);
+
+GWENHYWFAR_API
 int GWEN_NetLayerHttp_Request(GWEN_NETLAYER *nl,
                               const char *command,
                               const GWEN_URL *url,

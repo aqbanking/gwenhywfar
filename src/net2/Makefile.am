@@ -24,6 +24,7 @@ noinst_HEADERS=\
   nl_log_p.h \
   nl_packets_p.h \
   nl_socket_p.h \
+  nl_stdio_p.h \
   url_l.h \
   url_p.h
 
@@ -37,7 +38,8 @@ iheader_HEADERS=\
   nl_hbci.h \
   nl_packets.h \
   nl_file.h \
-  nl_log.h
+  nl_log.h \
+  nl_stdio.h
 
 libnet2_la_SOURCES=\
   netlayer.c \
@@ -48,7 +50,8 @@ libnet2_la_SOURCES=\
   nl_hbci.c \
   nl_packets.c \
   nl_file.c \
-  nl_log.c
+  nl_log.c \
+  nl_stdio.c
 
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)

@@ -760,6 +760,14 @@ void GWEN_CryptTokenOHBCI__DecodeKey(GWEN_CRYPTTOKEN *ct,
 			    p, l);
       break;
 
+    case GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_LEN:
+      assert(p);
+      GWEN_DB_SetIntValue(node,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "keyLength",
+                          atoi(p));
+      break;
+
     default:
       DBG_WARN(GWEN_LOGDOMAIN, "Unknown tag %02x", GWEN_TAG16_GetTagType(tlv));
       break;
@@ -938,6 +946,15 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
       DBG_INFO(GWEN_LOGDOMAIN,
 	       "Ignoring temporary crypt keys");
       break;
+
+    case GWEN_CRYPTTOKEN_OHBCI_TAG_USER_PRIVAUTHKEY:
+      GWEN_CryptTokenOHBCI__DecodeKey(ct, tlv, dbKeys, "localAuthKey");
+      break;
+
+    case GWEN_CRYPTTOKEN_OHBCI_TAG_INST_PUBAUTHKEY:
+      GWEN_CryptTokenOHBCI__DecodeKey(ct, tlv, dbKeys, "remoteAuthKey");
+      break;
+
     case GWEN_CRYPTTOKEN_OHBCI_TAG_HEADER:
       /* ignore header here */
       break;
@@ -1032,6 +1049,44 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
         peerId=GWEN_CryptKey_GetOwner(key);
       GWEN_CryptKey_SetStatus(key, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
       GWEN_CryptTokenFile_Context_SetRemoteCryptKey(fct, key);
+    }
+  }
+
+  /* local auth key */
+  dbKey=GWEN_DB_GetGroup(dbKeys, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                         "localAuthKey");
+  if (dbKey) {
+    GWEN_CRYPTKEY *key;
+
+    GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "data/public", 0);
+    key=GWEN_CryptKey_fromDb(dbKey);
+    if (!key) {
+      rv=-1;
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
+    }
+    else {
+      GWEN_CryptKey_SetStatus(key, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
+      GWEN_CryptTokenFile_Context_SetLocalAuthKey(fct, key);
+    }
+  }
+
+  /* remote auth key */
+  dbKey=GWEN_DB_GetGroup(dbKeys, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                         "remoteAuthKey");
+  if (dbKey) {
+    GWEN_CRYPTKEY *key;
+
+    GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "data/public", 0);
+    key=GWEN_CryptKey_fromDb(dbKey);
+    if (!key) {
+      rv=-1;
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad key format");
+    }
+    else {
+      GWEN_CryptKey_SetStatus(key, GWEN_CRYPTTOKEN_KEYSTATUS_ACTIVE);
+      GWEN_CryptTokenFile_Context_SetRemoteAuthKey(fct, key);
     }
   }
 
@@ -1235,6 +1290,11 @@ int GWEN_CryptTokenOHBCI__EncodeKey(const GWEN_CRYPTKEY *key,
                              dbuf);
   snprintf(numbuf, sizeof(numbuf), "%d", GWEN_CryptKey_GetVersion(key));
   GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_VERSION,
+                             numbuf,
+                             -1,
+                             dbuf);
+  snprintf(numbuf, sizeof(numbuf), "%d", GWEN_CryptKey_GetKeyLength(key));
+  GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_KEY_LEN,
                              numbuf,
                              -1,
                              dbuf);

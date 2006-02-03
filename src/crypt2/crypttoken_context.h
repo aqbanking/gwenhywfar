@@ -97,7 +97,7 @@ void GWEN_CryptToken_Context_SetDescription(GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                            const char *s);
 
 GWENHYWFAR_API
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
   GWEN_CryptToken_Context_GetSignKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 
 GWENHYWFAR_API
@@ -106,7 +106,25 @@ void
                                          const GWEN_CRYPTTOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
+  GWEN_CryptToken_Context_GetLocalAuthKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
+
+GWENHYWFAR_API
+void
+  GWEN_CryptToken_Context_SetLocalAuthKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                              const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
+GWEN_CRYPTTOKEN_KEYINFO*
+  GWEN_CryptToken_Context_GetRemoteAuthKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
+
+GWENHYWFAR_API
+void
+  GWEN_CryptToken_Context_SetRemoteAuthKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                               const GWEN_CRYPTTOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
+GWEN_CRYPTTOKEN_KEYINFO*
   GWEN_CryptToken_Context_GetVerifyKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 
 GWENHYWFAR_API
@@ -115,7 +133,7 @@ void
                                            const GWEN_CRYPTTOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
   GWEN_CryptToken_Context_GetEncryptKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 
 GWENHYWFAR_API
@@ -124,7 +142,7 @@ void
                                             const GWEN_CRYPTTOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
   GWEN_CryptToken_Context_GetDecryptKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 
 GWENHYWFAR_API
@@ -133,7 +151,7 @@ void
                                             const GWEN_CRYPTTOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
-const GWEN_CRYPTTOKEN_SIGNINFO*
+GWEN_CRYPTTOKEN_SIGNINFO*
   GWEN_CryptToken_Context_GetSignInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 
 GWENHYWFAR_API
@@ -141,12 +159,21 @@ void GWEN_CryptToken_Context_SetSignInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                          const GWEN_CRYPTTOKEN_SIGNINFO *si);
 
 GWENHYWFAR_API
-const GWEN_CRYPTTOKEN_CRYPTINFO*
+GWEN_CRYPTTOKEN_CRYPTINFO*
   GWEN_CryptToken_Context_GetCryptInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
 
 GWENHYWFAR_API
 void GWEN_CryptToken_Context_SetCryptInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
                                           const GWEN_CRYPTTOKEN_CRYPTINFO *ci);
+
+GWENHYWFAR_API
+GWEN_CRYPTTOKEN_SIGNINFO*
+  GWEN_CryptToken_Context_GetAuthInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx);
+
+GWENHYWFAR_API
+void GWEN_CryptToken_Context_SetAuthInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                         const GWEN_CRYPTTOKEN_SIGNINFO *si);
+
 /*@}*/
 
 

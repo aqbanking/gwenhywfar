@@ -74,6 +74,14 @@ void GWEN_CryptTokenFile_Context_SetRemoteSignSeq(GWEN_CT_FILE_CONTEXT *fc,
                                           unsigned int i);
 
 GWENHYWFAR_API
+unsigned int
+GWEN_CryptTokenFile_Context_GetLocalAuthSeq(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
+void GWEN_CryptTokenFile_Context_SetLocalAuthSeq(GWEN_CT_FILE_CONTEXT *fc,
+                                                 unsigned int i);
+
+GWENHYWFAR_API
 GWEN_CRYPTKEY*
   GWEN_CryptTokenFile_Context_GetLocalSignKey(const GWEN_CT_FILE_CONTEXT *fc);
 
@@ -104,6 +112,24 @@ GWEN_CRYPTKEY*
 GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetRemoteCryptKey(GWEN_CT_FILE_CONTEXT *fc,
                                                    GWEN_CRYPTKEY *key);
+
+GWEN_CRYPTKEY*
+GWEN_CryptTokenFile_Context_GetLocalAuthKey(const GWEN_CT_FILE_CONTEXT *fc);
+
+GWENHYWFAR_API
+void GWEN_CryptTokenFile_Context_SetLocalAuthKey(GWEN_CT_FILE_CONTEXT *fc,
+                                                 GWEN_CRYPTKEY *key);
+
+
+
+GWEN_CRYPTKEY*
+GWEN_CryptTokenFile_Context_GetRemoteAuthKey(const GWEN_CT_FILE_CONTEXT *fc);
+
+
+GWENHYWFAR_API
+void GWEN_CryptTokenFile_Context_SetRemoteAuthKey(GWEN_CT_FILE_CONTEXT *fc,
+                                                  GWEN_CRYPTKEY *key);
+
 
 GWENHYWFAR_API
 GWEN_CRYPTTOKEN_USER*

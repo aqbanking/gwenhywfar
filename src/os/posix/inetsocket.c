@@ -174,6 +174,17 @@ GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType){
 
 
 
+GWEN_SOCKET *GWEN_Socket_fromFile(int fd) {
+  GWEN_SOCKET *sp;
+
+  GWEN_NEW_OBJECT(GWEN_SOCKET, sp);
+  sp->type=GWEN_SocketTypeFile;
+  sp->socket=fd;
+  return sp;
+}
+
+
+
 void GWEN_Socket_free(GWEN_SOCKET *sp){
   if (sp) {
     GWEN_FREE_OBJECT(sp);

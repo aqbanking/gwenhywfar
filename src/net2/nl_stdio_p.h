@@ -2,8 +2,8 @@
  $RCSfile$
                              -------------------
     cvs         : $Id$
-    begin       : Sat Nov 08 2003
-    copyright   : (C) 2003 by Martin Preuss
+    begin       : Sat Jan 24 2004
+    copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,30 +26,34 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_KEYSPEC_P_H
-#define GWEN_KEYSPEC_P_H
+#ifndef GWEN_NL_STDIO_P_H
+#define GWEN_NL_STDIO_P_H
 
-#include <gwenhywfar/keyspec.h>
+#include "nl_stdio.h"
 
-struct GWEN_KEYSPEC {
-  GWEN_INHERIT_ELEMENT(GWEN_KEYSPEC)
-  GWEN_LIST_ELEMENT(GWEN_KEYSPEC)
-  int status;
-  char *keyType;
-  char *keyName;
-  char *owner;
-  unsigned int number;
-  unsigned int version;
-  unsigned int keyLength;
+
+
+typedef struct GWEN_NL_STDIO GWEN_NL_STDIO;
+struct GWEN_NL_STDIO {
+  GWEN_SOCKET *socketRead;
+  GWEN_SOCKET *socketWrite;
 };
 
+static void GWEN_NetLayerStdio_FreeData(void *bp, void *p);
+static int GWEN_NetLayerStdio_Disconnect(GWEN_NETLAYER *nl);
+static int GWEN_NetLayerStdio_Read(GWEN_NETLAYER *nl, char *buffer,
+                                   int *bsize);
+static int GWEN_NetLayerStdio_Write(GWEN_NETLAYER *nl,
+                                    const char *buffer,
+                                    int *bsize);
 
-GWEN_KEYSPEC *GWEN_KeySpec_List2__freeAll_cb(GWEN_KEYSPEC *st,
-                                             void *user_data);
+static int GWEN_NetLayerStdio_AddSockets(GWEN_NETLAYER *nl,
+                                         GWEN_SOCKETSET *readSet,
+                                         GWEN_SOCKETSET *writeSet,
+                                         GWEN_SOCKETSET *exSet);
 
+static GWEN_NETLAYER_RESULT GWEN_NetLayerStdio_Work(GWEN_NETLAYER *nl);
 
-
-
-#endif /* GWEN_KEYSPEC_P_H */
+#endif /* GWEN_NL_STDIO_P_H */
 
 

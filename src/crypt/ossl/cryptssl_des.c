@@ -219,6 +219,9 @@ GWEN_ERRORCODE GWEN_CryptKeyDES_FromDb(GWEN_CRYPTKEY *key,
                           GWEN_CRYPT_ERROR_BAD_SIZE);
   }
 
+  if (GWEN_CryptKey_GetKeyLength(key)==0)
+    GWEN_CryptKey_SetKeyLength(key, 16);
+
   memmove(kd, p, size);
   return 0;
 }

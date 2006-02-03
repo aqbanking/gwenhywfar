@@ -74,7 +74,7 @@
           <keyId>1</keyId>
           <keySize>768</keySize>
           <minKeySize>768</minKeySize>
-          <maxKeySize>768</maxKeySize>
+          <maxKeySize>2048</maxKeySize>
           <chunksize>96</chunksize>
           <cryptalgo>rsa</cryptalgo>
           <keyDescription>Local Sign Key</keyDescription>
@@ -89,7 +89,7 @@
           <keyId>2</keyId>
           <keySize>768</keySize>
           <minKeySize>768</minKeySize>
-          <maxKeySize>768</maxKeySize>
+          <maxKeySize>2048</maxKeySize>
           <chunksize>96</chunksize>
           <cryptalgo>rsa</cryptalgo>
           <keyDescription>Local Crypt Key</keyDescription>
@@ -103,7 +103,7 @@
           <keyId>3</keyId>
           <keySize>768</keySize>
           <minKeySize>768</minKeySize>
-          <maxKeySize>768</maxKeySize>
+          <maxKeySize>2048</maxKeySize>
           <chunksize>96</chunksize>
           <cryptalgo>rsa</cryptalgo>
           <keyDescription>Remote Sign Key</keyDescription>
@@ -116,13 +116,41 @@
           <keyId>4</keyId>
           <keySize>768</keySize>
           <minKeySize>768</minKeySize>
-          <maxKeySize>768</maxKeySize>
+          <maxKeySize>2048</maxKeySize>
           <chunksize>96</chunksize>
           <cryptalgo>rsa</cryptalgo>
           <keyDescription>Remote Crypt Key</keyDescription>
           <keyFlags>
             <flag>canEncrypt</flag>
             <flag>canDecrypt</flag>
+          </keyFlags>
+        </keyinfo>
+
+        <keyinfo>
+          <keyId>5</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>2048</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>rsa</cryptalgo>
+          <keyDescription>Local Auth Key</keyDescription>
+          <keyFlags>
+            <flag>canSign</flag>
+            <flag>canVerify</flag>
+            <flag>hasSignSeq</flag>
+          </keyFlags>
+        </keyinfo>
+
+        <keyinfo>
+          <keyId>6</keyId>
+          <keySize>768</keySize>
+          <minKeySize>768</minKeySize>
+          <maxKeySize>2048</maxKeySize>
+          <chunksize>96</chunksize>
+          <cryptalgo>rsa</cryptalgo>
+          <keyDescription>Remote Auth Key</keyDescription>
+          <keyFlags>
+            <flag>canVerify</flag>
           </keyFlags>
         </keyinfo>
         
@@ -152,6 +180,15 @@
             <cryptalgo>rsa</cryptalgo>
             <paddalgo>any</paddalgo>
           </cryptinfo>
+
+          <localAuthKeyInfo id="5" />
+          <remoteAuthKeyInfo id="6" />
+
+          <authinfo>
+            <id>1</id>
+            <hashalgo>any</hashalgo>
+            <paddalgo>any</paddalgo>
+          </authinfo>
           
         </context>
       </contexts>

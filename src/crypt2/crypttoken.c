@@ -1021,8 +1021,11 @@ void GWEN_CryptToken_Context_free(GWEN_CRYPTTOKEN_CONTEXT *ctx){
     GWEN_CryptToken_KeyInfo_free(ctx->verifyKeyInfo);
     GWEN_CryptToken_KeyInfo_free(ctx->encryptKeyInfo);
     GWEN_CryptToken_KeyInfo_free(ctx->decryptKeyInfo);
+    GWEN_CryptToken_KeyInfo_free(ctx->localAuthKeyInfo);
+    GWEN_CryptToken_KeyInfo_free(ctx->remoteAuthKeyInfo);
     GWEN_CryptToken_CryptInfo_free(ctx->cryptInfo);
     GWEN_CryptToken_SignInfo_free(ctx->signInfo);
+    GWEN_CryptToken_SignInfo_free(ctx->authInfo);
     free(ctx->description);
     GWEN_FREE_OBJECT(ctx);
   }
@@ -1052,6 +1055,13 @@ GWEN_CryptToken_Context_dup(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
   if (ctx->cryptInfo)
     nctx->cryptInfo=GWEN_CryptToken_CryptInfo_dup(ctx->cryptInfo);
 
+  if (ctx->localAuthKeyInfo)
+    nctx->localAuthKeyInfo=GWEN_CryptToken_KeyInfo_dup(ctx->localAuthKeyInfo);
+  if (ctx->remoteAuthKeyInfo)
+    nctx->remoteAuthKeyInfo=GWEN_CryptToken_KeyInfo_dup(ctx->remoteAuthKeyInfo);
+  if (ctx->authInfo)
+    nctx->authInfo=GWEN_CryptToken_SignInfo_dup(ctx->authInfo);
+
   if (ctx->description)
     nctx->description=strdup(ctx->description);
 
@@ -1079,6 +1089,8 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromDb(GWEN_DB_NODE *db){
   s=GWEN_DB_GetCharValue(db, "description", 0, 0);
   if (s)
     ctx->description=strdup(s);
+
+  /* sign keys */
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "signKeyInfo");
   if (dbT)
     ctx->signKeyInfo=GWEN_CryptToken_KeyInfo_fromDb(dbT);
@@ -1089,6 +1101,7 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromDb(GWEN_DB_NODE *db){
   if (dbT)
     ctx->signInfo=GWEN_CryptToken_SignInfo_fromDb(dbT);
 
+  /* crypt keys */
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "encryptKeyInfo");
   if (dbT)
     ctx->encryptKeyInfo=GWEN_CryptToken_KeyInfo_fromDb(dbT);
@@ -1098,6 +1111,17 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context_fromDb(GWEN_DB_NODE *db){
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "cryptInfo");
   if (dbT)
     ctx->cryptInfo=GWEN_CryptToken_CryptInfo_fromDb(dbT);
+
+  /* auth keys */
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "localAuthKeyInfo");
+  if (dbT)
+    ctx->localAuthKeyInfo=GWEN_CryptToken_KeyInfo_fromDb(dbT);
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "remoteAuthKeyInfo");
+  if (dbT)
+    ctx->remoteAuthKeyInfo=GWEN_CryptToken_KeyInfo_fromDb(dbT);
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "authInfo");
+  if (dbT)
+    ctx->authInfo=GWEN_CryptToken_SignInfo_fromDb(dbT);
 
   return ctx;
 }
@@ -1117,6 +1141,8 @@ int GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
   if (ctx->description)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "description", ctx->description);
+
+  /* sign keys */
   if (ctx->signKeyInfo) {
     dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
 			 "signKeyInfo");
@@ -1136,6 +1162,7 @@ int GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
     GWEN_CryptToken_SignInfo_toDb(ctx->signInfo, dbT);
   }
 
+  /* crypt keys */
   if (ctx->encryptKeyInfo) {
     dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
 			 "encryptKeyInfo");
@@ -1153,6 +1180,26 @@ int GWEN_CryptToken_Context_toDb(const GWEN_CRYPTTOKEN_CONTEXT *ctx,
 			 "cryptInfo");
     assert(dbT);
     GWEN_CryptToken_CryptInfo_toDb(ctx->cryptInfo, dbT);
+  }
+
+  /* auth keys */
+  if (ctx->localAuthKeyInfo) {
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			 "localAuthKeyInfo");
+    assert(dbT);
+    GWEN_CryptToken_KeyInfo_toDb(ctx->localAuthKeyInfo, dbT);
+  }
+  if (ctx->remoteAuthKeyInfo) {
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			 "remoteAuthKeyInfo");
+    assert(dbT);
+    GWEN_CryptToken_KeyInfo_toDb(ctx->remoteAuthKeyInfo, dbT);
+  }
+  if (ctx->authInfo) {
+    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+			 "authInfo");
+    assert(dbT);
+    GWEN_CryptToken_SignInfo_toDb(ctx->authInfo, dbT);
   }
 
   return 0;
@@ -1283,6 +1330,57 @@ GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context__fromXml(GWEN_CRYPTTOKEN *ct,
     }
   }
 
+  nn=GWEN_XMLNode_FindFirstTag(n, "localAuthKeyInfo", 0, 0);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->localAuthKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+      assert(ctx->localAuthKeyInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+      sscanf(s, "%i", &j);
+      ki=GWEN_CryptToken_GetKeyInfoById(ct, j);
+      assert(ki);
+      ctx->localAuthKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+    }
+  }
+
+  nn=GWEN_XMLNode_FindFirstTag(n, "remoteAuthKeyInfo", 0, 0);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->remoteAuthKeyInfo=GWEN_CryptToken_KeyInfo_fromXml(nn);
+      assert(ctx->remoteAuthKeyInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_KEYINFO *ki;
+
+      sscanf(s, "%i", &j);
+      ki=GWEN_CryptToken_GetKeyInfoById(ct, j);
+      assert(ki);
+      ctx->remoteAuthKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+    }
+  }
+
+  nn=GWEN_XMLNode_FindFirstTag(n, "authInfo", 0, 0);
+  if (nn) {
+    s=GWEN_XMLNode_GetProperty(nn, "id", 0);
+    if (!s) {
+      ctx->authInfo=GWEN_CryptToken_SignInfo_fromXml(nn);
+      assert(ctx->authInfo);
+    }
+    else {
+      const GWEN_CRYPTTOKEN_SIGNINFO *si;
+
+      sscanf(s, "%i", &j);
+      si=GWEN_CryptToken_GetSignInfoById(ct, j);
+      assert(si);
+      ctx->authInfo=GWEN_CryptToken_SignInfo_dup(si);
+    }
+  }
+
   return ctx;
 }
 
@@ -1322,7 +1420,7 @@ void GWEN_CryptToken_Context_SetContextType(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
 GWEN_CryptToken_Context_GetSignKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
   assert(ctx);
   return ctx->signKeyInfo;
@@ -1343,7 +1441,7 @@ GWEN_CryptToken_Context_SetSignKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
 GWEN_CryptToken_Context_GetVerifyKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
   assert(ctx);
   return ctx->verifyKeyInfo;
@@ -1364,7 +1462,7 @@ GWEN_CryptToken_Context_SetVerifyKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
 GWEN_CryptToken_Context_GetEncryptKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
   assert(ctx);
   return ctx->encryptKeyInfo;
@@ -1385,7 +1483,7 @@ GWEN_CryptToken_Context_SetEncryptKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
-const GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CRYPTTOKEN_KEYINFO*
 GWEN_CryptToken_Context_GetDecryptKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
   assert(ctx);
   return ctx->decryptKeyInfo;
@@ -1402,6 +1500,48 @@ GWEN_CryptToken_Context_SetDecryptKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
     ctx->decryptKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
   else
     ctx->decryptKeyInfo=0;
+}
+
+
+
+GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CryptToken_Context_GetLocalAuthKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
+  assert(ctx);
+  return ctx->localAuthKeyInfo;
+}
+
+
+
+void
+GWEN_CryptToken_Context_SetLocalAuthKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                            const GWEN_CRYPTTOKEN_KEYINFO *ki){
+  assert(ctx);
+  GWEN_CryptToken_KeyInfo_free(ctx->localAuthKeyInfo);
+  if (ki)
+    ctx->localAuthKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+  else
+    ctx->localAuthKeyInfo=0;
+}
+
+
+
+GWEN_CRYPTTOKEN_KEYINFO*
+GWEN_CryptToken_Context_GetRemoteAuthKeyInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx){
+  assert(ctx);
+  return ctx->remoteAuthKeyInfo;
+}
+
+
+
+void
+GWEN_CryptToken_Context_SetRemoteAuthKeyInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                            const GWEN_CRYPTTOKEN_KEYINFO *ki){
+  assert(ctx);
+  GWEN_CryptToken_KeyInfo_free(ctx->remoteAuthKeyInfo);
+  if (ki)
+    ctx->remoteAuthKeyInfo=GWEN_CryptToken_KeyInfo_dup(ki);
+  else
+    ctx->remoteAuthKeyInfo=0;
 }
 
 
@@ -1426,7 +1566,7 @@ void GWEN_CryptToken_Context_SetDescription(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
-const GWEN_CRYPTTOKEN_SIGNINFO*
+GWEN_CRYPTTOKEN_SIGNINFO*
 GWEN_CryptToken_Context_GetSignInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx) {
   assert(ctx);
   return ctx->signInfo;
@@ -1444,11 +1584,30 @@ void GWEN_CryptToken_Context_SetSignInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
 
 
 
-const GWEN_CRYPTTOKEN_CRYPTINFO*
+GWEN_CRYPTTOKEN_CRYPTINFO*
 GWEN_CryptToken_Context_GetCryptInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx) {
   assert(ctx);
   return ctx->cryptInfo;
 }
+
+
+
+GWEN_CRYPTTOKEN_SIGNINFO*
+GWEN_CryptToken_Context_GetAuthInfo(const GWEN_CRYPTTOKEN_CONTEXT *ctx) {
+  assert(ctx);
+  return ctx->authInfo;
+}
+
+
+
+void GWEN_CryptToken_Context_SetAuthInfo(GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                                         const GWEN_CRYPTTOKEN_SIGNINFO *si){
+  assert(ctx);
+  GWEN_CryptToken_SignInfo_free(ctx->authInfo);
+  if (si) ctx->authInfo=GWEN_CryptToken_SignInfo_dup(si);
+  else ctx->authInfo=0;
+}
+
 
 
 
@@ -1967,6 +2126,24 @@ void GWEN_CryptToken_SetDecryptFn(GWEN_CRYPTTOKEN *ct,
 
 
 
+void GWEN_CryptToken_SetAuthSignFn(GWEN_CRYPTTOKEN *ct,
+                                   GWEN_CRYPTTOKEN_AUTHSIGN_FN fn) {
+  assert(ct);
+  assert(ct->usage);
+  ct->authSignFn=fn;
+}
+
+
+
+void GWEN_CryptToken_SetAuthVerifyFn(GWEN_CRYPTTOKEN *ct,
+                                     GWEN_CRYPTTOKEN_AUTHVERIFY_FN fn) {
+  assert(ct);
+  assert(ct->usage);
+  ct->authVerifyFn=fn;
+}
+
+
+
 void GWEN_CryptToken_SetReadKeyFn(GWEN_CRYPTTOKEN *ct,
                                   GWEN_CRYPTTOKEN_READKEY_FN fn){
   assert(ct);
@@ -2187,6 +2364,43 @@ int GWEN_CryptToken_Verify(GWEN_CRYPTTOKEN *ct,
   if (ct->verifyFn==0)
     return GWEN_ERROR_UNSUPPORTED;
   return ct->verifyFn(ct, ctx, ptr, len, sigptr, siglen);
+}
+
+
+
+int GWEN_CryptToken_AuthSign(GWEN_CRYPTTOKEN *ct,
+                             const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                             const char *ptr,
+                             unsigned int len,
+                             GWEN_BUFFER *dst){
+  assert(ct);
+  assert(ct->usage);
+  if (ct->isOpen==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    return GWEN_ERROR_NOT_OPEN;
+  }
+  if (ct->authSignFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  return ct->authSignFn(ct, ctx, ptr, len, dst);
+}
+
+
+
+int GWEN_CryptToken_AuthVerify(GWEN_CRYPTTOKEN *ct,
+                               const GWEN_CRYPTTOKEN_CONTEXT *ctx,
+                               const char *ptr,
+                               unsigned int len,
+                               const char *sigptr,
+                               unsigned int siglen) {
+  assert(ct);
+  assert(ct->usage);
+  if (ct->isOpen==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not open");
+    return GWEN_ERROR_NOT_OPEN;
+  }
+  if (ct->authVerifyFn==0)
+    return GWEN_ERROR_UNSUPPORTED;
+  return ct->authVerifyFn(ct, ctx, ptr, len, sigptr, siglen);
 }
 
 
