@@ -108,15 +108,18 @@ void GWEN_NetLayerLog_FreeData(void *bp, void *p) {
 
 int GWEN_NetLayerLog_Connect(GWEN_NETLAYER *nl) {
   GWEN_NETLAYER *baseLayer;
-  int rv;
+  int rv=0;
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
-
-  rv=GWEN_NetLayer_Connect(baseLayer);
-  DBG_VERBOUS(GWEN_LOGDOMAIN, "Result of BaseLayer Connect: %d", rv);
+  if (GWEN_NetLayer_GetStatus(baseLayer)!=GWEN_NetLayerStatus_Connected) {
+    rv=GWEN_NetLayer_Connect(baseLayer);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Result of BaseLayer Connect: %d", rv);
+    }
+  }
+  GWEN_NetLayer_SetStatus(nl, GWEN_NetLayer_GetStatus(baseLayer));
   GWEN_NetLayer_SubFlags(nl, GWEN_NETLAYER_FLAGS_PASSIVE);
-
   return rv;
 }
 
@@ -223,6 +226,7 @@ int GWEN_NetLayerLog_AddSockets(GWEN_NETLAYER *nl,
 GWEN_NETLAYER_RESULT GWEN_NetLayerLog_Work(GWEN_NETLAYER *nl) {
   GWEN_NL_LOG *nld;
   GWEN_NETLAYER *baseLayer;
+  GWEN_NETLAYER_RESULT rv;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_LOG, nl);
@@ -231,7 +235,9 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerLog_Work(GWEN_NETLAYER *nl) {
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
 
-  return GWEN_NetLayer_Work(baseLayer);
+  rv=GWEN_NetLayer_Work(baseLayer);
+  GWEN_NetLayer_SetFlags(nl, GWEN_NetLayer_GetFlags(baseLayer));
+  return rv;
 }
 
 
@@ -272,6 +278,7 @@ void GWEN_NetLayerLog_BaseStatusChange(GWEN_NETLAYER *nl,
 
   DBG_NOTICE(GWEN_LOGDOMAIN, "Base has changed its status");
   GWEN_NetLayer_SetStatus(nl, newst);
+  GWEN_NetLayer_SetFlags(nl, GWEN_NetLayer_GetFlags(baseLayer));
 
   if (newst==GWEN_NetLayerStatus_Connected) {
     GWEN_BUFFER *nbuf;

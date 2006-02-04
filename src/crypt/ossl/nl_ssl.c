@@ -325,12 +325,14 @@ int GWEN_NetLayerSsl_Setup(GWEN_NETLAYER *nl) {
 int GWEN_NetLayerSsl_Connect(GWEN_NETLAYER *nl) {
   GWEN_NL_SSL *nld;
   GWEN_NETLAYER *baseLayer;
-  int rv;
+  int rv=0;
   GWEN_NETLAYER_STATUS st;
 
   assert(nl);
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_SSL, nl);
   assert(nld);
+
+  GWEN_NetLayer_SubFlags(nl, GWEN_NETLAYER_FLAGS_PASSIVE);
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
@@ -344,16 +346,20 @@ int GWEN_NetLayerSsl_Connect(GWEN_NETLAYER *nl) {
   }
 
   nld->mode=GWEN_NetLayerSslMode_PConnecting;
-  rv=GWEN_NetLayer_Connect(baseLayer);
-  DBG_VERBOUS(GWEN_LOGDOMAIN, "Result of BaseLayer Connect: %d", rv);
-  if (rv<0) {
-    GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disabled);
-    nld->mode=GWEN_NetLayerSslMode_Idle;
+  if (GWEN_NetLayer_GetStatus(baseLayer)!=GWEN_NetLayerStatus_Connected) {
+    rv=GWEN_NetLayer_Connect(baseLayer);
+    if (rv<0) {
+      GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disabled);
+      nld->mode=GWEN_NetLayerSslMode_Idle;
+    }
+    else {
+      GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Connecting);
+    }
   }
   else {
-    GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Connecting);
-    GWEN_NetLayer_SubFlags(nl, GWEN_NETLAYER_FLAGS_PASSIVE);
+    nld->mode=GWEN_NetLayerSslMode_PConnected;
   }
+
   return rv;
 }
 

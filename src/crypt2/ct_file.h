@@ -25,7 +25,7 @@ extern "C" {
 /**
  * <p>A crypt token file may contain mutliple user contexts.</p>
  * <p>Every user context contains the local signature sequence counter,
- * 4 keys and a GWEN_CRYPTTOKEN_USER.</p>
+ * up to 6 keys and a GWEN_CRYPTTOKEN_USER.</p>
  * <p>The key ids must be chosen according to the following table:</p>
  * <table>
  * <tr><th>Key id</th><th>Description</th></tr>
@@ -33,6 +33,8 @@ extern "C" {
  * <tr><td>XXXXXX02</td><td>LocalCryptKey</td></tr>
  * <tr><td>XXXXXX03</td><td>RemoteSignKey</td></tr>
  * <tr><td>XXXXXX04</td><td>RemoteCryptKey</td></tr>
+ * <tr><td>XXXXXX05</td><td>LocalAuthKey</td></tr>
+ * <tr><td>XXXXXX06</td><td>RemoteAuthKey</td></tr>
  * </table>
  * <p>This table shows that the lower 8 bits are predefined. The other 24 bits
  * can be freely chosen by the implementation of the plugin.</p>
@@ -113,7 +115,7 @@ GWENHYWFAR_API
 void GWEN_CryptTokenFile_Context_SetRemoteCryptKey(GWEN_CT_FILE_CONTEXT *fc,
                                                    GWEN_CRYPTKEY *key);
 
-GWEN_CRYPTKEY*
+GWENHYWFAR_API GWEN_CRYPTKEY*
 GWEN_CryptTokenFile_Context_GetLocalAuthKey(const GWEN_CT_FILE_CONTEXT *fc);
 
 GWENHYWFAR_API
@@ -122,7 +124,7 @@ void GWEN_CryptTokenFile_Context_SetLocalAuthKey(GWEN_CT_FILE_CONTEXT *fc,
 
 
 
-GWEN_CRYPTKEY*
+GWENHYWFAR_API GWEN_CRYPTKEY*
 GWEN_CryptTokenFile_Context_GetRemoteAuthKey(const GWEN_CT_FILE_CONTEXT *fc);
 
 
@@ -131,8 +133,7 @@ void GWEN_CryptTokenFile_Context_SetRemoteAuthKey(GWEN_CT_FILE_CONTEXT *fc,
                                                   GWEN_CRYPTKEY *key);
 
 
-GWENHYWFAR_API
-GWEN_CRYPTTOKEN_USER*
+GWENHYWFAR_API GWEN_CRYPTTOKEN_USER*
   GWEN_CryptTokenFile_Context_GetUser(const GWEN_CT_FILE_CONTEXT *fc);
 
 GWENHYWFAR_API

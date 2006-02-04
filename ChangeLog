@@ -11,6 +11,13 @@
 -------------------------------------------------
 - added functions GWEN_NetLayerHttp_GetHttpVersion()
   and GWEN_NetLayerHttp_SetHttpVersion()
+- fixed a bug in GWEN_InetSocket_Accept_Wait (was waiting for writeability,
+  should rather wait for readability)
+- fixed another bug in GWEN_InetSocket_Accept_Wait(): Was closing socket
+  even wif the error simply was a timeout
+- netlayers can now take over already connected baseLayers
+- OpenHBCI CryptToken:
+  - now saves new auth keys
 
 
 2006/02/02: Martin Preuss<martin@libchipcard.de>

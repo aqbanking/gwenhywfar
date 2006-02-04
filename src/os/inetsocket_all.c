@@ -238,7 +238,7 @@ GWEN_ERRORCODE GWEN_Socket_Accept_Wait(GWEN_SOCKET *sp,
                             GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
                             GWEN_SOCKET_ERROR_ABORTED);
     }
-    err=GWEN_Socket_WaitForWrite(sp, distance);
+    err=GWEN_Socket_WaitForRead(sp, distance);
     if (GWEN_Error_IsOk(err)) {
       break;
     }
@@ -261,8 +261,8 @@ GWEN_ERRORCODE GWEN_Socket_Accept_Wait(GWEN_SOCKET *sp,
     if (timeout!=-1) {
       if (difftime(time(0), startt)>timeout) {
         DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
-        DBG_ERROR(GWEN_LOGDOMAIN, "Could not accept within %d seconds, aborting", timeout);
-        GWEN_Socket_Close(sp);
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Could not accept within %d seconds, aborting", timeout);
         return GWEN_Error_new(0,
                               GWEN_ERROR_SEVERITY_ERR,
                               GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),

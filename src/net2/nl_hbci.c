@@ -98,12 +98,16 @@ void GWEN_NetLayerHbci_FreeData(void *bp, void *p) {
 
 int GWEN_NetLayerHbci_Connect(GWEN_NETLAYER *nl) {
   GWEN_NETLAYER *baseLayer;
-  int rv;
+  int rv=0;
 
   baseLayer=GWEN_NetLayer_GetBaseLayer(nl);
   assert(baseLayer);
-  rv=GWEN_NetLayer_Connect(baseLayer);
-  DBG_VERBOUS(GWEN_LOGDOMAIN, "Result of BaseLayer Connect: %d", rv);
+  if (GWEN_NetLayer_GetStatus(baseLayer)!=GWEN_NetLayerStatus_Connected) {
+    rv=GWEN_NetLayer_Connect(baseLayer);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Result of BaseLayer Connect: %d", rv);
+    }
+  }
   GWEN_NetLayer_SetStatus(nl, GWEN_NetLayer_GetStatus(baseLayer));
   GWEN_NetLayer_SubFlags(nl, GWEN_NETLAYER_FLAGS_PASSIVE);
   return rv;

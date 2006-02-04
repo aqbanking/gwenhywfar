@@ -1078,7 +1078,7 @@ int GWEN_CryptTokenOHBCI__Decode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
     GWEN_CRYPTKEY *key;
 
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "data/public", 0);
+                        "data/public", 1);
     key=GWEN_CryptKey_fromDb(dbKey);
     if (!key) {
       rv=-1;
@@ -1487,6 +1487,23 @@ int GWEN_CryptTokenOHBCI_Encode(GWEN_CRYPTTOKEN *ct, GWEN_BUFFER *dbuf) {
 	   GWEN_CryptTokenFile_Context_GetRemoteSignSeq(fct));
   GWEN_TAG16_DirectlyToBuffer(GWEN_CRYPTTOKEN_OHBCI_TAG_REMOTE_SEQ,
 			      numbuf, -1, dbuf);
+
+  /* new in 1.7 */
+  key=GWEN_CryptTokenFile_Context_GetLocalAuthKey(fct);
+  if (GWEN_CryptTokenOHBCI__EncodeKey(key,
+                                      GWEN_CRYPTTOKEN_OHBCI_TAG_USER_PRIVAUTHKEY,
+                                      1, 0, dbuf)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not encode key");
+    return -1;
+  }
+
+  key=GWEN_CryptTokenFile_Context_GetRemoteAuthKey(fct);
+  if (GWEN_CryptTokenOHBCI__EncodeKey(key,
+                                      GWEN_CRYPTTOKEN_OHBCI_TAG_INST_PUBAUTHKEY,
+				      0, 0, dbuf)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not encode key");
+    return -1;
+  }
 
   return 0;
 }
