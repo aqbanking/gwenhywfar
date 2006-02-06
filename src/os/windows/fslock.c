@@ -95,6 +95,7 @@ void GWEN_FSLock_free(GWEN_FSLOCK *fl){
     }
     free(fl->entryName);
     free(fl->baseLockFilename);
+    free(fl->uniqueLockFilename);
     GWEN_FREE_OBJECT(fl);
   }
 }
