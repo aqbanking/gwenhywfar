@@ -149,8 +149,8 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
     for (i=0; i<4; i++) {
       /* get next valid character */
       if (lastWasEq) {
-        while (*src && *src!='=')
-          src++;
+	while (*src && *src!='=')
+	  src++;
       }
       else {
         while (*src && ((p=strchr(GWEN_Base64_Alphabet, *src))==0))
@@ -166,7 +166,7 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
         }
       }
       if (*src=='=')
-        lastWasEq=1;
+        lastWasEq++;
       v<<=6;
       v+=(p-GWEN_Base64_Alphabet) & 0x3f;
       src++;
@@ -193,9 +193,17 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
       } /* switch */
     }
     else {
-      GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
-      GWEN_Buffer_AppendByte(dst, (v>>8) & 0xff);
-      GWEN_Buffer_AppendByte(dst, v & 0xff);
+      int bytes;
+
+      bytes=(24-(lastWasEq*6))/8;
+      if (bytes) {
+	GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
+	if (bytes>1) {
+	  GWEN_Buffer_AppendByte(dst, (v>>8) & 0xff);
+          if (bytes>2)
+	    GWEN_Buffer_AppendByte(dst, v & 0xff);
+	}
+      }
     }
   } /* for full quadruplets */
 

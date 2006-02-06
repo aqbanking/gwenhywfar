@@ -471,7 +471,7 @@ GWEN_ERRORCODE GWEN_CryptKeyRSA_FromDb(GWEN_CRYPTKEY *key,
   assert(kd);
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Reading this key:");
-  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
+  if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
     GWEN_DB_Dump(db, stderr, 2);
 
   /* needed because older versions of GWEN did not store the keylength */

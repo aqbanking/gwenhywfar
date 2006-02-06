@@ -7,10 +7,16 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/02/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added a test executable (for now only checks base64 code)
+
+
 2006-02-06   Christian Stimming <stimming@tuhh.de>
 
 	* src/os/{posix,windows}/fslock.c: Free strdup'd string to fix a
 	memory leak.
+
 
 2006/02/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

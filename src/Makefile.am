@@ -60,6 +60,10 @@ libgwenhywfar_la_DEPENDENCIES=\
   os/libos.la \
   parser/libparser.la
 
+noinst_PROGRAMS=testlib
+testlib_SOURCES=testlib.c
+testlib_LDADD=libgwenhywfar.la
+
 # if IS_WINDOWS
 if IS_WINDOWS
 libgwenhywfar_la_DEPENDENCIES += ressource.o
