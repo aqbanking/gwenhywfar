@@ -140,15 +140,6 @@ win32-cs-start: dist
 	  && rm -Rf $(win_develdir) $(win_bindir)
 	$(am__remove_distdir)
 
-# Extra rule instead of "all" which creates the auto-generated headers
-# *first* and only then starts "make all". This avoids duplicate
-# compilation.
-quick: config.h
-	make -C src version.h types.h
-	make -C src/os/$(GWEN_OS) system.h
-	make -C po stamp-po
-	make
-
 CLEANFILES = gwenhywfar-config
 DISTCLEANFILES = gwenhywfar-config.in
 
