@@ -1,24 +1,24 @@
-INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
+INCLUDES= \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/net2 \
- -I$(top_srcdir)/src/parser @all_includes@
+ -I$(top_srcdir)/src/parser $(all_includes)
 
-AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+AM_CFLAGS=$(visibility_cflags)
 
 SUBDIRS = base crypt io ipc os parser crypt2 net2
 
 localedir=$(datadir)/locale
 DEFS += \
+  -DBUILDING_GWENHYWFAR \
   -DGWEN_PREFIX_DIR=\"$(prefix)\" \
   -DGWEN_SYSCONF_DIR=\"$(sysconfdir)\" \
   -DLOCALEDIR=\"$(localedir)\" \
   -DLIBDIR=\"$(libdir)\" \
   -DPLUGINDIR=\"$(gwenhywfar_plugindir)\"
-
 
 EXTRA_DIST=\
  types.h.in \
@@ -77,6 +77,7 @@ libgwenhywfar_la_LDFLAGS= \
    $(GWENHYWFAR_SO_CURRENT):$(GWENHYWFAR_SO_REVISION):$(GWENHYWFAR_SO_AGE)
 
 
+TESTS = testlib
 
 sources:
 	for d in $(SUBDIRS); do \
