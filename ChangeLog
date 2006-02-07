@@ -1,11 +1,14 @@
   -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
   ! Remember to enable the _free()-function in plugindescr.c (freeAll()) !
-  ! as soon as the next release of GnuCash is out !                      !
+  ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+
+===========================================================================
+MARK: released gwenhywfar-1.99.7 (2006/02/06)
+===========================================================================
+
 
 2006/02/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
