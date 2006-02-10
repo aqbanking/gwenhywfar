@@ -347,6 +347,12 @@ int GWEN_NetLayer_Write_Wait(GWEN_NETLAYER *nl,
                              int timeout);
 
 GWENHYWFAR_API
+int GWEN_NetLayer_WaitForStatus(GWEN_NETLAYER *nl,
+                                GWEN_NETLAYER_STATUS nlst,
+                                int timeout);
+
+
+GWENHYWFAR_API
 int GWEN_NetLayer_Connect(GWEN_NETLAYER *nl);
 
 GWENHYWFAR_API

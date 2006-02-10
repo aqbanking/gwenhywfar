@@ -206,9 +206,9 @@ int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *buf, int dstSize){
   p=GWEN_Buffer_GetStart(buf);
   *(p++)=0x00;
   *(p++)=0x01; /* block type 01 */
-  if (diff>11) {
-    memset(p, 0xff, diff-11);
-    p+=diff-11;
+  if (diff>3) {
+    memset(p, 0xff, diff-3);
+    p+=diff-3;
   }
   *(p++)=0x00;
 
@@ -245,7 +245,7 @@ int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize){
   p=GWEN_Buffer_GetStart(buf);
   *(p++)=0x00;
   *(p++)=0x02; /* block type 02 */
-  for (i=0; i<diff-11; i++) {
+  for (i=0; i<diff-3; i++) {
     int r;
 
     while( (r=GWEN_Random() & 0xff) == 0 );

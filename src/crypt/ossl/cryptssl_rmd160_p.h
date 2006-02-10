@@ -37,16 +37,14 @@
 #include <openssl/objects.h>
 
 
-GWEN_ERRORCODE GWEN_MdRmd160_Register();
+static GWEN_MD *GWEN_MdRmd160_new();
+static void GWEN_MdRmd160_FreeData(GWEN_MD *md);
 
-GWEN_MD *GWEN_MdRmd160_new();
-void GWEN_MdRmd160_FreeData(GWEN_MD *md);
-
-int GWEN_MdRmd160_Begin(GWEN_MD *md);
-int GWEN_MdRmd160_End(GWEN_MD *md);
-int GWEN_MdRmd160_Update(GWEN_MD *md,
-                         const char *buf,
-                         unsigned int l);
+static int GWEN_MdRmd160_Begin(GWEN_MD *md);
+static int GWEN_MdRmd160_End(GWEN_MD *md);
+static int GWEN_MdRmd160_Update(GWEN_MD *md,
+                                const char *buf,
+                                unsigned int l);
 
 
 

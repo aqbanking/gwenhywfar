@@ -46,6 +46,19 @@ GWEN_ERRORCODE GWEN_CryptImpl_Fini();
 
 void GWEN_CryptImpl_Dump_Bignum(BIGNUM *bn, FILE *f, int indent);
 
+GWEN_ERRORCODE GWEN_CryptKeyBF_Register();
+GWEN_ERRORCODE GWEN_CryptKeyDES_Register();
+
+GWEN_ERRORCODE GWEN_MdMd5_Register();
+GWEN_ERRORCODE GWEN_MdRmd160_Register();
+GWEN_ERRORCODE GWEN_MdSha1_Register();
+
+
+
+
+
+GWEN_ERRORCODE GWEN_CryptKeyRSA_Register();
+
 
 #endif
 

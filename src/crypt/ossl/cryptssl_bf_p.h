@@ -38,34 +38,32 @@
 #include <openssl/objects.h>
 
 
-GWEN_ERRORCODE GWEN_CryptKeyBF_Register();
 
-
-GWEN_CRYPTKEY *GWEN_CryptKeyBF_new();
-GWEN_CRYPTKEY *GWEN_CryptKeyBF_dup(const GWEN_CRYPTKEY *key);
-void GWEN_CryptKeyBF_FreeKeyData(GWEN_CRYPTKEY *key);
-GWEN_ERRORCODE GWEN_CryptKeyBF_Encrypt(const GWEN_CRYPTKEY *key,
-                                       GWEN_BUFFER *src,
-                                       GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyBF_Decrypt(const GWEN_CRYPTKEY *key,
-                                       GWEN_BUFFER *src,
-                                       GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyBF_Sign(const GWEN_CRYPTKEY *key,
-                                    GWEN_BUFFER *src,
-                                    GWEN_BUFFER *dst);
-GWEN_ERRORCODE GWEN_CryptKeyBF_Verify(const GWEN_CRYPTKEY *key,
-                                      GWEN_BUFFER *src,
-                                      GWEN_BUFFER *signature);
-unsigned int GWEN_CryptKeyBF_GetChunkSize(const GWEN_CRYPTKEY *key);
-GWEN_ERRORCODE GWEN_CryptKeyBF_FromDb(GWEN_CRYPTKEY *key,
-                                      GWEN_DB_NODE *db);
-GWEN_ERRORCODE GWEN_CryptKeyBF_ToDb(const GWEN_CRYPTKEY *key,
-                                    GWEN_DB_NODE *db,
-                                    int pub);
-GWEN_ERRORCODE GWEN_CryptKeyBF_Generate(GWEN_CRYPTKEY *key,
-                                        unsigned keylength);
-GWEN_ERRORCODE GWEN_CryptKeyBF_Open(GWEN_CRYPTKEY *key);
-GWEN_ERRORCODE GWEN_CryptKeyBF_Close(GWEN_CRYPTKEY *key);
+static GWEN_CRYPTKEY *GWEN_CryptKeyBF_new();
+static GWEN_CRYPTKEY *GWEN_CryptKeyBF_dup(const GWEN_CRYPTKEY *key);
+static void GWEN_CryptKeyBF_FreeKeyData(GWEN_CRYPTKEY *key);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_Encrypt(const GWEN_CRYPTKEY *key,
+                                              GWEN_BUFFER *src,
+                                              GWEN_BUFFER *dst);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_Decrypt(const GWEN_CRYPTKEY *key,
+                                              GWEN_BUFFER *src,
+                                              GWEN_BUFFER *dst);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_Sign(const GWEN_CRYPTKEY *key,
+                                           GWEN_BUFFER *src,
+                                           GWEN_BUFFER *dst);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_Verify(const GWEN_CRYPTKEY *key,
+                                             GWEN_BUFFER *src,
+                                             GWEN_BUFFER *signature);
+static unsigned int GWEN_CryptKeyBF_GetChunkSize(const GWEN_CRYPTKEY *key);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_FromDb(GWEN_CRYPTKEY *key,
+                                             GWEN_DB_NODE *db);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_ToDb(const GWEN_CRYPTKEY *key,
+                                           GWEN_DB_NODE *db,
+                                           int pub);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_Generate(GWEN_CRYPTKEY *key,
+                                               unsigned keylength);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_Open(GWEN_CRYPTKEY *key);
+static GWEN_ERRORCODE GWEN_CryptKeyBF_Close(GWEN_CRYPTKEY *key);
 
 
 GWEN_ERRORCODE GWEN_CryptKeyBF_Crypt(const GWEN_CRYPTKEY *key,

@@ -427,6 +427,10 @@ GWENHYWFAR_API
   void GWEN_Crypt_UnregisterAllProviders();
 
 
+GWENHYWFAR_API
+long int GWEN_Random();
+
+
 #ifdef __cplusplus
 }
 #endif

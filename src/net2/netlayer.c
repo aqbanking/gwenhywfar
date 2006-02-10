@@ -381,6 +381,88 @@ int GWEN_NetLayer_Write_Wait(GWEN_NETLAYER *nl,
 
 
 /* -------------------------------------------------------------- FUNCTION */
+int GWEN_NetLayer_WaitForStatus(GWEN_NETLAYER *nl,
+                                GWEN_NETLAYER_STATUS nlst,
+                                int timeout) {
+  time_t startt;
+  int distance;
+  int count;
+
+  assert(nl);
+  startt=time(0);
+
+  if (timeout==GWEN_NET2_TIMEOUT_NONE)
+    distance=GWEN_NET2_TIMEOUT_NONE;
+  else if (timeout==GWEN_NET2_TIMEOUT_FOREVER)
+    distance=GWEN_NET2_TIMEOUT_FOREVER;
+  else {
+    distance=GWEN_WaitCallback_GetDistance(0);
+    if (distance)
+      if ((distance)>timeout)
+        distance=timeout;
+    if (!distance)
+      distance=750;
+  }
+
+  for (count=0;;count++) {
+    GWEN_NETLAYER_STATUS st;
+    GWEN_NETLAYER_RESULT res;
+    double d;
+
+    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      return GWEN_ERROR_USER_ABORTED;
+    }
+
+    st=GWEN_NetLayer_GetStatus(nl);
+    if (st==nlst)
+      return 0;
+
+    if (st!=GWEN_NetLayerStatus_Connecting &&
+	st!=GWEN_NetLayerStatus_Disconnecting) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad status of netlayer: %s",
+		GWEN_NetLayerStatus_toString(st));
+      return GWEN_ERROR_GENERIC;
+    }
+
+    res=GWEN_Net_HeartBeat(distance);
+    if (res==GWEN_NetLayerResult_Error) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      return GWEN_ERROR_GENERIC;
+    }
+
+    d=difftime(time(0), startt);
+
+    /* check timeout */
+    if (timeout!=GWEN_NET2_TIMEOUT_FOREVER) {
+      if (timeout==GWEN_NET2_TIMEOUT_NONE ||
+          d>timeout) {
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "Timeout (%d) while waiting, giving up",
+                 timeout);
+        return 1;
+      }
+    }
+
+    if (count && d) {
+      int ratio;
+
+      ratio=count/d;
+      if (ratio>100) {
+        /* insert sleep cycle to avoid CPU overuse which could prevent
+         * the user from aborting a program running wild */
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "WARNING: Inserting sleep cycle, "
+                 "please check the code! (%d)", ratio);
+        GWEN_Socket_Select(0, 0, 0, 750);
+      }
+    }
+  } /* for */
+}
+
+
+
+/* -------------------------------------------------------------- FUNCTION */
 int GWEN_NetLayer_Connect(GWEN_NETLAYER *nl) {
   assert(nl);
   if (nl->connectFn)

@@ -1248,8 +1248,9 @@ int GWEN_CryptTokenFile__Sign(GWEN_CRYPTTOKEN *ct,
     ki=GWEN_CryptToken_Context_GetSignKeyInfo(ctx);
   assert(ki);
   kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
-  if ((kid & 0xf)!=1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id");
+  if ((!auth && (kid & 0xf)!=1) ||
+      (auth && (kid & 0xf)!=5)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id \%02x\"", kid);
     return GWEN_ERROR_INVALID;
   }
   if (!(GWEN_CryptToken_KeyInfo_GetKeyFlags(ki) &

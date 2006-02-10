@@ -3,6 +3,26 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2006/02/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- finally fixed the spurious signature bug which sometimes caused HBCI
+  signatures to be invalid
+
+
+2006/02/09: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function GWEN_NetLayer_WaitForStatus()
+- fixed two bugs in PKCS1 padding
+
+
+2006/02/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- declare GWEN_Random() public
 
 
 ===========================================================================

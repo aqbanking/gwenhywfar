@@ -32,12 +32,6 @@
 
 
 #include "cryptssl_p.h"
-#include "cryptssl_bf_p.h"
-#include "cryptssl_des_p.h"
-#include "cryptssl_rsa_p.h"
-#include "cryptssl_md5_p.h"
-#include "cryptssl_sha1_p.h"
-#include "cryptssl_rmd160_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
