@@ -293,59 +293,125 @@ unsigned int GWEN_ListIterator_GetLinkCount(const GWEN_LIST_ITERATOR *li);
 
 
 
+/** Constructor. Returns a new empty list. */
 GWENHYWFAR_API
 GWEN_CONSTLIST *GWEN_ConstList_new();
 
+/** Destructor. Frees all of the memory used by this list. The list
+ * elements are not freed (FIXME: Describe how to free the list
+ * elements). */
 GWENHYWFAR_API
 void GWEN_ConstList_free(GWEN_CONSTLIST *l);
 
+/**
+ * Appends an element to a list, making it the new last element.
+ */
 GWENHYWFAR_API
 void GWEN_ConstList_PushBack(GWEN_CONSTLIST *l, const void *p);
 
+/**
+ * Inserts an element at the start of the list, making it the new
+ * first element.
+ */
 GWENHYWFAR_API
 void GWEN_ConstList_PushFront(GWEN_CONSTLIST *l, const void *p);
 
+/**
+ * Returns the first element of the list. (The element is not
+ * removed from the list.)
+ */
 GWENHYWFAR_API
 const void *GWEN_ConstList_GetFront(GWEN_CONSTLIST *l);
 
+/**
+ * Returns the last element of the list. (The element is not
+ * removed from the list.)
+ */
 GWENHYWFAR_API
 const void *GWEN_ConstList_GetBack(GWEN_CONSTLIST *l);
 
+/** Returns the size of this list, i.e. the number of elements in this
+ * list. 
+ *
+ * This number is counted in the list metadata, so this is a cheap
+ * operation. */
 GWENHYWFAR_API
 unsigned int GWEN_ConstList_GetSize(GWEN_CONSTLIST *l);
 
+/**
+ * Removes the list's last element from the list. (The element is not
+ * freed.)
+ */
 GWENHYWFAR_API
 void GWEN_ConstList_PopBack(GWEN_CONSTLIST *l);
 
+/**
+ * Removes the list's first element from the list. (The element is not
+ * freed.)
+ */
 GWENHYWFAR_API
 void GWEN_ConstList_PopFront(GWEN_CONSTLIST *l);
 
+/**
+ * Removes all list elements from the list. (The elements are not
+ * freed. FIXME: is this true?)
+ */
 GWENHYWFAR_API
 void GWEN_ConstList_Clear(GWEN_CONSTLIST *l);
 
+/** Traverses the list, calling the callback function 'func' on
+ * each list element.  Traversal will stop when 'func' returns a
+ * non-NULL value, and the routine will return with that
+ * value. Otherwise the routine will return NULL.
+ *
+ * @param list The list to traverse.
+ * @param func The function to be called with each list element.
+ * @param user_data A pointer passed on to the function 'func'.
+ * @return The non-NULL pointer returned by 'func' as soon as it
+ * returns one. Otherwise (i.e. 'func' always returns NULL)
+ * returns NULL.
+ */
 GWENHYWFAR_API
-const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *l, 
-				   GWEN_CONSTLIST_FOREACH_CB fn,
+const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *list, 
+				   GWEN_CONSTLIST_FOREACH_CB func,
 				   void *user_data);
 
+/** Return an iterator pointing to the first element in the list */
 GWENHYWFAR_API
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_First(const GWEN_CONSTLIST *l);
 
+/** Returns an iterator pointing to the last element in the list. */
 GWENHYWFAR_API
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_Last(const GWEN_CONSTLIST *l);
 
+/**
+ * Creates a list iterator for the given list. (FIXME: Should be private).
+ */
 GWENHYWFAR_API
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstListIterator_new(const GWEN_CONSTLIST *l);
 
+/** Frees a list iterator. */
 GWENHYWFAR_API
 void GWEN_ConstListIterator_free(GWEN_CONSTLIST_ITERATOR *li);
 
+/**
+ * Moves the list iterator to the predecessor of the currenty selected
+ * element and returns that predecessor element.
+ */
 GWENHYWFAR_API
 const void *GWEN_ConstListIterator_Previous(GWEN_CONSTLIST_ITERATOR *li);
 
+/**
+ * Moves the list iterator to the successor of the currenty selected
+ * element and returns that successor element.
+ */
 GWENHYWFAR_API
 const void *GWEN_ConstListIterator_Next(GWEN_CONSTLIST_ITERATOR *li);
 
+/**
+ * Returns the pointer to the element stored at the list position the
+ * iterator currently points to.
+ */
 GWENHYWFAR_API
 const void *GWEN_ConstListIterator_Data(GWEN_CONSTLIST_ITERATOR *li);
 

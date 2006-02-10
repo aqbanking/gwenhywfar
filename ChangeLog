@@ -7,6 +7,9 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006-02-10   Christian Stimming <stimming@tuhh.de>
+
+	* src/base/buffer.h, list.h: Improved documentation.
 
 2006/02/10: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

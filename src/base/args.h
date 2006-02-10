@@ -102,10 +102,16 @@ int GWEN_Args_Check(int argc, char **argv,
 		    const GWEN_ARGS *args,
 		    GWEN_DB_NODE *db);
 
+/** Print a "usage" message into the given GWEN_BUFFER @c
+ * ubuf. The message lists all available options. The
+ * GWEN_ARGS_OUTTYPE argument is supposed to offer either text or
+ * html as output format, but currently only text is
+ * implemented. */
 GWENHYWFAR_API
 int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                     GWEN_ARGS_OUTTYPE ot);
 
+/** Currently unimplemented; does nothing and returns zero. */
 GWENHYWFAR_API
 int GWEN_Args_ShortUsage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
                          GWEN_ARGS_OUTTYPE ot);

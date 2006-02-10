@@ -33,6 +33,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * @brief A dynamically resizeable text buffer.
+ *
+ * @ingroup MOD_BUFFER
+ */
 typedef struct GWEN_BUFFER GWEN_BUFFER;
 #ifdef __cplusplus
 }
@@ -53,7 +58,8 @@ extern "C" {
 /** @defgroup MOD_BUFFER Buffer Management
  * @ingroup MOD_BASE
  *
- * @brief This file contains the definition of a GWEN_BUFFER.
+ * @brief This file contains the definition of a GWEN_BUFFER, a
+ * dynamically resizeable text buffer.
  *
  */
 /*@{*/
@@ -72,25 +78,45 @@ extern "C" {
 
 
 /**
- * @param buffer if !=0, then the given buffer will be used. Otherwise
- * a new buffer will be allocated (with <i>size</i> bytes)
- * @param size real size of the buffer (if <i>buffer</i> is null, then
- * this number of bytes will be allocated)
- * @param used number of bytes of the buffer actually used. This is
- * interesting when reading from a buffer
- * @param take if buffer!=0 then this function takes over the ownership
- * of the given buffer, if take is !=0
+ * Creates a new GWEN_BUFFER, which is a dynamically resizeable
+ * text buffer.
+ *
+ * @param buffer If non-NULL, then this buffer will be used as
+ * actual storage space. Otherwise a new buffer will be allocated
+ * (with @c size bytes)
+ *
+ * @param size If @c buffer was non-NULL, then this argument
+ * <i>must</i> specifiy the size of that buffer. If @c buffer was
+ * NULL, then this argument specifies the number of bytes that
+ * will be allocated.
+ *
+ * @param used Number of bytes of the buffer actually used. This is
+ * interesting when reading from a buffer.
+ *
+ * @param take_ownership If @c buffer was non-NULL and this
+ * argument is nonzero, then the new GWEN_BUFFER object takes over
+ * the ownership of the given @c buffer so that it will be freed
+ * on GWEN_Buffer_free(). If this argument is zero, the given @c
+ * buffer will not be freed. If @c buffer was NULL, this argument
+ * has no effect.
  */
 GWENHYWFAR_API
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
                              GWEN_TYPE_UINT32 size,
                              GWEN_TYPE_UINT32 used,
-                             int take);
+                             int take_ownership);
 
+/** Frees the given buffer. 
+ *
+ * If the internal storage was allocated for this new buffer, then
+ * it will freed here. If the internal storage is used from a
+ * different @c buffer, then it will only be freed if the argument
+ * @c take_ownership of GWEN_Buffer_new() was nonzero. */
 GWENHYWFAR_API
 void GWEN_Buffer_free(GWEN_BUFFER *bf);
 
 
+/** Create a new copy as a duplicate of the buffer @c bf. */
 GWENHYWFAR_API
 GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf);
 
@@ -350,9 +376,11 @@ GWENHYWFAR_API
 int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf);
 
 
+/** Move the position pointer forward by the given number @c i. */
 GWENHYWFAR_API
 int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i);
 
+/** Move the position pointer backward by the given number @c i. */
 GWENHYWFAR_API
 int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i);
 
@@ -360,16 +388,25 @@ GWENHYWFAR_API
 int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf);
 
 
+/** Insert the content of the buffer @c sf into the buffer @c bf
+ * at the position of its current position pointer. The size of @c
+ * bf will be increased accordingly. Returns zero on success or
+ * nonzero if this failed (e.g. because of out of memory
+ * error). */
 GWENHYWFAR_API
 int GWEN_Buffer_InsertBuffer(GWEN_BUFFER *bf,
                              GWEN_BUFFER *sf);
 
+/** Append the content of the buffer @c sf at the end of the
+ * buffer @c bf. The size of @c bf will be increased
+ * accordingly. Returns zero on success or nonzero if this failed
+ * (e.g. because of out of memory error). */
 GWENHYWFAR_API
 int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
                              GWEN_BUFFER *sf);
 
 /**
- * @depracated
+ * @deprecated
  */
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf);
@@ -443,7 +480,7 @@ void GWEN_Buffer_SetSourceBIO(GWEN_BUFFER *bf,
 			      GWEN_BUFFEREDIO *bio,
 			      int take);
 
-
+/** Print the current content of buffer @c bf into the file @c f. */
 GWENHYWFAR_API
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert);
 
