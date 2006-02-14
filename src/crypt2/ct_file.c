@@ -1238,7 +1238,10 @@ int GWEN_CryptTokenFile__Sign(GWEN_CRYPTTOKEN *ct,
   }
 
   /* get sign info */
-  si=GWEN_CryptToken_Context_GetSignInfo(ctx);
+  if (auth)
+    si=GWEN_CryptToken_Context_GetAuthInfo(ctx);
+  else
+    si=GWEN_CryptToken_Context_GetSignInfo(ctx);
   assert(si);
 
   /* get keyinfo and perform some checks */
@@ -1248,6 +1251,9 @@ int GWEN_CryptTokenFile__Sign(GWEN_CRYPTTOKEN *ct,
     ki=GWEN_CryptToken_Context_GetSignKeyInfo(ctx);
   assert(ki);
   kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Signing with key %02x (%d)", kid, auth);
+
   if ((!auth && (kid & 0xf)!=1) ||
       (auth && (kid & 0xf)!=5)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id \%02x\"", kid);
@@ -1289,6 +1295,10 @@ int GWEN_CryptTokenFile__Sign(GWEN_CRYPTTOKEN *ct,
   }
 
   /* hash data */
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+            "Hashing with algo \"%s\"",
+            GWEN_CryptToken_HashAlgo_toString
+            (GWEN_CryptToken_SignInfo_GetHashAlgo(si)));
   hbuf=GWEN_Buffer_new(0, chunkSize, 0, 1);
   rv=GWEN_CryptToken_Hash(GWEN_CryptToken_SignInfo_GetHashAlgo(si),
                           ptr, len,
@@ -1300,6 +1310,10 @@ int GWEN_CryptTokenFile__Sign(GWEN_CRYPTTOKEN *ct,
   }
 
   /* padd hash */
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+            "Padding with algo \"%s\"",
+            GWEN_CryptToken_PaddAlgo_toString
+            (GWEN_CryptToken_SignInfo_GetPaddAlgo(si)));
   GWEN_Buffer_Rewind(hbuf);
   rv=GWEN_CryptToken_Padd(GWEN_CryptToken_SignInfo_GetPaddAlgo(si),
                           chunkSize,
@@ -1419,6 +1433,7 @@ int GWEN_CryptTokenFile__Verify(GWEN_CRYPTTOKEN *ct,
     ki=GWEN_CryptToken_Context_GetVerifyKeyInfo(ctx);
   assert(ki);
   kid=GWEN_CryptToken_KeyInfo_GetKeyId(ki);
+
   if ((kid & 0xf)!=3) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key id");
     return GWEN_ERROR_INVALID;
@@ -1442,7 +1457,10 @@ int GWEN_CryptTokenFile__Verify(GWEN_CRYPTTOKEN *ct,
   }
 
   /* check for existence of the key */
-  key=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fctx);
+  if (auth)
+    key=GWEN_CryptTokenFile_Context_GetRemoteAuthKey(fctx);
+  else
+    key=GWEN_CryptTokenFile_Context_GetRemoteSignKey(fctx);
   if (key==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No key");
     return GWEN_ERROR_CT_NO_KEY;
@@ -1456,6 +1474,10 @@ int GWEN_CryptTokenFile__Verify(GWEN_CRYPTTOKEN *ct,
   }
 
   /* hash data */
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+            "Hashing with algo \"%s\"",
+            GWEN_CryptToken_HashAlgo_toString
+            (GWEN_CryptToken_SignInfo_GetHashAlgo(si)));
   hbuf=GWEN_Buffer_new(0, chunkSize, 0, 1);
   rv=GWEN_CryptToken_Hash(GWEN_CryptToken_SignInfo_GetHashAlgo(si),
                           ptr, len,
@@ -1467,6 +1489,10 @@ int GWEN_CryptTokenFile__Verify(GWEN_CRYPTTOKEN *ct,
   }
 
   /* padd hash */
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+            "Padding with algo \"%s\"",
+            GWEN_CryptToken_PaddAlgo_toString
+            (GWEN_CryptToken_SignInfo_GetPaddAlgo(si)));
   GWEN_Buffer_Rewind(hbuf);
   rv=GWEN_CryptToken_Padd(GWEN_CryptToken_SignInfo_GetPaddAlgo(si),
                           chunkSize,

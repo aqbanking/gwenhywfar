@@ -85,8 +85,7 @@ GWENHYWFAR_API
 GWEN_LIST *GWEN_List_new();
 
 /** Destructor. Frees all of the memory used by this list. The list
- * elements are not freed (FIXME: Describe how to free the list
- * elements). */
+ * elements are not freed. */
 GWENHYWFAR_API
 void GWEN_List_free(GWEN_LIST *l);
 
@@ -201,8 +200,8 @@ GWENHYWFAR_API
 void GWEN_List_PopFront(GWEN_LIST *l);
 
 /**
- * Removes all list elements from the list. (The elements are not
- * freed. FIXME: is this true?)
+ * Removes all list elements from the list. The elements are not
+ * freed.
  */
 GWENHYWFAR_API
 void GWEN_List_Clear(GWEN_LIST *l);
@@ -233,7 +232,7 @@ GWENHYWFAR_API
 GWEN_LIST_ITERATOR *GWEN_List_Last(const GWEN_LIST *l);
 
 /**
- * Creates a list iterator for the given list. (FIXME: Should be private).
+ * Creates a list iterator for the given list.
  */
 GWENHYWFAR_API
 GWEN_LIST_ITERATOR *GWEN_ListIterator_new(const GWEN_LIST *l);
@@ -298,8 +297,8 @@ GWENHYWFAR_API
 GWEN_CONSTLIST *GWEN_ConstList_new();
 
 /** Destructor. Frees all of the memory used by this list. The list
- * elements are not freed (FIXME: Describe how to free the list
- * elements). */
+ * elements are not freed
+ */
 GWENHYWFAR_API
 void GWEN_ConstList_free(GWEN_CONSTLIST *l);
 
@@ -353,8 +352,8 @@ GWENHYWFAR_API
 void GWEN_ConstList_PopFront(GWEN_CONSTLIST *l);
 
 /**
- * Removes all list elements from the list. (The elements are not
- * freed. FIXME: is this true?)
+ * Removes all list elements from the list. The elements are not
+ * freed.
  */
 GWENHYWFAR_API
 void GWEN_ConstList_Clear(GWEN_CONSTLIST *l);
@@ -385,7 +384,7 @@ GWENHYWFAR_API
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_Last(const GWEN_CONSTLIST *l);
 
 /**
- * Creates a list iterator for the given list. (FIXME: Should be private).
+ * Creates a list iterator for the given list.
  */
 GWENHYWFAR_API
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstListIterator_new(const GWEN_CONSTLIST *l);

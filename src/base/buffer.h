@@ -68,7 +68,7 @@ extern "C" {
 
 #define GWEN_BUFFER_MODE_DYNAMIC          0x0001
 #define GWEN_BUFFER_MODE_ABORT_ON_MEMFULL 0x0002
-#define GWEN_BUFFER_MODE_USE_BIO    0x0004
+#define GWEN_BUFFER_MODE_USE_BIO          0x0004
 
 #define GWEN_BUFFER_MODE_DEFAULT \
   (\
@@ -405,16 +405,10 @@ GWENHYWFAR_API
 int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
                              GWEN_BUFFER *sf);
 
-/**
- * @deprecated
- */
-GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf);
-
 
 /**
  * Returns the maximum number of bytes which can be written to the buffer
- * at once (i.e. with reallocation).
+ * at once (i.e. without reallocation).
  */
 GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf);

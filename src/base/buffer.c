@@ -505,31 +505,12 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_RoomLeft(GWEN_BUFFER *bf){
-  assert(bf);
-
-  DBG_WARN(GWEN_LOGDOMAIN,
-           "You should better use \"GWEN_Buffer_AllocRoom\"");
-  if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
-    return bf->hardLimit-bf->bytesUsed;
-  return (bf->bufferSize-bf->bytesUsed);
-}
-
-
-
 GWEN_TYPE_UINT32 GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf){
   assert(bf);
 
   return (bf->bufferSize-bf->bytesUsed);
 }
 
-
-
-GWEN_TYPE_UINT32 GWEN_Buffer_BytesLeft(GWEN_BUFFER *bf){
-  DBG_WARN(GWEN_LOGDOMAIN,
-           "You should better use \"GWEN_Buffer_GetBytesLeft\"");
-  return GWEN_Buffer_GetBytesLeft(bf);
-}
 
 
 GWEN_TYPE_UINT32 GWEN_Buffer_GetBytesLeft(GWEN_BUFFER *bf){
