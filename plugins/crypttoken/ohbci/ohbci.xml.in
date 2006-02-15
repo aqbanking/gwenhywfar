@@ -53,21 +53,26 @@
       <signinfos>
         <signinfo>
           <id>1</id>
-          <hashalgo>rmd160</hashalgo>
-          <paddalgo>iso9796_1a4</paddalgo>
+          <hashalgo>any</hashalgo>
+          <paddalgo>any</paddalgo>
         </signinfo>
-
       </signinfos>
-
       
       <cryptinfos>
         <cryptinfo>
           <id>1</id>
-          <cryptalgo>rsa</cryptalgo>
-          <paddalgo>leftzero</paddalgo>
+          <cryptalgo>any</cryptalgo>
+          <paddalgo>any</paddalgo>
         </cryptinfo>
-
       </cryptinfos>
+
+      <authinfos>
+        <authinfo>
+          <id>1</id>
+          <hashalgo>any</hashalgo>
+          <paddalgo>any</paddalgo>
+        </authinfo>
+      </authinfos>
       
       <keyinfos>
         <keyinfo>
@@ -157,40 +162,26 @@
       </keyinfos>
   
       <contexts>
-        <!-- There only is one context, and it is the context for HBCI -->
+
         <context>
           <id>1</id>
-          <contextType>hbci</contextType>
-          <description>Context for HBCI operations</description>
+          <contextType>rsa</contextType>
+          <description>Context for operation with RSA keys</description>
           
           <signkeyinfo id="1" />
           <verifykeyinfo id="3" />
-          
-          <signinfo>
-            <id>1</id>
-            <hashalgo>any</hashalgo>
-            <paddalgo>any</paddalgo>
-          </signinfo>
+          <signinfo id="1" />
   
           <encryptKeyInfo id="4" />
           <decryptKeyInfo id="2" />
-  
-          <cryptinfo>
-            <id>1</id>
-            <cryptalgo>rsa</cryptalgo>
-            <paddalgo>any</paddalgo>
-          </cryptinfo>
+          <cryptinfo id="1" />
 
           <localAuthKeyInfo id="5" />
           <remoteAuthKeyInfo id="6" />
-
-          <authinfo>
-            <id>1</id>
-            <hashalgo>any</hashalgo>
-            <paddalgo>any</paddalgo>
-          </authinfo>
+          <authinfo id="1" />
           
         </context>
+
       </contexts>
       
     </crypttoken>

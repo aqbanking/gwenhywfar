@@ -298,7 +298,11 @@ GWEN_CryptToken_ContextType_fromString(const char *s) {
   if (strcasecmp(s, "unknown")==0)
     return GWEN_CryptToken_ContextType_Unknown;
   else if (strcasecmp(s, "hbci")==0)
-    return GWEN_CryptToken_ContextType_HBCI;
+    return GWEN_CryptToken_ContextType_Hbci;
+  else if (strcasecmp(s, "rsa")==0)
+    return GWEN_CryptToken_ContextType_Rsa;
+  else if (strcasecmp(s, "any")==0)
+    return GWEN_CryptToken_ContextType_Any;
   else {
     DBG_WARN(GWEN_LOGDOMAIN, "Unknown context type \"%s\"", s);
     return GWEN_CryptToken_ContextType_Unknown;
@@ -310,10 +314,14 @@ GWEN_CryptToken_ContextType_fromString(const char *s) {
 const char*
 GWEN_CryptToken_ContextType_toString(GWEN_CRYPTTOKEN_CONTEXTTYPE t) {
   switch(t) {
+  case GWEN_CryptToken_ContextType_Any:
+    return "any";
+  case GWEN_CryptToken_ContextType_Hbci:
+    return "hbci";
+  case GWEN_CryptToken_ContextType_Rsa:
+    return "rsa";
   case GWEN_CryptToken_ContextType_Unknown:
     return "unknown";
-  case GWEN_CryptToken_ContextType_HBCI:
-    return "hbci";
 
   default:
     DBG_WARN(GWEN_LOGDOMAIN, "Unhandled context type %d", t);
@@ -4161,6 +4169,331 @@ int GWEN_CryptToken_TransformPin(GWEN_CRYPTTOKEN_PINENCODING peSrc,
 
   return 0;
 }
+
+
+
+int GWEN_CryptToken__matchKey(const GWEN_CRYPTTOKEN_KEYINFO *pki,
+                              GWEN_CRYPTTOKEN_KEYINFO *ki,
+                              const char *name) {
+  int keySize;
+  int minSize, maxSize;
+  int chunkSize;
+  GWEN_CRYPTTOKEN_CRYPTALGO pcryptAlgo;
+  GWEN_CRYPTTOKEN_CRYPTALGO cryptAlgo;
+
+  if (!pki)
+    return 0;
+  if (!ki) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No info for %s in context", name);
+    return -1;
+  }
+
+  /* check crypt algo */
+  cryptAlgo=GWEN_CryptToken_KeyInfo_GetCryptAlgo(ki);
+  pcryptAlgo=GWEN_CryptToken_KeyInfo_GetCryptAlgo(pki);
+  if (cryptAlgo!=GWEN_CryptToken_CryptAlgo_Any &&
+      cryptAlgo!=pcryptAlgo) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Crypto algorithm %s not available for %s",
+             GWEN_CryptToken_CryptAlgo_toString(pcryptAlgo),
+             name);
+    return -1;
+  }
+  GWEN_CryptToken_KeyInfo_SetCryptAlgo(ki, pcryptAlgo);
+
+  /* check key length */
+  keySize=GWEN_CryptToken_KeyInfo_GetKeySize(pki);
+  minSize=GWEN_CryptToken_KeyInfo_GetMinKeySize(pki);
+  maxSize=GWEN_CryptToken_KeyInfo_GetMaxKeySize(pki);
+  if ((!minSize || (minSize && keySize>=minSize)) &&
+      (!maxSize || (maxSize && keySize<=maxSize))) {
+    GWEN_CryptToken_KeyInfo_SetKeySize(ki, keySize);
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Keysize %d not available for %s (%d<=x<=%d)",
+             keySize, name, minSize, maxSize);
+    return -1;
+  }
+
+  /* set chunk size */
+  chunkSize=GWEN_CryptToken_KeyInfo_GetChunkSize(pki);
+  if (chunkSize)
+    GWEN_CryptToken_KeyInfo_SetChunkSize(ki, chunkSize);
+
+  return 0;
+}
+
+
+
+int GWEN_CryptToken__matchContext(GWEN_CRYPTTOKEN *ct,
+                                  const GWEN_CRYPTTOKEN_CONTEXT *pattern,
+                                  GWEN_CRYPTTOKEN_CONTEXT *ctx) {
+  const GWEN_CRYPTTOKEN_SIGNINFO *psi;
+  const GWEN_CRYPTTOKEN_CRYPTINFO *pci;
+  const GWEN_CRYPTTOKEN_KEYINFO *pki;
+  GWEN_CRYPTTOKEN_KEYINFO *ki;
+  int rv;
+
+  /* check sign info */
+  psi=GWEN_CryptToken_Context_GetSignInfo(pattern);
+  if (psi) {
+    GWEN_CRYPTTOKEN_HASHALGO hashAlgo;
+    GWEN_CRYPTTOKEN_PADDALGO paddAlgo;
+    GWEN_CRYPTTOKEN_SIGNINFO *si;
+
+    hashAlgo=GWEN_CryptToken_SignInfo_GetHashAlgo(psi);
+    paddAlgo=GWEN_CryptToken_SignInfo_GetPaddAlgo(psi);
+    si=GWEN_CryptToken_Context_GetSignInfo(ctx);
+    if (!si)
+      return -1;
+    if (GWEN_CryptToken_SignInfo_GetHashAlgo(si)==hashAlgo &&
+        GWEN_CryptToken_SignInfo_GetPaddAlgo(si)==paddAlgo) {
+      /* full match */
+    }
+    else if ((GWEN_CryptToken_SignInfo_GetHashAlgo(si)==
+              GWEN_CryptToken_HashAlgo_Any ||
+              GWEN_CryptToken_SignInfo_GetHashAlgo(si)==hashAlgo) &&
+             (GWEN_CryptToken_SignInfo_GetPaddAlgo(si)==
+              GWEN_CryptToken_PaddAlgo_Any ||
+              GWEN_CryptToken_SignInfo_GetPaddAlgo(si)==paddAlgo)) {
+      const GWEN_CRYPTTOKEN_SIGNINFO *csi;
+
+      /* partial match */
+      csi=GWEN_CryptToken_GetSignInfoByAlgos(ct, hashAlgo, paddAlgo);
+      if (!csi)
+        csi=GWEN_CryptToken_GetSignInfoByAlgos(ct,
+                                               GWEN_CryptToken_HashAlgo_Any,
+                                               GWEN_CryptToken_PaddAlgo_Any);
+      if (!csi){
+        DBG_INFO(GWEN_LOGDOMAIN, "No matching sign info for \"%s/%s\"",
+                 GWEN_CryptToken_HashAlgo_toString(hashAlgo),
+                 GWEN_CryptToken_PaddAlgo_toString(paddAlgo));
+        return -1;
+      }
+      si=GWEN_CryptToken_SignInfo_dup(csi);
+      GWEN_CryptToken_SignInfo_SetHashAlgo(si, hashAlgo);
+      GWEN_CryptToken_SignInfo_SetPaddAlgo(si, paddAlgo);
+      GWEN_CryptToken_Context_SetSignInfo(ctx, si);
+      GWEN_CryptToken_SignInfo_free(si);
+    }
+    else {
+      /* no match */
+      DBG_INFO(GWEN_LOGDOMAIN, "No matching sign info for \"%s/%s\"",
+               GWEN_CryptToken_HashAlgo_toString(hashAlgo),
+               GWEN_CryptToken_PaddAlgo_toString(paddAlgo));
+      return -1;
+    }
+  }
+
+  /* check crypt info */
+  pci=GWEN_CryptToken_Context_GetCryptInfo(pattern);
+  if (pci) {
+    GWEN_CRYPTTOKEN_CRYPTALGO cryptAlgo;
+    GWEN_CRYPTTOKEN_PADDALGO paddAlgo;
+    GWEN_CRYPTTOKEN_CRYPTINFO *ci;
+
+    cryptAlgo=GWEN_CryptToken_CryptInfo_GetCryptAlgo(pci);
+    paddAlgo=GWEN_CryptToken_CryptInfo_GetPaddAlgo(pci);
+    ci=GWEN_CryptToken_Context_GetCryptInfo(ctx);
+    if (!ci)
+      return -1;
+    if (GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci)==cryptAlgo &&
+        GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci)==paddAlgo) {
+      /* full match */
+    }
+    else if ((GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci)==
+              GWEN_CryptToken_CryptAlgo_Any ||
+              GWEN_CryptToken_CryptInfo_GetCryptAlgo(ci)==cryptAlgo) &&
+             (GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci)==
+              GWEN_CryptToken_PaddAlgo_Any ||
+              GWEN_CryptToken_CryptInfo_GetPaddAlgo(ci)==paddAlgo)) {
+      const GWEN_CRYPTTOKEN_CRYPTINFO *cci;
+  
+      /* partial match */
+      cci=GWEN_CryptToken_GetCryptInfoByAlgos(ct, cryptAlgo, paddAlgo);
+      if (!cci)
+        cci=GWEN_CryptToken_GetCryptInfoByAlgos(ct,
+                                               GWEN_CryptToken_CryptAlgo_Any,
+                                               GWEN_CryptToken_PaddAlgo_Any);
+      if (!cci){
+        DBG_INFO(GWEN_LOGDOMAIN, "No matching crypt info for \"%s/%s\"",
+                 GWEN_CryptToken_CryptAlgo_toString(cryptAlgo),
+                 GWEN_CryptToken_PaddAlgo_toString(paddAlgo));
+        return -1;
+      }
+      ci=GWEN_CryptToken_CryptInfo_dup(cci);
+      GWEN_CryptToken_CryptInfo_SetCryptAlgo(ci, cryptAlgo);
+      GWEN_CryptToken_CryptInfo_SetPaddAlgo(ci, paddAlgo);
+      GWEN_CryptToken_Context_SetCryptInfo(ctx, ci);
+      GWEN_CryptToken_CryptInfo_free(ci);
+    }
+    else {
+      /* no match */
+      DBG_INFO(GWEN_LOGDOMAIN, "No matching crypt info for \"%s/%s\"",
+               GWEN_CryptToken_CryptAlgo_toString(cryptAlgo),
+               GWEN_CryptToken_PaddAlgo_toString(paddAlgo));
+      return -1;
+    }
+  }
+
+  /* check auth info */
+  psi=GWEN_CryptToken_Context_GetAuthInfo(pattern);
+  if (psi) {
+    GWEN_CRYPTTOKEN_HASHALGO hashAlgo;
+    GWEN_CRYPTTOKEN_PADDALGO paddAlgo;
+    GWEN_CRYPTTOKEN_SIGNINFO *si;
+
+    hashAlgo=GWEN_CryptToken_SignInfo_GetHashAlgo(psi);
+    paddAlgo=GWEN_CryptToken_SignInfo_GetPaddAlgo(psi);
+    si=GWEN_CryptToken_Context_GetSignInfo(ctx);
+    if (!si)
+      return -1;
+    if (GWEN_CryptToken_SignInfo_GetHashAlgo(si)==hashAlgo &&
+        GWEN_CryptToken_SignInfo_GetPaddAlgo(si)==paddAlgo) {
+      /* full match */
+    }
+    else if ((GWEN_CryptToken_SignInfo_GetHashAlgo(si)==
+              GWEN_CryptToken_HashAlgo_Any ||
+              GWEN_CryptToken_SignInfo_GetHashAlgo(si)==hashAlgo) &&
+             (GWEN_CryptToken_SignInfo_GetPaddAlgo(si)==
+              GWEN_CryptToken_PaddAlgo_Any ||
+              GWEN_CryptToken_SignInfo_GetPaddAlgo(si)==paddAlgo)) {
+      const GWEN_CRYPTTOKEN_SIGNINFO *csi;
+
+      /* partial match */
+      csi=GWEN_CryptToken_GetSignInfoByAlgos(ct, hashAlgo, paddAlgo);
+      if (!csi)
+        csi=GWEN_CryptToken_GetSignInfoByAlgos(ct,
+                                               GWEN_CryptToken_HashAlgo_Any,
+                                               GWEN_CryptToken_PaddAlgo_Any);
+      if (!csi){
+        DBG_INFO(GWEN_LOGDOMAIN, "No matching sign info for \"%s/%s\"",
+                 GWEN_CryptToken_HashAlgo_toString(hashAlgo),
+                 GWEN_CryptToken_PaddAlgo_toString(paddAlgo));
+        return -1;
+      }
+      si=GWEN_CryptToken_SignInfo_dup(csi);
+      GWEN_CryptToken_SignInfo_SetHashAlgo(si, hashAlgo);
+      GWEN_CryptToken_SignInfo_SetPaddAlgo(si, paddAlgo);
+      GWEN_CryptToken_Context_SetSignInfo(ctx, si);
+      GWEN_CryptToken_SignInfo_free(si);
+    }
+    else {
+      /* no match */
+      DBG_INFO(GWEN_LOGDOMAIN, "No matching sign info for \"%s/%s\"",
+               GWEN_CryptToken_HashAlgo_toString(hashAlgo),
+               GWEN_CryptToken_PaddAlgo_toString(paddAlgo));
+      return -1;
+    }
+  }
+
+  /* check sign key */
+  pki=GWEN_CryptToken_Context_GetSignKeyInfo(pattern);
+  ki=GWEN_CryptToken_Context_GetSignKeyInfo(ctx);
+  rv=GWEN_CryptToken__matchKey(pki, ki, "sign key");
+  if (rv)
+    return rv;
+
+  /* check verify key */
+  pki=GWEN_CryptToken_Context_GetVerifyKeyInfo(pattern);
+  ki=GWEN_CryptToken_Context_GetVerifyKeyInfo(ctx);
+  rv=GWEN_CryptToken__matchKey(pki, ki, "verify key");
+  if (rv)
+    return rv;
+
+  /* check encrypt key */
+  pki=GWEN_CryptToken_Context_GetEncryptKeyInfo(pattern);
+  ki=GWEN_CryptToken_Context_GetEncryptKeyInfo(ctx);
+  rv=GWEN_CryptToken__matchKey(pki, ki, "encrypt key");
+  if (rv)
+    return rv;
+
+  /* check decrypt key */
+  pki=GWEN_CryptToken_Context_GetDecryptKeyInfo(pattern);
+  ki=GWEN_CryptToken_Context_GetDecryptKeyInfo(ctx);
+  rv=GWEN_CryptToken__matchKey(pki, ki, "decrypt key");
+  if (rv)
+    return rv;
+
+  /* check local auth key */
+  pki=GWEN_CryptToken_Context_GetLocalAuthKeyInfo(pattern);
+  ki=GWEN_CryptToken_Context_GetLocalAuthKeyInfo(ctx);
+  rv=GWEN_CryptToken__matchKey(pki, ki, "local auth key");
+  if (rv)
+    return rv;
+
+  /* check remote auth key */
+  pki=GWEN_CryptToken_Context_GetRemoteAuthKeyInfo(pattern);
+  ki=GWEN_CryptToken_Context_GetRemoteAuthKeyInfo(ctx);
+  rv=GWEN_CryptToken__matchKey(pki, ki, "remote auth key");
+  if (rv)
+    return rv;
+
+  return 0;
+}
+
+
+
+int
+GWEN_CryptToken_GetMatchingContexts(GWEN_CRYPTTOKEN *ct,
+                                    const GWEN_CRYPTTOKEN_CONTEXT *pattern,
+                                    GWEN_CRYPTTOKEN_CONTEXT_LIST *cl) {
+  GWEN_CRYPTTOKEN_CONTEXT_LIST *ll;
+  GWEN_CRYPTTOKEN_CONTEXT *ctx;
+  int count=0;
+  int rv;
+
+  /* get all contexts */
+  ll=GWEN_CryptToken_Context_List_new();
+  rv=GWEN_CryptToken_FillContextList(ct, ll);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_CryptToken_Context_List_free(ll);
+    return rv;
+  }
+
+  ctx=GWEN_CryptToken_Context_List_First(ll);
+  while(ctx) {
+    GWEN_CRYPTTOKEN_CONTEXT *nctx;
+
+    nctx=GWEN_CryptToken_Context_dup(ctx);
+    rv=GWEN_CryptToken__matchContext(ct, pattern, nctx);
+    if (!rv) {
+      GWEN_CryptToken_Context_List_Add(nctx, cl);
+      count++;
+    }
+    else
+      GWEN_CryptToken_Context_free(nctx);
+    ctx=GWEN_CryptToken_Context_List_Next(ctx);
+  }
+  GWEN_CryptToken_Context_List_free(ll);
+
+  if (count==0) {
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  return 0;
+}
+
+
+
+GWEN_CRYPTTOKEN_CONTEXT*
+GWEN_CryptToken_FindContextInList(const GWEN_CRYPTTOKEN_CONTEXT_LIST *cl,
+                                  GWEN_TYPE_UINT32 id) {
+  GWEN_CRYPTTOKEN_CONTEXT *ctx;
+
+  ctx=GWEN_CryptToken_Context_List_First(cl);
+  while(ctx) {
+    if (GWEN_CryptToken_Context_GetId(ctx)==id)
+      break;
+    ctx=GWEN_CryptToken_Context_List_Next(ctx);
+  }
+
+  return ctx;
+}
+
+
 
 
 

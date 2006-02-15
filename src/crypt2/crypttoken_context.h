@@ -36,8 +36,10 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_CRYPTTOKEN_CONTEXT,
 
 
 typedef enum {
-  GWEN_CryptToken_ContextType_Unknown=0,
-  GWEN_CryptToken_ContextType_HBCI
+  GWEN_CryptToken_ContextType_Any=0,
+  GWEN_CryptToken_ContextType_Hbci,
+  GWEN_CryptToken_ContextType_Rsa,
+  GWEN_CryptToken_ContextType_Unknown=9999,
 } GWEN_CRYPTTOKEN_CONTEXTTYPE;
 
 

@@ -130,7 +130,7 @@ struct GWEN_CRYPTTOKEN_PLUGIN {
   GWEN_CRYPTTOKEN_PLUGIN_CREATETOKEN_FN createTokenFn;
   GWEN_CRYPTTOKEN_PLUGIN_CHECKTOKEN_FN checkTokenFn;
 };
-void GWEN_CryptToken_Plugin_FreeData(void *bp, void *p);
+static void GWEN_CryptToken_Plugin_FreeData(void *bp, void *p);
 
 
 
@@ -144,38 +144,50 @@ struct GWEN_CRYPTMANAGER {
   GWEN_CRYPTMANAGER_INSERT_CORRECT_TOKEN_FN insertCorrectTokenFn;
   GWEN_CRYPTMANAGER_SHOW_MESSAGE_FN showMessageFn;
 };
-void GWEN_CryptManager_FreeData(void *bp, void *p);
+static void GWEN_CryptManager_FreeData(void *bp, void *p);
 
 
 
-GWEN_CRYPTTOKEN_CRYPTINFO *GWEN_CryptToken_CryptInfo_fromXml(GWEN_XMLNODE *n);
-GWEN_CRYPTTOKEN_SIGNINFO *GWEN_CryptToken_SignInfo_fromXml(GWEN_XMLNODE *n);
-GWEN_CRYPTTOKEN_KEYINFO *GWEN_CryptToken_KeyInfo_fromXml(GWEN_XMLNODE *n);
-GWEN_CRYPTTOKEN_CONTEXT *GWEN_CryptToken_Context__fromXml(GWEN_CRYPTTOKEN *ct,
-                                                          GWEN_XMLNODE *n);
+static GWEN_CRYPTTOKEN_CRYPTINFO*
+  GWEN_CryptToken_CryptInfo_fromXml(GWEN_XMLNODE *n);
+static GWEN_CRYPTTOKEN_SIGNINFO*
+  GWEN_CryptToken_SignInfo_fromXml(GWEN_XMLNODE *n);
+static GWEN_CRYPTTOKEN_KEYINFO*
+  GWEN_CryptToken_KeyInfo_fromXml(GWEN_XMLNODE *n);
+static GWEN_CRYPTTOKEN_CONTEXT*
+  GWEN_CryptToken_Context__fromXml(GWEN_CRYPTTOKEN *ct,
+                                   GWEN_XMLNODE *n);
 
-int GWEN_CryptToken__TransformFromBCD(unsigned char *buffer,
-                                      unsigned int bufLength,
-                                      unsigned int *pinLength);
+static int GWEN_CryptToken__TransformFromBCD(unsigned char *buffer,
+                                             unsigned int bufLength,
+                                             unsigned int *pinLength);
 
-int GWEN_CryptToken__TransformFromFPIN2(unsigned char *buffer,
-					unsigned int bufLength,
-                                        unsigned int *pinLength);
+static int GWEN_CryptToken__TransformFromFPIN2(unsigned char *buffer,
+                                               unsigned int bufLength,
+                                               unsigned int *pinLength);
 
-int GWEN_CryptToken__TransformFromBin(unsigned char *buffer,
-                                      unsigned int bufLength,
-                                      unsigned int *pinLength);
+static int GWEN_CryptToken__TransformFromBin(unsigned char *buffer,
+                                             unsigned int bufLength,
+                                             unsigned int *pinLength);
 
-int GWEN_CryptToken__TransformToBCD(unsigned char *buffer,
-				    unsigned int bufLength,
-                                    unsigned int *pinLength);
-int GWEN_CryptToken__TransformToFPIN2(unsigned char *buffer,
-				      unsigned int bufLength,
-                                      unsigned int *pinLength);
-int GWEN_CryptToken__TransformToBin(unsigned char *buffer,
-                                    unsigned int bufLength,
-                                    unsigned int *pinLength);
+static int GWEN_CryptToken__TransformToBCD(unsigned char *buffer,
+                                           unsigned int bufLength,
+                                           unsigned int *pinLength);
+static int GWEN_CryptToken__TransformToFPIN2(unsigned char *buffer,
+                                             unsigned int bufLength,
+                                             unsigned int *pinLength);
+static int GWEN_CryptToken__TransformToBin(unsigned char *buffer,
+                                           unsigned int bufLength,
+                                           unsigned int *pinLength);
 
+static int GWEN_CryptToken__matchKey(const GWEN_CRYPTTOKEN_KEYINFO *pki,
+                                     GWEN_CRYPTTOKEN_KEYINFO *ki,
+                                     const char *name);
+
+static int
+  GWEN_CryptToken__matchContext(GWEN_CRYPTTOKEN *ct,
+                                const GWEN_CRYPTTOKEN_CONTEXT *pattern,
+                                GWEN_CRYPTTOKEN_CONTEXT *ctx);
 
 
 

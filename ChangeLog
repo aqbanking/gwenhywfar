@@ -7,6 +7,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/02/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added functions GWEN_CryptToken_GetMatchingContexts() and 
+  GWEN_CryptToken_FindContextInList(). This very much simplifies working with
+  crypt tokens.
+- adapted "ohbci" crypt token context description to the latest changes
+
+
 2006/02/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed debug messages in ct_file.c

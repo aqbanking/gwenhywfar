@@ -641,6 +641,22 @@ const GWEN_CRYPTTOKEN_CONTEXT*
   GWEN_CryptToken_GetContextById(GWEN_CRYPTTOKEN *ct,
                                  GWEN_TYPE_UINT32 id);
 
+/**
+ * This function compares all available contexts to the given one and stores
+ * copies of all matching contexts in the given list.
+ * For comparison all key infos can be used, as well as signInfo, cryptInfo
+ * and authInfo. Data omitted in the pattern context always matches.
+ */
+GWENHYWFAR_API
+int
+GWEN_CryptToken_GetMatchingContexts(GWEN_CRYPTTOKEN *ct,
+                                    const GWEN_CRYPTTOKEN_CONTEXT *pattern,
+                                    GWEN_CRYPTTOKEN_CONTEXT_LIST *cl);
+
+GWENHYWFAR_API
+  GWEN_CRYPTTOKEN_CONTEXT*
+  GWEN_CryptToken_FindContextInList(const GWEN_CRYPTTOKEN_CONTEXT_LIST *cl,
+                                    GWEN_TYPE_UINT32 id);
 
 GWENHYWFAR_API
 int GWEN_CryptToken_Hash(GWEN_CRYPTTOKEN_HASHALGO algo,
