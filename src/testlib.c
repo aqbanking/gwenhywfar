@@ -195,7 +195,7 @@ int check2() {
   int i;
 
   fprintf(stderr, "Check 2 ...");
-  for (i=0; i<500; i++) {
+  for (i=0; i<50; i++) {
     int rv;
 
     fprintf(stderr, ".");
