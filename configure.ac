@@ -10,7 +10,7 @@ AC_PREREQ(2.56)
 AC_INIT
 AC_CANONICAL_TARGET([])
 AC_CONFIG_SRCDIR([src/gwenhywfarapi.h])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 ###-------------------------------------------------------------------------
 #
