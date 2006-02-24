@@ -7,10 +7,16 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/02/24: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- mklistdoc now recognizes const list macros as well
+
+
 2006-02-17   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Use AC_CONFIG_HEADERS, not HEADER, in according to
 	autoconf docs.
+
 
 2006/02/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

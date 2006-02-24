@@ -57,6 +57,16 @@ MACRO_DEF macroDefs[]= {
   "_list2"
 },
 {
+  "GWEN_CONSTLIST2_FUNCTION_DEFS",
+  "list2.tmpl",
+  "_constlist2p"
+},
+{
+  "GWEN_CONSTLIST2_FUNCTION_LIB_DEFS",
+  "list2.tmpl",
+  "_constlist2"
+},
+{
   "GWEN_LIST_FUNCTION_DEFS",
   "list1.tmpl",
   "_listp"
@@ -65,6 +75,16 @@ MACRO_DEF macroDefs[]= {
   "GWEN_LIST_FUNCTION_LIB_DEFS",
   "list1.tmpl",
   "_list"
+},
+{
+  "GWEN_CONSTLIST_FUNCTION_DEFS",
+  "list1.tmpl",
+  "_constlistp"
+},
+{
+  "GWEN_CONSTLIST_FUNCTION_LIB_DEFS",
+  "list1.tmpl",
+  "_constlist"
 },
 {
   0, 0, 0
