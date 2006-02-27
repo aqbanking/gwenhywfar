@@ -27,7 +27,7 @@ $Id$
 ===============
 
 This file contains some style guidelines which I would like to see respected
-by all authors providing code to this project.
+by all authors contributing code to this project.
 
 Nobody will wrench off your head if your submission does not follow these
 guidelines, but you should be aware that your code will most likely be
@@ -37,10 +37,10 @@ The goal of these guidelines is to keep the project files uniform and thus
 making it easier to read them.
 
 This document is subject to changes, and the project admin is open for
-discussion and suggestions ;-)
+discussion and suggestions.
 
 I know that many parts of this project do not fully comply to this
-style guide but I am working on it ;-)
+style guide but I am working on it.
 
 
 
@@ -297,7 +297,7 @@ that ;-)
 
 
 
-Martin Preuss, Hamburg/Germany, Jan 22 2004
+Martin Preuss, Hamburg/Germany, Feb 27 2006
 
 
 

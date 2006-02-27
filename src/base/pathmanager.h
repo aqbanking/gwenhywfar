@@ -58,10 +58,10 @@ extern "C" {
  * module. This must be done before calling one of the other
  * functions of this group. The actual path is not yet set.
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
  * @return Zero on success, or GWEN_ERROR_INVALID if the @c
  * pathName already exists.
@@ -74,10 +74,10 @@ int GWEN_PathManager_DefinePath(const char *destLib,
  * Unregister a path that was registered by
  * GWEN_PathManager_DefinePath().
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
  * @return Zero on success, or GWEN_ERROR_NOT_FOUND if the @c
  * pathName was not found.
@@ -91,14 +91,14 @@ int GWEN_PathManager_UndefinePath(const char *destLib,
  * Add a directory path entry to a registered path entry in the
  * global GWEN_PathManager.
  *
- * @callingLib The name of the library that adds this path entry.
+ * @param callingLib The name of the library that adds this path entry.
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
- * @pathValue The actual directory path that should be added to
+ * @param pathValue The actual directory path that should be added to
  * this registered path.
  *
  * @return Zero on success, or GWEN_ERROR_NOT_FOUND if the @c
@@ -118,17 +118,17 @@ int GWEN_PathManager_AddPath(const char *callingLib,
  * On non-windows platforms, the function does nothing and returns
  * zero, so you can safely call this in your multi-platform code.
  *
- * @callingLib The name of the library that adds this path entry.
+ * @param callingLib The name of the library that adds this path entry.
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
- * @keypath The key's path in the windows registry under
+ * @param keypath The key's path in the windows registry under
  * HKEY_LOCAL_USER, e.g. "Software\MyProgram\Paths".
  *
- * @varname The variable name of the string variable with the
+ * @param varname The variable name of the string variable with the
  * actual directory path.
  *
  * @return Zero on success, or nonzero if the @c pathName or the
@@ -149,14 +149,14 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
  * ensure that plugins/files from a given path take precedence over already
  * added paths.
  *
- * @callingLib The name of the library that adds this path entry.
+ * @param callingLib The name of the library that adds this path entry.
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
- * @pathValue The actual directory path that should be added to
+ * @param pathValue The actual directory path that should be added to
  * this registered path.
  */
 GWENHYWFAR_API
@@ -169,14 +169,14 @@ int GWEN_PathManager_InsertPath(const char *callingLib,
  * Removes a directory path entry from a registered path entry in
  * the global GWEN_PathManager.
  *
- * @callingLib The name of the library that added this path entry.
+ * @param callingLib The name of the library that added this path entry.
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
- * @pathValue The actual directory path that should be added to
+ * @param pathValue The actual directory path that should be added to
  * this registered path.
  *
  * @return Zero on success, or nonzero if the @c pathName was not
@@ -192,7 +192,7 @@ int GWEN_PathManager_RemovePath(const char *callingLib,
  * Removes all directory path entries that were registered by the
  * @c callingLib from the global GWEN_PathManager.
  *
- * @callingLib The name of the library that added path entries.
+ * @param callingLib The name of the library that added path entries.
  *
  * @return Zero on success.
  */
@@ -205,10 +205,10 @@ int GWEN_PathManager_RemovePaths(const char *callingLib);
  * since the last call to this function (i.e. whether paths have been
  * added, inserted or removed).
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
  * @return Zero on success, or GWEN_ERROR_NOT_FOUND if the @c
  * pathName was not found.
@@ -221,10 +221,10 @@ int GWEN_PathManager_PathChanged(const char *destLib,
  * Returns a string list of all path entries that exist under the
  * registered @c pathName.
  *
- * @destLib The name of the library that this path is supposed to
+ * @param destLib The name of the library that this path is supposed to
  * belong to.
  *
- * @pathName A string identifier for this registered path.
+ * @param pathName A string identifier for this registered path.
  *
  * @return A newly allocated @ref GWEN_STRINGLIST with all added
  * path entries, or NULL if no path entry or no registered @c

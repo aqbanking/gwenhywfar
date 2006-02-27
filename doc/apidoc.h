@@ -12,9 +12,6 @@
 /** @defgroup MOD_NET Networking Functions */
 /** @defgroup MOD_IPC Inter Process communication */
 /** @defgroup MOD_PARSER Data Management And Parsing */
-/*@{*/
-/** @defgroup MOD_HBCI Implementation of the HBCI Protocol */
-/*@}*/
 /** @defgroup MOD_CRYPT Cryptographic Functions */
 
 
