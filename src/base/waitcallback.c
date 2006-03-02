@@ -487,12 +487,12 @@ void GWEN_WaitCallback_EnterWithText_u(const char *id,
         nctx->level=1;
       }
 
-      if (txt)
+      if (txt && nctx->originalCtx->logFn)
         /* inform the original context about the attachment */
-        ctx->originalCtx->logFn(ctx->originalCtx,
-                                GWEN_WAITCALLBACK_LEVEL_REUSED,
-                                GWEN_LoggerLevel_Notice,
-                                txt);
+        nctx->originalCtx->logFn(nctx->originalCtx,
+                                 GWEN_WAITCALLBACK_LEVEL_REUSED,
+                                 GWEN_LoggerLevel_Notice,
+                                 txt);
     }
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Instantiating from callback \"%s\"", id);
