@@ -231,7 +231,14 @@ int GWEN_BufferedIO__FillReadBuffer(GWEN_BUFFEREDIO *bt){
 
 int GWEN_BufferedIO_PeekChar(GWEN_BUFFEREDIO *bt){
   assert(bt);
-  assert(bt->readerBuffer);
+
+  /* Extend the assertion: If it fails, print a more verbose error
+     message to help programmers who are inexperienced with the
+     BUFFEREDIO. */
+  if (!bt->readerBuffer) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "BufferedIO has not yet been assigned a reading buffer for reading; probably assign one by GWEN_BufferedIO_SetReadBuffer(bio,0,length).");
+    assert(bt->readerBuffer);
+  }
 
   /* do some fast checks */
   if (bt->readerError) {
@@ -616,7 +623,7 @@ void GWEN_BufferedIO_SetLineMode(GWEN_BUFFEREDIO *dm,
 
 
 
-GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(GWEN_BUFFEREDIO *dm){
+GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(const GWEN_BUFFEREDIO *dm){
   assert(dm);
   return dm->lineMode;
 }
@@ -630,7 +637,7 @@ void GWEN_BufferedIO_SetTimeout(GWEN_BUFFEREDIO *dm, int timeout){
 
 
 
-int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm){
+int GWEN_BufferedIO_GetTimeout(const GWEN_BUFFEREDIO *dm){
   assert(dm);
   return dm->timeout;
 }

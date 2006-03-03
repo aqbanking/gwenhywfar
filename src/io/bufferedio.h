@@ -35,7 +35,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+  /** A flexible I/O class with buffer for input or for output.
+   *
+   * - Create one by creating one of the derived classes, e. g. by
+   * GWEN_BufferedIO_File_new(). 
+   * - Then assign an appropriate buffer
+   * to be used by GWEN_BufferedIO_SetWriteBuffer() or
+   * GWEN_BufferedIO_SetReadBuffer(). 
+   * - Then use it for input or output. 
+   * - In the end close it with GWEN_BufferedIO_Close().
+   */
   typedef struct GWEN_BUFFEREDIOSTRUCT GWEN_BUFFEREDIO;
+
   GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_BUFFEREDIO, GWENHYWFAR_API)
   /* No trailing semicolon because this is a macro call */
 #ifdef __cplusplus
@@ -112,27 +124,50 @@ GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_new();
 GWENHYWFAR_API void GWEN_BufferedIO_free(GWEN_BUFFEREDIO *dm);
 
 /**
- * Set the read buffer to be used. This is only needed if you want to read
- * from a stream.
+ * Set the read buffer to be used. If you want to read from a
+ * stream this function must be called beforehand! Otherwise the
+ * first reading call will fail. (For writing this is not needed.)
+ *
+ * Either supply a buffer by the @c buffer argument, or leave that
+ * argument as @c NULL so that the BufferedIO object will assign a
+ * new internal buffer for itself.
+ *
  * @author Martin Preuss<martin@aquamaniac.de>
- * @param buffer pointer to the buffer to be used. If 0 then this function
- * will allocate a buffer of len size. This function takes over ownership
- * of this buffer in any case ! This means you should never free this
- * buffer, this will be done by this module itself.
- * @param len length of the buffer (in bytes)
+ *
+ * @param bt The BufferedIO.
+ *
+ * @param buffer Pointer to the buffer to be used. If 0 then this
+ * function will allocate a buffer of @c len size by itself. In
+ * any case this function will take ownership of this buffer! This
+ * means you should never free this buffer, this will be done by
+ * this module itself.
+ *
+ * @param len Length of the buffer (in bytes)
  */
 GWENHYWFAR_API void GWEN_BufferedIO_SetReadBuffer(GWEN_BUFFEREDIO *bt,
                                                   char *buffer,
                                                   int len);
 
 /**
- * Set the write buffer to be used. This is only needed if you want to write
- * to a stream.
+ * Set the write buffer to be used. If you want to write to a
+ * stream this function must be called beforehand! Otherwise the
+ * first writing call will fail. (For reading this is not needed.)
+ *
+ * Either supply a buffer by the @c buffer argument, or leave that
+ * argument as @c NULL so that the BufferedIO object will assign a
+ * new internal buffer for itself.
+ *
  * @author Martin Preuss<martin@aquamaniac.de>
- * @param buffer pointer to the buffer to be used. If 0 then this function
- * will allocate a buffer of len size. This function takes over ownership
- * of this buffer in any case !
- * @param len length of the buffer (in bytes)
+ *
+ * @param bt The BufferedIO.
+ *
+ * @param buffer Pointer to the buffer to be used. If 0 then this
+ * function will allocate a buffer of @c len size by itself. In
+ * any case this function will take ownership of this buffer! This
+ * means you should never free this buffer, this will be done by
+ * this module itself.
+ *
+ * @param len Length of the buffer (in bytes)
  */
 GWENHYWFAR_API void GWEN_BufferedIO_SetWriteBuffer(GWEN_BUFFEREDIO *bt,
                                                    char *buffer,
@@ -186,13 +221,13 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
  */
 GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt);
 
-/*
+/**
  * Returns !=0 if the read buffer is empty, 0 if it is not.
  */
 GWENHYWFAR_API int GWEN_BufferedIO_ReadBufferEmpty(GWEN_BUFFEREDIO *bt);
 
 
-/*
+/**
  * Returns !=0 if the write buffer is empty, 0 if it is not.
  */
 GWENHYWFAR_API int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt);
@@ -294,7 +329,7 @@ void GWEN_BufferedIO_SubFlags(GWEN_BUFFEREDIO *bt, GWEN_TYPE_UINT32 f);
  * @author Martin Preuss<martin@aquamaniac.de>
  */
 GWENHYWFAR_API
-GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(GWEN_BUFFEREDIO *dm);
+GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(const GWEN_BUFFEREDIO *dm);
 
 
 /**
@@ -314,20 +349,23 @@ void GWEN_BufferedIO_SetTimeout(GWEN_BUFFEREDIO *dm, int timeout);
  * Returns the currently used timeout value in milliseconds.
  */
 GWENHYWFAR_API
-int GWEN_BufferedIO_GetTimeout(GWEN_BUFFEREDIO *dm);
+int GWEN_BufferedIO_GetTimeout(const GWEN_BUFFEREDIO *dm);
 
-
+/** Returns the number of lines that have been read or written so
+    far. */
 GWENHYWFAR_API
 int GWEN_BufferedIO_GetLines(const GWEN_BUFFEREDIO *dm);
 
-
+/** Returns the position index in the current line that is being
+    read or written. */
 GWENHYWFAR_API
 int GWEN_BufferedIO_GetLinePos(const GWEN_BUFFEREDIO *dm);
 
-
+/** Returns the number of bytes that have been read so far. */
 GWENHYWFAR_API
 int GWEN_BufferedIO_GetBytesRead(const GWEN_BUFFEREDIO *dm);
 
+/** Returns the number of bytes that have been written so far. */
 GWENHYWFAR_API
 int GWEN_BufferedIO_GetBytesWritten(const GWEN_BUFFEREDIO *dm);
 
@@ -356,7 +394,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
  * inside the internal buffer that data will be flushed first.
  * This allows for mixing calls to this function with calls to the
  * character based write functions.
- * @param bsize pointer to a variable which holds the number of bytes
+ *
+ * @param bt The BufferedIO.
+ * @param buffer The buffer to which bytes should be written.
+ * @param bsize Pointer to a variable which holds the number of bytes
  * to write. Upon return this variable shows the number of bytes actually
  * written. Please note that if this function has to flush internal buffers
  * the return value might be 0 (indicating that no error occurred, but the
@@ -373,7 +414,10 @@ GWENHYWFAR_API
  * Reads multiple bytes. If there is some data inside the internal buffers
  * then that data will be returned first. This allows for mixing with
  * character based read functions.
- * @param bsize pointer to a variable which holds the number of bytes
+ *
+ * @param bt The BufferedIO.
+ * @param buffer The buffer from which bytes should be read.
+ * @param bsize Pointer to a variable which holds the number of bytes
  * to read. Upon return this variable shows the number of bytes actually
  * read.
  */

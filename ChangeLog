@@ -3,6 +3,10 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006-03-03   Christian Stimming <stimming@tuhh.de>
+
+	* src/io/bufferedio.h: Make some simple accessor functions const
+	because they don't modify the object.
 
 ===========================================================================
 MARK: released gwenhywfar-2.0.0 (2006/02/27)
@@ -10,7 +14,8 @@ MARK: released gwenhywfar-2.0.0 (2006/02/27)
 
 2006/03/02: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- fixed a bug in waitcallback code
+- fixed a bug in waitcallback code (FIXME: this isn't in
+  gwenhywfar-2.0.0, is it?
 
 
 2006/02/24: Martin Preuss<martin@libchipcard.de>
