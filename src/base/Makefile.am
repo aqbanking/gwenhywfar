@@ -24,6 +24,7 @@ noinst_HEADERS=\
  idlist_p.h \
  inherit_p.h \
  list_p.h \
+ list1_p.h \
  logger_l.h \
  logger_p.h \
  memory_l.h \
@@ -50,6 +51,7 @@ iheader_HEADERS=\
  idlist.h \
  inherit.h \
  list.h \
+ list1.h \
  list1.tmpl \
  list2.h \
  list2.tmpl \
@@ -75,6 +77,7 @@ libbase_la_SOURCES=\
  idlist.c \
  inherit.c \
  list.c \
+ list1.c \
  logger.c \
  memory.c \
  pathmanager.c \

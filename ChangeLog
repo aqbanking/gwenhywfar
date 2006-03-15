@@ -3,6 +3,21 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006/03/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- replaced old GWEN_LIST stuff by new code: These new lists are a drop-in
+  replacement for the old lists (source-compatible) and are double-linked.
+  In addition to storing the first element these lists now also store a
+  pointer to the last element. This makes browsing of the list when adding
+  an element unnecessary.
+- XML code now uses the new lists insteadof its own list code. This leads
+  to an astonishing speedup for XML loading:
+  Loading times for an XML file with about 16MB of data:
+     Gwenhywfar 2.0.0.1: 11 secs
+     Gwenhywfar 2.0.0.2: 2-3 secs
+  If I can find the time I will also change the GWEN_DB code to use these
+  lists instead of its own list code.
+
 
 2006-03-03   Christian Stimming <stimming@tuhh.de>
 

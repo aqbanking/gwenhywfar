@@ -52,21 +52,19 @@ void GWEN_XMLProperty_add(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
 void GWEN_XMLProperty_insert(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
 void GWEN_XMLProperty_del(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head);
 
-struct GWEN__XMLNODE {
-  GWEN_XMLNODE *next;
-  GWEN_XMLNODE *child;
+struct GWEN_XMLNODE {
+  GWEN_LIST_ELEMENT(GWEN_XMLNODE)
+
+  GWEN_XMLNODE_LIST *children;
   GWEN_XMLNODE *parent;
 
-  GWEN_XMLNODE *header;
+  GWEN_XMLNODE_LIST *headers;
 
   GWEN_XMLNODE_TYPE type;
   GWEN_XMLPROPERTY *properties;
   GWEN_TYPE_UINT32 usage;
   char *data;
 };
-
-void GWEN_XMLNode_add(GWEN_XMLNODE *n, GWEN_XMLNODE **head);
-void GWEN_XMLNode_del(GWEN_XMLNODE *n, GWEN_XMLNODE **head);
 
 
 struct GWEN_XMLNODE_PATH {

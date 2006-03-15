@@ -307,6 +307,33 @@ int testXML3(int argc, char **argv) {
 
 
 
+int testXML4(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  time_t startTime;
+  time_t stopTime;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  startTime=time(0);
+  if (GWEN_XML_ReadFile(n, argv[2], GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+  stopTime=time(0);
+  GWEN_XMLNode_free(n);
+
+  fprintf(stderr, "Time for loading: %d secs\n",
+          (int)(difftime(stopTime, startTime)));
+
+  return 0;
+}
+
+
+
 int testMsg(int argc, char **argv) {
   GWEN_XMLNODE *n;
   GWEN_MSGENGINE *e;
@@ -3578,6 +3605,8 @@ int main(int argc, char **argv) {
     rv=testXML2(argc, argv);
   else if (strcasecmp(argv[1], "xml3")==0)
     rv=testXML3(argc, argv);
+  else if (strcasecmp(argv[1], "xml4")==0)
+    rv=testXML4(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
     rv=testSnprintf(argc, argv);
   else if (strcasecmp(argv[1], "process")==0)
