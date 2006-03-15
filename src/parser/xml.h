@@ -149,7 +149,7 @@ typedef enum {
 /** The abstract type XMLNODE. Each node is one node in the document
  * tree and can represent different things, see @ref
  * GWEN_XMLNODE_TYPE. */
-typedef struct GWEN_XMLNODE GWEN_XMLNODE;
+typedef struct GWEN__XMLNODE GWEN_XMLNODE;
 
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_XMLNODE, GWEN_XMLNode, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_XMLNODE, GWEN_XMLNode, GWENHYWFAR_API)
