@@ -70,7 +70,7 @@ extern "C" {
  *
  * GWEN_LIST_FUNCTION_DEFS(MYSTRUCT, MyStruct);
  *
- * struct {
+ * struct MYSTRUCT {
  *   GWEN_LIST_ELEMENT(MYSTRUCT);
  *   int myData;
  * }
@@ -111,7 +111,9 @@ extern "C" {
  * void MyStruct_free(MYSTRUCT *pMyStruct) {
  *   if (pMyStruct) {
  *     pMyStruct->myData=0;
+ *
  *     GWEN_LIST_FINI(MYSTRUCT, pMyStruct)
+ *
  *     free(pMyStruct);
  *   }
  * }
@@ -146,6 +148,13 @@ extern "C" {
 /*@{*/
 
 
+/** @name Internal Functions
+ *
+ * All functions and structs within this group should be considered
+ * internal. They just implement the functionality behind the typesafe list
+ * macros (see @ref GWEN_LIST_FUNCTION_LIB_DEFS and following).
+ */
+/*@{*/
 typedef struct GWEN_LIST1 GWEN_LIST1;
 typedef struct GWEN_LIST1_ELEMENT GWEN_LIST1_ELEMENT;
 
@@ -225,8 +234,13 @@ void *GWEN_List1Element_GetPrevious(const GWEN_LIST1_ELEMENT *el);
 GWENHYWFAR_API
 void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el);
 
+/*@}*/
 
 
+/** @name Typesafe Macros
+ *
+ */
+/*@{*/
 
 /**
  * Use this inside the declaration of a struct for which you want to create
@@ -282,8 +296,6 @@ GWEN_LIST1_ELEMENT *_list1_element;
  *  </li>
  * </ul>
  *
- * This macro should be used in applications, not in libraries. In
- * libraries please use the macro @ref GWEN_LIST_FUNCTION_LIB_DEFS.
  */
 #define GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef GWEN_LIST1_ELEMENT t##_LIST_ELEMENT; \
@@ -303,7 +315,10 @@ GWEN_LIST1_ELEMENT *_list1_element;
   decl GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l);
 
 
-
+/**
+ * This macro should be used in applications, not in libraries. In
+ * libraries please use the macro @ref GWEN_LIST_FUNCTION_LIB_DEFS.
+ */
 #define GWEN_LIST_FUNCTION_DEFS(t, pr) \
   GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
@@ -403,6 +418,8 @@ GWEN_LIST1_ELEMENT *_list1_element;
     GWEN_List1Element_free(element->_list1_element); \
     element->_list1_element=0; \
   }
+
+/*@}*/
 
 /*@}*/ /* defgroup */
 

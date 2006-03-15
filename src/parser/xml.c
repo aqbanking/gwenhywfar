@@ -2448,12 +2448,13 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
 
 void* GWEN_XMLNode_HandlePath(const char *entry,
                               void *data,
+                              int idx,
                               GWEN_TYPE_UINT32 flags) {
   GWEN_XMLNODE *n;
   GWEN_XMLNODE *nn;
-  int idx;
   char *tag;
   char *p;
+  int i;
 
   n=(GWEN_XMLNODE*)data;
 
@@ -2478,7 +2479,7 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
     return n;
   }
 
-  idx=1;
+  idx=0;
   tag=GWEN_Memory_strdup(entry);
   assert(tag);
   p=strchr(tag, '[');
@@ -2491,7 +2492,7 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
       GWEN_Memory_dealloc(tag);
       return 0;
     }
-    if (idx<1) {
+    if (idx<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad index %d in path element \"%s\"",
                 idx, entry);
       GWEN_Memory_dealloc(tag);
@@ -2518,7 +2519,7 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
       return 0;
     }
     else {
-      if (idx!=1) {
+      if (idx!=0) {
         DBG_ERROR(GWEN_LOGDOMAIN,
                   "Can not create tag with index!=1 (%s)", entry);
         GWEN_Memory_dealloc(tag);
@@ -2534,17 +2535,10 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
   }
 
   /* find the node */
-  if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-    nn=0;
-  }
-  else {
-    int i;
-
-    i=idx;
-    nn=GWEN_XMLNode_FindFirstTag(n, tag, 0, 0);
-    while(--i) {
-      nn=GWEN_XMLNode_FindNextTag(nn, tag, 0, 0);
-    }
+  i=idx;
+  nn=GWEN_XMLNode_FindFirstTag(n, tag, 0, 0);
+  while(nn && --i) {
+    nn=GWEN_XMLNode_FindNextTag(nn, tag, 0, 0);
   }
 
   if (!nn) {
@@ -2554,29 +2548,22 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
          (flags & GWEN_PATH_FLAGS_PATHMUSTEXIST)) ||
         (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST)
        ) {
-      if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-        DBG_VERBOUS(GWEN_LOGDOMAIN,
-                    "Variable \"%s\" does not exist", entry);
-      }
-      else {
-        DBG_VERBOUS(GWEN_LOGDOMAIN,
-                    "Tag \"%s\" does not exist", entry);
-      }
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Tag \"%s\" does not exist", entry);
       GWEN_Memory_dealloc(tag);
       return 0;
     }
     /* create the new variable/group */
-    if (flags & GWEN_PATH_FLAGS_VARIABLE) {
-      /* variable not allowed */
+    if (idx!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Can not create tag with index!=1 (%s)", entry);
       GWEN_Memory_dealloc(tag);
       return 0;
     }
-    else {
-      DBG_VERBOUS(GWEN_LOGDOMAIN,
-                  "Tag \"%s\" not found, creating", entry);
-      nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, tag);
-      GWEN_XMLNode_AddChild(n, nn);
-    }
+    DBG_VERBOUS(GWEN_LOGDOMAIN,
+                "Tag \"%s\" not found, creating", entry);
+    nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, tag);
+    GWEN_XMLNode_AddChild(n, nn);
   } /* if node not found */
   else {
     /* node does exist, check whether this is ok */
@@ -2601,10 +2588,10 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
 GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
                                           const char *path,
                                           GWEN_TYPE_UINT32 flags){
-  return (GWEN_XMLNODE*)GWEN_Path_Handle(path,
-                                         (void*)n,
-                                         flags,
-                                         GWEN_XMLNode_HandlePath);
+  return (GWEN_XMLNODE*)GWEN_Path_HandleWithIdx(path,
+                                                (void*)n,
+                                                flags,
+                                                GWEN_XMLNode_HandlePath);
 }
 
 
