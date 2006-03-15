@@ -49,6 +49,7 @@ GWEN_KEYSPEC *GWEN_KeySpec_new(){
   GWEN_NEW_OBJECT(GWEN_KEYSPEC, ks);
   DBG_MEM_INC("GWEN_KEYSPEC", 0);
   GWEN_INHERIT_INIT(GWEN_KEYSPEC, ks);
+  GWEN_LIST_INIT(GWEN_KEYSPEC, ks);
   ks->number=1;
   ks->version=1;
   return ks;
@@ -59,6 +60,7 @@ GWEN_KEYSPEC *GWEN_KeySpec_new(){
 void GWEN_KeySpec_free(GWEN_KEYSPEC *ks){
   if (ks) {
     DBG_MEM_DEC("GWEN_KEYSPEC");
+    GWEN_LIST_FINI(GWEN_KEYSPEC, ks);
     GWEN_INHERIT_FINI(GWEN_KEYSPEC, ks);
     free(ks->keyType);
     free(ks->keyName);

@@ -17,6 +17,7 @@
      Gwenhywfar 2.0.0.2: 2-3 secs
   If I can find the time I will also change the GWEN_DB code to use these
   lists instead of its own list code.
+- fixed a bug in keyspec.c: Was not initialising list structures
 
 
 2006-03-03   Christian Stimming <stimming@tuhh.de>
