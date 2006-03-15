@@ -150,47 +150,78 @@ typedef struct GWEN_LIST1 GWEN_LIST1;
 typedef struct GWEN_LIST1_ELEMENT GWEN_LIST1_ELEMENT;
 
 
+/** Allocate (create) a new empty list. */
 GWENHYWFAR_API
 GWEN_LIST1 *GWEN_List1_new();
 
+/** Free (delete) an existing list.  The list elements are
+ * untouched by this function; they need to be freed
+ * beforehand. */
 GWENHYWFAR_API
 void GWEN_List1_free(GWEN_LIST1 *l);
 
+/** Returns the number of elements in this list. This value is
+ * cached in the list structure, so this function is a cheap
+ * function. */
 GWENHYWFAR_API
 int GWEN_List1_GetCount(const GWEN_LIST1 *l);
 
+/** Adds (appends) a list element at the end of the list. (This
+ * operation is also called "append" or "push_back" elsewhere.) */
 GWENHYWFAR_API
 int GWEN_List1_Add(GWEN_LIST1 *l, GWEN_LIST1_ELEMENT *el);
 
+/** Inserts (prepends) a list element at the beginning of the
+ * list. (This operation is also called "prepend" or "push_front"
+ * elsewhere.) */
 GWENHYWFAR_API
 int GWEN_List1_Insert(GWEN_LIST1 *l, GWEN_LIST1_ELEMENT *el);
 
+/** Deletes (removes) a list element from the list it used to
+ * belong to. The list element is not free'd or anything, it is
+ * only removed from the list it used to belong to. (This
+ * operation is also called "remove" or "unlink" elsewhere.) */
 GWENHYWFAR_API
 int GWEN_List1_Del(GWEN_LIST1_ELEMENT *el);
 
+/** Adds (appends) the second list to the end of the first
+ * list. (This operation is also called "append" or "concatenate"
+ * elsewhere.) */
 GWENHYWFAR_API
 int GWEN_List1_AddList(GWEN_LIST1 *dest, GWEN_LIST1 *l);
 
+/** Returns the data pointer of the first list element. */
 GWENHYWFAR_API
 void *GWEN_List1_GetFirst(const GWEN_LIST1 *l);
 
+/** Returns the data pointer of the last list element. */
 GWENHYWFAR_API
 void *GWEN_List1_GetLast(const GWEN_LIST1 *l);
 
 
 
+/** Allocate (create) a new list element structure. */
 GWENHYWFAR_API
 GWEN_LIST1_ELEMENT *GWEN_List1Element_new(void *d);
 
+/** Free (delete) a list element structure. */
 GWENHYWFAR_API
 void GWEN_List1Element_free(GWEN_LIST1_ELEMENT *el);
 
+/** Returns the data pointer of the given list element
+ * structure. */
 GWENHYWFAR_API
 void *GWEN_List1Element_GetData(const GWEN_LIST1_ELEMENT *el);
 
+/** Returns the data pointer of the list element that is the
+ * previous (predecessor) to the given one in its list. If there
+ * is no such prepending list element, returns NULL. */
 GWENHYWFAR_API
 void *GWEN_List1Element_GetPrevious(const GWEN_LIST1_ELEMENT *el);
 
+/** Returns the data pointer of the list element that is the next
+ * one (successor) to the given one in its list. If there is no
+ * such prepending list element, returns NULL. */
 GWENHYWFAR_API
 void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el);
 
@@ -214,7 +245,8 @@ GWEN_LIST1_ELEMENT *_list1_element;
  * <ul>
  *  <li>
  *    void MyType_List_Add(MYTYPE *element, MYTYPE_LIST *list);<br>
- *    Adds a MYTYPE struct to the given list.
+ *    Adds (appends) a MYTYPE struct at the end of the given
+ *    list. (We apologize for the unusual argument order here.)
  *  </li>
  *  <li>
  *    void MyType_List_Del(MYTYPE *element);<br>
@@ -222,11 +254,17 @@ GWEN_LIST1_ELEMENT *_list1_element;
  *  </li>
  *  <li>
  *    MYTYPE *MyType_List_First(MYTYPE *element); <br>
- *    Returns the first member of the given list.
+ *    Returns the first element of the given list.
  *  </li>
  *  <li>
  *    MYTYPE* MyType_List_Next(const MYTYPE *element);<br>
- *    Returns a pointer to the object followed by the given one.
+ *    Returns the next list element to the given one (the
+ *    successor) in its list.
+ *  </li>
+ *  <li>
+ *    MYTYPE* MyType_List_Previous(const MYTYPE *element);<br>
+ *    Returns the previous list element to the given one (the
+ *    predecessor) in its list.
  *  </li>
  *  <li>
  *    void MyType_List_Clear(MYTYPE *element); <br>
