@@ -15,7 +15,7 @@
   In addition to storing the first element these lists now also store a
   pointer to the last element. This makes browsing of the list when adding
   an element unnecessary.
-- XML code now uses the new lists insteadof its own list code. This leads
+- XML code now uses the new lists instead of its own list code. This leads
   to an astonishing speedup for XML loading:
   Loading times for an XML file with about 16MB of data:
      Gwenhywfar 2.0.0.1: 11 secs
