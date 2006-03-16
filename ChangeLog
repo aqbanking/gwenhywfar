@@ -3,6 +3,11 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006/03/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in IPC request manager
+
+
 2006/03/15: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - replaced old GWEN_LIST stuff by new code: These new lists are a drop-in

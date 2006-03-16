@@ -74,8 +74,10 @@ int GWEN_IpcRequestManager__Work(GWEN_IPC_REQUEST_LIST *rql){
   rq=GWEN_IpcRequest_List_First(rql);
   while(rq) {
     GWEN_IPC_REQUEST_LIST *crql;
+    GWEN_IPC_REQUEST *rqNext;
     int rv;
 
+    rqNext=GWEN_IpcRequest_List_Next(rq);
     crql=GWEN_IpcRequest_GetSubRequests(rq);
     if (crql) {
       rv=GWEN_IpcRequestManager__Work(crql);
@@ -87,7 +89,7 @@ int GWEN_IpcRequestManager__Work(GWEN_IPC_REQUEST_LIST *rql){
     if (rv!=1)
       done++;
 
-    rq=GWEN_IpcRequest_List_Next(rq);
+    rq=rqNext;
   }
 
   if (done)
