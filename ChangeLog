@@ -3,6 +3,17 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2006/03/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added flags to NetLayer_Log which allow to choose what data to log 
+  (incoming and/or outgoing data)
+
+
 2006/03/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in IPC request manager

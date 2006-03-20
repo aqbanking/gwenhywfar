@@ -68,6 +68,8 @@ GWEN_NETLAYER *GWEN_NetLayerLog_new(GWEN_NETLAYER *baseLayer,
   nld->nameBase=strdup(fileNameBase);
   nld->inFd=-1;
   nld->outFd=-1;
+  nld->logWrite=1;
+  nld->logRead=1;
 
   GWEN_NetLayer_SetBaseLayer(nl, baseLayer);
   GWEN_NetLayer_SetStatus(nl, GWEN_NetLayer_GetStatus(baseLayer));
@@ -301,15 +303,17 @@ void GWEN_NetLayerLog_BaseStatusChange(GWEN_NETLAYER *nl,
                 GWEN_Buffer_GetStart(nbuf),
                 strerror(errno));
     }
-    GWEN_Buffer_Crop(nbuf, 0, pos);
-    GWEN_Buffer_AppendString(nbuf, ".write");
-    nld->outFd=open(GWEN_Buffer_GetStart(nbuf),
-                    O_WRONLY | O_CREAT | O_EXCL,
-                    S_IRUSR | S_IWUSR);
-    if (nld->outFd==-1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
-                GWEN_Buffer_GetStart(nbuf),
-                strerror(errno));
+    if (nld->logWrite) {
+      GWEN_Buffer_Crop(nbuf, 0, pos);
+      GWEN_Buffer_AppendString(nbuf, ".write");
+      nld->outFd=open(GWEN_Buffer_GetStart(nbuf),
+		      O_WRONLY | O_CREAT | O_EXCL,
+		      S_IRUSR | S_IWUSR);
+      if (nld->outFd==-1) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
+		  GWEN_Buffer_GetStart(nbuf),
+		  strerror(errno));
+      }
     }
   }
   else if (newst==GWEN_NetLayerStatus_Disconnected ||
@@ -353,6 +357,34 @@ int GWEN_NetLayerLog_CheckInPacket(GWEN_NETLAYER *nl) {
 
   return GWEN_NetLayer_CheckInPacket(baseLayer);
 }
+
+
+
+void GWEN_NetLayerLog_SetLogRead(GWEN_NETLAYER *nl, int logRead) {
+  GWEN_NL_LOG *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_LOG, nl);
+  assert(nld);
+
+  nld->logRead=logRead;
+}
+
+
+
+void GWEN_NetLayerLog_SetLogWrite(GWEN_NETLAYER *nl, int logWrite) {
+  GWEN_NL_LOG *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_LOG, nl);
+  assert(nld);
+
+  nld->logRead=logWrite;
+}
+
+
+
+
 
 
 

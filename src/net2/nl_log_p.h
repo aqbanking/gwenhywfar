@@ -37,6 +37,8 @@
 typedef struct GWEN_NL_LOG GWEN_NL_LOG;
 struct GWEN_NL_LOG {
   char *nameBase;
+  int logWrite;
+  int logRead;
   int count;
   int inFd;
   int outFd;

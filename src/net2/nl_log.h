@@ -42,6 +42,11 @@ GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayerLog_new(GWEN_NETLAYER *baseLayer,
                                     const char *fileNameBase);
 
+GWENHYWFAR_API
+void GWEN_NetLayerLog_SetLogRead(GWEN_NETLAYER *nl, int logRead);
+
+GWENHYWFAR_API
+void GWEN_NetLayerLog_SetLogWrite(GWEN_NETLAYER *nl, int logWrite);
 
 
 #endif /* GWEN_NL_LOG_H */
