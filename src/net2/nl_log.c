@@ -294,17 +294,19 @@ void GWEN_NetLayerLog_BaseStatusChange(GWEN_NETLAYER *nl,
     GWEN_Buffer_AppendString(nbuf, "-");
     GWEN_Buffer_AppendString(nbuf, numbuf);
     pos=GWEN_Buffer_GetPos(nbuf);
-    GWEN_Buffer_AppendString(nbuf, ".read");
-    nld->inFd=open(GWEN_Buffer_GetStart(nbuf),
-                   O_WRONLY | O_CREAT | O_EXCL,
-                   S_IRUSR | S_IWUSR);
-    if (nld->inFd==-1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
-                GWEN_Buffer_GetStart(nbuf),
-                strerror(errno));
+    if (nld->logRead) {
+      GWEN_Buffer_AppendString(nbuf, ".read");
+      nld->inFd=open(GWEN_Buffer_GetStart(nbuf),
+                     O_WRONLY | O_CREAT | O_EXCL,
+                     S_IRUSR | S_IWUSR);
+      if (nld->inFd==-1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
+                  GWEN_Buffer_GetStart(nbuf),
+                  strerror(errno));
+      }
+      GWEN_Buffer_Crop(nbuf, 0, pos);
     }
     if (nld->logWrite) {
-      GWEN_Buffer_Crop(nbuf, 0, pos);
       GWEN_Buffer_AppendString(nbuf, ".write");
       nld->outFd=open(GWEN_Buffer_GetStart(nbuf),
 		      O_WRONLY | O_CREAT | O_EXCL,
@@ -379,7 +381,7 @@ void GWEN_NetLayerLog_SetLogWrite(GWEN_NETLAYER *nl, int logWrite) {
   nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_LOG, nl);
   assert(nld);
 
-  nld->logRead=logWrite;
+  nld->logWrite=logWrite;
 }
 
 
