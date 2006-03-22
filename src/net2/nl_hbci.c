@@ -248,7 +248,9 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHbci__ReadWork(GWEN_NETLAYER *nl) {
                   code, GWEN_NetLayerHttp_GetInStatusText(nlHttp));
         if (code<200 || code>299) {
           if (code!=100) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "Got an error response");
+            DBG_ERROR(GWEN_LOGDOMAIN,
+                      "Got an error response (%d: %s)",
+                      code, text);
             GWEN_WaitCallback_Log(GWEN_LoggerLevel_Error,
                                   GWEN_Buffer_GetStart(lbuf));
           }
