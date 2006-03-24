@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#COMMAND='nohup ./daily_build.sh 2>/dev/null >/dev/null &'
-COMMAND='./daily_build.sh'
+#COMMAND='nohup ./daily_build.sh gwenhywfar 2>/dev/null >/dev/null &'
+COMMAND='./daily_build.sh gwenhywfar'
 
 #USE_HOSTS="openpower-linux1 amd-linux1 sparc-solaris1 x86-netbsd1"
 USE_HOSTS="openpower-linux1"

@@ -1,7 +1,15 @@
 #!/bin/bash
 
-PACKAGE=gwenhywfar
-MODULE=${PACKAGE}
+if [ $# -lt 1 ] ; then
+  PACKAGE=gwenhywfar
+else
+  PACKAGE=$1
+fi
+if [ $# -lt 2 ] ; then
+  MODULE=${PACKAGE}
+else
+  MODULE=$2
+fi
 LOGFILE=${HOME}/${MODULE}-${HOSTNAME}.log
 
 #FRESH_CHECKOUT=0
@@ -36,7 +44,15 @@ fi
 ### Now the actual test compile
 
 echo "### Building build system " >> ${LOGFILE} 2>&1
-make -f Makefile.cvs >> ${LOGFILE} 2>&1
+if [ -f Makefile.cvs ] ; then
+  make -f Makefile.cvs >> ${LOGFILE} 2>&1
+elif [ -f Makefile.dist ] ; then
+  make -f Makefile.dist >> ${LOGFILE} 2>&1
+elif [ -f autogen.sh ] ; then
+  ./autogen.sh >> ${LOGFILE} 2>&1
+else
+  echo "## Oops, no method for build system detected!" >> ${LOGFILE} 2>&1
+fi
 build_system_rv=$?
 
 echo "### Configuring " >> ${LOGFILE} 2>&1
