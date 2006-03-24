@@ -79,7 +79,7 @@ FROM_EMAIL="cstim@cf.sourceforge.net"
 #TO_EMAIL="cstim@users.sourceforge.net"
 TO_EMAIL="gwenhywfar-cvs@lists.sourceforge.net"
 SUBJECT="${MODULE} on ${HOSTNAME}: Results of automatic test"
-TMPFILE=resulttext-${HOSTNAME}.txt
+TMPFILE=resulttext-${MODULE}-${HOSTNAME}.txt
 
 cat > ${TMPFILE} <<EOF
 Subject: ${SUBJECT}
