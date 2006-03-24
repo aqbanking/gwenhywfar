@@ -81,7 +81,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
       s++;
     } /* while */
     if (!i) {
-      DBG_ERROR(0, "Groupname is too long (limit is %d chars)",
+      DBG_ERROR(0, "Groupname is too long (limit is %zd chars)",
 		sizeof(name)-1);
       return 0;
     }
@@ -110,7 +110,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
     s++;
   } /* while */
   if (!i) {
-    DBG_ERROR(0, "Name is too long (limit is %d chars)", sizeof(name)-1);
+    DBG_ERROR(0, "Name is too long (limit is %zd chars)", sizeof(name)-1);
     return 0;
   }
   *p=0;
@@ -221,7 +221,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
       s++;
     } /* while */
     if (!i) {
-      DBG_ERROR(0, "Value is too long (limit is %d chars)", sizeof(value)-1);
+      DBG_ERROR(0, "Value is too long (limit is %zd chars)", sizeof(value)-1);
       return 0;
     }
     if (quotes&1) {

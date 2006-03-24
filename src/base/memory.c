@@ -109,8 +109,8 @@ GWEN_ERRORCODE GWEN_Memory_ModuleFini(){
     }
 
     fprintf(stderr,
-            "GWEN info: %u %s allocated in %u calls "
-            "(%u times reused, average %u bytes)\n",
+            "GWEN info: %zu %s allocated in %zu calls "
+            "(%zu times reused, average %zu bytes)\n",
             bytes, suffix,
             gwen_memory__allocated_calls,
             gwen_memory__allocated_reused,
@@ -301,7 +301,7 @@ void GWEN_Memory_Table__Dump(GWEN_MEMORY_TABLE *mt) {
     bsize=GWEN_MEMORY_READSIZE(p);
     rsize=bsize & GWEN_MEMORY_MASK_LEN;
     fprintf(stderr,
-            "GWEN debug: at %5u: found block with %5u bytes [%p] (%s)\n",
+            "GWEN debug: at %5zu: found block with %5u bytes [%p] (%s)\n",
             p-mt->data,
             rsize,
             p,
