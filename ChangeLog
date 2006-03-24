@@ -5,6 +5,9 @@
 
 2006-03-24  Christian Stimming <stimming@tuhh.de>
 
+	* src/os/posix/fslock.c: Cast the result of getpid() to
+	int. Necessary for sparc-solaris.
+
 	* src/base/memory.c, plugins/dbio/olddb/olddb.c: Fix format args
 	for amd64 platform.
 

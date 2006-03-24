@@ -309,7 +309,7 @@ int GWEN_FSLock__UnifyLockFileName(GWEN_BUFFER *nbuf) {
   GWEN_Buffer_AppendString(nbuf, "-");
 
   buffer[0]=0;
-  snprintf(buffer, sizeof(buffer)-1, "%i", getpid());
+  snprintf(buffer, sizeof(buffer)-1, "%i", (int)getpid());
   buffer[sizeof(buffer)-1]=0;
   GWEN_Buffer_AppendString(nbuf, buffer);
 
