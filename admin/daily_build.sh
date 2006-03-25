@@ -155,11 +155,14 @@ Summary return values (zero==success):
   make         : ${make_rv}
   make check   : ${make_check_rv}
 
-Last 40 lines of log file follows.
-
 EOF
 #cat ${LOGFILE} >> ${TMPFILE}
-tail -40 ${LOGFILE} >> ${TMPFILE}
+if [ "${make_check_rv}" != "skipped" -a ${make_check_rv} -eq 0 ] ; then
+  echo -e "Last 40 lines of log file follows.\n\n" >> ${TMPFILE}
+  tail -40 ${LOGFILE} >> ${TMPFILE}
+else
+  echo "Build successful, no log file included." >> ${TMPFILE}
+fi
 
 if [ ${SEND_EMAIL} -ne 0 ] ; then
   if [ -x /usr/sbin/sendmail ] ; then
