@@ -1606,7 +1606,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 	unsigned char num=0;
 
 	src++;
-	while(isdigit(*src)) {
+	while(isdigit((int)*src)) {
 	  num*=10;
 	  num+=(*src)-'0';
 	  src++;
