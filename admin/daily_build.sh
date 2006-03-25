@@ -59,6 +59,7 @@ function module_build()
     ### Now the actual test compile
 
     echo "### Building build system " >> ${LOGFILE} 2>&1
+    ACLOCAL_FLAGS="-I ${INSTALLPREFIX}/share/aclocal"
     if [ -f Makefile.cvs ] ; then
       make -f Makefile.cvs >> ${LOGFILE} 2>&1
     elif [ -f Makefile.dist ] ; then
@@ -115,7 +116,7 @@ function module_build()
 # end of function module_build()
 
 ###
-# Build (only) one module. Might be changed later to build several
+# Build only one module. Might be changed later to build several
 # modules in a row, needed for e. g. the combinations
 # gwenhywfar/aqbanking.
 
