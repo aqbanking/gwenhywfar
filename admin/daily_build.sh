@@ -59,7 +59,9 @@ function module_build()
     ### Now the actual test compile
 
     echo "### Building build system " >> ${LOGFILE} 2>&1
-    ACLOCAL_FLAGS="-I ${INSTALLPREFIX}/share/aclocal"
+    if [ -d ${INSTALLPREFIX}/share/aclocal ] ; then
+	export ACLOCAL_FLAGS="-I ${INSTALLPREFIX}/share/aclocal"
+    fi
     if [ -f Makefile.cvs ] ; then
       make -f Makefile.cvs >> ${LOGFILE} 2>&1
     elif [ -f Makefile.dist ] ; then
