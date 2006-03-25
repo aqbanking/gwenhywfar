@@ -75,7 +75,7 @@ function module_build()
 
     echo "### Configuring " >> ${LOGFILE} 2>&1
     if [ ${PACKAGE} = "aqbanking" ] ; then
-	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} --with-gwen-dir=${INSTALLPREFIX} --with-frontends="cbanking" --with-backends="aqdtaus aqnone aqhbci" >> ${LOGFILE} 2>&1
+	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} --with-gwen-dir=${INSTALLPREFIX} --with-backends="aqdtaus aqnone aqhbci" >> ${LOGFILE} 2>&1
     else
 	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} >> ${LOGFILE} 2>&1
     fi
