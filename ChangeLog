@@ -3,6 +3,11 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released gwenhywfar-2.1.1 (2006/03/26)
+===========================================================================
+
+
 2006/03/26: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - fixed a bug in DBIO plugins: Was returning a false value when file to be
