@@ -3,6 +3,12 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006/03/26: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in DBIO plugins: Was returning a false value when file to be
+  checked did not exist
+
+
 2006-03-24  Christian Stimming <stimming@tuhh.de>
 
 	* src/os/posix/fslock.c: Cast the result of getpid() to
@@ -11,9 +17,13 @@
 	* src/base/memory.c, plugins/dbio/olddb/olddb.c: Fix format args
 	for amd64 platform.
 
+
 2006/03/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - nl_hbci.c: Also print code and text when logging error response
+- list1.h: Allow to define lists with private constructors (i.e. the
+  constructor/destructor is invisible to applications)
+- list2.h: Made some arguments const where possible
 
 
 ===========================================================================
@@ -55,15 +65,14 @@ MARK: released gwenhywfar-2.1.0 (2006/03/20)
 	because they don't modify the object.
 
 
+2006/03/02: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in waitcallback code
+
+
 ===========================================================================
 MARK: released gwenhywfar-2.0.0 (2006/02/27)
 ===========================================================================
-
-
-2006/03/02: Martin Preuss<martin@libchipcard.de>
--------------------------------------------------
-- fixed a bug in waitcallback code (FIXME: this isn't in
-  gwenhywfar-2.0.0, is it?
 
 
 2006/02/24: Martin Preuss<martin@libchipcard.de>

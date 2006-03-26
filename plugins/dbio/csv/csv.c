@@ -560,7 +560,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
     DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
               fname,
 	      strerror(errno));
-    return 0;
+    return GWEN_DBIO_CheckFileResultNotOk;
   }
   bio=GWEN_BufferedIO_File_new(fd);
   assert(bio);

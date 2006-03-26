@@ -249,6 +249,40 @@ void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el);
 #define GWEN_LIST_ELEMENT(t) \
 GWEN_LIST1_ELEMENT *_list1_element;
 
+/**
+ * Use this macro in your public header files to export only list functions
+ * which do not modify a list. This allows your code to return lists which can
+ * not be modified by callers. It also prevents callers from creating their
+ * own lists (this is sometimes needed).
+ */
+#define GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
+  typedef GWEN_LIST1 t##_LIST; \
+  \
+  decl t* pr##_List_First(const t##_LIST *l); \
+  decl t* pr##_List_Last(const t##_LIST *l); \
+  decl t* pr##_List_Next(const t *element); \
+  decl t* pr##_List_Previous(const t *element); \
+  decl GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l);
+
+
+#define GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl) \
+  typedef GWEN_LIST1_ELEMENT t##_LIST_ELEMENT; \
+  \
+  decl void pr##_List_Clear(t##_LIST *l); \
+  decl t##_LIST* pr##_List_new(); \
+  decl void pr##_List_free(t##_LIST *l); \
+  decl int pr##_List_AddList(t##_LIST *dst, t##_LIST *l); \
+  decl int pr##_List_Add(t *element, t##_LIST *list); \
+  decl int pr##_List_Insert(t *element, t##_LIST *list); \
+  decl int pr##_List_Del(t *element); \
+
+
+#define GWEN_LIST_FUNCTION_DEFS_CONST(t, pr) \
+  GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
+
+#define GWEN_LIST_FUNCTION_DEFS_NOCONST(t, pr) \
+  GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
+
 
 /**
  * Use this in public header files to define some prototypes for list
@@ -298,21 +332,8 @@ GWEN_LIST1_ELEMENT *_list1_element;
  *
  */
 #define GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, decl) \
-  typedef GWEN_LIST1_ELEMENT t##_LIST_ELEMENT; \
-  typedef GWEN_LIST1 t##_LIST; \
-  \
-  decl int pr##_List_AddList(t##_LIST *dst, t##_LIST *l); \
-  decl int pr##_List_Add(t *element, t##_LIST *list); \
-  decl int pr##_List_Insert(t *element, t##_LIST *list); \
-  decl int pr##_List_Del(t *element); \
-  decl t* pr##_List_First(const t##_LIST *l); \
-  decl t* pr##_List_Last(const t##_LIST *l); \
-  decl void pr##_List_Clear(t##_LIST *l); \
-  decl t##_LIST* pr##_List_new(); \
-  decl void pr##_List_free(t##_LIST *l); \
-  decl t* pr##_List_Next(const t *element); \
-  decl t* pr##_List_Previous(const t *element); \
-  decl GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l);
+  GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
+  GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl)
 
 
 /**

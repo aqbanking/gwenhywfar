@@ -65,11 +65,11 @@ extern "C" {
   decl void pr##_List2_Dump(t##_LIST2 *l, FILE *f, unsigned int indent); \
   decl void pr##_List2_PushBack(t##_LIST2 *l, t *p); \
   decl void pr##_List2_PushFront(t##_LIST2 *l, t *p); \
-  decl t *pr##_List2_GetFront(t##_LIST2 *l); \
-  decl t *pr##_List2_GetBack(t##_LIST2 *l); \
+  decl t *pr##_List2_GetFront(const t##_LIST2 *l); \
+  decl t *pr##_List2_GetBack(const t##_LIST2 *l); \
   decl void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it); \
   decl void pr##_List2_Remove(t##_LIST2 *l, const t *p); \
-  decl unsigned int pr##_List2_GetSize(t##_LIST2 *l); \
+  decl unsigned int pr##_List2_GetSize(const t##_LIST2 *l); \
   decl void pr##_List2_PopBack(t##_LIST2 *l); \
   decl void pr##_List2_PopFront(t##_LIST2 *l); \
   decl void pr##_List2_Clear(t##_LIST2 *l); \
@@ -121,11 +121,11 @@ extern "C" {
     GWEN_List_PushFront((GWEN_LIST*) l, p); \
   } \
   \
-  t *pr##_List2_GetFront(t##_LIST2 *l) { \
+  t *pr##_List2_GetFront(const t##_LIST2 *l) { \
   return (t*) GWEN_List_GetFront((GWEN_LIST*) l); \
   }\
   \
-  t *pr##_List2_GetBack(t##_LIST2 *l) { \
+  t *pr##_List2_GetBack(const t##_LIST2 *l) { \
   return (t*) GWEN_List_GetBack((GWEN_LIST*) l); \
   } \
   \
@@ -137,7 +137,7 @@ extern "C" {
     GWEN_List_Remove((GWEN_LIST*) l, p); \
   } \
   \
-  unsigned int pr##_List2_GetSize(t##_LIST2 *l){ \
+  unsigned int pr##_List2_GetSize(const t##_LIST2 *l){ \
     return GWEN_List_GetSize((GWEN_LIST*) l); \
   }\
   \
@@ -223,9 +223,9 @@ extern "C" {
   decl void pr##_ConstList2_free(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_PushBack(t##_CONSTLIST2 *l, const t *p); \
   decl void pr##_ConstList2_PushFront(t##_CONSTLIST2 *l, const t *p); \
-  decl const t *pr##_ConstList2_GetFront(t##_CONSTLIST2 *l); \
-  decl const t *pr##_ConstList2_GetBack(t##_CONSTLIST2 *l); \
-  decl unsigned int pr##_ConstList2_GetSize(t##_CONSTLIST2 *l); \
+  decl const t *pr##_ConstList2_GetFront(const t##_CONSTLIST2 *l); \
+  decl const t *pr##_ConstList2_GetBack(const t##_CONSTLIST2 *l); \
+  decl unsigned int pr##_ConstList2_GetSize(const t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_PopFront(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_Clear(t##_CONSTLIST2 *l); \
@@ -262,16 +262,16 @@ extern "C" {
     GWEN_ConstList_PushFront((GWEN_CONSTLIST*) l, p); \
   } \
   \
-  const t *pr##_ConstList2_GetFront(t##_CONSTLIST2 *l) { \
+  const t *pr##_ConstList2_GetFront(const t##_CONSTLIST2 *l) { \
   return (t*) GWEN_ConstList_GetFront((GWEN_CONSTLIST*) l); \
   }\
   \
-  const t *pr##_ConstList2_GetBack(t##_CONSTLIST2 *l) { \
+  const t *pr##_ConstList2_GetBack(const t##_CONSTLIST2 *l) { \
   return (t*) GWEN_ConstList_GetBack((GWEN_CONSTLIST*) l); \
   } \
   \
   \
-  unsigned int pr##_ConstList2_GetSize(t##_CONSTLIST2 *l){ \
+  unsigned int pr##_ConstList2_GetSize(const t##_CONSTLIST2 *l){ \
     return GWEN_ConstList_GetSize((GWEN_CONSTLIST*) l); \
   }\
   \
