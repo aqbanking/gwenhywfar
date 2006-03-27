@@ -110,6 +110,8 @@ function module_build()
     echo "### Configuring " >> ${LOGFILE} 2>&1
     if [ ${PACKAGE} = "aqbanking" ] ; then
 	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} --with-gwen-dir=${INSTALLPREFIX} --with-backends="aqdtaus aqnone aqhbci" >> ${LOGFILE} 2>&1
+    elif [ ${PACKAGE} = "simthetic" -o ${PACKAGE} = "libchipcard2" ] ; then
+	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} --with-gwen-dir=${INSTALLPREFIX} >> ${LOGFILE} 2>&1
     else
 	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} >> ${LOGFILE} 2>&1
     fi
@@ -156,12 +158,10 @@ function module_build()
 # modules in a row, needed for e. g. the combinations
 # gwenhywfar/aqbanking.
 
-if [ ${PACKAGE} = "aqbanking" ] ; then
+if [ "${PACKAGE}" = "aqbanking" -o "${PACKAGE}" = "simthetic" ] ; then
   module_build gwenhywfar gwenhywfar install
-  module_build ${PACKAGE} ${MODULE} noinstall
-else
-  module_build ${PACKAGE} ${MODULE} noinstall
 fi
+module_build ${PACKAGE} ${MODULE} noinstall
 
 #echo -e "\n### Summary return values (zero==success):\n Build system : ${build_system_rv}\n configure    : ${configure_rv}\n make         : ${make_rv}\n make check   : ${make_check_rv}\n###"
 

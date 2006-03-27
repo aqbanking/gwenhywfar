@@ -17,7 +17,7 @@ fi
 
 COMMAND="./daily_build.sh ${PACKAGE} ${MODULE}"
 
-USE_HOSTS="amd64-linux1 x86-linux1 x64-linux2 openpower-linux1 sparc-solaris1"
+USE_HOSTS="amd64-linux1 x86-linux1 x86-linux2 openpower-linux1 sparc-solaris1"
 #USE_HOSTS="amd64-linux1"
 
 BATCH_MARK_FILE=batchprogress-${PACKAGE}
@@ -28,6 +28,6 @@ for A in ${USE_HOSTS} ; do
 done
 
 # Send the mail by a separate script
-./summary_mail ${PACKAGE} ${MODULE}
+./summary_mail.sh ${PACKAGE} ${MODULE}
 
 rm ${BATCH_MARK_FILE}
