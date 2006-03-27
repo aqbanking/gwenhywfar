@@ -357,7 +357,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHbci__ReadWork(GWEN_NETLAYER *nl) {
     /* read size */
     p++;
     bsize=0;
-    while(*p && isdigit(*p)) {
+    while(*p && isdigit((int)*p)) {
       bsize*=10;
       bsize+=*p-'0';
       p++;

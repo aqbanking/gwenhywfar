@@ -189,7 +189,7 @@ int GWEN_XSD__ValidateElementData(GWEN_XSD_ENGINE *e,
     dcount=0;
     p=GWEN_Buffer_GetStart(vbuf);
     while(*p) {
-      if (isdigit(*p))
+      if (isdigit((int)*p))
         dcount++;
       p++;
     }
@@ -220,7 +220,7 @@ int GWEN_XSD__ValidateElementData(GWEN_XSD_ENGINE *e,
     p=strchr(GWEN_Buffer_GetStart(vbuf), '.');
     if (p) {
       while(*(++p)) {
-        if (isdigit(*p))
+        if (isdigit((int)*p))
           dcount++;
       }
     }

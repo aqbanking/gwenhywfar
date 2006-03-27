@@ -489,7 +489,7 @@ int GWEN_NetLayerHttp__ParseStatus(GWEN_NETLAYER *nl, const char *buffer) {
   s=p;
 
   /* read status code */
-  while(*p && isdigit(*p))
+  while(*p && isdigit((int)*p))
     p++;
   if (*p) {
     *p=0;
@@ -537,7 +537,7 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
 
   vbuf=GWEN_Buffer_new(0, 256, 0, 1);
   for (line=1;;line++) {
-    if (!isspace(*s)) {
+    if (!isspace((int)*s)) {
       if (GWEN_Buffer_GetUsedBytes(vbuf) && varName) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "Got header: %s=%s",
                   varName,
@@ -562,7 +562,7 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
       p++;
 
       varName=s;
-      while(*p && isspace(*p))
+      while(*p && isspace((int)*p))
         p++;
       if (*p==0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Bad header line %d \"%s\"", line, s);
@@ -573,7 +573,7 @@ int GWEN_NetLayerHttp__ParseHeader(GWEN_NETLAYER *nl, const char *buffer) {
       s=p;
     }
     else {
-      while(*s && isspace(*s))
+      while(*s && isspace((int)*s))
         s++;
       if (*s==0) {
         if (GWEN_Buffer_GetUsedBytes(vbuf) && varName) {
@@ -771,7 +771,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerHttp__ReadWork(GWEN_NETLAYER *nl) {
 
             p=GWEN_Buffer_GetStart(nld->inBuffer);
             while(*p) {
-              if (isxdigit(*p))
+              if (isxdigit((int)*p))
                 break;
               p++;
             }
