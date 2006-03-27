@@ -22,10 +22,15 @@ BATCH_MARK_FILE=batchprogress-${PACKAGE}
 if [ -f ${BATCH_MARK_FILE} -o ${HOSTNAME} = "amd64-linux1.sourceforge.net" ] ; then
   SEND_EMAIL=0
 else
-  SEND_EMAIL=1
+  SEND_EMAIL=0
 fi
 
 echo "### Starting build on:" > ${LOGFILE}
+if [ ! -f ${LOGFILE} -o ! -w ${LOGFILE} ] ; then
+    echo "Oops, cannot open log file ${LOGFILE} - exiting"
+    exit 1
+fi
+
 uname -a >> ${LOGFILE}
 
 # The actual module build. Has been moved to a function to make it
@@ -35,43 +40,72 @@ function module_build()
 {
     local PACKAGE="$1"
     local MODULE="$2"
+    local do_install="$3"
+    local from_tarball=0
 
-    ### Get the source code
-    echo "### CVS Checkout: " >> ${LOGFILE} 2>&1
-    ###cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/gwenhywfar login
-
-    # Either a fresh checkout
-    if [ ${FRESH_CHECKOUT} -ne 0 ] ; then
-      MODULEDIR=${MODULE}-${HOSTNAME}
-      cvs -q -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/${PACKAGE} co -P -d${MODULEDIR} ${MODULE} > /dev/null 2>&1
+    tarball_file=${MODULE}-*.tar.gz
+    if [ ` ls ${tarball_file} | wc -l ` -gt 1 ] ; then
+	echo "Oops, found more than one tarball file: ${tarball_file}"
+	echo "Exiting."
+	exit 1
+    fi
+    if [ -f ${tarball_file} ] ; then
+	from_tarball=1
+	echo "### Unpacking tarball ${tarball_file} " >> ${LOGFILE} 2>&1
+	gunzip -cd ${tarball_file} | tar -xf - >> ${LOGFILE} 2>&1
+	for A in ${MODULE}-* ; do
+	    if [ -d ${A} ] ; then
+		MODULEDIR=${HOSTNAME}-${A}
+		mv ${A} ${MODULEDIR}
+	    fi
+	done
     else
-      MODULEDIR=${MODULE}
+	### Get the source code
+	echo "### CVS Checkout: " >> ${LOGFILE} 2>&1
+	###cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/gwenhywfar login
+
+	# Either a fresh checkout
+	if [ ${FRESH_CHECKOUT} -ne 0 ] ; then
+	    MODULEDIR=${MODULE}-${HOSTNAME}
+	    cvs -q -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/${PACKAGE} co -P -d${MODULEDIR} ${MODULE} >> ${LOGFILE} 2>&1
+	else
+	    MODULEDIR=${MODULE}
+	fi
     fi
 
-    cd ${MODULEDIR}
+    if [ -d ${MODULEDIR} ] ; then
+	cd ${MODULEDIR}
+    else
+	echo "Oops, no directory ${MODULEDIR} available! Stopping $0" >> ${LOGFILE}
+	exit 1
+    fi
 
     # or an update of existing module
-    if [ ${FRESH_CHECKOUT} -eq 0 ] ; then
+    if [ ${from_tarball} -eq 0 -a ${FRESH_CHECKOUT} -eq 0 ] ; then
       cvs -q update > /dev/null 2>&1
       rm -rf autom4te.cache
     fi
 
     ### Now the actual test compile
 
-    echo "### Building build system " >> ${LOGFILE} 2>&1
-    if [ -d ${INSTALLPREFIX}/share/aclocal ] ; then
-	export ACLOCAL_FLAGS="-I ${INSTALLPREFIX}/share/aclocal"
-    fi
-    if [ -f Makefile.cvs ] ; then
-      make -f Makefile.cvs >> ${LOGFILE} 2>&1
-    elif [ -f Makefile.dist ] ; then
-      make -f Makefile.dist >> ${LOGFILE} 2>&1
-    elif [ -f autogen.sh ] ; then
-      ./autogen.sh >> ${LOGFILE} 2>&1
+    if [ ${from_tarball} -eq 0 ] ; then
+	echo "### Building build system " >> ${LOGFILE} 2>&1
+	if [ -d ${INSTALLPREFIX}/share/aclocal ] ; then
+	    export ACLOCAL_FLAGS="-I ${INSTALLPREFIX}/share/aclocal"
+	fi
+	if [ -f Makefile.cvs ] ; then
+	  make -f Makefile.cvs >> ${LOGFILE} 2>&1
+	elif [ -f Makefile.dist ] ; then
+	  make -f Makefile.dist >> ${LOGFILE} 2>&1
+	elif [ -f autogen.sh ] ; then
+	  ./autogen.sh >> ${LOGFILE} 2>&1
+	else
+	  echo "## Oops, no method for build system detected!" >> ${LOGFILE} 2>&1
+	fi
+	build_system_rv=$?
     else
-      echo "## Oops, no method for build system detected!" >> ${LOGFILE} 2>&1
+	build_system_rv=0
     fi
-    build_system_rv=$?
 
     echo "### Configuring " >> ${LOGFILE} 2>&1
     if [ ${PACKAGE} = "aqbanking" ] ; then
@@ -90,7 +124,7 @@ function module_build()
       make check >> ${LOGFILE} 2>&1
       make_check_rv=$?
 
-      if [ ${PACKAGE} = "gwenhywfar" ] ; then
+      if [ "${do_install}" = "install" ] ; then
         echo "### make install " >> ${LOGFILE} 2>&1
         make install >> ${LOGFILE} 2>&1
       fi
@@ -123,10 +157,10 @@ function module_build()
 # gwenhywfar/aqbanking.
 
 if [ ${PACKAGE} = "aqbanking" ] ; then
-  module_build gwenhywfar gwenhywfar
-  module_build ${PACKAGE} ${MODULE}
+  module_build gwenhywfar gwenhywfar install
+  module_build ${PACKAGE} ${MODULE} noinstall
 else
-  module_build ${PACKAGE} ${MODULE}
+  module_build ${PACKAGE} ${MODULE} noinstall
 fi
 
 #echo -e "\n### Summary return values (zero==success):\n Build system : ${build_system_rv}\n configure    : ${configure_rv}\n make         : ${make_rv}\n make check   : ${make_check_rv}\n###"
@@ -139,7 +173,13 @@ else
   TO_EMAIL="cstim@users.sourceforge.net"
 fi
 SUBJECT="${MODULE} on ${HOSTNAME}: Results of automatic test"
-TMPFILE=resulttext-${MODULE}-${HOSTNAME}.txt
+TMPFILE=${HOME}/resulttext-${MODULE}-${HOSTNAME}.txt
+
+touch ${TMPFILE}
+if [ ! -f ${TMPFILE} -o ! -w ${TMPFILE} ] ; then
+    echo "Oops, cannot open result file ${TMPFILE} - exiting"
+    exit 1
+fi
 
 cat > ${TMPFILE} <<EOF
 Subject: ${SUBJECT}
@@ -156,12 +196,16 @@ Summary return values (zero==success):
   make check   : ${make_check_rv}
 
 EOF
-#cat ${LOGFILE} >> ${TMPFILE}
-if [ "${make_check_rv}" != "skipped" -a ${make_check_rv} -eq 0 ] ; then
-  echo -e "Last 40 lines of log file follows.\n\n" >> ${TMPFILE}
-  tail -40 ${LOGFILE} >> ${TMPFILE}
-else
+
+if [ "${make_check_rv}" = "skipped" ] ; then
+  make_check_rv=1
+fi
+if [ ${make_check_rv} -eq 0 ] ; then
   echo "Build successful, no log file included." >> ${TMPFILE}
+else
+  echo -e "Last 40 lines of log file follows.\n\n" >> ${TMPFILE}
+  #cat ${LOGFILE} >> ${TMPFILE}
+  tail -40 ${LOGFILE} >> ${TMPFILE}
 fi
 
 if [ ${SEND_EMAIL} -ne 0 ] ; then
