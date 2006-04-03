@@ -3,6 +3,11 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006/04/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- initial import into SVN
+
+
 2006-03-27  Christian Stimming <stimming@tuhh.de>
 
 	* src/parser/xsd_write.c, src/net2/nl_http.c: Add cast to
