@@ -1825,6 +1825,11 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
   /* read from file */
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeDOS);
+  else
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeUnix);
+
   rv=GWEN_DB_ReadFromStream(n, bio, dbflags);
   err=GWEN_BufferedIO_Close(bio);
   if (!GWEN_Error_IsOk(err)) {
@@ -2297,6 +2302,10 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
   /* write to file */
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeDOS);
+  else
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeUnix);
   rv=GWEN_DB_WriteToStream(n, bio, dbflags);
   err=GWEN_BufferedIO_Close(bio);
   if (!GWEN_Error_IsOk(err)) {
@@ -2597,6 +2606,10 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
 
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeDOS);
+  else
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeUnix);
   rv=GWEN_DBIO_Import(dbio, bio, dbflags, db, params);
   err=GWEN_BufferedIO_Close(bio);
   if (!GWEN_Error_IsOk(err)) {
@@ -2641,6 +2654,10 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
 
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeDOS);
+  else
+    GWEN_BufferedIO_SetLineMode(bio, GWEN_LineModeUnix);
   rv=GWEN_DBIO_Export(dbio, bio, dbflags, db, params);
   err=GWEN_BufferedIO_Close(bio);
   if (!GWEN_Error_IsOk(err)) {

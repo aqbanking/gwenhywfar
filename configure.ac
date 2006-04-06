@@ -19,10 +19,30 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=2
 GWENHYWFAR_VERSION_MINOR=1
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="cvs"
-GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL.$GWENHYWFAR_VERSION_BUILD${GWENHYWFAR_VERSION_TAG}"
+GWENHYWFAR_VERSION_TAG="svn"
+
+
+
+###-------------------------------------------------------------------------
+#
+# Generate version strings and BUILD
+#
+
+GWENHYWFAR_VERSION_BUILD="0"
+case "$GWENHYWFAR_VERSION_TAG" in svn|cvs)
+  SVN=`which svn`
+  case "x$SVN" in
+    x|xno)
+      GWENHYWFAR_VERSION_BUILD="0"
+      ;;
+    *)
+      GWENHYWFAR_VERSION_BUILD=`LC_ALL="C" $SVN info|grep 'Last Changed Rev'|cut -d' ' -f4`
+      ;;
+  esac
+  ;;
+esac
+GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL-${GWENHYWFAR_VERSION_TAG}-r${GWENHYWFAR_VERSION_BUILD}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
 # The version number for the plugin/crypttoken/ohbci/ohbci.la
@@ -41,11 +61,11 @@ GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 ###-------------------------------------------------------------------------
 #
-# Create release string
+# Create release strings
 #
 case "$GWENHYWFAR_VERSION_TAG" in
-  cvs)
-     GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_FULL_STRING"
+  cvs|svn)
+     GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL-r${GWENHYWFAR_VERSION_BUILD}"
      ;;
   stable)
      GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
@@ -54,10 +74,10 @@ case "$GWENHYWFAR_VERSION_TAG" in
      GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
      
      # add TAG
-     GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_RELEASE_STRING${GWENHYWFAR_VERSION_TAG}"
+     GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_RELEASE_STRING-${GWENHYWFAR_VERSION_TAG}"
      ;;
 esac
-   
+
 
 AC_SUBST(GWENHYWFAR_VERSION_MAJOR)
 AC_SUBST(GWENHYWFAR_VERSION_MINOR)
@@ -671,6 +691,9 @@ AC_CONFIG_FILES([Doxyfile
                  plugins/dbio/olddb/Makefile
                  plugins/dbio/olddb/olddb.xml
                  plugins/dbio/olddb/ressource.rc
+                 plugins/dbio/rfc822/Makefile
+                 plugins/dbio/rfc822/rfc822.xml
+                 plugins/dbio/rfc822/ressource.rc
                  plugins/crypttoken/Makefile
                  plugins/crypttoken/ohbci/Makefile
                  plugins/crypttoken/ohbci/ohbci.xml

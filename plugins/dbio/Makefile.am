@@ -1,4 +1,4 @@
-SUBDIRS=csv olddb
+SUBDIRS=csv olddb rfc822
 EXTRA_DIST=README
 
 sources:

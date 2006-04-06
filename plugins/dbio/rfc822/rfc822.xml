@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf8" ?>
+<!DOCTYPE GWEN_PluginDescr SYSTEM "gwen/plugindescr.xsd" >
+
+<PluginDescr xmlns="http://www.aquamaniac.de/gwenhywfar/PluginDescr" >
+  <plugin name="rfc822" type="dbio" >
+    <version>2.1.1</version>
+    <author>Martin Preuss(martin@libchipcard.de)</author>
+    <short>Importer for RFC 822 Headers</short>
+    <descr>
+      This plugin imports RFC 822 headers.
+    </descr>
+  </plugin>
+
+  <plugin name="rfc822" type="dbio" lang="de" >
+    <version>2.1.1</version>
+    <author>Martin Preuss(martin@libchipcard.de)</author>
+    <short>Importer fuer RFC 822 Nachrichten-Header</short>
+    <descr>
+      Diese Erweiterung importiert und exportiert RFC 822 Nachrichten-Header.
+    </descr>
+  </plugin>
+
+</PluginDescr>
+

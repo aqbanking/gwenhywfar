@@ -3,7 +3,16 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
-test
+2006/04/06: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- db.c:
+  - GWEN_DB_ReadFile(), GWEN_DB_ReadFileAs(), GWEN_DB_WriteFile() and
+    GWEN_DB_WriteFileAs() now honour the flag "GWEN_DB_FLAGS_DOSMODE"
+- added GWEN_DBIO: "rfc822". This plugin reads RFC822 message headers (e.g.
+  those used in maildir or in HTTP requests)
+- GWENHYWFAR_VERSION_BUILD is now automatically updated from SVN's revision
+- changed GWENHYWFAR_VERSION_RELEASE_STRING and GWENHYWFAR_VERSION_FULL_STRING
+
 
 2006/04/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -19,6 +28,7 @@ test
 
 	* configure.ac: Change gcc version number checking so that it
 	works with 2.95.x as well.
+
 
 ===========================================================================
 MARK: released gwenhywfar-2.1.1 (2006/03/26)
