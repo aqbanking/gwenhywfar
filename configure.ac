@@ -38,7 +38,7 @@ case "$GWENHYWFAR_VERSION_TAG" in svn|cvs)
       ;;
     *)
       GWENHYWFAR_VERSION_BUILD=`LC_ALL="C" $SVN info|grep 'Last Changed Rev'|cut -d' ' -f4`
-      if [ "x$GWENHYWFAR_VERSION_BUILD" = "x" ] ; then
+      if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
 	GWENHYWFAR_VERSION_BUILD="0"
       fi
       ;;
