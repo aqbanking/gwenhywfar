@@ -523,6 +523,16 @@ GWEN_ERRORCODE GWEN_Socket_Write(GWEN_SOCKET *sp,
   assert(sp);
   assert(buffer);
   assert(bsize);
+
+#ifdef OS_DARWIN
+  /* this is just a temporary ugly hack for OS X, this has to be investigated
+   * further */
+  if (sp->haveWaited==0) {
+    sleep(1);
+    sp->haveWaited=1;
+  }
+#endif
+
 #ifndef MSG_NOSIGNAL
   i=send(sp->socket,buffer, *bsize,0);
 #else

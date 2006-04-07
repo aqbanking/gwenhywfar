@@ -550,4 +550,19 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
 
 
 
+const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *sl, int idx) {
+  GWEN_STRINGLISTENTRY *se;
+
+  assert(sl);
+  se=sl->first;
+  while(se) {
+    if (idx--==0)
+      return se->data;
+    se=se->next;
+  } /* while */
+  return 0;
+}
+
+
+
 

@@ -53,6 +53,7 @@ extern "C" {
 GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
   int socket;
   GWEN_SOCKETTYPE type;
+  int haveWaited;
 };
 
 

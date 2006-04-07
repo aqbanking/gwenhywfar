@@ -81,6 +81,10 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   const char *GWEN_StringListEntry_Data(const GWEN_STRINGLISTENTRY *se);
 
+GWENHYWFAR_API
+  void GWEN_StringListEntry_SetData(GWEN_STRINGLISTENTRY *se,
+                                    const char *s);
+
 /**
  * Normally this group of functions ignores cases when comparing two strings.
  * You can change this behaviour here.
@@ -159,6 +163,9 @@ void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
 /** Returns the first string in this list. */
 GWENHYWFAR_API
 const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l);
+
+GWENHYWFAR_API
+const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *l, int idx);
 
 
 /** Sorts this list. Internally this uses qsort(3), so the sorting

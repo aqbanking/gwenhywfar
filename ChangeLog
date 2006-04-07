@@ -3,6 +3,13 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006/04/07: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- included a temporary fix for MacOSX as suggested by Thorsten (introduce a 1s
+  sleep when writing to a socket for the first time). 
+  This is just an ugly hack, but it should work.
+
+
 2006/04/06: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - db.c:
