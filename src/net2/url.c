@@ -13,10 +13,14 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/urlfns.h>
 
 
 GWEN_LIST_FUNCTIONS(GWEN_URL, GWEN_Url)
 GWEN_LIST2_FUNCTIONS(GWEN_URL, GWEN_Url)
+
+
 
 
 GWEN_URL *GWEN_Url_new() {
@@ -40,6 +44,10 @@ void GWEN_Url_free(GWEN_URL *st) {
     free(st->server);
   if (st->path)
     free(st->path);
+  if (st->userName)
+    free(st->userName);
+  if (st->password)
+    free(st->password);
   if (st->vars)
     GWEN_DB_Group_free(st->vars);
   if (st->url)
@@ -64,6 +72,10 @@ GWEN_URL *GWEN_Url_dup(const GWEN_URL *d) {
   st->port=d->port;
   if (d->path)
     st->path=strdup(d->path);
+  if (d->userName)
+    st->userName=strdup(d->userName);
+  if (d->password)
+    st->password=strdup(d->password);
   if (d->vars)
     st->vars=GWEN_DB_Group_dup(d->vars);
   if (d->url)
@@ -86,6 +98,12 @@ int GWEN_Url_toDb(const GWEN_URL *st, GWEN_DB_NODE *db) {
   if (st->path)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "path", st->path))
       return -1;
+  if (st->userName)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userName", st->userName))
+      return -1;
+  if (st->password)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "password", st->password))
+      return -1;
   if (st->vars)
     if (GWEN_DB_AddGroupChildren(st->vars, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "vars")))
       return -1;
@@ -96,25 +114,41 @@ int GWEN_Url_toDb(const GWEN_URL *st, GWEN_DB_NODE *db) {
 }
 
 
-GWEN_URL *GWEN_Url_fromDb(GWEN_DB_NODE *db) {
-GWEN_URL *st;
-
+int GWEN_Url_ReadDb(GWEN_URL *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=GWEN_Url_new();
   GWEN_Url_SetProtocol(st, GWEN_DB_GetCharValue(db, "protocol", 0, 0));
   GWEN_Url_SetServer(st, GWEN_DB_GetCharValue(db, "server", 0, 0));
   GWEN_Url_SetPort(st, GWEN_DB_GetIntValue(db, "port", 0, 0));
   GWEN_Url_SetPath(st, GWEN_DB_GetCharValue(db, "path", 0, 0));
-  if (1) {
+  GWEN_Url_SetUserName(st, GWEN_DB_GetCharValue(db, "userName", 0, 0));
+  GWEN_Url_SetPassword(st, GWEN_DB_GetCharValue(db, "password", 0, 0));
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "vars");
-    if (dbT) st->vars=GWEN_DB_Group_dup(dbT);
+    if (dbT) {
+  if (st->vars)
+    GWEN_DB_Group_free(st->vars);
+  st->vars=GWEN_DB_Group_dup(dbT);
+}
   }
   GWEN_Url_SetUrl(st, GWEN_DB_GetCharValue(db, "url", 0, 0));
+  return 0;
+}
+
+
+GWEN_URL *GWEN_Url_fromDb(GWEN_DB_NODE *db) {
+  GWEN_URL *st;
+
+  assert(db);
+  st=GWEN_Url_new();
+  GWEN_Url_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 const char *GWEN_Url_GetProtocol(const GWEN_URL *st) {
@@ -127,7 +161,7 @@ void GWEN_Url_SetProtocol(GWEN_URL *st, const char *d) {
   assert(st);
   if (st->protocol)
     free(st->protocol);
-  if (d)
+  if (d && *d)
     st->protocol=strdup(d);
   else
     st->protocol=0;
@@ -147,7 +181,7 @@ void GWEN_Url_SetServer(GWEN_URL *st, const char *d) {
   assert(st);
   if (st->server)
     free(st->server);
-  if (d)
+  if (d && *d)
     st->server=strdup(d);
   else
     st->server=0;
@@ -182,10 +216,50 @@ void GWEN_Url_SetPath(GWEN_URL *st, const char *d) {
   assert(st);
   if (st->path)
     free(st->path);
-  if (d)
+  if (d && *d)
     st->path=strdup(d);
   else
     st->path=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *GWEN_Url_GetUserName(const GWEN_URL *st) {
+  assert(st);
+  return st->userName;
+}
+
+
+void GWEN_Url_SetUserName(GWEN_URL *st, const char *d) {
+  assert(st);
+  if (st->userName)
+    free(st->userName);
+  if (d && *d)
+    st->userName=strdup(d);
+  else
+    st->userName=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *GWEN_Url_GetPassword(const GWEN_URL *st) {
+  assert(st);
+  return st->password;
+}
+
+
+void GWEN_Url_SetPassword(GWEN_URL *st, const char *d) {
+  assert(st);
+  if (st->password)
+    free(st->password);
+  if (d && *d)
+    st->password=strdup(d);
+  else
+    st->password=0;
   st->_modified=1;
 }
 
@@ -222,7 +296,7 @@ void GWEN_Url_SetUrl(GWEN_URL *st, const char *d) {
   assert(st);
   if (st->url)
     free(st->url);
-  if (d)
+  if (d && *d)
     st->url=strdup(d);
   else
     st->url=0;
@@ -262,8 +336,6 @@ void GWEN_Url_List2_freeAll(GWEN_URL_LIST2 *stl) {
 }
 
 
-
-
 GWEN_URL_LIST *GWEN_Url_List_dup(const GWEN_URL_LIST *stl) {
   if (stl) {
     GWEN_URL_LIST *nl;
@@ -284,6 +356,7 @@ GWEN_URL_LIST *GWEN_Url_List_dup(const GWEN_URL_LIST *stl) {
   else
     return 0;
 }
+
 
 
 

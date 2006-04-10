@@ -16,9 +16,13 @@ struct GWEN_URL {
   char *server;
   int port;
   char *path;
+  char *userName;
+  char *password;
   GWEN_DB_NODE *vars;
   char *url;
 };
+
+
 
 
 

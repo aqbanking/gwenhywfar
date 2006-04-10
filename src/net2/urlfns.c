@@ -54,6 +54,34 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   if (*s=='/')
     s++;
 
+  /* read user/password */
+  if (!*s) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No server given");
+    GWEN_Url_free(url);
+    return 0;
+  }
+  p=strchr(s, '@');
+  if (p) {
+    char *upw;
+    char *pw;
+
+    upw=(char*)malloc(p-s+1);
+    assert(upw);
+    memmove(upw, s, p-s);
+    upw[p-s]=0;
+    pw=strchr(upw, ':');
+    if (pw) {
+      /* there is also a password */
+      *pw=0;
+      pw++;
+    }
+    GWEN_Url_SetUserName(url, upw);
+    if (pw)
+      GWEN_Url_SetPassword(url, pw);
+    free(upw);
+    s=p+1;
+  }
+
   /* read server */
   if (!*s) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No server given");

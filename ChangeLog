@@ -3,6 +3,16 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006/04/10: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- net2/urlfns.c, net2/url.xml:
+  - added fields "userName" and "password" to GWEN_URL, the format of a
+    complete URL is now:
+    "proto://user:passwd@host/path:port", as in
+    "http://me:secret@here/path:123"
+    These new fields are optional, of course.
+
+
 2006/04/07: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - included a temporary fix for MacOSX as suggested by Thorsten (introduce a 1s

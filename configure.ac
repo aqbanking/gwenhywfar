@@ -1,6 +1,16 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
+#
+
+###-------------------------------------------------------------------------
+#
+# The following line makes sure that this file is always touched when a new
+# revision is checked out.
+#
+# $Rev$
+#
+
 # info
 GWENHYWFAR_AUTHOR="Martin Preuss<martin@libchipcard.de>"
 GWENHYWFAR_BUGREPORT_ADDR="<martin@libchipcard.de>"
