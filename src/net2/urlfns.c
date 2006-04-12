@@ -60,10 +60,12 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
     GWEN_Url_free(url);
     return 0;
   }
+
   p=strchr(s, '@');
   if (p) {
     char *upw;
     char *pw;
+    char *pat;
 
     upw=(char*)malloc(p-s+1);
     assert(upw);
@@ -75,6 +77,9 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
       *pw=0;
       pw++;
     }
+    pat=strchr(upw, '%');
+    if (pat)
+      *pat='@';
     GWEN_Url_SetUserName(url, upw);
     if (pw)
       GWEN_Url_SetPassword(url, pw);

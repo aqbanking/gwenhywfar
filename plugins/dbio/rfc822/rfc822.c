@@ -63,7 +63,6 @@ int GWEN_DBIO_Rfc822_Export(GWEN_DBIO *dbio,
   dbVar=GWEN_DB_GetFirstVar(data);
   while(dbVar) {
     GWEN_DB_NODE *dbVal;
-    int first=1;
 
     dbVal=GWEN_DB_GetFirstValue(dbVar);
     while(dbVal) {
@@ -91,14 +90,33 @@ int GWEN_DBIO_Rfc822_Export(GWEN_DBIO *dbio,
       }
 
       if (p) {
-	if (first)
-	  first=0;
-	else {
-	  GWEN_BufferedIO_WriteLine(bio, ",");
-	  GWEN_BufferedIO_Write(bio, " ");
-	}
-	GWEN_BufferedIO_WriteLine(bio, p);
+	for (;;) {
+	  const char *t;
+	  GWEN_ERRORCODE err;
+
+	  t=strchr(p, 10);
+	  if (t) {
+	    unsigned int bsize;
+
+            bsize=t-p;
+	    err=GWEN_BufferedIO_WriteRawForced(bio, p, &bsize);
+	    if (!GWEN_Error_IsOk(err)) {
+	      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+	      return GWEN_Error_GetSimpleCode(err);
+	    }
+	    GWEN_BufferedIO_WriteLine(bio, "");
+	    GWEN_BufferedIO_Write(bio, "\t");
+	    t++;
+            p=t;
+	  }
+	  else {
+	    GWEN_BufferedIO_WriteLine(bio, p);
+	    break;
+	  }
+	} /* for */
       }
+      else
+	GWEN_BufferedIO_WriteLine(bio, "");
 
       dbVal=GWEN_DB_GetNextValue(dbVal);
     }
@@ -158,6 +176,7 @@ int GWEN_DBIO_Rfc822__Import(GWEN_DBIO *dbio,
 
       /* skip blank */
       GWEN_BufferedIO_ReadChar(bio);
+      GWEN_Buffer_AppendByte(lineBuf, 10);
     }
 
     if (GWEN_Buffer_GetUsedBytes(lineBuf)==0)

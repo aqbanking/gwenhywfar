@@ -1325,6 +1325,35 @@ int testRfc822Import(int argc, char **argv) {
 
 
 
+int testRfc822Export(int argc, char **argv) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbParams;
+
+  db=GWEN_DB_Group_new("test");
+  dbParams=GWEN_DB_Group_new("params");
+  if (GWEN_DB_ReadFileAs(db,
+                         "test.822",
+                         "rfc822",
+                         dbParams,
+                         GWEN_PATH_FLAGS_CREATE_GROUP |
+                         GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE)) {
+    DBG_ERROR(0, "Could not read test file");
+    return 2;
+  }
+
+  if (GWEN_DB_WriteFileAs(db,
+                          "test.822.out",
+                          "rfc822",
+                          dbParams,
+                          GWEN_DB_FLAGS_DEFAULT)) {
+    DBG_ERROR(0, "Could not write outfile");
+  }
+
+  return 0;
+}
+
+
+
 int testFsLock(int argc, char **argv) {
   GWEN_FSLOCK *fl;
   GWEN_FSLOCK_RESULT res;
@@ -3660,6 +3689,8 @@ int main(int argc, char **argv) {
     rv=testOldDbImport(argc, argv);
   else if (strcasecmp(argv[1], "822")==0)
     rv=testRfc822Import(argc, argv);
+  else if (strcasecmp(argv[1], "822x")==0)
+    rv=testRfc822Export(argc, argv);
   else if (strcasecmp(argv[1], "fslock")==0)
     rv=testFsLock(argc, argv);
   else if (strcasecmp(argv[1], "fslock2")==0)
