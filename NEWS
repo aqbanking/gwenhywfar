@@ -1,5 +1,14 @@
 
 ===========================================================================
+                    gwenhywfar-2.2.0 (2006/04/12)
+===========================================================================
+
+This release includes a fix for SSL problems on MacOSX, introduces user and
+password fields to GWEN_URL, adds a GWEN_DBIO plugin for RFC822 headers (as
+used by AqMail) and adds some signedness fixes.
+
+
+===========================================================================
                     gwenhywfar-2.1.1 (2006/03/26)
 ===========================================================================
 
