@@ -3625,6 +3625,30 @@ int testMem(int argc, char **argv) {
 
 
 
+int testBuffer2(int argc, char **argv) {
+  GWEN_BUFFER *buf;
+  unsigned int bsize;
+  char *ptr;
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  GWEN_Buffer_AppendString(buf, "Test");
+  GWEN_Buffer_AllocRoom(buf, 512);
+  bsize=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
+  ptr=GWEN_Buffer_GetPosPointer(buf);
+  memset(ptr, 'X', bsize);
+  GWEN_Buffer_IncrementPos(buf, bsize);
+  GWEN_Buffer_AdjustUsedBytes(buf);
+  GWEN_Buffer_AppendString(buf, "Behind");
+
+  GWEN_Buffer_Dump(buf, stderr, 2);
+  GWEN_Buffer_free(buf);
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -3713,6 +3737,8 @@ int main(int argc, char **argv) {
     rv=testSort(argc, argv);
   else if (strcasecmp(argv[1], "bio")==0)
     rv=testBIO(argc, argv);
+  else if (strcasecmp(argv[1], "buf2")==0)
+    rv=testBuffer2(argc, argv);
   else if (strcasecmp(argv[1], "transformpin")==0)
     rv=testTransformPin(argc, argv);
   else if (strcasecmp(argv[1], "dbkey")==0)
