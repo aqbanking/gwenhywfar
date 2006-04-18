@@ -3,6 +3,15 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006-04-18   Christian Stimming <stimming@tuhh.de>
+
+	* src/gwenhywfarapi.h: Define __attribute__((deprecated)) not on
+	all __GNUC__, but only on gcc >= 3.0.x because gcc-2.95 doesn't
+	yet have it.
+
+	* src/base/logger.h: Replace __attribute__((deprecated)) by the
+	macro from gwenhywfarapi.h.
+
 ===========================================================================
 MARK: released gwenhywfar-2.2.0 (2006/04/12)
 ===========================================================================

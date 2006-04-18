@@ -89,7 +89,8 @@
 #include <gwenhywfar/system.h>
 
 
-#ifdef __GNUC__
+#if __GNUC_PREREQ(3, 0)
+/* Only available in gcc >= 3.0.x */
 # define DEPRECATED __attribute__((deprecated))
 #else
 # define DEPRECATED
