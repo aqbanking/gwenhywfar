@@ -1393,7 +1393,7 @@ int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf){
   setlocale(LC_NUMERIC,"C");
 #endif
 
-  rv=snprintf(numbuf, sizeof(numbuf), "%f", num);
+  rv=snprintf(numbuf, sizeof(numbuf), "%lf", num);
 
 #ifdef HAVE_SETLOCALE
   setlocale(LC_NUMERIC, currentLocale);

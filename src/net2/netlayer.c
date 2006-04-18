@@ -270,7 +270,7 @@ int GWEN_NetLayer_Read_Wait(GWEN_NETLAYER *nl,
          * the user from aborting a program running wild */
         DBG_WARN(GWEN_LOGDOMAIN,
                  "WARNING: Inserting sleep cycle, "
-                 "please check the code! (%d, count=%d, dt=%f, distance=%d)",
+                 "please check the code! (%d, count=%d, dt=%lf, distance=%d)",
                  ratio, count, d, distance);
         GWEN_Socket_Select(0, 0, 0, 750);
       }

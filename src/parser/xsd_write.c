@@ -111,7 +111,7 @@ int GWEN_XSD__ValidateElementData(GWEN_XSD_ENGINE *e,
       haveDouble=1;
     }
     if (dv>xf->maxInclusive) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "MAXINCLUSIVE: Invalid value (%f>%f)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "MAXINCLUSIVE: Invalid value (%lf>%lf)",
                 dv, xf->maxInclusive);
       return -1;
     }
@@ -129,7 +129,7 @@ int GWEN_XSD__ValidateElementData(GWEN_XSD_ENGINE *e,
       haveDouble=1;
     }
     if (dv>=xf->maxExclusive) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "MAXEXCLUSIVE: Invalid value (%f>=%f)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "MAXEXCLUSIVE: Invalid value (%lf>=%lf)",
                 dv, xf->maxExclusive);
       return -1;
     }
@@ -147,7 +147,7 @@ int GWEN_XSD__ValidateElementData(GWEN_XSD_ENGINE *e,
       haveDouble=1;
     }
     if (dv<xf->minInclusive) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "MININCLUSIVE: Invalid value (%f<%f)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "MININCLUSIVE: Invalid value (%lf<%lf)",
                 dv, xf->minInclusive);
       return -1;
     }
@@ -165,7 +165,7 @@ int GWEN_XSD__ValidateElementData(GWEN_XSD_ENGINE *e,
       haveDouble=1;
     }
     if (dv<=xf->minExclusive) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "MINEXCLUSIVE: Invalid value (%f<=%f)",
+      DBG_ERROR(GWEN_LOGDOMAIN, "MINEXCLUSIVE: Invalid value (%lf<=%lf)",
                 dv, xf->minExclusive);
       return -1;
     }

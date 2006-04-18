@@ -496,7 +496,7 @@ int GWEN_XSD__ListElementType(GWEN_XSD_ENGINE *e,
       for (i=0; i<indent+4; i++)
 	GWEN_Buffer_AppendByte(outBuffer, ' ');
       GWEN_Buffer_AppendString(outBuffer, "MaxInclusive: ");
-      snprintf(numbuf, sizeof(numbuf)-1, "%f", xf->maxInclusive);
+      snprintf(numbuf, sizeof(numbuf)-1, "%lf", xf->maxInclusive);
       GWEN_Buffer_AppendString(outBuffer, numbuf);
       GWEN_Buffer_AppendString(outBuffer, "\n");
     }
@@ -508,7 +508,7 @@ int GWEN_XSD__ListElementType(GWEN_XSD_ENGINE *e,
       for (i=0; i<indent+4; i++)
 	GWEN_Buffer_AppendByte(outBuffer, ' ');
       GWEN_Buffer_AppendString(outBuffer, "MaxExclusive: ");
-      snprintf(numbuf, sizeof(numbuf)-1, "%f", xf->maxExclusive);
+      snprintf(numbuf, sizeof(numbuf)-1, "%lf", xf->maxExclusive);
       GWEN_Buffer_AppendString(outBuffer, numbuf);
       GWEN_Buffer_AppendString(outBuffer, "\n");
     }
@@ -520,7 +520,7 @@ int GWEN_XSD__ListElementType(GWEN_XSD_ENGINE *e,
       for (i=0; i<indent+4; i++)
 	GWEN_Buffer_AppendByte(outBuffer, ' ');
       GWEN_Buffer_AppendString(outBuffer, "MinInclusive: ");
-      snprintf(numbuf, sizeof(numbuf)-1, "%f", xf->minInclusive);
+      snprintf(numbuf, sizeof(numbuf)-1, "%lf", xf->minInclusive);
       GWEN_Buffer_AppendString(outBuffer, numbuf);
       GWEN_Buffer_AppendString(outBuffer, "\n");
     }
@@ -532,7 +532,7 @@ int GWEN_XSD__ListElementType(GWEN_XSD_ENGINE *e,
       for (i=0; i<indent+4; i++)
 	GWEN_Buffer_AppendByte(outBuffer, ' ');
       GWEN_Buffer_AppendString(outBuffer, "MinExclusive: ");
-      snprintf(numbuf, sizeof(numbuf)-1, "%f", xf->minExclusive);
+      snprintf(numbuf, sizeof(numbuf)-1, "%lf", xf->minExclusive);
       GWEN_Buffer_AppendString(outBuffer, numbuf);
       GWEN_Buffer_AppendString(outBuffer, "\n");
     }
