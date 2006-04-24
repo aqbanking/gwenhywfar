@@ -3,6 +3,11 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006-04-24   Christian Stimming <stimming@tuhh.de>
+
+	* test/README.MSVC: Update description on how to create a
+	libgwenhywfar.lib file for MSVC.
+
 2006-04-18   Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfarapi.h: Define __attribute__((deprecated)) not on

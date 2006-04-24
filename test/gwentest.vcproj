@@ -27,7 +27,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gwenhywfar32.lib libmingwex.a"
+				AdditionalDependencies="libgwenhywfar.lib libmingwex.a"
 				AdditionalLibraryDirectories="&quot;..\src&quot;;C:\msys\1.0\mingw\lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(TargetDir)/$(ProjectName).pdb"/>
