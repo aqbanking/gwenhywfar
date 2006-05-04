@@ -3,10 +3,32 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2006/05/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- removed prototype for a function which had been removed in previous
+  versions
+
+
 2006-04-24   Christian Stimming <stimming@tuhh.de>
 
 	* test/README.MSVC: Update description on how to create a
 	libgwenhywfar.lib file for MSVC.
+
+
+
+2006/04/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- text.{c,h}: 
+  - added function GWEN_Text_UnescapeN()
+  - added function GWEN_Text_EscapeTolerant()
+  - added function GWEN_Text_UnescapeTolerant()
+  - added function GWEN_Text_UnescapeTolerantN()
+
 
 2006-04-18   Christian Stimming <stimming@tuhh.de>
 

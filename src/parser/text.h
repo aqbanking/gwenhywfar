@@ -101,6 +101,29 @@ char *GWEN_Text_Unescape(const char *src,
                          unsigned int maxsize);
 
 GWENHYWFAR_API
+char *GWEN_Text_UnescapeN(const char *src,
+			  unsigned int srclen,
+                          char *buffer,
+                          unsigned int maxsize);
+
+GWENHYWFAR_API
+char *GWEN_Text_EscapeTolerant(const char *src,
+			       char *buffer,
+			       unsigned int maxsize);
+
+GWENHYWFAR_API
+char *GWEN_Text_UnescapeTolerant(const char *src,
+				 char *buffer,
+				 unsigned int maxsize);
+
+GWENHYWFAR_API
+char *GWEN_Text_UnescapeTolerantN(const char *src,
+				  unsigned int srclen,
+				  char *buffer,
+				  unsigned int maxsize);
+
+
+GWENHYWFAR_API
 int GWEN_Text_EscapeToBuffer(const char *src, GWEN_BUFFER *buf);
 
 GWENHYWFAR_API

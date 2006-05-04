@@ -3648,6 +3648,12 @@ int testBuffer2(int argc, char **argv) {
 }
 
 
+int testFloatDouble(int argc, char **argv) {
+  fprintf(stderr, "Sizeof double: %d float: %d\n",
+	  sizeof(double), sizeof(float));
+  return 0;
+}
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3773,6 +3779,8 @@ int main(int argc, char **argv) {
     rv=testNlLogConnect2(argc, argv);
   else if (strcasecmp(argv[1], "mem")==0)
     rv=testMem(argc, argv);
+  else if (strcasecmp(argv[1], "floatdouble")==0)
+    rv=testFloatDouble(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

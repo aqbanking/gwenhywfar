@@ -348,14 +348,73 @@ char *GWEN_Text_Escape(const char *src,
 }
 
 
-char *GWEN_Text_Unescape(const char *src,
-                         char *buffer,
-                         unsigned int maxsize){
+
+char *GWEN_Text_EscapeTolerant(const char *src,
+                               char *buffer,
+                               unsigned int maxsize) {
+  unsigned int size;
+
+  size=0;
+  while(*src) {
+    unsigned char x;
+
+    x=(unsigned char)*src;
+    if (!(
+          (x>='A' && x<='Z') ||
+          (x>='a' && x<='z') ||
+          (x>='0' && x<='9') ||
+          x==' ' ||
+          x=='.' ||
+          x==',' ||
+          x=='.' ||
+          x=='*' ||
+          x=='?'
+         )) {
+      unsigned char c;
+
+      if ((maxsize-1)<size+3) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+	return 0;
+      }
+      buffer[size++]='%';
+      c=(((unsigned char)(*src))>>4)&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      buffer[size++]=c;
+      c=((unsigned char)(*src))&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      buffer[size++]=c;
+    }
+    else {
+      if (size<(maxsize-1))
+	buffer[size++]=*src;
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+	return 0;
+      }
+    }
+
+    src++;
+  } /* while */
+
+  buffer[size]=0;
+  return buffer;
+}
+
+
+
+char *GWEN_Text_UnescapeN(const char *src,
+                          unsigned int srclen,
+                          char *buffer,
+                          unsigned int maxsize){
   unsigned int size;
 
   size=0;
 
-  while(*src) {
+  while(*src && srclen>0) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -375,7 +434,11 @@ char *GWEN_Text_Unescape(const char *src,
 	unsigned char d1, d2;
 	unsigned char c;
 
-	/* skip '%' */
+        if (srclen<3) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (EOLN met)");
+          return 0;
+        }
+        /* skip '%' */
 	src++;
 	if (!(*src) || !isxdigit((int)*src)) {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
@@ -406,7 +469,8 @@ char *GWEN_Text_Unescape(const char *src,
 	else {
 	  DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
 	  return 0;
-	}
+        }
+        srclen-=2;
       }
       else {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Found non-alphanum "
@@ -415,12 +479,126 @@ char *GWEN_Text_Unescape(const char *src,
         return 0;
       }
     }
+    srclen--;
     src++;
   } /* while */
 
   buffer[size]=0;
   return buffer;
 }
+
+
+
+char *GWEN_Text_Unescape(const char *src,
+                         char *buffer,
+                         unsigned int maxsize){
+  unsigned int srclen;
+
+  srclen=strlen(src);
+  return GWEN_Text_UnescapeN(src, srclen, buffer, maxsize);
+}
+
+
+
+char *GWEN_Text_UnescapeTolerantN(const char *src,
+                                  unsigned int srclen,
+                                  char *buffer,
+                                  unsigned int maxsize){
+  unsigned int size;
+
+  size=0;
+
+  while(*src && srclen>0) {
+    unsigned char x;
+
+    x=(unsigned char)*src;
+    if (
+        (x>='A' && x<='Z') ||
+        (x>='a' && x<='z') ||
+        (x>='0' && x<='9') ||
+        x==' ' ||
+        x=='.' ||
+        x==',' ||
+        x=='.' ||
+        x=='*' ||
+        x=='?'
+       ) {
+      if (size<(maxsize-1))
+        buffer[size++]=*src;
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+	return 0;
+      }
+    }
+    else {
+      if (*src=='%') {
+	unsigned char d1, d2;
+	unsigned char c;
+
+        if (srclen<3) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (EOLN met)");
+          return 0;
+        }
+        /* skip '%' */
+	src++;
+	if (!(*src) || !isxdigit((int)*src)) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (no digits)");
+	  return 0;
+	}
+	/* read first digit */
+	d1=(unsigned char)(toupper(*src));
+
+	/* get second digit */
+	src++;
+	if (!(*src) || !isxdigit((int)*src)) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Incomplete escape sequence (only 1 digit)");
+	  return 0;
+	}
+	d2=(unsigned char)(toupper(*src));
+	/* compute character */
+	d1-='0';
+	if (d1>9)
+	  d1-=7;
+	c=(d1<<4)&0xf0;
+	d2-='0';
+	if (d2>9)
+	  d2-=7;
+	c+=(d2&0xf);
+	/* store character */
+	if (size<(maxsize-1))
+	  buffer[size++]=(char)c;
+	else {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+	  return 0;
+        }
+        srclen-=2;
+      }
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Found non-alphanum "
+		  "characters in escaped string (\"%s\")",
+		  src);
+        return 0;
+      }
+    }
+    srclen--;
+    src++;
+  } /* while */
+
+  buffer[size]=0;
+  return buffer;
+}
+
+
+
+char *GWEN_Text_UnescapeTolerant(const char *src,
+                                 char *buffer,
+                                 unsigned int maxsize){
+  unsigned int srclen;
+
+  srclen=strlen(src);
+  return GWEN_Text_UnescapeTolerantN(src, srclen, buffer, maxsize);
+}
+
 
 
 char *GWEN_Text_ToHex(const char *src, unsigned l,
