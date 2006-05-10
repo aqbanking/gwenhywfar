@@ -8,6 +8,12 @@
   ------------------------------------------------------------------------
 
 
+2006-05-10   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Change RELEASE_STRING of svn versions from
+	x.y.z-r111 to x.y.z.r111 because tools like rpmbuild do not accept
+	a '-' inside the version numbers.
+
 2006/05/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - removed prototype for a function which had been removed in previous
