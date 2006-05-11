@@ -8,11 +8,18 @@
   ------------------------------------------------------------------------
 
 
+2006/05/11: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- parser/db.c: increased word buffer size
+- parser/xml.c: fixed a bug in GWEN_XMLNode_HandlePath
+
+
 2006-05-10   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Change RELEASE_STRING of svn versions from
 	x.y.z-r111 to x.y.z.r111 because tools like rpmbuild do not accept
 	a '-' inside the version numbers.
+
 
 2006/05/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

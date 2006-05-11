@@ -1470,7 +1470,7 @@ int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
   GWEN_DB_NODE *currGrp;
   GWEN_DB_NODE *currVar;
   char linebuf[GWEN_DB_LINE_MAXSIZE];
-  char wbuf[512];
+  char wbuf[GWEN_DB_LINE_MAXSIZE];
   char *p;
   const char *pos;
   int lineno;
