@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf8" ?>
+<!DOCTYPE GWEN_PluginDescr SYSTEM "gwen/plugindescr.xsd" >
+
+<PluginDescr xmlns="http://www.aquamaniac.de/gwenhywfar/PluginDescr" >
+  <plugin name="localfiles" type="storage" >
+    <version>@GWENHYWFAR_VERSION_STRING@</version>
+    <author>Martin Preuss(martin@libchipcard.de)</author>
+    <short>Storage plugin using local files</short>
+    <descr>
+      This storage plugin uses local files to store objects.
+    </descr>
+  </plugin>
+  
+  <plugin name="localfiles" type="storage" lang="de" >
+    <version>@GWENHYWFAR_VERSION_STRING@</version>
+    <author>Martin Preuss(martin@libchipcard.de)</author>
+    <short>Verwendung lokaler Dateien zur Speicherung</short>
+    <descr>
+      Diese Erweiterung verwendet lokale Dateien zur Speicherung von Objekten.
+    </descr>
+  </plugin>
+</PluginDescr>

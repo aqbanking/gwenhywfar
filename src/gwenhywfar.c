@@ -61,6 +61,8 @@
 #include "net2/net2_l.h"
 #include "base/waitcallback_l.h"
 
+#include "storage/st_storage_l.h"
+
 
 /* for regkey stuff */
 #ifdef OS_WIN32
@@ -207,6 +209,10 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_DBIO_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Storage module");
+    err=GWEN_StoStorage_ModuleInit();
+    if (!GWEN_Error_IsOk(err))
+      return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing WaitCallback module");
     err=GWEN_WaitCallback_ModuleInit();
     if (!GWEN_Error_IsOk(err))
@@ -240,6 +246,14 @@ GWEN_ERRORCODE GWEN_Fini() {
                          GWEN_ERROR_COULD_NOT_UNREGISTER);
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module WaitCallback");
+    }
+    if (!GWEN_Error_IsOk(GWEN_StoStorage_ModuleFini())) {
+      err=GWEN_Error_new(0,
+                         GWEN_ERROR_SEVERITY_ERR,
+                         0,
+                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
+                "Could not deinitialze module Storage");
     }
     if (!GWEN_Error_IsOk(GWEN_DBIO_ModuleFini())) {
       err=GWEN_Error_new(0,

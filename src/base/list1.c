@@ -66,6 +66,7 @@ int GWEN_List1_Add(GWEN_LIST1 *l, GWEN_LIST1_ELEMENT *el) {
   if (el->listPtr) {
     /* element is already part of another list */
     DBG_ERROR(GWEN_LOGDOMAIN, "Element is already part of a list");
+    assert(0);
     return -1;
   }
 

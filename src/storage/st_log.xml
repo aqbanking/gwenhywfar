@@ -1,0 +1,118 @@
+
+
+<typedefs>
+  <type id="GWEN_TYPE_UINT32" dbtype="int" />
+</typedefs>
+
+
+
+<types>
+
+  <type id="GWEN_STO_LOG" 
+        prefix="GWEN_StoLog"
+        class="StoLog"
+        access="public"
+        filename="st_log"
+        list="public">
+
+    <subtypes>
+
+      <type id="ACTION" prefix="Action" mode="enum" access="public" >
+        <values>
+          <value value="0">none
+            <descr>
+              No action
+            </descr>
+          </value>
+          <value>typeCreate
+            <descr>
+            </descr>
+          </value>
+          <value>typeDelete
+            <descr>
+            </descr>
+          </value>
+          <value>typeAddVar
+            <descr>
+            </descr>
+          </value>
+          <value>objectCreate
+            <descr>
+            </descr>
+          </value>
+          <value>objectDelete
+            <descr>
+            </descr>
+          </value>
+          <value>objectSetValue
+            <descr>
+            </descr>
+          </value>
+          <value>objectIncRef
+            <descr>
+            </descr>
+          </value>
+          <value>objectDecRef
+            <descr>
+            </descr>
+          </value>
+          <value>beginEdit
+            <descr>
+            </descr>
+          </value>
+          <value>endEdit
+            <descr>
+            </descr>
+          </value>
+        </values>
+      </type>
+
+    </subtypes>
+    
+    <headers>
+      <header type="sys" >gwenhywfar/gwenhywfarapi.h</header>
+    </headers>
+    
+    <elem name="userName" type="char" ptr="1" >
+      <descr>
+        Client name
+      </descr>
+    </elem>
+    <elem name="logAction" type="ACTION" >
+      <descr>
+        Reason for the log entry.
+      </descr>
+    </elem>
+    <elem name="typeBaseName" type="char" ptr="1" >
+      <descr>
+        Name of the basetype.
+      </descr>
+    </elem>
+    <elem name="typeName" type="char" ptr="1" >
+      <descr>
+        Type name
+      </descr>
+    </elem>
+    <elem name="objectId" type="GWEN_TYPE_UINT32" >
+      <descr>
+        Object id
+      </descr>
+    </elem>
+    <elem name="param1" type="char" ptr="1" >
+      <descr>
+        Parameter 1.
+      </descr>
+    </elem>
+    <elem name="param2" type="char" ptr="1" >
+      <descr>
+        Parameter 2.
+      </descr>
+    </elem>
+    <elem name="param3" type="char" ptr="1" >
+      <descr>
+        Parameter 3.
+      </descr>
+    </elem>
+  </type>
+
+</types>

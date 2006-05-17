@@ -5,11 +5,12 @@ INCLUDES= \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/net2 \
- -I$(top_srcdir)/src/parser $(all_includes)
-
+ -I$(top_srcdir)/src/parser \
+ -I$(top_srcdir)/src/storage $(all_includes)
+ 
 AM_CFLAGS=$(visibility_cflags)
 
-SUBDIRS = base crypt io ipc os parser crypt2 net2
+SUBDIRS = base crypt io ipc os parser crypt2 net2 storage
 
 localedir=$(datadir)/locale
 DEFS += \
@@ -49,7 +50,9 @@ libgwenhywfar_la_LIBADD=\
   ipc/libipc.la \
   net2/libnet2.la \
   os/libos.la \
-  parser/libparser.la $(ssl_libraries) $(ssl_lib) $(all_libraries)
+  parser/libparser.la \
+  storage/libsto.la $(ssl_libraries) $(ssl_lib) $(all_libraries)
+
 libgwenhywfar_la_DEPENDENCIES=\
   base/libbase.la \
   crypt/libcrypt.la \
@@ -58,7 +61,8 @@ libgwenhywfar_la_DEPENDENCIES=\
   ipc/libipc.la \
   net2/libnet2.la \
   os/libos.la \
-  parser/libparser.la
+  parser/libparser.la \
+  storage/libsto.la
 
 noinst_PROGRAMS=testlib
 testlib_SOURCES=testlib.c

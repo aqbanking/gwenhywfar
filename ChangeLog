@@ -7,6 +7,18 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/17: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added storage framework (to be used by some of my developing projects)
+- added first storage plugin which uses local files
+  The storage framework is not yet part of the official API of Gwenhywfar,
+  so API changes are likely to occurr.
+
+
+2006/05/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- base/idlist_p.h: increased GWEN_IDTABLE_MAXENTRIES from 16 to 32
+
 
 2006/05/11: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

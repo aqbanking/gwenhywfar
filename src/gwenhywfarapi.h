@@ -64,6 +64,15 @@
 #endif
 
 
+#ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
+# define GWENHYWFAR_EXPORT __attribute__((visibility("default")))
+# define GWENHYWFAR_NOEXPORT __attribute__((visibility("hidden")))
+#else
+# define GWENHYWFAR_EXPORT
+# define GWENHYWFAR_NOEXPORT
+#endif
+
+
 
 /* Convenience macros to test the versions of glibc and gcc. Taken
    from <features.h> which does not contain this on MinGW systems.  */

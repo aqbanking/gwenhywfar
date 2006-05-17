@@ -1,10 +1,10 @@
 /***************************************************************************
  $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
-    email       : martin@libchipcard.de
+ -------------------
+ cvs         : $Id: csv_p.h 120 2003-12-03 23:29:33Z aquamaniac $
+ begin       : Thu Oct 30 2003
+ copyright   : (C) 2003 by Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -25,52 +25,31 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GWEN_SMPSTO_TYPE_BE_H
+#define GWEN_SMPSTO_TYPE_BE_H
 
-
-#ifndef GWENHYWFAR_IDLIST_P_H
-#define GWENHYWFAR_IDLIST_P_H
-
-#include <gwenhywfar/types.h>
-#include <gwenhywfar/misc.h>
+#include <gwenhywfar/st_storage_be.h>
+#include <gwenhywfar/st_type_be.h>
 #include <gwenhywfar/idlist.h>
 
 
-#define GWEN_IDTABLE_MAXENTRIES 32
+GWENHYWFAR_API
+GWEN_STO_TYPE *GWEN_SmpStoType_new(GWEN_STO_STORAGE *storage,
+				   GWEN_TYPE_UINT32 id,
+				   const char *typeName,
+				   const char *name);
 
+GWENHYWFAR_API
+GWEN_STO_TYPE *GWEN_SmpStoType_dup(const GWEN_STO_TYPE *oty);
 
-typedef struct GWEN_IDTABLE GWEN_IDTABLE;
-GWEN_LIST_FUNCTION_DEFS(GWEN_IDTABLE, GWEN_IdTable)
-/* No trailing semicolon here because this is a macro call */
-struct GWEN_IDTABLE {
-  GWEN_LIST_ELEMENT(GWEN_IDTABLE)
-  /* No trailing semicolon here because this is a macro call */
-  GWEN_TYPE_UINT32 freeEntries;
-  GWEN_TYPE_UINT32 entries[GWEN_IDTABLE_MAXENTRIES];
-  GWEN_TYPE_UINT32 current;
-};
-
-GWEN_IDTABLE *GWEN_IdTable_new();
-void GWEN_IdTable_free(GWEN_IDTABLE *idt);
-
-int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_IsEmpty(const GWEN_IDTABLE *idt);
-int GWEN_IdTable_IsFull(const GWEN_IDTABLE *idt);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt);
-unsigned int GWEN_IdTable_GetCount(const GWEN_IDTABLE *idt);
-
-void GWEN_IdList_Clean(GWEN_IDLIST *idl);
-
-struct GWEN_IDLIST {
-  GWEN_IDTABLE_LIST *idTables;
-  GWEN_TYPE_UINT32 entryCount;
-  GWEN_IDTABLE *current;
-};
+GWENHYWFAR_API
+GWEN_IDLIST *GWEN_SmpStoType_GetObjectIdList(const GWEN_STO_TYPE *ty);
 
 
 
 
-#endif /* GWENHYWFAR_IDLIST_P_H */
+
+#endif
+
+
 

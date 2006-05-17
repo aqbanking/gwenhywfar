@@ -130,6 +130,8 @@ extern "C" {
 /* new error codes in GWEN2 */
 #define GWEN_ERROR_NOT_CONNECTED        (-100)
 #define GWEN_ERROR_BAD_DATA             (-101)
+#define GWEN_ERROR_FOUND                (-102)
+#define GWEN_ERROR_IO                   (-103)
 
 /*@}*/
 

@@ -422,7 +422,7 @@ AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/net2 src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/ipc/request src/os src/os/${GWEN_OS}"
+GWEN_HEADER_DIRS="src src/base src/net2 src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/storage"
 GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
@@ -696,6 +696,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/system.h
                  src/parser/Makefile
                  src/net2/Makefile
+                 src/storage/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile
                  plugins/dbio/csv/Makefile
@@ -711,6 +712,10 @@ AC_CONFIG_FILES([Doxyfile
                  plugins/crypttoken/ohbci/Makefile
                  plugins/crypttoken/ohbci/ohbci.xml
                  plugins/crypttoken/ohbci/ressource.rc
+                 plugins/storage/Makefile
+                 plugins/storage/localfiles/Makefile
+                 plugins/storage/localfiles/localfiles.xml
+                 plugins/storage/localfiles/ressource.rc
                  tools/Makefile
                  tools/xmlmerge/Makefile
                  tools/typemaker/Makefile
