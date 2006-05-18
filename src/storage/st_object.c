@@ -321,6 +321,38 @@ const char *GWEN_StoObject_GetCharValue(const GWEN_STO_OBJECT *o,
 
 
 
+void GWEN_StoObject_SetIntValue(GWEN_STO_OBJECT *o,
+                                const char *varName,
+                                int value,
+                                int overwrite) {
+  char numbuf[32];
+
+  snprintf(numbuf, sizeof(numbuf), "%d", value);
+  GWEN_StoObject_SetCharValue(o, varName, numbuf, overwrite);
+}
+
+
+
+int GWEN_StoObject_GetIntValue(const GWEN_STO_OBJECT *o,
+                               const char *varName,
+                               int idx,
+                               int defValue) {
+  const char *s;
+
+  s=GWEN_DB_GetCharValue(o->dbDataNode, varName, idx, 0);
+  if (s && *s) {
+    int i;
+
+    if (1!=sscanf(s, "%d", &i))
+      return defValue;
+    return i;
+  }
+  return defValue;
+}
+
+
+
+
 
 
 

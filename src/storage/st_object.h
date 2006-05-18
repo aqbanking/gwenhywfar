@@ -71,6 +71,18 @@ const char *GWEN_StoObject_GetCharValue(const GWEN_STO_OBJECT *o,
                                         int idx,
                                         const char *defValue);
 
+GWENHYWFAR_API
+void GWEN_StoObject_SetIntValue(GWEN_STO_OBJECT *o,
+                                const char *varName,
+                                int value,
+                                int overwrite);
+
+GWENHYWFAR_API
+int GWEN_StoObject_GetIntValue(const GWEN_STO_OBJECT *o,
+                               const char *varName,
+                               int idx,
+                               int defValue);
+
 #endif
 
 

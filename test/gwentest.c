@@ -3713,7 +3713,7 @@ int testMap(int argc, char **argv) {
     return 2;
   }
 
-  res=GWEN_IdMap_FindFirst(map, &id);
+  res=GWEN_IdMap_GetFirst(map, &id);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Not found first pointer (%d).\n", res);
     return 2;
@@ -3723,7 +3723,7 @@ int testMap(int argc, char **argv) {
     return 2;
   }
 
-  res=GWEN_IdMap_FindNext(map, &id);
+  res=GWEN_IdMap_GetNext(map, &id);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Not found 2nd pointer (%d).\n", res);
     return 2;
@@ -3733,7 +3733,7 @@ int testMap(int argc, char **argv) {
     return 2;
   }
 
-  res=GWEN_IdMap_FindNext(map, &id);
+  res=GWEN_IdMap_GetNext(map, &id);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Not found 3rd pointer (%d).\n", res);
     return 2;
@@ -3743,7 +3743,7 @@ int testMap(int argc, char **argv) {
     return 2;
   }
 
-  res=GWEN_IdMap_FindNext(map, &id);
+  res=GWEN_IdMap_GetNext(map, &id);
   if (res!=GWEN_IdMapResult_NotFound) {
     fprintf(stderr,
             "FAILED: Found more pointers than there should be (%d) [%x].\n",
@@ -3802,9 +3802,9 @@ int testMap2(int argc, char **argv) {
 
   fprintf(stderr, "  Reading many pointers...");
   i=0;
-  for (res=GWEN_IdMap_FindFirst(map, &id);
+  for (res=GWEN_IdMap_GetFirst(map, &id);
        res==GWEN_IdMapResult_Ok;
-       res=GWEN_IdMap_FindNext(map, &id)) {
+       res=GWEN_IdMap_GetNext(map, &id)) {
     const char *s;
     const char *sc;
 
@@ -3903,7 +3903,7 @@ int testMap3(int argc, char **argv) {
     return 2;
   }
 
-  res=GWEN_Buffer_IdMap_FindFirst(map, &id);
+  res=GWEN_Buffer_IdMap_GetFirst(map, &id);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Not found first pointer (%d).\n", res);
     return 2;
@@ -3913,7 +3913,7 @@ int testMap3(int argc, char **argv) {
     return 2;
   }
 
-  res=GWEN_Buffer_IdMap_FindNext(map, &id);
+  res=GWEN_Buffer_IdMap_GetNext(map, &id);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Not found 2nd pointer (%d).\n", res);
     return 2;
@@ -3923,7 +3923,7 @@ int testMap3(int argc, char **argv) {
     return 2;
   }
 
-  res=GWEN_Buffer_IdMap_FindNext(map, &id);
+  res=GWEN_Buffer_IdMap_GetNext(map, &id);
   if (res!=GWEN_IdMapResult_NotFound) {
     fprintf(stderr,
             "FAILED: Found more pointers than there should be (%d) [%x].\n",

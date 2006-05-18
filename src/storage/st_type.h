@@ -55,8 +55,9 @@ const char *GWEN_StoType_GetName(const GWEN_STO_TYPE *ty);
 GWENHYWFAR_API
 const GWEN_STO_VARDEF_LIST *GWEN_StoType_GetVarList(const GWEN_STO_TYPE *ty);
 
+/** takes over vdef */
 GWENHYWFAR_API
-int GWEN_StoType_AddVar(GWEN_STO_TYPE *ty, const GWEN_STO_VARDEF *vdef);
+int GWEN_StoType_AddVar(GWEN_STO_TYPE *ty, GWEN_STO_VARDEF *vdef);
 
 
 

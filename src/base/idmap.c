@@ -98,7 +98,7 @@ void *GWEN_IdMap_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id) {
 
 
 
-GWEN_IDMAP_RESULT GWEN_IdMap_FindFirst(GWEN_IDMAP *map,
+GWEN_IDMAP_RESULT GWEN_IdMap_GetFirst(GWEN_IDMAP *map,
                                        GWEN_TYPE_UINT32 *pid) {
   assert(map);
   assert(map->findFirstFn);
@@ -107,8 +107,8 @@ GWEN_IDMAP_RESULT GWEN_IdMap_FindFirst(GWEN_IDMAP *map,
 
 
 
-GWEN_IDMAP_RESULT GWEN_IdMap_FindNext(GWEN_IDMAP *map,
-                                      GWEN_TYPE_UINT32 *pid) {
+GWEN_IDMAP_RESULT GWEN_IdMap_GetNext(GWEN_IDMAP *map,
+                                     GWEN_TYPE_UINT32 *pid) {
   assert(map);
   assert(map->findNextFn);
   return map->findNextFn(map, pid);

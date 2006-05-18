@@ -367,7 +367,6 @@ int test_add_var() {
     fprintf(stderr, "FAILED: Could not open type (%d).\n", rv);
     return 2;
   }
-  GWEN_StoVarDef_free(vdef);
 
   fprintf(stderr, "  - close type\n");
   rv=GWEN_StoClient_CloseType(cl, ty, GWEN_StoCloseMode_Normal);

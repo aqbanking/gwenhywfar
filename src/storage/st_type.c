@@ -189,10 +189,10 @@ int GWEN_StoType_AddVarNoLog(GWEN_STO_TYPE *ty, GWEN_STO_VARDEF *vdef) {
 
 
 
-int GWEN_StoType_AddVar(GWEN_STO_TYPE *ty, const GWEN_STO_VARDEF *vdef){
+int GWEN_StoType_AddVar(GWEN_STO_TYPE *ty, GWEN_STO_VARDEF *vdef){
   int rv;
 
-  rv=GWEN_StoType_AddVarNoLog(ty, GWEN_StoVarDef_dup(vdef));
+  rv=GWEN_StoType_AddVarNoLog(ty, vdef);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here(%d)", rv);
     return rv;
