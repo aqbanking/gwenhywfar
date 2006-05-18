@@ -74,8 +74,18 @@ GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
 				    GWEN_TYPE_UINT32 id,
                                     void *ptr) {
   assert(map);
+  assert(ptr);
   assert(map->setPairFn);
   return map->setPairFn(map, id, ptr);
+}
+
+
+
+GWEN_IDMAP_RESULT GWEN_IdMap_Remove(GWEN_IDMAP *map,
+                                    GWEN_TYPE_UINT32 id) {
+  assert(map);
+  assert(map->setPairFn);
+  return map->setPairFn(map, id, 0);
 }
 
 
@@ -102,6 +112,13 @@ GWEN_IDMAP_RESULT GWEN_IdMap_FindNext(GWEN_IDMAP *map,
   assert(map);
   assert(map->findNextFn);
   return map->findNextFn(map, pid);
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_IdMap_GetSize(const GWEN_IDMAP *map) {
+  assert(map);
+  return map->count;
 }
 
 
@@ -239,6 +256,8 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
   *p=ptr;
 
   if (ptr==0) {
+    assert(map->count);
+    map->count--;
     /* do some cleanup */
     for (;;) {
       GWEN_IDMAP_HEX4_TABLE *parent;
@@ -260,6 +279,8 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
       t=parent;
     }
   }
+  else
+    map->count++;
 
   return GWEN_IdMapResult_Ok;
 }

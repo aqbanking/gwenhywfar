@@ -63,19 +63,21 @@ typedef enum {
 
 
 #define GWEN_IDMAP_FUNCTION_LIB_DEFS(t, pr, decl) \
-  typedef GWEN_IDMAP t##_IDMAP; \
-  \
-  decl t##_IDMAP *pr##_IdMap_new(GWEN_IDMAP_ALGO algo); \
-  decl void pr##_IdMap_free(t##_IDMAP *l); \
-  decl GWEN_IDMAP_RESULT pr##_IdMap_Insert(t##_IDMAP *l, \
-                                           GWEN_TYPE_UINT32 id, \
-                                           t* ptr); \
-  decl t* pr##_IdMap_Find(t##_IDMAP *l, \
-                            GWEN_TYPE_UINT32 id); \
-  decl GWEN_IDMAP_RESULT p##_IdMap_FindFirst(t##_IDMAP *map, \
-                                             GWEN_TYPE_UINT32 *pid); \
-  decl GWEN_IDMAP_RESULT p##_IdMap_FindNext(t##_IDMAP *map, \
-                                            GWEN_TYPE_UINT32 *pid);
+  typedef GWEN_IDMAP t##_IDMAP;                                       \
+                                                                      \
+  decl t##_IDMAP *pr##_IdMap_new(GWEN_IDMAP_ALGO algo);               \
+  decl void pr##_IdMap_free(t##_IDMAP *l);                            \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_Insert(t##_IDMAP *l,              \
+                                           GWEN_TYPE_UINT32 id,       \
+                                           t* ptr);                   \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_Remove(t##_IDMAP *l,              \
+                                           GWEN_TYPE_UINT32 id);      \
+  decl t* pr##_IdMap_Find(t##_IDMAP *l, GWEN_TYPE_UINT32 id);         \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_FindFirst(t##_IDMAP *map,         \
+                                              GWEN_TYPE_UINT32 *pid); \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_FindNext(t##_IDMAP *map,          \
+                                             GWEN_TYPE_UINT32 *pid);  \
+  decl GWEN_TYPE_UINT32 pr##_IdMap_GetSize(const GWEN_IDMAP *map);
 
 #define GWEN_IDMAP_FUNCTION_DEFS(t, pr) \
   GWEN_IDMAP_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
@@ -96,8 +98,13 @@ typedef enum {
     return GWEN_IdMap_Insert((GWEN_IDMAP*)l, id, (void*) ptr);       \
   }                                                                  \
                                                                      \
-  t* pr##_IdMap_Find(t##_IDMAP *l, GWEN_TYPE_UINT32 id) {          \
-    return GWEN_IdMap_Find((GWEN_IDMAP*)l, id);                    \
+  GWEN_IDMAP_RESULT pr##_IdMap_Remove(t##_IDMAP *l,                  \
+                                      GWEN_TYPE_UINT32 id){          \
+    return GWEN_IdMap_Remove((GWEN_IDMAP*)l, id);                    \
+  }                                                                  \
+\
+  t* pr##_IdMap_Find(t##_IDMAP *l, GWEN_TYPE_UINT32 id) {            \
+    return GWEN_IdMap_Find((GWEN_IDMAP*)l, id);                      \
   }                                                                  \
                                                                      \
   GWEN_IDMAP_RESULT pr##_IdMap_FindFirst(t##_IDMAP *l,               \
@@ -108,6 +115,10 @@ typedef enum {
   GWEN_IDMAP_RESULT pr##_IdMap_FindNext(t##_IDMAP *l,                \
                                        GWEN_TYPE_UINT32 *pid) {      \
     return GWEN_IdMap_FindNext((GWEN_IDMAP*)l, pid);                 \
+  }                                                                  \
+                                                                     \
+  GWEN_TYPE_UINT32 pr##_IdMap_GetSize(const GWEN_IDMAP *l) {       \
+    return GWEN_IdMap_GetSize((const GWEN_IDMAP*)l);                 \
   }
 /*@}*/
 
@@ -125,6 +136,10 @@ GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
 				    void *ptr);
 
 GWENHYWFAR_API
+GWEN_IDMAP_RESULT GWEN_IdMap_Remove(GWEN_IDMAP *map,
+                                    GWEN_TYPE_UINT32 id);
+
+GWENHYWFAR_API
 void *GWEN_IdMap_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
 
 
@@ -135,6 +150,9 @@ GWEN_IDMAP_RESULT GWEN_IdMap_FindFirst(GWEN_IDMAP *map,
 GWENHYWFAR_API
 GWEN_IDMAP_RESULT GWEN_IdMap_FindNext(GWEN_IDMAP *map,
                                       GWEN_TYPE_UINT32 *pid);
+
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_IdMap_GetSize(const GWEN_IDMAP *map);
 
 
 #ifdef __cplusplus

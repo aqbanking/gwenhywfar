@@ -55,6 +55,7 @@ struct GWEN_IDMAP {
 
   GWEN_IDMAP_ALGO algo;
   void *algoData;
+  GWEN_TYPE_UINT32 count;
 };
 
 
