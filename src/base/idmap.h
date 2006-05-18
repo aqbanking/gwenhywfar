@@ -31,6 +31,9 @@
 
 #include <gwenhywfar/types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 typedef struct GWEN_IDMAP GWEN_IDMAP;
@@ -46,6 +49,67 @@ typedef enum {
   GWEN_IdMapAlgo_Unknown=0,
   GWEN_IdMapAlgo_Hex4
 } GWEN_IDMAP_ALGO;
+
+
+/** @name Macros for Typesafe ID maps
+ *
+ */
+/*@{*/
+#ifndef GWEN_DUMMY_EMPTY_ARG
+/** Necessary for MSVC compiler because it does not accept a left-out
+    macro argument. */
+# define GWEN_DUMMY_EMPTY_ARG
+#endif
+
+
+#define GWEN_IDMAP_FUNCTION_LIB_DEFS(t, pr, decl) \
+  typedef GWEN_IDMAP t##_IDMAP; \
+  \
+  decl t##_IDMAP *pr##_IdMap_new(GWEN_IDMAP_ALGO algo); \
+  decl void pr##_IdMap_free(t##_IDMAP *l); \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_SetPtr(t##_IDMAP *l, \
+                                           GWEN_TYPE_UINT32 id, \
+                                           t* ptr); \
+  decl t* pr##_IdMap_GetPtr(t##_IDMAP *l, \
+                            GWEN_TYPE_UINT32 id); \
+  decl GWEN_IDMAP_RESULT p##_IdMap_FindFirst(t##_IDMAP *map, \
+                                             GWEN_TYPE_UINT32 *pid); \
+  decl GWEN_IDMAP_RESULT p##_IdMap_FindNext(t##_IDMAP *map, \
+                                            GWEN_TYPE_UINT32 *pid);
+
+#define GWEN_IDMAP_FUNCTION_DEFS(t, pr) \
+  GWEN_IDMAP_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
+
+
+#define GWEN_IDMAP_FUNCTIONS(t, pr) \
+  t##_IDMAP *pr##_IdMap_new(GWEN_IDMAP_ALGO algo) {                  \
+    return (t##_IDMAP*)GWEN_IdMap_new(algo);                         \
+  }                                                                  \
+                                                                     \
+  void pr##_IdMap_free(t##_IDMAP *l) {                               \
+    GWEN_IdMap_free((GWEN_IDMAP*)l);                                 \
+  }                                                                  \
+                                                                     \
+  GWEN_IDMAP_RESULT pr##_IdMap_SetPtr(t##_IDMAP *l,                  \
+                                      GWEN_TYPE_UINT32 id,           \
+                                      t* ptr) {                      \
+    return GWEN_IdMap_SetPtr((GWEN_IDMAP*)l, id, (void*) ptr);       \
+  }                                                                  \
+                                                                     \
+  t* pr##_IdMap_GetPtr(t##_IDMAP *l, GWEN_TYPE_UINT32 id) {          \
+    return GWEN_IdMap_GetPtr((GWEN_IDMAP*)l, id);                    \
+  }                                                                  \
+                                                                     \
+  GWEN_IDMAP_RESULT pr##_IdMap_FindFirst(t##_IDMAP *l,               \
+                                        GWEN_TYPE_UINT32 *pid) {     \
+    return GWEN_IdMap_FindFirst((GWEN_IDMAP*)l, pid);                \
+  }                                                                  \
+                                                                     \
+  GWEN_IDMAP_RESULT pr##_IdMap_FindNext(t##_IDMAP *l,                \
+                                       GWEN_TYPE_UINT32 *pid) {      \
+    return GWEN_IdMap_FindNext((GWEN_IDMAP*)l, pid);                 \
+  }
+/*@}*/
 
 
 
@@ -73,6 +137,9 @@ GWEN_IDMAP_RESULT GWEN_IdMap_FindNext(GWEN_IDMAP *map,
                                       GWEN_TYPE_UINT32 *pid);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

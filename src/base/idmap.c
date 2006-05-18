@@ -442,6 +442,7 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(GWEN_IDMAP *map,
     return GWEN_IdMapResult_Ok;
   }
 
+  xmap->lastId=0;
   return GWEN_IdMapResult_NotFound;
 }
 
@@ -468,7 +469,6 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(GWEN_IDMAP *map,
   }
 
   xmap->lastId=0;
-
   return GWEN_IdMapResult_NotFound;
 }
 

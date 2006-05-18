@@ -16,6 +16,12 @@
   fastly iterate over the pairs.
   It allows for multiple storage algos. The first algo uses 8-step pointer
   tables of 16 entries per table.
+- added typesafe macros for idmap (like those macros for GWEN_LIST2), e.g.
+  "GWEN_IDMAP_FUNCTION_DEFS(GWEN_BUFFER, GWEN_Buffer)" would create an idmap
+  for GWEN_BUFFER objects instead of void* pointers. So the function
+  GWEN_Buffer_IdMap_GetPtr() will only work on an idmap which stores pointers
+  to GWEN_BUFFERs and it returns a pointer to a GWEN_BUFFER rather than a
+  void* pointer.
 
 
 2006/05/17: Martin Preuss<martin@libchipcard.de>
