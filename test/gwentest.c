@@ -3668,25 +3668,25 @@ int testMap(int argc, char **argv) {
 
   map=GWEN_IdMap_new(GWEN_IdMapAlgo_Hex4);
 
-  res=GWEN_IdMap_SetPtr(map, 1, (void*)s1);
+  res=GWEN_IdMap_Insert(map, 1, (void*)s1);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not set pointer1 (%d).\n", res);
     return 2;
   }
 
-  res=GWEN_IdMap_SetPtr(map, 2, (void*)s2);
+  res=GWEN_IdMap_Insert(map, 2, (void*)s2);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not set pointer2 (%d).\n", res);
     return 2;
   }
 
-  res=GWEN_IdMap_SetPtr(map, 0x1234, (void*)s3);
+  res=GWEN_IdMap_Insert(map, 0x1234, (void*)s3);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not set pointer3 (%d).\n", res);
     return 2;
   }
 
-  s=(const char*)GWEN_IdMap_GetPtr(map, 1);
+  s=(const char*)GWEN_IdMap_Find(map, 1);
   if (s && strcasecmp(s, s1)==0) {
     fprintf(stderr, "  Pointer1: Ok.\n");
   }
@@ -3695,7 +3695,7 @@ int testMap(int argc, char **argv) {
     return 2;
   }
 
-  s=(const char*)GWEN_IdMap_GetPtr(map, 2);
+  s=(const char*)GWEN_IdMap_Find(map, 2);
   if (s && strcasecmp(s, s2)==0) {
     fprintf(stderr, "  Pointer2: Ok.\n");
   }
@@ -3704,7 +3704,7 @@ int testMap(int argc, char **argv) {
     return 2;
   }
 
-  s=(const char*)GWEN_IdMap_GetPtr(map, 0x1234);
+  s=(const char*)GWEN_IdMap_Find(map, 0x1234);
   if (s && strcasecmp(s, s3)==0) {
     fprintf(stderr, "  Pointer3: Ok.\n");
   }
@@ -3752,19 +3752,19 @@ int testMap(int argc, char **argv) {
   }
 
 
-  res=GWEN_IdMap_SetPtr(map, 1, 0);
+  res=GWEN_IdMap_Insert(map, 1, 0);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not reset pointer1 (%d).\n", res);
     return 2;
   }
 
-  res=GWEN_IdMap_SetPtr(map, 2, 0);
+  res=GWEN_IdMap_Insert(map, 2, 0);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not reset pointer1 (%d).\n", res);
     return 2;
   }
 
-  res=GWEN_IdMap_SetPtr(map, 0x1234, 0);
+  res=GWEN_IdMap_Insert(map, 0x1234, 0);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not reset pointer3 (%d).\n", res);
     return 2;
@@ -3791,7 +3791,7 @@ int testMap2(int argc, char **argv) {
     const char *s;
 
     s=(i & 1)?s2:s1;
-    res=GWEN_IdMap_SetPtr(map, i, (void*)s);
+    res=GWEN_IdMap_Insert(map, i, (void*)s);
     if (res!=GWEN_IdMapResult_Ok) {
       fprintf(stderr, "FAILED: Could not set pointer %x (%d).\n",
               id, res);
@@ -3814,7 +3814,7 @@ int testMap2(int argc, char **argv) {
       return 2;
     }
     sc=(id & 1)?s2:s1;
-    s=(const char*)GWEN_IdMap_GetPtr(map, id);
+    s=(const char*)GWEN_IdMap_Find(map, id);
     if (s!=sc) {
       fprintf(stderr,
               "FAILED: Unexpected pointer for id %x [%s].\n",
@@ -3840,7 +3840,7 @@ int testMap2(int argc, char **argv) {
     const char *s;
 
     s=(i & 1)?s2:s1;
-    res=GWEN_IdMap_SetPtr(map, i, 0);
+    res=GWEN_IdMap_Insert(map, i, 0);
     if (res!=GWEN_IdMapResult_Ok) {
       fprintf(stderr, "FAILED: Could not reset pointer (%d).\n", res);
       return 2;
@@ -3873,19 +3873,19 @@ int testMap3(int argc, char **argv) {
   buf2=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(buf2, "TestBuffer2");
 
-  res=GWEN_Buffer_IdMap_SetPtr(map, 1, buf1);
+  res=GWEN_Buffer_IdMap_Insert(map, 1, buf1);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not set pointer1 (%d).\n", res);
     return 2;
   }
 
-  res=GWEN_Buffer_IdMap_SetPtr(map, 2, buf2);
+  res=GWEN_Buffer_IdMap_Insert(map, 2, buf2);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not set pointer2 (%d).\n", res);
     return 2;
   }
 
-  buf=GWEN_Buffer_IdMap_GetPtr(map, 1);
+  buf=GWEN_Buffer_IdMap_Find(map, 1);
   if (buf==buf1) {
     fprintf(stderr, "  Pointer1: Ok.\n");
   }
@@ -3894,7 +3894,7 @@ int testMap3(int argc, char **argv) {
     return 2;
   }
 
-  buf=GWEN_Buffer_IdMap_GetPtr(map, 2);
+  buf=GWEN_Buffer_IdMap_Find(map, 2);
   if (buf==buf2) {
     fprintf(stderr, "  Pointer2: Ok.\n");
   }
@@ -3932,13 +3932,13 @@ int testMap3(int argc, char **argv) {
   }
 
 
-  res=GWEN_Buffer_IdMap_SetPtr(map, 1, 0);
+  res=GWEN_Buffer_IdMap_Insert(map, 1, 0);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not reset pointer1 (%d).\n", res);
     return 2;
   }
 
-  res=GWEN_Buffer_IdMap_SetPtr(map, 2, 0);
+  res=GWEN_Buffer_IdMap_Insert(map, 2, 0);
   if (res!=GWEN_IdMapResult_Ok) {
     fprintf(stderr, "FAILED: Could not reset pointer1 (%d).\n", res);
     return 2;

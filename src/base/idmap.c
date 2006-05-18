@@ -70,7 +70,7 @@ void GWEN_IdMap_free(GWEN_IDMAP *map) {
 
 
 
-GWEN_IDMAP_RESULT GWEN_IdMap_SetPtr(GWEN_IDMAP *map,
+GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
 				    GWEN_TYPE_UINT32 id,
                                     void *ptr) {
   assert(map);
@@ -80,7 +80,7 @@ GWEN_IDMAP_RESULT GWEN_IdMap_SetPtr(GWEN_IDMAP *map,
 
 
 
-void *GWEN_IdMap_GetPtr(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id) {
+void *GWEN_IdMap_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id) {
   assert(map);
   assert(map->getPairFn);
   return map->getPairFn(map, id);
@@ -122,8 +122,8 @@ void GWEN_IdMapHex4_Extend(GWEN_IDMAP *map) {
   GWEN_NEW_OBJECT(GWEN_IDMAP_HEX4, xmap);
   xmap->table=GWEN_IdMapHex4Map_new(0, 0);
   map->algoData=(void*)xmap;
-  map->setPairFn=GWEN_IdMapHex4_SetPtr;
-  map->getPairFn=GWEN_IdMapHex4_GetPtr;
+  map->setPairFn=GWEN_IdMapHex4_Insert;
+  map->getPairFn=GWEN_IdMapHex4_Find;
   map->findFirstFn=GWEN_IdMapHex4_FindFirst;
   map->findNextFn=GWEN_IdMapHex4_FindNext;
   map->freeDataFn=GWEN_IdMapHex4_free;
@@ -169,7 +169,7 @@ void GWEN_IdMapHex4Map_free(GWEN_IDMAP_HEX4_TABLE *t) {
 
 
 
-GWEN_IDMAP_RESULT GWEN_IdMapHex4_SetPtr(GWEN_IDMAP *map,
+GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
                                         GWEN_TYPE_UINT32 id,
                                         void *ptr) {
   GWEN_IDMAP_HEX4 *xmap;
@@ -266,7 +266,7 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_SetPtr(GWEN_IDMAP *map,
 
 
 
-void *GWEN_IdMapHex4_GetPtr(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id) {
+void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id) {
   GWEN_IDMAP_HEX4 *xmap;
   GWEN_IDMAP_HEX4_TABLE *t;
 

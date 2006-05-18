@@ -67,10 +67,10 @@ typedef enum {
   \
   decl t##_IDMAP *pr##_IdMap_new(GWEN_IDMAP_ALGO algo); \
   decl void pr##_IdMap_free(t##_IDMAP *l); \
-  decl GWEN_IDMAP_RESULT pr##_IdMap_SetPtr(t##_IDMAP *l, \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_Insert(t##_IDMAP *l, \
                                            GWEN_TYPE_UINT32 id, \
                                            t* ptr); \
-  decl t* pr##_IdMap_GetPtr(t##_IDMAP *l, \
+  decl t* pr##_IdMap_Find(t##_IDMAP *l, \
                             GWEN_TYPE_UINT32 id); \
   decl GWEN_IDMAP_RESULT p##_IdMap_FindFirst(t##_IDMAP *map, \
                                              GWEN_TYPE_UINT32 *pid); \
@@ -90,14 +90,14 @@ typedef enum {
     GWEN_IdMap_free((GWEN_IDMAP*)l);                                 \
   }                                                                  \
                                                                      \
-  GWEN_IDMAP_RESULT pr##_IdMap_SetPtr(t##_IDMAP *l,                  \
+  GWEN_IDMAP_RESULT pr##_IdMap_Insert(t##_IDMAP *l,                  \
                                       GWEN_TYPE_UINT32 id,           \
                                       t* ptr) {                      \
-    return GWEN_IdMap_SetPtr((GWEN_IDMAP*)l, id, (void*) ptr);       \
+    return GWEN_IdMap_Insert((GWEN_IDMAP*)l, id, (void*) ptr);       \
   }                                                                  \
                                                                      \
-  t* pr##_IdMap_GetPtr(t##_IDMAP *l, GWEN_TYPE_UINT32 id) {          \
-    return GWEN_IdMap_GetPtr((GWEN_IDMAP*)l, id);                    \
+  t* pr##_IdMap_Find(t##_IDMAP *l, GWEN_TYPE_UINT32 id) {          \
+    return GWEN_IdMap_Find((GWEN_IDMAP*)l, id);                    \
   }                                                                  \
                                                                      \
   GWEN_IDMAP_RESULT pr##_IdMap_FindFirst(t##_IDMAP *l,               \
@@ -120,12 +120,12 @@ GWENHYWFAR_API
 void GWEN_IdMap_free(GWEN_IDMAP *map);
 
 GWENHYWFAR_API
-GWEN_IDMAP_RESULT GWEN_IdMap_SetPtr(GWEN_IDMAP *map,
+GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
 				    GWEN_TYPE_UINT32 id,
 				    void *ptr);
 
 GWENHYWFAR_API
-void *GWEN_IdMap_GetPtr(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
+void *GWEN_IdMap_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
 
 
 GWENHYWFAR_API

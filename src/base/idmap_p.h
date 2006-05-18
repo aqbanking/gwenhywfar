@@ -79,10 +79,10 @@ struct GWEN_IDMAP_HEX4 {
 
 static void GWEN_IdMapHex4_Extend(GWEN_IDMAP *map);
 static void GWEN_IdMapHex4_free(GWEN_IDMAP *map);
-static GWEN_IDMAP_RESULT GWEN_IdMapHex4_SetPtr(GWEN_IDMAP *map,
+static GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
                                                GWEN_TYPE_UINT32 id,
                                                void *ptr);
-static void *GWEN_IdMapHex4_GetPtr(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
+static void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
 
 static GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(GWEN_IDMAP *map,
                                                   GWEN_TYPE_UINT32 *pid);
