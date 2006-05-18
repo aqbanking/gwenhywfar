@@ -46,6 +46,7 @@ GWEN_IDMAP *GWEN_IdMap_new(GWEN_IDMAP_ALGO algo) {
   GWEN_IDMAP *map;
 
   GWEN_NEW_OBJECT(GWEN_IDMAP, map);
+  map->algo=algo;
   switch(algo) {
   case GWEN_IdMapAlgo_Hex4:
     GWEN_IdMapHex4_Extend(map);
@@ -121,6 +122,22 @@ GWEN_TYPE_UINT32 GWEN_IdMap_GetSize(const GWEN_IDMAP *map) {
   return map->count;
 }
 
+
+
+void GWEN_IdMap_Clear(GWEN_IDMAP *map) {
+  assert(map);
+  if (map->freeDataFn)
+    map->freeDataFn(map);
+  map->algoData=0;
+
+  switch(map->algo) {
+  case GWEN_IdMapAlgo_Hex4:
+    GWEN_IdMapHex4_Extend(map);
+    break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown algo %d", map->algo);
+  }
+}
 
 
 

@@ -681,6 +681,8 @@ int LocalFiles_ReadObject(GWEN_STO_STORAGE *st,
   LOCALFILES_STORAGE *xst;
   GWEN_BUFFER *fbuf;
   GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbData;
+  GWEN_DB_NODE *dbMeta;
 
   assert(st);
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, LOCALFILES_STORAGE, st);
@@ -691,13 +693,19 @@ int LocalFiles_ReadObject(GWEN_STO_STORAGE *st,
 
   db=GWEN_DB_Group_new("object");
   if (GWEN_DB_ReadFile(db, GWEN_Buffer_GetStart(fbuf),
+                       GWEN_DB_FLAGS_DEFAULT |
                        GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Object %x not found", id);
     GWEN_DB_Group_free(db);
     GWEN_Buffer_free(fbuf);
     return GWEN_ERROR_NOT_FOUND;
   }
-  *po=LocalFilesObject_fromDb(ty, id, db, GWEN_Buffer_GetStart(fbuf));
+
+  dbMeta=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "meta");
+  dbData=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data");
+  *po=LocalFilesObject_fromDb(ty, id, dbData, GWEN_Buffer_GetStart(fbuf));
+  GWEN_StoObject_SetRefCount(*po,
+                             GWEN_DB_GetIntValue(dbMeta, "refCount", 0, 0));
   GWEN_DB_Group_free(db);
   GWEN_Buffer_free(fbuf);
   return 0;
@@ -709,6 +717,8 @@ int LocalFiles_WriteObject(GWEN_STO_STORAGE *st,
                            GWEN_STO_OBJECT *o) {
   LOCALFILES_STORAGE *xst;
   GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbData;
+  GWEN_DB_NODE *dbMeta;
   GWEN_BUFFER *fbuf;
 
   assert(st);
@@ -734,11 +744,16 @@ int LocalFiles_WriteObject(GWEN_STO_STORAGE *st,
 
   /* store object in DB */
   db=GWEN_DB_Group_new("object");
-  LocalFilesObject_toDb(o, db);
+  dbMeta=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "meta");
+  GWEN_DB_SetIntValue(dbMeta, GWEN_DB_FLAGS_DEFAULT,
+                      "refCount", GWEN_StoObject_GetRefCount(o));
+  dbData=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data");
+  LocalFilesObject_toDb(o, dbData);
 
   /* write to temporary file */
   if (GWEN_DB_WriteFile(db, GWEN_Buffer_GetStart(fbuf),
-                        GWEN_DB_FLAGS_DEFAULT)) {
+                        GWEN_DB_FLAGS_DEFAULT|
+                        GWEN_DB_FLAGS_LOCKFILE)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not write object %x",
               GWEN_StoObject_GetId(o));
     GWEN_DB_Group_free(db);

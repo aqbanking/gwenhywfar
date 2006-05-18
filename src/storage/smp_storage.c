@@ -780,6 +780,9 @@ int GWEN_SmpStoStorage_CreateType(GWEN_STO_STORAGE *st,
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, GWEN_SMPSTO_STORAGE, st);
   assert(st);
 
+  if (name==0)
+    name="unnamed";
+
   if (xst->lockHolder!=cl) {
     DBG_ERROR(GWEN_LOGDOMAIN, "User [%s] (%x) does not have the EditLock",
               GWEN_StoClient_GetUserName(cl),
@@ -834,6 +837,9 @@ int GWEN_SmpStoStorage_OpenType(GWEN_STO_STORAGE *st,
   assert(st);
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, GWEN_SMPSTO_STORAGE, st);
   assert(st);
+
+  if (name==0)
+    name="unnamed";
 
   if (openFlags & GWEN_STO_OPENFLAGS_WR) {
     if (xst->lockHolder!=cl) {
