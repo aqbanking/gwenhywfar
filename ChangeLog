@@ -7,6 +7,17 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2006/05/18: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added base/idmap: This code allows for fast and efficient storage of
+  pairs of [32-bit ID and a void* pointer].
+  Such pairs can be set, reset and sought. This new class also allows to
+  fastly iterate over the pairs.
+  It allows for multiple storage algos. The first algo uses 8-step pointer
+  tables of 16 entries per table.
+
+
 2006/05/17: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - added storage framework (to be used by some of my developing projects)

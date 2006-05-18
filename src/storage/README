@@ -49,19 +49,19 @@ Editing of data is done in edit sessions:
 - do some modifications
 - endEdit
 If endEdit is not called (or is called with an argument indicating that
-the edit sesion is to be aborted) then the changes of a session will not
+the edit session is to be aborted) then the changes of a session will not
 be stored to the DB.
 When an edit session is successfully closed all clients will be informed
 about the changes via callbacks.
-   
-   
+
+
 2.3 Modification History
 ------------------------
 The simplification layer issues logs for every change to the database. This
 log can be written by the actual database into a file.
 Such a file can serve to recover from the unlikely event of a corrupted
 database.
-It can also be used to keep track of the authors of modification.
+It can also be used to keep track of the authors of modifications.
 
 
 2.4 Extendability
@@ -98,7 +98,7 @@ simplifying the API for derived plugins.
 Plugins using this API will just have to provide a few very simple lowlevel 
 functions (such as WriteType, WriteObject, ReadObject etc).
 
-All pugins should use this API instead of the basic plugin API mentioned
+All plugins should use this API instead of the basic plugin API mentioned
 above.
 
 

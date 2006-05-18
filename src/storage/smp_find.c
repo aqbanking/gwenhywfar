@@ -35,6 +35,7 @@ GWEN_STO_FIND *GWEN_SmpStoFind_new(GWEN_TYPE_UINT32 id,
   GWEN_INHERIT_SETDATA(GWEN_STO_FIND, GWEN_SMPSTO_FIND, fnd, xf,
                        GWEN_SmpStoFind_FreeData);
 
+
   return fnd;
 }
 

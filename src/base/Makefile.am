@@ -39,7 +39,8 @@ noinst_HEADERS=\
  stringlist_p.h \
  stringlist2_p.h \
  waitcallback_l.h \
- waitcallback_p.h
+ waitcallback_p.h \
+ idmap_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -66,7 +67,8 @@ iheader_HEADERS=\
  ringbuffer.h \
  stringlist.h \
  stringlist2.h \
- waitcallback.h
+ waitcallback.h \
+ idmap.h
 
 libbase_la_SOURCES=\
  args.c \
@@ -87,7 +89,8 @@ libbase_la_SOURCES=\
  ringbuffer.c \
  stringlist.c \
  stringlist2.c \
- waitcallback.c
+ waitcallback.c \
+ idmap.c
 
 
 sources:

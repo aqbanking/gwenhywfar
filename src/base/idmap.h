@@ -1,7 +1,7 @@
 /***************************************************************************
  $RCSfile$
                              -------------------
-    cvs         : $Id$
+    cvs         : $Id: idlist_p.h 1048 2006-05-17 17:15:35Z martin $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -25,50 +25,55 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_IDLIST_P_H
-#define GWENHYWFAR_IDLIST_P_H
+#ifndef GWENHYWFAR_IDMAP_H
+#define GWENHYWFAR_IDMAP_H
+
 
 #include <gwenhywfar/types.h>
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/idlist.h>
-
-
-#define GWEN_IDTABLE_MAXENTRIES 32
-
-
-typedef struct GWEN_IDTABLE GWEN_IDTABLE;
-GWEN_LIST_FUNCTION_DEFS(GWEN_IDTABLE, GWEN_IdTable)
-/* No trailing semicolon here because this is a macro call */
-struct GWEN_IDTABLE {
-  GWEN_LIST_ELEMENT(GWEN_IDTABLE)
-  /* No trailing semicolon here because this is a macro call */
-  GWEN_TYPE_UINT32 freeEntries;
-  GWEN_TYPE_UINT32 entries[GWEN_IDTABLE_MAXENTRIES];
-  GWEN_TYPE_UINT32 current;
-};
-
-GWEN_IDTABLE *GWEN_IdTable_new();
-void GWEN_IdTable_free(GWEN_IDTABLE *idt);
-
-int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_IsEmpty(const GWEN_IDTABLE *idt);
-int GWEN_IdTable_IsFull(const GWEN_IDTABLE *idt);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt);
-unsigned int GWEN_IdTable_GetCount(const GWEN_IDTABLE *idt);
-
-void GWEN_IdList_Clean(GWEN_IDLIST *idl);
-
-struct GWEN_IDLIST {
-  GWEN_IDTABLE_LIST *idTables;
-  GWEN_TYPE_UINT32 entryCount;
-  GWEN_IDTABLE *current;
-};
 
 
 
+typedef struct GWEN_IDMAP GWEN_IDMAP;
 
-#endif /* GWENHYWFAR_IDLIST_P_H */
+typedef enum {
+  GWEN_IdMapResult_Ok=0,
+  GWEN_IdMapResult_NoFit,
+  GWEN_IdMapResult_NotFound
+} GWEN_IDMAP_RESULT;
+
+
+typedef enum {
+  GWEN_IdMapAlgo_Unknown=0,
+  GWEN_IdMapAlgo_Hex4
+} GWEN_IDMAP_ALGO;
+
+
+
+GWENHYWFAR_API
+GWEN_IDMAP *GWEN_IdMap_new(GWEN_IDMAP_ALGO algo);
+
+GWENHYWFAR_API
+void GWEN_IdMap_free(GWEN_IDMAP *map);
+
+GWENHYWFAR_API
+GWEN_IDMAP_RESULT GWEN_IdMap_SetPtr(GWEN_IDMAP *map,
+				    GWEN_TYPE_UINT32 id,
+				    void *ptr);
+
+GWENHYWFAR_API
+void *GWEN_IdMap_GetPtr(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
+
+
+GWENHYWFAR_API
+GWEN_IDMAP_RESULT GWEN_IdMap_FindFirst(GWEN_IDMAP *map,
+                                       GWEN_TYPE_UINT32 *pid);
+
+GWENHYWFAR_API
+GWEN_IDMAP_RESULT GWEN_IdMap_FindNext(GWEN_IDMAP *map,
+                                      GWEN_TYPE_UINT32 *pid);
+
+
+
+
+#endif
 
