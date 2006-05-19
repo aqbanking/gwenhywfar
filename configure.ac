@@ -48,8 +48,9 @@ case "$GWENHYWFAR_VERSION_TAG" in svn|cvs)
       ;;
     *)
       # Let svn write the revision number directly into here on
-      # each svn update
-      GWENHYWFAR_VERSION_BUILD=`echo "$Rev$" | cut -d' ' -f2`
+      # each svn update. Note: The trailing space is necessary for
+      # cvs versions.
+      GWENHYWFAR_VERSION_BUILD=`echo "$Rev$ " | cut -d' ' -f2`
       if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
 	GWENHYWFAR_VERSION_BUILD="0"
       fi
