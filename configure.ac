@@ -47,7 +47,9 @@ case "$GWENHYWFAR_VERSION_TAG" in svn|cvs)
       GWENHYWFAR_VERSION_BUILD="0"
       ;;
     *)
-      GWENHYWFAR_VERSION_BUILD=`LC_ALL="C" $SVN info|grep 'Last Changed Rev'|cut -d' ' -f4`
+      # Let svn write the revision number directly into here on
+      # each svn update
+      GWENHYWFAR_VERSION_BUILD=`echo "$Rev$" | cut -d' ' -f2`
       if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
 	GWENHYWFAR_VERSION_BUILD="0"
       fi

@@ -7,6 +7,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006-05-19   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Let svn write the revision number directly into
+	here on each svn update. Fixes all problems with using svninfo.
+
 
 2006/05/18: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
