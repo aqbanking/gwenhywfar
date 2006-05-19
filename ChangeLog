@@ -7,6 +7,15 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- added function pr##_IdMap_freeAll() to GWEN_IDMAP macros which e.g. expands
+  to GWEN_Buffer_IdMap_freeAll() for
+  "GWEN_IDMAP_FUNCTION_DEFS(GWEN_BUFFER, GWEN_Buffer)".
+  This function frees all objects stored in the GWEN_IDMAP and frees the 
+  GWEN_IDMAP itself.
+
+
 2006-05-19   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Let svn write the revision number directly into
@@ -85,6 +94,7 @@
 
 	* src/base/logger.h: Replace __attribute__((deprecated)) by the
 	macro from gwenhywfarapi.h.
+
 
 ===========================================================================
 MARK: released gwenhywfar-2.2.0 (2006/04/12)
