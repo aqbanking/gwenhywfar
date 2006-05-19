@@ -32,6 +32,7 @@ noinst_HEADERS=\
  st_client_p.h \
  st_find_p.h \
  st_object_p.h \
+ st_storage_l.h \
  st_storage_p.h \
  st_type_p.h \
  st_vardef_l.h st_vardef_p.h \
