@@ -1,4 +1,4 @@
-EXTRA_DIST=README ressource.rc.in localfiles.xml.in
+EXTRA_DIST= ressource.rc.in localfiles.xml.in
 
 INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
  -I$(top_srcdir)/src/base \
