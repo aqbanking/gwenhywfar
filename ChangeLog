@@ -14,6 +14,11 @@
   "GWEN_IDMAP_FUNCTION_DEFS(GWEN_BUFFER, GWEN_Buffer)".
   This function frees all objects stored in the GWEN_IDMAP and frees the 
   GWEN_IDMAP itself.
+- added function pr##_IdMap_FreeItems() to GWEN_IDMAP macros which e.g. 
+  expands to GWEN_Buffer_IdMap_freeItems() for
+  "GWEN_IDMAP_FUNCTION_DEFS(GWEN_BUFFER, GWEN_Buffer)".
+  This function frees all objects stored in the GWEN_IDMAP and clears the 
+  GWEN_IDMAP (e.g. make it contain no ids afterwards).
 
 
 2006-05-19   Christian Stimming <stimming@tuhh.de>

@@ -68,6 +68,7 @@ typedef enum {
   decl t##_IDMAP *pr##_IdMap_new(GWEN_IDMAP_ALGO algo);               \
   decl void pr##_IdMap_free(t##_IDMAP *l);                            \
   decl void pr##_IdMap_freeAll(t##_IDMAP *l);                         \
+  decl void pr##_IdMap_FreeItems(t##_IDMAP *l);                       \
   decl GWEN_IDMAP_RESULT pr##_IdMap_Insert(t##_IDMAP *l,              \
                                            GWEN_TYPE_UINT32 id,       \
                                            t* ptr);                   \
@@ -108,6 +109,25 @@ typedef enum {
       ptr=pr##_IdMap_Find(l, id);                                    \
       if (ptr)                                                       \
 	pr##_free(ptr);                                              \
+      id=nextId;                                                     \
+    }                                                                \
+    pr##_IdMap_free(l);                                              \
+  }                                                                  \
+                                                                     \
+  void pr##_IdMap_FreeItems(t##_IDMAP *l) {                          \
+    GWEN_IDMAP_RESULT res;                                           \
+    GWEN_TYPE_UINT32 id;                                             \
+					      		             \
+    res=pr##_IdMap_GetFirst(l, &id);                                 \
+    while(res==GWEN_IdMapResult_Ok) {                                \
+      GWEN_TYPE_UINT32 nextId;                                       \
+      t *ptr;                                                        \
+								     \
+      res=pr##_IdMap_GetNext(l, &nextId);                            \
+      ptr=pr##_IdMap_Find(l, id);                                    \
+      if (ptr)                                                       \
+	pr##_free(ptr);                                              \
+      pr##_IdMap_Remove(l, id);          			     \
       id=nextId;                                                     \
     }                                                                \
     pr##_IdMap_free(l);                                              \
