@@ -85,6 +85,8 @@ static void LocalFiles__GetObjectPath(GWEN_STO_STORAGE *st,
                                       GWEN_TYPE_UINT32 id,
                                       GWEN_BUFFER *fbuf);
 
+int LocalFiles__EscapeToBufferVeryTolerant(const char *src, GWEN_BUFFER *buf);
+
 
 #endif
 

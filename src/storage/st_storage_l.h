@@ -49,7 +49,8 @@ int GWEN_StoStorage_Open(GWEN_STO_STORAGE *st,
                          GWEN_TYPE_UINT32 openFlags);
 
 int GWEN_StoStorage_Close(GWEN_STO_STORAGE *st,
-                          GWEN_STO_CLIENT *cl);
+                          GWEN_STO_CLIENT *cl,
+                          const char *reason);
 
 int GWEN_StoStorage_BeginEdit(GWEN_STO_STORAGE *st,
                               GWEN_STO_CLIENT *cl);

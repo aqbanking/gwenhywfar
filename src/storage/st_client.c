@@ -233,9 +233,9 @@ int GWEN_StoClient_Open(GWEN_STO_CLIENT *cl,
 
 
 
-int GWEN_StoClient_Close(GWEN_STO_CLIENT *cl) {
+int GWEN_StoClient_Close(GWEN_STO_CLIENT *cl, const char *reason) {
   assert(cl);
-  return GWEN_StoStorage_Close(cl->storage, cl);
+  return GWEN_StoStorage_Close(cl->storage, cl, reason);
 }
 
 

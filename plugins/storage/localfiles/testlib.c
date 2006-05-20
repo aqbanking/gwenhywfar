@@ -29,7 +29,7 @@ int test_register_client() {
     return 2;
   }
 
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -64,14 +64,14 @@ int test_create_storage() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -106,14 +106,14 @@ int test_open_storage() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -162,14 +162,14 @@ int test_begin_edit() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -234,14 +234,14 @@ int test_create_type() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -293,14 +293,14 @@ int test_open_type() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -383,14 +383,14 @@ int test_add_var() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -474,14 +474,14 @@ int test_create_object() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -551,14 +551,14 @@ int test_open_object() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -652,14 +652,14 @@ int test_set_value() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -749,14 +749,14 @@ int test_set_value2() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -872,14 +872,14 @@ int test_set_value3() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -971,14 +971,14 @@ int test_get_value() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -1052,14 +1052,14 @@ int test_list_objects() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -1154,14 +1154,14 @@ int test_create_many_objects() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;
@@ -1251,14 +1251,14 @@ int test_open_many_objects() {
   }
 
   fprintf(stderr, "  - close storage\n");
-  rv=GWEN_StoClient_Close(cl);
+  rv=GWEN_StoClient_Close(cl, 0);
   if (rv) {
     fprintf(stderr, "FAILED: Could not close storage (%d).\n", rv);
     return 2;
   }
 
   fprintf(stderr, "  - unregister client\n");
-  rv=GWEN_StoStorage_UnregisterClient(st, cl, 0);
+  rv=GWEN_StoStorage_UnregisterClient(st, cl);
   if (rv) {
     fprintf(stderr, "FAILED: Could not unregister client (%d).\n", rv);
     return 2;

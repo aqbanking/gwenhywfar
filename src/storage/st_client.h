@@ -60,7 +60,7 @@ int GWEN_StoClient_Open(GWEN_STO_CLIENT *cl,
                         GWEN_TYPE_UINT32 openFlags);
 
 GWENHYWFAR_API
-int GWEN_StoClient_Close(GWEN_STO_CLIENT *cl);
+int GWEN_StoClient_Close(GWEN_STO_CLIENT *cl, const char *reason);
 /*@}*/
 
 

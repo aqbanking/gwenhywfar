@@ -871,19 +871,19 @@ int LocalFiles_AddLog(GWEN_STO_STORAGE *st, const GWEN_STO_LOG *log) {
 #define ADDSTRING(m)                           \
   s=GWEN_StoLog_Get##m(log);                   \
   if (s)                                       \
-    GWEN_Text_EscapeToBufferTolerant(s, lbuf); \
+    LocalFiles__EscapeToBufferVeryTolerant(s, lbuf); \
   GWEN_Buffer_AppendByte(lbuf, '\t');
 
   ADDSTRING(UserName);
   s=GWEN_StoLog_Action_toString(GWEN_StoLog_GetLogAction(log));
-  GWEN_Text_EscapeToBufferTolerant(s, lbuf);
+  LocalFiles__EscapeToBufferVeryTolerant(s, lbuf);
   GWEN_Buffer_AppendByte(lbuf, '\t');
   ADDSTRING(TypeBaseName);
   ADDSTRING(TypeName);
   id=GWEN_StoLog_GetObjectId(log);
   if (id) {
     snprintf(numbuf, sizeof(numbuf), "%x", id);
-    GWEN_Text_EscapeToBufferTolerant(numbuf, lbuf);
+    LocalFiles__EscapeToBufferVeryTolerant(numbuf, lbuf);
   }
   GWEN_Buffer_AppendByte(lbuf, '\t');
   ADDSTRING(Param1);
@@ -909,6 +909,52 @@ int LocalFiles_AddLog(GWEN_STO_STORAGE *st, const GWEN_STO_LOG *log) {
     DBG_WARN(GWEN_LOGDOMAIN, "Error removing lock (%d)", rv);
   }
   GWEN_Buffer_free(fbuf);
+
+  return 0;
+}
+
+
+
+
+int LocalFiles__EscapeToBufferVeryTolerant(const char *src, GWEN_BUFFER *buf){
+  while(*src) {
+    unsigned char x;
+
+    x=(unsigned char)*src;
+    if (!(
+          (x>='A' && x<='Z') ||
+          (x>='a' && x<='z') ||
+          (x>='0' && x<='9') ||
+          x==' ' ||
+          x=='.' ||
+          x==',' ||
+          x=='.' ||
+          x=='*' ||
+          x=='?' ||
+          x=='/' ||
+          x==':' ||
+          x=='-' ||
+          x=='_'
+         )) {
+      unsigned char c;
+
+      GWEN_Buffer_AppendByte(buf, '%');
+      c=(((unsigned char)(*src))>>4)&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+      c=((unsigned char)(*src))&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    else
+      GWEN_Buffer_AppendByte(buf, *src);
+
+    src++;
+  } /* while */
 
   return 0;
 }

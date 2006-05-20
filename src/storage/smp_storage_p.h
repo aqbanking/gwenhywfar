@@ -61,13 +61,13 @@ int GWEN_SmpStoStorage_Open(GWEN_STO_STORAGE *st,
                             GWEN_STO_CLIENT *cl,
                             GWEN_TYPE_UINT32 openFlags);
 int GWEN_SmpStoStorage_Close(GWEN_STO_STORAGE *st,
-                             GWEN_STO_CLIENT *cl);
+                             GWEN_STO_CLIENT *cl,
+                             const char *reason);
 int GWEN_SmpStoStorage_RegisterClient(GWEN_STO_STORAGE *st,
                                       const char *userName,
                                       GWEN_STO_CLIENT **pcl);
 int GWEN_SmpStoStorage_UnregisterClient(GWEN_STO_STORAGE *st,
-                                        GWEN_STO_CLIENT *cl,
-                                        const char *reason);
+                                        GWEN_STO_CLIENT *cl);
 int GWEN_SmpStoStorage_BeginEdit(GWEN_STO_STORAGE *st,
                                  GWEN_STO_CLIENT *cl);
 int GWEN_SmpStoStorage_EndEdit(GWEN_STO_STORAGE *st,
@@ -133,8 +133,6 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
                                   GWEN_STO_TYPE *ts,
                                   GWEN_TYPE_UINT32 id,
                                   GWEN_STO_LOCKMODE lm);
-
-
 
 
 
