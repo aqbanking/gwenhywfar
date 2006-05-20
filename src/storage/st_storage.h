@@ -86,7 +86,8 @@ int GWEN_StoStorage_RegisterClient(GWEN_STO_STORAGE *st,
 
 GWENHYWFAR_API
 int GWEN_StoStorage_UnregisterClient(GWEN_STO_STORAGE *st,
-                                     GWEN_STO_CLIENT *cl);
+                                     GWEN_STO_CLIENT *cl,
+                                     const char *reason);
 
 #endif
 

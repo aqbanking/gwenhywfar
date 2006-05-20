@@ -572,11 +572,12 @@ int GWEN_StoStorage_RegisterClient(GWEN_STO_STORAGE *st,
 
 
 int GWEN_StoStorage_UnregisterClient(GWEN_STO_STORAGE *st,
-                                     GWEN_STO_CLIENT *cl) {
+                                     GWEN_STO_CLIENT *cl,
+                                     const char *reason) {
   assert(st);
   assert(cl);
   if (st->unregisterClientFn)
-    return st->unregisterClientFn(st, cl);
+    return st->unregisterClientFn(st, cl, reason);
   return GWEN_ERROR_UNSUPPORTED;
 }
 

@@ -64,6 +64,14 @@
             <descr>
             </descr>
           </value>
+          <value>beginSession
+            <descr>
+            </descr>
+          </value>
+          <value>endSession
+            <descr>
+            </descr>
+          </value>
         </values>
       </type>
 

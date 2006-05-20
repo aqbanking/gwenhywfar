@@ -66,7 +66,8 @@ int GWEN_SmpStoStorage_RegisterClient(GWEN_STO_STORAGE *st,
                                       const char *userName,
                                       GWEN_STO_CLIENT **pcl);
 int GWEN_SmpStoStorage_UnregisterClient(GWEN_STO_STORAGE *st,
-                                        GWEN_STO_CLIENT *cl);
+                                        GWEN_STO_CLIENT *cl,
+                                        const char *reason);
 int GWEN_SmpStoStorage_BeginEdit(GWEN_STO_STORAGE *st,
                                  GWEN_STO_CLIENT *cl);
 int GWEN_SmpStoStorage_EndEdit(GWEN_STO_STORAGE *st,

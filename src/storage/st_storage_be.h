@@ -45,7 +45,8 @@ typedef int (*GWEN_STO_STORAGE_REGISTERCLIENT_FN)(GWEN_STO_STORAGE *st,
                                                   const char *userName,
                                                   GWEN_STO_CLIENT **pcl);
 typedef int (*GWEN_STO_STORAGE_UNREGISTERCLIENT_FN)(GWEN_STO_STORAGE *st,
-                                                    GWEN_STO_CLIENT *cl);
+                                                    GWEN_STO_CLIENT *cl,
+                                                    const char *reason);
 
 
 typedef int (*GWEN_STO_STORAGE_CREATE_FN)(GWEN_STO_STORAGE *st,

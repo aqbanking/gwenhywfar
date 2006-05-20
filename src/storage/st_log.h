@@ -121,7 +121,11 @@ typedef enum {
   /**   */
   GWEN_StoLog_ActionBeginEdit,
   /**   */
-  GWEN_StoLog_ActionEndEdit
+  GWEN_StoLog_ActionEndEdit,
+  /**   */
+  GWEN_StoLog_ActionBeginSession,
+  /**   */
+  GWEN_StoLog_ActionEndSession
 } GWEN_STO_LOG_ACTION;
 
 GWENHYWFAR_API GWEN_STO_LOG_ACTION GWEN_StoLog_Action_fromString(const char *s);

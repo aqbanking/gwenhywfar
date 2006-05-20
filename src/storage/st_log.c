@@ -43,6 +43,10 @@ GWEN_STO_LOG_ACTION GWEN_StoLog_Action_fromString(const char *s) {
       return GWEN_StoLog_ActionBeginEdit;
     else if (strcasecmp(s, "endEdit")==0)
       return GWEN_StoLog_ActionEndEdit;
+    else if (strcasecmp(s, "beginSession")==0)
+      return GWEN_StoLog_ActionBeginSession;
+    else if (strcasecmp(s, "endSession")==0)
+      return GWEN_StoLog_ActionEndSession;
   }
   return GWEN_StoLog_ActionUnknown;
 }
@@ -82,6 +86,12 @@ const char *GWEN_StoLog_Action_toString(GWEN_STO_LOG_ACTION v) {
 
     case GWEN_StoLog_ActionEndEdit:
       return "endEdit";
+
+    case GWEN_StoLog_ActionBeginSession:
+      return "beginSession";
+
+    case GWEN_StoLog_ActionEndSession:
+      return "endSession";
 
     default:
       return "unknown";

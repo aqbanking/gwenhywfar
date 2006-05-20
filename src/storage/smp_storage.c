@@ -20,6 +20,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/gwentime.h>
 
 
 GWEN_INHERIT(GWEN_STO_STORAGE, GWEN_SMPSTO_STORAGE)
@@ -532,6 +533,9 @@ int GWEN_SmpStoStorage_RegisterClient(GWEN_STO_STORAGE *st,
   GWEN_SMPSTO_STORAGE *xst;
   GWEN_STO_CLIENT *cl;
   GWEN_TYPE_UINT32 clientId;
+  GWEN_STO_LOG *log;
+  GWEN_TIME *ti;
+  GWEN_BUFFER *tbuf;
 
   assert(st);
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, GWEN_SMPSTO_STORAGE, st);
@@ -545,17 +549,38 @@ int GWEN_SmpStoStorage_RegisterClient(GWEN_STO_STORAGE *st,
              GWEN_StoClient_GetUserName(cl),
              GWEN_StoClient_GetId(cl));
 
+  /* generate log message */
+  log=GWEN_StoLog_new();
+  GWEN_StoLog_SetUserName(log, GWEN_StoClient_GetUserName(cl));
+  GWEN_StoLog_SetLogAction(log, GWEN_StoLog_ActionBeginSession);
+  ti=GWEN_CurrentTime();
+  assert(ti);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Time_toUtcString(ti, "YYYY/MM/DD-hh:mm:ss", tbuf)) {
+    GWEN_Buffer_free(tbuf);
+    GWEN_Time_free(ti);
+    return GWEN_ERROR_GENERIC;
+  }
+  GWEN_StoLog_SetParam1(log, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+  GWEN_Time_free(ti);
+  GWEN_StoClient_AddLog(cl, log);
+
   return 0;
 }
 
 
 
 int GWEN_SmpStoStorage_UnregisterClient(GWEN_STO_STORAGE *st,
-                                        GWEN_STO_CLIENT *cl) {
+                                        GWEN_STO_CLIENT *cl,
+                                        const char *reason) {
   GWEN_SMPSTO_STORAGE *xst;
   GWEN_STO_OBJECT *o;
   GWEN_TYPE_UINT32 oid;
   GWEN_IDLIST *idl;
+  GWEN_STO_LOG *log;
+  GWEN_TIME *ti;
+  GWEN_BUFFER *tbuf;
 
   assert(st);
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, GWEN_SMPSTO_STORAGE, st);
@@ -607,6 +632,24 @@ int GWEN_SmpStoStorage_UnregisterClient(GWEN_STO_STORAGE *st,
   DBG_NOTICE(GWEN_LOGDOMAIN, "Unregistered client [%s] (%x)",
              GWEN_StoClient_GetUserName(cl),
              GWEN_StoClient_GetId(cl));
+
+  /* generate log message */
+  log=GWEN_StoLog_new();
+  GWEN_StoLog_SetUserName(log, GWEN_StoClient_GetUserName(cl));
+  GWEN_StoLog_SetLogAction(log, GWEN_StoLog_ActionEndSession);
+  ti=GWEN_CurrentTime();
+  assert(ti);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Time_toUtcString(ti, "YYYY/MM/DD-hh:mm:ss", tbuf)) {
+    GWEN_Buffer_free(tbuf);
+    GWEN_Time_free(ti);
+    return GWEN_ERROR_GENERIC;
+  }
+  GWEN_StoLog_SetParam1(log, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+  GWEN_Time_free(ti);
+  GWEN_StoLog_SetParam2(log, reason);
+  GWEN_StoClient_AddLog(cl, log);
 
   GWEN_StoClient_free(cl);
   return 0;

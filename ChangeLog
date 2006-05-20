@@ -19,6 +19,8 @@
   "GWEN_IDMAP_FUNCTION_DEFS(GWEN_BUFFER, GWEN_Buffer)".
   This function frees all objects stored in the GWEN_IDMAP and clears the 
   GWEN_IDMAP (e.g. make it contain no ids afterwards).
+- src/storage: added argument "reason" to GWEN_StoStorage_UnregisterClient(),
+  which is now logged in the new log messages beginSession and endSession
 
 
 2006-05-19   Christian Stimming <stimming@tuhh.de>
