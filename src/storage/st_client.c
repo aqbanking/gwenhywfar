@@ -354,6 +354,15 @@ int GWEN_StoClient_LockObject(GWEN_STO_CLIENT *cl,
 
 
 
+int GWEN_StoClient_DeleteObject(GWEN_STO_CLIENT *cl,
+                                GWEN_STO_TYPE *ts,
+                                GWEN_STO_OBJECT *o) {
+  assert(cl);
+  return GWEN_StoStorage_DeleteObject(cl->storage, cl, ts, o);
+}
+
+
+
 
 
 

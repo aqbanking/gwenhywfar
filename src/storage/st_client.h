@@ -154,6 +154,12 @@ int GWEN_StoClient_LockObject(GWEN_STO_CLIENT *cl,
                               GWEN_STO_TYPE *ts,
                               GWEN_TYPE_UINT32 id,
                               GWEN_STO_LOCKMODE lm);
+
+GWENHYWFAR_API
+int GWEN_StoClient_DeleteObject(GWEN_STO_CLIENT *cl,
+                                GWEN_STO_TYPE *ts,
+                                GWEN_STO_OBJECT *o);
+
 /*@}*/
 
 
