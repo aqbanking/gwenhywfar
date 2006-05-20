@@ -21,6 +21,8 @@
   GWEN_IDMAP (e.g. make it contain no ids afterwards).
 - src/storage: added argument "reason" to GWEN_StoStorage_UnregisterClient(),
   which is now logged in the new log messages beginSession and endSession
+- src/base/idlist: added functions which allow iterating over 
+  const GWEN_IDLIST as well
 
 
 2006-05-19   Christian Stimming <stimming@tuhh.de>

@@ -80,7 +80,7 @@ int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
       return 0;
     }
   } /* for */
-  return 0;
+  return -1;
 }
 
 
@@ -170,6 +170,42 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt){
   idt->current=GWEN_IDTABLE_MAXENTRIES;
   return 0;
 }
+
+
+
+GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId2(const GWEN_IDTABLE *idt,
+                                          GWEN_TYPE_UINT32 *tabIdx){
+  unsigned int i;
+
+  assert(idt);
+  for (i=0; i<GWEN_IDTABLE_MAXENTRIES; i++) {
+    if (idt->entries[i]!=0) {
+      *tabIdx=i;
+      return idt->entries[i];
+    }
+  } /* for */
+  return 0;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId2(const GWEN_IDTABLE *idt,
+                                         GWEN_TYPE_UINT32 *tabIdx){
+  unsigned int i;
+
+  assert(idt);
+
+  for (i=(*tabIdx)+1; i<GWEN_IDTABLE_MAXENTRIES; i++) {
+    if (idt->entries[i]!=0) {
+      *tabIdx=i;
+      return idt->entries[i];
+    }
+  } /* for */
+  return 0;
+}
+
+
+
 
 
 
@@ -441,6 +477,69 @@ GWEN_IDLIST *GWEN_IdList_dup(const GWEN_IDLIST *idl){
 }
 
 
+
+GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
+                                         GWEN_TYPE_UINT32 *pos){
+  GWEN_IDTABLE *idt;
+  int tabNum=0;
+
+  assert(idl);
+
+  idt=GWEN_IdTable_List_First(idl->idTables);
+  /* find free table */
+  while(idt) {
+    GWEN_IDTABLE *next;
+    GWEN_TYPE_UINT32 id;
+    GWEN_TYPE_UINT32 tabIdx;
+
+    next=GWEN_IdTable_List_Next(idt);
+    id=GWEN_IdTable_GetFirstId2(idt, &tabIdx);
+    if (id) {
+      *pos=(tabNum*GWEN_IDTABLE_MAXENTRIES)+tabIdx;
+      return id;
+    }
+    tabNum++;
+    idt=next;
+  } /* while */
+
+  return 0;
+}
+
+
+
+GWEN_TYPE_UINT32 GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
+                                        GWEN_TYPE_UINT32 *pos){
+  GWEN_IDTABLE *idt;
+  int i;
+  int tabNum;
+  GWEN_TYPE_UINT32 tabIdx;
+
+  assert(idl);
+  tabNum=(*pos)/GWEN_IDTABLE_MAXENTRIES;
+  tabIdx=(*pos)%GWEN_IDTABLE_MAXENTRIES;
+
+  /* seek table */
+  i=tabNum;
+  idt=GWEN_IdTable_List_First(idl->idTables);
+  while(i--) idt=GWEN_IdTable_List_Next(idt);
+  assert(idt);
+
+  while(idt) {
+    GWEN_IDTABLE *next;
+    GWEN_TYPE_UINT32 id;
+
+    next=GWEN_IdTable_List_Next(idt);
+    id=GWEN_IdTable_GetNextId2(idt, &tabIdx);
+    if (id) {
+      *pos=(tabNum*GWEN_IDTABLE_MAXENTRIES)+tabIdx;
+      return id;
+    }
+    tabNum++;
+    idt=next;
+  } /* while */
+
+  return 0;
+}
 
 
 

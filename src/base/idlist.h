@@ -116,6 +116,29 @@ GWENHYWFAR_API
 GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
 
 /**
+ * This function returns the first id stored in the list. It can also
+ * be used with const GWEN_IDLIST.
+ * @param hdl pointer to a 32 bit value to receive a handle
+ *   to be used by @ref GWEN_IdList_GetNextId2. This handle is only valid
+ *   as longs as no ids are removed from the list.
+ */
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
+                                         GWEN_TYPE_UINT32 *hdl);
+
+/**
+ * This function returns the next id stored in the list. It can also
+ * be used with const GWEN_IDLIST.
+ * @param hdl pointer to a 32 bit value to receive a handle
+ *   to be used by @ref GWEN_IdList_GetNextId2. This handle is only valid
+ *   as longs as no ids are removed from the list.
+ */
+GWENHYWFAR_API
+GWEN_TYPE_UINT32 GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
+                                        GWEN_TYPE_UINT32 *hdl);
+
+
+/**
  * Sorts the ids in ascending order
  */
 GWENHYWFAR_API

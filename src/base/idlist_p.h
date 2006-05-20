@@ -59,6 +59,11 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt);
 GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt);
 unsigned int GWEN_IdTable_GetCount(const GWEN_IDTABLE *idt);
 
+GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId2(const GWEN_IDTABLE *idt,
+                                          GWEN_TYPE_UINT32 *tabIdx);
+GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId2(const GWEN_IDTABLE *idt,
+                                         GWEN_TYPE_UINT32 *tabIdx);
+
 void GWEN_IdList_Clean(GWEN_IDLIST *idl);
 
 struct GWEN_IDLIST {

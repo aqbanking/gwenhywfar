@@ -44,6 +44,7 @@
 #include <gwenhywfar/nl_log.h>
 #include <gwenhywfar/net2.h>
 #include <gwenhywfar/idmap.h>
+#include <gwenhywfar/idlist.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -3949,6 +3950,96 @@ int testMap3(int argc, char **argv) {
 
 
 
+int testIdList(int argc, char **argv) {
+  GWEN_IDLIST *idl;
+  GWEN_TYPE_UINT32 id;
+  GWEN_TYPE_UINT32 hdl;
+  int rv;
+
+  idl=GWEN_IdList_new();
+
+  rv=GWEN_IdList_AddId(idl, 1);
+  if (rv) {
+    fprintf(stderr, "FAILED: Could not add id (%d).\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_IdList_AddId(idl, 2);
+  if (rv) {
+    fprintf(stderr, "FAILED: Could not add id (%d).\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_IdList_AddId(idl, 0x1234);
+  if (rv) {
+    fprintf(stderr, "FAILED: Could not add id (%d).\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_IdList_HasId(idl, 1);
+  if (rv==0) {
+    fprintf(stderr, "FAILED: Could not find id 1 (%d).\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_IdList_HasId(idl, 2);
+  if (rv==0) {
+    fprintf(stderr, "FAILED: Could not find id 2 (%d).\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_IdList_HasId(idl, 0x1234);
+  if (rv==0) {
+    fprintf(stderr, "FAILED: Could not find id 0x1234 (%d).\n", rv);
+    return 2;
+  }
+
+  id=GWEN_IdList_GetFirstId2(idl, &hdl);
+  if (id==0) {
+    fprintf(stderr, "FAILED: Not found first id.\n");
+    return 2;
+  }
+  if (id!=1) {
+    fprintf(stderr, "FAILED: First id is not 1 (%x).\n", id);
+    return 2;
+  }
+
+  id=GWEN_IdList_GetNextId2(idl, &hdl);
+  if (id==0) {
+    fprintf(stderr, "FAILED: Not found 2nd id.\n");
+    return 2;
+  }
+  if (id!=2) {
+    fprintf(stderr, "FAILED: 2nd id is not 2 (%x).\n", id);
+    return 2;
+  }
+
+  id=GWEN_IdList_GetNextId2(idl, &hdl);
+  if (id==0) {
+    fprintf(stderr, "FAILED: Not found 3rd id.\n");
+    return 2;
+  }
+  if (id!=0x1234) {
+    fprintf(stderr, "FAILED: 3rd id is not 0x1234 (%x).\n", id);
+    return 2;
+  }
+
+  id=GWEN_IdList_GetNextId2(idl, &hdl);
+  if (id!=0) {
+    fprintf(stderr,
+            "FAILED: Found more ids than there should be [%x].\n",
+            id);
+    return 2;
+  }
+
+  GWEN_IdList_free(idl);
+
+  fprintf(stderr, "PASSED.\n");
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4082,6 +4173,8 @@ int main(int argc, char **argv) {
     rv=testMap2(argc, argv);
   else if (strcasecmp(argv[1], "map3")==0)
     rv=testMap3(argc, argv);
+  else if (strcasecmp(argv[1], "idlist")==0)
+    rv=testIdList(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
