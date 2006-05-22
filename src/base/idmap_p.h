@@ -37,9 +37,9 @@ typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_SETPAIR_FN)(GWEN_IDMAP *map,
 typedef void* (*GWEN_IDMAP_GETPAIR_FN)(GWEN_IDMAP *map,
                                        GWEN_TYPE_UINT32 id);
 
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDFIRST_FN)(GWEN_IDMAP *map,
+typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDFIRST_FN)(const GWEN_IDMAP *map,
                                                      GWEN_TYPE_UINT32 *pid);
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDNEXT_FN)(GWEN_IDMAP *map,
+typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDNEXT_FN)(const GWEN_IDMAP *map,
                                                     GWEN_TYPE_UINT32 *pid);
 
 
@@ -85,9 +85,9 @@ static GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
                                                void *ptr);
 static void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
 
-static GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(GWEN_IDMAP *map,
+static GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(const GWEN_IDMAP *map,
                                                   GWEN_TYPE_UINT32 *pid);
-static GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(GWEN_IDMAP *map,
+static GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(const GWEN_IDMAP *map,
                                                  GWEN_TYPE_UINT32 *pid);
 
 

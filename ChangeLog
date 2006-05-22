@@ -7,6 +7,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/22: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- improved idmap code: now iterates over const idmaps (i.e. the argument
+  *pid to the function GWEN_IdMap_FindNext() is now used as attach point
+  instead of an internally stored var). This also allows for multiple
+  iterations in parallel
+
+
 2006-05-22   Christian Stimming <stimming@tuhh.de>
 
 	* src/: Add include file ifdefs, which might be necessary on some

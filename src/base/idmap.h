@@ -75,9 +75,9 @@ typedef enum {
   decl GWEN_IDMAP_RESULT pr##_IdMap_Remove(t##_IDMAP *l,              \
                                            GWEN_TYPE_UINT32 id);      \
   decl t* pr##_IdMap_Find(t##_IDMAP *l, GWEN_TYPE_UINT32 id);         \
-  decl GWEN_IDMAP_RESULT pr##_IdMap_GetFirst(t##_IDMAP *map,         \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_GetFirst(const t##_IDMAP *map,    \
                                               GWEN_TYPE_UINT32 *pid); \
-  decl GWEN_IDMAP_RESULT pr##_IdMap_GetNext(t##_IDMAP *map,          \
+  decl GWEN_IDMAP_RESULT pr##_IdMap_GetNext(const t##_IDMAP *map,     \
                                              GWEN_TYPE_UINT32 *pid);  \
   decl GWEN_TYPE_UINT32 pr##_IdMap_GetSize(const GWEN_IDMAP *map);    \
   decl void pr##_IdMap_Clear(GWEN_IDMAP *l);
@@ -148,14 +148,14 @@ typedef enum {
     return GWEN_IdMap_Find((GWEN_IDMAP*)l, id);                      \
   }                                                                  \
                                                                      \
-  GWEN_IDMAP_RESULT pr##_IdMap_GetFirst(t##_IDMAP *l,               \
+  GWEN_IDMAP_RESULT pr##_IdMap_GetFirst(const t##_IDMAP *l,          \
                                         GWEN_TYPE_UINT32 *pid) {     \
-    return GWEN_IdMap_GetFirst((GWEN_IDMAP*)l, pid);                \
+    return GWEN_IdMap_GetFirst((const GWEN_IDMAP*)l, pid);           \
   }                                                                  \
                                                                      \
-  GWEN_IDMAP_RESULT pr##_IdMap_GetNext(t##_IDMAP *l,                \
+  GWEN_IDMAP_RESULT pr##_IdMap_GetNext(const t##_IDMAP *l,           \
                                        GWEN_TYPE_UINT32 *pid) {      \
-    return GWEN_IdMap_GetNext((GWEN_IDMAP*)l, pid);                 \
+    return GWEN_IdMap_GetNext((const GWEN_IDMAP*)l, pid);            \
   }                                                                  \
                                                                      \
   GWEN_TYPE_UINT32 pr##_IdMap_GetSize(const GWEN_IDMAP *l) {         \
@@ -188,12 +188,26 @@ GWENHYWFAR_API
 void *GWEN_IdMap_Find(GWEN_IDMAP *map, GWEN_TYPE_UINT32 id);
 
 
+/**
+ * Return the first id in the map.
+ * @param map map to browse
+ * @param pid pointer to a variable to receive the first id in the map.
+ *   Upon return this variable will be updated to the first id in the map if
+ *   the result is @ref GWEN_IdMapResult_Ok.
+ */
 GWENHYWFAR_API
-GWEN_IDMAP_RESULT GWEN_IdMap_GetFirst(GWEN_IDMAP *map,
-                                       GWEN_TYPE_UINT32 *pid);
+GWEN_IDMAP_RESULT GWEN_IdMap_GetFirst(const GWEN_IDMAP *map,
+                                      GWEN_TYPE_UINT32 *pid);
 
+/**
+ * Return the next id in the map.
+ * @param map map to browse
+ * @param pid pointer to the id retrieved via @ref GWEN_IdMap_GetFirst.
+ *   Upon return this variable will be updated to the next id in the map if
+ *   the result is @ref GWEN_IdMapResult_Ok.
+ */
 GWENHYWFAR_API
-GWEN_IDMAP_RESULT GWEN_IdMap_GetNext(GWEN_IDMAP *map,
+GWEN_IDMAP_RESULT GWEN_IdMap_GetNext(const GWEN_IDMAP *map,
                                      GWEN_TYPE_UINT32 *pid);
 
 GWENHYWFAR_API
