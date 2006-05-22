@@ -36,10 +36,14 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 #include <errno.h>
 #include <string.h>
-#include <strings.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 #include <ctype.h>
 
 #ifdef OS_WIN32

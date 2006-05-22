@@ -40,10 +40,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 #include <assert.h>
 
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 
 static GWEN_MEMORY_TABLE *gwen_memory__first_table=0;

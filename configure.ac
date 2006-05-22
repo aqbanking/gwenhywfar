@@ -217,7 +217,7 @@ AC_CHECK_LIB(dl, dlopen)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h])
-AC_CHECK_HEADERS([stdlib.h string.h sys/socket.h sys/time.h])
+AC_CHECK_HEADERS([stdlib.h string.h strings.h sys/socket.h sys/time.h])
 AC_CHECK_HEADERS([syslog.h unistd.h])
 AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_HEADERS([dlfcn.h])

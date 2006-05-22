@@ -45,7 +45,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include <strings.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 #include "error_p.h"
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"

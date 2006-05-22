@@ -49,7 +49,9 @@
 # include <fcntl.h>
 #endif
 #include <errno.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 
 
@@ -273,7 +275,7 @@ void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
 
 void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
                               const char *name, const char *value){
-  return GWEN_XMLNode__SetProperty(n, name, value, 0);
+  GWEN_XMLNode__SetProperty(n, name, value, 0);
 }
 
 
@@ -1781,7 +1783,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
                                 unsigned int ind) {
   GWEN_XMLPROPERTY *p;
   GWEN_XMLNODE *c;
-  int i;
+  unsigned int i;
   int simpleTag;
   GWEN_ERRORCODE err;
 

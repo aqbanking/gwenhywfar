@@ -43,11 +43,15 @@
 # include <syslog.h>
 #endif
 #include <string.h>
-#include <strings.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 #ifdef HAVE_TIME_H
 # include <time.h>
 #endif
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 
 static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;

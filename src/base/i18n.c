@@ -38,7 +38,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include <strings.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 
 #ifdef ENABLE_NLS
 # include <libintl.h>

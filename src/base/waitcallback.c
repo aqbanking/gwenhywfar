@@ -40,7 +40,9 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/path.h>
 
-#include <strings.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 
 
 
