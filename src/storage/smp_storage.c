@@ -641,11 +641,19 @@ int GWEN_SmpStoStorage_UnregisterClient(GWEN_STO_STORAGE *st,
   o=GWEN_StoObject_List_First(GWEN_StoClient_GetObjectList(cl));
   while(o) {
     if (GWEN_StoObject_GetLockHolder(o)==cl) {
+      int lockCount;
+      int i;
+
       DBG_NOTICE(GWEN_LOGDOMAIN,
                  "Removing ObjectLock held by user [%s] (%x) on %x",
                  GWEN_StoClient_GetUserName(cl),
                  GWEN_StoClient_GetId(cl),
                  GWEN_StoObject_GetId(o));
+      lockCount=GWEN_StoObject_GetLockCount(o);
+      for (i=0; i<lockCount; i++) {
+        GWEN_StoObject_DecLockCount(o);
+        GWEN_StoObject_DecOpenCount(o);
+      }
       GWEN_StoObject_SetLockHolder(o, 0);
     }
     o=GWEN_StoObject_List_Next(o);
@@ -1272,19 +1280,14 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
     assert(o);
 
     lockHolder=GWEN_StoObject_GetLockHolder(o);
-    if (lockHolder) {
-      if (lockHolder==cl) {
-        DBG_ERROR(GWEN_LOGDOMAIN,
-                  "User [%s] (%x) already has the ObjectLock for %x",
-                  GWEN_StoClient_GetUserName(cl),
-                  GWEN_StoClient_GetId(cl),
-                  GWEN_StoObject_GetId(o));
-        return GWEN_ERROR_INVALID;
-      }
+    if (lockHolder && lockHolder!=cl) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Another user has the ObjectLock");
       return GWEN_ERROR_TRY_AGAIN;
     }
+
     GWEN_StoObject_SetLockHolder(o, cl);
+    GWEN_StoObject_IncLockCount(o);
+
     GWEN_StoObject_IncOpenCount(o);
     DBG_INFO(GWEN_LOGDOMAIN,
              "User [%s] (%x) acquired the ObjectLock for %x",
@@ -1294,7 +1297,10 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
   } /* if lock */
   else if (lm==GWEN_StoLockMode_Unlock) {
     if (GWEN_StoObject_GetLockHolder(o)==cl) {
-      GWEN_StoObject_SetLockHolder(o, 0);
+      GWEN_StoObject_DecLockCount(o);
+      if (GWEN_StoObject_GetLockCount(o)==0) {
+        GWEN_StoObject_SetLockHolder(o, 0);
+      }
       rv=GWEN_SmpStoStorage__DecObjectOpenCount(st, o);
       if (rv) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

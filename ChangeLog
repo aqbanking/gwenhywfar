@@ -9,7 +9,11 @@
 
 2006/05/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
-- src/storage: now logs creation of new objects
+- src/storage: 
+  - now logs creation of new objects
+  - introduced lockCount for object locks thus allowing one client to have
+    multiple locks on a given object
+- src/storage.c: fixed a bug
 
 
 2006/05/22: Martin Preuss<martin@libchipcard.de>

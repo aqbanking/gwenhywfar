@@ -42,6 +42,8 @@ typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDFIRST_FN)(const GWEN_IDMAP *map,
 typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDNEXT_FN)(const GWEN_IDMAP *map,
                                                     GWEN_TYPE_UINT32 *pid);
 
+typedef void (*GWEN_IDMAP_DUMP_FN)(GWEN_IDMAP *map, FILE *f, int indent);
+
 
 typedef void (*GWEN_IDMAP_FREEDATA_FN)(GWEN_IDMAP *map);
 
@@ -52,6 +54,7 @@ struct GWEN_IDMAP {
   GWEN_IDMAP_FINDFIRST_FN findFirstFn;
   GWEN_IDMAP_FINDNEXT_FN findNextFn;
   GWEN_IDMAP_FREEDATA_FN freeDataFn;
+  GWEN_IDMAP_DUMP_FN dumpFn;
 
   GWEN_IDMAP_ALGO algo;
   void *algoData;
@@ -104,6 +107,11 @@ static
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
                                                     GWEN_TYPE_UINT32 *pid,
                                                     int incr);
+
+static void GWEN_IdMapHex4__Dump(GWEN_IDMAP_HEX4_TABLE *table,
+                                 FILE *f, int indent);
+
+static void GWEN_IdMapHex4_Dump(GWEN_IDMAP *map, FILE *f, int indent);
 
 
 #endif

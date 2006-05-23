@@ -141,6 +141,17 @@ void GWEN_IdMap_Clear(GWEN_IDMAP *map) {
 
 
 
+void GWEN_IdMap_Dump(GWEN_IDMAP *map, FILE *f, int indent) {
+  assert(map);
+  if (map->dumpFn)
+    map->dumpFn(map, f, indent);
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No dump fn");
+  }
+}
+
+
+
 
 
 /* _________________________________________________________________________
@@ -161,6 +172,7 @@ void GWEN_IdMapHex4_Extend(GWEN_IDMAP *map) {
   map->findFirstFn=GWEN_IdMapHex4_FindFirst;
   map->findNextFn=GWEN_IdMapHex4_FindNext;
   map->freeDataFn=GWEN_IdMapHex4_free;
+  map->dumpFn=GWEN_IdMapHex4_Dump;
 }
 
 
@@ -424,7 +436,6 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
   id=*pid;
   while (t) {
     int i;
-    GWEN_TYPE_UINT32 lid;
 
     if (incr) {
       while (t && (id & 0xf)==0xf) {
@@ -436,17 +447,18 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
       id++;
     }
 
-    lid=id & 0xfffffff0;
     for (i=id & 0xf; i<16; i++) {
       if (t->ptrs[i]) {
+        GWEN_TYPE_UINT32 lid;
 
-        lid=(id | i);
+        lid=((id & 0xfffffff0) | i);
         if (t->isPtrTable) {
           *pid=lid;
           return t;
         }
         else {
           GWEN_IDMAP_HEX4_TABLE *dt;
+
           lid=lid<<4;
           dt=GWEN_IdMapHex4__GetNextTable((GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[i]),
                                           &lid, 0);
@@ -509,6 +521,32 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(const GWEN_IDMAP *map,
 }
 
 
+
+void GWEN_IdMapHex4__Dump(GWEN_IDMAP_HEX4_TABLE *tbl, FILE *f, int indent) {
+  int i;
+
+  for (i=0; i<16; i++) {
+    int j;
+
+    if (tbl->ptrs[i]) {
+      for (j=0; j<indent; j++)
+        fprintf(f, " ");
+      fprintf(f, "Id: %01x Ptr: %p\n",
+              i, tbl->ptrs[i]);
+      if (!(tbl->isPtrTable))
+        GWEN_IdMapHex4__Dump(tbl->ptrs[i], f, indent+2);
+    }
+  }
+}
+
+
+
+void GWEN_IdMapHex4_Dump(GWEN_IDMAP *map, FILE *f, int indent) {
+  GWEN_IDMAP_HEX4 *xmap;
+
+  xmap=(GWEN_IDMAP_HEX4*)map->algoData;
+  GWEN_IdMapHex4__Dump(xmap->table, f, indent);
+}
 
 
 

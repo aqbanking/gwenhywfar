@@ -43,6 +43,7 @@ struct GWEN_STO_OBJECT {
   int refCount;
 
   GWEN_STO_CLIENT *lockHolder;
+  int lockCount;
 
   GWEN_STO_CLIENT *owner;
 

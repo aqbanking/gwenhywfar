@@ -31,6 +31,8 @@
 
 #include <gwenhywfar/types.h>
 
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -215,6 +217,10 @@ GWEN_TYPE_UINT32 GWEN_IdMap_GetSize(const GWEN_IDMAP *map);
 
 GWENHYWFAR_API
 void GWEN_IdMap_Clear(GWEN_IDMAP *map);
+
+
+GWENHYWFAR_API
+void GWEN_IdMap_Dump(GWEN_IDMAP *map, FILE *f, int indent);
 
 
 #ifdef __cplusplus

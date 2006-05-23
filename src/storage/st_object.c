@@ -243,6 +243,38 @@ void GWEN_StoObject_SetLockHolder(GWEN_STO_OBJECT *o, GWEN_STO_CLIENT *cl) {
 
 
 
+int GWEN_StoObject_GetLockCount(const GWEN_STO_OBJECT *o) {
+  assert(o);
+  return o->lockCount;
+}
+
+
+
+void GWEN_StoObject_IncLockCount(GWEN_STO_OBJECT *o) {
+  assert(o);
+  o->lockCount++;
+}
+
+
+
+void GWEN_StoObject_DecLockCount(GWEN_STO_OBJECT *o) {
+  assert(o);
+  if (o->lockCount)
+    o->lockCount--;
+  else {
+    DBG_WARN(GWEN_LOGDOMAIN, "Lockcount already is zero");
+  }
+}
+
+
+
+void GWEN_StoObject_SetLockCount(GWEN_STO_OBJECT *o, int i) {
+  assert(o);
+  o->lockCount=i;
+}
+
+
+
 GWEN_STO_CLIENT *GWEN_StoObject_GetOwner(const GWEN_STO_OBJECT *o) {
   assert(o);
   return o->owner;

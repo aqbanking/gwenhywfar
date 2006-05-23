@@ -90,6 +90,19 @@ void GWEN_StoObject_SetLockHolder(GWEN_STO_OBJECT *o,
                                   GWEN_STO_CLIENT *cl);
 
 GWENHYWFAR_API
+int GWEN_StoObject_GetLockCount(const GWEN_STO_OBJECT *o);
+
+GWENHYWFAR_API
+void GWEN_StoObject_IncLockCount(GWEN_STO_OBJECT *o);
+
+GWENHYWFAR_API
+void GWEN_StoObject_DecLockCount(GWEN_STO_OBJECT *o);
+
+GWENHYWFAR_API
+void GWEN_StoObject_SetLockCount(GWEN_STO_OBJECT *o, int i);
+
+
+GWENHYWFAR_API
 GWEN_STO_CLIENT *GWEN_StoObject_GetOwner(const GWEN_STO_OBJECT *o);
 
 GWENHYWFAR_API
