@@ -7,6 +7,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/05/23: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- src/storage: now logs creation of new objects
+
+
 2006/05/22: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - improved idmap code: now iterates over const idmaps (i.e. the argument

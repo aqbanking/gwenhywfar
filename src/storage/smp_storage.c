@@ -1023,6 +1023,7 @@ int GWEN_SmpStoStorage_CreateObject(GWEN_STO_STORAGE *st,
   GWEN_SMPSTO_STORAGE *xst;
   GWEN_STO_OBJECT *o;
   int rv;
+  GWEN_STO_LOG *log;
 
   assert(st);
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, GWEN_SMPSTO_STORAGE, st);
@@ -1045,6 +1046,15 @@ int GWEN_SmpStoStorage_CreateObject(GWEN_STO_STORAGE *st,
   GWEN_StoObject_IncOpenCount(o);
   GWEN_StoClient_AddObject(cl, o);
   *po=o;
+
+  /* generate log message */
+  log=GWEN_StoLog_new();
+  GWEN_StoLog_SetUserName(log, GWEN_StoClient_GetUserName(cl));
+  GWEN_StoLog_SetLogAction(log, GWEN_StoLog_ActionObjectCreate);
+  GWEN_StoLog_SetTypeBaseName(log, GWEN_StoType_GetTypeName(ty));
+  GWEN_StoLog_SetTypeName(log, GWEN_StoType_GetName(ty));
+  GWEN_StoLog_SetObjectId(log, GWEN_StoObject_GetId(o));
+  GWEN_StoClient_AddLog(cl, log);
 
   return 0;
 }
