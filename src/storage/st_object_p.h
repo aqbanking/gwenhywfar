@@ -51,6 +51,8 @@ struct GWEN_STO_OBJECT {
 
   int openCount;
   int modified;
+
+  int usage;
 };
 
 

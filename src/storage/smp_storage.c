@@ -281,6 +281,7 @@ GWEN_SmpSto_SetAddLogFn(GWEN_STO_STORAGE *st, GWEN_SMPSTO_ADDLOG_FN f) {
 
 
 int GWEN_SmpSto_NextUniqueId(GWEN_STO_STORAGE *st,
+                             GWEN_STO_TYPE *ty,
                              GWEN_TYPE_UINT32 *pid) {
   GWEN_SMPSTO_STORAGE *xst;
 
@@ -290,7 +291,7 @@ int GWEN_SmpSto_NextUniqueId(GWEN_STO_STORAGE *st,
 
   assert(pid);
   if (xst->nextUniqueIdFn)
-    return xst->nextUniqueIdFn(st, pid);
+    return xst->nextUniqueIdFn(st, ty, pid);
   return GWEN_ERROR_UNSUPPORTED;
 }
 
@@ -1257,7 +1258,6 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
                                   GWEN_TYPE_UINT32 id,
                                   GWEN_STO_LOCKMODE lm) {
   GWEN_SMPSTO_STORAGE *xst;
-  GWEN_STO_OBJECT *o;
   int rv;
 
   assert(st);
@@ -1265,6 +1265,7 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
   assert(st);
 
   if (lm==GWEN_StoLockMode_Lock) {
+    GWEN_STO_OBJECT *o;
     GWEN_STO_CLIENT *lockHolder;
 
     o=GWEN_StoStorage_FindObject(st, id);
@@ -1296,7 +1297,16 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
              GWEN_StoObject_GetId(o));
   } /* if lock */
   else if (lm==GWEN_StoLockMode_Unlock) {
-    if (GWEN_StoObject_GetLockHolder(o)==cl) {
+    GWEN_STO_OBJECT *o;
+    GWEN_STO_CLIENT *objLockHolder;
+
+    o=GWEN_StoStorage_FindObject(st, id);
+    if (o==0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Object %x not found", id);
+      return GWEN_ERROR_INVALID;
+    }
+    objLockHolder=GWEN_StoObject_GetLockHolder(o);
+    if (objLockHolder==cl) {
       GWEN_StoObject_DecLockCount(o);
       if (GWEN_StoObject_GetLockCount(o)==0) {
         GWEN_StoObject_SetLockHolder(o, 0);
@@ -1310,8 +1320,14 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
       return 0;
     }
     else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Another user has the ObjectLock");
-      return GWEN_ERROR_INVALID;
+      if (objLockHolder==0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "No user has the ObjectLock");
+        return GWEN_ERROR_INVALID;
+      }
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Another user has the ObjectLock");
+        return GWEN_ERROR_INVALID;
+      }
     }
   } /* if unlock */
   else {
@@ -1320,7 +1336,7 @@ int GWEN_SmpStoStorage_LockObject(GWEN_STO_STORAGE *st,
               GWEN_StoClient_GetUserName(cl),
               GWEN_StoClient_GetId(cl),
               lm,
-              GWEN_StoObject_GetId(o));
+              id);
     return GWEN_ERROR_INVALID;
   }
 

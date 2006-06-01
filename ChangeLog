@@ -7,6 +7,14 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/06/01: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- src/storage: 
+  - fixed some bugs
+  - object ids are now only unique within a type's namespace. This allows
+    for a more efficient use of GWEN_IDMAP to store object ids per type.
+
+
 2006/05/23: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - src/storage: 

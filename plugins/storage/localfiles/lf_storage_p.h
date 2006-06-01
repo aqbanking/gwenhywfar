@@ -28,6 +28,7 @@ static void LocalFilesStorage_FreeData(void *bp, void *p);
 
 
 static int LocalFiles_NextUniqueId(GWEN_STO_STORAGE *st,
+                                   GWEN_STO_TYPE *ty,
                                    GWEN_TYPE_UINT32 *pid);
 
 static int LocalFiles_CreateDb(GWEN_STO_STORAGE *st);

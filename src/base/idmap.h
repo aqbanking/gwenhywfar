@@ -107,6 +107,7 @@ typedef enum {
       GWEN_TYPE_UINT32 nextId;                                       \
       t *ptr;                                                        \
 								     \
+      nextId=id;						     \
       res=pr##_IdMap_GetNext(l, &nextId);                            \
       ptr=pr##_IdMap_Find(l, id);                                    \
       if (ptr)                                                       \
@@ -124,7 +125,8 @@ typedef enum {
     while(res==GWEN_IdMapResult_Ok) {                                \
       GWEN_TYPE_UINT32 nextId;                                       \
       t *ptr;                                                        \
-								     \
+                                                                     \
+      nextId=id;                                                     \
       res=pr##_IdMap_GetNext(l, &nextId);                            \
       ptr=pr##_IdMap_Find(l, id);                                    \
       if (ptr)                                                       \
@@ -132,7 +134,6 @@ typedef enum {
       pr##_IdMap_Remove(l, id);          			     \
       id=nextId;                                                     \
     }                                                                \
-    pr##_IdMap_free(l);                                              \
   }                                                                  \
                                                                      \
   GWEN_IDMAP_RESULT pr##_IdMap_Insert(t##_IDMAP *l,                  \

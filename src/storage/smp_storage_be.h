@@ -58,6 +58,7 @@ GWEN_STO_STORAGE *GWEN_SmpStoStorage_new(const char *typeName,
  */
 /*@{*/
 typedef int (*GWEN_SMPSTO_NEXTUNIQUEID_FN)(GWEN_STO_STORAGE *st,
+                                           GWEN_STO_TYPE *ty,
                                            GWEN_TYPE_UINT32 *pid);
 typedef int (*GWEN_SMPSTO_CREATEDB_FN)(GWEN_STO_STORAGE *st);
 typedef int (*GWEN_SMPSTO_LOADDB_FN)(GWEN_STO_STORAGE *st);
@@ -160,6 +161,7 @@ GWEN_SMPSTO_ADDLOG_FN
 /*@{*/
 GWENHYWFAR_API
 int GWEN_SmpSto_NextUniqueId(GWEN_STO_STORAGE *st,
+                             GWEN_STO_TYPE *ty,
                              GWEN_TYPE_UINT32 *pid);
 
 GWENHYWFAR_API

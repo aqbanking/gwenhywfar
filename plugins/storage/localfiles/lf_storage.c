@@ -89,7 +89,9 @@ void LocalFilesStorage_FreeData(void *bp, void *p) {
 
 
 
-int LocalFiles_NextUniqueId(GWEN_STO_STORAGE *st, GWEN_TYPE_UINT32 *pid) {
+int LocalFiles_NextUniqueId(GWEN_STO_STORAGE *st,
+                            GWEN_STO_TYPE *ty,
+                            GWEN_TYPE_UINT32 *pid) {
   LOCALFILES_STORAGE *xst;
   FILE *f;
   unsigned int lastId=0;
@@ -101,7 +103,10 @@ int LocalFiles_NextUniqueId(GWEN_STO_STORAGE *st, GWEN_TYPE_UINT32 *pid) {
   assert(xst);
 
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(fbuf, GWEN_StoStorage_GetAddress(st));
+  if (ty)
+    GWEN_Buffer_AppendString(fbuf, LocalFilesType_GetBaseFolder(ty));
+  else
+    GWEN_Buffer_AppendString(fbuf, GWEN_StoStorage_GetAddress(st));
   GWEN_Buffer_AppendString(fbuf, DIRSEP "lastid");
 
   f=fopen(GWEN_Buffer_GetStart(fbuf), "r+");
@@ -619,7 +624,7 @@ int LocalFiles_CreateType(GWEN_STO_STORAGE *st,
     return GWEN_ERROR_IO;
   }
 
-  rv=GWEN_SmpSto_NextUniqueId(st, &id);
+  rv=GWEN_SmpSto_NextUniqueId(st, 0, &id);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(fbuf);
@@ -793,7 +798,7 @@ int LocalFiles_CreateObject(GWEN_STO_STORAGE *st,
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, LOCALFILES_STORAGE, st);
   assert(xst);
 
-  rv=GWEN_SmpSto_NextUniqueId(st, &id);
+  rv=GWEN_SmpSto_NextUniqueId(st, ty, &id);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -925,17 +930,7 @@ int LocalFiles__EscapeToBufferVeryTolerant(const char *src, GWEN_BUFFER *buf){
           (x>='A' && x<='Z') ||
           (x>='a' && x<='z') ||
           (x>='0' && x<='9') ||
-          x==' ' ||
-          x=='.' ||
-          x==',' ||
-          x=='.' ||
-          x=='*' ||
-          x=='?' ||
-          x=='/' ||
-          x==':' ||
-          x=='-' ||
-          x=='_'
-         )) {
+          strchr(" .,*?/:-_()[]{}=!&#'~", x))) {
       unsigned char c;
 
       GWEN_Buffer_AppendByte(buf, '%');

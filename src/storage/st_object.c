@@ -33,6 +33,7 @@ GWEN_STO_OBJECT *GWEN_StoObject_new(GWEN_STO_TYPE *ty,
   GWEN_STO_OBJECT *o;
 
   GWEN_NEW_OBJECT(GWEN_STO_OBJECT, o)
+  o->usage=1;
   GWEN_INHERIT_INIT(GWEN_STO_OBJECT, o)
   GWEN_LIST_INIT(GWEN_STO_OBJECT, o)
 
@@ -49,9 +50,15 @@ GWEN_STO_OBJECT *GWEN_StoObject_new(GWEN_STO_TYPE *ty,
 
 void GWEN_StoObject_free(GWEN_STO_OBJECT *o) {
   if (o) {
-    GWEN_LIST_FINI(GWEN_STO_OBJECT, o)
-    GWEN_INHERIT_FINI(GWEN_STO_OBJECT, o)
-    GWEN_FREE_OBJECT(o);
+    assert(o->usage);
+    if (o->usage==1) {
+      GWEN_LIST_FINI(GWEN_STO_OBJECT, o)
+      GWEN_INHERIT_FINI(GWEN_STO_OBJECT, o)
+      o->usage--;
+      GWEN_FREE_OBJECT(o);
+    }
+    else
+      o->usage--;
   }
 }
 
@@ -134,6 +141,7 @@ int GWEN_StoObject_GetOpenCount(const GWEN_STO_OBJECT *o) {
 
 int GWEN_StoObject_IncOpenCount(GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   o->openCount++;
   return 0;
 }
@@ -142,6 +150,7 @@ int GWEN_StoObject_IncOpenCount(GWEN_STO_OBJECT *o) {
 
 int GWEN_StoObject_DecOpenCount(GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   if (o->openCount<1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Open counter of object %x is <1 (%d)",
               o->id, o->openCount);
@@ -155,6 +164,7 @@ int GWEN_StoObject_DecOpenCount(GWEN_STO_OBJECT *o) {
 
 void GWEN_StoObject_SetOpenCount(GWEN_STO_OBJECT *o, int i) {
   assert(o);
+  assert(o->usage);
   o->openCount=i;
 }
 
@@ -162,6 +172,7 @@ void GWEN_StoObject_SetOpenCount(GWEN_STO_OBJECT *o, int i) {
 
 GWEN_TYPE_UINT32 GWEN_StoObject_GetId(const GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   return o->id;
 }
 
@@ -169,6 +180,7 @@ GWEN_TYPE_UINT32 GWEN_StoObject_GetId(const GWEN_STO_OBJECT *o) {
 
 GWEN_STO_TYPE *GWEN_StoObject_GetType(const GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   return o->typ;
 }
 
@@ -176,6 +188,7 @@ GWEN_STO_TYPE *GWEN_StoObject_GetType(const GWEN_STO_OBJECT *o) {
 
 int GWEN_StoObject_GetRefCount(const GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   return o->refCount;
 }
 
@@ -183,6 +196,7 @@ int GWEN_StoObject_GetRefCount(const GWEN_STO_OBJECT *o) {
 
 int GWEN_StoObject_IncRefCount(GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   o->refCount++;
   o->modified=1;
   if (o->owner) {
@@ -205,6 +219,7 @@ int GWEN_StoObject_IncRefCount(GWEN_STO_OBJECT *o) {
 
 int GWEN_StoObject_DecRefCount(GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   if (o->refCount<1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Reference counter of object %x is <1 (%d)",
               o->id, o->refCount);
@@ -231,6 +246,7 @@ int GWEN_StoObject_DecRefCount(GWEN_STO_OBJECT *o) {
 
 GWEN_STO_CLIENT *GWEN_StoObject_GetLockHolder(const GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   return o->lockHolder;
 }
 
@@ -238,6 +254,7 @@ GWEN_STO_CLIENT *GWEN_StoObject_GetLockHolder(const GWEN_STO_OBJECT *o) {
 
 void GWEN_StoObject_SetLockHolder(GWEN_STO_OBJECT *o, GWEN_STO_CLIENT *cl) {
   assert(o);
+  assert(o->usage);
   o->lockHolder=cl;
 }
 
@@ -245,6 +262,7 @@ void GWEN_StoObject_SetLockHolder(GWEN_STO_OBJECT *o, GWEN_STO_CLIENT *cl) {
 
 int GWEN_StoObject_GetLockCount(const GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   return o->lockCount;
 }
 
@@ -252,6 +270,7 @@ int GWEN_StoObject_GetLockCount(const GWEN_STO_OBJECT *o) {
 
 void GWEN_StoObject_IncLockCount(GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   o->lockCount++;
 }
 
@@ -259,6 +278,7 @@ void GWEN_StoObject_IncLockCount(GWEN_STO_OBJECT *o) {
 
 void GWEN_StoObject_DecLockCount(GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   if (o->lockCount)
     o->lockCount--;
   else {
@@ -270,6 +290,7 @@ void GWEN_StoObject_DecLockCount(GWEN_STO_OBJECT *o) {
 
 void GWEN_StoObject_SetLockCount(GWEN_STO_OBJECT *o, int i) {
   assert(o);
+  assert(o->usage);
   o->lockCount=i;
 }
 
@@ -277,6 +298,7 @@ void GWEN_StoObject_SetLockCount(GWEN_STO_OBJECT *o, int i) {
 
 GWEN_STO_CLIENT *GWEN_StoObject_GetOwner(const GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   return o->owner;
 }
 
@@ -284,6 +306,7 @@ GWEN_STO_CLIENT *GWEN_StoObject_GetOwner(const GWEN_STO_OBJECT *o) {
 
 void GWEN_StoObject_SetOwner(GWEN_STO_OBJECT *o, GWEN_STO_CLIENT *cl) {
   assert(o);
+  assert(o->usage);
   o->owner=cl;
 }
 
@@ -291,6 +314,7 @@ void GWEN_StoObject_SetOwner(GWEN_STO_OBJECT *o, GWEN_STO_CLIENT *cl) {
 
 GWEN_STO_OBJECT *GWEN_StoObject_GetOriginalObject(const GWEN_STO_OBJECT *o) {
   assert(o);
+  assert(o->usage);
   return o->origObject;
 }
 
@@ -299,6 +323,7 @@ GWEN_STO_OBJECT *GWEN_StoObject_GetOriginalObject(const GWEN_STO_OBJECT *o) {
 void GWEN_StoObject_SetOriginalObject(GWEN_STO_OBJECT *o,
                                       GWEN_STO_OBJECT *oo) {
   assert(o);
+  assert(o->usage);
   o->origObject=oo;
 }
 
@@ -310,6 +335,9 @@ void GWEN_StoObject_SetCharValue(GWEN_STO_OBJECT *o,
                                  int overwrite) {
   GWEN_TYPE_UINT32 flags;
   int rv;
+
+  assert(o);
+  assert(o->usage);
 
   flags=GWEN_DB_FLAGS_DEFAULT;
   if (overwrite)
@@ -370,6 +398,9 @@ int GWEN_StoObject_GetIntValue(const GWEN_STO_OBJECT *o,
                                int idx,
                                int defValue) {
   const char *s;
+
+  assert(o);
+  assert(o->usage);
 
   s=GWEN_DB_GetCharValue(o->dbDataNode, varName, idx, 0);
   if (s && *s) {
