@@ -7,6 +7,15 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/06/03: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- plugins/storage/localfiles: 
+  - fixed a problem with the latest checkin:
+    The storage code assumes that every object has a unique id. So to ensure
+    this while keeping GWEN_IDMAPs effective the upper 8 bytes of the id
+    are now reserved for the type.
+
+
 2006/06/01: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - src/storage: 

@@ -102,6 +102,17 @@ int LocalFiles_NextUniqueId(GWEN_STO_STORAGE *st,
   xst=GWEN_INHERIT_GETDATA(GWEN_STO_STORAGE, LOCALFILES_STORAGE, st);
   assert(xst);
 
+  if (ty) {
+    if (GWEN_StoType_GetId(ty) & 0xffffff00) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Type id is too high, too many types? (%x [%s/%s])",
+                GWEN_StoType_GetId(ty),
+                GWEN_StoType_GetTypeName(ty),
+                GWEN_StoType_GetName(ty));
+      return GWEN_ERROR_IO;
+    }
+  }
+
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   if (ty)
     GWEN_Buffer_AppendString(fbuf, LocalFilesType_GetBaseFolder(ty));
@@ -175,6 +186,26 @@ int LocalFiles_NextUniqueId(GWEN_STO_STORAGE *st,
     return GWEN_ERROR_IO;
   }
   GWEN_Buffer_free(fbuf);
+
+  if (ty) {
+    if (lastId & 0xff000000) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Too many ids for type %x [%s/%s]",
+                GWEN_StoType_GetId(ty),
+                GWEN_StoType_GetTypeName(ty),
+                GWEN_StoType_GetName(ty));
+      return GWEN_ERROR_IO;
+    }
+
+    lastId&=0x00ffffff;
+    lastId|=(GWEN_StoType_GetId(ty) & 0xff)<<24;
+  }
+  else {
+    if (lastId & 0xffffff00) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Id is too high, too many types?");
+      return GWEN_ERROR_IO;
+    }
+  }
 
   *pid=lastId;
 
