@@ -400,6 +400,24 @@ AC_SUBST(USE_CRYPT)
 
 ###-------------------------------------------------------------------------
 #
+# check for LibXML
+#
+AC_MSG_CHECKING([whether LibXML2 should be used])
+if test "x`which xml2-config`" != "x"; then
+  AC_DEFINE(USE_LIBXML2, 1, [whether LibXML2 should be used])
+  xml_includes="`xml2-config --cflags`"
+  xml_libraries="`xml2-config --libs`"
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+AC_SUBST(xml_includes)
+AC_SUBST(xml_libraries)
+
+
+
+###-------------------------------------------------------------------------
+#
 # check for I18N
 #
 HAVE_I18N="yes"

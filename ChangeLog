@@ -7,6 +7,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/06/16: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- decreased verbosity of nl_packets.c
+
+
 2006/06/03: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - plugins/storage/localfiles: 

@@ -50,6 +50,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifdef USE_LIBXML2
+# include <libxml/tree.h>
+# include <libxml/parser.h>
+#endif
+
 
 int testDB(int argc, char **argv) {
   GWEN_DB_NODE *cfg;
@@ -331,6 +336,34 @@ int testXML4(int argc, char **argv) {
   fprintf(stderr, "Time for loading: %d secs\n",
           (int)(difftime(stopTime, startTime)));
 
+  return 0;
+}
+
+
+
+int testXML5(int argc, char **argv) {
+#ifdef USE_LIBXML2
+  xmlDocPtr doc;
+  time_t startTime;
+  time_t stopTime;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  startTime=time(0);
+  doc=xmlParseFile(argv[2]);
+  stopTime=time(0);
+  if (doc==0) {
+    fprintf(stderr, "Error loading file \"%s\"", argv[2]);
+    return -1;
+  }
+
+  fprintf(stderr, "Time for loading: %d secs\n",
+	  (int)(difftime(stopTime, startTime)));
+#else
+  fprintf(stderr, "Compiled without support for LibXML\n");
+#endif
   return 0;
 }
 
@@ -4143,6 +4176,8 @@ int main(int argc, char **argv) {
     rv=testXML3(argc, argv);
   else if (strcasecmp(argv[1], "xml4")==0)
     rv=testXML4(argc, argv);
+  else if (strcasecmp(argv[1], "xml5")==0)
+    rv=testXML5(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
     rv=testSnprintf(argc, argv);
   else if (strcasecmp(argv[1], "process")==0)

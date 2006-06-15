@@ -407,7 +407,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__ReadWork(GWEN_NETLAYER *nl) {
       return GWEN_NetLayerResult_Error;
     }
     if (bsize==0) {
-      DBG_NOTICE(GWEN_LOGDOMAIN, "Message finished");
+      DBG_INFO(GWEN_LOGDOMAIN, "Message finished");
       pk->status=GWEN_NL_PacketStatus_Finished;
       GWEN_NL_Packet_List_Add(pk, nld->inPackets);
       nld->currentInPacket=GWEN_NL_Packet_new();

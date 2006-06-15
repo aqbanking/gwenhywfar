@@ -387,7 +387,7 @@ void GWEN_StoObject_SetIntValue(GWEN_STO_OBJECT *o,
                                 int overwrite) {
   char numbuf[32];
 
-  snprintf(numbuf, sizeof(numbuf), "%d", value);
+  snprintf(numbuf, sizeof(numbuf), "%x", value);
   GWEN_StoObject_SetCharValue(o, varName, numbuf, overwrite);
 }
 
@@ -406,7 +406,7 @@ int GWEN_StoObject_GetIntValue(const GWEN_STO_OBJECT *o,
   if (s && *s) {
     int i;
 
-    if (1!=sscanf(s, "%d", &i))
+    if (1!=sscanf(s, "%x", &i))
       return defValue;
     return i;
   }
