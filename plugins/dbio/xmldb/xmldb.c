@@ -474,35 +474,52 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
 
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
 						     const char *fname){
-  GWEN_BUFFEREDIO *bio;
   int fd;
-  int rv;
-  GWEN_DB_NODE *dbTmp;
-  GWEN_DB_NODE *dbCfg;
+  GWEN_BUFFEREDIO *bio;
+
+  assert(dbio);
+  assert(fname);
 
   fd=open(fname, O_RDONLY);
   if (fd==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
-              fname,
-	      strerror(errno));
+    /* error */
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "open(%s): %s", fname, strerror(errno));
     return GWEN_DBIO_CheckFileResultNotOk;
   }
+
   bio=GWEN_BufferedIO_File_new(fd);
-  assert(bio);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
 
+  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+    char lbuffer[256];
+    GWEN_ERRORCODE err;
 
-  // TODO: Read a few lines and check for XML
-
+    err=GWEN_BufferedIO_ReadLine(bio, lbuffer, sizeof(lbuffer));
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "File \"%s\" is not supported by this plugin",
+               fname);
+      GWEN_BufferedIO_Close(bio);
+      GWEN_BufferedIO_free(bio);
+      return GWEN_DBIO_CheckFileResultNotOk;
+    }
+    if (-1!=GWEN_Text_ComparePattern(lbuffer, "*<?xml>*", 0)) {
+      /* match */
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "File \"%s\" is supported by this plugin",
+               fname);
+      GWEN_BufferedIO_Close(bio);
+      GWEN_BufferedIO_free(bio);
+      /* don't be too sure about this, we *may* support the file,
+       * so we dont say we don't support this file */
+      return GWEN_DBIO_CheckFileResultUnknown;
+    }
+  } /* while */
 
   GWEN_BufferedIO_Close(bio);
   GWEN_BufferedIO_free(bio);
-  GWEN_DB_Group_free(dbCfg);
-  GWEN_DB_Group_free(dbTmp);
-  if (rv) {
-    return GWEN_DBIO_CheckFileResultNotOk;
-  }
-  return GWEN_DBIO_CheckFileResultOk;
+  return GWEN_DBIO_CheckFileResultNotOk;
 }
 
 
