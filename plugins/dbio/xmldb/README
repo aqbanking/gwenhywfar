@@ -1,0 +1,15 @@
+
+This plugin reads/writes GWEN_DBs as XML files.
+It knows the following parameters:
+
+char rootElement
+----------------
+
+When exporting: This is the name of the root XML element when saving a 
+GWEN_DB. If omitted then the name of the GWEN_DB group is used.
+
+When importing: This is the name of the expected root element of the XML
+file. When omitted then the root element may have any name, otherwise an
+error is returned when then name of the root node does not match the value
+given here.
+

@@ -4137,6 +4137,88 @@ int testIdList(int argc, char **argv) {
 
 
 
+int testXmlDbExport(int argc, char **argv) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbT;
+  GWEN_DB_NODE *dbParams;
+  const char *x="BIN_0123456789ABCDEF";
+
+  db=GWEN_DB_Group_new("RootGroup");
+  dbParams=GWEN_DB_Group_new("params");
+
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "rootElement", "RootElement");
+
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT,
+                       "TextVar0_1", "CharValue0_1");
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
+                      "IntVar0_2", 12345);
+  GWEN_DB_SetBinValue(db, GWEN_DB_FLAGS_DEFAULT,
+                      "BinVar0_3", x, strlen(x));
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "SubGroup1");
+  assert(dbT);
+
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_DEFAULT,
+                       "TextVar1_1", "CharValue1_1");
+  GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_DEFAULT,
+                      "IntVar1_2", 12345);
+  GWEN_DB_SetBinValue(dbT, GWEN_DB_FLAGS_DEFAULT,
+                      "BinVar1_3", x, strlen(x));
+
+  dbT=GWEN_DB_GetGroup(dbT, GWEN_DB_FLAGS_DEFAULT, "SubGroup2");
+  assert(dbT);
+
+  GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_DEFAULT,
+                       "TextVar2_1", "CharValue2_1");
+  GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_DEFAULT,
+                      "IntVar2_2", 12345);
+  GWEN_DB_SetBinValue(dbT, GWEN_DB_FLAGS_DEFAULT,
+                      "BinVar2_3", x, strlen(x));
+
+  if (GWEN_DB_WriteFileAs(db,
+                          "test.xmldb.out",
+                          "xmldb",
+                          dbParams,
+                          GWEN_DB_FLAGS_DEFAULT)) {
+    DBG_ERROR(0, "Could not write outfile");
+  }
+
+  return 0;
+}
+
+
+
+int testXmlDbImport(int argc, char **argv) {
+  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbParams;
+
+  db=GWEN_DB_Group_new("TestGroup");
+  dbParams=GWEN_DB_Group_new("params");
+  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
+                       "rootElement", "RootElement");
+
+  if (GWEN_DB_ReadFileAs(db,
+                         "test.xmldb.out",
+                         "xmldb",
+                         dbParams,
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_PATH_FLAGS_CREATE_GROUP)) {
+    DBG_ERROR(0, "Could not read test file");
+    return 2;
+  }
+
+  if (GWEN_DB_WriteFile(db,
+                        "test.out",
+                        GWEN_DB_FLAGS_DEFAULT)) {
+    DBG_ERROR(0, "Could not write outfile");
+  }
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4206,6 +4288,10 @@ int main(int argc, char **argv) {
     rv=testRfc822Import(argc, argv);
   else if (strcasecmp(argv[1], "822x")==0)
     rv=testRfc822Export(argc, argv);
+  else if (strcasecmp(argv[1], "xmldb1")==0)
+    rv=testXmlDbExport(argc, argv);
+  else if (strcasecmp(argv[1], "xmldb2")==0)
+    rv=testXmlDbImport(argc, argv);
   else if (strcasecmp(argv[1], "fslock")==0)
     rv=testFsLock(argc, argv);
   else if (strcasecmp(argv[1], "fslock2")==0)

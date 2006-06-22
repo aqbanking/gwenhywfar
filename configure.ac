@@ -729,6 +729,9 @@ AC_CONFIG_FILES([Doxyfile
                  plugins/dbio/rfc822/Makefile
                  plugins/dbio/rfc822/rfc822.xml
                  plugins/dbio/rfc822/ressource.rc
+                 plugins/dbio/xmldb/Makefile
+                 plugins/dbio/xmldb/xmldb.xml
+                 plugins/dbio/xmldb/ressource.rc
                  plugins/crypttoken/Makefile
                  plugins/crypttoken/ohbci/Makefile
                  plugins/crypttoken/ohbci/ohbci.xml
