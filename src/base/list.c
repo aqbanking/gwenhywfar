@@ -111,6 +111,7 @@ void GWEN__ListPtr_Clear(GWEN__LISTPTR *lp){
     le=nle;
   } /* while */
   lp->first=0;
+  lp->last=0;
   lp->size=0;
 }
 
