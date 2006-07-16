@@ -162,6 +162,8 @@ GWEN_REFPTR *GWEN_List_GetBackRefPtr(const GWEN_LIST *l);
 /**
  * Removes the element currently pointed to by the given iterator
  * from the list. (The element is not freed.)
+ * The given iterator is move toward the next element in any case (if there
+ * is no next element then the iterator will point to 0).
  */
 GWENHYWFAR_API
 void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it);

@@ -485,8 +485,8 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
 
   assert(it);
   if (it->current) {
+    current=it->current;
     if (it->current->linkCount==1) {
-      current=it->current;
       /* unlink from list */
       if (lp->first==current)
         lp->first=current->next;
@@ -509,8 +509,20 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
       GWEN_ListEntry_free(current);
       lp->size--;
     }
-    else
+    else {
+      /* move iterator forwards even if the current entry has not
+       * been deleted. Thus making the return condition clear to the
+       * caller.
+       */
+      if (current->next) {
+        it->current=current->next;
+        current->next->usage++;
+      }
+      else
+        it->current=0;
+      current->usage--;
       it->current->linkCount--;
+    }
   }
 }
 

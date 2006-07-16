@@ -45,6 +45,7 @@
 #include <gwenhywfar/net2.h>
 #include <gwenhywfar/idmap.h>
 #include <gwenhywfar/idlist.h>
+#include <gwenhywfar/gwensignal.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -4219,6 +4220,140 @@ int testXmlDbImport(int argc, char **argv) {
 
 
 
+int testSignalsFunc(GWEN_SLOT *slot,
+                    void *userData,
+                    void *pArg1,
+                    void *pArg2,
+                    int iArg3,
+                    int iArg4) {
+  const char *text1;
+  const char *text2;
+
+  text1=(const char*)pArg1;
+  text2=(const char*)pArg2;
+  DBG_ERROR(0, "Slot %p: \"%s\", \"%s\", %d, %d",
+            slot, text1, text2, iArg3, iArg4);
+  return 0;
+}
+
+
+
+int testSignals1(int argc, char **argv) {
+  GWEN_SIGNALOBJECT *so1;
+  GWEN_SIGNALOBJECT *so2;
+  GWEN_SIGNAL *sigTextChanged;
+  GWEN_SLOT *slotTextChanged1;
+  GWEN_SLOT *slotTextChanged2;
+
+  so1=GWEN_SignalObject_new(0, 0);
+  so2=GWEN_SignalObject_new(0, 0);
+  sigTextChanged=GWEN_Signal_new(so1, 0, "sigTextChanged",
+                                 "const char", "const char");
+  slotTextChanged1=GWEN_Slot_new(so1, 0,
+                                 "slotTextChanged",
+                                 "const char", "const char",
+                                 testSignalsFunc,
+                                 0);
+
+  slotTextChanged2=GWEN_Slot_new(so2, 0,
+                                 "slotTextChanged",
+                                 "const char", "const char",
+                                 testSignalsFunc,
+                                 0);
+
+  GWEN_Signal_Connect(sigTextChanged, slotTextChanged1);
+  GWEN_Signal_Connect(sigTextChanged, slotTextChanged2);
+  GWEN_Signal_Emit(sigTextChanged,
+                   "New Text-A", "Text-B", 1, 2);
+
+  GWEN_SignalObject_free(so2);
+  GWEN_SignalObject_free(so1);
+
+  return 0;
+}
+
+
+
+int testSignals2(int argc, char **argv) {
+  GWEN_SIGNALOBJECT *so1;
+  GWEN_SIGNALOBJECT *so2;
+  GWEN_SIGNAL *sigTextChanged;
+  GWEN_SLOT *slotTextChanged1;
+  GWEN_SLOT *slotTextChanged2;
+
+  so1=GWEN_SignalObject_new(0, 0);
+  so2=GWEN_SignalObject_new(0, 0);
+  sigTextChanged=GWEN_Signal_new(so1, 0, "sigTextChanged",
+                                 "const char", "const char");
+  slotTextChanged1=GWEN_Slot_new(so1, 0,
+                                 "slotTextChanged",
+                                 "const char", "const char",
+                                 testSignalsFunc,
+                                 0);
+
+  slotTextChanged2=GWEN_Slot_new(so2, 0,
+                                 "slotTextChanged",
+                                 "const char", "const char",
+                                 testSignalsFunc,
+                                 0);
+
+  GWEN_Signal_Connect(sigTextChanged, slotTextChanged1);
+  GWEN_Signal_Connect(sigTextChanged, slotTextChanged2);
+  GWEN_Signal_Emit(sigTextChanged,
+                   "New Text-A", "Text-B", 1, 2);
+
+  GWEN_Signal_Disconnect(sigTextChanged, slotTextChanged2);
+  GWEN_Signal_Emit(sigTextChanged,
+                   "New Text2-A", "Text2-B", 1, 2);
+
+  GWEN_SignalObject_free(so2);
+  GWEN_SignalObject_free(so1);
+
+  return 0;
+}
+
+
+
+int testSignals3(int argc, char **argv) {
+  GWEN_SIGNALOBJECT *so1;
+  GWEN_SIGNALOBJECT *so2;
+  GWEN_SIGNAL *sigTextChanged;
+  GWEN_SLOT *slotTextChanged1;
+  GWEN_SLOT *slotTextChanged2;
+
+  so1=GWEN_SignalObject_new(0, 0);
+  so2=GWEN_SignalObject_new(0, 0);
+  sigTextChanged=GWEN_Signal_new(so1, 0, "sigTextChanged",
+                                 "const char", "const char");
+  slotTextChanged1=GWEN_Slot_new(so1, 0,
+                                 "slotTextChanged",
+                                 "const char", "const char",
+                                 testSignalsFunc,
+                                 0);
+
+  slotTextChanged2=GWEN_Slot_new(so2, 0,
+                                 "slotTextChanged",
+                                 "const char", 0,
+                                 testSignalsFunc,
+                                 0);
+
+  if (GWEN_Signal_Connect(sigTextChanged, slotTextChanged1)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not connect signal and slot");
+  }
+  if (GWEN_Signal_Connect(sigTextChanged, slotTextChanged2)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not connect signal and slot");
+  }
+  GWEN_Signal_Emit(sigTextChanged,
+                   "New Text-A", "Text-B", 1, 2);
+
+  GWEN_SignalObject_free(so2);
+  GWEN_SignalObject_free(so1);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4362,6 +4497,12 @@ int main(int argc, char **argv) {
     rv=testMap4(argc, argv);
   else if (strcasecmp(argv[1], "idlist")==0)
     rv=testIdList(argc, argv);
+  else if (strcasecmp(argv[1], "signals1")==0)
+    rv=testSignals1(argc, argv);
+  else if (strcasecmp(argv[1], "signals2")==0)
+    rv=testSignals2(argc, argv);
+  else if (strcasecmp(argv[1], "signals3")==0)
+    rv=testSignals3(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
