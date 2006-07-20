@@ -3686,7 +3686,7 @@ int testBuffer2(int argc, char **argv) {
 
 int testFloatDouble(int argc, char **argv) {
   fprintf(stderr, "Sizeof double: %d float: %d\n",
-	  sizeof(double), sizeof(float));
+          (int)sizeof(double), (int)sizeof(float));
   return 0;
 }
 
