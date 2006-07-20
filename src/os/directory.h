@@ -84,7 +84,7 @@ GWENHYWFAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
 /**
  * Opens a directory. This allows calling "Directory_Read" to succeed.
  * @author Martin Preuss<martin@libchipcard.de>
- * @return 0 if ok, !=0 on error
+ * @return 0 if ok, !=0 on error (e.g. if no such directory exists; see opendir(3) and errno for the detailed error)
  * @param d pointer to a directory data structure. This should be created
  * by calling @ref GWEN_Directory_new().
  * @param n path and name of the directory to open

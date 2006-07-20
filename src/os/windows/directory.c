@@ -94,6 +94,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
   assert(d);
   assert(buffer);
   assert(len);
+  assert(d->handle);
 
   if (d->lastName[0]==0) {
     DBG_INFO(GWEN_LOGDOMAIN, "No more entries");

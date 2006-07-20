@@ -93,6 +93,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
   assert(d);
   assert(buffer);
   assert(len);
+  assert(d->handle);
 
   de=readdir(d->handle);
   if (de) {
