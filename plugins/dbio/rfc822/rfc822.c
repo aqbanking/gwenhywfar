@@ -183,6 +183,8 @@ int GWEN_DBIO_Rfc822__Import(GWEN_DBIO *dbio,
       break;
 
     /* get name */
+    if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Verbous)
+      GWEN_Buffer_Dump(lineBuf, stderr, 2);
     name=GWEN_Buffer_GetStart(lineBuf);
     p=strchr(name, ':');
     if (!p) {
