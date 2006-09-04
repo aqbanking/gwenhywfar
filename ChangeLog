@@ -7,6 +7,10 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/09/04: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- implemented the function GWEN_Logger_SetLogFunction()
+
 
 2006/07/16: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

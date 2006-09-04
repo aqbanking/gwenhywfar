@@ -629,6 +629,20 @@ void GWEN_Logger_SetFilename(const char *logDomain, const char *name){
 
 
 
+GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(const char *logDomain,
+						  GWEN_LOGGERFUNCTIONLOG fn){
+  GWEN_LOGGER *lg;
+  GWEN_LOGGERFUNCTIONLOG oldFn;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  assert(lg);
+  oldFn=lg->logFunction;
+  lg->logFunction=fn;
+  return oldFn;
+}
+
+
+
 GWEN_LOGGER_LEVEL GWEN_Logger_Name2Level(const char *name) {
   if (strcasecmp(name, "emergency")==0)
     return GWEN_LoggerLevel_Emergency;
