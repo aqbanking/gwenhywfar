@@ -50,8 +50,8 @@ extern "C" {
    *
    */
   /*@{*/
-  typedef void (*GWEN_INHERIT_FREEDATAFN)(void *baseData,
-                                          void *data);
+  typedef void GWENHYWFAR_CB (*GWEN_INHERIT_FREEDATAFN)(void *baseData,
+                                                        void *data);
 
   GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_INHERITDATA, GWEN_InheritData, GWENHYWFAR_API)
   /* No trailing semicolon because this is a macro call */

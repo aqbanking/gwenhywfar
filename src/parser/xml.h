@@ -597,7 +597,7 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
  * @param n XML node to store the read tags/elements in
  * @param filepath name (and optionally path) of the file to read
  * @param flags see @ref GWEN_XML_FLAGS_DEFAULT and others
- * @param searchPath a string list containing multiple multiple directories
+ * @param searchPath a string list containing multiple directories
  * to scan if the file could not be opened directly
  */
 GWENHYWFAR_API

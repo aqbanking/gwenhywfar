@@ -64,6 +64,12 @@
 #endif
 
 
+#if GWENHYWFAR_SYS_IS_WINDOWS
+# define GWENHYWFAR_CB __stdcall
+#else
+# define GWENHYWFAR_CB
+#endif
+
 #ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
 # define GWENHYWFAR_EXPORT __attribute__((visibility("default")))
 # define GWENHYWFAR_NOEXPORT __attribute__((visibility("hidden")))

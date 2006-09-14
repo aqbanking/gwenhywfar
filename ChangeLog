@@ -7,6 +7,18 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+
+2006/09/14: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- introduced attribute GWENHYWFAR_CB which expands to "__stdcall" on WIN32
+  systems. This prevents some spurious errors we get on Win32 systems
+  when inherited classes are used (those errors are very hard to debug so
+  we now prevent them).
+  On WIN32 systems this changes the API of inherting classes!
+  However, our main development system is Linux, and on such systems nothing
+  changes. Therefore we will also increment SO_AGE for the next release.
+
+
 2006/09/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - implemented the function GWEN_Logger_SetLogFunction()
