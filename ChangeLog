@@ -11,6 +11,7 @@
 -------------------------------------------------
 - nl_packets: Don't start sending data unless the next lower layer is
   connected
+- decreased verbosity in src/os/directory_all.c
 
 
 2006/09/19: Martin Preuss<martin@libchipcard.de>
