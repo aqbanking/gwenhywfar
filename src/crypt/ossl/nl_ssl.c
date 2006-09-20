@@ -55,6 +55,7 @@
 #include <openssl/x509v3.h>
 
 #include <errno.h>
+#include <sys/stat.h>
 
 #ifdef OS_WIN32
 # define DIRSEP "\\"
@@ -1838,6 +1839,7 @@ int GWEN_NetLayerSsl_GenerateCertAndKeyFile(const char *fname,
   X509_NAME_ENTRY *ne=NULL;
   FILE *f;
   const char *p;
+  int um;
 
   X509V3_add_standard_extensions();
 
@@ -1948,6 +1950,8 @@ int GWEN_NetLayerSsl_GenerateCertAndKeyFile(const char *fname,
     return -1;
   }
 
+  um=umask(0077);
+
   /* save key */
   f=fopen(fname, "w+");
   if (!f) {
@@ -1976,6 +1980,8 @@ int GWEN_NetLayerSsl_GenerateCertAndKeyFile(const char *fname,
   X509_free(x);
   EVP_PKEY_free(pk);
   X509V3_EXT_cleanup();
+
+  umask(um);
 
   return 0;
 }

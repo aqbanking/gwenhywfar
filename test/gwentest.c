@@ -685,6 +685,54 @@ int testCopyKey(int argc, char **argv) {
 }
 
 
+
+int testMkDesKey(int argc, char **argv) {
+  GWEN_CRYPTKEY *key;
+  GWEN_ERRORCODE err;
+  GWEN_DB_NODE *db;
+
+  if (argc<3) {
+    fprintf(stderr, "Path of key file needed.\n");
+    return 1;
+  }
+
+  key=GWEN_CryptKey_Factory("DES");
+  if (!key) {
+    fprintf(stderr, "Error creating key.\n");
+    return 1;
+  }
+
+  GWEN_CryptKey_SetOwner(key, "martin");
+  GWEN_CryptKey_SetKeyName(key, "B");
+
+  fprintf(stderr, "Generating key.\n");
+  err=GWEN_CryptKey_Generate(key, 16);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+  fprintf(stderr, "Generating key done.\n");
+
+  db=GWEN_DB_Group_new("key");
+  err=GWEN_CryptKey_toDb(key,
+                         db, 0);
+  if (!GWEN_Error_IsOk(err)) {
+    DBG_ERROR_ERR(0, err);
+    return 2;
+  }
+
+  if (GWEN_DB_WriteFile(db, argv[2], GWEN_DB_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error writing file \"%s\"", argv[2]);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+
+
 int testSnprintf(int argc, char **argv) {
   unsigned int i;
   char buffer[256];
@@ -4383,6 +4431,8 @@ int main(int argc, char **argv) {
     rv=testKey(argc, argv);
   else if (strcasecmp(argv[1], "mkkey")==0)
     rv=testMkKey(argc, argv);
+  else if (strcasecmp(argv[1], "mkdeskey")==0)
+    rv=testMkDesKey(argc, argv);
   else if (strcasecmp(argv[1], "cpkey")==0)
     rv=testCopyKey(argc, argv);
   else if (strcasecmp(argv[1], "xml")==0)

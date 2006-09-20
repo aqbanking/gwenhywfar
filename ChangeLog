@@ -7,6 +7,37 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/09/20: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- nl_packets: Don't start sending data unless the next lower layer is
+  connected
+
+
+2006/09/19: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- decreased loglevel of some messages in gct-tool
+- function GWEN_NetLayerSsl_GenerateCertAndKeyFile() now always
+  sets permissions so that only the creating user will be able to
+  access the resulting file
+
+
+2006/09/15: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in GWEN_Logger: Now removes a logdomain upon close
+- removed the following functions, because they were never used and never
+  should be:
+  - GWEN_Logger_new()
+  - GWEN_Logger_free()
+  - GWEN_Logger_Attach()
+  - GWEN_Logger_SetDefaultLogger() (was deprecated for a long time)
+  - GWEN_Debug_Error_Log() (internal functions, not used)
+  - GWEN_Debug_Error_Err() (internal functions, not used)
+- removed the definition of the type GWEN_LOGGER: No part of the API uses
+  this struct (a logdomain is represented by a char*), so there is no need to
+  expose this type
+- fixed prototype for GWEN_Text_DumpString2Buffer(), GWEN_Text_DumpString(),
+  GWEN_Text_LogString() (use "unsigned int" instead of "unsigned")
+
 
 2006/09/14: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------

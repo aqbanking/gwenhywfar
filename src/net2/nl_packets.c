@@ -273,6 +273,9 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__WriteWork(GWEN_NETLAYER *nl) {
   if (st==GWEN_NetLayerStatus_Listening)
     return GWEN_NetLayerResult_Idle;
 
+  if (st==GWEN_NetLayerStatus_Connecting)
+    return GWEN_NetLayerResult_WouldBlock;
+
   pk=nld->currentOutPacket;
   if (!pk) {
     pk=GWEN_NL_Packet_List_First(nld->outPackets);
@@ -370,6 +373,9 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__ReadWork(GWEN_NETLAYER *nl) {
   st=GWEN_NetLayer_GetStatus(nl);
   if (st==GWEN_NetLayerStatus_Listening)
     return GWEN_NetLayerResult_Idle;
+
+  if (st==GWEN_NetLayerStatus_Connecting)
+    return GWEN_NetLayerResult_WouldBlock;
 
   pk=nld->currentInPacket;
   if (!pk) {

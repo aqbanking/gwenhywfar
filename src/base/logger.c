@@ -152,14 +152,15 @@ GWEN_LOGGER *GWEN_LoggerDomain_GetLogger(const char *name) {
     return ld->logger;
   }
   ld=GWEN_LoggerDomain_new(name);
-  ld->logger=GWEN_Logger_new();
+  ld->logger=GWEN_Logger_new(ld);
+
   GWEN_LoggerDomain_Add(ld);
   return ld->logger;
 }
 
 
 
-GWEN_LOGGER *GWEN_Logger_new(){
+GWEN_LOGGER *GWEN_Logger_new(GWEN_LOGGER_DOMAIN *domain){
   GWEN_LOGGER *lg;
 
   GWEN_NEW_OBJECT(GWEN_LOGGER, lg);
@@ -167,6 +168,7 @@ GWEN_LOGGER *GWEN_Logger_new(){
   lg->enabled=1;
   lg->logType=GWEN_LoggerType_Console;
   lg->logLevel=GWEN_LoggerLevel_Error;
+  lg->domain=domain;
   return lg;
 }
 
@@ -291,6 +293,9 @@ void GWEN_Logger_Close(const char *logDomain){
   closelog();
 #endif
   lg->open=0;
+  /* remove logdomain after it has been closed */
+  GWEN_LoggerDomain_Del(lg->domain);
+  GWEN_LoggerDomain_free(lg->domain);
 }
 
 

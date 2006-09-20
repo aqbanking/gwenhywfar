@@ -266,16 +266,17 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
  * classical hexdump.
  */
 GWENHYWFAR_API
-void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert);
+void GWEN_Text_DumpString(const char *s, unsigned intl, FILE *f,
+                          unsigned int insert);
 
 
 GWENHYWFAR_API
-void GWEN_Text_DumpString2Buffer(const char *s, unsigned l,
+void GWEN_Text_DumpString2Buffer(const char *s, unsigned int l,
                                  GWEN_BUFFER *mbuf,
-                                 unsigned insert);
+                                 unsigned int insert);
 
 GWENHYWFAR_API
-void GWEN_Text_LogString(const char *s, unsigned l,
+void GWEN_Text_LogString(const char *s, unsigned int l,
                          const char *logDomain,
                          GWEN_LOGGER_LEVEL lv);
 

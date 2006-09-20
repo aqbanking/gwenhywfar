@@ -36,9 +36,7 @@ extern "C" {
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
-typedef struct GWEN_LOGGER GWEN_LOGGER;
-
-typedef void (*GWEN_LOGGERFUNCTIONLOG)(const char *s);
+typedef void GWENHYWFAR_CB (*GWEN_LOGGERFUNCTIONLOG)(const char *s);
 
 typedef enum {
   GWEN_LoggerType_Console,
@@ -76,33 +74,6 @@ typedef enum {
 } GWEN_LOGGER_LEVEL;
 
 
-
-GWENHYWFAR_API
-GWEN_LOGGER *GWEN_Logger_new();
-
-GWENHYWFAR_API
-void GWEN_Logger_free(GWEN_LOGGER *lg);
-
-GWENHYWFAR_API
-void GWEN_Logger_Attach(GWEN_LOGGER *lg);
-
-
-/**
- * Adds a logger to the given one. So if the old logger is to log something
- * then the newly added logger will log the same message as well.
- * The new logger must already be open (via @ref GWEN_Logger_Open).
- */
-GWENHYWFAR_API
-void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger);
-
-
-/**
- * DEPRECATED. Only sets the new default logger if it not already is
- * set or if the new default logger is NULL.  You must call
- * GWEN_Logger_Open on that logger prior to calling this function.
- */
-GWENHYWFAR_API
-void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) DEPRECATED ;
 
 
 /**

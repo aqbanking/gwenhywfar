@@ -307,19 +307,6 @@ GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,
 
 
 
-void GWEN_Debug_Error_Log(GWEN_LOGGER *lg, const char *fmt, ...) {
-  va_list arguments;
-
-  va_start(arguments, fmt);
-
-}
-
-
-
-void GWEN_Debug_Error_Err(GWEN_LOGGER *lg, GWEN_ERRORCODE err) {
-}
-
-
 #ifdef NO_VARIADIC_MACROS
 void DBG_ERROR(const char *dbg_logger, const char *format, ...) {
   va_list args;

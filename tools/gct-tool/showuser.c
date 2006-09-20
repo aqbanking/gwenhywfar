@@ -124,7 +124,7 @@ int showUser(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     DBG_ERROR(0, "Plugin not found");
     return 3;
   }
-  DBG_ERROR(0, "Plugin found");
+  DBG_INFO(0, "Plugin found");
 
   ct=GWEN_CryptToken_Plugin_CreateToken(pl, 0, tname);
   if (ct==0) {

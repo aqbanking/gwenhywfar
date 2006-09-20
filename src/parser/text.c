@@ -1192,7 +1192,8 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
 
 
 
-void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert) {
+void GWEN_Text_DumpString(const char *s, unsigned int l,
+                          FILE *f, unsigned int insert) {
   unsigned int i;
   unsigned int j;
   unsigned int pos;
@@ -1231,9 +1232,9 @@ void GWEN_Text_DumpString(const char *s, unsigned l, FILE *f, unsigned insert) {
 
 
 
-void GWEN_Text_DumpString2Buffer(const char *s, unsigned l,
+void GWEN_Text_DumpString2Buffer(const char *s, unsigned int l,
                                  GWEN_BUFFER *mbuf,
-                                 unsigned insert) {
+                                 unsigned int insert) {
   unsigned int i;
   unsigned int j;
   unsigned int pos;
@@ -1507,7 +1508,7 @@ int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf) {
 
 
 
-void GWEN_Text_LogString(const char *s, unsigned l,
+void GWEN_Text_LogString(const char *s, unsigned int l,
                          const char *logDomain,
                          GWEN_LOGGER_LEVEL lv){
   GWEN_BUFFER *mbuf;
