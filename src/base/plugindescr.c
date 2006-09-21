@@ -499,7 +499,7 @@ int GWEN_LoadPluginDescrsByType(const char *path,
                     const char *l;
 
                     l=GWEN_StringListEntry_Data(se);
-                    DBG_NOTICE(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
+                    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
                     assert(l);
                     n=GWEN_XMLNode_FindFirstTag(node, "plugin", "lang", l);
                     if (n)

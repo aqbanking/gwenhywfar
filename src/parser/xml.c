@@ -2218,7 +2218,7 @@ const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
       const char *l;
 
       l=GWEN_StringListEntry_Data(se);
-      DBG_NOTICE(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
       assert(l);
       nn=GWEN_XMLNode_FindFirstTag(n, name, "lang", l);
       while(nn) {
