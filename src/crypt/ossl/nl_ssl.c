@@ -101,7 +101,7 @@ GWEN_NETLAYER *GWEN_NetLayerSsl_new(GWEN_NETLAYER *baseLayer,
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_NetLayerSsl_GetPublicCaFile(tbuf);
   if (rv<0) {
-    DBG_ERROR(0, "Could not get the path and name of the public cert file");
+    DBG_INFO(0, "Could not get the path and name of the public cert file");
   }
   else {
     nld->CAfile=strdup(GWEN_Buffer_GetStart(tbuf));
@@ -222,9 +222,9 @@ int GWEN_NetLayerSsl_Setup(GWEN_NETLAYER *nl) {
       int sslerr;
 
       sslerr=SSL_get_error(nld->ssl, rv);
-      DBG_ERROR(GWEN_LOGDOMAIN, "SSL error reading certfile: %s (%d)",
-                GWEN_NetLayerSsl_ErrorString(sslerr),
-                sslerr);
+      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading certfile: %s (%d)",
+               GWEN_NetLayerSsl_ErrorString(sslerr),
+               sslerr);
       return -1;
     }
 
@@ -236,14 +236,14 @@ int GWEN_NetLayerSsl_Setup(GWEN_NETLAYER *nl) {
       int sslerr;
 
       sslerr=SSL_get_error(nld->ssl, rv);
-      DBG_ERROR(GWEN_LOGDOMAIN, "SSL error reading keyfile: %s (%d)",
-                GWEN_NetLayerSsl_ErrorString(sslerr),
-                sslerr);
+      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading keyfile: %s (%d)",
+               GWEN_NetLayerSsl_ErrorString(sslerr),
+               sslerr);
       return -1;
     }
     if (!SSL_CTX_check_private_key(nld->ssl_ctx)) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Private key does not match the certificate public key");
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Private key does not match the certificate public key");
       return -1;
     }
   }
@@ -255,11 +255,11 @@ int GWEN_NetLayerSsl_Setup(GWEN_NETLAYER *nl) {
 				     nld->CAfile,
 				     nld->CAdir);
     if (rv==0) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-		"SSL: Could not load certificate location "
-		"(was: \"%s\" and \"%s\")",
-		nld->CAfile,
-		nld->CAdir);
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "SSL: Could not load certificate location "
+               "(was: \"%s\" and \"%s\")",
+               nld->CAfile,
+               nld->CAdir);
       return -1;
     }
   }
@@ -341,8 +341,8 @@ int GWEN_NetLayerSsl_Connect(GWEN_NETLAYER *nl) {
   st=GWEN_NetLayer_GetStatus(nl);
   if (st!=GWEN_NetLayerStatus_Unconnected &&
       st!=GWEN_NetLayerStatus_Disconnected){
-    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not unconnected (status \"%s\")",
-              GWEN_NetLayerStatus_toString(st));
+    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not unconnected (status \"%s\")",
+             GWEN_NetLayerStatus_toString(st));
     return GWEN_ERROR_INVALID;
   }
 
@@ -400,9 +400,9 @@ int GWEN_NetLayerSsl_Disconnect(GWEN_NETLAYER *nl) {
   if (st==GWEN_NetLayerStatus_Unconnected ||
       st==GWEN_NetLayerStatus_Disconnected ||
       st==GWEN_NetLayerStatus_Disabled) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Socket is inactive: %s (%d)",
-              GWEN_NetLayerStatus_toString(st), st);
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Socket is inactive: %s (%d)",
+             GWEN_NetLayerStatus_toString(st), st);
     return GWEN_ERROR_INVALID;
   }
 
@@ -445,9 +445,9 @@ int GWEN_NetLayerSsl_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
   /* check status */
   st=GWEN_NetLayer_GetStatus(nl);
   if (st!=GWEN_NetLayerStatus_Connected) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Socket is not connected: %s (%d)",
-              GWEN_NetLayerStatus_toString(st), st);
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Socket is not connected: %s (%d)",
+             GWEN_NetLayerStatus_toString(st), st);
     return GWEN_ERROR_INVALID;
   }
 
@@ -476,9 +476,9 @@ int GWEN_NetLayerSsl_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
       return 1; /* would block */
     else {
       if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
-                  sslerr,
-                  GWEN_NetLayerSsl_ErrorString(sslerr));
+        DBG_INFO(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
+                 sslerr,
+                 GWEN_NetLayerSsl_ErrorString(sslerr));
         SSL_free(nld->ssl);
         nld->ssl=0;
         SSL_CTX_free(nld->ssl_ctx);
@@ -505,11 +505,11 @@ int GWEN_NetLayerSsl_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
           return 0; /* changed */
         }
         else {
-          DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
-          ERR_print_errors_fp(stderr); /* DEBUG */
-          DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
-                    GWEN_NetLayerSsl_ErrorString(sslerr),
-                    sslerr);
+          DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+          /*ERR_print_errors_fp(stderr);*/ /* DEBUG */
+          DBG_INFO(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
+                   GWEN_NetLayerSsl_ErrorString(sslerr),
+                   sslerr);
           return GWEN_ERROR_READ;
         }
       } /* if !(error is syscall and errno==0) */
@@ -535,14 +535,14 @@ int GWEN_NetLayerSsl_Read(GWEN_NETLAYER *nl, char *buffer, int *bsize){
     DBG_DEBUG(GWEN_LOGDOMAIN, "Saving...");
     f=fopen("/tmp/read.bin", "a+");
     if (!f) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
+      DBG_INFO(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
     }
     else {
       if (fwrite(buffer, rv, 1, f)!=1) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
+	DBG_INFO(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
       }
       if (fclose(f)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
+	DBG_INFO(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
       }
     }
   }
@@ -1297,12 +1297,12 @@ int GWEN_NetLayerSsl_HandleInCert(GWEN_NETLAYER *nl, X509 *cert) {
   switch(res) {
 
   case GWEN_NetLayerSsl_AskAddCertResult_Error:
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error asking user");
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Error asking user");
     isErr=1;
     break;
 
   case GWEN_NetLayerSsl_AskAddCertResult_No:
-    DBG_ERROR(GWEN_LOGDOMAIN, "User doesn't trust the certificate");
+    DBG_INFO(GWEN_LOGDOMAIN, "User doesn't trust the certificate");
     isErr=1;
     break;
 
@@ -1324,7 +1324,7 @@ int GWEN_NetLayerSsl_HandleInCert(GWEN_NETLAYER *nl, X509 *cert) {
       isErr=1;
     }
     else {
-      DBG_NOTICE(GWEN_LOGDOMAIN, "Adding certificate to incoming certs");
+      DBG_INFO(GWEN_LOGDOMAIN, "Adding certificate to incoming certs");
       if (GWEN_NetLayerSsl_SaveCert(nl, cert, nld->newCAdir, 1)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Error saving certificate");
         isErr=1;
@@ -1437,9 +1437,9 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSsl_Work(GWEN_NETLAYER *nl) {
         GWEN_NL_SSL_MERGE_RESULTS(bres, res);
       }
       else if (bst!=GWEN_NetLayerStatus_Connecting) {
-        DBG_ERROR(GWEN_LOGDOMAIN,
-                  "Bad status of base layer (%s)",
-                  GWEN_NetLayerStatus_toString(bst));
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "Bad status of base layer (%s)",
+                 GWEN_NetLayerStatus_toString(bst));
         SSL_free(nld->ssl);
         nld->ssl=0;
         SSL_CTX_free(nld->ssl_ctx);
@@ -1553,14 +1553,15 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSsl_Work(GWEN_NETLAYER *nl) {
               GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnected);
               return GWEN_NetLayerResult_Changed; /* changed */
             }
-            else {
-              DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
-              ERR_print_errors_fp(stderr); /* DEBUG */
-              DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
-                        GWEN_NetLayerSsl_ErrorString(sslerr),
-                        sslerr);
-              return GWEN_NetLayerResult_Error;
-            }
+	    else {
+	      DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+              if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevelInfo)
+		ERR_print_errors_fp(stderr); /* DEBUG */
+	      DBG_INFO(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
+		       GWEN_NetLayerSsl_ErrorString(sslerr),
+		       sslerr);
+	      return GWEN_NetLayerResult_Error;
+	    }
           } /* if !(error is syscall and errno==0) */
         } /* if error is not wantRead or wantWrite */
       } /* if error */

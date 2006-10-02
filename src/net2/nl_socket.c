@@ -102,7 +102,7 @@ int GWEN_NetLayerSocket_Connect(GWEN_NETLAYER *nl){
 
   if (GWEN_NetLayer_GetStatus(nl)!=GWEN_NetLayerStatus_Unconnected &&
       GWEN_NetLayer_GetStatus(nl)!=GWEN_NetLayerStatus_Disconnected){
-    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not unconnected (status \"%s\")",
+    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not unconnected (status \"%s\")",
               GWEN_NetLayerStatus_toString(GWEN_NetLayer_GetStatus(nl)));
     return GWEN_ERROR_INVALID;
   }
@@ -120,14 +120,14 @@ int GWEN_NetLayerSocket_Connect(GWEN_NETLAYER *nl){
   /* arm socket code */
   err=GWEN_Socket_Open(nld->socket);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_Error_GetSimpleCode(err);
   }
 
   /* set nonblocking */
   err=GWEN_Socket_SetBlocking(nld->socket, 0);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_Error_GetSimpleCode(err);
   }
 
@@ -139,7 +139,7 @@ int GWEN_NetLayerSocket_Connect(GWEN_NETLAYER *nl){
         ||
         GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_IN_PROGRESS) {
       /* real error, so return that error */
-      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
       return GWEN_Error_GetSimpleCode(err);
     }
 
@@ -173,7 +173,7 @@ int GWEN_NetLayerSocket_Listen(GWEN_NETLAYER *nl){
   assert(nld);
 
   if (GWEN_NetLayer_GetStatus(nl)!=GWEN_NetLayerStatus_Unconnected) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not unconnected (%d)",
+    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not unconnected (%d)",
               GWEN_NetLayer_GetStatus(nl));
     return GWEN_ERROR_INVALID;
   }
@@ -194,35 +194,35 @@ int GWEN_NetLayerSocket_Listen(GWEN_NETLAYER *nl){
   /* arm socket code */
   err=GWEN_Socket_Open(nld->socket);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_Error_GetSimpleCode(err);
   }
 
   /* set nonblocking */
   err=GWEN_Socket_SetBlocking(nld->socket, 0);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_Error_GetSimpleCode(err);
   }
 
   /* reuse address */
   err=GWEN_Socket_SetReuseAddress(nld->socket, 1);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_Error_GetSimpleCode(err);
   }
 
   /* bind socket to local address */
   err=GWEN_Socket_Bind(nld->socket, GWEN_NetLayer_GetLocalAddr(nl));
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_Error_GetSimpleCode(err);
   }
 
   /* start listening */
   err=GWEN_Socket_Listen(nld->socket, 10);
   if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     return GWEN_Error_GetSimpleCode(err);
   }
 
@@ -253,7 +253,7 @@ int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl){
   if (st==GWEN_NetLayerStatus_Unconnected ||
       st==GWEN_NetLayerStatus_Disconnected ||
       st==GWEN_NetLayerStatus_Disabled) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
+    DBG_INFO(GWEN_LOGDOMAIN,
               "Socket is inactive: %s (%d)",
               GWEN_NetLayerStatus_toString(st), st);
     return GWEN_ERROR_INVALID;
@@ -295,7 +295,7 @@ int GWEN_NetLayerSocket_Read(GWEN_NETLAYER *nl,
 
   /* check status */
   if (GWEN_NetLayer_GetStatus(nl)!=GWEN_NetLayerStatus_Connected) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected (%d)",
+    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not connected (%d)",
               GWEN_NetLayer_GetStatus(nl));
     return GWEN_ERROR_INVALID;
   }
@@ -350,7 +350,7 @@ int GWEN_NetLayerSocket_Write(GWEN_NETLAYER *nl,
 
   /* check status */
   if (GWEN_NetLayer_GetStatus(nl)!=GWEN_NetLayerStatus_Connected) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected (%d)",
+    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not connected (%d)",
               GWEN_NetLayer_GetStatus(nl));
     return GWEN_ERROR_INVALID;
   }
@@ -483,7 +483,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSocket_Work(GWEN_NETLAYER *nl) {
           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE) ||
           (GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_TIMEOUT &&
            GWEN_Error_GetCode(err)!=GWEN_SOCKET_ERROR_INTERRUPTED)) {
-        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+        DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
         GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnected);
         return GWEN_NetLayerResult_Error;
       }
@@ -545,7 +545,7 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSocket_Work(GWEN_NETLAYER *nl) {
       /* set socket nonblocking */
       err=GWEN_Socket_SetBlocking(newS, 0);
       if (!GWEN_Error_IsOk(err)) {
-        DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+        DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
         GWEN_InetAddr_free(iaddr);
         GWEN_Socket_free(newS);
         GWEN_NetLayer_SetStatus(nl, GWEN_NetLayerStatus_Disconnected);

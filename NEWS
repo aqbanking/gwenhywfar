@@ -1,5 +1,21 @@
 
 ===========================================================================
+                    gwenhywfar-2.4.1 (2006/09/26)
+===========================================================================
+
+This release fixes some bugs, removes debugging messages and cleans up the
+API (longtime deprecated functions have been removed). Callbacks functions
+used widely in Gwenhywfar have been adapted to work on Windows as well.
+
+
+===========================================================================
+                    gwenhywfar-2.4.0 (2006/08/25)
+===========================================================================
+
+This version adds a simple signal/slot framework and fixes some bugs.
+
+
+===========================================================================
                     gwenhywfar-2.3.1 (2006/07/13)
 ===========================================================================
 

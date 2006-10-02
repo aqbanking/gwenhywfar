@@ -3,9 +3,25 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+2006/10/02: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- decreased verbosity of netlayer and OS functions
+
+
+===========================================================================
+MARK: released gwenhywfar-2.4.1 (2006/09/26)
+===========================================================================
+
+2006/09/28: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a bug in netlayer: Was not resetting "inStatusChangeFn"
+- decreased verbosity in nl_ssl.c
+
+
+2006/09/25: Martin Preuss<martin@libchipcard.de>
+-------------------------------------------------
+- fixed a possible memory leak in netlayer code
+
 
 2006/09/20: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
@@ -55,6 +71,11 @@
 2006/09/04: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
 - implemented the function GWEN_Logger_SetLogFunction()
+
+
+===========================================================================
+MARK: released gwenhywfar-2.4.0 (2006/08/25)
+===========================================================================
 
 
 2006/07/16: Martin Preuss<martin@libchipcard.de>

@@ -187,7 +187,7 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
   }
 
   default:
-    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown address family (%d)",af);
+    DBG_INFO(GWEN_LOGDOMAIN, "Unknown address family (%d)",af);
     assert(0);
   } /* switch */
 #ifdef MEMTRACE
@@ -284,7 +284,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
       /* ok, address to be set */
       if ((strlen(addr)+1)>sizeof(aptr->sun_path)) {
 	/* bad address */
-	DBG_ERROR(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
+	DBG_INFO(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
 		  (int)(strlen(addr)+1),(int)(sizeof(aptr->sun_path)));
 	return GWEN_Error_new(0,
 			      GWEN_ERROR_SEVERITY_ERR,
@@ -381,7 +381,7 @@ GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
       /* ok, address to be set */
       if ((strlen(name)+1)>sizeof(aptr->sun_path)) {
         /* bad address */
-	DBG_ERROR(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
+	DBG_INFO(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
 		  (int)(strlen(name)+1),(int)(sizeof(aptr->sun_path)));
 	return GWEN_Error_new(0,
 			 GWEN_ERROR_SEVERITY_ERR,

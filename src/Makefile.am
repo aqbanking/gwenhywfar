@@ -42,6 +42,11 @@ lib_LTLIBRARIES=libgwenhywfar.la
 libgwenhywfar_la_SOURCES=\
   gwenhywfar.c
 
+# if IS_WINDOWS
+if IS_WINDOWS
+ mingw_ldflags=-L/mingw/lib
+endif
+
 libgwenhywfar_la_LIBADD=\
   base/libbase.la \
   crypt/libcrypt.la \
@@ -51,7 +56,7 @@ libgwenhywfar_la_LIBADD=\
   net2/libnet2.la \
   os/libos.la \
   parser/libparser.la \
-  storage/libsto.la $(ssl_libraries) $(ssl_lib) $(all_libraries)
+  storage/libsto.la $(mingw_ldflags) $(ssl_libraries) $(ssl_lib) $(all_libraries)
 
 libgwenhywfar_la_DEPENDENCIES=\
   base/libbase.la \
@@ -70,8 +75,8 @@ testlib_LDADD=libgwenhywfar.la
 
 # if IS_WINDOWS
 if IS_WINDOWS
-libgwenhywfar_la_DEPENDENCIES += ressource.o
-ressource_ldflags=-Wl,ressource.o
+ libgwenhywfar_la_DEPENDENCIES += ressource.o
+ ressource_ldflags=-Wl,ressource.o
 endif
 # IS_WINDOWS
 

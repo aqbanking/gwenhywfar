@@ -878,7 +878,7 @@ GWEN_ERRORCODE GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
   assert(ssp);
   assert(sp);
   if (sp->socket==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected, can not add");
+    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not connected, can not add");
     return GWEN_Error_new(0,
                           GWEN_ERROR_SEVERITY_ERR,
                           GWEN_Error_FindType(GWEN_SOCKET_ERROR_TYPE),
@@ -1001,7 +1001,7 @@ GWEN_ERRORCODE GWEN_Socket_Connect(GWEN_SOCKET *sp,
               addr->size)) {
     if (WSAGetLastError()!=WSAEINPROGRESS &&
         WSAGetLastError()!=WSAEWOULDBLOCK) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Error %d (%s)",
+      DBG_INFO(GWEN_LOGDOMAIN, "Error %d (%s)",
                 WSAGetLastError(),
 		h_strerror(WSAGetLastError()));
       return GWEN_Error_new(0,
@@ -1409,7 +1409,7 @@ GWEN_ERRORCODE GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
   assert(sp);
   fl=!b;
   if (ioctlsocket(sp->socket,FIONBIO,&fl)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error %d (%s)",
+    DBG_INFO(GWEN_LOGDOMAIN, "Error %d (%s)",
               WSAGetLastError(),
               h_strerror(WSAGetLastError()));
     return GWEN_Error_new(0,

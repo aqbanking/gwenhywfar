@@ -701,7 +701,8 @@ void GWEN_NetLayer_StatusChange(GWEN_NETLAYER *nl,
       }
       else {
 	nl->inStatusChangeFn=1;
-	nl->statusChangeFn(nl, newst);
+        nl->statusChangeFn(nl, newst);
+        nl->inStatusChangeFn=0;
       }
     }
   }
@@ -1241,15 +1242,14 @@ const GWEN_INETADDRESS *GWEN_NetLayer_GetLocalAddr(const GWEN_NETLAYER *nl){
 
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_NetLayer_SetLocalAddr(GWEN_NETLAYER *nl,
-                                const GWEN_INETADDRESS *addr) {
+				const GWEN_INETADDRESS *addr) {
+  GWEN_INETADDRESS *na=0;
+
   assert(nl);
-  if (nl->localAddr!=addr) {
-    GWEN_InetAddr_free(nl->localAddr);
-    if (addr)
-      nl->localAddr=GWEN_InetAddr_dup(addr);
-    else
-      nl->localAddr=0;
-  }
+  if (addr)
+    na=GWEN_InetAddr_dup(addr);
+  GWEN_InetAddr_free(nl->localAddr);
+  nl->localAddr=na;
 }
 
 
@@ -1265,14 +1265,13 @@ const GWEN_INETADDRESS *GWEN_NetLayer_GetPeerAddr(const GWEN_NETLAYER *nl) {
 /* -------------------------------------------------------------- FUNCTION */
 void GWEN_NetLayer_SetPeerAddr(GWEN_NETLAYER *nl,
                                const GWEN_INETADDRESS *addr) {
+  GWEN_INETADDRESS *na=0;
+
   assert(nl);
-  if (nl->peerAddr!=addr) {
-    GWEN_InetAddr_free(nl->peerAddr);
-    if (addr)
-      nl->peerAddr=GWEN_InetAddr_dup(addr);
-    else
-      nl->peerAddr=0;
-  }
+  if (addr)
+    na=GWEN_InetAddr_dup(addr);
+  GWEN_InetAddr_free(nl->peerAddr);
+  nl->peerAddr=na;
 }
 
 
