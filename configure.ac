@@ -254,6 +254,8 @@ AC_CHECK_FUNCS([snprintf])
 AC_CHECK_FUNCS([symlink setlocale])
 AC_CHECK_FUNCS([srandom random])
 
+# Init binreloc
+AM_BINRELOC
 
 ###-------------------------------------------------------------------------
 #

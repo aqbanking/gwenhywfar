@@ -2,6 +2,7 @@
 EXTRA_DIST= \
  acx_compile_warn.m4 \
  as-scrub-include.m4 \
+ binreloc.m4 \
  debugmode.m4 \
  docpath.m4 \
  endian.m4 \

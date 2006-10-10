@@ -3,6 +3,12 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2006-10-10  Christian Stimming  <stimming@tuhh.de>
+
+	* src/gwenhywfar.c, src/binreloc.[hc]: Add initial binreloc
+	support; all directories except plugindir (!) are now looked up
+	automatically at runtime.
+
 2006/10/02: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - decreased verbosity of netlayer and OS functions

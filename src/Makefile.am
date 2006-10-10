@@ -7,7 +7,7 @@ INCLUDES= \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/parser \
  -I$(top_srcdir)/src/storage $(all_includes)
- 
+
 AM_CFLAGS=$(visibility_cflags)
 
 SUBDIRS = base crypt io ipc os parser crypt2 net2 storage
@@ -37,9 +37,13 @@ iheader_HEADERS=\
   types.h \
   version.h
 
+noinst_HEADERS=\
+  binreloc.h
+
 lib_LTLIBRARIES=libgwenhywfar.la
 
 libgwenhywfar_la_SOURCES=\
+  binreloc.c \
   gwenhywfar.c
 
 # if IS_WINDOWS

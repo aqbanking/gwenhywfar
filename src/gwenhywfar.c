@@ -63,6 +63,7 @@
 
 #include "storage/st_storage_l.h"
 
+#include "binreloc.h"
 
 /* for regkey stuff */
 #ifdef OS_WIN32
@@ -88,8 +89,16 @@ static unsigned int gwen_is_initialized=0;
 
 GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
+  BrInitError br_error;
+
+  /* Init binreloc. Note: It is not totally clear whether the correct
+     function might still be br_init() instead of br_init_lib(). */
+  if ( ! br_init_lib(&br_error) ) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on br_init: %d\n", br_error);
+  }
 
   if (gwen_is_initialized==0) {
+    char *tmp;
     err=GWEN_Memory_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
@@ -115,10 +124,12 @@ GWEN_ERRORCODE GWEN_Init() {
 				       GWEN_PM_INSTALLDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_PREFIX);
+    tmp = br_find_prefix (GWEN_PREFIX_DIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_INSTALLDIR,
-                             GWEN_PREFIX_DIR);
+                             tmp);
+    free (tmp);
 
     /* $sysconfdir e.g. "/etc" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSCONFDIR);
@@ -127,10 +138,12 @@ GWEN_ERRORCODE GWEN_Init() {
 				       GWEN_PM_SYSCONFDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_SYSCONFDIR);
+    tmp = br_find_etc_dir (GWEN_SYSCONF_DIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_SYSCONFDIR,
-                             GWEN_SYSCONF_DIR);
+                             tmp);
+    free (tmp);
 
     /* $localedir e.g. "/usr/share/locale" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
@@ -139,10 +152,12 @@ GWEN_ERRORCODE GWEN_Init() {
 				       GWEN_PM_LOCALEDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_LOCALEDIR);
+    tmp = br_find_locale_dir (LOCALEDIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_LOCALEDIR,
-                             LOCALEDIR);
+                             tmp);
+    free (tmp);
 
     /* $libdir e.g. "/usr/lib" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LIBDIR);
@@ -151,10 +166,12 @@ GWEN_ERRORCODE GWEN_Init() {
 				       GWEN_PM_LIBDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_LIBDIR);
+    tmp = br_find_lib_dir (LIBDIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_LIBDIR,
-                             LIBDIR);
+                             tmp);
+    free (tmp);
 
     /* $plugindir e.g. "/usr/lib/gwenhywfar/plugins/0" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_PLUGINDIR);
