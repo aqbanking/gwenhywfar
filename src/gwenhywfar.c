@@ -91,19 +91,6 @@ static int gwen_binreloc_initialized=0;
 GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
 
-  if (gwen_binreloc_initialized==0) {
-    BrInitError br_error;
-
-    /* Init binreloc. Note: It is not totally clear whether the correct
-     function might still be br_init() instead of br_init_lib(). */
-    if (!br_init_lib(&br_error)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Error on br_init: %d\n", br_error);
-      gwen_binreloc_initialized=-1;
-    }
-    else
-      gwen_binreloc_initialized=1;
-  }
-
   if (gwen_is_initialized==0) {
     char *tmp;
 
@@ -113,6 +100,20 @@ GWEN_ERRORCODE GWEN_Init() {
     err=GWEN_Logger_ModuleInit();
     if (!GWEN_Error_IsOk(err))
       return err;
+
+    if (gwen_binreloc_initialized==0) {
+      BrInitError br_error;
+
+      /* Init binreloc. Note: It is not totally clear whether the correct
+       function might still be br_init() instead of br_init_lib(). */
+      if (!br_init_lib(&br_error)) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Error on br_init: %d\n", br_error);
+        gwen_binreloc_initialized=-1;
+      }
+      else
+        gwen_binreloc_initialized=1;
+    }
+
     GWEN_Error_ModuleInit();
 
     err=GWEN_PathManager_ModuleInit();

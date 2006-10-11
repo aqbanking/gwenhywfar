@@ -14,7 +14,9 @@
   GWEN_NetLayerPackets_SetFixedPacketSize(): This allows the packets netlayer
   determine on its own how many bytes have to be read for a complete packet
   -> this constitutes an API enhancement
-- src/gwenhywfar.c: initialize binreloc only once, decreased verbosity
+- src/gwenhywfar.c: initialize binreloc only once, decreased verbosity,
+  changed position of binreloc init call because the GWEN_LOGGER mechanism is
+  only available after the logger module has been initialized
 
 
 2006-10-10  Christian Stimming  <stimming@tuhh.de>
