@@ -400,31 +400,61 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerPackets__ReadWork(GWEN_NETLAYER *nl) {
     return GWEN_NetLayerResult_Changed;
 
   case GWEN_NL_PacketStatus_ReadMsg:
-    GWEN_Buffer_AllocRoom(pk->buffer, GWEN_NL_PACKETS_CHUNKSIZE);
-    bsize=GWEN_NL_PACKETS_CHUNKSIZE;
-    p=GWEN_Buffer_GetPosPointer(pk->buffer);
-    rv=GWEN_NetLayer_Read(baseLayer, p, &bsize);
-    if (rv==1)
-      return GWEN_NetLayerResult_WouldBlock;
-    else if (rv==-1) {
-      pk->status=GWEN_NL_PacketStatus_Aborted;
-      GWEN_NL_Packet_List_Add(pk, nld->inPackets);
-      nld->currentInPacket=GWEN_NL_Packet_new();
-      return GWEN_NetLayerResult_Error;
-    }
-    if (bsize==0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Message finished");
-      pk->status=GWEN_NL_PacketStatus_Finished;
-      GWEN_NL_Packet_List_Add(pk, nld->inPackets);
-      nld->currentInPacket=GWEN_NL_Packet_new();
+    if (nld->fixedPacketSize) {
+      /* fixed messages sizes, so we now how many bytes to read */
+      bsize=nld->fixedPacketSize-GWEN_Buffer_GetUsedBytes(pk->buffer);
+      if (bsize>GWEN_NL_PACKETS_CHUNKSIZE)
+        bsize=GWEN_NL_PACKETS_CHUNKSIZE;
+      GWEN_Buffer_AllocRoom(pk->buffer, bsize);
+      p=GWEN_Buffer_GetPosPointer(pk->buffer);
+      rv=GWEN_NetLayer_Read(baseLayer, p, &bsize);
+      if (rv==1)
+        return GWEN_NetLayerResult_WouldBlock;
+      else if (rv==-1) {
+        pk->status=GWEN_NL_PacketStatus_Aborted;
+        GWEN_NL_Packet_List_Add(pk, nld->inPackets);
+        nld->currentInPacket=GWEN_NL_Packet_new();
+        return GWEN_NetLayerResult_Error;
+      }
+      GWEN_Buffer_IncrementPos(pk->buffer, bsize);
+      GWEN_Buffer_AdjustUsedBytes(pk->buffer);
+
+      /* check whether we are finished */
+      if (GWEN_Buffer_GetUsedBytes(pk->buffer)>=nld->fixedPacketSize) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Message finished");
+        pk->status=GWEN_NL_PacketStatus_Finished;
+        GWEN_NL_Packet_List_Add(pk, nld->inPackets);
+        nld->currentInPacket=GWEN_NL_Packet_new();
+      }
       return GWEN_NetLayerResult_Changed;
     }
     else {
-      GWEN_Buffer_IncrementPos(pk->buffer, bsize);
-      GWEN_Buffer_AdjustUsedBytes(pk->buffer);
-      return GWEN_NetLayerResult_Changed;
+      GWEN_Buffer_AllocRoom(pk->buffer, GWEN_NL_PACKETS_CHUNKSIZE);
+      bsize=GWEN_NL_PACKETS_CHUNKSIZE;
+      p=GWEN_Buffer_GetPosPointer(pk->buffer);
+      rv=GWEN_NetLayer_Read(baseLayer, p, &bsize);
+      if (rv==1)
+        return GWEN_NetLayerResult_WouldBlock;
+      else if (rv==-1) {
+        pk->status=GWEN_NL_PacketStatus_Aborted;
+        GWEN_NL_Packet_List_Add(pk, nld->inPackets);
+        nld->currentInPacket=GWEN_NL_Packet_new();
+        return GWEN_NetLayerResult_Error;
+      }
+      if (bsize==0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Message finished");
+        pk->status=GWEN_NL_PacketStatus_Finished;
+        GWEN_NL_Packet_List_Add(pk, nld->inPackets);
+        nld->currentInPacket=GWEN_NL_Packet_new();
+        return GWEN_NetLayerResult_Changed;
+      }
+      else {
+        GWEN_Buffer_IncrementPos(pk->buffer, bsize);
+        GWEN_Buffer_AdjustUsedBytes(pk->buffer);
+        return GWEN_NetLayerResult_Changed;
+      }
     }
-
+    /* no break here since we will never reach this point */
   case GWEN_NL_PacketStatus_StartWriteMsg:
   case GWEN_NL_PacketStatus_Finished:
   case GWEN_NL_PacketStatus_Aborted:
@@ -740,6 +770,35 @@ int GWEN_NetLayerPackets_Flush(GWEN_NETLAYER *nl, int timeout) {
   } /* for */
 
 }
+
+
+
+unsigned int GWEN_NetLayerPackets_GetFixedPacketSize(const GWEN_NETLAYER *nl){
+  GWEN_NL_PACKETS *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_PACKETS, nl);
+  assert(nld);
+
+  return nld->fixedPacketSize;
+}
+
+
+
+void GWEN_NetLayerPackets_SetFixedPacketSize(GWEN_NETLAYER *nl,
+                                             unsigned int i) {
+  GWEN_NL_PACKETS *nld;
+
+  assert(nl);
+  nld=GWEN_INHERIT_GETDATA(GWEN_NETLAYER, GWEN_NL_PACKETS, nl);
+  assert(nld);
+
+  nld->fixedPacketSize=i;
+}
+
+
+
+
 
 
 

@@ -81,6 +81,13 @@ GWENHYWFAR_API
 GWEN_NETLAYER *GWEN_NetLayerPackets_new(GWEN_NETLAYER *baseLayer);
 
 GWENHYWFAR_API
+unsigned int GWEN_NetLayerPackets_GetFixedPacketSize(const GWEN_NETLAYER *nl);
+
+GWENHYWFAR_API
+void GWEN_NetLayerPackets_SetFixedPacketSize(GWEN_NETLAYER *nl,
+                                             unsigned int i);
+
+GWENHYWFAR_API
 int GWEN_NetLayerPackets_SendPacket(GWEN_NETLAYER *nl,
                                     GWEN_NL_PACKET *packet);
 

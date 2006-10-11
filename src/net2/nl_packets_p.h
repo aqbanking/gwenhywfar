@@ -56,6 +56,7 @@ struct GWEN_NL_PACKETS {
   GWEN_NL_PACKET *currentOutPacket;
   GWEN_NL_PACKET_LIST *inPackets;
   GWEN_NL_PACKET *currentInPacket;
+  unsigned int fixedPacketSize;
 };
 
 void GWEN_NetLayerPackets_FreeData(void *bp, void *p);
