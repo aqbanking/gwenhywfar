@@ -85,7 +85,7 @@
 
 
 static unsigned int gwen_is_initialized=0;
-static unsigned int gwen_binreloc_initialized=0;
+static int gwen_binreloc_initialized=0;
 
 
 GWEN_ERRORCODE GWEN_Init() {
@@ -97,9 +97,11 @@ GWEN_ERRORCODE GWEN_Init() {
     /* Init binreloc. Note: It is not totally clear whether the correct
      function might still be br_init() instead of br_init_lib(). */
     if (!br_init_lib(&br_error)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Error on br_init: %d\n", br_error);
+      DBG_INFO(GWEN_LOGDOMAIN, "Error on br_init: %d\n", br_error);
+      gwen_binreloc_initialized=-1;
     }
-    gwen_binreloc_initialized=1;
+    else
+      gwen_binreloc_initialized=1;
   }
 
   if (gwen_is_initialized==0) {
