@@ -19,6 +19,7 @@ DEFS += \
   -DGWEN_SYSCONF_DIR=\"$(sysconfdir)\" \
   -DLOCALEDIR=\"$(localedir)\" \
   -DLIBDIR=\"$(libdir)\" \
+  -DGWENHYWFAR_SO_EFFECTIVE_STR=\"$(GWENHYWFAR_SO_EFFECTIVE)\" \
   -DPLUGINDIR=\"$(gwenhywfar_plugindir)\"
 
 EXTRA_DIST=\

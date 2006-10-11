@@ -87,6 +87,7 @@
 static unsigned int gwen_is_initialized=0;
 static int gwen_binreloc_initialized=0;
 
+char *GWEN__get_plugindir (const char *default_dir);
 
 GWEN_ERRORCODE GWEN_Init() {
   GWEN_ERRORCODE err;
@@ -189,10 +190,12 @@ GWEN_ERRORCODE GWEN_Init() {
 				       GWEN_PM_PLUGINDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_PLUGINDIR);
+    tmp = GWEN__get_plugindir (PLUGINDIR);
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
                              GWEN_PM_LIBNAME,
                              GWEN_PM_PLUGINDIR,
-                             PLUGINDIR);
+                             tmp);
+    free (tmp);
 
     /* Initialize other modules. */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing I18N module");
@@ -511,8 +514,26 @@ int GWEN_GetPluginPath(GWEN_BUFFER *pbuf) {
   return 0;
 }
 
+/** Construct the gwenhywfar_plugindir directory path with runtime
+    lookup of the initial $libdir. */
+char *GWEN__get_plugindir (const char *default_dir)
+{
+  char *result, *libdir, *pkglibdir, *tmp;
 
+  libdir = br_find_lib_dir (NULL);
+  if (libdir == (char *) NULL)
+    /* BinReloc not initialized, use default hard-coded path. */
+    return strdup (default_dir);
 
+  pkglibdir = br_build_path (libdir, PACKAGE); /* defined in config.h */
+  tmp = br_build_path (pkglibdir, "plugins");
+  result = br_build_path (tmp, GWENHYWFAR_SO_EFFECTIVE_STR);
 
+  free (libdir);
+  free (pkglibdir);
+  free (tmp);
+
+  return result;
+}
 
 
