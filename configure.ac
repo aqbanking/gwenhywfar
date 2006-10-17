@@ -41,12 +41,14 @@ GWENHYWFAR_VERSION_TAG="svn"
 
 GWENHYWFAR_VERSION_BUILD="0"
 case "$GWENHYWFAR_VERSION_TAG" in svn|cvs)
-  SVN=`which svn`
-  case "x$SVN" in
-    x|xno)
-      GWENHYWFAR_VERSION_BUILD="0"
-      ;;
-    *)
+dnl Note: Currently we don't need to lookup the actual SVN program
+dnl because the number has been written here on checkout anyway.
+dnl   SVN=`which svn`
+dnl   case "x$SVN" in
+dnl     x|xno)
+dnl       GWENHYWFAR_VERSION_BUILD="0"
+dnl       ;;
+dnl     *)
       # Let svn write the revision number directly into here on
       # each svn update. Note: The trailing space is necessary for
       # cvs versions.
@@ -54,8 +56,8 @@ case "$GWENHYWFAR_VERSION_TAG" in svn|cvs)
       if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
 	GWENHYWFAR_VERSION_BUILD="0"
       fi
-      ;;
-  esac
+dnl       ;;
+dnl   esac
   ;;
 esac
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL-${GWENHYWFAR_VERSION_TAG}-r${GWENHYWFAR_VERSION_BUILD}"
@@ -402,16 +404,17 @@ AC_SUBST(USE_CRYPT)
 
 ###-------------------------------------------------------------------------
 #
-# check for LibXML
+# check for LibXML for test/gwentest.c
 #
-AC_MSG_CHECKING([whether LibXML2 should be used])
-if test "x`which xml2-config`" != "x"; then
-  AC_DEFINE(USE_LIBXML2, 1, [whether LibXML2 should be used])
-  xml_includes="`xml2-config --cflags`"
-  xml_libraries="`xml2-config --libs`"
-  AC_MSG_RESULT(yes)
+AC_CHECK_PROG(XML2_CONFIG, xml2-config, xml2-config, NO)
+AC_MSG_CHECKING([whether LibXML2 example should be used])
+if test "x${XML2_CONFIG}" != "xNO"; then
+  AC_DEFINE(USE_LIBXML2, 1, [whether LibXML2 example should be used])
+  xml_includes="`${XML2_CONFIG} --cflags`"
+  xml_libraries="`${XML2_CONFIG} --libs`"
+  AC_MSG_RESULT([yes])
 else
-  AC_MSG_RESULT(no)
+  AC_MSG_RESULT([no])
 fi
 AC_SUBST(xml_includes)
 AC_SUBST(xml_libraries)
