@@ -110,7 +110,7 @@ function module_build()
     echo "### Configuring " >> ${LOGFILE} 2>&1
     if [ ${PACKAGE} = "aqbanking" ] ; then
 	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} --with-gwen-dir=${INSTALLPREFIX} --with-backends="aqdtaus aqnone aqhbci" >> ${LOGFILE} 2>&1
-    elif [ ${PACKAGE} = "simthetic" -o ${PACKAGE} = "libchipcard2" ] ; then
+    elif [ ${PACKAGE} = "libchipcard2" ] ; then
 	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} --with-gwen-dir=${INSTALLPREFIX} >> ${LOGFILE} 2>&1
     else
 	./configure --enable-debug --enable-warnings --enable-error-on-warning --prefix=${INSTALLPREFIX} >> ${LOGFILE} 2>&1
@@ -158,7 +158,7 @@ function module_build()
 # modules in a row, needed for e. g. the combinations
 # gwenhywfar/aqbanking.
 
-if [ "${PACKAGE}" = "aqbanking" -o "${PACKAGE}" = "simthetic" ] ; then
+if [ "${PACKAGE}" = "aqbanking" -o "${PACKAGE}" = "libchipcard2" ] ; then
   module_build gwenhywfar gwenhywfar install
 fi
 module_build ${PACKAGE} ${MODULE} noinstall
