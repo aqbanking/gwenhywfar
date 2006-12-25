@@ -206,15 +206,15 @@ GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
                           GWEN_LIBLOADER_ERROR_NOT_OPEN);
   *p=dlsym(h->handle,name);
   if (!*p) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error resolving symbol \"%s\": %s\n",
-              name, dlerror());
+    DBG_INFO(GWEN_LOGDOMAIN, "Error resolving symbol \"%s\": %s\n",
+	     name, dlerror());
     return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
+			  GWEN_ERROR_SEVERITY_ERR,
+			  GWEN_Error_FindType(GWEN_LIBLOADER_ERROR_TYPE),
 			  GWEN_LIBLOADER_ERROR_COULD_NOT_RESOLVE);
   }
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %p\n",
-              name, *p);
+	      name, *p);
   return 0;
 }
 

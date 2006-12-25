@@ -383,6 +383,9 @@ const char *GWEN_CryptToken_GetDescriptiveName(const GWEN_CRYPTTOKEN *ct);
 GWENHYWFAR_API
 void GWEN_CryptToken_SetDescriptiveName(GWEN_CRYPTTOKEN *ct, const char *s);
 
+
+
+
 GWENHYWFAR_API
 void GWEN_CryptToken_SetOpenFn(GWEN_CRYPTTOKEN *ct,
                                GWEN_CRYPTTOKEN_OPEN_FN fn);

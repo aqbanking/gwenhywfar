@@ -7,11 +7,16 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2006/12/25: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- decreased verbosity of libloader code
+
 
 2006-10-11   Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfar.c: Make plugindir lookup relocatable as well. By
 	now, the full gwenhywfar should be relocatable.
+
 
 2006/10/11: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
@@ -39,6 +44,7 @@
 ===========================================================================
 MARK: released gwenhywfar-2.4.1 (2006/09/26)
 ===========================================================================
+
 
 2006/09/28: Martin Preuss<martin@libchipcard.de>
 -------------------------------------------------
