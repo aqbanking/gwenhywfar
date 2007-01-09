@@ -271,7 +271,7 @@ GWEN_CRYPTTOKEN *GWEN_CryptTokenFile_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWEN_CryptTokenFile_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_CryptTokenFile_FreeData(void *bp, void *p) {
   GWEN_CRYPTTOKEN_FILE *lct;
 
   lct=(GWEN_CRYPTTOKEN_FILE*)p;

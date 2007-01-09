@@ -89,7 +89,7 @@ struct GWEN_NETCONNECTIONHTTP {
 };
 
 
-void GWEN_NetConnectionHTTP_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetConnectionHTTP_FreeData(void *bp, void *p);
 GWEN_NETCONNECTION_WORKRESULT
   GWEN_NetConnectionHTTP_Work(GWEN_NETCONNECTION *conn);
 

@@ -53,7 +53,7 @@ struct GWEN_SMPSTO_STORAGE {
   GWEN_SMPSTO_ADDLOG_FN addLogFn;
 };
 
-void GWEN_SmpStoStorage_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_SmpStoStorage_FreeData(void *bp, void *p);
 
 int GWEN_SmpStoStorage_Create(GWEN_STO_STORAGE *st,
                               GWEN_STO_CLIENT *cl);

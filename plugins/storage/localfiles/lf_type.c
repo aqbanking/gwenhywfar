@@ -148,7 +148,7 @@ void LocalFilesType_toDb(GWEN_STO_TYPE *ty, GWEN_DB_NODE *db) {
 
 
 
-void LocalFilesType_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB LocalFilesType_FreeData(void *bp, void *p) {
   LOCALFILES_TYPE *xty;
 
   xty=(LOCALFILES_TYPE*) p;

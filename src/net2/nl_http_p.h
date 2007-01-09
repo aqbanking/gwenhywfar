@@ -81,7 +81,7 @@ struct GWEN_NL_HTTP {
 
 };
 
-void GWEN_NetLayerHttp_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetLayerHttp_FreeData(void *bp, void *p);
 
 int GWEN_NetLayerHttp_Connect(GWEN_NETLAYER *nl);
 int GWEN_NetLayerHttp_Disconnect(GWEN_NETLAYER *nl);

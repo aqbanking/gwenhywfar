@@ -77,7 +77,7 @@ struct GWEN_NL_SSL {
 
 };
 
-void GWEN_NetLayerSsl_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetLayerSsl_FreeData(void *bp, void *p);
 
 
 int GWEN_NetLayerSsl_Connect(GWEN_NETLAYER *nl);

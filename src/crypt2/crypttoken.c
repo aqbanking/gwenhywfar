@@ -3234,7 +3234,7 @@ GWEN_PLUGIN *GWEN_CryptToken_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWEN_CryptToken_Plugin_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB GWEN_CryptToken_Plugin_FreeData(void *bp, void *p){
   GWEN_CRYPTTOKEN_PLUGIN *ctp;
 
   ctp=(GWEN_CRYPTTOKEN_PLUGIN*)p;
@@ -3356,7 +3356,7 @@ GWEN_PLUGIN_MANAGER *GWEN_CryptManager_new(){
 
 
 
-void GWEN_CryptManager_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_CryptManager_FreeData(void *bp, void *p) {
   GWEN_CRYPTMANAGER *cm;
 
   cm=(GWEN_CRYPTMANAGER*)p;

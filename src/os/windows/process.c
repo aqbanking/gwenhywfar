@@ -439,7 +439,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
 
 
 
-void GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p){
   GWEN_BUFFEREDIO_WINFILE *bft;
 
   bft=(GWEN_BUFFEREDIO_WINFILE *)p;

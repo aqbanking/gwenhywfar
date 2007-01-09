@@ -40,7 +40,7 @@ typedef struct GWEN_DBIO_PLUGIN GWEN_DBIO_PLUGIN;
 struct GWEN_DBIO_PLUGIN {
   GWEN_DBIO_PLUGIN_FACTORYFN factoryFn;
 };
-void GWEN_DBIO_Plugin_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_DBIO_Plugin_FreeData(void *bp, void *p);
 
 
 

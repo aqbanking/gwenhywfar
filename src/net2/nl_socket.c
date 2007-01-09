@@ -75,7 +75,7 @@ GWEN_NETLAYER *GWEN_NetLayerSocket_new(GWEN_SOCKET *sk, int takeOver) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_NetLayerSocket_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_NetLayerSocket_FreeData(void *bp, void *p) {
   GWEN_NL_SOCKET *nld;
 
   nld=(GWEN_NL_SOCKET*)p;

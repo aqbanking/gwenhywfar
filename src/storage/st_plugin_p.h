@@ -35,7 +35,7 @@ typedef struct GWEN_STO_PLUGIN GWEN_STO_PLUGIN;
 struct GWEN_STO_PLUGIN {
   GWEN_STO_PLUGIN_FACTORY_FN factoryFn;
 };
-void GWEN_StoPlugin_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_StoPlugin_FreeData(void *bp, void *p);
 
 
 #endif

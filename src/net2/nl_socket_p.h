@@ -39,7 +39,7 @@ struct GWEN_NL_SOCKET {
   int ownSocket;
 };
 
-void GWEN_NetLayerSocket_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetLayerSocket_FreeData(void *bp, void *p);
 
 int GWEN_NetLayerSocket_Connect(GWEN_NETLAYER *nl);
 int GWEN_NetLayerSocket_Disconnect(GWEN_NETLAYER *nl);

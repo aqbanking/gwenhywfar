@@ -35,7 +35,7 @@ typedef struct GWEN_SMPSTO_FIND GWEN_SMPSTO_FIND;
 struct GWEN_SMPSTO_FIND {
   GWEN_IDLIST *objectIdList;
 };
-void GWEN_SmpStoFind_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_SmpStoFind_FreeData(void *bp, void *p);
 
 
 #endif

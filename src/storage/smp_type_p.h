@@ -36,7 +36,7 @@ struct GWEN_SMPSTO_TYPE {
   GWEN_IDLIST *objectIdList;
 };
 
-void GWEN_SmpStoType_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_SmpStoType_FreeData(void *bp, void *p);
 
 
 

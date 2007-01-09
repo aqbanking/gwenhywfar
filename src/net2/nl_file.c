@@ -76,7 +76,7 @@ GWEN_NETLAYER *GWEN_NetLayerFile_new(int fdRead,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_NetLayerFile_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_NetLayerFile_FreeData(void *bp, void *p) {
   GWEN_NL_FILE *nld;
 
   nld=(GWEN_NL_FILE*)p;

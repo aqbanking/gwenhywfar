@@ -80,7 +80,7 @@ GWEN_STO_STORAGE *LocalFilesStorage_new(const char *address) {
 
 
 
-void LocalFilesStorage_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB LocalFilesStorage_FreeData(void *bp, void *p) {
   LOCALFILES_STORAGE *xst;
 
   xst=(LOCALFILES_STORAGE*) p;

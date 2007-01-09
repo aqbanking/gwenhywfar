@@ -40,7 +40,7 @@ struct GWEN_NL_FILE {
   int closeOnFree;
 };
 
-void GWEN_NetLayerFile_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetLayerFile_FreeData(void *bp, void *p);
 
 int GWEN_NetLayerFile_Connect(GWEN_NETLAYER *nl);
 int GWEN_NetLayerFile_Disconnect(GWEN_NETLAYER *nl);

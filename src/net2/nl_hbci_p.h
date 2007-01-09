@@ -76,7 +76,7 @@ struct GWEN_NL_HBCI {
 
 };
 
-void GWEN_NetLayerHbci_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetLayerHbci_FreeData(void *bp, void *p);
 
 int GWEN_NetLayerHbci_Connect(GWEN_NETLAYER *nl);
 int GWEN_NetLayerHbci_Disconnect(GWEN_NETLAYER *nl);

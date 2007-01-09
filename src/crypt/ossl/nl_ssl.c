@@ -138,7 +138,7 @@ GWEN_NETLAYER *GWEN_NetLayerSsl_new(GWEN_NETLAYER *baseLayer,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_NetLayerSsl_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_NetLayerSsl_FreeData(void *bp, void *p) {
   GWEN_NL_SSL *nld;
 
   nld=(GWEN_NL_SSL*) p;

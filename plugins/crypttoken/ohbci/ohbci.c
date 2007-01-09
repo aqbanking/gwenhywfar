@@ -228,7 +228,7 @@ GWEN_CRYPTTOKEN *GWEN_CryptTokenOHBCI_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWEN_CryptTokenOHBCI_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_CryptTokenOHBCI_FreeData(void *bp, void *p) {
   GWEN_CRYPTTOKEN_OHBCI *lct;
 
   lct=(GWEN_CRYPTTOKEN_OHBCI*) p;

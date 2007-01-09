@@ -42,7 +42,7 @@ GWEN_STO_OBJECT *LocalFilesObject_new(GWEN_STO_TYPE *ty,
 
 
 
-void LocalFilesObject_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB LocalFilesObject_FreeData(void *bp, void *p) {
   LOCALFILES_OBJECT *xo;
 
   xo=(LOCALFILES_OBJECT*) p;

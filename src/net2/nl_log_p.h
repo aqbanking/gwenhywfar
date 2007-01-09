@@ -44,7 +44,7 @@ struct GWEN_NL_LOG {
   int outFd;
 };
 
-void GWEN_NetLayerLog_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetLayerLog_FreeData(void *bp, void *p);
 
 int GWEN_NetLayerLog_Connect(GWEN_NETLAYER *nl);
 int GWEN_NetLayerLog_Disconnect(GWEN_NETLAYER *nl);

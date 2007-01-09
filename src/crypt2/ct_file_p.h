@@ -64,7 +64,7 @@ struct GWEN_CRYPTTOKEN_FILE {
 
 };
 
-void GWEN_CryptTokenFile_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_CryptTokenFile_FreeData(void *bp, void *p);
 
 int GWEN_CryptTokenFile__OpenFile(GWEN_CRYPTTOKEN *ct, int wr);
 int GWEN_CryptTokenFile__CloseFile(GWEN_CRYPTTOKEN *ct);

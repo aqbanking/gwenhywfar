@@ -23,7 +23,7 @@ struct LOCALFILES_OBJECT {
   char *fileName;
 };
 
-static void LocalFilesObject_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB LocalFilesObject_FreeData(void *bp, void *p);
 
 
 

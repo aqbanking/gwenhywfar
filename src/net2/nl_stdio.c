@@ -100,7 +100,7 @@ GWEN_NETLAYER *GWEN_NetLayerStdio_new() {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_NetLayerStdio_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_NetLayerStdio_FreeData(void *bp, void *p) {
   GWEN_NL_STDIO *nld;
 
   nld=(GWEN_NL_STDIO*)p;

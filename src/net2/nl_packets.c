@@ -173,7 +173,7 @@ GWEN_NETLAYER *GWEN_NetLayerPackets_new(GWEN_NETLAYER *baseLayer) {
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_NetLayerPackets_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_NetLayerPackets_FreeData(void *bp, void *p) {
   GWEN_NL_PACKETS *nld;
 
   nld=(GWEN_NL_PACKETS*)p;

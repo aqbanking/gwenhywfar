@@ -131,7 +131,7 @@ struct GWEN_CRYPTTOKEN_OHBCI {
 };
 
 
-void GWEN_CryptTokenOHBCI_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_CryptTokenOHBCI_FreeData(void *bp, void *p);
 
 
 int GWEN_CryptTokenOHBCI__DecryptFile(GWEN_CRYPTTOKEN *ct,

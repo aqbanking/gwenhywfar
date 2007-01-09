@@ -23,7 +23,7 @@ struct LOCALFILES_STORAGE {
   int dummy;
 };
 
-static void LocalFilesStorage_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB LocalFilesStorage_FreeData(void *bp, void *p);
 
 
 

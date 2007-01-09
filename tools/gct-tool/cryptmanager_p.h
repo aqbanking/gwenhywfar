@@ -25,7 +25,7 @@ typedef struct CON_CRYPTMANAGER CON_CRYPTMANAGER;
 struct CON_CRYPTMANAGER {
   int dummy;
 };
-void CON_CryptManager_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB CON_CryptManager_FreeData(void *bp, void *p);
 
 
 char CON_CryptManager___readCharFromStdin(int waitFor);

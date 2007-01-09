@@ -39,7 +39,7 @@ struct GWEN_NL_STDIO {
   GWEN_SOCKET *socketWrite;
 };
 
-static void GWEN_NetLayerStdio_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB GWEN_NetLayerStdio_FreeData(void *bp, void *p);
 static int GWEN_NetLayerStdio_Disconnect(GWEN_NETLAYER *nl);
 static int GWEN_NetLayerStdio_Read(GWEN_NETLAYER *nl, char *buffer,
                                    int *bsize);

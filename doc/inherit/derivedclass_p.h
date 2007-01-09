@@ -12,7 +12,7 @@ struct DERIVEDCLASS {
    * The inheritance administration data is only needed in the base class. */
   char *testData;
 };
-void DerivedClass_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB DerivedClass_FreeData(void *bp, void *p);
 
 
 #endif /* GWEN_EXAMPLE_INHERIT_DERIVEDCLASS_P_H */

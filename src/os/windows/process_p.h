@@ -68,7 +68,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
                                               int *size,
                                               int timeout);
 GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm);
-void GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p);
 
 GWEN_BUFFEREDIO *GWEN_BufferedIO_WinFile_new(HANDLE fd);
 

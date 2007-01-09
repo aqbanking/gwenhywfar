@@ -73,7 +73,7 @@ GWEN_NETCONNECTION *GWEN_NetConnectionHTTP_new(GWEN_NETTRANSPORT *tr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_NetConnectionHTTP_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB GWEN_NetConnectionHTTP_FreeData(void *bp, void *p){
   GWEN_NETCONNECTIONHTTP *chttp;
   GWEN_NETCONNECTION *conn;
 

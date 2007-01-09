@@ -23,7 +23,7 @@ struct LOCALFILES_TYPE {
   char *baseFolder;
 };
 
-static void LocalFilesType_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB LocalFilesType_FreeData(void *bp, void *p);
 
 
 

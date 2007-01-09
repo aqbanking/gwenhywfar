@@ -66,7 +66,7 @@ GWEN_STO_STORAGE *GWEN_SmpStoStorage_new(const char *typeName,
 
 
 
-void GWEN_SmpStoStorage_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SmpStoStorage_FreeData(void *bp, void *p) {
   GWEN_SMPSTO_STORAGE *xst;
 
   xst=(GWEN_SMPSTO_STORAGE*) p;

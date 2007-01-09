@@ -3,6 +3,12 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2007-01-09   Christian Stimming <stimming@tuhh.de>
+
+	* src/*: Add missing __stdcall decoration on callback functions as
+	needed on win32 since r1087 (2006-09-14). In other words,
+	gwenhywfar-2.4.1 and 2.5.0 are probably broken on win32.
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.0 (2006/12/25)
 ===========================================================================

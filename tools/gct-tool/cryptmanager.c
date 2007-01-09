@@ -67,7 +67,7 @@ GWEN_PLUGIN_MANAGER *CON_CryptManager_new() {
 
 
 
-void CON_CryptManager_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB CON_CryptManager_FreeData(void *bp, void *p) {
   CON_CRYPTMANAGER *bcm;
 
   bcm=(CON_CRYPTMANAGER *)p;

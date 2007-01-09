@@ -59,7 +59,7 @@ struct GWEN_NL_PACKETS {
   unsigned int fixedPacketSize;
 };
 
-void GWEN_NetLayerPackets_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_NetLayerPackets_FreeData(void *bp, void *p);
 
 int GWEN_NetLayerPackets_Connect(GWEN_NETLAYER *nl);
 int GWEN_NetLayerPackets_Disconnect(GWEN_NETLAYER *nl);

@@ -54,7 +54,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
 
 GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm);
 
-void GWEN_BufferedIO_File_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_BufferedIO_File_FreeData(void *bp, void *p);
 
 
 

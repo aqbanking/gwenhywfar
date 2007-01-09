@@ -92,7 +92,7 @@ GWEN_NETLAYER *GWEN_NetLayerHttp_new(GWEN_NETLAYER *baseLayer) {
 
 
 
-void GWEN_NetLayerHttp_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_NetLayerHttp_FreeData(void *bp, void *p) {
   GWEN_NL_HTTP *nld;
 
   nld=(GWEN_NL_HTTP*)p;

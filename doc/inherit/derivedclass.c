@@ -37,7 +37,7 @@ BASECLASS *DerivedClass_new(const char *data) {
 /* the first pointer is a pointer to the base class (in our case BASECLASS)
  * the second is a pointer to the private data (here DERIVEDCLASS).
  * When this function is called the base object still exists. */
-void DerivedClass_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB DerivedClass_FreeData(void *bp, void *p) {
   DERIVEDCLASS *derivedClass;
 
   derivedClass=(DERIVEDCLASS*) p;

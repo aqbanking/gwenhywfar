@@ -130,7 +130,7 @@ struct GWEN_CRYPTTOKEN_PLUGIN {
   GWEN_CRYPTTOKEN_PLUGIN_CREATETOKEN_FN createTokenFn;
   GWEN_CRYPTTOKEN_PLUGIN_CHECKTOKEN_FN checkTokenFn;
 };
-static void GWEN_CryptToken_Plugin_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB GWEN_CryptToken_Plugin_FreeData(void *bp, void *p);
 
 
 
@@ -144,7 +144,7 @@ struct GWEN_CRYPTMANAGER {
   GWEN_CRYPTMANAGER_INSERT_CORRECT_TOKEN_FN insertCorrectTokenFn;
   GWEN_CRYPTMANAGER_SHOW_MESSAGE_FN showMessageFn;
 };
-static void GWEN_CryptManager_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB GWEN_CryptManager_FreeData(void *bp, void *p);
 
 
 

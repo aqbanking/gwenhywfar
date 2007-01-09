@@ -57,7 +57,7 @@ GWEN_STO_TYPE *GWEN_SmpStoType_dup(const GWEN_STO_TYPE *oty) {
 
 
 
-void GWEN_SmpStoType_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SmpStoType_FreeData(void *bp, void *p) {
   GWEN_SMPSTO_TYPE *xty;
 
   xty=(GWEN_SMPSTO_TYPE*) p;

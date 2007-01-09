@@ -55,7 +55,7 @@ GWEN_PLUGIN *GWEN_StoPlugin_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWEN_StoPlugin_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_StoPlugin_FreeData(void *bp, void *p) {
   GWEN_STO_PLUGIN *xpl;
 
   xpl=(GWEN_STO_PLUGIN*) p;

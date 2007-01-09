@@ -172,7 +172,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Close(GWEN_BUFFEREDIO *dm){
 
 
 
-void GWEN_BufferedIO_Buffer_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_BufferedIO_Buffer_FreeData(void *bp, void *p) {
   GWEN_BUFFEREDIO_BUFFER *bft;
 
   bft=(GWEN_BUFFEREDIO_BUFFER*)p;

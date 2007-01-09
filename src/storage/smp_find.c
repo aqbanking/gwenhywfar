@@ -41,7 +41,7 @@ GWEN_STO_FIND *GWEN_SmpStoFind_new(GWEN_TYPE_UINT32 id,
 
 
 
-void GWEN_SmpStoFind_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SmpStoFind_FreeData(void *bp, void *p) {
   GWEN_SMPSTO_FIND *xf;
 
   xf=(GWEN_SMPSTO_FIND*) p;
