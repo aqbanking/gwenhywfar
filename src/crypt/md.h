@@ -46,7 +46,7 @@ typedef int (*GWEN_MD_END_FN)(GWEN_MD *md);
 typedef int (*GWEN_MD_UPDATE_FN)(GWEN_MD *md,
                                  const char *buf,
                                  unsigned int l);
-typedef void (*GWEN_MD_FREEDATA_FN)(GWEN_MD *md);
+typedef void GWENHYWFAR_CB (*GWEN_MD_FREEDATA_FN)(GWEN_MD *md);
 
 
 GWENHYWFAR_API

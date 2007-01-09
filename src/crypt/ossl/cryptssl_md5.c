@@ -70,7 +70,7 @@ GWEN_MD *GWEN_MdMd5_new(){
 
 
 
-void GWEN_MdMd5_FreeData(GWEN_MD *md){
+void GWENHYWFAR_CB GWEN_MdMd5_FreeData(GWEN_MD *md){
   MD5_CTX *ctx;
 
   if (md) {

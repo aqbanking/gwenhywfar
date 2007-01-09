@@ -38,7 +38,7 @@
 
 
 static GWEN_MD *GWEN_MdMd5_new();
-static void GWEN_MdMd5_FreeData(GWEN_MD *md);
+static void GWENHYWFAR_CB GWEN_MdMd5_FreeData(GWEN_MD *md);
 
 static int GWEN_MdMd5_Begin(GWEN_MD *md);
 static int GWEN_MdMd5_End(GWEN_MD *md);

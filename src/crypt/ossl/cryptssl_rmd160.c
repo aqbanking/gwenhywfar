@@ -70,7 +70,7 @@ GWEN_MD *GWEN_MdRmd160_new(){
 
 
 
-void GWEN_MdRmd160_FreeData(GWEN_MD *md){
+void GWENHYWFAR_CB GWEN_MdRmd160_FreeData(GWEN_MD *md){
   RIPEMD160_CTX *ctx;
 
   if (md) {

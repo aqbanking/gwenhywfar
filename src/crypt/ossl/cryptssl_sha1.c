@@ -70,7 +70,7 @@ GWEN_MD *GWEN_MdSha1_new(){
 
 
 
-void GWEN_MdSha1_FreeData(GWEN_MD *md){
+void GWENHYWFAR_CB GWEN_MdSha1_FreeData(GWEN_MD *md){
   SHA_CTX *ctx;
 
   if (md) {
