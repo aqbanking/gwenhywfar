@@ -3,6 +3,12 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2007-01-12  Christian Stimming  <stimming@tuhh.de>
+
+	* configure.ac: On win32, change gwenhywfar_libs flags back to
+	"-lgwenhywfar" without so-version because libtool will lookup the
+	library name without so-version number.
+
 2007-01-09   Christian Stimming <stimming@tuhh.de>
 
 	* src/*: Add missing __stdcall decoration on callback functions as
