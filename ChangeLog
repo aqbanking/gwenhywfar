@@ -3,6 +3,10 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released gwenhywfar-2.5.1 (2007/01/16)
+===========================================================================
+
 2007-01-12  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac: On win32, change gwenhywfar_libs flags back to
