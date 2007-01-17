@@ -3,6 +3,16 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2007-01-17   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac: Simplify OS section about windows; detection of
+	WIN_PATH_SYSTEM et al is no longer necessary for libtool-aided
+	builds, so we skip this here.
+	
+	* m4/ssl.m4: Change openssl detection on win32 so that gnuwin's
+	libtool libraries are looked for; alternatively, the user could
+	set ssl_lib and ssl_libraries externally.
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.1 (2007/01/16)
 ===========================================================================

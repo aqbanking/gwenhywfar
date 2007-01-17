@@ -266,6 +266,7 @@ AM_BINRELOC
 
 # Common settings for all OSs
 gwenhywfar_libs="-lgwenhywfar"
+gwenhywfar_ldflags="-L\${libdir}"
 gwenhywfar_internal_libname="libgwenhywfar.la"
 gwenhywfar_headerdir_am="\$(includedir)"
 gwenhywfar_headerdir="\${includedir}"
@@ -275,7 +276,6 @@ gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
 case "$OS_TYPE" in
     posix)
         gwenhywfar_sys_is_windows=0
-        gwenhywfar_ldflags="-L\${libdir}"
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
         
@@ -297,12 +297,10 @@ case "$OS_TYPE" in
     	;;
     windows)
         gwenhywfar_sys_is_windows=1
-        ACX_WINDOWS_PATHS
-        gwenhywfar_ldflags="-L\${libdir} -L${WIN_PATH_WINDOWS_MINGW}"
+        dnl ACX_WINDOWS_PATHS
 
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
-        PROG_LIBRARIES="-L/mingw/lib ${PROG_LIBRARIES}"
 	all_libraries="${all_libraries} -lregex -lwsock32"
     	;;
     *)
