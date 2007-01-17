@@ -77,21 +77,19 @@ dnl POSIX systems
    AC_MSG_RESULT($ssl_libraries ${ssl_lib})
 else
 dnl Windoze systems
-  # Tests will be ignored if ssl_lib have been set externally
+  # Tests will be ignored if ssl_lib/ssl_libraries have been set
+  # externally
   if test -z "$ssl_libraries" -o -z "$ssl_lib" ; then
-   if test -z "$WIN_PATH_WINDOWS_MINGW"; then
-     AC_ERROR([Error in configure.ac: The macro aq_windoze did not set a windows system path -- maybe this macro has not yet been called.])
-   fi
-   for d in $ssl_search_lib_dirs; do
-   # Look for library (linker) files
+    for d in $ssl_search_lib_dirs; do
+      # Look for library (linker) files that are available in
+      # gnuwin32's openssl packages
       AQ_SEARCH_FILES("$d", [libssl.dll.a libssl.dll libssl.a])
       if test -n "$found_file" ; then
          ssl_libraries="-L$d"
          ssl_lib="-lssl -lcrypto"
          break
       fi
-   done
-   ssl_lib="-leay32 -lssl32"
+    done
   fi
   AC_MSG_RESULT(${ssl_libraries} ${ssl_lib})
 fi
