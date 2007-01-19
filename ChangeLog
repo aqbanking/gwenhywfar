@@ -3,6 +3,10 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released gwenhywfar-2.5.2 (2007/01/19)
+===========================================================================
+
 2007-01-17   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac: Simplify OS section about windows; detection of
