@@ -56,6 +56,9 @@
 
 #include <errno.h>
 #include <sys/stat.h>
+#ifdef OS_WIN32
+# include <io.h> /* for unlink() on win32/mingw */
+#endif
 
 #ifdef OS_WIN32
 # define DIRSEP "\\"
