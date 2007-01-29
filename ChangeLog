@@ -3,6 +3,11 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2007-01-29   Christian Stimming <stimming@tuhh.de>
+
+	* m4/binreloc.m4: Fix detection of binreloc support for
+	autoconf>=2.60.
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.2 (2007/01/19)
 ===========================================================================
