@@ -236,20 +236,21 @@ catalogs: $(I18NLINGUAS)
 
 CLEANFILES += $(I18NCATALOGS)
 
-localedir = $(datadir)/locale
+# In autoconf>=2.60, this dir is already defined as $(localedir)
+ilocaledir = $(datadir)/locale
 install-mo-catalogs: catalogs
 	@for i in $(ALL_LINGUAS); do \
 	  filecat=$(top_builddir)/po/$$i.mo; \
           echo "Installing translation catalog for language \"$$i\""; \
-          $(mkinstalldirs) "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES"; \
-          echo $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
-          $(INSTALL_DATA) $${filecat} $(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
+          $(mkinstalldirs) "$(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES"; \
+          echo $(INSTALL_DATA) $${filecat} $(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
+          $(INSTALL_DATA) $${filecat} $(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES/$(PACKAGE).mo; \
         done
 uninstall-mo-catalogs:
 	@$(NORMAL_UNINSTALL)
 	@for i in $(ALL_LINGUAS); do \
-	  echo " rm -f '$(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo'"; \
-	  rm -f "$(DESTDIR)$(localedir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
+	  echo " rm -f '$(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES/$(PACKAGE).mo'"; \
+	  rm -f "$(DESTDIR)$(ilocaledir)/$$i/LC_MESSAGES/$(PACKAGE).mo"; \
 	done
 
 install-data-local: install-mo-catalogs
