@@ -128,7 +128,26 @@ GWENHYWFAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
 
 
 /**
- * Get the current users home directory and copy it into the given buffer.
+ * Gets the current user's home directory and copies it into the
+ * given buffer.
+ *
+ * On Unix, this looks up the passwd entry of the current user,
+ * similar to glib's g_get_home_dir(). Watch out: The environment
+ * variable "HOME" is *not* used, not even as a fallback if there
+ * is no passwd entry (different from g_get_home_dir()).
+ *
+ * On Windows, this looks up the environment variable "HOME", then
+ * "USERPROFILE", then the Windows system directory. This
+ * behaviour is identical to glib's g_get_home_dir(). Watch out:
+ * In the normal non-mingw/msys environment, only "USERPROFILE" is
+ * set, e.g. to "c:\Documents\Yourusername". But if this function
+ * is called from within msys, then msys itself has set "HOME" to
+ * a different value, e.g. to "c:\msys\1.0\home\yourusername". In
+ * effect, your program will see a different home directory when
+ * run from within msys compared to without msys. This is weird,
+ * but it is identical to the glib behaviour and hence we leave it
+ * at that.
+ *
  * @return 0 if ok, !=0 on error
  */
 GWENHYWFAR_API

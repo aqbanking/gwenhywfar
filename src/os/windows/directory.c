@@ -159,15 +159,70 @@ int GWEN_Directory_CreatePublic(const char *path){
 }
 
 
+/** Returns TRUE (nonzero) if the given path is an absolute one. */
+static int path_is_absolute(const char *path)
+{
+  return path && 
+    ( (path[0] == '\\') ||
+      (path[0] == '/') ||
+      ( (strlen(path) > 2) && (path[1] == ':') ) );
+}
 
 int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
   int rv;
+  char *home_dir;
 
-  rv=GetWindowsDirectory(buffer, size);
-  if (rv==0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Error on GetWindowsDirectory");
-    return -1;
-  }
+  /* Taken from
+     http://svn.gnome.org/viewcvs/glib/trunk/glib/gutils.c, see
+     the lookup of the g_home_dir variable in
+     g_get_any_init_do(). */
+
+  /* We check $HOME first for Win32, though it is a last resort for Unix
+   * where we prefer the results of getpwuid().
+   */
+  home_dir = getenv ("HOME");
+
+  /* Only believe HOME if it is an absolute path and exists */
+  if (home_dir)
+    {
+      if (!(path_is_absolute (home_dir)
+	    /* && g_file_test (home_dir, G_FILE_TEST_IS_DIR) */ 
+	    ))
+	{
+	  home_dir = NULL;
+	}
+    }
+  
+  if (!home_dir)
+    {
+      /* USERPROFILE is probably the closest equivalent to $HOME? */
+      if (getenv ("USERPROFILE") != NULL)
+	home_dir = getenv ("USERPROFILE");
+    }
+
+  /* Did we find any home_dir? Copy it to buffer. */
+  if (home_dir)
+    {
+      char *p;
+
+      rv = strlen (home_dir);
+      strncpy (buffer, home_dir, size);
+      
+      /* In case HOME is Unix-style (it happens), convert it to
+       * Windows style.
+       */
+      while ((p = strchr (buffer, '/')) != NULL)
+	*p = '\\';
+    }
+  else
+    {
+      rv=GetWindowsDirectory(buffer, size);
+      if (rv==0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Error on GetWindowsDirectory");
+	return -1;
+      }
+    }
+
   if (rv>=size) {
     DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
     return -1;

@@ -3,6 +3,12 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2007-02-09   Christian Stimming <stimming@tuhh.de>
+
+	* src/os/windows/directory.c: For GetHomeDirectory() on windows,
+	really look up the user's home directory now.  (Previously this
+	used the WindowsDirectory, but this is fixed now.).
+
 2007-01-29   Christian Stimming <stimming@tuhh.de>
 
 	* m4/binreloc.m4: Fix detection of binreloc support for
