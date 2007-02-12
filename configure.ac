@@ -461,9 +461,9 @@ for d in ${GWEN_HEADER_DIRS}; do
     esac
   done
 done
-test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" 2>/dev/null
-test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" 2>/dev/null
-test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" 2>/dev/null
+#test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" 2>/dev/null
+#test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" 2>/dev/null
+#test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" 2>/dev/null
 
 AC_SUBST(GWEN_HEADER_FILES)
 

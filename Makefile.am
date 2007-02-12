@@ -18,6 +18,17 @@ M4dir = $(datadir)/aclocal
 dist_M4_DATA = gwenhywfar.m4
 ACLOCAL_AMFLAGS = -I m4
 
+gwenhywfar/version.h: src/version.h
+	make -C ` dirname $< ` ` basename $< `
+	$(LN_S) ../$< $@
+gwenhywfar/types.h: src/types.h
+	make -C ` dirname $< ` ` basename $< `
+	$(LN_S) ../$< $@
+gwenhywfar/system.h: src/os/$(OS_TYPE)/system.h
+	make -C ` dirname $< ` ` basename $< `
+	$(LN_S) ../$< $@
+
+BUILT_SOURCES = gwenhywfar/version.h gwenhywfar/types.h gwenhywfar/system.h
 
 gwenhywfar-config: gwenhywfar-config.in
 	echo "#! /bin/sh" >gwenhywfar-config && \
