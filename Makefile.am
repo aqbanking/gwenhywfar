@@ -20,13 +20,13 @@ ACLOCAL_AMFLAGS = -I m4
 
 gwenhywfar/version.h: src/version.h
 	make -C ` dirname $< ` ` basename $< `
-	$(LN_S) ../$< $@
+	( cd gwenhywfar ; $(LN_S) ../$< ` basename $@ ` )
 gwenhywfar/types.h: src/types.h
 	make -C ` dirname $< ` ` basename $< `
-	$(LN_S) ../$< $@
+	( cd gwenhywfar ; $(LN_S) ../$< ` basename $@ ` )
 gwenhywfar/system.h: src/os/$(OS_TYPE)/system.h
 	make -C ` dirname $< ` ` basename $< `
-	$(LN_S) ../$< $@
+	( cd gwenhywfar ; $(LN_S) ../$< ` basename $@ ` )
 
 BUILT_SOURCES = gwenhywfar/version.h gwenhywfar/types.h gwenhywfar/system.h
 
