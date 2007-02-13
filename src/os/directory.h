@@ -154,6 +154,20 @@ GWENHYWFAR_API
 int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size);
 
 /**
+ * Gets the directory to use for temporary files and copies it
+ * into the given buffer.
+ *
+ * This is found from inspecting the environment variables TMPDIR,
+ * TMP, and TEMP in that order. If none of those are defined,
+ * "/tmp" is returned on UNIX and "C:\" on Windows. This is
+ * similar to glib's g_get_tmp_dir().
+ *
+ * @return 0 if ok, !=0 on error
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size);
+
+/**
  * Gets a file path. It uses @ref MOD_PATH to either create or check for
  * the existence of a given path.
  * @return 0 if ok, !=0 on error

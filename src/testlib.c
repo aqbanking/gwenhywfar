@@ -6,6 +6,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/padd.h>
+#include <gwenhywfar/directory.h>
+#include <errno.h>
 
 
 
@@ -310,6 +312,32 @@ int test1() {
 }
 
 
+#ifndef MAX_PATH
+# define MAX_PATH 200
+#endif
+int check_directory()
+{
+  char tmpdir[MAX_PATH];
+  GWEN_DIRECTORYDATA *dir;
+  int rv;
+
+  GWEN_Directory_GetTmpDirectory(tmpdir, MAX_PATH);
+  printf("GWEN_Directory_GetTmpDirectory returns \"%s\" as tmp directory\n",
+	 tmpdir);
+
+  dir = GWEN_Directory_new();
+  rv = GWEN_Directory_Open(dir, tmpdir);
+  if (rv) {
+    /* error */
+    printf("Error on GWEN_Directory_Open(\"%s\"): errno=%d: %s\n",
+	   tmpdir, errno, strerror(errno));
+  } else {
+    rv = GWEN_Directory_Close(dir);
+  }
+  GWEN_Directory_free(dir);
+  return rv;
+}
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -321,12 +349,10 @@ int main(int argc, char **argv) {
     cmd="check";
 
   if (strcasecmp(cmd, "check")==0) {
-    rv=check1();
-    if (rv)
-      return rv;
-    rv=check2();
-    if (rv)
-      return rv;
+    rv=
+      check1() ||
+      check2() ||
+      check_directory();
   }
   else if (strcasecmp(cmd, "test1")==0) {
     rv=test1();
@@ -335,7 +361,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Unknown command \"%s\"\n", cmd);
     return 1;
   }
-  return 0;
+  return rv;
 }
 
 

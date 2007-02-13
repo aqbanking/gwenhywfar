@@ -357,8 +357,30 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
 
 
 
+int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size)
+{
+  const char *tmp_dir;
+  assert(buffer);
 
+  /* Copied from http://svn.gnome.org/viewcvs/glib/trunk/glib/gutils.c */
+  tmp_dir = getenv ("TMPDIR");
+  if (!tmp_dir)
+    tmp_dir = getenv ("TMP");
+  if (!tmp_dir)
+    tmp_dir = getenv ("TEMP");
 
+  if (!tmp_dir)
+    {
+#ifdef OS_WIN32
+      tmp_dir = "C:\\";
+#else  
+      tmp_dir = "/tmp";
+#endif	/* !OS_WIN32 */
+    }
+
+  strncpy (buffer, tmp_dir, size);
+  return 0;
+}
 
 
 
