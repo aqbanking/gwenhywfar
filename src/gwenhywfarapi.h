@@ -70,6 +70,26 @@
 # define GWENHYWFAR_CB
 #endif
 
+#if GWENHYWFAR_SYS_IS_WINDOWS
+# define GWEN_DIR_SEPARATOR           '\\'
+# define GWEN_DIR_SEPARATOR_S         "\\"
+# define GWEN_SEARCHPATH_SEPARATOR    ';'
+# define GWEN_SEARCHPATH_SEPARATOR_S  ";"
+#else
+/** The directory separator character. This is '/' on UNIX
+    machines and '\' under Windows. Since gwenhywfar-2.5.4. */
+# define GWEN_DIR_SEPARATOR           '/'
+/** The directory separator as a string. This is "/" on UNIX
+    machines and "\" under Windows. Since gwenhywfar-2.5.4. */
+# define GWEN_DIR_SEPARATOR_S         "/"
+/** The search path separator character. This is ':' on UNIX
+    machines and ';' under Windows. Since gwenhywfar-2.5.4. */
+# define GWEN_SEARCHPATH_SEPARATOR    ':'
+/** The search path separator as a string. This is ":" on UNIX
+    machines and ";" under Windows. Since gwenhywfar-2.5.4. */
+# define GWEN_SEARCHPATH_SEPARATOR_S  ":"
+#endif
+
 #ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
 # define GWENHYWFAR_EXPORT __attribute__((visibility("default")))
 # define GWENHYWFAR_NOEXPORT __attribute__((visibility("hidden")))

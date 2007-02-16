@@ -460,7 +460,7 @@ int GWEN_LoadPluginDescrsByType(const char *path,
 
 	  GWEN_Buffer_Crop(nbuf, 0, pathLen);
 	  GWEN_Buffer_SetPos(nbuf, pathLen);
-	  GWEN_Buffer_AppendByte(nbuf, '/');
+	  GWEN_Buffer_AppendByte(nbuf, GWEN_DIR_SEPARATOR);
 	  GWEN_Buffer_AppendString(nbuf, nbuffer);
 
 	  if (stat(GWEN_Buffer_GetStart(nbuf), &st)) {

@@ -3,6 +3,12 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2007-02-16   Christian Stimming <stimming@tuhh.de>
+
+	* src/gwenhywfarapi.h: Add common macros for DIR_SEPARATOR and
+	SEARCHPATH_SEPARATOR, both as character and string. Naming is
+	similar to glib convention.
+
 2007-02-13   Christian Stimming <stimming@tuhh.de>
 
 	* src/os/directory.h: Add GWEN_Directory_GetTmpDirectory()
