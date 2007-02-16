@@ -1,5 +1,15 @@
 ===========================================================================
-                    gwenhywfar-2.5.3 (2007/02/09)
+                    gwenhywfar-2.5.4 (2007/02/16, r1165)
+===========================================================================
+
+Another bugfix release for windows: Fix copying of generated
+headers that would give wrong compile on windows. Add functions
+for lookup of a temp directory and macros for the directory
+separator character.
+
+
+===========================================================================
+                    gwenhywfar-2.5.3 (2007/02/09, r1150)
 ===========================================================================
 
 Bugfix release for windows: Home directory lookup is fixed
@@ -8,7 +18,7 @@ check tests for INHERIT macros are added.
 
 
 ===========================================================================
-                    gwenhywfar-2.5.2 (2007/01/19)
+                    gwenhywfar-2.5.2 (2007/01/19, r1122)
 ===========================================================================
 
 This release finally fixes additional build problems on

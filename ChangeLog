@@ -3,6 +3,10 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+===========================================================================
+MARK: released gwenhywfar-2.5.4 (2007/02/16, r1165)
+===========================================================================
+
 2007-02-16   Christian Stimming <stimming@tuhh.de>
 
 	* src/gwenhywfarapi.h: Add common macros for DIR_SEPARATOR and
@@ -15,8 +19,13 @@
 	function to have a uniform method for getting a temporary
 	directory, similar to g_get_tmp_dir().
 
+2007-02-12   Christian Stimming <stimming@tuhh.de>
+
+	* configure.ac, Makefile.am: Fix symlinking/copying generated
+	header files. Necessary for win32.
+
 ===========================================================================
-MARK: released gwenhywfar-2.5.3 (2007/02/09)
+MARK: released gwenhywfar-2.5.3 (2007/02/09, r1150)
 ===========================================================================
 
 2007-02-09   Christian Stimming <stimming@tuhh.de>
@@ -31,7 +40,7 @@ MARK: released gwenhywfar-2.5.3 (2007/02/09)
 	autoconf>=2.60.
 
 ===========================================================================
-MARK: released gwenhywfar-2.5.2 (2007/01/19)
+MARK: released gwenhywfar-2.5.2 (2007/01/19, r1122)
 ===========================================================================
 
 2007-01-17   Christian Stimming <stimming@tuhh.de>
