@@ -7,6 +7,7 @@
 #include <gwenhywfar/md.h>
 #include <gwenhywfar/padd.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/list.h>
 #include <errno.h>
 
 
@@ -197,7 +198,7 @@ int check2() {
   int i;
 
   fprintf(stderr, "Check 2 ...");
-  for (i=0; i<50; i++) {
+  for (i=0; i<30; i++) {
     int rv;
 
     fprintf(stderr, ".");
@@ -338,6 +339,103 @@ int check_directory()
   return rv;
 }
 
+#define ASSERT(expr) if (!(expr)) \
+ { printf("FAILED assertion in " __FILE__ ": %d: " #expr "\n", \
+	  __LINE__); return -1; }
+int check_list()
+{
+  const char *e1 = "one", *e2 = "two", *e3 = "three";
+  GWEN_LIST *list;
+  GWEN_LIST_ITERATOR *iter;
+
+  list = GWEN_List_new();
+  ASSERT(GWEN_List_GetSize(list) == 0);
+  GWEN_List_PushBack(list, (void*) e2);
+  ASSERT(GWEN_List_GetSize(list) == 1);
+  GWEN_List_PushBack(list, (void*) e3);
+  ASSERT(GWEN_List_GetSize(list) == 2);
+  GWEN_List_PushFront(list, (void*) e1);
+  ASSERT(GWEN_List_GetSize(list) == 3);
+  ASSERT(GWEN_List_GetFront(list) == e1);
+  ASSERT(GWEN_List_GetBack(list) == e3);
+
+  GWEN_List_Remove(list, e2);
+  ASSERT(GWEN_List_GetSize(list) == 2);
+  ASSERT(GWEN_List_GetFront(list) == e1);
+  ASSERT(GWEN_List_GetBack(list) == e3);
+
+  GWEN_List_PopBack(list);
+  ASSERT(GWEN_List_GetSize(list) == 1);
+  ASSERT(GWEN_List_GetFront(list) == e1);
+  ASSERT(GWEN_List_GetBack(list) == e1);
+
+  GWEN_List_PushBack(list, (void*) e2);
+  ASSERT(GWEN_List_GetSize(list) == 2);
+  ASSERT(GWEN_List_GetFront(list) == e1);
+  ASSERT(GWEN_List_GetBack(list) == e2);
+
+  iter = GWEN_List_First(list);
+  ASSERT(GWEN_ListIterator_Data(iter) == e1);
+  ASSERT(GWEN_ListIterator_Next(iter) == e2);
+  ASSERT(GWEN_ListIterator_Data(iter) == e2);
+
+  ASSERT(GWEN_ListIterator_Previous(iter) == e1);
+  GWEN_List_Erase(list, iter);
+  ASSERT(GWEN_List_GetSize(list) == 1);
+  ASSERT(GWEN_List_GetFront(list) == e2);
+  ASSERT(GWEN_List_GetBack(list) == e2);
+
+  GWEN_List_Clear(list);
+  ASSERT(GWEN_List_GetSize(list) == 0);
+
+  GWEN_List_free(list);
+  GWEN_ListIterator_free(iter);
+  printf("check_list: All tests passed.\n");
+  return 0;
+}
+
+int check_constlist()
+{
+  const char *e1 = "one", *e2 = "two", *e3 = "three";
+  GWEN_CONSTLIST *list;
+  GWEN_CONSTLIST_ITERATOR *iter;
+
+  list = GWEN_ConstList_new();
+  ASSERT(GWEN_ConstList_GetSize(list) == 0);
+  GWEN_ConstList_PushBack(list, e2);
+  ASSERT(GWEN_ConstList_GetSize(list) == 1);
+  GWEN_ConstList_PushBack(list, e3);
+  ASSERT(GWEN_ConstList_GetSize(list) == 2);
+  GWEN_ConstList_PushFront(list, e1);
+  ASSERT(GWEN_ConstList_GetSize(list) == 3);
+  ASSERT(GWEN_ConstList_GetFront(list) == e1);
+  ASSERT(GWEN_ConstList_GetBack(list) == e3);
+
+  GWEN_ConstList_PopBack(list);
+  ASSERT(GWEN_ConstList_GetSize(list) == 2);
+  ASSERT(GWEN_ConstList_GetFront(list) == e1);
+  ASSERT(GWEN_ConstList_GetBack(list) == e2);
+
+  GWEN_ConstList_PushBack(list, e3);
+  ASSERT(GWEN_ConstList_GetSize(list) == 3);
+  ASSERT(GWEN_ConstList_GetFront(list) == e1);
+  ASSERT(GWEN_ConstList_GetBack(list) == e3);
+
+  iter = GWEN_ConstList_First(list);
+  ASSERT(GWEN_ConstListIterator_Data(iter) == e1);
+  ASSERT(GWEN_ConstListIterator_Next(iter) == e2);
+  ASSERT(GWEN_ConstListIterator_Data(iter) == e2);
+
+  ASSERT(GWEN_ConstListIterator_Previous(iter) == e1);
+
+  GWEN_ConstList_Clear(list);
+  ASSERT(GWEN_ConstList_GetSize(list) == 0);
+
+  GWEN_ConstList_free(list);
+  GWEN_ConstListIterator_free(iter);
+  printf("check_constlist: All tests passed.\n");
+  return 0;
+}
 
 int main(int argc, char **argv) {
   int rv;
@@ -352,7 +450,9 @@ int main(int argc, char **argv) {
     rv=
       check1() ||
       check2() ||
-      check_directory();
+      check_directory() ||
+      check_list() ||
+      check_constlist();
   }
   else if (strcasecmp(cmd, "test1")==0) {
     rv=test1();
