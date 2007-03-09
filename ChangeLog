@@ -3,6 +3,13 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+Note: Need to increment SO_MAJOR, SO_AGE and also VERSION_MINOR at next release.
+	
+2007-03-09  Christian Stimming  <stimming@tuhh.de>
+
+	* src/base/list.h: Add functions IsEmpty, FindIter, Contains to
+	make available list functions more complete.
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.4 (2007/02/16, r1165)
 ===========================================================================

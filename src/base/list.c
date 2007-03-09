@@ -319,6 +319,9 @@ unsigned int GWEN_List_GetSize(const GWEN_LIST *l){
   return l->listPtr->size;
 }
 
+int GWEN_List_IsEmpty(const GWEN_LIST *l) {
+  return GWEN_List_GetSize(l) == 0;
+}
 
 
 void GWEN_List_PopBack(GWEN_LIST *l){
@@ -529,8 +532,8 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it){
 
 
 
-void GWEN_List_Remove(GWEN_LIST *l, const void *p) {
-  GWEN_LIST_ITERATOR *li;
+GWEN_LIST_ITERATOR *GWEN_List_FindIter(GWEN_LIST *l, const void *p) {
+ GWEN_LIST_ITERATOR *li;
 
   li=GWEN_List_First(l);
   if (li) {
@@ -539,12 +542,32 @@ void GWEN_List_Remove(GWEN_LIST *l, const void *p) {
     d=GWEN_ListIterator_Data(li);
     while(d) {
       if (d==p) {
-        GWEN_List_Erase(l, li);
-        break;
+        return li;
       }
       d=GWEN_ListIterator_Next(li);
     }
     GWEN_ListIterator_free(li);
+  }
+  return 0;
+}
+
+const void *GWEN_List_Contains(GWEN_LIST *l, const void *p) {
+  GWEN_LIST_ITERATOR *li;
+
+  li = GWEN_List_FindIter(l, p);
+  if (li) {
+    GWEN_ListIterator_free(li);
+    return p;
+  }
+  return 0;
+}
+
+void GWEN_List_Remove(GWEN_LIST *l, const void *p) {
+  GWEN_LIST_ITERATOR *li;
+
+  li = GWEN_List_FindIter(l, p);
+  if (li) {
+    GWEN_List_Erase(l, li);
   }
 }
 
@@ -778,8 +801,12 @@ const void *GWEN_ConstList_GetBack(GWEN_CONSTLIST *l){
 
 
 
-unsigned int GWEN_ConstList_GetSize(GWEN_CONSTLIST *l){
+unsigned int GWEN_ConstList_GetSize(const GWEN_CONSTLIST *l){
   return GWEN_List_GetSize(l);
+}
+
+int GWEN_ConstList_IsEmpty(const GWEN_LIST *l) {
+  return GWEN_ConstList_GetSize(l) == 0;
 }
 
 
@@ -831,6 +858,45 @@ const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *l,
 }
 
 
+
+GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_FindIter(const GWEN_CONSTLIST *l, const void *p) {
+ GWEN_CONSTLIST_ITERATOR *li;
+
+  li=GWEN_ConstList_First(l);
+  if (li) {
+    const void *d;
+
+    d=GWEN_ConstListIterator_Data(li);
+    while(d) {
+      if (d==p) {
+        return li;
+      }
+      d=GWEN_ConstListIterator_Next(li);
+    }
+    GWEN_ConstListIterator_free(li);
+  }
+  return 0;
+}
+
+const void *GWEN_ConstList_Contains(const GWEN_CONSTLIST *l, const void *p) {
+  GWEN_CONSTLIST_ITERATOR *li;
+
+  li = GWEN_ConstList_FindIter(l, p);
+  if (li) {
+    GWEN_ConstListIterator_free(li);
+    return p;
+  }
+  return 0;
+}
+
+void GWEN_ConstList_Remove(GWEN_CONSTLIST *l, const void *p) {
+  GWEN_CONSTLIST_ITERATOR *li;
+
+  li = GWEN_ConstList_FindIter(l, p);
+  if (li) {
+    GWEN_ConstList_Erase(l, li);
+  }
+}
 
 GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_First(const GWEN_CONSTLIST *l){
   return GWEN_List_First(l);

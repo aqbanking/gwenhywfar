@@ -168,9 +168,14 @@ GWEN_REFPTR *GWEN_List_GetBackRefPtr(const GWEN_LIST *l);
 GWENHYWFAR_API
 void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it);
 
-
+/** 
+ * Searches for the first occurrence of the "element" pointer and
+ * erases that element from the list. (The element itself is not
+ * freed.) I.e. this function calls GWEN_List_Erase on the first
+ * occurrence found of "element".
+ */
 GWENHYWFAR_API
-void GWEN_List_Remove(GWEN_LIST *l, const void *p);
+void GWEN_List_Remove(GWEN_LIST *l, const void *element);
 
 
 /** Returns the size of this list, i.e. the number of elements in this
@@ -180,6 +185,11 @@ void GWEN_List_Remove(GWEN_LIST *l, const void *p);
  * operation. */
 GWENHYWFAR_API
 unsigned int GWEN_List_GetSize(const GWEN_LIST *l);
+
+/** Returns nonzero (TRUE) if this list is empty, and zero (FALSE) if
+ * this list is not empty. */
+GWENHYWFAR_API
+int GWEN_List_IsEmpty(const GWEN_LIST *l);
 
 GWENHYWFAR_API
 GWEN_REFPTR_INFO *GWEN_List_GetRefPtrInfo(const GWEN_LIST *l);
@@ -208,6 +218,22 @@ void GWEN_List_PopFront(GWEN_LIST *l);
 GWENHYWFAR_API
 void GWEN_List_Clear(GWEN_LIST *l);
 
+/** 
+ * Finds the LIST_ITERATOR position of the given element. The
+ * returned LIST_ITERATOR will be owned by the caller and must be
+ * freed when no longer in use. If the list does not contain the
+ * element, NULL will be returned.
+ */
+GWENHYWFAR_API
+GWEN_LIST_ITERATOR *GWEN_List_FindIter(GWEN_LIST *l, const void *element);
+
+/**
+ * Searches whether the list contains the given element. If it does,
+ * the pointer to the element is returned. Otherwise, NULL is
+ * returned.
+ */
+GWENHYWFAR_API
+const void *GWEN_List_Contains(GWEN_LIST *l, const void *element);
 
 /** Traverses the list, calling the callback function 'func' on
  * each list element.  Traversal will stop when 'func' returns a
@@ -337,7 +363,12 @@ const void *GWEN_ConstList_GetBack(GWEN_CONSTLIST *l);
  * This number is counted in the list metadata, so this is a cheap
  * operation. */
 GWENHYWFAR_API
-unsigned int GWEN_ConstList_GetSize(GWEN_CONSTLIST *l);
+unsigned int GWEN_ConstList_GetSize(const GWEN_CONSTLIST *l);
+
+/** Returns nonzero (TRUE) if this list is empty, and zero (FALSE) if
+ * this list is not empty. */
+GWENHYWFAR_API
+int GWEN_ConstList_IsEmpty(const GWEN_LIST *l);
 
 /**
  * Removes the list's last element from the list. (The element is not
@@ -376,6 +407,32 @@ GWENHYWFAR_API
 const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *list, 
 				   GWEN_CONSTLIST_FOREACH_CB func,
 				   void *user_data);
+
+/** 
+ * Finds the LIST_ITERATOR position of the given element. The
+ * returned LIST_ITERATOR will be owned by the caller and must be
+ * freed when no longer in use. If the list does not contain the
+ * element, NULL will be returned.
+ */
+GWENHYWFAR_API
+GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_FindIter(const GWEN_CONSTLIST *l, const void *element);
+
+/**
+ * Searches whether the list contains the given element. If it does,
+ * the pointer to the element is returned. Otherwise, NULL is
+ * returned.
+ */
+GWENHYWFAR_API
+const void *GWEN_ConstList_Contains(const GWEN_CONSTLIST *l, const void *element);
+
+/** 
+ * Searches for the first occurrence of the "element" pointer and
+ * erases that element from the list. (The element itself is not
+ * freed.) I.e. this function calls GWEN_List_Erase on the first
+ * occurrence found of "element".
+ */
+GWENHYWFAR_API
+void GWEN_ConstList_Remove(GWEN_CONSTLIST *l, const void *element);
 
 /** Return an iterator pointing to the first element in the list */
 GWENHYWFAR_API
