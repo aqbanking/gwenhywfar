@@ -70,6 +70,7 @@ extern "C" {
   decl void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it); \
   decl void pr##_List2_Remove(t##_LIST2 *l, const t *p); \
   decl unsigned int pr##_List2_GetSize(const t##_LIST2 *l); \
+  decl int pr##_List2_IsEmpty(const t##_LIST2 *l); \
   decl void pr##_List2_PopBack(t##_LIST2 *l); \
   decl void pr##_List2_PopFront(t##_LIST2 *l); \
   decl void pr##_List2_Clear(t##_LIST2 *l); \
@@ -81,6 +82,8 @@ extern "C" {
   decl t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
   decl void pr##_List2Iterator_IncLinkCount(t##_LIST2_ITERATOR *li); \
+  decl t##_LIST2_ITERATOR *pr##_List2_FindIter(t##_LIST2 *l, const t *p); \
+  decl const t *pr##_List2_Contains(t##_LIST2 *l, const t *p); \
   decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH, void *user_data);
 
   /** This macro should be used in applications, not in libraries. In
@@ -140,6 +143,9 @@ extern "C" {
   unsigned int pr##_List2_GetSize(const t##_LIST2 *l){ \
     return GWEN_List_GetSize((GWEN_LIST*) l); \
   }\
+  int pr##_List2_IsEmpty(const t##_LIST2 *l){ \
+    return GWEN_List_IsEmpty((GWEN_LIST*) l); \
+  }\
   \
   void pr##_List2_PopBack(t##_LIST2 *l){ \
     GWEN_List_PopBack((GWEN_LIST*) l); \
@@ -190,6 +196,14 @@ extern "C" {
     return GWEN_ListIterator_GetLinkCount((const GWEN_LIST_ITERATOR*)li); \
   } \
   \
+  t##_LIST2_ITERATOR *pr##_List2_FindIter(t##_LIST2 *l, const t *p){ \
+    return (t##_LIST2_ITERATOR*) GWEN_List_FindIter((GWEN_LIST *)l, p); \
+  } \
+  \
+  const t *pr##_List2_Contains(t##_LIST2 *l, const t *p){ \
+    return (const t*) GWEN_List_Contains((GWEN_LIST*)l, p); \
+  } \
+  \
   t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH fn, void *user_data){ \
     t##_LIST2_ITERATOR *it; \
     t *el; \
@@ -226,6 +240,7 @@ extern "C" {
   decl const t *pr##_ConstList2_GetFront(const t##_CONSTLIST2 *l); \
   decl const t *pr##_ConstList2_GetBack(const t##_CONSTLIST2 *l); \
   decl unsigned int pr##_ConstList2_GetSize(const t##_CONSTLIST2 *l); \
+  decl int pr##_ConstList2_IsEmpty(const t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_PopFront(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_Clear(t##_CONSTLIST2 *l); \
@@ -236,6 +251,9 @@ extern "C" {
   decl const t *pr##_ConstList2Iterator_Previous(t##_CONSTLIST2_ITERATOR *li); \
   decl const t *pr##_ConstList2Iterator_Next(t##_CONSTLIST2_ITERATOR *li); \
   decl const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li); \
+  decl t##_CONSTLIST2_ITERATOR *pr##_ConstList2_FindIter(t##_CONSTLIST2 *l, const t *p); \
+  decl const t *pr##_ConstList2_Contains(t##_CONSTLIST2 *l, const t *p); \
+  decl void pr##_ConstList2_Remove(t##_CONSTLIST2 *l, const t *p); \
   decl const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH, void *user_data);
 
   /* This macro should be used in applications, not in libraries. In
@@ -273,6 +291,10 @@ extern "C" {
   \
   unsigned int pr##_ConstList2_GetSize(const t##_CONSTLIST2 *l){ \
     return GWEN_ConstList_GetSize((GWEN_CONSTLIST*) l); \
+  }\
+  \
+  int pr##_ConstList2_IsEmpty(const t##_CONSTLIST2 *l){ \
+    return GWEN_ConstList_IsEmpty((GWEN_CONSTLIST*) l); \
   }\
   \
   void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l){ \
@@ -314,6 +336,18 @@ extern "C" {
   \
   const t *pr##_ConstList2Iterator_Data(t##_CONSTLIST2_ITERATOR *li) { \
     return (t*) GWEN_ConstListIterator_Data((GWEN_CONSTLIST_ITERATOR*)li); \
+  } \
+  \
+  t##_CONSTLIST2_ITERATOR *pr##_ConstList2_FindIter(t##_CONSTLIST2 *l, const t *p){ \
+    return (t##_CONSTLIST2_ITERATOR*) GWEN_ConstList_FindIter((GWEN_CONSTLIST *)l, p); \
+  } \
+  \
+  const t *pr##_ConstList2_Contains(t##_CONSTLIST2 *l, const t *p){ \
+    return (const t*) GWEN_ConstList_Contains((GWEN_CONSTLIST*)l, p); \
+  } \
+  \
+  void pr##_ConstList2_Remove(t##_CONSTLIST2 *l, const t *p){ \
+    GWEN_ConstList_Remove((GWEN_CONSTLIST*) l, p); \
   } \
   \
   const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH fn, void *user_data){ \

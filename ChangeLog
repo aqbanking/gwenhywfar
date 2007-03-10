@@ -5,6 +5,11 @@
 
 Note: Need to increment SO_MAJOR, SO_AGE and also VERSION_MINOR at next release.
 	
+2007-03-10  Christian Stimming  <stimming@tuhh.de>
+
+	* src/base/list2.h: Add macros for functions IsEmpty, FindIter,
+	Contains to make available list functions more complete.
+
 2007-03-09  Christian Stimming  <stimming@tuhh.de>
 
 	* src/base/list.h: Add functions IsEmpty, FindIter, Contains to
