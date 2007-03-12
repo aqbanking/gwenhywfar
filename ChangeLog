@@ -4,20 +4,30 @@
   ------------------------------------------------------------------------
 
 Note: Need to increment SO_MAJOR, SO_AGE and also VERSION_MINOR at next release.
-	
+
+
+2007/03/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- src/os/posix/process.c: now use GWEN_BUFFER to collect arguments for
+  the process to start instead of fixed buffers
+
+
 2007-03-10  Christian Stimming  <stimming@tuhh.de>
 
 	* src/base/list2.h: Add macros for functions IsEmpty, FindIter,
 	Contains to make available list functions more complete.
+
 
 2007-03-09  Christian Stimming  <stimming@tuhh.de>
 
 	* src/base/list.h: Add functions IsEmpty, FindIter, Contains to
 	make available list functions more complete.
 
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.4 (2007/02/16, r1165)
 ===========================================================================
+
 
 2007-02-16   Christian Stimming <stimming@tuhh.de>
 
@@ -25,20 +35,24 @@ MARK: released gwenhywfar-2.5.4 (2007/02/16, r1165)
 	SEARCHPATH_SEPARATOR, both as character and string. Naming is
 	similar to glib convention.
 
+
 2007-02-13   Christian Stimming <stimming@tuhh.de>
 
 	* src/os/directory.h: Add GWEN_Directory_GetTmpDirectory()
 	function to have a uniform method for getting a temporary
 	directory, similar to g_get_tmp_dir().
 
+
 2007-02-12   Christian Stimming <stimming@tuhh.de>
 
 	* configure.ac, Makefile.am: Fix symlinking/copying generated
 	header files. Necessary for win32.
 
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.3 (2007/02/09, r1150)
 ===========================================================================
+
 
 2007-02-09   Christian Stimming <stimming@tuhh.de>
 
@@ -46,14 +60,17 @@ MARK: released gwenhywfar-2.5.3 (2007/02/09, r1150)
 	really look up the user's home directory now.  (Previously this
 	used the WindowsDirectory, but this is fixed now.).
 
+
 2007-01-29   Christian Stimming <stimming@tuhh.de>
 
 	* m4/binreloc.m4: Fix detection of binreloc support for
 	autoconf>=2.60.
 
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.2 (2007/01/19, r1122)
 ===========================================================================
+
 
 2007-01-17   Christian Stimming <stimming@tuhh.de>
 
@@ -65,9 +82,11 @@ MARK: released gwenhywfar-2.5.2 (2007/01/19, r1122)
 	libtool libraries are looked for; alternatively, the user could
 	set ssl_lib and ssl_libraries externally.
 
+
 ===========================================================================
 MARK: released gwenhywfar-2.5.1 (2007/01/16)
 ===========================================================================
+
 
 2007-01-12  Christian Stimming  <stimming@tuhh.de>
 
@@ -75,11 +94,13 @@ MARK: released gwenhywfar-2.5.1 (2007/01/16)
 	"-lgwenhywfar" without so-version because libtool will lookup the
 	library name without so-version number.
 
+
 2007-01-09   Christian Stimming <stimming@tuhh.de>
 
 	* src/*: Add missing __stdcall decoration on callback functions as
 	needed on win32 since r1087 (2006-09-14). In other words,
 	gwenhywfar-2.4.1 and 2.5.0 are probably broken on win32.
+
 
 ===========================================================================
 MARK: released gwenhywfar-2.5.0 (2006/12/25)

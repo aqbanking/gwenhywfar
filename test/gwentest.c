@@ -185,12 +185,14 @@ int testDBfile(int argc, char **argv) {
   db=GWEN_DB_Group_new("Config");
 
   fprintf(stderr,"Reading file\n");
-  if (GWEN_DB_ReadFile(db, "test.db", GWEN_DB_FLAGS_DEFAULT)) {
+  if (GWEN_DB_ReadFile(db, "test.db",
+		       GWEN_DB_FLAGS_DEFAULT |
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }
-  fprintf(stderr, "DB is:\n");
-  GWEN_DB_Dump(db, stderr, 2);
+  //fprintf(stderr, "DB is:\n");
+  //GWEN_DB_Dump(db, stderr, 2);
   fprintf(stderr,"Releasing DB\n");
   GWEN_DB_Group_free(db);
   return 0;
@@ -4402,6 +4404,55 @@ int testSignals3(int argc, char **argv) {
 
 
 
+int testDbReadSpeed() {
+  GWEN_TYPE_UINT32 count=0;
+  GWEN_BUFFEREDIO *bio;
+  int fd;
+  const char *fname;
+
+  fname="speed.db";
+  fprintf(stdout, "Loading database, this will take a few minutes ...\n");
+  fd=open(fname, O_RDONLY | O_EXCL);
+  if (fd==-1) {
+    DBG_ERROR(0, "open(%s): %s", fname, strerror(errno));
+    return -1;
+  }
+  bio=GWEN_BufferedIO_File_new(fd);
+  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
+
+  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+    GWEN_DB_NODE *dbT;
+    int pos;
+    char numbuf[32];
+
+    dbT=GWEN_DB_Group_new("bank");
+    pos=GWEN_BufferedIO_GetBytesRead(bio);
+    if (GWEN_DB_ReadFromStream(dbT, bio,
+			       GWEN_DB_FLAGS_DEFAULT |
+			       GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |
+                               GWEN_PATH_FLAGS_CREATE_GROUP)) {
+      DBG_ERROR(0, "Could not load file \"%s\"", fname);
+      GWEN_DB_Group_free(dbT);
+      GWEN_BufferedIO_Abandon(bio);
+      GWEN_BufferedIO_free(bio);
+      return -1;
+    }
+
+    GWEN_DB_Group_free(dbT);
+    count++;
+    snprintf(numbuf, sizeof(numbuf), "%08x", count);
+    if (count & ~31) {
+      fprintf(stdout, "%u\r", count);
+    }
+  } /* while */
+  fprintf(stdout, "\n");
+  fprintf(stdout, "  Read %d banks.\n", count);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -4553,6 +4604,8 @@ int main(int argc, char **argv) {
     rv=testSignals2(argc, argv);
   else if (strcasecmp(argv[1], "signals3")==0)
     rv=testSignals3(argc, argv);
+  else if (strcasecmp(argv[1], "dbrspeed")==0)
+    rv=testDbReadSpeed();
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();

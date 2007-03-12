@@ -163,10 +163,10 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 				      const char *prg,
 				      const char *args){
   pid_t pid;
-  char buffer[128];
   char *argv[32];
   int argc;
   const char *p, *p2;
+  GWEN_BUFFER *wbuf;
 
   assert(pr);
 
@@ -255,23 +255,26 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   argv[0]=strdup(prg);
   argc++;
   p=args;
+  wbuf=GWEN_Buffer_new(0, 256, 0, 1);
   while(argc<32 && *p) {
     while(*p && isspace((int)*p))
       p++;
     if (!(*p))
       break;
-    p2=GWEN_Text_GetWord(p, " ",
-			 buffer, sizeof(buffer),
-			 GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
-			 GWEN_TEXT_FLAGS_DEL_QUOTES |
-			 GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
-			 &p);
-    if (!p2)
+    if (GWEN_Text_GetWordToBuffer(p, " ",
+				  wbuf,
+				  GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
+				  GWEN_TEXT_FLAGS_DEL_QUOTES |
+				  GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
+				  &p))
       break;
 
+    p2=GWEN_Buffer_GetStart(wbuf);
     argv[argc]=strdup(p2);
+    GWEN_Buffer_Reset(wbuf);
     argc++;
   } /* while */
+  GWEN_Buffer_free(wbuf);
   argv[argc]=0;
   /* parameters ready, exec */
   execvp(prg, argv);
