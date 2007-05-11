@@ -263,14 +263,12 @@ int GWEN_Logger_Open(const char *logDomain,
 	    LOG_CONS |
 	    LOG_PID,
 	    fac);
-    lg->logType=GWEN_LoggerType_Syslog;
     lg->enabled=1;
   } /* if syslog */
 #endif /* ifdef HAVE_SYSLOG_H */
 
   else {
-    /* console */
-    lg->logType=GWEN_LoggerType_Console;
+    /* console or function */
     lg->enabled=1;
   }
 

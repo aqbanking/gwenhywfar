@@ -5,6 +5,10 @@
 
 Note: Need to increment SO_MAJOR, SO_AGE and also VERSION_MINOR at next release.
 
+2007-05-11  Christian Stimming  <stimming@tuhh.de>
+
+	* src/base/logger.c: Fix LoggerType_Function. By Hendrik Weimer.
+
 
 2007/03/12: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
