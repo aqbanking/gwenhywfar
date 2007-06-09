@@ -3,7 +3,9 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
-Note: Need to increment SO_MAJOR, SO_AGE and also VERSION_MINOR at next release.
+===========================================================================
+MARK: released gwenhywfar-2.6.0 (2007/06/09, r1225)
+===========================================================================
 
 2007-05-11  Christian Stimming  <stimming@tuhh.de>
 
