@@ -12,9 +12,9 @@ found_dir=""
 ls=$1
 ld="$2"
 for li in $ld; do
-    case "$OS_TYPE" in 
-      windows) fname="$li\\$ls" ;;
-      *)       fname="$li/$ls"  ;;
+    case "$build" in
+      *-win32*) fname="$li\\$ls" ;;
+      *)        fname="$li/$ls"  ;;
     esac
     
     if test -r "$fname"; then
