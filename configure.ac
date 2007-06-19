@@ -399,12 +399,12 @@ AC_SUBST(USE_CRYPT)
 #
 # check for LibXML for test/gwentest.c
 #
-AC_CHECK_PROG(XML2_CONFIG, xml2-config, xml2-config, NO)
+AC_CHECK_PROG(PKG_CONFIG, pkg-config, pkg-config, NO)
 AC_MSG_CHECKING([whether LibXML2 example should be used])
-if test "x${XML2_CONFIG}" != "xNO"; then
+if test "x${PKG_CONFIG}" != "xNO" && $PKG_CONFIG --exists libxml-2.0; then
   AC_DEFINE(USE_LIBXML2, 1, [whether LibXML2 example should be used])
-  xml_includes="`${XML2_CONFIG} --cflags`"
-  xml_libraries="`${XML2_CONFIG} --libs`"
+  xml_includes="`${PKG_CONFIG} --cflags libxml-2.0`"
+  xml_libraries="`${PKG_CONFIG} --libs libxml-2.0`"
   AC_MSG_RESULT([yes])
 else
   AC_MSG_RESULT([no])
