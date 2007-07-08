@@ -1,3 +1,7 @@
+===========================================================================
+Released gwenhywfar-2.6.1 (2007-07-08, r1261)
+===========================================================================
+
 2007-07-08  Christian Stimming  <stimming@tuhh.de>
 
 	* src/base/pathmanager.c, plugin.c: Change all registry key

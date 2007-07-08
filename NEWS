@@ -1,4 +1,13 @@
 ===========================================================================
+Released gwenhywfar-2.6.1 (2007-07-08, r1261)
+===========================================================================
+
+Windows registry issues have been solved. Some very minor bugs have
+been fixed. Cross-compiling is now supported. This release is only
+interesting for windows or cross-compiling users.
+
+
+===========================================================================
                     gwenhywfar-2.6.0 (2007/06/09, r1225)
 ===========================================================================
 
