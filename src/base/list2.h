@@ -207,6 +207,7 @@ extern "C" {
   t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH fn, void *user_data){ \
     t##_LIST2_ITERATOR *it; \
     t *el; \
+    if (!l) return 0; \
     \
     it=pr##_List2_First(l); \
     if (!it) \
@@ -353,6 +354,7 @@ extern "C" {
   const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH fn, void *user_data){ \
     t##_CONSTLIST2_ITERATOR *it; \
     const t *el; \
+    if (!l) return 0; \
     \
     it=pr##_ConstList2_First(l); \
     if (!it) \

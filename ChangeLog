@@ -3,6 +3,11 @@
   ! as soon as the next release of GnuCash is out (2.0.0)                !
   ------------------------------------------------------------------------
 
+2007-07-08  Christian Stimming  <stimming@tuhh.de>
+
+	* src/base/list2.h: Add sanity check in ForEach so that calling
+	this with a NULL list doesn't crash.
+
 2007-06-17  Andreas Köhler  <andi5.py@gmx.net>
 
 	* configure.ac: For the gwentest libxml2 check and --cflags and
