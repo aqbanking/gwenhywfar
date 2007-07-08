@@ -118,6 +118,11 @@ int GWEN_PathManager_AddPath(const char *callingLib,
  * On non-windows platforms, the function does nothing and returns
  * zero, so you can safely call this in your multi-platform code.
  *
+ * Note: Gwenhywfar-2.6.0 and older used to lookup the paths under
+ * HKEY_CURRENT_USER, but with gwen-2.6.1 this was changed to
+ * HKEY_LOCAL_MACHINE because we're talking about installation paths
+ * as opposed to per-user configuration settings.
+ *
  * @param callingLib The name of the library that adds this path entry.
  *
  * @param destLib The name of the library that this path is supposed to
@@ -126,7 +131,7 @@ int GWEN_PathManager_AddPath(const char *callingLib,
  * @param pathName A string identifier for this registered path.
  *
  * @param keypath The key's path in the windows registry under
- * HKEY_LOCAL_USER, e.g. "Software\MyProgram\Paths".
+ * HKEY_LOCAL_MACHINE, e.g. "Software\MyProgram\Paths".
  *
  * @param varname The variable name of the string variable with the
  * actual directory path.

@@ -247,7 +247,7 @@ int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
   snprintf(nbuffer, sizeof(nbuffer), keypath);
 
   /* open the key */
-  if (RegOpenKey(HKEY_CURRENT_USER, nbuffer, &hkey)){
+  if (RegOpenKey(HKEY_LOCAL_MACHINE, nbuffer, &hkey)){
     DBG_ERROR(GWEN_LOGDOMAIN, "RegOpenKey %s failed.", keypath);
     return 1;
   }

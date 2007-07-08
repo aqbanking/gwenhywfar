@@ -1,5 +1,11 @@
 2007-07-08  Christian Stimming  <stimming@tuhh.de>
 
+	* src/base/pathmanager.c, plugin.c: Change all registry key
+	lookups to use HKEY_LOCAL_MACHINE as opposed to CURRENT_USER
+	because we're talking about installation paths as opposed to
+	per-user configuration settings. See also
+	http://bugzilla.gnome.org/show_bug.cgi?id=454108.
+
 	* src/base/plugindescr.c: As per the reminder here, enabled the
 	_free() function in _freeAll() because gnucash doesn't depend on
 	it anymore for quite some time by now.

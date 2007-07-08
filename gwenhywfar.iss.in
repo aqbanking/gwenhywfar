@@ -71,14 +71,14 @@ Source: "ChangeLog"; DestDir: "{app}\doc\@PACKAGE@"; Components: doc
 ; Define the registry keys Setup should create (HKCU = HKEY_CURRENT_USER)
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [Registry]
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "dbio-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "crypttoken-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\crypttoken"
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
-Root: HKCU; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "localedir"; ValueData: "{app}\share\locale"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "prefix"; ValueData: "{app}"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "libdir"; ValueData: "{app}\lib"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "pkglibdir"; ValueData: "{app}\lib\@PACKAGE@"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "plugindir"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "dbio-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\dbio"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "crypttoken-plugins"; ValueData: "{app}\lib\@PACKAGE@\plugins\@GWENHYWFAR_SO_EFFECTIVE@\crypttoken"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "sysconfdir"; ValueData: "{app}\etc"
+Root: HKLM; Subkey: "Software\Gwenhywfar\Paths"; ValueType: string; ValueName: "localedir"; ValueData: "{app}\share\locale"
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Delete the created config script on uninstall

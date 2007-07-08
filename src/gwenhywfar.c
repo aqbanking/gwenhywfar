@@ -443,7 +443,7 @@ int GWEN__GetValueFromWinReg(const char *keyPath,
   snprintf(nbuffer, sizeof(nbuffer), keyPath);
 
   /* open the key */
-  if (RegOpenKey(HKEY_CURRENT_USER,
+  if (RegOpenKey(HKEY_LOCAL_MACHINE,
                  keyPath,
                  &hkey)){
     DBG_ERROR(GWEN_LOGDOMAIN,

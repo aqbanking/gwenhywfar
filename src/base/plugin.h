@@ -111,12 +111,14 @@ GWENHYWFAR_API
 int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
                                   const char *s);
 
-/** Add a directory path from the windows registry HKEY_CURRENT_USER,
+/** Add a directory path from the windows registry HKEY_LOCAL_MACHINE,
  * to lookup plugins from. On Non-Windows systems, this function does
  * nothing and returns zero.
  *
- * FIXME: Maybe it should be possible whether to lookup in
- * HKEY_CURRENT_USER vs. HKEY_LOCAL_MACHINE?
+ * Note: Gwenhywfar-2.6.0 and older used to lookup the paths under
+ * HKEY_CURRENT_USER, but with gwen-2.6.1 this was changed to
+ * HKEY_LOCAL_MACHINE because we're talking about installation paths
+ * as opposed to per-user configuration settings.
  *
  * @return Zero on success, and non-zero on error.
  *
