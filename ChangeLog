@@ -1,9 +1,8 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  ! Remember to enable the _free()-function in plugindescr.c (freeAll()) !
-  ! as soon as the next release of GnuCash is out (2.0.0)                !
-  ------------------------------------------------------------------------
-
 2007-07-08  Christian Stimming  <stimming@tuhh.de>
+
+	* src/base/plugindescr.c: As per the reminder here, enabled the
+	_free() function in _freeAll() because gnucash doesn't depend on
+	it anymore for quite some time by now.
 
 	* src/base/list2.h: Add sanity check in ForEach so that calling
 	this with a NULL list doesn't crash.
