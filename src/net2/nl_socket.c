@@ -491,6 +491,14 @@ GWEN_NETLAYER_RESULT GWEN_NetLayerSocket_Work(GWEN_NETLAYER *nl) {
       GWEN_NetLayer_AddFlags(nl, GWEN_NETLAYER_FLAGS_WANTWRITE);
       return GWEN_NetLayerResult_WouldBlock;
     }
+
+    err = GWEN_Socket_WaitForWrite(nld->socket, 0);
+    if (!GWEN_Error_IsOk(err)) {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Still not connected (write wait)");
+      GWEN_NetLayer_AddFlags(nl, GWEN_NETLAYER_FLAGS_WANTWRITE);
+      return GWEN_NetLayerResult_WouldBlock;
+    }
+
     /* log address */
     GWEN_InetAddr_GetAddress(GWEN_NetLayer_GetPeerAddr(nl),
                              addrBuffer, sizeof(addrBuffer));
