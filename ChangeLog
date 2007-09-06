@@ -1,3 +1,8 @@
+2007-09-06  Christian Stimming  <stimming@tuhh.de>
+
+	* src/net2/nl_socket.c: Fix socket race condition on NetBSD and
+	potentially others. Patch by G. Paul Ziemba.
+
 ===========================================================================
 Released gwenhywfar-2.6.1 (2007-07-08, r1265)
 ===========================================================================
