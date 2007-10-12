@@ -1,3 +1,8 @@
+2007-10-12  Christian Stimming  <stimming@tuhh.de>
+
+	* src/os/windows/inetsocket.c: Introduce an additional waiting
+	time to avoid Windows connection errors.
+
 2007-09-06  Christian Stimming  <stimming@tuhh.de>
 
 	* src/net2/nl_socket.c: Fix socket race condition on NetBSD and
