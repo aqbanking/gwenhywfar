@@ -1272,8 +1272,8 @@ GWEN_ERRORCODE GWEN_Socket_Write(GWEN_SOCKET *sp,
   /* This is a temporary ugly hack for Windows/mingw. It was reported
      to solve Win32 connection errors, namely
      http://bugzilla.gnome.org/show_bug.cgi?id=439654 */
-  _sleep(500);
-  /* The argument of _sleep() are milliseconds, not seconds as for
+  Sleep(300);
+  /* The argument of Sleep() are milliseconds, not seconds as for
      sleep(). */
 #endif
 
