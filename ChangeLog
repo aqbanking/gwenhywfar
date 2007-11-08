@@ -1,3 +1,9 @@
+
+2007/11/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- backported fix for GWEN_InetSock_Select()
+
+
 ===========================================================================
 Released gwenhywfar-2.6.2 (2007-10-15, r1298)
 ===========================================================================
@@ -11,6 +17,7 @@ Released gwenhywfar-2.6.2 (2007-10-15, r1298)
 
 	* src/net2/nl_socket.c: Fix socket race condition on NetBSD and
 	potentially others. Patch by G. Paul Ziemba.
+
 
 ===========================================================================
 Released gwenhywfar-2.6.1 (2007-07-08, r1265)
@@ -31,7 +38,7 @@ Released gwenhywfar-2.6.1 (2007-07-08, r1265)
 	* src/base/list2.h: Add sanity check in ForEach so that calling
 	this with a NULL list doesn't crash.
 
-2007-06-17  Andreas Köhler  <andi5.py@gmx.net>
+2007-06-17  Andreas Koehler  <andi5.py@gmx.net>
 
 	* configure.ac: For the gwentest libxml2 check and --cflags and
 	--libs retrieval, use pkg-config rather than xml2-config.
@@ -45,8 +52,10 @@ Released gwenhywfar-2.6.1 (2007-07-08, r1265)
 
 	* configure.ac: Use AC_CANONICAL_BUILD and _HOST, but not _TARGET
 
+
 ===========================================================================
 MARK: released gwenhywfar-2.6.0 (2007/06/09, r1225)
+
 ===========================================================================
 
 2007-05-11  Christian Stimming  <stimming@tuhh.de>

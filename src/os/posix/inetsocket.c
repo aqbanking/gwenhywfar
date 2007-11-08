@@ -453,9 +453,15 @@ GWEN_ERRORCODE GWEN_Socket_Select(GWEN_SOCKETSET *rs,
     rv=select(h+1,s1,s2,s3,0);
   }
   else {
+    uint32_t tmicro;
+    uint32_t tsecs;
+
+    tmicro=timeout*1000;
+    tsecs=tmicro/1000000UL;
+    tmicro%=1000000UL;
     /* return immediately */
-    tv.tv_sec=0;
-    tv.tv_usec=timeout*1000;
+    tv.tv_sec=tsecs;
+    tv.tv_usec=tmicro;
     rv=select(h+1,s1,s2,s3,&tv);
   }
 
