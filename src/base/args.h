@@ -75,9 +75,8 @@ typedef enum {
  * Developer's note: Please note that any change within this struct will
  * make it necessary to increment the SO_VERSION of the library !
  */
-GWENHYWFAR_API
 struct GWEN_ARGS {
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
   GWEN_ARGS_TYPE type;
   const char *name;
   unsigned int minNum;
@@ -98,7 +97,7 @@ struct GWEN_ARGS {
 GWENHYWFAR_API
 int GWEN_Args_Check(int argc, char **argv,
 		    int startAt,
-		    GWEN_TYPE_UINT32 mode,
+		    uint32_t mode,
 		    const GWEN_ARGS *args,
 		    GWEN_DB_NODE *db);
 

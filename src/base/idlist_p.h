@@ -42,33 +42,33 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_IDTABLE, GWEN_IdTable)
 struct GWEN_IDTABLE {
   GWEN_LIST_ELEMENT(GWEN_IDTABLE)
   /* No trailing semicolon here because this is a macro call */
-  GWEN_TYPE_UINT32 freeEntries;
-  GWEN_TYPE_UINT32 entries[GWEN_IDTABLE_MAXENTRIES];
-  GWEN_TYPE_UINT32 current;
+  uint32_t freeEntries;
+  uint32_t entries[GWEN_IDTABLE_MAXENTRIES];
+  uint32_t current;
 };
 
 GWEN_IDTABLE *GWEN_IdTable_new();
 void GWEN_IdTable_free(GWEN_IDTABLE *idt);
 
-int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
-int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id);
+int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, uint32_t id);
+int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, uint32_t id);
+int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, uint32_t id);
 int GWEN_IdTable_IsEmpty(const GWEN_IDTABLE *idt);
 int GWEN_IdTable_IsFull(const GWEN_IDTABLE *idt);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt);
+uint32_t GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt);
+uint32_t GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt);
 unsigned int GWEN_IdTable_GetCount(const GWEN_IDTABLE *idt);
 
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId2(const GWEN_IDTABLE *idt,
-                                          GWEN_TYPE_UINT32 *tabIdx);
-GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId2(const GWEN_IDTABLE *idt,
-                                         GWEN_TYPE_UINT32 *tabIdx);
+uint32_t GWEN_IdTable_GetFirstId2(const GWEN_IDTABLE *idt,
+                                          uint32_t *tabIdx);
+uint32_t GWEN_IdTable_GetNextId2(const GWEN_IDTABLE *idt,
+                                         uint32_t *tabIdx);
 
 void GWEN_IdList_Clean(GWEN_IDLIST *idl);
 
 struct GWEN_IDLIST {
   GWEN_IDTABLE_LIST *idTables;
-  GWEN_TYPE_UINT32 entryCount;
+  uint32_t entryCount;
   GWEN_IDTABLE *current;
 };
 

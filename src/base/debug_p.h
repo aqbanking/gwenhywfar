@@ -68,23 +68,23 @@ void GWEN_MemoryDebugObject_free(GWEN_MEMORY_DEBUG_OBJECT *o);
 
 GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebug__FindObject(const char *name);
 void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
-                                  GWEN_TYPE_UINT32 mode);
+                                  uint32_t mode);
 
 
 
-GWEN_TYPE_UINT32 GWEN_Debug_PrintDec(char *buffer,
-                                     GWEN_TYPE_UINT32 size,
-                                     GWEN_TYPE_UINT32 num,
+uint32_t GWEN_Debug_PrintDec(char *buffer,
+                                     uint32_t size,
+                                     uint32_t num,
                                      int leadingZero,
-                                     GWEN_TYPE_UINT32 length);
+                                     uint32_t length);
 
 
-GWEN_TYPE_UINT32 GWEN_Debug_PrintHex(char *buffer,
-                                     GWEN_TYPE_UINT32 size,
-                                     GWEN_TYPE_UINT32 num,
+uint32_t GWEN_Debug_PrintHex(char *buffer,
+                                     uint32_t size,
+                                     uint32_t num,
                                      int leadingZero,
                                      int up,
-                                     GWEN_TYPE_UINT32 length);
+                                     uint32_t length);
 
 
 

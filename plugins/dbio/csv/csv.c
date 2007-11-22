@@ -36,6 +36,10 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/dbio_be.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/iomanager.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -44,6 +48,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+
 
 
 int GWEN_CSV_GetNameAndIndex(const char *name,
@@ -93,30 +98,36 @@ int GWEN_CSV_GetNameAndIndex(const char *name,
 
 
 int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
-                         GWEN_BUFFEREDIO *bio,
-                         GWEN_TYPE_UINT32 flags,
-                         GWEN_DB_NODE *data,
-                         GWEN_DB_NODE *cfg) {
+			 GWEN_IO_LAYER *io,
+			 GWEN_DB_NODE *data,
+			 GWEN_DB_NODE *cfg,
+			 uint32_t flags,
+			 uint32_t guiid,
+			 int msecs) {
   GWEN_DB_NODE *colgr;
   GWEN_DB_NODE *n;
   int delimiter;
   int quote;
   const char *p;
   const char *groupName;
-  GWEN_ERRORCODE err;
+  int err;
   unsigned int column;
   int title;
+  GWEN_FAST_BUFFER *fb;
 
   assert(dbio);
-  assert(bio);
+  assert(io);
   assert(cfg);
   assert(data);
+
+  fb=GWEN_FastBuffer_new(512, io, guiid, msecs);
 
   /* get general configuration */
   colgr=GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "columns");
   if (!colgr) {
     DBG_ERROR(0, "Error in configuration: No columns specified");
-    return -1;
+    GWEN_FastBuffer_free(fb);
+    return GWEN_ERROR_INVALID;
   }
   p=GWEN_DB_GetCharValue(cfg, "delimiter", 0, ";");
   if (strcasecmp(p, "TAB")==0)
@@ -141,21 +152,23 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
       GWEN_Text_NumToString(column, numbuffer, sizeof(numbuffer), 0);
       p=GWEN_DB_GetCharValue(colgr, numbuffer, 0, 0);
       if (!p) {
-        /* no value. finished */
-        err=GWEN_BufferedIO_WriteLine(bio, "");
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
-          return -1;
-        }
-        DBG_VERBOUS(0, "No colums left, line finished");
-        break;
+	/* no value. finished */
+	GWEN_FASTBUFFER_WRITELINE(fb, err, "");
+	if (err<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", err);
+	  GWEN_FastBuffer_free(fb);
+	  return err;
+	}
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "No colums left, line finished");
+	break;
       }
       /* break down to name and index */
       idx=GWEN_CSV_GetNameAndIndex(p, namebuffer, sizeof(namebuffer));
       if (idx==-1) {
         DBG_INFO(0, "Error in configuration: Bad name for column %d",
                  column);
-        return -1;
+	GWEN_FastBuffer_free(fb);
+        return GWEN_ERROR_GENERIC;
       }
 
       /* add idx to name, if not 0 */
@@ -163,6 +176,7 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
         GWEN_Text_NumToString(idx, numbuffer, sizeof(numbuffer), 0);
         if (strlen(namebuffer)+strlen(numbuffer)+1>=sizeof(namebuffer)) {
           DBG_ERROR(0, "Internal: namebuffer too small");
+	  GWEN_FastBuffer_free(fb);
           return -1;
         }
         strcat(namebuffer, numbuffer);
@@ -176,33 +190,37 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
       }
 
       if (column!=1) {
-        /* write delimiter */
-        err=GWEN_BufferedIO_WriteChar(bio, delimiter);
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
-          return -1;
-        }
+	/* write delimiter */
+	GWEN_FASTBUFFER_WRITEBYTE(fb, err, delimiter);
+	if (err<0) {
+	  DBG_INFO(0, "Called from here");
+	  GWEN_FastBuffer_free(fb);
+	  return err;
+	}
       } /* if not first column */
       if (quote) {
         /* write quotation mark */
-        err=GWEN_BufferedIO_WriteChar(bio, '\"');
-        if (!GWEN_Error_IsOk(err)) {
-          DBG_INFO(0, "Called from here");
-          return -1;
+	GWEN_FASTBUFFER_WRITEBYTE(fb, err, '\"');
+	if (err<0) {
+	  DBG_INFO(0, "Called from here");
+	  GWEN_FastBuffer_free(fb);
+	  return err;
         }
       } /* if quote */
       /* write value */
-      err=GWEN_BufferedIO_Write(bio, namebuffer);
-      if (!GWEN_Error_IsOk(err)) {
+      GWEN_FASTBUFFER_WRITEBYTES(fb, err, namebuffer, -1);
+      if (err<0) {
         DBG_INFO(0, "Called from here");
-        return -1;
+	GWEN_FastBuffer_free(fb);
+	return err;
       }
       if (quote) {
         /* write quotation mark */
-        err=GWEN_BufferedIO_WriteChar(bio, '\"');
-        if (!GWEN_Error_IsOk(err)) {
+	GWEN_FASTBUFFER_WRITEBYTE(fb, err, '\"');
+	if (err<0) {
           DBG_INFO(0, "Called from here");
-          return -1;
+	  GWEN_FastBuffer_free(fb);
+          return err;
         }
       } /* if quote */
     } /* for */
@@ -215,7 +233,7 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
         int idx;
         char namebuffer[64];
 	char numbuffer[16];
-	GWEN_DB_VALUETYPE vt;
+	GWEN_DB_NODE_TYPE vt;
 	char valbuffer[64];
         int iv;
 
@@ -224,35 +242,37 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
         p=GWEN_DB_GetCharValue(colgr, numbuffer, 0, 0);
 	if (!p) {
           /* no value. finished */
-          err=GWEN_BufferedIO_WriteLine(bio, "");
-          if (!GWEN_Error_IsOk(err)) {
+	  GWEN_FASTBUFFER_WRITELINE(fb, err, "");
+          if (err<0) {
             DBG_INFO(0, "Called from here");
-            return -1;
+	    GWEN_FastBuffer_free(fb);
+            return err;
           }
-          DBG_VERBOUS(0, "No colums left, line finished");
-          break;
+          DBG_VERBOUS(GWEN_LOGDOMAIN, "No colums left, line finished");
+	  break;
 	}
 
         /* break down to name and index */
         idx=GWEN_CSV_GetNameAndIndex(p, namebuffer, sizeof(namebuffer));
         if (idx==-1) {
-          DBG_INFO(0, "Error in configuration: Bad name for column %d",
+          DBG_INFO(GWEN_LOGDOMAIN, "Error in configuration: Bad name for column %d",
                    column);
-          return -1;
+	  GWEN_FastBuffer_free(fb);
+          return GWEN_ERROR_GENERIC;
         }
         /* get data */
-        DBG_VERBOUS(0, "Checking value of %s[%d]", namebuffer, idx);
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Checking value of %s[%d]", namebuffer, idx);
 	if (GWEN_DB_VariableExists(n, namebuffer)) {
 	  vt=GWEN_DB_GetValueTypeByPath(n, namebuffer, idx);
 	  switch(vt) {
-	  case GWEN_DB_VALUETYPE_CHAR:
+	  case GWEN_DB_NodeType_ValueChar:
 	    p=GWEN_DB_GetCharValue(n, namebuffer, idx, "");
 	    break;
-	  case GWEN_DB_VALUETYPE_INT:
+	  case GWEN_DB_NodeType_ValueInt:
 	    iv=GWEN_DB_GetIntValue(n, namebuffer, idx, 0);
 	    snprintf(valbuffer, sizeof(valbuffer), "%d", iv);
 	    p=valbuffer;
-            break;
+	    break;
 	  default:
             DBG_DEBUG(GWEN_LOGDOMAIN, "Unhandled value type %d", vt);
             p="";
@@ -263,32 +283,36 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
 
 	if (column!=1) {
           /* write delimiter */
-          err=GWEN_BufferedIO_WriteChar(bio, delimiter);
-          if (!GWEN_Error_IsOk(err)) {
+	  GWEN_FASTBUFFER_WRITEBYTE(fb, err, delimiter);
+          if (err<0) {
             DBG_INFO(0, "Called from here");
-            return -1;
+	    GWEN_FastBuffer_free(fb);
+            return err;
           }
         } /* if not first column */
         if (quote) {
           /* write quotation mark */
-          err=GWEN_BufferedIO_WriteChar(bio, '\"');
-          if (!GWEN_Error_IsOk(err)) {
+	  GWEN_FASTBUFFER_WRITEBYTE(fb, err, '\"');
+	  if (err<0) {
             DBG_INFO(0, "Called from here");
-            return -1;
+	    GWEN_FastBuffer_free(fb);
+            return err;
           }
         } /* if quote */
-        /* write value */
-        err=GWEN_BufferedIO_Write(bio, p);
-        if (!GWEN_Error_IsOk(err)) {
+	/* write value */
+	GWEN_FASTBUFFER_WRITEBYTES(fb, err, p, -1);
+        if (err<0) {
           DBG_INFO(0, "Called from here");
-          return -1;
+	  GWEN_FastBuffer_free(fb);
+          return err;
         }
         if (quote) {
           /* write quotation mark */
-          err=GWEN_BufferedIO_WriteChar(bio, '\"');
-          if (!GWEN_Error_IsOk(err)) {
+	  GWEN_FASTBUFFER_WRITEBYTE(fb, err, '\"');
+          if (err<0) {
             DBG_INFO(0, "Called from here");
-            return -1;
+	    GWEN_FastBuffer_free(fb);
+            return err;
           }
         } /* if quote */
 
@@ -296,22 +320,34 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
     } /* if group name matches */
     n=GWEN_DB_GetNextGroup(n);
   } /* while n */
+
+  /* flush */
+  GWEN_FASTBUFFER_FLUSH(fb, err);
+  if (err<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", err);
+    GWEN_FastBuffer_free(fb);
+    return err;
+  }
+
+  GWEN_FastBuffer_free(fb);
   return 0;
 }
 
 
 
 int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
-                         GWEN_BUFFEREDIO *bio,
-                         GWEN_TYPE_UINT32 flags,
-                         GWEN_DB_NODE *data,
-                         GWEN_DB_NODE *cfg){
+			 GWEN_IO_LAYER *io,
+			 GWEN_DB_NODE *data,
+			 GWEN_DB_NODE *cfg,
+			 uint32_t flags,
+			 uint32_t guiid,
+			 int msecs) {
   GWEN_DB_NODE *colgr;
   int delimiter;
   int quote;
   const char *p;
   const char *groupName;
-  GWEN_ERRORCODE err;
+  int err;
   int title;
   GWEN_STRINGLIST *sl;
   GWEN_BUFFER *lbuffer;
@@ -320,17 +356,21 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   int ignoreLines;
   int fixedWidth;
   int condense;
+  GWEN_FAST_BUFFER *fb;
 
   assert(dbio);
-  assert(bio);
+  assert(io);
   assert(cfg);
   assert(data);
+
+  fb=GWEN_FastBuffer_new(512, io, guiid, msecs);
 
   /* get general configuration */
   colgr=GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "columns");
   if (!colgr) {
     DBG_ERROR(0, "Error in configuration: No columns specified");
-    return -1;
+    GWEN_FastBuffer_free(fb);
+    return GWEN_ERROR_INVALID;
   }
   p=GWEN_DB_GetCharValue(cfg, "delimiter", 0, ";");
   if (strcasecmp(p, "TAB")==0)
@@ -354,7 +394,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   lines=0;
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+  for (;;) {
     GWEN_BUFFER *wbuffer;
     int rv;
     const char *s;
@@ -365,12 +405,17 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
     /* read line */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Reading line %d", lines);
     GWEN_Buffer_Reset(lbuffer);
-    err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuffer);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-      GWEN_Buffer_free(lbuffer);
-      GWEN_StringList_free(sl);
-      return -1;
+    err=GWEN_FastBuffer_ReadLineToBuffer(fb, lbuffer);
+    if (err<0) {
+      if (err==GWEN_ERROR_EOF)
+	break;
+      else {
+	DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+	GWEN_Buffer_free(lbuffer);
+	GWEN_StringList_free(sl);
+	GWEN_FastBuffer_free(fb);
+	return err;
+      }
     }
 
     if (lines<ignoreLines){
@@ -431,6 +476,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
 	    GWEN_Buffer_free(wbuffer);
 	    GWEN_Buffer_free(lbuffer);
 	    GWEN_StringList_free(sl);
+	    GWEN_FastBuffer_free(fb);
 	    return rv;
 	  }
 	  GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(wbuffer), 0, 0);
@@ -489,60 +535,61 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   GWEN_Buffer_free(lbuffer);
   GWEN_StringList_free(sl);
 
+  GWEN_FastBuffer_free(fb);
+
   return 0;
 }
 
 
 
-int GWEN_DBIO_CSV__ReadLine(GWEN_BUFFEREDIO *bio,
-                            GWEN_STRINGLIST *sl) {
-  GWEN_ERRORCODE err;
+int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb,
+			    GWEN_STRINGLIST *sl,
+			    uint32_t guiid,
+			    int msecs) {
+  int err;
   const char *delimiters=";\t,";
+  GWEN_BUFFER *lbuffer;
+  GWEN_BUFFER *wbuffer;
+  int rv;
+  const char *s;
 
-  assert(bio);
+  assert(fb);
 
-  if(!GWEN_BufferedIO_CheckEOF(bio)) {
-    GWEN_BUFFER *lbuffer;
-    GWEN_BUFFER *wbuffer;
-    int rv;
-    const char *s;
-
-    /* read line */
-    lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_Reset(lbuffer);
-    err=GWEN_BufferedIO_ReadLine2Buffer(bio, lbuffer);
-    if (!GWEN_Error_IsOk(err)) {
-      DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
-      GWEN_Buffer_free(lbuffer);
-      return -1;
-    }
-
-    /* read columns */
-    wbuffer=GWEN_Buffer_new(0, 256, 0, 1);
-
-    s=GWEN_Buffer_GetStart(lbuffer);
-    while(*s) {
-      rv=GWEN_Text_GetWordToBuffer(s, delimiters, wbuffer,
-				   GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
-				   GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
-				   GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
-				   GWEN_TEXT_FLAGS_DEL_QUOTES,
-				   &s);
-      if (rv) {
-	GWEN_Buffer_free(wbuffer);
-	GWEN_Buffer_free(lbuffer);
-	return rv;
-      }
-      GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(wbuffer), 0, 0);
-      GWEN_Buffer_Reset(wbuffer);
-      if (*s) {
-	if (strchr(delimiters, *s))
-	  s++;
-      }
-    } /* while */
-    GWEN_Buffer_free(wbuffer);
+  /* read line */
+  lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_Reset(lbuffer);
+  err=GWEN_FastBuffer_ReadLineToBuffer(fb, lbuffer);
+  if (err<0) {
+    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     GWEN_Buffer_free(lbuffer);
+    return err;
   }
+
+  /* read columns */
+  wbuffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+  s=GWEN_Buffer_GetStart(lbuffer);
+  while(*s) {
+    rv=GWEN_Text_GetWordToBuffer(s, delimiters, wbuffer,
+				 GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+				 GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
+				 GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
+				 GWEN_TEXT_FLAGS_DEL_QUOTES,
+				 &s);
+    if (rv) {
+      GWEN_Buffer_free(wbuffer);
+      GWEN_Buffer_free(lbuffer);
+      return rv;
+    }
+    GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(wbuffer), 0, 0);
+    GWEN_Buffer_Reset(wbuffer);
+    if (*s) {
+      if (strchr(delimiters, *s))
+	s++;
+    }
+  } /* while */
+  GWEN_Buffer_free(wbuffer);
+  GWEN_Buffer_free(lbuffer);
 
   return 0;
 }
@@ -550,10 +597,15 @@ int GWEN_DBIO_CSV__ReadLine(GWEN_BUFFEREDIO *bio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
-                                                   const char *fname){
-  GWEN_BUFFEREDIO *bio;
+						   const char *fname,
+						   uint32_t guiid,
+						   int msecs){
   int fd;
   int i;
+  int rv;
+  GWEN_IO_LAYER *io;
+  GWEN_STRINGLIST *sl;
+  GWEN_FAST_BUFFER *fb;
 
   fd=open(fname, O_RDONLY);
   if (fd==-1) {
@@ -562,44 +614,50 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
 	      strerror(errno));
     return GWEN_DBIO_CheckFileResultNotOk;
   }
-  bio=GWEN_BufferedIO_File_new(fd);
-  assert(bio);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
 
-  if (!GWEN_BufferedIO_CheckEOF(bio)) {
-    GWEN_STRINGLIST *sl;
+  /* create io layer for this file (readonly) */
+  io=GWEN_Io_LayerFile_new(fd, -1);
+  assert(io);
 
-    /* read line into string list */
-    sl=GWEN_StringList_new();
-    if (GWEN_DBIO_CSV__ReadLine(bio, sl)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Error reading a line");
-      GWEN_BufferedIO_Abandon(bio);
-      GWEN_BufferedIO_free(bio);
-      return GWEN_DBIO_CheckFileResultNotOk;
-    }
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
+    return rv;
+  }
 
-    /* first column: number */
-    i=GWEN_StringList_Count(sl);
-    GWEN_StringList_free(sl);
-    if (i) {
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "Found %d columns, file might be supported", i);
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
-      /*return GWEN_DBIO_CheckFileResultOk; */
-      return GWEN_DBIO_CheckFileResultUnknown;
-    }
-    else {
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "Found no columns, file might not be supported");
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
-      return GWEN_DBIO_CheckFileResultUnknown;
-    }
-  } /* if !EOF */
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Empty file");
+  fb=GWEN_FastBuffer_new(512, io, guiid, msecs);
+
+  /* read line into string list */
+  sl=GWEN_StringList_new();
+  if (GWEN_DBIO_CSV__ReadLine(fb, sl, guiid, msecs)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error reading a line");
+    GWEN_FastBuffer_free(fb);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
     return GWEN_DBIO_CheckFileResultNotOk;
+  }
+
+  /* first column: number */
+  i=GWEN_StringList_Count(sl);
+  GWEN_StringList_free(sl);
+  if (i) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Found %d columns, file might be supported", i);
+    GWEN_FastBuffer_free(fb);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
+    /*return GWEN_DBIO_CheckFileResultOk; */
+    return GWEN_DBIO_CheckFileResultUnknown;
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Found no columns, file might not be supported");
+    GWEN_FastBuffer_free(fb);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
+    return GWEN_DBIO_CheckFileResultUnknown;
   }
 }
 

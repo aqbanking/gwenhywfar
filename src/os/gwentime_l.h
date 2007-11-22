@@ -45,8 +45,8 @@ extern "C" {
  * @ref GWEN_Time__GetCurrentTime.
  */
 void GWEN_Time__SetSecsAndMSecs(GWEN_TIME *ti,
-                                GWEN_TYPE_UINT32 secs,
-                                GWEN_TYPE_UINT32 msecs);
+                                uint32_t secs,
+                                uint32_t msecs);
 
 /** @name Functions to be implemented by OS specific modules
  *

@@ -1,32 +1,25 @@
 # norootforbuild
 # neededforbuild gettext gettext-devel gcc openssl-devel openssl
 
-%define is_mandrake %(test -e /etc/mandrake-release && echo 1 || echo 0)
-%define is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
-%define is_fedora %(test -e /etc/fedora-release && echo 1 || echo 0)
 
-%define dist redhat
-%define disttag rh
+%define name @PACKAGE@
+%define version @VERSION@
+%define rpm_cxxflags \"-O2 -march=i486 -mcpu=i586\"
+%define rpm_cflags \"-O2 -march=i486 -mcpu=i586\"
 
-%if %is_mandrake
-%define dist mandrake
-%define disttag mdk
-%endif
-%if %is_suse
-%define dist suse
-%define disttag suse
-%endif
-%if %is_fedora
-%define dist fedora
-%define disttag fc
-%endif
+%define dist    @aq_distrib_name@
+%define disttag @aq_distrib_tag@
+%define distver @aq_distrib_version@
 
-%define distver %(release="`rpm -q --queryformat='%{VERSION}' %{dist}-release 2>/dev/null`" ; if test $? != 0 ; then release="" ; fi ; echo "$release")
+# Note: There is not yet a special symbol for the rpm release
+# version. We set it to one here.
+%define release 1.%{disttag}%{distver}
+
 
 Summary: A multi-platform helper library for other libraries
-Name: gwenhywfar
-Version: @VERSION@
-Release: 1.%{disttag}%{distver}
+Name: %{name}
+Version: %{version}
+Release: %{release}
 Source: http://download.sourceforge.net/gwenhywfar/%{name}-%{version}.tar.gz
 Group: System Environment/Libraries
 License: LGPL
@@ -78,7 +71,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/%{name}
 %{_datadir}/locale/*/LC_MESSAGES/gwenhywfar.mo
 %{_bindir}/gct-tool
-%{_sysconfdir}/*.crt
+%{_datadir}/gwenhywfar/*.crt
 
 %files devel
 %defattr(-,root,root)
@@ -86,7 +79,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_bindir}/xmlmerge
 %{_bindir}/mklistdoc
 %{_bindir}/typemaker
-%{_includedir}/gwenhywfar
+%{_includedir}/gwenhywfar3
 %{_libdir}/*.so
 %{_libdir}/*.la
 #%{_libdir}/*.a

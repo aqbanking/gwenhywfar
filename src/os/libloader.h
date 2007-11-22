@@ -57,7 +57,7 @@ extern "C" {
 /*@{*/
 
 
-typedef struct GWEN_LIBLOADERSTRUCT GWEN_LIBLOADER;
+typedef struct GWEN_LIBLOADER GWEN_LIBLOADER;
 
 
 GWENHYWFAR_API GWEN_LIBLOADER *GWEN_LibLoader_new();
@@ -71,18 +71,18 @@ GWENHYWFAR_API GWEN_LIBLOADER *GWEN_LibLoader_new();
 GWENHYWFAR_API void GWEN_LibLoader_free(GWEN_LIBLOADER *h);
 
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
-                                            const char *name);
+  int GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
+				 const char *name);
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
-                                                    const char *path,
-                                                    const char *name);
+  int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
+					 const char *path,
+					 const char *name);
 
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h);
+  int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h);
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
-                                        const char *name, void **p);
+  int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
+			     const char *name, void **p);
 
 /*@}*/
 

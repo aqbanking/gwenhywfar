@@ -16,7 +16,7 @@
 
 #include <gwenhywfar/ipc.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/nl_packets.h>
+#include <gwenhywfar/iorequest.h>
 
 
 
@@ -26,20 +26,22 @@
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
+#define GWEN_IPCNODE_FLAGS_MGR_INFORMED 0x00000001
+
 typedef struct GWEN_IPCNODE GWEN_IPCNODE;
 GWEN_LIST_FUNCTION_DEFS(GWEN_IPCNODE, GWEN_IpcNode)
 struct GWEN_IPCNODE {
   GWEN_LIST_ELEMENT(GWEN_IPCNODE)
-  GWEN_NETLAYER *netLayer;
+  GWEN_IO_LAYER *ioLayer;
   int isServer;
   int isPassiveClient;
-  GWEN_TYPE_UINT32 id;
-  GWEN_TYPE_UINT32 mark;
-  GWEN_TYPE_UINT32 usage;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t id;
+  uint32_t mark;
+  uint32_t usage;
+  uint32_t flags;
 
-  GWEN_TYPE_UINT32 nextMsgId;
-  GWEN_TYPE_UINT32 lastMsgId;
+  uint32_t nextMsgId;
+  uint32_t lastMsgId;
 };
 GWEN_IPCNODE *GWEN_IpcNode_new();
 void GWEN_IpcNode_free(GWEN_IPCNODE *n);
@@ -59,12 +61,12 @@ struct GWEN_IPCMSG {
   GWEN_LIST_ELEMENT(GWEN_IPCMSG)
   GWEN_IPCNODE *node;
 
-  GWEN_TYPE_UINT32 id;
-  GWEN_TYPE_UINT32 refId;
+  uint32_t id;
+  uint32_t refId;
   GWEN_DB_NODE *db;
   time_t sendTime;
   time_t receivedTime;
-  GWEN_NL_PACKET *packet;
+  GWEN_IO_REQUEST *packet;
 };
 GWEN_IPCMSG *GWEN_IpcMsg_new(GWEN_IPCNODE *n);
 void GWEN_IpcMsg_free(GWEN_IPCMSG *m);
@@ -83,7 +85,7 @@ struct GWEN_IPC__REQUEST {
   GWEN_LIST_ELEMENT(GWEN_IPC__REQUEST)
   GWEN_INHERIT_ELEMENT(GWEN_IPC__REQUEST)
 
-  GWEN_TYPE_UINT32 id;
+  uint32_t id;
   GWEN_IPCMSG_LIST *requestMsgs;
   GWEN_IPCMSG_LIST *responseMsgs;
 
@@ -95,8 +97,8 @@ void GWEN_Ipc__Request_free(GWEN_IPC__REQUEST *r);
 void GWEN_Ipc__Request_AddRequestMsg(GWEN_IPC__REQUEST *r, GWEN_IPCMSG *m);
 void GWEN_Ipc__Request_AddResponseMsg(GWEN_IPC__REQUEST *r, GWEN_IPCMSG *m);
 int GWEN_Ipc__Request_HasRequestMsg(GWEN_IPC__REQUEST *r,
-                                  GWEN_TYPE_UINT32 nid,
-                                  GWEN_TYPE_UINT32 id);
+                                  uint32_t nid,
+                                  uint32_t id);
 GWEN_IPCMSG_LIST *GWEN_Ipc__Request_GetRequestMsgList(const GWEN_IPC__REQUEST *r);
 
 
@@ -116,11 +118,15 @@ struct GWEN_IPCMANAGER {
   GWEN_IPC__REQUEST_LIST *newInRequests;
   GWEN_IPC__REQUEST_LIST *oldInRequests;
   unsigned int sendTimeOut;
-  GWEN_TYPE_UINT32 usage;
+
+  GWEN_IPCMANAGER_CLIENTDOWN_FN clientDownFn;
+  void *user_data;
+
+  uint32_t usage;
 };
 
 GWEN_IPC__REQUEST *GWEN_IpcManager__FindRequest(GWEN_IPCMANAGER *mgr,
-                                              GWEN_TYPE_UINT32 rid,
+                                              uint32_t rid,
                                               GWEN_IPC__REQUEST *r);
 int GWEN_IpcManager__SendMsg(GWEN_IPCMANAGER *mgr,
                              GWEN_IPCMSG *m);
@@ -135,8 +141,8 @@ void GWEN_IpcManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
                                                 GWEN_IPC__REQUEST_LIST *rl,
                                                 const char *msgType);
 int GWEN_IpcManager__HandlePacket(GWEN_IPCMANAGER *mgr,
-                                  GWEN_IPCNODE *n,
-                                  GWEN_NL_PACKET *pk);
+				  GWEN_IPCNODE *n,
+				  GWEN_IO_REQUEST *r);
 
 int GWEN_IpcManager__Work(GWEN_IPCMANAGER *mgr);
 

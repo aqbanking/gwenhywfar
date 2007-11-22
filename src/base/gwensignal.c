@@ -65,7 +65,7 @@ void GWEN_SignalObject_free(GWEN_SIGNALOBJECT *so) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_SignalObject_MkTypeId(const char *typeName) {
+uint32_t GWEN_SignalObject_MkTypeId(const char *typeName) {
   return GWEN_Inherit_MakeId(typeName);
 }
 
@@ -73,8 +73,8 @@ GWEN_TYPE_UINT32 GWEN_SignalObject_MkTypeId(const char *typeName) {
 
 GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
                                            const char *name,
-                                           GWEN_TYPE_UINT32 typeId1,
-                                           GWEN_TYPE_UINT32 typeId2) {
+                                           uint32_t typeId1,
+                                           uint32_t typeId2) {
   GWEN_SIGNAL_LIST2_ITERATOR *sit;
 
   assert(so);
@@ -111,8 +111,8 @@ GWEN_SIGNAL *GWEN_SignalObject_FindSignal(const GWEN_SIGNALOBJECT *so,
                                           const char *name,
                                           const char *typeOfArg1,
                                           const char *typeOfArg2) {
-  GWEN_TYPE_UINT32 typeId1=0;
-  GWEN_TYPE_UINT32 typeId2=0;
+  uint32_t typeId1=0;
+  uint32_t typeId2=0;
 
   if (typeOfArg1)
     typeId1=GWEN_SignalObject_MkTypeId(typeOfArg1);
@@ -125,8 +125,8 @@ GWEN_SIGNAL *GWEN_SignalObject_FindSignal(const GWEN_SIGNALOBJECT *so,
 
 GWEN_SLOT *GWEN_SignalObject__findSlot(const GWEN_SIGNALOBJECT *so,
                                        const char *name,
-                                       GWEN_TYPE_UINT32 typeId1,
-                                       GWEN_TYPE_UINT32 typeId2) {
+                                       uint32_t typeId1,
+                                       uint32_t typeId2) {
   GWEN_SLOT_LIST2_ITERATOR *sit;
 
   assert(so);
@@ -163,8 +163,8 @@ GWEN_SLOT *GWEN_SignalObject_FindSlot(const GWEN_SIGNALOBJECT *so,
                                       const char *name,
                                       const char *typeOfArg1,
                                       const char *typeOfArg2) {
-  GWEN_TYPE_UINT32 typeId1=0;
-  GWEN_TYPE_UINT32 typeId2=0;
+  uint32_t typeId1=0;
+  uint32_t typeId2=0;
 
   if (typeOfArg1)
     typeId1=GWEN_SignalObject_MkTypeId(typeOfArg1);
@@ -212,7 +212,7 @@ int GWEN_SignalObject_AddSlot(GWEN_SIGNALOBJECT *so, GWEN_SLOT *slot) {
 
 void GWEN_SignalObject_RemoveForDerivedType(GWEN_SIGNALOBJECT *so,
                                             const char *derivedType) {
-  GWEN_TYPE_UINT32 typeId=0;
+  uint32_t typeId=0;
   GWEN_SLOT_LIST2_ITERATOR *slotIt;
   GWEN_SIGNAL_LIST2_ITERATOR *sigIt;
 

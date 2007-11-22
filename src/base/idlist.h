@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /** @file idlist.h
- * @short A list of GWEN_TYPE_UINT32 objects
+ * @short A list of uint32_t objects
  */
 
 
@@ -51,9 +51,9 @@ extern "C" {
 /**
  * @defgroup MOD_IDLIST ID list module
  * @ingroup MOD_BASE
- * @short A list of GWEN_TYPE_UINT32 objects
+ * @short A list of uint32_t objects
  *
- * This is basically a list for GWEN_TYPE_UINT32 objects,
+ * This is basically a list for uint32_t objects,
  * but since it uses tables instead of those list objects normally used
  * throughout Gwen it is less memory consuming.
  */
@@ -90,30 +90,30 @@ void GWEN_IdList_Clear(GWEN_IDLIST *idl);
  * Adds an id to the list. This function does no doublecheck.
  */
 GWENHYWFAR_API
-int GWEN_IdList_AddId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
+int GWEN_IdList_AddId(GWEN_IDLIST *idl, uint32_t id);
 
 /**
  * Removes the first occurrence of the given id.
  * @return 0 if deleted, !=0 if the id wasn't found
  */
 GWENHYWFAR_API
-int GWEN_IdList_DelId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
+int GWEN_IdList_DelId(GWEN_IDLIST *idl, uint32_t id);
 
 /**
  * Checks whether the given id exists in the idlist.
  * @return 0 if found, !=0 otherwise
  */
 GWENHYWFAR_API
-int GWEN_IdList_HasId(const GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id);
+int GWEN_IdList_HasId(const GWEN_IDLIST *idl, uint32_t id);
 
 /**
  * Returns the first id from the list.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl);
+uint32_t GWEN_IdList_GetFirstId(GWEN_IDLIST *idl);
 
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
+uint32_t GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
 
 /**
  * This function returns the first id stored in the list. It can also
@@ -123,8 +123,8 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
  *   as longs as no ids are removed from the list.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
-                                         GWEN_TYPE_UINT32 *hdl);
+uint32_t GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
+                                         uint32_t *hdl);
 
 /**
  * This function returns the next id stored in the list. It can also
@@ -134,8 +134,8 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
  *   as longs as no ids are removed from the list.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
-                                        GWEN_TYPE_UINT32 *hdl);
+uint32_t GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
+                                        uint32_t *hdl);
 
 
 /**

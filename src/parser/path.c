@@ -41,7 +41,7 @@
 
 void *GWEN_Path_Handle(const char *path,
                        void *data,
-                       GWEN_TYPE_UINT32 flags,
+                       uint32_t flags,
                        GWEN_PATHHANDLERPTR elementFunction) {
   GWEN_BUFFER *buf1;
   int i;
@@ -192,7 +192,7 @@ void *GWEN_Path_Handle(const char *path,
 
 void *GWEN_Path_HandleWithIdx(const char *path,
                               void *data,
-                              GWEN_TYPE_UINT32 flags,
+                              uint32_t flags,
                               GWEN_PATHIDXHANDLERPTR elementFunction) {
   GWEN_BUFFER *buf1;
   int i;
@@ -392,7 +392,7 @@ void *GWEN_Path_AppendPathElement(const char *entry,
 
 int GWEN_Path_Convert(const char *path,
                       GWEN_BUFFER *buffer,
-                      GWEN_TYPE_UINT32 flags) {
+                      uint32_t flags) {
   void *p;
 
   p=GWEN_Path_Handle(path,

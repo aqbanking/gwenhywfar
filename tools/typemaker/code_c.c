@@ -45,8 +45,8 @@ int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
   if (n) {
     GWEN_BUFFER *tprefix;
     GWEN_BUFFER *tid;
-    GWEN_TYPE_UINT32 ppos;
-    GWEN_TYPE_UINT32 tpos;
+    uint32_t ppos;
+    uint32_t tpos;
     const char *s;
 
     tprefix=GWEN_Buffer_new(0, 64, 0, 1);
@@ -85,7 +85,7 @@ int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
       if (nn)
         nn=GWEN_XMLNode_FindFirstTag(nn, "value", 0, 0);
       if (nn) {
-        GWEN_TYPE_UINT32 vpos;
+        uint32_t vpos;
         int first=1;
 
         vpos=GWEN_Buffer_GetPos(tprefix);
@@ -140,7 +140,7 @@ int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
       if (nn)
         nn=GWEN_XMLNode_FindFirstTag(nn, "value", 0, 0);
       if (nn) {
-        GWEN_TYPE_UINT32 vpos;
+        uint32_t vpos;
 
         vpos=GWEN_Buffer_GetPos(tprefix);
         while(nn) {
@@ -202,7 +202,7 @@ int write_code_freeElem_c(ARGUMENTS *args,
   const char *name;
   int doCopy;
   int takeOver;
-  GWEN_ERRORCODE err;
+  int err;
 
   if (atoi(get_property(node, "ptr", "0"))==0)
     return 0;
@@ -226,20 +226,20 @@ int write_code_freeElem_c(ARGUMENTS *args,
   }
 
   err=GWEN_BufferedIO_Write(bio, "  if (st->");
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+  if (err) { DBG_ERROR_ERR(0, err); return -1;}
   err=GWEN_BufferedIO_Write(bio, name);
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+  if (err) { DBG_ERROR_ERR(0, err); return -1;}
   err=GWEN_BufferedIO_WriteLine(bio, ")");
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+  if (err) { DBG_ERROR_ERR(0, err); return -1;}
 
   if (strcmp(typ, "char")==0) {
     /* we can handle chars */
     err=GWEN_BufferedIO_Write(bio, "    free(st->");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     err=GWEN_BufferedIO_Write(bio, name);
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     err=GWEN_BufferedIO_WriteLine(bio, ");");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     return 0;
   }
   else {
@@ -248,15 +248,15 @@ int write_code_freeElem_c(ARGUMENTS *args,
     fname=get_function_name(node, "free");
     if (fname) {
       err=GWEN_BufferedIO_Write(bio, "    ");
-      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+      if (err) { DBG_ERROR_ERR(0, err); return -1;}
       err=GWEN_BufferedIO_Write(bio, fname);
-      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+      if (err) { DBG_ERROR_ERR(0, err); return -1;}
       err=GWEN_BufferedIO_Write(bio, "(st->");
-      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+      if (err) { DBG_ERROR_ERR(0, err); return -1;}
       err=GWEN_BufferedIO_Write(bio, name);
-      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+      if (err) { DBG_ERROR_ERR(0, err); return -1;}
       err=GWEN_BufferedIO_WriteLine(bio, ");");
-      if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+      if (err) { DBG_ERROR_ERR(0, err); return -1;}
       return 0;
     }
   }
@@ -303,7 +303,7 @@ int write_code_dupArg_c(ARGUMENTS *args,
                         const char *param){
   const char *typ;
   const char *name;
-  GWEN_ERRORCODE err;
+  int err;
 
   typ=GWEN_XMLNode_GetProperty(node, "type", 0);
   if (!typ) {
@@ -320,11 +320,11 @@ int write_code_dupArg_c(ARGUMENTS *args,
   if (strcmp(typ, "char")==0) {
     /* we can handle chars */
     err=GWEN_BufferedIO_Write(bio, "strdup(");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     err=GWEN_BufferedIO_Write(bio, param);
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     err=GWEN_BufferedIO_WriteLine(bio, ");");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     return 0;
   }
   else {
@@ -336,12 +336,12 @@ int write_code_dupArg_c(ARGUMENTS *args,
       return -1;
     }
     err=GWEN_BufferedIO_Write(bio, fname);
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     err=GWEN_BufferedIO_Write(bio, "(");
     err=GWEN_BufferedIO_Write(bio, param);
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     err=GWEN_BufferedIO_WriteLine(bio, ");");
-    if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+    if (err) { DBG_ERROR_ERR(0, err); return -1;}
     return 0;
   }
 
@@ -620,7 +620,7 @@ int write_code_todbArg_c(ARGUMENTS *args,
     if (!btype) {
       if (strcasecmp(typ, "char")==0)
         btype="char";
-      else if (strcasecmp(typ, "GWEN_TYPE_UINT32")==0)
+      else if (strcasecmp(typ, "uint32_t")==0)
         btype="int";
       else if (strcasecmp(typ, "GWEN_TYPE_UINT64")==0)
         btype="int";
@@ -789,7 +789,7 @@ int write_code_fromdbArg_c(ARGUMENTS *args,
     if (!btype) {
       if (strcasecmp(typ, "char")==0)
         btype="char";
-      else if (strcasecmp(typ, "GWEN_TYPE_UINT32")==0)
+      else if (strcasecmp(typ, "uint32_t")==0)
         btype="int";
       else if (strcasecmp(typ, "GWEN_TYPE_UINT64")==0)
         btype="int";
@@ -2218,7 +2218,7 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 	    GWEN_BufferedIO_WriteLine(bio, "\\\"\");");
 	    GWEN_BufferedIO_WriteLine(bio, "          "
 				      "if (GWEN_Logger_GetLevel(0)>="
-				      "GWEN_LoggerLevelDebug)");
+				      "GWEN_LoggerLevel_Debug)");
 	    GWEN_BufferedIO_WriteLine(bio, "            "
 				      "GWEN_DB_Dump(dbT2, stderr, 2);");
 	    GWEN_BufferedIO_Write(bio, "          ");
@@ -2319,7 +2319,7 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 	    GWEN_BufferedIO_WriteLine(bio, "\\\"\");");
 	    GWEN_BufferedIO_WriteLine(bio, "          "
 				      "if (GWEN_Logger_GetLevel(0)>="
-				      "GWEN_LoggerLevelDebug)");
+				      "GWEN_LoggerLevel_Debug)");
 	    GWEN_BufferedIO_WriteLine(bio, "            "
 				      "GWEN_DB_Dump(dbT2, stderr, 2);");
 	    GWEN_BufferedIO_Write(bio, "          ");
@@ -2715,7 +2715,7 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   int fd;
   const char *nacc;
   GWEN_BUFFEREDIO *bio;
-  GWEN_ERRORCODE err;
+  int err;
   const char *id;
   const char *prefix;
   GWEN_XMLNODE *n;
@@ -2918,7 +2918,7 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   /* close stream */
   err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_BufferedIO_free(bio);
     return -1;

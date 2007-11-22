@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-typedef struct GWEN_DIRECTORYDATASTRUCT GWEN_DIRECTORYDATA;
+typedef struct GWEN_DIRECTORY GWEN_DIRECTORY;
 
 #ifdef __cplusplus
 }
@@ -74,12 +74,12 @@ extern "C" {
 /**
  * Constructor.
  */
-GWENHYWFAR_API GWEN_DIRECTORYDATA *GWEN_Directory_new();
+GWENHYWFAR_API GWEN_DIRECTORY *GWEN_Directory_new();
 
 /**
  * Destructor
  */
-GWENHYWFAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
+GWENHYWFAR_API void GWEN_Directory_free(GWEN_DIRECTORY *d);
 
 /**
  * Opens a directory. This allows calling "Directory_Read" to succeed.
@@ -90,7 +90,7 @@ GWENHYWFAR_API void GWEN_Directory_free(GWEN_DIRECTORYDATA *d);
  * @param n path and name of the directory to open
  */
 GWENHYWFAR_API
-  int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n);
+  int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n);
 
 /**
  * Closes a previously opened directory.
@@ -99,7 +99,7 @@ GWENHYWFAR_API
  * @param d pointer to a directory data structure. This should be created
  * by calling @ref GWEN_Directory_new().
  */
-GWENHYWFAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
+GWENHYWFAR_API int GWEN_Directory_Close(GWEN_DIRECTORY *d);
 
 /**
  * Reads the next entry from a directory and stores the name of that
@@ -112,7 +112,7 @@ GWENHYWFAR_API int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d);
  * @param buffer pointer to a buffer to receive the name
  * @param len size of the buffer
  */
-GWENHYWFAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
+GWENHYWFAR_API int GWEN_Directory_Read(GWEN_DIRECTORY *d,
                                        char *buffer,
                                        unsigned int len);
 
@@ -124,7 +124,7 @@ GWENHYWFAR_API int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
  * @param d pointer to a directory data structure. This should be created
  * by calling @ref GWEN_Directory_new().
  */
-GWENHYWFAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d);
+GWENHYWFAR_API int GWEN_Directory_Rewind(GWEN_DIRECTORY *d);
 
 
 /**

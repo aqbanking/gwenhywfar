@@ -74,14 +74,14 @@ char *GWEN_Text_GetWord(const char *src,
                         const char *delims,
                         char *buffer,
                         unsigned int maxsize,
-                        GWEN_TYPE_UINT32 flags,
+                        uint32_t flags,
                         const char **next);
 
 GWENHYWFAR_API
 int GWEN_Text_GetWordToBuffer(const char *src,
                               const char *delims,
                               GWEN_BUFFER *buf,
-                              GWEN_TYPE_UINT32 flags,
+                              uint32_t flags,
                               const char **next);
 
 

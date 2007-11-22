@@ -35,12 +35,12 @@
 /**
  * Initialize this module.
  */
-GWEN_ERRORCODE GWEN_Process_ModuleInit();
+int GWEN_Process_ModuleInit();
 
 /**
  * De-Initialize this module.
  */
-GWEN_ERRORCODE GWEN_Process_ModuleFini();
+int GWEN_Process_ModuleFini();
 
 
 

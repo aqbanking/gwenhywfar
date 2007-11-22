@@ -35,7 +35,7 @@
 #include "i18n_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inetsocket.h> /* for select */
-#include <gwenhywfar/waitcallback.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/gwentime.h>
 
 #include <sys/types.h>
@@ -202,39 +202,42 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl){
 
 
 
-GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout){
+GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid){
   GWEN_TIME *t0;
   int distance;
   int count;
   GWEN_FSLOCK_RESULT rv;
+  uint32_t progressId;
 
   t0=GWEN_CurrentTime();
   assert(t0);
 
-  GWEN_WaitCallback_EnterWithText(GWEN_WAITCALLBACK_ID_FAST,
-                                  I18N("Waiting for lock to become "
-                                       "available..."),
-                                  I18N("second(s)"),
-                                  0);
-  GWEN_WaitCallback_SetProgressTotal(GWEN_WAITCALLBACK_PROGRESS_NONE);
+  progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+				    GWEN_GUI_PROGRESS_SHOW_ABORT,
+				    I18N("Accquiring lock"),
+				    NULL,
+				    (timeout==GWEN_TIMEOUT_FOREVER)
+				    ?0:timeout, gid);
 
-  if (timeout==GWEN_FSLOCK_TIMEOUT_NONE)
-    distance=GWEN_FSLOCK_TIMEOUT_NONE;
-  else if (timeout==GWEN_FSLOCK_TIMEOUT_FOREVER)
-    distance=GWEN_FSLOCK_TIMEOUT_FOREVER;
+  if (timeout==GWEN_TIMEOUT_NONE)
+    distance=GWEN_TIMEOUT_NONE;
+  else if (timeout==GWEN_TIMEOUT_FOREVER)
+    distance=GWEN_TIMEOUT_FOREVER;
   else {
-    distance=GWEN_WaitCallback_GetDistance(0);
-    if (distance)
-      if ((distance)>timeout)
-        distance=timeout;
-    if (!distance)
-      distance=250;
+    distance=GWEN_GUI_CHECK_PERIOD;
+    if (distance>timeout)
+      distance=timeout;
   }
 
   for (count=0;;count++) {
-    if (GWEN_WaitCallback()==GWEN_WaitCallbackResult_Abort) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "User aborted via waitcallback");
-      GWEN_WaitCallback_Leave();
+    int err;
+
+    err=GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_NONE);
+    if (err==GWEN_ERROR_USER_ABORTED) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "User aborted.");
+      GWEN_Gui_ProgressEnd(progressId);
       return GWEN_FSLock_ResultUserAbort;
     }
 
@@ -242,54 +245,54 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout){
     if (rv==GWEN_FSLock_ResultError) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       GWEN_Time_free(t0);
-      GWEN_WaitCallback_Leave();
+      GWEN_Gui_ProgressEnd(progressId);
       return rv;
     }
     else if (rv==GWEN_FSLock_ResultOk) {
       GWEN_Time_free(t0);
-      GWEN_WaitCallback_Leave();
+      GWEN_Gui_ProgressEnd(progressId);
       return rv;
     }
     else {
       /* check timeout */
-      if (timeout!=GWEN_FSLOCK_TIMEOUT_FOREVER) {
+      if (timeout!=GWEN_TIMEOUT_FOREVER) {
         GWEN_TIME *t1;
         double d;
 
-        if (timeout==GWEN_FSLOCK_TIMEOUT_NONE) {
-          GWEN_WaitCallback_Leave();
-          return GWEN_FSLock_ResultTimeout;
-        }
-        t1=GWEN_CurrentTime();
-        assert(t1);
-        d=GWEN_Time_Diff(t1, t0);
-        GWEN_Time_free(t1);
+	if (timeout==GWEN_TIMEOUT_NONE) {
+	  GWEN_Gui_ProgressEnd(progressId);
+	  return GWEN_FSLock_ResultTimeout;
+	}
+	t1=GWEN_CurrentTime();
+	assert(t1);
+	d=GWEN_Time_Diff(t1, t0);
+	GWEN_Time_free(t1);
 
-        if (d>=timeout) {
-          DBG_DEBUG(GWEN_LOGDOMAIN,
-                    "Could not lock within %d milliseconds, giving up",
-                    timeout);
-          GWEN_Time_free(t0);
-          GWEN_WaitCallback_Leave();
-          return GWEN_FSLock_ResultTimeout;
-        }
-        GWEN_WaitCallback_SetProgressPos((GWEN_TYPE_UINT64)d);
+	if (d>=timeout) {
+	  DBG_DEBUG(GWEN_LOGDOMAIN,
+		    "Could not lock within %d milliseconds, giving up",
+		    timeout);
+	  GWEN_Time_free(t0);
+	  GWEN_Gui_ProgressEnd(progressId);
+	  return GWEN_FSLock_ResultTimeout;
+	}
 
+	err=GWEN_Gui_ProgressAdvance(progressId, (uint64_t)d);
+	if (err) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "User aborted.");
+	  GWEN_Gui_ProgressEnd(progressId);
+	  return GWEN_FSLock_ResultUserAbort;
+	}
       }
       /* sleep for the distance of the WaitCallback */
       GWEN_Socket_Select(0, 0, 0, distance);
     }
   } /* for */
-  GWEN_WaitCallback_Leave();
+  GWEN_Gui_ProgressEnd(progressId);
 
   DBG_WARN(GWEN_LOGDOMAIN, "We should never reach this point");
   GWEN_Time_free(t0);
   return GWEN_FSLock_ResultError;
-
-
-
-
-
 }
 
 

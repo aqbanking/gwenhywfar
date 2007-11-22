@@ -16,7 +16,7 @@ GWENHYWFAR_AUTHOR="Martin Preuss<martin@libchipcard.de>"
 GWENHYWFAR_BUGREPORT_ADDR="<martin@libchipcard.de>"
 
 
-AC_PREREQ(2.56)
+AC_PREREQ(2.60)
 AC_INIT
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
@@ -27,9 +27,9 @@ AC_CONFIG_HEADERS([config.h])
 #
 # versions
 #
-GWENHYWFAR_VERSION_MAJOR=2
-GWENHYWFAR_VERSION_MINOR=6
-GWENHYWFAR_VERSION_PATCHLEVEL=2
+GWENHYWFAR_VERSION_MAJOR=3
+GWENHYWFAR_VERSION_MINOR=0
+GWENHYWFAR_VERSION_PATCHLEVEL=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="stable"
 
@@ -41,39 +41,26 @@ GWENHYWFAR_VERSION_TAG="stable"
 #
 
 GWENHYWFAR_VERSION_BUILD="0"
-case "$GWENHYWFAR_VERSION_TAG" in svn|cvs)
-dnl Note: Currently we don't need to lookup the actual SVN program
-dnl because the number has been written here on checkout anyway.
-dnl   SVN=`which svn`
-dnl   case "x$SVN" in
-dnl     x|xno)
-dnl       GWENHYWFAR_VERSION_BUILD="0"
-dnl       ;;
-dnl     *)
-      # Let svn write the revision number directly into here on
-      # each svn update. Note: The trailing space is necessary for
-      # cvs versions.
-      GWENHYWFAR_VERSION_BUILD=`echo "$Rev$ " | cut -d' ' -f2`
-      if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
-	GWENHYWFAR_VERSION_BUILD="0"
-      fi
-dnl       ;;
-dnl   esac
-  ;;
-esac
-GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL-${GWENHYWFAR_VERSION_TAG}-r${GWENHYWFAR_VERSION_BUILD}"
+# Let svn write the revision number directly into here on
+# each svn update. Note: The trailing space is necessary for
+# cvs versions.
+GWENHYWFAR_VERSION_BUILD=`echo "$Rev$ " | cut -d' ' -f2`
+if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
+  GWENHYWFAR_VERSION_BUILD="0"
+fi
+GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.${GWENHYWFAR_VERSION_PATCHLEVEL}${GWENHYWFAR_VERSION_TAG}-${GWENHYWFAR_VERSION_BUILD}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
-# The version number for the plugin/crypttoken/ohbci/ohbci.la
+# The version number for the plugin/ct/ohbci/ohbci.la
 OHBCI_VERSION_STRING="0.1.0"
 
 ###-------------------------------------------------------------------------
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="48"
-GWENHYWFAR_SO_AGE="10"
-GWENHYWFAR_SO_REVISION="2"
+GWENHYWFAR_SO_CURRENT="47"
+GWENHYWFAR_SO_AGE="0"
+GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -93,7 +80,7 @@ case "$GWENHYWFAR_VERSION_TAG" in
      GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
      
      # add TAG
-     GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_RELEASE_STRING-${GWENHYWFAR_VERSION_TAG}"
+     GWENHYWFAR_VERSION_RELEASE_STRING="${GWENHYWFAR_VERSION_RELEASE_STRING}${GWENHYWFAR_VERSION_TAG}"
      ;;
 esac
 
@@ -212,6 +199,11 @@ AC_CHECK_PROG(SED,sed,sed)
 AC_CHECK_LIB(dl, dlopen)
 # note: this AC_CHECK_LIB will also add -ldl to LIBS.
 
+# Some systems have iconv in libc, some have it in libiconv (OSF/1 and
+# those with the standalone portable GNU libiconv installed). Check
+# which one is available. The define ICONV_CONST will be "" or "const"
+# accordingly.
+AM_ICONV
 
 ###-------------------------------------------------------------------------
 #
@@ -231,6 +223,17 @@ AC_CHECK_HEADERS([sys/stat.h])
 AC_CHECK_HEADERS([sys/types.h])
 AC_CHECK_HEADERS([sys/wait.h])
 AC_CHECK_HEADERS([regex.h])
+
+
+###-------------------------------------------------------------------------
+#
+# Checks for declarations
+#
+AC_CHECK_DECLS([sigprocmask], [], [], [
+  #ifdef HAVE_SIGNAL_H
+  #  include <signal.h>
+  #endif
+])
 
 
 ###-------------------------------------------------------------------------
@@ -260,18 +263,59 @@ AC_CHECK_FUNCS([srandom random])
 # Init binreloc
 AM_BINRELOC
 
+
+
+###-------------------------------------------------------------------------
+#
+# check whether gwen is a subproject to another one
+#
+
+AC_MSG_CHECKING(if gwen is a subproject)
+AC_ARG_ENABLE(gwen-subproject,
+  [  --enable-gwen-subproject         make gwen only a subproject (default=no)],
+  enable_gwen_subproject="$enableval",
+  enable_gwen_subproject="no")
+AC_MSG_RESULT($enable_gwen_subproject)
+
+if test "$enable_gwen_subproject" != "no"; then
+  AC_DEFINE(GWENHYWFAR_IS_SUBPROJECT, 1, [whether gwen is a subproject])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# check whether local installation mode is enabled
+#
+
+AC_MSG_CHECKING(whether local installation mode is wanted)
+AC_ARG_ENABLE(local-install,
+  [  --enable-local-install         allow local installation mode (default=no)],
+  enable_local_install="$enableval",
+  enable_local_install="no")
+AC_MSG_RESULT($enable_local_install)
+
+if test "$enable_local_install" != "no"; then
+  AC_DEFINE(ENABLE_LOCAL_INSTALL, 1, [whether local install is wanted])
+fi
+
+
+
 ###-------------------------------------------------------------------------
 #
 # OS dependant settings
 #
 
 # Common settings for all OSs
+gwenhywfar_bindir="\${bindir}"
 gwenhywfar_libs="-lgwenhywfar"
 gwenhywfar_ldflags="-L\${libdir}"
 gwenhywfar_internal_libname="libgwenhywfar.la"
-gwenhywfar_headerdir_am="\$(includedir)"
-gwenhywfar_headerdir="\${includedir}"
+gwenhywfar_headerdir_am="\$(includedir)/gwenhywfar3"
+gwenhywfar_headerdir="\${includedir}/gwenhywfar3"
 gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+gwenhywfar_symlinkdir="\$(top_builddir)/gwenhywfar3"
+gwenhywfar_datadir="\${datadir}/gwenhywfar"
 
 # Now the specific settings
 case "$OS_TYPE" in
@@ -302,7 +346,7 @@ case "$OS_TYPE" in
 
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
-	all_libraries="${all_libraries} -lregex -lwsock32"
+	all_libraries="${all_libraries} -lregex -lwsock32 -lintl"
     	;;
     *)
     	AC_MSG_ERROR(**** Unknown operating system type)
@@ -323,20 +367,110 @@ dnl AC_DEFINE_UNQUOTED(LIBDIRSUFFIX, ["$libdirsuffix"], [Defined to the suffix s
 dnl --- no longer needed since $libdir is used directly
 
 
+
 ###-------------------------------------------------------------------------
 #
-# check for some types and printf-templates
+# check plugin search path
 #
-AQ_TYPE_UINT32(unsigned int)
-AQ_TYPE_UINT64(unsigned long long)
-GWEN_TYPE_UINT32=$aq_type_uint32
-AC_SUBST(GWEN_TYPE_UINT32)
-GWEN_TYPE_TMPL_UINT32=$aq_type_tmpl_uint32
-AC_SUBST(GWEN_TYPE_TMPL_UINT32)
-GWEN_TYPE_UINT64=$aq_type_uint64
-AC_SUBST(GWEN_TYPE_UINT64)
-GWEN_TYPE_TMPL_UINT64=$aq_type_tmpl_uint64
-AC_SUBST(GWEN_TYPE_TMPL_UINT64)
+AC_MSG_CHECKING(plugin search dir)
+AC_ARG_WITH(plugin-searchdir, [  --with-plugin-searchdir=DIR where to search for plugins],
+  [gwenhywfar_plugin_searchdir="$withval"],
+  [gwenhywfar_plugin_searchdir=""])
+
+if test -z "${gwenhywfar_plugin_searchdir}"; then
+  if test "$OSYSTEM" = "windows"; then
+    gwenhywfar_plugin_searchdir="lib/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+  else
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_plugin_searchdir="lib/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+    else
+      gwenhywfar_plugin_searchdir="$gwenhywfar_plugindir"
+    fi
+  fi
+fi
+
+AC_SUBST(gwenhywfar_plugin_searchdir)
+AC_MSG_RESULT($gwenhywfar_plugin_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check data search dir
+#
+AC_MSG_CHECKING(data search dir)
+AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for data files],
+  [gwenhywfar_data_searchdir="$withval"],
+  [gwenhywfar_data_searchdir=""])
+
+if test -z "${gwenhywfar_data_searchdir}"; then
+  if test "$OSYSTEM" = "windows"; then
+    gwenhywfar_data_searchdir="share/gwenhywfar"
+  else
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_data_searchdir="share/gwenhywfar"
+    else
+      gwenhywfar_data_searchdir="$gwenhywfar_datadir"
+    fi
+  fi
+fi
+
+AC_SUBST(gwenhywfar_data_searchdir)
+AC_MSG_RESULT($gwenhywfar_data_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check locale search dir
+#
+AC_MSG_CHECKING(locale search dir)
+AC_ARG_WITH(locale-searchdir, [  --with-locale-searchdir=DIR where to search for locale files],
+  [gwenhywfar_locale_searchdir="$withval"],
+  [gwenhywfar_locale_searchdir=""])
+
+if test -z "${gwenhywfar_locale_searchdir}"; then
+  if test "$OSYSTEM" = "windows"; then
+    gwenhywfar_locale_searchdir="share/locale"
+  else
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_locale_searchdir="share/locale"
+    else
+      gwenhywfar_locale_searchdir="\$(localedir)"
+    fi
+  fi
+fi
+
+AC_SUBST(gwenhywfar_locale_searchdir)
+AC_MSG_RESULT($gwenhywfar_locale_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check cfg search dir
+#
+AC_MSG_CHECKING(cfg search dir)
+AC_ARG_WITH(cfg-searchdir, [  --with-cfg-searchdir=DIR where to search for cfg files],
+  [gwenhywfar_cfg_searchdir="$withval"],
+  [gwenhywfar_cfg_searchdir=""])
+
+if test -z "$gwenhywfar_cfg_searchdir"; then
+  if test "$OSYSTEM" = "windows"; then
+    gwenhywfar_cfg_searchdir="etc"
+  else
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_cfg_searchdir="etc"
+    else
+      gwenhywfar_cfg_searchdir="\$(sysconfdir)"
+    fi
+  fi
+fi
+
+
+AC_SUBST(gwenhywfar_cfg_searchdir)
+AC_MSG_RESULT($gwenhywfar_cfg_searchdir)
+
 
 
 ###-------------------------------------------------------------------------
@@ -378,39 +512,83 @@ AC_SUBST(PROFILING_LDFLAGS)
 
 ###-------------------------------------------------------------------------
 #
-# check for encryption library
+# check for libgcrypt
 #
-AQ_CHECK_SSL
-if test "$ssl_available" = "yes"; then
-  all_includes="$all_includes $ssl_includes"
-  GWEN_CRYPTO="ossl"
-  AC_DEFINE_UNQUOTED(GWEN_SSL_CRYPTO, 1, [Defined if OpenSSL crypto module is built])
-  USE_CRYPT="yes"
-else
-  GWEN_CRYPTO="none"
-  USE_CRYPT="no"
-fi
-AM_CONDITIONAL(GWEN_SSL_CRYPTO, [test "$GWEN_CRYPTO" = "ossl"])
-AC_SUBST(USE_CRYPT)
+case "$OS_TYPE" in
+  windows)
+    LIBGCRYPT_CFLAGS=""
+    LIBGCRYPT_LIBS="-lgcrypt"
+    AC_SUBST(LIBGCRYPT_CFLAGS)
+    AC_SUBST(LIBGCRYPT_LIBS)
+    ;;
+  *)
+    AM_PATH_LIBGCRYPT([], [have_gcrypt="yes"], [have_gcrypt="no"])
+    if test "$have_gcrypt" != "yes"; then
+      AC_MSG_ERROR([
+    **** Libgcrypt is required for Gwenhywfar. Please install it (including devel packages)])
+    fi
+    ;;
+esac
 
 
 
 ###-------------------------------------------------------------------------
 #
-# check for LibXML for test/gwentest.c
+# check for libgnutls
 #
-AC_CHECK_PROG(PKG_CONFIG, pkg-config, pkg-config, NO)
-AC_MSG_CHECKING([whether LibXML2 example should be used])
-if test "x${PKG_CONFIG}" != "xNO" && $PKG_CONFIG --exists libxml-2.0; then
-  AC_DEFINE(USE_LIBXML2, 1, [whether LibXML2 example should be used])
-  xml_includes="`${PKG_CONFIG} --cflags libxml-2.0`"
-  xml_libraries="`${PKG_CONFIG} --libs libxml-2.0`"
-  AC_MSG_RESULT([yes])
+case "$OS_TYPE" in
+  windows)
+    LIBGNUTLS_CFLAGS=""
+    LIBGNUTLS_LIBS="-lgnutls -lgpg-error"
+    # we use 1.6.3, so we do have gnutls_transport_set_error
+    AC_DEFINE(HAVE_GNUTLS_TRANSPORT_SET_ERRNO, 1, [only in gnutls>=1.6])
+    AC_SUBST(LIBGNUTLS_CFLAGS)
+    AC_SUBST(LIBGNUTLS_LIBS)
+    ;;
+    
+  *)
+    AM_PATH_LIBGNUTLS([], [have_gnutls="yes"], [have_gnutls="no"])
+    if test "$have_gnutls" != "yes"; then
+      AC_MSG_ERROR([
+    **** Libgnutls is required for Gwenhywfar. Please install it (including devel packages)])
+    fi
+    
+    # check for 1.6 or higher
+    oldlibs="$LIBS"
+    LIBS="${LIBGNUTLS_LIBS}"
+    AC_CHECK_LIB(gnutls,gnutls_transport_set_errno, 
+      [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="yes"], 
+      [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="no"])
+    LIBS="$oldlibs"
+    if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
+      AC_DEFINE(HAVE_GNUTLS_TRANSPORT_SET_ERRNO, 1, [only in gnutls>=1.6])
+    fi
+  ;;
+esac
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for OpenSSL
+#
+AQ_CHECK_SSL
+if test "$ssl_available" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_OPENSSL, 1, [Defined if OpenSSL is available])
+  USE_CRYPT="yes"
 else
-  AC_MSG_RESULT([no])
+  GWEN_CRYPTO="none"
+  USE_CRYPT="no"
 fi
-AC_SUBST(xml_includes)
-AC_SUBST(xml_libraries)
+AM_CONDITIONAL(IF_HAVE_OPENSSL, [test "$ssl_available" = "yes"])
+AC_SUBST(ssl_available)
+
+
+
+###-------------------------------------------------------------------------
+# check for Distribution
+
+AQ_DISTRIBUTION
 
 
 
@@ -418,55 +596,103 @@ AC_SUBST(xml_libraries)
 #
 # check for I18N
 #
-HAVE_I18N="yes"
-AC_CHECK_PROG(MSGFMT,msgfmt,msgfmt,missing)
+
+
+# check whether i18n files are to be created
 AC_CHECK_PROG(XGETTEXT,xgettext,xgettext, missing)
 
-if test "$XGETTEXT" != "missing" -a "$MSGFMT" != "missing" ; then
-  AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
+MAKE_I18N_FILES="yes"
+if test "$XGETTEXT" = "missing"; then
+  MAKE_I18N_FILES="no"
+  AC_MSG_WARN([xgettext is missing. Locale suport is disabled.])
+fi
+
+AC_PATH_PROG([MSGFMT], [msgfmt], [missing])
+if test "$MSGFMT" = "missing"; then
+  MAKE_I18N_FILES="no"
+  AC_MSG_WARN([msgfmt is missing. Locale suport is disabled.])
+fi
+
+AC_SUBST(MAKE_I18N_FILES)
+AM_CONDITIONAL(IF_MAKE_I18N_FILES, [test "$MAKE_I18N_FILES" = "yes"])
+
+
+# then check whether i18n support is to be compiled in
+i18n_libs=""
+HAVE_I18N="yes"
+AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
+
+if test "$OS_TYPE" != "windows"; then
+  oldlibs="$LIBS"
+  LIBS=""
   AC_SEARCH_LIBS(gettext, intl, [], [HAVE_I18N="no"])
+  i18n_libs="$LIBS"
+  LIBS="$oldlibs"
 else
-  HAVE_I18N="no"
-  AC_MSG_WARN([xgettext or msgfmt is missing. Locale suport is disabled.])
+  i18n_libs="-lintl"
 fi
-AC_SUBST(HAVE_I18N)
-if test "$HAVE_I18N" = "yes"; then
+
+if test "$HAVE_I18N" != "NO"; then
   AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
-  AC_DEFINE_UNQUOTED(ENABLE_NLS, 1, [whether I18N is available])
 fi
-AM_CONDITIONAL(USE_I18N, [test "$HAVE_I18N" = "yes"])
+
+AC_SUBST(HAVE_I18N)
+AC_SUBST(i18n_libs)
+
 
 
 ###-------------------------------------------------------------------------
 #
-# create header directory, make symlinks
+# check for iconv
 #
-GWEN_HEADER_DIRS="src src/base src/net2 src/crypt src/crypt/${GWEN_CRYPTO} src/crypt2 src/io src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/storage"
-GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
-lprefix="${srcdir}"
-lprefix=`( cd ${lprefix} ; pwd )`
 
-rm -Rf gwenhywfar 2>/dev/null
-mkdir gwenhywfar
-GWEN_HEADER_FILES="doc/apidoc.h"
-for d in ${GWEN_HEADER_DIRS}; do
-  hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
-  for f in ${hfiles}; do
-    case ${f} in
-      *_l.h | *_p.h)
-      	 ;;
-      *)
-         GWEN_HEADER_FILES="${GWEN_HEADER_FILES} ${d}/${f}"
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar/${f}"
-         ;;
-    esac
-  done
-done
-#test -f gwenhywfar/version.h || ln -s "${lprefix}/src/version.h" "gwenhywfar/version.h" 2>/dev/null
-#test -f gwenhywfar/types.h || ln -s "${lprefix}/src/types.h" "gwenhywfar/types.h" 2>/dev/null
-#test -f gwenhywfar/system.h || ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar/system.h" 2>/dev/null
+AC_ARG_WITH(iconv, [  --with-iconv=PATH take iconv from PATH],
+  [ICONV_DIR="$withval"],
+  [ICONV_DIR="/usr"])
 
-AC_SUBST(GWEN_HEADER_FILES)
+if test "$ICONV_DIR" = "no" ; then
+    echo Disabling ICONV support
+else
+    if test "$with_iconv" != "yes" -a "$with_iconv" != "" ; then
+	CPPFLAGS="${CPPFLAGS} -I$with_iconv/include"
+	# Export this since our headers include iconv.h
+	ICONV_INCLUDES="-I$ICONV_DIR/include"
+	ICONV_LIBS="-L$ICONV_DIR/lib"
+    fi
+
+    AC_CHECK_HEADER(iconv.h,
+	AC_MSG_CHECKING(for iconv)
+	AC_TRY_LINK([#include <stdlib.h>
+#include <iconv.h>],[
+iconv_t cd = iconv_open ("","");
+iconv (cd, NULL, NULL, NULL, NULL);],[
+	    AC_MSG_RESULT(yes)
+	    WITH_ICONV=1],[
+	    AC_MSG_RESULT(no)
+	    AC_MSG_CHECKING(for iconv in -liconv)
+
+	    _ldflags="${LDFLAGS}"
+	    _libs="${LIBS}"
+	    LDFLAGS="${LDFLAGS} ${ICONV_LIBS}"
+	    LIBS="${LIBS} -liconv"
+
+	    AC_TRY_LINK([#include <stdlib.h>
+#include <iconv.h>],[
+iconv_t cd = iconv_open ("","");
+iconv (cd, NULL, NULL, NULL, NULL);],[
+		AC_MSG_RESULT(yes)
+		WITH_ICONV=1
+		ICONV_LIBS="${ICONV_LIBS} -liconv"
+		LIBS="${_libs}"
+		LDFLAGS="${_ldflags}"],[
+		AC_MSG_RESULT(no)
+		LIBS="${_libs}"
+		LDFLAGS="${_ldflags}"])]))
+fi
+AC_DEFINE_UNQUOTED(HAVE_ICONV, $WITH_ICONV, [Defined if libiconv is available])
+AC_SUBST(WITH_ICONV)
+AC_SUBST(ICONV_LIBS)
+
 
 
 ###-------------------------------------------------------------------------
@@ -480,32 +706,6 @@ AC_ARG_WITH(docpath, [  --with-docpath=DIR where to store the apidoc],
 AC_SUBST(docpath)
 AC_MSG_RESULT($docpath)
 
-
-###-------------------------------------------------------------------------
-#
-# check for doc type
-#
-AC_MSG_CHECKING(if full docu should be created)
-AC_ARG_ENABLE(full-doc,
-  [  --enable-full-doc         enable creating full apidoc (default=no)],
-  [ case "${enableval}" in
-    yes) enable_fulldoc="yes";;
-    no)  enable_fulldoc="no";;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-full-doc);;
-    esac
-  ],
-  enable_fulldoc="no")
-
-if test "$enable_fulldoc" = "yes"; then
-	DOXYGEN_INPUT="listdoc.h src"
-        DOXYGEN_DEFINE=""
-else
-	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="listdoc.h ${GWEN_HEADER_FILES}"
-fi
-AC_SUBST(DOXYGEN_INPUT)
-AC_SUBST(DOXYGEN_DEFINE)
-AC_MSG_RESULT($enable_fulldoc)
 
 
 ###-------------------------------------------------------------------------
@@ -578,46 +778,59 @@ AC_MSG_RESULT($enable_release)
 # GCC version (check for usability)
 #
 AC_MSG_CHECKING(if symbol visibility is supported)
-visibility_cflags=""
-case `basename $CC` in 
-  gcc*)
-     dnl Determine version number (watch out: the outside square
-     dnl parenteses are vitally important here!)
-     gccversion=["` ${CC} --version | head -1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-     case $gccversion in
-       4.*)
-	 # Activate -fvisibility=hidden only for explicit 4.x gcc
-	 # versions. We never now what future gcc's might do with
-	 # that argument, and we also can't be sure that other
-	 # gcc's happen to show very weird version
-	 # numbers. Therefore leave the default at non-activated.
-         visibility_supported="yes, gcc-${gccversion}"
-         AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
-         visibility_cflags="-fvisibility=hidden"
-         ;;
-       *)
-	 # Default: -fvisibility=hidden not activated.
-         visibility_supported="no (needs gcc >=4.0, you have gcc-${gccversion})"
-         ;;
-      esac
-      ;;
-  *)
-    visibility_supported="no (needs gcc >=4.0, you use $CC)"
-    ;;
-esac
+AC_ARG_ENABLE(visibility,
+  [  --enable-visibility             enable visibility (default=no)],
+  enable_visibility="$enableval",
+  enable_visibility="yes")
+AC_MSG_RESULT($enable_visibility)
 
-# -fvisibility is at least not available on MinGW/gcc-3.4.4 (will
-# give an "unrecognized cmdline option"). Also, unfortunately I
-# don't know an easy way to ask the compiler here. Maybe
-# http://autoconf-archive.cryp.to/ax_cflags_gcc_option.html
-case "$OS_TYPE" in
-  windows)
-        visibility_supported="no (not yet on MinGW/Windows)"
-        visibility_cflags=""
-	;;
-  *)
-	;;
-esac
+if test "$enable_visibility" == "yes"; then
+  AC_MSG_CHECKING(if symbol visibility is supported)
+  visibility_cflags=""
+  case `basename $CC` in 
+    gcc*)
+       dnl Determine version number (watch out: the outside square
+       dnl parenteses are vitally important here!)
+       gccversion=["` ${CC} --version | head -1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+       case $gccversion in
+         4.*)
+           # Activate -fvisibility=hidden only for explicit 4.x gcc
+           # versions. We never now what future gcc's might do with
+           # that argument, and we also can't be sure that other
+           # gcc's happen to show very weird version
+           # numbers. Therefore leave the default at non-activated.
+           visibility_supported="yes, gcc-${gccversion}"
+           AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
+           visibility_cflags="-fvisibility=hidden"
+           ;;
+         *)
+           # Default: -fvisibility=hidden not activated.
+           visibility_supported="no (needs gcc >=4.0, you have gcc-${gccversion})"
+           ;;
+        esac
+        ;;
+    *)
+      visibility_supported="no (needs gcc >=4.0, you use $CC)"
+      ;;
+  esac
+  
+  # -fvisibility is at least not available on MinGW/gcc-3.4.4 (will
+  # give an "unrecognized cmdline option"). Also, unfortunately I
+  # don't know an easy way to ask the compiler here. Maybe
+  # http://autoconf-archive.cryp.to/ax_cflags_gcc_option.html
+  case "$OS_TYPE" in
+    windows)
+          visibility_supported="no (not yet on MinGW/Windows)"
+          visibility_cflags=""
+          ;;
+    *)
+          ;;
+  esac
+else
+  visibility_supported="no (not wanted)"
+  visibility_cflags=""
+fi
+
 
 AC_MSG_RESULT(${visibility_supported})
 AC_SUBST(visibility_cflags)
@@ -646,7 +859,7 @@ ACX_COMPILE_WARN()
 
 ###-------------------------------------------------------------------------
 #
-# compile program flagss
+# compile program flags
 #
 
 PROG_LIBRARIES="${PROG_LIBRARIES} ${ssl_libraries} ${ssl_lib} ${ncurses_libs}"
@@ -657,18 +870,45 @@ AS_SCRUB_INCLUDE(gwenhywfar_includes)
 AS_SCRUB_INCLUDE(all_includes)
 
 
+
+###-------------------------------------------------------------------------
+#
+# check for doc type
+#
+AC_MSG_CHECKING(if full docu should be created)
+AC_ARG_ENABLE(full-doc,
+  [  --enable-full-doc         enable creating full apidoc (default=no)],
+  [ case "${enableval}" in
+    yes) enable_fulldoc="yes";;
+    no)  enable_fulldoc="no";;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-full-doc);;
+    esac
+  ],
+  enable_fulldoc="no")
+
+if test "$enable_fulldoc" = "yes"; then
+	DOXYGEN_INPUT="listdoc.h src"
+        DOXYGEN_DEFINE=""
+else
+	DOXYGEN_DEFINE="DOXYGEN_HIDE"
+	DOXYGEN_INPUT="listdoc.h gwenhywfar"
+fi
+AC_SUBST(DOXYGEN_INPUT)
+AC_SUBST(DOXYGEN_DEFINE)
+AC_MSG_RESULT($enable_fulldoc)
+
+
 ###-------------------------------------------------------------------------
 #
 # substitute vars
 #
-AC_SUBST(GWEN_CRYPTO)
-AC_SUBST(GWEN_HEADER_FILES)
 AC_SUBST(GWEN_OS)
 AC_SUBST(PROG_LIBRARIES)
 AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
 AC_SUBST(gwenhywfar_crypt_lib)
 AC_SUBST(gwenhywfar_ldflags)
+AC_SUBST(gwenhywfar_bindir)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_internal_libname)
 AC_SUBST(gwenhywfar_libspp)
@@ -678,6 +918,8 @@ AC_SUBST(gwenhywfar_pkgincludedir)
 AC_SUBST(gwenhywfar_plugindir)
 AC_SUBST(gwenhywfar_headerdir_am)
 AC_SUBST(gwenhywfar_headerdir)
+AC_SUBST(gwenhywfar_symlinkdir)
+AC_SUBST(gwenhywfar_datadir)
 
 
 ###-------------------------------------------------------------------------
@@ -693,6 +935,8 @@ AC_CONFIG_FILES([Doxyfile
 		 gwenhywfar.pc
 		 gwenhywfar.spec
 		 gwenhywfar.iss
+                 checks/Makefile
+                 data/Makefile
                  doc/Makefile
                  doc/inherit/Makefile
 		 doc/plugindescr.xsd
@@ -701,11 +945,11 @@ AC_CONFIG_FILES([Doxyfile
                  src/ressource.rc
                  src/version.h
                  src/base/Makefile
-                 src/crypt/Makefile
-                 src/crypt/ossl/Makefile
-                 src/crypt/none/Makefile
-                 src/crypt2/Makefile
+                 src/crypt3/Makefile
+                 src/crypttoken/Makefile
+                 src/gui/Makefile
                  src/io/Makefile
+                 src/iolayer/Makefile
                  src/ipc/Makefile
                  src/ipc/request/Makefile
                  src/os/Makefile
@@ -714,8 +958,6 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/Makefile
                  src/os/windows/system.h
                  src/parser/Makefile
-                 src/net2/Makefile
-                 src/storage/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile
                  plugins/dbio/csv/Makefile
@@ -724,26 +966,81 @@ AC_CONFIG_FILES([Doxyfile
                  plugins/dbio/olddb/Makefile
                  plugins/dbio/olddb/olddb.xml
                  plugins/dbio/olddb/ressource.rc
-                 plugins/dbio/rfc822/Makefile
-                 plugins/dbio/rfc822/rfc822.xml
-                 plugins/dbio/rfc822/ressource.rc
                  plugins/dbio/xmldb/Makefile
                  plugins/dbio/xmldb/xmldb.xml
                  plugins/dbio/xmldb/ressource.rc
-                 plugins/crypttoken/Makefile
-                 plugins/crypttoken/ohbci/Makefile
-                 plugins/crypttoken/ohbci/ohbci.xml
-                 plugins/crypttoken/ohbci/ressource.rc
-                 plugins/storage/Makefile
-                 plugins/storage/localfiles/Makefile
-                 plugins/storage/localfiles/localfiles.xml
-                 plugins/storage/localfiles/ressource.rc
+                 plugins/ct/Makefile
+                 plugins/ct/ohbci/Makefile
+                 plugins/ct/ohbci/ohbci.xml
+                 plugins/ct/ohbci/ressource.rc
                  tools/Makefile
                  tools/xmlmerge/Makefile
                  tools/typemaker/Makefile
-                 tools/gct-tool/Makefile
+                 tools/gcttool/Makefile
                  test/Makefile
 		])
 AC_OUTPUT
+
+
+
+
+###-------------------------------------------------------------------------
+#
+# create header directory, make symlinks
+#
+GWEN_HEADER_DIRS="src src/base src/crypt3 src/crypttoken src/io src/iolayer src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/gui"
+GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
+lprefix="${srcdir}"
+lprefix=`( cd ${lprefix} ; pwd )`
+
+rm -Rf gwenhywfar3 2>/dev/null
+mkdir -p gwenhywfar3/gwenhywfar
+for d in ${GWEN_HEADER_DIRS}; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.h | *_p.h)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar3/gwenhywfar/${f}"
+         ;;
+    esac
+  done
+done
+#ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar3/gwenhywfar/system.h" 2>/dev/null
+
+
+
+
+
+###-------------------------------------------------------------------------
+#
+# summary
+#
+
+echo
+echo "Summary"
+echo "============================================="
+echo "Version                       : $GWENHYWFAR_VERSION_FULL_STRING"
+echo "System                        : $OSYSTEM"
+echo "Installation Folder           : $prefix"
+echo "Plugin Installation Folder    : $gwenhywfar_plugindir"
+echo "Plugin Search Folder          : $gwenhywfar_plugin_searchdir"
+echo "Data Search Folder            : $gwenhywfar_data_searchdir"
+echo "Locale Search Folder          : $gwenhywfar_locale_searchdir"
+echo "Config Search Folder          : $gwenhywfar_cfg_searchdir"
+echo "Symbol Visibility             : $visibility_supported"
+echo "Local Installation Mode       : $enable_local_install"
+echo "OpenSSL Support for gct-tool  : $ssl_available"
+
+if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
+  echo "GNUTLS                        : 1.6.1 or higher"
+else
+  echo "GNUTLS                        : pre-1.6.1"
+fi
+echo
+echo "You can now use the command 'make' (or on *BSD 'gmake') to "
+echo "build Gwenhywfar."
+echo
 
 

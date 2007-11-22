@@ -1,12 +1,6 @@
 
-
 db:
   - improve file reading/writing
-dbio:
-  - use generic plugin framework for plugin loading
-crypt:
-  - remove old list functions, replace them by the list macros
-    (will break compatibility -> for next major version)
 msgengine:
   - use "storedAs" in VALUE tags also
 
@@ -27,3 +21,18 @@ ohbci:
        GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_INVALID   0xc1 (was old DES)
       (GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_DES)      0xc2
        GWEN_CRYPTTOKEN_OHBCI_TAG_CRYPT_BF        0xc3
+
+
+Get root CA certs:
+http://curl.haxx.se/docs/caextract.html
+
+
+
+Callgraphs
+
+- Generate callgraphs:
+  make CC=/usr/gccgraph/bin/gcc
+  C  : genfull
+  C++: genfull -g cppdepn
+- Show callgraph for s specific function:
+  gengraph -f FUNCTION_NAME -o OUTFILENAME --output-type=png

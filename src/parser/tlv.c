@@ -138,7 +138,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   unsigned int pos;
   unsigned int j;
   GWEN_TLV *tlv;
-  GWEN_TYPE_UINT32 startPos;
+  uint32_t startPos;
 
   if (!GWEN_Buffer_GetBytesLeft(mbuf)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer empty");

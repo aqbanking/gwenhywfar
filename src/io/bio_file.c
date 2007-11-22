@@ -67,10 +67,10 @@ void GWEN_BufferedIO_File_Table__free(GWEN_BUFFEREDIO_FILE *bft) {
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
-                                          char *buffer,
-                                          int *size,
-                                          int timeout){
+int GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
+			       char *buffer,
+			       int *size,
+			       int timeout){
   int rv;
   GWEN_BUFFEREDIO_FILE *bft;
 
@@ -92,10 +92,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not read (%s)",
 	      strerror(errno));
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_READ);
+    return GWEN_ERROR_READ;
   }
   *size=rv;
   return 0;
@@ -103,10 +100,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
-                                           const char *buffer,
-                                           int *size,
-                                           int timeout){
+int GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
+				const char *buffer,
+				int *size,
+				int timeout){
   int rv;
   GWEN_BUFFEREDIO_FILE *bft;
 
@@ -124,10 +121,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
   if (rv<1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not write (%s)",
 	      strerror(errno));
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_WRITE);
+    return GWEN_ERROR_WRITE;
   }
   *size=rv;
   return 0;
@@ -135,7 +129,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm){
+int GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm){
   GWEN_BUFFEREDIO_FILE *bft;
 
   assert(dm);
@@ -148,10 +142,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm){
   if (close(bft->fd)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not close (%s)",
 	      strerror(errno));
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_CLOSE);
+    return GWEN_ERROR_CLOSE;
   }
   return 0;
 }

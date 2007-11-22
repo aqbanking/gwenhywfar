@@ -75,7 +75,7 @@ extern "C" {
 #define GWEN_INETADDR_CAPS_AF_TCP  0x00000001
 #define GWEN_INETADDR_CAPS_AF_UNIX 0x00000002
 
-GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_InetAddr_GetCapabilities();
+GWENHYWFAR_API uint32_t GWEN_InetAddr_GetCapabilities();
 /*@}*/
 
 
@@ -125,8 +125,7 @@ GWENHYWFAR_API GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *ia);
  * @param ia INETADDRESS to manipulate
  * @param addr IP address in 3-dot-notation ("1.2.3.4")
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
-                                                       const char *addr);
+GWENHYWFAR_API int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia, const char *addr);
 
 /**
  * Sets the IP name and resolves its address.
@@ -134,8 +133,7 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
  * @param ia INETADDRESS to manipulate
  * @param name hostname whose address is to be resolved in 3-dot-notation
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia,
-                                                    const char *name);
+GWENHYWFAR_API int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name);
 
 /**
  * Gets the IP address stored in the INETADDRESS.
@@ -145,7 +143,7 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia,
  * @param bsize size of the buffer in bytes
  */
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
+  int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
                                           char *buffer, unsigned int bsize);
 
 /**
@@ -157,7 +155,7 @@ GWENHYWFAR_API
  * @param bsize size of the buffer in bytes
  */
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
+  int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
                                        char *buffer, unsigned int bsize);
 /*@}*/
 
@@ -180,8 +178,8 @@ GWENHYWFAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
  * @param ia INETADDRESS to manipulate
  * @param port port to set (0-65535)
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
-                                                    int port);
+GWENHYWFAR_API int GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
+					 int port);
 /*@}*/
 
 

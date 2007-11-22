@@ -64,7 +64,7 @@ static size_t gwen_memory__released_since_collect=0;
 
 
 
-GWEN_ERRORCODE GWEN_Memory_ModuleInit(){
+int GWEN_Memory_ModuleInit(){
   const char *s;
 
   s=getenv(GWEN_MEMORY_ENV_DEBUG);
@@ -79,7 +79,7 @@ GWEN_ERRORCODE GWEN_Memory_ModuleInit(){
 
 
 
-GWEN_ERRORCODE GWEN_Memory_ModuleFini(){
+int GWEN_Memory_ModuleFini(){
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;

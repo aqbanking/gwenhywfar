@@ -42,6 +42,7 @@
 
 #define GWEN_BUFFER_FLAGS_OWNED   0x0001
 #define GWEN_BUFFER_FLAGS_OWN_BIO 0x0002
+#define GWEN_BUFFER_FLAGS_OWN_IO  0x0004
 
 #define GWEN_BUFFER_MODE_COPYMASK (\
   ~(GWEN_BUFFER_MODE_USE_BIO) \
@@ -51,26 +52,29 @@
 struct GWEN_BUFFER {
   char *realPtr;
   char *ptr;
-  GWEN_TYPE_UINT32 pos;
-  GWEN_TYPE_UINT32 bufferSize;
-  GWEN_TYPE_UINT32 realBufferSize;
-  GWEN_TYPE_UINT32 bytesUsed;
-  GWEN_TYPE_UINT32 flags;
-  GWEN_TYPE_UINT32 mode;
-  GWEN_TYPE_UINT32 hardLimit;
-  GWEN_TYPE_UINT32 step;
-  GWEN_TYPE_UINT32 bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
+  uint32_t pos;
+  uint32_t bufferSize;
+  uint32_t realBufferSize;
+  uint32_t bytesUsed;
+  uint32_t flags;
+  uint32_t mode;
+  uint32_t hardLimit;
+  uint32_t step;
+  uint32_t bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
   GWEN_BUFFEREDIO *bio;
+  GWEN_IO_LAYER *ioLayer;
 };
 
 
 
-void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
-                                 GWEN_TYPE_UINT32 pos,
-                                 int offset);
+static void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
+					uint32_t pos,
+					int offset);
 
 
-int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf);
+static int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf);
+static int GWEN_Buffer__FillBuffer_Bio(GWEN_BUFFER *bf);
+static int GWEN_Buffer__FillBuffer_IoLayer(GWEN_BUFFER *bf);
 
 
 #endif

@@ -39,16 +39,16 @@
 
 
 
-GWEN_DIRECTORYDATA *GWEN_Directory_new(){
-  GWEN_DIRECTORYDATA *d;
+GWEN_DIRECTORY *GWEN_Directory_new(){
+  GWEN_DIRECTORY *d;
 
-  GWEN_NEW_OBJECT(GWEN_DIRECTORYDATA, d);
+  GWEN_NEW_OBJECT(GWEN_DIRECTORY, d);
   return d;
 }
 
 
 
-void GWEN_Directory_free(GWEN_DIRECTORYDATA *d){
+void GWEN_Directory_free(GWEN_DIRECTORY *d){
   if (d) {
     if (d->handle!=INVALID_HANDLE_VALUE)
       FindClose(d->handle);
@@ -59,7 +59,7 @@ void GWEN_Directory_free(GWEN_DIRECTORYDATA *d){
 
 
 
-int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n){
+int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
   assert(d);
   assert(n);
   if ((strlen(n)+5)>=sizeof(d->pattern)) {
@@ -74,7 +74,7 @@ int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n){
 
 
 
-int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d){
+int GWEN_Directory_Close(GWEN_DIRECTORY *d){
   int rv;
 
   rv=0;
@@ -86,7 +86,7 @@ int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d){
 
 
 
-int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
+int GWEN_Directory_Read(GWEN_DIRECTORY *d,
 			char *buffer,
 			unsigned int len){
   WIN32_FIND_DATA wd;
@@ -122,7 +122,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
 
 
 
-int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
+int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
   WIN32_FIND_DATA wd;
 
   assert(d);

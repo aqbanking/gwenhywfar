@@ -39,7 +39,7 @@ struct GWEN_PLUGIN_MANAGER {
   GWEN_INHERIT_ELEMENT(GWEN_PLUGIN_MANAGER)
   GWEN_LIST_ELEMENT(GWEN_PLUGIN_MANAGER)
   char *name;
-  GWEN_STRINGLIST *paths;
+  char *destLib;
   GWEN_PLUGIN_LIST *plugins;
 };
 
@@ -52,7 +52,7 @@ struct GWEN_PLUGIN {
   char *name;
   char *fileName;
   GWEN_LIBLOADER *libLoader;
-  GWEN_TYPE_UINT32 refCount;
+  uint32_t refCount;
 };
 
 

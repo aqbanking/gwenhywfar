@@ -162,11 +162,6 @@ void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
     (pdl,
      GWEN_PluginDescription_List2_freeAll_cb,
      0);
-  /* The following line has been disabled to allow GnuCash 1.8.12 to work with
-   * this version of Gwen. As soon as the next Gnucash release appears we will
-   * enable this line again.
-   * Martin Preuss, 2005/12/05 */
-  /* Enabled with gwenhywfar-2.6.1, 2007-07-08. */
   GWEN_PluginDescription_List2_free(pdl);
 }
 
@@ -249,24 +244,14 @@ GWEN_PluginDescription__GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
     n=GWEN_XMLNode_FindFirstTag(n, "text", "format", s);
     while (n) {
       if (0==GWEN_XMLNode_GetProperty(n, "lang", 0)) {
-        GWEN_BUFFEREDIO *bio;
+	int rv;
 
-        bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
-        GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-        if (GWEN_XMLNode_WriteToStream(n, bio,
-                                       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
-          DBG_INFO(GWEN_LOGDOMAIN, "here");
-          GWEN_BufferedIO_Abandon(bio);
-          GWEN_BufferedIO_free(bio);
-          return -1;
-        }
-        if (GWEN_BufferedIO_Close(bio)) {
-          DBG_INFO(GWEN_LOGDOMAIN, "here");
-          GWEN_BufferedIO_free(bio);
-          return -1;
-        }
-        GWEN_BufferedIO_free(bio);
-        return 0;
+	rv=GWEN_XMLNode_toBuffer(n, buf, GWEN_XML_FLAGS_TOLERANT_ENDTAGS);
+	if (rv) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+	}
+	return 0;
       }
       n=GWEN_XMLNode_FindNextTag(n, "text", "format", s);
     } /* while */
@@ -295,24 +280,14 @@ GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPT
 
       fmt=GWEN_XMLNode_GetProperty(n, "format", 0);
       if (fmt && strcasecmp(fmt, s)==0) {
-        GWEN_BUFFEREDIO *bio;
+	int rv;
 
-        bio=GWEN_BufferedIO_Buffer2_new(buf, 0);
-        GWEN_BufferedIO_SetWriteBuffer(bio, 0, 256);
-        if (GWEN_XMLNode_WriteToStream(n, bio,
-                                       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
-          DBG_INFO(GWEN_LOGDOMAIN, "here");
-          GWEN_BufferedIO_Abandon(bio);
-          GWEN_BufferedIO_free(bio);
-          return -1;
-        }
-        if (GWEN_BufferedIO_Close(bio)) {
-          DBG_INFO(GWEN_LOGDOMAIN, "here");
-          GWEN_BufferedIO_free(bio);
-          return -1;
-        }
-        GWEN_BufferedIO_free(bio);
-        return 0;
+	rv=GWEN_XMLNode_toBuffer(n, buf, GWEN_XML_FLAGS_TOLERANT_ENDTAGS);
+	if (rv) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+	}
+	return 0;
       }
       n=GWEN_XMLNode_FindNextTag(n, "text", "lang", lang);
     } /* while */
@@ -423,7 +398,7 @@ void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i){
 int GWEN_LoadPluginDescrsByType(const char *path,
                                 const char *type,
                                 GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl){
-  GWEN_DIRECTORYDATA *d;
+  GWEN_DIRECTORY *d;
   GWEN_BUFFER *nbuf;
   char nbuffer[64];
   unsigned int pathLen;

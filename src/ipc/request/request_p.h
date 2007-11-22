@@ -13,9 +13,9 @@ struct GWEN_IPC_REQUEST {
   int _usage;
   int _modified;
 
-  GWEN_TYPE_UINT32 id;
+  uint32_t id;
   char *name;
-  GWEN_TYPE_UINT32 ipcId;
+  uint32_t ipcId;
   GWEN_TIME *expires;
   GWEN_IPC_REQUEST_LIST *subRequests;
   GWEN_IPC_REQUEST_STATUS status;

@@ -35,23 +35,12 @@
 #include <gwenhywfar/error.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
+struct GWEN_LIBLOADER {
   void *handle;
 };
 
 
-GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                                          const char *name);
-
-
-#ifdef __cplusplus
-}
-#endif
+int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h, const char *name);
 
 
 #endif /* GWENHYWFAR_LIBLOADER_P_H */

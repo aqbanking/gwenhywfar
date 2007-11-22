@@ -46,7 +46,7 @@
 extern "C" {
 #endif
 
-struct GWEN_DIRECTORYDATASTRUCT {
+struct GWEN_DIRECTORY {
   DIR *handle;
 };
 

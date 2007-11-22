@@ -1,4 +1,4 @@
-SUBDIRS=csv olddb rfc822 xmldb
+SUBDIRS=csv olddb xmldb
 EXTRA_DIST=README
 
 sources:

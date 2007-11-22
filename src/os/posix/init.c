@@ -42,10 +42,10 @@ static void GWEN_LibFini() __attribute__((destructor));
 
 
 void GWEN_LibInit() {
-  GWEN_ERRORCODE err;
+  int err;
 
   err=GWEN_Init();
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     fprintf(stderr, "Could not initialize Gwenhywfar, aborting\n");
     abort();
   }
@@ -54,12 +54,13 @@ void GWEN_LibInit() {
 
 
 void GWEN_LibFini() {
-  GWEN_ERRORCODE err;
+  int err;
 
   err=GWEN_Fini_Forced();
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
   }
   /* fprintf(stderr, "Gwenhywfar deinitialized.\n"); */
 }
+
 

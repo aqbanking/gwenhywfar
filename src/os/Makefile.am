@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
+INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
@@ -25,7 +25,6 @@ noinst_HEADERS= \
  gwentime_l.h \
  gwentime_p.h \
  inetaddr_l.h \
- inetsocket_all_p.h \
  inetsocket_l.h \
  libloader_l.h \
  process_l.h
@@ -33,8 +32,7 @@ noinst_HEADERS= \
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\
  directory_all.c \
- gwentime_all.c \
- inetsocket_all.c
+ gwentime_all.c
 
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la
 

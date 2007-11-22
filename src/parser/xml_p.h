@@ -29,6 +29,8 @@
 #define GWENHYWFAR_XML_P_H
 
 #include "xml_l.h"
+#include <gwenhywfar/fastbuffer.h>
+
 
 
 #define GWEN_XML_FLAGS__INTERNAL 0xf0000000
@@ -62,7 +64,7 @@ struct GWEN__XMLNODE {
 
   GWEN_XMLNODE_TYPE type;
   GWEN_XMLPROPERTY *properties;
-  GWEN_TYPE_UINT32 usage;
+  uint32_t usage;
   char *data;
 };
 
@@ -74,73 +76,58 @@ struct GWEN_XMLNODE_PATH {
 
 
 
-void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
-                               const char *name, const char *value,
-                               int doInsert);
+static void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
+				      const char *name, const char *value,
+				      int doInsert);
 
-/**
- * Reads a word from the buffered input until one of the delimiters is found.
- * @return <0 on error, >0 if delimiter (code), 0 if stopped for EOF
- */
-int GWEN_XML__ReadWordBuf(GWEN_BUFFEREDIO *bio,
-                          GWEN_TYPE_UINT32 flags,
-                          int chr,
-                          const char *delims,
-                          GWEN_BUFFER *buf);
+static int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
+                                       GWEN_FAST_BUFFER *fb,
+				       uint32_t flags,
+				       unsigned int ind);
 
 
-int GWEN_XML_ReadBIO(GWEN_XMLNODE *n,
-                     GWEN_BUFFEREDIO *bio,
-                     GWEN_TYPE_UINT32 flags,
-                     const char *path,
-                     GWEN_STRINGLIST *sl,
-                     GWEN_XML_INCLUDE_FN fn);
+static GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
+						 GWEN_XMLNODE_TYPE t);
+static GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(const GWEN_XMLNODE *n,
+						GWEN_XMLNODE_TYPE t);
 
-
-int GWEN_XML_ReadFileInt(GWEN_XMLNODE *n,
-                         const char *path,
-                         const char *file,
-                         GWEN_STRINGLIST *sl,
-                         GWEN_TYPE_UINT32 flags);
-
-int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
-                                GWEN_BUFFEREDIO *bio,
-                                GWEN_TYPE_UINT32 flags,
-                                unsigned int ind);
-
-
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
-                                          GWEN_XMLNODE_TYPE t);
-GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(const GWEN_XMLNODE *n,
-                                         GWEN_XMLNODE_TYPE t);
-
-GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
-                                   const char *tname,
-                                   const char *pname,
-                                   const char *pvalue);
+static GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
+					  const char *tname,
+					  const char *pname,
+					  const char *pvalue);
 
 
 /**
  * Removes all namespace declarations which have been declared in a higher
  * level.
  */
-int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
-                                       GWEN_STRINGLIST2 *sl,
-                                       const char *currentNameSpace);
+static int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
+					      GWEN_STRINGLIST2 *sl,
+					      const char *currentNameSpace);
 
 /**
  * Moves all namespace declarations from this node to the nodes
  * of first use
  */
-int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n);
+static int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n);
 
 
-int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
-                                const char *prefix,
-                                const char *nspace);
-int GWEN_XMLNode__CheckAndSetNameSpace(GWEN_XMLNODE *n,
-                                       const char *prefix,
-                                       const char *nspace);
+static int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
+				       const char *prefix,
+				       const char *nspace);
+static int GWEN_XMLNode__CheckAndSetNameSpace(GWEN_XMLNODE *n,
+					      const char *prefix,
+					      const char *nspace);
+
+static int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
+			      GWEN_FAST_BUFFER *fb,
+			      uint32_t flags);
+
+static int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
+			     GWEN_FAST_BUFFER *fb,
+			     uint32_t flags);
+
+static int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_IO_LAYER *io);
 
 
 #endif

@@ -39,10 +39,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 typedef struct GWEN_DBIO GWEN_DBIO;
+
 #ifdef __cplusplus
 }
 #endif
+
+
+#define GWEN_DBIO_PLUGIN_NAME "dbio"
 
 
 /**
@@ -52,7 +57,7 @@ typedef struct GWEN_DBIO GWEN_DBIO;
 
 
 #include <gwenhywfar/path.h>
-#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -78,22 +83,6 @@ typedef enum {
 } GWEN_DBIO_CHECKFILE_RESULT;
 
 
-typedef int (*GWEN_DBIO_IMPORTFN)(GWEN_DBIO *dbio,
-				  GWEN_BUFFEREDIO *bio,
-				  GWEN_TYPE_UINT32 flags,
-                                  GWEN_DB_NODE *db,
-                                  GWEN_DB_NODE *params);
-
-typedef int (*GWEN_DBIO_EXPORTFN)(GWEN_DBIO *dbio,
-				  GWEN_BUFFEREDIO *bio,
-				  GWEN_TYPE_UINT32 flags,
-                                  GWEN_DB_NODE *db,
-                                  GWEN_DB_NODE *params);
-
-typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio,
-                                     const char *fname);
-
-
 
 /** @name GWEN_DBIO plugins
  *
@@ -101,13 +90,6 @@ typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio,
 /*@{*/
 typedef GWEN_DBIO* (*GWEN_DBIO_PLUGIN_FACTORYFN)(GWEN_PLUGIN *pl);
 
-GWENHYWFAR_API
-GWEN_PLUGIN *GWEN_DBIO_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
-                                  const char *name,
-                                  const char *fileName);
-GWENHYWFAR_API
-void GWEN_DBIO_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
-                                   GWEN_DBIO_PLUGIN_FACTORYFN f);
 GWENHYWFAR_API
 GWEN_DBIO *GWEN_DBIO_Plugin_Factory(GWEN_PLUGIN *pl);
 /*@}*/
@@ -119,16 +101,27 @@ GWEN_DBIO *GWEN_DBIO_Plugin_Factory(GWEN_PLUGIN *pl);
  */
 /*@{*/
 /**
- * Reads data from the given GWEN_BUFFEREDIO and stores the data read
+ * Reads data from the given io layer and stores the data read
  * into the given DB. The stream represented by the buffered io is expected
  * to have the format for this particular GWEN_DBIO.
  */
 GWENHYWFAR_API
 int GWEN_DBIO_Import(GWEN_DBIO *dbio,
-                     GWEN_BUFFEREDIO *bio,
-                     GWEN_TYPE_UINT32 flags,
+                     GWEN_IO_LAYER *io,
                      GWEN_DB_NODE *db,
-                     GWEN_DB_NODE *params);
+		     GWEN_DB_NODE *params,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs);
+
+GWENHYWFAR_API
+int GWEN_DBIO_ImportFromFile(GWEN_DBIO *dbio,
+			     const char *fname,
+			     GWEN_DB_NODE *db,
+			     GWEN_DB_NODE *params,
+			     uint32_t flags,
+			     uint32_t guiid,
+			     int msecs);
 
 /**
  * Writes data to the given GWEN_BUFFEREDIO in the format of this particular
@@ -136,17 +129,40 @@ int GWEN_DBIO_Import(GWEN_DBIO *dbio,
  */
 GWENHYWFAR_API
 int GWEN_DBIO_Export(GWEN_DBIO *dbio,
-                     GWEN_BUFFEREDIO *bio,
-                     GWEN_TYPE_UINT32 flags,
-                     GWEN_DB_NODE *db,
-                     GWEN_DB_NODE *params);
+                     GWEN_IO_LAYER *io,
+		     GWEN_DB_NODE *db,
+                     GWEN_DB_NODE *params,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs);
+
+GWENHYWFAR_API
+int GWEN_DBIO_ExportToFile(GWEN_DBIO *dbio,
+			   const char *fname,
+			   GWEN_DB_NODE *db,
+			   GWEN_DB_NODE *params,
+			   uint32_t flags,
+			   uint32_t guiid,
+			   int msecs);
+
+GWENHYWFAR_API
+int GWEN_DBIO_ExportToBuffer(GWEN_DBIO *dbio,
+			     GWEN_BUFFER *buf,
+			     GWEN_DB_NODE *db,
+			     GWEN_DB_NODE *params,
+			     uint32_t flags,
+			     uint32_t guiid,
+			     int msecs);
+
 
 /**
  * Checks whether the given file is supported by the given DBIO.
  */
 GWENHYWFAR_API
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio,
-					       const char *fname);
+					       const char *fname,
+					       uint32_t guiid,
+					       int msecs);
 
 
 /**
@@ -174,36 +190,6 @@ const char *GWEN_DBIO_GetName(const GWEN_DBIO *dbio);
  */
 GWENHYWFAR_API
 const char *GWEN_DBIO_GetDescription(const GWEN_DBIO *dbio);
-
-/*@}*/
-
-
-
-
-/** @name Functions To Be Used By Inheritors
- *
- */
-/*@{*/
-/**
- * Creates the base object which is to be extended by the inheritor.
- */
-GWENHYWFAR_API
-GWEN_DBIO *GWEN_DBIO_new(const char *name, const char *descr);
-
-/**
- * Sets the import function for this kind of GWEN_DBIO.
- */
-GWENHYWFAR_API
-void GWEN_DBIO_SetImportFn(GWEN_DBIO *dbio, GWEN_DBIO_IMPORTFN f);
-
-/**
- * Sets the export function for this kind of GWEN_DBIO.
- */
-GWENHYWFAR_API
-void GWEN_DBIO_SetExportFn(GWEN_DBIO *dbio, GWEN_DBIO_EXPORTFN f);
-
-GWENHYWFAR_API
-void GWEN_DBIO_SetCheckFileFn(GWEN_DBIO *dbio, GWEN_DBIO_CHECKFILEFN f);
 
 /*@}*/
 

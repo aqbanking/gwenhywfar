@@ -69,10 +69,10 @@ void GWEN_BufferedIO_Buffer_Table__free(GWEN_BUFFEREDIO_BUFFER *bft) {
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Read(GWEN_BUFFEREDIO *dm,
-                                            char *buffer,
-                                            int *size,
-                                            int timeout){
+int GWEN_BufferedIO_Buffer__Read(GWEN_BUFFEREDIO *dm,
+				 char *buffer,
+				 int *size,
+				 int timeout){
   GWEN_BUFFEREDIO_BUFFER *bft;
   unsigned int readSize;
 
@@ -85,10 +85,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Read(GWEN_BUFFEREDIO *dm,
 
   if (bft->closed) {
     DBG_INFO(GWEN_LOGDOMAIN, "Channel closed");
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_READ);
+    return GWEN_ERROR_READ;
   }
 
   if (*size<1) {
@@ -100,10 +97,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Read(GWEN_BUFFEREDIO *dm,
   readSize=*size;
   if (GWEN_Buffer_ReadBytes(bft->buffer, buffer, &readSize)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error reading from buffer");
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_READ);
+    return GWEN_ERROR_READ;
   }
   *size=readSize;
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading ok (%d bytes)", *size);
@@ -112,10 +106,10 @@ GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Read(GWEN_BUFFEREDIO *dm,
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Write(GWEN_BUFFEREDIO *dm,
-                                             const char *buffer,
-                                             int *size,
-                                             int timeout){
+int GWEN_BufferedIO_Buffer__Write(GWEN_BUFFEREDIO *dm,
+				  const char *buffer,
+				  int *size,
+				  int timeout){
   GWEN_BUFFEREDIO_BUFFER *bft;
 
   assert(dm);
@@ -127,10 +121,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Write(GWEN_BUFFEREDIO *dm,
 
   if (bft->closed) {
     DBG_INFO(GWEN_LOGDOMAIN, "Channel closed");
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_WRITE);
+    return GWEN_ERROR_WRITE;
   }
 
   if (*size<1) {
@@ -141,10 +132,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Write(GWEN_BUFFEREDIO *dm,
 
   if (GWEN_Buffer_AppendBytes(bft->buffer, buffer, *size)) {
     DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_WRITE);
+    return GWEN_ERROR_WRITE;
   }
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Writing ok");
@@ -153,7 +141,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Write(GWEN_BUFFEREDIO *dm,
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_Buffer__Close(GWEN_BUFFEREDIO *dm){
+int GWEN_BufferedIO_Buffer__Close(GWEN_BUFFEREDIO *dm){
   GWEN_BUFFEREDIO_BUFFER *bft;
 
   assert(dm);

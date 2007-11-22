@@ -38,18 +38,12 @@ extern "C" {
 /**
  * Initializes this module.
  */
-GWEN_ERRORCODE GWEN_Socket_ModuleInit();
+int GWEN_Socket_ModuleInit();
 
 /**
  * Deinitializes this module.
  */
-GWEN_ERRORCODE GWEN_Socket_ModuleFini();
-
-/**
- * @internal
- * This is an internal function, it should not be used by an application.
- */
-GWENHYWFAR_API int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp);
+int GWEN_Socket_ModuleFini();
 
 
 #ifdef __cplusplus

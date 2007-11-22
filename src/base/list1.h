@@ -262,7 +262,8 @@ GWEN_LIST1_ELEMENT *_list1_element;
   decl t* pr##_List_Last(const t##_LIST *l); \
   decl t* pr##_List_Next(const t *element); \
   decl t* pr##_List_Previous(const t *element); \
-  decl GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l);
+  decl uint32_t pr##_List_GetCount(const t##_LIST *l); \
+  decl int pr##_List_HasElement(const t##_LIST *l, const t *element);
 
 
 #define GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl) \
@@ -391,6 +392,17 @@ GWEN_LIST1_ELEMENT *_list1_element;
     } /* while */ \
   } \
   \
+  int pr##_List_HasElement(const t##_LIST *l, const t *element) { \
+    const t* el; \
+    el=(t*)GWEN_List1_GetFirst(l); \
+    while(el) {\
+      if (el==element) \
+        return 1; \
+      el=(const t*)GWEN_List1Element_GetNext(element->_list1_element); \
+    } /* while */ \
+    return 0; \
+  } \
+  \
   t##_LIST* pr##_List_new(){\
     return (t##_LIST*)GWEN_List1_new(); \
   }\
@@ -414,7 +426,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
     return (t*)GWEN_List1Element_GetPrevious(element->_list1_element);\
   } \
   \
-  GWEN_TYPE_UINT32 pr##_List_GetCount(const t##_LIST *l){\
+  uint32_t pr##_List_GetCount(const t##_LIST *l){\
     return GWEN_List1_GetCount(l);\
   }
 

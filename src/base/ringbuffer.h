@@ -81,7 +81,7 @@ void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb);
 GWENHYWFAR_API
 int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
                                const char *buffer,
-                               GWEN_TYPE_UINT32 *size);
+                               uint32_t *size);
 
 /**
  * Writes a single byte to the ring buffer.
@@ -101,7 +101,7 @@ int GWEN_RingBuffer_WriteByte(GWEN_RINGBUFFER *rb, char c);
 GWENHYWFAR_API
 int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
                               char *buffer,
-                              GWEN_TYPE_UINT32 *size);
+                              uint32_t *size);
 
 /**
  * Reads a single byte from the ring buffer.
@@ -119,20 +119,20 @@ int GWEN_RingBuffer_ReadByte(GWEN_RINGBUFFER *rb);
  * Returns the number of bytes stored inside the ring buffer.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetUsedBytes(const GWEN_RINGBUFFER *rb);
+uint32_t GWEN_RingBuffer_GetUsedBytes(const GWEN_RINGBUFFER *rb);
 
 /**
  * Returns the number of bytes which still can be stored inside the ring
  * buffer.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBytesLeft(const GWEN_RINGBUFFER *rb);
+uint32_t GWEN_RingBuffer_GetBytesLeft(const GWEN_RINGBUFFER *rb);
 
 /**
  * Returns the size of the ring buffer.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb);
+uint32_t GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb);
 /*@}*/
 
 
@@ -145,7 +145,7 @@ GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb);
  * Returns the number of times the buffer was empty.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetEmptyCounter(const GWEN_RINGBUFFER *rb);
+uint32_t GWEN_RingBuffer_GetEmptyCounter(const GWEN_RINGBUFFER *rb);
 
 GWENHYWFAR_API
 void GWEN_RingBuffer_ResetEmptyCounter(GWEN_RINGBUFFER *rb);
@@ -155,7 +155,7 @@ void GWEN_RingBuffer_ResetEmptyCounter(GWEN_RINGBUFFER *rb);
  * Returns the number of times the buffer was full.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetFullCounter(const GWEN_RINGBUFFER *rb);
+uint32_t GWEN_RingBuffer_GetFullCounter(const GWEN_RINGBUFFER *rb);
 
 GWENHYWFAR_API
 void GWEN_RingBuffer_ResetFullCounter(GWEN_RINGBUFFER *rb);
@@ -166,7 +166,7 @@ void GWEN_RingBuffer_ResetFullCounter(GWEN_RINGBUFFER *rb);
  * bytes that have been written to <strong>and</strong> read from the buffer.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetThroughput(GWEN_RINGBUFFER *rb);
+uint32_t GWEN_RingBuffer_GetThroughput(GWEN_RINGBUFFER *rb);
 
 /**
  * Resets the buffers throughput counter to zero.
@@ -180,7 +180,7 @@ void GWEN_RingBuffer_ResetThroughput(GWEN_RINGBUFFER *rb);
  * Returns the maximum number of bytes which has been stored in the buffer.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb);
+uint32_t GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb);
 
 /**
  * Resets the counter for the maximum number of bytes stored in the
@@ -209,7 +209,7 @@ void GWEN_RingBuffer_Reset(GWEN_RINGBUFFER *rb);
  * used for @ref GWEN_RingBuffer_SkipBytesRead.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32
+uint32_t
   GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb);
 
 /**
@@ -218,7 +218,7 @@ GWEN_TYPE_UINT32
  * used for @ref GWEN_RingBuffer_SkipBytesWrite.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32
+uint32_t
   GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb);
 
 /**
@@ -229,7 +229,7 @@ GWEN_TYPE_UINT32
  */
 GWENHYWFAR_API
 void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
-                                   GWEN_TYPE_UINT32 psize);
+                                   uint32_t psize);
 
 /**
  * Adjusts the internal pointers and statistical data as if
@@ -239,7 +239,7 @@ void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
  */
 GWENHYWFAR_API
 void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
-                                    GWEN_TYPE_UINT32 psize);
+                                    uint32_t psize);
 
 /**
  * Returne the current read pointer. Please note that the return value of

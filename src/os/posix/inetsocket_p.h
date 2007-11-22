@@ -45,12 +45,8 @@
 #endif
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
+GWENHYWFAR_API struct GWEN_SOCKET {
+  GWEN_LIST_ELEMENT(GWEN_SOCKET)
   int socket;
   GWEN_SOCKETTYPE type;
   int haveWaited;
@@ -60,13 +56,12 @@ GWENHYWFAR_API struct GWEN_SOCKETSTRUCT {
 GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
   fd_set set;
   int highest;
-  GWEN_TYPE_UINT32 count;
+  uint32_t count;
 };
 
 
-#ifdef __cplusplus
-}
-#endif
+static int GWEN_Socket_NetError2GwenError(int rv);
+
 
 #endif /* GWEN_SOCKET_P_H */
 

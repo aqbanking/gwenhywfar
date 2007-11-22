@@ -86,7 +86,6 @@ extern "C" {
   typ *curr;                \
                             \
   assert(sr);               \
-  assert(head);             \
                             \
   curr=*head;               \
   if (!curr) {              \
@@ -105,7 +104,6 @@ extern "C" {
   typ *curr;                \
                             \
   assert(sr);               \
-  assert(head);             \
                             \
   curr=*head;               \
   if (!curr) {              \
@@ -122,7 +120,6 @@ extern "C" {
   typ *curr;                   \
                                \
   assert(sr);                  \
-  assert(head);                \
   curr=*head;                  \
   if (curr) {                  \
     if (curr==sr) {            \

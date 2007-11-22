@@ -37,8 +37,8 @@ typedef struct GWEN_REFPTR_POBJECT GWEN_REFPTR_POBJECT;
 
 
 struct GWEN_REFPTR_INFO {
-  GWEN_TYPE_UINT32 refCount;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t refCount;
+  uint32_t flags;
   GWEN_REFPTR_INFO_FREE_FN freeFn;
   GWEN_REFPTR_INFO_DUP_FN dupFn;
 };
@@ -46,8 +46,8 @@ struct GWEN_REFPTR_INFO {
 
 
 struct GWEN_REFPTR_POBJECT {
-  GWEN_TYPE_UINT32 refCount;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t refCount;
+  uint32_t flags;
   GWEN_REFPTR_INFO *infoPtr;
   void *ptr;
 };

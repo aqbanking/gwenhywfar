@@ -43,7 +43,7 @@ struct GWEN_LIST1_ELEMENT {
 
 
 struct GWEN_LIST1 {
-  GWEN_TYPE_UINT32 count;
+  uint32_t count;
   GWEN_LIST1_ELEMENT *firstElement;
   GWEN_LIST1_ELEMENT *lastElement;
 };

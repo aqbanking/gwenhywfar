@@ -36,27 +36,16 @@
 #include <gwenhywfar/libloader.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-GWENHYWFAR_API struct GWEN_LIBLOADERSTRUCT {
+struct GWEN_LIBLOADER {
   void *handle;
 };
 
 
-GWEN_ERRORCODE GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                                          const char *name);
+int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h, const char *name);
 
-GWEN_ERRORCODE GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
-                                                   const char *path,
-                                                   const char *name);
-
-
-#ifdef __cplusplus
-}
-#endif
+int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
+					const char *path,
+					const char *name);
 
 
 #endif /* GWENHYWFAR_LIBLOADER_P_H */

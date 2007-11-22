@@ -8,6 +8,7 @@
 
 /** @defgroup MOD_BASE Basic Stuff */
 /** @defgroup MOD_OS Operating System Abstraction */
+/** @defgroup MOD_IOLAYER Input Output Layer Functions */
 /** @defgroup MOD_IO Input Output Functions */
 /** @defgroup MOD_NET Networking Functions */
 /** @defgroup MOD_IPC Inter Process communication */

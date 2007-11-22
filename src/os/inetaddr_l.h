@@ -39,12 +39,12 @@
 /**
  * Initialize this module.
  */
-GWEN_ERRORCODE GWEN_InetAddr_ModuleInit();
+int GWEN_InetAddr_ModuleInit();
 
 /**
  * De-Initialize this module.
  */
-GWEN_ERRORCODE GWEN_InetAddr_ModuleFini();
+int GWEN_InetAddr_ModuleFini();
 
 
 #endif /* GWEN_INETADDR_L_H */

@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_srcdir)/gwenhywfar2
+INCLUDES= -I$(top_builddir)/gwenhywfar3
 
 EXTRA_DIST=README
 

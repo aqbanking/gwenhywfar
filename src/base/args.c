@@ -43,7 +43,7 @@
 
 int GWEN_Args_Check(int argc, char **argv,
                     int startAt,
-                    GWEN_TYPE_UINT32 mode,
+                    uint32_t mode,
                     const GWEN_ARGS *args,
                     GWEN_DB_NODE *db){
   int i;

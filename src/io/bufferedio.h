@@ -84,7 +84,8 @@ extern "C" {
 
 
 /** If set then @ref GWEN_BufferedIO_Close is enabled */
-#define GWEN_BUFFEREDIO_FLAGS_CLOSE   0x00000001
+#define GWEN_BUFFEREDIO_FLAGS_CLOSE              0x00000001
+#define GWEN_BUFFEREDIO_FLAGS_UNTIL_EMPTY_LINE   0x00000002
 
 #define GWEN_BUFFEREDIO_FLAGS_DEFAULT \
   (\
@@ -98,15 +99,15 @@ typedef enum {
   GWEN_LineModeDOS
 } GWEN_BUFFEREDIOLINEMODE;
 
-typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOREADFN)(GWEN_BUFFEREDIO *dm,
-                                                 char *buffer,
-                                                  int *size,
-                                                  int timeout);
-typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOWRITEFN)(GWEN_BUFFEREDIO *dm,
-                                                   const char *buffer,
-                                                   int *size,
-                                                   int timeout);
-typedef GWEN_ERRORCODE (*GWEN_BUFFEREDIOCLOSEFN)(GWEN_BUFFEREDIO *dm);
+typedef int (*GWEN_BUFFEREDIOREADFN)(GWEN_BUFFEREDIO *dm,
+				     char *buffer,
+				     int *size,
+				     int timeout);
+typedef int (*GWEN_BUFFEREDIOWRITEFN)(GWEN_BUFFEREDIO *dm,
+				      const char *buffer,
+				      int *size,
+				      int timeout);
+typedef int (*GWEN_BUFFEREDIOCLOSEFN)(GWEN_BUFFEREDIO *dm);
 
 
 
@@ -207,7 +208,7 @@ GWENHYWFAR_API int GWEN_BufferedIO_ReadChar(GWEN_BUFFEREDIO *bio);
  * automatically called upon @ref GWEN_BufferedIO_Close.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
+GWENHYWFAR_API int GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
 
 /**
  * Really writes the content of the write buffer to the stream.
@@ -219,7 +220,7 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Flush(GWEN_BUFFEREDIO *bt);
  * long as it returns this warning in order to really save the data.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt);
+GWENHYWFAR_API int GWEN_BufferedIO_ShortFlush(GWEN_BUFFEREDIO *bt);
 
 /**
  * Returns !=0 if the read buffer is empty, 0 if it is not.
@@ -238,7 +239,7 @@ GWENHYWFAR_API int GWEN_BufferedIO_WriteBufferEmpty(GWEN_BUFFEREDIO *bt);
  * The trailing CR or CRLF is not copied into the buffer.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API int GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
                                                        char *buffer,
                                                        unsigned int s);
 
@@ -249,14 +250,14 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ReadLine(GWEN_BUFFEREDIO *bt,
  * @author Martin Preuss<martin@aquamaniac.de>
  */
 GWENHYWFAR_API
-GWEN_ERRORCODE GWEN_BufferedIO_ReadLine2Buffer(GWEN_BUFFEREDIO *bt,
+int GWEN_BufferedIO_ReadLine2Buffer(GWEN_BUFFEREDIO *bt,
                                                GWEN_BUFFER *buffer);
 
 /**
  * Writes a character into the stream.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *dm,
+GWENHYWFAR_API int GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *dm,
                                                         char c);
 
 /**
@@ -264,7 +265,7 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteChar(GWEN_BUFFEREDIO *dm,
  * found.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API int GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
                                                     const char *buffer);
 
 /**
@@ -273,14 +274,14 @@ GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Write(GWEN_BUFFEREDIO *bt,
  * Please note that the buffer should not contain CR or CR/LF characters.
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
+GWENHYWFAR_API int GWEN_BufferedIO_WriteLine(GWEN_BUFFEREDIO *bt,
                                                         const char *buffer);
 
 /**
  * Closes the stream after flushing the output buffer (if needed).
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *dm);
+GWENHYWFAR_API int GWEN_BufferedIO_Close(GWEN_BUFFEREDIO *dm);
 
 
 /**
@@ -300,28 +301,28 @@ void GWEN_BufferedIO_SetLineMode(GWEN_BUFFEREDIO *dm,
  * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
  */
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_BufferedIO_GetFlags(const GWEN_BUFFEREDIO *bt);
+uint32_t GWEN_BufferedIO_GetFlags(const GWEN_BUFFEREDIO *bt);
 
 /**
  * Sets the flags for this bufferedIO.
  * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
  */
 GWENHYWFAR_API
-void GWEN_BufferedIO_SetFlags(GWEN_BUFFEREDIO *bt, GWEN_TYPE_UINT32 f);
+void GWEN_BufferedIO_SetFlags(GWEN_BUFFEREDIO *bt, uint32_t f);
 
 /**
  * Adds the given flags to the current flags for this bufferedIO.
  * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
  */
 GWENHYWFAR_API
-void GWEN_BufferedIO_AddFlags(GWEN_BUFFEREDIO *bt, GWEN_TYPE_UINT32 f);
+void GWEN_BufferedIO_AddFlags(GWEN_BUFFEREDIO *bt, uint32_t f);
 
 /**
  * Removes the given flags from the current flags for this bufferedIO.
  * See @ref GWEN_BUFFEREDIO_FLAGS_CLOSE and others for details.
  */
 GWENHYWFAR_API
-void GWEN_BufferedIO_SubFlags(GWEN_BUFFEREDIO *bt, GWEN_TYPE_UINT32 f);
+void GWEN_BufferedIO_SubFlags(GWEN_BUFFEREDIO *bt, uint32_t f);
 
 
 /**
@@ -336,8 +337,8 @@ GWEN_BUFFEREDIOLINEMODE GWEN_BufferedIO_GetLineMode(const GWEN_BUFFEREDIO *dm);
  * Set the timeout for read- and write operations in milliseconds.
  * Some values have special meanings:
  * <ul>
- *  <li>0: no timeout (not blocking)</li>
- *  <li>-1: wait forever (blocking)</li>
+ *  <li>GWEN_TIMEOUT_NONE: no timeout (not blocking)</li>
+ *  <li>GWEN_TIMEOUT_FOREVER: wait forever (blocking)</li>
  * </ul>
  * @author Martin Preuss<martin@aquamaniac.de>
  */
@@ -386,7 +387,7 @@ void GWEN_BufferedIO_SetCloseFn(GWEN_BUFFEREDIO *dm,
  * of a severe error. The content of the internal buffers will be lost !
  */
 GWENHYWFAR_API
-GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
+int GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
 
 
 /**
@@ -405,7 +406,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_Abandon(GWEN_BUFFEREDIO *dm);
  * next call to this function).
  */
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
+  int GWEN_BufferedIO_WriteRaw(GWEN_BUFFEREDIO *bt,
                                           const char *buffer,
                                           unsigned int *bsize);
 
@@ -422,7 +423,7 @@ GWENHYWFAR_API
  * read.
  */
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
+  int GWEN_BufferedIO_ReadRaw(GWEN_BUFFEREDIO *bt,
                                          char *buffer,
                                          unsigned int *bsize);
 
@@ -435,9 +436,9 @@ GWENHYWFAR_API
  * The parameter bsize will be updated in any case.
  */
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
-                                               char *buffer,
-                                               unsigned int *bsize);
+  int GWEN_BufferedIO_ReadRawForced(GWEN_BUFFEREDIO *bt,
+				    char *buffer,
+				    unsigned int *bsize);
 
 /**
  * Writes exactly the amount of bytes given or returns an error.
@@ -448,9 +449,9 @@ GWENHYWFAR_API
  * The parameter bsize will be updated in any case.
  */
 GWENHYWFAR_API
-  GWEN_ERRORCODE GWEN_BufferedIO_WriteRawForced(GWEN_BUFFEREDIO *bt,
-                                                const char *buffer,
-						unsigned int *bsize);
+  int GWEN_BufferedIO_WriteRawForced(GWEN_BUFFEREDIO *bt,
+				     const char *buffer,
+				     unsigned int *bsize);
 
 
 

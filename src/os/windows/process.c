@@ -43,13 +43,13 @@
 
 
 
-GWEN_ERRORCODE GWEN_Process_ModuleInit(){
+int GWEN_Process_ModuleInit(){
   return 0;
 }
 
 
 
-GWEN_ERRORCODE GWEN_Process_ModuleFini(){
+int GWEN_Process_ModuleFini(){
   return 0;
 }
 
@@ -282,21 +282,21 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
 
 
 
-void GWEN_Process_SetFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f){
   assert(pr);
   pr->pflags=f;
 }
 
 
 
-void GWEN_Process_AddFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f){
   assert(pr);
   pr->pflags|=f;
 }
 
 
 
-void GWEN_Process_SubFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f){
+void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f){
   assert(pr);
   pr->pflags&=~f;
 }
@@ -349,7 +349,7 @@ void GWEN_BufferedIO_WinFile_Table__free(GWEN_BUFFEREDIO_WINFILE *bft) {
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
+int GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
                                              char *buffer,
                                              int *size,
                                              int timeout){
@@ -374,10 +374,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
       return 0;
     }
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not read (%ld)", werr);
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_READ);
+    return GWEN_ERROR_READ;
   }
   if (bytesRead==0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
@@ -392,7 +389,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
+int GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
                                               const char *buffer,
                                               int *size,
                                               int timeout){
@@ -409,10 +406,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
   }
   if (!WriteFile(bft->fd, buffer, *size, &written, 0)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not write (%ld)", GetLastError());
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_WRITE);
+    return GWEN_ERROR_WRITE;
   }
   DBG_INFO(GWEN_LOGDOMAIN, "%ld bytes written", written);
   *size=written;
@@ -421,7 +415,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
 
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
+int GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
   GWEN_BUFFEREDIO_WINFILE *bft;
 
   assert(dm);
@@ -429,10 +423,7 @@ GWEN_ERRORCODE GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
   assert(bft);
   if (!CloseHandle(bft->fd)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not close (%ld)", GetLastError());
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_Error_FindType(GWEN_BUFFEREDIO_ERROR_TYPE),
-                          GWEN_BUFFEREDIO_ERROR_CLOSE);
+    return GWEN_ERROR_CLOSE;
   }
   return 0;
 }

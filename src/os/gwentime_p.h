@@ -35,18 +35,18 @@
 #define GWEN_TIME_TMPL_MAX_COUNT 8
 
 struct GWEN_TIME {
-  GWEN_TYPE_UINT32 secs;
-  GWEN_TYPE_UINT32 msecs;
+  uint32_t secs;
+  uint32_t msecs;
 };
 
 
 
-GWEN_TYPE_UINT32 GWEN_Time__mktimeUtc(int year,
-                                      int month,
-                                      int day,
-                                      int hour,
-                                      int min,
-                                      int sec);
+uint32_t GWEN_Time__mktimeUtc(int year,
+			      int month,
+			      int day,
+			      int hour,
+			      int min,
+			      int sec);
 
 
 

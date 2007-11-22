@@ -37,8 +37,8 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_PLUGIN, GWEN_Plugin)
 GWEN_LIST_FUNCTION_DEFS(GWEN_PLUGIN_MANAGER, GWEN_PluginManager)
 
 
-GWEN_ERRORCODE GWEN_Plugin_ModuleInit();
-GWEN_ERRORCODE GWEN_Plugin_ModuleFini();
+int GWEN_Plugin_ModuleInit();
+int GWEN_Plugin_ModuleFini();
 
 void GWEN_Plugin_Attach(GWEN_PLUGIN *p);
 

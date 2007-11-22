@@ -1,11 +1,19 @@
-INCLUDES=@all_includes@ -I$(top_builddir)/gwenhywfar2
+INCLUDES=@all_includes@ -I$(gwenhywfar_symlinkdir)
 
 bin_PROGRAMS=xmlmerge
 noinst_HEADERS=args.h
 xmlmerge_SOURCES=args.c main.c
-xmlmerge_LDADD=\
-  $(top_builddir)/src/$(gwenhywfar_internal_libname) \
-  $(PROG_LIBRARIES)
+
+if IS_WINDOWS
+
+xmlmerge_LDFLAGS=-L$(top_builddir)/src/.libs -mconsole
+xmlmerge_LDADD= -lgwenhywfar-$(GWENHYWFAR_SO_EFFECTIVE) $(PROG_LIBRARIES)
+
+else
+
+xmlmerge_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+
+endif
 
 sources:
 	for f in $(xmlmerge_SOURCES); do \

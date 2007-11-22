@@ -33,7 +33,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/path.h>
-#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/fastbuffer.h>
 #include <gwenhywfar/types.h>
 #include <stdio.h>
 
@@ -140,7 +140,7 @@ extern "C" {
  * variable definitions */
 #define GWEN_DB_FLAGS_USE_COLON              0x01000000
 /** stops reading from a stream at empty lines */
-#define GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE     0x02000000
+#define GWEN_DB_FLAGS_UNTIL_EMPTY_LINE       0x02000000
 /** normally the type of a variable is written to the stream, too.
  * This flag changes this behaviour */
 #define GWEN_DB_FLAGS_OMIT_TYPES             0x04000000
@@ -160,10 +160,9 @@ extern "C" {
  * values/groups rather than appending them.*/
 #define GWEN_DB_FLAGS_INSERT                 0x40000000
 
-/**
- * Then automatically creating BufferedIOs to write to or to read from
- * then the line mode is set to DOS instead of Unix.
- */
+  /**
+   * When writing a DB use DOS line termination (e.g. CR/LF) instead if unix mode (LF only)
+   */
 #define GWEN_DB_FLAGS_DOSMODE                0x80000000
 
   /** These are the default flags which you use in most cases */
@@ -195,7 +194,7 @@ extern "C" {
 #define GWEN_DB_FLAGS_HTTP \
   (\
   GWEN_DB_FLAGS_USE_COLON |\
-  GWEN_DB_FLAGS_STOP_ON_EMPTY_LINE |\
+  GWEN_DB_FLAGS_UNTIL_EMPTY_LINE |\
   GWEN_DB_FLAGS_OMIT_TYPES | \
   GWEN_DB_FLAGS_DOSMODE \
   )
@@ -215,6 +214,9 @@ extern "C" {
 /*@}*/
 
 
+#define GWEN_DB_DEFAULT_LOCK_TIMEOUT 1000
+
+
 /**
  * This is the type used to store a DB. Its contents are explicitly NOT
  * part of the API. 
@@ -222,23 +224,30 @@ extern "C" {
  * A description of what can be done with this type can be found in
  * @ref db.h
  */
-typedef union GWEN_DB_NODE GWEN_DB_NODE;
+typedef struct GWEN_DB_NODE GWEN_DB_NODE;
 
 /**
  * This specifies the type of a value stored in the DB.
  */
 typedef enum {
   /** type unknown */
-  GWEN_DB_VALUETYPE_UNKNOWN=0,
+  GWEN_DB_NodeType_Unknown=-1,
+  /** group */
+  GWEN_DB_NodeType_Group=0,
+  /** variable */
+  GWEN_DB_NodeType_Var,
   /** simple, null terminated C-string */
-  GWEN_DB_VALUETYPE_CHAR,
+  GWEN_DB_NodeType_ValueChar,
   /** integer */
-  GWEN_DB_VALUETYPE_INT,
+  GWEN_DB_NodeType_ValueInt,
   /** binary, user defined data */
-  GWEN_DB_VALUETYPE_BIN,
+  GWEN_DB_NodeType_ValueBin,
   /** pointer , will not be stored or read to/from files */
-  GWEN_DB_VALUETYPE_PTR
-} GWEN_DB_VALUETYPE;
+  GWEN_DB_NodeType_ValuePtr,
+  /** last value type */
+  GWEN_DB_NodeType_ValueLast
+} GWEN_DB_NODE_TYPE;
+
 
 
 /** @name Constructing, Destructing, Copying
@@ -464,7 +473,7 @@ const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API 
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
-                         GWEN_TYPE_UINT32 flags,
+                         uint32_t flags,
                          const char *path,
                          const char *val);
 
@@ -526,7 +535,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API 
 int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
-                        GWEN_TYPE_UINT32 flags,
+                        uint32_t flags,
                         const char *path,
                         int val);
 
@@ -562,7 +571,7 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API 
 int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
-			GWEN_TYPE_UINT32 flags,
+			uint32_t flags,
 			const char *path,
                         const void *val,
                         unsigned int valSize);
@@ -592,7 +601,7 @@ void *GWEN_DB_GetPtrValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API
 int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
-                        GWEN_TYPE_UINT32 flags,
+                        uint32_t flags,
                         const char *path,
                         void *val);
 /*@}*/
@@ -615,7 +624,7 @@ int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
-                               GWEN_TYPE_UINT32 flags,
+                               uint32_t flags,
                                const char *path);
 
 /**
@@ -732,7 +741,7 @@ int GWEN_DB_IsGroup(const GWEN_DB_NODE *n);
  * @param n db node
  */
 GWENHYWFAR_API 
-  GWEN_TYPE_UINT32 GWEN_DB_GetNodeFlags(const GWEN_DB_NODE *n);
+  uint32_t GWEN_DB_GetNodeFlags(const GWEN_DB_NODE *n);
 
 /**
  * Modifies the node flags for the given db node
@@ -741,7 +750,7 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API 
   void GWEN_DB_SetNodeFlags(GWEN_DB_NODE *n,
-                            GWEN_TYPE_UINT32 flags);
+                            uint32_t flags);
 
 /**
  * Modifies the flags of the given node and all its parents according
@@ -753,8 +762,8 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API 
 void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
-                                 GWEN_TYPE_UINT32 newflags,
-                                 GWEN_TYPE_UINT32 mask);
+                                 uint32_t newflags,
+                                 uint32_t mask);
 
 /**
  * Modifies the flags of the given node and all its children according
@@ -766,88 +775,96 @@ void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
  */
 GWENHYWFAR_API 
 void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
-                                   GWEN_TYPE_UINT32 newflags,
-                                   GWEN_TYPE_UINT32 mask);
+                                   uint32_t newflags,
+                                   uint32_t mask);
 
 /*@}*/
 
 
 
-/** @name Reading and Writing From/To Streams
+/** @name Reading and Writing From/To IO Layers
  *
- * These functions read or write a DB from/to GWEN_BUFFEREDIO.
- * This allows to use any source or target supported by GWEN_BUFFEREDIO
+ * These functions read or write a DB from/to GWEN_IO_LAYER.
+ * This allows to use any source or target supported by GWEN_IO_LAYER
  * for data storage (these are currently sockets, files and memory buffers).
  * The flags determine how to read/write the data (e.g. if sub-groups are
  * to be written etc).
  */
 /*@{*/
 
-/**
- * Read a DB from GWEN_BUFFEREDIO.
- * @param n db node
- * @param bio buffered IO to use
- * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
- * can all be OR-combined to form the flags to use.
- */
 GWENHYWFAR_API 
-int GWEN_DB_ReadFromStream(GWEN_DB_NODE *n,
-                           GWEN_BUFFEREDIO *bio,
-                           GWEN_TYPE_UINT32 dbflags);
+int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
+                               GWEN_FAST_BUFFER *fb,
+			       uint32_t dbflags);
 
 /**
- * Read a DB from a file.
- * @param n db node
- * @param fname path and name of the file to load
- * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
- * can all be OR-combined to form the flags to use.
+ * This functions reads data in the default file format of a GWEN_DB. It expects the given
+ * io layer to be of GWEN_IO_LAYER_BUFFERED_TYPE (see @ref MOD_IOLAYER_BUFFERED) because it
+ * operates line-based.
+ * This function is rather restrictive compared to earlier versions using GWEN_BUFFEREDIO, because
+ * it expects statements to be on a single line.
+ * This however makes loading of this format much faster and allows to stop parsing at defined points
+ * (e.g. upon encounter of an empty line).
  */
+GWENHYWFAR_API 
+int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n,
+		       GWEN_IO_LAYER *io,
+		       uint32_t dbflags,
+		       uint32_t guiid,
+		       int msecs);
+
+GWENHYWFAR_API 
+int GWEN_DB_ReadFromFd(GWEN_DB_NODE *n,
+		       int fd,
+		       uint32_t dbflags,
+		       uint32_t guiid,
+		       int msecs);
+
 GWENHYWFAR_API 
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
-                     const char *fname,
-                     GWEN_TYPE_UINT32 dbflags);
+		     const char *fname,
+		     uint32_t dbflags,
+		     uint32_t guiid,
+		     int msecs);
 
-/**
- * This is a convenience function which reads a DB from a string.
- */
 GWENHYWFAR_API
 int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
-                           const char *str,
-                           GWEN_TYPE_UINT32 dbflags);
+			   const char *str,
+                           int len,
+			   uint32_t dbflags,
+			   uint32_t guiid,
+			   int msecs);
 
-/**
- * Write a DB to a GWEN_BUFFEREDIO.
- * @param n db node
- * @param bio buffered IO to use
- * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
- * can all be OR-combined to form the flags to use.
- */
+GWENHYWFAR_API
+int GWEN_DB_WriteToFastBuffer(GWEN_DB_NODE *node,
+			      GWEN_FAST_BUFFER *fb,
+			      uint32_t dbflags);
+
+
 GWENHYWFAR_API 
-int GWEN_DB_WriteToStream(GWEN_DB_NODE *n,
-                          GWEN_BUFFEREDIO *bio,
-                          GWEN_TYPE_UINT32 dbflags);
+int GWEN_DB_WriteToIo(GWEN_DB_NODE *node,
+		      GWEN_IO_LAYER *io,
+		      uint32_t dbflags,
+		      uint32_t guiid,
+		      int msecs);
 
-/**
- * Write a DB to a file.
- * @param n db node
- * @param fname path and name of the file to create. If it already exists
- * it will be overwritten
- * @param dbflags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
- * can all be OR-combined to form the flags to use.
- */
 GWENHYWFAR_API 
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
-                      const char *fname,
-                      GWEN_TYPE_UINT32 dbflags);
+		      const char *fname,
+		      uint32_t dbflags,
+		      uint32_t guiid,
+		      int msecs);
 
-/**
- * This is a convenience function which writes a DB to a GWEN_BUFFER.
- */
+GWENHYWFAR_API 
+int GWEN_DB_WriteToFd(GWEN_DB_NODE *n, int fd, uint32_t dbflags, uint32_t guiid, int msecs);
+
+
 GWENHYWFAR_API 
 int GWEN_DB_WriteToBuffer(GWEN_DB_NODE *n,
-                          GWEN_BUFFER *buf,
-                          GWEN_TYPE_UINT32 dbflags);
-
+			  GWEN_BUFFER *buf,
+			  uint32_t dbflags,
+			  uint32_t guiid,
+			  int msecs);
 
 /**
  * Imports a file into a DB using a GWEN_DBIO importer.
@@ -864,7 +881,9 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *n,
                        const char *fname,
                        const char *type,
                        GWEN_DB_NODE *params,
-                       GWEN_TYPE_UINT32 dbflags);
+		       uint32_t dbflags,
+		       uint32_t guiid,
+		       int msecs);
 
 /**
  * Exports a DB to a file using a GWEN_DBIO exporter.
@@ -881,7 +900,11 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *n,
                         const char *fname,
                         const char *type,
                         GWEN_DB_NODE *params,
-                        GWEN_TYPE_UINT32 dbflags);
+                        uint32_t dbflags,
+			uint32_t guiid,
+			int msecs);
+
+
 /*@}*/
 
 
@@ -966,8 +989,8 @@ unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node);
  * @param p path of the variable to inspect
  */
 GWENHYWFAR_API 
-GWEN_DB_VALUETYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
-                                          const char *p);
+GWEN_DB_NODE_TYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
+					  const char *p);
 
 /**
  * Deletes the given variable by removing it and its values from the DB.
@@ -1111,12 +1134,12 @@ unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node);
  * @param n db node
  */
 GWENHYWFAR_API 
-GWEN_DB_VALUETYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
+GWEN_DB_NODE_TYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
 
 GWENHYWFAR_API
-GWEN_DB_VALUETYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
-                                             const char *p,
-                                             unsigned int i);
+GWEN_DB_NODE_TYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
+					     const char *p,
+					     unsigned int i);
 
 /**
  * Returns the value data of the given value node.
@@ -1170,90 +1193,6 @@ int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
  */
 GWENHYWFAR_API 
 void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
-/*@}*/
-
-
-
-/** @name Hash Mechanism
- *
- * These functions allow for the implementation of hash mechanisms for
- * DB groups.
- * Those mechanisms can be applied to group nodes to speed up the lookup of
- * subnodes to groups.
- */
-/*@{*/
-typedef struct GWEN_DB_HASH_MECHANISM GWEN_DB_HASH_MECHANISM;
-
-typedef int (*GWEN_DB_HASH_INITNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
-                                        GWEN_DB_NODE *node,
-                                        void **hashData);
-typedef int (*GWEN_DB_HASH_FININODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
-                                        GWEN_DB_NODE *node,
-                                        void **hashData);
-typedef int (*GWEN_DB_HASH_ADDNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
-                                       GWEN_DB_NODE *parent,
-                                       GWEN_DB_NODE *node,
-                                       int appendOrInsert, /* 1=append */
-                                       void *hashData);
-typedef int (*GWEN_DB_HASH_UNLINKNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
-                                          GWEN_DB_NODE *parent,
-                                          GWEN_DB_NODE *node,
-                                          void *hashData);
-typedef GWEN_DB_NODE* (*GWEN_DB_HASH_GETNODE_FN)(GWEN_DB_HASH_MECHANISM *hm,
-                                                 GWEN_DB_NODE *parent,
-                                                 const char *name,
-                                                 int idx,
-                                                 void *hashData);
-
-GWENHYWFAR_API 
-GWEN_DB_HASH_MECHANISM *GWEN_DB_HashMechanism_new();
-
-GWENHYWFAR_API 
-void GWEN_DB_HashMechanism_Attach(GWEN_DB_HASH_MECHANISM *hm);
-
-GWENHYWFAR_API 
-void GWEN_DB_HashMechanism_free(GWEN_DB_HASH_MECHANISM *hm);
-
-
-GWENHYWFAR_API 
-void GWEN_DB_HashMechanism_SetInitNodeFn(GWEN_DB_HASH_MECHANISM *hm,
-                                         GWEN_DB_HASH_INITNODE_FN f);
-
-GWENHYWFAR_API 
-void GWEN_DB_HashMechanism_SetFiniNodeFn(GWEN_DB_HASH_MECHANISM *hm,
-                                         GWEN_DB_HASH_FININODE_FN f);
-
-GWENHYWFAR_API 
-void GWEN_DB_HashMechanism_SetAddNodeFn(GWEN_DB_HASH_MECHANISM *hm,
-                                        GWEN_DB_HASH_ADDNODE_FN f);
-
-GWENHYWFAR_API 
-void GWEN_DB_HashMechanism_SetUnlinkNodeFn(GWEN_DB_HASH_MECHANISM *hm,
-                                           GWEN_DB_HASH_UNLINKNODE_FN f);
-
-GWENHYWFAR_API 
-void GWEN_DB_HashMechanism_SetGetNodeFn(GWEN_DB_HASH_MECHANISM *hm,
-                                        GWEN_DB_HASH_GETNODE_FN f);
-
-
-/**
- * Assigns a hash mechanism to a DB group. If the node flag
- * @ref GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM is set on this node then
- * this hash mechanism will be set to all nodes which become children to the
- * given node as they are added (but only if the nodes to be added don't
- * already have a hash mechanism of their own).
- * <p>
- * You should set the hash mechanism to the root node and also set the flag
- * described above to ensure that every group in every level uses this hash
- * mechanism. The GWEN_DB takes care of calling the approppriate init, fini,
- * attach and free functions of the hash mechanism.
- * </p>
- *
- */
-GWENHYWFAR_API 
-int GWEN_DB_Group_SetHashMechanism(GWEN_DB_NODE *node,
-                                   GWEN_DB_HASH_MECHANISM *hm);
-
 /*@}*/
 
 

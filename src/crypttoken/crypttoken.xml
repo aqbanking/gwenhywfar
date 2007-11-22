@@ -1,0 +1,54 @@
+<typedefs>
+  <type id="uint32_t" dbtype="int" />
+</typedefs>
+
+
+<types>
+  <type id="GWEN_CRYPT_TOKEN_CONTEXT" 
+        prefix="GWEN_Crypt_Token_Context"
+        class="CryptTokenContext"
+        access="public"
+        filename="ct_context"
+        inherit="public"
+        list="public"
+        list2="public" >
+    <headers>
+      <header type="sys" >gwenhywfar/types.h</header>
+    </headers>
+    
+    <elem name="id" type="uint32_t" />
+
+		<group name="Key Ids" >
+    	<descr>
+        This group contains the ids of the keys for multiple given purposes which are to
+        be used in this context.
+      </descr>
+      <elem name="signKeyId" type="uint32_t" />
+      <elem name="verifyKeyId" type="uint32_t" />
+      <elem name="encipherKeyId" type="uint32_t" />
+      <elem name="decipherKeyId" type="uint32_t" />
+      <elem name="authSignKeyId" type="uint32_t" />
+      <elem name="authVerifyKeyId" type="uint32_t" />
+    </group>
+    
+    <group name="User Information">
+      <descr>
+        This group contains some information about this context.
+        With some crypt token user information might be available with a context.
+      </descr>
+      <elem name="serviceId" type="char" ptr="1" >
+        <descr>For Homebanking this is the bank code</descr>
+      </elem>
+      <elem name="userId" type="char" ptr="1" />
+      <elem name="userName" type="char" ptr="1" />
+      <elem name="peerId" type="char" ptr="1" />
+      <elem name="peerName" type="char" ptr="1" />
+      <elem name="address" type="char" ptr="1" />
+      <elem name="port" type="int" />
+      <elem name="systemId" type="char" ptr="1" />
+    </group>
+  </type>
+  
+</types>
+
+

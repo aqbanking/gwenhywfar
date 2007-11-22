@@ -252,8 +252,8 @@ int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
   if (transformDriveElement) {
     if (*p=='/')
       if (isalpha(p[1]))
-        if (p[2]=='/') {
-          GWEN_Buffer_AppendByte(pbuf, p[0]);
+	if (p[2]=='/' || p[2]==0) {
+	  GWEN_Buffer_AppendByte(pbuf, p[0]);
           GWEN_Buffer_AppendByte(pbuf, ':');
           p+=2;
         }
@@ -313,7 +313,7 @@ int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
     se=GWEN_StringListEntry_Next(se);
   }
 
-  DBG_ERROR(GWEN_LOGDOMAIN, "File \"%s\" not found", filePath);
+  DBG_INFO(GWEN_LOGDOMAIN, "File \"%s\" not found", filePath);
   return GWEN_ERROR_NOT_FOUND;
 }
 
@@ -333,15 +333,15 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
     GWEN_Buffer_AppendString(tbuf, GWEN_StringListEntry_Data(se));
     GWEN_Buffer_AppendString(tbuf, DIRSEP);
     GWEN_Buffer_AppendString(tbuf, filePath);
-    DBG_ERROR(GWEN_LOGDOMAIN, "Trying \"%s\"",
-              GWEN_Buffer_GetStart(tbuf));
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
+	      GWEN_Buffer_GetStart(tbuf));
     f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
     if (f) {
       fclose(f);
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "File \"%s\" found in folder \"%s\"",
-                filePath,
-                GWEN_StringListEntry_Data(se));
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "File \"%s\" found in folder \"%s\"",
+	       filePath,
+	       GWEN_StringListEntry_Data(se));
       GWEN_Buffer_AppendString(fbuf, GWEN_StringListEntry_Data(se));
       GWEN_Buffer_free(tbuf);
       return 0;
@@ -351,7 +351,7 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
     se=GWEN_StringListEntry_Next(se);
   }
 
-  DBG_ERROR(GWEN_LOGDOMAIN, "File \"%s\" not found", filePath);
+  DBG_INFO(GWEN_LOGDOMAIN, "File \"%s\" not found", filePath);
   return GWEN_ERROR_NOT_FOUND;
 }
 

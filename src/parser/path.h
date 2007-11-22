@@ -182,12 +182,12 @@ extern "C" {
 
 typedef void* (*GWEN_PATHHANDLERPTR)(const char *entry,
                                      void *data,
-                                     GWEN_TYPE_UINT32 flags);
+                                     uint32_t flags);
 
 typedef void* (*GWEN_PATHIDXHANDLERPTR)(const char *entry,
                                         void *data,
                                         int idx,
-                                        GWEN_TYPE_UINT32 flags);
+                                        uint32_t flags);
 
 
 /**
@@ -205,13 +205,13 @@ typedef void* (*GWEN_PATHIDXHANDLERPTR)(const char *entry,
 GWENHYWFAR_API
   void *GWEN_Path_Handle(const char *path,
 			 void *data,
-			 GWEN_TYPE_UINT32 flags,
+			 uint32_t flags,
 			 GWEN_PATHHANDLERPTR elementFunction);
 
 GWENHYWFAR_API
   void *GWEN_Path_HandleWithIdx(const char *path,
 				void *data,
-				GWEN_TYPE_UINT32 flags,
+				uint32_t flags,
 				GWEN_PATHIDXHANDLERPTR elementFunction);
 
 
@@ -224,7 +224,7 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   int GWEN_Path_Convert(const char *path,
                         GWEN_BUFFER *buffer,
-                        GWEN_TYPE_UINT32 flags);
+                        uint32_t flags);
 
 
 /*@}*/ /* defgroup */

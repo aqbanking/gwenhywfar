@@ -1,6 +1,6 @@
 EXTRA_DIST=ressource.rc.in README
 
-INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
+INCLUDES= -I$(top_builddir)/gwenhywfar3 \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \

@@ -2,10 +2,10 @@
 This is Gwenhywfar, a multi-platform helper library for networking and
 security applications and libraries. 
 It is used by 
- - Libchipcard2 (http://www.libchipcard.de), 
+ - Libchipcard (http://www.libchipcard.de), 
  - OpenHBCI2 (http://www.openhbci.de), 
  - Simthetic, the simulation tool (http://simthetic.sourceforge.net)
- - AqBanking/AqHBCI (http://www.aquamaniac.de/aqbanking/).
+ - AqBanking/AqHBCI (http://www.aqbanking.de/).
  - and others by using one of the projects above
 
 
@@ -40,9 +40,6 @@ Gwenhywfar includes the following features:
 - Support for interprocess communication (HTTP on top of SSL or plain
   TCP/UDP sockets, with or without certificates for clients and/or servers)
 
-- Console user-interface (including a simple HTML parser) based on
-  ncurses
-
 - A tool to generate simple data containers from XML files. It automatically
   generates getters, setters, constructor, destructor, deep-copy function,
   usage counter handling, modification tracking, functions for reading from 
@@ -53,9 +50,8 @@ Gwenhywfar includes the following features:
 Requirements
 ============
 
-- OpenSSL >= 0.9.6x (0.9.7x recommended); this can optionally be
-  disabled by the configure switch --disable-ssl
-- ncurses (optional, used for user interface library gwenui)
+- GnuTLS >= 1.4 (>=2.0.1 recommended)
+- libgcrypt (>=1.2.0)
 
 
 
@@ -135,30 +131,6 @@ Complete path to the folder containing GWENs DBIO plugins.
 (and some more keys. See gwenhywfar.iss.in)
 
 
-WaitCallback Ids
-================
-
-GWEN_WAITCALLBACK_ID_SIMPLE_PROGRESS
-------------------------------------
-This id is not used by Gwenhywfar itself, but it may be used for applications
-or plugins which want to display a simple progress widget.
-Applications implementing such a callback should display a widget which shows
-the text (retrieved via GWEN_WaitCallback_GetText) and a progress bar.
-
-
-GWEN_WAITCALLBACK_ID_FAST
---------------------------
-This id is also not used internally, but it might be used by applications or
-plugins for operations which normally do not need a GUI widget.
-Implementations might choose to display a widget only after a certain period
-of time. E.g. some operations (like network operations) are supposed to be
-too fast to show a widget (e.g. normally there is no widget to be displayed).
-However, if the operations takes longer than expected the application should
-show a widget which contains the text retrieved via GWEN_WaitCallback_GetText
-and an abort button.
-
-
-
 Documentation
 =============
 
@@ -175,8 +147,8 @@ Contact
 =======
 
 For questions about this library please ask on the mailing list of the
-OpenHBCI project openhbci-general (subscriber-only, please subscribe
-on http://lists.sourceforge.net/lists/listinfo/openhbci-general),
+OpenHBCI project aqbanking-devel (subscriber-only, please subscribe
+on http://lists.sourceforge.net/lists/listinfo/aqbanking-devel),
 since this is where the author(s) hang out. 
 
 
@@ -201,6 +173,6 @@ The name of this library was chosen to honour a very special person ;-)
 
 
 
-Hamburg, Germany 2005/02/15
+Hamburg, Germany 2007/10/31
 
 

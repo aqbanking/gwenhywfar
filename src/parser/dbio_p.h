@@ -55,7 +55,7 @@ struct GWEN_DBIO {
   char *name;
   char *descr;
 
-  GWEN_TYPE_UINT32 usage;
+  uint32_t usage;
 };
 
 

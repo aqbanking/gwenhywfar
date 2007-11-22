@@ -39,24 +39,21 @@
  * This is used as the destLib name for paths of Gwenhywfar when used
  * with @ref GWEN_PathManager_AddPath and other functions of that group.
  */
-#define GWEN_PM_LIBNAME "gwenhywfar"
+#define GWEN_PM_LIBNAME      "gwenhywfar"
 
-/** Path identifier for the installation prefix of this gwenhywfar
-    installation, which might point to e.g. "/usr" */
-#define GWEN_PM_INSTALLDIR   "installdir"
 /** Path identifier for the system-wide configuration directory of
     this gwenhywfar installation, which might point to e.g. "/etc" */
 #define GWEN_PM_SYSCONFDIR   "sysconfdir"
 /** Path identifier for the locale data directory of this gwenhywfar
     installation, which might point to e.g. "/usr/share/locale" */
 #define GWEN_PM_LOCALEDIR    "localedir"
-/** Path identifier for the library files of this gwenhywfar
-    installation, which point to e.g.  "/usr/lib" */
-#define GWEN_PM_LIBDIR    "libdir"
 /** Path identifier for the plugin library files of this
     gwenhywfar installation, which point to e.g.
     "/usr/lib/gwenhywfar/plugins/0" */
 #define GWEN_PM_PLUGINDIR    "plugindir"
+/** Path identifier for the data files of this gwenhywfar
+    installation, which point to e.g.  "/usr/share/gwenhywfar" */
+#define GWEN_PM_DATADIR      "datadir"
 
 
 
@@ -66,14 +63,14 @@ extern "C" {
 
 
 GWENHYWFAR_API
-GWEN_ERRORCODE GWEN_Init();
+int GWEN_Init();
 
 GWENHYWFAR_API
-GWEN_ERRORCODE GWEN_Fini();
+int GWEN_Fini();
 
 
 GWENHYWFAR_API
-GWEN_ERRORCODE GWEN_Fini_Forced();
+int GWEN_Fini_Forced();
 
 
 GWENHYWFAR_API
@@ -81,21 +78,6 @@ void GWEN_Version(int *major,
                   int *minor,
                   int *patchlevel,
                   int *build);
-
-/**
- * Returns the installation prefix of gwenhywfar.
- * On WIN32 systems this value is taken from the Registry (key is
- * "Software\\Gwenhywfar\\Paths\\prefix"). On POSIX systems (or when this
- * key does not exist) the hardcoded installation prefix is returned
- * ($prefix).
- */
-GWENHYWFAR_API
-int GWEN_GetInstallPath(GWEN_BUFFER *pbuf);
-
-
-GWENHYWFAR_API
-int GWEN_GetPluginPath(GWEN_BUFFER *pbuf);
-
 
 
 #ifdef __cplusplus

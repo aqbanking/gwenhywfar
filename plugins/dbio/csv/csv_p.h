@@ -29,36 +29,42 @@
 #define GWENHYWFAR_PLUGIN_CSV_H
 
 
-#include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/fastbuffer.h>
 
 
 GWEN_PLUGIN *dbio_csv_factory(GWEN_PLUGIN_MANAGER *pm,
-                              const char *modName,
-                              const char *fileName);
+			      const char *modName,
+			      const char *fileName);
 
-GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl);
+static GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl);
 
 
-int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
-			 GWEN_BUFFEREDIO *bio,
-			 GWEN_TYPE_UINT32 flags,
-			 GWEN_DB_NODE *data,
-			 GWEN_DB_NODE *cfg);
+static int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
+				GWEN_IO_LAYER *io,
+				GWEN_DB_NODE *data,
+				GWEN_DB_NODE *cfg,
+				uint32_t flags,
+				uint32_t guiid,
+				int msecs);
 
-int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
-			 GWEN_BUFFEREDIO *bio,
-			 GWEN_TYPE_UINT32 flags,
-			 GWEN_DB_NODE *data,
-			 GWEN_DB_NODE *cfg);
+static int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
+				GWEN_IO_LAYER *io,
+				GWEN_DB_NODE *data,
+				GWEN_DB_NODE *cfg,
+				uint32_t flags,
+				uint32_t guiid,
+				int msecs);
 
-GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
-                                                   const char *fname);
+static GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio, const char *fname,
+							  uint32_t guiid, int msecs);
 
-int GWEN_DBIO_CSV__ReadLine(GWEN_BUFFEREDIO *bio,
-                            GWEN_STRINGLIST *sl);
+static int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb,
+				   GWEN_STRINGLIST *sl,
+				   uint32_t guiid,
+				   int msecs);
 
 
 #endif

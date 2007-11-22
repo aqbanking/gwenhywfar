@@ -36,12 +36,6 @@
 #include <gwenhywfar/stringlist.h>
 
 
-#ifdef ENABLE_NLS
-# include <libintl.h>
-# include <locale.h>
-#endif
-
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,6 +49,15 @@ GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList();
 
 GWENHYWFAR_API
 const char *GWEN_I18N_GetCurrentLocale();
+
+GWENHYWFAR_API
+const char *GWEN_I18N_Translate(const char *textdomain, const char *text);
+
+GWENHYWFAR_API
+int GWEN_I18N_BindTextDomain_Dir(const char *textdomain, const char *folder);
+
+GWENHYWFAR_API
+int GWEN_I18N_BindTextDomain_Codeset(const char *textdomain, const char *cs);
 
 #ifdef __cplusplus
 }

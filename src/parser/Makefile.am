@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
+INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
@@ -9,50 +9,54 @@ INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
 
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 
-EXTRA_DIST = xsdtypes.inc xsdtypes.xsd mkxsdtypes.sh
+typefiles=url.xml
+EXTRA_DIST=$(typefiles) dbrw.c xmlrw.c
 
 noinst_LTLIBRARIES=libparser.la
 
 noinst_HEADERS=\
- csv_p.h \
  db_p.h \
  dbio_l.h \
  dbio_p.h \
  msgengine_p.h \
+ tag16_p.h \
  tlv_p.h \
+ url_l.h \
+ url_p.h \
  xml_p.h \
  xml_l.h \
- xsd_p.h
+ xmlctx_l.h \
+ xmlctx_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
  base64.h \
- csv.h \
  db.h \
  dbio.h \
+ dbio_be.h \
  msgengine.h \
  path.h \
+ tag16.h \
  text.h \
  tlv.h \
+ url.h urlfns.h \
  xml.h \
- xsd.h
+ xmlctx.h
 
 libparser_la_SOURCES=\
  base64.c \
- csv.c \
  db.c \
  dbio.c \
  msgengine.c \
  path.c \
+ tag16.c \
  text.c \
  tlv.c \
+ url.c urlfns.c \
  xml.c \
- xsd.c xsd_list.c xsd_write.c
+ xmlctx.c
 
 
-
-xsdtypes.inc: xsdtypes.xsd
-	./mkxsdtypes.sh $< > $@
 
 sources:
 	for f in $(libparser_la_SOURCES); do \

@@ -55,7 +55,7 @@ struct GWEN_CONSTLIST_ENTRY {
 
 
 struct GWEN__LISTPTR {
-  GWEN_TYPE_UINT32 refCount;
+  uint32_t refCount;
   GWEN_LIST_ENTRY *first;
   GWEN_LIST_ENTRY *last;
   unsigned int size;

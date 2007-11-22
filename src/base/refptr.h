@@ -92,13 +92,13 @@ void GWEN_RefPtr_SetData(GWEN_REFPTR *rp, void *dp, GWEN_REFPTR_INFO *rpi);
  */
 /*@{*/
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RefPtr_GetFlags(const GWEN_REFPTR *rp);
+uint32_t GWEN_RefPtr_GetFlags(const GWEN_REFPTR *rp);
 GWENHYWFAR_API
-void GWEN_RefPtr_SetFlags(GWEN_REFPTR *rp, GWEN_TYPE_UINT32 fl);
+void GWEN_RefPtr_SetFlags(GWEN_REFPTR *rp, uint32_t fl);
 GWENHYWFAR_API
-void GWEN_RefPtr_AddFlags(GWEN_REFPTR *rp, GWEN_TYPE_UINT32 fl);
+void GWEN_RefPtr_AddFlags(GWEN_REFPTR *rp, uint32_t fl);
 GWENHYWFAR_API
-void GWEN_RefPtr_DelFlags(GWEN_REFPTR *rp, GWEN_TYPE_UINT32 fl);
+void GWEN_RefPtr_DelFlags(GWEN_REFPTR *rp, uint32_t fl);
 /*@}*/
 
 /*@}*/ /* defgroup */
@@ -134,13 +134,13 @@ void GWEN_RefPtrInfo_Attach(GWEN_REFPTR_INFO *rpi);
  */
 /*@{*/
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_RefPtrInfo_GetFlags(const GWEN_REFPTR_INFO *rpi);
+uint32_t GWEN_RefPtrInfo_GetFlags(const GWEN_REFPTR_INFO *rpi);
 GWENHYWFAR_API
-void GWEN_RefPtrInfo_SetFlags(GWEN_REFPTR_INFO *rpi, GWEN_TYPE_UINT32 fl);
+void GWEN_RefPtrInfo_SetFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl);
 GWENHYWFAR_API
-void GWEN_RefPtrInfo_AddFlags(GWEN_REFPTR_INFO *rpi, GWEN_TYPE_UINT32 fl);
+void GWEN_RefPtrInfo_AddFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl);
 GWENHYWFAR_API
-void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, GWEN_TYPE_UINT32 fl);
+void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl);
 /*@}*/
 
 

@@ -42,17 +42,17 @@ typedef struct GWEN_BUFFEREDIO_FILE GWEN_BUFFEREDIO_FILE;
 
 GWEN_BUFFEREDIO_FILE *GWEN_BufferedIO_File_Table__new();
 void GWEN_BufferedIO_File_Table__free(GWEN_BUFFEREDIO_FILE *bft);
-GWEN_ERRORCODE GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
-                                          char *buffer,
-                                          int *size,
-                                          int timeout);
-GWEN_ERRORCODE GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
-                                           const char *buffer,
-                                           int *size,
-                                           int timeout);
+int GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
+			       char *buffer,
+			       int *size,
+			       int timeout);
+int GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
+				const char *buffer,
+				int *size,
+				int timeout);
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm);
+int GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm);
 
 void GWENHYWFAR_CB GWEN_BufferedIO_File_FreeData(void *bp, void *p);
 

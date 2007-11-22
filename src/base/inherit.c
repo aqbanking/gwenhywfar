@@ -46,7 +46,7 @@ GWEN_LIST_FUNCTIONS(GWEN_INHERITDATA, GWEN_InheritData)
 
 
 GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
-                                       GWEN_TYPE_UINT32 id,
+                                       uint32_t id,
                                        void *data,
                                        void *baseData,
                                        GWEN_INHERIT_FREEDATAFN freeDataFn){
@@ -70,14 +70,25 @@ GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
 
 void GWEN_InheritData_free(GWEN_INHERITDATA *d) {
   if (d) {
-    DBG_VERBOUS(GWEN_LOGDOMAIN,
-                "Freeing data for type \"%s\"",
-                d->typeName);
     if (d->freeDataFn)
       d->freeDataFn(d->baseData, d->data);
     free(d->typeName);
     GWEN_LIST_FINI(GWEN_INHERITDATA, d);
     GWEN_FREE_OBJECT(d);
+  }
+}
+
+
+
+void GWEN_InheritData_freeData(GWEN_INHERITDATA *d) {
+  if (d) {
+    DBG_VERBOUS(GWEN_LOGDOMAIN,
+		"Freeing data for type \"%s\"",
+		d->typeName);
+    if (d->freeDataFn)
+      d->freeDataFn(d->baseData, d->data);
+    d->freeDataFn=NULL;
+    d->data=NULL;
   }
 }
 
@@ -98,7 +109,7 @@ const char *GWEN_InheritData_GetTypeName(const GWEN_INHERITDATA *d){
 
 
 
-GWEN_TYPE_UINT32 GWEN_InheritData_GetId(const GWEN_INHERITDATA *d){
+uint32_t GWEN_InheritData_GetId(const GWEN_INHERITDATA *d){
   assert(d);
   return d->id;
 }
@@ -122,14 +133,14 @@ GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d){
 
 
 
-GWEN_TYPE_UINT32 GWEN_Inherit_MakeId(const char *typeName){
+uint32_t GWEN_Inherit_MakeId(const char *typeName){
   unsigned int i, j;
-  GWEN_TYPE_UINT32 result;
+  uint32_t result;
 
   result=0;
   j=strlen(typeName);
   for (i=0; i<j; i++) {
-    GWEN_TYPE_UINT32 tmpResult;
+    uint32_t tmpResult;
     unsigned char c;
 
     tmpResult=result<<8;
@@ -147,7 +158,7 @@ GWEN_TYPE_UINT32 GWEN_Inherit_MakeId(const char *typeName){
 
 
 void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
-                            GWEN_TYPE_UINT32 id,
+                            uint32_t id,
                             int wantCreate){
   GWEN_INHERITDATA *ih;
 
@@ -174,7 +185,7 @@ void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
 
 
 GWEN_INHERITDATA *GWEN_Inherit_FindEntry(GWEN_INHERITDATA_LIST *l,
-					 GWEN_TYPE_UINT32 id,
+					 uint32_t id,
 					 int wantCreate){
   GWEN_INHERITDATA *ih;
 

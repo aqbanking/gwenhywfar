@@ -33,6 +33,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/gui.h>
 
 #include "logger_p.h"
 
@@ -58,7 +59,7 @@ static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
 
 
 
-GWEN_ERRORCODE GWEN_Logger_ModuleInit(){
+int GWEN_Logger_ModuleInit(){
   const char *s;
   GWEN_LOGGER_LEVEL ll=GWEN_LoggerLevel_Warning;
 
@@ -79,7 +80,7 @@ GWEN_ERRORCODE GWEN_Logger_ModuleInit(){
 
 
 
-GWEN_ERRORCODE GWEN_Logger_ModuleFini(){
+int GWEN_Logger_ModuleFini(){
   GWEN_LOGGER_DOMAIN *ld;
 
   while((ld=gwen_loggerdomains)) {
@@ -516,47 +517,51 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 
 int GWEN_Logger_Log(const char *logDomain,
                     GWEN_LOGGER_LEVEL priority, const char *s){
-  const char *p;
-  int rv;
-  unsigned int i;
-  GWEN_BUFFER *mbuf;
-  GWEN_LOGGER *lg;
-
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
-  assert(lg);
-
-  if (!lg->enabled)
-    return 1;
-
-  if (priority>lg->logLevel)
-    /* priority too low, don't log */
-    return 0;
-
-  /* temporarily disable logging to avoid endless loops */
-  lg->enabled=0;
-  /* copy buffer, exchange all newlines by 0 */
-  mbuf=GWEN_Buffer_new(0, strlen(s)+1, 0, 1);
-  for (i=0; i<strlen(s)+1; i++) {
-    if (s[i]=='\n') {
-      GWEN_Buffer_AppendByte(mbuf, 0);
+  if (!GWEN_Gui_LogHook(logDomain, priority, s)) {
+    const char *p;
+    int rv;
+    unsigned int i;
+    GWEN_BUFFER *mbuf;
+    GWEN_LOGGER *lg;
+  
+    lg=GWEN_LoggerDomain_GetLogger(logDomain);
+    assert(lg);
+  
+    if (!lg->enabled)
+      return 1;
+  
+    if (priority>lg->logLevel)
+      /* priority too low, don't log */
+      return 0;
+  
+    /* temporarily disable logging to avoid endless loops */
+    lg->enabled=0;
+    /* copy buffer, exchange all newlines by 0 */
+    mbuf=GWEN_Buffer_new(0, strlen(s)+1, 0, 1);
+    for (i=0; i<strlen(s)+1; i++) {
+      if (s[i]=='\n') {
+	GWEN_Buffer_AppendByte(mbuf, 0);
+      }
+      else
+	GWEN_Buffer_AppendByte(mbuf, s[i]);
     }
-    else
-      GWEN_Buffer_AppendByte(mbuf, s[i]);
-  }
-
-  /* now log each line */
-  rv=0;
-  p=GWEN_Buffer_GetStart(mbuf);
-  while (*p) {
-    rv|=GWEN_Logger__Log(lg, priority, p);
-    while(*p)
+  
+    /* now log each line */
+    rv=0;
+    p=GWEN_Buffer_GetStart(mbuf);
+    while (*p) {
+      rv|=GWEN_Logger__Log(lg, priority, p);
+      while(*p)
+	p++;
       p++;
-    p++;
+    }
+    GWEN_Buffer_free(mbuf);
+    /* reenable logging */
+    lg->enabled=1;
+    return rv;
   }
-  GWEN_Buffer_free(mbuf);
-  /* reenable logging */
-  lg->enabled=1;
-  return rv;
+  else
+    return 0;
 }
 
 

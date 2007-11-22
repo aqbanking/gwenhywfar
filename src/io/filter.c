@@ -36,7 +36,6 @@
 #include "filter_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
-#include <gwenhywfar/waitcallback.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -122,7 +121,7 @@ void GWEN_Filter_AppendNext(GWEN_FILTER *fPredecessor, GWEN_FILTER *fNew){
 
 GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter) {
   GWEN_FILTER *f;
-  GWEN_TYPE_UINT32 maxFree;
+  uint32_t maxFree;
   const char *p;
 
   /* get maximum of bytes for the next level (least number of writeable
@@ -131,7 +130,7 @@ GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter) {
   if (maxFree) {
     f=GWEN_Filter_List_First(filter->nextElements);
     while(f) {
-      GWEN_TYPE_UINT32 currFree;
+      uint32_t currFree;
 
       currFree=GWEN_RingBuffer_GetMaxUnsegmentedWrite(f->inBuffer);
       if (currFree<maxFree)
@@ -147,12 +146,12 @@ GWEN_FILTER_RESULT GWEN_Filter__WriteToAllNext(GWEN_FILTER *filter) {
     /* write to every next element */
     p=GWEN_RingBuffer_GetReadPointer(filter->outBuffer);
     DBG_INFO(GWEN_LOGDOMAIN,
-             "Writing "GWEN_TYPE_TMPL_UINT32" bytes",
+             "Writing %u bytes",
              maxFree);
     assert(p);
     f=GWEN_Filter_List_First(filter->nextElements);
     while(f) {
-      GWEN_TYPE_UINT32 written;
+      uint32_t written;
 
       written=maxFree;
       if (GWEN_RingBuffer_WriteBytes(f->inBuffer, p, &written)) {

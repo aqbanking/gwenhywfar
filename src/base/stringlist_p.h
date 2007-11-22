@@ -36,7 +36,7 @@
 struct GWEN_STRINGLISTENTRYSTRUCT {
   GWEN_STRINGLISTENTRY *next;
   const char *data;
-  GWEN_TYPE_UINT32 refCount;
+  uint32_t refCount;
 };
 
 

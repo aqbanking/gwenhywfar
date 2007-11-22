@@ -33,6 +33,8 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/pathmanager.h>
+#include <gwenhywfar/gwenhywfar.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -60,14 +62,14 @@ GWEN_LIST_FUNCTIONS(GWEN_PLUGIN_MANAGER, GWEN_PluginManager)
 
 
 
-GWEN_ERRORCODE GWEN_Plugin_ModuleInit(){
+int GWEN_Plugin_ModuleInit(){
   gwen_plugin_manager__list=GWEN_PluginManager_List_new();
   return 0;
 }
 
 
 
-GWEN_ERRORCODE GWEN_Plugin_ModuleFini(){
+int GWEN_Plugin_ModuleFini(){
   GWEN_PluginManager_List_free(gwen_plugin_manager__list);
   return 0;
 }
@@ -165,18 +167,18 @@ void GWEN_Plugin_SetLibLoader(GWEN_PLUGIN *p, GWEN_LIBLOADER *ll){
 
 
 
-GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name){
+GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name,
+					    const char *destLib){
   GWEN_PLUGIN_MANAGER *pm;
 
   assert(name);
+  assert(destLib);
   GWEN_NEW_OBJECT(GWEN_PLUGIN_MANAGER, pm);
   DBG_MEM_INC("GWEN_PLUGIN_MANAGER", 0);
   GWEN_INHERIT_INIT(GWEN_PLUGIN_MANAGER, pm);
   GWEN_LIST_INIT(GWEN_PLUGIN_MANAGER, pm);
   pm->name=strdup(name);
-  pm->paths=GWEN_StringList_new();
-  /* let the string list handle reference counters */
-  GWEN_StringList_SetIgnoreRefCount(pm->paths, 0);
+  pm->destLib=strdup(destLib);
   pm->plugins=GWEN_Plugin_List_new();
 
   return pm;
@@ -189,7 +191,7 @@ void GWEN_PluginManager_free(GWEN_PLUGIN_MANAGER *pm){
     DBG_MEM_DEC("GWEN_PLUGIN_MANAGER");
     GWEN_Plugin_List_free(pm->plugins);
     GWEN_INHERIT_FINI(GWEN_PLUGIN_MANAGER, pm);
-    GWEN_StringList_free(pm->paths);
+    free(pm->destLib);
     free(pm->name);
     GWEN_LIST_FINI(GWEN_PLUGIN_MANAGER, pm);
     GWEN_FREE_OBJECT(pm);
@@ -206,33 +208,59 @@ const char *GWEN_PluginManager_GetName(const GWEN_PLUGIN_MANAGER *pm){
 
 
 int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
-                               const char *s){
+			       const char *callingLib,
+			       const char *s){
   assert(pm);
-  return GWEN_StringList_AppendString(pm->paths, s, 0, 1);
+  return GWEN_PathManager_AddPath(callingLib,
+				  pm->destLib,
+				  pm->name,
+                                  s);
+}
+
+
+
+int GWEN_PluginManager_AddRelPath(GWEN_PLUGIN_MANAGER *pm,
+				  const char *callingLib,
+				  const char *s,
+				  GWEN_PATHMANAGER_RELMODE rm) {
+  assert(pm);
+  return GWEN_PathManager_AddRelPath(callingLib,
+				     pm->destLib,
+				     pm->name,
+				     s,
+				     rm);
 }
 
 
 
 int GWEN_PluginManager_InsertPath(GWEN_PLUGIN_MANAGER *pm,
+				  const char *callingLib,
                                   const char *s) {
   assert(pm);
-  return GWEN_StringList_InsertString(pm->paths, s, 0, 1);
+  return GWEN_PathManager_InsertPath(callingLib,
+				     pm->destLib,
+				     pm->name,
+				     s);
 }
 
 
 
 int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
+				  const char *callingLib,
                                   const char *s) {
   assert(pm);
-  return GWEN_StringList_RemoveString(pm->paths, s);
+  return GWEN_PathManager_RemovePath(callingLib,
+				     pm->destLib,
+				     pm->name,
+				     s);
 }
 
 
 
 int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
+					 const char *callingLib,
 					 const char *keypath,
-					 const char *varname)
-{
+					 const char *varname){
 #ifdef OS_WIN32
   HKEY hkey;
   TCHAR nbuffer[MAX_PATH];
@@ -248,7 +276,7 @@ int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
 
   /* open the key */
   if (RegOpenKey(HKEY_LOCAL_MACHINE, nbuffer, &hkey)){
-    DBG_ERROR(GWEN_LOGDOMAIN, "RegOpenKey %s failed.", keypath);
+    DBG_INFO(GWEN_LOGDOMAIN, "RegOpenKey %s failed.", keypath);
     return 1;
   }
 
@@ -268,14 +296,17 @@ int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
     if (strcasecmp(nbuffer, varname)==0 && typ==REG_SZ) {
       /* variable found */
       RegCloseKey(hkey);
-      return GWEN_StringList_AppendString(pm->paths, (char*)vbuffer, 0, 1);
+      return GWEN_PathManager_AddPath(callingLib,
+				      pm->destLib,
+				      pm->name,
+				      (char*)vbuffer);
     }
   } /* for */
 
   RegCloseKey(hkey);
-  DBG_ERROR(GWEN_LOGDOMAIN, 
-	    "In RegKey \"%s\" the variable \"%s\" does not exist", 
-	    keypath, varname);
+  DBG_INFO(GWEN_LOGDOMAIN,
+	   "In RegKey \"%s\" the variable \"%s\" does not exist",
+	   keypath, varname);
   return 1;
 
 #else /* OS_WIN32 */
@@ -294,15 +325,22 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
   GWEN_BUFFER *nbuf;
   const char *s;
   const char *fname;
-  GWEN_ERRORCODE err;
+  int err;
+  GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *se;
 
+  assert(pm);
   ll=GWEN_LibLoader_new();
-
+  sl=GWEN_PathManager_GetPaths(pm->destLib, pm->name);
+  if (sl==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No paths for plugins (%s)", pm->name);
+    GWEN_LibLoader_free(ll);
+    return NULL;
+  }
   nbuf=GWEN_Buffer_new(0, 128, 0, 1);
   s=modname;
   while(*s) GWEN_Buffer_AppendByte(nbuf, tolower(*(s++)));
-  se=GWEN_StringList_FirstEntry(pm->paths);
+  se=GWEN_StringList_FirstEntry(sl);
   fname=0;
   while(se) {
     fname=GWEN_StringListEntry_Data(se);
@@ -319,8 +357,9 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
   if (!se) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Plugin \"%s\" not found.", modname);
     GWEN_Buffer_free(nbuf);
+    GWEN_StringList_free(sl);
     GWEN_LibLoader_free(ll);
-    return 0;
+    return NULL;
   }
   GWEN_Buffer_free(nbuf);
 
@@ -335,10 +374,11 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
 
   /* resolve name of factory function */
   err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
     GWEN_Buffer_free(nbuf);
     GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_StringList_free(sl);
     GWEN_LibLoader_free(ll);
     return 0;
   }
@@ -350,11 +390,13 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
   if (!plugin) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error in plugin: No plugin created");
     GWEN_LibLoader_CloseLibrary(ll);
+    GWEN_StringList_free(sl);
     GWEN_LibLoader_free(ll);
     return 0;
   }
 
   /* store libloader */
+  GWEN_StringList_free(sl);
   GWEN_Plugin_SetLibLoader(plugin, ll);
   return plugin;
 }
@@ -370,12 +412,12 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
   void *p;
   GWEN_BUFFER *nbuf;
   const char *s;
-  GWEN_ERRORCODE err;
+  int err;
 
   ll=GWEN_LibLoader_new();
   if (GWEN_LibLoader_OpenLibrary(ll, fname)) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Could not load plugin \"%s\" (%s)", modname, fname);
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Could not load plugin \"%s\" (%s)", modname, fname);
     GWEN_LibLoader_free(ll);
     return 0;
   }
@@ -391,8 +433,8 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
 
   /* resolve name of factory function */
   err=GWEN_LibLoader_Resolve(ll, GWEN_Buffer_GetStart(nbuf), &p);
-  if (!GWEN_Error_IsOk(err)) {
-    DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
+  if (err) {
+    DBG_INFO_ERR(GWEN_LOGDOMAIN, err);
     GWEN_Buffer_free(nbuf);
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
@@ -404,7 +446,7 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
   assert(fn);
   plugin=fn(pm, modname, fname);
   if (!plugin) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error in plugin: No plugin created");
+    DBG_INFO(GWEN_LOGDOMAIN, "Error in plugin: No plugin created");
     GWEN_LibLoader_CloseLibrary(ll);
     GWEN_LibLoader_free(ll);
     return 0;
@@ -470,6 +512,7 @@ GWEN_PLUGIN_MANAGER *GWEN_PluginManager_FindPluginManager(const char *s){
 
 int GWEN_PluginManager_Register(GWEN_PLUGIN_MANAGER *pm){
   GWEN_PLUGIN_MANAGER *tpm;
+  int rv;
 
   assert(gwen_plugin_manager__list);
   assert(pm);
@@ -480,6 +523,14 @@ int GWEN_PluginManager_Register(GWEN_PLUGIN_MANAGER *pm){
               pm->name);
     return -1;
   }
+
+  rv=GWEN_PathManager_DefinePath(pm->destLib, pm->name);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not define path for plugin [%s:%s]",
+	     pm->destLib, pm->name);
+    return rv;
+  }
+
   GWEN_PluginManager_List_Add(pm, gwen_plugin_manager__list);
   DBG_INFO(GWEN_LOGDOMAIN,
            "Plugin type \"%s\" registered",
@@ -491,6 +542,7 @@ int GWEN_PluginManager_Register(GWEN_PLUGIN_MANAGER *pm){
 
 int GWEN_PluginManager_Unregister(GWEN_PLUGIN_MANAGER *pm){
   GWEN_PLUGIN_MANAGER *tpm;
+  int rv;
 
   assert(gwen_plugin_manager__list);
   assert(pm);
@@ -501,6 +553,14 @@ int GWEN_PluginManager_Unregister(GWEN_PLUGIN_MANAGER *pm){
               pm->name);
     return -1;
   }
+
+  rv=GWEN_PathManager_UndefinePath(pm->destLib, pm->name);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not undefine path for plugin [%s:%s]",
+	     pm->destLib, pm->name);
+    return rv;
+  }
+
   GWEN_PluginManager_List_Del(pm);
   DBG_INFO(GWEN_LOGDOMAIN,
            "Plugin type \"%s\" unregistered",
@@ -513,11 +573,18 @@ int GWEN_PluginManager_Unregister(GWEN_PLUGIN_MANAGER *pm){
 GWEN_PLUGIN_DESCRIPTION_LIST2*
 GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
+  GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *se;
 
-  se=GWEN_StringList_FirstEntry(pm->paths);
+  sl=GWEN_PathManager_GetPaths(pm->destLib, pm->name);
+  if (sl==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No paths for plugins (%s)", pm->name);
+    return NULL;
+  }
+  se=GWEN_StringList_FirstEntry(sl);
   if (!se) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No paths given");
+    GWEN_StringList_free(sl);
     return 0;
   }
 
@@ -538,16 +605,18 @@ GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm){
 
   if (GWEN_PluginDescription_List2_GetSize(pl)==0) {
     GWEN_PluginDescription_List2_free(pl);
+    GWEN_StringList_free(sl);
     return 0;
   }
+
+  GWEN_StringList_free(sl);
   return pl;
 }
 
 
-const GWEN_STRINGLIST *
-GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm){
+GWEN_STRINGLIST *GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm){
   assert(pm);
-  return pm->paths;
+  return GWEN_PathManager_GetPaths(pm->destLib, pm->name);
 }
 
 

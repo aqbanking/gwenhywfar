@@ -34,24 +34,32 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/stringlist.h>
 
+#define GWEN_DBIO_OLDDB_MAXVALUE_LEN (16*1024)
+
 
 GWEN_DBIO *olddb_factory();
 
 
-int GWEN_DBIO_OldDb_Export(GWEN_DBIO *dbio,
-                           GWEN_BUFFEREDIO *bio,
-                           GWEN_TYPE_UINT32 flags,
-                           GWEN_DB_NODE *data,
-                           GWEN_DB_NODE *cfg);
+static int GWEN_DBIO_OldDb_Export(GWEN_DBIO *dbio,
+				  GWEN_IO_LAYER *io,
+				  GWEN_DB_NODE *data,
+				  GWEN_DB_NODE *cfg,
+				  uint32_t flags,
+				  uint32_t guiid,
+				  int msecs);
 
-int GWEN_DBIO_OldDb_Import(GWEN_DBIO *dbio,
-                           GWEN_BUFFEREDIO *bio,
-                           GWEN_TYPE_UINT32 flags,
-                           GWEN_DB_NODE *data,
-                           GWEN_DB_NODE *cfg);
+static int GWEN_DBIO_OldDb_Import(GWEN_DBIO *dbio,
+				  GWEN_IO_LAYER *io,
+				  GWEN_DB_NODE *data,
+				  GWEN_DB_NODE *cfg,
+				  uint32_t flags,
+				  uint32_t guiid,
+				  int msecs);
 
-GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio,
-                                                     const char *fname);
+static GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio,
+							    const char *fname,
+							    uint32_t guiid,
+							    int msecs);
 
 
 

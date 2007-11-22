@@ -1,26 +1,28 @@
-INCLUDES= \
+INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/net2 \
- -I$(top_srcdir)/src/parser \
- -I$(top_srcdir)/src/storage $(all_includes)
+ -I$(top_srcdir)/src/parser $(all_includes)
 
 AM_CFLAGS=$(visibility_cflags)
 
-SUBDIRS = base crypt io ipc os parser crypt2 net2 storage
+SUBDIRS = base io iolayer ipc os parser crypt3 crypttoken gui
 
-localedir=$(datadir)/locale
 DEFS += \
   -DBUILDING_GWENHYWFAR \
   -DGWEN_PREFIX_DIR=\"$(prefix)\" \
-  -DGWEN_SYSCONF_DIR=\"$(sysconfdir)\" \
-  -DLOCALEDIR=\"$(localedir)\" \
+  -DGWEN_SYSCONF_DIR=\"@gwenhywfar_cfg_searchdir@\" \
+  -DLOCALEDIR=\"@gwenhywfar_locale_searchdir@\" \
   -DLIBDIR=\"$(libdir)\" \
   -DGWENHYWFAR_SO_EFFECTIVE_STR=\"$(GWENHYWFAR_SO_EFFECTIVE)\" \
-  -DPLUGINDIR=\"$(gwenhywfar_plugindir)\"
+  -DGWEN_DATADIR=\"$(gwenhywfar_data_searchdir)\" \
+  -DPLUGINDIR=\"$(gwenhywfar_plugin_searchdir)\"
+
+# Note: The symbol "DATADIR" is already used by some Windows header,
+# so we have to name this differently here.
 
 EXTRA_DIST=\
  types.h.in \
@@ -47,32 +49,27 @@ libgwenhywfar_la_SOURCES=\
   binreloc.c \
   gwenhywfar.c
 
-# if IS_WINDOWS
-if IS_WINDOWS
- mingw_ldflags=-L/mingw/lib
-endif
-
 libgwenhywfar_la_LIBADD=\
   base/libbase.la \
-  crypt/libcrypt.la \
-  crypt2/libcrypt2.la \
+  crypt3/libcrypt3.la \
+  crypttoken/libcrypttoken.la \
   io/libio.la \
+  iolayer/libiolayer.la \
   ipc/libipc.la \
-  net2/libnet2.la \
   os/libos.la \
   parser/libparser.la \
-  storage/libsto.la $(mingw_ldflags) $(ssl_libraries) $(ssl_lib) $(all_libraries)
+  gui/libgui.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(all_libraries)
 
 libgwenhywfar_la_DEPENDENCIES=\
   base/libbase.la \
-  crypt/libcrypt.la \
-  crypt2/libcrypt2.la \
+  crypt3/libcrypt3.la \
+  crypttoken/libcrypttoken.la \
   io/libio.la \
+  iolayer/libiolayer.la \
   ipc/libipc.la \
-  net2/libnet2.la \
   os/libos.la \
   parser/libparser.la \
-  storage/libsto.la
+  gui/libgui.la
 
 noinst_PROGRAMS=testlib
 testlib_SOURCES=testlib.c

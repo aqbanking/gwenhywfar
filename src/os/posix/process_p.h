@@ -47,7 +47,7 @@ struct GWEN_PROCESS {
   int filesStdout[2];
   int filesStderr[2];
   GWEN_PROCESS_STATE state;
-  GWEN_TYPE_UINT32 pflags;
+  uint32_t pflags;
   GWEN_BUFFEREDIO *stdIn;
   GWEN_BUFFEREDIO *stdOut;
   GWEN_BUFFEREDIO *stdErr;
@@ -55,11 +55,13 @@ struct GWEN_PROCESS {
 
 
 
+static
 GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w);
-void GWEN_Process_SignalHandler(int s);
-GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid);
+
+static
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status);
 
+static
 int GWEN_Process_Redirect(GWEN_PROCESS *pr);
 
 

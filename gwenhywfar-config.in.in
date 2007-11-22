@@ -4,6 +4,7 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 includedir=@includedir@
+bindir=@bindir@
 
 libdir=@libdir@
 
@@ -17,11 +18,8 @@ for d in $*; do
 	--libraries)
 	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libs@"
 	    ;;
-	--libraries++)
-	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libspp@"
-	    ;;
-	--libraries-ui)
-	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libsui@"
+	--bindir)
+	    result="$result @gwenhywfar_bindir@"
 	    ;;
 	--headers)
 	    result="$result @gwenhywfar_headerdir@/gwenhywfar"
@@ -48,9 +46,21 @@ for d in $*; do
 	    result="$result @GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@.@GWENHYWFAR_VERSION_PATCHLEVEL@"
             ;;
         --has-crypt)
-            result="$result @USE_CRYPT@"
+	    # Keep this argument in order not to completely break
+	    # the old gwenhywfar.m4 macro.
+	    result="This argument is obsolete. See $0 --help for current arguments."
             ;;
 	--has-ui)
+	    # Keep this argument in order not to completely break
+	    # the old gwenhywfar.m4 macro.
+	    result="This argument is obsolete. See $0 --help for current arguments."
+	    ;;
+	--libraries++)
+	    # Keep this argument in order not to completely break
+	    # the old gwenhywfar.m4 macro.
+	    result="This argument is obsolete. See $0 --help for current arguments."
+	    ;;
+	--libraries-ui)
 	    # Keep this argument in order not to completely break
 	    # the old gwenhywfar.m4 macro.
 	    result="This argument is obsolete. See $0 --help for current arguments."
@@ -59,8 +69,7 @@ for d in $*; do
 	    echo "Usage:"
 	    echo "$0 --includes gives you the include flags"
 	    echo "$0 --libraries gives you the library flags"
-	    echo "$0 --libraries++ gives you the library flags for GwenPP"
-	    echo "$0 --libraries-ui returns the library flags for GwenUI"
+	    echo "$0 --bindir returns the folder for binary tools"
 	    echo "$0 --headers gives you the location of the header files"
 	    echo "$0 --vmajor gives the major version of LibGwenhywfar"
 	    echo "$0 --vminor gives the minor version of LibGwenhywfar"
@@ -68,8 +77,6 @@ for d in $*; do
 	    echo "$0 --vbuild gives the build number of LibGwenhywfar"
 	    echo "$0 --vtag gives the tag of LibGwenhywfar (cvs, beta or stable)"
 	    echo "$0 --vstring returns a version string"
-            echo "$0 --has-crypt returns \"yes\" or \"no\" depending on whether"
-            echo "     there is cryto support compiled into Gwen"
 	    exit 1
 	    ;;
     esac

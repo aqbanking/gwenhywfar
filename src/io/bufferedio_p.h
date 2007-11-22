@@ -45,7 +45,7 @@ struct GWEN_BUFFEREDIOSTRUCT {
   GWEN_BUFFEREDIOREADFN readPtr;
   GWEN_BUFFEREDIOWRITEFN writePtr;
   GWEN_BUFFEREDIOCLOSEFN closePtr;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
 
   GWEN_BUFFEREDIOLINEMODE lineMode;
   int timeout;
@@ -65,12 +65,10 @@ struct GWEN_BUFFEREDIOSTRUCT {
   int bytesRead;
   int bytesWritten;
   int linePos;
+  int filteredLinePos; /* not counting CR */
   int lines;
 };
 
-
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit();
-GWENHYWFAR_API GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini();
 
 int GWEN_BufferedIO__FillReadBuffer(GWEN_BUFFEREDIO *bt);
 

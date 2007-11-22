@@ -49,7 +49,7 @@ case "$host" in
 	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])
 	OS_TYPE="posix"
 	;;
-    *-freebsd*)
+    *-freebsd* | *-kfreebsd*)
 	OSYSTEM="freebsd"
 	AC_DEFINE(OS_FREEBSD,1,[if FreeBSD is used])
 	AC_DEFINE(OS_POSIX,1,[if this is a POSIX system])

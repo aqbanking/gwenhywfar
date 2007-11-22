@@ -51,7 +51,7 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   const char *dupAcc;
   const char *dupName;
   GWEN_BUFFEREDIO *bio;
-  GWEN_ERRORCODE err;
+  int err;
   GWEN_XMLNODE *n;
   const char *id;
   const char *prefix;
@@ -384,7 +384,7 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   GWEN_BufferedIO_WriteLine(bio, " */");
 
   err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_BufferedIO_free(bio);
     GWEN_Buffer_free(hbuf);

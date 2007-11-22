@@ -567,7 +567,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
 
   /* fill data */
   if (fixSize) {
-    GWEN_TYPE_UINT32 bs;
+    uint32_t bs;
     unsigned int j;
 
     bs=GWEN_Buffer_GetPos(gbuf)-startPos;
@@ -590,11 +590,11 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__IsCharTyp(GWEN_MSGENGINE *e,
                               const char *type) {
   if (e->typeCheckPtr) {
-    GWEN_DB_VALUETYPE vt;
+    GWEN_DB_NODE_TYPE vt;
 
     vt=e->typeCheckPtr(e, type);
-    if (vt!=GWEN_DB_VALUETYPE_UNKNOWN) {
-      if (vt==GWEN_DB_VALUETYPE_CHAR)
+    if (vt!=GWEN_DB_NodeType_Unknown) {
+      if (vt==GWEN_DB_NodeType_ValueChar)
         return 1;
     }
   }
@@ -610,11 +610,11 @@ int GWEN_MsgEngine__IsCharTyp(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__IsIntTyp(GWEN_MSGENGINE *e,
                              const char *type) {
   if (e->typeCheckPtr) {
-    GWEN_DB_VALUETYPE vt;
+    GWEN_DB_NODE_TYPE vt;
 
     vt=e->typeCheckPtr(e, type);
-    if (vt!=GWEN_DB_VALUETYPE_UNKNOWN) {
-      if (vt==GWEN_DB_VALUETYPE_INT)
+    if (vt!=GWEN_DB_NodeType_Unknown) {
+      if (vt==GWEN_DB_NodeType_ValueInt)
         return 1;
     }
   }
@@ -627,11 +627,11 @@ int GWEN_MsgEngine__IsIntTyp(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__IsBinTyp(GWEN_MSGENGINE *e,
                              const char *type) {
   if (e->typeCheckPtr) {
-    GWEN_DB_VALUETYPE vt;
+    GWEN_DB_NODE_TYPE vt;
 
     vt=e->typeCheckPtr(e, type);
-    if (vt!=GWEN_DB_VALUETYPE_UNKNOWN) {
-      if (vt==GWEN_DB_VALUETYPE_BIN)
+    if (vt!=GWEN_DB_NodeType_Unknown) {
+      if (vt==GWEN_DB_NodeType_ValueBin)
         return 1;
     }
   }
@@ -772,30 +772,30 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
       nptr=name;
 
       if (gr) {
-        GWEN_DB_VALUETYPE vt;
+        GWEN_DB_NODE_TYPE vt;
         int idata;
 
         /* Variable type of DB takes precedence
          */
         vt=GWEN_DB_GetValueTypeByPath(gr, nptr, loopNr);
-        if (vt==GWEN_DB_VALUETYPE_UNKNOWN) {
+        if (vt==GWEN_DB_NodeType_Unknown) {
           if (GWEN_MsgEngine__IsCharTyp(e, type))
-            vt=GWEN_DB_VALUETYPE_CHAR;
+            vt=GWEN_DB_NodeType_ValueChar;
           else if (GWEN_MsgEngine__IsIntTyp(e, type))
-            vt=GWEN_DB_VALUETYPE_INT;
+            vt=GWEN_DB_NodeType_ValueInt;
           else if (GWEN_MsgEngine__IsBinTyp(e, type))
-            vt=GWEN_DB_VALUETYPE_BIN;
+            vt=GWEN_DB_NodeType_ValueBin;
           else {
             DBG_INFO(GWEN_LOGDOMAIN,
                      "Unable to determine parameter "
                      "type (%s), assuming \"char\" for this matter", type);
-            vt=GWEN_DB_VALUETYPE_CHAR;
+            vt=GWEN_DB_NodeType_ValueChar;
           }
         }
   
         /* get the value of the given var from the db */
         switch(vt) {
-        case GWEN_DB_VALUETYPE_CHAR:
+        case GWEN_DB_NodeType_ValueChar:
           DBG_DEBUG(GWEN_LOGDOMAIN, "Type of \"%s\" is char", name);
           pdata=GWEN_DB_GetCharValue(gr, nptr, loopNr, 0);
           if (pdata) {
@@ -806,7 +806,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
             datasize=0;
           break;
   
-        case GWEN_DB_VALUETYPE_INT:
+        case GWEN_DB_NodeType_ValueInt:
           DBG_DEBUG(GWEN_LOGDOMAIN, "Type of \"%s\" is int", name);
           if (GWEN_DB_ValueExists(gr, nptr, loopNr)) {
             idata=GWEN_DB_GetIntValue(gr, nptr, loopNr, 0);
@@ -822,7 +822,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
           }
           break;
   
-        case GWEN_DB_VALUETYPE_BIN:
+        case GWEN_DB_NodeType_ValueBin:
 	  DBG_DEBUG(GWEN_LOGDOMAIN, "Type of \"%s\" is bin", name);
 	  pdata=GWEN_DB_GetBinValue(gr, nptr, loopNr, 0, 0, &datasize);
           break;
@@ -1057,24 +1057,24 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
       }
       else {
         int z;
-        GWEN_DB_VALUETYPE vt;
+        GWEN_DB_NODE_TYPE vt;
         const char *type = "should_be_known";
 	/* default value; otherwise the compiler issues a warning */
 
         DBG_DEBUG(GWEN_LOGDOMAIN, "Getting global property \"%s\"", p);
         vt=GWEN_DB_GetVariableType(globalValues, p);
-        if (vt==GWEN_DB_VALUETYPE_UNKNOWN) {
+        if (vt==GWEN_DB_NodeType_Unknown) {
           if (!GWEN_DB_VariableExists(globalValues, p)) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Unable to determine type of \"%s\"", p);
             return 0;
           }
           type=GWEN_XMLNode_GetProperty(dnode, "type", "ascii");
           if (GWEN_MsgEngine__IsCharTyp(e, type))
-            vt=GWEN_DB_VALUETYPE_CHAR;
+            vt=GWEN_DB_NodeType_ValueChar;
           else if (GWEN_MsgEngine__IsIntTyp(e, type))
-            vt=GWEN_DB_VALUETYPE_INT;
+            vt=GWEN_DB_NodeType_ValueInt;
           else if (GWEN_MsgEngine__IsBinTyp(e, type))
-            vt=GWEN_DB_VALUETYPE_BIN;
+            vt=GWEN_DB_NodeType_ValueBin;
           else {
             DBG_ERROR(GWEN_LOGDOMAIN,
                       "Unable to determine type of \"%s\" (xml)", p);
@@ -1083,12 +1083,12 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
         }
 
         switch(vt) {
-        case GWEN_DB_VALUETYPE_CHAR:
+        case GWEN_DB_NodeType_ValueChar:
           pvalue=GWEN_DB_GetCharValue(globalValues, p, 0, "");
           *datasize=strlen(pvalue);
           break;
 
-        case GWEN_DB_VALUETYPE_INT:
+        case GWEN_DB_NodeType_ValueInt:
           z=GWEN_DB_GetIntValue(globalValues, p, 0, 0);
           if (GWEN_Text_NumToString(z, pbuffer, sizeof(pbuffer),0)<1) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Error converting num to string");
@@ -1098,7 +1098,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
           *datasize=strlen(pvalue);
           break;
 
-        case GWEN_DB_VALUETYPE_BIN:
+        case GWEN_DB_NodeType_ValueBin:
           pvalue=GWEN_DB_GetBinValue(globalValues, p, 0,
                                      0,0,
                                      datasize);
@@ -1125,7 +1125,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
         *datasize=0;
     }
     else if (*p=='?') {
-      GWEN_DB_VALUETYPE vt;
+      GWEN_DB_NODE_TYPE vt;
       int z;
       const char *dtype;
 
@@ -1138,15 +1138,15 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
 
       pvalue=0;
       if (GWEN_MsgEngine__IsCharTyp(e, dtype))
-        vt=GWEN_DB_VALUETYPE_CHAR;
+        vt=GWEN_DB_NodeType_ValueChar;
       else if (GWEN_MsgEngine__IsIntTyp(e, dtype))
-        vt=GWEN_DB_VALUETYPE_INT;
+        vt=GWEN_DB_NodeType_ValueInt;
       else {
-        vt=GWEN_DB_VALUETYPE_CHAR;
+        vt=GWEN_DB_NodeType_ValueChar;
       }
 
       switch(vt) {
-      case GWEN_DB_VALUETYPE_CHAR:
+      case GWEN_DB_NodeType_ValueChar:
         if (e->getCharValuePtr) {
           pvalue=e->getCharValuePtr(e, p, 0);
           if (pvalue)
@@ -1154,7 +1154,7 @@ const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
         }
         break;
 
-      case GWEN_DB_VALUETYPE_INT:
+      case GWEN_DB_NodeType_ValueInt:
         if (e->getIntValuePtr) {
           z=e->getIntValuePtr(e, p, 0);
           if (GWEN_Text_NumToString(z, pbuffer, sizeof(pbuffer),0)<1) {
@@ -2044,7 +2044,7 @@ int GWEN_MsgEngine__ShowElement(GWEN_MSGENGINE *e,
                                 const char *path,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
-                                GWEN_TYPE_UINT32 flags) {
+                                uint32_t flags) {
   const char *name;
   const char *type;
   const char *npath;
@@ -2141,7 +2141,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *node,
                               GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
-                              GWEN_TYPE_UINT32 flags) {
+                              uint32_t flags) {
   GWEN_XMLNODE *n;
   int isFirstElement;
   int omittedElements;
@@ -2355,7 +2355,7 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
                                const char *typ,
                                const char *msgName,
                                int msgVersion,
-                               GWEN_TYPE_UINT32 flags) {
+                               uint32_t flags) {
   GWEN_XMLNODE *group;
   GWEN_STRINGLIST *sl;
   int i, j;
@@ -2416,7 +2416,7 @@ int GWEN_MsgEngine__ListElement(GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
                                 GWEN_XMLNODE *listNode,
-                                GWEN_TYPE_UINT32 flags) {
+                                uint32_t flags) {
   const char *name;
   const char *type;
   const char *npath;
@@ -2479,7 +2479,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
                               GWEN_XMLNODE *listNode,
-                              GWEN_TYPE_UINT32 flags) {
+                              uint32_t flags) {
   GWEN_XMLNODE *n;
   int rv;
 
@@ -2667,7 +2667,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
                                          const char *typ,
                                          const char *msgName,
                                          int msgVersion,
-                                         GWEN_TYPE_UINT32 flags) {
+                                         uint32_t flags) {
   GWEN_XMLNODE *group;
   GWEN_STRINGLIST *sl;
   GWEN_XMLNODE *listNode;
@@ -2717,7 +2717,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
 			      GWEN_BUFFER *vbuf,
                               const char *delimiters,
-                              GWEN_TYPE_UINT32 flags) {
+                              uint32_t flags) {
   unsigned int minsize;
   unsigned int maxsize;
   unsigned int size;
@@ -2927,7 +2927,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *rnode,
                               GWEN_DB_NODE *gr,
                               const char *delimiters,
-                              GWEN_TYPE_UINT32 flags) {
+                              uint32_t flags) {
   unsigned int minsize;
   unsigned int maxsize;
   unsigned int minnum;
@@ -3316,7 +3316,7 @@ int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
 				GWEN_XMLNODE *group,
                                 GWEN_BUFFER *msgbuf,
                                 GWEN_DB_NODE *msgData,
-                                GWEN_TYPE_UINT32 flags){
+                                uint32_t flags){
 
   if (GWEN_MsgEngine__ReadGroup(e,
                                 msgbuf,
@@ -3468,7 +3468,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                const char *gtype,
                                GWEN_BUFFER *mbuf,
                                GWEN_DB_NODE *gr,
-                               GWEN_TYPE_UINT32 flags) {
+                               uint32_t flags) {
   unsigned int segments;
 
   segments=0;

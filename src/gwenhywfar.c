@@ -57,11 +57,9 @@
 
 #include "io/bufferedio_l.h"
 #include "parser/dbio_l.h"
-#include "crypt/crypt_l.h"
-#include "net2/net2_l.h"
-#include "base/waitcallback_l.h"
-
-#include "storage/st_storage_l.h"
+#include "crypt3/cryptkey_l.h"
+#include "crypttoken/ctplugin_l.h"
+#include "iolayer/iomanager_l.h"
 
 #include "binreloc.h"
 
@@ -82,6 +80,7 @@
 #define GWEN_REGNAME_PLUGINDIR   "plugindir"
 #define GWEN_REGNAME_SYSCONFDIR  "sysconfdir"
 #define GWEN_REGNAME_LOCALEDIR   "localedir"
+#define GWEN_REGNAME_DATADIR     "pkgdatadir"
 
 
 static unsigned int gwen_is_initialized=0;
@@ -89,17 +88,15 @@ static int gwen_binreloc_initialized=0;
 
 char *GWEN__get_plugindir (const char *default_dir);
 
-GWEN_ERRORCODE GWEN_Init() {
-  GWEN_ERRORCODE err;
+int GWEN_Init() {
+  int err;
 
   if (gwen_is_initialized==0) {
-    char *tmp;
-
     err=GWEN_Memory_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
     err=GWEN_Logger_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
 
     if (gwen_binreloc_initialized==0) {
@@ -118,7 +115,7 @@ GWEN_ERRORCODE GWEN_Init() {
     GWEN_Error_ModuleInit();
 
     err=GWEN_PathManager_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
 
     /* Define some paths used by gwenhywfar; add the windows
@@ -127,124 +124,138 @@ GWEN_ERRORCODE GWEN_Init() {
        most valid paths (which are those from the registry) are
        first in the path lists. */
 
-    /* $prefix e.g. "/usr" */
-    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_INSTALLDIR);
-    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBNAME,
-				       GWEN_PM_INSTALLDIR,
-				       GWEN_REGKEY_PATHS,
-				       GWEN_REGNAME_PREFIX);
-    tmp = br_find_prefix (GWEN_PREFIX_DIR);
-    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-                             GWEN_PM_LIBNAME,
-                             GWEN_PM_INSTALLDIR,
-                             tmp);
-    free (tmp);
-
-    /* $sysconfdir e.g. "/etc" */
+    /* ---------------------------------------------------------------------
+     * $sysconfdir e.g. "/etc" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSCONFDIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
 				       GWEN_PM_LIBNAME,
 				       GWEN_PM_SYSCONFDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_SYSCONFDIR);
-    tmp = br_find_etc_dir (GWEN_SYSCONF_DIR);
+#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
+    /* add folder relative to EXE */
+    GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
+				GWEN_PM_LIBNAME,
+				GWEN_PM_SYSCONFDIR,
+				GWEN_SYSCONF_DIR,
+				GWEN_PathManager_RelModeExe);
+#else
+    /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-                             GWEN_PM_LIBNAME,
-                             GWEN_PM_SYSCONFDIR,
-                             tmp);
-    free (tmp);
+			     GWEN_PM_LIBNAME,
+			     GWEN_PM_SYSCONFDIR,
+			     GWEN_SYSCONF_DIR);
+#endif
 
-    /* $localedir e.g. "/usr/share/locale" */
+    /* ---------------------------------------------------------------------
+     * $localedir e.g. "/usr/share/locale" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
 				       GWEN_PM_LIBNAME,
 				       GWEN_PM_LOCALEDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_LOCALEDIR);
-    tmp = br_find_locale_dir (LOCALEDIR);
+#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
+    /* add folder relative to EXE */
+    GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
+				GWEN_PM_LIBNAME,
+				GWEN_PM_LOCALEDIR,
+				LOCALEDIR,
+				GWEN_PathManager_RelModeExe);
+#else
+    /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-                             GWEN_PM_LIBNAME,
-                             GWEN_PM_LOCALEDIR,
-                             tmp);
-    free (tmp);
+			     GWEN_PM_LIBNAME,
+			     GWEN_PM_LOCALEDIR,
+			     LOCALEDIR);
+#endif
 
-    /* $libdir e.g. "/usr/lib" */
-    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LIBDIR);
-    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBDIR,
-				       GWEN_REGKEY_PATHS,
-				       GWEN_REGNAME_LIBDIR);
-    tmp = br_find_lib_dir (LIBDIR);
-    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-                             GWEN_PM_LIBNAME,
-                             GWEN_PM_LIBDIR,
-                             tmp);
-    free (tmp);
-
-    /* $plugindir e.g. "/usr/lib/gwenhywfar/plugins/0" */
+    /* ---------------------------------------------------------------------
+     * $plugindir e.g. "/usr/lib/gwenhywfar/plugins/0" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_PLUGINDIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
 				       GWEN_PM_LIBNAME,
 				       GWEN_PM_PLUGINDIR,
 				       GWEN_REGKEY_PATHS,
 				       GWEN_REGNAME_PLUGINDIR);
-    tmp = GWEN__get_plugindir (PLUGINDIR);
+#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
+    /* add folder relative to EXE */
+    GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
+				GWEN_PM_LIBNAME,
+				GWEN_PM_PLUGINDIR,
+				PLUGINDIR,
+				GWEN_PathManager_RelModeExe);
+#else
+    /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-                             GWEN_PM_LIBNAME,
-                             GWEN_PM_PLUGINDIR,
-                             tmp);
-    free (tmp);
+			     GWEN_PM_LIBNAME,
+			     GWEN_PM_PLUGINDIR,
+			     PLUGINDIR);
+#endif
+
+    /* ---------------------------------------------------------------------
+     * datadir e.g. "/usr/share/gwenhywfar" */
+    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
+    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
+				       GWEN_PM_LIBNAME,
+				       GWEN_PM_DATADIR,
+				       GWEN_REGKEY_PATHS,
+				       GWEN_REGNAME_DATADIR);
+#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
+    /* add folder relative to EXE */
+    GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
+				GWEN_PM_LIBNAME,
+				GWEN_PM_DATADIR,
+				GWEN_DATADIR,
+				GWEN_PathManager_RelModeExe);
+#else
+    /* add absolute folder */
+    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
+			     GWEN_PM_LIBNAME,
+			     GWEN_PM_DATADIR,
+			     GWEN_DATADIR);
+#endif
 
     /* Initialize other modules. */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing I18N module");
     err=GWEN_I18N_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing InetAddr module");
     err=GWEN_InetAddr_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Socket module");
     err=GWEN_Socket_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Libloader module");
     err=GWEN_LibLoader_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing BufferedIO module");
-    err=GWEN_BufferedIO_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
-      return err;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Crypt module");
-    err=GWEN_Crypt_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Crypt3 module");
+    err=GWEN_Crypt3_ModuleInit();
+    if (err)
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Process module");
     err=GWEN_Process_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Network2 module");
-    err=GWEN_Net_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing IO layer module");
+    err=GWEN_Io_Manager_ModuleInit();
+    if (err)
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Plugin module");
     err=GWEN_Plugin_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing DataBase IO module");
     err=GWEN_DBIO_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    if (err)
       return err;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Storage module");
-    err=GWEN_StoStorage_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
-      return err;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing WaitCallback module");
-    err=GWEN_WaitCallback_ModuleInit();
-    if (!GWEN_Error_IsOk(err))
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing CryptToken2 module");
+    err=GWEN_Crypt_Token_ModuleInit();
+    if (err)
       return err;
     /* add more modules here */
 
@@ -257,8 +268,8 @@ GWEN_ERRORCODE GWEN_Init() {
 
 
 
-GWEN_ERRORCODE GWEN_Fini() {
-  GWEN_ERRORCODE err;
+int GWEN_Fini() {
+  int err;
 
   err=0;
 
@@ -267,110 +278,74 @@ GWEN_ERRORCODE GWEN_Fini() {
 
   gwen_is_initialized--;
   if (gwen_is_initialized==0) {
+    int lerr;
+
     /* add more modules here */
-    if (!GWEN_Error_IsOk(GWEN_WaitCallback_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Crypt_Token_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module WaitCallback");
+		"Could not deinitialze module CryptToken2");
     }
-    if (!GWEN_Error_IsOk(GWEN_StoStorage_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_DBIO_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Storage");
+		"Could not deinitialze module DBIO");
     }
-    if (!GWEN_Error_IsOk(GWEN_DBIO_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Plugin_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module DBIO");
+		"Could not deinitialze module Plugin");
     }
-    if (!GWEN_Error_IsOk(GWEN_Plugin_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Io_Manager_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Plugin");
+                "Could not deinitialze module IO layer");
     }
-    if (!GWEN_Error_IsOk(GWEN_Net_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Process_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Net");
+		"Could not deinitialze module Process");
     }
-    if (!GWEN_Error_IsOk(GWEN_Process_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Crypt3_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Process");
+		"Could not deinitialze module Crypt3");
     }
-    if (!GWEN_Error_IsOk(GWEN_Crypt_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Crypt");
-    }
-    if (!GWEN_Error_IsOk(GWEN_BufferedIO_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
-      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module BufferedIO");
-    }
-    if (!GWEN_Error_IsOk(GWEN_LibLoader_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_LibLoader_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
 	      "Could not deinitialze module LibLoader");
     }
-    if (!GWEN_Error_IsOk(GWEN_Socket_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Socket_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Socket");
+		"Could not deinitialze module Socket");
     }
-    if (!GWEN_Error_IsOk(GWEN_InetAddr_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                       GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_InetAddr_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module InetAddr");
     }
 
-    if (!GWEN_Error_IsOk(GWEN_I18N_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_I18N_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module I18N");
+		"Could not deinitialze module I18N");
     }
 
-    if (!GWEN_Error_IsOk(GWEN_PathManager_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_PathManager_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module PathManager");
     }
@@ -378,24 +353,19 @@ GWEN_ERRORCODE GWEN_Fini() {
     GWEN_Error_ModuleFini();
 
     /* these two modules must be deinitialized at last */
-    if (!GWEN_Error_IsOk(GWEN_Logger_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                       GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Logger_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Logger");
+		"Could not deinitialze module Logger");
     }
 
-    if (!GWEN_Error_IsOk(GWEN_Memory_ModuleFini())) {
-      err=GWEN_Error_new(0,
-                         GWEN_ERROR_SEVERITY_ERR,
-                         0,
-                         GWEN_ERROR_COULD_NOT_UNREGISTER);
+    lerr=GWEN_Memory_ModuleFini();
+    if (lerr) {
+      err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Memory");
+		"Could not deinitialze module Memory");
     }
-
   }
 
   return err;
@@ -403,7 +373,7 @@ GWEN_ERRORCODE GWEN_Fini() {
 
 
 
-GWEN_ERRORCODE GWEN_Fini_Forced() {
+int GWEN_Fini_Forced() {
   if (gwen_is_initialized)
     gwen_is_initialized=1;
   return GWEN_Fini();
@@ -482,37 +452,6 @@ int GWEN__GetValueFromWinReg(const char *keyPath,
 #endif /* 0 */
 
 
-int GWEN_GetInstallPath(GWEN_BUFFER *pbuf) {
-  /* Only use the GWEN_PathManager */
-  const char *prefix;
-  GWEN_STRINGLIST *slist =
-    GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_INSTALLDIR);
-
-  assert(GWEN_StringList_Count(slist) > 0);
-  prefix = GWEN_StringList_FirstString(slist);
-
-  /* and copy the retrieved path into the return buffer */
-  GWEN_Directory_OsifyPath(prefix, pbuf, 1);
-  GWEN_StringList_free(slist);
-  return 0;
-}
-
-
-
-int GWEN_GetPluginPath(GWEN_BUFFER *pbuf) {
-  /* Only use the GWEN_PathManager */
-  const char *plugindir;
-  GWEN_STRINGLIST *slist =
-    GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_PLUGINDIR);
-
-  assert(GWEN_StringList_Count(slist) > 0);
-  plugindir = GWEN_StringList_FirstString(slist);
-
-  /* and copy the retrieved path into the return buffer */
-  GWEN_Directory_OsifyPath(plugindir, pbuf, 1);
-  GWEN_StringList_free(slist);
-  return 0;
-}
 
 /** Construct the gwenhywfar_plugindir directory path with runtime
     lookup of the initial $libdir. */

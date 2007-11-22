@@ -51,7 +51,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   const char *dupAcc;
   const char *dupName;
   GWEN_BUFFEREDIO *bio;
-  GWEN_ERRORCODE err;
+  int err;
   GWEN_XMLNODE *n;
   const char *id;
   const char *prefix;
@@ -458,32 +458,32 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   }
 
   err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
 
   err=GWEN_BufferedIO_WriteLine(bio, "#ifdef __cplusplus");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   err=GWEN_BufferedIO_WriteLine(bio, "} /* __cplusplus */");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   err=GWEN_BufferedIO_WriteLine(bio, "#endif");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
@@ -491,33 +491,33 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   /* write trailing endif */
   err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
 
   err=GWEN_BufferedIO_Write(bio, "#endif /* ");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   err=GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(hbuf));
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   err=GWEN_BufferedIO_WriteLine(bio, " */");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
 
   err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_BufferedIO_free(bio);
     GWEN_Buffer_free(hbuf);

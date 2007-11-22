@@ -33,8 +33,8 @@
 #include <gwenhywfar/pathmanager.h>
 
 
-GWEN_ERRORCODE GWEN_PathManager_ModuleInit();
-GWEN_ERRORCODE GWEN_PathManager_ModuleFini();
+int GWEN_PathManager_ModuleInit();
+int GWEN_PathManager_ModuleFini();
 
 
 

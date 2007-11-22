@@ -30,7 +30,9 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/xml.h>
-#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/io_buffered.h>
+#include <gwenhywfar/iomanager.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -89,10 +91,10 @@ int main(int argc, char **argv) {
   FREEPARAM *inFile;
   GWEN_XMLNODE *top;
   GWEN_XMLNODE *comment;
-  GWEN_BUFFEREDIO *bio;
+  GWEN_IO_LAYER *io;
+  GWEN_XML_CONTEXT *ctx;
   int fd;
-  GWEN_ERRORCODE err;
-  GWEN_TYPE_UINT32 flags;
+  uint32_t flags;
 
   args=Arguments_new();
   rv=checkArgs(args, argc, argv);
@@ -174,9 +176,6 @@ int main(int argc, char **argv) {
     fd=1;
   }
 
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetWriteBuffer(bio, 0, 1024);
-  flags=GWEN_XML_FLAGS_SIMPLE;
   if (args->compact) {
     flags=GWEN_XML_FLAGS_SIMPLE;
   }
@@ -185,16 +184,33 @@ int main(int argc, char **argv) {
   }
   flags|=GWEN_XML_FLAGS_HANDLE_HEADERS;
 
-  rv=GWEN_XMLNode_WriteToStream(top, bio, flags);
-  err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
-    fprintf(stderr, "Error closing output stream\n");
-    GWEN_BufferedIO_free(bio);
-    GWEN_XMLNode_free(top);
+  ctx=GWEN_XmlCtxStore_new(NULL, flags, 0, 10000);
+
+  io=GWEN_Io_LayerFile_new(-1, fd);
+  GWEN_Io_Manager_RegisterLayer(io);
+
+  rv=GWEN_XMLNode_WriteToStream(top, ctx, io);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000);
+    GWEN_Io_Layer_free(io);
+    GWEN_XmlCtx_free(ctx);
     return 5;
   }
-  GWEN_BufferedIO_free(bio);
 
+  /* close file */
+  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, GWEN_XmlCtx_GetGuiId(ctx), 30000);
+  if (rv<0) {
+    fprintf(stderr, "Error closing output stream (%d)\n", rv);
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, GWEN_XmlCtx_GetGuiId(ctx), 1000);
+    GWEN_Io_Layer_free(io);
+    GWEN_XmlCtx_free(ctx);
+    return 5;
+  }
+
+  GWEN_Io_Layer_free(io);
+  GWEN_XmlCtx_free(ctx);
 
   GWEN_XMLNode_free(top);
   Arguments_free(args);

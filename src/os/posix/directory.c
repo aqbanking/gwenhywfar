@@ -47,15 +47,15 @@ static char gwen_directory_posix__homedir[256];
 static int gwen_directory_posix__home_set=0;
 
 
-GWEN_DIRECTORYDATA *GWEN_Directory_new(){
-  GWEN_DIRECTORYDATA *d;
+GWEN_DIRECTORY *GWEN_Directory_new(){
+  GWEN_DIRECTORY *d;
 
-  GWEN_NEW_OBJECT(GWEN_DIRECTORYDATA, d);
+  GWEN_NEW_OBJECT(GWEN_DIRECTORY, d);
   return d;
 }
 
 
-void GWEN_Directory_free(GWEN_DIRECTORYDATA *d){
+void GWEN_Directory_free(GWEN_DIRECTORY *d){
   if (d) {
     if (d->handle)
       closedir(d->handle);
@@ -65,7 +65,7 @@ void GWEN_Directory_free(GWEN_DIRECTORYDATA *d){
 }
 
 
-int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n){
+int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
   assert(d);
 
   d->handle=opendir(n);
@@ -75,7 +75,7 @@ int GWEN_Directory_Open(GWEN_DIRECTORYDATA *d, const char *n){
 }
 
 
-int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d){
+int GWEN_Directory_Close(GWEN_DIRECTORY *d){
   int rv;
 
   assert(d);
@@ -85,7 +85,7 @@ int GWEN_Directory_Close(GWEN_DIRECTORYDATA *d){
 }
 
 
-int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
+int GWEN_Directory_Read(GWEN_DIRECTORY *d,
                         char *buffer,
                         unsigned int len){
   struct dirent *de;
@@ -108,7 +108,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORYDATA *d,
 }
 
 
-int GWEN_Directory_Rewind(GWEN_DIRECTORYDATA *d){
+int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
   assert(d);
   if (d->handle==0)
     return 1;

@@ -1,4 +1,4 @@
-SUBDIRS=dbio crypttoken storage
+SUBDIRS=dbio ct
 
 sources:
 	for d in $(SUBDIRS); do \

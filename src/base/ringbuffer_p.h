@@ -36,14 +36,14 @@
 
 struct GWEN_RINGBUFFER {
   char *ptr;
-  GWEN_TYPE_UINT32 bufferSize;
-  GWEN_TYPE_UINT32 readPos;
-  GWEN_TYPE_UINT32 writePos;
-  GWEN_TYPE_UINT32 bytesUsed;
-  GWEN_TYPE_UINT32 maxBytesUsed;
-  GWEN_TYPE_UINT32 emptyCounter;
-  GWEN_TYPE_UINT32 fullCounter;
-  GWEN_TYPE_UINT32 throughput;
+  uint32_t bufferSize;
+  uint32_t readPos;
+  uint32_t writePos;
+  uint32_t bytesUsed;
+  uint32_t maxBytesUsed;
+  uint32_t emptyCounter;
+  uint32_t fullCounter;
+  uint32_t throughput;
 };
 
 

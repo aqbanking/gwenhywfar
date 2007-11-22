@@ -143,11 +143,11 @@ GWENHYWFAR_API void GWEN_IpcRequest_SetModified(GWEN_IPC_REQUEST *st, int i);
 /**
 * Returns the property @ref GWEN_IPC_REQUEST_Id
 */
-GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_IpcRequest_GetId(const GWEN_IPC_REQUEST *el);
+GWENHYWFAR_API uint32_t GWEN_IpcRequest_GetId(const GWEN_IPC_REQUEST *el);
 /**
 * Set the property @ref GWEN_IPC_REQUEST_Id
 */
-GWENHYWFAR_API void GWEN_IpcRequest_SetId(GWEN_IPC_REQUEST *el, GWEN_TYPE_UINT32 d);
+GWENHYWFAR_API void GWEN_IpcRequest_SetId(GWEN_IPC_REQUEST *el, uint32_t d);
 
 /**
 * Returns the property @ref GWEN_IPC_REQUEST_Name
@@ -161,11 +161,11 @@ GWENHYWFAR_API void GWEN_IpcRequest_SetName(GWEN_IPC_REQUEST *el, const char *d)
 /**
 * Returns the property @ref GWEN_IPC_REQUEST_IpcId
 */
-GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_IpcRequest_GetIpcId(const GWEN_IPC_REQUEST *el);
+GWENHYWFAR_API uint32_t GWEN_IpcRequest_GetIpcId(const GWEN_IPC_REQUEST *el);
 /**
 * Set the property @ref GWEN_IPC_REQUEST_IpcId
 */
-GWENHYWFAR_API void GWEN_IpcRequest_SetIpcId(GWEN_IPC_REQUEST *el, GWEN_TYPE_UINT32 d);
+GWENHYWFAR_API void GWEN_IpcRequest_SetIpcId(GWEN_IPC_REQUEST *el, uint32_t d);
 
 /**
 * Returns the property @ref GWEN_IPC_REQUEST_Expires

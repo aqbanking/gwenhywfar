@@ -72,17 +72,6 @@ extern "C" {
 
 
   /**
-   * Initialize this module.
-   */
-  GWENHYWFAR_API GWEN_ERRORCODE GWEN_Process_ModuleInit();
-
-  /**
-   * De-Initialize this module.
-   */
-  GWENHYWFAR_API GWEN_ERRORCODE GWEN_Process_ModuleFini();
-
-
-  /**
    * Creates a process representation. This does not start a process, it
    * simply prepares some data for starting a process.
    */
@@ -101,28 +90,28 @@ extern "C" {
    * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
    */
   GWENHYWFAR_API
-    GWEN_TYPE_UINT32 GWEN_Process_GetFlags(const GWEN_PROCESS *pr);
+    uint32_t GWEN_Process_GetFlags(const GWEN_PROCESS *pr);
 
   /**
    * Sets the process flags to the given value
    * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
    */
   GWENHYWFAR_API
-    void GWEN_Process_SetFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f);
+    void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f);
 
   /**
    * Adds the given flag to the current process flags
    * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
    */
   GWENHYWFAR_API
-    void GWEN_Process_AddFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f);
+    void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f);
 
   /**
    * Removes the given flag from the current process flags
    * (see @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT and others)
    */
   GWENHYWFAR_API
-    void GWEN_Process_SubFlags(GWEN_PROCESS *pr, GWEN_TYPE_UINT32 f);
+    void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f);
 
   /**
    * Starts the given process.

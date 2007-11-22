@@ -1,10 +1,11 @@
-INCLUDES= -I$(top_srcdir)/gwenhywfar2 \
+INCLUDES= -I$(gwenhywfar_symlinkdir) \
+ -I$(top_srcdir)/src/ \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/net2 \
- -I$(top_srcdir)/src/parser @all_includes@
+ -I$(top_srcdir)/src/parser
 
 # Don't include src/os above because its process.h conflicts with the
 # system's <process.h>, at least for gcc3.2 on mingw32
@@ -23,6 +24,7 @@ noinst_HEADERS=\
  gwensignal_p.h \
  i18n_l.h \
  idlist_p.h \
+ idlist64_p.h \
  inherit_p.h \
  list_p.h \
  list1_p.h \
@@ -39,8 +41,6 @@ noinst_HEADERS=\
  ringbuffer_p.h \
  stringlist_p.h \
  stringlist2_p.h \
- waitcallback_l.h \
- waitcallback_p.h \
  idmap_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
@@ -52,6 +52,7 @@ iheader_HEADERS=\
  gwensignal.h \
  i18n.h \
  idlist.h \
+ idlist64.h \
  inherit.h \
  list.h \
  list1.h \
@@ -69,8 +70,8 @@ iheader_HEADERS=\
  ringbuffer.h \
  stringlist.h \
  stringlist2.h \
- waitcallback.h \
- idmap.h
+ idmap.h \
+ fastbuffer.h
 
 libbase_la_SOURCES=\
  args.c \
@@ -80,6 +81,7 @@ libbase_la_SOURCES=\
  gwensignal.c \
  i18n.c \
  idlist.c \
+ idlist64.c \
  inherit.c \
  list.c \
  list1.c \
@@ -92,8 +94,8 @@ libbase_la_SOURCES=\
  ringbuffer.c \
  stringlist.c \
  stringlist2.c \
- waitcallback.c \
- idmap.c
+ idmap.c \
+ fastbuffer.c
 
 
 sources:

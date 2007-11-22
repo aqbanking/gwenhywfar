@@ -40,6 +40,13 @@
 #include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/io_memory.h>
+#include <gwenhywfar/fslock.h>
+#include <gwenhywfar/pathmanager.h>
+
 
 /* TODO: #include <gwenhywfar/plugin.h> */
 
@@ -48,6 +55,18 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+
+#include <sys/types.h>
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
 
 #ifdef OS_WIN32
 # define DIRSEP "\\"
@@ -64,39 +83,46 @@ GWEN_INHERIT_FUNCTIONS(GWEN_DBIO)
 GWEN_INHERIT(GWEN_PLUGIN, GWEN_DBIO_PLUGIN)
 
 
-GWEN_ERRORCODE GWEN_DBIO_ModuleInit(){
+int GWEN_DBIO_ModuleInit(){
   GWEN_PLUGIN_MANAGER *pm;
-  GWEN_BUFFER *pbuf;
+  int err;
+  GWEN_STRINGLIST *sl;
 
-  pm=GWEN_PluginManager_new("dbio");
-  if (GWEN_PluginManager_Register(pm)) {
+  pm=GWEN_PluginManager_new("dbio", GWEN_PM_LIBNAME);
+  err=GWEN_PluginManager_Register(pm);
+  if (err) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not register DBIO plugin manager");
-    return GWEN_Error_new(0,
-                          GWEN_ERROR_SEVERITY_ERR,
-                          GWEN_ERROR_TYPE_ERROR,
-                          GWEN_ERROR_UNSPECIFIED);
+    return err;
   }
-  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  if (GWEN_GetPluginPath(pbuf)) {
+  /* create plugin paths */
+  sl=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_PLUGINDIR);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+    GWEN_BUFFER *pbuf;
+
+    pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      GWEN_Buffer_AppendString(pbuf, GWEN_StringListEntry_Data(se));
+      GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_DBIO_FOLDER);
+      DBG_INFO(GWEN_LOGDOMAIN, "Adding plugin path [%s]",
+	       GWEN_Buffer_GetStart(pbuf));
+      GWEN_PluginManager_AddPath(pm, GWEN_PM_LIBNAME,
+				 GWEN_Buffer_GetStart(pbuf));
+      GWEN_Buffer_Reset(pbuf);
+      se=GWEN_StringListEntry_Next(se);
+    }
     GWEN_Buffer_free(pbuf);
-    GWEN_PluginManager_free(pm);
-    return GWEN_Error_new(0,
-			  GWEN_ERROR_SEVERITY_ERR,
-			  GWEN_ERROR_TYPE_ERROR,
-			  GWEN_ERROR_UNSPECIFIED);
   }
-
-  GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_DBIO_FOLDER);
-  GWEN_PluginManager_AddPath(pm, GWEN_Buffer_GetStart(pbuf));
-  GWEN_Buffer_free(pbuf);
 
   return 0;
 }
 
 
 
-GWEN_ERRORCODE GWEN_DBIO_ModuleFini(){
+int GWEN_DBIO_ModuleFini(){
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager("dbio");
@@ -107,6 +133,7 @@ GWEN_ERRORCODE GWEN_DBIO_ModuleFini(){
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN,
 		"Could not unregister DBIO plugin manager (%d)", rv);
+      return rv;
     }
     else
       GWEN_PluginManager_free(pm);
@@ -217,16 +244,18 @@ void GWEN_DBIO_Attach(GWEN_DBIO *dbio){
 
 
 int GWEN_DBIO_Import(GWEN_DBIO *dbio,
-                     GWEN_BUFFEREDIO *bio,
-                     GWEN_TYPE_UINT32 flags,
-                     GWEN_DB_NODE *db,
-                     GWEN_DB_NODE *params) {
+		     GWEN_IO_LAYER *io,
+		     GWEN_DB_NODE *db,
+		     GWEN_DB_NODE *params,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs) {
   assert(dbio);
-  assert(bio);
+  assert(io);
   assert(db);
 
   if (dbio->importFn)
-    return dbio->importFn(dbio, bio, flags, db, params);
+    return dbio->importFn(dbio, io, db, params, flags, guiid, msecs);
   else {
     DBG_INFO(GWEN_LOGDOMAIN, "No import function set");
     return -1;
@@ -236,16 +265,18 @@ int GWEN_DBIO_Import(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_Export(GWEN_DBIO *dbio,
-                     GWEN_BUFFEREDIO *bio,
-                     GWEN_TYPE_UINT32 flags,
-                     GWEN_DB_NODE *db,
-                     GWEN_DB_NODE *params) {
+		     GWEN_IO_LAYER *io,
+		     GWEN_DB_NODE *db,
+		     GWEN_DB_NODE *params,
+		     uint32_t flags,
+		     uint32_t guiid,
+		     int msecs) {
   assert(dbio);
-  assert(bio);
+  assert(io);
   assert(db);
 
   if (dbio->exportFn)
-    return dbio->exportFn(dbio, bio, flags, db, params);
+    return dbio->exportFn(dbio, io, db, params, flags, guiid, msecs);
   else {
     DBG_INFO(GWEN_LOGDOMAIN, "No export function set");
     return -1;
@@ -255,12 +286,14 @@ int GWEN_DBIO_Export(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio,
-                                               const char *fname) {
+					       const char *fname,
+					       uint32_t guiid,
+					       int msecs) {
   assert(dbio);
   assert(fname);
 
   if (dbio->checkFileFn)
-    return dbio->checkFileFn(dbio, fname);
+    return dbio->checkFileFn(dbio, fname, guiid, msecs);
   else {
     DBG_INFO(GWEN_LOGDOMAIN, "No checkFile function set");
     return GWEN_DBIO_CheckFileResultUnknown;
@@ -330,6 +363,264 @@ GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname){
 
 
 
+int GWEN_DBIO_ExportToFile(GWEN_DBIO *dbio,
+			   const char *fname,
+			   GWEN_DB_NODE *db,
+			   GWEN_DB_NODE *params,
+			   uint32_t dbflags,
+			   uint32_t guiid,
+			   int msecs) {
+  GWEN_IO_LAYER *io;
+  int fd;
+  int rv;
+  GWEN_FSLOCK *lck=0;
+
+  /* if locking requested */
+  if (dbflags & GWEN_DB_FLAGS_LOCKFILE) {
+    GWEN_FSLOCK_RESULT res;
+
+    lck=GWEN_FSLock_new(fname, GWEN_FSLock_TypeFile);
+    assert(lck);
+    res=GWEN_FSLock_Lock(lck, GWEN_DB_DEFAULT_LOCK_TIMEOUT, 0);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not apply lock to file \"%s\" (%d)",
+                fname, res);
+      GWEN_FSLock_free(lck);
+      return GWEN_ERROR_IO;
+    }
+  }
+
+  /* open file */
+  if (dbflags & GWEN_DB_FLAGS_APPEND_FILE)
+    fd=open(fname, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
+  else
+    fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  if (fd==-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
+              fname,
+              strerror(errno));
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return GWEN_ERROR_IO;
+  }
+
+  /* create io layer for this file */
+  io=GWEN_Io_LayerFile_new(-1, fd);
+  assert(io);
+
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return rv;
+  }
+
+  /* write to file */
+  rv=GWEN_DBIO_Export(dbio, io, db, params, dbflags, guiid, msecs);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000);
+    GWEN_Io_Layer_free(io);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return rv;
+  }
+
+  /* flush and close io layer */
+  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, guiid, 30000);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 1000);
+    GWEN_Io_Layer_free(io);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return rv;
+  }
+
+  GWEN_Io_Layer_free(io);
+
+  /* remove lock, if any */
+  if (lck) {
+    GWEN_FSLOCK_RESULT res;
+
+    res=GWEN_FSLock_Unlock(lck);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_WARN(GWEN_LOGDOMAIN,
+               "Could not remove lock on file \"%s\" (%d)",
+               fname, res);
+    }
+    GWEN_FSLock_free(lck);
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_DBIO_ExportToBuffer(GWEN_DBIO *dbio,
+			     GWEN_BUFFER *buf,
+			     GWEN_DB_NODE *db,
+			     GWEN_DB_NODE *params,
+			     uint32_t flags,
+			     uint32_t guiid,
+			     int msecs) {
+  GWEN_IO_LAYER *io;
+  int rv;
+
+  /* create io layer for this file */
+  io=GWEN_Io_LayerMemory_new(buf);
+  assert(io);
+
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
+    return rv;
+  }
+
+  /* write to buffer */
+  rv=GWEN_DBIO_Export(dbio, io, db, params, flags, guiid, msecs);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000);
+    GWEN_Io_Layer_free(io);
+    return rv;
+  }
+
+  /* flush and close io layer */
+  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, guiid, 30000);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 1000);
+    GWEN_Io_Layer_free(io);
+    return rv;
+  }
+
+  GWEN_Io_Layer_free(io);
+
+  return 0;
+}
+
+
+
+int GWEN_DBIO_ImportFromFile(GWEN_DBIO *dbio,
+			     const char *fname,
+			     GWEN_DB_NODE *db,
+			     GWEN_DB_NODE *params,
+			     uint32_t dbflags,
+			     uint32_t guiid,
+			     int msecs) {
+  GWEN_IO_LAYER *io;
+  int fd;
+  int rv;
+  GWEN_FSLOCK *lck=0;
+
+  /* if locking requested */
+  if (dbflags & GWEN_DB_FLAGS_LOCKFILE) {
+    GWEN_FSLOCK_RESULT res;
+
+    lck=GWEN_FSLock_new(fname, GWEN_FSLock_TypeFile);
+    assert(lck);
+    res=GWEN_FSLock_Lock(lck, GWEN_DB_DEFAULT_LOCK_TIMEOUT, 0);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not apply lock to file \"%s\" (%d)",
+                fname, res);
+      GWEN_FSLock_free(lck);
+      return GWEN_ERROR_IO;
+    }
+  }
+
+  /* open file */
+  if (dbflags & GWEN_DB_FLAGS_APPEND_FILE)
+    fd=open(fname, O_RDWR, S_IRUSR | S_IWUSR);
+  else
+    fd=open(fname, O_RDWR, S_IRUSR | S_IWUSR);
+  if (fd==-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
+              fname,
+              strerror(errno));
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return GWEN_ERROR_IO;
+  }
+
+  /* create io layer for this file */
+  io=GWEN_Io_LayerFile_new(fd, -1);
+  assert(io);
+
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return rv;
+  }
+
+  /* read from file */
+  rv=GWEN_DBIO_Import(dbio, io, db, params, dbflags, guiid, msecs);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000);
+    GWEN_Io_Layer_free(io);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return rv;
+  }
+
+  /* flush and close io layer */
+  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL,
+					 GWEN_IO_REQUEST_FLAGS_FORCE,
+					 guiid, 30000);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 1000);
+    GWEN_Io_Layer_free(io);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return rv;
+  }
+
+  GWEN_Io_Layer_free(io);
+
+  /* remove lock, if any */
+  if (lck) {
+    GWEN_FSLOCK_RESULT res;
+
+    res=GWEN_FSLock_Unlock(lck);
+    if (res!=GWEN_FSLock_ResultOk) {
+      DBG_WARN(GWEN_LOGDOMAIN,
+               "Could not remove lock on file \"%s\" (%d)",
+               fname, res);
+    }
+    GWEN_FSLock_free(lck);
+  }
+
+  return 0;
+}
 
 
 

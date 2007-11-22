@@ -63,7 +63,7 @@ char *GWEN_Text_GetWord(const char *src,
                         const char *delims,
                         char *buffer,
                         unsigned int maxsize,
-                        GWEN_TYPE_UINT32 flags,
+                        uint32_t flags,
                         const char **next){
   unsigned int size;
   int lastWasBlank;
@@ -187,7 +187,7 @@ char *GWEN_Text_GetWord(const char *src,
 int GWEN_Text_GetWordToBuffer(const char *src,
                               const char *delims,
                               GWEN_BUFFER *buf,
-                              GWEN_TYPE_UINT32 flags,
+                              uint32_t flags,
                               const char **next){
   int lastWasBlank;
   int lastBlankPos;
@@ -1751,8 +1751,8 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len) {
 
 int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
   char *pdst;
-  GWEN_TYPE_UINT32 roomLeft;
-  GWEN_TYPE_UINT32 bytesAdded;
+  uint32_t roomLeft;
+  uint32_t bytesAdded;
 
 #define GWEN_TEXT__APPENDCHAR(chr)                     \
   if (roomLeft<2) {                                   \

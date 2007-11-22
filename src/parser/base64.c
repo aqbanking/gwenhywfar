@@ -47,7 +47,7 @@ int GWEN_Base64_Encode(const unsigned char *src, unsigned int size,
   unsigned int by3;
   unsigned int i;
   unsigned int l;
-  GWEN_TYPE_UINT32 triplet;
+  uint32_t triplet;
   unsigned char c1, c2, c3, c4;
 
   if (maxLineLength) {
@@ -130,7 +130,7 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
                        GWEN_BUFFER *dst) {
   unsigned int i;
   const char *p = "0";
-  GWEN_TYPE_UINT32 v;
+  uint32_t v;
   int lastWasEq;
   int sizeGiven;
 

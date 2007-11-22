@@ -92,8 +92,7 @@ int GWEN_List1_AddList(GWEN_LIST1 *dest, GWEN_LIST1 *l) {
   assert(dest);
   assert(l);
 
-  el=l->firstElement;
-  while(el) {
+  while((el=l->firstElement)) {
     GWEN_List1_Del(el);
     GWEN_List1_Add(dest, el);
   }

@@ -32,11 +32,8 @@
 #include <gwenhywfar/bufferedio.h>
 
 
-GWEN_ERRORCODE GWEN_BufferedIO_ModuleInit();
-GWEN_ERRORCODE GWEN_BufferedIO_ModuleFini();
 
-
-#endif /* GWENHYWFAR_BUFFEREDIO_P_H */
+#endif /* GWENHYWFAR_BUFFEREDIO_L_H */
 
 
 

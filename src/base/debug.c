@@ -46,14 +46,14 @@ static GWEN_MEMORY_DEBUG_OBJECT *gwen_debug__memobjects=0;
 
 
 
-GWEN_TYPE_UINT32 GWEN_Debug_PrintDec(char *buffer,
-                                     GWEN_TYPE_UINT32 size,
-                                     GWEN_TYPE_UINT32 num,
+uint32_t GWEN_Debug_PrintDec(char *buffer,
+                                     uint32_t size,
+                                     uint32_t num,
                                      int leadingZero,
-                                     GWEN_TYPE_UINT32 length) {
-  GWEN_TYPE_UINT32 i;
-  GWEN_TYPE_UINT32 j;
-  GWEN_TYPE_UINT32 k;
+                                     uint32_t length) {
+  uint32_t i;
+  uint32_t j;
+  uint32_t k;
   char numbuf[16];
   int numOr;
 
@@ -109,15 +109,15 @@ GWEN_TYPE_UINT32 GWEN_Debug_PrintDec(char *buffer,
 
 
 
-GWEN_TYPE_UINT32 GWEN_Debug_PrintHex(char *buffer,
-                                 GWEN_TYPE_UINT32 size,
-                                 GWEN_TYPE_UINT32 num,
+uint32_t GWEN_Debug_PrintHex(char *buffer,
+                                 uint32_t size,
+                                 uint32_t num,
                                  int leadingZero,
                                  int up,
-                                 GWEN_TYPE_UINT32 length) {
-  GWEN_TYPE_UINT32 i;
-  GWEN_TYPE_UINT32 j;
-  GWEN_TYPE_UINT32 k;
+                                 uint32_t length) {
+  uint32_t i;
+  uint32_t j;
+  uint32_t k;
   char numbuf[16];
   int numOr;
 
@@ -181,11 +181,11 @@ GWEN_TYPE_UINT32 GWEN_Debug_PrintHex(char *buffer,
 
 
 
-GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,
-                                 GWEN_TYPE_UINT32 size,
+uint32_t GWEN_Debug_Snprintf(char *buffer,
+                                 uint32_t size,
                                  const char *fmt, ...) {
   va_list arguments;
-  GWEN_TYPE_UINT32 i;
+  uint32_t i;
 
   i=0;
   va_start(arguments, fmt);
@@ -199,7 +199,7 @@ GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,
         i++;
       }
       else {
-        GWEN_TYPE_UINT32 length;
+        uint32_t length;
         int leadingZero;
 
         leadingZero=0;
@@ -528,7 +528,7 @@ void GWEN_MemoryDebug_Decrement(const char *name,
 
 
 void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
-                                  GWEN_TYPE_UINT32 mode){
+                                  uint32_t mode){
 
   DBG_ERROR(0, "Object \"%s\" (count=%ld)",
             o->name, o->count);
@@ -565,7 +565,7 @@ void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
 
 
 void GWEN_MemoryDebug_DumpObject(const char *name,
-                                 GWEN_TYPE_UINT32 mode){
+                                 uint32_t mode){
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   assert(name);
@@ -594,7 +594,7 @@ long int GWEN_MemoryDebug_GetObjectCount(const char *name){
 
 
 
-void GWEN_MemoryDebug_Dump(GWEN_TYPE_UINT32 mode){
+void GWEN_MemoryDebug_Dump(uint32_t mode){
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   DBG_ERROR(0, "Gwenhywfar Memory Debugger Statistics:");

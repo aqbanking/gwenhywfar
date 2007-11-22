@@ -1,27 +1,320 @@
 
+2007/11/19: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- GWEN_Gui_CGui is now less verbous in NonInteractive mode
+
+
+2007-11-18  Christian Stimming  <stimming@tuhh.de>
+
+	* m4/lib-prefix.m4 et al: Add additional aclocal macros that are
+	needed by the iconv.m4 macro.
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.15rc6 (2007/11/17)
+===========================================================================
+
+
+2007/11/17: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- simplified default settings for local installation mode (and WIN32)
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.14rc5 (2007/11/16)
+===========================================================================
+
+
+2007/11/16: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- io_tls: fixed some problems in TLS server code (used by Libchipcard in
+  private and secure IPC modes)
+
+
+2007/11/15: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- io_tls: added field dhParamFile which is used to specify a PEM encoded
+  file containing DH params (used for TLS servers)
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.13rc4 (2007/11/14)
+===========================================================================
+
+
+2007/11/14: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- configure.ac: added --with-cfg-searchdir and --with-locale-searchdir
+
+
+2007/11/13: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- translated messages from gui classes
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.12rc3 (2007/11/13)
+===========================================================================
+
+
+2007/11/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in target "make srcdoc" as pointed out by Micha Lenk
+- GWEN_Io_Layer_ReadPacketToBuffer(): now stores any data received so far
+  even if there was an error (fixes problems with some HBCI servers)
+- GWEN_Io_LayerBuffered_AddRequest() no longer returns an error if a
+  read request is to be added and the last result of enqueuing an outbound
+  read request was an error. We still enqueue the new request to make all
+  data available which have arrived prior to the error (that data would be
+  already in internal buffers and still be available).
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.11rc2 (2007/11/11)
+===========================================================================
+
+
+2007/11/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- GWEN_Time_fromString() is now more tolerant when handling multiple/single
+  digit elements (e.g. DD/MM/YYYY now also matches "1/12/2006" in addition to
+  "01/12/2006")
+- fixed a bug in mklistdoc (was not using the correct path to lookup
+  templates)
+
+
+2007/11/10: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- export GWEN_Socket_GetSocketInt() and make it part of the API (with
+  a strong recommendation to only use it if it can't be avoided because
+  it is not portable to every system)
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.10rc1 (2007/11/10)
+===========================================================================
+
+
 2007/11/08: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
-- backported fix for GWEN_InetSock_Select()
+- fixed a bug in GWEN_InetSocket_Select()
 
 
 ===========================================================================
-Released gwenhywfar-2.6.2 (2007-10-15, r1298)
+MARK: released gwenhywfar-2.9.9beta (2007/11/07)
 ===========================================================================
 
-2007-10-12  Christian Stimming  <stimming@tuhh.de>
 
-	* src/os/windows/inetsocket.c: Introduce an additional waiting
-	time to avoid Windows connection errors.
+2007/11/07: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- OpenHBCI keyfile plugin now reads and writes the key owner again
+  (using field peerId from CryptToken context)
+- fixed tool mklistdoc
 
-2007-09-06  Christian Stimming  <stimming@tuhh.de>
 
-	* src/net2/nl_socket.c: Fix socket race condition on NetBSD and
-	potentially others. Patch by G. Paul Ziemba.
+2007/11/05: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added module for 64 bit id lists
+
+
+2007/11/04: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- GWEN_BUFFER: increased maximum number of bookmarks to 32
 
 
 ===========================================================================
-Released gwenhywfar-2.6.1 (2007-07-08, r1265)
+MARK: released gwenhywfar-2.9.8beta (2007/11/03)
 ===========================================================================
+
+
+2007/11/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- dbio plugin olddb now has support for values of up to 16KB length. 
+  No value in old OpenHBCI files should be longer than that.
+- gct-tool: added command "setsignseq"
+
+
+2007/11/01: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added functions GWEN_Buffer_RemoveRoom() and GWEN_Buffer_ReplaceBytes()
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.7beta (2007/10/31)
+===========================================================================
+
+
+2007/10/30: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed OpenHBCI keyfile code (now sets the key info objects when generating
+  keys)
+- added function GWEN_DB_WriteToFastBuffer()
+- fixed a bug in GWEN_List1_AddList()
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.6beta (2007/10/30)
+===========================================================================
+
+
+2007/10/30: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- gct-tool: added command "genkey" which generates a key
+- cryptkeyrsa.c: use the old libgcrypt API to generate RSA keys because
+  the new API does not create the correct exponent
+
+
+2007/10/29: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- applied a patch by Micha Lenk (use "localedir" as defined by autoconf)
+- fixed a bug in GWEN_I18N_SetLocale()
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.5beta (2007/10/28)
+===========================================================================
+
+
+2007/10/28: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- check for OpenSSL again. However, this is only used by the gct-tool to
+  convert very old files to the new version (AqBanking can't link against
+  OpenSSL anymore, so in order to have the only function from OpenSSL we
+  depend on while converting an ancient key file we have to link the
+  gct-tool against it and provide that needed function).
+- added CryptToken mode "update". If this bit is set the CryptToken is 
+  allowed to update a key file
+- added command to gct-tool: "update". This command uses the feature 
+  described above.
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.4beta (2007/10/27)
+===========================================================================
+
+2007/10/27: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- improved I18N support
+
+
+2007/10/26: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- introduced local installation mode:
+  This can be used on Linux (on Windows this mode is always used since we
+  need relocatable files there).
+  Normally on Linux this project is installed to a well defined prefix and
+  in respect to the FHS.
+  However, it might sometimes be interesting to be able to have a relocatable
+  version of Gwenhywfar, too. That is Gwen looks for its data files and
+  plugins in folders below the location of the called executable (using
+  binreloc).
+- added default ca-bundle.crt which is used for TLS connections when no other 
+  trusted certs file is selected
+- removed some pathmanager paths which weren't used anyway
+- added pathmanager path for gwen's data
+- io_tls.c now checks host name if one is set
+- removed modules net2 (is no longer used anyway) and storage (including plugins,
+  I will write a new one for my other project specifically)
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.3beta (2007/10/24)
+===========================================================================
+
+
+2007/10/24: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- function GWEN_PathManager_AddRelPath() now has an additional argument
+  which specifies to what the path to be added is relative
+
+
+2007/10/23: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added function GWEN_PathManager_AddRelPath() to add a path
+  relative to the current working directory
+- GWEN_PathManager_AddPath() now translates the given path so that WIN32
+  can handle it e.g. when loading plugins
+- on WIN32 platforms the plugin folder is also searched for in the current 
+  working directory (e.g. "%PWD%\lib\gwenhywfar\plugins....")
+- gwen now cross-compiles for WIN32 using mingw32 on Debian. The resulting
+  binaries work on Windows XP :-) This makes it very much easier to compile
+  a win32 version of gwen because mingw32 is sometimes broken on windows but
+  works flawlessly on Debian... 
+  Compiling is also much faster on Debian than on Windows.
+
+
+2007/10/22: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added a missing #ifdef __cplusplus
+
+
+2007/10/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- removed old OpenSSL-based crypto stuff
+
+
+2007/09/22: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added GWEN_Gui_PasswordStatus_Remove (used to clear passwords)
+- prepared more headers for use with C++
+
+
+2007/09/21: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- many fixes to new crypt code etc
+
+
+2007/09/18: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added some fields to the keyinfo structure which are needed by AqHBCI
+- gct-tool: added command "showkey" to show available key information
+
+
+2007/09/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- adapted tls code to be able to work with gnutls < 1.6 (many distributions
+  seem still to be using 1.4.x)
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.2beta (2007/09/11)
+===========================================================================
+
+
+2007/09/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed RSA code (now the new OpenHBCI crypt token works!)
+
+
+2007/09/07: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- more fixes
+- added function GWEN_Padd_UnapplyPaddAlgo()
+- temporarily added a small tool to test the new CryptToken framework
+  and to compare the results of cryptographic functions of both CryptToken
+  frameworks (old and new)
+- GWEN_GetPluginPath() is now deprecated, is is now recommended to use
+  the path manager path GWEN_PM_PLUGINDIR instead
+- adapted dbio and storage code to no longer use GWEN_GetPluginPath()
+
+
+2007/09/05: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- numerous fixes
+- added convenience functions:
+  - GWEN_DBIO_ImportFromFile()
+  - GWEN_Io_Layer_ReadPacket()
+  - GWEN_Io_Layer_ReadPacketToBuffer()
+- crypt token plugin framework:
+  - now add plugin specific path from every generic plugin path
+
+
+2007/08/10: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added convenience functions:
+  - GWEN_DBIO_ExportToFile()
+  - GWEN_DBIO_ExportToBuffer()
+
 
 2007-07-08  Christian Stimming  <stimming@tuhh.de>
 
@@ -31,12 +324,37 @@ Released gwenhywfar-2.6.1 (2007-07-08, r1265)
 	per-user configuration settings. See also
 	http://bugzilla.gnome.org/show_bug.cgi?id=454108.
 
-	* src/base/plugindescr.c: As per the reminder here, enabled the
-	_free() function in _freeAll() because gnucash doesn't depend on
-	it anymore for quite some time by now.
-
 	* src/base/list2.h: Add sanity check in ForEach so that calling
 	this with a NULL list doesn't crash.
+
+
+2007/06/21: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed fastbuffer
+- applied a patch by Christian to make gwen compile correctly on 64 bit 
+  systems without warnings
+
+
+2007/06/20: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- improved and fixed GWEN_FAST_BUFFER, adapted GWEN_DB and GWEN_XML modules
+  to make use of it
+- added some convenience functions for reading/writing GWEN_DB and
+  GWEN_XML to ease the transition from GWEN_BUFFEREDIO to GWEN_IO_LAYER
+- fixed GWEN_XML, split-off xml io to xmlrw.c
+  Now xmlmerge works again :-)
+
+
+2007/06/19: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- improved GWEN_INHERIT_FINI (use safer variable names inside the macro)
+- fixed GWEN_Buffer_AdjustUsedBytes(): Was not adding trailing \0 when
+  it should
+- decreased verbosity of some modules
+- added function GWEN_DB_WriteToFd()
+- split-off read/write functions of GWEN_DB (->dbrw.c)
+- adapted ipc module now works (as proven with libchipcard4)
+
 
 2007-06-17  Andreas Koehler  <andi5.py@gmx.net>
 
@@ -53,14 +371,246 @@ Released gwenhywfar-2.6.1 (2007-07-08, r1265)
 	* configure.ac: Use AC_CANONICAL_BUILD and _HOST, but not _TARGET
 
 
-===========================================================================
-MARK: released gwenhywfar-2.6.0 (2007/06/09, r1225)
+2007/06/14: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added io layer io_packets which reads and writes complete packets
+- list1.h: added function *_List_HasElement() which checks whether a given
+  element is member of a given list
+- io_*: modifed behaviour of function AddRequest: Now the request's finish
+  handler is not called if the result of the AddRequest function is
+  GWEN_ERROR_TRY_AGAIN. This allows for adding the same request at at
+  later time
+- moved url*.{c,h,xml} from src/net2 to src/parser
+- added check for io_packets (now passes)
+- adapted GWEN_IPC code to use IO layer instead of the deprecated NetLayer
+- changed argument list for GWEN_IpcManager_SendRequest(): Now a meaningfull
+  error code is returned (so the caller can determine not only *that* the
+  function failed but also *why*)
+
+
+2007/06/13: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- implemented an HTTP io layer
+- added a check for new HTTP io layer
+- fixed io layer for sockets (reconnect now works)
+- added a check for new HTTP io layer over TLS
+- removed DBIO plugin rfc822
+- moved GWEN_DBIO from GWEN_BUFFEREDIO based to io layer based
+  approach
+- adapted GWEN_DBIO plugins to the changes in GWEN_DBIO
+- adapted tool "typemaker" to latest changes
+- added argument "guiid" to some GUI functions. This allows GUI 
+  implementations to keep track of e.g. parent widgets etc by
+  using this guiid. It is up to the GUI implementation to
+  interprete this guiid (or to just ignore it like the console
+  GUI implementation does)
+
+
+2007/06/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- xml:
+  - removed read functions which were based on GWEN_BUFFEREDIO
+  - replaced them with functions which use IO layers. These functions have
+    been moved from xml2.c to xml.c and they now internally use a
+    GWEN_XML_CONTEXT. Such a context contains callbacks for all major actions
+    when reading XML files (e.g. when an element begins and ends, when data or
+    comments have been read, attributes etc).
+    The replacement read functions mentioned above create such a context
+    themselves for the programmers convenience. This standard context just
+    stores the elements read into a GWEN_XMLNODE as the previous read
+    functions did. However, the programmer is now free to do whatever he
+    likes with received elements etc (e.g. use them not to store them into
+    and XML node but to create structures/objects from the data)
+  - IMPORTANT: removed functionality of including XML files! The "<include>"
+    element no longer serves as an include command! However, this can
+    still be implemented by providing your own GWEN_XML_CONTEXT which has
+    a different implementation for the StartTag/EndTag callbacks.
+
+
+2007/06/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- implemented new file read function for GWEN_DB (uses IO layer)
+- implemented new file read function for GWEN_XML (uses IO layer)
+
+
+2007/06/09: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- changed behaviour of GWEN_INHERIT_FINI: When this function is called all
+  type extension data is free'd by calling the *_freeData() callback function.
+  At this point (at least until after that function returns) the type extension
+  data *must* remain accessible via GWEN_INHERIT_GETDATA because the callback
+  function might want to perform some cleanup actions.
+  Before this change GWEN_INHERIT_FINI just called 
+  GWEN_InheritData_List_free(), but that function works by first removing 
+  elements from the list and then deleting them. This means at the point where
+  the GWEN_InheritData_free() function is called (which in turn calls the 
+  _freeData callback) that particular object is no longer in the list which
+  makes it inaccessible via GWEN_INHERIT_GETDATA.
+  So now GWEN_INHERIT_FINI clears the list by hand which allows _freeData()
+  callbacks to still find type extension data via GWEN_INHERIT_GETDATA
+- started working on io_tls (IO layer which provides a TLS layer over a given
+  base layer). I can at least use it now to request a document from an HTTPS 
+  server
+- moved ssl_cert_descr from crypt/ to iolayer/ since it will be used there and
+  the crypt/ folder will soon be removed
+- added function GWEN_Gui_CheckCert(): This is used by io_tls to ask the user
+  whether he wants to accept the certificate. The default implementation in
+  cgui.c shows the cert on the console and asks whether the user wants to
+  accept the certificate
+- io_tls now reads the peer's certificates and performs some checks. It ist
+  still up the application/user to decide whether the received cert is
+  accepted
+- added preliminary check for io_tls
+
+
+2007/06/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added io layer: io_socket. This is an io layer which uses sockets to 
+  transfer data
+- improved posix/inetsocket.c: Some of the error checking was still based on
+  the long deprecated GWEN_ERRORCODE behaviour, so in some cases the system's
+  error code wasn't translated to GWEN's error codes. This might be the
+  reason why on some systems connecting to some servers didn't work
+- added check for io_socket (reads http://devel.aqbanking.de/index.html)
+- started working on io_codec (this is a generic io layer which takes input
+  from requests, encodes/decodes it and writes the result to a base layer.
+  This will be used for the new GNU TLS based SSL io layer.
+
+
+2007/06/07: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- io_buffered:
+  - added flag GWEN_IO_REQUEST_BUFFERED_FLAGS_UNTILEMPTYLINE (same meaning
+    as the flag GWEN_BUFFEREDIO_FLAGS_UNTIL_EMPTY_LINE); report EOF upon
+    encounter of an empty line
+
+
+2007/06/06: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- completed io_file
+- added check for io_file
+- export io layer functions
+- added io_buffered (will soon replace GWEN_BUFFEREDIO)
+- added checks for io_file and io_buffer
+- added io_memory (uses a GWEN_BUFFER to read/write data)
+
+
+2007/06/05: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added function GWEN_Gui_WaitForSockets()
+  Most GUIs allow to add sockets to their internal socket list, so a
+  GWEN_GUI implementation can use that feature. This has the benefit
+  that while GWEN is waiting for sockets the GUI is updated more
+  fluidly.
+- added new io layer (much simpler than its predecessor GWEN_NETLAYER)
+  This module will replace some of the now deprecated modules:
+  - GWEN_NETLAYER
+  - GWEN_BUFFEREDIO
+  This layer is request based which makes it much easier to maintain since
+  those requests can be easily enqueued. It is now much easier to determine
+  whether an io layer has something to send or receive (just check whether
+  the io layer has enqueued requests). This also reduces the number of
+  virtual functions an io layer has to implement.
+- added first implementation of GWEN_IO_LAYER: GWEN_Io_LayerFile_new() 
+  creates an io layer which reads/write to/from files
+
+
+2007/06/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added functions:
+  - GWEN_Crypt_KeyRsa_GetModulus()
+  - GWEN_Crypt_KeyRsa_GetExponent()
+  - GWEN_Crypt_KeyRsa_fromModExp()
+
+
+2007/06/01: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- new CryptToken plugin compiles (functionality not yet tested)
+- implemented CryptToken plugin stuff for new CryptToken
+- started working on new gct-tool (which will later replace the
+  current one)
+
+
+2007/05/28: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- started working on replacement for CryptToken plugin "OHBCI"
+- moved module tag16 from old "ohbci" folder to src/parser (it will be
+  used for other code as well)
+- temporarily disabled new plugin (will only be compiled when running "make"
+  from within the folder)
+- fixed old CryptToken plugin (now compiles again)
+
+
+2007/05/21: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- implemented some more CryptToken functions
+- base class for file-based CryptToken finnished
+
+
+2007/05/20: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- implemented most virtual functions of file-based crypt token
+
+
+2007/05/19: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- started working on new, much simpler CryptToken API
+- added GWEN_Gui_LogHook() which is called at the beginning of
+  GWEN_Logger_Log() to give tha application an opportunity to catch all
+  logs
+- GWEN_FSLock_Lock() now takes an additional argument for a GUI id
+  (as assigned by GWEN_GUI). This provides support for gui threads of
+  actions (so the application can group widgets appropriately)
+- started implementing  file based CryptToken (like the old 
+  GWEN_CryptTokenFile module, but now based on the new crypt token
+  module)
+
+
+2007/05/18: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- finished implementing RSA key (works now)
+- implemented symmetric keys (DES3K, BlowFish)
+- no longer store padd/crypt/hash algos with the key (the key has nothing
+  to do with those anyway)
+
+
+2007/05/16: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added base module for hash algos
+- moved padding code from crypt to crypt3 (is usefull here as well)
+- started implementing RSA key (not finished yet, but I call it a night)
+
+
+2007/05/14: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added new implementation for basic crypt key stuff
+
 
 ===========================================================================
+MARK: released gwenhywfar-2.9.1beta (2007/05/14)
+===========================================================================
+
+
+2007/04/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed bug in CGUI (was not storing pointer to GWEN_GUI in CProgress)
+
 
 2007-05-11  Christian Stimming  <stimming@tuhh.de>
 
 	* src/base/logger.c: Fix LoggerType_Function. By Hendrik Weimer.
+
+
+===========================================================================
+MARK: released gwenhywfar-2.9.0beta (2007/04/03)
+===========================================================================
+
+
+2007/04/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- changed the way the release string is created (no "-" between version and
+  tag)
+- prepared release
 
 
 2007/03/12: Martin Preuss<martin@libchipcard.de>
@@ -69,21 +619,17 @@ MARK: released gwenhywfar-2.6.0 (2007/06/09, r1225)
   the process to start instead of fixed buffers
 
 
-2007-03-10  Christian Stimming  <stimming@tuhh.de>
-
-	* src/base/list2.h: Add macros for functions IsEmpty, FindIter,
-	Contains to make available list functions more complete.
-
-
-2007-03-09  Christian Stimming  <stimming@tuhh.de>
-
-	* src/base/list.h: Add functions IsEmpty, FindIter, Contains to
-	make available list functions more complete.
+2007/03/09: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- allow Gwenhywfar to be included in other projects (using static linking)
+- applied patch from cstim which adds makros for the functions
+  GWEN_List_FindIter(), GWEN_List_Contains() and GWEN_List_IsEmpty()
+- added function GWEN_ConstList_Remove()
 
 
-===========================================================================
-MARK: released gwenhywfar-2.5.4 (2007/02/16, r1165)
-===========================================================================
+2007/03/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- adapted crypt/none (now works again)
 
 
 2007-02-16   Christian Stimming <stimming@tuhh.de>
@@ -100,17 +646,6 @@ MARK: released gwenhywfar-2.5.4 (2007/02/16, r1165)
 	directory, similar to g_get_tmp_dir().
 
 
-2007-02-12   Christian Stimming <stimming@tuhh.de>
-
-	* configure.ac, Makefile.am: Fix symlinking/copying generated
-	header files. Necessary for win32.
-
-
-===========================================================================
-MARK: released gwenhywfar-2.5.3 (2007/02/09, r1150)
-===========================================================================
-
-
 2007-02-09   Christian Stimming <stimming@tuhh.de>
 
 	* src/os/windows/directory.c: For GetHomeDirectory() on windows,
@@ -124,12 +659,7 @@ MARK: released gwenhywfar-2.5.3 (2007/02/09, r1150)
 	autoconf>=2.60.
 
 
-===========================================================================
-MARK: released gwenhywfar-2.5.2 (2007/01/19, r1122)
-===========================================================================
-
-
-2007-01-17   Christian Stimming <stimming@tuhh.de>
+2007-01-21  Christian Stimming  <stimming@tuhh.de>
 
 	* configure.ac: Simplify OS section about windows; detection of
 	WIN_PATH_SYSTEM et al is no longer necessary for libtool-aided
@@ -139,17 +669,54 @@ MARK: released gwenhywfar-2.5.2 (2007/01/19, r1122)
 	libtool libraries are looked for; alternatively, the user could
 	set ssl_lib and ssl_libraries externally.
 
-
-===========================================================================
-MARK: released gwenhywfar-2.5.1 (2007/01/16)
-===========================================================================
-
-
-2007-01-12  Christian Stimming  <stimming@tuhh.de>
-
 	* configure.ac: On win32, change gwenhywfar_libs flags back to
 	"-lgwenhywfar" without so-version because libtool will lookup the
 	library name without so-version number.
+
+
+2007/01/21: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- xml: added flag GWEN_XML_FLAGS_TOLERANT_ENDTAGS
+- added xml2.{c,h}: This module reads XML files and calls some callback 
+  functions upon encounter of elements, attributes, comments etc.
+
+
+2007/01/19: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in db.c: Was not accepting ":" instead of "=" when flag
+  GWEN_DB_FLAGS_USE_COLON was given
+
+
+2007/01/13: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed some minor bugs
+
+
+2007/01/10: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- bufferedio:
+  - added var "filteredLinePos" which holds the position within a line
+    without CR characters (#13)
+  - added flag GWEN_BUFFEREDIO_FLAGS_UNTIL_EMPTY_LINE
+    When this flag is set then GWEN_BufferedIO_ReadChar() returns EOF upon
+    encounter of an empty line
+- db:
+  - replaced GWEN_BUFFEREDIO_FLAGS_STOP_ON_EMPTY_LINE by
+    GWEN_BUFFEREDIO_FLAGS_UNTIL_EMPTY_LINE to detect its use in derived
+    projects: The meaning of this flag has changed, because the DB reading
+    code has changed. The new flag only applies to functions which create
+    GWEN_BUFFEREDIO objects themselves (like GWEB_DB_ReadFile).
+    If you want the reader to stop on empty lines while reading from a
+    GWEN_BUFFEREDIO you must add the flag 
+    "GWEN_BUFFEREDIO_FLAGS_UNTIL_EMPTY_LINE" to it.
+  - fixed some bugs
+- armed console GUI
+
+
+2007/01/09: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added a section about callbacks and GWENHYWFAR_CB to doc/STYLE
+- all plugins are now adapted to the latest changes
 
 
 2007-01-09   Christian Stimming <stimming@tuhh.de>
@@ -157,6 +724,69 @@ MARK: released gwenhywfar-2.5.1 (2007/01/16)
 	* src/*: Add missing __stdcall decoration on callback functions as
 	needed on win32 since r1087 (2006-09-14). In other words,
 	gwenhywfar-2.4.1 and 2.5.0 are probably broken on win32.
+
+
+2007/01/07: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added functions to GUI:
+  - GWEN_Gui_GetPassword
+  - GWEN_Gui_SetPasswordStatus
+  These functions are used by the crypt manager and can be used by programs
+  or libraries (e.g. AqBanking).
+- PluginManager now internally uses PathManager to manage the plugin paths,
+  so there now is only one module which handles paths
+- the PluginManager for CryptTokens is now created by Gwenhywfar itself and
+  no longer has virtual functions: The former virtual user interaction
+  functions internally now call GWEN_GUI functions, so there is on place less
+  to overwrite user interaction functions (which leaves GWEN_GUI as the only
+  place where interaction is to be caught by applications)
+- GWEN_NetLayerSsl_AskAddCert() now as a default makes the necessary GUI 
+  calls if no handler is set
+- gui: Setters for virtual functions now return the previous functions
+
+
+2007/01/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- replaced all uses of GWEN_WAITCALLBACK by use of GWEN_GUI, so from now on
+  there is only one place where user interaction is to occur
+- cleaned up namespace (removed compatibility macros)
+- removed GWEN_DB_HASH_MECHANISM
+- large-scale rewrite of GWEN_DB code: 
+  - Now reading a normal GWEN_DB file is sped-up by a factor of about 200 with
+    a 3.8 MB file. GWEN_DB_NODE's now internally use GWEN_LIST code, so when 
+    appending a node to a GWEN_DB we no longer have to traverse the full list
+    in order to find the last node of a branch. Therefore the speedup-factor 
+    rises exponentially with larger files.
+  - reading of a file is now stream-oriented (as opposed to the line-oriented
+    approach of Gwen2). This allows for a much better representation of large
+    amounts of data
+- added a folder containing tests for gwenhywfar (checks/)
+
+
+2006/12/30: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- enable the _free()-function in plugindescr.c (freeAll())
+- removed GWEN_TYPE_UINT32/64, replaced with standard types 
+  uint32_t/uint64_t which are defined by "#include <inttypes.h>"
+- changed paradigm of error logging: Only log with priority "ERROR" at the
+  point the error is detected. Later code in the stack only logs with priority
+  "INFO". This makes error GWEN less verbous in case of errors.
+- started renaming, reordering and renaming error codes to be more
+  consistent
+- added GUI interface (like it has been used in AqBanking), added first
+  frontend (console gui).
+  The intention is to replace all the different ways currently used to 
+  handle user interaction (in CryptManager, WaitCallback etc) by a single
+  and simple one.
+- started renaming some types to be more consistent throughout Gwenhywfar
+  - GWEN_DIRECTORYDATA -> GWEN_DIRECTORY
+- removed parser/csv*.{c.h} (this is deprecated for a long time since it has
+  been replaced by a DBIO plugin)
+
+
+===========================================================================
+MARK: started working on gwenhywfar3 (2006/12/29)
+===========================================================================
 
 
 ===========================================================================

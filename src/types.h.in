@@ -28,39 +28,7 @@
 #ifndef GWENHYWFAR_TYPES_H
 #define GWENHYWFAR_TYPES_H
 
-/** define type templates */
-#define GWEN_TYPE_TMPL_UINT32 "@GWEN_TYPE_TMPL_UINT32@"
-#define GWEN_TYPE_TMPL_UINT64 "@GWEN_TYPE_TMPL_UINT64@"
-
-
-/** Define an unsigned integer type with 32 bit storage length. */
-typedef @GWEN_TYPE_UINT32@ GWEN_TYPE_UINT32;
-
-/* Here we provide G_GNUC_EXTENSION as an alias for __extension__,
- * where this is valid. This allows for warningless compilation of
- * "long long" types even in the presence of '-ansi -pedantic'. Copied
- * from glib-2.0's gmacros.h.
- */
-#if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8)
-#  define GWEN_GNUC_EXTENSION __extension__
-#else
-#  define GWEN_GNUC_EXTENSION
-#endif
-
-/** Define an unsigned integer type with 64 bit storage length.
- *
- *  This depends heavily on the actual compiler. Currently gcc and
- *  MSVC are supported. For any further compilers, additional
- *  conditional clauses have to be added. */
-#ifdef __GNUC__
-  GWEN_GNUC_EXTENSION
-  typedef @GWEN_TYPE_UINT64@ GWEN_TYPE_UINT64;
-#else /* __GNUC__ */
-# include <windows.h>
-  /* Workaround for Microsoft Visual Studio Compiler (MSVC) which does
-   * not have "long long" but ULONG64 instead. */
-  typedef ULONG64 GWEN_TYPE_UINT64;
-#endif /* __GNUC__ */
+#include <inttypes.h>
 
 
 #define GWENHYWFAR_SYS_IS_WINDOWS @gwenhywfar_sys_is_windows@

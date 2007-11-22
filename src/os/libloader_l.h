@@ -33,8 +33,8 @@
 #include <gwenhywfar/libloader.h>
 
 
-GWEN_ERRORCODE GWEN_LibLoader_ModuleInit();
-GWEN_ERRORCODE GWEN_LibLoader_ModuleFini();
+int GWEN_LibLoader_ModuleInit();
+int GWEN_LibLoader_ModuleFini();
 
 
 #endif /* GWENHYWFAR_LIBLOADER_L_H */

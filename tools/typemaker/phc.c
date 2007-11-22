@@ -42,7 +42,7 @@ int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
   const char *mode;
   GWEN_XMLNODE *tnode;
   const char *tmode;
-  GWEN_ERRORCODE err;
+  int err;
   int isPtr;
 
   name=GWEN_XMLNode_GetProperty(node, "name", 0);
@@ -68,7 +68,7 @@ int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
   isPtr=atoi(get_property(node, "ptr", "0"));
 
   err=GWEN_BufferedIO_Write(bio, "  ");
-  if (!GWEN_Error_IsOk(err)) { DBG_ERROR_ERR(0, err); return -1;}
+  if (err) { DBG_ERROR_ERR(0, err); return -1;}
 
   if (strcasecmp(tmode, "enum")!=0)
     GWEN_BufferedIO_Write(bio, typ);
@@ -257,7 +257,7 @@ int write_hp_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   const char *s;
   int fd;
   GWEN_BUFFEREDIO *bio;
-  GWEN_ERRORCODE err;
+  int err;
   const char *nacc;
   const char *constAcc;
   const char *constName;
@@ -456,33 +456,33 @@ int write_hp_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   /* write trailing endif */
   err=GWEN_BufferedIO_WriteLine(bio, "");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
 
   err=GWEN_BufferedIO_Write(bio, "#endif /* ");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   err=GWEN_BufferedIO_Write(bio, GWEN_Buffer_GetStart(hbuf));
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   err=GWEN_BufferedIO_WriteLine(bio, " */");
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
 
   err=GWEN_BufferedIO_Close(bio);
-  if (!GWEN_Error_IsOk(err)) {
+  if (err) {
     DBG_ERROR_ERR(0, err);
     GWEN_BufferedIO_free(bio);
     GWEN_Buffer_free(hbuf);

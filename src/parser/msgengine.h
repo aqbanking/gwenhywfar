@@ -158,8 +158,8 @@ typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
 /**
  * Checks of what base-type the given type is.
  */
-typedef GWEN_DB_VALUETYPE (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
-                                                          const char *tname);
+typedef GWEN_DB_NODE_TYPE (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
+							  const char *tname);
 
 typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
                                               GWEN_XMLNODE *node,
@@ -423,7 +423,7 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
                                const char *typ,
                                const char *msgName,
                                int msgVersion,
-                               GWEN_TYPE_UINT32 flags);
+                               uint32_t flags);
 
 /**
  * This function parses a single entity specified by a single
@@ -437,7 +437,7 @@ int GWEN_MsgEngine_ParseMessage(GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *group,
                                 GWEN_BUFFER *msgbuf,
                                 GWEN_DB_NODE *gr,
-                                GWEN_TYPE_UINT32 flags);
+                                uint32_t flags);
 
 /**
  * This function skips all bytes from the given buffer until the given
@@ -497,7 +497,7 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                const char *gtype,
                                GWEN_BUFFER *mbuf,
                                GWEN_DB_NODE *gr,
-                               GWEN_TYPE_UINT32 flags);
+                               uint32_t flags);
 
 /**
  * This function creates a full tree of all groups and elements
@@ -509,7 +509,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
                                          const char *typ,
                                          const char *msgName,
                                          int msgVersion,
-                                         GWEN_TYPE_UINT32 flags);
+                                         uint32_t flags);
 /*@}*/
 
 

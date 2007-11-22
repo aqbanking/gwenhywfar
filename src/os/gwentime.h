@@ -47,7 +47,7 @@ GWENHYWFAR_API int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db);
 GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db);
 
 
-GWENHYWFAR_API GWEN_TIME *GWEN_CurrentTime();
+GWENHYWFAR_API GWEN_TIME *GWEN_CurrentTime(void);
 
 GWENHYWFAR_API GWEN_TIME *GWEN_Time_new(int year,
                                         int month,
@@ -107,14 +107,14 @@ GWENHYWFAR_API int GWEN_Time_toUtcString(const GWEN_TIME *t,
 /**
  * Creates a GWEN_TIME object from the return value of @ref GWEN_Time_Seconds.
  */
-GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromSeconds(GWEN_TYPE_UINT32 s);
+GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromSeconds(uint32_t s);
 GWENHYWFAR_API void GWEN_Time_free(GWEN_TIME *t);
 GWENHYWFAR_API GWEN_TIME *GWEN_Time_dup(const GWEN_TIME *t);
 
 /**
  * Returns the time in seconds since the epoch (00:00:00 UTC Jan 1, 1970).
  */
-GWENHYWFAR_API GWEN_TYPE_UINT32 GWEN_Time_Seconds(const GWEN_TIME *t);
+GWENHYWFAR_API uint32_t GWEN_Time_Seconds(const GWEN_TIME *t);
 
 /** returns the time in milliseconds */
 GWENHYWFAR_API double GWEN_Time_Milliseconds(const GWEN_TIME *t);
@@ -135,13 +135,13 @@ GWENHYWFAR_API double GWEN_Time_DiffSeconds(const GWEN_TIME *t1,
  * Adds the given number of seconds to the given GWEN_TIME.
  * @return 0 if ok, !=0 on error (see @ref MOD_ERROR_SIMPLE)
  */
-GWENHYWFAR_API int GWEN_Time_AddSeconds(GWEN_TIME *ti, GWEN_TYPE_UINT32 secs);
+GWENHYWFAR_API int GWEN_Time_AddSeconds(GWEN_TIME *ti, uint32_t secs);
 
 /**
  * Subs the given number of seconds from the given GWEN_TIME.
  * @return 0 if ok, !=0 on error (see @ref MOD_ERROR_SIMPLE)
  */
-GWENHYWFAR_API int GWEN_Time_SubSeconds(GWEN_TIME *ti, GWEN_TYPE_UINT32 secs);
+GWENHYWFAR_API int GWEN_Time_SubSeconds(GWEN_TIME *ti, uint32_t secs);
 
 
 /**

@@ -31,209 +31,119 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/db.h>
-
-#define GWEN_DB_DEFAULT_LOCK_TIMEOUT 1000
-
-
-typedef struct GWEN_DB_HEADER GWEN_DB_HEADER;
-typedef struct GWEN_DB_GROUP GWEN_DB_GROUP;
-typedef struct GWEN_DB_VAR GWEN_DB_VAR;
-
-typedef struct GWEN_DB_VALUE_HEADER GWEN_DB_VALUE_HEADER;
-typedef struct GWEN_DB_VALUE_CHAR GWEN_DB_VALUE_CHAR;
-typedef struct GWEN_DB_VALUE_INT GWEN_DB_VALUE_INT;
-typedef struct GWEN_DB_VALUE_BIN GWEN_DB_VALUE_BIN;
-typedef struct GWEN_DB_VALUE_PTR GWEN_DB_VALUE_PTR;
-
-typedef union GWEN_DB_VALUE GWEN_DB_VALUE;
-
-typedef enum {
-  GWEN_DB_NODETYPE_UNKNOWN=0,
-  GWEN_DB_NODETYPE_GROUP,
-  GWEN_DB_NODETYPE_VAR,
-  GWEN_DB_NODETYPE_VALUE
-} GWEN_DB_NODETYPE;
+#include <gwenhywfar/fastbuffer.h>
 
 
-struct GWEN_DB_HASH_MECHANISM {
-  GWEN_TYPE_UINT32 ref;
-  GWEN_DB_HASH_INITNODE_FN initNodeFn;
-  GWEN_DB_HASH_FININODE_FN finiNodeFn;
-  GWEN_DB_HASH_ADDNODE_FN addNodeFn;
-  GWEN_DB_HASH_UNLINKNODE_FN unlinkNodeFn;
-  GWEN_DB_HASH_GETNODE_FN getNodeFn;
+
+GWEN_LIST_FUNCTION_DEFS(GWEN_DB_NODE, GWEN_DB_Node)
+
+
+typedef union GWEN_DB_NODE_VALUE_UNION GWEN_DB_NODE_VALUE_UNION;
+union GWEN_DB_NODE_VALUE_UNION {
+  char *dataName;
+  char *dataChar;
+  void *dataBin;
+  int dataInt;
+  void *dataPtr;
 };
 
 
-struct GWEN_DB_HEADER {
-  GWEN_DB_NODE *next;
+struct GWEN_DB_NODE {
+  GWEN_LIST_ELEMENT(GWEN_DB_NODE)
   GWEN_DB_NODE *parent;
-  GWEN_DB_NODE *child;
-  GWEN_DB_NODETYPE typ;
-  GWEN_TYPE_UINT32 nodeFlags;
+  GWEN_DB_NODE_LIST *children;
+  GWEN_DB_NODE_TYPE typ;
+  uint32_t nodeFlags;
+  GWEN_DB_NODE_VALUE_UNION data;
+  uint32_t dataSize;
 };
 
 
 
-struct GWEN_DB_GROUP {
-  GWEN_DB_HEADER h;
-  char *name;
-  GWEN_DB_HASH_MECHANISM *hashMechanism;
-  void *hashData;
-};
-
-
-struct GWEN_DB_VAR {
-  GWEN_DB_HEADER h;
-  char *name;
-};
+static GWEN_DB_NODE *GWEN_DB_Node_new(GWEN_DB_NODE_TYPE t);
+static void GWEN_DB_Node_free(GWEN_DB_NODE *n);
 
 
 
-struct GWEN_DB_VALUE_HEADER {
-  GWEN_DB_HEADER h;
-  GWEN_DB_VALUETYPE typ;
-};
+static GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
+					  unsigned int datasize);
 
 
-struct GWEN_DB_VALUE_CHAR {
-  GWEN_DB_VALUE_HEADER h;
-  char *data;
-};
+static GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);
+
+static GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data);
+
+static GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data);
 
 
-struct GWEN_DB_VALUE_INT {
-  GWEN_DB_VALUE_HEADER h;
-  int data;
-};
+static GWEN_DB_NODE *GWEN_DB_Var_new(const char *name);
 
 
-struct GWEN_DB_VALUE_BIN {
-  GWEN_DB_VALUE_HEADER h;
-  void *data;
-  unsigned int dataSize;
-};
+static GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n);
 
 
-struct GWEN_DB_VALUE_PTR {
-  GWEN_DB_VALUE_HEADER h;
-  void *data;
-};
+static void GWEN_DB_Node_free(GWEN_DB_NODE *n);
 
 
-union GWEN_DB_VALUE {
-  GWEN_DB_VALUE_HEADER h;
-  GWEN_DB_VALUE_CHAR c;
-  GWEN_DB_VALUE_INT i;
-  GWEN_DB_VALUE_BIN b;
-  GWEN_DB_VALUE_PTR p;
-};
+static void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
+				GWEN_DB_NODE *n);
 
+static void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
+				GWEN_DB_NODE *n);
 
-union GWEN_DB_NODE {
-  GWEN_DB_HEADER h;
-  GWEN_DB_GROUP group;
-  GWEN_DB_VAR var;
-  GWEN_DB_VALUE val;
-};
-
-
-
-GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
-                                   unsigned int datasize);
-
-
-GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);
-
-GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data);
-
-GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data);
-
-
-GWEN_DB_NODE *GWEN_DB_Var_new(const char *name);
-
-
-GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n);
-
-
-void GWEN_DB_Node_free(GWEN_DB_NODE *n);
-
-
-void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
-                         GWEN_DB_NODE *n);
-
-void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
-                         GWEN_DB_NODE *n);
-
-void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n);
+static void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n);
 
 /**
  * Used with GWEN_Path
  */
 
-void *GWEN_DB_HandlePath(const char *entry,
-                         void *data,
-                         int idx,
-                         GWEN_TYPE_UINT32 flags);
+static void *GWEN_DB_HandlePath(const char *entry,
+				void *data,
+				int idx,
+				uint32_t flags);
 
 
-GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
-                                const char *name,
-                                int idx);
+static GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
+				       const char *name,
+				       int idx);
 
-GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
-                              const char *name,
-                              int idx);
-
-
-GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
-                              const char *path,
-                              GWEN_TYPE_UINT32 flags);
-
-GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
-                               const char *path,
-                               int idx);
-
-void GWEN_DB_ClearNode(GWEN_DB_NODE *n);
+static GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
+				     const char *name,
+				     int idx);
 
 
+static GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
+				     const char *path,
+				     uint32_t flags);
 
-int GWEN_DB_WriteGroupToStream(GWEN_DB_NODE *node,
-                               GWEN_BUFFEREDIO *bio,
-                               GWEN_TYPE_UINT32 dbflags,
-                               int insert);
+static GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
+				      const char *path,
+				      int idx);
 
+static void GWEN_DB_ClearNode(GWEN_DB_NODE *n);
 
 static void *GWEN_DB_count_cb(GWEN_DB_NODE *node, void *user_data);
 
-void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
-                                 GWEN_DB_NODE *n);
-void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
-                                GWEN_DB_NODE *n);
-void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n);
+static void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
+					GWEN_DB_NODE *n);
+static void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
+				       GWEN_DB_NODE *n);
+static void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n);
 
 
 
-int GWEN_DB_HashMechanism_InitNode(GWEN_DB_HASH_MECHANISM *hm,
-                                   GWEN_DB_NODE *node,
-                                   void **hashData);
-int GWEN_DB_HashMechanism_FiniNode(GWEN_DB_HASH_MECHANISM *hm,
-                                   GWEN_DB_NODE *node,
-                                   void **hashData);
-int GWEN_DB_HashMechanism_AddNode(GWEN_DB_HASH_MECHANISM *hm,
-                                  GWEN_DB_NODE *parent,
-                                  GWEN_DB_NODE *node,
-                                  int appendOrInsert,
-                                  void *hashData);
-int GWEN_DB_HashMechanism_UnlinkNode(GWEN_DB_HASH_MECHANISM *hm,
-                                     GWEN_DB_NODE *parent,
-                                     GWEN_DB_NODE *node,
-                                     void *hashData);
-GWEN_DB_NODE *GWEN_DB_HashMechanism_GetNode(GWEN_DB_HASH_MECHANISM *hm,
-                                            GWEN_DB_NODE *parent,
-                                            const char *name,
-                                            int idx,
-                                            void *hashData);
+
+static int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
+			       uint32_t dbflags,
+			       const char *typeName,
+			       const char *varName,
+			       uint8_t *p);
+
+
+static int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
+				       GWEN_FAST_BUFFER *fb,
+				       uint32_t dbflags,
+				       int insert);
 
 
 #endif

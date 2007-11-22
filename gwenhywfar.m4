@@ -10,6 +10,7 @@ dnl   $2: minor version minimum
 dnl   $3: patchlevel version minimum
 dnl   $4: build version minimum
 dnl Returns: gwenhywfar_dir
+dnl          gwenhywfar_bindir
 dnl          gwenhywfar_libs
 dnl          gwenhywfar_plugins
 dnl          gwenhywfar_includes
@@ -33,9 +34,10 @@ have_gwenhywfar="no"
 gwenhywfar_dir=""
 gwenhywfar_plugins=""
 gwenhywfar_libs=""
+gwenhywfar_bindir=""
 gwenhywfar_libspp=""
 gwenhywfar_includes=""
-gwenhywfar_has_crypt="no"
+gwenhywfar_has_crypt="yes"
 if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_CHECKING(for gwenhywfar)
   AC_ARG_WITH(gwen-dir, [  --with-gwen-dir=DIR
@@ -71,15 +73,15 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_CHECKING(for gwen includes)
       gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
       AC_MSG_RESULT($gwenhywfar_includes)
+      AC_MSG_CHECKING(for gwen binary tools)
+      gwenhywfar_bindir="`$gwenhywfar_dir/bin/gwenhywfar-config --bindir`"
+      AC_MSG_RESULT($gwenhywfar_bindir)
       AC_MSG_CHECKING(for gwen plugins)
       gwenhywfar_plugins="`$gwenhywfar_dir/bin/gwenhywfar-config --plugins`"
       AC_MSG_RESULT($gwenhywfar_plugins)
       AC_MSG_CHECKING(for gwen headers)
       gwenhywfar_headers="`$gwenhywfar_dir/bin/gwenhywfar-config --headers`"
       AC_MSG_RESULT($gwenhywfar_headers)
-      AC_MSG_CHECKING(for gwen Crypto)
-      gwenhywfar_has_crypt="`$gwenhywfar_dir/bin/gwenhywfar-config --has-crypt`"
-      AC_MSG_RESULT($gwenhywfar_has_crypt)
   fi
   AC_MSG_CHECKING(if gwenhywfar test desired)
   AC_ARG_ENABLE(gwenhywfar,
@@ -122,6 +124,7 @@ fi
 
 AC_SUBST(gwenhywfar_dir)
 AC_SUBST(gwenhywfar_plugins)
+AC_SUBST(gwenhywfar_bindir)
 AC_SUBST(gwenhywfar_libs)
 AC_SUBST(gwenhywfar_includes)
 AC_SUBST(gwenhywfar_headers)

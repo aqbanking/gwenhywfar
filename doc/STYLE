@@ -10,6 +10,7 @@ $Id$
              3.3. Type Definitions
              3.4. Enum Elements
              3.5. Macro Definitions
+             3.6. Callbacks
              4. Formal Style
              4.1. Indent Style
              4.2. Brackets
@@ -140,6 +141,23 @@ this rule only applies to new enum definitions.
 ----------------------
 
 Macro names are written in all-capitals, like in GWEN_DB_FLAGS_DEFAULT.
+
+
+3.6. Callbacks
+--------------
+
+Callbacks must be attributed using "GWENHYWFAR_CB" to make them work. Best 
+known callbacks in Gwenhywfar are those of the GWEN_INHERIT framework.
+The following example illustrates this:
+
+      void GWENHYWFAR_CB MyType_FreeData(void *bp, void *p);
+
+As you can see the return type is followed by the keyword GWENHYWFAR_CB which
+expands on WIN32 platforms to "__stdcall". This makes it possible to use such
+callbacks on WIN32, too.
+BTW: In a Linux environment this macro is expanded to an empty string because
+Linux doesn't need such an attribute.
+However, using the macro GWENHYWFAR_CB make the source code protable.
 
 
 

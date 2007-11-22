@@ -31,27 +31,35 @@
 
 
 #include "pathmanager_p.h"
+#ifndef OS_WIN32
+# include "binreloc.h"
+#endif
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/directory.h>
 
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
+#include <errno.h>
 
 #ifdef OS_WIN32
 # include <windows.h>
 # define DIRSEP "\\"
+# define DIRSEP_C '\\'
 #else
 # define DIRSEP "/"
+# define DIRSEP_C '/'
 #endif
 
 
 static GWEN_DB_NODE *gwen__paths=0;
 
 
-GWEN_ERRORCODE GWEN_PathManager_ModuleInit(){
+int GWEN_PathManager_ModuleInit(){
   gwen__paths=GWEN_DB_Group_new("paths");
 
   return 0;
@@ -59,7 +67,7 @@ GWEN_ERRORCODE GWEN_PathManager_ModuleInit(){
 
 
 
-GWEN_ERRORCODE GWEN_PathManager_ModuleFini(){
+int GWEN_PathManager_ModuleFini(){
   GWEN_DB_Group_free(gwen__paths);
   gwen__paths=0;
   return 0;
@@ -118,8 +126,9 @@ int GWEN_PathManager_UndefinePath(const char *destLib,
 int GWEN_PathManager_AddPath(const char *callingLib,
                              const char *destLib,
                              const char *pathName,
-                             const char *pathValue) {
+			     const char *pathValue) {
   GWEN_DB_NODE *dbT;
+  GWEN_BUFFER *buf;
 
   assert(destLib);
   assert(pathName);
@@ -141,10 +150,156 @@ int GWEN_PathManager_AddPath(const char *callingLib,
     GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_DEFAULT,
                          "lib", callingLib);
   }
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Directory_OsifyPath(pathValue, buf, 1);
+
   GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_DEFAULT,
-                       "path", pathValue);
+		       "path",
+		       GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_free(buf);
 
   return 0;
+}
+
+
+
+int GWEN_PathManager_AddRelPath(const char *callingLib,
+				const char *destLib,
+				const char *pathName,
+				const char *pathValue,
+				GWEN_PATHMANAGER_RELMODE rm) {
+  char cwd[256];
+
+  switch(rm) {
+  case GWEN_PathManager_RelModeCwd: {
+    const char *pcwd;
+
+    pcwd=getcwd(cwd, sizeof(cwd)-1);
+    if (pcwd) {
+      GWEN_BUFFER *buf;
+      int rv;
+
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(buf, cwd);
+      if (*pathValue!=DIRSEP_C)
+	GWEN_Buffer_AppendString(buf, DIRSEP);
+      GWEN_Buffer_AppendString(buf, pathValue);
+      rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
+				  GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "getcwd(): %s", strerror(errno));
+      return GWEN_ERROR_IO;
+    }
+    break;
+  }
+
+  case GWEN_PathManager_RelModeExe: {
+#ifndef OS_WIN32
+    char *exeDir;
+    GWEN_BUFFER *buf;
+    int rv;
+
+    exeDir=br_find_prefix(NULL);
+    if (exeDir==(char*)NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "Unable to determine exe folder");
+      return GWEN_ERROR_GENERIC;
+    }
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buf, exeDir);
+    free(exeDir);
+    if (*pathValue!=DIRSEP_C)
+      GWEN_Buffer_AppendString(buf, DIRSEP);
+    GWEN_Buffer_AppendString(buf, pathValue);
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Adding path [%s]",
+	     GWEN_Buffer_GetStart(buf));
+    rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
+				GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return rv;
+#else
+    DWORD rv;
+    char *p;
+    GWEN_BUFFER *buf;
+
+    /* Get the absolute path to the executable, including its name */
+    rv=GetModuleFileName(NULL, cwd, sizeof(cwd)-1);
+    if (rv==0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"GetModuleFileName(): %d",
+		(int)GetLastError());
+      return GWEN_ERROR_IO;
+    }
+
+    /* Find the last DIRSEP and set it to NULL so that we now have the
+       bindir. */
+    p=strrchr(cwd, '\\');
+    if (p) {
+      *p=0;
+    }
+
+    /* Find again the last DIRSEP to check whether the path ends in
+       "bin" or "lib". */
+    p=strrchr(cwd, '\\');
+    if (p) {
+      /* DIRSEP was found and p points to it. p+1 points either to the
+	 rest of the string or the '\0' byte, so we can use it
+	 here. */
+      if ((strcmp(p+1, "bin") == 0) || (strcmp(p+1, "lib") == 0)) {
+	/* The path ends in "bin" or "lib", hence we strip that suffix
+	   so that we now only have the prefix. */
+	*p=0;
+      }
+    }
+
+    /* And append the given subdirectory to that prefix. */
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buf, cwd);
+    if (*pathValue!=DIRSEP_C)
+      GWEN_Buffer_AppendString(buf, DIRSEP);
+    GWEN_Buffer_AppendString(buf, pathValue);
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Adding path [%s]",
+	     GWEN_Buffer_GetStart(buf));
+    rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
+				GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return rv;
+#endif
+  }
+
+  case GWEN_PathManager_RelModeHome: {
+    GWEN_BUFFER *buf;
+    int rv;
+
+    rv=GWEN_Directory_GetHomeDirectory(cwd, sizeof(cwd)-1);
+    if (rv) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Could not determine HOME directory (%d)",
+		rv);
+      return rv;
+    }
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buf, cwd);
+    if (*pathValue!=DIRSEP_C)
+      GWEN_Buffer_AppendString(buf, DIRSEP);
+    GWEN_Buffer_AppendString(buf, pathValue);
+    rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
+				GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+
+  default:
+    DBG_INFO(GWEN_LOGDOMAIN, "Unknown relative mode %d", rm);
+    return GWEN_ERROR_INVALID;
+  }
+
 }
 
 
@@ -359,7 +514,7 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
 
   /* open the key */
   if (RegOpenKey(HKEY_LOCAL_MACHINE, nbuffer, &hkey)){
-    DBG_ERROR(GWEN_LOGDOMAIN, "RegOpenKey %s failed.", keypath);
+    DBG_INFO(GWEN_LOGDOMAIN, "RegOpenKey %s failed.", keypath);
     return 1;
   }
 
@@ -387,9 +542,9 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
   } /* for */
 
   RegCloseKey(hkey);
-  DBG_ERROR(GWEN_LOGDOMAIN, 
-	    "In RegKey \"%s\" the variable \"%s\" does not exist", 
-	    keypath, varname);
+  DBG_INFO(GWEN_LOGDOMAIN,
+	   "In RegKey \"%s\" the variable \"%s\" does not exist",
+	   keypath, varname);
   return 1;
 
 #else /* OS_WIN32 */

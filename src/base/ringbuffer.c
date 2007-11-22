@@ -64,9 +64,9 @@ void GWEN_RingBuffer_free(GWEN_RINGBUFFER *rb){
 
 int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
                                const char *buffer,
-                               GWEN_TYPE_UINT32 *size){
-  GWEN_TYPE_UINT32 psize;
-  GWEN_TYPE_UINT32 bytesLeft;
+                               uint32_t *size){
+  uint32_t psize;
+  uint32_t bytesLeft;
 
   if ((rb->bufferSize-rb->bytesUsed)==0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer full");
@@ -101,9 +101,9 @@ int GWEN_RingBuffer_WriteBytes(GWEN_RINGBUFFER *rb,
 
 
 
-GWEN_TYPE_UINT32
+uint32_t
 GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb) {
-  GWEN_TYPE_UINT32 psize;
+  uint32_t psize;
 
   assert(rb);
   if (rb->bytesUsed==0) {
@@ -122,9 +122,9 @@ GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb) {
 
 
 
-GWEN_TYPE_UINT32
+uint32_t
 GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb) {
-  GWEN_TYPE_UINT32 psize;
+  uint32_t psize;
 
   assert(rb);
   if ((rb->bufferSize-rb->bytesUsed)==0) {
@@ -144,7 +144,7 @@ GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb) {
 
 
 void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
-                                   GWEN_TYPE_UINT32 psize) {
+                                   uint32_t psize) {
   assert(rb);
 
   if (rb->bytesUsed<psize) {
@@ -161,7 +161,7 @@ void GWEN_RingBuffer_SkipBytesRead(GWEN_RINGBUFFER *rb,
 
 
 void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
-                                    GWEN_TYPE_UINT32 psize) {
+                                    uint32_t psize) {
   assert(rb);
 
   if ((rb->bufferSize-rb->bytesUsed)<psize) {
@@ -181,9 +181,9 @@ void GWEN_RingBuffer_SkipBytesWrite(GWEN_RINGBUFFER *rb,
 
 int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
                               char *buffer,
-                              GWEN_TYPE_UINT32 *size){
-  GWEN_TYPE_UINT32 psize;
-  GWEN_TYPE_UINT32 bytesLeft;
+                              uint32_t *size){
+  uint32_t psize;
+  uint32_t bytesLeft;
 
   if (rb->bytesUsed==0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Buffer empty");
@@ -217,21 +217,21 @@ int GWEN_RingBuffer_ReadBytes(GWEN_RINGBUFFER *rb,
 
 
 
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetUsedBytes(const GWEN_RINGBUFFER *rb){
+uint32_t GWEN_RingBuffer_GetUsedBytes(const GWEN_RINGBUFFER *rb){
   assert(rb);
   return rb->bytesUsed;
 }
 
 
 
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBytesLeft(const GWEN_RINGBUFFER *rb){
+uint32_t GWEN_RingBuffer_GetBytesLeft(const GWEN_RINGBUFFER *rb){
   assert(rb);
   return rb->bufferSize-rb->bytesUsed;
 }
 
 
 
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb){
+uint32_t GWEN_RingBuffer_GetBufferSize(const GWEN_RINGBUFFER *rb){
   assert(rb);
   return rb->bufferSize;
 }
@@ -280,7 +280,7 @@ int GWEN_RingBuffer_ReadByte(GWEN_RINGBUFFER *rb) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb){
+uint32_t GWEN_RingBuffer_GetMaxUsedBytes(const GWEN_RINGBUFFER *rb){
   assert(rb);
   return rb->maxBytesUsed;
 }
@@ -294,7 +294,7 @@ void GWEN_RingBuffer_ResetMaxUsedBytes(GWEN_RINGBUFFER *rb) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetThroughput(GWEN_RINGBUFFER *rb) {
+uint32_t GWEN_RingBuffer_GetThroughput(GWEN_RINGBUFFER *rb) {
   assert(rb);
   return rb->throughput;
 }
@@ -308,7 +308,7 @@ void GWEN_RingBuffer_ResetThroughput(GWEN_RINGBUFFER *rb) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetFullCounter(const GWEN_RINGBUFFER *rb){
+uint32_t GWEN_RingBuffer_GetFullCounter(const GWEN_RINGBUFFER *rb){
   assert(rb);
   return rb->fullCounter;
 }
@@ -322,7 +322,7 @@ void GWEN_RingBuffer_ResetFullCounter(GWEN_RINGBUFFER *rb) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_RingBuffer_GetEmptyCounter(const GWEN_RINGBUFFER *rb){
+uint32_t GWEN_RingBuffer_GetEmptyCounter(const GWEN_RINGBUFFER *rb){
   assert(rb);
   return rb->emptyCounter;
 }

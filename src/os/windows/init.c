@@ -46,12 +46,12 @@
 BOOL APIENTRY DllMain(HINSTANCE hInst,
                       DWORD reason,
                       LPVOID reserved) {
-  GWEN_ERRORCODE err;
+  int err;
 
   switch (reason) {
   case DLL_PROCESS_ATTACH:
     err=GWEN_Init();
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       fprintf(stderr, "Could not initialize Gwenhywfar, aborting\n");
       return FALSE;
     }
@@ -61,7 +61,7 @@ BOOL APIENTRY DllMain(HINSTANCE hInst,
 
   case DLL_PROCESS_DETACH:
     err=GWEN_Fini();
-    if (!GWEN_Error_IsOk(err)) {
+    if (err) {
       fprintf(stderr, "Could not deinitialize Gwenhywfar\n");
     }
     /* DEBUG */

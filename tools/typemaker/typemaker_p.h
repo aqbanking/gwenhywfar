@@ -6,6 +6,8 @@
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/bufferedio.h>
 
+int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio, uint32_t flags);
+
 
 int write_hp_group_c(ARGUMENTS *args, GWEN_XMLNODE *node,
                     GWEN_BUFFEREDIO *bio);

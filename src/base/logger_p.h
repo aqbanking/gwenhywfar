@@ -50,7 +50,7 @@ struct GWEN_LOGGER {
   char *logIdent;
   GWEN_LOGGER_LEVEL logLevel;
   GWEN_LOGGERFUNCTIONLOG logFunction;
-  GWEN_TYPE_UINT32 usage;
+  uint32_t usage;
 };
 
 

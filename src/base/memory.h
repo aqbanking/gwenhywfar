@@ -59,10 +59,10 @@ extern "C" {
 
 
   GWENHYWFAR_API 
-  GWEN_ERRORCODE GWEN_Memory_ModuleInit();
+  int GWEN_Memory_ModuleInit();
 
   GWENHYWFAR_API 
-  GWEN_ERRORCODE GWEN_Memory_ModuleFini();
+  int GWEN_Memory_ModuleFini();
 
 
   GWENHYWFAR_API

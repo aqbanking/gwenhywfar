@@ -33,7 +33,10 @@
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/list2.h>
+#include <gwenhywfar/iolayer.h>
+
 #include <stdio.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,69 +61,50 @@ extern "C" {
 /**
  * if set then comments are read. Otherwise they are ignored when reading
  * a file */
-#define GWEN_XML_FLAGS_READ_COMMENTS        0x0001
-/**
- * if set then toplevel elements are shared across all files (even included
- * ones, if the include tag/element appears in the top level)
- */
-#define GWEN_XML_FLAGS_SHARE_TOPLEVEL       0x0002
-
-/**
- * if set then the file given to the include tag/element are loaded to
- * the root of the XML tree regardless of the tag's location.
- */
-#define GWEN_XML_FLAGS_INCLUDE_TO_TOPLEVEL  0x0004
-
-/**
- * if set then include tags/elements are treated as any other tag
- * (i.e. no automatic file inclusion takes place. Instead the include
- * tag is stored like any other tag would be).
- */
-#define GWEN_XML_FLAGS_IGNORE_INCLUDE       0x0008
-
-/**
- * Also write comments when writing a node.
- */
-#define GWEN_XML_FLAGS_WRITE_COMMENTS       0x0010
+#define GWEN_XML_FLAGS_HANDLE_COMMENTS      0x0001
 
 /**
  * Indent lines according to node level when writing nodes. This increases
  * the readability of the resulting file.
  */
-#define GWEN_XML_FLAGS_INDENT               0x0020
+#define GWEN_XML_FLAGS_INDENT               0x0002
 
 /**
  * Let the parser accept some HTML which are known to be unclosed (e.g.
  * the tag "BR" in HTML tags is never closed).
  * If not set a "BR" tag without a corresponding "/BR" will produce an error.
  */
-#define GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS 0x0040
+#define GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS 0x0004
 
 /**
  * If set then data will not be condensed (e.g. multiple spaces will not
  * be replaced by a single one).
  */
-#define GWEN_XML_FLAGS_NO_CONDENSE          0x0080
+#define GWEN_XML_FLAGS_NO_CONDENSE          0x0008
 
 /**
  * If set then control characters (such as CR, LF) will not be removed from
  * data.
  */
-#define GWEN_XML_FLAGS_KEEP_CNTRL           0x0100
+#define GWEN_XML_FLAGS_KEEP_CNTRL           0x0010
 
-/**
- * If set then DESCR tags are ignored when reading XML files.
- */
-#define GWEN_XML_FLAGS_IGNORE_DESCR         0x0200
+#define GWEN_XML_FLAGS_KEEP_BLANKS          0x0020
 
-#define GWEN_XML_FLAGS_KEEP_BLANKS          0x0400
-
-#define GWEN_XML_FLAGS_SIMPLE               0x0800
+#define GWEN_XML_FLAGS_SIMPLE               0x0040
 
 /**
  * apply special treatment to toplevel header tags (such as &lt;?xml&gt;)
  */
-#define GWEN_XML_FLAGS_HANDLE_HEADERS       0x1000
+#define GWEN_XML_FLAGS_HANDLE_HEADERS       0x0080
+
+/**
+ * If this flag is given this module will be more tolerant when encountering
+ * and end element (e.g. &lt;/html&gt;). If the name of the end element does
+ * not match the currently open element then the element to be closed is
+ * searched above the currently open element. This works around problems
+ * with malformed XML files.
+ */
+#define GWEN_XML_FLAGS_TOLERANT_ENDTAGS     0x0100
 
 /**
  * combination of other flags resembling the default flags
@@ -128,7 +112,7 @@ extern "C" {
 #define GWEN_XML_FLAGS_DEFAULT \
   (\
   GWEN_XML_FLAGS_INDENT | \
-  GWEN_XML_FLAGS_WRITE_COMMENTS\
+  GWEN_XML_FLAGS_HANDLE_COMMENTS\
   )
 
 /*@}*/
@@ -154,13 +138,18 @@ typedef struct GWEN__XMLNODE GWEN_XMLNODE;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_XMLNODE, GWEN_XMLNode, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_XMLNODE, GWEN_XMLNode, GWENHYWFAR_API)
 
+#ifdef __cplusplus
+}
+#endif
 
-typedef int
-    (*GWEN_XML_INCLUDE_FN)(GWEN_XMLNODE *n,
-			   const char *path,
-                           const char *file,
-                           GWEN_STRINGLIST *sl,
-			   GWEN_TYPE_UINT32 flags);
+
+#include <gwenhywfar/xmlctx.h>
+#include <gwenhywfar/fastbuffer.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
@@ -190,11 +179,6 @@ void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n);
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n);
-
-GWENHYWFAR_API
-  GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s,
-                                        int len,
-                                        GWEN_TYPE_UINT32 flags);
 
 /*@}*/
 
@@ -342,7 +326,7 @@ GWENHYWFAR_API
   void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n);
 
 GWENHYWFAR_API
-  GWEN_TYPE_UINT32 GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n);
+  uint32_t GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n);
 /*@}*/
 
 
@@ -496,7 +480,7 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
                                           const char *path,
-                                          GWEN_TYPE_UINT32 flags);
+                                          uint32_t flags);
 
 
 /*@}*/
@@ -564,14 +548,6 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *n,
  *
  */
 /*@{*/
-/**
- * Reads exactly ONE tag/element (and all its subtags) from the given
- * bufferedIO.
- */
-GWENHYWFAR_API
-int GWEN_XML_Parse(GWEN_XMLNODE *n, GWEN_BUFFEREDIO *bio,
-                   GWEN_TYPE_UINT32 flags);
-
 
 /**
  * This function removes unnecessary namespaces from the given node and
@@ -581,38 +557,36 @@ GWENHYWFAR_API
 int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n);
 
 
+GWENHYWFAR_API
+int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb);
+
+/**
+ * Reads a single element (and all its sub-elements) from an IO layer.
+ */
+GWENHYWFAR_API
+int GWEN_XML_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_IO_LAYER *io);
+
+
 /**
  * Reads all tags/elements from a file and adds them as children to
  * the given node.
  */
 GWENHYWFAR_API
-int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath,
-                      GWEN_TYPE_UINT32 flags);
+int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath, uint32_t flags);
 
-/**
- * Reads the given file. If the path is an absolute one it will be used
- * directly.
- * If it is a relative one the given search path will be searched in case the
- * file with the given name could not be loaded without a search path.
- * @param n XML node to store the read tags/elements in
- * @param filepath name (and optionally path) of the file to read
- * @param flags see @ref GWEN_XML_FLAGS_DEFAULT and others
- * @param searchPath a string list containing multiple directories
- * to scan if the file could not be opened directly
- */
 GWENHYWFAR_API
-  int GWEN_XML_ReadFileSearch(GWEN_XMLNODE *n, const char *filepath,
-                              GWEN_TYPE_UINT32 flags,
-                              GWEN_STRINGLIST *searchPath);
-
+GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s,
+				      int len,
+				      uint32_t flags);
 
 /**
- * Writes a tag and all its subnodes to the given bufferedio.
+ * Writes a tag and all its subnodes to the given io layer (which is expected to be
+ * of type GWEN_IO_LAYER_BUFFERED, see @ref GWEN_Io_LayerBuffered_new).
  */
 GWENHYWFAR_API
 int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
-                               GWEN_BUFFEREDIO *bio,
-                               GWEN_TYPE_UINT32 flags);
+			       GWEN_XML_CONTEXT *ctx,
+			       GWEN_IO_LAYER *io);
 
 /**
  * Writes a tag and all its subnodes to the given file.
@@ -620,7 +594,14 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
 GWENHYWFAR_API
 int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
                            const char *fname,
-                           GWEN_TYPE_UINT32 flags);
+                           uint32_t flags);
+
+GWENHYWFAR_API
+int GWEN_XMLNode_toBuffer(const GWEN_XMLNODE *n, GWEN_BUFFER *buf, uint32_t flags);
+
+
+
+
 
 /*@}*/
 

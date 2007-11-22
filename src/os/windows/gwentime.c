@@ -47,7 +47,7 @@
 int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){
   long sec, msec;
   union {
-    GWEN_TYPE_UINT64 ns100; /* time since 1 Jan 1601 in 100ns units */
+    uint64_t ns100; /* time since 1 Jan 1601 in 100ns units */
     FILETIME ft;
   } current_date;
 

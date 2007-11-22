@@ -32,11 +32,11 @@
 #define GWENHYWFAR_DBIO_L_H
 
 
-#include <gwenhywfar/dbio.h>
+#include <gwenhywfar/dbio_be.h>
 
 
-GWEN_ERRORCODE GWEN_DBIO_ModuleInit();
-GWEN_ERRORCODE GWEN_DBIO_ModuleFini();
+int GWEN_DBIO_ModuleInit();
+int GWEN_DBIO_ModuleFini();
 
 
 #endif /* GWENHYWFAR_DBIO_P_H */

@@ -58,12 +58,18 @@ extern "C" {
 
   GWENHYWFAR_API 
   GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
-                                         GWEN_TYPE_UINT32 id,
+                                         uint32_t id,
                                          void *data,
                                          void *baseData,
                                          GWEN_INHERIT_FREEDATAFN fn);
   GWENHYWFAR_API 
   void GWEN_InheritData_free(GWEN_INHERITDATA *d);
+
+  GWENHYWFAR_API 
+  void GWEN_InheritData_freeData(GWEN_INHERITDATA *d);
+
+  GWENHYWFAR_API
+  void GWEN_InheritData_freeAllData(GWEN_INHERITDATA *d);
 
   GWENHYWFAR_API
     void GWEN_InheritData_clear(GWEN_INHERITDATA *d);
@@ -72,7 +78,7 @@ extern "C" {
   const char *GWEN_InheritData_GetTypeName(const GWEN_INHERITDATA *d);
 
   GWENHYWFAR_API 
-  GWEN_TYPE_UINT32 GWEN_InheritData_GetId(const GWEN_INHERITDATA *d);
+  uint32_t GWEN_InheritData_GetId(const GWEN_INHERITDATA *d);
 
   GWENHYWFAR_API 
   void *GWEN_InheritData_GetData(const GWEN_INHERITDATA *d);
@@ -82,16 +88,16 @@ extern "C" {
     GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d);
 
   GWENHYWFAR_API 
-  GWEN_TYPE_UINT32 GWEN_Inherit_MakeId(const char *typeName);
+  uint32_t GWEN_Inherit_MakeId(const char *typeName);
 
   GWENHYWFAR_API 
   void* GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
-                              GWEN_TYPE_UINT32 id,
+                              uint32_t id,
                               int wantCreate);
 
   GWENHYWFAR_API
     GWEN_INHERITDATA *GWEN_Inherit_FindEntry(GWEN_INHERITDATA_LIST *l,
-                                             GWEN_TYPE_UINT32 id,
+                                             uint32_t id,
                                              int wantCreate);
 
   /** @name Macros To Be Used In Inherited Classes - Header Files
@@ -119,14 +125,14 @@ extern "C" {
 #define GWEN_INHERIT_FUNCTION_LIB_DEFS(t, decl) \
   decl void t##__INHERIT_SETDATA(t *element, \
                                  const char *typeName,\
-                                 GWEN_TYPE_UINT32 id,\
+                                 uint32_t id,\
                                  void *data,\
                                  GWEN_INHERIT_FREEDATAFN f);\
-  decl int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id);\
+  decl int t##__INHERIT_ISOFTYPE(const t *element, uint32_t id);\
   decl GWEN_INHERITDATA_LIST *t##__INHERIT_GETLIST(const t *element);\
   decl void t##__INHERIT_UNLINK(t *element, \
                                 const char *typeName,\
-                                GWEN_TYPE_UINT32 id);
+                                uint32_t id);
 
   /**
    * Use this macro in the header file of the base class. This defines
@@ -162,7 +168,7 @@ extern "C" {
   \
   void t##__INHERIT_SETDATA(t *element, \
                             const char *typeName,\
-                            GWEN_TYPE_UINT32 id,\
+                            uint32_t id,\
                             void *data,\
                             GWEN_INHERIT_FREEDATAFN f) {\
   GWEN_INHERITDATA *d;\
@@ -182,7 +188,7 @@ extern "C" {
     GWEN_InheritData_List_Insert(d, element->INHERIT__list);\
   }\
   \
-  int t##__INHERIT_ISOFTYPE(t *element, GWEN_TYPE_UINT32 id) {\
+  int t##__INHERIT_ISOFTYPE(const t *element, uint32_t id) {\
     assert(element);\
     assert(element->INHERIT__list);\
   \
@@ -191,7 +197,7 @@ extern "C" {
   \
   void t##__INHERIT_UNLINK(t *element, \
                            const char *typeName,\
-                           GWEN_TYPE_UINT32 id) {\
+                           uint32_t id) {\
     GWEN_INHERITDATA *d;\
     \
     assert(element);\
@@ -230,7 +236,16 @@ extern "C" {
    * class does.
    */
 #define GWEN_INHERIT_FINI(t, element) {\
+    GWEN_INHERITDATA *inherit__data;\
+    \
     assert(element);\
+    assert(element->INHERIT__list);\
+    \
+    while( (inherit__data=GWEN_InheritData_List_First(element->INHERIT__list)) ) {\
+      GWEN_InheritData_freeData(inherit__data); \
+      GWEN_InheritData_List_Del(inherit__data); \
+      GWEN_InheritData_free(inherit__data); \
+    } \
     GWEN_InheritData_List_free(element->INHERIT__list);\
   }
 
@@ -247,7 +262,7 @@ extern "C" {
    * upon the first invocation of the macro @ref GWEN_INHERIT_SETDATA.
    */
 #define GWEN_INHERIT(bt, t) \
-  GWEN_TYPE_UINT32 t##__INHERIT_ID=0;
+  uint32_t t##__INHERIT_ID=0;
 
   /**
    * This macros returns the private data of an inheriting class associated

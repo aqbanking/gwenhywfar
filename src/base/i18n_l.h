@@ -34,20 +34,17 @@
 #ifdef ENABLE_NLS
 # include <libintl.h>
 # include <locale.h>
-# define I18N(m) dgettext("gwenhywfar", m)
-# define I18S(m) m
-#else
-# define I18N(m) m
-# define I18S(m) m
 #endif
 
 #include <gwenhywfar/i18n.h>
 
 
-GWEN_ERRORCODE GWEN_I18N_ModuleInit();
-GWEN_ERRORCODE GWEN_I18N_ModuleFini();
+int GWEN_I18N_ModuleInit();
+int GWEN_I18N_ModuleFini();
 
 
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
+#define I18S(msg) msg
 
 
 #endif

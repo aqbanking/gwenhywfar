@@ -31,8 +31,8 @@
 
 #include <gwenhywfar/memory.h>
 
-GWEN_ERRORCODE GWEN_Memory_ModuleInit();
-GWEN_ERRORCODE GWEN_Memory_ModuleFini();
+int GWEN_Memory_ModuleInit();
+int GWEN_Memory_ModuleFini();
 
 #endif /* GWENHYWFAR_MEMORY_L_H */
 

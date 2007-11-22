@@ -47,7 +47,7 @@
 extern "C" {
 #endif
 
-struct GWEN_DIRECTORYDATASTRUCT {
+struct GWEN_DIRECTORY {
   char pattern[256];
   HANDLE handle;
   char lastName[256];

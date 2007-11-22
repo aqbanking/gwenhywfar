@@ -33,6 +33,28 @@
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/stringlist.h>
 
+typedef enum {
+  /** relative to the current working directory at calling time */
+  GWEN_PathManager_RelModeCwd=0,
+  /**
+   * This mode is interpreted differently in Windows and non-Windows systems
+   * due to the different handling of paths.
+   * <ul>
+   *  <li>
+   *    Windows: Releative to the folder in which the currently running
+   *    executable is located.
+   *  </li>
+   *  <li>
+   *    Non-Windows: Relative to the installation prefix of the currently
+   *    running executable
+   *  </li>
+   * </ul>
+   */
+  GWEN_PathManager_RelModeExe,
+  /** relative to the user's home directory */
+  GWEN_PathManager_RelModeHome
+} GWEN_PATHMANAGER_RELMODE;
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,6 +123,8 @@ int GWEN_PathManager_UndefinePath(const char *destLib,
  * @param pathValue The actual directory path that should be added to
  * this registered path.
  *
+ * @param rm path relative to what? (see @ref GWEN_PathManager_RelModeCwd)
+ *
  * @return Zero on success, or GWEN_ERROR_NOT_FOUND if the @c
  * pathName was not found.
  */
@@ -108,8 +132,53 @@ GWENHYWFAR_API
 int GWEN_PathManager_AddPath(const char *callingLib,
                              const char *destLib,
                              const char *pathName,
-                             const char *pathValue);
+			     const char *pathValue);
 
+/**
+ * Same as @ref GWEN_PathManager_AddPath but the path to add is given
+ * relative to some directory. The "relmode" argument chooses the base
+ * directory to which the given sub-directory path is appended and the
+ * result is added to this PathManager:
+ *
+ * - RelModeCwd appends the path to the current working directory at
+ * the time of calling. So future changes to the CWD do not affect
+ * this setting.
+ *
+ * - RelModeExe appends the path to the prefix of the installation
+ * location of the calling executable. This function looks up the
+ * current working directory, removes the last component (i.e. the
+ * "/bin/") to get the prefix, then adds the given relative path to
+ * it.
+ *
+ * - RelModeHome appends the path to the return value of
+ * GWEN_Directory_GetHomeDirectory().
+ *
+ * All three variantes will then add the resulting path
+ * to the PathManager. 
+ *
+ * @param callingLib The name of the library that adds this path entry.
+ *
+ * @param destLib The name of the library that this path is supposed to
+ * belong to.
+ *
+ * @param pathName A string identifier for this registered path.
+ *
+ * @param pathValue The actual directory path relative to the prefix
+ * of the current working directory that should be added to this
+ * registered path.
+ *
+ * @param rm The Flag to choose the starting directory to which the
+ * path is appended.
+ *
+ * @return Zero on success, or GWEN_ERROR_NOT_FOUND if the @c
+ * pathName was not found.
+ */
+GWENHYWFAR_API
+int GWEN_PathManager_AddRelPath(const char *callingLib,
+				const char *destLib,
+				const char *pathName,
+				const char *pathValue,
+				GWEN_PATHMANAGER_RELMODE rm);
 /**
  * Add a directory path entry to a registered path entry in the
  * global GWEN_PathManager by looking up the directory path in the

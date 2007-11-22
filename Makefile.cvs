@@ -2,6 +2,18 @@
 #MY_CFLAGS=-W -pedantic -std=c99 -ggdb -Wall -O -ggdb
 MY_CFLAGS=-ggdb -Wall -O 
 
+WIN32_OPTIONS=\
+  --host=i586-mingw32msvc \
+  --target=i586-mingw32msvc \
+  --enable-version-specific-runtime-libs \
+  --with-gcc \
+  --with-gnu-ld \
+  --without-x \
+  --enable-threads=win32 \
+  --disable-win32-registry
+
+MINGW32_PREFIX=/usr/i586-mingw32msvc
+
 
 default: all
 
@@ -37,19 +49,38 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --prefix=/opt/devel/openhbci
+	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --enable-full-doc
 
-mp-debug:
+mp-priv:
 	libtoolize -f --automake
 	aclocal -I ./m4
 	autoheader
 	automake --add-missing
 	autoconf
-	CFLAGS="-ggdb -Wall" CXXFLAGS="-ggdb -Wall" ./configure --enable-maintainer-mode --disable-static --enable-memtrace --enable-profiling
+	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --prefix=/opt/devel/4 --enable-full-doc
 
 mp-darwin:
 	CFLAGS="-I/sw/include -ggdb -Wall" LDFLAGS="-L/sw/lib" ./configure
 
 mp-w32:
-	CFLAGS="-Wall" CXXFLAGS="-Wall" ./configure --enable-release
+	PATH="$(MINGW32_PREFIX)/bin:$(PATH)"
+	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" \
+        DLLTOOL=i586-mingw32msvc-dlltool \
+	OBJDUMP=i586-mingw32msvc-objdump \
+	LD=i586-mingw32msvc-ld \
+	AR=i586-mingw32msvc-ar \
+	NM=i586-mingw32msvc-nm \
+	RANLIB=i586-mingw32msvc-ranlib \
+	STRIP=i586-mingw32msvc-strip \
+	STRIPPROG=i586-mingw32msvc-strip \
+	AS=i586-mingw32msvc-as \
+	RC=i586-mingw32msvc-windres \
+	./configure \
+	  --enable-maintainer-mode \
+	  --prefix=$(MINGW32_PREFIX) $(WIN32_OPTIONS) \
+	  --enable-release \
+	  --disable-binreloc \
+	  --with-openssl-includes=$(MINGW32_PREFIX)/include \
+	  --with-openssl-libs=$(MINGW32_PREFIX)/lib
+
 

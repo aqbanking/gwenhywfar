@@ -39,8 +39,8 @@
 
 
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
-                             GWEN_TYPE_UINT32 size,
-                             GWEN_TYPE_UINT32 used,
+                             uint32_t size,
+                             uint32_t used,
                              int take){
   GWEN_BUFFER *bf;
 
@@ -94,7 +94,7 @@ void GWEN_Buffer_free(GWEN_BUFFER *bf){
 
 GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
   GWEN_BUFFER *newbf;
-  GWEN_TYPE_UINT32 i;
+  uint32_t i;
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, newbf);
   if (bf->realPtr && bf->realBufferSize) {
@@ -127,7 +127,20 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
 
 
 
-int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 res){
+int GWEN_Buffer_Relinquish(GWEN_BUFFER *bf) {
+  assert(bf);
+  if (!(bf->flags & GWEN_BUFFER_FLAGS_OWNED))
+    return GWEN_ERROR_INVALID;
+  if (bf->realPtr!=bf->ptr)
+    return GWEN_ERROR_INVALID;
+
+  bf->flags&=~GWEN_BUFFER_FLAGS_OWNED;
+  return 0;
+}
+
+
+
+int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, uint32_t res){
   assert(bf);
   if (!res)
     return 0;
@@ -157,40 +170,40 @@ int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 res){
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetMode(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetMode(GWEN_BUFFER *bf){
   assert(bf);
   return bf->mode;
 }
 
 
 
-void GWEN_Buffer_SetMode(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 mode){
+void GWEN_Buffer_SetMode(GWEN_BUFFER *bf, uint32_t mode){
   assert(bf);
   bf->mode=mode;
 }
 
 
-void GWEN_Buffer_AddMode(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 mode){
+void GWEN_Buffer_AddMode(GWEN_BUFFER *bf, uint32_t mode){
   assert(bf);
   bf->mode|=mode;
 }
 
 
-void GWEN_Buffer_SubMode(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 mode){
+void GWEN_Buffer_SubMode(GWEN_BUFFER *bf, uint32_t mode){
   assert(bf);
   bf->mode&=~mode;
 }
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetHardLimit(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetHardLimit(GWEN_BUFFER *bf){
   assert(bf);
   return bf->hardLimit;
 }
 
 
 
-void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 l){
+void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, uint32_t l){
   assert(bf);
   assert(l);
   bf->hardLimit=l;
@@ -205,7 +218,7 @@ char *GWEN_Buffer_GetStart(GWEN_BUFFER *bf){
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetSize(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetSize(GWEN_BUFFER *bf){
   assert(bf);
   if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
     return bf->hardLimit;
@@ -214,14 +227,14 @@ GWEN_TYPE_UINT32 GWEN_Buffer_GetSize(GWEN_BUFFER *bf){
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetPos(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetPos(GWEN_BUFFER *bf){
   assert(bf);
   return bf->pos;
 }
 
 
 
-int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
+int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i){
   assert(bf);
 
   if (i>=bf->bufferSize) {
@@ -241,14 +254,14 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf){
   assert(bf);
   return bf->bytesUsed;
 }
 
 
 
-int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
+int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, uint32_t i){
   assert(bf);
 
   DBG_WARN(GWEN_LOGDOMAIN,
@@ -265,15 +278,15 @@ int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
 
 
 
-int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
+int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
   assert(bf);
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
   /*if (bf->pos+size>bf->bufferSize) {*/
   if (bf->bytesUsed+(size+1) > bf->bufferSize) {
     /* need to realloc */
-    GWEN_TYPE_UINT32 nsize;
-    GWEN_TYPE_UINT32 noffs;
-    GWEN_TYPE_UINT32 reserved;
+    uint32_t nsize;
+    uint32_t noffs;
+    uint32_t reserved;
     void *p;
 
     /* check for dynamic mode */
@@ -331,7 +344,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 size) {
 
 int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
                             const char *buffer,
-                            GWEN_TYPE_UINT32 size){
+                            uint32_t size){
   assert(bf);
   if (GWEN_Buffer_AllocRoom(bf, size+1)) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
@@ -377,44 +390,94 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
 
 
 
-int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf){
-  if (bf->mode & GWEN_BUFFER_MODE_USE_BIO) {
-    if (bf->bio) {
-      unsigned int toread;
-      GWEN_ERRORCODE gerr;
+int GWEN_Buffer__FillBuffer_Bio(GWEN_BUFFER *bf){
+  if (bf->bio) {
+    unsigned int toread;
+    int gerr;
 
-      if (GWEN_BufferedIO_CheckEOF(bf->bio)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "End of data stream reached");
-        return -1;
-      }
-      toread=bf->pos-bf->bytesUsed+1;
-      if (GWEN_Buffer_AllocRoom(bf, toread+1)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
-        return -1;
-      }
-      gerr=GWEN_BufferedIO_ReadRawForced(bf->bio,
-                                         bf->ptr+bf->bytesUsed,
-                                         &toread);
-      if (!GWEN_Error_IsOk(gerr)) {
-        DBG_INFO_ERR(GWEN_LOGDOMAIN, gerr);
-        return -1;
-      }
-      bf->bytesUsed+=toread;
+    if (GWEN_BufferedIO_CheckEOF(bf->bio)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "End of data stream reached");
+      return GWEN_ERROR_EOF;
     }
-    else {
-      DBG_DEBUG(GWEN_LOGDOMAIN,
-                "End of used area reached and no BIO (%d bytes)",
-                bf->pos);
+    toread=bf->pos-bf->bytesUsed+1;
+    if (GWEN_Buffer_AllocRoom(bf, toread+1)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
       return -1;
     }
+    gerr=GWEN_BufferedIO_ReadRawForced(bf->bio,
+				       bf->ptr+bf->bytesUsed,
+				       &toread);
+    if (gerr) {
+      DBG_INFO_ERR(GWEN_LOGDOMAIN, gerr);
+      return -1;
+    }
+    bf->bytesUsed+=toread;
   }
   else {
     DBG_DEBUG(GWEN_LOGDOMAIN,
-              "End of used area reached (%d bytes)", bf->pos);
-    return -1;
+	      "End of used area reached and no BIO (%d bytes)",
+	      bf->pos);
+    return GWEN_ERROR_EOF;
   }
   return 0;
 }
+
+
+
+int GWEN_Buffer__FillBuffer_IoLayer(GWEN_BUFFER *bf){
+  if (bf->ioLayer) {
+    unsigned int toread;
+    int rv;
+
+    toread=bf->pos-bf->bytesUsed+1;
+    if (GWEN_Buffer_AllocRoom(bf, toread+1)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
+      return -1;
+    }
+    /* wait up to 30 secs for available data */
+    rv=GWEN_Io_Layer_ReadBytes(bf->ioLayer,
+			       (uint8_t*)bf->ptr+bf->bytesUsed,
+			       toread,
+			       GWEN_IO_REQUEST_FLAGS_READALL,
+			       0, 30000);
+    if (rv<toread) {
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+	/* still some bytes available, but not all */
+	bf->bytesUsed+=toread;
+	return GWEN_ERROR_EOF;
+      }
+    }
+    bf->bytesUsed+=toread;
+    return 0;
+  }
+  else {
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "End of used area reached and no BIO (%d bytes)",
+	      bf->pos);
+    return GWEN_ERROR_EOF;
+  }
+}
+
+
+
+int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf){
+  assert(bf);
+  if (bf->mode & GWEN_BUFFER_MODE_USE_BIO)
+    return GWEN_Buffer__FillBuffer_Bio(bf);
+  else if (bf->mode & GWEN_BUFFER_MODE_USE_IO)
+    return GWEN_Buffer__FillBuffer_IoLayer(bf);
+  else {
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "End of used area reached (%d bytes)", bf->pos);
+    return GWEN_ERROR_EOF;
+  }
+}
+
 
 
 int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf){
@@ -443,7 +506,7 @@ int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf){
 
 
 
-int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
+int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, uint32_t i){
   assert(bf);
 
   if (i+bf->pos>=bf->bufferSize) {
@@ -451,9 +514,10 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
       DBG_DEBUG(GWEN_LOGDOMAIN,
                 "Position %d outside buffer boundaries (%d bytes)\n"
                 "Incrementing anyway",
-                i+bf->pos, bf->bufferSize);
+		i+bf->pos, bf->bufferSize);
     }
   }
+
   bf->pos+=i;
   return 0;
 }
@@ -468,6 +532,8 @@ int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf){
                bf->pos);
       bf->bytesUsed=bf->pos;
     }
+    /* append a NULL to allow using the buffer as ASCIIZ string */
+    bf->ptr[bf->bytesUsed]=0;
     return 0;
   }
   else {
@@ -479,7 +545,7 @@ int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf){
 
 
 
-int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 i){
+int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, uint32_t i){
   assert(bf);
 
   if (bf->pos<i) {
@@ -505,7 +571,7 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf){
   assert(bf);
 
   return (bf->bufferSize-bf->bytesUsed);
@@ -513,7 +579,7 @@ GWEN_TYPE_UINT32 GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf){
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetBytesLeft(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetBytesLeft(GWEN_BUFFER *bf){
   assert(bf);
 
   if (bf->pos<bf->bytesUsed)
@@ -531,7 +597,7 @@ char *GWEN_Buffer_GetPosPointer(GWEN_BUFFER *bf){
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx){
+uint32_t GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx){
   assert(bf);
   assert(idx<GWEN_BUFFER_MAX_BOOKMARKS);
   return bf->bookmarks[idx];
@@ -540,7 +606,7 @@ GWEN_TYPE_UINT32 GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx){
 
 
 void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
-                             GWEN_TYPE_UINT32 v){
+                             uint32_t v){
   assert(bf);
   assert(idx<GWEN_BUFFER_MAX_BOOKMARKS);
   bf->bookmarks[idx]=v;
@@ -549,7 +615,7 @@ void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
 
 
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert) {
-  GWEN_TYPE_UINT32 k;
+  uint32_t k;
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
@@ -573,8 +639,8 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert) {
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Bytes Reserved : "GWEN_TYPE_TMPL_UINT32"\n",
-          (GWEN_TYPE_UINT32)(bf->ptr-bf->realPtr));
+  fprintf(f, "Bytes Reserved : %u\n",
+          (uint32_t)(bf->ptr-bf->realPtr));
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
@@ -627,10 +693,10 @@ void GWEN_Buffer_Rewind(GWEN_BUFFER *bf){
 
 int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
                           char *buffer,
-                          GWEN_TYPE_UINT32 *size){
+                          uint32_t *size){
 #if 0
   /* old behaviour */
-  GWEN_TYPE_UINT32 i;
+  uint32_t i;
   int c;
 
   i=0;
@@ -648,7 +714,7 @@ int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
 
 #else
   /* optimized for speed */
-  GWEN_TYPE_UINT32 i;
+  uint32_t i;
   char *pdst;
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "About to copy up to %d bytes", *size);
@@ -687,14 +753,14 @@ int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
 
 
 
-GWEN_TYPE_UINT32 GWEN_Buffer_GetStep(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetStep(GWEN_BUFFER *bf){
   assert(bf);
   return bf->step;
 }
 
 
 
-void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 step){
+void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, uint32_t step){
   assert(bf);
   bf->step=step;
 }
@@ -702,9 +768,9 @@ void GWEN_Buffer_SetStep(GWEN_BUFFER *bf, GWEN_TYPE_UINT32 step){
 
 
 void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
-                                 GWEN_TYPE_UINT32 pos,
+                                 uint32_t pos,
                                  int offset) {
-  GWEN_TYPE_UINT32 i;
+  uint32_t i;
 
   assert(bf);
   for (i=0; i<GWEN_BUFFER_MAX_BOOKMARKS; i++) {
@@ -716,7 +782,7 @@ void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
 
 
 int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
-                           GWEN_TYPE_UINT32 size){
+                           uint32_t size){
   char *p;
   int i;
 
@@ -773,9 +839,76 @@ int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
 
 
 
+int GWEN_Buffer_RemoveRoom(GWEN_BUFFER *bf, uint32_t size){
+  char *p;
+  int i;
+
+  assert(bf);
+
+  if (bf->pos==0) {
+    if (bf->bytesUsed<size) {
+      /* can't remove bytes we don't have */
+      return GWEN_ERROR_INVALID;
+    }
+    /* simply add to reserved space */
+    bf->ptr+=size;
+    bf->bytesUsed-=size;
+    bf->bufferSize-=size;
+  }
+  else {
+    if (bf->bytesUsed+size<(bf->bytesUsed)) {
+      /* can't remove more bytes than we have */
+      return GWEN_ERROR_INVALID;
+    }
+
+    /* we need to get the rest closer */
+    p=bf->ptr+bf->pos+size;
+    i=bf->bytesUsed-bf->pos-size;
+    memmove(bf->ptr+bf->pos, p, i);
+    bf->bytesUsed+=size;
+  }
+
+  /* append "0" behind buffer */
+  bf->ptr[bf->bytesUsed]=0;
+  GWEN_Buffer_AdjustBookmarks(bf, bf->pos, -((int)size));
+
+  return 0;
+}
+
+
+
+int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
+			     uint32_t rsize,
+			     const char *buffer,
+			     uint32_t size){
+  int32_t d;
+  int rv;
+
+  /* either insert or remove bytes */
+  d=rsize-size;
+  if (d<0) {
+    rv=GWEN_Buffer_RemoveRoom(bf, d);
+  }
+  else if (d>0) {
+    rv=GWEN_Buffer_InsertRoom(bf, d);
+  }
+  else
+    /* nothing to adjust if sizes are the same */
+    rv=0;
+  if (rv)
+    return rv;
+
+  /* write new bytes */
+  if (size)
+    memmove(bf->ptr+bf->pos, buffer, size);
+  return 0;
+}
+
+
+
 int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
                             const char *buffer,
-                            GWEN_TYPE_UINT32 size){
+                            uint32_t size){
   assert(bf);
   assert(buffer);
 
@@ -811,8 +944,8 @@ int GWEN_Buffer_InsertBuffer(GWEN_BUFFER *bf,
 
 
 int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
-                     GWEN_TYPE_UINT32 pos,
-                     GWEN_TYPE_UINT32 l) {
+                     uint32_t pos,
+                     uint32_t l) {
   if (pos>=bf->bufferSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Position outside buffer");
     return -1;
@@ -873,9 +1006,27 @@ void GWEN_Buffer_SetSourceBIO(GWEN_BUFFER *bf,
 
 
 
+void GWEN_Buffer_SetSourceIoLayer(GWEN_BUFFER *bf,
+				  GWEN_IO_LAYER *io,
+				  int take) {
+  assert(bf);
+  if (bf->ioLayer) {
+    if (bf->flags & GWEN_BUFFER_FLAGS_OWN_IO) {
+      GWEN_Io_Layer_free(bf->ioLayer);
+    }
+  }
+  if (take)
+    bf->flags|=GWEN_BUFFER_FLAGS_OWN_IO;
+  else
+    bf->flags&=~GWEN_BUFFER_FLAGS_OWN_IO;
+  bf->ioLayer=io;
+}
+
+
+
 int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
                               unsigned char c,
-                              GWEN_TYPE_UINT32 size){
+                              uint32_t size){
   assert(bf);
   if (GWEN_Buffer_AllocRoom(bf, size+1)) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
@@ -901,7 +1052,7 @@ int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
 
 int GWEN_Buffer_FillLeftWithBytes(GWEN_BUFFER *bf,
                                   unsigned char c,
-                                  GWEN_TYPE_UINT32 size){
+                                  uint32_t size){
   assert(bf);
 
   if (GWEN_Buffer_InsertRoom(bf, size)) {

@@ -35,6 +35,11 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/dbio_be.h>
+#include <gwenhywfar/io_buffered.h>
+#include <gwenhywfar/io_file.h>
+#include <gwenhywfar/iomanager.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -50,7 +55,7 @@
 
 
 int GWEN_DBIO__XmlDb_ImportGroup(GWEN_DBIO *dbio,
-				 GWEN_TYPE_UINT32 flags,
+				 uint32_t flags,
 				 GWEN_DB_NODE *data,
 				 GWEN_DB_NODE *cfg,
 				 GWEN_XMLNODE *node) {
@@ -124,7 +129,7 @@ void GWEN_DBIO__XmlDb_ReadDataTags(GWEN_XMLNODE *node, GWEN_BUFFER *buf) {
 
 
 int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
-			       GWEN_TYPE_UINT32 flags,
+			       uint32_t flags,
 			       GWEN_DB_NODE *data,
 			       GWEN_DB_NODE *cfg,
 			       GWEN_XMLNODE *node) {
@@ -218,28 +223,36 @@ int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
-			   GWEN_BUFFEREDIO *bio,
-                           GWEN_TYPE_UINT32 flags,
+			   GWEN_IO_LAYER *io,
 			   GWEN_DB_NODE *data,
-			   GWEN_DB_NODE *cfg) {
+			   GWEN_DB_NODE *cfg,
+			   uint32_t flags,
+			   uint32_t guiid,
+			   int msecs) {
   int rv;
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *n;
   const char *rootName=0;
+  GWEN_XML_CONTEXT *ctx;
 
   assert(data);
+
   if (cfg)
     rootName=GWEN_DB_GetCharValue(cfg, "rootElement", 0, 0);
 
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-  rv=GWEN_XML_Parse(root, bio,
-		    GWEN_XML_FLAGS_DEFAULT |
-		    GWEN_XML_FLAGS_HANDLE_HEADERS);
+  ctx=GWEN_XmlCtxStore_new(root,
+			   GWEN_XML_FLAGS_DEFAULT |
+			   GWEN_XML_FLAGS_HANDLE_HEADERS,
+			   guiid, msecs);
+  rv=GWEN_XML_ReadFromIo(ctx, io);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XmlCtx_free(ctx);
     GWEN_XMLNode_free(root);
     return rv;
   }
+  GWEN_XmlCtx_free(ctx);
 
   if (rootName) {
     n=GWEN_XMLNode_FindFirstTag(root, rootName, 0, 0);
@@ -342,13 +355,13 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
   dbT=GWEN_DB_GetFirstValue(data);
   while(dbT) {
     if (!(GWEN_DB_GetNodeFlags(dbT) & GWEN_DB_NODE_FLAGS_VOLATILE)) {
-      GWEN_DB_VALUETYPE vt;
+      GWEN_DB_NODE_TYPE vt;
       GWEN_XMLNODE *vn;
   
       vt=GWEN_DB_GetValueType(dbT);
       switch(vt) {
   
-      case GWEN_DB_VALUETYPE_CHAR:
+      case GWEN_DB_NodeType_ValueChar:
 	s=GWEN_DB_GetCharValueFromNode(dbT);
 	if (s && *s) {
 	  GWEN_XMLNODE *dn;
@@ -362,7 +375,7 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 	}
 	break;
   
-      case GWEN_DB_VALUETYPE_INT: {
+      case GWEN_DB_NodeType_ValueInt: {
 	char nbuf[32];
 	GWEN_XMLNODE *dn;
 
@@ -378,7 +391,7 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 	break;
       }
   
-      case GWEN_DB_VALUETYPE_BIN: {
+      case GWEN_DB_NodeType_ValueBin: {
 	const void *vp;
 	unsigned int vsize;
   
@@ -411,7 +424,7 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 	break;
       }
   
-      case GWEN_DB_VALUETYPE_PTR:
+      case GWEN_DB_NodeType_ValuePtr:
 	DBG_DEBUG(GWEN_LOGDOMAIN, "Not storing pointer value");
 	break;
   
@@ -432,14 +445,17 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
-			   GWEN_BUFFEREDIO *bio,
-			   GWEN_TYPE_UINT32 flags,
+			   GWEN_IO_LAYER *io,
 			   GWEN_DB_NODE *data,
-			   GWEN_DB_NODE *cfg){
+			   GWEN_DB_NODE *cfg,
+			   uint32_t flags,
+			   uint32_t guiid,
+			   int msecs) {
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *nh;
   int rv;
   const char *rootName=0;
+  GWEN_XML_CONTEXT *ctx;
 
   if (cfg)
     rootName=GWEN_DB_GetCharValue(cfg, "rootElement", 0, 0);
@@ -456,15 +472,22 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
     GWEN_XMLNode_free(root);
     return rv;
   }
-  rv=GWEN_XMLNode_WriteToStream(root, bio,
-				GWEN_XML_FLAGS_DEFAULT |
-				GWEN_XML_FLAGS_SIMPLE |
-				GWEN_XML_FLAGS_HANDLE_HEADERS);
+
+
+  ctx=GWEN_XmlCtxStore_new(root,
+			   GWEN_XML_FLAGS_DEFAULT |
+			   GWEN_XML_FLAGS_SIMPLE |
+			   GWEN_XML_FLAGS_HANDLE_HEADERS,
+			   guiid, msecs);
+
+  rv=GWEN_XMLNode_WriteToStream(root, ctx, io);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XmlCtx_free(ctx);
     GWEN_XMLNode_free(root);
     return rv;
   }
+  GWEN_XmlCtx_free(ctx);
   GWEN_XMLNode_free(root);
 
   return 0;
@@ -473,9 +496,14 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
-						     const char *fname){
+						     const char *fname,
+						     uint32_t guiid,
+						     int msecs){
   int fd;
-  GWEN_BUFFEREDIO *bio;
+  GWEN_IO_LAYER *baseIo;
+  GWEN_IO_LAYER *io;
+  GWEN_BUFFER *lbuffer;
+  int rv;
 
   assert(dbio);
   assert(fname);
@@ -488,37 +516,52 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
     return GWEN_DBIO_CheckFileResultNotOk;
   }
 
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
+  io=GWEN_Io_LayerFile_new(fd, -1);
+  assert(io);
+  baseIo=io;
 
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
-    char lbuffer[256];
-    GWEN_ERRORCODE err;
+  io=GWEN_Io_LayerBuffered_new(baseIo);
+  assert(io);
 
-    err=GWEN_BufferedIO_ReadLine(bio, lbuffer, sizeof(lbuffer));
-    if (!GWEN_Error_IsOk(err)) {
+  rv=GWEN_Io_Manager_RegisterLayer(io);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
+    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+    GWEN_Io_Layer_free(io);
+    return GWEN_DBIO_CheckFileResultNotOk;
+  }
+
+  lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  for (;;) {
+    int err;
+
+    GWEN_Buffer_Reset(lbuffer);
+    err=GWEN_Io_LayerBuffered_ReadLineToBuffer(io, lbuffer, guiid, msecs);
+    if (err<0) {
       DBG_INFO(GWEN_LOGDOMAIN,
-               "File \"%s\" is not supported by this plugin",
-               fname);
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
+	       "File \"%s\" is not supported by this plugin",
+	       fname);
+      GWEN_Buffer_free(lbuffer);
+      GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+      GWEN_Io_Layer_free(io);
       return GWEN_DBIO_CheckFileResultNotOk;
     }
-    if (-1!=GWEN_Text_ComparePattern(lbuffer, "*<?xml>*", 0)) {
+    if (-1!=GWEN_Text_ComparePattern(GWEN_Buffer_GetStart(lbuffer), "*<?xml*", 0)) {
       /* match */
       DBG_INFO(GWEN_LOGDOMAIN,
-               "File \"%s\" is supported by this plugin",
-               fname);
-      GWEN_BufferedIO_Close(bio);
-      GWEN_BufferedIO_free(bio);
+	       "File \"%s\" is supported by this plugin",
+	       fname);
+      GWEN_Buffer_free(lbuffer);
+      GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+      GWEN_Io_Layer_free(io);
       /* don't be too sure about this, we *may* support the file,
        * so we dont say we don't support this file */
       return GWEN_DBIO_CheckFileResultUnknown;
     }
   } /* while */
-
-  GWEN_BufferedIO_Close(bio);
-  GWEN_BufferedIO_free(bio);
+  GWEN_Buffer_free(lbuffer);
+  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
+  GWEN_Io_Layer_free(io);
   return GWEN_DBIO_CheckFileResultNotOk;
 }
 

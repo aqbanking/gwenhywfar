@@ -65,11 +65,11 @@ void GWEN_MemoryDebug_Decrement(const char *name,
                                 int wLine);
 
 GWENHYWFAR_API
-void GWEN_MemoryDebug_Dump(GWEN_TYPE_UINT32 mode);
+void GWEN_MemoryDebug_Dump(uint32_t mode);
 
 GWENHYWFAR_API
 void GWEN_MemoryDebug_DumpObject(const char *name,
-                                 GWEN_TYPE_UINT32 mode);
+                                 uint32_t mode);
 
 GWENHYWFAR_API
 long int GWEN_MemoryDebug_GetObjectCount(const char *name);
@@ -89,8 +89,8 @@ void GWEN_MemoryDebug_CleanUp();
 #endif
 
 GWENHYWFAR_API
-GWEN_TYPE_UINT32 GWEN_Debug_Snprintf(char *buffer,
-                                     GWEN_TYPE_UINT32 size,
+uint32_t GWEN_Debug_Snprintf(char *buffer,
+                                     uint32_t size,
                                      const char *fmt, ...);
 
 #ifndef NO_VARIADIC_MACROS

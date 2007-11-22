@@ -178,13 +178,13 @@ GWEN_IPC_REQUEST *st;
 }
 
 
-GWEN_TYPE_UINT32 GWEN_IpcRequest_GetId(const GWEN_IPC_REQUEST *st) {
+uint32_t GWEN_IpcRequest_GetId(const GWEN_IPC_REQUEST *st) {
   assert(st);
   return st->id;
 }
 
 
-void GWEN_IpcRequest_SetId(GWEN_IPC_REQUEST *st, GWEN_TYPE_UINT32 d) {
+void GWEN_IpcRequest_SetId(GWEN_IPC_REQUEST *st, uint32_t d) {
   assert(st);
   st->id=d;
   st->_modified=1;
@@ -211,13 +211,13 @@ void GWEN_IpcRequest_SetName(GWEN_IPC_REQUEST *st, const char *d) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_IpcRequest_GetIpcId(const GWEN_IPC_REQUEST *st) {
+uint32_t GWEN_IpcRequest_GetIpcId(const GWEN_IPC_REQUEST *st) {
   assert(st);
   return st->ipcId;
 }
 
 
-void GWEN_IpcRequest_SetIpcId(GWEN_IPC_REQUEST *st, GWEN_TYPE_UINT32 d) {
+void GWEN_IpcRequest_SetIpcId(GWEN_IPC_REQUEST *st, uint32_t d) {
   assert(st);
   st->ipcId=d;
   st->_modified=1;

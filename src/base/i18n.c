@@ -38,11 +38,13 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <errno.h>
+
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif
 
-#ifdef ENABLE_NLS
+#ifdef HAVE_I18N
 # include <libintl.h>
 # include <locale.h>
 #endif
@@ -53,39 +55,48 @@ static char *gwen_i18n__currentlocale=0;
 
 
 
-GWEN_ERRORCODE GWEN_I18N_ModuleInit(){
-  const char *s;
+int GWEN_I18N_ModuleInit(){
   const char *localedir;
   GWEN_STRINGLIST *slist;
 
   gwen_i18n__localelist=GWEN_StringList_new();
 
-  slist = GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
-  assert(GWEN_StringList_Count(slist) > 0);
-  localedir = GWEN_StringList_FirstString(slist);
-#ifdef HAVE_I18N
-  s = setlocale(LC_ALL,"");
-  if (bindtextdomain(PACKAGE, localedir)==0) {
-    DBG_WARN(GWEN_LOGDOMAIN, " Error bindtextdomain()\n");
-  } else {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Textdomain bound.");
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-  }
-#else
-  s="C";
-#endif
-  if (s) {
-    if (GWEN_I18N_SetLocale(s)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Could not set locale");
+  slist=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
+  if (slist) {
+    if (GWEN_StringList_Count(slist) > 0) {
+      int rv;
+
+      localedir=GWEN_StringList_FirstString(slist);
+      rv=GWEN_I18N_BindTextDomain_Dir(PACKAGE, localedir);
+      if (rv) {
+	DBG_WARN(GWEN_LOGDOMAIN, "Could not bind textdomain (%d)", rv);
+      }
+      else {
+	rv=GWEN_I18N_BindTextDomain_Codeset(PACKAGE, "UTF-8");
+	if (rv) {
+	  DBG_WARN(GWEN_LOGDOMAIN, "Could not set codeset (%d)", rv);
+	}
+      }
+
+      /* set locale */
+      if (GWEN_I18N_SetLocale("")) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Could not set locale");
+      }
     }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Empty locale path list");
+    }
+    GWEN_StringList_free(slist);
   }
-  GWEN_StringList_free(slist);
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No locale path list");
+  }
   return 0;
 }
 
 
 
-GWEN_ERRORCODE GWEN_I18N_ModuleFini(){
+int GWEN_I18N_ModuleFini(){
   GWEN_StringList_free(gwen_i18n__localelist);
   free(gwen_i18n__currentlocale);
   return 0;
@@ -94,11 +105,26 @@ GWEN_ERRORCODE GWEN_I18N_ModuleFini(){
 
 
 int GWEN_I18N_SetLocale(const char *s){
+  const char *realLocale;
   char *p;
   char *cs;
 
   assert(s);
-  cs=strdup(s);
+
+#ifdef HAVE_I18N
+  realLocale=setlocale(LC_ALL, s);
+  if (realLocale==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Unable to set locale [%s]", s);
+    realLocale=s;
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "Real locale is [%s]", realLocale);
+  }
+#else
+  realLocale=s;
+#endif
+
+  cs=strdup(realLocale);
   GWEN_StringList_Clear(gwen_i18n__localelist);
   GWEN_StringList_AppendString(gwen_i18n__localelist, cs, 0, 1);
   /*fprintf(stderr, "Appending locale \"%s\"\n", cs);*/
@@ -117,10 +143,7 @@ int GWEN_I18N_SetLocale(const char *s){
   free(cs);
 
   free(gwen_i18n__currentlocale);
-  gwen_i18n__currentlocale=strdup(s);
-#ifdef ENABLE_NLS
-  setlocale(LC_ALL, s);
-#endif
+  gwen_i18n__currentlocale=strdup(realLocale);
   return 0;
 }
 
@@ -134,6 +157,44 @@ GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList(){
 
 const char *GWEN_I18N_GetCurrentLocale() {
   return gwen_i18n__currentlocale;
+}
+
+
+
+const char *GWEN_I18N_Translate(const char *textdomain, const char *text) {
+#ifdef HAVE_I18N
+  return dgettext(textdomain, text);
+#else
+  return text;
+#endif
+}
+
+
+
+int GWEN_I18N_BindTextDomain_Dir(const char *textdomain, const char *folder) {
+#ifdef HAVE_I18N
+  if (NULL==bindtextdomain(textdomain, folder)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "bindtextdomain(): %s", strerror(errno));
+    return GWEN_ERROR_GENERIC;
+  }
+  return 0;
+#else
+  return GWEN_ERROR_NOT_SUPPORTED;
+#endif
+}
+
+
+
+int GWEN_I18N_BindTextDomain_Codeset(const char *textdomain, const char *cs) {
+#ifdef HAVE_I18N
+  if (NULL==bind_textdomain_codeset(textdomain, cs)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "bind_textdomain_codeset(): %s", strerror(errno));
+    return GWEN_ERROR_GENERIC;
+  }
+  return 0;
+#else
+  return GWEN_ERROR_NOT_SUPPORTED;
+#endif
 }
 
 

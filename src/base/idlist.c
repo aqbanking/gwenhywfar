@@ -67,7 +67,7 @@ void GWEN_IdTable_free(GWEN_IDTABLE *idt){
 
 
 
-int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
+int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, uint32_t id){
   unsigned int i;
 
   assert(idt);
@@ -85,7 +85,7 @@ int GWEN_IdTable_AddId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
 
 
 
-int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
+int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, uint32_t id){
   unsigned int i;
 
   assert(idt);
@@ -101,7 +101,7 @@ int GWEN_IdTable_HasId(const GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
 
 
 
-int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, GWEN_TYPE_UINT32 id){
+int GWEN_IdTable_DelId(GWEN_IDTABLE *idt, uint32_t id){
   unsigned int i;
 
   assert(idt);
@@ -140,7 +140,7 @@ unsigned int GWEN_IdTable_GetCount(const GWEN_IDTABLE *idt){
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt){
+uint32_t GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt){
   unsigned int i;
 
   assert(idt);
@@ -156,7 +156,7 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId(GWEN_IDTABLE *idt){
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt){
+uint32_t GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt){
   unsigned int i;
 
   assert(idt);
@@ -173,8 +173,8 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId(GWEN_IDTABLE *idt){
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId2(const GWEN_IDTABLE *idt,
-                                          GWEN_TYPE_UINT32 *tabIdx){
+uint32_t GWEN_IdTable_GetFirstId2(const GWEN_IDTABLE *idt,
+                                          uint32_t *tabIdx){
   unsigned int i;
 
   assert(idt);
@@ -189,8 +189,8 @@ GWEN_TYPE_UINT32 GWEN_IdTable_GetFirstId2(const GWEN_IDTABLE *idt,
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdTable_GetNextId2(const GWEN_IDTABLE *idt,
-                                         GWEN_TYPE_UINT32 *tabIdx){
+uint32_t GWEN_IdTable_GetNextId2(const GWEN_IDTABLE *idt,
+                                         uint32_t *tabIdx){
   unsigned int i;
 
   assert(idt);
@@ -228,7 +228,7 @@ void GWEN_IdList_free(GWEN_IDLIST *idl){
 
 
 
-int GWEN_IdList_AddId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
+int GWEN_IdList_AddId(GWEN_IDLIST *idl, uint32_t id){
   GWEN_IDTABLE *idt;
 
   assert(idl);
@@ -254,7 +254,7 @@ int GWEN_IdList_AddId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
 
 
 
-int GWEN_IdList_DelId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
+int GWEN_IdList_DelId(GWEN_IDLIST *idl, uint32_t id){
   GWEN_IDTABLE *idt;
 
   assert(idl);
@@ -276,7 +276,7 @@ int GWEN_IdList_DelId(GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
 
 
 
-int GWEN_IdList_HasId(const GWEN_IDLIST *idl, GWEN_TYPE_UINT32 id){
+int GWEN_IdList_HasId(const GWEN_IDLIST *idl, uint32_t id){
   GWEN_IDTABLE *idt;
 
   assert(idl);
@@ -314,7 +314,7 @@ void GWEN_IdList_Clean(GWEN_IDLIST *idl) {
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl){
+uint32_t GWEN_IdList_GetFirstId(GWEN_IDLIST *idl){
   GWEN_IDTABLE *idt;
 
   assert(idl);
@@ -323,7 +323,7 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl){
   /* find free table */
   while(idt) {
     GWEN_IDTABLE *next;
-    GWEN_TYPE_UINT32 id;
+    uint32_t id;
 
     next=GWEN_IdTable_List_Next(idt);
     id=GWEN_IdTable_GetFirstId(idt);
@@ -339,9 +339,9 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId(GWEN_IDLIST *idl){
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl){
+uint32_t GWEN_IdList_GetNextId(GWEN_IDLIST *idl){
   GWEN_IDTABLE *idt;
-  GWEN_TYPE_UINT32 id;
+  uint32_t id;
 
   assert(idl);
 
@@ -377,7 +377,7 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetNextId(GWEN_IDLIST *idl){
 int GWEN_IdList_Sort(GWEN_IDLIST *idl){
   GWEN_IDTABLE *idt;
   unsigned int cnt;
-  GWEN_TYPE_UINT32 *ptr;
+  uint32_t *ptr;
   unsigned int i;
 
   assert(idl);
@@ -397,11 +397,11 @@ int GWEN_IdList_Sort(GWEN_IDLIST *idl){
     return 0;
 
   /* move ids to a temporary list */
-  ptr=(GWEN_TYPE_UINT32*)malloc(sizeof(GWEN_TYPE_UINT32)*cnt);
+  ptr=(uint32_t*)malloc(sizeof(uint32_t)*cnt);
   assert(ptr);
 
   for (i=0; i<cnt; i++) {
-    GWEN_TYPE_UINT32 id;
+    uint32_t id;
 
     if (i==0)
       id=GWEN_IdList_GetFirstId(idl);
@@ -421,7 +421,7 @@ int GWEN_IdList_Sort(GWEN_IDLIST *idl){
     rpl=0;
     for (i=0; i<(cnt-1); i++) {
       if (ptr[i]>ptr[i+1]) {
-        GWEN_TYPE_UINT32 id;
+        uint32_t id;
 
         id=ptr[i];
         ptr[i]=ptr[i+1];
@@ -478,8 +478,8 @@ GWEN_IDLIST *GWEN_IdList_dup(const GWEN_IDLIST *idl){
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
-                                         GWEN_TYPE_UINT32 *pos){
+uint32_t GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
+                                         uint32_t *pos){
   GWEN_IDTABLE *idt;
   int tabNum=0;
 
@@ -489,8 +489,8 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
   /* find free table */
   while(idt) {
     GWEN_IDTABLE *next;
-    GWEN_TYPE_UINT32 id;
-    GWEN_TYPE_UINT32 tabIdx;
+    uint32_t id;
+    uint32_t tabIdx;
 
     next=GWEN_IdTable_List_Next(idt);
     id=GWEN_IdTable_GetFirstId2(idt, &tabIdx);
@@ -507,12 +507,12 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
 
 
 
-GWEN_TYPE_UINT32 GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
-                                        GWEN_TYPE_UINT32 *pos){
+uint32_t GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
+                                        uint32_t *pos){
   GWEN_IDTABLE *idt;
   int i;
   int tabNum;
-  GWEN_TYPE_UINT32 tabIdx;
+  uint32_t tabIdx;
 
   assert(idl);
   tabNum=(*pos)/GWEN_IDTABLE_MAXENTRIES;
@@ -526,7 +526,7 @@ GWEN_TYPE_UINT32 GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
 
   while(idt) {
     GWEN_IDTABLE *next;
-    GWEN_TYPE_UINT32 id;
+    uint32_t id;
 
     next=GWEN_IdTable_List_Next(idt);
     id=GWEN_IdTable_GetNextId2(idt, &tabIdx);

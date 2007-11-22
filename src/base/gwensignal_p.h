@@ -41,11 +41,11 @@ void GWEN_Slot_List2_freeAll(GWEN_SLOT_LIST2 *slist);
 struct GWEN_SIGNAL {
   GWEN_SIGNALOBJECT *signalObject;
   char *name;
-  GWEN_TYPE_UINT32 derivedParentType;
-  GWEN_TYPE_UINT32 typeOfArg1;
-  GWEN_TYPE_UINT32 typeOfArg2;
+  uint32_t derivedParentType;
+  uint32_t typeOfArg1;
+  uint32_t typeOfArg2;
   GWEN_SLOT_LIST2 *connectedSlots;
-  GWEN_TYPE_UINT32 _refCount;
+  uint32_t _refCount;
 };
 
 GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, void *user_data);
@@ -61,13 +61,13 @@ void GWEN_Signal_Attach(GWEN_SIGNAL *sig);
 struct GWEN_SLOT {
   GWEN_SIGNALOBJECT *signalObject;
   char *name;
-  GWEN_TYPE_UINT32 derivedParentType;
+  uint32_t derivedParentType;
   GWEN_SLOT_FUNCTION func;
   void *userData;
-  GWEN_TYPE_UINT32 typeOfArg1;
-  GWEN_TYPE_UINT32 typeOfArg2;
+  uint32_t typeOfArg1;
+  uint32_t typeOfArg2;
   GWEN_SIGNAL_LIST2 *connectedSignals;
-  GWEN_TYPE_UINT32 _refCount;
+  uint32_t _refCount;
 };
 
 GWEN_SLOT *GWEN_Slot__List2_freeAll_cb(GWEN_SLOT *slot, void *user_data);
@@ -84,15 +84,15 @@ struct GWEN_SIGNALOBJECT {
   GWEN_SIGNAL_LIST2 *signalList;
 };
 
-GWEN_TYPE_UINT32 GWEN_SignalObject_MkTypeId(const char *typeName);
+uint32_t GWEN_SignalObject_MkTypeId(const char *typeName);
 GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
                                            const char *name,
-                                           GWEN_TYPE_UINT32 typeId1,
-                                           GWEN_TYPE_UINT32 typeId2);
+                                           uint32_t typeId1,
+                                           uint32_t typeId2);
 GWEN_SLOT *GWEN_SignalObject__findSlot(const GWEN_SIGNALOBJECT *so,
                                        const char *name,
-                                       GWEN_TYPE_UINT32 typeId1,
-                                       GWEN_TYPE_UINT32 typeId2);
+                                       uint32_t typeId1,
+                                       uint32_t typeId2);
 int GWEN_SignalObject_AddSignal(GWEN_SIGNALOBJECT *so, GWEN_SIGNAL *sig);
 int GWEN_SignalObject_AddSlot(GWEN_SIGNALOBJECT *so, GWEN_SLOT *slot);
 
