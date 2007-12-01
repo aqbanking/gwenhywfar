@@ -296,14 +296,14 @@ int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
     GWEN_Buffer_AppendString(tbuf, DIRSEP);
     GWEN_Buffer_AppendString(tbuf, filePath);
     DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
-              GWEN_Buffer_GetStart(tbuf));
+	      GWEN_Buffer_GetStart(tbuf));
     f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
     if (f) {
       fclose(f);
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "File \"%s\" found in folder \"%s\"",
-               filePath,
-               GWEN_StringListEntry_Data(se));
+      DBG_DEBUG(GWEN_LOGDOMAIN,
+		"File \"%s\" found in folder \"%s\"",
+		filePath,
+		GWEN_StringListEntry_Data(se));
       GWEN_Buffer_AppendBuffer(fbuf, tbuf);
       GWEN_Buffer_free(tbuf);
       return 0;

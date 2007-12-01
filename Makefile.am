@@ -51,7 +51,9 @@ $(PACKAGE).tag: Doxyfile listdoc.h
 install-srcdoc: $(PACKAGE).tag
 	test -d "$(DESTDIR)@docpath@/$(PACKAGE)" || \
 	  mkdir -p "$(DESTDIR)@docpath@/$(PACKAGE)"
-	cp apidoc/* "$(DESTDIR)@docpath@/$(PACKAGE)"
+	for f in apidoc/*; do \
+	  cp $$f "$(DESTDIR)@docpath@/$(PACKAGE)/"; \
+	done
 	cp "$(PACKAGE).tag" "$(DESTDIR)@docpath@/"
 	if test -x "$(DESTDIR)@docpath@/$(PACKAGE)/installdox"; then \
 	  cd "$(DESTDIR)@docpath@/$(PACKAGE)" && \
