@@ -885,7 +885,7 @@ int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
   int rv;
 
   /* either insert or remove bytes */
-  d=rsize-size;
+  d=size-rsize;
   if (d<0) {
     rv=GWEN_Buffer_RemoveRoom(bf, d);
   }
