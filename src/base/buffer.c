@@ -887,7 +887,7 @@ int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
   /* either insert or remove bytes */
   d=size-rsize;
   if (d<0) {
-    rv=GWEN_Buffer_RemoveRoom(bf, d);
+    rv=GWEN_Buffer_RemoveRoom(bf, -d);
   }
   else if (d>0) {
     rv=GWEN_Buffer_InsertRoom(bf, d);
@@ -895,8 +895,12 @@ int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
   else
     /* nothing to adjust if sizes are the same */
     rv=0;
-  if (rv)
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Error replacing %d bytes with %d bytes (%d)",
+	      rsize, size, rv);
     return rv;
+  }
 
   /* write new bytes */
   if (size)
