@@ -50,6 +50,7 @@ GWEN_IDTABLE64 *GWEN_IdTable64_new(){
   GWEN_IDTABLE64 *idt;
 
   GWEN_NEW_OBJECT(GWEN_IDTABLE64, idt);
+  idt->refCount=1;
   GWEN_LIST_INIT(GWEN_IDTABLE64, idt);
 
   idt->freeEntries=GWEN_IDTABLE64_MAXENTRIES;
@@ -60,9 +61,20 @@ GWEN_IDTABLE64 *GWEN_IdTable64_new(){
 
 void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt){
   if (idt) {
-    GWEN_LIST_FINI(GWEN_IDTABLE64, idt);
-    GWEN_FREE_OBJECT(idt);
+    assert(idt->refCount);
+    if (--(idt->refCount)==0) {
+      GWEN_LIST_FINI(GWEN_IDTABLE64, idt);
+      GWEN_FREE_OBJECT(idt);
+    }
   }
+}
+
+
+
+void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt){
+  assert(idt);
+  assert(idt->refCount);
+  idt->refCount++;
 }
 
 
@@ -213,16 +225,28 @@ GWEN_IDLIST64 *GWEN_IdList64_new(){
   GWEN_IDLIST64 *idl;
 
   GWEN_NEW_OBJECT(GWEN_IDLIST64, idl);
+  idl->refCount=1;
   idl->idTables=GWEN_IdTable64_List_new();
   return idl;
 }
 
 
 
+void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl) {
+  assert(idl);
+  assert(idl->refCount);
+  idl->refCount++;
+}
+
+
+
 void GWEN_IdList64_free(GWEN_IDLIST64 *idl){
   if (idl) {
-    GWEN_IdTable64_List_free(idl->idTables);
-    GWEN_FREE_OBJECT(idl);
+    assert(idl->refCount);
+    if (--(idl->refCount)==0) {
+      GWEN_IdTable64_List_free(idl->idTables);
+      GWEN_FREE_OBJECT(idl);
+    }
   }
 }
 
@@ -299,13 +323,13 @@ void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl) {
   assert(idl);
   idl->current=0;
   idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find free table */
+  /* free empty tables */
   while(idt) {
     GWEN_IDTABLE64 *next;
 
     next=GWEN_IdTable64_List_Next(idt);
     if (GWEN_IdTable64_IsEmpty(idt)) {
-      GWEN_IdTable64_List_Del(idt);
+      /*GWEN_IdTable64_List_Del(idt);*/
       GWEN_IdTable64_free(idt);
     }
     idt=next;
@@ -320,7 +344,7 @@ uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl){
   assert(idl);
 
   idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find free table */
+  /* find table which contains the first id */
   while(idt) {
     GWEN_IDTABLE64 *next;
     uint64_t id;
@@ -375,6 +399,7 @@ uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl){
 
 
 int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl){
+  GWEN_IDLIST64_ITERATOR *it;
   GWEN_IDTABLE64 *idt;
   unsigned int cnt;
   uint64_t *ptr;
@@ -400,17 +425,20 @@ int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl){
   ptr=(uint64_t*)malloc(sizeof(uint64_t)*cnt);
   assert(ptr);
 
+  it=GWEN_IdList64_Iterator_new(idl);
   for (i=0; i<cnt; i++) {
     uint64_t id;
 
     if (i==0)
-      id=GWEN_IdList64_GetFirstId(idl);
+      id=GWEN_IdList64_Iterator_GetFirstId(it);
     else
-      id=GWEN_IdList64_GetNextId(idl);
+      id=GWEN_IdList64_Iterator_GetNextId(it);
     assert(id);
     ptr[i]=id;
   } /* for */
+  GWEN_IdList64_Iterator_free(it);
 
+  /* remove all tables (we will add sorted tables later) */
   GWEN_IdTable64_List_Clear(idl->idTables);
   idl->current=0;
 
@@ -433,7 +461,7 @@ int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl){
       break;
   } /* while */
 
-  /* move back from temporary list */
+  /* move back sorted list of ids from temporary list */
   for (i=0; i<cnt; i++) {
     GWEN_IdList64_AddId(idl, ptr[i]);
   }
@@ -540,6 +568,117 @@ uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl,
 
   return 0;
 }
+
+
+
+GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl) {
+  GWEN_IDLIST64_ITERATOR *it;
+
+  assert(idl);
+  GWEN_NEW_OBJECT(GWEN_IDLIST64_ITERATOR, it);
+
+  GWEN_IdList64_Attach(idl);
+  it->list=idl;
+
+  return it;
+}
+
+
+
+void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it) {
+  if (it) {
+    if (it->currentTable)
+      GWEN_IdTable64_free(it->currentTable);
+    GWEN_IdList64_free(it->list);
+    GWEN_FREE_OBJECT(it);
+  }
+}
+
+
+
+uint64_t GWEN_IdList64_Iterator_GetFirstId(GWEN_IDLIST64_ITERATOR *it) {
+  GWEN_IDTABLE64 *idt;
+
+  assert(it);
+
+  idt=GWEN_IdTable64_List_First(it->list->idTables);
+  /* find table which contains the first id */
+  while(idt) {
+    GWEN_IDTABLE64 *next;
+    unsigned int i;
+
+    next=GWEN_IdTable64_List_Next(idt);
+
+    for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
+      if (idt->entries[i]!=0) {
+        /* attach to new table */
+	GWEN_IdTable64_Attach(idt);
+	/* detach from previous table */
+	GWEN_IdTable64_free(it->currentTable);
+        /* store current table and index */
+	it->currentTable=idt;
+	it->currentIndex=i;
+	/* return id */
+	return idt->entries[i];
+      }
+    } /* for */
+
+    idt=next;
+  } /* while */
+
+  GWEN_IdTable64_free(it->currentTable);
+  it->currentTable=NULL;
+  it->currentIndex=0;
+
+  return 0;
+}
+
+
+
+uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it) {
+  GWEN_IDTABLE64 *idt;
+  uint32_t startIdx;
+
+  assert(it);
+
+  idt=it->currentTable;
+  startIdx=it->currentIndex+1;
+
+  /* find table which contains the next id */
+  while(idt) {
+    GWEN_IDTABLE64 *next;
+    unsigned int i;
+
+    next=GWEN_IdTable64_List_Next(idt);
+
+    for (i=startIdx; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
+      if (idt->entries[i]!=0) {
+        /* attach to new table */
+	GWEN_IdTable64_Attach(idt);
+	/* detach from previous table */
+	GWEN_IdTable64_free(it->currentTable);
+        /* store current table and index */
+	it->currentTable=idt;
+	it->currentIndex=i;
+	/* return id */
+	return idt->entries[i];
+      }
+    } /* for */
+
+    /* reset start index to start at 0 with next table */
+    startIdx=0;
+    idt=next;
+  } /* while */
+
+  GWEN_IdTable64_free(it->currentTable);
+  it->currentTable=NULL;
+  it->currentIndex=0;
+
+  return 0;
+}
+
+
+
 
 
 

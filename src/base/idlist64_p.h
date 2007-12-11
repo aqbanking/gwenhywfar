@@ -45,10 +45,12 @@ struct GWEN_IDTABLE64 {
   uint64_t freeEntries;
   uint64_t entries[GWEN_IDTABLE64_MAXENTRIES];
   uint64_t current;
+  uint32_t refCount;
 };
 
 GWEN_IDTABLE64 *GWEN_IdTable64_new();
 void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt);
+void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt);
 
 int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id);
 int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id);
@@ -70,8 +72,16 @@ struct GWEN_IDLIST64 {
   GWEN_IDTABLE64_LIST *idTables;
   uint64_t entryCount;
   GWEN_IDTABLE64 *current;
+  uint32_t refCount;
 };
 
+
+
+struct GWEN_IDLIST64_ITERATOR {
+  GWEN_IDLIST64 *list;
+  GWEN_IDTABLE64 *currentTable;
+  uint32_t currentIndex;
+};
 
 
 

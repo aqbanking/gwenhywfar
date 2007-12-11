@@ -37,6 +37,7 @@
 extern "C" {
 #endif
 typedef struct GWEN_IDLIST64 GWEN_IDLIST64;
+typedef struct GWEN_IDLIST64_ITERATOR GWEN_IDLIST64_ITERATOR;
 #ifdef __cplusplus
 }
 #endif
@@ -49,7 +50,7 @@ extern "C" {
 #endif
 
 /**
- * @defgroup MOD_IDLIST ID list module
+ * @defgroup MOD_IDLIST64 ID list module
  * @ingroup MOD_BASE
  * @short A list of uint64_t objects
  *
@@ -69,6 +70,11 @@ GWEN_IDLIST64 *GWEN_IdList64_new();
  */
 GWENHYWFAR_API
 void GWEN_IdList64_free(GWEN_IDLIST64 *idl);
+
+
+
+GWENHYWFAR_API
+void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl);
 
 
 /**
@@ -107,33 +113,36 @@ GWENHYWFAR_API
 int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id);
 
 /**
- * Returns the first id from the list.
+ * @deprecated
+ * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
+ * instead.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl);
 
-GWENHYWFAR_API
+/**
+ * @deprecated
+ * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
+ * instead.
+ */
+GWENHYWFAR_API DEPRECATED
 uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl);
 
 /**
- * This function returns the first id stored in the list. It can also
- * be used with const GWEN_IDLIST64.
- * @param hdl pointer to a 32 bit value to receive a handle
- *   to be used by @ref GWEN_IdList64_GetNextId2. This handle is only valid
- *   as longs as no ids are removed from the list.
+ * @deprecated
+ * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
+ * instead.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl,
                                          uint64_t *hdl);
 
 /**
- * This function returns the next id stored in the list. It can also
- * be used with const GWEN_IDLIST64.
- * @param hdl pointer to a 32 bit value to receive a handle
- *   to be used by @ref GWEN_IdList64_GetNextId2. This handle is only valid
- *   as longs as no ids are removed from the list.
+ * @deprecated
+ * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
+ * instead.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl,
                                         uint64_t *hdl);
 
@@ -143,6 +152,31 @@ uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl,
  */
 GWENHYWFAR_API
 int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl);
+
+/*@}*/
+
+
+
+
+/**
+ * @defgroup MOD_IDLIST64_ITERATOR Iterator for ID list module
+ * @ingroup MOD_BASE
+ * @short Iterator for a list of uint64_t objects
+ *
+ */
+/*@{*/
+
+GWENHYWFAR_API
+GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl);
+
+GWENHYWFAR_API
+void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it);
+
+GWENHYWFAR_API
+uint64_t GWEN_IdList64_Iterator_GetFirstId(GWEN_IDLIST64_ITERATOR *it);
+
+GWENHYWFAR_API
+uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it);
 
 /*@}*/
 

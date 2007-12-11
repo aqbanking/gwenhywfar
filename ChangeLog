@@ -1,4 +1,13 @@
 
+2007/12/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added GWEN_IDLIST64_ITERATOR which deprecates the following functions:
+  - GWEN_IdList64_GetFirstId()
+  - GWEN_IdList64_GetNextId()
+  - GWEN_IdList64_GetFirstId2()
+  - GWEN_IdList64_GetNextId2()
+
+
 2007/12/10: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed another bug in GWEN_Buffer_ReplaceBytes()
