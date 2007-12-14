@@ -753,7 +753,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     snprintf(buffer, sizeof(buffer)-1,
 	     "(genkey\n"
 	     " (rsa\n"
-	     "  (nbits %d:%d)\n"
+	     "  (nbits %zd:%d)\n"
 	     "  (rsa-use-e 5:65537)\n"
 	     " ))",
 	     strlen(numbuf),
@@ -763,7 +763,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     snprintf(buffer, sizeof(buffer)-1,
 	     "(genkey\n"
 	     " (rsa\n"
-	     "  (nbits %d:%d)\n"
+	     "  (nbits %zd:%d)\n"
 	     "  (rsa-use-e 1:0)\n"
 	     " ))",
 	     strlen(numbuf),
