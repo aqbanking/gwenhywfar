@@ -225,7 +225,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
       s++;
     } /* while */
     if (!i) {
-      DBG_ERROR(0, "Value is too long (limit is %zd chars)",
+      DBG_ERROR(0, "Value is too long (limit is %d chars)",
 		GWEN_DBIO_OLDDB_MAXVALUE_LEN-1);
       GWEN_Buffer_free(vbuf);
       return 0;
