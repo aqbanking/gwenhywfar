@@ -1,4 +1,10 @@
 
+2007/12/18: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- applied a small patch by Andreas Steinmetz which fixes a bug in
+  src/os/inetsocket.c
+
+
 2007/12/11: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added GWEN_IDLIST64_ITERATOR which deprecates the following functions:

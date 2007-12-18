@@ -1378,9 +1378,6 @@ int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout) {
   }
   err=GWEN_Socket_Select(set,0,0,timeout);
   GWEN_SocketSet_free(set);
-  if (!err) {
-    return 0;
-  }
 
   return err;
 }
@@ -1399,8 +1396,6 @@ int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout) {
   }
   err=GWEN_Socket_Select(0,set,0,timeout);
   GWEN_SocketSet_free(set);
-  if (!err)
-    return 0;
 
   return err;
 }
