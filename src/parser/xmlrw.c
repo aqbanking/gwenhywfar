@@ -746,14 +746,10 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 
 
 int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
-  GWEN_XMLNODE *n;
   int oks=0;
+  int startingDepth;
 
-  n=GWEN_XmlCtx_GetCurrentNode(ctx);
-  if (n==NULL) {
-    DBG_INFO(GWEN_LOGDOMAIN, "No current node in context");
-    return GWEN_ERROR_INVALID;
-  }
+  startingDepth=GWEN_XmlCtx_GetDepth(ctx);
 
   GWEN_XmlCtx_ResetFinishedElement(ctx);
   for (;;) {
@@ -777,7 +773,8 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
 
     GWEN_FASTBUFFER_PEEKBYTE(fb, rv);
     if (rv<0) {
-      if (rv!=GWEN_ERROR_EOF || !oks || GWEN_XmlCtx_GetCurrentNode(ctx)!=n) {
+      if (rv!=GWEN_ERROR_EOF || !oks ||
+	  (GWEN_XmlCtx_GetDepth(ctx)!=startingDepth)) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	return rv;
       }
@@ -793,12 +790,15 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
       oks=1;
     }
 
-    if (GWEN_XmlCtx_GetFinishedElement(ctx) && GWEN_XmlCtx_GetCurrentNode(ctx)==n)
+    if (GWEN_XmlCtx_GetFinishedElement(ctx) &&
+	GWEN_XmlCtx_GetDepth(ctx)==startingDepth)
       break;
   }
 
-  if (GWEN_XmlCtx_GetCurrentNode(ctx)!=n) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Not on same level where we started...");
+  if (GWEN_XmlCtx_GetDepth(ctx)!=startingDepth) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Not on same level where we started...(%d!=%d)",
+	      GWEN_XmlCtx_GetDepth(ctx), startingDepth);
   }
 
   return 0;

@@ -378,6 +378,7 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
 	newNode=currNode;
 	
 	while( (newNode=GWEN_XMLNode_GetParent(newNode)) ) {
+	  GWEN_XmlCtx_DecDepth(ctx);
 	  s=GWEN_XMLNode_GetData(newNode);
 	  if (strcasecmp(s, tagName)==0)
 	    break;
@@ -386,6 +387,7 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
 	  newNode=GWEN_XMLNode_GetParent(newNode);
 	if (newNode) {
 	  GWEN_XmlCtx_SetCurrentNode(ctx, newNode);
+	  GWEN_XmlCtx_DecDepth(ctx);
 	}
 	else {
 	  DBG_INFO(GWEN_LOGDOMAIN, "No matching parent node for [%s]",
@@ -401,6 +403,7 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
 	return GWEN_ERROR_BAD_DATA;
       }
       GWEN_XmlCtx_SetCurrentNode(ctx, newNode);
+      GWEN_XmlCtx_DecDepth(ctx);
     }
     /* one more element finished */
     GWEN_XmlCtx_IncFinishedElement(ctx);
@@ -410,6 +413,7 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
     assert(newNode);
     GWEN_XMLNode_AddChild(currNode, newNode);
     GWEN_XmlCtx_SetCurrentNode(ctx, newNode);
+    GWEN_XmlCtx_IncDepth(ctx);
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Starting tag [%s]", tagName);
   }
 
@@ -442,6 +446,7 @@ int GWEN_XmlCtxStore_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
       }
       GWEN_XmlCtx_SetCurrentNode(ctx, newNode);
       /* one more element finished */
+      GWEN_XmlCtx_DecDepth(ctx);
       GWEN_XmlCtx_IncFinishedElement(ctx);
     }
   }

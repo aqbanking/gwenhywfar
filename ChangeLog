@@ -1,4 +1,11 @@
 
+2008/01/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed GWEN_XML_ReadFromFastBuffer(): no longer requires the function
+  GWEN_XmlCtx_GetCurrentNode(), so we really can write new XML context
+  implementations which do not use XML nodes (e.g. for the new OFX parser)
+
+
 2007/12/18: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - applied a small patch by Andreas Steinmetz which fixes a bug in

@@ -462,7 +462,7 @@ int testXML(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "XML file:\n");
-  GWEN_XMLNode_Dump(n, stderr, 2);
+  GWEN_XMLNode_Dump(n, stdout, 2);
   GWEN_XMLNode_free(n);
 
   fprintf(stderr, "Memory before collection:\n");
