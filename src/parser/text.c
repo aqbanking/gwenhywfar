@@ -196,8 +196,13 @@ int GWEN_Text_GetWordToBuffer(const char *src,
 
   /* skip leading blanks, if wanted */
   if (flags & GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS) {
-    while(*src && (unsigned char)(*src)<33)
+    while(*src && (unsigned char)(*src)<33) {
+      if (strchr(delims, *src)) {
+	*next=src;
+	return 0;
+      }
       src++;
+    }
   }
 
   /* get word */

@@ -439,6 +439,11 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
     }
 
     /* tag finished */
+    rv=GWEN_XmlCtx_EndTag(ctx, 0);
+    if (rv) {
+      GWEN_Buffer_free(dbuf);
+      return rv;
+    }
     GWEN_Buffer_free(dbuf);
     return 0;
   }

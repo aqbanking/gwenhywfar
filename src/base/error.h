@@ -128,6 +128,8 @@ extern "C" {
 #define GWEN_ERROR_NET_UNREACHABLE      (-107)
 #define GWEN_ERROR_SSL_SECURITY         (-108)
 
+#define GWEN_ERROR_LOCK                 (-109)
+
 
 #define GWEN_ERROR_USEROFFSET           (-1000)
 

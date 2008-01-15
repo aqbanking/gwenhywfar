@@ -239,8 +239,8 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
     }
 
     if (i==-1 && strchr("YMDhms", *t)!=NULL) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-		"No more digits at [%s], continueing", t);
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "No more digits at [%s], continueing", t);
       p--;
     }
     else {

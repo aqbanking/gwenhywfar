@@ -1,9 +1,18 @@
 
+2008/01/15: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in src/parser/text.c whiche prevented the CSV plugin from
+  reading lines with empty fields when using TAB as a delimiter
+- gwentime_all.c: decrease verbosity
+
+
 2008/01/08: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed GWEN_XML_ReadFromFastBuffer(): no longer requires the function
   GWEN_XmlCtx_GetCurrentNode(), so we really can write new XML context
   implementations which do not use XML nodes (e.g. for the new OFX parser)
+- fixed a bug in GWEN_XML__ReadTag(): was not calling endTagFn for tags
+  beginning with "/"
 
 
 2007/12/18: Martin Preuss<martin@libchipcard.de>
