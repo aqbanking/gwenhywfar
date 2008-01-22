@@ -238,7 +238,8 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i){
   assert(bf);
 
   if (i>=bf->bufferSize) {
-    if (bf->mode & GWEN_BUFFER_MODE_USE_BIO) {
+    if ((bf->mode & GWEN_BUFFER_MODE_USE_BIO) ||
+	(bf->mode & GWEN_BUFFER_MODE_USE_IO)) {
       bf->pos=i;
     }
     else {

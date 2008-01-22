@@ -1,4 +1,9 @@
 
+2008/01/22: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- base/buffer.c: fixed a bug in IO mode
+
+
 2008/01/15: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in src/parser/text.c whiche prevented the CSV plugin from

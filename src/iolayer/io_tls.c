@@ -905,7 +905,7 @@ int GWEN_Io_LayerTls_Encode(GWEN_IO_LAYER *io, const uint8_t *pBuffer, uint32_t 
 #if 0
   else {
     DBG_ERROR(0, "Sent this:");
-    GWEN_Text_DumpString(pBuffer, rv,
+    GWEN_Text_DumpString((const char*)pBuffer, rv,
 			 stderr, 2);
   }
 #endif
