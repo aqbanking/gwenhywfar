@@ -940,7 +940,7 @@ int GWEN_Io_LayerTls_Decode(GWEN_IO_LAYER *io, uint8_t *pBuffer, uint32_t lBuffe
 #if 0
   else {
     DBG_ERROR(0, "Received this:");
-    GWEN_Text_DumpString(pBuffer, rv,
+    GWEN_Text_DumpString((const char*)pBuffer, rv,
 			 stderr, 2);
   }
 #endif

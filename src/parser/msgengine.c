@@ -3554,9 +3554,11 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
         unsigned int usize;
 
 	usize=GWEN_Buffer_GetPos(mbuf)-ustart-1;
+#if 0
 	GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart,
 			     usize,
 			     stderr, 1);
+#endif
         if (GWEN_MsgEngine_AddTrustInfo(e,
 					GWEN_Buffer_GetStart(mbuf)+ustart,
                                         usize,
