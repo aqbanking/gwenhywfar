@@ -725,7 +725,10 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
   /* replace key if modulus and exponent are given */
   if ((flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) &&
-      (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+      (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT) &&
+      id!=1 && /* don't change local keys */
+      id!=2 &&
+      id!=5) {
     GWEN_CRYPT_KEY *nkey;
 
     nkey=GWEN_Crypt_KeyRsa_fromModExp(GWEN_Crypt_Token_KeyInfo_GetKeySize(ki),

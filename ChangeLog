@@ -1,4 +1,16 @@
 
+===========================================================================
+MARK: released gwenhywfar-3.1.1 (2008/02/10)
+===========================================================================
+
+
+2008/02/10: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in ctfile.c (now ignores modulus and exponent in
+  GWEN_Crypt_TokenFile__SetKeyInfo())
+  Now gct-tool setsignseq works again with OpenHBCI keyfiles.
+
+
 2008/01/29: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - parser/msgengine.c: decreased verbosity
