@@ -48,6 +48,8 @@
 #include <gwenhywfar/cryptdefs.h>
 #include <gwenhywfar/cryptkeysym.h>
 
+#include <gwenhywfar/httpsession.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -2970,6 +2972,45 @@ check_rsa_keys (void){
 
 
 
+int testHttpSession(int argc, char **argv) {
+  const char *urlString;
+  GWEN_HTTP_SESSION *sess;
+  int rv;
+  GWEN_BUFFER *buf;
+
+  if (argc<3) {
+    fprintf(stderr, "%s %s URL\n", argv[0], argv[1]);
+    return 1;
+  }
+  urlString=argv[2];
+
+  sess=GWEN_HttpSession_new(urlString, 0);
+  rv=GWEN_HttpSession_Init(sess);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Could not init http session.\n");
+    return 3;
+  }
+
+  rv=GWEN_HttpSession_SendPacket(sess, "GET", NULL, 0, 10000);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Could not send request.\n");
+    return 3;
+  }
+
+  buf=GWEN_Buffer_new(0, 1024, 0, 1);
+  rv=GWEN_HttpSession_RecvPacket(sess, buf, 10000);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Could not receive response.\n");
+    return 3;
+  }
+
+  GWEN_Buffer_Dump(buf, stderr, 2);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3083,6 +3124,8 @@ int main(int argc, char **argv) {
     rv=testCrypt3Rsa2(argc, argv);
   else if (strcasecmp(argv[1], "gtls")==0)
     rv=testGnutls(argc, argv);
+  else if (strcasecmp(argv[1], "httpsession")==0)
+    rv=testHttpSession(argc, argv);
   else if (strcasecmp(argv[1], "rsa")==0) {
     check_rsa_keys();
     rv=0;

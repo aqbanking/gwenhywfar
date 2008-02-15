@@ -25,7 +25,8 @@ noinst_HEADERS=\
  io_socket_p.h \
  io_tls_p.h \
  ssl_cert_descr_l.h \
- ssl_cert_descr_p.h
+ ssl_cert_descr_p.h \
+ httpsession_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -43,7 +44,8 @@ iheader_HEADERS=\
  io_socket.h \
  io_tls.h \
  ssl_cert_descr.h \
- ssl_cert_flags.h
+ ssl_cert_flags.h \
+ httpsession.h
 
 libiolayer_la_SOURCES=\
  iolayer.c \
@@ -57,7 +59,8 @@ libiolayer_la_SOURCES=\
  io_packets.c \
  io_socket.c \
  io_tls.c \
- ssl_cert_descr.c
+ ssl_cert_descr.c \
+ httpsession.c
 
 
 types: $(typefiles)
