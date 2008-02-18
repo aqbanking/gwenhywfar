@@ -580,7 +580,7 @@ int GWEN_Io_Layer_DisconnectRecursively(GWEN_IO_LAYER *io,
     rv=GWEN_Io_Layer_FlushRecursively(io, guiid, msecs);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+      /* return rv; */
     }
   }
 
@@ -831,8 +831,10 @@ int GWEN_Io_Layer_FlushRecursively(GWEN_IO_LAYER *io, uint32_t guiid, int msecs)
 				 GWEN_IO_REQUEST_FLAGS_FLUSH,
 				 guiid,
 				 msecs);
-    if (rv<0)
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
+    }
     currIo=currIo->baseLayer;
   }
 

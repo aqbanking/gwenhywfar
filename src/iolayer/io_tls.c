@@ -898,7 +898,9 @@ int GWEN_Io_LayerTls_Encode(GWEN_IO_LAYER *io, const uint8_t *pBuffer, uint32_t 
     else if (rv==GNUTLS_E_INTERRUPTED)
       return GWEN_ERROR_INTERRUPTED;
     else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_record_send: %d (%s)", (int)rv, gnutls_strerror(rv));
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"gnutls_record_send: %d (%s) [encoding %d bytes]",
+		(int)rv, gnutls_strerror(rv), lBuffer);
       return GWEN_ERROR_IO;
     }
   }
@@ -929,7 +931,9 @@ int GWEN_Io_LayerTls_Decode(GWEN_IO_LAYER *io, uint8_t *pBuffer, uint32_t lBuffe
     else if (rv==GNUTLS_E_INTERRUPTED)
       return GWEN_ERROR_INTERRUPTED;
     else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_record_recv: %d (%s)", (int)rv, gnutls_strerror(rv));
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"gnutls_record_recv: %d (%s) [decoding %d bytes]",
+		(int)rv, gnutls_strerror(rv), lBuffer);
       return GWEN_ERROR_IO;
     }
   }

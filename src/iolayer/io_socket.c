@@ -323,31 +323,34 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerSocket_WorkOnRequests(GWEN_IO_LAYER *io) {
       }
       /* nothing to read, nothing done, so we don't set doneSomething=1 here ! */
     }
-    else if (bytesRead==0) {
-      /* end of stream reached */
-      xio->readRequest=NULL;
-      GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_EOF);
-      GWEN_Io_Request_free(r);
-      doneSomething=1;
-    }
     else {
-      uint32_t newPos;
-
-      /* some data returned */
-      newPos=GWEN_Io_Request_GetBufferPos(r)+bytesRead;
-      GWEN_Io_Request_SetBufferPos(r, newPos);
-
-      if (newPos>=GWEN_Io_Request_GetBufferSize(r) ||
-	  !(GWEN_Io_Request_GetFlags(r) & GWEN_IO_REQUEST_FLAGS_READALL)) {
+      if (bytesRead==0) {
+	/* end of stream reached */
+	DBG_INFO(GWEN_LOGDOMAIN, "End of stream reached");
 	xio->readRequest=NULL;
-	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, 0);
+	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_EOF);
 	GWEN_Io_Request_free(r);
-	DBG_VERBOUS(GWEN_LOGDOMAIN, "Read request finished (read %d bytes)", newPos);
+	doneSomething=1;
       }
       else {
-	DBG_VERBOUS(GWEN_LOGDOMAIN, "Read request waiting (got %d bytes)", newPos);
+	uint32_t newPos;
+
+	/* some data returned */
+	newPos=GWEN_Io_Request_GetBufferPos(r)+bytesRead;
+	GWEN_Io_Request_SetBufferPos(r, newPos);
+
+	if (newPos>=GWEN_Io_Request_GetBufferSize(r) ||
+	    !(GWEN_Io_Request_GetFlags(r) & GWEN_IO_REQUEST_FLAGS_READALL)) {
+	  xio->readRequest=NULL;
+	  GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, 0);
+	  GWEN_Io_Request_free(r);
+	  DBG_VERBOUS(GWEN_LOGDOMAIN, "Read request finished (read %d bytes)", newPos);
+	}
+	else {
+	  DBG_VERBOUS(GWEN_LOGDOMAIN, "Read request waiting (got %d bytes)", newPos);
+	}
+	doneSomething=1;
       }
-      doneSomething=1;
     }
   }
 

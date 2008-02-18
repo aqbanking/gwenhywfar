@@ -1,4 +1,9 @@
 
+2008/02/18: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added debug messages to io layer code
+
+
 2008/02/15: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added GWEN_HttpSession: This module is a wrapper around the various

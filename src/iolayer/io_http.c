@@ -1444,9 +1444,17 @@ int GWEN_Io_LayerHttp_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
     }
     else {
       if (xio->writeMode!=GWEN_Io_LayerHttp_Mode_Body) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Bad write mode and flag GWEN_IO_REQUEST_FLAGS_PACKETBEGIN not set");
-	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_INVALID);
-	return GWEN_ERROR_INVALID;
+	if ((GWEN_Io_Request_GetBufferSize(r)==0) &&
+	    (rflags & GWEN_IO_REQUEST_FLAGS_FLUSH)) {
+	  /* this is just a flush request */
+	  GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, 0);
+	  return 0;
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Bad write mode and flag GWEN_IO_REQUEST_FLAGS_PACKETBEGIN not set");
+	  GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_INVALID);
+	  return GWEN_ERROR_INVALID;
+	}
       }
     }
 
