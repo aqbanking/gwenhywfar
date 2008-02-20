@@ -23,6 +23,11 @@
 #include "cgui_l.h"
 #include "cprogress_l.h"
 
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/stringlist.h>
+
+
+
 
 typedef struct GWEN_GUI_CGUI GWEN_GUI_CGUI;
 struct GWEN_GUI_CGUI {
@@ -33,6 +38,11 @@ struct GWEN_GUI_CGUI {
   char *charSet;
   int nonInteractive;
 
+  GWEN_GUI_CHECKCERT_FN checkCertFn;
+  GWEN_DB_NODE *dbPasswords;
+  GWEN_DB_NODE *dbCerts;
+  GWEN_STRINGLIST *badPasswords;
+  int persistentPasswords;
 };
 
 
@@ -109,6 +119,33 @@ int GWEN_Gui_CGui_Print(GWEN_GUI *gui,
 			const char *descr,
 			const char *text,
 			uint32_t guiid);
+
+int GWEN_Gui_CGui__HashPassword(const char *token,
+				const char *pin,
+				GWEN_BUFFER *buf);
+
+
+int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
+			    const GWEN_SSLCERTDESCR *cd,
+			    GWEN_IO_LAYER *io, uint32_t guiid);
+
+int GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
+				    const char *token,
+				    const char *pin,
+				    GWEN_GUI_PASSWORD_STATUS status,
+				    uint32_t guiid);
+
+int GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
+			      uint32_t flags,
+			      const char *token,
+			      const char *title,
+			      const char *text,
+			      char *buffer,
+			      int minLen,
+			      int maxLen,
+			      uint32_t guiid);
+
+
 
 #endif
 

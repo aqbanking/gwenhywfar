@@ -1,4 +1,10 @@
 
+2008/02/19: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- cgui: added password handling and TLS certificate handling so this is now
+  also available to C console tools
+
+
 2008/02/18: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added debug messages to io layer code

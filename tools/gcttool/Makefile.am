@@ -29,6 +29,11 @@ gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
 endif
 
 
+noinst_PROGRAMS=cttest
+cttest_SOURCES=cttest.c
+cttest_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+
+
 if IF_HAVE_OPENSSL
 gct_tool_LDADD+=$(ssl_libraries) $(ssl_lib)
 endif

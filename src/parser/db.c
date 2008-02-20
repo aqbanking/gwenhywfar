@@ -1051,7 +1051,8 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
     p=nn->data.dataChar;
     assert(p);
     if (sscanf(p, "%d", &res)!=1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "String in node is not an int value");
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "String [%s] in node is not an int value", p);
       return defVal;
     }
     return res;

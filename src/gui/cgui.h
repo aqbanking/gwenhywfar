@@ -40,6 +40,21 @@ GWENHYWFAR_API
 void GWEN_Gui_CGui_SetIsNonInteractive(GWEN_GUI *gui, int i);
 
 
+/**
+ * Set the password DB. Takes over the given DB.
+ */
+GWENHYWFAR_API 
+void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
+				 GWEN_DB_NODE *dbPasswords,
+				 int persistent);
+
+/**
+ * Set the certificate DB. Takes over the given DB.
+ */
+GWENHYWFAR_API 
+void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts);
+
+
 #ifdef __cplusplus
 }
 #endif

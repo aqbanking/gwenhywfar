@@ -16,6 +16,7 @@
 
 
 #include "cgui.h"
+#include <gwenhywfar/gui_be.h>
 #include <gwenhywfar/buffer.h>
 
 
