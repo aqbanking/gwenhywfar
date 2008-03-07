@@ -420,9 +420,15 @@ int GWEN_Io_LayerSocket_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
   switch(GWEN_Io_Request_GetType(r)) {
   case GWEN_Io_Request_TypeConnect:
     /* check status */
+    if (st==GWEN_Io_Layer_StatusConnected &&
+	(lflags & GWEN_IO_LAYER_FLAGS_PASSIVE)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Socket already connected");
+      GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, 0);
+      return 0;
+    }
     if (st!=GWEN_Io_Layer_StatusUnconnected &&
 	st!=GWEN_Io_Layer_StatusDisconnected) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Socket is not open");
+      DBG_INFO(GWEN_LOGDOMAIN, "Socket is open");
       GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_INVALID);
       return GWEN_ERROR_NOT_OPEN;
     }

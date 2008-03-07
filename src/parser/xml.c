@@ -62,13 +62,15 @@
 #endif
 
 
-
 #define GWEN_XML_BUFFERSIZE 512
 
 
 
 GWEN_LIST_FUNCTIONS(GWEN_XMLNODE, GWEN_XMLNode)
 GWEN_LIST2_FUNCTIONS(GWEN_XMLNODE, GWEN_XMLNode)
+
+GWEN_LIST_FUNCTIONS(GWEN_XMLNODE_NAMESPACE, GWEN_XMLNode_NameSpace)
+
 
 
 
@@ -140,6 +142,7 @@ GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data){
   n->headers=GWEN_XMLNode_List_new();
   if (data)
     n->data=GWEN_Memory_strdup(data);
+  n->nameSpaces=GWEN_XMLNode_NameSpace_List_new();
   return n;
 }
 
@@ -151,6 +154,7 @@ void GWEN_XMLNode_free(GWEN_XMLNODE *n){
     GWEN_Memory_dealloc(n->data);
     GWEN_XMLNode_List_free(n->headers);
     GWEN_XMLNode_List_free(n->children);
+    GWEN_XMLNode_NameSpace_List_free(n->nameSpaces);
     GWEN_FREE_OBJECT(n);
   }
 }
@@ -170,6 +174,7 @@ void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n){
 GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n){
   GWEN_XMLNODE *nn, *cn, *ncn;
   const GWEN_XMLPROPERTY *p;
+  const GWEN_XMLNODE_NAMESPACE *nns;
 
   /* duplicate node itself */
   nn=GWEN_XMLNode_new(n->type, n->data);
@@ -199,6 +204,16 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n){
     GWEN_XMLNode_AddHeader(nn, ncn);
     cn=GWEN_XMLNode_Next(cn);
   } /* while */
+
+  /* duplicate namespaces */
+  nns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
+  while(nns) {
+    GWEN_XMLNODE_NAMESPACE *nnns;
+
+    nnns=GWEN_XMLNode_NameSpace_dup(nns);
+    GWEN_XMLNode_NameSpace_List_Add(nnns, nn->nameSpaces);
+    nns=GWEN_XMLNode_NameSpace_List_Next(nns);
+  }
 
   return nn;
 }
@@ -1066,6 +1081,61 @@ void GWEN_XMLNode_ClearHeaders(GWEN_XMLNODE *n){
 
 
 
+GWEN_XMLNODE_NAMESPACE_LIST *GWEN_XMLNode_GetNameSpaces(const GWEN_XMLNODE *n) {
+  assert(n);
+  return n->nameSpaces;
+}
+
+
+
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByName(const GWEN_XMLNODE *n,
+							 const char *s) {
+  GWEN_XMLNODE_NAMESPACE *ns;
+
+  assert(n);
+  ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
+  while(ns) {
+    const char *d;
+
+    d=GWEN_XMLNode_NameSpace_GetName(ns);
+    if (d && strcasecmp(d, s)==0)
+      return ns;
+    ns=GWEN_XMLNode_NameSpace_List_Next(ns);
+  }
+
+  return NULL;
+}
+
+
+
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByUrl(const GWEN_XMLNODE *n,
+							const char *s) {
+  GWEN_XMLNODE_NAMESPACE *ns;
+
+  assert(n);
+  ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
+  while(ns) {
+    const char *d;
+
+    d=GWEN_XMLNode_NameSpace_GetUrl(ns);
+    if (d && strcasecmp(d, s)==0)
+      return ns;
+    ns=GWEN_XMLNode_NameSpace_List_Next(ns);
+  }
+
+  return NULL;
+}
+
+
+
+void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns) {
+  assert(n);
+  assert(ns);
+  GWEN_XMLNode_NameSpace_List_Add(GWEN_XMLNode_NameSpace_dup(ns), n->nameSpaces);
+}
+
+
+
 
 
 
@@ -1558,7 +1628,67 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np){
 
 
 
+
+
+
+
+
+
+
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_new(const char *name,
+						   const char *url) {
+  GWEN_XMLNODE_NAMESPACE *ns;
+
+  GWEN_NEW_OBJECT(GWEN_XMLNODE_NAMESPACE, ns);
+  GWEN_LIST_INIT(GWEN_XMLNODE_NAMESPACE, ns);
+
+  if (name)
+    ns->name=strdup(name);
+  if (url)
+    ns->url=strdup(url);
+
+  return ns;
+}
+
+
+
+void GWEN_XMLNode_NameSpace_free(GWEN_XMLNODE_NAMESPACE *ns) {
+  if (ns) {
+    GWEN_LIST_FINI(GWEN_XMLNODE_NAMESPACE, ns);
+    free(ns->url);
+    free(ns->name);
+    GWEN_FREE_OBJECT(ns);
+  }
+}
+
+
+
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_dup(const GWEN_XMLNODE_NAMESPACE *ns) {
+  GWEN_XMLNODE_NAMESPACE *nns;
+
+  assert(ns);
+  nns=GWEN_XMLNode_NameSpace_new(ns->name, ns->url);
+  return nns;
+}
+
+
+
+const char *GWEN_XMLNode_NameSpace_GetName(const GWEN_XMLNODE_NAMESPACE *ns) {
+  assert(ns);
+  return ns->name;
+}
+
+
+
+const char *GWEN_XMLNode_NameSpace_GetUrl(const GWEN_XMLNODE_NAMESPACE *ns) {
+  assert(ns);
+  return ns->url;
+}
+
+
+
 #include "xmlrw.c"
+#include "xmlglobalize.c"
 
 
 

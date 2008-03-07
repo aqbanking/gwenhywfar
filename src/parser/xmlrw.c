@@ -63,6 +63,40 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "<UNKNOWN", -1);
       CHECK_ERROR(rv);
     }
+
+    if (flags & GWEN_XML_FLAGS_HANDLE_NAMESPACES) {
+      GWEN_XMLNODE_NAMESPACE *ns;
+
+      ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
+      while(ns) {
+	const char *name;
+	const char *url;
+
+	name=GWEN_XMLNode_NameSpace_GetName(ns);
+	url=GWEN_XMLNode_NameSpace_GetUrl(ns);
+	GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
+	CHECK_ERROR(rv);
+	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "xmlns", -1);
+	CHECK_ERROR(rv);
+	if (name) {
+	  GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ":", -1);
+	  CHECK_ERROR(rv);
+	  GWEN_FASTBUFFER_WRITEFORCED(fb, rv, name, -1);
+	  CHECK_ERROR(rv);
+	}
+	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
+	CHECK_ERROR(rv);
+	if (url) {
+	  GWEN_FASTBUFFER_WRITEFORCED(fb, rv, url, -1);
+	  CHECK_ERROR(rv);
+	}
+	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
+	CHECK_ERROR(rv);
+
+	ns=GWEN_XMLNode_NameSpace_List_Next(ns);
+      }
+    }
+
     p=n->properties;
     while (p) {
       GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');

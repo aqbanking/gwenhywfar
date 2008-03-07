@@ -61,6 +61,7 @@ struct GWEN__XMLNODE {
   GWEN_XMLNODE *parent;
 
   GWEN_XMLNODE_LIST *headers;
+  GWEN_XMLNODE_NAMESPACE_LIST *nameSpaces;
 
   GWEN_XMLNODE_TYPE type;
   GWEN_XMLPROPERTY *properties;
@@ -72,6 +73,14 @@ struct GWEN__XMLNODE {
 struct GWEN_XMLNODE_PATH {
   unsigned int pos;
   GWEN_XMLNODE *nodes[GWEN_XML_MAX_DEPTH];
+};
+
+
+
+struct GWEN_XMLNODE_NAMESPACE {
+  GWEN_LIST_ELEMENT(GWEN_XMLNODE_NAMESPACE)
+  char *name;
+  char *url;
 };
 
 
@@ -128,6 +137,20 @@ static int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 			     uint32_t flags);
 
 static int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_IO_LAYER *io);
+
+
+static GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,
+								const char *prefix);
+
+static int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
+					GWEN_XMLNODE_NAMESPACE_LIST *l,
+					uint32_t *pLastId);
+
+static void GWEN_XMLGL__ClearNameSpaces(GWEN_XMLNODE *n);
+
+static int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
+				     GWEN_XMLNODE_NAMESPACE_LIST *l,
+				     char **pValue);
 
 
 #endif

@@ -514,8 +514,9 @@ int GWEN_Io_Layer_ListenRecursively(GWEN_IO_LAYER *io, GWEN_IO_LAYER *stopAtLaye
   }
 
   /* then connect this layer, if it not already is */
-  if (io->status!=GWEN_Io_Layer_StatusListening)
+  if (io->status!=GWEN_Io_Layer_StatusListening) {
     return GWEN_Io_Layer_Listen(io);
+  }
   return 0;
 }
 

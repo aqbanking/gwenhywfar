@@ -219,6 +219,7 @@ int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *buf, int dstSize){
 int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize){
   unsigned int diff;
   char *p;
+  int i;
 
   if ((unsigned int)dstSize<GWEN_Buffer_GetUsedBytes(buf)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
@@ -244,7 +245,12 @@ int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize){
   *(p++)=0x00;
   *(p++)=0x02; /* block type 02 */
   GWEN_Crypt_Random(2, (uint8_t*)p, diff-3);
-  p+=(diff-3);
+  for (i=0; i<diff-3; i++) {
+    if (*p==0)
+      /* TODO: Need to find a better but yet fast way */
+      *p=0xff;
+    p++;
+  }
   *(p++)=0x00;
 
   return 0;

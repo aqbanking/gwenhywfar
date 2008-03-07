@@ -95,6 +95,26 @@ void GWEN_Crypt_KeySym_freeData(void *bp, void *p) {
 
 
 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_dup(const GWEN_CRYPT_KEY *k) {
+  GWEN_CRYPT_KEY *nk;
+  GWEN_CRYPT_KEY_SYM *xk;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_SYM, k);
+  assert(xk);
+
+  nk=GWEN_Crypt_KeySym_fromData(GWEN_Crypt_Key_GetCryptAlgoId(k),
+                                GWEN_Crypt_Key_GetKeySize(k),
+				xk->mode,
+				xk->algo,
+				GCRY_CIPHER_SECURE,
+				xk->keyData,
+				xk->keyLen);
+  return nk;
+}
+
+
+
 enum gcry_cipher_modes GWEN_Crypt_KeySym__MyMode2GMode(GWEN_CRYPT_CRYPTMODE mode) {
   switch(mode) {
   case GWEN_Crypt_CryptMode_Unknown: return GCRY_CIPHER_MODE_NONE;
@@ -143,6 +163,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_Generate(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
     return NULL;
   }
   xk->algoValid=1;
+  xk->mode=mode;
 
   kbytes=keySize/8;
   if (keySize % 8)
@@ -196,6 +217,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
     return NULL;
   }
   xk->algoValid=1;
+  xk->mode=mode;
+  xk->algo=algo;
 
   /* read key data */
   if (kd==NULL || kl==0) {
@@ -237,9 +260,6 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
   unsigned int len;
   const char *p;
 
-  DBG_ERROR(0, "Reading this DB:");
-  GWEN_DB_Dump(db, stderr, 2);
-
   dbR=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, gname);
   if (dbR==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "DB does not contain an %s key (no %s group)",
@@ -273,6 +293,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
     return NULL;
   }
   xk->algoValid=1;
+  xk->mode=mode;
+  xk->algo=algo;
 
   /* read key data */
   p=GWEN_DB_GetBinValue(dbR, "keyData", 0, NULL, 0, &len);

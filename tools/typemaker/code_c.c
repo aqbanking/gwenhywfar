@@ -1837,7 +1837,8 @@ int write_code_duprec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
         const char *typ;
         const char *name;
         const char *mode;
-        int doCopy;
+	int doCopy;
+        int takeOver;
 
         name=GWEN_XMLNode_GetProperty(n, "name", 0);
         if (!name) {
@@ -1853,6 +1854,7 @@ int write_code_duprec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
         isPtr=atoi(get_property(n, "ptr", "0"));
         doCopy=atoi(get_property(n, "copy", "1"));
+	takeOver=atoi(get_property(n, "takeOver", "0"));
         mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
         if (strcasecmp(mode, "single")!=0)
           /* lists are always pointers */
@@ -1886,7 +1888,7 @@ int write_code_duprec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
             GWEN_BufferedIO_WriteChar(bio, tolower(*name));
             GWEN_BufferedIO_Write(bio, name+1);
             GWEN_BufferedIO_Write(bio, "=");
-            if (doCopy) {
+	    if (doCopy || takeOver) {
               rv=write_code_dupArg_c(args, n, bio, GWEN_Buffer_GetStart(pbuf));
               GWEN_Buffer_free(pbuf);
               if (rv)

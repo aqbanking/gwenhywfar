@@ -16,6 +16,14 @@
 
 #include "cryptkey.h"
 
+
+/**
+ * When signing always directly use the signature, do not determine whether
+ * (sig-n) is smaller
+ */
+#define GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN 0x00000001
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,6 +41,7 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes,
 						  GWEN_CRYPT_KEY **pPubKey,
 						  GWEN_CRYPT_KEY **pSecretKey);
 
+GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k);
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromDb(GWEN_DB_NODE *db);
 GWENHYWFAR_API int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub);
@@ -45,6 +54,14 @@ GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
 							    uint32_t lModulus,
 							    const uint8_t *pExponent,
 							    uint32_t lExponent);
+
+GWENHYWFAR_API uint32_t GWEN_Crypt_KeyRsa_GetFlags(const GWEN_CRYPT_KEY *k);
+GWENHYWFAR_API void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k,
+                                               uint32_t fl);
+GWENHYWFAR_API void GWEN_Crypt_KeyRsa_AddFlags(GWEN_CRYPT_KEY *k,
+                                               uint32_t fl);
+GWENHYWFAR_API void GWEN_Crypt_KeyRsa_SubFlags(GWEN_CRYPT_KEY *k,
+					       uint32_t fl);
 
 #ifdef __cplusplus
 }

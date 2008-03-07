@@ -74,6 +74,17 @@ GWENHYWFAR_API
 uint32_t GWEN_Crypt_KeyBlowFish_GetKeyDataLen(const GWEN_CRYPT_KEY *k);
 
 
+
+/**
+ * This functions creates a copy of the given key. The given key must
+ * have been created by one of the functions in this group (e.g.
+ * @ref GWEN_Crypt_KeyBlowFish_fromDb(), @ref GWEN_Crypt_KeyDes3K_Generate()
+ * etc. For other kinds of keys other functions must be used (like
+ * @ref GWEN_Crypt_KeyRsa_dup() for RSA keys).
+ */
+GWENHYWFAR_API 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_dup(const GWEN_CRYPT_KEY *k);
+
 #ifdef __cplusplus
 }
 #endif

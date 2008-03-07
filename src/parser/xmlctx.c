@@ -434,7 +434,9 @@ int GWEN_XmlCtxStore_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
     currNode=GWEN_XmlCtx_GetCurrentNode(ctx);
     if (currNode==NULL)
       return GWEN_ERROR_INVALID;
-    DBG_VERBOUS(GWEN_LOGDOMAIN, "Ending tag [%s] (%s)", GWEN_XMLNode_GetData(currNode), closing?"closing":"not closing");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Ending tag [%s] (%s)",
+		GWEN_XMLNode_GetData(currNode),
+		closing?"closing":"not closing");
 
     if (closing) {
       GWEN_XMLNODE *newNode;
@@ -569,15 +571,50 @@ int GWEN_XmlCtxStore_AddAttr(GWEN_XML_CONTEXT *ctx,
     GWEN_XMLNode_SetProperty(currNode, attrName, attrData);
   }
   else {
+    int isNormalProperty=1;
+
     currNode=GWEN_XmlCtx_GetCurrentNode(ctx);
     if (currNode==NULL)
       return GWEN_ERROR_INVALID;
     if (attrData==NULL)
       attrData="";
 
-    DBG_VERBOUS(GWEN_LOGDOMAIN, "Setting attribute of tag [%s]: [%s]=[%s]",
-		GWEN_XMLNode_GetData(currNode), attrName, attrData);
-    GWEN_XMLNode_SetProperty(currNode, attrName, attrData);
+    if (ctx->flags & GWEN_XML_FLAGS_HANDLE_NAMESPACES) {
+      if (strcasecmp(attrName, "xmlns")==0) {
+	GWEN_XMLNODE_NAMESPACE *ns;
+
+	DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding namespace [%s] to node [%s]",
+		    attrData, GWEN_XMLNode_GetData(currNode));
+	ns=GWEN_XMLNode_NameSpace_new("", attrData);
+	GWEN_XMLNode_AddNameSpace(currNode, ns);
+	GWEN_XMLNode_NameSpace_free(ns);
+	isNormalProperty=0;
+      }
+      else if (strncasecmp(attrName, "xmlns:", 6)==0) {
+	const char *name;
+
+	name=strchr(attrName, ':');
+	if (name) {
+	  name++;
+	  if (*name) {
+	    GWEN_XMLNODE_NAMESPACE *ns;
+
+	    DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding namespace [%s]=[%s]",
+			name, attrData);
+	    ns=GWEN_XMLNode_NameSpace_new(name, attrData);
+	    GWEN_XMLNode_AddNameSpace(currNode, ns);
+	    GWEN_XMLNode_NameSpace_free(ns);
+	    isNormalProperty=0;
+	  }
+	}
+      }
+    }
+
+    if (isNormalProperty) {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Setting attribute of tag [%s]: [%s]=[%s]",
+		  GWEN_XMLNode_GetData(currNode), attrName, attrData);
+      GWEN_XMLNode_SetProperty(currNode, attrName, attrData);
+    }
   }
 
   return 0;

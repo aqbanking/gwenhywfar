@@ -24,6 +24,8 @@ typedef struct GWEN_CRYPT_KEY_SYM GWEN_CRYPT_KEY_SYM;
 struct GWEN_CRYPT_KEY_SYM {
   int algoValid;
   gcry_cipher_hd_t algoHandle;
+  GWEN_CRYPT_CRYPTMODE mode;
+  int algo;
   uint8_t *keyData;
   uint32_t keyLen;
 };
@@ -65,6 +67,7 @@ static GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAl
 static int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char *gname);
 
 static int GWEN_Crypt_KeySym_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl);
+
 
 
 #endif

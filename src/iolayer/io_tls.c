@@ -36,6 +36,9 @@
 #include <gwenhywfar/text.h> /* debug */
 
 
+/*#define DEBUG_TLS*/
+
+
 
 GWEN_INHERIT(GWEN_IO_LAYER, GWEN_IO_LAYER_TLS)
 
@@ -904,7 +907,7 @@ int GWEN_Io_LayerTls_Encode(GWEN_IO_LAYER *io, const uint8_t *pBuffer, uint32_t 
       return GWEN_ERROR_IO;
     }
   }
-#if 0
+#ifdef DEBUG_TLS
   else {
     DBG_ERROR(0, "Sent this:");
     GWEN_Text_DumpString((const char*)pBuffer, rv,
@@ -941,7 +944,7 @@ int GWEN_Io_LayerTls_Decode(GWEN_IO_LAYER *io, uint8_t *pBuffer, uint32_t lBuffe
     DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
     return GWEN_ERROR_EOF;
   }
-#if 0
+#ifdef DEBUG_TLS
   else {
     DBG_ERROR(0, "Received this:");
     GWEN_Text_DumpString((const char*)pBuffer, rv,

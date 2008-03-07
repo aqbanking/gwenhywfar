@@ -73,7 +73,7 @@ int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
   gcry_mpi_t mpi_n;
   gcry_mpi_t mpi_in;
   gcry_mpi_t mpi_sigout1;
-  gcry_mpi_t mpi_sigout2;
+  gcry_mpi_t mpi_sigout2=NULL;
   size_t nwritten;
 
   assert(k);
@@ -111,13 +111,15 @@ int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
   mpi_sigout1=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
   gcry_mpi_powm(mpi_sigout1, mpi_in, mpi_d, mpi_n);
 
-  /* create second signature */
-  mpi_sigout2=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
-  gcry_mpi_sub(mpi_sigout2, mpi_n, mpi_sigout1);
+  if (!(xk->flags & GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN)) {
+    /* create second signature */
+    mpi_sigout2=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
+    gcry_mpi_sub(mpi_sigout2, mpi_n, mpi_sigout1);
 
-  if (gcry_mpi_cmp(mpi_sigout2, mpi_sigout1)<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Choosing 2nd variant");
-    gcry_mpi_set(mpi_sigout1, mpi_sigout2);
+    if (gcry_mpi_cmp(mpi_sigout2, mpi_sigout1)<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Choosing 2nd variant");
+      gcry_mpi_set(mpi_sigout1, mpi_sigout2);
+    }
   }
 
   /* release unneeded objects */
@@ -345,7 +347,7 @@ int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
     return GWEN_ERROR_BAD_DATA;
   }
 
-  /* encrypt */
+  /* decrypt */
   mpi_out=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
   gcry_mpi_powm(mpi_out, mpi_in, mpi_d, mpi_n);
 
@@ -557,6 +559,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromDb(GWEN_DB_NODE *db) {
   isPublic=GWEN_DB_GetIntValue(dbR, "isPublic", 0, 1);
   xk->pub=isPublic;
 
+  xk->flags=GWEN_DB_GetIntValue(dbR, "flags", 0, 0);
+
   /* prepare data */
   rv=GWEN_Crypt_KeyRsa__DataFromDb(dbR, &data, isPublic, nbits);
   if (rv) {
@@ -635,6 +639,8 @@ int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub) {
 
   GWEN_DB_SetIntValue(dbR, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "isPublic", pub);
+  GWEN_DB_SetIntValue(dbR, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "flags", xk->flags);
 
   /* store n */
   rv=GWEN_Crypt_KeyRsa__WriteMpi(dbR, "n", ds, "n");
@@ -676,7 +682,6 @@ int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub) {
 
 
 
-#if 1
 int GWEN_Crypt_KeyRsa__sKeyElementToData(gcry_ac_data_t data, gcry_sexp_t sx, const char *name) {
   int rc;
   gcry_sexp_t list;
@@ -915,131 +920,6 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
 }
 
 
-#else
-
-
-int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
-				   GWEN_CRYPT_KEY **pPubKey,
-				   GWEN_CRYPT_KEY **pSecretKey) {
-  gcry_error_t err;
-  gcry_ac_key_spec_rsa_t rsa_spec;
-  gcry_ac_handle_t algoHandle;
-  gcry_ac_key_pair_t key_pair;
-  gcry_ac_key_t key;
-  GWEN_CRYPT_KEY *k;
-  GWEN_CRYPT_KEY_RSA *xk;
-
-  err=gcry_ac_open(&algoHandle, GCRY_AC_RSA, 0);
-  if (err) {
-    DBG_INFO(GWEN_LOGDOMAIN, "gcry_ac_open(): %d", err);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  memset(&rsa_spec, 0, sizeof(rsa_spec));
-
-  /* generate key pair */
-  rsa_spec.e=gcry_mpi_new(0);
-  if (use65537e) {
-    DBG_ERROR(0, "Using 65537");
-    //gcry_mpi_set_ui(rsa_spec.e, 1);
-    gcry_mpi_set_ui(rsa_spec.e, 65537);
-  }
-  else {
-    DBG_ERROR(0, "Letting libgcrypt decide");
-    gcry_mpi_set_ui(rsa_spec.e, 0);
-  }
-  err=gcry_ac_key_pair_generate(algoHandle, nbytes*8, (void*) &rsa_spec, &key_pair, NULL);
-  gcry_mpi_release(rsa_spec.e);
-  if (err) {
-    DBG_INFO(GWEN_LOGDOMAIN, "gcry_ac_key_pair_generate(): %d", err);
-    gcry_ac_close (algoHandle);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* extract and store public key from key pair */
-  key=gcry_ac_key_pair_extract(key_pair, GCRY_AC_KEY_PUBLIC);
-
-  /* create public key */
-  k=GWEN_Crypt_Key_new(GWEN_Crypt_CryptAlgoId_Rsa, nbytes);
-  assert(k);
-  GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_RSA, xk);
-  GWEN_INHERIT_SETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k, xk,
-		       GWEN_Crypt_KeyRsa_freeData);
-  GWEN_Crypt_Key_SetSignFn(k, GWEN_Crypt_KeyRsa_Sign);
-  GWEN_Crypt_Key_SetVerifyFn(k, GWEN_Crypt_KeyRsa_Verify);
-  GWEN_Crypt_Key_SetEncipherFn(k, GWEN_Crypt_KeyRsa_Encipher);
-  GWEN_Crypt_Key_SetDecipherFn(k, GWEN_Crypt_KeyRsa_Decipher);
-
-  /* open algo for key */
-  err=gcry_ac_open(&xk->algoHandle, GCRY_AC_RSA, 0);
-  if (err) {
-    DBG_INFO(GWEN_LOGDOMAIN, "gcry_ac_open(): %d", err);
-    GWEN_Crypt_Key_free(k);
-    gcry_ac_key_pair_destroy(key_pair);
-    gcry_ac_close (algoHandle);
-    return GWEN_ERROR_GENERIC;
-  }
-  xk->algoValid=1;
-  /* copy key */
-  err=gcry_ac_key_init(&xk->key, xk->algoHandle, GCRY_AC_KEY_PUBLIC,
-		       gcry_ac_key_data_get(key));
-  xk->pub=1;
-  if (err) {
-    DBG_INFO(GWEN_LOGDOMAIN, "gcry_ac_open(): %d", err);
-    GWEN_Crypt_Key_free(k);
-    gcry_ac_key_pair_destroy(key_pair);
-    gcry_ac_close(algoHandle);
-    return GWEN_ERROR_GENERIC;
-  }
-  xk->keyValid=1;
-  *pPubKey=k;
-
-  /* extract and store secret key from key pair */
-  key=gcry_ac_key_pair_extract(key_pair, GCRY_AC_KEY_SECRET);
-
-  /* create private key */
-  k=GWEN_Crypt_Key_new(GWEN_Crypt_CryptAlgoId_Rsa, nbytes);
-  assert(k);
-  GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_RSA, xk);
-  GWEN_INHERIT_SETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k, xk,
-		       GWEN_Crypt_KeyRsa_freeData);
-  GWEN_Crypt_Key_SetSignFn(k, GWEN_Crypt_KeyRsa_Sign);
-  GWEN_Crypt_Key_SetVerifyFn(k, GWEN_Crypt_KeyRsa_Verify);
-  GWEN_Crypt_Key_SetEncipherFn(k, GWEN_Crypt_KeyRsa_Encipher);
-  GWEN_Crypt_Key_SetDecipherFn(k, GWEN_Crypt_KeyRsa_Decipher);
-
-  /* open algo for key */
-  err=gcry_ac_open(&xk->algoHandle, GCRY_AC_RSA, 0);
-  if (err) {
-    DBG_INFO(GWEN_LOGDOMAIN, "gcry_ac_open(): %d", err);
-    GWEN_Crypt_Key_free(k);
-    gcry_ac_key_pair_destroy(key_pair);
-    gcry_ac_close (algoHandle);
-    return GWEN_ERROR_GENERIC;
-  }
-  xk->algoValid=1;
-  /* copy key */
-  err=gcry_ac_key_init(&xk->key, xk->algoHandle, GCRY_AC_KEY_SECRET,
-		       gcry_ac_key_data_get(key));
-  xk->pub=0;
-  if (err) {
-    DBG_INFO(GWEN_LOGDOMAIN, "gcry_ac_open(): %d", err);
-    GWEN_Crypt_Key_free(k);
-    gcry_ac_key_pair_destroy(key_pair);
-    gcry_ac_close(algoHandle);
-    return GWEN_ERROR_GENERIC;
-  }
-  xk->keyValid=1;
-  *pSecretKey=k;
-
-  gcry_ac_key_pair_destroy(key_pair);
-  gcry_ac_close(algoHandle);
-
-  return 0;
-}
-#endif
-
-
 
 int GWEN_Crypt_KeyRsa__GetNamedElement(const GWEN_CRYPT_KEY *k,
                                        const char *name,
@@ -1156,6 +1036,81 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
 }
 
 
+
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k) {
+  GWEN_CRYPT_KEY_RSA *xk;
+  GWEN_DB_NODE *dbKey;
+  GWEN_CRYPT_KEY *nk;
+  int rv;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k);
+  assert(xk);
+
+  dbKey=GWEN_DB_Group_new("dbKey");
+  rv=GWEN_Crypt_KeyRsa_toDb(k, dbKey, xk->pub);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(dbKey);
+    return NULL;
+  }
+
+  nk=GWEN_Crypt_KeyRsa_fromDb(dbKey);
+  GWEN_DB_Group_free(dbKey);
+  if (nk==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not create key");
+  }
+
+  return nk;
+}
+
+
+
+uint32_t GWEN_Crypt_KeyRsa_GetFlags(const GWEN_CRYPT_KEY *k) {
+  GWEN_CRYPT_KEY_RSA *xk;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k);
+  assert(xk);
+
+  return xk->flags;
+}
+
+
+
+void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
+  GWEN_CRYPT_KEY_RSA *xk;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k);
+  assert(xk);
+
+  xk->flags=fl;
+}
+
+
+
+void GWEN_Crypt_KeyRsa_AddFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
+  GWEN_CRYPT_KEY_RSA *xk;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k);
+  assert(xk);
+
+  xk->flags|=fl;
+}
+
+
+
+void GWEN_Crypt_KeyRsa_SubFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
+  GWEN_CRYPT_KEY_RSA *xk;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k);
+  assert(xk);
+
+  xk->flags&=~fl;
+}
 
 
 

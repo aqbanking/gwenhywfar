@@ -1,3 +1,41 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2008/03/07: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in CryptToken plugin OHBCI: Now creates empty key info
+  objects for keys missing in the file (thus allowing to create the 
+  corresponding keys later)
+
+
+2008/03/03: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added functions:
+  - GWEN_Crypt_KeyRsa_GetFlags()
+  - GWEN_Crypt_KeyRsa_SetFlags()
+  - GWEN_Crypt_KeyRsa_AddFlags()
+  - GWEN_Crypt_KeyRsa_SubFlags()
+
+
+2008/03/01: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added function GWEN_Crypt_KeySym_dup()
+- typemaker::write_code_duprec_c(): use the dup() function if "copy" is !=0 
+  OR if "takeOver" is !=0 (previously we only checked for the "copy" 
+  attribute)
+
+
+2008/02/27: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- xml: added optional handling of namespaces
+
+
+2008/02/26: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added function GWEN_Crypt_KeyRsa_dup()
+
 
 2008/02/19: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------

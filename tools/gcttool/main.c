@@ -14,8 +14,8 @@
 # include <config.h>
 #endif
 
-#define GCT_IS_EXPERIMENTAL
-#define DEBUG_GCT_TOOL
+/*#define GCT_IS_EXPERIMENTAL
+#define DEBUG_GCT_TOOL */
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/pathmanager.h>

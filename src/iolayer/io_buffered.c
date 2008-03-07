@@ -89,6 +89,7 @@ void GWEN_Io_LayerBuffered_AbortInRequests(GWEN_IO_LAYER *io, int errorCode) {
 
     r=xio->readRequestIn;
     xio->readRequestIn=NULL;
+    DBG_INFO(GWEN_LOGDOMAIN, "Aborting in read request");
     GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, errorCode);
     GWEN_Io_Request_free(r);
   }
@@ -97,6 +98,7 @@ void GWEN_Io_LayerBuffered_AbortInRequests(GWEN_IO_LAYER *io, int errorCode) {
 
     r=xio->writeRequestIn;
     xio->writeRequestIn=NULL;
+    DBG_INFO(GWEN_LOGDOMAIN, "Aborting in write request");
     GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, errorCode);
     GWEN_Io_Request_free(r);
   }
@@ -179,6 +181,8 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerBuffered_WorkOnReadRequest(GWEN_IO_LAYER *
       /* empty read buffer, fill it if possible */
       if (xio->lastReadOutResult) {
 	xio->readRequestIn=NULL;
+	DBG_INFO(GWEN_LOGDOMAIN, "Aborting in read request (reason: %d)",
+		 xio->lastReadOutResult);
 	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, xio->lastReadOutResult);
 	GWEN_Io_Request_free(r);
 	doneSomething=1;
@@ -203,6 +207,8 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerBuffered_WorkOnReadRequest(GWEN_IO_LAYER *
 	      xio->lastReadOutResult=rv;
 	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	      xio->readRequestIn=NULL;
+	      DBG_INFO(GWEN_LOGDOMAIN, "Aborting in read request (reason: %d)",
+		       xio->lastReadOutResult);
 	      GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, rv);
 	      GWEN_Io_Request_free(r);
 	    }
@@ -303,6 +309,9 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerBuffered_WorkOnReadRequest(GWEN_IO_LAYER *
 		xio->readLinePos=0;
 		xio->readRequestIn=NULL;
 		GWEN_Io_Request_SetBufferPos(r, bpos);
+		DBG_INFO(GWEN_LOGDOMAIN,
+			 "Aborting in read request (reason: %d)",
+			 xio->lastReadOutResult);
 		GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_EOF);
 		GWEN_Io_Request_free(r);
 	      }
@@ -339,6 +348,23 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerBuffered_WorkOnReadRequest(GWEN_IO_LAYER *
 	  }
 	}
       }
+    }
+  }
+
+  if (GWEN_Io_Layer_GetStatus(io)==GWEN_Io_Layer_StatusListening) {
+    GWEN_IO_LAYER *newIo;
+
+    newIo=GWEN_Io_Layer_GetNextIncomingLayer(GWEN_Io_Layer_GetBaseLayer(io));
+    if (newIo) {
+      GWEN_IO_LAYER *newNewIo;
+      uint32_t fl;
+
+      fl=GWEN_Io_Layer_GetFlags(io);
+      newNewIo=GWEN_Io_LayerBuffered_new(newIo);
+      GWEN_Io_Layer_AddFlags(newNewIo, GWEN_IO_LAYER_FLAGS_PASSIVE);
+      GWEN_Io_Layer_AddFlags(newNewIo, fl & 0xffff);
+      GWEN_Io_Layer_AddIncomingLayer(io, newNewIo);
+      doneSomething=1;
     }
   }
 
@@ -449,11 +475,14 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerBuffered_WorkOnWriteRequest(GWEN_IO_LAYER 
       }
       else {
 	assert(rv!=GWEN_ERROR_NO_DATA);
-	if (rv!=GWEN_ERROR_TRY_AGAIN) {
+	if (rv!=GWEN_ERROR_TRY_AGAIN &&
+	    rv!=GWEN_ERROR_IN_PROGRESS) {
 	  xio->writeRequestIn=NULL;
+	  DBG_INFO(GWEN_LOGDOMAIN,
+		   "Aborting in write request (reason: %d)",
+		   rv);
 	  GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, rv);
 	  GWEN_Io_Request_free(r);
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	  doneSomething=1;
 	}
       }
@@ -535,6 +564,9 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerBuffered_WorkOnWriteRequest(GWEN_IO_LAYER 
 	  }
 	  else if (rv!=GWEN_ERROR_TRY_AGAIN && rv!=GWEN_ERROR_IN_PROGRESS) {
 	    xio->writeRequestIn=NULL;
+	    DBG_INFO(GWEN_LOGDOMAIN,
+		     "Aborting in write request (reason: %d)",
+		     rv);
 	    GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, rv);
 	    GWEN_Io_Request_free(r);
 	    doneSomething=1;

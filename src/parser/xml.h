@@ -106,6 +106,8 @@ extern "C" {
  */
 #define GWEN_XML_FLAGS_TOLERANT_ENDTAGS     0x0100
 
+#define GWEN_XML_FLAGS_HANDLE_NAMESPACES    0x0200
+
 /**
  * combination of other flags resembling the default flags
  */
@@ -134,9 +136,12 @@ typedef enum {
  * tree and can represent different things, see @ref
  * GWEN_XMLNODE_TYPE. */
 typedef struct GWEN__XMLNODE GWEN_XMLNODE;
+typedef struct GWEN_XMLNODE_NAMESPACE GWEN_XMLNODE_NAMESPACE;
 
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_XMLNODE, GWEN_XMLNode, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_XMLNODE, GWEN_XMLNode, GWENHYWFAR_API)
+
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_XMLNODE_NAMESPACE, GWEN_XMLNode_NameSpace, GWENHYWFAR_API)
 
 #ifdef __cplusplus
 }
@@ -558,6 +563,16 @@ int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n);
 
 
 GWENHYWFAR_API
+int GWEN_XMLNode_Globalize(GWEN_XMLNODE *n);
+
+
+GWENHYWFAR_API
+int GWEN_XMLNode_GlobalizeWithList(GWEN_XMLNODE *n,
+				   GWEN_XMLNODE_NAMESPACE_LIST *l,
+				   uint32_t *pLastId);
+
+
+GWENHYWFAR_API
 int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb);
 
 /**
@@ -600,6 +615,21 @@ GWENHYWFAR_API
 int GWEN_XMLNode_toBuffer(const GWEN_XMLNODE *n, GWEN_BUFFER *buf, uint32_t flags);
 
 
+
+
+GWENHYWFAR_API
+GWEN_XMLNODE_NAMESPACE_LIST *GWEN_XMLNode_GetNameSpaces(const GWEN_XMLNODE *n);
+
+GWENHYWFAR_API
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByName(const GWEN_XMLNODE *n,
+							 const char *s);
+
+GWENHYWFAR_API
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByUrl(const GWEN_XMLNODE *n,
+							const char *s);
+
+GWENHYWFAR_API
+void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns);
 
 
 
@@ -734,6 +764,24 @@ GWENHYWFAR_API
 void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np);
 /*@}*/ /* defgroup */
 /*@}*/ /* defgroup (all)*/
+
+
+
+GWENHYWFAR_API
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_new(const char *name,
+						   const char *url);
+
+GWENHYWFAR_API
+void GWEN_XMLNode_NameSpace_free(GWEN_XMLNODE_NAMESPACE *ns);
+
+GWENHYWFAR_API
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_dup(const GWEN_XMLNODE_NAMESPACE *ns);
+
+GWENHYWFAR_API
+const char *GWEN_XMLNode_NameSpace_GetName(const GWEN_XMLNODE_NAMESPACE *ns);
+
+GWENHYWFAR_API
+const char *GWEN_XMLNode_NameSpace_GetUrl(const GWEN_XMLNODE_NAMESPACE *ns);
 
 
 #ifdef __cplusplus

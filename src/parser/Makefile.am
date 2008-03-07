@@ -10,7 +10,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 
 typefiles=url.xml
-EXTRA_DIST=$(typefiles) dbrw.c xmlrw.c
+EXTRA_DIST=$(typefiles) dbrw.c xmlrw.c xmlglobalize.c
 
 noinst_LTLIBRARIES=libparser.la
 
@@ -26,7 +26,9 @@ noinst_HEADERS=\
  xml_p.h \
  xml_l.h \
  xmlctx_l.h \
- xmlctx_p.h
+ xmlctx_p.h \
+ xsdnode_l.h \
+ xsdnode_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -41,7 +43,8 @@ iheader_HEADERS=\
  tlv.h \
  url.h urlfns.h \
  xml.h \
- xmlctx.h
+ xmlctx.h \
+ xsdnode.h
 
 libparser_la_SOURCES=\
  base64.c \
@@ -54,7 +57,8 @@ libparser_la_SOURCES=\
  tlv.c \
  url.c urlfns.c \
  xml.c \
- xmlctx.c
+ xmlctx.c \
+ xsdnode.c
 
 
 

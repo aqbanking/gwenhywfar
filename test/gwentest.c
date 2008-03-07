@@ -478,7 +478,7 @@ int testXML(int argc, char **argv) {
 
 
 
-int testXML3(int argc, char **argv) {
+int testXML2(int argc, char **argv) {
   GWEN_XMLNODE *n;
 
   if (argc<3) {
@@ -498,6 +498,62 @@ int testXML3(int argc, char **argv) {
   fprintf(stderr, "XML file:\n");
   GWEN_XMLNode_Dump(n, stderr, 2);
   if (GWEN_XMLNode_WriteFile(n, "xml.out",
+                             GWEN_XML_FLAGS_DEFAULT)){
+    fprintf(stderr, "Could not write file xml.out\n");
+    return 2;
+  }
+  GWEN_XMLNode_free(n);
+  return 0;
+}
+
+
+
+int testXML3(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_XMLNODE *nXml;
+  int rv;
+  GWEN_XMLNODE_NAMESPACE_LIST *l;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  if (GWEN_XML_ReadFile(n, argv[2],
+			GWEN_XML_FLAGS_TOLERANT_ENDTAGS |
+			GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS |
+			GWEN_XML_FLAGS_HANDLE_NAMESPACES |
+			GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  nXml=GWEN_XMLNode_GetFirstTag(n);
+  assert(nXml);
+
+  l=GWEN_XMLNode_GetNameSpaces(nXml);
+  if (l) {
+    GWEN_XMLNODE_NAMESPACE *ns;
+
+    ns=GWEN_XMLNode_NameSpace_List_First(l);
+    while(ns) {
+      fprintf(stderr, "- [%s] = [%s]\n",
+	      GWEN_XMLNode_NameSpace_GetName(ns),
+	      GWEN_XMLNode_NameSpace_GetUrl(ns));
+      ns=GWEN_XMLNode_NameSpace_List_Next(ns);
+    }
+  }
+
+  rv=GWEN_XMLNode_Globalize(nXml);
+  if (rv) {
+    fprintf(stderr, "Could not globalize (%d)\n", rv);
+    return 2;
+  }
+
+  if (GWEN_XMLNode_WriteFile(n, "xml.out",
+			     GWEN_XML_FLAGS_HANDLE_NAMESPACES |
                              GWEN_XML_FLAGS_DEFAULT)){
     fprintf(stderr, "Could not write file xml.out\n");
     return 2;
@@ -3042,6 +3098,8 @@ int main(int argc, char **argv) {
     rv=testListMsg(argc, argv);
   else if (strcasecmp(argv[1], "xml")==0)
     rv=testXML(argc, argv);
+  else if (strcasecmp(argv[1], "xml2")==0)
+    rv=testXML2(argc, argv);
   else if (strcasecmp(argv[1], "xml3")==0)
     rv=testXML3(argc, argv);
   else if (strcasecmp(argv[1], "xml4")==0)

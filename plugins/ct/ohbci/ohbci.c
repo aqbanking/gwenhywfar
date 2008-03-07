@@ -1033,6 +1033,21 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
       GWEN_CTF_Context_SetLocalSignKey(fct, key);
     }
   }
+  else {
+    GWEN_CRYPT_TOKEN_KEYINFO *ki;
+
+    /* create key info */
+    ki=GWEN_Crypt_Token_KeyInfo_new(0x0001, /* local sign key */
+                                    GWEN_Crypt_CryptAlgoId_Rsa, 96);
+    assert(ki);
+
+    GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Local Sign Key"));
+    GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+    GWEN_CTF_Context_SetLocalSignKeyInfo(fct, ki);
+  }
 
   /* local crypt key */
   dbKey=GWEN_DB_GetGroup(dbKeys, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
@@ -1095,6 +1110,20 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
       /* set key */
       GWEN_CTF_Context_SetLocalCryptKey(fct, key);
     }
+  }
+  else {
+    GWEN_CRYPT_TOKEN_KEYINFO *ki;
+
+    /* create key info */
+    ki=GWEN_Crypt_Token_KeyInfo_new(0x0002, /* local crypt key */
+				    GWEN_Crypt_CryptAlgoId_Rsa, 96);
+    assert(ki);
+    GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Local Crypt Key"));
+    GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER);
+    GWEN_CTF_Context_SetLocalCryptKeyInfo(fct, ki);
   }
 
   /* remote sign key */
@@ -1162,6 +1191,19 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
       GWEN_CTF_Context_SetRemoteSignKey(fct, key);
     }
   }
+  else {
+    GWEN_CRYPT_TOKEN_KEYINFO *ki;
+
+    /* create key info */
+    ki=GWEN_Crypt_Token_KeyInfo_new(0x0003, /* remote sign key */
+				    GWEN_Crypt_CryptAlgoId_Rsa, 96);
+    assert(ki);
+    GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Remote Sign Key"));
+    GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
+    GWEN_CTF_Context_SetRemoteSignKeyInfo(fct, ki);
+  }
 
   /* remote crypt key */
   dbKey=GWEN_DB_GetGroup(dbKeys, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
@@ -1228,6 +1270,19 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
       GWEN_CTF_Context_SetRemoteCryptKey(fct, key);
     }
   }
+  else {
+    GWEN_CRYPT_TOKEN_KEYINFO *ki;
+
+    /* create key info */
+    ki=GWEN_Crypt_Token_KeyInfo_new(0x0004, /* remote crypt key */
+				    GWEN_Crypt_CryptAlgoId_Rsa, 96);
+    assert(ki);
+    GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Remote Crypt Key"));
+    GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER);
+    GWEN_CTF_Context_SetRemoteCryptKeyInfo(fct, ki);
+  }
 
   /* local auth key */
   dbKey=GWEN_DB_GetGroup(dbKeys, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
@@ -1290,6 +1345,20 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
       GWEN_CTF_Context_SetLocalAuthKey(fct, key);
     }
   }
+  else {
+    GWEN_CRYPT_TOKEN_KEYINFO *ki;
+
+    /* create key info */
+    ki=GWEN_Crypt_Token_KeyInfo_new(0x0005, /* local auth key */
+				    GWEN_Crypt_CryptAlgoId_Rsa, 96);
+    assert(ki);
+    GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Local Auth Key"));
+    GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
+    GWEN_CTF_Context_SetLocalAuthKeyInfo(fct, ki);
+  }
 
   /* remote auth key */
   dbKey=GWEN_DB_GetGroup(dbKeys, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
@@ -1350,6 +1419,19 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
       /* set key */
       GWEN_CTF_Context_SetRemoteAuthKey(fct, key);
     }
+  }
+  else {
+    GWEN_CRYPT_TOKEN_KEYINFO *ki;
+
+    /* create key info */
+    ki=GWEN_Crypt_Token_KeyInfo_new(0x0006, /* remote auth key */
+				    GWEN_Crypt_CryptAlgoId_Rsa, 96);
+    assert(ki);
+    GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Remote Auth Key"));
+    GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
+    GWEN_CTF_Context_SetRemoteAuthKeyInfo(fct, ki);
   }
 
   /* finalize user and file context */

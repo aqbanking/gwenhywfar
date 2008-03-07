@@ -27,6 +27,7 @@ struct GWEN_CRYPT_KEY_RSA {
   gcry_ac_handle_t algoHandle;
   int keyValid;
   gcry_ac_key_t key;
+  uint32_t flags;
 };
 
 static GWENHYWFAR_CB void GWEN_Crypt_KeyRsa_freeData(void *bp, void *p);

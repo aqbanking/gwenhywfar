@@ -1489,7 +1489,12 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   else if (keyNum==3)
     cki=GWEN_CTF_Context_GetLocalCryptKeyInfo(ctx);
   else
-    cki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx);
+      cki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx);
+  if (cki==NULL) {
+    GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
+			 I18N("No key info found"));
+    return GWEN_ERROR_NO_DATA;
+  }
 
   /* update key info for the key */
   ki=GWEN_Crypt_Token_KeyInfo_dup(cki);
