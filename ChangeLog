@@ -3,6 +3,13 @@
   ------------------------------------------------------------------------
 
 
+2008/03/08: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added functions:
+   - GWEN_Padd_PaddWithIso9796_2()
+   - GWEN_Unpadd_PaddWithIso9796_2()
+
+
 2008/03/07: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in CryptToken plugin OHBCI: Now creates empty key info

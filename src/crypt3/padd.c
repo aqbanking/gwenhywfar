@@ -66,7 +66,7 @@ unsigned char GWEN_Padd_permutate(unsigned char input) {
 
 /*
  * The original code (in C++) has been written by Fabian Kaiser for OpenHBCI
- * (file rsakey.cpp). Moved to C by me (Martin Preuss)
+ * (file rsakey.cpp). Translated to C by Martin Preuss
  */
 int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
   unsigned char *p;
@@ -134,6 +134,71 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
+
+  return 0;
+}
+
+
+
+int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
+  unsigned int diff;
+  char *p;
+  int i;
+
+  if ((unsigned int)dstSize<GWEN_Buffer_GetUsedBytes(buf)+31) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* add trailer */
+  GWEN_Buffer_AppendByte(buf, 0xbc);
+
+  /* reset position to 0 */
+  GWEN_Buffer_Rewind(buf);
+
+  /* insert room for header */
+  diff=dstSize-31;
+  if (GWEN_Buffer_InsertRoom(buf, 1+diff+1+8)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Could not insert room for %d bytes",
+	      1+diff+1+8);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* insert header and more-data-bit */
+  p=GWEN_Buffer_GetStart(buf);
+  *(p++)=0x60;
+
+  /* insert padding field */
+  for (i=0; i<diff; i++)
+    *(p++)=0x0;
+  *(p++)=0x01;
+
+  /* insert 8 random bytes */
+  GWEN_Crypt_Random(2, (uint8_t*)p, 8);
+  for (i=0; i<8; i++) {
+    if (*p==0)
+      /* TODO: Need to find a better but yet fast way */
+      *p=0xff;
+    p++;
+  }
+  *(p++)=0x01;
+
+  return 0;
+}
+
+
+
+int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
+  uint32_t l;
+
+  l=GWEN_Buffer_GetUsedBytes(buf);
+  if (l<31) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too few bytes");
+    return GWEN_ERROR_INVALID;
+  }
+
+  GWEN_Buffer_Crop(buf, l-21, 20);
 
   return 0;
 }
@@ -385,8 +450,10 @@ int GWEN_Padd_ApplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
   case GWEN_Crypt_PaddAlgoId_AnsiX9_23:
     return GWEN_Padd_PaddWithAnsiX9_23(buf);
 
-  case GWEN_Crypt_PaddAlgoId_Iso9796_1:
   case GWEN_Crypt_PaddAlgoId_Iso9796_2:
+    return GWEN_Padd_PaddWithIso9796_2(buf, dstSize);
+
+  case GWEN_Crypt_PaddAlgoId_Iso9796_1:
   default:
     DBG_INFO(GWEN_LOGDOMAIN, "Algo-Type %d (%s) not supported",
 	     aid, GWEN_Crypt_PaddAlgoId_toString(aid));
@@ -431,8 +498,10 @@ int GWEN_Padd_UnapplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf){
   case GWEN_Crypt_PaddAlgoId_AnsiX9_23:
     return GWEN_Padd_UnpaddWithAnsiX9_23(buf);
 
-  case GWEN_Crypt_PaddAlgoId_Iso9796_1:
   case GWEN_Crypt_PaddAlgoId_Iso9796_2:
+    return GWEN_Padd_UnpaddWithIso9796_2(buf);
+
+  case GWEN_Crypt_PaddAlgoId_Iso9796_1:
   case GWEN_Crypt_PaddAlgoId_LeftZero:
   case GWEN_Crypt_PaddAlgoId_RightZero:
   case GWEN_Crypt_PaddAlgoId_Iso9796_1A4:

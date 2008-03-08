@@ -57,6 +57,16 @@ GWENHYWFAR_API
 int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src);
 
 /**
+ * This function padds according to ISO 8786-2.
+ */
+GWENHYWFAR_API
+int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize);
+
+
+GWENHYWFAR_API
+int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf);
+
+/**
  * This function is used to pad the plain text data to a multiple of 8 bytes
  * size before encrypting it.
  * This is done by adding bytes to the buffer until its length is multiple of
