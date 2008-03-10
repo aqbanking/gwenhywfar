@@ -22,6 +22,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/padd.h>
 #include <gwenhywfar/cryptkeyrsa.h>
+#include <gwenhywfar/text.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1125,15 +1126,17 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
   int keyNum;
-  GWEN_BUFFER *srcBuf;
   int i;
   int rv;
+  GWEN_CRYPT_PADDALGOID aid;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE, ct);
   assert(lct);
 
   DBG_INFO(GWEN_LOGDOMAIN, "Verifying with key %d", keyId);
+
+  aid=GWEN_Crypt_PaddAlgo_GetId(a);
 
   /* reload if needed */
   rv=GWEN_Crypt_TokenFile__ReloadIfNeeded(ct, gid);
@@ -1171,28 +1174,81 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
     return GWEN_ERROR_NO_KEY;
   }
 
-  /* copy to a buffer for padding */
-  srcBuf=GWEN_Buffer_new(0, inLen, 0, 0);
-  GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
+  if (aid==GWEN_Crypt_PaddAlgoId_Iso9796_2 ||
+      aid==GWEN_Crypt_PaddAlgoId_Pkcs1_2) {
+    GWEN_BUFFER *tbuf;
+    uint32_t l;
 
-  /* padd according to given algo */
-  rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(srcBuf);
-    return rv;
+    /* these algos add random numbers, we must use encrypt fn here and
+     * compare the decrypted and unpadded data with the source data */
+    tbuf=GWEN_Buffer_new(0, inLen+16, 0, 0);
+    l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
+    rv=GWEN_Crypt_Key_Encipher(k,
+			       pSignatureData, signatureLen,
+			       (uint8_t*)GWEN_Buffer_GetStart(tbuf),
+			       &l);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+    GWEN_Buffer_IncrementPos(tbuf, l);
+    GWEN_Buffer_AdjustUsedBytes(tbuf);
+
+    DBG_ERROR(0, "Decoded signature:");
+    GWEN_Buffer_Dump(tbuf, stderr, 2);
+
+    rv=GWEN_Padd_UnapplyPaddAlgo(a, tbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+    if (l!=inLen) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Signature length doesn't match");
+      DBG_ERROR(0, "InData:");
+      GWEN_Text_DumpString((const char*)pInData, inLen, stderr, 2);
+      DBG_ERROR(0, "Decoded signature:");
+      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_VERIFY;
+    }
+    if (memcmp(pInData, GWEN_Buffer_GetStart(tbuf), l)!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Signature doesn't match:");
+      DBG_ERROR(0, "InData:");
+      GWEN_Text_DumpString((const char*)pInData, inLen, stderr, 2);
+      DBG_ERROR(0, "Decoded signature:");
+      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_VERIFY;
+    }
   }
+  else {
+    GWEN_BUFFER *srcBuf;
 
-  /* sign with key */
-  rv=GWEN_Crypt_Key_Verify(k,
-			   (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
-			   GWEN_Buffer_GetUsedBytes(srcBuf),
-			   pSignatureData,
-			   signatureLen);
-  GWEN_Buffer_free(srcBuf);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+    /* copy to a buffer for padding */
+    srcBuf=GWEN_Buffer_new(0, inLen, 0, 0);
+    GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
+
+    /* padd according to given algo */
+    rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(srcBuf);
+      return rv;
+    }
+
+    /* sign with key */
+    rv=GWEN_Crypt_Key_Verify(k,
+			     (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
+			     GWEN_Buffer_GetUsedBytes(srcBuf),
+			     pSignatureData,
+			     signatureLen);
+    GWEN_Buffer_free(srcBuf);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   if (seqCounter) {
@@ -1335,9 +1391,10 @@ GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
   int keyNum;
-  GWEN_BUFFER *srcBuf;
+  GWEN_BUFFER *tbuf;
   int i;
   int rv;
+  uint32_t l;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE, ct);
@@ -1381,30 +1438,38 @@ GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
     return GWEN_ERROR_NOT_FOUND;
   }
 
-  /* copy to a buffer for padding */
-  srcBuf=GWEN_Buffer_new(0, inLen, 0, 0);
-  GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
-  GWEN_Buffer_Rewind(srcBuf);
-
-  /* padd according to given algo */
-  rv=GWEN_Padd_UnapplyPaddAlgo(a, srcBuf);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(srcBuf);
-    return rv;
-  }
-
   /* decipher with key */
+  tbuf=GWEN_Buffer_new(0, inLen+16, 0, 1);
+  l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
   rv=GWEN_Crypt_Key_Decipher(k,
-			     (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
-			     GWEN_Buffer_GetUsedBytes(srcBuf),
-			     pOutData,
-			     pOutLen);
-  GWEN_Buffer_free(srcBuf);
-  if (rv) {
+			     pInData, inLen,
+			     (uint8_t*)GWEN_Buffer_GetStart(tbuf), &l);
+  if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
     return rv;
   }
+  GWEN_Buffer_IncrementPos(tbuf, l);
+  GWEN_Buffer_AdjustUsedBytes(tbuf);
+
+  /* unpadd according to given algo */
+  rv=GWEN_Padd_UnapplyPaddAlgo(a, tbuf);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    return rv;
+  }
+
+  /* copy resulting data to given buffer */
+  l=GWEN_Buffer_GetUsedBytes(tbuf);
+  if (l>*pOutLen) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+  memmove(pOutData, GWEN_Buffer_GetStart(tbuf), l);
+  *pOutLen=l;
+  GWEN_Buffer_free(tbuf);
 
   return 0;
 }

@@ -3,11 +3,23 @@
   ------------------------------------------------------------------------
 
 
+2008/03/10: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in ctfile.c (was applying unpadd algo before decryption)
+
+
 2008/03/08: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added functions:
    - GWEN_Padd_PaddWithIso9796_2()
    - GWEN_Unpadd_PaddWithIso9796_2()
+- ctfile.c: verify function now has special handling for padd/signature algos
+  which add random bytes (like PKCS1#2, ISO 9796-2). In these cases the
+  signature is first decoded then unpadded and compared to the signed data.
+  Other algos which do not allow to recover the original data from the
+  signature (like ISO 9797-1A) are still handled the other way around (i.e.
+  first padding the signed data and calling GWEN_Crypt_Key_Verify which
+  decodes the signature and compares it to the padded signed data).
 
 
 2008/03/07: Martin Preuss<martin@libchipcard.de>
