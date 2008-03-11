@@ -63,6 +63,7 @@ GWENHYWFAR_API const char *GWEN_Crypt_Token_Device_toString(GWEN_CRYPT_TOKEN_DEV
 /** this flag allows updating of old CryptToken files to newer versions */
 #define GWEN_CRYPT_TOKEN_MODE_ALLOW_UPDATE       0x00000004
 #define GWEN_CRYPT_TOKEN_MODE_EXP_65537          0x00000008
+#define GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN        0x00000010
 
 
 

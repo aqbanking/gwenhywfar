@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/03/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- ct.h: added mode GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN (passes the flag
+  GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN on to sign keys if set)
+
 
 2008/03/10: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
