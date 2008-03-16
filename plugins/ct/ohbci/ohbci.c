@@ -1030,8 +1030,10 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
       GWEN_CTF_Context_SetLocalSignKeyInfo(fct, ki);
 
       /* set key */
-      if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN)
+      if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+        DBG_ERROR(0, "Adding mode \"direct sign\" to key");
 	GWEN_Crypt_KeyRsa_AddFlags(key, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+      }
       GWEN_CTF_Context_SetLocalSignKey(fct, key);
     }
   }
@@ -1346,6 +1348,10 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
 					GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
       GWEN_CTF_Context_SetLocalAuthKeyInfo(fct, ki);
       /* set key */
+      if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+        DBG_ERROR(0, "Adding mode \"direct sign\" to key");
+	GWEN_Crypt_KeyRsa_AddFlags(key, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+      }
       GWEN_CTF_Context_SetLocalAuthKey(fct, key);
     }
   }
@@ -1421,6 +1427,10 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
 					GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
       GWEN_CTF_Context_SetRemoteAuthKeyInfo(fct, ki);
       /* set key */
+      if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+        DBG_ERROR(0, "Adding mode \"direct sign\" to key");
+	GWEN_Crypt_KeyRsa_AddFlags(key, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+      }
       GWEN_CTF_Context_SetRemoteAuthKey(fct, key);
     }
   }

@@ -107,6 +107,9 @@ GWENHYWFAR_API
 int GWEN_Crypt_Token_KeyInfo_GetKeySize(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
+void GWEN_Crypt_Token_KeyInfo_SetKeySize(GWEN_CRYPT_TOKEN_KEYINFO *ki, int i);
+
+GWENHYWFAR_API
 uint32_t GWEN_Crypt_Token_KeyInfo_GetFlags(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API

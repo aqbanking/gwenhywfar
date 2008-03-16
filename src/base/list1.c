@@ -177,6 +177,9 @@ void *GWEN_List1_GetLast(const GWEN_LIST1 *l) {
 
 
 
+
+
+
 GWEN_LIST1_ELEMENT *GWEN_List1Element_new(void *d) {
   GWEN_LIST1_ELEMENT *el;
 
@@ -217,6 +220,8 @@ void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el){
     return el->nextElement->data;
   return 0;
 }
+
+
 
 
 

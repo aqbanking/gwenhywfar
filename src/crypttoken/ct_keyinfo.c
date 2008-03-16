@@ -126,6 +126,14 @@ int GWEN_Crypt_Token_KeyInfo_GetKeySize(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
 
 
 
+void GWEN_Crypt_Token_KeyInfo_SetKeySize(GWEN_CRYPT_TOKEN_KEYINFO *ki, int i){
+  assert(ki);
+  assert(ki->refCount);
+  ki->keySize=i;
+}
+
+
+
 uint32_t GWEN_Crypt_Token_KeyInfo_GetFlags(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
   assert(ki);
   assert(ki->refCount);

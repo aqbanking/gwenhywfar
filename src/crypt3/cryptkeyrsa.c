@@ -1061,6 +1061,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not create key");
   }
 
+  GWEN_Crypt_KeyRsa_SetFlags(nk, xk->flags);
+
   return nk;
 }
 

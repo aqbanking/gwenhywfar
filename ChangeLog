@@ -1,6 +1,17 @@
-  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
-  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
-  ------------------------------------------------------------------------
+
+===========================================================================
+MARK: released gwenhywfar-3.2.0 (2008/03/16)
+===========================================================================
+
+
+2008/03/12: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added function GWEN_Crypt_Token_KeyInfo_SetKeySize()
+- changed behaviour of GWEN_Crypt_TokenFile__SetKeyInfo(): Now we don't
+  just set the new KeyInfo object but we rather modify the existing
+  KeyInfo object according to the flags in the new keyinfo.
+  This avoids accidental overwriting of keyInfo data.
+
 
 2008/03/11: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
