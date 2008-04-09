@@ -4,11 +4,15 @@
 *.kdevses
 *.la
 *.lo
+*.o
+*.a
 *.obj
 *.sln
 *.vcproj
 *~
 .deps
+.libs
+
 Makefile
 Makefile.in
 
