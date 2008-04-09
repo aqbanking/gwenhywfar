@@ -60,3 +60,15 @@ src/version.h
 src/os/posix/system.h
 src/os/windows/system.h
 doc/plugindescr.xsd
+admin/mklistdoc
+checks/checks
+doc/inherit/testinherit
+po/*.mo
+src/testlib
+test/gwentest
+tools/gcttool/cttest
+tools/gcttool/gct-tool
+tools/typemaker/typemaker
+tools/xmlmerge/xmlmerge
+
+
