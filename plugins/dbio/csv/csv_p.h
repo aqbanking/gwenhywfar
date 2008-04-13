@@ -28,16 +28,17 @@
 #ifndef GWENHYWFAR_PLUGIN_CSV_H
 #define GWENHYWFAR_PLUGIN_CSV_H
 
-
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/fastbuffer.h>
 
 
+GWENHYWFAR_EXPORT
 GWEN_PLUGIN *dbio_csv_factory(GWEN_PLUGIN_MANAGER *pm,
 			      const char *modName,
 			      const char *fileName);
+
 
 static GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl);
 

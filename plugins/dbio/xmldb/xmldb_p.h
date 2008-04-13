@@ -35,7 +35,10 @@
 #include <gwenhywfar/stringlist.h>
 
 
-GWEN_DBIO *xmldb_factory();
+GWENHYWFAR_EXPORT
+GWEN_PLUGIN *dbio_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
+				const char *modName,
+				const char *fileName);
 
 
 static int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,

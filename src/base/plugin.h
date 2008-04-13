@@ -183,6 +183,15 @@ GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_GetPlugin(GWEN_PLUGIN_MANAGER *pm,
                                           const char *s);
 
+/**
+ * Add a plugin to this plugin manager. Normally plugins are loaded upon
+ * @ref GWEN_PluginManager_GetPlugin. This function allows for plugins
+ * that are created by other means (e.g. by static linking)
+ */
+GWENHYWFAR_API
+void GWEN_PluginManager_AddPlugin(GWEN_PLUGIN_MANAGER *pm, GWEN_PLUGIN *p);
+
+
 GWENHYWFAR_API
 int GWEN_PluginManager_Register(GWEN_PLUGIN_MANAGER *pm);
 

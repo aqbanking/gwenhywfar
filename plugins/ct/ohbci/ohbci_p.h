@@ -111,6 +111,10 @@
 #include <gwenhywfar/tag16.h>
 
 
+GWENHYWFAR_EXPORT
+GWEN_PLUGIN *ct_ohbci_factory(GWEN_PLUGIN_MANAGER *pm,
+			      const char *modName,
+			      const char *fileName);
 
 GWEN_PLUGIN *GWEN_Crypt_TokenOHBCI_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
 					      const char *modName,

@@ -37,7 +37,10 @@
 #define GWEN_DBIO_OLDDB_MAXVALUE_LEN (16*1024)
 
 
-GWEN_DBIO *olddb_factory();
+GWENHYWFAR_EXPORT
+GWEN_PLUGIN *dbio_olddb_factory(GWEN_PLUGIN_MANAGER *pm,
+				const char *modName,
+				const char *fileName);
 
 
 static int GWEN_DBIO_OldDb_Export(GWEN_DBIO *dbio,

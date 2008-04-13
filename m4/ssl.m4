@@ -97,11 +97,10 @@ fi
 AC_MSG_CHECKING(whether openssl is usable)
 if test -z "$ssl_libraries" -o -z "$ssl_lib" -o -z "$ssl_includes"; then
     ssl_available="no"
-    AC_MSG_ERROR(ssl libraries not found.)
 else
     ssl_available="yes"
-    AC_MSG_RESULT(yes)
 fi
+AC_MSG_RESULT($ssl_available)
 
 
 # end of "if enable-ssl"

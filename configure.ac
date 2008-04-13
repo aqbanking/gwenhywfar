@@ -922,6 +922,81 @@ AC_SUBST(gwenhywfar_symlinkdir)
 AC_SUBST(gwenhywfar_datadir)
 
 
+
+###-------------------------------------------------------------------------
+#
+AC_MSG_CHECKING(crypt token plugins)
+AC_ARG_WITH(plugins-ct, [  --with-plugins-ct=LIST list of CT plugins to build],
+  [plugins="$withval"],
+  [plugins="all"])
+
+if test "$plugins" == "all"; then
+  plugins="ohbci";
+fi
+
+gwenhywfar_plugins_ct_dirs=""
+gwenhywfar_plugins_ct_libs=""
+for plugin in $plugins; do
+  case "$plugin" in
+    ohbci)
+      gwenhywfar_plugins_ct_dirs="$gwenhywfar_plugins_ct_dirs ohbci"
+      gwenhywfar_plugins_ct_libs="$gwenhywfar_plugins_ct_libs ohbci/libct_ohbci.la"
+      AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_CT_OHBCI, 1, [plugin availability])
+      ;;
+    *)
+      AC_MSG_ERROR("ERROR: Unknown plugin \"$plugin\"")
+      ;;
+  esac
+done
+
+AC_SUBST(gwenhywfar_plugins_ct_dirs)
+AC_SUBST(gwenhywfar_plugins_ct_libs)
+AC_MSG_RESULT($plugins)
+
+
+
+###-------------------------------------------------------------------------
+#
+AC_MSG_CHECKING(DBIO plugins)
+AC_ARG_WITH(plugins-dbio, [  --with-plugins-dbio=LIST list of CT plugins to build],
+  [plugins="$withval"],
+  [plugins="all"])
+
+if test "$plugins" == "all"; then
+  plugins="csv olddb xmldb";
+fi
+
+gwenhywfar_plugins_dbio_dirs=""
+gwenhywfar_plugins_dbio_libs=""
+for plugin in $plugins; do
+  case "$plugin" in
+    csv)
+      gwenhywfar_plugins_dbio_dirs="$gwenhywfar_plugins_dbio_dirs csv"
+      gwenhywfar_plugins_dbio_libs="$gwenhywfar_plugins_dbio_libs csv/libdbio_csv.la"
+      AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_DBIO_CSV, 1, [plugin availability])
+      ;;
+    olddb)
+      gwenhywfar_plugins_dbio_dirs="$gwenhywfar_plugins_dbio_dirs olddb"
+      gwenhywfar_plugins_dbio_libs="$gwenhywfar_plugins_dbio_libs olddb/libdbio_olddb.la"
+      AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_DBIO_OLDDB, 1, [plugin availability])
+      ;;
+    xmldb)
+      gwenhywfar_plugins_dbio_dirs="$gwenhywfar_plugins_dbio_dirs xmldb"
+      gwenhywfar_plugins_dbio_libs="$gwenhywfar_plugins_dbio_libs xmldb/libdbio_xmldb.la"
+      AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_DBIO_XMLDB, 1, [plugin availability])
+      ;;
+    *)
+      AC_MSG_ERROR("ERROR: Unknown plugin \"$plugin\"")
+      ;;
+  esac
+done
+
+AC_SUBST(gwenhywfar_plugins_dbio_dirs)
+AC_SUBST(gwenhywfar_plugins_dbio_libs)
+AC_MSG_RESULT($plugins)
+
+
+
 ###-------------------------------------------------------------------------
 #
 # list of files to create
@@ -1024,13 +1099,13 @@ echo "============================================="
 echo "Version                       : $GWENHYWFAR_VERSION_FULL_STRING"
 echo "System                        : $OSYSTEM"
 echo "Installation Folder           : $prefix"
+echo "Local Installation Mode       : $enable_local_install"
 echo "Plugin Installation Folder    : $gwenhywfar_plugindir"
 echo "Plugin Search Folder          : $gwenhywfar_plugin_searchdir"
 echo "Data Search Folder            : $gwenhywfar_data_searchdir"
 echo "Locale Search Folder          : $gwenhywfar_locale_searchdir"
 echo "Config Search Folder          : $gwenhywfar_cfg_searchdir"
 echo "Symbol Visibility             : $visibility_supported"
-echo "Local Installation Mode       : $enable_local_install"
 echo "OpenSSL Support for gct-tool  : $ssl_available"
 
 if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
@@ -1038,6 +1113,13 @@ if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
 else
   echo "GNUTLS                        : pre-1.6.1"
 fi
+
+echo
+echo "Plugins"
+echo "============================================="
+echo "  Crypt token plugins         :$gwenhywfar_plugins_ct_dirs"
+echo "  DBIO plugins                :$gwenhywfar_plugins_dbio_dirs"
+
 echo
 echo "You can now use the command 'make' (or on *BSD 'gmake') to "
 echo "build Gwenhywfar."

@@ -50,7 +50,6 @@
 GWEN_INHERIT(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_OHBCI)
 
 
-
 GWEN_PLUGIN *ct_ohbci_factory(GWEN_PLUGIN_MANAGER *pm,
 			      const char *modName,
 			      const char *fileName) {

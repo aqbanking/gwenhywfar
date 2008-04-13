@@ -11,14 +11,17 @@ INCLUDES= -I$(top_builddir)/gwenhywfar3 \
 
 dbioplugindir = $(gwenhywfar_plugindir)/dbio
 
+noinst_LTLIBRARIES=libdbio_xmldb.la
+libdbio_xmldb_la_SOURCES=xmldb.c
+noinst_HEADERS=xmldb_p.h
+
 
 dbioplugin_LTLIBRARIES=xmldb.la
 dbioplugin_DATA=xmldb.xml
-noinst_HEADERS=xmldb_p.h
 
-xmldb_la_SOURCES=xmldb.c
-xmldb_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
-xmldb_la_DEPENDENCIES=$(top_builddir)/src/libgwenhywfar.la
+xmldb_la_SOURCES=dummy.c
+xmldb_la_LIBADD=libdbio_xmldb.la $(top_builddir)/src/libgwenhywfar.la
+xmldb_la_DEPENDENCIES=libdbio_xmldb.la $(top_builddir)/src/libgwenhywfar.la
 
 # if IS_WINDOWS
 if IS_WINDOWS

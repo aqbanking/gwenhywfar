@@ -1,4 +1,20 @@
 
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2008/04/13: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- configure.ac: added checks for plugins to be built
+- m4/ssl.m4: no longer abort if OpenSSL is not available
+- plugins/: added a convenience library which includes all plugins built
+- plugins/*: create convenience libraries for all plugins and let the
+  plugins link against that. This allows for static linkage of the plugins
+  into an application.
+- src/base/plugin.{c,h}: added function GWEN_PluginManager_AddPlugin()
+
+
 ===========================================================================
 MARK: released gwenhywfar-3.2.0 (2008/03/16)
 ===========================================================================
