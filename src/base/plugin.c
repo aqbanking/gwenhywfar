@@ -318,6 +318,7 @@ int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
 
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
                                            const char *modname){
+#ifdef ENABLE_PLUGIN_LOADING
   GWEN_LIBLOADER *ll;
   GWEN_PLUGIN *plugin;
   GWEN_PLUGIN_FACTORYFN fn;
@@ -399,6 +400,10 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
   GWEN_StringList_free(sl);
   GWEN_Plugin_SetLibLoader(plugin, ll);
   return plugin;
+#else
+  DBG_ERROR(GWEN_LOGDOMAIN, "Loading of plugins is disabled");
+  return NULL;
+#endif
 }
 
 
@@ -406,6 +411,7 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
 GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
                                                const char *modname,
                                                const char *fname){
+#ifdef ENABLE_PLUGIN_LOADING
   GWEN_LIBLOADER *ll;
   GWEN_PLUGIN *plugin;
   GWEN_PLUGIN_FACTORYFN fn;
@@ -456,6 +462,10 @@ GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
   GWEN_Plugin_SetLibLoader(plugin, ll);
 
   return plugin;
+#else
+  DBG_ERROR(GWEN_LOGDOMAIN, "Loading of plugins is disabled");
+  return NULL;
+#endif
 }
 
 

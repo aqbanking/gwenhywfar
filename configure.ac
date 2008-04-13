@@ -303,6 +303,24 @@ fi
 
 ###-------------------------------------------------------------------------
 #
+# check whether plugin loading is enabled
+#
+
+AC_MSG_CHECKING(whether plugin loading is wanted)
+AC_ARG_ENABLE(plugin-loading,
+  [  --enable-plugin-loading         allow loading of plugins (default=yes)],
+  enable_plugin_loading="$enableval",
+  enable_plugin_loading="yes")
+AC_MSG_RESULT($enable_plugin_loading)
+
+if test "$enable_plugin_loading" != "no"; then
+  AC_DEFINE(ENABLE_PLUGIN_LOADING, 1, [whether local install is wanted])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
 # OS dependant settings
 #
 
@@ -1100,6 +1118,7 @@ echo "Version                       : $GWENHYWFAR_VERSION_FULL_STRING"
 echo "System                        : $OSYSTEM"
 echo "Installation Folder           : $prefix"
 echo "Local Installation Mode       : $enable_local_install"
+echo "Plugin Loading Support        : $enable_plugin_loading"
 echo "Plugin Installation Folder    : $gwenhywfar_plugindir"
 echo "Plugin Search Folder          : $gwenhywfar_plugin_searchdir"
 echo "Data Search Folder            : $gwenhywfar_data_searchdir"
