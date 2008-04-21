@@ -269,7 +269,7 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
 	      break;
 
 	    default:
-	      DBG_DEBUG(GWEN_LOGDOMAIN, "Unhandled type [%d]", cn->type);
+	      DBG_DEBUG(GWEN_LOGDOMAIN, "Unhandled type [%d]", cn->typ);
 	      break;
 	    }
 

@@ -96,6 +96,12 @@ int main(int argc, char **argv) {
   int fd;
   uint32_t flags;
 
+  rv=GWEN_Init();
+  if (rv) {
+    fprintf(stderr, "Could not initialize Gwenhywfar.\n");
+    return 2;
+  }
+
   args=Arguments_new();
   rv=checkArgs(args, argc, argv);
   if (rv==-1) {

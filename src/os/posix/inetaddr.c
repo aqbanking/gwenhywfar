@@ -37,6 +37,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <sys/un.h>
+#include <arpa/inet.h>
 
 #include "gwenhywfar/debug.h"
 

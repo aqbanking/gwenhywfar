@@ -91,9 +91,13 @@ libgwenhywfar_la_LDFLAGS= \
 TESTS = testlib
 
 sources:
+	for f in $(libgwenhywfar_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
-	done
+	done ;
+
 
 ressource.o: ressource.rc
 	$(RC) -o $@ $<

@@ -109,6 +109,13 @@ sources:
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
 	done
+
+static-sources:
+	rm -f $(srcdir)/i18nsources
+	for d in src plugins; do \
+	  make -C $$d sources; \
+	done
+
 $(srcdir)/i18nsources:
 	make sources
 
