@@ -27,6 +27,7 @@
 
 
 #include "args.h"
+#include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/xml.h>
