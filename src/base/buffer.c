@@ -323,14 +323,20 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes",
                 bf->bufferSize, nsize);
     /* we always add a NULL character */
-    p=GWEN_Memory_realloc(bf->realPtr, nsize+1);
+    if (bf->realPtr==NULL) {
+      p=GWEN_Memory_malloc(nsize+1);
+    }
+    else {
+      p=GWEN_Memory_realloc(bf->realPtr, nsize+1);
+    }
     if (!p) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Realloc failed.");
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
-        abort();
+	abort();
       }
       return 1;
     }
+
     /* store new size and pointer */
     bf->realPtr=p;
     bf->ptr=bf->realPtr+reserved;
