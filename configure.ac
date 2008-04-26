@@ -30,8 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=3
 GWENHYWFAR_VERSION_PATCHLEVEL=1
+GWENHYWFAR_VERSION_BUILD="1"
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -40,14 +41,14 @@ GWENHYWFAR_VERSION_TAG="stable"
 # Generate version strings and BUILD
 #
 
-GWENHYWFAR_VERSION_BUILD="0"
+#GWENHYWFAR_VERSION_BUILD="0"
 # Let svn write the revision number directly into here on
 # each svn update. Note: The trailing space is necessary for
 # cvs versions.
-GWENHYWFAR_VERSION_BUILD=`echo "$Rev$ " | cut -d' ' -f2`
-if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
-  GWENHYWFAR_VERSION_BUILD="0"
-fi
+#GWENHYWFAR_VERSION_BUILD=`echo "$Rev$ " | cut -d' ' -f2`
+#if test "x$GWENHYWFAR_VERSION_BUILD" = "x" ; then
+#  GWENHYWFAR_VERSION_BUILD="0"
+#fi
 GWENHYWFAR_VERSION_FULL_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.${GWENHYWFAR_VERSION_PATCHLEVEL}${GWENHYWFAR_VERSION_TAG}-${GWENHYWFAR_VERSION_BUILD}"
 GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
 
@@ -272,7 +273,7 @@ AM_BINRELOC
 
 AC_MSG_CHECKING(if gwen is a subproject)
 AC_ARG_ENABLE(gwen-subproject,
-  [  --enable-gwen-subproject         make gwen only a subproject (default=no)],
+  [  --enable-gwen-subproject       make gwen only a subproject (default=no)],
   enable_gwen_subproject="$enableval",
   enable_gwen_subproject="no")
 AC_MSG_RESULT($enable_gwen_subproject)
@@ -854,6 +855,26 @@ AC_MSG_RESULT(${visibility_supported})
 AC_SUBST(visibility_cflags)
 
 
+
+###-------------------------------------------------------------------------
+#
+# enable export
+#
+AC_MSG_CHECKING(if symbol visibility is supported)
+AC_ARG_ENABLE(export,
+  [  --enable-export             enable export (default=yes)],
+  enable_export="$enableval",
+  enable_export="yes")
+AC_MSG_RESULT($enable_export)
+
+gwen_enable_export=0
+if test "$enable_export" == "yes"; then
+  gwen_enable_export=1
+fi
+AC_SUBST(gwen_enable_export)
+
+
+
 ###-------------------------------------------------------------------------
 #
 # check for MEMTRACE
@@ -914,6 +935,29 @@ fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
 AC_MSG_RESULT($enable_fulldoc)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for plugin init
+#
+AC_MSG_CHECKING(if plugin init is wanted)
+AC_ARG_ENABLE(init-plugins,
+  [  --enable-init-plugins             enable plugin init (default=yes)],
+  enable_init_plugins="$enableval",
+  enable_init_plugins="yes")
+AC_MSG_RESULT($enable_init_plugins)
+
+if test "$enable_init_plugins" != "no"; then
+  AC_DEFINE(GWEN_ENABLE_INIT_PLUGINS, 1, [if plugin init is wanted])
+fi
+
+
+
+# Debug arguments for compilation
+ACX_COMPILE_WARN()
+
 
 
 ###-------------------------------------------------------------------------

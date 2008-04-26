@@ -40,8 +40,8 @@ GWEN_PLUGIN *dbio_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-
 int GWEN_Plugins_Init() {
+#ifdef GWEN_ENABLE_INIT_PLUGINS
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *p;
 
@@ -75,6 +75,7 @@ int GWEN_Plugins_Init() {
 #endif
   }
 
+#endif
   return 0;
 }
 

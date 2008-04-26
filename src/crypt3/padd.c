@@ -139,7 +139,7 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
 }
 
 
-
+#if 0
 int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
   unsigned int diff;
   char *p;
@@ -202,6 +202,89 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
 
   return 0;
 }
+
+#else
+int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
+  unsigned int diff;
+  char *p;
+  int i;
+
+  if ((unsigned int)dstSize<GWEN_Buffer_GetUsedBytes(buf)+12) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* add trailer */
+  GWEN_Buffer_AppendByte(buf, 0xbc);
+
+  /* reset position to 0 */
+  GWEN_Buffer_Rewind(buf);
+
+  /* insert room for header */
+  diff=dstSize-GWEN_Buffer_GetUsedBytes(buf)-11;
+  if (GWEN_Buffer_InsertRoom(buf, 1+diff+1+8+1)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Could not insert room for %d bytes",
+	      1+diff+1+8+1);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* insert header and more-data-bit */
+  p=GWEN_Buffer_GetStart(buf);
+  *(p++)=0x60;
+
+  /* insert padding field */
+  for (i=0; i<diff; i++)
+    *(p++)=0x0;
+  *(p++)=0x01;
+
+  /* insert 8 random bytes */
+  GWEN_Crypt_Random(2, (uint8_t*)p, 8);
+  for (i=0; i<8; i++) {
+    if (*p==0)
+      /* TODO: Need to find a better but yet fast way */
+      *p=0xff;
+    p++;
+  }
+  *(p++)=0x01;
+
+  return 0;
+}
+
+
+int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
+  uint32_t l;
+  uint32_t realSize;
+  const uint8_t *p;
+
+  l=GWEN_Buffer_GetUsedBytes(buf);
+  if (l<12) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too few bytes");
+    return GWEN_ERROR_INVALID;
+  }
+
+  p=(const uint8_t*)GWEN_Buffer_GetStart(buf);
+  if (*p!=0x60) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "First byte is not a 0x60");
+    return GWEN_ERROR_BAD_DATA;
+  }
+  p++;
+  l=0;
+  while(*p==0x00) {
+    l++;
+    p++;
+  }
+  if (*p!=0x01) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "First byte after padding is not a 0x01");
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  realSize=GWEN_Buffer_GetUsedBytes(buf)-12-l;
+  GWEN_Buffer_Crop(buf, 11+l, realSize);
+
+  return 0;
+}
+#endif
 
 
 
