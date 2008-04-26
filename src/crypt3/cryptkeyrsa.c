@@ -117,7 +117,7 @@ int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
     gcry_mpi_sub(mpi_sigout2, mpi_n, mpi_sigout1);
 
     if (gcry_mpi_cmp(mpi_sigout2, mpi_sigout1)<0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Choosing 2nd variant");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Choosing 2nd variant");
       gcry_mpi_set(mpi_sigout1, mpi_sigout2);
     }
   }
@@ -209,7 +209,7 @@ int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
 
     mpi_sigin2=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
 
-    DBG_ERROR(GWEN_LOGDOMAIN, "Trying 2nd variant");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying 2nd variant");
     gcry_mpi_sub(mpi_sigin2, mpi_n, mpi_sigin1);
     gcry_mpi_powm(mpi_sigout, mpi_sigin2, mpi_e, mpi_n);
     if (gcry_mpi_cmp(mpi_sigout, mpi_in)) {

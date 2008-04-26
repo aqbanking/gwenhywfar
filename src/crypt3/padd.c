@@ -210,7 +210,7 @@ int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
   int i;
 
   if ((unsigned int)dstSize<GWEN_Buffer_GetUsedBytes(buf)+12) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
+    /*DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");*/
     return GWEN_ERROR_INVALID;
   }
 
@@ -275,7 +275,7 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
     p++;
   }
   if (*p!=0x01) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "First byte after padding is not a 0x01");
+    /*DBG_ERROR(GWEN_LOGDOMAIN, "First byte after padding is not a 0x01");*/
     return GWEN_ERROR_BAD_DATA;
   }
 
