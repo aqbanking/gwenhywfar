@@ -363,6 +363,7 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
     GWEN_Io_Layer_free(ioBase);
     return GWEN_ERROR_GENERIC;
   }
+  GWEN_Io_Layer_AddFlags(io, GWEN_IO_LAYER_BUFFERED_FLAGS_DOSMODE);
 
   /* prepare HTTP layer */
   ioBase=io;

@@ -68,6 +68,44 @@ int getKeyDataFromTextOpenSSL(GWEN_GUI *gui,
 #endif
 
 
+GWEN_CRYPT_TOKEN *getCryptToken(const char *ttype,
+				const char *tname) {
+  GWEN_PLUGIN_MANAGER *pm;
+  GWEN_PLUGIN *pl;
+  GWEN_CRYPT_TOKEN *ct;
+
+  /* get crypt token */
+  pm=GWEN_PluginManager_FindPluginManager("ct");
+  if (pm==0) {
+    DBG_ERROR(0, "Plugin manager not found");
+    return NULL;
+  }
+
+  pl=GWEN_PluginManager_GetPlugin(pm, ttype);
+  if (pl==0) {
+    DBG_ERROR(0, "Plugin not found");
+
+    fprintf(stderr,
+	    I18N("The plugin could not be found.\n"
+		 "Please make sure that you have the following "
+		 "packages installed (at least on Debian/Ubuntu):\n"
+		 "- libchipcard-plugins-libgwenhywfar (for chipcards)\n"
+                 "- libaqbanking-plugins-libgwenhywfar\n"));
+    return NULL;
+  }
+  DBG_INFO(0, "Plugin found");
+
+  ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, tname);
+  if (ct==0) {
+    DBG_ERROR(0, "Could not create crypt token");
+    return NULL;
+  }
+
+  return ct;
+}
+
+
+
 int main(int argc, char **argv) {
   GWEN_DB_NODE *db;
   const char *cmd;

@@ -246,7 +246,6 @@ int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
       *p=0xff;
     p++;
   }
-  *(p++)=0x01;
 
   return 0;
 }

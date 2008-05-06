@@ -30,8 +30,6 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
-  GWEN_PLUGIN_MANAGER *pm;
-  GWEN_PLUGIN *pl;
   GWEN_CRYPT_TOKEN *ct;
   unsigned int keyId;
   int shown=0;
@@ -113,24 +111,9 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   tname=GWEN_DB_GetCharValue(db, "tokenName", 0, 0);
 
   /* get crypt token */
-  pm=GWEN_PluginManager_FindPluginManager("ct");
-  if (pm==0) {
-    DBG_ERROR(0, "Plugin manager not found");
+  ct=getCryptToken(ttype, tname);
+  if (ct==0)
     return 3;
-  }
-
-  pl=GWEN_PluginManager_GetPlugin(pm, ttype);
-  if (pl==0) {
-    DBG_ERROR(0, "Plugin not found");
-    return 3;
-  }
-  DBG_INFO(0, "Plugin found");
-
-  ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, tname);
-  if (ct==0) {
-    DBG_ERROR(0, "Could not create crypt token");
-    return 3;
-  }
 
   if (GWEN_DB_GetIntValue(dbArgs, "forcePin", 0, 0))
     GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_FORCE_PIN_ENTRY);

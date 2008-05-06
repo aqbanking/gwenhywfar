@@ -263,6 +263,65 @@ int print_paths()
   return 0;
 }
 
+
+
+int check2() {
+  const char *testString="01234567890123456789";
+  int rv;
+  GWEN_BUFFER *buf1;
+  GWEN_BUFFER *buf2;
+  const char *p1, *p2;
+  int i;
+  int len;
+
+  fprintf(stderr, "Check 2 ...");
+
+  buf1=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(buf1, testString);
+  rv=GWEN_Padd_PaddWithIso9796_2(buf1, 256);
+  if (rv) {
+    fprintf(stderr, "FAILED: Could not padd.\n");
+    return 2;
+  }
+
+  buf2=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendBuffer(buf2, buf1);
+  rv=GWEN_Padd_UnpaddWithIso9796_2(buf2);
+  if (rv) {
+    fprintf(stderr, "FAILED: Could not unpadd.\n");
+    return 2;
+  }
+
+  p1=testString;
+  len=strlen(testString);
+  p2=GWEN_Buffer_GetStart(buf2);
+  if (GWEN_Buffer_GetUsedBytes(buf2)!=len) {
+    fprintf(stderr, "Data differs in size\n");
+    return 3;
+  }
+  rv=0;
+  for (i=0; i<len; i++) {
+    if (p1[i]!=p2[i]) {
+      fprintf(stderr, "Buffer1:\n%s\n", testString);
+      fprintf(stderr, "Buffer2:\n");
+      GWEN_Buffer_Dump(buf2, stderr, 2);
+
+      fprintf(stderr, "Differ at %d (%04x)\n", i, i);
+      rv=-1;
+    }
+  }
+
+  if (rv) {
+    fprintf(stderr, "Data differs in content\n");
+    return 3;
+  }
+
+  fprintf(stderr, "PASSED.\n");
+
+  return 0;
+}
+
+
 int main(int argc, char **argv) {
   int rv;
   const char *cmd;
@@ -274,6 +333,7 @@ int main(int argc, char **argv) {
 
   if (strcasecmp(cmd, "check")==0) {
     rv=check1() ||
+      check2() ||
       test_gui(0) ||
       check_directory() ||
       check_list() ||

@@ -22,6 +22,7 @@
 #include <gwenhywfar/misc2.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/ct.h>
+#include <gwenhywfar/ctplugin.h>
 
 #include <string.h>
 #include <errno.h>
@@ -29,6 +30,9 @@
 #define GCT_LOGDOMAIN "gcttool"
 
 #include "src/base/i18n_l.h"
+
+
+GWEN_CRYPT_TOKEN *getCryptToken(const char *ttype, const char *tname);
 
 
 int createToken(GWEN_DB_NODE *dbArgs, int argc, char **argv);
