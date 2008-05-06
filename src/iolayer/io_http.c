@@ -629,7 +629,7 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest1(GWEN_IO_LAYER *io)
 	      }
 	    }
 	    else {
-	      DBG_INFO(GWEN_LOGDOMAIN, "Added header read request");
+	      DBG_DEBUG(GWEN_LOGDOMAIN, "Added header read request");
 	      xio->readRequestOut=rOut;
 	      doneSomething=1;
 	    }
@@ -695,6 +695,7 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest1(GWEN_IO_LAYER *io)
 	if ((i-xio->lastHeaderPos)==0) {
 	  /* header finished, parse it. NOTE: This function will also determine the next
 	   * readMode and the size of the body (if any) */
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Parsing header");
 	  rv=GWEN_Io_LayerHttp_ParseHeader(io, GWEN_Buffer_GetStart(xio->readBuffer));
 	  if (rv<0) {
 	    xio->lastReadOutResult=rv;
@@ -709,6 +710,7 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest1(GWEN_IO_LAYER *io)
 	  GWEN_Buffer_Reset(xio->readBuffer);
 	}
 	else {
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "Awaiting next header");
 	  xio->lastHeaderPos=i+1; /* count the added #10 */
 	  if (xio->readRequestOut==NULL) {
 	    int rv;
@@ -762,7 +764,7 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest1(GWEN_IO_LAYER *io)
 		  }
 		}
 		else {
-		  DBG_INFO(GWEN_LOGDOMAIN, "Added header read request");
+		  DBG_DEBUG(GWEN_LOGDOMAIN, "Added header read request");
 		  xio->readRequestOut=rOut;
 		  doneSomething=1;
 		}
@@ -776,27 +778,34 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest1(GWEN_IO_LAYER *io)
       case GWEN_Io_LayerHttp_Mode_ChunkSize: {
 	int csize;
 
-	if (1!=sscanf(GWEN_Buffer_GetStart(xio->readBuffer), "%d", &csize)) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Invalid chunksize [%s]", GWEN_Buffer_GetStart(xio->readBuffer));
-	  xio->lastReadOutResult=GWEN_ERROR_BAD_DATA;
-	  xio->readRequestIn=NULL;
-	  DBG_INFO(GWEN_LOGDOMAIN,
-		   "Aborting in read request (reason: %d)",
-		   xio->lastReadOutResult);
-	  GWEN_Io_Request_Finished(rIn, GWEN_Io_Request_StatusFinished, GWEN_ERROR_BAD_DATA);
-	  GWEN_Io_Request_free(rIn);
-	  rIn=NULL;
+	if (GWEN_Buffer_GetUsedBytes(xio->readBuffer)==0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Empty line, skipping");
 	}
 	else {
-	  xio->currentReadChunkSize=csize;
-	  if (csize==0) {
-            DBG_INFO(GWEN_LOGDOMAIN, "Last chunk received");
-	    xio->readMode=GWEN_Io_LayerHttp_Mode_Finished;
-	    GWEN_Io_Request_AddFlags(rIn, GWEN_IO_REQUEST_FLAGS_PACKETEND);
+	  if (1!=sscanf(GWEN_Buffer_GetStart(xio->readBuffer), "%x", &csize)) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Invalid chunksize [%s]", GWEN_Buffer_GetStart(xio->readBuffer));
+	    xio->lastReadOutResult=GWEN_ERROR_BAD_DATA;
+	    xio->readRequestIn=NULL;
+	    DBG_INFO(GWEN_LOGDOMAIN,
+		     "Aborting in read request (reason: %d)",
+		     xio->lastReadOutResult);
+	    GWEN_Io_Request_Finished(rIn, GWEN_Io_Request_StatusFinished, GWEN_ERROR_BAD_DATA);
+	    GWEN_Io_Request_free(rIn);
+	    rIn=NULL;
 	  }
 	  else {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Started reading next chunk");
-	    xio->readMode=GWEN_Io_LayerHttp_Mode_Chunk;
+	    xio->currentReadChunkSize=csize;
+	    DBG_DEBUG(GWEN_LOGDOMAIN, "Chunksize: %d", csize);
+	    if (csize==0) {
+	      DBG_DEBUG(GWEN_LOGDOMAIN, "Last chunk received");
+	      xio->readMode=GWEN_Io_LayerHttp_Mode_Finished;
+	      GWEN_Io_Request_AddFlags(rIn, GWEN_IO_REQUEST_FLAGS_PACKETEND);
+	    }
+	    else {
+	      DBG_DEBUG(GWEN_LOGDOMAIN, "Started reading next chunk (%d bytes)",
+			csize);
+	      xio->readMode=GWEN_Io_LayerHttp_Mode_Chunk;
+	    }
 	  }
 	}
 	break;
@@ -876,8 +885,12 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest2(GWEN_IO_LAYER *io)
 	else {
 	  if (xio->readMode==GWEN_Io_LayerHttp_Mode_Chunk && xio->currentReadChunkSize==0) {
 	    /* chunk finished, next step is to read the size of the next chunk */
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Chunk finished");
 	    xio->currentReadChunkSize=-1;
 	    xio->readMode=GWEN_Io_LayerHttp_Mode_ChunkSize;
+	    xio->readLineFinished=0;
+	    GWEN_Buffer_Reset(xio->readBuffer);
+	    doneSomething=1;
 	  }
 	}
       }
@@ -917,6 +930,10 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest2(GWEN_IO_LAYER *io)
       xio->readMode=GWEN_Io_LayerHttp_Mode_Idle;
       doneSomething=1;
     } /* if finished */
+    else if (xio->readMode==GWEN_Io_LayerHttp_Mode_ChunkSize) {
+      /* don't enqueue a new request here since we
+       * just changed into readChunkSize mode */
+    }
     else {
       uint32_t len;
       uint32_t bposIn;
