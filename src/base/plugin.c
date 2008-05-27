@@ -669,6 +669,10 @@ GWEN_PluginManager_GetPluginDescr(GWEN_PLUGIN_MANAGER *pm,
 
 
 void GWEN_PluginManager_AddPlugin(GWEN_PLUGIN_MANAGER *pm, GWEN_PLUGIN *p) {
+#if 0
+  DBG_ERROR(0, "Adding plugin [%s] of type [%s]",
+	    p->name, pm->name);
+#endif
   GWEN_Plugin_List_Add(p, pm->plugins);
 }
 
