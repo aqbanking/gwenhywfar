@@ -30,7 +30,7 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=3
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD="3"
+GWENHYWFAR_VERSION_BUILD="4"
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="svn"
 
@@ -952,6 +952,35 @@ AC_MSG_RESULT($enable_init_plugins)
 if test "$enable_init_plugins" != "no"; then
   AC_DEFINE(GWEN_ENABLE_INIT_PLUGINS, 1, [if plugin init is wanted])
 fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for static plugins to be compiled into static exes
+#
+AC_ARG_WITH(static-plugins, 
+  [  --with-static-plugins      list of static plugins to link in],
+  [gwen_static_plugins="$withval"],
+  [gwen_static_plugins=""]
+)
+if test -n "$gwen_static_plugins"; then
+  AC_DEFINE(WITH_STATIC_PLUGINS, 1, [static plugins are used])
+fi
+AC_SUBST(gwen_static_plugins)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for extra libs for static exes
+#
+AC_ARG_WITH(extra-libs, 
+  [  --with-extra-libs      list of additional libraries],
+  [gwen_extra_libs="$withval"],
+  [gwen_extra_libs=""]
+)
+AC_SUBST(gwen_extra_libs)
 
 
 
