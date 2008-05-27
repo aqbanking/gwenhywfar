@@ -44,9 +44,9 @@
 #endif
 
 #ifdef WITH_STATIC_PLUGINS
-# include <gwenhywfar/gwen_plugins.h>
-# include <aqbanking/aqbanking_plugins.h>
-# include <chipcard/client/lcc_plugins.h>
+int GWEN_Plugins_Init();
+int AB_Plugins_Init();
+int LC_Plugins_Init();
 #endif
 
 
@@ -244,6 +244,7 @@ int main(int argc, char **argv) {
   }
 
 #ifdef WITH_STATIC_PLUGINS
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Initialising static plugins");
   rv=GWEN_Plugins_Init();
   if (rv<0) {
     fprintf(stderr, "ERROR: Unable to init GWEN plugins (%d).\n", rv);
