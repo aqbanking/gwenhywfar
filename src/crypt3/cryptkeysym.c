@@ -19,6 +19,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/cryptdefs.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -487,6 +488,34 @@ uint8_t *GWEN_Crypt_KeyDes3K_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
 
 uint32_t GWEN_Crypt_KeyDes3K_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
   return GWEN_Crypt_KeySym_GetKeyDataLen(k);
+}
+
+
+
+int GWEN_Crypt_KeyDes3K_SetIV(GWEN_CRYPT_KEY *k,
+			      const uint8_t *kd,
+			      uint32_t kl) {
+  GWEN_CRYPT_KEY_SYM *xk;
+  gcry_error_t err;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_SYM, k);
+  assert(xk);
+
+  if (kd==NULL || kl==0) {
+    const uint8_t iv[]={
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+    err=gcry_cipher_setiv(xk->algoHandle, iv, sizeof(iv));
+  }
+  else
+    err=gcry_cipher_setiv(xk->algoHandle, kd, kl);
+  if (err) {
+    DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_setiv(): %s", gcry_strerror(err));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
 }
 
 

@@ -47,6 +47,12 @@ GWENHYWFAR_API
 uint32_t GWEN_Crypt_KeyDes3K_GetKeyDataLen(const GWEN_CRYPT_KEY *k);
 
 
+GWENHYWFAR_API 
+int GWEN_Crypt_KeyDes3K_SetIV(GWEN_CRYPT_KEY *k,
+			      const uint8_t *kd,
+			      uint32_t kl);
+
+
 
 GWENHYWFAR_API 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_Generate(GWEN_CRYPT_CRYPTMODE mode,

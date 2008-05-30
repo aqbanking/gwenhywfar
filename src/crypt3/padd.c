@@ -221,11 +221,11 @@ int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
   GWEN_Buffer_Rewind(buf);
 
   /* insert room for header */
-  diff=dstSize-GWEN_Buffer_GetUsedBytes(buf)-11;
-  if (GWEN_Buffer_InsertRoom(buf, 1+diff+1+8+1)) {
+  diff=dstSize-GWEN_Buffer_GetUsedBytes(buf)-11+1;
+  if (GWEN_Buffer_InsertRoom(buf, 1+diff+1+8)) {
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not insert room for %d bytes",
-	      1+diff+1+8+1);
+	      1+diff+1+8);
     return GWEN_ERROR_GENERIC;
   }
 
@@ -257,7 +257,7 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
   const uint8_t *p;
 
   l=GWEN_Buffer_GetUsedBytes(buf);
-  if (l<12) {
+  if (l<11) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too few bytes");
     return GWEN_ERROR_INVALID;
   }
@@ -278,8 +278,8 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
     return GWEN_ERROR_BAD_DATA;
   }
 
-  realSize=GWEN_Buffer_GetUsedBytes(buf)-12-l;
-  GWEN_Buffer_Crop(buf, 11+l, realSize);
+  realSize=GWEN_Buffer_GetUsedBytes(buf)-11-l;
+  GWEN_Buffer_Crop(buf, 10+l, realSize);
 
   return 0;
 }

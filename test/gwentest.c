@@ -3067,6 +3067,300 @@ int testHttpSession(int argc, char **argv) {
 
 
 
+int testDES(int argc, char **argv) {
+  GWEN_CRYPT_KEY *skey;
+  GWEN_BUFFER *buf1;
+  GWEN_BUFFER *buf2;
+  GWEN_BUFFER *buf3;
+  uint32_t l;
+  int rv;
+  const char testString[]={
+    0x90, 0x80, 0x70, 0x60, 0x50, 0x40, 0x30, 0x20,
+    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+    0x09, 0x18, 0x27, 0x36, 0x45, 0x54, 0x63, 0x72,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88
+  };
+
+  skey=GWEN_Crypt_KeyDes3K_Generate(GWEN_Crypt_CryptMode_Cbc, 24, 2);
+  if (skey==NULL) {
+    DBG_ERROR(0, "Unable to generate DES key");
+    return 2;
+  }
+
+  buf1=GWEN_Buffer_new(0, sizeof(testString), 0, 1);
+  buf2=GWEN_Buffer_new(0, sizeof(testString), 0, 1);
+  buf3=GWEN_Buffer_new(0, sizeof(testString), 0, 1);
+
+  GWEN_Buffer_AppendBytes(buf1, testString, sizeof(testString));
+
+  /* encrypt buf1 */
+  l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf2);
+  rv=GWEN_Crypt_Key_Encipher(skey,
+			     (uint8_t*)GWEN_Buffer_GetStart(buf1),
+			     GWEN_Buffer_GetUsedBytes(buf1),
+			     (uint8_t*)GWEN_Buffer_GetPosPointer(buf2),
+			     &l);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to encipher");
+    return 2;
+  }
+  GWEN_Buffer_IncrementPos(buf2, l);
+  GWEN_Buffer_AdjustUsedBytes(buf2);
+
+  /* decrypt buf2 */
+  l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf3);
+  rv=GWEN_Crypt_Key_Decipher(skey,
+			     (uint8_t*)GWEN_Buffer_GetStart(buf2),
+			     GWEN_Buffer_GetUsedBytes(buf2),
+			     (uint8_t*)GWEN_Buffer_GetPosPointer(buf3),
+			     &l);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to decipher");
+    return 2;
+  }
+  GWEN_Buffer_IncrementPos(buf3, l);
+  GWEN_Buffer_AdjustUsedBytes(buf3);
+
+  if (GWEN_Buffer_GetUsedBytes(buf1)!=
+      GWEN_Buffer_GetUsedBytes(buf3)) {
+    DBG_ERROR(0, "Buffer size does not match");
+    return 2;
+  }
+
+  if (memcmp(GWEN_Buffer_GetStart(buf1),
+	     GWEN_Buffer_GetStart(buf3),
+	     GWEN_Buffer_GetUsedBytes(buf1))!=0) {
+    DBG_ERROR(0, "Buffers do not match");
+    DBG_ERROR(0, "Expected:");
+    GWEN_Buffer_Dump(buf1, stderr, 2);
+    DBG_ERROR(0, "Found:");
+    GWEN_Buffer_Dump(buf3, stderr, 2);
+    DBG_ERROR(0, "Encrypted:");
+    GWEN_Buffer_Dump(buf2, stderr, 2);
+    return 2;
+  }
+
+  GWEN_Buffer_free(buf3);
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+  GWEN_Crypt_Key_free(skey);
+
+  return 0;
+}
+
+
+
+int testDES2(int argc, char **argv) {
+  GWEN_CRYPT_KEY *skey;
+  GWEN_BUFFER *buf1;
+  GWEN_BUFFER *buf2;
+  GWEN_BUFFER *buf3;
+  uint32_t l;
+  int rv;
+  uint8_t kd[24];
+  const char testString[]={
+    0x90, 0x80, 0x70, 0x60, 0x50, 0x40, 0x30, 0x20,
+    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+    0x09, 0x18, 0x27, 0x36, 0x45, 0x54, 0x63, 0x72,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88
+  };
+
+  GWEN_Crypt_Random(2, kd, 16);
+  memmove(kd+16, kd, 8);
+
+  skey=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc,
+				    24,
+				    kd,
+				    24);
+  if (skey==NULL) {
+    DBG_ERROR(0, "Unable to generate DES key");
+    return 2;
+  }
+
+  buf1=GWEN_Buffer_new(0, sizeof(testString), 0, 1);
+  buf2=GWEN_Buffer_new(0, sizeof(testString), 0, 1);
+  buf3=GWEN_Buffer_new(0, sizeof(testString), 0, 1);
+
+  GWEN_Buffer_AppendBytes(buf1, testString, sizeof(testString));
+
+  /* encrypt buf1 */
+  l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf2);
+  rv=GWEN_Crypt_Key_Encipher(skey,
+			     (uint8_t*)GWEN_Buffer_GetStart(buf1),
+			     GWEN_Buffer_GetUsedBytes(buf1),
+			     (uint8_t*)GWEN_Buffer_GetPosPointer(buf2),
+			     &l);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to encipher");
+    return 2;
+  }
+  GWEN_Buffer_IncrementPos(buf2, l);
+  GWEN_Buffer_AdjustUsedBytes(buf2);
+
+  /* decrypt buf2 */
+  l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf3);
+  rv=GWEN_Crypt_Key_Decipher(skey,
+			     (uint8_t*)GWEN_Buffer_GetStart(buf2),
+			     GWEN_Buffer_GetUsedBytes(buf2),
+			     (uint8_t*)GWEN_Buffer_GetPosPointer(buf3),
+			     &l);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to decipher");
+    return 2;
+  }
+  GWEN_Buffer_IncrementPos(buf3, l);
+  GWEN_Buffer_AdjustUsedBytes(buf3);
+
+  if (GWEN_Buffer_GetUsedBytes(buf1)!=
+      GWEN_Buffer_GetUsedBytes(buf3)) {
+    DBG_ERROR(0, "Buffer size does not match");
+    return 2;
+  }
+
+  if (memcmp(GWEN_Buffer_GetStart(buf1),
+	     GWEN_Buffer_GetStart(buf3),
+	     GWEN_Buffer_GetUsedBytes(buf1))!=0) {
+    DBG_ERROR(0, "Buffers do not match");
+    DBG_ERROR(0, "Expected:");
+    GWEN_Buffer_Dump(buf1, stderr, 2);
+    DBG_ERROR(0, "Found:");
+    GWEN_Buffer_Dump(buf3, stderr, 2);
+    DBG_ERROR(0, "Encrypted:");
+    GWEN_Buffer_Dump(buf2, stderr, 2);
+    return 2;
+  }
+
+  GWEN_Buffer_free(buf3);
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+  GWEN_Crypt_Key_free(skey);
+
+  return 0;
+}
+
+
+
+int testDES3(int argc, char **argv) {
+  GWEN_CRYPT_KEY *skey;
+  uint32_t l2;
+  uint32_t l3;
+  int rv;
+  const uint8_t iv[8]={
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  };
+
+  const uint8_t testString[]={
+    0x90, 0x80, 0x70, 0x60, 0x50, 0x40, 0x30, 0x20,
+    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+    0x09, 0x18, 0x27, 0x36, 0x45, 0x54, 0x63, 0x72,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88
+  };
+  uint8_t buf2[sizeof(testString)];
+  uint8_t buf3[sizeof(testString)];
+
+  skey=GWEN_Crypt_KeyDes3K_Generate(GWEN_Crypt_CryptMode_Cbc, 24, 2);
+  if (skey==NULL) {
+    DBG_ERROR(0, "Unable to generate DES key");
+    return 2;
+  }
+
+  /* encrypt buf1 */
+  l2=sizeof(buf2);
+  rv=GWEN_Crypt_Key_Encipher(skey,
+			     testString,
+			     sizeof(testString),
+			     buf2,
+			     &l2);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to encipher");
+    return 2;
+  }
+
+  GWEN_Crypt_KeyDes3K_SetIV(skey, iv, sizeof(iv));
+
+  /* decrypt buf2 */
+  l3=sizeof(buf3);
+  rv=GWEN_Crypt_Key_Decipher(skey,
+			     buf2,
+                             l2,
+			     buf3,
+			     &l3);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to decipher");
+    return 2;
+  }
+
+  if (l2!=l3) {
+    DBG_ERROR(0, "Buffer size does not match");
+    return 2;
+  }
+
+  if (l2!=sizeof(testString)) {
+    DBG_ERROR(0, "Buffer size does not match size of testString");
+    return 2;
+  }
+
+  if (memcmp(testString, buf3, l3)!=0) {
+    DBG_ERROR(0, "Buffers do not match");
+    DBG_ERROR(0, "Expected:");
+    GWEN_Text_DumpString((const char*)testString, sizeof(testString),
+			 stderr, 2);
+    DBG_ERROR(0, "Found:");
+    GWEN_Text_DumpString((const char*)buf3, l3, stderr, 2);
+    DBG_ERROR(0, "Encrypted:");
+    GWEN_Text_DumpString((const char*)buf2, l2, stderr, 2);
+    return 2;
+  }
+
+  GWEN_Crypt_Key_free(skey);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3084,6 +3378,12 @@ int main(int argc, char **argv) {
 
   if (strcasecmp(argv[1], "dbfile")==0)
     rv=testDBfile(argc, argv);
+  else if (strcasecmp(argv[1], "des")==0)
+    rv=testDES(argc, argv);
+  else if (strcasecmp(argv[1], "des2")==0)
+    rv=testDES2(argc, argv);
+  else if (strcasecmp(argv[1], "des3")==0)
+    rv=testDES3(argc, argv);
   else if (strcasecmp(argv[1], "db")==0)
     rv=testDB(argc, argv);
   else if (strcasecmp(argv[1], "db2")==0)
