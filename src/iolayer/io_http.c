@@ -407,8 +407,21 @@ int GWEN_Io_LayerHttp_ParseHeader(GWEN_IO_LAYER *io, char *buf) {
   /* get size of body */
   xio->currentReadBodySize=GWEN_DB_GetIntValue(xio->dbHeaderIn, "Content-Length", 0, -1);
   if (xio->currentReadBodySize==0) {
-    /* no header */
+    /* no body */
     xio->readMode=GWEN_Io_LayerHttp_Mode_Finished;
+  }
+  if (xio->currentReadBodySize==-1) {
+    int rcode;
+
+    /* no length of body received, assume 0 in case of an error
+     * This eliminates the bug where this module waits for
+     * a timeout when receiving an error from a special server
+     */
+    rcode=GWEN_DB_GetIntValue(xio->dbStatusIn, "code", 0, -1);
+    if (rcode<0 || rcode>=300) {
+      /* no body */
+      xio->readMode=GWEN_Io_LayerHttp_Mode_Finished;
+    }
   }
 
   return 0;

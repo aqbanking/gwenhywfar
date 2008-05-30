@@ -1,4 +1,10 @@
 
+2008/05/30: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in io_http.c (was waiting until timeout with a special 
+  EBICS server)
+
+
 ===========================================================================
 MARK: released gwenhywfar-3.3.2 (2008/05/27)
 ===========================================================================
