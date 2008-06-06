@@ -741,19 +741,22 @@ GWEN_CRYPT_TOKEN_CHANGEPIN_FN GWEN_Crypt_Token_SetChangePinFn(GWEN_CRYPT_TOKEN *
 int GWEN_Crypt_Token__CreatePasswordName(GWEN_CRYPT_TOKEN *ct,
 					 GWEN_CRYPT_PINTYPE pt,
 					 GWEN_BUFFER *nbuf) {
+  const char *tname;
   const char *dname;
 
-  GWEN_Buffer_AppendString(nbuf, "PASSWD:");
+  tname=GWEN_Crypt_Token_GetTypeName(ct);
+  assert(tname);
   dname=GWEN_Crypt_Token_GetTokenName(ct);
   if (!dname) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Token has no name");
     return GWEN_ERROR_INVALID;
   }
 
+  GWEN_Buffer_AppendString(nbuf, "PASSWORD_");
+  GWEN_Buffer_AppendString(nbuf, tname);
+  GWEN_Buffer_AppendString(nbuf, "_");
   GWEN_Buffer_AppendString(nbuf, dname);
-  if (pt==GWEN_Crypt_PinType_Access)
-    GWEN_Buffer_AppendString(nbuf, ":ACCESS");
-  else if (pt==GWEN_Crypt_PinType_Manage)
+  if (pt==GWEN_Crypt_PinType_Manage)
     GWEN_Buffer_AppendString(nbuf, ":MANAGE");
 
   return 0;

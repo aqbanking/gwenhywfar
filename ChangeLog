@@ -1,4 +1,10 @@
 
+2008/06/06: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- changed the way the crypttoken password name is generated. It now
+  creates the same names as AqHBCI
+
+
 2008/05/30: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in io_http.c (was waiting until timeout with a special 
