@@ -981,7 +981,7 @@ int GWEN_Crypt_Token_InsertToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 		  "</html>"), dname, dname);
 
   rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
-			 GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS |
+			 GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
 			 GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
 			 I18N("Insert Medium"),
 			 buffer,

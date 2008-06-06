@@ -3,6 +3,7 @@
 ------------------------------------------------
 - changed the way the crypttoken password name is generated. It now
   creates the same names as AqHBCI
+- decreased severity of message which asks the user to insert a card
 
 
 2008/05/30: Martin Preuss<martin@libchipcard.de>
