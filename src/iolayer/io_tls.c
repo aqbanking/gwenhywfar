@@ -36,7 +36,7 @@
 #include <gwenhywfar/text.h> /* debug */
 
 
-/*#define DEBUG_TLS */
+#define DEBUG_TLS
 
 
 
