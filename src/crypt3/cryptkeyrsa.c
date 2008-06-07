@@ -395,10 +395,12 @@ int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db,
     return GWEN_ERROR_GENERIC;
   }
   if (nscanned<1) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Empty %s", dbName);
+    DBG_INFO(GWEN_LOGDOMAIN, "Empty %s (%d)", dbName, nscanned);
+#if 0
     if (mpi)
       gcry_mpi_release(mpi);
     return GWEN_ERROR_BAD_DATA;
+#endif
   }
   err=gcry_ac_data_set(ds, GCRY_AC_FLAG_COPY, (char*)dsName, mpi);
   if (err) {

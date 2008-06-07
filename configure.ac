@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=3
 GWENHYWFAR_VERSION_PATCHLEVEL=3
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -299,6 +299,27 @@ AC_MSG_RESULT($enable_local_install)
 if test "$enable_local_install" != "no"; then
   AC_DEFINE(ENABLE_LOCAL_INSTALL, 1, [whether local install is wanted])
 fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# check whether EBICS support should be linked-in
+#
+# This is used when statically linking plugins (especially for gct-tool)
+#
+
+AC_MSG_CHECKING(whether EBICS support is wanted)
+AC_ARG_ENABLE(ebics-plugins,
+  [  --ebics-plugins         allow EBICS plugins (default=no)],
+  enable_ebics_plugins="$enableval",
+  enable_ebics_plugins="no")
+AC_MSG_RESULT($enable_ebics_plugins)
+
+if test "$enable_ebics_plugins" != "no"; then
+  AC_DEFINE(ENABLE_EBICS_PLUGINS, 1, [whether EBICS plugins are supported])
+fi
+AM_CONDITIONAL(ENABLE_EBICS_PLUGINS, [test "$enable_ebics_plugins" = "yes"])
 
 
 
@@ -1194,6 +1215,7 @@ echo "Local Installation Mode       : $enable_local_install"
 echo "Plugin Loading Support        : $enable_plugin_loading"
 echo "Plugin Installation Folder    : $gwenhywfar_plugindir"
 echo "Plugin Search Folder          : $gwenhywfar_plugin_searchdir"
+echo "EBICS plugins enabled         : $enable_ebics_plugins"
 echo "Data Search Folder            : $gwenhywfar_data_searchdir"
 echo "Locale Search Folder          : $gwenhywfar_locale_searchdir"
 echo "Config Search Folder          : $gwenhywfar_cfg_searchdir"
