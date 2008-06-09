@@ -1,4 +1,11 @@
 
+2008/06/09: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- fixed a bug in CSV exporter (note: GWEN_FASTBUFFER_WRITEBYTES only writes
+  as many bytes as possible, use GWEN_FASTBUFFER_WRITEFORCED if you want
+  all bytes to be written)
+
+
 ===========================================================================
 MARK: released gwenhywfar-3.3.3 (2008/06/06)
 ===========================================================================

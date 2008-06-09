@@ -208,7 +208,7 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
         }
       } /* if quote */
       /* write value */
-      GWEN_FASTBUFFER_WRITEBYTES(fb, err, namebuffer, -1);
+      GWEN_FASTBUFFER_WRITEFORCED(fb, err, namebuffer, -1);
       if (err<0) {
         DBG_INFO(0, "Called from here");
 	GWEN_FastBuffer_free(fb);
@@ -300,7 +300,7 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
           }
         } /* if quote */
 	/* write value */
-	GWEN_FASTBUFFER_WRITEBYTES(fb, err, p, -1);
+	GWEN_FASTBUFFER_WRITEFORCED(fb, err, p, -1);
         if (err<0) {
           DBG_INFO(0, "Called from here");
 	  GWEN_FastBuffer_free(fb);
