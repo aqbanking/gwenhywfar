@@ -1,4 +1,9 @@
 
+===========================================================================
+MARK: released gwenhywfar-3.3.4 (2008/06/09)
+===========================================================================
+
+
 2008/06/09: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - fixed a bug in CSV exporter (note: GWEN_FASTBUFFER_WRITEBYTES only writes
