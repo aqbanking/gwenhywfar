@@ -1,7 +1,12 @@
 
 ===========================================================================
-MARK: released gwenhywfar-3.3.4 (2008/06/09)
+MARK: released gwenhywfar-3.3.4 (2008/06/10)
 ===========================================================================
+
+
+2008/06/10: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- gct-tool: added command "changepin"
 
 
 2008/06/09: Martin Preuss<martin@libchipcard.de>

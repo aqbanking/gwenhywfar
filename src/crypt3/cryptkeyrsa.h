@@ -48,6 +48,7 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE 
 
 GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GetModulus(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen);
 GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GetExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen);
+GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GetSecretExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen);
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
 							    const uint8_t *pModulus,

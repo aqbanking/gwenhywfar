@@ -296,6 +296,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "setsignseq")==0) {
     rv=setSignSeq(db, argc, argv);
   }
+  else if (strcasecmp(cmd, "changepin")==0) {
+    rv=changePin(db, argc, argv);
+  }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
     rv=1;

@@ -139,71 +139,6 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
 }
 
 
-#if 0
-int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
-  unsigned int diff;
-  char *p;
-  int i;
-
-  if ((unsigned int)dstSize<GWEN_Buffer_GetUsedBytes(buf)+31) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too much data");
-    return GWEN_ERROR_INVALID;
-  }
-
-  /* add trailer */
-  GWEN_Buffer_AppendByte(buf, 0xbc);
-
-  /* reset position to 0 */
-  GWEN_Buffer_Rewind(buf);
-
-  /* insert room for header */
-  diff=dstSize-31;
-  if (GWEN_Buffer_InsertRoom(buf, 1+diff+1+8)) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Could not insert room for %d bytes",
-	      1+diff+1+8);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* insert header and more-data-bit */
-  p=GWEN_Buffer_GetStart(buf);
-  *(p++)=0x60;
-
-  /* insert padding field */
-  for (i=0; i<diff; i++)
-    *(p++)=0x0;
-  *(p++)=0x01;
-
-  /* insert 8 random bytes */
-  GWEN_Crypt_Random(2, (uint8_t*)p, 8);
-  for (i=0; i<8; i++) {
-    if (*p==0)
-      /* TODO: Need to find a better but yet fast way */
-      *p=0xff;
-    p++;
-  }
-  *(p++)=0x01;
-
-  return 0;
-}
-
-
-
-int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
-  uint32_t l;
-
-  l=GWEN_Buffer_GetUsedBytes(buf);
-  if (l<31) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer contains too few bytes");
-    return GWEN_ERROR_INVALID;
-  }
-
-  GWEN_Buffer_Crop(buf, l-21, 20);
-
-  return 0;
-}
-
-#else
 int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize){
   unsigned int diff;
   char *p;
@@ -283,8 +218,6 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
 
   return 0;
 }
-#endif
-
 
 
 

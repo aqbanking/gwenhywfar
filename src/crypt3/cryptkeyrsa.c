@@ -988,6 +988,12 @@ int GWEN_Crypt_KeyRsa_GetExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint
 
 
 
+int GWEN_Crypt_KeyRsa_GetSecretExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen) {
+  return GWEN_Crypt_KeyRsa__GetNamedElement(k, "d", buffer, pBufLen);
+}
+
+
+
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
 					     const uint8_t *pModulus,
 					     uint32_t lModulus,
