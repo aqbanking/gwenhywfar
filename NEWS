@@ -1,9 +1,10 @@
 
 ===========================================================================
-                    gwenhywfar-3.3.4 (2008/06/10)
+                    gwenhywfar-3.3.4 (2008/06/11)
 ===========================================================================
 
-This release fixes a bug in the CSV exporter.
+This release fixes a bug in the CSV exporter. It also adds the gct-tool
+command "changepin".
 
 
 ===========================================================================

@@ -1,12 +1,18 @@
 
 ===========================================================================
-MARK: released gwenhywfar-3.3.4 (2008/06/10)
+MARK: released gwenhywfar-3.3.4 (2008/06/11)
 ===========================================================================
+
+2008/06/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- always ask for the pin if the CONFIRM flag is set
 
 
 2008/06/10: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
-- gct-tool: added command "changepin"
+- added function GWEN_CryptKeyRsa_GetSecretExponent()
+- removed unneeded code from src/crypt3/padd.c
+- added gct-tool command "changepin"
 
 
 2008/06/09: Martin Preuss<martin@libchipcard.de>
