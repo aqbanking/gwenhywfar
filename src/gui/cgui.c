@@ -940,28 +940,29 @@ int GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
   
     buf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Text_EscapeToBufferTolerant(token, buf);
-  
-    s=GWEN_DB_GetCharValue(cgui->dbPasswords,
-			   GWEN_Buffer_GetStart(buf),
-			   0, NULL);
-    if (s) {
-      int i;
-  
-      i=strlen(s);
-      if (i>=minLen && i<=maxLen) {
-	memmove(buffer, s, i+1);
-	GWEN_Buffer_free(buf);
-	return 0;
+
+    if (!(flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)) {
+      s=GWEN_DB_GetCharValue(cgui->dbPasswords,
+			     GWEN_Buffer_GetStart(buf),
+			     0, NULL);
+      if (s) {
+	int i;
+
+	i=strlen(s);
+	if (i>=minLen && i<=maxLen) {
+	  memmove(buffer, s, i+1);
+	  GWEN_Buffer_free(buf);
+	  return 0;
+	}
       }
     }
-    else {
-      if (cgui->nonInteractive) {
-	DBG_ERROR(GWEN_LOGDOMAIN,
-		  "Password for [%s] missing in noninteractive mode, "
-		  "aborting", token);
-	GWEN_Buffer_free(buf);
-        return GWEN_ERROR_USER_ABORTED;
-      }
+
+    if (cgui->nonInteractive) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Password for [%s] missing in noninteractive mode, "
+		"aborting", token);
+      GWEN_Buffer_free(buf);
+      return GWEN_ERROR_USER_ABORTED;
     }
 
     for (;;) {
