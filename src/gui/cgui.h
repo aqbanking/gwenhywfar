@@ -48,11 +48,17 @@ void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
 				 GWEN_DB_NODE *dbPasswords,
 				 int persistent);
 
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui);
+
 /**
  * Set the certificate DB. Takes over the given DB.
  */
 GWENHYWFAR_API 
 void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts);
+
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_Gui_CGui_GetCertDb(const GWEN_GUI *gui);
 
 
 #ifdef __cplusplus

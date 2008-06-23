@@ -1046,6 +1046,18 @@ void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
 
 
 
+GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui) {
+  GWEN_GUI_CGUI *cgui;
+
+  assert(gui);
+  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
+  assert(cgui);
+
+  return cgui->dbPasswords;
+}
+
+
+
 void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts) {
   GWEN_GUI_CGUI *cgui;
 
@@ -1059,5 +1071,14 @@ void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts) {
 
 
 
+GWEN_DB_NODE *GWEN_Gui_CGui_GetCertDb(const GWEN_GUI *gui) {
+  GWEN_GUI_CGUI *cgui;
+
+  assert(gui);
+  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
+  assert(cgui);
+
+  return cgui->dbCerts;
+}
 
 

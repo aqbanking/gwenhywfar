@@ -89,6 +89,12 @@ void GWEN_Gui_SetGui(GWEN_GUI *gui) {
 
 
 
+GWEN_GUI *GWEN_Gui_GetGui() {
+  return gwenhywfar_gui;
+}
+
+
+
 GWEN_GUI_MESSAGEBOX_FN GWEN_Gui_SetMessageBoxFn(GWEN_GUI *gui,
 						GWEN_GUI_MESSAGEBOX_FN f){
   GWEN_GUI_MESSAGEBOX_FN of;
