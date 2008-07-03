@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=3
 GWENHYWFAR_VERSION_PATCHLEVEL=4
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -917,6 +917,24 @@ fi
 ACX_COMPILE_WARN()
 
 
+
+###-------------------------------------------------------------------------
+#
+# check buffer hard limit
+#
+AC_MSG_CHECKING(default buffer hard limit)
+AC_ARG_WITH(buffer-hardlimit, [  --with-buffer-hardlimit=VALUE new default buffer hard limit],
+  [gwenhywfar_buffer_hardlimit="$withval"],
+  [gwenhywfar_buffer_hardlimit=""])
+
+if test -z "${gwenhywfar_buffer_hardlimit}"; then
+  gwenhywfar_buffer_hardlimit="(16*1024*1024)"
+fi
+
+AC_SUBST(gwenhywfar_buffer_hardlimit)
+AC_MSG_RESULT($gwenhywfar_buffer_hardlimit)
+
+
 ###-------------------------------------------------------------------------
 #
 # compile program flags
@@ -1219,6 +1237,7 @@ echo "EBICS plugins enabled         : $enable_ebics_plugins"
 echo "Data Search Folder            : $gwenhywfar_data_searchdir"
 echo "Locale Search Folder          : $gwenhywfar_locale_searchdir"
 echo "Config Search Folder          : $gwenhywfar_cfg_searchdir"
+echo "Buffer Default Hard Limit     : $gwenhywfar_buffer_hardlimit"
 echo "Symbol Visibility             : $visibility_supported"
 echo "OpenSSL Support for gct-tool  : $ssl_available"
 

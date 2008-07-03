@@ -13,6 +13,8 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 
 AM_CFLAGS=@PROFILING_CFLAGS@ @visibility_cflags@  -DBUILDING_GWENHYWFAR
 
+DEFS+=-DGWEN_BUFFER_DEFAULT_HARDLIMIT='@gwenhywfar_buffer_hardlimit@'
+
 noinst_LTLIBRARIES=libbase.la
 
 noinst_HEADERS=\

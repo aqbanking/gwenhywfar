@@ -32,8 +32,6 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/buffer.h>
 
-#define GWEN_BUFFER_DEFAULT_HARDLIMIT (8*1024*1024)
-
 /**
  * When reallocating the buffer a multiple of this value is used.
  * Needs to be aligned at 2^n
