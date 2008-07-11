@@ -1009,6 +1009,96 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
 
 
 
+GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByPropertyStrictProto(GWEN_MSGENGINE *e,
+							   const char *t,
+							   const char *pname,
+							   int version,
+							   const char *pvalue) {
+  GWEN_XMLNODE *n;
+  const char *p;
+  int i;
+  const char *mode;
+  unsigned int proto;
+  char buffer[256];
+
+  if ((strlen(t)+4)>sizeof(buffer)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Type name too long.");
+    return 0;
+  }
+
+  mode=GWEN_MsgEngine_GetMode(e);
+  proto=GWEN_MsgEngine_GetProtocolVersion(e);
+  if (!e->defs) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No definitions available");
+    return 0;
+  }
+  n=e->defs;
+  n=GWEN_XMLNode_GetChild(n);
+
+  /* find type+"S" */
+  strcpy(buffer, t);
+  strcat(buffer,"S");
+  while(n) {
+    if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeTag) {
+      p=GWEN_XMLNode_GetData(n);
+      assert(p);
+      if (strcasecmp(p, buffer)==0)
+	break;
+    }
+    n=GWEN_XMLNode_Next(n);
+  } /* while */
+
+  if (!n) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No definitions available for type \"%s\"", t);
+    return 0;
+  }
+
+  /* find approppriate group definition */
+  if (!mode)
+    mode="";
+  n=GWEN_XMLNode_GetChild(n);
+  if (!n) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No definitions inside \"%s\"", buffer);
+    return 0;
+  }
+
+  /* find type+"def" */
+  strcpy(buffer, t);
+  strcat(buffer,"def");
+  while(n) {
+    if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeTag) {
+      p=GWEN_XMLNode_GetData(n);
+      assert(p);
+      if (strcasecmp(p, buffer)==0) {
+	p=GWEN_XMLNode_GetProperty(n, pname,"");
+        if (strcasecmp(p, pvalue)==0) {
+          i=atoi(GWEN_XMLNode_GetProperty(n, "pversion" ,"0"));
+	  if (proto==0 || (int)proto==i) {
+	    i=atoi(GWEN_XMLNode_GetProperty(n, "version" ,"0"));
+	    if (version==0 || version==i) {
+	      p=GWEN_XMLNode_GetProperty(n, "mode","");
+	      if (strcasecmp(p, mode)==0 || !*p) {
+		DBG_DEBUG(GWEN_LOGDOMAIN, "Group definition for \"%s=%s\" found",
+                          pname, pvalue);
+                return n;
+	      }
+	    }
+          }
+	}
+      }
+    }
+    n=GWEN_XMLNode_Next(n);
+  } /* while */
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Group definition for \"%s=%s\"(%d) not found",
+           pname,
+           pvalue,
+           version);
+  return 0;
+}
+
+
+
 const char *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
                                            const char *pvalue,
                                            GWEN_XMLNODE *node,

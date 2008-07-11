@@ -359,6 +359,14 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
                                                 const char *pname,
                                                 int version,
                                                 const char *pvalue);
+
+GWENHYWFAR_API
+GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByPropertyStrictProto(GWEN_MSGENGINE *e,
+							   const char *t,
+							   const char *pname,
+							   int version,
+							   const char *pvalue);
+
 /**
  * Searches for a property in "node" and in "refnode" and all its parents.
  * If topdown is 0 then the nearest value is used, otherwise the farest

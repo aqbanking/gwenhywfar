@@ -1,3 +1,14 @@
+  -------------- REMINDER PLEASE KEEP ON TOP UNTIL RELEASE----------------
+  !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
+  ------------------------------------------------------------------------
+
+
+2008/07/11: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added function GWEN_MsgEngine_FindNodeByPropertyStrictProto() which
+  requires strict protocol matching when searching for a node. This function
+  is needed to make sure that only the node for the current protocol is
+  returned.
 
 ===========================================================================
 MARK: released gwenhywfar-3.3.5 (2008/07/8)
