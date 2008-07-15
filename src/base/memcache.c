@@ -372,6 +372,22 @@ void GWEN_MemCache_Purge(GWEN_MEMCACHE *mc) {
 
 
 
+int GWEN_MemCache_Lock(GWEN_MEMCACHE *mc) {
+  assert(mc);
+  return GWEN_Mutex_Lock(mc->mutex);
+}
+
+
+
+int GWEN_MemCache_Unlock(GWEN_MEMCACHE *mc) {
+  assert(mc);
+  return GWEN_Mutex_Unlock(mc->mutex);
+}
+
+
+
+
+
 
 
 
