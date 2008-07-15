@@ -2,6 +2,10 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/07/15: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added modules GWEN_MUTEX and GWEN_MEMCACHE
+
 
 2008/07/11: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
@@ -9,6 +13,7 @@
   requires strict protocol matching when searching for a node. This function
   is needed to make sure that only the node for the current protocol is
   returned.
+
 
 ===========================================================================
 MARK: released gwenhywfar-3.3.5 (2008/07/8)

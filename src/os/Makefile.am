@@ -19,7 +19,8 @@ iheader_HEADERS=\
  inetaddr.h \
  inetsocket.h \
  libloader.h \
- process.h
+ process.h \
+ mutex.h
 
 noinst_HEADERS= \
  gwentime_l.h \
