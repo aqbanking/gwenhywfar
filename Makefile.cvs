@@ -81,6 +81,8 @@ mp-w32:
 	  --enable-release \
 	  --disable-binreloc \
 	  --with-openssl-includes=$(MINGW32_PREFIX)/include \
-	  --with-openssl-libs=$(MINGW32_PREFIX)/lib
+	  --with-openssl-libs=$(MINGW32_PREFIX)/lib \
+	  --with-libgcrypt-prefix=$(MINGW32_PREFIX) \
+	  --with-libgnutls-prefix=$(MINGW32_PREFIX)
 
 

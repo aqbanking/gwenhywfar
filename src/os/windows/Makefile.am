@@ -23,7 +23,8 @@ noinst_HEADERS=\
  inetaddr_p.h \
  inetsocket_p.h \
  libloader_p.h \
- process_p.h
+ process_p.h \
+ mutex_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -37,7 +38,8 @@ libosimpl_la_SOURCES=\
  inetsocket.c \
  init.c \
  libloader.c \
- process.c
+ process.c \
+ mutex.c
 
 
 sources:
