@@ -22,17 +22,7 @@ crypttokenplugin_DATA=ohbci.xml
 
 ohbci_la_SOURCES=dummy.c
 ohbci_la_LIBADD=libct_ohbci.la $(top_builddir)/src/libgwenhywfar.la
-ohbci_la_DEPENDENCIES=libct_ohbci.la $(top_builddir)/src/libgwenhywfar.la
-
-# if IS_WINDOWS
-if IS_WINDOWS
-ohbci_la_DEPENDENCIES += ressource.o
-ressource_ldflags=-Wl,ressource.o
-endif
-# IS_WINDOWS
-
-ohbci_la_LDFLAGS = -no-undefined $(STRIPALL) $(ressource_ldflags) \
-  -module -omit-version
+ohbci_la_LDFLAGS = -no-undefined $(STRIPALL) -module -avoid-version
 
 sources:
 	for f in $(libctohbci_la_SOURCES); do \

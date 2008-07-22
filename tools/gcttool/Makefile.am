@@ -17,15 +17,12 @@ gct_tool_SOURCES=\
   setsignseq.c \
   main.c
 
+gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+
 if IS_WINDOWS
 
-gct_tool_LDFLAGS=-L$(top_builddir)/src/.libs -mconsole
-#gct_tool_LDADD= -lgwenhywfar-$(GWENHYWFAR_SO_EFFECTIVE) $(PROG_LIBRARIES)
-gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
-
-else
-
-gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+gct_tool_LDFLAGS=-mconsole
+gct_tool_LDADD+=$(PROG_LIBRARIES)
 
 endif
 

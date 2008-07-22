@@ -1,4 +1,7 @@
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <gwenhywfar/iomanager.h>
 #include <gwenhywfar/io_file.h>

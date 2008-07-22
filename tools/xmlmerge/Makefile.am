@@ -4,14 +4,12 @@ bin_PROGRAMS=xmlmerge
 noinst_HEADERS=args.h
 xmlmerge_SOURCES=args.c main.c
 
+xmlmerge_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+
 if IS_WINDOWS
 
-xmlmerge_LDFLAGS=-L$(top_builddir)/src/.libs -mconsole
-xmlmerge_LDADD= -lgwenhywfar-$(GWENHYWFAR_SO_EFFECTIVE) $(PROG_LIBRARIES)
-
-else
-
-xmlmerge_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+xmlmerge_LDFLAGS=-mconsole
+xmlmerge_LDADD+=$(PROG_LIBRARIES)
 
 endif
 
