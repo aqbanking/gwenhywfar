@@ -14,7 +14,6 @@ sysconfdir=@sysconfdir@
 
 # Particular variables of gwenhywfar
 plugindir=@gwenhywfar_plugindir@
-has-crypt=@USE_CRYPT@
 
 # Human-readable name
 Name: gwenhywfar
