@@ -2,6 +2,11 @@
   !     remember to do SO_CURRENT++ and SO_AGE++ before next release     !
   ------------------------------------------------------------------------
 
+2008/07/29: Martin Preuss<martin@libchipcard.de>
+------------------------------------------------
+- added module GWEN_SEMAPHORE (as needed by one of my projects)
+
+
 2008/07/15: Martin Preuss<martin@libchipcard.de>
 ------------------------------------------------
 - added modules GWEN_MUTEX and GWEN_MEMCACHE

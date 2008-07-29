@@ -20,7 +20,8 @@ iheader_HEADERS=\
  inetsocket.h \
  libloader.h \
  process.h \
- mutex.h
+ mutex.h \
+ gwensemaphore.h
 
 noinst_HEADERS= \
  gwentime_l.h \

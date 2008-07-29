@@ -58,7 +58,7 @@ libgwenhywfar_la_LIBADD=\
   ipc/libipc.la \
   os/libos.la \
   parser/libparser.la \
-  gui/libgui.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(all_libraries)
+  gui/libgui.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(rt_libs) $(all_libraries)
 
 libgwenhywfar_la_DEPENDENCIES=\
   base/libbase.la \

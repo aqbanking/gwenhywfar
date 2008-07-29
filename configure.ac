@@ -200,6 +200,13 @@ AC_CHECK_PROG(SED,sed,sed)
 AC_CHECK_LIB(dl, dlopen)
 # note: this AC_CHECK_LIB will also add -ldl to LIBS.
 
+AC_CHECK_LIB(rt, sem_init, 
+  [ 
+    rt_libs="-lrt"
+    AC_DEFINE(HAVE_LIBRT, "1", [whether librt is available])
+  ])
+AC_SUBST(rt_libs)
+
 # Some systems have iconv in libc, some have it in libiconv (OSF/1 and
 # those with the standalone portable GNU libiconv installed). Check
 # which one is available. The define ICONV_CONST will be "" or "const"
