@@ -30,22 +30,11 @@
 
 #include <gwenhywfar/gwensemaphore.h>
 
-#ifdef APPLE
-# include <mach/mach_init.h>
-# include <mach/semaphore.h>
-#else
-# include <semaphore.h>
-#endif
-
-#include <pthread.h>
+#include <semaphore.h>
 
 
 struct GWEN_SEMAPHORE {
-#ifdef APPLE
-  MPSemaphoreID semId;
-#else
   sem_t sem;
-#endif
 };
 
 

@@ -34,47 +34,6 @@
 
 
 
-#ifdef APPLE
-
-
-GWEN_SEMAPHORE *GWEN_Semaphore_new() {
-  GWEN_SEMAPHORE *sm;
-
-  GWEN_NEW_OBJECT(GWEN_SEMAPHORE, sm);
-  MPCreateSemaphore(2147483647, 0, &(sm->semId));
-
-  return sm;
-}
-
-
-
-void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm) {
-  if (sm) {
-    MPDeleteSemaphore(sm->semId);
-    GWEN_FREE_OBJECT(sm);
-  }
-}
-
-
-
-void GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm) {
-  assert(sm);
-  MPWaitOnSemaphore(sm->semId, kDurationForever);
-}
-
-
-
-void GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm) {
-  assert(sm);
-  MPSignalSemaphore(sm->semId));
-}
-
-
-
-#else
-
-
-
 GWEN_SEMAPHORE *GWEN_Semaphore_new() {
   GWEN_SEMAPHORE *sm;
 
@@ -109,6 +68,5 @@ void GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm) {
 
 
 
-#endif
 
 
