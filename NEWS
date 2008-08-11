@@ -1,5 +1,16 @@
 
 ===========================================================================
+                    gwenhywfar-3.4.0 (2008/08/11)
+===========================================================================
+
+This release fixes some problems with AqHBCI, features improved handling of
+TLS-connections, implements basic thread sync mechanisms (MUTEX, SEMAPHORE)
+and provides improved support for WIN32 platforms.
+Work on a configuration manager framework (as will be needed by AqBanking
+soon) has begun.
+
+
+===========================================================================
                     gwenhywfar-3.3.5 (2008/07/08)
 ===========================================================================
 
