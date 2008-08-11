@@ -18,6 +18,8 @@ noinst_HEADERS=\
  db_p.h \
  dbio_l.h \
  dbio_p.h \
+ configmgr_l.h \
+ configmgr_p.h \
  msgengine_p.h \
  tag16_p.h \
  tlv_p.h \
@@ -33,6 +35,8 @@ noinst_HEADERS=\
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
  base64.h \
+ configmgr.h \
+ configmgr_be.h \
  db.h \
  dbio.h \
  dbio_be.h \
@@ -48,6 +52,7 @@ iheader_HEADERS=\
 
 libparser_la_SOURCES=\
  base64.c \
+ configmgr.c \
  db.c \
  dbio.c \
  msgengine.c \

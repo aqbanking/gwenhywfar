@@ -57,6 +57,7 @@
 
 #include "io/bufferedio_l.h"
 #include "parser/dbio_l.h"
+#include "parser/configmgr_l.h"
 #include "crypt3/cryptkey_l.h"
 #include "crypttoken/ctplugin_l.h"
 #include "iolayer/iomanager_l.h"
@@ -253,6 +254,10 @@ int GWEN_Init() {
     err=GWEN_DBIO_ModuleInit();
     if (err)
       return err;
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing ConfigMgr module");
+    err=GWEN_ConfigMgr_ModuleInit();
+    if (err)
+      return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing CryptToken2 module");
     err=GWEN_Crypt_Token_ModuleInit();
     if (err)
@@ -286,6 +291,12 @@ int GWEN_Fini() {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
 		"Could not deinitialze module CryptToken2");
+    }
+    lerr=GWEN_ConfigMgr_ModuleFini();
+    if (lerr) {
+      err=lerr;
+      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
+		"Could not deinitialze module ConfigMgr");
     }
     lerr=GWEN_DBIO_ModuleFini();
     if (lerr) {
