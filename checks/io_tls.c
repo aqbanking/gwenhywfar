@@ -35,6 +35,7 @@ static int check_io_tls1() {
   char buffer[2048];
 
   addr=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  //rv=GWEN_InetAddr_SetName(addr, "devel.aqbanking.de");
   rv=GWEN_InetAddr_SetName(addr, "www.sf.net");
   if (rv) {
     fprintf(stderr,
@@ -107,7 +108,7 @@ static int check_io_tls1() {
       break;
     else if (rv<1) {
       if (rv==GWEN_ERROR_TIMEOUT || rv==GWEN_ERROR_EOF)
-        break;
+	break;
       fprintf(stderr,
 	      "ERROR in check_io_tls1: Could not read (%d)\n", rv);
       return 2;
@@ -121,8 +122,7 @@ static int check_io_tls1() {
   rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, 0, 2000);
   if (rv) {
     fprintf(stderr,
-	    "ERROR in check_io_tls1: Could not disconnect (%d)\n", rv);
-    return 2;
+	    "WARNING in check_io_tls1: Could not disconnect (%d)\n", rv);
   }
 
   return 0;

@@ -36,7 +36,7 @@
 #include <gwenhywfar/text.h> /* debug */
 
 
-/*#define DEBUG_TLS */
+/*#define DEBUG_TLS*/
 
 
 
@@ -784,6 +784,7 @@ ssize_t GWEN_Io_LayerTls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len) {
       return (ssize_t)-1;
     }
     else {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 #ifdef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
       gnutls_transport_set_errno(xio->session, EINVAL);
 #else
@@ -806,6 +807,9 @@ ssize_t GWEN_Io_LayerTls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len) {
     if (maxBytes) {
       memmove(buf, src, maxBytes);
       GWEN_RingBuffer_SkipBytesRead(rbuf, maxBytes);
+    }
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "End of stream reached.");
     }
 
 #ifdef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
@@ -936,6 +940,11 @@ int GWEN_Io_LayerTls_Decode(GWEN_IO_LAYER *io, uint8_t *pBuffer, uint32_t lBuffe
       return GWEN_ERROR_TRY_AGAIN;
     else if (rv==GNUTLS_E_INTERRUPTED)
       return GWEN_ERROR_INTERRUPTED;
+    else if (rv==GNUTLS_E_UNEXPECTED_PACKET_LENGTH) {
+      DBG_DEBUG(GWEN_LOGDOMAIN,
+		"Unexpected packet length, assuming EOF met");
+      return GWEN_ERROR_EOF;
+    }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN,
 		"gnutls_record_recv: %d (%s) [decoding %d bytes]",
