@@ -168,6 +168,19 @@ GWENHYWFAR_API
 int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size);
 
 /**
+ * Gets the prefix to which the calling executable was installed, e.g.
+ * if the executable was installed using prefix "/usr" then the binary
+ * itself will be in "/usr/bin". In this case this function will return
+ * the directory name "/usr".
+ * Please note that this function only looks at the folder at which the
+ * calling exectuable is located when this function is called, so if you
+ * move the binary to another place then the result will be different.
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size);
+
+
+/**
  * Gets a file path. It uses @ref MOD_PATH to either create or check for
  * the existence of a given path.
  * @return 0 if ok, !=0 on error

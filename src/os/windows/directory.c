@@ -232,6 +232,50 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
 
 
+int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
+  DWORD rv;
+  char *p;
+  char cwd[256];
+
+  /* Get the absolute path to the executable, including its name */
+  rv=GetModuleFileName(NULL, cwd, sizeof(cwd)-1);
+  if (rv==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "GetModuleFileName(): %d",
+	      (int)GetLastError());
+    return GWEN_ERROR_IO;
+  }
+
+  /* Find the last DIRSEP and set it to NULL so that we now have the
+     bindir. */
+  p=strrchr(cwd, '\\');
+  if (p) {
+    *p=0;
+  }
+
+  /* Find again the last DIRSEP to check whether the path ends in
+     "bin" or "lib". */
+  p=strrchr(cwd, '\\');
+  if (p) {
+    /* DIRSEP was found and p points to it. p+1 points either to the
+       rest of the string or the '\0' byte, so we can use it
+       here. */
+    if ((strcmp(p+1, "bin") == 0) || (strcmp(p+1, "lib") == 0)) {
+      /* The path ends in "bin" or "lib", hence we strip that suffix
+	 so that we now only have the prefix. */
+      *p=0;
+    }
+  }
+
+  if ((strlen(cwd)+1)>=size)
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+
+  strcpy(buffer, cwd);
+  return 0;
+}
+
+
+
 
 
 

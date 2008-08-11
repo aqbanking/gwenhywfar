@@ -31,9 +31,6 @@
 
 
 #include "pathmanager_p.h"
-#ifndef OS_WIN32
-# include "binreloc.h"
-#endif
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
@@ -198,79 +195,29 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
   }
 
   case GWEN_PathManager_RelModeExe: {
-#ifndef OS_WIN32
-    char *exeDir;
-    GWEN_BUFFER *buf;
     int rv;
 
-    exeDir=br_find_prefix(NULL);
-    if (exeDir==(char*)NULL) {
+    rv=GWEN_Directory_GetPrefixDirectory(cwd, sizeof(cwd)-1);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      GWEN_BUFFER *buf;
+
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(buf, cwd);
+      if (*pathValue!=DIRSEP_C)
+	GWEN_Buffer_AppendString(buf, DIRSEP);
+      GWEN_Buffer_AppendString(buf, pathValue);
       DBG_INFO(GWEN_LOGDOMAIN,
-	       "Unable to determine exe folder");
-      return GWEN_ERROR_GENERIC;
+	       "Adding path [%s]",
+	       GWEN_Buffer_GetStart(buf));
+      rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
+				  GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+      return rv;
     }
-    buf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(buf, exeDir);
-    free(exeDir);
-    if (*pathValue!=DIRSEP_C)
-      GWEN_Buffer_AppendString(buf, DIRSEP);
-    GWEN_Buffer_AppendString(buf, pathValue);
-    DBG_INFO(GWEN_LOGDOMAIN,
-	     "Adding path [%s]",
-	     GWEN_Buffer_GetStart(buf));
-    rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
-				GWEN_Buffer_GetStart(buf));
-    GWEN_Buffer_free(buf);
-    return rv;
-#else
-    DWORD rv;
-    char *p;
-    GWEN_BUFFER *buf;
-
-    /* Get the absolute path to the executable, including its name */
-    rv=GetModuleFileName(NULL, cwd, sizeof(cwd)-1);
-    if (rv==0) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-		"GetModuleFileName(): %d",
-		(int)GetLastError());
-      return GWEN_ERROR_IO;
-    }
-
-    /* Find the last DIRSEP and set it to NULL so that we now have the
-       bindir. */
-    p=strrchr(cwd, '\\');
-    if (p) {
-      *p=0;
-    }
-
-    /* Find again the last DIRSEP to check whether the path ends in
-       "bin" or "lib". */
-    p=strrchr(cwd, '\\');
-    if (p) {
-      /* DIRSEP was found and p points to it. p+1 points either to the
-	 rest of the string or the '\0' byte, so we can use it
-	 here. */
-      if ((strcmp(p+1, "bin") == 0) || (strcmp(p+1, "lib") == 0)) {
-	/* The path ends in "bin" or "lib", hence we strip that suffix
-	   so that we now only have the prefix. */
-	*p=0;
-      }
-    }
-
-    /* And append the given subdirectory to that prefix. */
-    buf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(buf, cwd);
-    if (*pathValue!=DIRSEP_C)
-      GWEN_Buffer_AppendString(buf, DIRSEP);
-    GWEN_Buffer_AppendString(buf, pathValue);
-    DBG_INFO(GWEN_LOGDOMAIN,
-	     "Adding path [%s]",
-	     GWEN_Buffer_GetStart(buf));
-    rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
-				GWEN_Buffer_GetStart(buf));
-    GWEN_Buffer_free(buf);
-    return rv;
-#endif
   }
 
   case GWEN_PathManager_RelModeHome: {

@@ -30,6 +30,7 @@
 #endif
 
 #include "directory_p.h"
+#include "binreloc.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -185,6 +186,28 @@ int GWEN_Directory_CreatePublic(const char *path){
              path, strerror(errno));
     return -1;
   }
+  return 0;
+}
+
+
+
+int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
+  char *exeDir;
+
+  exeDir=br_find_prefix(NULL);
+  if (exeDir==(char*)NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Unable to determine exe folder");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if ((strlen(exeDir)+1)>=size) {
+    free(exeDir);
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
+  strcpy(buffer, exeDir);
+  free(exeDir);
   return 0;
 }
 
