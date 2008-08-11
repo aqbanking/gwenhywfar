@@ -318,6 +318,9 @@ int GWEN_Io_LayerTls_Prepare(GWEN_IO_LAYER *io) {
     }
   }
 
+  /* protect against too-many-known-ca problem */
+  gnutls_handshake_set_max_packet_length(xio->session, 64*1024);
+
   /* let a server request peer certs */
   if ((lflags & GWEN_IO_LAYER_FLAGS_PASSIVE) &&
       (lflags & GWEN_IO_LAYER_TLS_FLAGS_REQUEST_CERT))
