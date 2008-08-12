@@ -700,8 +700,16 @@ int GWEN_Io_Layer_ReadPacketToBuffer(GWEN_IO_LAYER *io,
     GWEN_Buffer_AdjustUsedBytes(buf);
     GWEN_Io_Request_free(r);
     if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+      if (rv==GWEN_ERROR_EOF && bytesRead) {
+	DBG_INFO(GWEN_LOGDOMAIN,
+		 "EOF met with %d bytes read, assuming packet end",
+		 bytesRead);
+        return bytesRead;
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
     if (rflags & GWEN_IO_REQUEST_FLAGS_PACKETEND) {
       return bytesRead;
