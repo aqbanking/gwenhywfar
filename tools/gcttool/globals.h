@@ -47,6 +47,8 @@ int updateToken(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 int setSignSeq(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
+int setKey(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
 int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 

@@ -1046,6 +1046,8 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
 
     GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Local Sign Key"));
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
@@ -1123,6 +1125,8 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     assert(ki);
     GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Local Crypt Key"));
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER);
@@ -1205,6 +1209,8 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     assert(ki);
     GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Remote Sign Key"));
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
     GWEN_CTF_Context_SetRemoteSignKeyInfo(fct, ki);
@@ -1284,6 +1290,8 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     assert(ki);
     GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Remote Crypt Key"));
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER);
     GWEN_CTF_Context_SetRemoteCryptKeyInfo(fct, ki);
@@ -1363,6 +1371,8 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     assert(ki);
     GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Local Auth Key"));
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
@@ -1442,6 +1452,8 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     assert(ki);
     GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Remote Auth Key"));
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
     GWEN_CTF_Context_SetRemoteAuthKeyInfo(fct, ki);
@@ -2108,7 +2120,9 @@ GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
-				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
   GWEN_CTF_Context_SetLocalSignKeyInfo(fct, ki);
 
   /* create key info */
@@ -2120,7 +2134,9 @@ GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER |
-				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER);
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
   GWEN_CTF_Context_SetLocalCryptKeyInfo(fct, ki);
 
   /* create key info */
@@ -2133,7 +2149,9 @@ GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
   GWEN_CTF_Context_SetRemoteSignKeyInfo(fct, ki);
 
   /* create key info */
@@ -2145,7 +2163,9 @@ GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER);
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
   GWEN_CTF_Context_SetRemoteCryptKeyInfo(fct, ki);
 
   /* create key info */
@@ -2156,7 +2176,9 @@ GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN |
-				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
   GWEN_CTF_Context_SetLocalAuthKeyInfo(fct, ki);
   GWEN_Crypt_Token_KeyInfo_SetKeyDescr(ki, I18N("Local Auth Key"));
 
@@ -2169,7 +2191,9 @@ GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY);
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
   GWEN_CTF_Context_SetRemoteAuthKeyInfo(fct, ki);
 
   /* add context */

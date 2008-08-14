@@ -15,6 +15,7 @@ gct_tool_SOURCES=\
   showuser.c \
   update.c \
   setsignseq.c \
+  setkey.c \
   main.c
 
 gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
