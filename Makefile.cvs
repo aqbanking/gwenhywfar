@@ -85,4 +85,6 @@ mp-w32:
 	  --with-libgcrypt-prefix=$(MINGW32_PREFIX) \
 	  --with-libgnutls-prefix=$(MINGW32_PREFIX)
 
+git-log:
+	git-log --pretty="format:%ad %an%n%s%n%b" --since="2008-08-16" >git.log
 
