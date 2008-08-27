@@ -34,7 +34,10 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_KEY, GWEN_Crypt_Key)
 int GWEN_Crypt3_ModuleInit() {
   gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
   if (!gcry_check_version (GCRYPT_VERSION)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Libgcrypt version mismatch");
+    const char *gcrypt_version = gcry_check_version(0);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Libgcrypt version mismatch: "
+                              "Gwen built with GCrypt %s, but running with GCrypt %s"
+			      GCRYPT_VERSION, gcrypt_version);
     return GWEN_ERROR_GENERIC;
   }
   /*gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 1u, 0);*/
