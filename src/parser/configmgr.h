@@ -45,10 +45,10 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CONFIGMGR, GWENHYWFAR_API)
  * Creates a GWEN_CONFIGMGR object. The given URL is inspected for the protocol part
  * which is used to lookup the plugin responsible.
  * A generic file based configuration manager might have the URL
- * "file://home/martin/testconfig" which means that all files of the configuration
+ * "dir://home/martin/testconfig" which means that all files of the configuration
  * manager reside below the folder "/home/martin/testconfig".
  * Other plugins might have another URL scheme, however, the protocol part always
- * specifies the plugin (in this case "file").
+ * specifies the plugin (in this case "dir").
  */
 GWENHYWFAR_API
 GWEN_CONFIGMGR *GWEN_ConfigMgr_Factory(const char *url);
