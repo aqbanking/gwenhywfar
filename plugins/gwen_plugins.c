@@ -38,6 +38,10 @@ GWEN_PLUGIN *dbio_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
 				const char *modName,
 				const char *fileName);
 
+GWEN_PLUGIN *configmgr_dir_factory(GWEN_PLUGIN_MANAGER *pm,
+				   const char *modName,
+				   const char *fileName);
+
 
 
 int GWEN_Plugins_Init() {
@@ -70,6 +74,15 @@ int GWEN_Plugins_Init() {
 
 #ifdef GWENHYWFAR_WITH_PLUGIN_DBIO_XMLDB
     p=dbio_xmldb_factory(pm, "xmldb", NULL);
+    if (p)
+      GWEN_PluginManager_AddPlugin(pm, p);
+#endif
+  }
+
+  pm=GWEN_PluginManager_FindPluginManager("configmgr");
+  if (pm) {
+#ifdef GWENHYWFAR_WITH_PLUGIN_CFGMGR_DIR
+    p=configmgr_dir_factory(pm, "dir", NULL);
     if (p)
       GWEN_PluginManager_AddPlugin(pm, p);
 #endif
