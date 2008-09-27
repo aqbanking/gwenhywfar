@@ -54,6 +54,13 @@
 /* Win32/Mingw does not have link(2), so we have to keep this
    undefined for now. */
 
+
+
+GWEN_LIST_FUNCTIONS(GWEN_FSLOCK, GWEN_FSLock)
+GWEN_LIST2_FUNCTIONS(GWEN_FSLOCK, GWEN_FSLock)
+
+
+
 GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
   GWEN_FSLOCK *fl;
   GWEN_BUFFER *nbuf;
@@ -61,6 +68,8 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
 
   assert(fname);
   GWEN_NEW_OBJECT(GWEN_FSLOCK, fl);
+  GWEN_LIST_INIT(GWEN_FSLOCK, fl);
+  fl->usage=1;
   fl->entryName=strdup(fname);
 
   switch(t) {
@@ -91,15 +100,31 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
 
 void GWEN_FSLock_free(GWEN_FSLOCK *fl){
   if (fl) {
-    if (fl->lockCount) {
-      DBG_WARN(GWEN_LOGDOMAIN,
-               "File \"%s\" still locked", fl->entryName);
+    assert(fl->usage);
+    if (fl->usage==1) {
+      if (fl->lockCount) {
+	DBG_WARN(GWEN_LOGDOMAIN,
+		 "File \"%s\" still locked", fl->entryName);
+      }
+      free(fl->entryName);
+      free(fl->baseLockFilename);
+      free(fl->uniqueLockFilename);
+      GWEN_LIST_FINI(GWEN_FSLOCK, fl);
+      fl->usage=0;
+      GWEN_FREE_OBJECT(fl);
     }
-    free(fl->entryName);
-    free(fl->baseLockFilename);
-    free(fl->uniqueLockFilename);
-    GWEN_FREE_OBJECT(fl);
+    else {
+      fl->usage--;
+    }
   }
+}
+
+
+
+void GWEN_FSLock_Attach(GWEN_FSLOCK *fl){
+  assert(fl);
+  assert(fl->usage);
+  fl->usage++;
 }
 
 
@@ -337,6 +362,11 @@ int GWEN_FSLock__UnifyLockFileName(GWEN_BUFFER *nbuf) {
 
 
 
+const char *GWEN_FSLock_GetName(const GWEN_FSLOCK *fl) {
+  assert(fl);
+  assert(fl->usage);
+  return fl->entryName;
+}
 
 
 

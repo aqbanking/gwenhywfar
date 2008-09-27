@@ -50,7 +50,16 @@ extern "C" {
 #endif
 
 
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/list1.h>
+#include <gwenhywfar/list2.h>
+
+
 typedef struct GWEN_FSLOCK GWEN_FSLOCK;
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_FSLOCK, GWEN_FSLock, GWENHYWFAR_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_FSLOCK, GWEN_FSLock, GWENHYWFAR_API)
+
 
 typedef enum {
   GWEN_FSLock_TypeUnknown=0,
@@ -69,8 +78,6 @@ typedef enum {
 } GWEN_FSLOCK_RESULT;
 
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/gui.h>
 
@@ -80,13 +87,16 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t);
 GWENHYWFAR_API
 void GWEN_FSLock_free(GWEN_FSLOCK *fl);
 
+GWENHYWFAR_API
+void GWEN_FSLock_Attach(GWEN_FSLOCK *fl);
+
 /**
  * This function tries to acquire a lock for the given file/folder.
  * It waits if necessary (using @ref GWEN_Gui_ProgressStart) while waiting.
  * @param fl fslock object
  * @param timeout timeout in milliseconds (special values are
- *   @ref GWEN_FSLOCK_TIMEOUT_NONE (which does not wait at all) and
- *   @ref GWEN_FSLOCK_TIMEOUT_FOREVER (which waits forever).
+ *   @ref GWEN_TIMEOUT_NONE (which does not wait at all) and
+ *   @ref GWEN_TIMEOUT_FOREVER (which waits forever).
  */
 GWENHYWFAR_API
 GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid);
@@ -98,6 +108,9 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid);
 GWENHYWFAR_API
 GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl);
 
+
+GWENHYWFAR_API
+const char *GWEN_FSLock_GetName(const GWEN_FSLOCK *fl);
 
 #ifdef __cplusplus
 }

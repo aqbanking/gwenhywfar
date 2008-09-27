@@ -41,6 +41,7 @@
 
 
 struct GWEN_FSLOCK {
+  GWEN_LIST_ELEMENT(GWEN_FSLOCK)
   GWEN_FSLOCK_TYPE type;
   char *entryName;
   char *baseLockFilename;
