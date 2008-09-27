@@ -1095,7 +1095,7 @@ AC_MSG_RESULT($plugins)
 ###-------------------------------------------------------------------------
 #
 AC_MSG_CHECKING(DBIO plugins)
-AC_ARG_WITH(plugins-dbio, [  --with-plugins-dbio=LIST list of CT plugins to build],
+AC_ARG_WITH(plugins-dbio, [  --with-plugins-dbio=LIST list of DBIO plugins to build],
   [plugins="$withval"],
   [plugins="all"])
 
@@ -1130,6 +1130,38 @@ done
 
 AC_SUBST(gwenhywfar_plugins_dbio_dirs)
 AC_SUBST(gwenhywfar_plugins_dbio_libs)
+AC_MSG_RESULT($plugins)
+
+
+
+###-------------------------------------------------------------------------
+#
+AC_MSG_CHECKING(ConfigManager plugins)
+AC_ARG_WITH(plugins-cfgmgr, [  --with-plugins-cfgmgr=LIST list of ConfigManager plugins to build],
+  [plugins="$withval"],
+  [plugins="all"])
+
+if test "$plugins" == "all"; then
+  plugins="dir";
+fi
+
+gwenhywfar_plugins_cfgmgr_dirs=""
+gwenhywfar_plugins_cfgmgr_libs=""
+for plugin in $plugins; do
+  case "$plugin" in
+    dir)
+      gwenhywfar_plugins_cfgmgr_dirs="$gwenhywfar_plugins_cfgmgr_dirs dir"
+      gwenhywfar_plugins_cfgmgr_libs="$gwenhywfar_plugins_cfgmgr_libs dir/libcfgmgr_dir.la"
+      AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_CFGMGR_DIR, 1, [plugin availability])
+      ;;
+    *)
+      AC_MSG_ERROR("ERROR: Unknown plugin \"$plugin\"")
+      ;;
+  esac
+done
+
+AC_SUBST(gwenhywfar_plugins_cfgmgr_dirs)
+AC_SUBST(gwenhywfar_plugins_cfgmgr_libs)
 AC_MSG_RESULT($plugins)
 
 
@@ -1185,6 +1217,9 @@ AC_CONFIG_FILES([Doxyfile
                  plugins/ct/ohbci/Makefile
                  plugins/ct/ohbci/ohbci.xml
                  plugins/ct/ohbci/ressource.rc
+                 plugins/configmgr/Makefile
+                 plugins/configmgr/dir/Makefile
+                 plugins/configmgr/dir/dir.xml
                  tools/Makefile
                  tools/xmlmerge/Makefile
                  tools/typemaker/Makefile
@@ -1259,6 +1294,7 @@ echo "Plugins"
 echo "============================================="
 echo "  Crypt token plugins         :$gwenhywfar_plugins_ct_dirs"
 echo "  DBIO plugins                :$gwenhywfar_plugins_dbio_dirs"
+echo "  ConfigManager plugins       :$gwenhywfar_plugins_cfgmgr_dirs"
 
 echo
 echo "You can now use the command 'make' (or on *BSD 'gmake') to "

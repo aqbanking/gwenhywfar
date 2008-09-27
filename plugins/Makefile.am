@@ -1,4 +1,4 @@
-SUBDIRS=dbio ct
+SUBDIRS=dbio ct configmgr
 
 INCLUDES= -I$(top_builddir)/gwenhywfar3
 
