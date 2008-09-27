@@ -35,6 +35,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/text.h>
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -379,6 +380,173 @@ int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size)
     }
 
   strncpy (buffer, tmp_dir, size);
+  return 0;
+}
+
+
+
+int GWEN_Directory_GetAllEntries(char *folder, GWEN_STRINGLIST *sl,
+				 const char *mask) {
+  GWEN_DIRECTORY *d;
+  int rv;
+  char buffer[256];
+
+  d=GWEN_Directory_new();
+  rv=GWEN_Directory_Open(d, folder);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Directory_free(d);
+    return rv;
+  }
+
+  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
+    if (strcmp(buffer, ".")!=0 &&
+	strcmp(buffer, "..")!=0 &&
+	(mask==NULL ||
+	 GWEN_Text_ComparePattern(buffer+1, mask, 0)!=-1))
+      GWEN_StringList_AppendString(sl, buffer, 0, 1);
+  }
+
+  GWEN_Directory_Close(d);
+  GWEN_Directory_free(d);
+  return 0;
+}
+
+
+
+int GWEN_Directory_GetFileEntriesWithType(char *folder, GWEN_STRINGLIST *sl,
+					  const char *mask) {
+  GWEN_DIRECTORY *d;
+  int rv;
+  char buffer[256];
+  GWEN_BUFFER *pbuf;
+  uint32_t pos;
+
+  d=GWEN_Directory_new();
+  rv=GWEN_Directory_Open(d, folder);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Directory_free(d);
+    return rv;
+  }
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(pbuf, folder);
+  GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
+  pos=GWEN_Buffer_GetPos(pbuf);
+
+  while(0==GWEN_Directory_Read(d, buffer+1, sizeof(buffer)-1)) {
+    if (strcmp(buffer, ".")!=0 &&
+	strcmp(buffer, "..")!=0 &&
+	(mask==NULL ||
+	 GWEN_Text_ComparePattern(buffer+1, mask, 0)!=-1)) {
+      struct stat st;
+
+      GWEN_Buffer_AppendString(pbuf, buffer);
+      if (stat(GWEN_Buffer_GetStart(pbuf), &st)==0) {
+	if (S_ISREG(st.st_mode))
+	  buffer[0]='f';
+        else if (S_ISDIR(st.st_mode))
+	  buffer[0]='d';
+        else
+	  buffer[0]='?';
+	GWEN_StringList_AppendString(sl, buffer, 0, 1);
+      }
+      GWEN_Buffer_Crop(pbuf, 0, pos);
+    }
+  }
+
+  GWEN_Directory_Close(d);
+  GWEN_Directory_free(d);
+  return 0;
+}
+
+
+
+
+int GWEN_Directory_GetFileEntries(char *folder, GWEN_STRINGLIST *sl,
+				  const char *mask) {
+  GWEN_DIRECTORY *d;
+  int rv;
+  char buffer[256];
+  GWEN_BUFFER *pbuf;
+  uint32_t pos;
+
+  d=GWEN_Directory_new();
+  rv=GWEN_Directory_Open(d, folder);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Directory_free(d);
+    return rv;
+  }
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(pbuf, folder);
+  GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
+  pos=GWEN_Buffer_GetPos(pbuf);
+
+  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
+    if (strcmp(buffer, ".")!=0 &&
+	strcmp(buffer, "..")!=0 &&
+	(mask==NULL ||
+	 GWEN_Text_ComparePattern(buffer+1, mask, 0)!=-1)) {
+      struct stat st;
+
+      GWEN_Buffer_AppendString(pbuf, buffer);
+      if (stat(GWEN_Buffer_GetStart(pbuf), &st)==0) {
+	if (S_ISREG(st.st_mode))
+	  GWEN_StringList_AppendString(sl, buffer, 0, 1);
+      }
+      GWEN_Buffer_Crop(pbuf, 0, pos);
+    }
+  }
+
+  GWEN_Directory_Close(d);
+  GWEN_Directory_free(d);
+  return 0;
+}
+
+
+
+int GWEN_Directory_GetDirEntries(char *folder, GWEN_STRINGLIST *sl,
+				 const char *mask) {
+  GWEN_DIRECTORY *d;
+  int rv;
+  char buffer[256];
+  GWEN_BUFFER *pbuf;
+  uint32_t pos;
+
+  d=GWEN_Directory_new();
+  rv=GWEN_Directory_Open(d, folder);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Directory_free(d);
+    return rv;
+  }
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(pbuf, folder);
+  GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
+  pos=GWEN_Buffer_GetPos(pbuf);
+
+  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
+    if (strcmp(buffer, ".")!=0 &&
+	strcmp(buffer, "..")!=0 &&
+	(mask==NULL ||
+	 GWEN_Text_ComparePattern(buffer+1, mask, 0)!=-1)) {
+      struct stat st;
+
+      GWEN_Buffer_AppendString(pbuf, buffer);
+      if (stat(GWEN_Buffer_GetStart(pbuf), &st)==0) {
+	if (S_ISDIR(st.st_mode))
+	  GWEN_StringList_AppendString(sl, buffer, 0, 1);
+      }
+      GWEN_Buffer_Crop(pbuf, 0, pos);
+    }
+  }
+
+  GWEN_Directory_Close(d);
+  GWEN_Directory_free(d);
   return 0;
 }
 

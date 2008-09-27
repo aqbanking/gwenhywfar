@@ -232,6 +232,66 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
                                    const char *filePath,
                                    GWEN_BUFFER *fbuf);
 
+/**
+ * This function reads all entries of the given folder and stores them
+ * in the given string list if they match a mask.
+ *
+ * The entries added to the string list are the names returned by the
+ * operating systems. They do not contain the full path.
+ *
+ * @param folder folder to inspect
+ * @param sl string list to add new entries to
+ * @param mask if omitted, all entries match (wildcards and jokers allowed)
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetAllEntries(char *folder, GWEN_STRINGLIST *sl,
+				 const char *mask);
+
+/**
+ * This function does the same as @ref GWEN_Directory_GetAllEntries, but
+ * in addition a entry type indicator is prepended to the entries added
+ * to the string list.
+ * Known indicators are:
+ * <ul>
+ *   <li><b>d</b>: entry is a directory</li>
+ *   <li><b>f</b>: entry is a file</li>
+ *   <li><b>?</b>: entry type is unknown</li>
+ * </ul>
+ *
+ * @param folder folder to inspect
+ * @param sl string list to add new entries to
+ * @param mask if omitted, all entries match (wildcards and jokers allowed)
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetFileEntriesWithType(char *folder, GWEN_STRINGLIST *sl,
+					  const char *mask);
+
+/**
+ * This function does the same as @ref GWEN_Directory_GetAllEntries, but
+ * it only adds file entries.
+ *
+ * @param folder folder to inspect
+ * @param sl string list to add new entries to
+ * @param mask if omitted, all entries match (wildcards and jokers allowed)
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetFileEntries(char *folder, GWEN_STRINGLIST *sl,
+				  const char *mask);
+
+
+/**
+ * This function does the same as @ref GWEN_Directory_GetAllEntries, but
+ * it only adds folder entries.
+ *
+ * @param folder folder to inspect
+ * @param sl string list to add new entries to
+ * @param mask if omitted, all entries match (wildcards and jokers allowed)
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetDirEntries(char *folder, GWEN_STRINGLIST *sl,
+				 const char *mask);
+
+
 /*@}*/ /* defgroup */
 
 
