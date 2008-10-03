@@ -118,6 +118,8 @@ extern "C" {
  * </p>
  */
 /*@{*/
+/** when reading a DB allow for empty streams (e.g. empty file) */
+#define GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM     0x00008000
 /** Overwrite existing values when assigning a new value to a variable */
 #define GWEN_DB_FLAGS_OVERWRITE_VARS         0x00010000
 /** Overwrite existing groups when calling @ref GWEN_DB_GetGroup() */

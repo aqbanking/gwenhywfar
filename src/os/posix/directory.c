@@ -70,8 +70,11 @@ int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
   assert(d);
 
   d->handle=opendir(n);
-  if (d->handle==0)
-    return 1;
+  if (d->handle==0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "opendir(%s): %s",
+             n, strerror(errno));
+    return GWEN_ERROR_NOT_FOUND;
+  }
   return 0;
 }
 
@@ -100,19 +103,19 @@ int GWEN_Directory_Read(GWEN_DIRECTORY *d,
   if (de) {
     if (len<strlen(de->d_name)+1) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
-      return 1;
+      return GWEN_ERROR_BUFFER_OVERFLOW;
     }
     strcpy(buffer,de->d_name);
     return 0;
   }
-  return 1;
+  return GWEN_ERROR_NOT_FOUND;
 }
 
 
 int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
   assert(d);
   if (d->handle==0)
-    return 1;
+    return GWEN_ERROR_INVALID;
   rewinddir(d->handle);
   return 0;
 }

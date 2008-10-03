@@ -64,7 +64,7 @@ int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
   assert(n);
   if ((strlen(n)+5)>=sizeof(d->pattern)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Directory name too long");
-    return 1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   strcpy(d->pattern, n);
   strcat(d->pattern, "\\*.*");
@@ -98,13 +98,13 @@ int GWEN_Directory_Read(GWEN_DIRECTORY *d,
 
   if (d->lastName[0]==0) {
     DBG_INFO(GWEN_LOGDOMAIN, "No more entries");
-    return 1;
+    return GWEN_ERROR_NOT_FOUND;
   }
 
   /* copy existing entry */
   if ((strlen(d->lastName)>=len)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
-    return 1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   strcpy(buffer, d->lastName);
 
@@ -129,11 +129,11 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
   d->handle=FindFirstFile(d->pattern,&wd);
   if (d->handle==INVALID_HANDLE_VALUE) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "No entry for \"%s\"", d->pattern);
-    return 1;
+    return GWEN_ERROR_NOT_FOUND;
   }
   if ((strlen(wd.cFileName)+1)>=sizeof(d->lastName)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Entry name too long");
-    return 1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   strcpy(d->lastName,wd.cFileName);
   return 0;

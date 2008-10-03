@@ -36,6 +36,8 @@
 #include <gwenhywfar/urlfns.h>
 
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
 
 
 
@@ -51,6 +53,7 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_PLUGIN *pl, const char *url) {
   GWEN_ConfigMgr_SetSetGroupFn(cfg, GWEN_ConfigMgrDir_SetGroup);
   GWEN_ConfigMgr_SetLockGroupFn(cfg, GWEN_ConfigMgrDir_LockGroup);
   GWEN_ConfigMgr_SetUnlockGroupFn(cfg, GWEN_ConfigMgrDir_UnlockGroup);
+  GWEN_ConfigMgr_SetGetUniqueIdFn(cfg, GWEN_ConfigMgrDir_GetUniqueId);
   GWEN_ConfigMgr_SetDeleteGroupFn(cfg, GWEN_ConfigMgrDir_DeleteGroup);
   GWEN_ConfigMgr_SetListGroupsFn(cfg, GWEN_ConfigMgrDir_ListGroups);
   GWEN_ConfigMgr_SetListSubGroupsFn(cfg, GWEN_ConfigMgrDir_ListSubGroups);
@@ -81,7 +84,7 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url) {
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_URL *gurl;
 
-  cfg=GWEN_ConfigMgrDir_new(url);
+  cfg=GWEN_ConfigMgr_new(url);
   GWEN_NEW_OBJECT(GWEN_CONFIGMGR_DIR, xcfg);
   GWEN_INHERIT_SETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg, xcfg,
                        GWEN_ConfigMgrDir_FreeData);
@@ -142,6 +145,94 @@ void GWEN_ConfigMgrDir_FreeData(void *bp, void *p) {
 
   free(xcfg->folder);
   GWEN_FREE_OBJECT(xcfg);
+}
+
+
+
+int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
+				   const char *groupName,
+				   uint32_t *pUniqueId){
+  GWEN_CONFIGMGR_DIR *xcfg;
+  GWEN_BUFFER *nbuf;
+  uint32_t uniqueId=0;
+  GWEN_FSLOCK *lck;
+  GWEN_FSLOCK_RESULT res;
+  FILE *f;
+  int rv;
+
+  assert(cfg);
+  xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
+  assert(xcfg);
+
+  assert(xcfg->folder);
+  assert(groupName);
+
+  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(nbuf, xcfg->folder);
+  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Text_EscapeToBuffer(groupName, nbuf);
+  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(nbuf, "uniqueid");
+
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+			    GWEN_PATH_FLAGS_CHECKROOT |
+			    GWEN_PATH_FLAGS_VARIABLE);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
+  res=GWEN_FSLock_Lock(lck, 10000, 0);
+  if (res!=GWEN_FSLock_ResultOk) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Could not lock group [%s]: %d",
+	      groupName, res);
+    GWEN_FSLock_free(lck);
+    GWEN_Buffer_free(nbuf);
+    return GWEN_ERROR_LOCK;
+  }
+
+  /* read last id */
+  f=fopen(GWEN_Buffer_GetStart(nbuf), "r");
+  if (f) {
+    int i;
+
+    if (1!=fscanf(f, "%d", &i))
+      i=0;
+    uniqueId=i;
+    fclose(f);
+  }
+
+  uniqueId++;
+
+  f=fopen(GWEN_Buffer_GetStart(nbuf), "w");
+  if (f==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
+	      GWEN_Buffer_GetStart(nbuf),
+	      strerror(errno));
+    GWEN_FSLock_Unlock(lck);
+    GWEN_FSLock_free(lck);
+    GWEN_Buffer_free(nbuf);
+    return GWEN_ERROR_LOCK;
+  }
+  fprintf(f, "%d", (int)uniqueId);
+  if (fclose(f)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
+	      GWEN_Buffer_GetStart(nbuf),
+	      strerror(errno));
+    GWEN_FSLock_Unlock(lck);
+    GWEN_FSLock_free(lck);
+    GWEN_Buffer_free(nbuf);
+    return GWEN_ERROR_LOCK;
+  }
+
+  GWEN_FSLock_Unlock(lck);
+  GWEN_FSLock_free(lck);
+  GWEN_Buffer_free(nbuf);
+
+  *pUniqueId=uniqueId;
+  return 0;
 }
 
 
@@ -241,7 +332,8 @@ int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
   db=GWEN_DB_Group_new(subGroupName);
   rv=GWEN_DB_ReadFile(db,
 		      GWEN_Buffer_GetStart(nbuf),
-		      GWEN_DB_FLAGS_DEFAULT,
+		      GWEN_DB_FLAGS_DEFAULT |
+		      GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM,
 		      0,
 		      GWEN_TIMEOUT_FOREVER);
   if (rv<0) {
@@ -407,6 +499,36 @@ int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
 
 
 
+int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
+				  const char *groupName,
+				  char *buffer,
+				  uint32_t bufferLen) {
+  GWEN_CONFIGMGR_DIR *xcfg;
+  int rv;
+  uint32_t uid;
+  char ubuf[64];
+
+  assert(cfg);
+  xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
+  assert(xcfg);
+
+  rv=GWEN_ConfigMgrDir__GetUniqueId(cfg, groupName, &uid);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not create unique id (%d)", rv);
+    return rv;
+  }
+  snprintf(ubuf, sizeof(ubuf)-1, "uid::%08x", uid);
+  ubuf[sizeof(ubuf)-1]=0;
+
+  /* return new id */
+  strncpy(buffer, ubuf, bufferLen-1);
+  buffer[bufferLen-1]=0;
+
+  return 0;
+}
+
+
+
 int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
 				  const char *groupName,
 				  const char *subGroupName) {
@@ -500,6 +622,17 @@ int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
 
   nbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_ConfigMgrDir_AddGroupDirName(cfg, groupName, nbuf);
+
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+			    GWEN_PATH_FLAGS_CHECKROOT |
+			    GWEN_PATH_FLAGS_VARIABLE |
+                            GWEN_PATH_FLAGS_PATHMUSTEXIST |
+			    GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Path not found (%d)", rv);
+    GWEN_Buffer_free(nbuf);
+    return 0;
+  }
 
   rawsl=GWEN_StringList_new();
   rv=GWEN_Directory_GetFileEntries(GWEN_Buffer_GetStart(nbuf), rawsl, "*.conf");

@@ -79,6 +79,12 @@ int GWEN_ConfigMgr_UnlockGroup(GWEN_CONFIGMGR *mgr,
 			       const char *subGroupName);
 
 GWENHYWFAR_API
+int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
+			       const char *groupName,
+			       char *buffer,
+			       uint32_t bufferLen);
+
+GWENHYWFAR_API
 int GWEN_ConfigMgr_DeleteGroup(GWEN_CONFIGMGR *mgr,
 			       const char *groupName,
 			       const char *subGroupName);

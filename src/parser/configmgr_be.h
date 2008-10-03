@@ -32,6 +32,7 @@
 
 
 
+GWENHYWFAR_API
 GWEN_CONFIGMGR *GWEN_ConfigMgr_new(const char *url);
 
 
@@ -52,6 +53,11 @@ typedef int (*GWEN_CONFIGMGR_LOCKGROUP_FN)(GWEN_CONFIGMGR *mgr,
 typedef int (*GWEN_CONFIGMGR_UNLOCKGROUP_FN)(GWEN_CONFIGMGR *mgr,
 					     const char *groupName,
 					     const char *subGroupName);
+
+typedef int (*GWEN_CONFIGMGR_GETUNIQUEID_FN)(GWEN_CONFIGMGR *mgr,
+					     const char *groupName,
+					     char *buffer,
+					     uint32_t bufferLen);
 
 typedef int (*GWEN_CONFIGMGR_DELETEGROUP_FN)(GWEN_CONFIGMGR *mgr,
 					     const char *groupName,
@@ -81,6 +87,10 @@ GWEN_CONFIGMGR_LOCKGROUP_FN GWEN_ConfigMgr_SetLockGroupFn(GWEN_CONFIGMGR *mgr,
 GWENHYWFAR_API
 GWEN_CONFIGMGR_UNLOCKGROUP_FN GWEN_ConfigMgr_SetUnlockGroupFn(GWEN_CONFIGMGR *mgr,
                                                               GWEN_CONFIGMGR_UNLOCKGROUP_FN f);
+
+GWENHYWFAR_API
+GWEN_CONFIGMGR_GETUNIQUEID_FN GWEN_ConfigMgr_SetGetUniqueIdFn(GWEN_CONFIGMGR *mgr,
+							      GWEN_CONFIGMGR_GETUNIQUEID_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_DELETEGROUP_FN GWEN_ConfigMgr_SetDeleteGroupFn(GWEN_CONFIGMGR *mgr,

@@ -187,6 +187,19 @@ GWEN_CONFIGMGR_UNLOCKGROUP_FN GWEN_ConfigMgr_SetUnlockGroupFn(GWEN_CONFIGMGR *mg
 
 
 
+GWEN_CONFIGMGR_GETUNIQUEID_FN GWEN_ConfigMgr_SetGetUniqueIdFn(GWEN_CONFIGMGR *mgr,
+							      GWEN_CONFIGMGR_GETUNIQUEID_FN f) {
+  GWEN_CONFIGMGR_GETUNIQUEID_FN of;
+
+  assert(mgr);
+  of=mgr->getUniqueIdFn;
+  mgr->getUniqueIdFn=f;
+
+  return of;
+}
+
+
+
 GWEN_CONFIGMGR_DELETEGROUP_FN GWEN_ConfigMgr_SetDeleteGroupFn(GWEN_CONFIGMGR *mgr,
 							      GWEN_CONFIGMGR_DELETEGROUP_FN f) {
   GWEN_CONFIGMGR_DELETEGROUP_FN of;
@@ -270,6 +283,19 @@ int GWEN_ConfigMgr_UnlockGroup(GWEN_CONFIGMGR *mgr,
   assert(mgr);
   if (mgr->unlockGroupFn)
     return mgr->unlockGroupFn(mgr, groupName, subGroupName);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
+			       const char *groupName,
+			       char *buffer,
+			       uint32_t bufferLen) {
+  assert(mgr);
+  if (mgr->getUniqueIdFn)
+    return mgr->getUniqueIdFn(mgr, groupName, buffer, bufferLen);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
