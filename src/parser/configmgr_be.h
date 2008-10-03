@@ -39,36 +39,44 @@ GWEN_CONFIGMGR *GWEN_ConfigMgr_new(const char *url);
 typedef int (*GWEN_CONFIGMGR_GETGROUP_FN)(GWEN_CONFIGMGR *mgr,
 					  const char *groupName,
 					  const char *subGroupName,
-					  GWEN_DB_NODE **pDb);
+					  GWEN_DB_NODE **pDb,
+					  uint32_t guiid);
 
 typedef int (*GWEN_CONFIGMGR_SETGROUP_FN)(GWEN_CONFIGMGR *mgr,
 					  const char *groupName,
 					  const char *subGroupName,
-					  GWEN_DB_NODE *db);
+					  GWEN_DB_NODE *db,
+					  uint32_t guiid);
 
 typedef int (*GWEN_CONFIGMGR_LOCKGROUP_FN)(GWEN_CONFIGMGR *mgr,
 					   const char *groupName,
-					   const char *subGroupName);
+					   const char *subGroupName,
+					   uint32_t guiid);
 
 typedef int (*GWEN_CONFIGMGR_UNLOCKGROUP_FN)(GWEN_CONFIGMGR *mgr,
 					     const char *groupName,
-					     const char *subGroupName);
+					     const char *subGroupName,
+					     uint32_t guiid);
 
 typedef int (*GWEN_CONFIGMGR_GETUNIQUEID_FN)(GWEN_CONFIGMGR *mgr,
 					     const char *groupName,
 					     char *buffer,
-					     uint32_t bufferLen);
+					     uint32_t bufferLen,
+					     uint32_t guiid);
 
 typedef int (*GWEN_CONFIGMGR_DELETEGROUP_FN)(GWEN_CONFIGMGR *mgr,
 					     const char *groupName,
-					     const char *subGroupName);
+					     const char *subGroupName,
+					     uint32_t guiid);
 
 typedef int (*GWEN_CONFIGMGR_LISTGROUPS_FN)(GWEN_CONFIGMGR *mgr,
-					    GWEN_STRINGLIST *sl);
+					    GWEN_STRINGLIST *sl,
+					    uint32_t guiid);
 
 typedef int (*GWEN_CONFIGMGR_LISTSUBGROUPS_FN)(GWEN_CONFIGMGR *mgr,
 					       const char *groupName,
-					       GWEN_STRINGLIST *sl);
+					       GWEN_STRINGLIST *sl,
+					       uint32_t guiid);
 
 
 

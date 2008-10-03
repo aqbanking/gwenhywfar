@@ -242,10 +242,11 @@ GWEN_CONFIGMGR_LISTSUBGROUPS_FN GWEN_ConfigMgr_SetListSubGroupsFn(GWEN_CONFIGMGR
 int GWEN_ConfigMgr_GetGroup(GWEN_CONFIGMGR *mgr,
 			    const char *groupName,
 			    const char *subGroupName,
-			    GWEN_DB_NODE **pDb) {
+			    GWEN_DB_NODE **pDb,
+			    uint32_t guiid) {
   assert(mgr);
   if (mgr->getGroupFn)
-    return mgr->getGroupFn(mgr, groupName, subGroupName, pDb);
+    return mgr->getGroupFn(mgr, groupName, subGroupName, pDb, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -255,10 +256,11 @@ int GWEN_ConfigMgr_GetGroup(GWEN_CONFIGMGR *mgr,
 int GWEN_ConfigMgr_SetGroup(GWEN_CONFIGMGR *mgr,
 			    const char *groupName,
 			    const char *subGroupName,
-			    GWEN_DB_NODE *db) {
+			    GWEN_DB_NODE *db,
+			    uint32_t guiid) {
   assert(mgr);
   if (mgr->setGroupFn)
-    return mgr->setGroupFn(mgr, groupName, subGroupName, db);
+    return mgr->setGroupFn(mgr, groupName, subGroupName, db, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -267,10 +269,11 @@ int GWEN_ConfigMgr_SetGroup(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_LockGroup(GWEN_CONFIGMGR *mgr,
 			     const char *groupName,
-			     const char *subGroupName) {
+			     const char *subGroupName,
+			     uint32_t guiid) {
   assert(mgr);
   if (mgr->lockGroupFn)
-    return mgr->lockGroupFn(mgr, groupName, subGroupName);
+    return mgr->lockGroupFn(mgr, groupName, subGroupName, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -279,10 +282,11 @@ int GWEN_ConfigMgr_LockGroup(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_UnlockGroup(GWEN_CONFIGMGR *mgr,
 			       const char *groupName,
-			       const char *subGroupName) {
+			       const char *subGroupName,
+			       uint32_t guiid) {
   assert(mgr);
   if (mgr->unlockGroupFn)
-    return mgr->unlockGroupFn(mgr, groupName, subGroupName);
+    return mgr->unlockGroupFn(mgr, groupName, subGroupName, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -292,10 +296,11 @@ int GWEN_ConfigMgr_UnlockGroup(GWEN_CONFIGMGR *mgr,
 int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
 			       const char *groupName,
 			       char *buffer,
-			       uint32_t bufferLen) {
+			       uint32_t bufferLen,
+			       uint32_t guiid) {
   assert(mgr);
   if (mgr->getUniqueIdFn)
-    return mgr->getUniqueIdFn(mgr, groupName, buffer, bufferLen);
+    return mgr->getUniqueIdFn(mgr, groupName, buffer, bufferLen, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -304,10 +309,11 @@ int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_DeleteGroup(GWEN_CONFIGMGR *mgr,
 			       const char *groupName,
-			       const char *subGroupName) {
+			       const char *subGroupName,
+			       uint32_t guiid) {
   assert(mgr);
   if (mgr->deleteGroupFn)
-    return mgr->deleteGroupFn(mgr, groupName, subGroupName);
+    return mgr->deleteGroupFn(mgr, groupName, subGroupName, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -315,10 +321,11 @@ int GWEN_ConfigMgr_DeleteGroup(GWEN_CONFIGMGR *mgr,
 
 
 int GWEN_ConfigMgr_ListGroups(GWEN_CONFIGMGR *mgr,
-			      GWEN_STRINGLIST *sl) {
+			      GWEN_STRINGLIST *sl,
+			      uint32_t guiid) {
   assert(mgr);
   if (mgr->listGroupsFn)
-    return mgr->listGroupsFn(mgr, sl);
+    return mgr->listGroupsFn(mgr, sl, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -326,10 +333,11 @@ int GWEN_ConfigMgr_ListGroups(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_ListSubGroups(GWEN_CONFIGMGR *mgr,
 				 const char *groupName,
-				 GWEN_STRINGLIST *sl) {
+				 GWEN_STRINGLIST *sl,
+				 uint32_t guiid) {
   assert(mgr);
   if (mgr->listSubGroupsFn)
-    return mgr->listSubGroupsFn(mgr, groupName, sl);
+    return mgr->listSubGroupsFn(mgr, groupName, sl, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
