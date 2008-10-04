@@ -185,7 +185,7 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
   }
 
   lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
-  res=GWEN_FSLock_Lock(lck, 10000, guiid);
+  res=GWEN_FSLock_Lock(lck, 60000, guiid);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not lock group [%s]: %d",
@@ -465,7 +465,7 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
   }
 
   lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
-  res=GWEN_FSLock_Lock(lck, 10000, guiid);
+  res=GWEN_FSLock_Lock(lck, 60000, guiid);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not lock group [%s/%s]: %d",
@@ -593,7 +593,7 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
   }
 
   lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
-  res=GWEN_FSLock_Lock(lck, 10000, guiid);
+  res=GWEN_FSLock_Lock(lck, 60000, guiid);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not lock group [%s/%s]: %d",
