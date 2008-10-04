@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <ctype.h>
 
 
 
@@ -242,6 +243,8 @@ void GWEN_ConfigMgrDir_AddGroupDirName(GWEN_CONFIGMGR *cfg,
 				       const char *groupName,
 				       GWEN_BUFFER *nbuf) {
   GWEN_CONFIGMGR_DIR *xcfg;
+  uint32_t pos;
+  char *p;
 
   assert(cfg);
   xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
@@ -252,7 +255,14 @@ void GWEN_ConfigMgrDir_AddGroupDirName(GWEN_CONFIGMGR *cfg,
 
   GWEN_Buffer_AppendString(nbuf, xcfg->folder);
   GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+  pos=GWEN_Buffer_GetPos(nbuf);
   GWEN_Text_EscapeToBuffer(groupName, nbuf);
+  p=GWEN_Buffer_GetStart(nbuf)+pos;
+  while(*p) {
+    *p=tolower(*p);
+    p++;
+  }
+
 }
 
 
@@ -262,6 +272,8 @@ void GWEN_ConfigMgrDir_AddGroupFileName(GWEN_CONFIGMGR *cfg,
 					const char *subGroupName,
 					GWEN_BUFFER *nbuf) {
   GWEN_CONFIGMGR_DIR *xcfg;
+  uint32_t pos;
+  char *p;
 
   assert(cfg);
   xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
@@ -272,11 +284,19 @@ void GWEN_ConfigMgrDir_AddGroupFileName(GWEN_CONFIGMGR *cfg,
   assert(subGroupName);
 
   GWEN_Buffer_AppendString(nbuf, xcfg->folder);
+  pos=GWEN_Buffer_GetPos(nbuf);
+
   GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
   GWEN_Text_EscapeToBuffer(groupName, nbuf);
   GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
   GWEN_Text_EscapeToBuffer(subGroupName, nbuf);
   GWEN_Buffer_AppendString(nbuf, ".conf");
+
+  p=GWEN_Buffer_GetStart(nbuf)+pos;
+  while(*p) {
+    *p=tolower(*p);
+    p++;
+  }
 }
 
 
@@ -335,6 +355,7 @@ int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
   rv=GWEN_DB_ReadFile(db,
 		      GWEN_Buffer_GetStart(nbuf),
 		      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_CREATE_GROUP |
 		      GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM,
 		      guiid,
 		      GWEN_TIMEOUT_FOREVER);
