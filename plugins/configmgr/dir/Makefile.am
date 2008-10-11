@@ -1,4 +1,4 @@
-EXTRA_DIST=README dir.xml.in
+EXTRA_DIST=dir.xml.in
 
 INCLUDES= -I$(top_builddir)/gwenhywfar3 \
  -I$(top_srcdir)/src/base \
