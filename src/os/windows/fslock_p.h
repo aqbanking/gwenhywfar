@@ -47,6 +47,8 @@ struct GWEN_FSLOCK {
   char *baseLockFilename;
   char *uniqueLockFilename;
   int lockCount;
+
+  int usage;
 };
 
 
