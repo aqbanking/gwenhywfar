@@ -495,7 +495,7 @@ int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
 	  src++;
       }
       else {
-	while(*src && (*src<33 || *src>=127))
+	while(*src && *src<33)
 	  src++;
       }
     }
@@ -510,7 +510,7 @@ int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
       uint8_t c;
 
       c=*p;
-      if (!(flags & GWEN_XML_FLAGS_KEEP_CNTRL) && (c<32 || c>=127))
+      if (!(flags & GWEN_XML_FLAGS_KEEP_CNTRL) && c<32)
         c=32;
 
       /* remember next loop whether this char was a blank */

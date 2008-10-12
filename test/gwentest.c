@@ -57,6 +57,8 @@
 #include <gnutls/gnutls.h>
 #include <gcrypt.h>
 
+#include <zlib.h>
+
 
 #ifdef USE_LIBXML2
 # include <libxml/tree.h>
@@ -72,6 +74,176 @@
 #ifdef HAVE_ARPA_INET_H
 # include <arpa/inet.h>
 #endif
+
+
+
+static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
+  FILE *f;
+
+  f=fopen(fname, "rb");
+  if (f) {
+    while(!feof(f)) {
+      uint32_t l;
+      ssize_t s;
+      char *p;
+
+      GWEN_Buffer_AllocRoom(dbuf, 1024);
+      l=GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf);
+      p=GWEN_Buffer_GetPosPointer(dbuf);
+      s=fread(p, 1, l, f);
+      if (s==0)
+	break;
+      if (s==(ssize_t)-1) {
+	DBG_ERROR(0,
+		  "fread(%s): %s",
+		  fname, strerror(errno));
+	fclose(f);
+	return GWEN_ERROR_IO;
+      }
+
+      GWEN_Buffer_IncrementPos(dbuf, s);
+      GWEN_Buffer_AdjustUsedBytes(dbuf);
+    }
+
+    fclose(f);
+    return 0;
+  }
+  else {
+    DBG_ERROR(0,
+	     "fopen(%s): %s",
+	     fname, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+}
+
+
+
+static int removeCTRL(GWEN_BUFFER *dbuf) {
+  char *p1;
+  char *p2;
+
+  p1=GWEN_Buffer_GetStart(dbuf);
+  p2=p1;
+  while(*p1) {
+    if ((*p1)>31)
+      *(p2++)=*p1;
+    p1++;
+  }
+  GWEN_Buffer_Crop(dbuf, 0,
+		   p2-GWEN_Buffer_GetStart(dbuf));
+  return 0;
+}
+
+
+
+static int writeToFile(FILE *f, const char *p, int len) {
+  while(len>0) {
+    ssize_t l;
+    ssize_t s;
+
+    l=1024;
+    if (l>len)
+      l=len;
+    s=fwrite(p, 1, l, f);
+    if (s==(ssize_t)-1 || s==0) {
+      DBG_ERROR(0,
+	       "fwrite: %s",
+	       strerror(errno));
+      return GWEN_ERROR_IO;
+    }
+    p+=s;
+    len-=s;
+  }
+
+  return 0;
+}
+
+
+
+static int writeFile(const char *fname, const char *p, int len) {
+  FILE *f;
+
+  f=fopen(fname, "wb");
+  if (f) {
+    int rv;
+
+    rv=writeToFile(f, p, len);
+    if (rv<0) {
+      DBG_ERROR(0, "here (%d)", rv);
+      fclose(f);
+      return rv;
+    }
+    if (fclose(f)) {
+      DBG_ERROR(0, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_ERROR(0, "fopen(%s): %s",
+	      fname, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+
+  return 0;
+}
+
+
+
+static int zip_inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
+  z_stream z;
+  char outbuf[512];
+  int rv;
+  int mode;
+
+  z.next_in=(unsigned char*)ptr;
+  z.avail_in=size;
+  z.next_out=(unsigned char*)outbuf;
+  z.avail_out=sizeof(outbuf);
+  z.zalloc=Z_NULL;
+  z.zfree=Z_NULL;
+
+  rv=inflateInit(&z);
+  if (rv!=Z_OK) {
+    DBG_ERROR(0, "Error on deflateInit (%d)", rv);
+    return -1;
+  }
+
+  mode=Z_NO_FLUSH;
+  for(;;) {
+    rv=inflate(&z, mode);
+    if (z.avail_out!=sizeof(outbuf)) {
+      GWEN_Buffer_AppendBytes(buf, outbuf, sizeof(outbuf)-z.avail_out);
+      z.next_out=(unsigned char*)outbuf;
+      z.avail_out=sizeof(outbuf);
+    }
+
+    if (rv==Z_STREAM_END)
+      break;
+    if (rv!=Z_OK) {
+      DBG_ERROR(0, "Error on inflate (%d) [%d, %d]",
+		rv, z.avail_out, z.avail_in);
+      deflateEnd(&z);
+      return -1;
+    }
+    if (z.avail_in==0)
+      mode=Z_FINISH;
+    if (z.avail_out==0) {
+      GWEN_Buffer_AppendBytes(buf, outbuf, sizeof(outbuf));
+      z.next_out=(unsigned char*)outbuf;
+      z.avail_out=sizeof(outbuf);
+    }
+  }
+
+  if (z.avail_out!=sizeof(outbuf)) {
+    GWEN_Buffer_AppendBytes(buf, outbuf, sizeof(outbuf)-z.avail_out);
+    z.next_out=(unsigned char*)outbuf;
+    z.avail_out=sizeof(outbuf);
+  }
+
+  inflateEnd(&z);
+
+  return 0;
+}
 
 
 
@@ -996,6 +1168,13 @@ int testBase64_2(int argc, char **argv) {
     GWEN_Buffer_AppendBytes(src, buffer, i);
   } /* while */
   fclose(f);
+
+  DBG_ERROR(0, "Size of src data: %d bytes",
+	    GWEN_Buffer_GetUsedBytes(src));
+
+  removeCTRL(src);
+  DBG_ERROR(0, "Size of raw data: %d bytes",
+	    GWEN_Buffer_GetUsedBytes(src));
 
   if (GWEN_Base64_Decode(/* GCC4 pointer-signedness fix: */ (unsigned char*)GWEN_Buffer_GetStart(src),
                          0,
@@ -3361,6 +3540,98 @@ int testDES3(int argc, char **argv) {
 
 
 
+int testDES4(int argc, char **argv) {
+  GWEN_CRYPT_KEY *skey;
+  GWEN_BUFFER *buf1;
+  GWEN_BUFFER *buf2;
+  GWEN_BUFFER *buf3;
+  uint32_t l;
+  int rv;
+  const char *fname;
+#ifdef NEU1
+  const uint8_t keyData[]={
+    0x2a, 0x79, 0xc4, 0x45, 0xbc, 0x13, 0x5d, 0x13,
+    0xe0, 0xec, 0xe6, 0x43, 0x6d, 0x73, 0x91, 0x0b
+  };
+#else
+  const uint8_t keyData[]={
+    0x01, 0x3e, 0x1f, 0xf1, 0xab, 0xbf, 0x13, 0x79,
+    0x5b, 0x68, 0x9d, 0x26, 0x31, 0xdc, 0xe0, 0x52
+  };
+#endif
+
+  if (argc<3) {
+    DBG_ERROR(0, "Missing filename");
+    return 1;
+  }
+  fname=argv[2];
+
+  skey=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 16,
+                                    keyData, 16);
+  if (skey==NULL) {
+    DBG_ERROR(0, "Unable to create DES key");
+    return 2;
+  }
+
+  buf1=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=readFile(fname, buf1);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to read file [%s]: %d",
+	      fname, rv);
+    return 2;
+  }
+#ifdef NEU1
+  GWEN_Buffer_FillWithBytes(buf1, 0, 7);
+#endif
+
+  buf2=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(buf1)+16, 0, 1);
+
+  /* decrypt buf1 */
+  fprintf(stderr, "Decrypting %d bytes", GWEN_Buffer_GetUsedBytes(buf1));
+  l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf2);
+
+  GWEN_Crypt_KeyDes3K_SetIV(skey, NULL, 0);
+
+  rv=GWEN_Crypt_Key_Decipher(skey,
+			     (uint8_t*)GWEN_Buffer_GetStart(buf1),
+			     GWEN_Buffer_GetUsedBytes(buf1),
+			     (uint8_t*)GWEN_Buffer_GetPosPointer(buf2),
+			     &l);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to decipher");
+    return 2;
+  }
+  fprintf(stderr, "Decrypted %d bytes", l);
+  GWEN_Buffer_IncrementPos(buf2, l);
+  GWEN_Buffer_AdjustUsedBytes(buf2);
+
+  writeFile("des4.out1",
+	    GWEN_Buffer_GetStart(buf2),
+	    GWEN_Buffer_GetUsedBytes(buf2));
+
+  buf3=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=zip_inflate(GWEN_Buffer_GetStart(buf2),
+		 GWEN_Buffer_GetUsedBytes(buf2),
+		 buf3);
+
+  writeFile("des4.out2",
+	    GWEN_Buffer_GetStart(buf3),
+	    GWEN_Buffer_GetUsedBytes(buf3));
+
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to unzip");
+    return 2;
+  }
+
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+  GWEN_Crypt_Key_free(skey);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3384,6 +3655,8 @@ int main(int argc, char **argv) {
     rv=testDES2(argc, argv);
   else if (strcasecmp(argv[1], "des3")==0)
     rv=testDES3(argc, argv);
+  else if (strcasecmp(argv[1], "des4")==0)
+    rv=testDES4(argc, argv);
   else if (strcasecmp(argv[1], "db")==0)
     rv=testDB(argc, argv);
   else if (strcasecmp(argv[1], "db2")==0)

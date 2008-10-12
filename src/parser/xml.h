@@ -306,7 +306,14 @@ const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n);
 /** Set the character data of the given node to the given value. This
  * function will create a deep copy of the character data. */
 GWENHYWFAR_API
-  void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
+void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data);
+
+GWENHYWFAR_API
+const char *GWEN_XMLNode_GetNamespace(const GWEN_XMLNODE *n);
+
+GWENHYWFAR_API
+void GWEN_XMLNode_SetNamespace(GWEN_XMLNODE *n, const char *s);
+
 /*@}*/
 
 
@@ -560,6 +567,11 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *n,
  */
 GWENHYWFAR_API
 int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n);
+
+
+
+GWENHYWFAR_API
+int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n);
 
 
 GWENHYWFAR_API

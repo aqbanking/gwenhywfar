@@ -67,6 +67,7 @@ struct GWEN__XMLNODE {
   GWEN_XMLPROPERTY *properties;
   uint32_t usage;
   char *data;
+  char *nameSpace;
 };
 
 

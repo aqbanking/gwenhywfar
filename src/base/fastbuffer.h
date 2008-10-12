@@ -92,11 +92,11 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       else { \
 	fb->bufferWritePos=fb_peekbyte_rv; \
 	fb->bufferReadPos=0; \
-	var=fb->buffer[fb->bufferReadPos]; \
+	var=((int)((fb->buffer[fb->bufferReadPos])) & 0xff); \
       } \
     } \
     else { \
-      var=fb->buffer[fb->bufferReadPos]; \
+      var=((int)((fb->buffer[fb->bufferReadPos])) & 0xff); \
     } \
   }
 
@@ -118,12 +118,12 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       else { \
 	fb->bufferWritePos=fb_readbyte_rv; \
 	fb->bufferReadPos=0; \
-	var=fb->buffer[fb->bufferReadPos++]; \
+	var=((int)((fb->buffer[fb->bufferReadPos++])) & 0xff); \
         fb->bytesRead++; \
       } \
     } \
     else { \
-      var=fb->buffer[fb->bufferReadPos++]; \
+      var=((int)((fb->buffer[fb->bufferReadPos++])) & 0xff); \
       fb->bytesRead++; \
     } \
   }

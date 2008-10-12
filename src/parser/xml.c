@@ -151,6 +151,7 @@ void GWEN_XMLNode_free(GWEN_XMLNODE *n){
   if (n) {
     GWEN_LIST_FINI(GWEN_XMLNODE, n);
     GWEN_XMLProperty_freeAll(n->properties);
+    GWEN_Memory_dealloc(n->nameSpace);
     GWEN_Memory_dealloc(n->data);
     GWEN_XMLNode_List_free(n->headers);
     GWEN_XMLNode_List_free(n->children);
@@ -178,6 +179,8 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n){
 
   /* duplicate node itself */
   nn=GWEN_XMLNode_new(n->type, n->data);
+  if (n->nameSpace)
+    nn->nameSpace=strdup(n->nameSpace);
 
   /* duplicate properties */
   p=n->properties;
@@ -319,6 +322,25 @@ void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data){
   else
     n->data=0;
 }
+
+
+
+const char *GWEN_XMLNode_GetNamespace(const GWEN_XMLNODE *n) {
+  assert(n);
+  return n->nameSpace;
+}
+
+
+
+void GWEN_XMLNode_SetNamespace(GWEN_XMLNODE *n, const char *s) {
+  assert(n);
+  GWEN_Memory_dealloc(n->nameSpace);
+  if (s)
+    n->nameSpace=GWEN_Memory_strdup(s);
+  else
+    n->nameSpace=NULL;
+}
+
 
 
 GWEN_XMLNODE *GWEN_XMLNode_GetChild(const GWEN_XMLNODE *n){
@@ -1547,6 +1569,46 @@ int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n) {
 
 
 
+int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
+  if (n && n->type==GWEN_XMLNodeTypeTag && n->data) {
+    GWEN_XMLNODE *nn;
+
+    if (n->nameSpace==0) {
+      char *p;
+
+      p=strchr(n->data, ':');
+      if (p) {
+	int len=p-n->data;
+	char *s;
+
+	n->nameSpace=(char*)malloc(len);
+	assert(n->nameSpace);
+	memmove(n->nameSpace, n->data, len);
+	n->nameSpace[len-1]=0;
+	s=GWEN_Memory_strdup(p+1);
+	free(n->data);
+	n->data=s;
+      }
+    }
+
+    nn=GWEN_XMLNode_List_First(n->children);
+    while(nn) {
+      int rv;
+
+      rv=GWEN_XMLNode_StripNameSpaces(nn);
+      if (rv<0) {
+	DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+      nn=GWEN_XMLNode_List_Next(nn);
+    }
+  }
+
+  return 0;
+}
+
+
+
 
 
 
@@ -1643,9 +1705,9 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_new(const char *name,
   GWEN_LIST_INIT(GWEN_XMLNODE_NAMESPACE, ns);
 
   if (name)
-    ns->name=strdup(name);
+    ns->name=GWEN_Memory_strdup(name);
   if (url)
-    ns->url=strdup(url);
+    ns->url=GWEN_Memory_strdup(url);
 
   return ns;
 }
@@ -1684,6 +1746,9 @@ const char *GWEN_XMLNode_NameSpace_GetUrl(const GWEN_XMLNODE_NAMESPACE *ns) {
   assert(ns);
   return ns->url;
 }
+
+
+
 
 
 
