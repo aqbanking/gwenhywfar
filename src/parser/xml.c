@@ -1581,7 +1581,7 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
 	int len=p-n->data;
 	char *s;
 
-	n->nameSpace=(char*)malloc(len);
+	n->nameSpace=(char*)GWEN_Memory_malloc(len);
 	assert(n->nameSpace);
 	memmove(n->nameSpace, n->data, len);
 	n->nameSpace[len-1]=0;
@@ -1595,7 +1595,7 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
     while(nn) {
       int rv;
 
-      rv=GWEN_XMLNode_StripNameSpaces(nn);
+      rv=GWEN_XMLNode_StripNamespaces(nn);
       if (rv<0) {
 	DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", rv);
         return rv;
