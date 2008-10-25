@@ -57,7 +57,9 @@
 #include <gnutls/gnutls.h>
 #include <gcrypt.h>
 
-#include <zlib.h>
+#ifdef WITH_ZIP_TEST
+# include <zlib.h>
+#endif
 
 
 #ifdef USE_LIBXML2
@@ -190,6 +192,7 @@ static int writeFile(const char *fname, const char *p, int len) {
 
 
 static int zip_inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
+#ifdef WITH_ZIP_TEST
   z_stream z;
   char outbuf[512];
   int rv;
@@ -241,7 +244,7 @@ static int zip_inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
   }
 
   inflateEnd(&z);
-
+#endif
   return 0;
 }
 
