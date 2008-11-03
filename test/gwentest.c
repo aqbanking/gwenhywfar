@@ -32,6 +32,9 @@
 # include <winsock.h>
 # define sleep(x) Sleep(x*1000)
 # define strcasecmp(a, b) strcmp(a, b)
+#else
+# include <sys/socket.h>
+# include <netinet/in.h>
 #endif
 
 #include <gwenhywfar/idmap.h>

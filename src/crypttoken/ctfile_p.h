@@ -20,6 +20,8 @@
 #include <gwenhywfar/fslock.h>
 #include <gwenhywfar/cryptkey.h>
 
+#include <sys/stat.h>
+
 
 
 typedef struct GWEN_CRYPT_TOKEN_FILE GWEN_CRYPT_TOKEN_FILE;

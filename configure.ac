@@ -530,7 +530,7 @@ AC_ARG_ENABLE(variadic-macros,
   enable_variadic_macros="$enableval",
   enable_variadic_macros="yes")
 AC_MSG_RESULT($enable_variadic_macros)
-if test "x$enable_variadic_macros" == "xno"; then
+if test "x$enable_variadic_macros" = "xno"; then
   AC_DEFINE(NO_VARIADIC_MACROS, 1, [Define if variadic macros should be disabled])
 fi
 
@@ -546,7 +546,7 @@ AC_ARG_ENABLE(profiling,
   enable_profiling="$enableval",
   enable_profiling="no")
 AC_MSG_RESULT($enable_profiling)
-if test "x$enable_profiling" == "xyes"; then
+if test "x$enable_profiling" = "xyes"; then
   PROFILING_CFLAGS="-pg"
   PROFILING_LDFLAGS="-pg"
 else
@@ -831,7 +831,7 @@ AC_ARG_ENABLE(visibility,
   enable_visibility="yes")
 AC_MSG_RESULT($enable_visibility)
 
-if test "$enable_visibility" == "yes"; then
+if test "$enable_visibility" = "yes"; then
   AC_MSG_CHECKING(if symbol visibility is supported)
   visibility_cflags=""
   case `basename $CC` in 
@@ -896,7 +896,7 @@ AC_ARG_ENABLE(export,
 AC_MSG_RESULT($enable_export)
 
 gwen_enable_export=0
-if test "$enable_export" == "yes"; then
+if test "$enable_export" = "yes"; then
   gwen_enable_export=1
 fi
 AC_SUBST(gwen_enable_export)
@@ -1067,7 +1067,7 @@ AC_ARG_WITH(plugins-ct, [  --with-plugins-ct=LIST list of CT plugins to build],
   [plugins="$withval"],
   [plugins="all"])
 
-if test "$plugins" == "all"; then
+if test "$plugins" = "all"; then
   plugins="ohbci";
 fi
 
@@ -1099,7 +1099,7 @@ AC_ARG_WITH(plugins-dbio, [  --with-plugins-dbio=LIST list of DBIO plugins to bu
   [plugins="$withval"],
   [plugins="all"])
 
-if test "$plugins" == "all"; then
+if test "$plugins" = "all"; then
   plugins="csv olddb xmldb";
 fi
 
@@ -1141,7 +1141,7 @@ AC_ARG_WITH(plugins-cfgmgr, [  --with-plugins-cfgmgr=LIST list of ConfigManager 
   [plugins="$withval"],
   [plugins="all"])
 
-if test "$plugins" == "all"; then
+if test "$plugins" = "all"; then
   plugins="dir";
 fi
 
