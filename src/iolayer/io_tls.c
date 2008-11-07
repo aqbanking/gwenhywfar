@@ -1152,6 +1152,31 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerTls_WorkOnRequests(GWEN_IO_LAYER *io) {
 	  rv!=GNUTLS_E_INTERRUPTED) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_handshake: %d (%s) [%s]",
 		  rv, gnutls_strerror(rv), gnutls_error_is_fatal(rv)?"fatal":"non-fatal");
+	if (rv==GNUTLS_E_UNEXPECTED_PACKET_LENGTH) {
+	  GWEN_Gui_ProgressLog(GWEN_Io_Request_GetGuiId(r),
+			       GWEN_LoggerLevel_Error,
+			       I18N("A TLS handshake error occurred. "
+				    "If you are using AqBanking you should "
+				    "consider enabling the option "
+				    "\"force SSLv3\" in the user settings "
+				    "dialog."));
+	}
+	else {
+	  GWEN_BUFFER *tbuf;
+          char numbuf[32];
+
+	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	  GWEN_Buffer_AppendString(tbuf, I18N("TLS Handshake Error:"));
+	  snprintf(numbuf, sizeof(numbuf)-1, " %d ", rv);
+	  GWEN_Buffer_AppendString(tbuf, numbuf);
+	  GWEN_Buffer_AppendString(tbuf, "(");
+	  GWEN_Buffer_AppendString(tbuf, gnutls_strerror(rv));
+	  GWEN_Buffer_AppendString(tbuf, ")");
+	  GWEN_Gui_ProgressLog(GWEN_Io_Request_GetGuiId(r),
+			       GWEN_LoggerLevel_Error,
+			       GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+	}
 	GWEN_Io_Layer_SetStatus(io, GWEN_Io_Layer_StatusDisconnected);
 	xio->connectRequest=NULL;
 	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_SSL);
