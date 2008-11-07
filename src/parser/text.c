@@ -189,6 +189,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
                               GWEN_BUFFER *buf,
                               uint32_t flags,
                               const char **next){
+  const char *savedSrc=src;
   int lastWasBlank;
   int lastBlankPos;
   int insideQuotes;
@@ -257,9 +258,10 @@ int GWEN_Text_GetWordToBuffer(const char *src,
            * blanks removed */
 	  GWEN_Buffer_AppendByte(buf, *src);
         }
-        /* remember next loop whether this char was a blank */
-        if (isspace((int)*src) && !lastWasEscape) {
-          lastWasBlank=1;
+	/* remember next loop whether this char was a blank */
+
+	if (!lastWasEscape && *((unsigned char*)src)<33) {
+	  lastWasBlank=1;
 	  lastBlankPos=GWEN_Buffer_GetPos(buf);
 	}
         else {
@@ -268,12 +270,12 @@ int GWEN_Text_GetWordToBuffer(const char *src,
         }
       } /* if this is not a backslash */
     } /* !lastWasEscape */
-      /* advance source pointer */
-      src++;
-    } /* while */
+    /* advance source pointer */
+    src++;
+  } /* while */
 
   if (insideQuotes) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Missing \" after word");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing \" after word (at %d: [%s])", src-savedSrc, savedSrc);
     return -1;
   }
   /* check whether the source string was correctly terminated */
@@ -1637,7 +1639,8 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign){
         if (isalnum((int)*s1) && isalnum((int)*t)) {
           lmatch=1;
           break;
-        }
+	}
+        t++;
       } /* while */
 
       if (lmatch) {
@@ -1668,7 +1671,8 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign){
         if (isalnum((int)*s1) && isalnum((int)*t)) {
           lmatch=1;
           break;
-        }
+	}
+        t++;
       } /* while */
 
       if (lmatch) {

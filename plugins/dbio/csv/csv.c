@@ -473,6 +473,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
 				       GWEN_TEXT_FLAGS_DEL_QUOTES,
 				       &s);
 	  if (rv) {
+	    DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", rv);
 	    GWEN_Buffer_free(wbuffer);
 	    GWEN_Buffer_free(lbuffer);
 	    GWEN_StringList_free(sl);
