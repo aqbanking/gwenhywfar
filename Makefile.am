@@ -5,6 +5,8 @@ DIST_SUBDIRS=admin data m4 src plugins tools test doc po checks
 AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = \
+ ChangeLog \
+ ChangeLog.old \
  README.W32 \
  README.DARWIN \
  README.SOLARIS \
