@@ -15,6 +15,7 @@
 
 Makefile
 Makefile.in
+ChangeLog
 
 *-config
 *-config.in
