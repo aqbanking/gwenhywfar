@@ -210,4 +210,6 @@ uninstall-local: uninstall-mo-catalogs
 
 endif
 
+ChangeLog:
+	git-log --pretty="format:------------------------------------------------------------------%n%ai %an%n%s%n%b" >ChangeLog
 
