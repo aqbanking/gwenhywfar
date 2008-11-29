@@ -180,6 +180,22 @@ GWEN_MDIGEST *GWEN_MDigest_Sha1_new() {
 
 
 
+GWEN_MDIGEST *GWEN_MDigest_Sha256_new() {
+  GWEN_MDIGEST *md;
+  GWEN_MDIGEST_GC *xmd;
+
+  md=GWEN_MDigest_Gc_new(GWEN_Crypt_HashAlgoId_Sha256);
+  assert(md);
+  xmd=GWEN_INHERIT_GETDATA(GWEN_MDIGEST, GWEN_MDIGEST_GC, md);
+  assert(xmd);
+
+  xmd->algo=GCRY_MD_SHA256;
+
+  return md;
+}
+
+
+
 
 
 

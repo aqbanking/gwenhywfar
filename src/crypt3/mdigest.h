@@ -62,6 +62,7 @@ int GWEN_MDigest_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l);
 GWENHYWFAR_API GWEN_MDIGEST *GWEN_MDigest_Md5_new();
 GWENHYWFAR_API GWEN_MDIGEST *GWEN_MDigest_Rmd160_new();
 GWENHYWFAR_API GWEN_MDIGEST *GWEN_MDigest_Sha1_new();
+GWENHYWFAR_API GWEN_MDIGEST *GWEN_MDigest_Sha256_new();
 
 
 #ifdef __cplusplus

@@ -37,6 +37,8 @@ GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgoId_fromString(const char *s) {
     return GWEN_Crypt_HashAlgoId_Md5;
   else if (strcasecmp(s, "any")==0)
     return GWEN_Crypt_HashAlgoId_Any;
+  else if (strcasecmp(s, "sha256")==0)
+    return GWEN_Crypt_HashAlgoId_Sha256;
   return GWEN_Crypt_HashAlgoId_Unknown;
 }
 
@@ -52,6 +54,8 @@ const char *GWEN_Crypt_HashAlgoId_toString(GWEN_CRYPT_HASHALGOID a) {
     return "rmd160";
   case GWEN_Crypt_HashAlgoId_Md5:
     return "md5";
+  case GWEN_Crypt_HashAlgoId_Sha256:
+    return "sha256";
   case GWEN_Crypt_HashAlgoId_Any:
     return "any";
   default:

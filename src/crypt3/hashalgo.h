@@ -44,6 +44,7 @@ typedef enum {
   GWEN_Crypt_HashAlgoId_Rmd160,
   /** MD-5 */
   GWEN_Crypt_HashAlgoId_Md5,
+  GWEN_Crypt_HashAlgoId_Sha256,
 } GWEN_CRYPT_HASHALGOID;
 
 
