@@ -32,6 +32,7 @@ GWENHYWFAR_API void GWEN_Tag16_DirectlyToBuffer(unsigned int tagType,
 GWENHYWFAR_API void GWEN_Tag16_free(GWEN_TAG16 *tlv);
 
 GWENHYWFAR_API GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv);
+GWENHYWFAR_API GWEN_TAG16 *GWEN_Tag16_fromBuffer2(const uint8_t *p, uint32_t l, int doCopy);
 
 GWENHYWFAR_API unsigned int GWEN_Tag16_GetTagType(const GWEN_TAG16 *tlv);
 GWENHYWFAR_API unsigned int GWEN_Tag16_GetTagLength(const GWEN_TAG16 *tlv);
