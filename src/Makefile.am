@@ -53,6 +53,7 @@ libgwenhywfar_la_LIBADD=\
   base/libbase.la \
   crypt3/libcrypt3.la \
   crypttoken/libcrypttoken.la \
+  cryptmsg/libcryptmsg.la \
   io/libio.la \
   iolayer/libiolayer.la \
   ipc/libipc.la \
@@ -64,6 +65,7 @@ libgwenhywfar_la_DEPENDENCIES=\
   base/libbase.la \
   crypt3/libcrypt3.la \
   crypttoken/libcrypttoken.la \
+  cryptmsg/libcryptmsg.la \
   io/libio.la \
   iolayer/libiolayer.la \
   ipc/libipc.la \

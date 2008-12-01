@@ -127,8 +127,8 @@ int GWEN_SigTail_toBuffer(const GWEN_SIGTAIL *st, GWEN_BUFFER *buf, uint8_t tagT
   /* write size */
   l=GWEN_Buffer_GetPos(buf)-pos-2;
   p=(uint8_t*)GWEN_Buffer_GetStart(buf)+pos;
-  *(p++)=(l>>8) & 0xff;
-  *p=l & 0xff;
+  *(p++)=l & 0xff;
+  *p=(l>>8) & 0xff;
 
   return 0;
 }

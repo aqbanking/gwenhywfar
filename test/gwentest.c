@@ -72,6 +72,7 @@
 
 
 #include <gwenhywfar/cryptkeyrsa.h>
+#include <gwenhywfar/cryptmgrkeys.h>
 
 
 
@@ -3638,6 +3639,202 @@ int testDES4(int argc, char **argv) {
 
 
 
+int testCryptMgr1(int argc, char **argv) {
+  int rv;
+  GWEN_CRYPT_KEY *pubKey;
+  GWEN_CRYPT_KEY *secretKey;
+  GWEN_CRYPTMGR *cm;
+  uint8_t testData[]=
+    "This is the test data           "
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
+  GWEN_BUFFER *tbuf1;
+  GWEN_BUFFER *tbuf2;
+
+  fprintf(stderr, "Generating key pair...\n");
+  rv=GWEN_Crypt_KeyRsa_GeneratePair(2048/8, 1, &pubKey, &secretKey);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Generating key pair... done.\n");
+
+  GWEN_Crypt_KeyRsa_AddFlags(pubKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+  GWEN_Crypt_KeyRsa_AddFlags(secretKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+
+  cm=GWEN_CryptMgrKeys_new("local", secretKey, "local", pubKey, 1);
+  assert(cm);
+
+  fprintf(stderr, "Signing message...\n");
+  tbuf1=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_CryptMgr_Sign(cm, testData, sizeof(testData)-1, tbuf1);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not sign (%d).\n", rv);
+    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    return 2;
+  }
+  fprintf(stderr, "Signing message... done\n");
+
+  fprintf(stderr, "Verifying message...\n");
+  tbuf2=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_CryptMgr_Verify(cm,
+			  (const uint8_t*)GWEN_Buffer_GetStart(tbuf1),
+			  GWEN_Buffer_GetUsedBytes(tbuf1),
+			  tbuf2);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
+    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    return 2;
+  }
+  fprintf(stderr, "Verifying message... done\n");
+
+  fprintf(stderr, "Signature is valid.\n");
+
+  return 0;
+}
+
+
+
+int testCryptMgr2(int argc, char **argv) {
+  int rv;
+  GWEN_CRYPT_KEY *pubKey;
+  GWEN_CRYPT_KEY *secretKey;
+  GWEN_CRYPTMGR *cm;
+  uint8_t testData[]=
+    "This is the test data           "
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
+  GWEN_BUFFER *tbuf1;
+  GWEN_BUFFER *tbuf2;
+
+  fprintf(stderr, "Generating key pair...\n");
+  rv=GWEN_Crypt_KeyRsa_GeneratePair(2048/8, 1, &pubKey, &secretKey);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Generating key pair... done.\n");
+
+  GWEN_Crypt_KeyRsa_AddFlags(pubKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+  GWEN_Crypt_KeyRsa_AddFlags(secretKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+
+  cm=GWEN_CryptMgrKeys_new("local", secretKey, "local", pubKey, 1);
+  assert(cm);
+
+  fprintf(stderr, "Encrypting message...\n");
+  tbuf1=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_CryptMgr_Encrypt(cm, testData, sizeof(testData)-1, tbuf1);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not encrypt (%d).\n", rv);
+    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    return 2;
+  }
+  fprintf(stderr, "Encrypting message... done\n");
+
+  fprintf(stderr, "Decrypting message...\n");
+  tbuf2=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_CryptMgr_Decrypt(cm,
+			   (const uint8_t*)GWEN_Buffer_GetStart(tbuf1),
+			   GWEN_Buffer_GetUsedBytes(tbuf1),
+			   tbuf2);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
+    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    return 2;
+  }
+  fprintf(stderr, "Decrypting message... done\n");
+
+  if (sizeof(testData)-1!=GWEN_Buffer_GetUsedBytes(tbuf2)) {
+    fprintf(stderr, "Crypto-Error (size):\n");
+    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    return 2;
+  }
+
+  if (memcmp(testData, GWEN_Buffer_GetStart(tbuf2), GWEN_Buffer_GetUsedBytes(tbuf2))!=0) {
+    fprintf(stderr, "Crypto-Error (content):\n");
+    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    return 2;
+  }
+
+  fprintf(stderr, "Crypto-stuff ok.\n");
+
+  return 0;
+}
+
+
+
+int testCryptMgr3(int argc, char **argv) {
+  int rv;
+  GWEN_CRYPT_KEY *pubKey;
+  GWEN_CRYPT_KEY *secretKey;
+  GWEN_CRYPTMGR *cm;
+  uint8_t testData[]=
+    "This is the test data           "
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
+  GWEN_BUFFER *tbuf1;
+  GWEN_BUFFER *tbuf2;
+
+  fprintf(stderr, "Generating key pair...\n");
+  rv=GWEN_Crypt_KeyRsa_GeneratePair(2048/8, 1, &pubKey, &secretKey);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Generating key pair... done.\n");
+
+  GWEN_Crypt_KeyRsa_AddFlags(pubKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+  GWEN_Crypt_KeyRsa_AddFlags(secretKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
+
+  cm=GWEN_CryptMgrKeys_new("local", secretKey, "local", pubKey, 1);
+  assert(cm);
+
+  fprintf(stderr, "Encoding message...\n");
+  tbuf1=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_CryptMgr_Encode(cm, testData, sizeof(testData)-1, tbuf1);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not encrypt (%d).\n", rv);
+    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    return 2;
+  }
+  fprintf(stderr, "Encoding message... done\n");
+
+  fprintf(stderr, "Decoding message...\n");
+  tbuf2=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_CryptMgr_Decode(cm,
+			  (const uint8_t*)GWEN_Buffer_GetStart(tbuf1),
+			  GWEN_Buffer_GetUsedBytes(tbuf1),
+			  tbuf2);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
+    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    return 2;
+  }
+  fprintf(stderr, "Decoding message... done\n");
+
+  if (sizeof(testData)-1!=GWEN_Buffer_GetUsedBytes(tbuf2)) {
+    fprintf(stderr, "Crypto-Error (size):\n");
+    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    return 2;
+  }
+
+  if (memcmp(testData, GWEN_Buffer_GetStart(tbuf2), GWEN_Buffer_GetUsedBytes(tbuf2))!=0) {
+    fprintf(stderr, "Crypto-Error (content):\n");
+    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    return 2;
+  }
+
+  fprintf(stderr, "Crypto-stuff ok.\n");
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   int rv;
@@ -3766,6 +3963,15 @@ int main(int argc, char **argv) {
   else if (strcasecmp(argv[1], "rsa")==0) {
     check_rsa_keys();
     rv=0;
+  }
+  else if (strcasecmp(argv[1], "cryptmgr1")==0) {
+    rv=testCryptMgr1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "cryptmgr2")==0) {
+    rv=testCryptMgr2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "cryptmgr3")==0) {
+    rv=testCryptMgr3(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_CRYPTMSG_SIGTAIL_H
-#define GWEN_CRYPTMSG_SIGTAIL_H
+#ifndef GWEN_CRYPTMGR_SIGTAIL_H
+#define GWEN_CRYPTMGR_SIGTAIL_H
 
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/buffer.h>

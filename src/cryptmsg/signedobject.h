@@ -7,22 +7,11 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWEN_CRYPTMSG_SIGNEDOBJECT_H
-#define GWEN_CRYPTMSG_SIGNEDOBJECT_H
+#ifndef GWEN_CRYPTMGR_SIGNEDOBJECT_H
+#define GWEN_CRYPTMGR_SIGNEDOBJECT_H
 
 
 #include <gwenhywfar/gwenhywfarapi.h>
-
-
-enum {
-  GWEN_SignatureProfile_None=0,
-  /**
-   * Hash: RMD-160
-   * Padd: ISO 9796-2
-   * Sign: RSA 2048
-   */
-  GWEN_SignatureProfile_1=1
-} GWEN_SIGNATURE_PROFILE;
 
 
 typedef struct GWEN_SIGNED_OBJECT GWEN_SIGNED_OBJECT;

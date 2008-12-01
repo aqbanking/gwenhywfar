@@ -77,7 +77,7 @@ GWEN_SIGNED_OBJECT *GWEN_SignedObject_fromBuffer(const uint8_t *p, uint32_t l, i
       if (subtagLen && subtagPtr) {
 	switch(GWEN_Tag16_GetTagType(subtag)) {
 
-	case GWEN_SIGTAIL_TLV_SIGDATA:
+	case GWEN_SIGNEDOBJECT_TLV_SIGDATA:
 	  if (doCopy) {
 	    so->pData=(uint8_t*)malloc(subtagLen);
 	    memmove(so->pData, subtagPtr, subtagLen);
@@ -91,7 +91,7 @@ GWEN_SIGNED_OBJECT *GWEN_SignedObject_fromBuffer(const uint8_t *p, uint32_t l, i
 	  }
 	  break;
 
-	case GWEN_SIGTAIL_TLV_SIGHEAD: {
+	case GWEN_SIGNEDOBJECT_TLV_SIGHEAD: {
 	  GWEN_SIGHEAD *sh;
 
 	  sh=GWEN_SigHead_fromBuffer(subtagPtr, subtagLen);
@@ -106,7 +106,7 @@ GWEN_SIGNED_OBJECT *GWEN_SignedObject_fromBuffer(const uint8_t *p, uint32_t l, i
 	  break;
 	}
 
-	case GWEN_SIGTAIL_TLV_SIGTAIL: {
+	case GWEN_SIGNEDOBJECT_TLV_SIGTAIL: {
 	  GWEN_SIGTAIL *st;
 
 	  st=GWEN_SigTail_fromBuffer(subtagPtr, subtagLen);
@@ -156,7 +156,7 @@ int GWEN_SignedObject_toBuffer(const GWEN_SIGNED_OBJECT *so, GWEN_BUFFER *buf, u
     int rv;
 
     /* write signature head */
-    rv=GWEN_SigHead_toBuffer(sh, buf, GWEN_SIGTAIL_TLV_SIGHEAD);
+    rv=GWEN_SigHead_toBuffer(sh, buf, GWEN_SIGNEDOBJECT_TLV_SIGHEAD);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -167,7 +167,7 @@ int GWEN_SignedObject_toBuffer(const GWEN_SIGNED_OBJECT *so, GWEN_BUFFER *buf, u
 
   /* write data */
   if (so->pData && so->lData)
-    GWEN_Tag16_DirectlyToBuffer(GWEN_SIGTAIL_TLV_SIGDATA,
+    GWEN_Tag16_DirectlyToBuffer(GWEN_SIGNEDOBJECT_TLV_SIGDATA,
 				(const char*)so->pData,
 				so->lData,
 				buf);
@@ -178,7 +178,7 @@ int GWEN_SignedObject_toBuffer(const GWEN_SIGNED_OBJECT *so, GWEN_BUFFER *buf, u
     int rv;
 
     /* write signature tail */
-    rv=GWEN_SigTail_toBuffer(st, buf, GWEN_SIGTAIL_TLV_SIGTAIL);
+    rv=GWEN_SigTail_toBuffer(st, buf, GWEN_SIGNEDOBJECT_TLV_SIGTAIL);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
