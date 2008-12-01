@@ -1190,6 +1190,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/version.h
                  src/base/Makefile
                  src/crypt3/Makefile
+                 src/cryptmsg/Makefile
                  src/crypttoken/Makefile
                  src/gui/Makefile
                  src/io/Makefile
@@ -1235,7 +1236,7 @@ AC_OUTPUT
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/crypt3 src/crypttoken src/io src/iolayer src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/gui"
+GWEN_HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/io src/iolayer src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/gui"
 GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`

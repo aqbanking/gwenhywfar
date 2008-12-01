@@ -42,7 +42,8 @@ GWEN_TAG16 *GWEN_Tag16_new() {
 
 void GWEN_Tag16_free(GWEN_TAG16 *tlv) {
   if (tlv) {
-    free(tlv->tagData);
+    if (tlv->dataOwned)
+      free(tlv->tagData);
     GWEN_LIST_FINI(GWEN_TAG16, tlv);
     GWEN_FREE_OBJECT(tlv);
   }
@@ -131,10 +132,72 @@ GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   if (tagLength) {
     tlv->tagData=(void*)malloc(tagLength);
     memmove(tlv->tagData, tagData, tagLength);
+    tlv->dataOwned=1;
   }
 
   GWEN_Buffer_IncrementPos(mbuf, tagLength);
   tlv->tagSize=GWEN_Buffer_GetPos(mbuf)-startPos;
+  return tlv;
+}
+
+
+
+GWEN_TAG16 *GWEN_Tag16_fromBuffer2(const uint8_t *p, uint32_t l, int doCopy) {
+  unsigned int tagType;
+  unsigned int tagLength;
+  const uint8_t *tagData;
+  unsigned int size;
+  unsigned int pos;
+  unsigned int j;
+  GWEN_TAG16 *tlv;
+
+  if (l<1) {
+    DBG_ERROR(0, "Buffer empty");
+    return NULL;
+  }
+
+  tagType=tagLength=0;
+
+  pos=0;
+  size=l;
+
+  /* get tag type */
+  if (size<2) {
+    DBG_ERROR(0, "Too few bytes for TLV");
+    return 0;
+  }
+  j=(unsigned char)(p[pos]);
+  tagType=j;
+
+  /* get length */
+  pos++;
+  if (pos+1>=size) {
+    DBG_ERROR(0, "Too few bytes");
+    return 0;
+  }
+  j=((unsigned char)(p[pos+1]))<<8;
+  j|=(unsigned char)(p[pos]);
+  pos+=2;
+  tagLength=j;
+  tagData=p+pos;
+
+  tlv=GWEN_Tag16_new();
+  assert(tlv);
+  tlv->tagType=tagType;
+  tlv->tagLength=tagLength;
+  if (tagLength) {
+    if (doCopy) {
+      tlv->tagData=(void*)malloc(tagLength);
+      memmove(tlv->tagData, tagData, tagLength);
+      tlv->dataOwned=1;
+    }
+    else {
+      tlv->tagData=(uint8_t*)tagData;
+      tlv->dataOwned=0;
+    }
+  }
+
+  tlv->tagSize=tagLength+3;
   return tlv;
 }
 

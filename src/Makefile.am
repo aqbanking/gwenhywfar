@@ -9,7 +9,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 
 AM_CFLAGS=$(visibility_cflags)
 
-SUBDIRS = base io iolayer ipc os parser crypt3 crypttoken gui
+SUBDIRS = base io iolayer ipc os parser crypt3 crypttoken gui cryptmsg
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \

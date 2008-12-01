@@ -24,6 +24,7 @@ struct GWEN_TAG16 {
   unsigned int tagType;
   unsigned int tagLength;
   void *tagData;
+  int dataOwned;
 };
 
 
