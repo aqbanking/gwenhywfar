@@ -166,9 +166,13 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_Generate(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
   xk->algoValid=1;
   xk->mode=mode;
 
+#if 0
   kbytes=keySize/8;
   if (keySize % 8)
-    kbytes++;
+      kbytes++;
+#else
+  kbytes=keySize;
+#endif
   keyData=gcry_random_bytes(kbytes, q);
 
   /* store key data */
@@ -197,11 +201,13 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 
+#if 0
   if (kl!=gcry_cipher_get_algo_keylen(algo)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Invalid key length (is %d, should be %d)",
 	      (int)kl, (int)gcry_cipher_get_algo_keylen(algo));
     return NULL;
   }
+#endif
 
   k=GWEN_Crypt_Key_new(cryptAlgoId, keySize);
   assert(k);
