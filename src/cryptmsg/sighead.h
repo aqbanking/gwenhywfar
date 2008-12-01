@@ -8,13 +8,12 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_CRYPTMSG_SIGHEAD_H
-#define GWEN_CRYPTMSG_SIGHEAD_H
+#ifndef GWEN_CRYPTMGR_SIGHEAD_H
+#define GWEN_CRYPTMGR_SIGHEAD_H
 
 #include <gwenhywfar/list1.h>
-
-#include <gwenhywfar/sighead.h>
-#include <gwenhywfar/sigtail.h>
+#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/gwentime.h>
 
 
 

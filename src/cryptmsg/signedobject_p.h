@@ -8,19 +8,18 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_CRYPTMSG_SIGNEDOBJECT_P_H
-#define GWEN_CRYPTMSG_SIGNEDOBJECT_P_H
+#ifndef GWEN_CRYPTMGR_SIGNEDOBJECT_P_H
+#define GWEN_CRYPTMGR_SIGNEDOBJECT_P_H
 
 #include "signedobject.h"
 
-#define GWEN_SIGTAIL_TLV_SIGHEAD    0x21
-#define GWEN_SIGTAIL_TLV_SIGTAIL    0x22
-#define GWEN_SIGTAIL_TLV_SIGDATA    0x23
+#define GWEN_SIGNEDOBJECT_TLV_SIGHEAD    0x21
+#define GWEN_SIGNEDOBJECT_TLV_SIGTAIL    0x22
+#define GWEN_SIGNEDOBJECT_TLV_SIGDATA    0x23
 
 
 
 struct GWEN_SIGNED_OBJECT {
-  GWEN_LIST_ELEMENT(GWEN_SIGNED_OBJECT)
   uint8_t *pData;
   uint32_t lData;
   int dataOwned;

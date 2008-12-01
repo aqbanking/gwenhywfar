@@ -1,5 +1,5 @@
 /***************************************************************************
-    begin       : Sun Nov 30 2008
+    begin       : Mon Dec 01 2008
     copyright   : (C) 2008 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -8,21 +8,22 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_CRYPTMGR_SIGTAIL_P_H
-#define GWEN_CRYPTMGR_SIGTAIL_P_H
+#ifndef GWEN_CRYPTMGR_ENCRYPTEDOBJECT_P_H
+#define GWEN_CRYPTMGR_ENCRYPTEDOBJECT_P_H
 
-#include "sigtail.h"
+#include "encryptedobject.h"
 
-#define GWEN_SIGTAIL_TLV_SIGNUM     0x01
-#define GWEN_SIGTAIL_TLV_SIGNATURE  0x02
+#define GWEN_ENCRYPTEDOBJECT_TLV_CRYPTHEAD    0x21
+#define GWEN_ENCRYPTEDOBJECT_TLV_CRYPTDATA    0x22
 
 
 
-struct GWEN_SIGTAIL {
-  GWEN_LIST_ELEMENT(GWEN_SIGTAIL)
-  int signatureNumber;
-  uint8_t *pSignature;
-  uint32_t lSignature;
+struct GWEN_ENCRYPTED_OBJECT {
+  uint8_t *pData;
+  uint32_t lData;
+  int dataOwned;
+
+  GWEN_CRYPTHEAD *cryptHead;
 };
 
 

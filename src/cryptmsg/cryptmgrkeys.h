@@ -1,5 +1,5 @@
 /***************************************************************************
-    begin       : Sun Nov 30 2008
+    begin       : Mon Dec 01 2008
     copyright   : (C) 2008 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -8,23 +8,22 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_CRYPTMGR_SIGTAIL_P_H
-#define GWEN_CRYPTMGR_SIGTAIL_P_H
-
-#include "sigtail.h"
-
-#define GWEN_SIGTAIL_TLV_SIGNUM     0x01
-#define GWEN_SIGTAIL_TLV_SIGNATURE  0x02
+#ifndef GWEN_CRYPTMGR_CRYPTMGR_KEYS_H
+#define GWEN_CRYPTMGR_CRYPTMGR_KEYS_H
 
 
+#include <gwenhywfar/cryptmgr.h>
+#include <gwenhywfar/cryptkey.h>
 
-struct GWEN_SIGTAIL {
-  GWEN_LIST_ELEMENT(GWEN_SIGTAIL)
-  int signatureNumber;
-  uint8_t *pSignature;
-  uint32_t lSignature;
-};
+
+GWENHYWFAR_API
+GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
+				     GWEN_CRYPT_KEY *localKey,
+				     const char *peerName,
+				     GWEN_CRYPT_KEY *peerKey,
+				     int ownKeys);
 
 
 #endif
+
 

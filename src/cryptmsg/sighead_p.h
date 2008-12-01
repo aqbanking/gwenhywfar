@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_CRYPTMSG_SIGHEAD_P_H
-#define GWEN_CRYPTMSG_SIGHEAD_P_H
+#ifndef GWEN_CRYPTMGR_SIGHEAD_P_H
+#define GWEN_CRYPTMGR_SIGHEAD_P_H
 
 #include "sighead.h"
 
