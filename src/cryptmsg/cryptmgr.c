@@ -18,8 +18,9 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
 
-#include <gwenhywfar/signedobject.h>
-#include <gwenhywfar/encryptedobject.h>
+#include <gwenhywfar/crypthead.h>
+#include <gwenhywfar/sighead.h>
+#include <gwenhywfar/sigtail.h>
 #include <gwenhywfar/tag16.h>
 #include <gwenhywfar/cryptkeysym.h>
 #include <gwenhywfar/padd.h>

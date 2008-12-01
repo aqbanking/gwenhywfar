@@ -11,9 +11,7 @@ iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
  sighead.h \
  sigtail.h \
- signedobject.h \
  crypthead.h \
- encryptedobject.h \
  cryptmgr.h cryptmgr_be.h \
  cryptmgrkeys.h
 
@@ -22,9 +20,7 @@ noinst_LTLIBRARIES=libcryptmsg.la
 noinst_HEADERS=\
  sighead_p.h \
  sigtail_p.h \
- signedobject_p.h \
  crypthead_p.h \
- encryptedobject_p.h \
  cryptmgr_p.h \
  cryptmgrkeys_p.h
 
@@ -32,9 +28,7 @@ noinst_HEADERS=\
 libcryptmsg_la_SOURCES=\
  sighead.c \
  sigtail.c \
- signedobject.c \
  crypthead.c \
- encryptedobject.c \
  cryptmgr.c \
  cryptmgrkeys.c
 
