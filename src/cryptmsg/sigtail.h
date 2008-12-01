@@ -16,6 +16,11 @@
 #include <gwenhywfar/list1.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct GWEN_SIGTAIL GWEN_SIGTAIL;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_SIGTAIL, GWEN_SigTail, GWENHYWFAR_API)
 
@@ -33,6 +38,11 @@ void GWEN_SigTail_SetSignature(GWEN_SIGTAIL *st, const uint8_t *p, uint32_t l);
 
 int GWEN_SigTail_GetSignatureNumber(const GWEN_SIGTAIL *st);
 void GWEN_SigTail_SetSignatureNumber(GWEN_SIGTAIL *st, int i);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

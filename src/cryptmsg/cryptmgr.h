@@ -41,6 +41,11 @@ enum {
 } GWEN_SIGNATURE_PROFILE;
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 GWENHYWFAR_API
 void GWEN_CryptMgr_free(GWEN_CRYPTMGR *cm);
 
@@ -94,6 +99,12 @@ int GWEN_CryptMgr_Encode(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
 
 GWENHYWFAR_API
 int GWEN_CryptMgr_Decode(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData, GWEN_BUFFER *dbuf);
+
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif
 

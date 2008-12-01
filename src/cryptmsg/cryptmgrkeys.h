@@ -15,6 +15,10 @@
 #include <gwenhywfar/cryptmgr.h>
 #include <gwenhywfar/cryptkey.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 GWENHYWFAR_API
 GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
@@ -23,6 +27,9 @@ GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
 				     GWEN_CRYPT_KEY *peerKey,
 				     int ownKeys);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
