@@ -12,6 +12,7 @@
 *~
 .deps
 .libs
+core
 
 Makefile
 Makefile.in
