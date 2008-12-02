@@ -27,6 +27,12 @@ GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
 				     GWEN_CRYPT_KEY *peerKey,
 				     int ownKeys);
 
+GWENHYWFAR_API
+void GWEN_CryptMgrKeys_SetPeerKey(GWEN_CRYPTMGR *mgr,
+				  GWEN_CRYPT_KEY *peerKey,
+				  int ownKey);
+
+
 #ifdef __cplusplus
 }
 #endif

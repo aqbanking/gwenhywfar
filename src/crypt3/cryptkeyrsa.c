@@ -1045,6 +1045,64 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
 
 
 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModPrivExp(unsigned int nbytes,
+						 const uint8_t *pModulus,
+						 uint32_t lModulus,
+						 const uint8_t *pExponent,
+						 uint32_t lExponent,
+						 const uint8_t *pPrivExponent,
+						 uint32_t lPrivExponent) {
+  GWEN_DB_NODE *dbKey;
+  GWEN_DB_NODE *dbR;
+  GWEN_CRYPT_KEY *key;
+
+  assert(nbytes);
+  assert(pModulus);
+  assert(lModulus);
+  assert(pExponent);
+  assert(lExponent);
+  assert(pPrivExponent);
+  assert(lPrivExponent);
+
+  dbKey=GWEN_DB_Group_new("key");
+  dbR=GWEN_DB_GetGroup(dbKey, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "rsa");
+
+  /* basic key stuff */
+  GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		       "cryptAlgoId",
+		       GWEN_Crypt_CryptAlgoId_toString(GWEN_Crypt_CryptAlgoId_Rsa));
+  GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "keySize", nbytes);
+
+  /* RSA stuff */
+  GWEN_DB_SetIntValue(dbR, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "isPublic", 0);
+  GWEN_DB_SetBinValue(dbR, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "n",
+                      pModulus, lModulus);
+  GWEN_DB_SetBinValue(dbR, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "e",
+                      pExponent, lExponent);
+  GWEN_DB_SetBinValue(dbR, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "d",
+		      pPrivExponent, lPrivExponent);
+
+  /* create key from DB */
+  key=GWEN_Crypt_KeyRsa_fromDb(dbKey);
+  if (key==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "Internal error: Bad RSA key group");
+    GWEN_DB_Dump(dbKey, stderr, 2);
+    GWEN_DB_Group_free(dbKey);
+    return NULL;
+  }
+
+  GWEN_DB_Group_free(dbKey);
+  return key;
+}
+
+
+
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k) {
   GWEN_CRYPT_KEY_RSA *xk;
   GWEN_DB_NODE *dbKey;

@@ -46,20 +46,23 @@ GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
     GWEN_CryptMgr_SetLocalKeyNumber(cm, GWEN_Crypt_Key_GetKeyNumber(localKey));
     GWEN_CryptMgr_SetLocalKeyVersion(cm, GWEN_Crypt_Key_GetKeyVersion(localKey));
   }
+  else
+    xcm->ownLocalKey=0;
 
   if (peerKey) {
     xcm->peerKey=peerKey;
     GWEN_CryptMgr_SetPeerKeyNumber(cm, GWEN_Crypt_Key_GetKeyNumber(peerKey));
     GWEN_CryptMgr_SetPeerKeyVersion(cm, GWEN_Crypt_Key_GetKeyVersion(peerKey));
+    xcm->ownPeerKey=ownKeys;
   }
+  else
+    xcm->ownPeerKey=0;
 
   if (localName)
     GWEN_CryptMgr_SetLocalKeyName(cm, localName);
 
   if (peerName)
     GWEN_CryptMgr_SetPeerKeyName(cm, peerName);
-
-  xcm->ownKeys=ownKeys;
 
   GWEN_CryptMgr_SetSignDataFn(cm, GWEN_CryptMgrKeys_SignData);
   GWEN_CryptMgr_SetVerifyDataFn(cm, GWEN_CryptMgrKeys_VerifyData);
@@ -76,10 +79,28 @@ void GWEN_CryptMgrKeys_FreeData(void *bp, void *p) {
 
   xcm=(GWEN_CRYPTMGR_KEYS*) p;
 
-  if (xcm->ownKeys) {
+  if (xcm->ownLocalKey)
     GWEN_Crypt_Key_free(xcm->localKey);
+  if (xcm->ownPeerKey)
     GWEN_Crypt_Key_free(xcm->peerKey);
-  }
+}
+
+
+
+void GWEN_CryptMgrKeys_SetPeerKey(GWEN_CRYPTMGR *cm,
+				  GWEN_CRYPT_KEY *peerKey,
+				  int ownKey) {
+  GWEN_CRYPTMGR_KEYS *xcm;
+
+  assert(cm);
+  xcm=GWEN_INHERIT_GETDATA(GWEN_CRYPTMGR, GWEN_CRYPTMGR_KEYS, cm);
+  assert(xcm);
+
+  if (xcm->ownPeerKey)
+    GWEN_Crypt_Key_free(xcm->peerKey);
+  xcm->peerKey=peerKey;
+  xcm->ownPeerKey=ownKey;
+
 }
 
 

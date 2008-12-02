@@ -215,30 +215,50 @@ int GWEN_CryptMgr_DecryptKey(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t l
 
 
 
-void GWEN_CryptMgr_SetSignDataFn(GWEN_CRYPTMGR *cm, GWEN_CRYPTMGR_SIGNDATA_FN f) {
+GWEN_CRYPTMGR_SIGNDATA_FN GWEN_CryptMgr_SetSignDataFn(GWEN_CRYPTMGR *cm,
+						      GWEN_CRYPTMGR_SIGNDATA_FN f) {
+  GWEN_CRYPTMGR_SIGNDATA_FN of;
+
   assert(cm);
+  of=cm->signDataFn;
   cm->signDataFn=f;
+  return of;
 }
 
 
 
-void GWEN_CryptMgr_SetVerifyDataFn(GWEN_CRYPTMGR *cm, GWEN_CRYPTMGR_VERIFYDATA_FN f) {
+GWEN_CRYPTMGR_VERIFYDATA_FN GWEN_CryptMgr_SetVerifyDataFn(GWEN_CRYPTMGR *cm,
+							  GWEN_CRYPTMGR_VERIFYDATA_FN f) {
+  GWEN_CRYPTMGR_VERIFYDATA_FN of;
+
   assert(cm);
+  of=cm->verifyDataFn;
   cm->verifyDataFn=f;
+  return of;
 }
 
 
 
-void GWEN_CryptMgr_SetEncryptKeyFn(GWEN_CRYPTMGR *cm, GWEN_CRYPTMGR_ENCRYPTKEY_FN f) {
+GWEN_CRYPTMGR_ENCRYPTKEY_FN GWEN_CryptMgr_SetEncryptKeyFn(GWEN_CRYPTMGR *cm,
+							  GWEN_CRYPTMGR_ENCRYPTKEY_FN f) {
+  GWEN_CRYPTMGR_ENCRYPTKEY_FN of;
+
   assert(cm);
+  of=cm->encryptKeyFn;
   cm->encryptKeyFn=f;
+  return of;
 }
 
 
 
-void GWEN_CryptMgr_SetDecryptKeyFn(GWEN_CRYPTMGR *cm, GWEN_CRYPTMGR_DECRYPTKEY_FN f) {
+GWEN_CRYPTMGR_DECRYPTKEY_FN GWEN_CryptMgr_SetDecryptKeyFn(GWEN_CRYPTMGR *cm,
+							  GWEN_CRYPTMGR_DECRYPTKEY_FN f) {
+  GWEN_CRYPTMGR_DECRYPTKEY_FN of;
+
   assert(cm);
+  of=cm->decryptKeyFn;
   cm->decryptKeyFn=f;
+  return of;
 }
 
 

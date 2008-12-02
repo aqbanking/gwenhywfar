@@ -56,6 +56,14 @@ GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
 							    const uint8_t *pExponent,
 							    uint32_t lExponent);
 
+GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModPrivExp(unsigned int nbytes,
+								const uint8_t *pModulus,
+								uint32_t lModulus,
+								const uint8_t *pExponent,
+								uint32_t lExponent,
+								const uint8_t *pPrivExponent,
+								uint32_t lPrivExponent);
+
 GWENHYWFAR_API uint32_t GWEN_Crypt_KeyRsa_GetFlags(const GWEN_CRYPT_KEY *k);
 GWENHYWFAR_API void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k,
                                                uint32_t fl);

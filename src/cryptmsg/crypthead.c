@@ -154,7 +154,6 @@ int GWEN_CryptHead_toBuffer(const GWEN_CRYPTHEAD *ch, GWEN_BUFFER *buf, uint8_t 
   *p=(l>>8) & 0xff;
 
   return 0;
-
 }
 
 

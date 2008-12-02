@@ -20,7 +20,8 @@ typedef struct GWEN_CRYPTMGR_KEYS GWEN_CRYPTMGR_KEYS;
 struct GWEN_CRYPTMGR_KEYS {
   GWEN_CRYPT_KEY *localKey;
   GWEN_CRYPT_KEY *peerKey;
-  int ownKeys;
+  int ownLocalKey;
+  int ownPeerKey;
 };
 
 static GWENHYWFAR_CB
