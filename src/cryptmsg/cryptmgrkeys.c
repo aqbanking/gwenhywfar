@@ -100,7 +100,6 @@ void GWEN_CryptMgrKeys_SetPeerKey(GWEN_CRYPTMGR *cm,
     GWEN_Crypt_Key_free(xcm->peerKey);
   xcm->peerKey=peerKey;
   xcm->ownPeerKey=ownKey;
-
 }
 
 

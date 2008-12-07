@@ -488,17 +488,20 @@ int GWEN_Crypt_KeyRsa__DataFromDb(GWEN_DB_NODE *db, gcry_ac_data_t *pData,
     }
 
     /* read p */
-    rv=GWEN_Crypt_KeyRsa__ReadMpi(db, "p", ds, "p");
-    if (rv) {
-      gcry_ac_data_destroy(ds);
-      return rv;
-    }
+    if (GWEN_DB_VariableExists(db, "p") &&
+	GWEN_DB_VariableExists(db, "q")) {
+      rv=GWEN_Crypt_KeyRsa__ReadMpi(db, "p", ds, "p");
+      if (rv) {
+	gcry_ac_data_destroy(ds);
+	return rv;
+      }
 
-    /* read q */
-    rv=GWEN_Crypt_KeyRsa__ReadMpi(db, "q", ds, "q");
-    if (rv) {
-      gcry_ac_data_destroy(ds);
-      return rv;
+      /* read q */
+      rv=GWEN_Crypt_KeyRsa__ReadMpi(db, "q", ds, "q");
+      if (rv) {
+	gcry_ac_data_destroy(ds);
+	return rv;
+      }
     }
   }
 
@@ -658,23 +661,29 @@ int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub) {
     return rv;
   }
   if (!pub) {
+    gcry_mpi_t mpi;
+
     /* store d */
     rv=GWEN_Crypt_KeyRsa__WriteMpi(dbR, "d", ds, "d");
     if (rv) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-    /* store p */
-    rv=GWEN_Crypt_KeyRsa__WriteMpi(dbR, "p", ds, "p");
-    if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-    /* store q */
-    rv=GWEN_Crypt_KeyRsa__WriteMpi(dbR, "q", ds, "q");
-    if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+
+    if (gcry_ac_data_get_name(ds, 0, "p", &mpi)==0 &&
+	gcry_ac_data_get_name(ds, 0, "q", &mpi)==0) {
+      /* store p */
+      rv=GWEN_Crypt_KeyRsa__WriteMpi(dbR, "p", ds, "p");
+      if (rv) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+      /* store q */
+      rv=GWEN_Crypt_KeyRsa__WriteMpi(dbR, "q", ds, "q");
+      if (rv) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
   }
 

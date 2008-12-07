@@ -1396,6 +1396,8 @@ int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
           x=='.' ||
           x==',' ||
           x=='.' ||
+          x=='_' ||
+          x=='-' ||
           x=='*' ||
           x=='?'
          )) {
