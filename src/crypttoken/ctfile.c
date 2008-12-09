@@ -1366,7 +1366,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 
     /* these algos add random numbers, we must use encrypt fn here and
      * compare the decrypted and unpadded data with the source data */
-    tbuf=GWEN_Buffer_new(0, inLen+16, 0, 0);
+    tbuf=GWEN_Buffer_new(0, signatureLen+16, 0, 0);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
     rv=GWEN_Crypt_Key_Encipher(k,
 			       pSignatureData, signatureLen,
@@ -1386,6 +1386,8 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
       GWEN_Buffer_free(tbuf);
       return rv;
     }
+    l=GWEN_Buffer_GetUsedBytes(tbuf);
+
     if (l!=inLen) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Signature length doesn't match");
       GWEN_Buffer_free(tbuf);
