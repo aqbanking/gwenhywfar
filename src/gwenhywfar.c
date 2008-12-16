@@ -463,27 +463,3 @@ int GWEN__GetValueFromWinReg(const char *keyPath,
 #endif /* 0 */
 
 
-
-/** Construct the gwenhywfar_plugindir directory path with runtime
-    lookup of the initial $libdir. */
-char *GWEN__get_plugindir (const char *default_dir)
-{
-  char *result, *libdir, *pkglibdir, *tmp;
-
-  libdir = br_find_lib_dir (NULL);
-  if (libdir == (char *) NULL)
-    /* BinReloc not initialized, use default hard-coded path. */
-    return strdup (default_dir);
-
-  pkglibdir = br_build_path (libdir, PACKAGE); /* defined in config.h */
-  tmp = br_build_path (pkglibdir, "plugins");
-  result = br_build_path (tmp, GWENHYWFAR_SO_EFFECTIVE_STR);
-
-  free (libdir);
-  free (pkglibdir);
-  free (tmp);
-
-  return result;
-}
-
-
