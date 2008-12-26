@@ -64,7 +64,7 @@
 typedef struct GWEN_CRYPTMGR GWEN_CRYPTMGR;
 
 
-enum {
+typedef enum {
   GWEN_CryptProfile_None=0,
   /**
    * Padding for key    : ISO 9796-2
@@ -76,7 +76,7 @@ enum {
 } GWEN_CRYPT_PROFILE;
 
 
-enum {
+typedef enum {
   GWEN_SignatureProfile_None=0,
   /**
    * Hash: RMD-160

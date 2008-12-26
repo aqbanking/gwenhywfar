@@ -168,7 +168,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_GUI, GWENHYWFAR_API)
 /** button 3 is the confirmation button */
 #define GWEN_GUI_MSG_FLAGS_CONFIRM_B3         (3<<3)
 /** Determine which button is the confirmation button */
-#define GWEN_GUI_MSG_FLAGS_CONFIRM_BUTTON(fl) ((fl & 0x3)>>3)
+#define GWEN_GUI_MSG_FLAGS_CONFIRM_BUTTON(fl) (((fl)>>3) & 0x3)
 
 
 /**

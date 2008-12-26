@@ -32,6 +32,10 @@
 #include <gwenhywfar/inherit.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct GWEN_XML_CONTEXT GWEN_XML_CONTEXT;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_XML_CONTEXT, GWENHYWFAR_API)
 
@@ -137,6 +141,10 @@ GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n,
 				       uint32_t guiid,
 				       int timeout);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif
