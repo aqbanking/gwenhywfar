@@ -275,7 +275,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
   } /* while */
 
   if (insideQuotes) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Missing \" after word (at %d: [%s])", src-savedSrc, savedSrc);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing \" after word (at %d: [%s])", (int)(src-savedSrc), savedSrc);
     return -1;
   }
   /* check whether the source string was correctly terminated */
