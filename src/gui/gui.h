@@ -572,6 +572,10 @@ int GWEN_Gui_SetPasswordStatus(const char *token,
 
 /**
  * This function is called internally by @ref GWEN_Logger_Log.
+ * PLEASE NOTE: If you save the information in a file make sure to ignore
+ * messages from the log domain "gwenhywfar" with log level debug or higher, because
+ * those might contain sensitive information! Information of that level is not supposed
+ * to be saved to a file!
  */
 GWENHYWFAR_API 
 int GWEN_Gui_LogHook(const char *logDomain,

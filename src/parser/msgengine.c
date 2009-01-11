@@ -29,7 +29,7 @@
 # include <config.h>
 #endif
 
-//#define DISABLE_DEBUGLOG
+#define DISABLE_DEBUGLOG
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <msgengine_p.h>

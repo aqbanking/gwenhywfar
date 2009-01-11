@@ -469,6 +469,31 @@ double GWEN_Time_DiffSeconds(const GWEN_TIME *t1, const GWEN_TIME *t0){
 
 
 
+int GWEN_Time_Compare(const GWEN_TIME *t1, const GWEN_TIME *t0){
+  if (t1 && t0) {
+    if (t1->secs<t0->secs)
+      return -1;
+    else if (t1->secs>t0->secs)
+      return 1;
+    else {
+      if (t1->msecs<t0->msecs)
+	return -1;
+      else if (t1->msecs>t0->msecs)
+	return 1;
+      else
+	return 0;
+    }
+  }
+  else if (t1)
+    return 1;
+  else if (t0)
+    return -1;
+
+  return 0;
+}
+
+
+
 double GWEN_Time_Milliseconds(const GWEN_TIME *t){
   assert(t);
   return (double)((t->secs*1000)+(t->msecs));

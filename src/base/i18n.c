@@ -163,8 +163,24 @@ const char *GWEN_I18N_GetCurrentLocale() {
 
 const char *GWEN_I18N_Translate(const char *textdomain, const char *text) {
 #ifdef HAVE_I18N
-  return dgettext(textdomain, text);
+  const char *p;
+
+  p=strchr(text, '|');
+  if (p) {
+    const char *s;
+
+    s=dgettext(textdomain, text);
+    if (strcmp(s, text)==0)
+      return ++p;
+  }
+  else
+    return dgettext(textdomain, text);
 #else
+  const char *p;
+
+  p=strchr(text, '|');
+  if (p)
+    return ++p;
   return text;
 #endif
 }

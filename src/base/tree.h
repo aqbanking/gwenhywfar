@@ -243,6 +243,13 @@ void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el);
 GWENHYWFAR_API
 void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el);
 
+GWENHYWFAR_API
+void *GWEN_TreeElement_GetParent(const GWEN_TREE_ELEMENT *el);
+
+/** Returns the number of children of the given element */
+GWENHYWFAR_API
+uint32_t GWEN_TreeElement_GetChildrenCount(const GWEN_TREE_ELEMENT *el);
+
 
 /*@}*/
 
@@ -277,6 +284,7 @@ GWEN_TREE_ELEMENT *_tree_element;
   decl t* pr##_Tree_GetFirstChild(const t *element); \
   decl t* pr##_Tree_GetLastChild(const t *element); \
   decl uint32_t pr##_Tree_GetChildrenCount(const t *element); \
+  decl t* pr##_Tree_GetParent(const t *element);
 
 
 #define GWEN_TREE_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl) \
@@ -288,7 +296,7 @@ GWEN_TREE_ELEMENT *_tree_element;
   decl void pr##_Tree_AddList(t##_TREE *dst, t##_TREE *l); \
   decl void pr##_Tree_Add(t##_TREE *list, t *element); \
   decl void pr##_Tree_Insert(t##_TREE *list, t *element); \
-  decl int pr##_Tree_Del(t *element); \
+  decl void pr##_Tree_Del(t *element); \
   \
   decl void pr##_Tree_AddChild(t *where, t *element); \
   decl void pr##_Tree_InsertChild(t *where, t *element); \
@@ -384,13 +392,13 @@ GWEN_TREE_ELEMENT *_tree_element;
   void pr##_Tree_Insert(t##_TREE *l, t *element) { \
     assert(element); \
     assert(element->_tree_element);\
-    return GWEN_Tree_Insert(l, element->_tree_element); \
+    GWEN_Tree_Insert(l, element->_tree_element); \
   } \
   \
   void pr##_Tree_Del(t *element){ \
     assert(element); \
     assert(element->_tree_element);\
-    void GWEN_Tree_Del(element->_tree_element); \
+    GWEN_Tree_Del(element->_tree_element); \
   }\
   \
   t* pr##_Tree_GetFirst(const t##_TREE *l) { \
@@ -452,11 +460,11 @@ GWEN_TREE_ELEMENT *_tree_element;
   \
   int pr##_Tree_HasChildElement(const t *who, const t *element) { \
     const t* el; \
-    el=(t*)GWEN_Tree_GetFirstChild(who); \
+    el=(const t*)GWEN_TreeElement_GetFirstChild(who->_tree_element); \
     while(el) {\
       if (el==element) \
         return 1; \
-      el=(const t*)GWEN_TreeElement_GetNextChild(e->_tree_element); \
+      el=(const t*)GWEN_TreeElement_GetNext(el->_tree_element); \
     } /* while */ \
     return 0; \
   } \
@@ -479,7 +487,7 @@ GWEN_TREE_ELEMENT *_tree_element;
   \
   void pr##_Tree_ClearChildren(t *element) { \
     t* c; \
-    while( (c=GWEN_Tree_GetFirstChild(element)) ) {\
+    while( (c=GWEN_TreeElement_GetFirstChild(element->_tree_element)) ) {\
       pr##_Tree_ClearChildren(c);\
       pr##_Tree_Del(c);\
       pr##_free(c);\
@@ -498,8 +506,14 @@ GWEN_TREE_ELEMENT *_tree_element;
     return (t*)GWEN_TreeElement_GetLastChild(element->_tree_element);\
   } \
   \
-  uint32_t pr##_Tree_GetChildrenCount(const t##_TREE *l){\
-    return GWEN_Tree_GetChildrenCount(l);\
+  uint32_t pr##_Tree_GetChildrenCount(const t *element){\
+    return GWEN_TreeElement_GetChildrenCount(element->_tree_element);\
+  } \
+  \
+  t* pr##_Tree_GetParent(const t *element) { \
+    assert(element); \
+    assert(element->_tree_element);\
+    return (t*)GWEN_TreeElement_GetParent(element->_tree_element);\
   } \
   \
 

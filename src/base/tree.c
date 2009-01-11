@@ -282,6 +282,14 @@ void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el){
 
 
 
+void *GWEN_TreeElement_GetParent(const GWEN_TREE_ELEMENT *el) {
+  if (el->parent)
+    return el->parent->data;
+  return NULL;
+}
+
+
+
 uint32_t GWEN_TreeElement_GetChildrenCount(const GWEN_TREE_ELEMENT *el){
   assert(el);
   return el->count;

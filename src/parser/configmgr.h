@@ -28,6 +28,10 @@
 
 #include <gwenhywfar/inherit.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct GWEN_CONFIGMGR GWEN_CONFIGMGR;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CONFIGMGR, GWENHYWFAR_API)
@@ -107,6 +111,10 @@ int GWEN_ConfigMgr_ListSubGroups(GWEN_CONFIGMGR *mgr,
 				 GWEN_STRINGLIST *sl,
 				 uint32_t guiid);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

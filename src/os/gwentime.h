@@ -131,6 +131,11 @@ GWENHYWFAR_API double GWEN_Time_Diff(const GWEN_TIME *t1,
 GWENHYWFAR_API double GWEN_Time_DiffSeconds(const GWEN_TIME *t1,
                                             const GWEN_TIME *t0);
 
+/* Compare t1 and t0. Return 0 if both are equal, -1 if t1<t0 and
+ * 1 if t1>t0
+ */
+GWENHYWFAR_API int GWEN_Time_Compare(const GWEN_TIME *t1, const GWEN_TIME *t0);
+
 /**
  * Adds the given number of seconds to the given GWEN_TIME.
  * @return 0 if ok, !=0 on error (see @ref MOD_ERROR_SIMPLE)
