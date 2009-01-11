@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Fri Jan 02 2009
+ copyright   : (C) 2009 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -38,8 +35,8 @@
 #endif
 
 
-#ifndef GWEN_LIST1_H
-#define GWEN_LIST1_H
+#ifndef GWEN_TREE_H
+#define GWEN_TREE_H
 
 
 #ifdef __cplusplus
@@ -47,9 +44,9 @@ extern "C" {
 #endif
 
 
-/** @defgroup GWEN_MACRO_LIST Macros For Typesafe List Handling
+/** @defgroup GWEN_MACRO_TREE Macros For Typesafe Tree Handling
  *
- * The macros of this group facilitates typesafe use of lists.
+ * The macros of this group facilitates typesafe use of trees.
  *
  * <p>
  * Let's assume you have a structure type called MYSTRUCT and you want
@@ -68,10 +65,10 @@ extern "C" {
  *
  * typedef struct MYSTRUCT MYSTRUCT;
  *
- * GWEN_LIST_FUNCTION_DEFS(MYSTRUCT, MyStruct);
+ * GWEN_TREE_FUNCTION_DEFS(MYSTRUCT, MyStruct);
  *
  * struct MYSTRUCT {
- *   GWEN_LIST_ELEMENT(MYSTRUCT);
+ *   GWEN_TREE_ELEMENT(MYSTRUCT);
  *   int myData;
  * }
  *
@@ -94,7 +91,7 @@ extern "C" {
  *
  * / * mystruct.c * /
  *
- * GWEN_LIST_FUNCTIONS(MYSTRUCT, MyStruct)
+ * GWEN_TREE_FUNCTIONS(MYSTRUCT, MyStruct)
  *
  * MYSTRUCT *MyStruct_new(int myData) {
  *   MYSTRUCT *pMyStruct;
@@ -102,7 +99,7 @@ extern "C" {
  *   pMyStruct=(MYSTRUCT*)malloc(sizeof(MYSTRUCT));
  *   memset(pMyStruct, 0, sizeof(MYSTRUCT));
  *
- *   GWEN_LIST_INIT(MYSTRUCT, pMyStruct)
+ *   GWEN_TREE_INIT(MYSTRUCT, pMyStruct)
  *
  *   pMyStruct->myData=myData;
  *   return pMyStruct;
@@ -112,7 +109,7 @@ extern "C" {
  *   if (pMyStruct) {
  *     pMyStruct->myData=0;
  *
- *     GWEN_LIST_FINI(MYSTRUCT, pMyStruct)
+ *     GWEN_TREE_FINI(MYSTRUCT, pMyStruct)
  *
  *     free(pMyStruct);
  *   }
@@ -121,11 +118,11 @@ extern "C" {
  * @endcode
  * Please note the three macros used in the code file:
  * <ul>
- *   <li>@ref GWEN_LIST_FUNCTIONS creates the functions for the list
+ *   <li>@ref GWEN_TREE_FUNCTIONS creates the functions for the list
  *       management</li>
- *   <li>@ref GWEN_LIST_INIT initializes the list data inside your
+ *   <li>@ref GWEN_TREE_INIT initializes the list data inside your
  *       struct to defined values </li>
- *   <li>@ref GWEN_LIST_FINI frees all ressources occupied by the list
+ *   <li>@ref GWEN_TREE_FINI frees all ressources occupied by the list
  *       management code. Please note that this macro should be the last
  *       statement inside the destructor function before @b free()</li>
  * </ul>
@@ -152,87 +149,100 @@ extern "C" {
  *
  * All functions and structs within this group should be considered
  * internal. They just implement the functionality behind the typesafe list
- * macros (see @ref GWEN_LIST_FUNCTION_LIB_DEFS and following).
+ * macros (see @ref GWEN_TREE_FUNCTION_LIB_DEFS and following).
  */
 /*@{*/
-typedef struct GWEN_LIST1 GWEN_LIST1;
-typedef struct GWEN_LIST1_ELEMENT GWEN_LIST1_ELEMENT;
+typedef struct GWEN_TREE GWEN_TREE;
+typedef struct GWEN_TREE_ELEMENT GWEN_TREE_ELEMENT;
 
 
 /** Allocate (create) a new empty list. */
 GWENHYWFAR_API
-GWEN_LIST1 *GWEN_List1_new();
+GWEN_TREE *GWEN_Tree_new();
 
 /** Free (delete) an existing list.  The list elements are
  * untouched by this function; they need to be freed
  * beforehand. */
 GWENHYWFAR_API
-void GWEN_List1_free(GWEN_LIST1 *l);
+void GWEN_Tree_free(GWEN_TREE *l);
 
 /** Returns the number of elements in this list. This value is
  * cached in the list structure, so this function is a cheap
  * function. */
 GWENHYWFAR_API
-int GWEN_List1_GetCount(const GWEN_LIST1 *l);
+int GWEN_Tree_GetCount(const GWEN_TREE *l);
 
-/** Adds (appends) a list element at the end of the list. (This
+/** Adds (appends) a toplevel tree element. (This
  * operation is also called "append" or "push_back" elsewhere.) */
 GWENHYWFAR_API
-int GWEN_List1_Add(GWEN_LIST1 *l, GWEN_LIST1_ELEMENT *el);
+void GWEN_Tree_Add(GWEN_TREE *l, GWEN_TREE_ELEMENT *el);
 
-/** Inserts (prepends) a list element at the beginning of the
+/** Inserts (prepends) a toplevel tree element at the beginning of the
  * list. (This operation is also called "prepend" or "push_front"
  * elsewhere.) */
 GWENHYWFAR_API
-int GWEN_List1_Insert(GWEN_LIST1 *l, GWEN_LIST1_ELEMENT *el);
+void GWEN_Tree_Insert(GWEN_TREE *l, GWEN_TREE_ELEMENT *el);
 
-/** Deletes (removes) a list element from the list it used to
- * belong to. The list element is not free'd or anything, it is
+/** Deletes (removes) a tree element from the tree it used to
+ * belong to. The tree element is not free'd or anything, it is
  * only removed from the list it used to belong to. (This
  * operation is also called "remove" or "unlink" elsewhere.) */
 GWENHYWFAR_API
-int GWEN_List1_Del(GWEN_LIST1_ELEMENT *el);
+void GWEN_Tree_Del(GWEN_TREE_ELEMENT *el);
 
 /** Adds (appends) the second list to the end of the first
  * list. (This operation is also called "append" or "concatenate"
  * elsewhere.) */
 GWENHYWFAR_API
-int GWEN_List1_AddList(GWEN_LIST1 *dest, GWEN_LIST1 *l);
+void GWEN_Tree_AddList(GWEN_TREE *dest, GWEN_TREE *l);
+
+/** Add a child below the given element. */
+GWENHYWFAR_API
+void GWEN_Tree_AddChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el);
+
+/** Insert a child below the given element. */
+GWENHYWFAR_API
+void GWEN_Tree_InsertChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el);
+
 
 /** Returns the data pointer of the first list element. */
 GWENHYWFAR_API
-void *GWEN_List1_GetFirst(const GWEN_LIST1 *l);
+void *GWEN_Tree_GetFirst(const GWEN_TREE *l);
 
 /** Returns the data pointer of the last list element. */
 GWENHYWFAR_API
-void *GWEN_List1_GetLast(const GWEN_LIST1 *l);
+void *GWEN_Tree_GetLast(const GWEN_TREE *l);
 
 
 
 /** Allocate (create) a new list element structure. */
 GWENHYWFAR_API
-GWEN_LIST1_ELEMENT *GWEN_List1Element_new(void *d);
+GWEN_TREE_ELEMENT *GWEN_TreeElement_new(void *d);
 
 /** Free (delete) a list element structure. */
 GWENHYWFAR_API
-void GWEN_List1Element_free(GWEN_LIST1_ELEMENT *el);
-
-/** Returns the data pointer of the given list element
- * structure. */
-GWENHYWFAR_API
-void *GWEN_List1Element_GetData(const GWEN_LIST1_ELEMENT *el);
+void GWEN_TreeElement_free(GWEN_TREE_ELEMENT *el);
 
 /** Returns the data pointer of the list element that is the
  * previous (predecessor) to the given one in its list. If there
  * is no such prepending list element, returns NULL. */
 GWENHYWFAR_API
-void *GWEN_List1Element_GetPrevious(const GWEN_LIST1_ELEMENT *el);
+void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el);
 
 /** Returns the data pointer of the list element that is the next
  * one (successor) to the given one in its list. If there is no
  * such prepending list element, returns NULL. */
 GWENHYWFAR_API
-void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el);
+void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el);
+
+/** Returns the first child of the given element. */
+GWENHYWFAR_API
+void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el);
+
+/** Returns the last child of the given element. */
+GWENHYWFAR_API
+void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el);
+
 
 /*@}*/
 
@@ -246,8 +256,8 @@ void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el);
  * Use this inside the declaration of a struct for which you want to create
  * lists.
  */
-#define GWEN_LIST_ELEMENT(t) \
-GWEN_LIST1_ELEMENT *_list1_element;
+#define GWEN_TREE_ELEMENT(t) \
+GWEN_TREE_ELEMENT *_tree_element;
 
 /**
  * Use this macro in your public header files to export only list functions
@@ -255,34 +265,43 @@ GWEN_LIST1_ELEMENT *_list1_element;
  * not be modified by callers. It also prevents callers from creating their
  * own lists (this is sometimes needed).
  */
-#define GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
-  typedef GWEN_LIST1 t##_LIST; \
+#define GWEN_TREE_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
+  typedef GWEN_TREE t##_TREE; \
   \
-  decl t* pr##_List_First(const t##_LIST *l); \
-  decl t* pr##_List_Last(const t##_LIST *l); \
-  decl t* pr##_List_Next(const t *element); \
-  decl t* pr##_List_Previous(const t *element); \
-  decl uint32_t pr##_List_GetCount(const t##_LIST *l); \
-  decl int pr##_List_HasElement(const t##_LIST *l, const t *element);
+  decl t* pr##_Tree_GetFirst(const t##_TREE *l); \
+  decl t* pr##_Tree_GetLast(const t##_TREE *l); \
+  decl t* pr##_Tree_GetNext(const t *element); \
+  decl t* pr##_Tree_GetPrevious(const t *element); \
+  decl uint32_t pr##_Tree_GetCount(const t##_TREE *l); \
+  decl int pr##_Tree_HasElement(const t##_TREE *l, const t *element); \
+  decl t* pr##_Tree_GetFirstChild(const t *element); \
+  decl t* pr##_Tree_GetLastChild(const t *element); \
+  decl uint32_t pr##_Tree_GetChildrenCount(const t *element); \
 
 
-#define GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl) \
-  typedef GWEN_LIST1_ELEMENT t##_LIST_ELEMENT; \
+#define GWEN_TREE_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl) \
+  typedef GWEN_TREE_ELEMENT t##_TREE_ELEMENT; \
   \
-  decl void pr##_List_Clear(t##_LIST *l); \
-  decl t##_LIST* pr##_List_new(); \
-  decl void pr##_List_free(t##_LIST *l); \
-  decl int pr##_List_AddList(t##_LIST *dst, t##_LIST *l); \
-  decl int pr##_List_Add(t *element, t##_LIST *list); \
-  decl int pr##_List_Insert(t *element, t##_LIST *list); \
-  decl int pr##_List_Del(t *element); \
+  decl void pr##_Tree_Clear(t##_TREE *l); \
+  decl t##_TREE* pr##_Tree_new(); \
+  decl void pr##_Tree_free(t##_TREE *l); \
+  decl void pr##_Tree_AddList(t##_TREE *dst, t##_TREE *l); \
+  decl void pr##_Tree_Add(t##_TREE *list, t *element); \
+  decl void pr##_Tree_Insert(t##_TREE *list, t *element); \
+  decl int pr##_Tree_Del(t *element); \
+  \
+  decl void pr##_Tree_AddChild(t *where, t *element); \
+  decl void pr##_Tree_InsertChild(t *where, t *element); \
+  \
+  decl int pr##_Tree_HasChildElement(const t *who, const t *element); \
+  decl void pr##_Tree_ClearChildren(t *element); \
 
 
-#define GWEN_LIST_FUNCTION_DEFS_CONST(t, pr) \
-  GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
+#define GWEN_TREE_FUNCTION_DEFS_CONST(t, pr) \
+  GWEN_TREE_FUNCTION_LIB_DEFS_CONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
-#define GWEN_LIST_FUNCTION_DEFS_NOCONST(t, pr) \
-  GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
+#define GWEN_TREE_FUNCTION_DEFS_NOCONST(t, pr) \
+  GWEN_TREE_FUNCTION_LIB_DEFS_NOCONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
 
 /**
@@ -293,143 +312,196 @@ GWEN_LIST1_ELEMENT *_list1_element;
  * The following function prototypes will then be created:
  * <ul>
  *  <li>
- *    void MyType_List_Add(MYTYPE *element, MYTYPE_LIST *list);<br>
+ *    void MyType_Tree_Add(MYTYPE *element, MYTYPE_TREE *list);<br>
  *    Adds (appends) a MYTYPE struct at the end of the given
  *    list. (We apologize for the unusual argument order here.)
  *  </li>
  *  <li>
- *    void MyType_List_Del(MYTYPE *element);<br>
+ *    void MyType_Tree_Del(MYTYPE *element);<br>
  *    Removes a MyType struct from the list it is enlisted to.
  *  </li>
  *  <li>
- *    MYTYPE *MyType_List_First(MYTYPE *element); <br>
+ *    MYTYPE *MyType_Tree_First(MYTYPE *element); <br>
  *    Returns the first element of the given list.
  *  </li>
  *  <li>
- *    MYTYPE* MyType_List_Next(const MYTYPE *element);<br>
+ *    MYTYPE* MyType_Tree_Next(const MYTYPE *element);<br>
  *    Returns the next list element to the given one (the
  *    successor) in its list.
  *  </li>
  *  <li>
- *    MYTYPE* MyType_List_Previous(const MYTYPE *element);<br>
+ *    MYTYPE* MyType_Tree_Previous(const MYTYPE *element);<br>
  *    Returns the previous list element to the given one (the
  *    predecessor) in its list.
  *  </li>
  *  <li>
- *    void MyType_List_Clear(MYTYPE *element); <br>
+ *    void MyType_Tree_Clear(MYTYPE *element); <br>
  *    Frees all entries of the given list.
  *    This function assumes that there is a function Mytype_free().
  *  </li>
  *  <li>
- *    MYTYPE_LIST *MyType_List_new(); <br>
+ *    MYTYPE_TREE *MyType_Tree_new(); <br>
  *    Creates a new list of elements of MYTYPE type.
  *  </li>
  *  <li>
- *    void MyType_List_free(MYTYPE_LIST *l); <br>
+ *    void MyType_Tree_free(MYTYPE_TREE *l); <br>
  *    Clears and frees a list of elements of MYTYPE type.
  *    All objects inside the list are freed.
  *  </li>
  * </ul>
  *
  */
-#define GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, decl) \
-  GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
-  GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl)
+#define GWEN_TREE_FUNCTION_LIB_DEFS(t, pr, decl) \
+  GWEN_TREE_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
+  GWEN_TREE_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl)
 
 
 /**
  * This macro should be used in applications, not in libraries. In
- * libraries please use the macro @ref GWEN_LIST_FUNCTION_LIB_DEFS.
+ * libraries please use the macro @ref GWEN_TREE_FUNCTION_LIB_DEFS.
  */
-#define GWEN_LIST_FUNCTION_DEFS(t, pr) \
-  GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
+#define GWEN_TREE_FUNCTION_DEFS(t, pr) \
+  GWEN_TREE_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
 
   /**
    * Use this inside your code files (*.c).
    * Actually implements the functions for which the prototypes have been
-   * defined via @ref GWEN_LIST_FUNCTION_DEFS.
+   * defined via @ref GWEN_TREE_FUNCTION_DEFS.
    */
-#define GWEN_LIST_FUNCTIONS(t, pr) \
+#define GWEN_TREE_FUNCTIONS(t, pr) \
   \
-  int pr##_List_Add(t *element, t##_LIST *l) { \
+  void pr##_Tree_Add(t##_TREE *l, t *element) { \
     assert(element); \
-    assert(element->_list1_element);\
-    return GWEN_List1_Add(l, element->_list1_element); \
+    assert(element->_tree_element);\
+    GWEN_Tree_Add(l, element->_tree_element); \
   } \
   \
-  int pr##_List_AddList(t##_LIST *dst, t##_LIST *l) { \
-    return GWEN_List1_AddList(dst, l); \
+  void pr##_Tree_AddList(t##_TREE *dst, t##_TREE *l) { \
+    GWEN_Tree_AddList(dst, l); \
   } \
   \
-  int pr##_List_Insert(t *element, t##_LIST *l) { \
+  void pr##_Tree_Insert(t##_TREE *l, t *element) { \
     assert(element); \
-    assert(element->_list1_element);\
-    return GWEN_List1_Insert(l, element->_list1_element); \
+    assert(element->_tree_element);\
+    return GWEN_Tree_Insert(l, element->_tree_element); \
   } \
   \
-  int pr##_List_Del(t *element){ \
+  void pr##_Tree_Del(t *element){ \
     assert(element); \
-    assert(element->_list1_element);\
-    return GWEN_List1_Del(element->_list1_element); \
+    assert(element->_tree_element);\
+    void GWEN_Tree_Del(element->_tree_element); \
   }\
   \
-  t* pr##_List_First(const t##_LIST *l) { \
-    if (l) return (t*)GWEN_List1_GetFirst(l);\
+  t* pr##_Tree_GetFirst(const t##_TREE *l) { \
+    if (l) return (t*)GWEN_Tree_GetFirst(l);\
     else return 0; \
   } \
   \
-  t* pr##_List_Last(const t##_LIST *l) { \
-    if (l) return (t*) GWEN_List1_GetLast(l);\
+  t* pr##_Tree_GetLast(const t##_TREE *l) { \
+    if (l) return (t*) GWEN_Tree_GetLast(l);\
     else return 0; \
   } \
   \
-  void pr##_List_Clear(t##_LIST *l) { \
+  void pr##_Tree_Clear(t##_TREE *l) { \
     t* el; \
-    while( (el=GWEN_List1_GetFirst(l)) ) {\
-      pr##_List_Del(el);\
+    while( (el=GWEN_Tree_GetFirst(l)) ) {\
+      pr##_Tree_Del(el);\
+      pr##_Tree_ClearChildren(el); \
       pr##_free(el);\
     } /* while */ \
   } \
   \
-  int pr##_List_HasElement(const t##_LIST *l, const t *element) { \
+  int pr##_Tree_HasElement(const t##_TREE *l, const t *element) { \
     const t* el; \
-    el=(t*)GWEN_List1_GetFirst(l); \
+    el=(t*)GWEN_Tree_GetFirst(l); \
     while(el) {\
       if (el==element) \
         return 1; \
-      el=(const t*)GWEN_List1Element_GetNext(el->_list1_element); \
+      el=(const t*)GWEN_TreeElement_GetNext(el->_tree_element); \
     } /* while */ \
     return 0; \
   } \
   \
-  t##_LIST* pr##_List_new(){\
-    return (t##_LIST*)GWEN_List1_new(); \
+  t##_TREE* pr##_Tree_new(){\
+    return (t##_TREE*)GWEN_Tree_new(); \
   }\
   \
-  void pr##_List_free(t##_LIST *l) {\
+  void pr##_Tree_free(t##_TREE *l) {\
     if (l) { \
-      pr##_List_Clear(l);\
-      GWEN_List1_free(l); \
+      pr##_Tree_Clear(l);\
+      GWEN_Tree_free(l); \
     }\
   } \
   \
-  t* pr##_List_Next(const t *element) { \
+  t* pr##_Tree_GetNext(const t *element) { \
     assert(element); \
-    assert(element->_list1_element);\
-    return (t*)GWEN_List1Element_GetNext(element->_list1_element);\
+    assert(element->_tree_element);\
+    return (t*)GWEN_TreeElement_GetNext(element->_tree_element);\
   } \
   \
-  t* pr##_List_Previous(const t *element) { \
+  t* pr##_Tree_GetPrevious(const t *element) { \
     assert(element); \
-    assert(element->_list1_element);\
-    return (t*)GWEN_List1Element_GetPrevious(element->_list1_element);\
+    assert(element->_tree_element);\
+    return (t*)GWEN_TreeElement_GetPrevious(element->_tree_element);\
   } \
   \
-  uint32_t pr##_List_GetCount(const t##_LIST *l){\
-    return GWEN_List1_GetCount(l);\
-  }
-
+  uint32_t pr##_Tree_GetCount(const t##_TREE *l){\
+    return GWEN_Tree_GetCount(l);\
+  } \
+  \
+  int pr##_Tree_HasChildElement(const t *who, const t *element) { \
+    const t* el; \
+    el=(t*)GWEN_Tree_GetFirstChild(who); \
+    while(el) {\
+      if (el==element) \
+        return 1; \
+      el=(const t*)GWEN_TreeElement_GetNextChild(e->_tree_element); \
+    } /* while */ \
+    return 0; \
+  } \
+  \
+  void pr##_Tree_AddChild(t *where, t *element) { \
+    assert(where); \
+    assert(where->_tree_element);\
+    assert(element); \
+    assert(element->_tree_element);\
+    GWEN_Tree_AddChild(where->_tree_element, element->_tree_element); \
+  } \
+  \
+  void pr##_Tree_InsertChild(t *where, t *element) { \
+    assert(where); \
+    assert(where->_tree_element);\
+    assert(element); \
+    assert(element->_tree_element);\
+    GWEN_Tree_InsertChild(where->_tree_element, element->_tree_element); \
+  } \
+  \
+  void pr##_Tree_ClearChildren(t *element) { \
+    t* c; \
+    while( (c=GWEN_Tree_GetFirstChild(element)) ) {\
+      pr##_Tree_ClearChildren(c);\
+      pr##_Tree_Del(c);\
+      pr##_free(c);\
+    } /* while */ \
+  } \
+  \
+  t* pr##_Tree_GetFirstChild(const t *element) { \
+    assert(element); \
+    assert(element->_tree_element);\
+    return (t*)GWEN_TreeElement_GetFirstChild(element->_tree_element);\
+  } \
+  \
+  t* pr##_Tree_GetLastChild(const t *element) { \
+    assert(element); \
+    assert(element->_tree_element);\
+    return (t*)GWEN_TreeElement_GetLastChild(element->_tree_element);\
+  } \
+  \
+  uint32_t pr##_Tree_GetChildrenCount(const t##_TREE *l){\
+    return GWEN_Tree_GetChildrenCount(l);\
+  } \
+  \
 
 
 /**
@@ -437,8 +509,8 @@ GWEN_LIST1_ELEMENT *_list1_element;
  * you want to use in lists (in GWEN these are the functions which end with
  * "_new".
  */
-#define GWEN_LIST_INIT(t, element) \
-  element->_list1_element=GWEN_List1Element_new(element);
+#define GWEN_TREE_INIT(t, element) \
+  element->_tree_element=GWEN_TreeElement_new(element);
 
 
 /**
@@ -446,10 +518,10 @@ GWEN_LIST1_ELEMENT *_list1_element;
  * you want to use in lists (in GWEN these are the functions which end with
  * "_free".
  */
-#define GWEN_LIST_FINI(t, element) \
-  if (element && element->_list1_element) { \
-    GWEN_List1Element_free(element->_list1_element); \
-    element->_list1_element=0; \
+#define GWEN_TREE_FINI(t, element) \
+  if (element && element->_tree_element) { \
+    GWEN_TreeElement_free(element->_tree_element); \
+    element->_tree_element=0; \
   }
 
 /*@}*/

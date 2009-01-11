@@ -27,6 +27,7 @@
 #include <gwenhywfar/refptr.h>
 #include <gwenhywfar/stringlist2.h>
 #include <gwenhywfar/url.h>
+#include <gwenhywfar/tree.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # include <winsock.h>
@@ -3832,7 +3833,6 @@ int testCryptMgr3(int argc, char **argv) {
 
   return 0;
 }
-
 
 
 
