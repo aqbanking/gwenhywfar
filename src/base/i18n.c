@@ -172,6 +172,8 @@ const char *GWEN_I18N_Translate(const char *textdomain, const char *text) {
     s=dgettext(textdomain, text);
     if (strcmp(s, text)==0)
       return ++p;
+    else
+      return s;
   }
   else
     return dgettext(textdomain, text);
