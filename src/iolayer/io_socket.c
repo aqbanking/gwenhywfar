@@ -40,6 +40,146 @@ GWEN_INHERIT(GWEN_IO_LAYER, GWEN_IO_LAYER_SOCKET)
 
 
 
+int GWEN_Proxy_Connect(GWEN_SOCKET *sp, const GWEN_INETADDRESS *addr) {
+  int err;
+  int tport;
+  int len;
+  int idx=0;
+  int ok=0;
+  int first=1;
+  char *proxy;
+  char *port;
+  GWEN_INETADDRESS *in;
+  char taddr[64];
+  char wrk[1024];
+
+  if (GWEN_Socket_GetSocketType(sp)!=GWEN_SocketTypeTCP)
+    return GWEN_Socket_Connect(sp, addr);
+
+  tport=GWEN_InetAddr_GetPort(addr);
+  GWEN_InetAddr_GetAddress(addr, taddr, sizeof(taddr));
+  snprintf(wrk, sizeof(wrk)-1, "CONNECT %s:%d\n", taddr, tport);
+  wrk[sizeof(wrk)-1]=0;
+  len=strlen(wrk);
+
+  port=proxy=strdup(getenv("GWEN_PROXY"));
+  assert(port);
+
+  while (*port) {
+    if (*port==':') {
+      *port++=0;
+      break;
+    }
+    else
+      port++;
+  }
+
+  if (!*port) {
+    free(proxy);
+    return GWEN_ERROR_BAD_ADDRESS;
+  }
+
+  in=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  assert(in);
+
+  err=GWEN_InetAddr_SetPort(in, atoi(port));
+  if (err) {
+    free(proxy);
+    GWEN_InetAddr_free(in);
+    return err;
+  }
+
+  err=GWEN_InetAddr_SetAddress(in, proxy);
+  if (err) {
+    if (err==GWEN_ERROR_BAD_ADDRESS) {
+      err=GWEN_InetAddr_SetName(in, proxy);
+      if (err) {
+	free(proxy);
+	GWEN_InetAddr_free(in);
+	return err;
+      }
+    }
+    else {
+      free(proxy);
+      GWEN_InetAddr_free(in);
+      return err;
+    }
+  }
+
+  free(proxy);
+
+  /* this is the part I don't like very much but for now it is
+   * necessary. Later this should be implemented non-blocking because the
+   * code leading to the calling of this function expects the whole call
+   * to be non-blocking... */
+  err=GWEN_Socket_SetBlocking(sp, 1);
+  if (err) {
+    GWEN_InetAddr_free(in);
+    return err;
+  }
+
+  tport=GWEN_InetAddr_GetPort(in);
+  GWEN_InetAddr_GetAddress(in, taddr, sizeof(taddr));
+  DBG_INFO(GWEN_LOGDOMAIN, "Connecting to proxy %s (port %d)", taddr, tport);
+
+  /* connect to proxy */
+  err=GWEN_Socket_Connect(sp, in);
+  GWEN_InetAddr_free(in);
+  if (err) {
+    if (err==GWEN_ERROR_IN_PROGRESS) {
+      err=GWEN_Socket_WaitForWrite(sp, 10000);
+      if (err)
+        return err;
+    }
+    else
+      return err;
+  }
+
+  /* write connect command */
+  err=GWEN_Socket_Write(sp, wrk, &len);
+  if (err)
+    return err;
+
+  while (1) {
+    err=GWEN_Socket_WaitForRead(sp, first?40000:1000);
+    if (err)
+      return err;
+
+    first=0;
+    len=1;
+    err=GWEN_Socket_Read(sp, wrk+idx, &len);
+    if (err)
+      return err;
+
+    if(wrk[idx]=='\r')
+      continue;
+
+    if(wrk[idx]=='\n') {
+      if (!idx) {
+	if (ok)
+	  return 0;
+	else
+	  return GWEN_ERROR_IO;
+      }
+
+      if(!ok) {
+	wrk[idx]=0;
+	if (strncmp(wrk, "HTTP/1.0 200", 12)==0 ||
+	    strncmp(wrk, "HTTP/1.1 200", 12)==0)
+	  ok=1;
+	else
+	  return GWEN_ERROR_IO;
+      }
+
+      idx=0;
+    }
+    else if (++idx==sizeof(wrk))
+      return GWEN_ERROR_IO;
+  }
+}
+
+
+
 GWEN_IO_LAYER *GWEN_Io_LayerSocket_new(GWEN_SOCKET *sk) {
   GWEN_IO_LAYER *io;
   GWEN_IO_LAYER_SOCKET *xio;
@@ -472,7 +612,10 @@ int GWEN_Io_LayerSocket_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
 #endif
 
       /* actually start to connect */
-      rv=GWEN_Socket_Connect(xio->socket, xio->peerAddr);
+      if (getenv("GWEN_PROXY"))
+	rv=GWEN_Proxy_Connect(xio->socket, xio->peerAddr);
+      else
+	rv=GWEN_Socket_Connect(xio->socket, xio->peerAddr);
       /* not yet finished or real error ? */
       if (rv) {
 	if (rv!=GWEN_ERROR_IN_PROGRESS) {

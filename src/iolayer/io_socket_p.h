@@ -46,6 +46,8 @@ static int GWEN_Io_LayerSocket_Listen(GWEN_IO_LAYER *io);
 
 static GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerSocket_CheckForIncoming(GWEN_IO_LAYER *io);
 
+static int GWEN_Proxy_Connect(GWEN_SOCKET *sp, const GWEN_INETADDRESS *addr);
+
 
 
 #endif
