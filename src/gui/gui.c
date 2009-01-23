@@ -455,8 +455,19 @@ int GWEN_Gui_SetPasswordStatus(const char *token,
 
 int GWEN_Gui_LogHook(const char *logDomain,
 		     GWEN_LOGGER_LEVEL priority, const char *s) {
-  if (gwenhywfar_gui && gwenhywfar_gui->logHookFn)
-    return gwenhywfar_gui->logHookFn(gwenhywfar_gui, logDomain, priority, s);
+  if (gwenhywfar_gui && gwenhywfar_gui->logHookFn) {
+    if (priority>=GWEN_LoggerLevel_Debug &&
+	logDomain &&
+	strcasecmp(logDomain, "gwenhywfar")==0)
+      /* don't send possibly sensitive data to the log function because
+       * some application tend to store the messages indiscriminately.
+       * In some cases sensitive information can be send to this function
+       * which we don't want the application to store */
+      return 0;
+    else
+      /* otherwise the log message seems to be uncritical, convey it */
+      return gwenhywfar_gui->logHookFn(gwenhywfar_gui, logDomain, priority, s);
+  }
   else
     /* handle as usual */
     return 0;
