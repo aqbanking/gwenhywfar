@@ -235,6 +235,17 @@ void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el);
 GWENHYWFAR_API
 void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el);
 
+/** Returns the element which is logically below the given one.
+ * The order of search is this:
+ * <ul>
+ *  <li>first child of the given element </li>
+ *  <li>next neighbour of the given element </li>
+ *  <li>loop for every parent: check next neighbour of the given element's parent (if any) </li>
+ * </ul>
+ */
+GWENHYWFAR_API
+void *GWEN_TreeElement_GetBelow(const GWEN_TREE_ELEMENT *el);
+
 /** Returns the first child of the given element. */
 GWENHYWFAR_API
 void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el);
@@ -249,7 +260,6 @@ void *GWEN_TreeElement_GetParent(const GWEN_TREE_ELEMENT *el);
 /** Returns the number of children of the given element */
 GWENHYWFAR_API
 uint32_t GWEN_TreeElement_GetChildrenCount(const GWEN_TREE_ELEMENT *el);
-
 
 /*@}*/
 
@@ -279,6 +289,7 @@ GWEN_TREE_ELEMENT *_tree_element;
   decl t* pr##_Tree_GetLast(const t##_TREE *l); \
   decl t* pr##_Tree_GetNext(const t *element); \
   decl t* pr##_Tree_GetPrevious(const t *element); \
+  decl t* pr##_Tree_GetBelow(const t *element); \
   decl uint32_t pr##_Tree_GetCount(const t##_TREE *l); \
   decl int pr##_Tree_HasElement(const t##_TREE *l, const t *element); \
   decl t* pr##_Tree_GetFirstChild(const t *element); \
@@ -426,7 +437,7 @@ GWEN_TREE_ELEMENT *_tree_element;
     while(el) {\
       if (el==element) \
         return 1; \
-      el=(const t*)GWEN_TreeElement_GetNext(el->_tree_element); \
+      el=(const t*)GWEN_TreeElement_GetBelow(el->_tree_element); \
     } /* while */ \
     return 0; \
   } \
@@ -452,6 +463,12 @@ GWEN_TREE_ELEMENT *_tree_element;
     assert(element); \
     assert(element->_tree_element);\
     return (t*)GWEN_TreeElement_GetPrevious(element->_tree_element);\
+  } \
+  \
+  t* pr##_Tree_GetBelow(const t *element) { \
+    assert(element); \
+    assert(element->_tree_element);\
+    return (t*)GWEN_TreeElement_GetBelow(element->_tree_element);\
   } \
   \
   uint32_t pr##_Tree_GetCount(const t##_TREE *l){\

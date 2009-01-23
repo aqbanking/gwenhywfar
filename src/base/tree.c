@@ -266,6 +266,26 @@ void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el){
 
 
 
+void *GWEN_TreeElement_GetBelow(const GWEN_TREE_ELEMENT *el) {
+  if (el->firstChild)                               /* look down */
+    return el->firstChild->data;
+  else if (el->nextElement)                         /* look right */
+    return el->nextElement->data;
+  else {
+    /* look for a parent which has a right neighbour */
+    while(el && el->parent) {
+      if (el->parent->nextElement)                  /* look right of parent */
+	return el->parent->nextElement->data;
+      /* parent has no right neighbour, consult its parent */
+      el=el->parent;
+    }
+  }
+
+  return NULL;
+}
+
+
+
 void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el){
   if (el->firstChild)
     return el->firstChild->data;
