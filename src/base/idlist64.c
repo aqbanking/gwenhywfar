@@ -79,11 +79,8 @@ void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt){
 
 
 
-int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id){
+static inline int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id){
   unsigned int i;
-
-  assert(idt);
-  assert(id);
 
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
     if (idt->entries[i]==0) {
@@ -97,11 +94,8 @@ int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id){
 
 
 
-int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id){
+static inline int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id){
   unsigned int i;
-
-  assert(idt);
-  assert(id);
 
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
     if (idt->entries[i]==id) {
@@ -113,11 +107,8 @@ int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id){
 
 
 
-int GWEN_IdTable64_DelId(GWEN_IDTABLE64 *idt, uint64_t id){
+static inline int GWEN_IdTable64_DelId(GWEN_IDTABLE64 *idt, uint64_t id){
   unsigned int i;
-
-  assert(idt);
-  assert(id);
 
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
     if (idt->entries[i]==id) {
@@ -131,28 +122,25 @@ int GWEN_IdTable64_DelId(GWEN_IDTABLE64 *idt, uint64_t id){
 
 
 
-int GWEN_IdTable64_IsEmpty(const GWEN_IDTABLE64 *idt){
-  assert(idt);
+static inline int GWEN_IdTable64_IsEmpty(const GWEN_IDTABLE64 *idt){
   return GWEN_IDTABLE64_MAXENTRIES==idt->freeEntries;
 }
 
 
 
-int GWEN_IdTable64_IsFull(const GWEN_IDTABLE64 *idt){
-  assert(idt);
+static inline int GWEN_IdTable64_IsFull(const GWEN_IDTABLE64 *idt){
   return idt->freeEntries==0;
 }
 
 
 
-unsigned int GWEN_IdTable64_GetCount(const GWEN_IDTABLE64 *idt){
-  assert(idt);
+static inline unsigned int GWEN_IdTable64_GetCount(const GWEN_IDTABLE64 *idt){
   return GWEN_IDTABLE64_MAXENTRIES-idt->freeEntries;
 }
 
 
 
-uint64_t GWEN_IdTable64_GetFirstId(GWEN_IDTABLE64 *idt){
+static inline uint64_t GWEN_IdTable64_GetFirstId(GWEN_IDTABLE64 *idt){
   unsigned int i;
 
   assert(idt);
@@ -168,10 +156,8 @@ uint64_t GWEN_IdTable64_GetFirstId(GWEN_IDTABLE64 *idt){
 
 
 
-uint64_t GWEN_IdTable64_GetNextId(GWEN_IDTABLE64 *idt){
+static inline uint64_t GWEN_IdTable64_GetNextId(GWEN_IDTABLE64 *idt){
   unsigned int i;
-
-  assert(idt);
 
   for (i=idt->current+1; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
     if (idt->entries[i]!=0) {
@@ -185,11 +171,10 @@ uint64_t GWEN_IdTable64_GetNextId(GWEN_IDTABLE64 *idt){
 
 
 
-uint64_t GWEN_IdTable64_GetFirstId2(const GWEN_IDTABLE64 *idt,
-                                          uint64_t *tabIdx){
+static inline uint64_t GWEN_IdTable64_GetFirstId2(const GWEN_IDTABLE64 *idt,
+                                                  uint64_t *tabIdx){
   unsigned int i;
 
-  assert(idt);
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
     if (idt->entries[i]!=0) {
       *tabIdx=i;
@@ -201,11 +186,9 @@ uint64_t GWEN_IdTable64_GetFirstId2(const GWEN_IDTABLE64 *idt,
 
 
 
-uint64_t GWEN_IdTable64_GetNextId2(const GWEN_IDTABLE64 *idt,
-                                         uint64_t *tabIdx){
+static inline uint64_t GWEN_IdTable64_GetNextId2(const GWEN_IDTABLE64 *idt,
+                                                 uint64_t *tabIdx){
   unsigned int i;
-
-  assert(idt);
 
   for (i=(*tabIdx)+1; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
     if (idt->entries[i]!=0) {

@@ -353,8 +353,6 @@ GWEN_LIST1_ELEMENT *_list1_element;
 #define GWEN_LIST_FUNCTIONS(t, pr) \
   \
   int pr##_List_Add(t *element, t##_LIST *l) { \
-    assert(element); \
-    assert(element->_list1_element);\
     return GWEN_List1_Add(l, element->_list1_element); \
   } \
   \
@@ -363,14 +361,10 @@ GWEN_LIST1_ELEMENT *_list1_element;
   } \
   \
   int pr##_List_Insert(t *element, t##_LIST *l) { \
-    assert(element); \
-    assert(element->_list1_element);\
     return GWEN_List1_Insert(l, element->_list1_element); \
   } \
   \
   int pr##_List_Del(t *element){ \
-    assert(element); \
-    assert(element->_list1_element);\
     return GWEN_List1_Del(element->_list1_element); \
   }\
   \
@@ -415,14 +409,10 @@ GWEN_LIST1_ELEMENT *_list1_element;
   } \
   \
   t* pr##_List_Next(const t *element) { \
-    assert(element); \
-    assert(element->_list1_element);\
     return (t*)GWEN_List1Element_GetNext(element->_list1_element);\
   } \
   \
   t* pr##_List_Previous(const t *element) { \
-    assert(element); \
-    assert(element->_list1_element);\
     return (t*)GWEN_List1Element_GetPrevious(element->_list1_element);\
   } \
   \

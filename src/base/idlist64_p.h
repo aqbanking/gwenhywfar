@@ -52,20 +52,6 @@ GWEN_IDTABLE64 *GWEN_IdTable64_new();
 void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt);
 void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt);
 
-int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id);
-int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id);
-int GWEN_IdTable64_DelId(GWEN_IDTABLE64 *idt, uint64_t id);
-int GWEN_IdTable64_IsEmpty(const GWEN_IDTABLE64 *idt);
-int GWEN_IdTable64_IsFull(const GWEN_IDTABLE64 *idt);
-uint64_t GWEN_IdTable64_GetFirstId(GWEN_IDTABLE64 *idt);
-uint64_t GWEN_IdTable64_GetNextId(GWEN_IDTABLE64 *idt);
-unsigned int GWEN_IdTable64_GetCount(const GWEN_IDTABLE64 *idt);
-
-uint64_t GWEN_IdTable64_GetFirstId2(const GWEN_IDTABLE64 *idt,
-				    uint64_t *tabIdx);
-uint64_t GWEN_IdTable64_GetNextId2(const GWEN_IDTABLE64 *idt,
-				   uint64_t *tabIdx);
-
 void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl);
 
 struct GWEN_IDLIST64 {
