@@ -731,7 +731,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
     rv=GWEN_FastBuffer_ReadLineToBuffer(fb, lbuf);
     if (rv<0) {
       if (rv==GWEN_ERROR_EOF) {
-	if (!someLinesRead && !(dbflags | GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM)){
+	if (!someLinesRead && !(dbflags & GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM)){
 	  DBG_INFO(GWEN_LOGDOMAIN, "Unexpected EOF (%d)", rv);
 	  GWEN_Buffer_free(lbuf);
 	  return rv;
