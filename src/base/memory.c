@@ -391,7 +391,7 @@ void *GWEN_Memory_malloc(size_t wsize) {
   size_t dsize;
 #endif
 
-  if (wsize==0) {
+  if (GWEN_UNLIKELY(wsize==0)) {
     fprintf(stderr,
             "GWEN error: allocating 0 bytes, maybe a program error\n");
     abort();
@@ -519,7 +519,7 @@ void GWEN_Memory_dealloc(void *p) {
     }
   }
 #else
-  if (gwen_memory__nofree==0)
+  if (GWEN_LIKELY(gwen_memory__nofree==0))
     free(p);
 #endif
 }

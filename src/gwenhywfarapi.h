@@ -131,8 +131,12 @@
 #if __GNUC_PREREQ(3, 0)
 /* Only available in gcc >= 3.0.x */
 # define DEPRECATED __attribute__((deprecated))
+# define GWEN_LIKELY(cond) __builtin_expect(!!(cond), 1)
+# define GWEN_UNLIKELY(cond) __builtin_expect(!!(cond), 0)
 #else
 # define DEPRECATED
+# define GWEN_LIKELY(cond) (!!(cond))
+# define GWEN_UNLIKELY(cond) (!!(cond))
 #endif /* __GNUC__ */
 
 

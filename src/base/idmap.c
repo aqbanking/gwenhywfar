@@ -401,7 +401,8 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetFirstTable(GWEN_IDMAP_HEX4_TABLE *t,
   uint32_t id;
   int i;
 
-  id=*pid;
+  /* id=*pid; */
+  id=0;
   for (i=0; i<16; i++) {
     if (t->ptrs[i]) {
       uint32_t lid;

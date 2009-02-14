@@ -381,14 +381,15 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
 int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
   assert(bf);
 
-  if ((bf->bytesUsed+1+1 > bf->bufferSize) &&
-      GWEN_Buffer_AllocRoom(bf, 1+1)) { /* +1 for the trailing 0 */
-    DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
-    return 1;
+  if (GWEN_UNLIKELY(bf->bytesUsed+1+1 > bf->bufferSize)) {
+    if (GWEN_UNLIKELY(GWEN_Buffer_AllocRoom(bf, 1+1))) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "here");
+      return 1;
+    }
   }
 
   bf->ptr[bf->bytesUsed]=c;
-  if (bf->pos == bf->bytesUsed)
+  if (GWEN_LIKELY(bf->pos == bf->bytesUsed))
     bf->pos++;
   /* append a NULL to allow using the buffer as ASCIIZ string */
   bf->ptr[++(bf->bytesUsed)]=0;
