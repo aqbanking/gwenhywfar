@@ -562,7 +562,7 @@ AC_SUBST(PROFILING_LDFLAGS)
 # check for libgcrypt
 #
 NEED_LIBGCRYPT_API=1
-NEED_LIBGCRYPT_VERSION=1.4.0
+NEED_LIBGCRYPT_VERSION=1.2.0
 AC_DEFINE_UNQUOTED(NEED_LIBGCRYPT_VERSION, "$NEED_LIBGCRYPT_VERSION",
                                      [Required version of Libgcrypt])
 case "$OS_TYPE" in
