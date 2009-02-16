@@ -877,6 +877,8 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     case GWEN_CRYPT_TOKEN_OHBCI_TAG_SEQ:
       assert(p);
       localSignSeq=atoi(p);
+      if (localSignSeq==0)
+	localSignSeq=1;
       break;
 
     case GWEN_CRYPT_TOKEN_OHBCI_TAG_USER_ID:
