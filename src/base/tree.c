@@ -179,6 +179,7 @@ void GWEN_Tree_AddChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el) {
     el->parent=where;
 
     el->treePtr=where->treePtr;
+    el->treePtr->count++;
     where->count++;
   }
 }
@@ -201,6 +202,7 @@ void GWEN_Tree_InsertChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el) {
     el->parent=where;
 
     el->treePtr=where->treePtr;
+    el->treePtr->count++;
     where->count++;
   }
 }
