@@ -94,6 +94,21 @@ static inline int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id){
 
 
 
+static inline int GWEN_IdTable64_AppendId(GWEN_IDTABLE64 *idt, uint64_t id){
+  if (idt->freeEntries) {
+    unsigned int i;
+
+    i=GWEN_IDTABLE64_MAXENTRIES-idt->freeEntries;
+    idt->entries[i]=id;
+    idt->freeEntries--;
+    return 0;
+  }
+  else
+    return -1;
+}
+
+
+
 static inline int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id){
   unsigned int i;
 
@@ -662,6 +677,51 @@ uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it) {
 
 
 
+int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id) {
+  GWEN_IDTABLE64 *idt;
+
+  assert(idl);
+
+  idt=GWEN_IdTable64_List_Last(idl->idTables);
+  if (idt) {
+    if (GWEN_IdTable64_IsFull(idt)) {
+      idt=GWEN_IdTable64_new();
+      GWEN_IdTable64_List_Add(idt, idl->idTables);
+    }
+  }
+  else {
+    idt=GWEN_IdTable64_new();
+    GWEN_IdTable64_List_Add(idt, idl->idTables);
+  }
+
+  GWEN_IdTable64_AppendId(idt, id);
+  idl->entryCount++;
+  return 0;
+}
+
+
+
+uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index) {
+  GWEN_IDTABLE64 *idt;
+  uint64_t tableNum=index / GWEN_IDTABLE64_MAXENTRIES;
+  uint64_t tableIdx=index % GWEN_IDTABLE64_MAXENTRIES;
+
+  assert(idl);
+
+  idt=GWEN_IdTable64_List_First(idl->idTables);
+  /* find table */
+  while(idt && tableNum) {
+    idt=GWEN_IdTable64_List_Next(idt);
+    tableNum--;
+  } /* while */
+
+  if (!idt) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Index %lld not found", index);
+    return 0;
+  }
+
+  return idt->entries[tableIdx];
+}
 
 
 

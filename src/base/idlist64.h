@@ -153,6 +153,18 @@ uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl,
 GWENHYWFAR_API
 int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl);
 
+
+
+/**
+ * Always append id at the end of the list.
+ */
+GWENHYWFAR_API
+int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id);
+
+GWENHYWFAR_API
+uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index);
+
+
 /*@}*/
 
 
