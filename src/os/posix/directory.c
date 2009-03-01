@@ -197,7 +197,19 @@ int GWEN_Directory_CreatePublic(const char *path){
 int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
   char *exeDir;
 
+#if defined(OS_DARWIN) && defined(ENABLE_LOCAL_INSTALL)
+  CFBundleRef mainBundle = CFBundleGetMainBundle() ;
+  CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+  CFStringRef resourcesPath = CFURLCopyFileSystemPath(resourcesURL, kCFURLPOSIXPathStyle) ;
+  CFIndex maxPathSize = CFStringGetMaximumSizeOfFileSystemRepresentation(resourcesPath);
+  if ((exeDir = malloc(maxPathSize * sizeof(char)))) {
+    CFStringGetFileSystemRepresentation(resourcesPath, exeDir , maxPathSize);
+  }
+  CFRelease(resourcesPath);
+  CFRelease(resourcesURL);
+#else
   exeDir=br_find_prefix(NULL);
+#endif
   if (exeDir==(char*)NULL) {
     DBG_INFO(GWEN_LOGDOMAIN,
 	     "Unable to determine exe folder");

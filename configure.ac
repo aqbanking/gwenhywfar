@@ -385,6 +385,10 @@ case "$OS_TYPE" in
           all_libraries="-L/sw/lib ${all_libraries} -lintl"
           # hmm, this should be detected by the GETTEXT macro...
           PROG_LIBRARIES="${PROG_LIBRARIES} -lintl"
+          # for local install mode on Mac OS X link with the CoreFoundation framework 
+          if test "$enable_local_install" != "no"; then 
+            all_libraries="${all_libraries} -framework CoreFoundation"
+          fi  
         fi
     	;;
     windows)
