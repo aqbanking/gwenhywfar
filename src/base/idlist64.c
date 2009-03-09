@@ -716,7 +716,7 @@ uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index) {
   } /* while */
 
   if (!idt) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Index %lld not found", index);
+    DBG_INFO(GWEN_LOGDOMAIN, "Index %lld not found", (long long)index);
     return 0;
   }
 
