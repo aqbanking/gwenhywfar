@@ -266,7 +266,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
  * classical hexdump.
  */
 GWENHYWFAR_API
-void GWEN_Text_DumpString(const char *s, unsigned intl, FILE *f,
+void GWEN_Text_DumpString(const char *s, unsigned int l, FILE *f,
                           unsigned int insert);
 
 
