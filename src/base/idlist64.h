@@ -154,6 +154,9 @@ GWENHYWFAR_API
 int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl);
 
 
+GWENHYWFAR_API
+int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl);
+
 
 /**
  * Always append id at the end of the list.

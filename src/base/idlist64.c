@@ -396,7 +396,35 @@ uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl){
 
 
 
-int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl){
+static int __compAscending(const void *pa, const void *pb) {
+  uint64_t a=*((const uint64_t*)pa);
+  uint64_t b=*((const uint64_t*)pb);
+
+  if (a<b)
+    return -1;
+  else if (a>b)
+    return 1;
+  else
+    return 0;
+}
+
+
+
+static int __compDescending(const void *pa, const void *pb) {
+  uint64_t a=*((const uint64_t*)pa);
+  uint64_t b=*((const uint64_t*)pb);
+
+  if (a<b)
+    return 1;
+  else if (a>b)
+    return -1;
+  else
+    return 0;
+}
+
+
+
+static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending){
   GWEN_IDLIST64_ITERATOR *it;
   GWEN_IDTABLE64 *idt;
   unsigned int cnt;
@@ -440,24 +468,10 @@ int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl){
   GWEN_IdTable64_List_Clear(idl->idTables);
   idl->current=0;
 
-  /* sort temporary list */
-  while(1) {
-    int rpl;
-
-    rpl=0;
-    for (i=0; i<(cnt-1); i++) {
-      if (ptr[i]>ptr[i+1]) {
-        uint64_t id;
-
-        id=ptr[i];
-        ptr[i]=ptr[i+1];
-        ptr[i+1]=id;
-        rpl=1;
-      }
-    } /* for */
-    if (!rpl)
-      break;
-  } /* while */
+  if (ascending)
+    qsort(ptr, cnt, sizeof(uint64_t), __compAscending);
+  else
+    qsort(ptr, cnt, sizeof(uint64_t), __compDescending);
 
   /* move back sorted list of ids from temporary list */
   for (i=0; i<cnt; i++) {
@@ -466,6 +480,18 @@ int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl){
   free(ptr);
 
   return 0;
+}
+
+
+
+int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl){
+  return GWEN_IdList64__Sort(idl, 1);
+}
+
+
+
+int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl){
+  return GWEN_IdList64__Sort(idl, 0);
 }
 
 
