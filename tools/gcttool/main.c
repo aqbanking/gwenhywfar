@@ -95,7 +95,7 @@ GWEN_CRYPT_TOKEN *getCryptToken(const char *ttype,
   if (pl==0) {
     DBG_ERROR(0, "Plugin not found");
 
-    fprintf(stderr,
+    fprintf(stderr, "%s",
 	    I18N("The plugin could not be found.\n"
 		 "Please make sure that you have the following "
 		 "packages installed (at least on Debian/Ubuntu):\n"

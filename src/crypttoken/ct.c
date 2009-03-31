@@ -926,7 +926,7 @@ uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_CRYPT_TOKEN *ct,
   buffer[0]=0;
   buffer[sizeof(buffer)-1]=0;
 
-  snprintf(buffer, sizeof(buffer)-1,
+  snprintf(buffer, sizeof(buffer)-1, "%s",
 	   I18N("Please enter your PIN into the card reader."
 		"<html>"
 		"Please enter your PIN into the card reader."
