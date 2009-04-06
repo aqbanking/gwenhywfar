@@ -115,6 +115,7 @@ int GWEN_DBIO_ModuleInit(){
       se=GWEN_StringListEntry_Next(se);
     }
     GWEN_Buffer_free(pbuf);
+    GWEN_StringList_free(sl);
   }
 
   return 0;
