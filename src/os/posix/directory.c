@@ -30,7 +30,14 @@
 #endif
 
 #include "directory_p.h"
-#include "binreloc.h"
+
+#ifdef OS_DARWIN
+# ifdef ENABLE_LOCAL_INSTALL
+#   include <CoreFoundation/CFBundle.h>
+# endif
+#else
+# include "binreloc.h"
+#endif
 
 #include <stdlib.h>
 #include <assert.h>
