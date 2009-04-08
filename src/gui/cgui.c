@@ -169,6 +169,30 @@ void GWEN_Gui_CGui_SetIsNonInteractive(GWEN_GUI *gui, int i) {
 
 
 
+int GWEN_Gui_CGui_GetAcceptAllValidCerts(const GWEN_GUI *gui) {
+  GWEN_GUI_CGUI *cgui;
+
+  assert(gui);
+  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
+  assert(cgui);
+
+  return cgui->acceptAllValidCerts;
+}
+
+
+
+void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i) {
+  GWEN_GUI_CGUI *cgui;
+
+  assert(gui);
+  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
+  assert(cgui);
+
+  cgui->acceptAllValidCerts=i;
+}
+
+
+
 int GWEN_Gui_CGui__ConvertFromUtf8(GWEN_GUI *gui,
 				   const char *text,
 				   int len,
@@ -846,11 +870,23 @@ int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
   }
 
   if (cgui->nonInteractive) {
-    DBG_NOTICE(GWEN_LOGDOMAIN,
-	       "Automatically rejecting certificate [%s] (noninteractive)",
-	       hash);
-    GWEN_Buffer_free(hbuf);
-    return GWEN_ERROR_USER_ABORTED;
+    uint32_t fl;
+
+    fl=GWEN_SslCertDescr_GetStatusFlags(cd);
+    if (fl==GWEN_SSL_CERT_FLAGS_OK && cgui->acceptAllValidCerts) {
+      DBG_NOTICE(GWEN_LOGDOMAIN,
+		 "Automatically accepting valid new certificate [%s]",
+		 hash);
+      GWEN_Buffer_free(hbuf);
+      return 0;
+    }
+    else {
+      DBG_NOTICE(GWEN_LOGDOMAIN,
+		 "Automatically rejecting certificate [%s] (noninteractive)",
+		 hash);
+      GWEN_Buffer_free(hbuf);
+      return GWEN_ERROR_USER_ABORTED;
+    }
   }
 
   if (cgui->checkCertFn) {

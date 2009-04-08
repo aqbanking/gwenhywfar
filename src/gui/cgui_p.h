@@ -43,6 +43,8 @@ struct GWEN_GUI_CGUI {
   GWEN_DB_NODE *dbCerts;
   GWEN_STRINGLIST *badPasswords;
   int persistentPasswords;
+
+  int acceptAllValidCerts;
 };
 
 

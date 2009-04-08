@@ -133,6 +133,23 @@ void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts);
  */
 GWENHYWFAR_API 
 GWEN_DB_NODE *GWEN_Gui_CGui_GetCertDb(const GWEN_GUI *gui);
+
+/**
+ * In non-interactive mode only known certificates are accepted.
+ * If the parameter i unequals zero new certs are also accepted if they
+ * are valid (which means signed by a known and trusted authority, not expired
+ * etc).
+ * Invalid certificates are always rejected in non-interactive mode.
+ */
+GWENHYWFAR_API 
+void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i);
+
+/**
+ * See @ref GWEN_Gui_CGui_SetAcceptAllValidCerts
+ */
+GWENHYWFAR_API 
+int GWEN_Gui_CGui_GetAcceptAllValidCerts(const GWEN_GUI *gui);
+
 /*@}*/
 
 
