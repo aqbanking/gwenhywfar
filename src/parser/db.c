@@ -1530,7 +1530,7 @@ void *GWEN_DB_Groups_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 
 
 
-void *GWEN_DB_count_cb(GWEN_DB_NODE *node, void *user_data){
+void *GWEN_DB_count_cb(GWEN_UNUSED GWEN_DB_NODE *node, void *user_data){
   unsigned int *a = user_data;
   ++(*a);
   return NULL;

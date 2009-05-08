@@ -34,6 +34,7 @@
 # define GWENHYWFAR_API
 # define GWENHYWFAR_EXPORT
 # define GWENHYWFAR_NOEXPORT
+# define GWEN_UNUSED
 #else
 # ifdef BUILDING_GWENHYWFAR
    /* building Gwenhywfar */
@@ -75,6 +76,11 @@
 #  define GWENHYWFAR_NOEXPORT
 # endif
 
+# ifdef __GNUC__
+#  define GWEN_UNUSED __attribute__((unused))
+# else
+#  define GWEN_UNUSED
+# endif
 #endif
 
 #if GWENHYWFAR_SYS_IS_WINDOWS

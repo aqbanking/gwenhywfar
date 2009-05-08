@@ -322,7 +322,7 @@ void GWEN_Url_Attach(GWEN_URL *st) {
   assert(st);
   st->_usage++;
 }
-GWEN_URL *GWEN_Url_List2__freeAll_cb(GWEN_URL *st, void *user_data) {
+GWEN_URL *GWEN_Url_List2__freeAll_cb(GWEN_URL *st, GWEN_UNUSED void *user_data) {
   GWEN_Url_free(st);
 return 0;
 }

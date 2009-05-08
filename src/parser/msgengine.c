@@ -691,7 +691,7 @@ int GWEN_MsgEngine__GetInline(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                                  GWEN_BUFFER *gbuf,
                                  GWEN_XMLNODE *node,
-                                 GWEN_XMLNODE *rnode,
+				 GWEN_XMLNODE *rnode,
                                  GWEN_DB_NODE *gr,
                                  int loopNr,
                                  int isOptional,
@@ -1447,8 +1447,6 @@ const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
 	n=GWEN_XMLNode_GetChild(pn);
 	while(n) {
 	  if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeTag) {
-	    const char *p;
-
 	    p=GWEN_XMLNode_GetData(n);
 	    assert(p);
 	    if (strcasecmp(p, "VALUE")==0) {
@@ -2130,7 +2128,7 @@ int GWEN_MsgEngine_AddDefinitions(GWEN_MSGENGINE *e,
 
 
 
-int GWEN_MsgEngine__ShowElement(GWEN_MSGENGINE *e,
+int GWEN_MsgEngine__ShowElement(GWEN_UNUSED GWEN_MSGENGINE *e,
                                 const char *path,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
@@ -2501,7 +2499,7 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
 
 
 
-int GWEN_MsgEngine__ListElement(GWEN_MSGENGINE *e,
+int GWEN_MsgEngine__ListElement(GWEN_UNUSED GWEN_MSGENGINE *e,
                                 const char *path,
                                 GWEN_XMLNODE *node,
                                 GWEN_STRINGLIST *sl,
@@ -3485,7 +3483,7 @@ int GWEN_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int GWEN_MsgEngine_SkipSegment(GWEN_MSGENGINE *e,
+int GWEN_MsgEngine_SkipSegment(GWEN_UNUSED GWEN_MSGENGINE *e,
                                GWEN_BUFFER *msgbuf,
                                unsigned char escapeChar,
                                unsigned char delimiter) {
@@ -3877,8 +3875,6 @@ GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
 
       match=1;
       if (std->size==ntd->size) {
-        unsigned int i;
-
         for (i=0; i<td->size; i++) {
           if (std->data[i]!=ntd->data[i]) {
             match=0;

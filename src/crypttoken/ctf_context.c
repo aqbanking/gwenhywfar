@@ -50,7 +50,7 @@ int GWEN_CTF_Context_IsOfThisType(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
 
 
 GWENHYWFAR_CB
-void GWEN_CTF_Context_freeData(void *bp, void *p) {
+void GWEN_CTF_Context_freeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CTF_CONTEXT *fctx;
 
   fctx=(GWEN_CTF_CONTEXT*) p;

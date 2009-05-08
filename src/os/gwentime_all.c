@@ -596,6 +596,7 @@ int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
 
 
 
+/* TODO: compiler says "function returns an aggregate" */
 struct tm GWEN_Time_toTm(const GWEN_TIME *t) {
   struct tm *tb;
   time_t tt;
@@ -651,8 +652,8 @@ GWEN_TIME_TMPLCHAR *GWEN_Time__findTmplChar(GWEN_TIME_TMPLCHAR_LIST *ll,
 
 
 
-void GWEN_Time__sampleTmplChars(const GWEN_TIME *t, const char *tmpl,
-                                GWEN_BUFFER *buf,
+void GWEN_Time__sampleTmplChars(GWEN_UNUSED const GWEN_TIME *t, const char *tmpl,
+                                GWEN_UNUSED GWEN_BUFFER *buf,
                                 GWEN_TIME_TMPLCHAR_LIST *ll) {
   const char *s;
 

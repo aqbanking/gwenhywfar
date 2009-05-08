@@ -1080,17 +1080,11 @@ int GWEN_Io_LayerTls_DelRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
 
   case GWEN_Io_Request_TypeDisconnect:
     if (xio->disconnectRequest==r) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Aborted connect request");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Aborted disconnect request");
 
       GWEN_Io_Layer_SetStatus(io, GWEN_Io_Layer_StatusDisconnected);
-      if (xio->connectRequest) {
-	GWEN_IO_REQUEST *r;
-
-	r=xio->connectRequest;
-	xio->connectRequest=NULL;
-	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_ABORTED);
-	GWEN_Io_Request_free(r);
-      }
+      GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_ABORTED);
+      GWEN_Io_Request_free(r);
     }
     else {
       /* not my request */

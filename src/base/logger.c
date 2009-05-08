@@ -204,7 +204,7 @@ void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger){
 
 
 
-void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg){
+void GWEN_Logger_SetDefaultLogger(GWEN_UNUSED GWEN_LOGGER *lg){
   fprintf(stderr, "GWEN_Logger_SetDefaultLogger: Deprecated function\n");
 }
 
@@ -255,6 +255,7 @@ int GWEN_Logger_Open(const char *logDomain,
       fac=LOG_NEWS;
       break;
     case GWEN_LoggerFacility_User:
+    case GWEN_LoggerFacility_Unknown:
     default:
       fac=LOG_USER;
       break;
@@ -473,6 +474,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 
       case GWEN_LoggerLevel_Debug:
       case GWEN_LoggerLevel_Verbous:
+      case GWEN_LoggerLevel_Unknown:
       default:
         pri=LOG_DEBUG;
         break;
@@ -497,6 +499,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
       break;
 
     case GWEN_LoggerType_Console:
+    case GWEN_LoggerType_Unknown:
     default:
       rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
       if (rv) {
@@ -736,6 +739,7 @@ const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt) {
     s="syslog"; break;
   case GWEN_LoggerType_Function:
     s="function"; break;
+  case GWEN_LoggerType_Unknown:
   default:
     s="unknown"; break;
   } /* switch */

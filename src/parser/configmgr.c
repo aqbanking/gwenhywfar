@@ -367,7 +367,7 @@ GWEN_PLUGIN *GWEN_ConfigMgr_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWENHYWFAR_CB GWEN_ConfigMgr_Plugin_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_ConfigMgr_Plugin_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CONFIGMGR_PLUGIN *xpl;
 
   xpl=(GWEN_CONFIGMGR_PLUGIN*)p;

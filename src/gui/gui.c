@@ -555,9 +555,9 @@ int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_IO_LAYER *io, uint32_t 
 
 
 
-int GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
+int GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
 			      const GWEN_SSLCERTDESCR *cd,
-			      GWEN_IO_LAYER *io, uint32_t guiid) {
+			      GWEN_UNUSED GWEN_IO_LAYER *io, uint32_t guiid) {
   int rv;
   int isError;
   const char *hash;

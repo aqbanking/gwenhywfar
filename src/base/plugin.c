@@ -257,11 +257,11 @@ int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
 
 
 
+#ifdef OS_WIN32
 int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
 					 const char *callingLib,
 					 const char *keypath,
 					 const char *varname){
-#ifdef OS_WIN32
   HKEY hkey;
   TCHAR nbuffer[MAX_PATH];
   BYTE vbuffer[MAX_PATH];
@@ -309,10 +309,17 @@ int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
 	   keypath, varname);
   return 1;
 
-#else /* OS_WIN32 */
-  return 0;
-#endif /* OS_WIN32 */
 }
+
+#else /* OS_WIN32 */
+
+int GWEN_PluginManager_AddPathFromWinReg(GWEN_UNUSED GWEN_PLUGIN_MANAGER *pm,
+					 GWEN_UNUSED const char *callingLib,
+					 GWEN_UNUSED const char *keypath,
+					 GWEN_UNUSED const char *varname){
+  return 0;
+}
+#endif /* OS_WIN32 */
 
 
 

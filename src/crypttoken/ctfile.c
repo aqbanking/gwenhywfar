@@ -493,7 +493,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid){
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, GWEN_UNUSED int admin, uint32_t gid){
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -1836,7 +1836,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 
 
 GWENHYWFAR_CB
-void GWEN_Crypt_TokenFile_freeData(void *bp, void *p) {
+void GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CRYPT_TOKEN_FILE *lct;
 
   lct=(GWEN_CRYPT_TOKEN_FILE*) p;

@@ -163,7 +163,7 @@ GWEN_PLUGIN *GWEN_DBIO_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWENHYWFAR_CB GWEN_DBIO_Plugin_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DBIO_Plugin_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_DBIO_PLUGIN *pldbio;
 
   pldbio=(GWEN_DBIO_PLUGIN*)p;

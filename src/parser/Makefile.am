@@ -1,10 +1,8 @@
 INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
- -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/ipc \
- -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/parser @all_includes@
 
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR

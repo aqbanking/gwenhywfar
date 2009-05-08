@@ -150,7 +150,7 @@ GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd) {
 
 GWEN_PLUGIN_DESCRIPTION*
 GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd, 
-					void *user_data) {
+					__attribute__((unused)) void *user_data) {
   GWEN_PluginDescription_free(pd);
   return 0;
 }

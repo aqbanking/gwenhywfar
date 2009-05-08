@@ -325,7 +325,10 @@ void GWEN_IpcRequest_Attach(GWEN_IPC_REQUEST *st) {
   assert(st);
   st->_usage++;
 }
-GWEN_IPC_REQUEST *GWEN_IpcRequest_List2__freeAll_cb(GWEN_IPC_REQUEST *st, void *user_data) {
+
+
+
+GWEN_IPC_REQUEST *GWEN_IpcRequest_List2__freeAll_cb(GWEN_IPC_REQUEST *st, GWEN_UNUSED void *user_data) {
   GWEN_IpcRequest_free(st);
 return 0;
 }

@@ -870,7 +870,7 @@ int GWEN_Crypt_Token_GetPin(GWEN_CRYPT_TOKEN *ct,
 int GWEN_Crypt_Token_SetPinStatus(GWEN_CRYPT_TOKEN *ct,
 				  GWEN_CRYPT_PINTYPE pt,
 				  GWEN_CRYPT_PINENCODING pe,
-				  uint32_t flags,
+				  GWEN_UNUSED uint32_t flags,
 				  const unsigned char *buffer,
 				  unsigned int pinLength,
 				  int isOk,
@@ -916,7 +916,7 @@ int GWEN_Crypt_Token_SetPinStatus(GWEN_CRYPT_TOKEN *ct,
 
 
 uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_CRYPT_TOKEN *ct,
-					GWEN_CRYPT_PINTYPE pt,
+					GWEN_UNUSED GWEN_CRYPT_PINTYPE pt,
 					uint32_t gid) {
   char buffer[512];
 
@@ -939,8 +939,8 @@ uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_CRYPT_TOKEN *ct,
 
 
 int GWEN_Crypt_Token_EndEnterPin(GWEN_CRYPT_TOKEN *ct,
-				 GWEN_CRYPT_PINTYPE pt,
-				 int ok,
+				 GWEN_UNUSED GWEN_CRYPT_PINTYPE pt,
+				 GWEN_UNUSED int ok,
 				 uint32_t id) {
   assert(ct);
   assert(ct->refCount);

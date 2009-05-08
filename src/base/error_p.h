@@ -29,11 +29,11 @@
 #ifndef GWENHYWFAR_ERROR_P_H
 #define GWENHYWFAR_ERROR_P_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
+#include "error_l.h"
 
 
-const char *GWEN_Error_SimpleToString(int i);
+static const char *GWEN_Error_SimpleToString(int i);
+
 
 
 

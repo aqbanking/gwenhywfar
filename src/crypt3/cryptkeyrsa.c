@@ -453,7 +453,7 @@ int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db,
 
 
 int GWEN_Crypt_KeyRsa__DataFromDb(GWEN_DB_NODE *db, gcry_ac_data_t *pData,
-				  int pub, unsigned int nbits) {
+				  int pub, GWEN_UNUSED unsigned int nbits) {
   gcry_ac_data_t ds;
   gcry_error_t err;
   int rv;
@@ -512,7 +512,7 @@ int GWEN_Crypt_KeyRsa__DataFromDb(GWEN_DB_NODE *db, gcry_ac_data_t *pData,
 
 
 GWENHYWFAR_CB
-void GWEN_Crypt_KeyRsa_freeData(void *bp, void *p) {
+void GWEN_Crypt_KeyRsa_freeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CRYPT_KEY_RSA *xk;
 
   xk=(GWEN_CRYPT_KEY_RSA*) p;

@@ -347,7 +347,7 @@ void GWEN_Signal_Attach(GWEN_SIGNAL *sig) {
 
 
 
-GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, void *user_data){
+GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, GWEN_UNUSED void *user_data){
   GWEN_Signal_free(sig);
   return 0;
 }
@@ -567,7 +567,7 @@ void GWEN_Slot_Attach(GWEN_SLOT *slot) {
 
 
 
-GWEN_SLOT *GWEN_Slot__List2_freeAll_cb(GWEN_SLOT *slot, void *user_data) {
+GWEN_SLOT *GWEN_Slot__List2_freeAll_cb(GWEN_SLOT *slot, GWEN_UNUSED void *user_data) {
   GWEN_Slot_free(slot);
   return 0;
 }

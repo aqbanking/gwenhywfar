@@ -82,9 +82,6 @@ static GWEN_DB_NODE *GWEN_DB_Var_new(const char *name);
 static GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n);
 
 
-static void GWEN_DB_Node_free(GWEN_DB_NODE *n);
-
-
 static void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
 				GWEN_DB_NODE *n);
 

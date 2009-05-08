@@ -70,7 +70,7 @@ void GWEN_BufferedIO_File_Table__free(GWEN_BUFFEREDIO_FILE *bft) {
 int GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
 			       char *buffer,
 			       int *size,
-			       int timeout){
+			       GWEN_UNUSED int timeout){
   int rv;
   GWEN_BUFFEREDIO_FILE *bft;
 
@@ -103,7 +103,7 @@ int GWEN_BufferedIO_File__Read(GWEN_BUFFEREDIO *dm,
 int GWEN_BufferedIO_File__Write(GWEN_BUFFEREDIO *dm,
 				const char *buffer,
 				int *size,
-				int timeout){
+				GWEN_UNUSED int timeout){
   int rv;
   GWEN_BUFFEREDIO_FILE *bft;
 
@@ -149,7 +149,7 @@ int GWEN_BufferedIO_File__Close(GWEN_BUFFEREDIO *dm){
 
 
 
-void GWENHYWFAR_CB GWEN_BufferedIO_File_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_BufferedIO_File_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_BUFFEREDIO_FILE *bft;
 
   bft=(GWEN_BUFFEREDIO_FILE*)p;

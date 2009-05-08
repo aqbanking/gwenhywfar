@@ -2,6 +2,37 @@
 #MY_CFLAGS=-W -pedantic -std=c99 -ggdb -Wall -O -ggdb
 MY_CFLAGS=-ggdb -Wall -O 
 
+all_warnings=\
+ -Wextra  -Wall  -Waddress \
+ -Waggregate-return  -Warray-bounds \
+ -Wcast-qual -Wchar-subscripts -Wclobbered  -Wcomment \
+ -Wcoverage-mismatch  -Wno-deprecated-declarations -Wdisabled-optimization  \
+ -Wempty-body  -Wno-endif-labels -Wfloat-equal  -Wformat \
+ -Wformat=2 -Wno-format-extra-args -Wformat-nonliteral -Wformat-security  \
+ -Wformat-y2k -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration \
+ -Wimplicit-int -Wimport  -Wno-import  -Winit-self  -Winline \
+ -Wno-int-to-pointer-cast -Winvalid-pch \
+ -Wunsafe-loop-optimizations -Wlogical-op -Wlong-long -Wmain  -Wmissing-braces  \
+ -Wmissing-field-initializers -Wmissing-format-attribute  -Wmissing-include-dirs \
+ -Wmissing-noreturn -Wno-multichar  -Wnonnull  -Wno-overflow -Woverlength-strings \
+ -Wparentheses  -Wpointer-arith  -Wno-pointer-to-int-cast -Wno-variadic-macros \
+ -Wredundant-decls -Wreturn-type -Wsequence-point  -Wshadow -Wsign-compare  \
+ -Wstack-protector -Wstrict-aliasing \
+ -Wswitch -Wswitch-default  -Wswitch-enum \
+ -Wtrigraphs  -Wtype-limits  -Wundef  -Wuninitialized -Wunknown-pragmas  \
+ -Wno-pragmas -Wunused  -Wunused-function -Wunused-label \
+ -Wunused-parameter -Wunused-value  -Wunused-variable \
+ -Wvla -Wvolatile-register-var  -Wwrite-strings \
+
+c_warnings=\
+ -Wbad-function-cast  -Wmissing-declarations -Wmissing-parameter-type  \
+ -Wnested-externs \
+ -Wdeclaration-after-statement -Wpointer-sign
+
+cplusplus_warnings=\
+ -Wc++-compat -Wc++0x-compat -Wno-invalid-offsetof
+
+
 WIN32_OPTIONS=\
   --host=i586-mingw32msvc \
   --target=i586-mingw32msvc \
@@ -49,7 +80,7 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --enable-full-doc
+	CXXFLAGS="-O -ggdb $(all_warnings) $(cplusplus_warnings)" CFLAGS="-O -ggdb $(all_warnings) $(c_warnings)" ./configure INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --enable-full-doc
 
 mp-priv:
 	libtoolize -f --automake

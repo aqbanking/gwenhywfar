@@ -197,7 +197,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
 
 
 int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
-			   GWEN_LOGGER_LEVEL level,
+			   GWEN_UNUSED GWEN_LOGGER_LEVEL level,
 			   const char *text) {
   assert(cp);
   assert(text);

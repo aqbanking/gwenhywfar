@@ -437,17 +437,23 @@ int GWEN_Crypt_Token_Context_IsModified(const GWEN_CRYPT_TOKEN_CONTEXT *st) {
 }
 
 
+
 void GWEN_Crypt_Token_Context_SetModified(GWEN_CRYPT_TOKEN_CONTEXT *st, int i) {
   assert(st);
   st->_modified=i;
 }
 
 
+
 void GWEN_Crypt_Token_Context_Attach(GWEN_CRYPT_TOKEN_CONTEXT *st) {
   assert(st);
   st->_usage++;
 }
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List2__freeAll_cb(GWEN_CRYPT_TOKEN_CONTEXT *st, void *user_data) {
+
+
+
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List2__freeAll_cb(GWEN_CRYPT_TOKEN_CONTEXT *st,
+								     GWEN_UNUSED void *user_data) {
   GWEN_Crypt_Token_Context_free(st);
 return 0;
 }
@@ -459,6 +465,7 @@ void GWEN_Crypt_Token_Context_List2_freeAll(GWEN_CRYPT_TOKEN_CONTEXT_LIST2 *stl)
     GWEN_Crypt_Token_Context_List2_free(stl); 
   }
 }
+
 
 
 GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *stl) {

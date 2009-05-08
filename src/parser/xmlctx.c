@@ -553,7 +553,7 @@ int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 
 
-int GWEN_XmlCtxStore_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
+int GWEN_XmlCtxStore_AddComment(GWEN_UNUSED GWEN_XML_CONTEXT *ctx, GWEN_UNUSED const char *data) {
   return 0;
 }
 

@@ -227,13 +227,13 @@ int GWEN_Io_LayerMemory_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
 
 
 
-int GWEN_Io_LayerMemory_DelRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
+int GWEN_Io_LayerMemory_DelRequest(GWEN_UNUSED GWEN_IO_LAYER *io, GWEN_UNUSED GWEN_IO_REQUEST *r) {
   return GWEN_ERROR_INVALID;
 }
 
 
 
-int GWEN_Io_LayerMemory_HasWaitingRequests(GWEN_IO_LAYER *io) {
+int GWEN_Io_LayerMemory_HasWaitingRequests(GWEN_UNUSED GWEN_IO_LAYER *io) {
   return 0;
 }
 

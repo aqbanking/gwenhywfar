@@ -119,6 +119,9 @@ int GWEN_Base64_Encode(const unsigned char *src, unsigned int size,
     GWEN_Buffer_AppendByte(dst, GWEN_Base64_Alphabet[c3]);
     GWEN_Buffer_AppendByte(dst, '=');
     break;
+
+  default:
+    break;
   }
 
   return 0;

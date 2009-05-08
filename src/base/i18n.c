@@ -161,7 +161,7 @@ const char *GWEN_I18N_GetCurrentLocale() {
 
 
 
-const char *GWEN_I18N_Translate(const char *textdomain, const char *text) {
+const char *GWEN_I18N_Translate(const char *txtdom, const char *text) {
 #ifdef HAVE_I18N
   const char *p;
 
@@ -169,14 +169,14 @@ const char *GWEN_I18N_Translate(const char *textdomain, const char *text) {
   if (p) {
     const char *s;
 
-    s=dgettext(textdomain, text);
+    s=dgettext(txtdom, text);
     if (strcmp(s, text)==0)
       return ++p;
     else
       return s;
   }
   else
-    return dgettext(textdomain, text);
+    return dgettext(txtdom, text);
 #else
   const char *p;
 
@@ -189,9 +189,9 @@ const char *GWEN_I18N_Translate(const char *textdomain, const char *text) {
 
 
 
-int GWEN_I18N_BindTextDomain_Dir(const char *textdomain, const char *folder) {
+int GWEN_I18N_BindTextDomain_Dir(const char *txtdom, const char *folder) {
 #ifdef HAVE_I18N
-  if (NULL==bindtextdomain(textdomain, folder)) {
+  if (NULL==bindtextdomain(txtdom, folder)) {
     DBG_INFO(GWEN_LOGDOMAIN, "bindtextdomain(): %s", strerror(errno));
     return GWEN_ERROR_GENERIC;
   }
@@ -203,9 +203,9 @@ int GWEN_I18N_BindTextDomain_Dir(const char *textdomain, const char *folder) {
 
 
 
-int GWEN_I18N_BindTextDomain_Codeset(const char *textdomain, const char *cs) {
+int GWEN_I18N_BindTextDomain_Codeset(const char *txtdom, const char *cs) {
 #ifdef HAVE_I18N
-  if (NULL==bind_textdomain_codeset(textdomain, cs)) {
+  if (NULL==bind_textdomain_codeset(txtdom, cs)) {
     DBG_INFO(GWEN_LOGDOMAIN, "bind_textdomain_codeset(): %s", strerror(errno));
     return GWEN_ERROR_GENERIC;
   }

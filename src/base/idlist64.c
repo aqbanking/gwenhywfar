@@ -727,10 +727,10 @@ int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id) {
 
 
 
-uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index) {
+uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t idx) {
   GWEN_IDTABLE64 *idt;
-  uint64_t tableNum=index / GWEN_IDTABLE64_MAXENTRIES;
-  uint64_t tableIdx=index % GWEN_IDTABLE64_MAXENTRIES;
+  uint64_t tableNum=idx / GWEN_IDTABLE64_MAXENTRIES;
+  uint64_t tableIdx=idx % GWEN_IDTABLE64_MAXENTRIES;
 
   assert(idl);
 
@@ -742,7 +742,7 @@ uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index) {
   } /* while */
 
   if (!idt) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Index %lld not found", (long long)index);
+    DBG_INFO(GWEN_LOGDOMAIN, "Index %lld not found", (long long)idx);
     return 0;
   }
 

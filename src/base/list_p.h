@@ -46,6 +46,11 @@ struct GWEN_LIST_ENTRY {
 };
 
 
+static GWEN_LIST_ENTRY *GWEN_ListEntry_new();
+static void GWEN_ListEntry_free(GWEN_LIST_ENTRY *le);
+
+
+
 struct GWEN_CONSTLIST_ENTRY {
   GWEN_CONSTLIST_ENTRY *previous;
   GWEN_CONSTLIST_ENTRY *next;
@@ -63,11 +68,11 @@ struct GWEN__LISTPTR {
 };
 
 
-GWEN__LISTPTR *GWEN__ListPtr_new();
-void GWEN__ListPtr_free(GWEN__LISTPTR *lp);
-void GWEN__ListPtr_Attach(GWEN__LISTPTR *lp);
-void GWEN__ListPtr_Clear(GWEN__LISTPTR *lp);
-GWEN__LISTPTR *GWEN__ListPtr_dup(GWEN__LISTPTR *lp);
+static GWEN__LISTPTR *GWEN__ListPtr_new();
+static void GWEN__ListPtr_free(GWEN__LISTPTR *lp);
+static void GWEN__ListPtr_Attach(GWEN__LISTPTR *lp);
+static void GWEN__ListPtr_Clear(GWEN__LISTPTR *lp);
+static GWEN__LISTPTR *GWEN__ListPtr_dup(GWEN__LISTPTR *lp);
 
 
 struct GWEN_LIST {

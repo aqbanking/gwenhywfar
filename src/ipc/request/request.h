@@ -110,13 +110,6 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_IPC_REQUEST, GWEN_IpcRequest, GWENHYWFAR_API)
 /** Destroys all objects stored in the given LIST2 and the list itself
 */
 GWENHYWFAR_API void GWEN_IpcRequest_List2_freeAll(GWEN_IPC_REQUEST_LIST2 *stl);
-/** Creates a deep copy of the given LIST2.
-*/
-GWENHYWFAR_API GWEN_IPC_REQUEST_LIST2 *GWEN_IpcRequest_List2_dup(const GWEN_IPC_REQUEST_LIST2 *stl);
-
-/** Creates a new object.
-*/
-GWENHYWFAR_API GWEN_IPC_REQUEST *GWEN_IpcRequest_new();
 /** Destroys the given object.
 */
 GWENHYWFAR_API void GWEN_IpcRequest_free(GWEN_IPC_REQUEST *st);

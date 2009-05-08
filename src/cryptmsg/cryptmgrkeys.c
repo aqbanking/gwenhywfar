@@ -75,7 +75,7 @@ GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
 
 
 GWENHYWFAR_CB
-void GWEN_CryptMgrKeys_FreeData(void *bp, void *p) {
+void GWEN_CryptMgrKeys_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CRYPTMGR_KEYS *xcm;
 
   xcm=(GWEN_CRYPTMGR_KEYS*) p;

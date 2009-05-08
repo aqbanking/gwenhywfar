@@ -58,13 +58,6 @@ extern "C" {
 # endif
 
 
-  GWENHYWFAR_API 
-  int GWEN_Memory_ModuleInit();
-
-  GWENHYWFAR_API 
-  int GWEN_Memory_ModuleFini();
-
-
   GWENHYWFAR_API
   void *GWEN_Memory_malloc(size_t dsize);
   GWENHYWFAR_API

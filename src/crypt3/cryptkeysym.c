@@ -79,7 +79,7 @@ int GWEN_Crypt_KeySym_Decipher(GWEN_CRYPT_KEY *k,
 
 
 GWENHYWFAR_CB
-void GWEN_Crypt_KeySym_freeData(void *bp, void *p) {
+void GWEN_Crypt_KeySym_freeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CRYPT_KEY_SYM *xk;
 
   xk=(GWEN_CRYPT_KEY_SYM*) p;

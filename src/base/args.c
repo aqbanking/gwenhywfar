@@ -388,7 +388,8 @@ int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf){
 
 
 
-int GWEN_Args_UsageHTML(const GWEN_ARGS *args, GWEN_BUFFER *ubuf){
+int GWEN_Args_UsageHTML(GWEN_UNUSED const GWEN_ARGS *args,
+			GWEN_UNUSED GWEN_BUFFER *ubuf){
   return 0;
 }
 
@@ -415,8 +416,9 @@ int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
 
 
 
-int GWEN_Args_ShortUsage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
-                         GWEN_ARGS_OUTTYPE ot){
+int GWEN_Args_ShortUsage(GWEN_UNUSED const GWEN_ARGS *args,
+			 GWEN_UNUSED GWEN_BUFFER *ubuf,
+                         GWEN_UNUSED GWEN_ARGS_OUTTYPE ot){
   return 0;
 }
 

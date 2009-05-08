@@ -82,6 +82,7 @@ extern "C" {
   decl t *pr##_List2Iterator_Next(t##_LIST2_ITERATOR *li); \
   decl t *pr##_List2Iterator_Data(t##_LIST2_ITERATOR *li); \
   decl void pr##_List2Iterator_IncLinkCount(t##_LIST2_ITERATOR *li); \
+  decl unsigned int pr##_List2Iterator_GetLinkCount(const t##_LIST2_ITERATOR *li); \
   decl t##_LIST2_ITERATOR *pr##_List2_FindIter(t##_LIST2 *l, const t *p); \
   decl const t *pr##_List2_Contains(t##_LIST2 *l, const t *p); \
   decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH, void *user_data);
@@ -105,7 +106,7 @@ extern "C" {
   } \
   \
   t##_LIST2 *pr##_List2_dup(const t##_LIST2 *l) {\
-    return (t##_LIST2*)GWEN_List_dup((GWEN_LIST*)l); \
+    return (t##_LIST2*)GWEN_List_dup((const GWEN_LIST*)l); \
   }\
   \
   void pr##_List2_Unshare(t##_LIST2 *l) { \
@@ -125,11 +126,11 @@ extern "C" {
   } \
   \
   t *pr##_List2_GetFront(const t##_LIST2 *l) { \
-  return (t*) GWEN_List_GetFront((GWEN_LIST*) l); \
+  return (t*) GWEN_List_GetFront((const GWEN_LIST*) l); \
   }\
   \
   t *pr##_List2_GetBack(const t##_LIST2 *l) { \
-  return (t*) GWEN_List_GetBack((GWEN_LIST*) l); \
+  return (t*) GWEN_List_GetBack((const GWEN_LIST*) l); \
   } \
   \
   void pr##_List2_Erase(t##_LIST2 *l, t##_LIST2_ITERATOR *it) { \
@@ -141,10 +142,11 @@ extern "C" {
   } \
   \
   unsigned int pr##_List2_GetSize(const t##_LIST2 *l){ \
-    return GWEN_List_GetSize((GWEN_LIST*) l); \
+    return GWEN_List_GetSize((const GWEN_LIST*) l); \
   }\
+  \
   int pr##_List2_IsEmpty(const t##_LIST2 *l){ \
-    return GWEN_List_IsEmpty((GWEN_LIST*) l); \
+    return GWEN_List_IsEmpty((const GWEN_LIST*) l); \
   }\
   \
   void pr##_List2_PopBack(t##_LIST2 *l){ \
@@ -161,11 +163,11 @@ extern "C" {
   \
   \
   t##_LIST2_ITERATOR *pr##_List2_First(const t##_LIST2 *l) { \
-    return (t##_LIST2_ITERATOR*) GWEN_List_First((GWEN_LIST*) l); \
+    return (t##_LIST2_ITERATOR*) GWEN_List_First((const GWEN_LIST*) l); \
   }\
   \
   t##_LIST2_ITERATOR *pr##_List2_Last(const t##_LIST2 *l) { \
-    return (t##_LIST2_ITERATOR*) GWEN_List_Last((GWEN_LIST*) l); \
+    return (t##_LIST2_ITERATOR*) GWEN_List_Last((const GWEN_LIST*) l); \
   }\
   \
   t##_LIST2_ITERATOR *pr##_List2Iterator_new(t##_LIST2 *l) { \
@@ -282,20 +284,20 @@ extern "C" {
   } \
   \
   const t *pr##_ConstList2_GetFront(const t##_CONSTLIST2 *l) { \
-  return (t*) GWEN_ConstList_GetFront((GWEN_CONSTLIST*) l); \
+  return (t*) GWEN_ConstList_GetFront((const GWEN_CONSTLIST*) l); \
   }\
   \
   const t *pr##_ConstList2_GetBack(const t##_CONSTLIST2 *l) { \
-  return (t*) GWEN_ConstList_GetBack((GWEN_CONSTLIST*) l); \
+  return (t*) GWEN_ConstList_GetBack((const GWEN_CONSTLIST*) l); \
   } \
   \
   \
   unsigned int pr##_ConstList2_GetSize(const t##_CONSTLIST2 *l){ \
-    return GWEN_ConstList_GetSize((GWEN_CONSTLIST*) l); \
+    return GWEN_ConstList_GetSize((const GWEN_CONSTLIST*) l); \
   }\
   \
   int pr##_ConstList2_IsEmpty(const t##_CONSTLIST2 *l){ \
-    return GWEN_ConstList_IsEmpty((GWEN_CONSTLIST*) l); \
+    return GWEN_ConstList_IsEmpty((const GWEN_CONSTLIST*) l); \
   }\
   \
   void pr##_ConstList2_PopBack(t##_CONSTLIST2 *l){ \
@@ -312,11 +314,11 @@ extern "C" {
   \
   \
   t##_CONSTLIST2_ITERATOR *pr##_ConstList2_First(const t##_CONSTLIST2 *l) { \
-    return (t##_CONSTLIST2_ITERATOR*) GWEN_ConstList_First((GWEN_CONSTLIST*) l); \
+    return (t##_CONSTLIST2_ITERATOR*) GWEN_ConstList_First((const GWEN_CONSTLIST*) l); \
   }\
   \
   t##_CONSTLIST2_ITERATOR *pr##_ConstList2_Last(const t##_CONSTLIST2 *l) { \
-    return (t##_CONSTLIST2_ITERATOR*) GWEN_ConstList_Last((GWEN_CONSTLIST*) l); \
+    return (t##_CONSTLIST2_ITERATOR*) GWEN_ConstList_Last((const GWEN_CONSTLIST*) l); \
   }\
   \
   t##_CONSTLIST2_ITERATOR *pr##_ConstList2Iterator_new(t##_CONSTLIST2 *l) { \

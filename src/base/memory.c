@@ -58,7 +58,7 @@ static size_t gwen_memory__allocated_bytes=0;
 static size_t gwen_memory__allocated_calls=0;
 static size_t gwen_memory__allocated_reused=0;
 
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
 static size_t gwen_memory__released_since_collect=0;
 #endif
 
@@ -386,7 +386,7 @@ void *GWEN_Memory__Malloc(unsigned short dsize) {
 
 
 void *GWEN_Memory_malloc(size_t wsize) {
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   void *p;
   size_t dsize;
 #endif
@@ -397,7 +397,7 @@ void *GWEN_Memory_malloc(size_t wsize) {
     abort();
   }
 
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   dsize=(wsize+GWEN_MEMORY_GRANULARITY-1) & ~(GWEN_MEMORY_GRANULARITY-1);
 
   if (dsize<GWEN_MEMORY_MAXBLOCK) {
@@ -432,7 +432,7 @@ void *GWEN_Memory_malloc(size_t wsize) {
 
 
 void *GWEN_Memory_realloc(void *oldp, size_t nsize) {
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   void *p;
   unsigned char *pc;
   unsigned short dsize;
@@ -442,7 +442,7 @@ void *GWEN_Memory_realloc(void *oldp, size_t nsize) {
   assert(oldp);
   assert(nsize);
 
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   pc=GWEN_MEMORY_GETSTART(oldp);
   dsize=GWEN_MEMORY_READSIZE(pc);
   rsize=dsize & GWEN_MEMORY_MASK_LEN;
@@ -469,7 +469,7 @@ void *GWEN_Memory_realloc(void *oldp, size_t nsize) {
 
 
 void GWEN_Memory_dealloc(void *p) {
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   if (p) {
     unsigned char *pc;
     unsigned short dsize;
@@ -527,13 +527,13 @@ void GWEN_Memory_dealloc(void *p) {
 
 
 char *GWEN_Memory_strdup(const char *s) {
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   unsigned int dsize;
   char *p;
 #endif
 
   assert(s);
-#if ENABLE_MY_SMALL_BLOCK_ALLOC
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   dsize=strlen(s);
 
   p=(char*)GWEN_Memory_malloc(dsize+1);

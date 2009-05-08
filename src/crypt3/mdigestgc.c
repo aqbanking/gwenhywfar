@@ -98,7 +98,7 @@ int GWEN_MDigest_Gc_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l)
 
 
 GWENHYWFAR_CB
-void GWEN_Digest_Gc_freeData(void *bp, void *p) {
+void GWEN_Digest_Gc_freeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_MDIGEST_GC *xmd;
 
   xmd=(GWEN_MDIGEST_GC*) p;

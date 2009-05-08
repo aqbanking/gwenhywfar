@@ -478,7 +478,7 @@ uint32_t GWEN_IpcManager_AddClient(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-void GWEN_IpcManager__RemoveNodeRequestMessages(GWEN_IPCMANAGER *mgr,
+void GWEN_IpcManager__RemoveNodeRequestMessages(GWEN_UNUSED GWEN_IPCMANAGER *mgr,
 						GWEN_IPCNODE *n,
                                                 GWEN_IPC__REQUEST_LIST *rl,
                                                 const char *msgType) {
@@ -858,7 +858,7 @@ GWEN_DB_NODE *GWEN_IpcManager_GetResponseData(GWEN_IPCMANAGER *mgr,
 
 
 /* -------------------------------------------------------------- FUNCTION */
-GWEN_IPCMSG *GWEN_IpcManager__MakeErrorResponse(GWEN_IPCMANAGER *mgr,
+GWEN_IPCMSG *GWEN_IpcManager__MakeErrorResponse(GWEN_UNUSED GWEN_IPCMANAGER *mgr,
                                                 GWEN_IPCMSG *m,
                                                 int code,
                                                 const char *txt) {
@@ -1080,7 +1080,7 @@ void GWEN_IpcManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent){
 
 
 /* -------------------------------------------------------------- FUNCTION */
-int GWEN_IpcManager__SendMsg(GWEN_IPCMANAGER *mgr,
+int GWEN_IpcManager__SendMsg(GWEN_UNUSED GWEN_IPCMANAGER *mgr,
                              GWEN_IPCMSG *m) {
   GWEN_BUFFER *buf;
   int err;

@@ -448,7 +448,7 @@ int GWEN_Buffer__FillBuffer_IoLayer(GWEN_BUFFER *bf){
 			       toread,
 			       GWEN_IO_REQUEST_FLAGS_READALL,
 			       0, 30000);
-    if (rv<toread) {
+    if (rv<(int)toread) {
       if (rv<0) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         return rv;

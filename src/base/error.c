@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#include "error_p.h"
+
 /* Internationalization */
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -48,7 +50,7 @@
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif
-#include "error_p.h"
+
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"
 

@@ -207,7 +207,6 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
     nn=nheader;
     while(nn) {
       const GWEN_XMLNODE *next;
-      int rv;
 
       rv=GWEN_XMLNode__WriteToStream(nn, fb, GWEN_XmlCtx_GetFlags(ctx), 0);
       if (rv<0) {
@@ -369,7 +368,7 @@ int GWEN_XMLNode_toBuffer(const GWEN_XMLNODE *n, GWEN_BUFFER *buf, uint32_t flag
 
 int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
 		       GWEN_FAST_BUFFER *fb,
-		       uint32_t flags){
+		       GWEN_UNUSED uint32_t flags){
   int chr;
   unsigned char uc;
   GWEN_BUFFER *dbuf;
@@ -412,7 +411,7 @@ int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
 
 int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 		      GWEN_FAST_BUFFER *fb,
-		      uint32_t flags){
+		      GWEN_UNUSED uint32_t flags){
   int chr;
   unsigned char uc=0;
   GWEN_BUFFER *dbuf;

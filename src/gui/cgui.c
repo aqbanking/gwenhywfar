@@ -103,7 +103,7 @@ GWEN_GUI *GWEN_Gui_CGui_new() {
 
 
 
-void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_GUI_CGUI *cgui;
 
   cgui=(GWEN_GUI_CGUI*)p;
@@ -367,7 +367,7 @@ char GWEN_Gui_CGui__readCharFromStdin(int waitFor) {
 
 
 
-int GWEN_Gui_CGui__input(GWEN_GUI *gui,
+int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 			 uint32_t flags,
 			 char *buffer,
 			 int minLen,
@@ -507,7 +507,7 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
 			     const char *b1,
 			     const char *b2,
 			     const char *b3,
-			     uint32_t guiid) {
+			     GWEN_UNUSED uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   GWEN_BUFFER *tbuf;
   int c;
@@ -646,10 +646,10 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
 
 
 uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
-			       uint32_t flags,
+			       GWEN_UNUSED uint32_t flags,
 			       const char *title,
 			       const char *text,
-			       uint32_t guiid) {
+			       GWEN_UNUSED uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   GWEN_BUFFER *tbuf;
 
@@ -670,7 +670,7 @@ uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
 
 
 
-void GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, uint32_t id) {
+void GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, GWEN_UNUSED uint32_t id) {
   GWEN_GUI_CGUI *cgui;
 
   assert(gui);
@@ -687,7 +687,7 @@ uint32_t GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
 				     const char *title,
 				     const char *text,
 				     uint64_t total,
-				     uint32_t guiid) {
+				     GWEN_UNUSED uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -799,12 +799,12 @@ int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui,uint32_t id) {
 
 
 
-int GWEN_Gui_CGui_Print(GWEN_GUI *gui,
-			const char *docTitle,
-			const char *docType,
-			const char *descr,
-			const char *text,
-			uint32_t guiid) {
+int GWEN_Gui_CGui_Print(GWEN_UNUSED GWEN_GUI *gui,
+			GWEN_UNUSED const char *docTitle,
+			GWEN_UNUSED const char *docType,
+			GWEN_UNUSED const char *descr,
+			GWEN_UNUSED const char *text,
+			GWEN_UNUSED uint32_t guiid) {
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 
@@ -911,7 +911,7 @@ int GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
 				    const char *token,
 				    const char *pin,
 				    GWEN_GUI_PASSWORD_STATUS status,
-				    uint32_t guiid) {
+				    GWEN_UNUSED uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
 
   assert(gui);

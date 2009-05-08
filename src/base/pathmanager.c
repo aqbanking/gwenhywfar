@@ -443,12 +443,14 @@ GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
 
 
 
+
+
+#ifdef OS_WIN32
 int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
                                        const char *destLib,
                                        const char *pathName,
                                        const char *keypath,
                                        const char *varname){
-#ifdef OS_WIN32
   HKEY hkey;
   TCHAR nbuffer[MAX_PATH];
   BYTE vbuffer[MAX_PATH];
@@ -493,15 +495,19 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
 	   "In RegKey \"%s\" the variable \"%s\" does not exist",
 	   keypath, varname);
   return 1;
-
-#else /* OS_WIN32 */
-  return 0;
-#endif /* OS_WIN32 */
 }
 
+#else /* OS_WIN32 */
 
 
+int GWEN_PathManager_AddPathFromWinReg(GWEN_UNUSED const char *callingLib,
+				       GWEN_UNUSED const char *destLib,
+                                       GWEN_UNUSED const char *pathName,
+                                       GWEN_UNUSED const char *keypath,
+				       GWEN_UNUSED const char *varname){
+  return 0;
+}
 
-
+#endif /* OS_WIN32 */
 
 

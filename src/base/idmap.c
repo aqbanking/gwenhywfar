@@ -51,6 +51,7 @@ GWEN_IDMAP *GWEN_IdMap_new(GWEN_IDMAP_ALGO algo) {
   case GWEN_IdMapAlgo_Hex4:
     GWEN_IdMapHex4_Extend(map);
     break;
+  case GWEN_IdMapAlgo_Unknown:
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unknown algo %d", algo);
     GWEN_IdMap_free(map);
@@ -134,6 +135,7 @@ void GWEN_IdMap_Clear(GWEN_IDMAP *map) {
   case GWEN_IdMapAlgo_Hex4:
     GWEN_IdMapHex4_Extend(map);
     break;
+  case GWEN_IdMapAlgo_Unknown:
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unknown algo %d", map->algo);
   }

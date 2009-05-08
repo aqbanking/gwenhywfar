@@ -1477,8 +1477,6 @@ int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
 
   nn=GWEN_XMLNode_GetFirstTag(n);
   while(nn) {
-    int rv;
-
     rv=GWEN_XMLNode__CheckAndSetNameSpace(nn, prefix, nspace);
     if (rv==-1)
       return rv;
@@ -1531,8 +1529,6 @@ int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n) {
   /* do the same on all sub nodes */
   nn=GWEN_XMLNode_GetFirstTag(n);
   while(nn) {
-    int rv;
-
     rv=GWEN_XMLNode__CheckNameSpaceDecls3(nn);
     if (rv) {
       return rv;

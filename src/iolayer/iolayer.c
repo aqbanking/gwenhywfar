@@ -655,7 +655,7 @@ int GWEN_Io_Layer_ReadPacket(GWEN_IO_LAYER *io,
     if (rflags & GWEN_IO_REQUEST_FLAGS_PACKETEND) {
       return bytesRead;
     }
-    else if (size<=rv) {
+    else if ((int)size<=rv) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Buffer overrun after reading %d bytes", bytesRead);
       return GWEN_ERROR_BUFFER_OVERFLOW;
     }

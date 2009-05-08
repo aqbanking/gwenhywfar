@@ -213,7 +213,7 @@ int GWEN_BufferedIO_Socket__Close(GWEN_BUFFEREDIO *dm){
 
 
 
-void GWENHYWFAR_CB GWEN_BufferedIO_Socket_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_BufferedIO_Socket_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_BUFFEREDIO_SOCKET *bft;
 
   bft=(GWEN_BUFFEREDIO_SOCKET*)p;

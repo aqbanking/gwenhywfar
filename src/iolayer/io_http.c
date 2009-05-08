@@ -70,7 +70,7 @@ GWEN_IO_LAYER *GWEN_Io_LayerHttp_new(GWEN_IO_LAYER *baseLayer) {
 
 
 GWENHYWFAR_CB
-void GWEN_Io_LayerHttp_freeData(void *bp, void *p) {
+void GWEN_Io_LayerHttp_freeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_IO_LAYER_HTTP *xio;
 
   xio=(GWEN_IO_LAYER_HTTP*) p;
@@ -726,8 +726,6 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerHttp_WorkOnReadRequest1(GWEN_IO_LAYER *io)
 	  DBG_DEBUG(GWEN_LOGDOMAIN, "Awaiting next header");
 	  xio->lastHeaderPos=i+1; /* count the added #10 */
 	  if (xio->readRequestOut==NULL) {
-	    int rv;
-
 	    if (xio->lastReadOutResult) {
 	      xio->readRequestIn=NULL;
 	      DBG_INFO(GWEN_LOGDOMAIN,

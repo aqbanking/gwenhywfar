@@ -561,7 +561,7 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 
 
 int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess,
-				 GWEN_BUFFER *buf, int timeout) {
+				 GWEN_BUFFER *buf, GWEN_UNUSED int timeout) {
   int rv;
   GWEN_DB_NODE *db;
   int code;

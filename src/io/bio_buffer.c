@@ -72,7 +72,7 @@ void GWEN_BufferedIO_Buffer_Table__free(GWEN_BUFFEREDIO_BUFFER *bft) {
 int GWEN_BufferedIO_Buffer__Read(GWEN_BUFFEREDIO *dm,
 				 char *buffer,
 				 int *size,
-				 int timeout){
+				 GWEN_UNUSED int timeout){
   GWEN_BUFFEREDIO_BUFFER *bft;
   unsigned int readSize;
 
@@ -109,7 +109,7 @@ int GWEN_BufferedIO_Buffer__Read(GWEN_BUFFEREDIO *dm,
 int GWEN_BufferedIO_Buffer__Write(GWEN_BUFFEREDIO *dm,
 				  const char *buffer,
 				  int *size,
-				  int timeout){
+				  GWEN_UNUSED int timeout){
   GWEN_BUFFEREDIO_BUFFER *bft;
 
   assert(dm);
@@ -160,7 +160,7 @@ int GWEN_BufferedIO_Buffer__Close(GWEN_BUFFEREDIO *dm){
 
 
 
-void GWENHYWFAR_CB GWEN_BufferedIO_Buffer_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_BufferedIO_Buffer_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_BUFFEREDIO_BUFFER *bft;
 
   bft=(GWEN_BUFFEREDIO_BUFFER*)p;

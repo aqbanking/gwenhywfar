@@ -425,6 +425,16 @@ GWEN_CONSTLIST_ITERATOR *GWEN_ConstList_FindIter(const GWEN_CONSTLIST *l, const 
 GWENHYWFAR_API
 const void *GWEN_ConstList_Contains(const GWEN_CONSTLIST *l, const void *element);
 
+
+/**
+ * Removes the element currently pointed to by the given iterator
+ * from the list. (The element is not freed.)
+ * The given iterator is move toward the next element in any case (if there
+ * is no next element then the iterator will point to 0).
+ */
+GWENHYWFAR_API
+void GWEN_ConstList_Erase(GWEN_CONSTLIST *l, GWEN_CONSTLIST_ITERATOR *it);
+
 /** 
  * Searches for the first occurrence of the "element" pointer and
  * erases that element from the list. (The element itself is not
