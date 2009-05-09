@@ -4,7 +4,7 @@ DIST_SUBDIRS=admin data m4 src plugins tools test doc po checks
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = \
+EXTRA_DIST = config.rpath  \
  ChangeLog \
  ChangeLog.old \
  README.W32 \
