@@ -13,6 +13,9 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/gwentime.h>
+
 
 GWEN_INHERIT_FUNCTIONS(GWEN_IPC_REQUEST)
 GWEN_LIST_FUNCTIONS(GWEN_IPC_REQUEST, GWEN_IpcRequest)
@@ -59,6 +62,8 @@ const char *GWEN_IpcRequest_Status_toString(GWEN_IPC_REQUEST_STATUS v) {
 } 
 
 
+
+
 GWEN_IPC_REQUEST *GWEN_IpcRequest_new() {
   GWEN_IPC_REQUEST *st;
 
@@ -76,6 +81,12 @@ void GWEN_IpcRequest_free(GWEN_IPC_REQUEST *st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
   GWEN_INHERIT_FINI(GWEN_IPC_REQUEST, st)
+  if (st->name)
+    free(st->name);
+  if (st->expires)
+    GWEN_Time_free(st->expires);
+  if (st->subRequests)
+    GWEN_IpcRequest_List_free(st->subRequests);
   GWEN_LIST_FINI(GWEN_IPC_REQUEST, st)
   GWEN_FREE_OBJECT(st);
     }
@@ -135,22 +146,24 @@ int GWEN_IpcRequest_toDb(const GWEN_IPC_REQUEST *st, GWEN_DB_NODE *db) {
 }
 
 
-GWEN_IPC_REQUEST *GWEN_IpcRequest_fromDb(GWEN_DB_NODE *db) {
-GWEN_IPC_REQUEST *st;
-
+int GWEN_IpcRequest_ReadDb(GWEN_IPC_REQUEST *st, GWEN_DB_NODE *db) {
+  assert(st);
   assert(db);
-  st=GWEN_IpcRequest_new();
   GWEN_IpcRequest_SetId(st, GWEN_DB_GetIntValue(db, "id", 0, 0));
   GWEN_IpcRequest_SetName(st, GWEN_DB_GetCharValue(db, "name", 0, 0));
   GWEN_IpcRequest_SetIpcId(st, GWEN_DB_GetIntValue(db, "ipcId", 0, 0));
-  if (1) {
+  if (1) { /* for local vars */
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "expires");
-    if (dbT) st->expires=GWEN_Time_fromDb(dbT);
+    if (dbT) {
+  if (st->expires)
+    GWEN_Time_free(st->expires);
+  st->expires=GWEN_Time_fromDb(dbT);
+}
   }
   st->subRequests=GWEN_IpcRequest_List_new();
-  if (1) {
+  if (1) {/* just for local vars */
     GWEN_DB_NODE *dbT;
     GWEN_IPC_REQUEST *e;
 
@@ -173,9 +186,21 @@ GWEN_IPC_REQUEST *st;
     } /* if (dbT) */
   } /* if (1) */
   GWEN_IpcRequest_SetStatus(st, GWEN_IpcRequest_Status_fromString(GWEN_DB_GetCharValue(db, "status", 0, 0)));
+  return 0;
+}
+
+
+GWEN_IPC_REQUEST *GWEN_IpcRequest_fromDb(GWEN_DB_NODE *db) {
+  GWEN_IPC_REQUEST *st;
+
+  assert(db);
+  st=GWEN_IpcRequest_new();
+  GWEN_IpcRequest_ReadDb(st, db);
   st->_modified=0;
   return st;
 }
+
+
 
 
 uint32_t GWEN_IpcRequest_GetId(const GWEN_IPC_REQUEST *st) {
@@ -201,7 +226,9 @@ const char *GWEN_IpcRequest_GetName(const GWEN_IPC_REQUEST *st) {
 
 void GWEN_IpcRequest_SetName(GWEN_IPC_REQUEST *st, const char *d) {
   assert(st);
-  if (d)
+  if (st->name)
+    free(st->name);
+  if (d && *d)
     st->name=strdup(d);
   else
     st->name=0;
@@ -234,6 +261,8 @@ const GWEN_TIME *GWEN_IpcRequest_GetExpires(const GWEN_IPC_REQUEST *st) {
 
 void GWEN_IpcRequest_SetExpires(GWEN_IPC_REQUEST *st, const GWEN_TIME *d) {
   assert(st);
+  if (st->expires)
+    GWEN_Time_free(st->expires);
   if (d)
     st->expires=GWEN_Time_dup(d);
   else
@@ -252,6 +281,8 @@ GWEN_IPC_REQUEST_LIST *GWEN_IpcRequest_GetSubRequests(const GWEN_IPC_REQUEST *st
 
 void GWEN_IpcRequest_SetSubRequests(GWEN_IPC_REQUEST *st, GWEN_IPC_REQUEST_LIST *d) {
   assert(st);
+  if (st->subRequests)
+    GWEN_IpcRequest_List_free(st->subRequests);
   if (d) {
     GWEN_IPC_REQUEST *e;
 
@@ -325,10 +356,7 @@ void GWEN_IpcRequest_Attach(GWEN_IPC_REQUEST *st) {
   assert(st);
   st->_usage++;
 }
-
-
-
-GWEN_IPC_REQUEST *GWEN_IpcRequest_List2__freeAll_cb(GWEN_IPC_REQUEST *st, GWEN_UNUSED void *user_data) {
+GWEN_IPC_REQUEST *GWEN_IpcRequest_List2__freeAll_cb(GWEN_IPC_REQUEST *st, void *user_data) {
   GWEN_IpcRequest_free(st);
 return 0;
 }
@@ -340,8 +368,6 @@ void GWEN_IpcRequest_List2_freeAll(GWEN_IPC_REQUEST_LIST2 *stl) {
     GWEN_IpcRequest_List2_free(stl); 
   }
 }
-
-
 
 
 GWEN_IPC_REQUEST_LIST *GWEN_IpcRequest_List_dup(const GWEN_IPC_REQUEST_LIST *stl) {
@@ -364,6 +390,7 @@ GWEN_IPC_REQUEST_LIST *GWEN_IpcRequest_List_dup(const GWEN_IPC_REQUEST_LIST *stl
   else
     return 0;
 }
+
 
 
 

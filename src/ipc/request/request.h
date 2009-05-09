@@ -54,7 +54,8 @@ get it with @ref GWEN_IpcRequest_GetSubRequests
 @anchor GWEN_IPC_REQUEST_Status
 <h3>Status</h3>
 <p>
-Status of the request.</p>
+Status of the request.
+</p>
 <p>
 Set this property with @ref GWEN_IpcRequest_SetStatus, 
 get it with @ref GWEN_IpcRequest_GetStatus
@@ -75,6 +76,7 @@ typedef struct GWEN_IPC_REQUEST GWEN_IPC_REQUEST;
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
+/* headers */
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/gwentime.h>
 
@@ -84,44 +86,56 @@ extern "C" {
 
 typedef enum {
   GWEN_IpcRequest_StatusUnknown=-1,
-  /** New request.  */
+  /** New request.
+  */
   GWEN_IpcRequest_StatusNew=0,
-  /** Request has been sent, no answer has been received.  */
+  /** Request has been sent, no answer has been received.
+  */
   GWEN_IpcRequest_StatusSent,
-  /** Request has been answered partially.  */
+  /** Request has been answered partially.
+  */
   GWEN_IpcRequest_StatusPartial,
-  /** Request has been answered completely..  */
+  /** Request has been answered completely..
+  */
   GWEN_IpcRequest_StatusAnswered,
-  /** Request has been finished.  */
+  /** Request has been finished.
+  */
   GWEN_IpcRequest_StatusFinished
 } GWEN_IPC_REQUEST_STATUS;
 
-GWEN_IPC_REQUEST_STATUS GWEN_IpcRequest_Status_fromString(const char *s);
-const char *GWEN_IpcRequest_Status_toString(GWEN_IPC_REQUEST_STATUS v);
+GWENHYWFAR_API GWEN_IPC_REQUEST_STATUS GWEN_IpcRequest_Status_fromString(const char *s);
+GWENHYWFAR_API const char *GWEN_IpcRequest_Status_toString(GWEN_IPC_REQUEST_STATUS v);
 
 typedef int (*GWEN_IPC_REQUEST_WORK_FN)(GWEN_IPC_REQUEST *st);
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_IPC_REQUEST, GWENHYWFAR_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_IPC_REQUEST, GWEN_IpcRequest, GWENHYWFAR_API)
-GWEN_IPC_REQUEST_LIST *GWEN_IpcRequest_List_dup(const GWEN_IPC_REQUEST_LIST *stl);
+GWENHYWFAR_API GWEN_IPC_REQUEST_LIST *GWEN_IpcRequest_List_dup(const GWEN_IPC_REQUEST_LIST *stl);
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_IPC_REQUEST, GWEN_IpcRequest, GWENHYWFAR_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself
 */
 GWENHYWFAR_API void GWEN_IpcRequest_List2_freeAll(GWEN_IPC_REQUEST_LIST2 *stl);
+
+/** Creates a new object.
+*/
+GWENHYWFAR_API GWEN_IPC_REQUEST *GWEN_IpcRequest_new();
+/** Creates an object from the data in the given GWEN_DB_NODE
+*/
+GWENHYWFAR_API GWEN_IPC_REQUEST *GWEN_IpcRequest_fromDb(GWEN_DB_NODE *db);
+/** Creates and returns a deep copy of thegiven object.
+*/
+GWENHYWFAR_API GWEN_IPC_REQUEST *GWEN_IpcRequest_dup(const GWEN_IPC_REQUEST*st);
 /** Destroys the given object.
 */
 GWENHYWFAR_API void GWEN_IpcRequest_free(GWEN_IPC_REQUEST *st);
 /** Increments the usage counter of the given object, so an additional free() is needed to destroy the object.
 */
 GWENHYWFAR_API void GWEN_IpcRequest_Attach(GWEN_IPC_REQUEST *st);
-/** Creates and returns a deep copy of thegiven object.
+/** Reads data from a GWEN_DB.
 */
-GWENHYWFAR_API GWEN_IPC_REQUEST *GWEN_IpcRequest_dup(const GWEN_IPC_REQUEST*st);
-/** Creates an object from the data in the given GWEN_DB_NODE
-*/
-GWENHYWFAR_API GWEN_IPC_REQUEST *GWEN_IpcRequest_fromDb(GWEN_DB_NODE *db);
+GWENHYWFAR_API int GWEN_IpcRequest_ReadDb(GWEN_IPC_REQUEST *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
 GWENHYWFAR_API int GWEN_IpcRequest_toDb(const GWEN_IPC_REQUEST*st, GWEN_DB_NODE *db);
