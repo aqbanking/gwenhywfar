@@ -348,14 +348,14 @@ void GWEN_ConstList_PushFront(GWEN_CONSTLIST *l, const void *p);
  * removed from the list.)
  */
 GWENHYWFAR_API
-const void *GWEN_ConstList_GetFront(GWEN_CONSTLIST *l);
+const void *GWEN_ConstList_GetFront(const GWEN_CONSTLIST *l);
 
 /**
  * Returns the last element of the list. (The element is not
  * removed from the list.)
  */
 GWENHYWFAR_API
-const void *GWEN_ConstList_GetBack(GWEN_CONSTLIST *l);
+const void *GWEN_ConstList_GetBack(const GWEN_CONSTLIST *l);
 
 /** Returns the size of this list, i.e. the number of elements in this
  * list. 

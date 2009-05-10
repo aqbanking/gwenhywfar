@@ -789,13 +789,13 @@ void GWEN_ConstList_PushFront(GWEN_CONSTLIST *l, const void *p){
 
 
 
-const void *GWEN_ConstList_GetFront(GWEN_CONSTLIST *l){
+const void *GWEN_ConstList_GetFront(const GWEN_CONSTLIST *l){
   return GWEN_List_GetFront(l);
 }
 
 
 
-const void *GWEN_ConstList_GetBack(GWEN_CONSTLIST *l){
+const void *GWEN_ConstList_GetBack(const GWEN_CONSTLIST *l){
   return GWEN_List_GetBack(l);
 }
 
