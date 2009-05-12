@@ -80,7 +80,7 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-O -ggdb $(all_warnings) $(cplusplus_warnings)" CFLAGS="-O -ggdb $(all_warnings) $(c_warnings)" ./configure INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --enable-full-doc
+	CXXFLAGS="-O -ggdb $(all_warnings) $(cplusplus_warnings)" CFLAGS="-O -ggdb $(all_warnings) $(c_warnings)" ./configure INSTALL="/usr/bin/install -p" --disable-static --enable-full-doc
 
 mp-priv:
 	libtoolize -f --automake
@@ -88,7 +88,7 @@ mp-priv:
 	autoheader
 	automake --add-missing
 	autoconf
-	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --enable-maintainer-mode --disable-static --prefix=/opt/devel/4 --enable-full-doc
+	CFLAGS="$(MY_CFLAGS)" CXXFLAGS="-ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --disable-static --prefix=/opt/devel/4 --enable-full-doc
 
 mp-darwin:
 	CFLAGS="-I/sw/include -ggdb -Wall" LDFLAGS="-L/sw/lib" ./configure
@@ -107,7 +107,6 @@ mp-w32:
 	AS=i586-mingw32msvc-as \
 	RC=i586-mingw32msvc-windres \
 	./configure \
-	  --enable-maintainer-mode \
 	  --prefix=$(MINGW32_PREFIX) $(WIN32_OPTIONS) \
 	  --enable-release \
 	  --disable-binreloc \
