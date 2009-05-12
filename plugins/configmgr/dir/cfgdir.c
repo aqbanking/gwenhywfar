@@ -46,7 +46,7 @@ GWEN_INHERIT(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR)
 
 
 
-GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_PLUGIN *pl, const char *url) {
+GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_UNUSED GWEN_PLUGIN *pl, const char *url) {
   GWEN_CONFIGMGR *cfg;
 
   cfg=GWEN_ConfigMgrDir_new(url);
@@ -121,7 +121,7 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url) {
 
 
 
-GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(void *bp, void *p) {
+GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CONFIGMGR_DIR *xcfg;
 
   xcfg=(GWEN_CONFIGMGR_DIR*) p;
@@ -484,7 +484,7 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
 int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
 				  const char *groupName,
 				  const char *subGroupName,
-				  uint32_t guiid) {
+				  GWEN_UNUSED uint32_t guiid) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_FSLOCK *lck;
@@ -616,7 +616,7 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
 
 int GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
 				 GWEN_STRINGLIST *sl,
-				 uint32_t guiid) {
+				 GWEN_UNUSED uint32_t guiid) {
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
 
@@ -640,7 +640,7 @@ int GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
 int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
 				    const char *groupName,
 				    GWEN_STRINGLIST *sl,
-				    uint32_t guiid) {
+				    GWEN_UNUSED uint32_t guiid) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;

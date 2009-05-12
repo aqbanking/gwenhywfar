@@ -47,7 +47,7 @@ GWEN_MUTEX *GWEN_Mutex_new() {
 
 
 
-void GWEN_Mutex_free(GWEN_MUTEX *mtx) {
+void GWEN_Mutex_free(GWEN_UNUSED GWEN_MUTEX *mtx) {
 }
 
 
