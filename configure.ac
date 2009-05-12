@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=8
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="git"
 
 
 
@@ -202,9 +202,9 @@ AC_CHECK_LIB(dl, dlopen)
 
 AC_CHECK_LIB(rt, sem_init, 
   [ 
-    rt_libs="-lrt"
+    rt_libs="-lrt -pthread"
     AC_DEFINE(HAVE_LIBRT, "1", [whether librt is available])
-  ])
+  ], [], [-pthread])
 AC_SUBST(rt_libs)
 
 # Some systems have iconv in libc, some have it in libiconv (OSF/1 and
@@ -844,11 +844,11 @@ AC_MSG_RESULT($enable_visibility)
 if test "$enable_visibility" = "yes"; then
   AC_MSG_CHECKING(if symbol visibility is supported)
   visibility_cflags=""
-  case `basename $CC` in 
+  case `$CC --version|head -n1|cut -f1 -d " "` in 
     gcc*)
        dnl Determine version number (watch out: the outside square
        dnl parenteses are vitally important here!)
-       gccversion=["` ${CC} --version | head -1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+       gccversion=["` ${CC} -dumpversion `"]
        case $gccversion in
          4.*)
            # Activate -fvisibility=hidden only for explicit 4.x gcc
