@@ -30,7 +30,7 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=8
 GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=1
+GWENHYWFAR_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="git"
 
@@ -191,7 +191,6 @@ AC_PROG_LIBTOOL
 AC_PROG_AWK
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
 AC_CHECK_PROG(SED,sed,sed)
-
 
 ###-------------------------------------------------------------------------
 #
@@ -604,12 +603,7 @@ case "$OS_TYPE" in
     ;;
     
   *)
-    AM_PATH_LIBGNUTLS([], [have_gnutls="yes"], [have_gnutls="no"])
-    if test "$have_gnutls" != "yes"; then
-      AC_MSG_ERROR([
-    **** Libgnutls is required for Gwenhywfar. Please install it (including devel packages)])
-    fi
-    
+    PKG_CHECK_MODULES([LIBGNUTLS], [gnutls])
     # check for 1.6 or higher
     oldlibs="$LIBS"
     LIBS="${LIBGNUTLS_LIBS}"
