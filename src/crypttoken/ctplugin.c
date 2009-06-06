@@ -298,7 +298,15 @@ int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
 
   pdl=GWEN_Crypt_Token_PluginManager_GetPluginDescrs(pm, devt);
   if (pdl==NULL) {
-    DBG_INFO(GWEN_LOGDOMAIN, "No plugin descriptions found for this device type");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No plugin descriptions found for this device type");
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("No plugin found for this device type"));
+    GWEN_Gui_ProgressLog(guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("If you're using a Debian/Ubuntu based system "
+				"please consider to install package " 
+				LIBCHIPCARD_GWENHYWFAR_PLUGIN_PACKAGE));
     return GWEN_ERROR_NOT_FOUND;
   }
   else {

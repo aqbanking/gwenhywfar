@@ -43,6 +43,7 @@ libcrypttoken_la_SOURCES=\
   ct_keyinfo.c \
   ctplugin.c
 
+DEFS += -DLIBCHIPCARD_GWENHYWFAR_PLUGIN_PACKAGE=\"libchipcard-libgwenhywfar@GWENHYWFAR_SO_EFFECTIVE@-plugins\"
 
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)
