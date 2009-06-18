@@ -1115,6 +1115,9 @@ int GWEN_Io_LayerTls_HasWaitingRequests(GWEN_IO_LAYER *io) {
   xio=GWEN_INHERIT_GETDATA(GWEN_IO_LAYER, GWEN_IO_LAYER_TLS, io);
   assert(xio);
 
+  if (xio->waitingForGui)
+    return 0;
+
   if (xio->connectRequest || xio->disconnectRequest)
     return 1;
   if (xio->hasWaitingRequestsFn)
@@ -1132,6 +1135,10 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerTls_WorkOnRequests(GWEN_IO_LAYER *io) {
   assert(io);
   xio=GWEN_INHERIT_GETDATA(GWEN_IO_LAYER, GWEN_IO_LAYER_TLS, io);
   assert(xio);
+
+  if (xio->waitingForGui)
+    /* this worker is waiting for GUI, don't actually work here */
+    return GWEN_Io_Layer_WorkResultBlocking;
 
   /* work on connect request */
   if (xio->connectRequest) {
@@ -1210,8 +1217,10 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerTls_WorkOnRequests(GWEN_IO_LAYER *io) {
 	}
       }
       else {
-	/* present cert to the user */
+	  /* present cert to the user */
+	xio->waitingForGui=1;
 	rv=GWEN_Gui_CheckCert(xio->peerCertDescr, io, GWEN_Io_Request_GetGuiId(r));
+	xio->waitingForGui=0;
 	if (rv) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "Peer cert not accepted (%d), aborting", rv);
 	  GWEN_Io_Layer_SetStatus(io, GWEN_Io_Layer_StatusDisconnected);

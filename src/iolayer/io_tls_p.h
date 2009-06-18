@@ -46,6 +46,8 @@ struct GWEN_IO_LAYER_TLS {
 
   GWEN_SSLCERTDESCR *peerCertDescr;
   uint32_t peerCertFlags;
+
+  int waitingForGui;
 };
 
 
