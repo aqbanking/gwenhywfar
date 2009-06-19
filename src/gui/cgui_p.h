@@ -36,7 +36,6 @@ struct GWEN_GUI_CGUI {
   uint32_t nextBoxId;
   uint32_t nextProgressId;
   char *charSet;
-  int nonInteractive;
 
   GWEN_GUI_CHECKCERT_FN checkCertFn;
   GWEN_DB_NODE *dbPasswords;
@@ -44,7 +43,6 @@ struct GWEN_GUI_CGUI {
   GWEN_STRINGLIST *badPasswords;
   int persistentPasswords;
 
-  int acceptAllValidCerts;
 };
 
 

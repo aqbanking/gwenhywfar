@@ -138,7 +138,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
 
     t1=time(0);
     if (difftime(t1, cp->startTime)>GWEN_GUI_DELAY_SECS) {
-      if (!GWEN_Gui_CGui_GetIsNonInteractive(cp->gui))
+      if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
 	fprintf(stderr, "%s: Started.\n", cp->title);
       cp->shown=1;
     }
@@ -149,7 +149,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
   if (progress!=GWEN_GUI_PROGRESS_NONE) {
     if (progress!=cp->current) {
       if (cp->shown) {
-	if (!GWEN_Gui_CGui_GetIsNonInteractive(cp->gui)) {
+	if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
 	  if (cp->total==GWEN_GUI_PROGRESS_NONE)
 	    fprintf(stderr, "%s: %llu\n", cp->title,
 		    (long long unsigned)progress);
@@ -167,7 +167,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
     return GWEN_ERROR_USER_ABORTED;
 
 #ifndef OS_WIN32
-  if (!GWEN_Gui_CGui_GetIsNonInteractive(cp->gui)) {
+  if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
     /* check for abort */
     fl=fcntl(fileno(stdin), F_GETFL);
     if (fl!=-1) {
@@ -202,7 +202,7 @@ int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
   assert(cp);
   assert(text);
 
-  if (!GWEN_Gui_CGui_GetIsNonInteractive(cp->gui)) {
+  if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
     GWEN_BUFFER *tbuf;
     const char *t;
 
@@ -228,7 +228,7 @@ int GWEN_Gui_CProgress_End(GWEN_GUI_CPROGRESS *cp) {
   assert(cp);
 
   if (cp->shown) {
-    if (!GWEN_Gui_CGui_GetIsNonInteractive(cp->gui))
+    if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
       fprintf(stderr, "%s: Finished.\n", cp->title);
   }
   if (cp->aborted)

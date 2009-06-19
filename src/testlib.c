@@ -80,7 +80,7 @@ int test_gui(int test_with_interaction) {
   /* Set the static GUI object */
   assert(gui);
   GWEN_Gui_SetGui(gui);
-  GWEN_Gui_CGui_SetIsNonInteractive(gui, 0);
+  GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
 
   rv = GWEN_Gui_ShowBox(0,
 			"This is a ShowBox test title",

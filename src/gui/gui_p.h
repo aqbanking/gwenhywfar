@@ -59,6 +59,8 @@ struct GWEN_GUI {
 
   GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN keyDataFromTextOpenSslFn;
 
+  uint32_t flags;
+
   uint32_t refCount;
 };
 

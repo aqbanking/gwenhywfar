@@ -70,10 +70,10 @@ void GWEN_Gui_CGui_SetCharSet(GWEN_GUI *gui, const char *s);
  * These settings together allow for a non-interactive use.
  */
 /*@{*/
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 int GWEN_Gui_CGui_GetIsNonInteractive(const GWEN_GUI *gui);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 void GWEN_Gui_CGui_SetIsNonInteractive(GWEN_GUI *gui, int i);
 /*@}*/
 
@@ -141,13 +141,13 @@ GWEN_DB_NODE *GWEN_Gui_CGui_GetCertDb(const GWEN_GUI *gui);
  * etc).
  * Invalid certificates are always rejected in non-interactive mode.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i);
 
 /**
  * See @ref GWEN_Gui_CGui_SetAcceptAllValidCerts
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 int GWEN_Gui_CGui_GetAcceptAllValidCerts(const GWEN_GUI *gui);
 
 /*@}*/

@@ -146,49 +146,31 @@ void GWEN_Gui_CGui_SetCharSet(GWEN_GUI *gui, const char *s) {
 
 
 int GWEN_Gui_CGui_GetIsNonInteractive(const GWEN_GUI *gui) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  return cgui->nonInteractive;
+  return GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE;
 }
 
 
 
 void GWEN_Gui_CGui_SetIsNonInteractive(GWEN_GUI *gui, int i) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  cgui->nonInteractive=i;
+  if (i)
+    GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
+  else
+    GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
 }
 
 
 
 int GWEN_Gui_CGui_GetAcceptAllValidCerts(const GWEN_GUI *gui) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  return cgui->acceptAllValidCerts;
+  return GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS;
 }
 
 
 
 void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  cgui->acceptAllValidCerts=i;
+  if (i)
+    GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
+  else
+    GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
 }
 
 
@@ -519,7 +501,7 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Gui_CGui_GetRawText(gui, text, tbuf);
 
-  if (cgui->nonInteractive) {
+  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
     if (GWEN_GUI_MSG_FLAGS_SEVERITY_IS_DANGEROUS(flags)) {
       fprintf(stderr,
               "Got the following dangerous message:\n%s\n",
@@ -869,11 +851,11 @@ int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
     return 0;
   }
 
-  if (cgui->nonInteractive) {
+  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
     uint32_t fl;
 
     fl=GWEN_SslCertDescr_GetStatusFlags(cd);
-    if (fl==GWEN_SSL_CERT_FLAGS_OK && cgui->acceptAllValidCerts) {
+    if (fl==GWEN_SSL_CERT_FLAGS_OK && (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS)) {
       DBG_NOTICE(GWEN_LOGDOMAIN,
 		 "Automatically accepting valid new certificate [%s]",
 		 hash);
@@ -993,7 +975,7 @@ int GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
       }
     }
 
-    if (cgui->nonInteractive) {
+    if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
       DBG_ERROR(GWEN_LOGDOMAIN,
 		"Password for [%s] missing in noninteractive mode, "
 		"aborting", token);

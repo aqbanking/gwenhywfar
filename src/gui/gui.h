@@ -616,6 +616,26 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 
 
 
+/** @name Flags
+ *
+ * Functions in this group influence the behaviour of GWEN_GUI implementations.
+ * These functions operate on a specific GUI object which applications create.
+ */
+/*@{*/
+
+/** GUI is non-interactive */
+#define GWEN_GUI_FLAGS_NONINTERACTIVE     0x00000001
+/** GUI automatically accepts valid certs */
+#define GWEN_GUI_FLAGS_ACCEPTVALIDCERTS   0x00000002
+/** GUI automatically rejects invalid certs */
+#define GWEN_GUI_FLAGS_REJECTINVALIDCERTS 0x00000004
+
+
+GWENHYWFAR_API uint32_t GWEN_Gui_GetFlags(const GWEN_GUI *gui);
+GWENHYWFAR_API void GWEN_Gui_SetFlags(GWEN_GUI *gui, uint32_t fl);
+GWENHYWFAR_API void GWEN_Gui_AddFlags(GWEN_GUI *gui, uint32_t fl);
+GWENHYWFAR_API void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl);
+/*@}*/
 
 
 

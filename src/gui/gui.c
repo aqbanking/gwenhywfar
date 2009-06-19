@@ -281,6 +281,37 @@ GWEN_Gui_SetKeyDataFromTextOpenSslFn(GWEN_GUI *gui,
 
 
 
+uint32_t GWEN_Gui_GetFlags(const GWEN_GUI *gui) {
+  assert(gui);
+  return gui->flags;
+}
+
+
+
+void GWEN_Gui_SetFlags(GWEN_GUI *gui, uint32_t fl) {
+  assert(gui);
+  gui->flags=fl;
+}
+
+
+
+void GWEN_Gui_AddFlags(GWEN_GUI *gui, uint32_t fl) {
+  assert(gui);
+  gui->flags|=fl;
+}
+
+
+
+void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl) {
+  assert(gui);
+  gui->flags&=~fl;
+}
+
+
+
+
+
+
 
 
 
