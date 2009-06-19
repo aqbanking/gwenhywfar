@@ -14,6 +14,7 @@
 /** @defgroup MOD_IPC Inter Process communication */
 /** @defgroup MOD_PARSER Data Management And Parsing */
 /** @defgroup MOD_CRYPT Cryptographic Functions */
+/** @defgroup MOD_GUI Graphical User Interface */
 
 
 /** @mainpage Gwenhywfar Documentation Main Page

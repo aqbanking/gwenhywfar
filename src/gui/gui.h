@@ -39,6 +39,73 @@
 #include <inttypes.h>
 
 
+/** @defgroup MOD_GUI Graphical User Interface
+ *
+ * @brief This module contains the definition of GWEN_GUI.
+ *
+ * The concept of this module is to have a single GWEN_GUI object per
+ * application which is created at the start of your application.
+ * This GWEN_GUI object tells Gwenhywfar (and libraries using the GWEN_GUI-mechanism) how to handle user interaction.
+ *
+ * The GWEN_GUI object contains callbacks for message display, user
+ * input, progress reports, SSL certificate checking etc.
+ *
+ * There are implementations of GWEN_GUI based on console, QT3 and FOX.
+ *
+ * GWEN_GUI uses flags to tell implementations what the caller needs of the GUI
+ * implementation.
+ *
+ * Callbacks which might create windows when using graphical user interfaces like
+ * QT or FOX return GUI IDs (like @ref GWEN_Gui_ProgressStart()). These ids can be
+ * used to create window stacks. The implementation can freely choose how to generate those
+ * ids. The only fixed definition is that a GUIID of 0 refers to the last opened context (opened by
+ * e.g. @ref GWEN_Gui_ProgressStart()).
+ *
+ * A simple example of how GWEN_GUI is used:
+ *
+ * @code
+ * uint32_t pid;
+ *
+ * pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_PROGRESS,
+ *                            "Progress-Title",
+ *                            "This is an example progress with 2 steps",
+ *                            2,
+ *                            0);
+ * GWEN_Gui_ProgressAdvance(pid, 1);
+ * rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO,
+ *                        "MessageBox-Title",
+ *                        "This message box should appear in the context of the open progress dialog",
+ *                        "Button1",
+ *                        "Button2",
+ *                        "Button3",
+ *                        pid);
+ * GWEN_Gui_ProgressAdvance(pid, 2);
+ * GWEN_Gui_ProgressEnd(pid);
+ * @endcode
+ *
+ * In this example a progress context is started (with the GUIID stored in the variable pid). Then in this context
+ * a message box is opened and finally the progress context is closed.
+ *
+ * As seen in the example above the GUI ID returned by @ref GWEN_Gui_ProgressStart() is used as argument GUIID of the
+ * function @ref GWEN_Gui_MessageBox(). Effectively this makes the message box appear in the context of the open progress.
+ *
+ * An implementation which uses a graphical interface (QT, FOX) will most probably use windows for
+ * @ref GWEN_Gui_ProgressStart() and @ref GWEN_Gui_MessageBox(). In such a case the GUI IDs shown above can be used to
+ * establish a parental relationship between those windows. In the example above the message box will have the open
+ * progress dialog as parent window.
+ *
+ * However applications can use additional mechanisms to determine parent windows. QBankManager for example uses its own
+ * GWEN_GUI implementation based on QT3. It contains methods for maintaining a stack of parent windows.
+ * So whenever QBankManager wants GWEN_GUI user interaction to appear in a special window it calls QGui::pushParentWidget()
+ * just before calling Gwenhywfar or AqBanking functions which might need user interaction and QGui::popParentWidget()
+ * directly therafter.
+ *
+ * This mechanism makes it unnecessary to have multiple GUI objects. In fact using multiple GWEN_GUI objects is strongly
+ * discouraged. The implementation should use the GUIID parameter of each callback instead to establish a relationship
+ * between multiple windows.
+ */
+/*@{*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -259,6 +326,7 @@ typedef enum {
 } GWEN_GUI_PASSWORD_STATUS;
 
 
+
 /** @name Constructor, Destructor etc
  *
  */
@@ -350,6 +418,7 @@ GWEN_GUI *GWEN_Gui_GetGui();
  *  like "Ok" (see text restrictions note above)
  * @param b2 text for the optional second button
  * @param b3 text for the optional third button
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
 GWENHYWFAR_API 
 int GWEN_Gui_MessageBox(uint32_t flags,
@@ -367,7 +436,6 @@ int GWEN_Gui_MessageBox(uint32_t flags,
  * <p>
  *  This function is blocking.
  * </p>
- * @param ab banking interface
  * @param flags flags, see @ref GWEN_GUI_INPUT_FLAGS_CONFIRM ff.
  * @param title title of the input box
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
@@ -378,6 +446,7 @@ int GWEN_Gui_MessageBox(uint32_t flags,
  * This means that if you want to ask the user for a PIN of at most 4
  * characters you need to supply a buffer of at least @b 5 bytes and provide
  * a 5 as maxLen.
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  *
  * @return Zero on success, nonzero when the user requested abort or there was
  * any error. The special value AB_ERROR_DEFAULT_VALUE should be returned if
@@ -415,6 +484,7 @@ int GWEN_Gui_InputBox(uint32_t flags,
  * @param flags flags, see @ref GWEN_GUI_SHOWBOX_FLAGS_BEEP ff
  * @param title title of the box
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
 GWENHYWFAR_API 
 uint32_t GWEN_Gui_ShowBox(uint32_t flags,
@@ -464,6 +534,7 @@ void GWEN_Gui_HideBox(uint32_t id);
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  * @param total total number of steps of the operation started (i.e. value
  *  which represents 100%)
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
 GWENHYWFAR_API 
 uint32_t GWEN_Gui_ProgressStart(uint32_t progressFlags,
@@ -542,6 +613,7 @@ int GWEN_Gui_ProgressEnd(uint32_t id);
  * @param descr an optional description about what the document contains. This
  *   might be shown to the user (see text restriction notes above).
  * @param text text to be printed (see text restriction notes above).
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
 GWENHYWFAR_API 
 int GWEN_Gui_Print(const char *docTitle,
@@ -550,7 +622,25 @@ int GWEN_Gui_Print(const char *docTitle,
 		   const char *text,
 		   uint32_t guiid);
 
-
+/**
+ * This function retrieves a password or pin. The implementation might want to use a cache or
+ * a password file. The default implementation simply asks the user for input.
+ * The function @ref GWEN_Gui_SetPasswordStatus() is used to communicate the status of a password.
+ * So if this function here uses a password cache then the callback for @ref GWEN_Gui_SetPasswordStatus()
+ * should also be implemented.
+ * @param flags flags, see @ref GWEN_GUI_INPUT_FLAGS_CONFIRM ff.
+ * @param token unique identification for the password or pin. This can be used to read the password from a cache or file.
+ * @param title title of the input box
+ * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
+ * @param buffer buffer to store the response in. Must have at least room for
+ *  @b maxLen bytes
+ * @param minLen minimal length of the password (if 0 then there is no low limit)
+ * @param maxLen size of the buffer including the trailing NULL character.
+ * This means that if you want to ask the user for a PIN of at most 4
+ * characters you need to supply a buffer of at least @b 5 bytes and provide
+ * a 5 as maxLen.
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
+ */
 GWENHYWFAR_API
 int GWEN_Gui_GetPassword(uint32_t flags,
 			 const char *token,
@@ -563,6 +653,7 @@ int GWEN_Gui_GetPassword(uint32_t flags,
 
 /**
  * This functions sets the status of a password.
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
 GWENHYWFAR_API 
 int GWEN_Gui_SetPasswordStatus(const char *token,
@@ -572,10 +663,13 @@ int GWEN_Gui_SetPasswordStatus(const char *token,
 
 /**
  * This function is called internally by @ref GWEN_Logger_Log.
- * PLEASE NOTE: If you save the information in a file make sure to ignore
+ * <b>PLEASE NOTE:</b> If you save the information in a file make sure to ignore
  * messages from the log domain "gwenhywfar" with log level debug or higher, because
  * those might contain sensitive information! Information of that level is not supposed
  * to be saved to a file!
+ * @param logDomain logdomain of the given log message (e.g. "gwenhywfar")
+ * @param priority priority of the message
+ * @param s string to log
  */
 GWENHYWFAR_API 
 int GWEN_Gui_LogHook(const char *logDomain,
@@ -583,8 +677,12 @@ int GWEN_Gui_LogHook(const char *logDomain,
 
 
 /**
- * This function waits for activity on the given sockets. The default implementation uses
- * GWEN_Socket_Select() for this purpose.
+ * This function waits for activity on the given sockets. it is called by @ref GWEN_Io_Manager_Wait().
+ * The default implementation uses GWEN_Socket_Select() for this purpose.
+ * @param readSockets list of sockets to wait for to become readable
+ * @param writeSockets list of sockets to wait for to become writeable
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
+ * @param msecs time in milliseconds to wait for at max
  */
 GWENHYWFAR_API 
 int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
@@ -592,7 +690,14 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
                             uint32_t guiid,
 			    int msecs);
 
-
+/**
+ * This function checks the given certificate.
+ * The default implementation just shows the given certificate to the user and asks whether to
+ * accept it.
+ * @param cert certificate description
+ * @param io IO layer from which the certificate was received
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
+ */
 GWENHYWFAR_API 
 int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cert,
 		       GWEN_IO_LAYER *io,
@@ -605,6 +710,9 @@ int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cert,
  * License issues forbid us to link against OpenSSL so we leave it up to the application
  * to implement this function. A converter tool might use this function once to convert
  * an anciant OpenHBCI key file.
+ * @param text phrase to generate a key from
+ * @param buffer buffer to write the keydata generated from the given passphrase
+ * @param bufLengthr size of that buffer
  */
 GWENHYWFAR_API
 int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
@@ -642,6 +750,8 @@ GWENHYWFAR_API void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl);
 #ifdef __cplusplus
 }
 #endif
+
+/*@}*/
 
 
 #endif

@@ -18,7 +18,8 @@
 extern "C" {
 #endif
 
-/** @defgroup MOD_CGUI GUI Implementation for the Console
+/** @defgroup MOD_GUI_CGUI GUI Implementation for the Console
+ * @ingroup MOD_GUI
  *
  * This is an implementation of GWEN_GUI for the console. It supports
  * interactive and non-interactive mode, provides a cache for passwords/pins
