@@ -458,7 +458,8 @@ int GWEN_Gui_GetPassword(uint32_t flags,
 					   maxLen,
 					   guiid);
     else
-      return gwenhywfar_gui->inputBoxFn(gwenhywfar_gui,
+      if (gwenhywfar_gui->inputBoxFn)
+	return gwenhywfar_gui->inputBoxFn(gwenhywfar_gui,
 					flags,
 					title,
 					text,
