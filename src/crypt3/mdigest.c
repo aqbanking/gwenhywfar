@@ -99,6 +99,18 @@ void GWEN_MDigest_SetDigestBuffer(GWEN_MDIGEST *md, uint8_t *buf, unsigned int l
 
 
 
+void GWEN_MDigest_SetDigestLen(GWEN_MDIGEST *md, unsigned int l) {
+  assert(md);
+  assert(md->refCount);
+
+  if (md->pDigest && md->lDigest)
+    free(md->pDigest);
+  md->pDigest=NULL;
+  md->lDigest=l;
+}
+
+
+
 int GWEN_MDigest_Begin(GWEN_MDIGEST *md) {
   assert(md);
   assert(md->refCount);

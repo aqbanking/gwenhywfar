@@ -30,6 +30,7 @@
 
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/paddalgo.h>
+#include <gwenhywfar/mdigest.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -100,6 +101,35 @@ int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *src, int dstSize);
 
 GWENHYWFAR_API
 int GWEN_Padd_UnpaddWithPkcs1Bt2(GWEN_BUFFER *src);
+
+
+GWENHYWFAR_API
+int GWEN_Padd_MGF1(uint8_t *pDestBuffer,
+		   uint32_t lDestBuffer,
+		   const uint8_t *pSeed,
+		   uint32_t lSeed,
+		   GWEN_MDIGEST *md);
+
+/**
+ * @param nbits number of actual bits of the modulus
+ */
+GWENHYWFAR_API
+int GWEN_Padd_AddPkcs1Pss(uint8_t *pDestBuffer,
+			  uint32_t lDestBuffer,
+			  uint32_t nbits,
+			  const uint8_t *pHash,
+			  uint32_t lHash,
+			  uint32_t lSalt,
+			  GWEN_MDIGEST *md);
+
+GWENHYWFAR_API
+int GWEN_Padd_VerifyPkcs1Pss(const uint8_t *pSrcBuffer,
+			     uint32_t lSrcBuffer,
+			     uint32_t nbits,
+			     const uint8_t *pHash,
+			     uint32_t lHash,
+			     uint32_t lSalt,
+			     GWEN_MDIGEST *md);
 
 
 GWENHYWFAR_API

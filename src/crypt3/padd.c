@@ -35,10 +35,13 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/cryptdefs.h>
+#include <gwenhywfar/text.h>
+
 #include <string.h>
 #include <stdlib.h>
 
 
+static uint8_t nullarray[]={0, 0, 0, 0, 0, 0, 0, 0};
 
 
 /*
@@ -397,6 +400,333 @@ int GWEN_Padd_UnpaddWithPkcs1Bt1(GWEN_BUFFER *src){
 
 int GWEN_Padd_UnpaddWithPkcs1Bt2(GWEN_BUFFER *src){
   return GWEN_Padd__UnpaddWithPkcs1Bt1Or2(src);
+}
+
+
+
+int GWEN_Padd_MGF1(uint8_t *pDestBuffer,
+		   uint32_t lDestBuffer,
+		   const uint8_t *pSeed,
+		   uint32_t lSeed,
+		   GWEN_MDIGEST *md) {
+    uint32_t bytesLeft=lDestBuffer;
+    uint32_t i;
+    uint8_t counter[4];
+    uint8_t *p;
+
+    p=pDestBuffer;
+
+    for (i=0; bytesLeft>0; i++) {
+      int rv;
+      uint32_t l;
+
+      counter[0]= (uint8_t)((i>>24) & 0xff);
+      counter[1]= (uint8_t)((i>>16) & 0xff);
+      counter[2]= (uint8_t)((i>>8) & 0xff);
+      counter[3]= (uint8_t)(i & 0xff);
+
+      rv=GWEN_MDigest_Begin(md);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+
+      rv=GWEN_MDigest_Update(md, pSeed, lSeed);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+
+      rv=GWEN_MDigest_Update(md, counter, 4);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+
+      rv=GWEN_MDigest_End(md);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+
+      l=GWEN_MDigest_GetDigestSize(md);
+      if (bytesLeft<l)
+	l=bytesLeft;
+      memmove(p, GWEN_MDigest_GetDigestPtr(md), l);
+      bytesLeft-=l;
+      p+=l;
+    }
+
+    return 0;
+}
+
+
+
+int GWEN_Padd_AddPkcs1Pss(uint8_t *pDestBuffer,
+			  uint32_t lDestBuffer,
+			  uint32_t nbits,
+			  const uint8_t *pHash,
+			  uint32_t lHash,
+			  uint32_t lSalt,
+			  GWEN_MDIGEST *md) {
+  uint32_t emLen;
+  uint8_t *pSalt=NULL;
+  uint8_t *pDB;
+  uint8_t *pDbMask;
+  uint32_t x;
+  uint32_t i;
+  uint8_t *p;
+  int rv;
+  uint8_t hashMBar[64];
+  int numberOfBitsInByte0;
+
+  emLen=nbits/8;
+  if (nbits%8)
+    emLen++;
+
+  /* adjust emLen because the maximum number of bits in emLen is length of modulus-1 */
+  numberOfBitsInByte0=((nbits-1) & 0x07);
+  if (numberOfBitsInByte0==0) {
+    *(pDestBuffer++)=0;
+    emLen--;
+  }
+
+  /* generate salt */
+  pSalt=(uint8_t*) malloc(lSalt);
+  assert(pSalt);
+  GWEN_Crypt_Random(2, pSalt, lSalt);
+
+  /* M'=00 00 00 00 00 00 00 00 | HASH(M) | SALT */
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pSalt);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_Update(md, nullarray, 8);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pSalt);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_Update(md, pHash, lHash);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pSalt);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_Update(md, pSalt, lSalt);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pSalt);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pSalt);
+    return rv;
+  }
+  /* hashMBar=HASH(M') */
+  memmove(hashMBar,
+	  GWEN_MDigest_GetDigestPtr(md),
+	  GWEN_MDigest_GetDigestSize(md));
+
+  /* generate DB (PS | '01' | SALT) */
+  x=emLen-GWEN_MDigest_GetDigestSize(md)-lSalt-2;
+  pDB=(uint8_t*)malloc(emLen);
+  assert(pDB);
+  p=pDB;
+  memset(p, 0, x);
+  p+=x;
+  *(p++)=0x01;
+  memmove(p, pSalt, lSalt);
+  p+=lSalt;
+
+  /* create DBMask */
+  x=emLen-GWEN_MDigest_GetDigestSize(md)-1;
+  pDbMask=(uint8_t*)malloc(x);
+  rv=GWEN_Padd_MGF1(pDbMask, x,
+		    hashMBar, GWEN_MDigest_GetDigestSize(md),
+		    md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pDbMask);
+    free(pDB);
+    free(pSalt);
+    return rv;
+  }
+
+  /* created maskedDB in destination buffer */
+  p=pDestBuffer;
+  for (i=0; i<x; i++)
+    *(p++)=pDB[i] ^ pDbMask[i];
+
+  /* append hashMBar */
+  memmove(p, hashMBar, GWEN_MDigest_GetDigestSize(md));
+  p+=GWEN_MDigest_GetDigestSize(md);
+  /* append '0xbc' */
+  *(p++)=0xbc;
+
+  /* adjust first byte */
+  if (numberOfBitsInByte0)
+    pDestBuffer[0] &= 0xff >> (8-numberOfBitsInByte0);
+
+  free(pDbMask);
+  free(pDB);
+  free(pSalt);
+
+  return emLen;
+}
+
+
+
+int GWEN_Padd_VerifyPkcs1Pss(const uint8_t *pSrcBuffer,
+			     uint32_t lSrcBuffer,
+			     uint32_t nbits,
+			     const uint8_t *pHash,
+			     uint32_t lHash,
+			     uint32_t lSalt,
+			     GWEN_MDIGEST *md) {
+  uint32_t emLen;
+  const uint8_t *pSalt;
+  uint8_t *pDB;
+  uint32_t x;
+  uint32_t i;
+  int rv;
+  const uint8_t *hashMBar;
+  int numberOfBitsInByte0;
+
+  emLen=nbits/8;
+  if (nbits%8)
+    emLen++;
+
+  /* check for leading bits to be zero */
+  numberOfBitsInByte0=((nbits-1) & 0x07);
+
+  if (numberOfBitsInByte0==0) {
+    pSrcBuffer++;
+    emLen--;
+  }
+  else {
+    if (pSrcBuffer[0] & (0xff << numberOfBitsInByte0)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding: leading bits must be zero (%d)", numberOfBitsInByte0);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  /* check for key length */
+  if (emLen < (GWEN_MDigest_GetDigestSize(md)+lSalt+2)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding: Key too small for data");
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  /* check for length of provided data */
+  if (lSrcBuffer < emLen) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding: Provided data too small (is %d, expected %d)",
+	      lSrcBuffer, emLen);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  /* get DB (PS | '01' | SALT) */
+  x=emLen-GWEN_MDigest_GetDigestSize(md)-1;
+
+  pDB=(uint8_t*)malloc(x);
+  hashMBar=pSrcBuffer+x;
+  rv=GWEN_Padd_MGF1(pDB, x,
+		    hashMBar, GWEN_MDigest_GetDigestSize(md),
+		    md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pDB);
+    return rv;
+  }
+
+  /* un-XOR DB using DBMask from source buffer (EM) */
+  for (i=0; i<x; i++)
+    pDB[i] ^= pSrcBuffer[i];
+
+  /* check for leading bits */
+  if (numberOfBitsInByte0)
+    pDB[0] &= (0xff >> (8-numberOfBitsInByte0));
+
+  /* pDB now contains PS | '01' | SALT */
+
+  /* recover salt: skip all '00' and wait for '01' */
+  for (i=0; (i<(x-1) && pDB[i]==0); i++);
+  /* i now points to a byte which is not zero, expect it to be '01' */
+  if (pDB[i]!=0x01) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding: byte 0x01 missing before salt");
+    free(pDB);
+    return GWEN_ERROR_BAD_DATA;
+  }
+  i++;
+
+  /* check for length of salt */
+  if ((x-i)!=lSalt) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding: bad length for salt (is %d, should be %d)",
+	      x-i, lSalt);
+    free(pDB);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  /* get pointer to salt */
+  pSalt=pDB+i;
+
+  /* M'=00 00 00 00 00 00 00 00 | HASH(M) | SALT */
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pDB);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_Update(md, nullarray, 8);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pDB);
+    return rv;
+  }
+
+  if (lHash) {
+    rv=GWEN_MDigest_Update(md, pHash, lHash);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      free(pDB);
+      return rv;
+    }
+  }
+
+  rv=GWEN_MDigest_Update(md, pSalt, lSalt);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pDB);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    free(pDB);
+    return rv;
+  }
+  if (memcmp(hashMBar,
+	     GWEN_MDigest_GetDigestPtr(md),
+	     GWEN_MDigest_GetDigestSize(md))!=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad padding: hash does not match");
+
+    free(pDB);
+    return GWEN_ERROR_VERIFY;
+  }
+
+  free(pDB);
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Hash ok.");
+  return 0;
 }
 
 

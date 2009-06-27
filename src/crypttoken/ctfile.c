@@ -1360,7 +1360,8 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
   }
 
   if (aid==GWEN_Crypt_PaddAlgoId_Iso9796_2 ||
-      aid==GWEN_Crypt_PaddAlgoId_Pkcs1_2) {
+	   aid==GWEN_Crypt_PaddAlgoId_Pkcs1_2 ||
+	   aid==GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256) {
     GWEN_BUFFER *tbuf;
     uint32_t l;
 
@@ -1380,23 +1381,84 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
     GWEN_Buffer_IncrementPos(tbuf, l);
     GWEN_Buffer_AdjustUsedBytes(tbuf);
 
-    rv=GWEN_Padd_UnapplyPaddAlgo(a, tbuf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Buffer_free(tbuf);
-      return rv;
-    }
-    l=GWEN_Buffer_GetUsedBytes(tbuf);
+    if (aid==GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256) {
+      const GWEN_CRYPT_TOKEN_KEYINFO *ki;
+      int nbits;
+      const uint8_t *modPtr;
+      uint32_t modLen;
+      GWEN_MDIGEST *md;
 
-    if (l!=inLen) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Signature length doesn't match");
-      GWEN_Buffer_free(tbuf);
-      return GWEN_ERROR_VERIFY;
+      if (keyNum==3)
+	ki=GWEN_CTF_Context_GetRemoteSignKeyInfo(ctx);
+      else
+	ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx);
+      if (ki==NULL) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "No information for key %d", keyNum);
+	GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_GENERIC;
+      }
+
+      /* calculate real number of bits */
+      modPtr=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
+      modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+      nbits=modLen*8;
+      while(modLen && *modPtr==0) {
+	nbits-=8;
+	modLen--;
+        modPtr++;
+      }
+      if (modLen) {
+	uint8_t b=*modPtr;
+	int i;
+	uint8_t mask=0x80;
+
+	for (i=0; i<8; i++) {
+	  if (b & mask)
+	    break;
+	  nbits--;
+	  mask>>=1;
+	}
+      }
+
+      DBG_ERROR(0, "Real number of bits: %d", nbits);
+      if (nbits==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Empty modulus");
+	GWEN_Buffer_free(tbuf);
+	return GWEN_ERROR_GENERIC;
+      }
+
+      md=GWEN_MDigest_Sha256_new();
+      rv=GWEN_Padd_VerifyPkcs1Pss((const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+				  GWEN_Buffer_GetUsedBytes(tbuf),
+				  nbits,
+				  pInData, inLen,
+				  inLen,
+				  md);
+      GWEN_MDigest_free(md);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
-    if (memcmp(pInData, GWEN_Buffer_GetStart(tbuf), l)!=0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Signature doesn't match:");
-      GWEN_Buffer_free(tbuf);
-      return GWEN_ERROR_VERIFY;
+    else {
+      rv=GWEN_Padd_UnapplyPaddAlgo(a, tbuf);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	GWEN_Buffer_free(tbuf);
+	return rv;
+      }
+      l=GWEN_Buffer_GetUsedBytes(tbuf);
+
+      if (l!=inLen) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Signature length doesn't match");
+	GWEN_Buffer_free(tbuf);
+	return GWEN_ERROR_VERIFY;
+      }
+      if (memcmp(pInData, GWEN_Buffer_GetStart(tbuf), l)!=0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Signature doesn't match:");
+	GWEN_Buffer_free(tbuf);
+	return GWEN_ERROR_VERIFY;
+      }
     }
   }
   else {
@@ -1414,7 +1476,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
       return rv;
     }
 
-    /* sign with key */
+    /* verify with key */
     rv=GWEN_Crypt_Key_Verify(k,
 			     (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
 			     GWEN_Buffer_GetUsedBytes(srcBuf),

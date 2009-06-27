@@ -45,6 +45,8 @@ GWEN_CRYPT_PADDALGOID GWEN_Crypt_PaddAlgoId_fromString(const char *s) {
     return GWEN_Crypt_PaddAlgoId_RightZero;
   else if (strcasecmp(s, "ansix9_23")==0)
     return GWEN_Crypt_PaddAlgoId_AnsiX9_23;
+  else if (strcasecmp(s, "pkcs1_pss_sha256")==0)
+    return GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256;
   else if (strcasecmp(s, "any")==0)
     return GWEN_Crypt_PaddAlgoId_Any;
   return GWEN_Crypt_PaddAlgoId_Unknown;
@@ -72,6 +74,8 @@ const char *GWEN_Crypt_PaddAlgoId_toString(GWEN_CRYPT_PADDALGOID a) {
     return "rightzero";
   case GWEN_Crypt_PaddAlgoId_AnsiX9_23:
     return "ansix9_23";
+  case GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256:
+    return "pkcs1_pss_sha256";
   case GWEN_Crypt_PaddAlgoId_Any:
     return "any";
   default:

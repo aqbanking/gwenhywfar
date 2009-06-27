@@ -142,6 +142,7 @@ GWEN_MDIGEST *GWEN_MDigest_Md5_new() {
   assert(xmd);
 
   xmd->algo=GCRY_MD_MD5;
+  GWEN_MDigest_SetDigestLen(md, gcry_md_get_algo_dlen(xmd->algo));
 
   return md;
 }
@@ -158,6 +159,7 @@ GWEN_MDIGEST *GWEN_MDigest_Rmd160_new() {
   assert(xmd);
 
   xmd->algo=GCRY_MD_RMD160;
+  GWEN_MDigest_SetDigestLen(md, gcry_md_get_algo_dlen(xmd->algo));
 
   return md;
 }
@@ -174,6 +176,7 @@ GWEN_MDIGEST *GWEN_MDigest_Sha1_new() {
   assert(xmd);
 
   xmd->algo=GCRY_MD_SHA1;
+  GWEN_MDigest_SetDigestLen(md, gcry_md_get_algo_dlen(xmd->algo));
 
   return md;
 }
@@ -190,6 +193,8 @@ GWEN_MDIGEST *GWEN_MDigest_Sha256_new() {
   assert(xmd);
 
   xmd->algo=GCRY_MD_SHA256;
+  xmd->flags=GCRY_MD_FLAG_SECURE;
+  GWEN_MDigest_SetDigestLen(md, gcry_md_get_algo_dlen(xmd->algo));
 
   return md;
 }

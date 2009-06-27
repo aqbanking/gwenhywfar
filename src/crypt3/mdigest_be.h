@@ -47,6 +47,9 @@ GWEN_MDIGEST_UPDATE_FN GWEN_MDigest_SetUpdateFn(GWEN_MDIGEST *md, GWEN_MDIGEST_U
 GWENHYWFAR_API
 void GWEN_MDigest_SetDigestBuffer(GWEN_MDIGEST *md, uint8_t *buf, unsigned int l);
 
+GWENHYWFAR_API
+void GWEN_MDigest_SetDigestLen(GWEN_MDIGEST *md, unsigned int l);
+
 
 #endif
 
