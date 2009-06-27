@@ -188,18 +188,40 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 	    fprintf(stdout, "Sign Cnt   : %d\n", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
 	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) {
 	    GWEN_BUFFER *tbuf;
-	    const char *p;
+	    const uint8_t *p;
 	    uint32_t len;
+            int nbits;
 
 	    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	    fprintf(stdout, "Modulus    : \n");
-	    p=(const char*)GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
+	    p=(const uint8_t*)GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
 	    len=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+
+	    nbits=len*8;
+	    while(len && *p==0) {
+	      p++;
+	      len--;
+	      nbits-=8;
+	    }
+	    if (len) {
+	      int i;
+              uint8_t mask=0x80;
+	      uint8_t b=*p;
+
+	      for (i=0; i<8; i++) {
+		if (b & mask)
+		  break;
+		nbits--;
+                mask>>=1;
+	      }
+	    }
+
+	    fprintf(stdout, "Modulus    : (%d bits)\n", nbits);
+
 	    while(len) {
 	      uint32_t rl;
 
 	      rl=(len>16)?16:len;
-	      GWEN_Text_ToHexBuffer(p, rl, tbuf, 2, ' ', 0);
+	      GWEN_Text_ToHexBuffer((const char*)p, rl, tbuf, 2, ' ', 0);
 	      fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
 	      GWEN_Buffer_Reset(tbuf);
 	      p+=rl;
