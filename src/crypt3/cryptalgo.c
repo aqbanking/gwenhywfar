@@ -157,6 +157,7 @@ GWEN_CRYPT_CRYPTALGO *GWEN_Crypt_CryptAlgo_fromDb(GWEN_DB_NODE *db) {
       GWEN_Crypt_CryptAlgo_SetInitVector(a, p, len);
 
     a->chunkSize=GWEN_DB_GetIntValue(db, "chunkSize", 0, 0);
+    a->keySizeInBits=GWEN_DB_GetIntValue(db, "keySizeInBits", 0, 0);
 
     return a;
   }
@@ -185,6 +186,9 @@ int GWEN_Crypt_CryptAlgo_toDb(const GWEN_CRYPT_CRYPTALGO *a, GWEN_DB_NODE *db) {
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "chunkSize",
                       a->chunkSize);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "keySizeInBits",
+                      a->keySizeInBits);
 
   return 0;
 }
@@ -207,7 +211,7 @@ GWEN_CRYPT_CRYPTALGO *GWEN_Crypt_CryptAlgo_dup(const GWEN_CRYPT_CRYPTALGO *na) {
     a->lInitVector=na->lInitVector;
   }
   a->chunkSize=na->chunkSize;
-
+  a->keySizeInBits=na->keySizeInBits;
   return a;
 }
 
@@ -304,6 +308,24 @@ void GWEN_Crypt_CryptAlgo_SetChunkSize(GWEN_CRYPT_CRYPTALGO *a, int s) {
   assert(a->refCount);
 
   a->chunkSize=s;
+}
+
+
+
+int GWEN_Crypt_CryptAlgo_GetKeySizeInBits(const GWEN_CRYPT_CRYPTALGO *a) {
+  assert(a);
+  assert(a->refCount);
+
+  return a->keySizeInBits;
+}
+
+
+
+void GWEN_Crypt_CryptAlgo_SetKeySizeInBits(GWEN_CRYPT_CRYPTALGO *a, int s) {
+  assert(a);
+  assert(a->refCount);
+
+  a->keySizeInBits=s;
 }
 
 

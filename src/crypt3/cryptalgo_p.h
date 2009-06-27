@@ -24,6 +24,7 @@ struct GWEN_CRYPT_CRYPTALGO {
   uint32_t lInitVector;
 
   int chunkSize;
+  int keySizeInBits;
 
   uint32_t refCount;
 };

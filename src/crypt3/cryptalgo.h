@@ -92,6 +92,10 @@ GWENHYWFAR_API int GWEN_Crypt_CryptAlgo_GetChunkSize(const GWEN_CRYPT_CRYPTALGO 
 GWENHYWFAR_API void GWEN_Crypt_CryptAlgo_SetChunkSize(GWEN_CRYPT_CRYPTALGO *a, int s);
 
 
+GWENHYWFAR_API int GWEN_Crypt_CryptAlgo_GetKeySizeInBits(const GWEN_CRYPT_CRYPTALGO *a);
+GWENHYWFAR_API void GWEN_Crypt_CryptAlgo_SetKeySizeInBits(GWEN_CRYPT_CRYPTALGO *a, int s);
+
+
 #ifdef __cplusplus
 }
 #endif

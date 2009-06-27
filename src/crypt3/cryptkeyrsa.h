@@ -32,7 +32,7 @@ extern "C" {
 /**
  * Creates a key pair and returns a pointer to it.
  * @return NULL on error, otherwise a pointer to two keys: public and private
- * @param nbits number of bytes
+ * @param nbytes number of bytes
  * @param use65537e !=0: use the value 65537 for the public exponent, otherwise let the
  *  library choose the exponent by its own
  */
@@ -40,6 +40,20 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes,
 						  int use65537e,
 						  GWEN_CRYPT_KEY **pPubKey,
 						  GWEN_CRYPT_KEY **pSecretKey);
+
+
+/**
+ * Creates a key pair and returns a pointer to it.
+ * This function allows for more precise control over the size of the created key because it
+ * lets you specify the size in bits rather than in bytes.
+ * @return NULL on error, otherwise a pointer to two keys: public and private
+ * @param nbits number of bits
+ * @param use65537e !=0: use the value 65537 for the public exponent, otherwise let the
+ *  library choose the exponent by its own
+ */
+GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
+						   GWEN_CRYPT_KEY **pPubKey,
+						   GWEN_CRYPT_KEY **pSecretKey);
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k);
 

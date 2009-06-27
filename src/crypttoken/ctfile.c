@@ -1190,12 +1190,14 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
   GWEN_BUFFER *srcBuf;
   int i;
   int rv;
+  GWEN_CRYPT_PADDALGOID aid;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE, ct);
   assert(lct);
 
   DBG_INFO(GWEN_LOGDOMAIN, "Signing with key %d", keyId);
+  aid=GWEN_Crypt_PaddAlgo_GetId(a);
 
   /* reload if needed */
   rv=GWEN_Crypt_TokenFile__ReloadIfNeeded(ct, gid);
@@ -1241,14 +1243,84 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
 
   /* copy to a buffer for padding */
   srcBuf=GWEN_Buffer_new(0, inLen, 0, 0);
-  GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
 
-  /* padd according to given algo */
-  rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(srcBuf);
-    return rv;
+  if (aid==GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256) {
+    const GWEN_CRYPT_TOKEN_KEYINFO *ki;
+    int nbits;
+    const uint8_t *modPtr;
+    uint32_t modLen;
+    GWEN_MDIGEST *md;
+
+    switch(keyId & 0xffff) {
+    case 1:  ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx); break;
+    case 5:  ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx); break;
+    default: ki=NULL;
+    }
+
+    if (ki==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No information for key %d", keyNum);
+      GWEN_Buffer_free(srcBuf);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    /* calculate real number of bits */
+    modPtr=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
+    modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+    nbits=modLen*8;
+    while(modLen && *modPtr==0) {
+      nbits-=8;
+      modLen--;
+      modPtr++;
+    }
+    if (modLen) {
+      uint8_t b=*modPtr;
+      int i;
+      uint8_t mask=0x80;
+
+      for (i=0; i<8; i++) {
+	if (b & mask)
+	  break;
+	nbits--;
+	mask>>=1;
+      }
+    }
+
+    DBG_ERROR(0, "Real number of bits: %d", nbits);
+    if (nbits==0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Empty modulus");
+      GWEN_Buffer_free(srcBuf);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    md=GWEN_MDigest_Sha256_new();
+    GWEN_Buffer_AllocRoom(srcBuf, modLen);
+
+    rv=GWEN_Padd_AddPkcs1Pss((uint8_t*) GWEN_Buffer_GetStart(srcBuf),
+			     GWEN_Buffer_GetMaxUnsegmentedWrite(srcBuf),
+			     nbits,
+			     pInData, inLen,
+			     inLen,
+			     md);
+    GWEN_MDigest_free(md);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(srcBuf);
+      return rv;
+    }
+
+    GWEN_Buffer_IncrementPos(srcBuf, rv);
+    GWEN_Buffer_AdjustUsedBytes(srcBuf);
+  }
+  else {
+    GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
+
+    /* padd according to given algo */
+    rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(srcBuf);
+      return rv;
+    }
   }
 
   /* sign with key */
