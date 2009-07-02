@@ -1,0 +1,36 @@
+<?xml?>
+
+<tm2>
+  <typedef id="char" lang="c">
+    <identifier>
+      char
+    </identifier>
+  
+    <code>
+      <construct>
+        $(dst)=0;
+      </construct>
+    
+      <destruct>
+      </destruct>
+    
+      <assign>
+        $(dst)=$(src);
+      </assign>
+    
+      <dup>
+        $(dst)=$(src);
+      </dup>
+    
+      <todb>
+        $(retval)=GWEN_DB_SetIntValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, $(name), (int)($(src)));
+      </todb>
+  
+      <fromdb>
+        $(dst)=(char)(GWEN_DB_GetIntValue($(db), $(name), 0, $(default)));
+      </fromdb>
+    
+    </code>
+      
+  </typedef>
+</tm2>

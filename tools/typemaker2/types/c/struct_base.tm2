@@ -1,0 +1,43 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="struct_base" type="pointer" lang="c" >
+    <code>
+      <construct>
+        $(dst)=$(prefix)_new();
+      </construct>
+    
+      <destruct>
+        $(prefix)_free($(src));
+      </destruct>
+    
+      <assign>
+        $(dst)=$(src);
+      </assign>
+    
+      <dup>
+        $(dst)=$(prefix)_dup($(src));
+      </dup>
+    
+      <todb>
+        $(retval)=$(prefix)_toDb($(src), $(db));
+      </todb>
+  
+      <fromdb>
+        $(dst)=$(prefix)_fromDb($(src), $(name));
+      </fromdb>
+    
+    </code>
+  
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>

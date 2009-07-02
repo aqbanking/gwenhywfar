@@ -1,0 +1,60 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="char_array" type="array" basetype="char" lang="c" >
+    <identifier>
+      char
+    </identifier>
+  
+    <code>
+      <construct>
+        memset($(dst), 0, $(maxlen));
+      </construct>
+    
+      <destruct>
+      </destruct>
+    
+      <assign>
+        $(dst)=$(src);
+      </assign>
+    
+      <dup>
+        strncpy($(dst), $(src), $(maxlen));
+      </dup>
+    
+      <todb>
+        if (*$(src)) {
+          $(retval)=GWEN_DB_SetCharValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, $(name), $(src));
+        }
+        else {
+          GWEN_DB_DeleteVar($(db), $(name));
+          $(retval)=0;
+        }
+      </todb>
+  
+      <fromdb>
+        {
+          const char *s;
+          
+          s=GWEN_DB_GetCharValue($(db), $(name), 0, $(default));
+          if (s)
+            strncpy($(dst), $(src), $(maxlen));
+          else
+            memset($(dst), 0, $(maxlen));
+        }
+      </fromdb>
+    
+    </code>
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+    
+  </typedef>
+
+</tm2>

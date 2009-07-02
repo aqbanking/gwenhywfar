@@ -1,0 +1,49 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="char_ptr" type="pointer" basetype="char" lang="c">
+    <identifier>
+      char*
+    </identifier>
+  
+    <code>
+      <construct>
+        $(dst)=$(preset);
+      </construct>
+    
+      <destruct>
+        free($(src));
+      </destruct>
+    
+      <assign>
+        $(dst)=$(src);
+      </assign>
+    
+      <dup>
+        $(dst)=strdup($(src));
+      </dup>
+    
+      <todb>
+        $(retval)=GWEN_DB_SetCharValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, $(name), $(src));
+      </todb>
+  
+      <fromdb>
+        $(dst)=GWEN_DB_GetCharValue($(db), $(name), 0, $(default));
+      </fromdb>
+    
+    </code>
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <preset>NULL</preset>
+      <flags>own</flags>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>
