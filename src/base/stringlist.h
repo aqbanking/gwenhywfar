@@ -184,6 +184,9 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
                           int ascending,
                           GWEN_STRINGLIST_SORT_MODE sortMode);
 
+GWENHYWFAR_API
+GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimiters, int checkDouble);
+
 #ifdef __cplusplus
 }
 #endif

@@ -567,4 +567,57 @@ const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *sl, int idx) {
 
 
 
+GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimiters, int checkDouble) {
+  if (str && *str) {
+    GWEN_STRINGLIST *sl;
+    const unsigned char *s;
+  
+    sl=GWEN_StringList_new();
+    s=(const unsigned char*)str;
+  
+    while(*s) {
+      /* skip blanks */
+      while(*s && *s<33)
+	s++;
+
+      if (*s) {
+	const unsigned char *pStart;
+	int len;
+
+	/* read word */
+	pStart=s;
+        s++;
+	while(*s && strchr(delimiters, *s)==NULL)
+	  s++;
+	len=s-pStart;
+    
+	if (len) {
+	  char *toAdd;
+
+	  toAdd=(char*) malloc(len+1);
+	  assert(toAdd);
+
+	  memmove(toAdd, pStart, len);
+	  toAdd[len]=0;
+    
+	  GWEN_StringList_AppendString(sl, toAdd, 1, checkDouble);
+	}
+      }
+
+      if (*s==0)
+	break;
+      s++;
+    }
+  
+    if (GWEN_StringList_Count(sl)==0) {
+      GWEN_StringList_free(sl);
+      return NULL;
+    }
+    return sl;
+  }
+  else
+    return NULL;
+}
+
+
 
