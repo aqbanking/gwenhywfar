@@ -72,6 +72,7 @@ tools/gcttool/cttest
 tools/gcttool/gct-tool
 tools/typemaker/typemaker
 tools/typemaker2/typemaker2
+tools/typemaker2/testmain
 tools/xmlmerge/xmlmerge
 m4/libtool.m4
 m4/ltoptions.m4
