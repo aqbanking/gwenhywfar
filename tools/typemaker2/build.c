@@ -58,6 +58,30 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
       Typemaker2_TypeManager_AddFolder(tym, s);
   }
 
+  s=GWEN_DB_GetCharValue(dbArgs, "publicFile", 0, NULL);
+  if (s)
+    Typemaker2_Builder_SetFileNamePublic(tb, s);
+
+  s=GWEN_DB_GetCharValue(dbArgs, "libraryFile", 0, NULL);
+  if (s)
+    Typemaker2_Builder_SetFileNameLibrary(tb, s);
+
+  s=GWEN_DB_GetCharValue(dbArgs, "protectedFile", 0, NULL);
+  if (s)
+    Typemaker2_Builder_SetFileNameProtected(tb, s);
+
+  s=GWEN_DB_GetCharValue(dbArgs, "privateFile", 0, NULL);
+  if (s)
+    Typemaker2_Builder_SetFileNamePrivate(tb, s);
+
+  s=GWEN_DB_GetCharValue(dbArgs, "codeFile", 0, NULL);
+  if (s)
+    Typemaker2_Builder_SetFileNameCode(tb, s);
+
+  s=GWEN_DB_GetCharValue(dbArgs, "typedefFile", 0, NULL);
+  if (s)
+    Typemaker2_Builder_SetTypedefFileName(tb, s);
+
   ty=Typemaker2_TypeManager_LoadTypeFile(tym, fname);
   if (ty==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unable to load file [%s]", fname);

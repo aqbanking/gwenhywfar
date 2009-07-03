@@ -70,6 +70,10 @@ void Typemaker2_Builder_SetFileNameCode(TYPEMAKER2_BUILDER *tb, const char *s);
 const char *Typemaker2_Builder_GetSourceFileName(const TYPEMAKER2_BUILDER *tb);
 void Typemaker2_Builder_SetSourceFileName(TYPEMAKER2_BUILDER *tb, const char *s);
 
+const char *Typemaker2_Builder_GetTypedefFileName(const TYPEMAKER2_BUILDER *tb);
+void Typemaker2_Builder_SetTypedefFileName(TYPEMAKER2_BUILDER *tb, const char *s);
+
+
 void Typemaker2_Builder_SetBuildFn(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_BUILDER_BUILD_FN fn);
 
 

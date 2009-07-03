@@ -3,7 +3,7 @@ SUBDIRS=types
 INCLUDES=@all_includes@ -I$(gwenhywfar_symlinkdir)
 
 
-typefiles=test.tm2
+typefiles=test.xml
 
 bin_PROGRAMS=typemaker2
 noinst_HEADERS=\
@@ -69,5 +69,5 @@ indent:  $(BUILT_SOURCES)
 	  -a -y $(BUILT_SOURCES)
 
 types: $(typefiles)
-	./typemaker2 -I types/c -D GWENHYWFAR_API test.tm2
+	./typemaker2 -I types/c -D GWENHYWFAR_API test.xml
 
