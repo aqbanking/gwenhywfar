@@ -1,8 +1,8 @@
 <?xml?>
 
 <tm2>
-  <typedef id="uint32_t" lang="c">
-    <identifier>uint32_t</identifier>
+  <typedef id="int" lang="c">
+    <identifier>int</identifier>
   
     <code>
       <construct>

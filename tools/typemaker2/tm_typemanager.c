@@ -380,12 +380,60 @@ int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMA
     m=Typemaker2_Member_List_First(ml);
     while(m) {
       if (!(Typemaker2_Member_GetFlags(m) & TYPEMAKER2_FLAGS_VOLATILE)) {
+	const char *s;
+
 	Typemaker2_Member_SetMemberPosition(m, pos++);
+
+	/* create field id */
+	s=Typemaker2_Type_GetName(ty);
+	if (s && *s) {
+	  GWEN_BUFFER *tbuf;
+	  char *p;
+    
+	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, "_FIELD_");
+	  s=Typemaker2_Member_GetName(m);
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  /* all in capitals */
+	  p=GWEN_Buffer_GetStart(tbuf);
+	  while(*p) {
+	    *p=toupper(*p);
+	    p++;
+	  }
+
+	  Typemaker2_Member_SetFieldId(m, GWEN_Buffer_GetStart(tbuf));
+	  GWEN_Buffer_free(tbuf);
+	}
       }
 
       m=Typemaker2_Member_List_Next(m);
     }
     Typemaker2_Type_SetNonVolatileMemberCount(ty, pos);
+    if (pos) {
+      const char *s;
+  
+      /* create field id */
+      s=Typemaker2_Type_GetName(ty);
+      if (s && *s) {
+	GWEN_BUFFER *tbuf;
+	char *p;
+  
+	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "_FIELD_COUNT");
+	/* all in capitals */
+	p=GWEN_Buffer_GetStart(tbuf);
+	while(*p) {
+	  *p=toupper(*p);
+	  p++;
+	}
+
+	Typemaker2_Type_SetFieldCountId(ty, GWEN_Buffer_GetStart(tbuf));
+	GWEN_Buffer_free(tbuf);
+      }
+
+    }
   }
 
   return 0;

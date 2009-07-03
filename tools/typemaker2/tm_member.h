@@ -36,6 +36,9 @@ void Typemaker2_Member_SetName(TYPEMAKER2_MEMBER *tm, const char *s);
 const char *Typemaker2_Member_GetTypeName(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetTypeName(TYPEMAKER2_MEMBER *tm, const char *s);
 
+const char *Typemaker2_Member_GetFieldId(const TYPEMAKER2_MEMBER *tm);
+void Typemaker2_Member_SetFieldId(TYPEMAKER2_MEMBER *tm, const char *s);
+
 uint32_t Typemaker2_Member_GetFlags(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetFlags(TYPEMAKER2_MEMBER *tm, uint32_t i);
 

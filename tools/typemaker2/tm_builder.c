@@ -277,17 +277,24 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
     s=Typemaker2_Member_GetPresetValue(tm);
     if (s && *s)
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "preset", s);
-  }
 
-  /* set some fixed vars */
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "retval", "rv");
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "db", "db");
+    if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE)) {
+      /* set field number for toObject/fromObject */
+      s=Typemaker2_Member_GetFieldId(tm);
+      if (s && *s)
+	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fieldid", s);
+    }
+  }
 
   /* set src and dst */
   if (src && *src)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "src", src);
   if (dst && *dst)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dst", dst);
+
+  /* set some fixed vars */
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "retval", "rv");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "db", "db");
 
   return db;
 }

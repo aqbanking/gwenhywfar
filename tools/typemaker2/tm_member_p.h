@@ -37,6 +37,8 @@ struct TYPEMAKER2_MEMBER {
   int refCount;
 
   int memberPosition;
+  char *fieldId;
+
 };
 
 

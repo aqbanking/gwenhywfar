@@ -3,9 +3,7 @@
 <tm2>
 
   <typedef id="char_array" type="array" basetype="char" lang="c" >
-    <identifier>
-      char
-    </identifier>
+    <identifier>char</identifier>
   
     <code>
       <construct>

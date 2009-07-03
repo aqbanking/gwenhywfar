@@ -66,6 +66,8 @@ struct TYPEMAKER2_TYPE {
 
   int nonVolatileMemberCount;
 
+  char *fieldCountId;
+
   int refCount;
 };
 

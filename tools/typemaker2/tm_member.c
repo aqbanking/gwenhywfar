@@ -47,6 +47,7 @@ void Typemaker2_Member_free(TYPEMAKER2_MEMBER *tm) {
       GWEN_LIST_FINI(TYPEMAKER2_MEMBER, tm);
       free(tm->name);
       free(tm->typeName);
+      free(tm->fieldId);
       free(tm->defaultValue);
       free(tm->presetValue);
       tm->refCount=0;
@@ -100,6 +101,24 @@ void Typemaker2_Member_SetTypeName(TYPEMAKER2_MEMBER *tm, const char *s) {
   free(tm->typeName);
   if (s && *s) tm->typeName=strdup(s);
   else tm->typeName=NULL;
+}
+
+
+
+const char *Typemaker2_Member_GetFieldId(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->fieldId;
+}
+
+
+
+void Typemaker2_Member_SetFieldId(TYPEMAKER2_MEMBER *tm, const char *s) {
+  assert(tm);
+  assert(tm->refCount);
+  free(tm->fieldId);
+  if (s && *s) tm->fieldId=strdup(s);
+  else tm->fieldId=NULL;
 }
 
 
@@ -385,6 +404,9 @@ void Typemaker2_Member_Dump(TYPEMAKER2_MEMBER *tm, FILE *f, int indent) {
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Typename: %s\n", (tm->typeName)?(tm->typeName):"<null>");
+
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "Field Id: %s\n", (tm->fieldId)?(tm->fieldId):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Access  : %d  [%d]\n", tm->access, Typemaker2_Member_GetAccess(tm));

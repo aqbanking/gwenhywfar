@@ -2,9 +2,7 @@
 
 <tm2>
   <typedef id="char" lang="c">
-    <identifier>
-      char
-    </identifier>
+    <identifier>char</identifier>
   
     <code>
       <construct>

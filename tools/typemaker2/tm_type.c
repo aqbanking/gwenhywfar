@@ -85,6 +85,8 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
 
       Typemaker2_Member_List_free(ty->members);
 
+      free(ty->fieldCountId);
+
       ty->refCount=0;
       GWEN_FREE_OBJECT(ty);
     }
@@ -677,6 +679,24 @@ void Typemaker2_Type_SetNonVolatileMemberCount(TYPEMAKER2_TYPE *ty, int i) {
 
 
 
+const char *Typemaker2_Type_GetFieldCountId(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->fieldCountId;
+}
+
+
+
+void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s) {
+  assert(ty);
+  assert(ty->refCount);
+  free(ty->fieldCountId);
+  if (s) ty->fieldCountId=strdup(s);
+  else ty->fieldCountId=NULL;
+}
+
+
+
 int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang) {
   GWEN_XMLNODE *langNode=NULL;
   GWEN_XMLNODE *n;
@@ -910,6 +930,8 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
 	tm=Typemaker2_Member_List_Next(tm);
       }
     }
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "Field Count Id: %s\n", (ty->fieldCountId)?(ty->fieldCountId):"<null>");
   }
 }
 

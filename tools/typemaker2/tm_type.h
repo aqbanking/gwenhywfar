@@ -168,6 +168,9 @@ void Typemaker2_Type_SetBaseTypePtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p);
 TYPEMAKER2_TYPE *Typemaker2_Type_GetInheritsPtr(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetInheritsPtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p);
 
+const char *Typemaker2_Type_GetFieldCountId(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s);
+
 
 int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang);
 
