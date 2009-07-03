@@ -33,6 +33,8 @@ struct TYPEMAKER2_MEMBER {
   char *defaultValue;
   char *presetValue;
 
+  char *aedb_type;
+
   TYPEMAKER2_TYPE *typePtr;
   int refCount;
 

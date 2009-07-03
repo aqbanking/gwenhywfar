@@ -1,0 +1,110 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="gwen_time" type="pointer" lang="c" >
+    <identifier>GWEN_TIME</identifier>
+    <aedb_type>AEDB_DataType_Date</aedb_type>
+
+    <code>
+      <construct>
+        $(dst)=$(preset);
+      </construct>
+    
+      <destruct>
+        GWEN_Time_free($(src));
+      </destruct>
+    
+      <assign>
+        $(dst)=$(src);
+      </assign>
+    
+      <dup>
+        $(dst)=GWEN_Time_dup($(src));
+      </dup>
+    
+      <todb>
+        if ($(src)){
+          GWEN_DB_NODE *dbDest;
+          
+          dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
+          assert(dbDest);
+          $(retval)=GWEN_Time_toDb($(src), dbDest);
+        }
+        else
+          $(retval)=0;
+      </todb>
+  
+      <fromdb>
+        {
+          GWEN_DB_NODE *dbDest;
+          
+          dbDest=GWEN_DB_GetGroup($(db), GWEN_PATH_FLAGS_NAMEMUSTEXIST, "$(name)");
+          if (dbDest)
+            $(dst)=GWEN_Time_fromDb(dbDest);
+        }
+      </fromdb>
+
+      <toxml>
+        if ($(src)){
+          GWEN_BUFFER *xbuf;
+          int rv;
+
+          xbuf=GWEN_Buffer_new(0, 32, 0, 1);
+          rv=GWEN_Time_toString($(src), "YYYY/MM/DD-hh:mm", xbuf);
+          if (rv>=0) 
+            GWEN_XMLNode_SetCharValue($(db), "$(name)", GWEN_Buffer_GetStart(xbuf));
+          GWEN_Buffer_free(xbuf);
+        }
+      </toxml>
+  
+      <fromxml>
+        {
+          const char *s;
+          
+          s=GWEN_XMLNode_GetCharValue($(db), "$(name)", NULL);
+          if (s && *s)
+            $(dst)=GWEN_Time_fromString(s, "YYYY/MM/DD-hh:mm");
+        }
+      </fromxml>
+
+      <toobject>
+        if ($(src)){
+          GWEN_BUFFER *xbuf=GWEN_Buffer_new(0, 64, 0, 1);
+          $(retval)=GWEN_Time_toString($(src), "YYYYMMDD", xbuf);
+          if ($(retval)>=0)
+            $(retval)=AEDB_Object_SetFieldString($(db), $(fieldid), GWEN_Buffer_GetStart(xbuf));
+          GWEN_Buffer_free(xbuf);
+        }
+        else
+          $(retval)=0;
+      </toobject>
+  
+      <fromobject>
+        {
+          const char *s;
+          
+          $(retval)=AEDB_Object_GetFieldString($(db), $(fieldid), &s);
+          if ($(retval)>=0 && s && *s) {
+            $(dst)=GWEN_Time_fromString(s, "YYYYMMDD");
+            if ($(dst)==NULL)
+              $(retval)=GWEN_ERROR_BAD_DATA;
+          }
+          else
+            $(retval)=0;
+        }
+      </fromobject>
+    
+    </code>
+  
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>

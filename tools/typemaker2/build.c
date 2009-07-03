@@ -16,6 +16,8 @@
 #include "tm_builder_c.h"
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/gwenhywfar.h>
+#include <gwenhywfar/pathmanager.h>
 
 
 
@@ -23,6 +25,7 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_BUILDER *tb=NULL;
   TYPEMAKER2_TYPE *ty;
+  GWEN_STRINGLIST *sl;
   const char *s;
   int i;
   int rv;
@@ -56,6 +59,30 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
     s=GWEN_DB_GetCharValue(dbArgs, "include", 0, NULL);
     if (s && *s)
       Typemaker2_TypeManager_AddFolder(tym, s);
+  }
+
+  sl=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      s=GWEN_StringListEntry_Data(se);
+      if (s) {
+	GWEN_BUFFER *xbuf;
+
+	xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	GWEN_Buffer_AppendString(xbuf, s);
+	GWEN_Buffer_AppendString(xbuf, "/typemaker2/");
+        s=Typemaker2_TypeManager_GetLanguage(tym);
+	if (s && *s)
+	  GWEN_Buffer_AppendString(xbuf, s);
+	Typemaker2_TypeManager_AddFolder(tym, GWEN_Buffer_GetStart(xbuf));
+        GWEN_Buffer_free(xbuf);
+      }
+      se=GWEN_StringListEntry_Next(se);
+    }
+    GWEN_StringList_free(sl);
   }
 
   s=GWEN_DB_GetCharValue(dbArgs, "publicFile", 0, NULL);
@@ -112,19 +139,28 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
 
 
 int build(GWEN_DB_NODE *dbArgs) {
-  const char *fileName;
-  int rv=0;
+  int i;
 
-  fileName=GWEN_DB_GetCharValue(dbArgs, "params", 0, NULL);
-  if (fileName==NULL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "No input");
-    return 1;
-  }
-  else {
-    rv=buildFile(dbArgs, fileName);
+  for (i=0; i<99; i++) {
+    const char *fileName;
+
+    fileName=GWEN_DB_GetCharValue(dbArgs, "params", i, NULL);
+    if (fileName) {
+      int rv=buildFile(dbArgs, fileName);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error building type from [%s]", fileName);
+        return 2;
+      }
+    }
+    else {
+      if (i==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "No input");
+	return 1;
+      }
+    }
   }
 
-  return rv;
+  return 0;
 }
 
 

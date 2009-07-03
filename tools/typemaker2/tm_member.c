@@ -50,6 +50,7 @@ void Typemaker2_Member_free(TYPEMAKER2_MEMBER *tm) {
       free(tm->fieldId);
       free(tm->defaultValue);
       free(tm->presetValue);
+      free(tm->aedb_type);
       tm->refCount=0;
       GWEN_FREE_OBJECT(tm);
     }
@@ -280,6 +281,29 @@ void Typemaker2_Member_SetPresetValue(TYPEMAKER2_MEMBER *tm, const char *s) {
 
 
 
+const char *Typemaker2_Member_GetAeDbType(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+
+  if (tm->aedb_type==NULL && tm->typePtr)
+    return Typemaker2_Type_GetAeDbType(tm->typePtr);
+
+  return tm->aedb_type;
+}
+
+
+
+void Typemaker2_Member_SetAeDbType(TYPEMAKER2_MEMBER *tm, const char *s) {
+  assert(tm);
+  assert(tm->refCount);
+
+  free(tm->aedb_type);
+  if (s) tm->aedb_type=strdup(s);
+  else tm->aedb_type=NULL;
+}
+
+
+
 TYPEMAKER2_TYPE *Typemaker2_Member_GetTypePtr(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
@@ -385,6 +409,10 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
   if (s && *s)
     Typemaker2_Member_SetPresetValue(tm, s);
 
+  /* read AEDB type */
+  s=GWEN_XMLNode_GetCharValue(node, "aedb_type", NULL);
+  if (s && *s)
+    Typemaker2_Member_SetAeDbType(tm, s);
 
   return 0;
 }
