@@ -1,0 +1,74 @@
+<?xml?>
+
+<tm2>
+  <type id="TEST" type="pointer">
+    <lang id="c">
+      <identifier>TEST</identifier>
+      <prefix>Test</prefix>
+      
+      <flags>
+        with_db
+        with_xml
+        with_list1
+        with_list2
+        with_inherit
+        with_idmap
+      </flags>
+      
+      <headers>
+      </headers>
+      
+    </lang>
+    
+    <members>
+  
+      <member name="id" type="uint32_t">
+        <default>0</default>
+        <preset>0</preset>
+        <access>library</access>
+        <flags>volatile</flags>
+      </member>
+  
+      <member name="charPointer" type="char_ptr" maxlen="32" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+  
+      <member name="charArray" type="char_array" maxlen="32" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="charPointerNoDup" type="char_ptr" maxlen="32" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>protected</access>
+        <flags>own nodup</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="charPointerPrivate" type="char_ptr" maxlen="32" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>private</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+      
+    </members>
+    
+    
+  </type>
+  
+</tm2>
+

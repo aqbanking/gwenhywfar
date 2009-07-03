@@ -267,7 +267,6 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
   GWEN_XMLNode_free(root);
 
   /* add first, because other types might want to refer to this one */
-  DBG_ERROR(0, "Adding type [%s]", Typemaker2_Type_GetName(ty));
   Typemaker2_Type_List_Add(ty, tym->typeList);
 
   /* set type pointers in this type structure */
@@ -451,7 +450,6 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_GetType(TYPEMAKER2_TYPEMANAGER *tym, con
       int rv;
 
       /* add first, because other types might want to refer to this one */
-      DBG_ERROR(0, "Adding type [%s]", Typemaker2_Type_GetName(ty));
       Typemaker2_Type_List_Add(ty, tym->typeList);
 
       /* set type pointers in this type structure */

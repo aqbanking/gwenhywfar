@@ -20,22 +20,23 @@
 typedef struct TYPEMAKER2_TYPE TYPEMAKER2_TYPE;
 GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type);
 
-#define TYPEMAKER2_FLAGS_OWN          0x00000001
-#define TYPEMAKER2_FLAGS_VOLATILE     0x00000002
-#define TYPEMAKER2_FLAGS_CONST        0x00000004
-#define TYPEMAKER2_FLAGS_STATIC       0x00000008
-#define TYPEMAKER2_FLAGS_DUP          0x00000010
+#define TYPEMAKER2_FLAGS_OWN           0x00000001
+#define TYPEMAKER2_FLAGS_VOLATILE      0x00000002
+#define TYPEMAKER2_FLAGS_CONST         0x00000004
+#define TYPEMAKER2_FLAGS_STATIC        0x00000008
+#define TYPEMAKER2_FLAGS_DUP           0x00000010
+#define TYPEMAKER2_FLAGS_NODUP         0x00000020
 
-#define TYPEMAKER2_FLAGS_WITH_DB      0x00000020
-#define TYPEMAKER2_FLAGS_WITH_XML     0x00000040
-#define TYPEMAKER2_FLAGS_WITH_OBJECT  0x00000080
-#define TYPEMAKER2_FLAGS_WITH_LIST1   0x00000100
-#define TYPEMAKER2_FLAGS_WITH_LIST2   0x00000200
-#define TYPEMAKER2_FLAGS_WITH_INHERIT 0x00000400
-#define TYPEMAKER2_FLAGS_WITH_IDMAP   0x00000800
+#define TYPEMAKER2_FLAGS_WITH_DB       0x00000100
+#define TYPEMAKER2_FLAGS_WITH_XML      0x00000200
+#define TYPEMAKER2_FLAGS_WITH_OBJECT   0x00000400
+#define TYPEMAKER2_FLAGS_WITH_LIST1    0x00000800
+#define TYPEMAKER2_FLAGS_WITH_LIST2    0x00001000
+#define TYPEMAKER2_FLAGS_WITH_INHERIT  0x00002000
+#define TYPEMAKER2_FLAGS_WITH_IDMAP    0x00004000
 
 /** special value which is used to overwrite flags from extended types */
-#define TYPEMAKER2_FLAGS_NONE         0x80000000
+#define TYPEMAKER2_FLAGS_NONE          0x80000000
 
 
 enum {
@@ -50,8 +51,8 @@ enum {
 enum {
   TypeMaker2_Access_Unknown=0,
   TypeMaker2_Access_Public,
-  TypeMaker2_Access_Library,
   TypeMaker2_Access_Protected,
+  TypeMaker2_Access_Library,
   TypeMaker2_Access_Private
 };
 
@@ -78,6 +79,9 @@ void Typemaker2_Type_SetBaseType(TYPEMAKER2_TYPE *ty, const char *s);
 
 int Typemaker2_Type_GetType(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i);
+
+const char *Typemaker2_Type_GetAeDbType(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetAeDbType(TYPEMAKER2_TYPE *ty, const char *s);
 
 uint32_t Typemaker2_Type_GetFlags(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetFlags(TYPEMAKER2_TYPE *ty, uint32_t i);
@@ -153,6 +157,7 @@ void Typemaker2_Type_SetCodeToObject(TYPEMAKER2_TYPE *ty, const char *s);
 
 
 TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty);
+TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty);
 
 
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty);

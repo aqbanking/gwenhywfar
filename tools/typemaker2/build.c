@@ -50,6 +50,8 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
     return 1;
   }
 
+  Typemaker2_Builder_SetSourceFileName(tb, fname);
+
   for (i=0; i<99; i++) {
     s=GWEN_DB_GetCharValue(dbArgs, "include", 0, NULL);
     if (s && *s)
@@ -63,10 +65,18 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
   }
 
   /* DEBUG */
+#if 0
   Typemaker2_TypeManager_Dump(tym, stderr, 2);
+#endif
 
   /* build */
   rv=Typemaker2_Builder_Build(tb, ty);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return 2;
+  }
+
+  rv=Typemaker2_Builder_WriteFiles(tb, ty);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     return 2;

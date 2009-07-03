@@ -67,11 +67,14 @@ void Typemaker2_Builder_SetFileNamePrivate(TYPEMAKER2_BUILDER *tb, const char *s
 const char *Typemaker2_Builder_GetFileNameCode(const TYPEMAKER2_BUILDER *tb);
 void Typemaker2_Builder_SetFileNameCode(TYPEMAKER2_BUILDER *tb, const char *s);
 
+const char *Typemaker2_Builder_GetSourceFileName(const TYPEMAKER2_BUILDER *tb);
+void Typemaker2_Builder_SetSourceFileName(TYPEMAKER2_BUILDER *tb, const char *s);
 
 void Typemaker2_Builder_SetBuildFn(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_BUILDER_BUILD_FN fn);
 
 
 int Typemaker2_Builder_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
 

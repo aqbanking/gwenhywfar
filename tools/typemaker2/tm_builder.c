@@ -19,7 +19,9 @@
 #include <gwenhywfar/misc.h>
 
 #include <assert.h>
-
+#include <errno.h>
+#include <string.h>
+#include <ctype.h>
 
 
 GWEN_INHERIT_FUNCTIONS(TYPEMAKER2_BUILDER)
@@ -226,6 +228,22 @@ void Typemaker2_Builder_SetFileNameCode(TYPEMAKER2_BUILDER *tb, const char *s) {
 
 
 
+const char *Typemaker2_Builder_GetSourceFileName(const TYPEMAKER2_BUILDER *tb) {
+  assert(tb);
+  return tb->sourceFileName;
+}
+
+
+
+void Typemaker2_Builder_SetSourceFileName(TYPEMAKER2_BUILDER *tb, const char *s) {
+  assert(tb);
+  free(tb->sourceFileName);
+  if (s) tb->sourceFileName=strdup(s);
+  else tb->sourceFileName=NULL;
+}
+
+
+
 void Typemaker2_Builder_SetBuildFn(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_BUILDER_BUILD_FN fn) {
   assert(tb);
   tb->buildFn=fn;
@@ -266,6 +284,8 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
 
   /* set some member vars */
   if (tm) {
+    char numbuf[32];
+
     s=Typemaker2_Member_GetName(tm);
     if (s && *s)
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", s);
@@ -284,6 +304,10 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
       if (s && *s)
 	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fieldid", s);
     }
+
+    /* maxlen */
+    snprintf(numbuf, sizeof(numbuf)-1, "%d", Typemaker2_Member_GetMaxLen(tm));
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxlen", numbuf);
   }
 
   /* set src and dst */
@@ -293,8 +317,8 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dst", dst);
 
   /* set some fixed vars */
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "retval", "rv");
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "db", "db");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "retval", "p_rv");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "db", "p_db");
 
   return db;
 }
@@ -335,7 +359,7 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
 	  }
 	  name=(char*) malloc(len+1);
 	  assert(name);
-	  memmove(name, p, len);
+	  memmove(name, pStart, len);
 	  name[len]=0;
 	  v=GWEN_DB_GetCharValue(db, name, 0, NULL);
 	  if (v==NULL) {
@@ -369,30 +393,43 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
                                                  const char *src,        \
 					         const char *dst,        \
 					         GWEN_BUFFER *dbuf) {    \
-    const char *s;                                                       \
-                                                                         \
-    s=Typemaker2_Type_GetCode##macro_var1(ty);                           \
-    if (s && *s) {                                                       \
-      GWEN_DB_NODE *db;                                                  \
-      int rv;                                                            \
-                                                                         \
-      db=Typemaker2_Builder_CreateDbForCall(tb, ty, tm, src, dst);       \
-      if (db==NULL) {                                                    \
-	DBG_INFO(GWEN_LOGDOMAIN, "here");                                \
-	return GWEN_ERROR_BAD_DATA;                                      \
+    if (tm) {                                                            \
+      const char *s;                                                     \
+      TYPEMAKER2_TYPE *mty;                                              \
+									 \
+      mty=Typemaker2_Member_GetTypePtr(tm);                              \
+      if (mty==NULL) {                                                   \
+        DBG_ERROR(GWEN_LOGDOMAIN, "No type pointer for member");         \
+	return GWEN_ERROR_NO_DATA;                                       \
       }                                                                  \
-      rv=Typemaker2_Builder_ReplaceVars(s, db, dbuf);                    \
-      GWEN_DB_Group_free(db);                                            \
-      if (rv<0) {                                                        \
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);                       \
-	return rv;                                                       \
+      s=Typemaker2_Type_GetCode##macro_var1(mty);                        \
+      if (s && *s) {                                                     \
+	GWEN_DB_NODE *db;                                                \
+	int rv;                                                          \
+									 \
+	db=Typemaker2_Builder_CreateDbForCall(tb, ty, tm, src, dst);     \
+	if (db==NULL) {                                                  \
+	  DBG_INFO(GWEN_LOGDOMAIN, "here");                              \
+	  return GWEN_ERROR_BAD_DATA;                                    \
+	}                                                                \
+	rv=Typemaker2_Builder_ReplaceVars(s, db, dbuf);                  \
+	GWEN_DB_Group_free(db);                                          \
+	if (rv<0) {                                                      \
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);                     \
+	  return rv;                                                     \
+	}                                                                \
+	return 0;                                                        \
       }                                                                  \
-      return 0;                                                          \
+      else {                                                             \
+	DBG_INFO(GWEN_LOGDOMAIN, "No code for type [%s]",                \
+                 Typemaker2_Type_GetName(mty));                          \
+	return 0;                                                        \
+      }                                                                  \
     }                                                                    \
     else {                                                               \
-      DBG_ERROR(GWEN_LOGDOMAIN, "No code");                              \
+      DBG_ERROR(GWEN_LOGDOMAIN, "No member information");                \
       return GWEN_ERROR_NO_DATA;                                         \
-    }                                                                    \
+   }                                                                     \
   }
 
 
@@ -410,6 +447,362 @@ INVOKE_FN(FromObject);
 
 
 
+int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
+                                 TYPEMAKER2_TYPE *ty,
+				 const char *fileName,
+				 GWEN_STRINGLIST *sl,
+				 int acc) {
+  GWEN_STRINGLISTENTRY *se;
+  FILE *f;
+
+  f=fopen(fileName, "w");
+  if (f==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s): %s (%d)",
+	      fileName,
+	      strerror(errno),
+	      errno);
+    return GWEN_ERROR_IO;
+  }
+
+  fprintf(f,
+	  "/**********************************************************\n"
+	  " * This file has been automatically created by \"typemaker2\"\n"
+	  " * from the file \"%s\".\n"
+	  " * Please do not edit this file, all changes will be lost.\n"
+	  " * Better edit the mentioned source file instead.\n"
+	  " **********************************************************/\n"
+	  "\n",
+	  Typemaker2_Builder_GetSourceFileName(tb));
+
+  if (acc==TypeMaker2_Access_Unknown) {
+    const char *s;
+    TYPEMAKER2_HEADER_LIST *hl;
+
+    fprintf(f, "#ifdef HAVE_CONFIG_H\n# include <config.h>\n#endif\n\n");
+
+    s=tb->fileNamePrivate;
+    if (s==NULL)
+      s=tb->fileNameLibrary;
+    if (s==NULL)
+      s=tb->fileNameProtected;
+    if (s==NULL)
+      s=tb->fileNamePublic;
+    if (s) {
+      fprintf(f, "#include \"%s\"\n\n", s);
+    }
+
+    /* add some needed headers */
+    fprintf(f, "#include <gwenhywfar/misc.h>\n");
+    fprintf(f, "#include <gwenhywfar/debug.h>\n");
+
+    /* write code headers */
+    fprintf(f, "\n");
+    fprintf(f, "/* code headers */\n");
+    hl=Typemaker2_Type_GetHeaders(ty);
+    if (hl) {
+      TYPEMAKER2_HEADER *h;
+
+      h=Typemaker2_Header_List_First(hl);
+      while(h) {
+	if (Typemaker2_Header_GetLocation(h)==Typemaker2_HeaderLocation_Code) {
+          if (Typemaker2_Header_GetType(h)==Typemaker2_HeaderType_System)
+	    fprintf(f, "#include <%s>\n", Typemaker2_Header_GetFileName(h));
+          else
+	    fprintf(f, "#include \"%s\"\n", Typemaker2_Header_GetFileName(h));
+	}
+	h=Typemaker2_Header_List_Next(h);
+      }
+    }
+    fprintf(f, "\n");
+  }
+  else {
+    GWEN_BUFFER *xbuf;
+    char *p;
+    const char *s;
+
+    xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(xbuf, fileName);
+    p=GWEN_Buffer_GetStart(xbuf);
+    while(*p) {
+      if (*p=='.')
+	*p='_';
+      else
+	*p=toupper(*p);
+      p++;
+    }
+    fprintf(f, "#ifndef %s\n", GWEN_Buffer_GetStart(xbuf));
+    fprintf(f, "#define %s\n\n", GWEN_Buffer_GetStart(xbuf));
+
+    s=NULL;
+    switch(acc) {
+    case TypeMaker2_Access_Unknown:
+      s=tb->fileNamePrivate;
+      if (s)
+	break;
+    case TypeMaker2_Access_Private:
+      s=tb->fileNameLibrary;
+      if (s)
+	break;
+    case TypeMaker2_Access_Library:
+      s=tb->fileNameProtected;
+      if (s)
+	break;
+    case TypeMaker2_Access_Protected:
+      s=tb->fileNamePublic;
+      if (s)
+	break;
+    default:
+      break;
+    }
+
+    if (s) {
+      fprintf(f, "#include \"%s\"\n\n", s);
+    }
+
+    fprintf(f, "\n");
+    fprintf(f, "#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n");
+    GWEN_Buffer_free(xbuf);
+  }
+
+  se=GWEN_StringList_FirstEntry(sl);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s)
+      fprintf(f, "%s\n", s);
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  if (acc!=TypeMaker2_Access_Unknown) {
+    fprintf(f, "#ifdef __cplusplus\n}\n#endif\n\n");
+    fprintf(f, "#endif\n\n");
+  }
+
+  if (fclose(f)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fclose(%s): %s (%d)",
+	      fileName,
+	      strerror(errno),
+	      errno);
+    return GWEN_ERROR_IO;
+  }
+
+  return 0;
+}
+
+
+
+int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  const char *fname;
+
+  if (GWEN_StringList_Count(tb->declarationsPublic)) {
+    fname=tb->fileNamePublic;
+    if (fname==NULL || *fname==0) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
+
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while(*t) {
+	*t=tolower(*t);
+        t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, ".h");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      Typemaker2_Builder_SetFileNamePublic(tb, fname);
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsLibrary)) {
+    fname=tb->fileNameLibrary;
+    if (fname==NULL || *fname==0) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
+
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while(*t) {
+	*t=tolower(*t);
+        t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, "_l.h");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      Typemaker2_Builder_SetFileNameLibrary(tb, fname);
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsProtected)) {
+    fname=tb->fileNameProtected;
+    if (fname==NULL || *fname==0) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
+
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while(*t) {
+	*t=tolower(*t);
+        t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, "_be.h");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      Typemaker2_Builder_SetFileNameProtected(tb, fname);
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsPrivate)) {
+    fname=tb->fileNamePrivate;
+    if (fname==NULL || *fname==0) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
+
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while(*t) {
+	*t=tolower(*t);
+        t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, "_p.h");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      Typemaker2_Builder_SetFileNamePrivate(tb, fname);
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->code)) {
+    fname=tb->fileNameCode;
+    if (fname==NULL || *fname==0) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
+
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while(*t) {
+	*t=tolower(*t);
+        t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, ".c");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      Typemaker2_Builder_SetFileNameCode(tb, fname);
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
+  return 0;
+}
+
+
+
+int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  const char *fname;
+  int rv;
+
+  rv=Typemaker2_Builder_DetermineOutFileNames(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsPublic)) {
+    fname=tb->fileNamePublic;
+    assert(fname);
+
+    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsPublic,
+				    TypeMaker2_Access_Public);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsLibrary)) {
+    fname=tb->fileNameLibrary;
+    assert(fname);
+
+    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsLibrary,
+				    TypeMaker2_Access_Library);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsProtected)) {
+    fname=tb->fileNameProtected;
+    assert(fname);
+
+    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsProtected,
+				    TypeMaker2_Access_Protected);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsPrivate)) {
+    fname=tb->fileNamePrivate;
+    assert(fname);
+
+    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsPrivate,
+				    TypeMaker2_Access_Private);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  if (GWEN_StringList_Count(tb->code)) {
+    fname=tb->fileNameCode;
+    assert(fname);
+
+    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->code,
+				    TypeMaker2_Access_Unknown);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  return 0;
+}
 
 
 

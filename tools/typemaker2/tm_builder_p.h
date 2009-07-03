@@ -33,6 +33,8 @@ struct TYPEMAKER2_BUILDER {
   char *fileNamePrivate;
   char *fileNameCode;
 
+  char *sourceFileName;
+
   TYPEMAKER2_TYPEMANAGER *typeManager;
 
   TYPEMAKER2_BUILDER_BUILD_FN buildFn;
@@ -57,6 +59,14 @@ int Typemaker2_Builder_Invoke_Fn(TYPEMAKER2_BUILDER *tb,
 				 const char *dst,
 				 GWEN_BUFFER *dbuf);
 
+
+int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
+                                 TYPEMAKER2_TYPE *ty,
+				 const char *fileName,
+				 GWEN_STRINGLIST *sl,
+				 int acc);
+
+int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
 

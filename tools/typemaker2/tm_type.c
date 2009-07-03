@@ -75,6 +75,8 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       free(ty->defaultValue);
       free(ty->presetValue);
 
+      free(ty->aedb_type);
+
       Typemaker2_Header_List_free(ty->headers);
 
       GWEN_StringList_free(ty->structIncludes);
@@ -141,6 +143,28 @@ void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i) {
   assert(ty);
   assert(ty->refCount);
   ty->type=i;
+}
+
+
+
+const char *Typemaker2_Type_GetAeDbType(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+
+  if (ty->aedb_type==NULL && ty->extendsPtr)
+    return Typemaker2_Type_GetAeDbType(ty->extendsPtr);
+
+  return ty->aedb_type;
+}
+
+
+
+void Typemaker2_Type_SetAeDbType(TYPEMAKER2_TYPE *ty, const char *s) {
+  assert(ty);
+  assert(ty->refCount);
+  free(ty->aedb_type);
+  if (s && *s) ty->aedb_type=strdup(s);
+  else ty->aedb_type=NULL;
 }
 
 
@@ -663,6 +687,14 @@ TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty) {
 
 
 
+TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->headers;
+}
+
+
+
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -736,6 +768,15 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
   s=GWEN_XMLNode_GetCharValue(langNode, "prefix", NULL);
   Typemaker2_Type_SetPrefix(ty, s);
 
+  s=GWEN_XMLNode_GetCharValue(langNode, "aedb_type", NULL);
+  Typemaker2_Type_SetAeDbType(ty, s);
+
+  /* read flags. this element exists for <type> elements.
+   * For <typedef> elements the flags are stored in the <defaults> group. */
+  s=GWEN_XMLNode_GetCharValue(langNode, "flags", NULL);
+  if (s && *s)
+    Typemaker2_Type_SetFlags(ty, Typemaker2_FlagsFromString(s));
+
   /* read headers */
   n=GWEN_XMLNode_FindFirstTag(langNode, "headers", NULL, NULL);
   if (n) {
@@ -775,9 +816,6 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 	Typemaker2_Member_free(tm);
         return rv;
       }
-      /* TODO: only count members which are not volatile
-       Typemaker2_Member_SetMemberPosition(tm, memberPos++);
-       */
       Typemaker2_Member_List_Add(tm, ty->members);
       nn=GWEN_XMLNode_FindNextTag(nn, "member", NULL, NULL);
     }
@@ -879,6 +917,9 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
     fprintf(f, "Identifier: %s\n", (ty->identifier)?(ty->identifier):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "AEDB Type : %s\n", (ty->aedb_type)?(ty->aedb_type):"<null>");
+
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Extends   : %s\n", (ty->extends)?(ty->extends):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
@@ -932,6 +973,10 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
     }
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Field Count Id: %s\n", (ty->fieldCountId)?(ty->fieldCountId):"<null>");
+
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "Construct     : %s\n", ty->code_construct);
+
   }
 }
 

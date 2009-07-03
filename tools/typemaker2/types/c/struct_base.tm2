@@ -21,12 +21,48 @@
       </dup>
     
       <todb>
-        $(retval)=$(prefix)_toDb($(src), $(db));
+        {
+          GWEN_DB_NODE *dbDest;
+          
+          dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
+          assert(dbDest);
+          $(retval)=$(prefix)_toDb($(src), dbDest);
+        }
       </todb>
   
       <fromdb>
-        $(dst)=$(prefix)_fromDb($(src), $(name));
+        {
+          GWEN_DB_NODE *dbSource;
+          
+          dbSource=GWEN_DB_GetGroup($(db), GWEN_PATH_FLAGS_NAMEMUSTEXIST, "$(name)");
+          if (dbSource)
+            $(dst)=$(prefix)_fromDb(dbSource);
+          else
+            $(dst)=$(preset);
+        }
       </fromdb>
+
+      <toxml>
+        {
+          GWEN_XMLNODE *dbDest;
+          
+          dbDest=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "$(name)");
+          $(prefix)_toXml($(src), dbDest);
+          GWEN_XMLNode_AddChild($(db), dbDest);
+        }
+      </toxml>
+  
+      <fromxml>
+        {
+          GWEN_XMLNODE *dbSource;
+          
+          dbSource=GWEN_XMLNode_FindFirstTag($(db), "$(name)", NULL, NULL);
+          if (dbSource)
+            $(dst)=$(prefix)_fromXml(dbSource);
+          else
+            $(dst)=$(preset);
+        }
+      </fromxml>
     
     </code>
   

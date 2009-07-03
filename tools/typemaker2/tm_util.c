@@ -45,6 +45,8 @@ uint32_t Typemaker2_FlagsFromString(const char *s) {
 	flags|=TYPEMAKER2_FLAGS_STATIC;
       else if (strcasecmp(s, "dup")==0)
 	flags|=TYPEMAKER2_FLAGS_DUP;
+      else if (strcasecmp(s, "nodup")==0)
+	flags|=TYPEMAKER2_FLAGS_NODUP;
       else if (strcasecmp(s, "with_db")==0)
 	flags|=TYPEMAKER2_FLAGS_WITH_DB;
       else if (strcasecmp(s, "with_xml")==0)

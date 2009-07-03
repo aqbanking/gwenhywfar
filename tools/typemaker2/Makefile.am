@@ -2,7 +2,8 @@ SUBDIRS=types
 
 INCLUDES=@all_includes@ -I$(gwenhywfar_symlinkdir)
 
-#EXTRA_DIST=test.xml
+
+typefiles=test.tm2
 
 bin_PROGRAMS=typemaker2
 noinst_HEADERS=\
@@ -30,12 +31,22 @@ typemaker2_SOURCES=\
 typemaker2_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
 
 
+noinst_PROGRAMS=testmain
+testmain_SOURCES=testmain.c test.c
+testmain_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+
 if IS_WINDOWS
 
 typemaker2_LDFLAGS=-mconsole
 typemaker2_LDADD+= $(PROG_LIBRARIES)
 
 endif
+
+EXTRA_DIST=$(typefiles)
+
+BUILT_SOURCES=\
+  test.c
+
 
 
 sources:
@@ -45,4 +56,18 @@ sources:
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
 	done
+
+indent:  $(BUILT_SOURCES)
+	astyle \
+	  --style=gnu \
+	  --indent=spaces=2 \
+	  --min-conditional-indent=0 \
+	  --indent-labels \
+	  --pad=oper \
+	  --one-line=keep-blocks \
+	  --suffix=none \
+	  -a -y $(BUILT_SOURCES)
+
+types: $(typefiles)
+	./typemaker2 -I types/c -D GWENHYWFAR_API test.tm2
 

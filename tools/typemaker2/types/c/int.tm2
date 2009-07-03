@@ -3,7 +3,8 @@
 <tm2>
   <typedef id="int" lang="c">
     <identifier>int</identifier>
-  
+    <aedb_type>AEDB_DataType_Int</aedb_type>
+
     <code>
       <construct>
         $(dst)=0;
@@ -21,12 +22,38 @@
       </dup>
     
       <todb>
-        $(retval)=GWEN_DB_SetIntValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, $(name), $(src));
+        $(retval)=GWEN_DB_SetIntValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, "$(name)", $(src));
       </todb>
   
       <fromdb>
-        $(dst)=GWEN_DB_GetIntValue($(db), $(name), 0, $(default));
+        $(dst)=GWEN_DB_GetIntValue($(db), "$(name)", 0, $(default));
       </fromdb>
+
+      <toxml>
+        GWEN_XMLNode_SetIntValue($(db), "$(name)", ($(src)));
+      </toxml>
+  
+      <fromxml>
+        $(dst)=GWEN_XMLNode_GetIntValue($(db), "$(name)", $(default));
+      </fromxml>
+
+      <toobject>
+        {
+          int64_t v64=(int64_t) ($(src));
+          $(retval)=AEDB_Object_SetFieldInt64($(db), $(fieldId), v64);
+        }
+      </toobject>
+
+      <fromobject>
+        {
+          int64_t v64;
+          
+          $(retval)=AEDB_Object_GetFieldInt64($(db), $(fieldId), &v64);
+          if ($(retval)>=0)
+            $(dst)=(int) v64;
+        }
+      </fromobject>
+      
     
     </code>
       

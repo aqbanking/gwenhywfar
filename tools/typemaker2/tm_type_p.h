@@ -49,6 +49,7 @@ struct TYPEMAKER2_TYPE {
   char *defaultValue;
   char *presetValue;
 
+  char *aedb_type;
 
   TYPEMAKER2_HEADER_LIST *headers;
 
