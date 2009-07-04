@@ -744,6 +744,8 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
   }
 
   if (uc=='?' || uc=='!' || uc=='/') {
+    unsigned char ucsave=uc;
+
     GWEN_FASTBUFFER_PEEKBYTE(fb, chr);
     if (chr<0) {
       GWEN_Buffer_free(dbuf);
@@ -761,6 +763,12 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       GWEN_Buffer_free(dbuf);
       /* tag finished */
       return 0;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Got an unexpected character here (after %02x[%c]): %02x[%c], "
+		"maybe the text contains unescaped XML characters?",
+		ucsave, ucsave, uc, uc);
     }
   }
   else if (uc=='>') {
