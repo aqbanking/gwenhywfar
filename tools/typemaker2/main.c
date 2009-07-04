@@ -89,17 +89,6 @@ int main(int argc, char **argv) {
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
-    "typedefFile",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "typedef",                    /* long option */
-    "Name of the typedef file to create",
-    "Name of the typedef file to create"
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
     "language",                   /* name */
     0,                            /* minnum */
     1,                            /* maxnum */

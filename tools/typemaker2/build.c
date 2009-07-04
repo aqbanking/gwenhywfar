@@ -56,9 +56,11 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
   Typemaker2_Builder_SetSourceFileName(tb, fname);
 
   for (i=0; i<99; i++) {
-    s=GWEN_DB_GetCharValue(dbArgs, "include", 0, NULL);
+    s=GWEN_DB_GetCharValue(dbArgs, "include", i, NULL);
     if (s && *s)
       Typemaker2_TypeManager_AddFolder(tym, s);
+    else
+      break;
   }
 
   sl=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
@@ -104,10 +106,6 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
   s=GWEN_DB_GetCharValue(dbArgs, "codeFile", 0, NULL);
   if (s)
     Typemaker2_Builder_SetFileNameCode(tb, s);
-
-  s=GWEN_DB_GetCharValue(dbArgs, "typedefFile", 0, NULL);
-  if (s)
-    Typemaker2_Builder_SetTypedefFileName(tb, s);
 
   ty=Typemaker2_TypeManager_LoadTypeFile(tym, fname);
   if (ty==NULL) {

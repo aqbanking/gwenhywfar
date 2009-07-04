@@ -34,8 +34,12 @@ struct TYPEMAKER2_MEMBER {
   char *presetValue;
 
   char *aedb_type;
+  char *enumId;
 
   TYPEMAKER2_TYPE *typePtr;
+
+  TYPEMAKER2_ENUM *enumPtr;
+
   int refCount;
 
   int memberPosition;

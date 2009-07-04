@@ -48,8 +48,8 @@
         {
           int64_t v64;
           
-          $(retval)=AEDB_Object_GetFieldInt64($(db), $(fieldId), &v64);
-          if ($(retval)>=0)
+          $(retval)=AEDB_Object_GetFieldInt64($(db), $(fieldId), &amp;v64);
+          if ($(retval)&gt;=0)
             $(dst)=(char) v64;
         }
       </fromobject>

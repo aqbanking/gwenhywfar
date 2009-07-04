@@ -5,11 +5,11 @@
   <typedef id="struct_base" type="pointer" lang="c" >
     <code>
       <construct>
-        $(dst)=$(prefix)_new();
+        $(dst)=$(member_prefix)_new();
       </construct>
     
       <destruct>
-        $(prefix)_free($(src));
+        $(member_prefix)_free($(src));
       </destruct>
     
       <assign>
@@ -17,7 +17,7 @@
       </assign>
     
       <dup>
-        $(dst)=$(prefix)_dup($(src));
+        $(dst)=$(member_prefix)_dup($(src));
       </dup>
     
       <todb>
@@ -26,7 +26,7 @@
           
           dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
           assert(dbDest);
-          $(retval)=$(prefix)_toDb($(src), dbDest);
+          $(retval)=$(member_prefix)_toDb($(src), dbDest);
         }
       </todb>
   
@@ -36,7 +36,7 @@
           
           dbSource=GWEN_DB_GetGroup($(db), GWEN_PATH_FLAGS_NAMEMUSTEXIST, "$(name)");
           if (dbSource)
-            $(dst)=$(prefix)_fromDb(dbSource);
+            $(dst)=$(member_prefix)_fromDb(dbSource);
           else
             $(dst)=$(preset);
         }
@@ -47,7 +47,7 @@
           GWEN_XMLNODE *dbDest;
           
           dbDest=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "$(name)");
-          $(prefix)_toXml($(src), dbDest);
+          $(member_prefix)_toXml($(src), dbDest);
           GWEN_XMLNode_AddChild($(db), dbDest);
         }
       </toxml>
@@ -58,7 +58,7 @@
           
           dbSource=GWEN_XMLNode_FindFirstTag($(db), "$(name)", NULL, NULL);
           if (dbSource)
-            $(dst)=$(prefix)_fromXml(dbSource);
+            $(dst)=$(member_prefix)_fromXml(dbSource);
           else
             $(dst)=$(preset);
         }

@@ -1,0 +1,46 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="list2_base" type="pointer" lang="c" >
+    <code>
+      <construct>
+        $(dst)=$(member_prefix)_new();
+      </construct>
+    
+      <destruct>
+        $(member_prefix)_free($(src));
+      </destruct>
+    
+      <assign>
+        $(dst)=$(src);
+      </assign>
+    
+      <dup>
+      </dup>
+    
+      <todb>
+      </todb>
+  
+      <fromdb>
+      </fromdb>
+
+      <toxml>
+      </toxml>
+  
+      <fromxml>
+      </fromxml>
+    
+    </code>
+  
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>

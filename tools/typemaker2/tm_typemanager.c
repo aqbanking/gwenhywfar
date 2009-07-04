@@ -148,7 +148,6 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
   rv=GWEN_XML_ReadFile(root, GWEN_Buffer_GetStart(nbuf),
 		       GWEN_XML_FLAGS_DEFAULT |
 		       GWEN_XML_FLAGS_HANDLE_HEADERS |
-		       GWEN_XML_FLAGS_TOLERANT_ENDTAGS |
 		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", GWEN_Buffer_GetStart(nbuf), rv);
@@ -224,7 +223,6 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
   rv=GWEN_XML_ReadFile(root, fileName,
 		       GWEN_XML_FLAGS_DEFAULT |
 		       GWEN_XML_FLAGS_HANDLE_HEADERS |
-		       GWEN_XML_FLAGS_TOLERANT_ENDTAGS |
 		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", fileName, rv);
@@ -358,17 +356,33 @@ int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMA
     while(m) {
       if (Typemaker2_Member_GetTypePtr(m)==NULL) {
 	const char *s;
-    
+
+        /* set type pointer */
 	s=Typemaker2_Member_GetTypeName(m);
 	if (s && *s) {
 	  TYPEMAKER2_TYPE *tt;
     
 	  tt=Typemaker2_TypeManager_GetType(tym, s);
 	  if (tt==NULL) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Type for \"basetype\" not found [%s]", s);
+	    DBG_INFO(GWEN_LOGDOMAIN, "Type for \"type\" not found [%s]", s);
 	    return GWEN_ERROR_NOT_FOUND;
 	  }
 	  Typemaker2_Member_SetTypePtr(m, tt);
+	}
+
+        /* set enum pointer (if any) */
+	if ((Typemaker2_Member_GetFlags(m) & TYPEMAKER2_FLAGS_ENUM) &&
+	    Typemaker2_Member_GetEnumPtr(m)==NULL) {
+	  s=Typemaker2_Member_GetEnumId(m);
+	  if (s && *s) {
+	    TYPEMAKER2_ENUM *te=Typemaker2_Type_FindEnum(ty, s);
+	    if (te)
+	      Typemaker2_Member_SetEnumPtr(m, te);
+	    else {
+	      DBG_ERROR(GWEN_LOGDOMAIN, "Enum [%s] not found", s);
+	      return GWEN_ERROR_NOT_FOUND;
+	    }
+	  }
 	}
       }
 

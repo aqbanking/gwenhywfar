@@ -34,7 +34,6 @@ struct TYPEMAKER2_BUILDER {
   char *fileNameCode;
 
   char *sourceFileName;
-  char *typedefFileName;
 
   TYPEMAKER2_TYPEMANAGER *typeManager;
 
@@ -70,6 +69,14 @@ int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
 int Typemaker2_Builder_WriteTypedefFile(TYPEMAKER2_BUILDER *tb,
 					TYPEMAKER2_TYPE *ty,
 					const char *fileName);
+
+int Typemaker2_Builder_WriteTypedefFile_List1(TYPEMAKER2_BUILDER *tb,
+					      TYPEMAKER2_TYPE *ty,
+					      const char *fileName);
+
+int Typemaker2_Builder_WriteTypedefFile_List2(TYPEMAKER2_BUILDER *tb,
+					      TYPEMAKER2_TYPE *ty,
+					      const char *fileName);
 
 int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 

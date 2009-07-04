@@ -51,6 +51,7 @@ void Typemaker2_Member_free(TYPEMAKER2_MEMBER *tm) {
       free(tm->defaultValue);
       free(tm->presetValue);
       free(tm->aedb_type);
+      free(tm->enumId);
       tm->refCount=0;
       GWEN_FREE_OBJECT(tm);
     }
@@ -120,6 +121,24 @@ void Typemaker2_Member_SetFieldId(TYPEMAKER2_MEMBER *tm, const char *s) {
   free(tm->fieldId);
   if (s && *s) tm->fieldId=strdup(s);
   else tm->fieldId=NULL;
+}
+
+
+
+const char *Typemaker2_Member_GetEnumId(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->enumId;
+}
+
+
+
+void Typemaker2_Member_SetEnumId(TYPEMAKER2_MEMBER *tm, const char *s) {
+  assert(tm);
+  assert(tm->refCount);
+  free(tm->enumId);
+  if (s && *s) tm->enumId=strdup(s);
+  else tm->enumId=NULL;
 }
 
 
@@ -245,6 +264,8 @@ const char *Typemaker2_Member_GetDefaultValue(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
 
+  if (tm->defaultValue==NULL && tm->typePtr)
+    return Typemaker2_Type_GetDefaultValue(tm->typePtr);
   return tm->defaultValue;
 }
 
@@ -265,6 +286,8 @@ const char *Typemaker2_Member_GetPresetValue(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
 
+  if (tm->presetValue==NULL && tm->typePtr)
+    return Typemaker2_Type_GetPresetValue(tm->typePtr);
   return tm->presetValue;
 }
 
@@ -320,6 +343,22 @@ void Typemaker2_Member_SetTypePtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_TYPE *ty) {
 
 
 
+TYPEMAKER2_ENUM *Typemaker2_Member_GetEnumPtr(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->enumPtr;
+}
+
+
+
+void Typemaker2_Member_SetEnumPtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_ENUM *te) {
+  assert(tm);
+  assert(tm->refCount);
+  tm->enumPtr=te;
+}
+
+
+
 int Typemaker2_Member_GetMemberPosition(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
@@ -355,6 +394,9 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
     return GWEN_ERROR_BAD_DATA;
   }
   Typemaker2_Member_SetTypeName(tm, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "enum", NULL);
+  Typemaker2_Member_SetEnumId(tm, s);
 
   s=GWEN_XMLNode_GetProperty(node, "maxlen", NULL);
   if (s && *s) {

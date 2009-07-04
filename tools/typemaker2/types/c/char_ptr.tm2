@@ -45,7 +45,11 @@
 
       <toxml>
         if ($(src)) {
+#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON#
+          GWEN_XMLNode_SetProperty($(db), "$(name)", $(src));
+#else#
           GWEN_XMLNode_SetCharValue($(db), "$(name)", $(src));
+#endif#
         }
         else {
           /* TODO: remove element */
@@ -56,7 +60,11 @@
         {
           const char *s;
           
+#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON#
+          s=GWEN_XMLNode_GetProperty($(db), "$(name)", $(default));
+#else#
           s=GWEN_XMLNode_GetCharValue($(db), "$(name)", $(default));
+#endif#
           if (s)
            $(dst)=strdup(s);
         }
@@ -73,8 +81,8 @@
         {
           const char *s;
           
-          $(retval)=AEDB_Object_GetFieldString($(db), $(fieldId), &s);
-          if ($(retval)>=0 && s)
+          $(retval)=AEDB_Object_GetFieldString($(db), $(fieldId), &amp;s);
+          if ($(retval)&gt;=0 &amp;&amp; s)
             $(dst)=strdup(s);
         }
       </fromobject>

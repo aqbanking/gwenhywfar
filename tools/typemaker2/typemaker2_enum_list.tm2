@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="TYPEMAKER2_ENUM_LIST" type="pointer" lang="c" extends="list1_base" basetype="TYPEMAKER2_ENUM">
+    <identifier>TYPEMAKER2_ENUM_LIST</identifier>
+    <prefix>Typemaker2_Enum_List</prefix>
+  </typedef>
+</tm2>

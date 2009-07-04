@@ -36,6 +36,7 @@ TYPEMAKER2_TYPE *Typemaker2_Type_new() {
   GWEN_LIST_INIT(TYPEMAKER2_TYPE, ty);
 
   ty->headers=Typemaker2_Header_List_new();
+  ty->enums=Typemaker2_Enum_List_new();
 
   ty->structIncludes=GWEN_StringList_new();
   ty->privateIncludes=GWEN_StringList_new();
@@ -76,8 +77,10 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       free(ty->presetValue);
 
       free(ty->aedb_type);
+      free(ty->baseFileName);
 
       Typemaker2_Header_List_free(ty->headers);
+      Typemaker2_Enum_List_free(ty->enums);
 
       GWEN_StringList_free(ty->structIncludes);
       GWEN_StringList_free(ty->privateIncludes);
@@ -165,6 +168,25 @@ void Typemaker2_Type_SetAeDbType(TYPEMAKER2_TYPE *ty, const char *s) {
   free(ty->aedb_type);
   if (s && *s) ty->aedb_type=strdup(s);
   else ty->aedb_type=NULL;
+}
+
+
+
+const char *Typemaker2_Type_GetBaseFileName(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+
+  return ty->baseFileName;
+}
+
+
+
+void Typemaker2_Type_SetBaseFileName(TYPEMAKER2_TYPE *ty, const char *s) {
+  assert(ty);
+  assert(ty->refCount);
+  free(ty->baseFileName);
+  if (s && *s) ty->baseFileName=strdup(s);
+  else ty->baseFileName=NULL;
 }
 
 
@@ -695,6 +717,14 @@ TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty) {
 
 
 
+TYPEMAKER2_ENUM_LIST *Typemaker2_Type_GetEnums(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->enums;
+}
+
+
+
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -770,6 +800,10 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
   s=GWEN_XMLNode_GetCharValue(langNode, "aedb_type", NULL);
   Typemaker2_Type_SetAeDbType(ty, s);
+
+  /* read base file name (used to derive other output filenames) */
+  s=GWEN_XMLNode_GetCharValue(langNode, "basefilename", NULL);
+  Typemaker2_Type_SetBaseFileName(ty, s);
 
   /* read flags. this element exists for <type> elements.
    * For <typedef> elements the flags are stored in the <defaults> group. */
@@ -853,6 +887,33 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
     s=GWEN_XMLNode_GetCharValue(n, "fromobject", NULL);
     Typemaker2_Type_SetCodeFromObject(ty, s);
+  }
+
+  /* read enums */
+  n=GWEN_XMLNode_FindFirstTag(node, "enums", NULL, NULL);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "enum", NULL, NULL);
+    while(nn) {
+      TYPEMAKER2_ENUM *te;
+      GWEN_XMLNODE *nnn;
+
+      te=Typemaker2_Enum_fromXml(nn);
+
+      /* read items */
+      nnn=GWEN_XMLNode_FindFirstTag(nn, "item", NULL, NULL);
+      while(nnn) {
+	TYPEMAKER2_ITEM *ti;
+
+	ti=Typemaker2_Item_fromXml(nnn);
+	Typemaker2_Item_List_Add(ti, Typemaker2_Enum_GetItems(te));
+	nnn=GWEN_XMLNode_FindNextTag(nnn, "item", NULL, NULL);
+      }
+
+      Typemaker2_Enum_List_Add(te, ty->enums);
+      nn=GWEN_XMLNode_FindNextTag(nn, "enum", NULL, NULL);
+    }
   }
 
   /* read defaults */
@@ -982,6 +1043,22 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
 
 
 
+TYPEMAKER2_ENUM *Typemaker2_Type_FindEnum(TYPEMAKER2_TYPE *ty, const char *s) {
+  TYPEMAKER2_ENUM *te;
+
+  assert(ty);
+  te=Typemaker2_Enum_List_First(ty->enums);
+  while(te) {
+    const char *n;
+
+    n=Typemaker2_Enum_GetId(te);
+    if (n && strcasecmp(s, n)==0)
+      break;
+    te=Typemaker2_Enum_List_Next(te);
+  }
+
+  return te;
+}
 
 
 

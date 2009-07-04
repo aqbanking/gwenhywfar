@@ -152,6 +152,9 @@ int Typemaker2_Builder_Invoke_FromObjectFn(TYPEMAKER2_BUILDER *tb,
 					   const char *dst,
 					   GWEN_BUFFER *dbuf);
 
+void Typemaker2_Builder_BeginUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER *tm, GWEN_BUFFER *tbuf);
+void Typemaker2_Builder_EndUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER *tm, GWEN_BUFFER *tbuf);
+
 
 
 #endif

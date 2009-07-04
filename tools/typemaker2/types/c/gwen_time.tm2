@@ -52,7 +52,7 @@
 
           xbuf=GWEN_Buffer_new(0, 32, 0, 1);
           rv=GWEN_Time_toString($(src), "YYYY/MM/DD-hh:mm", xbuf);
-          if (rv>=0) 
+          if (rv&gt;=0) 
             GWEN_XMLNode_SetCharValue($(db), "$(name)", GWEN_Buffer_GetStart(xbuf));
           GWEN_Buffer_free(xbuf);
         }
@@ -63,7 +63,7 @@
           const char *s;
           
           s=GWEN_XMLNode_GetCharValue($(db), "$(name)", NULL);
-          if (s && *s)
+          if (s &amp;&amp; *s)
             $(dst)=GWEN_Time_fromString(s, "YYYY/MM/DD-hh:mm");
         }
       </fromxml>
@@ -72,7 +72,7 @@
         if ($(src)){
           GWEN_BUFFER *xbuf=GWEN_Buffer_new(0, 64, 0, 1);
           $(retval)=GWEN_Time_toString($(src), "YYYYMMDD", xbuf);
-          if ($(retval)>=0)
+          if ($(retval)&gt;=0)
             $(retval)=AEDB_Object_SetFieldString($(db), $(fieldid), GWEN_Buffer_GetStart(xbuf));
           GWEN_Buffer_free(xbuf);
         }
@@ -84,8 +84,8 @@
         {
           const char *s;
           
-          $(retval)=AEDB_Object_GetFieldString($(db), $(fieldid), &s);
-          if ($(retval)>=0 && s && *s) {
+          $(retval)=AEDB_Object_GetFieldString($(db), $(fieldid), &amp;s);
+          if ($(retval)&gt;=0 &amp;&amp; s &amp;&amp; *s) {
             $(dst)=GWEN_Time_fromString(s, "YYYYMMDD");
             if ($(dst)==NULL)
               $(retval)=GWEN_ERROR_BAD_DATA;

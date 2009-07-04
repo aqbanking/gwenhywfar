@@ -23,6 +23,7 @@ GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_MEMBER, Typemaker2_Member);
 
 
 #include "tm_type.h"
+#include "tm_enum.h"
 
 
 TYPEMAKER2_MEMBER *Typemaker2_Member_new();
@@ -39,6 +40,9 @@ void Typemaker2_Member_SetTypeName(TYPEMAKER2_MEMBER *tm, const char *s);
 const char *Typemaker2_Member_GetFieldId(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetFieldId(TYPEMAKER2_MEMBER *tm, const char *s);
 
+const char *Typemaker2_Member_GetEnumId(const TYPEMAKER2_MEMBER *tm);
+void Typemaker2_Member_SetEnumId(TYPEMAKER2_MEMBER *tm, const char *s);
+
 uint32_t Typemaker2_Member_GetFlags(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetFlags(TYPEMAKER2_MEMBER *tm, uint32_t i);
 
@@ -53,6 +57,9 @@ void Typemaker2_Member_SetDupFlags(TYPEMAKER2_MEMBER *tm, uint32_t i);
 
 TYPEMAKER2_TYPE *Typemaker2_Member_GetTypePtr(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetTypePtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_TYPE *ty);
+
+TYPEMAKER2_ENUM *Typemaker2_Member_GetEnumPtr(const TYPEMAKER2_MEMBER *tm);
+void Typemaker2_Member_SetEnumPtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_ENUM *te);
 
 int Typemaker2_Member_GetAccess(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetAccess(TYPEMAKER2_MEMBER *tm, int i);

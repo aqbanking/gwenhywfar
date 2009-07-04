@@ -26,14 +26,16 @@ GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type);
 #define TYPEMAKER2_FLAGS_STATIC        0x00000008
 #define TYPEMAKER2_FLAGS_DUP           0x00000010
 #define TYPEMAKER2_FLAGS_NODUP         0x00000020
+#define TYPEMAKER2_FLAGS_ATTRIBUTE     0x00000040
+#define TYPEMAKER2_FLAGS_ENUM          0x00000080
 
-#define TYPEMAKER2_FLAGS_WITH_DB       0x00000100
-#define TYPEMAKER2_FLAGS_WITH_XML      0x00000200
-#define TYPEMAKER2_FLAGS_WITH_OBJECT   0x00000400
-#define TYPEMAKER2_FLAGS_WITH_LIST1    0x00000800
-#define TYPEMAKER2_FLAGS_WITH_LIST2    0x00001000
-#define TYPEMAKER2_FLAGS_WITH_INHERIT  0x00002000
-#define TYPEMAKER2_FLAGS_WITH_IDMAP    0x00004000
+#define TYPEMAKER2_FLAGS_WITH_DB       0x00010000
+#define TYPEMAKER2_FLAGS_WITH_XML      0x00020000
+#define TYPEMAKER2_FLAGS_WITH_OBJECT   0x00040000
+#define TYPEMAKER2_FLAGS_WITH_LIST1    0x00080000
+#define TYPEMAKER2_FLAGS_WITH_LIST2    0x00100000
+#define TYPEMAKER2_FLAGS_WITH_INHERIT  0x00200000
+#define TYPEMAKER2_FLAGS_WITH_IDMAP    0x00400000
 
 /** special value which is used to overwrite flags from extended types */
 #define TYPEMAKER2_FLAGS_NONE          0x80000000
@@ -59,6 +61,7 @@ enum {
 
 #include "tm_member.h"
 #include "tm_header.h"
+#include "tm_enum.h"
 
 
 
@@ -82,6 +85,9 @@ void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i);
 
 const char *Typemaker2_Type_GetAeDbType(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetAeDbType(TYPEMAKER2_TYPE *ty, const char *s);
+
+const char *Typemaker2_Type_GetBaseFileName(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetBaseFileName(TYPEMAKER2_TYPE *ty, const char *s);
 
 uint32_t Typemaker2_Type_GetFlags(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetFlags(TYPEMAKER2_TYPE *ty, uint32_t i);
@@ -158,6 +164,7 @@ void Typemaker2_Type_SetCodeToObject(TYPEMAKER2_TYPE *ty, const char *s);
 
 TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty);
+TYPEMAKER2_ENUM_LIST *Typemaker2_Type_GetEnums(const TYPEMAKER2_TYPE *ty);
 
 
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty);
@@ -177,8 +184,10 @@ const char *Typemaker2_Type_GetFieldCountId(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s);
 
 
-int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang);
+TYPEMAKER2_ENUM *Typemaker2_Type_FindEnum(TYPEMAKER2_TYPE *ty, const char *s);
 
+
+int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang);
 
 void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent);
 
