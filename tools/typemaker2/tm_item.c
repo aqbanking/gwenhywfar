@@ -49,8 +49,6 @@ TYPEMAKER2_ITEM *Typemaker2_Item_dup(const TYPEMAKER2_ITEM *p_src) {
   assert(p_src);
   p_struct=Typemaker2_Item_new();
   /* member "name" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->name) {
     free(p_struct->name);
     p_struct->name=NULL;
@@ -58,12 +56,8 @@ TYPEMAKER2_ITEM *Typemaker2_Item_dup(const TYPEMAKER2_ITEM *p_src) {
   if (p_src->name) {
     p_struct->name=strdup(p_src->name);
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
   /* member "value" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->value) {
     free(p_struct->value);
     p_struct->value=NULL;
@@ -71,37 +65,25 @@ TYPEMAKER2_ITEM *Typemaker2_Item_dup(const TYPEMAKER2_ITEM *p_src) {
   if (p_src->value) {
     p_struct->value=strdup(p_src->value);
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
   return p_struct;
 }
 
 const char *Typemaker2_Item_GetName(const TYPEMAKER2_ITEM *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   return p_struct->name;
 }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
 const char *Typemaker2_Item_GetValue(const TYPEMAKER2_ITEM *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   return p_struct->value;
 }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
 void Typemaker2_Item_SetName(TYPEMAKER2_ITEM *p_struct, const char *p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   if (p_struct->name) {
     free(p_struct->name);
-}
+  }
   if (p_src) {
     p_struct->name=strdup(p_src);
   }
@@ -109,16 +91,12 @@ void Typemaker2_Item_SetName(TYPEMAKER2_ITEM *p_struct, const char *p_src) {
     p_struct->name=NULL;
   }
 }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
 void Typemaker2_Item_SetValue(TYPEMAKER2_ITEM *p_struct, const char *p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   if (p_struct->value) {
     free(p_struct->value);
-}
+  }
   if (p_src) {
     p_struct->value=strdup(p_src);
   }
@@ -126,74 +104,32 @@ void Typemaker2_Item_SetValue(TYPEMAKER2_ITEM *p_struct, const char *p_src) {
     p_struct->value=NULL;
   }
 }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
 void Typemaker2_Item_ReadXml(TYPEMAKER2_ITEM *p_struct, GWEN_XMLNODE *p_db) {
   assert(p_struct);
   /* member "name" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->name) {
     free(p_struct->name);
   }
   p_struct->name=NULL;
-  { const char *s; 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- s=GWEN_XMLNode_GetProperty(p_db, "name", NULL); 
-#else
- s=GWEN_XMLNode_GetCharValue(p_db, "name", NULL); 
-#endif
- if (s) p_struct->name=strdup(s); }
+  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "name", NULL); if (s) p_struct->name=strdup(s); }
 
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   /* member "value" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->value) {
     free(p_struct->value);
   }
   p_struct->value=NULL;
-  { const char *s; 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- s=GWEN_XMLNode_GetProperty(p_db, "value", NULL); 
-#else
- s=GWEN_XMLNode_GetCharValue(p_db, "value", NULL); 
-#endif
- if (s) p_struct->value=strdup(s); }
+  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "value", NULL); if (s) p_struct->value=strdup(s); }
 
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 void Typemaker2_Item_WriteXml(const TYPEMAKER2_ITEM *p_struct, GWEN_XMLNODE *p_db) {
   assert(p_struct);
   /* member "name" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-  if (p_struct->name) { 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- GWEN_XMLNode_SetProperty(p_db, "name", p_struct->name); 
-#else
- GWEN_XMLNode_SetCharValue(p_db, "name", p_struct->name); 
-#endif
- } else { /* TODO: remove element */ }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
+  GWEN_XMLNode_SetProperty(p_db, "name", p_struct->name);
 
   /* member "value" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-  if (p_struct->value) { 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- GWEN_XMLNode_SetProperty(p_db, "value", p_struct->value); 
-#else
- GWEN_XMLNode_SetCharValue(p_db, "value", p_struct->value); 
-#endif
- } else { /* TODO: remove element */ }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
+  GWEN_XMLNode_SetProperty(p_db, "value", p_struct->value);
 
 }
 

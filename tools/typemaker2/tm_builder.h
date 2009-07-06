@@ -81,6 +81,16 @@ int Typemaker2_Builder_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
+GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
+						 TYPEMAKER2_TYPE *ty,
+						 TYPEMAKER2_MEMBER *tm,
+						 const char *src,
+						 const char *dst);
+
+int Typemaker2_Builder_ReplaceVars(const char *s,
+				   GWEN_DB_NODE *db,
+				   GWEN_BUFFER *dbuf);
+
 
 int Typemaker2_Builder_Invoke_ConstructFn(TYPEMAKER2_BUILDER *tb,
 					  TYPEMAKER2_TYPE *ty,
@@ -159,9 +169,12 @@ int Typemaker2_Builder_Invoke_FromObjectFn(TYPEMAKER2_BUILDER *tb,
 					   const char *dst,
 					   GWEN_BUFFER *dbuf);
 
-void Typemaker2_Builder_BeginUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER *tm, GWEN_BUFFER *tbuf);
-void Typemaker2_Builder_EndUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER *tm, GWEN_BUFFER *tbuf);
-
+int Typemaker2_Builder_Invoke_ToHashStringFn(TYPEMAKER2_BUILDER *tb,
+					     TYPEMAKER2_TYPE *ty,
+					     TYPEMAKER2_MEMBER *tm,
+					     const char *src,
+					     const char *dst,
+					     GWEN_BUFFER *dbuf);
 
 
 #endif

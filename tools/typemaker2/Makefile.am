@@ -6,7 +6,8 @@ INCLUDES=@all_includes@ -I$(gwenhywfar_symlinkdir)
 typefiles=\
   tm_item.xml \
   tm_enum.xml \
-  tm_define.xml
+  tm_define.xml \
+  tm_code.xml
 
 
 bin_PROGRAMS=typemaker2
@@ -19,6 +20,8 @@ noinst_HEADERS=\
   tm_item_p.h tm_item.h \
   tm_enum_p.h tm_enum.h \
   tm_define_p.h tm_define.h \
+  tm_code_p.h tm_code.h \
+  tm_inline_p.h tm_inline.h \
   tm_util.h \
   typemaker2.h \
   tm_builder_c.h
@@ -34,6 +37,8 @@ typemaker2_SOURCES=\
   tm_item.c \
   tm_enum.c \
   tm_define.c \
+  tm_code.c \
+  tm_inline.c \
   build.c \
   main.c
   
@@ -75,17 +80,7 @@ indent:  $(BUILT_SOURCES)
 	  -a -y $(BUILT_SOURCES)
 
 types: $(typefiles)
-	./typemaker2 -I types/c -I $(srcdir) -D GWENHYWFAR_API test.xml
-
-
-tm_item.h tm_item.c tm_item_p.h: tm_item.xml
-	./typemaker2 -I types/c -I . tm_item.xml
-
-tm_enum.h tm_enum.c tm_enum_p.h: tm_enum.xml
-	./typemaker2 -I types/c -I $(srcdir) tm_enum.xml
-
-tm_define.h tm_define.c tm_define_p.h: tm_define.xml
-	./typemaker2 -I types/c -I $(srcdir) tm_define.xml
+	./typemaker2 -I types/c -I $(srcdir) $(typefiles)
 
 
 

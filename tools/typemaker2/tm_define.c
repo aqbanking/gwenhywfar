@@ -76,8 +76,6 @@ TYPEMAKER2_DEFINE *Typemaker2_Define_dup(const TYPEMAKER2_DEFINE *p_src) {
   assert(p_src);
   p_struct=Typemaker2_Define_new();
   /* member "id" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->id) {
     free(p_struct->id);
     p_struct->id=NULL;
@@ -85,12 +83,8 @@ TYPEMAKER2_DEFINE *Typemaker2_Define_dup(const TYPEMAKER2_DEFINE *p_src) {
   if (p_src->id) {
     p_struct->id=strdup(p_src->id);
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
   /* member "prefix" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->prefix) {
     free(p_struct->prefix);
     p_struct->prefix=NULL;
@@ -98,12 +92,8 @@ TYPEMAKER2_DEFINE *Typemaker2_Define_dup(const TYPEMAKER2_DEFINE *p_src) {
   if (p_src->prefix) {
     p_struct->prefix=strdup(p_src->prefix);
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
   /* member "type" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->type) {
     free(p_struct->type);
     p_struct->type=NULL;
@@ -111,104 +101,64 @@ TYPEMAKER2_DEFINE *Typemaker2_Define_dup(const TYPEMAKER2_DEFINE *p_src) {
   if (p_src->type) {
     p_struct->type=strdup(p_src->type);
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
   /* member "items" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   if (p_struct->items) {
     Typemaker2_Item_List_free(p_struct->items);
     p_struct->items=NULL;
   }
   if (p_src->items) {
-    { if (p_src->items) { TYPEMAKER2_ITEM_LIST *t; TYPEMAKER2_ITEM *elem; t=Typemaker2_Item_List_new(); elem=Typemaker2_Item_List_First(p_src->items); while(elem) { TYPEMAKER2_ITEM *cpy; cpy=Typemaker2_Item_dup(elem); Typemaker2_Item_List_Add(cpy, t); elem=Typemaker2_Item_List_Next(elem); } p_struct->items=t; } else p_struct->items=NULL; }
+    { if (p_src->items) { TYPEMAKER2_ITEM_LIST *t; TYPEMAKER2_ITEM *elem; t=Typemaker2_Item_List_new(); elem=Typemaker2_Item_List_First(p_src->items); while(elem) { TYPEMAKER2_ITEM *cpy; cpy=Typemaker2_Item_dup(elem); Typemaker2_Item_List_Add(cpy, t); elem=Typemaker2_Item_List_Next(elem); } p_struct->items=t; } else p_struct->items=Typemaker2_Item_List_new(); }
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
 
   /* member "mode" */
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
   p_struct->mode=p_src->mode;
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
 
   /* member "startValue" */
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   p_struct->startValue=p_src->startValue;
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 
   /* member "lastValue" */
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   p_struct->lastValue=p_src->lastValue;
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
 
   return p_struct;
 }
 
 const char *Typemaker2_Define_GetId(const TYPEMAKER2_DEFINE *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   return p_struct->id;
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 const char *Typemaker2_Define_GetPrefix(const TYPEMAKER2_DEFINE *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   return p_struct->prefix;
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 const char *Typemaker2_Define_GetType(const TYPEMAKER2_DEFINE *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   return p_struct->type;
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 TYPEMAKER2_ITEM_LIST *Typemaker2_Define_GetItems(const TYPEMAKER2_DEFINE *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   assert(p_struct);
   return p_struct->items;
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
 }
 
 int Typemaker2_Define_GetMode(const TYPEMAKER2_DEFINE *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
   assert(p_struct);
   return p_struct->mode;
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
 }
 
 int Typemaker2_Define_GetStartValue(const TYPEMAKER2_DEFINE *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   return p_struct->startValue;
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 int Typemaker2_Define_GetLastValue(const TYPEMAKER2_DEFINE *p_struct) {
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   assert(p_struct);
   return p_struct->lastValue;
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
 }
 
 void Typemaker2_Define_SetId(TYPEMAKER2_DEFINE *p_struct, const char *p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   if (p_struct->id) {
     free(p_struct->id);
@@ -219,13 +169,9 @@ void Typemaker2_Define_SetId(TYPEMAKER2_DEFINE *p_struct, const char *p_src) {
   else {
     p_struct->id=NULL;
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 void Typemaker2_Define_SetPrefix(TYPEMAKER2_DEFINE *p_struct, const char *p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   if (p_struct->prefix) {
     free(p_struct->prefix);
@@ -236,13 +182,9 @@ void Typemaker2_Define_SetPrefix(TYPEMAKER2_DEFINE *p_struct, const char *p_src)
   else {
     p_struct->prefix=NULL;
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 void Typemaker2_Define_SetType(TYPEMAKER2_DEFINE *p_struct, const char *p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   if (p_struct->type) {
     free(p_struct->type);
@@ -253,226 +195,98 @@ void Typemaker2_Define_SetType(TYPEMAKER2_DEFINE *p_struct, const char *p_src) {
   else {
     p_struct->type=NULL;
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 void Typemaker2_Define_SetItems(TYPEMAKER2_DEFINE *p_struct, const TYPEMAKER2_ITEM_LIST *p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   assert(p_struct);
   if (p_struct->items) {
     Typemaker2_Item_List_free(p_struct->items);
   }
   if (p_src) {
-    { if (p_src) { TYPEMAKER2_ITEM_LIST *t; TYPEMAKER2_ITEM *elem; t=Typemaker2_Item_List_new(); elem=Typemaker2_Item_List_First(p_src); while(elem) { TYPEMAKER2_ITEM *cpy; cpy=Typemaker2_Item_dup(elem); Typemaker2_Item_List_Add(cpy, t); elem=Typemaker2_Item_List_Next(elem); } p_struct->items=t; } else p_struct->items=NULL; }
+    { if (p_src) { TYPEMAKER2_ITEM_LIST *t; TYPEMAKER2_ITEM *elem; t=Typemaker2_Item_List_new(); elem=Typemaker2_Item_List_First(p_src); while(elem) { TYPEMAKER2_ITEM *cpy; cpy=Typemaker2_Item_dup(elem); Typemaker2_Item_List_Add(cpy, t); elem=Typemaker2_Item_List_Next(elem); } p_struct->items=t; } else p_struct->items=Typemaker2_Item_List_new(); }
   }
   else {
     p_struct->items=Typemaker2_Item_List_new();
   }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
 }
 
 void Typemaker2_Define_SetMode(TYPEMAKER2_DEFINE *p_struct, int p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
   assert(p_struct);
   p_struct->mode=p_src;
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
 }
 
 void Typemaker2_Define_SetStartValue(TYPEMAKER2_DEFINE *p_struct, int p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   assert(p_struct);
   p_struct->startValue=p_src;
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
 }
 
 void Typemaker2_Define_SetLastValue(TYPEMAKER2_DEFINE *p_struct, int p_src) {
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   assert(p_struct);
   p_struct->lastValue=p_src;
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
 }
 
 void Typemaker2_Define_ReadXml(TYPEMAKER2_DEFINE *p_struct, GWEN_XMLNODE *p_db) {
   assert(p_struct);
   /* member "id" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->id) {
     free(p_struct->id);
   }
   p_struct->id=NULL;
-  { const char *s; 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- s=GWEN_XMLNode_GetProperty(p_db, "id", NULL); 
-#else
- s=GWEN_XMLNode_GetCharValue(p_db, "id", NULL); 
-#endif
- if (s) p_struct->id=strdup(s); }
+  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "id", NULL); if (s) p_struct->id=strdup(s); }
 
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   /* member "prefix" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->prefix) {
     free(p_struct->prefix);
   }
   p_struct->prefix=NULL;
-  { const char *s; 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- s=GWEN_XMLNode_GetProperty(p_db, "prefix", NULL); 
-#else
- s=GWEN_XMLNode_GetCharValue(p_db, "prefix", NULL); 
-#endif
- if (s) p_struct->prefix=strdup(s); }
+  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "prefix", NULL); if (s) p_struct->prefix=strdup(s); }
 
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   /* member "type" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   if (p_struct->type) {
     free(p_struct->type);
   }
   p_struct->type=NULL;
-  { const char *s; 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- s=GWEN_XMLNode_GetProperty(p_db, "type", NULL); 
-#else
- s=GWEN_XMLNode_GetCharValue(p_db, "type", NULL); 
-#endif
- if (s) p_struct->type=strdup(s); }
+  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "type", NULL); if (s) p_struct->type=strdup(s); }
 
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   /* member "items" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   if (p_struct->items) {
     Typemaker2_Item_List_free(p_struct->items);
   }
   p_struct->items=Typemaker2_Item_List_new();
   /* member "items" is volatile, not reading from xml */
 
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   /* member "mode" */
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
   p_struct->mode=Typemaker2_Define_Mode_Unknown;
-  
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
- { const char *s; 
-# ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- s=GWEN_XMLNode_GetProperty(p_db, "mode", NULL); 
-# else
- s=GWEN_XMLNode_GetCharValue(p_db, "mode", NULL); 
-# endif
- if (s) p_struct->mode=Typemaker2_Define_Mode_fromString(s); else p_struct->mode=Typemaker2_Define_Mode_Unknown; } 
-#else
- p_struct->mode=GWEN_XMLNode_GetIntValue(p_db, "mode", Typemaker2_Define_Mode_Unknown); 
-#endif
+  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "mode", NULL); if (s) p_struct->mode=Typemaker2_Define_Mode_fromString(s); else p_struct->mode=Typemaker2_Define_Mode_Unknown; }
 
-
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
   /* member "startValue" */
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   p_struct->startValue=0;
-  
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
- { const char *s; 
-# ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- s=GWEN_XMLNode_GetProperty(p_db, "startValue", NULL); 
-# else
- s=GWEN_XMLNode_GetCharValue(p_db, "startValue", NULL); 
-# endif
- if (s) p_struct->startValue=VALUE OF enum_fromstring_fnWAS NOT SET(s); else p_struct->startValue=0; } 
-#else
- p_struct->startValue=GWEN_XMLNode_GetIntValue(p_db, "startValue", 0); 
-#endif
+  p_struct->startValue=GWEN_XMLNode_GetIntValue(p_db, "startValue", 0);
 
-
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
   /* member "lastValue" */
-#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
   p_struct->lastValue=0;
   /* member "lastValue" is volatile, not reading from xml */
 
-#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON
 }
 
 void Typemaker2_Define_WriteXml(const TYPEMAKER2_DEFINE *p_struct, GWEN_XMLNODE *p_db) {
   assert(p_struct);
   /* member "id" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-  if (p_struct->id) { 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- GWEN_XMLNode_SetProperty(p_db, "id", p_struct->id); 
-#else
- GWEN_XMLNode_SetCharValue(p_db, "id", p_struct->id); 
-#endif
- } else { /* TODO: remove element */ }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
+  GWEN_XMLNode_SetProperty(p_db, "id", p_struct->id);
 
   /* member "prefix" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-  if (p_struct->prefix) { 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- GWEN_XMLNode_SetProperty(p_db, "prefix", p_struct->prefix); 
-#else
- GWEN_XMLNode_SetCharValue(p_db, "prefix", p_struct->prefix); 
-#endif
- } else { /* TODO: remove element */ }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
+  GWEN_XMLNode_SetProperty(p_db, "prefix", p_struct->prefix);
 
   /* member "type" */
-#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-  if (p_struct->type) { 
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
- GWEN_XMLNode_SetProperty(p_db, "type", p_struct->type); 
-#else
- GWEN_XMLNode_SetCharValue(p_db, "type", p_struct->type); 
-#endif
- } else { /* TODO: remove element */ }
-#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
+  GWEN_XMLNode_SetProperty(p_db, "type", p_struct->type);
 
   /* member "items" is volatile, not writing to xml */
 
   /* member "mode" */
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#define TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
-  
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
- GWEN_XMLNode_SetCharValue(p_db, "mode", Typemaker2_Define_Mode_toString((p_struct->mode))); 
-#else
- GWEN_XMLNode_SetIntValue(p_db, "mode", (p_struct->mode)); 
-#endif
-
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-#undef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
+  GWEN_XMLNode_SetProperty(p_db, "mode", Typemaker2_Define_Mode_toString(p_struct->mode));
 
   /* member "startValue" */
-#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
-  
-#ifdef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON
- GWEN_XMLNode_SetCharValue(p_db, "startValue", VALUE OF enum_tostring_fnWAS NOT SET((p_struct->startValue))); 
-#else
- GWEN_XMLNode_SetIntValue(p_db, "startValue", (p_struct->startValue)); 
-#endif
-
-#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON
+  GWEN_XMLNode_SetIntValue(p_db, "startValue", p_struct->startValue);
 
   /* member "lastValue" is volatile, not writing to xml */
 

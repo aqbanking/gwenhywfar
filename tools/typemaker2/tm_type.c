@@ -38,6 +38,8 @@ TYPEMAKER2_TYPE *Typemaker2_Type_new() {
   ty->headers=Typemaker2_Header_List_new();
   ty->enums=Typemaker2_Enum_List_new();
   ty->defines=Typemaker2_Define_List_new();
+  ty->codeDefs=Typemaker2_Code_List_new();
+  ty->inlines=Typemaker2_Inline_List_new();
 
   ty->structIncludes=GWEN_StringList_new();
   ty->privateIncludes=GWEN_StringList_new();
@@ -84,6 +86,8 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       Typemaker2_Header_List_free(ty->headers);
       Typemaker2_Enum_List_free(ty->enums);
       Typemaker2_Define_List_free(ty->defines);
+      Typemaker2_Code_List_free(ty->codeDefs);
+      Typemaker2_Inline_List_free(ty->inlines);
 
       GWEN_StringList_free(ty->structIncludes);
       GWEN_StringList_free(ty->privateIncludes);
@@ -758,6 +762,22 @@ TYPEMAKER2_DEFINE_LIST *Typemaker2_Type_GetDefines(const TYPEMAKER2_TYPE *ty) {
 
 
 
+TYPEMAKER2_CODE_LIST *Typemaker2_Type_GetCodeDefs(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->codeDefs;
+}
+
+
+
+TYPEMAKER2_INLINE_LIST *Typemaker2_Type_GetInlines(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->inlines;
+}
+
+
+
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -888,6 +908,33 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     }
   }
 
+  /* read codedefs */
+  n=GWEN_XMLNode_FindFirstTag(langNode, "codedefs", NULL, NULL);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "codedef", NULL, NULL);
+    while(nn) {
+      TYPEMAKER2_CODE *tc;
+
+      tc=Typemaker2_Code_fromXml(nn);
+      if (tc) {
+        const char *s;
+
+	s=Typemaker2_Code_GetMemberFlagsMask(tc);
+	if (s && *s)
+	  Typemaker2_Code_SetMemberFlagsMaskInt(tc, Typemaker2_FlagsFromString(s));
+
+	s=Typemaker2_Code_GetMemberFlagsValue(tc);
+	if (s && *s)
+	  Typemaker2_Code_SetMemberFlagsValueInt(tc, Typemaker2_FlagsFromString(s));
+      }
+
+      Typemaker2_Code_List_Add(tc, ty->codeDefs);
+      nn=GWEN_XMLNode_FindNextTag(nn, "codedef", NULL, NULL);
+    }
+  }
+
   /* read code */
   n=GWEN_XMLNode_FindFirstTag(langNode, "code", NULL, NULL);
   if (n) {
@@ -923,6 +970,22 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
     s=GWEN_XMLNode_GetCharValue(n, "fromobject", NULL);
     Typemaker2_Type_SetCodeFromObject(ty, s);
+  }
+
+
+  /* read inlines */
+  n=GWEN_XMLNode_FindFirstTag(langNode, "inlines", NULL, NULL);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "inline", NULL, NULL);
+    while(nn) {
+      TYPEMAKER2_INLINE *ti;
+
+      ti=Typemaker2_Inline_fromXml(nn);
+      Typemaker2_Inline_List_Add(ti, ty->inlines);
+      nn=GWEN_XMLNode_FindNextTag(nn, "inline", NULL, NULL);
+    }
   }
 
   /* read enums */
@@ -1117,6 +1180,36 @@ TYPEMAKER2_ENUM *Typemaker2_Type_FindEnum(TYPEMAKER2_TYPE *ty, const char *s) {
   }
 
   return te;
+}
+
+
+
+TYPEMAKER2_CODE *Typemaker2_Type_FindCodeForMember(const TYPEMAKER2_TYPE *ty,
+                                                   const TYPEMAKER2_MEMBER *tm,
+						   const char *id) {
+  TYPEMAKER2_CODE *tc=NULL;
+  uint32_t flags=0;
+
+  if (tm)
+    flags=Typemaker2_Member_GetFlags(tm);
+
+  while(ty) {
+    tc=Typemaker2_Code_List_First(ty->codeDefs);
+    while(tc) {
+      const char *s;
+
+      s=Typemaker2_Code_GetId(tc);
+      if (s && strcasecmp(s, id)==0) {
+	if ((flags & Typemaker2_Code_GetMemberFlagsMaskInt(tc))==Typemaker2_Code_GetMemberFlagsValueInt(tc))
+          return tc;
+      }
+      tc=Typemaker2_Code_List_Next(tc);
+    }
+
+    ty=ty->extendsPtr;
+  }
+
+  return NULL;
 }
 
 

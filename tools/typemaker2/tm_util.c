@@ -71,6 +71,10 @@ uint32_t Typemaker2_FlagsFromString(const char *s) {
 	flags|=TYPEMAKER2_FLAGS_WITH_GETBYMEMBER;
       else if (strcasecmp(s, "with_tree")==0)
 	flags|=TYPEMAKER2_FLAGS_WITH_TREE;
+      else if (strcasecmp(s, "with_hash")==0)
+	flags|=TYPEMAKER2_FLAGS_WITH_HASH;
+      else if (strcasecmp(s, "with_refcount")==0)
+	flags|=TYPEMAKER2_FLAGS_WITH_REFCOUNT;
 
       else if (strcasecmp(s, "none")==0)
 	flags|=TYPEMAKER2_FLAGS_NONE;

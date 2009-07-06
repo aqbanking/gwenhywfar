@@ -6,6 +6,7 @@ dist_typedata_DATA=\
   char_array.tm2 \
   char_ptr.tm2 \
   int.tm2 \
+  int_base.tm2 \
   gwen_time.tm2 \
   list1_base.tm2 \
   list2_base.tm2 \

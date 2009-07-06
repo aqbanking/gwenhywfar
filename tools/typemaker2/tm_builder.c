@@ -261,60 +261,6 @@ int Typemaker2_Builder_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Builder_BeginUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER *tm, GWEN_BUFFER *tbuf) {
-  uint32_t flags=0;
-
-  if (tm)
-    flags=Typemaker2_Member_GetFlags(tm);
-  if (flags & TYPEMAKER2_FLAGS_OWN)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_OWN_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_VOLATILE)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_CONST)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_CONST_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_STATIC)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_STATIC_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_DUP)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_DUP_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_NODUP)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_NODUP_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_ATTRIBUTE)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_ENUM)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_ENUM_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_DEFINE)
-    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_DEFINE_ON\n");
-}
-
-
-
-void Typemaker2_Builder_EndUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER *tm, GWEN_BUFFER *tbuf) {
-  uint32_t flags=0;
-
-  if (tm)
-    flags=Typemaker2_Member_GetFlags(tm);
-  if (flags & TYPEMAKER2_FLAGS_OWN)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_OWN_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_VOLATILE)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_VOLATILE_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_CONST)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_CONST_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_STATIC)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_STATIC_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_DUP)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_DUP_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_NODUP)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_NODUP_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_ATTRIBUTE)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_ENUM)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON\n");
-  if (flags & TYPEMAKER2_FLAGS_DEFINE)
-    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_DEFINE_ON\n");
-}
-
-
-
 GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
 						 TYPEMAKER2_TYPE *ty,
 						 TYPEMAKER2_MEMBER *tm,
@@ -324,6 +270,14 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
   const char *s;
 
   db=GWEN_DB_Group_new("vars");
+
+  if (tb->typeManager) {
+    s=Typemaker2_TypeManager_GetApiDeclaration(tb->typeManager);
+    if (s && *s)
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "api", s);
+    else
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "", s);
+  }
 
   /* set some type vars */
   if (ty) {
@@ -428,6 +382,7 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
   /* set some fixed vars */
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "retval", "p_rv");
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "db", "p_db");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "buffer", "p_buffer");
 
   return db;
 }
@@ -521,49 +476,60 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
 
 
 #define INVOKE_FN(macro_var1) \
-  int Typemaker2_Builder_Invoke_##macro_var1##Fn(TYPEMAKER2_BUILDER *tb, \
-                                                 TYPEMAKER2_TYPE *ty,    \
-					         TYPEMAKER2_MEMBER *tm,  \
-                                                 const char *src,        \
-					         const char *dst,        \
-					         GWEN_BUFFER *dbuf) {    \
-    if (tm) {                                                            \
-      const char *s;                                                     \
-      TYPEMAKER2_TYPE *mty;                                              \
-									 \
-      mty=Typemaker2_Member_GetTypePtr(tm);                              \
-      if (mty==NULL) {                                                   \
-        DBG_ERROR(GWEN_LOGDOMAIN, "No type pointer for member");         \
-	return GWEN_ERROR_NO_DATA;                                       \
-      }                                                                  \
-      s=Typemaker2_Type_GetCode##macro_var1(mty);                        \
-      if (s && *s) {                                                     \
-	GWEN_DB_NODE *db;                                                \
-	int rv;                                                          \
-									 \
-	db=Typemaker2_Builder_CreateDbForCall(tb, ty, tm, src, dst);     \
-	if (db==NULL) {                                                  \
-	  DBG_INFO(GWEN_LOGDOMAIN, "here");                              \
-	  return GWEN_ERROR_BAD_DATA;                                    \
-	}                                                                \
-	rv=Typemaker2_Builder_ReplaceVars(s, db, dbuf);                  \
-	GWEN_DB_Group_free(db);                                          \
-	if (rv<0) {                                                      \
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);                     \
-	  return rv;                                                     \
-	}                                                                \
-	return 0;                                                        \
-      }                                                                  \
-      else {                                                             \
-	DBG_INFO(GWEN_LOGDOMAIN, "No code for type [%s]",                \
-                 Typemaker2_Type_GetName(mty));                          \
-	return 0;                                                        \
-      }                                                                  \
-    }                                                                    \
-    else {                                                               \
-      DBG_ERROR(GWEN_LOGDOMAIN, "No member information");                \
-      return GWEN_ERROR_NO_DATA;                                         \
-   }                                                                     \
+  int Typemaker2_Builder_Invoke_##macro_var1##Fn(TYPEMAKER2_BUILDER *tb,  \
+                                                 TYPEMAKER2_TYPE *ty,     \
+					         TYPEMAKER2_MEMBER *tm,   \
+                                                 const char *src,         \
+					         const char *dst,         \
+					         GWEN_BUFFER *dbuf) {     \
+    if (tm) {                                                             \
+      TYPEMAKER2_TYPE *mty;                                               \
+      TYPEMAKER2_CODE *tc;                                                \
+      const char *s=NULL;                                                 \
+									  \
+      mty=Typemaker2_Member_GetTypePtr(tm);                               \
+      if (mty==NULL) {                                                    \
+        DBG_ERROR(GWEN_LOGDOMAIN, "No type pointer for member");          \
+	return GWEN_ERROR_NO_DATA;                                        \
+      }                                                                   \
+      tc=Typemaker2_Type_FindCodeForMember(mty, tm, __STRING(macro_var1));\
+      if (tc)                                                             \
+        s=Typemaker2_Code_GetCode(tc);                                    \
+      if (s && *s) {                                                      \
+	GWEN_DB_NODE *db;                                                 \
+	int rv;                                                           \
+									  \
+	db=Typemaker2_Builder_CreateDbForCall(tb, ty, tm, src, dst);      \
+	if (db==NULL) {                                                   \
+	  DBG_INFO(GWEN_LOGDOMAIN, "here");                               \
+	  return GWEN_ERROR_BAD_DATA;                                     \
+	}                                                                 \
+                                                                          \
+        if (0) {                                                          \
+	  GWEN_Buffer_AppendString(dbuf, "/* function \"");               \
+	  GWEN_Buffer_AppendString(dbuf, __STRING(macro_var1));           \
+	  GWEN_Buffer_AppendString(dbuf, "\" of type \"");                \
+	  GWEN_Buffer_AppendString(dbuf, Typemaker2_Type_GetName(mty));   \
+	  GWEN_Buffer_AppendString(dbuf, "\" */\n");                      \
+        }                                                                 \
+	rv=Typemaker2_Builder_ReplaceVars(s, db, dbuf);                   \
+	GWEN_DB_Group_free(db);                                           \
+	if (rv<0) {                                                       \
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);                      \
+	  return rv;                                                      \
+	}                                                                 \
+	return 0;                                                         \
+      }                                                                   \
+      else {                                                              \
+	DBG_INFO(GWEN_LOGDOMAIN, "No code for type [%s]",                 \
+		 Typemaker2_Type_GetName(mty));                           \
+	return 0;                                                         \
+      }                                                                   \
+    }                                                                     \
+    else {                                                                \
+      DBG_ERROR(GWEN_LOGDOMAIN, "No member information");                 \
+      return GWEN_ERROR_NO_DATA;                                          \
+   }                                                                      \
   }
 
 
@@ -578,6 +544,7 @@ INVOKE_FN(ToXml);
 INVOKE_FN(FromXml);
 INVOKE_FN(ToObject);
 INVOKE_FN(FromObject);
+INVOKE_FN(ToHashString);
 
 
 
