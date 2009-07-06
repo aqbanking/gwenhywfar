@@ -20,6 +20,15 @@
       <dup>
         $(dst)=$(src);
       </dup>
+
+      <compare>
+        if ($(dst)==$(src))
+          $(retval)=0;
+        else if ($(src)&lt;$(dst))
+          $(retval)=-1;
+        else
+          $(retval)=1;
+      </compare>
     
       <todb>
         $(retval)=GWEN_DB_SetIntValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, "$(name)", $(src));

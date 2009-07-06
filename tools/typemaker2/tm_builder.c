@@ -282,6 +282,8 @@ void Typemaker2_Builder_BeginUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER
     GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON\n");
   if (flags & TYPEMAKER2_FLAGS_ENUM)
     GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_ENUM_ON\n");
+  if (flags & TYPEMAKER2_FLAGS_DEFINE)
+    GWEN_Buffer_AppendString(tbuf, "#define TYPEMAKER2_MEMBER_FLAGS_DEFINE_ON\n");
 }
 
 
@@ -307,6 +309,8 @@ void Typemaker2_Builder_EndUseMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_MEMBER *
     GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_ATTRIBUTE_ON\n");
   if (flags & TYPEMAKER2_FLAGS_ENUM)
     GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_ENUM_ON\n");
+  if (flags & TYPEMAKER2_FLAGS_DEFINE)
+    GWEN_Buffer_AppendString(tbuf, "#undef TYPEMAKER2_MEMBER_FLAGS_DEFINE_ON\n");
 }
 
 
@@ -455,7 +459,7 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
 	else {
           int len;
 	  char *name;
-          const char *v;
+	  const char *v;
 
 	  len=p-pStart;
 	  if (len<1) {
@@ -467,13 +471,16 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
 	  memmove(name, pStart, len);
 	  name[len]=0;
 	  v=GWEN_DB_GetCharValue(db, name, 0, NULL);
-	  if (v==NULL) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "No value for variable [%s]", name);
+	  if (v) {
 	    free(name);
-	    return GWEN_ERROR_NO_DATA;
+	    GWEN_Buffer_AppendString(dbuf, v);
 	  }
-	  free(name);
-	  GWEN_Buffer_AppendString(dbuf, v);
+	  else {
+	    GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
+            GWEN_Buffer_AppendString(dbuf, name);
+	    GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
+	    free(name);
+	  }
 	}
       }
       else {
@@ -564,6 +571,7 @@ INVOKE_FN(Construct);
 INVOKE_FN(Destruct);
 INVOKE_FN(Assign);
 INVOKE_FN(Dup);
+INVOKE_FN(Compare);
 INVOKE_FN(ToDb);
 INVOKE_FN(FromDb);
 INVOKE_FN(ToXml);

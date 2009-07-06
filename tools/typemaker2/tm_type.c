@@ -37,6 +37,7 @@ TYPEMAKER2_TYPE *Typemaker2_Type_new() {
 
   ty->headers=Typemaker2_Header_List_new();
   ty->enums=Typemaker2_Enum_List_new();
+  ty->defines=Typemaker2_Define_List_new();
 
   ty->structIncludes=GWEN_StringList_new();
   ty->privateIncludes=GWEN_StringList_new();
@@ -66,6 +67,7 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       free(ty->code_destruct);
       free(ty->code_assign);
       free(ty->code_dup);
+      free(ty->code_compare);
       free(ty->code_fromDb);
       free(ty->code_toDb);
       free(ty->code_fromXml);
@@ -81,6 +83,7 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
 
       Typemaker2_Header_List_free(ty->headers);
       Typemaker2_Enum_List_free(ty->enums);
+      Typemaker2_Define_List_free(ty->defines);
 
       GWEN_StringList_free(ty->structIncludes);
       GWEN_StringList_free(ty->privateIncludes);
@@ -521,6 +524,28 @@ void Typemaker2_Type_SetCodeDup(TYPEMAKER2_TYPE *ty, const char *s) {
 
 
 
+const char *Typemaker2_Type_GetCodeCompare(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+
+  if (ty->code_compare==NULL && ty->extendsPtr)
+    return Typemaker2_Type_GetCodeCompare(ty->extendsPtr);
+
+  return ty->code_compare;
+}
+
+
+
+void Typemaker2_Type_SetCodeCompare(TYPEMAKER2_TYPE *ty, const char *s) {
+  assert(ty);
+  assert(ty->refCount);
+  free(ty->code_compare);
+  if (s && *s) ty->code_compare=strdup(s);
+  else ty->code_compare=NULL;
+}
+
+
+
 const char *Typemaker2_Type_GetCodeFromDb(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -725,6 +750,14 @@ TYPEMAKER2_ENUM_LIST *Typemaker2_Type_GetEnums(const TYPEMAKER2_TYPE *ty) {
 
 
 
+TYPEMAKER2_DEFINE_LIST *Typemaker2_Type_GetDefines(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->defines;
+}
+
+
+
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -870,6 +903,9 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     s=GWEN_XMLNode_GetCharValue(n, "dup", NULL);
     Typemaker2_Type_SetCodeDup(ty, s);
 
+    s=GWEN_XMLNode_GetCharValue(n, "compare", NULL);
+    Typemaker2_Type_SetCodeCompare(ty, s);
+
     s=GWEN_XMLNode_GetCharValue(n, "todb", NULL);
     Typemaker2_Type_SetCodeToDb(ty, s);
 
@@ -913,6 +949,33 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
       Typemaker2_Enum_List_Add(te, ty->enums);
       nn=GWEN_XMLNode_FindNextTag(nn, "enum", NULL, NULL);
+    }
+  }
+
+  /* read defines */
+  n=GWEN_XMLNode_FindFirstTag(node, "defines", NULL, NULL);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "define", NULL, NULL);
+    while(nn) {
+      TYPEMAKER2_DEFINE *td;
+      GWEN_XMLNODE *nnn;
+
+      td=Typemaker2_Define_fromXml(nn);
+
+      /* read items */
+      nnn=GWEN_XMLNode_FindFirstTag(nn, "item", NULL, NULL);
+      while(nnn) {
+	TYPEMAKER2_ITEM *ti;
+
+	ti=Typemaker2_Item_fromXml(nnn);
+	Typemaker2_Item_List_Add(ti, Typemaker2_Define_GetItems(td));
+	nnn=GWEN_XMLNode_FindNextTag(nnn, "item", NULL, NULL);
+      }
+
+      Typemaker2_Define_List_Add(td, ty->defines);
+      nn=GWEN_XMLNode_FindNextTag(nn, "define", NULL, NULL);
     }
   }
 
@@ -1034,10 +1097,6 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
     }
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Field Count Id: %s\n", (ty->fieldCountId)?(ty->fieldCountId):"<null>");
-
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Construct     : %s\n", ty->code_construct);
-
   }
 }
 

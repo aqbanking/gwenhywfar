@@ -85,6 +85,8 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/list1.h>\n");
   if (flags & TYPEMAKER2_FLAGS_WITH_LIST2)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/list2.h>\n");
+  if (flags & TYPEMAKER2_FLAGS_WITH_TREE)
+    GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/tree.h>\n");
   if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/inherit.h>\n");
   if (flags & TYPEMAKER2_FLAGS_WITH_IDMAP)
@@ -175,6 +177,30 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     }
     else {
       GWEN_Buffer_AppendString(tbuf, "GWEN_LIST2_FUNCTION_DEFS(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ", ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ")\n");
+    }
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+    if (Typemaker2_TypeManager_GetApiDeclaration(tym)) {
+      GWEN_Buffer_AppendString(tbuf, "GWEN_TREE_FUNCTION_LIB_DEFS(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ", ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ", ");
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ")\n");
+    }
+    else {
+      GWEN_Buffer_AppendString(tbuf, "GWEN_TREE_FUNCTION_DEFS(");
       s=Typemaker2_Type_GetIdentifier(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, ", ");
@@ -294,6 +320,13 @@ static int _buildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
+  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+    GWEN_Buffer_AppendString(tbuf, "  GWEN_TREE_ELEMENT(");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, ")\n");
+  }
+
   tml=Typemaker2_Type_GetMembers(ty);
   if (tml) {
     TYPEMAKER2_MEMBER *tm;
@@ -371,6 +404,16 @@ static int _buildMacroFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
   if (flags & TYPEMAKER2_FLAGS_WITH_LIST2) {
     GWEN_Buffer_AppendString(tbuf, "GWEN_LIST2_FUNCTIONS(");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, ", ");
+    s=Typemaker2_Type_GetPrefix(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, ")\n");
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+    GWEN_Buffer_AppendString(tbuf, "GWEN_TREE_FUNCTIONS(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", ");
@@ -464,6 +507,13 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
   if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_LIST_INIT(");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+    GWEN_Buffer_AppendString(tbuf, "  GWEN_TREE_INIT(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
@@ -570,6 +620,13 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
   if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_LIST_FINI(");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+    GWEN_Buffer_AppendString(tbuf, "    GWEN_TREE_FINI(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
@@ -895,7 +952,7 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  GWEN_Buffer_free(srcbuf);
 	}
 
-	GWEN_Buffer_AppendString(tbuf, "}\n");
+	GWEN_Buffer_AppendString(tbuf, "  }\n");
       }
 
       if (Typemaker2_Member_GetSetFlags(tm) & TYPEMAKER2_FLAGS_DUP) {
@@ -967,7 +1024,7 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  s=Typemaker2_Member_GetName(tm);
 	  GWEN_Buffer_AppendString(dstbuf, s);
 
-	  GWEN_Buffer_AppendString(tbuf, "    ");
+	  GWEN_Buffer_AppendString(tbuf, "  ");
 	  rv=Typemaker2_Builder_Invoke_AssignFn(tb, ty, tm,
 						"p_src",
 						GWEN_Buffer_GetStart(dstbuf),
@@ -3047,6 +3104,462 @@ static int _buildEnumToString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
+static int _buildList1GetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm) {
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  uint32_t flags;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_TYPE *mty;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  mty=Typemaker2_Member_GetTypePtr(tm);
+  assert(mty);
+
+  /* prototype */
+  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+  if (s) {
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *");
+
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_Get");
+  GWEN_Buffer_AppendString(tbuf, "By");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+  GWEN_Buffer_AppendString(tbuf, "(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_LIST *p_list, ");
+  if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer ||
+      Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Array) {
+    GWEN_Buffer_AppendString(tbuf, " const ");
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " *");
+  }
+  else {
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  GWEN_Buffer_AppendString(tbuf, "p_cmp);\n");
+
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+  /* implementation */
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *");
+
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_Get");
+  GWEN_Buffer_AppendString(tbuf, "By");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+  GWEN_Buffer_AppendString(tbuf, "(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_LIST *p_list, ");
+  if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer ||
+      Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Array) {
+    GWEN_Buffer_AppendString(tbuf, " const ");
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " *");
+  }
+  else {
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  GWEN_Buffer_AppendString(tbuf, "p_cmp) {\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_struct;\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  assert(p_list);\n");
+  GWEN_Buffer_AppendString(tbuf, "  p_struct = ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_First(p_list);\n");
+  GWEN_Buffer_AppendString(tbuf, "  while(p_struct) {\n");
+  GWEN_Buffer_AppendString(tbuf, "    int p_rv;\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  GWEN_Buffer_AppendString(tbuf, "    ");
+  if (1) {
+    GWEN_BUFFER *dstbuf;
+    GWEN_BUFFER *srcbuf;
+    int rv;
+
+    srcbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(srcbuf, "p_cmp");
+
+    dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(dstbuf, "p_struct->");
+    s=Typemaker2_Member_GetName(tm);
+    GWEN_Buffer_AppendString(dstbuf, s);
+
+    rv=Typemaker2_Builder_Invoke_CompareFn(tb, ty, tm,
+					   GWEN_Buffer_GetStart(srcbuf),
+					   GWEN_Buffer_GetStart(dstbuf),
+					   tbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(srcbuf);
+      GWEN_Buffer_free(dstbuf);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+    GWEN_Buffer_AppendString(tbuf, "\n");
+    GWEN_Buffer_free(srcbuf);
+    GWEN_Buffer_free(dstbuf);
+  }
+
+
+  GWEN_Buffer_AppendString(tbuf, "    if (p_rv == 0)\n");
+  GWEN_Buffer_AppendString(tbuf, "      return p_struct;\n");
+
+  GWEN_Buffer_AppendString(tbuf, "    p_struct = ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_Next(p_struct);\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  }\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  return NULL;\n");
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+static int _buildTreeGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm) {
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  uint32_t flags;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_TYPE *mty;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  mty=Typemaker2_Member_GetTypePtr(tm);
+  assert(mty);
+
+  /* prototype */
+  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+  if (s) {
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *");
+
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_Tree_Get");
+  GWEN_Buffer_AppendString(tbuf, "By");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+  GWEN_Buffer_AppendString(tbuf, "(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_TREE *p_tree, ");
+  if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer ||
+      Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Array) {
+    GWEN_Buffer_AppendString(tbuf, " const ");
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " *");
+  }
+  else {
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  GWEN_Buffer_AppendString(tbuf, "p_cmp);\n");
+
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+  /* implementation */
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *");
+
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_Tree_Get");
+  GWEN_Buffer_AppendString(tbuf, "By");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+  GWEN_Buffer_AppendString(tbuf, "(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_TREE *p_tree, ");
+  if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer ||
+      Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Array) {
+    GWEN_Buffer_AppendString(tbuf, " const ");
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " *");
+  }
+  else {
+    s=Typemaker2_Type_GetIdentifier(mty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  GWEN_Buffer_AppendString(tbuf, "p_cmp) {\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_struct;\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  assert(p_tree);\n");
+  GWEN_Buffer_AppendString(tbuf, "  p_struct = ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_Tree_GetFirst(p_tree);\n");
+  GWEN_Buffer_AppendString(tbuf, "  while(p_struct) {\n");
+  GWEN_Buffer_AppendString(tbuf, "    int p_rv;\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  GWEN_Buffer_AppendString(tbuf, "    ");
+  if (1) {
+    GWEN_BUFFER *dstbuf;
+    GWEN_BUFFER *srcbuf;
+    int rv;
+
+    srcbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(srcbuf, "p_cmp");
+
+    dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(dstbuf, "p_struct->");
+    s=Typemaker2_Member_GetName(tm);
+    GWEN_Buffer_AppendString(dstbuf, s);
+
+    rv=Typemaker2_Builder_Invoke_CompareFn(tb, ty, tm,
+					   GWEN_Buffer_GetStart(srcbuf),
+					   GWEN_Buffer_GetStart(dstbuf),
+					   tbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(srcbuf);
+      GWEN_Buffer_free(dstbuf);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+    GWEN_Buffer_AppendString(tbuf, "\n");
+    GWEN_Buffer_free(srcbuf);
+    GWEN_Buffer_free(dstbuf);
+  }
+
+
+  GWEN_Buffer_AppendString(tbuf, "    if (p_rv == 0)\n");
+  GWEN_Buffer_AppendString(tbuf, "      return p_struct;\n");
+
+  GWEN_Buffer_AppendString(tbuf, "    p_struct = ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_Tree_GetBelow(p_struct);\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  }\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  return NULL;\n");
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  TYPEMAKER2_MEMBER_LIST *tml;
+  uint32_t flags;
+  TYPEMAKER2_TYPEMANAGER *tym;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  tml=Typemaker2_Type_GetMembers(ty);
+  if (tml) {
+    TYPEMAKER2_MEMBER *tm;
+
+    tm=Typemaker2_Member_List_First(tml);
+    while(tm) {
+      TYPEMAKER2_TYPE *mty;
+      int rv;
+
+      mty=Typemaker2_Member_GetTypePtr(tm);
+      assert(mty);
+
+      if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_WITH_GETBYMEMBER) {
+	if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+	  rv=_buildList1GetByMember(tb, ty, tm);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    return rv;
+	  }
+	}
+
+	if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+	  rv=_buildTreeGetByMember(tb, ty, tm);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    return rv;
+	  }
+	}
+
+      }
+      tm=Typemaker2_Member_List_Next(tm);
+    }
+    GWEN_Buffer_AppendString(tbuf, "  return p_cl;\n");
+  }
+
+  return 0;
+}
+
+
+
+static int _buildDefineDefines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  TYPEMAKER2_DEFINE_LIST *defines;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  uint32_t flags;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  defines=Typemaker2_Type_GetDefines(ty);
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  assert(defines);
+  if (Typemaker2_Define_List_GetCount(defines)) {
+    GWEN_BUFFER *tbuf;
+    const char *s;
+    TYPEMAKER2_DEFINE *td;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    td=Typemaker2_Define_List_First(defines);
+    while(td) {
+      const char *prefix;
+      TYPEMAKER2_ITEM *ti;
+      int access=TypeMaker2_Access_Public;
+      int j=Typemaker2_Define_GetStartValue(td);
+
+      GWEN_Buffer_AppendString(tbuf, "/* define ");
+      s=Typemaker2_Define_GetId(td);
+      if (s && *s)
+	GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " */\n");
+
+      prefix=Typemaker2_Define_GetPrefix(td);
+      if (prefix==NULL || *prefix==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "No prefix in define definition");
+	GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_BAD_DATA;
+      }
+
+      ti=Typemaker2_Item_List_First(Typemaker2_Define_GetItems(td));
+      while(ti) {
+	GWEN_Buffer_AppendString(tbuf, "#define ");
+	if (prefix)
+	  GWEN_Buffer_AppendString(tbuf, prefix);
+	s=Typemaker2_Item_GetName(ti);
+	if (s && *s) {
+	  GWEN_Buffer_AppendString(tbuf, s);
+	}
+	s=Typemaker2_Item_GetValue(ti);
+	if (s) {
+	  GWEN_Buffer_AppendString(tbuf, " ");
+	  GWEN_Buffer_AppendString(tbuf, s);
+	}
+	else {
+	  char numbuf[32];
+          int k=0;
+
+	  switch(Typemaker2_Define_GetMode(td)) {
+	  case Typemaker2_Define_Mode_BitField:
+	    k=1<<j;
+            break;
+	  case Typemaker2_Define_Mode_Sequence:
+	  default:
+	    k=j;
+	  }
+	  snprintf(numbuf, sizeof(numbuf)-1, "%d", k);
+          numbuf[sizeof(numbuf)-1]=0;
+	  GWEN_Buffer_AppendString(tbuf, " ");
+	  GWEN_Buffer_AppendString(tbuf, numbuf);
+	  j++;
+	}
+
+	GWEN_Buffer_AppendString(tbuf, "\n");
+	ti=Typemaker2_Item_List_Next(ti);
+      }
+      GWEN_Buffer_AppendString(tbuf, "\n");
+
+      switch(access) {
+      case TypeMaker2_Access_Public:
+	Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	break;
+      case TypeMaker2_Access_Library:
+	Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	break;
+      case TypeMaker2_Access_Protected:
+	Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	break;
+      case TypeMaker2_Access_Private:
+	Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	break;
+      default:
+	DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
+	GWEN_Buffer_free(tbuf);
+	return GWEN_ERROR_BAD_DATA;
+      }
+      GWEN_Buffer_Reset(tbuf);
+
+      td=Typemaker2_Define_List_Next(td);
+    }
+  }
+  return 0;
+}
+
+
+
 static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   int rv;
   uint32_t flags;
@@ -3065,6 +3578,12 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+  }
+
+  rv=_buildDefineDefines(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   rv=_buildTypedef(tb, ty);
@@ -3228,6 +3747,12 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+  }
+
+  rv=_buildGetByMember(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   return 0;

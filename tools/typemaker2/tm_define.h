@@ -47,9 +47,19 @@ void Typemaker2_Define_free(TYPEMAKER2_DEFINE *p_struct);
 TYPEMAKER2_DEFINE *Typemaker2_Define_dup(const TYPEMAKER2_DEFINE *p_struct);
 
 /** Getter.
+ * Use this function to get the member "id"
+*/
+const char *Typemaker2_Define_GetId(const TYPEMAKER2_DEFINE *p_struct);
+
+/** Getter.
  * Use this function to get the member "prefix"
 */
 const char *Typemaker2_Define_GetPrefix(const TYPEMAKER2_DEFINE *p_struct);
+
+/** Getter.
+ * Use this function to get the member "type"
+*/
+const char *Typemaker2_Define_GetType(const TYPEMAKER2_DEFINE *p_struct);
 
 /** Getter.
  * Use this function to get the member "items"
@@ -61,10 +71,30 @@ TYPEMAKER2_ITEM_LIST *Typemaker2_Define_GetItems(const TYPEMAKER2_DEFINE *p_stru
 */
 int Typemaker2_Define_GetMode(const TYPEMAKER2_DEFINE *p_struct);
 
+/** Getter.
+ * Use this function to get the member "startValue"
+*/
+int Typemaker2_Define_GetStartValue(const TYPEMAKER2_DEFINE *p_struct);
+
+/** Getter.
+ * Use this function to get the member "lastValue"
+*/
+int Typemaker2_Define_GetLastValue(const TYPEMAKER2_DEFINE *p_struct);
+
+/** Setter.
+ * Use this function to set the member "id"
+*/
+void Typemaker2_Define_SetId(TYPEMAKER2_DEFINE *p_struct, const char *p_src);
+
 /** Setter.
  * Use this function to set the member "prefix"
 */
 void Typemaker2_Define_SetPrefix(TYPEMAKER2_DEFINE *p_struct, const char *p_src);
+
+/** Setter.
+ * Use this function to set the member "type"
+*/
+void Typemaker2_Define_SetType(TYPEMAKER2_DEFINE *p_struct, const char *p_src);
 
 /** Setter.
  * Use this function to set the member "items"
@@ -75,6 +105,16 @@ void Typemaker2_Define_SetItems(TYPEMAKER2_DEFINE *p_struct, const TYPEMAKER2_IT
  * Use this function to set the member "mode"
 */
 void Typemaker2_Define_SetMode(TYPEMAKER2_DEFINE *p_struct, int p_src);
+
+/** Setter.
+ * Use this function to set the member "startValue"
+*/
+void Typemaker2_Define_SetStartValue(TYPEMAKER2_DEFINE *p_struct, int p_src);
+
+/** Setter.
+ * Use this function to set the member "lastValue"
+*/
+void Typemaker2_Define_SetLastValue(TYPEMAKER2_DEFINE *p_struct, int p_src);
 
 void Typemaker2_Define_ReadXml(TYPEMAKER2_DEFINE *p_struct, GWEN_XMLNODE *p_db);
 

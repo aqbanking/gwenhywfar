@@ -18,6 +18,7 @@ noinst_HEADERS=\
   tm_builder_p.h tm_builder.h \
   tm_item_p.h tm_item.h \
   tm_enum_p.h tm_enum.h \
+  tm_define_p.h tm_define.h \
   tm_util.h \
   typemaker2.h \
   tm_builder_c.h
@@ -32,6 +33,7 @@ typemaker2_SOURCES=\
   tm_builder_c.c \
   tm_item.c \
   tm_enum.c \
+  tm_define.c \
   build.c \
   main.c
   
@@ -73,7 +75,7 @@ indent:  $(BUILT_SOURCES)
 	  -a -y $(BUILT_SOURCES)
 
 types: $(typefiles)
-	./typemaker2 -I types/c -D GWENHYWFAR_API test.xml
+	./typemaker2 -I types/c -I $(srcdir) -D GWENHYWFAR_API test.xml
 
 
 tm_item.h tm_item.c tm_item_p.h: tm_item.xml

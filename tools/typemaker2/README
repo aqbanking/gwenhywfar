@@ -23,6 +23,13 @@
       </headers>
       
     </lang>
+
+    <enums>
+      <enum id="TEST_ENUM_MODE" prefix="Test_Enum_Mode_">
+        <item name="sequence" value="1"></item>
+        <item name="bitField"></item>
+      </enum>
+    </enums>
     
     <members>
   
@@ -67,6 +74,15 @@
         <flags>own</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
+      </member>
+
+      <member name="mode" type="int" maxlen="64" enum="TEST_ENUM_MODE" >
+        <default>Test_Enum_Mode_Unknown</default>
+        <preset>Test_Enum_Mode_Unknown</preset>
+        <access>public</access>
+        <flags>attribute enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
       </member>
       
     </members>

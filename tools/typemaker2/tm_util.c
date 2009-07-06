@@ -51,6 +51,8 @@ uint32_t Typemaker2_FlagsFromString(const char *s) {
 	flags|=TYPEMAKER2_FLAGS_ATTRIBUTE;
       else if (strcasecmp(s, "enum")==0)
 	flags|=TYPEMAKER2_FLAGS_ENUM;
+      else if (strcasecmp(s, "define")==0)
+	flags|=TYPEMAKER2_FLAGS_DEFINE;
       else if (strcasecmp(s, "with_db")==0)
 	flags|=TYPEMAKER2_FLAGS_WITH_DB;
       else if (strcasecmp(s, "with_xml")==0)
@@ -65,6 +67,10 @@ uint32_t Typemaker2_FlagsFromString(const char *s) {
 	flags|=TYPEMAKER2_FLAGS_WITH_INHERIT;
       else if (strcasecmp(s, "with_idmap")==0)
 	flags|=TYPEMAKER2_FLAGS_WITH_IDMAP;
+      else if (strcasecmp(s, "with_getbymember")==0)
+	flags|=TYPEMAKER2_FLAGS_WITH_GETBYMEMBER;
+      else if (strcasecmp(s, "with_tree")==0)
+	flags|=TYPEMAKER2_FLAGS_WITH_TREE;
 
       else if (strcasecmp(s, "none")==0)
 	flags|=TYPEMAKER2_FLAGS_NONE;

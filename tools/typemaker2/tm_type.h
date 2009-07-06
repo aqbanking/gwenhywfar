@@ -20,25 +20,28 @@
 typedef struct TYPEMAKER2_TYPE TYPEMAKER2_TYPE;
 GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type);
 
-#define TYPEMAKER2_FLAGS_OWN           0x00000001
-#define TYPEMAKER2_FLAGS_VOLATILE      0x00000002
-#define TYPEMAKER2_FLAGS_CONST         0x00000004
-#define TYPEMAKER2_FLAGS_STATIC        0x00000008
-#define TYPEMAKER2_FLAGS_DUP           0x00000010
-#define TYPEMAKER2_FLAGS_NODUP         0x00000020
-#define TYPEMAKER2_FLAGS_ATTRIBUTE     0x00000040
-#define TYPEMAKER2_FLAGS_ENUM          0x00000080
+#define TYPEMAKER2_FLAGS_OWN              0x00000001
+#define TYPEMAKER2_FLAGS_VOLATILE         0x00000002
+#define TYPEMAKER2_FLAGS_CONST            0x00000004
+#define TYPEMAKER2_FLAGS_STATIC           0x00000008
+#define TYPEMAKER2_FLAGS_DUP              0x00000010
+#define TYPEMAKER2_FLAGS_NODUP            0x00000020
+#define TYPEMAKER2_FLAGS_ATTRIBUTE        0x00000040
+#define TYPEMAKER2_FLAGS_ENUM             0x00000080
+#define TYPEMAKER2_FLAGS_DEFINE           0x00000100
 
-#define TYPEMAKER2_FLAGS_WITH_DB       0x00010000
-#define TYPEMAKER2_FLAGS_WITH_XML      0x00020000
-#define TYPEMAKER2_FLAGS_WITH_OBJECT   0x00040000
-#define TYPEMAKER2_FLAGS_WITH_LIST1    0x00080000
-#define TYPEMAKER2_FLAGS_WITH_LIST2    0x00100000
-#define TYPEMAKER2_FLAGS_WITH_INHERIT  0x00200000
-#define TYPEMAKER2_FLAGS_WITH_IDMAP    0x00400000
+#define TYPEMAKER2_FLAGS_WITH_DB          0x00010000
+#define TYPEMAKER2_FLAGS_WITH_XML         0x00020000
+#define TYPEMAKER2_FLAGS_WITH_OBJECT      0x00040000
+#define TYPEMAKER2_FLAGS_WITH_LIST1       0x00080000
+#define TYPEMAKER2_FLAGS_WITH_LIST2       0x00100000
+#define TYPEMAKER2_FLAGS_WITH_INHERIT     0x00200000
+#define TYPEMAKER2_FLAGS_WITH_IDMAP       0x00400000
+#define TYPEMAKER2_FLAGS_WITH_GETBYMEMBER 0x00800000
+#define TYPEMAKER2_FLAGS_WITH_TREE        0x01000000
 
 /** special value which is used to overwrite flags from extended types */
-#define TYPEMAKER2_FLAGS_NONE          0x80000000
+#define TYPEMAKER2_FLAGS_NONE             0x80000000
 
 
 enum {
@@ -62,6 +65,7 @@ enum {
 #include "tm_member.h"
 #include "tm_header.h"
 #include "tm_enum.h"
+#include "tm_define.h"
 
 
 
@@ -139,6 +143,9 @@ void Typemaker2_Type_SetCodeAssign(TYPEMAKER2_TYPE *ty, const char *s);
 const char *Typemaker2_Type_GetCodeDup(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetCodeDup(TYPEMAKER2_TYPE *ty, const char *s);
 
+const char *Typemaker2_Type_GetCodeCompare(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetCodeCompare(TYPEMAKER2_TYPE *ty, const char *s);
+
 const char *Typemaker2_Type_GetCodeFromDb(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetCodeFromDb(TYPEMAKER2_TYPE *ty, const char *s);
 
@@ -165,6 +172,7 @@ void Typemaker2_Type_SetCodeToObject(TYPEMAKER2_TYPE *ty, const char *s);
 TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_ENUM_LIST *Typemaker2_Type_GetEnums(const TYPEMAKER2_TYPE *ty);
+TYPEMAKER2_DEFINE_LIST *Typemaker2_Type_GetDefines(const TYPEMAKER2_TYPE *ty);
 
 
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty);

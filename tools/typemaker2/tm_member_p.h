@@ -35,10 +35,12 @@ struct TYPEMAKER2_MEMBER {
 
   char *aedb_type;
   char *enumId;
+  char *defineId;
 
   TYPEMAKER2_TYPE *typePtr;
 
   TYPEMAKER2_ENUM *enumPtr;
+  TYPEMAKER2_DEFINE *definePtr;
 
   int refCount;
 

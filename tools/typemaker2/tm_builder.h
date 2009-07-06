@@ -110,6 +110,13 @@ int Typemaker2_Builder_Invoke_DupFn(TYPEMAKER2_BUILDER *tb,
 				    const char *dst,
 				    GWEN_BUFFER *dbuf);
 
+int Typemaker2_Builder_Invoke_CompareFn(TYPEMAKER2_BUILDER *tb,
+					TYPEMAKER2_TYPE *ty,
+					TYPEMAKER2_MEMBER *tm,
+					const char *src,
+					const char *dst,
+					GWEN_BUFFER *dbuf);
+
 int Typemaker2_Builder_Invoke_ToDbFn(TYPEMAKER2_BUILDER *tb,
 				     TYPEMAKER2_TYPE *ty,
 				     TYPEMAKER2_MEMBER *tm,

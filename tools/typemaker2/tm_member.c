@@ -52,6 +52,7 @@ void Typemaker2_Member_free(TYPEMAKER2_MEMBER *tm) {
       free(tm->presetValue);
       free(tm->aedb_type);
       free(tm->enumId);
+      free(tm->defineId);
       tm->refCount=0;
       GWEN_FREE_OBJECT(tm);
     }
@@ -139,6 +140,24 @@ void Typemaker2_Member_SetEnumId(TYPEMAKER2_MEMBER *tm, const char *s) {
   free(tm->enumId);
   if (s && *s) tm->enumId=strdup(s);
   else tm->enumId=NULL;
+}
+
+
+
+const char *Typemaker2_Member_GetDefineId(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->defineId;
+}
+
+
+
+void Typemaker2_Member_SetDefineId(TYPEMAKER2_MEMBER *tm, const char *s) {
+  assert(tm);
+  assert(tm->refCount);
+  free(tm->defineId);
+  if (s && *s) tm->defineId=strdup(s);
+  else tm->defineId=NULL;
 }
 
 
@@ -359,6 +378,22 @@ void Typemaker2_Member_SetEnumPtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_ENUM *te) {
 
 
 
+TYPEMAKER2_DEFINE *Typemaker2_Member_GetDefinePtr(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->definePtr;
+}
+
+
+
+void Typemaker2_Member_SetDefinePtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_DEFINE *td) {
+  assert(tm);
+  assert(tm->refCount);
+  tm->definePtr=td;
+}
+
+
+
 int Typemaker2_Member_GetMemberPosition(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
@@ -397,6 +432,9 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
 
   s=GWEN_XMLNode_GetProperty(node, "enum", NULL);
   Typemaker2_Member_SetEnumId(tm, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "define", NULL);
+  Typemaker2_Member_SetDefineId(tm, s);
 
   s=GWEN_XMLNode_GetProperty(node, "maxlen", NULL);
   if (s && *s) {

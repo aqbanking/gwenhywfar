@@ -39,6 +39,7 @@ struct TYPEMAKER2_TYPE {
   char *code_destruct;
   char *code_assign;
   char *code_dup;
+  char *code_compare;
   char *code_fromDb;
   char *code_toDb;
   char *code_fromXml;
@@ -54,6 +55,7 @@ struct TYPEMAKER2_TYPE {
 
   TYPEMAKER2_HEADER_LIST *headers;
   TYPEMAKER2_ENUM_LIST *enums;
+  TYPEMAKER2_DEFINE_LIST *defines;
 
   GWEN_STRINGLIST *structIncludes;
   GWEN_STRINGLIST *privateIncludes;
