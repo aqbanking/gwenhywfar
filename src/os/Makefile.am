@@ -19,7 +19,8 @@ iheader_HEADERS=\
  libloader.h \
  process.h \
  mutex.h \
- gwensemaphore.h
+ gwensemaphore.h \
+ gwendate.h
 
 noinst_HEADERS= \
  gwentime_l.h \
@@ -32,7 +33,8 @@ noinst_HEADERS= \
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\
  directory_all.c \
- gwentime_all.c
+ gwentime_all.c \
+ gwendate.c
 
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la
 

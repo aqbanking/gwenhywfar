@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Wed Mar 24 2004
-    copyright   : (C) 2004 by Martin Preuss
+    begin       : Tue Jul 07 2009
+    copyright   : (C) 2009 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,52 +23,49 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_TIME_P_H
-#define GWEN_TIME_P_H
+#ifndef GWEN_DATE_P_H
+#define GWEN_DATE_P_H
 
-#include "gwentime_l.h"
+#include "gwendate.h"
 
 
-#define GWEN_TIME_TMPL_MAX_COUNT 8
+#define GWEN_DATE_TMPL_MAX_COUNT 8
 
-struct GWEN_TIME {
-  uint32_t secs;
-  uint32_t msecs;
+
+struct GWEN_DATE {
+  int year;
+  int month;
+  int day;
+  int julian;
+  char asString[10];
 };
 
 
 
-uint32_t GWEN_Time__mktimeUtc(int year,
-			      int month,
-			      int day,
-			      int hour,
-			      int min,
-			      int sec);
-
-
-
-typedef struct GWEN_TIME_TMPLCHAR GWEN_TIME_TMPLCHAR;
-GWEN_LIST_FUNCTION_DEFS(GWEN_TIME_TMPLCHAR, GWEN_TimeTmplChar)
-struct GWEN_TIME_TMPLCHAR {
-  GWEN_LIST_ELEMENT(GWEN_TIME_TMPLCHAR)
+typedef struct GWEN_DATE_TMPLCHAR GWEN_DATE_TMPLCHAR;
+GWEN_LIST_FUNCTION_DEFS(GWEN_DATE_TMPLCHAR, GWEN_TimeTmplChar)
+struct GWEN_DATE_TMPLCHAR {
+  GWEN_LIST_ELEMENT(GWEN_DATE_TMPLCHAR)
   char character;
   int count;
   int nextChar;
   char *content;
 };
-static GWEN_TIME_TMPLCHAR *GWEN_TimeTmplChar_new(char c);
-static void GWEN_TimeTmplChar_free(GWEN_TIME_TMPLCHAR *e);
 
-static GWEN_TIME_TMPLCHAR *GWEN_Time__findTmplChar(GWEN_TIME_TMPLCHAR_LIST *ll,
-						   char c);
-static void GWEN_Time__sampleTmplChars(const GWEN_TIME *t, const char *tmpl,
-				       GWEN_BUFFER *buf,
-				       GWEN_TIME_TMPLCHAR_LIST *ll);
-static void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
-				     GWEN_TIME_TMPLCHAR_LIST *ll,
-				     int useUtc);
-static int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
-			       GWEN_BUFFER *buf, int useUtc);
+static GWEN_DATE_TMPLCHAR *GWEN_DateTmplChar_new(char c);
+static void GWEN_DateTmplChar_free(GWEN_DATE_TMPLCHAR *e);
+static GWEN_DATE_TMPLCHAR *GWEN_Date__findTmplChar(GWEN_DATE_TMPLCHAR_LIST *ll, char c);
+static void GWEN_Date__sampleTmplChars(GWEN_UNUSED const GWEN_DATE *t, const char *tmpl,
+				       GWEN_UNUSED GWEN_BUFFER *buf,
+				       GWEN_DATE_TMPLCHAR_LIST *ll);
+static void GWEN_Date__fillTmplChars(const GWEN_DATE *t,
+				     GWEN_DATE_TMPLCHAR_LIST *ll);
+
+
+
+
+
+
 
 
 #endif
