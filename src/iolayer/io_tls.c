@@ -310,6 +310,7 @@ int GWEN_Io_LayerTls_Prepare(GWEN_IO_LAYER *io) {
   if (lflags & GWEN_IO_LAYER_TLS_FLAGS_FORCE_SSL_V3) {
     const int proto_prio[2] = { GNUTLS_SSL3, 0 };
 
+    DBG_INFO(GWEN_LOGDOMAIN, "Forcing SSL v3");
     rv=gnutls_protocol_set_priority(xio->session, proto_prio);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_protocol_set_priority: %d (%s)", rv, gnutls_strerror(rv));
@@ -840,7 +841,7 @@ ssize_t GWEN_Io_LayerTls_Push(gnutls_transport_ptr_t p, const void *buf, size_t 
 
   rv=GWEN_Io_LayerCodec_CheckWriteOut(io);
   if (rv) {
-    if (rv==GWEN_ERROR_TRY_AGAIN) {
+    if (rv==GWEN_ERROR_TRY_AGAIN || rv==GWEN_ERROR_IN_PROGRESS) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 #ifdef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
       gnutls_transport_set_errno(xio->session, EAGAIN);

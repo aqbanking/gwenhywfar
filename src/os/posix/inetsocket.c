@@ -74,6 +74,7 @@ int GWEN_Socket_ModuleFini(){
 int GWEN_Socket_NetError2GwenError(int rv) {
   switch(rv) {
   case EINTR:        return GWEN_ERROR_INTERRUPTED;
+  case ENOTCONN:
   case EWOULDBLOCK:  return GWEN_ERROR_TIMEOUT;
   case EACCES:
   case EPERM:        return GWEN_ERROR_PERMISSIONS;
@@ -348,7 +349,7 @@ int GWEN_Socket_Accept(GWEN_SOCKET *sp,
   if (localSocket->socket==-1) {
     GWEN_InetAddr_free(localAddr);
     GWEN_Socket_free(localSocket);
-    if (errno==EAGAIN)
+    if (errno==EAGAIN || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
     else {
       DBG_INFO(GWEN_LOGDOMAIN, "accept(): %s", strerror(errno));
@@ -498,7 +499,7 @@ int GWEN_Socket_Read(GWEN_SOCKET *sp, char *buffer, int *bsize){
   assert(bsize);
   i=recv(sp->socket,buffer, *bsize,0);
   if (i<0) {
-    if (errno==EAGAIN)
+    if (errno==EAGAIN || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
     else if (errno==EINTR)
       return GWEN_ERROR_INTERRUPTED;
@@ -542,7 +543,7 @@ int GWEN_Socket_Write(GWEN_SOCKET *sp, const char *buffer, int *bsize){
 	);
 
   if (i<0) {
-    if (errno==EAGAIN)
+    if (errno==EAGAIN || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
     else if (errno==EINTR)
       return GWEN_ERROR_INTERRUPTED;
@@ -594,7 +595,7 @@ int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
              &addrlen);
   if (i<0) {
     GWEN_InetAddr_free(localAddr);
-    if (errno==EAGAIN)
+    if (errno==EAGAIN || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
     else if (errno==EINTR)
       return GWEN_ERROR_INTERRUPTED;
@@ -632,7 +633,7 @@ int GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
            addr->address,
            addr->size);
   if (i<0) {
-    if (errno==EAGAIN)
+    if (errno==EAGAIN || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
     else if (errno==EINTR)
       return GWEN_ERROR_INTERRUPTED;
