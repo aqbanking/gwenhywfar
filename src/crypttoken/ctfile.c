@@ -1285,7 +1285,6 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
       }
     }
 
-    DBG_ERROR(0, "Real number of bits: %d", nbits);
     if (nbits==0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Empty modulus");
       GWEN_Buffer_free(srcBuf);
@@ -1492,7 +1491,6 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 	}
       }
 
-      DBG_ERROR(0, "Real number of bits: %d", nbits);
       if (nbits==0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Empty modulus");
 	GWEN_Buffer_free(tbuf);
@@ -1846,7 +1844,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   sizeInBits=GWEN_Crypt_CryptAlgo_GetKeySizeInBits(a);
   if (sizeInBits>0) {
     /* generate key pair with precise number of bits */
-    DBG_ERROR(0, "Creating key pair using %d bits", sizeInBits);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Creating key pair using %d bits", sizeInBits);
     rv=GWEN_Crypt_KeyRsa_GeneratePair2(sizeInBits,
 				       (GWEN_Crypt_Token_GetModes(ct) &
 					GWEN_CRYPT_TOKEN_MODE_EXP_65537)?1:0,
@@ -1855,7 +1853,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   }
   else {
     /* generate key pair the old way, just using the chunksize */
-    DBG_ERROR(0, "Creating key pair using %d bytes", GWEN_Crypt_CryptAlgo_GetChunkSize(a));
+    DBG_INFO(GWEN_LOGDOMAIN, "Creating key pair using %d bytes", GWEN_Crypt_CryptAlgo_GetChunkSize(a));
     rv=GWEN_Crypt_KeyRsa_GeneratePair(GWEN_Crypt_CryptAlgo_GetChunkSize(a),
 				      (GWEN_Crypt_Token_GetModes(ct) &
 				       GWEN_CRYPT_TOKEN_MODE_EXP_65537)?1:0,
@@ -1915,7 +1913,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 
   if (keyNum==1) {
     if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
-      DBG_ERROR(0, "Adding mode \"direct sign\" to key");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Adding mode \"direct sign\" to key");
       GWEN_Crypt_KeyRsa_AddFlags(secKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalSignKey(ctx, secKey);
@@ -1945,7 +1943,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   }
   else {
     if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
-      DBG_ERROR(0, "Adding mode \"direct sign\" to key");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Adding mode \"direct sign\" to key");
       GWEN_Crypt_KeyRsa_AddFlags(secKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalAuthKey(ctx, secKey);
