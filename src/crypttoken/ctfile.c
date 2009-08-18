@@ -1802,6 +1802,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   uint32_t klen;
   GWEN_CRYPT_TOKEN_KEYINFO *cki;
   GWEN_CRYPT_TOKEN_KEYINFO *ki;
+  int sizeInBits;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE, ct);
@@ -1842,12 +1843,25 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
     i--;
   }
 
-  /* generate key pair */
-  rv=GWEN_Crypt_KeyRsa_GeneratePair(GWEN_Crypt_CryptAlgo_GetChunkSize(a),
-				    (GWEN_Crypt_Token_GetModes(ct) &
-				     GWEN_CRYPT_TOKEN_MODE_EXP_65537)?1:0,
-				    &pubKey,
-				    &secKey);
+  sizeInBits=GWEN_Crypt_CryptAlgo_GetKeySizeInBits(a);
+  if (sizeInBits>0) {
+    /* generate key pair with precise number of bits */
+    DBG_ERROR(0, "Creating key pair using %d bits", sizeInBits);
+    rv=GWEN_Crypt_KeyRsa_GeneratePair2(sizeInBits,
+				       (GWEN_Crypt_Token_GetModes(ct) &
+					GWEN_CRYPT_TOKEN_MODE_EXP_65537)?1:0,
+				       &pubKey,
+				       &secKey);
+  }
+  else {
+    /* generate key pair the old way, just using the chunksize */
+    DBG_ERROR(0, "Creating key pair using %d bytes", GWEN_Crypt_CryptAlgo_GetChunkSize(a));
+    rv=GWEN_Crypt_KeyRsa_GeneratePair(GWEN_Crypt_CryptAlgo_GetChunkSize(a),
+				      (GWEN_Crypt_Token_GetModes(ct) &
+				       GWEN_CRYPT_TOKEN_MODE_EXP_65537)?1:0,
+				      &pubKey,
+				      &secKey);
+  }
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,

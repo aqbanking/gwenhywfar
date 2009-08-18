@@ -788,6 +788,9 @@ int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
 	     " ))",
 	     strlen(numbuf),
 	     nbits);
+  buffer[sizeof(buffer)-1]=0;
+
+  /*DBG_ERROR(0, "Genkey string: [%s]", buffer);*/
 
   rc=gcry_sexp_new(&keyparm, buffer, 0, 1);
   if (rc) {

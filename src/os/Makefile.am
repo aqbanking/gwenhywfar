@@ -23,6 +23,7 @@ iheader_HEADERS=\
  gwendate.h
 
 noinst_HEADERS= \
+ gwendate_p.h \
  gwentime_l.h \
  gwentime_p.h \
  inetaddr_l.h \
