@@ -30,11 +30,8 @@
 #endif
 
 #include "directory_p.h"
-
-#ifdef OS_DARWIN
-# ifdef ENABLE_LOCAL_INSTALL
-#   include <CoreFoundation/CFBundle.h>
-# endif
+#if defined(OS_DARWIN) && defined(ENABLE_LOCAL_INSTALL)
+#  include <CoreFoundation/CFBundle.h>
 #else
 # include "binreloc.h"
 #endif
