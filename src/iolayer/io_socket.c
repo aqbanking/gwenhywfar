@@ -23,8 +23,10 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/url.h>
 
-#include <gwenhywfar/text.h> /* debug */
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/base64.h>
 
 #include <assert.h>
 #include <errno.h>
@@ -33,13 +35,277 @@
 #include <fcntl.h>
 
 
-//#define HACK_FOR_DAVID
+#define GWEN_PROXY_ENVVAR "GWEN_PROXY"
+
 
 
 GWEN_INHERIT(GWEN_IO_LAYER, GWEN_IO_LAYER_SOCKET)
 
 
 
+int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
+		       const GWEN_INETADDRESS *addr,
+		       uint32_t guiid) {
+  const char *s;
+
+  /* do nothing for protocols other than TCP */
+  if (GWEN_Socket_GetSocketType(sp)!=GWEN_SocketTypeTCP)
+    return GWEN_Socket_Connect(sp, addr);
+
+  s=getenv(GWEN_PROXY_ENVVAR);
+  if (s && *s) {
+    GWEN_URL *url;
+    GWEN_BUFFER *sendBuf;
+    int tport;
+    char taddr[64];
+    char numbuf[16];
+    const char *t;
+    int rv;
+    GWEN_INETADDRESS *in;
+    int ok=0;
+    int first=1;
+    int len;
+    int idx=0;
+    char wrk[1024];
+
+    url=GWEN_Url_fromString(s);
+    if (url==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad string for proxy [%s]", s);
+      return GWEN_ERROR_IO;
+    }
+
+    sendBuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    /* build command line */
+    GWEN_Buffer_AppendString(sendBuf, "CONNECT ");
+
+    tport=GWEN_InetAddr_GetPort(addr);
+    GWEN_InetAddr_GetAddress(addr, taddr, sizeof(taddr));
+
+    GWEN_Buffer_AppendString(sendBuf, taddr);
+    GWEN_Buffer_AppendString(sendBuf, ":");
+    snprintf(numbuf, sizeof(numbuf)-1, "%d\n", tport);
+    numbuf[sizeof(numbuf)-1]=0;
+    GWEN_Buffer_AppendString(sendBuf, wrk);
+
+    GWEN_Buffer_AppendString(sendBuf, " HTTP/1.1\r\n");
+
+    /* build host line required for HTTP/1.1 */
+    GWEN_Buffer_AppendString(sendBuf, "Host: ");
+    GWEN_Buffer_AppendString(sendBuf, taddr);
+    GWEN_Buffer_AppendString(sendBuf, ":");
+    GWEN_Buffer_AppendString(sendBuf, wrk);
+    GWEN_Buffer_AppendString(sendBuf, "\r\n");
+
+    /* possibly add auth info */
+    t=GWEN_Url_GetUserName(url);
+    if (t && *t) {
+      GWEN_BUFFER *abuf;
+
+      /* we have auth info */
+      abuf=GWEN_Buffer_new(0, 64, 0, 1);
+      GWEN_Buffer_AppendString(sendBuf, "Proxy-Authorization: ");
+
+      GWEN_Buffer_AppendString(abuf, t);
+      t=GWEN_Url_GetPassword(url);
+      if (t && *t) {
+	GWEN_Buffer_AppendString(abuf, ":");
+	GWEN_Buffer_AppendString(abuf, t);
+      }
+      /* base64 encode */
+      rv=GWEN_Base64_Encode((const unsigned char*) GWEN_Buffer_GetStart(abuf),
+			    GWEN_Buffer_GetUsedBytes(abuf),
+                            sendBuf, 0);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	GWEN_Buffer_free(abuf);
+	GWEN_Buffer_free(sendBuf);
+	GWEN_Url_free(url);
+	return rv;
+      }
+      GWEN_Buffer_free(abuf);
+
+      /* end header */
+      GWEN_Buffer_AppendString(sendBuf, "\r\n");
+
+      /* now sendBuf contains all necessary data */
+    }
+
+    /* prepare connect to proxy */
+    in=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+    assert(in);
+
+    rv=GWEN_InetAddr_SetPort(in, GWEN_Url_GetPort(url));
+    if (rv<0) {
+      GWEN_InetAddr_free(in);
+      GWEN_Buffer_free(sendBuf);
+      GWEN_Url_free(url);
+      return rv;
+    }
+
+    rv=GWEN_InetAddr_SetAddress(in, GWEN_Url_GetServer(url));
+    if (rv) {
+      if (rv==GWEN_ERROR_BAD_ADDRESS) {
+	rv=GWEN_InetAddr_SetName(in, GWEN_Url_GetServer(url));
+	if (rv) {
+	  GWEN_InetAddr_free(in);
+	  GWEN_Buffer_free(sendBuf);
+	  GWEN_Url_free(url);
+	  return rv;
+	}
+      }
+      else {
+	GWEN_InetAddr_free(in);
+	GWEN_Buffer_free(sendBuf);
+	GWEN_Url_free(url);
+	return rv;
+      }
+    }
+
+    /* this is the part I don't like very much but for now it is
+     * necessary. Later this should be implemented non-blocking because the
+     * code leading to the calling of this function expects the whole call
+     * to be non-blocking... */
+    rv=GWEN_Socket_SetBlocking(sp, 1);
+    if (rv) {
+      GWEN_InetAddr_free(in);
+      GWEN_Buffer_free(sendBuf);
+      GWEN_Url_free(url);
+      return rv;
+    }
+  
+    tport=GWEN_InetAddr_GetPort(in);
+    GWEN_InetAddr_GetAddress(in, taddr, sizeof(taddr));
+    DBG_INFO(GWEN_LOGDOMAIN, "Connecting to proxy %s (port %d)", taddr, tport);
+    if (1) {
+      char dbuf[256];
+
+      snprintf(dbuf, sizeof(dbuf)-1, I18N("Connecting to proxy %s (port %d)"), taddr, tport);
+      dbuf[sizeof(dbuf)-1]=0;
+      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info, dbuf);
+    }
+  
+    /* connect to proxy */
+    rv=GWEN_Socket_Connect(sp, in);
+    GWEN_InetAddr_free(in);
+    if (rv) {
+      if (rv==GWEN_ERROR_IN_PROGRESS) {
+	rv=GWEN_Socket_WaitForWrite(sp, 10000);
+	if (rv) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Error connecting to proxy (%d)", rv);
+	  GWEN_Buffer_free(sendBuf);
+	  return rv;
+	}
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "Error connecting to proxy (%d)", rv);
+	GWEN_Buffer_free(sendBuf);
+	return rv;
+      }
+    }
+  
+    /* write connect command */
+    first=1;
+    if (1) {
+      const char *p;
+
+      len=GWEN_Buffer_GetUsedBytes(sendBuf);
+      p=GWEN_Buffer_GetStart(sendBuf);
+      while(len) {
+	int rl;
+
+	rv=GWEN_Socket_WaitForWrite(sp, first?40000:1000);
+	if (rv) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Error writing to proxy (%d)", rv);
+	  GWEN_Buffer_free(sendBuf);
+	  return rv;
+	}
+    
+	first=0;
+
+        rl=len;
+	rv=GWEN_Socket_Write(sp, p, &rl);
+	if (rv<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Error writing to proxy (%d)", rv);
+	  GWEN_Buffer_free(sendBuf);
+	  return rv;
+	}
+	if (rl<1) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Zero bytes written to proxy, aborting");
+	  GWEN_Buffer_free(sendBuf);
+	  return GWEN_ERROR_IO;
+	}
+	p+=rl;
+	len-=rl;
+      }
+    }
+    GWEN_Buffer_free(sendBuf);
+
+    /* read response */
+    first=1;
+    while (1) {
+      rv=GWEN_Socket_WaitForRead(sp, first?40000:1000);
+      if (rv) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Error reading from proxy (%d)", rv);
+	return rv;
+      }
+  
+      first=0;
+      len=1;
+      rv=GWEN_Socket_Read(sp, wrk+idx, &len);
+      if (rv) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Error reading from proxy (%d)", rv);
+	return rv;
+      }
+  
+      if(wrk[idx]=='\r')
+	continue;
+  
+      if (wrk[idx]=='\n') {
+	if (!idx) {
+	  /* empty line: header end, return result of previous status check */
+	  if (ok) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Proxy accepted CONNECT request, EOLN met");
+	    return 0;
+	  }
+	  else {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Line end, unknown proxy status");
+	    return GWEN_ERROR_IO;
+	  }
+	}
+
+	if (!ok) {
+	  wrk[idx]=0;
+	  if (strncmp(wrk, "HTTP/1.0 200", 12)==0 ||
+	      strncmp(wrk, "HTTP/1.1 200", 12)==0)
+	    ok=1;
+	  else {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Proxy rejected CONNECT request: %s", wrk);
+	    if (1) {
+	      GWEN_BUFFER *dbuf;
+
+	      dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	      GWEN_Buffer_AppendString(dbuf, I18N("Proxy rejected CONNECT request: "));
+	      GWEN_Buffer_AppendString(dbuf, wrk);
+	      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info, GWEN_Buffer_GetStart(dbuf));
+	      GWEN_Buffer_free(dbuf);
+	    }
+	    return GWEN_ERROR_IO;
+	  }
+	}
+	idx=0;
+      }
+      else if (++idx==sizeof(wrk))
+	return GWEN_ERROR_IO;
+    }
+  }
+  else
+    return GWEN_Socket_Connect(sp, addr);
+}
+
+
+
+#if 0
 int GWEN_Proxy_Connect(GWEN_SOCKET *sp, const GWEN_INETADDRESS *addr) {
   int err;
   int tport;
@@ -177,6 +443,7 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp, const GWEN_INETADDRESS *addr) {
       return GWEN_ERROR_IO;
   }
 }
+#endif
 
 
 
@@ -600,7 +867,6 @@ int GWEN_Io_LayerSocket_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
         return rv;
       }
 
-#ifndef HACK_FOR_DAVID
       /* set nonblocking */
       rv=GWEN_Socket_SetBlocking(xio->socket, 0);
       if (rv) {
@@ -609,13 +875,9 @@ int GWEN_Io_LayerSocket_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
 	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, rv);
 	return rv;
       }
-#endif
 
       /* actually start to connect */
-      if (getenv("GWEN_PROXY"))
-	rv=GWEN_Proxy_Connect(xio->socket, xio->peerAddr);
-      else
-	rv=GWEN_Socket_Connect(xio->socket, xio->peerAddr);
+      rv=GWEN_Proxy_Connect(xio->socket, xio->peerAddr, GWEN_Io_Request_GetGuiId(r));
       /* not yet finished or real error ? */
       if (rv) {
 	if (rv!=GWEN_ERROR_IN_PROGRESS) {
@@ -631,17 +893,6 @@ int GWEN_Io_LayerSocket_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
 	}
       }
       else {
-#ifdef HACK_FOR_DAVID
-	/* set nonblocking */
-	rv=GWEN_Socket_SetBlocking(xio->socket, 0);
-	if (rv) {
-	  GWEN_Socket_Close(xio->socket);
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, rv);
-	  return rv;
-	}
-#endif
-
 	/* connected */
 	DBG_INFO(GWEN_LOGDOMAIN, "Immediately connected to %s (port %d)", addrBuffer, port);
 	GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, 0);
