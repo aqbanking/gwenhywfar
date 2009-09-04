@@ -124,12 +124,11 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
 	return rv;
       }
       GWEN_Buffer_free(abuf);
-
-      /* end header */
-      GWEN_Buffer_AppendString(sendBuf, "\r\n");
-
-      /* now sendBuf contains all necessary data */
     }
+
+    /* end header */
+    GWEN_Buffer_AppendString(sendBuf, "\r\n");
+    /* now sendBuf contains all necessary data */
 
     /* prepare connect to proxy */
     in=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
