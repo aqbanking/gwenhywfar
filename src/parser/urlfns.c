@@ -36,31 +36,27 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   /* read protocol (if any) */
   p=strchr(s, ':');
   if (p) {
-    char *buf;
+    if (p[1]=='/' && p[2]=='/') {
+      char *buf;
 
-    /* got protocol settings */
-    buf=(char*)malloc(p-s+1);
-    assert(buf);
-    memmove(buf, s, p-s+1);
-    buf[p-s]=0;
-    GWEN_Url_SetProtocol(url, buf);
-    free(buf);
-    s=p+1;
+      /* got protocol settings */
+      buf=(char*)malloc(p-s+1);
+      assert(buf);
+      memmove(buf, s, p-s+1);
+      buf[p-s]=0;
+      GWEN_Url_SetProtocol(url, buf);
+      free(buf);
+      s=p+3;
+    }
   }
 
-  /* skip slashes (if any) */
-  if (*s=='/')
-    s++;
-  if (*s=='/')
-    s++;
-
-  /* read user/password */
   if (!*s) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No server given");
     GWEN_Url_free(url);
     return 0;
   }
 
+  /* read user/password */
   p=strchr(s, '@');
   if (p) {
     char *upw;
