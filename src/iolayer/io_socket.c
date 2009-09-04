@@ -266,10 +266,11 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
 	  /* empty line: header end, return result of previous status check */
 	  if (ok) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Proxy accepted CONNECT request, EOLN met");
+	    GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info, I18N("Proxy accepted CONNECT request."));
 	    return 0;
 	  }
 	  else {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Line end, unknown proxy status");
+	    DBG_INFO(GWEN_LOGDOMAIN, "Emtpy line end, unknown proxy status");
 	    return GWEN_ERROR_IO;
 	  }
 	}
