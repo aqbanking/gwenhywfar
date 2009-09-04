@@ -82,8 +82,9 @@ extern "C" {
  */
 /*@{*/
 /**
- * If this flag is set then lines are expected to end with CR/LF as opposed to Linux mode where a simple LF
- * suffices to mark the end of a line.
+ * If this flag is set then this layer is used for GWEN's IPC code. This means that only requests are
+ * sent (normally one side sends a request and the other replies with a response. In IPC mode however
+ * all messages are requests in HTTP-sense).
  */
 #define GWEN_IO_LAYER_HTTP_FLAGS_IPC     0x00000001
 /*@}*/

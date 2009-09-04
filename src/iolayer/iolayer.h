@@ -89,29 +89,29 @@ typedef enum {
  * If this flag is set then an object will take over the buffer given to the constructor. i.e. the buffer
  * is only valid as long as the io layer exists.
  */
-#define GWEN_IO_LAYER_FLAGS_TAKEOVER   0x01000000
+#define GWEN_IO_LAYER_FLAGS_TAKEOVER    0x01000000
 
 /**
  * If this flag is set then this connection is a passive one (e.g. other hosts/processes
  * actively connect to this one)
  */
-#define GWEN_IO_LAYER_FLAGS_PASSIVE    0x10000000
+#define GWEN_IO_LAYER_FLAGS_PASSIVE     0x10000000
 
 /**
  * If this flag is set then the io layer is packet based.
  */
-#define GWEN_IO_LAYER_FLAGS_PKG_BASED  0x20000000
+#define GWEN_IO_LAYER_FLAGS_PKG_BASED   0x20000000
 /**
  * If this flag is set then the given file descriptor will never be closed. However, upon receiption of
  * the request @ref GWEN_Io_Request_TypeDisconnect the file will be made unaccessibly by this module.
  */
-#define GWEN_IO_LAYER_FLAGS_DONTCLOSE  0x40000000
+#define GWEN_IO_LAYER_FLAGS_DONTCLOSE   0x40000000
 
 /**
  * This flag is set by @ref GWEN_Io_Manager_RegisterLayer and cleared by
  * @ref GWEN_Io_Manager_UnregisterLayer
  */
-#define GWEN_IO_LAYER_FLAGS_REGISTERED 0x80000000
+#define GWEN_IO_LAYER_FLAGS_REGISTERED  0x80000000
 /*@}*/
 
 
