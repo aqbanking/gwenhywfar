@@ -84,9 +84,9 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
 
     GWEN_Buffer_AppendString(sendBuf, taddr);
     GWEN_Buffer_AppendString(sendBuf, ":");
-    snprintf(numbuf, sizeof(numbuf)-1, "%d\n", tport);
+    snprintf(numbuf, sizeof(numbuf)-1, "%d", tport);
     numbuf[sizeof(numbuf)-1]=0;
-    GWEN_Buffer_AppendString(sendBuf, wrk);
+    GWEN_Buffer_AppendString(sendBuf, numbuf);
 
     GWEN_Buffer_AppendString(sendBuf, " HTTP/1.1\r\n");
 
@@ -94,7 +94,7 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
     GWEN_Buffer_AppendString(sendBuf, "Host: ");
     GWEN_Buffer_AppendString(sendBuf, taddr);
     GWEN_Buffer_AppendString(sendBuf, ":");
-    GWEN_Buffer_AppendString(sendBuf, wrk);
+    GWEN_Buffer_AppendString(sendBuf, numbuf);
     GWEN_Buffer_AppendString(sendBuf, "\r\n");
 
     /* possibly add auth info */
@@ -104,7 +104,7 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
 
       /* we have auth info */
       abuf=GWEN_Buffer_new(0, 64, 0, 1);
-      GWEN_Buffer_AppendString(sendBuf, "Proxy-Authorization: ");
+      GWEN_Buffer_AppendString(sendBuf, "Proxy-Authorization: Basic ");
 
       GWEN_Buffer_AppendString(abuf, t);
       t=GWEN_Url_GetPassword(url);
@@ -124,11 +124,15 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
 	return rv;
       }
       GWEN_Buffer_free(abuf);
+      GWEN_Buffer_AppendString(sendBuf, "\r\n");
     }
 
     /* end header */
     GWEN_Buffer_AppendString(sendBuf, "\r\n");
     /* now sendBuf contains all necessary data */
+
+    DBG_ERROR(0, "Would send this:");
+    GWEN_Buffer_Dump(sendBuf, stderr, 2);
 
     /* prepare connect to proxy */
     in=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
