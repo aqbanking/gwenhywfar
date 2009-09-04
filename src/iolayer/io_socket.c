@@ -160,6 +160,7 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
 	return rv;
       }
     }
+    GWEN_Url_free(url);
 
     /* this is the part I don't like very much but for now it is
      * necessary. Later this should be implemented non-blocking because the
@@ -169,7 +170,6 @@ int GWEN_Proxy_Connect(GWEN_SOCKET *sp,
     if (rv) {
       GWEN_InetAddr_free(in);
       GWEN_Buffer_free(sendBuf);
-      GWEN_Url_free(url);
       return rv;
     }
   
