@@ -215,3 +215,6 @@ endif
 ChangeLog:
 	git log --pretty="format:------------------------------------------------------------------%n%ai %an%n%s%n%b" >ChangeLog
 
+dist-hook:
+	rm -f ChangeLog 2>/dev/null
+	$(MAKE) ChangeLog
