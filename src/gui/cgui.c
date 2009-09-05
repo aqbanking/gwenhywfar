@@ -972,13 +972,17 @@ int GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
 	  GWEN_Buffer_free(buf);
 	  return 0;
 	}
+	else {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Stored password [%s] is not within size limits (%d), rejecting.",
+		    GWEN_Buffer_GetStart(buf), i);
+	}
       }
     }
 
     if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
       DBG_ERROR(GWEN_LOGDOMAIN,
 		"Password for [%s] missing in noninteractive mode, "
-		"aborting", token);
+		"aborting", GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
       return GWEN_ERROR_USER_ABORTED;
     }
