@@ -863,9 +863,9 @@ int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
       return 0;
     }
     else {
-      DBG_NOTICE(GWEN_LOGDOMAIN,
-		 "Automatically rejecting certificate [%s] (noninteractive)",
-		 hash);
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Automatically rejecting certificate [%s] (noninteractive)",
+		hash);
       GWEN_Buffer_free(hbuf);
       return GWEN_ERROR_USER_ABORTED;
     }

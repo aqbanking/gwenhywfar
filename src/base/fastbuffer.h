@@ -86,7 +86,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       fb_peekbyte_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0, \
                                              fb->guiid, fb->msecs); \
       if (fb_peekbyte_rv<0) { \
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", fb_peekbyte_rv); \
+        DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_peekbyte_rv); \
 	var=fb_peekbyte_rv; \
       } \
       else { \
@@ -112,7 +112,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       fb_readbyte_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0,\
                                              fb->guiid, fb->msecs); \
       if (fb_readbyte_rv<0) { \
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", fb_readbyte_rv); \
+        DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_readbyte_rv); \
 	var=fb_readbyte_rv; \
       } \
       else { \
@@ -196,7 +196,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
     \
     fb_readbyte_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0, fb->guiid, fb->msecs); \
     if (fb_readbyte_rv<0) { \
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", fb_readbyte_rv); \
+      DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_readbyte_rv); \
       var=fb_readbyte_rv; \
     } \
     else {\
@@ -229,7 +229,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
     fb_readline_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0,\
                                            fb->guiid, fb->msecs);\
     if (fb_readline_rv<0) {\
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", fb_readline_rv);\
+      DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_readline_rv);\
       var=fb_readline_rv;\
     }\
     else {\
