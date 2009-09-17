@@ -980,7 +980,7 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="listdoc.h gwenhywfar"
+	DOXYGEN_INPUT="listdoc.h gwenhywfar3/gwenhywfar"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
