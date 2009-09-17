@@ -1917,7 +1917,6 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
       GWEN_Crypt_KeyRsa_AddFlags(secKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalSignKey(ctx, secKey);
-    GWEN_CTF_Context_SetLocalSignKeyInfo(ctx, ki);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
@@ -1927,10 +1926,11 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+    GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, 1);
+    GWEN_CTF_Context_SetLocalSignKeyInfo(ctx, ki);
   }
   else if (keyNum==2) {
     GWEN_CTF_Context_SetLocalCryptKey(ctx, secKey);
-    GWEN_CTF_Context_SetLocalCryptKeyInfo(ctx, ki);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
@@ -1940,6 +1940,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER);
+    GWEN_CTF_Context_SetLocalCryptKeyInfo(ctx, ki);
   }
   else {
     if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
@@ -1947,7 +1948,6 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
       GWEN_Crypt_KeyRsa_AddFlags(secKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalAuthKey(ctx, secKey);
-    GWEN_CTF_Context_SetLocalAuthKeyInfo(ctx, ki);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
@@ -1957,6 +1957,8 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
 				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+    GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, 1);
+    GWEN_CTF_Context_SetLocalAuthKeyInfo(ctx, ki);
   }
 
   /* the public key is not used */
