@@ -24,7 +24,7 @@ xmldb_la_LDFLAGS = -no-undefined $(STRIPALL) \
     -module -version-info 0:1:0
 
 sources:
-	for f in $(libdbio_xmldb_la_SOURCES); do \
+	for f in $(xmldb_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \

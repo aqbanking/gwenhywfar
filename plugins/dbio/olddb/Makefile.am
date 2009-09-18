@@ -24,7 +24,7 @@ olddb_la_LDFLAGS = -no-undefined $(STRIPALL) \
     -module -version-info 0:1:0
 
 sources:
-	for f in $(libdbio_olddb_la_SOURCES); do \
+	for f in $(olddb_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \

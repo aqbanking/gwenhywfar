@@ -23,7 +23,7 @@ dir_la_LDFLAGS = -no-undefined $(STRIPALL) $(ressource_ldflags) \
     -module -avoid-version
 
 sources:
-	for f in $(libcfgmgr_dir_la_SOURCES); do \
+	for f in $(dir_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \

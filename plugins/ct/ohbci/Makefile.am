@@ -23,7 +23,7 @@ ohbci_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
 ohbci_la_LDFLAGS = -no-undefined $(STRIPALL) -module -avoid-version
 
 sources:
-	for f in $(libctohbci_la_SOURCES); do \
+	for f in $(ohbci_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
