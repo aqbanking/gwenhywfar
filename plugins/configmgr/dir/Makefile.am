@@ -11,17 +11,13 @@ INCLUDES= -I$(top_builddir)/gwenhywfar3 \
 
 cfgmgrplugindir = $(gwenhywfar_plugindir)/configmgr
 
-noinst_LTLIBRARIES=libcfgmgr_dir.la
-libcfgmgr_dir_la_SOURCES=cfgdir.c
 noinst_HEADERS=cfgdir_p.h
-
 
 cfgmgrplugin_LTLIBRARIES=dir.la
 cfgmgrplugin_DATA=dir.xml
 
-dir_la_SOURCES=dummy.c
-dir_la_LIBADD=libcfgmgr_dir.la $(top_builddir)/src/libgwenhywfar.la
-dir_la_DEPENDENCIES=libcfgmgr_dir.la $(top_builddir)/src/libgwenhywfar.la
+dir_la_SOURCES=cfgdir.c
+dir_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
 
 dir_la_LDFLAGS = -no-undefined $(STRIPALL) $(ressource_ldflags) \
     -module -avoid-version

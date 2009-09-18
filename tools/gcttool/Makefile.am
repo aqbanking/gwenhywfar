@@ -27,8 +27,6 @@ gct_tool_LDADD+=$(PROG_LIBRARIES)
 
 endif
 
-gct_tool_LDADD+=$(gwen_static_plugins) $(gwen_extra_libs)
-
 noinst_PROGRAMS=cttest
 cttest_SOURCES=cttest.c
 cttest_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)

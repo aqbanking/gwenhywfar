@@ -43,15 +43,6 @@
 # include <openssl/des.h>
 #endif
 
-#ifdef WITH_STATIC_PLUGINS
-int GWEN_Plugins_Init();
-int AB_Plugins_Init();
-int LC_Plugins_Init();
-# ifdef ENABLE_EBICS_PLUGINS
-int EBC_Plugins_Init();
-# endif
-#endif
-
 
 
 
@@ -245,32 +236,6 @@ int main(int argc, char **argv) {
     argc-=rv-1;
     argv+=rv-1;
   }
-
-#ifdef WITH_STATIC_PLUGINS
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Initialising static plugins");
-  rv=GWEN_Plugins_Init();
-  if (rv<0) {
-    fprintf(stderr, "ERROR: Unable to init GWEN plugins (%d).\n", rv);
-    return 1;
-  }
-  rv=LC_Plugins_Init();
-  if (rv<0) {
-    fprintf(stderr, "ERROR: Unable to init Libchipcard plugins (%d).\n", rv);
-    return 1;
-  }
-  rv=AB_Plugins_Init();
-  if (rv<0) {
-    fprintf(stderr, "ERROR: Unable to init AqBanking plugins (%d).\n", rv);
-    return 1;
-  }
-#ifdef ENABLE_EBICS_PLUGINS
-  rv=EBC_Plugins_Init();
-  if (rv<0) {
-    fprintf(stderr, "ERROR: Unable to init AqEBICS plugins (%d).\n", rv);
-    return 1;
-  }
-#endif
-#endif
 
   cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
   if (!cmd) {

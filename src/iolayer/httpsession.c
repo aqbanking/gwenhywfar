@@ -742,6 +742,79 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess,
 
 
 
+int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
+  int rv;
+
+  assert(sess);
+  assert(sess->usage);
+
+  /* first connect to server */
+  GWEN_Gui_ProgressLog(sess->guiid,
+		       GWEN_LoggerLevel_Notice,
+		       I18N("Connecting to server..."));
+  rv=GWEN_Io_Layer_ConnectRecursively(sess->ioLayer, NULL, 0,
+				      sess->guiid, 30000);
+  if (rv==GWEN_ERROR_SSL) {
+    GWEN_IO_LAYER *ioTls;
+
+    /* try again with alternated SSLv3 flag */
+    DBG_NOTICE(GWEN_LOGDOMAIN,
+	       "SSL-Error connecting (%d), retrying", rv);
+    GWEN_Io_Layer_DisconnectRecursively(sess->ioLayer, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					sess->guiid, 2000);
+    ioTls=GWEN_Io_Layer_FindBaseLayerByType(sess->ioLayer,
+					    GWEN_IO_LAYER_TLS_TYPE);
+    assert(ioTls);
+
+    if (sess->flags & GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (non-SSLv3)");
+      GWEN_Gui_ProgressLog(sess->guiid,
+			   GWEN_LoggerLevel_Info,
+			   I18N("Retrying to connect (non-SSLv3)"));
+      GWEN_Io_Layer_SubFlags(ioTls, GWEN_IO_LAYER_TLS_FLAGS_FORCE_SSL_V3);
+      rv=GWEN_Io_Layer_ConnectRecursively(sess->ioLayer, NULL, 0,
+					  sess->guiid, 30000);
+      if (rv==0) {
+	GWEN_HttpSession_SubFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
+      }
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (SSLv3)");
+      GWEN_Gui_ProgressLog(sess->guiid,
+			   GWEN_LoggerLevel_Info,
+			   I18N("Retrying to connect (SSLv3)"));
+      GWEN_Io_Layer_AddFlags(ioTls, GWEN_IO_LAYER_TLS_FLAGS_FORCE_SSL_V3);
+      rv=GWEN_Io_Layer_ConnectRecursively(sess->ioLayer, NULL, 0,
+					  sess->guiid, 30000);
+      if (rv==0) {
+	GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
+      }
+    }
+  }
+
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not connect to server (%d)", rv);
+    GWEN_Gui_ProgressLog(sess->guiid,
+			 GWEN_LoggerLevel_Error,
+			 I18N("Could not connect to server"));
+    GWEN_Io_Layer_DisconnectRecursively(sess->ioLayer, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					sess->guiid, 2000);
+    return rv;
+  }
+  else {
+    GWEN_Gui_ProgressLog(sess->guiid,
+			 GWEN_LoggerLevel_Info,
+			 I18N("Connected."));
+
+    GWEN_Io_Layer_DisconnectRecursively(sess->ioLayer, NULL,
+					GWEN_IO_REQUEST_FLAGS_FORCE,
+					sess->guiid, 2000);
+
+    return 0;
+  }
+}
 
 
 

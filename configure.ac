@@ -28,11 +28,11 @@ AC_CONFIG_HEADERS([config.h])
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=3
-GWENHYWFAR_VERSION_MINOR=10
-GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=1
+GWENHYWFAR_VERSION_MINOR=11
+GWENHYWFAR_VERSION_PATCHLEVEL=0
+GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="git"
+GWENHYWFAR_VERSION_TAG="stable"
 
 
 
@@ -59,9 +59,9 @@ OHBCI_VERSION_STRING="0.1.0"
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="57"
-GWENHYWFAR_SO_AGE="10"
-GWENHYWFAR_SO_REVISION="1"
+GWENHYWFAR_SO_CURRENT="58"
+GWENHYWFAR_SO_AGE="11"
+GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -304,45 +304,6 @@ AC_MSG_RESULT($enable_local_install)
 
 if test "$enable_local_install" != "no"; then
   AC_DEFINE(ENABLE_LOCAL_INSTALL, 1, [whether local install is wanted])
-fi
-
-
-
-###-------------------------------------------------------------------------
-#
-# check whether EBICS support should be linked-in
-#
-# This is used when statically linking plugins (especially for gct-tool)
-#
-
-AC_MSG_CHECKING(whether EBICS support is wanted)
-AC_ARG_ENABLE(ebics-plugins,
-  [  --ebics-plugins         allow EBICS plugins (default=no)],
-  enable_ebics_plugins="$enableval",
-  enable_ebics_plugins="no")
-AC_MSG_RESULT($enable_ebics_plugins)
-
-if test "$enable_ebics_plugins" != "no"; then
-  AC_DEFINE(ENABLE_EBICS_PLUGINS, 1, [whether EBICS plugins are supported])
-fi
-AM_CONDITIONAL(ENABLE_EBICS_PLUGINS, [test "$enable_ebics_plugins" = "yes"])
-
-
-
-###-------------------------------------------------------------------------
-#
-# check whether plugin loading is enabled
-#
-
-AC_MSG_CHECKING(whether plugin loading is wanted)
-AC_ARG_ENABLE(plugin-loading,
-  [  --enable-plugin-loading         allow loading of plugins (default=yes)],
-  enable_plugin_loading="$enableval",
-  enable_plugin_loading="yes")
-AC_MSG_RESULT($enable_plugin_loading)
-
-if test "$enable_plugin_loading" != "no"; then
-  AC_DEFINE(ENABLE_PLUGIN_LOADING, 1, [whether local install is wanted])
 fi
 
 
@@ -985,52 +946,6 @@ fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
 AC_MSG_RESULT($enable_fulldoc)
-
-
-
-###-------------------------------------------------------------------------
-#
-# check for plugin init
-#
-AC_MSG_CHECKING(if plugin init is wanted)
-AC_ARG_ENABLE(init-plugins,
-  [  --enable-init-plugins             enable plugin init (default=yes)],
-  enable_init_plugins="$enableval",
-  enable_init_plugins="yes")
-AC_MSG_RESULT($enable_init_plugins)
-
-if test "$enable_init_plugins" != "no"; then
-  AC_DEFINE(GWEN_ENABLE_INIT_PLUGINS, 1, [if plugin init is wanted])
-fi
-
-
-
-###-------------------------------------------------------------------------
-#
-# check for static plugins to be compiled into static exes
-#
-AC_ARG_WITH(static-plugins, 
-  [  --with-static-plugins      list of static plugins to link in],
-  [gwen_static_plugins="$withval"],
-  [gwen_static_plugins=""]
-)
-if test -n "$gwen_static_plugins"; then
-  AC_DEFINE(WITH_STATIC_PLUGINS, 1, [static plugins are used])
-fi
-AC_SUBST(gwen_static_plugins)
-
-
-
-###-------------------------------------------------------------------------
-#
-# check for extra libs for static exes
-#
-AC_ARG_WITH(extra-libs, 
-  [  --with-extra-libs      list of additional libraries],
-  [gwen_extra_libs="$withval"],
-  [gwen_extra_libs=""]
-)
-AC_SUBST(gwen_extra_libs)
 
 
 

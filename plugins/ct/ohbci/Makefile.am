@@ -13,15 +13,13 @@ AM_CFLAGS=@PROFILING_CFLAGS@
 
 crypttokenplugindir = $(gwenhywfar_plugindir)/ct
 
-noinst_LTLIBRARIES=libct_ohbci.la
-libct_ohbci_la_SOURCES=ohbci.c
 noinst_HEADERS=ohbci_l.h ohbci_p.h
 
 crypttokenplugin_LTLIBRARIES=ohbci.la
 crypttokenplugin_DATA=ohbci.xml
 
-ohbci_la_SOURCES=dummy.c
-ohbci_la_LIBADD=libct_ohbci.la $(top_builddir)/src/libgwenhywfar.la
+ohbci_la_SOURCES=ohbci.c
+ohbci_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
 ohbci_la_LDFLAGS = -no-undefined $(STRIPALL) -module -avoid-version
 
 sources:

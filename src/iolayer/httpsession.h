@@ -178,6 +178,16 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 GWENHYWFAR_API
 int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess,
 				GWEN_BUFFER *buf, int timeout);
+
+/**
+ * Test-connect to the server. This function can be used to retrieve the SSL
+ * certificate from a server as the cert exchange is part of the establishing of
+ * a connection.
+ * This function connects to the server and immediately disconnects.
+ */
+GWENHYWFAR_API
+int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess);
+
 /*@}*/
 
 
