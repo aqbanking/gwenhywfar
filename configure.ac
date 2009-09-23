@@ -560,8 +560,8 @@ case "$OS_TYPE" in
   windows)
     LIBGNUTLS_CFLAGS=""
     LIBGNUTLS_LIBS="-lgnutls -lgpg-error"
-    # we use 1.6.3, so we do have gnutls_transport_set_error
-    AC_DEFINE(HAVE_GNUTLS_TRANSPORT_SET_ERRNO, 1, [only in gnutls>=1.6])
+    # we use 1.6.3 or higher, so we do have gnutls_transport_set_error
+    HAVE_GNUTLS_TRANSPORT_SET_ERRNO="yes"
     AC_SUBST(LIBGNUTLS_CFLAGS)
     AC_SUBST(LIBGNUTLS_LIBS)
     ;;
@@ -575,11 +575,11 @@ case "$OS_TYPE" in
       [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="yes"], 
       [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="no"])
     LIBS="$oldlibs"
-    if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
-      AC_DEFINE(HAVE_GNUTLS_TRANSPORT_SET_ERRNO, 1, [only in gnutls>=1.6])
-    fi
   ;;
 esac
+if [ "x${HAVE_GNUTLS_TRANSPORT_SET_ERRNO}" = "xyes" ] ; then
+  AC_DEFINE(HAVE_GNUTLS_TRANSPORT_SET_ERRNO, 1, [only in gnutls>=1.6])
+fi
 
 
 
