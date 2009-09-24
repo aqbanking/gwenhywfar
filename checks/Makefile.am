@@ -7,7 +7,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser @all_includes@
 
-noinst_PROGRAMS=checks
+noinst_PROGRAMS=checks check_urlfns
 checks_SOURCES=\
  main.c \
  db.c \
@@ -19,12 +19,15 @@ checks_SOURCES=\
  io_https.c \
  io_packets.c
 
+check_urlfns_SOURCES = check_urlfns.c
+
 
 noinst_HEADERS = checks.h
 
 checks_LDADD=$(top_builddir)/src/libgwenhywfar.la 
+check_urlfns_LDADD = $(top_builddir)/src/libgwenhywfar.la
 
-TESTS = checks
+TESTS = checks check_urlfns
 
 sources:
 
