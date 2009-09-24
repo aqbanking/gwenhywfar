@@ -102,8 +102,13 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url) {
       GWEN_Buffer_AppendString(nbuf, s);
     s=GWEN_Url_GetPath(gurl);
     if (s) {
-      if (*s!='/' && *s!='\\')
+      /* Does this begin with a slash? If not, we add one, but only if
+	 this isn't a drive letter (for windows!) */
+      if (*s!='/' && *s!='\\'
+	  && !(isalpha(s[0]) && s[1] == ':'
+	       && (s[2] == '/' || s[2] == '\\'))) {
 	GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+      }
       GWEN_Buffer_AppendString(nbuf, s);
     }
     xcfg->folder=strdup(GWEN_Buffer_GetStart(nbuf));
