@@ -18,6 +18,7 @@
 #include "url_p.h"
 #include "urlfns.h"
 #include <gwenhywfar/debug.h>
+#include <ctype.h> // for isalpha()
 
 
 GWEN_URL *GWEN_Url_fromString(const char *str) {
@@ -25,6 +26,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   GWEN_DB_NODE *dbVars;
   const char *s;
   const char *p;
+  int starts_with_drive_letter = 0;
 
   url=GWEN_Url_new();
   dbVars=GWEN_DB_Group_new("vars");
@@ -33,8 +35,17 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   dbVars=0;
 
   s=str;
+
+  /* Check for a drive letter, which occurs on windows, but this will
+     always be one single alpha character followed by a colon followed
+     by a directory separator. */
+  if (s && isalpha(s[0]) && s[1] == ':'
+      && (s[2] == '/' || s[2] == '\\')) {
+    starts_with_drive_letter = 1;
+  }
+
   /* read protocol (if any) */
-  p=strchr(s, ':');
+  p = starts_with_drive_letter ? s : strchr(s, ':');
   if (p) {
     if (p[1]=='/' && p[2]=='/') {
       char *buf;
@@ -51,7 +62,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   }
 
   if (!*s) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "No server given");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No server or path given in url \"%s\"", str);
     GWEN_Url_free(url);
     return 0;
   }
@@ -83,14 +94,21 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
     s=p+1;
   }
 
+  /* Do we now have a drive letter? (After the protocol?) */
+  if (!starts_with_drive_letter
+      && s && isalpha(s[0]) && s[1] == ':'
+      && (s[2] == '/' || s[2] == '\\')) {
+    starts_with_drive_letter = 1;
+  }
+
   /* read server */
   if (!*s) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "No server given");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No server given in url \"%s\"", str);
     GWEN_Url_free(url);
     return 0;
   }
   p=s;
-  while(*p && *p!=':' && *p!='/' && *p!='?')
+  while(!starts_with_drive_letter && *p && *p!=':' && *p!='/' && *p!='?')
     p++;
   if (p!=s) {
     char *buf;
@@ -120,9 +138,10 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
       memmove(buf, s, p-s+1);
       buf[p-s]=0;
       if (sscanf(buf, "%d", &port)!=1) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad port (%s)", buf);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad port (%s) in url \"%s\"", buf, str);
         free(buf);
-        abort();
+	GWEN_Url_free(url);
+	return 0;
       }
       url->port=port;
       free(buf);
@@ -139,7 +158,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   }
 
   /* get path */
-  if (*s=='/') {
+  if (starts_with_drive_letter || *s=='/') {
     p=s;
     while(*p && *p!='?')
       p++;
