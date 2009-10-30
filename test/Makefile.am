@@ -1,4 +1,4 @@
-INCLUDES= -I$(gwenhywfar_symlinkdir) \
+INCLUDES= -I$(gwenhywfar_symlinkdir) $(LIBGNUTLS_CFLAGS) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
