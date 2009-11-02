@@ -44,12 +44,19 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid){
   int fd;
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_FSLOCK_RESULT lres;
+  const char *fname;
 
   assert(ct);
   lct=GWEN_INHERIT_GETDATA(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE, ct);
   assert(lct);
 
-  lct->lock=GWEN_FSLock_new(GWEN_Crypt_Token_GetTokenName(ct),
+  fname = GWEN_Crypt_Token_GetTokenName(ct);
+  if (!fname) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No name of the crypt token set - maybe you need to set the key file as token name? Cannot lock token.");
+    return GWEN_ERROR_IO;
+  }
+
+  lct->lock=GWEN_FSLock_new(fname,
 			    GWEN_FSLock_TypeFile);
   lres=GWEN_FSLock_Lock(lct->lock, 10000, gid);
   if (lres!=GWEN_FSLock_ResultOk) {
