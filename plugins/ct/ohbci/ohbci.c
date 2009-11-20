@@ -1226,7 +1226,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
 
     peerId=GWEN_DB_GetCharValue(dbKey, "keyOwner", 0, NULL);
     if (peerId) {
-      DBG_ERROR(0, "Got Peer Id [%s]", peerId);
+      DBG_INFO(0, "Got Peer Id [%s]", peerId);
     }
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			"rsa/isPublic", 1);
