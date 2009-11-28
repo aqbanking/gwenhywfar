@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_builddir)/gwenhywfar3
+INCLUDES= -I$(top_builddir)/gwenhywfar3 $(GPG_ERROR_CFLAGS)
 
 EXTRA_DIST=README
 
@@ -10,5 +10,6 @@ libinherit_la_LIBADD=$(top_builddir)/src/libgwenhywfar.la
 
 noinst_PROGRAMS = testinherit
 testinherit_SOURCES = testinherit.c
-testinherit_LDADD = libinherit.la $(top_builddir)/src/libgwenhywfar.la
+testinherit_LDADD = libinherit.la $(top_builddir)/src/libgwenhywfar.la \
+  $(GPG_ERROR_LIBS)
 TESTS = testinherit

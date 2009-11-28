@@ -1,4 +1,5 @@
-INCLUDES= -I$(gwenhywfar_symlinkdir) $(LIBGNUTLS_CFLAGS) \
+INCLUDES= -I$(gwenhywfar_symlinkdir) \
+ $(LIBGNUTLS_CFLAGS) $(GPG_ERROR_CFLAGS) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
@@ -9,7 +10,8 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) $(LIBGNUTLS_CFLAGS) \
 
 noinst_PROGRAMS=gwentest
 gwentest_SOURCES=gwentest.c
-gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la
+gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la \
+  $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(GPG_ERROR_LIBS)
 
 EXTRA_DIST = README.MSVC gwentest.vcproj
 

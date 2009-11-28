@@ -554,6 +554,14 @@ esac
 
 ###-------------------------------------------------------------------------
 #
+# check for library for common error values and messages in GnuPG components
+#
+AM_PATH_GPG_ERROR
+
+
+
+###-------------------------------------------------------------------------
+#
 # check for libgnutls
 #
 case "$OS_TYPE" in
