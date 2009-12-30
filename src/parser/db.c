@@ -736,9 +736,9 @@ void* GWEN_DB_HandlePath(const char *entry,
   else {
     /* node does exist, check whether this is ok */
     if (
-        ((flags & GWEN_PATH_FLAGS_LAST) &
+        ((flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST)) ||
-        (!(flags & GWEN_PATH_FLAGS_LAST) &
+        (!(flags & GWEN_PATH_FLAGS_LAST) &&
          (flags & GWEN_PATH_FLAGS_PATHMUSTNOTEXIST))
        ) {
       DBG_VERBOUS(GWEN_LOGDOMAIN, "Entry \"%s\" already exists", entry);
