@@ -142,6 +142,9 @@ static int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
 				       uint32_t dbflags,
 				       int insert);
 
+static int GWEN_DB_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf);
+static int GWEN_DB_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf);
+
 
 #endif
 

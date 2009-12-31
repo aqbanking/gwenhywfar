@@ -30,6 +30,98 @@
 
 
 
+int GWEN_DB_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    unsigned char x;
+
+    x=(unsigned char)*src;
+    if (!(
+          (x>='A' && x<='Z') ||
+          (x>='a' && x<='z') ||
+          (x>='0' && x<='9') ||
+          x=='%' ||
+          x=='.' ||
+          x==',' ||
+          x=='.' ||
+          x=='_' ||
+          x=='-' ||
+          x=='*' ||
+          x=='?'
+         )) {
+      unsigned char c;
+
+      GWEN_Buffer_AppendByte(buf, '&');
+      c=(((unsigned char)(*src))>>4)&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+      c=((unsigned char)(*src))&0xf;
+      if (c>9)
+	c+=7;
+      c+='0';
+      GWEN_Buffer_AppendByte(buf, c);
+    }
+    else
+      GWEN_Buffer_AppendByte(buf, *src);
+
+    src++;
+  } /* while */
+
+  return 0;
+}
+
+
+
+int GWEN_DB_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
+  while(*src) {
+    const char *srcBak;
+    int charHandled;
+
+    srcBak=src;
+    charHandled=0;
+    if (*src=='&') {
+      if (strlen(src)>2) {
+        unsigned char d1, d2;
+        unsigned char c;
+
+        if (isxdigit((int)src[1]) && isxdigit((int)src[2])) {
+          /* skip '%' */
+          src++;
+          /* read first digit */
+          d1=(unsigned char)(toupper(*src));
+
+          /* get second digit */
+          src++;
+          d2=(unsigned char)(toupper(*src));
+          /* compute character */
+          d1-='0';
+          if (d1>9)
+            d1-=7;
+          c=(d1<<4)&0xf0;
+          d2-='0';
+          if (d2>9)
+            d2-=7;
+          c+=(d2&0xf);
+          /* store character */
+          GWEN_Buffer_AppendByte(buf, (char)c);
+          charHandled=1;
+        }
+      }
+    }
+    if (!charHandled)
+      GWEN_Buffer_AppendByte(buf, *src);
+    src++;
+  } /* while */
+
+  return 0;
+}
+
+
+
+
+
+
 int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
                        const char *fname,
                        const char *type,
@@ -124,6 +216,8 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
       switch(n->typ) {
       case GWEN_DB_NodeType_Group:
 	if (dbflags & GWEN_DB_FLAGS_WRITE_SUBGROUPS) {
+	  GWEN_BUFFER *tbuf;
+
           if (dbflags & GWEN_DB_FLAGS_ADD_GROUP_NEWLINES) {
             if (lastWasVar) {
               /* only insert newline if the last one before this group was a
@@ -145,10 +239,22 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
 		return err;
 	      }
             } /* for */
-          } /* if indend */
-	  GWEN_FASTBUFFER_WRITEFORCED(fb, err, n->data.dataName, -1);
+	  } /* if indend */
+
+	  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+	  err=GWEN_DB_EscapeToBufferTolerant(n->data.dataName, tbuf);
 	  if (err<0) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", err);
+            GWEN_Buffer_free(tbuf);
+	    return err;
+	  }
+
+	  GWEN_FASTBUFFER_WRITEFORCED(fb, err,
+				      GWEN_Buffer_GetStart(tbuf),
+				      GWEN_Buffer_GetUsedBytes(tbuf));
+	  GWEN_Buffer_free(tbuf);
+	  if (err<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", err);
 	    return err;
 	  }
 	  GWEN_FASTBUFFER_WRITELINE(fb, err, " {");
@@ -719,10 +825,12 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 			       GWEN_FAST_BUFFER *fb,
 			       uint32_t dbflags) {
   GWEN_BUFFER *lbuf;
+  GWEN_BUFFER *tbuf;
   int level=0;
   int someLinesRead=0;
 
   lbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
 
   for (;;) {
     int rv;
@@ -733,12 +841,14 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
       if (rv==GWEN_ERROR_EOF) {
 	if (!someLinesRead && !(dbflags & GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM)){
 	  DBG_INFO(GWEN_LOGDOMAIN, "Unexpected EOF (%d)", rv);
+	  GWEN_Buffer_free(tbuf);
 	  GWEN_Buffer_free(lbuf);
 	  return rv;
 	}
 	break;
       }
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
       GWEN_Buffer_free(lbuf);
       return rv;
     }
@@ -762,6 +872,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 	  /* found end of current group */
 	  if (level<1) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Unbalanced number of curly bracket");
+	    GWEN_Buffer_free(tbuf);
 	    GWEN_Buffer_free(lbuf);
 	    return GWEN_ERROR_BAD_DATA;
 	  }
@@ -786,6 +897,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 	  if (!*p) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
             GWEN_Buffer_Dump(lbuf, stderr, 2);
+	    GWEN_Buffer_free(tbuf);
 	    GWEN_Buffer_free(lbuf);
 	    return GWEN_ERROR_BAD_DATA;
 	  }
@@ -796,6 +908,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 	    p++;
 	  if (!*p) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
+	    GWEN_Buffer_free(tbuf);
 	    GWEN_Buffer_free(lbuf);
 	    return GWEN_ERROR_BAD_DATA;
 	  }
@@ -805,12 +918,21 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
   
 	    /* found start of group */
 	    *p1end=0;
-	    newGr=GWEN_DB_GetGroup(n, dbflags, (const char*)p1begin);
+	    rv=GWEN_DB_UnescapeToBufferTolerant((const char*)p1begin, tbuf);
+	    if (rv<0) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(tbuf);
+	      GWEN_Buffer_free(lbuf);
+	      return rv;
+	    }
+	    newGr=GWEN_DB_GetGroup(n, dbflags, GWEN_Buffer_GetStart(tbuf));
 	    if (newGr==NULL) {
-	      DBG_INFO(GWEN_LOGDOMAIN, "Could not create group [%s]", p1begin);
+	      DBG_INFO(GWEN_LOGDOMAIN, "Could not create group [%s]", GWEN_Buffer_GetStart(tbuf));
+	      GWEN_Buffer_free(tbuf);
 	      GWEN_Buffer_free(lbuf);
 	      return GWEN_ERROR_GENERIC;
 	    }
+	    GWEN_Buffer_Reset(tbuf);
 	    n=newGr;
 	    level++;
 	  }
@@ -821,12 +943,14 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 	    rv=GWEN_DB__ReadValues(n, dbflags, NULL, (const char*)p1begin, p);
 	    if (rv) {
 	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(tbuf);
 	      GWEN_Buffer_free(lbuf);
 	      return rv;
 	    }
 	  }
 	  else if (*p==',' || *p==';') {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Unexpected delimiter found");
+	    GWEN_Buffer_free(tbuf);
 	    GWEN_Buffer_free(lbuf);
 	    return GWEN_ERROR_BAD_DATA;
 	  }
@@ -843,6 +967,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 	      p++;
 	    if (!*p) {
 	      DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token [%s], [%s]", p1begin, p2begin);
+	      GWEN_Buffer_free(tbuf);
 	      GWEN_Buffer_free(lbuf);
 	      return GWEN_ERROR_BAD_DATA;
 	    }
@@ -852,12 +977,14 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 		p++;
 	      if (!*p) {
 		DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
+		GWEN_Buffer_free(tbuf);
 		GWEN_Buffer_free(lbuf);
 		return GWEN_ERROR_BAD_DATA;
 	      }
 	    }
 	    if (*p!='=' && *p!=':') {
 	      DBG_INFO(GWEN_LOGDOMAIN, "Equation mark expected");
+	      GWEN_Buffer_free(tbuf);
 	      GWEN_Buffer_free(lbuf);
 	      return GWEN_ERROR_BAD_DATA;
 	    }
@@ -868,6 +995,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 	    rv=GWEN_DB__ReadValues(n, dbflags, (const char*)p1begin, (const char*)p2begin, p);
 	    if (rv) {
 	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(tbuf);
 	      GWEN_Buffer_free(lbuf);
 	      return rv;
 	    }
@@ -880,10 +1008,12 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 
   if (level) {
     DBG_INFO(GWEN_LOGDOMAIN, "Unbalanced number of curly bracket (too few)");
+    GWEN_Buffer_free(tbuf);
     GWEN_Buffer_free(lbuf);
     return GWEN_ERROR_BAD_DATA;
   }
 
+  GWEN_Buffer_free(tbuf);
   GWEN_Buffer_free(lbuf);
 
   return 0;
