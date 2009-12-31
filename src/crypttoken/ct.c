@@ -1028,12 +1028,28 @@ int GWEN_Crypt_Token_InsertCorrectToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 		  "<html>"
 		  "Please insert the correct security disc for <i>%s</i>"
 		  "</html>"), dname, dname);
-  else
-    snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please insert the correct chip card\nfor %s"
-		  "<html>"
-		  "Please insert the correct chip card for <i>%s</i>"
-		  "</html>"), dname, dname);
+  else {
+    if (dname && *dname) {
+      snprintf(buffer, sizeof(buffer)-1,
+	       I18N("The wrong chipcard has been inserted.\n"
+		    "Please insert the chipcard with the number\n"
+		    "  %s\n"
+		    "into the card reader.\n"
+		    "<html>"
+		    "<p>The wrong card has been inserted.</p>"
+		    "<p>Please insert the chipcard with the number"
+		    "<b>%s</b> into the card reader.</p>"
+		    "</html>"),
+	       dname,
+	       dname);
+    }
+    else
+      snprintf(buffer, sizeof(buffer)-1,
+	       I18N("Please insert the correct chipcard\nfor %s"
+		    "<html>"
+		    "Please insert the correct chipcard for <i>%s</i>"
+		    "</html>"), dname, dname);
+  }
 
   rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
 			 GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS |
