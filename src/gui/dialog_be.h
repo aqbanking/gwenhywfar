@@ -28,6 +28,7 @@
 
 
 #include <gwenhywfar/dialog.h>
+#include <gwenhywfar/widget_be.h>
 
 
 #ifdef __cplusplus
@@ -99,8 +100,6 @@ GWEN_DIALOG_GETENABLED_FN GWEN_Dialog_SetGetEnabledFn(GWEN_DIALOG *dlg,
 						      GWEN_DIALOG_GETENABLED_FN fn);
 
 
-
-
 GWENHYWFAR_API
 GWEN_WIDGET_TREE *GWEN_Dialog_GetWidgets(const GWEN_DIALOG *dlg);
 
@@ -111,7 +110,10 @@ GWENHYWFAR_API
 GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, void *ptr);
 
 
-
+/**
+ * Sends a signal to the signal handler of the given dialog. This does @b not send the signal
+ * to sub-dialogs. Use @ref GWEN_Dialog_EmitSignalToAll for that.
+ */
 GWENHYWFAR_API
 int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   GWEN_DIALOG_EVENTTYPE t,
@@ -119,6 +121,18 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   int intVal,
 			   const char *charVal,
 			   void *ptrVal);
+
+/**
+ * Emits signals to the given dialog and all its sub-dialogs. This should only be used
+ * for signals like @ref GWEN_DialogEvent_TypeInit and @ref GWEN_DialogEvent_TypeFini.
+ */
+GWENHYWFAR_API
+int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
+				GWEN_DIALOG_EVENTTYPE t,
+				const char *sender,
+				int intVal,
+				const char *charVal,
+				void *ptrVal);
 
 
 #ifdef __cplusplus

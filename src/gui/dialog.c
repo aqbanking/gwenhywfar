@@ -39,6 +39,8 @@
 
 
 GWEN_INHERIT_FUNCTIONS(GWEN_DIALOG)
+GWEN_LIST_FUNCTIONS(GWEN_DIALOG, GWEN_Dialog)
+
 
 
 
@@ -48,11 +50,15 @@ GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId) {
   GWEN_NEW_OBJECT(GWEN_DIALOG, dlg);
   dlg->refCount=1;
   GWEN_INHERIT_INIT(GWEN_DIALOG, dlg);
+  GWEN_LIST_INIT(GWEN_DIALOG, dlg);
 
   if (dialogId && *dialogId)
     dlg->dialogId=strdup(dialogId);
 
   dlg->widgets=GWEN_Widget_Tree_new();
+
+  dlg->subDialogs=GWEN_Dialog_List_new();
+
 
   return dlg;
 }
@@ -66,7 +72,10 @@ void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
       dlg->refCount--;
     }
     else {
+      GWEN_Dialog_List_free(dlg->subDialogs);
+
       GWEN_INHERIT_FINI(GWEN_DIALOG, dlg);
+      GWEN_LIST_FINI(GWEN_DIALOG, dlg);
       GWEN_Widget_Tree_free(dlg->widgets);
       free(dlg->dialogId);
       dlg->refCount=0;
@@ -106,7 +115,67 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
   else {
     DBG_WARN(GWEN_LOGDOMAIN, "No signal handler in dialog [%s]",
 	     (dlg->dialogId)?(dlg->dialogId):"-unnamed-");
+    return GWEN_DialogEvent_ResultNotHandled;
+  }
+}
+
+
+
+int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
+				GWEN_DIALOG_EVENTTYPE t,
+				const char *sender,
+				int intVal,
+				const char *charVal,
+				void *ptrVal) {
+  int rv;
+  GWEN_DIALOG *subdlg;
+
+  assert(dlg);
+  assert(dlg->refCount);
+
+  if (dlg->signalHandler) {
+    rv=(dlg->signalHandler)(dlg, t, sender, intVal, charVal, ptrVal);
+    if (rv!=GWEN_DialogEvent_ResultHandled &&
+	rv!=GWEN_DialogEvent_ResultNotHandled)
+      return rv;
+  }
+
+  subdlg=GWEN_Dialog_List_First(dlg->subDialogs);
+  while(subdlg) {
+    rv=GWEN_Dialog_EmitSignalToAll(subdlg, t, sender, intVal, charVal, ptrVal);
+    if (rv!=GWEN_DialogEvent_ResultHandled &&
+	rv!=GWEN_DialogEvent_ResultNotHandled)
+      return rv;
+    subdlg=GWEN_Dialog_List_Next(subdlg);
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
+                             const char *parentName,
+			     GWEN_DIALOG *subdlg) {
+  GWEN_WIDGET *wparent;
+
+  wparent=GWEN_Dialog_FindWidgetByName(dlg, parentName);
+  if (wparent) {
+    GWEN_WIDGET *cw;
+
+    /* move all widgets from the sub dialog to the parent dialog */
+    while( (cw=GWEN_Widget_Tree_GetFirst(subdlg->widgets)) ) {
+      GWEN_Widget_Tree_Del(cw);
+      GWEN_Widget_Tree_AddChild(wparent, cw);
+    }
+
+    /* store pointer to parent widget in dialog */
+    subdlg->parentWidget=wparent;
     return 0;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Parent widget [%s] not found", parentName);
+    return GWEN_ERROR_NOT_FOUND;
   }
 }
 
@@ -177,7 +246,11 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name) {
   assert(dlg->refCount);
   assert(dlg->widgets);
 
-  w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
+  if (dlg->parentWidget)
+    w=dlg->parentWidget;
+  else
+    w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
+
   while(w) {
     const char *s;
 
@@ -199,7 +272,11 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, void *ptr) {
   assert(dlg->refCount);
   assert(dlg->widgets);
 
-  w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
+  if (dlg->parentWidget)
+    w=dlg->parentWidget;
+  else
+    w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
+
   while(w) {
     if (ptr==GWEN_Widget_GetImplData(w))
       break;

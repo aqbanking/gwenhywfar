@@ -31,6 +31,7 @@
 
 struct GWEN_DIALOG {
   GWEN_INHERIT_ELEMENT(GWEN_DIALOG)
+  GWEN_LIST_ELEMENT(GWEN_DIALOG)
 
   char *dialogId;
 
@@ -46,6 +47,9 @@ struct GWEN_DIALOG {
   GWEN_DIALOG_SETRANGE_FN setRangeFn;
   GWEN_DIALOG_SETENABLED_FN setEnabledFn;
   GWEN_DIALOG_GETENABLED_FN getEnabledFn;
+
+  GWEN_DIALOG_LIST *subDialogs;
+  GWEN_WIDGET *parentWidget;
 
   uint32_t refCount;
 };

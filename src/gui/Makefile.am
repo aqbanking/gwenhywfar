@@ -20,7 +20,7 @@ iheader_HEADERS=\
  cgui.h \
  dialog.h dialog_be.h \
  gui.h gui_be.h \
- widget.h widget_be.h
+ widget_be.h
 
 libgui_la_SOURCES=\
  cgui.c \

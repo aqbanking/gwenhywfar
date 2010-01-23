@@ -31,6 +31,8 @@
 #include <gwenhywfar/xml.h>
 
 
+GWEN_WIDGET *GWEN_Widget_new(GWEN_DIALOG *dlg);
+void GWEN_Widget_free(GWEN_WIDGET *w);
 
 int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node);
 

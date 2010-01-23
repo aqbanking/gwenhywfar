@@ -28,6 +28,7 @@
 
 
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/list1.h>
 #include <gwenhywfar/xml.h>
 
 
@@ -36,6 +37,8 @@
  *
  * @brief This module contains the definition of GWEN_GUI dialogs.
  *
+ * A dialog contains widgets which can be accessed by name. A dialog can contain multiple
+ * subdialogs. Widgets of a dialog and its subdialogs should have unique names.
  */
 /*@{*/
 
@@ -47,6 +50,7 @@ extern "C" {
 
 typedef struct GWEN_DIALOG GWEN_DIALOG;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWENHYWFAR_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWEN_Dialog, GWENHYWFAR_API)
 
 
 
@@ -90,21 +94,6 @@ typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
 
 
 
-#ifdef __cplusplus
-}
-#endif
-
-
-/* other gwen headers */
-#include <gwenhywfar/widget.h>
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-
 GWENHYWFAR_API
 GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId);
 
@@ -115,6 +104,24 @@ GWENHYWFAR_API
 int GWEN_Dialog_ReadXml(GWEN_DIALOG *dlg, GWEN_XMLNODE *node);
 
 
+/**
+ * Inserts a sub-dialog into the given dialog. The widgets of the subdialog become
+ * children of the main dialog below the widget referenced to by parentName.
+ * Please take care that the subdialog doesn't contain widgets with the same name as
+ * the main dialog.
+ * This only works if @ref GWEN_Gui_ExecDialog has not been called yet!
+ * Takes over ownership of the given subdialog.
+ */
+GWENHYWFAR_API
+int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
+			     const char *parentWidgetName,
+			     GWEN_DIALOG *subdlg);
+
+
+/**
+ * Sets the signal handler of the dialog. Please note that this doesn't set the signal
+ * handler of any sub-dialog.
+ */
 GWENHYWFAR_API
 GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
                                                        GWEN_DIALOG_SIGNALHANDLER fn);
