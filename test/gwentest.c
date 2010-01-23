@@ -55,6 +55,7 @@
 #include <gwenhywfar/padd.h>
 
 #include <gwenhywfar/httpsession.h>
+#include <gwenhywfar/dialog.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -3943,6 +3944,40 @@ int testPss2(int argc, char **argv) {
 
 
 
+int testDialog(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+  GWEN_DIALOG *dlg;
+  int rv;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  if (GWEN_XML_ReadFile(n, argv[2],
+			GWEN_XML_FLAGS_DEFAULT |
+			GWEN_XML_FLAGS_HANDLE_HEADERS)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+  fprintf(stderr, "XML file:\n");
+  GWEN_XMLNode_Dump(n, stdout, 2);
+
+  dlg=GWEN_Dialog_new("testdialog");
+  rv=GWEN_Dialog_ReadXml(dlg, n);
+  if (rv) {
+    fprintf(stderr, "Error reading widgets from XML node: %d\n", rv);
+    return 2;
+  }
+  GWEN_XMLNode_free(n);
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4085,6 +4120,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "pss2")==0) {
     rv=testPss2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "dlg")==0) {
+    rv=testDialog(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

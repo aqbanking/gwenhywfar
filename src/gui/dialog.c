@@ -192,6 +192,25 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name) {
 
 
 
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, void *ptr) {
+  GWEN_WIDGET *w;
+
+  assert(dlg);
+  assert(dlg->refCount);
+  assert(dlg->widgets);
+
+  w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
+  while(w) {
+    if (ptr==GWEN_Widget_GetImplData(w))
+      break;
+    w=GWEN_Widget_Tree_GetBelow(w);
+  }
+
+  return w;
+}
+
+
+
 GWEN_WIDGET_TREE *GWEN_Dialog_GetWidgets(const GWEN_DIALOG *dlg) {
   assert(dlg);
   assert(dlg->refCount);
