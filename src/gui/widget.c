@@ -256,6 +256,16 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeImage;
     else if (strcasecmp(s, "listBox")==0)
       return GWEN_Widget_TypeListBox;
+    else if (strcasecmp(s, "dialog")==0)
+      return GWEN_Widget_TypeDialog;
+    else if (strcasecmp(s, "tabBook")==0)
+      return GWEN_Widget_TypeTabBook;
+    else if (strcasecmp(s, "tabPage")==0)
+      return GWEN_Widget_TypeTabPage;
+    else if (strcasecmp(s, "wizard")==0)
+      return GWEN_Widget_TypeWizard;
+    else if (strcasecmp(s, "wizardPage")==0)
+      return GWEN_Widget_TypeWizardPage;
   }
   return GWEN_Widget_TypeUnknown;
 }
@@ -281,6 +291,11 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeGridLayout:      return "gridLayout";
   case GWEN_Widget_TypeImage:           return "image";
   case GWEN_Widget_TypeListBox:         return "listBox";
+  case GWEN_Widget_TypeDialog:          return "dialog";
+  case GWEN_Widget_TypeTabBook:         return "tabBook";
+  case GWEN_Widget_TypeTabPage:         return "tabPage";
+  case GWEN_Widget_TypeWizard:          return "wizard";
+  case GWEN_Widget_TypeWizardPage:      return "wizardPage";
   case GWEN_Widget_TypeUnknown:
   default:                              return "unknown";
   }

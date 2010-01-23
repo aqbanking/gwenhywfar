@@ -64,7 +64,12 @@ typedef enum {
     GWEN_Widget_TypeVLayout,
     GWEN_Widget_TypeGridLayout,
     GWEN_Widget_TypeImage,
-    GWEN_Widget_TypeListBox
+    GWEN_Widget_TypeListBox,
+    GWEN_Widget_TypeDialog,
+    GWEN_Widget_TypeTabBook,
+    GWEN_Widget_TypeTabPage,
+    GWEN_Widget_TypeWizard,
+    GWEN_Widget_TypeWizardPage
 } GWEN_WIDGET_TYPE;
 
 
