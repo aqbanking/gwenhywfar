@@ -30,6 +30,10 @@
 #include <gwenhywfar/dialog.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETINTVALUE_FN)(GWEN_DIALOG *dlg,
 							GWEN_WIDGET *w,
@@ -66,28 +70,43 @@ typedef int GWENHYWFAR_CB (*GWEN_DIALOG_GETENABLED_FN)(GWEN_DIALOG *dlg,
 
 
 
+GWENHYWFAR_API
 GWEN_DIALOG_SETINTVALUE_FN GWEN_Dialog_SetSetIntValueFn(GWEN_DIALOG *dlg,
 							GWEN_DIALOG_SETINTVALUE_FN fn);
+
+GWENHYWFAR_API
 GWEN_DIALOG_GETINTVALUE_FN GWEN_Dialog_SetGetIntValueFn(GWEN_DIALOG *dlg,
 							GWEN_DIALOG_GETINTVALUE_FN fn);
+
+GWENHYWFAR_API
 GWEN_DIALOG_SETCHARVALUE_FN GWEN_Dialog_SetSetCharValueFn(GWEN_DIALOG *dlg,
 							  GWEN_DIALOG_SETCHARVALUE_FN fn);
+
+GWENHYWFAR_API
 GWEN_DIALOG_GETCHARVALUE_FN GWEN_Dialog_SetGetCharValueFn(GWEN_DIALOG *dlg,
 							  GWEN_DIALOG_GETCHARVALUE_FN fn);
+
+GWENHYWFAR_API
 GWEN_DIALOG_SETRANGE_FN GWEN_Dialog_SetSetRangeFn(GWEN_DIALOG *dlg,
 						  GWEN_DIALOG_SETRANGE_FN fn);
+
+GWENHYWFAR_API
 GWEN_DIALOG_SETENABLED_FN GWEN_Dialog_SetSetEnabledFn(GWEN_DIALOG *dlg,
 						      GWEN_DIALOG_SETENABLED_FN fn);
+
+GWENHYWFAR_API
 GWEN_DIALOG_GETENABLED_FN GWEN_Dialog_SetGetEnabledFn(GWEN_DIALOG *dlg,
 						      GWEN_DIALOG_GETENABLED_FN fn);
 
 
 
 
+GWENHYWFAR_API
 GWEN_WIDGET_TREE *GWEN_Dialog_GetWidgets(const GWEN_DIALOG *dlg);
 
 
 
+GWENHYWFAR_API
 int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   GWEN_DIALOG_EVENTTYPE t,
 			   const char *sender,
@@ -96,6 +115,9 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   void *ptrVal);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 
 

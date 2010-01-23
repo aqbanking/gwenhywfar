@@ -86,35 +86,63 @@ extern "C" {
 #endif
 
 
+GWENHYWFAR_API
 void GWEN_Widget_free(GWEN_WIDGET *w);
 
 
+GWENHYWFAR_API
 GWEN_DIALOG *GWEN_Widget_GetDialog(const GWEN_WIDGET *w);
 
+GWENHYWFAR_API
 const char *GWEN_Widget_GetName(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 void GWEN_Widget_SetName(GWEN_WIDGET *w, const char *s);
 
+GWENHYWFAR_API
 uint32_t GWEN_Widget_GetFlags(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 void GWEN_Widget_SetFlags(GWEN_WIDGET *w, uint32_t fl);
+
+GWENHYWFAR_API
 void GWEN_Widget_AddFlags(GWEN_WIDGET *w, uint32_t fl);
+
+GWENHYWFAR_API
 void GWEN_Widget_SubFlags(GWEN_WIDGET *w, uint32_t fl);
 
+GWENHYWFAR_API
 GWEN_WIDGET_TYPE GWEN_Widget_GetType(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 void GWEN_Widget_SetType(GWEN_WIDGET *w, GWEN_WIDGET_TYPE t);
 
+GWENHYWFAR_API
 int GWEN_Widget_GetColumns(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 void GWEN_Widget_SetColumns(GWEN_WIDGET *w, int i);
 
+GWENHYWFAR_API
 int GWEN_Widget_GetRows(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 void GWEN_Widget_SetRows(GWEN_WIDGET *w, int i);
 
+GWENHYWFAR_API
 const char *GWEN_Widget_GetText(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 void GWEN_Widget_SetText(GWEN_WIDGET *w, const char *s);
 
 
+GWENHYWFAR_API
 GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s);
+
+GWENHYWFAR_API
 const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t);
 
+GWENHYWFAR_API
 uint32_t GWEN_Widget_Flags_fromString(const char *s);
 
 

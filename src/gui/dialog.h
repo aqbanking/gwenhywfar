@@ -105,49 +105,61 @@ extern "C" {
 
 
 
+GWENHYWFAR_API
 GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId);
+
+GWENHYWFAR_API
 void GWEN_Dialog_free(GWEN_DIALOG *dlg);
 
+GWENHYWFAR_API
 int GWEN_Dialog_ReadXml(GWEN_DIALOG *dlg, GWEN_XMLNODE *node);
 
 
+GWENHYWFAR_API
 GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
                                                        GWEN_DIALOG_SIGNALHANDLER fn);
 
 
 
 
+GWENHYWFAR_API
 int GWEN_Dialog_SetIntValue(GWEN_DIALOG *dlg,
 			    const char *name,
 			    int value,
 			    int doSignal);
 
+GWENHYWFAR_API
 int GWEN_Dialog_GetIntValue(GWEN_DIALOG *dlg,
 			    const char *name,
 			    int defaultValue);
 
+GWENHYWFAR_API
 int GWEN_Dialog_SetCharValue(GWEN_DIALOG *dlg,
 			     const char *name,
 			     const char *value,
 			     int doSignal);
 
+GWENHYWFAR_API
 const char *GWEN_Dialog_GetCharValue(GWEN_DIALOG *dlg,
 				     const char *name,
 				     const char *defaultValue);
 
 
+GWENHYWFAR_API
 int GWEN_Dialog_SetRange(GWEN_DIALOG *dlg,
 			 const char *name,
 			 int minValue,
 			 int maxValue,
 			 int doSignal);
 
+GWENHYWFAR_API
 int GWEN_Dialog_SetEnabled(GWEN_DIALOG *dlg,
 			   const char *name,
 			   int b,
 			   int doSignal);
 
 
+GWENHYWFAR_API
 int GWEN_Dialog_GetEnabled(GWEN_DIALOG *dlg,
 			   const char *name);
 

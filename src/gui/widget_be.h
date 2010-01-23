@@ -30,14 +30,26 @@
 #include <gwenhywfar/widget.h>
 #include <gwenhywfar/inherit.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_WIDGET, GWENHYWFAR_API)
 
+GWENHYWFAR_API
 GWEN_WIDGET *GWEN_Widget_new(GWEN_DIALOG *dlg);
 
+GWENHYWFAR_API
 void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 void GWEN_Widget_SetImplData(GWEN_WIDGET *w, void *ptr);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

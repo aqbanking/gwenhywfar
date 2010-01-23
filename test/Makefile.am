@@ -13,6 +13,6 @@ gwentest_SOURCES=gwentest.c
 gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la \
   $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(GPG_ERROR_LIBS)
 
-EXTRA_DIST = README.MSVC gwentest.vcproj
+EXTRA_DIST = README.MSVC gwentest.vcproj testdialog.xml
 
 sources:

@@ -132,19 +132,15 @@ int GWEN_Dialog__ReadXmlWidget(GWEN_DIALOG *dlg,
   else
     GWEN_Widget_Tree_Add(dlg->widgets, w);
 
-  n=GWEN_XMLNode_FindFirstTag(node, "widgets", NULL, NULL);
-  if (n) {
-    GWEN_XMLNODE *nn;
 
-    nn=GWEN_XMLNode_FindFirstTag(n, "widget", NULL, NULL);
-    while(nn) {
-      int rv;
+  n=GWEN_XMLNode_FindFirstTag(node, "widget", NULL, NULL);
+  while(n) {
+    int rv;
 
-      rv=GWEN_Dialog__ReadXmlWidget(dlg, w, nn);
-      if (rv<0)
-	return rv;
-      nn=GWEN_XMLNode_FindNextTag(nn, "widget", NULL, NULL);
-    }
+    rv=GWEN_Dialog__ReadXmlWidget(dlg, w, n);
+    if (rv<0)
+      return rv;
+    n=GWEN_XMLNode_FindNextTag(n, "widget", NULL, NULL);
   }
 
   return 0;
