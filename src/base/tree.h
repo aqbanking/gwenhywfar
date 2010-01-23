@@ -192,7 +192,9 @@ void GWEN_Tree_Del(GWEN_TREE_ELEMENT *el);
 
 /** Adds (appends) the second list to the end of the first
  * list. (This operation is also called "append" or "concatenate"
- * elsewhere.) */
+ * elsewhere.)
+ * The second list will be empty upon return.
+ */
 GWENHYWFAR_API
 void GWEN_Tree_AddList(GWEN_TREE *dest, GWEN_TREE *l);
 
