@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: error.h 1104 2007-01-03 09:21:32Z martin $
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Wed Jan 20 2010
+    copyright   : (C) 2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,51 +23,20 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_GUI_GUI_P_H
-#define GWENHYWFAR_GUI_GUI_P_H
-
-#include "gui_be.h"
+#ifndef GWENHYWFAR_GUI_WIDGET_BE_H
+#define GWENHYWFAR_GUI_WIDGET_BE_H
 
 
-struct GWEN_GUI {
-  GWEN_INHERIT_ELEMENT(GWEN_GUI)
-
-  GWEN_GUI_MESSAGEBOX_FN messageBoxFn;
-  GWEN_GUI_INPUTBOX_FN inputBoxFn;
-
-  GWEN_GUI_SHOWBOX_FN showBoxFn;
-  GWEN_GUI_HIDEBOX_FN hideBoxFn;
-
-  GWEN_GUI_PROGRESS_START_FN progressStartFn;
-  GWEN_GUI_PROGRESS_ADVANCE_FN progressAdvanceFn;
-  GWEN_GUI_PROGRESS_LOG_FN progressLogFn;
-  GWEN_GUI_PROGRESS_END_FN progressEndFn;
-
-  GWEN_GUI_PRINT_FN printFn;
-
-  GWEN_GUI_GETPASSWORD_FN getPasswordFn;
-  GWEN_GUI_SETPASSWORDSTATUS_FN setPasswordStatusFn;
-
-  GWEN_GUI_LOG_HOOK_FN logHookFn;
-
-  GWEN_GUI_WAITFORSOCKETS_FN waitForSocketsFn;
-
-  GWEN_GUI_CHECKCERT_FN checkCertFn;
-
-  GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN keyDataFromTextOpenSslFn;
-
-  GWEN_GUI_EXEC_DIALOG_FN execDialogFn;
-
-  uint32_t flags;
-
-  uint32_t refCount;
-};
+#include <gwenhywfar/widget.h>
+#include <gwenhywfar/inherit.h>
 
 
-static int GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
-				     const GWEN_SSLCERTDESCR *cd,
-				     GWEN_IO_LAYER *io, uint32_t guiid);
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_WIDGET, GWENHYWFAR_API)
 
+GWEN_WIDGET *GWEN_Widget_new(GWEN_DIALOG *dlg);
+
+void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w);
+void GWEN_Widget_SetImplData(GWEN_WIDGET *w, void *ptr);
 
 
 

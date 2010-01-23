@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: error.h 1104 2007-01-03 09:21:32Z martin $
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Wed Jan 20 2010
+    copyright   : (C) 2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,52 +23,40 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_GUI_GUI_P_H
-#define GWENHYWFAR_GUI_GUI_P_H
+#ifndef GWENHYWFAR_GUI_DIALOG_P_H
+#define GWENHYWFAR_GUI_DIALOG_P_H
 
-#include "gui_be.h"
+#include <gwenhywfar/dialog_be.h>
 
 
-struct GWEN_GUI {
-  GWEN_INHERIT_ELEMENT(GWEN_GUI)
+struct GWEN_DIALOG {
+  GWEN_INHERIT_ELEMENT(GWEN_DIALOG)
 
-  GWEN_GUI_MESSAGEBOX_FN messageBoxFn;
-  GWEN_GUI_INPUTBOX_FN inputBoxFn;
-
-  GWEN_GUI_SHOWBOX_FN showBoxFn;
-  GWEN_GUI_HIDEBOX_FN hideBoxFn;
-
-  GWEN_GUI_PROGRESS_START_FN progressStartFn;
-  GWEN_GUI_PROGRESS_ADVANCE_FN progressAdvanceFn;
-  GWEN_GUI_PROGRESS_LOG_FN progressLogFn;
-  GWEN_GUI_PROGRESS_END_FN progressEndFn;
-
-  GWEN_GUI_PRINT_FN printFn;
-
-  GWEN_GUI_GETPASSWORD_FN getPasswordFn;
-  GWEN_GUI_SETPASSWORDSTATUS_FN setPasswordStatusFn;
-
-  GWEN_GUI_LOG_HOOK_FN logHookFn;
-
-  GWEN_GUI_WAITFORSOCKETS_FN waitForSocketsFn;
-
-  GWEN_GUI_CHECKCERT_FN checkCertFn;
-
-  GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN keyDataFromTextOpenSslFn;
-
-  GWEN_GUI_EXEC_DIALOG_FN execDialogFn;
+  char *dialogId;
 
   uint32_t flags;
+  GWEN_WIDGET_TREE *widgets;
+
+  GWEN_DIALOG_SIGNALHANDLER signalHandler;
+
+  GWEN_DIALOG_SETINTVALUE_FN setIntValueFn;
+  GWEN_DIALOG_GETINTVALUE_FN getIntValueFn;
+  GWEN_DIALOG_SETCHARVALUE_FN setCharValueFn;
+  GWEN_DIALOG_GETCHARVALUE_FN getCharValueFn;
+  GWEN_DIALOG_SETRANGE_FN setRangeFn;
+  GWEN_DIALOG_SETENABLED_FN setEnabledFn;
+  GWEN_DIALOG_GETENABLED_FN getEnabledFn;
 
   uint32_t refCount;
 };
 
 
-static int GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
-				     const GWEN_SSLCERTDESCR *cd,
-				     GWEN_IO_LAYER *io, uint32_t guiid);
 
+int GWEN_Dialog__ReadXmlWidget(GWEN_DIALOG *dlg,
+			       GWEN_WIDGET *wparent,
+			       GWEN_XMLNODE *node);
 
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name);
 
 
 #endif

@@ -204,6 +204,8 @@ typedef int (*GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN)(GWEN_GUI *gui,
 						   unsigned char *buffer,
 						   unsigned int bufLength);
 
+typedef int (*GWEN_GUI_EXEC_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg);
+
 
 /*@}*/
 
@@ -270,6 +272,9 @@ GWENHYWFAR_API
   GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN
   GWEN_Gui_SetKeyDataFromTextOpenSslFn(GWEN_GUI *gui,
                                        GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN f);
+
+GWENHYWFAR_API
+GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DIALOG_FN f);
 
 /*@}*/
 

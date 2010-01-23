@@ -266,6 +266,18 @@ GWEN_GUI_CHECKCERT_FN GWEN_Gui_SetCheckCertFn(GWEN_GUI *gui, GWEN_GUI_CHECKCERT_
 
 
 
+GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DIALOG_FN f) {
+  GWEN_GUI_EXEC_DIALOG_FN of;
+
+  assert(gui);
+  of=gui->execDialogFn;
+  gui->execDialogFn=f;
+
+  return of;
+}
+
+
+
 GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN
 GWEN_Gui_SetKeyDataFromTextOpenSslFn(GWEN_GUI *gui,
 				     GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN f) {
@@ -777,6 +789,11 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 
 
 
+int GWEN_Gui_ExecDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg) {
+  if (gwenhywfar_gui && gwenhywfar_gui->execDialogFn)
+    return gwenhywfar_gui->execDialogFn(gui, dlg);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
 
 
 

@@ -35,6 +35,7 @@
 #include <gwenhywfar/inetsocket.h>
 #include <gwenhywfar/ssl_cert_descr.h>
 #include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/dialog.h>
 
 #include <inttypes.h>
 
@@ -50,7 +51,7 @@
  * The GWEN_GUI object contains callbacks for message display, user
  * input, progress reports, SSL certificate checking etc.
  *
- * There are implementations of GWEN_GUI based on console, QT3 and FOX.
+ * There are implementations of GWEN_GUI based on console, QT3, QT4 and FOX.
  *
  * GWEN_GUI uses flags to tell implementations what the caller needs of the GUI
  * implementation.
@@ -719,6 +720,12 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 				     unsigned char *buffer,
 				     unsigned int bufLength);
 
+/**
+ * This function shows and executes the given dialog and returns the result.
+ * See @ref MOD_GUI_DIALOG for a description of the dialog framework.
+ */
+GWENHYWFAR_API
+int GWEN_Gui_ExecDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg);
 
 /*@}*/
 
@@ -737,7 +744,8 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 #define GWEN_GUI_FLAGS_ACCEPTVALIDCERTS   0x00000002
 /** GUI automatically rejects invalid certs */
 #define GWEN_GUI_FLAGS_REJECTINVALIDCERTS 0x00000004
-
+/** GUI implementation supports dialogs (see @ref MOD_GUI_DIALOG) */
+#define GWEN_GUI_FLAGS_DIALOGSUPPORTED    0x80000000
 
 GWENHYWFAR_API uint32_t GWEN_Gui_GetFlags(const GWEN_GUI *gui);
 GWENHYWFAR_API void GWEN_Gui_SetFlags(GWEN_GUI *gui, uint32_t fl);

@@ -9,14 +9,25 @@ AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 noinst_LTLIBRARIES=libgui.la
 
 noinst_HEADERS=\
- gui_p.h cgui_l.h cgui_p.h cprogress_l.h cprogress_p.h
+ cgui_p.h \
+ cprogress_l.h cprogress_p.h \
+ dialog_p.h \
+ gui_p.h cgui_l.h \
+ widget_l.h widget_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
- gui.h gui_be.h cgui.h
+ cgui.h \
+ dialog.h dialog_be.h \
+ gui.h gui_be.h \
+ widget.h widget_be.h
 
 libgui_la_SOURCES=\
- gui.c cgui.c cprogress.c
+ cgui.c \
+ cprogress.c \
+ dialog.c \
+ gui.c \
+ widget.c 
 
 
 sources:
