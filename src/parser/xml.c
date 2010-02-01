@@ -91,6 +91,7 @@ void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p){
   if (p) {
     GWEN_Memory_dealloc(p->name);
     GWEN_Memory_dealloc(p->value);
+    GWEN_Memory_dealloc(p->nameSpace);
     GWEN_FREE_OBJECT(p);
   }
 }
@@ -98,7 +99,13 @@ void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p){
 
 
 GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(const GWEN_XMLPROPERTY *p){
-  return GWEN_XMLProperty_new(p->name, p->value);
+  GWEN_XMLPROPERTY *pp;
+
+  pp=GWEN_XMLProperty_new(p->name, p->value);
+  if (p->nameSpace)
+    pp->nameSpace=strdup(p->nameSpace);
+
+  return pp;
 }
 
 
@@ -1568,6 +1575,7 @@ int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n) {
 int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
   if (n && n->type==GWEN_XMLNodeTypeTag && n->data) {
     GWEN_XMLNODE *nn;
+    GWEN_XMLPROPERTY *pp;
 
     if (n->nameSpace==0) {
       char *p;
@@ -1585,6 +1593,29 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
 	free(n->data);
 	n->data=s;
       }
+    }
+
+    pp=n->properties;
+    while(pp) {
+      if (pp->nameSpace==0) {
+	char *p;
+
+	p=strchr(pp->name, ':');
+	if (p) {
+	  int len=p-pp->name;
+	  char *s;
+
+	  pp->nameSpace=(char*)GWEN_Memory_malloc(len);
+	  assert(pp->nameSpace);
+	  memmove(pp->nameSpace, pp->name, len);
+	  pp->nameSpace[len-1]=0;
+	  s=GWEN_Memory_strdup(p+1);
+	  free(pp->name);
+	  pp->name=s;
+	}
+      }
+
+      pp=pp->next;
     }
 
     nn=GWEN_XMLNode_List_First(n->children);

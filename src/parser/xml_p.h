@@ -42,6 +42,7 @@ struct GWEN__XMLPROPERTY {
   GWEN_XMLPROPERTY *next;
   char *name;
   char *value;
+  char *nameSpace;
 };
 
 
