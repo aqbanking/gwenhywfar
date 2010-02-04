@@ -396,6 +396,35 @@ GWEN_DIALOG_GETENABLED_FN GWEN_Dialog_SetGetEnabledFn(GWEN_DIALOG *dlg,
 
 
 
+GWEN_DIALOG_ADDCHOICE_FN GWEN_Dialog_SetAddChoiceFn(GWEN_DIALOG *dlg,
+						    GWEN_DIALOG_ADDCHOICE_FN fn) {
+  GWEN_DIALOG_ADDCHOICE_FN oh;
+
+  assert(dlg);
+  assert(dlg->refCount);
+
+  oh=dlg->addChoiceFn;
+  dlg->addChoiceFn=fn;
+  return oh;
+}
+
+
+
+GWEN_DIALOG_CLRCHOICE_FN GWEN_Dialog_SetClearChoiceFn(GWEN_DIALOG *dlg,
+						      GWEN_DIALOG_CLRCHOICE_FN fn) {
+  GWEN_DIALOG_CLRCHOICE_FN oh;
+
+  assert(dlg);
+  assert(dlg->refCount);
+
+  oh=dlg->clearChoiceFn;
+  dlg->clearChoiceFn=fn;
+  return oh;
+}
+
+
+
+
 
 
 
@@ -569,6 +598,57 @@ int GWEN_Dialog_GetEnabled(GWEN_DIALOG *dlg,
     w=GWEN_Dialog_FindWidgetByName(dlg, name);
     if (w)
       return dlg->getEnabledFn(dlg, w);
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
+      return GWEN_ERROR_NOT_FOUND;
+    }
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+  }
+}
+
+
+
+int GWEN_Dialog_AddChoice(GWEN_DIALOG *dlg,
+			  const char *name,
+			  const char *value,
+			  int doSignal) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  if (dlg->addChoiceFn) {
+    GWEN_WIDGET *w;
+
+    w=GWEN_Dialog_FindWidgetByName(dlg, name);
+    if (w)
+      return dlg->addChoiceFn(dlg, w, value, doSignal);
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
+      return GWEN_ERROR_NOT_FOUND;
+    }
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+  }
+}
+
+
+
+int GWEN_Dialog_ClearChoice(GWEN_DIALOG *dlg,
+			    const char *name,
+			    int doSignal) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  if (dlg->clearChoiceFn) {
+    GWEN_WIDGET *w;
+
+    w=GWEN_Dialog_FindWidgetByName(dlg, name);
+    if (w)
+      return dlg->clearChoiceFn(dlg, w, doSignal);
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
       return GWEN_ERROR_NOT_FOUND;

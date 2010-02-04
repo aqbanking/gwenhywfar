@@ -68,6 +68,14 @@ typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETENABLED_FN)(GWEN_DIALOG *dlg,
 typedef int GWENHYWFAR_CB (*GWEN_DIALOG_GETENABLED_FN)(GWEN_DIALOG *dlg,
 						       GWEN_WIDGET *w);
 
+typedef int GWENHYWFAR_CB (*GWEN_DIALOG_ADDCHOICE_FN)(GWEN_DIALOG *dlg,
+						      GWEN_WIDGET *w,
+						      const char *value,
+						      int doSignal);
+typedef int GWENHYWFAR_CB (*GWEN_DIALOG_CLRCHOICE_FN)(GWEN_DIALOG *dlg,
+						      GWEN_WIDGET *w,
+						      int doSignal);
+
 
 
 
@@ -98,6 +106,14 @@ GWEN_DIALOG_SETENABLED_FN GWEN_Dialog_SetSetEnabledFn(GWEN_DIALOG *dlg,
 GWENHYWFAR_API
 GWEN_DIALOG_GETENABLED_FN GWEN_Dialog_SetGetEnabledFn(GWEN_DIALOG *dlg,
 						      GWEN_DIALOG_GETENABLED_FN fn);
+
+GWENHYWFAR_API
+GWEN_DIALOG_ADDCHOICE_FN GWEN_Dialog_SetAddChoiceFn(GWEN_DIALOG *dlg,
+						    GWEN_DIALOG_ADDCHOICE_FN fn);
+GWENHYWFAR_API
+GWEN_DIALOG_CLRCHOICE_FN GWEN_Dialog_SetClearChoiceFn(GWEN_DIALOG *dlg,
+						      GWEN_DIALOG_CLRCHOICE_FN fn);
+
 
 
 GWENHYWFAR_API

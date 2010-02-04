@@ -204,7 +204,9 @@ typedef int (*GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN)(GWEN_GUI *gui,
 						   unsigned char *buffer,
 						   unsigned int bufLength);
 
-typedef int (*GWEN_GUI_EXEC_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg);
+typedef int (*GWEN_GUI_EXEC_DIALOG_FN)(GWEN_GUI *gui,
+				       GWEN_DIALOG *parentDlg,
+				       GWEN_DIALOG *dlg);
 
 
 /*@}*/

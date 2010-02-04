@@ -48,6 +48,9 @@ struct GWEN_DIALOG {
   GWEN_DIALOG_SETENABLED_FN setEnabledFn;
   GWEN_DIALOG_GETENABLED_FN getEnabledFn;
 
+  GWEN_DIALOG_ADDCHOICE_FN addChoiceFn;
+  GWEN_DIALOG_CLRCHOICE_FN clearChoiceFn;
+
   GWEN_DIALOG_LIST *subDialogs;
   GWEN_WIDGET *parentWidget;
 

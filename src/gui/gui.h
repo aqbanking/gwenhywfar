@@ -723,9 +723,13 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 /**
  * This function shows and executes the given dialog and returns the result.
  * See @ref MOD_GUI_DIALOG for a description of the dialog framework.
+ * @param parentDlg parent dialog (e.g. if called from within another active
+ * dialog). Use NULL if there is no parent dialog.
  */
 GWENHYWFAR_API
-int GWEN_Gui_ExecDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg);
+int GWEN_Gui_ExecDialog(GWEN_GUI *gui,
+			GWEN_DIALOG *parentDlg,
+			GWEN_DIALOG *dlg);
 
 /*@}*/
 

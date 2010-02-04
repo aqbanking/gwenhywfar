@@ -170,6 +170,16 @@ GWENHYWFAR_API
 int GWEN_Dialog_GetEnabled(GWEN_DIALOG *dlg,
 			   const char *name);
 
+GWENHYWFAR_API
+int GWEN_Dialog_AddChoice(GWEN_DIALOG *dlg,
+			  const char *name,
+			  const char *value,
+			  int doSignal);
+
+GWENHYWFAR_API
+int GWEN_Dialog_ClearChoice(GWEN_DIALOG *dlg,
+			    const char *name,
+			    int doSignal);
 
 
 

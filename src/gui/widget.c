@@ -331,6 +331,10 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s){
         fl|=GWEN_WIDGET_FLAGS_FILLX;
       else if (strcasecmp(wstart, "fillY")==0)
 	fl|=GWEN_WIDGET_FLAGS_FILLY;
+      else if (strcasecmp(wstart, "readOnly")==0)
+	  fl|=GWEN_WIDGET_FLAGS_READONLY;
+      else if (strcasecmp(wstart, "password")==0)
+	  fl|=GWEN_WIDGET_FLAGS_PASSWORD;
     }
   }
 

@@ -1875,11 +1875,3 @@ int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 
-
-
-
-
-
-
-
-
