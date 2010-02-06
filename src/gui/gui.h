@@ -725,10 +725,10 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
  * See @ref MOD_GUI_DIALOG for a description of the dialog framework.
  * @param parentDlg parent dialog (e.g. if called from within another active
  * dialog). Use NULL if there is no parent dialog.
+ * @return <0: error code, 0: aborted, 1: accepted (e.g. "Ok" pressed)
  */
 GWENHYWFAR_API
-int GWEN_Gui_ExecDialog(GWEN_GUI *gui,
-			GWEN_DIALOG *parentDlg,
+int GWEN_Gui_ExecDialog(GWEN_DIALOG *parentDlg,
 			GWEN_DIALOG *dlg);
 
 /*@}*/

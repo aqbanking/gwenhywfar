@@ -67,6 +67,8 @@ void GWEN_Widget_free(GWEN_WIDGET *w) {
       GWEN_TREE_FINI(GWEN_WIDGET, w);
       free(w->name);
       free(w->text);
+      free(w->iconFile);
+      free(w->imageFile);
       w->refCount=0;
       GWEN_FREE_OBJECT(w);
     }
@@ -215,6 +217,44 @@ void GWEN_Widget_SetName(GWEN_WIDGET *w, const char *s) {
 
 
 
+const char *GWEN_Widget_GetIconFileName(const GWEN_WIDGET *w) {
+  assert(w);
+  assert(w->refCount);
+  return w->iconFile;
+}
+
+
+
+void GWEN_Widget_SetIconFileName(GWEN_WIDGET *w, const char *s) {
+  assert(w);
+  assert(w->refCount);
+  free(w->iconFile);
+  if (s) w->iconFile=strdup(s);
+  else w->iconFile=NULL;
+}
+
+
+
+const char *GWEN_Widget_GetImageFileName(const GWEN_WIDGET *w) {
+  assert(w);
+  assert(w->refCount);
+  return w->imageFile;
+}
+
+
+
+void GWEN_Widget_SetImageFileName(GWEN_WIDGET *w, const char *s) {
+  assert(w);
+  assert(w->refCount);
+  free(w->imageFile);
+  if (s) w->imageFile=strdup(s);
+  else w->imageFile=NULL;
+}
+
+
+
+
+
 GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
   if (s && *s) {
     if (strcasecmp(s, "unknown")==0)
@@ -346,6 +386,10 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s){
 int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
   const char *s;
 
+  s=GWEN_XMLNode_GetProperty(node, "name", NULL);
+  if (s && *s)
+    GWEN_Widget_SetName(w, s);
+
   s=GWEN_XMLNode_GetProperty(node, "type", "unknown");
   if (s && *s)
     w->wtype=GWEN_Widget_Type_fromString(s);
@@ -364,6 +408,14 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
   s=GWEN_XMLNode_GetProperty(node, "text", NULL);
   if (s && *s)
     GWEN_Widget_SetText(w, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "icon", NULL);
+  if (s && *s)
+    GWEN_Widget_SetIconFileName(w, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "image", NULL);
+  if (s && *s)
+    GWEN_Widget_SetImageFileName(w, s);
 
   return 0;
 }

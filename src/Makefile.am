@@ -19,6 +19,7 @@ DEFS += \
   -DLIBDIR=\"$(libdir)\" \
   -DGWENHYWFAR_SO_EFFECTIVE_STR=\"$(GWENHYWFAR_SO_EFFECTIVE)\" \
   -DGWEN_DATADIR=\"$(gwenhywfar_data_searchdir)\" \
+  -DGWEN_SYSDATADIR=\"$(gwenhywfar_sysdata_searchdir)\" \
   -DPLUGINDIR=\"$(gwenhywfar_plugin_searchdir)\"
 
 # Note: The symbol "DATADIR" is already used by some Windows header,

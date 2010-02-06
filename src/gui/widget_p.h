@@ -43,6 +43,9 @@ struct GWEN_WIDGET {
   int rows;
   char *text;
 
+  char *iconFile;
+  char *imageFile;
+
   void *impl_data;
 
   uint32_t refCount;

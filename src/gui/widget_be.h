@@ -145,6 +145,22 @@ GWENHYWFAR_API
 void GWEN_Widget_SetText(GWEN_WIDGET *w, const char *s);
 
 
+
+GWENHYWFAR_API
+const char *GWEN_Widget_GetIconFileName(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetIconFileName(GWEN_WIDGET *w, const char *s);
+
+
+GWENHYWFAR_API
+const char *GWEN_Widget_GetImageFileName(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetImageFileName(GWEN_WIDGET *w, const char *s);
+
+
+
 GWENHYWFAR_API
 GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s);
 

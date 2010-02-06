@@ -789,11 +789,10 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 
 
 
-int GWEN_Gui_ExecDialog(GWEN_GUI *gui,
-			GWEN_DIALOG *parentDlg,
+int GWEN_Gui_ExecDialog(GWEN_DIALOG *parentDlg,
 			GWEN_DIALOG *dlg) {
   if (gwenhywfar_gui && gwenhywfar_gui->execDialogFn)
-    return gwenhywfar_gui->execDialogFn(gui, parentDlg, dlg);
+    return gwenhywfar_gui->execDialogFn(gwenhywfar_gui, parentDlg, dlg);
   return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
