@@ -326,6 +326,7 @@ gwenhywfar_headerdir="\${includedir}/gwenhywfar3"
 gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
 gwenhywfar_symlinkdir="\$(top_builddir)/gwenhywfar3"
 gwenhywfar_datadir="\${datadir}/gwenhywfar"
+gwenhywfar_sysdatadir="\${datadir}"
 
 # Now the specific settings
 case "$OS_TYPE" in
@@ -413,7 +414,7 @@ AC_MSG_RESULT($gwenhywfar_plugin_searchdir)
 # check data search dir
 #
 AC_MSG_CHECKING(data search dir)
-AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for data files],
+AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for gwen's data files],
   [gwenhywfar_data_searchdir="$withval"],
   [gwenhywfar_data_searchdir=""])
 
@@ -431,6 +432,32 @@ fi
 
 AC_SUBST(gwenhywfar_data_searchdir)
 AC_MSG_RESULT($gwenhywfar_data_searchdir)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check system data search dir
+#
+AC_MSG_CHECKING(system data search dir)
+AC_ARG_WITH(sysdata-searchdir, [  --with-sysdata-searchdir=DIR where to search for data files],
+  [gwenhywfar_sysdata_searchdir="$withval"],
+  [gwenhywfar_sysdata_searchdir=""])
+
+if test -z "${gwenhywfar_sysdata_searchdir}"; then
+  if test "$OSYSTEM" = "windows"; then
+    gwenhywfar_sysdata_searchdir="share"
+  else
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_sysdata_searchdir="share"
+    else
+      gwenhywfar_sysdata_searchdir="$gwenhywfar_sysdatadir"
+    fi
+  fi
+fi
+
+AC_SUBST(gwenhywfar_sysdata_searchdir)
+AC_MSG_RESULT($gwenhywfar_sysdata_searchdir)
 
 
 

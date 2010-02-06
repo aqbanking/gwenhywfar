@@ -55,6 +55,16 @@
     installation, which point to e.g.  "/usr/share/gwenhywfar" */
 #define GWEN_PM_DATADIR      "datadir"
 
+/**
+ * Path identifier for generic data files of this installation,
+ * which points to e.g. "/usr/share".
+ * Please note: The difference between this identifier and
+ * @ref GWEN_PM_DATADIR is that the latter points to Gwenhywfar's
+ * own data files while this identifier here points to the generic
+ * data folder (usually the parent of @ref GWEN_PM_DATADIR).
+ */
+#define GWEN_PM_SYSDATADIR      "sysdatadir"
+
 
 
 #ifdef __cplusplus

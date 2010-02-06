@@ -3946,6 +3946,7 @@ int testPss2(int argc, char **argv) {
 
 int testDialog(int argc, char **argv) {
   GWEN_XMLNODE *n;
+  GWEN_XMLNODE *nDialog;
   GWEN_DIALOG *dlg;
   int rv;
 
@@ -3965,8 +3966,15 @@ int testDialog(int argc, char **argv) {
   fprintf(stderr, "XML file:\n");
   GWEN_XMLNode_Dump(n, stdout, 2);
 
+  nDialog=GWEN_XMLNode_FindFirstTag(n, "dialog", NULL, NULL);
+  if (nDialog==NULL) {
+    fprintf(stderr, "Dialog not found in XML file\n");
+    return 2;
+  }
+
+
   dlg=GWEN_Dialog_new("testdialog");
-  rv=GWEN_Dialog_ReadXml(dlg, n);
+  rv=GWEN_Dialog_ReadXml(dlg, nDialog);
   if (rv) {
     fprintf(stderr, "Error reading widgets from XML node: %d\n", rv);
     return 2;

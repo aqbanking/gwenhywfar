@@ -82,6 +82,8 @@
 #define GWEN_REGNAME_SYSCONFDIR  "sysconfdir"
 #define GWEN_REGNAME_LOCALEDIR   "localedir"
 #define GWEN_REGNAME_DATADIR     "pkgdatadir"
+#define GWEN_REGNAME_SYSDATADIR  "sysdatadir"
+
 
 
 static unsigned int gwen_is_initialized=0;
@@ -215,6 +217,29 @@ int GWEN_Init() {
 			     GWEN_PM_LIBNAME,
 			     GWEN_PM_DATADIR,
 			     GWEN_DATADIR);
+#endif
+
+    /* ---------------------------------------------------------------------
+     * system datadir e.g. "/usr/share" */
+    GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR);
+    GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
+				       GWEN_PM_LIBNAME,
+				       GWEN_PM_SYSDATADIR,
+				       GWEN_REGKEY_PATHS,
+				       GWEN_REGNAME_SYSDATADIR);
+#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
+    /* add folder relative to EXE */
+    GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
+				GWEN_PM_LIBNAME,
+				GWEN_PM_SYSDATADIR,
+				GWEN_SYSDATADIR,
+				GWEN_PathManager_RelModeExe);
+#else
+    /* add absolute folder */
+    GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
+			     GWEN_PM_LIBNAME,
+			     GWEN_PM_SYSDATADIR,
+			     GWEN_SYSDATADIR);
 #endif
 
     /* Initialize other modules. */
@@ -402,64 +427,5 @@ void GWEN_Version(int *major,
   *build=GWENHYWFAR_VERSION_BUILD;
 }
 
-
-
-
-
-
-#if 0
-/* Currently unused. */
-int GWEN__GetValueFromWinReg(const char *keyPath,
-                             const char *varName,
-                             GWEN_BUFFER *nbuf){
-#ifdef OS_WIN32
-  HKEY hkey;
-  TCHAR nbuffer[MAX_PATH];
-  BYTE vbuffer[MAX_PATH];
-  DWORD nsize;
-  DWORD vsize;
-  DWORD typ;
-  int i;
-
-  snprintf(nbuffer, sizeof(nbuffer), keyPath);
-
-  /* open the key */
-  if (RegOpenKey(HKEY_LOCAL_MACHINE,
-                 keyPath,
-                 &hkey)){
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "RegOpenKey \"%s\" failed.", keyPath);
-    return -1;
-  }
-
-  /* find the variablename  */
-  for (i=0;; i++) {
-    nsize=sizeof(nbuffer);
-    vsize=sizeof(vbuffer);
-    if (ERROR_SUCCESS!=RegEnumValue(hkey,
-                                    i,    /* index */
-                                    nbuffer,
-                                    &nsize,
-                                    0,       /* reserved */
-                                    &typ,
-                                    vbuffer,
-                                    &vsize))
-      break;
-    if (strcasecmp(nbuffer, varName)==0 && typ==REG_SZ) {
-      /* variable found */
-      RegCloseKey(hkey);
-      GWEN_Buffer_AppendString(nbuf, (char*)vbuffer);
-      return 0;
-    }
-  } /* for */
-
-  RegCloseKey(hkey);
-  return -1;
-
-#else /* OS_WIN32 */
-  return -1;
-#endif /* OS_WIN32 */
-}
-#endif /* 0 */
 
 
