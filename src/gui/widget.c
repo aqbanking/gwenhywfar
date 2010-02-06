@@ -303,6 +303,8 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeWizard;
     else if (strcasecmp(s, "wizardPage")==0)
       return GWEN_Widget_TypeWizardPage;
+    else if (strcasecmp(s, "checkBox")==0)
+      return GWEN_Widget_TypeCheckBox;
   }
   return GWEN_Widget_TypeUnknown;
 }
@@ -333,6 +335,7 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeTabPage:         return "tabPage";
   case GWEN_Widget_TypeWizard:          return "wizard";
   case GWEN_Widget_TypeWizardPage:      return "wizardPage";
+  case GWEN_Widget_TypeCheckBox:        return "checkBox";
   case GWEN_Widget_TypeUnknown:
   default:                              return "unknown";
   }

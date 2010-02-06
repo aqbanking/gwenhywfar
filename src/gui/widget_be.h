@@ -71,7 +71,8 @@ typedef enum {
     GWEN_Widget_TypeTabBook,
     GWEN_Widget_TypeTabPage,
     GWEN_Widget_TypeWizard,
-    GWEN_Widget_TypeWizardPage
+    GWEN_Widget_TypeWizardPage,
+    GWEN_Widget_TypeCheckBox
 } GWEN_WIDGET_TYPE;
 
 
