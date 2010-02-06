@@ -402,8 +402,21 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
   if (s && *s)
     w->flags=GWEN_Widget_Flags_fromString(s);
 
-  w->columns=GWEN_XMLNode_GetIntValue(node, "columns", 0);
-  w->rows=GWEN_XMLNode_GetIntValue(node, "rows", 0);
+  s=GWEN_XMLNode_GetProperty(node, "columns", NULL);
+  if (s && *s) {
+    if (1!=sscanf(s, "%d", &(w->columns))) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Value [%s] is not an integer", s);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  s=GWEN_XMLNode_GetProperty(node, "rows", NULL);
+  if (s && *s) {
+    if (1!=sscanf(s, "%d", &(w->rows))) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Value [%s] is not an integer", s);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
 
   s=GWEN_XMLNode_GetProperty(node, "text", NULL);
   if (s && *s)
