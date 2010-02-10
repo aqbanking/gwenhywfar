@@ -159,58 +159,55 @@ GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
 
 
 
-GWENHYWFAR_API
-int GWEN_Dialog_SetIntValue(GWEN_DIALOG *dlg,
-			    const char *name,
-			    int value,
-			    int doSignal);
 
-GWENHYWFAR_API
-int GWEN_Dialog_GetIntValue(GWEN_DIALOG *dlg,
-			    const char *name,
-			    int defaultValue);
+typedef enum {
+  GWEN_DialogProperty_None=0,
 
-GWENHYWFAR_API
-int GWEN_Dialog_SetCharValue(GWEN_DIALOG *dlg,
-			     const char *name,
-			     const char *value,
-			     int doSignal);
+  GWEN_DialogProperty_Title,
+  GWEN_DialogProperty_Value,
+  GWEN_DialogProperty_MinValue,
+  GWEN_DialogProperty_MaxValue,
+  GWEN_DialogProperty_Enabled,
+  GWEN_DialogProperty_AddChoice,
+  GWEN_DialogProperty_ClearChoices,
+  GWEN_DialogProperty_ChoiceCount,
+  GWEN_DialogProperty_ColumnWidth,
+  GWEN_DialogProperty_Width,
+  GWEN_DialogProperty_Height,
 
-GWENHYWFAR_API
-const char *GWEN_Dialog_GetCharValue(GWEN_DIALOG *dlg,
-				     const char *name,
-				     const char *defaultValue);
+  GWEN_DialogProperty_Unknown=-1
+} GWEN_DIALOG_PROPERTY;
 
 
 GWENHYWFAR_API
-int GWEN_Dialog_SetRange(GWEN_DIALOG *dlg,
-			 const char *name,
-			 int minValue,
-			 int maxValue,
-			 int doSignal);
+int GWEN_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
+			       const char *name,
+			       GWEN_DIALOG_PROPERTY prop,
+                               int index,
+			       int value,
+			       int doSignal);
 
 GWENHYWFAR_API
-int GWEN_Dialog_SetEnabled(GWEN_DIALOG *dlg,
-			   const char *name,
-			   int b,
-			   int doSignal);
-
-
-GWENHYWFAR_API
-int GWEN_Dialog_GetEnabled(GWEN_DIALOG *dlg,
-			   const char *name);
+int GWEN_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
+			       const char *name,
+			       GWEN_DIALOG_PROPERTY prop,
+			       int index,
+			       int defaultValue);
 
 GWENHYWFAR_API
-int GWEN_Dialog_AddChoice(GWEN_DIALOG *dlg,
-			  const char *name,
-			  const char *value,
-			  int doSignal);
+int GWEN_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
+				const char *name,
+				GWEN_DIALOG_PROPERTY prop,
+				int index,
+				const char *value,
+				int doSignal);
 
 GWENHYWFAR_API
-int GWEN_Dialog_ClearChoice(GWEN_DIALOG *dlg,
-			    const char *name,
-			    int doSignal);
-
+const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
+					const char *name,
+					GWEN_DIALOG_PROPERTY prop,
+					int index,
+					const char *defaultValue);
 
 
 

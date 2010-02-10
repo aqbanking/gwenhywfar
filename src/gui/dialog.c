@@ -251,6 +251,10 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name) {
   else
     w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
 
+  /* empty name always corresponds to the root */
+  if (name==NULL || *name==0)
+    return w;
+
   while(w) {
     const char *s;
 
@@ -298,127 +302,57 @@ GWEN_WIDGET_TREE *GWEN_Dialog_GetWidgets(const GWEN_DIALOG *dlg) {
 
 
 
-GWEN_DIALOG_SETINTVALUE_FN GWEN_Dialog_SetSetIntValueFn(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_SETINTVALUE_FN fn) {
-  GWEN_DIALOG_SETINTVALUE_FN oh;
+GWEN_DIALOG_SETINTPROPERTY_FN GWEN_Dialog_SetSetIntPropertyFn(GWEN_DIALOG *dlg,
+							      GWEN_DIALOG_SETINTPROPERTY_FN fn) {
+  GWEN_DIALOG_SETINTPROPERTY_FN oh;
 
   assert(dlg);
   assert(dlg->refCount);
 
-  oh=dlg->setIntValueFn;
-  dlg->setIntValueFn=fn;
+  oh=dlg->setIntPropertyFn;
+  dlg->setIntPropertyFn=fn;
   return oh;
 }
 
 
 
-GWEN_DIALOG_GETINTVALUE_FN GWEN_Dialog_SetGetIntValueFn(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_GETINTVALUE_FN fn) {
-  GWEN_DIALOG_GETINTVALUE_FN oh;
+GWEN_DIALOG_GETINTPROPERTY_FN GWEN_Dialog_SetGetIntPropertyFn(GWEN_DIALOG *dlg,
+							      GWEN_DIALOG_GETINTPROPERTY_FN fn) {
+  GWEN_DIALOG_GETINTPROPERTY_FN oh;
 
   assert(dlg);
   assert(dlg->refCount);
 
-  oh=dlg->getIntValueFn;
-  dlg->getIntValueFn=fn;
+  oh=dlg->getIntPropertyFn;
+  dlg->getIntPropertyFn=fn;
   return oh;
 }
 
 
 
-GWEN_DIALOG_SETCHARVALUE_FN GWEN_Dialog_SetSetCharValueFn(GWEN_DIALOG *dlg,
-							  GWEN_DIALOG_SETCHARVALUE_FN fn) {
-  GWEN_DIALOG_SETCHARVALUE_FN oh;
+GWEN_DIALOG_SETCHARPROPERTY_FN GWEN_Dialog_SetSetCharPropertyFn(GWEN_DIALOG *dlg,
+								GWEN_DIALOG_SETCHARPROPERTY_FN fn) {
+  GWEN_DIALOG_SETCHARPROPERTY_FN oh;
 
   assert(dlg);
   assert(dlg->refCount);
 
-  oh=dlg->setCharValueFn;
-  dlg->setCharValueFn=fn;
+  oh=dlg->setCharPropertyFn;
+  dlg->setCharPropertyFn=fn;
   return oh;
 }
 
 
 
-GWEN_DIALOG_GETCHARVALUE_FN GWEN_Dialog_SetGetCharValueFn(GWEN_DIALOG *dlg,
-							  GWEN_DIALOG_GETCHARVALUE_FN fn) {
-  GWEN_DIALOG_GETCHARVALUE_FN oh;
+GWEN_DIALOG_GETCHARPROPERTY_FN GWEN_Dialog_SetGetCharPropertyFn(GWEN_DIALOG *dlg,
+								GWEN_DIALOG_GETCHARPROPERTY_FN fn) {
+  GWEN_DIALOG_GETCHARPROPERTY_FN oh;
 
   assert(dlg);
   assert(dlg->refCount);
 
-  oh=dlg->getCharValueFn;
-  dlg->getCharValueFn=fn;
-  return oh;
-}
-
-
-
-GWEN_DIALOG_SETRANGE_FN GWEN_Dialog_SetSetRangeFn(GWEN_DIALOG *dlg,
-						  GWEN_DIALOG_SETRANGE_FN fn) {
-  GWEN_DIALOG_SETRANGE_FN oh;
-
-  assert(dlg);
-  assert(dlg->refCount);
-
-  oh=dlg->setRangeFn;
-  dlg->setRangeFn=fn;
-  return oh;
-}
-
-
-
-GWEN_DIALOG_SETENABLED_FN GWEN_Dialog_SetSetEnabledFn(GWEN_DIALOG *dlg,
-						      GWEN_DIALOG_SETENABLED_FN fn) {
-  GWEN_DIALOG_SETENABLED_FN oh;
-
-  assert(dlg);
-  assert(dlg->refCount);
-
-  oh=dlg->setEnabledFn;
-  dlg->setEnabledFn=fn;
-  return oh;
-}
-
-
-
-GWEN_DIALOG_GETENABLED_FN GWEN_Dialog_SetGetEnabledFn(GWEN_DIALOG *dlg,
-						      GWEN_DIALOG_GETENABLED_FN fn) {
-  GWEN_DIALOG_GETENABLED_FN oh;
-
-  assert(dlg);
-  assert(dlg->refCount);
-
-  oh=dlg->getEnabledFn;
-  dlg->getEnabledFn=fn;
-  return oh;
-}
-
-
-
-GWEN_DIALOG_ADDCHOICE_FN GWEN_Dialog_SetAddChoiceFn(GWEN_DIALOG *dlg,
-						    GWEN_DIALOG_ADDCHOICE_FN fn) {
-  GWEN_DIALOG_ADDCHOICE_FN oh;
-
-  assert(dlg);
-  assert(dlg->refCount);
-
-  oh=dlg->addChoiceFn;
-  dlg->addChoiceFn=fn;
-  return oh;
-}
-
-
-
-GWEN_DIALOG_CLRCHOICE_FN GWEN_Dialog_SetClearChoiceFn(GWEN_DIALOG *dlg,
-						      GWEN_DIALOG_CLRCHOICE_FN fn) {
-  GWEN_DIALOG_CLRCHOICE_FN oh;
-
-  assert(dlg);
-  assert(dlg->refCount);
-
-  oh=dlg->clearChoiceFn;
-  dlg->clearChoiceFn=fn;
+  oh=dlg->getCharPropertyFn;
+  dlg->getCharPropertyFn=fn;
   return oh;
 }
 
@@ -427,24 +361,21 @@ GWEN_DIALOG_CLRCHOICE_FN GWEN_Dialog_SetClearChoiceFn(GWEN_DIALOG *dlg,
 
 
 
-
-
-
-
-
-int GWEN_Dialog_SetIntValue(GWEN_DIALOG *dlg,
-			    const char *name,
-			    int value,
-			    int doSignal) {
+int GWEN_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
+			       const char *name,
+			       GWEN_DIALOG_PROPERTY prop,
+			       int index,
+			       int value,
+			       int doSignal) {
   assert(dlg);
   assert(dlg->refCount);
 
-  if (dlg->setIntValueFn) {
+  if (dlg->setIntPropertyFn) {
     GWEN_WIDGET *w;
 
     w=GWEN_Dialog_FindWidgetByName(dlg, name);
     if (w)
-      return dlg->setIntValueFn(dlg, w, value, doSignal);
+      return dlg->setIntPropertyFn(dlg, w, prop, index, value, doSignal);
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
       return GWEN_ERROR_NOT_FOUND;
@@ -458,18 +389,20 @@ int GWEN_Dialog_SetIntValue(GWEN_DIALOG *dlg,
 
 
 
-int GWEN_Dialog_GetIntValue(GWEN_DIALOG *dlg,
-			    const char *name,
-			    int defaultValue) {
+int GWEN_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
+			       const char *name,
+			       GWEN_DIALOG_PROPERTY prop,
+			       int index,
+			       int defaultProperty) {
   assert(dlg);
   assert(dlg->refCount);
 
-  if (dlg->getIntValueFn) {
+  if (dlg->getIntPropertyFn) {
     GWEN_WIDGET *w;
 
     w=GWEN_Dialog_FindWidgetByName(dlg, name);
     if (w)
-      return dlg->getIntValueFn(dlg, w, defaultValue);
+      return dlg->getIntPropertyFn(dlg, w, prop, index, defaultProperty);
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
       return GWEN_ERROR_NOT_FOUND;
@@ -483,19 +416,21 @@ int GWEN_Dialog_GetIntValue(GWEN_DIALOG *dlg,
 
 
 
-int GWEN_Dialog_SetCharValue(GWEN_DIALOG *dlg,
-			     const char *name,
-			     const char *value,
-			     int doSignal) {
+int GWEN_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
+				const char *name,
+				GWEN_DIALOG_PROPERTY prop,
+				int index,
+				const char *value,
+				int doSignal) {
   assert(dlg);
   assert(dlg->refCount);
 
-  if (dlg->setCharValueFn) {
+  if (dlg->setCharPropertyFn) {
     GWEN_WIDGET *w;
 
     w=GWEN_Dialog_FindWidgetByName(dlg, name);
     if (w)
-      return dlg->setCharValueFn(dlg, w, value, doSignal);
+      return dlg->setCharPropertyFn(dlg, w, prop, index, value, doSignal);
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
       return GWEN_ERROR_NOT_FOUND;
@@ -509,159 +444,30 @@ int GWEN_Dialog_SetCharValue(GWEN_DIALOG *dlg,
 
 
 
-const char *GWEN_Dialog_GetCharValue(GWEN_DIALOG *dlg,
-				     const char *name,
-				     const char *defaultValue) {
+const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
+					const char *name,
+                                        GWEN_DIALOG_PROPERTY prop,
+					int index,
+					const char *defaultProperty) {
   assert(dlg);
   assert(dlg->refCount);
 
-  if (dlg->getCharValueFn) {
+  if (dlg->getCharPropertyFn) {
     GWEN_WIDGET *w;
 
     w=GWEN_Dialog_FindWidgetByName(dlg, name);
     if (w)
-      return dlg->getCharValueFn(dlg, w, defaultValue);
+      return dlg->getCharPropertyFn(dlg, w, prop, index, defaultProperty);
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
-      return defaultValue;
+      return defaultProperty;
     }
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
-    return defaultValue;
+    return defaultProperty;
   }
 }
-
-
-
-int GWEN_Dialog_SetRange(GWEN_DIALOG *dlg,
-			 const char *name,
-			 int minValue,
-			 int maxValue,
-			 int doSignal) {
-  assert(dlg);
-  assert(dlg->refCount);
-
-  if (dlg->setRangeFn) {
-    GWEN_WIDGET *w;
-
-    w=GWEN_Dialog_FindWidgetByName(dlg, name);
-    if (w)
-      return dlg->setRangeFn(dlg, w, minValue, maxValue, doSignal);
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
-    return GWEN_ERROR_NOT_IMPLEMENTED;
-  }
-}
-
-
-
-int GWEN_Dialog_SetEnabled(GWEN_DIALOG *dlg,
-			   const char *name,
-			   int b,
-			   int doSignal) {
-  assert(dlg);
-  assert(dlg->refCount);
-
-  if (dlg->setEnabledFn) {
-    GWEN_WIDGET *w;
-
-    w=GWEN_Dialog_FindWidgetByName(dlg, name);
-    if (w)
-      return dlg->setEnabledFn(dlg, w, b, doSignal);
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
-    return GWEN_ERROR_NOT_IMPLEMENTED;
-  }
-}
-
-
-
-int GWEN_Dialog_GetEnabled(GWEN_DIALOG *dlg,
-			   const char *name) {
-  assert(dlg);
-  assert(dlg->refCount);
-
-  if (dlg->getEnabledFn) {
-    GWEN_WIDGET *w;
-
-    w=GWEN_Dialog_FindWidgetByName(dlg, name);
-    if (w)
-      return dlg->getEnabledFn(dlg, w);
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
-    return GWEN_ERROR_NOT_IMPLEMENTED;
-  }
-}
-
-
-
-int GWEN_Dialog_AddChoice(GWEN_DIALOG *dlg,
-			  const char *name,
-			  const char *value,
-			  int doSignal) {
-  assert(dlg);
-  assert(dlg->refCount);
-
-  if (dlg->addChoiceFn) {
-    GWEN_WIDGET *w;
-
-    w=GWEN_Dialog_FindWidgetByName(dlg, name);
-    if (w)
-      return dlg->addChoiceFn(dlg, w, value, doSignal);
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
-    return GWEN_ERROR_NOT_IMPLEMENTED;
-  }
-}
-
-
-
-int GWEN_Dialog_ClearChoice(GWEN_DIALOG *dlg,
-			    const char *name,
-			    int doSignal) {
-  assert(dlg);
-  assert(dlg->refCount);
-
-  if (dlg->clearChoiceFn) {
-    GWEN_WIDGET *w;
-
-    w=GWEN_Dialog_FindWidgetByName(dlg, name);
-    if (w)
-      return dlg->clearChoiceFn(dlg, w, doSignal);
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] not found", name);
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
-    return GWEN_ERROR_NOT_IMPLEMENTED;
-  }
-}
-
-
-
 
 
 

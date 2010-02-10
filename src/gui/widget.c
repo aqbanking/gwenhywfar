@@ -64,9 +64,12 @@ void GWEN_Widget_free(GWEN_WIDGET *w) {
       w->refCount--;
     }
     else {
+      int i;
+
       GWEN_TREE_FINI(GWEN_WIDGET, w);
       free(w->name);
-      free(w->text);
+      for (i=0; i<GWEN_WIDGET_TEXTCOUNT; i++)
+	free(w->text[i]);
       free(w->iconFile);
       free(w->imageFile);
       w->refCount=0;
@@ -181,20 +184,25 @@ void GWEN_Widget_SetRows(GWEN_WIDGET *w, int i) {
 
 
 
-const char *GWEN_Widget_GetText(const GWEN_WIDGET *w) {
+const char *GWEN_Widget_GetText(const GWEN_WIDGET *w, int idx) {
   assert(w);
   assert(w->refCount);
-  return w->text;
+  if (idx<0 || idx>=GWEN_WIDGET_TEXTCOUNT)
+    return NULL;
+  return w->text[idx];
 }
 
 
 
-void GWEN_Widget_SetText(GWEN_WIDGET *w, const char *s) {
+void GWEN_Widget_SetText(GWEN_WIDGET *w, int idx, const char *s) {
   assert(w);
   assert(w->refCount);
-  free(w->text);
-  if (s) w->text=strdup(s);
-  else w->text=NULL;
+
+  if (idx>=0 && idx<GWEN_WIDGET_TEXTCOUNT) {
+    free(w->text[idx]);
+    if (s) w->text[idx]=strdup(s);
+    else w->text[idx]=NULL;
+  }
 }
 
 
@@ -336,9 +344,10 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeWizard:          return "wizard";
   case GWEN_Widget_TypeWizardPage:      return "wizardPage";
   case GWEN_Widget_TypeCheckBox:        return "checkBox";
-  case GWEN_Widget_TypeUnknown:
-  default:                              return "unknown";
+  case GWEN_Widget_TypeUnknown:         return "unknown";
   }
+
+  return "unknown";
 }
 
 
@@ -378,6 +387,20 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s){
 	  fl|=GWEN_WIDGET_FLAGS_READONLY;
       else if (strcasecmp(wstart, "password")==0)
 	  fl|=GWEN_WIDGET_FLAGS_PASSWORD;
+      else if (strcasecmp(wstart, "default")==0)
+	fl|=GWEN_WIDGET_FLAGS_DEFAULT_WIDGET;
+      else if (strcasecmp(wstart, "decorShrinkable")==0)
+	fl|=GWEN_WIDGET_FLAGS_DECOR_SHRINKABLE;
+      else if (strcasecmp(wstart, "decorStretchable")==0)
+	fl|=GWEN_WIDGET_FLAGS_DECOR_STRETCHABLE;
+      else if (strcasecmp(wstart, "decorMinimize")==0)
+	fl|=GWEN_WIDGET_FLAGS_DECOR_MINIMIZE;
+      else if (strcasecmp(wstart, "decorMaximize")==0)
+	fl|=GWEN_WIDGET_FLAGS_DECOR_MAXIMIZE;
+      else if (strcasecmp(wstart, "decorClose")==0)
+	fl|=GWEN_WIDGET_FLAGS_DECOR_CLOSE;
+      else if (strcasecmp(wstart, "decorMenu")==0)
+	fl|=GWEN_WIDGET_FLAGS_DECOR_MENU;
     }
   }
 
@@ -423,7 +446,7 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
 
   s=GWEN_XMLNode_GetProperty(node, "text", NULL);
   if (s && *s)
-    GWEN_Widget_SetText(w, s);
+    GWEN_Widget_SetText(w, 0, s);
 
   s=GWEN_XMLNode_GetProperty(node, "icon", NULL);
   if (s && *s)

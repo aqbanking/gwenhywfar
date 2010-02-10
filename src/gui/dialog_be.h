@@ -36,84 +36,48 @@ extern "C" {
 #endif
 
 
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETINTVALUE_FN)(GWEN_DIALOG *dlg,
-							GWEN_WIDGET *w,
-							int value,
-							int doSignal);
+typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
+							   GWEN_WIDGET *w,
+							   GWEN_DIALOG_PROPERTY prop,
+							   int index,
+							   int value,
+							   int doSignal);
 
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_GETINTVALUE_FN)(GWEN_DIALOG *dlg,
-							GWEN_WIDGET *w,
-							int defaultValue);
+typedef int GWENHYWFAR_CB (*GWEN_DIALOG_GETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
+							   GWEN_WIDGET *w,
+							   GWEN_DIALOG_PROPERTY prop,
+							   int index,
+							   int defaultValue);
 
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETCHARVALUE_FN)(GWEN_DIALOG *dlg,
-							 GWEN_WIDGET *w,
-							 const char *value,
-							 int doSignal);
+typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
+							    GWEN_WIDGET *w,
+							    GWEN_DIALOG_PROPERTY prop,
+							    int index,
+							    const char *value,
+							    int doSignal);
 
-typedef const char* GWENHYWFAR_CB (*GWEN_DIALOG_GETCHARVALUE_FN)(GWEN_DIALOG *dlg,
-								 GWEN_WIDGET *w,
-								 const char *defaultValue);
-
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETRANGE_FN)(GWEN_DIALOG *dlg,
-						     GWEN_WIDGET *w,
-						     int minValue,
-						     int maxValue,
-						     int doSignal);
-
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETENABLED_FN)(GWEN_DIALOG *dlg,
-						       GWEN_WIDGET *w,
-						       int b,
-						       int doSignal);
-
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_GETENABLED_FN)(GWEN_DIALOG *dlg,
-						       GWEN_WIDGET *w);
-
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_ADDCHOICE_FN)(GWEN_DIALOG *dlg,
-						      GWEN_WIDGET *w,
-						      const char *value,
-						      int doSignal);
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_CLRCHOICE_FN)(GWEN_DIALOG *dlg,
-						      GWEN_WIDGET *w,
-						      int doSignal);
-
-
+typedef const char* GWENHYWFAR_CB (*GWEN_DIALOG_GETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
+								    GWEN_WIDGET *w,
+								    GWEN_DIALOG_PROPERTY prop,
+								    int index,
+								    const char *defaultValue);
 
 
 GWENHYWFAR_API
-GWEN_DIALOG_SETINTVALUE_FN GWEN_Dialog_SetSetIntValueFn(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_SETINTVALUE_FN fn);
+GWEN_DIALOG_SETINTPROPERTY_FN GWEN_Dialog_SetSetIntPropertyFn(GWEN_DIALOG *dlg,
+							      GWEN_DIALOG_SETINTPROPERTY_FN fn);
 
 GWENHYWFAR_API
-GWEN_DIALOG_GETINTVALUE_FN GWEN_Dialog_SetGetIntValueFn(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_GETINTVALUE_FN fn);
+GWEN_DIALOG_GETINTPROPERTY_FN GWEN_Dialog_SetGetIntPropertyFn(GWEN_DIALOG *dlg,
+							      GWEN_DIALOG_GETINTPROPERTY_FN fn);
 
 GWENHYWFAR_API
-GWEN_DIALOG_SETCHARVALUE_FN GWEN_Dialog_SetSetCharValueFn(GWEN_DIALOG *dlg,
-							  GWEN_DIALOG_SETCHARVALUE_FN fn);
+GWEN_DIALOG_SETCHARPROPERTY_FN GWEN_Dialog_SetSetCharPropertyFn(GWEN_DIALOG *dlg,
+								GWEN_DIALOG_SETCHARPROPERTY_FN fn);
 
 GWENHYWFAR_API
-GWEN_DIALOG_GETCHARVALUE_FN GWEN_Dialog_SetGetCharValueFn(GWEN_DIALOG *dlg,
-							  GWEN_DIALOG_GETCHARVALUE_FN fn);
-
-GWENHYWFAR_API
-GWEN_DIALOG_SETRANGE_FN GWEN_Dialog_SetSetRangeFn(GWEN_DIALOG *dlg,
-						  GWEN_DIALOG_SETRANGE_FN fn);
-
-GWENHYWFAR_API
-GWEN_DIALOG_SETENABLED_FN GWEN_Dialog_SetSetEnabledFn(GWEN_DIALOG *dlg,
-						      GWEN_DIALOG_SETENABLED_FN fn);
-
-GWENHYWFAR_API
-GWEN_DIALOG_GETENABLED_FN GWEN_Dialog_SetGetEnabledFn(GWEN_DIALOG *dlg,
-						      GWEN_DIALOG_GETENABLED_FN fn);
-
-GWENHYWFAR_API
-GWEN_DIALOG_ADDCHOICE_FN GWEN_Dialog_SetAddChoiceFn(GWEN_DIALOG *dlg,
-						    GWEN_DIALOG_ADDCHOICE_FN fn);
-GWENHYWFAR_API
-GWEN_DIALOG_CLRCHOICE_FN GWEN_Dialog_SetClearChoiceFn(GWEN_DIALOG *dlg,
-						      GWEN_DIALOG_CLRCHOICE_FN fn);
-
+GWEN_DIALOG_GETCHARPROPERTY_FN GWEN_Dialog_SetGetCharPropertyFn(GWEN_DIALOG *dlg,
+								GWEN_DIALOG_GETCHARPROPERTY_FN fn);
 
 
 GWENHYWFAR_API

@@ -41,7 +41,7 @@ struct GWEN_WIDGET {
 
   int columns;
   int rows;
-  char *text;
+  char *text[GWEN_WIDGET_TEXTCOUNT];
 
   char *iconFile;
   char *imageFile;
