@@ -183,6 +183,10 @@ typedef enum {
   GWEN_DialogProperty_Height,
   GWEN_DialogProperty_SelectionMode,
   GWEN_DialogProperty_SelectionState,
+  GWEN_DialogProperty_Focus,
+  /** value=direction, index=column */
+  GWEN_DialogProperty_SortDirection,
+  GWEN_DialogProperty_Sort,
 
   GWEN_DialogProperty_Unknown=-1
 } GWEN_DIALOG_PROPERTY;
@@ -193,6 +197,13 @@ typedef enum {
   GWEN_Dialog_SelectionMode_Single,
   GWEN_Dialog_SelectionMode_Multi
 } GWEN_DIALOG_SELECTION_MODE;
+
+
+typedef enum {
+  GWEN_DialogSortDirection_None=0,
+  GWEN_DialogSortDirection_Up,
+  GWEN_DialogSortDirection_Down
+} GWEN_DIALOG_SORT_DIRECTION;
 
 
 GWENHYWFAR_API
