@@ -32,6 +32,8 @@
 
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/buffer.h>
+
 
 typedef enum {
   /** relative to the current working directory at calling time */
@@ -308,6 +310,30 @@ int GWEN_PathManager_PathChanged(const char *destLib,
 GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
                                            const char *pathName);
+
+
+/**
+ * This functions tries to find a given file using the all
+ * path entries under the registered @c pathName.
+ *
+ * @param destLib The name of the library that this path is supposed to
+ * belong to.
+ *
+ * @param pathName A string identifier for this registered path.
+ *
+ * @param fileName Name of the file (may contain partial paths, like in
+ * "dialogs/testdialog.xml"
+ *
+ * @param fbuf buffer to receive the full path to access the file
+ *
+ * @return 0 on success (in that case @c fbuf will be filled), an
+ * error code otherwise.
+ */
+GWENHYWFAR_API
+int GWEN_PathManager_FindFile(const char *destLib,
+			      const char *pathName,
+			      const char *fileName,
+			      GWEN_BUFFER *fbuf);
 
 /*@}*/
 

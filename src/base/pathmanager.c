@@ -443,6 +443,68 @@ GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
 
 
 
+int GWEN_PathManager_FindFile(const char *destLib,
+			      const char *pathName,
+			      const char *fileName,
+			      GWEN_BUFFER *fbuf) {
+  GWEN_DB_NODE *dbT;
+
+  assert(gwen__paths);
+  dbT=GWEN_DB_GetGroup(gwen__paths, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       destLib);
+  if (dbT) {
+    dbT=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                         pathName);
+    if (dbT) {
+      int i;
+      const char *s;
+      GWEN_DB_NODE *dbN;
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+      /* check all paths */
+      dbN=GWEN_DB_FindFirstGroup(dbT, "pair");
+      while(dbN) {
+        for (i=0; ; i++) {
+          s=GWEN_DB_GetCharValue(dbN, "path", i, 0);
+          if (!s)
+	    break;
+	  else {
+	    FILE *f;
+	
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, DIRSEP);
+	    GWEN_Buffer_AppendString(tbuf, fileName);
+	    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
+		      GWEN_Buffer_GetStart(tbuf));
+	    f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
+	    if (f) {
+	      fclose(f);
+	      DBG_DEBUG(GWEN_LOGDOMAIN,
+			"File \"%s\" found in folder \"%s\"",
+			fileName,
+			s);
+	      GWEN_Buffer_AppendBuffer(fbuf, tbuf);
+	      GWEN_Buffer_free(tbuf);
+	      return 0;
+	    }
+	    GWEN_Buffer_Reset(tbuf);
+	  }
+	}
+
+	dbN=GWEN_DB_FindNextGroup(dbN, "pair");
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "File \"%s\" not found", fileName);
+  return GWEN_ERROR_NOT_FOUND;
+}
+
+
+
 
 
 #ifdef OS_WIN32
