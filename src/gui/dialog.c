@@ -31,6 +31,8 @@
 #include "dialog_p.h"
 #include "widget_l.h"
 
+#include <aqbanking/banking.h>
+
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 
@@ -82,6 +84,15 @@ void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
       GWEN_FREE_OBJECT(dlg);
     }
   }
+}
+
+
+
+const char *GWEN_Dialog_GetId(const GWEN_DIALOG *dlg) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  return dlg->dialogId;
 }
 
 
@@ -239,6 +250,41 @@ int GWEN_Dialog_ReadXml(GWEN_DIALOG *dlg, GWEN_XMLNODE *node) {
 
 
 
+int GWEN_Dialog_ReadXmlFile(GWEN_DIALOG *dlg, const char *fname) {
+  GWEN_XMLNODE *n;
+  GWEN_XMLNODE *nDialog;
+  int rv;
+
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  rv=GWEN_XML_ReadFile(n, fname,
+		       GWEN_XML_FLAGS_DEFAULT |
+		       GWEN_XML_FLAGS_HANDLE_HEADERS);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XMLNode_free(n);
+    return rv;
+  }
+
+  nDialog=GWEN_XMLNode_FindFirstTag(n, "dialog", NULL, NULL);
+  if (nDialog==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog element not found in XML file [%s]", fname);
+    GWEN_XMLNode_free(n);
+    return rv;
+  }
+
+  rv=GWEN_Dialog_ReadXml(dlg, nDialog);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XMLNode_free(n);
+    return rv;
+  }
+
+  GWEN_XMLNode_free(n);
+  return 0;
+}
+
+
+
 GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name) {
   GWEN_WIDGET *w;
 
@@ -269,7 +315,7 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name) {
 
 
 
-GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, void *ptr) {
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, int index, void *ptr) {
   GWEN_WIDGET *w;
 
   assert(dlg);
@@ -282,7 +328,7 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, void *ptr) {
     w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
 
   while(w) {
-    if (ptr==GWEN_Widget_GetImplData(w))
+    if (ptr==GWEN_Widget_GetImplData(w, index))
       break;
     w=GWEN_Widget_Tree_GetBelow(w);
   }

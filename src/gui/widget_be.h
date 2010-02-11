@@ -40,7 +40,8 @@ extern "C" {
 GWEN_TREE_FUNCTION_LIB_DEFS(GWEN_WIDGET, GWEN_Widget, GWENHYWFAR_API)
 
 
-#define GWEN_WIDGET_TEXTCOUNT 4
+#define GWEN_WIDGET_TEXTCOUNT       4
+#define GWEN_WIDGET_IMPLDATACOUNT   4
 
 #define GWEN_WIDGET_FLAGS_NONE              0x00000000L
 #define GWEN_WIDGET_FLAGS_FILLX             0x80000000L
@@ -56,6 +57,17 @@ GWEN_TREE_FUNCTION_LIB_DEFS(GWEN_WIDGET, GWEN_Widget, GWENHYWFAR_API)
 #define GWEN_WIDGET_FLAGS_DECOR_CLOSE       0x00400000L
 #define GWEN_WIDGET_FLAGS_DECOR_MENU        0x00200000L
 
+#define GWEN_WIDGET_FLAGS_FIXED_WIDTH       0x00100000L
+#define GWEN_WIDGET_FLAGS_FIXED_HEIGHT      0x00080000L
+#define GWEN_WIDGET_FLAGS_EQUAL_WIDTH       0x00040000L
+#define GWEN_WIDGET_FLAGS_EQUAL_HEIGHT      0x00020000L
+
+#define GWEN_WIDGET_FLAGS_JUSTIFY_LEFT      0x00010000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_RIGHT     0x00008000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_TOP       0x00004000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_BOTTOM    0x00002000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX   0x00001000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY   0x00000800L
 
 
 typedef enum {
@@ -80,9 +92,11 @@ typedef enum {
     GWEN_Widget_TypeDialog,
     GWEN_Widget_TypeTabBook,
     GWEN_Widget_TypeTabPage,
-    GWEN_Widget_TypeWizard,
-    GWEN_Widget_TypeWizardPage,
-    GWEN_Widget_TypeCheckBox
+    GWEN_Widget_TypeCheckBox,
+    GWEN_Widget_TypeWidgetStack,
+    GWEN_Widget_TypeScrollArea,
+    GWEN_Widget_TypeHLine,
+    GWEN_Widget_TypeVLine
 } GWEN_WIDGET_TYPE;
 
 
@@ -104,10 +118,10 @@ extern "C" {
 #endif
 
 GWENHYWFAR_API
-void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w);
+void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w, int index);
 
 GWENHYWFAR_API
-void GWEN_Widget_SetImplData(GWEN_WIDGET *w, void *ptr);
+void GWEN_Widget_SetImplData(GWEN_WIDGET *w, int index, void *ptr);
 
 
 GWENHYWFAR_API
@@ -183,6 +197,166 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s);
 
 
 
+
+/**
+ *
+ * All Widgets
+ *
+ * Integer Properties
+ *
+ * The following properties are handled by all widgets.
+ * <ul>
+ *   <li>
+ *     GWEN_DialogProperty_Width: The preferred width of
+ *     the widget. This is only guaranteed to work for
+ *     widgets of type @ref GWEN_Widget_TypeDialogBox.
+ *   </li>
+ *   <li>
+ *     GWEN_DialogProperty_Height: The preferred height of
+ *     the widget. This is only guaranteed to work for
+ *     widgets of type @ref GWEN_Widget_TypeDialogBox.
+ *   </li>
+ *   <li>
+ *     GWEN_DialogProperty_Enabled: The enabled state of
+ *     a widget (0=disabled, 1=enabled)
+ *   </li>
+ * </ul>
+ *
+ *
+ *
+ *
+ * GWEN_Widget_TypeLabel
+ *
+ * This is a simple label widget (e.g. QLabel in QT or
+ * FXLabel in FOX).
+ *
+ * Integer Properties
+ *
+ * This widget does not have special integer properties.
+ *
+ *
+ * String Properties
+ *
+ * The following properties are handled by this widget.
+ * <ul>
+ *   <li>
+ *     GWEN_DialogProperty_Title: Text of the label.
+ *   </li>
+ * </ul>
+ *
+ *
+ * Signals
+ *
+ * This widget does not emit special signals.
+ *
+ *
+ *
+ *
+ * GWEN_Widget_TypePushButton
+ *
+ * This is a simple push button widget (e.g. QPushButton in QT or
+ * FXButton in FOX).
+ *
+ * Integer Properties
+ *
+ * This widget does not have special integer properties.
+ *
+ *
+ * String Properties
+ *
+ * The following properties are handled by this widget.
+ * <ul>
+ *   <li>
+ *     GWEN_DialogProperty_Title: Text of the button.
+ *   </li>
+ * </ul>
+ *
+ *
+ *
+ *
+ * GWEN_Widget_TypeLineEdit
+ *
+ * This is a one line edit field widget (e.g. Q?? in QT or
+ * FXTextField in FOX).
+ *
+ * Integer Properties
+ *
+ * This widget does not have special integer properties.
+ *
+ *
+ * String Properties
+ *
+ * The following properties are handled by this widget.
+ * <ul>
+ *   <li>
+ *     GWEN_DialogProperty_Value: Entered text.
+ *   </li>
+ * </ul>
+ *
+ *
+ * Signals
+ *
+ * <ul>
+ *   <li>
+ *     GWEN_DialogEvent_TypeValueChanged: This signal is
+ *     emitted as soon as the enter key is pressed or
+ *     the widget looses focus.
+ *   </li>
+ * </ul>
+ *
+ *
+ *
+ *
+ * GWEN_Widget_TypeTextEdit
+ *
+ * This is a multi line edit field widget (e.g. Q?? in QT or
+ * FXText in FOX).
+ *
+ * Integer Properties
+ *
+ * This widget does not have special integer properties.
+ *
+ *
+ * String Properties
+ *
+ * The following properties are handled by this widget.
+ * <ul>
+ *   <li>
+ *     GWEN_DialogProperty_Value: Entered text.
+ *   </li>
+ * </ul>
+ *
+ *
+ * Signals
+ *
+ * No special signals for now.
+ *
+ *
+ *
+ *
+ * GWEN_Widget_TypeComboBox
+ * GWEN_Widget_TypeProgressBar
+ * GWEN_Widget_TypeRadioGroup
+ * GWEN_Widget_TypeGroupBox
+ * GWEN_Widget_TypeHSpacer
+ * GWEN_Widget_TypeVSpacer
+ * GWEN_Widget_TypeHLayout
+ * GWEN_Widget_TypeVLayout
+ * GWEN_Widget_TypeGridLayout
+ * GWEN_Widget_TypeImage
+ * GWEN_Widget_TypeListBox
+ * GWEN_Widget_TypeDialog
+ * GWEN_Widget_TypeTabBook
+ * GWEN_Widget_TypeTabPage
+ * GWEN_Widget_TypeCheckBox
+ * GWEN_Widget_TypeWidgetStack
+ * GWEN_Widget_TypeScrollArea
+ * GWEN_Widget_TypeHLine
+ * GWEN_Widget_TypeVLine
+ * GWEN_Widget_TypeRadioButton
+ *
+ *
+ */
 
 
 

@@ -87,7 +87,7 @@ GWENHYWFAR_API
 GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name);
 
 GWENHYWFAR_API
-GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, void *ptr);
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, int index, void *ptr);
 
 
 /**

@@ -46,7 +46,7 @@ struct GWEN_WIDGET {
   char *iconFile;
   char *imageFile;
 
-  void *impl_data;
+  void *impl_data[GWEN_WIDGET_IMPLDATACOUNT];
 
   uint32_t refCount;
 };

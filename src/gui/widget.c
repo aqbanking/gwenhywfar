@@ -88,18 +88,27 @@ GWEN_DIALOG *GWEN_Widget_GetDialog(const GWEN_WIDGET *w) {
 
 
 
-void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w) {
+void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w, int index) {
   assert(w);
   assert(w->refCount);
-  return w->impl_data;
+  if (index<GWEN_WIDGET_IMPLDATACOUNT)
+    return w->impl_data[index];
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Index out of range");
+    return NULL;
+  }
 }
 
 
 
-void GWEN_Widget_SetImplData(GWEN_WIDGET *w, void *ptr) {
+void GWEN_Widget_SetImplData(GWEN_WIDGET *w, int index, void *ptr) {
   assert(w);
   assert(w->refCount);
-  w->impl_data=ptr;
+  if (index<GWEN_WIDGET_IMPLDATACOUNT)
+    w->impl_data[index]=ptr;
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Index out of range");
+  }
 }
 
 
@@ -307,12 +316,16 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeTabBook;
     else if (strcasecmp(s, "tabPage")==0)
       return GWEN_Widget_TypeTabPage;
-    else if (strcasecmp(s, "wizard")==0)
-      return GWEN_Widget_TypeWizard;
-    else if (strcasecmp(s, "wizardPage")==0)
-      return GWEN_Widget_TypeWizardPage;
+    else if (strcasecmp(s, "widgetStack")==0)
+      return GWEN_Widget_TypeWidgetStack;
     else if (strcasecmp(s, "checkBox")==0)
       return GWEN_Widget_TypeCheckBox;
+    else if (strcasecmp(s, "scrollArea")==0)
+      return GWEN_Widget_TypeScrollArea;
+    else if (strcasecmp(s, "hLine")==0)
+      return GWEN_Widget_TypeHLine;
+    else if (strcasecmp(s, "vLine")==0)
+      return GWEN_Widget_TypeVLine;
   }
   return GWEN_Widget_TypeUnknown;
 }
@@ -341,9 +354,11 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeDialog:          return "dialog";
   case GWEN_Widget_TypeTabBook:         return "tabBook";
   case GWEN_Widget_TypeTabPage:         return "tabPage";
-  case GWEN_Widget_TypeWizard:          return "wizard";
-  case GWEN_Widget_TypeWizardPage:      return "wizardPage";
+  case GWEN_Widget_TypeWidgetStack:     return "widgetStack";
   case GWEN_Widget_TypeCheckBox:        return "checkBox";
+  case GWEN_Widget_TypeScrollArea:      return "scrollArea";
+  case GWEN_Widget_TypeHLine:           return "hLine";
+  case GWEN_Widget_TypeVLine:           return "vLine";
   case GWEN_Widget_TypeUnknown:         return "unknown";
   }
 
@@ -401,6 +416,26 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s){
 	fl|=GWEN_WIDGET_FLAGS_DECOR_CLOSE;
       else if (strcasecmp(wstart, "decorMenu")==0)
 	fl|=GWEN_WIDGET_FLAGS_DECOR_MENU;
+      else if (strcasecmp(wstart, "fixedWidth")==0)
+	fl|=GWEN_WIDGET_FLAGS_FIXED_WIDTH;
+      else if (strcasecmp(wstart, "fixedHeight")==0)
+	fl|=GWEN_WIDGET_FLAGS_FIXED_HEIGHT;
+      else if (strcasecmp(wstart, "equalWidth")==0)
+	fl|=GWEN_WIDGET_FLAGS_EQUAL_WIDTH;
+      else if (strcasecmp(wstart, "equalHeight")==0)
+	fl|=GWEN_WIDGET_FLAGS_EQUAL_HEIGHT;
+      else if (strcasecmp(wstart, "justifyLeft")==0)
+	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_LEFT;
+      else if (strcasecmp(wstart, "justifyRight")==0)
+	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_RIGHT;
+      else if (strcasecmp(wstart, "justifyTop")==0)
+	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_TOP;
+      else if (strcasecmp(wstart, "justifyBottom")==0)
+	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_BOTTOM;
+      else if (strcasecmp(wstart, "justifyCenterX")==0)
+	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX;
+      else if (strcasecmp(wstart, "justifyCenterY")==0)
+	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY;
     }
   }
 
