@@ -90,6 +90,10 @@ GWENHYWFAR_API
 GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, int index, void *ptr);
 
 
+GWENHYWFAR_API
+void GWEN_Dialog_SetGuiId(GWEN_DIALOG *dlg, uint32_t guiid);
+
+
 /**
  * Sends a signal to the signal handler of the given dialog. This does @b not send the signal
  * to sub-dialogs. Use @ref GWEN_Dialog_EmitSignalToAll for that.

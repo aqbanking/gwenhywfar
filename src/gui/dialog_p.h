@@ -48,6 +48,8 @@ struct GWEN_DIALOG {
   GWEN_DIALOG_LIST *subDialogs;
   GWEN_WIDGET *parentWidget;
 
+  uint32_t guiId;
+
   uint32_t refCount;
 };
 

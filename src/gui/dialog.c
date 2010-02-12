@@ -97,6 +97,24 @@ const char *GWEN_Dialog_GetId(const GWEN_DIALOG *dlg) {
 
 
 
+uint32_t GWEN_Dialog_GetGuiId(const GWEN_DIALOG *dlg) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  return dlg->guiId;
+}
+
+
+
+void GWEN_Dialog_SetGuiId(GWEN_DIALOG *dlg, uint32_t guiid) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  dlg->guiId=guiid;
+}
+
+
+
 GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
 						       GWEN_DIALOG_SIGNALHANDLER fn) {
   GWEN_DIALOG_SIGNALHANDLER oh;

@@ -141,6 +141,10 @@ GWENHYWFAR_API
 const char*GWEN_Dialog_GetId(const GWEN_DIALOG *dlg);
 
 
+GWENHYWFAR_API
+uint32_t GWEN_Dialog_GetGuiId(const GWEN_DIALOG *dlg);
+
+
 /**
  * Inserts a sub-dialog into the given dialog. The widgets of the subdialog become
  * children of the main dialog below the widget referenced to by parentName.
