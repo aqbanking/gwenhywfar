@@ -103,8 +103,7 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   GWEN_DIALOG_EVENTTYPE t,
 			   const char *sender,
 			   int intVal,
-			   const char *charVal,
-			   void *ptrVal);
+			   const char *charVal);
 
 /**
  * Emits signals to the given dialog and all its sub-dialogs. This should only be used
@@ -115,8 +114,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 				GWEN_DIALOG_EVENTTYPE t,
 				const char *sender,
 				int intVal,
-				const char *charVal,
-				void *ptrVal);
+				const char *charVal);
 
 
 #ifdef __cplusplus

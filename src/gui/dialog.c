@@ -134,13 +134,12 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   GWEN_DIALOG_EVENTTYPE t,
 			   const char *sender,
 			   int intVal,
-			   const char *charVal,
-			   void *ptrVal) {
+			   const char *charVal) {
   assert(dlg);
   assert(dlg->refCount);
 
   if (dlg->signalHandler)
-    return (dlg->signalHandler)(dlg, t, sender, intVal, charVal, ptrVal);
+    return (dlg->signalHandler)(dlg, t, sender, intVal, charVal);
   else {
     DBG_WARN(GWEN_LOGDOMAIN, "No signal handler in dialog [%s]",
 	     (dlg->dialogId)?(dlg->dialogId):"-unnamed-");
@@ -154,8 +153,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 				GWEN_DIALOG_EVENTTYPE t,
 				const char *sender,
 				int intVal,
-				const char *charVal,
-				void *ptrVal) {
+				const char *charVal) {
   int rv;
   GWEN_DIALOG *subdlg;
 
@@ -163,7 +161,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
   assert(dlg->refCount);
 
   if (dlg->signalHandler) {
-    rv=(dlg->signalHandler)(dlg, t, sender, intVal, charVal, ptrVal);
+    rv=(dlg->signalHandler)(dlg, t, sender, intVal, charVal);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
 	rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
@@ -171,7 +169,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 
   subdlg=GWEN_Dialog_List_First(dlg->subDialogs);
   while(subdlg) {
-    rv=GWEN_Dialog_EmitSignalToAll(subdlg, t, sender, intVal, charVal, ptrVal);
+    rv=GWEN_Dialog_EmitSignalToAll(subdlg, t, sender, intVal, charVal);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
 	rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;

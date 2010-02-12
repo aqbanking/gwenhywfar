@@ -119,8 +119,7 @@ typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
 						       GWEN_DIALOG_EVENTTYPE t,
 						       const char *sender,
 						       int intVal,
-						       const char *charVal,
-						       void *ptrVal);
+						       const char *charVal);
 
 
 
