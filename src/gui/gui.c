@@ -278,6 +278,18 @@ GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DI
 
 
 
+GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f) {
+  GWEN_GUI_GET_FILENAME_FN of;
+
+  assert(gui);
+  of=gui->getFileNameFn;
+  gui->getFileNameFn=f;
+
+  return of;
+}
+
+
+
 GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN
 GWEN_Gui_SetKeyDataFromTextOpenSslFn(GWEN_GUI *gui,
 				     GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN f) {
@@ -789,10 +801,28 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 
 
 
-int GWEN_Gui_ExecDialog(GWEN_DIALOG *parentDlg,
-			GWEN_DIALOG *dlg) {
+int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
   if (gwenhywfar_gui && gwenhywfar_gui->execDialogFn)
-    return gwenhywfar_gui->execDialogFn(gwenhywfar_gui, parentDlg, dlg);
+    return gwenhywfar_gui->execDialogFn(gwenhywfar_gui, dlg, guiid);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_Gui_GetFileName(const char *caption,
+			 GWEN_GUI_FILENAME_TYPE fnt,
+			 uint32_t flags,
+			 const char *patterns,
+			 GWEN_BUFFER *pathBuffer,
+			 uint32_t guiid) {
+  if (gwenhywfar_gui && gwenhywfar_gui->getFileNameFn)
+    return gwenhywfar_gui->getFileNameFn(gwenhywfar_gui,
+					 caption,
+					 fnt,
+                                         flags,
+					 patterns,
+					 pathBuffer,
+					 guiid);
   return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 

@@ -723,13 +723,36 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
 /**
  * This function shows and executes the given dialog and returns the result.
  * See @ref MOD_GUI_DIALOG for a description of the dialog framework.
- * @param parentDlg parent dialog (e.g. if called from within another active
- * dialog). Use NULL if there is no parent dialog.
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart, @ref GWEN_Gui_ShowBox or as can be found
+ * via @ref GWEN_Dialog_GetGuiId())
  * @return <0: error code, 0: aborted, 1: accepted (e.g. "Ok" pressed)
  */
 GWENHYWFAR_API
-int GWEN_Gui_ExecDialog(GWEN_DIALOG *parentDlg,
-			GWEN_DIALOG *dlg);
+int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid);
+
+
+
+typedef enum {
+  GWEN_Gui_FileNameType_OpenFileName=0,
+  GWEN_Gui_FileNameType_SaveFileName,
+  GWEN_Gui_FileNameType_OpenDirectory
+
+} GWEN_GUI_FILENAME_TYPE;
+
+
+/**
+ * @param patterns multiple tab-separated entries like in:
+ *   "All Files (*)\tC++ Sources (*.cpp,*.cc)\tC++ Headers (*.hpp;*.hh;*.h)"
+ *
+ */
+GWENHYWFAR_API
+int GWEN_Gui_GetFileName(const char *caption,
+			 GWEN_GUI_FILENAME_TYPE fnt,
+                         uint32_t flags,
+			 const char *patterns,
+			 GWEN_BUFFER *pathBuffer,
+			 uint32_t guiid);
+
 
 /*@}*/
 

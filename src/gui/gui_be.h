@@ -205,8 +205,17 @@ typedef int (*GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN)(GWEN_GUI *gui,
 						   unsigned int bufLength);
 
 typedef int (*GWEN_GUI_EXEC_DIALOG_FN)(GWEN_GUI *gui,
-				       GWEN_DIALOG *parentDlg,
-				       GWEN_DIALOG *dlg);
+				       GWEN_DIALOG *dlg,
+				       uint32_t guiid);
+
+
+typedef int (*GWEN_GUI_GET_FILENAME_FN)(GWEN_GUI *gui,
+                                        const char *caption,
+					GWEN_GUI_FILENAME_TYPE fnt,
+					uint32_t flags,
+					const char *patterns,
+					GWEN_BUFFER *pathBuffer,
+					uint32_t guiid);
 
 
 /*@}*/
@@ -277,6 +286,9 @@ GWENHYWFAR_API
 
 GWENHYWFAR_API
 GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DIALOG_FN f);
+
+GWENHYWFAR_API
+GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f);
 
 /*@}*/
 

@@ -60,6 +60,7 @@ struct GWEN_GUI {
   GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN keyDataFromTextOpenSslFn;
 
   GWEN_GUI_EXEC_DIALOG_FN execDialogFn;
+  GWEN_GUI_GET_FILENAME_FN getFileNameFn;
 
   uint32_t flags;
 
