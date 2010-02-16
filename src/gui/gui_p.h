@@ -30,6 +30,8 @@
 #define GWENHYWFAR_GUI_GUI_P_H
 
 #include "gui_be.h"
+#include "progressdata_l.h"
+
 
 
 struct GWEN_GUI {
@@ -60,9 +62,18 @@ struct GWEN_GUI {
   GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN keyDataFromTextOpenSslFn;
 
   GWEN_GUI_EXEC_DIALOG_FN execDialogFn;
+
+  GWEN_GUI_OPEN_DIALOG_FN openDialogFn;
+  GWEN_GUI_CLOSE_DIALOG_FN closeDialogFn;
+  GWEN_GUI_RUN_DIALOG_FN runDialogFn;
+
   GWEN_GUI_GET_FILENAME_FN getFileNameFn;
 
   uint32_t flags;
+
+  GWEN_PROGRESS_DATA_TREE *progressDataTree;
+
+  uint32_t nextProgressId;
 
   uint32_t refCount;
 };
@@ -71,6 +82,25 @@ struct GWEN_GUI {
 static int GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
 				     const GWEN_SSLCERTDESCR *cd,
 				     GWEN_IO_LAYER *io, uint32_t guiid);
+
+
+static void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd);
+
+static uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
+						uint32_t progressFlags,
+						const char *title,
+						const char *text,
+						uint64_t total,
+						uint32_t guiid);
+static int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid);
+static int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress);
+
+static int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
+					 uint32_t pid,
+					 GWEN_LOGGER_LEVEL level,
+					 const char *text);
+
+
 
 
 

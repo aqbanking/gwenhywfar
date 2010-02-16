@@ -30,6 +30,8 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list1.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/db.h>
+
 
 
 /** @defgroup MOD_GUI_DIALOG GUI Dialogs
@@ -91,6 +93,8 @@ typedef enum {
    * @ref GWEN_DialogEvent_ResultNotHandled should be returned.
    */
   GWEN_DialogEvent_TypeGetIconPath,
+
+  GWEN_DialogEvent_TypeClose,
 
   GWEN_DialogEvent_TypeLast
 } GWEN_DIALOG_EVENTTYPE;
@@ -258,6 +262,17 @@ const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
 					int index,
 					const char *defaultValue);
 
+
+
+
+GWENHYWFAR_API
+GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg);
+
+/**
+ * Takes over the given preferences db.
+ */
+GWENHYWFAR_API
+void GWEN_Dialog_SetPreferences(GWEN_DIALOG *dlg, GWEN_DB_NODE *db);
 
 
 #ifdef __cplusplus

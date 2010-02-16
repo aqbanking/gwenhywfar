@@ -732,6 +732,16 @@ int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 
 
 
+GWENHYWFAR_API
+int GWEN_Gui_OpenDialog(GWEN_DIALOG *dlg, uint32_t guiid);
+
+GWENHYWFAR_API
+int GWEN_Gui_CloseDialog(GWEN_DIALOG *dlg);
+
+GWENHYWFAR_API
+int GWEN_Gui_RunDialog(GWEN_DIALOG *dlg, int timeout);
+
+
 typedef enum {
   GWEN_Gui_FileNameType_OpenFileName=0,
   GWEN_Gui_FileNameType_SaveFileName,

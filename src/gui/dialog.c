@@ -60,7 +60,7 @@ GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId) {
   dlg->widgets=GWEN_Widget_Tree_new();
 
   dlg->subDialogs=GWEN_Dialog_List_new();
-
+  dlg->dbPreferences=GWEN_DB_Group_new("preferences");
 
   return dlg;
 }
@@ -81,6 +81,8 @@ void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
       GWEN_Widget_Tree_free(dlg->widgets);
       free(dlg->dialogId);
       dlg->refCount=0;
+      GWEN_DB_Group_free(dlg->dbPreferences);
+
       GWEN_FREE_OBJECT(dlg);
     }
   }
@@ -525,6 +527,25 @@ const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
     DBG_ERROR(GWEN_LOGDOMAIN, "Function pointer not set");
     return defaultProperty;
   }
+}
+
+
+
+GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  return dlg->dbPreferences;
+}
+
+
+
+void GWEN_Dialog_SetPreferences(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  GWEN_DB_Group_free(dlg->dbPreferences);
+  dlg->dbPreferences=db;
 }
 
 

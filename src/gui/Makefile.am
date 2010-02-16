@@ -13,7 +13,9 @@ noinst_HEADERS=\
  cprogress_l.h cprogress_p.h \
  dialog_p.h \
  gui_p.h cgui_l.h \
- widget_l.h widget_p.h
+ widget_l.h widget_p.h \
+ progressdata_l.h progressdata_p.h \
+ dlg_progress_l.h dlg_progress_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -27,7 +29,13 @@ libgui_la_SOURCES=\
  cprogress.c \
  dialog.c \
  gui.c \
- widget.c 
+ widget.c \
+ progressdata.c \
+ dlg_progress.c
+
+dlgdatadir=$(pkgdatadir)/dialogs
+dlgdata_DATA=\
+  dlg_progress.dlg
 
 
 sources:

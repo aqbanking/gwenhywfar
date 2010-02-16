@@ -209,6 +209,15 @@ typedef int (*GWEN_GUI_EXEC_DIALOG_FN)(GWEN_GUI *gui,
 				       uint32_t guiid);
 
 
+typedef int (*GWEN_GUI_OPEN_DIALOG_FN)(GWEN_GUI *gui,
+				       GWEN_DIALOG *dlg,
+				       uint32_t guiid);
+
+typedef int (*GWEN_GUI_CLOSE_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg);
+
+typedef int (*GWEN_GUI_RUN_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout);
+
+
 typedef int (*GWEN_GUI_GET_FILENAME_FN)(GWEN_GUI *gui,
                                         const char *caption,
 					GWEN_GUI_FILENAME_TYPE fnt,
@@ -287,8 +296,23 @@ GWENHYWFAR_API
 GWENHYWFAR_API
 GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DIALOG_FN f);
 
+
+GWENHYWFAR_API
+GWEN_GUI_OPEN_DIALOG_FN GWEN_Gui_SetOpenDialogFn(GWEN_GUI *gui, GWEN_GUI_OPEN_DIALOG_FN f);
+
+GWENHYWFAR_API
+GWEN_GUI_CLOSE_DIALOG_FN GWEN_Gui_SetCloseDialogFn(GWEN_GUI *gui, GWEN_GUI_CLOSE_DIALOG_FN f);
+
+GWENHYWFAR_API
+GWEN_GUI_RUN_DIALOG_FN GWEN_Gui_SetRunDialogFn(GWEN_GUI *gui, GWEN_GUI_RUN_DIALOG_FN f);
+
+
 GWENHYWFAR_API
 GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f);
+
+
+GWENHYWFAR_API
+void GWEN_Gui_UseDialogs(GWEN_GUI *gui);
 
 /*@}*/
 

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: bio_buffer.c 1102 2006-12-30 19:39:37Z martin $
  begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2003-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -32,6 +29,7 @@
 
 
 #include "gui_p.h"
+#include "dlg_progress_l.h"
 #include "i18n_l.h"
 
 #include <gwenhywfar/debug.h>
@@ -54,6 +52,8 @@ GWEN_GUI *GWEN_Gui_new() {
 
   gui->checkCertFn=GWEN_Gui_CheckCertBuiltIn;
 
+  gui->progressDataTree=GWEN_ProgressData_Tree_new();
+
   return gui;
 }
 
@@ -64,9 +64,22 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
     assert(gui->refCount);
     if ((--gui->refCount)==0) {
       GWEN_INHERIT_FINI(GWEN_GUI, gui);
+
+      GWEN_ProgressData_Tree_free(gui->progressDataTree);
+
       GWEN_FREE_OBJECT(gui);
     }
   }
+}
+
+
+
+void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
+  assert(gui);
+  gui->progressStartFn=GWEN_Gui_Internal_ProgressStart;
+  gui->progressAdvanceFn=GWEN_Gui_Internal_ProgressAdvance;
+  gui->progressLogFn=GWEN_Gui_Internal_ProgressLog;
+  gui->progressEndFn=GWEN_Gui_Internal_ProgressEnd;
 }
 
 
@@ -275,6 +288,43 @@ GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DI
 
   return of;
 }
+
+
+
+GWEN_GUI_OPEN_DIALOG_FN GWEN_Gui_SetOpenDialogFn(GWEN_GUI *gui, GWEN_GUI_OPEN_DIALOG_FN f) {
+  GWEN_GUI_OPEN_DIALOG_FN of;
+
+  assert(gui);
+  of=gui->openDialogFn;
+  gui->openDialogFn=f;
+
+  return of;
+}
+
+
+
+GWEN_GUI_CLOSE_DIALOG_FN GWEN_Gui_SetCloseDialogFn(GWEN_GUI *gui, GWEN_GUI_CLOSE_DIALOG_FN f) {
+  GWEN_GUI_CLOSE_DIALOG_FN of;
+
+  assert(gui);
+  of=gui->closeDialogFn;
+  gui->closeDialogFn=f;
+
+  return of;
+}
+
+
+
+GWEN_GUI_RUN_DIALOG_FN GWEN_Gui_SetRunDialogFn(GWEN_GUI *gui, GWEN_GUI_RUN_DIALOG_FN f) {
+  GWEN_GUI_RUN_DIALOG_FN of;
+
+  assert(gui);
+  of=gui->runDialogFn;
+  gui->runDialogFn=f;
+
+  return of;
+}
+
 
 
 
@@ -809,6 +859,31 @@ int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 
+int GWEN_Gui_OpenDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
+  if (gwenhywfar_gui && gwenhywfar_gui->openDialogFn)
+    return gwenhywfar_gui->openDialogFn(gwenhywfar_gui, dlg, guiid);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_Gui_CloseDialog(GWEN_DIALOG *dlg) {
+  if (gwenhywfar_gui && gwenhywfar_gui->closeDialogFn)
+    return gwenhywfar_gui->closeDialogFn(gwenhywfar_gui, dlg);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_Gui_RunDialog(GWEN_DIALOG *dlg, int timeout) {
+  if (gwenhywfar_gui && gwenhywfar_gui->runDialogFn)
+    return gwenhywfar_gui->runDialogFn(gwenhywfar_gui, dlg, timeout);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+
 int GWEN_Gui_GetFileName(const char *caption,
 			 GWEN_GUI_FILENAME_TYPE fnt,
 			 uint32_t flags,
@@ -832,6 +907,245 @@ int GWEN_Gui_GetFileName(const char *caption,
 
 
 
+
+
+
+int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
+  GWEN_PROGRESS_DATA *highest=NULL;
+  GWEN_PROGRESS_DATA *t;
+  GWEN_DIALOG *dlg=NULL;
+
+  assert(gwenhywfar_gui);
+
+  t=pd;
+  while(t) {
+    highest=t;
+    t=GWEN_ProgressData_Tree_GetParent(t);
+  }
+
+  /* highest must always be visible */
+  if (GWEN_ProgressData_GetShown(highest)==0)
+    GWEN_ProgressData_SetShown(highest, 1);
+
+  dlg=GWEN_ProgressData_GetDialog(highest);
+  if (dlg==NULL) {
+    int rv;
+
+    /* need to create dialog for it */
+    dlg=GWEN_DlgProgress_new("dlg_gwen_progress");
+    rv=GWEN_Gui_OpenDialog(dlg, 0);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unable to openDialog: %d", rv);
+      GWEN_Dialog_free(dlg);
+      return rv;
+    }
+
+    GWEN_DlgProgress_SetFirstProgress(dlg, highest);
+    GWEN_ProgressData_SetDialog(highest, dlg);
+  }
+
+  if (pd!=highest) {
+    GWEN_DlgProgress_SetSecondProgress(dlg, pd);
+    GWEN_ProgressData_SetDialog(pd, dlg);
+    GWEN_ProgressData_SetShown(pd, 1);
+  }
+
+  GWEN_Gui_RunDialog(dlg, GWEN_TIMEOUT_NONE);
+
+  return 0;
+}
+
+
+
+void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd) {
+  if (GWEN_ProgressData_GetShown(pd)==0) {
+    if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_DELAY) {
+      double dt;
+      time_t t1;
+
+      t1=time(0);
+      dt=difftime(t1, GWEN_ProgressData_GetStartTime(pd));
+      if ((int)dt>=GWEN_GUI_DELAY_SECS)
+	GWEN_ProgressData_SetShown(pd, 1);
+    }
+    else
+      GWEN_ProgressData_SetShown(pd, 1);
+  }
+
+  if (GWEN_ProgressData_GetShown(pd)==1) {
+    if (GWEN_ProgressData_GetDialog(pd)==NULL) {
+      GWEN_Gui_ShowProgress(pd);
+    }
+  }
+}
+
+
+
+uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
+					 uint32_t progressFlags,
+					 const char *title,
+					 const char *text,
+					 uint64_t total,
+					 uint32_t guiid) {
+  GWEN_PROGRESS_DATA *pdParent=NULL;
+  GWEN_PROGRESS_DATA *pd;
+  uint32_t id;
+
+  id=++(gui->nextProgressId);
+
+  if (guiid) {
+    pdParent=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, guiid);
+    if (pdParent==NULL) {
+      DBG_WARN(GWEN_LOGDOMAIN, "Parent progress by id %08x not found", guiid);
+    }
+  }
+
+  pd=GWEN_ProgressData_new(gui, id, progressFlags, title, text, total);
+  assert(pd);
+  if (pdParent)
+    GWEN_ProgressData_Tree_AddChild(pdParent, pd);
+  else
+    GWEN_ProgressData_Tree_Add(gui->progressDataTree, pd);
+
+  GWEN_Gui_Internal_CheckShow(gui, pd);
+
+  return id;
+}
+
+
+
+int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
+  GWEN_PROGRESS_DATA *pd;
+
+  pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
+  if (pd==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Progress by id %08x not found", pid);
+    return GWEN_ERROR_INVALID;
+  }
+  else {
+    GWEN_DIALOG *dlg;
+
+    dlg=GWEN_ProgressData_GetDialog(pd);
+    if (dlg) {
+      GWEN_PROGRESS_DATA *primary;
+      GWEN_PROGRESS_DATA *secondary;
+  
+      primary=GWEN_DlgProgress_GetFirstProgress(dlg);
+      secondary=GWEN_DlgProgress_GetSecondProgress(dlg);
+  
+      if (primary==pd) {
+	int rv;
+  
+	if (secondary) {
+	  DBG_WARN(GWEN_LOGDOMAIN, "There is still a secondary progress!");
+	  GWEN_DlgProgress_SetSecondProgress(dlg, NULL);
+	  GWEN_ProgressData_SetDialog(secondary, NULL);
+	}
+  
+	/* this is the primary progress, with this closed we can also
+	 * close the dialog */
+	DBG_INFO(GWEN_LOGDOMAIN, "Closing progress dialog");
+	rv=GWEN_Gui_CloseDialog(dlg);
+	if (rv<0) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Unable to closeDialog: %d", rv);
+	  GWEN_Dialog_free(dlg);
+	  return rv;
+	}
+	GWEN_Dialog_free(dlg);
+      }
+      else if (secondary==pd) {
+	GWEN_PROGRESS_DATA *t;
+  
+	/* find next highest active progress */
+	DBG_INFO(GWEN_LOGDOMAIN, "Removing secondary progress, searching for next");
+	t=GWEN_ProgressData_Tree_GetParent(pd);
+	while(t) {
+	  if (GWEN_ProgressData_GetShown(t))
+	    break;
+	  t=GWEN_ProgressData_Tree_GetParent(t);
+	}
+  
+	/* t is maybe the next higher progress, it will become the second progress */
+	if (t && t!=GWEN_DlgProgress_GetFirstProgress(dlg)) {
+	  GWEN_DlgProgress_SetSecondProgress(dlg, pd);
+	  GWEN_ProgressData_SetDialog(pd, dlg);
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN, "No next secondary progress");
+	  GWEN_DlgProgress_SetSecondProgress(dlg, NULL);
+	}
+      }
+    }
+    GWEN_ProgressData_SetDialog(pd, NULL);
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress) {
+  GWEN_PROGRESS_DATA *pd;
+  int aborted=0;
+
+  pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
+  if (pd==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Progress by id %08x not found", pid);
+    return GWEN_ERROR_INVALID;
+  }
+  else {
+    GWEN_DIALOG *dlg;
+
+    GWEN_ProgressData_SetCurrent(pd, progress);
+    GWEN_Gui_Internal_CheckShow(gui, pd);
+
+    dlg=GWEN_ProgressData_GetDialog(pd);
+    if (dlg)
+      GWEN_Gui_RunDialog(dlg, GWEN_TIMEOUT_NONE);
+    aborted=GWEN_ProgressData_GetAborted(pd);
+  }
+
+  if (aborted)
+    return GWEN_ERROR_USER_ABORTED;
+  return 0;
+}
+
+
+
+int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
+				  uint32_t pid,
+				  GWEN_LOGGER_LEVEL level,
+				  const char *text) {
+  GWEN_PROGRESS_DATA *pd;
+  int aborted=0;
+
+  pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
+  if (pd==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Progress by id %08x not found", pid);
+    return GWEN_ERROR_INVALID;
+  }
+  else {
+    GWEN_DIALOG *dlg;
+
+    if (level<=GWEN_LoggerLevel_Notice)
+      GWEN_ProgressData_SetShown(pd, 1);
+    GWEN_Gui_Internal_CheckShow(gui, pd);
+
+    dlg=GWEN_ProgressData_GetDialog(pd);
+    if (dlg) {
+      GWEN_DlgProgress_AddLogText(dlg, level, text);
+      GWEN_Gui_RunDialog(dlg, GWEN_TIMEOUT_NONE);
+    }
+    else
+      GWEN_ProgressData_AddLogText(pd, level, text);
+
+    aborted=GWEN_ProgressData_GetAborted(pd);
+  }
+
+  if (aborted)
+    return GWEN_ERROR_USER_ABORTED;
+  return 0;
+}
 
 
 

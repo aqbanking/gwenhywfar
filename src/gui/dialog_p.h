@@ -50,6 +50,8 @@ struct GWEN_DIALOG {
 
   uint32_t guiId;
 
+  GWEN_DB_NODE *dbPreferences;
+
   uint32_t refCount;
 };
 
