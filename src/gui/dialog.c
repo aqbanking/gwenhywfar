@@ -132,14 +132,12 @@ GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
 
 int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   GWEN_DIALOG_EVENTTYPE t,
-			   const char *sender,
-			   int intVal,
-			   const char *charVal) {
+			   const char *sender) {
   assert(dlg);
   assert(dlg->refCount);
 
   if (dlg->signalHandler)
-    return (dlg->signalHandler)(dlg, t, sender, intVal, charVal);
+    return (dlg->signalHandler)(dlg, t, sender);
   else {
     DBG_WARN(GWEN_LOGDOMAIN, "No signal handler in dialog [%s]",
 	     (dlg->dialogId)?(dlg->dialogId):"-unnamed-");
@@ -151,9 +149,7 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 
 int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 				GWEN_DIALOG_EVENTTYPE t,
-				const char *sender,
-				int intVal,
-				const char *charVal) {
+				const char *sender) {
   int rv;
   GWEN_DIALOG *subdlg;
 
@@ -161,7 +157,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
   assert(dlg->refCount);
 
   if (dlg->signalHandler) {
-    rv=(dlg->signalHandler)(dlg, t, sender, intVal, charVal);
+    rv=(dlg->signalHandler)(dlg, t, sender);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
 	rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
@@ -169,7 +165,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 
   subdlg=GWEN_Dialog_List_First(dlg->subDialogs);
   while(subdlg) {
-    rv=GWEN_Dialog_EmitSignalToAll(subdlg, t, sender, intVal, charVal);
+    rv=GWEN_Dialog_EmitSignalToAll(subdlg, t, sender);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
 	rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
@@ -301,7 +297,7 @@ int GWEN_Dialog_ReadXmlFile(GWEN_DIALOG *dlg, const char *fname) {
 
 
 
-GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name) {
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(const GWEN_DIALOG *dlg, const char *name) {
   GWEN_WIDGET *w;
 
   assert(dlg);
@@ -331,7 +327,7 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name) {
 
 
 
-GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, int index, void *ptr) {
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(const GWEN_DIALOG *dlg, int index, const void *ptr) {
   GWEN_WIDGET *w;
 
   assert(dlg);

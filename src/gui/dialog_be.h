@@ -84,10 +84,10 @@ GWENHYWFAR_API
 GWEN_WIDGET_TREE *GWEN_Dialog_GetWidgets(const GWEN_DIALOG *dlg);
 
 GWENHYWFAR_API
-GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(GWEN_DIALOG *dlg, const char *name);
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(const GWEN_DIALOG *dlg, const char *name);
 
 GWENHYWFAR_API
-GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(GWEN_DIALOG *dlg, int index, void *ptr);
+GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(const GWEN_DIALOG *dlg, int index, const void *ptr);
 
 
 GWENHYWFAR_API
@@ -101,9 +101,7 @@ void GWEN_Dialog_SetGuiId(GWEN_DIALOG *dlg, uint32_t guiid);
 GWENHYWFAR_API
 int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 			   GWEN_DIALOG_EVENTTYPE t,
-			   const char *sender,
-			   int intVal,
-			   const char *charVal);
+			   const char *sender);
 
 /**
  * Emits signals to the given dialog and all its sub-dialogs. This should only be used
@@ -112,9 +110,7 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 GWENHYWFAR_API
 int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 				GWEN_DIALOG_EVENTTYPE t,
-				const char *sender,
-				int intVal,
-				const char *charVal);
+				const char *sender);
 
 
 #ifdef __cplusplus
