@@ -739,7 +739,7 @@ GWENHYWFAR_API
 int GWEN_Gui_CloseDialog(GWEN_DIALOG *dlg);
 
 GWENHYWFAR_API
-int GWEN_Gui_RunDialog(GWEN_DIALOG *dlg, int timeout);
+int GWEN_Gui_RunDialog(GWEN_DIALOG *dlg, int untilEnd);
 
 
 typedef enum {

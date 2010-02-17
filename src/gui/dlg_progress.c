@@ -68,6 +68,9 @@ GWEN_DIALOG *GWEN_DlgProgress_new(const char *dialogId) {
   }
   GWEN_Buffer_free(fbuf);
 
+  xdlg->logBufferTxt=GWEN_Buffer_new(0, 256, 0, 1);
+  xdlg->logBufferHtml=GWEN_Buffer_new(0, 256, 0, 1);
+
   return dlg;
 }
 
@@ -77,6 +80,9 @@ void GWEN_DlgProgress_FreeData(void *bp, void *p) {
   GWEN_DLGPROGRESS *xdlg;
 
   xdlg=(GWEN_DLGPROGRESS*) p;
+
+  GWEN_Buffer_free(xdlg->logBufferHtml);
+  GWEN_Buffer_free(xdlg->logBufferTxt);
 
   GWEN_FREE_OBJECT(xdlg);
 }
@@ -91,6 +97,34 @@ void GWEN_DlgProgress_SetAllowClose(GWEN_DIALOG *dlg, int b) {
   assert(xdlg);
 
   xdlg->allowClose=b;
+  if (xdlg->wasInit) {
+    GWEN_Dialog_SetIntProperty(dlg, "abortButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "closeButton", GWEN_DialogProperty_Enabled, 0, 1, 0);
+  }
+}
+
+
+
+void GWEN_DlgProgress_SetStayOpen(GWEN_DIALOG *dlg, int b) {
+  GWEN_DLGPROGRESS *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg);
+  assert(xdlg);
+
+  xdlg->stayOpen=b;
+}
+
+
+
+int GWEN_DlgProgress_GetStayOpen(const GWEN_DIALOG *dlg) {
+  GWEN_DLGPROGRESS *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg);
+  assert(xdlg);
+
+  return xdlg->stayOpen;
 }
 
 
@@ -118,6 +152,16 @@ void GWEN_DlgProgress_SetFirstProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd)
 
   if (xdlg->wasInit) {
     if (xdlg->firstProgress) {
+      const char *s;
+
+      s=GWEN_ProgressData_GetTitle(xdlg->firstProgress);
+      if (s && *s)
+	GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, s, 0);
+
+      s=GWEN_ProgressData_GetText(xdlg->firstProgress);
+      if (s && *s)
+	GWEN_Dialog_SetCharProperty(dlg, "descrLabel", GWEN_DialogProperty_Title, 0, s, 0);
+
       GWEN_Dialog_SetIntProperty(dlg, "allProgress", GWEN_DialogProperty_Enabled, 0, 1, 0);
       GWEN_Dialog_SetIntProperty(dlg, "allProgress", GWEN_DialogProperty_MaxValue, 0,
 				 GWEN_ProgressData_GetTotal(xdlg->firstProgress), 0);
@@ -176,13 +220,99 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
 				 GWEN_LOGGER_LEVEL level,
 				 const char *s) {
   GWEN_DLGPROGRESS *xdlg;
+  GWEN_TIME *ti;
+  int rv;
+  GWEN_BUFFER *tbuf;
+  const char *col;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "Would log: [%s]", s);
-  // TODO
+  ti=GWEN_CurrentTime();
+
+  /* setup text string */
+  if (GWEN_Buffer_GetUsedBytes(xdlg->logBufferTxt))
+    GWEN_Buffer_AppendString(xdlg->logBufferTxt, "\n");
+  if (ti)
+    rv=GWEN_Time_toString(ti, "hh:mm:ss", xdlg->logBufferTxt);
+  else
+    rv=GWEN_ERROR_GENERIC;
+  if (rv<0)
+    GWEN_Buffer_AppendString(xdlg->logBufferTxt, "??:??:??");
+  GWEN_Buffer_AppendString(xdlg->logBufferTxt, " ");
+  if (s)
+    GWEN_Buffer_AppendString(xdlg->logBufferTxt, s);
+
+  /* setup HTML string */
+  GWEN_Buffer_AppendString(xdlg->logBufferHtml, "<tr><td>");
+  if (ti)
+    rv=GWEN_Time_toString(ti, "hh:mm:ss", xdlg->logBufferHtml);
+  else
+    rv=GWEN_ERROR_GENERIC;
+  if (rv<0)
+    GWEN_Buffer_AppendString(xdlg->logBufferHtml, "??:??:??");
+  GWEN_Buffer_AppendString(xdlg->logBufferHtml, "</td><td>");
+
+  if (level<=GWEN_LoggerLevel_Error)
+    col="red";
+  else if (level==GWEN_LoggerLevel_Warning)
+    col="blue";
+  else if (level==GWEN_LoggerLevel_Info)
+    col="green";
+  else
+    col=NULL;
+  if (col) {
+    GWEN_Buffer_AppendString(xdlg->logBufferHtml, "<font color=\"");
+    GWEN_Buffer_AppendString(xdlg->logBufferHtml, col);
+    GWEN_Buffer_AppendString(xdlg->logBufferHtml,"\">");
+  }
+  GWEN_Buffer_AppendString(xdlg->logBufferHtml, s);
+  if (col)
+    GWEN_Buffer_AppendString(xdlg->logBufferHtml, "</font>");
+  GWEN_Buffer_AppendString(xdlg->logBufferHtml, "</td></tr>");
+
+  /* assemble full string, containing HTML and text log */
+  tbuf=GWEN_Buffer_new(0,
+		       GWEN_Buffer_GetUsedBytes(xdlg->logBufferHtml)+
+		       GWEN_Buffer_GetUsedBytes(xdlg->logBufferTxt)+256,
+		       0,
+		       1);
+
+  GWEN_Buffer_AppendString(tbuf, "<html><table>");
+  GWEN_Buffer_AppendString(tbuf, GWEN_Buffer_GetStart(xdlg->logBufferHtml));
+  GWEN_Buffer_AppendString(tbuf, "</table></html>");
+  GWEN_Buffer_AppendString(tbuf, GWEN_Buffer_GetStart(xdlg->logBufferTxt));
+
+  GWEN_Dialog_SetCharProperty(dlg, "logText", GWEN_DialogProperty_Value, 0,
+			      GWEN_Buffer_GetStart(tbuf), 0);
+  GWEN_Buffer_free(tbuf);
+}
+
+
+
+void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
+  GWEN_DLGPROGRESS *xdlg;
+  const char *s;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg);
+  assert(xdlg);
+
+  if (pd==xdlg->firstProgress)
+    s="allProgress";
+  else if (pd==xdlg->secondProgress)
+    s="currentProgress";
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Progress %08x is neither primary nor secondary",
+	      GWEN_ProgressData_GetId(pd));
+    return;
+  }
+
+  if (xdlg->wasInit) {
+    GWEN_Dialog_SetIntProperty(dlg, s, GWEN_DialogProperty_Value, 0,
+			       GWEN_ProgressData_GetCurrent(pd), 0);
+  }
 }
 
 
@@ -282,7 +412,7 @@ int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "closeButton")==0) {
-    return GWEN_DialogEvent_ResultHandled;
+    return GWEN_DialogEvent_ResultAccept;
   }
   else if (strcasecmp(sender, "abortButton")==0) {
     if (xdlg->firstProgress)
@@ -290,6 +420,7 @@ int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     if (xdlg->secondProgress)
       GWEN_ProgressData_SetAborted(xdlg->secondProgress, 1);
 
+    xdlg->stayOpen=1;
     GWEN_Dialog_SetIntProperty(dlg, "abortButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "closeButton", GWEN_DialogProperty_Enabled, 0, 1, 0);
 

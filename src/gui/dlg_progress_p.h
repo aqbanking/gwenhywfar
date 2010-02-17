@@ -21,6 +21,10 @@ struct GWEN_DLGPROGRESS {
 
   int wasInit;
   int allowClose;
+  int stayOpen;
+
+  GWEN_BUFFER *logBufferTxt;
+  GWEN_BUFFER *logBufferHtml;
 };
 typedef struct GWEN_DLGPROGRESS GWEN_DLGPROGRESS;
 

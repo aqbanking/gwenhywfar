@@ -47,6 +47,7 @@ GWEN_PROGRESS_DATA *GWEN_ProgressData_new(GWEN_GUI *gui,
   pd->total=total;
 
   pd->logBuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  pd->startTime=time(0);
 
   return pd;
 }
@@ -82,6 +83,20 @@ uint32_t GWEN_ProgressData_GetId(const GWEN_PROGRESS_DATA *pd) {
 uint32_t GWEN_ProgressData_GetFlags(const GWEN_PROGRESS_DATA *pd) {
   assert(pd);
   return pd->flags;
+}
+
+
+
+void GWEN_ProgressData_AddFlags(GWEN_PROGRESS_DATA *pd, uint32_t fl) {
+  assert(pd);
+  pd->flags|=fl;
+}
+
+
+
+void GWEN_ProgressData_SubFlags(GWEN_PROGRESS_DATA *pd, uint32_t fl) {
+  assert(pd);
+  pd->flags&=~fl;
 }
 
 

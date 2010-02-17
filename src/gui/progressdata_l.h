@@ -39,6 +39,8 @@ GWEN_GUI *GWEN_ProgressData_GetGui(const GWEN_PROGRESS_DATA *pd);
 uint32_t GWEN_ProgressData_GetId(const GWEN_PROGRESS_DATA *pd);
 
 uint32_t GWEN_ProgressData_GetFlags(const GWEN_PROGRESS_DATA *pd);
+void GWEN_ProgressData_AddFlags(GWEN_PROGRESS_DATA *pd, uint32_t fl);
+void GWEN_ProgressData_SubFlags(GWEN_PROGRESS_DATA *pd, uint32_t fl);
 
 const char *GWEN_ProgressData_GetTitle(const GWEN_PROGRESS_DATA *pd);
 

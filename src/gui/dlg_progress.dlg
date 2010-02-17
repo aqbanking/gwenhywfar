@@ -4,7 +4,7 @@
     <widget type="label" name="descrLabel" flags="fillX" />
 
     <widget type="groupBox" name="logGroup" flags="fillX fillY">
-      <widget type="textEdit" name="logText" flags="fillX fillY" />
+      <widget type="textBrowser" name="logText" flags="fillX fillY readOnly" />
     </widget>
 
     <widget name="hline1" type="hLine" flags="fillX" />

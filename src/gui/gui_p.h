@@ -74,6 +74,7 @@ struct GWEN_GUI {
   GWEN_PROGRESS_DATA_TREE *progressDataTree;
 
   uint32_t nextProgressId;
+  uint32_t lastProgressId;
 
   uint32_t refCount;
 };

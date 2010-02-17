@@ -32,9 +32,12 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
 				 GWEN_LOGGER_LEVEL level,
 				 const char *s);
 
+void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd);
 
 void GWEN_DlgProgress_SetAllowClose(GWEN_DIALOG *dlg, int b);
 
+void GWEN_DlgProgress_SetStayOpen(GWEN_DIALOG *dlg, int b);
+int GWEN_DlgProgress_GetStayOpen(const GWEN_DIALOG *dlg);
 
 
 
