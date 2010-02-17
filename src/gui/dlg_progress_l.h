@@ -19,7 +19,7 @@
 
 
 
-GWEN_DIALOG *GWEN_DlgProgress_new(const char *dialogId);
+GWEN_DIALOG *GWEN_DlgProgress_new(void);
 
 
 GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetFirstProgress(const GWEN_DIALOG *dlg);

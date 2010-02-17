@@ -101,6 +101,14 @@ static int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
 					 GWEN_LOGGER_LEVEL level,
 					 const char *text);
 
+static int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
+				      uint32_t flags,
+				      const char *title,
+				      const char *text,
+				      char *buffer,
+				      int minLen,
+				      int maxLen,
+				      uint32_t guiid);
 
 
 

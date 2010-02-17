@@ -55,6 +55,33 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWENHYWFAR_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWEN_Dialog, GWENHYWFAR_API)
 
 
+#define GWEN_WIDGET_FLAGS_NONE              0x00000000L
+#define GWEN_WIDGET_FLAGS_FILLX             0x80000000L
+#define GWEN_WIDGET_FLAGS_FILLY             0x40000000L
+#define GWEN_WIDGET_FLAGS_READONLY          0x20000000L
+#define GWEN_WIDGET_FLAGS_PASSWORD          0x10000000L
+#define GWEN_WIDGET_FLAGS_DEFAULT_WIDGET    0x08000000L
+
+#define GWEN_WIDGET_FLAGS_DECOR_SHRINKABLE  0x04000000L
+#define GWEN_WIDGET_FLAGS_DECOR_STRETCHABLE 0x02000000L
+#define GWEN_WIDGET_FLAGS_DECOR_MINIMIZE    0x01000000L
+#define GWEN_WIDGET_FLAGS_DECOR_MAXIMIZE    0x00800000L
+#define GWEN_WIDGET_FLAGS_DECOR_CLOSE       0x00400000L
+#define GWEN_WIDGET_FLAGS_DECOR_MENU        0x00200000L
+
+#define GWEN_WIDGET_FLAGS_FIXED_WIDTH       0x00100000L
+#define GWEN_WIDGET_FLAGS_FIXED_HEIGHT      0x00080000L
+#define GWEN_WIDGET_FLAGS_EQUAL_WIDTH       0x00040000L
+#define GWEN_WIDGET_FLAGS_EQUAL_HEIGHT      0x00020000L
+
+#define GWEN_WIDGET_FLAGS_JUSTIFY_LEFT      0x00010000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_RIGHT     0x00008000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_TOP       0x00004000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_BOTTOM    0x00002000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX   0x00001000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY   0x00000800L
+
+
 
 typedef enum {
   GWEN_DialogEvent_TypeInit=0,
@@ -262,6 +289,36 @@ const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
 					int index,
 					const char *defaultValue);
 
+
+
+
+
+GWENHYWFAR_API
+int GWEN_Dialog_RemoveWidget(GWEN_DIALOG *dlg, const char *name);
+
+GWENHYWFAR_API
+uint32_t GWEN_Dialog_GetWidgetFlags(const GWEN_DIALOG *dlg, const char *name);
+
+GWENHYWFAR_API
+void GWEN_Dialog_SetWidgetFlags(GWEN_DIALOG *dlg, const char *name, uint32_t fl);
+
+GWENHYWFAR_API
+void GWEN_Dialog_AddWidgetFlags(GWEN_DIALOG *dlg, const char *name, uint32_t fl);
+
+GWENHYWFAR_API
+void GWEN_Dialog_SubWidgetFlags(GWEN_DIALOG *dlg, const char *name, uint32_t fl);
+
+GWENHYWFAR_API
+int GWEN_Dialog_GetWidgetColumns(const GWEN_DIALOG *dlg, const char *name);
+
+GWENHYWFAR_API
+void GWEN_Dialog_SetWidgetColumns(GWEN_DIALOG *dlg, const char *name, int i);
+
+GWENHYWFAR_API
+int GWEN_Dialog_GetWidgetRows(const GWEN_DIALOG *dlg, const char *name);
+
+GWENHYWFAR_API
+void GWEN_Dialog_SetWidgetRows(GWEN_DIALOG *dlg, const char *name, int i);
 
 
 

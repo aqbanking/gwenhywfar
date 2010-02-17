@@ -29,6 +29,7 @@
 
 
 #include "gui_p.h"
+#include "dlg_input_l.h"
 #include "dlg_progress_l.h"
 #include "i18n_l.h"
 
@@ -82,6 +83,7 @@ void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
   gui->progressAdvanceFn=GWEN_Gui_Internal_ProgressAdvance;
   gui->progressLogFn=GWEN_Gui_Internal_ProgressLog;
   gui->progressEndFn=GWEN_Gui_Internal_ProgressEnd;
+  gui->inputBoxFn=GWEN_Gui_Internal_InputBox;
 }
 
 
@@ -862,7 +864,6 @@ int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 int GWEN_Gui_OpenDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
-  DBG_ERROR(0, "OpenDialog");
   if (gwenhywfar_gui && gwenhywfar_gui->openDialogFn)
     return gwenhywfar_gui->openDialogFn(gwenhywfar_gui, dlg, guiid);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -935,7 +936,7 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
     int rv;
 
     /* need to create dialog for it */
-    dlg=GWEN_DlgProgress_new("dlg_gwen_progress");
+    dlg=GWEN_DlgProgress_new();
     rv=GWEN_Gui_OpenDialog(dlg, 0);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unable to openDialog: %d", rv);
@@ -1217,6 +1218,43 @@ int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
   if (aborted)
     return GWEN_ERROR_USER_ABORTED;
   return 0;
+}
+
+
+
+int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
+			       uint32_t flags,
+			       const char *title,
+			       const char *text,
+			       char *buffer,
+			       int minLen,
+			       int maxLen,
+			       uint32_t guiid) {
+  GWEN_DIALOG *dlg;
+  int rv;
+
+  dlg=GWEN_DlgInput_new(flags, title, text, minLen, maxLen);
+  if (dlg==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not create dialog");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg, 0);
+  if (rv==1) {
+    rv=GWEN_DlgInput_CopyInput(dlg, buffer, maxLen);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Dialog_free(dlg);
+      return rv;
+    }
+    GWEN_Dialog_free(dlg);
+    return 0;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "User aborted");
+    GWEN_Dialog_free(dlg);
+    return GWEN_ERROR_USER_ABORTED;
+  }
 }
 
 

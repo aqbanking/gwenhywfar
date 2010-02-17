@@ -32,13 +32,13 @@ GWEN_INHERIT(GWEN_DIALOG, GWEN_DLGPROGRESS)
 
 
 
-GWEN_DIALOG *GWEN_DlgProgress_new(const char *dialogId) {
+GWEN_DIALOG *GWEN_DlgProgress_new() {
   GWEN_DIALOG *dlg;
   GWEN_DLGPROGRESS *xdlg;
   GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=GWEN_Dialog_new(dialogId);
+  dlg=GWEN_Dialog_new("dlg_gwen_progress");
   GWEN_NEW_OBJECT(GWEN_DLGPROGRESS, xdlg);
 
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg, xdlg,

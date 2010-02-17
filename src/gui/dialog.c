@@ -531,6 +531,116 @@ const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
 
 
 
+int GWEN_Dialog_RemoveWidget(GWEN_DIALOG *dlg, const char *name) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    GWEN_Widget_Tree_Del(w);
+    GWEN_Widget_free(w);
+    return 0;
+  }
+
+  return GWEN_ERROR_NOT_FOUND;
+}
+
+
+uint32_t GWEN_Dialog_GetWidgetFlags(const GWEN_DIALOG *dlg, const char *name) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    return GWEN_Widget_GetFlags(w);
+  }
+
+  return 0;
+}
+
+
+
+void GWEN_Dialog_SetWidgetFlags(GWEN_DIALOG *dlg, const char *name, uint32_t fl) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    GWEN_Widget_SetFlags(w, fl);
+  }
+}
+
+
+
+void GWEN_Dialog_AddWidgetFlags(GWEN_DIALOG *dlg, const char *name, uint32_t fl) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    GWEN_Widget_AddFlags(w, fl);
+  }
+}
+
+
+
+void GWEN_Dialog_SubWidgetFlags(GWEN_DIALOG *dlg, const char *name, uint32_t fl) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    GWEN_Widget_SubFlags(w, fl);
+  }
+}
+
+
+
+int GWEN_Dialog_GetWidgetColumns(const GWEN_DIALOG *dlg, const char *name) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    return GWEN_Widget_GetColumns(w);
+  }
+
+  return -1;
+}
+
+
+
+void GWEN_Dialog_SetWidgetColumns(GWEN_DIALOG *dlg, const char *name, int i) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    GWEN_Widget_SetColumns(w, i);
+  }
+}
+
+
+
+int GWEN_Dialog_GetWidgetRows(const GWEN_DIALOG *dlg, const char *name) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    return GWEN_Widget_GetRows(w);
+  }
+
+  return -1;
+}
+
+
+
+void GWEN_Dialog_SetWidgetRows(GWEN_DIALOG *dlg, const char *name, int i) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    GWEN_Widget_SetRows(w, i);
+  }
+}
+
+
+
+
+
 GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg) {
   assert(dlg);
   assert(dlg->refCount);
