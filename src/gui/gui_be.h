@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: error.h 1104 2007-01-03 09:21:32Z martin $
     begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2002-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -315,7 +312,20 @@ GWEN_GUI_RUN_DIALOG_FN GWEN_Gui_SetRunDialogFn(GWEN_GUI *gui, GWEN_GUI_RUN_DIALO
 
 
 GWENHYWFAR_API
+GWEN_GUI_READ_DIALOG_PREFS_FN
+  GWEN_Gui_SetReadDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_READ_DIALOG_PREFS_FN f);
+
+GWENHYWFAR_API
+GWEN_GUI_WRITE_DIALOG_PREFS_FN
+  GWEN_Gui_SetWriteDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_WRITE_DIALOG_PREFS_FN f);
+
+
+GWENHYWFAR_API
 GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f);
+
+
+GWENHYWFAR_API
+void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name);
 
 
 GWENHYWFAR_API

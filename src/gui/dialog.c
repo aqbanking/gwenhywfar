@@ -30,6 +30,7 @@
 
 #include "dialog_p.h"
 #include "widget_l.h"
+#include "gui_l.h"
 
 #include <aqbanking/banking.h>
 
@@ -48,6 +49,8 @@ GWEN_LIST_FUNCTIONS(GWEN_DIALOG, GWEN_Dialog)
 
 GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId) {
   GWEN_DIALOG *dlg;
+  int rv;
+  GWEN_DB_NODE *db=NULL;
 
   GWEN_NEW_OBJECT(GWEN_DIALOG, dlg);
   dlg->refCount=1;
@@ -60,7 +63,16 @@ GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId) {
   dlg->widgets=GWEN_Widget_Tree_new();
 
   dlg->subDialogs=GWEN_Dialog_List_new();
-  dlg->dbPreferences=GWEN_DB_Group_new("preferences");
+
+  /* try to load preferences */
+  rv=GWEN_Gui_ReadDialogPrefs(dialogId, NULL, &db);
+  if (rv<0) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Could not read dialog preferences (%d)", rv);
+    dlg->dbPreferences=GWEN_DB_Group_new("preferences");
+  }
+  else {
+    dlg->dbPreferences=db;
+  }
 
   return dlg;
 }
@@ -70,10 +82,19 @@ GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId) {
 void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
   if (dlg) {
     assert(dlg->refCount);
+
     if (dlg->refCount>1) {
       dlg->refCount--;
     }
     else {
+      int rv;
+
+      /* try to save preferences */
+      rv=GWEN_Gui_WriteDialogPrefs(dlg->dialogId, dlg->dbPreferences);
+      if (rv<0) {
+	DBG_WARN(GWEN_LOGDOMAIN, "Could not write dialog preferences (%d)", rv);
+      }
+
       GWEN_Dialog_List_free(dlg->subDialogs);
 
       GWEN_INHERIT_FINI(GWEN_DIALOG, dlg);
@@ -639,6 +660,31 @@ void GWEN_Dialog_SetWidgetRows(GWEN_DIALOG *dlg, const char *name, int i) {
 
 
 
+void GWEN_Dialog_SetWidgetText(GWEN_DIALOG *dlg, const char *name, const char *t) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    GWEN_Widget_SetText(w, 0, t);
+  }
+}
+
+
+
+const char *GWEN_Dialog_GetWidgetText(const GWEN_DIALOG *dlg, const char *name) {
+  GWEN_WIDGET *w;
+
+  w=GWEN_Dialog_FindWidgetByName(dlg, name);
+  if (w) {
+    return GWEN_Widget_GetText(w, 0);
+  }
+
+  return NULL;
+}
+
+
+
+
 
 
 GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg) {
@@ -647,18 +693,6 @@ GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg) {
 
   return dlg->dbPreferences;
 }
-
-
-
-void GWEN_Dialog_SetPreferences(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
-  assert(dlg);
-  assert(dlg->refCount);
-
-  GWEN_DB_Group_free(dlg->dbPreferences);
-  dlg->dbPreferences=db;
-}
-
-
 
 
 

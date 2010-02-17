@@ -320,17 +320,16 @@ int GWEN_Dialog_GetWidgetRows(const GWEN_DIALOG *dlg, const char *name);
 GWENHYWFAR_API
 void GWEN_Dialog_SetWidgetRows(GWEN_DIALOG *dlg, const char *name, int i);
 
+GWENHYWFAR_API
+void GWEN_Dialog_SetWidgetText(GWEN_DIALOG *dlg, const char *name, const char *t);
+
+GWENHYWFAR_API
+const char *GWEN_Dialog_GetWidgetText(const GWEN_DIALOG *dlg, const char *name);
+
 
 
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg);
-
-/**
- * Takes over the given preferences db.
- */
-GWENHYWFAR_API
-void GWEN_Dialog_SetPreferences(GWEN_DIALOG *dlg, GWEN_DB_NODE *db);
-
 
 #ifdef __cplusplus
 }

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: error.h 1104 2007-01-03 09:21:32Z martin $
     begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2002-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -790,6 +787,8 @@ GWENHYWFAR_API void GWEN_Gui_AddFlags(GWEN_GUI *gui, uint32_t fl);
 GWENHYWFAR_API void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl);
 /*@}*/
 
+
+GWENHYWFAR_API const char *GWEN_Gui_GetName();
 
 
 #ifdef __cplusplus

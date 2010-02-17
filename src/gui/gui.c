@@ -30,6 +30,7 @@
 
 #include "gui_p.h"
 #include "dlg_input_l.h"
+#include "dlg_message_l.h"
 #include "dlg_progress_l.h"
 #include "i18n_l.h"
 
@@ -67,6 +68,7 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
     if ((--gui->refCount)==0) {
       GWEN_INHERIT_FINI(GWEN_GUI, gui);
 
+      free(gui->name);
       GWEN_ProgressData_Tree_free(gui->progressDataTree);
 
       GWEN_FREE_OBJECT(gui);
@@ -84,6 +86,7 @@ void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
   gui->progressLogFn=GWEN_Gui_Internal_ProgressLog;
   gui->progressEndFn=GWEN_Gui_Internal_ProgressEnd;
   gui->inputBoxFn=GWEN_Gui_Internal_InputBox;
+  gui->messageBoxFn=GWEN_Gui_Internal_MessageBox;
 }
 
 
@@ -331,6 +334,31 @@ GWEN_GUI_RUN_DIALOG_FN GWEN_Gui_SetRunDialogFn(GWEN_GUI *gui, GWEN_GUI_RUN_DIALO
 
 
 
+GWEN_GUI_READ_DIALOG_PREFS_FN
+GWEN_Gui_SetReadDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_READ_DIALOG_PREFS_FN f) {
+  GWEN_GUI_READ_DIALOG_PREFS_FN of;
+
+  assert(gui);
+  of=gui->readDialogPrefsFn;
+  gui->readDialogPrefsFn=f;
+
+  return of;
+}
+
+
+
+GWEN_GUI_WRITE_DIALOG_PREFS_FN
+GWEN_Gui_SetWriteDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_WRITE_DIALOG_PREFS_FN f) {
+  GWEN_GUI_WRITE_DIALOG_PREFS_FN of;
+
+  assert(gui);
+  of=gui->writeDialogPrefsFn;
+  gui->writeDialogPrefsFn=f;
+
+  return of;
+}
+
+
 
 GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f) {
   GWEN_GUI_GET_FILENAME_FN of;
@@ -383,6 +411,22 @@ void GWEN_Gui_AddFlags(GWEN_GUI *gui, uint32_t fl) {
 void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl) {
   assert(gui);
   gui->flags&=~fl;
+}
+
+
+
+void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name) {
+  free(gui->name);
+  if (name) gui->name=strdup(name);
+  else gui->name=NULL;
+}
+
+
+
+const char *GWEN_Gui_GetName() {
+  if (gwenhywfar_gui)
+    return gwenhywfar_gui->name;
+  return NULL;
 }
 
 
@@ -907,6 +951,25 @@ int GWEN_Gui_GetFileName(const char *caption,
 
 
 
+int GWEN_Gui_ReadDialogPrefs(const char *groupName,
+			     const char *altName,
+			     GWEN_DB_NODE **pDb) {
+  if (gwenhywfar_gui && gwenhywfar_gui->readDialogPrefsFn)
+    return gwenhywfar_gui->readDialogPrefsFn(gwenhywfar_gui, groupName, altName, pDb);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_Gui_WriteDialogPrefs(const char *groupName,
+			      GWEN_DB_NODE *db) {
+  if (gwenhywfar_gui && gwenhywfar_gui->writeDialogPrefsFn)
+    return gwenhywfar_gui->writeDialogPrefsFn(gwenhywfar_gui, groupName, db);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
 
 
 
@@ -1257,6 +1320,30 @@ int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
   }
 }
 
+
+
+int GWEN_Gui_Internal_MessageBox(GWEN_GUI *gui,
+				 uint32_t flags,
+				 const char *title,
+				 const char *text,
+				 const char *b1,
+				 const char *b2,
+				 const char *b3,
+				 uint32_t guiid) {
+  GWEN_DIALOG *dlg;
+  int rv;
+
+  dlg=GWEN_DlgMessage_new(flags, title, text, b1, b2, b3);
+  if (dlg==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not create dialog");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  GWEN_Gui_ExecDialog(dlg, 0);
+  rv=GWEN_DlgMessage_GetResponse(dlg);
+  GWEN_Dialog_free(dlg);
+  return rv;
+}
 
 
 

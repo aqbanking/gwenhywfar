@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: error.h 1104 2007-01-03 09:21:32Z martin $
     begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2002-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,7 +26,7 @@
 #ifndef GWENHYWFAR_GUI_GUI_P_H
 #define GWENHYWFAR_GUI_GUI_P_H
 
-#include "gui_be.h"
+#include "gui_l.h"
 #include "progressdata_l.h"
 
 
@@ -79,6 +76,8 @@ struct GWEN_GUI {
   uint32_t nextProgressId;
   uint32_t lastProgressId;
 
+  char *name;
+
   uint32_t refCount;
 };
 
@@ -113,6 +112,14 @@ static int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
 				      int maxLen,
 				      uint32_t guiid);
 
+static int GWEN_Gui_Internal_MessageBox(GWEN_GUI *gui,
+					uint32_t flags,
+					const char *title,
+					const char *text,
+					const char *b1,
+					const char *b2,
+					const char *b3,
+					uint32_t guiid);
 
 
 
