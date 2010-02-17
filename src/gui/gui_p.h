@@ -72,9 +72,12 @@ struct GWEN_GUI {
   uint32_t flags;
 
   GWEN_PROGRESS_DATA_TREE *progressDataTree;
+  GWEN_DIALOG_LIST *activeDialogs;
 
   uint32_t nextProgressId;
   uint32_t lastProgressId;
+
+  uint32_t nextDialogId;
 
   char *name;
 
@@ -120,6 +123,13 @@ static int GWEN_Gui_Internal_MessageBox(GWEN_GUI *gui,
 					const char *b2,
 					const char *b3,
 					uint32_t guiid);
+
+static uint32_t GWEN_Gui_Internal_ShowBox(GWEN_GUI *gui,
+					  uint32_t flags,
+					  const char *title,
+					  const char *text,
+					  uint32_t guiid);
+static void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id);
 
 
 

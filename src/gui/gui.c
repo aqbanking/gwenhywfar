@@ -32,10 +32,11 @@
 #include "dlg_input_l.h"
 #include "dlg_message_l.h"
 #include "dlg_progress_l.h"
+#include "dlg_showbox_l.h"
 #include "i18n_l.h"
 
 #include <gwenhywfar/debug.h>
-
+#include <gwenhywfar/dialog_be.h>
 
 
 static GWEN_GUI *gwenhywfar_gui=NULL;
@@ -55,6 +56,7 @@ GWEN_GUI *GWEN_Gui_new() {
   gui->checkCertFn=GWEN_Gui_CheckCertBuiltIn;
 
   gui->progressDataTree=GWEN_ProgressData_Tree_new();
+  gui->activeDialogs=GWEN_Dialog_List_new();
 
   DBG_ERROR(0, "Created gui %p", gui);
   return gui;
@@ -68,8 +70,9 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
     if ((--gui->refCount)==0) {
       GWEN_INHERIT_FINI(GWEN_GUI, gui);
 
-      free(gui->name);
+      GWEN_Dialog_List_free(gui->activeDialogs);
       GWEN_ProgressData_Tree_free(gui->progressDataTree);
+      free(gui->name);
 
       GWEN_FREE_OBJECT(gui);
     }
@@ -87,6 +90,8 @@ void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
   gui->progressEndFn=GWEN_Gui_Internal_ProgressEnd;
   gui->inputBoxFn=GWEN_Gui_Internal_InputBox;
   gui->messageBoxFn=GWEN_Gui_Internal_MessageBox;
+  gui->showBoxFn=GWEN_Gui_Internal_ShowBox;
+  gui->hideBoxFn=GWEN_Gui_Internal_HideBox;
 }
 
 
@@ -1344,6 +1349,70 @@ int GWEN_Gui_Internal_MessageBox(GWEN_GUI *gui,
   GWEN_Dialog_free(dlg);
   return rv;
 }
+
+
+
+uint32_t GWEN_Gui_Internal_ShowBox(GWEN_GUI *gui,
+				   uint32_t flags,
+				   const char *title,
+				   const char *text,
+				   uint32_t guiid) {
+  GWEN_DIALOG *dlg;
+  int rv;
+  uint32_t id;
+
+  id=++(gui->nextDialogId);
+ 
+  dlg=GWEN_DlgShowBox_new(flags, title, text);
+  if (dlg==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not create dialog");
+    return 0;
+  }
+
+  GWEN_Dialog_SetGuiId(dlg, id);
+
+  rv=GWEN_Gui_OpenDialog(dlg, guiid);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Dialog_free(dlg);
+    return 0;
+  }
+
+  GWEN_Dialog_List_Add(dlg, gui->activeDialogs);
+
+  return id;
+}
+
+
+
+void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id) {
+  GWEN_DIALOG *dlg;
+
+  if (id) {
+    dlg=GWEN_Dialog_List_First(gui->activeDialogs);
+    while(dlg) {
+      if (GWEN_Dialog_GetGuiId(dlg)==id)
+	break;
+      dlg=GWEN_Dialog_List_Next(dlg);
+    }
+  }
+  else
+    dlg=GWEN_Dialog_List_Last(gui->activeDialogs);
+
+  if (dlg) {
+    int rv;
+
+    rv=GWEN_Gui_CloseDialog(dlg);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    }
+    GWEN_Dialog_List_Del(dlg);
+    GWEN_Dialog_free(dlg);
+  }
+}
+
+
+
 
 
 
