@@ -328,6 +328,8 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeVLine;
     else if (strcasecmp(s, "spinBox")==0)
       return GWEN_Widget_TypeSpinBox;
+    else if (strcasecmp(s, "textBrowser")==0)
+      return GWEN_Widget_TypeTextBrowser;
   }
   return GWEN_Widget_TypeUnknown;
 }
@@ -362,6 +364,7 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeHLine:           return "hLine";
   case GWEN_Widget_TypeVLine:           return "vLine";
   case GWEN_Widget_TypeSpinBox:         return "spinBox";
+  case GWEN_Widget_TypeTextBrowser:     return "textBrowser";
   case GWEN_Widget_TypeUnknown:         return "unknown";
   }
 
