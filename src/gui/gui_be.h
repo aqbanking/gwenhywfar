@@ -218,6 +218,13 @@ typedef int (*GWEN_GUI_CLOSE_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg);
 typedef int (*GWEN_GUI_RUN_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout);
 
 
+typedef int (*GWEN_GUI_READ_DIALOG_PREFS_FN)(GWEN_GUI *gui, const char *groupName, const char *altName,
+					     GWEN_DB_NODE **pDb);
+
+typedef int (*GWEN_GUI_WRITE_DIALOG_PREFS_FN)(GWEN_GUI *gui, const char *groupName,
+					      GWEN_DB_NODE *db);
+
+
 typedef int (*GWEN_GUI_GET_FILENAME_FN)(GWEN_GUI *gui,
                                         const char *caption,
 					GWEN_GUI_FILENAME_TYPE fnt,

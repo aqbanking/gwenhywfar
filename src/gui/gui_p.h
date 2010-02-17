@@ -67,6 +67,9 @@ struct GWEN_GUI {
   GWEN_GUI_CLOSE_DIALOG_FN closeDialogFn;
   GWEN_GUI_RUN_DIALOG_FN runDialogFn;
 
+  GWEN_GUI_READ_DIALOG_PREFS_FN readDialogPrefsFn;
+  GWEN_GUI_WRITE_DIALOG_PREFS_FN writeDialogPrefsFn;
+
   GWEN_GUI_GET_FILENAME_FN getFileNameFn;
 
   uint32_t flags;
