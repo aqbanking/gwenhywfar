@@ -2221,7 +2221,7 @@ int QT3_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
       }
 
       if (wt) {
-	int x, y;
+	int x=0, y=0;
         int c;
 
 	if ((c=GWEN_Widget_GetColumns(gwParent))) {

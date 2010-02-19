@@ -187,7 +187,6 @@ int test2(int argc, char **argv) {
   QString lf;
   int rv;
   uint32_t pid;
-  int i;
 
   rv=GWEN_Init();
   if (rv) {

@@ -11,14 +11,14 @@
 #ifndef FOX16_GUI_HPP
 #define FOX16_GUI_HPP
 
-#include "cppgui.hpp"
-#include "fox16_gui_updater_l.hpp"
+#include <gwen-gui-fox16/cppgui.hpp>
 
 #include <fx.h>
 
 #include <list>
 
 
+class FOX16_GuiUpdater;
 
 
 class FOX16GUI_API FOX16_Gui: public CppGui {
@@ -106,7 +106,7 @@ protected:
   WinScopePtrList m_scopeList;
   uint32_t m_lastId;
 
-  FOX16_GuiUpdater m_updater;
+  FOX16_GuiUpdater *m_updater;
 
 };
 

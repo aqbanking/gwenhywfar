@@ -45,7 +45,7 @@ depcomp
 distribution
 gwenhywfar
 gwenhywfar-*.*.*
-gwenhywfar2
+gwenhywfar3
 install-sh
 libtool
 listdoc.h

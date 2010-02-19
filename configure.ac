@@ -1337,14 +1337,14 @@ AC_OUTPUT
 #
 # create header directory, make symlinks
 #
-GWEN_HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/io src/iolayer src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/gui"
-GWEN_HEADER_DIRS="${GWEN_HEADER_DIRS} src/parser"
+HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/io src/iolayer src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/gui"
+HEADER_DIRS="${HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
 rm -Rf gwenhywfar3 2>/dev/null
 mkdir -p gwenhywfar3/gwenhywfar
-for d in ${GWEN_HEADER_DIRS}; do
+for d in ${HEADER_DIRS}; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
     case ${f} in
@@ -1358,6 +1358,61 @@ for d in ${GWEN_HEADER_DIRS}; do
 done
 #ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar3/gwenhywfar/system.h" 2>/dev/null
 
+
+
+# qt3
+#
+rm -Rf gwenhywfar3/gwen-gui-qt3 2>/dev/null
+mkdir -p gwenhywfar3/gwen-gui-qt3
+for d in gui/qt3; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.hpp | *_p.hpp | qt3_gui_*.hpp)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar3/gwen-gui-qt3/${f}"
+         ;;
+    esac
+  done
+done
+
+
+
+# qt4
+#
+rm -Rf gwenhywfar3/gwen-gui-qt4 2>/dev/null
+mkdir -p gwenhywfar3/gwen-gui-qt4
+for d in gui/qt4; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.hpp | *_p.hpp | qt4_gui_*.hpp)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar3/gwen-gui-qt4/${f}"
+         ;;
+    esac
+  done
+done
+
+
+# fox16
+#
+rm -Rf gwenhywfar3/gwen-gui-fox16 2>/dev/null
+mkdir -p gwenhywfar3/gwen-gui-fox16
+for d in gui/fox16; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.hpp | *_p.hpp | fox16_gui_*.hpp)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar3/gwen-gui-fox16/${f}"
+         ;;
+    esac
+  done
+done
 
 
 

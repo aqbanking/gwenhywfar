@@ -14,6 +14,7 @@
 
 #include "fox16_gui.hpp"
 #include "fox16_gui_dialog_l.hpp"
+#include "fox16_gui_updater_l.hpp"
 
 #include <gwenhywfar/debug.h>
 
@@ -79,7 +80,9 @@ FOX16_Gui::FOX16_Gui(FXApp *a)
 :CppGui()
 ,m_app(a)
 ,m_lastId(0)
+,m_updater()
 {
+  m_updater=new FOX16_GuiUpdater();
   GWEN_Gui_AddFlags(_gui, GWEN_GUI_FLAGS_DIALOGSUPPORTED);
   GWEN_Gui_UseDialogs(_gui);
   GWEN_Gui_SetName(_gui, "fox16-gui");
@@ -91,6 +94,9 @@ FOX16_Gui::~FOX16_Gui() {
   if (!m_scopeList.empty()) {
     DBG_ERROR(0, "ScopeList is not empty!");
   }
+
+  if (m_updater)
+    delete m_updater;
 }
 
 
@@ -378,7 +384,7 @@ int FOX16_Gui::openDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
   }
 
   foxDlg->openDialog();
-  m_updater.guiUpdate();
+  m_updater->guiUpdate();
 
   return 0;
 }
@@ -393,7 +399,7 @@ int FOX16_Gui::closeDialog(GWEN_DIALOG *dlg) {
 
   foxDlg->closeDialog();
   delete foxDlg;
-  m_updater.guiUpdate();
+  m_updater->guiUpdate();
 
   return 0;
 }
@@ -409,7 +415,7 @@ int FOX16_Gui::runDialog(GWEN_DIALOG *dlg, int untilEnd) {
   if (untilEnd)
     return foxDlg->cont();
   else {
-    m_updater.guiUpdate();
+    m_updater->guiUpdate();
     return 0;
   }
 }

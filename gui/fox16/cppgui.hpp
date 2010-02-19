@@ -33,7 +33,7 @@
 
 class CppGui;
 
-#include "cppdialog.hpp"
+#include <gwen-gui-fox16/cppdialog.hpp>
 
 
 /**
