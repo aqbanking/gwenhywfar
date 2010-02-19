@@ -753,12 +753,34 @@ AC_SUBST(ICONV_LIBS)
 AC_ARG_WITH(guis, 
   [  --with-guis=list      space separated list of GUI implementations (default:all)],
   [gwenhywfar_guis="$withval"],
-  [gwenhywfar_guis="qt3 qt4"]
+  [gwenhywfar_guis="fox16 qt3 qt4"]
 )
 if test "$gwenhywfar_guis" = "none"; then
   gwenhywfar_guis=""
 fi
 AC_SUBST(gwenhywfar_guis)
+
+
+
+
+###-------------------------------------------------------------------------
+# Check for fox toolkit
+#
+
+
+case "$gwenhywfar_guis" in 
+  *fox16*)
+     AQ_CHECK_FOX
+     AM_CONDITIONAL(WITH_FOX, [test "$have_fox" = "yes"])
+     AC_DEFINE(BUILD_GUI_QT3, 1, [if gwen gui for fox16 is built])
+     with_gui_fox16="yes"
+     ;;
+  *)
+     ;;
+esac
+
+AC_SUBST(with_gui_fox16)
+AM_CONDITIONAL(WITH_GUI_FOX16, [test "$with_gui_fox16" = "yes"])
 
 
 
@@ -843,7 +865,7 @@ case "$gwenhywfar_guis" in
     QT4_BINDIR="` echo ${qt4_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
     UIC4="${qt4_uic}"
 
-    AC_DEFINE(BUILD_Q4BANKING_FRONTEND, 1, [if qbanking frontend is built])
+    AC_DEFINE(BUILD_GUI_QT4, 1, [if gwen gui for qt4 is built])
     with_gui_qt4="yes"
     ;;
   *)
@@ -1303,6 +1325,8 @@ AC_CONFIG_FILES([Doxyfile
                  gui/qt3/gwengui-qt3.pc
                  gui/qt4/Makefile
                  gui/qt4/gwengui-qt4.pc
+                 gui/fox16/Makefile
+                 gui/fox16/gwengui-fox16.pc
 		])
 AC_OUTPUT
 
