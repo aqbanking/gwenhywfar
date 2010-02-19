@@ -771,8 +771,7 @@ AC_SUBST(gwenhywfar_guis)
 case "$gwenhywfar_guis" in 
   *fox16*)
      AQ_CHECK_FOX
-     AM_CONDITIONAL(WITH_FOX, [test "$have_fox" = "yes"])
-     AC_DEFINE(BUILD_GUI_QT3, 1, [if gwen gui for fox16 is built])
+     AC_DEFINE(BUILD_GUI_FOX16, 1, [if gwen gui for fox16 is built])
      with_gui_fox16="yes"
      ;;
   *)
