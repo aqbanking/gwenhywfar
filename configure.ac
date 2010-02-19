@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=11
 GWENHYWFAR_VERSION_PATCHLEVEL=3
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -747,6 +747,118 @@ AC_SUBST(ICONV_LIBS)
 
 ###-------------------------------------------------------------------------
 #
+# guis
+#
+
+AC_ARG_WITH(guis, 
+  [  --with-guis=list      space separated list of GUI implementations (default:all)],
+  [gwenhywfar_guis="$withval"],
+  [gwenhywfar_guis="qt3 qt4"]
+)
+if test "$gwenhywfar_guis" = "none"; then
+  gwenhywfar_guis=""
+fi
+AC_SUBST(gwenhywfar_guis)
+
+
+
+###-------------------------------------------------------------------------
+#
+# QT3
+#
+
+UIC3="NO"
+QT_BINDIR=""
+
+case "$gwenhywfar_guis" in 
+  *qt3*)
+    AQ_CHECK_QT3
+    if test "$have_qt3" = "yes"; then
+      # Define this macro to disable the cast from QString to const char
+      # which implicitly uses latin1()!
+      AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
+    fi
+    
+    dnl windows/mingw doesnt have the yes program, so add this emulation
+    AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
+    
+    dnl Store the bin dir for the windows dlls
+    QT_BINDIR="` echo ${qt3_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
+  
+    dnl Check for potential qt4 environment, but only if moc is from qt4
+    dnl (watch out: the outside square parenteses are vitally important here!)
+    MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
+      UIC3="${qt3_uic}"
+    else
+      AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
+      AC_PATH_PROG([QT3TO4], [qt3to4], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
+    fi
+  
+    dnl Make sure moc and uic come from the same Qt version
+    dnl (watch out: the outside square parenteses are vitally important here!)
+    UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
+    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
+          "` echo ${UIC_VERSION} | cut -d. -f1 `" \
+       -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
+          "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
+      AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
+    fi
+
+    AC_DEFINE(BUILD_GUI_QT3, 1, [if gwen gui for qt3 is built])
+    with_gui_qt3="yes"
+    ;;
+  *)
+    ;;
+esac
+
+dnl Store the bin dir for the windows dlls
+AC_SUBST(QT_BINDIR)
+AC_SUBST(with_gui_qt3)
+AM_CONDITIONAL(WITH_GUI_QT3, [test "$with_gui_qt3" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# QT4
+#
+
+UIC4="NO"
+QT4_BINDIR=""
+
+case "$gwenhywfar_guis" in 
+  *qt4*)
+    AQ_CHECK_QT4
+    if test "$have_qt4" = "yes"; then
+      # Define this macro to disable the cast from QString to const char
+      # which implicitly uses latin1()!
+      AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
+    fi
+    
+    dnl windows/mingw doesnt have the yes program, so add this emulation
+    AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
+    
+    dnl Store the bin dir for the windows dlls
+    QT4_BINDIR="` echo ${qt4_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
+    UIC4="${qt4_uic}"
+
+    AC_DEFINE(BUILD_Q4BANKING_FRONTEND, 1, [if qbanking frontend is built])
+    with_gui_qt4="yes"
+    ;;
+  *)
+    ;;
+esac
+
+dnl Store the bin dir for the windows dlls
+AC_SUBST(QT4_BINDIR)
+AC_SUBST(with_gui_qt4)
+AM_CONDITIONAL(WITH_GUI_QT4, [test "$with_gui_qt4" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
 # check docpath
 #
 AC_MSG_CHECKING(docpath)
@@ -838,7 +950,7 @@ if test "$enable_visibility" = "yes"; then
   AC_MSG_CHECKING(if symbol visibility is supported)
   visibility_cflags=""
   case `$CC --version|head -n1|cut -f1 -d " "` in 
-    gcc*)
+    *gcc*)
        dnl Determine version number (watch out: the outside square
        dnl parenteses are vitally important here!)
        gccversion=["` ${CC} -dumpversion `"]
@@ -1186,6 +1298,11 @@ AC_CONFIG_FILES([Doxyfile
                  tools/typemaker2/types/c/Makefile
                  tools/gcttool/Makefile
                  test/Makefile
+                 gui/Makefile
+                 gui/qt3/Makefile
+                 gui/qt3/gwengui-qt3.pc
+                 gui/qt4/Makefile
+                 gui/qt4/gwengui-qt4.pc
 		])
 AC_OUTPUT
 
@@ -1233,16 +1350,15 @@ echo "Version                       : $GWENHYWFAR_VERSION_FULL_STRING"
 echo "System                        : $OSYSTEM"
 echo "Installation Folder           : $prefix"
 echo "Local Installation Mode       : $enable_local_install"
-echo "Plugin Loading Support        : $enable_plugin_loading"
 echo "Plugin Installation Folder    : $gwenhywfar_plugindir"
 echo "Plugin Search Folder          : $gwenhywfar_plugin_searchdir"
-echo "EBICS plugins enabled         : $enable_ebics_plugins"
 echo "Data Search Folder            : $gwenhywfar_data_searchdir"
 echo "Locale Search Folder          : $gwenhywfar_locale_searchdir"
 echo "Config Search Folder          : $gwenhywfar_cfg_searchdir"
 echo "Buffer Default Hard Limit     : $gwenhywfar_buffer_hardlimit"
 echo "Symbol Visibility             : $visibility_supported"
 echo "OpenSSL Support for gct-tool  : $ssl_available"
+echo "GUI Support                   : $gwenhywfar_guis"
 
 if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
   echo "GNUTLS                        : 1.6.1 or higher"

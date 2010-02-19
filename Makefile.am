@@ -1,5 +1,5 @@
-SUBDIRS=admin data m4 src plugins tools test po doc checks
-DIST_SUBDIRS=admin data m4 src plugins tools test doc po checks
+SUBDIRS=admin data m4 src plugins tools gui test po doc checks
+DIST_SUBDIRS=admin data m4 src plugins tools gui test doc po checks
 
 
 AUTOMAKE_OPTIONS = foreign
