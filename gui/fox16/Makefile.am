@@ -7,7 +7,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwengui-fox16.pc
 
 
-noinst_LTLIBRARIES=libgwengui_fox16.la
+lib_LTLIBRARIES=libgwengui-fox16.la
 
 noinst_HEADERS=\
   cppdialog_p.hpp \
