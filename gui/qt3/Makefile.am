@@ -6,6 +6,9 @@ DEFS=-DBUILDING_QT3_GUI
 lib_LTLIBRARIES=libgwengui-qt3.la
 noinst_PROGRAMS=libtest
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = gwengui-qt3.pc
+
 noinst_HEADERS=\
   cppdialog_p.hpp \
   cppgui_p.hpp \

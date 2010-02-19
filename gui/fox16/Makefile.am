@@ -3,6 +3,9 @@ INCLUDES=-I$(top_builddir)/gwenhywfar3 $(fox_includes)
 AM_CPPFLAGS= @visibility_cflags@
 DEFS=-DBUILDING_FOX16_GUI
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = gwengui-fox16.pc
+
 
 noinst_LTLIBRARIES=libgwengui_fox16.la
 

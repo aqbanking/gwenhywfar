@@ -3,6 +3,10 @@ INCLUDES=-I$(top_builddir)/gwenhywfar3 $(qt4_includes)
 AM_CPPFLAGS= @visibility_cflags@
 DEFS=-DBUILDING_QT4_GUI
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = gwengui-qt4.pc
+
+
 lib_LTLIBRARIES=libgwengui-qt4.la
 noinst_PROGRAMS=libtest
 
