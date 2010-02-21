@@ -612,7 +612,7 @@ case "$OS_TYPE" in
     LIBS="$oldlibs"
   ;;
 esac
-if [ "x${HAVE_GNUTLS_TRANSPORT_SET_ERRNO}" = "xyes" ] ; then
+if test "x${HAVE_GNUTLS_TRANSPORT_SET_ERRNO}" = "xyes"; then
   AC_DEFINE(HAVE_GNUTLS_TRANSPORT_SET_ERRNO, 1, [only in gnutls>=1.6])
 fi
 
