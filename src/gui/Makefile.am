@@ -47,6 +47,8 @@ dlgdata_DATA=\
   dlg_progress.dlg \
   dlg_showbox.dlg
 
+EXTRA_DIST=$(dlgdata_DATA)
+
 
 sources:
 	for f in $(libgui_la_SOURCES); do \
