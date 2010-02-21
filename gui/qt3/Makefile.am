@@ -45,7 +45,7 @@ EXTRA_DIST=$(UI_FILES) testdialog.xml
 
 
 libtest_SOURCES=libtest.cpp
-libtest_LDADD=libgwengui-qt3.la $(top_builddir)/src/$(gwenhywfar_internal_libname)
+libtest_LDADD=libgwengui-qt3.la $(top_builddir)/src/$(gwenhywfar_internal_libname) $(qt3_libs)
 
 
 

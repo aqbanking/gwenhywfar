@@ -29,7 +29,7 @@
 
 class CppGui;
 
-#include <gwen-gui-qt3/cppdialog.hpp>
+#include <gwen-gui-qt4/cppdialog.hpp>
 
 
 /**
