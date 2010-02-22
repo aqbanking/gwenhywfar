@@ -84,3 +84,5 @@ m4/lt~obsolete.m4
 checks/check_urlfns
 gui/qt3/libtest
 gui/qt4/libtest
+gui/fox16/libtest
+gui/fox16/html/libtest

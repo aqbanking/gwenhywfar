@@ -17,42 +17,6 @@
 class CppGuiLinker {
   friend class CppGui;
 
-  static int MessageBox(GWEN_GUI *gui,
-			uint32_t flags,
-			const char *title,
-			const char *text,
-			const char *b1,
-			const char *b2,
-			const char *b3,
-			uint32_t guiid);
-  static int InputBox(GWEN_GUI *gui,
-		      uint32_t flags,
-		      const char *title,
-		      const char *text,
-		      char *buffer,
-		      int minLen,
-		      int maxLen,
-		      uint32_t guiid);
-  static uint32_t ShowBox(GWEN_GUI *gui,
-			  uint32_t flags,
-			  const char *title,
-			  const char *text,
-			  uint32_t guiid);
-  static void HideBox(GWEN_GUI *gui,uint32_t id);
-  static uint32_t ProgressStart(GWEN_GUI *gui,
-				uint32_t flags,
-				const char *title,
-				const char *text,
-				uint64_t total,
-				uint32_t guiid);
-  static int ProgressAdvance(GWEN_GUI *gui,
-			     uint32_t id,
-			     uint64_t progress);
-  static int ProgressLog(GWEN_GUI *gui,
-			 uint32_t id,
-			 GWEN_LOGGER_LEVEL level,
-			 const char *text);
-  static int ProgressEnd(GWEN_GUI *gui, uint32_t id);
   static int Print(GWEN_GUI *gui,
 		   const char *docTitle,
 		   const char *docType,

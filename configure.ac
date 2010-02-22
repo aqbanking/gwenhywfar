@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=11
 GWENHYWFAR_VERSION_PATCHLEVEL=4
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="beta"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -1326,6 +1326,7 @@ AC_CONFIG_FILES([Doxyfile
                  gui/qt4/gwengui-qt4.pc
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
+                 gui/fox16/html/Makefile
 		])
 AC_OUTPUT
 
