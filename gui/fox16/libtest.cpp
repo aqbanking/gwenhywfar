@@ -123,7 +123,7 @@ int test3(int argc, char **argv) {
     "  </tr>"
     "  <tr>"
     "    <td>data1</td>"
-    "    <td>data2</td>"
+    "    <td>this is longer data (data2)</td>"
     "  </tr>"
     "</table>"
     "And   this is   after the table.<br>"
