@@ -89,6 +89,7 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
     o=HtmlObject_GridEntry_new(ctx);
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
     HtmlObject_GridEntry_SetColumn(o, xg->columns++);
+    HtmlObject_GridEntry_SetRow(o, xg->row);
     HtmlObject_GridEntry_SetIsHeader(o, 1);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlGroup_SetObject(gNew, o);
@@ -102,6 +103,7 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
     o=HtmlObject_GridEntry_new(ctx);
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
     HtmlObject_GridEntry_SetColumn(o, xg->columns++);
+    HtmlObject_GridEntry_SetRow(o, xg->row);
     HtmlObject_GridEntry_SetIsHeader(o, 0);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlGroup_SetObject(gNew, o);
@@ -119,6 +121,21 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
 
   return 0;
 }
+
+
+
+void HtmlGroup_TableRow_SetRow(HTML_GROUP *g, int row) {
+  GROUP_TABLEROW *xg;
+
+  assert(g);
+  xg=GWEN_INHERIT_GETDATA(HTML_GROUP, GROUP_TABLEROW, g);
+  assert(xg);
+
+  xg->row=row;
+}
+
+
+
 
 
 

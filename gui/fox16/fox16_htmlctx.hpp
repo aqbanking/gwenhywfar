@@ -26,10 +26,16 @@ public:
 
   void setText(const char *s);
 
+  int getWidth();
+  int getHeight();
+
   int layout(int width, int height);
   void dump();
 
   void paint(FXDC *dc, int xOffset, int yOffset);
+
+  HTML_PROPS *getStandardProps();
+  void setStandardProps(HTML_PROPS *pr);
 
 protected:
   GWEN_XML_CONTEXT *_context;
@@ -43,6 +49,8 @@ protected:
 
   int getTextHeight(HTML_FONT *fnt,
 		    const char *s);
+
+  uint32_t getColorFromName(const char *name);
 
 };
 

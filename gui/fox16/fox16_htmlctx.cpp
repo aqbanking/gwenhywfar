@@ -58,6 +58,19 @@ int FOX16_HtmlCtxLinker::GetTextHeight(GWEN_XML_CONTEXT *ctx,
 
 
 
+uint32_t FOX16_HtmlCtxLinker::GetColorFromName(const GWEN_XML_CONTEXT *ctx,
+					       const char *name) {
+  FOX16_HtmlCtx *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, FOX16_HtmlCtx, ctx);
+  assert(xctx);
+
+  return xctx->getColorFromName(name);
+}
+
+
+
 void FOX16_HtmlCtxLinker::freeData(void *bp, void *p) {
   FOX16_HtmlCtx *xctx;
 
@@ -94,6 +107,7 @@ FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout)
   _font=FXApp::instance()->getNormalFont();
   HtmlCtx_SetGetTextWidthFn(_context, FOX16_HtmlCtxLinker::GetTextWidth);
   HtmlCtx_SetGetTextHeightFn(_context, FOX16_HtmlCtxLinker::GetTextHeight);
+  HtmlCtx_SetGetColorFromNameFn(_context, FOX16_HtmlCtxLinker::GetColorFromName);
 
   pr=HtmlProps_new();
   fnt=HtmlCtx_GetFont(_context, _font->getName().text(), _font->getSize()/10, 0);
@@ -134,7 +148,7 @@ FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
       face=HtmlFont_GetFontName(fnt);
     else
       face=_font->getName();
-    size=HtmlFont_GetFontSize(fnt)*10;
+    size=HtmlFont_GetFontSize(fnt);
     weight=FXFont::Normal;
     slant=_font->getSlant();
     encoding=_font->getEncoding();
@@ -201,6 +215,12 @@ int FOX16_HtmlCtx::getTextHeight(HTML_FONT *fnt, const char *s) {
     else
       return xfnt->getTextHeight(str);
   }
+}
+
+
+
+uint32_t FOX16_HtmlCtx::getColorFromName(const char *name) {
+  return fxcolorfromname(name);
 }
 
 
@@ -294,6 +314,7 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
     if (xfnt) {
       dc->setFont(xfnt);
       ascent=xfnt->getFontAscent();
+      DBG_ERROR(0, "Font size: %d (%d)", xfnt->getSize(), HtmlFont_GetFontSize(fnt));
     }
 
     /* select foreground color */
@@ -306,6 +327,8 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
     if (col!=HTML_PROPS_NOCOLOR)
       dc->setBackground(col);
 
+    DBG_ERROR(0, "Drawing at %d / %d: [%s]",
+	      xOffset, yOffset+ascent, HtmlObject_GetText(o));
     dc->drawText(xOffset, yOffset+ascent, HtmlObject_GetText(o));
   }
 
@@ -325,6 +348,42 @@ void FOX16_HtmlCtx::paint(FXDC *dc, int xOffset, int yOffset) {
   o=HtmlCtx_GetRootObject(_context);
   if (o)
     _paint(dc, o, xOffset, yOffset);
+}
+
+
+
+int FOX16_HtmlCtx::getWidth() {
+  HTML_OBJECT *o;
+
+  o=HtmlCtx_GetRootObject(_context);
+  if (o)
+    return HtmlObject_GetWidth(o);
+  else
+    return -1;
+}
+
+
+
+int FOX16_HtmlCtx::getHeight() {
+  HTML_OBJECT *o;
+
+  o=HtmlCtx_GetRootObject(_context);
+  if (o)
+    return HtmlObject_GetHeight(o);
+  else
+    return -1;
+}
+
+
+
+HTML_PROPS *FOX16_HtmlCtx::getStandardProps() {
+  return HtmlCtx_GetStandardProps(_context);
+}
+
+
+
+void FOX16_HtmlCtx::setStandardProps(HTML_PROPS *pr) {
+  HtmlCtx_SetStandardProps(_context, pr);
 }
 
 

@@ -31,6 +31,9 @@ typedef int (*HTMLCTX_GET_TEXT_HEIGHT_FN)(GWEN_XML_CONTEXT *ctx,
 					  const char *s);
 
 
+typedef uint32_t (*HTMLCTX_GET_COLOR_FROM_NAME_FN)(const GWEN_XML_CONTEXT *ctx, const char *s);
+
+
 
 
 GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags,
@@ -57,6 +60,9 @@ HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
 HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
 						      HTMLCTX_GET_TEXT_HEIGHT_FN fn);
 
+
+HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *ctx,
+							     HTMLCTX_GET_COLOR_FROM_NAME_FN fn);
 
 #ifdef __cplusplus
 }

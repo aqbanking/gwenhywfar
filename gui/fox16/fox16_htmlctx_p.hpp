@@ -25,6 +25,9 @@ class FOX16_HtmlCtxLinker {
 			   HTML_FONT *fnt,
 			   const char *s);
 
+  static uint32_t GetColorFromName(const GWEN_XML_CONTEXT *ctx,
+				   const char *name);
+
   static GWENHYWFAR_CB void freeData(void *bp, void *p);
   static GWENHYWFAR_CB void freeFontData(void *bp, void *p);
 };

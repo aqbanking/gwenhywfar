@@ -32,7 +32,7 @@ static int HtmlObject_Word_Layout(HTML_OBJECT *o) {
     pr=HtmlObject_GetProperties(o);
     assert(pr);
     fnt=HtmlProps_GetFont(pr);
-    w=HtmlCtx_GetTextWidth(HtmlObject_GetXmlCtx(o), fnt, s);
+    w=HtmlCtx_GetTextWidth(HtmlObject_GetXmlCtx(o), fnt, s)+4;
     h=HtmlCtx_GetTextHeight(HtmlObject_GetXmlCtx(o), fnt, s);
   }
 

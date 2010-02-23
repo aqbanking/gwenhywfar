@@ -38,9 +38,6 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
   while(c) {
     int th;
 
-    HtmlObject_SetX(c, x);
-    HtmlObject_SetY(c, y);
-
     if ((HtmlObject_GetFlags(c) & HTML_OBJECT_FLAGS_START_ON_NEWLINE) &&
 	x>0) {
       /* next line */
@@ -80,6 +77,9 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
         lineHeight=0;
       }
     }
+
+    HtmlObject_SetX(c, x);
+    HtmlObject_SetY(c, y);
 
     th=HtmlObject_GetHeight(c);
     if (th>lineHeight)

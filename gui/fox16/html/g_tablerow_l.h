@@ -20,7 +20,7 @@ HTML_GROUP *HtmlGroup_TableRow_new(const char *groupName,
 				   GWEN_XML_CONTEXT *ctx);
 
 int HtmlGroup_TableRow_GetColumns(const HTML_GROUP *g);
-
+void HtmlGroup_TableRow_SetRow(HTML_GROUP *g, int row);
 
 #endif
 

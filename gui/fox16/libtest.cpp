@@ -4,48 +4,18 @@
 
 #include <gwen-gui-fox16/fox16_gui.hpp>
 #include "fox16_htmlctx.hpp"
+#include "fox16_htmllabel.hpp"
 
 #include <gwenhywfar/debug.h>
 
-
-#if 0
-int test1(int argc, char **argv) {
-  FXApp a("libtest","Martin Preuss");
-  FH_HtmlLabel *label;
-  FXDialogBox *dbox;
-  FXVerticalFrame *vf;
-  const char testString[]=
-    "<h1>Title</h1>"
-    "<h2>Subtitle</h2>"
-    "thisIsALongWord <i>and</i> this is <b>bold</b><br>"
-    "This should begin on the <b>next</b> line."
-    "<p>This should be another paragraph</p>"
-    "<p>And this is <i>after</i> the <font color=red>paragraph</font>.</p>";
-
-  a.init(argc,argv);
-  a.create();
-
-  dbox=new FXDialogBox(&a, "Test", DECOR_ALL);
-  vf=new FXVerticalFrame(dbox, LAYOUT_FILL_X | LAYOUT_FILL_Y,
-                         0, 0, 0, 0, 1, 1, 1, 1);
-  label=new FH_HtmlLabel(vf, FXString(testString), LAYOUT_FILL_X|LAYOUT_FILL_Y);
-
-  dbox->create();
-  dbox->resize(300, 200);
-  dbox->show();
-  a.runModalFor(dbox);
-
-  return 0;
-}
-#endif
 
 
 int test1(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
   int rv;
   const char testString[]=
-    "This is <b>a</b> test."
-    "And this, is the second line:followed by something else."
+    "This is <b>a</b> test. "
+    "And this, is the second line: followed by something else."
     "<table>"
     "  <tr>"
     "    <th>header1</th>"
@@ -64,7 +34,7 @@ int test1(int argc, char **argv) {
 
   FOX16_HtmlCtx ctx(0, 0, 2000);
   ctx.setText(testString);
-  rv=ctx.layout(1024, 1024);
+  rv=ctx.layout(300, 1024);
   fprintf(stderr, "Result of layout: %d\n", rv);
   ctx.dump();
 
@@ -138,9 +108,48 @@ int test2(int argc, char **argv) {
 
 
 
+int test3(int argc, char **argv) {
+  FXApp a("libtest","Martin Preuss");
+  FOX16_HtmlLabel *label;
+  FXDialogBox *dbox;
+  FXVerticalFrame *vf;
+  const char testString[]=
+    "This is <b>a</b> test. "
+    "And this, is the second line: followed by something else."
+    "<table>"
+    "  <tr>"
+    "    <th>header1</th>"
+    "    <th>header2</th>"
+    "  </tr>"
+    "  <tr>"
+    "    <td>data1</td>"
+    "    <td>data2</td>"
+    "  </tr>"
+    "</table>"
+    "And   this is   after the table.<br>"
+    "and this <font color=\"red\">one</font> is red.";
+
+  a.init(argc,argv);
+  a.create();
+
+  dbox=new FXDialogBox(&a, "Test", DECOR_ALL);
+  vf=new FXVerticalFrame(dbox, LAYOUT_FILL_X | LAYOUT_FILL_Y,
+                         0, 0, 0, 0, 1, 1, 1, 1);
+  label=new FOX16_HtmlLabel(vf, FXString(testString), LAYOUT_FILL_X|LAYOUT_FILL_Y);
+
+  dbox->create();
+  dbox->resize(300, 200);
+  dbox->show();
+  a.runModalFor(dbox);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
-  return test1(argc, argv);
+  return test3(argc, argv);
 }
 
 

@@ -18,6 +18,7 @@
 typedef struct GROUP_TABLEROW GROUP_TABLEROW;
 struct GROUP_TABLEROW {
   int columns;
+  int row;
 };
 
 

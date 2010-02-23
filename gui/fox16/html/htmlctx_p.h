@@ -28,6 +28,7 @@ struct HTML_XMLCTX {
 
   HTMLCTX_GET_TEXT_WIDTH_FN getTextWidthFn;
   HTMLCTX_GET_TEXT_HEIGHT_FN getTextHeightFn;
+  HTMLCTX_GET_COLOR_FROM_NAME_FN getColorFromNameFn;
 };
 
 

@@ -184,6 +184,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
       /* next row */
       y+=maxLineHeight+ROW_SPACING;
       x=COLUMN_SPACING/2;
+      currentRow=r;
     }
 
     /* place object */
@@ -202,7 +203,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 
     c=HtmlObject_Tree_GetNext(c);
   }
-  y+=ROW_SPACING/2;
+  y+=maxLineHeight+(ROW_SPACING/2);
 
   HtmlObject_SetWidth(o, maxLineWidth);
   HtmlObject_SetHeight(o, y);

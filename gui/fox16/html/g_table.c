@@ -50,19 +50,18 @@ int HtmlGroup_Table_StartTag(HTML_GROUP *g, const char *tagName) {
 
   if (strcasecmp(tagName, "tr")==0) {
     HTML_OBJECT *o;
+    int rows;
+
+    o=HtmlGroup_GetObject(g);
+    assert(o);
+    rows=HtmlObject_Grid_GetRows(o);
 
     /* Create new parser group with new properties but use the same object */
     gNew=HtmlGroup_TableRow_new(tagName, g, ctx);
+    HtmlGroup_TableRow_SetRow(gNew, rows);
     HtmlGroup_SetProperties(gNew, HtmlGroup_GetProperties(g));
-    o=HtmlGroup_GetObject(g);
-    assert(o);
-    if (HtmlObject_GetObjectType(o)==HtmlObjectType_Grid) {
-      int i;
-
-      i=HtmlObject_Grid_GetRows(o);
-      HtmlObject_Grid_SetRows(o, ++i);
-    }
-    HtmlGroup_SetObject(gNew, HtmlGroup_GetObject(g));
+    HtmlObject_Grid_SetRows(o, ++rows);
+    HtmlGroup_SetObject(gNew, o);
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN,

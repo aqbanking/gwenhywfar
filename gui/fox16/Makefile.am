@@ -30,13 +30,15 @@ libgwengui_fox16_la_SOURCES=\
   fox16_gui_dialog.cpp \
   fox16_gui_sortinglist.cpp \
   fox16_gui_updater.cpp \
-  fox16_htmlctx.cpp
+  fox16_htmlctx.cpp \
+  fox16_htmllabel.cpp
 
 iheaderdir=${includedir}/gwen-gui-fox16
 iheader_HEADERS=\
  cppgui.hpp \
  cppdialog.hpp \
- fox16_gui.hpp
+ fox16_gui.hpp \
+ fox16_htmllabel.hpp
 
 noinst_PROGRAMS=libtest
 libtest_SOURCES=libtest.cpp

@@ -528,44 +528,6 @@ int HtmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
 
 
 
-uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx, const char *name) {
-  if (strcasecmp(name, "aqua")==0)
-    return 0x00ffff;
-  else if (strcasecmp(name, "black")==0)
-    return 0;
-  else if (strcasecmp(name, "blue")==0)
-    return 0x0000ff;
-  else if (strcasecmp(name, "fuchsia")==0)
-    return 0xff00ff;
-  else if (strcasecmp(name, "gray")==0)
-    return 0xbebebe;
-  else if (strcasecmp(name, "green")==0)
-    return 0x008000;
-  else if (strcasecmp(name, "lime")==0)
-    return 0x00ff00;
-  else if (strcasecmp(name, "maroon")==0)
-    return 0x800000;
-  else if (strcasecmp(name, "navy")==0)
-    return 0x000080;
-  else if (strcasecmp(name, "olive")==0)
-    return 0x808000;
-  else if (strcasecmp(name, "purple")==0)
-    return 0x800080;
-  else if (strcasecmp(name, "red")==0)
-    return 0xff0000;
-  else if (strcasecmp(name, "silver")==0)
-    return 0xc0c0c0;
-  else if (strcasecmp(name, "teal")==0)
-    return 0x008080;
-  else if (strcasecmp(name, "white")==0)
-    return 0xffffff;
-  else if (strcasecmp(name, "yellow")==0)
-    return 0xffff00;
-  return 0;
-}
-
-
-
 int HtmlCtx_GetTextWidth(GWEN_XML_CONTEXT *ctx,
 			 HTML_FONT *fnt,
 			 const char *s) {
@@ -600,6 +562,22 @@ int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
 
 
 
+uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx,
+				  const char *name) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  if (xctx->getColorFromNameFn)
+    return xctx->getColorFromNameFn(ctx, name);
+  else
+    return 0xffffffff;
+}
+
+
+
 HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
 						    HTMLCTX_GET_TEXT_WIDTH_FN fn) {
   HTML_XMLCTX *xctx;
@@ -628,6 +606,23 @@ HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
 
   of=xctx->getTextHeightFn;
   xctx->getTextHeightFn=fn;
+
+  return of;
+}
+
+
+
+HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *ctx,
+							     HTMLCTX_GET_COLOR_FROM_NAME_FN fn) {
+  HTML_XMLCTX *xctx;
+  HTMLCTX_GET_COLOR_FROM_NAME_FN of;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  of=xctx->getColorFromNameFn;
+  xctx->getColorFromNameFn=fn;
 
   return of;
 }
