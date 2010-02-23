@@ -38,3 +38,8 @@ iheader_HEADERS=\
  cppdialog.hpp \
  fox16_gui.hpp
 
+noinst_PROGRAMS=libtest
+libtest_SOURCES=libtest.cpp
+libtest_LDADD=libgwengui-fox16.la $(fox_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname) \
+  html/libfxhtml.la
+

@@ -17,6 +17,10 @@
 #include <gwenhywfar/xmlctx.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef int (*HTMLCTX_GET_TEXT_WIDTH_FN)(GWEN_XML_CONTEXT *ctx,
 					 HTML_FONT *fnt,
@@ -53,6 +57,10 @@ HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
 HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
 						      HTMLCTX_GET_TEXT_HEIGHT_FN fn);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

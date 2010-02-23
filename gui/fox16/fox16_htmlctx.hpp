@@ -11,17 +11,32 @@
 #define FOX16_HTMLCTX_HPP
 
 
+#include "cppgui.hpp"
 #include "htmlctx_be.h"
 
 #include <fx.h>
 
 
-class FOX16_HtmlCtx {
+class FOX16GUI_API FOX16_HtmlCtx {
     friend class FOX16_HtmlCtxLinker;
 
 public:
   FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout);
   ~FOX16_HtmlCtx();
+
+  void setText(const char *s);
+
+  int layout(int width, int height);
+  void dump();
+
+  void paint(FXDC *dc, int xOffset, int yOffset);
+
+protected:
+  GWEN_XML_CONTEXT *_context;
+  FXFont *_font;
+
+  FXFont *_getFoxFont(HTML_FONT *fnt);
+  void _paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset);
 
   int getTextWidth(HTML_FONT *fnt,
 		   const char *s);
@@ -29,11 +44,6 @@ public:
   int getTextHeight(HTML_FONT *fnt,
 		    const char *s);
 
-protected:
-  GWEN_XML_CONTEXT *_context;
-  FXFont *_font;
-
-  FXFont *_getFoxFont(HTML_FONT *fnt);
 };
 
 

@@ -26,6 +26,8 @@ HTML_PROPS *HtmlProps_new() {
 
   GWEN_NEW_OBJECT(HTML_PROPS, pr);
   pr->refCount=1;
+  pr->foregroundColor=HTML_PROPS_NOCOLOR;
+  pr->backgroundColor=HTML_PROPS_NOCOLOR;
 
   return pr;
 }

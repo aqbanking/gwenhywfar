@@ -14,7 +14,13 @@
 
 typedef struct HTML_PROPS HTML_PROPS;
 
+#define HTML_PROPS_NOCOLOR 0xffffffff
+
 #include "htmlfont_be.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 HTML_PROPS *HtmlProps_new();
@@ -32,6 +38,10 @@ void HtmlProps_SetForegroundColor(HTML_PROPS *pr, uint32_t c);
 uint32_t HtmlProps_GetBackgroundColor(const HTML_PROPS *pr);
 void HtmlProps_SetBackgroundColor(HTML_PROPS *pr, uint32_t c);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

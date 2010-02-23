@@ -15,6 +15,11 @@
 #include <gwenhywfar/inherit.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct HTML_FONT HTML_FONT;
 GWEN_INHERIT_FUNCTION_DEFS(HTML_FONT)
 GWEN_LIST_FUNCTION_DEFS(HTML_FONT, HtmlFont)
@@ -43,6 +48,9 @@ void HtmlFont_SetFontFlags(HTML_FONT *fnt, uint32_t i);
 void HtmlFont_AddFontFlags(HTML_FONT *fnt, uint32_t i);
 void HtmlFont_SubFontFlags(HTML_FONT *fnt, uint32_t i);
 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

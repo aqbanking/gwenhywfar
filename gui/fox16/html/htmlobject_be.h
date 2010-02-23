@@ -17,6 +17,10 @@
 #include <gwenhywfar/xmlctx.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct HTML_OBJECT HTML_OBJECT;
 GWEN_TREE_FUNCTION_DEFS(HTML_OBJECT, HtmlObject)
@@ -96,6 +100,10 @@ void HtmlObject_SubFlags(HTML_OBJECT *o, uint32_t fl);
 
 HTML_OBJECT_LAYOUT_FN HtmlObject_SetLayoutFn(HTML_OBJECT *o,
                                              HTML_OBJECT_LAYOUT_FN fn);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

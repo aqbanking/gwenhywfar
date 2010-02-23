@@ -18,6 +18,7 @@
 #include "htmlctx_l.h"
 #include "o_box_l.h"
 #include "o_grid_l.h"
+#include "o_gridentry_l.h"
 #include "o_word_l.h"
 
 #include <gwenhywfar/debug.h>
@@ -51,11 +52,16 @@ int HtmlGroup_UnorderedList_StartTag(HTML_GROUP *g, const char *tagName) {
 
   if (strcasecmp(tagName, "li")==0) {
     HTML_OBJECT *o;
+    HTML_OBJECT *oGrid;
 
     /* first column in the grid is "-" */
+    oGrid=HtmlObject_GridEntry_new(ctx);
+    HtmlObject_SetProperties(oGrid, HtmlGroup_GetProperties(g));
+    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), oGrid);
+
     o=HtmlObject_Word_new(ctx, "-");
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
-    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_Tree_AddChild(oGrid, o);
 
     /* Create new parser group with new properties but use the same object */
     gNew=HtmlGroup_Box_new(tagName, g, ctx);
@@ -70,9 +76,10 @@ int HtmlGroup_UnorderedList_StartTag(HTML_GROUP *g, const char *tagName) {
     }
 
     /* second column is the content of li */
-    o=HtmlObject_Box_new(ctx);
+    o=HtmlObject_GridEntry_new(ctx);
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
-    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_Tree_AddChild(oGrid, o);
+
     HtmlGroup_SetObject(gNew, o);
   }
   else {

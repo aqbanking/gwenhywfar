@@ -21,6 +21,7 @@
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/io_memory.h>
 
 
 
@@ -91,6 +92,8 @@ FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout)
   GWEN_INHERIT_SETDATA(GWEN_XML_CONTEXT, FOX16_HtmlCtx, _context, this,
 		       FOX16_HtmlCtxLinker::freeData);
   _font=FXApp::instance()->getNormalFont();
+  HtmlCtx_SetGetTextWidthFn(_context, FOX16_HtmlCtxLinker::GetTextWidth);
+  HtmlCtx_SetGetTextHeightFn(_context, FOX16_HtmlCtxLinker::GetTextHeight);
 
   pr=HtmlProps_new();
   fnt=HtmlCtx_GetFont(_context, _font->getName().text(), _font->getSize()/10, 0);
@@ -141,6 +144,10 @@ FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
       weight=FXFont::Bold;
     if (flags & HTML_FONT_FLAGS_ITALIC)
       weight=FXFont::Italic;
+
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Creating font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
+	      face.text(), size, weight, slant, encoding);
 
     xfnt=new FXFont(FXApp::instance(), face, size, weight, slant, encoding);
     if (xfnt==NULL) {
@@ -196,6 +203,129 @@ int FOX16_HtmlCtx::getTextHeight(HTML_FONT *fnt, const char *s) {
   }
 }
 
+
+
+int FOX16_HtmlCtx::layout(int width, int height) {
+  return HtmlCtx_Layout(_context, width, height);
+}
+
+
+
+void FOX16_HtmlCtx::setText(const char *s) {
+  GWEN_IO_LAYER *io;
+  int rv;
+
+  io=GWEN_Io_LayerMemory_fromString((const uint8_t*) s, strlen(s));
+  rv=GWEN_XML_ReadFromIo(_context, io);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  }
+  GWEN_Io_Layer_free(io);
+}
+
+
+
+static void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
+  HTML_OBJECT *c;
+  int i;
+  const char *s;
+  HTML_PROPS *pr;
+  HTML_FONT *fnt;
+
+  s=HtmlObject_GetText(o);
+  for (i=0; i<indent; i++) fprintf(f, " ");
+  fprintf(stderr, "Object type: %d [%s] flags: %08x, x=%d, y=%d, w=%d, h=%d\n",
+	  HtmlObject_GetObjectType(o),
+	  s?s:"(empty)",
+	  HtmlObject_GetFlags(o),
+          HtmlObject_GetX(o),
+          HtmlObject_GetY(o),
+          HtmlObject_GetWidth(o),
+          HtmlObject_GetHeight(o));
+
+  pr=HtmlObject_GetProperties(o);
+  fnt=HtmlProps_GetFont(pr);
+
+  for (i=0; i<indent+2; i++) fprintf(f, " ");
+  fprintf(stderr, "fgcol=%06x, bgcol=%06x, fontsize=%d, fontflags=%08x, fontname=[%s]\n",
+	  HtmlProps_GetForegroundColor(pr),
+	  HtmlProps_GetBackgroundColor(pr),
+	  HtmlFont_GetFontSize(fnt),
+	  HtmlFont_GetFontFlags(fnt),
+	  HtmlFont_GetFontName(fnt));
+
+  c=HtmlObject_Tree_GetFirstChild(o);
+  while(c) {
+    dumpObject(c, f, indent+2);
+    c=HtmlObject_Tree_GetNext(c);
+  }
+}
+
+
+
+void FOX16_HtmlCtx::dump() {
+  HTML_OBJECT *o;
+
+  o=HtmlCtx_GetRootObject(_context);
+  if (o)
+    dumpObject(o, stderr, 2);
+}
+
+
+
+void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
+  HTML_OBJECT *c;
+
+  xOffset+=HtmlObject_GetX(o);
+  yOffset+=HtmlObject_GetY(o);
+
+  if (HtmlObject_GetObjectType(o)==HtmlObjectType_Word) {
+    HTML_PROPS *pr;
+    HTML_FONT *fnt;
+    FXFont *xfnt;
+    uint32_t col;
+    int ascent=0;
+
+    pr=HtmlObject_GetProperties(o);
+
+    /* select font */
+    fnt=HtmlProps_GetFont(pr);
+    xfnt=_getFoxFont(fnt);
+    if (xfnt) {
+      dc->setFont(xfnt);
+      ascent=xfnt->getFontAscent();
+    }
+
+    /* select foreground color */
+    col=HtmlProps_GetForegroundColor(pr);
+    if (col!=HTML_PROPS_NOCOLOR)
+      dc->setForeground(col);
+
+    /* select foreground color */
+    col=HtmlProps_GetBackgroundColor(pr);
+    if (col!=HTML_PROPS_NOCOLOR)
+      dc->setBackground(col);
+
+    dc->drawText(xOffset, yOffset+ascent, HtmlObject_GetText(o));
+  }
+
+  c=HtmlObject_Tree_GetFirstChild(o);
+  while(c) {
+    _paint(dc, c, xOffset, yOffset);
+    c=HtmlObject_Tree_GetNext(c);
+  }
+
+}
+
+
+
+void FOX16_HtmlCtx::paint(FXDC *dc, int xOffset, int yOffset) {
+  HTML_OBJECT *o;
+
+  o=HtmlCtx_GetRootObject(_context);
+  if (o)
+    _paint(dc, o, xOffset, yOffset);
+}
 
 
 

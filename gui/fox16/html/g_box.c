@@ -252,12 +252,8 @@ int HtmlGroup_Box_AddData(HTML_GROUP *g, const char *data) {
 
     /* find end of word */
     t=s;
-    while(*t && isalnum(*t))
+    while(*t && !isblank(*t))
       t++;
-    /* if end was by punctuation character: skip those */
-    while(*t && !isalnum(*t) && !isblank(*t))
-      t++;
-
     c=*t;
     *t=0;
     o=HtmlObject_Word_new(ctx, (const char*) s);

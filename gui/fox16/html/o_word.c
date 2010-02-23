@@ -15,6 +15,8 @@
 #include "o_word_l.h"
 #include "htmlctx_l.h"
 
+#include <gwenhywfar/debug.h>
+
 
 
 static int HtmlObject_Word_Layout(HTML_OBJECT *o) {
