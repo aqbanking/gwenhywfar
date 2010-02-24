@@ -11,8 +11,10 @@
 #define FOX16_HTMLCTX_HPP
 
 
-#include "cppgui.hpp"
-#include "htmlctx_be.h"
+#include <gwen-gui-fox16/cppgui.hpp>
+#include <gwen-gui-fox16/html/htmlobject_be.h>
+#include <gwen-gui-fox16/html/htmlfont_be.h>
+#include <gwen-gui-fox16/html/htmlctx_be.h>
 
 #include <fx.h>
 
@@ -34,12 +36,14 @@ public:
 
   void paint(FXDC *dc, int xOffset, int yOffset);
 
-  HTML_PROPS *getStandardProps();
-  void setStandardProps(HTML_PROPS *pr);
+  void setBackgroundColor(FXColor c);
+  void setForegroundColor(FXColor c);
 
 protected:
   GWEN_XML_CONTEXT *_context;
   FXFont *_font;
+  FXColor _fgColor;
+  FXColor _bgColor;
 
   FXFont *_getFoxFont(HTML_FONT *fnt);
   void _paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset);

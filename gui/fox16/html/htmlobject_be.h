@@ -53,8 +53,8 @@ typedef enum {
 } HTML_OBJECT_TYPE;
 
 
-#include "htmlprops_be.h"
-#include "htmlctx_be.h"
+#include <gwen-gui-fox16/html/htmlprops_be.h>
+#include <gwen-gui-fox16/html/htmlctx_be.h>
 
 
 HTML_OBJECT *HtmlObject_new(GWEN_XML_CONTEXT *ctx, HTML_OBJECT_TYPE t);

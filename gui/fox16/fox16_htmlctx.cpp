@@ -12,6 +12,8 @@
 #endif
 
 #include "fox16_htmlctx_p.hpp"
+#include "htmlctx_be.h"
+
 #include <assert.h>
 
 #include <gwenhywfar/inherit.h>
@@ -97,6 +99,8 @@ void FOX16_HtmlCtxLinker::freeFontData(void *bp, void *p) {
 FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout)
 :_context(NULL)
 ,_font(NULL)
+,_fgColor(0)
+,_bgColor(0)
 {
   HTML_PROPS *pr;
   HTML_FONT *fnt;
@@ -158,10 +162,6 @@ FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
       weight=FXFont::Bold;
     if (flags & HTML_FONT_FLAGS_ITALIC)
       weight=FXFont::Italic;
-
-    DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Creating font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
-	      face.text(), size, weight, slant, encoding);
 
     xfnt=new FXFont(FXApp::instance(), face, size, weight, slant, encoding);
     if (xfnt==NULL) {
@@ -303,8 +303,8 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
     HTML_PROPS *pr;
     HTML_FONT *fnt;
     FXFont *xfnt;
-    uint32_t col;
     int ascent=0;
+    uint32_t col;
 
     pr=HtmlObject_GetProperties(o);
 
@@ -314,21 +314,23 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
     if (xfnt) {
       dc->setFont(xfnt);
       ascent=xfnt->getFontAscent();
-      DBG_ERROR(0, "Font size: %d (%d)", xfnt->getSize(), HtmlFont_GetFontSize(fnt));
+      //DBG_ERROR(0, "Font size: %d (%d)", xfnt->getSize(), HtmlFont_GetFontSize(fnt));
     }
 
     /* select foreground color */
     col=HtmlProps_GetForegroundColor(pr);
-    if (col!=HTML_PROPS_NOCOLOR)
+    if (col==HTML_PROPS_NOCOLOR)
+      dc->setForeground(_fgColor);
+    else
       dc->setForeground(col);
 
-    /* select foreground color */
+    /* select background color */
     col=HtmlProps_GetBackgroundColor(pr);
-    if (col!=HTML_PROPS_NOCOLOR)
+    if (col==HTML_PROPS_NOCOLOR)
+      dc->setBackground(_bgColor);
+    else
       dc->setBackground(col);
 
-    DBG_ERROR(0, "Drawing at %d / %d: [%s]",
-	      xOffset, yOffset+ascent, HtmlObject_GetText(o));
     dc->drawText(xOffset, yOffset+ascent, HtmlObject_GetText(o));
   }
 
@@ -376,15 +378,17 @@ int FOX16_HtmlCtx::getHeight() {
 
 
 
-HTML_PROPS *FOX16_HtmlCtx::getStandardProps() {
-  return HtmlCtx_GetStandardProps(_context);
+void FOX16_HtmlCtx::setBackgroundColor(FXColor c) {
+  _bgColor=c;
 }
 
 
 
-void FOX16_HtmlCtx::setStandardProps(HTML_PROPS *pr) {
-  HtmlCtx_SetStandardProps(_context, pr);
+void FOX16_HtmlCtx::setForegroundColor(FXColor c) {
+  _fgColor=c;
 }
+
+
 
 
 

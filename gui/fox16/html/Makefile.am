@@ -18,8 +18,12 @@ libfxhtml_la_SOURCES=\
  o_gridentry.c \
  o_word.c
 
-#iheaderdir=${includedir}/gwen-gui-fox16/html
-#iheader_HEADERS=
+iheaderdir=${includedir}/gwen-gui-fox16/html
+iheader_HEADERS= \
+ htmlctx_be.h \
+ htmlfont_be.h  \
+ htmlobject_be.h \
+ htmlprops_be.h
 
 noinst_HEADERS= \
  g_box_p.h \
@@ -43,11 +47,7 @@ noinst_HEADERS= \
  o_grid_p.h \
  o_gridentry_l.h \
  o_gridentry_p.h \
- o_word_l.h \
- htmlctx_be.h \
- htmlfont_be.h  \
- htmlobject_be.h \
- htmlprops_be.h
+ o_word_l.h
 
 
 noinst_PROGRAMS=libtest

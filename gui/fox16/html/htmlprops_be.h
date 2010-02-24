@@ -16,7 +16,8 @@ typedef struct HTML_PROPS HTML_PROPS;
 
 #define HTML_PROPS_NOCOLOR 0xffffffff
 
-#include "htmlfont_be.h"
+#include <gwen-gui-fox16/html/htmlfont_be.h>
+
 
 #ifdef __cplusplus
 extern "C" {

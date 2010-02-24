@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=11
 GWENHYWFAR_VERSION_PATCHLEVEL=5
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="beta"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -1409,6 +1409,20 @@ for d in gui/fox16; do
       	 ;;
       *)
     	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar3/gwen-gui-fox16/${f}"
+         ;;
+    esac
+  done
+done
+
+mkdir -p gwenhywfar3/gwen-gui-fox16/html
+for d in gui/fox16/html; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.h | *_p.h)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar3/gwen-gui-fox16/html/${f}"
          ;;
     esac
   done

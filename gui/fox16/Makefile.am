@@ -38,6 +38,7 @@ iheader_HEADERS=\
  cppgui.hpp \
  cppdialog.hpp \
  fox16_gui.hpp \
+ fox16_htmlctx.hpp \
  fox16_htmllabel.hpp
 
 noinst_PROGRAMS=libtest
