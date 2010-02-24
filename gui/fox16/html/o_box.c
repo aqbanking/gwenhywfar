@@ -23,6 +23,7 @@
 
 static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
   HTML_OBJECT *c;
+  HTML_OBJECT *cFirstInLine;
   int w;
   int h;
   int x=0;
@@ -35,6 +36,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
   h=HtmlObject_GetHeight(o);
 
   c=HtmlObject_Tree_GetFirstChild(o);
+  cFirstInLine=c;
   while(c) {
     int th;
 
@@ -43,9 +45,33 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       /* next line */
       if (x>maxX)
 	maxX=x;
+
+      /* possibly justify */
+      if (w!=-1 && x<w) {
+	int diff=0;
+
+	if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+	  diff=w-x;
+	else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+	  diff=(w-x)>>1;
+	}
+	if (diff) {
+	  HTML_OBJECT *ct;
+
+	  ct=cFirstInLine;
+	  while(ct) {
+	    HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+	    if (ct==c)
+	      break;
+	    ct=HtmlObject_Tree_GetNext(ct);
+	  }
+	}
+      }
+
       x=0;
       y+=lineHeight+LINE_EXTRA_OFFSET;
       lineHeight=0;
+      cFirstInLine=HtmlObject_Tree_GetNext(c);
     }
 
     HtmlObject_SetHeight(c, -1);
@@ -72,9 +98,33 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 	/* next line */
 	if (x>maxX)
 	  maxX=x;
+
+	/* possibly justify */
+	if (x<w) {
+	  int diff=0;
+  
+	  if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+	    diff=w-x;
+	  else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+	    diff=(w-x)>>1;
+	  }
+	  if (diff) {
+	    HTML_OBJECT *ct;
+
+	    ct=cFirstInLine;
+	    while(ct) {
+	      HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+	      if (ct==c)
+		break;
+	      ct=HtmlObject_Tree_GetNext(ct);
+	    }
+	  }
+	}
+
 	x=0;
 	y+=lineHeight+LINE_EXTRA_OFFSET;
         lineHeight=0;
+	cFirstInLine=HtmlObject_Tree_GetNext(c);
       }
     }
 
@@ -92,9 +142,33 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       /* next line */
       if (x>maxX)
 	maxX=x;
+
+      /* possibly justify */
+      if (x<w) {
+	int diff=0;
+
+	if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+	  diff=w-x;
+	else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+	  diff=(w-x)>>1;
+	}
+	if (diff) {
+	  HTML_OBJECT *ct;
+
+	  ct=cFirstInLine;
+	  while(ct) {
+	    HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+	    if (ct==c)
+	      break;
+	    ct=HtmlObject_Tree_GetNext(ct);
+	  }
+	}
+      }
+
       x=0;
       y+=lineHeight+LINE_EXTRA_OFFSET;
       lineHeight=0;
+      cFirstInLine=HtmlObject_Tree_GetNext(c);
     }
 
     c=HtmlObject_Tree_GetNext(c);
@@ -104,6 +178,27 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
     /* next line */
     if (x>maxX)
       maxX=x;
+
+    /* possibly justify */
+    if (x<w) {
+      int diff=0;
+
+      if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+	diff=w-x;
+      else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+	diff=(w-x)>>1;
+      }
+      if (diff) {
+	HTML_OBJECT *ct;
+
+	ct=cFirstInLine;
+	while(ct) {
+	  HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+	  ct=HtmlObject_Tree_GetNext(ct);
+	}
+      }
+    }
+
     x=0;
     y+=lineHeight+LINE_EXTRA_OFFSET;
     lineHeight=0;

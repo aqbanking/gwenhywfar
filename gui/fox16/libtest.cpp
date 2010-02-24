@@ -14,6 +14,7 @@ int test1(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
   int rv;
   const char testString[]=
+#if 0
     "This is <b>a</b> test. "
     "And this, is the second line: followed by something else."
     "<table>"
@@ -28,6 +29,11 @@ int test1(int argc, char **argv) {
     "</table>"
     "And   this is   after the table.<br>"
     "and this <font color=\"red\">one</font> is red.";
+#else
+    "This is before right"
+    "<right>RIGHT</right>"
+    "and this after right.";
+#endif
 
   a.init(argc,argv);
   a.create();
@@ -114,10 +120,12 @@ int test3(int argc, char **argv) {
   FXDialogBox *dbox;
   FXVerticalFrame *vf;
   const char testString[]=
+#if 1
     "<h1>Title</h1>"
     "<h2>Subtitle</h2>"
     "This is <b>a</b> test. "
     "And this, is the second line: followed by something else."
+    "<right>This should be right aligned</right>"
     "<table>"
     "  <tr>"
     "    <th>header1</th>"
@@ -130,7 +138,11 @@ int test3(int argc, char **argv) {
     "</table>"
     "And   this is   after the table.<br>"
     "and this <font color=\"red\">one</font> is red.";
-
+#else
+    "This is before right"
+    "<right>Right</right>"
+    "and this after right.";
+#endif
   a.init(argc,argv);
   a.create();
 

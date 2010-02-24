@@ -50,10 +50,12 @@ HTML_GROUP *HtmlGroup_Box_new(const char *groupName,
 int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
   HTML_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
+  GWEN_DB_NODE *dbAttribs;
 
   assert(g);
 
   ctx=HtmlGroup_GetXmlContext(g);
+  dbAttribs=HtmlCtx_GetCurrentAttributes(ctx);
 
   if (strcasecmp(tagName, "b")==0) {
     /* Create new parser group with new properties but use the same object */
@@ -110,10 +112,36 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     HTML_OBJECT *o;
 
     gNew=HtmlGroup_Box_new(tagName, g, ctx);
+    HtmlGroup_SetProperties(gNew, HtmlGroup_GetProperties(g));
     o=HtmlObject_Box_new(ctx);
     HtmlObject_AddFlags(o,
 			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
 			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+    if (dbAttribs) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(dbAttribs, "align", 0, "left");
+      if (s) {
+	if (strcasecmp(s, "right")==0)
+	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
+        else if (strcasecmp(s, "center")==0)
+	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
+      }
+    }
+    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
+    HtmlGroup_SetObject(gNew, o);
+  }
+  else if (strcasecmp(tagName, "right")==0) {
+    HTML_OBJECT *o;
+
+    gNew=HtmlGroup_Box_new(tagName, g, ctx);
+    HtmlGroup_SetProperties(gNew, HtmlGroup_GetProperties(g));
+    o=HtmlObject_Box_new(ctx);
+    HtmlObject_AddFlags(o,
+			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+			HTML_OBJECT_FLAGS_END_WITH_NEWLINE |
+			HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
     HtmlGroup_SetObject(gNew, o);
