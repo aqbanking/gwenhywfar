@@ -2071,6 +2071,8 @@ int QT3_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeDialog:
     _mainWidget=new QT3_DialogBox(this, dialogParent, name);
+    if (!text.isEmpty())
+      _mainWidget->setCaption(text);
     wChild=_mainWidget;
     break;
 

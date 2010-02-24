@@ -58,7 +58,6 @@ GWEN_GUI *GWEN_Gui_new() {
   gui->progressDataTree=GWEN_ProgressData_Tree_new();
   gui->activeDialogs=GWEN_Dialog_List_new();
 
-  DBG_ERROR(0, "Created gui %p", gui);
   return gui;
 }
 
@@ -83,7 +82,7 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
 
 void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
   assert(gui);
-  DBG_ERROR(0, "Using own callbacks in gui %p", gui);
+  DBG_INFO(GWEN_LOGDOMAIN, "Using own callbacks in gui %p", gui);
   gui->progressStartFn=GWEN_Gui_Internal_ProgressStart;
   gui->progressAdvanceFn=GWEN_Gui_Internal_ProgressAdvance;
   gui->progressLogFn=GWEN_Gui_Internal_ProgressLog;
@@ -1012,15 +1011,15 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
       return rv;
     }
 
-    DBG_ERROR(0, "Setting new firstprogress: %08x",
-	      GWEN_ProgressData_GetId(pd));
+    DBG_INFO(GWEN_LOGDOMAIN, "Setting new firstprogress: %08x",
+	     GWEN_ProgressData_GetId(pd));
     GWEN_DlgProgress_SetFirstProgress(dlg, highest);
     GWEN_ProgressData_SetDialog(highest, dlg);
   }
 
   if (pd!=highest) {
-    DBG_ERROR(0, "Setting new second progress: %08x",
-	      GWEN_ProgressData_GetId(pd));
+    DBG_INFO(GWEN_LOGDOMAIN, "Setting new second progress: %08x",
+	     GWEN_ProgressData_GetId(pd));
     GWEN_DlgProgress_SetSecondProgress(dlg, pd);
     GWEN_ProgressData_SetDialog(pd, dlg);
     GWEN_ProgressData_SetShown(pd, 1);
@@ -1045,8 +1044,8 @@ void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd) {
       t1=time(0);
       dt=difftime(t1, GWEN_ProgressData_GetStartTime(pd));
       if ((int)dt>=GWEN_GUI_DELAY_SECS) {
-	DBG_ERROR(0, "Progress %08x open for %d secs, showing",
-		  GWEN_ProgressData_GetId(pd), (int) dt);
+	DBG_INFO(GWEN_LOGDOMAIN, "Progress %08x open for %d secs, showing",
+		 GWEN_ProgressData_GetId(pd), (int) dt);
 	GWEN_ProgressData_SetShown(pd, 1);
       }
     }
@@ -1075,7 +1074,7 @@ uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
 
   id=++(gui->nextProgressId);
 
-  DBG_ERROR(0, "ProgressStart: flags=%08x, title=[%s], total=%08x, guiid=%08x",
+  DBG_DEBUG(GWEN_LOGDOMAIN, "ProgressStart: flags=%08x, title=[%s], total=%08x, guiid=%08x",
 	    progressFlags, title?title:"(none)", (uint32_t) total, guiid);
 
   if (guiid) {
@@ -1104,7 +1103,7 @@ uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
 int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
   GWEN_PROGRESS_DATA *pd;
 
-  DBG_ERROR(0, "ProgressEnd: guiid=%08x", pid);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "ProgressEnd: guiid=%08x", pid);
 
   if (pid==0) {
     DBG_WARN(GWEN_LOGDOMAIN, "PID==0!");
@@ -1139,7 +1138,7 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
       if (primary==pd) {
 	int rv;
 
-	DBG_ERROR(0, "Progress %08x is primary, closing dialog",
+	DBG_DEBUG(GWEN_LOGDOMAIN, "Progress %08x is primary, closing dialog",
 		  GWEN_ProgressData_GetId(pd));
 
 	if (secondary) {
@@ -1173,7 +1172,7 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
       else if (secondary==pd) {
 	/* t is maybe the next higher progress, it will become the second progress */
 	if (previousPd && previousPd!=GWEN_DlgProgress_GetFirstProgress(dlg)) {
-	  DBG_ERROR(0, "Progress %08x becomes new second progress",
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "Progress %08x becomes new second progress",
 		    GWEN_ProgressData_GetId(previousPd));
 	  GWEN_DlgProgress_SetSecondProgress(dlg, pd);
 	  GWEN_ProgressData_SetDialog(pd, dlg);
@@ -1185,12 +1184,12 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
 	}
       }
       else {
-	DBG_ERROR(0, "Progress %08x is neither primary nor secondary, SNH",
+	DBG_ERROR(GWEN_LOGDOMAIN, "Progress %08x is neither primary nor secondary, SNH",
 		  GWEN_ProgressData_GetId(pd));
       }
     }
     else {
-      DBG_ERROR(0, "Progress %08x has no dialog", GWEN_ProgressData_GetId(pd));
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Progress %08x has no dialog", GWEN_ProgressData_GetId(pd));
     }
 
     if (previousPd)
