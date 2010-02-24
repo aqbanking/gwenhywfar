@@ -204,6 +204,81 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     HtmlProps_free(pr);
     HtmlGroup_SetObject(gNew, HtmlGroup_GetObject(g));
   }
+  else if (strcasecmp(tagName, "h1")==0) {
+    /* Create new parser group with new properties but use the same object */
+    HTML_PROPS *pr;
+    HTML_FONT *fnt;
+    HTML_OBJECT *o;
+
+    gNew=HtmlGroup_Box_new(tagName, g, ctx);
+    pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
+    fnt=HtmlProps_GetFont(pr);
+    fnt=HtmlCtx_GetFont(ctx,
+			HtmlFont_GetFontName(fnt),
+			HtmlFont_GetFontSize(fnt)+8,
+			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+    HtmlProps_SetFont(pr, fnt);
+    HtmlGroup_SetProperties(gNew, pr);
+
+    o=HtmlObject_Box_new(ctx);
+    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_AddFlags(o,
+			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+    HtmlObject_SetProperties(o, pr);
+    HtmlGroup_SetObject(gNew, o);
+    HtmlProps_free(pr);
+  }
+  else if (strcasecmp(tagName, "h2")==0) {
+    /* Create new parser group with new properties but use the same object */
+    HTML_PROPS *pr;
+    HTML_FONT *fnt;
+    HTML_OBJECT *o;
+
+    gNew=HtmlGroup_Box_new(tagName, g, ctx);
+    pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
+    fnt=HtmlProps_GetFont(pr);
+    fnt=HtmlCtx_GetFont(ctx,
+			HtmlFont_GetFontName(fnt),
+			HtmlFont_GetFontSize(fnt)+4,
+			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+    HtmlProps_SetFont(pr, fnt);
+    HtmlGroup_SetProperties(gNew, pr);
+
+    o=HtmlObject_Box_new(ctx);
+    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_AddFlags(o,
+			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+    HtmlObject_SetProperties(o, pr);
+    HtmlGroup_SetObject(gNew, o);
+    HtmlProps_free(pr);
+  }
+  else if (strcasecmp(tagName, "h3")==0) {
+    /* Create new parser group with new properties but use the same object */
+    HTML_PROPS *pr;
+    HTML_FONT *fnt;
+    HTML_OBJECT *o;
+
+    gNew=HtmlGroup_Box_new(tagName, g, ctx);
+    pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
+    fnt=HtmlProps_GetFont(pr);
+    fnt=HtmlCtx_GetFont(ctx,
+			HtmlFont_GetFontName(fnt),
+			HtmlFont_GetFontSize(fnt),
+			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+    HtmlProps_SetFont(pr, fnt);
+    HtmlGroup_SetProperties(gNew, pr);
+
+    o=HtmlObject_Box_new(ctx);
+    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_AddFlags(o,
+			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+    HtmlObject_SetProperties(o, pr);
+    HtmlGroup_SetObject(gNew, o);
+    HtmlProps_free(pr);
+  }
   else {
     DBG_WARN(GWEN_LOGDOMAIN,
 	     "Unknown group [%s], handling as normal box", tagName);

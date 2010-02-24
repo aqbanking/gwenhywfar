@@ -68,7 +68,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 	return rv;
       }
 
-      if (HtmlObject_GetWidth(c)>tw) {
+      if (HtmlObject_GetWidth(c)>tw && x>0) {
 	/* next line */
 	if (x>maxX)
 	  maxX=x;

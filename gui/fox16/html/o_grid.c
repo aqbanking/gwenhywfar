@@ -163,6 +163,12 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 	    cw[i]=p*x/100;
 	  }
 	}
+
+        /* now copy fixed column widths from above */
+	for (i=0; i<xo->columns; i++) {
+	  if (cw[i]==0)
+	    cw[i]=cw2[i];
+	}
       }
     }
   }

@@ -114,6 +114,8 @@ int test3(int argc, char **argv) {
   FXDialogBox *dbox;
   FXVerticalFrame *vf;
   const char testString[]=
+    "<h1>Title</h1>"
+    "<h2>Subtitle</h2>"
     "This is <b>a</b> test. "
     "And this, is the second line: followed by something else."
     "<table>"
