@@ -31,6 +31,10 @@ public:
   int getWidth();
   int getHeight();
 
+  HTML_FONT *getFont(const char *fontName,
+		     int fontSize,
+		     uint32_t fontFlags);
+
   int layout(int width, int height);
   void dump();
 

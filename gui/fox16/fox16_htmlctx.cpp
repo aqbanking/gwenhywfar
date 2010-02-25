@@ -12,6 +12,7 @@
 #endif
 
 #include "fox16_htmlctx_p.hpp"
+#include "fox16_gui.hpp"
 #include "htmlctx_be.h"
 
 #include <assert.h>
@@ -73,6 +74,21 @@ uint32_t FOX16_HtmlCtxLinker::GetColorFromName(const GWEN_XML_CONTEXT *ctx,
 
 
 
+HTML_FONT *FOX16_HtmlCtxLinker::GetFont(GWEN_XML_CONTEXT *ctx,
+					const char *fontName,
+					int fontSize,
+					uint32_t fontFlags) {
+  FOX16_HtmlCtx *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, FOX16_HtmlCtx, ctx);
+  assert(xctx);
+
+  return xctx->getFont(fontName, fontSize, fontFlags);
+}
+
+
+
 void FOX16_HtmlCtxLinker::freeData(void *bp, void *p) {
   FOX16_HtmlCtx *xctx;
 
@@ -112,6 +128,7 @@ FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout)
   HtmlCtx_SetGetTextWidthFn(_context, FOX16_HtmlCtxLinker::GetTextWidth);
   HtmlCtx_SetGetTextHeightFn(_context, FOX16_HtmlCtxLinker::GetTextHeight);
   HtmlCtx_SetGetColorFromNameFn(_context, FOX16_HtmlCtxLinker::GetColorFromName);
+  HtmlCtx_SetGetFontFn(_context, FOX16_HtmlCtxLinker::GetFont);
 
   pr=HtmlProps_new();
   fnt=HtmlCtx_GetFont(_context, _font->getName().text(), _font->getSize()/10, 0);
@@ -162,6 +179,10 @@ FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
       weight=FXFont::Bold;
     if (flags & HTML_FONT_FLAGS_ITALIC)
       weight=FXFont::Italic;
+
+    DBG_ERROR(0,
+	      "Creating font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
+	      face.text(), size, weight, slant, encoding);
 
     xfnt=new FXFont(FXApp::instance(), face, size, weight, slant, encoding);
     if (xfnt==NULL) {
@@ -375,6 +396,20 @@ int FOX16_HtmlCtx::getHeight() {
   else
     return -1;
 }
+
+
+
+HTML_FONT *FOX16_HtmlCtx::getFont(const char *fontName,
+				  int fontSize,
+				  uint32_t fontFlags) {
+  FOX16_Gui *gui;
+
+  gui=FOX16_Gui::getFgGui();
+  assert(gui);
+
+  return gui->getFont(fontName, fontSize, fontFlags);
+}
+
 
 
 

@@ -54,7 +54,6 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags,
   GWEN_XmlCtx_SetAddAttrFn(ctx, HtmlCtx_AddAttr);
 
   xctx->objects=HtmlObject_Tree_new();
-  xctx->fontList=HtmlFont_List_new();
 
   /* create initial group */
   g=HtmlGroup_Box_new("HTML_ROOT", NULL, ctx);
@@ -88,7 +87,6 @@ void HtmlCtx_FreeData(void *bp, void *p) {
 
   GWEN_DB_Group_free(xctx->dbCurrentAttribs);
   free(xctx->currentTagName);
-  HtmlFont_List_free(xctx->fontList);
   HtmlObject_Tree_free(xctx->objects);
 
   GWEN_FREE_OBJECT(xctx);
@@ -294,64 +292,6 @@ void HtmlCtx_SetStandardProps(GWEN_XML_CONTEXT *ctx, HTML_PROPS *pr) {
   if (o && HtmlObject_GetProperties(o)==NULL)
     HtmlObject_SetProperties(o, pr);
 }
-
-
-
-HTML_FONT *HtmlCtx_FindFont(const GWEN_XML_CONTEXT *ctx,
-			       const char *fontName,
-			       int fontSize,
-			       uint32_t fontFlags) {
-  HTML_XMLCTX *xctx;
-  HTML_FONT *fnt;
-
-  assert(ctx);
-  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
-  assert(xctx);
-
-  assert(xctx->fontList);
-  fnt=HtmlFont_List_First(xctx->fontList);
-  while(fnt) {
-    const char *s;
-
-    s=HtmlFont_GetFontName(fnt);
-    if (s && *s &&
-	HtmlFont_GetFontSize(fnt)==fontSize &&
-	HtmlFont_GetFontFlags(fnt)==fontFlags &&
-	strcasecmp(s, fontName)==0)
-      break;
-    fnt=HtmlFont_List_Next(fnt);
-  }
-
-  return fnt;
-}
-
-
-
-HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
-			      const char *fontName,
-			      int fontSize,
-			      uint32_t fontFlags) {
-  HTML_XMLCTX *xctx;
-  HTML_FONT *fnt;
-
-  assert(ctx);
-  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
-  assert(xctx);
-
-  fnt=HtmlCtx_FindFont(ctx, fontName, fontSize, fontFlags);
-  if (fnt)
-    return fnt;
-  fnt=HtmlFont_new();
-  HtmlFont_SetFontName(fnt, fontName);
-  HtmlFont_SetFontSize(fnt, fontSize);
-  HtmlFont_SetFontFlags(fnt, fontFlags);
-  HtmlFont_List_Add(fnt, xctx->fontList);
-
-  return fnt;
-}
-
-
-
 
 
 
@@ -578,6 +518,24 @@ uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx,
 
 
 
+HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
+			   const char *fontName,
+			   int fontSize,
+			   uint32_t fontFlags) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  if (xctx->getFontFn)
+    return xctx->getFontFn(ctx, fontName, fontSize, fontFlags);
+  else
+    return NULL;
+}
+
+
+
 HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
 						    HTMLCTX_GET_TEXT_WIDTH_FN fn) {
   HTML_XMLCTX *xctx;
@@ -623,6 +581,22 @@ HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *c
 
   of=xctx->getColorFromNameFn;
   xctx->getColorFromNameFn=fn;
+
+  return of;
+}
+
+
+
+HTMLCTX_GET_FONT_FN HtmlCtx_SetGetFontFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_FONT_FN fn) {
+  HTML_XMLCTX *xctx;
+  HTMLCTX_GET_FONT_FN of;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  of=xctx->getFontFn;
+  xctx->getFontFn=fn;
 
   return of;
 }

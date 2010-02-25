@@ -13,6 +13,9 @@
 
 #include <gwen-gui-fox16/cppgui.hpp>
 
+#include <gwen-gui-fox16/html/htmlfont_be.h>
+
+
 #include <fx.h>
 
 #include <list>
@@ -72,6 +75,10 @@ public:
   virtual int closeDialog(GWEN_DIALOG *dlg);
   virtual int runDialog(GWEN_DIALOG *dlg, int untilEnd);
 
+  HTML_FONT *getFont(const char *fontName,
+		     int fontSize,
+		     uint32_t fontFlags);
+
 protected:
   uint32_t getNextId();
   uint32_t getIdOfLastScope();
@@ -80,6 +87,10 @@ protected:
   void delWinScope(WinScope *ws);
 
   void dumpScopeList();
+
+  HTML_FONT *findFont(const char *fontName,
+		      int fontSize,
+		      uint32_t fontFlags);
 
 
   int print(const char *docTitle,
@@ -108,6 +119,7 @@ protected:
 
   FOX16_GuiUpdater *m_updater;
 
+  HTML_FONT_LIST *m_fontList;
 };
 
 

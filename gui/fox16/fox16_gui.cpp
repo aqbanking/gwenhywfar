@@ -81,11 +81,13 @@ FOX16_Gui::FOX16_Gui(FXApp *a)
 ,m_app(a)
 ,m_lastId(0)
 ,m_updater()
+,m_fontList(NULL)
 {
   m_updater=new FOX16_GuiUpdater();
   GWEN_Gui_AddFlags(_gui, GWEN_GUI_FLAGS_DIALOGSUPPORTED);
   GWEN_Gui_UseDialogs(_gui);
   GWEN_Gui_SetName(_gui, "fox16-gui");
+  m_fontList=HtmlFont_List_new();
 }
 
 
@@ -97,6 +99,7 @@ FOX16_Gui::~FOX16_Gui() {
 
   if (m_updater)
     delete m_updater;
+  HtmlFont_List_free(m_fontList);
 }
 
 
@@ -518,6 +521,47 @@ int FOX16_Gui::getFileName(const char *caption,
 
 
 
+HTML_FONT *FOX16_Gui::findFont(const char *fontName,
+			       int fontSize,
+			       uint32_t fontFlags) {
+  HTML_FONT *fnt;
+
+  assert(m_fontList);
+  fnt=HtmlFont_List_First(m_fontList);
+  while(fnt) {
+    const char *s;
+
+    s=HtmlFont_GetFontName(fnt);
+    if (s && *s &&
+	HtmlFont_GetFontSize(fnt)==fontSize &&
+	HtmlFont_GetFontFlags(fnt)==fontFlags &&
+	strcasecmp(s, fontName)==0)
+      break;
+    fnt=HtmlFont_List_Next(fnt);
+  }
+
+  return fnt;
+}
+
+
+
+HTML_FONT *FOX16_Gui::getFont(const char *fontName,
+			      int fontSize,
+			      uint32_t fontFlags) {
+  HTML_FONT *fnt;
+
+  fnt=findFont(fontName, fontSize, fontFlags);
+  if (fnt)
+    return fnt;
+  else {
+    fnt=HtmlFont_new();
+    HtmlFont_SetFontName(fnt, fontName);
+    HtmlFont_SetFontSize(fnt, fontSize);
+    HtmlFont_SetFontFlags(fnt, fontFlags);
+    HtmlFont_List_Add(fnt, m_fontList);
+    return fnt;
+  }
+}
 
 
 
