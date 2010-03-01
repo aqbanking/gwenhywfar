@@ -11,8 +11,6 @@
 #ifndef HTMLGROUP_L_H
 #define HTMLGROUP_L_H
 
-#include <aqbanking/imexporter.h>
-
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xmlctx.h>
 

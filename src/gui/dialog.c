@@ -32,8 +32,6 @@
 #include "widget_l.h"
 #include "gui_l.h"
 
-#include <aqbanking/banking.h>
-
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 
@@ -295,21 +293,21 @@ int GWEN_Dialog_ReadXmlFile(GWEN_DIALOG *dlg, const char *fname) {
 		       GWEN_XML_FLAGS_DEFAULT |
 		       GWEN_XML_FLAGS_HANDLE_HEADERS);
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_XMLNode_free(n);
     return rv;
   }
 
   nDialog=GWEN_XMLNode_FindFirstTag(n, "dialog", NULL, NULL);
   if (nDialog==NULL) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog element not found in XML file [%s]", fname);
+    DBG_INFO(GWEN_LOGDOMAIN, "Dialog element not found in XML file [%s]", fname);
     GWEN_XMLNode_free(n);
     return rv;
   }
 
   rv=GWEN_Dialog_ReadXml(dlg, nDialog);
   if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_XMLNode_free(n);
     return rv;
   }

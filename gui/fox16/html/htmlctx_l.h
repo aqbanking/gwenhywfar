@@ -15,6 +15,9 @@
 #include "htmlctx_be.h"
 #include "htmlgroup_l.h"
 
+#include <gwenhywfar/db.h>
+
+
 
 HTML_OBJECT_TREE *HtmlCtx_GetObjects(const GWEN_XML_CONTEXT *ctx);
 HTML_OBJECT_TREE *HtmlCtx_TakeObjects(const GWEN_XML_CONTEXT *ctx);

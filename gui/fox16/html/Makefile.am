@@ -26,6 +26,7 @@ iheader_HEADERS= \
  htmlprops_be.h
 
 noinst_HEADERS= \
+ g_box_l.h \
  g_box_p.h \
  g_generic_l.h \
  g_generic_p.h \
