@@ -68,6 +68,9 @@ void GWEN_ProgressData_SetShown(GWEN_PROGRESS_DATA *pd, int i);
 time_t GWEN_ProgressData_GetStartTime(const GWEN_PROGRESS_DATA *pd);
 void GWEN_ProgressData_SetStartTime(GWEN_PROGRESS_DATA *pd, time_t t);
 
+time_t GWEN_ProgressData_GetCheckTime(const GWEN_PROGRESS_DATA *pd);
+void GWEN_ProgressData_SetCheckTime(GWEN_PROGRESS_DATA *pd, time_t t);
+
 
 GWEN_PROGRESS_DATA *GWEN_ProgressData_Tree_FindProgressById(GWEN_PROGRESS_DATA_TREE *pt, uint32_t id);
 

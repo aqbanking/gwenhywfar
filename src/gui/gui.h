@@ -580,6 +580,23 @@ int GWEN_Gui_ProgressLog(uint32_t id,
 			 const char *text);
 
 /**
+ * Adds a log message to the referred process dialog and returns immediately.
+ *
+ * This is a convenience function to be used with variable number of arguments (like
+ * printf). It uses the given arguments to prepare a buffer which is then handed to
+ * @ref GWEN_Gui_ProgressLog.
+ * @param id id assigned by @ref GWEN_Gui_ProgressStart (if 0 then the
+ * last started progress dialog is referred to)
+ * @param level log level (see @ref GWEN_Gui_LogLevelPanic ff.)
+ * @param text Text of the box (possibly including printf format string characters): UTF-8, with both a normal text
+ * and a HTML variant of the text in the same string. See text restrictions note above.
+ */
+GWENHYWFAR_API 
+int GWEN_Gui_ProgressLog2(uint32_t id,
+			  GWEN_LOGGER_LEVEL level,
+			  const char *text, ...);
+
+/**
  * <p>
  * Flags the end of the current operation. In graphical user interfaces
  * this call should allow the user to close the progress dialog window.
@@ -591,7 +608,14 @@ int GWEN_Gui_ProgressLog(uint32_t id,
  * the user will not be able to see the log messages).
  * </p>
  * <p>
- * This function MUST return immediately (non-blocking).
+ * Whether this function is blocking or not depends on the status of the
+ * progress dialog and its initial flags. If the dialog needs to stay open
+ * for the user to read the log messages etc then this function only needs to
+ * return after the user manually closes the dialog.
+ * </p>
+ * <p>
+ * If there is no reason to keep the dialog open then this function should simply
+ * close the dialog window and return immediately.
  * </p>
  * @param id id assigned by @ref GWEN_Gui_ProgressStart (if 0 then the
  * last started progress dialog is referred to)

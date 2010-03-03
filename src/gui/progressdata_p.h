@@ -28,6 +28,7 @@ struct GWEN_PROGRESS_DATA {
   int aborted;
   int shown;
   time_t startTime;
+  time_t checkTime;
 
   GWEN_DIALOG *dialog;
 };

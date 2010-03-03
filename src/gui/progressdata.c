@@ -208,6 +208,20 @@ void GWEN_ProgressData_SetStartTime(GWEN_PROGRESS_DATA *pd, time_t t) {
 
 
 
+time_t GWEN_ProgressData_GetCheckTime(const GWEN_PROGRESS_DATA *pd) {
+  assert(pd);
+  return pd->checkTime;
+}
+
+
+
+void GWEN_ProgressData_SetCheckTime(GWEN_PROGRESS_DATA *pd, time_t t) {
+  assert(pd);
+  pd->checkTime=t;
+}
+
+
+
 GWEN_DIALOG *GWEN_ProgressData_GetDialog(const GWEN_PROGRESS_DATA *pd) {
   assert(pd);
   return pd->dialog;

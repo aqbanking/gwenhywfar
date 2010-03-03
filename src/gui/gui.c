@@ -38,6 +38,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/dialog_be.h>
 
+#include <stdarg.h>
+
 
 static GWEN_GUI *gwenhywfar_gui=NULL;
 
@@ -535,6 +537,26 @@ int GWEN_Gui_ProgressLog(uint32_t id,
     return gwenhywfar_gui->progressLogFn(gwenhywfar_gui,
 					 id, level, text);
   return 0;
+}
+
+
+
+int GWEN_Gui_ProgressLog2(uint32_t id,
+			  GWEN_LOGGER_LEVEL level,
+			  const char *fmt, ...) {
+  va_list list;
+  char msgbuffer[2048];
+  int rv;
+
+  /* prepare list for va_arg */
+  va_start(list, fmt);
+  rv=vsnprintf(msgbuffer, sizeof(msgbuffer), fmt, list);
+  if (rv<0 || rv>=(int)(sizeof(msgbuffer))) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Internal buffer too small for message, truncating (%d>%d)",
+	     rv, (int)(sizeof(msgbuffer)));
+  }
+
+  return GWEN_Gui_ProgressLog(id, level, msgbuffer);
 }
 
 
@@ -1224,13 +1246,25 @@ int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t prog
   else {
     GWEN_DIALOG *dlg;
 
+    if (progress==GWEN_GUI_PROGRESS_ONE)
+      progress=GWEN_ProgressData_GetCurrent(pd)+1;
+    else if (progress==GWEN_GUI_PROGRESS_NONE)
+      progress=GWEN_ProgressData_GetCurrent(pd);
     GWEN_ProgressData_SetCurrent(pd, progress);
     GWEN_Gui_Internal_CheckShow(gui, pd);
 
     dlg=GWEN_ProgressData_GetDialog(pd);
     if (dlg) {
-      GWEN_DlgProgress_Advanced(dlg, pd);
-      GWEN_Gui_RunDialog(dlg, 0);
+      time_t t0;
+      time_t t1;
+
+      t0=GWEN_ProgressData_GetCheckTime(pd);
+      t1=time(0);
+      if (t0!=t1) {
+	GWEN_DlgProgress_Advanced(dlg, pd);
+	GWEN_Gui_RunDialog(dlg, 0);
+	GWEN_ProgressData_SetCheckTime(pd, t1);
+      }
     }
     aborted=GWEN_ProgressData_GetAborted(pd);
   }
