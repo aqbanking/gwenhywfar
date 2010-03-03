@@ -46,8 +46,8 @@ FOX16_GuiUpdater::~FOX16_GuiUpdater() {
 void FOX16_GuiUpdater::guiUpdate() {
   FXApp *a=FXApp::instance();
 
-  a->flush();
   a->addChore(this, ID_CHORE);
+  a->flush(true);
 
   m_guiIdleFlag=0;
   DBG_ERROR(0, "Waiting for GUI to become idle");
