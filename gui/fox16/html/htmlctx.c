@@ -197,8 +197,8 @@ HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx) {
 
 
 int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
-			       const char *data,
-			       GWEN_BUFFER *buf) {
+			 const char *data,
+			 GWEN_BUFFER *buf) {
   const uint8_t *p;
   uint8_t *dst;
   uint8_t *src;
@@ -217,7 +217,7 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
   src=dst;
 
   /* skip leading blanks */
-  while(*src && (*src<33 || *src>=127))
+  while(*src && (*src<33 || *src==127))
     src++;
 
   p=src;
@@ -230,7 +230,7 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
     uint8_t c;
 
     c=*p;
-    if (c<32 || c>=127)
+    if (c<32 || c==127)
       c=32;
 
     /* remember next loop whether this char was a blank */

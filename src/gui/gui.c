@@ -1156,7 +1156,11 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
   
       primary=GWEN_DlgProgress_GetFirstProgress(dlg);
       secondary=GWEN_DlgProgress_GetSecondProgress(dlg);
-  
+
+      /* force update of progress bar */
+      GWEN_DlgProgress_Advanced(dlg, pd);
+      GWEN_Gui_RunDialog(dlg, 0);
+
       if (primary==pd) {
 	int rv;
 
@@ -1172,7 +1176,7 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
 	/* this is the primary progress, with this closed we can also
 	 * close the dialog */
 	DBG_INFO(GWEN_LOGDOMAIN, "Closing progress dialog");
-	// TODO: run dialog until end, close then
+	// run dialog until end, close then
 	GWEN_DlgProgress_SetAllowClose(dlg, 1);
 	if (GWEN_DlgProgress_GetStayOpen(dlg)) {
 	  rv=GWEN_Gui_RunDialog(dlg, 1);

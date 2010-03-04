@@ -67,9 +67,11 @@ FOX16_HtmlLabel::~FOX16_HtmlLabel() {
 
 void FOX16_HtmlLabel::setText(const FXString& text) {
   m_text=text;
+  flags|=FLAG_DIRTY;
   updateHtml();
   recalc();
-  layout();
+  update();
+  //layout();
 }
 
 
@@ -77,7 +79,6 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
 FXint FOX16_HtmlLabel::getDefaultWidth() {
   if (m_htmlCtx==NULL)
     updateHtml();
-
   if (flags & FLAG_DIRTY)
     layout();
 

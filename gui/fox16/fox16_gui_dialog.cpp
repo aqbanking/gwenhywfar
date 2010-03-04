@@ -13,6 +13,7 @@
 
 #include "fox16_gui_dialog_l.hpp"
 #include "fox16_gui_sortinglist_l.hpp"
+#include "fox16_htmllabel.hpp"
 
 #include <gwenhywfar/dialog_be.h>
 #include <gwenhywfar/debug.h>
@@ -786,15 +787,18 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 
 
 int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       const char *value,
-			       int doSignal) {
+				     GWEN_DIALOG_PROPERTY prop,
+				     int index,
+				     const char *value,
+				     int doSignal) {
 
   FXString strValue;
+  FXString htmlValue;
 
-  if (value && *value)
+  if (value && *value) {
     strValue=FOX16_Gui::getRawText(value);
+    htmlValue=FOX16_Gui::getHtmlText(value);
+  }
 
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeUnknown:
@@ -804,14 +808,14 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeLabel:
     {
-      FXLabel *f;
+      FOX16_HtmlLabel *f;
 
-      f=(FXLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(FOX16_HtmlLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
       case GWEN_DialogProperty_Title:
-	f->setText(strValue);
+	f->setText(htmlValue);
         return 0;
 
       default:
@@ -1107,9 +1111,9 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
 
 const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
-				       GWEN_DIALOG_PROPERTY prop,
-				       int index,
-				       const char *defaultValue) {
+					     GWEN_DIALOG_PROPERTY prop,
+					     int index,
+					     const char *defaultValue) {
   FXString str;
 
   switch(GWEN_Widget_GetType(w)) {
@@ -1120,9 +1124,9 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeLabel:
     {
-      FXLabel *f;
+      FOX16_HtmlLabel *f;
 
-      f=(FXLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(FOX16_HtmlLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -1782,6 +1786,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   FXuint opts=0;
   uint32_t flags;
   FXString text;
+  FXString htmlText;
   FXComposite *parentComposite=NULL;
   FXWindow *wChild=NULL;
   FXWindow *wContent=NULL;
@@ -1792,8 +1797,10 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   /* sample data */
   flags=GWEN_Widget_GetFlags(w);
   s=GWEN_Widget_GetText(w, 0);
-  if (s)
+  if (s) {
     text=FXString(s);
+    htmlText=FOX16_Gui::getHtmlText(s);
+  }
   name=GWEN_Widget_GetName(w);
   cols=GWEN_Widget_GetColumns(w);
   rows=GWEN_Widget_GetRows(w);
@@ -1852,10 +1859,9 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   /* create THIS widget */
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeLabel:
-    wChild=new FXLabel(parentComposite,
-		       text,
-		       NULL, /* icon */
-		       opts);
+    wChild=new FOX16_HtmlLabel(parentComposite,
+			       htmlText,
+			       opts);
     break;
 
   case GWEN_Widget_TypePushButton:

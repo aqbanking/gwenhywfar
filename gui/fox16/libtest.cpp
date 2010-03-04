@@ -161,9 +161,71 @@ int test3(int argc, char **argv) {
 
 
 
+int test4(int argc, char **argv) {
+  FXApp application("libtest","Martin Preuss");
+  FOX16_Gui *gui;
+  int rv;
+  uint32_t id1;
+  uint32_t id2;
+  uint64_t i1;
+  uint64_t i2;
+
+  application.init(argc,argv);
+
+  application.create();
+
+  gui=new FOX16_Gui(&application);
+  GWEN_Gui_SetGui(gui->getCInterface());
+
+  id1=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
+			     GWEN_GUI_PROGRESS_SHOW_ABORT |
+			     GWEN_GUI_PROGRESS_KEEP_OPEN,
+			     "Progress-Title",
+                             "<html>"
+                             "<p><b>Test</b> f\xc3\xbcr Umlaute.</p>"
+                             "</html>",
+                             10,
+                             0);
+  for (i1=1; i1<=10; i1++) {
+    char numbuf[128];
+
+    snprintf(numbuf, sizeof(numbuf)-1, "Step %d", (int)i1);
+    GWEN_Gui_ProgressLog(id1, GWEN_LoggerLevel_Notice, numbuf);
+    id2=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
+                               GWEN_GUI_PROGRESS_DELAY |
+			       GWEN_GUI_PROGRESS_SHOW_ABORT,
+			       "2nd progress",
+			       "Starting 2nd progress...",
+			       10,
+			       id1);
+    for (i2=1; i2<=10; i2++) {
+      sleep(1);
+      fprintf(stderr, "Advancing %d/%d\n", (int)i1, (int)i2);
+      rv=GWEN_Gui_ProgressAdvance(id2, i2);
+      if (rv==GWEN_ERROR_USER_ABORTED) {
+	fprintf(stderr, "Aborted by user\n");
+	break;
+      }
+    }
+    GWEN_Gui_ProgressEnd(id2);
+
+    rv=GWEN_Gui_ProgressAdvance(id1, i1);
+    if (rv==GWEN_ERROR_USER_ABORTED) {
+      fprintf(stderr, "Aborted by user\n");
+      break;
+    }
+  }
+
+  GWEN_Gui_ProgressEnd(id1);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
-  return test3(argc, argv);
+  return test4(argc, argv);
 }
 
 
