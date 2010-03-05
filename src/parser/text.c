@@ -1792,11 +1792,12 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
     match=0;
     x=(unsigned char)*src;
     if (x=='&') {
-      if (0 && src[1]=='#') { /* disabled */
+      if (src[1]=='#') {
 	unsigned char num=0;
 
 	src++;
-	while(isdigit((int)*src)) {
+	src++;
+	while(*src && isdigit((int)*src)) {
 	  num*=10;
 	  num+=(*src)-'0';
 	  src++;

@@ -611,9 +611,18 @@ int GWEN_XmlCtxStore_AddAttr(GWEN_XML_CONTEXT *ctx,
     }
 
     if (isNormalProperty) {
+      GWEN_BUFFER *buf;
+
       DBG_VERBOUS(GWEN_LOGDOMAIN, "Setting attribute of tag [%s]: [%s]=[%s]",
 		  GWEN_XMLNode_GetData(currNode), attrName, attrData);
-      GWEN_XMLNode_SetProperty(currNode, attrName, attrData);
+      buf=GWEN_Buffer_new(0, 64, 0, 1);
+      if (GWEN_Text_UnescapeXmlToBuffer(attrData, buf)) {
+	GWEN_Buffer_free(buf);
+	DBG_INFO(GWEN_LOGDOMAIN, "here");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      GWEN_XMLNode_SetProperty(currNode, attrName, GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
     }
   }
 

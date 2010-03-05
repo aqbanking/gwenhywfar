@@ -41,6 +41,7 @@ GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type);
 #define TYPEMAKER2_FLAGS_WITH_TREE        0x01000000
 #define TYPEMAKER2_FLAGS_WITH_HASH        0x02000000
 #define TYPEMAKER2_FLAGS_WITH_REFCOUNT    0x04000000
+#define TYPEMAKER2_FLAGS_WITH_FLAGS       0x08000000
 
 /** special value which is used to overwrite flags from extended types */
 #define TYPEMAKER2_FLAGS_NONE             0x80000000

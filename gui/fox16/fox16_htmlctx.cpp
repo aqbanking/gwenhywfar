@@ -178,7 +178,7 @@ FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
     if (flags & HTML_FONT_FLAGS_STRONG)
       weight=FXFont::Bold;
     if (flags & HTML_FONT_FLAGS_ITALIC)
-      weight=FXFont::Italic;
+      slant=FXFont::Italic;
 
     DBG_ERROR(0,
 	      "Creating font [%s], size=%d, weight=%d, slant=%d, encoding=%d",

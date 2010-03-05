@@ -971,6 +971,164 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       }
       GWEN_Buffer_Reset(tbuf);
 
+      /* add special functions for flags */
+      if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_WITH_FLAGS) {
+	GWEN_Buffer_AppendString(tbuf,
+				 "/** Add flags.\n"
+				 " * Use this function to add flags to the member \"");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "\"\n*/\n");
+	s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+	if (s && Typemaker2_Member_GetAccess(tm)<=TypeMaker2_Access_Protected) {
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, " ");
+	}
+	GWEN_Buffer_AppendString(tbuf, "void ");
+	s=Typemaker2_Type_GetPrefix(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "_Add");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+	GWEN_Buffer_AppendString(tbuf, s+1);
+  
+	GWEN_Buffer_AppendString(tbuf, "(");
+	s=Typemaker2_Type_GetIdentifier(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, " *p_struct, ");
+  
+	typeIsWritten=0;
+	if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_ENUM) {
+	  TYPEMAKER2_ENUM *te=Typemaker2_Member_GetEnumPtr(tm);
+	  const char *s;
+  
+	  assert(te);
+	  s=Typemaker2_Enum_GetType(te);
+	  if (s && *s) {
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " ");
+	    GWEN_Buffer_AppendString(tbuf, " p_src");
+	    typeIsWritten=1;
+	  }
+	}
+  
+	if (!typeIsWritten) {
+	  if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer ||
+	      Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Array) {
+	    if (Typemaker2_Member_GetSetFlags(tm) & TYPEMAKER2_FLAGS_CONST ||
+		Typemaker2_Member_GetSetFlags(tm) & TYPEMAKER2_FLAGS_DUP)
+	      GWEN_Buffer_AppendString(tbuf, "const ");
+	    s=Typemaker2_Type_GetIdentifier(mty);
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " *p_src");
+	  }
+	  else {
+	    s=Typemaker2_Type_GetIdentifier(mty);
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " p_src");
+	  }
+	}
+	GWEN_Buffer_AppendString(tbuf, ");\n");
+  
+	switch(Typemaker2_Member_GetAccess(tm)) {
+	case TypeMaker2_Access_Public:
+	  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Library:
+	  Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Protected:
+	  Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Private:
+	  Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	default:
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
+	  GWEN_Buffer_free(tbuf);
+	  return GWEN_ERROR_BAD_DATA;
+	}
+	GWEN_Buffer_Reset(tbuf);
+
+	GWEN_Buffer_AppendString(tbuf,
+				 "/** Sub flags.\n"
+				 " * Use this function to sub flags to the member \"");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "\"\n*/\n");
+	s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+	if (s && Typemaker2_Member_GetAccess(tm)<=TypeMaker2_Access_Protected) {
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, " ");
+	}
+	GWEN_Buffer_AppendString(tbuf, "void ");
+	s=Typemaker2_Type_GetPrefix(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "_Sub");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+	GWEN_Buffer_AppendString(tbuf, s+1);
+  
+	GWEN_Buffer_AppendString(tbuf, "(");
+	s=Typemaker2_Type_GetIdentifier(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, " *p_struct, ");
+  
+	typeIsWritten=0;
+	if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_ENUM) {
+	  TYPEMAKER2_ENUM *te=Typemaker2_Member_GetEnumPtr(tm);
+	  const char *s;
+  
+	  assert(te);
+	  s=Typemaker2_Enum_GetType(te);
+	  if (s && *s) {
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " ");
+	    GWEN_Buffer_AppendString(tbuf, " p_src");
+	    typeIsWritten=1;
+	  }
+	}
+  
+	if (!typeIsWritten) {
+	  if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer ||
+	      Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Array) {
+	    if (Typemaker2_Member_GetSetFlags(tm) & TYPEMAKER2_FLAGS_CONST ||
+		Typemaker2_Member_GetSetFlags(tm) & TYPEMAKER2_FLAGS_DUP)
+	      GWEN_Buffer_AppendString(tbuf, "const ");
+	    s=Typemaker2_Type_GetIdentifier(mty);
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " *p_src");
+	  }
+	  else {
+	    s=Typemaker2_Type_GetIdentifier(mty);
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " p_src");
+	  }
+	}
+	GWEN_Buffer_AppendString(tbuf, ");\n");
+  
+	switch(Typemaker2_Member_GetAccess(tm)) {
+	case TypeMaker2_Access_Public:
+	  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Library:
+	  Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Protected:
+	  Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Private:
+	  Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	default:
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
+	  GWEN_Buffer_free(tbuf);
+	  return GWEN_ERROR_BAD_DATA;
+	}
+	GWEN_Buffer_Reset(tbuf);
+      }
+
+
       /* implementation */
       GWEN_Buffer_AppendString(tbuf, "void ");
       s=Typemaker2_Type_GetPrefix(ty);
@@ -1157,6 +1315,102 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
       Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_Reset(tbuf);
+
+      if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_WITH_FLAGS) {
+        /* add flags */
+	GWEN_Buffer_AppendString(tbuf, "void ");
+	s=Typemaker2_Type_GetPrefix(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "_Add");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+	GWEN_Buffer_AppendString(tbuf, s+1);
+  
+	GWEN_Buffer_AppendString(tbuf, "(");
+	s=Typemaker2_Type_GetIdentifier(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, " *p_struct, ");
+  
+	typeIsWritten=0;
+	if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_ENUM) {
+	  TYPEMAKER2_ENUM *te=Typemaker2_Member_GetEnumPtr(tm);
+	  const char *s;
+  
+	  assert(te);
+	  s=Typemaker2_Enum_GetType(te);
+	  if (s && *s) {
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " ");
+	    GWEN_Buffer_AppendString(tbuf, " p_src");
+	    typeIsWritten=1;
+	  }
+	}
+  
+	if (!typeIsWritten) {
+	  s=Typemaker2_Type_GetIdentifier(mty);
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, " p_src");
+	}
+	GWEN_Buffer_AppendString(tbuf, ") {\n");
+  
+	GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+	GWEN_Buffer_AppendString(tbuf, "  p_struct->");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "|=p_src;\n");
+	GWEN_Buffer_AppendString(tbuf, "}\n");
+
+	Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+	GWEN_Buffer_Reset(tbuf);
+
+        /* sub flags */
+	GWEN_Buffer_AppendString(tbuf, "void ");
+	s=Typemaker2_Type_GetPrefix(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "_Sub");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+	GWEN_Buffer_AppendString(tbuf, s+1);
+  
+	GWEN_Buffer_AppendString(tbuf, "(");
+	s=Typemaker2_Type_GetIdentifier(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, " *p_struct, ");
+  
+	typeIsWritten=0;
+	if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_ENUM) {
+	  TYPEMAKER2_ENUM *te=Typemaker2_Member_GetEnumPtr(tm);
+	  const char *s;
+  
+	  assert(te);
+	  s=Typemaker2_Enum_GetType(te);
+	  if (s && *s) {
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, " ");
+	    GWEN_Buffer_AppendString(tbuf, " p_src");
+	    typeIsWritten=1;
+	  }
+	}
+  
+	if (!typeIsWritten) {
+	  s=Typemaker2_Type_GetIdentifier(mty);
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, " p_src");
+	}
+	GWEN_Buffer_AppendString(tbuf, ") {\n");
+  
+	GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+	GWEN_Buffer_AppendString(tbuf, "  p_struct->");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "&=~p_src;\n");
+	GWEN_Buffer_AppendString(tbuf, "}\n");
+
+	Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+	GWEN_Buffer_Reset(tbuf);
+      }
+
+
 
       tm=Typemaker2_Member_List_Next(tm);
     }
