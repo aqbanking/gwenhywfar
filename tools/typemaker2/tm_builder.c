@@ -677,6 +677,30 @@ int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
     se=GWEN_StringListEntry_Next(se);
   }
 
+  if (acc==TypeMaker2_Access_Unknown) {
+    TYPEMAKER2_HEADER_LIST *hl;
+
+    /* write codeEnd headers */
+    fprintf(f, "\n");
+    fprintf(f, "/* code headers */\n");
+    hl=Typemaker2_Type_GetHeaders(ty);
+    if (hl) {
+      TYPEMAKER2_HEADER *h;
+
+      h=Typemaker2_Header_List_First(hl);
+      while(h) {
+	if (Typemaker2_Header_GetLocation(h)==Typemaker2_HeaderLocation_CodeEnd) {
+          if (Typemaker2_Header_GetType(h)==Typemaker2_HeaderType_System)
+	    fprintf(f, "#include <%s>\n", Typemaker2_Header_GetFileName(h));
+          else
+	    fprintf(f, "#include \"%s\"\n", Typemaker2_Header_GetFileName(h));
+	}
+	h=Typemaker2_Header_List_Next(h);
+      }
+    }
+    fprintf(f, "\n");
+  }
+
   if (acc!=TypeMaker2_Access_Unknown) {
     fprintf(f, "#ifdef __cplusplus\n}\n#endif\n\n");
     fprintf(f, "#endif\n\n");

@@ -30,7 +30,8 @@ enum {
   Typemaker2_HeaderLocation_Unknown=-1,
   Typemaker2_HeaderLocation_Pre=0,
   Typemaker2_HeaderLocation_Post,
-  Typemaker2_HeaderLocation_Code
+  Typemaker2_HeaderLocation_Code,
+  Typemaker2_HeaderLocation_CodeEnd
 };
 
 

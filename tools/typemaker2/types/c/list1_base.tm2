@@ -26,25 +26,7 @@
 
       <codedef id="dup">
         <code>
-          {
-            if ($(src)) {
-              $(member_type) *t;
-              $(member_basetype_type) *elem;
-            
-              t=$(member_prefix)_new();
-              elem=$(member_prefix)_First($(src));
-              while(elem) {
-                $(member_basetype_type) *cpy;
-                
-                cpy=$(member_basetype_prefix)_dup(elem);
-                $(member_prefix)_Add(cpy, t);
-                elem=$(member_prefix)_Next(elem);
-              }
-              $(dst)=t;
-            }
-            else
-              $(dst)=$(preset);
-          }
+          $(dst)=$(member_prefix)_dup($(src));
         </code>
       </codedef>
 

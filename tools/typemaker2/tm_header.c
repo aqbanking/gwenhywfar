@@ -141,6 +141,8 @@ int Typemaker2_Header_readXml(TYPEMAKER2_HEADER *th, GWEN_XMLNODE *node) {
     Typemaker2_Header_SetLocation(th, Typemaker2_HeaderLocation_Post);
   else if (strcasecmp(s, "code")==0)
     Typemaker2_Header_SetLocation(th, Typemaker2_HeaderLocation_Code);
+  else if (strcasecmp(s, "codeEnd")==0)
+    Typemaker2_Header_SetLocation(th, Typemaker2_HeaderLocation_CodeEnd);
 
   return 0;
 }
