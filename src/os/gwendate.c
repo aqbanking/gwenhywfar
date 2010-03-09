@@ -243,6 +243,19 @@ int GWEN_Date_Diff(const GWEN_DATE *gd1, const GWEN_DATE *gd0) {
 
 
 
+GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti) {
+  GWEN_BUFFER *tbuf;
+  GWEN_DATE *gd;
+
+  tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+  gd=GWEN_Date_fromString(GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return gd;
+}
+
+
 
 
 GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl){

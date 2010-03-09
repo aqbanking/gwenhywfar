@@ -31,14 +31,15 @@
 #include <gwenhywfar/buffer.h>
 
 
+typedef struct GWEN_DATE GWEN_DATE;
+
+
+#include <gwenhywfar/gwentime.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-
-typedef struct GWEN_DATE GWEN_DATE;
-
 
 
 
@@ -65,6 +66,8 @@ GWENHYWFAR_API GWEN_DATE *GWEN_Date_CurrentDate();
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromString(const char *s);
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti);
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl);
 GWENHYWFAR_API int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t,
