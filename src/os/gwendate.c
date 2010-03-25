@@ -107,7 +107,7 @@ GWEN_DATE *GWEN_Date_CurrentDate() {
   if (ltm) {
     GWEN_DATE *gd;
 
-    gd=GWEN_Date_fromGregorian(ltm->tm_year+1900, ltm->tm_mon, ltm->tm_mday);
+    gd=GWEN_Date_fromGregorian(ltm->tm_year+1900, ltm->tm_mon+1, ltm->tm_mday);
     return gd;
   }
 
