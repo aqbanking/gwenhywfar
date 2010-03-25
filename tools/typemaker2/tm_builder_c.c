@@ -253,6 +253,22 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   }
   GWEN_Buffer_AppendString(tbuf, "\n");
 
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+static int _buildPostHeaders(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_HEADER_LIST *hl;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
   /* handle post-headers */
   hl=Typemaker2_Type_GetHeaders(ty);
   if (hl) {
@@ -4263,6 +4279,12 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
   }
 
   rv=_buildDefineEnums(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=_buildPostHeaders(tb, ty);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
