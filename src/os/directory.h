@@ -244,7 +244,8 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
  * @param mask if omitted, all entries match (wildcards and jokers allowed)
  */
 GWENHYWFAR_API
-int GWEN_Directory_GetAllEntries(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetAllEntries(const char *folder,
+				 GWEN_STRINGLIST *sl,
 				 const char *mask);
 
 /**
@@ -263,7 +264,8 @@ int GWEN_Directory_GetAllEntries(char *folder, GWEN_STRINGLIST *sl,
  * @param mask if omitted, all entries match (wildcards and jokers allowed)
  */
 GWENHYWFAR_API
-int GWEN_Directory_GetFileEntriesWithType(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetFileEntriesWithType(const char *folder,
+					  GWEN_STRINGLIST *sl,
 					  const char *mask);
 
 /**
@@ -275,7 +277,8 @@ int GWEN_Directory_GetFileEntriesWithType(char *folder, GWEN_STRINGLIST *sl,
  * @param mask if omitted, all entries match (wildcards and jokers allowed)
  */
 GWENHYWFAR_API
-int GWEN_Directory_GetFileEntries(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetFileEntries(const char *folder,
+				  GWEN_STRINGLIST *sl,
 				  const char *mask);
 
 
@@ -288,7 +291,8 @@ int GWEN_Directory_GetFileEntries(char *folder, GWEN_STRINGLIST *sl,
  * @param mask if omitted, all entries match (wildcards and jokers allowed)
  */
 GWENHYWFAR_API
-int GWEN_Directory_GetDirEntries(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetDirEntries(const char *folder,
+				 GWEN_STRINGLIST *sl,
 				 const char *mask);
 
 

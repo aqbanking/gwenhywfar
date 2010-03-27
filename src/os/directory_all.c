@@ -385,7 +385,8 @@ int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size)
 
 
 
-int GWEN_Directory_GetAllEntries(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetAllEntries(const char *folder,
+				 GWEN_STRINGLIST *sl,
 				 const char *mask) {
   GWEN_DIRECTORY *d;
   int rv;
@@ -414,7 +415,8 @@ int GWEN_Directory_GetAllEntries(char *folder, GWEN_STRINGLIST *sl,
 
 
 
-int GWEN_Directory_GetFileEntriesWithType(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetFileEntriesWithType(const char *folder,
+					  GWEN_STRINGLIST *sl,
 					  const char *mask) {
   GWEN_DIRECTORY *d;
   int rv;
@@ -464,7 +466,7 @@ int GWEN_Directory_GetFileEntriesWithType(char *folder, GWEN_STRINGLIST *sl,
 
 
 
-int GWEN_Directory_GetFileEntries(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetFileEntries(const char *folder, GWEN_STRINGLIST *sl,
 				  const char *mask) {
   GWEN_DIRECTORY *d;
   int rv;
@@ -508,7 +510,7 @@ int GWEN_Directory_GetFileEntries(char *folder, GWEN_STRINGLIST *sl,
 
 
 
-int GWEN_Directory_GetDirEntries(char *folder, GWEN_STRINGLIST *sl,
+int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
 				 const char *mask) {
   GWEN_DIRECTORY *d;
   int rv;
