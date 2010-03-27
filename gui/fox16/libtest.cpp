@@ -117,6 +117,7 @@ int test2(int argc, char **argv) {
 int test3(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
   FOX16_HtmlLabel *label;
+  FOX16_Gui *gui;
   FXDialogBox *dbox;
   FXVerticalFrame *vf;
   const char testString[]=
@@ -145,6 +146,9 @@ int test3(int argc, char **argv) {
 #endif
   a.init(argc,argv);
   a.create();
+
+  gui=new FOX16_Gui(&a);
+  GWEN_Gui_SetGui(gui->getCInterface());
 
   dbox=new FXDialogBox(&a, "Test", DECOR_ALL);
   vf=new FXVerticalFrame(dbox, LAYOUT_FILL_X | LAYOUT_FILL_Y,
@@ -225,7 +229,7 @@ int test4(int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-  return test4(argc, argv);
+  return test3(argc, argv);
 }
 
 

@@ -44,6 +44,7 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 ,m_minWidth(0)
 {
   flags|=FLAG_ENABLED;
+  flags|=FLAG_DIRTY;
 }
 
 
@@ -67,8 +68,8 @@ FOX16_HtmlLabel::~FOX16_HtmlLabel() {
 
 void FOX16_HtmlLabel::setText(const FXString& text) {
   m_text=text;
-  flags|=FLAG_DIRTY;
   updateHtml();
+  flags|=FLAG_DIRTY;
   recalc();
   update();
   //layout();
@@ -77,24 +78,19 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
 
 
 FXint FOX16_HtmlLabel::getDefaultWidth() {
-  if (m_htmlCtx==NULL)
-    updateHtml();
-  if (flags & FLAG_DIRTY)
-    layout();
-
-  return m_htmlCtx->getWidth();
+  if (m_htmlCtx)
+    return m_htmlCtx->getWidth();
+  else
+    return FXFrame::getDefaultWidth();
 }
 
 
 
 FXint FOX16_HtmlLabel::getDefaultHeight() {
-  if (m_htmlCtx==NULL)
-    updateHtml();
-
-  if (flags & FLAG_DIRTY)
-    layout();
-
-  return m_htmlCtx->getHeight();
+  if (m_htmlCtx)
+    return m_htmlCtx->getHeight();
+  else
+    return FXFrame::getDefaultHeight();
 }
 
 
@@ -106,9 +102,11 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
   dc.setForeground(backColor);
   dc.fillRectangle(border, border, width-(border*2), height-(border*2));
 
-  if (m_htmlCtx==NULL)
-    updateHtml();
-  m_htmlCtx->paint(&dc, 0, 0);
+  if (m_htmlCtx)
+    m_htmlCtx->paint(&dc, 0, 0);
+  else {
+    DBG_ERROR(0, "No HtmlContext");
+  }
 
   drawFrame(dc, 0, 0, width, height);
   return 1;
