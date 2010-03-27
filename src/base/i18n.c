@@ -127,18 +127,22 @@ int GWEN_I18N_SetLocale(const char *s){
   cs=strdup(realLocale);
   GWEN_StringList_Clear(gwen_i18n__localelist);
   GWEN_StringList_AppendString(gwen_i18n__localelist, cs, 0, 1);
-  /*fprintf(stderr, "Appending locale \"%s\"\n", cs);*/
+
   p=strrchr(cs, '@');
   if (p) {
     *p=0;
     GWEN_StringList_AppendString(gwen_i18n__localelist, cs, 0, 1);
-    /*fprintf(stderr, "Appending locale \"%s\"\n", cs);*/
   }
+  p=strrchr(cs, '.');
+  if (p) {
+    *p=0;
+    GWEN_StringList_AppendString(gwen_i18n__localelist, cs, 0, 1);
+  }
+
   p=strrchr(cs, '_');
   if (p) {
     *p=0;
     GWEN_StringList_AppendString(gwen_i18n__localelist, cs, 0, 1);
-    /*fprintf(stderr, "Appending locale \"%s\"\n", cs);*/
   }
   free(cs);
 
