@@ -154,6 +154,8 @@ int test3(int argc, char **argv) {
   vf=new FXVerticalFrame(dbox, LAYOUT_FILL_X | LAYOUT_FILL_Y,
                          0, 0, 0, 0, 1, 1, 1, 1);
   label=new FOX16_HtmlLabel(vf, FXString(testString), LAYOUT_FILL_X|LAYOUT_FILL_Y);
+  new FXSpring(vf, LAYOUT_FILL_X | LAYOUT_FILL_Y);
+  new FXLabel(vf, "Normal Testlabel");
 
   dbox->create();
   dbox->resize(300, 200);

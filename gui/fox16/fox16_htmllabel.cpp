@@ -40,11 +40,10 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 				 FXint pt, FXint pb)
 :FXFrame(p, opts, x, y, w, h, pl, pr, pt, pb)
 ,m_htmlCtx(NULL)
-,m_text(text)
 ,m_minWidth(0)
 {
+  setText(text);
   flags|=FLAG_ENABLED;
-  flags|=FLAG_DIRTY;
 }
 
 
@@ -70,27 +69,32 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
   m_text=text;
   updateHtml();
   flags|=FLAG_DIRTY;
+  layout();
   recalc();
   update();
-  //layout();
 }
 
 
 
 FXint FOX16_HtmlLabel::getDefaultWidth() {
-  if (m_htmlCtx)
-    return m_htmlCtx->getWidth();
-  else
-    return FXFrame::getDefaultWidth();
+  FXint w;
+
+  if (m_htmlCtx==NULL)
+    updateHtml();
+  w=m_htmlCtx->getWidth();
+
+  if (m_minWidth && w<m_minWidth)
+    w=m_minWidth;
+
+  return w;
 }
 
 
 
 FXint FOX16_HtmlLabel::getDefaultHeight() {
-  if (m_htmlCtx)
-    return m_htmlCtx->getHeight();
-  else
-    return FXFrame::getDefaultHeight();
+  if (m_htmlCtx==NULL)
+    updateHtml();
+  return m_htmlCtx->getHeight();
 }
 
 
@@ -103,7 +107,7 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
   dc.fillRectangle(border, border, width-(border*2), height-(border*2));
 
   if (m_htmlCtx)
-    m_htmlCtx->paint(&dc, 0, 0);
+    m_htmlCtx->paint(&dc, border, border);
   else {
     DBG_ERROR(0, "No HtmlContext");
   }
@@ -118,12 +122,11 @@ void FOX16_HtmlLabel::layout() {
   int w;
 
   w=width;
-  if (w<m_minWidth)
-    w=m_minWidth;
 
   if (m_htmlCtx==NULL)
     updateHtml();
   m_htmlCtx->layout(w-border*2, height-border*2);
+  update();
   flags&=~FLAG_DIRTY;
 }
 
@@ -136,6 +139,7 @@ void FOX16_HtmlLabel::updateHtml() {
   m_htmlCtx->setBackgroundColor(backColor);
   m_htmlCtx->setForegroundColor(fxcolorfromname("black"));
   m_htmlCtx->setText(m_text.text());
+  flags|=FLAG_DIRTY;
 }
 
 
