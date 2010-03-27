@@ -89,6 +89,17 @@ int main(int argc, char **argv) {
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
+    "destFolder",                 /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "destfolder",                 /* long option */
+    "Destination folder",
+    "Destination folder"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
     "language",                   /* name */
     0,                            /* minnum */
     1,                            /* maxnum */

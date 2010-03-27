@@ -58,6 +58,7 @@ void Typemaker2_Builder_free(TYPEMAKER2_BUILDER *tb) {
     free(tb->fileNameProtected);
     free(tb->fileNamePrivate);
     free(tb->fileNameCode);
+    free(tb->destFolder);
     GWEN_FREE_OBJECT(tb);
   }
 }
@@ -240,6 +241,22 @@ void Typemaker2_Builder_SetSourceFileName(TYPEMAKER2_BUILDER *tb, const char *s)
   free(tb->sourceFileName);
   if (s) tb->sourceFileName=strdup(s);
   else tb->sourceFileName=NULL;
+}
+
+
+
+const char *Typemaker2_Builder_GetDestFolderName(const TYPEMAKER2_BUILDER *tb) {
+  assert(tb);
+  return tb->destFolder;
+}
+
+
+
+void Typemaker2_Builder_SetDestFolderName(TYPEMAKER2_BUILDER *tb, const char *s) {
+  assert(tb);
+  free(tb->destFolder);
+  if (s) tb->destFolder=strdup(s);
+  else tb->destFolder=NULL;
 }
 
 
@@ -906,6 +923,10 @@ int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_
 	}
       }
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+        GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
       GWEN_Buffer_AppendString(tbuf, s);
       t=GWEN_Buffer_GetStart(tbuf);
       while(*t) {
@@ -935,6 +956,10 @@ int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_
 	}
       }
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+        GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
       GWEN_Buffer_AppendString(tbuf, s);
       t=GWEN_Buffer_GetStart(tbuf);
       while(*t) {
@@ -964,6 +989,10 @@ int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_
 	}
       }
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+        GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
       GWEN_Buffer_AppendString(tbuf, s);
       t=GWEN_Buffer_GetStart(tbuf);
       while(*t) {
@@ -993,6 +1022,10 @@ int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_
 	}
       }
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+        GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
       GWEN_Buffer_AppendString(tbuf, s);
       t=GWEN_Buffer_GetStart(tbuf);
       while(*t) {
@@ -1022,6 +1055,10 @@ int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_
 	}
       }
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+        GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
       GWEN_Buffer_AppendString(tbuf, s);
       t=GWEN_Buffer_GetStart(tbuf);
       while(*t) {
@@ -1122,6 +1159,10 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	return GWEN_ERROR_BAD_DATA;
     }
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (tb->destFolder) {
+      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+    }
     GWEN_Buffer_AppendString(tbuf, s);
     t=GWEN_Buffer_GetStart(tbuf);
     while(*t) {
@@ -1151,6 +1192,10 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	return GWEN_ERROR_BAD_DATA;
     }
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (tb->destFolder) {
+      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+    }
     GWEN_Buffer_AppendString(tbuf, s);
     t=GWEN_Buffer_GetStart(tbuf);
     while(*t) {
@@ -1179,6 +1224,10 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	return GWEN_ERROR_BAD_DATA;
     }
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (tb->destFolder) {
+      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+    }
     GWEN_Buffer_AppendString(tbuf, s);
     t=GWEN_Buffer_GetStart(tbuf);
     while(*t) {
@@ -1207,6 +1256,10 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	return GWEN_ERROR_BAD_DATA;
     }
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (tb->destFolder) {
+      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+    }
     GWEN_Buffer_AppendString(tbuf, s);
     t=GWEN_Buffer_GetStart(tbuf);
     while(*t) {

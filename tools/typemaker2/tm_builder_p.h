@@ -35,6 +35,8 @@ struct TYPEMAKER2_BUILDER {
 
   char *sourceFileName;
 
+  char *destFolder;
+
   TYPEMAKER2_TYPEMANAGER *typeManager;
 
   TYPEMAKER2_BUILDER_BUILD_FN buildFn;
