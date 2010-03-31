@@ -44,6 +44,10 @@ extern "C" {
 GWENHYWFAR_API
 int GWEN_I18N_SetLocale(const char *s);
 
+/**
+ * Gwenhywfar remains the owner of the object returned (if any), so you
+ * MUST NOT free it.
+ */
 GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList();
 
