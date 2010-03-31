@@ -111,19 +111,27 @@ int GWEN_DBIO__XmlDb_ImportGroup(GWEN_DBIO *dbio,
 
 void GWEN_DBIO__XmlDb_ReadDataTags(GWEN_XMLNODE *node, GWEN_BUFFER *buf) {
   GWEN_XMLNODE *ndata;
+  GWEN_BUFFER *tbuf;
+  int rv;
 
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   ndata=GWEN_XMLNode_GetFirstData(node);
   while(ndata) {
     const char *s;
 
     s=GWEN_XMLNode_GetData(ndata);
     if (s) {
-      if (GWEN_Buffer_GetUsedBytes(buf))
-	GWEN_Buffer_AppendByte(buf, ' ');
-      GWEN_Buffer_AppendString(buf, s);
+      if (GWEN_Buffer_GetUsedBytes(tbuf))
+	GWEN_Buffer_AppendByte(tbuf, ' ');
+      GWEN_Buffer_AppendString(tbuf, s);
     }
     ndata=GWEN_XMLNode_GetNextData(node);
   }
+  rv=GWEN_Text_UnescapeXmlToBuffer(GWEN_Buffer_GetStart(tbuf), buf);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  }
+  GWEN_Buffer_free(tbuf);
 }
 
 
@@ -365,12 +373,21 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 	s=GWEN_DB_GetCharValueFromNode(dbT);
 	if (s && *s) {
 	  GWEN_XMLNODE *dn;
-  
+          GWEN_BUFFER *tbuf;
+
 	  vn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "value");
 	  GWEN_XMLNode_SetProperty(vn, "type", "char");
 	  GWEN_XMLNode_AddChild(n, vn);
-  
-	  dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, s);
+
+	  tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+	  rv=GWEN_Text_EscapeXmlToBuffer(s, tbuf);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    GWEN_Buffer_free(tbuf);
+            return rv;
+	  }
+	  dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
 	  GWEN_XMLNode_AddChild(vn, dn);
 	}
 	break;
