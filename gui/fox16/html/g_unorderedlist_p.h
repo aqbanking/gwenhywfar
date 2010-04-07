@@ -15,6 +15,14 @@
 #include "g_unorderedlist_l.h"
 
 
+typedef struct GROUP_UNORDEREDLIST GROUP_UNORDEREDLIST;
+struct GROUP_UNORDEREDLIST {
+  int row;
+};
+
+static void GWENHYWFAR_CB HtmlGroup_UnorderedList_FreeData(void *bp, void *p);
+
+
 static int HtmlGroup_UnorderedList_StartTag(HTML_GROUP *g, const char *tagName);
 
 #endif
