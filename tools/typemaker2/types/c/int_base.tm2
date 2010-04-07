@@ -130,7 +130,7 @@
         <memberFlagsMask>  enum </memberFlagsMask>
         <memberFlagsValue>      </memberFlagsValue>
         <code>
-          GWEN_XMLNode_SetIntValue($(db), "$(name)", $(src));
+          $(retval)=GWEN_DB_SetIntValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, "$(name)", $(src));
         </code>
       </codedef>
 
