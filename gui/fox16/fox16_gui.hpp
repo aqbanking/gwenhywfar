@@ -27,7 +27,7 @@ class FOX16_GuiUpdater;
 class FOX16GUI_API FOX16_Gui: public CppGui {
 public:
 
-  class WinScope {
+  class FOX16GUI_API WinScope {
     friend class FOX16_Gui;
 
   public:
