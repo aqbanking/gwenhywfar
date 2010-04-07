@@ -350,12 +350,12 @@ int HtmlGroup_Box_AddData(HTML_GROUP *g, const char *data) {
     uint8_t c;
 
     /* find begin of word */
-    while(*s && isblank(*s))
+    while(*s && isspace(*s))
       s++;
 
     /* find end of word */
     t=s;
-    while(*t && !isblank(*t))
+    while(*t && !isspace(*t))
       t++;
     c=*t;
     *t=0;
