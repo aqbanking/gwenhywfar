@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=11
 GWENHYWFAR_VERSION_PATCHLEVEL=7
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="beta"
+GWENHYWFAR_VERSION_TAG="git"
 
 
 
@@ -361,7 +361,7 @@ case "$OS_TYPE" in
 
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
-	all_libraries="${all_libraries} -lregex -lwsock32 -lintl"
+	all_libraries="${all_libraries} -lwsock32 -lintl"
     	;;
     *)
     	AC_MSG_ERROR(**** Unknown operating system type)

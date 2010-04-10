@@ -70,30 +70,18 @@ fi
 dnl paths for fox libs
 AC_MSG_CHECKING(for fox libraries)
 AC_ARG_WITH(fox-libs, 
-  [  --with-fox-libs=DIR      uses fox libs from given dir],
-  [local_fox_libs="$withval"],
-  [local_fox_libs="\
-        /usr/lib \
-        /usr/local/lib \
-        /usr/lib${libdirsuffix} \
-        /usr/local/lib${libdirsuffix} \
-        "
+  [  --with-fox-libs=SPEC      uses given fox libs ],
+  [fox_libs="$withval"],
+  [
+    AC_CHECK_LIB(FOX-1.6, fxfindfox, 
+      [ 
+        fox_libs="-lFOX-1.6"
+      ], [], [])
+  
   ]
 )
 
-# Determine the extension of a shared library; the variable
-# std_shrext comes from the AC_PROG_LIBTOOL macro. Copied from
-# libtool.
 
-# Shared library suffix. On linux this was set as
-# shrext_cmds='.so'; but on darwin it is actually a text command.
-eval std_shrext=\"$shrext_cmds\"
-if test -n "${std_shrext}"; then
-   std_strext='.so'
-fi
-
-# This is the name of the qt library to search for.
-qt_searchname="libFOX-1.6${std_shrext}"
 
 if test -z "$fox_libs"; then
    AQ_SEARCH_FOR_PATH([$qt_searchname],[$local_fox_libs])

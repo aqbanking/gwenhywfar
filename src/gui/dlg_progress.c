@@ -76,7 +76,7 @@ GWEN_DIALOG *GWEN_DlgProgress_new() {
 
 
 
-void GWEN_DlgProgress_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DlgProgress_FreeData(void *bp, void *p) {
   GWEN_DLGPROGRESS *xdlg;
 
   xdlg=(GWEN_DLGPROGRESS*) p;
@@ -433,9 +433,9 @@ int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int GWEN_DlgProgress_SignalHandler(GWEN_DIALOG *dlg,
-				   GWEN_DIALOG_EVENTTYPE t,
-				   const char *sender) {
+int GWENHYWFAR_CB GWEN_DlgProgress_SignalHandler(GWEN_DIALOG *dlg,
+						 GWEN_DIALOG_EVENTTYPE t,
+						 const char *sender) {
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);

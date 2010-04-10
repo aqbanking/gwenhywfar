@@ -3,7 +3,7 @@ SUBDIRS=html
 INCLUDES=-I$(top_builddir)/gwenhywfar3 $(fox_includes) -Ihtml
 
 AM_CPPFLAGS= @visibility_cflags@
-DEFS=-DBUILDING_FOX16_GUI -DPACKAGE=\"$(PACKAGE)\"
+DEFS+=-DBUILDING_FOX16_GUI -DPACKAGE=\"$(PACKAGE)\"
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwengui-fox16.pc

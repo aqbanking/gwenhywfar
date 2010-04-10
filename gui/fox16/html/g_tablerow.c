@@ -47,7 +47,7 @@ HTML_GROUP *HtmlGroup_TableRow_new(const char *groupName,
 
 
 
-void HtmlGroup_TableRow_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB HtmlGroup_TableRow_FreeData(void *bp, void *p) {
   GROUP_TABLEROW *xg;
 
   xg=(GROUP_TABLEROW*) p;

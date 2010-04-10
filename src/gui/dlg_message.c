@@ -114,7 +114,7 @@ GWEN_DIALOG *GWEN_DlgMessage_new(uint32_t flags,
 
 
 
-void GWEN_DlgMessage_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DlgMessage_FreeData(void *bp, void *p) {
   GWEN_DLGMSG *xdlg;
 
   xdlg=(GWEN_DLGMSG*) p;
@@ -237,9 +237,9 @@ int GWEN_DlgMessage_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int GWEN_DlgMessage_SignalHandler(GWEN_DIALOG *dlg,
-				  GWEN_DIALOG_EVENTTYPE t,
-				  const char *sender) {
+int GWENHYWFAR_CB GWEN_DlgMessage_SignalHandler(GWEN_DIALOG *dlg,
+						GWEN_DIALOG_EVENTTYPE t,
+						const char *sender) {
   GWEN_DLGMSG *xdlg;
 
   assert(dlg);

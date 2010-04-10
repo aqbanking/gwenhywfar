@@ -1,4 +1,14 @@
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef OS_WIN32
+# include <windows.h>
+# define sleep(x) Sleep(x)
+#endif
+
+
 #undef BUILDING_FOX16_GUI
 
 

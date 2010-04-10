@@ -51,7 +51,7 @@ HTML_GROUP *HtmlGroup_UnorderedList_new(const char *groupName,
 
 
 
-void HtmlGroup_UnorderedList_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB HtmlGroup_UnorderedList_FreeData(void *bp, void *p) {
   GROUP_UNORDEREDLIST *xg;
 
   xg=(GROUP_UNORDEREDLIST*) p;

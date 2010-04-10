@@ -108,7 +108,7 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
 
 
 
-void GWEN_DlgInput_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DlgInput_FreeData(void *bp, void *p) {
   GWEN_DLGINPUT *xdlg;
 
   xdlg=(GWEN_DLGINPUT*) p;
@@ -295,9 +295,9 @@ int GWEN_DlgInput_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int GWEN_DlgInput_SignalHandler(GWEN_DIALOG *dlg,
-				GWEN_DIALOG_EVENTTYPE t,
-				const char *sender) {
+int GWENHYWFAR_CB GWEN_DlgInput_SignalHandler(GWEN_DIALOG *dlg,
+					      GWEN_DIALOG_EVENTTYPE t,
+					      const char *sender) {
   GWEN_DLGINPUT *xdlg;
 
   assert(dlg);
