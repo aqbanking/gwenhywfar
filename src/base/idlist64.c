@@ -266,7 +266,7 @@ int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id){
 
   if (!idt) {
     idt=GWEN_IdTable64_new();
-    GWEN_IdTable64_List_Add(idt, idl->idTables);;
+    GWEN_IdTable64_List_Add(idt, idl->idTables);
   }
 
   GWEN_IdTable64_AddId(idt, id);
