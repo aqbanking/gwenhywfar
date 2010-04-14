@@ -119,6 +119,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
     memmove(buf, s, p-s+1);
     buf[p-s]=0;
     GWEN_Url_SetServer(url, buf);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Server: [%s]", buf);
     free(buf);
     s=p;
   }
@@ -171,6 +172,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
       memmove(buf, s, p-s+1);
       buf[p-s]=0;
       GWEN_Url_SetPath(url, buf);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Path: [%s]", buf);
       free(buf);
       s=p;
     }
