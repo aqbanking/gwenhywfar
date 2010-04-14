@@ -73,11 +73,17 @@ AC_ARG_WITH(fox-libs,
   [  --with-fox-libs=SPEC      uses given fox libs ],
   [fox_libs="$withval"],
   [
-    AC_CHECK_LIB(FOX-1.6, fxfindfox, 
-      [ 
-        fox_libs="-lFOX-1.6"
-      ], [], [])
-  
+      AC_LANG(C++)
+      SAVED_LDFLAGS=$LDFLAGS
+      SAVED_CXXFLAGS=$CXXFLAGS
+      LDFLAGS="$LDFLAGS -lFOX-1.6"
+      CXXFLAGS="$CXXFLAGS $fox_includes"
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM([#include <fx.h>],
+          [FX::FXDate dummy])],
+        [fox_libs="-lFOX-1.6"])
+      LDFLAGS=$SAVED_LDFLAGS
+      CXXFLAGS=$SAVED_CXXFLAGS
   ]
 )
 
