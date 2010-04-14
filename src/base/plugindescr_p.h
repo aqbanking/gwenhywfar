@@ -48,6 +48,8 @@ struct GWEN_PLUGIN_DESCRIPTION {
   char *longDescr;
   int isActive;
   GWEN_XMLNODE *xmlNode;
+
+  uint32_t refCount;
 };
 
 GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node);
