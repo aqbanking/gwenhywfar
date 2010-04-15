@@ -1824,7 +1824,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   /* setup info for new widget */
   if (flags & GWEN_WIDGET_FLAGS_FILLX)
-    opts|=LAYOUT_FILL_X;
+    opts|=LAYOUT_FILL_X | LAYOUT_FILL_COLUMN;
   if (flags & GWEN_WIDGET_FLAGS_FILLY)
     opts|=LAYOUT_FILL_Y;
   if (flags & GWEN_WIDGET_FLAGS_DECOR_SHRINKABLE)
