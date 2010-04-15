@@ -71,6 +71,7 @@ GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId) {
   else {
     dlg->dbPreferences=db;
   }
+  dlg->mediaPaths=GWEN_StringList_new();
 
   return dlg;
 }
@@ -101,6 +102,7 @@ void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
       free(dlg->dialogId);
       dlg->refCount=0;
       GWEN_DB_Group_free(dlg->dbPreferences);
+      GWEN_StringList_free(dlg->mediaPaths);
 
       GWEN_FREE_OBJECT(dlg);
     }
@@ -132,6 +134,24 @@ void GWEN_Dialog_SetGuiId(GWEN_DIALOG *dlg, uint32_t guiid) {
   assert(dlg->refCount);
 
   dlg->guiId=guiid;
+}
+
+
+
+void GWEN_Dialog_AddMediaPath(GWEN_DIALOG *dlg, const char *s) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  GWEN_StringList_AppendString(dlg->mediaPaths, s, 0, 1);
+}
+
+
+
+GWEN_STRINGLIST *GWEN_Dialog_GetMediaPaths(const GWEN_DIALOG *dlg) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  return dlg->mediaPaths;
 }
 
 

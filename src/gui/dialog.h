@@ -90,37 +90,6 @@ typedef enum {
   GWEN_DialogEvent_TypeActivated,
   GWEN_DialogEvent_TypeEnabled,
   GWEN_DialogEvent_TypeDisabled,
-
-  /**
-   * This signal asks for the full path of an image.
-   * Please note that no GWEN_DIALOG function must be called from within the handler of this
-   * signal, because it is called by the GUI implementation upon initialization, so not all
-   * widgets have been initialized, yet.
-   * <ul>
-   *  <li>charVal points to the name of the image (e.g. "aqbanking/dialogs/wizard/image01.png")</li>
-   *  <li>ptrVal points to a buffer to receive the full path (including trailing null byte)</li>
-   *  <li>intVal contains the size of that buffer</li>
-   * </ul>
-   * If the full path can't be determined by the signal handler the code
-   * @ref GWEN_DialogEvent_ResultNotHandled should be returned.
-   */
-  GWEN_DialogEvent_TypeGetImagePath,
-
-  /**
-   * This signal asks for the full path of an icon.
-   * Please note that no GWEN_DIALOG function must be called from within the handler of this
-   * signal, because it is called by the GUI implementation upon initialization, so not all
-   * widgets have been initialized, yet.
-   * <ul>
-   *  <li>charVal points to the name of the image (e.g. "aqbanking/dialogs/wizard/icon01.png")</li>
-   *  <li>ptrVal points to a buffer to receive the full path (including trailing null byte)</li>
-   *  <li>intVal contains the size of that buffer</li>
-   * </ul>
-   * If the full path can't be determined by the signal handler the code
-   * @ref GWEN_DialogEvent_ResultNotHandled should be returned.
-   */
-  GWEN_DialogEvent_TypeGetIconPath,
-
   GWEN_DialogEvent_TypeClose,
 
   GWEN_DialogEvent_TypeLast
@@ -171,6 +140,14 @@ const char*GWEN_Dialog_GetId(const GWEN_DIALOG *dlg);
 
 GWENHYWFAR_API
 uint32_t GWEN_Dialog_GetGuiId(const GWEN_DIALOG *dlg);
+
+
+/**
+ * Add a path where to find media such as icons, images etc when used
+ * e.g. with pushbuttons or images.
+ */
+GWENHYWFAR_API
+void GWEN_Dialog_AddMediaPath(GWEN_DIALOG *dlg, const char *s);
 
 
 /**

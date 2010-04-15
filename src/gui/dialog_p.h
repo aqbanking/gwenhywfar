@@ -52,6 +52,8 @@ struct GWEN_DIALOG {
 
   GWEN_DB_NODE *dbPreferences;
 
+  GWEN_STRINGLIST *mediaPaths;
+
   uint32_t refCount;
 };
 

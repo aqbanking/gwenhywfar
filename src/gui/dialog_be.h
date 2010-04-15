@@ -29,6 +29,8 @@
 
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/widget_be.h>
+#include <gwenhywfar/stringlist.h>
+
 
 
 #ifdef __cplusplus
@@ -92,6 +94,10 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByImplData(const GWEN_DIALOG *dlg, int index,
 
 GWENHYWFAR_API
 void GWEN_Dialog_SetGuiId(GWEN_DIALOG *dlg, uint32_t guiid);
+
+
+GWENHYWFAR_API
+GWEN_STRINGLIST *GWEN_Dialog_GetMediaPaths(const GWEN_DIALOG *dlg);
 
 
 /**

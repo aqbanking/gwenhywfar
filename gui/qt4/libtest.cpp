@@ -108,12 +108,6 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeDisabled:
     fprintf(stderr, "Disabled\n");
     break;
-  case GWEN_DialogEvent_TypeGetImagePath:
-    fprintf(stderr, "GetImagePath\n");
-    return GWEN_DialogEvent_ResultNotHandled;
-  case GWEN_DialogEvent_TypeGetIconPath:
-    fprintf(stderr, "GetIconPath\n");
-    return GWEN_DialogEvent_ResultNotHandled;
   case GWEN_DialogEvent_TypeClose:
     fprintf(stderr, "Close\n");
     return GWEN_DialogEvent_ResultNotHandled;
