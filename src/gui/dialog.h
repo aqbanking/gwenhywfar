@@ -151,6 +151,24 @@ void GWEN_Dialog_AddMediaPath(GWEN_DIALOG *dlg, const char *s);
 
 
 /**
+ * Add paths from the given path manager.
+ * For each entry of the given path managers path list that entry is
+ * concatenated with the relPath argument (if not NULL) and added to the
+ * dialogs list of media paths.
+ * @param dlg dialog to which media paths are to be added
+ * @param destlib see the argument of the same name in @ref GWEN_PathManager_GetPaths
+ * @param pathName see the argument of the same name in @ref GWEN_PathManager_GetPaths
+ * @param relPath optional relative path to be added to each entry of the given
+ *   path manager's entry to form a media path for this dialog
+ */
+GWENHYWFAR_API
+void GWEN_Dialog_AddMediaPathsFromPathManager(GWEN_DIALOG *dlg,
+					      const char *destlib,
+					      const char *pathName,
+					      const char *relPath);
+
+
+/**
  * Inserts a sub-dialog into the given dialog. The widgets of the subdialog become
  * children of the main dialog below the widget referenced to by parentName.
  * Please take care that the subdialog doesn't contain widgets with the same name as

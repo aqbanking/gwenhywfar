@@ -33,6 +33,7 @@
 #include "gui_l.h"
 
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
 
 #include <assert.h>
@@ -143,6 +144,44 @@ void GWEN_Dialog_AddMediaPath(GWEN_DIALOG *dlg, const char *s) {
   assert(dlg->refCount);
 
   GWEN_StringList_AppendString(dlg->mediaPaths, s, 0, 1);
+}
+
+
+
+void GWEN_Dialog_AddMediaPathsFromPathManager(GWEN_DIALOG *dlg,
+					      const char *destlib,
+					      const char *pathName,
+					      const char *relPath) {
+  GWEN_STRINGLIST *sl;
+
+  sl=GWEN_PathManager_GetPaths(destlib, pathName);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+    se=GWEN_StringList_FirstEntry(sl);
+    if (se) {
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      while(se) {
+	const char *s;
+
+	s=GWEN_StringListEntry_Data(se);
+	assert(s);
+	if (relPath) {
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+	  GWEN_Buffer_AppendString(tbuf, relPath);
+	  GWEN_StringList_AppendString(dlg->mediaPaths, GWEN_Buffer_GetStart(tbuf), 0, 1);
+	  GWEN_Buffer_Reset(tbuf);
+	}
+	else
+	  GWEN_StringList_AppendString(dlg->mediaPaths, s, 0, 1);
+	se=GWEN_StringListEntry_Next(se);
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+    GWEN_StringList_free(sl);
+  }
 }
 
 
