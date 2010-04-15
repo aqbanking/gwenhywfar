@@ -181,6 +181,7 @@ GWEN_LIST *GWEN_List_dup(const GWEN_LIST *l){
   assert(l);
   assert(l->listPtr);
   GWEN_NEW_OBJECT(GWEN_LIST, nl);
+  GWEN_INHERIT_INIT(GWEN_LIST, nl);
   nl->listPtr=l->listPtr;
   GWEN__ListPtr_Attach(nl->listPtr);
   return nl;
@@ -551,6 +552,8 @@ GWEN_LIST_ITERATOR *GWEN_List_FindIter(GWEN_LIST *l, const void *p) {
   return 0;
 }
 
+
+
 const void *GWEN_List_Contains(GWEN_LIST *l, const void *p) {
   GWEN_LIST_ITERATOR *li;
 
@@ -562,12 +565,15 @@ const void *GWEN_List_Contains(GWEN_LIST *l, const void *p) {
   return 0;
 }
 
+
+
 void GWEN_List_Remove(GWEN_LIST *l, const void *p) {
   GWEN_LIST_ITERATOR *li;
 
   li = GWEN_List_FindIter(l, p);
   if (li) {
     GWEN_List_Erase(l, li);
+    GWEN_ListIterator_free(li);
   }
 }
 
