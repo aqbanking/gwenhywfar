@@ -74,9 +74,6 @@ if test -z "$qt_libs" && test "$enable_qt_threads" != "no"; then
 	if test -n "$found_dir" ; then
         	qt_dir="$found_dir"
     		qt_libs="-L$found_dir/lib -lqt-mt"
-                if test "$ops" = "freebsd"; then
-                	qt_libs="$qt_libs -lc_r"
-                fi
                 qt_generation="3"
 	fi
 fi

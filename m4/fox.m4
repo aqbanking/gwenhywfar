@@ -93,8 +93,6 @@ if test -z "$fox_libs"; then
    AQ_SEARCH_FOR_PATH([$qt_searchname],[$local_fox_libs])
    if test -n "$found_dir" ; then
      fox_libs="-L$found_dir -lFOX-1.6"
-       test "$OSYSTEM" = "freebsd" && \
-          fox_libs="$fox_libs -lc_r"
    fi
 fi
 
