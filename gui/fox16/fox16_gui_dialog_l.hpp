@@ -43,6 +43,8 @@ public:
   long onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr);
   long onSelKeyRelease(FXObject *sender, FXSelector sel, void *ptr);
 
+  FXIcon *getIcon(const char *fileName);
+
   bool setup(FXWindow *parentWindow);
 
   int execute();
@@ -58,6 +60,8 @@ protected:
   FOX16_Gui *_gui;
   int _widgetCount;
   FXDialogBox *_mainWidget;
+  FXIconSource *m_iconSource;
+  std::list<FXIcon*> m_iconList;
 
   FOX16_GuiDialog();
 

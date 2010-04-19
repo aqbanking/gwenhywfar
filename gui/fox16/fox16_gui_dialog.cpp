@@ -16,6 +16,7 @@
 #include "fox16_htmllabel.hpp"
 
 #include <gwenhywfar/dialog_be.h>
+#include <gwenhywfar/directory.h>
 #include <gwenhywfar/debug.h>
 
 #include <list>
@@ -51,6 +52,7 @@ FOX16_GuiDialog::FOX16_GuiDialog()
 ,_gui(NULL)
 ,_widgetCount(0)
 ,_mainWidget(NULL)
+,m_iconSource(NULL)
 {
 }
 
@@ -62,6 +64,7 @@ FOX16_GuiDialog::FOX16_GuiDialog(FOX16_Gui *gui, GWEN_DIALOG *dlg)
 ,_gui(gui)
 ,_widgetCount(0)
 ,_mainWidget(NULL)
+,m_iconSource(NULL)
 {
 }
 
@@ -70,6 +73,15 @@ FOX16_GuiDialog::FOX16_GuiDialog(FOX16_Gui *gui, GWEN_DIALOG *dlg)
 FOX16_GuiDialog::~FOX16_GuiDialog() {
   if (_mainWidget)
     delete _mainWidget;
+  if (!m_iconList.empty()) {
+    std::list<FXIcon*>::iterator it;
+
+    for (it=m_iconList.begin(); it!=m_iconList.end(); it++)
+      delete *it;
+    m_iconList.clear();
+  }
+  if (m_iconSource)
+    delete m_iconSource;
 }
 
 
@@ -81,6 +93,44 @@ FOX16_GuiDialog *FOX16_GuiDialog::getDialog(GWEN_DIALOG *dlg) {
   if (cppDlg)
     return dynamic_cast<FOX16_GuiDialog*>(cppDlg);
   return NULL;
+}
+
+
+
+FXIcon *FOX16_GuiDialog::getIcon(const char *fileName) {
+  GWEN_STRINGLIST *sl;
+
+  sl=GWEN_Dialog_GetMediaPaths(_dialog);
+  if (sl) {
+    GWEN_BUFFER *tbuf;
+    int rv;
+    FXIcon *ic;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Directory_FindFileInPaths(sl, fileName, tbuf);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return NULL;
+    }
+
+    if (m_iconSource==NULL)
+      m_iconSource=new FXIconSource(FXApp::instance());
+
+    DBG_ERROR(0, "Loading [%s]", GWEN_Buffer_GetStart(tbuf));
+    ic=m_iconSource->loadIconFile(GWEN_Buffer_GetStart(tbuf));
+    if (ic==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not load icon [%s]", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+      return NULL;
+    }
+    m_iconList.push_back(ic);
+    return ic;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No media paths in dialog");
+    return NULL;
+  }
 }
 
 
@@ -107,10 +157,10 @@ int FOX16_GuiDialog::execute() {
 
 
 int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
-			      GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      int value,
-			      int doSignal) {
+				    GWEN_DIALOG_PROPERTY prop,
+				    int index,
+				    int value,
+				    int doSignal) {
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeUnknown:
     return GWEN_ERROR_GENERIC;
@@ -1866,18 +1916,26 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 			       opts);
     break;
 
-  case GWEN_Widget_TypePushButton:
+  case GWEN_Widget_TypePushButton: {
+    const char *s;
+    FXIcon *ic=NULL;
+
     if (flags & GWEN_WIDGET_FLAGS_DEFAULT_WIDGET)
       opts|=BUTTON_DEFAULT | BUTTON_INITIAL | BUTTON_NORMAL;
     else
       opts|=BUTTON_NORMAL;
+    s=GWEN_Widget_GetIconFileName(w);
+    if (s && *s)
+      ic=getIcon(s);
+
     wChild=new FXButton(parentComposite,
 			text,
-			NULL, /* icon */
+			ic,  /* icon */
 			this,
 			ID_WIDGET_FIRST+_widgetCount,
 			opts);
     break;
+  }
 
   case GWEN_Widget_TypeLineEdit:
     if (flags & GWEN_WIDGET_FLAGS_PASSWORD)

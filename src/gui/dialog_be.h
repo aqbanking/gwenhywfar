@@ -96,6 +96,9 @@ GWENHYWFAR_API
 void GWEN_Dialog_SetGuiId(GWEN_DIALOG *dlg, uint32_t guiid);
 
 
+/**
+ * The dialog remains the owner of the object returned (if any).
+ */
 GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_Dialog_GetMediaPaths(const GWEN_DIALOG *dlg);
 
