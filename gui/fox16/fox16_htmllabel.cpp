@@ -121,7 +121,10 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
 void FOX16_HtmlLabel::layout() {
   int w;
 
-  w=width;
+  if (options & FLAGS_NO_WORDWRAP)
+    w=-1;
+  else
+    w=width;
 
   if (m_htmlCtx==NULL)
     updateHtml();

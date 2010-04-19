@@ -1859,6 +1859,8 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   /* create THIS widget */
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeLabel:
+    if (flags & GWEN_WIDGET_FLAGS_NO_WORDWRAP)
+      opts|=FOX16_HtmlLabel::FLAGS_NO_WORDWRAP;
     wChild=new FOX16_HtmlLabel(parentComposite,
 			       htmlText,
 			       opts);

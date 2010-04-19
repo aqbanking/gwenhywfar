@@ -442,6 +442,8 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s){
 	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX;
       else if (strcasecmp(wstart, "justifyCenterY")==0)
 	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY;
+      else if (strcasecmp(wstart, "noWordWrap")==0)
+	fl|=GWEN_WIDGET_FLAGS_NO_WORDWRAP;
     }
   }
 

@@ -50,9 +50,7 @@ void FOX16_GuiUpdater::guiUpdate() {
   a->flush(true);
 
   m_guiIdleFlag=0;
-  DBG_ERROR(0, "Waiting for GUI to become idle");
   a->runUntil(m_guiIdleFlag);
-  DBG_ERROR(0, "GUI is idle now");
 }
 
 

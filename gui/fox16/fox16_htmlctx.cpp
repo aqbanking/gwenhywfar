@@ -180,7 +180,7 @@ FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
     if (flags & HTML_FONT_FLAGS_ITALIC)
       slant=FXFont::Italic;
 
-    DBG_ERROR(0,
+    DBG_DEBUG(GWEN_LOGDOMAIN,
 	      "Creating font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
 	      face.text(), size, weight, slant, encoding);
 

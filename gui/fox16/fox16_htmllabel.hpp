@@ -23,6 +23,11 @@ class FOX16GUI_API FOX16_HtmlLabel: public FXFrame {
   FXDECLARE(FOX16_HtmlLabel)
 
 public:
+
+  enum {
+    FLAGS_NO_WORDWRAP = 0x00080000
+  };
+
   FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 		  FXuint opts=0,
 		  FXint x=0, FXint y=0, FXint w=0, FXint h=0,
