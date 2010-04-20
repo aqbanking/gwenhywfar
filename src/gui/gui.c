@@ -1176,6 +1176,8 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
 	/* this is the primary progress, with this closed we can also
 	 * close the dialog */
 	DBG_INFO(GWEN_LOGDOMAIN, "Closing progress dialog");
+	GWEN_DlgProgress_AddLogText(dlg, GWEN_LoggerLevel_Info, I18N("Operation finished, you can now close this window."));
+
 	// run dialog until end, close then
 	GWEN_DlgProgress_SetAllowClose(dlg, 1);
 	if (GWEN_DlgProgress_GetStayOpen(dlg)) {
