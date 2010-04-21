@@ -54,6 +54,7 @@ struct GWEN_IO_LAYER_TLS {
 static GWENHYWFAR_CB void GWEN_Io_LayerTls_freeData(void *bp, void *p);
 
 static int GWEN_Io_LayerTls_Prepare(GWEN_IO_LAYER *io);
+static void GWEN_Io_LayerTls_UndoPrepare(GWEN_IO_LAYER *io);
 static int GWEN_Io_LayerTls_GetPeerCert(GWEN_IO_LAYER *io, uint32_t guiid);
 
 static ssize_t GWEN_Io_LayerTls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len);

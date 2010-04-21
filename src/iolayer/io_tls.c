@@ -460,6 +460,22 @@ int GWEN_Io_LayerTls_Prepare(GWEN_IO_LAYER *io) {
 
 
 
+void GWEN_Io_LayerTls_UndoPrepare(GWEN_IO_LAYER *io) {
+  GWEN_IO_LAYER_TLS *xio;
+
+  assert(io);
+  xio=GWEN_INHERIT_GETDATA(GWEN_IO_LAYER, GWEN_IO_LAYER_TLS, io);
+  assert(xio);
+
+  if (xio->prepared) {
+    gnutls_certificate_free_credentials(xio->credentials);
+    gnutls_deinit(xio->session);
+    xio->prepared=0;
+  }
+}
+
+
+
 int GWEN_Io_LayerTls_GetPeerCert(GWEN_IO_LAYER *io, uint32_t guiid) {
   GWEN_IO_LAYER_TLS *xio;
   const gnutls_datum_t *cert_list;
@@ -1025,6 +1041,7 @@ int GWEN_Io_LayerTls_AddRequest(GWEN_IO_LAYER *io, GWEN_IO_REQUEST *r) {
       DBG_INFO(GWEN_LOGDOMAIN, "File is not open");
       GWEN_Io_Request_Finished(r, GWEN_Io_Request_StatusFinished, GWEN_ERROR_NOT_OPEN);
       GWEN_Io_LayerCodec_Reset(io);
+      GWEN_Io_LayerTls_UndoPrepare(io);
       return GWEN_ERROR_NOT_OPEN;
     }
     else {
