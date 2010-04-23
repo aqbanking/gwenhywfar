@@ -54,6 +54,9 @@ sources:
 	for f in $(libgui_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
+	for f in $(dlgdata_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/dlgsources; \
+	done
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
 	done

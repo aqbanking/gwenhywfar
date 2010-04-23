@@ -105,15 +105,17 @@ if IF_MAKE_I18N_FILES
 # set this to an empty variable, because they are only needed by the
 # developers and release technicians.
 I18NFILES=$(shell cat $(srcdir)/i18nsources)
+DLGFILES=$(shell cat $(srcdir)/dlgsources)
+
 # Current build rule:
 sources:
-	rm -f $(srcdir)/i18nsources
+	rm -f $(srcdir)/i18nsources $(srcdir)/dlgsources
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
 	done
 
 static-sources:
-	rm -f $(srcdir)/i18nsources
+	rm -f $(srcdir)/i18nsources $(srcdir)/dlgsources
 	for d in src plugins; do \
 	  make -C $$d sources; \
 	done
@@ -149,15 +151,25 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 # you would simply set this to an empty variable.
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
 
-po/$(PACKAGE).pot: $(I18NFILES)
+
+po/$(PACKAGE).pot: i18nsources dlgsources $(I18NFILES)
+	rm -f po/tmp*
 	if test -n "$(I18NFILES)"; then \
-	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N \
-	    -kI18N_NOOP -kI18S -ktranslate -kaliasLocale \
+	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N -kI18S\
+	    -kI18N_NOOP -ktranslate -kaliasLocale \
             -ktr -ktrUtf8 \
-	    '--msgid-bugs-address=openhbci-general@lists.sourceforge.net' \
-	    -o po/$(PACKAGE).pot \
-	    $(I18NFILES); \
+	    '--msgid-bugs-address=aqbanking-user@lists.aqbanking.de' \
+	    -o po/tmppot \
+	    $(I18NFILES) ; \
 	fi
+	for i in $(DLGFILES); do \
+          po4a-gettextize -f xml -m $$i -p po/tmppot1 -o attributes=text && \
+	  msghack -o po/tmppot2 --append po/tmppot po/tmppot1 && \
+	  mv po/tmppot2 po/tmppot; \
+	done
+	mv po/tmppot po/$(PACKAGE).pot
+	rm -f po/tmppot1
+
 
 # This rule is called automatically at install time. However, it is
 # necessary only for the translators, so maybe it shouldn't be called

@@ -86,3 +86,6 @@ gui/qt3/libtest
 gui/qt4/libtest
 gui/fox16/libtest
 gui/fox16/html/libtest
+dlgsources
+qtsources
+po/gwenhywfar.pot
