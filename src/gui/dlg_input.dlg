@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dialog type="dialog" name="dlg_gwen_input" flags="decorShrinkable decorStretchable" >
+<dialog type="dialog" name="dlg_gwen_input" flags="decorShrinkable decorStretchable" i18n="gwenhywfar" >
   <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
     <widget type="label" name="descrLabel" flags="fillX" />
 

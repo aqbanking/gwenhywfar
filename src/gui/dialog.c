@@ -35,6 +35,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/i18n.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -58,6 +59,8 @@ GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId) {
 
   if (dialogId && *dialogId)
     dlg->dialogId=strdup(dialogId);
+
+  dlg->i18nDomain=strdup(PACKAGE);
 
   dlg->widgets=GWEN_Widget_Tree_new();
 
@@ -101,6 +104,7 @@ void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
       GWEN_LIST_FINI(GWEN_DIALOG, dlg);
       GWEN_Widget_Tree_free(dlg->widgets);
       free(dlg->dialogId);
+      free(dlg->i18nDomain);
       dlg->refCount=0;
       GWEN_DB_Group_free(dlg->dbPreferences);
       GWEN_StringList_free(dlg->mediaPaths);
@@ -135,6 +139,35 @@ void GWEN_Dialog_SetGuiId(GWEN_DIALOG *dlg, uint32_t guiid) {
   assert(dlg->refCount);
 
   dlg->guiId=guiid;
+}
+
+
+
+void GWEN_Dialog_SetI18nDomain(GWEN_DIALOG *dlg, const char *s) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  free(dlg->i18nDomain);
+  if (s) dlg->i18nDomain=strdup(s);
+  else dlg->i18nDomain=strdup(PACKAGE);
+}
+
+
+
+const char *GWEN_Dialog_GetI18nDomain(const GWEN_DIALOG *dlg) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  return dlg->i18nDomain;
+}
+
+
+
+const char *GWEN_Dialog_TranslateString(const GWEN_DIALOG *dlg, const char *s) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  return GWEN_I18N_Translate(dlg->i18nDomain, s);
 }
 
 
@@ -322,12 +355,17 @@ int GWEN_Dialog__ReadXmlWidget(GWEN_DIALOG *dlg,
 
 int GWEN_Dialog_ReadXml(GWEN_DIALOG *dlg, GWEN_XMLNODE *node) {
   int rv;
+  const char *s;
 
   assert(dlg);
   assert(dlg->refCount);
 
   assert(dlg->widgets);
   GWEN_Widget_Tree_Clear(dlg->widgets);
+
+  s=GWEN_XMLNode_GetProperty(node, "i18n", NULL);
+  if (s && *s)
+    GWEN_Dialog_SetI18nDomain(dlg, s);
 
   rv=GWEN_Dialog__ReadXmlWidget(dlg, NULL, node);
   if (rv<0) {

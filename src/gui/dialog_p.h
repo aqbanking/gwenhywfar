@@ -54,6 +54,8 @@ struct GWEN_DIALOG {
 
   GWEN_STRINGLIST *mediaPaths;
 
+  char *i18nDomain;
+
   uint32_t refCount;
 };
 

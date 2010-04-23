@@ -489,7 +489,7 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
 
   s=GWEN_XMLNode_GetProperty(node, "text", NULL);
   if (s && *s)
-    GWEN_Widget_SetText(w, 0, s);
+    GWEN_Widget_SetText(w, 0, GWEN_Dialog_TranslateString(w->dialog, s));
 
   s=GWEN_XMLNode_GetProperty(node, "icon", NULL);
   if (s && *s)

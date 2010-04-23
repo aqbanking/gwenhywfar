@@ -324,6 +324,14 @@ GWENHYWFAR_API
 const char *GWEN_Dialog_GetWidgetText(const GWEN_DIALOG *dlg, const char *name);
 
 
+GWENHYWFAR_API
+void GWEN_Dialog_SetI18nDomain(GWEN_DIALOG *dlg, const char *s);
+
+GWENHYWFAR_API
+const char *GWEN_Dialog_GetI18nDomain(const GWEN_DIALOG *dlg);
+
+GWENHYWFAR_API
+const char *GWEN_Dialog_TranslateString(const GWEN_DIALOG *dlg, const char *s);
 
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg);
