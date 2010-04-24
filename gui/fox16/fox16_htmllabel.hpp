@@ -57,9 +57,15 @@ protected:
   FOX16_HtmlCtx *m_htmlCtx;
   FXString m_text;
   int m_minWidth;
+  int m_maxDefaultWidth;
+
+  bool m_haveDefaultDims;
+  FXint m_defaultWidth;
+  FXint m_defaultHeight;
 
   FOX16_HtmlLabel();
   void updateHtml();
+  void calcDefaultDims();
 
 
 };

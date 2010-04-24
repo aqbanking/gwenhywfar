@@ -20,6 +20,9 @@
 #include <assert.h>
 
 
+#define MAX_DEFAULT_WIDTH 400
+
+
 
 FXDEFMAP(FOX16_HtmlLabel) FOX16_HtmlLabelMap[]={
   FXMAPFUNC(SEL_PAINT,0,FOX16_HtmlLabel::onPaint),
@@ -41,6 +44,8 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 :FXFrame(p, opts, x, y, w, h, pl, pr, pt, pb)
 ,m_htmlCtx(NULL)
 ,m_minWidth(0)
+,m_maxDefaultWidth(MAX_DEFAULT_WIDTH)
+,m_haveDefaultDims(false)
 {
   setText(text);
   flags|=FLAG_ENABLED;
@@ -66,6 +71,7 @@ FOX16_HtmlLabel::~FOX16_HtmlLabel() {
 
 
 void FOX16_HtmlLabel::setText(const FXString& text) {
+  m_haveDefaultDims=false;
   m_text=text;
   updateHtml();
   flags|=FLAG_DIRTY;
@@ -76,17 +82,28 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
 
 
 
-FXint FOX16_HtmlLabel::getDefaultWidth() {
-  FXint w;
+void FOX16_HtmlLabel::calcDefaultDims() {
+  int w;
 
+  m_htmlCtx->layout(-1, -1);
+  w=m_htmlCtx->getWidth();
+  if (w>m_maxDefaultWidth) {
+    m_htmlCtx->layout(m_maxDefaultWidth-border*2, -1);
+  }
+  m_defaultWidth=m_htmlCtx->getWidth();
+  m_defaultHeight=m_htmlCtx->getHeight();
+  m_haveDefaultDims=true;
+}
+
+
+
+FXint FOX16_HtmlLabel::getDefaultWidth() {
   if (m_htmlCtx==NULL)
     updateHtml();
-  w=m_htmlCtx->getWidth();
+  if (!m_haveDefaultDims)
+    calcDefaultDims();
 
-  if (m_minWidth && w<m_minWidth)
-    w=m_minWidth;
-
-  return w;
+  return m_defaultWidth;
 }
 
 
@@ -94,7 +111,9 @@ FXint FOX16_HtmlLabel::getDefaultWidth() {
 FXint FOX16_HtmlLabel::getDefaultHeight() {
   if (m_htmlCtx==NULL)
     updateHtml();
-  return m_htmlCtx->getHeight();
+  if (!m_haveDefaultDims)
+    calcDefaultDims();
+  return m_defaultHeight;
 }
 
 
