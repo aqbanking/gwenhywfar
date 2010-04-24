@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Wed Mar 31 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,7 +23,7 @@
  ***************************************************************************/
 
 
-/** @file gwenhywfar/dbio.h */
+/** @file src/parser/dbio.h */
 
 #ifndef GWENHYWFAR_DBIO_L_H
 #define GWENHYWFAR_DBIO_L_H

@@ -164,8 +164,10 @@ GWENHYWFAR_API
 void GWEN_RefPtrInfo_SetDupFn(GWEN_REFPTR_INFO *rpi,
                               GWEN_REFPTR_INFO_DUP_FN f);
 
-/*@}*/ /* defgroup */
+/*@}*/
 
+
+/*@}*/ /* defgroup */
 
 /*@}*/ /* defgroup */
 

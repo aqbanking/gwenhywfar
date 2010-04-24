@@ -2,7 +2,11 @@
 
 
 /**
- * GWEN_Dialog Framework
+ * @defgroup MOD_DIALOG Toolkit Independent Dialog Framework
+ *
+ * @brief Platform and toolkit independent XML-based dialog framework.
+ *
+ * @section SEC_Dialog GWEN_Dialog Framework
  *
  * A dialog consists of a tree of widgets.
  *
@@ -19,21 +23,42 @@
  *
  *
  *
- * All Widgets
+ * @section SEC_STRING String Properties
  *
- * Integer Properties
+ * Some widgets may allow for HTML text, e.g. the FOX and QT3/4 implementations allow for
+ * HTML text as title property. However, not all implementations might have HTML support,
+ * so it must still be possible to set standard text which is then used by HTML-agnostic
+ * implementations. The chosen way to do this in the GWEN_Dialog framework is to specify both
+ * formats in a single string.
+ * String properties with the "html" mark in the following list may contain text in the following
+ * format:
+ * @code
+ *   "<html>this is the <b>html</b> version</html> and this is the standard text"
+ * @endcode
+ *
+ * As you can see HTML text is enclosed by the HTML element "html". Everything outside that is
+ * supposed to be standard text.
+ *
+ * Implementations which are aware of HTML text will only use that enclosed part and ignore the
+ * rest. HTML-agnostic implementations will use the text outside those "html" markings.
+ *
+ *
+ *
+ * @section SEC_ALL_WIDGETS All Widgets
+ *
+ * @subsection SUBSEC_INT Integer Properties
  *
  * The following properties are handled by all widgets.
  * <ul>
  *   <li>
  *     GWEN_DialogProperty_Width (rw): The preferred width of
  *     the widget. This is only guaranteed to work for
- *     widgets of type @ref GWEN_Widget_TypeDialogBox.
+ *     widgets of type @ref GWEN_Widget_TypeDialog.
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_Height (rw): The preferred height of
  *     the widget. This is only guaranteed to work for
- *     widgets of type @ref GWEN_Widget_TypeDialogBox.
+ *     widgets of type @ref GWEN_Widget_TypeDialog.
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_Enabled (rw): The enabled state of
@@ -48,41 +73,41 @@
  *
  *
  *
- * GWEN_Widget_TypeLabel
+ * @section SEC_LABEL GWEN_Widget_TypeLabel
  *
  * This is a simple label widget (e.g. QLabel in QT or
  * FXLabel in FOX).
  *
  *
- * String Properties
+ * @subsection SUBSEC_STRING String Properties
  *
  * The following properties are handled by this widget.
  * <ul>
  *   <li>
- *     GWEN_DialogProperty_Title (rw): Text of the label.
+ *     GWEN_DialogProperty_Title (rw, html): Text of the label.
  *   </li>
  * </ul>
  *
  *
- * Signals
+ * @subsection SUBSEC_SIGNALS Signals
  *
  * This widget does not emit special signals.
  *
  *
  *
  *
- * GWEN_Widget_TypePushButton
+ * @section SEC_PUSHBUTTON GWEN_Widget_TypePushButton
  *
  * This is a simple push button widget (e.g. QPushButton in QT or
  * FXButton in FOX).
  *
  *
- * Integer Properties
+ * @subsection SUBSEC_INT Integer Properties
  *
  * This widget does not have special integer properties.
  *
  *
- * String Properties
+ * @subsection SUBSEC_STRING String Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -94,18 +119,18 @@
  *
  *
  *
- * GWEN_Widget_TypeLineEdit
+ * @section SEC_LINEEDIT GWEN_Widget_TypeLineEdit
  *
  * This is a one line edit field widget (e.g. QLineEdit in QT or
  * FXTextField in FOX).
  *
  *
- * Integer Properties
+ * @subsection SUBSEC_INT Integer Properties
  *
  * This widget does not have special integer properties.
  *
  *
- * String Properties
+ * @subsection SUBSEC_STRING String Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -115,11 +140,15 @@
  * </ul>
  *
  *
- * Signals
+ * @subsection SUBSEC_SIGNALS Signals
  *
  * <ul>
  *   <li>
  *     GWEN_DialogEvent_TypeValueChanged: This signal is
+ *     emitted whenever the content of the line edit changes.
+ *   </li>
+ *   <li>
+ *     GWEN_DialogEvent_TypeValueCommand: This signal is
  *     emitted as soon as the enter key is pressed or
  *     the widget looses focus.
  *   </li>
@@ -128,18 +157,18 @@
  *
  *
  *
- * GWEN_Widget_TypeTextEdit
+ * @section SEC_TEXTEDIT GWEN_Widget_TypeTextEdit
  *
  * This is a multi line edit field widget (e.g. Q?? in QT or
  * FXText in FOX).
  *
  *
- * Integer Properties
+ * @subsection SUBSEC_INT Integer Properties
  *
  * This widget does not have special integer properties.
  *
  *
- * String Properties
+ * @subsection SUBSEC_STRING String Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -149,19 +178,19 @@
  * </ul>
  *
  *
- * Signals
+ * @subsection SUBSEC_SIGNALS Signals
  *
  * No special signals for now.
  *
  *
  *
  *
- * GWEN_Widget_TypeComboBox
+ * @section SEC_COMBOBOX GWEN_Widget_TypeComboBox
  *
  * This is a combobox widget (e.g. QComboBox in QT or FXComboBox in FOX).
  *
  *
- * Integer Properties
+ * @subsection SUBSEC_INT Integer Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -179,7 +208,7 @@
  * </ul>
  *
  *
- * String Properties
+ * @subsection SUBSEC_STRING String Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -192,7 +221,7 @@
  * </ul>
  *
  *
- * Signals
+ * @subsection SUBSEC_SIGNALS Signals
  *
  * <ul>
  *   <li>
@@ -205,14 +234,14 @@
  *
  *
  *
- * GWEN_Widget_TypeProgressBar
+ * @section SEC_PROGRESSBAR GWEN_Widget_TypeProgressBar
  *
  * This widget is a simple progress bar. It has a total value which
  * represents 100 percent and a progress value (from which the percentage
  * is calculated and shown).
  *
  *
- * Integer Properties
+ * @subsection SUBSEC_INT Integer Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -225,20 +254,20 @@
  * </ul>
  *
  *
- * Signals
+ * @subsection SUBSEC_SIGNALS Signals
  *
  * No special signals.
  *
  *
  *
  *
- * GWEN_Widget_TypeGroupBox
+ * @section SEC_GROUPBOX GWEN_Widget_TypeGroupBox
  *
  * This widget is a box surrounding other widgets with a thin line. It may also
  * have a title.
  *
  *
- * String Properties
+ * @subsection SUBSEC_STRING String Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -248,20 +277,20 @@
  * </ul>
  *
  *
- * Signals
+ * @subsection SUBSEC_SIGNALS Signals
  *
  * This widget does not emit special signals.
  *
  *
  *
  *
- * GWEN_Widget_TypeListBox
+ * @section SEC_LISTBOX GWEN_Widget_TypeListBox
  *
  * A list box is a simple list with a horizontal title header at the top.
  * Entries of a list may have multiple columns.
  *
  *
- * Integer Properties
+ * @subsection SUBSEC_INT Integer Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -308,7 +337,7 @@
  * </ul>
  *
  *
- * String Properties
+ * @subsection SUBSEC_STRING String Properties
  *
  * The following properties are handled by this widget.
  * <ul>
@@ -329,7 +358,7 @@
  * </ul>
  *
  *
- * Signals
+ * @subsection SUBSEC_SIGNALS Signals
  *
  * <ul>
  *   <li>

@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 
-/** @defgroup MOD_HTTP_SESSION
+/** @defgroup MOD_HTTP_SESSION HTTP Session
  *
  * This module provides support for exchanging a HTTP(s) request.
  */

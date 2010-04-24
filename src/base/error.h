@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file error.h
+ * @file base/error.h
  * @short This file contains the module for error handling.
  */
 

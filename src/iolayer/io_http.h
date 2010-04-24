@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 
-/** @defgroup MOD_IOLAYER_HTTP
+/** @defgroup MOD_IOLAYER_HTTP HTTP Protocol IO Layer
  * @ingroup MOD_IOLAYER
  *
  * This module implements the HTTP protocol over a base layer created with @ref GWEN_Io_LayerBuffered_new.
@@ -125,6 +125,9 @@ GWENHYWFAR_API GWEN_DB_NODE *GWEN_Io_LayerHttp_GetDbStatusOut(const GWEN_IO_LAYE
 GWENHYWFAR_API GWEN_DB_NODE *GWEN_Io_LayerHttp_GetDbHeaderOut(const GWEN_IO_LAYER *io);
 /*@}*/
 
+
+
+/*@}*/ /* group */
 
 
 #ifdef __cplusplus

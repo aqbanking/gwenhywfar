@@ -22,7 +22,7 @@ extern "C" {
 
 
 
-/** @defgroup MOD_IOLAYER_FILE
+/** @defgroup MOD_IOLAYER_FILE File-based IO Layer
  * @ingroup MOD_IOLAYER
  *
  * This module provides access to already open files.

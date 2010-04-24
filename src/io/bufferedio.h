@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2003-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -430,9 +427,7 @@ GWENHYWFAR_API
 /**
  * Reads exactly the amount of bytes given or returns an error.
  * If less bytes are read than requested the GWN_BUFFEREDIO error
- * @ref GWEN_BUFFEREDIO_ERROR_PARTIAL is returned (which corresponds
- * to the GWEN_ERROR code @ref GWEN_ERROR_PARTIAL when converted via
- * @ref GWEN_Error_GetSimpleCode).
+ * @ref GWEN_ERROR_PARTIAL is returned.
  * The parameter bsize will be updated in any case.
  */
 GWENHYWFAR_API
@@ -443,9 +438,7 @@ GWENHYWFAR_API
 /**
  * Writes exactly the amount of bytes given or returns an error.
  * If less bytes are written than requested the GWN_BUFFEREDIO error
- * @ref GWEN_BUFFEREDIO_ERROR_PARTIAL is returned (which corresponds
- * to the GWEN_ERROR code @ref GWEN_ERROR_PARTIAL when converted via
- * @ref GWEN_Error_GetSimpleCode).
+ * @ref GWEN_ERROR_PARTIAL is returned.
  * The parameter bsize will be updated in any case.
  */
 GWENHYWFAR_API

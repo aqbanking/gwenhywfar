@@ -24,7 +24,7 @@ extern "C" {
 
 
 
-/** @defgroup MOD_IOLAYER_MEMORY
+/** @defgroup MOD_IOLAYER_MEMORY Memory-based IO Layer
  * @ingroup MOD_IOLAYER
  *
  * This module uses a GWEN_BUFFER object to read/write data..

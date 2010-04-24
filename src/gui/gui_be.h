@@ -35,17 +35,18 @@ extern "C" {
 
 
 
-/** @name Prototypes For Virtual User Interaction Functions
+/** @name Prototypes For Virtual Lowlevel User Interaction Functions
  *
+ * Please note that these virtual functions are now more or less obsolete
+ * since the dialog framework is now able to handle them.
+ *
+ * If these functions are unchanged then the current dialog framework implementation
+ * will handle them. Currently there are implementations for FOX1.6, QT3 and QT4.
  */
 /*@{*/
 /**
  * Please see @ref GWEN_Gui_MessageBox for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
- * However, the recommended way is to use Gwenhywfars' heritage functions
- * (see @ref GWEN_INHERIT_SETDATA).
  */
 typedef int (*GWEN_GUI_MESSAGEBOX_FN)(GWEN_GUI *gui,
 				      uint32_t flags,
@@ -59,8 +60,6 @@ typedef int (*GWEN_GUI_MESSAGEBOX_FN)(GWEN_GUI *gui,
 /**
  * Please see @ref GWEN_Gui_InputBox for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
  */
 typedef int (*GWEN_GUI_INPUTBOX_FN)(GWEN_GUI *gui,
 				    uint32_t flags,
@@ -74,8 +73,6 @@ typedef int (*GWEN_GUI_INPUTBOX_FN)(GWEN_GUI *gui,
 /**
  * Please see @ref GWEN_Gui_ShowBox for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
  */
 typedef uint32_t (*GWEN_GUI_SHOWBOX_FN)(GWEN_GUI *gui, 
 					uint32_t flags,
@@ -86,16 +83,12 @@ typedef uint32_t (*GWEN_GUI_SHOWBOX_FN)(GWEN_GUI *gui,
 /**
  * Please see @ref GWEN_Gui_HideBox for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
  */
 typedef void (*GWEN_GUI_HIDEBOX_FN)(GWEN_GUI *gui, uint32_t id);
 
 /**
  * Please see @ref GWEN_Gui_ProgressStart for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
  */
 typedef uint32_t
   (*GWEN_GUI_PROGRESS_START_FN)(GWEN_GUI *gui, 
@@ -108,8 +101,6 @@ typedef uint32_t
 /**
  * Please see @ref GWEN_Gui_ProgressAdvance for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
  */
 typedef int (*GWEN_GUI_PROGRESS_ADVANCE_FN)(GWEN_GUI *gui, 
 					    uint32_t id,
@@ -118,8 +109,6 @@ typedef int (*GWEN_GUI_PROGRESS_ADVANCE_FN)(GWEN_GUI *gui,
 /**
  * Please see @ref GWEN_Gui_ProgressLog for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
  */
 typedef int (*GWEN_GUI_PROGRESS_LOG_FN)(GWEN_GUI *gui, 
 					uint32_t id,
@@ -128,10 +117,17 @@ typedef int (*GWEN_GUI_PROGRESS_LOG_FN)(GWEN_GUI *gui,
 /**
  * Please see @ref GWEN_Gui_ProgressEnd for details.
  *
- * One way of passing arbitrary additional data to this callback is by
- * means of the @ref GWEN_Gui_GetUserData function.
  */
 typedef int (*GWEN_GUI_PROGRESS_END_FN)(GWEN_GUI *gui, uint32_t id);
+/*@}*/
+
+
+
+/** @name Prototypes For Virtual User Interaction Functions
+ *
+ */
+/*@{*/
+
 
 /**
  * This function is used to make the application print something.

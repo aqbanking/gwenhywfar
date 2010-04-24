@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 /**
- * @file gwenhywfar/inetaddr.h
+ * @file src/os/inetaddr.h
  * @short This file contains the internet address handling module
  */
 

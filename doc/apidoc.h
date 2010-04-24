@@ -15,6 +15,7 @@
 /** @defgroup MOD_PARSER Data Management And Parsing */
 /** @defgroup MOD_CRYPT Cryptographic Functions */
 /** @defgroup MOD_GUI Graphical User Interface */
+/** @defgroup MOD_DIALOG Toolkit Independent Dialog Framework */
 
 
 /** @mainpage Gwenhywfar Documentation Main Page
@@ -60,10 +61,10 @@
  @section GWEN_contact Contact
 
  For questions about this library please ask on the mailing list of the
- OpenHBCI project openhbci-general (subscriber-only, please subscribe
+ AqBanking project aqbanking-user (subscriber-only, please subscribe
  on
- <a href="http://lists.sourceforge.net/lists/listinfo/openhbci-general">
- http://lists.sourceforge.net/lists/listinfo/openhbci-general</a>),
+ <a href="http://lists.aqbanking.de/cgi-bin/mailman/listinfo/aqbanking-user">
+ http://lists.aqbanking.de/cgi-bin/mailman/listinfo/aqbanking-user</a>),
  since this is where the author(s) hang out.
 
 
@@ -71,8 +72,8 @@
 
  This library is being written by and is being maintained by
  <a href="mailto:Martin Preuss <martin@libchipcard.de>">Martin Preuss</a>
- Some minor work has been contributed by others including
- <a href="mailto:Christian Stimming <stimming@tuhh.de>">Christian Stimming</a>.
+ Special thanks go to <a href="mailto:Christian Stimming <stimming@tuhh.de>">Christian Stimming</a>
+ and Micha Lenk.
  */
 
 

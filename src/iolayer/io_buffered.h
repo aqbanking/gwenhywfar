@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 
-/** @defgroup MOD_IOLAYER_BUFFERED
+/** @defgroup MOD_IOLAYER_BUFFERED Line Buffered IO Layer
  * @ingroup MOD_IOLAYER
  *
  * This module provides access to already open files.
