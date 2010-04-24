@@ -22,10 +22,6 @@
 
 
 
-#define DIALOG_MINWIDTH  200
-#define DIALOG_MINHEIGHT 50
-
-
 
 GWEN_INHERIT(GWEN_DIALOG, GWEN_DLGMSG)
 
@@ -141,7 +137,6 @@ int GWEN_DlgMessage_GetResponse(const GWEN_DIALOG *dlg) {
 
 void GWEN_DlgMessage_Init(GWEN_DIALOG *dlg) {
   GWEN_DLGMSG *xdlg;
-  int i;
   GWEN_DB_NODE *dbParams;
 
   assert(dlg);
@@ -151,6 +146,7 @@ void GWEN_DlgMessage_Init(GWEN_DIALOG *dlg) {
   dbParams=GWEN_Dialog_GetPreferences(dlg);
   assert(dbParams);
 
+#if 0
   /* read width */
   i=GWEN_DB_GetIntValue(dbParams, "dialog_width", 0, -1);
   if (i<DIALOG_MINWIDTH)
@@ -162,6 +158,7 @@ void GWEN_DlgMessage_Init(GWEN_DIALOG *dlg) {
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
   GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+#endif
 
   /* special stuff */
   if (xdlg->title)
@@ -178,7 +175,6 @@ void GWEN_DlgMessage_Init(GWEN_DIALOG *dlg) {
 
 void GWEN_DlgMessage_Fini(GWEN_DIALOG *dlg) {
   GWEN_DLGMSG *xdlg;
-  int i;
   GWEN_DB_NODE *dbParams;
 
   assert(dlg);
@@ -188,6 +184,7 @@ void GWEN_DlgMessage_Fini(GWEN_DIALOG *dlg) {
   dbParams=GWEN_Dialog_GetPreferences(dlg);
   assert(dbParams);
 
+#if 0
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   if (i<DIALOG_MINWIDTH)
@@ -205,6 +202,7 @@ void GWEN_DlgMessage_Fini(GWEN_DIALOG *dlg) {
 		      GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "dialog_height",
 		      i);
+#endif
 }
 
 
