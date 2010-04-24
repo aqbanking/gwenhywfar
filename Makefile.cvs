@@ -1,6 +1,7 @@
 
 #MY_CFLAGS=-W -pedantic -std=c99 -ggdb -Wall -O -ggdb
 MY_CFLAGS=-ggdb -Wall -O 
+WIN32_INSTALL_DIR=/home/martin/install/win32
 
 all_warnings=\
  -Wextra  -Wall  -Waddress \
@@ -100,8 +101,8 @@ mp-w32:
 	automake --add-missing
 	autoconf
 	PATH="$(MINGW32_PREFIX)/bin:$(PATH)" \
-	PKG_CONFIG_PATH=/tmp/install/lib/pkgconfig \
-	CFLAGS="$(MY_CFLAGS) -I/tmp/install/include -L/tmp/install/lib" CXXFLAGS="-ggdb -Wall -I/tmp/install/include -L/tmp/install/lib" \
+	PKG_CONFIG_PATH=$(WIN32_INSTALL_DIR)/lib/pkgconfig \
+	CFLAGS="$(MY_CFLAGS) -I$(WIN32_INSTALL_DIR)/include -L$(WIN32_INSTALL_DIR)/lib" CXXFLAGS="-ggdb -Wall -I$(WIN32_INSTALL_DIR)/include -L$(WIN32_INSTALL_DIR)/lib" \
         DLLTOOL=i586-mingw32msvc-dlltool \
 	OBJDUMP=i586-mingw32msvc-objdump \
 	LD=i586-mingw32msvc-ld \
@@ -113,18 +114,18 @@ mp-w32:
 	AS=i586-mingw32msvc-as \
 	RC=i586-mingw32msvc-windres \
 	./configure \
-	  --prefix=/tmp/install $(WIN32_OPTIONS) \
+	  --prefix=$(WIN32_INSTALL_DIR) $(WIN32_OPTIONS) \
 	  --enable-release \
 	  --disable-binreloc \
-	  --with-openssl-includes=/tmp/install/include \
-	  --with-openssl-libs=/tmp/install/lib \
-	  --with-libgcrypt-prefix=/tmp/install \
-	  --with-libgnutls-prefix=/tmp/install \
-	  --with-fox-includes=/tmp/install/include/fox-1.6 \
+	  --with-openssl-includes=$(WIN32_INSTALL_DIR)/include \
+	  --with-openssl-libs=$(WIN32_INSTALL_DIR)/lib \
+	  --with-libgcrypt-prefix=$(WIN32_INSTALL_DIR) \
+	  --with-libgnutls-prefix=$(WIN32_INSTALL_DIR) \
+	  --with-fox-includes=$(WIN32_INSTALL_DIR)/include/fox-1.6 \
 	  --disable-qt3 \
 	  --disable-qt4 \
 	  --with-guis=fox16 \
-	  --with-fox-libs="-L/tmp/install/lib -lFOX-1.6" \
+	  --with-fox-libs="-L$(WIN32_INSTALL_DIR)/lib -lFOX-1.6" \
 
 git-log:
 	git-log --pretty="format:%ad %an%n%s%n%b" --since="2008-08-16" >git.log
