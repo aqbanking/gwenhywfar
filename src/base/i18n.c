@@ -54,6 +54,77 @@ static GWEN_STRINGLIST *gwen_i18n__localelist=0;
 static char *gwen_i18n__currentlocale=0;
 
 
+#ifdef OS_WIN32
+
+struct gwen_i18n_tabletype {
+  const char *win_name;
+  const char *nls_name;
+};
+
+
+static struct gwen_i18n_tabletype gwen_i18n___localetable[]={
+{ "German_Germany", "de_DE" },
+{ "English_UK", "en_GB" },
+{ "English_US", "en_US" },
+{ "French_France", "fr_FR" },
+{ NULL, NULL }
+};
+
+
+
+static const char *gwen_i18n_transwinlocale(const char *s) {
+  char *cs;
+  char *p;
+  struct gwen_i18n_tabletype *tt;
+
+  cs=strdup(s);
+
+  /* find complete */
+  tt=gwen_i18n___localetable;
+  while(tt->win_name) {
+    if (strcasecmp(tt->win_name, cs)==0) {
+      free(cs);
+      return tt->nls_name;
+    }
+    tt++;
+  }
+
+  p=strrchr(cs, '.');
+  if (p) {
+    *p=0;
+    /* find partial string */
+    tt=gwen_i18n___localetable;
+    while(tt->win_name) {
+      if (strcasecmp(tt->win_name, cs)==0) {
+	free(cs);
+	return tt->nls_name;
+      }
+      tt++;
+    }
+  }
+
+  p=strrchr(cs, '_');
+  if (p) {
+    *p=0;
+    /* find partial string */
+    tt=gwen_i18n___localetable;
+    while(tt->win_name) {
+      if (strcasecmp(tt->win_name, cs)==0) {
+	free(cs);
+	return tt->nls_name;
+      }
+      tt++;
+    }
+  }
+  free(cs);
+  DBG_ERROR(GWEN_LOGDOMAIN, "No translation found for WIN32 locale [%s]", s);
+  return s;
+}
+
+
+#endif
+
+
 
 int GWEN_I18N_ModuleInit(){
   const char *localedir;
@@ -118,7 +189,15 @@ int GWEN_I18N_SetLocale(const char *s){
     realLocale=s;
   }
   else {
+#ifdef OS_WIN32
+    const char *t;
+
+    t=gwen_i18n_transwinlocale(realLocale);
+    DBG_INFO(GWEN_LOGDOMAIN, "Real locale is [%s] (from [%s])", t, realLocale);
+    realLocale=t;
+#else
     DBG_INFO(GWEN_LOGDOMAIN, "Real locale is [%s]", realLocale);
+#endif
   }
 #else
   realLocale=s;
