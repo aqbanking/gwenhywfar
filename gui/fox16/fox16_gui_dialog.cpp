@@ -1812,9 +1812,6 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
     return false;
   }
 
-  /* create X11 server side resources */
-  xw->create();
-
   _mainWidget=dynamic_cast<FXDialogBox*>(xw);
   assert(_mainWidget);
 
@@ -1823,6 +1820,9 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
     DBG_INFO(0, "Error initializing dialog: %d", rv);
     return false;
   }
+
+  /* create X11 server side resources */
+  xw->create();
 
   return true;
 }
