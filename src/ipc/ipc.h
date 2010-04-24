@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Fri May 07 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,6 +10,14 @@
 
 #ifndef GWEN_IPC_H
 #define GWEN_IPC_H
+
+
+/** @file src/ipc/ipc.h
+ *
+ * This module is now deprecated. It was only used by Libchipcard which now no
+ * longer uses it. This module is kinda bloated anyway...
+ *
+ */
 
 
 #include <gwenhywfar/types.h>
@@ -50,23 +55,23 @@ typedef void (*GWEN_IPCMANAGER_CLIENTDOWN_FN)(GWEN_IPCMANAGER *mgr,
 					      void *user_data);
 
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 GWEN_IPCMANAGER *GWEN_IpcManager_new();
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 void GWEN_IpcManager_free(GWEN_IPCMANAGER *mgr);
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 void GWEN_IpcManager_Attach(GWEN_IPCMANAGER *mgr);
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 void GWEN_IpcManager_Dump(GWEN_IPCMANAGER *mgr, FILE *f, int indent);
 
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 const char *GWEN_IpcManager_GetApplicationName(const GWEN_IPCMANAGER *mgr);
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 void GWEN_IpcManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
                                         const char *name);
 
@@ -74,7 +79,7 @@ void GWEN_IpcManager_SetApplicationName(GWEN_IPCMANAGER *mgr,
 /**
  * Starts disconnecting the given client/server.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 int GWEN_IpcManager_Disconnect(GWEN_IPCMANAGER *mgr, uint32_t nid);
 
 /**
@@ -90,7 +95,7 @@ int GWEN_IpcManager_Disconnect(GWEN_IPCMANAGER *mgr, uint32_t nid);
  *   @ref GWEN_IpcManager_SendMultiRequest, it is not otherwise used by
  *   the IPC manager
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 uint32_t GWEN_IpcManager_AddServer(GWEN_IPCMANAGER *mgr,
                                    GWEN_IO_LAYER *ioBase,
 				   uint32_t mark);
@@ -108,7 +113,7 @@ uint32_t GWEN_IpcManager_AddServer(GWEN_IPCMANAGER *mgr,
  *   @ref GWEN_IpcManager_SendMultiRequest, it is not otherwise used by
  *   the IPC manager
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 uint32_t GWEN_IpcManager_AddClient(GWEN_IPCMANAGER *mgr,
 				   GWEN_IO_LAYER *ioBase,
 				   uint32_t mark);
@@ -118,7 +123,7 @@ uint32_t GWEN_IpcManager_AddClient(GWEN_IPCMANAGER *mgr,
  * This function removes all pending messages and/or requests for/from this
  * client.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 int GWEN_IpcManager_RemoveClient(GWEN_IPCMANAGER *mgr,
 				 uint32_t nid);
 
@@ -131,7 +136,7 @@ int GWEN_IpcManager_RemoveClient(GWEN_IPCMANAGER *mgr,
  *   @ref GWEN_IpcManager_GetInRequestData (in variable "ipc/nodeId");
  * @param req DB containing the request
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 int GWEN_IpcManager_SendRequest(GWEN_IPCMANAGER *mgr,
 				uint32_t nid,
 				GWEN_DB_NODE *req,
@@ -145,7 +150,7 @@ int GWEN_IpcManager_SendRequest(GWEN_IPCMANAGER *mgr,
  *   by @ref GWEN_IpcManager_GetNextInRequest)
  * @param rsp DB containing the response
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 int GWEN_IpcManager_SendResponse(GWEN_IPCMANAGER *mgr,
                                  uint32_t rid,
                                  GWEN_DB_NODE *rsp);
@@ -160,7 +165,7 @@ int GWEN_IpcManager_SendResponse(GWEN_IPCMANAGER *mgr,
  * @param outbound if 0 then an incoming request is to be removed, otherwise
  *   an outgoing request is to be deleted
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 int GWEN_IpcManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
                                   uint32_t rid,
                                   int outbound);
@@ -174,7 +179,7 @@ int GWEN_IpcManager_RemoveRequest(GWEN_IPCMANAGER *mgr,
  * @param mgr pointer to the IPC manager object
  * @param mark, 0 matches any (see @ref GWEN_IpcManager_AddServer)
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 uint32_t GWEN_IpcManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
 					  uint32_t mark);
 
@@ -195,7 +200,7 @@ uint32_t GWEN_IpcManager_GetNextInRequest(GWEN_IPCMANAGER *mgr,
  * @param mgr pointer to the IPC manager object
  * @param rid request id returned by @ref GWEN_IpcManager_GetNextInRequest
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 GWEN_DB_NODE *GWEN_IpcManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
                                                uint32_t rid);
 
@@ -209,7 +214,7 @@ GWEN_DB_NODE *GWEN_IpcManager_GetInRequestData(GWEN_IPCMANAGER *mgr,
  * @param rid request id returned by @ref GWEN_IpcManager_SendRequest or
  *        @ref GWEN_IpcManager_SendMultiRequest
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 GWEN_DB_NODE *GWEN_IpcManager_GetResponseData(GWEN_IPCMANAGER *mgr,
                                               uint32_t rid);
 
@@ -222,7 +227,7 @@ GWEN_DB_NODE *GWEN_IpcManager_GetResponseData(GWEN_IPCMANAGER *mgr,
  * @param rid request id returned by @ref GWEN_IpcManager_SendRequest or
  *        @ref GWEN_IpcManager_SendMultiRequest
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 GWEN_DB_NODE *GWEN_IpcManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
                                                uint32_t rid);
 
@@ -232,22 +237,22 @@ GWEN_DB_NODE *GWEN_IpcManager_PeekResponseData(GWEN_IPCMANAGER *mgr,
  * You need to call @ref GWEN_Net2_HeartBeat before this function to
  * catch changes in the network connections used.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 int GWEN_IpcManager_Work(GWEN_IPCMANAGER *mgr);
 
 
 /**
  * Returns a pointer to the connection used by the given node.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 GWEN_IO_LAYER *GWEN_IpcManager_GetIoLayer(GWEN_IPCMANAGER *mgr, uint32_t nid);
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 uint32_t GWEN_IpcManager_GetClientForIoLayer(const GWEN_IPCMANAGER *mgr, const GWEN_IO_LAYER *io);
 
 
 
-GWENHYWFAR_API
+GWENHYWFAR_API DEPRECATED
 void GWEN_IpcManager_SetClientDownFn(GWEN_IPCMANAGER *mgr,
 				     GWEN_IPCMANAGER_CLIENTDOWN_FN f,
 				     void *user_data);
