@@ -89,3 +89,5 @@ gui/fox16/html/libtest
 dlgsources
 qtsources
 po/gwenhywfar.pot
+test/test.db*
+test/testfile
