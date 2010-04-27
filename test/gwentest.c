@@ -27,6 +27,8 @@
 #include <gwenhywfar/stringlist2.h>
 #include <gwenhywfar/url.h>
 #include <gwenhywfar/tree.h>
+#include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/syncio_buffered.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # include <winsock.h>
@@ -3799,6 +3801,196 @@ int testDialog(int argc, char **argv) {
 
 
 
+int testSyncIo1(int argc, char **argv) {
+  int rv;
+  const char *fname;
+  GWEN_SYNCIO *sio;
+  GWEN_BUFFER *tbuf;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+
+  fname=argv[2];
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  fprintf(stderr, "Opening file\n");
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Error opening file: %d\n", rv);
+    return 2;
+  }
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  do {
+    uint8_t *p;
+
+    GWEN_Buffer_AllocRoom(tbuf, 1024);
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    rv=GWEN_SyncIo_Read(sio, p, 1024);
+    if (rv<0) {
+      fprintf(stderr, "Error reading file: %d\n", rv);
+      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      return 2;
+    }
+    else if (rv>0) {
+      fprintf(stderr, "Received %d bytes\n", rv);
+      GWEN_Buffer_IncrementPos(tbuf, rv);
+      GWEN_Buffer_AdjustUsedBytes(tbuf);
+    }
+    else if (rv==0) {
+      fprintf(stderr, "EOF met.\n");
+    }
+  } while(rv>0);
+
+  fprintf(stderr, "File received.\n");
+  GWEN_Buffer_Dump(tbuf, stderr, 2);
+
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Error closing file: %d\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Finished.\n");
+
+  return 0;
+}
+
+
+
+int testSyncIo2(int argc, char **argv) {
+  int rv;
+  const char *fname;
+  GWEN_SYNCIO *baseIo;
+  GWEN_SYNCIO *sio;
+  GWEN_BUFFER *tbuf;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+
+  fname=argv[2];
+  baseIo=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  sio=GWEN_SyncIo_Buffered_new(baseIo);
+
+  fprintf(stderr, "Opening file\n");
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Error opening file: %d\n", rv);
+    return 2;
+  }
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  do {
+    uint8_t *p;
+
+    GWEN_Buffer_AllocRoom(tbuf, 1024);
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    rv=GWEN_SyncIo_Read(sio, p, 1024);
+    if (rv<0) {
+      fprintf(stderr, "Error reading file: %d\n", rv);
+      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      return 2;
+    }
+    else if (rv>0) {
+      fprintf(stderr, "Received %d bytes\n", rv);
+      GWEN_Buffer_IncrementPos(tbuf, rv);
+      GWEN_Buffer_AdjustUsedBytes(tbuf);
+      if (p[rv-1]==10) {
+	fprintf(stderr, "Received line:\n");
+	GWEN_Buffer_Dump(tbuf, stderr, 2);
+	GWEN_Buffer_Reset(tbuf);
+        getchar();
+      }
+    }
+    else if (rv==0) {
+      fprintf(stderr, "EOF met.\n");
+    }
+  } while(rv>0);
+
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Error closing file: %d\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Finished.\n");
+
+  return 0;
+}
+
+
+
+int testSyncIo3(int argc, char **argv) {
+  int rv;
+  const char *fname;
+  GWEN_SYNCIO *baseIo;
+  GWEN_SYNCIO *sio;
+  GWEN_BUFFER *tbuf;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+
+  fname=argv[2];
+  baseIo=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  sio=GWEN_SyncIo_Buffered_new(baseIo);
+
+  fprintf(stderr, "Opening file\n");
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Error opening file: %d\n", rv);
+    return 2;
+  }
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  do {
+    uint8_t *p;
+
+    GWEN_Buffer_AllocRoom(tbuf, 1024);
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    rv=GWEN_SyncIo_Read(sio, p, 1024);
+    if (rv<0) {
+      fprintf(stderr, "Error reading file: %d\n", rv);
+      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      return 2;
+    }
+    else if (rv>0) {
+      fprintf(stderr, "Received %d bytes\n", rv);
+      GWEN_Buffer_IncrementPos(tbuf, rv);
+      GWEN_Buffer_AdjustUsedBytes(tbuf);
+      if (p[rv-1]==10) {
+	fprintf(stderr, "Received line:\n");
+	GWEN_Buffer_Dump(tbuf, stderr, 2);
+	getchar();
+      }
+    }
+    else if (rv==0) {
+      fprintf(stderr, "EOF met.\n");
+    }
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_TRANSPARENT);
+  } while(rv>0);
+
+
+  fprintf(stderr, "File received.\n");
+  GWEN_Buffer_Dump(tbuf, stderr, 2);
+
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Error closing file: %d\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Finished.\n");
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -3940,6 +4132,15 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "dlg")==0) {
     rv=testDialog(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sio1")==0) {
+    rv=testSyncIo1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sio2")==0) {
+    rv=testSyncIo2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sio3")==0) {
+    rv=testSyncIo3(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: db.c 1231 2007-06-12 01:54:15Z martin $
  begin       : Tue Sep 09 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2003-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -1080,24 +1077,241 @@ int GWEN_DB_ReadFromFd(GWEN_DB_NODE *n,
 
 
 
+int GWEN_DB_ReadFromFastBuffer2(GWEN_DB_NODE *n,
+				GWEN_FAST_BUFFER2 *fb,
+				uint32_t dbflags) {
+  GWEN_BUFFER *lbuf;
+  GWEN_BUFFER *tbuf;
+  int level=0;
+  int someLinesRead=0;
+
+  lbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+
+  for (;;) {
+    int rv;
+    uint8_t *p;
+
+    rv=GWEN_FastBuffer2_ReadLineToBuffer(fb, lbuf);
+    if (rv<0) {
+      if (rv==GWEN_ERROR_EOF) {
+	if (!someLinesRead && !(dbflags & GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM)){
+	  DBG_INFO(GWEN_LOGDOMAIN, "Unexpected EOF (%d)", rv);
+	  GWEN_Buffer_free(tbuf);
+	  GWEN_Buffer_free(lbuf);
+	  return rv;
+	}
+	break;
+      }
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      GWEN_Buffer_free(lbuf);
+      return rv;
+    }
+
+    if (GWEN_Buffer_GetUsedBytes(lbuf)==0) {
+      if (dbflags & GWEN_DB_FLAGS_UNTIL_EMPTY_LINE) {
+	break;
+      }
+    }
+    else {
+      someLinesRead=1;
+      p=(uint8_t*)GWEN_Buffer_GetStart(lbuf);
+      while(*p && isspace(*p))
+	p++;
+      if (*p) {
+	uint8_t *p1begin=NULL, *p1end=NULL;
+	uint8_t *p2begin=NULL, *p2end=NULL;
+  
+	/* non-empty line */
+	if (*p=='}') {
+	  /* found end of current group */
+	  if (level<1) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Unbalanced number of curly bracket");
+	    GWEN_Buffer_free(tbuf);
+	    GWEN_Buffer_free(lbuf);
+	    return GWEN_ERROR_BAD_DATA;
+	  }
+	  n=n->parent;
+	  assert(n); /* internal error if parent not found */
+	  assert(n->typ==GWEN_DB_NodeType_Group); /* internal error if parent is not a group */
+          level--;
+	}
+	else if (*p=='#') {
+	  /* comment only line */
+	}
+	else {
+	  p1begin=p;
+	  /* read first token */
+	  while(*p && !isspace(*p) &&
+		*p!='{' &&
+		*p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
+		*p!='}' &&
+		*p!=',' &&
+		*p!=';')
+	    p++;
+	  if (!*p) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
+            GWEN_Buffer_Dump(lbuf, stderr, 2);
+	    GWEN_Buffer_free(tbuf);
+	    GWEN_Buffer_free(lbuf);
+	    return GWEN_ERROR_BAD_DATA;
+	  }
+	  p1end=p;
+
+	  /* get to start of 2nd token */
+	  while(*p && isspace(*p))
+	    p++;
+	  if (!*p) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
+	    GWEN_Buffer_free(tbuf);
+	    GWEN_Buffer_free(lbuf);
+	    return GWEN_ERROR_BAD_DATA;
+	  }
+  
+	  if (*p=='{') {
+	    GWEN_DB_NODE *newGr;
+  
+	    /* found start of group */
+	    *p1end=0;
+	    rv=GWEN_DB_UnescapeToBufferTolerant((const char*)p1begin, tbuf);
+	    if (rv<0) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(tbuf);
+	      GWEN_Buffer_free(lbuf);
+	      return rv;
+	    }
+	    newGr=GWEN_DB_GetGroup(n, dbflags, GWEN_Buffer_GetStart(tbuf));
+	    if (newGr==NULL) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "Could not create group [%s]", GWEN_Buffer_GetStart(tbuf));
+	      GWEN_Buffer_free(tbuf);
+	      GWEN_Buffer_free(lbuf);
+	      return GWEN_ERROR_GENERIC;
+	    }
+	    GWEN_Buffer_Reset(tbuf);
+	    n=newGr;
+	    level++;
+	  }
+	  else if (*p=='=' || *p==':') {
+	    /* found short variable definition */
+	    *p1end=0;
+	    p++;
+	    rv=GWEN_DB__ReadValues(n, dbflags, NULL, (const char*)p1begin, p);
+	    if (rv) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(tbuf);
+	      GWEN_Buffer_free(lbuf);
+	      return rv;
+	    }
+	  }
+	  else if (*p==',' || *p==';') {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Unexpected delimiter found");
+	    GWEN_Buffer_free(tbuf);
+	    GWEN_Buffer_free(lbuf);
+	    return GWEN_ERROR_BAD_DATA;
+	  }
+	  else {
+	    /* 2nd token, so this should be a standard variable definition */
+	    p2begin=p;
+	    while(*p &&
+		  !isspace(*p) &&
+		  *p!='{' &&
+		  *p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
+		  *p!='}' &&
+		  *p!=',' &&
+		  *p!=';')
+	      p++;
+	    if (!*p) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token [%s], [%s]", p1begin, p2begin);
+	      GWEN_Buffer_free(tbuf);
+	      GWEN_Buffer_free(lbuf);
+	      return GWEN_ERROR_BAD_DATA;
+	    }
+	    p2end=p;
+	    if (isspace(*p)) {
+	      while(*p && isspace(*p))
+		p++;
+	      if (!*p) {
+		DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
+		GWEN_Buffer_free(tbuf);
+		GWEN_Buffer_free(lbuf);
+		return GWEN_ERROR_BAD_DATA;
+	      }
+	    }
+	    if (*p!='=' && *p!=':') {
+	      DBG_INFO(GWEN_LOGDOMAIN, "Equation mark expected");
+	      GWEN_Buffer_free(tbuf);
+	      GWEN_Buffer_free(lbuf);
+	      return GWEN_ERROR_BAD_DATA;
+	    }
+	    p++;
+  
+	    *p1end=0;
+	    *p2end=0;
+	    rv=GWEN_DB__ReadValues(n, dbflags, (const char*)p1begin, (const char*)p2begin, p);
+	    if (rv) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(tbuf);
+	      GWEN_Buffer_free(lbuf);
+	      return rv;
+	    }
+	  }
+	}
+      }
+    }
+    GWEN_Buffer_Reset(lbuf);
+  }
+
+  if (level) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Unbalanced number of curly bracket (too few)");
+    GWEN_Buffer_free(tbuf);
+    GWEN_Buffer_free(lbuf);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  GWEN_Buffer_free(tbuf);
+  GWEN_Buffer_free(lbuf);
+
+  return 0;
+}
+
+
+
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
 		     const char *fname,
 		     uint32_t dbflags,
 		     uint32_t guiid,
 		     int msecs) {
-  int fd;
+  GWEN_SYNCIO *sio;
+  GWEN_FAST_BUFFER2 *fb;
   int rv;
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "open(%s, O_RDONLY): %s", fname, strerror(errno));
-    return GWEN_ERROR_IO;
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
 
-  rv=GWEN_DB_ReadFromFd(n, fd, dbflags, guiid, msecs);
-  close(fd);
+  /* prepare fast buffer */
+  fb=GWEN_FastBuffer2_new(1024, sio);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_FastBuffer2_AddFlags(fb, GWEN_FAST_BUFFER2_FLAGS_DOSMODE);
 
-  return rv;
+  /* read from it */
+  rv=GWEN_DB_ReadFromFastBuffer2(n, fb, dbflags);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_FastBuffer2_free(fb);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  GWEN_FastBuffer2_free(fb);
+  GWEN_SyncIo_Disconnect(sio);
+  return 0;
 }
 
 

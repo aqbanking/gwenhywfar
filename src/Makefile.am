@@ -9,7 +9,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 
 AM_CFLAGS=$(visibility_cflags)
 
-SUBDIRS = base io iolayer ipc os parser crypt3 crypttoken gui cryptmsg
+SUBDIRS = base sio io iolayer ipc os parser crypt3 crypttoken gui cryptmsg
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \
@@ -56,34 +56,17 @@ libgwenhywfar_la_LIBADD=\
   crypttoken/libcrypttoken.la \
   cryptmsg/libcryptmsg.la \
   io/libio.la \
+  sio/libsio.la \
   iolayer/libiolayer.la \
   ipc/libipc.la \
   os/libos.la \
   parser/libparser.la \
   gui/libgui.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(rt_libs) $(all_libraries)
 
-libgwenhywfar_la_DEPENDENCIES=\
-  base/libbase.la \
-  crypt3/libcrypt3.la \
-  crypttoken/libcrypttoken.la \
-  cryptmsg/libcryptmsg.la \
-  io/libio.la \
-  iolayer/libiolayer.la \
-  ipc/libipc.la \
-  os/libos.la \
-  parser/libparser.la \
-  gui/libgui.la
 
 noinst_PROGRAMS=testlib
 testlib_SOURCES=testlib.c
 testlib_LDADD=libgwenhywfar.la
-
-# if IS_WINDOWS
-if IS_WINDOWS
- libgwenhywfar_la_DEPENDENCIES += ressource.o
- ressource_ldflags=-Wl,ressource.o
-endif
-# IS_WINDOWS
 
 libgwenhywfar_la_LDFLAGS= \
   -no-undefined $(STRIPALL) $(ressource_ldflags) \

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue Sep 09 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2003-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -34,6 +31,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/fastbuffer.h>
+#include <gwenhywfar/fastbuffer2.h>
 #include <gwenhywfar/types.h>
 #include <stdio.h>
 
@@ -814,6 +812,11 @@ int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n,
 		       uint32_t dbflags,
 		       uint32_t guiid,
 		       int msecs);
+
+GWENHYWFAR_API 
+int GWEN_DB_ReadFromFastBuffer2(GWEN_DB_NODE *n,
+				GWEN_FAST_BUFFER2 *fb,
+				uint32_t dbflags);
 
 GWENHYWFAR_API 
 int GWEN_DB_ReadFromFd(GWEN_DB_NODE *n,

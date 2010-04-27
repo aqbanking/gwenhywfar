@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=11
 GWENHYWFAR_VERSION_PATCHLEVEL=9
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="beta"
+GWENHYWFAR_VERSION_TAG="git"
 
 
 
@@ -1285,6 +1285,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/gui/Makefile
                  src/io/Makefile
                  src/iolayer/Makefile
+                 src/sio/Makefile
                  src/ipc/Makefile
                  src/ipc/request/Makefile
                  src/os/Makefile
@@ -1337,7 +1338,7 @@ AC_OUTPUT
 #
 # create header directory, make symlinks
 #
-HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/io src/iolayer src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/gui"
+HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/io src/iolayer src/sio src/ipc src/ipc/request src/os src/os/${GWEN_OS} src/gui"
 HEADER_DIRS="${HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
