@@ -394,7 +394,7 @@ int check_db7() {
 #endif
 	    "db1.conf", MAX_PATH - strlen(tmpfile));
 
-    rv=GWEN_DB_WriteFile(cfg, tmpfile, GWEN_DB_FLAGS_DEFAULT, 0, 2000);
+    rv=GWEN_DB_WriteFile(cfg, tmpfile, GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     fprintf(stderr,
 	    "ERROR in db7: Could not write DB file (%d)\n", rv);
@@ -403,7 +403,7 @@ int check_db7() {
 
   GWEN_DB_ClearGroup(cfg, NULL);
 
-  rv=GWEN_DB_ReadFile(cfg, tmpfile, GWEN_DB_FLAGS_DEFAULT, 0, 2000);
+  rv=GWEN_DB_ReadFile(cfg, tmpfile, GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     fprintf(stderr,
 	    "ERROR in db7: Could not read DB file (%d)\n", rv);

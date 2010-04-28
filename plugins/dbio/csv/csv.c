@@ -37,8 +37,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/dbio_be.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -98,12 +97,10 @@ int GWEN_CSV_GetNameAndIndex(const char *name,
 
 
 int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
-			 GWEN_IO_LAYER *io,
+			 GWEN_SYNCIO *sio,
 			 GWEN_DB_NODE *data,
 			 GWEN_DB_NODE *cfg,
-			 uint32_t flags,
-			 uint32_t guiid,
-			 int msecs) {
+			 uint32_t flags) {
   GWEN_DB_NODE *colgr;
   GWEN_DB_NODE *n;
   int delimiter;
@@ -116,11 +113,11 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
   GWEN_FAST_BUFFER *fb;
 
   assert(dbio);
-  assert(io);
+  assert(sio);
   assert(cfg);
   assert(data);
 
-  fb=GWEN_FastBuffer_new(512, io, guiid, msecs);
+  fb=GWEN_FastBuffer_new(512, sio);
 
   /* get general configuration */
   colgr=GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "columns");
@@ -336,12 +333,10 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
-			 GWEN_IO_LAYER *io,
+			 GWEN_SYNCIO *sio,
 			 GWEN_DB_NODE *data,
 			 GWEN_DB_NODE *cfg,
-			 uint32_t flags,
-			 uint32_t guiid,
-			 int msecs) {
+			 uint32_t flags) {
   GWEN_DB_NODE *colgr;
   int delimiter;
   int quote;
@@ -359,11 +354,11 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
   GWEN_FAST_BUFFER *fb;
 
   assert(dbio);
-  assert(io);
+  assert(sio);
   assert(cfg);
   assert(data);
 
-  fb=GWEN_FastBuffer_new(512, io, guiid, msecs);
+  fb=GWEN_FastBuffer_new(512, sio);
 
   /* get general configuration */
   colgr=GWEN_DB_GetGroup(cfg, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "columns");
@@ -543,10 +538,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
 
 
 
-int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb,
-			    GWEN_STRINGLIST *sl,
-			    uint32_t guiid,
-			    int msecs) {
+int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb, GWEN_STRINGLIST *sl) {
   int err;
   const char *delimiters=";\t,";
   GWEN_BUFFER *lbuffer;
@@ -597,46 +589,31 @@ int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb,
 
 
 
-GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
-						   const char *fname,
-						   uint32_t guiid,
-						   int msecs){
-  int fd;
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio, const char *fname){
   int i;
   int rv;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   GWEN_STRINGLIST *sl;
   GWEN_FAST_BUFFER *fb;
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "open(%s): %s",
-              fname,
-	      strerror(errno));
-    return GWEN_DBIO_CheckFileResultNotOk;
-  }
-
-  /* create io layer for this file (readonly) */
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  fb=GWEN_FastBuffer_new(512, io, guiid, msecs);
+  fb=GWEN_FastBuffer_new(512, sio);
 
   /* read line into string list */
   sl=GWEN_StringList_new();
-  if (GWEN_DBIO_CSV__ReadLine(fb, sl, guiid, msecs)) {
+  if (GWEN_DBIO_CSV__ReadLine(fb, sl)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error reading a line");
     GWEN_FastBuffer_free(fb);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return GWEN_DBIO_CheckFileResultNotOk;
   }
 
@@ -647,8 +624,8 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
     DBG_INFO(GWEN_LOGDOMAIN,
 	     "Found %d columns, file might be supported", i);
     GWEN_FastBuffer_free(fb);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     /*return GWEN_DBIO_CheckFileResultOk; */
     return GWEN_DBIO_CheckFileResultUnknown;
   }
@@ -656,8 +633,8 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio,
     DBG_INFO(GWEN_LOGDOMAIN,
 	     "Found no columns, file might not be supported");
     GWEN_FastBuffer_free(fb);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return GWEN_DBIO_CheckFileResultUnknown;
   }
 }

@@ -44,28 +44,20 @@ static GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl);
 
 
 static int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
-				GWEN_IO_LAYER *io,
+				GWEN_SYNCIO *sio,
 				GWEN_DB_NODE *data,
 				GWEN_DB_NODE *cfg,
-				uint32_t flags,
-				uint32_t guiid,
-				int msecs);
+				uint32_t flags);
 
 static int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
-				GWEN_IO_LAYER *io,
+				GWEN_SYNCIO *sio,
 				GWEN_DB_NODE *data,
 				GWEN_DB_NODE *cfg,
-				uint32_t flags,
-				uint32_t guiid,
-				int msecs);
+				uint32_t flags);
 
-static GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio, const char *fname,
-							  uint32_t guiid, int msecs);
+static GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio, const char *fname);
 
-static int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb,
-				   GWEN_STRINGLIST *sl,
-				   uint32_t guiid,
-				   int msecs);
+static int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb, GWEN_STRINGLIST *sl);
 
 
 #endif

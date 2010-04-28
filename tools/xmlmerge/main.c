@@ -31,9 +31,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/xml.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/io_buffered.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -92,7 +90,7 @@ int main(int argc, char **argv) {
   FREEPARAM *inFile;
   GWEN_XMLNODE *top;
   GWEN_XMLNODE *comment;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   GWEN_XML_CONTEXT *ctx;
   int fd;
   uint32_t flags;
@@ -191,32 +189,30 @@ int main(int argc, char **argv) {
   }
   flags|=GWEN_XML_FLAGS_HANDLE_HEADERS;
 
-  ctx=GWEN_XmlCtxStore_new(NULL, flags, 0, 10000);
+  ctx=GWEN_XmlCtxStore_new(NULL, flags);
 
-  io=GWEN_Io_LayerFile_new(-1, fd);
-  GWEN_Io_Manager_RegisterLayer(io);
+  sio=GWEN_SyncIo_File_TakeOver(fd);
 
-  rv=GWEN_XMLNode_WriteToStream(top, ctx, io);
+  rv=GWEN_XMLNode_WriteToStream(top, ctx, sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     GWEN_XmlCtx_free(ctx);
     return 5;
   }
 
   /* close file */
-  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, GWEN_XmlCtx_GetGuiId(ctx), 30000);
+  rv=GWEN_SyncIo_Disconnect(sio);
   if (rv<0) {
     fprintf(stderr, "Error closing output stream (%d)\n", rv);
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, GWEN_XmlCtx_GetGuiId(ctx), 1000);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_free(sio);
     GWEN_XmlCtx_free(ctx);
     return 5;
   }
 
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_free(sio);
   GWEN_XmlCtx_free(ctx);
 
   GWEN_XMLNode_free(top);

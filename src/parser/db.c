@@ -37,11 +37,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/fslock.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/io_memory.h>
-#include <gwenhywfar/iomanager.h>
 #include <gwenhywfar/fastbuffer.h>
-#include <gwenhywfar/fastbuffer2.h>
 #include <gwenhywfar/syncio_file.h>
 #include <gwenhywfar/syncio_memory.h>
 

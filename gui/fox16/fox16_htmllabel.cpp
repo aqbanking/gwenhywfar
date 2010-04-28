@@ -157,7 +157,7 @@ void FOX16_HtmlLabel::layout() {
 void FOX16_HtmlLabel::updateHtml() {
   if (m_htmlCtx)
     delete m_htmlCtx;
-  m_htmlCtx=new FOX16_HtmlCtx(0, 0, 2000);
+  m_htmlCtx=new FOX16_HtmlCtx(0);
   m_htmlCtx->setBackgroundColor(backColor);
   m_htmlCtx->setForegroundColor(fxcolorfromname("black"));
   m_htmlCtx->setText(m_text.text());

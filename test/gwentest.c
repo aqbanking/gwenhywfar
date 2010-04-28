@@ -528,7 +528,7 @@ int testDBfile(int argc, char **argv) {
   fprintf(stderr,"Reading file\n");
   if (GWEN_DB_ReadFile(db, "test.db",
 		       GWEN_DB_FLAGS_DEFAULT |
-		       GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }
@@ -554,15 +554,14 @@ int testDBfile2(int argc, char **argv) {
   fprintf(stderr,"Reading file\n");
   if (GWEN_DB_ReadFile(db, argv[2],
 		       GWEN_DB_FLAGS_DEFAULT |
-		       GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }
 
   if (GWEN_DB_WriteFile(db, argv[3],
 			GWEN_DB_FLAGS_DEFAULT
-			&~GWEN_DB_FLAGS_ESCAPE_CHARVALUES, 0, 2000
-		       )) {
+			&~GWEN_DB_FLAGS_ESCAPE_CHARVALUES)) {
     fprintf(stderr,"Error writing file.\n");
     return 1;
   }
@@ -587,16 +586,14 @@ int testDBfile3(int argc, char **argv) {
   fprintf(stderr,"Reading file\n");
   if (GWEN_DB_ReadFile(db, argv[2],
 		       GWEN_DB_FLAGS_DEFAULT |
-		       GWEN_PATH_FLAGS_CREATE_GROUP,
-		       0, 30000)) {
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }
 
   if (GWEN_DB_WriteFile(db, argv[3],
 			GWEN_DB_FLAGS_DEFAULT
-			&~GWEN_DB_FLAGS_ESCAPE_CHARVALUES, 0, 2000
-		       )) {
+			&~GWEN_DB_FLAGS_ESCAPE_CHARVALUES)) {
     fprintf(stderr,"Error writing file.\n");
     return 1;
   }
@@ -617,7 +614,7 @@ int testDBfile4(int argc, char **argv) {
   fprintf(stderr,"Reading file\n");
   if (GWEN_DB_ReadFile(db, "test.db",
 		       GWEN_DB_FLAGS_DEFAULT |
-		       GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+		       GWEN_PATH_FLAGS_CREATE_GROUP)) {
     fprintf(stderr,"Error reading file.\n");
     return 1;
   }
@@ -1325,14 +1322,14 @@ int testOldDbImport(int argc, char **argv) {
                          "olddb",
                          dbParams,
                          GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_ERROR(0, "Could not read test file");
     return 2;
   }
 
   if (GWEN_DB_WriteFile(db,
                         "test.out",
-			GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+			GWEN_DB_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Could not write outfile");
   }
 
@@ -1352,7 +1349,7 @@ int testRfc822Import(int argc, char **argv) {
                          "rfc822",
                          dbParams,
                          GWEN_PATH_FLAGS_CREATE_GROUP |
-			 GWEN_DB_FLAGS_UNTIL_EMPTY_LINE, 0, 2000)) {
+			 GWEN_DB_FLAGS_UNTIL_EMPTY_LINE)) {
     GWEN_DB_Dump(db, stderr, 2);
     DBG_ERROR(0, "Could not read test file");
     return 2;
@@ -1360,7 +1357,7 @@ int testRfc822Import(int argc, char **argv) {
 
   if (GWEN_DB_WriteFile(db,
                         "test.out",
-			GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+			GWEN_DB_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Could not write outfile");
   }
 
@@ -1385,7 +1382,7 @@ int testRfc822Export(int argc, char **argv) {
                          "rfc822",
                          dbParams,
                          GWEN_PATH_FLAGS_CREATE_GROUP |
-			 GWEN_DB_FLAGS_UNTIL_EMPTY_LINE, 0, 2000)) {
+			 GWEN_DB_FLAGS_UNTIL_EMPTY_LINE)) {
     DBG_ERROR(0, "Could not read test file");
     return 2;
   }
@@ -1396,7 +1393,7 @@ int testRfc822Export(int argc, char **argv) {
                           "test.822.out",
                           "rfc822",
                           dbParams,
-			  GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+			  GWEN_DB_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Could not write outfile");
   }
 
@@ -2348,7 +2345,7 @@ int testXmlDbExport(int argc, char **argv) {
                           "test.xmldb.out",
                           "xmldb",
                           dbParams,
-			  GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+			  GWEN_DB_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Could not write outfile");
   }
 
@@ -2371,14 +2368,14 @@ int testXmlDbImport(int argc, char **argv) {
                          "xmldb",
                          dbParams,
                          GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP, 0, 2000)) {
+			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_ERROR(0, "Could not read test file");
     return 2;
   }
 
   if (GWEN_DB_WriteFile(db,
                         "test.out",
-			GWEN_DB_FLAGS_DEFAULT, 0, 2000)) {
+			GWEN_DB_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Could not write outfile");
   }
 
@@ -2549,13 +2546,23 @@ int testNewXML(int argc, char **argv) {
   time_t startTime;
   time_t stopTime;
   GWEN_XML_CONTEXT *ctx;
-  GWEN_IO_LAYER *io;
-  int fd;
+  GWEN_SYNCIO *sio;
+  int rv;
 
   if (argc<3) {
     fprintf(stderr, "Name of testfile needed.\n");
     return 1;
   }
+
+  sio=GWEN_SyncIo_File_new(argv[2], GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   //GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Error);
@@ -2565,20 +2572,11 @@ int testNewXML(int argc, char **argv) {
   ctx=GWEN_XmlCtxStore_new(n,
 			   GWEN_XML_FLAGS_DEFAULT |
 			   GWEN_XML_FLAGS_TOLERANT_ENDTAGS |
-			   GWEN_XML_FLAGS_HANDLE_HEADERS,
-			   0, 30000);
-  fd=open(argv[2], O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(0, "Could not open file (%s)", strerror(errno));
-    return 2;
-  }
-
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  GWEN_Io_Manager_RegisterLayer(io);
+			   GWEN_XML_FLAGS_HANDLE_HEADERS);
 
   startTime=time(0);
 
-  if (GWEN_XML_ReadFromIo(ctx, io)) {
+  if (GWEN_XML_ReadFromIo(ctx, sio)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }

@@ -36,9 +36,7 @@
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/dbio_be.h>
-#include <gwenhywfar/io_buffered.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -231,12 +229,10 @@ int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
-			   GWEN_IO_LAYER *io,
+			   GWEN_SYNCIO *sio,
 			   GWEN_DB_NODE *data,
 			   GWEN_DB_NODE *cfg,
-			   uint32_t flags,
-			   uint32_t guiid,
-			   int msecs) {
+			   uint32_t flags) {
   int rv;
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *n;
@@ -251,9 +247,8 @@ int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   ctx=GWEN_XmlCtxStore_new(root,
 			   GWEN_XML_FLAGS_DEFAULT |
-			   GWEN_XML_FLAGS_HANDLE_HEADERS,
-			   guiid, msecs);
-  rv=GWEN_XML_ReadFromIo(ctx, io);
+			   GWEN_XML_FLAGS_HANDLE_HEADERS);
+  rv=GWEN_XML_ReadFromIo(ctx, sio);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_XmlCtx_free(ctx);
@@ -462,12 +457,10 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
-			   GWEN_IO_LAYER *io,
+			   GWEN_SYNCIO *sio,
 			   GWEN_DB_NODE *data,
 			   GWEN_DB_NODE *cfg,
-			   uint32_t flags,
-			   uint32_t guiid,
-			   int msecs) {
+			   uint32_t flags) {
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *nh;
   int rv;
@@ -494,10 +487,9 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
   ctx=GWEN_XmlCtxStore_new(root,
 			   GWEN_XML_FLAGS_DEFAULT |
 			   GWEN_XML_FLAGS_SIMPLE |
-			   GWEN_XML_FLAGS_HANDLE_HEADERS,
-			   guiid, msecs);
+			   GWEN_XML_FLAGS_HANDLE_HEADERS);
 
-  rv=GWEN_XMLNode_WriteToStream(root, ctx, io);
+  rv=GWEN_XMLNode_WriteToStream(root, ctx, sio);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_XmlCtx_free(ctx);
@@ -513,72 +505,47 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
-						     const char *fname,
-						     uint32_t guiid,
-						     int msecs){
-  int fd;
-  GWEN_IO_LAYER *baseIo;
-  GWEN_IO_LAYER *io;
-  GWEN_BUFFER *lbuffer;
+						     const char *fname){
+  GWEN_SYNCIO *sio;
   int rv;
+  uint8_t tbuf[256];
 
   assert(dbio);
   assert(fname);
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    /* error */
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "open(%s): %s", fname, strerror(errno));
-    return GWEN_DBIO_CheckFileResultNotOk;
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
 
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  assert(io);
-  baseIo=io;
 
-  io=GWEN_Io_LayerBuffered_new(baseIo);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
+  rv=GWEN_SyncIo_Read(sio, tbuf, sizeof(tbuf)-1);
+  if (rv<1) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "File \"%s\" is not supported by this plugin",
+	     fname);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return GWEN_DBIO_CheckFileResultNotOk;
   }
-
-  lbuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  for (;;) {
-    int err;
-
-    GWEN_Buffer_Reset(lbuffer);
-    err=GWEN_Io_LayerBuffered_ReadLineToBuffer(io, lbuffer, guiid, msecs);
-    if (err<0) {
-      DBG_INFO(GWEN_LOGDOMAIN,
-	       "File \"%s\" is not supported by this plugin",
-	       fname);
-      GWEN_Buffer_free(lbuffer);
-      GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-      GWEN_Io_Layer_free(io);
-      return GWEN_DBIO_CheckFileResultNotOk;
-    }
-    if (-1!=GWEN_Text_ComparePattern(GWEN_Buffer_GetStart(lbuffer), "*<?xml*", 0)) {
-      /* match */
-      DBG_INFO(GWEN_LOGDOMAIN,
-	       "File \"%s\" is supported by this plugin",
-	       fname);
-      GWEN_Buffer_free(lbuffer);
-      GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-      GWEN_Io_Layer_free(io);
-      /* don't be too sure about this, we *may* support the file,
-       * so we dont say we don't support this file */
-      return GWEN_DBIO_CheckFileResultUnknown;
-    }
-  } /* while */
-  GWEN_Buffer_free(lbuffer);
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-  GWEN_Io_Layer_free(io);
+  tbuf[rv-1]=0;
+  if (-1!=GWEN_Text_ComparePattern((const char*) tbuf, "*<?xml*", 0)) {
+    /* match */
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "File \"%s\" is supported by this plugin",
+	     fname);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    /* don't be too sure about this, we *may* support the file,
+     * so we dont say we don't support this file */
+    return GWEN_DBIO_CheckFileResultUnknown;
+  }
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
   return GWEN_DBIO_CheckFileResultNotOk;
 }
 

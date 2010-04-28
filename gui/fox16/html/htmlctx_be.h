@@ -42,9 +42,7 @@ typedef HTML_FONT* (*HTMLCTX_GET_FONT_FN)(GWEN_XML_CONTEXT *ctx,
 
 
 
-GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags,
-			      uint32_t guiid,
-			      int timeout);
+GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags);
 
 int HtmlCtx_Layout(GWEN_XML_CONTEXT *ctx, int width, int height);
 HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx);

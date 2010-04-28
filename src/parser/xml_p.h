@@ -138,7 +138,7 @@ static int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 			     GWEN_FAST_BUFFER *fb,
 			     uint32_t flags);
 
-static int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_IO_LAYER *io);
+static int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio);
 
 
 static GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,

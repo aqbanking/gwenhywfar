@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
-    begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    begin       : Tue Apr 27 2010
+    copyright   : (C) 2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,8 +21,7 @@
 #include <assert.h>
 
 
-GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize,
-				      GWEN_IO_LAYER *io, uint32_t guiid, int msecs) {
+GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize, GWEN_SYNCIO *io) {
   GWEN_FAST_BUFFER *fb;
 
   assert(bsize);
@@ -37,8 +33,6 @@ GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize,
   fb->bufferSize=bsize;
 
   fb->io=io;
-  fb->guiid=guiid;
-  fb->msecs=msecs;
 
   return fb;
 }
@@ -60,7 +54,7 @@ int GWEN_FastBuffer_ReadLine(GWEN_FAST_BUFFER *fb, uint8_t *p, int len) {
   if (fb->bufferReadPos>=fb->bufferWritePos) {
     int rv;
 
-    rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0, fb->guiid, fb->msecs);
+    rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize);
     if (rv<0) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -104,7 +98,7 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
     if (fb->bufferReadPos>=fb->bufferWritePos) {
       int rv;
   
-      rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0, fb->guiid, fb->msecs);
+      rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize);
       if (rv<0) {
 	if (rv==GWEN_ERROR_EOF && hadSome) {
           /* done */

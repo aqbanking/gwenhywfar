@@ -74,7 +74,6 @@ iheader_HEADERS=\
  stringlist2.h \
  idmap.h \
  fastbuffer.h \
- fastbuffer2.h \
  memcache.h \
  tree.h
 
@@ -101,7 +100,6 @@ libbase_la_SOURCES=\
  stringlist2.c \
  idmap.c \
  fastbuffer.c \
- fastbuffer2.c \
  memcache.c \
  tree.c
 

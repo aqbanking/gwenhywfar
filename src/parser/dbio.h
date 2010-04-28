@@ -57,7 +57,7 @@ typedef struct GWEN_DBIO GWEN_DBIO;
 
 
 #include <gwenhywfar/path.h>
-#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/syncio.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -107,21 +107,17 @@ GWEN_DBIO *GWEN_DBIO_Plugin_Factory(GWEN_PLUGIN *pl);
  */
 GWENHYWFAR_API
 int GWEN_DBIO_Import(GWEN_DBIO *dbio,
-                     GWEN_IO_LAYER *io,
+                     GWEN_SYNCIO *sio,
                      GWEN_DB_NODE *db,
 		     GWEN_DB_NODE *params,
-		     uint32_t flags,
-		     uint32_t guiid,
-		     int msecs);
+		     uint32_t flags);
 
 GWENHYWFAR_API
 int GWEN_DBIO_ImportFromFile(GWEN_DBIO *dbio,
 			     const char *fname,
 			     GWEN_DB_NODE *db,
 			     GWEN_DB_NODE *params,
-			     uint32_t flags,
-			     uint32_t guiid,
-			     int msecs);
+			     uint32_t flags);
 
 /**
  * Writes data to the given GWEN_BUFFEREDIO in the format of this particular
@@ -129,40 +125,31 @@ int GWEN_DBIO_ImportFromFile(GWEN_DBIO *dbio,
  */
 GWENHYWFAR_API
 int GWEN_DBIO_Export(GWEN_DBIO *dbio,
-                     GWEN_IO_LAYER *io,
+		     GWEN_SYNCIO *sio,
 		     GWEN_DB_NODE *db,
                      GWEN_DB_NODE *params,
-		     uint32_t flags,
-		     uint32_t guiid,
-		     int msecs);
+		     uint32_t flags);
 
 GWENHYWFAR_API
 int GWEN_DBIO_ExportToFile(GWEN_DBIO *dbio,
 			   const char *fname,
 			   GWEN_DB_NODE *db,
 			   GWEN_DB_NODE *params,
-			   uint32_t flags,
-			   uint32_t guiid,
-			   int msecs);
+			   uint32_t flags);
 
 GWENHYWFAR_API
 int GWEN_DBIO_ExportToBuffer(GWEN_DBIO *dbio,
 			     GWEN_BUFFER *buf,
 			     GWEN_DB_NODE *db,
 			     GWEN_DB_NODE *params,
-			     uint32_t flags,
-			     uint32_t guiid,
-			     int msecs);
+			     uint32_t flags);
 
 
 /**
  * Checks whether the given file is supported by the given DBIO.
  */
 GWENHYWFAR_API
-GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio,
-					       const char *fname,
-					       uint32_t guiid,
-					       int msecs);
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio, const char *fname);
 
 
 /**

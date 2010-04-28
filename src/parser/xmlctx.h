@@ -57,9 +57,7 @@ typedef int (*GWEN_XMLCTX_ADDATTR_FN)(GWEN_XML_CONTEXT *ctx,
 
 
 
-GWENHYWFAR_API GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags,
-						 uint32_t guiid,
-						 int timeout);
+GWENHYWFAR_API GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags);
 GWENHYWFAR_API void GWEN_XmlCtx_free(GWEN_XML_CONTEXT *ctx);
 
 GWENHYWFAR_API
@@ -91,12 +89,6 @@ void GWEN_XmlCtx_IncDepth(GWEN_XML_CONTEXT *ctx);
 GWENHYWFAR_API
 int GWEN_XmlCtx_DecDepth(GWEN_XML_CONTEXT *ctx);
 
-
-GWENHYWFAR_API
-uint32_t GWEN_XmlCtx_GetGuiId(const GWEN_XML_CONTEXT *ctx);
-
-GWENHYWFAR_API
-int GWEN_XmlCtx_GetTimeout(const GWEN_XML_CONTEXT *ctx);
 
 GWENHYWFAR_API 
 void GWEN_XmlCtx_SetCurrentNode(GWEN_XML_CONTEXT *ctx, GWEN_XMLNODE *n);
@@ -136,10 +128,7 @@ GWEN_XMLCTX_ADDATTR_FN GWEN_XmlCtx_SetAddAttrFn(GWEN_XML_CONTEXT *ctx,
 
 
 GWENHYWFAR_API 
-GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n,
-				       uint32_t flags,
-				       uint32_t guiid,
-				       int timeout);
+GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n, uint32_t flags);
 
 
 #ifdef __cplusplus

@@ -31,7 +31,6 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/fastbuffer.h>
-#include <gwenhywfar/fastbuffer2.h>
 #include <gwenhywfar/types.h>
 #include <stdio.h>
 
@@ -792,53 +791,21 @@ void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
  */
 /*@{*/
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
                                GWEN_FAST_BUFFER *fb,
 			       uint32_t dbflags);
 
-/**
- * This functions reads data in the default file format of a GWEN_DB. It expects the given
- * io layer to be of GWEN_IO_LAYER_BUFFERED_TYPE (see @ref MOD_IOLAYER_BUFFERED) because it
- * operates line-based.
- * This function is rather restrictive compared to earlier versions using GWEN_BUFFEREDIO, because
- * it expects statements to be on a single line.
- * This however makes loading of this format much faster and allows to stop parsing at defined points
- * (e.g. upon encounter of an empty line).
- */
-GWENHYWFAR_API 
-int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n,
-		       GWEN_IO_LAYER *io,
-		       uint32_t dbflags,
-		       uint32_t guiid,
-		       int msecs);
-
-GWENHYWFAR_API 
-int GWEN_DB_ReadFromFastBuffer2(GWEN_DB_NODE *n,
-				GWEN_FAST_BUFFER2 *fb,
-				uint32_t dbflags);
-
-GWENHYWFAR_API 
-int GWEN_DB_ReadFromFd(GWEN_DB_NODE *n,
-		       int fd,
-		       uint32_t dbflags,
-		       uint32_t guiid,
-		       int msecs);
-
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
 		     const char *fname,
-		     uint32_t dbflags,
-		     uint32_t guiid,
-		     int msecs);
+		     uint32_t dbflags);
 
 GWENHYWFAR_API
 int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
 			   const char *str,
                            int len,
-			   uint32_t dbflags,
-			   uint32_t guiid,
-			   int msecs);
+			   uint32_t dbflags);
 
 GWENHYWFAR_API
 int GWEN_DB_WriteToFastBuffer(GWEN_DB_NODE *node,
@@ -847,29 +814,14 @@ int GWEN_DB_WriteToFastBuffer(GWEN_DB_NODE *node,
 
 
 GWENHYWFAR_API 
-int GWEN_DB_WriteToIo(GWEN_DB_NODE *node,
-		      GWEN_IO_LAYER *io,
-		      uint32_t dbflags,
-		      uint32_t guiid,
-		      int msecs);
-
-GWENHYWFAR_API 
 int GWEN_DB_WriteFile(GWEN_DB_NODE *n,
 		      const char *fname,
-		      uint32_t dbflags,
-		      uint32_t guiid,
-		      int msecs);
-
-GWENHYWFAR_API 
-int GWEN_DB_WriteToFd(GWEN_DB_NODE *n, int fd, uint32_t dbflags, uint32_t guiid, int msecs);
-
+		      uint32_t dbflags);
 
 GWENHYWFAR_API 
 int GWEN_DB_WriteToBuffer(GWEN_DB_NODE *n,
 			  GWEN_BUFFER *buf,
-			  uint32_t dbflags,
-			  uint32_t guiid,
-			  int msecs);
+			  uint32_t dbflags);
 
 /**
  * Imports a file into a DB using a GWEN_DBIO importer.
@@ -886,9 +838,7 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *n,
                        const char *fname,
                        const char *type,
                        GWEN_DB_NODE *params,
-		       uint32_t dbflags,
-		       uint32_t guiid,
-		       int msecs);
+		       uint32_t dbflags);
 
 /**
  * Exports a DB to a file using a GWEN_DBIO exporter.
@@ -905,9 +855,7 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *n,
                         const char *fname,
                         const char *type,
                         GWEN_DB_NODE *params,
-                        uint32_t dbflags,
-			uint32_t guiid,
-			int msecs);
+                        uint32_t dbflags);
 
 
 /*@}*/

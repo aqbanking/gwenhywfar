@@ -38,25 +38,18 @@
 
 
 typedef int (*GWEN_DBIO_IMPORTFN)(GWEN_DBIO *dbio,
-				  GWEN_IO_LAYER *io,
+				  GWEN_SYNCIO *sio,
 				  GWEN_DB_NODE *db,
 				  GWEN_DB_NODE *params,
-				  uint32_t flags,
-				  uint32_t guiid,
-				  int msecs);
+				  uint32_t flags);
 
 typedef int (*GWEN_DBIO_EXPORTFN)(GWEN_DBIO *dbio,
-				  GWEN_IO_LAYER *io,
+				  GWEN_SYNCIO *sio,
 				  GWEN_DB_NODE *db,
 				  GWEN_DB_NODE *params,
-				  uint32_t flags,
-				  uint32_t guiid,
-				  int msecs);
+				  uint32_t flags);
 
-typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio,
-							    const char *fname,
-							    uint32_t guiid,
-							    int msecs);
+typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio, const char *fname);
 
 
 

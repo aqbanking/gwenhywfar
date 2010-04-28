@@ -157,8 +157,7 @@ GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(GWEN_UNUSED void *bp, void *p) {
 
 int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
 				   const char *groupName,
-				   uint32_t *pUniqueId,
-				   uint32_t guiid){
+				   uint32_t *pUniqueId){
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_BUFFER *nbuf;
   uint32_t uniqueId=0;
@@ -190,7 +189,7 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
   }
 
   lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
-  res=GWEN_FSLock_Lock(lck, 60000, guiid);
+  res=GWEN_FSLock_Lock(lck, 60000, 0);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not lock group [%s]: %d",
@@ -332,8 +331,7 @@ GWEN_FSLOCK *GWEN_ConfigMgrDir_FindLock(GWEN_CONFIGMGR *cfg, const char *fname) 
 int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
 			       const char *groupName,
 			       const char *subGroupName,
-			       GWEN_DB_NODE **pDb,
-			       uint32_t guiid) {
+			       GWEN_DB_NODE **pDb) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -361,9 +359,7 @@ int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
 		      GWEN_Buffer_GetStart(nbuf),
 		      GWEN_DB_FLAGS_DEFAULT |
                       GWEN_PATH_FLAGS_CREATE_GROUP |
-		      GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM,
-		      guiid,
-		      GWEN_TIMEOUT_FOREVER);
+		      GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not read [%s]: %d",
 	     GWEN_Buffer_GetStart(nbuf), rv);
@@ -382,8 +378,7 @@ int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
 int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
 			       const char *groupName,
 			       const char *subGroupName,
-			       GWEN_DB_NODE *db,
-			       uint32_t guiid) {
+			       GWEN_DB_NODE *db) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -417,9 +412,7 @@ int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
 
   rv=GWEN_DB_WriteFile(db,
 		       GWEN_Buffer_GetStart(nbuf),
-		       GWEN_DB_FLAGS_DEFAULT,
-		       guiid,
-		       GWEN_TIMEOUT_FOREVER);
+		       GWEN_DB_FLAGS_DEFAULT);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not write [%s]: %d",
 	     GWEN_Buffer_GetStart(nbuf), rv);
@@ -435,8 +428,7 @@ int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
 
 int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
 				const char *groupName,
-				const char *subGroupName,
-				uint32_t guiid) {
+				const char *subGroupName) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -470,7 +462,7 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
   }
 
   lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
-  res=GWEN_FSLock_Lock(lck, 60000, guiid);
+  res=GWEN_FSLock_Lock(lck, 60000, 0);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not lock group [%s/%s]: %d",
@@ -488,8 +480,7 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
 
 int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
 				  const char *groupName,
-				  const char *subGroupName,
-				  GWEN_UNUSED uint32_t guiid) {
+				  const char *subGroupName) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_FSLOCK *lck;
@@ -533,8 +524,7 @@ int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
 int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
 				  const char *groupName,
 				  char *buffer,
-				  uint32_t bufferLen,
-				  uint32_t guiid) {
+				  uint32_t bufferLen) {
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
   uint32_t uid;
@@ -544,7 +534,7 @@ int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
   xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
   assert(xcfg);
 
-  rv=GWEN_ConfigMgrDir__GetUniqueId(cfg, groupName, &uid, guiid);
+  rv=GWEN_ConfigMgrDir__GetUniqueId(cfg, groupName, &uid);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not create unique id (%d)", rv);
     return rv;
@@ -563,8 +553,7 @@ int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
 
 int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
 				  const char *groupName,
-				  const char *subGroupName,
-				  uint32_t guiid) {
+				  const char *subGroupName) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -598,7 +587,7 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
   }
 
   lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
-  res=GWEN_FSLock_Lock(lck, 60000, guiid);
+  res=GWEN_FSLock_Lock(lck, 60000, 0);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
 	      "Could not lock group [%s/%s]: %d",
@@ -620,8 +609,7 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
-				 GWEN_STRINGLIST *sl,
-				 GWEN_UNUSED uint32_t guiid) {
+				 GWEN_STRINGLIST *sl) {
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
 
@@ -644,8 +632,7 @@ int GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
 
 int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
 				    const char *groupName,
-				    GWEN_STRINGLIST *sl,
-				    GWEN_UNUSED uint32_t guiid) {
+				    GWEN_STRINGLIST *sl) {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;

@@ -34,6 +34,7 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/syncio.h>
 
 #include <stdio.h>
 
@@ -591,7 +592,7 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb);
  * Reads a single element (and all its sub-elements) from an IO layer.
  */
 GWENHYWFAR_API
-int GWEN_XML_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_IO_LAYER *io);
+int GWEN_XML_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *io);
 
 
 /**
@@ -607,13 +608,12 @@ GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s,
 				      uint32_t flags);
 
 /**
- * Writes a tag and all its subnodes to the given io layer (which is expected to be
- * of type GWEN_IO_LAYER_BUFFERED, see @ref GWEN_Io_LayerBuffered_new).
+ * Writes a tag and all its subnodes to the given io layer.
  */
 GWENHYWFAR_API
 int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
 			       GWEN_XML_CONTEXT *ctx,
-			       GWEN_IO_LAYER *io);
+			       GWEN_SYNCIO *sio);
 
 /**
  * Writes a tag and all its subnodes to the given file.

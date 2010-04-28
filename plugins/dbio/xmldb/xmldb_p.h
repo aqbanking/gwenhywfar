@@ -42,25 +42,19 @@ GWEN_PLUGIN *dbio_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 static int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
-				  GWEN_IO_LAYER *io,
+				  GWEN_SYNCIO *sio,
 				  GWEN_DB_NODE *data,
 				  GWEN_DB_NODE *cfg,
-				  uint32_t flags,
-				  uint32_t guiid,
-				  int msecs);
+				  uint32_t flags);
 
 static int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
-				  GWEN_IO_LAYER *io,
+				  GWEN_SYNCIO *sio,
 				  GWEN_DB_NODE *data,
 				  GWEN_DB_NODE *cfg,
-				  uint32_t flags,
-				  uint32_t guiid,
-				  int msecs);
+				  uint32_t flags);
 
 static GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
-							    const char *fname,
-							    uint32_t guiid,
-							    int msecs);
+							    const char *fname);
 
 
 

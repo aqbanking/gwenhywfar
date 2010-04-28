@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Wed Mar 16 2005
-    copyright   : (C) 2005-2010 by Martin Preuss
+    begin       : Tue Apr 27 2010
+    copyright   : (C) 2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -12,7 +12,7 @@
 #define GWEN_FASTBUFFER_H
 
 
-#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/syncio.h>
 #include <gwenhywfar/buffer.h>
 
 
@@ -27,12 +27,10 @@
  * This struct is not part of the API.
  */
 typedef struct {
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *io;
   uint32_t bufferSize;
   uint32_t bufferReadPos;
   uint32_t bufferWritePos;
-  uint32_t guiid;
-  int msecs;
   uint32_t flags;
   uint32_t bytesWritten;
   uint32_t bytesRead;
@@ -46,10 +44,7 @@ extern "C" {
 #endif
 
 
-GWENHYWFAR_API GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize,
-						     GWEN_IO_LAYER *io,
-						     uint32_t guiid,
-						     int msecs);
+GWENHYWFAR_API GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize, GWEN_SYNCIO *io);
 
 GWENHYWFAR_API void GWEN_FastBuffer_free(GWEN_FAST_BUFFER *fb);
 
@@ -80,8 +75,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
     if (fb->bufferReadPos>=fb->bufferWritePos) { \
       int fb_peekbyte_rv; \
       \
-      fb_peekbyte_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0, \
-                                             fb->guiid, fb->msecs); \
+      fb_peekbyte_rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize); \
       if (fb_peekbyte_rv<0) { \
         DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_peekbyte_rv); \
 	var=fb_peekbyte_rv; \
@@ -106,8 +100,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
     if (fb->bufferReadPos>=fb->bufferWritePos) { \
       int fb_readbyte_rv; \
       \
-      fb_readbyte_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0,\
-                                             fb->guiid, fb->msecs); \
+      fb_readbyte_rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize); \
       if (fb_readbyte_rv<0) { \
         DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_readbyte_rv); \
 	var=fb_readbyte_rv; \
@@ -134,9 +127,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
     if (fb->bufferWritePos>=fb->bufferSize) { \
       int fb_writeByte_rv; \
       \
-      fb_writeByte_rv=GWEN_Io_Layer_WriteBytes(fb->io, fb->buffer, fb->bufferWritePos, \
-                                               GWEN_IO_REQUEST_FLAGS_WRITEALL, \
-                                               fb->guiid, fb->msecs); \
+      fb_writeByte_rv=GWEN_SyncIo_WriteForced(fb->io, fb->buffer, fb->bufferWritePos); \
       if (fb_writeByte_rv<(int)(fb->bufferWritePos)) { \
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", fb_writeByte_rv); \
 	var=fb_writeByte_rv; \
@@ -163,9 +154,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
 #define GWEN_FASTBUFFER_FLUSH(fb, var) {\
     int fb_flush_rv; \
     \
-    fb_flush_rv=GWEN_Io_Layer_WriteBytes(fb->io, fb->buffer, fb->bufferWritePos, \
-           	          	         GWEN_IO_REQUEST_FLAGS_WRITEALL | GWEN_IO_REQUEST_FLAGS_FLUSH, \
-				         fb->guiid, fb->msecs); \
+    fb_flush_rv=GWEN_SyncIo_WriteForced(fb->io, fb->buffer, fb->bufferWritePos); \
     if (fb_flush_rv<(int)(fb->bufferWritePos)) { \
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", fb_flush_rv); \
       var=fb_flush_rv; \
@@ -191,7 +180,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
   if (fb->bufferReadPos>=fb->bufferWritePos) { \
     int fb_readbyte_rv; \
     \
-    fb_readbyte_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0, fb->guiid, fb->msecs); \
+    fb_readbyte_rv=GWEN_SyncIo_ReadBytes(fb->io, fb->buffer, fb->bufferSize); \
     if (fb_readbyte_rv<0) { \
       DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_readbyte_rv); \
       var=fb_readbyte_rv; \
@@ -223,8 +212,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
   if (fb->bufferReadPos>=fb->bufferWritePos) {\
     int fb_readline_rv;\
     \
-    fb_readline_rv=GWEN_Io_Layer_ReadBytes(fb->io, fb->buffer, fb->bufferSize, 0,\
-                                           fb->guiid, fb->msecs);\
+    fb_readline_rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize);\
     if (fb_readline_rv<0) {\
       DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_readline_rv);\
       var=fb_readline_rv;\
@@ -348,9 +336,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
   if (fb->bufferWritePos>=fb->bufferSize) { \
     int fb_writebytes_rv; \
     \
-    fb_writebytes_rv=GWEN_Io_Layer_WriteBytes(fb->io, fb->buffer, fb->bufferWritePos, \
-                                              GWEN_IO_REQUEST_FLAGS_WRITEALL, \
-				              fb->guiid, fb->msecs); \
+    fb_writebytes_rv=GWEN_SyncIo_WriteForced(fb->io, fb->buffer, fb->bufferWritePos); \
     if (fb_writebytes_rv<(int)(fb->bufferWritePos)) { \
       DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_writebytes_rv); \
       var=fb_writebytes_rv; \
@@ -447,8 +433,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
   if (fb1->bufferReadPos>=fb1->bufferWritePos) { \
     int fb_copybytes_rv; \
     \
-    fb_copybytes_rv=GWEN_Io_Layer_ReadBytes(fb1->io, fb1->buffer, fb1->bufferSize, 0, \
-                                            fb1->guiid, fb1->msecs); \
+    fb_copybytes_rv=GWEN_SyncIo_Read(fb1->io, fb1->buffer, fb1->bufferSize); \
     if (fb_copybytes_rv<0) { \
       DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_copybytes_rv); \
       var=fb_copybytes_rv; \

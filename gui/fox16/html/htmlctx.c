@@ -28,16 +28,14 @@ GWEN_INHERIT(GWEN_XML_CONTEXT, HTML_XMLCTX)
 
 
 
-GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags,
-			      uint32_t guiid,
-			      int timeout) {
+GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags) {
   GWEN_XML_CONTEXT *ctx;
   HTML_XMLCTX *xctx;
   HTML_GROUP *g;
   HTML_OBJECT *o;
 
   /* create base object */
-  ctx=GWEN_XmlCtx_new(flags, guiid, timeout);
+  ctx=GWEN_XmlCtx_new(flags);
   assert(ctx);
 
   /* create and assign extension */

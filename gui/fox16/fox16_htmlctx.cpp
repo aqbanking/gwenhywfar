@@ -24,7 +24,7 @@
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/io_memory.h>
+#include <gwenhywfar/syncio_memory.h>
 
 
 
@@ -112,7 +112,7 @@ void FOX16_HtmlCtxLinker::freeFontData(void *bp, void *p) {
 
 
 
-FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout)
+FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags)
 :_context(NULL)
 ,_font(NULL)
 ,_fgColor(0)
@@ -121,7 +121,7 @@ FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout)
   HTML_PROPS *pr;
   HTML_FONT *fnt;
 
-  _context=HtmlCtx_new(flags, guiid, timeout);
+  _context=HtmlCtx_new(flags);
   GWEN_INHERIT_SETDATA(GWEN_XML_CONTEXT, FOX16_HtmlCtx, _context, this,
 		       FOX16_HtmlCtxLinker::freeData);
   _font=FXApp::instance()->getNormalFont();
@@ -253,15 +253,15 @@ int FOX16_HtmlCtx::layout(int width, int height) {
 
 
 void FOX16_HtmlCtx::setText(const char *s) {
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   int rv;
 
-  io=GWEN_Io_LayerMemory_fromString((const uint8_t*) s, strlen(s));
-  rv=GWEN_XML_ReadFromIo(_context, io);
+  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t*) s, strlen(s));
+  rv=GWEN_XML_ReadFromIo(_context, sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
   }
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_free(sio);
 }
 
 

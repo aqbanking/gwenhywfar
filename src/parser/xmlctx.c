@@ -49,17 +49,13 @@ GWEN_INHERIT_FUNCTIONS(GWEN_XML_CONTEXT)
 
 
 
-GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags,
-				  uint32_t guiid,
-				  int timeout) {
+GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags) {
   GWEN_XML_CONTEXT *ctx;
 
   GWEN_NEW_OBJECT(GWEN_XML_CONTEXT, ctx);
   GWEN_INHERIT_INIT(GWEN_XML_CONTEXT, ctx);
 
   ctx->flags=flags;
-  ctx->guiid=guiid;
-  ctx->timeout=timeout;
 
   return ctx;
 }
@@ -71,20 +67,6 @@ void GWEN_XmlCtx_free(GWEN_XML_CONTEXT *ctx) {
     GWEN_INHERIT_FINI(GWEN_XML_CONTEXT, ctx);
     GWEN_FREE_OBJECT(ctx);
   }
-}
-
-
-
-uint32_t GWEN_XmlCtx_GetGuiId(const GWEN_XML_CONTEXT *ctx) {
-  assert(ctx);
-  return ctx->guiid;
-}
-
-
-
-int GWEN_XmlCtx_GetTimeout(const GWEN_XML_CONTEXT *ctx) {
-  assert(ctx);
-  return ctx->timeout;
 }
 
 
@@ -318,13 +300,10 @@ int GWEN_XmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
 
 
 
-GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n,
-				       uint32_t flags,
-				       uint32_t guiid,
-				       int timeout) {
+GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n, uint32_t flags) {
   GWEN_XML_CONTEXT *ctx;
 
-  ctx=GWEN_XmlCtx_new(flags, guiid, timeout);
+  ctx=GWEN_XmlCtx_new(flags);
   assert(ctx);
 
   GWEN_XmlCtx_SetCurrentNode(ctx, n);

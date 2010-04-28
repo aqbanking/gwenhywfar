@@ -123,12 +123,9 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
                        const char *fname,
                        const char *type,
                        GWEN_DB_NODE *params,
-		       uint32_t dbflags,
-		       uint32_t guiid,
-		       int msecs){
-  GWEN_IO_LAYER *io;
+		       uint32_t dbflags){
+  GWEN_SYNCIO *sio;
   GWEN_DBIO *dbio;
-  int fd;
   int rv;
 
   dbio=GWEN_DBIO_GetPlugin(type);
@@ -137,30 +134,21 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 
-  fd=open(fname, O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "open(%s, O_RDONLY): %s", fname, strerror(errno));
-    return GWEN_ERROR_IO;
-  }
-
-  /* create io layer for this file (readonly) */
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  rv=GWEN_DBIO_Import(dbio, io, db, params, dbflags, guiid, msecs);
-  if (rv) {
+  rv=GWEN_DBIO_Import(dbio, sio, db, params, dbflags);
+  if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
   }
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-  GWEN_Io_Layer_free(io);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 
   return rv;
 }
@@ -171,9 +159,7 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
                         const char *fname,
                         const char *type,
                         GWEN_DB_NODE *params,
-			uint32_t dbflags,
-			uint32_t guiid,
-			int msecs){
+			uint32_t dbflags){
   int rv;
   GWEN_DBIO *dbio;
 
@@ -183,7 +169,7 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 
-  rv=GWEN_DBIO_ExportToFile(dbio, fname, db, params, dbflags, guiid, msecs);
+  rv=GWEN_DBIO_ExportToFile(dbio, fname, db, params, dbflags);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -521,14 +507,12 @@ int GWEN_DB_WriteToFastBuffer(GWEN_DB_NODE *node,
 
 
 int GWEN_DB_WriteToIo(GWEN_DB_NODE *node,
-		      GWEN_IO_LAYER *io,
-		      uint32_t dbflags,
-		      uint32_t guiid,
-		      int msecs) {
+		      GWEN_SYNCIO *sio,
+		      uint32_t dbflags) {
   int rv;
   GWEN_FAST_BUFFER *fb;
 
-  fb=GWEN_FastBuffer_new(512, io, guiid, msecs);
+  fb=GWEN_FastBuffer_new(512, sio);
   if (dbflags & GWEN_DB_FLAGS_DOSMODE)
     GWEN_FastBuffer_AddFlags(fb, GWEN_FAST_BUFFER_FLAGS_DOSMODE);
   rv=GWEN_DB_WriteGroupToIoLayer(node, fb, dbflags, 0);
@@ -543,52 +527,10 @@ int GWEN_DB_WriteToIo(GWEN_DB_NODE *node,
 
 
 
-int GWEN_DB_WriteToFd(GWEN_DB_NODE *n, int fd, uint32_t dbflags, uint32_t guiid, int msecs){
-  GWEN_IO_LAYER *io;
-  int rv;
-
-  /* create io layer for this file */
-  io=GWEN_Io_LayerFile_new(-1, fd);
-  assert(io);
-  GWEN_Io_Layer_AddFlags(io, GWEN_IO_LAYER_FLAGS_DONTCLOSE);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  /* write to file */
-  rv=GWEN_DB_WriteToIo(n, io, dbflags, guiid, msecs);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 1000);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  /* close io layer */
-  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, guiid, 30000);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 1000);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  GWEN_Io_Layer_free(io);
-
-  return 0;
-}
-
-
-
-int GWEN_DB_WriteFile(GWEN_DB_NODE *n, const char *fname, uint32_t dbflags, uint32_t guiid, int msecs){
-  int fd;
+int GWEN_DB_WriteFile(GWEN_DB_NODE *n, const char *fname, uint32_t dbflags){
   int rv;
   GWEN_FSLOCK *lck=0;
+  GWEN_SYNCIO *sio;
 
   /* if locking requested */
   if (dbflags & GWEN_DB_FLAGS_LOCKFILE) {
@@ -607,25 +549,18 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n, const char *fname, uint32_t dbflags, uint
   }
 
   /* open file */
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_CreateAlways);
   if (dbflags & GWEN_DB_FLAGS_APPEND_FILE)
-    fd=open(fname, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
-  else
-    fd=open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-  if (fd==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error opening file \"%s\": %s",
-              fname,
-              strerror(errno));
-    if (lck) {
-      GWEN_FSLock_Unlock(lck);
-      GWEN_FSLock_free(lck);
-    }
-    return GWEN_ERROR_IO;
-  }
-
-  rv=GWEN_DB_WriteToFd(n, fd, dbflags, guiid, msecs);
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_APPEND);
+  GWEN_SyncIo_AddFlags(sio,
+		       GWEN_SYNCIO_FILE_FLAGS_READ |
+		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_UWRITE);
+  rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    close(fd);
+    GWEN_SyncIo_free(sio);
     if (lck) {
       GWEN_FSLock_Unlock(lck);
       GWEN_FSLock_free(lck);
@@ -633,16 +568,29 @@ int GWEN_DB_WriteFile(GWEN_DB_NODE *n, const char *fname, uint32_t dbflags, uint
     return rv;
   }
 
-  if (close(fd)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error closing file \"%s\": %s",
-	      fname,
-	      strerror(errno));
+  rv=GWEN_DB_WriteToIo(n, sio, dbflags);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     if (lck) {
       GWEN_FSLock_Unlock(lck);
       GWEN_FSLock_free(lck);
     }
-    return GWEN_ERROR_IO;
+    return rv;
   }
+
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    if (lck) {
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+    }
+    return rv;
+  }
+  GWEN_SyncIo_free(sio);
 
   /* remove lock, if any */
   if (lck) {
@@ -1018,275 +966,15 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 
 
 
-int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n,
-		       GWEN_IO_LAYER *io,
-		       uint32_t dbflags,
-		       uint32_t guiid,
-		       int msecs) {
+int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
+		     const char *fname,
+		     uint32_t dbflags) {
+  GWEN_SYNCIO *sio;
   GWEN_FAST_BUFFER *fb;
   int rv;
 
-  /* prepare fast buffer */
-  fb=GWEN_FastBuffer_new(1024, io, guiid, msecs);
-  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
-    GWEN_FastBuffer_AddFlags(fb, GWEN_FAST_BUFFER_FLAGS_DOSMODE);
-
-  /* read from it */
-  rv=GWEN_DB_ReadFromFastBuffer(n, fb, dbflags);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_FastBuffer_free(fb);
-    return rv;
-  }
-
-  GWEN_FastBuffer_free(fb);
-  return 0;
-}
-
-
-
-int GWEN_DB_ReadFromFd(GWEN_DB_NODE *n,
-                       int fd,
-		       uint32_t dbflags,
-		       uint32_t guiid,
-		       int msecs) {
-  GWEN_IO_LAYER *io;
-  int rv;
-
-  /* create io layer for this file (readonly) */
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  assert(io);
-  GWEN_Io_Layer_AddFlags(io, GWEN_IO_LAYER_FLAGS_DONTCLOSE);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  rv=GWEN_DB_ReadFromIo(n, io, dbflags, guiid, msecs);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-  }
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-  GWEN_Io_Layer_free(io);
-
-  return rv;
-}
-
-
-
-int GWEN_DB_ReadFromFastBuffer2(GWEN_DB_NODE *n,
-				GWEN_FAST_BUFFER2 *fb,
-				uint32_t dbflags) {
-  GWEN_BUFFER *lbuf;
-  GWEN_BUFFER *tbuf;
-  int level=0;
-  int someLinesRead=0;
-
-  lbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
-
-  for (;;) {
-    int rv;
-    uint8_t *p;
-
-    rv=GWEN_FastBuffer2_ReadLineToBuffer(fb, lbuf);
-    if (rv<0) {
-      if (rv==GWEN_ERROR_EOF) {
-	if (!someLinesRead && !(dbflags & GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM)){
-	  DBG_INFO(GWEN_LOGDOMAIN, "Unexpected EOF (%d)", rv);
-	  GWEN_Buffer_free(tbuf);
-	  GWEN_Buffer_free(lbuf);
-	  return rv;
-	}
-	break;
-      }
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Buffer_free(tbuf);
-      GWEN_Buffer_free(lbuf);
-      return rv;
-    }
-
-    if (GWEN_Buffer_GetUsedBytes(lbuf)==0) {
-      if (dbflags & GWEN_DB_FLAGS_UNTIL_EMPTY_LINE) {
-	break;
-      }
-    }
-    else {
-      someLinesRead=1;
-      p=(uint8_t*)GWEN_Buffer_GetStart(lbuf);
-      while(*p && isspace(*p))
-	p++;
-      if (*p) {
-	uint8_t *p1begin=NULL, *p1end=NULL;
-	uint8_t *p2begin=NULL, *p2end=NULL;
-  
-	/* non-empty line */
-	if (*p=='}') {
-	  /* found end of current group */
-	  if (level<1) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Unbalanced number of curly bracket");
-	    GWEN_Buffer_free(tbuf);
-	    GWEN_Buffer_free(lbuf);
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-	  n=n->parent;
-	  assert(n); /* internal error if parent not found */
-	  assert(n->typ==GWEN_DB_NodeType_Group); /* internal error if parent is not a group */
-          level--;
-	}
-	else if (*p=='#') {
-	  /* comment only line */
-	}
-	else {
-	  p1begin=p;
-	  /* read first token */
-	  while(*p && !isspace(*p) &&
-		*p!='{' &&
-		*p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
-		*p!='}' &&
-		*p!=',' &&
-		*p!=';')
-	    p++;
-	  if (!*p) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
-            GWEN_Buffer_Dump(lbuf, stderr, 2);
-	    GWEN_Buffer_free(tbuf);
-	    GWEN_Buffer_free(lbuf);
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-	  p1end=p;
-
-	  /* get to start of 2nd token */
-	  while(*p && isspace(*p))
-	    p++;
-	  if (!*p) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
-	    GWEN_Buffer_free(tbuf);
-	    GWEN_Buffer_free(lbuf);
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-  
-	  if (*p=='{') {
-	    GWEN_DB_NODE *newGr;
-  
-	    /* found start of group */
-	    *p1end=0;
-	    rv=GWEN_DB_UnescapeToBufferTolerant((const char*)p1begin, tbuf);
-	    if (rv<0) {
-	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	      GWEN_Buffer_free(tbuf);
-	      GWEN_Buffer_free(lbuf);
-	      return rv;
-	    }
-	    newGr=GWEN_DB_GetGroup(n, dbflags, GWEN_Buffer_GetStart(tbuf));
-	    if (newGr==NULL) {
-	      DBG_INFO(GWEN_LOGDOMAIN, "Could not create group [%s]", GWEN_Buffer_GetStart(tbuf));
-	      GWEN_Buffer_free(tbuf);
-	      GWEN_Buffer_free(lbuf);
-	      return GWEN_ERROR_GENERIC;
-	    }
-	    GWEN_Buffer_Reset(tbuf);
-	    n=newGr;
-	    level++;
-	  }
-	  else if (*p=='=' || *p==':') {
-	    /* found short variable definition */
-	    *p1end=0;
-	    p++;
-	    rv=GWEN_DB__ReadValues(n, dbflags, NULL, (const char*)p1begin, p);
-	    if (rv) {
-	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	      GWEN_Buffer_free(tbuf);
-	      GWEN_Buffer_free(lbuf);
-	      return rv;
-	    }
-	  }
-	  else if (*p==',' || *p==';') {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Unexpected delimiter found");
-	    GWEN_Buffer_free(tbuf);
-	    GWEN_Buffer_free(lbuf);
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-	  else {
-	    /* 2nd token, so this should be a standard variable definition */
-	    p2begin=p;
-	    while(*p &&
-		  !isspace(*p) &&
-		  *p!='{' &&
-		  *p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
-		  *p!='}' &&
-		  *p!=',' &&
-		  *p!=';')
-	      p++;
-	    if (!*p) {
-	      DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token [%s], [%s]", p1begin, p2begin);
-	      GWEN_Buffer_free(tbuf);
-	      GWEN_Buffer_free(lbuf);
-	      return GWEN_ERROR_BAD_DATA;
-	    }
-	    p2end=p;
-	    if (isspace(*p)) {
-	      while(*p && isspace(*p))
-		p++;
-	      if (!*p) {
-		DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
-		GWEN_Buffer_free(tbuf);
-		GWEN_Buffer_free(lbuf);
-		return GWEN_ERROR_BAD_DATA;
-	      }
-	    }
-	    if (*p!='=' && *p!=':') {
-	      DBG_INFO(GWEN_LOGDOMAIN, "Equation mark expected");
-	      GWEN_Buffer_free(tbuf);
-	      GWEN_Buffer_free(lbuf);
-	      return GWEN_ERROR_BAD_DATA;
-	    }
-	    p++;
-  
-	    *p1end=0;
-	    *p2end=0;
-	    rv=GWEN_DB__ReadValues(n, dbflags, (const char*)p1begin, (const char*)p2begin, p);
-	    if (rv) {
-	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	      GWEN_Buffer_free(tbuf);
-	      GWEN_Buffer_free(lbuf);
-	      return rv;
-	    }
-	  }
-	}
-      }
-    }
-    GWEN_Buffer_Reset(lbuf);
-  }
-
-  if (level) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Unbalanced number of curly bracket (too few)");
-    GWEN_Buffer_free(tbuf);
-    GWEN_Buffer_free(lbuf);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  GWEN_Buffer_free(tbuf);
-  GWEN_Buffer_free(lbuf);
-
-  return 0;
-}
-
-
-
-int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
-		     const char *fname,
-		     uint32_t dbflags,
-		     uint32_t guiid,
-		     int msecs) {
-  GWEN_SYNCIO *sio;
-  GWEN_FAST_BUFFER2 *fb;
-  int rv;
-
   sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1295,21 +983,21 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
   }
 
   /* prepare fast buffer */
-  fb=GWEN_FastBuffer2_new(1024, sio);
+  fb=GWEN_FastBuffer_new(1024, sio);
   if (dbflags & GWEN_DB_FLAGS_DOSMODE)
-    GWEN_FastBuffer2_AddFlags(fb, GWEN_FAST_BUFFER2_FLAGS_DOSMODE);
+    GWEN_FastBuffer_AddFlags(fb, GWEN_FAST_BUFFER_FLAGS_DOSMODE);
 
   /* read from it */
-  rv=GWEN_DB_ReadFromFastBuffer2(n, fb, dbflags);
-  if (rv) {
+  rv=GWEN_DB_ReadFromFastBuffer(n, fb, dbflags);
+  if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_FastBuffer2_free(fb);
+    GWEN_FastBuffer_free(fb);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  GWEN_FastBuffer2_free(fb);
+  GWEN_FastBuffer_free(fb);
   GWEN_SyncIo_Disconnect(sio);
   return 0;
 }
@@ -1319,90 +1007,54 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
 int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
 			   const char *str,
                            int len,
-			   uint32_t dbflags,
-			   uint32_t guiid,
-			   int msecs) {
-  GWEN_IO_LAYER *io;
+			   uint32_t dbflags) {
+  GWEN_SYNCIO *sio;
+  GWEN_FAST_BUFFER *fb;
   int rv;
 
   if (len==0)
     len=strlen(str);
 
-  /* create io layer */
-  io=GWEN_Io_LayerMemory_fromString((const uint8_t*)str, len);
-  assert(io);
+  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t*) str, len);
 
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
+  /* prepare fast buffer */
+  fb=GWEN_FastBuffer_new(1024, sio);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_FastBuffer_AddFlags(fb, GWEN_FAST_BUFFER_FLAGS_DOSMODE);
+
+  /* read from it */
+  rv=GWEN_DB_ReadFromFastBuffer(n, fb, dbflags);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_FastBuffer_free(fb);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  rv=GWEN_DB_ReadFromIo(n, io, dbflags, guiid, msecs);
-  if (rv) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-  }
-  GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-  GWEN_Io_Layer_free(io);
+  GWEN_FastBuffer_free(fb);
+  GWEN_SyncIo_free(sio);
 
-  return rv;
+  return 0;
 }
 
 
 
 int GWEN_DB_WriteToBuffer(GWEN_DB_NODE *n,
 			  GWEN_BUFFER *buf,
-			  uint32_t dbflags,
-			  uint32_t guiid,
-			  int msecs) {
-  GWEN_IO_LAYER *io;
+			  uint32_t dbflags) {
+  GWEN_SYNCIO *sio;
   int rv;
 
-  /* create io layer */
-  io=GWEN_Io_LayerMemory_new(buf);
-  assert(io);
-
-  rv=GWEN_Io_Manager_RegisterLayer(io);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: Could not register io layer (%d)", rv);
-    GWEN_Io_Layer_DisconnectRecursively(io, NULL, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, msecs);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  rv=GWEN_DB_WriteToIo(n, io, dbflags, guiid, msecs);
+  /* create SyncIO, don't take over buf */
+  sio=GWEN_SyncIo_Memory_new(buf, 0);
+  rv=GWEN_DB_WriteToIo(n, sio, dbflags);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000);
-    GWEN_Io_Layer_free(io);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  /* flush data */
-  rv=GWEN_Io_Layer_WriteString(io, "",
-			       GWEN_IO_REQUEST_FLAGS_FLUSH,
-			       guiid,
-			       30000);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, 0, 1000);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  /* close io layer */
-  rv=GWEN_Io_Layer_DisconnectRecursively(io, NULL, 0, guiid, 30000);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Io_Layer_Disconnect(io, GWEN_IO_REQUEST_FLAGS_FORCE, guiid, 1000);
-    GWEN_Io_Layer_free(io);
-    return rv;
-  }
-
-  GWEN_Io_Layer_free(io);
-
+  GWEN_SyncIo_free(sio);
   return 0;
 }
 

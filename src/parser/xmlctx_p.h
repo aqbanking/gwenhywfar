@@ -36,8 +36,6 @@ struct GWEN_XML_CONTEXT {
   GWEN_INHERIT_ELEMENT(GWEN_XML_CONTEXT)
 
   uint32_t flags;
-  uint32_t guiid;
-  int timeout;
   GWEN_XMLNODE *currentNode;
   GWEN_XMLNODE *currentHeader;
 

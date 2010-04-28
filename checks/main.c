@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
   GWEN_Gui_SetCheckCertFn(gui, checkCert);
   GWEN_Gui_SetGui(gui);
 
-  return check_io_tls();
+  //return check_io_tls();
 
 
   if (check_db())

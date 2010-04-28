@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2003-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -40,10 +37,8 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/fastbuffer.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/io_memory.h>
-#include <gwenhywfar/io_buffered.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/syncio_memory.h>
 
 #include <stdlib.h>
 #include <assert.h>

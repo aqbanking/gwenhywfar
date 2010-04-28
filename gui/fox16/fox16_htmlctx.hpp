@@ -23,7 +23,7 @@ class FOX16GUI_API FOX16_HtmlCtx {
     friend class FOX16_HtmlCtxLinker;
 
 public:
-  FOX16_HtmlCtx(uint32_t flags, uint32_t guiid, int timeout);
+  FOX16_HtmlCtx(uint32_t flags);
   ~FOX16_HtmlCtx();
 
   void setText(const char *s);

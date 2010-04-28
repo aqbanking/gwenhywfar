@@ -4,8 +4,7 @@
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/xml.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/iomanager.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,8 +56,7 @@ void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
 
 int test1(int argc, char **argv) {
   GWEN_XML_CONTEXT *xmlCtx;
-  int fd;
-  GWEN_IO_LAYER *io;
+  GWEN_SYNCIO *sio;
   int rv;
   HTML_PROPS *pr;
   HTML_FONT *fnt;
@@ -69,16 +67,16 @@ int test1(int argc, char **argv) {
     return 1;
   }
 
-  fd=open(argv[1], O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not open file (%s)", strerror(errno));
+  sio=GWEN_SyncIo_File_new(argv[1], GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
     return 2;
   }
 
-  io=GWEN_Io_LayerFile_new(fd, -1);
-  GWEN_Io_Manager_RegisterLayer(io);
-
-  xmlCtx=HtmlCtx_new(0, 0, GWEN_TIMEOUT_FOREVER);
+  xmlCtx=HtmlCtx_new(0);
   assert(xmlCtx);
 
   pr=HtmlProps_new();
@@ -89,9 +87,11 @@ int test1(int argc, char **argv) {
   HtmlProps_free(pr);
 
   /* read OFX file into context */
-  rv=GWEN_XML_ReadFromIo(xmlCtx, io);
+  rv=GWEN_XML_ReadFromIo(xmlCtx, sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
     return rv;
   }
 
@@ -103,6 +103,8 @@ int test1(int argc, char **argv) {
     dumpObject(o, stderr, 2);
   }
 
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
   GWEN_XmlCtx_free(xmlCtx);
 
   return 0;

@@ -48,7 +48,7 @@ int test1(int argc, char **argv) {
   a.init(argc,argv);
   a.create();
 
-  FOX16_HtmlCtx ctx(0, 0, 2000);
+  FOX16_HtmlCtx ctx(0);
   ctx.setText(testString);
   rv=ctx.layout(300, 1024);
   fprintf(stderr, "Result of layout: %d\n", rv);

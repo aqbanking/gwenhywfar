@@ -37,6 +37,7 @@ typedef enum {
   GWEN_SyncIo_File_CreationMode_Unknown=-1,
   GWEN_SyncIo_File_CreationMode_OpenExisting=0,
   GWEN_SyncIo_File_CreationMode_CreateNew,
+  GWEN_SyncIo_File_CreationMode_CreateAlways,
   GWEN_SyncIo_File_CreationMode_OpenAlways,
   GWEN_SyncIo_File_CreationMode_TruncateExisting
 } GWEN_SYNCIO_FILE_CREATIONMODE;
@@ -76,6 +77,9 @@ extern "C" {
 
 GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMODE cm);
+
+GWENHYWFAR_API
+GWEN_SYNCIO *GWEN_SyncIo_File_TakeOver(int fd);
 
 GWENHYWFAR_API
 const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio);
