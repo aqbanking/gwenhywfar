@@ -13,7 +13,7 @@
 
 int checkCert(GWEN_GUI *gui,
 	      const GWEN_SSLCERTDESCR *cert,
-	      GWEN_IO_LAYER *io,
+	      GWEN_SYNCIO *sio,
 	      uint32_t guiid) {
   /* automatically accept any cert for non-interactive checks */
   return 0;
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   if (check_io_socket())
     errs++;
 
-  if (check_io_tls())
+  if (check_syncio_tls())
     errs++;
 
   if (check_io_http())

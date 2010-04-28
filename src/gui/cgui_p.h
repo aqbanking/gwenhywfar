@@ -127,7 +127,7 @@ int GWEN_Gui_CGui__HashPassword(const char *token,
 
 int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
 			    const GWEN_SSLCERTDESCR *cd,
-			    GWEN_IO_LAYER *io, uint32_t guiid);
+			    GWEN_SYNCIO *sio, uint32_t guiid);
 
 int GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
 				    const char *token,

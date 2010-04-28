@@ -87,7 +87,7 @@ struct GWEN_GUI {
 
 static int GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
 				     const GWEN_SSLCERTDESCR *cd,
-				     GWEN_IO_LAYER *io, uint32_t guiid);
+				     GWEN_SYNCIO *sio, uint32_t guiid);
 
 
 static void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd);

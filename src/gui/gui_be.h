@@ -189,7 +189,7 @@ typedef int (*GWEN_GUI_WAITFORSOCKETS_FN)(GWEN_GUI *gui,
 
 typedef int (*GWEN_GUI_CHECKCERT_FN)(GWEN_GUI *gui,
 				     const GWEN_SSLCERTDESCR *cert,
-				     GWEN_IO_LAYER *io,
+				     GWEN_SYNCIO *sio,
 				     uint32_t guiid);
 
 typedef int (*GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN)(GWEN_GUI *gui,

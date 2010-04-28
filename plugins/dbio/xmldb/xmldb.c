@@ -519,7 +519,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_SyncIo_free(sio);
-    return rv;
+    return GWEN_DBIO_CheckFileResultNotOk;
   }
 
 

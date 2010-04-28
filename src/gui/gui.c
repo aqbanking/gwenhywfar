@@ -670,33 +670,37 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
     wset=GWEN_SocketSet_new();
 
     /* fill read socket set */
-    sit=GWEN_Socket_List2_First(readSockets);
-    if (sit) {
-      GWEN_SOCKET *s;
+    if (readSockets) {
+      sit=GWEN_Socket_List2_First(readSockets);
+      if (sit) {
+	GWEN_SOCKET *s;
 
-      s=GWEN_Socket_List2Iterator_Data(sit);
-      assert(s);
+	s=GWEN_Socket_List2Iterator_Data(sit);
+	assert(s);
 
-      while(s) {
-	GWEN_SocketSet_AddSocket(rset, s);
-	s=GWEN_Socket_List2Iterator_Next(sit);
+	while(s) {
+	  GWEN_SocketSet_AddSocket(rset, s);
+	  s=GWEN_Socket_List2Iterator_Next(sit);
+	}
+	GWEN_Socket_List2Iterator_free(sit);
       }
-      GWEN_Socket_List2Iterator_free(sit);
     }
 
     /* fill write socket set */
-    sit=GWEN_Socket_List2_First(writeSockets);
-    if (sit) {
-      GWEN_SOCKET *s;
+    if (writeSockets) {
+      sit=GWEN_Socket_List2_First(writeSockets);
+      if (sit) {
+	GWEN_SOCKET *s;
 
-      s=GWEN_Socket_List2Iterator_Data(sit);
-      assert(s);
+	s=GWEN_Socket_List2Iterator_Data(sit);
+	assert(s);
 
-      while(s) {
-	GWEN_SocketSet_AddSocket(wset, s);
-	s=GWEN_Socket_List2Iterator_Next(sit);
+	while(s) {
+	  GWEN_SocketSet_AddSocket(wset, s);
+	  s=GWEN_Socket_List2Iterator_Next(sit);
+	}
+	GWEN_Socket_List2Iterator_free(sit);
       }
-      GWEN_Socket_List2Iterator_free(sit);
     }
 
     if (GWEN_SocketSet_GetSocketCount(rset)==0 &&
@@ -726,9 +730,9 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
 
 
 
-int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_IO_LAYER *io, uint32_t guiid) {
+int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t guiid) {
   if (gwenhywfar_gui && gwenhywfar_gui->checkCertFn)
-    return gwenhywfar_gui->checkCertFn(gwenhywfar_gui, cd, io, guiid);
+    return gwenhywfar_gui->checkCertFn(gwenhywfar_gui, cd, sio, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -737,7 +741,7 @@ int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_IO_LAYER *io, uint32_t 
 
 int GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
 			      const GWEN_SSLCERTDESCR *cd,
-			      GWEN_UNUSED GWEN_IO_LAYER *io, uint32_t guiid) {
+			      GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid) {
   int rv;
   int isError;
   const char *hash;

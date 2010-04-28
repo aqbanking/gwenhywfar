@@ -86,6 +86,14 @@ void GWEN_Buffer_free(GWEN_BUFFER *bf){
         GWEN_BufferedIO_free(bf->bio);
       }
     }
+    if (bf->ioLayer) {
+      if (bf->flags & GWEN_BUFFER_FLAGS_OWN_IO)
+	GWEN_Io_Layer_free(bf->ioLayer);
+    }
+    if (bf->syncIo) {
+      if (bf->flags & GWEN_BUFFER_FLAGS_OWN_SYNCIO)
+        GWEN_SyncIo_free(bf->syncIo);
+    }
     GWEN_FREE_OBJECT(bf);
   }
 }
@@ -239,7 +247,8 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i){
 
   if (i>=bf->bufferSize) {
     if ((bf->mode & GWEN_BUFFER_MODE_USE_BIO) ||
-	(bf->mode & GWEN_BUFFER_MODE_USE_IO)) {
+	(bf->mode & GWEN_BUFFER_MODE_USE_IO) ||
+	(bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)) {
       bf->pos=i;
     }
     else {
@@ -473,12 +482,49 @@ int GWEN_Buffer__FillBuffer_IoLayer(GWEN_BUFFER *bf){
 
 
 
+int GWEN_Buffer__FillBuffer_SyncIo(GWEN_BUFFER *bf){
+  if (bf->syncIo) {
+    uint32_t toread;
+    int rv;
+
+    toread=bf->pos-bf->bytesUsed+1;
+    if (GWEN_Buffer_AllocRoom(bf, toread+1)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
+      return GWEN_ERROR_GENERIC;
+    }
+    rv=GWEN_SyncIo_ReadForced(bf->syncIo,
+			      (uint8_t*) (bf->ptr+bf->bytesUsed),
+			      toread);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+      return GWEN_ERROR_EOF;
+    }
+
+    bf->bytesUsed+=rv;
+  }
+  else {
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "End of used area reached and no SYNCIO (%d bytes)",
+	      bf->pos);
+    return GWEN_ERROR_EOF;
+  }
+  return 0;
+}
+
+
+
 int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf){
   assert(bf);
   if (bf->mode & GWEN_BUFFER_MODE_USE_BIO)
     return GWEN_Buffer__FillBuffer_Bio(bf);
   else if (bf->mode & GWEN_BUFFER_MODE_USE_IO)
     return GWEN_Buffer__FillBuffer_IoLayer(bf);
+  else if (bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)
+    return GWEN_Buffer__FillBuffer_SyncIo(bf);
   else {
     DBG_DEBUG(GWEN_LOGDOMAIN,
 	      "End of used area reached (%d bytes)", bf->pos);
@@ -1032,6 +1078,24 @@ void GWEN_Buffer_SetSourceIoLayer(GWEN_BUFFER *bf,
   else
     bf->flags&=~GWEN_BUFFER_FLAGS_OWN_IO;
   bf->ioLayer=io;
+}
+
+
+
+void GWEN_Buffer_SetSourceSyncIo(GWEN_BUFFER *bf,
+				 GWEN_SYNCIO *sio,
+				 int take) {
+  assert(bf);
+  if (bf->syncIo) {
+    if (bf->flags & GWEN_BUFFER_FLAGS_OWN_SYNCIO) {
+      GWEN_SyncIo_free(bf->syncIo);
+    }
+  }
+  if (take)
+    bf->flags|=GWEN_BUFFER_FLAGS_OWN_SYNCIO;
+  else
+    bf->flags&=~GWEN_BUFFER_FLAGS_OWN_SYNCIO;
+  bf->syncIo=sio;
 }
 
 

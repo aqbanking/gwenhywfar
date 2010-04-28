@@ -966,11 +966,34 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 
 
 
+int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n, GWEN_SYNCIO *sio, uint32_t dbflags) {
+  GWEN_FAST_BUFFER *fb;
+  int rv;
+
+  /* prepare fast buffer */
+  fb=GWEN_FastBuffer_new(1024, sio);
+  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
+    GWEN_FastBuffer_AddFlags(fb, GWEN_FAST_BUFFER_FLAGS_DOSMODE);
+
+  /* read from it */
+  rv=GWEN_DB_ReadFromFastBuffer(n, fb, dbflags);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_FastBuffer_free(fb);
+    return rv;
+  }
+
+  GWEN_FastBuffer_free(fb);
+
+  return 0;
+}
+
+
+
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
 		     const char *fname,
 		     uint32_t dbflags) {
   GWEN_SYNCIO *sio;
-  GWEN_FAST_BUFFER *fb;
   int rv;
 
   sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
@@ -982,22 +1005,15 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
     return rv;
   }
 
-  /* prepare fast buffer */
-  fb=GWEN_FastBuffer_new(1024, sio);
-  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
-    GWEN_FastBuffer_AddFlags(fb, GWEN_FAST_BUFFER_FLAGS_DOSMODE);
-
   /* read from it */
-  rv=GWEN_DB_ReadFromFastBuffer(n, fb, dbflags);
+  rv=GWEN_DB_ReadFromIo(n, sio, dbflags);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_FastBuffer_free(fb);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  GWEN_FastBuffer_free(fb);
   GWEN_SyncIo_Disconnect(sio);
   return 0;
 }
@@ -1009,29 +1025,19 @@ int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
                            int len,
 			   uint32_t dbflags) {
   GWEN_SYNCIO *sio;
-  GWEN_FAST_BUFFER *fb;
   int rv;
 
   if (len==0)
     len=strlen(str);
 
   sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t*) str, len);
-
-  /* prepare fast buffer */
-  fb=GWEN_FastBuffer_new(1024, sio);
-  if (dbflags & GWEN_DB_FLAGS_DOSMODE)
-    GWEN_FastBuffer_AddFlags(fb, GWEN_FAST_BUFFER_FLAGS_DOSMODE);
-
-  /* read from it */
-  rv=GWEN_DB_ReadFromFastBuffer(n, fb, dbflags);
+  rv=GWEN_DB_ReadFromIo(n, sio, dbflags);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_FastBuffer_free(fb);
     GWEN_SyncIo_free(sio);
     return rv;
   }
 
-  GWEN_FastBuffer_free(fb);
   GWEN_SyncIo_free(sio);
 
   return 0;

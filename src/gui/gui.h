@@ -31,7 +31,7 @@
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/inetsocket.h>
 #include <gwenhywfar/ssl_cert_descr.h>
-#include <gwenhywfar/iolayer.h>
+#include <gwenhywfar/syncio.h>
 #include <gwenhywfar/dialog.h>
 
 #include <inttypes.h>
@@ -722,7 +722,7 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
  */
 GWENHYWFAR_API 
 int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cert,
-		       GWEN_IO_LAYER *io,
+		       GWEN_SYNCIO *sio,
 		       uint32_t guiid);
 
 

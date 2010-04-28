@@ -797,6 +797,9 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 			       uint32_t dbflags);
 
 GWENHYWFAR_API
+int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n, GWEN_SYNCIO *sio, uint32_t dbflags);
+
+GWENHYWFAR_API
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
 		     const char *fname,
 		     uint32_t dbflags);
@@ -811,6 +814,11 @@ GWENHYWFAR_API
 int GWEN_DB_WriteToFastBuffer(GWEN_DB_NODE *node,
 			      GWEN_FAST_BUFFER *fb,
 			      uint32_t dbflags);
+
+GWENHYWFAR_API 
+int GWEN_DB_WriteToIo(GWEN_DB_NODE *node,
+		      GWEN_SYNCIO *sio,
+		      uint32_t dbflags);
 
 
 GWENHYWFAR_API 

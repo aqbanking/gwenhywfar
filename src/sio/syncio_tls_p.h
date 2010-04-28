@@ -1,10 +1,7 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Fri Sep 12 2003
-    copyright   : (C) 2003 by Martin Preuss
-    email       : martin@libchipcard.de
+ begin       : Wed Apr 28 2010
+ copyright   : (C) 2010 by Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -26,59 +23,66 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_BUFFER_P_H
-#define GWENHYWFAR_BUFFER_P_H
+#ifndef GWENHYWFAR_SYNCIO_TLS_P_H
+#define GWENHYWFAR_SYNCIO_TLS_P_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/buffer.h>
+#include <gwenhywfar/syncio_tls.h>
 
-/**
- * When reallocating the buffer a multiple of this value is used.
- * Needs to be aligned at 2^n
- */
-#define GWEN_BUFFER_DYNAMIC_STEP 1024
-
-#define GWEN_BUFFER_FLAGS_OWNED      0x0001
-#define GWEN_BUFFER_FLAGS_OWN_BIO    0x0002
-#define GWEN_BUFFER_FLAGS_OWN_IO     0x0004
-#define GWEN_BUFFER_FLAGS_OWN_SYNCIO 0x0008
-
-#define GWEN_BUFFER_MODE_COPYMASK (\
-  ~(GWEN_BUFFER_MODE_USE_BIO | GWEN_BUFFER_FLAGS_OWN_IO | GWEN_BUFFER_FLAGS_OWN_SYNCIO) \
-  )
+#include <gnutls/gnutls.h>
 
 
-struct GWEN_BUFFER {
-  char *realPtr;
-  char *ptr;
-  uint32_t pos;
-  uint32_t bufferSize;
-  uint32_t realBufferSize;
-  uint32_t bytesUsed;
-  uint32_t flags;
-  uint32_t mode;
-  uint32_t hardLimit;
-  uint32_t step;
-  uint32_t bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
-  GWEN_BUFFEREDIO *bio;
-  GWEN_IO_LAYER *ioLayer;
-  GWEN_SYNCIO *syncIo;
+
+typedef struct GWEN_SYNCIO_TLS GWEN_SYNCIO_TLS;
+struct GWEN_SYNCIO_TLS {
+  char *localCertFile;
+  char *localKeyFile;
+  char *localTrustFile;
+  char *dhParamFile;
+
+  char *hostName;
+
+  gnutls_session_t session;
+  gnutls_certificate_credentials_t credentials;
+
+  int prepared;
+
+  GWEN_IO_REQUEST *connectRequest;
+  GWEN_IO_REQUEST *disconnectRequest;
+
+  GWEN_SSLCERTDESCR *peerCertDescr;
+  uint32_t peerCertFlags;
 };
 
 
+static void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p);
 
-static void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
-					uint32_t pos,
-					int offset);
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio);
+
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio);
 
 
-static int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf);
-static int GWEN_Buffer__FillBuffer_Bio(GWEN_BUFFER *bf);
-static int GWEN_Buffer__FillBuffer_IoLayer(GWEN_BUFFER *bf);
-static int GWEN_Buffer__FillBuffer_SyncIo(GWEN_BUFFER *bf);
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
+				       uint8_t *buffer,
+				       uint32_t size);
+
+
+
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
+					const uint8_t *buffer,
+					uint32_t size);
+
+
+static int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf);
+
+static ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len);
+static ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t len);
+
+
+void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio);
+int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio);
+
 
 
 #endif
-
 
 

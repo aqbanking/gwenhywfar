@@ -42,7 +42,7 @@ class CppGuiLinker {
 
   static int CheckCert(GWEN_GUI *gui,
 		       const GWEN_SSLCERTDESCR *cert,
-		       GWEN_IO_LAYER *io,
+		       GWEN_SYNCIO *io,
 		       uint32_t guiid);
 
   static int ExecDialog(GWEN_GUI *gui,

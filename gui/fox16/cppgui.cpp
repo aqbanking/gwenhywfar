@@ -86,7 +86,7 @@ int CppGuiLinker::SetPasswordStatus(GWEN_GUI *gui,
 
 int CppGuiLinker::CheckCert(GWEN_GUI *gui,
 			    const GWEN_SSLCERTDESCR *cert,
-			    GWEN_IO_LAYER *io,
+			    GWEN_SYNCIO *sio,
 			    uint32_t guiid) {
   CppGui *xgui;
 
@@ -94,7 +94,7 @@ int CppGuiLinker::CheckCert(GWEN_GUI *gui,
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, CppGui, gui);
   assert(xgui);
 
-  return xgui->checkCert(cert, io, guiid);
+  return xgui->checkCert(cert, sio, guiid);
 }
 
 
@@ -388,9 +388,9 @@ int CppGui::getPassword(uint32_t flags,
 
 
 int CppGui::checkCert(const GWEN_SSLCERTDESCR *cd,
-		      GWEN_IO_LAYER *io,
+		      GWEN_SYNCIO *sio,
 		      uint32_t guiid) {
-  return checkCertBuiltIn(cd, io, guiid);
+  return checkCertBuiltIn(cd, sio, guiid);
 }
 
 
@@ -435,10 +435,10 @@ int CppGui::getFileName(const char *caption,
 
 
 int CppGui::checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
-			     GWEN_IO_LAYER *io,
+			     GWEN_SYNCIO *sio,
 			     uint32_t guiid) {
   if (_checkCertFn)
-    return _checkCertFn(_gui, cert, io, guiid);
+    return _checkCertFn(_gui, cert, sio, guiid);
   else {
     DBG_ERROR(0, "No built-in checkcert function?");
     return GWEN_ERROR_NOT_SUPPORTED;

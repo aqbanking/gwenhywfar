@@ -827,7 +827,7 @@ int GWEN_Gui_CGui__HashPair(const char *token,
 
 int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
 			    const GWEN_SSLCERTDESCR *cd,
-			    GWEN_IO_LAYER *io, uint32_t guiid) {
+			    GWEN_SYNCIO *sio, uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   const char *hash;
   const char *status;
@@ -874,7 +874,7 @@ int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
   }
 
   if (cgui->checkCertFn) {
-    i=cgui->checkCertFn(gui, cd, io, guiid);
+    i=cgui->checkCertFn(gui, cd, sio, guiid);
     if (i==0) {
       GWEN_DB_SetIntValue(cgui->dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  GWEN_Buffer_GetStart(hbuf), i);

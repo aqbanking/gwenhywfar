@@ -1237,7 +1237,7 @@ GWEN_IO_LAYER_WORKRESULT GWEN_Io_LayerTls_WorkOnRequests(GWEN_IO_LAYER *io) {
       else {
 	  /* present cert to the user */
 	xio->waitingForGui=1;
-	rv=GWEN_Gui_CheckCert(xio->peerCertDescr, io, GWEN_Io_Request_GetGuiId(r));
+	rv=GWEN_Gui_CheckCert(xio->peerCertDescr, NULL, GWEN_Io_Request_GetGuiId(r));
 	xio->waitingForGui=0;
 	if (rv) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "Peer cert not accepted (%d), aborting", rv);

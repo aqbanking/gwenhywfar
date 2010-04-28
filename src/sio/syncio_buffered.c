@@ -133,6 +133,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
     return GWEN_ERROR_INTERNAL;
   }
 
+  GWEN_SyncIo_SubFlags(sio, GWEN_SYNCIO_FLAGS_PACKET_END);
   flags=GWEN_SyncIo_GetFlags(sio);
   if (flags & GWEN_SYNCIO_FLAGS_TRANSPARENT) {
     uint32_t bytesInBuffer;
@@ -233,8 +234,10 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 	}
 	psrc++;
 	bytesSkipped++;
-	if (c==10)
+	if (c==10) {
+	  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PACKET_END);
 	  break;
+	}
       }
       GWEN_RingBuffer_SkipBytesRead(xio->readBuffer, bytesSkipped);
     }

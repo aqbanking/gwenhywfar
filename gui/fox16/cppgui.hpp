@@ -107,7 +107,7 @@ protected:
 				uint32_t guiid);
 
   virtual int checkCert(const GWEN_SSLCERTDESCR *cert,
-			GWEN_IO_LAYER *io,
+			GWEN_SYNCIO *sio,
 			uint32_t guiid);
 
   virtual int execDialog(GWEN_DIALOG *dlg, uint32_t guiid);
@@ -125,7 +125,7 @@ protected:
 
 
   int checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
-		       GWEN_IO_LAYER *io,
+		       GWEN_SYNCIO *sio,
 		       uint32_t guiid);
 
   };
