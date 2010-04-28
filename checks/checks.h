@@ -13,6 +13,7 @@ int check_io_https();
 int check_io_packets();
 
 int check_syncio_tls();
+int check_syncio_http();
 
 #endif
 

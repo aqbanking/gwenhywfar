@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
   //return check_io_tls();
 
-
+#if 0
   if (check_db())
     errs++;
 
@@ -44,17 +44,19 @@ int main(int argc, char **argv) {
   if (check_io_socket())
     errs++;
 
-  if (check_syncio_tls())
-    errs++;
-
-  if (check_io_http())
-    errs++;
-
   if (check_io_https())
     errs++;
 
   if (check_io_packets())
     errs++;
+
+  if (check_syncio_tls())
+    errs++;
+
+#endif
+  if (check_syncio_http())
+    errs++;
+
 
   if (errs)
     return 2;

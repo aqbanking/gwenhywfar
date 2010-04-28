@@ -34,6 +34,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/text.h>
 
 #include <assert.h>
 #include <errno.h>
@@ -235,6 +236,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
   /* done */
   xio->socket=sk;
   GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
+  DBG_INFO(GWEN_LOGDOMAIN, "Connected to \"%s\"", xio->address);
   GWEN_Gui_ProgressLog2(0,
 			GWEN_LoggerLevel_Notice,
 			I18N("Connected to \"%s\""),
@@ -316,6 +318,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
     return rv;
   }
 
+#if 0
+  DBG_ERROR(0, "Received this:");
+  GWEN_Text_DumpString((const char*) buffer, i, stderr, 2);
+#endif
+
   return i;
 }
 
@@ -373,6 +380,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
+
+#if 0
+  DBG_ERROR(0, "Written this:");
+  GWEN_Text_DumpString((const char*) buffer, i, stderr, 2);
+#endif
 
   return i;
 }

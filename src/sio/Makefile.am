@@ -11,7 +11,8 @@ noinst_HEADERS=\
  syncio_socket_p.h \
  syncio_memory_p.h \
  syncio_buffered_p.h \
- syncio_tls_p.h
+ syncio_tls_p.h \
+ syncio_http_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -20,14 +21,16 @@ iheader_HEADERS=\
  syncio_socket.h \
  syncio_memory.h \
  syncio_buffered.h \
- syncio_tls.h
+ syncio_tls.h \
+ syncio_http.h
 
 libsio_la_SOURCES=\
  syncio.c \
  syncio_socket.c \
  syncio_memory.c \
  syncio_buffered.c \
- syncio_tls.c
+ syncio_tls.c \
+ syncio_http.c
 
 
 sources:

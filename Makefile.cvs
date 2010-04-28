@@ -1,6 +1,6 @@
 
 #MY_CFLAGS=-W -pedantic -std=c99 -ggdb -Wall -O -ggdb
-MY_CFLAGS=-ggdb -Wall -O 
+MY_CFLAGS=-ggdb -Wall -O0
 WIN32_INSTALL_DIR=/home/martin/install/win32
 
 all_warnings=\

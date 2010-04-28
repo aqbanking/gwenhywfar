@@ -79,6 +79,7 @@ void GWENHYWFAR_CB GWEN_SyncIo_Buffered_FreeData(void *bp, void *p) {
 int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Connect(GWEN_SYNCIO *sio) {
   GWEN_SYNCIO *baseIo;
 
+  //GWEN_RingBuffer_Reset(xio->readBuffer);
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   if (baseIo) {
     int rv;
@@ -123,6 +124,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 					    uint32_t size) {
   GWEN_SYNCIO_BUFFERED *xio;
   uint32_t flags;
+
+  assert(size);
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_BUFFERED, sio);
@@ -211,8 +214,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 	  return rv;
 	}
 	else if (rv==0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
-	  return bytesRead;
+	  DBG_INFO(GWEN_LOGDOMAIN, "EOF met (%d)", bytesRead);
+          break;
 	}
 	GWEN_RingBuffer_SkipBytesWrite(xio->readBuffer, rv);
 	bytesInBuffer=GWEN_RingBuffer_GetMaxUnsegmentedRead(xio->readBuffer);
