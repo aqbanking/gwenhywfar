@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/gwenhywfar3 $(qt3_includes)
+INCLUDES=-I$(gwenhywfar_symlinkdir) $(qt3_includes)
 
 AM_CPPFLAGS= @visibility_cflags@
 DEFS=-DBUILDING_QT3_GUI

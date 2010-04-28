@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_builddir)/gwenhywfar3
+INCLUDES=-I$(gwenhywfar_symlinkdir)
 
 noinst_LTLIBRARIES=libfxhtml.la
 libfxhtml_la_LIBADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)

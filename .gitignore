@@ -46,6 +46,7 @@ distribution
 gwenhywfar
 gwenhywfar-*.*.*
 gwenhywfar3
+gwenhywfar4
 install-sh
 libtool
 listdoc.h
@@ -91,3 +92,6 @@ qtsources
 po/gwenhywfar.pot
 test/test.db*
 test/testfile
+system.h
+types.h
+version.h

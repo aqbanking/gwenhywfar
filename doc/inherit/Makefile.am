@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_builddir)/gwenhywfar3 $(GPG_ERROR_CFLAGS)
+INCLUDES= -I$(gwenhywfar_symlinkdir) $(GPG_ERROR_CFLAGS)
 
 EXTRA_DIST=README
 

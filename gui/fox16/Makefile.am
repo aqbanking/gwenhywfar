@@ -1,6 +1,6 @@
 SUBDIRS=html
 
-INCLUDES=-I$(top_builddir)/gwenhywfar3 $(fox_includes) -Ihtml
+INCLUDES=-I$(gwenhywfar_symlinkdir) $(fox_includes) -Ihtml
 
 AM_CPPFLAGS= @visibility_cflags@
 DEFS+=-DBUILDING_FOX16_GUI -DPACKAGE=\"$(PACKAGE)\"

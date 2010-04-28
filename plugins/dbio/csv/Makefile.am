@@ -1,6 +1,6 @@
 EXTRA_DIST=README ressource.rc.in
 
-INCLUDES= -I$(top_builddir)/gwenhywfar3 \
+INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
