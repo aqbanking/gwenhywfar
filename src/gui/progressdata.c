@@ -80,6 +80,20 @@ uint32_t GWEN_ProgressData_GetId(const GWEN_PROGRESS_DATA *pd) {
 
 
 
+uint32_t GWEN_ProgressData_GetPreviousId(const GWEN_PROGRESS_DATA *pd) {
+  assert(pd);
+  return pd->previousId;
+}
+
+
+
+void GWEN_ProgressData_SetPreviousId(GWEN_PROGRESS_DATA *pd, uint32_t i) {
+  assert(pd);
+  pd->previousId=i;
+}
+
+
+
 uint32_t GWEN_ProgressData_GetFlags(const GWEN_PROGRESS_DATA *pd) {
   assert(pd);
   return pd->flags;

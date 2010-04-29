@@ -339,6 +339,20 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "command",
 			 httpCommand);
+    if (sess->httpVMajor) {
+      char numbuf[32];
+
+      snprintf(numbuf, sizeof(numbuf)-1, "HTTP/%d.%d",
+	       sess->httpVMajor, sess->httpVMinor);
+      numbuf[sizeof(numbuf)-1]=0;
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "protocol",
+			   numbuf);
+    }
+    else
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "protocol",
+			   "HTTP/1.0");
 
     /* set content length */
     db=GWEN_SyncIo_Http_GetDbHeaderOut(sess->syncIo);

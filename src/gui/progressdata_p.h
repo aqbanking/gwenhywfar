@@ -19,6 +19,7 @@ struct GWEN_PROGRESS_DATA {
   GWEN_TREE_ELEMENT(GWEN_PROGRESS_DATA);
   GWEN_GUI *gui;
   uint32_t id;
+  uint32_t previousId;
   uint32_t flags;
   char *title;
   char *text;

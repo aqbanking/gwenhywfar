@@ -1136,11 +1136,15 @@ uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
     pdParent=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, guiid);
     if (pdParent==NULL) {
       DBG_WARN(GWEN_LOGDOMAIN, "Parent progress by id %08x not found", guiid);
+      DBG_ERROR(0, "Title: [%s], Text: [%s]",
+		title?title:"no title",
+		text?text:"no text");
     }
   }
 
   pd=GWEN_ProgressData_new(gui, id, progressFlags, title, text, total);
   assert(pd);
+  GWEN_ProgressData_SetPreviousId(pd, gui->lastProgressId);
   if (pdParent)
     GWEN_ProgressData_Tree_AddChild(pdParent, pd);
   else
@@ -1157,11 +1161,11 @@ uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
 
 int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
   GWEN_PROGRESS_DATA *pd;
+  uint32_t parentPid=0;
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "ProgressEnd: guiid=%08x", pid);
 
   if (pid==0) {
-    DBG_WARN(GWEN_LOGDOMAIN, "PID==0!");
     pid=gui->lastProgressId;
   }
 
@@ -1174,8 +1178,13 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
     GWEN_DIALOG *dlg;
     GWEN_PROGRESS_DATA *previousPd;
 
+    /* set previous progress id */
+    gui->lastProgressId=GWEN_ProgressData_GetPreviousId(pd);
+
     /* find next highest active progress */
     previousPd=GWEN_ProgressData_Tree_GetParent(pd);
+    if (previousPd)
+      parentPid=GWEN_ProgressData_GetId(previousPd);
     while(previousPd) {
       if (GWEN_ProgressData_GetShown(previousPd))
 	break;
@@ -1240,7 +1249,6 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
 	}
 	else {
 	  DBG_INFO(GWEN_LOGDOMAIN, "No next secondary progress");
-	  gui->lastProgressId=0;
 	  GWEN_DlgProgress_SetSecondProgress(dlg, NULL);
 	}
       }
@@ -1252,11 +1260,6 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Progress %08x has no dialog", GWEN_ProgressData_GetId(pd));
     }
-
-    if (previousPd)
-      gui->lastProgressId=GWEN_ProgressData_GetId(previousPd);
-    else
-      gui->lastProgressId=0;
 
     GWEN_ProgressData_SetDialog(pd, NULL);
     GWEN_ProgressData_Tree_Del(pd);
@@ -1273,7 +1276,6 @@ int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t prog
   int aborted=0;
 
   if (pid==0) {
-    DBG_WARN(GWEN_LOGDOMAIN, "PID==0!");
     pid=gui->lastProgressId;
   }
 
@@ -1323,7 +1325,6 @@ int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
   int aborted=0;
 
   if (pid==0) {
-    DBG_WARN(GWEN_LOGDOMAIN, "PID==0!");
     pid=gui->lastProgressId;
   }
 
