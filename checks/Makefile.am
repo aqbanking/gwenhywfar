@@ -19,7 +19,8 @@ checks_SOURCES=\
  io_https.c \
  io_packets.c \
  syncio_tls.c \
- syncio_http.c
+ syncio_http.c \
+ syncio_https.c
 
 check_urlfns_SOURCES = check_urlfns.c
 

@@ -963,6 +963,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio) {
 
   GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
   GWEN_SyncIo_Tls_UndoPrepare(sio);
+  GWEN_SyncIo_Disconnect(baseIo);
   return 0;
 }
 
@@ -1005,6 +1006,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
     GWEN_SyncIo_Disconnect(baseIo);
     return GWEN_ERROR_SSL;
   }
+
+#if 0
+  DBG_ERROR(0, "Received this:");
+  GWEN_Text_DumpString((const char*) buffer, rv, stderr, 2);
+#endif
 
   return rv;
 }

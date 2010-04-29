@@ -56,6 +56,8 @@ int main(int argc, char **argv) {
 #endif
   if (check_syncio_http())
     errs++;
+  if (check_syncio_https())
+    errs++;
 
 
   if (errs)
