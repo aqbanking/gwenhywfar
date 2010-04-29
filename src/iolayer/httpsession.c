@@ -475,7 +475,7 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
   GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Disconnected."));
-  return 0;
+  return rv;
 }
 
 
