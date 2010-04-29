@@ -3033,6 +3033,7 @@ check_rsa_keys (void){
 
 
 int testHttpSession(int argc, char **argv) {
+  GWEN_GUI *gui;
   const char *urlString;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -3044,21 +3045,25 @@ int testHttpSession(int argc, char **argv) {
   }
   urlString=argv[2];
 
-  sess=GWEN_HttpSession_new(urlString, 0);
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  sess=GWEN_HttpSession_new(urlString, "http", 80);
   rv=GWEN_HttpSession_Init(sess);
   if (rv<0) {
     fprintf(stderr, "ERROR: Could not init http session.\n");
     return 3;
   }
 
-  rv=GWEN_HttpSession_SendPacket(sess, "GET", NULL, 0, 10000);
+  rv=GWEN_HttpSession_SendPacket(sess, "GET", NULL, 0);
   if (rv<0) {
     fprintf(stderr, "ERROR: Could not send request.\n");
     return 3;
   }
 
   buf=GWEN_Buffer_new(0, 1024, 0, 1);
-  rv=GWEN_HttpSession_RecvPacket(sess, buf, 10000);
+  rv=GWEN_HttpSession_RecvPacket(sess, buf);
   if (rv<0) {
     fprintf(stderr, "ERROR: Could not receive response.\n");
     return 3;

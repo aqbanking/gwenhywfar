@@ -75,6 +75,11 @@ GWENHYWFAR_API GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbStatusOut(const GWEN_SYNCIO *
 GWENHYWFAR_API GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderOut(const GWEN_SYNCIO *sio);
 /*@}*/
 
+
+
+GWENHYWFAR_API int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf);
+
+
 #ifdef __cplusplus
 }
 #endif

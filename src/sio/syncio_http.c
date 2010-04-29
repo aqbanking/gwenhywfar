@@ -1035,6 +1035,115 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderOut(const GWEN_SYNCIO *sio) {
 
 
 
+int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
+  GWEN_SYNCIO_HTTP *xio;
+  int rv;
+  int code=0;
+  int firstRead=1;
+  int bodySize=-1;
+  int bytesRead=0;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
+  assert(xio);
+
+  /* recv packet (this reads the HTTP body) */
+  for (;;) {
+    uint8_t *p;
+    uint32_t l;
+
+    rv=GWEN_Buffer_AllocRoom(buf, 1024);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(buf);
+    l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
+    do {
+      rv=GWEN_SyncIo_Read(sio, p, l-1);
+    } while(rv==GWEN_ERROR_INTERRUPTED);
+
+    if (rv==0)
+      break;
+    else if (rv<0) {
+      if (rv==GWEN_ERROR_EOF) {
+	if (bodySize!=-1 && bytesRead<bodySize) {
+	    DBG_ERROR(GWEN_LOGDOMAIN,
+		      "EOF met prematurely (%d < %d)",
+		      bytesRead, bodySize);
+	    return GWEN_ERROR_EOF;
+	}
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+    }
+    else {
+      GWEN_Buffer_IncrementPos(buf, rv);
+      GWEN_Buffer_AdjustUsedBytes(buf);
+      if (firstRead) {
+	GWEN_DB_NODE *db;
+
+	db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
+	bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
+      }
+      bytesRead+=rv;
+    }
+
+    if (bodySize!=-1 && bytesRead>=bodySize) {
+      break;
+    }
+    firstRead=0;
+  }
+
+  if (rv<0) {
+    if (GWEN_Buffer_GetUsedBytes(buf)) {
+      /* data received, check for common error codes */
+      if (rv==GWEN_ERROR_EOF || (rv==GWEN_ERROR_IO)) {
+	DBG_INFO(GWEN_LOGDOMAIN,
+		 "We received an error, but we still got data, "
+		 "so we ignore the error here");
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "No message received (%d)", rv);
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
+			     I18N("No message received"));
+	return rv;
+      }
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "No message received (%d)", rv);
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Error,
+			   I18N("No message received"));
+      return rv;
+    }
+  }
+
+  code=GWEN_DB_GetIntValue(xio->dbStatusIn, "code", 0, 0);
+  if (code) {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(xio->dbStatusIn, "text", 0, NULL);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "HTTP-Status: %d (%s)",
+	      code, s?s:"- no text -");
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info,
+			  I18N("HTTP-Status: %d (%s)"),
+			  code, s?s:I18N("- no details -)"));
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No HTTP status code received");
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Error,
+			 I18N("No HTTP status code received"));
+    code=GWEN_ERROR_BAD_DATA;
+  }
+
+  return code;
+}
 
 
 

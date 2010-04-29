@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
     begin       : Fri Feb 15 2008
-    copyright   : (C) 2008 by Martin Preuss
+    copyright   : (C) 2008-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,9 +17,11 @@
 struct GWEN_HTTP_SESSION {
   GWEN_INHERIT_ELEMENT(GWEN_HTTP_SESSION);
 
-  GWEN_URL *url;
-  GWEN_IO_LAYER *ioLayer;
-  uint32_t guiid;
+  char *url;
+  char *defaultProtocol;
+  int defaultPort;
+
+  GWEN_SYNCIO *syncIo;
 
   uint32_t flags;
 
@@ -34,12 +34,7 @@ struct GWEN_HTTP_SESSION {
 };
 
 
-static int GWEN_HttpSession__SetAddress(GWEN_HTTP_SESSION *sess,
-					GWEN_INETADDRESS *addr,
-					const char *peerAddr);
-
-static int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess,
-					GWEN_BUFFER *buf, int timeout);
+static int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf);
 
 
 

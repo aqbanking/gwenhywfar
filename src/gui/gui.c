@@ -1553,6 +1553,7 @@ int GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
 	GWEN_Url_free(u);
 	return GWEN_ERROR_GENERIC;
       }
+      GWEN_SyncIo_Tls_SetRemoteHostName(sio, addr);
       baseLayer=sio;
     }
 

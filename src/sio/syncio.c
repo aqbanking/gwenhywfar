@@ -291,25 +291,39 @@ GWEN_SYNCIO_WRITE_FN GWEN_SyncIo_SetWriteFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_WRITE_
 int GWEN_SyncIo_WriteForced(GWEN_SYNCIO *sio,
 			    const uint8_t *buffer,
 			    uint32_t size) {
-  uint32_t todo;
-
-  todo=size;
-  while(todo) {
+  if (size==0) {
     int rv;
 
     do {
-      rv=GWEN_SyncIo_Write(sio, buffer, todo);
+      rv=GWEN_SyncIo_Write(sio, buffer, size);
     } while (rv==GWEN_ERROR_INTERRUPTED);
-
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-    todo-=rv;
-    buffer+=rv;
+    return 0;
   }
+  else {
+    uint32_t todo;
 
-  return size;
+    todo=size;
+    while(todo) {
+      int rv;
+
+      do {
+	rv=GWEN_SyncIo_Write(sio, buffer, todo);
+      } while (rv==GWEN_ERROR_INTERRUPTED);
+
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+      todo-=rv;
+      buffer+=rv;
+    }
+
+    return size;
+  }
 }
 
 

@@ -37,6 +37,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
  * This flag forces SSLv3 connections when in HTTPS mode.
  */
 #define GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3 0x00000001
+#define GWEN_HTTP_SESSION_FLAGS_NO_CACHE   0x00000002
 
 
 #ifdef __cplusplus
@@ -56,24 +57,13 @@ extern "C" {
 /*@{*/
 
 GWENHYWFAR_API
-GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url,
-					uint32_t guiid);
+GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url, const char *defaultProto, int defaultPort);
 
 GWENHYWFAR_API
 void GWEN_HttpSession_Attach(GWEN_HTTP_SESSION *sess);
 
 GWENHYWFAR_API
 void GWEN_HttpSession_free(GWEN_HTTP_SESSION *sess);
-/*@}*/
-
-
-
-/** @name Informational Functions
- *
- */
-/*@{*/
-GWENHYWFAR_API
-uint32_t GWEN_HttpSession_GetGuiId(const GWEN_HTTP_SESSION *sess);
 /*@}*/
 
 
@@ -136,17 +126,6 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess);
 GWENHYWFAR_API
 int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess);
 
-/**
- * This function returns the IO layer created by @ref GWEN_HttpSession_Init.
- * Therefore it is only valid between @ref GWEN_HttpSession_Init and
- * @ref GWEN_HttpSession_Fini.
- * The chain of this io layer is: HTTP->Buffered->(TLS)->Socket.
- * The tls io layer is only inserted for HTTPS connections.
- */
-GWENHYWFAR_API
-GWEN_IO_LAYER *GWEN_HttpSession_GetIoLayer(const GWEN_HTTP_SESSION *sess);
-/*@}*/
-
 
 
 /** @name Sending and Receiving
@@ -167,8 +146,7 @@ GWEN_IO_LAYER *GWEN_HttpSession_GetIoLayer(const GWEN_HTTP_SESSION *sess);
 GWENHYWFAR_API
 int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 				const char *httpCommand,
-				const uint8_t *buf, uint32_t blen,
-				int timeout);
+				const uint8_t *buf, uint32_t blen);
 
 /**
  * This function receives a response packet from the server and closes
@@ -176,8 +154,7 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
  * @ref GWEN_HttpSession_SendPacket().
  */
 GWENHYWFAR_API
-int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess,
-				GWEN_BUFFER *buf, int timeout);
+int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf);
 
 /**
  * Test-connect to the server. This function can be used to retrieve the SSL
