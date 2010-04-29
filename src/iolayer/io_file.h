@@ -58,7 +58,7 @@ extern "C" {
  * @param fdRead descriptor for reading (or -1 if reading is not wanted)
  * @param fdWrite descriptor for writing (or -1 if writing is not wanted)
  */
-GWENHYWFAR_API GWEN_IO_LAYER *GWEN_Io_LayerFile_new(int fdRead, int fdWrite);
+GWENHYWFAR_API DEPRECATED GWEN_IO_LAYER *GWEN_Io_LayerFile_new(int fdRead, int fdWrite);
 /*@}*/
 
 

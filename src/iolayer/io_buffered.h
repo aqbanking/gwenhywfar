@@ -89,7 +89,7 @@ extern "C" {
 /**
  * Creates a new IO layer using the given base layer.
  */
-GWENHYWFAR_API GWEN_IO_LAYER *GWEN_Io_LayerBuffered_new(GWEN_IO_LAYER *baseLayer);
+GWENHYWFAR_API DEPRECATED GWEN_IO_LAYER *GWEN_Io_LayerBuffered_new(GWEN_IO_LAYER *baseLayer);
 /*@}*/
 
 

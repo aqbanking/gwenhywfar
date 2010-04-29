@@ -44,7 +44,7 @@ extern "C" {
 
 
 
-GWENHYWFAR_API GWEN_IO_LAYER *GWEN_Io_LayerTls_new(GWEN_IO_LAYER *baseLayer);
+GWENHYWFAR_API DEPRECATED GWEN_IO_LAYER *GWEN_Io_LayerTls_new(GWEN_IO_LAYER *baseLayer);
 
 
 GWENHYWFAR_API const char *GWEN_Io_LayerTls_GetLocalCertFile(const GWEN_IO_LAYER *io);

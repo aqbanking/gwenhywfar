@@ -62,7 +62,7 @@ extern "C" {
  * Creates a new IO layer using the given buffer.
  * @param buffer GWEN_BUFFER to be used
  */
-GWENHYWFAR_API GWEN_IO_LAYER *GWEN_Io_LayerMemory_new(GWEN_BUFFER *buffer);
+GWENHYWFAR_API DEPRECATED GWEN_IO_LAYER *GWEN_Io_LayerMemory_new(GWEN_BUFFER *buffer);
 
 /**
  * Creates a new IO layer using the given data. This function internally creates a GWEN_BUFFER and calls

@@ -55,7 +55,7 @@ extern "C" {
  * Creates a new IO layer using the given socket.
  * @param sk socket to use for reading and writing)
  */
-GWENHYWFAR_API GWEN_IO_LAYER *GWEN_Io_LayerSocket_new(GWEN_SOCKET *sk);
+GWENHYWFAR_API DEPRECATED GWEN_IO_LAYER *GWEN_Io_LayerSocket_new(GWEN_SOCKET *sk);
 /*@}*/
 
 

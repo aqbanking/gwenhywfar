@@ -23,7 +23,7 @@ extern "C" {
 
 
 
-GWENHYWFAR_API int GWEN_Io_Manager_RegisterLayer(GWEN_IO_LAYER *io);
+GWENHYWFAR_API DEPRECATED int GWEN_Io_Manager_RegisterLayer(GWEN_IO_LAYER *io);
 GWENHYWFAR_API int GWEN_Io_Manager_UnregisterLayer(GWEN_IO_LAYER *io);
 
 
