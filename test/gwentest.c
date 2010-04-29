@@ -29,6 +29,7 @@
 #include <gwenhywfar/tree.h>
 #include <gwenhywfar/syncio_file.h>
 #include <gwenhywfar/syncio_buffered.h>
+#include <gwenhywfar/syncio_http.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # include <winsock.h>
@@ -3989,6 +3990,123 @@ int testSyncIo3(int argc, char **argv) {
 
 
 
+int testHttp1(int argc, char **argv) {
+  int rv;
+  const char *fname;
+  GWEN_SYNCIO *sio=NULL;
+  int firstRead=1;
+  int bodySize=-1;
+  int bytesRead=0;
+  GWEN_BUFFER *tbuf;
+  GWEN_GUI *gui;
+  GWEN_DB_NODE *db;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  fname=argv[2];
+  rv=GWEN_Gui_GetSyncIo(fname, "http", 80, &sio);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR: Could not get SyncIO (%d)\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+
+  /* send request */
+  db=GWEN_SyncIo_Http_GetDbHeaderOut(sio);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-length", 0);
+  rv=GWEN_SyncIo_Write(sio, (uint8_t*)"", 0);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR: Could not write (%d)\n", rv);
+    return 2;
+  }
+
+  /* get response */
+  tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  for (;;) {
+    uint8_t *p;
+    uint32_t l;
+
+    rv=GWEN_Buffer_AllocRoom(tbuf, 1024);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR in check_syncio_http1: Could not allocRoom (%d)\n", rv);
+      return 2;
+    }
+
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
+    do {
+      rv=GWEN_SyncIo_Read(sio, p, l-1);
+    } while(rv==GWEN_ERROR_INTERRUPTED);
+    if (rv==0)
+      break;
+    else if (rv<0) {
+      if (rv==GWEN_ERROR_EOF) {
+	if (bodySize!=-1 && bytesRead<bodySize) {
+	  fprintf(stderr,
+		  "ERROR: Received too few bytes (%d<%d)\n",
+		  bytesRead, bodySize);
+	  return 2;
+	}
+      }
+      fprintf(stderr,
+	      "ERROR: Could not read (%d) [%d / %d]\n",
+	      rv, bytesRead, bodySize);
+      return 2;
+    }
+    else {
+      GWEN_Buffer_IncrementPos(tbuf, rv);
+      GWEN_Buffer_AdjustUsedBytes(tbuf);
+      if (firstRead) {
+	GWEN_DB_NODE *db;
+
+	db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
+	bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
+      }
+      bytesRead+=rv;
+    }
+
+    if (bodySize!=-1 && bytesRead>=bodySize) {
+      break;
+    }
+    firstRead=0;
+  }
+
+#if 1
+  fprintf(stderr, "Received:\n");
+  GWEN_Buffer_Dump(tbuf, stderr, 2);
+#endif
+  GWEN_Buffer_free(tbuf);
+
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR in check_syncio_http1: Could not disconnect (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Finished.\n");
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4139,6 +4257,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "sio3")==0) {
     rv=testSyncIo3(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "http1")==0) {
+    rv=testHttp1(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

@@ -69,6 +69,8 @@ struct GWEN_GUI {
 
   GWEN_GUI_GET_FILENAME_FN getFileNameFn;
 
+  GWEN_GUI_GETSYNCIO_FN getSyncIoFn;
+
   uint32_t flags;
 
   GWEN_PROGRESS_DATA_TREE *progressDataTree;
@@ -131,6 +133,10 @@ static uint32_t GWEN_Gui_Internal_ShowBox(GWEN_GUI *gui,
 					  uint32_t guiid);
 static void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id);
 
+static int GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui, const char *url,
+				       const char *defaultProto,
+				       int defaultPort,
+				       GWEN_SYNCIO **pSio);
 
 
 

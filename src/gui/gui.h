@@ -784,6 +784,21 @@ int GWEN_Gui_GetFileName(const char *caption,
 			 GWEN_BUFFER *pathBuffer,
 			 uint32_t guiid);
 
+/**
+ * This function creates a base layer GWEN_SYNCIO.
+ * The idea is to allow applications to implement their own PROXY handling.
+ * @param url url to which the caller wants to connect to. You should call @ref GWEN_Url_fromString()
+ *   to get the information required to determine the protocol and destination.
+ * @param defaultProto default protocol name if not specified by the url (e.g. "http", "https", "hbci")
+ * @param defaultPort default port if not specified by the url
+ * @param pSio pointer to a variable to receive the created GWEN_SYNCIO.
+ */
+GWENHYWFAR_API
+int GWEN_Gui_GetSyncIo(const char *url,
+		       const char *defaultProto,
+		       int defaultPort,
+		       GWEN_SYNCIO **pSio);
+
 
 /*@}*/
 

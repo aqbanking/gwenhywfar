@@ -226,6 +226,11 @@ typedef int (*GWEN_GUI_GET_FILENAME_FN)(GWEN_GUI *gui,
 					GWEN_BUFFER *pathBuffer,
 					uint32_t guiid);
 
+typedef int (*GWEN_GUI_GETSYNCIO_FN)(GWEN_GUI *gui, const char *url,
+				     const char *defaultProto,
+                                     int defaultPort,
+				     GWEN_SYNCIO **pSio);
+
 
 /*@}*/
 
@@ -318,6 +323,10 @@ GWEN_GUI_WRITE_DIALOG_PREFS_FN
 
 GWENHYWFAR_API
 GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f);
+
+
+GWENHYWFAR_API
+GWEN_GUI_GETSYNCIO_FN GWEN_Gui_SetGetSyncIoFn(GWEN_GUI *gui, GWEN_GUI_GETSYNCIO_FN f);
 
 
 GWENHYWFAR_API

@@ -75,6 +75,7 @@ void GWEN_SyncIo_free(GWEN_SYNCIO *sio) {
     if (sio->refCount==1) {
       GWEN_LIST_FINI(GWEN_SYNCIO, sio);
       GWEN_INHERIT_FINI(GWEN_SYNCIO, sio);
+      GWEN_SyncIo_free(sio->baseIo);
       free(sio->typeName);
       sio->refCount=0;
       GWEN_FREE_OBJECT(sio);

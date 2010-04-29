@@ -37,6 +37,11 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/dialog_be.h>
+#include <gwenhywfar/url.h>
+#include <gwenhywfar/syncio_socket.h>
+#include <gwenhywfar/syncio_buffered.h>
+#include <gwenhywfar/syncio_tls.h>
+#include <gwenhywfar/syncio_http.h>
 
 #include <stdarg.h>
 
@@ -56,6 +61,7 @@ GWEN_GUI *GWEN_Gui_new() {
   gui->refCount=1;
 
   gui->checkCertFn=GWEN_Gui_CheckCertBuiltIn;
+  gui->getSyncIoFn=GWEN_Gui_Internal_GetSyncIo;
 
   gui->progressDataTree=GWEN_ProgressData_Tree_new();
   gui->activeDialogs=GWEN_Dialog_List_new();
@@ -372,6 +378,18 @@ GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_F
   assert(gui);
   of=gui->getFileNameFn;
   gui->getFileNameFn=f;
+
+  return of;
+}
+
+
+
+GWEN_GUI_GETSYNCIO_FN GWEN_Gui_SetGetSyncIoFn(GWEN_GUI *gui, GWEN_GUI_GETSYNCIO_FN f) {
+  GWEN_GUI_GETSYNCIO_FN of;
+
+  assert(gui);
+  of=gui->getSyncIoFn;
+  gui->getSyncIoFn=f;
 
   return of;
 }
@@ -1000,6 +1018,17 @@ int GWEN_Gui_WriteDialogPrefs(const char *groupName,
 
 
 
+int GWEN_Gui_GetSyncIo(const char *url,
+		       const char *defaultProto,
+		       int defaultPort,
+		       GWEN_SYNCIO **pSio) {
+  if (gwenhywfar_gui && gwenhywfar_gui->getSyncIoFn)
+    return gwenhywfar_gui->getSyncIoFn(gwenhywfar_gui, url, defaultProto, defaultPort, pSio);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
 
 
 
@@ -1456,6 +1485,140 @@ void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id) {
 
 
 
+int GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
+				const char *url,
+				const char *defaultProto,
+				int defaultPort,
+				GWEN_SYNCIO **pSio) {
+  GWEN_URL *u;
+  const char *s;
+  int port;
+  const char *addr;
+
+  if (!(url && *url)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty URL");
+    return GWEN_ERROR_INVALID;
+  }
+
+  u=GWEN_Url_fromString(url);
+  if (u==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid URL [%s]", url);
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* determine protocol and port */
+  s=GWEN_Url_GetProtocol(u);
+  if (!(s && *s))
+    s=defaultProto;
+  if (!(s && *s))
+    s="http";
+  port=GWEN_Url_GetPort(u);
+  if (port<1)
+    port=defaultPort;
+  if (port<1)
+    port=80;
+  addr=GWEN_Url_GetServer(u);
+  if (!(addr && *addr)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing server in URL [%s]", url);
+    GWEN_Url_free(u);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (strcasecmp(s, "http")==0 ||
+      strcasecmp(s, "https")==0) {
+    GWEN_SYNCIO *sio;
+    GWEN_SYNCIO *baseLayer;
+    GWEN_DB_NODE *db;
+    GWEN_BUFFER *tbuf;
+    int rv;
+
+    /* create base io */
+    sio=GWEN_SyncIo_Socket_new(GWEN_SocketTypeTCP, GWEN_AddressFamilyIP);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      GWEN_Url_free(u);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    GWEN_SyncIo_Socket_SetAddress(sio, addr);
+    GWEN_SyncIo_Socket_SetPort(sio, port);
+    baseLayer=sio;
+
+    if (strcasecmp(s, "https")==0) {
+      /* create TLS layer */
+      sio=GWEN_SyncIo_Tls_new(baseLayer);
+      if (sio==NULL) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here");
+	GWEN_SyncIo_free(baseLayer);
+	GWEN_Url_free(u);
+	return GWEN_ERROR_GENERIC;
+      }
+      baseLayer=sio;
+    }
+
+    /* create buffered layer as needed for HTTP */
+    sio=GWEN_SyncIo_Buffered_new(baseLayer);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      GWEN_SyncIo_free(baseLayer);
+      GWEN_Url_free(u);
+      return GWEN_ERROR_GENERIC;
+    }
+    baseLayer=sio;
+
+    /* create HTTP layer */
+    sio=GWEN_SyncIo_Http_new(baseLayer);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      GWEN_SyncIo_free(baseLayer);
+      GWEN_Url_free(u);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    /* setup default command and header */
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    db=GWEN_SyncIo_Http_GetDbCommandOut(sio);
+
+    /* get command string (e.g. server-relative path plus variables) */
+    rv=GWEN_Url_toCommandString(u, tbuf);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid path in URL, ignoring (%d)", rv);
+    }
+    else
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "url", GWEN_Buffer_GetStart(tbuf));
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "command", "GET");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", "HTTP/1.0");
+
+    /* preset some headers */
+    db=GWEN_SyncIo_Http_GetDbHeaderOut(sio);
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Host", addr);
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Connection", "close");
+
+    /* done */
+    GWEN_Url_free(u);
+    *pSio=sio;
+    return 0;
+  }
+  else {
+    GWEN_SYNCIO *sio;
+
+    /* create base io */
+    sio=GWEN_SyncIo_Socket_new(GWEN_SocketTypeTCP, GWEN_AddressFamilyIP);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      GWEN_Url_free(u);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_SyncIo_Socket_SetAddress(sio, addr);
+    GWEN_SyncIo_Socket_SetPort(sio, port);
+
+    /* done */
+    GWEN_Url_free(u);
+    *pSio=sio;
+    return 0;
+  }
+
+}
 
 
 
