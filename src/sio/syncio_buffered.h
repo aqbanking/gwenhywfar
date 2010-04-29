@@ -27,6 +27,7 @@
 #define GWENHYWFAR_SYNCIO_BUFFERED_H
 
 #include <gwenhywfar/syncio.h>
+#include <gwenhywfar/buffer.h>
 
 
 #define GWEN_SYNCIO_BUFFERED_TYPE "buffered"
@@ -45,6 +46,8 @@ extern "C" {
 GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_Buffered_new(GWEN_SYNCIO *baseIo);
 
+GWENHYWFAR_API
+int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf);
 
 
 #ifdef __cplusplus

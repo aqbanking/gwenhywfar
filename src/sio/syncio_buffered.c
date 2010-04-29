@@ -319,5 +319,41 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
 
 
 
+int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
+  int rv;
+
+  /* read a single line */
+  do {
+    uint8_t *p;
+    uint32_t l;
+
+    GWEN_Buffer_AllocRoom(tbuf, 1024);
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
+    rv=GWEN_SyncIo_Read(sio, p, l);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else if (rv>0) {
+      GWEN_Buffer_IncrementPos(tbuf, rv);
+      GWEN_Buffer_AdjustUsedBytes(tbuf);
+      if (p[rv-1]==10) {
+        p[rv-1]=0;
+	break;
+      }
+    }
+    else if (rv==0)
+      break;
+  } while(rv>0);
+
+  if (GWEN_Buffer_GetUsedBytes(tbuf)<1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Nothing received");
+    return GWEN_ERROR_EOF;
+  }
+
+  return 0;
+}
+
 
 
