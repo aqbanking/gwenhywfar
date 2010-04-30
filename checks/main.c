@@ -29,31 +29,12 @@ int main(int argc, char **argv) {
   GWEN_Gui_SetCheckCertFn(gui, checkCert);
   GWEN_Gui_SetGui(gui);
 
-  //return check_io_tls();
-
-#if 0
   if (check_db())
-    errs++;
-
-  if (check_io_file())
-    errs++;
-
-  if (check_io_buffered())
-    errs++;
-
-  if (check_io_socket())
-    errs++;
-
-  if (check_io_https())
-    errs++;
-
-  if (check_io_packets())
     errs++;
 
   if (check_syncio_tls())
     errs++;
 
-#endif
   if (check_syncio_http())
     errs++;
   if (check_syncio_https())

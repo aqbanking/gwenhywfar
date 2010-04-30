@@ -11,13 +11,6 @@ noinst_PROGRAMS=checks check_urlfns
 checks_SOURCES=\
  main.c \
  db.c \
- io_file.c \
- io_buffered.c \
- io_socket.c \
- io_tls.c \
- io_http.c \
- io_https.c \
- io_packets.c \
  syncio_tls.c \
  syncio_http.c \
  syncio_https.c
