@@ -41,19 +41,22 @@ struct GWEN_SYNCIO_FILE {
 static void GWENHYWFAR_CB GWEN_SyncIo_File_FreeData(void *bp, void *p);
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio);
-int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio);
+static GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(int fd, const char *hname);
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
-					uint8_t *buffer,
-					uint32_t size);
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio);
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio);
+
+
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
+					       uint8_t *buffer,
+					       uint32_t size);
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
-					 const uint8_t *buffer,
-					 uint32_t size);
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
+						const uint8_t *buffer,
+						uint32_t size);
 
 
 

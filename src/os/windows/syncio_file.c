@@ -65,6 +65,45 @@ GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMOD
 
 
 
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(HANDLE hd, const char *hname) {
+  GWEN_SYNCIO *sio;
+  GWEN_SYNCIO_FILE *xio;
+
+  sio=GWEN_SyncIo_new(GWEN_SYNCIO_FILE_TYPE, NULL);
+  GWEN_NEW_OBJECT(GWEN_SYNCIO_FILE, xio);
+  GWEN_INHERIT_SETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio, xio, GWEN_SyncIo_File_FreeData);
+
+  xio->path=strdup(hname);
+  xio->fh=hd;
+
+  GWEN_SyncIo_SetConnectFn(sio, GWEN_SyncIo_File_Connect);
+  GWEN_SyncIo_SetDisconnectFn(sio, GWEN_SyncIo_File_Disconnect);
+  GWEN_SyncIo_SetReadFn(sio, GWEN_SyncIo_File_Read);
+  GWEN_SyncIo_SetWriteFn(sio, GWEN_SyncIo_File_Write);
+
+  return sio;
+}
+
+
+
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin() {
+  return GWEN_SyncIo_File_fromStdHandle(GetStdHandle(STD_INPUT_HANDLE), "stdin");
+}
+
+
+
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdout() {
+  return GWEN_SyncIo_File_fromStdHandle(GetStdHandle(STD_OUTPUT_HANDLE), "stdout");
+}
+
+
+
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr() {
+  return GWEN_SyncIo_File_fromStdHandle(GetStdHandle(STD_ERROR_HANDLE), "stderr");
+}
+
+
+
 const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio) {
   GWEN_SYNCIO_FILE *xio;
 
