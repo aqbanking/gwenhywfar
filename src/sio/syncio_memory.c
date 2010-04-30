@@ -159,7 +159,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Memory_Read(GWEN_SYNCIO *sio,
 
   bytesLeft=GWEN_Buffer_GetBytesLeft(xio->buffer);
   if (bytesLeft==0) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "EOF met");
     return 0;
   }
 
