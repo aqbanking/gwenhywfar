@@ -84,17 +84,20 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Write(GWEN_SYNCIO *sio,
 
 static int GWEN_SyncIo_Http_ReadLine(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf);
 static int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio);
+static int GWEN_SyncIo_Http_ReadCommand(GWEN_SYNCIO *sio);
 static int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio);
 static int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio);
 static int GWEN_SyncIo_Http_ReadChunk(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size);
 static int GWEN_SyncIo_Http_ReadBody(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size);
 
 static int GWEN_SyncIo_Http_ParseStatus(GWEN_SYNCIO *sio, char *buffer);
+static int GWEN_SyncIo_Http_ParseCommand(GWEN_SYNCIO *sio, const char *buffer);
 
 static void GWEN_SyncIo_Http_SetReadIdle(GWEN_SYNCIO *sio);
 
 
 static int GWEN_SyncIo_Http_WriteCommand(GWEN_SYNCIO *sio);
+static int GWEN_SyncIo_Http_WriteStatus(GWEN_SYNCIO *sio);
 static int GWEN_SyncIo_Http_WriteHeader(GWEN_SYNCIO *sio);
 static int GWEN_SyncIo_Http_WriteChunkSize(GWEN_SYNCIO *sio, uint32_t size);
 

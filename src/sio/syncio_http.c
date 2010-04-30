@@ -187,15 +187,25 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Read(GWEN_SYNCIO *sio,
     GWEN_DB_ClearGroup(xio->dbStatusIn, NULL);
     GWEN_DB_ClearGroup(xio->dbHeaderIn, NULL);
 
-    /* read status */
-    rv=GWEN_SyncIo_Http_ReadStatus(sio);
-    if (rv<0) {
-      xio->readMode=GWEN_SyncIo_Http_Mode_Error;
-      return rv;
+    if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE) {
+      /* read command */
+      rv=GWEN_SyncIo_Http_ReadCommand(sio);
+      if (rv<0) {
+	xio->readMode=GWEN_SyncIo_Http_Mode_Error;
+	return rv;
+      }
+    }
+    else {
+      /* read status */
+      rv=GWEN_SyncIo_Http_ReadStatus(sio);
+      if (rv<0) {
+	xio->readMode=GWEN_SyncIo_Http_Mode_Error;
+	return rv;
+      }
     }
 
     /* possibly read header */
-    s=GWEN_DB_GetCharValue(xio->dbStatusIn, "protocol", 0, "HTTP/0.9");
+    s=GWEN_DB_GetCharValue(xio->dbStatusIn, "protocol", 0, "HTTP/1.0");
     if (!(s && strcasecmp(s, "HTTP/0.9")==0)) {
       rv=GWEN_SyncIo_Http_ReadHeader(sio);
       if (rv<0) {
@@ -280,15 +290,19 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Write(GWEN_SYNCIO *sio,
   if (xio->writeMode==GWEN_SyncIo_Http_Mode_Idle) {
     const char *s;
 
-    /* write command */
-    rv=GWEN_SyncIo_Http_WriteCommand(sio);
+    if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE)
+      /* write status */
+      rv=GWEN_SyncIo_Http_WriteStatus(sio);
+    else
+      /* write command */
+      rv=GWEN_SyncIo_Http_WriteCommand(sio);
     if (rv<0) {
       xio->writeMode=GWEN_SyncIo_Http_Mode_Error;
       return rv;
     }
 
     /* possibly write header */
-    s=GWEN_DB_GetCharValue(xio->dbCommandOut, "protocol", 0, "HTTP/0.9");
+    s=GWEN_DB_GetCharValue(xio->dbCommandOut, "protocol", 0, "HTTP/1.0");
     if (!(s && strcasecmp(s, "HTTP/0.9")==0)) {
       rv=GWEN_SyncIo_Http_WriteHeader(sio);
       if (rv<0) {
@@ -458,6 +472,63 @@ int GWEN_SyncIo_Http_ParseStatus(GWEN_SYNCIO *sio, char *buffer) {
 
 
 
+int GWEN_SyncIo_Http_ParseCommand(GWEN_SYNCIO *sio, const char *buffer) {
+  GWEN_SYNCIO_HTTP *xio;
+  char *tmp;
+  char *p;
+  char *s;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
+  assert(xio);
+
+  tmp=strdup(buffer);
+  s=tmp;
+
+  /* read command */
+  p=strchr(s, ' ');
+  if (!p) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Bad format of HTTP request (%s)", buffer);
+    free(tmp);
+    return GWEN_ERROR_INVALID;
+  }
+  *p=0;
+  p++;
+
+  GWEN_DB_SetCharValue(xio->dbCommandIn, GWEN_DB_FLAGS_OVERWRITE_VARS, "command", s);
+  s=p;
+
+  /* read URL */
+  p=strchr(s, ' ');
+  if (!p) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Bad format of HTTP request (%s)", buffer);
+      free(tmp);
+      return GWEN_ERROR_INVALID;
+  }
+  *p=0;
+  p++;
+
+  GWEN_DB_SetCharValue(xio->dbCommandIn, GWEN_DB_FLAGS_OVERWRITE_VARS, "url", s);
+  s=p;
+
+  if (*s==0) {
+    /* no protocol information follows, so we assume HTTP/0.9 */
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad request (not in HTTP>=1.0)");
+    free(tmp);
+    return GWEN_ERROR_INVALID;
+  }
+  else {
+    GWEN_DB_SetCharValue(xio->dbCommandIn, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", s);
+  }
+
+  free(tmp);
+  return 0;
+}
+
+
+
 int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio) {
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
@@ -481,6 +552,41 @@ int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio) {
   }
 
   rv=GWEN_SyncIo_Http_ParseStatus(sio, GWEN_Buffer_GetStart(tbuf));
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    return rv;
+  }
+
+  GWEN_Buffer_free(tbuf);
+  return 0;
+}
+
+
+
+int GWEN_SyncIo_Http_ReadCommand(GWEN_SYNCIO *sio) {
+  GWEN_SYNCIO_HTTP *xio;
+  GWEN_SYNCIO *baseIo;
+  GWEN_BUFFER *tbuf;
+  int rv;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
+  assert(xio);
+
+  baseIo=GWEN_SyncIo_GetBaseIo(sio);
+  assert(baseIo);
+
+  /* read a single line */
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SyncIo_Http_ReadLine(sio, tbuf);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    return rv;
+  }
+
+  rv=GWEN_SyncIo_Http_ParseCommand(sio, GWEN_Buffer_GetStart(tbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -801,6 +907,60 @@ int GWEN_SyncIo_Http_WriteCommand(GWEN_SYNCIO *sio) {
   GWEN_Buffer_AppendString(tbuf, " ");
 
   s=GWEN_DB_GetCharValue(xio->dbCommandOut, "protocol", 0, "HTTP/1.0");
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "\r\n");
+
+  /* write */
+  rv=GWEN_SyncIo_WriteForced(baseIo,
+			     (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+			     GWEN_Buffer_GetUsedBytes(tbuf));
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    return rv;
+  }
+
+  GWEN_Buffer_free(tbuf);
+  return 0;
+}
+
+
+
+int GWEN_SyncIo_Http_WriteStatus(GWEN_SYNCIO *sio) {
+  GWEN_SYNCIO_HTTP *xio;
+  GWEN_SYNCIO *baseIo;
+  int rv;
+  const char *s;
+  GWEN_BUFFER *tbuf;
+  char numbuf[32];
+  int i;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
+  assert(xio);
+
+  baseIo=GWEN_SyncIo_GetBaseIo(sio);
+  assert(baseIo);
+
+  /* we will construct the line including CR/LF ourselves */
+  GWEN_SyncIo_AddFlags(baseIo, GWEN_SYNCIO_FLAGS_TRANSPARENT);
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  s=GWEN_DB_GetCharValue(xio->dbStatusOut, "protocol", 0, "HTTP/1.0");
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " ");
+
+  i=GWEN_DB_GetIntValue(xio->dbStatusOut, "code", 0, -1);
+  if (i==-1) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Missing status code");
+    GWEN_Buffer_free(tbuf);
+    return GWEN_ERROR_NO_DATA;
+  }
+  snprintf(numbuf, sizeof(numbuf), "%d ", i);
+  GWEN_Buffer_AppendString(tbuf, numbuf);
+
+  s=GWEN_DB_GetCharValue(xio->dbStatusOut, "text", 0, "No text.");
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\r\n");
 
