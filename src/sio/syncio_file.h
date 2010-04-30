@@ -79,9 +79,6 @@ GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMODE cm);
 
 GWENHYWFAR_API
-GWEN_SYNCIO *GWEN_SyncIo_File_TakeOver(int fd);
-
-GWENHYWFAR_API
 const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio);
 
 GWENHYWFAR_API

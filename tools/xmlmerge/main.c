@@ -92,7 +92,6 @@ int main(int argc, char **argv) {
   GWEN_XMLNODE *comment;
   GWEN_SYNCIO *sio;
   GWEN_XML_CONTEXT *ctx;
-  int fd;
   uint32_t flags;
 
   rv=GWEN_Init();
@@ -167,20 +166,6 @@ int main(int argc, char **argv) {
   } /* while */
 
   /* write file */
-  if (args->outputFile) {
-    fd=open(args->outputFile, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-    if (fd==-1) {
-      fprintf(stderr, "Error opening file \"%s\": %s\n",
-              args->outputFile,
-              strerror(errno));
-      GWEN_XMLNode_free(top);
-      return 4;
-    }
-  }
-  else {
-    fd=1;
-  }
-
   if (args->compact) {
     flags=GWEN_XML_FLAGS_SIMPLE;
   }
@@ -191,11 +176,31 @@ int main(int argc, char **argv) {
 
   ctx=GWEN_XmlCtxStore_new(NULL, flags);
 
-  sio=GWEN_SyncIo_File_TakeOver(fd);
+  sio=GWEN_SyncIo_File_new(args->outputFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
+  GWEN_SyncIo_AddFlags(sio,
+		       GWEN_SYNCIO_FILE_FLAGS_READ |
+		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+		       GWEN_SYNCIO_FILE_FLAGS_GREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Error opening file \"%s\": %s\n",
+	    args->outputFile,
+	    strerror(errno));
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    GWEN_XmlCtx_free(ctx);
+    return 5;
+  }
+
 
   rv=GWEN_XMLNode_WriteToStream(top, ctx, sio);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    fprintf(stderr, "Error writing to file \"%s\": %s\n",
+	    args->outputFile,
+	    strerror(errno));
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     GWEN_XmlCtx_free(ctx);

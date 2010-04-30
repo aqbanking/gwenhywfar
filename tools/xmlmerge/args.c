@@ -196,6 +196,11 @@ int checkArgs(ARGUMENTS *args, int argc, char **argv) {
     i++;
   } /* while */
 
+  if (args->outputFile==NULL) {
+    fprintf(stderr, "%s\n", I18N("Please specify the name of the output file."));
+    return RETURNVALUE_PARAM;
+  }
+
   /* that's it */
   return 0;
 }
