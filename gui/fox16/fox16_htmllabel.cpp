@@ -84,11 +84,17 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
 
 void FOX16_HtmlLabel::calcDefaultDims() {
   int w;
+  int wNeeded;
 
   m_htmlCtx->layout(-1, -1);
-  w=m_htmlCtx->getWidth();
-  if (w>m_maxDefaultWidth) {
-    m_htmlCtx->layout(m_maxDefaultWidth-border*2, -1);
+  wNeeded=m_htmlCtx->getWidth();
+  w=wNeeded;
+  if (w>m_maxDefaultWidth)
+    w=m_maxDefaultWidth;
+  if (w<width)
+    w=width;
+  if (w<wNeeded) {
+    m_htmlCtx->layout(w-border*2, -1);
   }
   m_defaultWidth=m_htmlCtx->getWidth();
   m_defaultHeight=m_htmlCtx->getHeight();
@@ -140,6 +146,7 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
 void FOX16_HtmlLabel::layout() {
   int w;
 
+  m_haveDefaultDims=false;
   if (options & FLAGS_NO_WORDWRAP)
     w=-1;
   else
