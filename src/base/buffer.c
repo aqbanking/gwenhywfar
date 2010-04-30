@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Fri Sep 12 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2003-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -47,16 +44,14 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
   GWEN_NEW_OBJECT(GWEN_BUFFER, bf);
   if (!buffer) {
     /* allocate buffer */
-    if (size) {
-      bf->realPtr=(char*)GWEN_Memory_malloc(size+1);
-      assert(bf->realPtr);
-      bf->ptr=bf->realPtr;
-      bf->realBufferSize=size+1;
-      bf->bufferSize=size+1;
-      bf->flags=GWEN_BUFFER_FLAGS_OWNED;
-      bf->bytesUsed=used;
-      bf->ptr[0]=0;
-    }
+    bf->realPtr=(char*)GWEN_Memory_malloc(size+1);
+    assert(bf->realPtr);
+    bf->ptr=bf->realPtr;
+    bf->realBufferSize=size+1;
+    bf->bufferSize=size+1;
+    bf->flags=GWEN_BUFFER_FLAGS_OWNED;
+    bf->bytesUsed=used;
+    bf->ptr[0]=0;
   }
   else {
     /* use existing buffer */
@@ -237,16 +232,14 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i){
   assert(bf);
 
   if (i>=bf->bufferSize) {
-    if ((bf->mode & GWEN_BUFFER_MODE_USE_BIO) ||
-	(bf->mode & GWEN_BUFFER_MODE_USE_IO) ||
-	(bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)) {
+    if (bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO) {
       bf->pos=i;
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Position %d outside buffer boundaries (%d bytes)",
                 i, bf->bufferSize);
-      return -1;
+      return GWEN_ERROR_BUFFER_OVERFLOW;
     }
   }
   bf->pos=i;
@@ -262,25 +255,15 @@ uint32_t GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf){
 
 
 
-int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, uint32_t i){
-  assert(bf);
-
-  DBG_WARN(GWEN_LOGDOMAIN,
-           "GWEN_Buffer_SetUsedBytes: Deprecated, "
-           "please use GWEN_Buffer_Crop instead.");
-  if (i>bf->bufferSize) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bytes used>buffer size (%d>%d bytes)",
-              i, bf->bufferSize);
-    return 1;
-  }
-  bf->bytesUsed=i;
-  return 0;
-}
-
-
-
 int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
   assert(bf);
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
   /*if (bf->pos+size>bf->bufferSize) {*/
   if (bf->bytesUsed+(size+1) > bf->bufferSize) {
@@ -296,7 +279,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
         abort();
       }
-      return 1;
+      return GWEN_ERROR_BUFFER_OVERFLOW;
     }
 
     /* calculate reserved bytes (to set ptr later) */
@@ -318,7 +301,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
         abort();
       }
-      return 1;
+      return GWEN_ERROR_BUFFER_OVERFLOW;
     }
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes",
                 bf->bufferSize, nsize);
@@ -334,7 +317,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
 	abort();
       }
-      return 1;
+      return GWEN_ERROR_MEMORY_FULL;
     }
 
     /* store new size and pointer */
@@ -352,10 +335,22 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
 int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
                             const char *buffer,
                             uint32_t size){
+  int rv;
+
   assert(bf);
-  if (GWEN_Buffer_AllocRoom(bf, size+1)) {
+
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
+  rv=GWEN_Buffer_AllocRoom(bf, size+1);
+  if (rv<0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
-    return 1;
+    return rv;
   }
   /* if (bf->pos+size>bf->bufferSize) { */
   if (bf->bytesUsed+size>bf->bufferSize) {
@@ -363,9 +358,9 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
               /*bf->pos, size,*/
               bf->bytesUsed, size+1,
               bf->bufferSize);
-    return 1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
-  /*memmove(bf->ptr+bf->pos, buffer, size);*/
+
   memmove(bf->ptr+bf->bytesUsed, buffer, size);
   /*bf->pos+=size;*/
   if (bf->pos==bf->bytesUsed)
@@ -379,17 +374,28 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
 
 
 int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
+  int rv;
+
   assert(bf);
 
-  if (GWEN_UNLIKELY(bf->bytesUsed+1+1 > bf->bufferSize)) {
-    if (GWEN_UNLIKELY(GWEN_Buffer_AllocRoom(bf, 1+1))) {
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
+  if (bf->bytesUsed+1+1 > bf->bufferSize) {
+    rv=GWEN_Buffer_AllocRoom(bf, 1+1);
+    if (rv<0) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "here");
-      return 1;
+      return rv;
     }
   }
 
   bf->ptr[bf->bytesUsed]=c;
-  if (GWEN_LIKELY(bf->pos == bf->bytesUsed))
+  if (bf->pos == bf->bytesUsed)
     bf->pos++;
   /* append a NULL to allow using the buffer as ASCIIZ string */
   bf->ptr[++(bf->bytesUsed)]=0;
@@ -450,8 +456,13 @@ int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf){
   assert(bf);
 
   if (bf->pos>=bf->bytesUsed) {
-    if (GWEN_Buffer__FillBuffer(bf))
-      return -1;
+    int rv;
+
+    rv=GWEN_Buffer__FillBuffer(bf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   return (unsigned char) (bf->ptr[bf->pos]);
@@ -463,8 +474,13 @@ int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf){
   assert(bf);
 
   if (bf->pos>=bf->bytesUsed) {
-    if (GWEN_Buffer__FillBuffer(bf))
-      return -1;
+    int rv;
+
+    rv=GWEN_Buffer__FillBuffer(bf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   return (unsigned char) (bf->ptr[bf->pos++]);
@@ -476,7 +492,7 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, uint32_t i){
   assert(bf);
 
   if (i+bf->pos>=bf->bufferSize) {
-    if (!(bf->mode & GWEN_BUFFER_MODE_USE_BIO)) {
+    if (!(bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)) {
       DBG_DEBUG(GWEN_LOGDOMAIN,
                 "Position %d outside buffer boundaries (%d bytes)\n"
                 "Incrementing anyway",
@@ -505,7 +521,7 @@ int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf){
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Pointer outside buffer size (%d bytes)",
               bf->bufferSize);
-    return 1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
 }
 
@@ -518,7 +534,7 @@ int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, uint32_t i){
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Position %d outside buffer boundaries (%d bytes)",
               bf->pos-i, bf->bufferSize);
-    return 1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   bf->pos-=i;
   return 0;
@@ -526,10 +542,19 @@ int GWEN_Buffer_DecrementPos(GWEN_BUFFER *bf, uint32_t i){
 
 
 
-int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf,
-                             GWEN_BUFFER *sf){
+int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf, GWEN_BUFFER *sf){
+
   assert(bf);
   assert(sf);
+
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
   if (sf->bytesUsed)
     return GWEN_Buffer_AppendBytes(bf, sf->ptr, sf->bytesUsed);
   return 0;
@@ -620,6 +645,8 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert) {
   fprintf(f, "Mode           : %08x ( ", bf->mode);
   if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
     fprintf(f, "DYNAMIC ");
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY)
+    fprintf(f, "READONLY ");
   if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL)
     fprintf(f, "ABORT_ON_MEMFULL ");
   fprintf(f, ")\n");
@@ -657,28 +684,7 @@ void GWEN_Buffer_Rewind(GWEN_BUFFER *bf){
 
 
 
-int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
-                          char *buffer,
-                          uint32_t *size){
-#if 0
-  /* old behaviour */
-  uint32_t i;
-  int c;
-
-  i=0;
-
-  while(i<*size) {
-    c=GWEN_Buffer_ReadByte(bf);
-    if (c==-1)
-      break;
-    buffer[i]=c;
-    i++;
-  } /* while */
-
-  *size=i;
-  return 0;
-
-#else
+int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf, char *buffer, uint32_t *size){
   /* optimized for speed */
   uint32_t i;
   char *pdst;
@@ -714,7 +720,6 @@ int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf,
   *size=i;
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Copied %d bytes", *size);
   return 0;
-#endif
 }
 
 
@@ -751,13 +756,20 @@ int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
                            uint32_t size){
   char *p;
   int i;
+  int rv;
 
   assert(bf);
 
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
   if (bf->pos==0) {
     if (bf->bytesUsed==0) {
-      int rv;
-
       /* no bytes used, simply return */
       rv=GWEN_Buffer_AllocRoom(bf, size);
       if (rv) {
@@ -781,15 +793,16 @@ int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
     }
   }
 
-  if (GWEN_Buffer_AllocRoom(bf, size)) {
+  rv=GWEN_Buffer_AllocRoom(bf, size);
+  if (rv<0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
-    return 1;
+    return rv;
   }
   if (bf->pos+size>bf->bufferSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d [%d] of %d bytes)",
 	      bf->pos, size,
 	      bf->bufferSize);
-    return -1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   p=bf->ptr+bf->pos;
   i=bf->bytesUsed-bf->pos;
@@ -810,6 +823,14 @@ int GWEN_Buffer_RemoveRoom(GWEN_BUFFER *bf, uint32_t size){
   int i;
 
   assert(bf);
+
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
 
   if (bf->pos==0) {
     if (bf->bytesUsed<size) {
@@ -850,6 +871,14 @@ int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
   int32_t d;
   int rv;
 
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
   /* either insert or remove bytes */
   d=size-rsize;
   if (d<0) {
@@ -879,11 +908,23 @@ int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
 int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
                             const char *buffer,
                             uint32_t size){
+  int rv;
+
   assert(bf);
   assert(buffer);
 
-  if (GWEN_Buffer_InsertRoom(bf, size)) {
-    return -1;
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
+  rv=GWEN_Buffer_InsertRoom(bf, size);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
   memmove(bf->ptr+bf->pos, buffer, size);
   return 0;
@@ -892,10 +933,22 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
 
 
 int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c){
+  int rv;
+
   assert(bf);
 
-  if (GWEN_Buffer_InsertRoom(bf, 1)) {
-    return -1;
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
+  rv=GWEN_Buffer_InsertRoom(bf, 1);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
   bf->ptr[bf->pos]=c;
   return 0;
@@ -916,6 +969,15 @@ int GWEN_Buffer_InsertBuffer(GWEN_BUFFER *bf,
 int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
                      uint32_t pos,
                      uint32_t l) {
+
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
   if (pos>=bf->bufferSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Position outside buffer");
     return -1;
@@ -979,17 +1041,29 @@ void GWEN_Buffer_SetSourceSyncIo(GWEN_BUFFER *bf,
 int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
                               unsigned char c,
                               uint32_t size){
+  int rv;
+
   assert(bf);
-  if (GWEN_Buffer_AllocRoom(bf, size+1)) {
+
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
+  rv=GWEN_Buffer_AllocRoom(bf, size+1);
+  if (rv<0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
-    return 1;
+    return rv;
   }
   /* if (bf->pos+size>bf->bufferSize) { */
   if (bf->bytesUsed+size>bf->bufferSize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d [%d] of %d bytes)",
               bf->bytesUsed, size+1,
               bf->bufferSize);
-    return 1;
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   memset(bf->ptr+bf->bytesUsed, c, size);
   if (bf->pos==bf->bytesUsed)
@@ -1005,9 +1079,21 @@ int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
 int GWEN_Buffer_FillLeftWithBytes(GWEN_BUFFER *bf,
                                   unsigned char c,
                                   uint32_t size){
+  int rv;
+
   assert(bf);
 
-  if (GWEN_Buffer_InsertRoom(bf, size)) {
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+      return GWEN_ERROR_PERMISSIONS;
+    }
+  }
+
+  rv=GWEN_Buffer_InsertRoom(bf, size);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return -1;
   }
   memset(bf->ptr+bf->pos, c, size);
