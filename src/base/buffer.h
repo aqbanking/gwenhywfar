@@ -68,9 +68,8 @@ extern "C" {
 
 #define GWEN_BUFFER_MODE_DYNAMIC          0x0001
 #define GWEN_BUFFER_MODE_ABORT_ON_MEMFULL 0x0002
-#define GWEN_BUFFER_MODE_USE_BIO          0x0004
-#define GWEN_BUFFER_MODE_USE_IO           0x0008
 #define GWEN_BUFFER_MODE_USE_SYNCIO       0x0010
+#define GWEN_BUFFER_MODE_READONLY         0x0020
 
 #define GWEN_BUFFER_MODE_DEFAULT \
   (\
@@ -257,12 +256,6 @@ GWENHYWFAR_API
 void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
                              uint32_t v);
 
-
-/**
- * @return 0 if ok, !=0 on error
- */
-GWENHYWFAR_API
-int GWEN_Buffer_SetUsedBytes(GWEN_BUFFER *bf, uint32_t i);
 
 /**
  * Copies the contents of the given buffer to this GWEN_BUFFER, if there is
