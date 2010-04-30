@@ -29,7 +29,6 @@
 #define GWENHYWFAR_PLUGIN_OLDDB_H
 
 
-#include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/stringlist.h>

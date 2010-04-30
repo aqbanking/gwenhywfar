@@ -17,7 +17,6 @@
 #include "globals.h"
 
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/bio_file.h>
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/ctplugin.h>
 

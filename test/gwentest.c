@@ -44,12 +44,6 @@
 #include <gwenhywfar/idlist.h>
 #include <gwenhywfar/gwensignal.h>
 #include <gwenhywfar/cgui.h>
-#include <gwenhywfar/io_file.h>
-#include <gwenhywfar/io_socket.h>
-#include <gwenhywfar/io_buffered.h>
-#include <gwenhywfar/io_tls.h>
-#include <gwenhywfar/io_http.h>
-#include <gwenhywfar/iomanager.h>
 
 #include <gwenhywfar/cryptdefs.h>
 #include <gwenhywfar/cryptkeysym.h>
@@ -946,44 +940,45 @@ int testProcess(int argc, char **argv) {
   if (strcasecmp(argv[2], "server")==0) {
     GWEN_PROCESS *pr;
     GWEN_PROCESS_STATE pst;
-    GWEN_BUFFEREDIO *bio;
+    GWEN_SYNCIO *sio;
+    GWEN_BUFFER *tbuf;
     int err;
-	
-	fprintf(stderr, "Creating process\n");
+
+    fprintf(stderr, "Creating process\n");
     pr=GWEN_Process_new();
-	fprintf(stderr, "Creating process: done\n");
-	fprintf(stderr, "Setting flags\n");
+    fprintf(stderr, "Creating process: done\n");
+    fprintf(stderr, "Setting flags\n");
     GWEN_Process_AddFlags(pr, GWEN_PROCESS_FLAGS_REDIR_STDOUT);
-	fprintf(stderr, "Setting flags: done\n");
-	
-	fprintf(stderr, "Starting process\n");
+    fprintf(stderr, "Setting flags: done\n");
+
+    fprintf(stderr, "Starting process\n");
     pst=GWEN_Process_Start(pr, argv[0], "process client");
-	//pst=GWEN_ProcessStateNotStarted;
+    //pst=GWEN_ProcessStateNotStarted;
     if (pst!=GWEN_ProcessStateRunning) {
       fprintf(stderr, "Bad process state \"%d\"", pst);
       return 2;
     }
-	fprintf(stderr, "Started process\n");
-	//Sleep(15000);
-	//return 0;
+    fprintf(stderr, "Started process\n");
+    //Sleep(15000);
+    //return 0;
 
-    bio=GWEN_Process_GetStdout(pr);
-    assert(bio);
-    while(!GWEN_BufferedIO_CheckEOF(bio)) {
-      char buffer[256];
-
-	  fprintf(stderr, "Will read from client\n");
-      buffer[0]=0;
-      err=GWEN_BufferedIO_ReadLine(bio, buffer, sizeof(buffer)-1);
-      if (err) {
-        fprintf(stderr, "ERROR: Reading from clients output\n");
-        return 2;
+    sio=GWEN_Process_GetStdout(pr);
+    assert(sio);
+    sio=GWEN_SyncIo_Buffered_new(sio);
+    assert(sio);
+    tbuf=GWEN_Buffer_new(0, 512, 0, 1);
+    do {
+      fprintf(stderr, "Will read from client\n");
+      err=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, tbuf);
+      if (err<0) {
+	fprintf(stderr, "ERROR: Reading from clients output (%d)\n", err);
+	return 2;
       }
-      fprintf(stderr, "DATA: %s\n", buffer);
-    } /* while */
-    err=GWEN_BufferedIO_Close(bio);
-    if (err) {
-      fprintf(stderr, "ERROR: Closing clients output stream\n");
+      fprintf(stderr, "DATA: %s\n", GWEN_Buffer_GetStart(tbuf));
+    } while(err>=0);
+    err=GWEN_SyncIo_Disconnect(sio);
+    if (err<0) {
+      fprintf(stderr, "ERROR: Closing clients output stream (%d)\n", err);
       return 2;
     }
 
@@ -993,8 +988,8 @@ int testProcess(int argc, char **argv) {
   else {
     fprintf(stderr, "Hello, I'm the client...\n");
     if (fprintf(stdout, "Hello, I'm the client...\n")<1) {
-		fprintf(stderr, "ERROR: Client could not write.\n");
-	}
+      fprintf(stderr, "ERROR: Client could not write.\n");
+    }
     sleep(10);
     fprintf(stderr, "Client exiting\n");
     return 0;
@@ -1716,91 +1711,6 @@ int testSort(int argc, char **argv) {
 
   x=strdup("Simple test");
   free(x);
-
-  return 0;
-}
-
-
-
-int testBIO(int argc, char **argv) {
-  GWEN_BUFFEREDIO *bio;
-  int err;
-  int fd;
-  FILE *f;
-  char buf[128];
-  char buf2[512];
-  unsigned int bread;
-
-  f=fopen("testfile.128", "w+");
-  if (!f) {
-    DBG_ERROR(0, "fopen: %s", strerror(errno));
-    return 1;
-  }
-
-  memset(buf, 0xa5, 128);
-  if (1!=fwrite(buf, 128, 1, f)) {
-    DBG_ERROR(0, "fwrite: %s", strerror(errno));
-    return 1;
-  }
-
-  if (fclose(f)) {
-    DBG_ERROR(0, "fclose: %s", strerror(errno));
-    return 1;
-  }
-
-  fd=open("testfile.128", O_RDONLY);
-  if (fd==-1) {
-    DBG_ERROR(0, "open: %s", strerror(errno));
-    return 1;
-  }
-
-  bio=GWEN_BufferedIO_File_new(fd);
-  GWEN_BufferedIO_SetReadBuffer(bio, 0, 1024);
-
-  memset(buf2, 0, sizeof(buf2));
-  bread=128;
-  err=GWEN_BufferedIO_ReadRawForced(bio, buf2, &bread);
-  if (err) {
-    DBG_ERROR(0, "Got an error (%d bytes read): %d",
-              bread,
-              err);
-    DBG_ERROR_ERR(0, err);
-    return 2;
-  }
-  else {
-    DBG_ERROR(0, "Got this return value (%d bytes read):", bread);
-    DBG_ERROR_ERR(0, err);
-  }
-
-  bread=128;
-  err=GWEN_BufferedIO_ReadRawForced(bio, buf2+128, &bread);
-  if (err) {
-    DBG_ERROR(0, "Got an error (%d bytes read): %d",
-              bread,
-              err);
-    DBG_ERROR_ERR(0, err);
-    return 2;
-  }
-  else {
-    DBG_ERROR(0, "Got this return value (%d bytes read):", bread);
-    DBG_ERROR_ERR(0, err);
-  }
-
-  f=fopen("testfile.out", "w+");
-  if (!f) {
-    DBG_ERROR(0, "fopen: %s", strerror(errno));
-    return 1;
-  }
-
-  if (1!=fwrite(buf2, bread+128, 1, f)) {
-    DBG_ERROR(0, "fwrite: %s", strerror(errno));
-    return 1;
-  }
-
-  if (fclose(f)) {
-    DBG_ERROR(0, "fclose: %s", strerror(errno));
-    return 1;
-  }
 
   return 0;
 }
@@ -4196,8 +4106,6 @@ int main(int argc, char **argv) {
     rv=testFuzzy(argc, argv);
   else if (strcasecmp(argv[1], "sort")==0)
     rv=testSort(argc, argv);
-  else if (strcasecmp(argv[1], "bio")==0)
-    rv=testBIO(argc, argv);
   else if (strcasecmp(argv[1], "buf2")==0)
     rv=testBuffer2(argc, argv);
   else if (strcasecmp(argv[1], "mem")==0)

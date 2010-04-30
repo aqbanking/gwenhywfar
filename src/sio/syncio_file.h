@@ -78,6 +78,7 @@ extern "C" {
 GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMODE cm);
 
+
 GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin();
 

@@ -1,9 +1,6 @@
 /***************************************************************************
-  $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sun Dec 28 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2003-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -34,12 +31,13 @@
 
 
 #include "process_p.h"
+#include "syncio_file_l.h"
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <windows.h>
 
-#include "../../io/bufferedio_p.h" /* very ugly */
 
 
 
@@ -71,9 +69,9 @@ void GWEN_Process_free(GWEN_PROCESS *pr){
     /* close handles */
     CloseHandle(pr->processInfo.hThread);
     CloseHandle(pr->processInfo.hProcess);
-    GWEN_BufferedIO_free(pr->stdIn);
-    GWEN_BufferedIO_free(pr->stdOut);
-    GWEN_BufferedIO_free(pr->stdErr);
+    GWEN_SyncIo_free(pr->stdIn);
+    GWEN_SyncIo_free(pr->stdOut);
+    GWEN_SyncIo_free(pr->stdErr);
     GWEN_FREE_OBJECT(pr);
   }
 }
@@ -110,9 +108,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
       return -1;
     }
     si.hStdOutput=hChildStdoutWr;
-    DBG_INFO(GWEN_LOGDOMAIN, "Creating WinFile");
-    pr->stdOut=GWEN_BufferedIO_WinFile_new(hChildStdoutRd);
-    GWEN_BufferedIO_SetReadBuffer(pr->stdOut, 0, 128);
+    pr->stdOut=GWEN_SyncIo_File_fromHandle(hChildStdoutRd);
   }
   else
     si.hStdOutput=GetStdHandle(STD_OUTPUT_HANDLE);
@@ -125,9 +121,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
       return -1;
     }
     si.hStdInput=hChildStdinRd;
-    pr->stdIn=GWEN_BufferedIO_WinFile_new(hChildStdinWr);
-    DBG_INFO(GWEN_LOGDOMAIN, "Creating WinFile");
-    GWEN_BufferedIO_SetWriteBuffer(pr->stdIn, 0, 128);
+    pr->stdIn=GWEN_SyncIo_File_fromHandle(hChildStdinWr);
   }
   else
     si.hStdInput=GetStdHandle(STD_INPUT_HANDLE);
@@ -140,9 +134,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
       return -1;
     }
     si.hStdError=hChildStderrWr;
-    pr->stdErr=GWEN_BufferedIO_WinFile_new(hChildStderrRd);
-    DBG_INFO(GWEN_LOGDOMAIN, "Creating WinFile");
-    GWEN_BufferedIO_SetReadBuffer(pr->stdErr, 0, 128);
+    pr->stdErr=GWEN_SyncIo_File_fromHandle(hChildStderrRd);
   }
   else
     si.hStdError=GetStdHandle(STD_ERROR_HANDLE);
@@ -303,170 +295,24 @@ void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f){
 
 
 
-GWEN_BUFFEREDIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
   assert(pr);
   return pr->stdIn;
 }
 
 
 
-GWEN_BUFFEREDIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
   assert(pr);
   return pr->stdOut;
 }
 
 
 
-GWEN_BUFFEREDIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
   assert(pr);
   return pr->stdErr;
 }
-
-
-
-
-
-
-
-
-GWEN_INHERIT(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE);
-
-GWEN_BUFFEREDIO_WINFILE *GWEN_BufferedIO_WinFile_Table__new() {
-  GWEN_BUFFEREDIO_WINFILE *bft;
-
-  GWEN_NEW_OBJECT(GWEN_BUFFEREDIO_WINFILE, bft);
-  bft->fd=NULL;
-  return bft;
-}
-
-
-
-void GWEN_BufferedIO_WinFile_Table__free(GWEN_BUFFEREDIO_WINFILE *bft) {
-  GWEN_FREE_OBJECT(bft);
-}
-
-
-
-
-
-int GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
-                                             char *buffer,
-                                             int *size,
-                                             int timeout){
-  GWEN_BUFFEREDIO_WINFILE *bft;
-  DWORD bytesRead;
-
-  assert(dm);
-  bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
-  assert(bft);
-  if (*size<1) {
-    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to read");
-    *size=0;
-    return 0;
-  }
-  if (!ReadFile(bft->fd, buffer, *size, &bytesRead, 0)) {
-    DWORD werr;
-
-    werr=GetLastError();
-    if (werr==ERROR_BROKEN_PIPE) {
-      DBG_INFO(GWEN_LOGDOMAIN, "EOF met (broken pipe)");
-      *size=0;
-      return 0;
-    }
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not read (%ld)", werr);
-    return GWEN_ERROR_READ;
-  }
-  if (bytesRead==0) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
-    *size=0;
-    return 0;
-  }
-
-  DBG_INFO(GWEN_LOGDOMAIN, "%ld bytes read", bytesRead);
-  *size=bytesRead;
-  return 0;
-}
-
-
-
-int GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
-                                              const char *buffer,
-                                              int *size,
-                                              int timeout){
-  GWEN_BUFFEREDIO_WINFILE *bft;
-  DWORD written;
-
-  assert(dm);
-  bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
-  assert(bft);
-  if (*size<1) {
-    DBG_WARN(GWEN_LOGDOMAIN, "Nothing to write");
-    *size=0;
-    return 0;
-  }
-  if (!WriteFile(bft->fd, buffer, *size, &written, 0)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not write (%ld)", GetLastError());
-    return GWEN_ERROR_WRITE;
-  }
-  DBG_INFO(GWEN_LOGDOMAIN, "%ld bytes written", written);
-  *size=written;
-  return 0;
-}
-
-
-
-int GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm){
-  GWEN_BUFFEREDIO_WINFILE *bft;
-
-  assert(dm);
-  bft=GWEN_INHERIT_GETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE, dm);
-  assert(bft);
-  if (!CloseHandle(bft->fd)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not close (%ld)", GetLastError());
-    return GWEN_ERROR_CLOSE;
-  }
-  return 0;
-}
-
-
-
-void GWENHYWFAR_CB GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p){
-  GWEN_BUFFEREDIO_WINFILE *bft;
-
-  bft=(GWEN_BUFFEREDIO_WINFILE *)p;
-  GWEN_BufferedIO_WinFile_Table__free(bft);
-}
-
-
-
-GWEN_BUFFEREDIO *GWEN_BufferedIO_WinFile_new(HANDLE fd){
-  GWEN_BUFFEREDIO *bt;
-  GWEN_BUFFEREDIO_WINFILE *bft;
-
-  bt=GWEN_BufferedIO_new();
-  bft=GWEN_BufferedIO_WinFile_Table__new();
-  bft->fd=fd;
-
-  GWEN_INHERIT_SETDATA(GWEN_BUFFEREDIO, GWEN_BUFFEREDIO_WINFILE,
-                       bt, bft,
-                       GWEN_BufferedIO_WinFile_FreeData);
-  GWEN_BufferedIO_SetReadFn(bt, GWEN_BufferedIO_WinFile__Read);
-  GWEN_BufferedIO_SetWriteFn(bt, GWEN_BufferedIO_WinFile__Write);
-  GWEN_BufferedIO_SetCloseFn(bt, GWEN_BufferedIO_WinFile__Close);
-  GWEN_BufferedIO_SetTimeout(bt, GWEN_BUFFEREDIO_WINFILE_TIMEOUT);
-
-  return bt;
-}
-
-
-
-
-
-
-
-
-
-
 
 
 

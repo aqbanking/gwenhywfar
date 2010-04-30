@@ -56,6 +56,7 @@ typedef enum {
 #define GWEN_SYNCIO_FLAGS_DONTCLOSE   0x40000000
 #define GWEN_SYNCIO_FLAGS_PASSIVE     0x20000000
 #define GWEN_SYNCIO_FLAGS_PACKET_END  0x10000000
+#define GWEN_SYNCIO_FLAGS_DOSMODE     0x08000000
 
 
 
@@ -136,6 +137,20 @@ int GWEN_SyncIo_ReadForced(GWEN_SYNCIO *sio,
 			   uint8_t *buffer,
 			   uint32_t size);
 
+
+
+/**
+ * This is just a convenience function to easily replace a function from
+ * the deprecated module GWEN_BUFFEREDIO.
+ */
+GWENHYWFAR_API
+int GWEN_SyncIo_WriteString(GWEN_SYNCIO *sio, const char *s);
+
+GWENHYWFAR_API
+int GWEN_SyncIo_WriteLine(GWEN_SYNCIO *sio, const char *s);
+
+GWENHYWFAR_API
+int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s);
 
 
 

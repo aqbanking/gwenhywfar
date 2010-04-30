@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Tue Apr 27 2010
+ copyright   : (C) 2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,30 +23,17 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_BIO_FILE_H
-#define GWENHYWFAR_BIO_FILE_H
+#ifndef GWENHYWFAR_SYNCIO_FILE_L_H
+#define GWENHYWFAR_SYNCIO_FILE_L_H
 
-#include <gwenhywfar/bufferedio.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <gwenhywfar/syncio_file.h>
 
 
-/**
- * Create a buffered IO context using an already open file.
- * This file will automatically be closed upon @ref GWEN_BufferedIO_Close
- * (unless it is stdin, stdout or stderr).
- * This context can be free'd using @ref GWEN_BufferedIO_free.
- */
-GWENHYWFAR_API GWEN_BUFFEREDIO *GWEN_BufferedIO_File_new(int fd);
 
-#ifdef __cplusplus
-}
-#endif
+GWEN_SYNCIO *GWEN_SyncIo_File_fromFd(int fd);
+
 
 
 #endif
-
 
 

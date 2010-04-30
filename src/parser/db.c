@@ -33,7 +33,6 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/path.h>
-#include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/fslock.h>

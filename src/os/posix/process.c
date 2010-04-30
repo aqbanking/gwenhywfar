@@ -1,9 +1,6 @@
 /***************************************************************************
-  $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sat Dec 27 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2003-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -34,6 +31,8 @@
 
 
 #include "process_p.h"
+#include "syncio_file_l.h"
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
@@ -151,9 +150,9 @@ void GWEN_Process_free(GWEN_PROCESS *pr){
     if (--(pr->usage)==0) {
       /* unlink from list */
       GWEN_LIST_DEL(GWEN_PROCESS, pr, &GWEN_Process_ProcessList);
-      GWEN_BufferedIO_free(pr->stdIn);
-      GWEN_BufferedIO_free(pr->stdOut);
-      GWEN_BufferedIO_free(pr->stdErr);
+      GWEN_SyncIo_free(pr->stdIn);
+      GWEN_SyncIo_free(pr->stdOut);
+      GWEN_SyncIo_free(pr->stdErr);
       GWEN_FREE_OBJECT(pr);
     }
   }
@@ -210,18 +209,15 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
     /* setup redirections */
     if (pr->filesStdin[0]!=-1) {
       close(pr->filesStdin[1]);
-      pr->stdIn=GWEN_BufferedIO_File_new(pr->filesStdin[0]);
-      GWEN_BufferedIO_SetWriteBuffer(pr->stdIn, 0, 128);
+      pr->stdIn=GWEN_SyncIo_File_fromFd(pr->filesStdin[0]);
     }
     if (pr->filesStdout[0]!=-1) {
       close(pr->filesStdout[1]);
-      pr->stdOut=GWEN_BufferedIO_File_new(pr->filesStdout[0]);
-      GWEN_BufferedIO_SetReadBuffer(pr->stdOut, 0, 128);
+      pr->stdOut=GWEN_SyncIo_File_fromFd(pr->filesStdout[0]);
     }
     if (pr->filesStderr[0]!=-1) {
       close(pr->filesStderr[1]);
-      pr->stdErr=GWEN_BufferedIO_File_new(pr->filesStdout[0]);
-      GWEN_BufferedIO_SetReadBuffer(pr->stdErr, 0, 128);
+      pr->stdErr=GWEN_SyncIo_File_fromFd(pr->filesStdout[0]);
     }
 
     return GWEN_ProcessStateRunning;
@@ -448,21 +444,21 @@ void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f){
 
 
 
-GWEN_BUFFEREDIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
   assert(pr);
   return pr->stdIn;
 }
 
 
 
-GWEN_BUFFEREDIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
   assert(pr);
   return pr->stdOut;
 }
 
 
 
-GWEN_BUFFEREDIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
   assert(pr);
   return pr->stdErr;
 }

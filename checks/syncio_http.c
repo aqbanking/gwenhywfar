@@ -3,7 +3,6 @@
 # include <config.h>
 #endif
 
-#include <gwenhywfar/iomanager.h>
 #include <gwenhywfar/syncio_socket.h>
 #include <gwenhywfar/syncio_http.h>
 #include <gwenhywfar/syncio_buffered.h>

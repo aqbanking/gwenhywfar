@@ -1,9 +1,6 @@
 /***************************************************************************
-  $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sat Dec 27 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2003-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -48,9 +45,9 @@ struct GWEN_PROCESS {
   int filesStderr[2];
   GWEN_PROCESS_STATE state;
   uint32_t pflags;
-  GWEN_BUFFEREDIO *stdIn;
-  GWEN_BUFFEREDIO *stdOut;
-  GWEN_BUFFEREDIO *stdErr;
+  GWEN_SYNCIO *stdIn;
+  GWEN_SYNCIO *stdOut;
+  GWEN_SYNCIO *stdErr;
 };
 
 

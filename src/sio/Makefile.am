@@ -4,6 +4,9 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 
+typefiles=ssl_cert_descr.xml
+EXTRA_DIST=$(typefiles)
+
 noinst_LTLIBRARIES=libsio.la
 
 noinst_HEADERS=\
@@ -12,7 +15,10 @@ noinst_HEADERS=\
  syncio_memory_p.h \
  syncio_buffered_p.h \
  syncio_tls_p.h \
- syncio_http_p.h
+ syncio_http_p.h \
+ ssl_cert_descr_l.h \
+ ssl_cert_descr_p.h \
+ httpsession_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -22,7 +28,10 @@ iheader_HEADERS=\
  syncio_memory.h \
  syncio_buffered.h \
  syncio_tls.h \
- syncio_http.h
+ syncio_http.h \
+ ssl_cert_descr.h \
+ ssl_cert_flags.h \
+ httpsession.h
 
 libsio_la_SOURCES=\
  syncio.c \
@@ -30,7 +39,13 @@ libsio_la_SOURCES=\
  syncio_memory.c \
  syncio_buffered.c \
  syncio_tls.c \
- syncio_http.c
+ syncio_http.c \
+ ssl_cert_descr.c \
+ httpsession.c
+
+
+types: $(typefiles)
+	typemaker -d GWENHYWFAR_API $(typefiles)
 
 
 sources:

@@ -27,7 +27,6 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
 
 
 #include <gwenhywfar/url.h>
-#include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/buffer.h>
 
 

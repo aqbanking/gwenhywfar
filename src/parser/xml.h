@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2003-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,11 +26,9 @@
 #define GWENHYWFAR_XML_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/bufferedio.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/list2.h>
-#include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/syncio.h>
 
 #include <stdio.h>

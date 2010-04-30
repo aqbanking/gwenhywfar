@@ -55,12 +55,10 @@
 #include "os/libloader_l.h"
 #include "os/process_l.h"
 
-#include "io/bufferedio_l.h"
 #include "parser/dbio_l.h"
 #include "parser/configmgr_l.h"
 #include "crypt3/cryptkey_l.h"
 #include "crypttoken/ctplugin_l.h"
-#include "iolayer/iomanager_l.h"
 
 #include "binreloc.h"
 
@@ -267,10 +265,6 @@ int GWEN_Init() {
     err=GWEN_Process_ModuleInit();
     if (err)
       return err;
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing IO layer module");
-    err=GWEN_Io_Manager_ModuleInit();
-    if (err)
-      return err;
     DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing Plugin module");
     err=GWEN_Plugin_ModuleInit();
     if (err)
@@ -334,12 +328,6 @@ int GWEN_Fini() {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
 		"Could not deinitialze module Plugin");
-    }
-    lerr=GWEN_Io_Manager_ModuleFini();
-    if (lerr) {
-      err=lerr;
-      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module IO layer");
     }
     lerr=GWEN_Process_ModuleFini();
     if (lerr) {

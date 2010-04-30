@@ -354,6 +354,49 @@ int GWEN_SyncIo_ReadForced(GWEN_SYNCIO *sio,
 
 
 
+int GWEN_SyncIo_WriteString(GWEN_SYNCIO *sio, const char *s) {
+  int rv;
+
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) s, s?strlen(s):0);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_SyncIo_WriteLine(GWEN_SYNCIO *sio, const char *s) {
+  int rv;
+
+  rv=GWEN_SyncIo_WriteString(sio, s);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_DOSMODE)
+    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\r\n", 2);
+  else
+    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s) {
+  return GWEN_SyncIo_WriteForced(sio, (const uint8_t*) &s, 1);
+}
+
+
+
 
 
 

@@ -1,9 +1,6 @@
 /***************************************************************************
-  $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sat Dec 27 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2003-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -32,7 +29,7 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
-#include <gwenhywfar/bufferedio.h>
+#include <gwenhywfar/syncio.h>
 #include <gwenhywfar/error.h>
 
 /** redirect the child processes stdin channel */
@@ -153,7 +150,7 @@ extern "C" {
    * have the flag @ref GWEN_PROCESS_FLAGS_REDIR_STDIN set.
    */
   GWENHYWFAR_API
-    GWEN_BUFFEREDIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr);
+    GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr);
 
   /**
    * Returns a GWEN_BUFFEREDIO which can be used to read data written by
@@ -161,7 +158,7 @@ extern "C" {
    * have the flag @ref GWEN_PROCESS_FLAGS_REDIR_STDOUT set.
    */
   GWENHYWFAR_API
-    GWEN_BUFFEREDIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr);
+    GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr);
 
   /**
    * Returns a GWEN_BUFFEREDIO which can be used to read data written by
@@ -169,7 +166,7 @@ extern "C" {
    * have the flag @ref GWEN_PROCESS_FLAGS_REDIR_STDERR set.
    */
   GWENHYWFAR_API
-    GWEN_BUFFEREDIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr);
+    GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr);
 
 
 #ifdef __cplusplus

@@ -1,14 +1,13 @@
 INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
- -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/parser $(all_includes)
 
 AM_CFLAGS=$(visibility_cflags)
 
-SUBDIRS = base sio io iolayer os parser crypt3 crypttoken gui cryptmsg
+SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \
@@ -54,9 +53,7 @@ libgwenhywfar_la_LIBADD=\
   crypt3/libcrypt3.la \
   crypttoken/libcrypttoken.la \
   cryptmsg/libcryptmsg.la \
-  io/libio.la \
   sio/libsio.la \
-  iolayer/libiolayer.la \
   os/libos.la \
   parser/libparser.la \
   gui/libgui.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(rt_libs) $(all_libraries)

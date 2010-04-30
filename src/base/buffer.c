@@ -81,15 +81,6 @@ void GWEN_Buffer_free(GWEN_BUFFER *bf){
   if (bf) {
     if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
       GWEN_Memory_dealloc(bf->realPtr);
-    if (bf->bio) {
-      if (bf->flags & GWEN_BUFFER_FLAGS_OWN_BIO) {
-        GWEN_BufferedIO_free(bf->bio);
-      }
-    }
-    if (bf->ioLayer) {
-      if (bf->flags & GWEN_BUFFER_FLAGS_OWN_IO)
-	GWEN_Io_Layer_free(bf->ioLayer);
-    }
     if (bf->syncIo) {
       if (bf->flags & GWEN_BUFFER_FLAGS_OWN_SYNCIO)
         GWEN_SyncIo_free(bf->syncIo);
@@ -407,81 +398,6 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
 
 
 
-int GWEN_Buffer__FillBuffer_Bio(GWEN_BUFFER *bf){
-  if (bf->bio) {
-    unsigned int toread;
-    int gerr;
-
-    if (GWEN_BufferedIO_CheckEOF(bf->bio)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "End of data stream reached");
-      return GWEN_ERROR_EOF;
-    }
-    toread=bf->pos-bf->bytesUsed+1;
-    if (GWEN_Buffer_AllocRoom(bf, toread+1)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
-      return -1;
-    }
-    gerr=GWEN_BufferedIO_ReadRawForced(bf->bio,
-				       bf->ptr+bf->bytesUsed,
-				       &toread);
-    if (gerr) {
-      DBG_INFO_ERR(GWEN_LOGDOMAIN, gerr);
-      return -1;
-    }
-    bf->bytesUsed+=toread;
-  }
-  else {
-    DBG_DEBUG(GWEN_LOGDOMAIN,
-	      "End of used area reached and no BIO (%d bytes)",
-	      bf->pos);
-    return GWEN_ERROR_EOF;
-  }
-  return 0;
-}
-
-
-
-int GWEN_Buffer__FillBuffer_IoLayer(GWEN_BUFFER *bf){
-  if (bf->ioLayer) {
-    unsigned int toread;
-    int rv;
-
-    toread=bf->pos-bf->bytesUsed+1;
-    if (GWEN_Buffer_AllocRoom(bf, toread+1)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
-      return -1;
-    }
-    /* wait up to 30 secs for available data */
-    rv=GWEN_Io_Layer_ReadBytes(bf->ioLayer,
-			       (uint8_t*)bf->ptr+bf->bytesUsed,
-			       toread,
-			       GWEN_IO_REQUEST_FLAGS_READALL,
-			       0, 30000);
-    if (rv<(int)toread) {
-      if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-        return rv;
-      }
-      else {
-	DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
-	/* still some bytes available, but not all */
-	bf->bytesUsed+=toread;
-	return GWEN_ERROR_EOF;
-      }
-    }
-    bf->bytesUsed+=toread;
-    return 0;
-  }
-  else {
-    DBG_DEBUG(GWEN_LOGDOMAIN,
-	      "End of used area reached and no BIO (%d bytes)",
-	      bf->pos);
-    return GWEN_ERROR_EOF;
-  }
-}
-
-
-
 int GWEN_Buffer__FillBuffer_SyncIo(GWEN_BUFFER *bf){
   if (bf->syncIo) {
     uint32_t toread;
@@ -519,11 +435,7 @@ int GWEN_Buffer__FillBuffer_SyncIo(GWEN_BUFFER *bf){
 
 int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf){
   assert(bf);
-  if (bf->mode & GWEN_BUFFER_MODE_USE_BIO)
-    return GWEN_Buffer__FillBuffer_Bio(bf);
-  else if (bf->mode & GWEN_BUFFER_MODE_USE_IO)
-    return GWEN_Buffer__FillBuffer_IoLayer(bf);
-  else if (bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)
+  if (bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)
     return GWEN_Buffer__FillBuffer_SyncIo(bf);
   else {
     DBG_DEBUG(GWEN_LOGDOMAIN,
@@ -1042,42 +954,6 @@ int GWEN_Buffer_InsertString(GWEN_BUFFER *bf,
   assert(bf);
   assert(buffer);
   return GWEN_Buffer_InsertBytes(bf, buffer, strlen(buffer));
-}
-
-
-
-void GWEN_Buffer_SetSourceBIO(GWEN_BUFFER *bf,
-                              GWEN_BUFFEREDIO *bio,
-                              int take){
-  assert(bf);
-  if (bf->bio) {
-    if (bf->flags & GWEN_BUFFER_FLAGS_OWN_BIO) {
-      GWEN_BufferedIO_free(bf->bio);
-    }
-  }
-  if (take)
-    bf->flags|=GWEN_BUFFER_FLAGS_OWN_BIO;
-  else
-    bf->flags&=~GWEN_BUFFER_FLAGS_OWN_BIO;
-  bf->bio=bio;
-}
-
-
-
-void GWEN_Buffer_SetSourceIoLayer(GWEN_BUFFER *bf,
-				  GWEN_IO_LAYER *io,
-				  int take) {
-  assert(bf);
-  if (bf->ioLayer) {
-    if (bf->flags & GWEN_BUFFER_FLAGS_OWN_IO) {
-      GWEN_Io_Layer_free(bf->ioLayer);
-    }
-  }
-  if (take)
-    bf->flags|=GWEN_BUFFER_FLAGS_OWN_IO;
-  else
-    bf->flags&=~GWEN_BUFFER_FLAGS_OWN_IO;
-  bf->ioLayer=io;
 }
 
 

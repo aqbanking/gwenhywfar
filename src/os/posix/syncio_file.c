@@ -71,6 +71,26 @@ GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMOD
 
 
 
+GWEN_SYNCIO *GWEN_SyncIo_File_fromFd(int fd) {
+  GWEN_SYNCIO *sio;
+  GWEN_SYNCIO_FILE *xio;
+
+  sio=GWEN_SyncIo_new(GWEN_SYNCIO_FILE_TYPE, NULL);
+  GWEN_NEW_OBJECT(GWEN_SYNCIO_FILE, xio);
+  GWEN_INHERIT_SETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio, xio, GWEN_SyncIo_File_FreeData);
+
+  xio->fd=fd;
+
+  GWEN_SyncIo_SetConnectFn(sio, GWEN_SyncIo_File_Connect);
+  GWEN_SyncIo_SetDisconnectFn(sio, GWEN_SyncIo_File_Disconnect);
+  GWEN_SyncIo_SetReadFn(sio, GWEN_SyncIo_File_Read);
+  GWEN_SyncIo_SetWriteFn(sio, GWEN_SyncIo_File_Write);
+
+  return sio;
+}
+
+
+
 GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(int fd, const char *hname) {
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_FILE *xio;

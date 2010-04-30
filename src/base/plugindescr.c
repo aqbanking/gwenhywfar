@@ -34,7 +34,6 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
-#include <gwenhywfar/bio_buffer.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

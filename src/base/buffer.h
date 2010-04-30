@@ -44,8 +44,6 @@ typedef struct GWEN_BUFFER GWEN_BUFFER;
 #endif
 
 #include <gwenhywfar/types.h>
-#include <gwenhywfar/bufferedio.h>
-#include <gwenhywfar/iolayer.h>
 #include <gwenhywfar/syncio.h>
 
 
@@ -523,30 +521,6 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
                      uint32_t pos,
                      uint32_t l);
 
-
-/**
- * Sets the buffered input to be used as a source.
- * This BIO is used when a byte is to be returned while the buffer is
- * empty (or the end of the buffer is reached). In such a case the missing
- * bytes are read from this BIO if the mode contains
- * @ref GWEN_BUFFER_MODE_USE_BIO.
- */
-GWENHYWFAR_API DEPRECATED
-void GWEN_Buffer_SetSourceBIO(GWEN_BUFFER *bf,
-			      GWEN_BUFFEREDIO *bio,
-			      int take);
-
-/**
- * Sets the io layer to be used as a source.
- * This io layer is used when a byte is to be returned while the buffer is
- * empty (or the end of the buffer is reached). In such a case the missing
- * bytes are read from this io layer if the mode contains
- * @ref GWEN_BUFFER_MODE_USE_IO.
- */
-GWENHYWFAR_API DEPRECATED
-void GWEN_Buffer_SetSourceIoLayer(GWEN_BUFFER *bf,
-				  GWEN_IO_LAYER *io,
-				  int take);
 
 /**
  * Sets the syncio to be used as a source.

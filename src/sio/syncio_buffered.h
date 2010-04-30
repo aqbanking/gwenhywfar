@@ -39,9 +39,6 @@ extern "C" {
 #endif
 
 
-#define GWEN_SYNCIO_FLAGS_BUFFERED_DOS  0x00000001
-
-
 
 GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_Buffered_new(GWEN_SYNCIO *baseIo);

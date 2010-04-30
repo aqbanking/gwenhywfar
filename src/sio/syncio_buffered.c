@@ -292,7 +292,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
 	}
       }
 
-      if (flags & GWEN_SYNCIO_FLAGS_BUFFERED_DOS) {
+      if (flags & GWEN_SYNCIO_FLAGS_DOSMODE) {
 	do {
 	  rv=GWEN_SyncIo_Write(baseIo, (const uint8_t*) "\r\n", 2);
 	} while (rv==GWEN_ERROR_INTERRUPTED);
@@ -354,6 +354,7 @@ int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
 
   return 0;
 }
+
 
 
 

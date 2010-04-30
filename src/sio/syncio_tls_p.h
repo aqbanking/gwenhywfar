@@ -46,9 +46,6 @@ struct GWEN_SYNCIO_TLS {
 
   int prepared;
 
-  GWEN_IO_REQUEST *connectRequest;
-  GWEN_IO_REQUEST *disconnectRequest;
-
   GWEN_SSLCERTDESCR *peerCertDescr;
   uint32_t peerCertFlags;
 };

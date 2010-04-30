@@ -39,12 +39,10 @@
 #define GWEN_BUFFER_DYNAMIC_STEP 1024
 
 #define GWEN_BUFFER_FLAGS_OWNED      0x0001
-#define GWEN_BUFFER_FLAGS_OWN_BIO    0x0002
-#define GWEN_BUFFER_FLAGS_OWN_IO     0x0004
-#define GWEN_BUFFER_FLAGS_OWN_SYNCIO 0x0008
+#define GWEN_BUFFER_FLAGS_OWN_SYNCIO 0x0002
 
 #define GWEN_BUFFER_MODE_COPYMASK (\
-  ~(GWEN_BUFFER_MODE_USE_BIO | GWEN_BUFFER_FLAGS_OWN_IO | GWEN_BUFFER_FLAGS_OWN_SYNCIO) \
+  ~(GWEN_BUFFER_FLAGS_OWN_SYNCIO) \
   )
 
 
@@ -60,8 +58,6 @@ struct GWEN_BUFFER {
   uint32_t hardLimit;
   uint32_t step;
   uint32_t bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
-  GWEN_BUFFEREDIO *bio;
-  GWEN_IO_LAYER *ioLayer;
   GWEN_SYNCIO *syncIo;
 };
 
@@ -73,8 +69,6 @@ static void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
 
 
 static int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf);
-static int GWEN_Buffer__FillBuffer_Bio(GWEN_BUFFER *bf);
-static int GWEN_Buffer__FillBuffer_IoLayer(GWEN_BUFFER *bf);
 static int GWEN_Buffer__FillBuffer_SyncIo(GWEN_BUFFER *bf);
 
 

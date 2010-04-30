@@ -23,6 +23,7 @@ noinst_HEADERS=\
  process_p.h \
  mutex_p.h \
  semaphore_p.h \
+ syncio_file_l.h \
  syncio_file_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar

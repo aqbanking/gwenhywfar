@@ -1,9 +1,6 @@
 /***************************************************************************
-  $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sun Dec 28 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2003-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -36,7 +33,6 @@
 
 #define GWEN_PROCESS_EXITCODE_ABORT 253
 
-#define GWEN_BUFFEREDIO_WINFILE_TIMEOUT 20000
 
 
 struct GWEN_PROCESS {
@@ -45,36 +41,12 @@ struct GWEN_PROCESS {
   int result;
   int finished;
   uint32_t pflags;
-  GWEN_BUFFEREDIO *stdIn;
-  GWEN_BUFFEREDIO *stdOut;
-  GWEN_BUFFEREDIO *stdErr;
+  GWEN_SYNCIO *stdIn;
+  GWEN_SYNCIO *stdOut;
+  GWEN_SYNCIO *stdErr;
 };
 
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status);
-
-
-struct GWEN_BUFFEREDIO_WINFILE {
-  HANDLE fd;
-};
-typedef struct GWEN_BUFFEREDIO_WINFILE GWEN_BUFFEREDIO_WINFILE;
-
-int GWEN_BufferedIO_WinFile__Read(GWEN_BUFFEREDIO *dm,
-                                             char *buffer,
-                                             int *size,
-                                             int timeout);
-
-int GWEN_BufferedIO_WinFile__Write(GWEN_BUFFEREDIO *dm,
-                                              const char *buffer,
-                                              int *size,
-                                              int timeout);
-int GWEN_BufferedIO_WinFile__Close(GWEN_BUFFEREDIO *dm);
-void GWENHYWFAR_CB GWEN_BufferedIO_WinFile_FreeData(void *bp, void *p);
-
-GWEN_BUFFEREDIO *GWEN_BufferedIO_WinFile_new(HANDLE fd);
-
-
-
-
 
 
 

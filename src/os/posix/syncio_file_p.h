@@ -26,7 +26,7 @@
 #ifndef GWENHYWFAR_SYNCIO_FILE_P_H
 #define GWENHYWFAR_SYNCIO_FILE_P_H
 
-#include <gwenhywfar/syncio_file.h>
+#include "syncio_file_l.h"
 
 
 

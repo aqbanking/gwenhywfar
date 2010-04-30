@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
- begin       : Fri Feb 07 2003
- copyright   : (C) 2003 by Martin Preuss
+ begin       : Tue Apr 27 2010
+ copyright   : (C) 2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,26 +23,19 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_BIO_SOCKET_P_H
-#define GWENHYWFAR_BIO_SOCKET_P_H
+#ifndef GWENHYWFAR_SYNCIO_FILE_L_H
+#define GWENHYWFAR_SYNCIO_FILE_L_H
 
-#include <gwenhywfar/bio_socket.h>
+#include <gwenhywfar/syncio_file.h>
 
-#define GWEN_BUFFEREDIO_SOCKET_TIMEOUT 20000
-#define GWEN_BUFFEREDIO_SOCKET_TRIES   3
-
-
-struct GWEN_BUFFEREDIO_SOCKET {
-  GWEN_SOCKET *sock;
-};
-typedef struct GWEN_BUFFEREDIO_SOCKET GWEN_BUFFEREDIO_SOCKET;
+#include <windows.h>
 
 
 
-
-#endif /* GWENHYWFAR_BIO_SOCKET_P_H */
-
+GWEN_SYNCIO *GWEN_SyncIo_File_fromHandle(HANDLE fh);
 
 
+
+#endif
 
 
