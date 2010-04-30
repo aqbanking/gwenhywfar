@@ -28,33 +28,37 @@
 
 #include <gwenhywfar/syncio_file.h>
 
+#include <windows.h>
+
 
 
 typedef struct GWEN_SYNCIO_FILE GWEN_SYNCIO_FILE;
 struct GWEN_SYNCIO_FILE {
   char *path;
   GWEN_SYNCIO_FILE_CREATIONMODE creationMode;
-  int fd;
+  HANDLE fh;
 };
 
 
 static void GWENHYWFAR_CB GWEN_SyncIo_File_FreeData(void *bp, void *p);
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio);
-int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio);
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio);
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio);
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
-					uint8_t *buffer,
-					uint32_t size);
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
+					       uint8_t *buffer,
+					       uint32_t size);
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
-					 const uint8_t *buffer,
-					 uint32_t size);
+static int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
+						const uint8_t *buffer,
+						uint32_t size);
 
+/* not static! */
+int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WHENCE whence);
 
 
 #endif

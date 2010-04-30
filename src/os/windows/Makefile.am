@@ -24,7 +24,8 @@ noinst_HEADERS=\
  libloader_p.h \
  process_p.h \
  mutex_p.h \
- semaphore_p.h
+ semaphore_p.h \
+ syncio_file_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -40,7 +41,8 @@ libosimpl_la_SOURCES=\
  libloader.c \
  process.c \
  mutex.c \
- semaphore.c
+ semaphore.c \
+ syncio_file.c
 
 
 sources:
