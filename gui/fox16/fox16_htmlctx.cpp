@@ -253,15 +253,12 @@ int FOX16_HtmlCtx::layout(int width, int height) {
 
 
 void FOX16_HtmlCtx::setText(const char *s) {
-  GWEN_SYNCIO *sio;
   int rv;
 
-  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t*) s, strlen(s));
-  rv=GWEN_XML_ReadFromIo(_context, sio);
+  rv=GWEN_XMLContext_ReadFromString(_context, s);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
   }
-  GWEN_SyncIo_free(sio);
 }
 
 
