@@ -81,7 +81,7 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-O -ggdb -Wall $(cplusplus_warnings)" CFLAGS="-O -ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --disable-static --enable-full-doc
+	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" CFLAGS="-O0 -ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --disable-static --enable-full-doc
 
 mp-priv:
 	libtoolize -f --automake
