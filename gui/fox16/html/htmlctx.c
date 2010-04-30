@@ -197,63 +197,65 @@ HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx) {
 int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
 			 const char *data,
 			 GWEN_BUFFER *buf) {
-  const uint8_t *p;
-  uint8_t *dst;
-  uint8_t *src;
-  unsigned int size;
-  unsigned int i;
-  int lastWasBlank;
-  uint8_t *lastBlankPos;
-  uint32_t bStart=0;
-
-  if (GWEN_Text_UnescapeXmlToBuffer(data, buf)) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here");
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  dst=(uint8_t*)GWEN_Buffer_GetStart(buf);
-  src=dst;
-
-  /* skip leading blanks */
-  while(*src && (*src<33 || *src==127))
-    src++;
-
-  p=src;
-  bStart=src-((uint8_t*)GWEN_Buffer_GetStart(buf));
-  size=GWEN_Buffer_GetUsedBytes(buf)-bStart;
-  lastWasBlank=0;
-  lastBlankPos=0;
-
-  for (i=0; i<size; i++) {
-    uint8_t c;
-
-    c=*p;
-    if (c<32 || c==127)
-      c=32;
-
-    /* remember next loop whether this char was a blank */
-    if (c==32) {
-      if (!lastWasBlank) {
-	/* store only one blank */
-	lastWasBlank=1;
-	lastBlankPos=dst;
+  if (data && *data) {
+    const uint8_t *p;
+    uint8_t *dst;
+    uint8_t *src;
+    unsigned int size;
+    unsigned int i;
+    int lastWasBlank;
+    uint8_t *lastBlankPos;
+    uint32_t bStart=0;
+  
+    if (GWEN_Text_UnescapeXmlToBuffer(data, buf)) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      return GWEN_ERROR_BAD_DATA;
+    }
+  
+    dst=(uint8_t*)GWEN_Buffer_GetStart(buf);
+    src=dst;
+  
+    /* skip leading blanks */
+    while(*src && (*src<33 || *src==127))
+      src++;
+  
+    p=src;
+    bStart=src-((uint8_t*)GWEN_Buffer_GetStart(buf));
+    size=GWEN_Buffer_GetUsedBytes(buf)-bStart;
+    lastWasBlank=0;
+    lastBlankPos=0;
+  
+    for (i=0; i<size; i++) {
+      uint8_t c;
+  
+      c=*p;
+      if (c<32 || c==127)
+	c=32;
+  
+      /* remember next loop whether this char was a blank */
+      if (c==32) {
+	if (!lastWasBlank) {
+	  /* store only one blank */
+	  lastWasBlank=1;
+	  lastBlankPos=dst;
+	  *(dst++)=c;
+	}
+      }
+      else {
+	lastWasBlank=0;
+	lastBlankPos=0;
 	*(dst++)=c;
       }
+      p++;
     }
-    else {
-      lastWasBlank=0;
-      lastBlankPos=0;
-      *(dst++)=c;
-    }
-    p++;
+  
+    /* remove trailing blanks */
+    if (lastBlankPos!=0)
+      dst=lastBlankPos;
+  
+    size=dst-(uint8_t*)GWEN_Buffer_GetStart(buf);
+    GWEN_Buffer_Crop(buf, 0, size);
   }
-
-  /* remove trailing blanks */
-  if (lastBlankPos!=0)
-    dst=lastBlankPos;
-
-  size=dst-(uint8_t*)GWEN_Buffer_GetStart(buf);
-  GWEN_Buffer_Crop(buf, 0, size);
 
   return 0;
 }
