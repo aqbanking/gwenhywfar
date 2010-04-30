@@ -62,6 +62,9 @@
 
 #include "binreloc.h"
 
+#include <gnutls/gnutls.h>
+
+
 /* for regkey stuff */
 #ifdef OS_WIN32
 # define DIRSEP "\\"
@@ -99,6 +102,8 @@ int GWEN_Init() {
     err=GWEN_Logger_ModuleInit();
     if (err)
       return err;
+
+    gnutls_global_init();
 
     if (gwen_binreloc_initialized==0) {
       BrInitError br_error;
@@ -390,6 +395,9 @@ int GWEN_Fini() {
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
 		"Could not deinitialze module Memory");
     }
+
+    gnutls_global_deinit();
+
   }
 
   return err;
