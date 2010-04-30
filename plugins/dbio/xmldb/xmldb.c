@@ -248,7 +248,7 @@ int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
   ctx=GWEN_XmlCtxStore_new(root,
 			   GWEN_XML_FLAGS_DEFAULT |
 			   GWEN_XML_FLAGS_HANDLE_HEADERS);
-  rv=GWEN_XML_ReadFromIo(ctx, sio);
+  rv=GWEN_XMLContext_ReadFromIo(ctx, sio);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_XmlCtx_free(ctx);

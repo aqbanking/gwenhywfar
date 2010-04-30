@@ -87,7 +87,7 @@ int test1(int argc, char **argv) {
   HtmlProps_free(pr);
 
   /* read OFX file into context */
-  rv=GWEN_XML_ReadFromIo(xmlCtx, sio);
+  rv=GWEN_XMLContext_ReadFromIo(xmlCtx, sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_SyncIo_Disconnect(sio);

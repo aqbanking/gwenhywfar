@@ -2487,7 +2487,7 @@ int testNewXML(int argc, char **argv) {
 
   startTime=time(0);
 
-  if (GWEN_XML_ReadFromIo(ctx, sio)) {
+  if (GWEN_XMLContext_ReadFromIo(ctx, sio)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 1;
   }
