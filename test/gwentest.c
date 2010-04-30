@@ -30,6 +30,7 @@
 #include <gwenhywfar/syncio_file.h>
 #include <gwenhywfar/syncio_buffered.h>
 #include <gwenhywfar/syncio_http.h>
+#include <gwenhywfar/syncio_tls.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # include <winsock.h>
@@ -3909,6 +3910,7 @@ int testHttp1(int argc, char **argv) {
   int rv;
   const char *fname;
   GWEN_SYNCIO *sio=NULL;
+  GWEN_SYNCIO *sioTls;
   int firstRead=1;
   int bodySize=-1;
   int bytesRead=0;
@@ -3926,11 +3928,22 @@ int testHttp1(int argc, char **argv) {
   GWEN_Gui_SetGui(gui);
 
   fname=argv[2];
+
+
+
   rv=GWEN_Gui_GetSyncIo(fname, "http", 80, &sio);
   if (rv<0) {
     fprintf(stderr,
 	    "ERROR: Could not get SyncIO (%d)\n", rv);
     return 2;
+  }
+
+  sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sio, GWEN_SYNCIO_TLS_TYPE);
+  if (sioTls) {
+    GWEN_SyncIo_SubFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
+    GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT);
+    GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
+    fprintf(stderr, "Remote host: %s\n", GWEN_SyncIo_Tls_GetRemoteHostName(sioTls));
   }
 
   rv=GWEN_SyncIo_Connect(sio);
