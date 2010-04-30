@@ -364,7 +364,10 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 					      xio->localTrustFile,
 					      GNUTLS_X509_FMT_PEM);
     if (rv<=0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_trust_file: %d (%s)", rv, gnutls_strerror(rv));
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+		(xio->localTrustFile)?(xio->localTrustFile):"-none-",
+		rv, gnutls_strerror(rv));
       gnutls_certificate_free_credentials(xio->credentials);
       gnutls_deinit(xio->session);
       return GWEN_ERROR_GENERIC;
