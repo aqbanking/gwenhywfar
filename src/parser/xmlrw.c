@@ -861,7 +861,7 @@ int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
 
 
 
-int GWEN_XML_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
+int GWEN_XMLContext_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
   GWEN_FAST_BUFFER *fb;
   int rv;
 
@@ -880,12 +880,70 @@ int GWEN_XML_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
 
 
 
+int GWEN_XMLContext_ReadFromFile(GWEN_XML_CONTEXT *ctx, const char *fname) {
+  GWEN_SYNCIO *sio;
+  int rv;
+
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  rv=GWEN_XML__ReadAllFromIo(ctx, sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  return 0;
+}
+
+
+
+int GWEN_XMLContext_ReadFromString(GWEN_XML_CONTEXT *ctx, const char *text) {
+  if (text && *text) {
+    GWEN_SYNCIO *sio;
+    int rv;
+    GWEN_BUFFER *tbuf;
+    int i;
+
+    i=strlen(text)+1;
+    tbuf=GWEN_Buffer_new((char*)text, i, i, 0);
+    /* static buffer, don't resize */
+    GWEN_Buffer_SubMode(tbuf, GWEN_BUFFER_MODE_DYNAMIC);
+    GWEN_Buffer_AddMode(tbuf, GWEN_BUFFER_MODE_READONLY);
+    sio=GWEN_SyncIo_Memory_new(tbuf, 0);
+
+    rv=GWEN_XML__ReadAllFromIo(ctx, sio);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_free(sio);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+
+    GWEN_SyncIo_free(sio);
+    GWEN_Buffer_free(tbuf);
+  }
+  return 0;
+}
+
+
+
 
 int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath, uint32_t flags) {
   GWEN_XML_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
   int rv;
-
 
   sio=GWEN_SyncIo_File_new(filepath, GWEN_SyncIo_File_CreationMode_OpenExisting);
   GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);

@@ -587,7 +587,13 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb);
  * Reads a single element (and all its sub-elements) from an IO layer.
  */
 GWENHYWFAR_API
-int GWEN_XML_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *io);
+int GWEN_XMLContext_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *io);
+
+GWENHYWFAR_API
+int GWEN_XMLContext_ReadFromFile(GWEN_XML_CONTEXT *ctx, const char *fname);
+
+GWENHYWFAR_API
+int GWEN_XMLContext_ReadFromString(GWEN_XML_CONTEXT *ctx, const char *text);
 
 
 /**
