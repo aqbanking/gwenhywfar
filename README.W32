@@ -12,54 +12,16 @@
 We use the precompiled packages from the wireshark project (gnutls 1.6.0)
 which also contain all needed libraries such as libgcrypt and libgpg-error.
 
-1.1.2. RegExp
-
-You can get it from http://gnuwin32.sf.net/
-Install the DLL to the application folder or the windows folder.. 
 
 
 
-2. File Hierarchy
--------------------
-
-2.1. PREFIX\
-
-This is the base folder for your application using gwenhywfar.
-
-
-2.1.1. PREFIX\plugins
-
-This folder contains all plugins (not only for gwenhywfar but also for
-other projects)
-
-
-2.1.1.1. PREFIX\plugins\gwenhywfar
-
-This folder now contains all plugins of gwenhywfar. There is one folder
-per plugin type (e.g. dbio, ct).
-
-
-2.1.2. PREFIX\data
-
-This folder contains all data. There is one subfolder per project, e.g.
-gwenhywfar, aqbanking, libchipcard.
-
-
-2.1.3. PREFIX\config
-
-
-This folder contains all configuration files. There is also one subfolder per
-project, like gwenhywfar, aqbanking, libchipcard.
-
-
-
-3. Compiling Gwenhywfar
+2. Compiling Gwenhywfar
 =======================
 
-3.1. Needed Components
+2.1. Needed Components
 ----------------------
 
-3.1.1. MinGW32
+2.1.1. MinGW32
 
 Gwenhywfar uses MinGW32 on Windows platforms.
 MinGW32 is a project with the goal to provide a free compiler system and a
@@ -78,19 +40,13 @@ which just means you have to manually supply the -I/some/dir flags and
 -L/some/dir/lib flags for libregex, libintl, libiconv, and gnutls.
 
 
-3.1.2. GnuTLS
+2.1.2. GnuTLS
 
 We use the precompiled packages from the wireshark project (gnutls 1.6.0)
 which also contain all needed libraries such as libgcrypt and libgpg-error.
 To compile gwenhywfar you will also need the developer files (ending in
 *.dll.a and *.h).
 
-
-3.1.3. RegEx
-
-You can get it from http://gnuwin32.sf.net/
-Install the DLL to the application folder or the windows folder. To compile
-Gwenhywfar you will also need the developer files.
 
 
 
