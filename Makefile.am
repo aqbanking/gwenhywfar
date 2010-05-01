@@ -20,17 +20,17 @@ M4dir = $(datadir)/aclocal
 dist_M4_DATA = gwenhywfar.m4
 ACLOCAL_AMFLAGS = -I m4
 
-gwenhywfar3/gwenhywfar/version.h: src/version.h
+$(gwenhywfar_symlinkdir)/gwenhywfar/version.h: $(top_builddir)/src/version.h
 	make -C ` dirname $< ` ` basename $< `
-	( cd gwenhywfar3/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
-gwenhywfar3/gwenhywfar/types.h: src/types.h
+	( cd $(gwenhywfar_symlinkdir)/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
+$(gwenhywfar_symlinkdir)/gwenhywfar/types.h: $(top_builddir)/src/types.h
 	make -C ` dirname $< ` ` basename $< `
-	( cd gwenhywfar3/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
-gwenhywfar3/gwenhywfar/system.h: src/os/$(OS_TYPE)/system.h
+	( cd $(gwenhywfar_symlinkdir)/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
+$(gwenhywfar_symlinkdir)/gwenhywfar/system.h: $(top_builddir)/src/os/$(OS_TYPE)/system.h
 	make -C ` dirname $< ` ` basename $< `
-	( cd gwenhywfar3/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
+	( cd $(gwenhywfar_symlinkdir)/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
 
-BUILT_SOURCES = gwenhywfar3/gwenhywfar/version.h gwenhywfar3/gwenhywfar/types.h gwenhywfar3/gwenhywfar/system.h
+BUILT_SOURCES = $(gwenhywfar_symlinkdir)/gwenhywfar/version.h $(gwenhywfar_symlinkdir)/gwenhywfar/types.h $(gwenhywfar_symlinkdir)/gwenhywfar/system.h
 
 gwenhywfar-config: gwenhywfar-config.in
 	echo "#! /bin/sh" >gwenhywfar-config && \
