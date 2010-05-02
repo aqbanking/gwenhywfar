@@ -42,7 +42,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwenhywfar.pc
 
 listdoc.h:
-	admin/mklistdoc -v -I $(top_srcdir)/src/base `find "$(top_builddir)/gwenhywfar3/gwenhywfar" -name "*.h"` >listdoc.h
+	admin/mklistdoc -v -I $(top_srcdir)/src/base `find "$(top_builddir)/gwenhywfar4/gwenhywfar" -name "*.h"` >listdoc.h
 
 srcdoc: Doxyfile listdoc.h
 	doxygen
