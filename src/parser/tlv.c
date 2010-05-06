@@ -204,7 +204,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
         j+=(unsigned char)(p[pos]);
       } /* 0x82 */
       else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x", j);
+	DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x at %d", j, pos);
         return 0;
       }
     } /* if tag length modifier */
