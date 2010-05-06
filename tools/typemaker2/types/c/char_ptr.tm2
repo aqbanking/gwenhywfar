@@ -152,9 +152,28 @@
 
 
       <codedef id="toHashString">
+        <!-- !with_hashnum -->
+        <memberFlagsMask>  with_hashnum</memberFlagsMask>
+        <memberFlagsValue> </memberFlagsValue>
         <code>
           if ($(src)) 
             GWEN_Buffer_AppendString($(buffer), $(src));
+        </code>
+      </codedef>
+
+      <codedef id="toHashString">
+        <!-- with_hashnum -->
+        <memberFlagsMask>  with_hashnum</memberFlagsMask>
+        <memberFlagsValue> with_hashnum</memberFlagsValue>
+        <code>
+          if (($(src))) {
+            const char *tmp_s;
+            tmp_s=$(src);
+            while (*tmp_s=='0')
+              tmp_s++;
+            if (*tmp_s)
+              GWEN_Buffer_AppendString($(buffer), tmp_s);
+          }
         </code>
       </codedef>
 

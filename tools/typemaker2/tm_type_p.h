@@ -35,18 +35,6 @@ struct TYPEMAKER2_TYPE {
   char *identifier;
   char *prefix;
 
-  char *code_construct;
-  char *code_destruct;
-  char *code_assign;
-  char *code_dup;
-  char *code_compare;
-  char *code_fromDb;
-  char *code_toDb;
-  char *code_fromXml;
-  char *code_toXml;
-  char *code_toObject;
-  char *code_fromObject;
-
   char *defaultValue;
   char *presetValue;
 

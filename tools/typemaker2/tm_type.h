@@ -20,6 +20,7 @@
 typedef struct TYPEMAKER2_TYPE TYPEMAKER2_TYPE;
 GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type);
 
+/* don't forget to add new flags to tm_util.c ! */
 #define TYPEMAKER2_FLAGS_OWN              0x00000001
 #define TYPEMAKER2_FLAGS_VOLATILE         0x00000002
 #define TYPEMAKER2_FLAGS_CONST            0x00000004
@@ -42,6 +43,7 @@ GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type);
 #define TYPEMAKER2_FLAGS_WITH_HASH        0x02000000
 #define TYPEMAKER2_FLAGS_WITH_REFCOUNT    0x04000000
 #define TYPEMAKER2_FLAGS_WITH_FLAGS       0x08000000
+#define TYPEMAKER2_FLAGS_WITH_HASHNUM     0x10000000
 
 /** special value which is used to overwrite flags from extended types */
 #define TYPEMAKER2_FLAGS_NONE             0x80000000
@@ -134,44 +136,6 @@ void Typemaker2_Type_SetBaseType(TYPEMAKER2_TYPE *ty, const char *s);
 
 const char *Typemaker2_Type_GetExtends(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetExtends(TYPEMAKER2_TYPE *ty, const char *s);
-
-
-const char *Typemaker2_Type_GetCodeConstruct(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeConstruct(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeDestruct(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeDestruct(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeAssign(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeAssign(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeDup(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeDup(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeCompare(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeCompare(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeFromDb(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeFromDb(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeToDb(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeToDb(TYPEMAKER2_TYPE *ty, const char *s);
-
-
-const char *Typemaker2_Type_GetCodeFromXml(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeFromXml(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeToXml(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeToXml(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeToXml(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeToXml(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeFromObject(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeFromObject(TYPEMAKER2_TYPE *ty, const char *s);
-
-const char *Typemaker2_Type_GetCodeToObject(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetCodeToObject(TYPEMAKER2_TYPE *ty, const char *s);
 
 
 TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty);
