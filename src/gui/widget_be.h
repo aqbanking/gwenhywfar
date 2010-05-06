@@ -109,6 +109,10 @@ const char *GWEN_Widget_GetName(const GWEN_WIDGET *w);
 GWENHYWFAR_API
 void GWEN_Widget_SetName(GWEN_WIDGET *w, const char *s);
 
+/**
+ * Returns the flags of the given widget
+ * (see @ref GWEN_WIDGET_FLAGS_FILLX and following).
+ */
 GWENHYWFAR_API
 uint32_t GWEN_Widget_GetFlags(const GWEN_WIDGET *w);
 
@@ -121,6 +125,9 @@ void GWEN_Widget_AddFlags(GWEN_WIDGET *w, uint32_t fl);
 GWENHYWFAR_API
 void GWEN_Widget_SubFlags(GWEN_WIDGET *w, uint32_t fl);
 
+/**
+ * Returns the type of the widget (see @ref GWEN_Widget_TypeLabel and following).
+ */
 GWENHYWFAR_API
 GWEN_WIDGET_TYPE GWEN_Widget_GetType(const GWEN_WIDGET *w);
 
