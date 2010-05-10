@@ -4035,6 +4035,159 @@ int testHttp1(int argc, char **argv) {
 
 
 
+int testHttp2(int argc, char **argv) {
+  int rv;
+  const char *foutName;
+  const char *finName;
+  const char *url;
+  GWEN_SYNCIO *sio=NULL;
+  GWEN_SYNCIO *sioTls;
+  int firstRead=1;
+  int bodySize=-1;
+  int bytesRead=0;
+  GWEN_BUFFER *ibuf;
+  GWEN_BUFFER *tbuf;
+  GWEN_GUI *gui;
+  GWEN_DB_NODE *db;
+
+  if (argc<5) {
+    fprintf(stderr, "Usage: %s url sendfile recvfile\n", argv[0]);
+    return 1;
+  }
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  url=argv[2];
+  foutName=argv[3];
+  finName=argv[4];
+
+  ibuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=readFile(foutName, ibuf);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR: Could not read file (%d)\n", rv);
+    return 2;
+  }
+
+  rv=GWEN_Gui_GetSyncIo(url, "http", 80, &sio);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR: Could not get SyncIO (%d)\n", rv);
+    return 2;
+  }
+
+  sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sio, GWEN_SYNCIO_TLS_TYPE);
+  if (sioTls) {
+    GWEN_SyncIo_SubFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
+    GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT);
+    GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
+    fprintf(stderr, "Remote host: %s\n", GWEN_SyncIo_Tls_GetRemoteHostName(sioTls));
+  }
+
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR: Could not connect (%d)\n", rv);
+    return 2;
+  }
+
+  /* send request */
+  db=GWEN_SyncIo_Http_GetDbCommandOut(sio);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Command", "POST");
+
+  db=GWEN_SyncIo_Http_GetDbHeaderOut(sio);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-Type", "application/x-www-form-urlencoded");
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-length", GWEN_Buffer_GetUsedBytes(ibuf));
+  rv=GWEN_SyncIo_WriteForced(sio,
+			     (uint8_t*) GWEN_Buffer_GetStart(ibuf),
+			     GWEN_Buffer_GetUsedBytes(ibuf));
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR: Could not write (%d)\n", rv);
+    return 2;
+  }
+
+  /* get response */
+  tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  for (;;) {
+    uint8_t *p;
+    uint32_t l;
+
+    rv=GWEN_Buffer_AllocRoom(tbuf, 1024);
+    if (rv<0) {
+      fprintf(stderr,
+	      "ERROR in check_syncio_http1: Could not allocRoom (%d)\n", rv);
+      return 2;
+    }
+
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
+    do {
+      rv=GWEN_SyncIo_Read(sio, p, l-1);
+    } while(rv==GWEN_ERROR_INTERRUPTED);
+    if (rv==0)
+      break;
+    else if (rv<0) {
+      if (rv==GWEN_ERROR_EOF) {
+	if (bodySize!=-1 && bytesRead<bodySize) {
+	  fprintf(stderr,
+		  "ERROR: Received too few bytes (%d<%d)\n",
+		  bytesRead, bodySize);
+	  return 2;
+	}
+      }
+      fprintf(stderr,
+	      "ERROR: Could not read (%d) [%d / %d]\n",
+	      rv, bytesRead, bodySize);
+      return 2;
+    }
+    else {
+      GWEN_Buffer_IncrementPos(tbuf, rv);
+      GWEN_Buffer_AdjustUsedBytes(tbuf);
+      if (firstRead) {
+	GWEN_DB_NODE *db;
+
+	db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
+	bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
+      }
+      bytesRead+=rv;
+    }
+
+    if (bodySize!=-1 && bytesRead>=bodySize) {
+      break;
+    }
+    firstRead=0;
+  }
+
+  rv=writeFile(finName, GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf));
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR in writeFile (%d)\n", rv);
+    return 2;
+  }
+
+#if 1
+  fprintf(stderr, "Received:\n");
+  GWEN_Buffer_Dump(tbuf, stderr, 2);
+#endif
+  GWEN_Buffer_free(tbuf);
+
+  rv=GWEN_SyncIo_Disconnect(sio);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR in check_syncio_http1: Could not disconnect (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Finished.\n");
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4186,6 +4339,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "http1")==0) {
     rv=testHttp1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "http2")==0) {
+    rv=testHttp2(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
