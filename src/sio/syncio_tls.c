@@ -1031,6 +1031,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
 
+#if 0
+  DBG_ERROR(0, "Sending this:");
+  GWEN_Text_DumpString((const char*) buffer, size, stderr, 2);
+#endif
+
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   assert(baseIo);
 
