@@ -21,7 +21,8 @@ iheader_HEADERS=\
   cryptkeysym.h \
   mdigest.h \
   mdigest_be.h \
-  padd.h 
+  padd.h \
+  smalltresor.h
 
 noinst_LTLIBRARIES=libcrypt3.la
 noinst_HEADERS=\
@@ -47,7 +48,8 @@ libcrypt3_la_SOURCES=\
   cryptkeysym.c \
   mdigest.c \
   mdigestgc.c \
-  padd.c
+  padd.c \
+  smalltresor.c
 
 
 types: $(typefiles)

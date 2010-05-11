@@ -31,6 +31,7 @@
 #include <gwenhywfar/syncio_buffered.h>
 #include <gwenhywfar/syncio_http.h>
 #include <gwenhywfar/syncio_tls.h>
+#include <gwenhywfar/smalltresor.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # include <winsock.h>
@@ -4188,6 +4189,47 @@ int testHttp2(int argc, char **argv) {
 
 
 
+int testTresor1(int argc, char **argv) {
+  int rv;
+  const char *testData="This is the actual test data";
+  GWEN_BUFFER *buf1;
+  GWEN_BUFFER *buf2;
+
+  buf1=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SmallTresor_Encrypt((const uint8_t*) testData,
+			      strlen(testData),
+			      "TESTPASSWORD",
+			      buf1,
+			      1546,
+			      1937);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR in checkTresor1: Could not encrypt (%d)\n", rv);
+    return 2;
+  }
+
+  buf2=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SmallTresor_Decrypt((const uint8_t*) GWEN_Buffer_GetStart(buf1),
+                              GWEN_Buffer_GetUsedBytes(buf1),
+			      "TESTPASSWORD",
+			      buf2,
+			      1546,
+			      1937);
+  if (rv<0) {
+    fprintf(stderr,
+	    "ERROR in checkTresor1: Could not decrypt (%d)\n", rv);
+    return 2;
+  }
+  DBG_ERROR(0, "Got this:");
+  GWEN_Buffer_Dump(buf2, stderr, 2);
+
+  fprintf(stderr, "Finished.\n");
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4342,6 +4384,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "http2")==0) {
     rv=testHttp2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "tresor1")==0) {
+    rv=testTresor1(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
