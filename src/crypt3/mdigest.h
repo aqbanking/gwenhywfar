@@ -65,6 +65,18 @@ GWENHYWFAR_API GWEN_MDIGEST *GWEN_MDigest_Sha1_new();
 GWENHYWFAR_API GWEN_MDIGEST *GWEN_MDigest_Sha256_new();
 
 
+/**
+ * Generate a key from a given password and a salt according to RFC 2898.
+ */
+GWENHYWFAR_API int GWEN_MDigest_PKPDF2(GWEN_MDIGEST *md,
+				       const char *password,
+				       const uint8_t *pSalt,
+				       uint32_t lSalt,
+				       uint8_t *pKey,
+				       uint32_t lKey,
+				       uint32_t iterations);
+
+
 #ifdef __cplusplus
 }
 #endif

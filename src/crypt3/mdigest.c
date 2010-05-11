@@ -183,3 +183,88 @@ GWEN_MDIGEST_UPDATE_FN GWEN_MDigest_SetUpdateFn(GWEN_MDIGEST *md, GWEN_MDIGEST_U
 
 
 
+int GWEN_MDigest_PKPDF2(GWEN_MDIGEST *md,
+			const char *password,
+			const uint8_t *pSalt,
+			uint32_t lSalt,
+                        uint8_t *pKey,
+			uint32_t lKey,
+			uint32_t iterations) {
+  int rv;
+  uint8_t hash[128];
+  uint32_t hsize;
+  uint32_t i;
+
+  hsize=GWEN_MDigest_GetDigestSize(md);
+  if (lKey>hsize || lKey>sizeof(hash)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Derived key too long");
+    return GWEN_ERROR_INVALID;
+  }
+
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_MDigest_End(md);
+    return rv;
+  }
+
+  /* hash password */
+  rv=GWEN_MDigest_Update(md, (const uint8_t*) password, strlen(password));
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_MDigest_End(md);
+    return rv;
+  }
+
+  /* hash salt */
+  rv=GWEN_MDigest_Update(md, pSalt, lSalt);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_MDigest_End(md);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_MDigest_End(md);
+    return rv;
+  }
+
+  /* use that hash now for the iterations */
+  memmove(hash, GWEN_MDigest_GetDigestPtr(md), hsize);
+
+  for (i=2; i<iterations; i++) {
+    rv=GWEN_MDigest_Begin(md);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_MDigest_End(md);
+      return rv;
+    }
+    rv=GWEN_MDigest_Update(md, hash, hsize);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_MDigest_End(md);
+      return rv;
+    }
+
+    rv=GWEN_MDigest_End(md);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_MDigest_End(md);
+      return rv;
+    }
+
+    /* use that hash now for the next iteration */
+    memmove(hash, GWEN_MDigest_GetDigestPtr(md), hsize);
+  }
+
+  /* done, copy key */
+  memmove(pKey, hash, lKey);
+  memset(hash, 0, sizeof(hash));
+
+  return 0;
+}
+
+
+
