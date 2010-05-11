@@ -21,7 +21,11 @@ extern "C" {
 #endif
 
 
-
+/**
+ * This function encrypts the given data using the given password.
+ * The key for encryption is derived from the given password using
+ * the function @ref GWEN_MDigest_PKPDF2.
+ */
 GWENHYWFAR_API
 int GWEN_SmallTresor_Encrypt(const uint8_t *src,
 			     uint32_t slen,
