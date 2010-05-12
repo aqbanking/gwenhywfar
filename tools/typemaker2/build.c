@@ -145,7 +145,7 @@ int build(GWEN_DB_NODE *dbArgs) {
     fileName=GWEN_DB_GetCharValue(dbArgs, "params", i, NULL);
     if (fileName) {
       int rv=buildFile(dbArgs, fileName);
-      if (rv<0) {
+      if (rv != 0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Error building type from [%s]", fileName);
         return 2;
       }
