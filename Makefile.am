@@ -22,13 +22,13 @@ ACLOCAL_AMFLAGS = -I m4
 
 $(gwenhywfar_symlinkdir)/gwenhywfar/version.h: $(top_builddir)/src/version.h
 	make -C ` dirname $< ` ` basename $< `
-	( cd $(gwenhywfar_symlinkdir)/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
+	( cd $(gwenhywfar_symlinkdir)/gwenhywfar && $(LN_S) -f ../../$< ` basename $@ ` )
 $(gwenhywfar_symlinkdir)/gwenhywfar/types.h: $(top_builddir)/src/types.h
 	make -C ` dirname $< ` ` basename $< `
-	( cd $(gwenhywfar_symlinkdir)/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
+	( cd $(gwenhywfar_symlinkdir)/gwenhywfar && $(LN_S) -f ../../$< ` basename $@ ` )
 $(gwenhywfar_symlinkdir)/gwenhywfar/system.h: $(top_builddir)/src/os/$(OS_TYPE)/system.h
 	make -C ` dirname $< ` ` basename $< `
-	( cd $(gwenhywfar_symlinkdir)/gwenhywfar ; $(LN_S) -f ../../$< ` basename $@ ` )
+	( cd $(gwenhywfar_symlinkdir)/gwenhywfar && $(LN_S) -f ../../$< ` basename $@ ` )
 
 BUILT_SOURCES = $(gwenhywfar_symlinkdir)/gwenhywfar/version.h $(gwenhywfar_symlinkdir)/gwenhywfar/types.h $(gwenhywfar_symlinkdir)/gwenhywfar/system.h
 
