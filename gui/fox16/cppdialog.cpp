@@ -24,7 +24,7 @@
 #include <gwenhywfar/debug.h>
 
 
-#define I18N(msg) GWEN_I18N_Translate("aqfinance", msg)
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 
 
 

@@ -426,11 +426,11 @@ int FOX16_Gui::runDialog(GWEN_DIALOG *dlg, int untilEnd) {
 
 
 int FOX16_Gui::getFileName(const char *caption,
-			GWEN_GUI_FILENAME_TYPE fnt,
-			uint32_t flags,
-			const char *patterns,
-			GWEN_BUFFER *pathBuffer,
-			uint32_t guiid) {
+			   GWEN_GUI_FILENAME_TYPE fnt,
+			   uint32_t flags,
+			   const char *patterns,
+			   GWEN_BUFFER *pathBuffer,
+			   uint32_t guiid) {
   FXString sCaption;
   FXString sPatterns;
   FXString sPath;
