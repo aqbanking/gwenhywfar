@@ -80,6 +80,7 @@ void GWEN_Widget_free(GWEN_WIDGET *w) {
 
 
 
+
 GWEN_DIALOG *GWEN_Widget_GetDialog(const GWEN_WIDGET *w) {
   assert(w);
   assert(w->refCount);
@@ -502,6 +503,123 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
   return 0;
 }
 
+
+
+GWEN_WIDGET_SETINTPROPERTY_FN GWEN_Widget_SetSetIntPropertyFn(GWEN_WIDGET *w,
+							      GWEN_WIDGET_SETINTPROPERTY_FN fn) {
+  GWEN_WIDGET_SETINTPROPERTY_FN of;
+
+  assert(w);
+  assert(w->refCount);
+
+  of=w->setIntPropertyFn;
+  w->setIntPropertyFn=fn;
+  return of;
+}
+
+
+
+GWEN_WIDGET_GETINTPROPERTY_FN GWEN_Widget_SetGetIntPropertyFn(GWEN_WIDGET *w,
+							      GWEN_WIDGET_GETINTPROPERTY_FN fn) {
+  GWEN_WIDGET_GETINTPROPERTY_FN of;
+
+  assert(w);
+  assert(w->refCount);
+
+  of=w->getIntPropertyFn;
+  w->getIntPropertyFn=fn;
+  return of;
+}
+
+
+
+GWEN_WIDGET_SETCHARPROPERTY_FN GWEN_Widget_SetSetCharPropertyFn(GWEN_WIDGET *w,
+								GWEN_WIDGET_SETCHARPROPERTY_FN fn) {
+  GWEN_WIDGET_SETCHARPROPERTY_FN of;
+
+  assert(w);
+  assert(w->refCount);
+
+  of=w->setCharPropertyFn;
+  w->setCharPropertyFn=fn;
+  return of;
+}
+
+
+
+GWEN_WIDGET_GETCHARPROPERTY_FN GWEN_Widget_SetGetCharPropertyFn(GWEN_WIDGET *w,
+								GWEN_WIDGET_GETCHARPROPERTY_FN fn) {
+  GWEN_WIDGET_GETCHARPROPERTY_FN of;
+
+  assert(w);
+  assert(w->refCount);
+
+  of=w->getCharPropertyFn;
+  w->getCharPropertyFn=fn;
+  return of;
+}
+
+
+
+int GWEN_Widget_SetIntProperty(GWEN_WIDGET *w,
+			       GWEN_DIALOG_PROPERTY prop,
+			       int index,
+			       int value,
+			       int doSignal) {
+  assert(w);
+  assert(w->refCount);
+
+  if (w->setIntPropertyFn)
+    return w->setIntPropertyFn(w, prop, index, value, doSignal);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_Widget_GetIntProperty(GWEN_WIDGET *w,
+			       GWEN_DIALOG_PROPERTY prop,
+			       int index,
+			       int defaultValue) {
+  assert(w);
+  assert(w->refCount);
+
+  if (w->getIntPropertyFn)
+    return w->getIntPropertyFn(w, prop, index, defaultValue);
+  else
+    return defaultValue;
+}
+
+
+
+int GWEN_Widget_SetCharProperty(GWEN_WIDGET *w,
+				GWEN_DIALOG_PROPERTY prop,
+				int index,
+				const char *value,
+				int doSignal) {
+  assert(w);
+  assert(w->refCount);
+
+  if (w->setCharPropertyFn)
+    return w->setCharPropertyFn(w, prop, index, value, doSignal);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+const char* GWEN_Widget_GetCharProperty(GWEN_WIDGET *w,
+					GWEN_DIALOG_PROPERTY prop,
+					int index,
+					const char *defaultValue) {
+  assert(w);
+  assert(w->refCount);
+
+  if (w->getCharPropertyFn)
+    return w->getCharPropertyFn(w, prop, index, defaultValue);
+  else
+    return defaultValue;
+}
 
 
 

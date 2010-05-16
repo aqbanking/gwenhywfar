@@ -48,6 +48,12 @@ struct GWEN_WIDGET {
 
   void *impl_data[GWEN_WIDGET_IMPLDATACOUNT];
 
+  GWEN_WIDGET_SETINTPROPERTY_FN setIntPropertyFn;
+  GWEN_WIDGET_GETINTPROPERTY_FN getIntPropertyFn;
+
+  GWEN_WIDGET_SETCHARPROPERTY_FN setCharPropertyFn;
+  GWEN_WIDGET_GETCHARPROPERTY_FN getCharPropertyFn;
+
   uint32_t refCount;
 };
 

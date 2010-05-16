@@ -1,0 +1,22 @@
+INCLUDES=-I$(gwenhywfar_symlinkdir) $(GTK2_CFLAGS)
+
+AM_CPPFLAGS= @visibility_cflags@
+DEFS+=-DBUILDING_GTK2_GUI -DPACKAGE=\"$(PACKAGE)\"
+
+lib_LTLIBRARIES=libgwengui-gtk2.la
+
+
+libgwengui_gtk2_la_LIBADD=$(GTK2_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname)
+noinst_HEADERS=\
+  gtk2_gui_dialog_p.h
+
+libgwengui_gtk2_la_SOURCES=\
+  gtk2_gui_dialog.c
+
+EXTRA_DIST=\
+  w_label.c
+
+
+#iheaderdir=${includedir}/gwen-gui-gtk2
+#iheader_HEADERS=
+

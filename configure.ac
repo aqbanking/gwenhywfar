@@ -753,7 +753,7 @@ AC_SUBST(ICONV_LIBS)
 AC_ARG_WITH(guis, 
   [  --with-guis=list      space separated list of GUI implementations (default:all)],
   [gwenhywfar_guis="$withval"],
-  [gwenhywfar_guis="fox16 qt3 qt4"]
+  [gwenhywfar_guis="fox16 qt3 qt4 gtk2"]
 )
 if test "$gwenhywfar_guis" = "none"; then
   gwenhywfar_guis=""
@@ -774,12 +774,30 @@ case "$gwenhywfar_guis" in
      AC_DEFINE(BUILD_GUI_FOX16, 1, [if gwen gui for fox16 is built])
      with_gui_fox16="yes"
      ;;
-  *)
-     ;;
 esac
 
 AC_SUBST(with_gui_fox16)
 AM_CONDITIONAL(WITH_GUI_FOX16, [test "$with_gui_fox16" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+# Check for GTK+
+#
+
+
+case "$gwenhywfar_guis" in 
+  *gtk2*)
+     pkg_modules="gtk+-2.0 >= 2.0.0"
+     dnl $4=true => don't die in case of failure.
+     PKG_CHECK_MODULES(GTK2, [$pkg_modules], [], true)
+     AC_DEFINE(BUILD_GUI_GTK2, 1, [if gwen gui for gtk2 is built])
+     with_gui_gtk2="yes"
+     ;;
+esac
+
+AC_SUBST(with_gui_gtk2)
+AM_CONDITIONAL(WITH_GUI_GTK2, [test "$with_gui_gtk2" = "yes"])
 
 
 
@@ -1324,6 +1342,7 @@ AC_CONFIG_FILES([Doxyfile
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
                  gui/fox16/html/Makefile
+                 gui/gtk2/Makefile
 		])
 AC_OUTPUT
 
@@ -1420,6 +1439,25 @@ for d in gui/fox16/html; do
       	 ;;
       *)
     	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-fox16/html/${f}"
+         ;;
+    esac
+  done
+done
+
+
+
+# gtk2
+#
+rm -Rf gwenhywfar4/gwen-gui-gtk2 2>/dev/null
+mkdir -p gwenhywfar4/gwen-gui-gtk2
+for d in gui/gtk2; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.h | *_p.h | gtk2_gui_*.h)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-gtk2/${f}"
          ;;
     esac
   done
