@@ -22,6 +22,15 @@ struct GTK2_GUI_DIALOG {
   GWEN_DIALOG_GETCHARPROPERTY_FN getCharPropertyFn;
 
   GtkWidget *mainWidget;
+
+  int response;
+  GMainLoop *loop;
+  int destroyed;
+
+  gulong unmap_handler;
+  gulong destroy_handler;
+  gulong delete_handler;
+
 };
 
 static void GWENHYWFAR_CB Gtk2Gui_Dialog_FreeData(void *bp, void *p);
@@ -54,6 +63,8 @@ static const char *Gtk2Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
 						  int index,
 						  const char *defaultValue);
 
+
+static int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w);
 
 
 #endif

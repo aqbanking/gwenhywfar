@@ -116,6 +116,15 @@ void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
 
 
 
+GWEN_DIALOG *GWEN_Dialog_GetParentDialog(const GWEN_DIALOG *dlg) {
+  assert(dlg);
+  assert(dlg->refCount);
+
+  return dlg->parentDialog;
+}
+
+
+
 const char *GWEN_Dialog_GetId(const GWEN_DIALOG *dlg) {
   assert(dlg);
   assert(dlg->refCount);
@@ -307,6 +316,9 @@ int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
 
     /* store pointer to parent widget in dialog */
     subdlg->parentWidget=wparent;
+
+    /* store pointer to parent dialog in dialog */
+    subdlg->parentDialog=dlg;
     return 0;
   }
   else {

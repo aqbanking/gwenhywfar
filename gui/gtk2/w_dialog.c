@@ -12,14 +12,14 @@
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
-				 GWEN_DIALOG_PROPERTY prop,
-				 int index,
-				 int value,
-				 int doSignal) {
-  GtkLabel *g;
+int Gtk2Gui_WDialog_SetIntProperty(GWEN_WIDGET *w,
+				   GWEN_DIALOG_PROPERTY prop,
+				   int index,
+				   int value,
+				   int doSignal) {
+  GtkWindow *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -33,7 +33,7 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
 
   case GWEN_DialogProperty_Width:
   case GWEN_DialogProperty_Height:
-    /* just ignore these for now */
+    /* just ignore these for now (gtk_window_get/set_default_size) */
     return 0;
 
   default:
@@ -50,13 +50,13 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
+int Gtk2Gui_WDialog_GetIntProperty(GWEN_WIDGET *w,
 				 GWEN_DIALOG_PROPERTY prop,
 				 int index,
 				 int defaultValue) {
-  GtkLabel *g;
+  GtkWindow *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -85,19 +85,19 @@ int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
+int Gtk2Gui_WDialog_SetCharProperty(GWEN_WIDGET *w,
 				  GWEN_DIALOG_PROPERTY prop,
 				  int index,
 				  const char *value,
 				  int doSignal) {
-  GtkLabel *g;
+  GtkWindow *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
   case GWEN_DialogProperty_Title:
-    gtk_label_set_text(g, value);
+    gtk_window_set_title(GTK_WINDOW(g), value);
     return 0;
   default:
     break;
@@ -112,18 +112,18 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
+const char* Gtk2Gui_WDialog_GetCharProperty(GWEN_WIDGET *w,
 					  GWEN_DIALOG_PROPERTY prop,
 					  int index,
 					  const char *defaultValue) {
-  GtkLabel *g;
+  GtkWindow *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
   case GWEN_DialogProperty_Title:
-    return gtk_label_get_label(g);
+    return gtk_window_get_title(GTK_WINDOW(g));
   default:
     break;
   }
@@ -136,7 +136,7 @@ const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-int Gtk2Gui_WLabel_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w) {
+int Gtk2Gui_WDialog_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
   uint32_t flags;
@@ -144,23 +144,16 @@ int Gtk2Gui_WLabel_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w)
   flags=GWEN_Widget_GetFlags(w);
   s=GWEN_Widget_GetText(w, 0);
 
-  g=gtk_label_new(s);
-  if (gbox)
-    /* add to layout box (if any) */
-    gtk_box_pack_start(gbox, g,
-		       (flags & (GWEN_WIDGET_FLAGS_FILLX | GWEN_WIDGET_FLAGS_FILLY))?TRUE:FALSE,
-		       (flags & (GWEN_WIDGET_FLAGS_FILLX | GWEN_WIDGET_FLAGS_FILLY))?TRUE:FALSE,
-		       0);
-  else if (gcontainer)
-    gtk_container_add(gcontainer, g);
+  g=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_modal(GTK_WINDOW(g), TRUE);
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 
-  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WLabel_SetIntProperty);
-  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WLabel_GetIntProperty);
-  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WLabel_SetCharProperty);
-  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLabel_GetCharProperty);
+  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WDialog_SetIntProperty);
+  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WDialog_GetIntProperty);
+  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WDialog_SetCharProperty);
+  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WDialog_GetCharProperty);
 
   return 0;
 }

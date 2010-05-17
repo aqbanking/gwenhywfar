@@ -122,6 +122,10 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 				const char *sender);
 
 
+GWENHYWFAR_API
+GWEN_DIALOG *GWEN_Dialog_GetParentDialog(const GWEN_DIALOG *dlg);
+
+
 #ifdef __cplusplus
 }
 #endif

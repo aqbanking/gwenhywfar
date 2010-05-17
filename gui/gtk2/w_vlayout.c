@@ -12,7 +12,7 @@
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
+int Gtk2Gui_WVLayout_SetIntProperty(GWEN_WIDGET *w,
 				 GWEN_DIALOG_PROPERTY prop,
 				 int index,
 				 int value,
@@ -31,11 +31,6 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
 
-  case GWEN_DialogProperty_Width:
-  case GWEN_DialogProperty_Height:
-    /* just ignore these for now */
-    return 0;
-
   default:
     break;
   }
@@ -50,7 +45,7 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
+int Gtk2Gui_WVLayout_GetIntProperty(GWEN_WIDGET *w,
 				 GWEN_DIALOG_PROPERTY prop,
 				 int index,
 				 int defaultValue) {
@@ -67,11 +62,6 @@ int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
     return (gtk_widget_has_focus(GTK_WIDGET(g))==TRUE)?1:0;
     return 0;
 
-  case GWEN_DialogProperty_Width:
-  case GWEN_DialogProperty_Height:
-    /* just ignore these for now */
-    return 0;
-
   default:
     break;
   }
@@ -85,23 +75,15 @@ int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
-				  GWEN_DIALOG_PROPERTY prop,
-				  int index,
-				  const char *value,
-				  int doSignal) {
+int Gtk2Gui_WVLayout_SetCharProperty(GWEN_WIDGET *w,
+				     GWEN_DIALOG_PROPERTY prop,
+				     int index,
+				     const char *value,
+				     int doSignal) {
   GtkLabel *g;
 
   g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
-
-  switch(prop) {
-  case GWEN_DialogProperty_Title:
-    gtk_label_set_text(g, value);
-    return 0;
-  default:
-    break;
-  }
 
   DBG_WARN(GWEN_LOGDOMAIN,
 	   "Function is not appropriate for this type of widget (%s)",
@@ -112,21 +94,14 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
-					  GWEN_DIALOG_PROPERTY prop,
-					  int index,
-					  const char *defaultValue) {
+const char* Gtk2Gui_WVLayout_GetCharProperty(GWEN_WIDGET *w,
+					     GWEN_DIALOG_PROPERTY prop,
+					     int index,
+					     const char *defaultValue) {
   GtkLabel *g;
 
   g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
-
-  switch(prop) {
-  case GWEN_DialogProperty_Title:
-    return gtk_label_get_label(g);
-  default:
-    break;
-  }
 
   DBG_WARN(GWEN_LOGDOMAIN,
 	   "Function is not appropriate for this type of widget (%s)",
@@ -136,7 +111,7 @@ const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-int Gtk2Gui_WLabel_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w) {
+int Gtk2Gui_WVLayout_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
   uint32_t flags;
@@ -144,7 +119,8 @@ int Gtk2Gui_WLabel_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w)
   flags=GWEN_Widget_GetFlags(w);
   s=GWEN_Widget_GetText(w, 0);
 
-  g=gtk_label_new(s);
+  g=gtk_vbox_new((flags & GWEN_WIDGET_FLAGS_EQUAL_HEIGHT)?TRUE:FALSE,
+		 GTK2_GUI_DIALOG_DEFAULT_BOX_SPACING);
   if (gbox)
     /* add to layout box (if any) */
     gtk_box_pack_start(gbox, g,
@@ -157,10 +133,10 @@ int Gtk2Gui_WLabel_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w)
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 
-  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WLabel_SetIntProperty);
-  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WLabel_GetIntProperty);
-  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WLabel_SetCharProperty);
-  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLabel_GetCharProperty);
+  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WVLayout_SetIntProperty);
+  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WVLayout_GetIntProperty);
+  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WVLayout_SetCharProperty);
+  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WVLayout_GetCharProperty);
 
   return 0;
 }

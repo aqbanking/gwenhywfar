@@ -24,6 +24,12 @@
 # define GTK2GUI_API
 #endif
 
+#include <gwenhywfar/gui.h>
+
+
+
+GTK2GUI_API GWEN_GUI *Gtk2_Gui_new();
+
 
 
 #endif

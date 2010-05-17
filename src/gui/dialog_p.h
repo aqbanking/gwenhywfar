@@ -45,6 +45,7 @@ struct GWEN_DIALOG {
   GWEN_DIALOG_SETCHARPROPERTY_FN setCharPropertyFn;
   GWEN_DIALOG_GETCHARPROPERTY_FN getCharPropertyFn;
 
+  GWEN_DIALOG *parentDialog;
   GWEN_DIALOG_LIST *subDialogs;
   GWEN_WIDGET *parentWidget;
 

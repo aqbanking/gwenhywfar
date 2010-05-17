@@ -36,6 +36,10 @@
 
 
 #include "w_label.c"
+#include "w_dialog.c"
+#include "w_hlayout.c"
+#include "w_vlayout.c"
+#include "w_pushbutton.c"
 
 
 
@@ -91,6 +95,18 @@ void GWENHYWFAR_CB Gtk2Gui_Dialog_FreeData(void *bp, void *p) {
 
 
 
+GtkWidget *Gtk2Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg) {
+  GTK2_GUI_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->mainWidget;
+}
+
+
+
 int Gtk2Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
                                   GWEN_WIDGET *w,
 				  GWEN_DIALOG_PROPERTY prop,
@@ -133,15 +149,175 @@ const char *Gtk2Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
 
 
 
+int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
+  GTK2_GUI_DIALOG *xdlg;
+  GWEN_WIDGET_TREE *wtree;
+  GWEN_WIDGET *w;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
+  assert(xdlg);
+
+  wtree=GWEN_Dialog_GetWidgets(dlg);
+  if (wtree==NULL) {
+    DBG_ERROR(0, "No widget tree in dialog");
+    return GWEN_ERROR_NOT_FOUND;
+  }
+  w=GWEN_Widget_Tree_GetFirst(wtree);
+  if (w==NULL) {
+    DBG_ERROR(0, "No widgets in dialog");
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  rv=Gtk2Gui_Dialog_SetupTree(w);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  xdlg->mainWidget=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+
+  return 0;
+}
+
+
+
+void Gtk2Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result) {
+  GTK2_GUI_DIALOG *xdlg;
+  GWEN_DIALOG *parent;
+
+  /* get toplevel dialog, the one which actually is the GUI dialog */
+  while( (parent=GWEN_Dialog_GetParentDialog(dlg)) )
+    dlg=parent;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
+  assert(xdlg);
+
+  xdlg->response=result;
+  if (g_main_loop_is_running(xdlg->loop))
+    g_main_loop_quit(xdlg->loop);
+}
+
+
+
+static void
+run_unmap_handler (GtkWindow *window, gpointer data){
+  GWEN_DIALOG *dlg;
+  GTK2_GUI_DIALOG *xdlg;
+
+  dlg=data;
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
+  assert(xdlg);
+
+  DBG_ERROR(0, "here");
+  Gtk2Gui_Dialog_Leave(dlg, 0);
+}
+
+
+
+static gint
+run_delete_handler(GtkWindow *window,
+		   GdkEventAny *event,
+		   gpointer data){
+  GWEN_DIALOG *dlg;
+  GTK2_GUI_DIALOG *xdlg;
+
+  dlg=data;
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
+  assert(xdlg);
+
+  DBG_ERROR(0, "here");
+  Gtk2Gui_Dialog_Leave(dlg, 0);
+  return TRUE; /* Do not destroy */
+}
+
+
+
+static void
+run_destroy_handler(GtkWindow *window, gpointer data) {
+  GWEN_DIALOG *dlg;
+  GTK2_GUI_DIALOG *xdlg;
+
+  dlg=data;
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
+  assert(xdlg);
+
+  DBG_ERROR(0, "Destroyed");
+  xdlg->destroyed=1;
+}
+
+
+
+int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int timeout) {
+  GTK2_GUI_DIALOG *xdlg;
+  GtkWidget *g;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
+  assert(xdlg);
+
+  g=Gtk2Gui_Dialog_GetMainWidget(dlg);
+  if (g==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No main widget");
+    Gtk2Gui_Dialog_Unextend(dlg);
+    return GWEN_ERROR_INVALID;
+  }
+
+  xdlg->unmap_handler =
+    g_signal_connect(g,
+		     "unmap",
+		     G_CALLBACK (run_unmap_handler),
+		     dlg);
+
+  xdlg->delete_handler =
+    g_signal_connect(g,
+		     "delete-event",
+		     G_CALLBACK (run_delete_handler),
+		     dlg);
+  
+  xdlg->destroy_handler =
+    g_signal_connect(g,
+		     "destroy",
+		     G_CALLBACK (run_destroy_handler),
+		     dlg);
+
+  xdlg->loop=g_main_loop_new(NULL, FALSE);
+  DBG_ERROR(0, "Starting to run");
+  g_main_loop_run(xdlg->loop);
+  DBG_ERROR(0, "Finished running");
+  g_main_loop_unref(xdlg->loop);
+
+  if (!xdlg->destroyed) {
+    g_signal_handler_disconnect(g, xdlg->unmap_handler);
+    g_signal_handler_disconnect(g, xdlg->delete_handler);
+    g_signal_handler_disconnect(g, xdlg->destroy_handler);
+  }
+
+  return xdlg->response;
+}
+
+
+
 int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   GWEN_WIDGET *wParent;
   int rv;
   GtkBox *gbox=NULL;
   GtkContainer *gcontainer=NULL;
 
+  DBG_ERROR(0, "This widget is of type %s",
+	    GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+
   wParent=GWEN_Widget_Tree_GetParent(w);
   if (wParent) {
-    switch(GWEN_Widget_GetType(w)) {
+    DBG_ERROR(0, "Parent is of type %s",
+	      GWEN_Widget_Type_toString(GWEN_Widget_GetType(wParent)));
+
+    switch(GWEN_Widget_GetType(wParent)) {
     case GWEN_Widget_TypeHLayout:
     case GWEN_Widget_TypeVLayout:
     case GWEN_Widget_TypeGridLayout:
@@ -154,10 +330,22 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   }
 
   switch(GWEN_Widget_GetType(w)) {
+  case GWEN_Widget_TypeDialog:
+    rv=Gtk2Gui_WDialog_Setup(w);
+    break;
   case GWEN_Widget_TypeLabel:
-    rv=Gtk2Gui_Label_Setup(gcontainer, gbox, w);
+    rv=Gtk2Gui_WLabel_Setup(gcontainer, gbox, w);
+    break;
+  case GWEN_Widget_TypeVLayout:
+    rv=Gtk2Gui_WVLayout_Setup(gcontainer, gbox, w);
+    break;
+  case GWEN_Widget_TypeHLayout:
+    rv=Gtk2Gui_WHLayout_Setup(gcontainer, gbox, w);
     break;
   case GWEN_Widget_TypePushButton:
+    rv=Gtk2Gui_WPushButton_Setup(gcontainer, gbox, w);
+    break;
+
   case GWEN_Widget_TypeLineEdit:
   case GWEN_Widget_TypeTextEdit:
   case GWEN_Widget_TypeComboBox:
@@ -167,12 +355,9 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
-  case GWEN_Widget_TypeHLayout:
-  case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
   case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
-  case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeTabPage:
   case GWEN_Widget_TypeCheckBox:
@@ -210,14 +395,5 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
 
   return 0;
 }
-
-
-
-
-int Gtk2Gui_Dialog_Setup(GtkWidget *parentWindow) {
-  // TODO: create GtkDialog as main widget and then create the children
-}
-
-
 
 

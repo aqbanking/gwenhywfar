@@ -11,12 +11,25 @@ noinst_HEADERS=\
   gtk2_gui_dialog_p.h
 
 libgwengui_gtk2_la_SOURCES=\
-  gtk2_gui_dialog.c
+  gtk2_gui_dialog.c \
+  gtk2_gui.c
+
 
 EXTRA_DIST=\
-  w_label.c
+  w_label.c \
+  w_dialog.c \
+  w_hlayout.c \
+  w_vlayout.c \
+  w_pushbutton.c
 
 
-#iheaderdir=${includedir}/gwen-gui-gtk2
-#iheader_HEADERS=
+
+iheaderdir=${includedir}/gwen-gui-gtk2
+iheader_HEADERS= \
+  gtk2_gui.h
+
+
+noinst_PROGRAMS = libtest
+libtest_SOURCES = libtest.c
+libtest_LDADD = libgwengui-gtk2.la $(GTK2_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname)
 

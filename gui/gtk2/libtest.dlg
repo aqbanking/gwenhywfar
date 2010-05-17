@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog type="dialog" name="testdialog" flags="decorShrinkable decorStretchable" >
+  <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+    <widget type="label" name="label1" text="Column 1" />
+    <widget type="hlayout" name="vlayout1" flags="fillX fillY" >
+      <widget type="pushbutton" name="okButton" text="Ok" />
+      <widget type="pushbutton" name="abortButton" text="Abort" />
+    </widget>
+  </widget>
+
+</dialog>
