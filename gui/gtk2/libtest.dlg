@@ -8,6 +8,13 @@
 
       <widget type="label" name="label2" text="Input 2" />
       <widget type="lineEdit" name="edit2" flags="fillX" />
+
+      <widget type="label" name="label3" text="Input 3" />
+      <widget type="comboBox" name="combo1" flags="fillX readOnly" />
+
+      <widget type="label" name="label4" text="Input 4" />
+      <widget type="comboBox" name="combo2" flags="fillX" />
+
     </widget>
 
     <widget type="vspacer" name="vspacer1" flags="fillY" />

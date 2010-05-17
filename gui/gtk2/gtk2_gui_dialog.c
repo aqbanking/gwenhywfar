@@ -35,6 +35,7 @@
 #define GTK2_DIALOG_STRING_VALUE  1
 
 
+#include "w_combobox.c"
 #include "w_label.c"
 #include "w_dialog.c"
 #include "w_gridlayout.c"
@@ -346,9 +347,11 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeHSpacer:
     rv=Gtk2Gui_WHSpacer_Setup(w);
     break;
+  case GWEN_Widget_TypeComboBox:
+    rv=Gtk2Gui_WComboBox_Setup(w);
+    break;
 
   case GWEN_Widget_TypeTextEdit:
-  case GWEN_Widget_TypeComboBox:
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
   case GWEN_Widget_TypeRadioGroup:

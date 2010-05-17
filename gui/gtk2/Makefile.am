@@ -16,6 +16,7 @@ libgwengui_gtk2_la_SOURCES=\
 
 
 EXTRA_DIST=\
+  w_combobox.c \
   w_label.c \
   w_dialog.c \
   w_gridlayout.c \

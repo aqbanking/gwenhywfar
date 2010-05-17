@@ -47,17 +47,28 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 				0,
 				"Zweiter Text in Combo1",
 				0);
+    GWEN_Dialog_SetIntProperty(dlg, "combo1",
+			       GWEN_DialogProperty_Value,
+			       0,
+			       0,
+			       0);
+
 
     GWEN_Dialog_SetCharProperty(dlg, "combo2",
 				GWEN_DialogProperty_AddValue,
 				0,
 				"Erster Text in Combo2",
 				0);
-    GWEN_Dialog_SetCharProperty(dlg, "combo1",
+    GWEN_Dialog_SetCharProperty(dlg, "combo2",
 				GWEN_DialogProperty_AddValue,
 				0,
 				"Zweiter Text in Combo2",
 				0);
+    GWEN_Dialog_SetIntProperty(dlg, "combo2",
+			       GWEN_DialogProperty_Value,
+			       0,
+			       0,
+			       0);
 
     GWEN_Dialog_SetCharProperty(dlg, "listbox1",
 				GWEN_DialogProperty_Title,
