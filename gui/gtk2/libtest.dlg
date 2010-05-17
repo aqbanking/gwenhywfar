@@ -10,9 +10,12 @@
       <widget type="lineEdit" name="edit2" flags="fillX" />
     </widget>
 
+    <widget type="vspacer" name="vspacer1" flags="fillY" />
+
     <widget type="hline" name="hline1" flags="fillX" />
-    
+
     <widget type="hlayout" name="hlayout1" flags="fillX" >
+      <widget type="hspacer" name="hspacer1" flags="fillX" />
       <widget type="pushbutton" name="okButton" text="Ok" />
       <widget type="pushbutton" name="abortButton" text="Abort" />
     </widget>

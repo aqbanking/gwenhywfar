@@ -40,8 +40,10 @@
 #include "w_gridlayout.c"
 #include "w_hlayout.c"
 #include "w_hline.c"
+#include "w_hspacer.c"
 #include "w_vlayout.c"
 #include "w_vline.c"
+#include "w_vspacer.c"
 #include "w_pushbutton.c"
 #include "w_lineedit.c"
 
@@ -338,6 +340,12 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeVLine:
     rv=Gtk2Gui_WVLine_Setup(w);
     break;
+  case GWEN_Widget_TypeVSpacer:
+    rv=Gtk2Gui_WVSpacer_Setup(w);
+    break;
+  case GWEN_Widget_TypeHSpacer:
+    rv=Gtk2Gui_WHSpacer_Setup(w);
+    break;
 
   case GWEN_Widget_TypeTextEdit:
   case GWEN_Widget_TypeComboBox:
@@ -345,8 +353,6 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeProgressBar:
   case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeGroupBox:
-  case GWEN_Widget_TypeHSpacer:
-  case GWEN_Widget_TypeVSpacer:
   case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeTabBook:
