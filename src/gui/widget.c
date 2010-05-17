@@ -39,6 +39,7 @@
 
 
 GWEN_TREE_FUNCTIONS(GWEN_WIDGET, GWEN_Widget)
+GWEN_INHERIT_FUNCTIONS(GWEN_WIDGET)
 
 
 
@@ -48,6 +49,7 @@ GWEN_WIDGET *GWEN_Widget_new(GWEN_DIALOG *dlg) {
 
   GWEN_NEW_OBJECT(GWEN_WIDGET, w);
   w->refCount=1;
+  GWEN_INHERIT_INIT(GWEN_WIDGET, w);
   GWEN_TREE_INIT(GWEN_WIDGET, w);
 
   w->dialog=dlg;
@@ -67,6 +69,7 @@ void GWEN_Widget_free(GWEN_WIDGET *w) {
       int i;
 
       GWEN_TREE_FINI(GWEN_WIDGET, w);
+      GWEN_INHERIT_FINI(GWEN_WIDGET, w);
       free(w->name);
       for (i=0; i<GWEN_WIDGET_TEXTCOUNT; i++)
 	free(w->text[i]);

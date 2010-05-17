@@ -37,9 +37,11 @@
 
 #include "w_label.c"
 #include "w_dialog.c"
+#include "w_gridlayout.c"
 #include "w_hlayout.c"
 #include "w_vlayout.c"
 #include "w_pushbutton.c"
+#include "w_lineedit.c"
 
 
 
@@ -304,30 +306,7 @@ int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int timeout) {
 
 
 int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
-  GWEN_WIDGET *wParent;
   int rv;
-  GtkBox *gbox=NULL;
-  GtkContainer *gcontainer=NULL;
-
-  DBG_ERROR(0, "This widget is of type %s",
-	    GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
-
-  wParent=GWEN_Widget_Tree_GetParent(w);
-  if (wParent) {
-    DBG_ERROR(0, "Parent is of type %s",
-	      GWEN_Widget_Type_toString(GWEN_Widget_GetType(wParent)));
-
-    switch(GWEN_Widget_GetType(wParent)) {
-    case GWEN_Widget_TypeHLayout:
-    case GWEN_Widget_TypeVLayout:
-    case GWEN_Widget_TypeGridLayout:
-      gbox=GTK_BOX(GWEN_Widget_GetImplData(wParent, GTK2_DIALOG_WIDGET_CONTENT));
-      break;
-    default:
-      gcontainer=GTK_CONTAINER(GWEN_Widget_GetImplData(wParent, GTK2_DIALOG_WIDGET_CONTENT));
-      break;
-    }
-  }
 
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeDialog:
@@ -335,6 +314,9 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
     break;
   case GWEN_Widget_TypeLabel:
     rv=Gtk2Gui_WLabel_Setup(w);
+    break;
+  case GWEN_Widget_TypeGridLayout:
+    rv=Gtk2Gui_WGridLayout_Setup(w);
     break;
   case GWEN_Widget_TypeVLayout:
     rv=Gtk2Gui_WVLayout_Setup(w);
@@ -345,8 +327,10 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypePushButton:
     rv=Gtk2Gui_WPushButton_Setup(w);
     break;
-
   case GWEN_Widget_TypeLineEdit:
+    rv=Gtk2Gui_WLineEdit_Setup(w);
+    break;
+
   case GWEN_Widget_TypeTextEdit:
   case GWEN_Widget_TypeComboBox:
   case GWEN_Widget_TypeRadioButton:
@@ -355,7 +339,6 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
-  case GWEN_Widget_TypeGridLayout:
   case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeTabBook:

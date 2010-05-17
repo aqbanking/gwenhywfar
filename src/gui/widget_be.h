@@ -28,6 +28,7 @@
 
 
 #include <gwenhywfar/tree.h>
+#include <gwenhywfar/inherit.h>
 
 
 typedef struct GWEN_WIDGET GWEN_WIDGET;
@@ -38,6 +39,7 @@ extern "C" {
 
 
 GWEN_TREE_FUNCTION_LIB_DEFS(GWEN_WIDGET, GWEN_Widget, GWENHYWFAR_API)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_WIDGET, GWENHYWFAR_API)
 
 
 #define GWEN_WIDGET_TEXTCOUNT       4

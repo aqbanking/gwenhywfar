@@ -12,10 +12,10 @@
 typedef struct GTK2_GRIDLAYOUT_WIDGET GTK2_GRIDLAYOUT_WIDGET;
 struct GTK2_GRIDLAYOUT_WIDGET {
   int sortByRow;
-  int usedCols;
-  int usedRows;
+  int allocatedColumns;
+  int allocatedRows;
 
-  int currentCol;
+  int currentColumn;
   int currentRow;
 };
 
@@ -125,6 +125,71 @@ const char* Gtk2Gui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
+int Gtk2Gui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+  GTK2_GRIDLAYOUT_WIDGET *xw;
+  GtkWidget *g;
+  GtkWidget *gChild;
+  uint32_t cflags;
+  int x;
+  int y;
+
+  assert(w);
+  xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, GTK2_GRIDLAYOUT_WIDGET, w);
+  assert(xw);
+
+  cflags=GWEN_Widget_GetFlags(wChild);
+
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  assert(g);
+
+  gChild=GTK_WIDGET(GWEN_Widget_GetImplData(wChild, GTK2_DIALOG_WIDGET_REAL));
+  assert(gChild);
+
+  if (xw->sortByRow) {
+    /* fill rows, enter next column if column full */
+    y=(xw->currentRow)++;
+    if (y>=xw->allocatedRows) {
+      xw->currentRow=0;
+      y=(xw->currentRow)++;
+      xw->currentColumn++;
+    }
+
+    x=xw->currentColumn;
+    if (x>=xw->allocatedColumns) {
+      xw->allocatedColumns=x+1;
+      gtk_table_resize(GTK_TABLE(g), xw->allocatedRows, xw->allocatedColumns);
+    }
+  }
+  else {
+    /* fill columns, enter next row if row full */
+    x=(xw->currentColumn)++;
+    if (x>=xw->allocatedColumns) {
+      xw->currentColumn=0;
+      x=(xw->currentColumn)++;
+      xw->currentRow++;
+    }
+
+    y=xw->currentRow;
+    if (y>=xw->allocatedRows) {
+      xw->allocatedRows=y+1;
+      gtk_table_resize(GTK_TABLE(g), xw->allocatedRows, xw->allocatedColumns);
+    }
+  }
+
+  gtk_table_attach(GTK_TABLE(g), gChild,
+		   x, x+1, y, y+1,
+		   (cflags & GWEN_WIDGET_FLAGS_FILLX)?(GTK_FILL|GTK_EXPAND):0,
+		   (cflags & GWEN_WIDGET_FLAGS_FILLY)?(GTK_FILL|GTK_EXPAND):0,
+		   GTK2_GUI_DIALOG_DEFAULT_BOX_SPACING,
+                   GTK2_GUI_DIALOG_DEFAULT_BOX_SPACING);
+
+  return 0;
+}
+
+
+
+
+static GWENHYWFAR_CB
 void Gtk2Gui_WGridLayout_FreeData(void *bp, void *p) {
   GTK2_GRIDLAYOUT_WIDGET *xw;
 
@@ -135,9 +200,10 @@ void Gtk2Gui_WGridLayout_FreeData(void *bp, void *p) {
 
 
 
-int Gtk2Gui_WGridLayout_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w) {
+int Gtk2Gui_WGridLayout_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   uint32_t flags;
+  GWEN_WIDGET *wParent;
   GTK2_GRIDLAYOUT_WIDGET *xw;
   int rows;
   int cols;
@@ -146,29 +212,22 @@ int Gtk2Gui_WGridLayout_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGE
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, GTK2_GRIDLAYOUT_WIDGET, w, xw, Gtk2Gui_WGridLayout_FreeData);
 
   flags=GWEN_Widget_GetFlags(w);
+  wParent=GWEN_Widget_Tree_GetParent(w);
   cols=GWEN_Widget_GetColumns(w);
   rows=GWEN_Widget_GetRows(w);
 
   if (rows>0) {
     xw->sortByRow=1;
-    xw->usedRows=rows;
-    xw->usedColumns=1;
+    xw->allocatedRows=rows;
+    xw->allocatedColumns=1;
   }
   else {
-    xw->sortByRow=1;
-    xw->usedColumns=cols;
-    xw->usedRows=1;
+    xw->sortByRow=0;
+    xw->allocatedColumns=cols;
+    xw->allocatedRows=1;
   }
 
-  g=gtk_table_new(xw->usedRows, xw->usedColumns, FALSE);
-  if (gbox)
-    /* add to layout box (if any) */
-    gtk_box_pack_start(gbox, g,
-		       (flags & (GWEN_WIDGET_FLAGS_FILLX | GWEN_WIDGET_FLAGS_FILLY))?TRUE:FALSE,
-		       (flags & (GWEN_WIDGET_FLAGS_FILLX | GWEN_WIDGET_FLAGS_FILLY))?TRUE:FALSE,
-		       0);
-  else if (gcontainer)
-    gtk_container_add(gcontainer, g);
+  g=gtk_table_new(xw->allocatedRows, xw->allocatedColumns, FALSE);
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
@@ -177,6 +236,10 @@ int Gtk2Gui_WGridLayout_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGE
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WGridLayout_GetIntProperty);
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WGridLayout_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WGridLayout_GetCharProperty);
+  GWEN_Widget_SetAddChildGuiWidgetFn(w, Gtk2Gui_WGridLayout_AddChildGuiWidget);
+
+  if (wParent)
+    GWEN_Widget_AddChildGuiWidget(wParent, w);
 
   return 0;
 }

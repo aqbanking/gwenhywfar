@@ -18,7 +18,9 @@ libgwengui_gtk2_la_SOURCES=\
 EXTRA_DIST=\
   w_label.c \
   w_dialog.c \
+  w_gridlayout.c \
   w_hlayout.c \
+  w_lineedit.c \
   w_vlayout.c \
   w_pushbutton.c
 
