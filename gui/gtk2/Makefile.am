@@ -28,7 +28,9 @@ EXTRA_DIST=\
   w_vline.c \
   w_vspacer.c \
   w_pushbutton.c \
-  w_textedit.c
+  w_textedit.c \
+  w_stack.c \
+  w_tabbook.c
 
 
 
