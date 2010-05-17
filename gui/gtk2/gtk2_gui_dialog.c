@@ -334,16 +334,16 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
     rv=Gtk2Gui_WDialog_Setup(w);
     break;
   case GWEN_Widget_TypeLabel:
-    rv=Gtk2Gui_WLabel_Setup(gcontainer, gbox, w);
+    rv=Gtk2Gui_WLabel_Setup(w);
     break;
   case GWEN_Widget_TypeVLayout:
-    rv=Gtk2Gui_WVLayout_Setup(gcontainer, gbox, w);
+    rv=Gtk2Gui_WVLayout_Setup(w);
     break;
   case GWEN_Widget_TypeHLayout:
-    rv=Gtk2Gui_WHLayout_Setup(gcontainer, gbox, w);
+    rv=Gtk2Gui_WHLayout_Setup(w);
     break;
   case GWEN_Widget_TypePushButton:
-    rv=Gtk2Gui_WPushButton_Setup(gcontainer, gbox, w);
+    rv=Gtk2Gui_WPushButton_Setup(w);
     break;
 
   case GWEN_Widget_TypeLineEdit:

@@ -154,13 +154,15 @@ static void clicked_handler(GtkButton *button, gpointer data) {
 
 
 
-int Gtk2Gui_WPushButton_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGET *w) {
+int Gtk2Gui_WPushButton_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
   uint32_t flags;
+  GWEN_WIDGET *wParent;
   gulong clicked_handler_id;
 
   flags=GWEN_Widget_GetFlags(w);
+  wParent=GWEN_Widget_Tree_GetParent(w);
   s=GWEN_Widget_GetText(w, 0);
 
   /* create widget */
@@ -169,20 +171,6 @@ int Gtk2Gui_WPushButton_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGE
   else
     g=gtk_button_new();
 
-  clicked_handler_id=g_signal_connect(g,
-				      "clicked",
-				      G_CALLBACK (clicked_handler),
-				      w);
-
-  if (gbox)
-    /* add to layout box (if any) */
-    gtk_box_pack_start(gbox, g,
-		       (flags & (GWEN_WIDGET_FLAGS_FILLX | GWEN_WIDGET_FLAGS_FILLY))?TRUE:FALSE,
-		       (flags & (GWEN_WIDGET_FLAGS_FILLX | GWEN_WIDGET_FLAGS_FILLY))?TRUE:FALSE,
-		       0);
-  else if (gcontainer)
-    gtk_container_add(gcontainer, g);
-
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 
@@ -190,6 +178,14 @@ int Gtk2Gui_WPushButton_Setup(GtkContainer *gcontainer, GtkBox *gbox, GWEN_WIDGE
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WPushButton_GetIntProperty);
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WPushButton_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WPushButton_GetCharProperty);
+
+  clicked_handler_id=g_signal_connect(g,
+				      "clicked",
+				      G_CALLBACK (clicked_handler),
+				      w);
+
+  if (wParent)
+    GWEN_Widget_AddChildGuiWidget(wParent, w);
 
   return 0;
 }

@@ -561,6 +561,20 @@ GWEN_WIDGET_GETCHARPROPERTY_FN GWEN_Widget_SetGetCharPropertyFn(GWEN_WIDGET *w,
 
 
 
+GWEN_WIDGET_ADDCHILDGUIWIDGET_FN GWEN_Widget_SetAddChildGuiWidgetFn(GWEN_WIDGET *w,
+								    GWEN_WIDGET_ADDCHILDGUIWIDGET_FN fn) {
+  GWEN_WIDGET_ADDCHILDGUIWIDGET_FN of;
+
+  assert(w);
+  assert(w->refCount);
+
+  of=w->addChildGuiWidgetFn;
+  w->addChildGuiWidgetFn=fn;
+  return of;
+}
+
+
+
 int GWEN_Widget_SetIntProperty(GWEN_WIDGET *w,
 			       GWEN_DIALOG_PROPERTY prop,
 			       int index,
@@ -619,6 +633,18 @@ const char* GWEN_Widget_GetCharProperty(GWEN_WIDGET *w,
     return w->getCharPropertyFn(w, prop, index, defaultValue);
   else
     return defaultValue;
+}
+
+
+
+int GWEN_Widget_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+  assert(w);
+  assert(w->refCount);
+
+  if (w->addChildGuiWidgetFn)
+    return w->addChildGuiWidgetFn(w, wChild);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 

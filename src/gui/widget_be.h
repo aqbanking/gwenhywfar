@@ -115,6 +115,8 @@ typedef const char* GWENHYWFAR_CB (*GWEN_WIDGET_GETCHARPROPERTY_FN)(GWEN_WIDGET 
 								    int index,
 								    const char *defaultValue);
 
+typedef int GWENHYWFAR_CB (*GWEN_WIDGET_ADDCHILDGUIWIDGET_FN)(GWEN_WIDGET *w, GWEN_WIDGET *wChild);
+
 
 
 GWENHYWFAR_API
@@ -220,6 +222,10 @@ GWENHYWFAR_API
 GWEN_WIDGET_GETCHARPROPERTY_FN GWEN_Widget_SetGetCharPropertyFn(GWEN_WIDGET *w,
 								GWEN_WIDGET_GETCHARPROPERTY_FN fn);
 
+GWENHYWFAR_API
+GWEN_WIDGET_ADDCHILDGUIWIDGET_FN GWEN_Widget_SetAddChildGuiWidgetFn(GWEN_WIDGET *w,
+								    GWEN_WIDGET_ADDCHILDGUIWIDGET_FN fn);
+
 
 
 
@@ -249,6 +255,8 @@ const char* GWEN_Widget_GetCharProperty(GWEN_WIDGET *w,
 					int index,
 					const char *defaultValue);
 
+GWENHYWFAR_API
+int GWEN_Widget_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild);
 
 
 #ifdef __cplusplus

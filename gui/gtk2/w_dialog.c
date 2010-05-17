@@ -136,6 +136,24 @@ const char* Gtk2Gui_WDialog_GetCharProperty(GWEN_WIDGET *w,
 
 
 
+static GWENHYWFAR_CB
+int Gtk2Gui_WDialog_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+  GtkWidget *g;
+  GtkWidget *gChild;
+
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  assert(g);
+
+  gChild=GTK_WIDGET(GWEN_Widget_GetImplData(wChild, GTK2_DIALOG_WIDGET_REAL));
+  assert(gChild);
+
+  gtk_container_add(GTK_CONTAINER(g), gChild);
+
+  return 0;
+}
+
+
+
 int Gtk2Gui_WDialog_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
@@ -154,6 +172,7 @@ int Gtk2Gui_WDialog_Setup(GWEN_WIDGET *w) {
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WDialog_GetIntProperty);
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WDialog_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WDialog_GetCharProperty);
+  GWEN_Widget_SetAddChildGuiWidgetFn(w, Gtk2Gui_WDialog_AddChildGuiWidget);
 
   return 0;
 }

@@ -54,6 +54,8 @@ struct GWEN_WIDGET {
   GWEN_WIDGET_SETCHARPROPERTY_FN setCharPropertyFn;
   GWEN_WIDGET_GETCHARPROPERTY_FN getCharPropertyFn;
 
+  GWEN_WIDGET_ADDCHILDGUIWIDGET_FN addChildGuiWidgetFn;
+
   uint32_t refCount;
 };
 
