@@ -20,8 +20,10 @@ EXTRA_DIST=\
   w_dialog.c \
   w_gridlayout.c \
   w_hlayout.c \
+  w_hline.c \
   w_lineedit.c \
   w_vlayout.c \
+  w_vline.c \
   w_pushbutton.c
 
 

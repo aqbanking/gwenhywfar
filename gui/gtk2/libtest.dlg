@@ -4,13 +4,15 @@
 
     <widget type="gridlayout" name="glayout1" columns="2" flags="fillX fillY" >
       <widget type="label" name="label1" text="Input 1" />
-      <widget type="lineEdit" name="edit1" flags="fillX fillY" />
+      <widget type="lineEdit" name="edit1" flags="fillX" />
 
       <widget type="label" name="label2" text="Input 2" />
-      <widget type="lineEdit" name="edit2" flags="fillX fillY" />
+      <widget type="lineEdit" name="edit2" flags="fillX" />
     </widget>
 
-    <widget type="hlayout" name="vlayout1" flags="fillX fillY" >
+    <widget type="hline" name="hline1" flags="fillX" />
+    
+    <widget type="hlayout" name="hlayout1" flags="fillX" >
       <widget type="pushbutton" name="okButton" text="Ok" />
       <widget type="pushbutton" name="abortButton" text="Abort" />
     </widget>

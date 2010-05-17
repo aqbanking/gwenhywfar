@@ -39,7 +39,9 @@
 #include "w_dialog.c"
 #include "w_gridlayout.c"
 #include "w_hlayout.c"
+#include "w_hline.c"
 #include "w_vlayout.c"
+#include "w_vline.c"
 #include "w_pushbutton.c"
 #include "w_lineedit.c"
 
@@ -330,6 +332,12 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeLineEdit:
     rv=Gtk2Gui_WLineEdit_Setup(w);
     break;
+  case GWEN_Widget_TypeHLine:
+    rv=Gtk2Gui_WHLine_Setup(w);
+    break;
+  case GWEN_Widget_TypeVLine:
+    rv=Gtk2Gui_WVLine_Setup(w);
+    break;
 
   case GWEN_Widget_TypeTextEdit:
   case GWEN_Widget_TypeComboBox:
@@ -346,8 +354,6 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeCheckBox:
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeScrollArea:
-  case GWEN_Widget_TypeHLine:
-  case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeTextBrowser:
   default:
