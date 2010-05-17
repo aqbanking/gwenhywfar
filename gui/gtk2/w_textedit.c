@@ -12,14 +12,14 @@
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
+int Gtk2Gui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
 				       GWEN_DIALOG_PROPERTY prop,
 				       int index,
 				       int value,
 				       int doSignal) {
-  GtkWidget *g;
+  GtkButton *g;
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -50,13 +50,13 @@ int Gtk2Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
+int Gtk2Gui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
 				       GWEN_DIALOG_PROPERTY prop,
 				       int index,
 				       int defaultValue) {
-  GtkWidget *g;
+  GtkButton *g;
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -85,20 +85,32 @@ int Gtk2Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
-					GWEN_DIALOG_PROPERTY prop,
-					int index,
-					const char *value,
-					int doSignal) {
+int Gtk2Gui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
+				      GWEN_DIALOG_PROPERTY prop,
+				      int index,
+				      const char *value,
+				      int doSignal) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
-  case GWEN_DialogProperty_Value:
-    gtk_entry_set_text(GTK_ENTRY(g), value);
+  case GWEN_DialogProperty_Value: {
+    GtkTextBuffer *tb;
+    GtkTextIter endIter;
+
+    tb=gtk_text_view_get_buffer(GTK_TEXT_VIEW(g));
+    assert(tb);
+    if (value && *value)
+      gtk_text_buffer_set_text(tb, value, -1);
+    else
+      gtk_text_buffer_set_text(tb, "", -1);
+
+    gtk_text_buffer_get_end_iter(tb, &endIter);
+    gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(g), &endIter, 0.5, FALSE, 0.0, 0.0);
     return 0;
+  }
   default:
     break;
   }
@@ -112,18 +124,38 @@ int Gtk2Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
-						GWEN_DIALOG_PROPERTY prop,
-						int index,
-						const char *defaultValue) {
-  GtkWidget *g;
+const char* Gtk2Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
+					      GWEN_DIALOG_PROPERTY prop,
+					      int index,
+					      const char *defaultValue) {
+  GtkButton *g;
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
-  case GWEN_DialogProperty_Value:
-    return gtk_entry_get_text(GTK_ENTRY(g));
+  case GWEN_DialogProperty_Value: {
+    GtkTextBuffer *tb;
+    GtkTextIter startIter;
+    GtkTextIter endIter;
+    gchar *s;
+
+    tb=gtk_text_view_get_buffer(GTK_TEXT_VIEW(g));
+    assert(tb);
+
+    gtk_text_buffer_get_start_iter(tb, &startIter);
+    gtk_text_buffer_get_end_iter(tb, &endIter);
+
+    s=gtk_text_buffer_get_text(tb, &startIter, &endIter, FALSE);
+    if (s) {
+      GWEN_Widget_SetText(w, GTK2_DIALOG_STRING_VALUE, s);
+      g_free(s);
+      return GWEN_Widget_GetText(w, GTK2_DIALOG_STRING_VALUE);
+    }
+    return defaultValue;
+  }
+
+    return gtk_button_get_label(g);
   default:
     break;
   }
@@ -136,10 +168,7 @@ const char* Gtk2Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void Gtk2Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
-						   guint arg1,
-						   guint arg2,
-						   gpointer data) {
+static void Gtk2Gui_WTextEdit_Changed_handler(GtkTextBuffer *buffer, gpointer data) {
   GWEN_WIDGET *w;
   int rv;
 
@@ -156,61 +185,34 @@ static void Gtk2Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
 
 
 
-static void Gtk2Gui_WLineEdit_Inserted_text_handler(GtkEntryBuffer *entrybuffer,
-						    guint arg1,
-						    gchar *arg2,
-						    guint arg3,
-						    gpointer data) {
-  GWEN_WIDGET *w;
-  int rv;
-
-  w=data;
-  assert(w);
-  rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			    GWEN_DialogEvent_TypeValueChanged,
-			    GWEN_Widget_GetName(w));
-  if (rv==GWEN_DialogEvent_ResultAccept)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 1);
-  else if (rv==GWEN_DialogEvent_ResultReject)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 0);
-}
-
-
-
-int Gtk2Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
+int Gtk2Gui_WTextEdit_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
   uint32_t flags;
   GWEN_WIDGET *wParent;
-  gulong deleted_text_handler_id;
-  gulong inserted_text_handler_id;
+  gulong changed_handler_id;
 
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
   s=GWEN_Widget_GetText(w, 0);
 
   /* create widget */
-  g=gtk_entry_new();
+  g=gtk_text_view_new();
   if (s && *s)
-    gtk_entry_set_text(GTK_ENTRY(g), s);
+    gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)), s, -1);
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 
-  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WLineEdit_SetIntProperty);
-  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WLineEdit_GetIntProperty);
-  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WLineEdit_SetCharProperty);
-  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLineEdit_GetCharProperty);
+  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WTextEdit_SetIntProperty);
+  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WTextEdit_GetIntProperty);
+  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WTextEdit_SetCharProperty);
+  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WTextEdit_GetCharProperty);
 
-  deleted_text_handler_id=g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
-					   "deleted-text",
-					   G_CALLBACK (Gtk2Gui_WLineEdit_Deleted_text_handler),
-					   w);
-
-  inserted_text_handler_id=g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
-					    "inserted-text",
-					    G_CALLBACK (Gtk2Gui_WLineEdit_Inserted_text_handler),
-					    w);
+  changed_handler_id=g_signal_connect(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)),
+				      "changed",
+				      G_CALLBACK (Gtk2Gui_WTextEdit_Changed_handler),
+				      w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

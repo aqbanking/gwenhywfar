@@ -47,6 +47,8 @@
 #include "w_vspacer.c"
 #include "w_pushbutton.c"
 #include "w_lineedit.c"
+#include "w_textedit.c"
+
 
 
 
@@ -350,8 +352,10 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeComboBox:
     rv=Gtk2Gui_WComboBox_Setup(w);
     break;
-
   case GWEN_Widget_TypeTextEdit:
+    rv=Gtk2Gui_WTextEdit_Setup(w);
+    break;
+
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
   case GWEN_Widget_TypeRadioGroup:

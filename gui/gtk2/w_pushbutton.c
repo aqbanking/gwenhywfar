@@ -136,7 +136,7 @@ const char* Gtk2Gui_WPushButton_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void clicked_handler(GtkButton *button, gpointer data) {
+static void Gtk2Gui_WPushButton_Clicked_handler(GtkButton *button, gpointer data) {
   GWEN_WIDGET *w;
   int rv;
 
@@ -181,7 +181,7 @@ int Gtk2Gui_WPushButton_Setup(GWEN_WIDGET *w) {
 
   clicked_handler_id=g_signal_connect(g,
 				      "clicked",
-				      G_CALLBACK (clicked_handler),
+				      G_CALLBACK (Gtk2Gui_WPushButton_Clicked_handler),
 				      w);
 
   if (wParent)
