@@ -6,18 +6,25 @@
 
       <widget type="tabpage" name="tabpage1" text="First Page" flags="fillX fillY" >
 
-        <widget type="gridlayout" name="glayout1" columns="2" flags="fillX fillY" >
-          <widget type="label" name="label1" text="Input 1" />
-          <widget type="lineEdit" name="edit1" flags="fillX" />
+        <widget type="groupbox" name="groupbox1" text="Group 1" flags="fillX fillY" >
+          <widget type="gridlayout" name="glayout1" columns="2" flags="fillX fillY" >
+
+            <widget type="label" name="label1" text="Input 1" />
+            <widget type="lineEdit" name="edit1" flags="fillX" />
+      
+            <widget type="label" name="label2" text="Input 2" />
+            <widget type="lineEdit" name="edit2" flags="fillX" />
+          </widget>
+        </widget>
     
-          <widget type="label" name="label2" text="Input 2" />
-          <widget type="lineEdit" name="edit2" flags="fillX" />
+        <widget type="groupbox" name="groupbox2" text="Group 2" flags="fillX fillY" >
+          <widget type="gridlayout" name="glayout1" columns="2" flags="fillX fillY" >
+            <widget type="label" name="label3" text="Input 3" />
+            <widget type="comboBox" name="combo1" flags="fillX readOnly" />
     
-          <widget type="label" name="label3" text="Input 3" />
-          <widget type="comboBox" name="combo1" flags="fillX readOnly" />
-    
-          <widget type="label" name="label4" text="Input 4" />
-          <widget type="comboBox" name="combo2" flags="fillX" />
+            <widget type="label" name="label4" text="Input 4" />
+            <widget type="comboBox" name="combo2" flags="fillX" />
+          </widget>
         </widget>
         
       </widget>

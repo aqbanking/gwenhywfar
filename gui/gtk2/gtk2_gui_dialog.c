@@ -50,6 +50,7 @@
 #include "w_textedit.c"
 #include "w_stack.c"
 #include "w_tabbook.c"
+#include "w_groupbox.c"
 
 
 
@@ -363,17 +364,18 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeTabBook:
     rv=Gtk2Gui_WTabBook_Setup(w);
     break;
-
   case GWEN_Widget_TypeTabPage:
     /* just re-use vbox */
     GWEN_Widget_AddFlags(w, GWEN_WIDGET_FLAGS_FILLX | GWEN_WIDGET_FLAGS_FILLY);
     rv=Gtk2Gui_WVLayout_Setup(w);
     break;
+  case GWEN_Widget_TypeGroupBox:
+    rv=Gtk2Gui_WGroupBox_Setup(w);
+    break;
 
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
   case GWEN_Widget_TypeRadioGroup:
-  case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeCheckBox:
