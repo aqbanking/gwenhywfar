@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Thu Sep 11 2003
  copyright   : (C) 2003 by Martin Preuss
  email       : martin@libchipcard.de
@@ -106,6 +103,7 @@ int GWEN_Init() {
     gnutls_global_init();
 
     if (gwen_binreloc_initialized==0) {
+#ifdef ENABLE_BINRELOC
       BrInitError br_error;
 
       /* Init binreloc. Note: It is not totally clear whether the correct
@@ -115,7 +113,10 @@ int GWEN_Init() {
         gwen_binreloc_initialized=-1;
       }
       else
-        gwen_binreloc_initialized=1;
+	gwen_binreloc_initialized=1;
+#else
+      gwen_binreloc_initialized=1;
+#endif
     }
 
     GWEN_Error_ModuleInit();

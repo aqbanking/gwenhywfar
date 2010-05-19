@@ -207,7 +207,17 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
   CFStringRef resourcesPath = CFURLCopyFileSystemPath(resourcesURL, kCFURLPOSIXPathStyle) ;
   CFIndex maxPathSize = CFStringGetMaximumSizeOfFileSystemRepresentation(resourcesPath);
   if ((exeDir = malloc(maxPathSize * sizeof(char)))) {
+    char *s;
+
     CFStringGetFileSystemRepresentation(resourcesPath, exeDir , maxPathSize);
+    DBG_INFO(GWEN_LOGDOMAIN, "Ressource path: [%s]", exeDir);
+    /* remove "/bin/" from path */
+    s=strrchr(exeDir, '/');
+    if (s) {
+      if (strcasecmp(s, "/bin")==0 ||
+	  strcasecmp(s, "/bin/")==0)
+        *s=0;
+    }
   }
   CFRelease(resourcesPath);
   CFRelease(resourcesURL);
