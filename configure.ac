@@ -343,12 +343,8 @@ case "$OS_TYPE" in
         
         # add special libraries for darwin
         if test "$OSYSTEM" = "osx"; then
-	  # Add -L/sw/lib here since it is needed on darwin, but
-	  # it should be avoided when linking the test program in
-	  # test/.
-          all_libraries="-L/sw/lib ${all_libraries} -lintl"
           # hmm, this should be detected by the GETTEXT macro...
-          PROG_LIBRARIES="${PROG_LIBRARIES} -lintl"
+          #PROG_LIBRARIES="${PROG_LIBRARIES} -lintl"
           # for local install mode on Mac OS X link with the CoreFoundation framework 
           if test "$enable_local_install" != "no"; then 
             all_libraries="${all_libraries} -framework CoreFoundation"
