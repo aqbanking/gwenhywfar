@@ -48,6 +48,7 @@
 #include "w_pushbutton.c"
 #include "w_lineedit.c"
 #include "w_textedit.c"
+#include "w_textbrowser.c"
 #include "w_stack.c"
 #include "w_tabbook.c"
 #include "w_groupbox.c"
@@ -372,7 +373,9 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeGroupBox:
     rv=Gtk2Gui_WGroupBox_Setup(w);
     break;
-
+  case GWEN_Widget_TypeTextBrowser:
+    rv=Gtk2Gui_WTextBrowser_Setup(w);
+    break;
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
   case GWEN_Widget_TypeRadioGroup:
@@ -381,7 +384,6 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeCheckBox:
   case GWEN_Widget_TypeScrollArea:
   case GWEN_Widget_TypeSpinBox:
-  case GWEN_Widget_TypeTextBrowser:
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled widget type %d", GWEN_Widget_GetType(w));
     rv=GWEN_ERROR_INVALID;
