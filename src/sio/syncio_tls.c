@@ -893,7 +893,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
     rv=GWEN_SyncIo_Tls_GetPeerCert(sio);
     if (rv<0) {
       if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_NEED_PEER_CERT) {
-	DBG_INFO(GWEN_LOGDOMAIN, "No peer certificate when needed, aborting connection");
+	DBG_ERROR(GWEN_LOGDOMAIN, "No peer certificate when needed, aborting connection");
 	GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
 	GWEN_SyncIo_Tls_UndoPrepare(sio);
 	GWEN_SyncIo_Disconnect(baseIo);
@@ -910,7 +910,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
       /* present cert to the user */
       rv=GWEN_Gui_CheckCert(xio->peerCertDescr, sio, 0);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Peer cert not accepted (%d), aborting", rv);
+	DBG_ERROR(GWEN_LOGDOMAIN, "Peer cert not accepted (%d), aborting", rv);
 	GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
 	GWEN_SyncIo_Tls_UndoPrepare(sio);
 	GWEN_SyncIo_Disconnect(baseIo);
