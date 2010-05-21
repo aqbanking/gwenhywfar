@@ -222,14 +222,20 @@ const char *GWEN_Date_GetString(const GWEN_DATE *gd) {
 
 
 int GWEN_Date_Compare(const GWEN_DATE *gd1, const GWEN_DATE *gd0) {
-  assert(gd0);
-  assert(gd1);
-  if (gd1->julian==gd0->julian)
-    return 0;
-  else if (gd1->julian>gd0->julian)
+  if (gd0 && gd1) {
+    if (gd1->julian==gd0->julian)
+      return 0;
+    else if (gd1->julian>gd0->julian)
+      return 1;
+    else
+      return -1;
+  }
+  else if (gd0)
     return 1;
-  else
+  else if (gd1)
     return -1;
+  else
+    return 0;
 }
 
 
