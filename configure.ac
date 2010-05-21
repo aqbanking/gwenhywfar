@@ -29,10 +29,21 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=99
-GWENHYWFAR_VERSION_PATCHLEVEL=3
+GWENHYWFAR_VERSION_PATCHLEVEL=4
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="beta"
+
+
+
+###-------------------------------------------------------------------------
+#
+# SO version for Gwenhywfar
+#
+GWENHYWFAR_SO_CURRENT="59"
+GWENHYWFAR_SO_AGE="0"
+GWENHYWFAR_SO_REVISION="3"
+GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
 
@@ -54,15 +65,6 @@ GWENHYWFAR_VERSION_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$
 
 # The version number for the plugin/ct/ohbci/ohbci.la
 OHBCI_VERSION_STRING="0.1.0"
-
-###-------------------------------------------------------------------------
-#
-# SO version for Gwenhywfar
-#
-GWENHYWFAR_SO_CURRENT="59"
-GWENHYWFAR_SO_AGE="0"
-GWENHYWFAR_SO_REVISION="2"
-GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
 
