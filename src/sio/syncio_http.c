@@ -1237,7 +1237,8 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
       }
       else {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+	/*return rv;*/
+        break;
       }
     }
     else {
@@ -1261,7 +1262,7 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
   if (rv<0) {
     if (GWEN_Buffer_GetUsedBytes(buf)) {
       /* data received, check for common error codes */
-      if (rv==GWEN_ERROR_EOF || (rv==GWEN_ERROR_IO)) {
+      if (rv==GWEN_ERROR_EOF || rv==GWEN_ERROR_IO || rv==GWEN_ERROR_SSL) {
 	DBG_INFO(GWEN_LOGDOMAIN,
 		 "We received an error, but we still got data, "
 		 "so we ignore the error here");
