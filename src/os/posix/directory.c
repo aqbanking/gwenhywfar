@@ -215,8 +215,10 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
     s=strrchr(exeDir, '/');
     if (s) {
       if (strcasecmp(s, "/bin")==0 ||
-	  strcasecmp(s, "/bin/")==0)
-        *s=0;
+	  strcasecmp(s, "/bin/")==0 ||
+	  strcasecmp(s, "/MacOS")==0 ||
+	  strcasecmp(s, "/MacOS/")==0)
+	*s=0;
     }
   }
   CFRelease(resourcesPath);
