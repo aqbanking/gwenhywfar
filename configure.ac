@@ -30,7 +30,7 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=99
 GWENHYWFAR_VERSION_PATCHLEVEL=6
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="beta"
 
@@ -393,6 +393,12 @@ AC_ARG_WITH(plugin-searchdir, [  --with-plugin-searchdir=DIR where to search for
 if test -z "${gwenhywfar_plugin_searchdir}"; then
   if test "$OSYSTEM" = "windows"; then
     gwenhywfar_plugin_searchdir="lib/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_plugin_searchdir="Frameworks/AqBanking/lib/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
+    else
+      gwenhywfar_plugin_searchdir="$gwenhywfar_plugindir"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       gwenhywfar_plugin_searchdir="lib/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
@@ -419,6 +425,12 @@ AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for gwe
 if test -z "${gwenhywfar_data_searchdir}"; then
   if test "$OSYSTEM" = "windows"; then
     gwenhywfar_data_searchdir="share/gwenhywfar"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_data_searchdir="Frameworks/AqBanking/share/gwenhywfar"
+    else
+      gwenhywfar_data_searchdir="$gwenhywfar_datadir"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       gwenhywfar_data_searchdir="share/gwenhywfar"
@@ -445,6 +457,12 @@ AC_ARG_WITH(sysdata-searchdir, [  --with-sysdata-searchdir=DIR where to search f
 if test -z "${gwenhywfar_sysdata_searchdir}"; then
   if test "$OSYSTEM" = "windows"; then
     gwenhywfar_sysdata_searchdir="share"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_sysdata_searchdir="Frameworks/AqBanking/share"
+    else
+      gwenhywfar_sysdata_searchdir="$gwenhywfar_sysdatadir"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       gwenhywfar_sysdata_searchdir="share"
@@ -471,6 +489,12 @@ AC_ARG_WITH(locale-searchdir, [  --with-locale-searchdir=DIR where to search for
 if test -z "${gwenhywfar_locale_searchdir}"; then
   if test "$OSYSTEM" = "windows"; then
     gwenhywfar_locale_searchdir="share/locale"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_locale_searchdir="Frameworks/AqBanking/share/locale"
+    else
+      gwenhywfar_locale_searchdir="\$(localedir)"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       gwenhywfar_locale_searchdir="share/locale"
@@ -497,6 +521,12 @@ AC_ARG_WITH(cfg-searchdir, [  --with-cfg-searchdir=DIR where to search for cfg f
 if test -z "$gwenhywfar_cfg_searchdir"; then
   if test "$OSYSTEM" = "windows"; then
     gwenhywfar_cfg_searchdir="etc"
+  elif test "$OSYSTEM" = "osx"; then
+    if test "$enable_local_install" != "no"; then
+      gwenhywfar_cfg_searchdir="Frameworks/AqBanking/etc"
+    else
+      gwenhywfar_cfg_searchdir="\$(sysconfdir)"
+    fi
   else
     if test "$enable_local_install" != "no"; then
       gwenhywfar_cfg_searchdir="etc"
@@ -1124,7 +1154,7 @@ AC_ARG_ENABLE(full-doc,
   enable_fulldoc="no")
 
 if test "$enable_fulldoc" = "yes"; then
-	DOXYGEN_INPUT="listdoc.h src"
+	DOXYGEN_INPUT="listdoc.h src gui"
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"

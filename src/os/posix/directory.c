@@ -199,33 +199,63 @@ int GWEN_Directory_CreatePublic(const char *path){
 
 
 int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
-  char *exeDir;
+#ifdef OS_DARWIN
+# ifdef ENABLE_LOCAL_INSTALL
+  char binarypath[1024];
+  uint32_t pathsize = sizeof(binarypath);
+  char *s;
 
-#if defined(OS_DARWIN) && defined(ENABLE_LOCAL_INSTALL)
-  CFBundleRef mainBundle = CFBundleGetMainBundle() ;
-  CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
-  CFStringRef resourcesPath = CFURLCopyFileSystemPath(resourcesURL, kCFURLPOSIXPathStyle) ;
-  CFIndex maxPathSize = CFStringGetMaximumSizeOfFileSystemRepresentation(resourcesPath);
-  if ((exeDir = malloc(maxPathSize * sizeof(char)))) {
-    char *s;
+  if (_NSGetExecutablePath(binarypath, &pathsize)==-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Unable to determine exe folder (error on _NSGetExecutablePath)");
+    return GWEN_ERROR_GENERIC;
+  }
+  DBG_INFO(GWEN_LOGDOMAIN, "Binary path: [%s]", binarypath);
+  /* remove binary name */
+  s=strrchr(binarypath, '/');
+  if (s==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Bad path returned by system: [%s]", binarypath);
+    return GWEN_ERROR_GENERIC;
+  }
+  if (s) {
+    *s=0;
 
-    CFStringGetFileSystemRepresentation(resourcesPath, exeDir , maxPathSize);
-    DBG_INFO(GWEN_LOGDOMAIN, "Ressource path: [%s]", exeDir);
-    /* remove "/bin/" from path */
-    s=strrchr(exeDir, '/');
+    /* remove "/bin/" or "MacOS" from path */
+    s=strrchr(binarypath, '/');
     if (s) {
       if (strcasecmp(s, "/bin")==0 ||
-	  strcasecmp(s, "/bin/")==0 ||
-	  strcasecmp(s, "/MacOS")==0 ||
-	  strcasecmp(s, "/MacOS/")==0)
+	  strcasecmp(s, "/MacOS")==0)
 	*s=0;
     }
   }
-  CFRelease(resourcesPath);
-  CFRelease(resourcesURL);
-#else
+
+  if ((strlen(binarypath)+1)>=size) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
+  strcpy(buffer, binarypath);
+  return 0;
+
+# else /* not local install */
+
+  const char *s="/usr/local";
+
+  if ((strlen(s)+1)>=size) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+  strcpy(buffer, s);
+  return 0;
+
+# endif
+#else /* if darwin */
+
+# ifdef ENABLE_BINRELOC
+  char *exeDir;
+
   exeDir=br_find_prefix(NULL);
-#endif
   if (exeDir==(char*)NULL) {
     DBG_INFO(GWEN_LOGDOMAIN,
 	     "Unable to determine exe folder");
@@ -240,6 +270,19 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
   strcpy(buffer, exeDir);
   free(exeDir);
   return 0;
+
+# else /* if with binloc */
+  const char *s="/usr/local";
+
+  if ((strlen(s)+1)>=size) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+  strcpy(buffer, s);
+  return 0;
+
+# endif /* if without binloc */
+#endif /* if not darwin */
 }
 
 
