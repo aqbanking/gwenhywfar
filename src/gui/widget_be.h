@@ -144,6 +144,19 @@ void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w, int index);
  * is void* Gwenhywfar wouldn't know how to free it anyway. However, most graphical toolkits (like
  * GTK, QT) take over created widget objects so with those toolkits you normally don't have to care
  * about freeing the pointers stored here.
+ *
+ * Example from the GTK2 implementation:
+ * @code
+ * #define GTK2_DIALOG_WIDGET_REAL    0
+ * #define GTK2_DIALOG_WIDGET_CONTENT 1
+ *
+ * GtkWidget *g;
+ *
+ * g=gtk_label_new("Label");
+ * GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
+ * GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+ * @endcode
+ *
  */
 GWENHYWFAR_API
 void GWEN_Widget_SetImplData(GWEN_WIDGET *w, int index, void *ptr);
