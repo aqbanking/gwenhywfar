@@ -124,6 +124,27 @@ typedef int GWENHYWFAR_CB (*GWEN_WIDGET_ADDCHILDGUIWIDGET_FN)(GWEN_WIDGET *w, GW
 GWENHYWFAR_API
 void *GWEN_Widget_GetImplData(const GWEN_WIDGET *w, int index);
 
+/**
+ * @brief Store a pointer with the widget.
+ *
+ * A widget can store up to 4 pointers.
+ * It is up to the actual dialog framework implementation to decide what the pointers
+ * really point to. Gwenhywfar will never access this pointer, but the implementation
+ * might want to store pointers to the generated GUI objects.
+ *
+ * The GTK2 implementation for example stores at index 0 a pointer to the actually created
+ * GUI object (e.g. the result of gtk_label_new() for labels).
+ *
+ * For container widgets (like groupbox etc) the GTK2 stores a pointer to the content widget
+ * at index 1. But as written above: It is completely up to the implementation.
+ * @param w pointer to the widget with which the pointer is to be stored
+ * @param index position of the pointer (there can be up to 4 pointers with index ranging from 0 to 3)
+ * @param ptr void* pointer to be stored.
+ * Please note that the implementation still remains the owern of the pointer since the type
+ * is void* Gwenhywfar wouldn't know how to free it anyway. However, most graphical toolkits (like
+ * GTK, QT) take over created widget objects so with those toolkits you normally don't have to care
+ * about freeing the pointers stored here.
+ */
 GWENHYWFAR_API
 void GWEN_Widget_SetImplData(GWEN_WIDGET *w, int index, void *ptr);
 
@@ -207,23 +228,40 @@ GWENHYWFAR_API
 uint32_t GWEN_Widget_Flags_fromString(const char *s);
 
 
-
+/**
+ * Set the handler for the SetIntProperty function (see @ref GWEN_WIDGET_SETINTPROPERTY_FN,
+ * @ref GWEN_Widget_SetIntProperty and @ref GWEN_Dialog_SetIntProperty).
+ */
 GWENHYWFAR_API
 GWEN_WIDGET_SETINTPROPERTY_FN GWEN_Widget_SetSetIntPropertyFn(GWEN_WIDGET *w,
 							      GWEN_WIDGET_SETINTPROPERTY_FN fn);
 
+/**
+ * Set the handler for the GetIntProperty function (see @ref GWEN_WIDGET_GETINTPROPERTY_FN,
+ * @ref GWEN_Widget_GetIntProperty and @ref GWEN_Dialog_GetIntProperty).
+ */
 GWENHYWFAR_API
 GWEN_WIDGET_GETINTPROPERTY_FN GWEN_Widget_SetGetIntPropertyFn(GWEN_WIDGET *w,
 							      GWEN_WIDGET_GETINTPROPERTY_FN fn);
 
+/**
+ * Set the handler for the SetCharProperty function (see @ref GWEN_WIDGET_SETCHARPROPERTY_FN,
+ * @ref GWEN_Widget_SetCharProperty and @ref GWEN_Dialog_SetCharProperty).
+ */
 GWENHYWFAR_API
 GWEN_WIDGET_SETCHARPROPERTY_FN GWEN_Widget_SetSetCharPropertyFn(GWEN_WIDGET *w,
 								GWEN_WIDGET_SETCHARPROPERTY_FN fn);
 
+/**
+ * Set the handler for the GetCharProperty function (see @ref GWEN_WIDGET_GETCHARPROPERTY_FN,
+ * @ref GWEN_Widget_GetCharProperty and @ref GWEN_Dialog_GetCharProperty).
+ */
 GWENHYWFAR_API
 GWEN_WIDGET_GETCHARPROPERTY_FN GWEN_Widget_SetGetCharPropertyFn(GWEN_WIDGET *w,
 								GWEN_WIDGET_GETCHARPROPERTY_FN fn);
-
+/**
+ * Sets the handler for the AddChildGuiWidget function (see @ref GWEN_WIDGET_ADDCHILDGUIWIDGET_FN).
+ */
 GWENHYWFAR_API
 GWEN_WIDGET_ADDCHILDGUIWIDGET_FN GWEN_Widget_SetAddChildGuiWidgetFn(GWEN_WIDGET *w,
 								    GWEN_WIDGET_ADDCHILDGUIWIDGET_FN fn);

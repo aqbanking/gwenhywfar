@@ -30,6 +30,23 @@
  *   <li>@ref GWEN_Dialog_GetCharProperty (use @ref GWEN_Dialog_SetGetCharPropertyFn)</li>
  * </ul>
  *
+ * The GKT2 implementation does it like this:
+ * @code
+ * GWEN_INHERIT(GWEN_DIALOG, GTK2_GUI_DIALOG)
+ *
+ * void Gtk2Gui_Dialog_Extend(GWEN_DIALOG *dlg) {
+ *   GTK2_GUI_DIALOG *xdlg;
+ *
+ *   GWEN_NEW_OBJECT(GTK2_GUI_DIALOG, xdlg);
+ *   GWEN_INHERIT_SETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg, xdlg, Gtk2Gui_Dialog_FreeData);
+ *
+ *   GWEN_Dialog_SetSetIntPropertyFn(dlg, Gtk2Gui_Dialog_SetIntProperty);
+ *   GWEN_Dialog_SetGetIntPropertyFn(dlg, Gtk2Gui_Dialog_GetIntProperty);
+ *   GWEN_Dialog_SetSetCharPropertyFn(dlg, Gtk2Gui_Dialog_SetCharProperty);
+ *   GWEN_Dialog_SetGetCharPropertyFn(dlg, Gtk2Gui_Dialog_GetCharProperty);
+ * }
+ * @endcode
+ *
  * It must also create the actual widgets used by your GUI toolkit (e.g. QLabel for label
  * widgets with QT). To do that you should call @ref GWEN_Dialog_GetWidgets to get the
  * tree of widget descriptions. The most important information about a widget is its type
@@ -54,6 +71,38 @@
  * @ref GWEN_Directory_FindFileInPaths to actually find the icon or image file using the media
  * paths.
  *
+ *
+ * This example shows how the GTK2 implementation creates a GUI representation of type
+ * @ref GWEN_Widget_TypeLabel:
+ * @code
+ * #define GTK2_DIALOG_WIDGET_REAL    0
+ * #define GTK2_DIALOG_WIDGET_CONTENT 1
+ *
+ * int Gtk2Gui_WLabel_Setup(GWEN_WIDGET *w) {
+ *   GtkWidget *g;
+ *   const char *s;
+ *   uint32_t flags;
+ *   GWEN_WIDGET *wParent;
+ *
+ *   flags=GWEN_Widget_GetFlags(w);
+ *   wParent=GWEN_Widget_Tree_GetParent(w);
+ *   s=GWEN_Widget_GetText(w, 0);
+ *
+ *   g=gtk_label_new(s);
+ *   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
+ *   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+ *
+ *   GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WLabel_SetIntProperty);
+ *   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WLabel_GetIntProperty);
+ *   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WLabel_SetCharProperty);
+ *   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLabel_GetCharProperty);
+ *
+ *   if (wParent)
+ *     GWEN_Widget_AddChildGuiWidget(wParent, w);
+ *
+ *   return 0;
+ * }
+ * @endcode
  *
  *
  */
