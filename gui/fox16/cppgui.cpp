@@ -99,6 +99,20 @@ int CppGuiLinker::CheckCert(GWEN_GUI *gui,
 
 
 
+int CppGuiLinker::LogHook(GWEN_GUI *gui,
+			  const char *logDomain,
+			  GWEN_LOGGER_LEVEL priority, const char *s) {
+  CppGui *xgui;
+
+  assert(gui);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, CppGui, gui);
+  assert(xgui);
+
+  return xgui->logHook(logDomain, priority, s);
+}
+
+
+
 int CppGuiLinker::ExecDialog(GWEN_GUI *gui,
 			     GWEN_DIALOG *dlg,
 			     uint32_t guiid) {
@@ -212,6 +226,7 @@ CppGui::CppGui()
   _getPasswordFn=GWEN_Gui_SetGetPasswordFn(_gui, CppGuiLinker::GetPassword);
   _setPasswordStatusFn=GWEN_Gui_SetSetPasswordStatusFn(_gui, CppGuiLinker::SetPasswordStatus);
   _checkCertFn=GWEN_Gui_SetCheckCertFn(_gui, CppGuiLinker::CheckCert);
+  GWEN_Gui_SetLogHookFn(_gui, CppGuiLinker::LogHook);
   _execDialogFn=GWEN_Gui_SetExecDialogFn(_gui, CppGuiLinker::ExecDialog);
   _openDialogFn=GWEN_Gui_SetOpenDialogFn(_gui, CppGuiLinker::OpenDialog);
   _closeDialogFn=GWEN_Gui_SetCloseDialogFn(_gui, CppGuiLinker::CloseDialog);
@@ -391,6 +406,14 @@ int CppGui::checkCert(const GWEN_SSLCERTDESCR *cd,
 		      GWEN_SYNCIO *sio,
 		      uint32_t guiid) {
   return checkCertBuiltIn(cd, sio, guiid);
+}
+
+
+
+int CppGui::logHook(const char *logDomain,
+		    GWEN_LOGGER_LEVEL priority, const char *s) {
+  /* not hooked */
+  return 0;
 }
 
 

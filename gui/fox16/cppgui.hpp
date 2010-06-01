@@ -110,6 +110,9 @@ protected:
 			GWEN_SYNCIO *sio,
 			uint32_t guiid);
 
+  virtual int logHook(const char *logDomain,
+		      GWEN_LOGGER_LEVEL priority, const char *s);
+
   virtual int execDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 
   virtual int openDialog(GWEN_DIALOG *dlg, uint32_t guiid);
