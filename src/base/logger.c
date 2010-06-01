@@ -390,6 +390,19 @@ int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
 
 
 
+int GWEN_Logger_CreateLogMessage(const char *logDomain,
+				 GWEN_LOGGER_LEVEL priority, const char *s,
+				 GWEN_BUFFER *mbuf){
+  GWEN_LOGGER *lg;
+
+  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  assert(lg);
+
+  return GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
+}
+
+
+
 int GWEN_Logger__Log(GWEN_LOGGER *lg,
                      GWEN_LOGGER_LEVEL priority, const char *s){
   while(lg) {

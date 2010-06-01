@@ -35,6 +35,8 @@ extern "C" {
 #define GWEN_LOGDOMAIN "gwenhywfar"
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/buffer.h>
+
 
 typedef void GWENHYWFAR_CB (*GWEN_LOGGERFUNCTIONLOG)(const char *s);
 
@@ -203,6 +205,14 @@ GWENHYWFAR_API
 GWENHYWFAR_API
   const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt);
 
+
+/**
+ * This function can be used to generate log messages from within log hooks.
+ */
+GWENHYWFAR_API
+int GWEN_Logger_CreateLogMessage(const char *logDomain,
+				 GWEN_LOGGER_LEVEL priority, const char *s,
+				 GWEN_BUFFER *mbuf);
 
 
 #ifdef __cplusplus
