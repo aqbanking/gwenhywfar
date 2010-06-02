@@ -437,20 +437,20 @@ int GWEN_Directory_GetFileEntriesWithType(const char *folder,
   GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
   pos=GWEN_Buffer_GetPos(pbuf);
 
-  while(0==GWEN_Directory_Read(d, buffer+1, sizeof(buffer)-1)) {
+  while(0==GWEN_Directory_Read(d, buffer+1, sizeof(buffer)-2)) {
     if (strcmp(buffer, ".")!=0 &&
 	strcmp(buffer, "..")!=0 &&
 	(mask==NULL ||
 	 GWEN_Text_ComparePattern(buffer+1, mask, 0)!=-1)) {
       struct stat st;
 
-      GWEN_Buffer_AppendString(pbuf, buffer);
+      GWEN_Buffer_AppendString(pbuf, buffer+1);
       if (stat(GWEN_Buffer_GetStart(pbuf), &st)==0) {
 	if (S_ISREG(st.st_mode))
 	  buffer[0]='f';
-        else if (S_ISDIR(st.st_mode))
+	else if (S_ISDIR(st.st_mode))
 	  buffer[0]='d';
-        else
+	else
 	  buffer[0]='?';
 	GWEN_StringList_AppendString(sl, buffer, 0, 1);
       }
