@@ -27,11 +27,10 @@
 int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   const char *folder;
-  const char *ignFile;
-  const char *outFile;
   GWEN_MDIGEST *md;
   GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *se;
+  GWEN_BUFFER *tbuf;
   FILE *f;
   int rv;
   const GWEN_ARGS args[]={
@@ -45,28 +44,6 @@ int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     "dir",                        /* long option */
     "Specify folder to hash",     /* short description */
     "Specify folder to hash"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "ignFile",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "i",                          /* short option */
-    "ignfile",                    /* long option */
-    "Specify a filename to ignore",     /* short description */
-    "Specify a filename to ignore"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "outFile",                     /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "o",                          /* short option */
-    "outFile",                    /* long option */
-    "Specify the output file",     /* short description */
-    "Specify the output file"      /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -106,21 +83,20 @@ int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   folder=GWEN_DB_GetCharValue(db, "folder", 0, NULL);
   assert(folder);
 
-  ignFile=GWEN_DB_GetCharValue(db, "ignFile", 0, NULL);
-
-  outFile=GWEN_DB_GetCharValue(db, "outFile", 0, NULL);
-  assert(outFile);
-
   /* hash */
   sl=GWEN_StringList_new();
   md=GWEN_MDigest_Rmd160_new();
-  rv=GWEN_MDigest_HashFileTree(md, folder, ignFile, sl);
+  rv=GWEN_MDigest_HashFileTree(md, folder, "checksums.rmd", sl);
   if (rv<0) {
     fprintf(stderr, "ERROR: Could not hash folder tree (%d)\n", rv);
     return 2;
   }
 
-  f=fopen(outFile, "w+");
+  /* write checksum file */
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(tbuf, folder);
+  GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S "checksums.rmd");
+  f=fopen(GWEN_Buffer_GetStart(tbuf), "w+");
   if (f==NULL) {
     fprintf(stderr, "ERROR: Could not open output file: %s\n", strerror(errno));
     return 2;
@@ -142,6 +118,7 @@ int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     fprintf(stderr, "ERROR: Could not close output file: %s\n", strerror(errno));
     return 2;
   }
+  GWEN_Buffer_free(tbuf);
 
   return 0;
 }

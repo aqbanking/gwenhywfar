@@ -13,12 +13,15 @@
 
 
 #include "mdigest_p.h"
+#include "i18n_l.h"
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/syncio.h>
 #include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/gui.h>
 
 
 
@@ -398,6 +401,7 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
 	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
 	  /* add relative path to line buffer */
+	  GWEN_Buffer_AppendString(tbuf, "F");
 	  rv=GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(pbuf)+rpos, tbuf);
 	  if (rv<0) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -452,6 +456,96 @@ int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
 
   return 0;
 }
+
+
+
+int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
+			       const char *folder,
+			       const char *checksumFile,
+			       int strictCheck,
+			       uint32_t pid) {
+  GWEN_STRINGLIST *sl;
+  GWEN_STRINGLIST *savedList;
+  GWEN_BUFFER *tbuf;
+  GWEN_STRINGLISTENTRY *se;
+  int rv;
+  int allHashesOk=1;
+
+  sl=GWEN_StringList_new();
+
+  /* generate hash list */
+  rv=GWEN_MDigest_HashFileTree(md, folder, checksumFile, sl);
+  if (rv<0) {
+    GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
+			  I18N("Error unpacking program (%d)"), rv);
+    GWEN_StringList_free(sl);
+    return rv;
+  }
+
+  savedList=GWEN_StringList_new();
+
+  /* read checksums from file */
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(tbuf, folder);
+  GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(tbuf, checksumFile);
+  rv=GWEN_SyncIo_Helper_ReadFileToStringList(GWEN_Buffer_GetStart(tbuf),
+					     -1,
+					     savedList);
+  if (rv<0) {
+    GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
+			  I18N("Error loading checksum file (%d)"), rv);
+    GWEN_Buffer_free(tbuf);
+    GWEN_StringList_free(savedList);
+    GWEN_StringList_free(sl);
+    return rv;
+  }
+  GWEN_Buffer_free(tbuf);
+
+  /* check checksums */
+  se=GWEN_StringList_FirstEntry(savedList);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s) {
+      if (0==GWEN_StringList_RemoveString(sl, s)) {
+	DBG_ERROR(0, "Hash not found: %s", s);
+	allHashesOk=0;
+      }
+    }
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  if (allHashesOk==0) {
+    GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
+			  I18N("Integrity check on folder failed"));
+    GWEN_StringList_free(savedList);
+    GWEN_StringList_free(sl);
+    return GWEN_ERROR_VERIFY;
+  }
+
+  /* check for additional files */
+  if (GWEN_StringList_Count(sl)) {
+    if (strictCheck) {
+      GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
+			    I18N("Folder contains %d files without checksum"),
+			    GWEN_StringList_Count(sl));
+      GWEN_StringList_free(savedList);
+      GWEN_StringList_free(sl);
+    }
+    else
+      GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Warning,
+			    I18N("Folder contains %d files without checksum"),
+			    GWEN_StringList_Count(sl));
+  }
+  GWEN_StringList_free(savedList);
+  GWEN_StringList_free(sl);
+
+  return 0;
+}
+
+
 
 
 

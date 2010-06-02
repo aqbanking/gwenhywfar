@@ -28,6 +28,8 @@
 
 
 #include "syncio_p.h"
+#include "syncio_file.h"
+#include "syncio_buffered.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -397,6 +399,39 @@ int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s) {
 
 
 
+int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
+					    int maxLines,
+					    GWEN_STRINGLIST *sl) {
+  GWEN_SYNCIO *sio;
+  GWEN_SYNCIO *baseSio;
+  int rv;
+
+  /* open checksums from file */
+  baseSio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_SetFlags(baseSio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  sio=GWEN_SyncIo_Buffered_new(baseSio);
+
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not open file [%s]", fname?fname:"<no filename>");
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  /* read up to maxlines lines from file */
+  rv=GWEN_SyncIo_Buffered_ReadLinesToStringList(sio, maxLines, sl);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not open file [%s]", fname?fname:"<no filename>");
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  /* close file */
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+  return 0;
+}
 
 
 

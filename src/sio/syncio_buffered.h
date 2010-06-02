@@ -28,6 +28,7 @@
 
 #include <gwenhywfar/syncio.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/stringlist.h>
 
 
 #define GWEN_SYNCIO_BUFFERED_TYPE "buffered"
@@ -45,6 +46,9 @@ GWEN_SYNCIO *GWEN_SyncIo_Buffered_new(GWEN_SYNCIO *baseIo);
 
 GWENHYWFAR_API
 int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf);
+
+GWENHYWFAR_API
+int GWEN_SyncIo_Buffered_ReadLinesToStringList(GWEN_SYNCIO *sio, int maxLines, GWEN_STRINGLIST *sl);
 
 
 #ifdef __cplusplus

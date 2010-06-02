@@ -82,6 +82,25 @@ GWENHYWFAR_API int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
 					     const char *ignoreFile,
 					     GWEN_STRINGLIST *sl);
 
+
+/**
+ * This function verifies the integrity of a given file hierarchy by comparing
+ * checksums saved in a given file inside that file tree to the actual checksums
+ * of the files in the file tree.
+ * @param md digest algorithm to use (see @ref GWEN_MDigest_Rmd160_new et al)
+ * @param folder folder to check
+ * @param checkSumFile name of the file containing the checksums
+ * @param strictCheck if !=0 then an error will be returned if there are files in the
+ *   tree for which there is no corresponding entry in the checksum file
+ * @param pid id of the open progress dialog (see @ref GWEN_Gui_ProgressStart)
+ */
+GWENHYWFAR_API
+int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
+			       const char *folder,
+			       const char *checksumFile,
+			       int strictCheck,
+			       uint32_t pid);
+
 #ifdef __cplusplus
 }
 #endif

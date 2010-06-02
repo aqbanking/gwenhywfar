@@ -29,6 +29,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list1.h>
+#include <gwenhywfar/stringlist.h>
 
 
 #ifdef __cplusplus
@@ -151,6 +152,12 @@ int GWEN_SyncIo_WriteLine(GWEN_SYNCIO *sio, const char *s);
 
 GWENHYWFAR_API
 int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s);
+
+
+GWENHYWFAR_API
+int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
+					    int maxLines,
+					    GWEN_STRINGLIST *sl);
 
 
 

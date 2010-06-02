@@ -357,4 +357,41 @@ int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
 
 
 
+int GWEN_SyncIo_Buffered_ReadLinesToStringList(GWEN_SYNCIO *sio, int maxLines, GWEN_STRINGLIST *sl) {
+  GWEN_BUFFER *tbuf;
+  int rv;
+  int lineCount=0;
+
+  if (maxLines==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Maxlines==0");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* read every line of the file */
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  while( (maxLines==-1) || (lineCount<maxLines) ) {
+    rv=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, tbuf);
+    if (rv<0) {
+      if (rv==GWEN_ERROR_EOF)
+	break;
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+    }
+    else {
+      GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 0);
+      lineCount++;
+    }
+    GWEN_Buffer_Reset(tbuf);
+  }
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+
+
 
