@@ -348,7 +348,7 @@ int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
   } while(rv>0);
 
   if (GWEN_Buffer_GetUsedBytes(tbuf)<1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Nothing received");
+      DBG_INFO(GWEN_LOGDOMAIN, "Nothing received: EOF met");
     return GWEN_ERROR_EOF;
   }
 
