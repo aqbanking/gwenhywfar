@@ -267,6 +267,12 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "setkey")==0) {
     rv=setKey(db, argc, argv);
   }
+  else if (strcasecmp(cmd, "hashTree")==0) {
+    rv=hashTree(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "checkTree")==0) {
+    rv=checkTree(db, argc, argv);
+  }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
     rv=1;

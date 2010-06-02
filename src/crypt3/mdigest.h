@@ -30,6 +30,7 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_MDIGEST, GWEN_MDigest, GWENHYWFAR_API)
 
 
 #include <gwenhywfar/hashalgo.h>
+#include <gwenhywfar/stringlist.h>
 
 
 
@@ -76,6 +77,10 @@ GWENHYWFAR_API int GWEN_MDigest_PKPDF2(GWEN_MDIGEST *md,
 				       uint32_t lKey,
 				       uint32_t iterations);
 
+GWENHYWFAR_API int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
+					     const char *folder,
+					     const char *ignoreFile,
+					     GWEN_STRINGLIST *sl);
 
 #ifdef __cplusplus
 }

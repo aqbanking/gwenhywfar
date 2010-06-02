@@ -51,6 +51,10 @@ int setKey(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
+int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+int checkTree(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
 
 #endif /* GCTTOOL_GLOBALS_H */
 

@@ -4230,6 +4230,40 @@ int testTresor1(int argc, char **argv) {
 
 
 
+int testHashTree(int argc, char **argv) {
+  int rv;
+  GWEN_MDIGEST *md;
+  GWEN_STRINGLIST *sl;
+  GWEN_STRINGLISTENTRY *se;
+
+  if (argc<3) {
+    fprintf(stderr, "Folder needed\n");
+    return 1;
+  }
+
+  sl=GWEN_StringList_new();
+  md=GWEN_MDigest_Rmd160_new();
+  rv=GWEN_MDigest_HashFileTree(md, argv[2], NULL, sl);
+  if (rv<0) {
+    fprintf(stderr, "ERROR on HASHTREE (%d)\n", rv);
+    return 2;
+  }
+
+  se=GWEN_StringList_FirstEntry(sl);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s)
+      fprintf(stderr, " %s\n", s);
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4387,6 +4421,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "tresor1")==0) {
     rv=testTresor1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "hashtree")==0) {
+    rv=testHashTree(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

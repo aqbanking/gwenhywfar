@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
     begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    copyright   : (C) 2005-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -18,6 +15,10 @@
 #include "mdigest_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/directory.h>
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/syncio.h>
+#include <gwenhywfar/syncio_file.h>
 
 
 
@@ -265,6 +266,193 @@ int GWEN_MDigest_PKPDF2(GWEN_MDIGEST *md,
 
   return 0;
 }
+
+
+
+static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
+				  const char *fname,
+				  GWEN_BUFFER *hbuf) {
+  GWEN_SYNCIO *sio;
+  int rv;
+  uint8_t buffer[1024];
+
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_SetFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  while(1) {
+    rv=GWEN_SyncIo_Read(sio, buffer, sizeof(buffer));
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+    else if (rv==0)
+      break;
+    else {
+      rv=GWEN_MDigest_Update(md, (const uint8_t*) buffer, rv);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	GWEN_SyncIo_Disconnect(sio);
+	GWEN_SyncIo_free(sio);
+	return rv;
+      }
+    }
+  }
+
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  rv=GWEN_Text_ToHexBuffer((const char*) GWEN_MDigest_GetDigestPtr(md),
+			   GWEN_MDigest_GetDigestSize(md),
+                           hbuf, 0, 0, 0);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
+				      const char *baseFolder,
+				      const char *relFolder,
+				      const char *ignoreFile,
+				      GWEN_STRINGLIST *sl) {
+  GWEN_STRINGLIST *files;
+  GWEN_STRINGLISTENTRY *se;
+  GWEN_BUFFER *pbuf;
+  uint32_t ppos;
+  uint32_t rpos;
+  int rv;
+
+  files=GWEN_StringList_new();
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(pbuf, baseFolder);
+  GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
+  rpos=GWEN_Buffer_GetPos(pbuf);
+  if (relFolder) {
+    GWEN_Buffer_AppendString(pbuf, relFolder);
+    GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
+  }
+  ppos=GWEN_Buffer_GetPos(pbuf);
+
+  rv=GWEN_Directory_GetFileEntriesWithType(GWEN_Buffer_GetStart(pbuf), files, NULL);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(pbuf);
+    GWEN_StringList_free(files);
+    return rv;
+  }
+
+  se=GWEN_StringList_FirstEntry(files);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s) {
+      GWEN_Buffer_AppendString(pbuf, s+1);
+      if (*s=='d') {
+	if (strcasecmp(s+1, ".")!=0 && strcasecmp(s+1, "..")!=0) {
+	  rv=GWEN_MDigest__HashFileTree(md,
+					baseFolder,
+					GWEN_Buffer_GetStart(pbuf)+rpos,
+					ignoreFile,
+					sl);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    GWEN_Buffer_free(pbuf);
+	    GWEN_StringList_free(files);
+            return rv;
+	  }
+	}
+      }
+      else if (*s=='f') {
+	if (!(ignoreFile && strcasecmp(ignoreFile, s+1)==0)) {
+	  GWEN_BUFFER *tbuf;
+
+	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+	  /* add relative path to line buffer */
+	  rv=GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(pbuf)+rpos, tbuf);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    GWEN_Buffer_free(tbuf);
+	    GWEN_Buffer_free(pbuf);
+	    GWEN_StringList_free(files);
+	    return rv;
+	  }
+	  GWEN_Buffer_AppendString(tbuf, ":");
+
+          /* hash file */
+	  rv=GWEN_MDigest__HashFile(md, GWEN_Buffer_GetStart(pbuf), tbuf);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    GWEN_Buffer_free(tbuf);
+	    GWEN_Buffer_free(pbuf);
+	    GWEN_StringList_free(files);
+	    return rv;
+	  }
+
+	  /* append line to stringlist */
+          GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 0);
+	  GWEN_Buffer_free(tbuf);
+	}
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "Unknown file type in [%s]", s);
+      }
+      GWEN_Buffer_Crop(pbuf, 0, ppos);
+    }
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  GWEN_Buffer_free(pbuf);
+  GWEN_StringList_free(files);
+  return 0;
+}
+
+
+
+int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
+			      const char *folder,
+			      const char *ignoreFile,
+			      GWEN_STRINGLIST *sl) {
+  int rv;
+
+  rv=GWEN_MDigest__HashFileTree(md, folder, NULL, ignoreFile, sl);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
 
 
 
