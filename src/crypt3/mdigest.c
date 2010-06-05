@@ -470,6 +470,7 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
   GWEN_STRINGLISTENTRY *se;
   int rv;
   int allHashesOk=1;
+  int validLines=0;
 
   sl=GWEN_StringList_new();
 
@@ -509,12 +510,21 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
 
     s=GWEN_StringListEntry_Data(se);
     if (s && *s) {
+      validLines++;
       if (0==GWEN_StringList_RemoveString(sl, s)) {
 	DBG_ERROR(0, "Hash not found: %s", s);
 	allHashesOk=0;
       }
     }
     se=GWEN_StringListEntry_Next(se);
+  }
+
+  if (validLines==0) {
+    GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
+			  I18N("Checksum file does not contain valid lines"));
+    GWEN_StringList_free(savedList);
+    GWEN_StringList_free(sl);
+    return GWEN_ERROR_VERIFY;
   }
 
   if (allHashesOk==0) {
