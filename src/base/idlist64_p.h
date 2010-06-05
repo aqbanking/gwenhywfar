@@ -34,39 +34,43 @@
 
 
 #define GWEN_IDTABLE64_MAXENTRIES 32
+#define GWEN_IDLIST64_STEP 64
 
 
 typedef struct GWEN_IDTABLE64 GWEN_IDTABLE64;
-GWEN_LIST_FUNCTION_DEFS(GWEN_IDTABLE64, GWEN_IdTable64)
-/* No trailing semicolon here because this is a macro call */
+
 struct GWEN_IDTABLE64 {
-  GWEN_LIST_ELEMENT(GWEN_IDTABLE64)
-  /* No trailing semicolon here because this is a macro call */
   uint64_t freeEntries;
   uint64_t entries[GWEN_IDTABLE64_MAXENTRIES];
   uint64_t current;
   uint32_t refCount;
 };
 
-GWEN_IDTABLE64 *GWEN_IdTable64_new();
-void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt);
-void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt);
+static GWEN_IDTABLE64 *GWEN_IdTable64_new();
+static void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt);
+/*static void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt);*/
 
-void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl);
+static uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos);
+static uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos);
+
+static void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt);
+static void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl);
 
 struct GWEN_IDLIST64 {
-  GWEN_IDTABLE64_LIST *idTables;
-  uint64_t entryCount;
-  GWEN_IDTABLE64 *current;
   uint32_t refCount;
+  uint64_t entryCount;
+
+  GWEN_IDTABLE64 **pIdTablePointers;
+  uint32_t idTableCount;
+  uint32_t lastTableIdx;
+  uint64_t nextIdx;
 };
 
 
 
 struct GWEN_IDLIST64_ITERATOR {
   GWEN_IDLIST64 *list;
-  GWEN_IDTABLE64 *currentTable;
-  uint32_t currentIndex;
+  uint64_t nextIndex;
 };
 
 

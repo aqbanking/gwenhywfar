@@ -79,8 +79,9 @@ void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl);
 
 /**
  * Returns a new id list which contains all the ids of the given list
- * in the same order. However, the list returned is compact (i.e. it has no
- * wholes).
+ * in the same order. However, the list returned might be more
+ * is compact (i.e. it has fewer wholes), so the positions of ids
+ * within the list might have changed!.
  */
 GWENHYWFAR_API
 GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl);
@@ -134,8 +135,7 @@ uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl);
  * instead.
  */
 GWENHYWFAR_API DEPRECATED
-uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl,
-                                         uint64_t *hdl);
+uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
 
 /**
  * @deprecated
@@ -143,8 +143,7 @@ uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl,
  * instead.
  */
 GWENHYWFAR_API DEPRECATED
-uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl,
-                                        uint64_t *hdl);
+uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
 
 
 /**

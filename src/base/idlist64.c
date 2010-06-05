@@ -41,17 +41,12 @@
 #include <string.h>
 
 
-GWEN_LIST_FUNCTIONS(GWEN_IDTABLE64, GWEN_IdTable64)
-/* No trailing semicolon here because this is a macro call */
-
-
 
 GWEN_IDTABLE64 *GWEN_IdTable64_new(){
   GWEN_IDTABLE64 *idt;
 
   GWEN_NEW_OBJECT(GWEN_IDTABLE64, idt);
   idt->refCount=1;
-  GWEN_LIST_INIT(GWEN_IDTABLE64, idt);
 
   idt->freeEntries=GWEN_IDTABLE64_MAXENTRIES;
   return idt;
@@ -63,7 +58,6 @@ void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt){
   if (idt) {
     assert(idt->refCount);
     if (--(idt->refCount)==0) {
-      GWEN_LIST_FINI(GWEN_IDTABLE64, idt);
       GWEN_FREE_OBJECT(idt);
     }
   }
@@ -71,11 +65,13 @@ void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt){
 
 
 
+#if 0
 void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt){
   assert(idt);
   assert(idt->refCount);
   idt->refCount++;
 }
+#endif
 
 
 
@@ -224,7 +220,6 @@ GWEN_IDLIST64 *GWEN_IdList64_new(){
 
   GWEN_NEW_OBJECT(GWEN_IDLIST64, idl);
   idl->refCount=1;
-  idl->idTables=GWEN_IdTable64_List_new();
   return idl;
 }
 
@@ -241,32 +236,79 @@ void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl) {
 void GWEN_IdList64_free(GWEN_IDLIST64 *idl){
   if (idl) {
     assert(idl->refCount);
-    if (--(idl->refCount)==0) {
-      GWEN_IdTable64_List_free(idl->idTables);
+    if (idl->refCount==1) {
+      GWEN_IdList64_Clear(idl);
+      idl->refCount=0;
       GWEN_FREE_OBJECT(idl);
     }
+    else
+      idl->refCount--;
+  }
+}
+
+
+
+void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt) {
+  GWEN_IDTABLE64 **tablePtr;
+  int idx;
+
+  assert(idl);
+
+  tablePtr=idl->pIdTablePointers;
+  for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
+    if (*tablePtr==NULL)
+      break;
+  } /* while */
+
+  if (idx>=idl->idTableCount) {
+    uint32_t newCount;
+    GWEN_IDTABLE64 **newPtr;
+
+    /* resize */
+    newCount=idl->idTableCount+GWEN_IDLIST64_STEP;
+    newPtr=(GWEN_IDTABLE64 **)realloc(idl->pIdTablePointers, sizeof(GWEN_IDTABLE64*)*newCount);
+    assert(newPtr);
+    /* init new pointers */
+    memset((void*)(newPtr+idl->idTableCount),
+	   0,
+	   sizeof(GWEN_IDTABLE64*)*(newCount-idl->idTableCount));
+    idl->pIdTablePointers=newPtr;
+    idl->pIdTablePointers[idl->idTableCount]=idt;
+    idl->lastTableIdx=idl->idTableCount;
+    idl->idTableCount=newCount;
+  }
+  else {
+    idl->pIdTablePointers[idx]=idt;
+    idl->lastTableIdx=idx;
   }
 }
 
 
 
 int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id){
-  GWEN_IDTABLE64 *idt;
+  GWEN_IDTABLE64 *idt=NULL;
+  GWEN_IDTABLE64 **tablePtr;
+  int idx;
 
   assert(idl);
 
-  idl->current=0;
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find free table */
-  while(idt) {
-    if (!GWEN_IdTable64_IsFull(idt))
+  if (idl->pIdTablePointers==NULL) {
+    /* create an initial pointer table which can take up to GWEN_IDLIST64_STEP pointers */
+    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    assert(idl->pIdTablePointers);
+    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    idl->idTableCount=GWEN_IDLIST64_STEP;
+  }
+
+  for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
+    idt=*tablePtr;
+    if (idt && !GWEN_IdTable64_IsFull(idt))
       break;
-    idt=GWEN_IdTable64_List_Next(idt);
   } /* while */
 
-  if (!idt) {
+  if (idx>=idl->idTableCount) {
     idt=GWEN_IdTable64_new();
-    GWEN_IdTable64_List_Add(idt, idl->idTables);
+    GWEN_IdList64_AddTable(idl, idt);
   }
 
   GWEN_IdTable64_AddId(idt, id);
@@ -277,121 +319,73 @@ int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id){
 
 
 int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id){
-  GWEN_IDTABLE64 *idt;
+  GWEN_IDTABLE64 *idt=NULL;
+  GWEN_IDTABLE64 **tablePtr;
+  int idx;
 
-  assert(idl);
-
-  idl->current=0;
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find table */
-  while(idt) {
-    if (!GWEN_IdTable64_DelId(idt, id)) {
+  for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
+    idt=*tablePtr;
+    if (idt && !GWEN_IdTable64_DelId(idt, id)) {
       /* found a table which had this id */
       GWEN_IdList64_Clean(idl);
       idl->entryCount--;
       return 0;
     }
-    idt=GWEN_IdTable64_List_Next(idt);
-  } /* while */
+  }
+
   return -1;
 }
 
 
 
 int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id){
-  GWEN_IDTABLE64 *idt;
+  GWEN_IDTABLE64 *idt=NULL;
+  GWEN_IDTABLE64 **tablePtr;
+  int idx;
 
-  assert(idl);
-
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find free table */
-  while(idt) {
-    if (GWEN_IdTable64_HasId(idt, id))
+  for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
+    idt=*tablePtr;
+    if (idt && GWEN_IdTable64_HasId(idt, id))
       return 1;
-    idt=GWEN_IdTable64_List_Next(idt);
-  } /* while */
+  }
+
   return 0;
 }
 
 
 
 void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl) {
-  GWEN_IDTABLE64 *idt;
+  GWEN_IDTABLE64 *idt=NULL;
+  GWEN_IDTABLE64 **tablePtr;
+  int idx;
 
-  assert(idl);
-  idl->current=0;
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* free empty tables */
-  while(idt) {
-    GWEN_IDTABLE64 *next;
-
-    next=GWEN_IdTable64_List_Next(idt);
-    if (GWEN_IdTable64_IsEmpty(idt)) {
-      /*GWEN_IdTable64_List_Del(idt);*/
+  for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
+    idt=*tablePtr;
+    if (idt && GWEN_IdTable64_IsEmpty(idt)) {
       GWEN_IdTable64_free(idt);
+      *tablePtr=NULL;
     }
-    idt=next;
-  } /* while */
+  }
 }
 
 
 
-uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl){
-  GWEN_IDTABLE64 *idt;
+void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl) {
+  GWEN_IDTABLE64 *idt=NULL;
+  GWEN_IDTABLE64 **tablePtr;
+  int idx;
 
-  assert(idl);
-
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find table which contains the first id */
-  while(idt) {
-    GWEN_IDTABLE64 *next;
-    uint64_t id;
-
-    next=GWEN_IdTable64_List_Next(idt);
-    id=GWEN_IdTable64_GetFirstId(idt);
-    if (id) {
-      idl->current=idt;
-      return id;
-    }
-    idt=next;
-  } /* while */
-
-  return 0;
-}
-
-
-
-uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl){
-  GWEN_IDTABLE64 *idt;
-  uint64_t id;
-
-  assert(idl);
-
-  idt=idl->current;
-  if (idt) {
-    id=GWEN_IdTable64_GetNextId(idt);
-    if (id) {
-      idl->current=idt;
-      return id;
+  for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
+    idt=*tablePtr;
+    if (idt) {
+      GWEN_IdTable64_free(idt);
+      *tablePtr=NULL;
     }
   }
-  else {
-    idl->current=0;
-    return 0;
-  }
-
-  idt=GWEN_IdTable64_List_Next(idt);
-  while (idt) {
-    id=GWEN_IdTable64_GetFirstId(idt);
-    if (id) {
-      idl->current=idt;
-      return id;
-    }
-    idt=GWEN_IdTable64_List_Next(idt);
-  } /* while */
-
-  idl->current=0;
-  return 0;
+  free(idl->pIdTablePointers);
+  idl->pIdTablePointers=NULL;
+  idl->entryCount=0;
+  idl->nextIdx=0;
 }
 
 
@@ -426,7 +420,6 @@ static int __compDescending(const void *pa, const void *pb) {
 
 static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending){
   GWEN_IDLIST64_ITERATOR *it;
-  GWEN_IDTABLE64 *idt;
   unsigned int cnt;
   uint64_t *ptr;
   unsigned int i;
@@ -434,18 +427,7 @@ static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending){
   assert(idl);
 
   /* count ids */
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  cnt=0;
-  while(idt) {
-    GWEN_IDTABLE64 *next;
-
-    next=GWEN_IdTable64_List_Next(idt);
-    cnt+=GWEN_IdTable64_GetCount(idt);
-    idt=next;
-  } /* while */
-
-  if (!cnt)
-    return 0;
+  cnt=idl->entryCount;
 
   /* move ids to a temporary list */
   ptr=(uint64_t*)malloc(sizeof(uint64_t)*cnt);
@@ -465,8 +447,7 @@ static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending){
   GWEN_IdList64_Iterator_free(it);
 
   /* remove all tables (we will add sorted tables later) */
-  GWEN_IdTable64_List_Clear(idl->idTables);
-  idl->current=0;
+  GWEN_IdList64_Clear(idl);
 
   if (ascending)
     qsort(ptr, cnt, sizeof(uint64_t), __compAscending);
@@ -496,33 +477,25 @@ int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl){
 
 
 
-void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl){
-  assert(idl);
-  GWEN_IdTable64_List_Clear(idl->idTables);
-  idl->entryCount=0;
-  idl->current=0;
-}
-
-
-
 GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl){
   GWEN_IDLIST64 *nidl;
-  GWEN_IDTABLE64 *idt;
+  int idx;
 
-  assert(idl);
   nidl=GWEN_IdList64_new();
 
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  while(idt) {
-    if (idt->freeEntries!=GWEN_IDTABLE64_MAXENTRIES){
-      int i;
+  nidl->idTableCount=idl->idTableCount;
+  for (idx=0; idx<idl->idTableCount; idx++) {
+    GWEN_IDTABLE64 *idt;
 
-      for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
-	if (idt->entries[i]!=0)
-	  GWEN_IdList64_AddId(nidl, idt->entries[i]);
-      }
+    idt=idl->pIdTablePointers[idx];
+    if (idt && !GWEN_IdTable64_IsEmpty(idt)) {
+      GWEN_IDTABLE64 *nidt;
+
+      nidt=GWEN_IdTable64_new();
+      memmove(nidt->entries, idt->entries, GWEN_IDTABLE64_MAXENTRIES*sizeof(uint64_t));
+      nidt->freeEntries=idt->freeEntries;
+      GWEN_IdList64_AddTable(nidl, nidt);
     }
-    idt=GWEN_IdTable64_List_Next(idt);
   }
 
   return nidl;
@@ -530,68 +503,110 @@ GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl){
 
 
 
-uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl,
-                                         uint64_t *pos){
-  GWEN_IDTABLE64 *idt;
-  int tabNum=0;
+uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos){
+  GWEN_IDTABLE64 *idt=NULL;
+  GWEN_IDTABLE64 **tablePtr;
+  int idx;
+  int idIndex=0;
 
-  assert(idl);
+  *pos=0;
+  for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
+    idt=*tablePtr;
+    if (idt && !GWEN_IdTable64_IsEmpty(idt)) {
+      int i;
+      uint64_t id;
 
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find free table */
-  while(idt) {
-    GWEN_IDTABLE64 *next;
-    uint64_t id;
-    uint64_t tabIdx;
-
-    next=GWEN_IdTable64_List_Next(idt);
-    id=GWEN_IdTable64_GetFirstId2(idt, &tabIdx);
-    if (id) {
-      *pos=(tabNum*GWEN_IDTABLE64_MAXENTRIES)+tabIdx;
-      return id;
+      for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
+	if (idt->entries[i]!=0) {
+	  id=idt->entries[i];
+	  *pos=idIndex+i+1;
+	  return id;
+	}
+      }
     }
-    tabNum++;
-    idt=next;
-  } /* while */
+    idIndex+=GWEN_IDTABLE64_MAXENTRIES;
+  }
 
   return 0;
 }
 
 
 
-uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl,
-				  uint64_t *pos){
-  GWEN_IDTABLE64 *idt;
-  int i;
-  int tabNum;
-  uint64_t tabIdx;
+uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos){
+  if (*pos) {
+    GWEN_IDTABLE64 *idt;
+    uint64_t tableNum=*pos / GWEN_IDTABLE64_MAXENTRIES;
+    uint64_t tableIdx=*pos % GWEN_IDTABLE64_MAXENTRIES;
+    GWEN_IDTABLE64 **tablePtr;
+    int idIndex=0;
+    int idx;
 
-  assert(idl);
-  tabNum=(*pos)/GWEN_IDTABLE64_MAXENTRIES;
-  tabIdx=(*pos)%GWEN_IDTABLE64_MAXENTRIES;
-
-  /* seek table */
-  i=tabNum;
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  while(i--) idt=GWEN_IdTable64_List_Next(idt);
-  assert(idt);
-
-  while(idt) {
-    GWEN_IDTABLE64 *next;
-    uint64_t id;
-
-    next=GWEN_IdTable64_List_Next(idt);
-    id=GWEN_IdTable64_GetNextId2(idt, &tabIdx);
-    if (id) {
-      *pos=(tabNum*GWEN_IDTABLE64_MAXENTRIES)+tabIdx;
-      return id;
+    if (tableNum>idl->idTableCount) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Table number out of range");
+      *pos=0;
+      return 0;
     }
-    tabNum++;
-    idt=next;
-  } /* while */
+
+    idIndex=(tableNum*GWEN_IDTABLE64_MAXENTRIES);
+    for (idx=tableNum, tablePtr=idl->pIdTablePointers+tableNum; idx<idl->idTableCount; idx++, tablePtr++) {
+      idt=*tablePtr;
+      if (idt && !GWEN_IdTable64_IsEmpty(idt)) {
+	int i;
+	uint64_t id;
+
+	if (idx==tableNum) {
+	  for (i=tableIdx; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
+	    if (idt->entries[i]!=0) {
+	      id=idt->entries[i];
+	      *pos=idIndex+i+1;
+	      return id;
+	    }
+	  }
+	}
+	else {
+	  for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
+	    if (idt->entries[i]!=0) {
+	      id=idt->entries[i];
+	      *pos=idIndex+i+1;
+	      return id;
+	    }
+	  }
+	}
+      }
+      idIndex+=GWEN_IDTABLE64_MAXENTRIES;
+    }
+    *pos=0;
+  }
 
   return 0;
 }
+
+
+
+uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl){
+  return GWEN_IdList64__GetFirstId(idl, &(idl->nextIdx));
+}
+
+
+
+uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl){
+  return GWEN_IdList64__GetNextId(idl, &(idl->nextIdx));
+}
+
+
+
+uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *pos){
+  return GWEN_IdList64__GetFirstId(idl, pos);
+}
+
+
+
+uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *pos){
+  return GWEN_IdList64__GetNextId(idl, pos);
+}
+
+
+
 
 
 
@@ -611,8 +626,6 @@ GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl) {
 
 void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it) {
   if (it) {
-    if (it->currentTable)
-      GWEN_IdTable64_free(it->currentTable);
     GWEN_IdList64_free(it->list);
     GWEN_FREE_OBJECT(it);
   }
@@ -621,103 +634,34 @@ void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it) {
 
 
 uint64_t GWEN_IdList64_Iterator_GetFirstId(GWEN_IDLIST64_ITERATOR *it) {
-  GWEN_IDTABLE64 *idt;
-
-  assert(it);
-
-  idt=GWEN_IdTable64_List_First(it->list->idTables);
-  /* find table which contains the first id */
-  while(idt) {
-    GWEN_IDTABLE64 *next;
-    unsigned int i;
-
-    next=GWEN_IdTable64_List_Next(idt);
-
-    for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
-      if (idt->entries[i]!=0) {
-        /* attach to new table */
-	GWEN_IdTable64_Attach(idt);
-	/* detach from previous table */
-	GWEN_IdTable64_free(it->currentTable);
-        /* store current table and index */
-	it->currentTable=idt;
-	it->currentIndex=i;
-	/* return id */
-	return idt->entries[i];
-      }
-    } /* for */
-
-    idt=next;
-  } /* while */
-
-  GWEN_IdTable64_free(it->currentTable);
-  it->currentTable=NULL;
-  it->currentIndex=0;
-
-  return 0;
+  return GWEN_IdList64__GetFirstId(it->list, &(it->nextIndex));
 }
 
 
 
 uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it) {
-  GWEN_IDTABLE64 *idt;
-  uint32_t startIdx;
-
-  assert(it);
-
-  idt=it->currentTable;
-  startIdx=it->currentIndex+1;
-
-  /* find table which contains the next id */
-  while(idt) {
-    GWEN_IDTABLE64 *next;
-    unsigned int i;
-
-    next=GWEN_IdTable64_List_Next(idt);
-
-    for (i=startIdx; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
-      if (idt->entries[i]!=0) {
-        /* attach to new table */
-	GWEN_IdTable64_Attach(idt);
-	/* detach from previous table */
-	GWEN_IdTable64_free(it->currentTable);
-        /* store current table and index */
-	it->currentTable=idt;
-	it->currentIndex=i;
-	/* return id */
-	return idt->entries[i];
-      }
-    } /* for */
-
-    /* reset start index to start at 0 with next table */
-    startIdx=0;
-    idt=next;
-  } /* while */
-
-  GWEN_IdTable64_free(it->currentTable);
-  it->currentTable=NULL;
-  it->currentIndex=0;
-
-  return 0;
+  return GWEN_IdList64__GetNextId(it->list, &(it->nextIndex));
 }
 
 
 
 int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id) {
-  GWEN_IDTABLE64 *idt;
+  GWEN_IDTABLE64 *idt=NULL;
 
   assert(idl);
 
-  idt=GWEN_IdTable64_List_Last(idl->idTables);
-  if (idt) {
-    if (GWEN_IdTable64_IsFull(idt)) {
-      idt=GWEN_IdTable64_new();
-      GWEN_IdTable64_List_Add(idt, idl->idTables);
-    }
+  if (idl->pIdTablePointers==NULL) {
+    /* create an initial pointer table which can take up to GWEN_IDLIST64_STEP pointers */
+    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    assert(idl->pIdTablePointers);
+    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    idl->idTableCount=GWEN_IDLIST64_STEP;
   }
-  else {
+
+  idt=idl->pIdTablePointers[idl->lastTableIdx];
+  if (idt==NULL || GWEN_IdTable64_IsFull(idt)) {
     idt=GWEN_IdTable64_new();
-    GWEN_IdTable64_List_Add(idt, idl->idTables);
+    GWEN_IdList64_AddTable(idl, idt);
   }
 
   GWEN_IdTable64_AppendId(idt, id);
@@ -733,16 +677,14 @@ uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t idx) {
   uint64_t tableIdx=idx % GWEN_IDTABLE64_MAXENTRIES;
 
   assert(idl);
+  if (tableNum>idl->idTableCount) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Table index out of range");
+    return 0;
+  }
 
-  idt=GWEN_IdTable64_List_First(idl->idTables);
-  /* find table */
-  while(idt && tableNum) {
-    idt=GWEN_IdTable64_List_Next(idt);
-    tableNum--;
-  } /* while */
-
-  if (!idt) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Index %lld not found", (long long)idx);
+  idt=idl->pIdTablePointers[tableNum];
+  if (idt==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Table index points to an empty table");
     return 0;
   }
 
