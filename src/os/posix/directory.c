@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Tue Dec 03 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2002-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -32,6 +29,7 @@
 #include "directory_p.h"
 #if defined(OS_DARWIN) && defined(ENABLE_LOCAL_INSTALL)
 #  include <CoreFoundation/CFBundle.h>
+#  include <sys/param.h>
 #else
 # include "binreloc.h"
 #endif
@@ -202,6 +200,7 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
 #ifdef OS_DARWIN
 # ifdef ENABLE_LOCAL_INSTALL
   char binarypath[1024];
+  char realbuffer[PATH_MAX];
   uint32_t pathsize = sizeof(binarypath);
   char *s;
 
@@ -211,18 +210,24 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
     return GWEN_ERROR_GENERIC;
   }
   DBG_INFO(GWEN_LOGDOMAIN, "Binary path: [%s]", binarypath);
+  if (NULL==realpath(binarypath, realbuffer)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Unable to determine real exe folder (error on realpath)");
+    return GWEN_ERROR_GENERIC;
+  }
+
   /* remove binary name */
-  s=strrchr(binarypath, '/');
+  s=strrchr(realbuffer, '/');
   if (s==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Bad path returned by system: [%s]", binarypath);
+	      "Bad path returned by system: [%s]", realbuffer);
     return GWEN_ERROR_GENERIC;
   }
   if (s) {
     *s=0;
 
     /* remove "/bin/" or "MacOS" from path */
-    s=strrchr(binarypath, '/');
+    s=strrchr(realbuffer, '/');
     if (s) {
       if (strcasecmp(s, "/bin")==0 ||
 	  strcasecmp(s, "/MacOS")==0)
@@ -230,12 +235,12 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
     }
   }
 
-  if ((strlen(binarypath)+1)>=size) {
+  if ((strlen(realbuffer)+1)>=size) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
 
-  strcpy(buffer, binarypath);
+  strcpy(buffer, realbuffer);
   return 0;
 
 # else /* not local install */
