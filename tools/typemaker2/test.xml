@@ -1,0 +1,93 @@
+<?xml?>
+
+<tm2>
+  <type id="TEST" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>TEST</identifier>
+      <prefix>Test</prefix>
+      <basefilename>test</basefilename>
+      
+      <flags>
+        with_list1
+        with_xml
+      </flags>
+      
+      <headers>
+        <header type="local" loc="pre">tm_item.h</header>
+      </headers>
+      
+    </lang>
+
+    <enums>
+      <enum id="TEST_MODE" prefix="Test_Mode_">
+        <item name="sequence" value="1"></item>
+        <item name="bitField"></item>
+      </enum>
+    </enums>
+
+    <defines>
+      <define id="TEST_DEF" prefix="TEST_DEFINE_" mode="bitfield" startValue="1">
+        <item name="VALUE1"></item>
+        <item name="VALUE2"></item>
+        <item name="VALUE3"></item>
+        <item name="VALUE4"></item>
+        <item name="VALUEx" value="255"></item>
+      </define>
+    </defines>
+    
+    <members>
+
+      <member name="id" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+  
+      <member name="prefix" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="type" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="items" type="TYPEMAKER2_ITEM_LIST" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own volatile</flags>
+        <setflags>const dup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="mode" type="int" maxlen="64" 
+              enum="TEST_MODE" >
+        <default>Test_Mode_Unknown</default>
+        <preset>Test_Mode_Unknown</preset>
+        <access>public</access>
+        <flags>attribute enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
+

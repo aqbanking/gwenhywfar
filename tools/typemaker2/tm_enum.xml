@@ -1,0 +1,84 @@
+<?xml?>
+
+<tm2>
+  <type id="TYPEMAKER2_ENUM" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>TYPEMAKER2_ENUM</identifier>
+      <prefix>Typemaker2_Enum</prefix>
+      <basefilename>tm_enum</basefilename>
+      
+      <flags>
+        with_list1
+        with_xml
+      </flags>
+      
+      <headers>
+        <header type="local" loc="pre">tm_item.h</header>
+      </headers>
+      
+    </lang>
+    
+    <members>
+
+      <member name="id" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="prefix" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="type" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="items" type="TYPEMAKER2_ITEM_LIST" >
+        <default>NULL</default>
+        <preset>Typemaker2_Item_List_new()</preset>
+        <access>public</access>
+        <flags>own volatile</flags>
+        <setflags>const dup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="toStringFn" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own volatile</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="fromStringFn" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own volatile</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
+
