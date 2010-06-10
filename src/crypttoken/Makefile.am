@@ -8,7 +8,8 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 
 
-typefiles=crypttoken.xml
+typefiles=ct_context.xml 
+#ct_keyinfo.xml
 
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
@@ -46,7 +47,7 @@ libcrypttoken_la_SOURCES=\
 DEFS += -DLIBCHIPCARD_GWENHYWFAR_PLUGIN_PACKAGE=\"libchipcard-libgwenhywfar@GWENHYWFAR_SO_EFFECTIVE@-plugins\"
 
 types: $(typefiles)
-	typemaker -d GWENHYWFAR_API $(typefiles)
+	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $(typefiles)
 
 sources:
 	for f in $(libcrypttoken_la_SOURCES); do \
