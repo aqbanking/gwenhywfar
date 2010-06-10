@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
     begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    copyright   : (C) 2005-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,7 +17,7 @@
 #include <gwenhywfar/cryptkey.h>
 
 
-#define GWEN_CRYPT_TOKEN_CONTEXT_KEYS 6
+#define GWEN_CRYPT_TOKEN_CONTEXT_KEYS 7
 
 #ifdef __cplusplus
 extern "C" {
@@ -104,6 +101,19 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteAuthKeyInfo(const GWEN_CRYPT
 
 GWENHYWFAR_API
 void GWEN_CTF_Context_SetRemoteAuthKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki);
+
+
+GWENHYWFAR_API
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetTempLocalSignKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx);
+
+GWENHYWFAR_API
+void GWEN_CTF_Context_SetTempLocalSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k);
+
+GWENHYWFAR_API
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetTempLocalSignKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx);
+
+GWENHYWFAR_API
+void GWEN_CTF_Context_SetTempLocalSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki);
 
 
 #ifdef __cplusplus

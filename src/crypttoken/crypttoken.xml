@@ -29,6 +29,7 @@
       <elem name="decipherKeyId" type="uint32_t" />
       <elem name="authSignKeyId" type="uint32_t" />
       <elem name="authVerifyKeyId" type="uint32_t" />
+      <elem name="tempSignKeyId" type="uint32_t" />
     </group>
     
     <group name="User Information">

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
     begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    copyright   : (C) 2005-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -38,6 +35,7 @@ typedef int GWENHYWFAR_CB
  *  <li>xx04=remoteCryptKey</li>
  *  <li>xx05=localAuthKey</li>
  *  <li>xx06=remoteAuthKey</li>
+ *  <li>xx07=tempLocalSignKey</li>
  * </ul>
  */
 

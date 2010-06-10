@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
     begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    copyright   : (C) 2005-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -643,6 +640,7 @@ GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
   case 4: ki=GWEN_CTF_Context_GetRemoteCryptKeyInfo(ctx); break;
   case 5: ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx); break;
   case 6: ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx); break;
+  case 7: ki=GWEN_CTF_Context_GetTempLocalSignKeyInfo(ctx); break;
   default:
     DBG_INFO(GWEN_LOGDOMAIN, "No key by id [%x] known (key id out of range)", id);
     return NULL;
@@ -863,6 +861,10 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
     ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx);
     key=GWEN_CTF_Context_GetRemoteAuthKey(ctx);
     break;
+  case 7:
+    ki=GWEN_CTF_Context_GetTempLocalSignKeyInfo(ctx);
+    key=GWEN_CTF_Context_GetTempLocalSignKey(ctx);
+    break;
   default:
     DBG_INFO(GWEN_LOGDOMAIN, "No key by id [%x] known (key id out of range)", id);
     return GWEN_ERROR_NOT_FOUND;
@@ -910,7 +912,8 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
       (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT) &&
       id!=1 && /* don't change local keys */
       id!=2 &&
-      id!=5) {
+      id!=5 &&
+      id!=7) {
     GWEN_CRYPT_KEY *nkey;
 
     GWEN_Crypt_Token_KeyInfo_SetKeySize(ki, GWEN_Crypt_Token_KeyInfo_GetKeySize(ski));
