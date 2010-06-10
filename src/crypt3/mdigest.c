@@ -187,7 +187,7 @@ GWEN_MDIGEST_UPDATE_FN GWEN_MDigest_SetUpdateFn(GWEN_MDIGEST *md, GWEN_MDIGEST_U
 
 
 
-int GWEN_MDigest_PKPDF2(GWEN_MDIGEST *md,
+int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
 			const char *password,
 			const uint8_t *pSalt,
 			uint32_t lSalt,

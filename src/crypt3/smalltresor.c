@@ -229,7 +229,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   /* first derive the key from the given password */
   GWEN_Crypt_Random(3, salt, sizeof(salt));
   md=GWEN_MDigest_Sha256_new();
-  rv=GWEN_MDigest_PKPDF2(md, password, salt, sizeof(salt), key, BLOWFISH_KEYSIZE, passwordIterations);
+  rv=GWEN_MDigest_PBKDF2(md, password, salt, sizeof(salt), key, BLOWFISH_KEYSIZE, passwordIterations);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -341,7 +341,7 @@ int GWEN_SmallTresor_Decrypt(const uint8_t *p,
   }
 
   md=GWEN_MDigest_Sha256_new();
-  rv=GWEN_MDigest_PKPDF2(md, password, p+2, lDest, key, BLOWFISH_KEYSIZE, passwordIterations);
+  rv=GWEN_MDigest_PBKDF2(md, password, p+2, lDest, key, BLOWFISH_KEYSIZE, passwordIterations);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
