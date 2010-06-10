@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: ohbci_p.h 1109 2007-01-09 15:03:51Z christian $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -18,11 +15,15 @@
 
 #define GWEN_CRYPT_TOKEN_OHBCI_NAME         "OHBCI"
 #define GWEN_CRYPT_TOKEN_OHBCI_VMAJOR       1
-#define GWEN_CRYPT_TOKEN_OHBCI_VMINOR       7
+#define GWEN_CRYPT_TOKEN_OHBCI_VMINOR       8
 
 #define GWEN_CRYPT_TOKEN_OHBCI_PINMINLENGTH 4 /* temporary, should be 5 or more */
 
 #define GWEN_CRYPT_TOKEN_OHBCI_MAX_PIN_TRY 10
+
+#define GWEN_CRYPT_TOKEN_OHBCI_TRESOR_PWD_ITERATIONS   1469
+#define GWEN_CRYPT_TOKEN_OHBCI_TRESOR_CRYPT_ITERATIONS  365
+
 
 /* new in 1.6 */
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_MEDIUM1            (unsigned char)0xc1
@@ -33,6 +34,8 @@
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_CRYPT              GWEN_CRYPT_TOKEN_OHBCI_TAG_MEDIUM2
 /* new in 1.6 */
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_CRYPT_BF           GWEN_CRYPT_TOKEN_OHBCI_TAG_MEDIUM3
+/* new in 1.8 */
+#define GWEN_CRYPT_TOKEN_OHBCI_TAG_CRYPT_TRESOR       (unsigned char)0xc4
 
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_VERSION_MAJOR      (unsigned char)0x02
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_VERSION_MINOR      (unsigned char)0x03
@@ -50,9 +53,10 @@
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_INST_CODE          (unsigned char)0x0d
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_INST_SYSTEMID      (unsigned char)0x0e
 
-/* temporary keys (new in version 1.1, ignored in later versions) */
+/* temporary keys (reintroduced in version 1.8) */
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_TEMP_PUBSIGNKEY    (unsigned char)0xcf
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_TEMP_PRIVSIGNKEY   (unsigned char)0xd0
+/* temporary keys (new in version 1.1, ignored in later versions) */
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_TEMP_PUBCRYPTKEY   (unsigned char)0xd1
 #define GWEN_CRYPT_TOKEN_OHBCI_TAG_TEMP_PRIVCRYPTKEY  (unsigned char)0xd2
 
@@ -137,7 +141,7 @@ struct GWEN_CRYPT_TOKEN_OHBCI {
   unsigned int cryptoTag;
   unsigned int vminor;
 
-  char password[24];
+  char password[64];
   int passWordIsSet;
 
   int justCreated;
@@ -155,6 +159,12 @@ int GWEN_Crypt_TokenOHBCI__DecryptFile16(GWEN_CRYPT_TOKEN *ct,
 					 GWEN_BUFFER *fbuf,
 					 int trynum,
 					 uint32_t gid);
+
+int GWEN_Crypt_TokenOHBCI__DecryptTresor(GWEN_CRYPT_TOKEN *ct,
+					 GWEN_BUFFER *fbuf,
+					 int trynum,
+					 uint32_t gid);
+
 void GWEN_Crypt_TokenOHBCI__DecodeKey(GWEN_CRYPT_TOKEN *ct,
 				      GWEN_TAG16 *keyTlv,
 				      GWEN_DB_NODE *dbKeys,
