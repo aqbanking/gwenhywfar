@@ -81,6 +81,8 @@ uint32_t Typemaker2_FlagsFromString(const char *s) {
 	flags|=TYPEMAKER2_FLAGS_WITH_FLAGS;
       else if (strcasecmp(s, "assign")==0)
 	flags|=TYPEMAKER2_FLAGS_ASSIGN;
+      else if (strcasecmp(s, "omit")==0)
+	flags|=TYPEMAKER2_FLAGS_OMIT;
 
       else if (strcasecmp(s, "none")==0)
 	flags|=TYPEMAKER2_FLAGS_NONE;

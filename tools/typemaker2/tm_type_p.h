@@ -39,7 +39,7 @@ struct TYPEMAKER2_TYPE {
   char *presetValue;
 
   char *aedb_type;
-  char *baseFileName;;
+  char *baseFileName;
 
   TYPEMAKER2_HEADER_LIST *headers;
   TYPEMAKER2_ENUM_LIST *enums;

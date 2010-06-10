@@ -508,41 +508,41 @@ void Typemaker2_Member_Dump(TYPEMAKER2_MEMBER *tm, FILE *f, int indent) {
     fprintf(f, "Member\n");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Name    : %s\n", (tm->name)?(tm->name):"<null>");
+    fprintf(f, "Name     : %s\n", (tm->name)?(tm->name):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Typename: %s\n", (tm->typeName)?(tm->typeName):"<null>");
+    fprintf(f, "Typename : %s\n", (tm->typeName)?(tm->typeName):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Field Id: %s\n", (tm->fieldId)?(tm->fieldId):"<null>");
+    fprintf(f, "Field Id : %s\n", (tm->fieldId)?(tm->fieldId):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Access  : %d  [%d]\n", tm->access, Typemaker2_Member_GetAccess(tm));
+    fprintf(f, "Access   : %d  [%d]\n", tm->access, Typemaker2_Member_GetAccess(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Flags   : %08x [%08x]\n", tm->flags, Typemaker2_Member_GetFlags(tm));
+    fprintf(f, "Flags    : %08x [%08x]\n", tm->flags, Typemaker2_Member_GetFlags(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "SetFlags: %08x [%08x]\n", tm->setFlags, Typemaker2_Member_GetSetFlags(tm));
+    fprintf(f, "SetFlags : %08x [%08x]\n", tm->setFlags, Typemaker2_Member_GetSetFlags(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "GetFlags: %08x [%08x]\n", tm->getFlags, Typemaker2_Member_GetGetFlags(tm));
+    fprintf(f, "GetFlags : %08x [%08x]\n", tm->getFlags, Typemaker2_Member_GetGetFlags(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "DupFlags: %08x [%08x]\n", tm->dupFlags, Typemaker2_Member_GetDupFlags(tm));
+    fprintf(f, "DupFlags : %08x [%08x]\n", tm->dupFlags, Typemaker2_Member_GetDupFlags(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     s1=tm->defaultValue;
     s2=Typemaker2_Member_GetDefaultValue(tm);
-    fprintf(f, "Default : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
+    fprintf(f, "Default  : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     s1=tm->presetValue;
     s2=Typemaker2_Member_GetPresetValue(tm);
-    fprintf(f, "Preset  : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
+    fprintf(f, "Preset   : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Position: %d\n", tm->memberPosition);
+    fprintf(f, "Position : %d\n", tm->memberPosition);
   }
 }
 
