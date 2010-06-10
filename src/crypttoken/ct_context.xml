@@ -1,0 +1,164 @@
+<?xml?>
+
+<tm2>
+  <type id="GWEN_CRYPT_TOKEN_CONTEXT" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>GWEN_CRYPT_TOKEN_CONTEXT</identifier>
+      <prefix>GWEN_Crypt_Token_Context</prefix>
+      <baseFileName>ct_context</baseFileName>
+      
+      <flags>
+        with_inherit
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">gwenhywfar/types.h</header>
+      </headers>
+
+    </lang>
+
+
+    <members>
+  
+      <member name="id" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_getbymember</flags>
+        <access>public</access>
+      </member>
+
+      <member name="signKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="verifyKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="encipherKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="decipherKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="authSignKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="authVerifyKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="tempSignKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+
+      <member name="serviceId" type="char_ptr" maxlen="64" >
+        <descr>For Homebanking this is the bank code</descr>
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="userId" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="userName" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="peerId" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="peerName" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="address" type="char_ptr" maxlen="128" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="port" type="int" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="systemId" type="char_ptr" maxlen="256" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
+
+
