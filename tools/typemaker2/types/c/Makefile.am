@@ -7,6 +7,7 @@ dist_typedata_DATA=\
   char_ptr.tm2 \
   int.tm2 \
   int_base.tm2 \
+  gwen_buffer.tm2 \
   gwen_date.tm2 \
   gwen_time.tm2 \
   list1_base.tm2 \
