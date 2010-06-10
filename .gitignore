@@ -56,7 +56,6 @@ mkinstalldirs
 stamp-h1
 i18nsources
 
-*.xml
 *.rc
 *.moc
 src/types.h
@@ -96,3 +95,9 @@ system.h
 types.h
 version.h
 libtest
+plugins/ct/ohbci/ohbci.xml
+plugins/dbio/csv/csv.xml
+plugins/dbio/olddb/olddb.xml
+plugins/dbio/xmldb/xmldb.xml
+plugins/configmgr/dir/dir.xml
+
