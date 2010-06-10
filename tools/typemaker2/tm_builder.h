@@ -92,6 +92,7 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
 				   GWEN_BUFFER *dbuf);
 
 
+/* see INVOKE_FN macro in tm_builder.c */
 int Typemaker2_Builder_Invoke_ConstructFn(TYPEMAKER2_BUILDER *tb,
 					  TYPEMAKER2_TYPE *ty,
 					  TYPEMAKER2_MEMBER *tm,
