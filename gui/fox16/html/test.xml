@@ -1,0 +1,14 @@
+This is <b>a</b> test.
+And this, is the second line:followed by something else.
+<table>
+  <tr>
+    <th>header1</th>
+    <th>header2</th>
+  </tr>
+  <tr>
+    <td>data1</td>
+    <td>data2</td>
+  </tr>
+</table>
+And   this is   after the table.<br>
+and this <font color="red">one</font> is red.
