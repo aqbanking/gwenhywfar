@@ -844,13 +844,21 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   assert(baseIo);
 
-  DBG_INFO(GWEN_LOGDOMAIN, "Connecting base layer");
-  rv=GWEN_SyncIo_Connect(baseIo);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE) {
+    if (GWEN_SyncIo_GetStatus(baseIo)!=GWEN_SyncIo_Status_Connected) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Base layer is not connected");
+      return GWEN_ERROR_NOT_CONNECTED;
+    }
   }
-  DBG_INFO(GWEN_LOGDOMAIN, "Base layer connected");
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "Connecting base layer");
+    rv=GWEN_SyncIo_Connect(baseIo);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    DBG_INFO(GWEN_LOGDOMAIN, "Base layer connected");
+  }
 
   rv=GWEN_SyncIo_Tls_Prepare(sio);
   if (rv<0) {
@@ -902,7 +910,6 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
       else {
 	DBG_INFO(GWEN_LOGDOMAIN, "SSL connected (insecure)");
 	GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
-	GWEN_SyncIo_Disconnect(baseIo);
 	return 0;
       }
     }
