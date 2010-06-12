@@ -68,26 +68,41 @@ GWENHYWFAR_API
 int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf);
 
 /**
+ * This is a compatibility function
+ * (calls @ref GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf with param y=8).
+ */
+GWENHYWFAR_API
+int GWEN_Padd_PaddWithAnsiX9_23(GWEN_BUFFER *src);
+
+/**
+ * This is a compatibility function
+ * (calls @ref GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf with param y=8).
+ */
+GWENHYWFAR_API
+int GWEN_Padd_UnpaddWithAnsiX9_23(GWEN_BUFFER *src);
+
+
+/**
  * This function is used to pad the plain text data to a multiple of 8 bytes
  * size before encrypting it.
  * This is done by adding bytes to the buffer until its length is multiple of
- * 8 bytes. The byte added is the number of padding bytes appended.
- * Example: Buffer initially contains 5 bytes, so 3 bytes are needed to make
+ * Y bytes. The byte added is the number of padding bytes appended.
+ * Example: Y is 8, buffer initially contains 5 bytes, so 3 bytes are needed to make
  * the buffer length a multiple of 8. So the number "3" is added three times.
- * Please note that if the buffer initially has a multiple of 8 bytes then
- * 8 bytes are added (this is needed to make sure the unpadd function can
+ * Please note that if the buffer initially has a multiple of Y bytes then
+ * Y bytes are added (this is needed to make sure the unpadd function can
  * always recover data padded in this manner).
  *
  */
 GWENHYWFAR_API
-int GWEN_Padd_PaddWithAnsiX9_23(GWEN_BUFFER *src);
+int GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf(GWEN_BUFFER *src, int y);
 
 /**
  * This function is used to remove padding from plain text data after
  * decrypting it.
  */
 GWENHYWFAR_API
-int GWEN_Padd_UnpaddWithAnsiX9_23(GWEN_BUFFER *src);
+int GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf(GWEN_BUFFER *src, int y);
 
 
 GWENHYWFAR_API

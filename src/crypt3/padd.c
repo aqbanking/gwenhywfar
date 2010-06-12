@@ -224,11 +224,11 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf){
 
 
 
-int GWEN_Padd_PaddWithAnsiX9_23(GWEN_BUFFER *src) {
+int GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf(GWEN_BUFFER *src, int y) {
   unsigned char paddLength;
   unsigned int i;
 
-  paddLength=8-(GWEN_Buffer_GetUsedBytes(src) % 8);
+  paddLength=y-(GWEN_Buffer_GetUsedBytes(src) % y);
   for (i=0; i<paddLength; i++)
     GWEN_Buffer_AppendByte(src, paddLength);
   return 0;
@@ -236,13 +236,13 @@ int GWEN_Padd_PaddWithAnsiX9_23(GWEN_BUFFER *src) {
 
 
 
-int GWEN_Padd_UnpaddWithAnsiX9_23(GWEN_BUFFER *src) {
+int GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf(GWEN_BUFFER *src, int y) {
   const char *p;
   unsigned int lastpos;
   unsigned char paddLength;
 
   lastpos=GWEN_Buffer_GetUsedBytes(src);
-  if (lastpos<8) {
+  if (lastpos<y) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
     return -1;
   }
@@ -250,13 +250,25 @@ int GWEN_Padd_UnpaddWithAnsiX9_23(GWEN_BUFFER *src) {
 
   p=GWEN_Buffer_GetStart(src)+lastpos;
   paddLength=*p;
-  if (paddLength<1 || paddLength>8) {
+  if (paddLength<1 || paddLength>y) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Invalid padding (%d bytes ?)", paddLength);
     return -1;
   }
   GWEN_Buffer_Crop(src, 0, GWEN_Buffer_GetUsedBytes(src)-paddLength);
   GWEN_Buffer_SetPos(src, lastpos-paddLength);
   return 0;
+}
+
+
+
+int GWEN_Padd_PaddWithAnsiX9_23(GWEN_BUFFER *src) {
+  return GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf(src, 8);
+}
+
+
+
+int GWEN_Padd_UnpaddWithAnsiX9_23(GWEN_BUFFER *src) {
+  return GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf(src, 8);
 }
 
 
