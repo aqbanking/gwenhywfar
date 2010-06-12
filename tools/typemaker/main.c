@@ -54,7 +54,11 @@ int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_SYNCIO *sio, uint32_t flags) {
 
   rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf));
   GWEN_Buffer_free(buf);
-  return rv;
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    return rv;
+  }
+  return 0;
 }
 
 
@@ -770,15 +774,19 @@ int write_apidocrec_c(ARGUMENTS *args,
         dn=GWEN_XMLNode_FindFirstTag(n, "descr", 0, 0);
         if (dn) {
           if (write_xml_to_bio(dn, sio,
-                                         GWEN_XML_FLAGS_SIMPLE |
-                                         GWEN_XML_FLAGS_INDENT))
-            return -1;
+			       GWEN_XML_FLAGS_SIMPLE |
+			       GWEN_XML_FLAGS_INDENT)) {
+            DBG_INFO(0, "here (%d)", rv);
+	    return -1;
+	  }
         }
         GWEN_SyncIo_WriteLine(sio, "</p>");
 
         rv=write_apidocrec_c(args, n, sio, acc, level+1);
-        if (rv)
-          return rv;
+	if (rv) {
+	  DBG_INFO(0, "here (%d)", rv);
+	  return rv;
+	}
       }
       else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0) {
         if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", "public"),
@@ -821,8 +829,10 @@ int write_apidocrec_c(ARGUMENTS *args,
             GWEN_SyncIo_WriteString(sio, "@short ");
             if (write_xml_to_bio(dn, sio,
 				 GWEN_XML_FLAGS_SIMPLE |
-				 GWEN_XML_FLAGS_INDENT))
-              return -1;
+				 GWEN_XML_FLAGS_INDENT)) {
+	      DBG_INFO(0, "here (%d)", rv);
+	      return -1;
+	    }
             GWEN_SyncIo_WriteLine(sio, "");
             GWEN_SyncIo_WriteLine(sio, "");
           }
@@ -830,10 +840,13 @@ int write_apidocrec_c(ARGUMENTS *args,
           GWEN_SyncIo_WriteLine(sio, "<p>");
           dn=GWEN_XMLNode_FindFirstTag(n, "descr", 0, 0);
           if (dn) {
-            if (write_xml_to_bio(dn, sio,
-				 GWEN_XML_FLAGS_SIMPLE |
-				 GWEN_XML_FLAGS_INDENT))
-              return -1;
+	    rv=write_xml_to_bio(dn, sio,
+				GWEN_XML_FLAGS_SIMPLE |
+				GWEN_XML_FLAGS_INDENT);
+	    if (rv) {
+	      DBG_INFO(0, "here (%d)", rv);
+	      return -1;
+	    }
           }
           GWEN_SyncIo_WriteLine(sio, "</p>");
 
@@ -905,13 +918,17 @@ int write_apidoc_c(ARGUMENTS *args,
   if (dn) {
     if (write_xml_to_bio(dn, sio,
 			 GWEN_XML_FLAGS_SIMPLE |
-			 GWEN_XML_FLAGS_INDENT))
+			 GWEN_XML_FLAGS_INDENT)) {
+      DBG_INFO(0, "here (%d)", rv);
       return -1;
+    }
   }
 
   rv=write_apidocrec_c(args, node, sio, acc, 3);
-  if (rv)
+  if (rv) {
+    DBG_INFO(0, "here (%d)", rv);
     return rv;
+  }
 
   GWEN_SyncIo_WriteLine(sio, "*/");
 
@@ -931,20 +948,28 @@ int write_files(ARGUMENTS *args, GWEN_XMLNODE *node) {
     return 0;
   }
   rv=write_hp_files_c(args, n);
-  if (rv)
+  if (rv) {
+    DBG_INFO(0, "here (%d)", rv);
     return rv;
+  }
 
   rv=write_hl_files_c(args, n);
-  if (rv)
+  if (rv) {
+    DBG_INFO(0, "here (%d)", rv);
     return rv;
+  }
 
   rv=write_ha_files_c(args, n);
-  if (rv)
+  if (rv) {
+    DBG_INFO(0, "here (%d)", rv);
     return rv;
+  }
 
   rv=write_code_files_c(args, n);
-  if (rv)
+  if (rv) {
+    DBG_INFO(0, "here (%d)", rv);
     return rv;
+  }
 
   return 0;
 }

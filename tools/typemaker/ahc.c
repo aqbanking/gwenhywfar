@@ -124,8 +124,10 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   GWEN_SyncIo_WriteLine(sio, "");
 
   rv=write_apidoc_c(args, node, sio, "public");
-  if (rv)
+  if (rv) {
+    DBG_INFO(0, "here (%d)", rv);
     return rv;
+  }
 
   if (strcasecmp(nacc, "public")==0) {
     GWEN_SyncIo_WriteLine(sio, "#ifdef __cplusplus");
@@ -188,6 +190,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       rv=write_hp_group_c(args, nn, sio);
       if (rv) {
 	GWEN_Buffer_free(hbuf);
+	DBG_INFO(0, "here (%d)", rv);
 	return -1;
       }
       nn=GWEN_XMLNode_GetNextTag(nn);
@@ -297,6 +300,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       rv=write_hp_group_c(args, nn, sio);
       if (rv) {
 	GWEN_Buffer_free(hbuf);
+        DBG_INFO(0, "here (%d)", rv);
 	return -1;
       }
       nn=GWEN_XMLNode_GetNextTag(nn);
@@ -456,6 +460,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_Buffer_free(hbuf);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
+    DBG_INFO(0, "here (%d)", rv);
     return rv;
   }
 
@@ -543,8 +548,10 @@ int write_ha_files_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     nacc=get_struct_property(n, "access", "public");
     if (strcasecmp(nacc, "public")==0) {
       rv=write_ha_file_c(args, n);
-      if (rv)
+      if (rv) {
+        DBG_INFO(0, "here (%d)", rv);
 	return rv;
+      }
     }
     n=GWEN_XMLNode_FindNextTag(n, "type", 0, 0);
   }
