@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
     begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    copyright   : (C) 2005-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -51,12 +48,12 @@ static GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_Generate(GWEN_CRYPT_CRYPTALGOID cryptAl
 						  unsigned int flags,
 						  int quality);
 
-static GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
-						GWEN_CRYPT_CRYPTMODE mode,
-						int algo,
-						unsigned int flags,
-						const char *gname,
-						GWEN_DB_NODE *db);
+static GWEN_CRYPT_KEY *GWEN_Crypt_KeySym__fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
+						 GWEN_CRYPT_CRYPTMODE mode,
+						 int algo,
+						 unsigned int flags,
+						 const char *gname,
+						 GWEN_DB_NODE *db);
 
 static GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, int keySize,
 						  GWEN_CRYPT_CRYPTMODE mode,
@@ -64,7 +61,7 @@ static GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAl
 						  unsigned int flags,
 						  const uint8_t *kd, uint32_t kl);
 
-static int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char *gname);
+static int GWEN_Crypt_KeySym__toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char *gname);
 
 static int GWEN_Crypt_KeySym_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl);
 

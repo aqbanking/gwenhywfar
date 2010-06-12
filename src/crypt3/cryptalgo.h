@@ -43,8 +43,10 @@ typedef enum {
   GWEN_Crypt_CryptAlgoId_Des,
   /** triple-key DES */
   GWEN_Crypt_CryptAlgoId_Des3K,
-  /* blofish */
+  /* blowfish */
   GWEN_Crypt_CryptAlgoId_BlowFish,
+  /* AES-128 */
+  GWEN_Crypt_CryptAlgoId_Aes128,
 } GWEN_CRYPT_CRYPTALGOID;
 
 

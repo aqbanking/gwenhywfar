@@ -35,10 +35,13 @@ GWEN_CRYPT_CRYPTALGOID GWEN_Crypt_CryptAlgoId_fromString(const char *s) {
     return GWEN_Crypt_CryptAlgoId_Dsa;
   else if (strcasecmp(s, "des")==0)
     return GWEN_Crypt_CryptAlgoId_Des;
-  else if (strcasecmp(s, "des_3k")==0)
+  else if (strcasecmp(s, "des_3k")==0 ||
+	   strcasecmp(s, "des3k")==0)
     return GWEN_Crypt_CryptAlgoId_Des3K;
   else if (strcasecmp(s, "blowfish")==0)
     return GWEN_Crypt_CryptAlgoId_BlowFish;
+  else if (strcasecmp(s, "aes128")==0)
+    return GWEN_Crypt_CryptAlgoId_Aes128;
   else if (strcasecmp(s, "any")==0)
     return GWEN_Crypt_CryptAlgoId_Any;
   return GWEN_Crypt_CryptAlgoId_Unknown;
@@ -60,6 +63,8 @@ const char *GWEN_Crypt_CryptAlgoId_toString(GWEN_CRYPT_CRYPTALGOID a) {
     return "des_3k";
   case GWEN_Crypt_CryptAlgoId_BlowFish:
     return "blowfish";
+  case GWEN_Crypt_CryptAlgoId_Aes128:
+    return "aes128";
   case GWEN_Crypt_CryptAlgoId_Any:
     return "any";
   default:

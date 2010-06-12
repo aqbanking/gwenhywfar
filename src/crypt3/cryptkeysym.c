@@ -250,12 +250,12 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
 
 
 
-GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
-                                         GWEN_CRYPT_CRYPTMODE mode,
-					 int algo,
-					 unsigned int flags,
-                                         const char *gname,
-					 GWEN_DB_NODE *db) {
+GWEN_CRYPT_KEY *GWEN_Crypt_KeySym__fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
+					  GWEN_CRYPT_CRYPTMODE mode,
+					  int algo,
+					  unsigned int flags,
+					  const char *gname,
+					  GWEN_DB_NODE *db) {
   gcry_error_t err;
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_SYM *xk;
@@ -327,7 +327,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
 
 
 
-int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char *gname) {
+int GWEN_Crypt_KeySym__toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char *gname) {
   GWEN_CRYPT_KEY_SYM *xk;
   GWEN_DB_NODE *dbR;
   int rv;
@@ -340,6 +340,110 @@ int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char
   rv=GWEN_Crypt_Key_toDb(k, db);
   if (rv)
     return rv;
+
+  /* write sym stuff into our own group */
+  dbR=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, gname);
+  assert(dbR);
+
+  GWEN_DB_SetBinValue(dbR, GWEN_DB_FLAGS_OVERWRITE_VARS,
+		      "keyData", xk->keyData, xk->keyLen);
+
+  return 0;
+}
+
+
+
+GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE *db) {
+  gcry_error_t err;
+  GWEN_CRYPT_KEY *k;
+  GWEN_CRYPT_KEY_SYM *xk;
+  unsigned int nbits;
+  GWEN_DB_NODE *dbR;
+  unsigned int len;
+  const char *gname;
+  const char *p;
+
+  k=GWEN_Crypt_Key_fromDb(db);
+  if (k==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    return NULL;
+  }
+
+  gname=GWEN_Crypt_CryptAlgoId_toString(GWEN_Crypt_Key_GetCryptAlgoId(k));
+
+  dbR=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, gname);
+  if (dbR==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "DB does not contain an %s key (no %s group)",
+	      gname, gname);
+    GWEN_Crypt_Key_free(k);
+    return NULL;
+  }
+
+  nbits=GWEN_Crypt_Key_GetKeySize(k)*8;
+
+  /* extend key */
+  GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_SYM, xk);
+  GWEN_INHERIT_SETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_SYM, k, xk, GWEN_Crypt_KeySym_freeData);
+  GWEN_Crypt_Key_SetEncipherFn(k, GWEN_Crypt_KeySym_Encipher);
+  GWEN_Crypt_Key_SetDecipherFn(k, GWEN_Crypt_KeySym_Decipher);
+
+  /* open algo */
+  err=gcry_cipher_open(&xk->algoHandle,
+		       GWEN_Crypt_Key_GetCryptAlgoId(k),
+		       GWEN_Crypt_KeySym__MyMode2GMode(mode),
+		       GCRY_CIPHER_SECURE);
+  if (err) {
+    DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_open(): %s", gcry_strerror(err));
+    GWEN_Crypt_Key_free(k);
+    return NULL;
+  }
+  xk->algoValid=1;
+  xk->mode=mode;
+  xk->algo=GWEN_Crypt_Key_GetCryptAlgoId(k);
+
+  /* read key data */
+  p=GWEN_DB_GetBinValue(dbR, "keyData", 0, NULL, 0, &len);
+  if (p==NULL || len==0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No key data");
+    GWEN_Crypt_Key_free(k);
+    return NULL;
+  }
+
+  /* store key data */
+  xk->keyData=(uint8_t*) malloc(len);
+  assert(xk->keyData);
+  memmove(xk->keyData, p, len);
+  xk->keyLen=len;
+
+  /* set key in algo */
+  err=gcry_cipher_setkey(xk->algoHandle, xk->keyData, xk->keyLen);
+  if (err) {
+    DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_setkey(): %s", gcry_strerror(err));
+    GWEN_Crypt_Key_free(k);
+    return NULL;
+  }
+
+  return k;
+}
+
+
+
+int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+  GWEN_CRYPT_KEY_SYM *xk;
+  GWEN_DB_NODE *dbR;
+  int rv;
+  const char *gname;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_SYM, k);
+  assert(xk);
+
+  /* let key module wirte basic key info */
+  rv=GWEN_Crypt_Key_toDb(k, db);
+  if (rv)
+    return rv;
+
+  gname=GWEN_Crypt_CryptAlgoId_toString(GWEN_Crypt_Key_GetCryptAlgoId(k));
 
   /* write sym stuff into our own group */
   dbR=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, gname);
@@ -453,14 +557,14 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyDes3K_fromData(GWEN_CRYPT_CRYPTMODE mode, int keyS
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyDes3K_fromDb(GWEN_CRYPT_CRYPTMODE mode,
 					   GWEN_DB_NODE *db) {
-  return GWEN_Crypt_KeySym_fromDb(GWEN_Crypt_CryptAlgoId_Des3K, mode,
-				  GCRY_CIPHER_3DES, GCRY_CIPHER_SECURE, "des3k", db);
+  return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_Des3K, mode,
+				   GCRY_CIPHER_3DES, GCRY_CIPHER_SECURE, "des3k", db);
 }
 
 
 
 int GWEN_Crypt_KeyDes3K_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
-  return GWEN_Crypt_KeySym_toDb(k, db, "des3k");
+  return GWEN_Crypt_KeySym__toDb(k, db, "des3k");
 }
 
 
@@ -547,14 +651,14 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_fromData(GWEN_CRYPT_CRYPTMODE mode, int k
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_fromDb(GWEN_CRYPT_CRYPTMODE mode,
 					      GWEN_DB_NODE *db) {
-  return GWEN_Crypt_KeySym_fromDb(GWEN_Crypt_CryptAlgoId_BlowFish, mode,
-				  GCRY_CIPHER_BLOWFISH, GCRY_CIPHER_SECURE, "blowFish", db);
+  return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_BlowFish, mode,
+				   GCRY_CIPHER_BLOWFISH, GCRY_CIPHER_SECURE, "blowFish", db);
 }
 
 
 
 int GWEN_Crypt_KeyBlowFish_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
-  return GWEN_Crypt_KeySym_toDb(k, db, "blowFish");
+  return GWEN_Crypt_KeySym__toDb(k, db, "blowFish");
 }
 
 
@@ -573,6 +677,86 @@ uint8_t *GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
 
 uint32_t GWEN_Crypt_KeyBlowFish_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
   return GWEN_Crypt_KeySym_GetKeyDataLen(k);
+}
+
+
+
+
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_Generate(GWEN_CRYPT_CRYPTMODE mode,
+					      int keySize,
+					      int quality){
+  return GWEN_Crypt_KeySym_Generate(GWEN_Crypt_CryptAlgoId_Aes128, keySize, mode,
+				    GCRY_CIPHER_AES128, GCRY_CIPHER_SECURE, quality);
+}
+
+
+
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_fromData(GWEN_CRYPT_CRYPTMODE mode, int keySize,
+					      const uint8_t *kd, uint32_t kl) {
+  return GWEN_Crypt_KeySym_fromData(GWEN_Crypt_CryptAlgoId_Aes128, keySize, mode,
+				    GCRY_CIPHER_AES128, GCRY_CIPHER_SECURE,
+				    kd, kl);
+}
+
+
+
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_fromDb(GWEN_CRYPT_CRYPTMODE mode,
+					    GWEN_DB_NODE *db) {
+  return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_Aes128, mode,
+				   GCRY_CIPHER_AES128, GCRY_CIPHER_SECURE, "aes128", db);
+}
+
+
+
+int GWEN_Crypt_KeyAes128_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+  return GWEN_Crypt_KeySym__toDb(k, db, "aes128");
+}
+
+
+
+int GWEN_Crypt_KeyAes128_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl) {
+  return GWEN_Crypt_KeySym_SetKeyData(k, kd, kl);
+}
+
+
+
+uint8_t *GWEN_Crypt_KeyAes128_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
+  return GWEN_Crypt_KeySym_GetKeyDataPtr(k);
+}
+
+
+
+uint32_t GWEN_Crypt_KeyAes128_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
+  return GWEN_Crypt_KeySym_GetKeyDataLen(k);
+}
+
+
+
+int GWEN_Crypt_KeyAes128_SetIV(GWEN_CRYPT_KEY *k,
+			       const uint8_t *kd,
+			       uint32_t kl) {
+  GWEN_CRYPT_KEY_SYM *xk;
+  gcry_error_t err;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_SYM, k);
+  assert(xk);
+
+  if (kd==NULL || kl==0) {
+    const uint8_t iv[]={
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+    err=gcry_cipher_setiv(xk->algoHandle, iv, sizeof(iv));
+  }
+  else
+    err=gcry_cipher_setiv(xk->algoHandle, kd, kl);
+  if (err) {
+    DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_setiv(): %s", gcry_strerror(err));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
 }
 
 

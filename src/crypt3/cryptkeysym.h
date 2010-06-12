@@ -81,6 +81,39 @@ uint32_t GWEN_Crypt_KeyBlowFish_GetKeyDataLen(const GWEN_CRYPT_KEY *k);
 
 
 
+GWENHYWFAR_API 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_Generate(GWEN_CRYPT_CRYPTMODE mode,
+					      int keySize,
+					      int quality);
+
+GWENHYWFAR_API 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_fromData(GWEN_CRYPT_CRYPTMODE mode, int keySize,
+					      const uint8_t *kd, uint32_t kl);
+
+GWENHYWFAR_API 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_fromDb(GWEN_CRYPT_CRYPTMODE mode,
+					    GWEN_DB_NODE *db);
+
+GWENHYWFAR_API 
+int GWEN_Crypt_KeyAes128_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db);
+
+GWENHYWFAR_API 
+int GWEN_Crypt_KeyAes128_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl);
+
+GWENHYWFAR_API 
+uint8_t *GWEN_Crypt_KeyAes128_GetKeyDataPtr(const GWEN_CRYPT_KEY *k);
+
+GWENHYWFAR_API 
+uint32_t GWEN_Crypt_KeyAes128_GetKeyDataLen(const GWEN_CRYPT_KEY *k);
+
+
+GWENHYWFAR_API 
+int GWEN_Crypt_KeyAes128_SetIV(GWEN_CRYPT_KEY *k,
+			       const uint8_t *kd,
+			       uint32_t kl);
+
+
+
 /**
  * This functions creates a copy of the given key. The given key must
  * have been created by one of the functions in this group (e.g.
@@ -90,6 +123,14 @@ uint32_t GWEN_Crypt_KeyBlowFish_GetKeyDataLen(const GWEN_CRYPT_KEY *k);
  */
 GWENHYWFAR_API 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_dup(const GWEN_CRYPT_KEY *k);
+
+
+GWENHYWFAR_API 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE *db);
+
+GWENHYWFAR_API 
+int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db);
+
 
 #ifdef __cplusplus
 }
