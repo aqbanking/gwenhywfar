@@ -919,7 +919,7 @@ int write_apidoc_c(ARGUMENTS *args,
     if (write_xml_to_bio(dn, sio,
 			 GWEN_XML_FLAGS_SIMPLE |
 			 GWEN_XML_FLAGS_INDENT)) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(0, "here");
       return -1;
     }
   }
