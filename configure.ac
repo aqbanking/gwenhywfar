@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=99
 GWENHYWFAR_VERSION_PATCHLEVEL=8
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="beta"
+GWENHYWFAR_VERSION_TAG="git"
 
 
 
@@ -799,6 +799,15 @@ AC_SUBST(gwenhywfar_guis)
 case "$gwenhywfar_guis" in 
   *fox16*)
      AQ_CHECK_FOX
+     if test "$have_fox" != "yes"; then
+       AC_MSG_ERROR([
+**** FOX Toolkit missing.
+**** If you want to use the FOX-GUI you will have to install the package
+**** libfox-1.6 and libfox-1.6-devel on Debian-like systems.
+**** On RPM systems like SuSE those packages might have different names.
+**** If you don't need the FOX-GUI you might want to use the option
+**** --with-guis])
+     fi
      AC_DEFINE(BUILD_GUI_FOX16, 1, [if gwen gui for fox16 is built])
      with_gui_fox16="yes"
      ;;
