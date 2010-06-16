@@ -2057,10 +2057,6 @@ int GWEN_Crypt_TokenOHBCI_Encode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
 
   /* new in 1.8 */
   ki=GWEN_CTF_Context_GetTempLocalSignKeyInfo(fct);
-  if (ki) {
-    snprintf(numbuf, sizeof(numbuf), "%d", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
-    GWEN_Tag16_DirectlyToBuffer(GWEN_CRYPT_TOKEN_OHBCI_TAG_SEQ, numbuf, -1, dbuf);
-  }
   key=GWEN_CTF_Context_GetTempLocalSignKey(fct);
   if (GWEN_Crypt_TokenOHBCI__EncodeKey(key, fct,
                                        GWEN_CRYPT_TOKEN_OHBCI_TAG_TEMP_PUBSIGNKEY,
