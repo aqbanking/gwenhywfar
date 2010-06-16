@@ -279,13 +279,13 @@ int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
     struct sockaddr_un *aptr;
 
     aptr=(struct sockaddr_un*)(ia->address);
-#ifdef PF_INET
-    aptr->sun_family=PF_INET;
+#ifdef PF_UNIX
+    aptr->sun_family=PF_UNIX;
 #elif defined (AF_UNIX)
     aptr->sun_family=AF_UNIX;
 #else
     DBG_ERROR(GWEN_LOGDOMAIN, "No unix domain sockets available for this system");
-    return GWEN_ERROR_BAD_ADDRESS_FAMILY);
+    return GWEN_ERROR_BAD_ADDRESS_FAMILY;
 #endif
     aptr->sun_path[0]=0;
 
