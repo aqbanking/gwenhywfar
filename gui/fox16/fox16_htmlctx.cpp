@@ -357,7 +357,73 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
     _paint(dc, c, xOffset, yOffset);
     c=HtmlObject_Tree_GetNext(c);
   }
+}
 
+
+
+void FOX16_HtmlCtx::_paintAt(FXDC *dc, HTML_OBJECT *o,
+			     int xOffset, int yOffset,
+			     int xText, int yText,
+			     int w, int h) {
+  HTML_OBJECT *c;
+  int x;
+  int y;
+  int printX;
+  int printY;
+  int objectW;
+  int objectH;
+
+  x=xText+HtmlObject_GetX(o);
+  y=yText+HtmlObject_GetY(o);
+  objectW=HtmlObject_GetWidth(o);
+  objectH=HtmlObject_GetHeight(o);
+
+  printX=x-xOffset;
+  printY=y-yOffset;
+
+  if (printX<w && printX+objectW>=0 &&
+      printY<h && printY+objectH>=0) {
+    if (HtmlObject_GetObjectType(o)==HtmlObjectType_Word) {
+      HTML_PROPS *pr;
+      HTML_FONT *fnt;
+      FXFont *xfnt;
+      int ascent=0;
+      uint32_t col;
+  
+      pr=HtmlObject_GetProperties(o);
+  
+      /* select font */
+      fnt=HtmlProps_GetFont(pr);
+      xfnt=_getFoxFont(fnt);
+      if (xfnt) {
+	dc->setFont(xfnt);
+	ascent=xfnt->getFontAscent();
+	//DBG_ERROR(0, "Font size: %d (%d)", xfnt->getSize(), HtmlFont_GetFontSize(fnt));
+      }
+  
+      /* select foreground color */
+      col=HtmlProps_GetForegroundColor(pr);
+      if (col==HTML_PROPS_NOCOLOR)
+	dc->setForeground(_fgColor);
+      else
+	dc->setForeground(col);
+  
+      /* select background color */
+      col=HtmlProps_GetBackgroundColor(pr);
+      if (col==HTML_PROPS_NOCOLOR)
+	dc->setBackground(_bgColor);
+      else
+	dc->setBackground(col);
+  
+      dc->drawText(printX, printY+ascent, HtmlObject_GetText(o));
+    }
+  
+    c=HtmlObject_Tree_GetFirstChild(o);
+    while(c) {
+      _paintAt(dc, c, xOffset, yOffset, x, y, w, h);
+      c=HtmlObject_Tree_GetNext(c);
+    }
+  }
 }
 
 
@@ -368,6 +434,19 @@ void FOX16_HtmlCtx::paint(FXDC *dc, int xOffset, int yOffset) {
   o=HtmlCtx_GetRootObject(_context);
   if (o)
     _paint(dc, o, xOffset, yOffset);
+}
+
+
+
+void FOX16_HtmlCtx::paintAt(FXDC *dc,
+			    int xOffset, int yOffset,
+			    int xText, int yText,
+			    int w, int h) {
+  HTML_OBJECT *o;
+
+  o=HtmlCtx_GetRootObject(_context);
+  if (o)
+    _paintAt(dc, o, xOffset, yOffset, xText, yText, w, h);
 }
 
 

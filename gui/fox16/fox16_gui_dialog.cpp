@@ -14,6 +14,7 @@
 #include "fox16_gui_dialog_l.hpp"
 #include "fox16_gui_sortinglist_l.hpp"
 #include "fox16_htmllabel.hpp"
+#include "fox16_htmltext.hpp"
 
 #include <gwenhywfar/dialog_be.h>
 #include <gwenhywfar/directory.h>
@@ -876,23 +877,23 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeTextBrowser:
     {
-      FXText *f;
+      FOX16_HtmlText *f;
 
-      f=(FXText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(FOX16_HtmlText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
       case GWEN_DialogProperty_Value:
-	f->setText(strValue, doSignal?TRUE:FALSE);
+	f->setText(htmlValue);
         f->makePositionVisible(strValue.length());
 	return 0;
 
       case GWEN_DialogProperty_AddValue:
-	f->setText(f->getText()+strValue, doSignal?TRUE:FALSE);
+	f->setText(f->getText()+htmlValue);
         return 0;
 
       case GWEN_DialogProperty_ClearValues:
-	f->setText("", doSignal?TRUE:FALSE);
+	f->setText("");
 	return 0;
 
       default:
@@ -946,7 +947,7 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
       switch(prop) {
       case GWEN_DialogProperty_Value:
-	f->setText(strValue, doSignal?TRUE:FALSE);
+	f->setText(strValue);
         return 0;
       default:
         break;
@@ -1266,9 +1267,9 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeTextBrowser:
     {
-      FXText *f;
+      FOX16_HtmlText *f;
 
-      f=(FXText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(FOX16_HtmlText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -1959,7 +1960,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
       f=new FXText(parentComposite,
 		   this,
 		   ID_WIDGET_FIRST+_widgetCount,
-		   opts);
+		   opts | HSCROLLING_OFF);
       if (cols)
         f->setVisibleColumns(cols);
       if (rows)
@@ -1970,16 +1971,10 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeTextBrowser:
     {
-      FXText *f;
+      FOX16_HtmlText *f;
 
-      f=new FXText(parentComposite,
-		   this,
-		   ID_WIDGET_FIRST+_widgetCount,
-		   opts | TEXT_READONLY);
-      if (cols)
-        f->setVisibleColumns(cols);
-      if (rows)
-        f->setVisibleRows(rows);
+      f=new FOX16_HtmlText(parentComposite, "",
+			   opts | HSCROLLING_OFF);
       wChild=f;
       break;
     }

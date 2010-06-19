@@ -39,6 +39,10 @@ public:
   void dump();
 
   void paint(FXDC *dc, int xOffset, int yOffset);
+  void paintAt(FXDC *dc,
+	       int xOffset, int yOffset,
+	       int xText, int yText,
+	       int w, int h);
 
   void setBackgroundColor(FXColor c);
   void setForegroundColor(FXColor c);
@@ -51,6 +55,10 @@ protected:
 
   FXFont *_getFoxFont(HTML_FONT *fnt);
   void _paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset);
+  void _paintAt(FXDC *dc, HTML_OBJECT *o,
+		int xOffset, int yOffset,
+		int xText, int yText,
+		int w, int h);
 
   int getTextWidth(HTML_FONT *fnt,
 		   const char *s);
