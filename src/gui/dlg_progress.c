@@ -22,7 +22,7 @@
 
 
 
-#define DIALOG_MINWIDTH  400
+#define DIALOG_MINWIDTH  300
 #define DIALOG_MINHEIGHT 400
 
 
