@@ -300,19 +300,14 @@ int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd) {
 		     dlg);
 
   xdlg->loop=g_main_loop_new(NULL, FALSE);
-  if (untilEnd) {
-    DBG_ERROR(0, "Starting to run");
+  if (untilEnd)
     g_main_loop_run(xdlg->loop);
-    DBG_ERROR(0, "Finished running");
-  }
   else {
     GMainContext *ctx;
 
-    DBG_ERROR(0, "Starting to run");
     ctx=g_main_loop_get_context(xdlg->loop);
     while(g_main_context_pending(ctx))
       g_main_context_iteration(ctx, FALSE);
-    DBG_ERROR(0, "Finished running");
   }
   g_main_loop_unref(xdlg->loop);
 
