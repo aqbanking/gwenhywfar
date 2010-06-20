@@ -18,6 +18,7 @@
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -267,7 +268,8 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
     GWEN_Buffer_AppendString(xdlg->logBufferHtml, col);
     GWEN_Buffer_AppendString(xdlg->logBufferHtml,"\">");
   }
-  GWEN_Buffer_AppendString(xdlg->logBufferHtml, s);
+  if (s)
+    GWEN_Text_EscapeXmlToBuffer(s, xdlg->logBufferHtml);
   if (col)
     GWEN_Buffer_AppendString(xdlg->logBufferHtml, "</font>");
   GWEN_Buffer_AppendString(xdlg->logBufferHtml, "</td></tr>");
