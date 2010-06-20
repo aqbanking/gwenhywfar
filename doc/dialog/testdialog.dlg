@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog type="dialog" name="testdialog" flags="decorShrinkable decorStretchable" >
+  <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+
+    <widget type="tabbook" name="tabbook1" flags="fillX fillY" >
+
+      <widget type="tabpage" name="tabpage1" text="First Page" flags="fillX fillY" >
+
+        <widget type="groupbox" name="groupbox1" text="Group 1" flags="fillX fillY" >
+          <widget type="gridlayout" name="glayout1" columns="2" flags="fillX fillY" >
+
+            <widget type="label" name="label1" text="Input 1" />
+            <widget type="lineEdit" name="edit1" flags="fillX" />
+      
+            <widget type="label" name="label2" text="Input 2" />
+            <widget type="lineEdit" name="edit2" flags="fillX" />
+          </widget>
+        </widget>
+    
+        <widget type="groupbox" name="groupbox2" text="Group 2" flags="fillX fillY" >
+          <widget type="gridlayout" name="glayout1" columns="2" flags="fillX fillY" >
+            <widget type="label" name="label3" text="Input 3" />
+            <widget type="comboBox" name="combo1" flags="fillX readOnly" />
+    
+            <widget type="label" name="label4" text="Input 4" />
+            <widget type="comboBox" name="combo2" flags="fillX" />
+          </widget>
+        </widget>
+        
+      </widget>
+
+      <widget type="tabpage" name="tabpage2" text="Second Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget type="label" name="label21" text="Input 1" />
+          <widget type="textedit" name="edit1" flags="fillX fillY" />
+        </widget>
+      </widget>
+
+    </widget>
+
+  
+    <!-- <widget type="vspacer" name="vspacer1" flags="fillY" /> -->
+    <widget type="hline" name="hline1" flags="fillX" />
+
+    <widget type="hlayout" name="hlayout1" flags="fillX" >
+      <widget type="hspacer" name="hspacer1" flags="fillX" />
+      <widget type="pushbutton" name="okButton" text="Ok" />
+      <widget type="pushbutton" name="abortButton" text="Abort" />
+    </widget>
+
+  </widget>
+
+</dialog>

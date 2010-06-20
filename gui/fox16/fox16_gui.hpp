@@ -21,6 +21,12 @@
 #include <list>
 
 
+/* TODO:
+ * - catch closing of dialog and send GWEN_DialogEvent_TypeClose.
+ *
+ */
+
+
 class FOX16_GuiUpdater;
 
 

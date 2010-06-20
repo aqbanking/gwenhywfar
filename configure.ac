@@ -1327,6 +1327,7 @@ AC_CONFIG_FILES([Doxyfile
                  checks/Makefile
                  data/Makefile
                  doc/Makefile
+                 doc/dialog/Makefile
                  doc/inherit/Makefile
 		 doc/plugindescr.xsd
                  src/Makefile

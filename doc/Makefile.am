@@ -9,7 +9,7 @@ EXTRA_DIST= \
   widgets_be.h
 
 
-SUBDIRS=inherit
+SUBDIRS=inherit dialog
 
 sources:
 
