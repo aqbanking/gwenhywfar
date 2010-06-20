@@ -17,18 +17,21 @@ int Gtk2Gui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
 					int index,
 					int value,
 					int doSignal) {
-  GtkButton *g;
+  GtkWidget *g;  /* text view */
+  GtkWidget *gs; /* scrollable window */
 
-  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
+  gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  assert(gs);
 
   switch(prop) {
   case GWEN_DialogProperty_Enabled:
-    gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(gs), (value==0)?FALSE:TRUE);
     return 0;
   
   case GWEN_DialogProperty_Focus:
-    gtk_widget_grab_focus(GTK_WIDGET(g));
+    gtk_widget_grab_focus(GTK_WIDGET(gs));
     return 0;
 
   case GWEN_DialogProperty_Width:
@@ -54,17 +57,23 @@ int Gtk2Gui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
 					GWEN_DIALOG_PROPERTY prop,
 					int index,
 					int defaultValue) {
-  GtkButton *g;
+  GtkWidget *g;  /* text view */
+  GtkWidget *gs; /* scrollable window */
 
-  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
+  assert(g);
+  gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  assert(gs);
+
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
 
   switch(prop) {
   case GWEN_DialogProperty_Enabled:
-    return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
+    return (gtk_widget_get_sensitive(GTK_WIDGET(gs))==TRUE)?1:0;
 
   case GWEN_DialogProperty_Focus:
-    return (gtk_widget_has_focus(GTK_WIDGET(g))==TRUE)?1:0;
+    return (gtk_widget_has_focus(GTK_WIDGET(gs))==TRUE)?1:0;
     return 0;
 
   case GWEN_DialogProperty_Width:
@@ -90,15 +99,18 @@ int Gtk2Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
 					 int index,
 					 const char *value,
 					 int doSignal) {
-  GtkWidget *g;
+  GtkWidget *g;  /* text view */
+  GtkWidget *gs; /* scrollable window */
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
+  gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  assert(gs);
 
   switch(prop) {
   case GWEN_DialogProperty_Value: {
     GtkTextBuffer *tb;
-    GtkTextIter endIter;
+    GtkAdjustment *va;
 
     tb=gtk_text_view_get_buffer(GTK_TEXT_VIEW(g));
     assert(tb);
@@ -107,8 +119,11 @@ int Gtk2Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
     else
       gtk_text_buffer_set_text(tb, "", -1);
 
-    gtk_text_buffer_get_end_iter(tb, &endIter);
-    gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(g), &endIter, 0.5, FALSE, 0.0, 0.0);
+    /* scroll to end */
+    va=gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(gs));
+    if (va)
+      gtk_adjustment_set_value(va, va->upper);
+
     return 0;
   }
   default:
@@ -128,10 +143,13 @@ const char* Gtk2Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
 						 GWEN_DIALOG_PROPERTY prop,
 						 int index,
 						 const char *defaultValue) {
-  GtkButton *g;
+  GtkWidget *g;  /* text view */
+  GtkWidget *gs; /* scrollable window */
 
-  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
+  gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  assert(gs);
 
   switch(prop) {
   case GWEN_DialogProperty_Value: {
@@ -155,7 +173,6 @@ const char* Gtk2Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
     return defaultValue;
   }
 
-    return gtk_button_get_label(g);
   default:
     break;
   }
@@ -169,6 +186,7 @@ const char* Gtk2Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
 
 
 int Gtk2Gui_WTextBrowser_Setup(GWEN_WIDGET *w) {
+  GtkWidget *gs;
   GtkWidget *g;
   const char *s;
   uint32_t flags;
@@ -179,11 +197,14 @@ int Gtk2Gui_WTextBrowser_Setup(GWEN_WIDGET *w) {
   s=GWEN_Widget_GetText(w, 0);
 
   /* create widget */
+  gs=gtk_scrolled_window_new(NULL, NULL);
   g=gtk_text_view_new();
+  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(gs), g);
+
   if (s && *s)
     gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)), s, -1);
 
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) gs);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WTextBrowser_SetIntProperty);

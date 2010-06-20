@@ -34,7 +34,8 @@ EXTRA_DIST=\
   w_textbrowser.c \
   w_textedit.c \
   w_stack.c \
-  w_tabbook.c
+  w_tabbook.c \
+  w_progressbar.c
 
 
 

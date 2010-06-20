@@ -234,7 +234,7 @@ int test2(int argc, char **argv) {
   for (i1=1; i1<=10; i1++) {
     char numbuf[128];
 
-    snprintf(numbuf, sizeof(numbuf)-1, "Step %d", (int)i1);
+    snprintf(numbuf, sizeof(numbuf)-1, "Step %d\n", (int)i1);
     GWEN_Gui_ProgressLog(id1, GWEN_LoggerLevel_Notice, numbuf);
     id2=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
                                GWEN_GUI_PROGRESS_DELAY |
@@ -248,7 +248,7 @@ int test2(int argc, char **argv) {
       fprintf(stderr, "Advancing %d/%d\n", (int)i1, (int)i2);
       rv=GWEN_Gui_ProgressAdvance(id2, i2);
       if (rv==GWEN_ERROR_USER_ABORTED) {
-	fprintf(stderr, "Aborted by user\n");
+	fprintf(stderr, "Aborted by user (2)\n");
 	break;
       }
     }
@@ -256,7 +256,7 @@ int test2(int argc, char **argv) {
 
     rv=GWEN_Gui_ProgressAdvance(id1, i1);
     if (rv==GWEN_ERROR_USER_ABORTED) {
-      fprintf(stderr, "Aborted by user\n");
+      fprintf(stderr, "Aborted by user (1)\n");
       break;
     }
   }
@@ -271,7 +271,7 @@ int test2(int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-  return test1(argc, argv);
+  return test2(argc, argv);
 #if 0
   GWEN_GUI *gui;
 

@@ -75,7 +75,7 @@ int GTK2_Gui_ExecDialog(GWEN_GUI *gui,
     return rv;
   }
 
-  rv=GTK2_Gui_RunDialog(gui, dlg, GWEN_TIMEOUT_FOREVER);
+  rv=GTK2_Gui_RunDialog(gui, dlg, 1);
   GTK2_Gui_CloseDialog(gui, dlg);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -151,10 +151,10 @@ int GTK2_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg) {
 
 
 
-int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout) {
+int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilEnd) {
   int rv;
 
-  rv=GTK2_Gui_Dialog_Run(dlg, timeout);
+  rv=GTK2_Gui_Dialog_Run(dlg, untilEnd);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;

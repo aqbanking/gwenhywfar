@@ -52,7 +52,7 @@
 #include "w_stack.c"
 #include "w_tabbook.c"
 #include "w_groupbox.c"
-
+#include "w_progressbar.c"
 
 
 
@@ -266,7 +266,7 @@ run_destroy_handler(GtkWindow *window, gpointer data) {
 
 
 
-int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int timeout) {
+int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd) {
   GTK2_GUI_DIALOG *xdlg;
   GtkWidget *g;
 
@@ -300,9 +300,20 @@ int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int timeout) {
 		     dlg);
 
   xdlg->loop=g_main_loop_new(NULL, FALSE);
-  DBG_ERROR(0, "Starting to run");
-  g_main_loop_run(xdlg->loop);
-  DBG_ERROR(0, "Finished running");
+  if (untilEnd) {
+    DBG_ERROR(0, "Starting to run");
+    g_main_loop_run(xdlg->loop);
+    DBG_ERROR(0, "Finished running");
+  }
+  else {
+    GMainContext *ctx;
+
+    DBG_ERROR(0, "Starting to run");
+    ctx=g_main_loop_get_context(xdlg->loop);
+    while(g_main_context_pending(ctx))
+      g_main_context_iteration(ctx, FALSE);
+    DBG_ERROR(0, "Finished running");
+  }
   g_main_loop_unref(xdlg->loop);
 
   if (!xdlg->destroyed) {
@@ -376,8 +387,10 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeTextBrowser:
     rv=Gtk2Gui_WTextBrowser_Setup(w);
     break;
-  case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
+    rv=Gtk2Gui_WProgressBar_Setup(w);
+    break;
+  case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
