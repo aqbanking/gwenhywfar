@@ -82,7 +82,7 @@ int Gtk2Gui_WVSpacer_Setup(GWEN_WIDGET *w) {
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
 
-  g=gtk_vbox_new(FALSE, -1);
+  g=gtk_vbox_new(FALSE, 0);
   GWEN_Widget_AddFlags(w, GWEN_WIDGET_FLAGS_FILLY);
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
