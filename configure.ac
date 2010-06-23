@@ -825,7 +825,9 @@ AM_CONDITIONAL(WITH_GUI_FOX16, [test "$with_gui_fox16" = "yes"])
 
 case "$gwenhywfar_guis" in 
   *gtk2*)
-     pkg_modules="gtk+-2.0 >= 2.0.0"
+     # We need at least GTK 2.17.5 because we use functions like
+     # gtk_widget_get_sensitive() and gtk_widget_has_focus()
+     pkg_modules="gtk+-2.0 >= 2.17.5"
      dnl $4=true => don't die in case of failure.
      PKG_CHECK_MODULES(GTK2, [$pkg_modules], [], true)
      AC_DEFINE(BUILD_GUI_GTK2, 1, [if gwen gui for gtk2 is built])
