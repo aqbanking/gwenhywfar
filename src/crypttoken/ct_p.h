@@ -53,6 +53,8 @@ struct GWEN_CRYPT_TOKEN {
 
   GWEN_CRYPT_TOKEN_GENERATEKEY_FN generateKeyFn;
 
+  GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN activateKeyFn;
+
   int openCount;
 
   int refCount;

@@ -43,6 +43,8 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
+int activateKey(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
 int updateToken(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 int setSignSeq(GWEN_DB_NODE *dbArgs, int argc, char **argv);

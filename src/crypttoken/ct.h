@@ -221,6 +221,9 @@ GWENHYWFAR_API int GWEN_Crypt_Token_GenerateKey(GWEN_CRYPT_TOKEN *ct,
 						uint32_t gid);
 
 GWENHYWFAR_API int GWEN_Crypt_Token_ChangePin(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid);
+
+GWENHYWFAR_API int  GWEN_Crypt_Token_ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid);
+
 /*@}*/
 
 

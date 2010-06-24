@@ -1,6 +1,6 @@
 /***************************************************************************
- begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ begin       : Thu Jun 24 2010
+ copyright   : (C) 2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,14 +23,12 @@
 
 
 
-int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int activateKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
   GWEN_CRYPT_TOKEN *ct;
   unsigned int keyId;
-  unsigned int keySize;
-  GWEN_CRYPT_CRYPTALGOID algoId;
   int rv;
   const char *s;
   const GWEN_ARGS args[]={
@@ -66,39 +64,6 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     "tname",                      /* long option */
     "Specify the crypt token name",     /* short description */
     "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "algo",                       /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "algo",                       /* long option */
-    "Specify the algorithm",      /* short description */
-    "Specify the algorithm"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "keysize",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "s",                          /* short option */
-    "keysize",                    /* long option */
-    "Key size in bytes",          /* short description */
-    "Key size in bytes"           /* long description */
-  },
-  {
-    0,                            /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "exp65537",                   /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "e",                          /* short option */
-    "exp65537",                   /* long option */
-    "Use default exponent of 65537", /* short description */
-    "Use default exponent of 65537"  /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -146,18 +111,6 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     DBG_ERROR(0, "Algo id missing");
     return 1;
   }
-  algoId=GWEN_Crypt_CryptAlgoId_fromString(s);
-  if (algoId==GWEN_Crypt_CryptAlgoId_Unknown) {
-    DBG_ERROR(0, "Bad algo id [%s]", s);
-    return 1;
-  }
-
-  keySize=GWEN_DB_GetIntValue(db, "keySize", 0, 96);
-  if (keySize==0) {
-    DBG_ERROR(0, "Invalid key size %d", keySize);
-    return 1;
-  }
-
   ttype=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
   assert(ttype);
 
@@ -171,9 +124,6 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   if (GWEN_DB_GetIntValue(dbArgs, "forcePin", 0, 0))
     GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_FORCE_PIN_ENTRY);
 
-  if (GWEN_DB_GetIntValue(db, "exp65537", 0, 0))
-    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_EXP_65537);
-
   /* open crypt token for use */
   rv=GWEN_Crypt_Token_Open(ct, 1, 0);
   if (rv) {
@@ -181,17 +131,11 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
   else {
-    GWEN_CRYPT_CRYPTALGO *algo;
-
-    algo=GWEN_Crypt_CryptAlgo_new(algoId, GWEN_Crypt_CryptMode_None);
-    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, keySize);
-
-    /* generate key */
-    rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
+    /* activate key */
+    rv=GWEN_Crypt_Token_ActivateKey(ct, keyId, 0);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error generating key (%d)", rv);
-      GWEN_Crypt_CryptAlgo_free(algo);
+		"Error activating key (%d)", rv);
       return 3;
     }
   }
@@ -203,8 +147,7 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
 
-  fprintf(stderr, "Key %d (%s, %d bytes) successfully generated.\n",
-	  keyId, GWEN_Crypt_CryptAlgoId_toString(algoId), keySize);
+  fprintf(stderr, "Key %d successfully activated.\n", keyId);
 
   return 0;
 }

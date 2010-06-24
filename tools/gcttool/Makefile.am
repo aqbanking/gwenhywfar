@@ -8,6 +8,7 @@ noinst_HEADERS=\
   globals.h
 
 gct_tool_SOURCES=\
+  activatekey.c \
   changepin.c \
   create.c \
   genkey.c \

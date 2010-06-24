@@ -516,6 +516,21 @@ int GWEN_Crypt_Token_ChangePin(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid) {
 
 
 
+int  GWEN_Crypt_Token_ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid) {
+  assert(ct);
+  assert(ct->refCount);
+
+  if (ct->openCount<1)
+    return GWEN_ERROR_NOT_OPEN;
+
+  if (ct->activateKeyFn)
+    return ct->activateKeyFn(ct, id ,gid);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
 
 
 
@@ -730,6 +745,20 @@ GWEN_CRYPT_TOKEN_CHANGEPIN_FN GWEN_Crypt_Token_SetChangePinFn(GWEN_CRYPT_TOKEN *
   assert(ct->refCount);
   of=ct->changePinFn;
   ct->changePinFn=f;
+
+  return of;
+}
+
+
+
+GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN GWEN_Crypt_Token_SetActivateKeyFn(GWEN_CRYPT_TOKEN *ct,
+								  GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN f) {
+  GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN of;
+
+  assert(ct);
+  assert(ct->refCount);
+  of=ct->activateKeyFn;
+  ct->activateKeyFn=f;
 
   return of;
 }

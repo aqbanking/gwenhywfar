@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: main.c 1107 2007-01-07 21:17:05Z martin $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2005-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -254,6 +251,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "genkey")==0) {
     rv=genKey(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "activatekey")==0) {
+    rv=activateKey(db, argc, argv);
   }
   else if (strcasecmp(cmd, "update")==0) {
     rv=updateToken(db, argc, argv);
