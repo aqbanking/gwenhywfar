@@ -2176,6 +2176,7 @@ int FOX16_GuiDialog::openDialog() {
 
   /* show dialog */
   DBG_ERROR(0, "Showing...");
+  dialogBox->layout();
   dialogBox->show(PLACEMENT_OWNER);
 
   return 0;
