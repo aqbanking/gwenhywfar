@@ -16,6 +16,7 @@ noinst_HEADERS=\
   tm_member_p.h tm_member.h \
   tm_header_p.h tm_header.h \
   tm_typemanager_p.h tm_typemanager.h \
+  tm_virtualfn_p.h tm_virtualfn.h \
   tm_builder_p.h tm_builder.h \
   tm_item_p.h tm_item.h \
   tm_enum_p.h tm_enum.h \
@@ -39,6 +40,7 @@ typemaker2_SOURCES=\
   tm_define.c \
   tm_code.c \
   tm_inline.c \
+  tm_virtualfn.c \
   build.c \
   main.c
   

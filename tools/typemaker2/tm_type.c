@@ -40,6 +40,7 @@ TYPEMAKER2_TYPE *Typemaker2_Type_new() {
   ty->defines=Typemaker2_Define_List_new();
   ty->codeDefs=Typemaker2_Code_List_new();
   ty->inlines=Typemaker2_Inline_List_new();
+  ty->virtualFns=Typemaker2_VirtualFn_List_new();
 
   ty->structIncludes=GWEN_StringList_new();
   ty->privateIncludes=GWEN_StringList_new();
@@ -77,6 +78,7 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       Typemaker2_Define_List_free(ty->defines);
       Typemaker2_Code_List_free(ty->codeDefs);
       Typemaker2_Inline_List_free(ty->inlines);
+      Typemaker2_VirtualFn_List_free(ty->virtualFns);
 
       GWEN_StringList_free(ty->structIncludes);
       GWEN_StringList_free(ty->privateIncludes);
@@ -525,6 +527,14 @@ TYPEMAKER2_INLINE_LIST *Typemaker2_Type_GetInlines(const TYPEMAKER2_TYPE *ty) {
 
 
 
+TYPEMAKER2_VIRTUALFN_LIST *Typemaker2_Type_GetVirtualFns(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->virtualFns;
+}
+
+
+
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -748,6 +758,28 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
       Typemaker2_Define_List_Add(td, ty->defines);
       nn=GWEN_XMLNode_FindNextTag(nn, "define", NULL, NULL);
+    }
+  }
+
+  /* read virtual functions */
+  n=GWEN_XMLNode_FindFirstTag(node, "virtualFns", NULL, NULL);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "fn", NULL, NULL);
+    while(nn) {
+      TYPEMAKER2_VIRTUALFN *vf;
+      int rv;
+
+      vf=Typemaker2_VirtualFn_new();
+      rv=Typemaker2_VirtualFn_readXml(vf, nn);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	Typemaker2_VirtualFn_free(vf);
+        return rv;
+      }
+      Typemaker2_VirtualFn_List_Add(vf, ty->virtualFns);
+      nn=GWEN_XMLNode_FindNextTag(nn, "fn", NULL, NULL);
     }
   }
 

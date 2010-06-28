@@ -46,6 +46,7 @@ struct TYPEMAKER2_TYPE {
   TYPEMAKER2_DEFINE_LIST *defines;
   TYPEMAKER2_CODE_LIST *codeDefs;
   TYPEMAKER2_INLINE_LIST *inlines;
+  TYPEMAKER2_VIRTUALFN_LIST *virtualFns;
 
   GWEN_STRINGLIST *structIncludes;
   GWEN_STRINGLIST *privateIncludes;
