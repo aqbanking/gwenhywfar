@@ -30,6 +30,8 @@ void Typemaker2_TypeManager_SetApiDeclaration(TYPEMAKER2_TYPEMANAGER *tym, const
 void Typemaker2_TypeManager_AddFolder(TYPEMAKER2_TYPEMANAGER *tym, const char *s);
 
 void Typemaker2_TypeManager_AddType(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty);
+int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty);
+int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty);
 
 TYPEMAKER2_TYPE *Typemaker2_TypeManager_FindType(TYPEMAKER2_TYPEMANAGER *tym, const char *s);
 TYPEMAKER2_TYPE *Typemaker2_TypeManager_GetType(TYPEMAKER2_TYPEMANAGER *tym, const char *s);

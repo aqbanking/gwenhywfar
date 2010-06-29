@@ -35,7 +35,6 @@ TYPEMAKER2_VIRTUALFN *Typemaker2_VirtualFn_new() {
   vf->paramTypes=GWEN_StringList_new();
   vf->access=TypeMaker2_Access_Public;
 
-
   return vf;
 }
 
@@ -49,6 +48,7 @@ void Typemaker2_VirtualFn_free(TYPEMAKER2_VIRTUALFN *vf) {
       free(vf->name);
       free(vf->returnType);
       free(vf->defaultReturnValue);
+      free(vf->location);
       vf->refCount=0;
       GWEN_FREE_OBJECT(vf);
     }
@@ -80,6 +80,9 @@ int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
     return GWEN_ERROR_BAD_DATA;
   }
   Typemaker2_VirtualFn_SetName(vf, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "location", "pre");
+  Typemaker2_VirtualFn_SetLocation(vf, s);
 
   /* read flags */
   s=GWEN_XMLNode_GetCharValue(node, "flags", NULL);
@@ -143,6 +146,26 @@ void Typemaker2_VirtualFn_SetName(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
   free(vf->name);
   if (s) vf->name=strdup(s);
   else vf->name=NULL;
+}
+
+
+
+const char *Typemaker2_VirtualFn_GetLocation(const TYPEMAKER2_VIRTUALFN *vf) {
+  assert(vf);
+  assert(vf->refCount);
+
+  return vf->location;
+}
+
+
+
+void Typemaker2_VirtualFn_SetLocation(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+  assert(vf);
+  assert(vf->refCount);
+
+  free(vf->location);
+  if (s) vf->location=strdup(s);
+  else vf->location=NULL;
 }
 
 

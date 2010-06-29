@@ -80,6 +80,12 @@ void Typemaker2_Builder_SetBuildFn(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_BUILDER_BU
 int Typemaker2_Builder_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
+int Typemaker2_Builder_MakeTypeList1(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int Typemaker2_Builder_MakeTypeList2(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int Typemaker2_Builder_MakeTypeTree(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+
+
+
 
 GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
 						 TYPEMAKER2_TYPE *ty,

@@ -3329,7 +3329,7 @@ static int _buildDefineEnums(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
-int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const char *loc) {
   TYPEMAKER2_VIRTUALFN_LIST *fns;
   TYPEMAKER2_TYPEMANAGER *tym;
   uint32_t flags;
@@ -3348,75 +3348,80 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
-      int access=Typemaker2_VirtualFn_GetAccess(vf);
-      GWEN_STRINGLISTENTRY *se;
-      int i;
-
-      GWEN_Buffer_AppendString(tbuf, "typedef ");
-      s=Typemaker2_VirtualFn_GetReturnType(vf);
-      if (!(s && *s)) {
-        GWEN_Buffer_free(tbuf);
-	return GWEN_ERROR_BAD_DATA;
-      }
-      GWEN_Buffer_AppendString(tbuf, s);
-
-      GWEN_Buffer_AppendString(tbuf, "  (*");
-      s=Typemaker2_Type_GetIdentifier(ty);
-      GWEN_Buffer_AppendString(tbuf, s);
-      GWEN_Buffer_AppendString(tbuf, "_");
-
-      s=Typemaker2_VirtualFn_GetName(vf);
-      if (!(s && *s)) {
-	GWEN_Buffer_free(tbuf);
-	return GWEN_ERROR_BAD_DATA;
-      }
-      while(*s) {
-	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
-	s++;
-      }
-      GWEN_Buffer_AppendString(tbuf, "_FN)(");
-
-      s=Typemaker2_Type_GetIdentifier(ty);
-      GWEN_Buffer_AppendString(tbuf, s);
-      /* created structs are always pointers */
-      GWEN_Buffer_AppendString(tbuf, " *p_struct");
-
-      i=1;
-      se=GWEN_StringList_FirstEntry(Typemaker2_VirtualFn_GetParamTypes(vf));
-      while(se) {
-	char numbuf[64];
-
-	GWEN_Buffer_AppendString(tbuf, ", ");
-	s=GWEN_StringListEntry_Data(se);
+      s=Typemaker2_VirtualFn_GetLocation(vf);
+      if (!(s && *s))
+	s="pre";
+      if (s && loc && strcasecmp(s, loc)==0) {
+	int access=Typemaker2_VirtualFn_GetAccess(vf);
+	GWEN_STRINGLISTENTRY *se;
+	int i;
+  
+	GWEN_Buffer_AppendString(tbuf, "typedef ");
+	s=Typemaker2_VirtualFn_GetReturnType(vf);
+	if (!(s && *s)) {
+	  GWEN_Buffer_free(tbuf);
+	  return GWEN_ERROR_BAD_DATA;
+	}
 	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, " ");
-	snprintf(numbuf, sizeof(numbuf)-1, "param%d", i++);
-	numbuf[sizeof(numbuf)-1]=0;
-	GWEN_Buffer_AppendString(tbuf, numbuf);
-
-	se=GWEN_StringListEntry_Next(se);
+  
+	GWEN_Buffer_AppendString(tbuf, "  (*");
+	s=Typemaker2_Type_GetIdentifier(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "_");
+  
+	s=Typemaker2_VirtualFn_GetName(vf);
+	if (!(s && *s)) {
+	  GWEN_Buffer_free(tbuf);
+	  return GWEN_ERROR_BAD_DATA;
+	}
+	while(*s) {
+	  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+	  s++;
+	}
+	GWEN_Buffer_AppendString(tbuf, "_FN)(");
+  
+	s=Typemaker2_Type_GetIdentifier(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	/* created structs are always pointers */
+	GWEN_Buffer_AppendString(tbuf, " *p_struct");
+  
+	i=1;
+	se=GWEN_StringList_FirstEntry(Typemaker2_VirtualFn_GetParamTypes(vf));
+	while(se) {
+	  char numbuf[64];
+  
+	  GWEN_Buffer_AppendString(tbuf, ", ");
+	  s=GWEN_StringListEntry_Data(se);
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, " ");
+	  snprintf(numbuf, sizeof(numbuf)-1, "param%d", i++);
+	  numbuf[sizeof(numbuf)-1]=0;
+	  GWEN_Buffer_AppendString(tbuf, numbuf);
+  
+	  se=GWEN_StringListEntry_Next(se);
+	}
+	GWEN_Buffer_AppendString(tbuf, ");\n");
+  
+	switch(access) {
+	case TypeMaker2_Access_Public:
+	  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Library:
+	  Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Protected:
+	  Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	case TypeMaker2_Access_Private:
+	  Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+	  break;
+	default:
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
+	  GWEN_Buffer_free(tbuf);
+	  return GWEN_ERROR_BAD_DATA;
+	}
+	GWEN_Buffer_Reset(tbuf);
       }
-      GWEN_Buffer_AppendString(tbuf, ");\n");
-
-      switch(access) {
-      case TypeMaker2_Access_Public:
-	Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
-	break;
-      case TypeMaker2_Access_Library:
-	Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
-	break;
-      case TypeMaker2_Access_Protected:
-	Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
-	break;
-      case TypeMaker2_Access_Private:
-	Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
-	break;
-      default:
-	DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
-	GWEN_Buffer_free(tbuf);
-	return GWEN_ERROR_BAD_DATA;
-      }
-      GWEN_Buffer_Reset(tbuf);
 
       vf=Typemaker2_VirtualFn_List_Next(vf);
     }
@@ -4881,13 +4886,19 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     return rv;
   }
 
-  rv=_buildDefineVirtualFns(tb, ty);
+  rv=_buildDefineVirtualFns(tb, ty, "pre");
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
   rv=_buildPostHeaders(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=_buildDefineVirtualFns(tb, ty, "post");
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;

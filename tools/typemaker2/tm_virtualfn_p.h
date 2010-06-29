@@ -19,6 +19,7 @@ struct TYPEMAKER2_VIRTUALFN {
   GWEN_LIST_ELEMENT(TYPEMAKER2_VIRTUALFN)
 
   char *name;
+  char *location;
 
   int access;
   uint32_t flags;
