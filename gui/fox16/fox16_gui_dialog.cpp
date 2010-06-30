@@ -481,11 +481,12 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
     switch(prop) {
     case GWEN_DialogProperty_Width:
-      f->setWidth(value);
+      f->recalc();
+      f->resize(value, f->getHeight());
       return 0;
-
     case GWEN_DialogProperty_Height:
-      f->setHeight(value);
+      f->recalc();
+      f->resize(f->getWidth(), value);
       return 0;
     case GWEN_DialogProperty_Enabled:
       if (value==0)
@@ -496,6 +497,17 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
     case GWEN_DialogProperty_Focus:
       f->setFocus();
+      return 0;
+
+    case GWEN_DialogProperty_Visibility:
+      if (value==0) {
+	f->hide();
+        f->recalc();
+      }
+      else {
+	f->show();
+	f->recalc();
+      }
       return 0;
 
     case GWEN_DialogProperty_Title:
@@ -823,6 +835,7 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
     case GWEN_DialogProperty_SelectionState:
     case GWEN_DialogProperty_SortDirection:
     case GWEN_DialogProperty_Sort:
+    case GWEN_DialogProperty_Visibility:
     case GWEN_DialogProperty_None:
     case GWEN_DialogProperty_Unknown:
       ;
@@ -1149,6 +1162,7 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Focus:
   case GWEN_DialogProperty_SortDirection:
   case GWEN_DialogProperty_Sort:
+  case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
@@ -1530,6 +1544,7 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Focus:
   case GWEN_DialogProperty_SortDirection:
   case GWEN_DialogProperty_Sort:
+  case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
@@ -1816,14 +1831,15 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
   _mainWidget=dynamic_cast<FXDialogBox*>(xw);
   assert(_mainWidget);
 
+  /* create X11 server side resources */
+  xw->create();
+
   rv=GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeInit, "");
   if (rv<0) {
     DBG_INFO(0, "Error initializing dialog: %d", rv);
     return false;
   }
-
-  /* create X11 server side resources */
-  xw->create();
+  xw->layout();
 
   return true;
 }

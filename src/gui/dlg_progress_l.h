@@ -39,6 +39,7 @@ void GWEN_DlgProgress_SetAllowClose(GWEN_DIALOG *dlg, int b);
 void GWEN_DlgProgress_SetStayOpen(GWEN_DIALOG *dlg, int b);
 int GWEN_DlgProgress_GetStayOpen(const GWEN_DIALOG *dlg);
 
+void GWEN_DlgProgress_SetShowLog(GWEN_DIALOG *dlg, int b);
 
 
 #endif

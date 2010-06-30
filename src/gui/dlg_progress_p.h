@@ -22,6 +22,7 @@ struct GWEN_DLGPROGRESS {
   int wasInit;
   int allowClose;
   int stayOpen;
+  int showLog;
 
   GWEN_BUFFER *logBufferTxt;
   GWEN_BUFFER *logBufferHtml;

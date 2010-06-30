@@ -548,6 +548,7 @@ int QT3_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 	case GWEN_DialogProperty_Sort:
 	case GWEN_DialogProperty_None:
 	case GWEN_DialogProperty_Unknown:
+	case GWEN_DialogProperty_Visibility:
 	  break;
 	}
       }
@@ -877,6 +878,7 @@ int QT3_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 	case GWEN_DialogProperty_SelectionState:
 	case GWEN_DialogProperty_SortDirection:
 	case GWEN_DialogProperty_Sort:
+	case GWEN_DialogProperty_Visibility:
 	case GWEN_DialogProperty_None:
 	case GWEN_DialogProperty_Unknown:
 	  break;
@@ -1243,6 +1245,7 @@ int QT3_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Focus:
   case GWEN_DialogProperty_SortDirection:
   case GWEN_DialogProperty_Sort:
+  case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
@@ -1633,6 +1636,7 @@ const char *QT3_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Focus:
   case GWEN_DialogProperty_SortDirection:
   case GWEN_DialogProperty_Sort:
+  case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;

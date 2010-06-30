@@ -1083,6 +1083,9 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
   if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_KEEP_OPEN)
     GWEN_DlgProgress_SetStayOpen(dlg, 1);
 
+  if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_SHOW_LOG)
+    GWEN_DlgProgress_SetShowLog(dlg, 1);
+
   GWEN_Gui_RunDialog(dlg, 0);
 
   return 0;
@@ -1344,8 +1347,10 @@ int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
 
     dlg=GWEN_ProgressData_GetDialog(pd);
     if (dlg) {
-      if (level<=GWEN_LoggerLevel_Warning)
+      if (level<=GWEN_LoggerLevel_Warning) {
 	GWEN_DlgProgress_SetStayOpen(dlg, 1);
+	GWEN_DlgProgress_SetShowLog(dlg, 1);
+      }
 
       GWEN_DlgProgress_AddLogText(dlg, level, text);
       GWEN_Gui_RunDialog(dlg, 0);
