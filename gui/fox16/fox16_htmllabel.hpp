@@ -47,6 +47,8 @@ public:
   /// Return default height
   virtual FXint getDefaultHeight();
 
+  void create();
+
   void setMinimumWidth(int i) { m_minWidth=i;};
 
   long onPaint(FXObject*, FXSelector, void*);

@@ -48,7 +48,7 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 ,m_haveDefaultDims(false)
 {
   setText(text);
-  flags|=FLAG_ENABLED;
+  flags|=FLAG_ENABLED|FLAG_DIRTY|FLAG_RECALC;
 }
 
 
@@ -143,6 +143,14 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
 
 
 
+void FOX16_HtmlLabel::create() {
+  FXFrame::create();
+  updateHtml();
+  recalc();
+}
+
+
+
 void FOX16_HtmlLabel::layout() {
   int w;
 
@@ -164,6 +172,7 @@ void FOX16_HtmlLabel::layout() {
 void FOX16_HtmlLabel::updateHtml() {
   if (m_htmlCtx)
     delete m_htmlCtx;
+  m_haveDefaultDims=false;
   m_htmlCtx=new FOX16_HtmlCtx(0);
   m_htmlCtx->setBackgroundColor(backColor);
   m_htmlCtx->setForegroundColor(fxcolorfromname("black"));
