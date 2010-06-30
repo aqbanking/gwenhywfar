@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: idlist.h 1102 2006-12-30 19:39:37Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -166,6 +163,9 @@ int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id);
 GWENHYWFAR_API
 uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index);
 
+
+GWENHYWFAR_API
+uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl);
 
 /*@}*/
 

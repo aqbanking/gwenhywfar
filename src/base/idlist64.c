@@ -493,6 +493,7 @@ GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl){
   nidl=GWEN_IdList64_new();
 
   nidl->idTableCount=idl->idTableCount;
+  nidl->entryCount=idl->entryCount;
   if (idl->pIdTablePointers) {
     for (idx=0; idx<idl->idTableCount; idx++) {
       GWEN_IDTABLE64 *idt;
@@ -510,6 +511,15 @@ GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl){
   }
 
   return nidl;
+}
+
+
+
+uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl) {
+  assert(idl);
+  assert(idl->refCount);
+
+  return idl->entryCount;
 }
 
 
