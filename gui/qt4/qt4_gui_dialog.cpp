@@ -966,6 +966,13 @@ int QT4_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 	  f->setFocus();
 	  return 0;
 
+	case GWEN_DialogProperty_Visibility:
+	  if (value==0)
+	    f->hide();
+	  else
+            f->show();
+	  return 0;
+
 	case GWEN_DialogProperty_Title:
 	case GWEN_DialogProperty_Value:
 	case GWEN_DialogProperty_MinValue:
@@ -978,7 +985,6 @@ int QT4_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 	case GWEN_DialogProperty_SelectionState:
 	case GWEN_DialogProperty_SortDirection:
 	case GWEN_DialogProperty_Sort:
-	case GWEN_DialogProperty_Visibility:
 	case GWEN_DialogProperty_None:
 	case GWEN_DialogProperty_Unknown:
 	  break;
