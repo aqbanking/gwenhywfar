@@ -1059,6 +1059,12 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
 
     /* need to create dialog for it */
     dlg=GWEN_DlgProgress_new();
+    if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_KEEP_OPEN)
+      GWEN_DlgProgress_SetStayOpen(dlg, 1);
+
+    if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_SHOW_LOG)
+      GWEN_DlgProgress_SetShowLog(dlg, 1);
+
     rv=GWEN_Gui_OpenDialog(dlg, 0);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unable to openDialog: %d", rv);
@@ -1079,12 +1085,6 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
     GWEN_ProgressData_SetDialog(pd, dlg);
     GWEN_ProgressData_SetShown(pd, 1);
   }
-
-  if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_KEEP_OPEN)
-    GWEN_DlgProgress_SetStayOpen(dlg, 1);
-
-  if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_SHOW_LOG)
-    GWEN_DlgProgress_SetShowLog(dlg, 1);
 
   GWEN_Gui_RunDialog(dlg, 0);
 

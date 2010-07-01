@@ -358,9 +358,52 @@ int test6(int argc, char **argv) {
 
 
 
+int test7(int argc, char **argv) {
+  FXApp application("libtest","Martin Preuss");
+  FOX16_Gui *gui;
+  char buffer[65];
+
+  application.init(argc,argv);
+
+  application.create();
+
+  gui=new FOX16_Gui(&application);
+  GWEN_Gui_SetGui(gui->getCInterface());
+
+  GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_SHOW,
+		    "This is the Title",
+		    "<html>This is the text.</html>This is ASCII",
+		    buffer,
+		    1,
+		    sizeof(buffer)-1,
+		    0);
+
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
-  return test6(argc, argv);
+  if (argc>1) {
+    if (strcasecmp(argv[1], "1")==0)
+      return test1(argc, argv);
+    else if (strcasecmp(argv[1], "2")==0)
+      return test2(argc, argv);
+    else if (strcasecmp(argv[1], "3")==0)
+      return test3(argc, argv);
+    else if (strcasecmp(argv[1], "4")==0)
+      return test4(argc, argv);
+    else if (strcasecmp(argv[1], "5")==0)
+      return test5(argc, argv);
+    else if (strcasecmp(argv[1], "6")==0)
+      return test6(argc, argv);
+    else if (strcasecmp(argv[1], "7")==0)
+      return test7(argc, argv);
+  }
+  else
+    return test7(argc, argv);
 }
 
 

@@ -50,6 +50,7 @@ public:
   void create();
 
   void setMinimumWidth(int i) { m_minWidth=i;};
+  void setMaxDefaultWidth(int i) { m_maxDefaultWidth=i;};
 
   long onPaint(FXObject*, FXSelector, void*);
 

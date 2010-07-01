@@ -208,6 +208,20 @@ int GWEN_Widget_GetRows(const GWEN_WIDGET *w);
 GWENHYWFAR_API
 void GWEN_Widget_SetRows(GWEN_WIDGET *w, int i);
 
+
+GWENHYWFAR_API
+int GWEN_Widget_GetWidth(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetWidth(GWEN_WIDGET *w, int i);
+
+GWENHYWFAR_API
+int GWEN_Widget_GetHeight(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetHeight(GWEN_WIDGET *w, int i);
+
+
 GWENHYWFAR_API
 const char *GWEN_Widget_GetText(const GWEN_WIDGET *w, int idx);
 

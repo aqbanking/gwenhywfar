@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dialog type="dialog" name="dlg_gwen_progress" flags="decorShrinkable decorStretchable" i18n="gwenhywfar" >
   <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
-    <widget type="label" name="descrLabel" flags="fillX" />
+    <widget type="label" name="descrLabel" flags="fillX" width="500" />
 
     <widget type="groupBox" name="logGroup" flags="fillX fillY">
       <widget type="textBrowser" name="logText" flags="fillX fillY readOnly" />

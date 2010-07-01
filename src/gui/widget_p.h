@@ -42,6 +42,10 @@ struct GWEN_WIDGET {
 
   int columns;
   int rows;
+
+  int width;
+  int height;
+
   char *text[GWEN_WIDGET_TEXTCOUNT];
 
   char *iconFile;

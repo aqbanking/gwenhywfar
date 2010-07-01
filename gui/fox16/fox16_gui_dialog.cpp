@@ -1831,14 +1831,15 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
   _mainWidget=dynamic_cast<FXDialogBox*>(xw);
   assert(_mainWidget);
 
-  /* create X11 server side resources */
-  xw->create();
-
   rv=GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeInit, "");
   if (rv<0) {
     DBG_INFO(0, "Error initializing dialog: %d", rv);
     return false;
   }
+
+  /* create X11 server side resources */
+  xw->create();
+
   xw->layout();
 
   return true;
@@ -1925,13 +1926,22 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   /* create THIS widget */
   switch(GWEN_Widget_GetType(w)) {
-  case GWEN_Widget_TypeLabel:
+
+  case GWEN_Widget_TypeLabel: {
+    FOX16_HtmlLabel *label;
+    int wi;
+
     if (flags & GWEN_WIDGET_FLAGS_NO_WORDWRAP)
       opts|=FOX16_HtmlLabel::FLAGS_NO_WORDWRAP;
-    wChild=new FOX16_HtmlLabel(parentComposite,
-			       htmlText,
-			       opts);
+    label=new FOX16_HtmlLabel(parentComposite,
+			      htmlText,
+			      opts);
+    wi=GWEN_Widget_GetWidth(w);
+    if (wi>0)
+      label->setMaxDefaultWidth(wi);
+    wChild=label;
     break;
+  }
 
   case GWEN_Widget_TypePushButton: {
     const char *s;

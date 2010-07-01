@@ -197,6 +197,38 @@ void GWEN_Widget_SetRows(GWEN_WIDGET *w, int i) {
 
 
 
+int GWEN_Widget_GetWidth(const GWEN_WIDGET *w) {
+  assert(w);
+  assert(w->refCount);
+  return w->width;
+}
+
+
+
+void GWEN_Widget_SetWidth(GWEN_WIDGET *w, int i) {
+  assert(w);
+  assert(w->refCount);
+  w->width=i;
+}
+
+
+
+int GWEN_Widget_GetHeight(const GWEN_WIDGET *w) {
+  assert(w);
+  assert(w->refCount);
+  return w->height;
+}
+
+
+
+void GWEN_Widget_SetHeight(GWEN_WIDGET *w, int i) {
+  assert(w);
+  assert(w->refCount);
+  w->height=i;
+}
+
+
+
 const char *GWEN_Widget_GetText(const GWEN_WIDGET *w, int idx) {
   assert(w);
   assert(w->refCount);
@@ -486,6 +518,22 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
   s=GWEN_XMLNode_GetProperty(node, "rows", NULL);
   if (s && *s) {
     if (1!=sscanf(s, "%d", &(w->rows))) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Value [%s] is not an integer", s);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  s=GWEN_XMLNode_GetProperty(node, "width", NULL);
+  if (s && *s) {
+    if (1!=sscanf(s, "%d", &(w->width))) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Value [%s] is not an integer", s);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  s=GWEN_XMLNode_GetProperty(node, "height", NULL);
+  if (s && *s) {
+    if (1!=sscanf(s, "%d", &(w->height))) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Value [%s] is not an integer", s);
       return GWEN_ERROR_BAD_DATA;
     }

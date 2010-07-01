@@ -83,6 +83,7 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
 
 
 void FOX16_HtmlLabel::calcDefaultDims() {
+#if 0
   int w;
   int wNeeded;
 
@@ -99,6 +100,18 @@ void FOX16_HtmlLabel::calcDefaultDims() {
   m_defaultWidth=m_htmlCtx->getWidth();
   m_defaultHeight=m_htmlCtx->getHeight();
   m_haveDefaultDims=true;
+#else
+  int w;
+
+  if (options & FLAGS_NO_WORDWRAP)
+    w=-1;
+  else
+    w=m_maxDefaultWidth;
+  m_htmlCtx->layout(w-border*2, -1);
+  m_defaultWidth=m_htmlCtx->getWidth();
+  m_defaultHeight=m_htmlCtx->getHeight();
+  m_haveDefaultDims=true;
+#endif
 }
 
 
@@ -142,7 +155,6 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
 }
 
 
-
 void FOX16_HtmlLabel::create() {
   FXFrame::create();
   updateHtml();
@@ -152,6 +164,7 @@ void FOX16_HtmlLabel::create() {
 
 
 void FOX16_HtmlLabel::layout() {
+#if 0
   int w;
 
   m_haveDefaultDims=false;
@@ -165,6 +178,21 @@ void FOX16_HtmlLabel::layout() {
   m_htmlCtx->layout(w-border*2, height-border*2);
   update();
   flags&=~FLAG_DIRTY;
+#else
+  int w;
+
+  m_haveDefaultDims=false;
+  if (options & FLAGS_NO_WORDWRAP)
+    w=-1;
+  else
+    w=m_maxDefaultWidth;
+
+  if (m_htmlCtx==NULL)
+    updateHtml();
+  m_htmlCtx->layout(w-border*2, height-border*2);
+  update();
+  flags&=~FLAG_DIRTY;
+#endif
 }
 
 
