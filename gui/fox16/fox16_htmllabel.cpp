@@ -105,6 +105,8 @@ void FOX16_HtmlLabel::calcDefaultDims() {
 
   if (options & FLAGS_NO_WORDWRAP)
     w=-1;
+  else if (options & FLAGS_USE_FULL_WIDTH)
+    w=width;
   else
     w=m_maxDefaultWidth;
   m_htmlCtx->layout(w-border*2, -1);
@@ -184,6 +186,8 @@ void FOX16_HtmlLabel::layout() {
   m_haveDefaultDims=false;
   if (options & FLAGS_NO_WORDWRAP)
     w=-1;
+  else if (options & FLAGS_USE_FULL_WIDTH)
+    w=width;
   else
     w=m_maxDefaultWidth;
 

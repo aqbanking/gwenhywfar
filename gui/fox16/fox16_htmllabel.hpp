@@ -25,7 +25,14 @@ class FOX16GUI_API FOX16_HtmlLabel: public FXFrame {
 public:
 
   enum {
-    FLAGS_NO_WORDWRAP = 0x00080000
+    /** don't wrap the text. If this flag is given as parameter to the constructor
+     * then you'll have to insert line-breaks into the text yourself.
+     */
+    FLAGS_NO_WORDWRAP    = 0x00080000,
+    /** when wrapping words use the full widget width to layout the text.
+     * Otherwise the wordwrapping occurrs at the width set by @ref setMaxDefaultWidth().
+     */
+    FLAGS_USE_FULL_WIDTH = 0x00040000
   };
 
   FOX16_HtmlLabel(FXComposite* p, const FXString& text,
