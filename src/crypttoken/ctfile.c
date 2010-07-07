@@ -2029,12 +2029,15 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   /* set key */
   if (keyNum==1)
     cki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
-  else if (keyNum==3)
+  else if (keyNum==2)
     cki=GWEN_CTF_Context_GetLocalCryptKeyInfo(ctx);
   else if (keyNum==5)
     cki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx);
   else if (keyNum==7)
     cki=GWEN_CTF_Context_GetTempLocalSignKeyInfo(ctx);
+  else
+    cki=NULL;
+
   if (cki==NULL) {
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
 			 I18N("No key info found"));
