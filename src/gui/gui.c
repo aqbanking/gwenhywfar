@@ -662,9 +662,20 @@ int GWEN_Gui_LogHook(const char *logDomain,
        * In some cases sensitive information can be send to this function
        * which we don't want the application to store */
       return 0;
-    else
-      /* otherwise the log message seems to be uncritical, convey it */
-      return gwenhywfar_gui->logHookFn(gwenhywfar_gui, logDomain, priority, s);
+    else {
+      int rv;
+
+      if (gwenhywfar_gui->inLogHook==0) {
+	/* otherwise the log message seems to be uncritical, convey it */
+	gwenhywfar_gui->inLogHook++;
+	rv=gwenhywfar_gui->logHookFn(gwenhywfar_gui, logDomain, priority, s);
+	gwenhywfar_gui->inLogHook--;
+	return rv;
+      }
+      else
+        /* loghook recursion, don't convey */
+	return 0;
+    }
   }
   else
     /* handle as usual */
@@ -680,69 +691,119 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
   if (gwenhywfar_gui && gwenhywfar_gui->waitForSocketsFn)
     return gwenhywfar_gui->waitForSocketsFn(gwenhywfar_gui, readSockets, writeSockets, guiid, msecs);
   else {
-    GWEN_SOCKETSET *rset;
-    GWEN_SOCKETSET *wset;
-    GWEN_SOCKET_LIST2_ITERATOR *sit;
+    uint32_t pid;
+    time_t t0;
+    int wt;
+    int dist;
 
-    rset=GWEN_SocketSet_new();
-    wset=GWEN_SocketSet_new();
-
-    /* fill read socket set */
-    if (readSockets) {
-      sit=GWEN_Socket_List2_First(readSockets);
-      if (sit) {
-	GWEN_SOCKET *s;
-
-	s=GWEN_Socket_List2Iterator_Data(sit);
-	assert(s);
-
-	while(s) {
-	  GWEN_SocketSet_AddSocket(rset, s);
-	  s=GWEN_Socket_List2Iterator_Next(sit);
-	}
-	GWEN_Socket_List2Iterator_free(sit);
-      }
+    t0=time(0);
+    if (msecs==GWEN_TIMEOUT_NONE) {
+      wt=0;
+      dist=0;
     }
-
-    /* fill write socket set */
-    if (writeSockets) {
-      sit=GWEN_Socket_List2_First(writeSockets);
-      if (sit) {
-	GWEN_SOCKET *s;
-
-	s=GWEN_Socket_List2Iterator_Data(sit);
-	assert(s);
-
-	while(s) {
-	  GWEN_SocketSet_AddSocket(wset, s);
-	  s=GWEN_Socket_List2Iterator_Next(sit);
-	}
-	GWEN_Socket_List2Iterator_free(sit);
-      }
-    }
-
-    if (GWEN_SocketSet_GetSocketCount(rset)==0 &&
-	GWEN_SocketSet_GetSocketCount(wset)==0) {
-      /* no sockets to wait for, sleep for a few ms to keep cpu load down */
-      GWEN_SocketSet_free(wset);
-      GWEN_SocketSet_free(rset);
-
-      if (msecs) {
-	/* only sleep if a timeout was given */
-	DBG_DEBUG(GWEN_LOGDOMAIN, "Sleeping (no socket)");
-	GWEN_Socket_Select(NULL, NULL, NULL, GWEN_GUI_CPU_TIMEOUT);
-      }
-      return GWEN_ERROR_TIMEOUT;
+    else if (msecs==GWEN_TIMEOUT_FOREVER) {
+      wt=0;
+      dist=500;
     }
     else {
-      int rv;
-
-      rv=GWEN_Socket_Select(rset, wset, NULL, msecs);
-      GWEN_SocketSet_free(wset);
-      GWEN_SocketSet_free(rset);
-
-      return rv;
+      wt=msecs/1000;
+      dist=500;
     }
+
+    pid=GWEN_Gui_ProgressStart((wt!=0)?GWEN_GUI_PROGRESS_SHOW_PROGRESS:0 |
+			       GWEN_GUI_PROGRESS_SHOW_ABORT |
+			       GWEN_GUI_PROGRESS_DELAY |
+			       GWEN_GUI_PROGRESS_ALLOW_EMBED,
+			       I18N("Waiting for Data"),
+			       "Waiting for data to become available",
+			       wt,
+			       0);
+    while(1) {
+      GWEN_SOCKETSET *rset;
+      GWEN_SOCKETSET *wset;
+      GWEN_SOCKET_LIST2_ITERATOR *sit;
+  
+      rset=GWEN_SocketSet_new();
+      wset=GWEN_SocketSet_new();
+  
+      /* fill read socket set */
+      if (readSockets) {
+	sit=GWEN_Socket_List2_First(readSockets);
+	if (sit) {
+	  GWEN_SOCKET *s;
+  
+	  s=GWEN_Socket_List2Iterator_Data(sit);
+	  assert(s);
+  
+	  while(s) {
+	    GWEN_SocketSet_AddSocket(rset, s);
+	    s=GWEN_Socket_List2Iterator_Next(sit);
+	  }
+	  GWEN_Socket_List2Iterator_free(sit);
+	}
+      }
+  
+      /* fill write socket set */
+      if (writeSockets) {
+	sit=GWEN_Socket_List2_First(writeSockets);
+	if (sit) {
+	  GWEN_SOCKET *s;
+  
+	  s=GWEN_Socket_List2Iterator_Data(sit);
+	  assert(s);
+  
+	  while(s) {
+	    GWEN_SocketSet_AddSocket(wset, s);
+	    s=GWEN_Socket_List2Iterator_Next(sit);
+	  }
+	  GWEN_Socket_List2Iterator_free(sit);
+	}
+      }
+  
+      if (GWEN_SocketSet_GetSocketCount(rset)==0 &&
+	  GWEN_SocketSet_GetSocketCount(wset)==0) {
+	/* no sockets to wait for, sleep for a few ms to keep cpu load down */
+	GWEN_SocketSet_free(wset);
+	GWEN_SocketSet_free(rset);
+  
+	if (msecs) {
+	  /* only sleep if a timeout was given */
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "Sleeping (no socket)");
+	  GWEN_Socket_Select(NULL, NULL, NULL, GWEN_GUI_CPU_TIMEOUT);
+	}
+	GWEN_Gui_ProgressEnd(pid);
+	return GWEN_ERROR_TIMEOUT;
+      }
+      else {
+	int rv;
+	int v=0;
+
+	rv=GWEN_Socket_Select(rset, wset, NULL, dist);
+	GWEN_SocketSet_free(wset);
+	GWEN_SocketSet_free(rset);
+
+	if (rv!=GWEN_ERROR_TIMEOUT) {
+	  GWEN_Gui_ProgressEnd(pid);
+	  return rv;
+	}
+
+	if (wt) {
+	  time_t t1;
+
+	  t1=time(0);
+	  v=(int) difftime(t1, t0);
+	  if (v>wt) {
+	    GWEN_Gui_ProgressEnd(pid);
+            return GWEN_ERROR_TIMEOUT;
+	  }
+	}
+	rv=GWEN_Gui_ProgressAdvance(pid, v);
+	if (rv==GWEN_ERROR_USER_ABORTED) {
+	  GWEN_Gui_ProgressEnd(pid);
+	  return rv;
+	}
+      }
+    } /* loop */
   }
 }
 
@@ -1135,11 +1196,15 @@ uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
   DBG_DEBUG(GWEN_LOGDOMAIN, "ProgressStart: flags=%08x, title=[%s], total=%08x, guiid=%08x",
 	    progressFlags, title?title:"(none)", (uint32_t) total, guiid);
 
+  if (guiid==0) {
+    guiid=gui->lastProgressId;
+  }
+
   if (guiid) {
     pdParent=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, guiid);
     if (pdParent==NULL) {
       DBG_WARN(GWEN_LOGDOMAIN, "Parent progress by id %08x not found", guiid);
-      DBG_ERROR(0, "Title: [%s], Text: [%s]",
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Title: [%s], Text: [%s]",
 		title?title:"no title",
 		text?text:"no text");
     }

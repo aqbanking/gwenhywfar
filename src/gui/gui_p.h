@@ -83,6 +83,8 @@ struct GWEN_GUI {
 
   char *name;
 
+  int inLogHook;
+
   uint32_t refCount;
 };
 

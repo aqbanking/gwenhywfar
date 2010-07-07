@@ -366,6 +366,9 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeSpinBox;
     else if (strcasecmp(s, "textBrowser")==0)
       return GWEN_Widget_TypeTextBrowser;
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unknown widget type [%s]", s);
+    }
   }
   return GWEN_Widget_TypeUnknown;
 }
@@ -496,8 +499,14 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
     GWEN_Widget_SetName(w, s);
 
   s=GWEN_XMLNode_GetProperty(node, "type", "unknown");
-  if (s && *s)
+  if (s && *s) {
     w->wtype=GWEN_Widget_Type_fromString(s);
+    if (w->wtype==GWEN_Widget_TypeUnknown) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "unknown type in node");
+      GWEN_XMLNode_Dump(node, stderr, 2);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "type property missing in node");
     return GWEN_ERROR_BAD_DATA;
