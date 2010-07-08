@@ -16,6 +16,8 @@
 #include "fox16_htmllabel.hpp"
 #include "fox16_htmltext.hpp"
 
+#include "theme.h"
+
 #include <gwenhywfar/dialog_be.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/debug.h>
@@ -171,9 +173,9 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeComboBox:
     {
-      FXComboBox *f;
+      THEMECOMBOBOX *f;
 
-      f=(FXComboBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -546,9 +548,9 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeComboBox:
     {
-      FXComboBox *f;
+      THEMECOMBOBOX *f;
 
-      f=(FXComboBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -918,9 +920,9 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypePushButton:
     {
-      FXButton *f;
+      THEMEBUTTON *f;
 
-      f=(FXButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(THEMEBUTTON*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -970,9 +972,9 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeComboBox:
     {
-      FXComboBox *f;
+      THEMECOMBOBOX *f;
 
-      f=(FXComboBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -1056,11 +1058,11 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeTabPage:
     {
       FXWindow *f1;
-      FXTabItem *f2;
+      THEMETABITEM *f2;
 
       f1=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f1);
-      f2=(FXTabItem*) (f1->getPrev());
+      f2=(THEMETABITEM*) (f1->getPrev());
       assert(f2);
 
       switch(prop) {
@@ -1212,9 +1214,9 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypePushButton:
     {
-      FXButton *f;
+      THEMEBUTTON *f;
 
-      f=(FXButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(THEMEBUTTON*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -1304,9 +1306,9 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
   case GWEN_Widget_TypeComboBox:
     {
-      FXComboBox *f;
+      THEMECOMBOBOX *f;
 
-      f=(FXComboBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f);
 
       switch(prop) {
@@ -1397,11 +1399,11 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeTabPage:
     {
       FXWindow *f1;
-      FXTabItem *f2;
+      THEMETABITEM *f2;
 
       f1=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
       assert(f1);
-      f2=(FXTabItem*) (f1->getPrev());
+      f2=(THEMETABITEM*) (f1->getPrev());
       assert(f2);
 
       switch(prop) {
@@ -1955,12 +1957,12 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     if (s && *s)
       ic=getIcon(s);
 
-    wChild=new FXButton(parentComposite,
-			text,
-			ic,  /* icon */
-			this,
-			ID_WIDGET_FIRST+_widgetCount,
-			opts);
+    wChild=new THEMEBUTTON(parentComposite,
+			   text,
+			   ic,  /* icon */
+			   this,
+			   ID_WIDGET_FIRST+_widgetCount,
+			   opts);
     break;
   }
 
@@ -2008,11 +2010,11 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   case GWEN_Widget_TypeComboBox:
     if (flags & GWEN_WIDGET_FLAGS_READONLY)
       opts|=COMBOBOX_STATIC;
-    wChild=new FXComboBox(parentComposite,
-			  cols?cols:16,
-			  this,
-			  ID_WIDGET_FIRST+_widgetCount,
-			  opts);
+    wChild=new THEMECOMBOBOX(parentComposite,
+			     cols?cols:16,
+			     this,
+			     ID_WIDGET_FIRST+_widgetCount,
+			     opts);
     break;
 
   case GWEN_Widget_TypeRadioButton:
@@ -2108,7 +2110,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 	return NULL;
       }
 
-      new FXTabItem(tbook, text, NULL, opts | TAB_TOP_NORMAL);
+      new THEMETABITEM(tbook, text, NULL, opts | TAB_TOP_NORMAL);
       wChild=new FXVerticalFrame(tbook, opts);
     }
     break;
