@@ -103,7 +103,7 @@ int QT4_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
   flags=GWEN_Widget_GetFlags(w);
   s=GWEN_Widget_GetText(w, 0);
   if (s)
-    text=QString(s);
+    text=QString::fromUtf8(s);
   name=GWEN_Widget_GetName(w);
   cols=GWEN_Widget_GetColumns(w);
   rows=GWEN_Widget_GetRows(w);
