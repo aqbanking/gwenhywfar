@@ -144,13 +144,17 @@ void GWEN_DlgProgress_SetShowLog(GWEN_DIALOG *dlg, int b) {
 
       GWEN_Dialog_SetIntProperty(dlg, "logGroup", GWEN_DialogProperty_Visibility, 0, b, 0);
       if (b) {
-	int h;
+	int i;
 
-	h=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, 0);
-	h+=100;
-	if (h<DIALOG_MINHEIGHT_NOLOG)
-	  h=DIALOG_MINHEIGHT_NOLOG;
-	GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, h, 0);
+        i=xdlg->withLogWidth;
+	if (i<DIALOG_MINWIDTH)
+	  i=DIALOG_MINWIDTH;
+	GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+
+	i=xdlg->withLogHeight;
+	if (i<DIALOG_MINHEIGHT)
+	  i=DIALOG_MINHEIGHT;
+	GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
       }
     }
   }
@@ -359,15 +363,18 @@ void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg) {
   dbParams=GWEN_Dialog_GetPreferences(dlg);
   assert(dbParams);
 
+  xdlg->withLogWidth=GWEN_DB_GetIntValue(dbParams, "dialog_width", 0, -1);
+  xdlg->withLogHeight=GWEN_DB_GetIntValue(dbParams, "dialog_height", 0, -1);
+
   if (xdlg->showLog) {
-    /* read width */
-    i=GWEN_DB_GetIntValue(dbParams, "dialog_width", 0, -1);
+    int i;
+  
+    i=xdlg->withLogWidth;
     if (i<DIALOG_MINWIDTH)
       i=DIALOG_MINWIDTH;
     GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
   
-    /* read height */
-    i=GWEN_DB_GetIntValue(dbParams, "dialog_height", 0, -1);
+    i=xdlg->withLogHeight;
     if (i<DIALOG_MINHEIGHT)
       i=DIALOG_MINHEIGHT;
     GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
