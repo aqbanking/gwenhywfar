@@ -7,7 +7,7 @@
     
     <widget   type="hLine"      name="hline1"      flags="fillX" />
 
-    <widget   type="hlayout"    name="hlayout1"    flags="fillX" >
+    <widget   type="hlayout"    name="hlayout1"    flags="fillX equalWidth" >
       <widget type="hspacer"    name="hspacer1"    flags="fillX" />
       <widget type="pushButton" name="button1"     text="button1" />
       <widget type="pushButton" name="button2"     text="button2" />

@@ -14,7 +14,7 @@
     
     <widget name="hline2" type="hLine" flags="fillX" />
 
-    <widget type="hlayout" name="hlayout1" flags="fillX" >
+    <widget type="hlayout" name="hlayout1" flags="fillX equalWidth" >
       <widget type="hspacer" name="hspacer1" flags="fillX" />
       <widget type="pushButton" text="Close" name="closeButton" flags="default" />
       <widget type="pushButton" text="Abort" name="abortButton" />
