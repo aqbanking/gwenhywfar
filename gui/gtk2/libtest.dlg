@@ -36,6 +36,10 @@
         </widget>
       </widget>
 
+      <widget type="tabpage" name="tabpage3" text="Second Page" flags="fillX fillY" >
+        <widget type="listBox" name="listbox1" />
+      </widget>
+
     </widget>
 
   

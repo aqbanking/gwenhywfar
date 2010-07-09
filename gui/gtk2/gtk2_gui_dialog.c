@@ -30,6 +30,7 @@
 
 #define GTK2_DIALOG_WIDGET_REAL    0
 #define GTK2_DIALOG_WIDGET_CONTENT 1
+#define GTK2_DIALOG_WIDGET_DATA    2
 
 #define GTK2_DIALOG_STRING_TITLE  0
 #define GTK2_DIALOG_STRING_VALUE  1
@@ -53,6 +54,7 @@
 #include "w_tabbook.c"
 #include "w_groupbox.c"
 #include "w_progressbar.c"
+#include "w_listbox.c"
 
 
 
@@ -385,10 +387,12 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeProgressBar:
     rv=Gtk2Gui_WProgressBar_Setup(w);
     break;
+  case GWEN_Widget_TypeListBox:
+    rv=Gtk2Gui_WListBox_Setup(w);
+    break;
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeCheckBox:
   case GWEN_Widget_TypeScrollArea:
   case GWEN_Widget_TypeSpinBox:

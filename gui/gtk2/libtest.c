@@ -73,21 +73,19 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
     GWEN_Dialog_SetCharProperty(dlg, "listbox1",
 				GWEN_DialogProperty_Title,
 				0,
-				"Column1\tColumn2",
+				"Column1\tColumn2\tColumn3",
 				0);
 
     GWEN_Dialog_SetCharProperty(dlg, "listbox1",
 				GWEN_DialogProperty_AddValue,
 				0,
-				"Zeile 1 Spalte 1\tZeile 1 Spalte 2",
+				"Zeile 1 Spalte 1\tZeile 1 Spalte 2\tZeile 1 Spalte 3",
 				0);
-
     GWEN_Dialog_SetCharProperty(dlg, "listbox1",
 				GWEN_DialogProperty_AddValue,
 				0,
-				"Zeile 2 Spalte 1\tZeile 2 Spalte 2",
+				"Zeile 2 Spalte 1\tZeile 2 Spalte 2\tZeile 2 Spalte 3",
 				0);
-
     GWEN_Dialog_SetIntProperty(dlg, "listbox1",
 			       GWEN_DialogProperty_ColumnWidth,
 			       0,
@@ -271,7 +269,7 @@ int test2(int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-  return test2(argc, argv);
+  return test1(argc, argv);
 #if 0
   GWEN_GUI *gui;
 
