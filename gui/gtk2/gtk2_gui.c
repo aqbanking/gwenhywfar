@@ -43,11 +43,13 @@ GWEN_GUI *Gtk2_Gui_new() {
   GWEN_NEW_OBJECT(GTK2_GUI, xgui);
   GWEN_INHERIT_SETDATA(GWEN_GUI, GTK2_GUI, gui, xgui, Gtk2_Gui_FreeData);
 
+  GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_DIALOGSUPPORTED);
   GWEN_Gui_UseDialogs(gui);
   xgui->execDialogFn=GWEN_Gui_SetExecDialogFn(gui, GTK2_Gui_ExecDialog);
   xgui->openDialogFn=GWEN_Gui_SetOpenDialogFn(gui, GTK2_Gui_OpenDialog);
   xgui->closeDialogFn=GWEN_Gui_SetCloseDialogFn(gui, GTK2_Gui_CloseDialog);
   xgui->runDialogFn=GWEN_Gui_SetRunDialogFn(gui, GTK2_Gui_RunDialog);
+  xgui->getFileNameDialogFn=GWEN_Gui_SetGetFileNameFn(gui, GTK2_Gui_GetFileName);
 
   return gui;
 }
@@ -162,6 +164,129 @@ int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilEnd) {
   return rv;
 }
 
+
+
+int GTK2_Gui_GetFileName(GWEN_GUI *gui,
+			 const char *caption,
+			 GWEN_GUI_FILENAME_TYPE fnt,
+			 uint32_t flags,
+			 const char *patterns,
+			 GWEN_BUFFER *pathBuffer,
+			 uint32_t guiid) {
+  char *folder=NULL;
+  char *fileName=NULL;
+
+  if (GWEN_Buffer_GetUsedBytes(pathBuffer)) {
+    folder=strdup(GWEN_Buffer_GetStart(pathBuffer));
+    fileName=strchr(folder, GWEN_DIR_SEPARATOR);
+    if (fileName) {
+      *fileName=0;
+      fileName++;
+      if (*fileName==0)
+        fileName=NULL;
+    }
+  }
+
+  switch(fnt) {
+  case GWEN_Gui_FileNameType_OpenFileName: {
+    GtkWidget *dialog;
+
+    if (!(caption && *caption))
+      caption=I18N("Open File");
+    dialog=gtk_file_chooser_dialog_new (caption,
+					NULL,
+					GTK_FILE_CHOOSER_ACTION_OPEN,
+					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					NULL);
+    if (folder && *folder)
+      gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), folder);
+    if (fileName && *fileName)
+      gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), fileName);
+
+    if (gtk_dialog_run(GTK_DIALOG(dialog))==GTK_RESPONSE_ACCEPT) {
+      char *filename;
+
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      GWEN_Buffer_Reset(pathBuffer);
+      GWEN_Buffer_AppendString(pathBuffer, filename);
+      g_free (filename);
+      gtk_widget_destroy (dialog);
+      free(folder);
+      return 0;
+    }
+    gtk_widget_destroy (dialog);
+    free(folder);
+    return GWEN_ERROR_USER_ABORTED;
+  }
+
+  case GWEN_Gui_FileNameType_SaveFileName: {
+    GtkWidget *dialog;
+
+    if (!(caption && *caption))
+      caption=I18N("Save File");
+    dialog=gtk_file_chooser_dialog_new (caption,
+					NULL,
+					GTK_FILE_CHOOSER_ACTION_SAVE,
+					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					NULL);
+    gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
+    if (folder && *folder)
+      gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), folder);
+    if (fileName && *fileName)
+      gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), fileName);
+
+    if (gtk_dialog_run(GTK_DIALOG(dialog))==GTK_RESPONSE_ACCEPT) {
+      char *filename;
+
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      GWEN_Buffer_Reset(pathBuffer);
+      GWEN_Buffer_AppendString(pathBuffer, filename);
+      g_free(filename);
+      gtk_widget_destroy(dialog);
+      free(folder);
+      return 0;
+    }
+    gtk_widget_destroy (dialog);
+    free(folder);
+    return GWEN_ERROR_USER_ABORTED;
+  }
+
+  case GWEN_Gui_FileNameType_OpenDirectory: {
+    GtkWidget *dialog;
+
+    if (!(caption && *caption))
+      caption=I18N("Select Folder");
+    dialog=gtk_file_chooser_dialog_new (caption,
+					NULL,
+					GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					NULL);
+    if (gtk_dialog_run(GTK_DIALOG(dialog))==GTK_RESPONSE_ACCEPT) {
+      char *filename;
+
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+      GWEN_Buffer_Reset(pathBuffer);
+      GWEN_Buffer_AppendString(pathBuffer, filename);
+      g_free (filename);
+      gtk_widget_destroy (dialog);
+      free(folder);
+      return 0;
+    }
+    gtk_widget_destroy (dialog);
+    free(folder);
+    return GWEN_ERROR_USER_ABORTED;
+  }
+
+  default:
+    break;
+  }
+  free(folder);
+
+  return GWEN_ERROR_USER_ABORTED;
+}
 
 
 
