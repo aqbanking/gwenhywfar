@@ -33,6 +33,80 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
 
+  case GWEN_DialogProperty_SelectionMode: {
+    GtkTreeSelection *sel;
+
+    sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(g));
+    if (sel) {
+      switch(value) {
+      case GWEN_Dialog_SelectionMode_None:
+	gtk_tree_selection_set_mode(sel, GTK_SELECTION_NONE);
+	return 0;
+      case GWEN_Dialog_SelectionMode_Single:
+	gtk_tree_selection_set_mode(sel, GTK_SELECTION_SINGLE);
+	return 0;
+      case GWEN_Dialog_SelectionMode_Multi:
+	gtk_tree_selection_set_mode(sel, GTK_SELECTION_MULTIPLE);
+	return 0;
+      }
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unknown SelectionMode %d", value);
+      return GWEN_ERROR_INVALID;
+    }
+    break;
+  }
+
+  case GWEN_DialogProperty_ColumnWidth: {
+    GtkTreeViewColumn *col;
+
+    col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
+    if (col) {
+      gtk_tree_view_column_set_fixed_width(col, value);
+      return 0;
+    }
+
+    /* no width */
+    return GWEN_ERROR_INVALID;
+  }
+
+  case GWEN_DialogProperty_SortDirection: {
+    GtkTreeViewColumn *col;
+    int i;
+    int cols;
+
+    /* remove sort indicator from all columns */
+    cols=GWEN_Widget_GetColumns(w);
+    for (i=0; i<cols; i++) {
+      col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
+      if (col) {
+	if (gtk_tree_view_column_get_sort_indicator(col)==TRUE)
+	  gtk_tree_view_column_set_sort_indicator(col, FALSE);
+      }
+    }
+
+    if (value!=GWEN_DialogSortDirection_None) {
+      /* set sort indicator on given column */
+      col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
+      if (col) {
+	switch(value) {
+	case GWEN_DialogSortDirection_Up:
+	  gtk_tree_view_column_set_sort_order(col, GTK_SORT_ASCENDING);
+          break;
+	case GWEN_DialogSortDirection_Down:
+	  gtk_tree_view_column_set_sort_order(col, GTK_SORT_DESCENDING);
+          break;
+	default:
+	  break;
+	}
+      }
+    }
+
+    return 0;
+  }
+
+  case GWEN_DialogProperty_Sort:
+    /* NOOP, we use auto-sorting for now (TODO: figure out how to manually sort) */
+    return 0;
+
   default:
     break;
   }
@@ -63,6 +137,54 @@ int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Focus:
     return (gtk_widget_has_focus(GTK_WIDGET(g))==TRUE)?1:0;
     return 0;
+
+  case GWEN_DialogProperty_Value: {
+    GtkTreePath *path=NULL;
+
+    gtk_tree_view_get_cursor(GTK_TREE_VIEW(g), &path, NULL);
+    if (path!=NULL) {
+      gint *idxlist;
+
+      idxlist=gtk_tree_path_get_indices(path);
+      if (idxlist!=NULL) {
+	return idxlist[0];
+      }
+    }
+
+    /* no cursor */
+    return -1;
+  }
+
+  case GWEN_DialogProperty_ColumnWidth: {
+    GtkTreeViewColumn *col;
+
+    col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
+    if (col)
+      return gtk_tree_view_column_get_width(col);
+
+    /* no width */
+    return -1;
+  }
+
+  case GWEN_DialogProperty_SortDirection: {
+    GtkTreeViewColumn *col;
+
+    col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
+    if (col) {
+      if (gtk_tree_view_column_get_sort_indicator(col)==TRUE) {
+	switch(gtk_tree_view_column_get_sort_order(col)) {
+	case GTK_SORT_ASCENDING:
+	  return GWEN_DialogSortDirection_Up;
+	case GTK_SORT_DESCENDING:
+	  return GWEN_DialogSortDirection_Down;
+	default:
+          break;
+	}
+      }
+    }
+
+    return GWEN_DialogSortDirection_None;
+  }
 
   default:
     break;
@@ -143,6 +265,7 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
         gtk_tree_view_column_pack_start(col, renderer, TRUE);
 	gtk_tree_view_column_set_sort_column_id(col, i);
         gtk_tree_view_column_set_resizable(col, TRUE);
+	gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_column_set_attributes(col, renderer, "text", i, NULL);
 
 	gtk_tree_view_append_column(GTK_TREE_VIEW(g), col);
@@ -256,10 +379,29 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
+static void Gtk2Gui_WListBox_CursorChanged_handler(GtkTreeView *g, gpointer data) {
+  GWEN_WIDGET *w;
+  int rv;
+
+  DBG_ERROR(0, "Cursor Changed");
+  w=data;
+  assert(w);
+  rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
+			    GWEN_DialogEvent_TypeActivated,
+			    GWEN_Widget_GetName(w));
+  if (rv==GWEN_DialogEvent_ResultAccept)
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 1);
+  else if (rv==GWEN_DialogEvent_ResultReject)
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 0);
+}
+
+
+
 int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   uint32_t flags;
   GWEN_WIDGET *wParent;
+  gulong changed_handler_id;
 
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
@@ -275,6 +417,11 @@ int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w) {
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WListBox_GetIntProperty);
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WListBox_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WListBox_GetCharProperty);
+
+  changed_handler_id=g_signal_connect(g,
+				      "cursor-changed",
+				      G_CALLBACK (Gtk2Gui_WListBox_CursorChanged_handler),
+				      w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);
