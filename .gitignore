@@ -58,6 +58,8 @@ i18nsources
 
 *.rc
 *.moc
+*.ui.hpp
+*.ui.cpp
 src/types.h
 src/version.h
 src/os/posix/system.h
