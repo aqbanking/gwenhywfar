@@ -512,5 +512,78 @@ CppGui *CppGui::getCppGui(){
 
 
 
+int CppGui::extractHTML(const char *text, GWEN_BUFFER *tbuf) {
+  const char *p=0;
+  const char *p2=0;
+
+  if (text==NULL)
+    return 0;
+
+  /* find begin of HTML area */
+  p=text;
+  while ((p=strchr(p, '<'))) {
+    const char *t;
+
+    t=p;
+    t++;
+    if (toupper(*t)=='H') {
+      t++;
+      if (toupper(*t)=='T') {
+        t++;
+        if (toupper(*t)=='M') {
+          t++;
+          if (toupper(*t)=='L') {
+	    t++;
+	    if (toupper(*t)=='>') {
+	      break;
+	    }
+	  }
+        }
+      }
+    }
+    p++;
+  } /* while */
+
+  /* find end of HTML area */
+  if (p) {
+    p+=6; /* skip "<html>" */
+    p2=p;
+    while ((p2=strchr(p2, '<'))) {
+      const char *t;
+  
+      t=p2;
+      t++;
+      if (toupper(*t)=='/') {
+	t++;
+	if (toupper(*t)=='H') {
+	  t++;
+	  if (toupper(*t)=='T') {
+	    t++;
+	    if (toupper(*t)=='M') {
+	      t++;
+	      if (toupper(*t)=='L') {
+		t++;
+		if (toupper(*t)=='>') {
+		  break;
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      p2++;
+    } /* while */
+  }
+
+  if (p && p2) {
+    GWEN_Buffer_AppendString(tbuf, "<qt>");
+    GWEN_Buffer_AppendBytes(tbuf, p, p2-p);
+    GWEN_Buffer_AppendString(tbuf, "</qt>");
+    return 0;
+  }
+
+  GWEN_Buffer_AppendString(tbuf, text);
+  return 0;
+}
 
 

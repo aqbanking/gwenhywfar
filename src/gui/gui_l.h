@@ -29,13 +29,6 @@
 #include <gwenhywfar/gui_be.h>
 
 
-int GWEN_Gui_ReadDialogPrefs(const char *groupName,
-			     const char *altName,
-			     GWEN_DB_NODE **pDb);
-
-int GWEN_Gui_WriteDialogPrefs(const char *groupName,
-			      GWEN_DB_NODE *db);
-
 
 
 #endif

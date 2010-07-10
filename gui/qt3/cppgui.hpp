@@ -73,6 +73,8 @@ public:
 
   GWEN_GUI *getCInterface();
 
+  static int extractHTML(const char *text, GWEN_BUFFER *tbuf);
+
 protected:
   GWEN_GUI *_gui;
 

@@ -9,9 +9,14 @@ noinst_PROGRAMS=libtest
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwengui-qt3.pc
 
+
+UI_FILES=\
+  qt3_printdialog.ui
+
 noinst_HEADERS=\
   cppdialog_p.hpp \
   cppgui_p.hpp \
+  qt3_printdialog.hpp \
   qt3dialogbox.hpp \
   qt3_gui_dialog.hpp \
   qt3_gui_dialog.hpp
@@ -20,12 +25,14 @@ libgwengui_qt3_la_LIBADD=$(qt3_libs) $(top_builddir)/src/$(gwenhywfar_internal_l
 libgwengui_qt3_la_SOURCES=\
   cppdialog.cpp \
   cppgui.cpp \
+  qt3_printdialog.cpp \
   qt3dialogbox.cpp \
   qt3_gui.cpp \
   qt3_gui_dialog.cpp
   
 
-nodist_libgwengui_qt3_la_SOURCES=
+nodist_libgwengui_qt3_la_SOURCES=\
+  qt3_printdialog.ui.cpp
 
 nodist_noinst_HEADERS=
 
@@ -36,10 +43,15 @@ iheader_HEADERS=\
  cppdialog.hpp \
  qt3_gui.hpp
 
-MOC_FILES=\
- qt3_gui_dialog.moc
+nodist_iheader_HEADERS=\
+  qt3_printdialog.ui.hpp
 
-UI_FILES=
+
+MOC_FILES=\
+ qt3_gui_dialog.moc \
+ qt3_printdialog.moc \
+ qt3_printdialog.ui.moc
+
 
 EXTRA_DIST=$(UI_FILES) testdialog.xml
 

@@ -47,6 +47,12 @@ protected:
    */
   /*@{*/
 
+  virtual int print(const char *docTitle,
+		    const char *docType,
+		    const char *descr,
+		    const char *text,
+		    uint32_t guiid);
+
   virtual int execDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 
   virtual int openDialog(GWEN_DIALOG *dlg, uint32_t guiid);

@@ -14,6 +14,7 @@
 
 #include "qt3_gui.hpp"
 #include "qt3_gui_dialog.hpp"
+#include "qt3_printdialog.hpp"
 
 #include <gwenhywfar/debug.h>
 
@@ -280,6 +281,38 @@ int QT3_Gui::getFileName(const char *caption,
 }
 
 
+
+int QT3_Gui::print(const char *docTitle,
+		   const char *docType,
+		   const char *descr,
+		   const char *text,
+		   uint32_t guiid) {
+  GWEN_BUFFER *buf1;
+  GWEN_BUFFER *buf2;
+  int rv;
+
+  buf1=GWEN_Buffer_new(0, strlen(descr)+32, 0, 1);
+
+  if (!extractHTML(descr, buf1)) {
+    descr=GWEN_Buffer_GetStart(buf1);
+  }
+  buf2=GWEN_Buffer_new(0, strlen(text)+32, 0, 1);
+  if (!extractHTML(text, buf2)) {
+    text=GWEN_Buffer_GetStart(buf2);
+  }
+
+  QT3_PrintDialog pdlg(docTitle, docType, descr, text, getParentWidget(),
+		       "printdialog", true);
+
+  if (pdlg.exec()==QDialog::Accepted)
+    rv=0;
+  else
+    rv=GWEN_ERROR_USER_ABORTED;
+
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+  return rv;
+}
 
 
 

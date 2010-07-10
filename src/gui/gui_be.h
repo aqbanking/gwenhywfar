@@ -336,6 +336,16 @@ void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name);
 GWENHYWFAR_API
 void GWEN_Gui_UseDialogs(GWEN_GUI *gui);
 
+
+GWENHYWFAR_API
+int GWEN_Gui_ReadDialogPrefs(const char *groupName,
+			     const char *altName,
+			     GWEN_DB_NODE **pDb);
+
+GWENHYWFAR_API
+int GWEN_Gui_WriteDialogPrefs(const char *groupName,
+			      GWEN_DB_NODE *db);
+
 /*@}*/
 
 
