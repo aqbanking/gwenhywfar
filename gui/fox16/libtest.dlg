@@ -41,7 +41,7 @@
       </widget>
 
       <widget type="tabpage" name="tabpage3" text="Third Page" flags="fillX fillY" >
-        <widget type="listBox" name="listbox1" />
+        <widget type="listBox" name="listbox1" flags="fillX fillY" />
       </widget>
 
       <widget type="tabpage" name="tabpage4" text="Fourth Page" flags="fillX fillY" >
@@ -60,9 +60,11 @@
         </widget>
       </widget>
 
+<!--
       <widget type="tabpage" name="tabpage5" text="Fifth Page" flags="fillX fillY" >
         <widget type="image" image="disk.png" name="image1" flags="fillX fillY" />
       </widget>
+-->
 
       <widget type="tabpage" name="tabpage6" text="Sixth Page" flags="fillX fillY" >
         <widget type="vlayout" name="vlayout1" flags="fillX fillY" >

@@ -37,11 +37,13 @@
 
 
 
+
+
 FXDEFMAP(FOX16_GuiDialog) FOX16_GuiDialogMap[]={
   FXMAPFUNCS(SEL_COMMAND, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelCommand),
   FXMAPFUNCS(SEL_CHANGED, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelChanged),
   FXMAPFUNCS(SEL_KEYPRESS, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelKeyPress),
-  FXMAPFUNCS(SEL_KEYRELEASE, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelKeyRelease),
+  FXMAPFUNCS(SEL_KEYRELEASE, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelKeyRelease)
 };
 
 
@@ -85,6 +87,13 @@ FOX16_GuiDialog::~FOX16_GuiDialog() {
   }
   if (m_iconSource)
     delete m_iconSource;
+
+  if (!m_radioGroups.empty()) {
+    std::list<RadioButtonGroup*>::iterator it;
+
+    for (it=m_radioGroups.begin(); it!=m_radioGroups.end(); it++)
+      delete *it;
+  }
 }
 
 
@@ -1489,8 +1498,27 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
 
   w=GWEN_Dialog_FindWidgetByImplData(_dialog, FOX16_DIALOG_WIDGET_REAL, sender);
   if (w==NULL) {
-    DBG_INFO(0, "Widget not found");
-    return 0;
+    if (!m_radioGroups.empty()) {
+      std::list<RadioButtonGroup*>::iterator it;
+      RadioButtonGroup *grp=NULL;
+
+      for (it=m_radioGroups.begin(); it!=m_radioGroups.end(); it++) {
+	if ((*it)->getDataTarget()==sender) {
+	  grp=*it;
+          break;
+	}
+      }
+
+      if (grp==NULL) {
+	DBG_WARN(GWEN_LOGDOMAIN, "Widget or RadioButtonGroup not found");
+	return 0;
+      }
+      else {
+	DBG_INFO(0, "Found button group %d: %d", grp->getGroupId(), grp->getRadioValue());
+	// no signal for now
+        return 1;
+      }
+    }
   }
   wname=GWEN_Widget_GetName(w);
 
@@ -1514,6 +1542,11 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeCheckBox:
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypeTextEdit:
+    rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
+			      GWEN_DialogEvent_TypeActivated,
+			      GWEN_Widget_GetName(w));
+    break;
+
   case GWEN_Widget_TypeRadioButton: /* use SEL_UPDATED for FXRadioButton */
   case GWEN_Widget_TypeProgressBar:
   case GWEN_Widget_TypeGroupBox:
@@ -1923,13 +1956,34 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 			     opts);
     break;
 
-  case GWEN_Widget_TypeRadioButton:
-    wChild=new FXRadioButton(parentComposite,
-			     text,
-			     this,
-			     ID_WIDGET_FIRST+_widgetCount,
-			     opts | RADIOBUTTON_NORMAL);
+  case GWEN_Widget_TypeRadioButton: {
+    FXRadioButton *rb;
+    int groupId;
+    RadioButtonGroup *grp=NULL;
+    std::list<RadioButtonGroup*>::iterator it;
+
+    groupId=GWEN_Widget_GetGroupId(w);
+
+
+    for (it=m_radioGroups.begin(); it!=m_radioGroups.end(); it++) {
+      if ((*it)->getGroupId()==groupId) {
+        grp=*it;
+      }
+    }
+    if (grp==NULL) {
+      grp=new RadioButtonGroup(groupId, this, ID_WIDGET_FIRST+_widgetCount);
+      m_radioGroups.push_back(grp);
+    }
+
+    rb=new FXRadioButton(parentComposite,
+			 text,
+			 grp->getDataTarget(),
+			 FXDataTarget::ID_OPTION+grp->getButtonCount(),
+			 opts | RADIOBUTTON_NORMAL);
+    grp->addButton(rb);
+    wChild=rb;
     break;
+  }
 
   case GWEN_Widget_TypeProgressBar:
     wChild=new FXProgressBar(parentComposite,

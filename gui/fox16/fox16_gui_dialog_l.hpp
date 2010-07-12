@@ -26,6 +26,33 @@
 class FOX16_GuiDialog: public FXObject, public CppDialog {
   FXDECLARE(FOX16_GuiDialog)
 
+protected:
+  class RadioButtonGroup {
+  protected:
+    FXDataTarget m_radioTarget;
+    int m_groupId;
+    FXint m_radioValue;
+    int m_buttonCount;
+
+  public:
+    RadioButtonGroup(int groupId, FXObject* tgt=NULL, FXSelector sel=0)
+      :m_radioTarget(m_radioValue, tgt, sel), m_groupId(groupId), m_radioValue(0), m_buttonCount(0) {};
+    ~RadioButtonGroup() {};
+
+    int getGroupId() { return m_groupId;};
+
+    FXDataTarget *getDataTarget() { return &m_radioTarget;};
+
+    int getButtonCount() { return m_buttonCount;};
+
+    FXint getRadioValue() const { return m_radioValue;};
+
+    void addButton(FXRadioButton *rb) {
+      m_buttonCount++;
+    };
+  };
+
+
 public:
   enum {
     ID_WIDGET_FIRST=1,
@@ -62,6 +89,7 @@ protected:
   FXDialogBox *_mainWidget;
   FXIconSource *m_iconSource;
   std::list<FXIcon*> m_iconList;
+  std::list<RadioButtonGroup*> m_radioGroups;
 
   FOX16_GuiDialog();
 
