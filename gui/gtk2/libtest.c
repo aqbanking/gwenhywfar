@@ -196,6 +196,8 @@ int test1(int argc, char **argv) {
   }
   GWEN_XMLNode_free(n);
 
+  GWEN_Dialog_AddMediaPath(dlg, ".");
+
   GWEN_Dialog_SetSignalHandler(dlg, _gwenGuiSignalHandler);
 
   rv=GWEN_Gui_ExecDialog(dlg, 0);

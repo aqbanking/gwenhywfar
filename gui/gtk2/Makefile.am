@@ -38,7 +38,8 @@ EXTRA_DIST=\
   w_progressbar.c \
   w_listbox.c \
   w_checkbox.c \
-  w_scrollarea.c
+  w_scrollarea.c \
+  w_image.c disk.png
 
 
 

@@ -58,6 +58,10 @@
         </widget>
       </widget>
 
+      <widget type="tabpage" name="tabpage5" text="Fifth Page" flags="fillX fillY" >
+        <widget type="image" image="disk.png" name="listbox1" flags="fillX fillY" />
+      </widget>
+
     </widget>
 
   
