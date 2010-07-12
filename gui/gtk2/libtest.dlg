@@ -38,8 +38,24 @@
         </widget>
       </widget>
 
-      <widget type="tabpage" name="tabpage3" text="Second Page" flags="fillX fillY" >
+      <widget type="tabpage" name="tabpage3" text="Third Page" flags="fillX fillY" >
         <widget type="listBox" name="listbox1" />
+      </widget>
+
+      <widget type="tabpage" name="tabpage4" text="Fourth Page" flags="fillX fillY" >
+        <widget type="scrollArea" name="scrollArea1" flags="fillX fillY" >
+          <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+            <widget type="checkBox" name="checkBox1.1" text="Checkbox 1" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.2" text="Checkbox 2" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.3" text="Checkbox 3" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.4" text="Checkbox 4" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.5" text="Checkbox 5" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.6" text="Checkbox 6" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.7" text="Checkbox 7" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.8" text="Checkbox 8" flags="fillX" />
+            <widget type="checkBox" name="checkBox1.9" text="Checkbox 9" flags="fillX" />
+          </widget>
+        </widget>
       </widget>
 
     </widget>
