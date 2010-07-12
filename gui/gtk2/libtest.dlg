@@ -33,6 +33,8 @@
         <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
           <widget type="label" name="label21" text="Input 1" />
           <widget type="textedit" name="edit1" flags="fillX fillY" />
+          <widget type="checkBox" name="checkBox1" text="Checkbox 1" flags="fillX" />
+          <widget type="checkBox" name="checkBox2" text="Checkbox 2" flags="fillX" />
         </widget>
       </widget>
 

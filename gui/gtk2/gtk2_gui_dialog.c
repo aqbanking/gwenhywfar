@@ -55,6 +55,7 @@
 #include "w_groupbox.c"
 #include "w_progressbar.c"
 #include "w_listbox.c"
+#include "w_checkbox.c"
 
 
 
@@ -390,10 +391,12 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeListBox:
     rv=Gtk2Gui_WListBox_Setup(w);
     break;
+  case GWEN_Widget_TypeCheckBox:
+    rv=Gtk2Gui_WCheckBox_Setup(w);
+    break;
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeCheckBox:
   case GWEN_Widget_TypeScrollArea:
   case GWEN_Widget_TypeSpinBox:
   default:
