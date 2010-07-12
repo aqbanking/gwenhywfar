@@ -183,7 +183,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_GUI, GWENHYWFAR_API)
  *  </li>
  * </ul>
  * <p>
- * A note about <i>confirmation buttons</i>: AqBanking has been designed with
+ * A note about <i>confirmation buttons</i>: Gwenhywfar has been designed with
  * non-interactive applications in mind. For such an application it is
  * important to know what button-press it has to simulate upon catching of a
  * messagebox callback. This is what the confimation button flags are for.
@@ -243,8 +243,8 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_GUI, GWENHYWFAR_API)
  * The backend calling this function thus allows the frontend to detect
  * when the message is important regarding data security.
  * E.g. a message like "Shall I delete this file" should be considered
- * dangerous (since this might result in a data loss). However, the messae
- * "Just started" is not that dangerous ;-)
+ * dangerous (since this might result in a data loss). However, the message
+ * "Application started" is not that dangerous ;-)
  * </p>
  * <p>
  * The following example allows to determine whether a message is

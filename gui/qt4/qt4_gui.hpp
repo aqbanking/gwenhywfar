@@ -21,7 +21,13 @@ class QWidget;
 
 #include <string>
 
-
+/**
+ * This is an implementation of GWEN_GUI for QT4.
+ *
+ * It implements the GWEN_DIALOG framework.
+ *
+ * @todo: @ref GWEN_Gui_Print() needs to be implemented
+ */
 class QT4GUI_API QT4_Gui: public CppGui {
 
 private:

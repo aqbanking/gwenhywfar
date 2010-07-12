@@ -273,7 +273,7 @@ int test2(int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-  return test1(argc, argv);
+  return test2(argc, argv);
 #if 0
   GWEN_GUI *gui;
 
