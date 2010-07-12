@@ -40,7 +40,9 @@ iheader_HEADERS=\
 MOC_FILES=\
  qt4_gui_dialog.moc
 
+
 UI_FILES=
+
 
 EXTRA_DIST=$(UI_FILES) testdialog.xml
 
@@ -56,18 +58,8 @@ SUFFIXES = .ui .ui.hpp .ui.cpp .moc
 %.moc: %.hpp
 	$(qt4_moc) -o $@ $<
 
-%.ui.cpp: %.ui
-	$(UIC3) $< -impl $(@:.ui.cpp=.ui.hpp) -o $@.tmp && \
-	echo "#ifdef HAVE_CONFIG_H" >$@ && \
-	echo "# include <config.h>" >>$@ && \
-	echo "#endif" >>$@ && \
-	cat $@.tmp >>$@ && \
-	rm $@.tmp && \
-	echo "#include \"`basename $<`.moc\"" >>$@
-
-
 %.ui.hpp: %.ui
-	$(UIC3) $< -o $@
+	$(qt4_uic) $< -o $@
 
 
 sources:
