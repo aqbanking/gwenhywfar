@@ -404,8 +404,6 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
     rv=Gtk2Gui_WImage_Setup(w);
     break;
   case GWEN_Widget_TypeRadioButton:
-  case GWEN_Widget_TypeRadioGroup:
-  case GWEN_Widget_TypeSpinBox:
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled widget type %d", GWEN_Widget_GetType(w));
     rv=GWEN_ERROR_INVALID;

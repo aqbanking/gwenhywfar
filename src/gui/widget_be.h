@@ -56,7 +56,6 @@ typedef enum {
     GWEN_Widget_TypeComboBox,
     GWEN_Widget_TypeRadioButton,
     GWEN_Widget_TypeProgressBar,
-    GWEN_Widget_TypeRadioGroup,
     GWEN_Widget_TypeGroupBox,
     GWEN_Widget_TypeHSpacer,
     GWEN_Widget_TypeVSpacer,
@@ -73,7 +72,6 @@ typedef enum {
     GWEN_Widget_TypeScrollArea,
     GWEN_Widget_TypeHLine,
     GWEN_Widget_TypeVLine,
-    GWEN_Widget_TypeSpinBox,
     GWEN_Widget_TypeTextBrowser
 } GWEN_WIDGET_TYPE;
 
@@ -207,6 +205,14 @@ int GWEN_Widget_GetRows(const GWEN_WIDGET *w);
 
 GWENHYWFAR_API
 void GWEN_Widget_SetRows(GWEN_WIDGET *w, int i);
+
+
+
+GWENHYWFAR_API
+int GWEN_Widget_GetGroupId(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetGroupId(GWEN_WIDGET *w, int i);
 
 
 GWENHYWFAR_API

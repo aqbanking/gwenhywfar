@@ -43,6 +43,8 @@ struct GWEN_WIDGET {
   int columns;
   int rows;
 
+  int groupId;
+
   int width;
   int height;
 

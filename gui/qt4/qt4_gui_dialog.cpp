@@ -389,16 +389,6 @@ int QT4_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
       break;
     }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      QSpinBox *f;
-
-      f=new QSpinBox(wParent);
-      connect(f, SIGNAL(valueChanged(int)), this, SLOT(slotValueChanged()));
-      wChild=f;
-      break;
-    }
-
   case GWEN_Widget_TypeRadioButton:
     {
       QRadioButton *f;
@@ -411,7 +401,6 @@ int QT4_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
 
 
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeRadioGroup:
     break;
   }
 
@@ -825,32 +814,6 @@ int QT4_GuiDialog::setIntProperty(GWEN_WIDGET *w,
       break;
     }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      QSpinBox *f;
-
-      f=(QSpinBox*)GWEN_Widget_GetImplData(w, QT4_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setValue(value);
-	return 0;
-
-      case GWEN_DialogProperty_MinValue:
-        f->setMinimum(value);
-	return 0;
-
-      case GWEN_DialogProperty_MaxValue:
-	f->setMaximum(value);
-	return 0;
-
-      default:
-        break;
-      }
-      break;
-    }
-
   case GWEN_Widget_TypeWidgetStack:
     {
       QStackedWidget *f;
@@ -903,7 +866,6 @@ int QT4_GuiDialog::setIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeScrollArea:
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeTabPage:
   case GWEN_Widget_TypeTextBrowser:
     break;
@@ -920,7 +882,6 @@ int QT4_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_Widget_TypeGridLayout:
     case GWEN_Widget_TypeHSpacer:
     case GWEN_Widget_TypeVSpacer:
-    case GWEN_Widget_TypeRadioGroup:
       break;
 
     case GWEN_Widget_TypeComboBox:
@@ -928,7 +889,6 @@ int QT4_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_Widget_TypeCheckBox:
     case GWEN_Widget_TypeProgressBar:
     case GWEN_Widget_TypeListBox:
-    case GWEN_Widget_TypeSpinBox:
     case GWEN_Widget_TypeWidgetStack:
     case GWEN_Widget_TypeTabBook:
     case GWEN_Widget_TypePushButton:
@@ -1153,29 +1113,6 @@ int QT4_GuiDialog::getIntProperty(GWEN_WIDGET *w,
       break;
     }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      QSpinBox *f;
-
-      f=(QSpinBox*)GWEN_Widget_GetImplData(w, QT4_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return f->value();
-
-      case GWEN_DialogProperty_MinValue:
-	return f->minimum();
-
-      case GWEN_DialogProperty_MaxValue:
-	return f->maximum();
-
-      default:
-        break;
-      }
-      break;
-    }
-
   case GWEN_Widget_TypeWidgetStack:
     {
       QStackedWidget *f;
@@ -1226,7 +1163,6 @@ int QT4_GuiDialog::getIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeScrollArea:
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeTabPage:
   case GWEN_Widget_TypeTextBrowser:
     break;
@@ -1243,7 +1179,6 @@ int QT4_GuiDialog::getIntProperty(GWEN_WIDGET *w,
     case GWEN_Widget_TypeGridLayout:
     case GWEN_Widget_TypeHSpacer:
     case GWEN_Widget_TypeVSpacer:
-    case GWEN_Widget_TypeRadioGroup:
       break;
 
     case GWEN_Widget_TypeComboBox:
@@ -1251,7 +1186,6 @@ int QT4_GuiDialog::getIntProperty(GWEN_WIDGET *w,
     case GWEN_Widget_TypeCheckBox:
     case GWEN_Widget_TypeProgressBar:
     case GWEN_Widget_TypeListBox:
-    case GWEN_Widget_TypeSpinBox:
     case GWEN_Widget_TypeWidgetStack:
     case GWEN_Widget_TypeTabBook:
     case GWEN_Widget_TypePushButton:
@@ -1638,9 +1572,7 @@ int QT4_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeScrollArea:
-  case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeRadioGroup:
     break;
   }
 
@@ -2028,9 +1960,7 @@ const char *QT4_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeScrollArea:
-  case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeTextBrowser:
     break;
   }
@@ -2103,17 +2033,10 @@ void QT4_GuiDialog::slotActivated() {
     case GWEN_Widget_TypeComboBox:
     case GWEN_Widget_TypeListBox:
     case GWEN_Widget_TypeCheckBox:
-    case GWEN_Widget_TypeSpinBox:
-      rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-				GWEN_DialogEvent_TypeActivated,
-				GWEN_Widget_GetName(w));
-      break;
-  
     case GWEN_Widget_TypeLabel:
     case GWEN_Widget_TypeTextEdit:
     case GWEN_Widget_TypeRadioButton:
     case GWEN_Widget_TypeProgressBar:
-    case GWEN_Widget_TypeRadioGroup:
     case GWEN_Widget_TypeGroupBox:
     case GWEN_Widget_TypeHSpacer:
     case GWEN_Widget_TypeVSpacer:
@@ -2177,17 +2100,10 @@ void QT4_GuiDialog::slotValueChanged() {
     case GWEN_Widget_TypeComboBox:
     case GWEN_Widget_TypeListBox:
     case GWEN_Widget_TypeCheckBox:
-    case GWEN_Widget_TypeSpinBox:
-      rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-				GWEN_DialogEvent_TypeValueChanged,
-				GWEN_Widget_GetName(w));
-      break;
-  
     case GWEN_Widget_TypeLabel:
     case GWEN_Widget_TypeTextEdit:
     case GWEN_Widget_TypeRadioButton:
     case GWEN_Widget_TypeProgressBar:
-    case GWEN_Widget_TypeRadioGroup:
     case GWEN_Widget_TypeGroupBox:
     case GWEN_Widget_TypeHSpacer:
     case GWEN_Widget_TypeVSpacer:

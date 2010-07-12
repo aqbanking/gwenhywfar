@@ -197,6 +197,22 @@ void GWEN_Widget_SetRows(GWEN_WIDGET *w, int i) {
 
 
 
+int GWEN_Widget_GetGroupId(const GWEN_WIDGET *w) {
+  assert(w);
+  assert(w->refCount);
+  return w->groupId;
+}
+
+
+
+void GWEN_Widget_SetGroupId(GWEN_WIDGET *w, int i) {
+  assert(w);
+  assert(w->refCount);
+  w->groupId=i;
+}
+
+
+
 int GWEN_Widget_GetWidth(const GWEN_WIDGET *w) {
   assert(w);
   assert(w->refCount);
@@ -328,8 +344,6 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeRadioButton;
     else if (strcasecmp(s, "progressBar")==0)
       return GWEN_Widget_TypeProgressBar;
-    else if (strcasecmp(s, "radioGroup")==0)
-      return GWEN_Widget_TypeRadioGroup;
     else if (strcasecmp(s, "groupBox")==0)
       return GWEN_Widget_TypeGroupBox;
     else if (strcasecmp(s, "hSpacer")==0)
@@ -362,8 +376,6 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeHLine;
     else if (strcasecmp(s, "vLine")==0)
       return GWEN_Widget_TypeVLine;
-    else if (strcasecmp(s, "spinBox")==0)
-      return GWEN_Widget_TypeSpinBox;
     else if (strcasecmp(s, "textBrowser")==0)
       return GWEN_Widget_TypeTextBrowser;
     else {
@@ -385,7 +397,6 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeComboBox:        return "comboBox";
   case GWEN_Widget_TypeRadioButton:     return "radioButton";
   case GWEN_Widget_TypeProgressBar:     return "progressBar";
-  case GWEN_Widget_TypeRadioGroup:      return "radioGroup";
   case GWEN_Widget_TypeGroupBox:        return "groupBox";
   case GWEN_Widget_TypeHSpacer:         return "hSpacer";
   case GWEN_Widget_TypeVSpacer:         return "vSpacer";
@@ -402,7 +413,6 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeScrollArea:      return "scrollArea";
   case GWEN_Widget_TypeHLine:           return "hLine";
   case GWEN_Widget_TypeVLine:           return "vLine";
-  case GWEN_Widget_TypeSpinBox:         return "spinBox";
   case GWEN_Widget_TypeTextBrowser:     return "textBrowser";
   case GWEN_Widget_TypeUnknown:         return "unknown";
   }
@@ -559,6 +569,14 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
   s=GWEN_XMLNode_GetProperty(node, "image", NULL);
   if (s && *s)
     GWEN_Widget_SetImageFileName(w, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "groupId", NULL);
+  if (s && *s) {
+    if (1!=sscanf(s, "%d", &(w->groupId))) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Value [%s] is not an integer", s);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
 
   return 0;
 }

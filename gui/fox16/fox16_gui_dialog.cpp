@@ -415,50 +415,10 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
       break;
     }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      FXSpinner *f;
-
-      f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setValue(value, doSignal?TRUE:FALSE);
-	return 0;
-
-      case GWEN_DialogProperty_MinValue:
-	{
-	  FXint i1, i2;
-
-	  f->getRange(i1, i2);
-	  i1=value;
-	  f->setRange(i1, i2);
-          return 0;
-	}
-
-      case GWEN_DialogProperty_MaxValue:
-	{
-	  FXint i1, i2;
-
-	  f->getRange(i1, i2);
-	  i2=value;
-	  f->setRange(i1, i2);
-	  return 0;
-	}
-
-      default:
-        break;
-      }
-      break;
-
-    }
-
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypePushButton:
   case GWEN_Widget_TypeLineEdit:
   case GWEN_Widget_TypeTextEdit:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
@@ -748,47 +708,10 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
       break;
     }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      FXSpinner *f;
-
-      f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return f->getValue();
-	return 0;
-
-      case GWEN_DialogProperty_MinValue:
-	{
-	  FXint i1, i2;
-
-	  f->getRange(i1, i2);
-	  return i1;
-	}
-
-      case GWEN_DialogProperty_MaxValue:
-	{
-	  FXint i1, i2;
-
-	  f->getRange(i1, i2);
-	  return i2;
-	}
-
-      default:
-        break;
-      }
-      break;
-
-    }
-
-
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypePushButton:
   case GWEN_Widget_TypeLineEdit:
   case GWEN_Widget_TypeTextEdit:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
@@ -1128,7 +1051,6 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
 
   case GWEN_Widget_TypeProgressBar:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
   case GWEN_Widget_TypeHLayout:
@@ -1140,7 +1062,6 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
-  case GWEN_Widget_TypeSpinBox:
     ;
   }
 
@@ -1510,7 +1431,6 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
 
   case GWEN_Widget_TypeProgressBar:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
   case GWEN_Widget_TypeHLayout:
@@ -1522,7 +1442,6 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
-  case GWEN_Widget_TypeSpinBox:
     break;
   }
 
@@ -1593,17 +1512,10 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeComboBox:
   case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeCheckBox:
-  case GWEN_Widget_TypeSpinBox:
-    rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			      GWEN_DialogEvent_TypeActivated,
-			      GWEN_Widget_GetName(w));
-    break;
-
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypeTextEdit:
   case GWEN_Widget_TypeRadioButton: /* use SEL_UPDATED for FXRadioButton */
   case GWEN_Widget_TypeProgressBar:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
@@ -1665,7 +1577,6 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeComboBox:
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
@@ -1682,7 +1593,6 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
-  case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeTextBrowser:
     ;
   }
@@ -1729,7 +1639,6 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
   case GWEN_Widget_TypeComboBox:
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
@@ -1745,7 +1654,6 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
-  case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeTextBrowser:
     ;
   }
@@ -1781,7 +1689,6 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
   case GWEN_Widget_TypeComboBox:
   case GWEN_Widget_TypeRadioButton:
   case GWEN_Widget_TypeProgressBar:
-  case GWEN_Widget_TypeRadioGroup:
   case GWEN_Widget_TypeGroupBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
@@ -1797,7 +1704,6 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
-  case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeTextBrowser:
     ;
   }
@@ -2145,16 +2051,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     wChild=new FXVerticalSeparator(parentComposite, opts | SEPARATOR_GROOVE);
     break;
 
-  case GWEN_Widget_TypeSpinBox:
-    wChild=new FXSpinner(parentComposite,
-			 cols?cols:16,
-			 this,
-			 ID_WIDGET_FIRST+_widgetCount,
-			 opts | SPIN_NORMAL);
-    break;
-
   case GWEN_Widget_TypeImage:
-  case GWEN_Widget_TypeRadioGroup:
     DBG_ERROR(0, "Type for widget [%s] not yet implemented", name?name:"(unnamed)");
     return NULL;
 
