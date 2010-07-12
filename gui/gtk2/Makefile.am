@@ -39,7 +39,8 @@ EXTRA_DIST=\
   w_listbox.c \
   w_checkbox.c \
   w_scrollarea.c \
-  w_image.c disk.png
+  w_image.c disk.png \
+  w_radiobutton.c
 
 
 
