@@ -11,6 +11,8 @@
 
 #include <fx.h>
 
+#include <gwen-gui-fox16/fox16_gui.hpp>
+
 
 
 #define THEMEBUTTON          ThemeButton
@@ -25,7 +27,7 @@
 
 
 
-class ThemeButton : public FXButton {
+class FOX16GUI_API ThemeButton : public FXButton {
   FXDECLARE( ThemeButton );
 
 protected:
@@ -42,7 +44,7 @@ public:
 
 
 
-class ThemeTextField : public FXTextField {
+class FOX16GUI_API ThemeTextField : public FXTextField {
   FXDECLARE( ThemeTextField );
 
 protected:
@@ -62,12 +64,12 @@ protected:
 
 
 
-void init_theme( FXApp *app );
+FOX16GUI_API void init_theme( FXApp *app );
 
 
 
 
-class ThemeComboBox : public FXComboBox {
+class FOX16GUI_API ThemeComboBox : public FXComboBox {
   FXDECLARE( ThemeComboBox );
 
 protected:
@@ -84,7 +86,7 @@ public:
 
 
 
-class ThemeLabel : public FXLabel {
+class FOX16GUI_API ThemeLabel : public FXLabel {
   FXDECLARE( ThemeLabel );
 
 protected:
@@ -101,7 +103,7 @@ public:
 
 
 
-class ThemeTabItem : public FXTabItem {
+class FOX16GUI_API ThemeTabItem : public FXTabItem {
   FXDECLARE( ThemeTabItem );
 
 protected:
@@ -118,7 +120,7 @@ public:
 
 
 
-class ThemeVerticalFrame : public FXVerticalFrame {
+class FOX16GUI_API ThemeVerticalFrame : public FXVerticalFrame {
 protected:
   ThemeVerticalFrame() {}
 
@@ -131,7 +133,7 @@ public:
 
 
 
-class ThemeHorizontalFrame : public FXHorizontalFrame {
+class FOX16GUI_API ThemeHorizontalFrame : public FXHorizontalFrame {
 protected:
   ThemeHorizontalFrame() {}
 
@@ -144,7 +146,7 @@ public:
 
 
 
-class ThemeMenuButton : public FXMenuButton {
+class FOX16GUI_API ThemeMenuButton : public FXMenuButton {
   FXDECLARE( ThemeMenuButton );
 
 protected:
@@ -166,7 +168,7 @@ public:
 
 
 
-class ThemeHeaderItem : public FXHeaderItem {
+class FOX16GUI_API ThemeHeaderItem : public FXHeaderItem {
 protected:
   ThemeHeaderItem() {}
 
