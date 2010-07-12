@@ -171,6 +171,32 @@ int Gtk2Gui_WPushButton_Setup(GWEN_WIDGET *w) {
   else
     g=gtk_button_new();
 
+  s=GWEN_Widget_GetIconFileName(w);
+  if (s && *s) {
+    GWEN_STRINGLIST *sl;
+
+    sl=GWEN_Dialog_GetMediaPaths(GWEN_Widget_GetDialog(w));
+    if (sl) {
+      int rv;
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      rv=GWEN_Directory_FindFileInPaths(sl, s, tbuf);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Image file [%s] not found (%d)", s, rv);
+	/* ignore result here, instead create GtkImage with "broken mage" later */
+      }
+      else {
+	GtkWidget *gImage;
+
+	gImage=gtk_image_new_from_file(GWEN_Buffer_GetStart(tbuf));
+	gtk_button_set_image(GTK_BUTTON(g), gImage);
+	gtk_button_set_image_position(GTK_BUTTON(g), GTK_POS_LEFT);
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 

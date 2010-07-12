@@ -8,9 +8,6 @@
  ***************************************************************************/
 
 
-#include <gwenhywfar/directory.h>
-
-
 
 
 static GWENHYWFAR_CB

@@ -35,6 +35,8 @@
           <widget type="textedit" name="edit1" flags="fillX fillY" />
           <widget type="checkBox" name="checkBox1" text="Checkbox 1" flags="fillX" />
           <widget type="checkBox" name="checkBox2" text="Checkbox 2" flags="fillX" />
+          
+          <widget type="pushButton" name="buttonWithImage" text="Button With Icon" icon="disk.png" />
         </widget>
       </widget>
 

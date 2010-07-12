@@ -23,6 +23,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/mdigest.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/directory.h>
 
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
