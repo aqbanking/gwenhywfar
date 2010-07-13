@@ -58,7 +58,6 @@
 #include "w_listbox.c"
 #include "w_checkbox.c"
 #include "w_scrollarea.c"
-#include "w_image.c"
 #include "w_radiobutton.c"
 
 

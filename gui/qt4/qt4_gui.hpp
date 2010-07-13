@@ -11,11 +11,23 @@
 #ifndef QT4_GUI_H
 #define QT4_GUI_H
 
+
+#if defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
+# ifdef BUILDING_QT4_GUI
+#   define QT4GUI_API __attribute__ ((visibility("default")))
+# else
+#   define QT4GUI_API
+# endif
+#else
+# define QT4GUI_API
+#endif
+
+
 class QT4_Gui;
 class QWidget;
 
 
-#include <gwen-gui-qt4/cppgui.hpp>
+#include <gwen-gui-cpp/cppgui.hpp>
 
 #include <QString>
 

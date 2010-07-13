@@ -48,10 +48,7 @@ protected:
 
   CppDialog();
 
-  int emitSignal(GWEN_DIALOG_EVENTTYPE t,
-		 const char *sender,
-		 int intVal,
-		 const char *charVal);
+  int emitSignal(GWEN_DIALOG_EVENTTYPE t, const char *sender);
 
   GWEN_WIDGET_TREE *getWidgets() const;
 

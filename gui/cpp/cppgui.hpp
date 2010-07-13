@@ -10,26 +10,18 @@
 #define CPPGUI_HPP
 
 
-
-#if defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
-# ifdef BUILDING_QT4_GUI
-#   define QT4GUI_API __attribute__ ((visibility("default")))
-# else
-#   define QT4GUI_API
-# endif
-#else
-# define QT4GUI_API
-#endif
-
-
-
 #include <gwenhywfar/gui_be.h>
+#include <gwenhywfar/i18n.h>
+
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
+#define I18S(msg) msg
+
 #include <list>
 #include <string>
 
 class CppGui;
 
-#include <gwen-gui-qt4/cppdialog.hpp>
+#include <gwen-gui-cpp/cppdialog.hpp>
 
 
 /**
@@ -41,7 +33,7 @@ class CppGui;
  *
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-class QT4GUI_API CppGui {
+class CppGui {
   friend class CppGuiLinker;
 
 private:
@@ -50,8 +42,6 @@ private:
   GWEN_DB_NODE *_dbPasswords;
   std::list<std::string> _badPasswords;
 
-  GWEN_GUI_MESSAGEBOX_FN _messageBoxFn;
-  GWEN_GUI_INPUTBOX_FN _inputBoxFn;
   GWEN_GUI_PRINT_FN _printFn;
   GWEN_GUI_GETPASSWORD_FN _getPasswordFn;
   GWEN_GUI_SETPASSWORDSTATUS_FN _setPasswordStatusFn;
@@ -69,7 +59,7 @@ public:
   CppGui();
   virtual ~CppGui();
 
-  static QT4GUI_API CppGui *getCppGui();
+  static CppGui *getCppGui();
 
   GWEN_GUI *getCInterface();
 
@@ -107,6 +97,9 @@ protected:
   virtual int checkCert(const GWEN_SSLCERTDESCR *cert,
 			GWEN_SYNCIO *sio,
 			uint32_t guiid);
+
+  virtual int logHook(const char *logDomain,
+		      GWEN_LOGGER_LEVEL priority, const char *s);
 
   virtual int execDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 

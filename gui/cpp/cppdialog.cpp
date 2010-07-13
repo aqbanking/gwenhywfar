@@ -24,7 +24,7 @@
 #include <gwenhywfar/debug.h>
 
 
-#define I18N(msg) GWEN_I18N_Translate("aqfinance", msg)
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 
 
 
@@ -213,10 +213,7 @@ const char *CppDialog::getCharProperty(GWEN_WIDGET *w,
 
 
 
-int CppDialog::emitSignal(GWEN_DIALOG_EVENTTYPE t,
-			  const char *sender,
-			  int intVal,
-			  const char *charVal) {
+int CppDialog::emitSignal(GWEN_DIALOG_EVENTTYPE t, const char *sender) {
   assert(_dialog);
   return GWEN_Dialog_EmitSignal(_dialog, t, sender);
 }

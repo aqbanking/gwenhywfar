@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,10 +23,6 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/mdigest.h>
 #include <gwenhywfar/debug.h>
-
-
-#define I18N(msg) GWEN_I18N_Translate("aqfinance", msg)
-
 
 
 
@@ -103,6 +99,20 @@ int CppGuiLinker::CheckCert(GWEN_GUI *gui,
 
 
 
+int CppGuiLinker::LogHook(GWEN_GUI *gui,
+			  const char *logDomain,
+			  GWEN_LOGGER_LEVEL priority, const char *s) {
+  CppGui *xgui;
+
+  assert(gui);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, CppGui, gui);
+  assert(xgui);
+
+  return xgui->logHook(logDomain, priority, s);
+}
+
+
+
 int CppGuiLinker::ExecDialog(GWEN_GUI *gui,
 			     GWEN_DIALOG *dlg,
 			     uint32_t guiid) {
@@ -125,6 +135,8 @@ int CppGuiLinker::OpenDialog(GWEN_GUI *gui,
   assert(gui);
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, CppGui, gui);
   assert(xgui);
+
+  DBG_ERROR(0, "CppGuiLinker::OpenDialog");
 
   return xgui->openDialog(dlg, guiid);
 }
@@ -202,17 +214,19 @@ void CppGuiLinker::freeData(void *bp, void *p) {
 CppGui::CppGui()
 :_checkCertFn(NULL)
 ,_dbPasswords(NULL)
-,_gui(NULL){
+,_gui(NULL) {
   _gui=GWEN_Gui_new();
   _dbPasswords=GWEN_DB_Group_new("passwords");
 
   GWEN_INHERIT_SETDATA(GWEN_GUI, CppGui,
 		       _gui, this,
 		       CppGuiLinker::freeData);
+  GWEN_Gui_UseDialogs(_gui);
   _printFn=GWEN_Gui_SetPrintFn(_gui, CppGuiLinker::Print);
   _getPasswordFn=GWEN_Gui_SetGetPasswordFn(_gui, CppGuiLinker::GetPassword);
   _setPasswordStatusFn=GWEN_Gui_SetSetPasswordStatusFn(_gui, CppGuiLinker::SetPasswordStatus);
   _checkCertFn=GWEN_Gui_SetCheckCertFn(_gui, CppGuiLinker::CheckCert);
+  GWEN_Gui_SetLogHookFn(_gui, CppGuiLinker::LogHook);
   _execDialogFn=GWEN_Gui_SetExecDialogFn(_gui, CppGuiLinker::ExecDialog);
   _openDialogFn=GWEN_Gui_SetOpenDialogFn(_gui, CppGuiLinker::OpenDialog);
   _closeDialogFn=GWEN_Gui_SetCloseDialogFn(_gui, CppGuiLinker::CloseDialog);
@@ -381,10 +395,6 @@ int CppGui::getPassword(uint32_t flags,
       }
     }
 
-#if 0
-    GWEN_DB_SetCharValue(_dbPasswords, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 GWEN_Buffer_GetStart(buf), buffer);
-#endif
     GWEN_Buffer_free(buf);
     return 0;
   }
@@ -400,6 +410,14 @@ int CppGui::checkCert(const GWEN_SSLCERTDESCR *cd,
 
 
 
+int CppGui::logHook(const char *logDomain,
+		    GWEN_LOGGER_LEVEL priority, const char *s) {
+  /* not hooked */
+  return 0;
+}
+
+
+
 int CppGui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
   return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -407,6 +425,8 @@ int CppGui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 int CppGui::openDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
+  DBG_ERROR(0, "CppGui::OpenDialog");
+
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 

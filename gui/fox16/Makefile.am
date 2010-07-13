@@ -48,5 +48,6 @@ iheader_HEADERS=\
 noinst_PROGRAMS=libtest
 libtest_SOURCES=libtest.cpp
 libtest_LDADD=libgwengui-fox16.la $(fox_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname) \
+ $(builddir)/../testdialogs/libgwengui-test.la \
   html/libfxhtml.la
 

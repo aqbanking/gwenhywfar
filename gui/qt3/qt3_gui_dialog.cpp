@@ -13,6 +13,7 @@
 #include <gwenhywfar/dialog_be.h>
 #include <gwenhywfar/widget_be.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/directory.h>
 
 #include <qapplication.h>
 #include <qeventloop.h>
@@ -1751,6 +1752,36 @@ int QT3_GuiDialog::setupTree(QWidget *dialogParent, GWEN_WIDGET *w) {
 
 
 
+QPixmap *QT3_GuiDialog::getIcon(const char *fileName) {
+  GWEN_STRINGLIST *sl;
+
+  sl=GWEN_Dialog_GetMediaPaths(_dialog);
+  if (sl) {
+    GWEN_BUFFER *tbuf;
+    int rv;
+    QPixmap *pm;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Directory_FindFileInPaths(sl, fileName, tbuf);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return NULL;
+    }
+
+    DBG_ERROR(0, "Loading [%s]", GWEN_Buffer_GetStart(tbuf));
+    pm=new QPixmap(GWEN_Buffer_GetStart(tbuf));
+    assert(pm);
+    return pm;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No media paths in dialog");
+    return NULL;
+  }
+}
+
+
+
 int QT3_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
   GWEN_WIDGET *gwParent;
   QWidget *wParent=NULL;
@@ -1824,8 +1855,19 @@ int QT3_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
   case GWEN_Widget_TypePushButton:
     {
       QPushButton *f;
+      const char *s;
 
-      f=new QPushButton(text, wParent, name);
+      s=GWEN_Widget_GetIconFileName(w);
+      if (s && *s) {
+	QPixmap *pm;
+
+	pm=getIcon(s);
+	f=new QPushButton(*pm, text, wParent, name);
+        delete pm;
+      }
+      else
+	f=new QPushButton(text, wParent, name);
+
       connect(f, SIGNAL(clicked()), this, SLOT(slotActivated()));
       wChild=f;
       break;

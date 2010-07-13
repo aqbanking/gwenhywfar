@@ -18,6 +18,7 @@ class QT4_GuiDialog;
 
 
 class QT4_DialogBox: public QDialog {
+  Q_OBJECT
 public:
   QT4_DialogBox(QT4_GuiDialog *dialog, QWidget *parent=0, bool modal=FALSE, Qt::WindowFlags f=0);
   virtual ~QT4_DialogBox();
@@ -30,6 +31,10 @@ public:
   void closeEvent(QCloseEvent *e);
 
   void unlinkFromDialog();
+
+public slots:
+  void slotActivated();
+  void slotValueChanged();
 
 protected:
   QT4_GuiDialog *_dialog;

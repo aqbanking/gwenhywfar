@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2010 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -42,8 +42,12 @@ class CppGuiLinker {
 
   static int CheckCert(GWEN_GUI *gui,
 		       const GWEN_SSLCERTDESCR *cert,
-		       GWEN_SYNCIO *sio,
+		       GWEN_SYNCIO *io,
 		       uint32_t guiid);
+
+  static int LogHook(GWEN_GUI *gui,
+		     const char *logDomain,
+		     GWEN_LOGGER_LEVEL priority, const char *s);
 
   static int ExecDialog(GWEN_GUI *gui,
 			GWEN_DIALOG *dlg,

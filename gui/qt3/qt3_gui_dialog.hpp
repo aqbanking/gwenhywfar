@@ -58,6 +58,8 @@ protected:
   int setupTree(QWidget *dialogParent, GWEN_WIDGET *w);
   int setupWidget(QWidget *dialogParent, GWEN_WIDGET *w);
 
+  QPixmap *getIcon(const char *fileName);
+
   virtual int setIntProperty(GWEN_WIDGET *w,
 			     GWEN_DIALOG_PROPERTY prop,
 			     int index,

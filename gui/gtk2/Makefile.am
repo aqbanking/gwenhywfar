@@ -39,7 +39,6 @@ EXTRA_DIST=\
   w_listbox.c \
   w_checkbox.c \
   w_scrollarea.c \
-  w_image.c disk.png \
   w_radiobutton.c
 
 
@@ -51,5 +50,6 @@ iheader_HEADERS= \
 
 noinst_PROGRAMS = libtest
 libtest_SOURCES = libtest.c
-libtest_LDADD = libgwengui-gtk2.la $(GTK2_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname)
+libtest_LDADD = libgwengui-gtk2.la $(GTK2_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname) \
+  $(builddir)/../testdialogs/libgwengui-test.la
 

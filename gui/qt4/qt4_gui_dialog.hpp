@@ -10,7 +10,7 @@
 #ifndef QT4_DIALOG_HPP
 #define QT4_DIALOG_HPP
 
-#include "cppdialog.hpp"
+#include <gwen-gui-cpp/cppdialog.hpp>
 #include "qt4_gui.hpp"
 
 #include <gwenhywfar/dialog_be.h>
@@ -26,11 +26,14 @@
 class QT4_DialogBox;
 
 
+#define QT4_DIALOG_WIDGET_REAL    0
+#define QT4_DIALOG_WIDGET_CONTENT 1
+#define QT4_DIALOG_WIDGET_LAYOUT  2
 
-class QT4_GuiDialog: public QObject, public CppDialog {
-  Q_OBJECT
+
+
+class QT4_GuiDialog: public CppDialog {
 public:
-
   QT4_GuiDialog(QT4_Gui *gui, GWEN_DIALOG *dlg);
   virtual ~QT4_GuiDialog();
 
@@ -46,17 +49,12 @@ public:
 
   QT4_DialogBox *getMainWindow() { return _mainWidget;};
 
-public slots:
-  void slotActivated();
-  void slotValueChanged();
-
 protected:
   QT4_Gui *_gui;
   int _widgetCount;
   QT4_DialogBox *_mainWidget;
 
-  int setupTree(QWidget *dialogParent, GWEN_WIDGET *w);
-  int setupWidget(QWidget *dialogParent, GWEN_WIDGET *w);
+  int setupTree(GWEN_WIDGET *w);
 
   virtual int setIntProperty(GWEN_WIDGET *w,
 			     GWEN_DIALOG_PROPERTY prop,

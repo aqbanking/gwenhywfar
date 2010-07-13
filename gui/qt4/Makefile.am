@@ -11,16 +11,12 @@ lib_LTLIBRARIES=libgwengui-qt4.la
 noinst_PROGRAMS=libtest
 
 noinst_HEADERS=\
-  cppdialog_p.hpp \
-  cppgui_p.hpp \
   qt4dialogbox.hpp \
   qt4_gui_dialog.hpp \
   qt4_gui_dialog.hpp
 
-libgwengui_qt4_la_LIBADD=$(qt4_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname)
+libgwengui_qt4_la_LIBADD=$(qt4_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname) $(builddir)/../cpp/libgwengui-cpp.la
 libgwengui_qt4_la_SOURCES=\
-  cppdialog.cpp \
-  cppgui.cpp \
   qt4dialogbox.cpp \
   qt4_gui.cpp \
   qt4_gui_dialog.cpp
@@ -33,22 +29,21 @@ nodist_noinst_HEADERS=
 
 iheaderdir=${includedir}/gwen-gui-qt4
 iheader_HEADERS=\
- cppgui.hpp \
- cppdialog.hpp \
  qt4_gui.hpp
 
 MOC_FILES=\
- qt4_gui_dialog.moc
+  qt4dialogbox.moc
 
 
 UI_FILES=
 
 
-EXTRA_DIST=$(UI_FILES) testdialog.xml
+EXTRA_DIST=$(UI_FILES)
 
 
 libtest_SOURCES=libtest.cpp
-libtest_LDADD=libgwengui-qt4.la $(top_builddir)/src/$(gwenhywfar_internal_libname) $(qt4_libs)
+libtest_LDADD=libgwengui-qt4.la $(top_builddir)/src/$(gwenhywfar_internal_libname) $(qt4_libs) \
+  $(builddir)/../testdialogs/libgwengui-test.la
 
 
 

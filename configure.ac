@@ -1375,6 +1375,7 @@ AC_CONFIG_FILES([Doxyfile
                  tools/gcttool/Makefile
                  test/Makefile
                  gui/Makefile
+                 gui/cpp/Makefile
                  gui/qt3/Makefile
                  gui/qt3/gwengui-qt3.pc
                  gui/qt4/Makefile
@@ -1383,6 +1384,7 @@ AC_CONFIG_FILES([Doxyfile
                  gui/fox16/gwengui-fox16.pc
                  gui/fox16/html/Makefile
                  gui/gtk2/Makefile
+                 gui/testdialogs/Makefile
 		])
 AC_OUTPUT
 
@@ -1413,6 +1415,25 @@ for d in ${HEADER_DIRS}; do
   done
 done
 #ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar4/gwenhywfar/system.h" 2>/dev/null
+
+
+
+# cpp
+#
+rm -Rf gwenhywfar4/gwen-gui-cpp 2>/dev/null
+mkdir -p gwenhywfar4/gwen-gui-cpp
+for d in gui/cpp; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.hpp | *_p.hpp)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-cpp/${f}"
+         ;;
+    esac
+  done
+done
 
 
 
