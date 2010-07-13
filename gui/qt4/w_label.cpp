@@ -36,7 +36,7 @@ public:
     wParent=GWEN_Widget_Tree_GetParent(_widget);
     s=GWEN_Widget_GetText(_widget, 0);
     if (s)
-      text=QString::fromUtf8(s);
+      text=QT4_Gui::extractHtml(s);
 
     qw=new QLabel(text);
 
@@ -67,7 +67,7 @@ public:
     assert(qw);
 
     if (value)
-      text=QString::fromUtf8(value);
+      text=QT4_Gui::extractHtml(value);
 
     switch(prop) {
     case GWEN_DialogProperty_Title:
