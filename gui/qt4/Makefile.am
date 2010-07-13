@@ -38,7 +38,29 @@ MOC_FILES=\
 UI_FILES=
 
 
-EXTRA_DIST=$(UI_FILES)
+EXTRA_DIST=$(UI_FILES) \
+  w_widget.cpp \
+  w_dialog.cpp \
+  w_vlayout.cpp \
+  w_hlayout.cpp \
+  w_gridlayout.cpp \
+  w_label.cpp \
+  w_lineedit.cpp \
+  w_pushbutton.cpp \
+  w_hline.cpp \
+  w_vline.cpp \
+  w_textedit.cpp \
+  w_combobox.cpp \
+  w_tabbook.cpp \
+  w_checkbox.cpp \
+  w_groupbox.cpp \
+  w_widgetstack.cpp \
+  w_textbrowser.cpp \
+  w_scrollarea.cpp \
+  w_progressbar.cpp \
+  w_listbox.cpp \
+  w_radiobutton.cpp
+
 
 
 libtest_SOURCES=libtest.cpp
