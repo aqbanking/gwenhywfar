@@ -62,7 +62,6 @@ typedef enum {
     GWEN_Widget_TypeHLayout,
     GWEN_Widget_TypeVLayout,
     GWEN_Widget_TypeGridLayout,
-    GWEN_Widget_TypeImage,
     GWEN_Widget_TypeListBox,
     GWEN_Widget_TypeDialog,
     GWEN_Widget_TypeTabBook,

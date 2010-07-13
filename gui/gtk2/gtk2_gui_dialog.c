@@ -401,9 +401,6 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeScrollArea:
     rv=Gtk2Gui_WScrollArea_Setup(w);
     break;
-  case GWEN_Widget_TypeImage:
-    rv=Gtk2Gui_WImage_Setup(w);
-    break;
   case GWEN_Widget_TypeRadioButton:
     rv=Gtk2Gui_WRadioButton_Setup(w);
     break;

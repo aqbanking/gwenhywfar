@@ -356,8 +356,6 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
       return GWEN_Widget_TypeVLayout;
     else if (strcasecmp(s, "gridLayout")==0)
       return GWEN_Widget_TypeGridLayout;
-    else if (strcasecmp(s, "image")==0)
-      return GWEN_Widget_TypeImage;
     else if (strcasecmp(s, "listBox")==0)
       return GWEN_Widget_TypeListBox;
     else if (strcasecmp(s, "dialog")==0)
@@ -403,7 +401,6 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   case GWEN_Widget_TypeHLayout:         return "hLayout";
   case GWEN_Widget_TypeVLayout:         return "vLayout";
   case GWEN_Widget_TypeGridLayout:      return "gridLayout";
-  case GWEN_Widget_TypeImage:           return "image";
   case GWEN_Widget_TypeListBox:         return "listBox";
   case GWEN_Widget_TypeDialog:          return "dialog";
   case GWEN_Widget_TypeTabBook:         return "tabBook";

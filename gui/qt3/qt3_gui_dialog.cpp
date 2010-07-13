@@ -444,7 +444,6 @@ int QT3_GuiDialog::setIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeScrollArea:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeTabPage:
   case GWEN_Widget_TypeTextBrowser:
     break;
@@ -479,7 +478,6 @@ int QT3_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_Widget_TypeVLine:
     case GWEN_Widget_TypeDialog:
     case GWEN_Widget_TypeScrollArea:
-    case GWEN_Widget_TypeImage:
     case GWEN_Widget_TypeTabPage:
     case GWEN_Widget_TypeTextBrowser:
       {
@@ -760,7 +758,6 @@ int QT3_GuiDialog::getIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeScrollArea:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeTabPage:
   case GWEN_Widget_TypeTextBrowser:
     break;
@@ -795,7 +792,6 @@ int QT3_GuiDialog::getIntProperty(GWEN_WIDGET *w,
     case GWEN_Widget_TypeVLine:
     case GWEN_Widget_TypeDialog:
     case GWEN_Widget_TypeScrollArea:
-    case GWEN_Widget_TypeImage:
     case GWEN_Widget_TypeTabPage:
     case GWEN_Widget_TypeTextBrowser:
       {
@@ -1170,7 +1166,6 @@ int QT3_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeScrollArea:
-  case GWEN_Widget_TypeImage:
     break;
   }
 
@@ -1559,7 +1554,6 @@ const char *QT3_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeScrollArea:
-  case GWEN_Widget_TypeImage:
     break;
   }
 
@@ -1641,7 +1635,6 @@ void QT3_GuiDialog::slotActivated() {
     case GWEN_Widget_TypeHLayout:
     case GWEN_Widget_TypeVLayout:
     case GWEN_Widget_TypeGridLayout:
-    case GWEN_Widget_TypeImage:
     case GWEN_Widget_TypeDialog:
     case GWEN_Widget_TypeTabBook:
     case GWEN_Widget_TypeTabPage:
@@ -1708,7 +1701,6 @@ void QT3_GuiDialog::slotValueChanged() {
     case GWEN_Widget_TypeHLayout:
     case GWEN_Widget_TypeVLayout:
     case GWEN_Widget_TypeGridLayout:
-    case GWEN_Widget_TypeImage:
     case GWEN_Widget_TypeDialog:
     case GWEN_Widget_TypeTabBook:
     case GWEN_Widget_TypeTabPage:
@@ -2077,10 +2069,6 @@ int QT3_GuiDialog::setupWidget(QWidget *dialogParent, GWEN_WIDGET *w) {
       wChild=f;
       break;
     }
-
-
-  case GWEN_Widget_TypeImage:
-    break;
   }
 
   _widgetCount++;

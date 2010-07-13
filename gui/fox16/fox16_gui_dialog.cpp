@@ -434,7 +434,6 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeTabPage:
   case GWEN_Widget_TypeScrollArea:
@@ -727,7 +726,6 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeTabPage:
   case GWEN_Widget_TypeScrollArea:
@@ -1065,7 +1063,6 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeScrollArea:
   case GWEN_Widget_TypeWidgetStack:
@@ -1445,7 +1442,6 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeScrollArea:
   case GWEN_Widget_TypeWidgetStack:
@@ -1555,7 +1551,6 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeTabPage:
@@ -1616,7 +1611,6 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeTabBook:
@@ -1678,7 +1672,6 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeTabPage:
@@ -1728,7 +1721,6 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeImage:
   case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeTabPage:
@@ -2104,10 +2096,6 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   case GWEN_Widget_TypeVLine:
     wChild=new FXVerticalSeparator(parentComposite, opts | SEPARATOR_GROOVE);
     break;
-
-  case GWEN_Widget_TypeImage:
-    DBG_ERROR(0, "Type for widget [%s] not yet implemented", name?name:"(unnamed)");
-    return NULL;
 
   case GWEN_Widget_TypeUnknown:
     DBG_ERROR(0, "Widget [%s] is of type \'unknown\'", name?name:"(unnamed)");

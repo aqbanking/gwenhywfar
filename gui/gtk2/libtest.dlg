@@ -60,11 +60,7 @@
         </widget>
       </widget>
 
-      <widget type="tabpage" name="tabpage5" text="Fifth Page" flags="fillX fillY" >
-        <widget type="image" image="disk.png" name="image1" flags="fillX fillY" />
-      </widget>
-
-      <widget type="tabpage" name="tabpage6" text="Sixth Page" flags="fillX fillY" >
+      <widget type="tabpage" name="tabpage5" text="Sixth Page" flags="fillX fillY" >
         <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
           <widget type="radioButton" name="radio1" text="Radio 1" groupId="1" flags="fillX" />
           <widget type="radioButton" name="radio2" text="Radio 2" groupId="1" flags="fillX" />
