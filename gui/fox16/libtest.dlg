@@ -42,6 +42,7 @@
 
       <widget type="tabpage" name="tabpage3" text="Third Page" flags="fillX fillY" >
         <widget type="listBox" name="listbox1" flags="fillX fillY" />
+        <widget type="label" name="label3" text="Label With an Icon" icon="disk.png" />
       </widget>
 
       <widget type="tabpage" name="tabpage4" text="Fourth Page" flags="fillX fillY" >

@@ -21,6 +21,7 @@
 
 
 #define MAX_DEFAULT_WIDTH 400
+#define ICON_SPACE        4
 
 
 
@@ -46,6 +47,7 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 ,m_minWidth(0)
 ,m_maxDefaultWidth(MAX_DEFAULT_WIDTH)
 ,m_haveDefaultDims(false)
+,m_icon(NULL)
 {
   setText(text);
   flags|=FLAG_ENABLED|FLAG_DIRTY|FLAG_RECALC;
@@ -57,6 +59,7 @@ FOX16_HtmlLabel::FOX16_HtmlLabel()
 :FXFrame()
 ,m_htmlCtx(NULL)
 ,m_minWidth(0)
+,m_icon(NULL)
 {
   flags|=FLAG_ENABLED;
 }
@@ -74,6 +77,16 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
   m_haveDefaultDims=false;
   m_text=text;
   updateHtml();
+  flags|=FLAG_DIRTY;
+  layout();
+  recalc();
+  update();
+}
+
+
+
+void FOX16_HtmlLabel::setIcon(FXIcon *ic) {
+  m_icon=ic;
   flags|=FLAG_DIRTY;
   layout();
   recalc();
@@ -119,22 +132,38 @@ void FOX16_HtmlLabel::calcDefaultDims() {
 
 
 FXint FOX16_HtmlLabel::getDefaultWidth() {
+  int w;
+
   if (m_htmlCtx==NULL)
     updateHtml();
   if (!m_haveDefaultDims)
     calcDefaultDims();
 
-  return m_defaultWidth;
+  w=m_defaultWidth;
+  if (m_icon)
+    w+=m_icon->getWidth()+ICON_SPACE;
+  return w;
 }
 
 
 
 FXint FOX16_HtmlLabel::getDefaultHeight() {
+  int h;
+
   if (m_htmlCtx==NULL)
     updateHtml();
   if (!m_haveDefaultDims)
     calcDefaultDims();
-  return m_defaultHeight;
+  h=m_defaultHeight;
+  if (m_icon) {
+    int ih;
+
+    ih=m_icon->getHeight();
+    if (ih>h)
+      h=ih;
+  }
+
+  return h;
 }
 
 
@@ -146,8 +175,27 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
   dc.setForeground(backColor);
   dc.fillRectangle(border, border, width-(border*2), height-(border*2));
 
-  if (m_htmlCtx)
-    m_htmlCtx->paint(&dc, border, border);
+  if (m_htmlCtx) {
+    if (m_icon) {
+      int th;
+      int ih;
+      int ty=border;
+
+      if(isEnabled())
+	dc.drawIcon(m_icon, border, border);
+      else
+	dc.drawIconSunken(m_icon, border, border);
+
+      ih=m_icon->getHeight();
+      th=m_htmlCtx->getHeight();
+      if (ih>th)
+	ty+=(ih-th)/2;
+      m_htmlCtx->paint(&dc, border+ICON_SPACE+m_icon->getWidth(), ty);
+    }
+    else {
+      m_htmlCtx->paint(&dc, border, border);
+    }
+  }
   else {
     DBG_ERROR(0, "No HtmlContext");
   }
@@ -157,8 +205,11 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
 }
 
 
+
 void FOX16_HtmlLabel::create() {
   FXFrame::create();
+  if (m_icon)
+    m_icon->create();
   updateHtml();
   recalc();
 }
@@ -186,8 +237,11 @@ void FOX16_HtmlLabel::layout() {
   m_haveDefaultDims=false;
   if (options & FLAGS_NO_WORDWRAP)
     w=-1;
-  else if (options & FLAGS_USE_FULL_WIDTH)
+  else if (options & FLAGS_USE_FULL_WIDTH) {
     w=width;
+    if (m_icon)
+      w-=(m_icon->getWidth()+ICON_SPACE);
+  }
   else
     w=m_maxDefaultWidth;
 

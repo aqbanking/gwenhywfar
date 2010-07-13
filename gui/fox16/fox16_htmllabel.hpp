@@ -48,6 +48,9 @@ public:
   /// Get the text for this label
   FXString getText() const { return m_text; }
 
+  FXIcon *getIcon() const { return m_icon;};
+  void setIcon(FXIcon *ic);
+
   /// Return default width
   virtual FXint getDefaultWidth();
 
@@ -72,6 +75,8 @@ protected:
   bool m_haveDefaultDims;
   FXint m_defaultWidth;
   FXint m_defaultHeight;
+
+  FXIcon *m_icon;
 
   FOX16_HtmlLabel();
   void updateHtml();

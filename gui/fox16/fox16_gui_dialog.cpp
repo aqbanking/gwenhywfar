@@ -1863,12 +1863,22 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   case GWEN_Widget_TypeLabel: {
     FOX16_HtmlLabel *label;
     int wi;
+    const char *s;
 
     if (flags & GWEN_WIDGET_FLAGS_NO_WORDWRAP)
       opts|=FOX16_HtmlLabel::FLAGS_NO_WORDWRAP;
     label=new FOX16_HtmlLabel(parentComposite,
 			      htmlText,
 			      opts);
+    s=GWEN_Widget_GetIconFileName(w);
+    if (s && *s) {
+      FXIcon *ic;
+
+      ic=getIcon(s);
+      if (ic)
+	label->setIcon(ic);
+    }
+
     wi=GWEN_Widget_GetWidth(w);
     if (wi>0)
       label->setMaxDefaultWidth(wi);
