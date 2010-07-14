@@ -117,6 +117,7 @@ void QT4_DialogBox::slotActivated() {
     case GWEN_Widget_TypeCheckBox:
     case GWEN_Widget_TypeLabel:
     case GWEN_Widget_TypeTextEdit:
+    case GWEN_Widget_TypeSpinBox:
       rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
 				GWEN_DialogEvent_TypeActivated,
 				GWEN_Widget_GetName(w));
@@ -184,6 +185,7 @@ void QT4_DialogBox::slotValueChanged() {
     case GWEN_Widget_TypeCheckBox:
     case GWEN_Widget_TypeLabel:
     case GWEN_Widget_TypeTextEdit:
+    case GWEN_Widget_TypeSpinBox:
       rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
 				GWEN_DialogEvent_TypeValueChanged,
 				GWEN_Widget_GetName(w));

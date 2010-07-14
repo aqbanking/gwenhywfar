@@ -37,6 +37,8 @@ public:
     qw=new QTreeWidget();
     qw->setAllColumnsShowFocus(true);
     qw->setSortingEnabled(true);
+    qw->setRootIsDecorated(false);
+    qw->setItemsExpandable(false);
     qw->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     /* handle flags */

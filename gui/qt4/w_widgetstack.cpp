@@ -29,15 +29,9 @@ public:
     GWEN_WIDGET *wParent;
     QSizePolicy::Policy hpolicy=QSizePolicy::Minimum;
     QSizePolicy::Policy vpolicy=QSizePolicy::Minimum;
-    const char *s;
-    QString text;
-    QT4_GuiDialog *qtDialog;
 
     flags=GWEN_Widget_GetFlags(_widget);
     wParent=GWEN_Widget_Tree_GetParent(_widget);
-    s=GWEN_Widget_GetText(_widget, 0);
-    if (s)
-      text=QString::fromUtf8(s);
 
     qw=new QStackedWidget();
 
@@ -49,13 +43,6 @@ public:
     qw->setSizePolicy(hpolicy, vpolicy);
 
     GWEN_Widget_SetImplData(_widget, QT4_DIALOG_WIDGET_REAL, (void*) qw);
-
-    qtDialog=dynamic_cast<QT4_GuiDialog*>(getDialog());
-    assert(qtDialog);
-
-    qw->connect(qw, SIGNAL(toggled(bool)),
-		qtDialog->getMainWindow(),
-		SLOT(slotActivated()));
 
     if (wParent)
       GWEN_Widget_AddChildGuiWidget(wParent, _widget);
