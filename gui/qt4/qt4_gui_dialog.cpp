@@ -74,6 +74,7 @@
 #include "w_progressbar.cpp"
 #include "w_listbox.cpp"
 #include "w_radiobutton.cpp"
+#include "w_spinbox.cpp"
 
 
 
@@ -308,6 +309,9 @@ int QT4_GuiDialog::setupTree(GWEN_WIDGET *w) {
     break;
   case GWEN_Widget_TypeRadioButton:
     xw=new Qt4_W_RadioButton(w);
+    break;
+  case GWEN_Widget_TypeSpinBox:
+    xw=new Qt4_W_SpinBox(w);
     break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled widget type %d (%s)",

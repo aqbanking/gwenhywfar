@@ -77,31 +77,17 @@ public:
       return 0;
 
     case GWEN_DialogProperty_Value: {
-      QTreeWidgetItem *root;
-      int i=0;
+      QTreeWidgetItem *item;
 
-      root=qw->invisibleRootItem();
-      if (root) {
-	QTreeWidgetItem *item;
+      item=qw->topLevelItem(index);
 
-	item=qw->itemBelow(root);
-	while(item && i<value) {
-	  item=qw->itemBelow(item);
-	  i++;
-	}
-
-	if (item==NULL) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
-	  return GWEN_ERROR_INVALID;
-	}
-
-	qw->setCurrentItem(item);
-	return 0;
-      }
-      else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "List is empty");
+      if (item==NULL) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
 	return GWEN_ERROR_INVALID;
       }
+
+      qw->setCurrentItem(item);
+      return 0;
     }
 
     case GWEN_DialogProperty_ColumnWidth:
@@ -312,39 +298,26 @@ public:
     }
 
     case GWEN_DialogProperty_Value: {
-      QTreeWidgetItem *root;
-      int i=0;
+      QTreeWidgetItem *item;
+      int i;
 
-      root=qw->invisibleRootItem();
-      if (root) {
-	QTreeWidgetItem *item;
+      item=qw->topLevelItem(index);
 
-	item=qw->itemBelow(root);
-	while(item && i<index) {
-	  item=qw->itemBelow(item);
-	  i++;
-	}
-
-	if (item==NULL) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", index);
-	  return defaultValue;
-	}
-
-	for (i=0; i<qw->columnCount(); i++) {
-	  if (i)
-	    str+='\t';
-	  str+=item->text(i);
-	}
-	if (str.isEmpty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_VALUE, str.toUtf8());
-	  return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_VALUE);
-	}
-      }
-      else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "List is empty");
+      if (item==NULL) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", index);
 	return defaultValue;
+      }
+
+      for (i=0; i<qw->columnCount(); i++) {
+	if (i)
+	  str+='\t';
+	str+=item->text(i);
+      }
+      if (str.isEmpty())
+	return defaultValue;
+      else {
+	GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_VALUE, str.toUtf8());
+	return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_VALUE);
       }
     }
 

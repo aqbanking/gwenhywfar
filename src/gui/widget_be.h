@@ -71,7 +71,8 @@ typedef enum {
     GWEN_Widget_TypeScrollArea,
     GWEN_Widget_TypeHLine,
     GWEN_Widget_TypeVLine,
-    GWEN_Widget_TypeTextBrowser
+    GWEN_Widget_TypeTextBrowser,
+    GWEN_Widget_TypeSpinBox
 } GWEN_WIDGET_TYPE;
 
 

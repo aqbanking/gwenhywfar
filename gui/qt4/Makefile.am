@@ -59,7 +59,8 @@ EXTRA_DIST=$(UI_FILES) \
   w_scrollarea.cpp \
   w_progressbar.cpp \
   w_listbox.cpp \
-  w_radiobutton.cpp
+  w_radiobutton.cpp \
+  w_spinbox.cpp
 
 
 
