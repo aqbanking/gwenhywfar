@@ -11,6 +11,7 @@
 #define CPPDIALOG_HPP
 
 #include <gwenhywfar/dialog_be.h>
+
 #include <list>
 #include <string>
 

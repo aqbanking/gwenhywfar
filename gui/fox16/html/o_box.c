@@ -17,7 +17,7 @@
 
 
 
-#define LINE_EXTRA_OFFSET 4
+#define LINE_EXTRA_OFFSET_DIV 6
 
 
 
@@ -69,7 +69,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       }
 
       x=0;
-      y+=lineHeight+LINE_EXTRA_OFFSET;
+      y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
       lineHeight=0;
       cFirstInLine=HtmlObject_Tree_GetNext(c);
     }
@@ -122,7 +122,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 	}
 
 	x=0;
-	y+=lineHeight+LINE_EXTRA_OFFSET;
+	y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
         lineHeight=0;
 	cFirstInLine=HtmlObject_Tree_GetNext(c);
       }
@@ -166,7 +166,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       }
 
       x=0;
-      y+=lineHeight+LINE_EXTRA_OFFSET;
+      y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
       lineHeight=0;
       cFirstInLine=HtmlObject_Tree_GetNext(c);
     }
@@ -200,7 +200,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
     }
 
     x=0;
-    y+=lineHeight+LINE_EXTRA_OFFSET;
+    y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
     lineHeight=0;
   }
 

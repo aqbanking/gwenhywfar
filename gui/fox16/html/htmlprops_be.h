@@ -11,6 +11,8 @@
 #ifndef HTMLPROPS_BE_H
 #define HTMLPROPS_BE_H
 
+#include <gwen-gui-fox16/api.h>
+
 
 typedef struct HTML_PROPS HTML_PROPS;
 
@@ -24,20 +26,20 @@ extern "C" {
 #endif
 
 
-HTML_PROPS *HtmlProps_new();
-void HtmlProps_free(HTML_PROPS *pr);
-void HtmlProps_Attach(HTML_PROPS *pr);
-HTML_PROPS *HtmlProps_dup(const HTML_PROPS *pr);
+FOX16GUI_API HTML_PROPS *HtmlProps_new();
+FOX16GUI_API void HtmlProps_free(HTML_PROPS *pr);
+FOX16GUI_API void HtmlProps_Attach(HTML_PROPS *pr);
+FOX16GUI_API HTML_PROPS *HtmlProps_dup(const HTML_PROPS *pr);
 
 
-HTML_FONT *HtmlProps_GetFont(const HTML_PROPS *pr);
-void HtmlProps_SetFont(HTML_PROPS *pr, HTML_FONT *fnt);
+FOX16GUI_API HTML_FONT *HtmlProps_GetFont(const HTML_PROPS *pr);
+FOX16GUI_API void HtmlProps_SetFont(HTML_PROPS *pr, HTML_FONT *fnt);
 
-uint32_t HtmlProps_GetForegroundColor(const HTML_PROPS *pr);
-void HtmlProps_SetForegroundColor(HTML_PROPS *pr, uint32_t c);
+FOX16GUI_API uint32_t HtmlProps_GetForegroundColor(const HTML_PROPS *pr);
+FOX16GUI_API void HtmlProps_SetForegroundColor(HTML_PROPS *pr, uint32_t c);
 
-uint32_t HtmlProps_GetBackgroundColor(const HTML_PROPS *pr);
-void HtmlProps_SetBackgroundColor(HTML_PROPS *pr, uint32_t c);
+FOX16GUI_API uint32_t HtmlProps_GetBackgroundColor(const HTML_PROPS *pr);
+FOX16GUI_API void HtmlProps_SetBackgroundColor(HTML_PROPS *pr, uint32_t c);
 
 
 #ifdef __cplusplus

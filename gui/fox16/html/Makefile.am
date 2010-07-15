@@ -1,5 +1,9 @@
 INCLUDES=-I$(gwenhywfar_symlinkdir)
 
+AM_CPPFLAGS= @visibility_cflags@
+DEFS+=-DBUILDING_FOX16_GUI -DPACKAGE=\"$(PACKAGE)\"
+
+
 noinst_LTLIBRARIES=libfxhtml.la
 libfxhtml_la_LIBADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
 libfxhtml_la_SOURCES=\

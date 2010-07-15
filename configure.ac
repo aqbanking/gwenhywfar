@@ -1479,7 +1479,7 @@ done
 rm -Rf gwenhywfar4/gwen-gui-fox16 2>/dev/null
 mkdir -p gwenhywfar4/gwen-gui-fox16
 for d in gui/fox16; do
-  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
   for f in ${hfiles}; do
     case ${f} in
       *_l.hpp | *_p.hpp | fox16_gui_*.hpp)

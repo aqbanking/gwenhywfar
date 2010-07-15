@@ -16,6 +16,8 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xmlctx.h>
 
+#include <gwen-gui-fox16/api.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,8 +25,8 @@ extern "C" {
 
 
 typedef struct HTML_OBJECT HTML_OBJECT;
-GWEN_TREE_FUNCTION_DEFS(HTML_OBJECT, HtmlObject)
-GWEN_INHERIT_FUNCTION_DEFS(HTML_OBJECT)
+GWEN_TREE_FUNCTION_LIB_DEFS(HTML_OBJECT, HtmlObject, FOX16GUI_API)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(HTML_OBJECT, FOX16GUI_API)
 
 
 #define HTML_OBJECT_FLAGS_START_ON_NEWLINE 0x00000001
@@ -57,49 +59,49 @@ typedef enum {
 #include <gwen-gui-fox16/html/htmlctx_be.h>
 
 
-HTML_OBJECT *HtmlObject_new(GWEN_XML_CONTEXT *ctx, HTML_OBJECT_TYPE t);
-void HtmlObject_free(HTML_OBJECT *o);
-void HtmlObject_Attach(HTML_OBJECT *o);
+FOX16GUI_API HTML_OBJECT *HtmlObject_new(GWEN_XML_CONTEXT *ctx, HTML_OBJECT_TYPE t);
+FOX16GUI_API void HtmlObject_free(HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_Attach(HTML_OBJECT *o);
 
-GWEN_XML_CONTEXT *HtmlObject_GetXmlCtx(const HTML_OBJECT *o);
+FOX16GUI_API GWEN_XML_CONTEXT *HtmlObject_GetXmlCtx(const HTML_OBJECT *o);
 
-HTML_OBJECT_TYPE HtmlObject_GetObjectType(const HTML_OBJECT *o);
-void HtmlObject_SetObjectType(HTML_OBJECT *o, HTML_OBJECT_TYPE t);
+FOX16GUI_API HTML_OBJECT_TYPE HtmlObject_GetObjectType(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetObjectType(HTML_OBJECT *o, HTML_OBJECT_TYPE t);
 
-HTML_PROPS *HtmlObject_GetProperties(const HTML_OBJECT *o);
-void HtmlObject_SetProperties(HTML_OBJECT *o, HTML_PROPS *pr);
+FOX16GUI_API HTML_PROPS *HtmlObject_GetProperties(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetProperties(HTML_OBJECT *o, HTML_PROPS *pr);
 
-int HtmlObject_GetX(const HTML_OBJECT *o);
-void HtmlObject_SetX(HTML_OBJECT *o, int i);
+FOX16GUI_API int HtmlObject_GetX(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetX(HTML_OBJECT *o, int i);
 
-int HtmlObject_GetY(const HTML_OBJECT *o);
-void HtmlObject_SetY(HTML_OBJECT *o, int i);
+FOX16GUI_API int HtmlObject_GetY(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetY(HTML_OBJECT *o, int i);
 
-int HtmlObject_GetWidth(const HTML_OBJECT *o);
-void HtmlObject_SetWidth(HTML_OBJECT *o, int i);
+FOX16GUI_API int HtmlObject_GetWidth(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetWidth(HTML_OBJECT *o, int i);
 
-int HtmlObject_GetHeight(const HTML_OBJECT *o);
-void HtmlObject_SetHeight(HTML_OBJECT *o, int i);
+FOX16GUI_API int HtmlObject_GetHeight(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetHeight(HTML_OBJECT *o, int i);
 
-int HtmlObject_GetConfiguredWidth(const HTML_OBJECT *o);
-void HtmlObject_SetConfiguredWidth(HTML_OBJECT *o, int i);
+FOX16GUI_API int HtmlObject_GetConfiguredWidth(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetConfiguredWidth(HTML_OBJECT *o, int i);
 
-int HtmlObject_GetConfiguredHeight(const HTML_OBJECT *o);
-void HtmlObject_SetConfiguredHeight(HTML_OBJECT *o, int i);
+FOX16GUI_API int HtmlObject_GetConfiguredHeight(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetConfiguredHeight(HTML_OBJECT *o, int i);
 
-const char *HtmlObject_GetText(const HTML_OBJECT *o);
-void HtmlObject_SetText(HTML_OBJECT *o, const char *s);
+FOX16GUI_API const char *HtmlObject_GetText(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetText(HTML_OBJECT *o, const char *s);
 
-int HtmlObject_Layout(HTML_OBJECT *o);
+FOX16GUI_API int HtmlObject_Layout(HTML_OBJECT *o);
 
-uint32_t HtmlObject_GetFlags(const HTML_OBJECT *o);
-void HtmlObject_SetFlags(HTML_OBJECT *o, uint32_t fl);
-void HtmlObject_AddFlags(HTML_OBJECT *o, uint32_t fl);
-void HtmlObject_SubFlags(HTML_OBJECT *o, uint32_t fl);
+FOX16GUI_API uint32_t HtmlObject_GetFlags(const HTML_OBJECT *o);
+FOX16GUI_API void HtmlObject_SetFlags(HTML_OBJECT *o, uint32_t fl);
+FOX16GUI_API void HtmlObject_AddFlags(HTML_OBJECT *o, uint32_t fl);
+FOX16GUI_API void HtmlObject_SubFlags(HTML_OBJECT *o, uint32_t fl);
 
 
-HTML_OBJECT_LAYOUT_FN HtmlObject_SetLayoutFn(HTML_OBJECT *o,
-                                             HTML_OBJECT_LAYOUT_FN fn);
+FOX16GUI_API HTML_OBJECT_LAYOUT_FN HtmlObject_SetLayoutFn(HTML_OBJECT *o,
+							  HTML_OBJECT_LAYOUT_FN fn);
 
 #ifdef __cplusplus
 }

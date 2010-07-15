@@ -243,7 +243,7 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
 			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt)+8,
+			HtmlFont_GetFontSize(fnt)*1.8,
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
     HtmlProps_SetFont(pr, fnt);
     HtmlGroup_SetProperties(gNew, pr);
@@ -268,7 +268,7 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
 			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt)+4,
+			HtmlFont_GetFontSize(fnt)*1.5,
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
     HtmlProps_SetFont(pr, fnt);
     HtmlGroup_SetProperties(gNew, pr);

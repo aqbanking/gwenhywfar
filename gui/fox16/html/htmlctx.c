@@ -631,6 +631,14 @@ int HtmlCtx_Layout(GWEN_XML_CONTEXT *ctx, int width, int height) {
 
 
 
+void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
+  int rv;
+
+  rv=GWEN_XMLContext_ReadFromString(ctx, s);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  }
+}
 
 
 

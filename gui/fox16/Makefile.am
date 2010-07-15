@@ -43,7 +43,8 @@ iheader_HEADERS=\
  fox16_htmlctx.hpp \
  fox16_htmllabel.hpp \
  fox16_htmltext.hpp \
- theme.h
+ theme.h \
+ api.h
 
 noinst_PROGRAMS=libtest
 libtest_SOURCES=libtest.cpp
