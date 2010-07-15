@@ -48,6 +48,8 @@ struct GWEN_XML_CONTEXT {
   int finishedElements;
 
   int depth;
+
+  int _refCount;
 };
 
 

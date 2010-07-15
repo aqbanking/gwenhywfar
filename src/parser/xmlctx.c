@@ -53,6 +53,7 @@ GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags) {
   GWEN_XML_CONTEXT *ctx;
 
   GWEN_NEW_OBJECT(GWEN_XML_CONTEXT, ctx);
+  ctx->_refCount=1;
   GWEN_INHERIT_INIT(GWEN_XML_CONTEXT, ctx);
 
   ctx->flags=flags;
@@ -64,9 +65,23 @@ GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags) {
 
 void GWEN_XmlCtx_free(GWEN_XML_CONTEXT *ctx) {
   if (ctx) {
-    GWEN_INHERIT_FINI(GWEN_XML_CONTEXT, ctx);
-    GWEN_FREE_OBJECT(ctx);
+    assert(ctx->_refCount);
+    if (ctx->_refCount==1) {
+      GWEN_INHERIT_FINI(GWEN_XML_CONTEXT, ctx);
+      ctx->_refCount=0;
+      GWEN_FREE_OBJECT(ctx);
+    }
+    else
+      ctx->_refCount--;
   }
+}
+
+
+
+void GWEN_XmlCtx_Attach(GWEN_XML_CONTEXT *ctx) {
+  assert(ctx);
+  assert(ctx->_refCount);
+  ctx->_refCount++;
 }
 
 

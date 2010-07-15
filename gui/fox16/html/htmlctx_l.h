@@ -53,6 +53,5 @@ int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
 			  HTML_FONT *fnt,
 			  const char *s);
 
-
 #endif
 

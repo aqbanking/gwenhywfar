@@ -632,15 +632,67 @@ int HtmlCtx_Layout(GWEN_XML_CONTEXT *ctx, int width, int height) {
 
 
 void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
+  HTML_XMLCTX *xctx;
   int rv;
+  HTML_GROUP *g;
+  HTML_OBJECT *o;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  /* reset */
+  HtmlObject_Tree_Clear(xctx->objects);
+  /* create initial group */
+  g=HtmlGroup_Box_new("HTML_ROOT", NULL, ctx);
+  assert(g);
+  HtmlGroup_SetProperties(g, xctx->standardProps);
+  o=HtmlObject_Box_new(ctx);
+  HtmlObject_SetProperties(o, xctx->standardProps);
+  HtmlGroup_SetObject(g, o);
+  HtmlObject_Tree_Add(xctx->objects, o);
+  HtmlCtx_SetCurrentGroup(ctx, g);
 
   rv=GWEN_XMLContext_ReadFromString(ctx, s);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
   }
+
+#if 0
+  fprintf(stderr, "============ Objects:\n");
+  o=HtmlObject_Tree_GetFirst(xctx->objects);
+  while(o) {
+    if (HtmlObject_GetObjectType(o)==HtmlObjectType_Word) {
+      fprintf(stderr, "Object: [%s]\n", HtmlObject_GetText(o));
+
+    }
+    o=HtmlObject_Tree_GetBelow(o);
+  }
+#endif
 }
 
 
 
+int HtmlCtx_GetWidth(const GWEN_XML_CONTEXT *ctx) {
+  HTML_OBJECT *o;
+
+  o=HtmlCtx_GetRootObject(ctx);
+  if (o)
+    return HtmlObject_GetWidth(o);
+  else
+    return -1;
+}
+
+
+
+int HtmlCtx_GetHeight(const GWEN_XML_CONTEXT *ctx) {
+  HTML_OBJECT *o;
+
+  o=HtmlCtx_GetRootObject(ctx);
+  if (o)
+    return HtmlObject_GetHeight(o);
+  else
+    return -1;
+}
 
 

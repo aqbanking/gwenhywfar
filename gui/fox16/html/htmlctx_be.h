@@ -69,6 +69,13 @@ FOX16GUI_API
 void HtmlCtx_SetStandardProps(GWEN_XML_CONTEXT *ctx, HTML_PROPS *pr);
 
 
+FOX16GUI_API 
+int HtmlCtx_GetWidth(const GWEN_XML_CONTEXT *ctx);
+
+FOX16GUI_API 
+int HtmlCtx_GetHeight(const GWEN_XML_CONTEXT *ctx);
+
+
 
 FOX16GUI_API 
 HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,

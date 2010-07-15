@@ -12,6 +12,7 @@
 #endif
 
 #include "o_box_l.h"
+#include "htmlctx_l.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -166,6 +167,15 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       }
 
       x=0;
+      if (lineHeight==0) {
+	HTML_PROPS *pr;
+	HTML_FONT *fnt;
+
+	pr=HtmlObject_GetProperties(o);
+	assert(pr);
+	fnt=HtmlProps_GetFont(pr);
+	lineHeight=HtmlCtx_GetTextHeight(HtmlObject_GetXmlCtx(o), fnt, "ABCD");
+      }
       y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
       lineHeight=0;
       cFirstInLine=HtmlObject_Tree_GetNext(c);
