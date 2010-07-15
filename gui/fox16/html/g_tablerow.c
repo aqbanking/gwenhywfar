@@ -82,10 +82,21 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
 
   if (strcasecmp(tagName, "th")==0) {
     HTML_OBJECT *o;
+    HTML_PROPS *pr;
+    HTML_FONT *fnt;
 
     /* create new parser group */
     gNew=HtmlGroup_Box_new(tagName, g, ctx);
-    HtmlGroup_SetProperties(gNew, HtmlGroup_GetProperties(g));
+    pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
+    fnt=HtmlProps_GetFont(pr);
+    fnt=HtmlCtx_GetFont(ctx,
+			HtmlFont_GetFontName(fnt),
+			HtmlFont_GetFontSize(fnt),
+			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+    HtmlProps_SetFont(pr, fnt);
+    HtmlGroup_SetProperties(gNew, pr);
+    HtmlProps_free(pr);
+
     o=HtmlObject_GridEntry_new(ctx);
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
     HtmlObject_GridEntry_SetColumn(o, xg->columns++);
