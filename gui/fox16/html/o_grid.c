@@ -82,11 +82,17 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 
     if (x>w) {
       int fullw[MAX_COLUMN];
-      int cw2[MAX_COLUMN];
+      int meanColumnWidth;
+      int k;
 
       /* doesn't fit, so we need to adjust the columns */
+      meanColumnWidth=w/xo->columns;
+
+
+      /* reset full width of every column */
       for (i=0; i<xo->columns; i++)
 	fullw[i]=0;
+      /* calculate full width of every column */
       c=HtmlObject_Tree_GetFirstChild(o);
       while(c) {
 	int k;
@@ -97,27 +103,46 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 	  fullw[i]=k;
 	c=HtmlObject_Tree_GetNext(c);
       }
-  
-      j=0;
+
       for (i=0; i<xo->columns; i++)
-	j+=fullw[i];
-  
-      /* now calculate percentual width for each column */
+	cw[i]=0;
+
+      /* set fixed widths to those columns which are smaller than fullWidth/columns */
       for (i=0; i<xo->columns; i++) {
 	int p;
-  
-	p=fullw[i]*100/j;
-	cw[i]=p*w/100;
+
+	p=fullw[i];
+	if (p<=meanColumnWidth) {
+          k+=p;
+	  cw[i]=p;
+	}
       }
-      /* now cw[] contains the assigned widths of all columns */
-  
-      /* let all children layout again, get the real width of each column */
-      for (i=0; i<xo->columns; i++)
-	cw2[i]=0;
+
+      /* now get the remaining width */
+      j=0;
+      k=w-k;
+      for (i=0; i<xo->columns; i++) {
+        if (cw[i]==0)
+	  j+=fullw[i];
+      }
+
+      /*DBG_ERROR(0, "Full width: %d, still needed space: %d, available space: %d", w, j, k);*/
+
+      if (j>0) {
+	/* calculate percentual width of each remaining column */
+	for (i=0; i<xo->columns; i++) {
+	  if (cw[i]==0) {
+	    int p;
+
+	    p=fullw[i]*100/j;
+	    cw[i]=p*k/100;
+	  }
+	}
+      }
+
+      /* re-layout columns */
       c=HtmlObject_Tree_GetFirstChild(o);
       while(c) {
-	int k;
-  
 	i=HtmlObject_GridEntry_GetColumn(c);
 	HtmlObject_SetHeight(c, -1);
 	HtmlObject_SetWidth(c, cw[i]);
@@ -126,49 +151,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	  return rv;
 	}
-	k=HtmlObject_GetWidth(c);
-	if (k>cw2[i])
-	  cw2[i]=k;
 	c=HtmlObject_Tree_GetNext(c);
-      }
-      /* cw2[] now contains the real sizes of all columns */
-  
-      /* now sort out those columns which need more space */
-      x=0;
-      for (i=0; i<xo->columns; i++) {
-	if (cw2[i]>cw[i]) {
-	  /* this column needs more space */
-	  x+=cw2[i];
-	  cw[i]=0;
-	}
-	else
-	  cw[i]=cw2[i];
-      }
-  
-      if (x>0) {
-	int k;
-  
-	/* some columns have been resized, so we need to adjust the remaining columns now */
-	x=w-x;
-	k=0;
-	for (i=0; i<xo->columns; i++)
-	  k+=cw[i];
-  
-	/* now recalc width for the remaining columns */
-	for (i=0; i<xo->columns; i++) {
-	  if (cw[i]) {
-	    int p;
-  
-	    p=cw[i]*100/k;
-	    cw[i]=p*x/100;
-	  }
-	}
-
-        /* now copy fixed column widths from above */
-	for (i=0; i<xo->columns; i++) {
-	  if (cw[i]==0)
-	    cw[i]=cw2[i];
-	}
       }
     }
   }
