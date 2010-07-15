@@ -1805,6 +1805,41 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
         src++;
 	GWEN_TEXT__APPENDCHAR(num);
       }
+      else if (strncmp(src+1, "szlig;", 6)==0) {
+	GWEN_TEXT__APPENDCHAR(0xc3);
+	GWEN_TEXT__APPENDCHAR(0x9f);
+        src+=7;
+      }
+      else if (strncmp(src+1, "Auml;", 5)==0) {
+	GWEN_TEXT__APPENDCHAR(0xc3);
+	GWEN_TEXT__APPENDCHAR(0xa4);
+        src+=6;
+      }
+      else if (strncmp(src+1, "Ouml;", 5)==0) {
+	GWEN_TEXT__APPENDCHAR(0xc3);
+	GWEN_TEXT__APPENDCHAR(0xb6);
+        src+=6;
+      }
+      else if (strncmp(src+1, "Uuml;", 5)==0) {
+	GWEN_TEXT__APPENDCHAR(0xc3);
+	GWEN_TEXT__APPENDCHAR(0xbc);
+        src+=6;
+      }
+      else if (strncmp(src+1, "auml;", 5)==0) {
+	GWEN_TEXT__APPENDCHAR(0xc3);
+	GWEN_TEXT__APPENDCHAR(0x84);
+        src+=6;
+      }
+      else if (strncmp(src+1, "ouml;", 5)==0) {
+	GWEN_TEXT__APPENDCHAR(0xc3);
+	GWEN_TEXT__APPENDCHAR(0x96);
+        src+=6;
+      }
+      else if (strncmp(src+1, "uuml;", 5)==0) {
+	GWEN_TEXT__APPENDCHAR(0xc3);
+	GWEN_TEXT__APPENDCHAR(0x9c);
+        src+=6;
+      }
       else {
 	const GWEN_TEXT_ESCAPE_ENTRY *e;
 	e=gwen_text__xml_escape_chars;
