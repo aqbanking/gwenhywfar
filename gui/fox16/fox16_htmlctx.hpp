@@ -31,6 +31,9 @@ public:
   int getWidth();
   int getHeight();
 
+  void setXFactor(double d);
+  void setYFactor(double d);
+
   HTML_FONT *getFont(const char *fontName,
 		     int fontSize,
 		     uint32_t fontFlags);
@@ -52,6 +55,7 @@ protected:
   FXFont *_font;
   FXColor _fgColor;
   FXColor _bgColor;
+  double _xFactor;
 
   FXFont *_getFoxFont(HTML_FONT *fnt);
   void _paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset);

@@ -34,6 +34,7 @@ static int HtmlObject_Word_Layout(HTML_OBJECT *o) {
     fnt=HtmlProps_GetFont(pr);
     w=HtmlCtx_GetTextWidth(HtmlObject_GetXmlCtx(o), fnt, s)+4;
     h=HtmlCtx_GetTextHeight(HtmlObject_GetXmlCtx(o), fnt, s);
+    //DBG_ERROR(0, "Box[%s]: w=%d, h=%d", s, w, h);
   }
 
   HtmlObject_SetWidth(o, w);

@@ -51,6 +51,8 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags) {
   GWEN_XmlCtx_SetAddCommentFn(ctx, HtmlCtx_AddComment);
   GWEN_XmlCtx_SetAddAttrFn(ctx, HtmlCtx_AddAttr);
 
+  xctx->xFactor=1.0;
+  xctx->yFactor=1.0;
   xctx->objects=HtmlObject_Tree_new();
 
   /* create initial group */
@@ -88,6 +90,55 @@ void HtmlCtx_FreeData(void *bp, void *p) {
   HtmlObject_Tree_free(xctx->objects);
 
   GWEN_FREE_OBJECT(xctx);
+}
+
+
+
+void HtmlCtx_SetXFactor(GWEN_XML_CONTEXT *ctx, double d) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  xctx->xFactor=d;
+}
+
+
+
+double HtmlCtx_GetXFactor(const GWEN_XML_CONTEXT *ctx) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  return xctx->xFactor;
+}
+
+
+
+
+void HtmlCtx_SetYFactor(GWEN_XML_CONTEXT *ctx, double d) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  xctx->yFactor=d;
+}
+
+
+
+double HtmlCtx_GetYFactor(const GWEN_XML_CONTEXT *ctx) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  return xctx->yFactor;
 }
 
 
@@ -478,7 +529,7 @@ int HtmlCtx_GetTextWidth(GWEN_XML_CONTEXT *ctx,
   assert(xctx);
 
   if (xctx->getTextWidthFn)
-    return xctx->getTextWidthFn(ctx, fnt, s);
+    return (xctx->xFactor) * (xctx->getTextWidthFn(ctx, fnt, s));
   else
     return -1;
 }
@@ -495,7 +546,7 @@ int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
   assert(xctx);
 
   if (xctx->getTextHeightFn)
-    return xctx->getTextHeightFn(ctx, fnt, s);
+    return (xctx->yFactor) * (xctx->getTextHeightFn(ctx, fnt, s));
   else
     return -1;
 }

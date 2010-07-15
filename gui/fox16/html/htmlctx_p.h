@@ -24,6 +24,8 @@ struct HTML_XMLCTX {
   GWEN_DB_NODE *dbCurrentAttribs;
 
   HTML_PROPS *standardProps;
+  double xFactor;
+  double yFactor;
 
   HTMLCTX_GET_TEXT_WIDTH_FN getTextWidthFn;
   HTMLCTX_GET_TEXT_HEIGHT_FN getTextHeightFn;

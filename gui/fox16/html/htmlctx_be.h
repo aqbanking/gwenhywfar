@@ -47,6 +47,12 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags);
 int HtmlCtx_Layout(GWEN_XML_CONTEXT *ctx, int width, int height);
 HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx);
 
+void HtmlCtx_SetXFactor(GWEN_XML_CONTEXT *ctx, double d);
+double HtmlCtx_GetXFactor(const GWEN_XML_CONTEXT *ctx);
+
+void HtmlCtx_SetYFactor(GWEN_XML_CONTEXT *ctx, double d);
+double HtmlCtx_GetYFactor(const GWEN_XML_CONTEXT *ctx);
+
 
 HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
 			   const char *fontName,

@@ -191,7 +191,14 @@ FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
 		face.text(), size, weight, slant, encoding);
       return NULL;
     }
+
     xfnt->create();
+
+    if (1) {
+      FXString an=xfnt->getActualName();
+      DBG_ERROR(0, "Created font: [%s]", an.text());
+    }
+
     GWEN_INHERIT_SETDATA(HTML_FONT, FXFont, fnt, xfnt,
 			 FOX16_HtmlCtxLinker::freeFontData);
     return xfnt;
@@ -499,6 +506,17 @@ void FOX16_HtmlCtx::setForegroundColor(FXColor c) {
   _fgColor=c;
 }
 
+
+
+void FOX16_HtmlCtx::setXFactor(double d) {
+  HtmlCtx_SetXFactor(_context, d);
+}
+
+
+
+void FOX16_HtmlCtx::setYFactor(double d) {
+  HtmlCtx_SetYFactor(_context, d);
+}
 
 
 
