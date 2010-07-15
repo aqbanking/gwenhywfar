@@ -1,6 +1,6 @@
 INCLUDES=-I$(gwenhywfar_symlinkdir)
 
-ABSMEDIAPATH="$(shell pwd)"
+ABSMEDIAPATH=$(abs_srcdir)
 
 DEFS+=-DMEDIAPATH=\"$(ABSMEDIAPATH)\"
 
