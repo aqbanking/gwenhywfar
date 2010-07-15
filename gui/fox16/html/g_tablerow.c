@@ -73,12 +73,14 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
   GROUP_TABLEROW *xg;
   HTML_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
+  GWEN_DB_NODE *dbAttribs;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(HTML_GROUP, GROUP_TABLEROW, g);
   assert(xg);
 
   ctx=HtmlGroup_GetXmlContext(g);
+  dbAttribs=HtmlCtx_GetCurrentAttributes(ctx);
 
   if (strcasecmp(tagName, "th")==0) {
     HTML_OBJECT *o;
@@ -102,6 +104,19 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
     HtmlObject_GridEntry_SetColumn(o, xg->columns++);
     HtmlObject_GridEntry_SetRow(o, xg->row);
     HtmlObject_GridEntry_SetIsHeader(o, 1);
+
+    if (dbAttribs) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(dbAttribs, "align", 0, "left");
+      if (s) {
+	if (strcasecmp(s, "right")==0)
+	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
+        else if (strcasecmp(s, "center")==0)
+	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
+      }
+    }
+
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlGroup_SetObject(gNew, o);
   }
@@ -116,6 +131,19 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
     HtmlObject_GridEntry_SetColumn(o, xg->columns++);
     HtmlObject_GridEntry_SetRow(o, xg->row);
     HtmlObject_GridEntry_SetIsHeader(o, 0);
+
+    if (dbAttribs) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(dbAttribs, "align", 0, "left");
+      if (s) {
+	if (strcasecmp(s, "right")==0)
+	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
+        else if (strcasecmp(s, "center")==0)
+	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
+      }
+    }
+
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlGroup_SetObject(gNew, o);
   }
