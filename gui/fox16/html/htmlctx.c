@@ -52,6 +52,7 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags) {
   GWEN_XmlCtx_SetAddAttrFn(ctx, HtmlCtx_AddAttr);
 
   xctx->objects=HtmlObject_Tree_new();
+  xctx->mediaPaths=GWEN_StringList_new();
 
   /* create initial group */
   g=HtmlGroup_Box_new("HTML_ROOT", NULL, ctx);
@@ -87,8 +88,36 @@ void HtmlCtx_FreeData(void *bp, void *p) {
   free(xctx->currentTagName);
   HtmlObject_Tree_free(xctx->objects);
 
+  GWEN_StringList_free(xctx->mediaPaths);
+
   GWEN_FREE_OBJECT(xctx);
 }
+
+
+
+GWEN_STRINGLIST *HtmlCtx_GetMediaPaths(const GWEN_XML_CONTEXT *ctx) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  return xctx->mediaPaths;
+}
+
+
+
+void HtmlCtx_AddMediaPath(GWEN_XML_CONTEXT *ctx, const char *s) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  assert(s && *s);
+  GWEN_StringList_AppendString(xctx->mediaPaths, s, 0, 1);
+}
+
 
 
 
@@ -536,6 +565,21 @@ HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
 
 
 
+HTML_IMAGE *HtmlCtx_GetImage(GWEN_XML_CONTEXT *ctx, const char *imageName) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  if (xctx->getImageFn)
+    return xctx->getImageFn(ctx, imageName);
+  else
+    return NULL;
+}
+
+
+
 HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
 						    HTMLCTX_GET_TEXT_WIDTH_FN fn) {
   HTML_XMLCTX *xctx;
@@ -597,6 +641,22 @@ HTMLCTX_GET_FONT_FN HtmlCtx_SetGetFontFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_FONT
 
   of=xctx->getFontFn;
   xctx->getFontFn=fn;
+
+  return of;
+}
+
+
+
+HTMLCTX_GET_IMAGE_FN HtmlCtx_SetGetImageFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_IMAGE_FN fn) {
+  HTML_XMLCTX *xctx;
+  HTMLCTX_GET_IMAGE_FN of;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  of=xctx->getImageFn;
+  xctx->getImageFn=fn;
 
   return of;
 }

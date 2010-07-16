@@ -16,6 +16,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/i18n.h>
+#include <gwenhywfar/stringlist.h>
 
 #include <assert.h>
 
@@ -47,10 +48,13 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 ,m_minWidth(0)
 ,m_maxDefaultWidth(MAX_DEFAULT_WIDTH)
 ,m_haveDefaultDims(false)
+,m_mediaPaths(NULL)
 ,m_icon(NULL)
 {
+  m_mediaPaths=GWEN_StringList_new();
   setText(text);
   flags|=FLAG_ENABLED|FLAG_DIRTY|FLAG_RECALC;
+
 }
 
 
@@ -59,6 +63,7 @@ FOX16_HtmlLabel::FOX16_HtmlLabel()
 :FXFrame()
 ,m_htmlCtx(NULL)
 ,m_minWidth(0)
+,m_mediaPaths(NULL)
 ,m_icon(NULL)
 {
   flags|=FLAG_ENABLED;
@@ -69,6 +74,7 @@ FOX16_HtmlLabel::FOX16_HtmlLabel()
 FOX16_HtmlLabel::~FOX16_HtmlLabel() {
   if (m_htmlCtx)
     delete m_htmlCtx;
+  GWEN_StringList_free(m_mediaPaths);
 }
 
 
@@ -81,6 +87,13 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
   layout();
   recalc();
   update();
+}
+
+
+
+void FOX16_HtmlLabel::addMediaPath(const char *s) {
+  assert(s);
+  GWEN_StringList_AppendString(m_mediaPaths, s, 0, 1);
 }
 
 
@@ -256,10 +269,23 @@ void FOX16_HtmlLabel::layout() {
 
 
 void FOX16_HtmlLabel::updateHtml() {
+  GWEN_STRINGLISTENTRY *se;
+
   if (m_htmlCtx)
     delete m_htmlCtx;
   m_haveDefaultDims=false;
   m_htmlCtx=new FOX16_HtmlCtx(0);
+  /* copy media paths to context */
+  se=GWEN_StringList_FirstEntry(m_mediaPaths);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    assert(s);
+    m_htmlCtx->addMediaPath(s);
+    se=GWEN_StringListEntry_Next(se);
+  }
+
   m_htmlCtx->setBackgroundColor(backColor);
   m_htmlCtx->setForegroundColor(fxcolorfromname("black"));
   m_htmlCtx->setText(m_text.text());

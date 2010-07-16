@@ -98,6 +98,18 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 			       200,
 			       0);
 
+    GWEN_Dialog_SetCharProperty(dlg, "labelWithHtmlImage",
+				GWEN_DialogProperty_Title,
+				0,
+				"This label contains text which should also contain an image:"
+				"<img src=\"chipcard.png\">"
+				"And here the text should continue, followed by another image:"
+				"<img src=\"disk.png\">"
+                                "And again, this should be on the following line.",
+				0);
+
+    
+
     GWEN_Dialog_SetIntProperty(dlg, "",
 			       GWEN_DialogProperty_Width,
 			       0,

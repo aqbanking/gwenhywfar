@@ -24,11 +24,13 @@ struct HTML_XMLCTX {
   GWEN_DB_NODE *dbCurrentAttribs;
 
   HTML_PROPS *standardProps;
+  GWEN_STRINGLIST *mediaPaths;
 
   HTMLCTX_GET_TEXT_WIDTH_FN getTextWidthFn;
   HTMLCTX_GET_TEXT_HEIGHT_FN getTextHeightFn;
   HTMLCTX_GET_COLOR_FROM_NAME_FN getColorFromNameFn;
   HTMLCTX_GET_FONT_FN getFontFn;
+  HTMLCTX_GET_IMAGE_FN getImageFn;
 };
 
 

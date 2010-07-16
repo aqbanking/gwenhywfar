@@ -51,6 +51,8 @@ public:
   FXIcon *getIcon() const { return m_icon;};
   void setIcon(FXIcon *ic);
 
+  void addMediaPath(const char *s);
+
   /// Return default width
   virtual FXint getDefaultWidth();
 
@@ -75,6 +77,8 @@ protected:
   bool m_haveDefaultDims;
   FXint m_defaultWidth;
   FXint m_defaultHeight;
+
+  GWEN_STRINGLIST *m_mediaPaths;
 
   FXIcon *m_icon;
 

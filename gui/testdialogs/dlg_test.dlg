@@ -61,11 +61,9 @@
         </widget>
       </widget>
 
-<!--
       <widget type="tabpage" name="tabpage5" text="Fifth Page" flags="fillX fillY" >
-        <widget type="image" image="disk.png" name="image1" flags="fillX fillY" />
+        <widget type="label" name="labelWithHtmlImage" flags="fillX fillY" />
       </widget>
--->
 
       <widget type="tabpage" name="tabpage6" text="Sixth Page" flags="fillX fillY" >
         <widget type="vlayout" name="vlayout1" flags="fillX fillY" >

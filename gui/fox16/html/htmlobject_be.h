@@ -51,7 +51,10 @@ typedef enum {
   HtmlObjectType_ListEntry,
   HtmlObjectType_Grid,
   HtmlObjectType_GridEntry,
-  HtmlObjectType_Control
+  HtmlObjectType_Control,
+  HtmlObjectType_Image,
+
+  HtmlObjectType_Count
 } HTML_OBJECT_TYPE;
 
 

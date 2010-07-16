@@ -20,6 +20,7 @@
 #include "o_box_l.h"
 #include "o_word_l.h"
 #include "o_grid_l.h"
+#include "o_image_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -152,6 +153,54 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     /* just create and add a control object */
     o=HtmlObject_new(ctx, HtmlObjectType_Control);
     HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
+  }
+  else if (strcasecmp(tagName, "img")==0) {
+    HTML_OBJECT *o;
+    GWEN_DB_NODE *dbAttribs;
+
+    o=HtmlObject_Image_new(ctx);
+    HtmlObject_AddFlags(o,
+			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+    dbAttribs=HtmlCtx_GetCurrentAttributes(ctx);
+    if (dbAttribs) {
+      const char *s;
+      int w;
+      int h;
+
+      w=GWEN_DB_GetIntValue(dbAttribs, "width", 0, -1);
+      h=GWEN_DB_GetIntValue(dbAttribs, "height", 0, -1);
+
+      /* preset */
+      if (w!=-1)
+	HtmlObject_Image_SetScaledWidth(o, w);
+      if (h!=-1)
+	HtmlObject_Image_SetScaledHeight(o, w);
+
+      s=GWEN_DB_GetCharValue(dbAttribs, "src", 0, NULL);
+      if (s && *s) {
+	HTML_IMAGE *img;
+
+	img=HtmlCtx_GetImage(ctx, s);
+	if (img) {
+	  HtmlObject_Image_SetImage(o, img);
+	  /* adjust scaled width and height if not set by attributes */
+	  if (w==-1)
+	    HtmlObject_Image_SetScaledWidth(o, HtmlImage_GetWidth(img));
+          if (h==-1)
+	    HtmlObject_Image_SetScaledHeight(o, HtmlImage_GetHeight(img));
+	}
+	else {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Image [%s] not found", s);
+	}
+      }
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Missing image name in IMG element");
+      }
+    }
+
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
   }

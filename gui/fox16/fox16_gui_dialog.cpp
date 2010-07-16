@@ -137,6 +137,7 @@ FXIcon *FOX16_GuiDialog::getIcon(const char *fileName) {
       return NULL;
     }
     m_iconList.push_back(ic);
+    GWEN_Buffer_free(tbuf);
     return ic;
   }
   else {
@@ -1942,6 +1943,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     FOX16_HtmlLabel *label;
     int wi;
     const char *s;
+    GWEN_STRINGLISTENTRY *se;
 
     if (flags & GWEN_WIDGET_FLAGS_NO_WORDWRAP)
       opts|=FOX16_HtmlLabel::FLAGS_NO_WORDWRAP;
@@ -1960,6 +1962,18 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     wi=GWEN_Widget_GetWidth(w);
     if (wi>0)
       label->setMaxDefaultWidth(wi);
+
+    /* copy media paths to label */
+    se=GWEN_StringList_FirstEntry(GWEN_Dialog_GetMediaPaths(_dialog));
+    while(se) {
+      const char *s;
+  
+      s=GWEN_StringListEntry_Data(se);
+      assert(s);
+      label->addMediaPath(s);
+      se=GWEN_StringListEntry_Next(se);
+    }
+
     wChild=label;
     break;
   }

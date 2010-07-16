@@ -33,9 +33,13 @@ class FOX16_HtmlCtxLinker {
 			    int fontSize,
 			    uint32_t fontFlags);
 
+  static HTML_IMAGE *GetImage(GWEN_XML_CONTEXT *ctx,
+			      const char *imageName);
 
   static GWENHYWFAR_CB void freeData(void *bp, void *p);
   static GWENHYWFAR_CB void freeFontData(void *bp, void *p);
+  static GWENHYWFAR_CB void freeImageData(void *bp, void *p);
+
 };
 
 

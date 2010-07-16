@@ -35,6 +35,10 @@ public:
 		     int fontSize,
 		     uint32_t fontFlags);
 
+  HTML_IMAGE *getImage(const char *imageName);
+
+  void addMediaPath(const char *s);
+
   int layout(int width, int height);
   void dump();
 
@@ -52,6 +56,7 @@ protected:
   FXFont *_font;
   FXColor _fgColor;
   FXColor _bgColor;
+  FXIconSource *m_iconSource;
 
   FXFont *_getFoxFont(HTML_FONT *fnt);
   void _paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset);

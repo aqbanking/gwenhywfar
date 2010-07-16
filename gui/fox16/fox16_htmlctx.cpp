@@ -14,6 +14,7 @@
 #include "fox16_htmlctx_p.hpp"
 #include "fox16_gui.hpp"
 #include "htmlctx_be.h"
+#include "o_image_l.h"
 
 #include <assert.h>
 
@@ -25,11 +26,13 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/syncio_memory.h>
+#include <gwenhywfar/directory.h>
 
 
 
 GWEN_INHERIT(GWEN_XML_CONTEXT, FOX16_HtmlCtx)
 GWEN_INHERIT(HTML_FONT, FXFont)
+GWEN_INHERIT(HTML_IMAGE, FXImage)
 
 
 
@@ -89,6 +92,20 @@ HTML_FONT *FOX16_HtmlCtxLinker::GetFont(GWEN_XML_CONTEXT *ctx,
 
 
 
+HTML_IMAGE *FOX16_HtmlCtxLinker::GetImage(GWEN_XML_CONTEXT *ctx,
+					  const char *imageName) {
+  FOX16_HtmlCtx *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, FOX16_HtmlCtx, ctx);
+  assert(xctx);
+
+  return xctx->getImage(imageName);
+
+}
+
+
+
 void FOX16_HtmlCtxLinker::freeData(void *bp, void *p) {
   FOX16_HtmlCtx *xctx;
 
@@ -110,6 +127,15 @@ void FOX16_HtmlCtxLinker::freeFontData(void *bp, void *p) {
 
 
 
+void FOX16_HtmlCtxLinker::freeImageData(void *bp, void *p) {
+  FXImage *ximg;
+
+  ximg=(FXImage*) p;
+  delete ximg;
+}
+
+
+
 
 
 FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags)
@@ -117,6 +143,7 @@ FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags)
 ,_font(NULL)
 ,_fgColor(0)
 ,_bgColor(0)
+,m_iconSource(NULL)
 {
   HTML_PROPS *pr;
   HTML_FONT *fnt;
@@ -129,6 +156,7 @@ FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags)
   HtmlCtx_SetGetTextHeightFn(_context, FOX16_HtmlCtxLinker::GetTextHeight);
   HtmlCtx_SetGetColorFromNameFn(_context, FOX16_HtmlCtxLinker::GetColorFromName);
   HtmlCtx_SetGetFontFn(_context, FOX16_HtmlCtxLinker::GetFont);
+  HtmlCtx_SetGetImageFn(_context, FOX16_HtmlCtxLinker::GetImage);
 
   pr=HtmlProps_new();
   fnt=HtmlCtx_GetFont(_context, _font->getName().text(), _font->getSize()/10, 0);
@@ -263,6 +291,12 @@ void FOX16_HtmlCtx::setText(const char *s) {
 
 
 
+void FOX16_HtmlCtx::addMediaPath(const char *s) {
+  HtmlCtx_AddMediaPath(_context, s);
+}
+
+
+
 static void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
   HTML_OBJECT *c;
   int i;
@@ -317,7 +351,8 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
   xOffset+=HtmlObject_GetX(o);
   yOffset+=HtmlObject_GetY(o);
 
-  if (HtmlObject_GetObjectType(o)==HtmlObjectType_Word) {
+  switch(HtmlObject_GetObjectType(o)) {
+  case HtmlObjectType_Word: {
     HTML_PROPS *pr;
     HTML_FONT *fnt;
     FXFont *xfnt;
@@ -350,6 +385,43 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
       dc->setBackground(col);
 
     dc->drawText(xOffset, yOffset+ascent, HtmlObject_GetText(o));
+    break;
+  }
+
+  case HtmlObjectType_Image: {
+    HTML_IMAGE *img;
+
+    img=HtmlObject_Image_GetImage(o);
+    if (img) {
+      FXImage *ximg;
+
+      ximg=GWEN_INHERIT_GETDATA(HTML_IMAGE, FXImage, img);
+      if (ximg) {
+	HTML_PROPS *pr;
+	uint32_t col;
+
+	pr=HtmlObject_GetProperties(o);
+
+	/* select background color */
+	col=HtmlProps_GetBackgroundColor(pr);
+	if (col==HTML_PROPS_NOCOLOR) {
+	  dc->setBackground(_bgColor);
+	  dc->setForeground(_bgColor);
+	}
+	else {
+	  dc->setBackground(col);
+	  dc->setForeground(col);
+	}
+
+	dc->fillRectangle(xOffset, yOffset, ximg->getWidth(), ximg->getHeight());
+
+	dc->drawImage(ximg, xOffset, yOffset);
+      }
+    }
+    break;
+  }
+  default:
+    break;
   }
 
   c=HtmlObject_Tree_GetFirstChild(o);
@@ -383,7 +455,8 @@ void FOX16_HtmlCtx::_paintAt(FXDC *dc, HTML_OBJECT *o,
 
   if (printX<w && printX+objectW>=0 &&
       printY<h && printY+objectH>=0) {
-    if (HtmlObject_GetObjectType(o)==HtmlObjectType_Word) {
+    switch(HtmlObject_GetObjectType(o)) {
+    case HtmlObjectType_Word: {
       HTML_PROPS *pr;
       HTML_FONT *fnt;
       FXFont *xfnt;
@@ -416,8 +489,45 @@ void FOX16_HtmlCtx::_paintAt(FXDC *dc, HTML_OBJECT *o,
 	dc->setBackground(col);
   
       dc->drawText(printX, printY+ascent, HtmlObject_GetText(o));
+      break;
     }
+
+    case HtmlObjectType_Image: {
+      HTML_IMAGE *img;
   
+      img=HtmlObject_Image_GetImage(o);
+      if (img) {
+	FXImage *ximg;
+  
+	ximg=GWEN_INHERIT_GETDATA(HTML_IMAGE, FXImage, img);
+	if (ximg) {
+	  HTML_PROPS *pr;
+	  uint32_t col;
+
+	  pr=HtmlObject_GetProperties(o);
+
+	  /* select background color */
+	  col=HtmlProps_GetBackgroundColor(pr);
+	  if (col==HTML_PROPS_NOCOLOR) {
+	    dc->setBackground(_bgColor);
+	    dc->setForeground(_bgColor);
+	  }
+	  else {
+	    dc->setBackground(col);
+	    dc->setForeground(col);
+	  }
+	  dc->fillRectangle(xOffset, yOffset, ximg->getWidth(), ximg->getHeight());
+
+	  dc->drawImage(ximg, printX, printY);
+	}
+      }
+      break;
+    }
+    default:
+      break;
+    }
+
+
     c=HtmlObject_Tree_GetFirstChild(o);
     while(c) {
       _paintAt(dc, c, xOffset, yOffset, x, y, w, h);
@@ -484,6 +594,54 @@ HTML_FONT *FOX16_HtmlCtx::getFont(const char *fontName,
   assert(gui);
 
   return gui->getFont(fontName, fontSize, fontFlags);
+}
+
+
+
+HTML_IMAGE *FOX16_HtmlCtx::getImage(const char *fileName) {
+  GWEN_STRINGLIST *sl;
+
+  sl=HtmlCtx_GetMediaPaths(_context);
+  if (sl) {
+    GWEN_BUFFER *tbuf;
+    int rv;
+    FXImage *ximg;
+    HTML_IMAGE *img;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Directory_FindFileInPaths(sl, fileName, tbuf);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return NULL;
+    }
+
+    if (m_iconSource==NULL)
+      m_iconSource=new FXIconSource(FXApp::instance());
+
+    DBG_ERROR(0, "Loading [%s]", GWEN_Buffer_GetStart(tbuf));
+    ximg=m_iconSource->loadIconFile(GWEN_Buffer_GetStart(tbuf));
+    if (ximg==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not load icon [%s]", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+      return NULL;
+    }
+
+    ximg->create();
+    img=HtmlImage_new();
+    HtmlImage_SetImageName(img, GWEN_Buffer_GetStart(tbuf));
+    HtmlImage_SetWidth(img, ximg->getWidth());
+    HtmlImage_SetHeight(img, ximg->getHeight());
+
+    GWEN_INHERIT_SETDATA(HTML_IMAGE, FXImage, img, ximg,
+			 FOX16_HtmlCtxLinker::freeImageData);
+    GWEN_Buffer_free(tbuf);
+    return img;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No media paths in dialog");
+    return NULL;
+  }
 }
 
 

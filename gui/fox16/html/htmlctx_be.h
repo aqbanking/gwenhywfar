@@ -13,10 +13,12 @@
 
 #include "htmlfont_be.h"
 #include "htmlobject_be.h"
+#include "htmlimage_be.h"
 
 #include <gwen-gui-fox16/api.h>
 
 #include <gwenhywfar/xmlctx.h>
+#include <gwenhywfar/stringlist.h>
 
 
 #ifdef __cplusplus
@@ -41,6 +43,8 @@ typedef HTML_FONT* (*HTMLCTX_GET_FONT_FN)(GWEN_XML_CONTEXT *ctx,
 					  int fontSize,
 					  uint32_t fontFlags);
 
+typedef HTML_IMAGE* (*HTMLCTX_GET_IMAGE_FN)(GWEN_XML_CONTEXT *ctx, const char *imageName);
+
 
 
 FOX16GUI_API 
@@ -62,6 +66,12 @@ HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
 			   int fontSize,
 			   uint32_t fontFlags);
 
+/**
+ * The implementation must set width and height in the image returned.
+ */
+FOX16GUI_API 
+HTML_IMAGE *HtmlCtx_GetImage(GWEN_XML_CONTEXT *ctx, const char *imageName);
+
 FOX16GUI_API 
 HTML_PROPS *HtmlCtx_GetStandardProps(const GWEN_XML_CONTEXT *ctx);
 
@@ -75,6 +85,12 @@ int HtmlCtx_GetWidth(const GWEN_XML_CONTEXT *ctx);
 FOX16GUI_API 
 int HtmlCtx_GetHeight(const GWEN_XML_CONTEXT *ctx);
 
+
+FOX16GUI_API 
+GWEN_STRINGLIST *HtmlCtx_GetMediaPaths(const GWEN_XML_CONTEXT *ctx);
+
+FOX16GUI_API 
+void HtmlCtx_AddMediaPath(GWEN_XML_CONTEXT *ctx, const char *s);
 
 
 FOX16GUI_API 
@@ -93,6 +109,9 @@ HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *c
 FOX16GUI_API 
 HTMLCTX_GET_FONT_FN HtmlCtx_SetGetFontFn(GWEN_XML_CONTEXT *ctx,
 					 HTMLCTX_GET_FONT_FN fn);
+
+FOX16GUI_API 
+HTMLCTX_GET_IMAGE_FN HtmlCtx_SetGetImageFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_IMAGE_FN fn);
 
 #ifdef __cplusplus
 }
