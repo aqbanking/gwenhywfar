@@ -20,7 +20,7 @@
 #include "o_box_l.h"
 #include "o_word_l.h"
 #include "o_grid_l.h"
-#include "o_image_l.h"
+#include "o_image_be.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -355,6 +355,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     HtmlObject_SetProperties(o, pr);
     HtmlGroup_SetObject(gNew, o);
     HtmlProps_free(pr);
+  }
+  else if (strcasecmp(tagName, "html")==0 ||
+	   strcasecmp(tagName, "body")==0) {
   }
   else {
     DBG_WARN(GWEN_LOGDOMAIN,

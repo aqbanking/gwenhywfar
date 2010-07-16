@@ -88,21 +88,20 @@ int test2(int argc, char **argv) {
                              "<p>As you can see <font color=red>colors</font> can "
                              "be used.</p>"
                              "</html>",
-                             10,
+                             15,
                              0);
-  for (i1=1; i1<=10; i1++) {
-    char numbuf[128];
-
-    snprintf(numbuf, sizeof(numbuf)-1, "Step %d", (int)i1);
-    GWEN_Gui_ProgressLog(id1, GWEN_LoggerLevel_Notice, numbuf);
+  for (i1=1; i1<=15; i1++) {
+    GWEN_Gui_ProgressLog2(id1, GWEN_LoggerLevel_Notice,
+			  "Step %d: This is a another step in the test of progress widgets",
+                          (int) i1);
     id2=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
                                GWEN_GUI_PROGRESS_DELAY |
 			       GWEN_GUI_PROGRESS_SHOW_ABORT,
 			       "2nd progress",
 			       "Starting 2nd progress...",
-			       10,
+			       5,
 			       id1);
-    for (i2=1; i2<=10; i2++) {
+    for (i2=1; i2<=3; i2++) {
       sleep(1);
       fprintf(stderr, "Advancing %d/%d\n", (int)i1, (int)i2);
       rv=GWEN_Gui_ProgressAdvance(id2, i2);

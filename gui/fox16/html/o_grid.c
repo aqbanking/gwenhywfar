@@ -88,15 +88,12 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
       /* doesn't fit, so we need to adjust the columns */
       meanColumnWidth=w/xo->columns;
 
-
       /* reset full width of every column */
       for (i=0; i<xo->columns; i++)
 	fullw[i]=0;
       /* calculate full width of every column */
       c=HtmlObject_Tree_GetFirstChild(o);
       while(c) {
-	int k;
-  
 	i=HtmlObject_GridEntry_GetColumn(c);
 	k=HtmlObject_GetWidth(c);
 	if (k>fullw[i])
@@ -108,6 +105,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 	cw[i]=0;
 
       /* set fixed widths to those columns which are smaller than fullWidth/columns */
+      k=0;
       for (i=0; i<xo->columns; i++) {
 	int p;
 
@@ -117,7 +115,6 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 	  cw[i]=p;
 	}
       }
-
       /* now get the remaining width */
       j=0;
       k=w-k;
@@ -125,8 +122,6 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
         if (cw[i]==0)
 	  j+=fullw[i];
       }
-
-      /*DBG_ERROR(0, "Full width: %d, still needed space: %d, available space: %d", w, j, k);*/
 
       if (j>0) {
 	/* calculate percentual width of each remaining column */
@@ -174,7 +169,11 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
       y+=maxLineHeight+ROW_SPACING;
       x=COLUMN_SPACING/2;
       currentRow=r;
+      maxLineHeight=0;
     }
+
+    HtmlObject_SetWidth(c, cw[i]);
+    HtmlObject_Layout(c);
 
     /* place object */
     HtmlObject_SetX(c, x);
@@ -189,7 +188,6 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
     x+=cw[i]+COLUMN_SPACING;
     if (x>maxLineWidth)
       maxLineWidth=x;
-
     c=HtmlObject_Tree_GetNext(c);
   }
   y+=maxLineHeight+(ROW_SPACING/2);

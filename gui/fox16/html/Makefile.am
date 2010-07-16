@@ -30,7 +30,8 @@ iheader_HEADERS= \
  htmlfont_be.h  \
  htmlimage_be.h \
  htmlobject_be.h \
- htmlprops_be.h
+ htmlprops_be.h \
+ o_image_be.h
 
 noinst_HEADERS= \
  g_box_l.h \
@@ -56,7 +57,6 @@ noinst_HEADERS= \
  o_grid_p.h \
  o_gridentry_l.h \
  o_gridentry_p.h \
- o_image_l.h \
  o_image_p.h \
  o_word_l.h
 

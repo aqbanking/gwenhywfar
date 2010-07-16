@@ -14,7 +14,7 @@
 #include "fox16_htmlctx_p.hpp"
 #include "fox16_gui.hpp"
 #include "htmlctx_be.h"
-#include "o_image_l.h"
+#include "o_image_be.h"
 
 #include <assert.h>
 
@@ -456,6 +456,13 @@ void FOX16_HtmlCtx::_paintAt(FXDC *dc, HTML_OBJECT *o,
   if (printX<w && printX+objectW>=0 &&
       printY<h && printY+objectH>=0) {
     switch(HtmlObject_GetObjectType(o)) {
+#if 0
+    case HtmlObjectType_Grid:
+      dc->setForeground(FXRGB(255,0,0));
+      dc->fillRectangle(printX, printY,
+			HtmlObject_GetWidth(o),
+			HtmlObject_GetHeight(o));
+#endif
     case HtmlObjectType_Word: {
       HTML_PROPS *pr;
       HTML_FONT *fnt;
@@ -516,7 +523,7 @@ void FOX16_HtmlCtx::_paintAt(FXDC *dc, HTML_OBJECT *o,
 	    dc->setBackground(col);
 	    dc->setForeground(col);
 	  }
-	  dc->fillRectangle(xOffset, yOffset, ximg->getWidth(), ximg->getHeight());
+	  dc->fillRectangle(printX, printY, ximg->getWidth(), ximg->getHeight());
 
 	  dc->drawImage(ximg, printX, printY);
 	}

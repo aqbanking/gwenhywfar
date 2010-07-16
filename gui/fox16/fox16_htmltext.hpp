@@ -25,6 +25,9 @@ class FOX16GUI_API FOX16_HtmlText: public FXScrollArea {
 public:
 
   enum {
+    /** don't wrap the text. If this flag is given as parameter to the constructor
+     * then you'll have to insert line-breaks into the text yourself.
+     */
     FLAGS_NO_WORDWRAP = 0x00080000
   };
 

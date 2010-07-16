@@ -54,6 +54,9 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags) {
   xctx->objects=HtmlObject_Tree_new();
   xctx->mediaPaths=GWEN_StringList_new();
 
+  xctx->resolutionX=75;
+  xctx->resolutionY=75;
+
   /* create initial group */
   g=HtmlGroup_Box_new("HTML_ROOT", NULL, ctx);
   assert(g);
@@ -91,6 +94,54 @@ void HtmlCtx_FreeData(void *bp, void *p) {
   GWEN_StringList_free(xctx->mediaPaths);
 
   GWEN_FREE_OBJECT(xctx);
+}
+
+
+
+int HtmlCtx_GetResolutionX(const GWEN_XML_CONTEXT *ctx) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  return xctx->resolutionX;
+}
+
+
+
+void HtmlCtx_SetResolutionX(GWEN_XML_CONTEXT *ctx, int i) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  xctx->resolutionX=i;
+}
+
+
+
+int HtmlCtx_GetResolutionY(const GWEN_XML_CONTEXT *ctx) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  return xctx->resolutionY;
+}
+
+
+
+void HtmlCtx_SetResolutionY(GWEN_XML_CONTEXT *ctx, int i) {
+  HTML_XMLCTX *xctx;
+
+  assert(ctx);
+  xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
+  assert(xctx);
+
+  xctx->resolutionY=i;
 }
 
 
@@ -315,15 +366,14 @@ void HtmlCtx_SetStandardProps(GWEN_XML_CONTEXT *ctx, HTML_PROPS *pr) {
   HtmlProps_free(xctx->standardProps);
   xctx->standardProps=pr;
 
-  if (xctx->currentGroup && HtmlGroup_GetParent(xctx->currentGroup)==NULL)
-    HtmlGroup_SetProperties(xctx->currentGroup, pr);
-  o=HtmlObject_Tree_GetFirst(xctx->objects);
-  if (o && HtmlObject_GetProperties(o)==NULL)
-    HtmlObject_SetProperties(o, pr);
+  if (pr) {
+    if (xctx->currentGroup && HtmlGroup_GetParent(xctx->currentGroup)==NULL)
+      HtmlGroup_SetProperties(xctx->currentGroup, pr);
+    o=HtmlObject_Tree_GetFirst(xctx->objects);
+    if (o && HtmlObject_GetProperties(o)==NULL)
+      HtmlObject_SetProperties(o, pr);
+  }
 }
-
-
-
 
 
 
@@ -706,6 +756,7 @@ void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
   /* create initial group */
   g=HtmlGroup_Box_new("HTML_ROOT", NULL, ctx);
   assert(g);
+
   HtmlGroup_SetProperties(g, xctx->standardProps);
   o=HtmlObject_Box_new(ctx);
   HtmlObject_SetProperties(o, xctx->standardProps);

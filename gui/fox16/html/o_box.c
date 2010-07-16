@@ -18,13 +18,14 @@
 
 
 
-#define LINE_EXTRA_OFFSET_DIV 6
+#define LINE_EXTRA_OFFSET_DIV 20
 
 
 
 static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
   HTML_OBJECT *c;
   HTML_OBJECT *cFirstInLine;
+  GWEN_XML_CONTEXT *ctx;
   int w;
   int h;
   int x=0;
@@ -32,9 +33,15 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
   int maxX=0;
   int lineHeight=0;
   int rv;
+  int resX;
+  int resY;
 
   w=HtmlObject_GetWidth(o);
   h=HtmlObject_GetHeight(o);
+
+  ctx=HtmlObject_GetXmlCtx(o);
+  resX=HtmlCtx_GetResolutionX(ctx);
+  resY=HtmlCtx_GetResolutionY(ctx);
 
   c=HtmlObject_Tree_GetFirstChild(o);
   cFirstInLine=c;
@@ -70,7 +77,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       }
 
       x=0;
-      y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
+      y+=lineHeight+(resY/LINE_EXTRA_OFFSET_DIV);
       lineHeight=0;
       cFirstInLine=HtmlObject_Tree_GetNext(c);
     }
@@ -123,7 +130,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 	}
 
 	x=0;
-	y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
+	y+=lineHeight+(resY/LINE_EXTRA_OFFSET_DIV);
         lineHeight=0;
 	cFirstInLine=HtmlObject_Tree_GetNext(c);
       }
@@ -138,30 +145,31 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 
     x+=HtmlObject_GetWidth(c);
 
-    if ((HtmlObject_GetFlags(c) & HTML_OBJECT_FLAGS_END_WITH_NEWLINE) &&
-	x>0) {
-      /* next line */
-      if (x>maxX)
-	maxX=x;
+    if ((HtmlObject_GetFlags(c) & HTML_OBJECT_FLAGS_END_WITH_NEWLINE)) {
+      if (x>0) {
+	/* next line */
+	if (x>maxX)
+	  maxX=x;
 
-      /* possibly justify */
-      if (x<w) {
-	int diff=0;
+	/* possibly justify */
+	if (x<w) {
+	  int diff=0;
 
-	if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
-	  diff=w-x;
-	else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
-	  diff=(w-x)>>1;
-	}
-	if (diff) {
-	  HTML_OBJECT *ct;
+	  if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+	    diff=w-x;
+	  else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+	    diff=(w-x)>>1;
+	  }
+	  if (diff) {
+	    HTML_OBJECT *ct;
 
-	  ct=cFirstInLine;
-	  while(ct) {
-	    HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
-	    if (ct==c)
-	      break;
-	    ct=HtmlObject_Tree_GetNext(ct);
+	    ct=cFirstInLine;
+	    while(ct) {
+	      HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+	      if (ct==c)
+		break;
+	      ct=HtmlObject_Tree_GetNext(ct);
+	    }
 	  }
 	}
       }
@@ -176,7 +184,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 	fnt=HtmlProps_GetFont(pr);
 	lineHeight=HtmlCtx_GetTextHeight(HtmlObject_GetXmlCtx(o), fnt, "ABCD");
       }
-      y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
+      y+=lineHeight+(resY/LINE_EXTRA_OFFSET_DIV);
       lineHeight=0;
       cFirstInLine=HtmlObject_Tree_GetNext(c);
     }
@@ -210,7 +218,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
     }
 
     x=0;
-    y+=lineHeight+(lineHeight/LINE_EXTRA_OFFSET_DIV);
+    y+=lineHeight+(resY/LINE_EXTRA_OFFSET_DIV);
     lineHeight=0;
   }
 

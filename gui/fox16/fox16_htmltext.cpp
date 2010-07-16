@@ -95,11 +95,11 @@ void FOX16_HtmlText::calcDefaultDims() {
   w=wNeeded;
   if (w>m_maxDefaultWidth)
     w=m_maxDefaultWidth;
-  if (w<width)
-    w=width;
-  if (w<wNeeded) {
+  if (w<viewport_w)
+    w=viewport_w;
+  //if (w<wNeeded) {
     m_htmlCtx->layout(w-BORDER*2, -1);
-  }
+  //}
   m_defaultWidth=m_htmlCtx->getWidth();
   m_defaultHeight=m_htmlCtx->getHeight();
   m_haveDefaultDims=true;
@@ -110,6 +110,10 @@ void FOX16_HtmlText::calcDefaultDims() {
 FXint FOX16_HtmlText::getContentWidth() {
   if (m_htmlCtx==NULL)
     updateHtml();
+
+  if (!m_haveDefaultDims)
+    calcDefaultDims();
+
   m_htmlCtx->layout(viewport_w-(marginleft+marginright+barwidth), -1);
   return m_htmlCtx->getWidth();
 }
@@ -119,6 +123,10 @@ FXint FOX16_HtmlText::getContentWidth() {
 FXint FOX16_HtmlText::getContentHeight() {
   if (m_htmlCtx==NULL)
     updateHtml();
+
+  if (!m_haveDefaultDims)
+    calcDefaultDims();
+
   return m_htmlCtx->getHeight();
 }
 

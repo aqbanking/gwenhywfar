@@ -87,6 +87,19 @@ int HtmlCtx_GetHeight(const GWEN_XML_CONTEXT *ctx);
 
 
 FOX16GUI_API 
+int HtmlCtx_GetResolutionX(const GWEN_XML_CONTEXT *ctx);
+
+FOX16GUI_API 
+void HtmlCtx_SetResolutionX(GWEN_XML_CONTEXT *ctx, int i);
+
+FOX16GUI_API 
+int HtmlCtx_GetResolutionY(const GWEN_XML_CONTEXT *ctx);
+
+FOX16GUI_API 
+void HtmlCtx_SetResolutionY(GWEN_XML_CONTEXT *ctx, int i);
+
+
+FOX16GUI_API 
 GWEN_STRINGLIST *HtmlCtx_GetMediaPaths(const GWEN_XML_CONTEXT *ctx);
 
 FOX16GUI_API 

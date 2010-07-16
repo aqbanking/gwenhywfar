@@ -100,6 +100,7 @@ HTML_PROPS *HtmlObject_GetProperties(const HTML_OBJECT *o) {
 void HtmlObject_SetProperties(HTML_OBJECT *o, HTML_PROPS *pr) {
   assert(o);
   assert(o->refCount);
+
   HtmlProps_Attach(pr);
   HtmlProps_free(o->properties);
   o->properties=pr;
@@ -262,8 +263,11 @@ int HtmlObject_Layout(HTML_OBJECT *o) {
   assert(o->refCount);
   if (o->layoutFn)
     return o->layoutFn(o);
-  else
+  else {
+    o->width=0;
+    o->height=0;
     return 0;
+  }
 }
 
 

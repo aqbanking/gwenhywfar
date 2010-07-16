@@ -23,6 +23,9 @@ struct HTML_XMLCTX {
   char *currentTagName;
   GWEN_DB_NODE *dbCurrentAttribs;
 
+  int resolutionX;
+  int resolutionY;
+
   HTML_PROPS *standardProps;
   GWEN_STRINGLIST *mediaPaths;
 

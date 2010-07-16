@@ -12,7 +12,7 @@
 #define HTMLOBJECT_IMAGE_P_H
 
 
-#include "o_image_l.h"
+#include "o_image_be.h"
 
 
 typedef struct OBJECT_IMAGE OBJECT_IMAGE;
