@@ -1342,6 +1342,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/crypttoken/Makefile
                  src/gui/Makefile
                  src/sio/Makefile
+                 src/html/Makefile
                  src/os/Makefile
                  src/os/posix/Makefile
                  src/os/posix/system.h
@@ -1382,7 +1383,6 @@ AC_CONFIG_FILES([Doxyfile
                  gui/qt4/gwengui-qt4.pc
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
-                 gui/fox16/html/Makefile
                  gui/gtk2/Makefile
                  gui/testdialogs/Makefile
 		])
@@ -1395,7 +1395,7 @@ AC_OUTPUT
 #
 # create header directory, make symlinks
 #
-HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/sio src/os src/os/${GWEN_OS} src/gui"
+HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/sio src/os src/os/${GWEN_OS} src/gui src/html"
 HEADER_DIRS="${HEADER_DIRS} src/parser"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`

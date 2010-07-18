@@ -1,5 +1,3 @@
-SUBDIRS=html
-
 INCLUDES=-I$(gwenhywfar_symlinkdir) $(fox_includes) -Ihtml
 
 AM_CPPFLAGS= @visibility_cflags@
@@ -20,8 +18,7 @@ noinst_HEADERS=\
   fox16_htmlctx_p.hpp \
   fox16_htmlctx.hpp
 
-libgwengui_fox16_la_LIBADD=$(fox_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname) \
-  html/libfxhtml.la
+libgwengui_fox16_la_LIBADD=$(fox_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname)
 
 libgwengui_fox16_la_SOURCES=\
   cppdialog.cpp \
@@ -49,6 +46,5 @@ iheader_HEADERS=\
 noinst_PROGRAMS=libtest
 libtest_SOURCES=libtest.cpp
 libtest_LDADD=libgwengui-fox16.la $(fox_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname) \
- $(builddir)/../testdialogs/libgwengui-test.la \
-  html/libfxhtml.la
+ $(builddir)/../testdialogs/libgwengui-test.la
 

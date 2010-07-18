@@ -14,8 +14,6 @@
 #include <gwenhywfar/list1.h>
 #include <gwenhywfar/inherit.h>
 
-#include <gwen-gui-fox16/api.h>
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,37 +21,37 @@ extern "C" {
 
 
 typedef struct HTML_IMAGE HTML_IMAGE;
-GWEN_INHERIT_FUNCTION_LIB_DEFS(HTML_IMAGE, FOX16GUI_API)
-GWEN_LIST_FUNCTION_LIB_DEFS(HTML_IMAGE, HtmlImage, FOX16GUI_API)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(HTML_IMAGE, GWENHYWFAR_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(HTML_IMAGE, HtmlImage, GWENHYWFAR_API)
 
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 HTML_IMAGE *HtmlImage_new();
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 void HtmlImage_free(HTML_IMAGE *img);
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 void HtmlImage_Attach(HTML_IMAGE *img);
 
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 const char *HtmlImage_GetImageName(const HTML_IMAGE *img);
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 void HtmlImage_SetImageName(HTML_IMAGE *img, const char *s);
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 int HtmlImage_GetWidth(const HTML_IMAGE *img);
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 void HtmlImage_SetWidth(HTML_IMAGE *img, int i);
 
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 int HtmlImage_GetHeight(const HTML_IMAGE *img);
 
-FOX16GUI_API 
+GWENHYWFAR_API 
 void HtmlImage_SetHeight(HTML_IMAGE *img, int i);
 
 

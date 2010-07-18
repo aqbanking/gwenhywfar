@@ -1,12 +1,12 @@
 INCLUDES=-I$(gwenhywfar_symlinkdir)
 
 AM_CPPFLAGS= @visibility_cflags@
-DEFS+=-DBUILDING_FOX16_GUI -DPACKAGE=\"$(PACKAGE)\"
+AM_CFLAGS=@visibility_cflags@ 
+DEFS+=-DPACKAGE=\"$(PACKAGE)\" -DBUILDING_GWENHYWFAR
 
 
-noinst_LTLIBRARIES=libfxhtml.la
-libfxhtml_la_LIBADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
-libfxhtml_la_SOURCES=\
+noinst_LTLIBRARIES=libgwenhtml.la
+libgwenhtml_la_SOURCES=\
  g_box.c \
  g_generic.c \
  g_table.c \
@@ -24,7 +24,7 @@ libfxhtml_la_SOURCES=\
  o_image.c \
  o_word.c
 
-iheaderdir=${includedir}/gwen-gui-fox16/html
+iheaderdir=${includedir}/gwenhywfar
 iheader_HEADERS= \
  htmlctx_be.h \
  htmlfont_be.h  \
@@ -61,7 +61,7 @@ noinst_HEADERS= \
  o_word_l.h
 
 
-noinst_PROGRAMS=libtest
-libtest_SOURCES=libtest.c
-libtest_LDADD=libfxhtml.la
+#noinst_PROGRAMS=libtest
+#libtest_SOURCES=libtest.c
+#libtest_LDADD=libgwenhtml.la
 

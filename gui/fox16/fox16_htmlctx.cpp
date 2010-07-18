@@ -13,8 +13,6 @@
 
 #include "fox16_htmlctx_p.hpp"
 #include "fox16_gui.hpp"
-#include "htmlctx_be.h"
-#include "o_image_be.h"
 
 #include <assert.h>
 
@@ -22,7 +20,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui_be.h>
 #include <gwenhywfar/i18n.h>
-
+#include <gwenhywfar/htmlctx_be.h>
+#include <gwenhywfar/o_image_be.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/syncio_memory.h>

@@ -13,7 +13,7 @@
 
 #include <gwen-gui-fox16/cppgui.hpp>
 
-#include <gwen-gui-fox16/html/htmlfont_be.h>
+#include <gwenhywfar/htmlfont_be.h>
 
 
 #include <fx.h>

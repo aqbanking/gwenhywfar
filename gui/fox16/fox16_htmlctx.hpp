@@ -12,9 +12,9 @@
 
 
 #include <gwen-gui-fox16/cppgui.hpp>
-#include <gwen-gui-fox16/html/htmlobject_be.h>
-#include <gwen-gui-fox16/html/htmlfont_be.h>
-#include <gwen-gui-fox16/html/htmlctx_be.h>
+#include <gwenhywfar/htmlobject_be.h>
+#include <gwenhywfar/htmlfont_be.h>
+#include <gwenhywfar/htmlctx_be.h>
 
 #include <fx.h>
 
