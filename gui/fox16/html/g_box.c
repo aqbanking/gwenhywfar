@@ -387,35 +387,39 @@ int HtmlGroup_Box_AddData(HTML_GROUP *g, const char *data) {
   assert(g);
 
   ctx=HtmlGroup_GetXmlContext(g);
+  if (data && *data) {
+    buf=GWEN_Buffer_new(0, strlen(data), 0, 1);
+    rv=HtmlCtx_SanitizeData(ctx, data, buf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    if (GWEN_Buffer_GetUsedBytes(buf)) {
+      s=(uint8_t*)GWEN_Buffer_GetStart(buf);
 
-  buf=GWEN_Buffer_new(0, strlen(data), 0, 1);
-  rv=HtmlCtx_SanitizeData(ctx, data, buf);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      while(*s) {
+	uint8_t *t;
+	uint8_t c;
+    
+	/* find begin of word */
+	while(*s && isspace(*s))
+	  s++;
+    
+	/* find end of word */
+	t=s;
+	while(*t && !isspace(*t))
+	  t++;
+	c=*t;
+	*t=0;
+	o=HtmlObject_Word_new(ctx, (const char*) s);
+	HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
+	HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+	*t=c;
+	s=t;
+      }
+    }
     GWEN_Buffer_free(buf);
-    return rv;
-  }
-  s=(uint8_t*)GWEN_Buffer_GetStart(buf);
-
-  while(*s) {
-    uint8_t *t;
-    uint8_t c;
-
-    /* find begin of word */
-    while(*s && isspace(*s))
-      s++;
-
-    /* find end of word */
-    t=s;
-    while(*t && !isspace(*t))
-      t++;
-    c=*t;
-    *t=0;
-    o=HtmlObject_Word_new(ctx, (const char*) s);
-    HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
-    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
-    *t=c;
-    s=t;
   }
 
   return 0;

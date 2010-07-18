@@ -376,11 +376,15 @@ int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
 
   if (GWEN_Buffer_GetUsedBytes(dbuf)) {
     int rv;
+    const char *s;
 
-    rv=GWEN_XmlCtx_AddData(ctx, GWEN_Buffer_GetStart(dbuf));
-    if (rv) {
-      GWEN_Buffer_free(dbuf);
-      return rv;
+    s=GWEN_Buffer_GetStart(dbuf);
+    if (*s) {
+      rv=GWEN_XmlCtx_AddData(ctx, s);
+      if (rv) {
+	GWEN_Buffer_free(dbuf);
+	return rv;
+      }
     }
   }
   GWEN_Buffer_free(dbuf);

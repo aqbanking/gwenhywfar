@@ -291,6 +291,10 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_BAD_DATA;
     }
+    if (GWEN_Buffer_GetUsedBytes(buf)==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Empty data.");
+      return 0;
+    }
   
     dst=(uint8_t*)GWEN_Buffer_GetStart(buf);
     src=dst;
@@ -753,6 +757,7 @@ void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
 
   /* reset */
   HtmlObject_Tree_Clear(xctx->objects);
+
   /* create initial group */
   g=HtmlGroup_Box_new("HTML_ROOT", NULL, ctx);
   assert(g);
@@ -764,19 +769,24 @@ void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
   HtmlObject_Tree_Add(xctx->objects, o);
   HtmlCtx_SetCurrentGroup(ctx, g);
 
-  rv=GWEN_XMLContext_ReadFromString(ctx, s);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  if (s && *s) {
+    rv=GWEN_XMLContext_ReadFromString(ctx, s);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    }
   }
 
 #if 0
   fprintf(stderr, "============ Objects:\n");
+  fprintf(stderr, "String: [%s]\n", s);
   o=HtmlObject_Tree_GetFirst(xctx->objects);
   while(o) {
-    if (HtmlObject_GetObjectType(o)==HtmlObjectType_Word) {
-      fprintf(stderr, "Object: [%s]\n", HtmlObject_GetText(o));
+    const char *xx;
 
-    }
+    xx=HtmlObject_GetText(o);
+    fprintf(stderr, "Object(%d): [%s]\n",
+	    HtmlObject_GetObjectType(o),
+	    xx?xx:"(NULL)");
     o=HtmlObject_Tree_GetBelow(o);
   }
 #endif
