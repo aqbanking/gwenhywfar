@@ -147,6 +147,41 @@ void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
 
 
 
+GWEN_STRINGLIST *GWEN_StringList_fromTabString(const char *s, int checkDup) {
+  GWEN_STRINGLIST *sl;
+
+  sl=GWEN_StringList_new();
+  if (s && *s) {
+    while(*s) {
+      const char *t;
+      char *tmpStr;
+  
+      t=strchr(s, '\t');
+      if (t) {
+	int len;
+  
+	len=(t-s);
+	tmpStr=(char*) malloc(len+1);
+	assert(tmpStr);
+	memmove(tmpStr, s, len);
+	tmpStr[len]=0;
+	/* add partial string, take it over */
+	GWEN_StringList_AppendString(sl, tmpStr, 1, checkDup);
+	s=t+1;
+      }
+      else {
+	/* just add the remaining string (don't take over, copy!) */
+	GWEN_StringList_AppendString(sl, s, 0, checkDup);
+	break;
+      }
+    }
+  }
+
+  return sl;
+}
+
+
+
 void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
 				 GWEN_STRINGLISTENTRY *se){
   GWEN_STRINGLISTENTRY *curr;
