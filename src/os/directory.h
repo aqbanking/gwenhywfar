@@ -296,6 +296,19 @@ int GWEN_Directory_GetDirEntries(const char *folder,
 				 const char *mask);
 
 
+/**
+ * This function adds all matching files to the given string list recursively.
+ *
+ * @param folder folder to inspect (including sub-folders)
+ * @param sl string list to add new entries to
+ * @param mask if omitted, all entries match (wildcards and jokers allowed)
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
+					       GWEN_STRINGLIST *sl,
+					       const char *mask);
+
+
 /*@}*/ /* defgroup */
 
 

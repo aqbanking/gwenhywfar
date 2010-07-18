@@ -554,5 +554,73 @@ int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
 
 
 
+int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
+					       GWEN_STRINGLIST *sl,
+					       const char *mask) {
+  GWEN_DIRECTORY *d;
+  int rv;
+  char buffer[256];
+  GWEN_BUFFER *pbuf;
+  uint32_t pos;
+  GWEN_STRINGLIST *folderList;
+
+  folderList=GWEN_StringList_new();
+
+  d=GWEN_Directory_new();
+  rv=GWEN_Directory_Open(d, folder);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Directory_free(d);
+    GWEN_StringList_free(folderList);
+    return rv;
+  }
+
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(pbuf, folder);
+  GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
+  pos=GWEN_Buffer_GetPos(pbuf);
+
+  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer)-2)) {
+    if (strcmp(buffer, ".")!=0 &&
+	strcmp(buffer, "..")!=0 &&
+	(mask==NULL ||
+	 GWEN_Text_ComparePattern(buffer, mask, 0)!=-1)) {
+      struct stat st;
+
+      GWEN_Buffer_AppendString(pbuf, buffer);
+      if (stat(GWEN_Buffer_GetStart(pbuf), &st)==0) {
+	if (S_ISDIR(st.st_mode))
+          /* add folders to the folder list */
+	  GWEN_StringList_AppendString(folderList, GWEN_Buffer_GetStart(pbuf), 0, 1);
+	else
+	  GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(pbuf), 0, 1);
+      }
+      GWEN_Buffer_Crop(pbuf, 0, pos);
+    }
+  }
+
+  GWEN_Directory_Close(d);
+  GWEN_Directory_free(d);
+
+  if (GWEN_StringList_Count(folderList)) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(folderList);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s)
+	GWEN_Directory_GetMatchingFilesRecursively(s, sl, mask);
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+  GWEN_StringList_free(folderList);
+
+  return 0;
+}
+
+
+
 
 
