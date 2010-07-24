@@ -8,6 +8,8 @@
  ***************************************************************************/
 
 
+#include "config.h" /* for OS_WIN32 */
+
 #include "gtk2_gui.h"
 #include "../testdialogs/dlg_test.h"
 
