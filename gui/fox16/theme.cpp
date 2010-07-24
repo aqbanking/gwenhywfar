@@ -109,7 +109,7 @@ long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr){
     dc.drawRectangle(2,0,width-5,0);
     dc.drawRectangle(2,height-1,width-5,height-1);
     dc.drawRectangle(0,2,0,height-5);
-    dc.drawRectangle(width-1,2,0,height-5);
+    dc.drawRectangle(width-1,2,width-1,height-5);
     dc.drawPoints(bordercorners,4);
     dc.setForeground(shade);
     dc.drawPoints(bordershade,16);
@@ -129,7 +129,7 @@ long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr){
     dc.drawRectangle(2,0,width-5,0);
     dc.drawRectangle(2,height-1,width-5,height-1);
     dc.drawRectangle(0,2,0,height-5);
-    dc.drawRectangle(width-1,2,0,height-5);
+    dc.drawRectangle(width-1,2,width-1,height-5);
     dc.drawPoints(bordercorners,4);
     dc.setForeground(shade);
     dc.drawPoints(bordershade,16);
