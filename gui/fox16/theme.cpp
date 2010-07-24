@@ -1,3 +1,11 @@
+/* These widgets have initially been created by Martin Oberzalek who gave them into
+ * the public domain via an email to the mailing list foxgui-users on 17th of June, 2010
+ * ("here the source. Free to use for alll.").
+ * I (Martin Preuss) adapted them to be usable with FOX 1.6 and also added some widgets of
+ * my own (for now: ThemeHeaderItem).
+ */
+
+
 #include "theme.h"
 
 #define ICON_SPACING  4

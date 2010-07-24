@@ -11,6 +11,11 @@
 
 #include <fx.h>
 
+/** This header is only needed for the definition of "FOX16GUI_API" which is
+ * used in the declaration of all exported classes and methods.
+ * If you want to use these themed widgets in your own projects you should remove
+ * this include here and all occurrences of "FOX16GUI_API".
+ */
 #include <gwen-gui-fox16/fox16_gui.hpp>
 
 
