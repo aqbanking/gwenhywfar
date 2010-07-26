@@ -29,7 +29,7 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=99
-GWENHYWFAR_VERSION_PATCHLEVEL=13
+GWENHYWFAR_VERSION_PATCHLEVEL=14
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="beta"
@@ -42,7 +42,7 @@ GWENHYWFAR_VERSION_TAG="beta"
 #
 GWENHYWFAR_SO_CURRENT="59"
 GWENHYWFAR_SO_AGE="0"
-GWENHYWFAR_SO_REVISION="13"
+GWENHYWFAR_SO_REVISION="14"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -1490,21 +1490,6 @@ for d in gui/fox16; do
     esac
   done
 done
-
-mkdir -p gwenhywfar4/gwen-gui-fox16/html
-for d in gui/fox16/html; do
-  hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
-  for f in ${hfiles}; do
-    case ${f} in
-      *_l.h | *_p.h)
-      	 ;;
-      *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-fox16/html/${f}"
-         ;;
-    esac
-  done
-done
-
 
 
 # gtk2
