@@ -45,11 +45,6 @@
 
 #ifdef OS_WIN32
 # include <windows.h>
-# define DIRSEP "\\"
-# define DIRSEP_C '\\'
-#else
-# define DIRSEP "/"
-# define DIRSEP_C '/'
 #endif
 
 
@@ -179,8 +174,8 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
 
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_AppendString(buf, cwd);
-      if (*pathValue!=DIRSEP_C)
-	GWEN_Buffer_AppendString(buf, DIRSEP);
+      if (*pathValue!=GWEN_DIR_SEPARATOR)
+	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
       GWEN_Buffer_AppendString(buf, pathValue);
       rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
 				  GWEN_Buffer_GetStart(buf));
@@ -207,8 +202,8 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
 
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_AppendString(buf, cwd);
-      if (*pathValue!=DIRSEP_C)
-	GWEN_Buffer_AppendString(buf, DIRSEP);
+      if (*pathValue!=GWEN_DIR_SEPARATOR)
+	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
       GWEN_Buffer_AppendString(buf, pathValue);
       DBG_INFO(GWEN_LOGDOMAIN,
 	       "Adding path [%s]",
@@ -233,8 +228,8 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
     }
     buf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(buf, cwd);
-    if (*pathValue!=DIRSEP_C)
-      GWEN_Buffer_AppendString(buf, DIRSEP);
+    if (*pathValue!=GWEN_DIR_SEPARATOR)
+      GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
     GWEN_Buffer_AppendString(buf, pathValue);
     rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
 				GWEN_Buffer_GetStart(buf));
@@ -474,7 +469,7 @@ int GWEN_PathManager_FindFile(const char *destLib,
 	    FILE *f;
 	
 	    GWEN_Buffer_AppendString(tbuf, s);
-	    GWEN_Buffer_AppendString(tbuf, DIRSEP);
+	    GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
 	    GWEN_Buffer_AppendString(tbuf, fileName);
 	    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
 		      GWEN_Buffer_GetStart(tbuf));
@@ -501,6 +496,59 @@ int GWEN_PathManager_FindFile(const char *destLib,
 
   DBG_INFO(GWEN_LOGDOMAIN, "File \"%s\" not found", fileName);
   return GWEN_ERROR_NOT_FOUND;
+}
+
+
+
+int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
+						 const char *pathName,
+						 const char *subFolderName,
+						 GWEN_STRINGLIST *sl,
+						 const char *mask) {
+  GWEN_DB_NODE *dbT;
+
+  assert(gwen__paths);
+  dbT=GWEN_DB_GetGroup(gwen__paths, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                       destLib);
+  if (dbT) {
+    dbT=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                         pathName);
+    if (dbT) {
+      int i;
+      const char *s;
+      GWEN_DB_NODE *dbN;
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+      /* check all paths */
+      dbN=GWEN_DB_FindFirstGroup(dbT, "pair");
+      while(dbN) {
+        for (i=0; ; i++) {
+          s=GWEN_DB_GetCharValue(dbN, "path", i, 0);
+          if (!s)
+	    break;
+	  else {
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    if (subFolderName && *subFolderName) {
+	      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+	      GWEN_Buffer_AppendString(tbuf, subFolderName);
+	    }
+
+	    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
+		      GWEN_Buffer_GetStart(tbuf));
+	    GWEN_Directory_GetMatchingFilesRecursively(GWEN_Buffer_GetStart(tbuf), sl, mask);
+	    GWEN_Buffer_Reset(tbuf);
+	  }
+	}
+
+	dbN=GWEN_DB_FindNextGroup(dbN, "pair");
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+  }
+
+  return 0;
 }
 
 

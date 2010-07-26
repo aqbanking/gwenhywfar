@@ -313,7 +313,7 @@ GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
 
 
 /**
- * This functions tries to find a given file using the all
+ * This functions tries to find a given file using all
  * path entries under the registered @c pathName.
  *
  * @param destLib The name of the library that this path is supposed to
@@ -334,6 +334,30 @@ int GWEN_PathManager_FindFile(const char *destLib,
 			      const char *pathName,
 			      const char *fileName,
 			      GWEN_BUFFER *fbuf);
+
+/**
+ * This function calls @ref GWEN_Directory_GetMatchingFilesRecursively() on every
+ * path entry under the registered @c pathName.
+ *
+ * @return 0 if ok, error code on error
+ *
+ * @param destLib The name of the library that this path is supposed to
+ * belong to.
+ *
+ * @param pathName A string identifier for this registered path.
+ *
+ * @param subFolderName if given then this folder name is appended to every path under
+ * the registered @c pathName before caling @ref GWEN_Directory_GetMatchingFilesRecursively()
+ * on it. You can use this parameter to search only in specific sub folders of the paths.
+ *
+ * @param sl string list to receive the paths of all matching files
+ */
+GWENHYWFAR_API
+int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
+						 const char *pathName,
+						 const char *subFolderName,
+						 GWEN_STRINGLIST *sl,
+						 const char *mask);
 
 /*@}*/
 
