@@ -174,6 +174,8 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 				    int index,
 				    int value,
 				    int doSignal) {
+  DBG_DEBUG(GWEN_LOGDOMAIN, "SetIntProperty([%s], %d)", GWEN_Widget_GetName(w), value);
+
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeUnknown:
     return GWEN_ERROR_GENERIC;
@@ -190,8 +192,14 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
       switch(prop) {
       case GWEN_DialogProperty_Value:
-	f->setCurrentItem(value, doSignal?TRUE:FALSE);
-	return 0;
+	if (value<f->getNumItems()) {
+	  f->setCurrentItem(value, doSignal?TRUE:FALSE);
+	  return 0;
+	}
+	else {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range in widget [%s]", value, GWEN_Widget_GetName(w));
+          return GWEN_ERROR_INVALID;
+	}
 
       case GWEN_DialogProperty_ClearValues:
 	f->clearItems();
