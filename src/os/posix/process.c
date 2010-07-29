@@ -275,6 +275,11 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   } /* while */
   GWEN_Buffer_free(wbuf);
   argv[argc]=0;
+
+  /* clear environment if requested */
+  if (pr->flags & GWEN_PROCESS_FLAGS_CLEARENV)
+    clearenv();
+
   /* parameters ready, exec */
   execvp(prg, argv);
   /* if we reach this point an error occurred */
