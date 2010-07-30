@@ -29,6 +29,7 @@
 
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list1.h>
+#include <gwenhywfar/list2.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/db.h>
 
@@ -53,6 +54,7 @@ extern "C" {
 typedef struct GWEN_DIALOG GWEN_DIALOG;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWENHYWFAR_API)
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWEN_Dialog, GWENHYWFAR_API)
+GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWEN_Dialog, GWENHYWFAR_API)
 
 
 #define GWEN_WIDGET_FLAGS_NONE              0x00000000L

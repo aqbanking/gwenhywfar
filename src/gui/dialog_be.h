@@ -31,6 +31,7 @@
 #include <gwenhywfar/widget_be.h>
 #include <gwenhywfar/stringlist.h>
 
+#include <stdio.h>
 
 
 #ifdef __cplusplus
@@ -125,6 +126,9 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 GWENHYWFAR_API
 GWEN_DIALOG *GWEN_Dialog_GetParentDialog(const GWEN_DIALOG *dlg);
 
+
+GWENHYWFAR_API
+void GWEN_Dialog_Dump(const GWEN_DIALOG *dlg, FILE *f, unsigned int indent);
 
 #ifdef __cplusplus
 }
