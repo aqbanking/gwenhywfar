@@ -146,6 +146,13 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
 GWENHYWFAR_API int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
                                              const char *s);
 
+/**
+ * Returns the position of the given string within the stringlist.
+ *
+ * @return position, -1 if not found
+ */
+GWENHYWFAR_API int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s);
+
 
 /** Traverses the list, calling the callback function 'func' on
  * each list element.  Traversal will stop when 'func' returns a

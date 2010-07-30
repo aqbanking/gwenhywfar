@@ -403,6 +403,38 @@ int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
 
 
 
+int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s){
+  GWEN_STRINGLISTENTRY *se;
+  int i;
+
+  assert(sl);
+  se=sl->first;
+  if (sl->senseCase) {
+    i=0;
+    while(se) {
+      if (strcmp(se->data, s)==0) {
+	return i;
+      }
+      i++;
+      se=se->next;
+    } /* while */
+    return -1;
+  }
+  else {
+    i=0;
+    while(se) {
+      if (strcasecmp(se->data, s)==0) {
+	return i;
+      }
+      i++;
+      se=se->next;
+    } /* while */
+    return -1;
+  }
+}
+
+
+
 GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl){
   GWEN_STRINGLISTENTRY *se;
   GWEN_STRINGLIST *newsl;
