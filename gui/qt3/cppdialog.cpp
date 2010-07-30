@@ -147,6 +147,10 @@ CppDialog::~CppDialog() {
 
 CppDialog *CppDialog::getDialog(GWEN_DIALOG *dlg) {
   CppDialog *xdlg;
+  GWEN_DIALOG *pdlg;
+
+  while( (pdlg=GWEN_Dialog_GetParentDialog(dlg)) )
+    dlg=pdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, CppDialog, dlg);
