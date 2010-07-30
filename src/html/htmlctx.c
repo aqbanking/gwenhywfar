@@ -388,7 +388,7 @@ int HtmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
   xctx=GWEN_INHERIT_GETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx);
   assert(xctx);
 
-  DBG_INFO(GWEN_LOGDOMAIN, "Starting tag [%s]", tagName);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Starting tag [%s]", tagName);
 
   /* store for later, do nothing more here */
   HtmlCtx_SetCurrentTagName(ctx, tagName);
@@ -409,7 +409,7 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 
   if (closing) {
     /* just ignore empty tags which are closed immediately */
-    DBG_INFO(GWEN_LOGDOMAIN, "Closing empty tag [%s]",
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Closing empty tag [%s]",
 	     (xctx->currentTagName)?xctx->currentTagName:"<noname>");
     return 0;
   }
@@ -419,14 +419,14 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
     return GWEN_ERROR_BAD_DATA;
   }
 
-  DBG_INFO(GWEN_LOGDOMAIN, "Completed tag [%s]", xctx->currentTagName);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Completed tag [%s]", xctx->currentTagName);
 
   if (xctx->currentGroup) {
     if (*(xctx->currentTagName)=='/') {
       int rv;
 
       /* it is a closing tag, call EndTagFn */
-      DBG_INFO(GWEN_LOGDOMAIN,
+      DBG_DEBUG(GWEN_LOGDOMAIN,
 	       "Calling %s->EndTag(%s)",
 	       HtmlGroup_GetGroupName(xctx->currentGroup),
 	       xctx->currentTagName);
@@ -449,7 +449,7 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 	gParent=HtmlGroup_GetParent(g);
 	xctx->currentGroup=gParent;
 	if (gParent) {
-	  DBG_INFO(GWEN_LOGDOMAIN,
+	  DBG_DEBUG(GWEN_LOGDOMAIN,
 		   "Calling %s->EndSubGroup(%s)",
 		   HtmlGroup_GetGroupName(gParent),
                    HtmlGroup_GetGroupName(g));
@@ -463,7 +463,7 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
       int rv;
 
       /* it is an opening tag, call StartTagFn */
-      DBG_INFO(GWEN_LOGDOMAIN,
+      DBG_DEBUG(GWEN_LOGDOMAIN,
 	       "Calling %s->StartTag(%s)",
 	       HtmlGroup_GetGroupName(xctx->currentGroup),
 	       xctx->currentTagName);
@@ -498,9 +498,9 @@ int HtmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
   if (xctx->currentGroup) {
     int rv;
 
-    DBG_INFO(GWEN_LOGDOMAIN,
-	     "Calling %s->AddData()",
-	     HtmlGroup_GetGroupName(xctx->currentGroup));
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "Calling %s->AddData()",
+	      HtmlGroup_GetGroupName(xctx->currentGroup));
     rv=HtmlGroup_AddData(xctx->currentGroup, data);
     if (rv<0) {
       if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {

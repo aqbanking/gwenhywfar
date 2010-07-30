@@ -108,7 +108,7 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
 	return rv;
       }
       else if (rv==0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+	DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
 	return GWEN_ERROR_EOF;
       }
       else {

@@ -789,7 +789,7 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
     GWEN_FASTBUFFER_PEEKBYTE(fb, rv);
     if (rv<0) {
       if (rv!=GWEN_ERROR_EOF || !oks) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", rv);
 	return rv;
       }
       return 0;
