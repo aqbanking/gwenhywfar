@@ -149,9 +149,9 @@ static void Gtk2Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
 			    GWEN_DialogEvent_TypeValueChanged,
 			    GWEN_Widget_GetName(w));
   if (rv==GWEN_DialogEvent_ResultAccept)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 1);
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
   else if (rv==GWEN_DialogEvent_ResultReject)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 0);
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
 }
 
 
@@ -170,9 +170,9 @@ static void Gtk2Gui_WLineEdit_Inserted_text_handler(GtkEntryBuffer *entrybuffer,
 			    GWEN_DialogEvent_TypeValueChanged,
 			    GWEN_Widget_GetName(w));
   if (rv==GWEN_DialogEvent_ResultAccept)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 1);
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
   else if (rv==GWEN_DialogEvent_ResultReject)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 0);
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
 }
 
 

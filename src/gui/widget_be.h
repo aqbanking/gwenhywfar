@@ -164,6 +164,9 @@ GWENHYWFAR_API
 GWEN_DIALOG *GWEN_Widget_GetDialog(const GWEN_WIDGET *w);
 
 GWENHYWFAR_API
+GWEN_DIALOG *GWEN_Widget_GetTopDialog(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
 const char *GWEN_Widget_GetName(const GWEN_WIDGET *w);
 
 GWENHYWFAR_API

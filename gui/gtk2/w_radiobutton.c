@@ -153,9 +153,9 @@ static void Gtk2Gui_WRadioButton_Toggled_handler(GtkButton *button, gpointer dat
 			    GWEN_DialogEvent_TypeActivated,
 			    GWEN_Widget_GetName(w));
   if (rv==GWEN_DialogEvent_ResultAccept)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 1);
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
   else if (rv==GWEN_DialogEvent_ResultReject)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetDialog(w), 0);
+    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
 }
 
 

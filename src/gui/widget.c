@@ -32,6 +32,7 @@
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/dialog_be.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -87,7 +88,27 @@ void GWEN_Widget_free(GWEN_WIDGET *w) {
 GWEN_DIALOG *GWEN_Widget_GetDialog(const GWEN_WIDGET *w) {
   assert(w);
   assert(w->refCount);
+
   return w->dialog;
+}
+
+
+
+GWEN_DIALOG *GWEN_Widget_GetTopDialog(const GWEN_WIDGET *w) {
+  GWEN_DIALOG *dlg;
+  GWEN_DIALOG *pdlg;
+
+  assert(w);
+  assert(w->refCount);
+
+  dlg=w->dialog;
+  if (dlg) {
+    while( (pdlg=GWEN_Dialog_GetParentDialog(dlg)) )
+      dlg=pdlg;
+
+    return w->dialog;
+  }
+  return NULL;
 }
 
 
