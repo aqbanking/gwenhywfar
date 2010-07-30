@@ -129,7 +129,7 @@ FXIcon *FOX16_GuiDialog::getIcon(const char *fileName) {
     if (m_iconSource==NULL)
       m_iconSource=new FXIconSource(FXApp::instance());
 
-    DBG_ERROR(0, "Loading [%s]", GWEN_Buffer_GetStart(tbuf));
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Loading [%s]", GWEN_Buffer_GetStart(tbuf));
     ic=m_iconSource->loadIconFile(GWEN_Buffer_GetStart(tbuf));
     if (ic==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Could not load icon [%s]", GWEN_Buffer_GetStart(tbuf));
@@ -243,7 +243,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
       case GWEN_DialogProperty_MinValue:
 	if (value!=0) {
-	  DBG_ERROR(0, "MinValue should be 0!");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "MinValue should be 0!");
 	  return GWEN_ERROR_INVALID;
 	}
         return 0;
@@ -313,7 +313,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 	if (fi && i==value)
 	  f->setCurrentItem(fi, doSignal?TRUE:FALSE);
 	else {
-	  DBG_ERROR(0, "Value %d out of range", value);
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
 	  return GWEN_ERROR_INVALID;
 	}
         return 0;
@@ -334,7 +334,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 	  return 0;
 	  ;
 	}
-	DBG_ERROR(0, "Unknown SelectionMode %d", value);
+	DBG_ERROR(GWEN_LOGDOMAIN, "Unknown SelectionMode %d", value);
 	return GWEN_ERROR_INVALID;
 
       case GWEN_DialogProperty_SelectionState:
@@ -343,7 +343,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
 	  ti=f->getItem(index);
 	  if (ti==NULL) {
-	    DBG_ERROR(0, "Index %d out of range", index);
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
             return GWEN_ERROR_INVALID;
 	  }
 	  ti->setSelected((value==0)?FALSE:TRUE);
@@ -728,7 +728,7 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 		return GWEN_DialogSortDirection_Down;
 	    }
 	  }
-	  DBG_ERROR(0, "Column %d out of range", index);
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Column %d out of range", index);
 	}
 	return defaultValue;
 
@@ -1481,7 +1481,6 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 	}
 
       case GWEN_DialogProperty_Value:
-        DBG_ERROR(0, "GetCharProperty %d", index);
 	fi=f->getFirstItem();
 	if (fi) {
 	  int i=index;
@@ -1498,12 +1497,12 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 	    return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
 	  }
 	  else {
-	    DBG_ERROR(0, "Index %d out of range", index);
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
 	    return defaultValue;
 	  }
 	}
 	else {
-	  DBG_ERROR(0, "Empty list");
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Empty list");
           return defaultValue;
 	}
 
@@ -1599,7 +1598,7 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
 
   dialogBox=_mainWidget;
 
-  DBG_ERROR(0, "Command for [%s] (type: %s)",
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Command for [%s] (type: %s)",
 	    wname?wname:"(unnamed)",
 	    GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
 
@@ -1833,12 +1832,12 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
 
   wtree=GWEN_Dialog_GetWidgets(_dialog);
   if (wtree==NULL) {
-    DBG_ERROR(0, "No widget tree in dialog");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No widget tree in dialog");
     return false;
   }
   w=GWEN_Widget_Tree_GetFirst(wtree);
   if (w==NULL) {
-    DBG_ERROR(0, "No widgets in dialog");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No widgets in dialog");
     return false;
   }
 
@@ -1904,7 +1903,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
       /* these types don't need the parent to be a FXComposite */
       break;
     default:
-      DBG_ERROR(0, "Parent of widget [%s] (type %d) is not a composite",
+      DBG_ERROR(GWEN_LOGDOMAIN, "Parent of widget [%s] (type %d) is not a composite",
 		name?name:"(unnamed)", GWEN_Widget_GetType(w));
       return NULL;
     }
@@ -2012,7 +2011,6 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
       opts|=TEXTFIELD_PASSWD;
     if (flags & GWEN_WIDGET_FLAGS_READONLY)
       opts|=TEXTFIELD_READONLY;
-    DBG_ERROR(0, "TextField with %d columns", cols);
     wChild=new FXTextField(parentComposite,
 			   cols?cols:16,
 			   this,
@@ -2119,9 +2117,8 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     break;
 
   case GWEN_Widget_TypeGridLayout:
-    DBG_ERROR(0, "GridLayout: %d cols, %d rows", cols, rows);
     if (cols & rows) {
-      DBG_ERROR(0, "State columns *or* rows, not both in widget [%s]",
+      DBG_ERROR(GWEN_LOGDOMAIN, "State columns *or* rows, not both in widget [%s]",
 		name?name:"(unnamed)");
       return NULL;
     }
@@ -2162,13 +2159,13 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeTabPage:
     if (parentWidget==NULL) {
-      DBG_ERROR(0, "Widget [%s] has no parent", name?name:"(unnamed)");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] has no parent", name?name:"(unnamed)");
       return NULL;
     }
     else {
       FXTabBook *tbook=dynamic_cast<FXTabBook*>(parentWindow);
       if (tbook==NULL) {
-	DBG_ERROR(0, "Parent of widget [%s] needs to be of type TabBook", name?name:"(unnamed)");
+	DBG_ERROR(GWEN_LOGDOMAIN, "Parent of widget [%s] needs to be of type TabBook", name?name:"(unnamed)");
 	return NULL;
       }
 
@@ -2216,10 +2213,10 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     break;
 
   case GWEN_Widget_TypeUnknown:
-    DBG_ERROR(0, "Widget [%s] is of type \'unknown\'", name?name:"(unnamed)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] is of type \'unknown\'", name?name:"(unnamed)");
     return NULL;
   case GWEN_Widget_TypeNone:
-    DBG_ERROR(0, "Widget [%s] is of type \'none\'", name?name:"(unnamed)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] is of type \'none\'", name?name:"(unnamed)");
     return NULL;
   }
 
@@ -2260,7 +2257,6 @@ int FOX16_GuiDialog::openDialog() {
   dialogBox=_mainWidget;
 
   /* show dialog */
-  DBG_ERROR(0, "Showing...");
   dialogBox->layout();
   dialogBox->show(PLACEMENT_OWNER);
 

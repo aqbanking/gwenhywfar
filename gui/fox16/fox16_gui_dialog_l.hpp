@@ -33,22 +33,29 @@ protected:
     int m_groupId;
     FXint m_radioValue;
     int m_buttonCount;
+    std::list<FXRadioButton*> m_buttonList;
 
   public:
     RadioButtonGroup(int groupId, FXObject* tgt=NULL, FXSelector sel=0)
       :m_radioTarget(m_radioValue, tgt, sel), m_groupId(groupId), m_radioValue(0), m_buttonCount(0) {};
-    ~RadioButtonGroup() {};
+    ~RadioButtonGroup() {
+      std::list<FXRadioButton*>::iterator it;
+
+      for (it=m_buttonList.begin(); it!=m_buttonList.end(); it++)
+	/* reset target pointer in buttons because we are about to destroy the FXDataTarget */
+	(*it)->setTarget(NULL);
+    };
 
     int getGroupId() { return m_groupId;};
 
     FXDataTarget *getDataTarget() { return &m_radioTarget;};
 
-    int getButtonCount() { return m_buttonCount;};
+    int getButtonCount() { return m_buttonList.size();};
 
     FXint getRadioValue() const { return m_radioValue;};
 
     void addButton(FXRadioButton *rb) {
-      m_buttonCount++;
+      m_buttonList.push_back(rb);
     };
   };
 
