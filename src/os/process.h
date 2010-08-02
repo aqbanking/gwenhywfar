@@ -39,9 +39,6 @@
 /** redirect the child processes stderr channel */
 #define GWEN_PROCESS_FLAGS_REDIR_STDERR 0x00000004
 
-/** clear environment of called process */
-#define GWEN_PROCESS_FLAGS_CLEARENV     0x00000008
-
 #define GWEN_PROCESS_FLAGS_DEFAULT 0
 
 
