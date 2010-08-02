@@ -786,6 +786,9 @@ AC_ARG_WITH(guis,
 if test "$gwenhywfar_guis" = "none"; then
   gwenhywfar_guis=""
 fi
+if test "$gwenhywfar_guis" = "yes"; then
+  gwenhywfar_guis=""
+fi
 AC_SUBST(gwenhywfar_guis)
 
 
