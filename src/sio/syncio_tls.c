@@ -1006,11 +1006,13 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
 
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_record_recv: %d (%s)", rv, gnutls_strerror(rv));
+#if 0
     GWEN_Gui_ProgressLog2(0,
 			  GWEN_LoggerLevel_Error,
 			  I18N("Error on gnutls_record_recv: %d (%s)"),
 			  rv,
 			  gnutls_strerror(rv));
+#endif
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
     GWEN_SyncIo_Tls_UndoPrepare(sio);
     GWEN_SyncIo_Disconnect(baseIo);
