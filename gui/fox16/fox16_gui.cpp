@@ -354,13 +354,13 @@ FXString FOX16_Gui::getHtmlText(const char *text) {
 
 int FOX16_Gui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
   FOX16_GuiDialog foxDlg(this, dlg);
-  FXWindow *parentWindow=NULL;
+  FXWindow *owner;
 
-  /* TODO: get main window of parent dialog (if any) */
-  parentWindow=NULL;
+  /* get main window of parent dialog (if any) */
+  owner=m_app->getActiveWindow();
 
   /* setup widget tree for the dialog */
-  if (!(foxDlg.setup(parentWindow))) {
+  if (!(foxDlg.setup(owner))) {
     return GWEN_ERROR_GENERIC;
   }
 
