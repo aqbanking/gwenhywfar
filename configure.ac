@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=99
 GWENHYWFAR_VERSION_PATCHLEVEL=16
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="beta"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -159,6 +159,20 @@ AC_SUBST(GWENPP_SO_EFFECTIVE)
 AQ_CHECK_OS
 
 
+if test "$OSYSTEM" = "osx"; then
+  COCOA_FRAMEWORK="-framework Cocoa"
+  FOUNDATION_FRAMEWORK="-framework CoreFoundation"
+  SYSCONF_FRAMEWORK="-framework SystemConfiguration"
+  APPKIT_FRAMEWORK="-framework AppKit"
+  COREDATA_FRAMEWORK="-framework CoreData"
+fi
+AC_SUBST(COCOA_FRAMEWORK)
+AC_SUBST(FOUNDATION_FRAMEWORK)
+AC_SUBST(SYSCONF_FRAMEWORK)
+AC_SUBST(APPKIT_FRAMEWORK)
+AC_SUBST(COREDATA_FRAMEWORK)
+
+
 ###-------------------------------------------------------------------------
 # prefix handling
 
@@ -185,6 +199,7 @@ AC_ENABLE_SHARED(yes)
 #
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_OBJC
 AC_PROG_INSTALL
 
 AC_LIBTOOL_WIN32_DLL
@@ -1387,6 +1402,7 @@ AC_CONFIG_FILES([Doxyfile
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
                  gui/gtk2/Makefile
+                 gui/cocoa/Makefile
                  gui/testdialogs/Makefile
 		])
 AC_OUTPUT
@@ -1507,6 +1523,25 @@ for d in gui/gtk2; do
       	 ;;
       *)
     	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-gtk2/${f}"
+         ;;
+    esac
+  done
+done
+
+
+
+# cocoa
+#
+rm -Rf gwenhywfar4/gwen-gui-cocoa 2>/dev/null
+mkdir -p gwenhywfar4/gwen-gui-cocoa
+for d in gui/cocoa; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.h | *_p.h | gtk2_gui_*.h)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-cocoa/${f}"
          ;;
     esac
   done
