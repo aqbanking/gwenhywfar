@@ -8,12 +8,12 @@ The Problem
 GWEN follows the object oriented pragma as far as possible. There are structs
 on which groups of functions operate.
 
-The module defined in "src/net/netconnection*.{c,h}" consists of a struct
+The module defined in "src/sio/syncio*.{c,h}" consists of a struct
 and functions which create a network connection.
 
-However, this module is very basic, i.e. it only nows ow to deal with network
-connections in general, but it doesn't have a clue about special protocols
-like HTTP, HBCI etc.
+However, this module is very basic, i.e. it only knows how to deal with 
+network connections in general, but it doesn't have a clue about special
+protocols like HTTP, HBCI etc.
 
 These protocols are implemented by extending the base module via GWEN's 
 inherit module.
@@ -78,7 +78,7 @@ This has certain advantages:
 
 This folder contains an example of how inheritance works practically.
 The files "baseclass*.{,c,h}" contain the declaration and implementation of
-a fictional base class, which "derivedclass*.{c,h}" implement a module
+a fictional base class, "derivedclass*.{c,h}" implements a module
 which extends the module "BaseClass".
 
 
