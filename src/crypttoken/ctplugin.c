@@ -323,6 +323,8 @@ int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
       progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
 					GWEN_GUI_PROGRESS_ALLOW_EMBED |
 					GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                        GWEN_GUI_PROGRESS_SHOW_LOG |
+					GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
 					GWEN_GUI_PROGRESS_SHOW_ABORT,
 					I18N("Determining plugin module..."),
 					NULL,
