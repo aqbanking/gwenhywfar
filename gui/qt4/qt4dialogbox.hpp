@@ -11,7 +11,7 @@
 #ifndef QT4_DIALOGBOX_H
 #define QT4_DIALOGBOX_H
 
-#include <qdialog.h>
+#include <QDialog>
 
 
 class QT4_GuiDialog;
