@@ -29,10 +29,10 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=3
 GWENHYWFAR_VERSION_MINOR=99
-GWENHYWFAR_VERSION_PATCHLEVEL=16
-GWENHYWFAR_VERSION_BUILD=2
+GWENHYWFAR_VERSION_PATCHLEVEL=17
+GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="svn"
+GWENHYWFAR_VERSION_TAG="beta"
 
 
 
@@ -42,7 +42,7 @@ GWENHYWFAR_VERSION_TAG="svn"
 #
 GWENHYWFAR_SO_CURRENT="59"
 GWENHYWFAR_SO_AGE="0"
-GWENHYWFAR_SO_REVISION="16"
+GWENHYWFAR_SO_REVISION="17"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -796,7 +796,7 @@ AC_SUBST(ICONV_LIBS)
 AC_ARG_WITH(guis, 
   [  --with-guis=list      space separated list of GUI implementations (default:all)],
   [gwenhywfar_guis="$withval"],
-  [gwenhywfar_guis="fox16 qt3 qt4 gtk2"]
+  [gwenhywfar_guis="qt4 gtk2"]
 )
 if test "$gwenhywfar_guis" = "none"; then
   gwenhywfar_guis=""
