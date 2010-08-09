@@ -62,7 +62,9 @@
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_Enabled (rw): The enabled state of
- *     a widget (0=disabled, 1=enabled)
+ *     a widget (0=disabled, 1=enabled). This only works for
+ *     widgets, not for the dialog itself (which woudn't make sense
+ *     anyway).
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_Focus (rw): Whether a widget
@@ -378,7 +380,6 @@
  * GWEN_Widget_TypeHLayout
  * GWEN_Widget_TypeVLayout
  * GWEN_Widget_TypeGridLayout
- * GWEN_Widget_TypeImage
  * GWEN_Widget_TypeDialog
  * GWEN_Widget_TypeTabBook
  * GWEN_Widget_TypeTabPage

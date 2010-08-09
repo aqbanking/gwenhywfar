@@ -18,6 +18,7 @@
 #include "fox16_htmltext.hpp"
 
 #include "../testdialogs/dlg_test.h"
+#include "../testdialogs/dlg_test2.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -416,6 +417,37 @@ int test8(int argc, char **argv) {
 
 
 
+int test9(int argc, char **argv) {
+  FXApp application("libtest","Martin Preuss");
+  FOX16_Gui *gui;
+  int rv;
+  GWEN_DIALOG *dlg;
+
+  application.init(argc,argv);
+
+  application.create();
+
+  gui=new FOX16_Gui(&application);
+  GWEN_Gui_SetGui(gui->getCInterface());
+
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  dlg=Dlg_Test2_new();
+  if (dlg==NULL) {
+    fprintf(stderr, "Could not create dialog.\n");
+    return 2;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg, 0);
+  fprintf(stderr, "Result: %d\n", rv);
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   if (argc>1) {
@@ -435,6 +467,8 @@ int main(int argc, char **argv) {
       return test7(argc, argv);
     else if (strcasecmp(argv[1], "8")==0)
       return test8(argc, argv);
+    else if (strcasecmp(argv[1], "9")==0)
+      return test9(argc, argv);
   }
   else
     return test7(argc, argv);

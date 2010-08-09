@@ -202,7 +202,7 @@ int GWEN_Dialog_RemoveWidget(GWEN_DIALOG *dlg, const char *name);
 
 /**
  * Sets the signal handler of the dialog. Please note that this doesn't set the signal
- * handler of any sub-dialog.
+ * handler of any sub-dialog, so each dialog will only receive its own signals.
  */
 GWENHYWFAR_API
 GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,

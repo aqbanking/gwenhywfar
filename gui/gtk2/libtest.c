@@ -12,6 +12,7 @@
 
 #include "gtk2_gui.h"
 #include "../testdialogs/dlg_test.h"
+#include "../testdialogs/dlg_test2.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/gui.h>
@@ -128,22 +129,52 @@ int test2(int argc, char **argv) {
 
 
 
-
-
-int main(int argc, char **argv) {
-  return test1(argc, argv);
-  //return test2(argc, argv);
-#if 0
+int test3(int argc, char **argv) {
   GWEN_GUI *gui;
+  int rv;
+  GWEN_DIALOG *dlg;
+
+  rv=GWEN_Init();
+  if (rv) {
+    DBG_ERROR_ERR(0, rv);
+    return 2;
+  }
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
 
   gtk_set_locale ();
   gtk_init (&argc, &argv);
 
+  /* create GUI */
   gui=Gtk2_Gui_new();
   GWEN_Gui_SetGui(gui);
 
+  dlg=Dlg_Test2_new();
+  if (dlg==NULL) {
+    fprintf(stderr, "Could not create dialog.\n");
+    return 2;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg, 0);
+  fprintf(stderr, "Result: %d\n", rv);
+
   return 0;
-#endif
+}
+
+
+
+
+
+int main(int argc, char **argv) {
+  if (argc>1) {
+    if (strcasecmp(argv[1], "1")==0)
+      return test1(argc, argv);
+    else if (strcasecmp(argv[1], "2")==0)
+      return test2(argc, argv);
+    else if (strcasecmp(argv[1], "3")==0)
+      return test3(argc, argv);
+  }
+  return test1(argc, argv);
 }
 
 
