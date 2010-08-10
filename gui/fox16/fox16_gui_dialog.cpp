@@ -551,9 +551,9 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
 
 int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
-			      GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      int defaultValue) {
+				    GWEN_DIALOG_PROPERTY prop,
+				    int index,
+				    int defaultValue) {
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeUnknown:
   case GWEN_Widget_TypeNone:
@@ -1318,12 +1318,18 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
       switch(prop) {
       case GWEN_DialogProperty_Value:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
+	if (index<f->getNumItems()) {
+	  str=f->getItem(index);
+	  if (str.empty())
+	    return defaultValue;
+	  else {
+	    GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
+	    return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
+	  }
+	}
 	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
+	  return defaultValue;
 	}
 
       default:
