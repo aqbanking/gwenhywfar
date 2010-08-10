@@ -164,6 +164,8 @@ int Gtk2Gui_WDialog_Setup(GWEN_WIDGET *w) {
 
   g=gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_modal(GTK_WINDOW(g), TRUE);
+  if (s && *s)
+    gtk_window_set_title(GTK_WINDOW(g), s);
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
