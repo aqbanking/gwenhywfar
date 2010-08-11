@@ -28,10 +28,10 @@ all_warnings=\
 c_warnings=\
  -Wbad-function-cast  -Wmissing-declarations -Wmissing-parameter-type  \
  -Wnested-externs \
- -Wdeclaration-after-statement -Wpointer-sign
+ -Wdeclaration-after-statement -Wpointer-sign -Wc++-compat
 
 cplusplus_warnings=\
- -Wc++-compat -Wc++0x-compat -Wno-invalid-offsetof
+ -Wc++0x-compat -Wno-invalid-offsetof
 
 
 WIN32_OPTIONS=\
