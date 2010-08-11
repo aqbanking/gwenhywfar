@@ -213,11 +213,15 @@ int QT4_Gui::getFileName(const char *caption,
       s2=strchr(s1, '\t');
       if (s2) {
 	str=QString::fromUtf8(s1, s2-s1);
+	str.replace(',', ' ');
+	str.replace(';', ' ');
 	/* skip tab */
         s2++;
       }
       else {
 	str=QString::fromUtf8(s1);
+        str.replace(',', ' ');
+	str.replace(';', ' ');
 	s2=NULL;
       }
 
