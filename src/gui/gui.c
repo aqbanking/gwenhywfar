@@ -733,7 +733,7 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
       dist=500;
     }
 
-    pid=GWEN_Gui_ProgressStart((wt!=0)?GWEN_GUI_PROGRESS_SHOW_PROGRESS:0 |
+    pid=GWEN_Gui_ProgressStart(((wt!=0)?GWEN_GUI_PROGRESS_SHOW_PROGRESS:0) |
 			       GWEN_GUI_PROGRESS_SHOW_ABORT |
 			       GWEN_GUI_PROGRESS_DELAY |
 			       GWEN_GUI_PROGRESS_ALLOW_EMBED,
