@@ -480,6 +480,29 @@ int GWEN_Gui_MessageBox(uint32_t flags,
 
 
 
+void GWEN_Gui_ShowError(const char *title, const char *fmt, ...) {
+  va_list list;
+  char msgbuffer[2048];
+  int rv;
+
+  /* prepare list for va_arg */
+  va_start(list, fmt);
+  rv=vsnprintf(msgbuffer, sizeof(msgbuffer), fmt, list);
+  if (rv<0 || rv>=(int)(sizeof(msgbuffer))) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Internal buffer too small for message, truncating (%d>%d)",
+	     rv, (int)(sizeof(msgbuffer)));
+  }
+
+  GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+		      GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+		      GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+		      title,
+		      msgbuffer,
+		      I18N("Dismiss"), NULL, NULL, 0);
+}
+
+
+
 int GWEN_Gui_InputBox(uint32_t flags,
 		      const char *title,
 		      const char *text,

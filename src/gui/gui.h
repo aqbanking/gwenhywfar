@@ -428,6 +428,15 @@ int GWEN_Gui_MessageBox(uint32_t flags,
 			uint32_t guiid);
 
 /**
+ * This is a convenience function which calls @ref GWEN_Gui_MessageBox showing the given
+ * message and a single "Close" button.
+ * It is especially well suited to show an error message.
+ */
+GWENHYWFAR_API 
+void GWEN_Gui_ShowError(const char *title, const char *text, ...);
+
+
+/**
  * <p>
  * Ask the user for input.
  * </p>
