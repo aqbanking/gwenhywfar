@@ -475,8 +475,6 @@ int FOX16_Gui::getFileName(const char *caption,
     }
   }
 
-  DBG_ERROR(0, "Patterns: [%s]", sPatterns.text());
-
   if (GWEN_Buffer_GetUsedBytes(pathBuffer))
     sPath=FXString(GWEN_Buffer_GetStart(pathBuffer));
 
