@@ -379,10 +379,14 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid){
 	  else if (rv==2) {
 	    remove(fl->baseLockFilename);
 	    remove(fl->uniqueLockFilename);
-	    DBG_DEBUG(GWEN_LOGDOMAIN, "FS-Lock forcably released from %s", fl->entryName);
+	    DBG_WARN(GWEN_LOGDOMAIN, "FS-Lock forcably released from %s", fl->entryName);
 	    GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
 				 I18N("Lock removed by user request."));
 	    doWait=0;
+	    /* reset timeout */
+	    GWEN_Time_free(t0);
+	    t0=GWEN_CurrentTime();
+	    assert(t0);
 	  }
 	}
       }
