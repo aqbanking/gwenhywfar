@@ -781,9 +781,21 @@ typedef enum {
 
 
 /**
- * @param patterns multiple tab-separated entries like in:
- *   "All Files (*)\tC++ Sources (*.cpp,*.cc)\tC++ Headers (*.hpp;*.hh;*.h)"
+ * This function is used to get the path and name of a single file or folder.
  *
+ * @param caption title for the dialog
+ *
+ * @param fnt type of the operation (see @ref GWEN_Gui_FileNameType_OpenFileName and following)
+ *
+ * @param flags currently reserved, use 0
+ *
+ * @param patterns multiple tab-separated entries like in:
+ *   "All Files (*)\tC++ Sources (*.cpp,*.cc)\tC++ Headers (*.hpp,*.hh,*.h)"
+ *
+ * @param pathBuffer upon call this may contain a preselected path/filename, upon return
+ *   this will contain the selected name
+ *
+ * @return 0 if ok, !=0 on error
  */
 GWENHYWFAR_API
 int GWEN_Gui_GetFileName(const char *caption,
