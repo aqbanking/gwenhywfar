@@ -7,7 +7,8 @@
  ***************************************************************************/
 
 
-#include "cocoa_gui.h"
+#include "cocoa_gui_dialog.mm"
+#include "cocoa_gui.mm"
 //#include "../testdialogs/dlg_test.h"
 
 #include <gwenhywfar/gwenhywfar.h>
@@ -19,40 +20,121 @@
 #include <unistd.h>
 
 #import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
-
-int test1(int argc, char **argv) {
-	fprintf(stderr, "Test\n");
+@interface AppDelegate : NSObject {
 	
- /* GWEN_GUI *gui;
-  int rv;
-  GWEN_DIALOG *dlg;
+}
 
-  rv=GWEN_Init();
-  if (rv) {
-    DBG_ERROR_ERR(0, rv);
-    return 2;
-  }
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
+@end
 
-  gtk_set_locale ();
-  gtk_init (&argc, &argv);
+@implementation AppDelegate
 
-  // create GUI
-  gui=Gtk2_Gui_new();
-  GWEN_Gui_SetGui(gui);
+-(id) init {
+	self = [super init];
+	if (self) {
+		
+	}
+	return self;
+}
 
-  dlg=Dlg_Test1_new();
-  if (dlg==NULL) {
-    fprintf(stderr, "Could not create dialog.\n");
-    return 2;
-  }
+-(void) dealloc {
+	[super dealloc];
+}
 
-  rv=GWEN_Gui_ExecDialog(dlg, 0);
-  fprintf(stderr, "Result: %d\n", rv);*/
+- (void)windowWillClose:(NSNotification *)notification {
+	[NSApp stop:self];
+}
 
-  return 0;
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+	
+	NSLog(@"Test");
+	
+	NSWindow *window = [[NSWindow alloc] initWithContentRect:NSMakeRect(100.0, 100.0, 200.0, 200.0) styleMask:NSTitledWindowMask|NSClosableWindowMask backing:NSBackingStoreBuffered defer:YES];
+	[window setDelegate:self];
+	[window makeKeyAndOrderFront:nil];
+	
+	test1();
+}
+
+@end
+
+
+int test1() {
+	//fprintf(stderr, "Test\n");
+	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	NSLog(@"Start");
+	
+	GWEN_GUI *gui;
+	int rv;
+	GWEN_DIALOG *dlg;
+	
+	rv=GWEN_Init();
+	if (rv) {
+		DBG_ERROR_ERR(0, rv);
+		return 2;
+	}
+	
+	NSLog(@"GWEN Gui initialized");
+	
+	GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
+	
+	//gtk_set_locale ();
+	//gtk_init (&argc, &argv);
+	
+	// create GUI
+	gui=Cocoa_Gui_new();
+	GWEN_Gui_SetGui(gui);
+	
+	NSLog(@"Cocoa Gui set");
+	
+	dlg=Dlg_Test1_new();
+	if (dlg==NULL) {
+		fprintf(stderr, "Could not create dialog.\n");
+		return 2;
+	}
+	
+	NSLog(@"Test new");
+	
+	rv=GWEN_Gui_ExecDialog(dlg, 0);
+	fprintf(stderr, "Result: %d\n", rv);
+	
+	
+	/* GWEN_GUI *gui;
+	 int rv;
+	 GWEN_DIALOG *dlg;
+	 
+	 rv=GWEN_Init();
+	 if (rv) {
+	 DBG_ERROR_ERR(0, rv);
+	 return 2;
+	 }
+	 
+	 GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
+	 
+	 gtk_set_locale ();
+	 gtk_init (&argc, &argv);
+	 
+	 // create GUI
+	 gui=Gtk2_Gui_new();
+	 GWEN_Gui_SetGui(gui);
+	 
+	 dlg=Dlg_Test1_new();
+	 if (dlg==NULL) {
+	 fprintf(stderr, "Could not create dialog.\n");
+	 return 2;
+	 }
+	 
+	 rv=GWEN_Gui_ExecDialog(dlg, 0);
+	 fprintf(stderr, "Result: %d\n", rv);*/
+	
+	[pool release];
+	
+	return 0;
 }
 
 
@@ -136,10 +218,21 @@ int test3(int argc, char **argv) {
 
 
 int main(int argc, char **argv) {
-  //return test1(argc, argv);
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSApplication *app = [NSApplication sharedApplication];
+	AppDelegate *app_delegate = [[AppDelegate alloc] init];
+	NSMenu *menu = [[NSMenu alloc] initWithTitle:@"Testprogramm"];
+	[menu addItemWithTitle:@"Quit" action:@selector(windowWillClose:) keyEquivalent:@"Q"];
+	[app setDelegate:app_delegate];
+	[app setMainMenu:menu];
+	[NSApp run];
+	[menu release];
+	[pool release];
+  //test1(argc, argv);
+	
   //return test2(argc, argv);
-  return test3(argc, argv);
-#if 0
+  //return test3(argc, argv);
+/*#if 0
   GWEN_GUI *gui;
 
   gtk_set_locale ();
@@ -149,7 +242,7 @@ int main(int argc, char **argv) {
   GWEN_Gui_SetGui(gui);
 
   return 0;
-#endif
+#endif*/
 }
 
 
