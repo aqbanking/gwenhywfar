@@ -110,6 +110,16 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 				"HTML.",
 				0);
 
+    GWEN_Dialog_SetIntProperty(dlg, "progressBar1",
+			       GWEN_DialogProperty_MinValue,
+			       0,
+			       0,
+			       0);
+    GWEN_Dialog_SetIntProperty(dlg, "progressBar1",
+			       GWEN_DialogProperty_MaxValue,
+			       0,
+			       10,
+			       0);
     
 
     GWEN_Dialog_SetIntProperty(dlg, "",
@@ -146,6 +156,22 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
       return GWEN_DialogEvent_ResultAccept;
     else if (strcasecmp(sender, "abortButton")==0)
       return GWEN_DialogEvent_ResultReject;
+    else if (strcasecmp(sender, "progressMinus")==0) {
+      int v;
+
+      v=GWEN_Dialog_GetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, -1);
+      if (v>0)
+	GWEN_Dialog_SetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, v-1, 0);
+      return GWEN_DialogEvent_ResultHandled;
+    }
+    else if (strcasecmp(sender, "progressPlus")==0) {
+      int v;
+
+      v=GWEN_Dialog_GetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, -1);
+      if (v<10)
+	GWEN_Dialog_SetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, v+1, 0);
+      return GWEN_DialogEvent_ResultHandled;
+    }
     break;
   case GWEN_DialogEvent_TypeEnabled:
     fprintf(stderr, "Enabled\n");

@@ -77,6 +77,17 @@
         </widget>
       </widget>
 
+      <widget type="tabpage" name="tabpage7" text="Seventh Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget type="hlayout" name="hlayout1" flags="fillX" >
+            <widget type="pushButton" name="progressMinus" text="Decrement"  />
+            <widget type="progressBar" name="progressBar1" flags="fillX" />
+            <widget type="pushButton" name="progressPlus" text="Increment" />
+          </widget>
+          <widget type="vspacer" name="vspacer1" flags="fillY" />
+        </widget>
+      </widget>
+
     </widget>
 
   
