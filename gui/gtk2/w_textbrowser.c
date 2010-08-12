@@ -101,11 +101,16 @@ int Gtk2Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
 					 int doSignal) {
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
+  GWEN_BUFFER *tbuf;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
   gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(gs);
+
+  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  if (value && *value)
+    Gtk2Gui_GetRawText(value, tbuf);
 
   switch(prop) {
   case GWEN_DialogProperty_Value: {
@@ -114,15 +119,13 @@ int Gtk2Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
 
     tb=gtk_text_view_get_buffer(GTK_TEXT_VIEW(g));
     assert(tb);
-    if (value && *value)
-      gtk_text_buffer_set_text(tb, value, -1);
-    else
-      gtk_text_buffer_set_text(tb, "", -1);
+    gtk_text_buffer_set_text(tb, GWEN_Buffer_GetStart(tbuf), -1);
 
     /* scroll to end */
     va=gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(gs));
     if (va)
       gtk_adjustment_set_value(va, va->upper);
+    GWEN_Buffer_free(tbuf);
 
     return 0;
   }
@@ -133,6 +136,7 @@ int Gtk2Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
   DBG_WARN(GWEN_LOGDOMAIN,
 	   "Function is not appropriate for this type of widget (%s)",
 	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+  GWEN_Buffer_free(tbuf);
   return GWEN_ERROR_INVALID;
 }
 
