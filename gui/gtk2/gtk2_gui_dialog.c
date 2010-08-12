@@ -25,6 +25,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
 
+#include <ctype.h>
+
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 
@@ -434,6 +436,94 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
   }
 
   return 0;
+}
+
+
+
+
+int Gtk2Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf) {
+  const char *p=0;
+  const char *p2=0;
+
+  if (text==NULL)
+    return 0;
+
+  /* find begin of HTML area */
+  p=text;
+  while ((p=strchr(p, '<'))) {
+    const char *t;
+
+    t=p;
+    t++;
+    if (toupper(*t)=='H') {
+      t++;
+      if (toupper(*t)=='T') {
+        t++;
+        if (toupper(*t)=='M') {
+          t++;
+          if (toupper(*t)=='L') {
+	    t++;
+	    if (toupper(*t)=='>') {
+	      break;
+	    }
+	  }
+        }
+      }
+    }
+    p++;
+  } /* while */
+
+  /* find end of HTML area */
+  if (p) {
+    p2=p;
+    p2+=6; /* skip "<html>" */
+    while ((p2=strchr(p2, '<'))) {
+      const char *t;
+  
+      t=p2;
+      t++;
+      if (toupper(*t)=='/') {
+	t++;
+	if (toupper(*t)=='H') {
+	  t++;
+	  if (toupper(*t)=='T') {
+	    t++;
+	    if (toupper(*t)=='M') {
+	      t++;
+	      if (toupper(*t)=='L') {
+		t++;
+		if (toupper(*t)=='>') {
+		  break;
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      p2++;
+    } /* while */
+  }
+
+  if (p && p2) {
+    int startPos;
+    int endPos;
+
+    p2+=7; /* skip "</html>" */
+
+    startPos=(p-text);
+    endPos=(p2-text);
+
+    /* append stuff before startPos */
+    if (startPos)
+      GWEN_Buffer_AppendBytes(tbuf, text, startPos);
+    if (*p2)
+      GWEN_Buffer_AppendString(tbuf, p2);
+    return 0;
+  }
+  else {
+    GWEN_Buffer_AppendString(tbuf, text);
+    return 0;
+  }
 }
 
 

@@ -91,13 +91,19 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
 				  const char *value,
 				  int doSignal) {
   GtkLabel *g;
+  GWEN_BUFFER *tbuf;
 
   g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
+  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  if (value && *value)
+    Gtk2Gui_GetRawText(value, tbuf);
+
   switch(prop) {
   case GWEN_DialogProperty_Title:
-    gtk_label_set_text(g, value);
+    gtk_label_set_text(g, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
     return 0;
   default:
     break;
@@ -106,6 +112,7 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
   DBG_WARN(GWEN_LOGDOMAIN,
 	   "Function is not appropriate for this type of widget (%s)",
 	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+  GWEN_Buffer_free(tbuf);
   return GWEN_ERROR_INVALID;
 }
 

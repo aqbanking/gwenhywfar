@@ -1,3 +1,6 @@
+SUBDIRS=images
+
+
 EXTRA_DIST=\
   main.c \
   testdialog.c \

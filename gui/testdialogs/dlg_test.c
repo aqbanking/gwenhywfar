@@ -101,11 +101,13 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
     GWEN_Dialog_SetCharProperty(dlg, "labelWithHtmlImage",
 				GWEN_DialogProperty_Title,
 				0,
-				"This label contains text which should also contain an image:"
+				"<html>This label contains text which should also contain an image:"
 				"<img src=\"chipcard.png\">"
-				"And here the text should continue, followed by another image:"
-				"<img src=\"disk.png\">"
-                                "And again, this should be on the following line.",
+				"<p>And here the text should continue, followed by another image:"
+				"<img src=\"disk.png\"></p>"
+				"And again, this should be on the following line.</html>"
+				"This label would contain an image if it were able to use "
+				"HTML.",
 				0);
 
     

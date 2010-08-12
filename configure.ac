@@ -1348,6 +1348,7 @@ AC_CONFIG_FILES([Doxyfile
                  data/Makefile
                  doc/Makefile
                  doc/dialog/Makefile
+                 doc/dialog/images/Makefile
                  doc/inherit/Makefile
 		 doc/plugindescr.xsd
                  src/Makefile

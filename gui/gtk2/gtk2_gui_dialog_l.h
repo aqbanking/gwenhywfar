@@ -44,6 +44,8 @@ GtkWidget *Gtk2Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg);
 int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int timeout);
 void Gtk2Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result);
 
+int Gtk2Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf);
+
 #endif
 
 
