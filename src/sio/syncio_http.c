@@ -812,7 +812,8 @@ int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio) {
   }
 
   if (1!=sscanf(GWEN_Buffer_GetStart(tbuf), "%x", &csize)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad data received (invalid chunksize specifier)");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad data received (invalid chunksize specifier: [%s])",
+		GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
     return GWEN_ERROR_BAD_DATA;
   }
