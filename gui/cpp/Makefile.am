@@ -16,7 +16,7 @@ libgwengui_cpp_la_SOURCES=\
   cppgui.cpp \
   cppwidget.cpp
 
-iheaderdir=${includedir}/gwen-gui-cpp
+iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-cpp
 iheader_HEADERS=\
  cppgui.hpp \
  cppdialog.hpp \

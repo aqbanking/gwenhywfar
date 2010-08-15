@@ -37,7 +37,7 @@ nodist_libgwengui_qt3_la_SOURCES=\
 nodist_noinst_HEADERS=
 
 
-iheaderdir=${includedir}/gwen-gui-qt3
+iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-qt3
 iheader_HEADERS=\
  cppgui.hpp \
  cppdialog.hpp \

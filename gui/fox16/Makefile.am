@@ -32,7 +32,7 @@ libgwengui_fox16_la_SOURCES=\
   fox16_htmltext.cpp \
   theme.cpp
 
-iheaderdir=${includedir}/gwen-gui-fox16
+iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-fox16
 iheader_HEADERS=\
  cppgui.hpp \
  cppdialog.hpp \

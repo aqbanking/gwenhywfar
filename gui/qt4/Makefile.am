@@ -27,7 +27,7 @@ nodist_libgwengui_qt4_la_SOURCES=
 nodist_noinst_HEADERS=
 
 
-iheaderdir=${includedir}/gwen-gui-qt4
+iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-qt4
 iheader_HEADERS=\
  qt4_gui.hpp
 

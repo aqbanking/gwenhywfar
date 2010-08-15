@@ -44,7 +44,7 @@ EXTRA_DIST=\
 
 
 
-iheaderdir=${includedir}/gwen-gui-gtk2
+iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-gtk2
 iheader_HEADERS= \
   gtk2_gui.h
 

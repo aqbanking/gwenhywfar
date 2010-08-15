@@ -24,7 +24,7 @@ libgwenhtml_la_SOURCES=\
  o_image.c \
  o_word.c
 
-iheaderdir=${includedir}/gwenhywfar
+iheaderdir=${gwenhywfar_headerdir_am}/gwenhywfar
 iheader_HEADERS= \
  htmlctx_be.h \
  htmlfont_be.h  \

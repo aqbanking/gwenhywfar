@@ -22,7 +22,7 @@ libgwengui_cocoa_la_SOURCES=\
   cocoa_gui.mm
 
 
-iheaderdir=${includedir}/gwen-gui-cocoa
+iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-cocoa
 iheader_HEADERS= \
   cocoa_gui.h
 
