@@ -69,7 +69,7 @@ if test -z "$qt4_includes"; then
                     lv1=`grep -h "#define QT_VERSION_STR" $i/Qt/qglobal.h`
                     case $lv1 in
                     *4.*)
-                  	qt4_includes="-I$i -I$i/Qt -I$i/Qt3Support -I$i/QtCore -I$i/QtGui"
+                  	qt4_includes="-I$i -I$i/Qt -I$i/QtCore -I$i/QtGui"
                         qt4_dir=`echo $i | ${SED} 's-/include*--'`
                         break;
                         ;;
