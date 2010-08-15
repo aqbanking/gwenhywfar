@@ -39,13 +39,17 @@ static int _encodeData(const uint8_t *ptr,
   k=GWEN_Crypt_KeyBlowFish_fromData(GWEN_Crypt_CryptMode_Cbc,
 				    BLOWFISH_KEYSIZE,
 				    pKey, BLOWFISH_KEYSIZE);
-  if (!k)
+  if (!k) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not create key");
     return GWEN_ERROR_ENCRYPT;
+  }
 
   rv=GWEN_Crypt_Key_Encipher(k,
 			     ptr, len,
 			     pOutData, pOutLen);
-  if (rv) {
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on GWEN_Crypt_Key_Encipher(len=%d, *outLen=%d): %d",
+	      len, *pOutLen, rv);
     GWEN_Crypt_Key_free(k);
     return rv;
   }
@@ -76,7 +80,8 @@ static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterati
     GWEN_Buffer_AllocRoom(tbuf1, lDest);
     pDest=(uint8_t*)GWEN_Buffer_GetPosPointer(tbuf1);
     rv=_encodeData(p, len, pDest, &lDest, key);
-    if (rv) {
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(tbuf2);
       GWEN_Buffer_free(tbuf1);
       return rv;
@@ -231,7 +236,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   md=GWEN_MDigest_Sha256_new();
   rv=GWEN_MDigest_PBKDF2(md, password, salt, sizeof(salt), key, BLOWFISH_KEYSIZE, passwordIterations);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
     return rv;
   }
@@ -242,7 +247,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   /* add random bytes at the beginning */
   rv=_addRandomBytes(tbuf, 1);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
     return rv;
   }
@@ -257,7 +262,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   /* add random bytes at the end (without length marker) */
   rv=_addRandomBytes(tbuf, 0);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
     return rv;
   }
@@ -267,7 +272,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   x=(len+7+12) & ~0x7;
   rv=GWEN_Padd_PaddWithIso9796_2(tbuf, x);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
     return rv;
   }
@@ -279,7 +284,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
 	     xbuf,
 	     cryptIterations);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(xbuf);
     GWEN_Buffer_free(tbuf);
     return rv;
@@ -300,7 +305,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   pDest=(uint8_t*)GWEN_Buffer_GetPosPointer(dst);
   lDest=len;
   rv=_encodeData(p, len, pDest, &lDest, key);
-  if (rv) {
+  if (rv<0) {
     GWEN_Buffer_free(xbuf);
     return rv;
   }
