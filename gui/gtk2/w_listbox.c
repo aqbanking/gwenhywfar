@@ -8,17 +8,16 @@
  ***************************************************************************/
 
 
-
 #define W_LISTBOX_MAX_TYPES 256
 
 
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
-				     GWEN_DIALOG_PROPERTY prop,
-				     int index,
-				     int value,
-				     int doSignal) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int value,
+                                    int doSignal) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -32,6 +31,15 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Focus:
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
+
+  case GWEN_DialogProperty_Value: {
+    GtkTreePath *path;
+
+    path=gtk_tree_path_new_from_indices(value, -1);
+    gtk_tree_view_set_cursor(GTK_TREE_VIEW(g), path, NULL, FALSE);
+    gtk_tree_path_free(path);
+    return 0;
+  }
 
   case GWEN_DialogProperty_SelectionMode: {
     GtkTreeSelection *sel;
@@ -147,8 +155,13 @@ int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
 
       idxlist=gtk_tree_path_get_indices(path);
       if (idxlist!=NULL) {
-	return idxlist[0];
+        int res;
+
+        res=idxlist[0];
+        gtk_tree_path_free(path);
+        return res;
       }
+      gtk_tree_path_free(path);
     }
 
     /* no cursor */
@@ -360,13 +373,87 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
 					     GWEN_DIALOG_PROPERTY prop,
 					     int index,
 					     const char *defaultValue) {
-  GtkLabel *g;
+  GtkWidget *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
-  case GWEN_DialogProperty_Title:
+  case GWEN_DialogProperty_Title: {
+    GList *cols;
+
+    cols=gtk_tree_view_get_columns(GTK_TREE_VIEW(g));
+    if (cols) {
+      GList *le;
+      GWEN_BUFFER *tbuf;
+      int cnt=0;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      le=g_list_first(cols);
+      while(le) {
+        const gchar *s;
+
+        if (cnt)
+          GWEN_Buffer_AppendByte(tbuf, '\t');
+        s=gtk_tree_view_column_get_title(GTK_TREE_VIEW_COLUMN(le));
+        if (s && *s)
+          GWEN_Buffer_AppendString(tbuf, s);
+        cnt++;
+        le=g_list_next(le);
+      } /* while */
+      GWEN_Widget_SetText(w, GTK2_DIALOG_STRING_TITLE, GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+
+      g_list_free(cols);
+      return GWEN_Widget_GetText(w, GTK2_DIALOG_STRING_TITLE);
+    }
+    return defaultValue;
+  }
+
+  case GWEN_DialogProperty_Value: {
+    GtkTreePath *path;
+
+    path=gtk_tree_path_new_from_indices(index, -1);
+    if (path!=NULL) {
+      GtkListStore *sto;
+      GtkTreeIter iter;
+
+      sto=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(g)));
+      if (gtk_tree_model_get_iter(GTK_TREE_MODEL(sto), &iter, path)) {
+        GList *cols;
+
+        cols=gtk_tree_view_get_columns(GTK_TREE_VIEW(g));
+        if (cols) {
+          GList *le;
+          GWEN_BUFFER *tbuf;
+          int cnt=0;
+
+          tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          le=g_list_first(cols);
+          while(le) {
+            gchar *s;
+
+            if (cnt)
+              GWEN_Buffer_AppendByte(tbuf, '\t');
+            gtk_tree_model_get(GTK_TREE_MODEL(sto), &iter, cnt, &s, -1, NULL);
+            GWEN_Buffer_AppendString(tbuf, s);
+            g_free(s);
+            cnt++;
+            le=g_list_next(le);
+          } /* while */
+          GWEN_Widget_SetText(w, GTK2_DIALOG_STRING_VALUE, GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+
+          g_list_free(cols);
+          return GWEN_Widget_GetText(w, GTK2_DIALOG_STRING_VALUE);
+        }
+      }
+
+      gtk_tree_path_free(path);
+    }
+    return defaultValue;
+  }
+
   default:
     break;
   }

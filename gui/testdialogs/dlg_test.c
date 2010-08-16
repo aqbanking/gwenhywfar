@@ -149,8 +149,33 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeActivated:
     fprintf(stderr, "Activated\n");
     if (strcasecmp(sender, "listbox1")==0) {
-      fprintf(stderr, "Selected list entry %d\n",
-	      GWEN_Dialog_GetIntProperty(dlg, "listbox1", GWEN_DialogProperty_Value, 0, -1));
+      int idx;
+
+      idx=GWEN_Dialog_GetIntProperty(dlg, "listbox1", GWEN_DialogProperty_Value, 0, -1);
+      fprintf(stderr, "Selected list entry %d\n", idx);
+      if (idx>=0) {
+        const char *s;
+
+        s=GWEN_Dialog_GetCharProperty(dlg, "listbox1", GWEN_DialogProperty_Value, idx, NULL);
+        if (s && *s) {
+          fprintf(stderr, "Text of selected list entry %d: [%s]\n", idx, s);
+        }
+      }
+    }
+    else if (strcasecmp(sender, "combo1")==0) {
+      int idx;
+
+      idx=GWEN_Dialog_GetIntProperty(dlg, "combo1", GWEN_DialogProperty_Value, 0, -1);
+      fprintf(stderr, "Selected list entry %d\n", idx);
+      if (idx>=0) {
+        const char *s;
+
+        s=GWEN_Dialog_GetCharProperty(dlg, "combo1", GWEN_DialogProperty_Value, idx, NULL);
+        if (s && *s) {
+          fprintf(stderr, "Text of selected list entry %d: [%s]\n", idx, s);
+        }
+      }
+
     }
     else if (strcasecmp(sender, "okButton")==0)
       return GWEN_DialogEvent_ResultAccept;

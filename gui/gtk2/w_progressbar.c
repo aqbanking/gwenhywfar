@@ -52,42 +52,61 @@ int Gtk2Gui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
     return 0;
 
   case GWEN_DialogProperty_Value: {
-    gdouble d;
-    char numbuf[32];
 
     xw->currentValue=value;
-    d=(gdouble)(xw->currentValue-xw->minValue)/(gdouble)(xw->maxValue);
-    gtk_progress_bar_set_fraction(g, d);
-    snprintf(numbuf, sizeof(numbuf)-1, "%d %%", (int)(d*100.0));
-    numbuf[sizeof(numbuf)-1]=0;
-    gtk_progress_bar_set_text(g, numbuf);
+    if (xw->maxValue) {
+      gdouble d;
+      char numbuf[32];
+
+      d=(gdouble)(xw->currentValue-xw->minValue)/(gdouble)(xw->maxValue);
+      gtk_progress_bar_set_fraction(g, d);
+      snprintf(numbuf, sizeof(numbuf)-1, "%d %%", (int)(d*100.0));
+      numbuf[sizeof(numbuf)-1]=0;
+      gtk_progress_bar_set_text(g, numbuf);
+    }
+    else {
+      gtk_progress_bar_set_fraction(g, 0.0);
+      gtk_progress_bar_set_text(g, "");
+    }
     return 0;
   }
 
   case GWEN_DialogProperty_MinValue: {
-    gdouble d;
-    char numbuf[32];
-
     xw->minValue=value;
-    d=(gdouble)(xw->currentValue-xw->minValue)/(gdouble)(xw->maxValue);
-    gtk_progress_bar_set_fraction(g, d);
-    snprintf(numbuf, sizeof(numbuf)-1, "%d %%", (int)(d*100.0));
-    numbuf[sizeof(numbuf)-1]=0;
-    gtk_progress_bar_set_text(g, numbuf);
+    if (xw->maxValue) {
+      gdouble d;
+      char numbuf[32];
+
+      d=(gdouble)(xw->currentValue-xw->minValue)/(gdouble)(xw->maxValue);
+      gtk_progress_bar_set_fraction(g, d);
+      snprintf(numbuf, sizeof(numbuf)-1, "%d %%", (int)(d*100.0));
+      numbuf[sizeof(numbuf)-1]=0;
+      gtk_progress_bar_set_text(g, numbuf);
+    }
+    else {
+      gtk_progress_bar_set_fraction(g, 0.0);
+      gtk_progress_bar_set_text(g, "");
+    }
     return 0;
   }
 
   case GWEN_DialogProperty_MaxValue: {
-    gdouble d;
-    char numbuf[32];
-
     xw->maxValue=value;
-    d=(gdouble)(xw->currentValue-xw->minValue)/(gdouble)(xw->maxValue);
-    gtk_progress_bar_set_fraction(g, d);
-    snprintf(numbuf, sizeof(numbuf)-1, "%d %%", (int)(d*100.0));
-    numbuf[sizeof(numbuf)-1]=0;
-    gtk_progress_bar_set_text(g, numbuf);
-    return 0;
+    if (xw->maxValue) {
+      gdouble d;
+      char numbuf[32];
+
+      d=(gdouble)(xw->currentValue-xw->minValue)/(gdouble)(xw->maxValue);
+      gtk_progress_bar_set_fraction(g, d);
+      snprintf(numbuf, sizeof(numbuf)-1, "%d %%", (int)(d*100.0));
+      numbuf[sizeof(numbuf)-1]=0;
+      gtk_progress_bar_set_text(g, numbuf);
+      return 0;
+    }
+    else {
+      gtk_progress_bar_set_fraction(g, 0.0);
+      gtk_progress_bar_set_text(g, "");
+    }
   }
 
   default:

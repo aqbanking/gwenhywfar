@@ -8,6 +8,15 @@
  ***************************************************************************/
 
 
+typedef struct W_COMBOBOX W_COMBOBOX;
+struct W_COMBOBOX {
+  GWEN_STRINGLIST *entries;
+};
+
+
+GWEN_INHERIT(GWEN_WIDGET, W_COMBOBOX)
+
+
 
 
 static GWENHYWFAR_CB
@@ -17,6 +26,11 @@ int Gtk2Gui_WComboBox_SetIntProperty(GWEN_WIDGET *w,
 				     int value,
 				     int doSignal) {
   GtkWidget *g;
+  W_COMBOBOX *xw;
+
+  assert(w);
+  xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_COMBOBOX, w);
+  assert(xw);
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
@@ -40,6 +54,7 @@ int Gtk2Gui_WComboBox_SetIntProperty(GWEN_WIDGET *w,
     store=GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(g)));
     assert(store);
     gtk_list_store_clear(store);
+    GWEN_StringList_Clear(xw->entries);
     return 0;
   }
 
@@ -115,25 +130,19 @@ int Gtk2Gui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
 				      const char *value,
 				      int doSignal) {
   GtkWidget *g;
+  W_COMBOBOX *xw;
+
+  assert(w);
+  xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_COMBOBOX, w);
+  assert(xw);
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
-  case GWEN_DialogProperty_Value: {
-    GtkListStore *store;
-    GtkTreeIter iter;
-
-    store=GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(g)));
-    assert(store);
-
-    if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(g), &iter)) {
-      gtk_list_store_set(store, &iter, value, -1);
-      return 0;
-    }
-    else
-      return GWEN_ERROR_NOT_FOUND;
-  }
+  case GWEN_DialogProperty_Value:
+    /* undefined */
+    break;
 
   case GWEN_DialogProperty_AddValue: {
     GtkListStore *store;
@@ -145,6 +154,7 @@ int Gtk2Gui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
     DBG_ERROR(0, "Adding value [%s]", value);
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter, 0, value, -1);
+    GWEN_StringList_AppendString(xw->entries, value, 0, 0);
     return 0;
   }
 
@@ -154,6 +164,7 @@ int Gtk2Gui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
     store=GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(g)));
     assert(store);
     gtk_list_store_clear(store);
+    GWEN_StringList_Clear(xw->entries);
     return 0;
   }
 
@@ -175,22 +186,24 @@ const char* Gtk2Gui_WComboBox_GetCharProperty(GWEN_WIDGET *w,
 					      int index,
 					      const char *defaultValue) {
   GtkWidget *g;
+  W_COMBOBOX *xw;
+
+  assert(w);
+  xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_COMBOBOX, w);
+  assert(xw);
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
   case GWEN_DialogProperty_Value: {
-    gchar *s;
+    const char *s;
 
-    s=gtk_combo_box_get_active_text(GTK_COMBO_BOX(g));
-    if (s) {
-      GWEN_Widget_SetText(w, GTK2_DIALOG_STRING_VALUE, s);
-      g_free(s);
-      return GWEN_Widget_GetText(w, GTK2_DIALOG_STRING_VALUE);
-    }
+    s=GWEN_StringList_StringAt(xw->entries, index);
+    if (s && *s)
+      return s;
     else
-      return NULL;
+      return defaultValue;
   }
 
   default:
@@ -223,7 +236,18 @@ static void changed_handler(GtkWidget *comboBox, gpointer data) {
 
 
 
+static void GWENHYWFAR_CB Gtk2Gui_WComboBox_FreeData(void *bp, void *p) {
+  W_COMBOBOX *xw;
+
+  xw=(W_COMBOBOX*) p;
+  GWEN_StringList_free(xw->entries);
+  GWEN_FREE_OBJECT(xw);
+}
+
+
+
 int Gtk2Gui_WComboBox_Setup(GWEN_WIDGET *w) {
+  W_COMBOBOX *xw;
   GtkWidget *g;
   GtkCellRenderer *cr;
   GtkListStore *store;
@@ -246,6 +270,10 @@ int Gtk2Gui_WComboBox_Setup(GWEN_WIDGET *w) {
   cr=gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT (g), cr, TRUE);
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(g), cr, "text", 0, NULL);
+
+  GWEN_NEW_OBJECT(W_COMBOBOX, xw);
+  GWEN_INHERIT_SETDATA(GWEN_WIDGET, W_COMBOBOX, w, xw, Gtk2Gui_WComboBox_FreeData);
+  xw->entries=GWEN_StringList_new();
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);

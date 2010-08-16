@@ -98,8 +98,11 @@ public:
     case GWEN_DialogProperty_Value:
       return qw->currentIndex();
 
-      default:
-	return Qt4_W_Widget::getIntProperty(prop, index, defaultValue);
+    case GWEN_DialogProperty_ValueCount:
+      return qw->count();
+
+    default:
+      return Qt4_W_Widget::getIntProperty(prop, index, defaultValue);
     }
   };
 
@@ -120,8 +123,9 @@ public:
 
     switch(prop) {
     case GWEN_DialogProperty_Value:
-      qw->setEditText(text);
-      return 0;
+      // undefined
+      break;
+
     case GWEN_DialogProperty_AddValue:
       qw->addItem(text);
       return 0;
@@ -144,15 +148,15 @@ public:
   const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
 			      int index,
 			      const char *defaultValue) {
-    QLabel *qw;
+    QComboBox *qw;
     QString str;
 
-    qw=(QLabel*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
+    qw=(QComboBox*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
     assert(qw);
 
     switch(prop) {
     case GWEN_DialogProperty_Value:
-      str=qw->text();
+      str=qw->itemText(index);
       if (str.isEmpty())
 	return defaultValue;
       else {

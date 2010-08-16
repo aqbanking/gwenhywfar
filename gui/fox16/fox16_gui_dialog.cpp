@@ -986,8 +986,8 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
       switch(prop) {
       case GWEN_DialogProperty_Value:
-	f->setText(strValue);
-        return 0;
+        // undefined
+        break;
 
       case GWEN_DialogProperty_AddValue:
 	{
