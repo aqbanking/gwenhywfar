@@ -215,7 +215,7 @@
  * The following properties are handled by this widget.
  * <ul>
  *   <li>
- *     GWEN_DialogProperty_Value (rw): Text of the currently active entry.
+ *     GWEN_DialogProperty_Value (ro): Text of an entry of a given index.
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_AddChoice (wo): Appends an entry at the end
