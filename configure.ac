@@ -860,63 +860,6 @@ AM_CONDITIONAL(WITH_GUI_GTK2, [test "$with_gui_gtk2" = "yes"])
 
 ###-------------------------------------------------------------------------
 #
-# QT3
-#
-
-UIC3="NO"
-QT_BINDIR=""
-
-case "$gwenhywfar_guis" in 
-  *qt3*)
-    AQ_CHECK_QT3
-    if test "$have_qt3" = "yes"; then
-      # Define this macro to disable the cast from QString to const char
-      # which implicitly uses latin1()!
-      AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
-    fi
-    
-    dnl windows/mingw doesnt have the yes program, so add this emulation
-    AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
-    
-    dnl Store the bin dir for the windows dlls
-    QT_BINDIR="` echo ${qt3_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
-  
-    dnl Check for potential qt4 environment, but only if moc is from qt4
-    dnl (watch out: the outside square parenteses are vitally important here!)
-    MOC_VERSION=["` ${qt3_moc} -v 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" = "3"; then
-      UIC3="${qt3_uic}"
-    else
-      AC_PATH_PROGS([UIC3], [uic3 uic], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-      AC_PATH_PROG([QT3TO4], [qt3to4], [NO], ["` echo ${qt3_moc} | ${SED} 's-/moc--' `":$PATH])
-    fi
-  
-    dnl Make sure moc and uic come from the same Qt version
-    dnl (watch out: the outside square parenteses are vitally important here!)
-    UIC_VERSION=["` ${UIC3} -version 2>&1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-    if test "` echo ${MOC_VERSION} | cut -d. -f1 `" -ne \
-          "` echo ${UIC_VERSION} | cut -d. -f1 `" \
-       -o "` echo ${MOC_VERSION} | cut -d. -f2 `" -ne \
-          "` echo ${UIC_VERSION} | cut -d. -f2 `"  ; then
-      AC_MSG_ERROR([Qt version mixup: ${qt3_moc} is from qt-${MOC_VERSION}, ${UIC3} is from qt-${UIC_VERSION}. Fix this by specifying the bin directory of the desired qt version by --with-qt3-moc, which will be used for all qt tools.])
-    fi
-
-    AC_DEFINE(BUILD_GUI_QT3, 1, [if gwen gui for qt3 is built])
-    with_gui_qt3="yes"
-    ;;
-  *)
-    ;;
-esac
-
-dnl Store the bin dir for the windows dlls
-AC_SUBST(QT_BINDIR)
-AC_SUBST(with_gui_qt3)
-AM_CONDITIONAL(WITH_GUI_QT3, [test "$with_gui_qt3" = "yes"])
-
-
-
-###-------------------------------------------------------------------------
-#
 # QT4
 #
 
@@ -1396,8 +1339,6 @@ AC_CONFIG_FILES([Doxyfile
                  test/Makefile
                  gui/Makefile
                  gui/cpp/Makefile
-                 gui/qt3/Makefile
-                 gui/qt3/gwengui-qt3.pc
                  gui/qt4/Makefile
                  gui/qt4/gwengui-qt4.pc
                  gui/fox16/Makefile
@@ -1450,25 +1391,6 @@ for d in gui/cpp; do
       	 ;;
       *)
     	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-cpp/${f}"
-         ;;
-    esac
-  done
-done
-
-
-
-# qt3
-#
-rm -Rf gwenhywfar4/gwen-gui-qt3 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-qt3
-for d in gui/qt3; do
-  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
-  for f in ${hfiles}; do
-    case ${f} in
-      *_l.hpp | *_p.hpp | qt3_gui_*.hpp)
-      	 ;;
-      *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-qt3/${f}"
          ;;
     esac
   done
