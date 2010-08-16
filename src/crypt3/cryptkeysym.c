@@ -163,25 +163,34 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_Generate(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
   xk->algoValid=1;
   xk->mode=mode;
 
-#if 0
-  kbytes=keySize/8;
-  if (keySize % 8)
-      kbytes++;
-#else
-  kbytes=keySize;
-#endif
-  keyData=gcry_random_bytes(kbytes, q);
+  while(1) {
+    kbytes=keySize;
+    keyData=gcry_random_bytes(kbytes, q);
 
-  /* store key data */
-  xk->keyData=keyData;
-  xk->keyLen=kbytes;
+    /* store key data */
+    xk->keyData=keyData;
+    xk->keyLen=kbytes;
 
-  /* set key in algo */
-  err=gcry_cipher_setkey(xk->algoHandle, xk->keyData, xk->keyLen);
-  if (err) {
-    DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_setkey(): %s", gcry_strerror(err));
-    GWEN_Crypt_Key_free(k);
-    return NULL;
+    /* set key in algo */
+    err=gcry_cipher_setkey(xk->algoHandle, xk->keyData, xk->keyLen);
+    if (err) {
+      if ((err & GPG_ERR_CODE_MASK)==GPG_ERR_WEAK_KEY) {
+	DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_setkey(): weak key, will try again");
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_setkey(): %d [%s]", err, gcry_strerror(err));
+	GWEN_Crypt_Key_free(k);
+	return NULL;
+      }
+    }
+    else
+      break;
+
+    /* try it again */
+    memset(xk->keyData, 0, xk->keyLen);
+    free(xk->keyData);
+    xk->keyData=NULL;
+    xk->keyLen=0;
   }
 
   return k;

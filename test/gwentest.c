@@ -4194,6 +4194,7 @@ int testTresor1(int argc, char **argv) {
   const char *testData="This is the actual test data";
   GWEN_BUFFER *buf1;
   GWEN_BUFFER *buf2;
+  int l;
 
   buf1=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_SmallTresor_Encrypt((const uint8_t*) testData,
@@ -4220,8 +4221,78 @@ int testTresor1(int argc, char **argv) {
 	    "ERROR in checkTresor1: Could not decrypt (%d)\n", rv);
     return 2;
   }
-  DBG_ERROR(0, "Got this:");
-  GWEN_Buffer_Dump(buf2, stderr, 2);
+
+  l=strlen(testData);
+  if (l!=GWEN_Buffer_GetUsedBytes(buf2)) {
+    fprintf(stderr, "Bad result (len):\n");
+    GWEN_Buffer_Dump(buf2, stderr, 2);
+    return 2;
+  }
+
+  if (strcmp(testData, GWEN_Buffer_GetStart(buf2))!=0) {
+    fprintf(stderr, "Bad result (content):\n");
+    GWEN_Buffer_Dump(buf2, stderr, 2);
+    return 2;
+  }
+
+  fprintf(stderr, "Finished.\n");
+
+  return 0;
+}
+
+
+
+int testTresor2(int argc, char **argv) {
+  int i;
+
+  for (i=0; i<100; i++) {
+    int rv;
+    const char *testData="This is the actual test data";
+    GWEN_BUFFER *buf1;
+    GWEN_BUFFER *buf2;
+    int l;
+
+    fprintf(stderr, "Round %d...\n", i);
+    buf1=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_SmallTresor_Encrypt((const uint8_t*) testData,
+                                strlen(testData),
+                                "TESTPASSWORD",
+                                buf1,
+                                1546,
+                                1937);
+    if (rv<0) {
+      fprintf(stderr,
+              "ERROR in checkTresor1: Could not encrypt (%d)\n", rv);
+      return 2;
+    }
+  
+    buf2=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_SmallTresor_Decrypt((const uint8_t*) GWEN_Buffer_GetStart(buf1),
+                                GWEN_Buffer_GetUsedBytes(buf1),
+                                "TESTPASSWORD",
+                                buf2,
+                                1546,
+                                1937);
+    if (rv<0) {
+      fprintf(stderr,
+              "ERROR in checkTresor1: Could not decrypt (%d)\n", rv);
+      return 2;
+    }
+  
+    l=strlen(testData);
+    if (l!=GWEN_Buffer_GetUsedBytes(buf2)) {
+      fprintf(stderr, "Bad result (len):\n");
+      GWEN_Buffer_Dump(buf2, stderr, 2);
+      return 2;
+    }
+  
+    if (strcmp(testData, GWEN_Buffer_GetStart(buf2))!=0) {
+      fprintf(stderr, "Bad result (content):\n");
+      GWEN_Buffer_Dump(buf2, stderr, 2);
+      return 2;
+    }
+    fprintf(stderr, "Round %d... Ok.\n", i);
+  }
 
   fprintf(stderr, "Finished.\n");
 
@@ -4421,6 +4492,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "tresor1")==0) {
     rv=testTresor1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "tresor2")==0) {
+    rv=testTresor2(argc, argv);
   }
   else if (strcasecmp(argv[1], "hashtree")==0) {
     rv=testHashTree(argc, argv);
