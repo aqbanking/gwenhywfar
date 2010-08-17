@@ -811,9 +811,19 @@ int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio) {
     return rv;
   }
 
+  if (*GWEN_Buffer_GetStart(tbuf)==0) {
+    GWEN_Buffer_Reset(tbuf);
+    rv=GWEN_SyncIo_Http_ReadLine(sio, tbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+  }
+
   if (1!=sscanf(GWEN_Buffer_GetStart(tbuf), "%x", &csize)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad data received (invalid chunksize specifier: [%s])",
-		GWEN_Buffer_GetStart(tbuf));
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad data received (invalid chunksize specifier: [%s])",
+              GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
     return GWEN_ERROR_BAD_DATA;
   }
@@ -835,7 +845,7 @@ int GWEN_SyncIo_Http_ReadChunk(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
   assert(xio);
 
-  DBG_INFO(GWEN_LOGDOMAIN, "Reading chunk");
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading chunk (%d bytes)", (int) size);
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   assert(baseIo);
 
