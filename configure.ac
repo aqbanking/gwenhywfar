@@ -1344,6 +1344,7 @@ AC_CONFIG_FILES([Doxyfile
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
                  gui/gtk2/Makefile
+                 gui/gtk2/gwengui-gtk2.pc
                  gui/cocoa/Makefile
                  gui/testdialogs/Makefile
 		])
