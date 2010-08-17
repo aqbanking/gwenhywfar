@@ -138,7 +138,6 @@ int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess);
  * @param httpCommand HTTP command to send (e.g. "GET", "POST")
  * @param buf pointer to the http body data to send
  * @param blen size of the http body data to send (might be 0)
- * @param timeout timeout in milliseconds
  */
 GWENHYWFAR_API
 int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
