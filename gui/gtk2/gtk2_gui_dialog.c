@@ -175,7 +175,9 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
   GTK2_GUI_DIALOG *xdlg;
   GWEN_WIDGET_TREE *wtree;
   GWEN_WIDGET *w;
+  GtkWindow *gw;
   int rv;
+  GList *tll;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
@@ -198,7 +200,26 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
     return rv;
   }
 
-  xdlg->mainWidget=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  gw=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  xdlg->mainWidget=GTK_WIDGET(gw);
+
+  tll=gtk_window_list_toplevels();
+  if (tll) {
+    GList* element;
+    GtkWindow *topLevel=NULL;
+
+    for (element = tll; element; element = g_list_next(element)) {
+      GtkWindow* win = GTK_WINDOW(element->data);
+      if (gtk_window_is_active(win)) {
+	topLevel=win;
+	break;
+      }
+    }
+    g_list_free(tll);
+
+    if (topLevel)
+      gtk_window_set_transient_for(gw, topLevel);
+  }
 
   return 0;
 }
