@@ -395,7 +395,7 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
 
         if (cnt)
           GWEN_Buffer_AppendByte(tbuf, '\t');
-        s=gtk_tree_view_column_get_title(GTK_TREE_VIEW_COLUMN(le));
+        s=gtk_tree_view_column_get_title(GTK_TREE_VIEW_COLUMN(le->data));
         if (s && *s)
           GWEN_Buffer_AppendString(tbuf, s);
         cnt++;
