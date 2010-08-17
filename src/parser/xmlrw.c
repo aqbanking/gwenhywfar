@@ -789,7 +789,8 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
     GWEN_FASTBUFFER_PEEKBYTE(fb, rv);
     if (rv<0) {
       if (rv!=GWEN_ERROR_EOF || !oks) {
-	DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", rv);
+        DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d), after reading %d bytes",
+                  rv, (int) GWEN_FastBuffer_GetBytesRead(fb));
 	return rv;
       }
       return 0;
@@ -979,6 +980,7 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath, uint32_t flags) {
 
 
 GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s, int len, uint32_t flags) {
+#if 0
   GWEN_XML_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
   GWEN_XMLNODE *n;
@@ -1004,6 +1006,37 @@ GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s, int len, uint32_t flags) {
   GWEN_XmlCtx_free(ctx);
 
   return n;
+#else
+  GWEN_XML_CONTEXT *ctx;
+  GWEN_SYNCIO *sio;
+  GWEN_XMLNODE *n;
+  int rv;
+  GWEN_BUFFER *tbuf;
+
+  tbuf=GWEN_Buffer_new((char*)s, len, len, 0);
+  /* static buffer, don't resize */
+  GWEN_Buffer_SubMode(tbuf, GWEN_BUFFER_MODE_DYNAMIC);
+  GWEN_Buffer_AddMode(tbuf, GWEN_BUFFER_MODE_READONLY);
+  sio=GWEN_SyncIo_Memory_new(tbuf, 0);
+
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "doc");
+  ctx=GWEN_XmlCtxStore_new(n, flags);
+  rv=GWEN_XML__ReadAllFromIo(ctx, sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XmlCtx_free(ctx);
+    GWEN_XMLNode_free(n);
+    GWEN_SyncIo_free(sio);
+    GWEN_Buffer_free(tbuf);
+    return NULL;
+  }
+
+  GWEN_XmlCtx_free(ctx);
+  GWEN_SyncIo_free(sio);
+  GWEN_Buffer_free(tbuf);
+
+  return n;
+#endif
 }
 
 
