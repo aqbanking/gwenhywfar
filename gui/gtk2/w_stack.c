@@ -9,6 +9,15 @@
 
 
 
+/*
+ * Note: This is a special use case for gtk_notebook.
+ * To use it as a WidgetStack we have to disable drawing od tabs
+ * and borders by calling:
+ * - gtk_notebook_set_show_tabs(GTK_NOTEBOOK(g), FALSE);
+ * - gtk_notebook_set_show_border(GTK_NOTEBOOK(g), FALSE);
+ *
+ */
+
 
 
 static GWENHYWFAR_CB
