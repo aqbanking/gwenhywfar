@@ -30,9 +30,9 @@ int Gtk2Gui_WGridLayout_SetIntProperty(GWEN_WIDGET *w,
 				       int index,
 				       int value,
 				       int doSignal) {
-  GtkLabel *g;
+  GtkWidget *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -62,9 +62,9 @@ int Gtk2Gui_WGridLayout_GetIntProperty(GWEN_WIDGET *w,
 				       GWEN_DIALOG_PROPERTY prop,
 				       int index,
 				       int defaultValue) {
-  GtkLabel *g;
+  GtkWidget *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -93,9 +93,9 @@ int Gtk2Gui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
 					int index,
 					const char *value,
 					int doSignal) {
-  GtkLabel *g;
+  GtkWidget *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   DBG_WARN(GWEN_LOGDOMAIN,
@@ -111,9 +111,9 @@ const char* Gtk2Gui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
 						GWEN_DIALOG_PROPERTY prop,
 						int index,
 						const char *defaultValue) {
-  GtkLabel *g;
+  GtkWidget *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   DBG_WARN(GWEN_LOGDOMAIN,

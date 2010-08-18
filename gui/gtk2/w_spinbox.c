@@ -25,14 +25,14 @@ int Gtk2Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
 					int index,
 					int value,
 					int doSignal) {
-  GtkProgressBar *g;
+  GtkWidget *g;
   W_SPINBOX *xw;
 
   assert(w);
   xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_SPINBOX, w);
   assert(xw);
 
-  g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -79,14 +79,14 @@ int Gtk2Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
 					GWEN_DIALOG_PROPERTY prop,
 					int index,
 					int defaultValue) {
-  GtkProgressBar *g;
+  GtkWidget *g;
   W_SPINBOX *xw;
 
   assert(w);
   xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_SPINBOX, w);
   assert(xw);
 
-  g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {

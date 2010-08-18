@@ -17,9 +17,9 @@ int Gtk2Gui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
 				       int index,
 				       int value,
 				       int doSignal) {
-  GtkButton *g;
+  GtkWidget *g;
 
-  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -54,9 +54,9 @@ int Gtk2Gui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
 				       GWEN_DIALOG_PROPERTY prop,
 				       int index,
 				       int defaultValue) {
-  GtkButton *g;
+  GtkWidget *g;
 
-  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -128,9 +128,9 @@ const char* Gtk2Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
 					      GWEN_DIALOG_PROPERTY prop,
 					      int index,
 					      const char *defaultValue) {
-  GtkButton *g;
+  GtkWidget *g;
 
-  g=GTK_BUTTON(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -155,7 +155,6 @@ const char* Gtk2Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
     return defaultValue;
   }
 
-    return gtk_button_get_label(g);
   default:
     break;
   }
