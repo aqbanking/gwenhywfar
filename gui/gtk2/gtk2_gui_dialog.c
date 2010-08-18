@@ -202,6 +202,8 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
 
   gw=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   gtk_window_set_type_hint(GTK_WINDOW(gw), GDK_WINDOW_TYPE_HINT_DIALOG);
+  gtk_window_set_position (GTK_WINDOW (gw), GTK_WIN_POS_CENTER_ON_PARENT);
+  /*gtk_window_set_keep_above(GTK_WINDOW(gw), TRUE);*/
   xdlg->mainWidget=GTK_WIDGET(gw);
 
   tll=gtk_window_list_toplevels();
