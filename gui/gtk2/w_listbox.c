@@ -505,6 +505,9 @@ int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w) {
   wParent=GWEN_Widget_Tree_GetParent(w);
 
   gScroll=gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gScroll),
+                                 GTK_POLICY_AUTOMATIC,
+                                 GTK_POLICY_AUTOMATIC);
   g=gtk_tree_view_new();
   gtk_tree_view_set_headers_clickable(GTK_TREE_VIEW(g), TRUE);
   gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(g), TRUE);
