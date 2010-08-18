@@ -165,12 +165,14 @@ if test "$OSYSTEM" = "osx"; then
   SYSCONF_FRAMEWORK="-framework SystemConfiguration"
   APPKIT_FRAMEWORK="-framework AppKit"
   COREDATA_FRAMEWORK="-framework CoreData"
+  WEBKIT_FRAMEWORK="-framework WebKit"
 fi
 AC_SUBST(COCOA_FRAMEWORK)
 AC_SUBST(FOUNDATION_FRAMEWORK)
 AC_SUBST(SYSCONF_FRAMEWORK)
 AC_SUBST(APPKIT_FRAMEWORK)
 AC_SUBST(COREDATA_FRAMEWORK)
+AC_SUBST(WEBKIT_FRAMEWORK)
 
 
 ###-------------------------------------------------------------------------
