@@ -446,8 +446,10 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
             if (cnt)
               GWEN_Buffer_AppendByte(tbuf, '\t');
             gtk_tree_model_get(GTK_TREE_MODEL(sto), &iter, cnt, &s, -1, NULL);
-            GWEN_Buffer_AppendString(tbuf, s);
-            g_free(s);
+            if (s) {
+	      GWEN_Buffer_AppendString(tbuf, s);
+	      g_free(s);
+	    }
             cnt++;
             le=g_list_next(le);
           } /* while */
