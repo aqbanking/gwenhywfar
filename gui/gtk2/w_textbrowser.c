@@ -205,8 +205,14 @@ int Gtk2Gui_WTextBrowser_Setup(GWEN_WIDGET *w) {
   g=gtk_text_view_new();
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(gs), g);
 
-  if (s && *s)
-    gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)), s, -1);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+    Gtk2Gui_GetRawText(s, tbuf);
+    gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)), GWEN_Buffer_GetStart(tbuf), -1);
+    GWEN_Buffer_free(tbuf);
+  }
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) gs);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);

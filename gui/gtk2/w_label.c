@@ -148,12 +148,18 @@ int Gtk2Gui_WLabel_Setup(GWEN_WIDGET *w) {
   const char *s;
   uint32_t flags;
   GWEN_WIDGET *wParent;
+  GWEN_BUFFER *tbuf;
 
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
   s=GWEN_Widget_GetText(w, 0);
 
-  g=gtk_label_new(s);
+  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  if (s && *s)
+    Gtk2Gui_GetRawText(s, tbuf);
+
+  g=gtk_label_new(GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 
