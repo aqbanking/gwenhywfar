@@ -130,7 +130,7 @@ int Gtk2Gui_WTabBook_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
   gChild=GTK_WIDGET(GWEN_Widget_GetImplData(wChild, GTK2_DIALOG_WIDGET_REAL));
   assert(gChild);
 
-  s=GWEN_Widget_GetText(w, 0);
+  s=GWEN_Widget_GetText(wChild, 0);
 
   gtk_notebook_append_page(GTK_NOTEBOOK(g), gChild, (s && *s)?gtk_label_new(s):NULL);
 
