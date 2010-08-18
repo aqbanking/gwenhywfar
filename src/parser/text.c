@@ -1037,6 +1037,39 @@ int GWEN_Text_Compare(const char *s1, const char *s2, int ign) {
 
 
 
+const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle) {
+  while(*haystack) {
+    while(*haystack && tolower(*haystack)!=tolower(*needle))
+      haystack++;
+    if (*haystack) {
+      const char *t;
+      const char *s;
+
+      /* now haystack points to an area which begins with *needle */
+      t=haystack;
+      s=needle;
+      t++;
+      s++;
+      while(*t && *s && (tolower(*t)==tolower(*s))) {
+	t++;
+	s++;
+      }
+      if (*s==0)
+	return haystack;
+    }
+    else
+      /* not found */
+      break;
+    /* no match here, advance haystack */
+    haystack++;
+  }
+
+  /* not found */
+  return NULL;
+}
+
+
+
 
 int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
                           const char *p, unsigned int *ppos,

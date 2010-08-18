@@ -251,6 +251,14 @@ int GWEN_Text_Compare(const char *s1, const char *s2, int ign);
 
 
 /**
+ * This function provides the functionality of strcasestr() which is not available
+ * on some systems.
+ */
+GWENHYWFAR_API
+const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle);
+
+
+/**
  * This function compares two string and returns the number of matches or
  * -1 on error.
  * @param w string to compare
