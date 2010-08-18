@@ -201,6 +201,7 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
   }
 
   gw=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  gtk_window_set_type_hint(GTK_WINDOW(gw), GDK_WINDOW_TYPE_HINT_DIALOG);
   xdlg->mainWidget=GTK_WIDGET(gw);
 
   tll=gtk_window_list_toplevels();
@@ -217,8 +218,14 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
     }
     g_list_free(tll);
 
-    if (topLevel)
+    if (topLevel) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Found active window found [%s]",
+                gtk_window_get_title(topLevel));
       gtk_window_set_transient_for(gw, topLevel);
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No active window found...");
+    }
   }
 
   return 0;
