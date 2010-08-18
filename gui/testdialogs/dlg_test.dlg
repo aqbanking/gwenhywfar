@@ -89,19 +89,19 @@
             <widget type="pushButton" name="prevPageButton" text="Previous Page"  />
             <widget type="pushButton" name="nextPageButton" text="Next Page"  />
           </widget>
-          <widget type="widgetStack" name="stack1" flags="fillX fillY" >
-            <widget type="vlayout" flags="fillX fillY" >
-              <widget type="label" name="label7.1" text="Page 1" flags="fillX fillY" />
+          <widget type="widgetStack" name="stack1" flags="fillX" >
+            <widget type="vlayout" flags="fillX" >
+              <widget type="label" name="label7.1" text="Page 1" flags="fillX" />
             </widget>
-            <widget type="vlayout" flags="fillX fillY" >
-              <widget type="label" name="label7.2" text="Page 2" flags="fillX fillY" />
+            <widget type="vlayout" flags="fillX" >
+              <widget type="label" name="label7.2" text="Page 2" flags="fillX" />
             </widget>
-            <widget type="vlayout" flags="fillX fillY" >
-              <widget type="label" name="label7.3" text="Page 3" flags="fillX fillY" />
+            <widget type="vlayout" flags="fillX" >
+              <widget type="label" name="label7.3" text="Page 3" flags="fillX" />
             </widget>
           </widget>
-          
-          <widget type="vspacer" name="vspacer1" flags="fillY" />
+
+          <widget type="textBrowser" name="textbrowser1" flags="fillX fillY" />
         </widget>
       </widget>
 
