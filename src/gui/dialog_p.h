@@ -49,6 +49,8 @@ struct GWEN_DIALOG {
   GWEN_DIALOG_LIST *subDialogs;
   GWEN_WIDGET *parentWidget;
 
+  GWEN_WIDGET *firstSubWidget;
+
   uint32_t guiId;
 
   GWEN_DB_NODE *dbPreferences;

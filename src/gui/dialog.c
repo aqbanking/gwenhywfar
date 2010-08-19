@@ -314,6 +314,8 @@ int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
     subRoot=GWEN_Widget_Tree_GetFirst(subdlg->widgets);
     if (subRoot) {
       while( (cw=GWEN_Widget_Tree_GetFirstChild(subRoot)) ) {
+	if (subdlg->firstSubWidget==NULL)
+	  subdlg->firstSubWidget=cw;
 	GWEN_Widget_Tree_Del(cw);
 	GWEN_Widget_Tree_AddChild(wparent, cw);
       }
@@ -442,14 +444,21 @@ GWEN_WIDGET *GWEN_Dialog_FindWidgetByName(const GWEN_DIALOG *dlg, const char *na
   assert(dlg->refCount);
   assert(dlg->widgets);
 
+#if 0
   if (dlg->parentWidget)
     w=dlg->parentWidget;
   else
     w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
-
-  /* empty name always corresponds to the root */
-  if (name==NULL || *name==0)
-    return w;
+#else
+  if (dlg->firstSubWidget)
+    w=dlg->firstSubWidget;
+  else {
+    w=GWEN_Widget_Tree_GetFirst(dlg->widgets);
+    /* empty name always corresponds to the root */
+    if (name==NULL || *name==0)
+      return w;
+  }
+#endif
 
   while(w) {
     const char *s;

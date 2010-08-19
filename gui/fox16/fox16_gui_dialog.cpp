@@ -537,6 +537,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_DialogProperty_SelectionState:
     case GWEN_DialogProperty_SortDirection:
     case GWEN_DialogProperty_Sort:
+    case GWEN_DialogProperty_ToolTip:
     case GWEN_DialogProperty_None:
     case GWEN_DialogProperty_Unknown:
       ;
@@ -845,6 +846,7 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
     case GWEN_DialogProperty_SortDirection:
     case GWEN_DialogProperty_Sort:
     case GWEN_DialogProperty_Visibility:
+    case GWEN_DialogProperty_ToolTip:
     case GWEN_DialogProperty_None:
     case GWEN_DialogProperty_Unknown:
       ;
@@ -937,6 +939,10 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 	f->setText(value);
 	return 0;
 
+      case GWEN_DialogProperty_ToolTip:
+	f->setTipText(htmlValue);
+        return 0;
+
       default:
         break;
       }
@@ -954,6 +960,11 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
       case GWEN_DialogProperty_Value:
 	f->setText(value, doSignal?TRUE:FALSE);
         return 0;
+
+      case GWEN_DialogProperty_ToolTip:
+	f->setTipText(htmlValue);
+        return 0;
+
       default:
 	break;
       }
@@ -971,6 +982,11 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
       case GWEN_DialogProperty_Value:
 	f->setText(strValue);
         return 0;
+
+      case GWEN_DialogProperty_ToolTip:
+	f->setTipText(htmlValue);
+        return 0;
+
       default:
         break;
       }
@@ -988,6 +1004,10 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
       case GWEN_DialogProperty_Value:
         // undefined
         break;
+
+      case GWEN_DialogProperty_ToolTip:
+	f->setTipText(htmlValue);
+        return 0;
 
       case GWEN_DialogProperty_AddValue:
 	{
@@ -1039,6 +1059,11 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
       case GWEN_DialogProperty_Title:
 	f->setText(strValue);
 	return 0;
+
+      case GWEN_DialogProperty_ToolTip:
+	f->setTipText(htmlValue);
+        return 0;
+
       default:
         break;
       }
@@ -1056,6 +1081,11 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
       case GWEN_DialogProperty_Title:
 	f->setText(strValue);
 	return 0;
+
+      case GWEN_DialogProperty_ToolTip:
+	f->setTipText(htmlValue);
+        return 0;
+
       default:
         break;
       }
@@ -1076,6 +1106,11 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
       case GWEN_DialogProperty_Title:
 	f2->setText(strValue);
 	return 0;
+
+      case GWEN_DialogProperty_ToolTip:
+        f2->setTipText(htmlValue);
+        return 0;
+
       default:
         break;
       }
@@ -1133,9 +1168,25 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
       break;
     }
 
+  case GWEN_Widget_TypeSpinBox:
+    {
+      FXSpinner *f;
+
+      f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      assert(f);
+
+      switch(prop) {
+      case GWEN_DialogProperty_ToolTip:
+	f->setTipText(htmlValue);
+        return 0;
+
+      default:
+        break;
+      }
+      break;
+    }
 
   case GWEN_Widget_TypeProgressBar:
-  case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeHSpacer:
   case GWEN_Widget_TypeVSpacer:
   case GWEN_Widget_TypeHLayout:
@@ -1170,6 +1221,7 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_SortDirection:
   case GWEN_DialogProperty_Sort:
   case GWEN_DialogProperty_Visibility:
+  case GWEN_DialogProperty_ToolTip:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
@@ -1555,6 +1607,7 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_SortDirection:
   case GWEN_DialogProperty_Sort:
   case GWEN_DialogProperty_Visibility:
+  case GWEN_DialogProperty_ToolTip:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;

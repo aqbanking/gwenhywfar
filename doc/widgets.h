@@ -116,6 +116,9 @@
  *   <li>
  *     GWEN_DialogProperty_Title (rw): Text of the button.
  *   </li>
+ *   <li>
+ *     GWEN_DialogProperty_ToolTip (wo): Tooltip text.
+ *   </li>
  * </ul>
  *
  *
@@ -138,6 +141,9 @@
  * <ul>
  *   <li>
  *     GWEN_DialogProperty_Value (rw): Entered text.
+ *   </li>
+ *   <li>
+ *     GWEN_DialogProperty_ToolTip (wo): Tooltip text.
  *   </li>
  * </ul>
  *
@@ -176,6 +182,9 @@
  * <ul>
  *   <li>
  *     GWEN_DialogProperty_Value (rw): Entered text.
+ *   </li>
+ *   <li>
+ *     GWEN_DialogProperty_ToolTip (wo): Tooltip text.
  *   </li>
  * </ul>
  *
@@ -219,6 +228,9 @@
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_AddChoice (wo): Appends an entry at the end
+ *   </li>
+ *   <li>
+ *     GWEN_DialogProperty_ToolTip (wo): Tooltip text.
  *   </li>
  * </ul>
  *

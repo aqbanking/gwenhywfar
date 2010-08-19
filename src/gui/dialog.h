@@ -233,6 +233,7 @@ typedef enum {
   GWEN_DialogProperty_SortDirection,
   GWEN_DialogProperty_Sort,
   GWEN_DialogProperty_Visibility,
+  GWEN_DialogProperty_ToolTip,
 
   GWEN_DialogProperty_Unknown=-1
 } GWEN_DIALOG_PROPERTY;
