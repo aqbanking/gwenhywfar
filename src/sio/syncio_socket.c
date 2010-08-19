@@ -41,6 +41,9 @@
 #include <string.h>
 
 
+#define GWEN_SYNCIO_SOCKET_READ_TIMEOUT  60000
+#define GWEN_SYNCIO_SOCKET_WRITE_TIMEOUT 60000
+
 
 GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_SOCKET)
 
@@ -301,7 +304,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
     GWEN_Socket_List2_PushBack(sl, xio->socket);
 
     do {
-      rv=GWEN_Gui_WaitForSockets(sl, NULL, 0, 20000);
+      rv=GWEN_Gui_WaitForSockets(sl, NULL, 0, GWEN_SYNCIO_SOCKET_READ_TIMEOUT);
     } while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
@@ -364,7 +367,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
     GWEN_Socket_List2_PushBack(sl, xio->socket);
 
     do {
-      rv=GWEN_Gui_WaitForSockets(NULL, sl, 0, 20000);
+      rv=GWEN_Gui_WaitForSockets(NULL, sl, 0, GWEN_SYNCIO_SOCKET_WRITE_TIMEOUT);
     } while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv<0) {
