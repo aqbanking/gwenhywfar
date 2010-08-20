@@ -7,8 +7,6 @@
  ***************************************************************************/
 
 
-#include "cocoa_gui_dialog.mm"
-#include "cocoa_gui.mm"
 //#include "../testdialogs/dlg_test.h"
 
 #include <gwenhywfar/gwenhywfar.h>

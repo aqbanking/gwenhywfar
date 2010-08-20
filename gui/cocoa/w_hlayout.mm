@@ -9,7 +9,8 @@
 
 
 #import "CocoaHLayout.h"
-#include "CocoaHLayout.m"
+
+
 
 static GWENHYWFAR_CB
 int CocoaGui_WHLayout_SetIntProperty(GWEN_WIDGET *w,
@@ -146,7 +147,9 @@ int CocoaGui_WHLayout_Setup(GWEN_WIDGET *w) {
 	wParent=GWEN_Widget_Tree_GetParent(w);
 	
 	
-	hlayout = [[CocoaHLayout alloc] initWithFrame:NSMakeRect(10.0, 10.0, 200.0, 200.0)];
+	hlayout = [[[CocoaHLayout alloc] initWithFrame:NSMakeRect(10.0, 10.0, 200.0, 200.0)] autorelease];
+	if (flags & GWEN_WIDGET_FLAGS_FILLX) hlayout.fillX = YES;
+	if (flags & GWEN_WIDGET_FLAGS_FILLY) hlayout.fillY = YES;
 	/*#if 0
 	 // using equal width here doesn't seem to be working as expected:
 	 // I would expect al children be of equal width, but instead all children are

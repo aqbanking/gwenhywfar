@@ -1,20 +1,28 @@
-/***************************************************************************
-    begin       : Tue Aug 10 2010
-    copyright   : (C) 2010 by Samuel Strupp
+//
+//  CocoaHLineView.m
+//  
+//
+//  Created by Samuel Strupp on 10.08.10.
+//
 
- ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
- ***************************************************************************/
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 #import "CocoaHLineView.h"
 
 
 @implementation CocoaHLineView
 
+@synthesize fillX;
+@synthesize fillY;
+
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code here.
+		fillX = NO;
+		fillY = NO;
     }
     return self;
 }
@@ -24,14 +32,27 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-	//nur zum debuggen
 	NSRect bounds = [self bounds];
-    [[NSColor yellowColor] set];
+    [[NSColor grayColor] set];
 	NSBezierPath *line = [NSBezierPath bezierPath];
 	CGFloat y = bounds.origin.y+bounds.size.height/2.0;
 	[line moveToPoint:NSMakePoint(bounds.origin.x, y)];
 	[line lineToPoint:NSMakePoint(bounds.origin.x + bounds.size.width, y)];
 	[line stroke];
+}
+
+#pragma mark Protocoll Methods
+
+- (NSSize) minSize {
+	return NSMakeSize(3.0, 3.0);
+}
+
+- (BOOL) fillX {
+	return fillX;
+}
+
+- (BOOL) fillY {
+	return fillY;
 }
 
 @end

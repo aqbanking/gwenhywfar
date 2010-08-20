@@ -7,8 +7,7 @@
  ***************************************************************************/
 
 
-#import "CocoaGWENButton.h"
-#include "CocoaGWENButton.mm"
+#import "CocoaButton.h"
 
 
 static GWENHYWFAR_CB
@@ -18,9 +17,9 @@ int CocoaGui_WPushButton_SetIntProperty(GWEN_WIDGET *w,
 										int value,
 										int doSignal) {
 	
-	NSButton *button;
+	CocoaButton *button;
 	
-	button=(NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	button=(CocoaButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(button);
 	
 	switch(prop) {
@@ -66,9 +65,9 @@ int CocoaGui_WPushButton_GetIntProperty(GWEN_WIDGET *w,
 										GWEN_DIALOG_PROPERTY prop,
 										int index,
 										int defaultValue) {
-	NSButton *button;
+	CocoaButton *button;
 	
-	button=(NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	button=(CocoaButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(button);
 	
 	switch(prop) {
@@ -106,9 +105,9 @@ int CocoaGui_WPushButton_SetCharProperty(GWEN_WIDGET *w,
 										 const char *value,
 										 int doSignal) {
 	
-	NSButton *button;
+	CocoaButton *button;
 	
-	button=(NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	button=(CocoaButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(button);
 	
 	switch(prop) {
@@ -135,9 +134,9 @@ const char* CocoaGui_WPushButton_GetCharProperty(GWEN_WIDGET *w,
 												 GWEN_DIALOG_PROPERTY prop,
 												 int index,
 												 const char *defaultValue) {
-	NSButton *button;
+	CocoaButton *button;
 	
-	button=(NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	button=(CocoaButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(button);
 	
 	switch(prop) {
@@ -160,7 +159,7 @@ static void CocoaGui_WPushButton_Clicked_handler(NSButton *button, void* data) {
 	int rv;
 	
 	DBG_ERROR(0, "Clicked");
-	w=data;
+	w=(GWEN_WIDGET*)data;
 	assert(w);
 	rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
 							  GWEN_DialogEvent_TypeActivated,
@@ -175,7 +174,7 @@ static void CocoaGui_WPushButton_Clicked_handler(NSButton *button, void* data) {
 
 int CocoaGui_WPushButton_Setup(GWEN_WIDGET *w) {
 	
-	CocoaGWENButton *button;
+	CocoaButton *button;
 	const char *s;
 	uint32_t flags;
 	GWEN_WIDGET *wParent;
@@ -186,7 +185,9 @@ int CocoaGui_WPushButton_Setup(GWEN_WIDGET *w) {
 	
 	
 	//Create Button
-	button = [[[CocoaGWENButton alloc] initWithFrame:NSMakeRect(0.0, 0.0, 60.0, 24.0)] autorelease];
+	button = [[[CocoaButton alloc] initWithFrame:NSMakeRect(0.0, 0.0, 60.0, 24.0)] autorelease];
+	if (flags & GWEN_WIDGET_FLAGS_FILLX) button.fillX = YES;
+	if (flags & GWEN_WIDGET_FLAGS_FILLY) button.fillY = YES;
 	[button setBezelStyle:NSRoundedBezelStyle];
 	if (s && *s) {
 		NSString *title = [[NSString alloc] initWithCString:s encoding:NSUTF8StringEncoding];
@@ -213,11 +214,17 @@ int CocoaGui_WPushButton_Setup(GWEN_WIDGET *w) {
 				NSString *pathToIconFile = [[NSString alloc] initWithCString:GWEN_Buffer_GetStart(tbuf) encoding:NSUTF8StringEncoding];
 				if (pathToIconFile) {
 					NSImage *icon = [[NSImage alloc] initWithContentsOfFile:pathToIconFile];
+					CGFloat height = 15.0;
+					NSSize imageSize = [icon size];
+					imageSize.width = round(imageSize.width/(imageSize.height/height));
+					imageSize.height = 15.0;
+					[icon setSize:imageSize];
 					[pathToIconFile release];
 					if (icon) {
-						[button setBezelStyle:NSRegularSquareBezelStyle];
+						//[button setBezelStyle:NSRegularSquareBezelStyle];
 						[button setImage:icon];
 						[button setImagePosition:NSImageLeft];
+						//[[button cell] setImageScaling:NSImageScaleProportionallyUpOrDown];
 						[icon release];
 					}
 				}

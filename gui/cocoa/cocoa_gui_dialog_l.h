@@ -17,6 +17,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+#import "CocoaWindow.h"
 
 //#define GTK2_GUI_DIALOG_DEFAULT_BOX_SPACING 3
 
@@ -37,7 +38,7 @@ void CocoaGui_Dialog_Unextend(GWEN_DIALOG *dlg);
 int CocoaGui_Dialog_Setup(GWEN_DIALOG *dlg, NSWindow *parentWindow);
 
 
-NSWindow *CocoaGui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg);
+CocoaWindow *CocoaGui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg);
 
 
 int Cocoa_Gui_Dialog_Run(GWEN_DIALOG *dlg, int timeout);

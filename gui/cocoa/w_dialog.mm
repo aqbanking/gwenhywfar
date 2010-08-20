@@ -7,7 +7,9 @@
  ***************************************************************************/
 
 
+#import "CocoaWindow.h"
 
+#import "CocoaWindowContentView.h"
 
 
 static GWENHYWFAR_CB
@@ -28,7 +30,7 @@ int CocoaGui_WDialog_SetIntProperty(GWEN_WIDGET *w,
 				return 0;
 				
 			case GWEN_DialogProperty_Focus:
-				[window makeKeyAndOrderFront:nil];
+				//[window makeKeyAndOrderFront:nil];
 				return 0;
 				
 			case GWEN_DialogProperty_Width: {
@@ -167,7 +169,9 @@ int CocoaGui_WDialog_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 	NSRect bounds = [[window contentView] bounds];
 	[subview setFrame:bounds];
 	[subview setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-	[[window contentView] addSubview:subview];
+	
+	CocoaWindowContentView *contentView = (CocoaWindowContentView*)[window contentView];
+	[contentView addLayoutSubview:subview];
 	
 	return 0;
 }
@@ -175,16 +179,21 @@ int CocoaGui_WDialog_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 
 
 int CocoaGui_WDialog_Setup(GWEN_WIDGET *w) {
-	NSWindow *newWindow;
+	CocoaWindow *newWindow;
 	const char *s;
 	uint32_t flags;
 	
 	flags=GWEN_Widget_GetFlags(w);
 	s=GWEN_Widget_GetText(w, 0);
 	
-	newWindow=[[NSWindow alloc] initWithContentRect:NSMakeRect(50.0, 50.0, 400.0, 200.0) styleMask:NSTitledWindowMask|NSClosableWindowMask|NSResizableWindowMask backing:NSBackingStoreBuffered defer:YES];
-	[[newWindow contentView] setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-	//gtk_window_set_modal(GTK_WINDOW(g), TRUE);
+	newWindow=[[CocoaWindow alloc] initWithContentRect:NSMakeRect(50.0, 50.0, 400.0, 200.0) styleMask:NSTitledWindowMask/*|NSClosableWindowMask*/|NSResizableWindowMask backing:NSBackingStoreBuffered defer:YES];
+	[newWindow setReleasedWhenClosed:NO];
+	
+	CocoaWindowContentView *newContentView = [[CocoaWindowContentView alloc] initWithFrame:[[newWindow contentView] frame]];
+	[newContentView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+	[newWindow setContentView:newContentView];
+	[newContentView release];
+	
 	NSLog(@"getWindow Title");
 	if (s && *s) {
 		//DBG_WARN(GWEN_LOGDOMAIN, "String s = (%s)",s );

@@ -7,7 +7,7 @@
  ***************************************************************************/
 
 
-
+#import "CocoaLabel.h"
 
 
 static GWENHYWFAR_CB
@@ -16,9 +16,9 @@ int CocoaGui_WLabel_SetIntProperty(GWEN_WIDGET *w,
 								   int index,
 								   int value,
 								   int doSignal) {
-	NSTextField *labelTextField;
+	CocoaLabel *labelTextField;
 	
-	labelTextField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	labelTextField=(CocoaLabel*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(labelTextField);
 	
 	switch(prop) {
@@ -64,9 +64,9 @@ int CocoaGui_WLabel_GetIntProperty(GWEN_WIDGET *w,
 								   GWEN_DIALOG_PROPERTY prop,
 								   int index,
 								   int defaultValue) {
-	NSTextField *labelTextField;
+	CocoaLabel *labelTextField;
 	
-	labelTextField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	labelTextField=(CocoaLabel*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(labelTextField);
 	
 	switch(prop) {
@@ -105,15 +105,16 @@ int CocoaGui_WLabel_SetCharProperty(GWEN_WIDGET *w,
 									int index,
 									const char *value,
 									int doSignal) {
-	NSTextField *labelTextField;
+	CocoaLabel *labelTextField;
 	
-	labelTextField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	labelTextField=(CocoaLabel*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(labelTextField);
 	
 	switch(prop) {
 		case GWEN_DialogProperty_Title: {
 			NSString *stringValue = [[NSString alloc] initWithCString:value encoding:NSUTF8StringEncoding];
 			[labelTextField setStringValue:stringValue];
+			NSLog(@"%@", stringValue);
 			[stringValue release];
 		}
 			return 0;
@@ -134,9 +135,9 @@ const char* CocoaGui_WLabel_GetCharProperty(GWEN_WIDGET *w,
 											GWEN_DIALOG_PROPERTY prop,
 											int index,
 											const char *defaultValue) {
-	NSTextField *labelTextField;
+	CocoaLabel *labelTextField;
 	
-	labelTextField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	labelTextField=(CocoaLabel*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(labelTextField);
 	
 	switch(prop) {
@@ -156,29 +157,7 @@ const char* CocoaGui_WLabel_GetCharProperty(GWEN_WIDGET *w,
 
 int CocoaGui_WLabel_Setup(GWEN_WIDGET *w) {
 	
-	NSLog(@"CocoaGui_WLabel_Setup");
-	/*GtkWidget *g;
-	 const char *s;
-	 uint32_t flags;
-	 GWEN_WIDGET *wParent;
-	 
-	 flags=GWEN_Widget_GetFlags(w);
-	 wParent=GWEN_Widget_Tree_GetParent(w);
-	 s=GWEN_Widget_GetText(w, 0);
-	 
-	 g=gtk_label_new(s);
-	 GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-	 GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
-	 
-	 GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WLabel_SetIntProperty);
-	 GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WLabel_GetIntProperty);
-	 GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WLabel_SetCharProperty);
-	 GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLabel_GetCharProperty);
-	 
-	 if (wParent)
-	 GWEN_Widget_AddChildGuiWidget(wParent, w);*/
-	
-	NSTextField *labelTextField;
+	CocoaLabel *labelTextField;
 	const char *s;
 	uint32_t flags;
 	GWEN_WIDGET *wParent;
@@ -187,13 +166,18 @@ int CocoaGui_WLabel_Setup(GWEN_WIDGET *w) {
 	wParent=GWEN_Widget_Tree_GetParent(w);
 	s=GWEN_Widget_GetText(w, 0);
 	
-	labelTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(10.0, 10.0, 100.0, 24.0)] autorelease];
+	labelTextField = [[[CocoaLabel alloc] initWithFrame:NSMakeRect(10.0, 10.0, 100.0, 24.0)] autorelease];
+	if (flags & GWEN_WIDGET_FLAGS_FILLX) labelTextField.fillX = YES;
+	if (flags & GWEN_WIDGET_FLAGS_FILLY) labelTextField.fillY = YES;
 	[labelTextField setDrawsBackground:NO];
 	[labelTextField setBordered:NO];
 	[labelTextField setEditable:NO];
-	NSString *stringValue = [[NSString alloc] initWithCString:s encoding:NSUTF8StringEncoding];
-	[labelTextField setStringValue:stringValue];
-	[stringValue release];
+	if (s && *s) {
+		NSString *stringValue = [[NSString alloc] initWithCString:s encoding:NSUTF8StringEncoding];
+		[labelTextField setStringValue:stringValue];
+		//NSLog(@"%@", stringValue);
+		[stringValue release];
+	}
 	
 	
 	GWEN_Widget_SetImplData(w, COCOA_DIALOG_WIDGET_REAL, (void*) labelTextField);

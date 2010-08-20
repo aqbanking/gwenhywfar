@@ -7,8 +7,7 @@
  ***************************************************************************/
 
 
-#import "CocoaGWENButton.h"
-#include "CocoaGWENButton.mm"
+#import "CocoaCheckboxButton.h"
 
 
 static GWENHYWFAR_CB
@@ -17,9 +16,9 @@ int CocoaGui_WCheckBox_SetIntProperty(GWEN_WIDGET *w,
 									  int index,
 									  int value,
 									  int doSignal) {
-	NSButton *checkbox;
+	CocoaCheckboxButton *checkbox;
 	
-	checkbox = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	checkbox = (CocoaCheckboxButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(checkbox);
 	
 	switch(prop) {
@@ -71,9 +70,9 @@ int CocoaGui_WCheckBox_GetIntProperty(GWEN_WIDGET *w,
 									  GWEN_DIALOG_PROPERTY prop,
 									  int index,
 									  int defaultValue) {
-	NSButton *checkbox;
+	CocoaCheckboxButton *checkbox;
 	
-	checkbox = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	checkbox = (CocoaCheckboxButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(checkbox);
 	
 	switch(prop) {
@@ -113,9 +112,9 @@ int CocoaGui_WCheckBox_SetCharProperty(GWEN_WIDGET *w,
 									   int index,
 									   const char *value,
 									   int doSignal) {
-	NSButton *checkbox;
+	CocoaCheckboxButton *checkbox;
 	
-	checkbox = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	checkbox = (CocoaCheckboxButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(checkbox);
 	
 	switch(prop) {
@@ -142,9 +141,9 @@ const char* CocoaGui_WCheckBox_GetCharProperty(GWEN_WIDGET *w,
 											   GWEN_DIALOG_PROPERTY prop,
 											   int index,
 											   const char *defaultValue) {
-	NSButton *checkbox;
+	CocoaCheckboxButton *checkbox;
 	
-	checkbox = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	checkbox = (CocoaCheckboxButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(checkbox);
 	
 	switch(prop) {
@@ -167,7 +166,7 @@ static void CocoaGui_WCheckBox_Toggled_handler(NSButton *button, void* data) {
 	int rv;
 	
 	DBG_ERROR(0, "Toggled");
-	w=data;
+	w=(GWEN_WIDGET*)data;
 	assert(w);
 	rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
 							  GWEN_DialogEvent_TypeActivated,
@@ -181,7 +180,7 @@ static void CocoaGui_WCheckBox_Toggled_handler(NSButton *button, void* data) {
 
 
 int CocoaGui_WCheckBox_Setup(GWEN_WIDGET *w) {
-	CocoaGWENButton *checkbox;
+	CocoaCheckboxButton *checkbox;
 	const char *s;
 	uint32_t flags;
 	GWEN_WIDGET *wParent;
@@ -191,9 +190,9 @@ int CocoaGui_WCheckBox_Setup(GWEN_WIDGET *w) {
 	s=GWEN_Widget_GetText(w, 0);
 	
 	//Create Button
-	checkbox = [[[CocoaGWENButton alloc] initWithFrame:NSMakeRect(0.0, 0.0, 60.0, 24.0)] autorelease];
-	[checkbox setBezelStyle:NSRoundedBezelStyle];
-	[checkbox setButtonType:NSSwitchButton];
+	checkbox = [[[CocoaCheckboxButton alloc] initWithFrame:NSMakeRect(0.0, 0.0, 60.0, 24.0)] autorelease];
+	if (flags & GWEN_WIDGET_FLAGS_FILLX) checkbox.fillX = YES;
+	if (flags & GWEN_WIDGET_FLAGS_FILLY) checkbox.fillY = YES;
 	if (s && *s) {
 		NSString *title = [[NSString alloc] initWithCString:s encoding:NSUTF8StringEncoding];
 		[checkbox setTitle:title];

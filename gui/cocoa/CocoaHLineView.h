@@ -1,15 +1,19 @@
-/***************************************************************************
-    begin       : Tue Aug 10 2010
-    copyright   : (C) 2010 by Samuel Strupp
-
- ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
- ***************************************************************************/
-
+//
+//  CocoaHLineView.h
+//  
+//
+//  Created by Samuel Strupp on 10.08.10.
+//
 
 #import <Cocoa/Cocoa.h>
+#import "CocoaGwenGUIProtocol.h"
 
-
-@interface CocoaHLineView : NSView {
+@interface CocoaHLineView : NSView <CocoaGwenGUIProtocol> {
+	BOOL fillX;
+	BOOL fillY;
 }
+
+@property BOOL fillX;
+@property BOOL fillY;
+
 @end

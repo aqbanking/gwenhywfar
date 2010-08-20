@@ -1,21 +1,31 @@
-/***************************************************************************
-    begin       : Tue Aug 10 2010
-    copyright   : (C) 2010 by Samuel Strupp
+//
+//  CocoaVLayout.m
+//  
+//
+//  Created by Samuel Strupp on 10.08.10.
+//  Copyright 2010 Synium Software GmbH. All rights reserved.
+//
 
- ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
- ***************************************************************************/
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 
 #import "CocoaVLayout.h"
+#import "CocoaGwenGUIProtocol.h"
 
 
 @implementation CocoaVLayout
 
+@synthesize fillX;
+@synthesize fillY;
+
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code here.
+        fillX = NO;
+		fillY = NO;
 		subviewsInOrder = [[NSMutableArray alloc] init];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layoutSubviews) name:NSViewFrameDidChangeNotification object:self];
     }
@@ -28,14 +38,14 @@
 	[super dealloc];
 }
 
-- (void)drawRect:(NSRect)dirtyRect {
-	//nur zum debuggen
+/*- (void)drawRect:(NSRect)dirtyRect {
+	//debug colors
     [[NSColor redColor] set];
 	NSRectFill(dirtyRect);
-}
+}*/
 
 #define borderDistance 8.0
-#define cellDistance 2.0
+#define cellDistance 4.0
 
 -(void) layoutSubviews {
 	NSRect bounds = [self bounds];
@@ -43,18 +53,74 @@
 	NSUInteger numOfSubViews = [subviewsInOrder count];
 	
 	if (numOfSubViews > 0) {
-		CGFloat stdHeight = (bounds.size.height-(borderDistance+borderDistance)-((numOfSubViews-1)*cellDistance))/numOfSubViews;
+		//Prepass to compute the sizes
+		
+		CGFloat sizesHeight[numOfSubViews];
+		CGFloat sizesWidth[numOfSubViews];
+		CGFloat exclusiveHeight = 0.0;
+		NSUInteger exclusiveChilds = 0;
 		
 		NSUInteger i;
-		NSRect actualFrame = bounds;
-		actualFrame.origin.x = borderDistance;
-		actualFrame.origin.y += bounds.size.height-stdHeight-borderDistance;
-		actualFrame.size.width -= borderDistance+borderDistance;
-		actualFrame.size.height = stdHeight;
 		for (i=0; i<numOfSubViews; i++) {
 			NSView* subview = [subviewsInOrder objectAtIndex:i];
+			if ([subview conformsToProtocol:@protocol(CocoaGwenGUIProtocol)]) {
+				if ([(<CocoaGwenGUIProtocol>)subview fillX]) sizesWidth[i] = -1.0;
+				else {
+					CGFloat neededWidth = [(<CocoaGwenGUIProtocol>)subview minSize].width;
+					sizesWidth[i] = neededWidth;
+				}
+				if ([(<CocoaGwenGUIProtocol>)subview fillY]) sizesHeight[i] = -1.0;
+				else {
+					CGFloat neededHeight = [(<CocoaGwenGUIProtocol>)subview minSize].height;
+					sizesHeight[i] = neededHeight;
+					exclusiveHeight += neededHeight;
+					exclusiveChilds++;
+				}
+			}
+			else {
+				sizesWidth[i] = -1.0;
+				sizesHeight[i] = -1.0;
+			}
+		}
+		
+		
+		//Compute standard Sizes for Subviews
+
+		CGFloat stdHeight = 0.0;
+		if (numOfSubViews > exclusiveChilds) {
+			CGFloat fillHeight = bounds.size.height-exclusiveHeight;
+			stdHeight = (fillHeight-(borderDistance+borderDistance)-((numOfSubViews-1)*cellDistance))/(numOfSubViews-exclusiveChilds);
+		}
+		else {
+			CGFloat fillHeight = bounds.size.height;
+			stdHeight = (fillHeight-(borderDistance+borderDistance)-((numOfSubViews-1)*cellDistance))/(numOfSubViews);
+		}
+		
+		CGFloat stdWidth = bounds.size.width-(borderDistance+borderDistance);
+		
+		//if (numOfSubViews>=4) NSLog(@"view.height = %f", bounds.size.height);
+		
+		
+		//change Subviews Frame
+		NSRect actualFrame = bounds;
+		actualFrame.origin.x = borderDistance;
+		actualFrame.origin.y += bounds.size.height-borderDistance;
+		for (i=0; i<numOfSubViews; i++) {
+			
+			CGFloat usedHeight = sizesHeight[i];
+			if (usedHeight < 0.0) usedHeight = stdHeight;
+			actualFrame.origin.y -= usedHeight;
+			actualFrame.size.height = usedHeight;
+			
+			//if (numOfSubViews>=4) NSLog(@"subview %i height = %f", i, usedHeight);
+			
+			CGFloat usedWidth = sizesWidth[i];
+			if (usedWidth < 0.0) usedWidth = stdWidth;
+			NSView* subview = [subviewsInOrder objectAtIndex:i];
+			actualFrame.size.width = usedWidth;
+			
 			[subview setFrame:actualFrame];
-			actualFrame.origin.y -= stdHeight+cellDistance;
+			actualFrame.origin.y -= cellDistance;
 		}
 	}
 	
@@ -64,6 +130,40 @@
 	[subviewsInOrder addObject:new_subview];
 	[self addSubview:new_subview];
 	[self layoutSubviews];
+}
+
+#pragma mark Protocoll Methods
+
+- (NSSize) minSize {
+	NSUInteger numOfSubViews = [subviewsInOrder count];
+	CGFloat borderWidth = borderDistance+borderDistance;
+	NSSize size = NSMakeSize(borderWidth, borderWidth);
+	if (numOfSubViews > 0) {
+		NSUInteger i;
+		for (i=0; i<numOfSubViews; i++) {
+			NSView* subview = [subviewsInOrder objectAtIndex:i];
+			if ([subview conformsToProtocol:@protocol(CocoaGwenGUIProtocol)]) {
+				NSSize subViewMinSize = [(<CocoaGwenGUIProtocol>)subview minSize];
+				if (subViewMinSize.width+borderWidth > size.width) {
+					size.width = subViewMinSize.width+borderWidth;
+				}
+				size.height += subViewMinSize.height;
+				if (i>0) size.height += cellDistance;
+			}
+		}
+	}
+	return size;
+}
+
+- (void)setFrame:(NSRect)frameRect {
+	NSSize minSize = [self minSize];
+	if (frameRect.size.height < minSize.height) {
+		frameRect.size.height = minSize.height;
+	}
+	if (frameRect.size.width < minSize.width) {
+		frameRect.size.width = minSize.width;
+	}
+	[super setFrame:frameRect];
 }
 
 @end

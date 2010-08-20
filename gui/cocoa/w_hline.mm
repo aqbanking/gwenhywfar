@@ -8,7 +8,6 @@
 
 
 #import "CocoaHLineView.h"
-#include "CocoaHLineView.m"
 
 
 static GWENHYWFAR_CB
@@ -19,7 +18,7 @@ int CocoaGui_WHLine_SetIntProperty(GWEN_WIDGET *w,
 								   int doSignal) {
 	CocoaHLineView *hLineView;
 	
-	hLineView=(NSBox*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	hLineView=(CocoaHLineView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(hLineView);
 	
 	switch(prop) {
@@ -51,7 +50,7 @@ int CocoaGui_WHLine_GetIntProperty(GWEN_WIDGET *w,
 								   int defaultValue) {
 	CocoaHLineView *hLineView;
 	
-	hLineView=(NSBox*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	hLineView=(CocoaHLineView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(hLineView);
 	
 	switch(prop) {
@@ -83,7 +82,9 @@ int CocoaGui_WHLine_Setup(GWEN_WIDGET *w) {
 	flags=GWEN_Widget_GetFlags(w);
 	wParent=GWEN_Widget_Tree_GetParent(w);
 	
-	hLineView = [[CocoaHLineView alloc] initWithFrame:NSMakeRect(0.0, 0.0, 100.0, 5.0)];
+	hLineView = [[[CocoaHLineView alloc] initWithFrame:NSMakeRect(0.0, 0.0, 100.0, 5.0)] autorelease];
+	if (flags & GWEN_WIDGET_FLAGS_FILLX) hLineView.fillX = YES;
+	if (flags & GWEN_WIDGET_FLAGS_FILLY) hLineView.fillY = YES;
 	
 	
 	GWEN_Widget_SetImplData(w, COCOA_DIALOG_WIDGET_REAL, (void*) hLineView);

@@ -7,7 +7,6 @@
  ***************************************************************************/
 
 #import "CocoaVLayout.h"
-#include "CocoaVLayout.m"
 
 
 
@@ -170,7 +169,9 @@ int CocoaGui_WVLayout_Setup(GWEN_WIDGET *w) {
 	flags=GWEN_Widget_GetFlags(w);
 	wParent=GWEN_Widget_Tree_GetParent(w);
 	
-	vlayout = [[CocoaVLayout alloc] initWithFrame:NSMakeRect(10.0, 10.0, 200.0, 200.0)];
+	vlayout = [[[CocoaVLayout alloc] initWithFrame:NSMakeRect(10.0, 10.0, 200.0, 200.0)] autorelease];
+	if (flags & GWEN_WIDGET_FLAGS_FILLX) vlayout.fillX = YES;
+	if (flags & GWEN_WIDGET_FLAGS_FILLY) vlayout.fillY = YES;
 	
 	GWEN_Widget_SetImplData(w, COCOA_DIALOG_WIDGET_REAL, (void*) vlayout);
 	GWEN_Widget_SetImplData(w, COCOA_DIALOG_WIDGET_CONTENT, (void*) vlayout);

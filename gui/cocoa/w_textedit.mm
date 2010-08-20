@@ -7,7 +7,7 @@
  ***************************************************************************/
 
 
-
+#import "CocoaLineTextField.h"
 
 
 static GWENHYWFAR_CB
@@ -16,9 +16,9 @@ int CocoaGui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
 									 int index,
 									 int value,
 									 int doSignal) {
-	NSTextField *textField;
+	CocoaLineTextField *textField;
 	
-	textField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(textField);
 	
 	switch(prop) {
@@ -65,9 +65,9 @@ int CocoaGui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
 									 GWEN_DIALOG_PROPERTY prop,
 									 int index,
 									 int defaultValue) {
-	NSTextField *textField;
+	CocoaLineTextField *textField;
 	
-	textField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(textField);
 	
 	switch(prop) {
@@ -105,9 +105,9 @@ int CocoaGui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
 									  int index,
 									  const char *value,
 									  int doSignal) {
-	NSTextField *textField;
+	CocoaLineTextField *textField;
 	
-	textField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(textField);
 	
 	switch(prop) {
@@ -133,9 +133,9 @@ const char* CocoaGui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
 											  GWEN_DIALOG_PROPERTY prop,
 											  int index,
 											  const char *defaultValue) {
-	NSTextField *textField;
+	CocoaLineTextField *textField;
 	
-	textField=(NSTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
+	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
 	assert(textField);
 	
 	switch(prop) {
@@ -153,25 +153,42 @@ const char* CocoaGui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-/*static void Gtk2Gui_WTextEdit_Changed_handler(GtkTextBuffer *buffer, gpointer data) {
+static void CocoaGui_WTextEdit_End_Editing_text_handler(NSTextField *textField, void* data) {
 	GWEN_WIDGET *w;
 	int rv;
-	
+		
+	w=data;
+	assert(w);
+	rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
+							  GWEN_DialogEvent_TypeActivated,
+							  GWEN_Widget_GetName(w));
+	if (rv==GWEN_DialogEvent_ResultAccept)
+		CocoaGui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
+	else if (rv==GWEN_DialogEvent_ResultReject)
+		CocoaGui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
+}
+
+
+
+static void CocoaGui_WTextEdit_Changed_text_handler(NSTextField *textField, void* data) {
+	GWEN_WIDGET *w;
+	int rv;
+		
 	w=data;
 	assert(w);
 	rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
 							  GWEN_DialogEvent_TypeValueChanged,
 							  GWEN_Widget_GetName(w));
 	if (rv==GWEN_DialogEvent_ResultAccept)
-		Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
+		CocoaGui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
 	else if (rv==GWEN_DialogEvent_ResultReject)
-		Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
-}*/
+		CocoaGui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
+}
 
 
 
 int CocoaGui_WTextEdit_Setup(GWEN_WIDGET *w) {
-	NSTextField *textField;
+	CocoaLineTextField *textField;
 	const char *s;
 	uint32_t flags;
 	GWEN_WIDGET *wParent;
@@ -183,7 +200,9 @@ int CocoaGui_WTextEdit_Setup(GWEN_WIDGET *w) {
 	s=GWEN_Widget_GetText(w, 0);
 	
 	/* create widget */
-	textField = [[[NSTextField alloc] initWithFrame:NSMakeRect(10.0, 10.0, 100.0, 22.0)] autorelease];
+	textField = [[[CocoaLineTextField alloc] initWithFrame:NSMakeRect(10.0, 10.0, 100.0, 22.0)] autorelease];
+	if (flags & GWEN_WIDGET_FLAGS_FILLX) textField.fillX = YES;
+	if (flags & GWEN_WIDGET_FLAGS_FILLY) textField.fillY = YES;
 	//[textField setBordered:YES];
 	[textField setEditable:YES];
 	
@@ -202,11 +221,11 @@ int CocoaGui_WTextEdit_Setup(GWEN_WIDGET *w) {
 	GWEN_Widget_SetGetCharPropertyFn(w, CocoaGui_WTextEdit_GetCharProperty);
 	
 	
-#pragma mark noch machen
-	/*changed_handler_id=g_signal_connect(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)),
-										"changed",
-										G_CALLBACK (Gtk2Gui_WTextEdit_Changed_handler),
-										w);*/
+	gwenTextFieldActionPtr ptr = CocoaGui_WTextEdit_End_Editing_text_handler;
+	[textField setC_ActionPtr:ptr Data:w];
+	
+	gwenTextFieldActionPtr changed_ptr = CocoaGui_WTextEdit_Changed_text_handler;
+	[textField setC_TextChanged_ActionPtr:changed_ptr Data:w];
 	
 	if (wParent)
 		GWEN_Widget_AddChildGuiWidget(wParent, w);
