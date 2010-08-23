@@ -347,6 +347,10 @@ int GWEN_SyncIo_ReadForced(GWEN_SYNCIO *sio,
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+    else if (rv==0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "EOF met");
+      return GWEN_ERROR_EOF;
+    }
     todo-=rv;
     buffer+=rv;
   }
