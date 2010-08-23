@@ -79,10 +79,10 @@ static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterati
                                        BLOWFISH_KEYSIZE,
                                        3);
     if (ck==NULL) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+      DBG_ERROR(GWEN_LOGDOMAIN, "here");
       GWEN_Buffer_free(tbuf2);
       GWEN_Buffer_free(tbuf1);
-      return rv;
+      return GWEN_ERROR_INTERNAL;
     }
 
     lDest=len;
