@@ -279,6 +279,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_SOCKET, sio);
   assert(xio);
 
+  if (size==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read size is zero");
+    return GWEN_ERROR_INVALID;
+  }
+
   if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
     /* not connected */
     DBG_ERROR(GWEN_LOGDOMAIN, "Socket not connected (%d)",
@@ -297,7 +302,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
   } while (rv==GWEN_ERROR_INTERRUPTED);
 
 
-  while(rv==GWEN_ERROR_TIMEOUT) {
+  /* nothing to read immediately, wait for data availability */
+  if (rv==GWEN_ERROR_TIMEOUT) {
     GWEN_SOCKET_LIST2 *sl;
 
     sl=GWEN_Socket_List2_new();
@@ -307,12 +313,17 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
       rv=GWEN_Gui_WaitForSockets(sl, NULL, 0, GWEN_SYNCIO_SOCKET_READ_TIMEOUT);
     } while (rv==GWEN_ERROR_INTERRUPTED);
 
-    if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Socket_List2_free(sl);
-      return rv;
-    }
     GWEN_Socket_List2_free(sl);
+    if (rv<0) {
+      if (rv==GWEN_ERROR_TIMEOUT) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "timeout (%d)", rv);
+        return rv;
+      }
+      else {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
   }
 
   i=size;
