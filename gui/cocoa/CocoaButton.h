@@ -7,8 +7,6 @@
 
 
 
-#ifndef COCOA_BUTTON_H
-#define COCOA_BUTTON_H
 
 #import <Cocoa/Cocoa.h>
 #import "CocoaGwenGUIProtocol.h"
@@ -29,7 +27,9 @@ typedef void (*gwenActionPtr)(NSButton *button, void* data);
 @property BOOL fillY;
 
 -(void) setC_ActionPtr:(gwenActionPtr)ptr Data:(void*)data;
+-(NSSize) neededTextSize;
+
+-(void) clicked:(id) sender;
 
 @end
 
-#endif

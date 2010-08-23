@@ -27,6 +27,8 @@
 }
 
 -(void) createNewGroupManagerWithGroupID:(NSInteger)newGroupID;
+-(CocoaRadioGroupManager*) getGroupManager;
+-(void) setGroupManager:(CocoaRadioGroupManager*) newGroupManager;
 
 @end
 

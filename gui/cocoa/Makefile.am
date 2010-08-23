@@ -3,7 +3,7 @@ INCLUDES=-I$(gwenhywfar_symlinkdir) $(COCOA_CFLAGS)
 AM_CPPFLAGS= @visibility_cflags@
 DEFS+=-DBUILDING_COCOA_GUI -DPACKAGE=\"$(PACKAGE)\"
 
-AM_OBJCFLAGS= -x objective-c
+#AM_OBJCFLAGS= -x objective-c
 
 lib_LTLIBRARIES=libgwengui-cocoa.la
 
@@ -75,10 +75,10 @@ iheader_HEADERS= \
   cocoa_gui.h
 
 
-noinst_PROGRAMS = libtest
-libtest_SOURCES = libtest.m
-#libtest_LDFLAGS=
-libtest_LDADD = libgwengui-cocoa.la $(top_builddir)/src/$(gwenhywfar_internal_libname) \
+noinst_PROGRAMS = gwen-cocoa-test
+gwen_cocoa_test_SOURCES = libtest.m
+#gwen_cocoa_test_LDFLAGS=
+gwen_cocoa_test_LDADD = libgwengui-cocoa.la $(top_builddir)/src/$(gwenhywfar_internal_libname) \
   $(COCOA_FRAMEWORK) $(FOUNDATION_FRAMEWORK) $(APPKIT_FRAMEWORK) $(COREDATA_FRAMEWORK) $(WEBKIT_FRAMEWORK) \
   -lobjc \
   $(builddir)/../testdialogs/libgwengui-test.la

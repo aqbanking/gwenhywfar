@@ -23,6 +23,8 @@
 @property BOOL fillX;
 @property BOOL fillY;
 
+-(NSSize) neededTextSize;
+
 @end
 
 #endif

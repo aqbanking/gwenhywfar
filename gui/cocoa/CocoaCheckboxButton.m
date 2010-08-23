@@ -11,6 +11,8 @@
 
 #import "CocoaCheckboxButton.h"
 
+#import <Foundation/Foundation.h>
+
 
 @implementation CocoaCheckboxButton
 

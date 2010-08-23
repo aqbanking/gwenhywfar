@@ -6,6 +6,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CocoaGwenGUIProtocol.h"
 
 
 @interface CocoaVLineView : NSView <CocoaGwenGUIProtocol> {
