@@ -31,10 +31,21 @@ int Gtk2Gui_WDialog_SetIntProperty(GWEN_WIDGET *w,
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
 
-  case GWEN_DialogProperty_Width:
-  case GWEN_DialogProperty_Height:
-    /* just ignore these for now (gtk_window_get/set_default_size) */
+  case GWEN_DialogProperty_Width: {
+    gint width, height;
+
+    gtk_window_get_size(GTK_WINDOW(g), &width, &height);
+    gtk_window_resize(GTK_WINDOW(g), value, height);
     return 0;
+  }
+
+  case GWEN_DialogProperty_Height: {
+    gint width, height;
+
+    gtk_window_get_size(GTK_WINDOW(g), &width, &height);
+    gtk_window_resize(GTK_WINDOW(g), width, value);
+    return 0;
+  }
 
   default:
     break;
@@ -67,10 +78,19 @@ int Gtk2Gui_WDialog_GetIntProperty(GWEN_WIDGET *w,
     return (gtk_widget_has_focus(GTK_WIDGET(g))==TRUE)?1:0;
     return 0;
 
-  case GWEN_DialogProperty_Width:
-  case GWEN_DialogProperty_Height:
-    /* just ignore these for now */
-    return 0;
+  case GWEN_DialogProperty_Width: {
+    gint width, height;
+
+    gtk_window_get_size(GTK_WINDOW(g), &width, &height);
+    return width;
+  }
+
+  case GWEN_DialogProperty_Height: {
+    gint width, height;
+
+    gtk_window_get_size(GTK_WINDOW(g), &width, &height);
+    return height;
+  }
 
   default:
     break;
