@@ -12,8 +12,6 @@
 #define COCOA_GUI_H
 
 
-//#include <gtk/gtk.h>
-
 
 #if defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
 # ifdef BUILDING_COCOA_GUI
@@ -30,8 +28,18 @@
 #include <gwenhywfar/gui_be.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 COCOAGUI_API GWEN_GUI *Cocoa_Gui_new();
+
+
+#ifdef __cplusplus
+}
+#endif
+
 
 
 #endif
