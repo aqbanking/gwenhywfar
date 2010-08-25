@@ -104,6 +104,22 @@
           <widget type="textBrowser" name="textbrowser1" flags="fillX fillY" />
         </widget>
       </widget>
+      
+
+      <widget type="tabpage" name="tabpage8" text="Eigth Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget type="label" name="labelWithImage" text="Label With an Icon" icon="disk.png" />
+
+          <widget type="gridlayout" name="glayout1" columns="2" flags="fillX fillY" >
+
+            <widget type="label" text="Password" />
+            <widget type="lineEdit" name="editPass1" flags="fillX password" />
+      
+            <widget type="label" name="label2" text="Clear text" />
+            <widget type="lineEdit" name="editPass2" flags="fillX" />
+          </widget>
+        </widget>
+      </widget>
 
     </widget>
 

@@ -167,6 +167,14 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
       fprintf(stderr, "Selected list entry %d\n",
 	      GWEN_Dialog_GetIntProperty(dlg, "listbox1", GWEN_DialogProperty_Value, 0, -1));
     }
+    else if (strcasecmp(sender, "editPass1")==0) {
+      const char *s;
+
+      s=GWEN_Dialog_GetCharProperty(dlg, "editPass1", GWEN_DialogProperty_Value, 0, NULL);
+      if (!(s && *s))
+	s="<empty>";
+      GWEN_Dialog_SetCharProperty(dlg, "editPass2", GWEN_DialogProperty_Value, 0, s, 0);
+    }
     break;
 
   case GWEN_DialogEvent_TypeActivated:
