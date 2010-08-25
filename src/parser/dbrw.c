@@ -1015,6 +1015,7 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
   }
 
   GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
   return 0;
 }
 

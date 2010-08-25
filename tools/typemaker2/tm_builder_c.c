@@ -2335,7 +2335,13 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       }
 
       /* preset */
-      if (1) {
+      if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
+        GWEN_Buffer_AppendString(tbuf, "  p_struct->");
+        s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "=NULL;\n");
+      }
+      else {
 	GWEN_BUFFER *dstbuf;
 	int rv;
 

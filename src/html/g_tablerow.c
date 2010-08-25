@@ -95,7 +95,10 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
 			HtmlFont_GetFontName(fnt),
 			HtmlFont_GetFontSize(fnt),
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
-    HtmlProps_SetFont(pr, fnt);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
     HtmlGroup_SetProperties(gNew, pr);
     HtmlProps_free(pr);
 

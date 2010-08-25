@@ -70,7 +70,10 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 			HtmlFont_GetFontName(fnt),
 			HtmlFont_GetFontSize(fnt),
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
-    HtmlProps_SetFont(pr, fnt);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
     HtmlGroup_SetProperties(gNew, pr);
     HtmlProps_free(pr);
     HtmlGroup_SetObject(gNew, HtmlGroup_GetObject(g));
@@ -87,7 +90,10 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 			HtmlFont_GetFontName(fnt),
 			HtmlFont_GetFontSize(fnt),
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_ITALIC);
-    HtmlProps_SetFont(pr, fnt);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
     HtmlGroup_SetProperties(gNew, pr);
     HtmlProps_free(pr);
     HtmlGroup_SetObject(gNew, HtmlGroup_GetObject(g));
@@ -104,7 +110,10 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 			HtmlFont_GetFontName(fnt),
 			HtmlFont_GetFontSize(fnt),
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_UNDERLINE);
-    HtmlProps_SetFont(pr, fnt);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
     HtmlGroup_SetProperties(gNew, pr);
     HtmlProps_free(pr);
     HtmlGroup_SetObject(gNew, HtmlGroup_GetObject(g));
@@ -274,7 +283,10 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
       }
 
       fnt=HtmlCtx_GetFont(ctx, fontName, fontSize, fontFlags);
-      HtmlProps_SetFont(pr, fnt);
+      if (fnt) {
+        HtmlProps_SetFont(pr, fnt);
+        //HtmlFont_free(fnt);
+      }
     }
 
     HtmlGroup_SetProperties(gNew, pr);
@@ -294,7 +306,10 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 			HtmlFont_GetFontName(fnt),
 			HtmlFont_GetFontSize(fnt)*1.8,
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
-    HtmlProps_SetFont(pr, fnt);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
     HtmlGroup_SetProperties(gNew, pr);
 
     o=HtmlObject_Box_new(ctx);
@@ -319,7 +334,10 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 			HtmlFont_GetFontName(fnt),
 			HtmlFont_GetFontSize(fnt)*1.5,
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
-    HtmlProps_SetFont(pr, fnt);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
     HtmlGroup_SetProperties(gNew, pr);
 
     o=HtmlObject_Box_new(ctx);
@@ -344,7 +362,10 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 			HtmlFont_GetFontName(fnt),
 			HtmlFont_GetFontSize(fnt),
 			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
-    HtmlProps_SetFont(pr, fnt);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
     HtmlGroup_SetProperties(gNew, pr);
 
     o=HtmlObject_Box_new(ctx);
