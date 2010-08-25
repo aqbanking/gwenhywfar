@@ -17,5 +17,12 @@ EXTRA_DIST=\
   qt4-3.jpg \
   qt4-4.jpg \
   qt4-5.jpg \
-  qt4-6.jpg
+  qt4-6.jpg \
+  cocoa-1.jpg \
+  cocoa-2.jpg \
+  cocoa-3.jpg \
+  cocoa-4.jpg \
+  cocoa-5.jpg \
+  cocoa-6.jpg \
+  cocoa-7.jpg
 
