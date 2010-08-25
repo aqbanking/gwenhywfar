@@ -1149,11 +1149,10 @@ int GWEN_DB_IsValue(const GWEN_DB_NODE *n);
 /**
  * Dumps the content of the given DB to the given file (e.g. stderr).
  * @param n node to dump
- * @param f destination file (e.g. stderr)
  * @param insert number of blanks to insert at every line
  */
 GWENHYWFAR_API 
-void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert);
+void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert);
 /*@}*/
 
 

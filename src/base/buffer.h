@@ -530,7 +530,7 @@ void GWEN_Buffer_SetSourceSyncIo(GWEN_BUFFER *bf,
 
 /** Print the current content of buffer @c bf into the file @c f. */
 GWENHYWFAR_API
-void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert);
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, unsigned int insert);
 
 
 /*@}*/

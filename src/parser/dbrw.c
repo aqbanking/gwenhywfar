@@ -841,7 +841,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 	    p++;
 	  if (!*p) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
-            GWEN_Buffer_Dump(lbuf, stderr, 2);
+            GWEN_Buffer_Dump(lbuf, 2);
 	    GWEN_Buffer_free(tbuf);
 	    GWEN_Buffer_free(lbuf);
 	    return GWEN_ERROR_BAD_DATA;

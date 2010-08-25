@@ -445,7 +445,7 @@ int testDB(int argc, char **argv) {
     return 2;
   }
 
-  GWEN_DB_Dump(cfg, stderr, 2);
+  GWEN_DB_Dump(cfg, 2);
 
   fprintf(stderr,"Releasing DB\n");
   GWEN_DB_Group_free(cfg);
@@ -507,7 +507,7 @@ int testDB2(int argc, char **argv) {
                          -1);
   fprintf(stderr," Retrieved int value 2 is: %d\n", rv);
 
-  GWEN_DB_Dump(cfg, stderr, 2);
+  GWEN_DB_Dump(cfg, 2);
 
   fprintf(stderr,"Releasing DB\n");
   GWEN_DB_Group_free(cfg);
@@ -530,7 +530,7 @@ int testDBfile(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "DB is:\n");
-  GWEN_DB_Dump(db, stderr, 2);
+  GWEN_DB_Dump(db, 2);
   fprintf(stderr,"Releasing DB\n");
   GWEN_DB_Group_free(db);
   return 0;
@@ -642,7 +642,7 @@ int testXML(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "XML file:\n");
-  GWEN_XMLNode_Dump(n, stdout, 2);
+  GWEN_XMLNode_Dump(n, 2);
   GWEN_XMLNode_free(n);
 
   fprintf(stderr, "Memory before collection:\n");
@@ -674,7 +674,7 @@ int testXML2(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "XML file:\n");
-  GWEN_XMLNode_Dump(n, stderr, 2);
+  GWEN_XMLNode_Dump(n, 2);
   if (GWEN_XMLNode_WriteFile(n, "xml.out",
                              GWEN_XML_FLAGS_DEFAULT)){
     fprintf(stderr, "Could not write file xml.out\n");
@@ -828,7 +828,7 @@ int testMsg(int argc, char **argv) {
   }
 
   fprintf(stderr, "Node:\n");
-  GWEN_XMLNode_Dump(sn, stderr, 2);
+  GWEN_XMLNode_Dump(sn, 2);
 
   GWEN_DB_SetCharValue(da,
                        GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -849,7 +849,7 @@ int testMsg(int argc, char **argv) {
 
   GWEN_Text_DumpString(GWEN_Buffer_GetStart(gbuf),
                        GWEN_Buffer_GetUsedBytes(gbuf),
-                       stderr, 1);
+                       1);
 
   GWEN_Buffer_SetPos(gbuf, 0);
   if (GWEN_MsgEngine_ParseMessage(e,
@@ -903,7 +903,7 @@ int testListMsg(int argc, char **argv) {
   }
 
   fprintf(stderr, "Node:\n");
-  GWEN_XMLNode_Dump(sn, stderr, 2);
+  GWEN_XMLNode_Dump(sn, 2);
 
   GWEN_MsgEngine_free(e);
   return 0;
@@ -1051,7 +1051,7 @@ int testOptions(int argc, char **argv) {
     fprintf(stderr, "ERROR: Could not parse (%d)\n", rv);
   }
   else {
-    GWEN_DB_Dump(db, stderr, 2);
+    GWEN_DB_Dump(db, 2);
   }
 
   GWEN_DB_Group_free(db);
@@ -1226,7 +1226,7 @@ int testTime(int argc, char **argv) {
     return 1;
   }
   DBG_NOTICE(0, "Time 1:");
-  GWEN_DB_Dump(db1, stderr, 2);
+  GWEN_DB_Dump(db1, 2);
 
   ti2=GWEN_Time_fromDb(db1);
   db2=GWEN_DB_Group_new("time");
@@ -1235,7 +1235,7 @@ int testTime(int argc, char **argv) {
     return 1;
   }
   DBG_NOTICE(0, "Time 2:");
-  GWEN_DB_Dump(db2, stderr, 2);
+  GWEN_DB_Dump(db2, 2);
 
   return 0;
 }
@@ -1348,7 +1348,7 @@ int testRfc822Import(int argc, char **argv) {
                          dbParams,
                          GWEN_PATH_FLAGS_CREATE_GROUP |
 			 GWEN_DB_FLAGS_UNTIL_EMPTY_LINE)) {
-    GWEN_DB_Dump(db, stderr, 2);
+    GWEN_DB_Dump(db, 2);
     DBG_ERROR(0, "Could not read test file");
     return 2;
   }
@@ -1754,7 +1754,7 @@ int testBuffer2(int argc, char **argv) {
   GWEN_Buffer_AdjustUsedBytes(buf);
   GWEN_Buffer_AppendString(buf, "Behind");
 
-  GWEN_Buffer_Dump(buf, stderr, 2);
+  GWEN_Buffer_Dump(buf, 2);
   GWEN_Buffer_free(buf);
 
   return 0;
@@ -2447,7 +2447,7 @@ int testUrl(int argc, char **argv) {
 
   db=GWEN_DB_Group_new("url");
   GWEN_Url_toDb(url, db);
-  GWEN_DB_Dump(db, stderr, 2);
+  GWEN_DB_Dump(db, 2);
 
   return 0;
 }
@@ -2547,7 +2547,7 @@ int testCrypt3Rsa(int argc, char **argv) {
   rv=GWEN_Crypt_Key_Verify(pubKey, testData, sizeof(testData)-1, buffer, len);
   if (rv) {
     fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
-    GWEN_Text_DumpString((const char*)buffer, len, stderr, 1);
+    GWEN_Text_DumpString((const char*)buffer, len, 1);
     return 2;
   }
 
@@ -2575,12 +2575,12 @@ int testCrypt3Rsa(int argc, char **argv) {
   if ((sizeof(testData)-1)!=len2) {
     fprintf(stderr, "Length of deciphered message does not match that of src (%d!=%d)\n",
 	    len, len2);
-    GWEN_Text_DumpString((const char*)buffer2, len2, stderr, 1);
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
     return 2;
   }
   if (memcmp(testData, buffer2, len2)) {
     fprintf(stderr, "Deciphered message does not match src\n");
-    GWEN_Text_DumpString((const char*)buffer2, len2, stderr, 1);
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
     return 2;
   }
 
@@ -2631,14 +2631,14 @@ int testCrypt3Rsa2(int argc, char **argv) {
   pubKey=GWEN_Crypt_KeyRsa_fromDb(dbPubKey);
   if (pubKey==NULL) {
     fprintf(stderr, "ERROR: Could not read public key from db\n");
-    GWEN_DB_Dump(dbPubKey, stderr, 2);
+    GWEN_DB_Dump(dbPubKey, 2);
     return 2;
   }
 
   secretKey=GWEN_Crypt_KeyRsa_fromDb(dbSecretKey);
   if (secretKey==NULL) {
     fprintf(stderr, "ERROR: Could not read secret key from db\n");
-    GWEN_DB_Dump(dbSecretKey, stderr, 2);
+    GWEN_DB_Dump(dbSecretKey, 2);
     return 2;
   }
 
@@ -2654,7 +2654,7 @@ int testCrypt3Rsa2(int argc, char **argv) {
   rv=GWEN_Crypt_Key_Verify(pubKey, testData, sizeof(testData)-1, buffer, len);
   if (rv) {
     fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
-    GWEN_Text_DumpString((const char*)buffer, len, stderr, 1);
+    GWEN_Text_DumpString((const char*)buffer, len, 1);
     return 2;
   }
 
@@ -2682,12 +2682,12 @@ int testCrypt3Rsa2(int argc, char **argv) {
   if ((sizeof(testData)-1)!=len2) {
     fprintf(stderr, "Length of deciphered message does not match that of src (%d!=%d)\n",
 	    len, len2);
-    GWEN_Text_DumpString((const char*)buffer2, len2, stderr, 1);
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
     return 2;
   }
   if (memcmp(testData, buffer2, len2)) {
     fprintf(stderr, "Deciphered message does not match src\n");
-    GWEN_Text_DumpString((const char*)buffer2, len2, stderr, 1);
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
     return 2;
   }
 
@@ -2981,7 +2981,7 @@ int testHttpSession(int argc, char **argv) {
     return 3;
   }
 
-  GWEN_Buffer_Dump(buf, stderr, 2);
+  GWEN_Buffer_Dump(buf, 2);
 
   return 0;
 }
@@ -3067,11 +3067,11 @@ int testDES(int argc, char **argv) {
 	     GWEN_Buffer_GetUsedBytes(buf1))!=0) {
     DBG_ERROR(0, "Buffers do not match");
     DBG_ERROR(0, "Expected:");
-    GWEN_Buffer_Dump(buf1, stderr, 2);
+    GWEN_Buffer_Dump(buf1, 2);
     DBG_ERROR(0, "Found:");
-    GWEN_Buffer_Dump(buf3, stderr, 2);
+    GWEN_Buffer_Dump(buf3, 2);
     DBG_ERROR(0, "Encrypted:");
-    GWEN_Buffer_Dump(buf2, stderr, 2);
+    GWEN_Buffer_Dump(buf2, 2);
     return 2;
   }
 
@@ -3171,11 +3171,11 @@ int testDES2(int argc, char **argv) {
 	     GWEN_Buffer_GetUsedBytes(buf1))!=0) {
     DBG_ERROR(0, "Buffers do not match");
     DBG_ERROR(0, "Expected:");
-    GWEN_Buffer_Dump(buf1, stderr, 2);
+    GWEN_Buffer_Dump(buf1, 2);
     DBG_ERROR(0, "Found:");
-    GWEN_Buffer_Dump(buf3, stderr, 2);
+    GWEN_Buffer_Dump(buf3, 2);
     DBG_ERROR(0, "Encrypted:");
-    GWEN_Buffer_Dump(buf2, stderr, 2);
+    GWEN_Buffer_Dump(buf2, 2);
     return 2;
   }
 
@@ -3267,11 +3267,11 @@ int testDES3(int argc, char **argv) {
     DBG_ERROR(0, "Buffers do not match");
     DBG_ERROR(0, "Expected:");
     GWEN_Text_DumpString((const char*)testString, sizeof(testString),
-			 stderr, 2);
+			 2);
     DBG_ERROR(0, "Found:");
-    GWEN_Text_DumpString((const char*)buf3, l3, stderr, 2);
+    GWEN_Text_DumpString((const char*)buf3, l3, 2);
     DBG_ERROR(0, "Encrypted:");
-    GWEN_Text_DumpString((const char*)buf2, l2, stderr, 2);
+    GWEN_Text_DumpString((const char*)buf2, l2, 2);
     return 2;
   }
 
@@ -3405,7 +3405,7 @@ int testCryptMgr1(int argc, char **argv) {
   rv=GWEN_CryptMgr_Sign(cm, testData, sizeof(testData)-1, tbuf1);
   if (rv) {
     fprintf(stderr, "ERROR: Could not sign (%d).\n", rv);
-    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    GWEN_Buffer_Dump(tbuf1, 2);
     return 2;
   }
   fprintf(stderr, "Signing message... done\n");
@@ -3418,7 +3418,7 @@ int testCryptMgr1(int argc, char **argv) {
 			  tbuf2);
   if (rv) {
     fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
-    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    GWEN_Buffer_Dump(tbuf2, 2);
     return 2;
   }
   fprintf(stderr, "Verifying message... done\n");
@@ -3461,7 +3461,7 @@ int testCryptMgr2(int argc, char **argv) {
   rv=GWEN_CryptMgr_Encrypt(cm, testData, sizeof(testData)-1, tbuf1);
   if (rv) {
     fprintf(stderr, "ERROR: Could not encrypt (%d).\n", rv);
-    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    GWEN_Buffer_Dump(tbuf1, 2);
     return 2;
   }
   fprintf(stderr, "Encrypting message... done\n");
@@ -3474,22 +3474,22 @@ int testCryptMgr2(int argc, char **argv) {
 			   tbuf2);
   if (rv) {
     fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
-    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    GWEN_Buffer_Dump(tbuf2, 2);
     return 2;
   }
   fprintf(stderr, "Decrypting message... done\n");
 
   if (sizeof(testData)-1!=GWEN_Buffer_GetUsedBytes(tbuf2)) {
     fprintf(stderr, "Crypto-Error (size):\n");
-    GWEN_Buffer_Dump(tbuf1, stderr, 2);
-    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    GWEN_Buffer_Dump(tbuf1, 2);
+    GWEN_Buffer_Dump(tbuf2, 2);
     return 2;
   }
 
   if (memcmp(testData, GWEN_Buffer_GetStart(tbuf2), GWEN_Buffer_GetUsedBytes(tbuf2))!=0) {
     fprintf(stderr, "Crypto-Error (content):\n");
-    GWEN_Buffer_Dump(tbuf1, stderr, 2);
-    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    GWEN_Buffer_Dump(tbuf1, 2);
+    GWEN_Buffer_Dump(tbuf2, 2);
     return 2;
   }
 
@@ -3531,7 +3531,7 @@ int testCryptMgr3(int argc, char **argv) {
   rv=GWEN_CryptMgr_Encode(cm, testData, sizeof(testData)-1, tbuf1);
   if (rv) {
     fprintf(stderr, "ERROR: Could not encrypt (%d).\n", rv);
-    GWEN_Buffer_Dump(tbuf1, stderr, 2);
+    GWEN_Buffer_Dump(tbuf1, 2);
     return 2;
   }
   fprintf(stderr, "Encoding message... done\n");
@@ -3544,22 +3544,22 @@ int testCryptMgr3(int argc, char **argv) {
 			  tbuf2);
   if (rv) {
     fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
-    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    GWEN_Buffer_Dump(tbuf2, 2);
     return 2;
   }
   fprintf(stderr, "Decoding message... done\n");
 
   if (sizeof(testData)-1!=GWEN_Buffer_GetUsedBytes(tbuf2)) {
     fprintf(stderr, "Crypto-Error (size):\n");
-    GWEN_Buffer_Dump(tbuf1, stderr, 2);
-    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    GWEN_Buffer_Dump(tbuf1, 2);
+    GWEN_Buffer_Dump(tbuf2, 2);
     return 2;
   }
 
   if (memcmp(testData, GWEN_Buffer_GetStart(tbuf2), GWEN_Buffer_GetUsedBytes(tbuf2))!=0) {
     fprintf(stderr, "Crypto-Error (content):\n");
-    GWEN_Buffer_Dump(tbuf1, stderr, 2);
-    GWEN_Buffer_Dump(tbuf2, stderr, 2);
+    GWEN_Buffer_Dump(tbuf1, 2);
+    GWEN_Buffer_Dump(tbuf2, 2);
     return 2;
   }
 
@@ -3695,7 +3695,7 @@ int testDialog(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "XML file:\n");
-  GWEN_XMLNode_Dump(n, stdout, 2);
+  GWEN_XMLNode_Dump(n, 2);
 
   nDialog=GWEN_XMLNode_FindFirstTag(n, "dialog", NULL, NULL);
   if (nDialog==NULL) {
@@ -3746,7 +3746,7 @@ int testSyncIo1(int argc, char **argv) {
     rv=GWEN_SyncIo_Read(sio, p, 1024);
     if (rv<0) {
       fprintf(stderr, "Error reading file: %d\n", rv);
-      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      GWEN_Buffer_Dump(tbuf, 2);
       return 2;
     }
     else if (rv>0) {
@@ -3760,7 +3760,7 @@ int testSyncIo1(int argc, char **argv) {
   } while(rv>0);
 
   fprintf(stderr, "File received.\n");
-  GWEN_Buffer_Dump(tbuf, stderr, 2);
+  GWEN_Buffer_Dump(tbuf, 2);
 
   rv=GWEN_SyncIo_Disconnect(sio);
   if (rv<0) {
@@ -3807,7 +3807,7 @@ int testSyncIo2(int argc, char **argv) {
     rv=GWEN_SyncIo_Read(sio, p, 1024);
     if (rv<0) {
       fprintf(stderr, "Error reading file: %d\n", rv);
-      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      GWEN_Buffer_Dump(tbuf, 2);
       return 2;
     }
     else if (rv>0) {
@@ -3816,7 +3816,7 @@ int testSyncIo2(int argc, char **argv) {
       GWEN_Buffer_AdjustUsedBytes(tbuf);
       if (p[rv-1]==10) {
 	fprintf(stderr, "Received line:\n");
-	GWEN_Buffer_Dump(tbuf, stderr, 2);
+	GWEN_Buffer_Dump(tbuf, 2);
 	GWEN_Buffer_Reset(tbuf);
         getchar();
       }
@@ -3871,7 +3871,7 @@ int testSyncIo3(int argc, char **argv) {
     rv=GWEN_SyncIo_Read(sio, p, 1024);
     if (rv<0) {
       fprintf(stderr, "Error reading file: %d\n", rv);
-      GWEN_Buffer_Dump(tbuf, stderr, 2);
+      GWEN_Buffer_Dump(tbuf, 2);
       return 2;
     }
     else if (rv>0) {
@@ -3880,7 +3880,7 @@ int testSyncIo3(int argc, char **argv) {
       GWEN_Buffer_AdjustUsedBytes(tbuf);
       if (p[rv-1]==10) {
 	fprintf(stderr, "Received line:\n");
-	GWEN_Buffer_Dump(tbuf, stderr, 2);
+	GWEN_Buffer_Dump(tbuf, 2);
 	getchar();
       }
     }
@@ -3892,7 +3892,7 @@ int testSyncIo3(int argc, char **argv) {
 
 
   fprintf(stderr, "File received.\n");
-  GWEN_Buffer_Dump(tbuf, stderr, 2);
+  GWEN_Buffer_Dump(tbuf, 2);
 
   rv=GWEN_SyncIo_Disconnect(sio);
   if (rv<0) {
@@ -4018,7 +4018,7 @@ int testHttp1(int argc, char **argv) {
 
 #if 1
   fprintf(stderr, "Received:\n");
-  GWEN_Buffer_Dump(tbuf, stderr, 2);
+  GWEN_Buffer_Dump(tbuf, 2);
 #endif
   GWEN_Buffer_free(tbuf);
 
@@ -4171,7 +4171,7 @@ int testHttp2(int argc, char **argv) {
 
 #if 1
   fprintf(stderr, "Received:\n");
-  GWEN_Buffer_Dump(tbuf, stderr, 2);
+  GWEN_Buffer_Dump(tbuf, 2);
 #endif
   GWEN_Buffer_free(tbuf);
 
@@ -4225,13 +4225,13 @@ int testTresor1(int argc, char **argv) {
   l=strlen(testData);
   if (l!=GWEN_Buffer_GetUsedBytes(buf2)) {
     fprintf(stderr, "Bad result (len):\n");
-    GWEN_Buffer_Dump(buf2, stderr, 2);
+    GWEN_Buffer_Dump(buf2, 2);
     return 2;
   }
 
   if (strcmp(testData, GWEN_Buffer_GetStart(buf2))!=0) {
     fprintf(stderr, "Bad result (content):\n");
-    GWEN_Buffer_Dump(buf2, stderr, 2);
+    GWEN_Buffer_Dump(buf2, 2);
     return 2;
   }
 
@@ -4282,13 +4282,13 @@ int testTresor2(int argc, char **argv) {
     l=strlen(testData);
     if (l!=GWEN_Buffer_GetUsedBytes(buf2)) {
       fprintf(stderr, "Bad result (len):\n");
-      GWEN_Buffer_Dump(buf2, stderr, 2);
+      GWEN_Buffer_Dump(buf2, 2);
       return 2;
     }
   
     if (strcmp(testData, GWEN_Buffer_GetStart(buf2))!=0) {
       fprintf(stderr, "Bad result (content):\n");
-      GWEN_Buffer_Dump(buf2, stderr, 2);
+      GWEN_Buffer_Dump(buf2, 2);
       return 2;
     }
     fprintf(stderr, "Round %d... Ok.\n", i);

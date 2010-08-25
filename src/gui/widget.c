@@ -534,7 +534,7 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
     w->wtype=GWEN_Widget_Type_fromString(s);
     if (w->wtype==GWEN_Widget_TypeUnknown) {
       DBG_ERROR(GWEN_LOGDOMAIN, "unknown type in node");
-      GWEN_XMLNode_Dump(node, stderr, 2);
+      GWEN_XMLNode_Dump(node, 2);
       return GWEN_ERROR_BAD_DATA;
     }
   }

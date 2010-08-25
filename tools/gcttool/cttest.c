@@ -191,7 +191,7 @@ int signWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
 
     fprintf(stderr, "Signature is:\n");
-    GWEN_Text_DumpString((const char*) signature, signLen, stderr, 2);
+    GWEN_Text_DumpString((const char*) signature, signLen, 2);
 
     rv=GWEN_Crypt_Token_Verify(ct, 0x81,
 			       algo,
@@ -362,7 +362,7 @@ int cryptWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
 
     fprintf(stderr, "Encrypted data is:\n");
-    GWEN_Text_DumpString((const char*) encrypted, elen, stderr, 2);
+    GWEN_Text_DumpString((const char*) encrypted, elen, 2);
 
     dlen=sizeof(decrypted);
     rv=GWEN_Crypt_Token_Decipher(ct,

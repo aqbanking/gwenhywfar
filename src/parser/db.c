@@ -1271,26 +1271,26 @@ const char *GWEN_DB_GroupName(GWEN_DB_NODE *n){
 
 
 
-void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
+void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert){
   if (n) {
     int i;
 
     for (i=0; i<insert; i++)
-      fprintf(f, " ");
+      fprintf(stderr, " ");
 
     /* dump dynamic (allocated) data */
     switch(n->typ) {
     case GWEN_DB_NodeType_Group:
-      fprintf(f, "Group : \"%s\"\n", n->data.dataName);
+      fprintf(stderr, "Group : \"%s\"\n", n->data.dataName);
       break;
     case GWEN_DB_NodeType_Var:
-      fprintf(f, "Var   : \"%s\"\n", n->data.dataName);
+      fprintf(stderr, "Var   : \"%s\"\n", n->data.dataName);
       break;
     case GWEN_DB_NodeType_ValueChar:
-      fprintf(f, "Value : \"%s\" (char)\n", n->data.dataChar);
+      fprintf(stderr, "Value : \"%s\" (char)\n", n->data.dataChar);
       break;
     case GWEN_DB_NodeType_ValueInt:
-      fprintf(f, "Value : %d (int)\n", n->data.dataInt);
+      fprintf(stderr, "Value : %d (int)\n", n->data.dataInt);
       break;
     case GWEN_DB_NodeType_ValueBin: {
       char *buffer;
@@ -1299,19 +1299,19 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
       assert(buffer);
       if (GWEN_Text_ToHex(n->data.dataBin, n->dataSize,
 			  buffer, (n->dataSize*2)+1)==0) {
-	fprintf(f, "Value : %d bytes (bin)\n", n->dataSize);
+	fprintf(stderr, "Value : %d bytes (bin)\n", n->dataSize);
       }
       else {
-	fprintf(f, "Value : %s (bin)\n", buffer);
+	fprintf(stderr, "Value : %s (bin)\n", buffer);
       }
       GWEN_Memory_dealloc(buffer);
       break;
     }
     case GWEN_DB_NodeType_ValuePtr:
-      fprintf(f, "Value : %p (ptr)\n", n->data.dataPtr);
+      fprintf(stderr, "Value : %p (ptr)\n", n->data.dataPtr);
       break;
     default:
-      fprintf(f, "[unknown node type %d]\n", n->typ);
+      fprintf(stderr, "[unknown node type %d]\n", n->typ);
     }
 
     /* dump children */
@@ -1320,13 +1320,13 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, FILE *f, int insert){
 
       cn=GWEN_DB_Node_List_First(n->children);
       while(cn) {
-	GWEN_DB_Dump(cn, f, insert+4);
+	GWEN_DB_Dump(cn, insert+4);
 	cn=GWEN_DB_Node_List_Next(cn);
       }
     }
   }
   else {
-    fprintf(f, "[no node]\n");
+    fprintf(stderr, "[no node]\n");
   }
 }
 
@@ -1385,7 +1385,7 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn){
 
   if (nn->typ!=GWEN_DB_NodeType_Group) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Source node is not a group");
-    GWEN_DB_Dump(nn, stderr, 1);
+    GWEN_DB_Dump(nn, 1);
     return -1;
   }
 

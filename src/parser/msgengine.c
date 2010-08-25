@@ -878,7 +878,7 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                     "Value for element \"%s[%d]\" (mode \"%s\") not found",
                     name, loopNr,
                     GWEN_MsgEngine_GetMode(e));
-          GWEN_DB_Dump(gr, stderr, 4);
+          GWEN_DB_Dump(gr, 4);
 	  GWEN_Buffer_free(data);
           return -1;
         }
@@ -1778,10 +1778,10 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
           if (rv==-1) {
             DBG_INFO(GWEN_LOGDOMAIN, "Error writing element");
             DBG_INFO(GWEN_LOGDOMAIN, "Node is:");
-            GWEN_XMLNode_Dump(n, stderr, 1);
+            GWEN_XMLNode_Dump(n, 1);
             if (gr) {
               DBG_INFO(GWEN_LOGDOMAIN, "Data is:");
-              GWEN_DB_Dump(gr, stderr, 1);
+              GWEN_DB_Dump(gr, 1);
             }
 	    return -1;
 	  }
@@ -1937,15 +1937,15 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
               DBG_INFO(GWEN_LOGDOMAIN, "Could not write group \"%s\"", gtype);
               if (gn) {
                 DBG_INFO(GWEN_LOGDOMAIN, "Node is:");
-                GWEN_XMLNode_Dump(gn, stderr, 1);
+                GWEN_XMLNode_Dump(gn, 1);
               }
               if (n) {
                 DBG_INFO(GWEN_LOGDOMAIN, "Referring node is:");
-                GWEN_XMLNode_Dump(n, stderr, 1);
+                GWEN_XMLNode_Dump(n, 1);
               }
               if (gr) {
                 DBG_INFO(GWEN_LOGDOMAIN, "Data is:");
-                GWEN_DB_Dump(gr, stderr, 1);
+                GWEN_DB_Dump(gr, 1);
               }
               return -1;
             }
@@ -2962,7 +2962,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Value missing");
-      GWEN_XMLNode_Dump(node, stderr, 1);
+      GWEN_XMLNode_Dump(node, 1);
       return -1;
     }
   }
@@ -3240,7 +3240,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	} /* while */
 	if (loopNr<minnum) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (too few ELEM repeats)");
-          GWEN_XMLNode_Dump(n, stderr, 2);
+          GWEN_XMLNode_Dump(n, 2);
 	  GWEN_Buffer_free(delimBuffer);
 	  return -1;
 	}
@@ -3358,7 +3358,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	i=atoi(GWEN_XMLNode_GetProperty(n, "minnum", "1"));
 	if (i) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (still tags to parse)");
-          GWEN_XMLNode_Dump(n, stderr, 2);
+          GWEN_XMLNode_Dump(n, 2);
 	  GWEN_Buffer_free(delimBuffer);
 	  return -1;
 	}
@@ -3382,7 +3382,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 		  GWEN_Buffer_GetPos(msgbuf),
                   terminator,
 		  GWEN_Buffer_PeekByte(msgbuf));
-	GWEN_XMLNode_Dump(node, stderr, 1);
+	GWEN_XMLNode_Dump(node, 1);
 	GWEN_Buffer_free(delimBuffer);
 	return -1;
       }
@@ -3608,8 +3608,8 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
       DBG_ERROR(GWEN_LOGDOMAIN, "Full message (pos=%04x)", posBak);
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf),
 			   GWEN_Buffer_GetUsedBytes(mbuf),
-			   stderr, 1);
-      GWEN_DB_Dump(tmpdb, stderr, 1);
+			   1);
+      GWEN_DB_Dump(tmpdb, 1);
       GWEN_DB_Group_free(tmpdb);
       return -1;
     }
@@ -3696,9 +3696,9 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
 		  GWEN_Buffer_GetPos(mbuf)-startPos);
 	GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
 			     GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
-			     stderr, 1);
+			     1);
 	DBG_ERROR(GWEN_LOGDOMAIN, "Stored data so far:");
-	GWEN_DB_Dump(storegrp, stderr, 2);
+	GWEN_DB_Dump(storegrp, 2);
 	GWEN_DB_Group_free(tmpdb);
 	return -1;
       }

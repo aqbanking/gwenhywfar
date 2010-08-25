@@ -1233,7 +1233,7 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
 
 
 void GWEN_Text_DumpString(const char *s, unsigned int l,
-                          FILE *f, unsigned int insert) {
+                          unsigned int insert) {
   unsigned int i;
   unsigned int j;
   unsigned int pos;
@@ -1241,31 +1241,31 @@ void GWEN_Text_DumpString(const char *s, unsigned int l,
 
   pos=0;
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f,"String size is %d:\n",l);
+    fprintf(stderr, " ");
+  fprintf(stderr,"String size is %d:\n",l);
   while(pos<l) {
     for (k=0; k<insert; k++)
-      fprintf(f, " ");
-    fprintf(f,"%04x: ",pos);
+      fprintf(stderr, " ");
+    fprintf(stderr,"%04x: ",pos);
     j=pos+16;
     if (j>=l)
       j=l;
 
     /* show hex dump */
     for (i=pos; i<j; i++) {
-      fprintf(f,"%02x ",(unsigned char)s[i]);
+      fprintf(stderr,"%02x ",(unsigned char)s[i]);
     }
     if (j-pos<16)
       for (i=0; i<16-(j-pos); i++)
-	fprintf(f,"   ");
+	fprintf(stderr,"   ");
     /* show text */
     for (i=pos; i<j; i++) {
       if (s[i]<32)
-	fprintf(f,".");
+	fprintf(stderr,".");
       else
-	fprintf(f,"%c",s[i]);
+	fprintf(stderr,"%c",s[i]);
     }
-    fprintf(f,"\n");
+    fprintf(stderr,"\n");
     pos+=16;
   }
 }

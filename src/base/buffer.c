@@ -605,64 +605,64 @@ void GWEN_Buffer_SetBookmark(GWEN_BUFFER *bf, unsigned int idx,
 
 
 
-void GWEN_Buffer_Dump(GWEN_BUFFER *bf, FILE *f, unsigned int insert) {
+void GWEN_Buffer_Dump(GWEN_BUFFER *bf, unsigned int insert) {
   uint32_t k;
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Buffer:\n");
+    fprintf(stderr, " ");
+  fprintf(stderr, "Buffer:\n");
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Pos            : %d (%04x)\n", bf->pos, bf->pos);
+    fprintf(stderr, " ");
+  fprintf(stderr, "Pos            : %d (%04x)\n", bf->pos, bf->pos);
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Buffer Size    : %d\n", bf->bufferSize);
+    fprintf(stderr, " ");
+  fprintf(stderr, "Buffer Size    : %d\n", bf->bufferSize);
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Hard limit     : %d\n", bf->hardLimit);
+    fprintf(stderr, " ");
+  fprintf(stderr, "Hard limit     : %d\n", bf->hardLimit);
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Bytes Used     : %d\n", bf->bytesUsed);
+    fprintf(stderr, " ");
+  fprintf(stderr, "Bytes Used     : %d\n", bf->bytesUsed);
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Bytes Reserved : %u\n",
+    fprintf(stderr, " ");
+  fprintf(stderr, "Bytes Reserved : %u\n",
           (uint32_t)(bf->ptr-bf->realPtr));
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Flags          : %08x ( ", bf->flags);
+    fprintf(stderr, " ");
+  fprintf(stderr, "Flags          : %08x ( ", bf->flags);
   if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
-    fprintf(f, "OWNED ");
-  fprintf(f, ")\n");
+    fprintf(stderr, "OWNED ");
+  fprintf(stderr, ")\n");
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Mode           : %08x ( ", bf->mode);
+    fprintf(stderr, " ");
+  fprintf(stderr, "Mode           : %08x ( ", bf->mode);
   if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
-    fprintf(f, "DYNAMIC ");
+    fprintf(stderr, "DYNAMIC ");
   if (bf->mode & GWEN_BUFFER_MODE_READONLY)
-    fprintf(f, "READONLY ");
+    fprintf(stderr, "READONLY ");
   if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL)
-    fprintf(f, "ABORT_ON_MEMFULL ");
-  fprintf(f, ")\n");
+    fprintf(stderr, "ABORT_ON_MEMFULL ");
+  fprintf(stderr, ")\n");
 
   for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "Bookmarks      :");
+    fprintf(stderr, " ");
+  fprintf(stderr, "Bookmarks      :");
   for (k=0; k<GWEN_BUFFER_MAX_BOOKMARKS; k++)
-    fprintf(f, " %d", bf->bookmarks[k]);
-  fprintf(f, "\n");
+    fprintf(stderr, " %d", bf->bookmarks[k]);
+  fprintf(stderr, "\n");
 
   if (bf->ptr && bf->bytesUsed) {
     for (k=0; k<insert; k++)
-      fprintf(f, " ");
-    fprintf(f, "Data:\n");
-    GWEN_Text_DumpString(bf->ptr, bf->bytesUsed, f, insert+1);
+      fprintf(stderr, " ");
+    fprintf(stderr, "Data:\n");
+    GWEN_Text_DumpString(bf->ptr, bf->bytesUsed, insert+1);
   }
 }
 

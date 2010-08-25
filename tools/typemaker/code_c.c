@@ -2219,7 +2219,7 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 				      "if (GWEN_Logger_GetLevel(0)>="
 				      "GWEN_LoggerLevel_Debug)");
 	    GWEN_SyncIo_WriteLine(sio, "            "
-				      "GWEN_DB_Dump(dbT2, stderr, 2);");
+				      "GWEN_DB_Dump(dbT2, 2);");
 	    GWEN_SyncIo_WriteString(sio, "          ");
 	    GWEN_SyncIo_WriteString(sio, prefix);
 	    GWEN_SyncIo_WriteLine(sio, "_free(st);");
@@ -2320,7 +2320,7 @@ int write_code_fromdbrec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 				      "if (GWEN_Logger_GetLevel(0)>="
 				      "GWEN_LoggerLevel_Debug)");
 	    GWEN_SyncIo_WriteLine(sio, "            "
-				      "GWEN_DB_Dump(dbT2, stderr, 2);");
+				      "GWEN_DB_Dump(dbT2, 2);");
 	    GWEN_SyncIo_WriteString(sio, "          ");
 	    GWEN_SyncIo_WriteString(sio, prefix);
 	    GWEN_SyncIo_WriteLine(sio, "_free(st);");

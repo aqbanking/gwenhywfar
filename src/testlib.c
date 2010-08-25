@@ -53,7 +53,7 @@ int check1() {
     if (p1[i]!=p2[i]) {
       fprintf(stderr, "Buffer1:\n%s\n", testString);
       fprintf(stderr, "Buffer2:\n");
-      GWEN_Buffer_Dump(buf2, stderr, 2);
+      GWEN_Buffer_Dump(buf2, 2);
 
       fprintf(stderr, "Differ at %d (%04x)\n", i, i);
       rv=-1;
@@ -304,7 +304,7 @@ int check2() {
     if (p1[i]!=p2[i]) {
       fprintf(stderr, "Buffer1:\n%s\n", testString);
       fprintf(stderr, "Buffer2:\n");
-      GWEN_Buffer_Dump(buf2, stderr, 2);
+      GWEN_Buffer_Dump(buf2, 2);
 
       fprintf(stderr, "Differ at %d (%04x)\n", i, i);
       rv=-1;

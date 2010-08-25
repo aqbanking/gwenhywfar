@@ -732,7 +732,7 @@ void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
  * Dumps the content of the given XML node and all its children.
  */
 GWENHYWFAR_API
-void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind);
+void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, int ind);
 /*@}*/
 
 /*@}*/ /* defgroup */

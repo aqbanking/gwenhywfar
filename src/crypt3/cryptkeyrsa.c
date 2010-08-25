@@ -1057,7 +1057,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
   if (key==NULL) {
     DBG_INFO(GWEN_LOGDOMAIN,
 	     "Internal error: Bad RSA key group");
-    GWEN_DB_Dump(dbKey, stderr, 2);
+    GWEN_DB_Dump(dbKey, 2);
     GWEN_DB_Group_free(dbKey);
     return NULL;
   }
@@ -1115,7 +1115,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModPrivExp(unsigned int nbytes,
   if (key==NULL) {
     DBG_INFO(GWEN_LOGDOMAIN,
 	     "Internal error: Bad RSA key group");
-    GWEN_DB_Dump(dbKey, stderr, 2);
+    GWEN_DB_Dump(dbKey, 2);
     GWEN_DB_Group_free(dbKey);
     return NULL;
   }

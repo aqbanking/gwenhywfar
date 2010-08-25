@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Sat Jun 28 2003
  copyright   : (C) 2003 by Martin Preuss
  email       : martin@libchipcard.de
@@ -274,7 +271,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase);
  * classical hexdump.
  */
 GWENHYWFAR_API
-void GWEN_Text_DumpString(const char *s, unsigned int l, FILE *f,
+void GWEN_Text_DumpString(const char *s, unsigned int l,
                           unsigned int insert);
 
 

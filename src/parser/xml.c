@@ -402,7 +402,7 @@ GWEN_XMLNODE *GWEN_XMLNode_Next(const GWEN_XMLNODE *n) {
 }
 
 
-void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind) {
+void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, int ind) {
   GWEN_XMLPROPERTY *p;
   GWEN_XMLNODE *c;
   int i;
@@ -411,59 +411,59 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, FILE *f, int ind) {
   assert(n);
 
   for(i=0; i<ind; i++)
-    fprintf(f, " ");
+    fprintf(stderr, " ");
 
   simpleTag=0;
   if (n->type==GWEN_XMLNodeTypeTag) {
     if (n->data)
-      fprintf(f, "<%s", n->data);
+      fprintf(stderr, "<%s", n->data);
     else
-      fprintf(f, "<UNKNOWN");
+      fprintf(stderr, "<UNKNOWN");
     p=n->properties;
     while (p) {
       if (p->value)
-        fprintf(f, " %s=\"%s\"", p->name, p->value);
+        fprintf(stderr, " %s=\"%s\"", p->name, p->value);
       else
-        fprintf(f, " %s", p->name);
+        fprintf(stderr, " %s", p->name);
       p=p->next;
     }
 
     if (n->data) {
       if (n->data[0]=='?') {
         simpleTag=1;
-        fprintf(f, "?");
+        fprintf(stderr, "?");
       }
       else if (n->data[0]=='!') {
         simpleTag=1;
       }
     }
 
-    fprintf(f, ">\n");
+    fprintf(stderr, ">\n");
     if (!simpleTag) {
       c=GWEN_XMLNode_GetChild(n);
       while(c) {
-        GWEN_XMLNode_Dump(c, f, ind+2);
+        GWEN_XMLNode_Dump(c, ind+2);
         c=GWEN_XMLNode_Next(c);
       }
       for(i=0; i<ind; i++)
-        fprintf(f, " ");
+        fprintf(stderr, " ");
       if (n->data)
-        fprintf(f, "</%s>\n", n->data);
+        fprintf(stderr, "</%s>\n", n->data);
       else
-        fprintf(f, "</UNKNOWN>\n");
+        fprintf(stderr, "</UNKNOWN>\n");
     }
   }
   else if (n->type==GWEN_XMLNodeTypeData) {
     if (n->data) {
-      fprintf(f, "%s\n", n->data);
+      fprintf(stderr, "%s\n", n->data);
     }
   }
   else if (n->type==GWEN_XMLNodeTypeComment) {
-    fprintf(f, "<!--");
+    fprintf(stderr, "<!--");
     if (n->data) {
-      fprintf(f, "%s", n->data);
+      fprintf(stderr, "%s", n->data);
     }
-    fprintf(f, "-->\n");
+    fprintf(stderr, "-->\n");
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unknown tag type (%d)", n->type);
@@ -1705,7 +1705,7 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np){
   }
   for (i=0; i<np->pos; i++) {
     DBG_NOTICE(GWEN_LOGDOMAIN, "Path entry %d:", i);
-    GWEN_XMLNode_Dump(np->nodes[i], stderr, 1);
+    GWEN_XMLNode_Dump(np->nodes[i], 1);
   }
 }
 
