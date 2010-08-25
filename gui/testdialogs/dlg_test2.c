@@ -94,13 +94,24 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 GWEN_DIALOG *Dlg_Test2_new() {
   GWEN_DIALOG *dlg;
   int rv;
+  const char *s;
+  GWEN_BUFFER *tbuf;
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  s=getenv("DIALOG_DIR");
+  if (s && *s)
+    GWEN_Buffer_AppendString(tbuf, s);
+  else
+    GWEN_Buffer_AppendString(tbuf, MEDIAPATH);
 
   dlg=GWEN_Dialog_new("dlg_test2");
   GWEN_Dialog_SetSignalHandler(dlg, _gwenGuiSignalHandler);
   GWEN_Dialog_AddMediaPath(dlg, MEDIAPATH);
 
   /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, MEDIAPATH "/dlg_test2.dlg");
+  GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S "dlg_test2.dlg");
+  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d).", rv);
     GWEN_Dialog_free(dlg);
