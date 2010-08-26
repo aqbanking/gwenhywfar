@@ -1534,6 +1534,7 @@ static int _buildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, "\" */\n");
 
+      /* release previous value */
       if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer &&
 	  (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_OWN)) {
 	GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
@@ -1568,10 +1569,16 @@ static int _buildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, "  }\n");
       }
 
-      /* preset */
-      if (1) {
+      /* read form object */
+      if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE) {
 	GWEN_BUFFER *dstbuf;
 	int rv;
+
+	/* volatile */
+	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "\" is volatile, just presetting */\n");
 
 	dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
 	GWEN_Buffer_AppendString(dstbuf, "p_struct->");
@@ -1592,10 +1599,9 @@ static int _buildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, "\n");
 	GWEN_Buffer_free(dstbuf);
       }
-
-      if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE)) {
-	/* from db */
-	if (1) {
+      else {
+	/* not volatile */
+	if (1) { /* from object */
 	  GWEN_BUFFER *dstbuf;
           int rv;
 
@@ -1618,12 +1624,45 @@ static int _buildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  GWEN_Buffer_free(dstbuf);
 	  GWEN_Buffer_AppendString(tbuf, "\n");
 	}
-      }
-      else {
-	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
-	s=Typemaker2_Member_GetName(tm);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "\" is volatile, not reading from db */\n");
+
+	if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
+	  GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
+	  s=Typemaker2_Member_GetName(tm);
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, "==NULL) {");
+
+	  if (1) {
+	    GWEN_BUFFER *dstbuf;
+	    int rv;
+    
+	    /* volatile */
+	    GWEN_Buffer_AppendString(tbuf, "  /* member \"");
+	    s=Typemaker2_Member_GetName(tm);
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, "\" is volatile, just presetting */\n");
+    
+	    dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	    GWEN_Buffer_AppendString(dstbuf, "p_struct->");
+	    s=Typemaker2_Member_GetName(tm);
+	    GWEN_Buffer_AppendString(dstbuf, s);
+    
+	    GWEN_Buffer_AppendString(tbuf, "  ");
+	    rv=Typemaker2_Builder_Invoke_ConstructFn(tb, ty, tm,
+						     NULL, /* no source */
+						     GWEN_Buffer_GetStart(dstbuf),
+						     tbuf);
+	    if (rv<0) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(dstbuf);
+	      GWEN_Buffer_free(tbuf);
+	      return rv;
+	    }
+	    GWEN_Buffer_AppendString(tbuf, "\n");
+	    GWEN_Buffer_free(dstbuf);
+	  }
+
+	  GWEN_Buffer_AppendString(tbuf, "  }\n");
+	}
       }
       GWEN_Buffer_AppendString(tbuf, "\n");
 
@@ -1920,6 +1959,7 @@ static int _buildReadXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, "\" */\n");
 
+      /* release previous value */
       if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer &&
 	  (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_OWN)) {
 	GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
@@ -1954,10 +1994,16 @@ static int _buildReadXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, "  }\n");
       }
 
-      /* preset */
-      if (1) {
+      /* read form object */
+      if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE) {
 	GWEN_BUFFER *dstbuf;
 	int rv;
+
+	/* volatile */
+	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "\" is volatile, just presetting */\n");
 
 	dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
 	GWEN_Buffer_AppendString(dstbuf, "p_struct->");
@@ -1978,10 +2024,9 @@ static int _buildReadXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, "\n");
 	GWEN_Buffer_free(dstbuf);
       }
-
-      if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE)) {
-	/* from xml */
-	if (1) {
+      else {
+	/* not volatile */
+	if (1) { /* from object */
 	  GWEN_BUFFER *dstbuf;
           int rv;
 
@@ -2004,12 +2049,45 @@ static int _buildReadXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  GWEN_Buffer_free(dstbuf);
 	  GWEN_Buffer_AppendString(tbuf, "\n");
 	}
-      }
-      else {
-	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
-	s=Typemaker2_Member_GetName(tm);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "\" is volatile, not reading from xml */\n");
+
+	if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
+	  GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
+	  s=Typemaker2_Member_GetName(tm);
+	  GWEN_Buffer_AppendString(tbuf, s);
+	  GWEN_Buffer_AppendString(tbuf, "==NULL) {");
+
+	  if (1) {
+	    GWEN_BUFFER *dstbuf;
+	    int rv;
+    
+	    /* volatile */
+	    GWEN_Buffer_AppendString(tbuf, "  /* member \"");
+	    s=Typemaker2_Member_GetName(tm);
+	    GWEN_Buffer_AppendString(tbuf, s);
+	    GWEN_Buffer_AppendString(tbuf, "\" is volatile, just presetting */\n");
+    
+	    dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	    GWEN_Buffer_AppendString(dstbuf, "p_struct->");
+	    s=Typemaker2_Member_GetName(tm);
+	    GWEN_Buffer_AppendString(dstbuf, s);
+    
+	    GWEN_Buffer_AppendString(tbuf, "  ");
+	    rv=Typemaker2_Builder_Invoke_ConstructFn(tb, ty, tm,
+						     NULL, /* no source */
+						     GWEN_Buffer_GetStart(dstbuf),
+						     tbuf);
+	    if (rv<0) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	      GWEN_Buffer_free(dstbuf);
+	      GWEN_Buffer_free(tbuf);
+	      return rv;
+	    }
+	    GWEN_Buffer_AppendString(tbuf, "\n");
+	    GWEN_Buffer_free(dstbuf);
+	  }
+
+	  GWEN_Buffer_AppendString(tbuf, "  }\n");
+	}
       }
       GWEN_Buffer_AppendString(tbuf, "\n");
 
@@ -2300,6 +2378,7 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, "\" */\n");
 
+      /* release previous value */
       if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer &&
 	  (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_OWN)) {
 	GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
@@ -2334,16 +2413,16 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, "  }\n");
       }
 
-      /* preset */
-      if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
-        GWEN_Buffer_AppendString(tbuf, "  p_struct->");
-        s=Typemaker2_Member_GetName(tm);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "=NULL;\n");
-      }
-      else {
+      /* read form object */
+      if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE) {
 	GWEN_BUFFER *dstbuf;
 	int rv;
+
+	/* volatile */
+	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
+	s=Typemaker2_Member_GetName(tm);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "\" is volatile, just presetting */\n");
 
 	dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
 	GWEN_Buffer_AppendString(dstbuf, "p_struct->");
@@ -2364,10 +2443,9 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, "\n");
 	GWEN_Buffer_free(dstbuf);
       }
-
-      if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE)) {
-	/* from object */
-	if (1) {
+      else {
+	/* not volatile */
+	if (1) { /* from object */
 	  GWEN_BUFFER *dstbuf;
           int rv;
 
@@ -2395,12 +2473,6 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, "    DBG_INFO(GWEN_LOGDOMAIN, \"here (%d)\\n\", p_rv);\n");
 	GWEN_Buffer_AppendString(tbuf, "    return p_rv;\n");
 	GWEN_Buffer_AppendString(tbuf, "  }\n");
-      }
-      else {
-	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
-	s=Typemaker2_Member_GetName(tm);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "\" is volatile, not reading from object */\n");
       }
       GWEN_Buffer_AppendString(tbuf, "\n");
 
