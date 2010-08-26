@@ -351,6 +351,15 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
     GWEN_XMLNode_AddHeader(currNode, newNode);
     GWEN_XmlCtx_SetCurrentHeader(ctx, newNode);
   }
+  else if (strcasecmp(tagName, "!DOCTYPE")==0) {
+    newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, tagName);
+    assert(newNode);
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding header [%s] to [%s]",
+                GWEN_XMLNode_GetData(newNode),
+                GWEN_XMLNode_GetData(currNode));
+    GWEN_XMLNode_AddHeader(currNode, newNode);
+    GWEN_XmlCtx_SetCurrentHeader(ctx, newNode);
+  }
   else if (*tagName=='/') {
     const char *s;
 

@@ -867,6 +867,7 @@ int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
 
 
 int GWEN_XMLContext_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
+#if 0
   GWEN_FAST_BUFFER *fb;
   int rv;
 
@@ -881,6 +882,17 @@ int GWEN_XMLContext_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
 
   GWEN_FastBuffer_free(fb);
   return 0;
+#else
+  int rv;
+
+  rv=GWEN_XML__ReadAllFromIo(ctx, sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return rv;
+#endif
 }
 
 
