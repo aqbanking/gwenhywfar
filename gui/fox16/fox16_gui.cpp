@@ -94,7 +94,7 @@ FOX16_Gui::FOX16_Gui(FXApp *a)
 
 FOX16_Gui::~FOX16_Gui() {
   if (!m_scopeList.empty()) {
-    DBG_ERROR(0, "ScopeList is not empty!");
+    DBG_ERROR(GWEN_LOGDOMAIN, "ScopeList is not empty!");
   }
 
   if (m_updater)
@@ -373,8 +373,6 @@ int FOX16_Gui::openDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
   FOX16_GuiDialog *foxDlg;
   FXWindow *owner;
 
-  DBG_ERROR(0, "FOX16_Gui::OpenDialog");
-
   /* get main window of parent dialog (if any) */
   owner=m_app->getActiveWindow();
 
@@ -480,15 +478,13 @@ int FOX16_Gui::getFileName(const char *caption,
 
   owner=m_app->getModalWindow();
   if (owner==NULL) {
-    DBG_ERROR(0, "No modal window");
     owner=m_app->getActiveWindow();
   }
   if (owner==NULL) {
-    DBG_ERROR(0, "No active window");
     owner=m_app->getRootWindow();
   }
   if (owner==NULL) {
-    DBG_ERROR(0, "Could not determine owner window");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not determine owner window");
     return GWEN_ERROR_INTERNAL;
   }
 
@@ -507,7 +503,7 @@ int FOX16_Gui::getFileName(const char *caption,
   }
 
   if (str.empty()) {
-    DBG_ERROR(0, "Empty filename returned.");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty filename returned.");
     return GWEN_ERROR_ABORTED;
   }
   else {

@@ -365,7 +365,6 @@ void FOX16_HtmlCtx::_paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset) {
     if (xfnt) {
       dc->setFont(xfnt);
       ascent=xfnt->getFontAscent();
-      //DBG_ERROR(0, "Font size: %d (%d)", xfnt->getSize(), HtmlFont_GetFontSize(fnt));
     }
 
     /* select foreground color */
@@ -476,7 +475,6 @@ void FOX16_HtmlCtx::_paintAt(FXDC *dc, HTML_OBJECT *o,
       if (xfnt) {
 	dc->setFont(xfnt);
 	ascent=xfnt->getFontAscent();
-	//DBG_ERROR(0, "Font size: %d (%d)", xfnt->getSize(), HtmlFont_GetFontSize(fnt));
       }
   
       /* select foreground color */
@@ -624,7 +622,6 @@ HTML_IMAGE *FOX16_HtmlCtx::getImage(const char *fileName) {
     if (m_iconSource==NULL)
       m_iconSource=new FXIconSource(FXApp::instance());
 
-    DBG_ERROR(0, "Loading [%s]", GWEN_Buffer_GetStart(tbuf));
     ximg=m_iconSource->loadIconFile(GWEN_Buffer_GetStart(tbuf));
     if (ximg==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Could not load icon [%s]", GWEN_Buffer_GetStart(tbuf));

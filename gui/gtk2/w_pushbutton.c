@@ -140,7 +140,6 @@ static void Gtk2Gui_WPushButton_Clicked_handler(GtkButton *button, gpointer data
   GWEN_WIDGET *w;
   int rv;
 
-  DBG_ERROR(0, "Clicked");
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),

@@ -251,7 +251,7 @@ int QT4_Gui::getFileName(const char *caption,
   }
 
   if (str.isEmpty()) {
-    DBG_ERROR(0, "Empty filename returned.");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty filename returned.");
     return GWEN_ERROR_ABORTED;
   }
   else {

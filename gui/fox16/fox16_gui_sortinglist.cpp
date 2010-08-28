@@ -157,7 +157,7 @@ void FOX16_GuiSortingList::sortByColumn(int c, bool up) {
     break;
 
   default:
-    DBG_ERROR(0, "Column %d is out of range (no more functions)", c);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Column %d is out of range (no more functions)", c);
     return;
   }
 

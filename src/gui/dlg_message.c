@@ -213,7 +213,6 @@ int GWEN_DlgMessage_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGMSG, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "button1")==0) {
     xdlg->response=1;
     return GWEN_DialogEvent_ResultAccept;

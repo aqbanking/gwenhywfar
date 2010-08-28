@@ -324,7 +324,6 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_AddValue: {
     GtkListStore *sto;
 
-    DBG_ERROR(0, "Adding value [%s]", value);
     sto=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(g)));
     if (sto) {
       GtkTreeIter iter;
@@ -349,7 +348,6 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
 	if (pT)
 	  *pT=0;
 	g_value_set_string(&val, p);
-	DBG_ERROR(0, "Setting column %d: [%s]", i, p);
 	gtk_list_store_set_value(sto, &iter, i, &val);
 	g_value_unset(&val);
 
@@ -482,7 +480,6 @@ static void Gtk2Gui_WListBox_CursorChanged_handler(GtkTreeView *g, gpointer data
   GWEN_WIDGET *w;
   int rv;
 
-  DBG_ERROR(0, "Cursor Changed");
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),

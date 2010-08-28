@@ -146,7 +146,6 @@ static void Gtk2Gui_WRadioButton_Toggled_handler(GtkButton *button, gpointer dat
   GWEN_WIDGET *w;
   int rv;
 
-  DBG_ERROR(0, "Toggled");
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),

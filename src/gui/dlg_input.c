@@ -249,7 +249,6 @@ int GWEN_DlgInput_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGINPUT, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0) {
     return GWEN_DialogEvent_ResultAccept;
   }

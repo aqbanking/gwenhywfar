@@ -163,7 +163,6 @@ static void Gtk2Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer
   GWEN_WIDGET *w;
   int rv;
 
-  DBG_ERROR(0, "ValueChanged");
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),

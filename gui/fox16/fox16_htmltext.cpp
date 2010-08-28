@@ -186,7 +186,7 @@ long FOX16_HtmlText::onPaint(FXObject*, FXSelector, void *ptr) {
 #endif
   }
   else {
-    DBG_ERROR(0, "No HtmlContext");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No HtmlContext");
   }
 
   return 1;

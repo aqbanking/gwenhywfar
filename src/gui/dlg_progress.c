@@ -478,7 +478,6 @@ int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "closeButton")==0) {
     return GWEN_DialogEvent_ResultAccept;
   }

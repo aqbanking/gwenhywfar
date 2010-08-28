@@ -136,8 +136,6 @@ int CppGuiLinker::OpenDialog(GWEN_GUI *gui,
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, CppGui, gui);
   assert(xgui);
 
-  DBG_ERROR(0, "CppGuiLinker::OpenDialog");
-
   return xgui->openDialog(dlg, guiid);
 }
 
@@ -425,8 +423,6 @@ int CppGui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 int CppGui::openDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
-  DBG_ERROR(0, "CppGui::OpenDialog");
-
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 
@@ -450,7 +446,7 @@ int CppGui::getFileName(const char *caption,
 			const char *patterns,
 			GWEN_BUFFER *pathBuffer,
 			uint32_t guiid) {
-  DBG_ERROR(0, "Not supported");
+  DBG_ERROR(GWEN_LOGDOMAIN, "Not supported");
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 
@@ -463,7 +459,7 @@ int CppGui::checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
   if (_checkCertFn)
     return _checkCertFn(_gui, cert, sio, guiid);
   else {
-    DBG_ERROR(0, "No built-in checkcert function?");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No built-in checkcert function?");
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 }

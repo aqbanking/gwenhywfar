@@ -107,7 +107,6 @@ int Gtk2Gui_WComboBox_GetIntProperty(GWEN_WIDGET *w,
     store=GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(g)));
     assert(store);
     i=gtk_tree_model_iter_n_children(GTK_TREE_MODEL(store), NULL);
-    DBG_ERROR(0, "Number: %d", i);
     return i;
   }
 
@@ -151,7 +150,6 @@ int Gtk2Gui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
     store=GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(g)));
     assert(store);
 
-    DBG_ERROR(0, "Adding value [%s]", value);
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter, 0, value, -1);
     GWEN_StringList_AppendString(xw->entries, value, 0, 0);
@@ -222,7 +220,6 @@ static void changed_handler(GtkWidget *comboBox, gpointer data) {
   GWEN_WIDGET *w;
   int rv;
 
-  DBG_ERROR(0, "Changed");
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),

@@ -64,15 +64,10 @@ void QT4_DialogBox::closeEvent(QCloseEvent *e){
 
     rv=GWEN_Dialog_EmitSignal(_dialog->getCInterface(), GWEN_DialogEvent_TypeClose, "");
     if (rv!=GWEN_DialogEvent_ResultReject) {
-      DBG_ERROR(0, "Accepting to close dialog (%d)", rv);
       e->accept();
-    }
-    else {
-      DBG_ERROR(0, "Rejecting to close dialog");
     }
   }
   else {
-    DBG_ERROR(0, "Dialog gone, accepting to close dialog");
     e->accept();
   }
 }

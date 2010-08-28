@@ -1258,6 +1258,10 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
 
   if (pid==0) {
     pid=gui->lastProgressId;
+    if (pid==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Last active progress not available");
+      return GWEN_ERROR_INVALID;
+    }
   }
 
   pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
@@ -1368,6 +1372,10 @@ int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t prog
 
   if (pid==0) {
     pid=gui->lastProgressId;
+    if (pid==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Last active progress not available");
+      return GWEN_ERROR_INVALID;
+    }
   }
 
   pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
@@ -1417,6 +1425,10 @@ int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
 
   if (pid==0) {
     pid=gui->lastProgressId;
+    if (pid==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Last active progress not available");
+      return GWEN_ERROR_INVALID;
+    }
   }
 
   pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);

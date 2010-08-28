@@ -210,7 +210,7 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
     }
   }
   else {
-    DBG_ERROR(0, "No HtmlContext");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No HtmlContext");
   }
 
   drawFrame(dc, 0, 0, width, height);

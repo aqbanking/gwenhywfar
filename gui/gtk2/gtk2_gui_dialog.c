@@ -185,12 +185,12 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
 
   wtree=GWEN_Dialog_GetWidgets(dlg);
   if (wtree==NULL) {
-    DBG_ERROR(0, "No widget tree in dialog");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No widget tree in dialog");
     return GWEN_ERROR_NOT_FOUND;
   }
   w=GWEN_Widget_Tree_GetFirst(wtree);
   if (w==NULL) {
-    DBG_ERROR(0, "No widgets in dialog");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No widgets in dialog");
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -264,7 +264,6 @@ run_unmap_handler (GtkWindow *window, gpointer data){
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "here");
   Gtk2Gui_Dialog_Leave(dlg, 0);
 }
 
@@ -282,7 +281,6 @@ run_delete_handler(GtkWindow *window,
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "here");
   Gtk2Gui_Dialog_Leave(dlg, 0);
   return TRUE; /* Do not destroy */
 }
@@ -299,7 +297,6 @@ run_destroy_handler(GtkWindow *window, gpointer data) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GTK2_GUI_DIALOG, dlg);
   assert(xdlg);
 
-  DBG_ERROR(0, "Destroyed");
   xdlg->destroyed=1;
 }
 
