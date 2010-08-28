@@ -108,8 +108,8 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
       free(pd->version);
       free(pd->type);
       free(pd->name);
-      GWEN_FREE_OBJECT(pd);
       pd->refCount=0;
+      GWEN_FREE_OBJECT(pd);
     }
     else
       pd->refCount--;
