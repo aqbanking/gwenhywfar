@@ -27,7 +27,7 @@
 int test1(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
   FOX16_Gui *gui;
-  int rv;
+  //int rv;
   const char testString[]=
 #if 0
 # if 0

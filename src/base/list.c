@@ -405,7 +405,7 @@ void GWEN_List_Clear(GWEN_LIST *l){
     GWEN__LISTPTR *nlp;
 
     /* only copy the list if someone else is using it */
-    nlp=GWEN__ListPtr_new(l->listPtr);
+    nlp=GWEN__ListPtr_dup(l->listPtr);
     GWEN__ListPtr_free(l->listPtr);
     l->listPtr=nlp;
   }

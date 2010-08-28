@@ -1775,7 +1775,7 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len) {
     if (i) {
       int j;
 
-      for (j=0; j<j; j++) {
+      for (j=0; j<i; j++) {
         if ((((unsigned char)*s) & 0xc0)!=0xc0) {
           DBG_ERROR(GWEN_LOGDOMAIN,
                     "Invalid UTF8 sequence at pos %d (rel %d of %d)",
