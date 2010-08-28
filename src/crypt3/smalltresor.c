@@ -11,6 +11,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "smalltresor.h"
 
 #include <gwenhywfar/mdigest.h>

@@ -11,6 +11,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "htmlgroup_p.h"
 
 #include <gwenhywfar/misc.h>

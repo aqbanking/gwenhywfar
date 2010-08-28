@@ -11,6 +11,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "crypthead_p.h"
 #include "i18n_l.h"

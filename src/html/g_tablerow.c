@@ -11,6 +11,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "g_tablerow_p.h"
 #include "g_box_l.h"

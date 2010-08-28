@@ -26,6 +26,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "syncio_p.h"
 #include "syncio_file.h"

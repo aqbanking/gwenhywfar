@@ -27,6 +27,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "configmgr_p.h"
 
 #include <gwenhywfar/gwenhywfar.h>

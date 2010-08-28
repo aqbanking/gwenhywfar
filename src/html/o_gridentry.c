@@ -11,6 +11,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "o_gridentry_p.h"
 #include "o_box_l.h"
 

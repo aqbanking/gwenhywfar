@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: idlist64.c 1102 2006-12-30 19:39:37Z martin $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -30,6 +27,8 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#define DISABLE_DEBUGLOG
 
 
 #include "idlist64_p.h"

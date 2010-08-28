@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: error.h 1104 2007-01-03 09:21:32Z martin $
     begin       : Tue Oct 02 2002
     copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
@@ -29,6 +26,9 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#define DISABLE_DEBUGLOG
+
 
 #ifndef ICONV_CONST
 # define ICONV_CONST

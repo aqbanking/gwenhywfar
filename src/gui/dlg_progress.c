@@ -12,6 +12,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "dlg_progress_p.h"
 

@@ -12,6 +12,9 @@
 #endif
 
 
+#define DISABLE_DEBUGLOG
+
+
 #include "fastbuffer.h"
 
 #include "i18n_l.h"

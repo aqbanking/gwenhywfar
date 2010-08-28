@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sat Nov 15 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
@@ -29,6 +26,9 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#define DISABLE_DEBUGLOG
+
 
 #include "list_p.h"
 #include <gwenhywfar/misc.h>

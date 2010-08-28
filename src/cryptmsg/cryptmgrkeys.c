@@ -12,6 +12,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "cryptmgrkeys_p.h"
 #include "i18n_l.h"

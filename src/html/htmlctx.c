@@ -13,6 +13,9 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
+
 #include "htmlctx_p.h"
 #include "o_box_l.h"
 #include "g_box_l.h"

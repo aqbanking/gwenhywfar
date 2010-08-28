@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
     begin       : Fri Feb 15 2008
     copyright   : (C) 2008 by Martin Preuss
     email       : martin@libchipcard.de
@@ -13,6 +11,8 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#define DISABLE_DEBUGLOG
 
 
 #include "httpsession_p.h"

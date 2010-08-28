@@ -26,6 +26,7 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
 
 
 #include "syncio_tls_p.h"

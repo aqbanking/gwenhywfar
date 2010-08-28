@@ -27,6 +27,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "gui_p.h"
 #include "dlg_input_l.h"

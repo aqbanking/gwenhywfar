@@ -11,6 +11,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "cryptkeysym_p.h"
 #include <gwenhywfar/misc.h>

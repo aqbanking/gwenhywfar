@@ -11,6 +11,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 #include "g_table_p.h"
 #include "g_generic_l.h"

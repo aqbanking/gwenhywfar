@@ -27,6 +27,8 @@
 # include <config.h>
 #endif
 
+#define DISABLE_DEBUGLOG
+
 #include "tree_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
     begin       : Wed Mar 16 2005
     copyright   : (C) 2005 by Martin Preuss
     email       : martin@libchipcard.de
@@ -13,6 +10,8 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#define DISABLE_DEBUGLOG
 
 
 #include "cryptkeyrsa_p.h"
