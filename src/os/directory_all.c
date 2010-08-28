@@ -503,6 +503,7 @@ int GWEN_Directory_GetFileEntries(const char *folder, GWEN_STRINGLIST *sl,
     }
   }
 
+  GWEN_Buffer_free(pbuf);
   GWEN_Directory_Close(d);
   GWEN_Directory_free(d);
   return 0;
@@ -616,6 +617,7 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
     }
   }
   GWEN_StringList_free(folderList);
+  GWEN_Buffer_free(pbuf);
 
   return 0;
 }

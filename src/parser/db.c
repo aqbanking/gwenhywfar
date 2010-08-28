@@ -242,19 +242,8 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
     GWEN_LIST_FINI(GWEN_DB_NODE, n);
 
     /* free children */
-    if (n->children) {
-      GWEN_DB_NODE *cn;
-
-      cn=GWEN_DB_Node_List_First(n->children);
-      while(cn) {
-	GWEN_DB_NODE *ncn;
-
-	ncn=GWEN_DB_Node_List_Next(cn);
-	DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing child node");
-	GWEN_DB_Node_free(cn);
-	cn=ncn;
-      }
-    }
+    if (n->children)
+      GWEN_DB_Node_List_free(n->children);
 
     /* free dynamic (allocated) data */
     switch(n->typ) {

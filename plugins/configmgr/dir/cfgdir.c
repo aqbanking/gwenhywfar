@@ -473,6 +473,7 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
   }
 
   GWEN_FSLock_List_Add(lck, xcfg->fileLocks);
+  GWEN_Buffer_free(nbuf);
   return 0;
 }
 
@@ -515,6 +516,7 @@ int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
 
   GWEN_FSLock_List_Del(lck);
   GWEN_FSLock_free(lck);
+  GWEN_Buffer_free(nbuf);
 
   return 0;
 }
