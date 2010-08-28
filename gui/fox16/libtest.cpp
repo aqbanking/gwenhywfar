@@ -26,9 +26,11 @@
 
 int test1(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
+  FOX16_Gui *gui;
   int rv;
   const char testString[]=
 #if 0
+# if 0
     "This is <b>a</b> test. "
     "And this, is the second line: followed by something else."
     "<table>"
@@ -43,20 +45,29 @@ int test1(int argc, char **argv) {
     "</table>"
     "And   this is   after the table.<br>"
     "and this <font color=\"red\">one</font> is red.";
-#else
+# else
     "This is before right"
     "<right>RIGHT</right>"
     "and this after right.";
+# endif
+#else
+    "word";
 #endif
 
   a.init(argc,argv);
   a.create();
 
+  gui=new FOX16_Gui(&a);
+  GWEN_Gui_SetGui(gui->getCInterface());
+
   FOX16_HtmlCtx ctx(0);
   ctx.setText(testString);
-  rv=ctx.layout(300, 1024);
-  fprintf(stderr, "Result of layout: %d\n", rv);
+  //rv=ctx.layout(300, 1024);
+  //fprintf(stderr, "Result of layout: %d\n", rv);
   ctx.dump();
+
+  GWEN_Gui_SetGui(NULL);
+  delete gui;
 
   return 0;
 }

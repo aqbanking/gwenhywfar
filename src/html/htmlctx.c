@@ -93,6 +93,8 @@ void HtmlCtx_FreeData(void *bp, void *p) {
 
   GWEN_StringList_free(xctx->mediaPaths);
 
+  HtmlProps_free(xctx->standardProps);
+
   GWEN_FREE_OBJECT(xctx);
 }
 

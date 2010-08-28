@@ -160,7 +160,6 @@ FOX16_HtmlCtx::FOX16_HtmlCtx(uint32_t flags)
   pr=HtmlProps_new();
   fnt=HtmlCtx_GetFont(_context, _font->getName().text(), _font->getSize()/10, 0);
   HtmlProps_SetFont(pr, fnt);
-  HtmlFont_free(fnt);
   HtmlCtx_SetStandardProps(_context, pr);
   HtmlProps_free(pr);
 
