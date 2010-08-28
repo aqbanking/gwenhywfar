@@ -136,7 +136,8 @@ static int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
 
 static int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 			     GWEN_FAST_BUFFER *fb,
-			     uint32_t flags);
+                             uint32_t flags,
+                             GWEN_BUFFER *workBuf);
 
 static int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio);
 

@@ -396,19 +396,16 @@ int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
 
 int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 		      GWEN_FAST_BUFFER *fb,
-		      GWEN_UNUSED uint32_t flags){
+                      GWEN_UNUSED uint32_t flags,
+                      GWEN_BUFFER *dbuf){
   int chr;
   unsigned char uc=0;
-  GWEN_BUFFER *dbuf;
   int rv;
-
-  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   /* skip blanks */
   for (;;) {
     GWEN_FASTBUFFER_READBYTE(fb, chr);
     if (chr<0) {
-      GWEN_Buffer_free(dbuf);
       return chr;
     }
     uc=(unsigned char) chr;
@@ -422,7 +419,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
     for (;;) {
       GWEN_FASTBUFFER_READBYTE(fb, chr);
       if (chr<0) {
-	GWEN_Buffer_free(dbuf);
 	return chr;
       }
       uc=(unsigned char) chr;
@@ -434,7 +430,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 
     rv=GWEN_XmlCtx_StartTag(ctx, GWEN_Buffer_GetStart(dbuf));
     if (rv) {
-      GWEN_Buffer_free(dbuf);
       return rv;
     }
     if (uc!='>') {
@@ -442,7 +437,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 	/* skip blanks, expect '>' */
 	GWEN_FASTBUFFER_READBYTE(fb, chr);
 	if (chr<0) {
-	  GWEN_Buffer_free(dbuf);
 	  return chr;
 	}
 	uc=(unsigned char) chr;
@@ -452,24 +446,20 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
     }
     if (uc!='>') {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected character");
-      GWEN_Buffer_free(dbuf);
       return GWEN_ERROR_BAD_DATA;
     }
 
     /* tag finished */
     rv=GWEN_XmlCtx_EndTag(ctx, 0);
     if (rv) {
-      GWEN_Buffer_free(dbuf);
       return rv;
     }
-    GWEN_Buffer_free(dbuf);
     return 0;
   }
   else if (uc=='!') {
     /* check for comment */
     GWEN_FASTBUFFER_PEEKBYTE(fb, chr);
     if (chr<0) {
-      GWEN_Buffer_free(dbuf);
       return chr;
     }
     uc=(unsigned char) chr;
@@ -477,7 +467,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       fb->bufferReadPos++;
       GWEN_FASTBUFFER_PEEKBYTE(fb, chr);
       if (chr<0) {
-	GWEN_Buffer_free(dbuf);
 	return chr;
       }
       uc=(unsigned char) chr;
@@ -491,7 +480,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 	  GWEN_FASTBUFFER_READBYTE(fb, chr);
 	  if (chr<0) {
 	    GWEN_Buffer_free(cbuf);
-	    GWEN_Buffer_free(dbuf);
 	    return chr;
 	  }
 	  uc=(unsigned char) chr;
@@ -506,11 +494,9 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 	      rv=GWEN_XmlCtx_AddComment(ctx, GWEN_Buffer_GetStart(cbuf));
 	      if (rv) {
 		GWEN_Buffer_free(cbuf);
-		GWEN_Buffer_free(dbuf);
                 return rv;
 	      }
 	      GWEN_Buffer_free(cbuf);
-	      GWEN_Buffer_free(dbuf);
 	      return 0;
 	    }
 	  }
@@ -535,7 +521,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       if ((fc=='!' && uc=='!') || (fc=='?' && uc=='?')) {
 	GWEN_FASTBUFFER_PEEKBYTE(fb, chr);
 	if (chr<0) {
-	  GWEN_Buffer_free(dbuf);
 	  return chr;
 	}
 	uc=(unsigned char) chr;
@@ -551,11 +536,9 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
     GWEN_FASTBUFFER_READBYTE(fb, chr);
     if (chr<0) {
       if (chr==GWEN_ERROR_EOF) {
-	GWEN_Buffer_free(dbuf);
 	return chr;
       }
       else {
-	GWEN_Buffer_free(dbuf);
 	return chr;
       }
     }
@@ -566,20 +549,17 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
   /* tag started */
   if (GWEN_Buffer_GetUsedBytes(dbuf)==0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Element name missing");
-    GWEN_Buffer_free(dbuf);
     return GWEN_ERROR_BAD_DATA;
   }
 
   rv=GWEN_XmlCtx_StartTag(ctx, GWEN_Buffer_GetStart(dbuf));
   if (rv) {
-    GWEN_Buffer_free(dbuf);
     return rv;
   }
 
   if (uc=='/' || uc=='?' || uc=='!') {
     GWEN_FASTBUFFER_PEEKBYTE(fb, chr);
     if (chr<0) {
-      GWEN_Buffer_free(dbuf);
       return chr;
     }
     uc=(unsigned char) chr;
@@ -587,10 +567,8 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       fb->bufferReadPos++;
       rv=GWEN_XmlCtx_EndTag(ctx, 1);
       if (rv) {
-	GWEN_Buffer_free(dbuf);
 	return rv;
       }
-      GWEN_Buffer_free(dbuf);
       /* tag finished */
       return 0;
     }
@@ -599,10 +577,8 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
   if (uc=='>') {
     rv=GWEN_XmlCtx_EndTag(ctx, 0);
     if (rv) {
-      GWEN_Buffer_free(dbuf);
       return rv;
     }
-    GWEN_Buffer_free(dbuf);
     /* tag finished */
     return 0;
   }
@@ -619,7 +595,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       GWEN_FASTBUFFER_READBYTE(fb, chr);
       if (chr<0) {
 	GWEN_Buffer_free(nbuf);
-	GWEN_Buffer_free(dbuf);
 	return chr;
       }
       uc=(unsigned char) chr;
@@ -636,7 +611,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       GWEN_FASTBUFFER_READBYTE(fb, chr);
       if (chr<0) {
 	GWEN_Buffer_free(nbuf);
-	GWEN_Buffer_free(dbuf);
 	return chr;
       }
       uc=(unsigned char) chr;
@@ -652,7 +626,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 	  GWEN_FASTBUFFER_READBYTE(fb, chr);
 	  if (chr<0) {
 	    GWEN_Buffer_free(nbuf);
-	    GWEN_Buffer_free(dbuf);
 	    return chr;
 	  }
 	  uc=(unsigned char) chr;
@@ -673,7 +646,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 			  "Nested element definitions");
 		GWEN_Buffer_free(vbuf);
 		GWEN_Buffer_free(nbuf);
-		GWEN_Buffer_free(dbuf);
 		return GWEN_ERROR_BAD_DATA;
 	      }
 	      else if (GWEN_Buffer_GetUsedBytes(dbuf)) {
@@ -684,7 +656,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 		  if (chr<0) {
 		    GWEN_Buffer_free(vbuf);
 		    GWEN_Buffer_free(nbuf);
-		    GWEN_Buffer_free(dbuf);
 		    return chr;
 		  }
 		  tc=(unsigned char) chr;
@@ -701,7 +672,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 	  DBG_ERROR(GWEN_LOGDOMAIN, "No matching number of quote chars");
 	  GWEN_Buffer_free(vbuf);
 	  GWEN_Buffer_free(nbuf);
-	  GWEN_Buffer_free(dbuf);
 	  return GWEN_ERROR_BAD_DATA;
 	}
 
@@ -716,7 +686,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       if (rv) {
 	GWEN_Buffer_free(vbuf);
 	GWEN_Buffer_free(nbuf);
-	GWEN_Buffer_free(dbuf);
 	return rv;
       }
     }
@@ -733,7 +702,6 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 
     GWEN_FASTBUFFER_PEEKBYTE(fb, chr);
     if (chr<0) {
-      GWEN_Buffer_free(dbuf);
       return chr;
     }
     uc=(unsigned char) chr;
@@ -742,10 +710,8 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       fb->bufferReadPos++;
       rv=GWEN_XmlCtx_EndTag(ctx, 1);
       if (rv) {
-	GWEN_Buffer_free(dbuf);
 	return rv;
       }
-      GWEN_Buffer_free(dbuf);
       /* tag finished */
       return 0;
     }
@@ -759,17 +725,14 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
   else if (uc=='>') {
     rv=GWEN_XmlCtx_EndTag(ctx, 0);
     if (rv) {
-      GWEN_Buffer_free(dbuf);
       return rv;
     }
-    GWEN_Buffer_free(dbuf);
     /* tag finished */
     return 0;
   }
 
   DBG_ERROR(GWEN_LOGDOMAIN,
 	    "Internal error: Should never reach this point");
-  GWEN_Buffer_free(dbuf);
   return GWEN_ERROR_INTERNAL;
 }
 
@@ -779,9 +742,11 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
   int oks=0;
   int startingDepth;
+  GWEN_BUFFER *workBuf;
 
   startingDepth=GWEN_XmlCtx_GetDepth(ctx);
 
+  workBuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_XmlCtx_ResetFinishedElement(ctx);
   for (;;) {
     int rv;
@@ -791,14 +756,17 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
       if (rv!=GWEN_ERROR_EOF || !oks) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d), after reading %d bytes",
                   rv, (int) GWEN_FastBuffer_GetBytesRead(fb));
+        GWEN_Buffer_free(workBuf);
 	return rv;
       }
+      GWEN_Buffer_free(workBuf);
       return 0;
     }
 
     rv=GWEN_XML__ReadData(ctx, fb, GWEN_XmlCtx_GetFlags(ctx));
     if (rv) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(workBuf);
       return rv;
     }
     oks=1;
@@ -808,17 +776,20 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
       if (rv!=GWEN_ERROR_EOF || !oks ||
 	  (GWEN_XmlCtx_GetDepth(ctx)!=startingDepth)) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(workBuf);
 	return rv;
       }
       return 0;
     }
     else if (rv=='<') {
       fb->bufferReadPos++;
-      rv=GWEN_XML__ReadTag(ctx, fb, GWEN_XmlCtx_GetFlags(ctx));
+      rv=GWEN_XML__ReadTag(ctx, fb, GWEN_XmlCtx_GetFlags(ctx), workBuf);
       if (rv) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(workBuf);
 	return rv;
       }
+      GWEN_Buffer_Reset(workBuf);
       oks=1;
     }
 
@@ -832,6 +803,7 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
 	      "Not on same level where we started...(%d!=%d)",
 	      GWEN_XmlCtx_GetDepth(ctx), startingDepth);
   }
+  GWEN_Buffer_free(workBuf);
 
   return 0;
 }
