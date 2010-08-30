@@ -6,7 +6,6 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = config.rpath  \
  ChangeLog \
- ChangeLog.old \
  README.W32 \
  README.DARWIN \
  README.SOLARIS \
@@ -228,7 +227,7 @@ cppcheck:
 	for f in `find . -name \*.c -o -name \*.cpp`; do cppcheck $$f; done
 
 ChangeLog:
-	git log --pretty="format:------------------------------------------------------------------%n%ai %an%n%s%n%b" >ChangeLog
+	git log --pretty="format:------------------------------------------------------------------%n%ai %an%n%s%n%b" -n 100 >ChangeLog
 
 dist-hook:
 	rm -f ChangeLog 2>/dev/null
