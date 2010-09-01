@@ -572,6 +572,12 @@ int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio) {
     return rv;
   }
 
+  if (*GWEN_Buffer_GetStart(tbuf)==0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Empty line received while reading status response, assuming EOF");
+    GWEN_Buffer_free(tbuf);
+    return GWEN_ERROR_EOF;
+  }
+
   rv=GWEN_SyncIo_Http_ParseStatus(sio, GWEN_Buffer_GetStart(tbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1038,7 +1044,7 @@ int GWEN_SyncIo_Http_WriteHeader(GWEN_SYNCIO *sio) {
   /* we will construct the line including CR/LF ourselves */
   GWEN_SyncIo_AddFlags(baseIo, GWEN_SYNCIO_FLAGS_TRANSPARENT);
 
-  /* default next mode after reading the header is reading the body
+  /* default next mode after writing the header is writing the body
    * (if any, but that will be checked later) */
   xio->writeMode=GWEN_SyncIo_Http_Mode_Body;
 
