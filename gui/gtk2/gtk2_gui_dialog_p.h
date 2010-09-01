@@ -36,7 +36,7 @@ struct GTK2_GUI_DIALOG {
 static void GWENHYWFAR_CB Gtk2Gui_Dialog_FreeData(void *bp, void *p);
 
 
-static int Gtk2Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
+static int GWENHYWFAR_CB Gtk2Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
 					 GWEN_WIDGET *w,
 					 GWEN_DIALOG_PROPERTY prop,
 					 int index,
@@ -44,20 +44,20 @@ static int Gtk2Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
 					 int doSignal);
 
 
-static int Gtk2Gui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
+static int GWENHYWFAR_CB Gtk2Gui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
 					 GWEN_WIDGET *w,
 					 GWEN_DIALOG_PROPERTY prop,
 					 int index,
 					 int defaultValue);
 
-static int Gtk2Gui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
+static int GWENHYWFAR_CB Gtk2Gui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
 					  GWEN_WIDGET *w,
 					  GWEN_DIALOG_PROPERTY prop,
 					  int index,
 					  const char *value,
 					  int doSignal);
 
-static const char *Gtk2Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
+static const char * GWENHYWFAR_CB Gtk2Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
 						  GWEN_WIDGET *w,
 						  GWEN_DIALOG_PROPERTY prop,
 						  int index,
