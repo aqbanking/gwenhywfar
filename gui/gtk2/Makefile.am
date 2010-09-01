@@ -10,6 +10,8 @@ lib_LTLIBRARIES=libgwengui-gtk2.la
 
 
 libgwengui_gtk2_la_LIBADD=$(GTK2_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname)
+libgwengui_gtk2_la_LDFLAGS = -no-undefined
+
 noinst_HEADERS=\
   gtk2_gui_p.h \
   gtk2_gui_dialog_l.h \
