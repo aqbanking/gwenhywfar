@@ -263,6 +263,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Disconnect(GWEN_SYNCIO *sio) {
     GWEN_Socket_free(xio->socket);
     xio->socket=NULL;
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+    DBG_INFO(GWEN_LOGDOMAIN, "Disconnected socket");
   }
 
   return 0;
