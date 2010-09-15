@@ -184,8 +184,10 @@ int Gtk2Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
   GWEN_WIDGET *wParent;
   gulong deleted_text_handler_id;
   gulong inserted_text_handler_id;
+  gboolean text_is_visible;
 
   flags=GWEN_Widget_GetFlags(w);
+  text_is_visible = (flags & GWEN_GUI_INPUT_FLAGS_SHOW) != 0;
   wParent=GWEN_Widget_Tree_GetParent(w);
   s=GWEN_Widget_GetText(w, 0);
 
@@ -193,6 +195,7 @@ int Gtk2Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
   g=gtk_entry_new();
   if (s && *s)
     gtk_entry_set_text(GTK_ENTRY(g), s);
+  gtk_entry_set_visibility(GTK_ENTRY(g), text_is_visible);
 
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
