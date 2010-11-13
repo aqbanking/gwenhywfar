@@ -70,7 +70,7 @@ if test -z "$qt4_includes"; then
                     case $lv1 in
                     *4.*)
                   	qt4_includes="-I$i -I$i/Qt -I$i/QtCore -I$i/QtGui"
-                        qt4_dir=`echo $i | ${SED} 's-/include*--'`
+                        qt4_dir=`echo $i | ${SED} 's-/include.*--'`
                         break;
                         ;;
                     esac

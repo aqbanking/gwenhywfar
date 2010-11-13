@@ -70,7 +70,7 @@ if test -z "$qt3_includes"; then
                     case $lv1 in
                     *3.*)
                   	qt3_includes="-I$i"
-                        qt3_dir=`echo $i | ${SED} 's-/include*--'`
+                        qt3_dir=`echo $i | ${SED} 's-/include.*--'`
                         break;
                         ;;
                     esac
