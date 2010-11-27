@@ -82,6 +82,8 @@ struct GWEN_GUI {
   uint32_t nextDialogId;
 
   char *name;
+  char *charSet;
+
 
   int inLogHook;
 

@@ -348,6 +348,23 @@ GWEN_GUI *GWEN_Gui_GetGui();
 
 
 
+/** @name Character Set
+ *
+ * All messages and texts can be converted from UTF8 automatically.
+ * This needs the name of the destination character set.
+ * See output of <i>iconv --list</i> for a list of supported
+ * character sets.
+ */
+/*@{*/
+GWENHYWFAR_API 
+const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui);
+
+GWENHYWFAR_API 
+void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s);
+/*@}*/
+
+
+
 
 
 

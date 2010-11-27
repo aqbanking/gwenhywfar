@@ -39,6 +39,24 @@ GWENHYWFAR_API
 void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name);
 
 
+/**
+ * This function converts the given text from UTF-8 to the character set selected
+ * by @ref GWEN_Gui_SetCharSet.
+ */
+GWENHYWFAR_API
+int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui,
+                             const char *text,
+                             int len,
+                             GWEN_BUFFER *tbuf);
+
+/**
+ * This function extracts the raw text (e.g. the part outside a HTML element) and converts it
+ * from UTF-8 to the character set selected by @ref GWEN_Gui_SetCharSet.
+ */
+GWENHYWFAR_API
+void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf);
+
+
 
 
 /** @name Prototypes For Virtual User Interaction Functions

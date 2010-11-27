@@ -62,9 +62,6 @@
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
 #endif
-#ifdef HAVE_ICONV_H
-# include <iconv.h>
-#endif
 
 
 
@@ -110,7 +107,6 @@ void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p) {
 
   cgui=(GWEN_GUI_CGUI*)p;
   GWEN_Gui_CProgress_List_free(cgui->progressList);
-  free(cgui->charSet);
   GWEN_StringList_free(cgui->badPasswords);
   GWEN_DB_Group_free(cgui->dbCerts);
   GWEN_DB_Group_free(cgui->dbPasswords);
@@ -120,29 +116,13 @@ void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p) {
 
 
 const char *GWEN_Gui_CGui_GetCharSet(const GWEN_GUI *gui) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  return cgui->charSet;
+  return GWEN_Gui_GetCharSet(gui);
 }
 
 
 
 void GWEN_Gui_CGui_SetCharSet(GWEN_GUI *gui, const char *s) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  free(cgui->charSet);
-  if (s)
-    cgui->charSet=strdup(s);
-  else
-    cgui->charSet=NULL;
+  GWEN_Gui_SetCharSet(gui, s);
 }
 
 
@@ -173,125 +153,6 @@ void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i) {
     GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
   else
     GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
-}
-
-
-
-int GWEN_Gui_CGui__ConvertFromUtf8(GWEN_GUI *gui,
-				   const char *text,
-				   int len,
-				   GWEN_BUFFER *tbuf){
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  assert(len);
-
-  if (cgui->charSet) {
-    if (strcasecmp(cgui->charSet, "utf-8")!=0) {
-#ifndef HAVE_ICONV
-      DBG_INFO(GWEN_LOGDOMAIN,
-	       "iconv not available, can not convert to \"%s\"",
-	       cgui->charSet);
-#else
-      iconv_t ic;
-
-      ic=iconv_open(cgui->charSet, "UTF-8");
-      if (ic==((iconv_t)-1)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" not available",
-		  cgui->charSet);
-      }
-      else {
-        char *outbuf;
-        char *pOutbuf;
-	/* Some systems have iconv in libc, some have it in libiconv
-	   (OSF/1 and those with the standalone portable GNU libiconv
-	   installed). Check which one is available. The define
-	   ICONV_CONST will be "" or "const" accordingly. */
-	ICONV_CONST char *pInbuf;
-        size_t inLeft;
-        size_t outLeft;
-        size_t done;
-        size_t space;
-
-        /* convert */
-        pInbuf=(char*)text;
-
-        outLeft=len*2;
-        space=outLeft;
-        outbuf=(char*)malloc(outLeft);
-        assert(outbuf);
-
-        inLeft=len;
-        pInbuf=(char*)text;
-        pOutbuf=outbuf;
-        done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
-        if (done==(size_t)-1) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Error in conversion: %s (%d)",
-                    strerror(errno), errno);
-          free(outbuf);
-          iconv_close(ic);
-	  return GWEN_ERROR_GENERIC;
-        }
-
-        GWEN_Buffer_AppendBytes(tbuf, outbuf, space-outLeft);
-	free(outbuf);
-	DBG_DEBUG(GWEN_LOGDOMAIN, "Conversion done.");
-	iconv_close(ic);
-	return 0;
-      }
-#endif
-    }
-  }
-
-  GWEN_Buffer_AppendBytes(tbuf, text, len);
-  return 0;
-}
-
-
-
-void GWEN_Gui_CGui_GetRawText(GWEN_GUI *gui,
-			      const char *text,
-			      GWEN_BUFFER *tbuf) {
-  const char *p;
-  int rv;
-
-  assert(text);
-  p=text;
-  while ((p=strchr(p, '<'))) {
-    const char *t;
-
-    t=p;
-    t++;
-    if (toupper(*t)=='H') {
-      t++;
-      if (toupper(*t)=='T') {
-        t++;
-        if (toupper(*t)=='M') {
-          t++;
-          if (toupper(*t)=='L') {
-            break;
-          }
-        }
-      }
-    }
-    p++;
-  } /* while */
-
-  if (p)
-    rv=GWEN_Gui_CGui__ConvertFromUtf8(gui, text, (p-text), tbuf);
-  else
-    rv=GWEN_Gui_CGui__ConvertFromUtf8(gui, text, strlen(text), tbuf);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error converting text");
-    GWEN_Buffer_Reset(tbuf);
-    if (p)
-      GWEN_Buffer_AppendBytes(tbuf, text, (p-text));
-    else
-      GWEN_Buffer_AppendString(tbuf, text);
-  }
 }
 
 
@@ -501,7 +362,7 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
   assert(cgui);
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Gui_CGui_GetRawText(gui, text, tbuf);
+  GWEN_Gui_GetRawText(gui, text, tbuf);
 
   if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
     if (GWEN_GUI_MSG_FLAGS_SEVERITY_IS_DANGEROUS(flags)) {
@@ -579,7 +440,7 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
 
   assert(gui);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Gui_CGui_GetRawText(gui, text, tbuf);
+  GWEN_Gui_GetRawText(gui, text, tbuf);
 
   fprintf(stderr, "===== %s =====\n", title);
   fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));
@@ -642,7 +503,7 @@ uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
   assert(cgui);
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Gui_CGui_GetRawText(gui, text, tbuf);
+  GWEN_Gui_GetRawText(gui, text, tbuf);
 
   fprintf(stderr, "----- %s -----\n", title);
   fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));

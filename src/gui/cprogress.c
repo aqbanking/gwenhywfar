@@ -207,7 +207,7 @@ int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
     const char *t;
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Gui_CGui_GetRawText(cp->gui, text, tbuf);
+    GWEN_Gui_GetRawText(cp->gui, text, tbuf);
     t=GWEN_Buffer_GetStart(tbuf);
     if (t[strlen(t)-1]!='\n')
       GWEN_Buffer_AppendByte(tbuf, '\n');

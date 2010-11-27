@@ -43,10 +43,10 @@ GWEN_GUI *GWEN_Gui_CGui_new();
  * character sets.
  */
 /*@{*/
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 const char *GWEN_Gui_CGui_GetCharSet(const GWEN_GUI *gui);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 void GWEN_Gui_CGui_SetCharSet(GWEN_GUI *gui, const char *s);
 
 /*@}*/

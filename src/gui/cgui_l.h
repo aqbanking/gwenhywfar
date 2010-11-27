@@ -20,12 +20,6 @@
 #include <gwenhywfar/buffer.h>
 
 
-void GWEN_Gui_CGui_GetRawText(GWEN_GUI *gui,
-			      const char *text,
-			      GWEN_BUFFER *tbuf);
-
-
-
 
 #endif
 

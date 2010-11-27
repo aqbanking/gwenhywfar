@@ -30,6 +30,11 @@
 #define DISABLE_DEBUGLOG
 
 
+#ifndef ICONV_CONST
+# define ICONV_CONST
+#endif
+
+
 #include "gui_p.h"
 #include "dlg_input_l.h"
 #include "dlg_message_l.h"
@@ -46,6 +51,14 @@
 #include <gwenhywfar/syncio_http.h>
 
 #include <stdarg.h>
+#include <string.h>
+#include <errno.h>
+#include <ctype.h>
+
+#ifdef HAVE_ICONV_H
+# include <iconv.h>
+#endif
+
 
 
 static GWEN_GUI *gwenhywfar_gui=NULL;
@@ -82,6 +95,7 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
       GWEN_Dialog_List_free(gui->activeDialogs);
       GWEN_ProgressData_Tree_free(gui->progressDataTree);
       free(gui->name);
+      free(gui->charSet);
 
       GWEN_FREE_OBJECT(gui);
     }
@@ -125,6 +139,115 @@ void GWEN_Gui_SetGui(GWEN_GUI *gui) {
 
 GWEN_GUI *GWEN_Gui_GetGui() {
   return gwenhywfar_gui;
+}
+
+
+
+int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui, const char *text, int len, GWEN_BUFFER *tbuf) {
+  assert(gui);
+  assert(len);
+
+  if (gui->charSet) {
+    if (strcasecmp(gui->charSet, "utf-8")!=0) {
+#ifndef HAVE_ICONV
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "iconv not available, can not convert to \"%s\"",
+               gui->charSet);
+#else
+      iconv_t ic;
+
+      ic=iconv_open(gui->charSet, "UTF-8");
+      if (ic==((iconv_t)-1)) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" not available",
+                  gui->charSet);
+      }
+      else {
+        char *outbuf;
+        char *pOutbuf;
+        /* Some systems have iconv in libc, some have it in libiconv
+         (OSF/1 and those with the standalone portable GNU libiconv
+         installed). Check which one is available. The define
+         ICONV_CONST will be "" or "const" accordingly. */
+        ICONV_CONST char *pInbuf;
+        size_t inLeft;
+        size_t outLeft;
+        size_t done;
+        size_t space;
+
+        /* convert */
+        pInbuf=(char*)text;
+
+        outLeft=len*2;
+        space=outLeft;
+        outbuf=(char*)malloc(outLeft);
+        assert(outbuf);
+
+        inLeft=len;
+        pInbuf=(char*)text;
+        pOutbuf=outbuf;
+        done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
+        if (done==(size_t)-1) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Error in conversion: %s (%d)",
+                    strerror(errno), errno);
+          free(outbuf);
+          iconv_close(ic);
+          return GWEN_ERROR_GENERIC;
+        }
+
+        GWEN_Buffer_AppendBytes(tbuf, outbuf, space-outLeft);
+        free(outbuf);
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Conversion done.");
+        iconv_close(ic);
+        return 0;
+      }
+#endif
+    }
+  }
+
+  GWEN_Buffer_AppendBytes(tbuf, text, len);
+  return 0;
+}
+
+
+
+void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf) {
+  const char *p;
+  int rv;
+
+  assert(text);
+  p=text;
+  while ((p=strchr(p, '<'))) {
+    const char *t;
+
+    t=p;
+    t++;
+    if (toupper(*t)=='H') {
+      t++;
+      if (toupper(*t)=='T') {
+        t++;
+        if (toupper(*t)=='M') {
+          t++;
+          if (toupper(*t)=='L') {
+            break;
+          }
+        }
+      }
+    }
+    p++;
+  } /* while */
+
+  if (p)
+    rv=GWEN_Gui_ConvertFromUtf8(gui, text, (p-text), tbuf);
+  else
+    rv=GWEN_Gui_ConvertFromUtf8(gui, text, strlen(text), tbuf);
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error converting text");
+    GWEN_Buffer_Reset(tbuf);
+    if (p)
+      GWEN_Buffer_AppendBytes(tbuf, text, (p-text));
+    else
+      GWEN_Buffer_AppendString(tbuf, text);
+  }
 }
 
 
@@ -453,6 +576,26 @@ const char *GWEN_Gui_GetName() {
   if (gwenhywfar_gui)
     return gwenhywfar_gui->name;
   return NULL;
+}
+
+
+
+const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui) {
+  if (gui)
+    return gui->charSet;
+  return NULL;
+}
+
+
+
+void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s) {
+  if (gui) {
+    free(gui->charSet);
+    if (s)
+      gui->charSet=strdup(s);
+    else
+      gui->charSet=NULL;
+  }
 }
 
 

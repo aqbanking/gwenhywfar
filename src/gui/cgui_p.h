@@ -35,7 +35,6 @@ struct GWEN_GUI_CGUI {
 
   uint32_t nextBoxId;
   uint32_t nextProgressId;
-  char *charSet;
 
   GWEN_GUI_CHECKCERT_FN checkCertFn;
   GWEN_DB_NODE *dbPasswords;
@@ -50,12 +49,6 @@ struct GWEN_GUI_CGUI {
 
 void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(void *bp, void *p);
 
-
-
-int GWEN_Gui_CGui__ConvertFromUtf8(GWEN_GUI *gui,
-				   const char *text,
-				   int len,
-				   GWEN_BUFFER *tbuf);
 
 
 char GWEN_Gui_CGui__readCharFromStdin(int waitFor);
