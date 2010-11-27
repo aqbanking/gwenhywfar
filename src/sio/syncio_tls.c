@@ -28,6 +28,8 @@
 
 #define DISABLE_DEBUGLOG
 
+/*#define GWEN_TLS_DEBUG*/
+
 
 #include "syncio_tls_p.h"
 #include "i18n_l.h"
@@ -793,7 +795,7 @@ ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len) {
   errno=0;
 #endif
   DBG_VERBOUS(GWEN_LOGDOMAIN, "TLS PULL: returning %d bytes", rv);
-  /*GWEN_Text_DumpString(buf, rv, stderr, 2);*/
+  /*GWEN_Text_DumpString(buf, rv, 2);*/
   return rv;
 }
 
@@ -827,7 +829,7 @@ ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t l
   gnutls_transport_set_errno(xio->session, 0);
 #endif
   DBG_VERBOUS(GWEN_LOGDOMAIN, "TLS PUSH: returning %d bytes", rv);
-  /*GWEN_Text_DumpString(buf, rv, stderr, 2);*/
+  /*GWEN_Text_DumpString(buf, rv, 2);*/
   return rv;
 }
 
@@ -1020,9 +1022,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
     return GWEN_ERROR_SSL;
   }
 
-#if 0
+#ifdef GWEN_TLS_DEBUG
   DBG_ERROR(0, "Received this:");
-  GWEN_Text_DumpString((const char*) buffer, rv, stderr, 2);
+  GWEN_Text_DumpString((const char*) buffer, rv, 2);
 #endif
 
   return rv;
@@ -1041,9 +1043,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
 
-#if 0
+#ifdef GWEN_TLS_DEBUG
   DBG_ERROR(0, "Sending this:");
-  GWEN_Text_DumpString((const char*) buffer, size, stderr, 2);
+  GWEN_Text_DumpString((const char*) buffer, size, 2);
 #endif
 
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
