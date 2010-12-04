@@ -830,7 +830,7 @@ int GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
 	int i;
 
 	i=strlen(s);
-	if (i>=minLen && i<=maxLen) {
+	if (i>=minLen && i < maxLen) {
 	  memmove(buffer, s, i+1);
 	  GWEN_Buffer_free(buf);
 	  return 0;
