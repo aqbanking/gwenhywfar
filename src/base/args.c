@@ -86,7 +86,7 @@ int GWEN_Args_Check(int argc, char **argv,
         i++;
       }
       else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Only options are allowed");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Only options are allowed, but argument[%d] \"%s\" was not recognized as a known option.", i, p);
         GWEN_DB_Group_free(counts);
         return GWEN_ARGS_RESULT_ERROR;
       }
