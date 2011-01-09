@@ -60,8 +60,7 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_RESULT([not found ])
       AC_MSG_ERROR([
 *** The library Gwenhywfar was not found. Obtain it from 
-*** http://gwenhywfar.sf.net, direct link for download is 
-*** http://sf.net/project/showfiles.php?group_id=88769 . 
+*** http://www.aquamaniac.de . 
 *** If it is already installed (including the -devel package), 
 *** you might need to specify the location with the 
 *** option --with-gwen-dir=DIR.])
@@ -95,20 +94,20 @@ if test "$enable_gwenhywfar" != "no"; then
     AC_MSG_RESULT([found $gwen_versionstring])
     if test "$vma" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
       AC_MSG_ERROR([Your Gwenhywfar version is way too old.
-      Please update from http://sf.net/projects/gwenhywfar])
+      Please update from http://www.aquamaniac.de])
     elif test "$vma" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
       if test "$vmi" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
         AC_MSG_ERROR([Your Gwenhywfar version is too old.
-          Please update from http://sf.net/projects/gwenhywfar])
+          Please update from http://www.aquamaniac.de])
       elif test "$vmi" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
           if test "$vpl" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
             AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old.
-            Please update from http://sf.net/projects/gwenhywfar])
+            Please update from http://www.aquamaniac.de])
           elif test "$vpl" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
             if test "$vbld" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vbuild`"; then
               AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old. 
-  Please update to the latest CVS version. Instructions for accessing 
-  CVS can be found on http://sf.net/projects/gwenhywfar])
+  Please update to the latest SVN version. Instructions for accessing 
+  SVN can be found on http://www.aquamaniac.de])
              fi
            fi
       fi
