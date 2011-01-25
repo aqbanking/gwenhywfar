@@ -187,7 +187,7 @@ int Gtk2Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
   gboolean text_is_visible;
 
   flags=GWEN_Widget_GetFlags(w);
-  text_is_visible = (flags & GWEN_GUI_INPUT_FLAGS_SHOW) != 0;
+  text_is_visible = (flags & GWEN_WIDGET_FLAGS_PASSWORD) == 0;
   wParent=GWEN_Widget_Tree_GetParent(w);
   s=GWEN_Widget_GetText(w, 0);
 
