@@ -695,6 +695,7 @@ int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf) {
   s=GWEN_DB_GetCharValue(xio->dbHeaderIn, "Transfer-Encoding", 0, 0);
   if (s && (-1!=GWEN_Text_ComparePattern(s, "*chunked*", 0))) {
     /* chunked encoding, this means next we have to read the chunksize */
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Body is \"chunked\"");
     xio->currentReadChunkSize=-1;
     xio->readMode=GWEN_SyncIo_Http_Mode_ChunkSize;
   }
@@ -873,9 +874,25 @@ int GWEN_SyncIo_Http_ReadChunk(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
   if (xio->currentReadBodySize>0)
     xio->currentReadBodySize-=rv;
 
-  if (xio->currentReadChunkSize==0)
-    /* chunk finished, change read mode */
+  if (xio->currentReadChunkSize==0) {
+    int rv2;
+    GWEN_BUFFER *tbuf;
+
+    /* chunk finished, read trailing CR/LF */
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv2=GWEN_SyncIo_Http_ReadLine(sio, tbuf);
+    if (rv2<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
+      GWEN_Buffer_free(tbuf);
+      return rv2;
+    }
+    GWEN_Buffer_free(tbuf);
+
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Chunk finished.");
+
+    /* change read mode */
     xio->readMode=GWEN_SyncIo_Http_Mode_ChunkSize;
+  }
 
   return rv;
 }
