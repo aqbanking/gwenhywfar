@@ -240,6 +240,21 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Read(GWEN_SYNCIO *sio,
       return rv;
     }
     if (xio->currentReadChunkSize==0) {
+      int rv2;
+      GWEN_BUFFER *tbuf;
+
+      /* all chunks finished, read trailing CR/LF */
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      rv2=GWEN_SyncIo_Http_ReadLine(sio, tbuf);
+      if (rv2<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
+        GWEN_Buffer_free(tbuf);
+        return rv2;
+      }
+      GWEN_Buffer_free(tbuf);
+
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Chunks finished.");
+
       /* chunksize is 0, body ended */
       GWEN_SyncIo_Http_SetReadIdle(sio);
       return 0;
