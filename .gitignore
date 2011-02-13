@@ -55,6 +55,7 @@ missing
 mkinstalldirs
 stamp-h1
 i18nsources
+pdsources
 
 *.rc
 *.moc

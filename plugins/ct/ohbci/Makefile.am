@@ -26,6 +26,9 @@ sources:
 	for f in $(ohbci_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
+	for f in $(crypttokenplugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
 	done
