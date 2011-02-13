@@ -34,7 +34,7 @@ public:
     flags=GWEN_Widget_GetFlags(_widget);
     wParent=GWEN_Widget_Tree_GetParent(_widget);
 
-    qw=new QT4_DialogBox(dynamic_cast<QT4_GuiDialog*>(getDialog()));
+    qw=new QT4_DialogBox(dynamic_cast<QT4_GuiDialog*>(getDialog()), QApplication::activeModalWidget());
     qLayout=new QVBoxLayout(qw);
 
     /* handle flags */
