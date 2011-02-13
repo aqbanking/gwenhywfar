@@ -39,6 +39,7 @@ struct GWEN_PLUGIN_DESCRIPTION {
 
   char *fileName;
 
+  char *langDomain;
   char *path;
   char *name;
   char *type;

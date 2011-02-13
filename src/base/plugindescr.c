@@ -34,6 +34,7 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/i18n.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -69,6 +70,14 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
   }
   pd->name=strdup(p);
   pd->xmlNode=GWEN_XMLNode_dup(node);
+
+  p=GWEN_XMLNode_GetProperty(node, "i18n", NULL);
+  if (!p) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Plugin has no I18N domain, using GWEN");
+    p="gwenhywfar";
+  }
+  pd->langDomain=strdup(p);
+
   p=GWEN_XMLNode_GetProperty(node, "type", 0);
   if (!p) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Plugin has no type");
@@ -76,16 +85,17 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
     return 0;
   }
   pd->type=strdup(p);
-  p=GWEN_XMLNode_GetLocalizedCharValue(node, "version", 0);
+
+  p=GWEN_XMLNode_GetCharValue(node, "version", 0);
   if (p)
     pd->version=strdup(p);
-  p=GWEN_XMLNode_GetLocalizedCharValue(node, "author", 0);
+  p=GWEN_XMLNode_GetCharValue(node, "author", 0);
   if (p)
     pd->author=strdup(p);
-  p=GWEN_XMLNode_GetLocalizedCharValue(node, "short", 0);
+  p=GWEN_XMLNode_GetCharValue(node, "short", 0);
   if (p)
     pd->shortDescr=strdup(p);
-  p=GWEN_XMLNode_GetLocalizedCharValue(node, "descr", 0);
+  p=GWEN_XMLNode_GetCharValue(node, "descr", 0);
   if (p)
     pd->longDescr=strdup(p);
   return pd;
@@ -106,6 +116,7 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd){
       free(pd->shortDescr);
       free(pd->author);
       free(pd->version);
+      free(pd->langDomain);
       free(pd->type);
       free(pd->name);
       pd->refCount=0;
@@ -146,6 +157,8 @@ GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd) {
   if (s) np->name=strdup(s);
   s=pd->type;
   if (s) np->type=strdup(s);
+  s=pd->langDomain;
+  if (s) np->langDomain=strdup(s);
   s=pd->shortDescr;
   if (s) np->shortDescr=strdup(s);
   s=pd->author;
@@ -216,7 +229,7 @@ const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd){
 const char*
 GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd){
   assert(pd);
-  return pd->shortDescr;
+  return GWEN_I18N_Translate(pd->langDomain, pd->shortDescr);
 }
 
 
@@ -240,7 +253,7 @@ GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd){
 const char*
 GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd){
   assert(pd);
-  return pd->longDescr;
+  return GWEN_I18N_Translate(pd->langDomain, pd->longDescr);
 }
 
 
