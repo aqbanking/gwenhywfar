@@ -1732,21 +1732,6 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
           posBeforeElement=GWEN_Buffer_GetPos(gbuf);
 
           /* write delimiter, if needed */
-
-          /*
-           Replaced the following code because it did not work correctly
-           with segment HKDAN... (aquamaniac, 2005/07/09)
-
-          if (!isFirstElement && delimiter) {
-            DBG_VERBOUS(GWEN_LOGDOMAIN, "Appending %d delimiters", omittedElements+1);
-            for (j=0; j<omittedElements+1; j++) {
-              if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
-                DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-		return -1;
-              }
-            }
-          }*/
-
           if (delimiter) {
             DBG_VERBOUS(GWEN_LOGDOMAIN, "Appending %d delimiters",
                         omittedElements);
@@ -1850,16 +1835,17 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
 	  }
 	}
 
-        gname=0;
-        gcfg=0;
+        gname=NULL;
+	gcfg=NULL;
         if (gr) {
-          gname=GWEN_XMLNode_GetProperty(n, "name",0);
+	  gname=GWEN_XMLNode_GetProperty(n, "name",0);
           if (gname) {
             DBG_VERBOUS(GWEN_LOGDOMAIN, "Group \"%s\" using special data", gname);
-            gcfg=GWEN_DB_GetFirstGroup(gr);
-          }
+	    gcfg=GWEN_DB_FindFirstGroup(gr, gname);
+	  }
           else {
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Unnamed group, using basic data");
+	    DBG_DEBUG(GWEN_LOGDOMAIN, "Unnamed group, using basic data");
+	    /* TODO: check for maxnum==1, since only then the following line makes sense */
             gcfg=gr;
           }
         }
@@ -1870,43 +1856,42 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
           int groupIsEmpty;
 
           groupIsEmpty=0;
-          posBeforeGroup=GWEN_Buffer_GetPos(gbuf);
+	  posBeforeGroup=GWEN_Buffer_GetPos(gbuf);
 
-          /* find next matching group */
-          if (gname) {
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Finding next group named \"%s\"", gname);
-            while(gcfg) {
-              if (strcasecmp(GWEN_DB_GroupName(gcfg), gname)==0)
-                break;
-              gcfg=GWEN_DB_GetNextGroup(gcfg);
-              if (gcfg==0) {
-                DBG_DEBUG(GWEN_LOGDOMAIN, "No group found");
-                if (loopNr>=minnum)
-                  groupIsEmpty=1;
+	  /* write delimiter, if needed */
+          if (delimiter) {
+	    int j;
+
+            DBG_VERBOUS(GWEN_LOGDOMAIN, "Appending %d delimiters",
+                        omittedElements);
+            for (j=0; j<omittedElements; j++) {
+              if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
+                DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+		return -1;
               }
-            } /* while */
+            }
+            if (!isFirstElement)
+              if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
+                DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+                return -1;
+              }
           }
 
-          if (!groupIsEmpty) {
+          /* find next matching group */
+	  if (gcfg==0) {
+	    DBG_DEBUG(GWEN_LOGDOMAIN, "No group found");
+	    if (loopNr>=minnum)
+	      groupIsEmpty=1;
+	  }
+
+	  if (groupIsEmpty) {
+	    /* empty group, flag as such */
+	    rv=1;
+	  }
+	  else {
             int dive;
 
-            /* write delimiter, if needed */
-            if (!isFirstElement && delimiter) {
-              int j;
-
-              DBG_VERBOUS(GWEN_LOGDOMAIN, "Appending %d delimiters", omittedElements+1);
-              for (j=0; j<omittedElements+1; j++) {
-                if (GWEN_Buffer_AppendByte(gbuf, delimiter)) {
-                  return -1;
-                }
-              }
-              omittedElements=0;
-            }
-            else
-              isFirstElement=0;
-
-            /* write group */
-
+	    /* write group */
             if (GWEN_XMLNode_Path_Dive(nodePath, n)) {
               DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
               return -1;
@@ -1929,72 +1914,66 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
                                           nodePath);
             GWEN_XMLNode_Path_Surface(nodePath);
             if (dive==2)
-              GWEN_XMLNode_Path_Surface(nodePath);
-            if (rv==-1){
-              DBG_INFO(GWEN_LOGDOMAIN, "Could not write group \"%s\"", gtype);
-              if (gn) {
-                DBG_INFO(GWEN_LOGDOMAIN, "Node is:");
-                GWEN_XMLNode_Dump(gn, 1);
-              }
-              if (n) {
-                DBG_INFO(GWEN_LOGDOMAIN, "Referring node is:");
-                GWEN_XMLNode_Dump(n, 1);
-              }
-              if (gr) {
-                DBG_INFO(GWEN_LOGDOMAIN, "Data is:");
-                GWEN_DB_Dump(gr, 1);
-              }
-              return -1;
-            }
-            else if (rv==0) {
-              hasEntries=1;
-            }
-            else
-              groupIsEmpty=1;
-          }
+	      GWEN_XMLNode_Path_Surface(nodePath);
+	  }
 
-          if (groupIsEmpty) {
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Empty Group");
-            GWEN_Buffer_SetPos(gbuf, posBeforeGroup);
-            GWEN_Buffer_Crop(gbuf, 0, posBeforeGroup);
+	  if (rv==-1) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Could not write group \"%s\"", gtype);
+	    if (gn) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "Node is:");
+	      GWEN_XMLNode_Dump(gn, 1);
+	    }
+	    if (n) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "Referring node is:");
+	      GWEN_XMLNode_Dump(n, 1);
+	    }
+	    if (gr) {
+	      DBG_INFO(GWEN_LOGDOMAIN, "Data is:");
+	      GWEN_DB_Dump(gr, 1);
+	    }
+	    return -1;
+	  }
+	  else if (rv==0) {
+	    isFirstElement=0;
+	    omittedElements=0;
+	    hasEntries=1;
+	    DBG_DEBUG(GWEN_LOGDOMAIN, "Element written");
+	  }
+	  else {
+	    /* group is optional, not found */
+	    /* restore position */
+	    GWEN_Buffer_SetPos(gbuf, posBeforeGroup);
+	    GWEN_Buffer_Crop(gbuf, 0, posBeforeGroup);
 
-            if (loopNr>=minnum) {
-              DBG_DEBUG(GWEN_LOGDOMAIN, "No data for group \"%s[%d]\", omitting",
-                        gname, loopNr);
-	      if (strcasecmp(addEmptyMode, "max")==0) {
-                DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding max empty");
-                omittedElements+=(maxnum-loopNr);
-	      }
-	      else if (strcasecmp(addEmptyMode, "min")==0) {
-                DBG_VERBOUS(GWEN_LOGDOMAIN, "Adding min empty");
-                if (loopNr<minnum)
-                  omittedElements+=(minnum-loopNr);
-              }
-              else if (strcasecmp(addEmptyMode, "one")==0) {
-                if (loopNr==0)
-		  omittedElements++;
-	      }
-	      else if (strcasecmp(addEmptyMode, "none")==0) {
-	      }
-	      else {
-		DBG_ERROR(GWEN_LOGDOMAIN, "Unknown addemptymode \"%s\"",
-			  addEmptyMode);
-		return -1;
-	      }
-	      break;
+	    if (strcasecmp(addEmptyMode, "max")==0) {
+	      DBG_DEBUG(GWEN_LOGDOMAIN, "Adding max empty");
+	      omittedElements+=(maxnum-loopNr);
+	    }
+	    else if (strcasecmp(addEmptyMode, "min")==0) {
+	      DBG_DEBUG(GWEN_LOGDOMAIN, "Adding min empty");
+	      if (loopNr<minnum)
+		omittedElements+=(minnum-loopNr);
+	    }
+	    else if (strcasecmp(addEmptyMode, "one")==0) {
+	      if (loopNr==0)
+		omittedElements++;
+	    }
+	    else if (strcasecmp(addEmptyMode, "none")==0) {
 	    }
 	    else {
-	      DBG_ERROR(GWEN_LOGDOMAIN, "No data for group \"%s[%d]\"",
-			gname, loopNr);
+	      DBG_ERROR(GWEN_LOGDOMAIN, "Unknown addemptymode \"%s\"",
+			addEmptyMode);
 	      return -1;
 	    }
-          } /* if empty group */
-          /* use next group next time if any */
-          if (gcfg)
-            gcfg=GWEN_DB_GetNextGroup(gcfg);
-        } /* for */
-      }
-    }
+	    break;
+	  }
+
+	  /* use next group next time if any */
+          if (gcfg && gname)
+            gcfg=GWEN_DB_FindNextGroup(gcfg, gname);
+	} /* for */
+      } /* if "GROUP" */
+    } /* if TAG */
     else if (t==GWEN_XMLNodeTypeData) {
     }
     else {
