@@ -820,8 +820,8 @@ int testMsg(int argc, char **argv) {
   sn=GWEN_MsgEngine_FindNodeByProperty(e,
                                        "SEG",
                                        "code",
-                                       1,
-                                       "PING");
+                                       3,
+                                       "HKTAN");
   if (!sn) {
     fprintf(stderr, "Segment not found.\n");
     return 2;
@@ -830,14 +830,18 @@ int testMsg(int argc, char **argv) {
   fprintf(stderr, "Node:\n");
   GWEN_XMLNode_Dump(sn, 2);
 
+  GWEN_DB_SetIntValue(da,
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "head/seq",
+                      77);
+  GWEN_DB_SetIntValue(da,
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "process",
+                      4);
   GWEN_DB_SetCharValue(da,
                        GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "name",
-                       "Gwenhyfwar-Test");
-  GWEN_DB_SetCharValue(da,
-                       GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "version",
-                       "0.0.1");
+                       "tanMediumId",
+                       "TESTMEDIUM");
 
   if (GWEN_MsgEngine_CreateMessageFromNode(e,
                                            sn,
@@ -4369,6 +4373,8 @@ int main(int argc, char **argv) {
     rv=testDBfile3(argc, argv);
   else if (strcasecmp(argv[1], "dbfile4")==0)
     rv=testDBfile4(argc, argv);
+  else if (strcasecmp(argv[1], "msg")==0)
+    rv=testMsg(argc, argv);
   else if (strcasecmp(argv[1], "list")==0)
     rv=testListMsg(argc, argv);
   else if (strcasecmp(argv[1], "xml")==0)
