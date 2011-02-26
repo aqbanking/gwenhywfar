@@ -298,6 +298,8 @@ int GWEN_Directory_GetDirEntries(const char *folder,
 
 /**
  * This function adds all matching files to the given string list recursively.
+ * Each entry of the stringlist starts with the given @b folder, so if that
+ * argument is an absolute path all stringlist entries will be absolute paths.
  *
  * @param folder folder to inspect (including sub-folders)
  * @param sl string list to add new entries to

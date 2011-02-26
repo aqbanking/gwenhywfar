@@ -583,18 +583,18 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
 
   while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer)-2)) {
     if (strcmp(buffer, ".")!=0 &&
-	strcmp(buffer, "..")!=0 &&
-	(mask==NULL ||
-	 GWEN_Text_ComparePattern(buffer, mask, 0)!=-1)) {
+        strcmp(buffer, "..")!=0) {
       struct stat st;
 
       GWEN_Buffer_AppendString(pbuf, buffer);
       if (stat(GWEN_Buffer_GetStart(pbuf), &st)==0) {
 	if (S_ISDIR(st.st_mode))
-          /* add folders to the folder list */
+	  /* add folders to the folder list */
 	  GWEN_StringList_AppendString(folderList, GWEN_Buffer_GetStart(pbuf), 0, 1);
-	else
-	  GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(pbuf), 0, 1);
+	else {
+	  if (mask==NULL || GWEN_Text_ComparePattern(buffer, mask, 0)!=-1)
+	    GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(pbuf), 0, 1);
+	}
       }
       GWEN_Buffer_Crop(pbuf, 0, pos);
     }
