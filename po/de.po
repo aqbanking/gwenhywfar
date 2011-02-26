@@ -980,7 +980,7 @@ msgid ""
 "    Display key info stored on the token\n"
 "\n"
 msgstr ""
-"  showuser:\n"
+"  showkey:\n"
 "    Zeige auf dem CryptToken gespeicherte Schlüsselinformationen an\n"
 "\n"
 
