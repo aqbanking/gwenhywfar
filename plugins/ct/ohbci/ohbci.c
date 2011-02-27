@@ -45,6 +45,10 @@
 #endif
 
 
+#define GWEN_MAX_RSA_KEY_LENGTH 1024
+
+
+
 GWEN_INHERIT(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_OHBCI)
 
 
@@ -1067,7 +1071,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CRYPT_TOKEN_KEYINFO *ki;
-      uint8_t kbuf[256];
+      uint8_t kbuf[GWEN_MAX_RSA_KEY_LENGTH];
       uint32_t klen;
 
       /* create key info */
@@ -1156,7 +1160,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CRYPT_TOKEN_KEYINFO *ki;
-      uint8_t kbuf[256];
+      uint8_t kbuf[GWEN_MAX_RSA_KEY_LENGTH];
       uint32_t klen;
 
       /* create key info */
@@ -1235,7 +1239,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CRYPT_TOKEN_KEYINFO *ki;
-      uint8_t kbuf[256];
+      uint8_t kbuf[GWEN_MAX_RSA_KEY_LENGTH];
       uint32_t klen;
 
       /* create key info */
@@ -1322,7 +1326,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CRYPT_TOKEN_KEYINFO *ki;
-      uint8_t kbuf[256];
+      uint8_t kbuf[GWEN_MAX_RSA_KEY_LENGTH];
       uint32_t klen;
 
       /* create key info */
@@ -1399,7 +1403,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CRYPT_TOKEN_KEYINFO *ki;
-      uint8_t kbuf[256];
+      uint8_t kbuf[GWEN_MAX_RSA_KEY_LENGTH];
       uint32_t klen;
 
       /* create key info */
@@ -1481,7 +1485,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CRYPT_TOKEN_KEYINFO *ki;
-      uint8_t kbuf[256];
+      uint8_t kbuf[GWEN_MAX_RSA_KEY_LENGTH];
       uint32_t klen;
 
       /* create key info */
@@ -1562,7 +1566,7 @@ int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf) {
     }
     else {
       GWEN_CRYPT_TOKEN_KEYINFO *ki;
-      uint8_t kbuf[256];
+      uint8_t kbuf[GWEN_MAX_RSA_KEY_LENGTH];
       uint32_t klen;
 
       /* create key info */
