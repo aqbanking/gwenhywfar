@@ -993,7 +993,7 @@ GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
   int rv;
   int i;
   uint32_t keyNum;
-  uint8_t kbuf[512];
+  uint8_t kbuf[GWEN_CRYPT_KEYRSA_MAX_KEYLENGTH];
   uint32_t klen;
   GWEN_CRYPT_TOKEN_KEYINFO *cki=NULL;
   GWEN_CRYPT_TOKEN_KEYINFO *ki;
@@ -1954,7 +1954,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   uint32_t keyNum;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
-  uint8_t kbuf[512];
+  uint8_t kbuf[GWEN_CRYPT_KEYRSA_MAX_KEYLENGTH];
   uint32_t klen;
   GWEN_CRYPT_TOKEN_KEYINFO *cki;
   GWEN_CRYPT_TOKEN_KEYINFO *ki;

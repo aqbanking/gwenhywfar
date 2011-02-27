@@ -24,6 +24,9 @@
 #define GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN 0x00000001
 
 
+#define GWEN_CRYPT_KEYRSA_MAX_KEYLENGTH 1024
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
