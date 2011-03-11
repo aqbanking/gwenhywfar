@@ -473,7 +473,7 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   nh=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "?xml");
   GWEN_XMLNode_SetProperty(nh, "version", "1.0");
-  GWEN_XMLNode_SetProperty(nh, "encoding", "utf8");
+  GWEN_XMLNode_SetProperty(nh, "encoding", "utf-8");
   GWEN_XMLNode_AddHeader(root, nh);
 
   rv=GWEN_DBIO_XmlDb__ExportGroup(dbio, data, root, rootName);
