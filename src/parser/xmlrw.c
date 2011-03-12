@@ -779,6 +779,7 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
         GWEN_Buffer_free(workBuf);
 	return rv;
       }
+      GWEN_Buffer_free(workBuf);
       return 0;
     }
     else if (rv=='<') {
