@@ -114,6 +114,9 @@ int GWEN_List1_Insert(GWEN_LIST1 *l, GWEN_LIST1_ELEMENT *el) {
   if (l->lastElement==0)
     l->lastElement=el;
 
+  if (el->nextElement)
+    el->nextElement->prevElement=el;
+
   el->listPtr=l;
   l->count++;
 
