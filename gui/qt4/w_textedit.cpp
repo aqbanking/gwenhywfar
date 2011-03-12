@@ -97,15 +97,15 @@ public:
   const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
 			      int index,
 			      const char *defaultValue) {
-    QLabel *qw;
+    QTextEdit *qw;
     QString str;
 
-    qw=(QLabel*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
+    qw=(QTextEdit*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
     assert(qw);
 
     switch(prop) {
     case GWEN_DialogProperty_Value:
-      str=qw->text();
+      str=qw->toPlainText();
       if (str.isEmpty())
 	return defaultValue;
       else {
