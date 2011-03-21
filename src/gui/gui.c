@@ -1288,6 +1288,10 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
 
     /* need to create dialog for it */
     dlg=GWEN_DlgProgress_new();
+    if (dlg==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unable to create progress dialog, maybe data not installed?");
+      return GWEN_ERROR_INTERNAL;
+    }
     if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_KEEP_OPEN)
       GWEN_DlgProgress_SetStayOpen(dlg, 1);
 

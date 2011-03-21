@@ -414,14 +414,14 @@ int GWEN_Dialog_ReadXmlFile(GWEN_DIALOG *dlg, const char *fname) {
 		       GWEN_XML_FLAGS_DEFAULT |
 		       GWEN_XML_FLAGS_HANDLE_HEADERS);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_XMLNode_free(n);
     return rv;
   }
 
   nDialog=GWEN_XMLNode_FindFirstTag(n, "dialog", NULL, NULL);
   if (nDialog==NULL) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Dialog element not found in XML file [%s]", fname);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Dialog element not found in XML file [%s]", fname);
     GWEN_XMLNode_free(n);
     return rv;
   }
