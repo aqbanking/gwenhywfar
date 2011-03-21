@@ -96,8 +96,8 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   if (flags & TYPEMAKER2_FLAGS_WITH_XML)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/xml.h>\n");
   if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
-    GWEN_Buffer_AppendString(tbuf, "#include <aqfinance/engine/db/aedb.h>\n");
-    GWEN_Buffer_AppendString(tbuf, "#include <aqfinance/engine/db/aedb_db.h>\n");
+    GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb.h>\n");
+    GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb_db.h>\n");
   }
   GWEN_Buffer_AppendString(tbuf, "\n");
 
@@ -2343,7 +2343,7 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "_ReadObject(");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct, const AEDB_OBJECT *p_db);\n");
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, const AQDB_OBJECT *p_db);\n");
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
@@ -2354,7 +2354,7 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "_ReadObject(");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct, const AEDB_OBJECT *p_db) {\n");
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, const AQDB_OBJECT *p_db) {\n");
 
   if (Typemaker2_Type_GetNonVolatileMemberCount(ty)) {
     GWEN_Buffer_AppendString(tbuf, "  int p_rv;\n");
@@ -2515,7 +2515,7 @@ static int _buildWriteObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "_WriteObject(const ");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct, AEDB_OBJECT *p_db);\n");
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, AQDB_OBJECT *p_db);\n");
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
@@ -2526,7 +2526,7 @@ static int _buildWriteObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "_WriteObject(const ");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct, AEDB_OBJECT *p_db) {\n");
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, AQDB_OBJECT *p_db) {\n");
 
   if (Typemaker2_Type_GetNonVolatileMemberCount(ty)) {
     GWEN_Buffer_AppendString(tbuf, "  int p_rv;\n");
@@ -2629,7 +2629,7 @@ static int _buildToObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "_toObject(const ");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct, AEDB_OBJECT *p_db);\n");
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, AQDB_OBJECT *p_db);\n");
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
@@ -2640,7 +2640,7 @@ static int _buildToObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "_toObject(const ");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct, AEDB_OBJECT *p_db) {\n");
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, AQDB_OBJECT *p_db) {\n");
 
   GWEN_Buffer_AppendString(tbuf, "  return ");
   s=Typemaker2_Type_GetPrefix(ty);
@@ -2676,7 +2676,7 @@ static int _buildFromObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "int ");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_fromObject(const AEDB_OBJECT *p_db, ");
+  GWEN_Buffer_AppendString(tbuf, "_fromObject(const AQDB_OBJECT *p_db, ");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, " **pp_struct);\n");
@@ -2687,7 +2687,7 @@ static int _buildFromObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "int ");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_fromObject(const AEDB_OBJECT *p_db, ");
+  GWEN_Buffer_AppendString(tbuf, "_fromObject(const AQDB_OBJECT *p_db, ");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, " **pp_struct) {\n");
@@ -2747,7 +2747,7 @@ static int _buildCreateColumnList(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, " ");
   }
-  GWEN_Buffer_AppendString(tbuf, "AEDB_COLUMN_LIST *");
+  GWEN_Buffer_AppendString(tbuf, "AQDB_COLUMN_LIST *");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "_CreateColumnList();\n");
@@ -2755,7 +2755,7 @@ static int _buildCreateColumnList(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_Reset(tbuf);
 
   /* implementation */
-  GWEN_Buffer_AppendString(tbuf, "AEDB_COLUMN_LIST *");
+  GWEN_Buffer_AppendString(tbuf, "AQDB_COLUMN_LIST *");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "_CreateColumnList() {\n");
@@ -2764,11 +2764,11 @@ static int _buildCreateColumnList(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "  return NULL;\n");
   }
   else {
-    GWEN_Buffer_AppendString(tbuf, "  AEDB_COLUMN_LIST *p_cl;\n");
-    GWEN_Buffer_AppendString(tbuf, "  AEDB_COLUMN *p_c;\n");
+    GWEN_Buffer_AppendString(tbuf, "  AQDB_COLUMN_LIST *p_cl;\n");
+    GWEN_Buffer_AppendString(tbuf, "  AQDB_COLUMN *p_c;\n");
     GWEN_Buffer_AppendString(tbuf, "\n");
 
-    GWEN_Buffer_AppendString(tbuf, "  p_cl=AEDB_Column_List_new();\n");
+    GWEN_Buffer_AppendString(tbuf, "  p_cl=AQDB_Column_List_new();\n");
     GWEN_Buffer_AppendString(tbuf, "\n");
 
     tml=Typemaker2_Type_GetMembers(ty);
@@ -2791,13 +2791,13 @@ static int _buildCreateColumnList(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  GWEN_Buffer_AppendString(tbuf, s);
 	  GWEN_Buffer_AppendString(tbuf, "\" */\n");
 
-	  GWEN_Buffer_AppendString(tbuf, "  p_c=AEDB_Column_new(");
-	  s=Typemaker2_Type_GetAeDbType(mty);
+	  GWEN_Buffer_AppendString(tbuf, "  p_c=AQDB_Column_new(");
+	  s=Typemaker2_Type_GetAqDbType(mty);
 	  if (s && *s) {
 	    GWEN_Buffer_AppendString(tbuf, s);
 	  }
 	  else {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Type has no AEDB type element");
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Type has no AQDB type element");
 	    GWEN_Buffer_free(tbuf);
 	    return GWEN_ERROR_BAD_DATA;
 	  }
@@ -2818,7 +2818,7 @@ static int _buildCreateColumnList(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  numbuf[sizeof(numbuf)-1]=0;
 	  GWEN_Buffer_AppendString(tbuf, numbuf);
 	  GWEN_Buffer_AppendString(tbuf, ");\n");
-	  GWEN_Buffer_AppendString(tbuf, "  AEDB_Column_List_Add(p_c, p_cl);\n");
+	  GWEN_Buffer_AppendString(tbuf, "  AQDB_Column_List_Add(p_c, p_cl);\n");
 	}
 	else {
 	  GWEN_Buffer_AppendString(tbuf, "  /* member \"");
@@ -3215,7 +3215,7 @@ static int _buildCreateTable(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "int ");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_CreateTable(AEDB_DB *p_db, const char *p_name, uint32_t p_flags);");
+  GWEN_Buffer_AppendString(tbuf, "_CreateTable(AQDB_DB *p_db, const char *p_name, uint32_t p_flags);");
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
@@ -3223,9 +3223,9 @@ static int _buildCreateTable(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "int ");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_CreateTable(AEDB_DB *p_db, const char *p_name, uint32_t p_flags) {\n");
+  GWEN_Buffer_AppendString(tbuf, "_CreateTable(AQDB_DB *p_db, const char *p_name, uint32_t p_flags) {\n");
 
-  GWEN_Buffer_AppendString(tbuf, "  AEDB_COLUMN_LIST *p_cl;\n");
+  GWEN_Buffer_AppendString(tbuf, "  AQDB_COLUMN_LIST *p_cl;\n");
   GWEN_Buffer_AppendString(tbuf, "  int p_rv;\n");
   GWEN_Buffer_AppendString(tbuf, "\n");
 
@@ -3234,8 +3234,8 @@ static int _buildCreateTable(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "_CreateColumnList();\n");
 
-  GWEN_Buffer_AppendString(tbuf, "  p_rv=AEDB_DB_CreateTable(p_db, p_name, p_flags, p_cl);\n");
-  GWEN_Buffer_AppendString(tbuf, "  AEDB_Column_List_free(p_cl);\n");
+  GWEN_Buffer_AppendString(tbuf, "  p_rv=AQDB_DB_CreateTable(p_db, p_name, p_flags, p_cl);\n");
+  GWEN_Buffer_AppendString(tbuf, "  AQDB_Column_List_free(p_cl);\n");
   GWEN_Buffer_AppendString(tbuf, "  if (p_rv<0) {\n");
   GWEN_Buffer_AppendString(tbuf, "    DBG_INFO(GWEN_LOGDOMAIN, \"here (%d)\", p_rv);\n");
   GWEN_Buffer_AppendString(tbuf, "    return p_rv;\n");
@@ -3272,7 +3272,7 @@ static int _buildCreateObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "int ");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_CreateObject(AEDB_DB *p_db, AEDB_ID p_tableId, AEDB_ID p_id, AEDB_OBJECT **pp_o);\n");
+  GWEN_Buffer_AppendString(tbuf, "_CreateObject(AQDB_DB *p_db, AQDB_ID p_tableId, AQDB_ID p_id, AQDB_OBJECT **pp_o);\n");
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
@@ -3280,12 +3280,12 @@ static int _buildCreateObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "int ");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_CreateObject(AEDB_DB *p_db, AEDB_ID p_tableId, AEDB_ID p_id, AEDB_OBJECT **pp_o) {\n");
+  GWEN_Buffer_AppendString(tbuf, "_CreateObject(AQDB_DB *p_db, AQDB_ID p_tableId, AQDB_ID p_id, AQDB_OBJECT **pp_o) {\n");
 
-  GWEN_Buffer_AppendString(tbuf, "  AEDB_OBJECT *p_o;\n");
+  GWEN_Buffer_AppendString(tbuf, "  AQDB_OBJECT *p_o;\n");
   GWEN_Buffer_AppendString(tbuf, "\n");
 
-  GWEN_Buffer_AppendString(tbuf, "  p_o=AEDB_Object_new(p_tableId, p_id, ");
+  GWEN_Buffer_AppendString(tbuf, "  p_o=AQDB_Object_new(p_tableId, p_id, ");
   s=Typemaker2_Type_GetFieldCountId(ty);
   if (s && *s) {
   }

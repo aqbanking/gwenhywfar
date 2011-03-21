@@ -70,7 +70,7 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       free(ty->defaultValue);
       free(ty->presetValue);
 
-      free(ty->aedb_type);
+      free(ty->aqdb_type);
       free(ty->baseFileName);
 
       Typemaker2_Header_List_free(ty->headers);
@@ -148,24 +148,24 @@ void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i) {
 
 
 
-const char *Typemaker2_Type_GetAeDbType(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetAqDbType(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
 
-  if (ty->aedb_type==NULL && ty->extendsPtr)
-    return Typemaker2_Type_GetAeDbType(ty->extendsPtr);
+  if (ty->aqdb_type==NULL && ty->extendsPtr)
+    return Typemaker2_Type_GetAqDbType(ty->extendsPtr);
 
-  return ty->aedb_type;
+  return ty->aqdb_type;
 }
 
 
 
-void Typemaker2_Type_SetAeDbType(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetAqDbType(TYPEMAKER2_TYPE *ty, const char *s) {
   assert(ty);
   assert(ty->refCount);
-  free(ty->aedb_type);
-  if (s && *s) ty->aedb_type=strdup(s);
-  else ty->aedb_type=NULL;
+  free(ty->aqdb_type);
+  if (s && *s) ty->aqdb_type=strdup(s);
+  else ty->aqdb_type=NULL;
 }
 
 
@@ -608,8 +608,8 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
   s=GWEN_XMLNode_GetCharValue(langNode, "prefix", NULL);
   Typemaker2_Type_SetPrefix(ty, s);
 
-  s=GWEN_XMLNode_GetCharValue(langNode, "aedb_type", NULL);
-  Typemaker2_Type_SetAeDbType(ty, s);
+  s=GWEN_XMLNode_GetCharValue(langNode, "aqdb_type", NULL);
+  Typemaker2_Type_SetAqDbType(ty, s);
 
   /* read base file name (used to derive other output filenames) */
   s=GWEN_XMLNode_GetCharValue(langNode, "basefilename", NULL);
@@ -845,7 +845,7 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
     fprintf(f, "Identifier: %s\n", (ty->identifier)?(ty->identifier):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "AEDB Type : %s\n", (ty->aedb_type)?(ty->aedb_type):"<null>");
+    fprintf(f, "AEDB Type : %s\n", (ty->aqdb_type)?(ty->aqdb_type):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Extends   : %s\n", (ty->extends)?(ty->extends):"<null>");

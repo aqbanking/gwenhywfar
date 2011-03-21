@@ -4,7 +4,7 @@
 
   <typedef id="char_ptr" type="pointer" basetype="char" lang="c">
     <identifier>char</identifier>
-    <aedb_type>AEDB_DataType_String</aedb_type>
+    <aqdb_type>AQDB_DataType_String</aqdb_type>
 
 
     <codedefs>
@@ -129,9 +129,9 @@
       <codedef id="toObject">
         <code>
           if ($(src))
-            $(retval)=AEDB_Object_SetFieldString($(db), $(fieldId), $(src));
+            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), $(src));
           else 
-            $(retval)=AEDB_Object_SetFieldString($(db), $(fieldId), NULL);
+            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), NULL);
         </code>
       </codedef>
 
@@ -142,7 +142,7 @@
           {
             const char *s;
             
-            $(retval)=AEDB_Object_GetFieldString($(db), $(fieldId), &amp;s);
+            $(retval)=AQDB_Object_GetFieldString($(db), $(fieldId), &amp;s);
             if ($(retval)&gt;=0 &amp;&amp; s)
               $(dst)=strdup(s);
           }

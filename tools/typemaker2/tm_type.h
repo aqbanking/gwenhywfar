@@ -98,8 +98,8 @@ void Typemaker2_Type_SetBaseType(TYPEMAKER2_TYPE *ty, const char *s);
 int Typemaker2_Type_GetType(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i);
 
-const char *Typemaker2_Type_GetAeDbType(const TYPEMAKER2_TYPE *ty);
-void Typemaker2_Type_SetAeDbType(TYPEMAKER2_TYPE *ty, const char *s);
+const char *Typemaker2_Type_GetAqDbType(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetAqDbType(TYPEMAKER2_TYPE *ty, const char *s);
 
 const char *Typemaker2_Type_GetBaseFileName(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetBaseFileName(TYPEMAKER2_TYPE *ty, const char *s);

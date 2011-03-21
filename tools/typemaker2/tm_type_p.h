@@ -38,7 +38,7 @@ struct TYPEMAKER2_TYPE {
   char *defaultValue;
   char *presetValue;
 
-  char *aedb_type;
+  char *aqdb_type;
   char *baseFileName;
 
   TYPEMAKER2_HEADER_LIST *headers;

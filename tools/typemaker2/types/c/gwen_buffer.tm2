@@ -4,7 +4,7 @@
 
   <typedef id="GWEN_BUFFER" type="pointer" lang="c">
     <identifier>GWEN_BUFFER</identifier>
-    <aedb_type>AEDB_DataType_String</aedb_type>
+    <aqdb_type>AQDB_DataType_String</aqdb_type>
 
 
     <codedefs>
@@ -120,11 +120,11 @@
                                   GWEN_Buffer_GetUsedBytes($(src)),
                                   tbuf, 0, 0, 0);
             GWEN_XMLNode_SetCharValue($(db), "$(name)", GWEN_Buffer_GetStart(tbuf));
-            $(retval)=AEDB_Object_SetFieldString($(db), $(fieldId), GWEN_Buffer_GetStart(tbuf));
+            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), GWEN_Buffer_GetStart(tbuf));
             GWEN_Buffer_free(tbuf);
           }
           else 
-            $(retval)=AEDB_Object_SetFieldString($(db), $(fieldId), NULL);
+            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), NULL);
         </code>
       </codedef>
 
@@ -135,7 +135,7 @@
           {
             const char *s;
             
-            $(retval)=AEDB_Object_GetFieldString($(db), $(fieldId), &amp;s);
+            $(retval)=AQDB_Object_GetFieldString($(db), $(fieldId), &amp;s);
             if ($(retval)&gt;=0 &amp;&amp; s)
               $(dst)=GWEN_Buffer_new(0, strlen(s)/2, 0, 1);
               GWEN_Text_FromHexBuffer(s, $(dst));

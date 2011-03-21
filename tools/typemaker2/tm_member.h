@@ -80,8 +80,8 @@ void Typemaker2_Member_SetPresetValue(TYPEMAKER2_MEMBER *tm, const char *s);
 int Typemaker2_Member_GetMaxLen(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetMaxLen(TYPEMAKER2_MEMBER *tm, int i);
 
-const char *Typemaker2_Member_GetAeDbType(const TYPEMAKER2_MEMBER *tm);
-void Typemaker2_Member_SetAeDbType(TYPEMAKER2_MEMBER *tm, const char *s);
+const char *Typemaker2_Member_GetAqDbType(const TYPEMAKER2_MEMBER *tm);
+void Typemaker2_Member_SetAqDbType(TYPEMAKER2_MEMBER *tm, const char *s);
 
 int Typemaker2_Member_GetMemberPosition(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetMemberPosition(TYPEMAKER2_MEMBER *tm, int i);

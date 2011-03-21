@@ -4,7 +4,7 @@
 
   <typedef id="gwen_time" type="pointer" lang="c" >
     <identifier>GWEN_TIME</identifier>
-    <aedb_type>AEDB_DataType_Date</aedb_type>
+    <aqdb_type>AQDB_DataType_Date</aqdb_type>
 
 
     <codedefs>
@@ -150,7 +150,7 @@
             GWEN_BUFFER *xbuf=GWEN_Buffer_new(0, 64, 0, 1);
             $(retval)=GWEN_Time_toString($(src), "YYYYMMDD", xbuf);
             if ($(retval)&gt;=0)
-              $(retval)=AEDB_Object_SetFieldString($(db), $(fieldid), GWEN_Buffer_GetStart(xbuf));
+              $(retval)=AQDB_Object_SetFieldString($(db), $(fieldid), GWEN_Buffer_GetStart(xbuf));
             GWEN_Buffer_free(xbuf);
           }
           else
@@ -165,7 +165,7 @@
           {
             const char *s;
             
-            $(retval)=AEDB_Object_GetFieldString($(db), $(fieldid), &s);
+            $(retval)=AQDB_Object_GetFieldString($(db), $(fieldid), &s);
             if ($(retval)&gt;=0 && s && *s) {
               $(dst)=GWEN_Time_fromString(s, "YYYYMMDD");
               if ($(dst)==NULL)

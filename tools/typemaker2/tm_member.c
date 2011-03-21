@@ -323,19 +323,19 @@ void Typemaker2_Member_SetPresetValue(TYPEMAKER2_MEMBER *tm, const char *s) {
 
 
 
-const char *Typemaker2_Member_GetAeDbType(const TYPEMAKER2_MEMBER *tm) {
+const char *Typemaker2_Member_GetAqDbType(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
 
   if (tm->aedb_type==NULL && tm->typePtr)
-    return Typemaker2_Type_GetAeDbType(tm->typePtr);
+    return Typemaker2_Type_GetAqDbType(tm->typePtr);
 
   return tm->aedb_type;
 }
 
 
 
-void Typemaker2_Member_SetAeDbType(TYPEMAKER2_MEMBER *tm, const char *s) {
+void Typemaker2_Member_SetAqDbType(TYPEMAKER2_MEMBER *tm, const char *s) {
   assert(tm);
   assert(tm->refCount);
 
@@ -492,7 +492,7 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
   /* read AEDB type */
   s=GWEN_XMLNode_GetCharValue(node, "aedb_type", NULL);
   if (s && *s)
-    Typemaker2_Member_SetAeDbType(tm, s);
+    Typemaker2_Member_SetAqDbType(tm, s);
 
   return 0;
 }

@@ -4,7 +4,7 @@
 
   <typedef id="gwen_date" type="pointer" lang="c" >
     <identifier>GWEN_DATE</identifier>
-    <aedb_type>AEDB_DataType_Date</aedb_type>
+    <aqdb_type>AQDB_DataType_Date</aqdb_type>
 
 
     <codedefs>
@@ -135,10 +135,10 @@
         <code>
           if ($(src)){
             const char *s=GWEN_Date_GetString($(src));
-            $(retval)=AEDB_Object_SetFieldString($(db), $(fieldid), s);
+            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldid), s);
           }
           else {
-            $(retval)=AEDB_Object_SetFieldString($(db), $(fieldid), NULL);
+            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldid), NULL);
           }
         </code>
       </codedef>
@@ -150,7 +150,7 @@
           {
             const char *s;
             
-            $(retval)=AEDB_Object_GetFieldString($(db), $(fieldid), &s);
+            $(retval)=AQDB_Object_GetFieldString($(db), $(fieldid), &s);
             if ($(retval)&gt;=0 && s && *s) {
               $(dst)=GWEN_Date_fromString(s);
               if ($(dst)==NULL)
