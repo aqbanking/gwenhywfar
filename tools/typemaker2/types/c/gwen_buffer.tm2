@@ -103,7 +103,7 @@
             ptr=GWEN_DB_GetBinValue($(db), "$(name)", 0, NULL, 0, &amp;len);
             if (ptr &amp;&amp; len) {
               $(dst)=GWEN_Buffer_new(0, len, 0, 1);
-              GWEN_Buffer_AppendBytes($(dst), ptr, len);
+              GWEN_Buffer_AppendBytes($(dst), (const char*)ptr, len);
             }
           }
         </code>
@@ -113,18 +113,12 @@
       <codedef id="toObject">
         <code>
           if ($(src)) {
-            GWEN_BUFFER *tbuf;
-            
-            tbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes($(src))*2, 0, 1);
-            GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart($(src)),
-                                  GWEN_Buffer_GetUsedBytes($(src)),
-                                  tbuf, 0, 0, 0);
-            GWEN_XMLNode_SetCharValue($(db), "$(name)", GWEN_Buffer_GetStart(tbuf));
-            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), GWEN_Buffer_GetStart(tbuf));
-            GWEN_Buffer_free(tbuf);
+            $(retval)=AQDB_Object_SetField($(db), $(fieldId), 
+                                           (const uint8_t*) GWEN_Buffer_GetStart($(src)), 
+                                           GWEN_Buffer_GetUsedBytes($(src)));
           }
           else 
-            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), NULL);
+            $(retval)=AQDB_Object_SetField($(db), $(fieldId), NULL, 0);
         </code>
       </codedef>
 
@@ -133,12 +127,13 @@
       <codedef id="fromObject">
         <code>
           {
-            const char *s;
+            uint8_t *p;
+            uint32_t len;
             
-            $(retval)=AQDB_Object_GetFieldString($(db), $(fieldId), &amp;s);
-            if ($(retval)&gt;=0 &amp;&amp; s)
-              $(dst)=GWEN_Buffer_new(0, strlen(s)/2, 0, 1);
-              GWEN_Text_FromHexBuffer(s, $(dst));
+            $(retval)=AQDB_Object_GetField($(db), $(fieldId), &amp;p, &amp;len);
+            if ($(retval)&gt;=0 &amp;&amp; p &amp;&amp; len) {
+              $(dst)=GWEN_Buffer_new(0, len, 0, 1);
+              GWEN_Buffer_AppendBytes($(dst), (const char*) p, len);
             }
           }
         </code>
