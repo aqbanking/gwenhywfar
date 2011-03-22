@@ -205,14 +205,14 @@ void GWEN_Buffer_SetHardLimit(GWEN_BUFFER *bf, uint32_t l){
 
 
 
-char *GWEN_Buffer_GetStart(GWEN_BUFFER *bf){
+char *GWEN_Buffer_GetStart(const GWEN_BUFFER *bf){
   assert(bf);
   return bf->ptr;
 }
 
 
 
-uint32_t GWEN_Buffer_GetSize(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetSize(const GWEN_BUFFER *bf){
   assert(bf);
   if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
     return bf->hardLimit;
@@ -221,7 +221,7 @@ uint32_t GWEN_Buffer_GetSize(GWEN_BUFFER *bf){
 
 
 
-uint32_t GWEN_Buffer_GetPos(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetPos(const GWEN_BUFFER *bf){
   assert(bf);
   return bf->pos;
 }
@@ -248,7 +248,7 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i){
 
 
 
-uint32_t GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf){
+uint32_t GWEN_Buffer_GetUsedBytes(const GWEN_BUFFER *bf){
   assert(bf);
   return bf->bytesUsed;
 }
@@ -581,14 +581,14 @@ uint32_t GWEN_Buffer_GetBytesLeft(GWEN_BUFFER *bf){
 
 
 
-char *GWEN_Buffer_GetPosPointer(GWEN_BUFFER *bf){
+char *GWEN_Buffer_GetPosPointer(const GWEN_BUFFER *bf){
   assert(bf);
   return bf->ptr+bf->pos;
 }
 
 
 
-uint32_t GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx){
+uint32_t GWEN_Buffer_GetBookmark(const GWEN_BUFFER *bf, unsigned int idx){
   assert(bf);
   assert(idx<GWEN_BUFFER_MAX_BOOKMARKS);
   return bf->bookmarks[idx];

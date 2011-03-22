@@ -212,14 +212,14 @@ int GWEN_Buffer_ReserveBytes(GWEN_BUFFER *bf, uint32_t res);
  * @ref GWEN_Buffer_GetPos to navigate within the buffer.
  */
 GWENHYWFAR_API
-char *GWEN_Buffer_GetStart(GWEN_BUFFER *bf);
+char *GWEN_Buffer_GetStart(const GWEN_BUFFER *bf);
 
 
 /**
  * Returns the size of the buffer (i.e. the number of bytes allocated).
  */
 GWENHYWFAR_API
-uint32_t GWEN_Buffer_GetSize(GWEN_BUFFER *bf);
+uint32_t GWEN_Buffer_GetSize(const GWEN_BUFFER *bf);
 
 
 /**
@@ -227,7 +227,7 @@ uint32_t GWEN_Buffer_GetSize(GWEN_BUFFER *bf);
  * by the various read and write functions.
  */
 GWENHYWFAR_API
-uint32_t GWEN_Buffer_GetPos(GWEN_BUFFER *bf);
+uint32_t GWEN_Buffer_GetPos(const GWEN_BUFFER *bf);
 
 /**
  * @return 0 if ok, !=0 on error
@@ -238,14 +238,14 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i);
 /**
  */
 GWENHYWFAR_API
-uint32_t GWEN_Buffer_GetUsedBytes(GWEN_BUFFER *bf);
+uint32_t GWEN_Buffer_GetUsedBytes(const GWEN_BUFFER *bf);
 
 
 /**
  * Returns the given bookmark
  */
 GWENHYWFAR_API
-uint32_t GWEN_Buffer_GetBookmark(GWEN_BUFFER *bf, unsigned int idx);
+uint32_t GWEN_Buffer_GetBookmark(const GWEN_BUFFER *bf, unsigned int idx);
 
 
 /**
@@ -485,7 +485,7 @@ uint32_t GWEN_Buffer_GetBytesLeft(GWEN_BUFFER *bf);
  * Returns a pointer to the current position within the buffer.
  */
 GWENHYWFAR_API
-char *GWEN_Buffer_GetPosPointer(GWEN_BUFFER *bf);
+char *GWEN_Buffer_GetPosPointer(const GWEN_BUFFER *bf);
 
 
 /**
