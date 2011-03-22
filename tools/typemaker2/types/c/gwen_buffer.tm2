@@ -4,7 +4,7 @@
 
   <typedef id="GWEN_BUFFER" type="pointer" lang="c">
     <identifier>GWEN_BUFFER</identifier>
-    <aqdb_type>AQDB_DataType_String</aqdb_type>
+    <aqdb_type>AQDB_DataType_Bin</aqdb_type>
 
 
     <codedefs>
