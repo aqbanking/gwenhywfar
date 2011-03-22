@@ -67,10 +67,11 @@ GWENHYWFAR_CB void Gtk2_Gui_FreeData(void *bp, void *p) {
 
 
 GWENHYWFAR_CB int GTK2_Gui_ExecDialog(GWEN_GUI *gui,
-			GWEN_DIALOG *dlg,
-			uint32_t guiid) {
+				      GWEN_DIALOG *dlg,
+				      uint32_t guiid) {
   int rv;
 
+  assert(dlg);
   rv=GTK2_Gui_OpenDialog(gui, dlg, guiid);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -90,11 +91,12 @@ GWENHYWFAR_CB int GTK2_Gui_ExecDialog(GWEN_GUI *gui,
 
 
 GWENHYWFAR_CB int GTK2_Gui_OpenDialog(GWEN_GUI *gui,
-			GWEN_DIALOG *dlg,
-			uint32_t guiid) {
+				      GWEN_DIALOG *dlg,
+				      uint32_t guiid) {
   int rv;
   GtkWidget *g;
 
+  assert(dlg);
   Gtk2Gui_Dialog_Extend(dlg);
   rv=Gtk2Gui_Dialog_Setup(dlg, NULL);
   if (rv<0) {
@@ -129,6 +131,7 @@ GWENHYWFAR_CB int GTK2_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg) {
   GtkWidget *g;
   int rv;
 
+  assert(dlg);
   g=Gtk2Gui_Dialog_GetMainWidget(dlg);
   if (g==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No main widget");
@@ -156,6 +159,7 @@ GWENHYWFAR_CB int GTK2_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg) {
 GWENHYWFAR_CB int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilEnd) {
   int rv;
 
+  assert(dlg);
   rv=GTK2_Gui_Dialog_Run(dlg, untilEnd);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -167,12 +171,12 @@ GWENHYWFAR_CB int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilE
 
 
 GWENHYWFAR_CB int GTK2_Gui_GetFileName(GWEN_GUI *gui,
-			 const char *caption,
-			 GWEN_GUI_FILENAME_TYPE fnt,
-			 uint32_t flags,
-			 const char *patterns,
-			 GWEN_BUFFER *pathBuffer,
-			 uint32_t guiid) {
+				       const char *caption,
+				       GWEN_GUI_FILENAME_TYPE fnt,
+				       uint32_t flags,
+				       const char *patterns,
+				       GWEN_BUFFER *pathBuffer,
+				       uint32_t guiid) {
   char *folder=NULL;
   char *fileName=NULL;
 
