@@ -336,16 +336,21 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
   /* find default trust file if none is selected */
   if (lflags & GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS) {
-    GWEN_STRINGLIST *paths;
+    int trustFileSet=0;
 
-    /* try to find out trust file */
-    paths=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
-    if (paths) {
+#if 0
+# ifndef OS_WIN32
+    /* try to find OpenSSL cert file */
+    if (trustFileSet==0) {
+      GWEN_STRINGLIST *paths;
       GWEN_BUFFER *nbuf;
+
+      paths=GWEN_StringList_new();
+      GWEN_StringList_AppendString(paths, "/etc/ssl/certs", 0, 0);
 
       nbuf=GWEN_Buffer_new(0, 256, 0, 1);
       rv=GWEN_Directory_FindFileInPaths(paths,
-					"ca-bundle.crt",
+					"ca-certificates.crt",
 					nbuf);
       GWEN_StringList_free(paths);
       if (rv==0) {
@@ -353,11 +358,38 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 		 "Using default ca-bundle from [%s]",
 		 GWEN_Buffer_GetStart(nbuf));
 	GWEN_SyncIo_Tls_SetLocalTrustFile(sio, GWEN_Buffer_GetStart(nbuf));
+	trustFileSet=1;
       }
-      else {
-        DBG_WARN(GWEN_LOGDOMAIN, "Default bundle file not found");
+    }
+# endif
+#endif
+
+    if (trustFileSet==0) {
+      GWEN_STRINGLIST *paths;
+
+      /* try to find our trust file */
+      paths=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
+      if (paths) {
+	GWEN_BUFFER *nbuf;
+
+	nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	rv=GWEN_Directory_FindFileInPaths(paths,
+					  "ca-bundle.crt",
+					  nbuf);
+	GWEN_StringList_free(paths);
+	if (rv==0) {
+	  DBG_INFO(GWEN_LOGDOMAIN,
+		   "Using default ca-bundle from [%s]",
+		   GWEN_Buffer_GetStart(nbuf));
+	  GWEN_SyncIo_Tls_SetLocalTrustFile(sio, GWEN_Buffer_GetStart(nbuf));
+	  trustFileSet=1;
+	}
+	GWEN_Buffer_free(nbuf);
       }
-      GWEN_Buffer_free(nbuf);
+    }
+
+    if (trustFileSet==0) {
+      DBG_WARN(GWEN_LOGDOMAIN, "No default bundle file found");
     }
   }
 
