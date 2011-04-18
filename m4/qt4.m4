@@ -63,20 +63,23 @@ AC_ARG_WITH(qt4-includes,
 )
 
 if test -z "$qt4_includes"; then
-	for i in $local_qt4_includes; do
-		if test -z "$qt4_includes"; then
-                  if test -f "$i/Qt/qglobal.h"; then
-                    lv1=`grep -h "#define QT_VERSION_STR" $i/Qt/qglobal.h`
+    for i in $local_qt4_includes; do
+        if test -z "$qt4_includes"; then
+            qglobalh_paths="Qt QtCore"
+            for q in $qglobalh_paths; do
+                if test -f "$i/$q/qglobal.h"; then
+                    lv1=`grep -h "#define QT_VERSION_STR" $i/$q/qglobal.h`
                     case $lv1 in
                     *4.*)
-                  	qt4_includes="-I$i -I$i/Qt -I$i/QtCore -I$i/QtGui"
+                        qt4_includes="-I$i -I$i/Qt -I$i/QtCore -I$i/QtGui"
                         qt4_dir=`echo $i | ${SED} 's-/include.*--'`
                         break;
                         ;;
                     esac
-                  fi
- 		fi
-        done
+                fi
+            done
+        fi
+    done
 fi
 if test -n "$qt4_includes"; then
 	AC_MSG_RESULT($qt4_includes)
@@ -135,7 +138,7 @@ fi
 qt_libname="QtGui"
 
 # This is the name of the qt library to search for.
-if test "x$OSYSTEM" = "xdarwin"; then
+if test "x$OSYSTEM" = "xosx"; then
    qt_searchname="lib${qt_libname}.4.dylib"
 else
    qt_searchname="lib${qt_libname}${std_shrext}.4"
