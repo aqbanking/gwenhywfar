@@ -248,6 +248,11 @@ int GWEN_DBIO_Import(GWEN_DBIO *dbio,
   assert(sio);
   assert(db);
 
+  if (GWEN_SyncIo_GetStatus(sio) != GWEN_SyncIo_Status_Connected) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_SYNCIO %s not connected; did you forget to call GWEN_SyncIo_Connect()?", GWEN_SyncIo_GetTypeName(sio));
+    return -1;
+  }
+
   if (dbio->importFn)
     return dbio->importFn(dbio, sio, db, params, flags);
   else {
