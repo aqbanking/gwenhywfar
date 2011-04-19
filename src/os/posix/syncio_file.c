@@ -80,6 +80,7 @@ GWEN_SYNCIO *GWEN_SyncIo_File_fromFd(int fd) {
   GWEN_INHERIT_SETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio, xio, GWEN_SyncIo_File_FreeData);
 
   xio->fd=fd;
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
 
   GWEN_SyncIo_SetConnectFn(sio, GWEN_SyncIo_File_Connect);
   GWEN_SyncIo_SetDisconnectFn(sio, GWEN_SyncIo_File_Disconnect);
@@ -101,6 +102,7 @@ GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(int fd, const char *hname) {
 
   xio->path=strdup(hname);
   xio->fd=fd;
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
 
   GWEN_SyncIo_SetConnectFn(sio, GWEN_SyncIo_File_Connect);
   GWEN_SyncIo_SetDisconnectFn(sio, GWEN_SyncIo_File_Disconnect);
@@ -286,6 +288,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
   }
 
   xio->fd=-1;
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
 
   return (int)rv;
 }
@@ -304,6 +307,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
 
   if (xio->fd==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "File (%s) not open", xio->path);
+    return GWEN_ERROR_NOT_OPEN;
+  }
+
+  if (GWEN_SyncIo_GetStatus(sio) != GWEN_SyncIo_Status_Connected) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_SYNCIO of file (%s) not connected; did you forget to call GWEN_SyncIo_Connect()?", xio->path);
     return GWEN_ERROR_NOT_OPEN;
   }
 
