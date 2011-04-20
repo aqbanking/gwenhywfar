@@ -36,7 +36,6 @@
       </codedef>
 
       <codedef id="toXml">
-        <!-- !attribute -->
         <code>
           {
             GWEN_XMLNODE *dbDest;

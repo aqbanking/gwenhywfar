@@ -20,18 +20,20 @@
 
 
 
-uint32_t Typemaker2_FlagsFromString(const char *s) {
+uint32_t Typemaker2_FlagsFromString(const char *t) {
   GWEN_STRINGLIST *sl;
   uint32_t flags=0;
 
-  assert(s && *s);
+  assert(t && *t);
 
-  sl=GWEN_StringList_fromString(s, " ,:/", 1);
+  sl=GWEN_StringList_fromString(t, " ,:/", 1);
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
 
     se=GWEN_StringList_FirstEntry(sl);
     while(se) {
+      const char *s;
+
       s=GWEN_StringListEntry_Data(se);
       assert(s);
 

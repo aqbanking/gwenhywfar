@@ -36,36 +36,56 @@
       </codedef>
 
       <codedef id="toXml">
-        <!-- !attribute -->
-        <memberFlagsMask>  attribute</memberFlagsMask>
-        <memberFlagsValue>          </memberFlagsValue>
         <code>
-        </code>
-      </codedef>
-
-      <codedef id="toXml">
-        <!-- attribute -->
-        <memberFlagsMask>  attribute</memberFlagsMask>
-        <memberFlagsValue> attribute</memberFlagsValue>
-        <code>
+          {
+            GWEN_XMLNODE *dbDest;
+            $(member_basetype_type) *elem;
+            
+            dbDest=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "$(name)");
+            elem=$(member_prefix)_First($(src));
+            while(elem) {
+              GWEN_XMLNODE *dbElem;
+              
+              dbElem=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "element");
+              assert(dbElem);
+              $(member_basetype_prefix)_toXml(elem, dbElem);
+              GWEN_XMLNode_AddChild(dbDest, dbElem);
+              elem=$(member_prefix)_Next(elem);
+            }
+            
+            GWEN_XMLNode_AddChild($(db), dbDest);
+          }
         </code>
       </codedef>
 
       <codedef id="fromXml">
-        <!-- !attribute -->
-        <memberFlagsMask>  attribute</memberFlagsMask>
-        <memberFlagsValue>          </memberFlagsValue>
         <code>
-        </code>
+           {
+            GWEN_XMLNODE *dbSource;
+            
+            dbSource=GWEN_XMLNode_FindFirstTag($(db), "$(name)", NULL, NULL);
+            if (dbSource) {
+              $(member_type) *t;
+              GWEN_XMLNODE *dbT;
+              
+              t=$(member_prefix)_new();
+              dbT=GWEN_XMLNode_FindFirstTag(dbSource, "element", NULL, NULL);
+              while(dbT) {
+                $(member_basetype_type) *elem;
+                
+                elem=$(member_basetype_prefix)_fromXml(dbT);
+                if (elem)
+                  $(member_prefix)_Add(elem, t);
+                dbT=GWEN_XMLNode_FindNextTag(dbT, "element", NULL, NULL);
+              }
+              $(dst)=t;
+            }
+            else
+              $(dst)=$(preset);
+          }
+       </code>
       </codedef>
 
-      <codedef id="fromXml">
-        <!-- enum | attribute -->
-        <memberFlagsMask>  attribute</memberFlagsMask>
-        <memberFlagsValue> attribute</memberFlagsValue>
-        <code>
-        </code>
-      </codedef>
 
 
 

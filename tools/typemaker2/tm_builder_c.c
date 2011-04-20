@@ -16,6 +16,10 @@
 #include <ctype.h>
 
 
+/* DEBUG */
+/*DBG_ERROR(0, "Member %s has flags %x", Typemaker2_Member_GetName(tm), Typemaker2_Member_GetFlags(tm));*/
+
+
 
 static int _buildFieldIds(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
@@ -1625,6 +1629,7 @@ static int _buildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  GWEN_Buffer_AppendString(tbuf, "\n");
 	}
 
+        /* add preset code for the case when a pointer is NULL */
 	if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
 	  GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
 	  s=Typemaker2_Member_GetName(tm);
@@ -1634,12 +1639,6 @@ static int _buildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  if (1) {
 	    GWEN_BUFFER *dstbuf;
 	    int rv;
-    
-	    /* volatile */
-	    GWEN_Buffer_AppendString(tbuf, "  /* member \"");
-	    s=Typemaker2_Member_GetName(tm);
-	    GWEN_Buffer_AppendString(tbuf, s);
-	    GWEN_Buffer_AppendString(tbuf, "\" is volatile, just presetting */\n");
     
 	    dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
 	    GWEN_Buffer_AppendString(dstbuf, "p_struct->");
