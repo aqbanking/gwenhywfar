@@ -87,6 +87,7 @@ GWEN_DATE *GWEN_Date_fromJulian(int julian) {
   l=j/11;
   gd->month=j+2-(12*l);
   gd->year=100*(n-49)+i+l;
+  gd->julian=julian;
 
   snprintf(gd->asString, sizeof(gd->asString)-1,
 	   "%04d%02d%02d",

@@ -4359,9 +4359,24 @@ int testDate1(int argc, char **argv) {
       DBG_ERROR(0, "Bad julian date value %d", j+i);
     }
     else {
-      DBG_NOTICE(0, "  Julian date %2d: %s", j+i, GWEN_Date_GetString(ti2));
+      DBG_NOTICE(0, "  - Julian date %2d: %s (%d)", j+i, GWEN_Date_GetString(ti2), GWEN_Date_WeekDay(ti1));
+      GWEN_Date_free(ti2);
     }
   }
+
+  for (i=1; i<4; i++) {
+    GWEN_DATE  *ti2;
+
+    ti2=GWEN_Date_fromJulian(j+(i*7));
+    if (ti2==NULL) {
+      DBG_ERROR(0, "Bad julian date value %d", j+(i*7));
+    }
+    else {
+      DBG_NOTICE(0, "  + Julian date %2d: %s (%d)", j+(i*7), GWEN_Date_GetString(ti2), GWEN_Date_WeekDay(ti2));
+      GWEN_Date_free(ti2);
+    }
+  }
+
 
   return 0;
 }
