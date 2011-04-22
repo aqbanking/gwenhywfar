@@ -494,6 +494,7 @@ void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll) {
     }
     else {
       char buffer[32];
+      int clen;
 
       switch(e->character) {
       case 'Y':
@@ -520,7 +521,11 @@ void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll) {
       snprintf(buffer, sizeof(buffer)-1, "%0*d", e->maxCount, v);
       buffer[sizeof(buffer)-1]=0;
       e->content=strdup(buffer);
-      e->nextChar=strlen(e->content)-(e->count);
+      /* adjust counter if there are more than maxCount template chars */
+      clen=strlen(e->content);
+      if (e->count>clen)
+        e->count=clen;
+      e->nextChar=clen-(e->count);
     }
 
     e=GWEN_DateTmplChar_List_Next(e);
@@ -554,9 +559,11 @@ int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t, const char *tmpl, GWEN_BU
         s++;
       }
       else {
-        c=e->content[e->nextChar++];
-        assert(c);
-        GWEN_Buffer_AppendByte(buf, c);
+        c=e->content[e->nextChar];
+        if (c!=0) {
+          GWEN_Buffer_AppendByte(buf, c);
+          e->nextChar++;
+        }
       }
     }
     else

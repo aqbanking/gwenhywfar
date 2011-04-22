@@ -4391,11 +4391,15 @@ int testDate2(int argc, char **argv) {
   assert(ti1);
 
   dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Date_toStringWithTemplate(ti1, "w*, DD.MM.YYYY", dbuf);
+  GWEN_Date_toStringWithTemplate(ti1, "w*, DDDD.MM.YYYY", dbuf);
   DBG_NOTICE(0, "Current date: %s", GWEN_Buffer_GetStart(dbuf));
 
   GWEN_Buffer_Reset(dbuf);
   GWEN_Date_toStringWithTemplate(ti1, "www, DD.M*.YYYY (W)", dbuf);
+  DBG_NOTICE(0, "or like this: %s", GWEN_Buffer_GetStart(dbuf));
+
+  GWEN_Buffer_Reset(dbuf);
+  GWEN_Date_toStringWithTemplate(ti1, "w*, D.M.YYYY (W)", dbuf);
   DBG_NOTICE(0, "or like this: %s", GWEN_Buffer_GetStart(dbuf));
 
   return 0;
