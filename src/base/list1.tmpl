@@ -46,6 +46,13 @@ extern "C" {
    * If you need a better list please check @ref GWEN_LIST.
    */
   typedef struct @TYPENAME@_LIST @TYPENAME@_LIST;
+
+  /**
+   * This function is called from within @ref @FN_PREFIX@_List_SetSortFn().
+   */
+  typedef int GWENHYWFAR_CB (*@TYPENAME@_LIST_SORT_FN)(const @TYPENAME@ *a, const @TYPENAME@ *b, int ascending);
+
+
   /** @internal */
   struct @TYPENAME@_LIST {
     @TYPENAME@ *first;
@@ -118,6 +125,19 @@ extern "C" {
    * Returns the number of elements currently in the given list.
    */
   uint32_t @FN_PREFIX@_List_GetCount(const @TYPENAME@_LIST *l);
+
+  /**
+   * Set the sort function for the next calls to @ref @FN_PREFIX@_List_Sort().
+   */
+  @TYPENAME@_LIST_SORT_FN @FN_PREFIX@_List_SetSortFn(@TYPENAME@_LIST *l, @TYPENAME@_LIST_SORT_FN fn);
+
+  /**
+   * Sort the list. Within the course of this function the sort function set via
+   * @ref @FN_PREFIX@_List_SetSortFn is called with the arguments
+   * "const @TYPENAME@ *a, const @TYPENAME@ *b, int ascending".
+   */
+  void @FN_PREFIX@_List_Sort(@TYPENAME@_LIST *l, int ascending);
+
 
 #ifdef __cplusplus
 }

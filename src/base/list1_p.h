@@ -46,6 +46,8 @@ struct GWEN_LIST1 {
   uint32_t count;
   GWEN_LIST1_ELEMENT *firstElement;
   GWEN_LIST1_ELEMENT *lastElement;
+
+  GWEN_LIST1_SORT_FN sortFunction;
 };
 
 

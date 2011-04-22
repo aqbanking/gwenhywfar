@@ -32,12 +32,17 @@
 #include <gwenhywfar/debug.h>
 
 
+static GWENHYWFAR_CB int GWEN_List1__defaultSortFn(const void *a, const void *b, int ascending) {
+  return 0;
+}
+
 
 
 GWEN_LIST1 *GWEN_List1_new() {
   GWEN_LIST1 *l;
 
   GWEN_NEW_OBJECT(GWEN_LIST1, l);
+  l->sortFunction=GWEN_List1__defaultSortFn;
   return l;
 }
 
@@ -223,7 +228,85 @@ void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el){
 
 
 
+static int GWEN_List1__compar_asc(const void *a, const void *b) {
+  const GWEN_LIST1_ELEMENT *elA;
+  const GWEN_LIST1_ELEMENT *elB;
 
+  elA=(const GWEN_LIST1_ELEMENT*) a;
+  elB=(const GWEN_LIST1_ELEMENT*) b;
+
+  return (elA->listPtr->sortFunction)(elA, elB, 1);
+}
+
+
+
+static int GWEN_List1__compar_desc(const void *a, const void *b) {
+  const GWEN_LIST1_ELEMENT *elA;
+  const GWEN_LIST1_ELEMENT *elB;
+
+  elA=(const GWEN_LIST1_ELEMENT*) a;
+  elB=(const GWEN_LIST1_ELEMENT*) b;
+
+  return (elA->listPtr->sortFunction)(elA, elB, 0);
+}
+
+
+
+GWEN_LIST1_SORT_FN GWEN_List1_SetSortFn(GWEN_LIST1 *l, GWEN_LIST1_SORT_FN fn) {
+  GWEN_LIST1_SORT_FN oldFn;
+
+  assert(l);
+  oldFn=l->sortFunction;
+  l->sortFunction=fn;
+  return oldFn;
+}
+
+
+
+void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
+  void **tmpEntries;
+  void *sentry;
+  void **psentry;
+  uint32_t count;
+
+  if (l->count<1)
+    return;
+
+  count=l->count;
+
+  /* sort entries into a linear pointer list */
+  tmpEntries=(void **)malloc((count+1)* sizeof(void*));
+  assert(tmpEntries);
+  psentry=tmpEntries;
+
+  sentry=GWEN_List1_GetFirst(l);
+  while(sentry) {
+    *(psentry++)=sentry;
+    sentry=GWEN_List1Element_GetNext(sentry);
+  } /* while */
+  *psentry=0;
+
+  /* sort */
+  if (ascending)
+    qsort(tmpEntries, count, sizeof(void*), GWEN_List1__compar_asc);
+  else
+    qsort(tmpEntries, count, sizeof(void*), GWEN_List1__compar_desc);
+
+  /* remove all entries from the list */
+  while( (sentry=GWEN_List1_GetFirst(l)) )
+    GWEN_List1_Del(sentry);
+
+
+  /* sort entries back into GWEN_LIST1 according to temporary list */
+  psentry=tmpEntries;
+  while(*psentry) {
+    GWEN_List1_Add(l, *psentry);
+    psentry++;
+  } /* while */
+
+  free(tmpEntries);
+
+}
 
 
 

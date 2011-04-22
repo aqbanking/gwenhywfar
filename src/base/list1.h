@@ -158,6 +158,8 @@ extern "C" {
 typedef struct GWEN_LIST1 GWEN_LIST1;
 typedef struct GWEN_LIST1_ELEMENT GWEN_LIST1_ELEMENT;
 
+typedef int GWENHYWFAR_CB (*GWEN_LIST1_SORT_FN)(const void *a, const void *b, int ascending);
+
 
 /** Allocate (create) a new empty list. */
 GWENHYWFAR_API
@@ -207,6 +209,12 @@ void *GWEN_List1_GetFirst(const GWEN_LIST1 *l);
 GWENHYWFAR_API
 void *GWEN_List1_GetLast(const GWEN_LIST1 *l);
 
+GWENHYWFAR_API
+GWEN_LIST1_SORT_FN GWEN_List1_SetSortFn(GWEN_LIST1 *l, GWEN_LIST1_SORT_FN fn);
+
+GWENHYWFAR_API
+void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending);
+
 
 
 /** Allocate (create) a new list element structure. */
@@ -234,6 +242,7 @@ void *GWEN_List1Element_GetPrevious(const GWEN_LIST1_ELEMENT *el);
 GWENHYWFAR_API
 void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el);
 
+
 /*@}*/
 
 
@@ -257,13 +266,17 @@ GWEN_LIST1_ELEMENT *_list1_element;
  */
 #define GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
   typedef GWEN_LIST1 t##_LIST; \
+  typedef int GWENHYWFAR_CB (*t##_LIST_SORT_FN)(const t *a, const t *b, int ascending); \
+                                                                                        \
   \
   decl t* pr##_List_First(const t##_LIST *l); \
   decl t* pr##_List_Last(const t##_LIST *l); \
   decl t* pr##_List_Next(const t *element); \
   decl t* pr##_List_Previous(const t *element); \
   decl uint32_t pr##_List_GetCount(const t##_LIST *l); \
-  decl int pr##_List_HasElement(const t##_LIST *l, const t *element);
+  decl int pr##_List_HasElement(const t##_LIST *l, const t *element); \
+  decl t##_LIST_SORT_FN pr##_List_SetSortFn(t##_LIST *l, t##_LIST_SORT_FN fn); \
+  decl void pr##_List_Sort(t##_LIST *l, int ascending);
 
 
 #define GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl) \
@@ -328,6 +341,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
  *    void MyType_List_free(MYTYPE_LIST *l); <br>
  *    Clears and frees a list of elements of MYTYPE type.
  *    All objects inside the list are freed.
+ *    This function assumes that there is a function Mytype_free().
  *  </li>
  * </ul>
  *
@@ -418,9 +432,15 @@ GWEN_LIST1_ELEMENT *_list1_element;
   \
   uint32_t pr##_List_GetCount(const t##_LIST *l){\
     return GWEN_List1_GetCount(l);\
+  } \
+  \
+  t##_LIST_SORT_FN pr##_List_SetSortFn(t##_LIST *l, t##_LIST_SORT_FN fn) { \
+    return (t##_LIST_SORT_FN) GWEN_List1_SetSortFn(l, (GWEN_LIST1_SORT_FN) fn); \
+  } \
+  \
+  void pr##_List_Sort(t##_LIST *l, int ascending){\
+    GWEN_List1_Sort(l, ascending);\
   }
-
-
 
 /**
  * Use this in your code file (*.c) inside the init code for the struct
