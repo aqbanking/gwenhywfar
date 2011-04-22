@@ -93,6 +93,10 @@ GWENHYWFAR_API const char *GWEN_Date_GetString(const GWEN_DATE *gd);
 
 GWENHYWFAR_API int GWEN_Date_DaysInMonth(const GWEN_DATE *gd);
 
+/**
+ * Returns the distance between the given date and the begin of that year.
+ * E.g. if the given date is the 1st of January the result is 0.
+ */
 GWENHYWFAR_API int GWEN_Date_DaysInYear(const GWEN_DATE *gd);
 
 GWENHYWFAR_API int GWEN_Date_GetYear(const GWEN_DATE *gd);

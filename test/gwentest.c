@@ -4383,6 +4383,26 @@ int testDate1(int argc, char **argv) {
 
 
 
+int testDate2(int argc, char **argv) {
+  GWEN_DATE *ti1;
+  GWEN_BUFFER *dbuf;
+
+  ti1=GWEN_Date_CurrentDate();
+  assert(ti1);
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Date_toStringWithTemplate(ti1, "w*, DD.MM.YYYY", dbuf);
+  DBG_NOTICE(0, "Current date: %s", GWEN_Buffer_GetStart(dbuf));
+
+  GWEN_Buffer_Reset(dbuf);
+  GWEN_Date_toStringWithTemplate(ti1, "www, DD.M*.YYYY (W)", dbuf);
+  DBG_NOTICE(0, "or like this: %s", GWEN_Buffer_GetStart(dbuf));
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4551,6 +4571,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "date1")==0) {
     rv=testDate1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "date2")==0) {
+    rv=testDate2(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

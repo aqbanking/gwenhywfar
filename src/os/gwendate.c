@@ -28,6 +28,7 @@
 
 
 #include "gwendate_p.h"
+#include "i18n_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -398,6 +399,15 @@ GWEN_DATE_TMPLCHAR *GWEN_DateTmplChar_new(char c) {
   GWEN_NEW_OBJECT(GWEN_DATE_TMPLCHAR, e);
   GWEN_LIST_INIT(GWEN_DATE_TMPLCHAR, e);
   e->character=c;
+  switch(c) {
+  case 'Y': e->maxCount=4; break;
+  case 'M': e->maxCount=2; break;
+  case 'D': e->maxCount=2; break;
+  case 'W': e->maxCount=1; break;
+  case 'w':
+  default:  e->maxCount=GWEN_DATE_TMPL_MAX_COUNT; break;
+  }
+
   return e;
 }
 
@@ -436,7 +446,7 @@ void GWEN_Date__sampleTmplChars(GWEN_UNUSED const GWEN_DATE *t, const char *tmpl
 
   s=tmpl;
   while(*s) {
-    if (strchr("YMD", *s)) {
+    if (strchr("YMDWw", *s)) {
       GWEN_DATE_TMPLCHAR *e;
 
       e=GWEN_Date__findTmplChar(ll, *s);
@@ -465,23 +475,54 @@ void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll) {
   e=GWEN_DateTmplChar_List_First(ll);
   while(e) {
     int v;
-    char buffer[32];
 
-    switch(e->character) {
-    case 'Y': v=t->year; break;
-    case 'M': v=t->month; break;
-    case 'D': v=t->day; break;
-    default:  v=-1; break;
+    if (e->character=='w') {
+      const char *s=NULL;
+
+      switch(GWEN_Date_WeekDay(t)) {
+      case 0:  s=I18N("Sunday"); break;
+      case 1:  s=I18N("Monday"); break;
+      case 2:  s=I18N("Tuesday"); break;
+      case 3:  s=I18N("Wednesday"); break;
+      case 4:  s=I18N("Thursday"); break;
+      case 5:  s=I18N("Friday"); break;
+      case 6:  s=I18N("Saturday"); break;
+      }
+      assert(s);
+      e->content=strdup(s);
+      e->nextChar=0;
     }
-    if (v==-1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Unknown character, should not happen here");
-      abort();
+    else {
+      char buffer[32];
+
+      switch(e->character) {
+      case 'Y':
+        v=t->year;
+        break;
+      case 'M':
+        v=t->month;
+        break;
+      case 'D':
+        v=t->day;
+        break;
+      case 'W':
+        v=GWEN_Date_WeekDay(t);
+        break;
+      default:
+        v=-1;
+        break;
+      }
+      if (v==-1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unknown character, should not happen here");
+        abort();
+      }
+      buffer[0]=0;
+      snprintf(buffer, sizeof(buffer)-1, "%0*d", e->maxCount, v);
+      buffer[sizeof(buffer)-1]=0;
+      e->content=strdup(buffer);
+      e->nextChar=strlen(e->content)-(e->count);
     }
-    buffer[0]=0;
-    snprintf(buffer, sizeof(buffer)-1, "%0*d", GWEN_DATE_TMPL_MAX_COUNT, v);
-    buffer[sizeof(buffer)-1]=0;
-    e->content=strdup(buffer);
-    e->nextChar=strlen(e->content)-(e->count);
+
     e=GWEN_DateTmplChar_List_Next(e);
   }
 }
@@ -499,16 +540,24 @@ int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t, const char *tmpl, GWEN_BU
 
   s=tmpl;
   while(*s) {
-    if (strchr("YMD", *s)) {
+    if (strchr("YMDWw", *s)) {
       GWEN_DATE_TMPLCHAR *e;
       char c;
 
       e=GWEN_Date__findTmplChar(ll, *s);
       assert(e);
       assert(e->content);
-      c=e->content[e->nextChar++];
-      assert(c);
-      GWEN_Buffer_AppendByte(buf, c);
+      if (s[1]=='*') {
+        /* append full string */
+        GWEN_Buffer_AppendString(buf, e->content);
+        /* skip asterisk */
+        s++;
+      }
+      else {
+        c=e->content[e->nextChar++];
+        assert(c);
+        GWEN_Buffer_AppendByte(buf, c);
+      }
     }
     else
       GWEN_Buffer_AppendByte(buf, *s);

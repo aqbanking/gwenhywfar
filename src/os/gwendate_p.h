@@ -29,7 +29,7 @@
 #include "gwendate.h"
 
 
-#define GWEN_DATE_TMPL_MAX_COUNT 8
+#define GWEN_DATE_TMPL_MAX_COUNT 32
 
 
 struct GWEN_DATE {
@@ -48,6 +48,7 @@ struct GWEN_DATE_TMPLCHAR {
   GWEN_LIST_ELEMENT(GWEN_DATE_TMPLCHAR)
   char character;
   int count;
+  int maxCount;
   int nextChar;
   char *content;
 };

@@ -744,9 +744,17 @@ int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
       e=GWEN_Time__findTmplChar(ll, *s);
       assert(e);
       assert(e->content);
-      c=e->content[e->nextChar++];
-      assert(c);
-      GWEN_Buffer_AppendByte(buf, c);
+      if (s[1]=='*') {
+        /* append full string */
+        GWEN_Buffer_AppendString(buf, e->content);
+        /* skip asterisk */
+        s++;
+      }
+      else {
+        c=e->content[e->nextChar++];
+        assert(c);
+        GWEN_Buffer_AppendByte(buf, c);
+      }
     }
     else
       GWEN_Buffer_AppendByte(buf, *s);
