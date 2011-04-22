@@ -36,6 +36,8 @@ typedef struct GWEN_DATE GWEN_DATE;
 
 #include <gwenhywfar/gwentime.h>
 
+#include <time.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,6 +70,10 @@ GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromString(const char *s);
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd);
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromLocalTime(time_t t);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromGmTime(time_t t);
+
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl);
 GWENHYWFAR_API int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t,

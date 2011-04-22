@@ -98,12 +98,10 @@ GWEN_DATE *GWEN_Date_fromJulian(int julian) {
 
 
 
-GWEN_DATE *GWEN_Date_CurrentDate() {
-  time_t l;
+GWEN_DATE *GWEN_Date_fromLocalTime(time_t t) {
   struct tm *ltm;
 
-  time(&l);
-  ltm=localtime(&l);
+  ltm=localtime(&t);
   if (ltm) {
     GWEN_DATE *gd;
 
@@ -112,6 +110,32 @@ GWEN_DATE *GWEN_Date_CurrentDate() {
   }
 
   return NULL;
+}
+
+
+
+GWEN_DATE *GWEN_Date_fromGmTime(time_t t) {
+  struct tm *ltm;
+
+  ltm=gmtime(&t);
+  if (ltm) {
+    GWEN_DATE *gd;
+
+    gd=GWEN_Date_fromGregorian(ltm->tm_year+1900, ltm->tm_mon+1, ltm->tm_mday);
+    return gd;
+  }
+
+  return NULL;
+}
+
+
+
+
+GWEN_DATE *GWEN_Date_CurrentDate() {
+  time_t l;
+
+  time(&l);
+  return GWEN_Date_fromLocalTime(l);
 }
 
 

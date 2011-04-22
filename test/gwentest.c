@@ -22,6 +22,7 @@
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/misc2.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/gwendate.h>
 #include <gwenhywfar/fslock.h>
 #include <gwenhywfar/refptr.h>
 #include <gwenhywfar/stringlist2.h>
@@ -4339,6 +4340,34 @@ int testHashTree(int argc, char **argv) {
 
 
 
+int testDate1(int argc, char **argv) {
+  GWEN_DATE *ti1;
+  int j;
+  int i;
+
+  ti1=GWEN_Date_CurrentDate();
+  assert(ti1);
+
+  j=GWEN_Date_GetJulian(ti1);
+  DBG_NOTICE(0, "Current Julian date: %d (%s)", j, GWEN_Date_GetString(ti1));
+
+  for (i=1; i<20; i++) {
+    GWEN_DATE  *ti2;
+
+    ti2=GWEN_Date_fromJulian(j+i);
+    if (ti2==NULL) {
+      DBG_ERROR(0, "Bad julian date value %d", j+i);
+    }
+    else {
+      DBG_NOTICE(0, "  Julian date %2d: %s", j+i, GWEN_Date_GetString(ti2));
+    }
+  }
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4504,6 +4533,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "hashtree")==0) {
     rv=testHashTree(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "date1")==0) {
+    rv=testDate1(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
