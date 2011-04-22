@@ -268,6 +268,7 @@ void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
   void *sentry;
   void **psentry;
   uint32_t count;
+  uint32_t i;
 
   if (l->count<1)
     return;
@@ -284,7 +285,7 @@ void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
     *(psentry++)=sentry;
     sentry=GWEN_List1Element_GetNext(sentry);
   } /* while */
-  *psentry=0;
+  *psentry=NULL;
 
   /* sort */
   if (ascending)
@@ -299,10 +300,12 @@ void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
 
   /* sort entries back into GWEN_LIST1 according to temporary list */
   psentry=tmpEntries;
-  while(*psentry) {
-    GWEN_List1_Add(l, *psentry);
+  /* we use "<=count" because the list contains count+1 elements */
+  for (i=0; i<=count; i++) {
+    if (*psentry)
+      GWEN_List1_Add(l, *psentry);
     psentry++;
-  } /* while */
+  } /* for */
 
   free(tmpEntries);
 
