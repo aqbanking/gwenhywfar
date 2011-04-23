@@ -283,6 +283,9 @@ int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
   int rv;
 
   sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_CreateAlways);
+  GWEN_SyncIo_AddFlags(sio,
+                       GWEN_SYNCIO_FILE_FLAGS_READ | GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD | GWEN_SYNCIO_FILE_FLAGS_UWRITE);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

@@ -349,7 +349,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
   } while (rv==-1 && errno==EINTR);
 
   if (rv==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "write(%s, %lu): %s", xio->path, (long unsigned int) size, strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "write(%d, %s, %lu): %s", xio->fd, xio->path, (long unsigned int) size, strerror(errno));
     switch(errno) {
     case ENOSPC: return GWEN_ERROR_MEMORY_FULL;
     default:     return GWEN_ERROR_IO;
