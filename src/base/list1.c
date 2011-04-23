@@ -229,25 +229,19 @@ void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el){
 
 
 static int GWEN_List1__compar_asc(const void *a, const void *b) {
-  const GWEN_LIST1_ELEMENT *elA;
-  const GWEN_LIST1_ELEMENT *elB;
+  const GWEN_LIST1_ELEMENT * const * pse1 = a, * const * pse2 = b;
+  const GWEN_LIST1_ELEMENT *se1 = *pse1, *se2 = *pse2;
 
-  elA=(const GWEN_LIST1_ELEMENT*) a;
-  elB=(const GWEN_LIST1_ELEMENT*) b;
-
-  return (elA->listPtr->sortFunction)(elA, elB, 1);
+  return (se1->listPtr->sortFunction)(se1->data, se2->data, 1);
 }
 
 
 
 static int GWEN_List1__compar_desc(const void *a, const void *b) {
-  const GWEN_LIST1_ELEMENT *elA;
-  const GWEN_LIST1_ELEMENT *elB;
+  const GWEN_LIST1_ELEMENT * const * pse1 = a, * const * pse2 = b;
+  const GWEN_LIST1_ELEMENT *se1 = *pse1, *se2 = *pse2;
 
-  elA=(const GWEN_LIST1_ELEMENT*) a;
-  elB=(const GWEN_LIST1_ELEMENT*) b;
-
-  return (elA->listPtr->sortFunction)(elA, elB, 0);
+  return (se1->listPtr->sortFunction)(se1->data, se2->data, 0);
 }
 
 
@@ -264,9 +258,9 @@ GWEN_LIST1_SORT_FN GWEN_List1_SetSortFn(GWEN_LIST1 *l, GWEN_LIST1_SORT_FN fn) {
 
 
 void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
-  void **tmpEntries;
-  void *sentry;
-  void **psentry;
+  GWEN_LIST1_ELEMENT **tmpEntries;
+  GWEN_LIST1_ELEMENT *sentry;
+  GWEN_LIST1_ELEMENT **psentry;
   uint32_t count;
   uint32_t i;
 
@@ -276,39 +270,46 @@ void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
   count=l->count;
 
   /* sort entries into a linear pointer list */
-  tmpEntries=(void **)malloc((count+1)* sizeof(void*));
+  tmpEntries=(GWEN_LIST1_ELEMENT **)malloc((count+1)* sizeof(GWEN_LIST1_ELEMENT*));
   assert(tmpEntries);
   psentry=tmpEntries;
 
-  sentry=GWEN_List1_GetFirst(l);
+  sentry=l->firstElement;
   while(sentry) {
+    GWEN_LIST1_ELEMENT *next;
+
     *(psentry++)=sentry;
-    sentry=GWEN_List1Element_GetNext(sentry);
+    next=sentry->nextElement;
+    sentry->prevElement=NULL;
+    sentry->nextElement=NULL;
+    sentry->listPtr=l;
+    sentry=next;
   } /* while */
   *psentry=NULL;
 
+  /* clear list */
+  l->count=0;
+  l->firstElement=NULL;
+  l->lastElement=NULL;
+
   /* sort */
   if (ascending)
-    qsort(tmpEntries, count, sizeof(void*), GWEN_List1__compar_asc);
+    qsort(tmpEntries, count, sizeof(GWEN_LIST1_ELEMENT*), GWEN_List1__compar_asc);
   else
-    qsort(tmpEntries, count, sizeof(void*), GWEN_List1__compar_desc);
-
-  /* remove all entries from the list */
-  while( (sentry=GWEN_List1_GetFirst(l)) )
-    GWEN_List1_Del(sentry);
-
+    qsort(tmpEntries, count, sizeof(GWEN_LIST1_ELEMENT*), GWEN_List1__compar_desc);
 
   /* sort entries back into GWEN_LIST1 according to temporary list */
   psentry=tmpEntries;
   /* we use "<=count" because the list contains count+1 elements */
   for (i=0; i<=count; i++) {
-    if (*psentry)
+    if (*psentry) {
+      (*psentry)->listPtr=NULL;
       GWEN_List1_Add(l, *psentry);
+    }
     psentry++;
   } /* for */
 
   free(tmpEntries);
-
 }
 
 
