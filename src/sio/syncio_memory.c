@@ -97,6 +97,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Memory_fromBuffer(const uint8_t *buffer, int size) {
     GWEN_Buffer_AppendBytes(xio->buffer, (const char*) buffer, size);
     GWEN_Buffer_Rewind(xio->buffer);
   }
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
   return sio;
 }
 
