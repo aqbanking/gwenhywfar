@@ -67,6 +67,8 @@ GWEN_SYNCIO *GWEN_SyncIo_Memory_new(GWEN_BUFFER *buffer, int take) {
     xio->own=1;
   }
 
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
+
   return sio;
 }
 
