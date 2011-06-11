@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Sat Jun 28 2003
  copyright   : (C) 2003 by Martin Preuss
  email       : martin@libchipcard.de
@@ -49,6 +46,29 @@ struct GWEN_LIST1 {
 
   GWEN_LIST1_SORT_FN sortFunction;
 };
+
+
+
+
+typedef struct GWEN_LIST1_SORT_CTX GWEN_LIST1_SORT_CTX;
+struct GWEN_LIST1_SORT_CTX {
+  GWEN_LIST1 *list;
+  int param;
+};
+static GWEN_LIST1_SORT_CTX *GWEN_List1_SortCtx_new(GWEN_LIST1 *list, int param);
+static void GWEN_List1_SortCtx_free(GWEN_LIST1_SORT_CTX *ctx);
+
+
+
+
+typedef struct GWEN_LIST1_SORT_ELEM GWEN_LIST1_SORT_ELEM;
+struct GWEN_LIST1_SORT_ELEM {
+  GWEN_LIST1_SORT_CTX *context;
+  GWEN_LIST1_ELEMENT *element;
+};
+static GWEN_LIST1_SORT_ELEM *GWEN_List1_SortElem_new(GWEN_LIST1_SORT_CTX *ctx, GWEN_LIST1_ELEMENT *elem);
+static void GWEN_List1_SortElem_free(GWEN_LIST1_SORT_ELEM *e);
+
 
 
 

@@ -228,6 +228,7 @@ void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el){
 
 
 
+#if 0
 static int GWEN_List1__compar_asc(const void *a, const void *b) {
   const GWEN_LIST1_ELEMENT * const * pse1 = a, * const * pse2 = b;
   const GWEN_LIST1_ELEMENT *se1 = *pse1, *se2 = *pse2;
@@ -310,6 +311,156 @@ void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
   } /* for */
 
   free(tmpEntries);
+}
+#endif
+
+
+
+
+
+
+
+
+
+/* -------------------------------------------------------------------------------------------------
+ *                                         Sort
+ * -------------------------------------------------------------------------------------------------
+ */
+
+
+static int GWEN_List1__compar(const void *a, const void *b) {
+  const GWEN_LIST1_SORT_ELEM * const * pse1 = a, * const * pse2 = b;
+  const GWEN_LIST1_SORT_ELEM *se1 = *pse1, *se2 = *pse2;
+  const GWEN_LIST1_SORT_CTX *ctx=se1->context;
+
+  const GWEN_LIST1_ELEMENT * e1=se1->element;
+  const GWEN_LIST1_ELEMENT * e2=se2->element;
+
+  return (ctx->list->sortFunction)(e1->data, e2->data, ctx->param);
+}
+
+
+
+GWEN_LIST1_SORT_FN GWEN_List1_SetSortFn(GWEN_LIST1 *l, GWEN_LIST1_SORT_FN fn) {
+  GWEN_LIST1_SORT_FN oldFn;
+
+  assert(l);
+  oldFn=l->sortFunction;
+  l->sortFunction=fn;
+  return oldFn;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+GWEN_LIST1_SORT_CTX *GWEN_List1_SortCtx_new(GWEN_LIST1 *list, int param) {
+  GWEN_LIST1_SORT_CTX *ctx;
+
+  GWEN_NEW_OBJECT(GWEN_LIST1_SORT_CTX, ctx);
+  ctx->list=list;
+  ctx->param=param;
+  return ctx;
+}
+
+
+
+void GWEN_List1_SortCtx_free(GWEN_LIST1_SORT_CTX *ctx) {
+  if (ctx) {
+    GWEN_FREE_OBJECT(ctx);
+  }
+}
+
+
+
+GWEN_LIST1_SORT_ELEM *GWEN_List1_SortElem_new(GWEN_LIST1_SORT_CTX *ctx, GWEN_LIST1_ELEMENT *elem) {
+  GWEN_LIST1_SORT_ELEM *e;
+
+  GWEN_NEW_OBJECT(GWEN_LIST1_SORT_ELEM, e);
+  e->context=ctx;
+  e->element=elem;
+  return e;
+}
+
+
+
+void GWEN_List1_SortElem_free(GWEN_LIST1_SORT_ELEM *e) {
+  if (e) {
+    GWEN_FREE_OBJECT(e);
+  }
+}
+
+
+
+void GWEN_List1_Sort(GWEN_LIST1 *l, int ascending) {
+  GWEN_LIST1_SORT_ELEM **tmpEntries;
+  GWEN_LIST1_SORT_ELEM **psentry;
+  GWEN_LIST1_ELEMENT *sentry;
+  uint32_t count;
+  uint32_t i;
+  GWEN_LIST1_SORT_CTX *sortContext;
+
+  if (l->count<1)
+    return;
+
+  count=l->count;
+
+  sortContext=GWEN_List1_SortCtx_new(l, ascending);
+
+  /* sort entries into a linear pointer list */
+  tmpEntries=(GWEN_LIST1_SORT_ELEM **)malloc((count+1)* sizeof(GWEN_LIST1_SORT_ELEM*));
+  assert(tmpEntries);
+  psentry=tmpEntries;
+
+  sentry=l->firstElement;
+  while(sentry) {
+    GWEN_LIST1_ELEMENT *next;
+    GWEN_LIST1_SORT_ELEM *se;
+
+    se=GWEN_List1_SortElem_new(sortContext, sentry);
+    *(psentry++)=se;
+    next=sentry->nextElement;
+    sentry->prevElement=NULL;
+    sentry->nextElement=NULL;
+    sentry->listPtr=l;
+    sentry=next;
+  } /* while */
+  *psentry=NULL;
+
+  /* clear list */
+  l->count=0;
+  l->firstElement=NULL;
+  l->lastElement=NULL;
+
+  /* sort */
+  qsort(tmpEntries, count, sizeof(GWEN_LIST1_SORT_ELEM*), GWEN_List1__compar);
+
+  /* sort entries back into GWEN_LIST1 according to temporary list */
+  psentry=tmpEntries;
+  /* we use "<=count" because the list contains count+1 elements */
+  for (i=0; i<=count; i++) {
+    GWEN_LIST1_SORT_ELEM *se;
+
+    se=*psentry;
+    if (se) {
+      sentry=se->element;
+      sentry->listPtr=NULL;
+      GWEN_List1_Add(l, sentry);
+      GWEN_List1_SortElem_free(se);
+      *psentry=NULL;
+    }
+    psentry++;
+  } /* for */
+
+  free(tmpEntries);
+  GWEN_List1_SortCtx_free(sortContext);
 }
 
 
