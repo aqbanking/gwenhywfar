@@ -304,6 +304,8 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
 
   if (year<100)
     year+=2000;
+  if (day==0)
+    day=1;
 
   DBG_DEBUG(GWEN_LOGDOMAIN,
 	    "Got this date/time: %04d/%02d/%02d, %02d:%02d:%02d",
