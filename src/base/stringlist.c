@@ -43,7 +43,7 @@
 
 
 
-GWEN_STRINGLIST *GWEN_StringList_new(){
+GWEN_STRINGLIST *GWEN_StringList_new(void){
   GWEN_STRINGLIST *sl;
 
   GWEN_NEW_OBJECT(GWEN_STRINGLIST, sl);
