@@ -551,7 +551,7 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, " *");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_new()");
+  GWEN_Buffer_AppendString(tbuf, "_new(void)");
   GWEN_Buffer_AppendString(tbuf, ";\n");
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
@@ -562,7 +562,7 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, " *");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, "_new()");
+  GWEN_Buffer_AppendString(tbuf, "_new(void)");
   GWEN_Buffer_AppendString(tbuf, " {\n");
 
   GWEN_Buffer_AppendString(tbuf, "  ");

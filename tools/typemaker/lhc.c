@@ -295,7 +295,7 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       GWEN_SyncIo_WriteString(sio, constName);
     else
       GWEN_SyncIo_WriteString(sio, "_new");
-    GWEN_SyncIo_WriteLine(sio, "();");
+    GWEN_SyncIo_WriteLine(sio, "(void);");
   }
 
   /* FromDb */

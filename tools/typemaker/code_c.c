@@ -1020,7 +1020,7 @@ int write_code_const_c(ARGUMENTS *args,
     GWEN_SyncIo_WriteString(sio, constName);
   else
     GWEN_SyncIo_WriteString(sio, "_new");
-  GWEN_SyncIo_WriteLine(sio, "() {");
+  GWEN_SyncIo_WriteLine(sio, "(void) {");
 
   GWEN_SyncIo_WriteString(sio, "  ");
   GWEN_SyncIo_WriteString(sio, styp);
