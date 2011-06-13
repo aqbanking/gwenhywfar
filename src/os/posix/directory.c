@@ -50,7 +50,7 @@ static char gwen_directory_posix__homedir[256];
 static int gwen_directory_posix__home_set=0;
 
 
-GWEN_DIRECTORY *GWEN_Directory_new(){
+GWEN_DIRECTORY *GWEN_Directory_new(void){
   GWEN_DIRECTORY *d;
 
   GWEN_NEW_OBJECT(GWEN_DIRECTORY, d);

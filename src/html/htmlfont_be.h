@@ -32,7 +32,7 @@ GWEN_LIST_FUNCTION_LIB_DEFS(HTML_FONT, HtmlFont, GWENHYWFAR_API)
 
 
 GWENHYWFAR_API 
-HTML_FONT *HtmlFont_new();
+HTML_FONT *HtmlFont_new(void);
 
 GWENHYWFAR_API 
 void HtmlFont_free(HTML_FONT *fnt);

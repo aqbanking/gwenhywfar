@@ -32,8 +32,8 @@
 #include <gwenhywfar/dbio_be.h>
 
 
-int GWEN_DBIO_ModuleInit();
-int GWEN_DBIO_ModuleFini();
+int GWEN_DBIO_ModuleInit(void);
+int GWEN_DBIO_ModuleFini(void);
 
 
 #endif /* GWENHYWFAR_DBIO_P_H */

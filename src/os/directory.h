@@ -74,7 +74,7 @@ extern "C" {
 /**
  * Constructor.
  */
-GWENHYWFAR_API GWEN_DIRECTORY *GWEN_Directory_new();
+GWENHYWFAR_API GWEN_DIRECTORY *GWEN_Directory_new(void);
 
 /**
  * Destructor

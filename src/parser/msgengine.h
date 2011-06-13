@@ -194,7 +194,7 @@ typedef void (*GWEN_MSGENGINE_FREEDATA_PTR)(GWEN_MSGENGINE *e);
  */
 /*@{*/
 GWENHYWFAR_API
-GWEN_MSGENGINE *GWEN_MsgEngine_new();
+GWEN_MSGENGINE *GWEN_MsgEngine_new(void);
 GWENHYWFAR_API
 void GWEN_MsgEngine_free(GWEN_MSGENGINE *e);
 

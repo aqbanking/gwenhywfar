@@ -56,7 +56,7 @@ static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
 
 
 
-int GWEN_Logger_ModuleInit(){
+int GWEN_Logger_ModuleInit(void){
   const char *s;
   GWEN_LOGGER_LEVEL ll=GWEN_LoggerLevel_Warning;
 
@@ -77,7 +77,7 @@ int GWEN_Logger_ModuleInit(){
 
 
 
-int GWEN_Logger_ModuleFini(){
+int GWEN_Logger_ModuleFini(void){
   GWEN_LOGGER_DOMAIN *ld;
 
   while((ld=gwen_loggerdomains)) {

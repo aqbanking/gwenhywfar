@@ -37,11 +37,11 @@
 #include <stdlib.h>
 
 
-static void GWEN_LibInit() __attribute__((constructor));
-static void GWEN_LibFini() __attribute__((destructor));
+static void GWEN_LibInit(void) __attribute__((constructor));
+static void GWEN_LibFini(void) __attribute__((destructor));
 
 
-void GWEN_LibInit() {
+void GWEN_LibInit(void) {
   int err;
 
   err=GWEN_Init();
@@ -53,7 +53,7 @@ void GWEN_LibInit() {
 }
 
 
-void GWEN_LibFini() {
+void GWEN_LibFini(void) {
   int err;
 
   err=GWEN_Fini_Forced();

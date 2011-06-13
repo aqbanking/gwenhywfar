@@ -58,13 +58,13 @@ GWEN_LIST2_FUNCTIONS(GWEN_SOCKET, GWEN_Socket)
 
 
 
-int GWEN_Socket_ModuleInit(){
+int GWEN_Socket_ModuleInit(void){
   return 0;
 }
 
 
 
-int GWEN_Socket_ModuleFini(){
+int GWEN_Socket_ModuleFini(void){
   return 0;
 }
 
@@ -100,7 +100,7 @@ int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp){
 
 
 
-GWEN_SOCKETSET *GWEN_SocketSet_new() {
+GWEN_SOCKETSET *GWEN_SocketSet_new(void) {
   GWEN_SOCKETSET *ssp;
 
   GWEN_NEW_OBJECT(GWEN_SOCKETSET, ssp);

@@ -39,7 +39,7 @@
 
 
 
-GWEN_DIRECTORY *GWEN_Directory_new(){
+GWEN_DIRECTORY *GWEN_Directory_new(void){
   GWEN_DIRECTORY *d;
 
   GWEN_NEW_OBJECT(GWEN_DIRECTORY, d);

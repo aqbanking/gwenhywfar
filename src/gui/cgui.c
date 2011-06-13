@@ -70,7 +70,7 @@ GWEN_INHERIT(GWEN_GUI, GWEN_GUI_CGUI)
 
 
 
-GWEN_GUI *GWEN_Gui_CGui_new() {
+GWEN_GUI *GWEN_Gui_CGui_new(void) {
   GWEN_GUI *gui;
   GWEN_GUI_CGUI *cgui;
 

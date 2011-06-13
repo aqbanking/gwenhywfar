@@ -18,8 +18,8 @@
 #include <gwenhywfar/ctplugin.h>
 
 
-int GWEN_Crypt_Token_ModuleInit();
-int GWEN_Crypt_Token_ModuleFini();
+int GWEN_Crypt_Token_ModuleInit(void);
+int GWEN_Crypt_Token_ModuleFini(void);
 
 
 

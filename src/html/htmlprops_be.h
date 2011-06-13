@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 
-GWENHYWFAR_API HTML_PROPS *HtmlProps_new();
+GWENHYWFAR_API HTML_PROPS *HtmlProps_new(void);
 GWENHYWFAR_API void HtmlProps_free(HTML_PROPS *pr);
 GWENHYWFAR_API void HtmlProps_Attach(HTML_PROPS *pr);
 GWENHYWFAR_API HTML_PROPS *HtmlProps_dup(const HTML_PROPS *pr);

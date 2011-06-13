@@ -32,12 +32,12 @@
 /**
  * Initialize this module.
  */
-int GWEN_Process_ModuleInit();
+int GWEN_Process_ModuleInit(void);
 
 /**
  * De-Initialize this module.
  */
-int GWEN_Process_ModuleFini();
+int GWEN_Process_ModuleFini(void);
 
 
 

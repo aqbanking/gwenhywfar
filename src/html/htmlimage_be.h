@@ -26,7 +26,7 @@ GWEN_LIST_FUNCTION_LIB_DEFS(HTML_IMAGE, HtmlImage, GWENHYWFAR_API)
 
 
 GWENHYWFAR_API 
-HTML_IMAGE *HtmlImage_new();
+HTML_IMAGE *HtmlImage_new(void);
 
 GWENHYWFAR_API 
 void HtmlImage_free(HTML_IMAGE *img);

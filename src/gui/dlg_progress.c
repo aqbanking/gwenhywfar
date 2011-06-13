@@ -36,7 +36,7 @@ GWEN_INHERIT(GWEN_DIALOG, GWEN_DLGPROGRESS)
 
 
 
-GWEN_DIALOG *GWEN_DlgProgress_new() {
+GWEN_DIALOG *GWEN_DlgProgress_new(void) {
   GWEN_DIALOG *dlg;
   GWEN_DLGPROGRESS *xdlg;
   GWEN_BUFFER *fbuf;

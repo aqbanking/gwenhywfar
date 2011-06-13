@@ -41,7 +41,7 @@
 
 
 
-GWEN_IDTABLE64 *GWEN_IdTable64_new(){
+GWEN_IDTABLE64 *GWEN_IdTable64_new(void){
   GWEN_IDTABLE64 *idt;
 
   GWEN_NEW_OBJECT(GWEN_IDTABLE64, idt);
@@ -214,7 +214,7 @@ static inline uint64_t GWEN_IdTable64_GetNextId2(const GWEN_IDTABLE64 *idt,
 
 
 
-GWEN_IDLIST64 *GWEN_IdList64_new(){
+GWEN_IDLIST64 *GWEN_IdList64_new(void){
   GWEN_IDLIST64 *idl;
 
   GWEN_NEW_OBJECT(GWEN_IDLIST64, idl);

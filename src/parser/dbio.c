@@ -78,7 +78,7 @@ GWEN_INHERIT_FUNCTIONS(GWEN_DBIO)
 GWEN_INHERIT(GWEN_PLUGIN, GWEN_DBIO_PLUGIN)
 
 
-int GWEN_DBIO_ModuleInit(){
+int GWEN_DBIO_ModuleInit(void){
   GWEN_PLUGIN_MANAGER *pm;
   int err;
   GWEN_STRINGLIST *sl;
@@ -118,7 +118,7 @@ int GWEN_DBIO_ModuleInit(){
 
 
 
-int GWEN_DBIO_ModuleFini(){
+int GWEN_DBIO_ModuleFini(void){
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager("dbio");

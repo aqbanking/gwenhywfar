@@ -48,19 +48,19 @@
 
 
 
-int GWEN_LibLoader_ModuleInit(){
+int GWEN_LibLoader_ModuleInit(void){
   return 0;
 }
 
 
 
-int GWEN_LibLoader_ModuleFini(){
+int GWEN_LibLoader_ModuleFini(void){
   return 0;
 }
 
 
 
-GWEN_LIBLOADER *GWEN_LibLoader_new(){
+GWEN_LIBLOADER *GWEN_LibLoader_new(void){
   GWEN_LIBLOADER *h;
 
   GWEN_NEW_OBJECT(GWEN_LIBLOADER, h);

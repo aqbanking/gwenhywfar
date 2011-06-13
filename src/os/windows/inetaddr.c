@@ -45,19 +45,19 @@ static int GWEN_INETADDR__Counter=0;
 #endif
 
 
-uint32_t GWEN_InetAddr_GetCapabilities(){
+uint32_t GWEN_InetAddr_GetCapabilities(void){
   return
     GWEN_INETADDR_CAPS_AF_TCP;
 }
 
 
-int GWEN_InetAddr_ModuleInit(){
+int GWEN_InetAddr_ModuleInit(void){
   return 0;
 }
 
 
 
-int GWEN_InetAddr_ModuleFini(){
+int GWEN_InetAddr_ModuleFini(void){
   return 0;
 }
 

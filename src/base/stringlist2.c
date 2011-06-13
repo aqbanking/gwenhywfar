@@ -42,7 +42,7 @@
 #endif
 
 
-GWEN_STRINGLIST2 *GWEN_StringList2_new(){
+GWEN_STRINGLIST2 *GWEN_StringList2_new(void){
   GWEN_STRINGLIST2 *sl2;
   GWEN_REFPTR_INFO *rpi;
 

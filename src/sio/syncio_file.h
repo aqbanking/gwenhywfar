@@ -80,13 +80,13 @@ GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMOD
 
 
 GWENHYWFAR_API
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin();
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin(void);
 
 GWENHYWFAR_API
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStdout();
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdout(void);
 
 GWENHYWFAR_API
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr();
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr(void);
 
 GWENHYWFAR_API
 const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio);

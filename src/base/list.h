@@ -82,7 +82,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_LIST, GWENHYWFAR_API)
 
 /** Constructor. Returns a new empty list. */
 GWENHYWFAR_API
-GWEN_LIST *GWEN_List_new();
+GWEN_LIST *GWEN_List_new(void);
 
 /** Destructor. Frees all of the memory used by this list. The list
  * elements are not freed. */
@@ -322,7 +322,7 @@ unsigned int GWEN_ListIterator_GetLinkCount(const GWEN_LIST_ITERATOR *li);
 
 /** Constructor. Returns a new empty list. */
 GWENHYWFAR_API
-GWEN_CONSTLIST *GWEN_ConstList_new();
+GWEN_CONSTLIST *GWEN_ConstList_new(void);
 
 /** Destructor. Frees all of the memory used by this list. The list
  * elements are not freed

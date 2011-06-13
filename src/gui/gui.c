@@ -68,7 +68,7 @@ GWEN_INHERIT_FUNCTIONS(GWEN_GUI)
 
 
 
-GWEN_GUI *GWEN_Gui_new() {
+GWEN_GUI *GWEN_Gui_new(void) {
   GWEN_GUI *gui;
 
   GWEN_NEW_OBJECT(GWEN_GUI, gui);
@@ -137,7 +137,7 @@ void GWEN_Gui_SetGui(GWEN_GUI *gui) {
 
 
 
-GWEN_GUI *GWEN_Gui_GetGui() {
+GWEN_GUI *GWEN_Gui_GetGui(void) {
   return gwenhywfar_gui;
 }
 
@@ -572,7 +572,7 @@ void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name) {
 
 
 
-const char *GWEN_Gui_GetName() {
+const char *GWEN_Gui_GetName(void) {
   if (gwenhywfar_gui)
     return gwenhywfar_gui->name;
   return NULL;

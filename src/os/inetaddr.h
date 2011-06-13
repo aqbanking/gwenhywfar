@@ -75,7 +75,7 @@ extern "C" {
 #define GWEN_INETADDR_CAPS_AF_TCP  0x00000001
 #define GWEN_INETADDR_CAPS_AF_UNIX 0x00000002
 
-GWENHYWFAR_API uint32_t GWEN_InetAddr_GetCapabilities();
+GWENHYWFAR_API uint32_t GWEN_InetAddr_GetCapabilities(void);
 /*@}*/
 
 

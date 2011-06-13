@@ -60,7 +60,7 @@ extern "C" {
 typedef struct GWEN_LIBLOADER GWEN_LIBLOADER;
 
 
-GWENHYWFAR_API GWEN_LIBLOADER *GWEN_LibLoader_new();
+GWENHYWFAR_API GWEN_LIBLOADER *GWEN_LibLoader_new(void);
 
 /**
  * Frees the libloader. This does NOT automatically unload the library

@@ -609,7 +609,7 @@ void GWEN_MemoryDebug_Dump(uint32_t mode){
 
 
 
-void GWEN_MemoryDebug_CleanUp(){
+void GWEN_MemoryDebug_CleanUp(void){
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   o=gwen_debug__memobjects;

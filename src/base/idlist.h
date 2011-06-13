@@ -62,7 +62,7 @@ extern "C" {
  * Constructor.
  */
 GWENHYWFAR_API
-GWEN_IDLIST *GWEN_IdList_new();
+GWEN_IDLIST *GWEN_IdList_new(void);
 
 /**
  * Destructor.

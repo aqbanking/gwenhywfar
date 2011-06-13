@@ -23,7 +23,7 @@ GWEN_LIST2_FUNCTIONS(GWEN_URL, GWEN_Url)
 
 
 
-GWEN_URL *GWEN_Url_new() {
+GWEN_URL *GWEN_Url_new(void) {
   GWEN_URL *st;
 
   GWEN_NEW_OBJECT(GWEN_URL, st)

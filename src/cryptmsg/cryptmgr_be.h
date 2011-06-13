@@ -39,7 +39,7 @@ typedef GWENHYWFAR_CB int (*GWEN_CRYPTMGR_DECRYPTKEY_FN)(GWEN_CRYPTMGR *cm,
 
 
 GWENHYWFAR_API
-GWEN_CRYPTMGR *GWEN_CryptMgr_new();
+GWEN_CRYPTMGR *GWEN_CryptMgr_new(void);
 
 GWENHYWFAR_API
 void GWEN_CryptMgr_SetLocalKeyName(GWEN_CRYPTMGR *cm, const char *s);

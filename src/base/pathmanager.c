@@ -50,7 +50,7 @@
 static GWEN_DB_NODE *gwen__paths=0;
 
 
-int GWEN_PathManager_ModuleInit(){
+int GWEN_PathManager_ModuleInit(void){
   gwen__paths=GWEN_DB_Group_new("paths");
 
   return 0;
@@ -58,7 +58,7 @@ int GWEN_PathManager_ModuleInit(){
 
 
 
-int GWEN_PathManager_ModuleFini(){
+int GWEN_PathManager_ModuleFini(void){
   GWEN_DB_Group_free(gwen__paths);
   gwen__paths=0;
   return 0;

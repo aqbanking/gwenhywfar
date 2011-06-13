@@ -133,7 +133,7 @@ GWEN_DATE *GWEN_Date_fromGmTime(time_t t) {
 
 
 
-GWEN_DATE *GWEN_Date_CurrentDate() {
+GWEN_DATE *GWEN_Date_CurrentDate(void) {
   time_t l;
 
   time(&l);

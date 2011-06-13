@@ -25,7 +25,7 @@ typedef struct GWEN_SIGTAIL GWEN_SIGTAIL;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_SIGTAIL, GWEN_SigTail, GWENHYWFAR_API)
 
 
-GWEN_SIGTAIL *GWEN_SigTail_new();
+GWEN_SIGTAIL *GWEN_SigTail_new(void);
 void GWEN_SigTail_free(GWEN_SIGTAIL *st);
 
 GWEN_SIGTAIL *GWEN_SigTail_fromBuffer(const uint8_t *p, uint32_t l);

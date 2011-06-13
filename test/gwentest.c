@@ -2327,8 +2327,8 @@ int testSignals1(int argc, char **argv) {
   GWEN_SLOT *slotTextChanged1;
   GWEN_SLOT *slotTextChanged2;
 
-  so1=GWEN_SignalObject_new(0, 0);
-  so2=GWEN_SignalObject_new(0, 0);
+  so1=GWEN_SignalObject_new();
+  so2=GWEN_SignalObject_new();
   sigTextChanged=GWEN_Signal_new(so1, 0, "sigTextChanged",
                                  "const char", "const char");
   slotTextChanged1=GWEN_Slot_new(so1, 0,
@@ -2363,8 +2363,8 @@ int testSignals2(int argc, char **argv) {
   GWEN_SLOT *slotTextChanged1;
   GWEN_SLOT *slotTextChanged2;
 
-  so1=GWEN_SignalObject_new(0, 0);
-  so2=GWEN_SignalObject_new(0, 0);
+  so1=GWEN_SignalObject_new();
+  so2=GWEN_SignalObject_new();
   sigTextChanged=GWEN_Signal_new(so1, 0, "sigTextChanged",
                                  "const char", "const char");
   slotTextChanged1=GWEN_Slot_new(so1, 0,
@@ -2403,8 +2403,8 @@ int testSignals3(int argc, char **argv) {
   GWEN_SLOT *slotTextChanged1;
   GWEN_SLOT *slotTextChanged2;
 
-  so1=GWEN_SignalObject_new(0, 0);
-  so2=GWEN_SignalObject_new(0, 0);
+  so1=GWEN_SignalObject_new();
+  so2=GWEN_SignalObject_new();
   sigTextChanged=GWEN_Signal_new(so1, 0, "sigTextChanged",
                                  "const char", "const char");
   slotTextChanged1=GWEN_Slot_new(so1, 0,

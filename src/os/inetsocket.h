@@ -105,7 +105,7 @@ typedef enum {
  * @ref GWEN_Socket_Select.
  */
 /*@{*/
-GWENHYWFAR_API GWEN_SOCKETSET *GWEN_SocketSet_new();
+GWENHYWFAR_API GWEN_SOCKETSET *GWEN_SocketSet_new(void);
 GWENHYWFAR_API void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp);
 GWENHYWFAR_API int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp);
 /*@}*/

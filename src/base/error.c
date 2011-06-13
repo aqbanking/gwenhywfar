@@ -60,14 +60,14 @@
 
 
 
-int GWEN_Error_ModuleInit() {
+int GWEN_Error_ModuleInit(void) {
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Error_ModuleInit");
   return 0;
 }
 
 
 
-int GWEN_Error_ModuleFini() {
+int GWEN_Error_ModuleFini(void) {
   return 0;
 }
 

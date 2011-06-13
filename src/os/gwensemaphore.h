@@ -31,7 +31,7 @@
 typedef struct GWEN_SEMAPHORE GWEN_SEMAPHORE;
 
 
-GWEN_SEMAPHORE *GWEN_Semaphore_new();
+GWEN_SEMAPHORE *GWEN_Semaphore_new(void);
 void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm);
 
 void GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm);

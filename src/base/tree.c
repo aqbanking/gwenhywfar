@@ -36,7 +36,7 @@
 
 
 
-GWEN_TREE *GWEN_Tree_new() {
+GWEN_TREE *GWEN_Tree_new(void) {
   GWEN_TREE *l;
 
   GWEN_NEW_OBJECT(GWEN_TREE, l);

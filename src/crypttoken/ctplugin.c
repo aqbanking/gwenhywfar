@@ -37,7 +37,7 @@ GWEN_INHERIT(GWEN_PLUGIN, GWEN_CRYPT_TOKEN_PLUGIN)
 
 
 
-int GWEN_Crypt_Token_ModuleInit(){
+int GWEN_Crypt_Token_ModuleInit(void){
   GWEN_PLUGIN_MANAGER *pm;
   int err;
   GWEN_STRINGLIST *sl;
@@ -77,7 +77,7 @@ int GWEN_Crypt_Token_ModuleInit(){
 
 
 
-int GWEN_Crypt_Token_ModuleFini(){
+int GWEN_Crypt_Token_ModuleFini(void){
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);

@@ -30,8 +30,8 @@
 #include <gwenhywfar/configmgr_be.h>
 
 
-int GWEN_ConfigMgr_ModuleInit();
-int GWEN_ConfigMgr_ModuleFini();
+int GWEN_ConfigMgr_ModuleInit(void);
+int GWEN_ConfigMgr_ModuleFini(void);
 
 
 

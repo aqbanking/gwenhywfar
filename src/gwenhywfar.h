@@ -73,14 +73,14 @@ extern "C" {
 
 
 GWENHYWFAR_API
-int GWEN_Init();
+int GWEN_Init(void);
 
 GWENHYWFAR_API
-int GWEN_Fini();
+int GWEN_Fini(void);
 
 
 GWENHYWFAR_API
-int GWEN_Fini_Forced();
+int GWEN_Fini_Forced(void);
 
 
 GWENHYWFAR_API

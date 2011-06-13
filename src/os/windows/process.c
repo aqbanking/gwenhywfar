@@ -41,19 +41,19 @@
 
 
 
-int GWEN_Process_ModuleInit(){
+int GWEN_Process_ModuleInit(void){
   return 0;
 }
 
 
 
-int GWEN_Process_ModuleFini(){
+int GWEN_Process_ModuleFini(void){
   return 0;
 }
 
 
 
-GWEN_PROCESS *GWEN_Process_new(){
+GWEN_PROCESS *GWEN_Process_new(void){
   GWEN_PROCESS *pr;
 
   GWEN_NEW_OBJECT(GWEN_PROCESS, pr);

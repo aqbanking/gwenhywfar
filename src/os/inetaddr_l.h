@@ -39,12 +39,12 @@
 /**
  * Initialize this module.
  */
-int GWEN_InetAddr_ModuleInit();
+int GWEN_InetAddr_ModuleInit(void);
 
 /**
  * De-Initialize this module.
  */
-int GWEN_InetAddr_ModuleFini();
+int GWEN_InetAddr_ModuleFini(void);
 
 
 #endif /* GWEN_INETADDR_L_H */

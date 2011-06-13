@@ -23,7 +23,7 @@
 
 
 
-HTML_PROPS *HtmlProps_new() {
+HTML_PROPS *HtmlProps_new(void) {
   HTML_PROPS *pr;
 
   GWEN_NEW_OBJECT(HTML_PROPS, pr);

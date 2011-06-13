@@ -34,7 +34,7 @@
 
 
 
-GWEN_SEMAPHORE *GWEN_Semaphore_new() {
+GWEN_SEMAPHORE *GWEN_Semaphore_new(void) {
   GWEN_SEMAPHORE *sm;
 
   GWEN_NEW_OBJECT(GWEN_SEMAPHORE, sm);

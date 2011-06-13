@@ -163,7 +163,7 @@ typedef int GWENHYWFAR_CB (*GWEN_LIST1_SORT_FN)(const void *a, const void *b, in
 
 /** Allocate (create) a new empty list. */
 GWENHYWFAR_API
-GWEN_LIST1 *GWEN_List1_new();
+GWEN_LIST1 *GWEN_List1_new(void);
 
 /** Free (delete) an existing list.  The list elements are
  * untouched by this function; they need to be freed

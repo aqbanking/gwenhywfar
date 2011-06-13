@@ -70,10 +70,10 @@ extern "C" {
   char *GWEN_Memory_strdup(const char *s);
 
   GWENHYWFAR_API 
-  void GWEN_Memory_Collect();
+  void GWEN_Memory_Collect(void);
 
   GWENHYWFAR_API 
-  void GWEN_Memory_Dump();
+  void GWEN_Memory_Dump(void);
 
 
 #define GWEN_MEM_NEW(typ, memptr) \

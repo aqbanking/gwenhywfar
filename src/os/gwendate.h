@@ -63,7 +63,7 @@ GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromJulian(int julian);
 /**
  * Create a date from the current local date.
  */
-GWENHYWFAR_API GWEN_DATE *GWEN_Date_CurrentDate();
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_CurrentDate(void);
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromString(const char *s);
 

@@ -126,7 +126,7 @@ static const char *gwen_i18n_transwinlocale(const char *s) {
 
 
 
-int GWEN_I18N_ModuleInit(){
+int GWEN_I18N_ModuleInit(void){
   const char *localedir;
   GWEN_STRINGLIST *slist;
 
@@ -167,7 +167,7 @@ int GWEN_I18N_ModuleInit(){
 
 
 
-int GWEN_I18N_ModuleFini(){
+int GWEN_I18N_ModuleFini(void){
   GWEN_StringList_free(gwen_i18n__localelist);
   free(gwen_i18n__currentlocale);
   return 0;
@@ -232,13 +232,13 @@ int GWEN_I18N_SetLocale(const char *s){
 
 
 
-GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList(){
+GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList(void){
   return gwen_i18n__localelist;
 }
 
 
 
-const char *GWEN_I18N_GetCurrentLocale() {
+const char *GWEN_I18N_GetCurrentLocale(void) {
   return gwen_i18n__currentlocale;
 }
 

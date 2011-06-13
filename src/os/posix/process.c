@@ -50,13 +50,13 @@
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
 
 
-int GWEN_Process_ModuleInit(){
+int GWEN_Process_ModuleInit(void){
   return 0;
 }
 
 
 
-int GWEN_Process_ModuleFini(){
+int GWEN_Process_ModuleFini(void){
   GWEN_PROCESS *pr, *prnext;
 
   pr=GWEN_Process_ProcessList;
@@ -130,7 +130,7 @@ void GWEN_Process_SignalHandler(int s) {
 
 
 
-GWEN_PROCESS *GWEN_Process_new(){
+GWEN_PROCESS *GWEN_Process_new(void){
   GWEN_PROCESS *pr;
 
   GWEN_NEW_OBJECT(GWEN_PROCESS, pr);

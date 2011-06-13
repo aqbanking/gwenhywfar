@@ -118,7 +118,7 @@ void GWEN_RefPtr_DelFlags(GWEN_REFPTR *rp, uint32_t fl);
  */
 /*@{*/
 GWENHYWFAR_API
-GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new();
+GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new(void);
 GWENHYWFAR_API
 void GWEN_RefPtrInfo_free(GWEN_REFPTR_INFO *rpi);
 GWENHYWFAR_API

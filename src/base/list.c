@@ -39,7 +39,7 @@ GWEN_INHERIT_FUNCTIONS(GWEN_LIST)
 
 
 
-GWEN_LIST_ENTRY *GWEN_ListEntry_new(){
+GWEN_LIST_ENTRY *GWEN_ListEntry_new(void){
   GWEN_LIST_ENTRY *le;
 
   GWEN_NEW_OBJECT(GWEN_LIST_ENTRY, le);
@@ -68,7 +68,7 @@ void GWEN_ListEntry_free(GWEN_LIST_ENTRY *le){
 
 
 
-GWEN__LISTPTR *GWEN__ListPtr_new(){
+GWEN__LISTPTR *GWEN__ListPtr_new(void){
   GWEN__LISTPTR *lp;
 
   GWEN_NEW_OBJECT(GWEN__LISTPTR, lp);
@@ -153,7 +153,7 @@ GWEN__LISTPTR *GWEN__ListPtr_dup(GWEN__LISTPTR *lp){
 
 
 
-GWEN_LIST *GWEN_List_new(){
+GWEN_LIST *GWEN_List_new(void){
   GWEN_LIST *l;
 
   GWEN_NEW_OBJECT(GWEN_LIST, l);
@@ -771,7 +771,7 @@ unsigned int GWEN_ListIterator_GetLinkCount(const GWEN_LIST_ITERATOR *li){
 
 
 
-GWEN_CONSTLIST *GWEN_ConstList_new(){
+GWEN_CONSTLIST *GWEN_ConstList_new(void){
   return GWEN_List_new();
 }
 

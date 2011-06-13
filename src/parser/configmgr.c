@@ -52,7 +52,7 @@ GWEN_INHERIT(GWEN_PLUGIN, GWEN_CONFIGMGR_PLUGIN)
 
 
 
-int GWEN_ConfigMgr_ModuleInit(){
+int GWEN_ConfigMgr_ModuleInit(void){
   GWEN_PLUGIN_MANAGER *pm;
   int err;
   GWEN_STRINGLIST *sl;
@@ -92,7 +92,7 @@ int GWEN_ConfigMgr_ModuleInit(){
 
 
 
-int GWEN_ConfigMgr_ModuleFini(){
+int GWEN_ConfigMgr_ModuleFini(void){
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager(GWEN_CONFIGMGR_PLUGIN_NAME);

@@ -86,7 +86,7 @@ typedef int (*GWEN_SLOT_FUNCTION)(GWEN_SLOT *slot,
  */
 /*@{*/
 GWENHYWFAR_API
-GWEN_SIGNALOBJECT *GWEN_SignalObject_new();
+GWEN_SIGNALOBJECT *GWEN_SignalObject_new(void);
 
 GWENHYWFAR_API
 void GWEN_SignalObject_free(GWEN_SIGNALOBJECT *so);

@@ -46,7 +46,7 @@ GWEN_LIST_FUNCTIONS(GWEN_IDTABLE, GWEN_IdTable)
 
 
 
-GWEN_IDTABLE *GWEN_IdTable_new(){
+GWEN_IDTABLE *GWEN_IdTable_new(void){
   GWEN_IDTABLE *idt;
 
   GWEN_NEW_OBJECT(GWEN_IDTABLE, idt);
@@ -209,7 +209,7 @@ uint32_t GWEN_IdTable_GetNextId2(const GWEN_IDTABLE *idt,
 
 
 
-GWEN_IDLIST *GWEN_IdList_new(){
+GWEN_IDLIST *GWEN_IdList_new(void){
   GWEN_IDLIST *idl;
 
   GWEN_NEW_OBJECT(GWEN_IDLIST, idl);

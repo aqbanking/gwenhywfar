@@ -33,12 +33,12 @@
 /**
  * Initializes this module.
  */
-int GWEN_Error_ModuleInit();
+int GWEN_Error_ModuleInit(void);
 
 /**
  * Deinitializes this module.
  */
-int GWEN_Error_ModuleFini();
+int GWEN_Error_ModuleFini(void);
 
 #endif /* MOD_ERROR_L_H */
 

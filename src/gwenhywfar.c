@@ -89,7 +89,7 @@ static int gwen_binreloc_initialized=0;
 
 char *GWEN__get_plugindir (const char *default_dir);
 
-int GWEN_Init() {
+int GWEN_Init(void) {
   int err;
 
   if (gwen_is_initialized==0) {
@@ -298,7 +298,7 @@ int GWEN_Init() {
 
 
 
-int GWEN_Fini() {
+int GWEN_Fini(void) {
   int err;
 
   err=0;
@@ -406,7 +406,7 @@ int GWEN_Fini() {
 
 
 
-int GWEN_Fini_Forced() {
+int GWEN_Fini_Forced(void) {
   if (gwen_is_initialized)
     gwen_is_initialized=1;
   return GWEN_Fini();

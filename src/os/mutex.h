@@ -31,7 +31,7 @@
 typedef struct GWEN_MUTEX GWEN_MUTEX;
 
 
-GWEN_MUTEX *GWEN_Mutex_new();
+GWEN_MUTEX *GWEN_Mutex_new(void);
 void GWEN_Mutex_free(GWEN_MUTEX *mtx);
 
 int GWEN_Mutex_Lock(GWEN_MUTEX *mtx);

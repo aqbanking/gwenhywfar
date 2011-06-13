@@ -23,7 +23,7 @@ typedef struct GWEN_TAG16 GWEN_TAG16;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_TAG16, GWEN_Tag16, GWENHYWFAR_API)
 
 
-GWENHYWFAR_API GWEN_TAG16 *GWEN_Tag16_new();
+GWENHYWFAR_API GWEN_TAG16 *GWEN_Tag16_new(void);
 GWENHYWFAR_API void GWEN_Tag16_DirectlyToBuffer(unsigned int tagType,
 						const char *p,
 						int size,

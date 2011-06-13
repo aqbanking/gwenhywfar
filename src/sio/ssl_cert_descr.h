@@ -157,7 +157,7 @@ GWENHYWFAR_API void GWEN_SslCertDescr_List2_freeAll(GWEN_SSLCERTDESCR_LIST2 *stl
 
 /** Creates a new object.
 */
-GWENHYWFAR_API GWEN_SSLCERTDESCR *GWEN_SslCertDescr_new();
+GWENHYWFAR_API GWEN_SSLCERTDESCR *GWEN_SslCertDescr_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 GWENHYWFAR_API GWEN_SSLCERTDESCR *GWEN_SslCertDescr_fromDb(GWEN_DB_NODE *db);

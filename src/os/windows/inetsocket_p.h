@@ -66,12 +66,12 @@ GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
 /**
  * Initializes this module.
  */
-GWENHYWFAR_API int GWEN_Socket_ModuleInit();
+GWENHYWFAR_API int GWEN_Socket_ModuleInit(void);
 
 /**
  * Deinitializes this module.
  */
-GWENHYWFAR_API int GWEN_Socket_ModuleFini();
+GWENHYWFAR_API int GWEN_Socket_ModuleFini(void);
 
 
 

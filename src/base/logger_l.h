@@ -31,8 +31,8 @@
 #include <gwenhywfar/logger.h>
 
 
-int GWEN_Logger_ModuleInit();
-int GWEN_Logger_ModuleFini();
+int GWEN_Logger_ModuleInit(void);
+int GWEN_Logger_ModuleFini(void);
 
 
 #endif /* GWEN_LOGGER_L_H */

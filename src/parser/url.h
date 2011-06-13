@@ -103,7 +103,7 @@ GWENHYWFAR_API void GWEN_Url_List2_freeAll(GWEN_URL_LIST2 *stl);
 
 /** Creates a new object.
 */
-GWENHYWFAR_API GWEN_URL *GWEN_Url_new();
+GWENHYWFAR_API GWEN_URL *GWEN_Url_new(void);
 /** Creates an object from the data in the given GWEN_DB_NODE
 */
 GWENHYWFAR_API GWEN_URL *GWEN_Url_fromDb(GWEN_DB_NODE *db);

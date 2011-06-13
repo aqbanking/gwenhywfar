@@ -330,7 +330,7 @@ typedef enum {
  */
 /*@{*/
 GWENHYWFAR_API 
-GWEN_GUI *GWEN_Gui_new();
+GWEN_GUI *GWEN_Gui_new(void);
 
 GWENHYWFAR_API 
 void GWEN_Gui_free(GWEN_GUI *gui);
@@ -342,7 +342,7 @@ GWENHYWFAR_API
 void GWEN_Gui_SetGui(GWEN_GUI *gui);
 
 GWENHYWFAR_API 
-GWEN_GUI *GWEN_Gui_GetGui();
+GWEN_GUI *GWEN_Gui_GetGui(void);
 
 /*@}*/
 
@@ -865,7 +865,7 @@ GWENHYWFAR_API void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl);
 /*@}*/
 
 
-GWENHYWFAR_API const char *GWEN_Gui_GetName();
+GWENHYWFAR_API const char *GWEN_Gui_GetName(void);
 
 
 #ifdef __cplusplus

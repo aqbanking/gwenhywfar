@@ -50,7 +50,7 @@ typedef enum {
 
 
 GWENHYWFAR_API
-GWEN_STRINGLIST2 *GWEN_StringList2_new();
+GWEN_STRINGLIST2 *GWEN_StringList2_new(void);
 GWENHYWFAR_API
 void GWEN_StringList2_free(GWEN_STRINGLIST2 *sl2);
 GWENHYWFAR_API

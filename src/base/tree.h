@@ -158,7 +158,7 @@ typedef struct GWEN_TREE_ELEMENT GWEN_TREE_ELEMENT;
 
 /** Allocate (create) a new empty list. */
 GWENHYWFAR_API
-GWEN_TREE *GWEN_Tree_new();
+GWEN_TREE *GWEN_Tree_new(void);
 
 /** Free (delete) an existing list.  The list elements are
  * untouched by this function; they need to be freed

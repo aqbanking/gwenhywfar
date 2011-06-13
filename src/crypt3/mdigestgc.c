@@ -132,7 +132,7 @@ GWEN_MDIGEST *GWEN_MDigest_Gc_new(GWEN_CRYPT_HASHALGOID a) {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Md5_new() {
+GWEN_MDIGEST *GWEN_MDigest_Md5_new(void) {
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 
@@ -149,7 +149,7 @@ GWEN_MDIGEST *GWEN_MDigest_Md5_new() {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Rmd160_new() {
+GWEN_MDIGEST *GWEN_MDigest_Rmd160_new(void) {
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 
@@ -166,7 +166,7 @@ GWEN_MDIGEST *GWEN_MDigest_Rmd160_new() {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Sha1_new() {
+GWEN_MDIGEST *GWEN_MDigest_Sha1_new(void) {
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 
@@ -183,7 +183,7 @@ GWEN_MDIGEST *GWEN_MDigest_Sha1_new() {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Sha256_new() {
+GWEN_MDIGEST *GWEN_MDigest_Sha256_new(void) {
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 

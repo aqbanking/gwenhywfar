@@ -49,10 +49,10 @@ int GWEN_I18N_SetLocale(const char *s);
  * MUST NOT free it.
  */
 GWENHYWFAR_API
-GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList();
+GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList(void);
 
 GWENHYWFAR_API
-const char *GWEN_I18N_GetCurrentLocale();
+const char *GWEN_I18N_GetCurrentLocale(void);
 
 GWENHYWFAR_API
 const char *GWEN_I18N_Translate(const char *textdomain, const char *text);

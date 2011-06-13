@@ -75,7 +75,7 @@ GWENHYWFAR_API
 long int GWEN_MemoryDebug_GetObjectCount(const char *name);
 
 GWENHYWFAR_API
-void GWEN_MemoryDebug_CleanUp();
+void GWEN_MemoryDebug_CleanUp(void);
 
 
 #ifdef GWEN_MEMORY_DEBUG

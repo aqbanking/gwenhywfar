@@ -72,7 +72,7 @@ extern "C" {
    * Creates a process representation. This does not start a process, it
    * simply prepares some data for starting a process.
    */
-  GWENHYWFAR_API GWEN_PROCESS *GWEN_Process_new();
+  GWENHYWFAR_API GWEN_PROCESS *GWEN_Process_new(void);
 
   /**
    * Frees process data. This does not stop the process represented by this

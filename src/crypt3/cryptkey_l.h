@@ -17,8 +17,8 @@
 #include <gwenhywfar/cryptkey_be.h>
 
 
-int GWEN_Crypt3_ModuleInit();
-int GWEN_Crypt3_ModuleFini();
+int GWEN_Crypt3_ModuleInit(void);
+int GWEN_Crypt3_ModuleFini(void);
 
 
 

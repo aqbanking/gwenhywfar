@@ -32,7 +32,7 @@ extern "C" {
  *
  */
 GWENHYWFAR_API 
-GWEN_GUI *GWEN_Gui_CGui_new();
+GWEN_GUI *GWEN_Gui_CGui_new(void);
 
 
 /** @name Character Set

@@ -31,7 +31,7 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_KEY, GWEN_Crypt_Key)
 
 
 
-int GWEN_Crypt3_ModuleInit() {
+int GWEN_Crypt3_ModuleInit(void) {
   gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
   if (!gcry_check_version (NEED_LIBGCRYPT_VERSION)) {
     const char *gcrypt_version = gcry_check_version(0);
@@ -50,7 +50,7 @@ int GWEN_Crypt3_ModuleInit() {
 
 
 
-int GWEN_Crypt3_ModuleFini() {
+int GWEN_Crypt3_ModuleFini(void) {
   return 0;
 }
 

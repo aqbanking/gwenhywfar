@@ -114,19 +114,19 @@ GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(int fd, const char *hname) {
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin() {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin(void) {
   return GWEN_SyncIo_File_fromStdHandle(fileno(stdin), "stdin");
 }
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStdout() {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdout(void) {
   return GWEN_SyncIo_File_fromStdHandle(fileno(stdout), "stdout");
 }
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr() {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr(void) {
   return GWEN_SyncIo_File_fromStdHandle(fileno(stderr), "stderr");
 }
 

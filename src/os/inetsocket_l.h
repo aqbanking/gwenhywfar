@@ -38,12 +38,12 @@ extern "C" {
 /**
  * Initializes this module.
  */
-int GWEN_Socket_ModuleInit();
+int GWEN_Socket_ModuleInit(void);
 
 /**
  * Deinitializes this module.
  */
-int GWEN_Socket_ModuleFini();
+int GWEN_Socket_ModuleFini(void);
 
 
 #ifdef __cplusplus

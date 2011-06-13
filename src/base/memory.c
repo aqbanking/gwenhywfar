@@ -61,7 +61,7 @@ static size_t gwen_memory__released_since_collect=0;
 
 
 
-int GWEN_Memory_ModuleInit(){
+int GWEN_Memory_ModuleInit(void){
   const char *s;
 
   s=getenv(GWEN_MEMORY_ENV_DEBUG);
@@ -76,7 +76,7 @@ int GWEN_Memory_ModuleInit(){
 
 
 
-int GWEN_Memory_ModuleFini(){
+int GWEN_Memory_ModuleFini(void){
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;
@@ -123,7 +123,7 @@ int GWEN_Memory_ModuleFini(){
 
 
 
-void GWEN_Memory_Report(){
+void GWEN_Memory_Report(void){
   return;
 }
 
@@ -131,7 +131,7 @@ void GWEN_Memory_Report(){
 
 
 
-GWEN_MEMORY_TABLE *GWEN_Memory_Table_new() {
+GWEN_MEMORY_TABLE *GWEN_Memory_Table_new(void) {
   GWEN_MEMORY_TABLE *mt;
   unsigned char *p;
   unsigned short dsize;
@@ -544,7 +544,7 @@ char *GWEN_Memory_strdup(const char *s) {
 
 
 
-void GWEN_Memory_Dump() {
+void GWEN_Memory_Dump(void) {
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;
@@ -556,7 +556,7 @@ void GWEN_Memory_Dump() {
 
 
 
-void GWEN_Memory_Collect() {
+void GWEN_Memory_Collect(void) {
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;

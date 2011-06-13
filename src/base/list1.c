@@ -38,7 +38,7 @@ static GWENHYWFAR_CB int GWEN_List1__defaultSortFn(const void *a, const void *b,
 
 
 
-GWEN_LIST1 *GWEN_List1_new() {
+GWEN_LIST1 *GWEN_List1_new(void) {
   GWEN_LIST1 *l;
 
   GWEN_NEW_OBJECT(GWEN_LIST1, l);

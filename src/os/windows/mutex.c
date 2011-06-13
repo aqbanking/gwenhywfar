@@ -34,7 +34,7 @@
 
 
 
-GWEN_MUTEX *GWEN_Mutex_new() {
+GWEN_MUTEX *GWEN_Mutex_new(void) {
   GWEN_MUTEX *mtx;
 
   GWEN_NEW_OBJECT(GWEN_MUTEX, mtx);

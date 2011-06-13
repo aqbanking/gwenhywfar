@@ -58,7 +58,7 @@ extern "C" {
   typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
   typedef t* (t##_LIST2_FOREACH)(t *element, void *user_data); \
   \
-  decl t##_LIST2 *pr##_List2_new(); \
+  decl t##_LIST2 *pr##_List2_new(void); \
   decl void pr##_List2_free(t##_LIST2 *l); \
   decl t##_LIST2 *pr##_List2_dup(const t##_LIST2 *l); \
   decl void pr##_List2_Unshare(t##_LIST2 *l); \
@@ -97,7 +97,7 @@ extern "C" {
    * source file (*.c) after the includes.
    */
 #define GWEN_LIST2_FUNCTIONS(t, pr) \
-  t##_LIST2 *pr##_List2_new() { \
+  t##_LIST2 *pr##_List2_new(void) { \
     return (t##_LIST2*)GWEN_List_new(); \
   } \
   \
@@ -236,7 +236,7 @@ extern "C" {
   typedef struct t##_CONSTLIST2_ITERATOR t##_CONSTLIST2_ITERATOR; \
   typedef const t* (t##_CONSTLIST2_FOREACH)(const t *element, void *user_data); \
   \
-  decl t##_CONSTLIST2 *pr##_ConstList2_new(); \
+  decl t##_CONSTLIST2 *pr##_ConstList2_new(void); \
   decl void pr##_ConstList2_free(t##_CONSTLIST2 *l); \
   decl void pr##_ConstList2_PushBack(t##_CONSTLIST2 *l, const t *p); \
   decl void pr##_ConstList2_PushFront(t##_CONSTLIST2 *l, const t *p); \
@@ -267,7 +267,7 @@ extern "C" {
 
 
 #define GWEN_CONSTLIST2_FUNCTIONS(t, pr) \
-  t##_CONSTLIST2 *pr##_ConstList2_new() { \
+  t##_CONSTLIST2 *pr##_ConstList2_new(void) { \
     return (t##_CONSTLIST2*)GWEN_ConstList_new(); \
   } \
   \

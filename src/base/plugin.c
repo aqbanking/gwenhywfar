@@ -62,14 +62,14 @@ GWEN_LIST_FUNCTIONS(GWEN_PLUGIN_MANAGER, GWEN_PluginManager)
 
 
 
-int GWEN_Plugin_ModuleInit(){
+int GWEN_Plugin_ModuleInit(void){
   gwen_plugin_manager__list=GWEN_PluginManager_List_new();
   return 0;
 }
 
 
 
-int GWEN_Plugin_ModuleFini(){
+int GWEN_Plugin_ModuleFini(void){
   GWEN_PluginManager_List_free(gwen_plugin_manager__list);
   return 0;
 }

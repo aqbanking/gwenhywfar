@@ -112,7 +112,7 @@ void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl){
 
 
 
-GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new(){
+GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new(void){
   GWEN_REFPTR_INFO *rpi;
 
   GWEN_NEW_OBJECT(GWEN_REFPTR_INFO, rpi);
