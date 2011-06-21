@@ -400,6 +400,13 @@ void *GWEN_DB_Groups_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
  * that will be reached in the GWEN_DB_Groups_foreach() function. */
 GWENHYWFAR_API 
 unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node);
+
+/**
+ * Returns the parent group of the given node.
+ */
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_DB_GetParentGroup(GWEN_DB_NODE *n);
+
 /*@}*/
 
 

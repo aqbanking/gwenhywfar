@@ -1643,6 +1643,18 @@ void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
 
 
 
+GWEN_DB_NODE *GWEN_DB_GetParentGroup(GWEN_DB_NODE *n) {
+  GWEN_DB_NODE *nn;
+
+  assert(n);
+  nn=n->parent;
+  while(nn && nn->typ!=GWEN_DB_NodeType_Group)
+    nn=nn->parent;
+  return nn;
+}
+
+
+
 GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name){
   GWEN_DB_NODE *nn;
 
