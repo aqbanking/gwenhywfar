@@ -22,7 +22,7 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_TOKEN_CONTEXT, GWEN_Crypt_Token_Context)
 GWEN_INHERIT_FUNCTIONS(GWEN_CRYPT_TOKEN_CONTEXT)
 
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new() {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void) {
   GWEN_CRYPT_TOKEN_CONTEXT *p_struct;
 
   GWEN_NEW_OBJECT(GWEN_CRYPT_TOKEN_CONTEXT, p_struct)
@@ -40,6 +40,7 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new() {
   p_struct->tempSignKeyId=0;
   p_struct->serviceId=NULL;
   p_struct->userId=NULL;
+  p_struct->customerId=NULL;
   p_struct->userName=NULL;
   p_struct->peerId=NULL;
   p_struct->peerName=NULL;
@@ -59,6 +60,7 @@ void GWEN_Crypt_Token_Context_free(GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
   /* members */
     free(p_struct->serviceId);
     free(p_struct->userId);
+    free(p_struct->customerId);
     free(p_struct->userName);
     free(p_struct->peerId);
     free(p_struct->peerName);
@@ -123,6 +125,15 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
   }
   if (p_src->userId) {
     p_struct->userId=strdup(p_src->userId);
+  }
+
+  /* member "customerId" */
+  if (p_struct->customerId) {
+    free(p_struct->customerId);
+    p_struct->customerId=NULL;
+  }
+  if (p_src->customerId) {
+    p_struct->customerId=strdup(p_src->customerId);
   }
 
   /* member "userName" */
@@ -226,6 +237,11 @@ const char *GWEN_Crypt_Token_Context_GetUserId(const GWEN_CRYPT_TOKEN_CONTEXT *p
   return p_struct->userId;
 }
 
+const char *GWEN_Crypt_Token_Context_GetCustomerId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+  assert(p_struct);
+  return p_struct->customerId;
+}
+
 const char *GWEN_Crypt_Token_Context_GetUserName(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
   assert(p_struct);
   return p_struct->userName;
@@ -322,6 +338,19 @@ void GWEN_Crypt_Token_Context_SetUserId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, cons
   }
 }
 
+void GWEN_Crypt_Token_Context_SetCustomerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+  assert(p_struct);
+  if (p_struct->customerId) {
+    free(p_struct->customerId);
+  }
+  if (p_src) {
+    p_struct->customerId=strdup(p_src);
+  }
+  else {
+    p_struct->customerId=NULL;
+  }
+}
+
 void GWEN_Crypt_Token_Context_SetUserName(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
   assert(p_struct);
   if (p_struct->userName) {
@@ -413,89 +442,95 @@ GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYP
 void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db) {
   assert(p_struct);
   /* member "id" */
-  p_struct->id=0;
   p_struct->id=GWEN_DB_GetIntValue(p_db, "id", 0, 0);
 
   /* member "signKeyId" */
-  p_struct->signKeyId=0;
   p_struct->signKeyId=GWEN_DB_GetIntValue(p_db, "signKeyId", 0, 0);
 
   /* member "verifyKeyId" */
-  p_struct->verifyKeyId=0;
   p_struct->verifyKeyId=GWEN_DB_GetIntValue(p_db, "verifyKeyId", 0, 0);
 
   /* member "encipherKeyId" */
-  p_struct->encipherKeyId=0;
   p_struct->encipherKeyId=GWEN_DB_GetIntValue(p_db, "encipherKeyId", 0, 0);
 
   /* member "decipherKeyId" */
-  p_struct->decipherKeyId=0;
   p_struct->decipherKeyId=GWEN_DB_GetIntValue(p_db, "decipherKeyId", 0, 0);
 
   /* member "authSignKeyId" */
-  p_struct->authSignKeyId=0;
   p_struct->authSignKeyId=GWEN_DB_GetIntValue(p_db, "authSignKeyId", 0, 0);
 
   /* member "authVerifyKeyId" */
-  p_struct->authVerifyKeyId=0;
   p_struct->authVerifyKeyId=GWEN_DB_GetIntValue(p_db, "authVerifyKeyId", 0, 0);
 
   /* member "tempSignKeyId" */
-  p_struct->tempSignKeyId=0;
   p_struct->tempSignKeyId=GWEN_DB_GetIntValue(p_db, "tempSignKeyId", 0, 0);
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
     free(p_struct->serviceId);
   }
-  p_struct->serviceId=NULL;
   { const char *s; s=GWEN_DB_GetCharValue(p_db, "serviceId", 0, NULL); if (s) p_struct->serviceId=strdup(s); }
+  if (p_struct->serviceId==NULL) {  p_struct->serviceId=NULL;
+  }
 
   /* member "userId" */
   if (p_struct->userId) {
     free(p_struct->userId);
   }
-  p_struct->userId=NULL;
   { const char *s; s=GWEN_DB_GetCharValue(p_db, "userId", 0, NULL); if (s) p_struct->userId=strdup(s); }
+  if (p_struct->userId==NULL) {  p_struct->userId=NULL;
+  }
+
+  /* member "customerId" */
+  if (p_struct->customerId) {
+    free(p_struct->customerId);
+  }
+  { const char *s; s=GWEN_DB_GetCharValue(p_db, "customerId", 0, NULL); if (s) p_struct->customerId=strdup(s); }
+  if (p_struct->customerId==NULL) {  p_struct->customerId=NULL;
+  }
 
   /* member "userName" */
   if (p_struct->userName) {
     free(p_struct->userName);
   }
-  p_struct->userName=NULL;
   { const char *s; s=GWEN_DB_GetCharValue(p_db, "userName", 0, NULL); if (s) p_struct->userName=strdup(s); }
+  if (p_struct->userName==NULL) {  p_struct->userName=NULL;
+  }
 
   /* member "peerId" */
   if (p_struct->peerId) {
     free(p_struct->peerId);
   }
-  p_struct->peerId=NULL;
   { const char *s; s=GWEN_DB_GetCharValue(p_db, "peerId", 0, NULL); if (s) p_struct->peerId=strdup(s); }
+  if (p_struct->peerId==NULL) {  p_struct->peerId=NULL;
+  }
 
   /* member "peerName" */
   if (p_struct->peerName) {
     free(p_struct->peerName);
   }
-  p_struct->peerName=NULL;
   { const char *s; s=GWEN_DB_GetCharValue(p_db, "peerName", 0, NULL); if (s) p_struct->peerName=strdup(s); }
+  if (p_struct->peerName==NULL) {  p_struct->peerName=NULL;
+  }
 
   /* member "address" */
   if (p_struct->address) {
     free(p_struct->address);
   }
-  p_struct->address=NULL;
   { const char *s; s=GWEN_DB_GetCharValue(p_db, "address", 0, NULL); if (s) p_struct->address=strdup(s); }
+  if (p_struct->address==NULL) {  p_struct->address=NULL;
+  }
 
   /* member "port" */
-  p_struct->port=0;
   p_struct->port=GWEN_DB_GetIntValue(p_db, "port", 0, 0);
 
   /* member "systemId" */
   if (p_struct->systemId) {
     free(p_struct->systemId);
   }
-  p_struct->systemId=NULL;
   { const char *s; s=GWEN_DB_GetCharValue(p_db, "systemId", 0, NULL); if (s) p_struct->systemId=strdup(s); }
+  if (p_struct->systemId==NULL) {  p_struct->systemId=NULL;
+  }
 
 }
 
@@ -573,6 +608,13 @@ int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, G
     return p_rv;
   }
 
+  /* member "customerId" */
+  if (p_struct->customerId) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "customerId", p_struct->customerId); else { GWEN_DB_DeleteVar(p_db, "customerId"); p_rv=0; }
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
   /* member "userName" */
   if (p_struct->userName) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userName", p_struct->userName); else { GWEN_DB_DeleteVar(p_db, "userName"); p_rv=0; }
   if (p_rv<0) {
@@ -632,89 +674,103 @@ int GWEN_Crypt_Token_Context_toDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN
 void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db) {
   assert(p_struct);
   /* member "id" */
-  p_struct->id=0;
   p_struct->id=GWEN_XMLNode_GetIntValue(p_db, "id", 0);
 
   /* member "signKeyId" */
-  p_struct->signKeyId=0;
   p_struct->signKeyId=GWEN_XMLNode_GetIntValue(p_db, "signKeyId", 0);
 
   /* member "verifyKeyId" */
-  p_struct->verifyKeyId=0;
   p_struct->verifyKeyId=GWEN_XMLNode_GetIntValue(p_db, "verifyKeyId", 0);
 
   /* member "encipherKeyId" */
-  p_struct->encipherKeyId=0;
   p_struct->encipherKeyId=GWEN_XMLNode_GetIntValue(p_db, "encipherKeyId", 0);
 
   /* member "decipherKeyId" */
-  p_struct->decipherKeyId=0;
   p_struct->decipherKeyId=GWEN_XMLNode_GetIntValue(p_db, "decipherKeyId", 0);
 
   /* member "authSignKeyId" */
-  p_struct->authSignKeyId=0;
   p_struct->authSignKeyId=GWEN_XMLNode_GetIntValue(p_db, "authSignKeyId", 0);
 
   /* member "authVerifyKeyId" */
-  p_struct->authVerifyKeyId=0;
   p_struct->authVerifyKeyId=GWEN_XMLNode_GetIntValue(p_db, "authVerifyKeyId", 0);
 
   /* member "tempSignKeyId" */
-  p_struct->tempSignKeyId=0;
   p_struct->tempSignKeyId=GWEN_XMLNode_GetIntValue(p_db, "tempSignKeyId", 0);
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
     free(p_struct->serviceId);
   }
-  p_struct->serviceId=NULL;
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "serviceId", NULL); if (s) p_struct->serviceId=strdup(s); }
+  if (p_struct->serviceId==NULL) {  /* member "serviceId" is volatile, just presetting */
+  p_struct->serviceId=NULL;
+  }
 
   /* member "userId" */
   if (p_struct->userId) {
     free(p_struct->userId);
   }
-  p_struct->userId=NULL;
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "userId", NULL); if (s) p_struct->userId=strdup(s); }
+  if (p_struct->userId==NULL) {  /* member "userId" is volatile, just presetting */
+  p_struct->userId=NULL;
+  }
+
+  /* member "customerId" */
+  if (p_struct->customerId) {
+    free(p_struct->customerId);
+  }
+  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "customerId", NULL); if (s) p_struct->customerId=strdup(s); }
+  if (p_struct->customerId==NULL) {  /* member "customerId" is volatile, just presetting */
+  p_struct->customerId=NULL;
+  }
 
   /* member "userName" */
   if (p_struct->userName) {
     free(p_struct->userName);
   }
-  p_struct->userName=NULL;
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "userName", NULL); if (s) p_struct->userName=strdup(s); }
+  if (p_struct->userName==NULL) {  /* member "userName" is volatile, just presetting */
+  p_struct->userName=NULL;
+  }
 
   /* member "peerId" */
   if (p_struct->peerId) {
     free(p_struct->peerId);
   }
-  p_struct->peerId=NULL;
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "peerId", NULL); if (s) p_struct->peerId=strdup(s); }
+  if (p_struct->peerId==NULL) {  /* member "peerId" is volatile, just presetting */
+  p_struct->peerId=NULL;
+  }
 
   /* member "peerName" */
   if (p_struct->peerName) {
     free(p_struct->peerName);
   }
-  p_struct->peerName=NULL;
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "peerName", NULL); if (s) p_struct->peerName=strdup(s); }
+  if (p_struct->peerName==NULL) {  /* member "peerName" is volatile, just presetting */
+  p_struct->peerName=NULL;
+  }
 
   /* member "address" */
   if (p_struct->address) {
     free(p_struct->address);
   }
-  p_struct->address=NULL;
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "address", NULL); if (s) p_struct->address=strdup(s); }
+  if (p_struct->address==NULL) {  /* member "address" is volatile, just presetting */
+  p_struct->address=NULL;
+  }
 
   /* member "port" */
-  p_struct->port=0;
   p_struct->port=GWEN_XMLNode_GetIntValue(p_db, "port", 0);
 
   /* member "systemId" */
   if (p_struct->systemId) {
     free(p_struct->systemId);
   }
-  p_struct->systemId=NULL;
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "systemId", NULL); if (s) p_struct->systemId=strdup(s); }
+  if (p_struct->systemId==NULL) {  /* member "systemId" is volatile, just presetting */
+  p_struct->systemId=NULL;
+  }
 
 }
 
@@ -749,6 +805,9 @@ void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
 
   /* member "userId" */
   GWEN_XMLNode_SetCharValue(p_db, "userId", p_struct->userId);
+
+  /* member "customerId" */
+  GWEN_XMLNode_SetCharValue(p_db, "customerId", p_struct->customerId);
 
   /* member "userName" */
   GWEN_XMLNode_SetCharValue(p_db, "userName", p_struct->userName);

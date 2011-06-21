@@ -29,6 +29,7 @@ struct GWEN_CRYPT_TOKEN_CONTEXT {
   uint32_t tempSignKeyId;
   char *serviceId;
   char *userId;
+  char *customerId;
   char *userName;
   char *peerId;
   char *peerName;

@@ -34,7 +34,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPT_TOKEN_CONTEXT, GWENHYWFAR_API)
 
 
 /** Constructor. */
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new();
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void);
 
 /** Destructor. */
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_free(GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
@@ -92,6 +92,11 @@ GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetServiceId(const GWEN_CRYP
  * Use this function to get the member "userId"
 */
 GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetUserId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "customerId"
+*/
+GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetCustomerId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
 /** Getter.
  * Use this function to get the member "userName"
@@ -172,6 +177,11 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetServiceId(GWEN_CRYPT_TOKEN_CONTE
  * Use this function to set the member "userId"
 */
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetUserId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
+
+/** Setter.
+ * Use this function to set the member "customerId"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetCustomerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
 
 /** Setter.
  * Use this function to set the member "userName"
