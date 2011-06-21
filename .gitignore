@@ -103,4 +103,4 @@ plugins/dbio/csv/csv.xml
 plugins/dbio/olddb/olddb.xml
 plugins/dbio/xmldb/xmldb.xml
 plugins/configmgr/dir/dir.xml
-
+src/crypttoken/*.tm2
