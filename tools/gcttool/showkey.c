@@ -166,6 +166,8 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 	    fprintf(stdout, " EXPONENT");
 	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
 	    fprintf(stdout, " KEYVERSION");
+	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
+	    fprintf(stdout, " KEYNUMBER");
 	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)
 	    fprintf(stdout, " SIGNCOUNTER");
 	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS) {
