@@ -151,6 +151,9 @@ int showUser(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 	  s=GWEN_Crypt_Token_Context_GetUserId(ctx);
 	  if (s)
 	    fprintf(stdout, "User Id        : %s\n", s);
+	  s=GWEN_Crypt_Token_Context_GetCustomerId(ctx);
+	  if (s)
+	    fprintf(stdout, "Customer Id    : %s\n", s);
 	  s=GWEN_Crypt_Token_Context_GetUserName(ctx);
 	  if (s)
 	    fprintf(stdout, "User Name      : %s\n", s);
