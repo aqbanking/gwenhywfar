@@ -192,11 +192,12 @@ void FOX16_Gui::dumpScopeList() {
 
 
 int FOX16_Gui::print(const char *docTitle,
-		  const char *docType,
-		  const char *descr,
-		  const char *text,
-		  uint32_t guiid) {
-  return GWEN_ERROR_NOT_IMPLEMENTED;
+                     const char *docType,
+                     const char *descr,
+                     const char *text,
+                     uint32_t guiid) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Not implemented");
+    return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
