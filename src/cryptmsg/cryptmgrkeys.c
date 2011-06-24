@@ -47,6 +47,7 @@ GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
     xcm->localKey=localKey;
     GWEN_CryptMgr_SetLocalKeyNumber(cm, GWEN_Crypt_Key_GetKeyNumber(localKey));
     GWEN_CryptMgr_SetLocalKeyVersion(cm, GWEN_Crypt_Key_GetKeyVersion(localKey));
+    xcm->ownLocalKey=ownKeys;
   }
   else
     xcm->ownLocalKey=0;
