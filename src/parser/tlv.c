@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sun Jun 13 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -304,16 +304,16 @@ int GWEN_TLV_DirectlyToBuffer(unsigned int tagType,
     if (tagLength>255) {
       /* two byte size */
       GWEN_Buffer_AppendByte(mbuf, 0x82);
-      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>8) && 0xff));
-      GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>8) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
     }
     else if (tagLength>127) {
       /* one byte size */
       GWEN_Buffer_AppendByte(mbuf, 0x81);
-      GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
     }
     else {
-      GWEN_Buffer_AppendByte(mbuf, (tagLength && 0x7f));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0x7f));
     }
 
     /* write tag data */
@@ -337,6 +337,213 @@ int GWEN_TLV_DirectlyToBuffer(unsigned int tagType,
 
 
 
+int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBerTlv) {
+  uint64_t tagMode;
+  uint64_t tagType;
+  uint64_t tagLength;
+  unsigned int pos;
+  uint64_t j;
+
+  tagMode=tagType=tagLength=0;
+
+  pos=0;
+
+  /* get tag type */
+  if (size<2) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes for TLV");
+    return GWEN_ERROR_BAD_DATA;
+  }
+  j=(unsigned char)(p[pos]);
+  tagMode=(j & 0xe0);
+  if (isBerTlv) {
+    if ((j & 0x1f)==0x1f) {
+      pos++;
+      if (pos>=size) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+        return 0;
+      }
+      j=(unsigned char)(p[pos]);
+    }
+    else
+      j&=0x1f;
+  }
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Tag type %02x%s", j,
+            isBerTlv?" (BER-TLV)":"");
+  tagType=j;
+
+  /* get length */
+  pos++;
+  if (pos>=size) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+    return GWEN_ERROR_BAD_DATA;
+  }
+  j=(unsigned char)(p[pos]);
+  if (isBerTlv) {
+    if (j & 0x80) {
+      if (j==0x81) {
+        pos++;
+        if (pos>=size) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+	  return GWEN_ERROR_BAD_DATA;
+        }
+        j=(unsigned char)(p[pos]);
+      } /* 0x81 */
+      else if (j==0x82) {
+        if (pos+1>=size) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+	  return GWEN_ERROR_BAD_DATA;
+        }
+        pos++;
+        j=((unsigned char)(p[pos]))<<8;
+        pos++;
+        j+=(unsigned char)(p[pos]);
+      } /* 0x82 */
+      else if (j==0x83) {
+        if (pos+2>=size) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+	  return GWEN_ERROR_BAD_DATA;
+        }
+        pos++;
+        j=((unsigned char)(p[pos]))<<16;
+        pos++;
+        j=((unsigned char)(p[pos]))<<8;
+        pos++;
+        j+=(unsigned char)(p[pos]);
+      } /* 0x83 */
+      else if (j==0x84) {
+        if (pos+3>=size) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+	  return GWEN_ERROR_BAD_DATA;
+        }
+        pos++;
+        j=((unsigned char)(p[pos]))<<24;
+        pos++;
+        j=((unsigned char)(p[pos]))<<16;
+        pos++;
+        j=((unsigned char)(p[pos]))<<8;
+        pos++;
+        j+=(unsigned char)(p[pos]);
+      } /* 0x84 */
+      else if (j==0x85) {
+        if (pos+4>=size) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+	  return GWEN_ERROR_BAD_DATA;
+        }
+        pos++;
+	j=((uint64_t) ((unsigned char)(p[pos])))<<32;
+        pos++;
+        j=((uint64_t) ((unsigned char)(p[pos])))<<24;
+        pos++;
+	j=((uint64_t) ((unsigned char)(p[pos])))<<16;
+        pos++;
+	j=((uint64_t) ((unsigned char)(p[pos])))<<8;
+        pos++;
+        j+=(unsigned char)(p[pos]);
+      } /* 0x85 */
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x at %d", (int) j, pos);
+	return GWEN_ERROR_BAD_DATA;
+      }
+    } /* if tag length modifier */
+  }
+  else {
+    if (j==255) {
+      if (pos+2>=size) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      pos++;
+      j=((unsigned char)(p[pos]))<<8;
+      pos++;
+      j+=(unsigned char)(p[pos]);
+    }
+  }
+  pos++;
+  tagLength=j;
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Tag: %02x (%d bytes)", tagType, tagLength);
+
+  tlv->isBerTlv=isBerTlv;
+  tlv->tagMode=tagMode;
+  tlv->tagType=tagType;
+  tlv->tagLength=tagLength;
+
+  tlv->tagSize=pos+tagLength;
+  return (int) pos;
+}
+
+
+
+int GWEN_TLV_WriteHeader(unsigned int tagType,
+                         unsigned int tagMode,
+			 uint64_t tagLength,
+			 int isBerTlv,
+			 GWEN_BUFFER *mbuf) {
+  if (isBerTlv) {
+    unsigned char j;
+
+    /* write tag type */
+    j=tagMode;
+    if (tagType>=0x1f) {
+      j|=0x1f;
+      GWEN_Buffer_AppendByte(mbuf, j);
+      GWEN_Buffer_AppendByte(mbuf, (unsigned char)tagType);
+    }
+    else {
+      j|=tagType;
+      GWEN_Buffer_AppendByte(mbuf, j);
+    }
+
+    /* write tag length */
+    if (tagLength>0xffffffffLL) {
+      /* five byte size */
+      GWEN_Buffer_AppendByte(mbuf, 0x85);
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>32) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>24) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>16) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>8) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
+    }
+    else if (tagLength>0xffffffL) {
+      /* four byte size */
+      GWEN_Buffer_AppendByte(mbuf, 0x84);
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>24) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>16) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>8) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
+    }
+    else if (tagLength>0xffff) {
+      /* three byte size */
+      GWEN_Buffer_AppendByte(mbuf, 0x83);
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>16) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>8) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
+    }
+    else if (tagLength>0xff) {
+      /* two byte size */
+      GWEN_Buffer_AppendByte(mbuf, 0x82);
+      GWEN_Buffer_AppendByte(mbuf, ((tagLength>>8) & 0xff));
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
+    }
+    else if (tagLength>127) {
+      /* one byte size */
+      GWEN_Buffer_AppendByte(mbuf, 0x81);
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
+    }
+    else {
+      GWEN_Buffer_AppendByte(mbuf, (tagLength & 0x7f));
+    }
+  }
+  else {
+    /* write tag type */
+    GWEN_Buffer_AppendByte(mbuf, (unsigned char)tagType);
+
+    /* write tag length */
+    GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+  }
+
+  return 0;
+}
 
 
 

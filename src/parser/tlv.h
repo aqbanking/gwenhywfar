@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sun Jun 13 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -69,6 +66,34 @@ GWENHYWFAR_API
 unsigned int GWEN_TLV_GetTagSize(const GWEN_TLV *tlv);
 
 
+/**
+ * Reads a TLV header from a buffer (tag and length) and returns the number of bytes
+ * used by the header.
+ * @return number of bytes used to specify tag and length (i.e. TLV size without the data part)
+ * @param tlv TLV to read the header into
+ * @param p pointer to a buffer containing at least the header
+ * @param size siez of the buffer pointed to by @b p
+ * @param isBerTlv if !=0 then the TLV is supposed to be a BER-TLV object
+ */
+GWENHYWFAR_API
+int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBerTlv);
+
+
+/**
+ * Directly writes a TLV header (tag and length) to the given buffer.
+ * @return 0 if ok, error code otherwise
+ * @param tagType tag id
+ * @param tagMode bits 5, 6 and 7 of the first TLV byte (bits 6/7: class, bit 5: constructed)
+ * @param tagLength length of the data part introduced by the TLV header
+ * @param isBerTlv if !=0 then the TLV is supposed to be a BER-TLV object
+ * @param mbuf buffer to receive the TLV header
+ */
+GWENHYWFAR_API
+int GWEN_TLV_WriteHeader(unsigned int tagType,
+			 unsigned int tagMode,
+			 uint64_t tagLength,
+			 int isBerTlv,
+			 GWEN_BUFFER *mbuf);
 
 
 #endif /* GWENHYWFAR_TLV_H */
