@@ -33,6 +33,7 @@
 #include <gwenhywfar/syncio_http.h>
 #include <gwenhywfar/syncio_tls.h>
 #include <gwenhywfar/smalltresor.h>
+#include <gwenhywfar/sar.h>
 #ifdef OS_WIN32
 # include <windows.h>
 # include <winsock.h>
@@ -4407,6 +4408,197 @@ int testDate2(int argc, char **argv) {
 
 
 
+int testSar1(int argc, char **argv) {
+  GWEN_SAR *sr;
+  const char *aname;
+  const char *fname;
+  int rv;
+
+  if (argc<4) {
+    fprintf(stderr, "%s sar1 archive file\n", argv[0]);
+    return 1;
+  }
+
+  aname=argv[2];
+  fname=argv[3];
+
+  sr=GWEN_Sar_new();
+  rv=GWEN_Sar_CreateArchive(sr, aname);
+  if (rv<0) {
+    fprintf(stderr, "Error creating archive (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Adding file \"%s\"\n", fname);
+  rv=GWEN_Sar_AddFile(sr, fname);
+  if (rv<0) {
+    fprintf(stderr, "Error adding file \"%s\" to archive \"%s\" (%d)\n",
+            fname, aname, rv);
+    return 2;
+  }
+
+  rv=GWEN_Sar_CloseArchive(sr, 0);
+  if (rv<0) {
+    fprintf(stderr, "Error closing archive (%d)\n", rv);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+int testSar2(int argc, char **argv) {
+  GWEN_SAR *sr;
+  const char *aname;
+  int rv;
+  const GWEN_SAR_FILEHEADER_LIST *fhl;
+
+  if (argc<3) {
+    fprintf(stderr, "%s sar2 archive\n", argv[0]);
+    return 1;
+  }
+
+  aname=argv[2];
+
+  sr=GWEN_Sar_new();
+  rv=GWEN_Sar_OpenArchive(sr, aname,
+                          GWEN_SyncIo_File_CreationMode_OpenExisting,
+                          GWEN_SYNCIO_FILE_FLAGS_READ);
+  if (rv<0) {
+    fprintf(stderr, "Error opening archive (%d)\n", rv);
+    return 2;
+  }
+
+  fhl=GWEN_Sar_GetHeaders(sr);
+  if (fhl) {
+    const GWEN_SAR_FILEHEADER *fh;
+
+    fh=GWEN_SarFileHeader_List_First(fhl);
+    while(fh) {
+      const char *s;
+
+      s=GWEN_SarFileHeader_GetPath(fh);
+      rv=GWEN_Sar_CheckFile(sr, fh);
+      if (rv<0) {
+        fprintf(stderr, "%s: CRC error\n", s?s:"(noname)");
+      }
+      else {
+        fprintf(stderr, "%s: Ok\n", s?s:"(noname)");
+      }
+
+      fh=GWEN_SarFileHeader_List_Next(fh);
+    }
+  }
+
+  rv=GWEN_Sar_CloseArchive(sr, 0);
+  if (rv<0) {
+    fprintf(stderr, "Error closing archive (%d)\n", rv);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+int testSar3(int argc, char **argv) {
+  GWEN_SAR *sr;
+  const char *aname;
+  int rv;
+  const GWEN_SAR_FILEHEADER_LIST *fhl;
+
+  if (argc<3) {
+    fprintf(stderr, "%s sar2 archive\n", argv[0]);
+    return 1;
+  }
+
+  aname=argv[2];
+
+  sr=GWEN_Sar_new();
+  rv=GWEN_Sar_OpenArchive(sr, aname,
+                          GWEN_SyncIo_File_CreationMode_OpenExisting,
+                          GWEN_SYNCIO_FILE_FLAGS_READ);
+  if (rv<0) {
+    fprintf(stderr, "Error opening archive (%d)\n", rv);
+    return 2;
+  }
+
+  fhl=GWEN_Sar_GetHeaders(sr);
+  if (fhl) {
+    const GWEN_SAR_FILEHEADER *fh;
+
+    fh=GWEN_SarFileHeader_List_First(fhl);
+    while(fh) {
+      const char *s;
+
+      s=GWEN_SarFileHeader_GetPath(fh);
+      rv=GWEN_Sar_ExtractFile(sr, fh);
+      if (rv<0) {
+        fprintf(stderr, "%s: CRC error\n", s?s:"(noname)");
+      }
+      else {
+        fprintf(stderr, "%s: Ok\n", s?s:"(noname)");
+      }
+
+      fh=GWEN_SarFileHeader_List_Next(fh);
+    }
+  }
+
+  rv=GWEN_Sar_CloseArchive(sr, 0);
+  if (rv<0) {
+    fprintf(stderr, "Error closing archive (%d)\n", rv);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+int testSar4(int argc, char **argv) {
+  GWEN_SAR *sr;
+  const char *aname;
+  const char *fname;
+  int rv;
+
+  if (argc<4) {
+    fprintf(stderr, "%s sar1 archive file\n", argv[0]);
+    return 1;
+  }
+
+  aname=argv[2];
+  fname=argv[3];
+
+  sr=GWEN_Sar_new();
+  rv=GWEN_Sar_OpenArchive(sr, aname,
+                          GWEN_SyncIo_File_CreationMode_OpenExisting,
+                          GWEN_SYNCIO_FILE_FLAGS_READ|
+                          GWEN_SYNCIO_FILE_FLAGS_WRITE);
+  if (rv<0) {
+    fprintf(stderr, "Error opening archive (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Adding file \"%s\"\n", fname);
+  rv=GWEN_Sar_AddFile(sr, fname);
+  if (rv<0) {
+    fprintf(stderr, "Error adding file \"%s\" to archive \"%s\" (%d)\n",
+            fname, aname, rv);
+    return 2;
+  }
+
+  rv=GWEN_Sar_CloseArchive(sr, 0);
+  if (rv<0) {
+    fprintf(stderr, "Error closing archive (%d)\n", rv);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4578,6 +4770,18 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "date2")==0) {
     rv=testDate2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sar1")==0) {
+    rv=testSar1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sar2")==0) {
+    rv=testSar2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sar3")==0) {
+    rv=testSar3(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sar4")==0) {
+    rv=testSar4(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

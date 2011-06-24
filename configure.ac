@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=4
 GWENHYWFAR_VERSION_MINOR=1
 GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="svn"
 
 
 
@@ -1314,6 +1314,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/Makefile
                  src/os/windows/system.h
                  src/parser/Makefile
+                 src/sar/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile
                  plugins/dbio/csv/Makefile
@@ -1361,7 +1362,7 @@ AC_OUTPUT
 # create header directory, make symlinks
 #
 HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/sio src/os src/os/${GWEN_OS} src/gui src/html"
-HEADER_DIRS="${HEADER_DIRS} src/parser"
+HEADER_DIRS="${HEADER_DIRS} src/parser src/sar"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
