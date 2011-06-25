@@ -288,7 +288,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 	  }
 	}
 	else {
-	  /* too few characters */
+          /* too few characters */
 	  fprintf(stderr, "\007");
 	}
       }
