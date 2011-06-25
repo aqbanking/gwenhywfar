@@ -1012,7 +1012,10 @@ int GWEN_Sar_ScanFile(GWEN_SAR *sr) {
       }
       if (GWEN_SarFileHeader_GetFileType(lastHeader)!=GWEN_SarFileHeader_FType_SymLink &&
           GWEN_SarFileHeader_GetFileSize(lastHeader)!=tagLength) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "File size in header and in archive differ");
+        DBG_ERROR(GWEN_LOGDOMAIN, "File size in header and in archive differ (%s: hs=%lu, ts=%lu)",
+                  GWEN_SarFileHeader_GetPath(lastHeader),
+                  (unsigned long int) GWEN_SarFileHeader_GetFileSize(lastHeader),
+                  (unsigned long int) tagLength);
         GWEN_Buffer_free(mbuf);
         return GWEN_ERROR_BAD_DATA;
       }
