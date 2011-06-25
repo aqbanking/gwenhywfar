@@ -406,7 +406,7 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
         pos++;
         j=((unsigned char)(p[pos]))<<16;
         pos++;
-        j=((unsigned char)(p[pos]))<<8;
+        j+=((unsigned char)(p[pos]))<<8;
         pos++;
         j+=(unsigned char)(p[pos]);
       } /* 0x83 */
@@ -418,9 +418,9 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
         pos++;
         j=((unsigned char)(p[pos]))<<24;
         pos++;
-        j=((unsigned char)(p[pos]))<<16;
+        j+=((unsigned char)(p[pos]))<<16;
         pos++;
-        j=((unsigned char)(p[pos]))<<8;
+        j+=((unsigned char)(p[pos]))<<8;
         pos++;
         j+=(unsigned char)(p[pos]);
       } /* 0x84 */
@@ -432,11 +432,11 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
         pos++;
 	j=((uint64_t) ((unsigned char)(p[pos])))<<32;
         pos++;
-        j=((uint64_t) ((unsigned char)(p[pos])))<<24;
+        j+=((uint64_t) ((unsigned char)(p[pos])))<<24;
         pos++;
-	j=((uint64_t) ((unsigned char)(p[pos])))<<16;
+	j+=((uint64_t) ((unsigned char)(p[pos])))<<16;
         pos++;
-	j=((uint64_t) ((unsigned char)(p[pos])))<<8;
+	j+=((uint64_t) ((unsigned char)(p[pos])))<<8;
         pos++;
         j+=(unsigned char)(p[pos]);
       } /* 0x85 */
