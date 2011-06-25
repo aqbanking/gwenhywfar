@@ -653,7 +653,7 @@ GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimit
 
 	/* read word */
 	pStart=s;
-        s++;
+        //s++;
 	while(*s && strchr(delimiters, *s)==NULL)
 	  s++;
 	len=s-pStart;

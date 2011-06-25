@@ -4599,6 +4599,33 @@ int testSar4(int argc, char **argv) {
 
 
 
+int testStringListFromString(int argc, char **argv) {
+  GWEN_STRINGLIST *sl;
+#if 1
+  const char delims[]="\n";
+  const char td[]="test1\ntest2\ntest3";
+#else
+  const char delims[]=",";
+  const char td[]="test1,test2,test3";
+#endif
+  sl=GWEN_StringList_fromString(td, delims, 1);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      fprintf(stderr, "Got this: [%s]\n", s?s:"(empty)");
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -4782,6 +4809,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "sar4")==0) {
     rv=testSar4(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "sl")==0) {
+    rv=testStringListFromString(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
