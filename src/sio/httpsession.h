@@ -152,6 +152,9 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 GWENHYWFAR_API
 int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf);
 
+GWENHYWFAR_API
+int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname);
+
 /**
  * Test-connect to the server. This function can be used to retrieve the SSL
  * certificate from a server as the cert exchange is part of the establishing of

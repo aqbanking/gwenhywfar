@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Feb 15 2008
-    copyright   : (C) 2008 by Martin Preuss
+    copyright   : (C) 2008-2011 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,12 +21,14 @@
 #include <gwenhywfar/syncio.h>
 #include <gwenhywfar/syncio_tls.h>
 #include <gwenhywfar/syncio_http.h>
+#include <gwenhywfar/syncio_file.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
 
 #include <assert.h>
+#include <unistd.h>
 
 
 GWEN_INHERIT_FUNCTIONS(GWEN_HTTP_SESSION)
@@ -466,6 +468,138 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
   GWEN_Gui_ProgressLog(0,
 		       GWEN_LoggerLevel_Info,
 		       I18N("Response received."));
+
+  /* disconnect */
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Disconnecting from server..."));
+  GWEN_SyncIo_Disconnect(sess->syncIo);
+  GWEN_Gui_ProgressLog(0,
+		       GWEN_LoggerLevel_Info,
+		       I18N("Disconnected."));
+  return rv;
+}
+
+
+
+int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio) {
+  int rv;
+
+  assert(sess);
+  assert(sess->usage);
+
+  rv=GWEN_SyncIo_Http_RecvBodyToSio(sess->syncIo, sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  else if (rv<200 || rv>299) {
+    /* response is only ok for continuation (100) code */
+    if (rv==100) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Continue...");
+    }
+    else {
+      GWEN_DB_NODE *dbHeaderIn;
+
+      dbHeaderIn=GWEN_SyncIo_Http_GetDbHeaderIn(sess->syncIo);
+
+      if (rv==301 || rv==303 || rv==305 || rv==307) {
+	/* moved */
+	if (dbHeaderIn) {
+	  const char *s;
+
+	  s=GWEN_DB_GetCharValue(dbHeaderIn, "Location", 0, 0);
+	  if (s) {
+	    switch(rv) {
+	    case 301:
+	    case 303:
+	      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("HTTP: Moved permanently to %s"), s);
+	      break;
+	    case 305:
+	      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("HTTP: Use proxy at %s"), s);
+	      break;
+	    case 307:
+	      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("HTTP: Moved temporarily to %s"), s);
+	      break;
+	    default:
+	      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("HTTP: Moved to %s"), s);
+	    } /* switch */
+	  }
+	}
+      } /* if moved */
+    }
+  }
+
+  return rv;
+}
+
+
+
+int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname) {
+  int rv;
+
+  /* read response */
+  for (;;) {
+    GWEN_SYNCIO *sio;
+
+    sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_CreateAlways);
+    GWEN_SyncIo_AddFlags(sio,
+                         GWEN_SYNCIO_FILE_FLAGS_READ |
+                         GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                         GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                         GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+                         GWEN_SYNCIO_FILE_FLAGS_GREAD |
+                         GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Info,
+			 I18N("Waiting for response..."));
+    rv=GWEN_HttpSession__RecvPacketToSio(sess, sio);
+    if (rv<0 || rv<200 || rv>299) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "Error receiving packet (%d)", rv);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+      unlink(fname);
+      GWEN_SyncIo_Disconnect(sess->syncIo);
+      return rv;
+    }
+    if (rv!=100) {
+      int rv2;
+
+      /* flush file and close it */
+      rv2=GWEN_SyncIo_Flush(sio);
+      if (rv2<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
+        GWEN_SyncIo_free(sio);
+        return rv2;
+      }
+      rv2=GWEN_SyncIo_Disconnect(sio);
+      if (rv2<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
+        GWEN_SyncIo_free(sio);
+        return rv2;
+      }
+      GWEN_SyncIo_free(sio);
+      break;
+    }
+    GWEN_Gui_ProgressLog(0,
+			 GWEN_LoggerLevel_Info,
+			 I18N("Received continuation response."));
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    unlink(fname);
+  }
+
+  GWEN_Gui_ProgressLog(0,
+                       GWEN_LoggerLevel_Info,
+                       I18N("Response received."));
 
   /* disconnect */
   GWEN_Gui_ProgressLog(0,
