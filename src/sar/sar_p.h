@@ -89,6 +89,7 @@ static int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEA
 
 static int GWEN_Sar_ScanFile(GWEN_SAR *sr);
 
+static int GWEN_Sar__UnpackArchive(const char *inFile, const char *where);
 
 
 #endif

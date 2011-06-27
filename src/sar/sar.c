@@ -1758,6 +1758,106 @@ const GWEN_SAR_FILEHEADER_LIST *GWEN_Sar_GetHeaders(GWEN_SAR *sr) {
 
 
 
+int GWEN_Sar__UnpackArchive(const char *inFile, const char *where) {
+  GWEN_SAR *sr;
+  int rv;
+  const GWEN_SAR_FILEHEADER_LIST *fhl;
+
+  /* open archive file */
+  sr=GWEN_Sar_new();
+  rv=GWEN_Sar_OpenArchive(sr, inFile,
+                          GWEN_SyncIo_File_CreationMode_OpenExisting,
+                          GWEN_SYNCIO_FILE_FLAGS_READ);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* change to "where" */
+  if (chdir(where)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "chdir(%s): %s", where, strerror(errno));
+    GWEN_Sar_CloseArchive(sr, 1);
+    GWEN_Sar_free(sr);
+    return GWEN_ERROR_IO;
+  }
+
+  fhl=GWEN_Sar_GetHeaders(sr);
+  if (fhl) {
+    const GWEN_SAR_FILEHEADER *fh;
+    uint32_t pid;
+
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+                               GWEN_GUI_PROGRESS_SHOW_ABORT |
+                               GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                               GWEN_GUI_PROGRESS_SHOW_PROGRESS,
+                               I18N("File Operation"),
+                               I18N("Unpacking archive file"),
+                               GWEN_SarFileHeader_List_GetCount(fhl),
+                               0);
+
+    fh=GWEN_SarFileHeader_List_First(fhl);
+    while(fh) {
+      const char *s;
+
+      s=GWEN_SarFileHeader_GetPath(fh);
+      rv=GWEN_Sar_ExtractFile(sr, fh);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Gui_ProgressEnd(pid);
+	GWEN_Sar_CloseArchive(sr, 1);
+	GWEN_Sar_free(sr);
+      }
+
+      rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Gui_ProgressEnd(pid);
+        GWEN_Sar_CloseArchive(sr, 1);
+        GWEN_Sar_free(sr);
+        return rv;
+      }
+
+      fh=GWEN_SarFileHeader_List_Next(fh);
+    }
+    GWEN_Gui_ProgressEnd(pid);
+  }
+
+  rv=GWEN_Sar_CloseArchive(sr, 0);
+  if (rv<0) {
+    fprintf(stderr, "Error closing archive (%d)\n", rv);
+    return 2;
+  }
+
+  return 0;
+
+}
+
+
+
+int GWEN_Sar_UnpackArchive(const char *inFile, const char *where) {
+  char savedPwd[300];
+  int rv;
+
+  /* get current working dir */
+  if (getcwd(savedPwd, sizeof(savedPwd)-1)==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "getcwd(): %s", strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+  savedPwd[sizeof(savedPwd)-1]=0;
+
+  rv=GWEN_Sar__UnpackArchive(inFile, where);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  /* change back to previous pwd */
+  if (chdir(savedPwd)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "chdir(%s): %s", savedPwd, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+
+  return rv;
+}
 
 
 

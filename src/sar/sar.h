@@ -73,6 +73,11 @@ int GWEN_Sar_CheckFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh);
 
 
 
+GWENHYWFAR_API
+int GWEN_Sar_UnpackArchive(const char *inFile, const char *where);
+
+
+
 #endif
 
 
