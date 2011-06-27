@@ -311,6 +311,18 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
 					       const char *mask);
 
 
+/**
+ * This function determines the absolute path og the given folder and returns it
+ * in the given buffer. It uses a combination of getcwd() and chdir() to get
+ * the result. This function should return with the current working directory
+ * effectively unchanged.
+ * @return 0 if ok, error code otherwise
+ * @param folder folder for which to retrieve the absolute path
+ * @param tbuf buffer to receive the result
+ */
+GWENHYWFAR_API
+int GWEN_Directory_GetAbsoluteFolderPath(const char *folder, GWEN_BUFFER *tbuf);
+
 /*@}*/ /* defgroup */
 
 

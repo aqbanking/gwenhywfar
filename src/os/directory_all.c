@@ -624,5 +624,40 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
 
 
 
+int GWEN_Directory_GetAbsoluteFolderPath(const char *folder, GWEN_BUFFER *tbuf) {
+  char savedPwd[300];
+  char dataPwd[300];
+
+  /* get current working dir */
+  if (getcwd(savedPwd, sizeof(savedPwd)-1)==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "getcwd(): %s", strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+
+  if (chdir(folder)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "chdir(%s): %s", folder, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+
+  /* get new current working dir */
+  if (getcwd(dataPwd, sizeof(dataPwd)-1)==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "getcwd(): %s", strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+  dataPwd[sizeof(dataPwd)-1]=0;
+
+  /* change back to previous pwd */
+  if (chdir(savedPwd)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "chdir(%s): %s", folder, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+
+  GWEN_Buffer_AppendString(tbuf, dataPwd);
+  return 0;
+}
+
+
+
+
 
 
