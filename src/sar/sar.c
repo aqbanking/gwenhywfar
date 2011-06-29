@@ -728,7 +728,6 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
   switch(st.st_mode & S_IFMT) {
 #ifdef S_IFLNK
   case S_IFLNK:
-    DBG_ERROR(0, "File is a link");
     GWEN_SarFileHeader_SetFileType(fh, GWEN_SarFileHeader_FType_SymLink);
     break;
 #endif
