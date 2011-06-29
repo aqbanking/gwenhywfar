@@ -22,6 +22,47 @@
 
 
 
+int readFile(const char *fname, GWEN_BUFFER *dbuf) {
+  FILE *f;
+
+  f=fopen(fname, "rb");
+  if (f) {
+    while(!feof(f)) {
+      uint32_t l;
+      ssize_t s;
+      char *p;
+
+      GWEN_Buffer_AllocRoom(dbuf, 1024);
+      l=GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf);
+      p=GWEN_Buffer_GetPosPointer(dbuf);
+      s=fread(p, 1, l, f);
+      if (s==0)
+	break;
+      if (s==(ssize_t)-1) {
+	DBG_INFO(GWEN_LOGDOMAIN,
+		 "fread(%s): %s",
+		 fname, strerror(errno));
+	fclose(f);
+	return GWEN_ERROR_IO;
+      }
+
+      GWEN_Buffer_IncrementPos(dbuf, s);
+      GWEN_Buffer_AdjustUsedBytes(dbuf);
+    }
+
+    fclose(f);
+    return 0;
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "fopen(%s): %s",
+	     fname, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+}
+
+
+
 
 
 int main(int argc, char **argv) {
@@ -147,6 +188,18 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "extract")==0) {
     rv=extractArchive(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sign")==0) {
+    rv=signArchive(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "verify")==0) {
+    rv=verifyArchive(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "mkkey")==0) {
+    rv=mkArchiveKey(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "rfi")==0) {
+    rv=releaseFillIn(db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

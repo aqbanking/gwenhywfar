@@ -40,8 +40,7 @@
     <defines>
 
       <define id="GWEN_SAR_FILEHEADER_FLAGS" prefix="GWEN_SAR_FILEHEADER_FLAGS_">
-        <item name="HASH_FOLLOWS"       value="0x00000001" />
-        <item name="SIGNATURE_FOLLOWS"  value="0x00000002" />
+        <item name="SIGNED"    value="0x00000001" />
      </define>
 
     </defines>

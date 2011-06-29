@@ -51,6 +51,7 @@
 
 #define GWEN_SAR_TAG_FILE           0x02
 #define GWEN_SAR_TAG_HASH           0x03
+#define GWEN_SAR_TAG_SIGNATURE      0x04
 
 
 
@@ -67,6 +68,9 @@ struct GWEN_SAR {
   uint64_t archiveSize;
 
   GWEN_SAR_FILEHEADER_LIST *headers;
+
+  uint64_t signaturePos;
+  uint64_t signatureSize;
 
   int openMode;
   int refCount;

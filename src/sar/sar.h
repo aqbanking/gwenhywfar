@@ -29,6 +29,8 @@
 
 #include <gwenhywfar/gwen_sar_fileheader.h>
 #include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/cryptmgr.h>
+#include <gwenhywfar/cryptkey.h>
 
 
 
@@ -42,6 +44,7 @@ void GWEN_Sar_Attach(GWEN_SAR *sr);
 
 GWENHYWFAR_API 
 void GWEN_Sar_free(GWEN_SAR *sr);
+
 
 
 GWENHYWFAR_API 
@@ -71,10 +74,27 @@ GWENHYWFAR_API
 int GWEN_Sar_CheckFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh);
 
 
+GWENHYWFAR_API
+int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm);
+
+GWENHYWFAR_API
+int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm);
+
+
 
 
 GWENHYWFAR_API
 int GWEN_Sar_UnpackArchive(const char *inFile, const char *where);
+
+GWENHYWFAR_API
+int GWEN_Sar_CheckArchive(const char *inFile);
+
+
+GWENHYWFAR_API
+int GWEN_Sar_VerifyArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY *key);
+
+GWENHYWFAR_API
+int GWEN_Sar_SignArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY *key);
 
 
 

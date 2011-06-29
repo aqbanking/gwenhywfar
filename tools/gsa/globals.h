@@ -28,6 +28,8 @@
 
 #include "src/base/i18n_l.h"
 
+int readFile(const char *fname, GWEN_BUFFER *dbuf);
+
 
 int createArchive(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int checkArchive(GWEN_DB_NODE *dbArgs, int argc, char **argv);
@@ -35,6 +37,11 @@ int listArchive(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int add2Archive(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int extractArchive(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
+int mkArchiveKey(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int signArchive(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int verifyArchive(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+int releaseFillIn(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 
 #endif /* GSA_GLOBALS_H */

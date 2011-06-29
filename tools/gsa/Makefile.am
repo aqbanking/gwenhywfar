@@ -13,6 +13,10 @@ gsa_SOURCES=\
   check.c \
   extract.c \
   list.c \
+  mkkey.c \
+  rfi.c \
+  sign.c \
+  verify.c \
   main.c
 
 gsa_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
