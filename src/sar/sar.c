@@ -1161,7 +1161,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
   }
 
   /* copy file if fsize>0 */
-  if (fsize>0) {
+  if (1) {
     GWEN_SYNCIO *sio=NULL;
     uint32_t pid;
 
@@ -1179,66 +1179,39 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
       }
     }
 
-    /* seek to start of data */
-    pos=GWEN_SyncIo_File_Seek(sr->archiveSio, dpos, GWEN_SyncIo_File_Whence_Set);
-    if (pos<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", (int) pos);
-      if (!checkOnly) {
-        GWEN_SyncIo_Disconnect(sio);
-        GWEN_SyncIo_free(sio);
-      }
-      GWEN_MDigest_free(md);
-      return (int) pos;
-    }
-
-    /* start extracting */
-    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-                               GWEN_GUI_PROGRESS_SHOW_ABORT |
-                               GWEN_GUI_PROGRESS_ALLOW_EMBED |
-                               GWEN_GUI_PROGRESS_SHOW_PROGRESS,
-                               I18N("File Operation"),
-                               I18N("Extracting file from archive"),
-                               fsize,
-                               0);
-    bytesDone=0;
-    while(fsize) {
-      uint8_t fbuf[10240];
-      uint64_t bs;
-
-      bs=fsize;
-      if (bs>sizeof(fbuf))
-        bs=sizeof(fbuf);
-
-      /* read from input */
-      rv=GWEN_SyncIo_Read(sr->archiveSio, fbuf, bs);
-      if (rv<0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-        GWEN_Gui_ProgressEnd(pid);
+    if (fsize>0) {
+      /* seek to start of data */
+      pos=GWEN_SyncIo_File_Seek(sr->archiveSio, dpos, GWEN_SyncIo_File_Whence_Set);
+      if (pos<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", (int) pos);
         if (!checkOnly) {
           GWEN_SyncIo_Disconnect(sio);
           GWEN_SyncIo_free(sio);
         }
         GWEN_MDigest_free(md);
-        return rv;
+        return (int) pos;
       }
-      bs=rv;
-
-      /* digest data */
-      rv=GWEN_MDigest_Update(md, fbuf, bs);
-      if (rv<0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-        GWEN_Gui_ProgressEnd(pid);
-        if (!checkOnly) {
-          GWEN_SyncIo_Disconnect(sio);
-          GWEN_SyncIo_free(sio);
-        }
-        GWEN_MDigest_free(md);
-        return rv;
-      }
-
-      if (!checkOnly) {
-        /* write to archive */
-        rv=GWEN_SyncIo_WriteForced(sio, fbuf, bs);
+  
+      /* start extracting */
+      pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+                                 GWEN_GUI_PROGRESS_SHOW_ABORT |
+                                 GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                                 GWEN_GUI_PROGRESS_SHOW_PROGRESS,
+                                 I18N("File Operation"),
+                                 I18N("Extracting file from archive"),
+                                 fsize,
+                                 0);
+      bytesDone=0;
+      while(fsize) {
+        uint8_t fbuf[10240];
+        uint64_t bs;
+  
+        bs=fsize;
+        if (bs>sizeof(fbuf))
+          bs=sizeof(fbuf);
+  
+        /* read from input */
+        rv=GWEN_SyncIo_Read(sr->archiveSio, fbuf, bs);
         if (rv<0) {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
           GWEN_Gui_ProgressEnd(pid);
@@ -1249,38 +1222,67 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
           GWEN_MDigest_free(md);
           return rv;
         }
-      }
-
-      if (bs>fsize) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: bs>fsize (%lu>%lu)",
-                  (unsigned long int)bs, (unsigned long int) fsize);
-        GWEN_Gui_ProgressEnd(pid);
-        if (!checkOnly) {
-          GWEN_SyncIo_Disconnect(sio);
-          GWEN_SyncIo_free(sio);
+        bs=rv;
+  
+        /* digest data */
+        rv=GWEN_MDigest_Update(md, fbuf, bs);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Gui_ProgressEnd(pid);
+          if (!checkOnly) {
+            GWEN_SyncIo_Disconnect(sio);
+            GWEN_SyncIo_free(sio);
+          }
+          GWEN_MDigest_free(md);
+          return rv;
         }
-        GWEN_MDigest_free(md);
-        return rv;
-      }
-
-      bytesDone+=bs;
-      fsize-=bs;
-
-      /* advance progress bar */
-      rv=GWEN_Gui_ProgressAdvance(pid, bytesDone);
-      if (rv<0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-        GWEN_Gui_ProgressEnd(pid);
+  
         if (!checkOnly) {
-          GWEN_SyncIo_Disconnect(sio);
-          GWEN_SyncIo_free(sio);
+          /* write to archive */
+          rv=GWEN_SyncIo_WriteForced(sio, fbuf, bs);
+          if (rv<0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Gui_ProgressEnd(pid);
+            if (!checkOnly) {
+              GWEN_SyncIo_Disconnect(sio);
+              GWEN_SyncIo_free(sio);
+            }
+            GWEN_MDigest_free(md);
+            return rv;
+          }
         }
-        GWEN_MDigest_free(md);
-        return rv;
-      }
-
-    } /* while */
-    GWEN_Gui_ProgressEnd(pid);
+  
+        if (bs>fsize) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: bs>fsize (%lu>%lu)",
+                    (unsigned long int)bs, (unsigned long int) fsize);
+          GWEN_Gui_ProgressEnd(pid);
+          if (!checkOnly) {
+            GWEN_SyncIo_Disconnect(sio);
+            GWEN_SyncIo_free(sio);
+          }
+          GWEN_MDigest_free(md);
+          return rv;
+        }
+  
+        bytesDone+=bs;
+        fsize-=bs;
+  
+        /* advance progress bar */
+        rv=GWEN_Gui_ProgressAdvance(pid, bytesDone);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Gui_ProgressEnd(pid);
+          if (!checkOnly) {
+            GWEN_SyncIo_Disconnect(sio);
+            GWEN_SyncIo_free(sio);
+          }
+          GWEN_MDigest_free(md);
+          return rv;
+        }
+  
+      } /* while */
+      GWEN_Gui_ProgressEnd(pid);
+    }
 
     if (!checkOnly) {
       /* close output file */
@@ -1461,7 +1463,6 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
         GWEN_MDigest_free(md);
         return GWEN_ERROR_IO;
       }
-
       /* owner perms */
       if (perms & GWEN_SYNCIO_FILE_FLAGS_UREAD)
         mode|=S_IRUSR;
@@ -1469,6 +1470,8 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
         mode|=S_IWUSR;
       if (perms & GWEN_SYNCIO_FILE_FLAGS_UEXEC)
         mode|=S_IXUSR;
+
+#if 0 /* CHMOD on symlinks doesn't work */
 
       /* group perms */
 #ifdef S_IRGRP
@@ -1497,6 +1500,8 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
         DBG_WARN(GWEN_LOGDOMAIN, "chmod(%s): %d (%s), ignoring",
                  fname, errno, strerror(errno));
       }
+
+#endif
     }
     GWEN_Buffer_free(mbuf);
   }
