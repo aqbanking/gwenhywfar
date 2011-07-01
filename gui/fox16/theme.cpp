@@ -5,6 +5,10 @@
  * my own (for now: ThemeHeaderItem).
  */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 #include "theme.h"
 
