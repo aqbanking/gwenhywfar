@@ -19,6 +19,7 @@ noinst_HEADERS=\
   fox16_htmlctx.hpp
 
 libgwengui_fox16_la_LIBADD=$(fox_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname)
+libgwengui_fox16_la_LDFLAGS=-no-undefined
 
 libgwengui_fox16_la_SOURCES=\
   cppdialog.cpp \
