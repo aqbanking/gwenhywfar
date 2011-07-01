@@ -399,12 +399,24 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
       else if (*s=='f') {
 	if (!(ignoreFile && strcasecmp(ignoreFile, s+1)==0)) {
 	  GWEN_BUFFER *tbuf;
+	  GWEN_BUFFER *xbuf;
+	  char *p;
+
+	  xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	  GWEN_Buffer_AppendString(xbuf, GWEN_Buffer_GetStart(pbuf)+rpos);
+	  p=GWEN_Buffer_GetStart(xbuf);
+	  while(*p) {
+	    if (*p=='\\')
+	      *p='/';
+	    p++;
+	  }
 
 	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
 	  /* add relative path to line buffer */
 	  GWEN_Buffer_AppendString(tbuf, "F");
-	  rv=GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(pbuf)+rpos, tbuf);
+	  rv=GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(xbuf), tbuf);
+	  GWEN_Buffer_free(xbuf);
 	  if (rv<0) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	    GWEN_Buffer_free(tbuf);
