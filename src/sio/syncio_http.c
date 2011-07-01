@@ -1280,10 +1280,21 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
   int firstRead=1;
   int bodySize=-1;
   int bytesRead=0;
+  uint32_t pid;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
   assert(xio);
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT |
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS,
+                             I18N("Network Operation"),
+                             I18N("Receiving data"),
+                             0,
+                             0);
+
 
   /* recv packet (this reads the HTTP body) */
   for (;;) {
@@ -1293,6 +1304,7 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
     rv=GWEN_Buffer_AllocRoom(buf, 1024);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Gui_ProgressEnd(pid);
       return rv;
     }
 
@@ -1310,6 +1322,7 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
 	    DBG_ERROR(GWEN_LOGDOMAIN,
 		      "EOF met prematurely (%d < %d)",
 		      bytesRead, bodySize);
+            GWEN_Gui_ProgressEnd(pid);
 	    return GWEN_ERROR_EOF;
 	}
       }
@@ -1327,15 +1340,36 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
 
 	db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
 	bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
+
+        if (bodySize!=-1) {
+          int rv2;
+
+          rv2=GWEN_Gui_ProgressSetTotal(pid, bodySize);
+          if (rv2<0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
+            GWEN_Gui_ProgressEnd(pid);
+            return rv2;
+          }
+        }
       }
       bytesRead+=rv;
+
+      /* advance progress bar */
+      rv=GWEN_Gui_ProgressAdvance(pid, bytesRead);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Gui_ProgressEnd(pid);
+        return rv;
+      }
     }
 
     if (bodySize!=-1 && bytesRead>=bodySize) {
       break;
     }
+
     firstRead=0;
   }
+  GWEN_Gui_ProgressEnd(pid);
 
   if (rv<0) {
     if (GWEN_Buffer_GetUsedBytes(buf)) {
@@ -1397,10 +1431,20 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
   int firstRead=1;
   int bodySize=-1;
   int bytesRead=0;
+  uint32_t pid;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
   assert(xio);
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT |
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS,
+                             I18N("Network Operation"),
+                             I18N("Receiving data"),
+                             0,
+                             0);
 
   /* recv packet (this reads the HTTP body) */
   for (;;) {
@@ -1423,6 +1467,7 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
 	    DBG_ERROR(GWEN_LOGDOMAIN,
 		      "EOF met prematurely (%d < %d)",
 		      bytesRead, bodySize);
+            GWEN_Gui_ProgressEnd(pid);
 	    return GWEN_ERROR_EOF;
 	}
       }
@@ -1438,6 +1483,7 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
       rv2=GWEN_SyncIo_WriteForced(sout, rbuf, rv);
       if (rv2<0) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
+        GWEN_Gui_ProgressEnd(pid);
 	return rv2;
       }
       if (firstRead) {
@@ -1445,8 +1491,27 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
 
 	db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
 	bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
+
+        if (bodySize!=-1) {
+          int rv2;
+
+          rv2=GWEN_Gui_ProgressSetTotal(pid, bodySize);
+          if (rv2<0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
+            GWEN_Gui_ProgressEnd(pid);
+            return rv2;
+          }
+        }
       }
       bytesRead+=rv;
+
+      /* advance progress bar */
+      rv=GWEN_Gui_ProgressAdvance(pid, bytesRead);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Gui_ProgressEnd(pid);
+        return rv;
+      }
     }
 
     if (bodySize!=-1 && bytesRead>=bodySize) {
@@ -1454,6 +1519,8 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
     }
     firstRead=0;
   }
+  GWEN_Gui_ProgressEnd(pid);
+
 
   if (rv<0) {
     if (bytesRead) {

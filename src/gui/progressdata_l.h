@@ -50,6 +50,7 @@ const char *GWEN_ProgressData_GetTitle(const GWEN_PROGRESS_DATA *pd);
 const char *GWEN_ProgressData_GetText(const GWEN_PROGRESS_DATA *pd);
 
 uint64_t GWEN_ProgressData_GetTotal(const GWEN_PROGRESS_DATA *pd);
+void GWEN_ProgressData_SetTotal(GWEN_PROGRESS_DATA *pd, uint64_t i);
 
 uint64_t GWEN_ProgressData_GetCurrent(const GWEN_PROGRESS_DATA *pd);
 void GWEN_ProgressData_SetCurrent(GWEN_PROGRESS_DATA *pd, uint64_t i);

@@ -42,6 +42,7 @@ struct GWEN_GUI {
 
   GWEN_GUI_PROGRESS_START_FN progressStartFn;
   GWEN_GUI_PROGRESS_ADVANCE_FN progressAdvanceFn;
+  GWEN_GUI_PROGRESS_SETTOTAL_FN progressSetTotalFn;
   GWEN_GUI_PROGRESS_LOG_FN progressLogFn;
   GWEN_GUI_PROGRESS_END_FN progressEndFn;
 
@@ -91,9 +92,9 @@ struct GWEN_GUI {
 };
 
 
-static int GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
-				     const GWEN_SSLCERTDESCR *cd,
-				     GWEN_SYNCIO *sio, uint32_t guiid);
+static int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
+                                                   const GWEN_SSLCERTDESCR *cd,
+                                                   GWEN_SYNCIO *sio, uint32_t guiid);
 
 
 static void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd);
@@ -106,6 +107,7 @@ static uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
 						uint32_t guiid);
 static int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid);
 static int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress);
+static int GWEN_Gui_Internal_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total);
 
 static int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
 					 uint32_t pid,
@@ -137,10 +139,10 @@ static uint32_t GWEN_Gui_Internal_ShowBox(GWEN_GUI *gui,
 					  uint32_t guiid);
 static void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id);
 
-static int GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui, const char *url,
-				       const char *defaultProto,
-				       int defaultPort,
-				       GWEN_SYNCIO **pSio);
+static int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui, const char *url,
+                                                     const char *defaultProto,
+                                                     int defaultPort,
+                                                     GWEN_SYNCIO **pSio);
 
 
 

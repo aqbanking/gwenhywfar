@@ -118,25 +118,25 @@ int GWEN_Gui_CGui__HashPassword(const char *token,
 				GWEN_BUFFER *buf);
 
 
-int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
-			    const GWEN_SSLCERTDESCR *cd,
-			    GWEN_SYNCIO *sio, uint32_t guiid);
+static int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
+                                                 const GWEN_SSLCERTDESCR *cd,
+                                                 GWEN_SYNCIO *sio, uint32_t guiid);
 
-int GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
-				    const char *token,
-				    const char *pin,
-				    GWEN_GUI_PASSWORD_STATUS status,
-				    uint32_t guiid);
+static int GWENHYWFAR_CB GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
+                                                         const char *token,
+                                                         const char *pin,
+                                                         GWEN_GUI_PASSWORD_STATUS status,
+                                                         uint32_t guiid);
 
-int GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
-			      uint32_t flags,
-			      const char *token,
-			      const char *title,
-			      const char *text,
-			      char *buffer,
-			      int minLen,
-			      int maxLen,
-			      uint32_t guiid);
+static int GWENHYWFAR_CB GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
+                                                   uint32_t flags,
+                                                   const char *token,
+                                                   const char *title,
+                                                   const char *text,
+                                                   char *buffer,
+                                                   int minLen,
+                                                   int maxLen,
+                                                   uint32_t guiid);
 
 
 

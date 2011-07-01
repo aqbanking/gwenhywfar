@@ -1719,7 +1719,11 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 #endif
 
     /* create folder */
+#ifndef OS_WIN32
     rv=mkdir(fname, mode);
+#else
+    rv=mkdir(fname);
+#endif
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN, "mkdir(%s): %d (%s)",
                 fname, errno, strerror(errno));

@@ -109,6 +109,7 @@ void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
   DBG_INFO(GWEN_LOGDOMAIN, "Using own callbacks in gui %p", gui);
   gui->progressStartFn=GWEN_Gui_Internal_ProgressStart;
   gui->progressAdvanceFn=GWEN_Gui_Internal_ProgressAdvance;
+  gui->progressSetTotalFn=GWEN_Gui_Internal_ProgressSetTotal;
   gui->progressLogFn=GWEN_Gui_Internal_ProgressLog;
   gui->progressEndFn=GWEN_Gui_Internal_ProgressEnd;
   gui->inputBoxFn=GWEN_Gui_Internal_InputBox;
@@ -319,6 +320,18 @@ GWEN_Gui_SetProgressAdvanceFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_ADVANCE_FN f){
   assert(gui);
   of=gui->progressAdvanceFn;
   gui->progressAdvanceFn=f;
+  return of;
+}
+
+
+
+GWEN_GUI_PROGRESS_SETTOTAL_FN
+GWEN_Gui_SetProgressSetTotalFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_SETTOTAL_FN f){
+  GWEN_GUI_PROGRESS_SETTOTAL_FN of;
+
+  assert(gui);
+  of=gui->progressSetTotalFn;
+  gui->progressSetTotalFn=f;
   return of;
 }
 
@@ -716,6 +729,16 @@ int GWEN_Gui_ProgressAdvance(uint32_t id, uint32_t progress) {
 
 
 
+int GWEN_Gui_ProgressSetTotal(uint32_t id, uint64_t total) {
+  if (gwenhywfar_gui && gwenhywfar_gui->progressSetTotalFn)
+    return gwenhywfar_gui->progressSetTotalFn(gwenhywfar_gui,
+                                              id,
+                                              total);
+  return 0;
+}
+
+
+
 int GWEN_Gui_ProgressLog(uint32_t id,
 			 GWEN_LOGGER_LEVEL level,
 			 const char *text) {
@@ -986,9 +1009,9 @@ int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t g
 
 
 
-int GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
-			      const GWEN_SSLCERTDESCR *cd,
-			      GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid) {
+int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
+                                            const GWEN_SSLCERTDESCR *cd,
+                                            GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid) {
   int rv;
   int isError;
   const char *hash;
@@ -1565,6 +1588,52 @@ int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t prog
 
 
 
+int GWEN_Gui_Internal_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total) {
+  GWEN_PROGRESS_DATA *pd;
+  int aborted=0;
+
+  if (pid==0) {
+    pid=gui->lastProgressId;
+    if (pid==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Last active progress not available");
+      return GWEN_ERROR_INVALID;
+    }
+  }
+
+  pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
+  if (pd==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Progress by id %08x not found", pid);
+    return GWEN_ERROR_INVALID;
+  }
+  else {
+    GWEN_DIALOG *dlg;
+
+    GWEN_ProgressData_SetTotal(pd, total);
+    GWEN_Gui_Internal_CheckShow(gui, pd);
+
+    dlg=GWEN_ProgressData_GetDialog(pd);
+    if (dlg) {
+      time_t t0;
+      time_t t1;
+
+      t0=GWEN_ProgressData_GetCheckTime(pd);
+      t1=time(0);
+      if (t0!=t1) {
+        GWEN_DlgProgress_TotalChanged(dlg, pd);
+	GWEN_Gui_RunDialog(dlg, 0);
+	GWEN_ProgressData_SetCheckTime(pd, t1);
+      }
+    }
+    aborted=GWEN_ProgressData_GetAborted(pd);
+  }
+
+  if (aborted)
+    return GWEN_ERROR_USER_ABORTED;
+  return 0;
+}
+
+
+
 int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
 				  uint32_t pid,
 				  GWEN_LOGGER_LEVEL level,
@@ -1740,11 +1809,11 @@ void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id) {
 
 
 
-int GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
-				const char *url,
-				const char *defaultProto,
-				int defaultPort,
-				GWEN_SYNCIO **pSio) {
+int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
+                                              const char *url,
+                                              const char *defaultProto,
+                                              int defaultPort,
+                                              GWEN_SYNCIO **pSio) {
   GWEN_URL *u;
   const char *s;
   int port;

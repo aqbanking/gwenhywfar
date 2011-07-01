@@ -590,6 +590,9 @@ uint32_t GWEN_Gui_ProgressStart(uint32_t progressFlags,
 GWENHYWFAR_API 
 int GWEN_Gui_ProgressAdvance(uint32_t id, uint32_t progress);
 
+GWENHYWFAR_API 
+int GWEN_Gui_ProgressSetTotal(uint32_t id, uint64_t total);
+
 /**
  * Adds a log message to the referred process dialog.
  * <p>

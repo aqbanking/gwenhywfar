@@ -152,6 +152,13 @@ void GWEN_ProgressData_SetCurrent(GWEN_PROGRESS_DATA *pd, uint64_t i) {
 
 
 
+void GWEN_ProgressData_SetTotal(GWEN_PROGRESS_DATA *pd, uint64_t i) {
+  assert(pd);
+  pd->total=i;
+}
+
+
+
 GWEN_BUFFER *GWEN_ProgressData_GetLogBuf(const GWEN_PROGRESS_DATA *pd) {
   assert(pd);
   return pd->logBuf;

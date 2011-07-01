@@ -353,6 +353,32 @@ void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
 
 
 
+void GWEN_DlgProgress_TotalChanged(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
+  GWEN_DLGPROGRESS *xdlg;
+  const char *s;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg);
+  assert(xdlg);
+
+  if (pd==xdlg->firstProgress)
+    s="allProgress";
+  else if (pd==xdlg->secondProgress)
+    s="currentProgress";
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Progress %08x is neither primary nor secondary",
+	      GWEN_ProgressData_GetId(pd));
+    return;
+  }
+
+  if (xdlg->wasInit) {
+    GWEN_Dialog_SetIntProperty(dlg, s, GWEN_DialogProperty_MaxValue, 0,
+                               GWEN_ProgressData_GetTotal(pd), 0);
+  }
+}
+
+
+
 void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg) {
   GWEN_DLGPROGRESS *xdlg;
   int i;

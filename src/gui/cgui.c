@@ -686,9 +686,9 @@ int GWEN_Gui_CGui__HashPair(const char *token,
 
 
 
-int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
-			    const GWEN_SSLCERTDESCR *cd,
-			    GWEN_SYNCIO *sio, uint32_t guiid) {
+int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
+                                          const GWEN_SSLCERTDESCR *cd,
+                                          GWEN_SYNCIO *sio, uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   const char *hash;
   const char *status;
@@ -752,11 +752,11 @@ int GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
-				    const char *token,
-				    const char *pin,
-				    GWEN_GUI_PASSWORD_STATUS status,
-				    GWEN_UNUSED uint32_t guiid) {
+int GWENHYWFAR_CB GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
+                                                  const char *token,
+                                                  const char *pin,
+                                                  GWEN_GUI_PASSWORD_STATUS status,
+                                                  GWEN_UNUSED uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
 
   assert(gui);
@@ -790,15 +790,15 @@ int GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
-			      uint32_t flags,
-			      const char *token,
-			      const char *title,
-			      const char *text,
-			      char *buffer,
-			      int minLen,
-			      int maxLen,
-			      uint32_t guiid) {
+int GWENHYWFAR_CB GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
+                                            uint32_t flags,
+                                            const char *token,
+                                            const char *title,
+                                            const char *text,
+                                            char *buffer,
+                                            int minLen,
+                                            int maxLen,
+                                            uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
 
   assert(gui);

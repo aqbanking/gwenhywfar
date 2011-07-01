@@ -449,7 +449,7 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
   for (;;) {
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Info,
-			 I18N("Waiting for response..."));
+			 I18N("Receiving response..."));
     rv=GWEN_HttpSession__RecvPacket(sess, buf);
     if (rv<0 || rv<200 || rv>299) {
       DBG_INFO(GWEN_LOGDOMAIN,
@@ -559,7 +559,7 @@ int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname
 
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Info,
-			 I18N("Waiting for response..."));
+			 I18N("Receiving response..."));
     rv=GWEN_HttpSession__RecvPacketToSio(sess, sio);
     if (rv<0 || rv<200 || rv>299) {
       DBG_INFO(GWEN_LOGDOMAIN,
