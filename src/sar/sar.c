@@ -2278,7 +2278,7 @@ int GWEN_Sar_VerifyArchive(const char *inFile, const char *signer, GWEN_CRYPT_KE
   else {
     GWEN_CRYPTMGR *cm;
 
-    cm=GWEN_CryptMgrKeys_new(NULL, NULL, signer, key, 1);
+    cm=GWEN_CryptMgrKeys_new(NULL, NULL, signer, key, 0);
 
     /* verify */
     rv=GWEN_Sar_Verify(sr, cm);
@@ -2323,7 +2323,7 @@ int GWEN_Sar_SignArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY 
   else {
     GWEN_CRYPTMGR *cm;
 
-    cm=GWEN_CryptMgrKeys_new(NULL, NULL, signer, key, 1);
+    cm=GWEN_CryptMgrKeys_new(NULL, NULL, signer, key, 0);
 
     /* verify */
     rv=GWEN_Sar_Sign(sr, cm);
