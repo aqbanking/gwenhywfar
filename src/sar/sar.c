@@ -614,7 +614,7 @@ int GWEN_Sar_AddAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GW
 
 
 int GWEN_Sar_AddAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_MDIGEST *md) {
-#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L || defined(OS_DARWIN)
   int rv;
   const char *fname;
   GWEN_BUFFER *hbuf;
@@ -1352,7 +1352,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 
 
 int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly) {
-#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED || _POSIX_C_SOURCE >= 200112L
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L || defined(OS_DARWIN)
   int rv;
   const char *fname;
   uint32_t perms;
