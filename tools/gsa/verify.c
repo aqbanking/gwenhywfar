@@ -105,7 +105,7 @@ int verifyArchive(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   keyFile=GWEN_DB_GetCharValue(db, "keyFile", 0, NULL);
   assert(keyFile);
 
-  signer=GWEN_DB_GetCharValue(db, "keyFile", 0, "Signer");
+  signer=GWEN_DB_GetCharValue(db, "Signer", 0, "Signer");
 
   dbKey=GWEN_DB_Group_new("keyfile");
   rv=GWEN_DB_ReadFile(dbKey, keyFile, GWEN_DB_FLAGS_DEFAULT);
