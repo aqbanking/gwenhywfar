@@ -24,7 +24,7 @@ public:
 
 
   virtual int setup() {
-    QWidget *qw;
+    QLabel *qw;
     uint32_t flags;
     GWEN_WIDGET *wParent;
     QSizePolicy::Policy hpolicy=QSizePolicy::Minimum;
@@ -39,6 +39,7 @@ public:
       text=QT4_Gui::extractHtml(s);
 
     qw=new QLabel(text);
+    qw->setWordWrap(true);
 
     /* handle flags */
     if (flags & GWEN_WIDGET_FLAGS_FILLX)
