@@ -1341,22 +1341,14 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
 	db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
 	bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
 
-        if (bodySize!=-1) {
-          int rv2;
-
-          rv2=GWEN_Gui_ProgressSetTotal(pid, bodySize);
-          if (rv2<0) {
-            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
-            GWEN_Gui_ProgressEnd(pid);
-            return rv2;
-          }
-        }
+	if (bodySize!=-1)
+	  GWEN_Gui_ProgressSetTotal(pid, bodySize);
       }
       bytesRead+=rv;
 
       /* advance progress bar */
       rv=GWEN_Gui_ProgressAdvance(pid, bytesRead);
-      if (rv<0) {
+      if (rv==GWEN_ERROR_USER_ABORTED) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_Gui_ProgressEnd(pid);
         return rv;
@@ -1492,22 +1484,14 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
 	db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
 	bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
 
-        if (bodySize!=-1) {
-          int rv2;
-
-          rv2=GWEN_Gui_ProgressSetTotal(pid, bodySize);
-          if (rv2<0) {
-            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv2);
-            GWEN_Gui_ProgressEnd(pid);
-            return rv2;
-          }
-        }
+	if (bodySize!=-1)
+	  GWEN_Gui_ProgressSetTotal(pid, bodySize);
       }
       bytesRead+=rv;
 
       /* advance progress bar */
       rv=GWEN_Gui_ProgressAdvance(pid, bytesRead);
-      if (rv<0) {
+      if (rv==GWEN_ERROR_USER_ABORTED) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_Gui_ProgressEnd(pid);
         return rv;
