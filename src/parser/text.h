@@ -337,6 +337,23 @@ GWENHYWFAR_API
   double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign);
 
 
+/**
+ * This function converts a given text from one charset to another one.
+ * Currently, iconv is used for this conversion.
+ *
+ * @param fromCharset charset of the source text
+ * @param toCharset charset of the source text
+ * @param text text to convert
+ * @param len length of the text (excluding trailing 0)
+ * @param tbuf destination buffer for the converted text
+ */
+GWENHYWFAR_API
+int GWEN_Text_ConvertCharset(const char *fromCharset,
+                             const char *toCharset,
+                             const char *text, int len,
+                             GWEN_BUFFER *tbuf);
+
+
 
 #ifdef __cplusplus
 }
