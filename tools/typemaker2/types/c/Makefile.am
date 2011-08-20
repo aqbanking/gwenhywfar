@@ -5,6 +5,7 @@ dist_typedata_DATA=\
   char.tm2 \
   char_array.tm2 \
   char_ptr.tm2 \
+  double.tm2 \
   int.tm2 \
   int_base.tm2 \
   gwen_buffer.tm2 \
