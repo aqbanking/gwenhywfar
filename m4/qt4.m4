@@ -6,10 +6,8 @@
 AC_DEFUN([AQ_CHECK_QT4],[
 dnl PREREQUISITES:
 dnl   AQ_CHECK_OS must be called before this
-dnl IN: 
-dnl   $1 = "yes" if QT4 is needed, "no" if QT4 is optional
-dnl   You may preset the return variables.
-dnl   All variables which already have a value will not be altered
+dnl IN:
+dnl    nothing
 dnl OUT:
 dnl   Variables:
 dnl     have_qt4 - set to "yes" if QT4 exists
@@ -19,24 +17,6 @@ dnl     qt4_uic - name and path of the uic tool
 dnl     qt4_moc - name and path of the moc tool
 dnl   Defines:
 dnl     HAVE_QT4
-
-lforce="$1"
-
-AC_MSG_CHECKING(if QT4 is allowed)
-AC_ARG_ENABLE(qt4,
-  [  --enable-qt4         enable qt4 (default=yes)],
-  enable_qt4="$enableval",
-  enable_qt4="yes")
-AC_MSG_RESULT($enable_qt4)
-
-if test "$enable_qt4" = "no"; then
-   qt4_libs=""
-   qt4_includes=""
-   qt4_moc=""
-   qt4_uic=""
-   have_qt4="no"
-else
-
 
 dnl paths for qt4 includes
 AC_MSG_CHECKING(for qt4 includes)
@@ -271,28 +251,18 @@ if test -z "$qt4_includes" || \
 	qt4_uic=""
    	qt4_includes=""
    	have_qt4="no"
-   	if test "$lforce" = "yes"; then
-        	AC_MSG_WARN([
- Compilation of QT applications is enabled but I could not find some QT
+        AC_MSG_ERROR([
+ Compilation of QT applications is enabled but I could not find some Qt
  components (see which are missing in messages above).
- If you don't want to compile QT4 applications please use "--disable-qt4".
+ If you don't want to compile Qt4 applications please explicitly specify
+ which GUIs you want to support using "--with-guis".
  ])
-   	else
-        	AC_MSG_WARN([
- QT4 is not explicitly disabled and I could not find some QT4 components 
- (see which are missing in messages above).
- If you don't want to compile QT4 applications please use "--disable-qt4".
- ])
-   	fi
 else
 dnl TODO: AC_TRY_RUN, check whether qversion.h has matching versions
    have_qt4="yes"
-   AC_DEFINE(HAVE_QT4, 1, [whether QT4 is available])
+   AC_DEFINE(HAVE_QT4, 1, [whether Qt4 is available])
 fi
 
-
-dnl end of if "$enable_qt4"
-fi
 
 AS_SCRUB_INCLUDE(qt4_includes)
 AC_SUBST(qt4_libs)
