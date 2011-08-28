@@ -84,6 +84,7 @@ AC_ARG_WITH(qt4-libs,
   [local_qt4_libs="\
         $qt4_dir/lib${libdirsuffix} \
   	$QTDIR/lib${libdirsuffix} \
+	$DEBIAN_MULTIARCH_DIRS \
         /usr/lib/qt4 \
         /usr/local/lib/qt4 \
         /usr/lib/qt4/lib${libdirsuffix} \
