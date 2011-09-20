@@ -2,7 +2,8 @@
 
 <tm2>
   <typedef id="double" lang="c">
-    <aqdb_type>AQDB_DataType_Char</aqdb_type>
+    <aqdb_type>AQDB_DataType_String</aqdb_type>
+    <identifier>double</identifier>
 
     <codedefs>
 
@@ -119,7 +120,6 @@
             
             snprintf(numbuf, sizeof(numbuf)-1, "%f", $(src));
             numbuf[sizeof(numbuf)-1]=0;
-            GWEN_XMLNode_SetCharValue($(db), "$(name)", numbuf);
             $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), numbuf);
           }
         </code>
