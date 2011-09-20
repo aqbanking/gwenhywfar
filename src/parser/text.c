@@ -1965,65 +1965,65 @@ int GWEN_Text_ConvertCharset(const char *fromCharset,
                              const char *toCharset,
                              const char *text, int len,
                              GWEN_BUFFER *tbuf) {
-  assert(len);
-
-  if (fromCharset && *fromCharset && toCharset && *toCharset &&
-      strcasecmp(fromCharset, toCharset)!=0) {
+  if (len) {
+    if (fromCharset && *fromCharset && toCharset && *toCharset &&
+	strcasecmp(fromCharset, toCharset)!=0) {
 #ifndef HAVE_ICONV
-    DBG_INFO(GWEN_LOGDOMAIN,
-             "iconv not available, can not convert from \"%s\" to \"%s\"",
-             fromCharset, toCharset);
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "iconv not available, can not convert from \"%s\" to \"%s\"",
+	       fromCharset, toCharset);
 #else
-    iconv_t ic;
+      iconv_t ic;
 
-    ic=iconv_open(toCharset, fromCharset);
-    if (ic==((iconv_t)-1)) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" or \"%s\" not available",
-		fromCharset, toCharset);
-    }
-    else {
-      char *outbuf;
-      char *pOutbuf;
-      /* Some systems have iconv in libc, some have it in libiconv
-       (OSF/1 and those with the standalone portable GNU libiconv
-       installed). Check which one is available. The define
-       ICONV_CONST will be "" or "const" accordingly. */
-      ICONV_CONST char *pInbuf;
-      size_t inLeft;
-      size_t outLeft;
-      size_t done;
-      size_t space;
-
-      /* convert */
-      pInbuf=(char*)text;
-
-      outLeft=len*2;
-      space=outLeft;
-      outbuf=(char*)malloc(outLeft);
-      assert(outbuf);
-
-      inLeft=len;
-      pInbuf=(char*)text;
-      pOutbuf=outbuf;
-      done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
-      if (done==(size_t)-1) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error in conversion: %s (%d)",
-                  strerror(errno), errno);
-        free(outbuf);
-        iconv_close(ic);
-        return GWEN_ERROR_GENERIC;
+      ic=iconv_open(toCharset, fromCharset);
+      if (ic==((iconv_t)-1)) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" or \"%s\" not available",
+		  fromCharset, toCharset);
       }
+      else {
+	char *outbuf;
+	char *pOutbuf;
+	/* Some systems have iconv in libc, some have it in libiconv
+	 (OSF/1 and those with the standalone portable GNU libiconv
+	 installed). Check which one is available. The define
+	 ICONV_CONST will be "" or "const" accordingly. */
+	ICONV_CONST char *pInbuf;
+	size_t inLeft;
+	size_t outLeft;
+	size_t done;
+	size_t space;
 
-      GWEN_Buffer_AppendBytes(tbuf, outbuf, space-outLeft);
-      free(outbuf);
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Conversion done.");
-      iconv_close(ic);
-      return 0;
-    }
+	/* convert */
+	pInbuf=(char*)text;
+
+	outLeft=len*2;
+	space=outLeft;
+	outbuf=(char*)malloc(outLeft);
+	assert(outbuf);
+
+	inLeft=len;
+	pInbuf=(char*)text;
+	pOutbuf=outbuf;
+	done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
+	if (done==(size_t)-1) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Error in conversion: %s (%d)",
+		    strerror(errno), errno);
+	  free(outbuf);
+	  iconv_close(ic);
+	  return GWEN_ERROR_GENERIC;
+	}
+
+	GWEN_Buffer_AppendBytes(tbuf, outbuf, space-outLeft);
+	free(outbuf);
+	DBG_DEBUG(GWEN_LOGDOMAIN, "Conversion done.");
+	iconv_close(ic);
+	return 0;
+      }
 #endif
-  }
+    }
 
-  GWEN_Buffer_AppendBytes(tbuf, text, len);
+    GWEN_Buffer_AppendBytes(tbuf, text, len);
+  }
   return 0;
 }
 
