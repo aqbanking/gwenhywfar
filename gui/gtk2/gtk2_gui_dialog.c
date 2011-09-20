@@ -221,7 +221,7 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
     g_list_free(tll);
 
     if (topLevel) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Found active window found [%s]",
+      DBG_ERROR(GWEN_LOGDOMAIN, "Found active window [%s]",
                 gtk_window_get_title(topLevel));
       gtk_window_set_transient_for(gw, topLevel);
     }
