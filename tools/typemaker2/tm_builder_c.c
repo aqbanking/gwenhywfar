@@ -384,7 +384,15 @@ static int _buildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	    (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_CONST))
 	  GWEN_Buffer_AppendString(tbuf, "const ");
 
-	s=Typemaker2_Type_GetIdentifier(mty);
+        s=Typemaker2_Type_GetIdentifier(mty);
+	if (!(s && *s)) {
+	  const char *xx;
+
+	  xx=Typemaker2_Member_GetName(tm);
+	  DBG_ERROR(0, "Member [%s] has no identifier", xx?xx:"(unnamed)");
+	  GWEN_Buffer_free(tbuf);
+	  return GWEN_ERROR_BAD_DATA;
+        }
 	GWEN_Buffer_AppendString(tbuf, s);
 	GWEN_Buffer_AppendString(tbuf, " ");
 
