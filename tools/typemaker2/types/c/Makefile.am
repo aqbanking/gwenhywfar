@@ -17,7 +17,8 @@ dist_typedata_DATA=\
   struct_base.tm2 \
   uint32_t.tm2 \
   uint64_t.tm2 \
-  tree_base.tm2
+  tree_base.tm2 \
+  idmap_base.tm2
 
 
 sources:

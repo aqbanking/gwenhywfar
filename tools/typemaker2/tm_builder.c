@@ -902,6 +902,48 @@ int Typemaker2_Builder_WriteTypedefFile_Tree(TYPEMAKER2_BUILDER *tb,
 
 
 
+int Typemaker2_Builder_WriteTypedefFile_IdMap(TYPEMAKER2_BUILDER *tb,
+					      TYPEMAKER2_TYPE *ty,
+					      const char *fileName) {
+  FILE *f;
+
+  f=fopen(fileName, "w");
+  if (f==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s): %s (%d)",
+	      fileName,
+	      strerror(errno),
+	      errno);
+    return GWEN_ERROR_IO;
+  }
+
+  fprintf(f, "<?xml?>\n");
+  fprintf(f, "\n");
+  fprintf(f, "<tm2>\n");
+
+  fprintf(f, "  <typedef id=\"%s_IDMAP\" type=\"pointer\" lang=\"c\" extends=\"idmap_base\" "
+	  "basetype=\"%s\">\n",
+	  Typemaker2_Type_GetName(ty),
+	  Typemaker2_Type_GetName(ty));
+
+  fprintf(f, "    <identifier>%s_IDMAP</identifier>\n", Typemaker2_Type_GetName(ty));
+  fprintf(f, "    <prefix>%s_IdMap</prefix>\n", Typemaker2_Type_GetPrefix(ty));
+
+  fprintf(f, "  </typedef>\n");
+  fprintf(f, "</tm2>\n");
+
+  if (fclose(f)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "fclose(%s): %s (%d)",
+	      fileName,
+	      strerror(errno),
+	      errno);
+    return GWEN_ERROR_IO;
+  }
+
+  return 0;
+}
+
+
+
 
 
 int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
@@ -1269,6 +1311,38 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "_tree.tm2");
     fname=GWEN_Buffer_GetStart(tbuf);
     rv=Typemaker2_Builder_WriteTypedefFile_Tree(tb, ty, fname);
+    GWEN_Buffer_free(tbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* write typedef file for idmap */
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_IDMAP) {
+    const char *s;
+    char *t;
+    GWEN_BUFFER *tbuf;
+
+    s=Typemaker2_Type_GetName(ty);
+    if (s==NULL || *s==0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
+	return GWEN_ERROR_BAD_DATA;
+    }
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (tb->destFolder) {
+      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+    }
+    GWEN_Buffer_AppendString(tbuf, s);
+    t=GWEN_Buffer_GetStart(tbuf);
+    while(*t) {
+      *t=tolower(*t);
+      t++;
+    }
+    GWEN_Buffer_AppendString(tbuf, "_idmap.tm2");
+    fname=GWEN_Buffer_GetStart(tbuf);
+    rv=Typemaker2_Builder_WriteTypedefFile_IdMap(tb, ty, fname);
     GWEN_Buffer_free(tbuf);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

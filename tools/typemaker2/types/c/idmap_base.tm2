@@ -1,0 +1,44 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="idmap_base" type="pointer" lang="c" >
+
+    <codedefs>
+
+      <codedef id="construct">
+        <code>
+          $(dst)=$(preset);
+        </code>
+      </codedef>
+
+      <codedef id="destruct">
+        <code>
+          $(member_prefix)_free($(src));
+        </code>
+      </codedef>
+
+      <codedef id="assign">
+        <code>
+          $(dst)=$(src);
+        </code>
+      </codedef>
+
+      <codedef id="dup">
+        <code>
+        <!-- $(dst)=$(member_prefix)_dup($(src)); TODO -->
+        </code>
+      </codedef>
+
+    </codedefs>
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <preset>NULL</preset>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>

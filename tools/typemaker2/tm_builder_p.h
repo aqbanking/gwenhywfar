@@ -80,6 +80,15 @@ int Typemaker2_Builder_WriteTypedefFile_List2(TYPEMAKER2_BUILDER *tb,
 					      TYPEMAKER2_TYPE *ty,
 					      const char *fileName);
 
+int Typemaker2_Builder_WriteTypedefFile_Tree(TYPEMAKER2_BUILDER *tb,
+					     TYPEMAKER2_TYPE *ty,
+                                             const char *fileName);
+
+int Typemaker2_Builder_WriteTypedefFile_IdMap(TYPEMAKER2_BUILDER *tb,
+                                              TYPEMAKER2_TYPE *ty,
+                                              const char *fileName);
+
+
 int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
