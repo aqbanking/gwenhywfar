@@ -469,7 +469,9 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   gnutls_transport_set_ptr(xio->session, (gnutls_transport_ptr_t)sio);
   gnutls_transport_set_push_function(xio->session, GWEN_SyncIo_Tls_Push);
   gnutls_transport_set_pull_function(xio->session, GWEN_SyncIo_Tls_Pull);
+#if GNUTLS_VERSION_NUMBER < 0x030003
   gnutls_transport_set_lowat(xio->session, 0);
+#endif
 
   xio->prepared=1;
 
