@@ -666,7 +666,7 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
         GWEN_Buffer_AppendString(tbuf, "p_struct->");
         GWEN_Buffer_AppendByte(tbuf, tolower(*fname));
         GWEN_Buffer_AppendString(tbuf, fname+1);
-        GWEN_Buffer_AppendString(tbuf, "=");
+        GWEN_Buffer_AppendString(tbuf, "Fn=");
         GWEN_Buffer_AppendString(tbuf, fpreset);
         GWEN_Buffer_AppendString(tbuf, ";\n");
       }
