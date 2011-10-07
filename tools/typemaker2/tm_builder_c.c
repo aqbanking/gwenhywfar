@@ -540,6 +540,7 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_MEMBER_LIST *tml;
   uint32_t flags;
   TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_VIRTUALFN_LIST *tvfl;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -645,6 +646,31 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendString(tbuf, "\n");
 
       tm=Typemaker2_Member_List_Next(tm);
+    }
+  }
+
+  tvfl=Typemaker2_Type_GetVirtualFns(ty);
+  if (tvfl) {
+    TYPEMAKER2_VIRTUALFN *tvf;
+
+    GWEN_Buffer_AppendString(tbuf, "  /* virtual functions */\n");
+    tvf=Typemaker2_VirtualFn_List_First(tvfl);
+    while(tvf) {
+      const char *fname;
+      const char *fpreset;
+
+      fname=Typemaker2_VirtualFn_GetName(tvf);
+      fpreset=Typemaker2_VirtualFn_GetPreset(tvf);
+      if (fname && *fname && fpreset && *fpreset) {
+        GWEN_Buffer_AppendString(tbuf, "  ");
+        GWEN_Buffer_AppendString(tbuf, "p_struct->");
+        GWEN_Buffer_AppendByte(tbuf, tolower(*fname));
+        GWEN_Buffer_AppendString(tbuf, fname+1);
+        GWEN_Buffer_AppendString(tbuf, "=");
+        GWEN_Buffer_AppendString(tbuf, fpreset);
+        GWEN_Buffer_AppendString(tbuf, ";\n");
+      }
+      tvf=Typemaker2_VirtualFn_List_Next(tvf);
     }
   }
 

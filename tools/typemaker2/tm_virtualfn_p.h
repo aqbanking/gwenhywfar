@@ -26,6 +26,7 @@ struct TYPEMAKER2_VIRTUALFN {
 
   char *returnType;
   char *defaultReturnValue;
+  char *preset;
 
   GWEN_STRINGLIST *paramTypes;
 

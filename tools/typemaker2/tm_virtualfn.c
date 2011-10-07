@@ -45,6 +45,7 @@ void Typemaker2_VirtualFn_free(TYPEMAKER2_VIRTUALFN *vf) {
     if (vf->refCount==1) {
       GWEN_LIST_FINI(TYPEMAKER2_VIRTUALFN, vf);
       GWEN_StringList_free(vf->paramTypes);
+      free(vf->preset);
       free(vf->name);
       free(vf->returnType);
       free(vf->defaultReturnValue);
@@ -104,6 +105,10 @@ int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
   s=GWEN_XMLNode_GetCharValue(node, "defaultReturnValue", NULL);
   if (s && *s)
     Typemaker2_VirtualFn_SetDefaultReturnValue(vf, s);
+
+  s=GWEN_XMLNode_GetCharValue(node, "preset", NULL);
+  if (s && *s)
+    Typemaker2_VirtualFn_SetPreset(vf, s);
 
   /* read return type */
   s=GWEN_XMLNode_GetCharValue(node, "returnType", NULL);
@@ -273,6 +278,23 @@ GWEN_STRINGLIST *Typemaker2_VirtualFn_GetParamTypes(const TYPEMAKER2_VIRTUALFN *
 
 
 
+const char *Typemaker2_VirtualFn_GetPreset(const TYPEMAKER2_VIRTUALFN *vf) {
+  assert(vf);
+  assert(vf->refCount);
+
+  return vf->preset;
+}
+
+
+
+void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+  assert(vf);
+  assert(vf->refCount);
+
+  free(vf->preset);
+  if (s) vf->preset=strdup(s);
+  else vf->preset=NULL;
+}
 
 
 

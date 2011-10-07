@@ -46,6 +46,9 @@ void Typemaker2_VirtualFn_SetAccess(TYPEMAKER2_VIRTUALFN *vf, int i);
 const char *Typemaker2_VirtualFn_GetReturnType(const TYPEMAKER2_VIRTUALFN *vf);
 void Typemaker2_VirtualFn_SetReturnType(TYPEMAKER2_VIRTUALFN *vf, const char *s);
 
+const char *Typemaker2_VirtualFn_GetPreset(const TYPEMAKER2_VIRTUALFN *vf);
+void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s);
+
 const char *Typemaker2_VirtualFn_GetDefaultReturnValue(const TYPEMAKER2_VIRTUALFN *vf);
 void Typemaker2_VirtualFn_SetDefaultReturnValue(TYPEMAKER2_VIRTUALFN *vf, const char *s);
 
