@@ -203,7 +203,7 @@ int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
           break;
 	}
       }
-      break;
+      /*break; <- this is wrong here, isn't it? */
     }
 
     return GWEN_DialogSortDirection_None;
