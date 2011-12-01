@@ -156,6 +156,9 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_GUI, GWENHYWFAR_API)
 #define GWEN_GUI_INPUT_FLAGS_ALLOW_DEFAULT  0x00000010
 /** The input is a TAN (this is used by @ref GWEN_Gui_GetPassword) */
 #define GWEN_GUI_INPUT_FLAGS_TAN            0x00000020
+/** The input contains optical data encapsuled in "$OBEGIN$" and "$OEND$" (this is used by @ref GWEN_Gui_GetPassword) */
+#define GWEN_GUI_INPUT_FLAGS_OPTICAL        0x00000040
+
 /*@}*/
 
 
