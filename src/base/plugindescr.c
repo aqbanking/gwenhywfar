@@ -395,11 +395,10 @@ GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd){
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
-  int rv;
 
   pl=GWEN_PluginDescription_List2_new();
 
-  rv=GWEN_LoadPluginDescrsByType(path, 0, pl);
+  GWEN_LoadPluginDescrsByType(path, 0, pl);
   if (GWEN_PluginDescription_List2_GetSize(pl)==0) {
     GWEN_PluginDescription_List2_free(pl);
     return 0;

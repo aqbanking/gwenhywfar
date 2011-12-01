@@ -364,9 +364,6 @@ GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n){
 
 
 GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n){
-  GWEN_DB_NODE *og;
-
-  og=n;
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Group) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
@@ -404,9 +401,6 @@ GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n){
 
 
 GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n){
-  GWEN_DB_NODE *og;
-
-  og=n;
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Var) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a variable");

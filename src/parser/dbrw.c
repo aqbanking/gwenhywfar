@@ -72,10 +72,8 @@ int GWEN_DB_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
 
 int GWEN_DB_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
   while(*src) {
-    const char *srcBak;
     int charHandled;
 
-    srcBak=src;
     charHandled=0;
     if (*src=='&') {
       if (strlen(src)>2) {

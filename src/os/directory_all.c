@@ -70,10 +70,8 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
   int withDrive;
   GWEN_BUFFER *buf;
   GWEN_BUFFER *ebuf = 0;
-  const char *origEntry;
 
   withDrive=0;
-  origEntry=entry;
 
 #ifdef OS_WIN32
   if (entry && isalpha(*entry)) {
@@ -242,10 +240,8 @@ int GWEN_Directory_GetPath(const char *path,
 
 int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
                              int transformDriveElement){
-  int len;
   const char *p;
 
-  len=strlen(path);
   p=path;
 
   /* handle drive letters (only check for normal slashes here) */
