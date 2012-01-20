@@ -11,6 +11,9 @@
 
 #include <qapplication.h>
 
+#include <unistd.h>
+
+
 
 int test1(int argc, char **argv) {
   QApplication a(argc, argv);
