@@ -95,6 +95,7 @@ GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(HANDLE hd, const char *hname) {
 
   xio->path=strdup(hname);
   xio->fh=hd;
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
 
   GWEN_SyncIo_SetConnectFn(sio, GWEN_SyncIo_File_Connect);
   GWEN_SyncIo_SetDisconnectFn(sio, GWEN_SyncIo_File_Disconnect);
@@ -215,6 +216,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio) {
   }
 
   xio->fh=fh;
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
   return 0;
 }
 
