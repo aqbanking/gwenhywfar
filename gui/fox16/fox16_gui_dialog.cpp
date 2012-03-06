@@ -283,7 +283,9 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 	FXint lo, hi;
 
 	f->getRange(lo, hi);
-        lo=value;
+        hi=value;
+        if (hi<lo)
+	  hi=lo;
 	f->setRange(lo, hi);
 	return 0;
       }
