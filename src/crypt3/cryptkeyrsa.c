@@ -261,11 +261,11 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
 
 
 
-int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
-			   const uint8_t *pInData,
-			   uint32_t inLen,
-			   uint8_t *pSignatureData,
-			   uint32_t *pSignatureLen) {
+GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
+                                         const uint8_t *pInData,
+                                         uint32_t inLen,
+                                         uint8_t *pSignatureData,
+					 uint32_t *pSignatureLen) {
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
@@ -332,11 +332,11 @@ int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
 
 
 
-int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
-			     const uint8_t *pInData,
-			     uint32_t inLen,
-			     const uint8_t *pSignatureData,
-			     uint32_t signatureLen) {
+GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
+					   const uint8_t *pInData,
+					   uint32_t inLen,
+					   const uint8_t *pSignatureData,
+					   uint32_t signatureLen) {
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
@@ -412,11 +412,11 @@ int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
 
 
 
-int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
-			       const uint8_t *pInData,
-			       uint32_t inLen,
-			       uint8_t *pOutData,
-			       uint32_t *pOutLen) {
+GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
+					     const uint8_t *pInData,
+					     uint32_t inLen,
+					     uint8_t *pOutData,
+					     uint32_t *pOutLen) {
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
@@ -471,11 +471,11 @@ int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
 
 
 
-int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
-			       const uint8_t *pInData,
-			       uint32_t inLen,
-			       uint8_t *pOutData,
-			       uint32_t *pOutLen) {
+GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
+					     const uint8_t *pInData,
+					     uint32_t inLen,
+					     uint8_t *pOutData,
+					     uint32_t *pOutLen) {
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
