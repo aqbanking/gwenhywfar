@@ -18,6 +18,7 @@ iheader_HEADERS=\
   cryptkey.h \
   cryptkey_be.h \
   cryptkeyrsa.h \
+  cryptkeyrsa2.h \
   cryptkeysym.h \
   mdigest.h \
   mdigest_be.h \
@@ -33,6 +34,7 @@ noinst_HEADERS=\
   cryptkey_l.h \
   cryptkey_p.h \
   cryptkeyrsa_p.h \
+  cryptkeyrsa2_p.h \
   cryptkeysym_p.h \
   mdigest_p.h \
   mdigestgc_p.h \
@@ -45,6 +47,7 @@ libcrypt3_la_SOURCES=\
   paddalgo.c \
   cryptkey.c \
   cryptkeyrsa.c \
+  cryptkeyrsa2.c \
   cryptkeysym.c \
   mdigest.c \
   mdigestgc.c \

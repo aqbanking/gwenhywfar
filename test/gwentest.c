@@ -76,6 +76,7 @@
 
 
 #include <gwenhywfar/cryptkeyrsa.h>
+#include <gwenhywfar/cryptkeyrsa2.h>
 #include <gwenhywfar/cryptmgrkeys.h>
 
 
@@ -2605,13 +2606,13 @@ int testCrypt3Rsa2(int argc, char **argv) {
     "This is the test data           "
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
-  uint8_t buffer[256];
+  uint8_t buffer[512];
   uint32_t len;
-  uint8_t buffer2[256];
+  uint8_t buffer2[512];
   uint32_t len2;
 
   fprintf(stderr, "Generating key pair...\n");
-  rv=GWEN_Crypt_KeyRsa_GeneratePair(768, 1, &pubKey, &secretKey);
+  rv=GWEN_Crypt_KeyRsa_GeneratePair(128, 1, &pubKey, &secretKey);
   if (rv) {
     fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
     return 2;
@@ -2635,6 +2636,113 @@ int testCrypt3Rsa2(int argc, char **argv) {
   GWEN_Crypt_Key_free(secretKey);
 
   pubKey=GWEN_Crypt_KeyRsa_fromDb(dbPubKey);
+  if (pubKey==NULL) {
+    fprintf(stderr, "ERROR: Could not read public key from db\n");
+    GWEN_DB_Dump(dbPubKey, 2);
+    return 2;
+  }
+
+  secretKey=GWEN_Crypt_KeyRsa2_fromDb(dbSecretKey);
+  if (secretKey==NULL) {
+    fprintf(stderr, "ERROR: Could not read secret key from db\n");
+    GWEN_DB_Dump(dbSecretKey, 2);
+    return 2;
+  }
+
+  fprintf(stderr, "Signing message...\n");
+  len=sizeof(buffer);
+  rv=GWEN_Crypt_Key_Sign(secretKey, testData, sizeof(testData)-1, buffer, &len);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not sign (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Signing message... done\n");
+
+  rv=GWEN_Crypt_Key_Verify(pubKey, testData, sizeof(testData)-1, buffer, len);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
+    GWEN_Text_DumpString((const char*)buffer, len, 1);
+    return 2;
+  }
+
+  fprintf(stderr, "Signature is valid.\n");
+
+
+  fprintf(stderr, "Encrypting message...\n");
+  len=sizeof(buffer);
+  rv=GWEN_Crypt_Key_Encipher(pubKey, testData, sizeof(testData)-1, buffer, &len);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not encipher (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Encrypting message... done (%d)\n", len);
+
+  fprintf(stderr, "Decrypting message...\n");
+  len2=sizeof(buffer2);
+  rv=GWEN_Crypt_Key_Decipher(secretKey, buffer, len, buffer2, &len2);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not decipher (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Decrypting message... done\n");
+
+  if ((sizeof(testData)-1)!=len2) {
+    fprintf(stderr, "Length of deciphered message does not match that of src (%d!=%d)\n",
+	    len, len2);
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
+    return 2;
+  }
+  if (memcmp(testData, buffer2, len2)) {
+    fprintf(stderr, "Deciphered message does not match src\n");
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+int testCrypt3Rsa3(int argc, char **argv) {
+  int rv;
+  GWEN_CRYPT_KEY *pubKey;
+  GWEN_CRYPT_KEY *secretKey;
+  GWEN_DB_NODE *dbPubKey;
+  GWEN_DB_NODE *dbSecretKey;
+  uint8_t testData[]=
+    "This is the test data           "
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
+  uint8_t buffer[512];
+  uint32_t len;
+  uint8_t buffer2[512];
+  uint32_t len2;
+
+  fprintf(stderr, "Generating key pair (using method 2)...\n");
+  rv=GWEN_Crypt_KeyRsa2_GeneratePair(128, 1, &pubKey, &secretKey);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "Generating key pair... done.\n");
+
+  dbPubKey=GWEN_DB_Group_new("PublicKey");
+  rv=GWEN_Crypt_KeyRsa2_toDb(pubKey, dbPubKey, 1);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not store public key (%d).\n", rv);
+    return 2;
+  }
+  GWEN_Crypt_Key_free(pubKey);
+
+  dbSecretKey=GWEN_DB_Group_new("SecretKey");
+  rv=GWEN_Crypt_KeyRsa2_toDb(secretKey, dbSecretKey, 0);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not store secret key (%d).\n", rv);
+    return 2;
+  }
+  GWEN_Crypt_Key_free(secretKey);
+
+  pubKey=GWEN_Crypt_KeyRsa2_fromDb(dbPubKey);
   if (pubKey==NULL) {
     fprintf(stderr, "ERROR: Could not read public key from db\n");
     GWEN_DB_Dump(dbPubKey, 2);
@@ -4742,6 +4850,8 @@ int main(int argc, char **argv) {
     rv=testCrypt3Rsa(argc, argv);
   else if (strcasecmp(argv[1], "3rsa2")==0)
     rv=testCrypt3Rsa2(argc, argv);
+  else if (strcasecmp(argv[1], "3rsa3")==0)
+    rv=testCrypt3Rsa3(argc, argv);
   else if (strcasecmp(argv[1], "gtls")==0)
     rv=testGnutls(argc, argv);
   else if (strcasecmp(argv[1], "httpsession")==0)
