@@ -535,7 +535,7 @@ int GWEN_Crypt_KeyRsa2__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t
   const void *p;
   unsigned int len;
   gcry_mpi_t mpi=NULL;
-  size_t nscanned;
+  size_t nscanned=0;
 
   /* read n */
   p=GWEN_DB_GetBinValue(db, dbName, 0, NULL, 0, &len);
@@ -552,12 +552,10 @@ int GWEN_Crypt_KeyRsa2__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t
     return GWEN_ERROR_GENERIC;
   }
   if (nscanned<1) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Empty %s (%d)", dbName, (int)nscanned);
-#if 0
-    if (mpi)
-      gcry_mpi_release(mpi);
-    return GWEN_ERROR_BAD_DATA;
-#endif
+    if (mpi==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Empty %s (%d)", dbName, (int)nscanned);
+      return GWEN_ERROR_BAD_DATA;
+    }
   }
   *pMpi=mpi;
 
@@ -622,13 +620,10 @@ void GWEN_Crypt_KeyRsa2_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa2_fromDb(GWEN_DB_NODE *db) {
-  gcry_error_t err;
-  gcry_ac_data_t data;
   int rv;
   int isPublic;
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_RSA2 *xk;
-  unsigned int nbits;
   GWEN_DB_NODE *dbR;
 
   dbR=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "rsa");
@@ -646,7 +641,6 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa2_fromDb(GWEN_DB_NODE *db) {
     GWEN_Crypt_Key_free(k);
     return NULL;
   }
-  nbits=GWEN_Crypt_Key_GetKeySize(k)*8;
 
   /* extend key */
   GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_RSA2, xk);
@@ -687,11 +681,6 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa2_fromDb(GWEN_DB_NODE *db) {
   }
 
 
-#if 0
-  DBG_ERROR(0, "fromDb:");
-  dumpKeyData(data);
-#endif
-
   return k;
 }
 
@@ -701,7 +690,6 @@ int GWEN_Crypt_KeyRsa2_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub) 
   GWEN_CRYPT_KEY_RSA2 *xk;
   GWEN_DB_NODE *dbR;
   int rv;
-  gcry_ac_data_t ds;
 
   assert(k);
   xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA2, k);
@@ -772,6 +760,9 @@ int GWEN_Crypt_KeyRsa2_GetModulus(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint
   rv=GWEN_Crypt_KeyRsa2__MpiToBuffer(xk->modulus, buffer, *pBufLen);
   if (rv<1) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    if (rv<0)
+      return rv;
+    return GWEN_ERROR_GENERIC;
   }
 
   *pBufLen=rv;
@@ -791,6 +782,9 @@ int GWEN_Crypt_KeyRsa2_GetExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uin
   rv=GWEN_Crypt_KeyRsa2__MpiToBuffer(xk->pubExponent, buffer, *pBufLen);
   if (rv<1) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    if (rv<0)
+      return rv;
+    return GWEN_ERROR_GENERIC;
   }
 
   *pBufLen=rv;
@@ -810,6 +804,9 @@ int GWEN_Crypt_KeyRsa2_GetSecretExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffe
   rv=GWEN_Crypt_KeyRsa2__MpiToBuffer(xk->privExponent, buffer, *pBufLen);
   if (rv<1) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    if (rv<0)
+      return rv;
+    return GWEN_ERROR_GENERIC;
   }
 
   *pBufLen=rv;
