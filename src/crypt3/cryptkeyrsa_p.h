@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
-    begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    begin       : Mon May 07 2012
+    copyright   : (C) 2012 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,42 +20,45 @@
 typedef struct GWEN_CRYPT_KEY_RSA GWEN_CRYPT_KEY_RSA;
 struct GWEN_CRYPT_KEY_RSA {
   int pub;
-  int algoValid;
-  gcry_ac_handle_t algoHandle;
-  int keyValid;
-  gcry_ac_key_t key;
+  gcry_mpi_t modulus;
+  gcry_mpi_t pubExponent;
+  gcry_mpi_t privExponent;
+
   uint32_t flags;
 };
 
 static GWENHYWFAR_CB void GWEN_Crypt_KeyRsa_freeData(void *bp, void *p);
 
-static int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db,
-				      const char *dbName,
-				      gcry_ac_data_t ds,
-				      const char *dsName);
-static int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db,
-				       const char *dbName,
-				       gcry_ac_data_t ds,
-				       const char *dsName);
-static int GWEN_Crypt_KeyRsa__DataFromDb(GWEN_DB_NODE *db, gcry_ac_data_t *pData,
-					 int pub, unsigned int nbits);
 
-static int GWEN_Crypt_KeyRsa__GetNamedElement(const GWEN_CRYPT_KEY *k,
-					      const char *name,
-					      uint8_t *buffer,
-					      uint32_t *pBufLen);
+static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name, gcry_mpi_t *pMpi);
+static int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t *pMpi);
+static int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, const gcry_mpi_t mpi);
+static int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *buf, size_t nbytes);
 
+static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
+                                                const uint8_t *pInData,
+                                                uint32_t inLen,
+                                                uint8_t *pSignatureData,
+                                                uint32_t *pSignatureLen);
 
-static int GWEN_Crypt_KeyRsa__sKeyElementToData(gcry_ac_data_t data,
-						gcry_sexp_t sx,
-						const char *name);
+static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
+                                                  const uint8_t *pInData,
+                                                  uint32_t inLen,
+                                                  const uint8_t *pSignatureData,
+                                                  uint32_t signatureLen);
 
-static int GWEN_Crypt_KeyRsa__sKeyToDataPubKey(gcry_ac_data_t data,
-					       gcry_sexp_t sx);
+static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
+                                                    const uint8_t *pInData,
+                                                    uint32_t inLen,
+                                                    uint8_t *pOutData,
+                                                    uint32_t *pOutLen);
 
+static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
+                                                    const uint8_t *pInData,
+                                                    uint32_t inLen,
+                                                    uint8_t *pOutData,
+                                                    uint32_t *pOutLen);
 
-static int GWEN_Crypt_KeyRsa__sKeyToDataPrivKey(gcry_ac_data_t data,
-						gcry_sexp_t sx);
 
 
 #endif

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
-    begin       : Wed Mar 16 2005
-    copyright   : (C) 2005 by Martin Preuss
+    begin       : Mon May 07 2012
+    copyright   : (C) 2012 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,6 +12,7 @@
 #define GWEN_CRYPT_KEY_RSA_H
 
 #include "cryptkey.h"
+#include <gwenhywfar/cryptkeyrsa.h>
 
 
 /**
@@ -40,9 +38,9 @@ extern "C" {
  *  library choose the exponent by its own
  */
 GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes,
-						  int use65537e,
-						  GWEN_CRYPT_KEY **pPubKey,
-						  GWEN_CRYPT_KEY **pSecretKey);
+                                                  int use65537e,
+                                                  GWEN_CRYPT_KEY **pPubKey,
+                                                  GWEN_CRYPT_KEY **pSecretKey);
 
 
 /**
@@ -55,8 +53,8 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes,
  *  library choose the exponent by its own
  */
 GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
-						   GWEN_CRYPT_KEY **pPubKey,
-						   GWEN_CRYPT_KEY **pSecretKey);
+                                                   GWEN_CRYPT_KEY **pPubKey,
+                                                   GWEN_CRYPT_KEY **pSecretKey);
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k);
 
@@ -68,26 +66,23 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GetExponent(const GWEN_CRYPT_KEY *k, uint8_
 GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GetSecretExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen);
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
-							    const uint8_t *pModulus,
-							    uint32_t lModulus,
-							    const uint8_t *pExponent,
-							    uint32_t lExponent);
+                                                            const uint8_t *pModulus,
+                                                            uint32_t lModulus,
+                                                            const uint8_t *pExponent,
+                                                            uint32_t lExponent);
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModPrivExp(unsigned int nbytes,
-								const uint8_t *pModulus,
-								uint32_t lModulus,
-								const uint8_t *pExponent,
-								uint32_t lExponent,
-								const uint8_t *pPrivExponent,
-								uint32_t lPrivExponent);
+                                                                const uint8_t *pModulus,
+								 uint32_t lModulus,
+                                                                const uint8_t *pExponent,
+                                                                uint32_t lExponent,
+                                                                const uint8_t *pPrivExponent,
+                                                                uint32_t lPrivExponent);
 
 GWENHYWFAR_API uint32_t GWEN_Crypt_KeyRsa_GetFlags(const GWEN_CRYPT_KEY *k);
-GWENHYWFAR_API void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k,
-                                               uint32_t fl);
-GWENHYWFAR_API void GWEN_Crypt_KeyRsa_AddFlags(GWEN_CRYPT_KEY *k,
-                                               uint32_t fl);
-GWENHYWFAR_API void GWEN_Crypt_KeyRsa_SubFlags(GWEN_CRYPT_KEY *k,
-					       uint32_t fl);
+GWENHYWFAR_API void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k, uint32_t fl);
+GWENHYWFAR_API void GWEN_Crypt_KeyRsa_AddFlags(GWEN_CRYPT_KEY *k, uint32_t fl);
+GWENHYWFAR_API void GWEN_Crypt_KeyRsa_SubFlags(GWEN_CRYPT_KEY *k, uint32_t fl);
 
 #ifdef __cplusplus
 }

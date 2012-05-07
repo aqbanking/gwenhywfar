@@ -76,7 +76,6 @@
 
 
 #include <gwenhywfar/cryptkeyrsa.h>
-#include <gwenhywfar/cryptkeyrsa2.h>
 #include <gwenhywfar/cryptmgrkeys.h>
 
 
@@ -2642,7 +2641,7 @@ int testCrypt3Rsa2(int argc, char **argv) {
     return 2;
   }
 
-  secretKey=GWEN_Crypt_KeyRsa2_fromDb(dbSecretKey);
+  secretKey=GWEN_Crypt_KeyRsa_fromDb(dbSecretKey);
   if (secretKey==NULL) {
     fprintf(stderr, "ERROR: Could not read secret key from db\n");
     GWEN_DB_Dump(dbSecretKey, 2);
@@ -2719,7 +2718,7 @@ int testCrypt3Rsa3(int argc, char **argv) {
   uint32_t len2;
 
   fprintf(stderr, "Generating key pair (using method 2)...\n");
-  rv=GWEN_Crypt_KeyRsa2_GeneratePair(128, 1, &pubKey, &secretKey);
+  rv=GWEN_Crypt_KeyRsa_GeneratePair(128, 1, &pubKey, &secretKey);
   if (rv) {
     fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
     return 2;
@@ -2727,7 +2726,7 @@ int testCrypt3Rsa3(int argc, char **argv) {
   fprintf(stderr, "Generating key pair... done.\n");
 
   dbPubKey=GWEN_DB_Group_new("PublicKey");
-  rv=GWEN_Crypt_KeyRsa2_toDb(pubKey, dbPubKey, 1);
+  rv=GWEN_Crypt_KeyRsa_toDb(pubKey, dbPubKey, 1);
   if (rv) {
     fprintf(stderr, "ERROR: Could not store public key (%d).\n", rv);
     return 2;
@@ -2735,14 +2734,14 @@ int testCrypt3Rsa3(int argc, char **argv) {
   GWEN_Crypt_Key_free(pubKey);
 
   dbSecretKey=GWEN_DB_Group_new("SecretKey");
-  rv=GWEN_Crypt_KeyRsa2_toDb(secretKey, dbSecretKey, 0);
+  rv=GWEN_Crypt_KeyRsa_toDb(secretKey, dbSecretKey, 0);
   if (rv) {
     fprintf(stderr, "ERROR: Could not store secret key (%d).\n", rv);
     return 2;
   }
   GWEN_Crypt_Key_free(secretKey);
 
-  pubKey=GWEN_Crypt_KeyRsa2_fromDb(dbPubKey);
+  pubKey=GWEN_Crypt_KeyRsa_fromDb(dbPubKey);
   if (pubKey==NULL) {
     fprintf(stderr, "ERROR: Could not read public key from db\n");
     GWEN_DB_Dump(dbPubKey, 2);
@@ -2815,7 +2814,6 @@ int testCrypt3Rsa4(int argc, char **argv) {
   GWEN_CRYPT_KEY *pubKey;
   GWEN_CRYPT_KEY *secretKey;
   GWEN_DB_NODE *dbPubKey;
-  GWEN_DB_NODE *dbSecretKey;
   uint8_t testData[]=
     "This is the test data           "
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -2835,8 +2833,8 @@ int testCrypt3Rsa4(int argc, char **argv) {
   nbytes=128;
 
   fprintf(stderr, "testCrypt3Rsa4\n");
-  fprintf(stderr, "  Generating key pair )...\n");
-  rv=GWEN_Crypt_KeyRsa2_GeneratePair(nbytes, 1, &pubKey, &secretKey);
+  fprintf(stderr, "  Generating key pair ...\n");
+  rv=GWEN_Crypt_KeyRsa_GeneratePair(nbytes, 1, &pubKey, &secretKey);
   if (rv) {
     fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
     return 2;
@@ -2845,21 +2843,21 @@ int testCrypt3Rsa4(int argc, char **argv) {
 
   /* get data for secret key */
   modLen=sizeof(modBuffer);
-  rv=GWEN_Crypt_KeyRsa2_GetModulus(secretKey, modBuffer, &modLen);
+  rv=GWEN_Crypt_KeyRsa_GetModulus(secretKey, modBuffer, &modLen);
   if (rv) {
     fprintf(stderr, "ERROR: Could not store modulus (%d).\n", rv);
     return 2;
   }
 
   pubExpLen=sizeof(pubExpBuffer);
-  rv=GWEN_Crypt_KeyRsa2_GetExponent(secretKey, pubExpBuffer, &pubExpLen);
+  rv=GWEN_Crypt_KeyRsa_GetExponent(secretKey, pubExpBuffer, &pubExpLen);
   if (rv) {
     fprintf(stderr, "ERROR: Could not store public exponent (%d).\n", rv);
     return 2;
   }
 
   privExpLen=sizeof(privExpBuffer);
-  rv=GWEN_Crypt_KeyRsa2_GetSecretExponent(secretKey, privExpBuffer, &privExpLen);
+  rv=GWEN_Crypt_KeyRsa_GetSecretExponent(secretKey, privExpBuffer, &privExpLen);
   if (rv) {
     fprintf(stderr, "ERROR: Could not store private exponent (%d).\n", rv);
     return 2;
@@ -2867,24 +2865,24 @@ int testCrypt3Rsa4(int argc, char **argv) {
 
 
   dbPubKey=GWEN_DB_Group_new("PublicKey");
-  rv=GWEN_Crypt_KeyRsa2_toDb(pubKey, dbPubKey, 1);
+  rv=GWEN_Crypt_KeyRsa_toDb(pubKey, dbPubKey, 1);
   if (rv) {
     fprintf(stderr, "ERROR: Could not store public key (%d).\n", rv);
     return 2;
   }
   GWEN_Crypt_Key_free(pubKey);
 
-  pubKey=GWEN_Crypt_KeyRsa2_fromDb(dbPubKey);
+  pubKey=GWEN_Crypt_KeyRsa_fromDb(dbPubKey);
   if (pubKey==NULL) {
     fprintf(stderr, "ERROR: Could not read public key from db\n");
     GWEN_DB_Dump(dbPubKey, 2);
     return 2;
   }
 
-  secretKey=GWEN_Crypt_KeyRsa2_fromModPrivExp(nbytes,
-                                              modBuffer, modLen,
-                                              pubExpBuffer, pubExpLen,
-                                              privExpBuffer, privExpLen);
+  secretKey=GWEN_Crypt_KeyRsa_fromModPrivExp(nbytes,
+                                             modBuffer, modLen,
+                                             pubExpBuffer, pubExpLen,
+                                             privExpBuffer, privExpLen);
   if (secretKey==NULL) {
     fprintf(stderr, "ERROR: Could not read secret key from buffers\n");
     return 2;
