@@ -2810,6 +2810,140 @@ int testCrypt3Rsa3(int argc, char **argv) {
 
 
 
+int testCrypt3Rsa4(int argc, char **argv) {
+  int rv;
+  GWEN_CRYPT_KEY *pubKey;
+  GWEN_CRYPT_KEY *secretKey;
+  GWEN_DB_NODE *dbPubKey;
+  GWEN_DB_NODE *dbSecretKey;
+  uint8_t testData[]=
+    "This is the test data           "
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
+  uint8_t buffer[512];
+  uint32_t len;
+  uint8_t buffer2[512];
+  uint32_t len2;
+  uint8_t modBuffer[512];
+  uint32_t modLen;
+  uint8_t pubExpBuffer[512];
+  uint32_t pubExpLen;
+  uint8_t privExpBuffer[512];
+  uint32_t privExpLen;
+  int nbytes;
+
+  nbytes=128;
+
+  fprintf(stderr, "testCrypt3Rsa4\n");
+  fprintf(stderr, "  Generating key pair )...\n");
+  rv=GWEN_Crypt_KeyRsa2_GeneratePair(nbytes, 1, &pubKey, &secretKey);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not generate key pair (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "  Generating key pair... done.\n");
+
+  /* get data for secret key */
+  modLen=sizeof(modBuffer);
+  rv=GWEN_Crypt_KeyRsa2_GetModulus(secretKey, modBuffer, &modLen);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not store modulus (%d).\n", rv);
+    return 2;
+  }
+
+  pubExpLen=sizeof(pubExpBuffer);
+  rv=GWEN_Crypt_KeyRsa2_GetExponent(secretKey, pubExpBuffer, &pubExpLen);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not store public exponent (%d).\n", rv);
+    return 2;
+  }
+
+  privExpLen=sizeof(privExpBuffer);
+  rv=GWEN_Crypt_KeyRsa2_GetSecretExponent(secretKey, privExpBuffer, &privExpLen);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not store private exponent (%d).\n", rv);
+    return 2;
+  }
+
+
+  dbPubKey=GWEN_DB_Group_new("PublicKey");
+  rv=GWEN_Crypt_KeyRsa2_toDb(pubKey, dbPubKey, 1);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not store public key (%d).\n", rv);
+    return 2;
+  }
+  GWEN_Crypt_Key_free(pubKey);
+
+  pubKey=GWEN_Crypt_KeyRsa2_fromDb(dbPubKey);
+  if (pubKey==NULL) {
+    fprintf(stderr, "ERROR: Could not read public key from db\n");
+    GWEN_DB_Dump(dbPubKey, 2);
+    return 2;
+  }
+
+  secretKey=GWEN_Crypt_KeyRsa2_fromModPrivExp(nbytes,
+                                              modBuffer, modLen,
+                                              pubExpBuffer, pubExpLen,
+                                              privExpBuffer, privExpLen);
+  if (secretKey==NULL) {
+    fprintf(stderr, "ERROR: Could not read secret key from buffers\n");
+    return 2;
+  }
+
+  fprintf(stderr, "  Signing message...\n");
+  len=sizeof(buffer);
+  rv=GWEN_Crypt_Key_Sign(secretKey, testData, sizeof(testData)-1, buffer, &len);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not sign (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "  Signing message... done\n");
+
+  rv=GWEN_Crypt_Key_Verify(pubKey, testData, sizeof(testData)-1, buffer, len);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not verify (%d).\n", rv);
+    GWEN_Text_DumpString((const char*)buffer, len, 1);
+    return 2;
+  }
+
+  fprintf(stderr, "  Signature is valid.\n");
+
+
+  fprintf(stderr, "  Encrypting message...\n");
+  len=sizeof(buffer);
+  rv=GWEN_Crypt_Key_Encipher(pubKey, testData, sizeof(testData)-1, buffer, &len);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not encipher (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "  Encrypting message... done (%d)\n", len);
+
+  fprintf(stderr, "  Decrypting message...\n");
+  len2=sizeof(buffer2);
+  rv=GWEN_Crypt_Key_Decipher(secretKey, buffer, len, buffer2, &len2);
+  if (rv) {
+    fprintf(stderr, "ERROR: Could not decipher (%d).\n", rv);
+    return 2;
+  }
+  fprintf(stderr, "  Decrypting message... done\n");
+
+  if ((sizeof(testData)-1)!=len2) {
+    fprintf(stderr, "Length of deciphered message does not match that of src (%d!=%d)\n",
+	    len, len2);
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
+    return 2;
+  }
+  if (memcmp(testData, buffer2, len2)) {
+    fprintf(stderr, "Deciphered message does not match src\n");
+    GWEN_Text_DumpString((const char*)buffer2, len2, 1);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
 int testGnutls(int argc, char **argv) {
   gnutls_session_t session;
   gnutls_certificate_credentials_t credentials;
@@ -4852,6 +4986,8 @@ int main(int argc, char **argv) {
     rv=testCrypt3Rsa2(argc, argv);
   else if (strcasecmp(argv[1], "3rsa3")==0)
     rv=testCrypt3Rsa3(argc, argv);
+  else if (strcasecmp(argv[1], "3rsa4")==0)
+    rv=testCrypt3Rsa4(argc, argv);
   else if (strcasecmp(argv[1], "gtls")==0)
     rv=testGnutls(argc, argv);
   else if (strcasecmp(argv[1], "httpsession")==0)
