@@ -96,6 +96,24 @@ Set this property with @ref GWEN_SslCertDescr_SetFingerPrint,
 get it with @ref GWEN_SslCertDescr_GetFingerPrint
 </p>
 
+@anchor GWEN_SSLCERTDESCR_PubKeyModulus
+<h3>PubKeyModulus</h3>
+<p>
+</p>
+<p>
+Set this property with @ref GWEN_SslCertDescr_SetPubKeyModulus, 
+get it with @ref GWEN_SslCertDescr_GetPubKeyModulus
+</p>
+
+@anchor GWEN_SSLCERTDESCR_PubKeyExponent
+<h3>PubKeyExponent</h3>
+<p>
+</p>
+<p>
+Set this property with @ref GWEN_SslCertDescr_SetPubKeyExponent, 
+get it with @ref GWEN_SslCertDescr_GetPubKeyExponent
+</p>
+
 @anchor GWEN_SSLCERTDESCR_StatusText
 <h3>StatusText</h3>
 <p>
@@ -272,6 +290,24 @@ GWENHYWFAR_API const char *GWEN_SslCertDescr_GetFingerPrint(const GWEN_SSLCERTDE
 * Set the property @ref GWEN_SSLCERTDESCR_FingerPrint
 */
 GWENHYWFAR_API void GWEN_SslCertDescr_SetFingerPrint(GWEN_SSLCERTDESCR *el, const char *d);
+
+/**
+* Returns the property @ref GWEN_SSLCERTDESCR_PubKeyModulus
+*/
+GWENHYWFAR_API const char *GWEN_SslCertDescr_GetPubKeyModulus(const GWEN_SSLCERTDESCR *el);
+/**
+* Set the property @ref GWEN_SSLCERTDESCR_PubKeyModulus
+*/
+GWENHYWFAR_API void GWEN_SslCertDescr_SetPubKeyModulus(GWEN_SSLCERTDESCR *el, const char *d);
+
+/**
+* Returns the property @ref GWEN_SSLCERTDESCR_PubKeyExponent
+*/
+GWENHYWFAR_API const char *GWEN_SslCertDescr_GetPubKeyExponent(const GWEN_SSLCERTDESCR *el);
+/**
+* Set the property @ref GWEN_SSLCERTDESCR_PubKeyExponent
+*/
+GWENHYWFAR_API void GWEN_SslCertDescr_SetPubKeyExponent(GWEN_SSLCERTDESCR *el, const char *d);
 
 /**
 * Returns the property @ref GWEN_SSLCERTDESCR_StatusText

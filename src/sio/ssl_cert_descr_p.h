@@ -22,10 +22,14 @@ struct GWEN_SSLCERTDESCR {
   GWEN_TIME *notAfter;
   char *ipAddress;
   char *fingerPrint;
+  char *pubKeyModulus;
+  char *pubKeyExponent;
   char *statusText;
   int isError;
   uint32_t statusFlags;
 };
+
+
 
 
 

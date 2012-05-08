@@ -39,6 +39,9 @@
     <elem name="ipAddress" type="char" ptr="1" />
     <elem name="fingerPrint" type="char" ptr="1" />
 
+    <elem name="pubKeyModulus" type="char" ptr="1" />
+    <elem name="pubKeyExponent" type="char" ptr="1" />
+
     <elem name="statusText" type="char" ptr="1" />
     <elem name="isError" type="int" />
     <elem name="statusFlags" type="uint32_t" />

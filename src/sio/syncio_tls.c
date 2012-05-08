@@ -49,6 +49,7 @@
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#include <gcrypt.h>
 
 
 
@@ -588,7 +589,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
       return GWEN_ERROR_GENERIC;
     }
 
-    rv=gnutls_x509_crt_import(cert, &cert_list[0], GNUTLS_X509_FMT_DER);
+    rv=gnutls_x509_crt_import(cert, &cert_list[0], GNUTLS_X509_FMT_DER); /* TODO: shouldn't we use the index?? */
     if (rv!=0) {
       DBG_INFO(GWEN_LOGDOMAIN, "gnutls_x509_crt_import: %d (%s)", rv, gnutls_strerror(rv));
       gnutls_x509_crt_deinit(cert);
@@ -596,7 +597,41 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
     }
 
     if (i==0) {
-      /* get fingerprint */
+      gnutls_datum_t n={NULL, 0};
+      gnutls_datum_t e={NULL, 0};
+
+      /* get public key from cert, if any */
+      rv=gnutls_x509_crt_get_pk_rsa_raw(cert, &n, &e);
+      if (rv!=0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "gnutls_x509_crt_get_pk_rsa_raw: %d (%s)", rv, gnutls_strerror(rv));
+      }
+      else {
+	GWEN_BUFFER *kbuf;
+
+	kbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+	if (n.data && n.size) {
+	  /* store public modulus */
+	  GWEN_Text_ToHexBuffer((const char*)(n.data), n.size, kbuf, 2, 0, 0);
+	  GWEN_SslCertDescr_SetPubKeyModulus(certDescr, GWEN_Buffer_GetStart(kbuf));
+	  GWEN_Buffer_Reset(kbuf);
+	}
+
+	if (e.data && e.size) {
+	  /* store public exponent */
+	  GWEN_Text_ToHexBuffer((const char*)(e.data), e.size, kbuf, 2, 0, 0);
+	  GWEN_SslCertDescr_SetPubKeyExponent(certDescr, GWEN_Buffer_GetStart(kbuf));
+	  GWEN_Buffer_Reset(kbuf);
+	}
+
+	GWEN_Buffer_free(kbuf);
+	if (n.data)
+	  gcry_free(n.data);
+	if (e.data)
+	  gcry_free(e.data);
+      }
+
+        /* get fingerprint */
       size=16;
       rv=gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_MD5, buffer1, &size);
       if (rv!=0) {

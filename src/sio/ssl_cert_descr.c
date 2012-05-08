@@ -57,6 +57,10 @@ void GWEN_SslCertDescr_free(GWEN_SSLCERTDESCR *st) {
     free(st->ipAddress);
   if (st->fingerPrint)
     free(st->fingerPrint);
+  if (st->pubKeyModulus)
+    free(st->pubKeyModulus);
+  if (st->pubKeyExponent)
+    free(st->pubKeyExponent);
   if (st->statusText)
     free(st->statusText);
   GWEN_LIST_FINI(GWEN_SSLCERTDESCR, st)
@@ -92,6 +96,10 @@ GWEN_SSLCERTDESCR *GWEN_SslCertDescr_dup(const GWEN_SSLCERTDESCR *d) {
     st->ipAddress=strdup(d->ipAddress);
   if (d->fingerPrint)
     st->fingerPrint=strdup(d->fingerPrint);
+  if (d->pubKeyModulus)
+    st->pubKeyModulus=strdup(d->pubKeyModulus);
+  if (d->pubKeyExponent)
+    st->pubKeyExponent=strdup(d->pubKeyExponent);
   if (d->statusText)
     st->statusText=strdup(d->statusText);
   st->isError=d->isError;
@@ -132,6 +140,12 @@ int GWEN_SslCertDescr_toDb(const GWEN_SSLCERTDESCR *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->fingerPrint)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fingerPrint", st->fingerPrint))
+      return -1;
+  if (st->pubKeyModulus)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "pubKeyModulus", st->pubKeyModulus))
+      return -1;
+  if (st->pubKeyExponent)
+    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "pubKeyExponent", st->pubKeyExponent))
       return -1;
   if (st->statusText)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "statusText", st->statusText))
@@ -175,6 +189,8 @@ int GWEN_SslCertDescr_ReadDb(GWEN_SSLCERTDESCR *st, GWEN_DB_NODE *db) {
   }
   GWEN_SslCertDescr_SetIpAddress(st, GWEN_DB_GetCharValue(db, "ipAddress", 0, 0));
   GWEN_SslCertDescr_SetFingerPrint(st, GWEN_DB_GetCharValue(db, "fingerPrint", 0, 0));
+  GWEN_SslCertDescr_SetPubKeyModulus(st, GWEN_DB_GetCharValue(db, "pubKeyModulus", 0, 0));
+  GWEN_SslCertDescr_SetPubKeyExponent(st, GWEN_DB_GetCharValue(db, "pubKeyExponent", 0, 0));
   GWEN_SslCertDescr_SetStatusText(st, GWEN_DB_GetCharValue(db, "statusText", 0, 0));
   GWEN_SslCertDescr_SetIsError(st, GWEN_DB_GetIntValue(db, "isError", 0, 0));
   GWEN_SslCertDescr_SetStatusFlags(st, GWEN_DB_GetIntValue(db, "statusFlags", 0, 0));
@@ -395,6 +411,46 @@ void GWEN_SslCertDescr_SetFingerPrint(GWEN_SSLCERTDESCR *st, const char *d) {
 
 
 
+const char *GWEN_SslCertDescr_GetPubKeyModulus(const GWEN_SSLCERTDESCR *st) {
+  assert(st);
+  return st->pubKeyModulus;
+}
+
+
+void GWEN_SslCertDescr_SetPubKeyModulus(GWEN_SSLCERTDESCR *st, const char *d) {
+  assert(st);
+  if (st->pubKeyModulus)
+    free(st->pubKeyModulus);
+  if (d && *d)
+    st->pubKeyModulus=strdup(d);
+  else
+    st->pubKeyModulus=0;
+  st->_modified=1;
+}
+
+
+
+
+const char *GWEN_SslCertDescr_GetPubKeyExponent(const GWEN_SSLCERTDESCR *st) {
+  assert(st);
+  return st->pubKeyExponent;
+}
+
+
+void GWEN_SslCertDescr_SetPubKeyExponent(GWEN_SSLCERTDESCR *st, const char *d) {
+  assert(st);
+  if (st->pubKeyExponent)
+    free(st->pubKeyExponent);
+  if (d && *d)
+    st->pubKeyExponent=strdup(d);
+  else
+    st->pubKeyExponent=0;
+  st->_modified=1;
+}
+
+
+
+
 const char *GWEN_SslCertDescr_GetStatusText(const GWEN_SSLCERTDESCR *st) {
   assert(st);
   return st->statusText;
@@ -461,7 +517,7 @@ void GWEN_SslCertDescr_Attach(GWEN_SSLCERTDESCR *st) {
   assert(st);
   st->_usage++;
 }
-GWEN_SSLCERTDESCR *GWEN_SslCertDescr_List2__freeAll_cb(GWEN_SSLCERTDESCR *st, GWEN_UNUSED void *user_data) {
+GWEN_SSLCERTDESCR *GWEN_SslCertDescr_List2__freeAll_cb(GWEN_SSLCERTDESCR *st, void *user_data) {
   GWEN_SslCertDescr_free(st);
 return 0;
 }
