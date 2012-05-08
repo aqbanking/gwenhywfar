@@ -608,18 +608,21 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
       else {
 	GWEN_BUFFER *kbuf;
 
+	DBG_INFO(GWEN_LOGDOMAIN, "Key stored within certificate, extracting (modlen=%d, explen=%d)",
+		 n.size, e.size);
+
 	kbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
 	if (n.data && n.size) {
 	  /* store public modulus */
-	  GWEN_Text_ToHexBuffer((const char*)(n.data), n.size, kbuf, 2, 0, 0);
+	  GWEN_Text_ToHexBuffer((const char*)(n.data), n.size, kbuf, 0, 0, 0);
 	  GWEN_SslCertDescr_SetPubKeyModulus(certDescr, GWEN_Buffer_GetStart(kbuf));
 	  GWEN_Buffer_Reset(kbuf);
 	}
 
 	if (e.data && e.size) {
 	  /* store public exponent */
-	  GWEN_Text_ToHexBuffer((const char*)(e.data), e.size, kbuf, 2, 0, 0);
+	  GWEN_Text_ToHexBuffer((const char*)(e.data), e.size, kbuf, 0, 0, 0);
 	  GWEN_SslCertDescr_SetPubKeyExponent(certDescr, GWEN_Buffer_GetStart(kbuf));
 	  GWEN_Buffer_Reset(kbuf);
 	}
@@ -825,6 +828,17 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
   GWEN_SslCertDescr_SetStatusText(certDescr, GWEN_Buffer_GetStart(sbuf));
   GWEN_SslCertDescr_SetStatusFlags(certDescr, errFlags);
   GWEN_Buffer_free(sbuf);
+
+#if 0
+  if (1) {
+    GWEN_DB_NODE *dbTest;
+
+    dbTest=GWEN_DB_Group_new("Cert");
+    GWEN_SslCertDescr_toDb(certDescr, dbTest);
+    GWEN_DB_Dump(dbTest, 2);
+    GWEN_DB_Group_free(dbTest);
+  }
+#endif
 
   xio->peerCertDescr=certDescr;
   xio->peerCertFlags=errFlags;
