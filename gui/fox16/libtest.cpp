@@ -22,6 +22,8 @@
 
 #include <gwenhywfar/debug.h>
 
+#include <unistd.h>
+
 
 
 int test1(int argc, char **argv) {
