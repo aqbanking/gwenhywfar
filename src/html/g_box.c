@@ -380,6 +380,34 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     HtmlGroup_SetObject(gNew, o);
     HtmlProps_free(pr);
   }
+  else if (strcasecmp(tagName, "h4")==0) {
+    /* Create new parser group with new properties but use the same object */
+    HTML_PROPS *pr;
+    HTML_FONT *fnt;
+    HTML_OBJECT *o;
+
+    gNew=HtmlGroup_Box_new(tagName, g, ctx);
+    pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
+    fnt=HtmlProps_GetFont(pr);
+    fnt=HtmlCtx_GetFont(ctx,
+			HtmlFont_GetFontName(fnt),
+			HtmlFont_GetFontSize(fnt),
+			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_ITALIC);
+    if (fnt) {
+      HtmlProps_SetFont(pr, fnt);
+      //HtmlFont_free(fnt);
+    }
+    HtmlGroup_SetProperties(gNew, pr);
+
+    o=HtmlObject_Box_new(ctx);
+    HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+    HtmlObject_AddFlags(o,
+			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+    HtmlObject_SetProperties(o, pr);
+    HtmlGroup_SetObject(gNew, o);
+    HtmlProps_free(pr);
+  }
   else if (strcasecmp(tagName, "html")==0 ||
 	   strcasecmp(tagName, "body")==0) {
   }
