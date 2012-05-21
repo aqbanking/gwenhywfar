@@ -778,7 +778,8 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
     if (rv<0) {
       if (rv!=GWEN_ERROR_EOF || !oks ||
 	  (GWEN_XmlCtx_GetDepth(ctx)!=startingDepth)) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	DBG_INFO(GWEN_LOGDOMAIN, "here (rv=%d, oks=%d, depth=%d, startingDepth=%d)",
+		 rv, oks, GWEN_XmlCtx_GetDepth(ctx), startingDepth);
         GWEN_Buffer_free(workBuf);
 	return rv;
       }
@@ -798,8 +799,10 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb){
     }
 
     if (GWEN_XmlCtx_GetFinishedElement(ctx) &&
-	GWEN_XmlCtx_GetDepth(ctx)==startingDepth)
+	GWEN_XmlCtx_GetDepth(ctx)==startingDepth) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Finished element at depth %d", GWEN_XmlCtx_GetDepth(ctx));
       break;
+    }
   }
 
   if (GWEN_XmlCtx_GetDepth(ctx)!=startingDepth) {
@@ -828,7 +831,7 @@ int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio){
       if (rv==GWEN_ERROR_EOF && oks)
 	break;
       else {
-	DBG_INFO(GWEN_LOGDOMAIN, "here");
+	DBG_INFO(GWEN_LOGDOMAIN, "here (rv=%d, oks=%d)", rv, oks);
 	GWEN_FastBuffer_free(fb);
 	return rv;
       }
