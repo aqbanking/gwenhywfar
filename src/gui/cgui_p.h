@@ -99,6 +99,8 @@ int GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
 				  uint32_t id,
 				  uint64_t progress);
 
+int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total);
+
 int GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
 			      uint32_t id,
 			      GWEN_LOGGER_LEVEL level,

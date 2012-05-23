@@ -102,6 +102,13 @@ uint64_t GWEN_Gui_CProgress_GetTotal(const GWEN_GUI_CPROGRESS *cp) {
 
 
 
+void GWEN_Gui_CProgress_SetTotal(GWEN_GUI_CPROGRESS *cp, uint64_t i) {
+  assert(cp);
+  cp->total=i;
+}
+
+
+
 uint64_t GWEN_Gui_CProgress_GetCurrent(const GWEN_GUI_CPROGRESS *cp) {
   assert(cp);
   return cp->current;

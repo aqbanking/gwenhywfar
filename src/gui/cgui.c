@@ -86,6 +86,7 @@ GWEN_GUI *GWEN_Gui_CGui_new(void) {
   GWEN_Gui_SetHideBoxFn(gui, GWEN_Gui_CGui_HideBox);
   GWEN_Gui_SetProgressStartFn(gui, GWEN_Gui_CGui_ProgressStart);
   GWEN_Gui_SetProgressAdvanceFn(gui, GWEN_Gui_CGui_ProgressAdvance);
+  GWEN_Gui_SetProgressSetTotalFn(gui, GWEN_Gui_CGui_ProgressSetTotal);
   GWEN_Gui_SetProgressLogFn(gui, GWEN_Gui_CGui_ProgressLog);
   GWEN_Gui_SetProgressEndFn(gui, GWEN_Gui_CGui_ProgressEnd);
   GWEN_Gui_SetSetPasswordStatusFn(gui, GWEN_Gui_CGui_SetPasswordStatus);
@@ -592,6 +593,25 @@ int GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
   else {
     return GWEN_Gui_CProgress_Advance(cp, progress);
   }
+}
+
+
+
+int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total) {
+  GWEN_GUI_CGUI *cgui;
+  GWEN_GUI_CPROGRESS *cp;
+
+  assert(gui);
+  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
+  assert(cgui);
+
+  cp=GWEN_Gui_CGui__findProgress(gui, id);
+  if (!cp) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Progress object %u not found", id);
+  }
+  else
+    GWEN_Gui_CProgress_SetTotal(cp, total);
+  return 0;
 }
 
 

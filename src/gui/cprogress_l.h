@@ -29,6 +29,8 @@ uint32_t GWEN_Gui_CProgress_GetId(const GWEN_GUI_CPROGRESS *cp);
 const char *GWEN_Gui_CProgress_GetTitle(const GWEN_GUI_CPROGRESS *cp);
 const char *GWEN_Gui_CProgress_GetText(const GWEN_GUI_CPROGRESS *cp);
 uint64_t GWEN_Gui_CProgress_GetTotal(const GWEN_GUI_CPROGRESS *cp);
+void GWEN_Gui_CProgress_SetTotal(GWEN_GUI_CPROGRESS *cp, uint64_t i);
+
 uint64_t GWEN_Gui_CProgress_GetCurrent(const GWEN_GUI_CPROGRESS *cp);
 const char *GWEN_Gui_CProgress_GetLogBuf(const GWEN_GUI_CPROGRESS *cp);
 int GWEN_Gui_CProgress_GetAborted(const GWEN_GUI_CPROGRESS *cp);
