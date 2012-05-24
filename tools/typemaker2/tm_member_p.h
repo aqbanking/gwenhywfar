@@ -21,6 +21,8 @@ struct TYPEMAKER2_MEMBER {
   char *name;
   char *typeName;
 
+  char *descr;
+
   int access;
 
   uint32_t flags;

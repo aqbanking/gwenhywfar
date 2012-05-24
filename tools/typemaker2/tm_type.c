@@ -73,6 +73,8 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       free(ty->aqdb_type);
       free(ty->baseFileName);
 
+      free(ty->descr);
+
       Typemaker2_Header_List_free(ty->headers);
       Typemaker2_Enum_List_free(ty->enums);
       Typemaker2_Define_List_free(ty->defines);
@@ -122,6 +124,24 @@ void Typemaker2_Type_SetName(TYPEMAKER2_TYPE *ty, const char *s) {
   free(ty->name);
   if (s && *s) ty->name=strdup(s);
   else ty->name=NULL;
+}
+
+
+
+const char *Typemaker2_Type_GetDescription(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->descr;
+}
+
+
+
+void Typemaker2_Type_SetDescription(TYPEMAKER2_TYPE *ty, const char *s) {
+  assert(ty);
+  assert(ty->refCount);
+  free(ty->descr);
+  if (s && *s) ty->descr=strdup(s);
+  else ty->descr=NULL;
 }
 
 
@@ -824,6 +844,23 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     }
   }
 
+  /* read description */
+  n=GWEN_XMLNode_FindFirstTag(node, "descr", NULL, NULL);
+  if (n) {
+    GWEN_BUFFER *tbuf;
+    int rv;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_XMLNode_toBuffer(n, tbuf, GWEN_XML_FLAGS_SIMPLE | GWEN_XML_FLAGS_HANDLE_COMMENTS);
+    if (rv<0) {
+      DBG_ERROR(0, "here (%d)", rv);
+    }
+    else {
+      Typemaker2_Type_SetDescription(ty, GWEN_Buffer_GetStart(tbuf));
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+
   return 0;
 }
 
@@ -901,6 +938,10 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
     }
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Field Count Id: %s\n", (ty->fieldCountId)?(ty->fieldCountId):"<null>");
+
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "Descript. : %s\n", (ty->descr)?(ty->descr):"<null>");
+
   }
 }
 

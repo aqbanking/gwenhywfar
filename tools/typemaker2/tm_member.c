@@ -47,6 +47,7 @@ void Typemaker2_Member_free(TYPEMAKER2_MEMBER *tm) {
       GWEN_LIST_FINI(TYPEMAKER2_MEMBER, tm);
       free(tm->name);
       free(tm->typeName);
+      free(tm->descr);
       free(tm->fieldId);
       free(tm->defaultValue);
       free(tm->presetValue);
@@ -104,6 +105,24 @@ void Typemaker2_Member_SetTypeName(TYPEMAKER2_MEMBER *tm, const char *s) {
   free(tm->typeName);
   if (s && *s) tm->typeName=strdup(s);
   else tm->typeName=NULL;
+}
+
+
+
+const char *Typemaker2_Member_GetDescription(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->descr;
+}
+
+
+
+void Typemaker2_Member_SetDescription(TYPEMAKER2_MEMBER *tm, const char *s) {
+  assert(tm);
+  assert(tm->refCount);
+  free(tm->descr);
+  if (s && *s) tm->descr=strdup(s);
+  else tm->descr=NULL;
 }
 
 
@@ -412,6 +431,7 @@ void Typemaker2_Member_SetMemberPosition(TYPEMAKER2_MEMBER *tm, int i) {
 
 int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
   const char *s;
+  GWEN_XMLNODE *nn;
 
   assert(tm);
   assert(tm->refCount);
@@ -494,6 +514,23 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
   if (s && *s)
     Typemaker2_Member_SetAqDbType(tm, s);
 
+  /* read description */
+  nn=GWEN_XMLNode_FindFirstTag(node, "descr", NULL, NULL);
+  if (nn) {
+    GWEN_BUFFER *tbuf;
+    int rv;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_XMLNode_toBuffer(nn, tbuf, GWEN_XML_FLAGS_SIMPLE | GWEN_XML_FLAGS_HANDLE_COMMENTS);
+    if (rv<0) {
+      DBG_ERROR(0, "here (%d)", rv);
+    }
+    else {
+      Typemaker2_Member_SetDescription(tm, GWEN_Buffer_GetStart(tbuf));
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+
   return 0;
 }
 
@@ -543,6 +580,10 @@ void Typemaker2_Member_Dump(TYPEMAKER2_MEMBER *tm, FILE *f, int indent) {
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "Position : %d\n", tm->memberPosition);
+
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "Descript.: %s\n", (tm->descr)?(tm->descr):"<null>");
+
   }
 }
 

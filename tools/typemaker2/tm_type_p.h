@@ -19,6 +19,8 @@ struct TYPEMAKER2_TYPE {
 
   char *name;
 
+  char *descr;
+
   uint32_t flags;
   uint32_t setFlags;
   uint32_t getFlags;
