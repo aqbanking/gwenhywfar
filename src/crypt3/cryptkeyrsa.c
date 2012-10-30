@@ -58,7 +58,7 @@ static void dumpKeyData(gcry_ac_data_t data) {
 
 
 
-int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name, gcry_mpi_t *pMpi) {
+static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name, gcry_mpi_t *pMpi) {
   gcry_sexp_t list;
   gcry_mpi_t mpi;
 
@@ -332,7 +332,7 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
 
 
 
-GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
+static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
 					   const uint8_t *pInData,
 					   uint32_t inLen,
 					   const uint8_t *pSignatureData,
@@ -412,7 +412,7 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
 
 
 
-GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
+static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
 					     const uint8_t *pInData,
 					     uint32_t inLen,
 					     uint8_t *pOutData,
@@ -471,7 +471,7 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
 
 
 
-GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
+static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
 					     const uint8_t *pInData,
 					     uint32_t inLen,
 					     uint8_t *pOutData,
@@ -530,7 +530,7 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
 
 
 
-int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t *pMpi) {
+static int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t *pMpi) {
   gcry_error_t err;
   const void *p;
   unsigned int len;
@@ -565,7 +565,7 @@ int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t 
 
 
 
-int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, const gcry_mpi_t mpi) {
+static int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, const gcry_mpi_t mpi) {
   gcry_error_t err;
   unsigned char *buf;
   size_t nbytes;
@@ -586,7 +586,7 @@ int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, const gcry
 
 
 
-int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *buf, size_t nbytes) {
+static int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *buf, size_t nbytes) {
   gcry_error_t err;
   size_t nwritten=0;
 
@@ -602,7 +602,7 @@ int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *buf, siz
 
 
 
-GWENHYWFAR_CB
+static GWENHYWFAR_CB
 void GWEN_Crypt_KeyRsa_freeData(GWEN_UNUSED void *bp, void *p) {
   GWEN_CRYPT_KEY_RSA *xk;
 
