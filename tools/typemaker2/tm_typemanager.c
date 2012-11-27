@@ -179,8 +179,8 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
   }
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a typedef element for type [%s] and language [%s]",
-	      GWEN_Buffer_GetStart(nbuf), typeName, tym->lang);
+	      "File [%s] does not contain a <typedef> element for type [%s] and language [%s]",
+              GWEN_Buffer_GetStart(nbuf), typeName, tym->lang);
     GWEN_XMLNode_free(root);
     GWEN_Buffer_free(nbuf);
     GWEN_Buffer_free(tbuf);
@@ -326,6 +326,15 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
 
   GWEN_XMLNode_free(root);
 
+  /* preset some stuff */
+  if (1) {
+    const char *x;
+
+    x=Typemaker2_Type_GetExtends(ty);
+    if (!x || !(*x))
+      Typemaker2_Type_SetExtends(ty, "struct_base");
+  }
+
   /* add first, because other types might want to refer to this one */
   Typemaker2_Type_List_Add(ty, tym->typeList);
 
@@ -357,6 +366,141 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
 
 
   return ty;
+}
+
+
+
+int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName,
+                                         TYPEMAKER2_TYPE_LIST2 *tlist2) {
+  int rv;
+  TYPEMAKER2_TYPE *ty=NULL;
+  GWEN_XMLNODE *root;
+  GWEN_XMLNODE *node;
+  TYPEMAKER2_TYPE_LIST2 *tl;
+  TYPEMAKER2_TYPE_LIST2_ITERATOR *it;
+
+  /* read XML file */
+  root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "xml");
+
+  rv=GWEN_XML_ReadFile(root, fileName,
+		       GWEN_XML_FLAGS_DEFAULT |
+		       GWEN_XML_FLAGS_HANDLE_HEADERS |
+		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", fileName, rv);
+    GWEN_XMLNode_free(root);
+    return rv;
+  }
+
+  /* get <tm2> element */
+  node=GWEN_XMLNode_FindFirstTag(root, "tm2", NULL, NULL);
+  if (node==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "File [%s] does not contain a tm2 element",
+	      fileName);
+    GWEN_XMLNode_free(root);
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* get <type> element with id==typeName and wanted language */
+  node=GWEN_XMLNode_FindFirstTag(node, "type", NULL, NULL);
+  if (node==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "File [%s] does not contain a type element",
+              fileName);
+    GWEN_XMLNode_free(root);
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* read all types from the file */
+  tl=Typemaker2_Type_List2_new();
+  while(node) {
+     /* load type from XML element */
+     ty=Typemaker2_Type_new();
+     rv=Typemaker2_Type_readXml(ty, node, tym->lang);
+     if (rv<0) {
+       DBG_INFO(GWEN_LOGDOMAIN, "Error reading type from file [%s] (%d)",
+                fileName,
+                rv);
+       Typemaker2_Type_free(ty);
+       GWEN_XMLNode_free(root);
+       Typemaker2_Type_List2_free(tl);
+       return rv;
+     }
+   
+     /* preset some stuff */
+     if (1) {
+       const char *x;
+   
+       x=Typemaker2_Type_GetExtends(ty);
+       if (!x || !(*x))
+         Typemaker2_Type_SetExtends(ty, "struct_base");
+     }
+   
+     /* add first, because other types might want to refer to this one */
+     Typemaker2_Type_List_Add(ty, tym->typeList);
+     Typemaker2_Type_List2_PushBack(tl, ty);
+   
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST1)
+       Typemaker2_TypeManager_MakeTypeList1(tym, ty);
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST2)
+       Typemaker2_TypeManager_MakeTypeList2(tym, ty);
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_TREE)
+       Typemaker2_TypeManager_MakeTypeTree(tym, ty);
+
+     node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);
+  }
+
+  GWEN_XMLNode_free(root);
+
+  //Typemaker2_TypeManager_Dump(tym, stderr, 2);
+
+  /* set type pointers first */
+  it=Typemaker2_Type_List2_First(tl);
+  if(it) {
+    ty=Typemaker2_Type_List2Iterator_Data(it);
+    while(ty) {
+      /* set type pointers in this type structure */
+      rv=Typemaker2_TypeManager_SetTypePtrs(tym, ty);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        Typemaker2_Type_List2Iterator_free(it);
+        Typemaker2_Type_List2_free(tl);
+        return rv;
+      }
+
+      /* handle next type */
+      ty=Typemaker2_Type_List2Iterator_Next(it);
+    }
+    Typemaker2_Type_List2Iterator_free(it);
+  }
+
+  /* now set member pointers */
+  it=Typemaker2_Type_List2_First(tl);
+  if(it) {
+    ty=Typemaker2_Type_List2Iterator_Data(it);
+    while(ty) {
+      /* set type pointers in the member structures */
+      rv=Typemaker2_TypeManager_SetMemberTypePtrs(tym, ty);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        Typemaker2_Type_List2Iterator_free(it);
+        Typemaker2_Type_List2_free(tl);
+        return rv;
+      }
+
+      /* add to provided list2 */
+      Typemaker2_Type_List2_PushBack(tlist2, ty);
+      /* handle next type */
+      ty=Typemaker2_Type_List2Iterator_Next(it);
+    }
+    Typemaker2_Type_List2Iterator_free(it);
+  }
+
+  /* done, free list */
+  Typemaker2_Type_List2_free(tl);
+
+  return 0;
 }
 
 

@@ -13,12 +13,16 @@
 
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/list1.h>
+#include <gwenhywfar/list2.h>
 
 #include <stdio.h>
 
 
 typedef struct TYPEMAKER2_TYPE TYPEMAKER2_TYPE;
-GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type);
+
+GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type)
+GWEN_LIST2_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type)
+
 
 /* don't forget to add new flags to tm_util.c ! */
 #define TYPEMAKER2_FLAGS_OWN              0x00000001

@@ -1119,7 +1119,7 @@ int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_
 
 
 
-int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, int defsOnly) {
   const char *fname;
   int rv;
 
@@ -1129,63 +1129,65 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     return rv;
   }
 
-  if (GWEN_StringList_Count(tb->declarationsPublic)) {
-    fname=tb->fileNamePublic;
-    assert(fname);
-
-    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsPublic,
-				    TypeMaker2_Access_Public);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+  if (defsOnly) {
+    if (GWEN_StringList_Count(tb->declarationsPublic)) {
+      fname=tb->fileNamePublic;
+      assert(fname);
+  
+      rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsPublic,
+                                      TypeMaker2_Access_Public);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
     }
-  }
-
-  if (GWEN_StringList_Count(tb->declarationsLibrary)) {
-    fname=tb->fileNameLibrary;
-    assert(fname);
-
-    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsLibrary,
-				    TypeMaker2_Access_Library);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+  
+    if (GWEN_StringList_Count(tb->declarationsLibrary)) {
+      fname=tb->fileNameLibrary;
+      assert(fname);
+  
+      rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsLibrary,
+                                      TypeMaker2_Access_Library);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
     }
-  }
-
-  if (GWEN_StringList_Count(tb->declarationsProtected)) {
-    fname=tb->fileNameProtected;
-    assert(fname);
-
-    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsProtected,
-				    TypeMaker2_Access_Protected);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+  
+    if (GWEN_StringList_Count(tb->declarationsProtected)) {
+      fname=tb->fileNameProtected;
+      assert(fname);
+  
+      rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsProtected,
+                                      TypeMaker2_Access_Protected);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
     }
-  }
-
-  if (GWEN_StringList_Count(tb->declarationsPrivate)) {
-    fname=tb->fileNamePrivate;
-    assert(fname);
-
-    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsPrivate,
-				    TypeMaker2_Access_Private);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+  
+    if (GWEN_StringList_Count(tb->declarationsPrivate)) {
+      fname=tb->fileNamePrivate;
+      assert(fname);
+  
+      rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->declarationsPrivate,
+                                      TypeMaker2_Access_Private);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
     }
-  }
-
-  if (GWEN_StringList_Count(tb->code)) {
-    fname=tb->fileNameCode;
-    assert(fname);
-
-    rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->code,
-				    TypeMaker2_Access_Unknown);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+  
+    if (GWEN_StringList_Count(tb->code)) {
+      fname=tb->fileNameCode;
+      assert(fname);
+  
+      rv=Typemaker2_Builder_WriteFile(tb, ty, fname, tb->code,
+                                      TypeMaker2_Access_Unknown);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
     }
   }
 
