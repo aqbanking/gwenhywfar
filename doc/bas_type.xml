@@ -1,0 +1,210 @@
+<?xml?>
+
+<tm2>
+  <type id="BAS_TYPE" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>BAS_TYPE</identifier>
+      <prefix>BAS_Type</prefix>
+      
+      <flags>
+        with_list1
+        with_list2
+        with_inherit
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbasic/abc_api.h</header>
+        <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
+      </headers>
+
+    </lang>
+
+    <members>
+  
+      <member name="name" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="size" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="flags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>with_flags</flags>
+      </member>
+
+
+    </members>
+
+    <virtualFns>
+
+      <fn name="init" location="post" >
+        <descr>
+          In:   %R1 = current value (for pointers this is NULL)
+          Out:  %R1 = new value (for pointer types this is the pointer to the init object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="fini" location="post" >
+        <descr>
+          In:   %R1 = current value (for pointers this the pointer to the object)
+          Out:
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="copy" location="post" >
+        <descr>
+          In:   %R1 = current value (for pointers this the pointer to the object)
+                %R2 = value to copy from (for pointers this the pointer to the object)
+          Out:  %R1 = new value (for pointers this the pointer to the object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="opAdd" location="post" >
+        <descr>
+          In:   %R1 = value of 1st parameter (for pointers this the pointer to the object)
+                %R2 = value of 2nd parameter (for pointers this the pointer to the object)
+          Out:  %R1 = new value (for pointers this the pointer to a new object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="opSub" location="post" >
+        <descr>
+          In:   %R1 = value of 1st parameter (for pointers this the pointer to the object)
+                %R2 = value of 2nd parameter (for pointers this the pointer to the object)
+          Out:  %R1 = new value (for pointers this the pointer to a new object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="opMult" location="post" >
+        <descr>
+          In:   %R1 = value of 1st parameter (for pointers this the pointer to the object)
+                %R2 = value of 2nd parameter (for pointers this the pointer to the object)
+          Out:  %R1 = new value (for pointers this the pointer to a new object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="opAnd" location="post" >
+        <descr>
+          In:   %R1 = value of 1st parameter (for pointers this the pointer to the object)
+                %R2 = value of 2nd parameter (for pointers this the pointer to the object)
+          Out:  %R1 = new value (for pointers this the pointer to a new object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="opOr" location="post" >
+        <descr>
+          In:   %R1 = value of 1st parameter (for pointers this the pointer to the object)
+                %R2 = value of 2nd parameter (for pointers this the pointer to the object)
+          Out:  %R1 = new value (for pointers this the pointer to a new object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="opXor" location="post" >
+        <descr>
+          In:   %R1 = value of 1st parameter (for pointers this the pointer to the object)
+                %R2 = value of 2nd parameter (for pointers this the pointer to the object)
+          Out:  %R1 = new value (for pointers this the pointer to a new object)
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+      <fn name="opCmp" location="post" >
+        <descr>
+          In:   %R1 = value of 1st parameter (for pointers this the pointer to the object)
+                %R2 = value of 2nd parameter (for pointers this the pointer to the object)
+          Out:  %R1 = result: R1 lt R2: -1, R1 eq R2: 0, R1 gt R2: 1
+        </descr>
+        
+        <access>public</access>
+        <defaultReturnValue>0</defaultReturnValue>
+        <returnType>int</returnType>
+        <params>
+          <param type="GWEN_BUFFER*" />
+        </params>
+      </fn>
+
+
+
+    </virtualFns>
+    
+  </type>
+  
+</tm2>
+
+
