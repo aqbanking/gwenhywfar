@@ -34,6 +34,9 @@
 #define GWEN_SOCKET_P_H
 
 #include <windows.h>
+#include <winsock2.h>
+#include <winerror.h>
+
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/inetsocket.h>
