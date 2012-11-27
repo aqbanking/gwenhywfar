@@ -43,7 +43,8 @@ noinst_HEADERS=\
  stringlist2_p.h \
  idmap_p.h \
  memcache_p.h \
- tree_p.h
+ tree_p.h \
+ pointerlist_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -75,7 +76,8 @@ iheader_HEADERS=\
  idmap.h \
  fastbuffer.h \
  memcache.h \
- tree.h
+ tree.h \
+ pointerlist.h
 
 libbase_la_SOURCES=\
  args.c \
@@ -101,7 +103,8 @@ libbase_la_SOURCES=\
  idmap.c \
  fastbuffer.c \
  memcache.c \
- tree.c
+ tree.c \
+ pointerlist.c
 
 
 sources:
