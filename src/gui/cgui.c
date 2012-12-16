@@ -879,7 +879,7 @@ int GWENHYWFAR_CB GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
 			   minLen,
 			   maxLen,
 			   guiid);
-      if (rv) {
+      if (rv<0) {
 	GWEN_Buffer_free(buf);
 	return rv;
       }
