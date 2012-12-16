@@ -588,6 +588,15 @@ char *GWEN_Buffer_GetPosPointer(const GWEN_BUFFER *bf){
 
 
 
+void GWEN_Buffer_OverwriteContent(GWEN_BUFFER *bf, int c) {
+  assert(bf);
+  if (bf->realPtr && bf->realBufferSize) {
+    memset(bf->realPtr, c, bf->realBufferSize);
+  }
+}
+
+
+
 uint32_t GWEN_Buffer_GetBookmark(const GWEN_BUFFER *bf, unsigned int idx){
   assert(bf);
   assert(idx<GWEN_BUFFER_MAX_BOOKMARKS);

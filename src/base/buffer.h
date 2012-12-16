@@ -514,6 +514,13 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
                      uint32_t pos,
                      uint32_t l);
 
+/* Overwrite complete buffer with a given value.
+ * This does not only overwrite the used bytes but all the memory held
+ * by this object.
+ */
+GWENHYWFAR_API
+void GWEN_Buffer_OverwriteContent(GWEN_BUFFER *bf, int c);
+
 
 /**
  * Sets the syncio to be used as a source.
