@@ -210,6 +210,8 @@ extern "C" {
 /** this is only valid for groups. It determines whether subgroups will
  *  inherit the hash mechanism set in the root node. */
 #define GWEN_DB_NODE_FLAGS_INHERIT_HASH_MECHANISM  0x00000004
+/** node has to be disposed of safely (i.e. it will be overridden before freeing it) */
+#define GWEN_DB_NODE_FLAGS_SAFE                    0x00000008
 /*@}*/
 
 

@@ -245,25 +245,65 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n){
     if (n->children)
       GWEN_DB_Node_List_free(n->children);
 
-    /* free dynamic (allocated) data */
-    switch(n->typ) {
-    case GWEN_DB_NodeType_Group:
-    case GWEN_DB_NodeType_Var:
-      GWEN_Memory_dealloc(n->data.dataName);
-      break;
-
-    case GWEN_DB_NodeType_ValueChar:
-      GWEN_Memory_dealloc(n->data.dataChar);
-      break;
-    case GWEN_DB_NodeType_ValueBin:
-      GWEN_Memory_dealloc(n->data.dataBin);
-      break;
-    case GWEN_DB_NodeType_ValuePtr:
-    case GWEN_DB_NodeType_ValueInt:
-      break;
-    default:
-      DBG_WARN(GWEN_LOGDOMAIN, "Unknown node type (%d)", n->typ);
+    if (n->nodeFlags & GWEN_DB_NODE_FLAGS_SAFE) {
+      /* free dynamic (allocated) data safely */
+      switch(n->typ) {
+      case GWEN_DB_NodeType_Group:
+      case GWEN_DB_NodeType_Var:
+	if (n->data.dataName) {
+	  int l=strlen(n->data.dataName);
+	  if (l)
+	    memset(n->data.dataName, 0, l);
+	  GWEN_Memory_dealloc(n->data.dataName);
+	}
+        break;
+  
+      case GWEN_DB_NodeType_ValueChar:
+	if (n->data.dataChar) {
+	  int l=strlen(n->data.dataChar);
+	  if (l)
+	    memset(n->data.dataChar, 0, l);
+	  GWEN_Memory_dealloc(n->data.dataChar);
+	}
+        break;
+      case GWEN_DB_NodeType_ValueBin:
+	if (n->data.dataBin && n->dataSize) {
+	  memset(n->data.dataBin, 0, n->dataSize);
+	  GWEN_Memory_dealloc(n->data.dataBin);
+	}
+        break;
+      case GWEN_DB_NodeType_ValuePtr:
+	n->data.dataPtr=NULL;
+	break;
+      case GWEN_DB_NodeType_ValueInt:
+	n->data.dataInt=0;
+	break;
+      default:
+        DBG_WARN(GWEN_LOGDOMAIN, "Unknown node type (%d)", n->typ);
+      }
     }
+    else {
+      /* free dynamic (allocated) data */
+      switch(n->typ) {
+      case GWEN_DB_NodeType_Group:
+      case GWEN_DB_NodeType_Var:
+        GWEN_Memory_dealloc(n->data.dataName);
+        break;
+  
+      case GWEN_DB_NodeType_ValueChar:
+        GWEN_Memory_dealloc(n->data.dataChar);
+        break;
+      case GWEN_DB_NodeType_ValueBin:
+        GWEN_Memory_dealloc(n->data.dataBin);
+        break;
+      case GWEN_DB_NodeType_ValuePtr:
+      case GWEN_DB_NodeType_ValueInt:
+        break;
+      default:
+        DBG_WARN(GWEN_LOGDOMAIN, "Unknown node type (%d)", n->typ);
+      }
+    }
+
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing node itself");
     GWEN_FREE_OBJECT(n);
   }
