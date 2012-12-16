@@ -39,12 +39,26 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
   GWEN_DIALOG *dlg;
   GWEN_DLGINPUT *xdlg;
   GWEN_BUFFER *fbuf;
+  GWEN_GUI *gui;
+  uint32_t gflags=0;
+  int n;
   int rv;
+  char dlgNameBuf[128];
 
-  if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)
-    dlg=GWEN_Dialog_new("dlg_gwen_input1");
-  else
-    dlg=GWEN_Dialog_new("dlg_gwen_input2");
+  /* get GUI flags */
+  gui=GWEN_Gui_GetGui();
+  if (gui)
+    gflags=GWEN_Gui_GetFlags(gui);
+
+  /* setup dialog name */
+  n=0;
+  if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) n|=1;
+  if (gflags & GWEN_GUI_FLAGS_PERMPASSWORDS) n|=2;
+
+  snprintf(dlgNameBuf, sizeof(dlgNameBuf)-1, "dlg_gwen_input%d", n);
+  dlgNameBuf[sizeof(dlgNameBuf)-1]=0;
+
+  dlg=GWEN_Dialog_new(dlgNameBuf);
   GWEN_NEW_OBJECT(GWEN_DLGINPUT, xdlg);
 
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, GWEN_DLGINPUT, dlg, xdlg,
@@ -99,6 +113,10 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
   if (!(flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)) {
     GWEN_Dialog_RemoveWidget(dlg, "input2");
     GWEN_Dialog_RemoveWidget(dlg, "label2");
+  }
+
+  if (!(gflags & GWEN_GUI_FLAGS_PERMPASSWORDS)) {
+    GWEN_Dialog_RemoveWidget(dlg, "storePasswordCheck");
   }
 
   return dlg;

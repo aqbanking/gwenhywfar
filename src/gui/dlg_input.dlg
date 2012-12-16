@@ -12,6 +12,7 @@
     </widget>
 
     <widget   type="vspacer"    name="vspacer1"    flags="fillY" />
+    <widget type="checkBox" name="storePasswordCheck" text="Store password permanently" />
     
     <widget   type="hLine"      name="hline1"      flags="fillX" />
 
