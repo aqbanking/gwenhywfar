@@ -18,14 +18,16 @@ noinst_HEADERS=\
  dlg_progress_l.h dlg_progress_p.h \
  dlg_input_l.h dlg_input_p.h \
  dlg_message_l.h dlg_message_p.h \
- dlg_showbox_l.h dlg_showbox_p.h
+ dlg_showbox_l.h dlg_showbox_p.h \
+ passwdstore_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
  cgui.h \
  dialog.h dialog_be.h \
  gui.h gui_be.h \
- widget_be.h
+ widget_be.h \
+ passwdstore.h
 
 libgui_la_SOURCES=\
  cgui.c \
@@ -37,7 +39,8 @@ libgui_la_SOURCES=\
  dlg_progress.c \
  dlg_input.c \
  dlg_message.c \
- dlg_showbox.c
+ dlg_showbox.c \
+ passwdstore.c
 
 
 dlgdatadir=$(pkgdatadir)/dialogs
