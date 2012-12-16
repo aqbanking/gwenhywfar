@@ -33,6 +33,7 @@
 #include <gwenhywfar/ssl_cert_descr.h>
 #include <gwenhywfar/syncio.h>
 #include <gwenhywfar/dialog.h>
+#include <gwenhywfar/passwdstore.h>
 
 #include <inttypes.h>
 
@@ -877,6 +878,42 @@ GWENHYWFAR_API void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl);
 
 
 GWENHYWFAR_API const char *GWEN_Gui_GetName(void);
+
+
+/** @name Password Cache
+ *
+ * This implementation provides a password cache. This will be
+ * consulted upon @ref GWEN_Gui_GetPassword. The implementation of
+ * @ref GWEN_Gui_SetPasswordStatus also accesses this password cache.
+ *
+ * Normally this cache is filled from password files (like those
+ * specified via option <i>-P</i> of <i>aqbanking-cli</i>).
+ */
+/**@{*/
+/**
+ * Set the password DB. Takes over the given DB.
+ * @param gui GUI object
+ * @param dbPasswords password cache
+ * @param persistent if !=0 then the passwords come from a password file
+ * and a request to clear the password cache will be ignored.
+ */
+GWENHYWFAR_API 
+void GWEN_Gui_SetPasswordDb(GWEN_GUI *gui,
+                            GWEN_DB_NODE *dbPasswords,
+                            int persistent);
+
+/**
+ * Returns a pointer to the internally used password cache. The GUI
+ * object remains the owner of the object returned (if any).
+ */
+GWENHYWFAR_API 
+GWEN_DB_NODE *GWEN_Gui_GetPasswordDb(const GWEN_GUI *gui);
+/*@}*/
+
+
+GWENHYWFAR_API GWEN_PASSWD_STORE *GWEN_Gui_GetPasswdStore(const GWEN_GUI *gui);
+GWENHYWFAR_API void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto);
+
 
 
 #ifdef __cplusplus

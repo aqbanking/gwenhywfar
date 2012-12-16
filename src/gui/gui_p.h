@@ -29,6 +29,7 @@
 #include "gui_l.h"
 #include "progressdata_l.h"
 
+#include <gwenhywfar/stringlist.h>
 
 
 struct GWEN_GUI {
@@ -88,6 +89,11 @@ struct GWEN_GUI {
 
   int inLogHook;
 
+  GWEN_DB_NODE *dbPasswords;
+  GWEN_PASSWD_STORE *passwdStore;
+  GWEN_STRINGLIST *badPasswords;
+  int persistentPasswords;
+
   uint32_t refCount;
 };
 
@@ -144,6 +150,23 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui, const char *
                                                      int defaultPort,
                                                      GWEN_SYNCIO **pSio);
 
+static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
+                                                             const char *token,
+                                                             const char *pin,
+                                                             GWEN_GUI_PASSWORD_STATUS status,
+                                                             GWEN_UNUSED uint32_t guiid);
+static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
+						       uint32_t flags,
+						       const char *token,
+						       const char *title,
+						       const char *text,
+						       char *buffer,
+						       int minLen,
+						       int maxLen,
+                                                       uint32_t guiid);
+
+
+static int GWEN_Gui__HashPair(const char *token, const char *pin, GWEN_BUFFER *buf);
 
 
 #endif

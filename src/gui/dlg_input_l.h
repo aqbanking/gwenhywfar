@@ -25,6 +25,8 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
 
 int GWEN_DlgInput_CopyInput(GWEN_DIALOG *dlg, char *buffer, int size);
 
+int GWEN_DlgInput_GetFlagAllowStore(GWEN_DIALOG *dlg);
+
 
 
 

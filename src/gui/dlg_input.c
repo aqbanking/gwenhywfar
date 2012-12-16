@@ -233,9 +233,11 @@ void GWEN_DlgInput_Fini(GWEN_DIALOG *dlg) {
 
   if (GWEN_DlgInput_CheckInput(dlg)==0) {
     const char *s;
+
     s=GWEN_Dialog_GetCharProperty(dlg, "input1", GWEN_DialogProperty_Value, 0, NULL);
     if (s)
       xdlg->response=strdup(s);
+    xdlg->flagAllowStore=GWEN_Dialog_GetIntProperty(dlg, "storePasswordCheck", GWEN_DialogProperty_Value, 0, 0);
   }
 
 #if 0
@@ -371,6 +373,18 @@ int GWEN_DlgInput_CopyInput(GWEN_DIALOG *dlg, char *buffer, int size) {
     return 0;
   }
   return GWEN_ERROR_NO_DATA;
+}
+
+
+
+int GWEN_DlgInput_GetFlagAllowStore(GWEN_DIALOG *dlg) {
+  GWEN_DLGINPUT *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGINPUT, dlg);
+  assert(xdlg);
+
+  return xdlg->flagAllowStore;
 }
 
 
