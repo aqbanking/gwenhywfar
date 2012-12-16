@@ -825,9 +825,10 @@ int GWENHYWFAR_CB GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
   cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
   assert(cgui);
 
-  if (flags & GWEN_GUI_INPUT_FLAGS_TAN) {
+  if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
+      (flags & GWEN_GUI_INPUT_FLAGS_DIRECT)) {
     return GWEN_Gui_InputBox(flags,
-			     title,
+                             title,
 			     text,
 			     buffer,
 			     minLen,

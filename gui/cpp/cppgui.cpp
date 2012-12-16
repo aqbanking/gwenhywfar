@@ -303,7 +303,8 @@ int CppGui::getPassword(uint32_t flags,
 			int minLen,
 			int maxLen,
 			uint32_t guiid) {
-  if (flags & GWEN_GUI_INPUT_FLAGS_TAN) {
+  if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
+      (flags & GWEN_GUI_INPUT_FLAGS_DIRECT)) {
     return GWEN_Gui_InputBox(flags,
 			     title,
 			     text,
