@@ -158,6 +158,8 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_GUI, GWENHYWFAR_API)
 #define GWEN_GUI_INPUT_FLAGS_TAN            0x00000020
 /** The input contains optical data encapsuled in "$OBEGIN$" and "$OEND$" (this is used by @ref GWEN_Gui_GetPassword) */
 #define GWEN_GUI_INPUT_FLAGS_OPTICAL        0x00000040
+/** The input MUST come via user input, not from some sort of password cache */
+#define GWEN_GUI_INPUT_FLAGS_DIRECT         0x00000080
 
 /*@}*/
 
@@ -861,6 +863,9 @@ int GWEN_Gui_GetSyncIo(const char *url,
 #define GWEN_GUI_FLAGS_ACCEPTVALIDCERTS   0x00000002
 /** GUI automatically rejects invalid certs */
 #define GWEN_GUI_FLAGS_REJECTINVALIDCERTS 0x00000004
+/** GUI uses permanent password storage */
+#define GWEN_GUI_FLAGS_PERMPASSWORDS     0x00000008
+
 /** GUI implementation supports dialogs (see @ref MOD_GUI_DIALOG) */
 #define GWEN_GUI_FLAGS_DIALOGSUPPORTED    0x80000000
 
