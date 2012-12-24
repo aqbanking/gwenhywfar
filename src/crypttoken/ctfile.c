@@ -193,13 +193,13 @@ int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 #ifndef OS_WIN32
   if (st.st_mode & 0007) {
     DBG_WARN(GWEN_LOGDOMAIN,
-             "WARNING: Your keyfile \"%s\" is world accessible!\n"
+             "WARNING: Your keyfile \"%s\" is accessible by every user on your computer!\n"
              "Nobody but you should have access to the file. You \n"
 	     "should probably change this with \"chmod 600 %s\"",
              GWEN_Crypt_Token_GetTokenName(ct),
              GWEN_Crypt_Token_GetTokenName(ct));
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning,
-			 "WARNING: Your keyfile is world accessible!\n"
+			 "WARNING: Your keyfile is accessible ny every user on your computer!\n"
 			 "Nobody but you should have access to the file.");
   }
 #endif
