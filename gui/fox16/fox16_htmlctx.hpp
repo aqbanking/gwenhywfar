@@ -11,7 +11,7 @@
 #define FOX16_HTMLCTX_HPP
 
 
-#include <gwen-gui-fox16/cppgui.hpp>
+#include <gwen-gui-fox16/fox16_gui.hpp>
 #include <gwenhywfar/htmlobject_be.h>
 #include <gwenhywfar/htmlfont_be.h>
 #include <gwenhywfar/htmlctx_be.h>

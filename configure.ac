@@ -1384,7 +1384,7 @@ done
 rm -Rf gwenhywfar4/gwen-gui-cpp 2>/dev/null
 mkdir -p gwenhywfar4/gwen-gui-cpp
 for d in gui/cpp; do
-  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
   for f in ${hfiles}; do
     case ${f} in
       *_l.hpp | *_p.hpp)
@@ -1403,7 +1403,7 @@ done
 rm -Rf gwenhywfar4/gwen-gui-qt4 2>/dev/null
 mkdir -p gwenhywfar4/gwen-gui-qt4
 for d in gui/qt4; do
-  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp 2>/dev/null )`
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
   for f in ${hfiles}; do
     case ${f} in
       *_l.hpp | *_p.hpp | qt4_gui_*.hpp)

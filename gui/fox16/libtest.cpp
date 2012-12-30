@@ -20,7 +20,9 @@
 #include "../testdialogs/dlg_test.h"
 #include "../testdialogs/dlg_test2.h"
 
+#include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/passwdstore.h>
 
 #include <unistd.h>
 
@@ -461,8 +463,73 @@ int test9(int argc, char **argv) {
 
 
 
+int test10(int argc, char **argv) {
+  FXApp application("libtest","Martin Preuss");
+  FOX16_Gui *gui;
+  int rv;
+  GWEN_DIALOG *dlg;
+  GWEN_PASSWD_STORE *sto;
+  GWEN_DB_NODE *dbPasswords;
+  const char *token;
+  const char *epw;
+  char pw[256];
+
+  if (argc<4) {
+    DBG_ERROR(0, "Expected token and secret");
+    return 1;
+  }
+  token=argv[2];
+  epw=argv[3];
+
+  application.init(argc,argv);
+
+  application.create();
+
+  gui=new FOX16_Gui(&application);
+  GWEN_Gui_SetGui(gui->getCInterface());
+
+  sto=GWEN_PasswordStore_new("/tmp/pwstore.pw");
+  dbPasswords=GWEN_DB_Group_new("TempPasswords");
+
+  gui->setPasswordStore(sto);
+  gui->setPasswordDb(dbPasswords, 0);
+
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Error getting password: %d", rv);
+    return 2;
+  }
+  if (strcmp(epw, pw)!=0) {
+    DBG_ERROR(0, "Bad password for token [%s], expected [%s], got [%s].", token, epw, pw);
+    return 2;
+  }
+
+#if 0
+  dlg=Dlg_Test2_new();
+  if (dlg==NULL) {
+    fprintf(stderr, "Could not create dialog.\n");
+    return 2;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg, 0);
+  fprintf(stderr, "Result: %d\n", rv);
+#endif
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
+  GWEN_Init();
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
   if (argc>1) {
     if (strcasecmp(argv[1], "1")==0)
       return test1(argc, argv);
@@ -482,6 +549,8 @@ int main(int argc, char **argv) {
       return test8(argc, argv);
     else if (strcasecmp(argv[1], "9")==0)
       return test9(argc, argv);
+    else if (strcasecmp(argv[1], "10")==0)
+      return test10(argc, argv);
   }
   else
     return test7(argc, argv);

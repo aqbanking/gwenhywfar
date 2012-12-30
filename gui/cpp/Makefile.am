@@ -1,6 +1,7 @@
 INCLUDES=-I$(gwenhywfar_symlinkdir) $(fox_includes) -Ihtml
 
-DEFS+=-DPACKAGE=\"$(PACKAGE)\"
+AM_CPPFLAGS= @visibility_cflags@
+DEFS+=-DBUILDING_CPP_GUI -DPACKAGE=\"$(PACKAGE)\"
 
 noinst_LTLIBRARIES=libgwengui-cpp.la
 
@@ -18,6 +19,7 @@ libgwengui_cpp_la_SOURCES=\
 
 iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-cpp
 iheader_HEADERS=\
+ api.h \
  cppgui.hpp \
  cppdialog.hpp \
  cppwidget.hpp

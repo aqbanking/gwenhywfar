@@ -10,7 +10,10 @@
 #ifndef CPPDIALOG_HPP
 #define CPPDIALOG_HPP
 
+#include <gwen-gui-cpp/api.h>
+
 #include <gwenhywfar/dialog_be.h>
+
 #include <list>
 #include <string>
 
@@ -26,7 +29,7 @@ class CppDialog;
  *
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-class CppDialog {
+class CPPGUI_API CppDialog {
   friend class CppDialogLinker;
 
 private:
@@ -41,7 +44,7 @@ public:
 
   GWEN_DIALOG *getCInterface();
 
-  static CppDialog *getDialog(GWEN_DIALOG *dlg);
+  static CPPGUI_API CppDialog *getDialog(GWEN_DIALOG *dlg);
 
 protected:
   GWEN_DIALOG *_dialog;

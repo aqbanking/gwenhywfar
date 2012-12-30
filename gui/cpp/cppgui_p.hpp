@@ -18,40 +18,40 @@ class CppGuiLinker {
   friend class CppGui;
 
   static int GWENHYWFAR_CB Print(GWEN_GUI *gui,
-		   const char *docTitle,
-		   const char *docType,
-		   const char *descr,
-		   const char *text,
-		   uint32_t guiid);
+                                 const char *docTitle,
+                                 const char *docType,
+                                 const char *descr,
+                                 const char *text,
+                                 uint32_t guiid);
 
   static int GWENHYWFAR_CB GetPassword(GWEN_GUI *gui,
-			 uint32_t flags,
-			 const char *token,
-			 const char *title,
-			 const char *text,
-			 char *buffer,
-			 int minLen,
-			 int maxLen,
-			 uint32_t guiid);
+                                       uint32_t flags,
+                                       const char *token,
+                                       const char *title,
+                                       const char *text,
+                                       char *buffer,
+                                       int minLen,
+                                       int maxLen,
+                                       uint32_t guiid);
 
   static int GWENHYWFAR_CB SetPasswordStatus(GWEN_GUI *gui,
-			       const char *token,
-			       const char *pin,
-			       GWEN_GUI_PASSWORD_STATUS status,
-			       uint32_t guiid);
+                                             const char *token,
+                                             const char *pin,
+                                             GWEN_GUI_PASSWORD_STATUS status,
+                                             uint32_t guiid);
 
   static int GWENHYWFAR_CB CheckCert(GWEN_GUI *gui,
-		       const GWEN_SSLCERTDESCR *cert,
-		       GWEN_SYNCIO *io,
-		       uint32_t guiid);
+                                     const GWEN_SSLCERTDESCR *cert,
+                                     GWEN_SYNCIO *io,
+                                     uint32_t guiid);
 
   static int GWENHYWFAR_CB LogHook(GWEN_GUI *gui,
-		     const char *logDomain,
-		     GWEN_LOGGER_LEVEL priority, const char *s);
+                                   const char *logDomain,
+                                   GWEN_LOGGER_LEVEL priority, const char *s);
 
   static int GWENHYWFAR_CB ExecDialog(GWEN_GUI *gui,
-			GWEN_DIALOG *dlg,
-			uint32_t guiid);
+                                      GWEN_DIALOG *dlg,
+                                      uint32_t guiid);
 
   static int GWENHYWFAR_CB OpenDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, uint32_t guiid);
   static int GWENHYWFAR_CB CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg);
@@ -59,12 +59,12 @@ class CppGuiLinker {
 
 
   static int GWENHYWFAR_CB GetFileName(GWEN_GUI *gui,
-			 const char *caption,
-			 GWEN_GUI_FILENAME_TYPE fnt,
-			 uint32_t flags,
-			 const char *patterns,
-			 GWEN_BUFFER *pathBuffer,
-			 uint32_t guiid);
+                                       const char *caption,
+                                       GWEN_GUI_FILENAME_TYPE fnt,
+                                       uint32_t flags,
+                                       const char *patterns,
+                                       GWEN_BUFFER *pathBuffer,
+                                       uint32_t guiid);
 
   static GWENHYWFAR_CB void freeData(void *bp, void *p);
 };

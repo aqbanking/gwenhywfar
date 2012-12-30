@@ -12,6 +12,8 @@
 
 #include <gwenhywfar/gui_be.h>
 #include <gwenhywfar/i18n.h>
+//#include <gwenhywfar/db.h>
+//#include <gwenhywfar/passwdstore.h>
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 #define I18S(msg) msg
@@ -21,6 +23,7 @@
 
 class CppGui;
 
+#include <gwen-gui-cpp/api.h>
 #include <gwen-gui-cpp/cppdialog.hpp>
 
 
@@ -33,15 +36,11 @@ class CppGui;
  *
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-class CppGui {
+class CPPGUI_API CppGui {
   friend class CppGuiLinker;
 
 private:
   GWEN_GUI_CHECKCERT_FN _checkCertFn;
-
-  GWEN_DB_NODE *_dbPasswords;
-  std::list<std::string> _badPasswords;
-
   GWEN_GUI_PRINT_FN _printFn;
   GWEN_GUI_GETPASSWORD_FN _getPasswordFn;
   GWEN_GUI_SETPASSWORDSTATUS_FN _setPasswordStatusFn;
@@ -53,15 +52,16 @@ private:
   GWEN_GUI_GET_FILENAME_FN _getFileNameFn;
 
 
-  std::string _getPasswordHash(const char *token, const char *pin);
-
 public:
   CppGui();
   virtual ~CppGui();
 
-  static CppGui *getCppGui();
+  static CPPGUI_API CppGui *getCppGui();
 
   GWEN_GUI *getCInterface();
+
+  void setPasswordDb(GWEN_DB_NODE *dbPasswords, int persistent);
+  void setPasswordStore(GWEN_PASSWD_STORE *sto);
 
 protected:
   GWEN_GUI *_gui;
@@ -118,6 +118,7 @@ protected:
   int checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
 		       GWEN_SYNCIO *sio,
 		       uint32_t guiid);
+
 
   };
 

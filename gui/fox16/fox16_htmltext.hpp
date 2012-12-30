@@ -11,7 +11,7 @@
 #ifndef FOX16_HTMLTEXT_HPP
 #define FOX16_HTMLTEXT_HPP
 
-#include <gwen-gui-fox16/cppgui.hpp>
+#include <gwen-gui-fox16/fox16_gui.hpp>
 
 #include <fx.h>
 

@@ -10,8 +10,8 @@
 #ifndef FOX16_GUI_DIALOG_L_HPP
 #define FOX16_GUI_DIALOG_L_HPP
 
-#include "cppdialog.hpp"
 #include "fox16_gui.hpp"
+#include <gwen-gui-cpp/cppdialog.hpp>
 
 #include <fx.h>
 

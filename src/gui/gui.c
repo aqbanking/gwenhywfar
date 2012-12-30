@@ -1762,8 +1762,12 @@ int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
       GWEN_Dialog_free(dlg);
       return rv;
     }
+    if (GWEN_DlgInput_GetFlagAllowStore(dlg))
+      rv=1;
+    else
+      rv=0;
     GWEN_Dialog_free(dlg);
-    return 0;
+    return rv;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "User aborted");

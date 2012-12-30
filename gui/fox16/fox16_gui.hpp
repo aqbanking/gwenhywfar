@@ -11,7 +11,8 @@
 #ifndef FOX16_GUI_HPP
 #define FOX16_GUI_HPP
 
-#include <gwen-gui-fox16/cppgui.hpp>
+#include <gwen-gui-fox16/api.h>
+#include <gwen-gui-cpp/cppgui.hpp>
 
 #include <gwenhywfar/htmlfont_be.h>
 

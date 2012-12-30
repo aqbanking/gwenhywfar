@@ -53,7 +53,13 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
   /* setup dialog name */
   n=0;
   if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) n|=1;
-  if (gflags & GWEN_GUI_FLAGS_PERMPASSWORDS) n|=2;
+  if (
+      (gflags & GWEN_GUI_FLAGS_PERMPASSWORDS) &&
+      !(flags & GWEN_GUI_INPUT_FLAGS_DIRECT) &&
+      !(flags & GWEN_GUI_INPUT_FLAGS_TAN) &&
+      !(flags & GWEN_GUI_INPUT_FLAGS_DIRECT)
+     )
+    n|=2;
 
   snprintf(dlgNameBuf, sizeof(dlgNameBuf)-1, "dlg_gwen_input%d", n);
   dlgNameBuf[sizeof(dlgNameBuf)-1]=0;
@@ -115,7 +121,7 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
     GWEN_Dialog_RemoveWidget(dlg, "label2");
   }
 
-  if (!(gflags & GWEN_GUI_FLAGS_PERMPASSWORDS)) {
+  if (!(n & 2)) {
     GWEN_Dialog_RemoveWidget(dlg, "storePasswordCheck");
   }
 

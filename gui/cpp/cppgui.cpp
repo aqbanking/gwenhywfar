@@ -213,19 +213,17 @@ void CppGuiLinker::freeData(void *bp, void *p) {
 
 CppGui::CppGui()
 :_checkCertFn(NULL)
-,_dbPasswords(NULL)
 ,_gui(NULL) {
   _gui=GWEN_Gui_new();
-  _dbPasswords=GWEN_DB_Group_new("passwords");
 
   GWEN_INHERIT_SETDATA(GWEN_GUI, CppGui,
 		       _gui, this,
 		       CppGuiLinker::freeData);
   GWEN_Gui_UseDialogs(_gui);
+  _checkCertFn=GWEN_Gui_SetCheckCertFn(_gui, CppGuiLinker::CheckCert);
   _printFn=GWEN_Gui_SetPrintFn(_gui, CppGuiLinker::Print);
   _getPasswordFn=GWEN_Gui_SetGetPasswordFn(_gui, CppGuiLinker::GetPassword);
   _setPasswordStatusFn=GWEN_Gui_SetSetPasswordStatusFn(_gui, CppGuiLinker::SetPasswordStatus);
-  _checkCertFn=GWEN_Gui_SetCheckCertFn(_gui, CppGuiLinker::CheckCert);
   GWEN_Gui_SetLogHookFn(_gui, CppGuiLinker::LogHook);
   _execDialogFn=GWEN_Gui_SetExecDialogFn(_gui, CppGuiLinker::ExecDialog);
   _openDialogFn=GWEN_Gui_SetOpenDialogFn(_gui, CppGuiLinker::OpenDialog);
@@ -240,164 +238,6 @@ CppGui::~CppGui(){
   if (_gui) {
     GWEN_INHERIT_UNLINK(GWEN_GUI, CppGui, _gui)
     GWEN_Gui_free(_gui);
-  }
-  GWEN_DB_Group_free(_dbPasswords);
-}
-
-
-
-int CppGui::print(const char *docTitle,
-		  const char *docType,
-		  const char *descr,
-		  const char *text,
-		  uint32_t guiid){
-  if (_printFn)
-    return _printFn(_gui, docTitle, docType, descr, text, guiid);
-  else
-    return GWEN_ERROR_NOT_SUPPORTED;
-}
-
-
-
-std::string CppGui::_getPasswordHash(const char *token, const char *pin) {
-  GWEN_MDIGEST *md;
-  std::string s;
-  GWEN_BUFFER *buf;
-  int rv;
-
-  /* hash token and pin */
-  md=GWEN_MDigest_Md5_new();
-  rv=GWEN_MDigest_Begin(md);
-  if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)token, strlen(token));
-  if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)pin, strlen(pin));
-  if (rv==0)
-    rv=GWEN_MDigest_End(md);
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Hash error (%d)", rv);
-    GWEN_MDigest_free(md);
-    return "";
-  }
-
-  buf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Text_ToHexBuffer((const char*)GWEN_MDigest_GetDigestPtr(md),
-			GWEN_MDigest_GetDigestSize(md),
-			buf,
-			0, 0, 0);
-  s=std::string(GWEN_Buffer_GetStart(buf),
-		GWEN_Buffer_GetUsedBytes(buf));
-  GWEN_Buffer_free(buf);
-
-  GWEN_MDigest_free(md);
-  return s;
-}
-
-
-
-int CppGui::getPassword(uint32_t flags,
-			const char *token,
-			const char *title,
-			const char *text,
-			char *buffer,
-			int minLen,
-			int maxLen,
-			uint32_t guiid) {
-  if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
-      (flags & GWEN_GUI_INPUT_FLAGS_DIRECT)) {
-    return GWEN_Gui_InputBox(flags,
-			     title,
-			     text,
-			     buffer,
-			     minLen,
-			     maxLen,
-			     guiid);
-  }
-  else {
-    GWEN_BUFFER *buf;
-    int rv;
-    const char *s;
-  
-    buf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Text_EscapeToBufferTolerant(token, buf);
-  
-    if (!(flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)) {
-      s=GWEN_DB_GetCharValue(_dbPasswords,
-			     GWEN_Buffer_GetStart(buf),
-			     0, NULL);
-      if (s) {
-	int i;
-
-	i=strlen(s);
-	if (i>=minLen && i<=maxLen) {
-	  memmove(buffer, s, i+1);
-	  GWEN_Buffer_free(buf);
-	  return 0;
-	}
-      }
-    }
-  
-    for (;;) {
-      rv=GWEN_Gui_InputBox(flags,
-			   title,
-			   text,
-			   buffer,
-			   minLen,
-			   maxLen,
-			   guiid);
-      if (rv) {
-	GWEN_Buffer_free(buf);
-	return rv;
-      }
-      else {
-	std::string s;
-	std::list<std::string>::iterator it;
-	bool isBad=false;
-  
-	s=_getPasswordHash(token, buffer);
-	for (it=_badPasswords.begin();
-	     it!=_badPasswords.end();
-	     it++) {
-	  if (*it==s) {
-	    /* password is bad */
-	    isBad=true;
-	    break;
-	  }
-	}
-    
-	if (!isBad)
-	  break;
-	rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			       GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			       GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-			       I18N("Enforce PIN"),
-			       I18N(
-				   "You entered the same PIN twice.\n"
-				   "The PIN is marked as bad, do you want\n"
-				   "to use it anyway?"
-				   "<html>"
-				   "<p>"
-				   "You entered the same PIN twice."
-				   "</p>"
-				   "<p>"
-				   "The PIN is marked as <b>bad</b>, "
-				   "do you want to use it anyway?"
-				   "</p>"
-				   "</html>"),
-			       I18N("Use my input"),
-			       I18N("Re-enter"),
-			       0,
-			       guiid);
-	if (rv==1) {
-	  /* accept this input */
-	  _badPasswords.remove(s);
-	  break;
-	}
-      }
-    }
-
-    GWEN_Buffer_free(buf);
-    return 0;
   }
 }
 
@@ -457,6 +297,19 @@ int CppGui::getFileName(const char *caption,
 
 
 
+int CppGui::print(const char *docTitle,
+		  const char *docType,
+		  const char *descr,
+		  const char *text,
+		  uint32_t guiid){
+  if (_printFn)
+    return _printFn(_gui, docTitle, docType, descr, text, guiid);
+  else
+    return GWEN_ERROR_NOT_SUPPORTED;
+}
+
+
+
 
 int CppGui::checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
 			     GWEN_SYNCIO *sio,
@@ -471,45 +324,44 @@ int CppGui::checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
 
 
 
+int CppGui::getPassword(uint32_t flags,
+                        const char *token,
+			const char *title,
+			const char *text,
+			char *buffer,
+			int minLen,
+			int maxLen,
+                        uint32_t guiid) {
+  if (_getPasswordFn)
+    return _getPasswordFn(_gui, flags, token, title, text, buffer, minLen, maxLen, guiid);
+  else
+    return GWEN_ERROR_NOT_SUPPORTED;
+}
+
+
+
 int CppGui::setPasswordStatus(const char *token,
 			      const char *pin,
 			      GWEN_GUI_PASSWORD_STATUS status,
 			      uint32_t guiid) {
-  if (token==NULL && pin==NULL && status==GWEN_Gui_PasswordStatus_Remove) {
-    GWEN_DB_ClearGroup(_dbPasswords, NULL);
-  }
-  else {
-    GWEN_BUFFER *buf;
-    std::string s;
+  if (_setPasswordStatusFn)
+    return _setPasswordStatusFn(_gui, token, pin, status, guiid);
+  else
+    return GWEN_ERROR_NOT_SUPPORTED;
+}
 
-    buf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Text_EscapeToBufferTolerant(token, buf);
 
-    s=_getPasswordHash(token, pin);
-    if (status==GWEN_Gui_PasswordStatus_Bad) {
-      std::list<std::string>::iterator it;
 
-      s=_getPasswordHash(token, pin);
-      for (it=_badPasswords.begin();
-	   it!=_badPasswords.end();
-	   it++) {
-	if (*it==s) {
-	  /* bad password already in list */
-	  GWEN_Buffer_free(buf);
-	  return 0;
-	}
-      }
-      _badPasswords.push_back(s);
-    }
-    else if (status==GWEN_Gui_PasswordStatus_Ok) {
-      /* only store passwords of which we know that they are ok */
-      GWEN_DB_SetCharValue(_dbPasswords, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   GWEN_Buffer_GetStart(buf), pin);
-    }
-    GWEN_Buffer_free(buf);
-  }
 
-  return 0;
+
+void CppGui::setPasswordDb(GWEN_DB_NODE *dbPasswords, int persistent) {
+  GWEN_Gui_SetPasswordDb(_gui, dbPasswords, persistent);
+}
+
+
+
+void CppGui::setPasswordStore(GWEN_PASSWD_STORE *sto) {
+  GWEN_Gui_SetPasswdStore(_gui, sto);
 }
 
 
