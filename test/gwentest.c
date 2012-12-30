@@ -1673,24 +1673,6 @@ int testStringList2(int argc, char **argv) {
 
 
 
-int testFuzzy(int argc, char **argv) {
-  const char *w1, *w2;
-  uint32_t score = 0;
-
-  if (argc<4) {
-    fprintf(stderr, "Two extra-arguments needed.\n");
-    return 1;
-  }
-  w1=argv[2];
-  w2=argv[3];
-
-  //score=GWEN_Text_FuzzyCompare(w1, w2);
-  fprintf(stderr, "Similarity: %u\n", score);
-  return 0;
-}
-
-
-
 int testSort(int argc, char **argv) {
   GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *se;
@@ -1956,9 +1938,6 @@ int testMap2(int argc, char **argv) {
 
   fprintf(stderr, "  Resetting many pointers...");
   for (i=0; i<TEST_MAP2_MANY; i++) {
-    const char *s;
-
-    s=(i & 1)?s2:s1;
     res=GWEN_IdMap_Remove(map, i);
     if (res!=GWEN_IdMapResult_Ok) {
       fprintf(stderr, "FAILED: Could not reset pointer (%d).\n", res);
@@ -5147,8 +5126,6 @@ int main(int argc, char **argv) {
     rv=testPtr(argc, argv);
   else if (strcasecmp(argv[1], "sl2")==0)
     rv=testStringList2(argc, argv);
-  else if (strcasecmp(argv[1], "fuzzy")==0)
-    rv=testFuzzy(argc, argv);
   else if (strcasecmp(argv[1], "sort")==0)
     rv=testSort(argc, argv);
   else if (strcasecmp(argv[1], "buf2")==0)
