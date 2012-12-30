@@ -2206,7 +2206,7 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
 				   GWEN_Buffer_GetStart(hbuf),
 				   0, 1);
       /* remove from permanent passwd storage */
-      if (gui->dbPasswords) {
+      if (gui->passwdStore) {
 	int rv;
 
 	rv=GWEN_PasswordStore_SetPassword(gui->passwdStore, token, NULL);
