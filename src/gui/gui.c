@@ -632,8 +632,11 @@ GWEN_PASSWD_STORE *GWEN_Gui_GetPasswdStore(const GWEN_GUI *gui) {
 
 
 void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto) {
-  if (gui)
+  if (gui) {
+    if (gui->passwdStore && gui->passwdStore!=sto)
+      GWEN_PasswordStore_free(gui->passwdStore);
     gui->passwdStore=sto;
+  }
 }
 
 
