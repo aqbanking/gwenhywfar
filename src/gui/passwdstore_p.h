@@ -40,6 +40,7 @@ struct GWEN_PASSWD_STORE {
   char *fileName;
   char pw[GWEN_PASSWDSTORE_PWLEN];
   GWEN_DB_NODE *dbPasswords;
+  int isNew;
 };
 
 

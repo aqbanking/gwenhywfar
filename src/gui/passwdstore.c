@@ -104,10 +104,16 @@ static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
     return 0;
   }
   else {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-	     "fopen(%s): %s",
-	     fname, strerror(errno));
-    return GWEN_ERROR_IO;
+    if (errno==ENOENT) {
+      DBG_INFO(GWEN_LOGDOMAIN, "File [%s] does not exist", fname);
+      return GWEN_ERROR_NOT_FOUND;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "fopen(%s): %s",
+                fname, strerror(errno));
+      return GWEN_ERROR_IO;
+    }
   }
 }
 
@@ -221,6 +227,16 @@ static int GWEN_PasswordStore_CheckDigest(const uint8_t *t, uint32_t size, const
 
 
 
+static void GWEN_PasswordStore_SafeFreeDb(GWEN_PASSWD_STORE *sto) {
+  if (sto->dbPasswords) {
+    GWEN_DB_ModifyBranchFlagsDown(sto->dbPasswords, GWEN_DB_NODE_FLAGS_SAFE, GWEN_DB_NODE_FLAGS_SAFE);
+    GWEN_DB_Group_free(sto->dbPasswords);
+    sto->dbPasswords=NULL;
+  }
+}
+
+
+
 static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFER *secbuf) {
   int rv;
   GWEN_BUFFER *sbuf;
@@ -231,6 +247,12 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(sbuf);
     return rv;
+  }
+
+  if (GWEN_Buffer_GetUsedBytes(sbuf)<1) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Empty file");
+    GWEN_Buffer_free(sbuf);
+    return GWEN_ERROR_NO_DATA;
   }
 
   for (;;) {
@@ -317,7 +339,7 @@ static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uin
 
   /* make sure the data dir exists */
   DBG_ERROR(0, "Looking for [%s]", sto->fileName);
-  rv=GWEN_Directory_GetPath(sto->fileName, 0);
+  rv=GWEN_Directory_GetPath(sto->fileName, GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -329,7 +351,12 @@ static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uin
 
   /* ask for passwd if not already set */
   if (sto->pw[0]==0) {
-    rv=GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_DIRECT | GWEN_GUI_INPUT_FLAGS_CONFIRM,
+    uint32_t flags;
+
+    flags=GWEN_GUI_INPUT_FLAGS_DIRECT;
+    if (sto->isNew)
+      flags|=GWEN_GUI_INPUT_FLAGS_CONFIRM;
+    rv=GWEN_Gui_InputBox(flags,
                          I18N("Enter Password"),
                          I18N("Please enter the password for the password store\n"
                               "<html>"
@@ -410,12 +437,9 @@ static int GWEN_PasswordStore_ReadFile(GWEN_PASSWD_STORE *sto) {
     GWEN_Buffer_free(tbuf);
     return rv;
   }
+  sto->isNew=0;
 
-  if (sto->dbPasswords) {
-    GWEN_DB_ModifyBranchFlagsDown(sto->dbPasswords, GWEN_DB_NODE_FLAGS_SAFE, GWEN_DB_NODE_FLAGS_SAFE);
-    GWEN_DB_Group_free(sto->dbPasswords);
-    sto->dbPasswords=NULL;
-  }
+  GWEN_PasswordStore_SafeFreeDb(sto);
 
   sto->dbPasswords=GWEN_DB_Group_new("passwords");
   rv=GWEN_DB_ReadFromString(sto->dbPasswords,
@@ -532,7 +556,7 @@ int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, co
   int rv;
 
   /* make sure path exists */
-  rv=GWEN_Directory_GetPath(sto->fileName, 0);
+  rv=GWEN_Directory_GetPath(sto->fileName, GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -546,10 +570,18 @@ int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, co
     return GWEN_ERROR_IO;
   }
 
-  /* read and decrypt file, if we not already did */
-  if (sto->dbPasswords==NULL) {
-    rv=GWEN_PasswordStore_ReadFile(sto);
-    if (rv<0) {
+  /* read and decrypt file */
+  rv=GWEN_PasswordStore_ReadFile(sto);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_NOT_FOUND || rv==GWEN_ERROR_NO_DATA) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Will create password store [%s]", sto->fileName);
+      if (sto->dbPasswords==NULL) {
+        sto->dbPasswords=GWEN_DB_Group_new("passwords");
+        GWEN_DB_ModifyBranchFlagsDown(sto->dbPasswords, GWEN_DB_NODE_FLAGS_SAFE, GWEN_DB_NODE_FLAGS_SAFE);
+      }
+      sto->isNew=1;
+    }
+    else {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_FSLock_Unlock(lck);
       GWEN_FSLock_free(lck);
@@ -578,6 +610,10 @@ int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, co
   /* unlock file */
   GWEN_FSLock_Unlock(lck);
   GWEN_FSLock_free(lck);
+
+  /* release passwords */
+  GWEN_PasswordStore_SafeFreeDb(sto);
+
   return 0;
 }
 
@@ -586,39 +622,36 @@ int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, co
 
 int GWEN_PasswordStore_GetPassword(GWEN_PASSWD_STORE *sto, const char *token, char *buffer, int minLen, int maxLen) {
   int rv;
+  GWEN_FSLOCK *lck;
+  GWEN_FSLOCK_RESULT rs;
 
-  if (sto->dbPasswords==NULL) {
-    GWEN_FSLOCK *lck;
-    GWEN_FSLOCK_RESULT rs;
+  /* make sure path exists */
+  rv=GWEN_Directory_GetPath(sto->fileName, GWEN_PATH_FLAGS_VARIABLE);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
-    /* make sure path exists */
-    rv=GWEN_Directory_GetPath(sto->fileName, 0);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
+  /* lock file */
+  lck=GWEN_FSLock_new(sto->fileName, GWEN_FSLock_TypeFile);
+  rs=GWEN_FSLock_Lock(lck, 60*1000, 0);
+  if (rs!=GWEN_FSLock_ResultOk) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rs);
+    return GWEN_ERROR_IO;
+  }
 
-    /* lock file */
-    lck=GWEN_FSLock_new(sto->fileName, GWEN_FSLock_TypeFile);
-    rs=GWEN_FSLock_Lock(lck, 60*1000, 0);
-    if (rs!=GWEN_FSLock_ResultOk) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rs);
-      return GWEN_ERROR_IO;
-    }
-
-    /* read and decode file */
-    rv=GWEN_PasswordStore_ReadFile(sto);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      GWEN_FSLock_Unlock(lck);
-      GWEN_FSLock_free(lck);
-      return rv;
-    }
-
-    /* unlock file */
+  /* read and decode file */
+  rv=GWEN_PasswordStore_ReadFile(sto);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_FSLock_Unlock(lck);
     GWEN_FSLock_free(lck);
+    return rv;
   }
+
+  /* unlock file */
+  GWEN_FSLock_Unlock(lck);
+  GWEN_FSLock_free(lck);
 
   /* finally get password, if possible */
   rv=GWEN_PasswordStore__GetPassword(sto, token, buffer, minLen, maxLen);
@@ -626,6 +659,9 @@ int GWEN_PasswordStore_GetPassword(GWEN_PASSWD_STORE *sto, const char *token, ch
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
+
+  /* release passwords */
+  GWEN_PasswordStore_SafeFreeDb(sto);
 
   return 0;
 }

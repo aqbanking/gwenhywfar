@@ -77,6 +77,7 @@
 
 #include <gwenhywfar/cryptkeyrsa.h>
 #include <gwenhywfar/cryptmgrkeys.h>
+#include <gwenhywfar/passwdstore.h>
 
 
 
@@ -4866,6 +4867,71 @@ int testStringListFromString(int argc, char **argv) {
 
 
 
+int testPasswordStore1(int argc, char **argv) {
+  GWEN_PASSWD_STORE *sto;
+  const char *pw1="Secret1";
+  char pw[256];
+  int rv;
+  GWEN_GUI *gui;
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  sto=GWEN_PasswordStore_new("/tmp/pwstore.pw");
+  rv=GWEN_PasswordStore_SetPassword(sto, "TestVar1", pw1);
+  if (rv<0) {
+    DBG_ERROR(0, "Error setting password: %d", rv);
+    return 2;
+  }
+  rv=GWEN_PasswordStore_GetPassword(sto, "TestVar1", pw, 4, sizeof(pw)-1);
+  if (rv<0) {
+    DBG_ERROR(0, "Error getting password: %d", rv);
+    return 2;
+  }
+  if (strcmp(pw1, pw)!=0) {
+    DBG_ERROR(0, "Bad password, expected [%s], got [%s].", pw1, pw);
+    return 2;
+  }
+  GWEN_PasswordStore_free(sto);
+
+  return 0;
+}
+
+
+
+int testPasswordStore2(int argc, char **argv) {
+  GWEN_PASSWD_STORE *sto;
+  const char *pw1="Secret1";
+  char pw[256];
+  int rv;
+  GWEN_GUI *gui;
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  sto=GWEN_PasswordStore_new("/tmp/pwstore.pw");
+  rv=GWEN_PasswordStore_GetPassword(sto, "TestVar1", pw, 4, sizeof(pw)-1);
+  if (rv<0) {
+    DBG_ERROR(0, "Error getting password: %d", rv);
+    return 2;
+  }
+  if (strcmp(pw1, pw)!=0) {
+    DBG_ERROR(0, "Bad password, expected [%s], got [%s].", pw1, pw);
+    return 2;
+  }
+  GWEN_PasswordStore_free(sto);
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -5056,6 +5122,12 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "sl")==0) {
     rv=testStringListFromString(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "pw1")==0) {
+    rv=testPasswordStore1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "pw2")==0) {
+    rv=testPasswordStore2(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
