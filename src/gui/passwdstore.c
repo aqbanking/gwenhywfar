@@ -71,6 +71,18 @@ void GWEN_PasswordStore_free(GWEN_PASSWD_STORE *sto) {
 
 
 
+void GWEN_PasswordStore_ClearStoragePasswd(GWEN_PASSWD_STORE *sto) {
+  assert(sto);
+  memset(sto->pw, 0, GWEN_PASSWDSTORE_PWLEN);
+  if (sto->dbPasswords) {
+    GWEN_DB_ModifyBranchFlagsDown(sto->dbPasswords, GWEN_DB_NODE_FLAGS_SAFE, GWEN_DB_NODE_FLAGS_SAFE);
+    GWEN_DB_Group_free(sto->dbPasswords);
+    sto->dbPasswords=NULL;
+  }
+}
+
+
+
 
 static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
   FILE *f;

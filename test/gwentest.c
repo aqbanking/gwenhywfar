@@ -4934,6 +4934,7 @@ int testPasswordStore2(int argc, char **argv) {
 
 int testPasswordStore3(int argc, char **argv) {
   GWEN_PASSWD_STORE *sto;
+  GWEN_DB_NODE *dbPasswords;
   const char *pw1="Secret1";
   char pw[256];
   int rv;
@@ -4946,8 +4947,10 @@ int testPasswordStore3(int argc, char **argv) {
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
 
   sto=GWEN_PasswordStore_new("/tmp/pwstore.pw");
+  dbPasswords=GWEN_DB_Group_new("TempPasswords");
 
   GWEN_Gui_SetPasswdStore(gui, sto);
+  GWEN_Gui_SetPasswordDb(gui, dbPasswords, 0);
 
   rv=GWEN_Gui_GetPassword(0, "TestVar1", "Get Password 1", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
   if (rv<0) {
@@ -4956,6 +4959,104 @@ int testPasswordStore3(int argc, char **argv) {
   }
   if (strcmp(pw1, pw)!=0) {
     DBG_ERROR(0, "Bad password, expected [%s], got [%s].", pw1, pw);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+int testPasswordStore4(int argc, char **argv) {
+  GWEN_PASSWD_STORE *sto;
+  GWEN_DB_NODE *dbPasswords;
+  const char *token;
+  const char *epw;
+  char pw[256];
+  int rv;
+  GWEN_GUI *gui;
+
+  if (argc<4) {
+    DBG_ERROR(0, "Expected token and secret");
+    return 1;
+  }
+  token=argv[2];
+  epw=argv[3];
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_AddFlags(gui, GWEN_CGUI_FLAGS_PERMPASSWORDS);
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  sto=GWEN_PasswordStore_new("/tmp/pwstore.pw");
+  dbPasswords=GWEN_DB_Group_new("TempPasswords");
+
+  GWEN_Gui_SetPasswdStore(gui, sto);
+  GWEN_Gui_SetPasswordDb(gui, dbPasswords, 0);
+
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Error getting password: %d", rv);
+    return 2;
+  }
+  if (strcmp(epw, pw)!=0) {
+    DBG_ERROR(0, "Bad password for token [%s], expected [%s], got [%s].", token, epw, pw);
+    return 2;
+  }
+
+  return 0;
+}
+
+
+
+int testPasswordStore5(int argc, char **argv) {
+  GWEN_PASSWD_STORE *sto;
+  GWEN_DB_NODE *dbPasswords;
+  const char *token;
+  const char *epw;
+  char pw[256];
+  int rv;
+  GWEN_GUI *gui;
+
+  if (argc<4) {
+    DBG_ERROR(0, "Expected token and secret");
+    return 1;
+  }
+  token=argv[2];
+  epw=argv[3];
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_AddFlags(gui, GWEN_CGUI_FLAGS_PERMPASSWORDS);
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  sto=GWEN_PasswordStore_new("/tmp/pwstore.pw");
+  dbPasswords=GWEN_DB_Group_new("TempPasswords");
+
+  GWEN_Gui_SetPasswdStore(gui, sto);
+  GWEN_Gui_SetPasswordDb(gui, dbPasswords, 0);
+
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Error getting password: %d", rv);
+    return 2;
+  }
+  if (strcmp(epw, pw)!=0) {
+    DBG_ERROR(0, "Bad password for token [%s], expected [%s], got [%s].", token, epw, pw);
+    return 2;
+  }
+
+  /* 2nd time: Should read password from temporary storage */
+  memset(pw, 0, sizeof(pw)-1);
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Error getting password: %d", rv);
+    return 2;
+  }
+  if (strcmp(epw, pw)!=0) {
+    DBG_ERROR(0, "Bad password for token [%s], expected [%s], got [%s].", token, epw, pw);
     return 2;
   }
 
@@ -5163,6 +5264,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "pw3")==0) {
     rv=testPasswordStore3(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "pw4")==0) {
+    rv=testPasswordStore4(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

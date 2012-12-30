@@ -89,14 +89,10 @@ GWEN_GUI *GWEN_Gui_CGui_new(void) {
   GWEN_Gui_SetProgressSetTotalFn(gui, GWEN_Gui_CGui_ProgressSetTotal);
   GWEN_Gui_SetProgressLogFn(gui, GWEN_Gui_CGui_ProgressLog);
   GWEN_Gui_SetProgressEndFn(gui, GWEN_Gui_CGui_ProgressEnd);
-  GWEN_Gui_SetSetPasswordStatusFn(gui, GWEN_Gui_CGui_SetPasswordStatus);
-  GWEN_Gui_SetGetPasswordFn(gui, GWEN_Gui_CGui_GetPassword);
 
   cgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, GWEN_Gui_CGui_CheckCert);
 
-  cgui->dbPasswords=GWEN_DB_Group_new("passwords");
   cgui->dbCerts=GWEN_DB_Group_new("certs");
-  cgui->badPasswords=GWEN_StringList_new();
 
   return gui;
 }
@@ -108,9 +104,7 @@ void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p) {
 
   cgui=(GWEN_GUI_CGUI*)p;
   GWEN_Gui_CProgress_List_free(cgui->progressList);
-  GWEN_StringList_free(cgui->badPasswords);
   GWEN_DB_Group_free(cgui->dbCerts);
-  GWEN_DB_Group_free(cgui->dbPasswords);
   GWEN_FREE_OBJECT(cgui);
 }
 
@@ -155,6 +149,20 @@ void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i) {
   else
     GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
 }
+
+
+
+void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui, GWEN_DB_NODE *dbPasswords, int persistent) {
+  GWEN_Gui_SetPasswordDb(gui, dbPasswords, persistent);
+}
+
+
+
+GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui) {
+  return GWEN_Gui_GetPasswordDb(gui);
+}
+
+
 
 
 
@@ -486,6 +494,8 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
     rv=GWEN_Gui_CGui__input(gui, flags, buffer, minLen, maxLen, guiid);
   }
 
+  if ((rv==0) && (GWEN_Gui_GetFlags(gui) & GWEN_CGUI_FLAGS_PERMPASSWORDS))
+    return 1;
   return rv;
 }
 
@@ -768,198 +778,6 @@ int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
     GWEN_Buffer_free(hbuf);
     return GWEN_ERROR_NOT_SUPPORTED;
   }
-}
-
-
-
-int GWENHYWFAR_CB GWEN_Gui_CGui_SetPasswordStatus(GWEN_GUI *gui,
-                                                  const char *token,
-                                                  const char *pin,
-                                                  GWEN_GUI_PASSWORD_STATUS status,
-                                                  GWEN_UNUSED uint32_t guiid) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  if (token==NULL && pin==NULL && status==GWEN_Gui_PasswordStatus_Remove) {
-    if (cgui->persistentPasswords==0)
-      GWEN_DB_ClearGroup(cgui->dbPasswords, NULL);
-  }
-  else {
-    GWEN_BUFFER *hbuf;
-
-    hbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    GWEN_Gui_CGui__HashPair(token, pin, hbuf);
-    if (status==GWEN_Gui_PasswordStatus_Bad)
-      GWEN_StringList_AppendString(cgui->badPasswords,
-				   GWEN_Buffer_GetStart(hbuf),
-				   0, 1);
-    else if (status==GWEN_Gui_PasswordStatus_Ok ||
-	     status==GWEN_Gui_PasswordStatus_Remove) {
-      if (cgui->persistentPasswords==0)
-	GWEN_StringList_RemoveString(cgui->badPasswords,
-				     GWEN_Buffer_GetStart(hbuf));
-    }
-    GWEN_Buffer_free(hbuf);
-  }
-
-  return 0;
-}
-
-
-
-int GWENHYWFAR_CB GWEN_Gui_CGui_GetPassword(GWEN_GUI *gui,
-                                            uint32_t flags,
-                                            const char *token,
-                                            const char *title,
-                                            const char *text,
-                                            char *buffer,
-                                            int minLen,
-                                            int maxLen,
-                                            uint32_t guiid) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
-      (flags & GWEN_GUI_INPUT_FLAGS_DIRECT)) {
-    return GWEN_Gui_InputBox(flags,
-                             title,
-			     text,
-			     buffer,
-			     minLen,
-			     maxLen,
-			     guiid);
-  }
-  else {
-    GWEN_BUFFER *buf;
-    int rv;
-    const char *s;
-  
-    buf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Text_EscapeToBufferTolerant(token, buf);
-
-    if (!(flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)) {
-      s=GWEN_DB_GetCharValue(cgui->dbPasswords,
-			     GWEN_Buffer_GetStart(buf),
-			     0, NULL);
-      if (s) {
-	int i;
-
-	i=strlen(s);
-	if (i>=minLen && i < maxLen) {
-	  memmove(buffer, s, i+1);
-	  GWEN_Buffer_free(buf);
-	  return 0;
-	}
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Stored password [%s] is not within size limits (%d), rejecting.",
-		    GWEN_Buffer_GetStart(buf), i);
-	}
-      }
-    }
-
-    if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-		"Password for [%s] missing in noninteractive mode, "
-		"aborting", GWEN_Buffer_GetStart(buf));
-      GWEN_Buffer_free(buf);
-      return GWEN_ERROR_USER_ABORTED;
-    }
-
-    for (;;) {
-      rv=GWEN_Gui_InputBox(flags,
-			   title,
-			   text,
-			   buffer,
-			   minLen,
-			   maxLen,
-			   guiid);
-      if (rv<0) {
-	GWEN_Buffer_free(buf);
-	return rv;
-      }
-      else {
-	GWEN_BUFFER *hbuf;
-        int isBad=0;
-    
-	hbuf=GWEN_Buffer_new(0, 64, 0, 1);
-	GWEN_Gui_CGui__HashPair(token, buffer, hbuf);
-	isBad=GWEN_StringList_HasString(cgui->badPasswords,
-					GWEN_Buffer_GetStart(hbuf));
-	if (!isBad) {
-	  GWEN_Buffer_free(hbuf);
-	  break;
-	}
-	rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			       GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			       GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-			       I18N("Enforce PIN"),
-			       I18N(
-				    "You entered the same PIN twice.\n"
-				    "The PIN is marked as bad, do you want\n"
-				    "to use it anyway?"
-				    "<html>"
-				    "<p>"
-				    "You entered the same PIN twice."
-				    "</p>"
-				    "<p>"
-				    "The PIN is marked as <b>bad</b>, "
-				    "do you want to use it anyway?"
-				    "</p>"
-				    "</html>"),
-			       I18N("Use my input"),
-			       I18N("Re-enter"),
-			       0,
-			       guiid);
-	if (rv==1) {
-	  /* accept this input */
-	  GWEN_StringList_RemoveString(cgui->badPasswords,
-				       GWEN_Buffer_GetStart(hbuf));
-	  GWEN_Buffer_free(hbuf);
-	  break;
-	}
-	GWEN_Buffer_free(hbuf);
-      }
-    } /* for */
-  
-    GWEN_DB_SetCharValue(cgui->dbPasswords, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 GWEN_Buffer_GetStart(buf), buffer);
-    GWEN_Buffer_free(buf);
-    return 0;
-  }
-}
-
-
-
-void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
-				 GWEN_DB_NODE *dbPasswords,
-				 int persistent) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  GWEN_DB_Group_free(cgui->dbPasswords);
-  cgui->dbPasswords=dbPasswords;
-  cgui->persistentPasswords=persistent;
-}
-
-
-
-GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  return cgui->dbPasswords;
 }
 
 

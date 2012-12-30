@@ -18,6 +18,10 @@
 extern "C" {
 #endif
 
+/** Force storing entered passwords in permanent password storage */
+#define GWEN_CGUI_FLAGS_PERMPASSWORDS     0x00010000
+
+
 /** @defgroup MOD_GUI_CGUI GUI Implementation for the Console
  * @ingroup MOD_GUI
  *
@@ -96,7 +100,7 @@ void GWEN_Gui_CGui_SetIsNonInteractive(GWEN_GUI *gui, int i);
  * @param persistent if !=0 then the passwords come from a password file
  * and a request to clear the password cache will be ignored.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
 				 GWEN_DB_NODE *dbPasswords,
 				 int persistent);
@@ -105,7 +109,7 @@ void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
  * Returns a pointer to the internally used password cache. The GUI
  * object remains the owner of the object returned (if any).
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API DEPRECATED
 GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui);
 /*@}*/
 

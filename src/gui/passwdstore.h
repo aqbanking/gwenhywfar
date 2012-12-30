@@ -42,6 +42,8 @@ GWEN_PASSWD_STORE *GWEN_PasswordStore_new(const char *fname);
 GWENHYWFAR_API
 void GWEN_PasswordStore_free(GWEN_PASSWD_STORE *sto);
 
+GWENHYWFAR_API
+void GWEN_PasswordStore_ClearStoragePasswd(GWEN_PASSWD_STORE *sto);
 
 GWENHYWFAR_API
 int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, const char *secret);

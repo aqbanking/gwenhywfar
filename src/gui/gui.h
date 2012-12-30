@@ -865,7 +865,7 @@ int GWEN_Gui_GetSyncIo(const char *url,
 /** GUI automatically rejects invalid certs */
 #define GWEN_GUI_FLAGS_REJECTINVALIDCERTS 0x00000004
 /** GUI uses permanent password storage */
-#define GWEN_GUI_FLAGS_PERMPASSWORDS     0x00000008
+#define GWEN_GUI_FLAGS_PERMPASSWORDS      0x00000008
 
 /** GUI implementation supports dialogs (see @ref MOD_GUI_DIALOG) */
 #define GWEN_GUI_FLAGS_DIALOGSUPPORTED    0x80000000

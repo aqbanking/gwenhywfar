@@ -80,6 +80,9 @@ GWEN_GUI *GWEN_Gui_new(void) {
   gui->checkCertFn=GWEN_Gui_CheckCertBuiltIn;
   gui->getSyncIoFn=GWEN_Gui_Internal_GetSyncIo;
 
+  gui->getPasswordFn=GWEN_Gui_Internal_GetPassword;
+  gui->setPasswordStatusFn=GWEN_Gui_Internal_SetPasswordStatus;
+
   gui->progressDataTree=GWEN_ProgressData_Tree_new();
   gui->activeDialogs=GWEN_Dialog_List_new();
 
@@ -636,6 +639,8 @@ void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto) {
     if (gui->passwdStore && gui->passwdStore!=sto)
       GWEN_PasswordStore_free(gui->passwdStore);
     gui->passwdStore=sto;
+    if (sto)
+      gui->flags|=GWEN_GUI_FLAGS_PERMPASSWORDS;
   }
 }
 
@@ -651,7 +656,7 @@ void GWEN_Gui_SetPasswordDb(GWEN_GUI *gui,
 
 
 
-GWEN_DB_NODE *GWEN_Gui_Gui_GetPasswordDb(const GWEN_GUI *gui) {
+GWEN_DB_NODE *GWEN_Gui_GetPasswordDb(const GWEN_GUI *gui) {
   return gui->dbPasswords;
 }
 
@@ -2076,11 +2081,18 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
     if (gui->passwdStore) {
       rv=GWEN_PasswordStore_GetPassword(gui->passwdStore, token, buffer, minLen, maxLen);
       if (rv<0) {
-        if (rv!=GWEN_ERROR_NOT_FOUND) {
+        if (rv==GWEN_ERROR_NOT_FOUND) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Password not found in PasswordStore");
+        }
+        else {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
           GWEN_Buffer_free(buf);
           return rv;
 	}
+      }
+      else {
+        /* got password */
+        return 0;
       }
     }
 
@@ -2175,6 +2187,8 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
 							     GWEN_GUI_PASSWORD_STATUS status,
 							     GWEN_UNUSED uint32_t guiid) {
   if (token==NULL && pin==NULL && status==GWEN_Gui_PasswordStatus_Remove) {
+    if (gui->passwdStore)
+      GWEN_PasswordStore_ClearStoragePasswd(gui->passwdStore);
     if (gui->persistentPasswords==0)
       GWEN_DB_ClearGroup(gui->dbPasswords, NULL);
   }
