@@ -305,9 +305,10 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
                                 GWEN_PASSWDSTORE_PW_ITERATIONS,
                                 GWEN_PASSWDSTORE_CRYPT_ITERATIONS);
     GWEN_Buffer_free(tbuf);
-    GWEN_Buffer_free(sbuf);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      /* error, reset password */
+      memset(sto->pw, 0, sizeof(sto->pw));
     }
     else {
       /* check and remove hash */
@@ -324,6 +325,7 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
         rv=GWEN_PasswordStore_CheckDigest(p1, len-20, p2);
         if (rv<0) {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(sbuf);
           return rv;
         }
         else {
@@ -335,9 +337,13 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
         DBG_ERROR(GWEN_LOGDOMAIN, "Bad data size (smaller than 20 bytes)");
         /* reset buffer */
         GWEN_Buffer_Crop(secbuf, 0, pos1);
+        GWEN_Buffer_free(sbuf);
+        return rv;
       }
     }
-  }
+  } /* for */
+
+  GWEN_Buffer_free(sbuf);
 
   return 0;
 }
