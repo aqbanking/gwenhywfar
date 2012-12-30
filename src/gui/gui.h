@@ -478,11 +478,13 @@ void GWEN_Gui_ShowError(const char *title, const char *text, ...);
  * a 5 as maxLen.
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  *
- * @return Zero on success, nonzero when the user requested abort or there was
+ * @return Zero on success, less than zero when the user requested abort or there was
  * any error. The special value AB_ERROR_DEFAULT_VALUE should be returned if
  * the flag GWEN_GUI_INPUT_FLAGS_ALLOW_DEFAULT was given and the user has
  * chosen to use the default value (e.g. pressed the "default" button in a
  * GUI).
+ * A return value of "1" means the result may be stored by the application. This value is
+ * returned when the user ticks the checkbox "Store permanently".
  */
 GWENHYWFAR_API 
 int GWEN_Gui_InputBox(uint32_t flags,
