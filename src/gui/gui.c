@@ -2085,7 +2085,7 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
     if (gui->passwdStore) {
       rv=GWEN_PasswordStore_GetPassword(gui->passwdStore, token, buffer, minLen, maxLen);
       if (rv<0) {
-        if (rv==GWEN_ERROR_NOT_FOUND) {
+        if (rv==GWEN_ERROR_NOT_FOUND || rv==GWEN_ERROR_NO_DATA) {
           DBG_INFO(GWEN_LOGDOMAIN, "Password not found in PasswordStore");
         }
         else {
