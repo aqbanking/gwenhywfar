@@ -267,7 +267,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 static int _buildPostHeaders(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
-  TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_TYPEMANAGER *tym GWEN_UNUSED;
   TYPEMAKER2_HEADER_LIST *hl;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
