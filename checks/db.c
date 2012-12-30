@@ -67,7 +67,7 @@ int check_db3() {
   }
 
   db2=GWEN_DB_GetGroup(cfg, 0, "test1/test11");
-  if (db1==NULL) {
+  if (db2==NULL) {
     fprintf(stderr, "ERROR in db3: Could not create group [test1/test11].\n");
     return 2;
   }
@@ -97,7 +97,7 @@ int check_db4() {
   }
 
   db2=GWEN_DB_GetGroup(cfg, 0, "test1/test11");
-  if (db1==NULL) {
+  if (db2==NULL) {
     fprintf(stderr, "ERROR in db2: Could not create group [test1/test11].\n");
     return 2;
   }
@@ -144,7 +144,7 @@ int check_db5() {
   }
 
   db2=GWEN_DB_GetGroup(cfg, 0, "test1/test11");
-  if (db1==NULL) {
+  if (db2==NULL) {
     fprintf(stderr, "ERROR in db2: Could not create group [test1/test11].\n");
     return 2;
   }
@@ -223,7 +223,7 @@ int check_db6() {
   }
 
   db2=GWEN_DB_GetGroup(cfg, 0, "test1/test11");
-  if (db1==NULL) {
+  if (db2==NULL) {
     fprintf(stderr, "ERROR in db2: Could not create group [test1/test11].\n");
     return 2;
   }
@@ -328,7 +328,7 @@ int check_db7() {
   }
 
   db2=GWEN_DB_GetGroup(cfg, 0, "test1/test11");
-  if (db1==NULL) {
+  if (db2==NULL) {
     fprintf(stderr, "ERROR in db2: Could not create group [test1/test11].\n");
     return 2;
   }
