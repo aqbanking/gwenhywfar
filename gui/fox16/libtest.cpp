@@ -467,7 +467,6 @@ int test10(int argc, char **argv) {
   FXApp application("libtest","Martin Preuss");
   FOX16_Gui *gui;
   int rv;
-  GWEN_DIALOG *dlg;
   GWEN_PASSWD_STORE *sto;
   GWEN_DB_NODE *dbPasswords;
   const char *token;
