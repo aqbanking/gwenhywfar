@@ -7,7 +7,7 @@
       <widget type="label"      name="label1" text="Input" />
       <widget type="lineEdit"   name="input1" columns="32" flags="fillX fillY" />
 
-      <widget type="label"      name="label2" text="Input" />
+      <widget type="label"      name="label2" text="Again" />
       <widget type="lineEdit"   name="input2" columns="32" flags="fillX fillY" />
     </widget>
 
