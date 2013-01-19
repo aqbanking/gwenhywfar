@@ -917,6 +917,10 @@ GWENHYWFAR_API GWEN_PASSWD_STORE *GWEN_Gui_GetPasswdStore(const GWEN_GUI *gui);
 GWENHYWFAR_API void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto);
 
 
+/** Returns the minimum log level needed to show progress logs */
+GWENHYWFAR_API GWEN_LOGGER_LEVEL GWEN_Gui_GetMinProgressLogLevel(const GWEN_GUI *gui);
+GWENHYWFAR_API void GWEN_Gui_SetMinProgressLogLevel(GWEN_GUI *gui, GWEN_LOGGER_LEVEL ll);
+
 
 #ifdef __cplusplus
 }

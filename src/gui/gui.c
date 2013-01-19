@@ -89,6 +89,8 @@ GWEN_GUI *GWEN_Gui_new(void) {
   gui->dbPasswords=GWEN_DB_Group_new("passwords");
   gui->badPasswords=GWEN_StringList_new();
 
+  gui->minProgressLogLevel=GWEN_LoggerLevel_Info;
+
   return gui;
 }
 
@@ -1689,49 +1691,54 @@ int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
 				  uint32_t pid,
 				  GWEN_LOGGER_LEVEL level,
 				  const char *text) {
-  GWEN_PROGRESS_DATA *pd;
-  int aborted=0;
+  assert(gui);
 
-  if (pid==0) {
-    pid=gui->lastProgressId;
+  /* only show messages with log level lower or equal threshold */
+  if (level<=gui->minProgressLogLevel) {
+    GWEN_PROGRESS_DATA *pd;
+    int aborted=0;
+  
     if (pid==0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Last active progress not available");
+      pid=gui->lastProgressId;
+      if (pid==0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Last active progress not available");
+        return GWEN_ERROR_INVALID;
+      }
+    }
+  
+    pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
+    if (pd==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Progress by id %08x not found", pid);
       return GWEN_ERROR_INVALID;
     }
-  }
-
-  pd=GWEN_ProgressData_Tree_FindProgressById(gui->progressDataTree, pid);
-  if (pd==NULL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Progress by id %08x not found", pid);
-    return GWEN_ERROR_INVALID;
-  }
-  else {
-    GWEN_DIALOG *dlg;
-
-    if (level<=GWEN_LoggerLevel_Notice)
-      GWEN_ProgressData_SetShown(pd, 1);
-    if (level<=GWEN_LoggerLevel_Warning)
-      GWEN_ProgressData_AddFlags(pd, GWEN_GUI_PROGRESS_KEEP_OPEN);
-    GWEN_Gui_Internal_CheckShow(gui, pd);
-
-    dlg=GWEN_ProgressData_GetDialog(pd);
-    if (dlg) {
-      if (level<=GWEN_LoggerLevel_Warning) {
-	GWEN_DlgProgress_SetStayOpen(dlg, 1);
-	GWEN_DlgProgress_SetShowLog(dlg, 1);
+    else {
+      GWEN_DIALOG *dlg;
+  
+      if (level<=GWEN_LoggerLevel_Notice)
+        GWEN_ProgressData_SetShown(pd, 1);
+      if (level<=GWEN_LoggerLevel_Warning)
+        GWEN_ProgressData_AddFlags(pd, GWEN_GUI_PROGRESS_KEEP_OPEN);
+      GWEN_Gui_Internal_CheckShow(gui, pd);
+  
+      dlg=GWEN_ProgressData_GetDialog(pd);
+      if (dlg) {
+        if (level<=GWEN_LoggerLevel_Warning) {
+          GWEN_DlgProgress_SetStayOpen(dlg, 1);
+          GWEN_DlgProgress_SetShowLog(dlg, 1);
+        }
+  
+        GWEN_DlgProgress_AddLogText(dlg, level, text);
+        GWEN_Gui_RunDialog(dlg, 0);
       }
-
-      GWEN_DlgProgress_AddLogText(dlg, level, text);
-      GWEN_Gui_RunDialog(dlg, 0);
+      else
+        GWEN_ProgressData_AddLogText(pd, level, text);
+  
+      aborted=GWEN_ProgressData_GetAborted(pd);
     }
-    else
-      GWEN_ProgressData_AddLogText(pd, level, text);
-
-    aborted=GWEN_ProgressData_GetAborted(pd);
+  
+    if (aborted)
+      return GWEN_ERROR_USER_ABORTED;
   }
-
-  if (aborted)
-    return GWEN_ERROR_USER_ABORTED;
   return 0;
 }
 
@@ -2225,6 +2232,22 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
 
   return 0;
 }
+
+
+
+
+GWEN_LOGGER_LEVEL GWEN_Gui_GetMinProgressLogLevel(const GWEN_GUI *gui) {
+  assert(gui);
+  return gui->minProgressLogLevel;
+}
+
+
+
+void GWEN_Gui_SetMinProgressLogLevel(GWEN_GUI *gui, GWEN_LOGGER_LEVEL ll) {
+  assert(gui);
+  gui->minProgressLogLevel=ll;
+}
+
 
 
 

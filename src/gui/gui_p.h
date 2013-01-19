@@ -94,6 +94,8 @@ struct GWEN_GUI {
   GWEN_STRINGLIST *badPasswords;
   int persistentPasswords;
 
+  GWEN_LOGGER_LEVEL minProgressLogLevel;
+
   uint32_t refCount;
 };
 
