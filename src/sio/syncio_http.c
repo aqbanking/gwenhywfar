@@ -1398,7 +1398,7 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
       s=GWEN_DB_GetCharValue(xio->dbStatusIn, "text", 0, NULL);
       DBG_DEBUG(GWEN_LOGDOMAIN, "HTTP-Status: %d (%s)",
 		code, s?s:"- no text -");
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info,
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Debug,
 			    I18N("HTTP-Status: %d (%s)"),
 			    code, s?s:I18N("- no details -)"));
     }
@@ -1541,7 +1541,7 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
       s=GWEN_DB_GetCharValue(xio->dbStatusIn, "text", 0, NULL);
       DBG_DEBUG(GWEN_LOGDOMAIN, "HTTP-Status: %d (%s)",
 		code, s?s:"- no text -");
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info,
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Debug,
 			    I18N("HTTP-Status: %d (%s)"),
 			    code, s?s:I18N("- no details -)"));
     }

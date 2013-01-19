@@ -283,7 +283,7 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 
   /* first connect to server */
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
+		       GWEN_LoggerLevel_Debug,
 		       I18N("Connecting to server..."));
   rv=GWEN_SyncIo_Connect(sess->syncIo);
   if (rv==GWEN_ERROR_SSL) {
@@ -333,7 +333,7 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
     GWEN_DB_NODE *db;
 
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Debug,
 			 I18N("Connected."));
 
     /* set command */
@@ -362,7 +362,7 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 			"Content-length", blen);
 
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Debug,
 			 I18N("Sending message..."));
 
     /* send request */
@@ -379,7 +379,7 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 
     DBG_INFO(GWEN_LOGDOMAIN, "Message sent.");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Debug,
 			 I18N("Message sent."));
     return 0;
   }
@@ -448,7 +448,7 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
   pos=GWEN_Buffer_GetPos(buf);
   for (;;) {
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Debug,
 			 I18N("Receiving response..."));
     rv=GWEN_HttpSession__RecvPacket(sess, buf);
     if (rv<0 || rv<200 || rv>299) {
@@ -460,22 +460,22 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
     if (rv!=100)
       break;
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Debug,
 			 I18N("Received continuation response."));
     GWEN_Buffer_Crop(buf, 0, pos);
   }
 
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
+		       GWEN_LoggerLevel_Debug,
 		       I18N("Response received."));
 
   /* disconnect */
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
+		       GWEN_LoggerLevel_Debug,
 		       I18N("Disconnecting from server..."));
   GWEN_SyncIo_Disconnect(sess->syncIo);
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
+		       GWEN_LoggerLevel_Debug,
 		       I18N("Disconnected."));
   return rv;
 }
@@ -558,7 +558,7 @@ int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname
     }
 
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Debug,
 			 I18N("Receiving response..."));
     rv=GWEN_HttpSession__RecvPacketToSio(sess, sio);
     if (rv<0 || rv<200 || rv>299) {
@@ -590,7 +590,7 @@ int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname
       break;
     }
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Debug,
 			 I18N("Received continuation response."));
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
@@ -598,16 +598,16 @@ int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname
   }
 
   GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
+                       GWEN_LoggerLevel_Debug,
                        I18N("Response received."));
 
   /* disconnect */
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
+		       GWEN_LoggerLevel_Debug,
 		       I18N("Disconnecting from server..."));
   GWEN_SyncIo_Disconnect(sess->syncIo);
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
+		       GWEN_LoggerLevel_Debug,
 		       I18N("Disconnected."));
   return rv;
 }
@@ -638,7 +638,7 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
       if (sess->flags & GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3) {
 	DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (non-SSLv3)");
 	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Info,
+			     GWEN_LoggerLevel_Warning,
 			     I18N("Retrying to connect (non-SSLv3)"));
 	GWEN_SyncIo_SubFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
 	rv=GWEN_SyncIo_Connect(sess->syncIo);
@@ -649,7 +649,7 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
       else {
 	DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (SSLv3)");
 	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Info,
+			     GWEN_LoggerLevel_Warning,
 			     I18N("Retrying to connect (SSLv3)"));
 	GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
 	rv=GWEN_SyncIo_Connect(sess->syncIo);
@@ -670,12 +670,12 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
   }
   else {
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Notice,
 			 I18N("Connected."));
 
     GWEN_SyncIo_Disconnect(sess->syncIo);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
+			 GWEN_LoggerLevel_Notice,
 			 I18N("Disconnected."));
     return 0;
   }

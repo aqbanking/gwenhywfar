@@ -191,7 +191,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
   rv=GWEN_InetAddr_SetAddress(addr, xio->address);
   if (rv<0) {
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Info,
+			  GWEN_LoggerLevel_Debug,
 			  I18N("Resolving hostname \"%s\" ..."),
 			  xio->address);
     rv=GWEN_InetAddr_SetName(addr, xio->address);
@@ -214,7 +214,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
       }
       else
 	GWEN_Gui_ProgressLog2(0,
-			      GWEN_LoggerLevel_Info,
+			      GWEN_LoggerLevel_Debug,
 			      I18N("IP address is \"%s\""),
 			      addrBuf);
     }
@@ -223,7 +223,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
 
   /* connect */
   GWEN_Gui_ProgressLog2(0,
-			GWEN_LoggerLevel_Info,
+			GWEN_LoggerLevel_Debug,
 			I18N("Connecting to \"%s\""),
 			xio->address);
   rv=GWEN_Socket_Connect(sk, addr);
@@ -243,7 +243,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
   GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
   DBG_INFO(GWEN_LOGDOMAIN, "Connected to \"%s\"", xio->address);
   GWEN_Gui_ProgressLog2(0,
-			GWEN_LoggerLevel_Notice,
+			GWEN_LoggerLevel_Debug,
 			I18N("Connected to \"%s\""),
 			xio->address);
   return 0;
