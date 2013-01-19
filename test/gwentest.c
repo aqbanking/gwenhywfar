@@ -32,6 +32,7 @@
 #include <gwenhywfar/syncio_buffered.h>
 #include <gwenhywfar/syncio_http.h>
 #include <gwenhywfar/syncio_tls.h>
+#include <gwenhywfar/syncio_memory.h>
 #include <gwenhywfar/smalltresor.h>
 #include <gwenhywfar/sar.h>
 #ifdef OS_WIN32
@@ -5044,6 +5045,76 @@ int testPasswordStore5(int argc, char **argv) {
 
 
 
+int testCSV(int argc, char **argv) {
+  GWEN_DB_NODE *dbData;
+  GWEN_DB_NODE *dbParams;
+  GWEN_DBIO *dbio;
+  GWEN_SYNCIO *sio;
+  int rv;
+  GWEN_GUI *gui;
+  const char params[]={
+      "quote=\"1\"\n"
+      "title=\"1\"\n"
+      "delimiter=\";\n"
+      "columns {\n"
+      "  1=\"column-1\"\n"
+      "  2=\"column-2\"\n"
+      "  3=\"column-3\"\n"
+      "}\n"
+  };
+  const char data[]={
+      "\"col1\";\"col2\";\"col3\"\n"
+      "\"1-1\";\"1-2\";\"1-3\"\n"
+      "\"2-1\";\"2-2\";\"2-3\"\n"
+      "\"3-1\";\"3-2\";\"3-3\""
+  };
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  dbParams=GWEN_DB_Group_new("params");
+  rv=GWEN_DB_ReadFromString(dbParams, params, strlen(params), GWEN_DB_FLAGS_DEFAULT);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    return rv;
+  }
+  dbData=GWEN_DB_Group_new("transactions");
+
+  dbio=GWEN_DBIO_GetPlugin("csv");
+  if (!dbio) {
+    DBG_ERROR(0, "GWEN DBIO plugin \"CSV\" not available");
+    return 0;
+  }
+
+  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t*) data, strlen(data));
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=GWEN_DBIO_Import(dbio,
+                      sio,
+                      dbData,
+		      dbParams,
+		      GWEN_DB_FLAGS_DEFAULT |
+		      GWEN_PATH_FLAGS_CREATE_GROUP);
+  if (rv) {
+    DBG_ERROR(0, "Error importing data (%d)", rv);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  fprintf(stderr, "Imported this:\n");
+  GWEN_DB_Dump(dbData, 2);
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -5244,6 +5315,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "pw4")==0) {
     rv=testPasswordStore4(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "csv")==0) {
+    rv=testCSV(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

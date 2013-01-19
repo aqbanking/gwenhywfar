@@ -111,8 +111,11 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
 	return rv;
       }
       else if (rv==0) {
-	DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
-	return GWEN_ERROR_EOF;
+        DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
+        if (!hadSome)
+          return GWEN_ERROR_EOF;
+        lineComplete=1;
+        /* TODO: maybe we should have a flag that indicates that we met EOF here... */
       }
       else {
 	fb->bufferWritePos=rv;

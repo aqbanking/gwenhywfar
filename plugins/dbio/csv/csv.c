@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Thu Oct 30 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2003-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,6 +27,7 @@
 # include <config.h>
 #endif
 
+/* disable DBG_DEBUG() and DBG_VERBOUS() */
 #define DISABLE_DEBUGLOG
 
 #include "csv_p.h"
@@ -402,8 +400,10 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
     GWEN_Buffer_Reset(lbuffer);
     err=GWEN_FastBuffer_ReadLineToBuffer(fb, lbuffer);
     if (err<0) {
-      if (err==GWEN_ERROR_EOF)
-	break;
+      if (err==GWEN_ERROR_EOF) {
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "EOF met");
+        break;
+      }
       else {
 	DBG_ERROR_ERR(GWEN_LOGDOMAIN, err);
 	GWEN_Buffer_free(lbuffer);
