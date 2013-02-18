@@ -735,7 +735,8 @@ int testXML3(int argc, char **argv) {
   }
 
   if (GWEN_XMLNode_WriteFile(n, "xml.out",
-			     GWEN_XML_FLAGS_HANDLE_NAMESPACES |
+                             GWEN_XML_FLAGS_HANDLE_NAMESPACES |
+                             GWEN_XML_FLAGS_SIMPLE |
                              GWEN_XML_FLAGS_DEFAULT)){
     fprintf(stderr, "Could not write file xml.out\n");
     return 2;
@@ -796,6 +797,37 @@ int testXML5(int argc, char **argv) {
 #else
   fprintf(stderr, "Compiled without support for LibXML\n");
 #endif
+  return 0;
+}
+
+
+
+int testXML6(int argc, char **argv) {
+  GWEN_XMLNODE *n;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  if (GWEN_XML_ReadFile(n, argv[2],
+			GWEN_XML_FLAGS_TOLERANT_ENDTAGS |
+			GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS |
+			GWEN_XML_FLAGS_HANDLE_NAMESPACES |
+			GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+
+  if (GWEN_XMLNode_WriteFile(n, "xml.out",
+                             GWEN_XML_FLAGS_HANDLE_NAMESPACES |
+                             GWEN_XML_FLAGS_SIMPLE)){
+    fprintf(stderr, "Could not write file xml.out\n");
+    return 2;
+  }
+  GWEN_XMLNode_free(n);
   return 0;
 }
 
@@ -5163,6 +5195,8 @@ int main(int argc, char **argv) {
     rv=testXML4(argc, argv);
   else if (strcasecmp(argv[1], "xml5")==0)
     rv=testXML5(argc, argv);
+  else if (strcasecmp(argv[1], "xml6")==0)
+    rv=testXML6(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
     rv=testSnprintf(argc, argv);
   else if (strcasecmp(argv[1], "process")==0)
