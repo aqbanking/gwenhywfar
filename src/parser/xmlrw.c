@@ -44,15 +44,17 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 
   assert(n);
 
-  if (flags & GWEN_XML_FLAGS_INDENT) {
-    for(i=0; i<ind; i++) {
-      GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-      CHECK_ERROR(rv);
-    }
-  }
-
   simpleTag=0;
   if (n->type==GWEN_XMLNodeTypeTag) {
+    if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+      if (flags & GWEN_XML_FLAGS_INDENT) {
+	for(i=0; i<ind; i++) {
+	  GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
+	  CHECK_ERROR(rv);
+	}
+      }
+    }
+
     if (n->data) {
       GWEN_FASTBUFFER_WRITEBYTE(fb, rv, '<');
       CHECK_ERROR(rv);
@@ -78,7 +80,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 	CHECK_ERROR(rv);
 	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "xmlns", -1);
 	CHECK_ERROR(rv);
-	if (name) {
+	if (name && *name) {
 	  GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ":", -1);
 	  CHECK_ERROR(rv);
 	  GWEN_FASTBUFFER_WRITEFORCED(fb, rv, name, -1);
@@ -125,7 +127,12 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
       }
     }
 
-    GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+    if (flags & GWEN_XML_FLAGS_SIMPLE) {
+      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
+    }
+    else {
+      GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+    }
     CHECK_ERROR(rv);
     if (!simpleTag) {
       c=GWEN_XMLNode_GetChild(n);
@@ -134,18 +141,26 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 	CHECK_ERROR(rv);
         c=GWEN_XMLNode_Next(c);
       }
-      if (flags & GWEN_XML_FLAGS_INDENT) {
-	for(i=0; i<ind; i++) {
-	  GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-	  CHECK_ERROR(rv);
+
+      if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+	if (flags & GWEN_XML_FLAGS_INDENT) {
+	  for(i=0; i<ind; i++) {
+	    GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
+	    CHECK_ERROR(rv);
+	  }
 	}
       }
       if (n->data) {
 	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "</", -1);
 	CHECK_ERROR(rv);
 	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
-	CHECK_ERROR(rv);
-	GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+        CHECK_ERROR(rv);
+	if (flags & GWEN_XML_FLAGS_SIMPLE) {
+	  GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
+	}
+	else {
+	  GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+	}
 	CHECK_ERROR(rv);
       }
       else {
@@ -156,14 +171,32 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
   }
   else if (n->type==GWEN_XMLNodeTypeData) {
     if (n->data) {
+      if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+	if (flags & GWEN_XML_FLAGS_INDENT) {
+	  for(i=0; i<ind; i++) {
+	    GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
+	    CHECK_ERROR(rv);
+	  }
+	}
+      }
+
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
       CHECK_ERROR(rv);
-      GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
-      CHECK_ERROR(rv);
+      if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+	GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
+	CHECK_ERROR(rv);
+      }
     }
   }
   else if (n->type==GWEN_XMLNodeTypeComment) {
     if (flags & GWEN_XML_FLAGS_HANDLE_COMMENTS) {
+      if (flags & GWEN_XML_FLAGS_INDENT) {
+	for(i=0; i<ind; i++) {
+	  GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
+	  CHECK_ERROR(rv);
+	}
+      }
+
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "<!--", -1);
       CHECK_ERROR(rv);
       if (n->data) {
