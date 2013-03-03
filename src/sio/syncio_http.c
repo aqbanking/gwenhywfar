@@ -1400,7 +1400,7 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
 		code, s?s:"- no text -");
       GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Debug,
 			    I18N("HTTP-Status: %d (%s)"),
-			    code, s?s:I18N("- no details -)"));
+			    code, s?s:I18N("- no details -"));
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "No HTTP status code received");

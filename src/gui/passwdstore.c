@@ -280,9 +280,9 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
     if (sto->pw[0]==0) {
       rv=GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_DIRECT,
                            I18N("Enter Password"),
-                           I18N("Please enter the password for the password store\n"
+                           I18N("Please enter the password for the password store.\n"
                                 "<html>"
-                                "Please enter the password for the password store</br>"
+                                "Please enter the password for the <b>password store</b>.</br>"
                                 "</html>"),
                            sto->pw,
                            4,
