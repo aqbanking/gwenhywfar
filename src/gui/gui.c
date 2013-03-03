@@ -2158,7 +2158,7 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
 				     "do you want to use it anyway?"
 				     "</p>"
 				     "</html>"),
-				I18N("Use my input"),
+				I18N("Yes, use anyway"),
 				I18N("Re-enter"),
 				0,
 				guiid);
