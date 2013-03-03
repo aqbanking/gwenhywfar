@@ -240,7 +240,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc){
 
     if (i==-1 && strchr("YMDhms", *t)!=NULL) {
       DBG_INFO(GWEN_LOGDOMAIN,
-	       "No more digits at [%s], continueing", t);
+	       "No more digits at [%s], continuing", t);
       p--;
     }
     else {

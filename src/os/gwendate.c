@@ -332,7 +332,7 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl){
 
     if (i==-1 && strchr("YMD", *t)!=NULL) {
       DBG_INFO(GWEN_LOGDOMAIN,
-	       "No more digits at [%s], continueing", t);
+	       "No more digits at [%s], continuing", t);
       p--;
     }
     else {

@@ -185,7 +185,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
         return 0;
       }
       close(fd);
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Sucessfully created");
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Successfully created");
     }
     else {
       /* create dir */
