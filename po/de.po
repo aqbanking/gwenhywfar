@@ -7,12 +7,13 @@
 # Martin Preuss <martin@aqbanking.de>, 2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: de\n"
+"Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2011-02-13 21:38+0100\n"
-"PO-Revision-Date: 2011-02-13 21:55+0100\n"
-"Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
+"POT-Creation-Date: 2013-03-03 22:12+0100\n"
+"PO-Revision-Date: 2013-03-03 22:09+0100\n"
+"Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -175,212 +176,242 @@ msgstr "Allgemeiner SSL Fehler"
 #: src/sio/syncio_socket.c:184
 #, c-format
 msgid "Error setting up socket: %d"
-msgstr ""
+msgstr "Fehler beim Starten des Socket: %d"
 
 #: src/sio/syncio_socket.c:195
 #, c-format
 msgid "Resolving hostname \"%s\" ..."
-msgstr ""
+msgstr "Hostname \"%s\" wird aufgelöst..."
 
 #: src/sio/syncio_socket.c:201
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown hostname \"%s\""
-msgstr "Unbekannte Option \"%s\"\n"
+msgstr "Unbekannter Hostname \"%s\""
 
 #: src/sio/syncio_socket.c:218
 #, c-format
 msgid "IP address is \"%s\""
-msgstr ""
+msgstr "IP-Adresse ist \"%s\""
 
 #: src/sio/syncio_socket.c:227
-#, fuzzy, c-format
+#, c-format
 msgid "Connecting to \"%s\""
-msgstr "Plugin \"%s\" prüfen"
+msgstr "Verbindung zu \"%s\" wird aufgebaut"
 
 #: src/sio/syncio_socket.c:233
 #, c-format
 msgid "Error connecting to \"%s\": %s"
-msgstr ""
+msgstr "Fehler beim Verbinden mit \"%s\": %s"
 
 #: src/sio/syncio_socket.c:247
 #, c-format
 msgid "Connected to \"%s\""
-msgstr ""
+msgstr "Verbunden mit \"%s\""
 
-#: src/sio/syncio_tls.c:523
-#: src/sio/syncio_tls.c:705
-#, fuzzy
+#: src/sio/syncio_tls.c:558 src/sio/syncio_tls.c:777
 msgid "Signer not found"
-msgstr "Host nicht gefunden"
+msgstr "Unterzeichner des Zertifikats wurde nicht gefunden"
 
-#: src/sio/syncio_tls.c:530
-#: src/sio/syncio_tls.c:711
-#, fuzzy
+#: src/sio/syncio_tls.c:565 src/sio/syncio_tls.c:783
 msgid "Certificate is not trusted"
-msgstr "Zertifikat empfangen"
+msgstr "Dem Zertifikat wird nicht vertraut"
 
-#: src/sio/syncio_tls.c:537
-#: src/sio/syncio_tls.c:717
-#, fuzzy
+#: src/sio/syncio_tls.c:572 src/sio/syncio_tls.c:789
 msgid "Certificate has been revoked"
-msgstr "Zertifikat empfangen"
+msgstr "Das Zertifikat wurde zurückgerufen (revoked)"
 
-#: src/sio/syncio_tls.c:595
+#: src/sio/syncio_tls.c:667
 msgid "Certificate was not issued for this host"
-msgstr ""
+msgstr "Zertifikat ist nicht für diesen Host erstellt worden"
 
-#: src/sio/syncio_tls.c:606
+#: src/sio/syncio_tls.c:678
 msgid "No hostname to verify the sender!"
-msgstr ""
+msgstr "Kein Hostname vorhanden, mit dem der Absender verifiziert werden kann!"
 
-#: src/sio/syncio_tls.c:723
-#, fuzzy
+#: src/sio/syncio_tls.c:795
 msgid "Certificate has expired"
 msgstr "Zertifikat ist nicht mehr gültig"
 
-#: src/sio/syncio_tls.c:729
-#, fuzzy
+#: src/sio/syncio_tls.c:801
 msgid "Certificate is not active yet"
-msgstr "Zertifikat empfangen"
+msgstr "Zertifikat ist noch nicht gültig"
 
-#: src/sio/syncio_tls.c:735
+#: src/sio/syncio_tls.c:807
 msgid "Certificate owner does not match hostname"
-msgstr ""
+msgstr "Zertifikat-Besitzer passt nicht zum Hostnamen"
 
-#: src/sio/syncio_tls.c:741
+#: src/sio/syncio_tls.c:813
 msgid "Certificate contains invalid information"
-msgstr ""
+msgstr "Zertifikat enthält ungültige Informationen"
 
-#: src/sio/syncio_tls.c:747
+#: src/sio/syncio_tls.c:819
 msgid "A system error occurred while checking the certificate"
-msgstr ""
+msgstr "Es gab einen Fehler im Betriebssystem beim Prüfen des Zertifikates"
 
-#: src/sio/syncio_tls.c:753
-#, fuzzy
+#: src/sio/syncio_tls.c:825
 msgid "The certificate is valid"
-msgstr "Neues Zertifikat"
+msgstr "Zertifikat ist gültig"
 
-#: src/sio/syncio_tls.c:883
-msgid "A TLS handshake error occurred. If you are using AqBanking you should consider enabling the option \"force SSLv3\" in the user settings dialog."
+#: src/sio/syncio_tls.c:966
+msgid ""
+"A TLS handshake error occurred. If you are using AqBanking you should "
+"consider enabling the option \"force SSLv3\" in the user settings dialog."
 msgstr ""
+"Ein Fehler beim TLS-Handshake ist aufgetreten. Wenn Sie Online-Banking "
+"benutzen, sollten Sie einmal die Option \"SSLv3 erzwingen\" in den "
+"Einstellungen ausprobieren."
 
-#: src/sio/syncio_tls.c:892
+#: src/sio/syncio_tls.c:975
 #, c-format
 msgid "TLS Handshake Error: %d (%s)"
-msgstr ""
+msgstr "TLS-Handshake-Fehler: %d (%s)"
 
-#: src/sio/syncio_tls.c:968
+#: src/sio/syncio_tls.c:1051
 #, c-format
 msgid "Error on gnutls_bye: %d (%s)"
-msgstr ""
+msgstr "Fehler beim Schritt \"gnutls_bye\": %d (%s)"
 
-#: src/sio/syncio_tls.c:1015
+#: src/sio/syncio_tls.c:1098
 #, c-format
 msgid "Error on gnutls_record_recv: %d (%s)"
-msgstr ""
+msgstr "Fehler beim Schritt \"gnutls_record_recv\": %d (%s)"
 
-#: src/sio/syncio_tls.c:1069
+#: src/sio/syncio_tls.c:1152
 #, c-format
 msgid "Error on gnutls_record_send: %d (%s)"
-msgstr ""
+msgstr "Fehler beim Schritt \"gnutls_record_send\": %d (%s)"
 
-#: src/sio/syncio_http.c:1352
-#: src/sio/syncio_http.c:1360
+#: src/sio/syncio_http.c:1293 src/sio/syncio_http.c:1436
+msgid "Network Operation"
+msgstr "Netzwerk-Verbindung"
+
+#: src/sio/syncio_http.c:1294 src/sio/syncio_http.c:1437
+msgid "Receiving data"
+msgstr "Daten empfangen"
+
+#: src/sio/syncio_http.c:1378 src/sio/syncio_http.c:1386
+#: src/sio/syncio_http.c:1521 src/sio/syncio_http.c:1529
 msgid "No message received"
-msgstr ""
+msgstr "Keine Nachricht empfangen"
 
-#: src/sio/syncio_http.c:1376
+#: src/sio/syncio_http.c:1402 src/sio/syncio_http.c:1545
 #, c-format
 msgid "HTTP-Status: %d (%s)"
-msgstr ""
+msgstr "HTTP-Status: %d (%s)"
 
-#: src/sio/syncio_http.c:1377
-msgid "- no details -)"
-msgstr ""
+#: src/sio/syncio_http.c:1403
+msgid "- no details -"
+msgstr "- Keine Angaben -"
 
-#: src/sio/syncio_http.c:1383
+#: src/sio/syncio_http.c:1409 src/sio/syncio_http.c:1552
 msgid "No HTTP status code received"
-msgstr ""
+msgstr "Kein HTTP Status-Code empfangen"
 
-#: src/sio/httpsession.c:285
-#: src/sio/httpsession.c:492
+#: src/sio/syncio_http.c:1546
+msgid "- no details -)"
+msgstr "- Keine Angaben -"
+
+#: src/sio/httpsession.c:287 src/sio/httpsession.c:626
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Mit Server verbinden..."
 
-#: src/sio/httpsession.c:301
-#: src/sio/httpsession.c:508
+#: src/sio/httpsession.c:303 src/sio/httpsession.c:642
 msgid "Retrying to connect (non-SSLv3)"
-msgstr ""
+msgstr "Erneuter Verbindungsaufbau wird versucht (ohne SSLv3)"
 
-#: src/sio/httpsession.c:312
-#: src/sio/httpsession.c:519
+#: src/sio/httpsession.c:314 src/sio/httpsession.c:653
 msgid "Retrying to connect (SSLv3)"
-msgstr ""
+msgstr "Erneuter Verbindungsaufbau wird versucht (mit SSLv3)"
 
-#: src/sio/httpsession.c:326
-#: src/sio/httpsession.c:533
-#, fuzzy
+#: src/sio/httpsession.c:328 src/sio/httpsession.c:667
 msgid "Could not connect to server"
-msgstr "Fehler beim Schließen"
+msgstr "Es konnte keine Verbindung zum Server aufgebaut werden."
 
-#: src/sio/httpsession.c:335
-#: src/sio/httpsession.c:540
+#: src/sio/httpsession.c:337 src/sio/httpsession.c:674
 msgid "Connected."
-msgstr ""
+msgstr "Verbunden."
 
-#: src/sio/httpsession.c:364
+#: src/sio/httpsession.c:366
 msgid "Sending message..."
-msgstr ""
+msgstr "Nachricht senden..."
 
-#: src/sio/httpsession.c:372
-#, fuzzy, c-format
+#: src/sio/httpsession.c:374
+#, c-format
 msgid "Could not send message (%d)"
-msgstr "Der Schlüssel konnte nicht erzeugt werden."
+msgstr "Konnte Nachricht nicht senden (%d)"
 
-#: src/sio/httpsession.c:381
+#: src/sio/httpsession.c:383
 msgid "Message sent."
-msgstr ""
+msgstr "Nachricht gesendet."
 
-#: src/sio/httpsession.c:419
+#: src/sio/httpsession.c:421 src/sio/httpsession.c:516
 #, c-format
 msgid "HTTP: Moved permanently to %s"
-msgstr ""
+msgstr "HTTP: Permanent verschoben nach %s"
 
-#: src/sio/httpsession.c:422
+#: src/sio/httpsession.c:424 src/sio/httpsession.c:519
 #, c-format
 msgid "HTTP: Use proxy at %s"
-msgstr ""
+msgstr "HTTP: Proxy verwenden auf %s"
 
-#: src/sio/httpsession.c:425
+#: src/sio/httpsession.c:427 src/sio/httpsession.c:522
 #, c-format
 msgid "HTTP: Moved temporarily to %s"
-msgstr ""
+msgstr "HTTP: Zeitweise verschoben nach %s"
 
-#: src/sio/httpsession.c:428
+#: src/sio/httpsession.c:430 src/sio/httpsession.c:525
 #, c-format
 msgid "HTTP: Moved to %s"
-msgstr ""
+msgstr "HTTP: Verschoben nach %s"
 
-#: src/sio/httpsession.c:450
-msgid "Waiting for response..."
-msgstr ""
+#: src/sio/httpsession.c:452 src/sio/httpsession.c:562
+msgid "Receiving response..."
+msgstr "Antwort wird empfangen..."
 
-#: src/sio/httpsession.c:462
+#: src/sio/httpsession.c:464 src/sio/httpsession.c:594
 msgid "Received continuation response."
-msgstr ""
+msgstr "Antwort mit Fortsetzung empfangen."
 
-#: src/sio/httpsession.c:468
+#: src/sio/httpsession.c:470 src/sio/httpsession.c:602
 msgid "Response received."
-msgstr ""
+msgstr "Antwort empfangen."
 
-#: src/sio/httpsession.c:473
+#: src/sio/httpsession.c:475 src/sio/httpsession.c:607
 msgid "Disconnecting from server..."
-msgstr ""
+msgstr "Beenden der Verbindung zum Server..."
 
-#: src/sio/httpsession.c:477
-#: src/sio/httpsession.c:545
+#: src/sio/httpsession.c:479 src/sio/httpsession.c:611
+#: src/sio/httpsession.c:679
 msgid "Disconnected."
-msgstr ""
+msgstr "Verbindung beendet."
+
+#: src/os/gwendate.c:483
+msgid "Sunday"
+msgstr "Sonntag"
+
+#: src/os/gwendate.c:484
+msgid "Monday"
+msgstr "Montag"
+
+#: src/os/gwendate.c:485
+msgid "Tuesday"
+msgstr "Dienstag"
+
+#: src/os/gwendate.c:486
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+#: src/os/gwendate.c:487
+msgid "Thursday"
+msgstr "Donnerstag"
+
+#: src/os/gwendate.c:488
+msgid "Friday"
+msgstr "Freitag"
+
+#: src/os/gwendate.c:489
+msgid "Saturday"
+msgstr "Samstag"
 
 #: src/os/posix/fslock.c:249
 msgid "Accquiring lock"
@@ -390,22 +421,40 @@ msgstr "Starte exklusiven Zugriff"
 #, c-format
 msgid ""
 "There already is a lock for \"%s\".\n"
-"Either that lock is valid (e.g. some other process is currently holding that lock) or it is a stale lock of a process which for whatever reason did not remove the lock before terminating.\n"
+"Either that lock is valid (e.g. some other process is currently holding that "
+"lock) or it is a stale lock of a process which for whatever reason did not "
+"remove the lock before terminating.\n"
 "\n"
 "This dialog allows for forced removal of that lock.\n"
 "\n"
-"WARNING: Only remove the lock if you are certain that no other process is actually holding the lock!\n"
+"WARNING: Only remove the lock if you are certain that no other process is "
+"actually holding the lock!\n"
 "\n"
 "Do you want to remove the possibly stale lock?\n"
-"<html><p>There already is a lock for <i>%s</i>.</p><p>Either that lock is valid (e.g. some other process is currently holding that lock) or it is a stale lock of a process which for whatever reason did not remove the lock before terminating.</p><p>This dialog allows for forced removal of that lock.</p><p><font color=\"red\"><b>Warning</b></font>: Only remove the lock if you are certain that no other process is actually holding the lock!</p><p>Do you want to remove the possibly stale lock?</p></html>"
+"<html><p>There already is a lock for <i>%s</i>.</p><p>Either that lock is "
+"valid (e.g. some other process is currently holding that lock) or it is a "
+"stale lock of a process which for whatever reason did not remove the lock "
+"before terminating.</p><p>This dialog allows for forced removal of that lock."
+"</p><p><font color=\"red\"><b>Warning</b></font>: Only remove the lock if "
+"you are certain that no other process is actually holding the lock!</p><p>Do "
+"you want to remove the possibly stale lock?</p></html>"
 msgstr ""
 "Es existiert bereits ein Lock für Benutzer \"%s\".\n"
-"Entweder das Lock ist gültig (z.B. weil eine andere Anwendung dieses Lock derzeit hält) oder aber es ist übriggeblieben, weil eine Anwendung es aus welchen Gründen auch immer versäumt hat das Lock wieder freizugeben.\n"
+"Entweder das Lock ist gültig (z.B. weil eine andere Anwendung dieses Lock "
+"derzeit hält) oder aber es ist übriggeblieben, weil eine Anwendung es aus "
+"welchen Gründen auch immer versäumt hat das Lock wieder freizugeben.\n"
 "\n"
-"WARNUNG: Sie sollten das Lock nur dann entfernen, wenn Sie sicher sind, daß es von keiner derzeit aktiven Anwendung gehalten wird!\n"
+"WARNUNG: Sie sollten das Lock nur dann entfernen, wenn Sie sicher sind, daß "
+"es von keiner derzeit aktiven Anwendung gehalten wird!\n"
 "\n"
 "Wollen Sie das Lock entfernen?\n"
-"<html><p>Es existiert bereits ein Lock für Benutzer \"%s\".</p><p>Entweder das Lock ist gültig (z.B. weil eine andere Anwendung dieses Lock derzeit hält) oder aber es ist übriggeblieben, weil eine Anwendung es aus welchen Gründen auch immer versäumt hat das Lock wieder freizugeben.</p><p><font color=\"red\"><b>Warnung</b></font>: Sie sollten das Lock nur dann entfernen, wenn Sie sicher sind, daß es von keiner derzeit aktiven Anwendung gehalten wird!</p> <p>Wollen Sie das Lock entfernen?</p></html>"
+"<html><p>Es existiert bereits ein Lock für Benutzer \"%s\".</p><p>Entweder "
+"das Lock ist gültig (z.B. weil eine andere Anwendung dieses Lock derzeit "
+"hält) oder aber es ist übriggeblieben, weil eine Anwendung es aus welchen "
+"Gründen auch immer versäumt hat das Lock wieder freizugeben.</p><p><font "
+"color=\"red\"><b>Warnung</b></font>: Sie sollten das Lock nur dann "
+"entfernen, wenn Sie sicher sind, daß es von keiner derzeit aktiven Anwendung "
+"gehalten wird!</p> <p>Wollen Sie das Lock entfernen?</p></html>"
 
 #: src/os/posix/fslock.c:365
 msgid "Possible Stale Lock"
@@ -419,16 +468,12 @@ msgstr "Warten"
 msgid "Remove Lock"
 msgstr "Lock entfernen"
 
-#: src/os/posix/fslock.c:369
-#: src/crypttoken/ct.c:1016
-#: src/crypttoken/ct.c:1087
-#: src/gui/cgui.c:280
+#: src/os/posix/fslock.c:369 src/crypttoken/ct.c:1016 src/crypttoken/ct.c:1087
+#: src/gui/cgui.c:289
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/os/posix/fslock.c:375
-#: src/crypttoken/ct.c:1020
-#: src/crypttoken/ct.c:1091
+#: src/os/posix/fslock.c:375 src/crypttoken/ct.c:1020 src/crypttoken/ct.c:1091
 msgid "Aborted by user."
 msgstr "Vom Benutzer abgebrochen."
 
@@ -436,29 +481,28 @@ msgstr "Vom Benutzer abgebrochen."
 msgid "Lock removed by user request."
 msgstr "Lock auf Aufforderung des Benutzers entfernt."
 
-#: src/crypt3/mdigest.c:483
+#: src/crypt3/mdigest.c:495
 #, c-format
 msgid "Error unpacking program (%d)"
-msgstr ""
+msgstr "Fehler beim Entpacken des Programms (%d)"
 
-#: src/crypt3/mdigest.c:500
+#: src/crypt3/mdigest.c:512
 #, c-format
 msgid "Error loading checksum file (%d)"
-msgstr ""
+msgstr "Fehler beim Laden der Prüfsummendatei (%d)"
 
-#: src/crypt3/mdigest.c:526
+#: src/crypt3/mdigest.c:538
 msgid "Checksum file does not contain valid lines"
-msgstr ""
+msgstr "Prüfsummendatei enthält keine gültigen Zeilen"
 
-#: src/crypt3/mdigest.c:534
+#: src/crypt3/mdigest.c:546
 msgid "Integrity check on folder failed"
-msgstr ""
+msgstr "Integritätsprüfung des Ordners ist fehlgeschlagen"
 
-#: src/crypt3/mdigest.c:544
-#: src/crypt3/mdigest.c:551
+#: src/crypt3/mdigest.c:556 src/crypt3/mdigest.c:563
 #, c-format
 msgid "Folder contains %d files without checksum"
-msgstr ""
+msgstr "Ordner enthält %d Dateien ohne Prüfsumme"
 
 #: src/crypttoken/ct.c:819
 msgid "access password"
@@ -485,11 +529,13 @@ msgstr ""
 msgid ""
 "Please enter a new %s for \n"
 "%s\n"
-"The password must be at least %d characters long.%s<html>Please enter a new %s for <i>%s</i>. The password must be at least %d characters long.%s</html>"
+"The password must be at least %d characters long.%s<html>Please enter a new "
+"%s for <i>%s</i>. The password must be at least %d characters long.%s</html>"
 msgstr ""
 "Bitte geben Sie ein neues %s für\n"
 " %s\n"
-"ein.  Es muss mindestens %d Zeichen lang sein.%s <html> Bitte geben Sie ein neues %s für<i>%s</i> ein. Es muss mindestens %d Zeichen lang sein.%s </html>"
+"ein.  Es muss mindestens %d Zeichen lang sein.%s <html> Bitte geben Sie ein "
+"neues %s für<i>%s</i> ein. Es muss mindestens %d Zeichen lang sein.%s </html>"
 
 #: src/crypttoken/ct.c:851
 #, c-format
@@ -502,13 +548,17 @@ msgstr ""
 "%s\n"
 "ein.%s <html>Bitte geben Sie das %s für <i>%s</i> ein.%s</html>"
 
-#: src/crypttoken/ct.c:868
+#: src/crypttoken/ct.c:868 src/gui/passwdstore.c:282 src/gui/passwdstore.c:415
 msgid "Enter Password"
 msgstr "Passworteingabe"
 
 #: src/crypttoken/ct.c:958
-msgid "Please enter your PIN into the card reader.<html>Please enter your PIN into the card reader.</html>"
-msgstr "Bitte geben Sie Ihre PIN am Kartenleser ein. <html>Bitte geben Sie Ihre PIN am Kartenleser ein.</html>"
+msgid ""
+"Please enter your PIN into the card reader.<html>Please enter your PIN into "
+"the card reader.</html>"
+msgstr ""
+"Bitte geben Sie Ihre PIN am Kartenleser ein. <html>Bitte geben Sie Ihre PIN "
+"am Kartenleser ein.</html>"
 
 #: src/crypttoken/ct.c:963
 msgid "Secure PIN Input"
@@ -534,29 +584,23 @@ msgstr ""
 "für %s in den Kartenleser. <html>Bitte legen Sie die Chipkarte\n"
 "für <i>%s</i> in den Kartenleser.</html>"
 
-#: src/crypttoken/ct.c:1014
-#: src/crypttoken/ct.c:1085
+#: src/crypttoken/ct.c:1014 src/crypttoken/ct.c:1085
 msgid "Insert Medium"
 msgstr "Sicherheitsmedium einlegen"
 
-#: src/crypttoken/ct.c:1016
-#: src/crypttoken/ct.c:1087
+#: src/crypttoken/ct.c:1016 src/crypttoken/ct.c:1087
 msgid "OK"
 msgstr "Ok"
 
-#: src/crypttoken/ct.c:1027
-#: src/crypttoken/ct.c:1098
+#: src/crypttoken/ct.c:1027 src/crypttoken/ct.c:1098
 msgid "Error"
 msgstr "Fehler"
 
-#: src/crypttoken/ct.c:1028
-#: src/crypttoken/ct.c:1099
+#: src/crypttoken/ct.c:1028 src/crypttoken/ct.c:1099
 msgid "An internal error occurred."
 msgstr "Es ist ein interner Fehler aufgetreten."
 
-#: src/crypttoken/ct.c:1029
-#: src/crypttoken/ct.c:1100
-#: src/gui/gui.c:646
+#: src/crypttoken/ct.c:1029 src/crypttoken/ct.c:1100 src/gui/gui.c:712
 msgid "Dismiss"
 msgstr "Schließen"
 
@@ -565,7 +609,9 @@ msgstr "Schließen"
 msgid ""
 "Please insert the correct security disc\n"
 "for %s<html>Please insert the correct security disc for <i>%s</i></html>"
-msgstr "Bitte legen Sie die korrekte Sicherheitsdiskette für %s ein. <html>Bitte legen Sie die korrekte Sicherheitsdiskette für <i>%s</i> ein.</html>"
+msgstr ""
+"Bitte legen Sie die korrekte Sicherheitsdiskette für %s ein. <html>Bitte "
+"legen Sie die korrekte Sicherheitsdiskette für <i>%s</i> ein.</html>"
 
 #: src/crypttoken/ct.c:1062
 #, c-format
@@ -574,35 +620,36 @@ msgid ""
 "Please insert the chipcard with the number\n"
 "  %s\n"
 "into the card reader.\n"
-"<html><p>The wrong card has been inserted.</p><p>Please insert the chipcard with the number<b>%s</b> into the card reader.</p></html>"
+"<html><p>The wrong card has been inserted.</p><p>Please insert the chipcard "
+"with the number<b>%s</b> into the card reader.</p></html>"
 msgstr ""
 "Eine falsche Chipkarte wurde eingelegt.\n"
 "Bitte legen Sie die Chipkarte mit der Nummer\n"
 " %s\n"
 "in den Kartenleser ein.\n"
-"<html><p>Eine falsche Chipkarte wurde eingelegt.</p> <p>Bitte legen Sie die Chipkarte mit der Nummer<b>%s</b> in den Kartenleser ein.</p></html>"
+"<html><p>Eine falsche Chipkarte wurde eingelegt.</p> <p>Bitte legen Sie die "
+"Chipkarte mit der Nummer<b>%s</b> in den Kartenleser ein.</p></html>"
 
 #: src/crypttoken/ct.c:1076
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Please insert the correct chipcard\n"
 "for %s<html>Please insert the correct chipcard for <i>%s</i></html>"
-msgstr "Bitte legen Sie die korrekte Chipkarte für %s ein. <html>Bitte legen Sie die korrekte Chipkarte für <i>%s</i> ein.</html>"
+msgstr ""
+"Bitte legen Sie die korrekte Chipkarte \n"
+"für %s ein. <html>Bitte legen Sie die korrekte Chipkarte für <i>%s</i> ein.</"
+"html>"
 
-#: src/crypttoken/ctfile.c:773
-#: src/crypttoken/ctfile.c:960
+#: src/crypttoken/ctfile.c:773 src/crypttoken/ctfile.c:960
 msgid "Public key replaced"
 msgstr "Öffentlicher Schlüssel ersetzt"
 
-#: src/crypttoken/ctfile.c:788
-#: src/crypttoken/ctfile.c:977
-#: src/crypttoken/ctfile.c:1123
-#: src/crypttoken/ctfile.c:2152
+#: src/crypttoken/ctfile.c:788 src/crypttoken/ctfile.c:977
+#: src/crypttoken/ctfile.c:1123 src/crypttoken/ctfile.c:2152
 msgid "Unable to write key file"
 msgstr "Die Schlüsseldatei konnte nicht geschrieben werden"
 
-#: src/crypttoken/ctfile.c:793
-#: src/crypttoken/ctfile.c:982
+#: src/crypttoken/ctfile.c:793 src/crypttoken/ctfile.c:982
 #: src/crypttoken/ctfile.c:1128
 msgid "Key file saved"
 msgstr "Schlüsseldatei gesichert"
@@ -610,13 +657,11 @@ msgstr "Schlüsseldatei gesichert"
 #: src/crypttoken/ctfile.c:1043
 #, c-format
 msgid "Invalid key id %02x"
-msgstr ""
+msgstr "Ungültige Schlüssel-ID %02x"
 
-#: src/crypttoken/ctfile.c:1049
-#: src/crypttoken/ctfile.c:2045
-#, fuzzy
+#: src/crypttoken/ctfile.c:1049 src/crypttoken/ctfile.c:2045
 msgid "No key info found"
-msgstr "Host nicht gefunden"
+msgstr "Keine Schlüsselinformationen gefunden"
 
 #: src/crypttoken/ctfile.c:1980
 msgid "Can only generate local keys."
@@ -643,8 +688,12 @@ msgid "No plugin found for this device type"
 msgstr "Kein Modul für den Gerätetypen gefunden"
 
 #: src/crypttoken/ctplugin.c:306
-msgid "If you're using a Debian/Ubuntu based system please consider to install package "
-msgstr "Falls Sie ein Debian-/Ubuntu-basiertes System verwenden sollten Sie das folgende Paket installieren: "
+msgid ""
+"If you're using a Debian/Ubuntu based system please consider to install "
+"package "
+msgstr ""
+"Falls Sie ein Debian-/Ubuntu-basiertes System verwenden sollten Sie das "
+"folgende Paket installieren: "
 
 #: src/crypttoken/ctplugin.c:328
 msgid "Determining plugin module..."
@@ -678,7 +727,8 @@ msgstr "Plugin \"%s\" unterstützt dieses Token nicht"
 #: src/crypttoken/ctplugin.c:424
 #, c-format
 msgid "Plugin \"%s\" supports this token, but the name did not match"
-msgstr "Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
+msgstr ""
+"Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
 
 #: src/crypttoken/ctplugin.c:435
 #, c-format
@@ -690,11 +740,11 @@ msgstr "Plugin \"%s\": Unerwarteter Fehler (%d)"
 msgid "Could not load plugin \"%s\""
 msgstr "Fehler beim Laden des Plugins \"%s\""
 
-#: src/gui/cgui.c:275
+#: src/gui/cgui.c:284
 msgid "Empty Input"
 msgstr "Leere Eingabe"
 
-#: src/gui/cgui.c:276
+#: src/gui/cgui.c:285
 msgid ""
 "Your input was empty.\n"
 "Do you want to use the default?"
@@ -702,43 +752,19 @@ msgstr ""
 "Ihre Eingabe war leer.\n"
 "Wollen Sie die voreingestellte PIN benutzen?"
 
-#: src/gui/cgui.c:278
-#: src/gui/gui.c:1153
+#: src/gui/cgui.c:287 src/gui/gui.c:1229
 msgid "Yes"
 msgstr "Ja"
 
-#: src/gui/cgui.c:279
-#: src/gui/gui.c:1153
+#: src/gui/cgui.c:288 src/gui/gui.c:1229
 msgid "No"
 msgstr "Nein"
 
-#: src/gui/cgui.c:880
-msgid "Enforce PIN"
-msgstr "PIN erzwingen"
-
-#: src/gui/cgui.c:882
-msgid ""
-"You entered the same PIN twice.\n"
-"The PIN is marked as bad, do you want\n"
-"to use it anyway?<html><p>You entered the same PIN twice.</p><p>The PIN is marked as <b>bad</b>, do you want to use it anyway?</p></html>"
-msgstr ""
-"Sie haben die gleiche PIN zweimal eingegeben.\n"
-"Die PIN ist aber als ungültig markiert, wollen Sie sie dennoch verwenden? <html><p>Sie haben die gleiche PIN zweimal eingegeben.</p> <p>Die PIN ist aber als <b>ungültig</b> markiert, wollen Sie sie dennoch verwenden?</p></html>"
-
-#: src/gui/cgui.c:894
-#, fuzzy
-msgid "Use my input"
-msgstr "Leere Eingabe"
-
-#: src/gui/cgui.c:895
-msgid "Re-enter"
-msgstr "Neu eingeben"
-
-#: src/gui/gui.c:885
+#: src/gui/gui.c:961
 msgid "Waiting for Data"
-msgstr ""
+msgstr "Auf Daten warten"
 
-#: src/gui/gui.c:1013
+#: src/gui/gui.c:1089
 #, c-format
 msgid ""
 "The following certificate has been received:\n"
@@ -752,7 +778,14 @@ msgid ""
 "Valid until : %s\n"
 "Hash        : %s\n"
 "Status      : %s\n"
-"Do you wish to accept this certificate?<html> <p>  The following certificate has been received: </p> <table>  <tr><td>Name</td><td>%s</td></tr>  <tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Department</td><td>%s</td></tr>  <tr><td>Country</td><td>%s</td></tr>  <tr><td>City</td><td>%s</td></tr>  <tr><td>State</td><td>%s</td></tr>  <tr><td>Valid after</td><td>%s</td></tr>  <tr><td>Valid until</td><td>%s</td></tr>  <tr><td>Hash</td><td>%s</td></tr>  <tr><td>Status</td><td>%s%s%s</td></tr> </table> <p>  Do you wish to accept this certificate? </p></html>"
+"Do you wish to accept this certificate?<html> <p>  The following certificate "
+"has been received: </p> <table>  <tr><td>Name</td><td>%s</td></tr>  "
+"<tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Department</td><td>%s</"
+"td></tr>  <tr><td>Country</td><td>%s</td></tr>  <tr><td>City</td><td>%s</"
+"td></tr>  <tr><td>State</td><td>%s</td></tr>  <tr><td>Valid after</td><td>"
+"%s</td></tr>  <tr><td>Valid until</td><td>%s</td></tr>  <tr><td>Hash</td><td>"
+"%s</td></tr>  <tr><td>Status</td><td>%s%s%s</td></tr> </table> <p>  Do you "
+"wish to accept this certificate? </p></html>"
 msgstr ""
 "Das folgende Zertifikat wurde empfangen:\n"
 "Name        : %s\n"
@@ -765,7 +798,14 @@ msgstr ""
 "Gültig bis  : %s\n"
 "Hash        : %s\n"
 "Status      : %s\n"
-"Wollen Sie dieses Zertifikat akzeptieren? <html><p>Das folgende Zertifikat wurde empfangen:</p> <table>  <tr><td>Name</td><td>%s</td></tr>  <tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Abteilung</td><td>%s</td></tr>  <tr><td>Staat</td><td>%s</td></tr>  <tr><td>Stadt</td><td>%s</td></tr>  <tr><td>Bundesland</td><td>%s</td></tr>  <tr><td>G&uuml;ltig ab</td><td>%s</td></tr>  <tr><td>G&uuml;ltig bis</td><td>%s</td></tr>  <tr><td>Hash</td><td>%s</td></tr>  <tr><td>Status</td><td>%s%s%s</td></tr> </table> <p>Wollen Sie dieses Zertifikat akzeptieren?</p></html>"
+"Wollen Sie dieses Zertifikat akzeptieren? <html><p>Das folgende Zertifikat "
+"wurde empfangen:</p> <table>  <tr><td>Name</td><td>%s</td></tr>  "
+"<tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Abteilung</td><td>%s</"
+"td></tr>  <tr><td>Staat</td><td>%s</td></tr>  <tr><td>Stadt</td><td>%s</td></"
+"tr>  <tr><td>Bundesland</td><td>%s</td></tr>  <tr><td>G&uuml;ltig ab</td><td>"
+"%s</td></tr>  <tr><td>G&uuml;ltig bis</td><td>%s</td></tr>  <tr><td>Hash</"
+"td><td>%s</td></tr>  <tr><td>Status</td><td>%s%s%s</td></tr> </table> "
+"<p>Wollen Sie dieses Zertifikat akzeptieren?</p></html>"
 
 #. TRANSLATORS: This string is used as a template string to
 #. convert a given time into your local translated timeformat. The
@@ -773,74 +813,133 @@ msgstr ""
 #. digit of the year, M - digit of the month, D - digit of the day
 #. of month, h - digit of the hour, m - digit of the minute, s-
 #. digit of the second. All other characters are left unchanged.
-#: src/gui/gui.c:1069
-#: src/gui/gui.c:1083
+#: src/gui/gui.c:1145 src/gui/gui.c:1159
 msgid "YYYY/MM/DD hh:mm:ss"
 msgstr "DD.MM.YYYY hh:mm:ss"
 
-#: src/gui/gui.c:1101
+#: src/gui/gui.c:1177
 msgid "unknown"
 msgstr "unbekannt"
 
-#: src/gui/gui.c:1151
+#: src/gui/gui.c:1227
 msgid "Certificate Received"
 msgstr "Zertifikat empfangen"
 
-#: src/gui/gui.c:1461
+#: src/gui/gui.c:1541
 msgid "Operation finished, you can now close this window."
 msgstr "Vorgang abgeschlossen, Sie können das Fenster nun schließen."
 
-#: plugins/ct/ohbci/ohbci.c:630
+#: src/gui/gui.c:2147
+msgid "Enforce PIN"
+msgstr "PIN erzwingen"
+
+#: src/gui/gui.c:2149
+msgid ""
+"You entered the same PIN twice.\n"
+"The PIN is marked as bad, do you want\n"
+"to use it anyway?<html><p>You entered the same PIN twice.</p><p>The PIN is "
+"marked as <b>bad</b>, do you want to use it anyway?</p></html>"
+msgstr ""
+"Sie haben die gleiche PIN zweimal eingegeben.\n"
+"Die PIN ist aber als ungültig markiert. Wollen Sie sie trotzdem verwenden? "
+"<html><p>Sie haben die gleiche PIN zweimal eingegeben.</p> <p>Die PIN ist "
+"aber als <b>ungültig</b> markiert. Wollen Sie sie trotzdem verwenden?</p></"
+"html>"
+
+#: src/gui/gui.c:2161
+msgid "Yes, use anyway"
+msgstr "Ja, trotzdem verwenden"
+
+#: src/gui/gui.c:2162
+msgid "Re-enter"
+msgstr "Neu eingeben"
+
+#: src/gui/passwdstore.c:283 src/gui/passwdstore.c:416
+msgid ""
+"Please enter the password for the password store.\n"
+"<html>Please enter the password for the <b>password store</b>.</br></html>"
+msgstr ""
+"Bitte geben Sie ein Password für den Passwortspeicher ein.\n"
+"<html>Bitte geben Sie ein Password für den <b>Passwortspeicher</b> ein.</"
+"br></html>"
+
+#: src/gui/passwdstore.c:374
+msgid "Create New Password Store"
+msgstr "Neuen Passwortspeicher erstellen"
+
+#: src/gui/passwdstore.c:376
+msgid ""
+"You are about to create a new password store.\n"
+"Passwords you store here will be encrypted with a passphrase\n"
+"which you must enter now.\n"
+"\n"
+"Later you will only need to remember the passphrase for the\n"
+"password store, not all the individuell passwords.\n"
+"\n"
+"WARNING: Storing your passwords in the password store\n"
+"can be considered a security risk, especially if the passphrase protecting "
+"it\n"
+"is not strong enough!\n"
+"\n"
+"You can safely abort this step, in which case your passwords will not be "
+"stored.\n"
+"\n"
+"Please enter the passphrase for the password store to be created or abort.\n"
+"<html><p>You are about to create a new <b>password store</b>.</"
+"p><br><p>Passwords you store here will be encrypted with a passphrase which "
+"you must enter now.</p><p>Later you will only need to remember the "
+"passphrase for the password store, not all the individuell passwords."
+"<p><p><font color=\"red\"><b>Warning:</b> Storing your passwords in the "
+"password store can be considered a <b>security risk</b>, especially if the "
+"passphrase protecting it is not strong enough!</font></p><p><b>You can "
+"safely abort this step</b>, in which case your passwords will not be stored."
+"</p><br><p>Please enter the passphrase for the password store to be created "
+"or abort.</p></html>"
+msgstr ""
+
+#: plugins/ct/ohbci/ohbci.c:632
 msgid "No valid PIN (tried too often), aborting."
 msgstr "Keine gültige PIN erhalten (zu oft versucht). Abbruch."
 
-#: plugins/ct/ohbci/ohbci.c:664
+#: plugins/ct/ohbci/ohbci.c:666
 msgid "Bad PIN, will try again"
 msgstr "Falsche PIN erhalten. Erneut versuchen"
 
-#: plugins/ct/ohbci/ohbci.c:1079
-#: plugins/ct/ohbci/ohbci.c:1134
-#: plugins/ct/ohbci/ohbci.c:2356
+#: plugins/ct/ohbci/ohbci.c:1081 plugins/ct/ohbci/ohbci.c:1136
+#: plugins/ct/ohbci/ohbci.c:2358
 msgid "Local Sign Key"
 msgstr "Lokaler Signierschlüssel"
 
-#: plugins/ct/ohbci/ohbci.c:1167
-#: plugins/ct/ohbci/ohbci.c:1213
-#: plugins/ct/ohbci/ohbci.c:2372
+#: plugins/ct/ohbci/ohbci.c:1169 plugins/ct/ohbci/ohbci.c:1215
+#: plugins/ct/ohbci/ohbci.c:2374
 msgid "Local Crypt Key"
 msgstr "Lokaler Crypto-Schlüssel"
 
-#: plugins/ct/ohbci/ohbci.c:1246
-#: plugins/ct/ohbci/ohbci.c:1297
-#: plugins/ct/ohbci/ohbci.c:2386
+#: plugins/ct/ohbci/ohbci.c:1248 plugins/ct/ohbci/ohbci.c:1299
+#: plugins/ct/ohbci/ohbci.c:2388
 msgid "Remote Sign Key"
 msgstr "Signierschlüssel des Servers"
 
-#: plugins/ct/ohbci/ohbci.c:1333
-#: plugins/ct/ohbci/ohbci.c:1378
-#: plugins/ct/ohbci/ohbci.c:2401
+#: plugins/ct/ohbci/ohbci.c:1335 plugins/ct/ohbci/ohbci.c:1380
+#: plugins/ct/ohbci/ohbci.c:2403
 msgid "Remote Crypt Key"
 msgstr "Crypto-Schlüssel des Servers"
 
-#: plugins/ct/ohbci/ohbci.c:1410
-#: plugins/ct/ohbci/ohbci.c:1459
-#: plugins/ct/ohbci/ohbci.c:2422
+#: plugins/ct/ohbci/ohbci.c:1412 plugins/ct/ohbci/ohbci.c:1461
+#: plugins/ct/ohbci/ohbci.c:2424
 msgid "Local Auth Key"
 msgstr "Lokaler Authentifizierungsschlüssel"
 
-#: plugins/ct/ohbci/ohbci.c:1492
-#: plugins/ct/ohbci/ohbci.c:1540
-#: plugins/ct/ohbci/ohbci.c:2429
+#: plugins/ct/ohbci/ohbci.c:1494 plugins/ct/ohbci/ohbci.c:1542
+#: plugins/ct/ohbci/ohbci.c:2431
 msgid "Remote Auth Key"
 msgstr "Authentifizierungsschlüssel des Servers"
 
-#: plugins/ct/ohbci/ohbci.c:1574
-#: plugins/ct/ohbci/ohbci.c:1628
-#, fuzzy
+#: plugins/ct/ohbci/ohbci.c:1576 plugins/ct/ohbci/ohbci.c:1630
 msgid "Temporary Local Sign Key"
-msgstr "Lokaler Signierschlüssel"
+msgstr "Temporärer Lokaler Signierschlüssel"
 
-#: plugins/ct/ohbci/ohbci.c:2105
+#: plugins/ct/ohbci/ohbci.c:2107
 msgid "Updating ancient key file to new one"
 msgstr "Aktualisiere sehr alte Schlüsseldatei auf aktuelles Format"
 
@@ -857,30 +956,28 @@ msgstr ""
 "--logfile ARG    Name der Logdatei\n"
 "--logtype ARG    Logtyp\n"
 "--loglevel ARG   Loglevel\n"
-"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht angegeben)\n"
+"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
+"angegeben)\n"
 "--compact        schreibe eine kompakte Datei\n"
 
-#: tools/xmlmerge/args.c:147
-#: tools/typemaker/args.c:148
+#: tools/xmlmerge/args.c:147 tools/typemaker/args.c:148
 #, c-format
 msgid "Unknown log type \"%s\"\n"
 msgstr "Unbekannter Logtyp \"%s\"\n"
 
-#: tools/xmlmerge/args.c:159
-#: tools/typemaker/args.c:160
+#: tools/xmlmerge/args.c:159 tools/typemaker/args.c:160
 #, c-format
 msgid "Unknown log level \"%s\"\n"
 msgstr "Unbekannter Loglevel \"%s\"\n"
 
-#: tools/xmlmerge/args.c:190
-#: tools/typemaker/args.c:194
+#: tools/xmlmerge/args.c:190 tools/typemaker/args.c:194
 #, c-format
 msgid "Unknown option \"%s\"\n"
 msgstr "Unbekannte Option \"%s\"\n"
 
 #: tools/xmlmerge/args.c:200
 msgid "Please specify the name of the output file."
-msgstr ""
+msgstr "Bitte geben Sie den Namen der Ausgabedatei an."
 
 #: tools/typemaker/args.c:116
 msgid ""
@@ -897,23 +994,22 @@ msgstr ""
 "--logfile ARG    Name der Logdatei\n"
 "--logtype ARG    Logtyp\n"
 "--loglevel ARG   Loglevel\n"
-"-d ARG           ARG als Domain-Prefix aller Funktionsdeklarationen benutzen\n"
-"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht angegeben)\n"
+"-d ARG           ARG als Domain-Prefix aller Funktionsdeklarationen "
+"benutzen\n"
+"-o ARG           Name der Ausgabedatei (Standardausgabe, wenn nicht "
+"angegeben)\n"
 "--compact        schreibe eine kompakte Datei\n"
 "-V | --version   Versionsnummer ausgeben und abbrechen\n"
 
-#: tools/typemaker2/main.c:163
-#: tools/gcttool/main.c:198
+#: tools/typemaker2/main.c:163 tools/gcttool/main.c:198 tools/gsa/main.c:134
 msgid "Usage: "
 msgstr "Benutzung: "
 
-#: tools/typemaker2/main.c:166
-#: tools/gcttool/main.c:201
+#: tools/typemaker2/main.c:166 tools/gcttool/main.c:201 tools/gsa/main.c:137
 msgid " [GLOBAL OPTIONS] COMMAND [LOCAL OPTIONS]\n"
 msgstr "[GLOBALE OPTIONEN] KOMMANDO [LOCALE OPTIONEN]\n"
 
-#: tools/typemaker2/main.c:169
-#: tools/gcttool/main.c:204
+#: tools/typemaker2/main.c:169 tools/gcttool/main.c:204 tools/gsa/main.c:140
 msgid ""
 "\n"
 "Global Options:\n"
@@ -921,8 +1017,7 @@ msgstr ""
 "\n"
 "Globale Optionen:\n"
 
-#: tools/typemaker2/main.c:175
-#: tools/gcttool/main.c:210
+#: tools/typemaker2/main.c:175 tools/gcttool/main.c:210 tools/gsa/main.c:146
 msgid ""
 "\n"
 "Commands:\n"
@@ -945,12 +1040,14 @@ msgstr ""
 #: tools/gcttool/main.c:87
 msgid ""
 "The plugin could not be found.\n"
-"Please make sure that you have the following packages installed (at least on Debian/Ubuntu):\n"
+"Please make sure that you have the following packages installed (at least on "
+"Debian/Ubuntu):\n"
 "- libchipcard-plugins-libgwenhywfar (for chipcards)\n"
 "- libaqbanking-plugins-libgwenhywfar\n"
 msgstr ""
 "Das Modul konnte nicht gefunden werden.\n"
-"Stellen Sie sicher, daß die folgenden Pakete installiert sind (zumindest auf Debian/Ubuntu):\n"
+"Stellen Sie sicher, daß die folgenden Pakete installiert sind (zumindest auf "
+"Debian/Ubuntu):\n"
 "- libchipcard-plugins-libgwenhywfar (for chipcards)\n"
 "- libaqbanking-plugins-libgwenhywfar\n"
 
@@ -994,12 +1091,58 @@ msgstr ""
 "    Aktualisiert Sicherheitsmedien (z.B. OpenHBCI Schlüsseldateien)\n"
 "\n"
 
+#: tools/gsa/main.c:130
+msgid "GWEN's Simple Archiver"
+msgstr "GWEN's Simple Archiver - Einfache Archiverstellung"
+
+#: tools/gsa/main.c:148
+msgid ""
+"  create:\n"
+"    This command creates an archive file\n"
+"\n"
+msgstr ""
+"  create:\n"
+"    Dieser Befehl erzeugt eine Archiv-Datei\n"
+"\n"
+
+#: tools/gsa/main.c:152
+msgid ""
+"  add:\n"
+"    Add files and folders to an archive file\n"
+"\n"
+msgstr ""
+
+#: tools/gsa/main.c:155
+msgid ""
+"  list:\n"
+"    List files and folders in an archive file\n"
+"\n"
+msgstr ""
+
+#: tools/gsa/main.c:159
+msgid ""
+"  check:\n"
+"    Check integrity of files and folders in an archive file\n"
+"\n"
+msgstr ""
+
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/gui/dlg_input.dlg:7
-#: src/gui/dlg_input.dlg:10
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "Input"
-msgstr "Eingabe    :"
+msgstr "Eingabe"
+
+#. type: Attribute 'text' of: <dialog><widget><widget><widget>
+#: src/gui/dlg_input.dlg:10
+#, no-wrap
+msgid "Again"
+msgstr "Nochmal"
+
+#. type: Attribute 'text' of: <dialog><widget><widget>
+#: src/gui/dlg_input.dlg:15
+#, no-wrap
+msgid "Store permanently"
+msgstr "Dauerhaft speichern"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/gui/dlg_message.dlg:12
@@ -1028,11 +1171,12 @@ msgstr "Schließen"
 #. type: Content of: <plugin><short>
 #: plugins/dbio/csv/csv.xml:7
 msgid "Exporter for CSV"
-msgstr ""
+msgstr "Exporter für CSV"
 
 #. type: Content of: <plugin><descr>
 #: plugins/dbio/csv/csv.xml:9
-msgid "This plugin exports data to a CSV file according to a given configuration."
+msgid ""
+"This plugin exports data to a CSV file according to a given configuration."
 msgstr ""
 
 #. type: Content of: <plugin><short>
@@ -1048,7 +1192,7 @@ msgstr "Dieses Modul importiert Daten aus einer alten OpenHBCI1-Art."
 #. type: Content of: <plugin><short>
 #: plugins/dbio/xmldb/xmldb.xml:7
 msgid "Importer for XML"
-msgstr ""
+msgstr "Importer für XML"
 
 #. type: Content of: <plugin><descr>
 #: plugins/dbio/xmldb/xmldb.xml:9
@@ -1062,7 +1206,10 @@ msgstr ""
 
 #. type: Content of: <plugin><descr>
 #: plugins/ct/ohbci/ohbci.xml:9
-msgid "This plugins provides support for keyfiles created with OpenHBCI1 and OpenHBCI2.  The file is encrypted with a password using the 3DES algorithm and it stores the private and public RSA keys."
+msgid ""
+"This plugins provides support for keyfiles created with OpenHBCI1 and "
+"OpenHBCI2.  The file is encrypted with a password using the 3DES algorithm "
+"and it stores the private and public RSA keys."
 msgstr ""
 
 #. type: Content of: <plugin><short>
@@ -1074,4 +1221,3 @@ msgstr ""
 #: plugins/configmgr/dir/dir.xml:9
 msgid "ConfigManager implementation using files."
 msgstr ""
-
