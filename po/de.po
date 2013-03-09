@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2013-03-03 22:12+0100\n"
-"PO-Revision-Date: 2013-03-03 22:09+0100\n"
+"PO-Revision-Date: 2013-03-09 10:39+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
 "Language: de_DE\n"
@@ -896,6 +896,46 @@ msgid ""
 "</p><br><p>Please enter the passphrase for the password store to be created "
 "or abort.</p></html>"
 msgstr ""
+"Sie erstellen jetzt einen neuen Passwortspeicher.\n"
+"\n"
+"Die Passwörter, die darin gespeichert werden, müssen ihrerseits durch\n"
+"ein schwer zu erratendes Hauptpasswort (auch genannt Pass-Phrase)\n"
+"verschlüsselt werden. Dieses müssen Sie jetzt eingeben.\n"
+"\n"
+"Anschließend müssen Sie sich nur noch das Hauptpasswort für den\n"
+"Passwortspeicher merken, nicht mehr die einzelnen Passwörter.\n"
+"\n"
+"Vorsicht: Es ist ein Sicherheitsrisiko, wenn Sie alle Ihre Passwörter\n"
+"in diesem Passwortspeicher ablegen und dabei nur ein leicht zu\n"
+"erratendes Hauptpasswort verwenden!\n"
+"\n"
+"Sie könne in jedem Fall hier auch \"Abbrechen\" wählen. Ihre Passwörter\n"
+"werden dann nicht gespeichert.\n"
+"\n"
+"Bitte geben Sie jetzt das Hauptpasswort für den Passwortspeicher ein\n"
+"oder wählen Sie \"Abbrechen\".\n"
+"<html>\n"
+"<p>Sie erstellen jetzt einen neuen <b>Passwortspeicher</b>.</p><br>\n"
+"<p>\n"
+"Die Passwörter, die darin gespeichert werden, müssen ihrerseits durch\n"
+"ein schwer zu erratendes Hauptpasswort (auch genannt Pass-Phrase)\n"
+"verschlüsselt werden. Dieses müssen Sie jetzt eingeben.\n"
+"</p><p>\n"
+"Anschließend müssen Sie sich nur noch das Hauptpasswort für den\n"
+"Passwortspeicher merken, nicht mehr die einzelnen Passwörter.\n"
+"</p><p>\n"
+"<font color=\"red\"><b>Vorsicht:</b> Es ist ein <b>Sicherheitsrisiko</b>,\n"
+"wenn Sie alle Ihre Passwörter in diesem Passwortspeicher ablegen und\n"
+"dabei nur ein leicht zu erratendes Hauptpasswort verwenden!</font>\n"
+"</p><p>\n"
+"\n"
+"Sie könne in jedem Fall hier auch \"Abbrechen\" wählen. Ihre Passwörter\n"
+"werden dann nicht gespeichert.\n"
+"</p><p>\n"
+"\n"
+"Bitte geben Sie jetzt das Hauptpasswort für den Passwortspeicher ein oder "
+"wählen Sie \"Abbrechen\".\n"
+"</p></html>"
 
 #: plugins/ct/ohbci/ohbci.c:632
 msgid "No valid PIN (tried too often), aborting."
@@ -1111,6 +1151,9 @@ msgid ""
 "    Add files and folders to an archive file\n"
 "\n"
 msgstr ""
+"  add:\n"
+"    Dateien und Ordner zu einer Archiv-Datei hinzufügen\n"
+"\n"
 
 #: tools/gsa/main.c:155
 msgid ""
@@ -1118,6 +1161,9 @@ msgid ""
 "    List files and folders in an archive file\n"
 "\n"
 msgstr ""
+"  list:\n"
+"    Die Dateien und Ordner aus einer Archiv-Datei anzeigen\n"
+"\n"
 
 #: tools/gsa/main.c:159
 msgid ""
@@ -1125,6 +1171,9 @@ msgid ""
 "    Check integrity of files and folders in an archive file\n"
 "\n"
 msgstr ""
+"  check:\n"
+"    Die Integrität der Dateien und Ordner einer Archiv-Datei überprüfen\n"
+"\n"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/gui/dlg_input.dlg:7
@@ -1148,19 +1197,19 @@ msgstr "Dauerhaft speichern"
 #: src/gui/dlg_message.dlg:12
 #, no-wrap
 msgid "button1"
-msgstr ""
+msgstr "button1"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/gui/dlg_message.dlg:13
 #, no-wrap
 msgid "button2"
-msgstr ""
+msgstr "button2"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/gui/dlg_message.dlg:14
 #, no-wrap
 msgid "button3"
-msgstr ""
+msgstr "button3"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/gui/dlg_progress.dlg:19
@@ -1178,6 +1227,8 @@ msgstr "Exporter für CSV"
 msgid ""
 "This plugin exports data to a CSV file according to a given configuration."
 msgstr ""
+"Dieses Plugin exportiert Daten in eine CSV-Datei (Comma Separated Valued, "
+"Komma-getrennte Werte) gemäß einer angegebenen Konfiguration"
 
 #. type: Content of: <plugin><short>
 #: plugins/dbio/olddb/olddb.xml:7
@@ -1197,12 +1248,12 @@ msgstr "Importer für XML"
 #. type: Content of: <plugin><descr>
 #: plugins/dbio/xmldb/xmldb.xml:9
 msgid "This plugin imports data from an XML file."
-msgstr ""
+msgstr "Dieses Plugin importiert Daten aus einer XML-Datei."
 
 #. type: Content of: <plugin><short>
 #: plugins/ct/ohbci/ohbci.xml:6
 msgid "OpenHBCI Keyfile Medium"
-msgstr ""
+msgstr "OpenHBCI Sicherheitsmedium Schlüsseldatei"
 
 #. type: Content of: <plugin><descr>
 #: plugins/ct/ohbci/ohbci.xml:9
@@ -1211,13 +1262,17 @@ msgid ""
 "OpenHBCI2.  The file is encrypted with a password using the 3DES algorithm "
 "and it stores the private and public RSA keys."
 msgstr ""
+"Dieses Plugin unterstützt die Schlüsseldateien, die mit den alten "
+"Bibliotheken OpenHBCI1 und OpenHBCI2 erzeugt wurden. Die Datei ist mit einem "
+"Passwort und dem 3DES-Algorithmus verschlüsselt und speichert private und "
+"öffentliche RSA-Schlüssel."
 
 #. type: Content of: <plugin><short>
 #: plugins/configmgr/dir/dir.xml:7
 msgid "ConfigManager implementation using files"
-msgstr ""
+msgstr "Eine Implementierung von ConfigManager mit Dateien"
 
 #. type: Content of: <plugin><descr>
 #: plugins/configmgr/dir/dir.xml:9
 msgid "ConfigManager implementation using files."
-msgstr ""
+msgstr "Eine Implementierung von ConfigManager mit Dateien."
