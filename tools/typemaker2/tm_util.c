@@ -49,6 +49,10 @@ uint32_t Typemaker2_FlagsFromString(const char *t) {
 	flags|=TYPEMAKER2_FLAGS_DUP;
       else if (strcasecmp(s, "nodup")==0)
 	flags|=TYPEMAKER2_FLAGS_NODUP;
+      else if (strcasecmp(s, "copy")==0)
+	flags|=TYPEMAKER2_FLAGS_COPY;
+      else if (strcasecmp(s, "nocopy")==0)
+	flags|=TYPEMAKER2_FLAGS_NOCOPY;
       else if (strcasecmp(s, "attribute")==0)
 	flags|=TYPEMAKER2_FLAGS_ATTRIBUTE;
       else if (strcasecmp(s, "enum")==0)
