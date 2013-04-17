@@ -3157,9 +3157,7 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "_copy(");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
-
-  GWEN_Buffer_AppendString(tbuf, ", const ");
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, const ");
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, " *p_src);\n");
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
@@ -3176,7 +3174,7 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, " *p_struct, const ");
   GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " ) {\n");
+  GWEN_Buffer_AppendString(tbuf, " *p_src) {\n");
 
   GWEN_Buffer_AppendString(tbuf, "  ");
 
@@ -3194,7 +3192,7 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       mty=Typemaker2_Member_GetTypePtr(tm);
       assert(mty);
 
-      if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_NOCOPY)) {
+      if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_NODUP)) {
 	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
 	s=Typemaker2_Member_GetName(tm);
 	GWEN_Buffer_AppendString(tbuf, s);
@@ -3359,12 +3357,12 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  }
 	}
 
-      } /* if !nocopy */
+      } /* if !nodup */
       else {
 	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
 	s=Typemaker2_Member_GetName(tm);
 	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "\" has NOCOPY flag, not copying */\n");
+	GWEN_Buffer_AppendString(tbuf, "\" has NODUP flag, not copying */\n");
       }
 
       GWEN_Buffer_AppendString(tbuf, "\n");
