@@ -88,7 +88,7 @@ public:
 
     switch(prop) {
     case GWEN_DialogProperty_Title:
-      qw->setWindowTitle(value);
+      qw->setWindowTitle(QString::fromUtf8(value));
       return 0;
     default:
       break;
