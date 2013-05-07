@@ -833,6 +833,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     while(nn) {
       TYPEMAKER2_SIGNAL *sig;
       GWEN_XMLNODE *nnn;
+      int i;
 
       s=GWEN_XMLNode_GetProperty(nn, "name", NULL);
       if (!(s && *s)) {
@@ -843,6 +844,13 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
       Typemaker2_Signal_SetName(sig, s);
       Typemaker2_Signal_SetParamType1(sig, "none");
       Typemaker2_Signal_SetParamType2(sig, "none");
+
+      i=GWEN_XMLNode_GetIntProperty(nn, "useParam3", 0);
+      if (i)
+        Typemaker2_Signal_AddFlags(sig, TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM3);
+      i=GWEN_XMLNode_GetIntProperty(nn, "useParam4", 0);
+      if (i)
+        Typemaker2_Signal_AddFlags(sig, TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM4);
 
       nnn=GWEN_XMLNode_FindFirstTag(nn, "params", NULL, NULL);
       if (nnn) {
@@ -878,6 +886,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     while(nn) {
       TYPEMAKER2_SLOT *slot;
       GWEN_XMLNODE *nnn;
+      int i;
 
       s=GWEN_XMLNode_GetProperty(nn, "name", NULL);
       if (!(s && *s)) {
@@ -888,6 +897,14 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
       Typemaker2_Slot_SetName(slot, s);
       Typemaker2_Slot_SetParamType1(slot, "none");
       Typemaker2_Slot_SetParamType2(slot, "none");
+
+      i=GWEN_XMLNode_GetIntProperty(nn, "useParam3", 0);
+      if (i)
+        Typemaker2_Slot_AddFlags(slot, TYPEMAKER2_SLOT_FLAGS_USE_PARAM3);
+      i=GWEN_XMLNode_GetIntProperty(nn, "useParam4", 0);
+      if (i)
+        Typemaker2_Slot_AddFlags(slot, TYPEMAKER2_SLOT_FLAGS_USE_PARAM4);
+
 
       nnn=GWEN_XMLNode_FindFirstTag(nn, "params", NULL, NULL);
       if (nnn) {

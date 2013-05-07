@@ -103,7 +103,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb.h>\n");
     GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb_db.h>\n");
   }
-  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS)
+  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS))
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/gwensignal.h>\n");
   GWEN_Buffer_AppendString(tbuf, "\n");
 
@@ -350,7 +350,7 @@ static int _buildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_SIGNALOBJECT *_signalObject;");
     GWEN_Buffer_AppendString(tbuf, "\n");
   }
@@ -616,10 +616,12 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
   }
 
+  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
+    GWEN_Buffer_AppendString(tbuf, "  p_struct->_signalObject=GWEN_SignalObject_new();\n");
+  }
+
   if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
     TYPEMAKER2_SIGNAL_LIST *slist;
-
-    GWEN_Buffer_AppendString(tbuf, "  p_struct->_signalObject=GWEN_SignalObject_new();\n");
 
     GWEN_Buffer_AppendString(tbuf, "  /* generate pre-defined signals */\n");
     slist=Typemaker2_Type_GetSignals(ty);
@@ -830,7 +832,7 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "  if (p_struct->_refCount==1) {\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_SignalObject_free(p_struct->_signalObject);\n");
   }
 
@@ -926,7 +928,7 @@ static int _buildGetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   flags=Typemaker2_Type_GetFlags(ty);
 
   /* probably add getter for signalObject */
-  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
     /* prototype */
     s=Typemaker2_TypeManager_GetApiDeclaration(tym);
     if (s && *s) {
