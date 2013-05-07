@@ -5439,7 +5439,7 @@ static int _buildSignalFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       s=Typemaker2_Signal_GetName(sig);
       GWEN_Buffer_AppendByte(tbuf, toupper(*s));
       GWEN_Buffer_AppendString(tbuf, s+1);
-      GWEN_Buffer_AppendString(tbuf, "(");
+      GWEN_Buffer_AppendString(tbuf, "(const ");
       s=Typemaker2_Type_GetIdentifier(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
@@ -5576,7 +5576,7 @@ static int _buildSignalFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       s=Typemaker2_Signal_GetName(sig);
       GWEN_Buffer_AppendByte(tbuf, toupper(*s));
       GWEN_Buffer_AppendString(tbuf, s+1);
-      GWEN_Buffer_AppendString(tbuf, "(");
+      GWEN_Buffer_AppendString(tbuf, "(const ");
       s=Typemaker2_Type_GetIdentifier(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, " *p_struct) {\n");
@@ -5748,7 +5748,7 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       s=Typemaker2_Slot_GetName(slot);
       GWEN_Buffer_AppendByte(tbuf, toupper(*s));
       GWEN_Buffer_AppendString(tbuf, s+1);
-      GWEN_Buffer_AppendString(tbuf, "(");
+      GWEN_Buffer_AppendString(tbuf, "(const ");
       s=Typemaker2_Type_GetIdentifier(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
@@ -5823,7 +5823,7 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       s=Typemaker2_Slot_GetName(slot);
       GWEN_Buffer_AppendByte(tbuf, toupper(*s));
       GWEN_Buffer_AppendString(tbuf, s+1);
-      GWEN_Buffer_AppendString(tbuf, "(");
+      GWEN_Buffer_AppendString(tbuf, "(const ");
       s=Typemaker2_Type_GetIdentifier(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, " *p_struct) {\n");
