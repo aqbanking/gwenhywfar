@@ -103,6 +103,8 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb.h>\n");
     GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb_db.h>\n");
   }
+  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS)
+    GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/gwensignal.h>\n");
   GWEN_Buffer_AppendString(tbuf, "\n");
 
   /* handle pre-headers */
@@ -346,6 +348,11 @@ static int _buildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ")\n");
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+    GWEN_Buffer_AppendString(tbuf, "  GWEN_SIGNALOBJECT *_signalObject;");
+    GWEN_Buffer_AppendString(tbuf, "\n");
   }
 
   if (flags & TYPEMAKER2_FLAGS_WITH_REFCOUNT)
@@ -609,6 +616,98 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
   }
 
+  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+    TYPEMAKER2_SIGNAL_LIST *slist;
+
+    GWEN_Buffer_AppendString(tbuf, "  p_struct->_signalObject=GWEN_SignalObject_new();\n");
+
+    GWEN_Buffer_AppendString(tbuf, "  /* generate pre-defined signals */\n");
+    slist=Typemaker2_Type_GetSignals(ty);
+    if (slist) {
+      TYPEMAKER2_SIGNAL *sig;
+
+      sig=Typemaker2_Signal_List_First(slist);
+      while(sig) {
+        s=Typemaker2_Signal_GetName(sig);
+        GWEN_Buffer_AppendString(tbuf, "  /* signal \"");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "\" */\n");
+
+        GWEN_Buffer_AppendString(tbuf, "  GWEN_Signal_new(p_struct->_signalObject, NULL, ");
+        /* name */
+        GWEN_Buffer_AppendString(tbuf, "\"");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "\", ");
+
+        /* param type 1 */
+        s=Typemaker2_Signal_GetParamType1(sig);
+        GWEN_Buffer_AppendString(tbuf, "\"");
+        GWEN_Buffer_AppendString(tbuf, s?s:"none");
+        GWEN_Buffer_AppendString(tbuf, "\", ");
+
+        /* param type 2 */
+        s=Typemaker2_Signal_GetParamType2(sig);
+        GWEN_Buffer_AppendString(tbuf, "\"");
+        GWEN_Buffer_AppendString(tbuf, s?s:"none");
+        GWEN_Buffer_AppendString(tbuf, "\");\n");
+
+        sig=Typemaker2_Signal_List_Next(sig);
+      }
+    }
+  }
+
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_SLOTS) {
+    TYPEMAKER2_SLOT_LIST *slist;
+
+    GWEN_Buffer_AppendString(tbuf, "  /* generate pre-defined slots */\n");
+    slist=Typemaker2_Type_GetSlots(ty);
+    if (slist) {
+      TYPEMAKER2_SLOT *slot;
+
+      slot=Typemaker2_Slot_List_First(slist);
+      while(slot) {
+        s=Typemaker2_Slot_GetName(slot);
+        GWEN_Buffer_AppendString(tbuf, "  /* slot \"");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "\" */\n");
+
+        GWEN_Buffer_AppendString(tbuf, "  GWEN_Slot_new(p_struct->_signalObject, NULL, ");
+        /* name */
+        GWEN_Buffer_AppendString(tbuf, "\"");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "\", ");
+
+        /* param type 1 */
+        s=Typemaker2_Slot_GetParamType1(slot);
+        GWEN_Buffer_AppendString(tbuf, "\"");
+        GWEN_Buffer_AppendString(tbuf, s?s:"none");
+        GWEN_Buffer_AppendString(tbuf, "\", ");
+
+        /* param type 2 */
+        s=Typemaker2_Slot_GetParamType2(slot);
+        GWEN_Buffer_AppendString(tbuf, "\"");
+        GWEN_Buffer_AppendString(tbuf, s?s:"none");
+	GWEN_Buffer_AppendString(tbuf, "\", ");
+
+	/* callback function */
+	s=Typemaker2_Type_GetPrefix(ty);
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, "_SlotCallback_");
+	s=Typemaker2_Slot_GetName(slot);
+	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+	GWEN_Buffer_AppendString(tbuf, s+1);
+	GWEN_Buffer_AppendString(tbuf, ", (void*) p_struct");
+        GWEN_Buffer_AppendString(tbuf, ");\n");
+
+
+
+        slot=Typemaker2_Slot_List_Next(slot);
+      }
+    }
+  }
+
+
   GWEN_Buffer_AppendString(tbuf, "  /* members */\n");
 
   tml=Typemaker2_Type_GetMembers(ty);
@@ -731,6 +830,10 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "  if (p_struct->_refCount==1) {\n");
   }
 
+  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+    GWEN_Buffer_AppendString(tbuf, "    GWEN_SignalObject_free(p_struct->_signalObject);\n");
+  }
+
   if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_INHERIT_FINI(");
     s=Typemaker2_Type_GetIdentifier(ty);
@@ -821,6 +924,46 @@ static int _buildGetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   flags=Typemaker2_Type_GetFlags(ty);
+
+  /* probably add getter for signalObject */
+  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+    /* prototype */
+    s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+    if (s && *s) {
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " ");
+    }
+
+    GWEN_Buffer_AppendString(tbuf, "GWEN_SIGNALOBJECT *");
+    s=Typemaker2_Type_GetPrefix(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, "_GetSignalObject(const ");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
+
+
+    Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+    /* implementation */
+    GWEN_Buffer_AppendString(tbuf, "GWEN_SIGNALOBJECT *");
+    s=Typemaker2_Type_GetPrefix(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, "_GetSignalObject(const ");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " *p_struct) {\n");
+
+    GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+    GWEN_Buffer_AppendString(tbuf, "  return p_struct->_signalObject;\n");
+
+    GWEN_Buffer_AppendString(tbuf, "}\n");
+
+    Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+  }
 
   tml=Typemaker2_Type_GetMembers(ty);
   if (tml) {
@@ -5210,11 +5353,588 @@ static int _buildAttach(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
+static int _buildSignalFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  uint32_t flags;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_SIGNAL_LIST *sigList;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  sigList=Typemaker2_Type_GetSignals(ty);
+  if (sigList) {
+    TYPEMAKER2_SIGNAL *sig;
+
+    /* prototype */
+    sig=Typemaker2_Signal_List_First(sigList);
+    while(sig) {
+
+      /* SignalConnect */
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      if (s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " ");
+      }
+      GWEN_Buffer_AppendString(tbuf, "int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_SignalConnect_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct, GWEN_SLOT *slot);\n");
+
+      /* SignalDisconnect */
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      if (s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " ");
+      }
+      GWEN_Buffer_AppendString(tbuf, "int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_SignalDisconnect_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct, GWEN_SLOT *slot);\n");
+
+      /* GetSignal */
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      if (s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " ");
+      }
+      GWEN_Buffer_AppendString(tbuf, "GWEN_SIGNAL *");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_GetSignal_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
+
+
+      /* EmitSignal */
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      if (s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " ");
+      }
+      GWEN_Buffer_AppendString(tbuf, "int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_EmitSignal_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct");
+      s=Typemaker2_Signal_GetParamType1(sig);            /* param 1 */
+      if (s && *s && strcasecmp(s, "none")) {
+        GWEN_Buffer_AppendString(tbuf, ", ");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " param1");
+      }
+      s=Typemaker2_Signal_GetParamType2(sig);            /* param 2 */
+      if (s && *s && strcasecmp(s, "none")) {
+        GWEN_Buffer_AppendString(tbuf, ", ");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " param2");
+      }
+      if (Typemaker2_Signal_GetFlags(sig) & TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM3) {
+        GWEN_Buffer_AppendString(tbuf, ", int param3");
+      }
+      if (Typemaker2_Signal_GetFlags(sig) & TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM4) {
+        GWEN_Buffer_AppendString(tbuf, ", int param4");
+      }
+      GWEN_Buffer_AppendString(tbuf, ");\n");
+
+
+      sig=Typemaker2_Signal_List_Next(sig);
+    }
+    Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+    /* implementation */
+    sig=Typemaker2_Signal_List_First(sigList);
+    while(sig) {
+
+      /* SignalConnect */
+      GWEN_Buffer_AppendString(tbuf, "int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_SignalConnect_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct, GWEN_SLOT *slot) {\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  GWEN_SIGNAL *sig;\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+      GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+      GWEN_Buffer_AppendString(tbuf, "  sig=GWEN_SignalObject_FindSignal(p_struct->_signalObject, ");
+      s=Typemaker2_Signal_GetName(sig);       /* name */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Signal_GetParamType1(sig); /* param 1 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Signal_GetParamType2(sig); /* param 2 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\");\n");
+      GWEN_Buffer_AppendString(tbuf, "  if (sig)\n");
+      GWEN_Buffer_AppendString(tbuf, "    return GWEN_Signal_Connect(sig, slot);\n");
+      GWEN_Buffer_AppendString(tbuf, "  else\n");
+      GWEN_Buffer_AppendString(tbuf, "    return GWEN_ERROR_NOT_FOUND;\n");
+
+      GWEN_Buffer_AppendString(tbuf, "}\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+
+      /* SignalDisconnect */
+      GWEN_Buffer_AppendString(tbuf, "int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_SignalDisconnect_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct, GWEN_SLOT *slot) {\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  GWEN_SIGNAL *sig;\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+      GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+      GWEN_Buffer_AppendString(tbuf, "  sig=GWEN_SignalObject_FindSignal(p_struct->_signalObject, ");
+      s=Typemaker2_Signal_GetName(sig);       /* name */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Signal_GetParamType1(sig); /* param 1 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Signal_GetParamType2(sig); /* param 2 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\");\n");
+      GWEN_Buffer_AppendString(tbuf, "  if (sig)\n");
+      GWEN_Buffer_AppendString(tbuf, "    return GWEN_Signal_Disconnect(sig, slot);\n");
+      GWEN_Buffer_AppendString(tbuf, "  else\n");
+      GWEN_Buffer_AppendString(tbuf, "    return GWEN_ERROR_NOT_FOUND;\n");
+
+      GWEN_Buffer_AppendString(tbuf, "}\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+
+
+      /* GetSignal */
+      GWEN_Buffer_AppendString(tbuf, "GWEN_SIGNAL *");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_GetSignal_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct) {\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+      GWEN_Buffer_AppendString(tbuf, "  return GWEN_SignalObject_FindSignal(p_struct->_signalObject, ");
+      s=Typemaker2_Signal_GetName(sig);       /* name */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Signal_GetParamType1(sig); /* param 1 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Signal_GetParamType2(sig); /* param 2 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\");\n");
+
+      GWEN_Buffer_AppendString(tbuf, "}\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+
+
+      /* EmitSignal */
+      GWEN_Buffer_AppendString(tbuf, "int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_EmitSignal_");
+      s=Typemaker2_Signal_GetName(sig);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct");
+      s=Typemaker2_Signal_GetParamType1(sig);            /* param 1 */
+      if (s && *s && strcasecmp(s, "none")) {
+        GWEN_Buffer_AppendString(tbuf, ", ");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " param1");
+      }
+      s=Typemaker2_Signal_GetParamType2(sig);            /* param 2 */
+      if (s && *s && strcasecmp(s, "none")) {
+        GWEN_Buffer_AppendString(tbuf, ", ");
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " param2");
+      }
+      if (Typemaker2_Signal_GetFlags(sig) & TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM3) {
+        GWEN_Buffer_AppendString(tbuf, ", int param3");
+      }
+      if (Typemaker2_Signal_GetFlags(sig) & TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM4) {
+        GWEN_Buffer_AppendString(tbuf, ", int param4");
+      }
+      GWEN_Buffer_AppendString(tbuf, "){\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  GWEN_SIGNAL *sig;\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+      GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+      GWEN_Buffer_AppendString(tbuf, "  sig=GWEN_SignalObject_FindSignal(p_struct->_signalObject, ");
+      s=Typemaker2_Signal_GetName(sig);       /* name */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+
+      s=Typemaker2_Signal_GetParamType1(sig); /* param 1 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Signal_GetParamType2(sig); /* param 2 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\");\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  if (sig) \n");
+      GWEN_Buffer_AppendString(tbuf, "    return GWEN_Signal_Emit(sig, ");
+      s=Typemaker2_Signal_GetParamType1(sig);            /* param 1 */
+      if (s && *s && strcasecmp(s, "none")) {
+        GWEN_Buffer_AppendString(tbuf, "(void*) ");
+        GWEN_Buffer_AppendString(tbuf, "param1, ");
+      }
+      else
+	GWEN_Buffer_AppendString(tbuf, "NULL, ");
+      s=Typemaker2_Signal_GetParamType2(sig);            /* param 2 */
+      if (s && *s && strcasecmp(s, "none")) {
+	GWEN_Buffer_AppendString(tbuf, "(void*) ");
+	GWEN_Buffer_AppendString(tbuf, " param2, ");
+      }
+      else
+	GWEN_Buffer_AppendString(tbuf, "NULL, ");
+      if (Typemaker2_Signal_GetFlags(sig) & TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM3)
+        GWEN_Buffer_AppendString(tbuf, "param3, ");
+      else
+        GWEN_Buffer_AppendString(tbuf, "0, ");
+      if (Typemaker2_Signal_GetFlags(sig) & TYPEMAKER2_SIGNAL_FLAGS_USE_PARAM4)
+        GWEN_Buffer_AppendString(tbuf, "param4");
+      else
+        GWEN_Buffer_AppendString(tbuf, "0");
+      GWEN_Buffer_AppendString(tbuf, ");\n");
+
+
+      GWEN_Buffer_AppendString(tbuf, "  else\n");
+      GWEN_Buffer_AppendString(tbuf, "    return 0;\n");
+
+      GWEN_Buffer_AppendString(tbuf, "}\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+
+
+      sig=Typemaker2_Signal_List_Next(sig);
+    }
+    Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+  }
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_SLOT_LIST *slotList;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  slotList=Typemaker2_Type_GetSlots(ty);
+  if (slotList) {
+    TYPEMAKER2_SLOT *slot;
+
+    /* private prototypes */
+    slot=Typemaker2_Slot_List_First(slotList);
+    while(slot) {
+
+      /* callback function */
+      GWEN_Buffer_AppendString(tbuf, "static int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_SlotCallback_");
+      s=Typemaker2_Slot_GetName(slot);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(GWEN_SLOT *slot, void *userData, void *p1, void *p2, int p3, int p4);\n");
+
+      slot=Typemaker2_Slot_List_Next(slot);
+    }
+
+    Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+    /* public prototypes */
+    slot=Typemaker2_Slot_List_First(slotList);
+    while(slot) {
+      /* GetSlot */
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      if (s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " ");
+      }
+      GWEN_Buffer_AppendString(tbuf, "GWEN_SLOT *");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_GetSlot_");
+      s=Typemaker2_Slot_GetName(slot);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
+
+
+      slot=Typemaker2_Slot_List_Next(slot);
+    }
+    Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+    /* implementation */
+    slot=Typemaker2_Slot_List_First(slotList);
+    while(slot) {
+
+      /* callback function */
+      GWEN_Buffer_AppendString(tbuf, "static int ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_SlotCallback_");
+      s=Typemaker2_Slot_GetName(slot);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(GWEN_SLOT *slot, void *userData, void *p1, void *p2, int p3, int p4) {\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  ");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct;\n");
+
+      GWEN_Buffer_AppendString(tbuf, "\n");
+      GWEN_Buffer_AppendString(tbuf, "  p_struct=(");
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "*) userData;\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  return ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_");
+      s=Typemaker2_Slot_GetName(slot);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(p_struct");
+
+      s=Typemaker2_Slot_GetParamType1(slot); /* param 1 */
+      if (s && *s && strcasecmp(s, "none")) {
+	GWEN_Buffer_AppendString(tbuf, ", (");
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, ") p1");
+      }
+      s=Typemaker2_Slot_GetParamType2(slot); /* param 2 */
+      if (s && *s && strcasecmp(s, "none")) {
+	GWEN_Buffer_AppendString(tbuf, ", (");
+	GWEN_Buffer_AppendString(tbuf, s);
+	GWEN_Buffer_AppendString(tbuf, ") p2");
+      }
+      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM3)
+        GWEN_Buffer_AppendString(tbuf, ", p3");
+      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM4)
+	GWEN_Buffer_AppendString(tbuf, ", p4");
+
+      GWEN_Buffer_AppendString(tbuf, ");\n");
+
+      GWEN_Buffer_AppendString(tbuf, "}\n\n");
+
+
+      /* GetSlot */
+      GWEN_Buffer_AppendString(tbuf, "GWEN_SLOT *");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_GetSlot_");
+      s=Typemaker2_Slot_GetName(slot);
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " *p_struct) {\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+      GWEN_Buffer_AppendString(tbuf, "  return GWEN_SignalObject_FindSlot(p_struct->_signalObject, ");
+      s=Typemaker2_Slot_GetName(slot);       /* name */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Slot_GetParamType1(slot); /* param 1 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\", ");
+      s=Typemaker2_Slot_GetParamType2(slot); /* param 2 */
+      GWEN_Buffer_AppendString(tbuf, "\"");
+      GWEN_Buffer_AppendString(tbuf, s?s:"none");
+      GWEN_Buffer_AppendString(tbuf, "\");\n");
+
+      GWEN_Buffer_AppendString(tbuf, "}\n");
+      GWEN_Buffer_AppendString(tbuf, "\n");
+
+      slot=Typemaker2_Slot_List_Next(slot);
+    }
+    Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+  }
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  TYPEMAKER2_VIRTUALFN_LIST *fnList;
+  TYPEMAKER2_SLOT_LIST *slotList;
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  fnList=Typemaker2_Type_GetVirtualFns(ty);
+
+  slotList=Typemaker2_Type_GetSlots(ty);
+  if (slotList) {
+    TYPEMAKER2_SLOT *slot;
+
+    slot=Typemaker2_Slot_List_First(slotList);
+    while(slot) {
+      TYPEMAKER2_VIRTUALFN *fn;
+      GWEN_STRINGLIST *plist;
+
+      /* callback function */
+      s=Typemaker2_Slot_GetName(slot);
+      GWEN_Buffer_AppendByte(tbuf, tolower(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+
+      fn=Typemaker2_VirtualFn_new();
+      plist=Typemaker2_VirtualFn_GetParamTypes(fn);
+
+      /* name */
+      Typemaker2_VirtualFn_SetName(fn, GWEN_Buffer_GetStart(tbuf));
+
+      s=Typemaker2_Slot_GetParamType1(slot); /* param 1 */
+      if (s && *s && strcasecmp(s, "none"))
+	GWEN_StringList_AppendString(plist, s, 0, 0);
+      s=Typemaker2_Slot_GetParamType2(slot); /* param 2 */
+      if (s && *s && strcasecmp(s, "none"))
+	GWEN_StringList_AppendString(plist, s, 0, 0);
+      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM3)
+	GWEN_StringList_AppendString(plist, "int", 0, 0);
+      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM4)
+	GWEN_StringList_AppendString(plist, "int", 0, 0);
+
+      Typemaker2_VirtualFn_SetAccess(fn, TypeMaker2_Access_Public);
+      Typemaker2_VirtualFn_SetReturnType(fn, "int");
+      Typemaker2_VirtualFn_SetDefaultReturnValue(fn, "GWEN_ERROR_NOT_IMPLEMENTED");
+
+      Typemaker2_VirtualFn_AddFlags(fn, TYPEMAKER2_VIRTUALFN_FLAGS_FROMSLOT);
+
+      Typemaker2_VirtualFn_List_Add(fn, fnList);
+
+      slot=Typemaker2_Slot_List_Next(slot);
+    }
+  }
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+static void _delVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  TYPEMAKER2_VIRTUALFN_LIST *fnList;
+
+  fnList=Typemaker2_Type_GetVirtualFns(ty);
+  if (fnList) {
+    TYPEMAKER2_VIRTUALFN *fn;
+
+    fn=Typemaker2_VirtualFn_List_First(fnList);
+    while(fn) {
+      TYPEMAKER2_VIRTUALFN *fnNext;
+
+      fnNext=Typemaker2_VirtualFn_List_Next(fn);
+      if (Typemaker2_VirtualFn_GetFlags(fn) & TYPEMAKER2_VIRTUALFN_FLAGS_FROMSLOT) {
+	Typemaker2_VirtualFn_List_Del(fn);
+	Typemaker2_VirtualFn_free(fn);
+      }
+      fn=fnNext;
+    }
+  }
+}
+
+
+
+
 static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   int rv;
   uint32_t flags;
 
   flags=Typemaker2_Type_GetFlags(ty);
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_SLOTS) {
+    _delVirtualFnsFromSlots(tb, ty);
+    rv=_addVirtualFnsFromSlots(tb,ty);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
 
   rv=_setEnumStringFns(tb, ty);
   if (rv<0) {
@@ -5471,6 +6191,22 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
 
   if (flags & TYPEMAKER2_FLAGS_WITH_HASH) {
     rv=_buildToHashString(tb, ty);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+    rv=_buildSignalFunctions(tb, ty);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_SLOTS) {
+    rv=_buildSlotFunctions(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;

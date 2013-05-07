@@ -52,6 +52,8 @@ GWEN_LIST2_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type)
 #define TYPEMAKER2_FLAGS_WITH_REFCOUNT    0x04000000
 #define TYPEMAKER2_FLAGS_WITH_FLAGS       0x08000000
 #define TYPEMAKER2_FLAGS_WITH_HASHNUM     0x10000000
+#define TYPEMAKER2_FLAGS_WITH_SIGNALS     0x20000000
+#define TYPEMAKER2_FLAGS_WITH_SLOTS       0x40000000
 
 /** special value which is used to overwrite flags from extended types */
 #define TYPEMAKER2_FLAGS_NONE             0x80000000
@@ -82,6 +84,8 @@ enum {
 #include "tm_code.h"
 #include "tm_inline.h"
 #include "tm_virtualfn.h"
+#include "tm_signal.h"
+#include "tm_slot.h"
 
 
 
@@ -158,6 +162,8 @@ TYPEMAKER2_DEFINE_LIST *Typemaker2_Type_GetDefines(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_CODE_LIST *Typemaker2_Type_GetCodeDefs(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_INLINE_LIST *Typemaker2_Type_GetInlines(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_VIRTUALFN_LIST *Typemaker2_Type_GetVirtualFns(const TYPEMAKER2_TYPE *ty);
+TYPEMAKER2_SIGNAL_LIST *Typemaker2_Type_GetSignals(const TYPEMAKER2_TYPE *ty);
+TYPEMAKER2_SLOT_LIST *Typemaker2_Type_GetSlots(const TYPEMAKER2_TYPE *ty);
 
 
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty);

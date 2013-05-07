@@ -21,7 +21,7 @@ GWEN_LIST_FUNCTIONS(TYPEMAKER2_ITEM, Typemaker2_Item)
 GWEN_LIST2_FUNCTIONS(TYPEMAKER2_ITEM, Typemaker2_Item)
 
 
-TYPEMAKER2_ITEM *Typemaker2_Item_new() {
+TYPEMAKER2_ITEM *Typemaker2_Item_new(void) {
   TYPEMAKER2_ITEM *p_struct;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_ITEM, p_struct)
@@ -29,6 +29,7 @@ TYPEMAKER2_ITEM *Typemaker2_Item_new() {
   /* members */
   p_struct->name=NULL;
   p_struct->value=NULL;
+  /* virtual functions */
 
   return p_struct;
 }
@@ -48,6 +49,30 @@ TYPEMAKER2_ITEM *Typemaker2_Item_dup(const TYPEMAKER2_ITEM *p_src) {
 
   assert(p_src);
   p_struct=Typemaker2_Item_new();
+  /* member "name" */
+  if (p_struct->name) {
+    free(p_struct->name);
+    p_struct->name=NULL;
+  }
+  if (p_src->name) {
+    p_struct->name=strdup(p_src->name);
+  }
+
+  /* member "value" */
+  if (p_struct->value) {
+    free(p_struct->value);
+    p_struct->value=NULL;
+  }
+  if (p_src->value) {
+    p_struct->value=strdup(p_src->value);
+  }
+
+  return p_struct;
+}
+
+TYPEMAKER2_ITEM *Typemaker2_Item_copy(TYPEMAKER2_ITEM *p_struct, const TYPEMAKER2_ITEM *p_src) {
+    assert(p_struct);
+  assert(p_src);
   /* member "name" */
   if (p_struct->name) {
     free(p_struct->name);
@@ -105,21 +130,43 @@ void Typemaker2_Item_SetValue(TYPEMAKER2_ITEM *p_struct, const char *p_src) {
   }
 }
 
+TYPEMAKER2_ITEM_LIST *Typemaker2_Item_List_dup(const TYPEMAKER2_ITEM_LIST *p_src) {
+  TYPEMAKER2_ITEM_LIST *p_dest;
+  TYPEMAKER2_ITEM *p_elem;
+
+  assert(p_src);
+  p_dest=Typemaker2_Item_List_new();
+  p_elem=Typemaker2_Item_List_First(p_src);
+  while(p_elem) {
+    TYPEMAKER2_ITEM *p_cpy;
+
+    p_cpy=Typemaker2_Item_dup(p_elem);
+    Typemaker2_Item_List_Add(p_cpy, p_dest);
+    p_elem=Typemaker2_Item_List_Next(p_elem);
+  }
+
+  return p_dest;
+}
+
 void Typemaker2_Item_ReadXml(TYPEMAKER2_ITEM *p_struct, GWEN_XMLNODE *p_db) {
   assert(p_struct);
   /* member "name" */
   if (p_struct->name) {
     free(p_struct->name);
   }
-  p_struct->name=NULL;
   { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "name", NULL); if (s) p_struct->name=strdup(s); }
+  if (p_struct->name==NULL) {  /* member "name" is volatile, just presetting */
+  p_struct->name=NULL;
+  }
 
   /* member "value" */
   if (p_struct->value) {
     free(p_struct->value);
   }
-  p_struct->value=NULL;
   { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "value", NULL); if (s) p_struct->value=strdup(s); }
+  if (p_struct->value==NULL) {  /* member "value" is volatile, just presetting */
+  p_struct->value=NULL;
+  }
 
 }
 
@@ -143,4 +190,7 @@ TYPEMAKER2_ITEM *Typemaker2_Item_fromXml(GWEN_XMLNODE *p_db) {
   Typemaker2_Item_ReadXml(p_struct, p_db);
   return p_struct;
 }
+
+
+/* code headers */
 

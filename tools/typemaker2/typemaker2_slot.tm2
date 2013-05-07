@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="TYPEMAKER2_SLOT" type="pointer" lang="c" extends="struct_base">
+    <identifier>TYPEMAKER2_SLOT</identifier>
+    <prefix>Typemaker2_Slot</prefix>
+  </typedef>
+</tm2>

@@ -1,0 +1,74 @@
+<?xml?>
+
+<tm2>
+  <type id="TYPEMAKER2_SLOT" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>TYPEMAKER2_SLOT</identifier>
+      <prefix>Typemaker2_Slot</prefix>
+      <basefilename>tm_slot</basefilename>
+      
+      <flags>
+        with_list1
+        with_list2
+        with_xml
+      </flags>
+      
+      <headers>
+      </headers>
+      
+    </lang>
+
+    <defines>
+
+      <define id="TYPEMAKER2_SLOT_FLAGS" prefix="TYPEMAKER2_SLOT_FLAGS_">
+        <item name="USE_PARAM3"     value="0x00000001" />
+        <item name="USE_PARAM4"     value="0x00000002" />
+     </define>
+
+    </defines>
+
+    
+    <members>
+  
+      <member name="name" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="paramType1" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="paramType2" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own attribute</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="flags" type="uint32_t" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>with_flags</flags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
+

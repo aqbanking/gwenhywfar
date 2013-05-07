@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="TYPEMAKER2_SLOT_LIST" type="pointer" lang="c" extends="list1_base" basetype="TYPEMAKER2_SLOT">
+    <identifier>TYPEMAKER2_SLOT_LIST</identifier>
+    <prefix>Typemaker2_Slot_List</prefix>
+  </typedef>
+</tm2>

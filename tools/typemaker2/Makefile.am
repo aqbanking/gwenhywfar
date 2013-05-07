@@ -7,7 +7,9 @@ typefiles=\
   tm_item.xml \
   tm_enum.xml \
   tm_define.xml \
-  tm_code.xml
+  tm_code.xml \
+  tm_signal.xml \
+  tm_slot.xml
 
 
 bin_PROGRAMS=typemaker2
@@ -23,6 +25,8 @@ noinst_HEADERS=\
   tm_define_p.h tm_define.h \
   tm_code_p.h tm_code.h \
   tm_inline_p.h tm_inline.h \
+  tm_signal_p.h tm_signal.h \
+  tm_slot_p.h tm_slot.h \
   tm_util.h \
   typemaker2.h \
   tm_builder_c.h
@@ -41,6 +45,8 @@ typemaker2_SOURCES=\
   tm_code.c \
   tm_inline.c \
   tm_virtualfn.c \
+  tm_signal.c \
+  tm_slot.c \
   build.c \
   main.c
   

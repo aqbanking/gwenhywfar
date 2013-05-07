@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="TYPEMAKER2_SIGNAL_LIST" type="pointer" lang="c" extends="list1_base" basetype="TYPEMAKER2_SIGNAL">
+    <identifier>TYPEMAKER2_SIGNAL_LIST</identifier>
+    <prefix>Typemaker2_Signal_List</prefix>
+  </typedef>
+</tm2>

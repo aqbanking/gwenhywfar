@@ -24,16 +24,19 @@ extern "C" {
 typedef struct TYPEMAKER2_CODE TYPEMAKER2_CODE;
 GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_CODE, Typemaker2_Code)
 
+
 /* post-headers */
 
 
 /** Constructor. */
-TYPEMAKER2_CODE *Typemaker2_Code_new();
+TYPEMAKER2_CODE *Typemaker2_Code_new(void);
 
 /** Destructor. */
 void Typemaker2_Code_free(TYPEMAKER2_CODE *p_struct);
 
 TYPEMAKER2_CODE *Typemaker2_Code_dup(const TYPEMAKER2_CODE *p_struct);
+
+TYPEMAKER2_CODE *Typemaker2_Code_copy(TYPEMAKER2_CODE *p_struct, const TYPEMAKER2_CODE *p_src);
 
 /** Getter.
  * Use this function to get the member "id"
@@ -94,6 +97,8 @@ void Typemaker2_Code_SetMemberFlagsMaskInt(TYPEMAKER2_CODE *p_struct, uint32_t p
  * Use this function to set the member "memberFlagsValueInt"
 */
 void Typemaker2_Code_SetMemberFlagsValueInt(TYPEMAKER2_CODE *p_struct, uint32_t p_src);
+
+TYPEMAKER2_CODE_LIST *Typemaker2_Code_List_dup(const TYPEMAKER2_CODE_LIST *p_src);
 
 void Typemaker2_Code_ReadXml(TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db);
 

@@ -25,13 +25,16 @@ GWEN_LIST2_FUNCTION_DEFS(TYPEMAKER2_ITEM, Typemaker2_Item)
 
 
 
+
 /** Constructor. */
-TYPEMAKER2_ITEM *Typemaker2_Item_new();
+TYPEMAKER2_ITEM *Typemaker2_Item_new(void);
 
 /** Destructor. */
 void Typemaker2_Item_free(TYPEMAKER2_ITEM *p_struct);
 
 TYPEMAKER2_ITEM *Typemaker2_Item_dup(const TYPEMAKER2_ITEM *p_struct);
+
+TYPEMAKER2_ITEM *Typemaker2_Item_copy(TYPEMAKER2_ITEM *p_struct, const TYPEMAKER2_ITEM *p_src);
 
 /** Getter.
  * Use this function to get the member "name"
@@ -52,6 +55,8 @@ void Typemaker2_Item_SetName(TYPEMAKER2_ITEM *p_struct, const char *p_src);
  * Use this function to set the member "value"
 */
 void Typemaker2_Item_SetValue(TYPEMAKER2_ITEM *p_struct, const char *p_src);
+
+TYPEMAKER2_ITEM_LIST *Typemaker2_Item_List_dup(const TYPEMAKER2_ITEM_LIST *p_src);
 
 void Typemaker2_Item_ReadXml(TYPEMAKER2_ITEM *p_struct, GWEN_XMLNODE *p_db);
 

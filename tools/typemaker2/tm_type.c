@@ -42,6 +42,8 @@ TYPEMAKER2_TYPE *Typemaker2_Type_new() {
   ty->codeDefs=Typemaker2_Code_List_new();
   ty->inlines=Typemaker2_Inline_List_new();
   ty->virtualFns=Typemaker2_VirtualFn_List_new();
+  ty->signals=Typemaker2_Signal_List_new();
+  ty->slots=Typemaker2_Slot_List_new();
 
   ty->structIncludes=GWEN_StringList_new();
   ty->privateIncludes=GWEN_StringList_new();
@@ -82,6 +84,8 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       Typemaker2_Code_List_free(ty->codeDefs);
       Typemaker2_Inline_List_free(ty->inlines);
       Typemaker2_VirtualFn_List_free(ty->virtualFns);
+      Typemaker2_Signal_List_free(ty->signals);
+      Typemaker2_Slot_List_free(ty->slots);
 
       GWEN_StringList_free(ty->structIncludes);
       GWEN_StringList_free(ty->privateIncludes);
@@ -556,6 +560,22 @@ TYPEMAKER2_VIRTUALFN_LIST *Typemaker2_Type_GetVirtualFns(const TYPEMAKER2_TYPE *
 
 
 
+TYPEMAKER2_SIGNAL_LIST *Typemaker2_Type_GetSignals(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->signals;
+}
+
+
+
+TYPEMAKER2_SLOT_LIST *Typemaker2_Type_GetSlots(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->slots;
+}
+
+
+
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -803,6 +823,96 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
       nn=GWEN_XMLNode_FindNextTag(nn, "fn", NULL, NULL);
     }
   }
+
+  /* read signals */
+  n=GWEN_XMLNode_FindFirstTag(node, "signals", NULL, NULL);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "signal", NULL, NULL);
+    while(nn) {
+      TYPEMAKER2_SIGNAL *sig;
+      GWEN_XMLNODE *nnn;
+
+      s=GWEN_XMLNode_GetProperty(nn, "name", NULL);
+      if (!(s && *s)) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unnamed signal");
+        return GWEN_ERROR_INVALID;
+      }
+      sig=Typemaker2_Signal_new();
+      Typemaker2_Signal_SetName(sig, s);
+      Typemaker2_Signal_SetParamType1(sig, "none");
+      Typemaker2_Signal_SetParamType2(sig, "none");
+
+      nnn=GWEN_XMLNode_FindFirstTag(nn, "params", NULL, NULL);
+      if (nnn) {
+        GWEN_XMLNODE *nnnn;
+        int i;
+
+        nnnn=GWEN_XMLNode_FindFirstTag(nnn, "param", NULL, NULL);
+        i=1;
+        while(nnnn && i<3) {
+          const char *s;
+
+          s=GWEN_XMLNode_GetProperty(nnnn, "type", "none");
+          if (i==1)
+            Typemaker2_Signal_SetParamType1(sig, s);
+          else
+            Typemaker2_Signal_SetParamType2(sig, s);
+          i++;
+          nnnn=GWEN_XMLNode_FindNextTag(nnnn, "param", NULL, NULL);
+        }
+      }
+      Typemaker2_Signal_List_Add(sig, ty->signals);
+      nn=GWEN_XMLNode_FindNextTag(nn, "signal", NULL, NULL);
+    }
+  }
+
+
+  /* read slots */
+  n=GWEN_XMLNode_FindFirstTag(node, "slots", NULL, NULL);
+  if (n) {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "slot", NULL, NULL);
+    while(nn) {
+      TYPEMAKER2_SLOT *slot;
+      GWEN_XMLNODE *nnn;
+
+      s=GWEN_XMLNode_GetProperty(nn, "name", NULL);
+      if (!(s && *s)) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unnamed slot");
+        return GWEN_ERROR_INVALID;
+      }
+      slot=Typemaker2_Slot_new();
+      Typemaker2_Slot_SetName(slot, s);
+      Typemaker2_Slot_SetParamType1(slot, "none");
+      Typemaker2_Slot_SetParamType2(slot, "none");
+
+      nnn=GWEN_XMLNode_FindFirstTag(nn, "params", NULL, NULL);
+      if (nnn) {
+        GWEN_XMLNODE *nnnn;
+        int i;
+
+        nnnn=GWEN_XMLNode_FindFirstTag(nnn, "param", NULL, NULL);
+        i=1;
+        while(nnnn && i<3) {
+          const char *s;
+
+          s=GWEN_XMLNode_GetProperty(nnnn, "type", "none");
+          if (i==1)
+            Typemaker2_Slot_SetParamType1(slot, s);
+          else
+            Typemaker2_Slot_SetParamType2(slot, s);
+          i++;
+          nnnn=GWEN_XMLNode_FindNextTag(nnnn, "param", NULL, NULL);
+        }
+      }
+      Typemaker2_Slot_List_Add(slot, ty->slots);
+      nn=GWEN_XMLNode_FindNextTag(nn, "slot", NULL, NULL);
+    }
+  }
+
 
   /* read defaults */
   n=GWEN_XMLNode_FindFirstTag(langNode, "defaults", NULL, NULL);

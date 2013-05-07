@@ -24,14 +24,15 @@ extern "C" {
 typedef struct TYPEMAKER2_DEFINE TYPEMAKER2_DEFINE;
 GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_DEFINE, Typemaker2_Define)
 
-/* post-headers */
-
 
 enum {
-  Typemaker2_Define_Mode_Unknown = 0,
+  Typemaker2_Define_Mode_Unknown = -1,
   Typemaker2_Define_Mode_Sequence = 1,
   Typemaker2_Define_Mode_BitField
 };
+
+
+/* post-headers */
 
 
 int Typemaker2_Define_Mode_fromString(const char *p_s);
@@ -39,12 +40,14 @@ int Typemaker2_Define_Mode_fromString(const char *p_s);
 const char *Typemaker2_Define_Mode_toString(int p_i);
 
 /** Constructor. */
-TYPEMAKER2_DEFINE *Typemaker2_Define_new();
+TYPEMAKER2_DEFINE *Typemaker2_Define_new(void);
 
 /** Destructor. */
 void Typemaker2_Define_free(TYPEMAKER2_DEFINE *p_struct);
 
 TYPEMAKER2_DEFINE *Typemaker2_Define_dup(const TYPEMAKER2_DEFINE *p_struct);
+
+TYPEMAKER2_DEFINE *Typemaker2_Define_copy(TYPEMAKER2_DEFINE *p_struct, const TYPEMAKER2_DEFINE *p_src);
 
 /** Getter.
  * Use this function to get the member "id"
@@ -115,6 +118,8 @@ void Typemaker2_Define_SetStartValue(TYPEMAKER2_DEFINE *p_struct, int p_src);
  * Use this function to set the member "lastValue"
 */
 void Typemaker2_Define_SetLastValue(TYPEMAKER2_DEFINE *p_struct, int p_src);
+
+TYPEMAKER2_DEFINE_LIST *Typemaker2_Define_List_dup(const TYPEMAKER2_DEFINE_LIST *p_src);
 
 void Typemaker2_Define_ReadXml(TYPEMAKER2_DEFINE *p_struct, GWEN_XMLNODE *p_db);
 

@@ -24,16 +24,19 @@ extern "C" {
 typedef struct TYPEMAKER2_ENUM TYPEMAKER2_ENUM;
 GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_ENUM, Typemaker2_Enum)
 
+
 /* post-headers */
 
 
 /** Constructor. */
-TYPEMAKER2_ENUM *Typemaker2_Enum_new();
+TYPEMAKER2_ENUM *Typemaker2_Enum_new(void);
 
 /** Destructor. */
 void Typemaker2_Enum_free(TYPEMAKER2_ENUM *p_struct);
 
 TYPEMAKER2_ENUM *Typemaker2_Enum_dup(const TYPEMAKER2_ENUM *p_struct);
+
+TYPEMAKER2_ENUM *Typemaker2_Enum_copy(TYPEMAKER2_ENUM *p_struct, const TYPEMAKER2_ENUM *p_src);
 
 /** Getter.
  * Use this function to get the member "id"
@@ -94,6 +97,8 @@ void Typemaker2_Enum_SetToStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_src)
  * Use this function to set the member "fromStringFn"
 */
 void Typemaker2_Enum_SetFromStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_src);
+
+TYPEMAKER2_ENUM_LIST *Typemaker2_Enum_List_dup(const TYPEMAKER2_ENUM_LIST *p_src);
 
 void Typemaker2_Enum_ReadXml(TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db);
 
