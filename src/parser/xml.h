@@ -273,6 +273,21 @@ GWENHYWFAR_API
                                 const char *value);
 
 /**
+ * Same as @ref GWEN_XMLNode_GetProperty, but it tries to parse the property as
+ * an integer value.
+ */
+GWENHYWFAR_API
+int GWEN_XMLNode_GetIntProperty(const GWEN_XMLNODE *n, const char *name,
+                                int defaultValue);
+
+/**
+ * Same as @ref GWEN_XMLNode_SetProperty, but for integer values.
+ */
+GWENHYWFAR_API
+void GWEN_XMLNode_SetIntProperty(GWEN_XMLNODE *n,
+                                 const char *name, int value);
+
+/**
  * This function copies the properties/attributes of one tag/element
  * to another one.
  *

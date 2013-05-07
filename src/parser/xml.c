@@ -247,6 +247,33 @@ const char *GWEN_XMLNode_GetProperty(const GWEN_XMLNODE *n, const char *name,
 }
 
 
+
+int GWEN_XMLNode_GetIntProperty(const GWEN_XMLNODE *n, const char *name,
+                                int defaultValue){
+  GWEN_XMLPROPERTY *p;
+
+  assert(n);
+  assert(name);
+  p=n->properties;
+  while(p) {
+    assert(p->name);
+    if (strcasecmp(p->name, name)==0)
+      break;
+    p=p->next;
+  } /* while */
+
+  if (p) {
+    if (p->value) {
+      int i;
+
+      if (1==sscanf(p->value, "%i", &i))
+	return i;
+    }
+  }
+  return defaultValue;
+}
+
+
 void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
                                const char *name, const char *value,
                                int doInsert){
@@ -281,6 +308,17 @@ void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
 void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
                               const char *name, const char *value){
   GWEN_XMLNode__SetProperty(n, name, value, 0);
+}
+
+
+
+void GWEN_XMLNode_SetIntProperty(GWEN_XMLNODE *n,
+				 const char *name, int value){
+  char numbuf[256];
+
+  snprintf(numbuf, sizeof(numbuf)-1, "%i", value);
+  numbuf[sizeof(numbuf)-1]=0;
+  GWEN_XMLNode__SetProperty(n, name, numbuf, 0);
 }
 
 
