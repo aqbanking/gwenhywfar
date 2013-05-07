@@ -3539,6 +3539,7 @@ static int _buildList1Dup(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   flags=Typemaker2_Type_GetFlags(ty);
 
   /* prototype */
+  GWEN_Buffer_AppendString(tbuf, "/* list1 functions */\n");
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
   if (s) {
     GWEN_Buffer_AppendString(tbuf, s);
@@ -3557,6 +3558,7 @@ static int _buildList1Dup(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_Reset(tbuf);
 
   /* implementation */
+  GWEN_Buffer_AppendString(tbuf, "/* list1 functions */\n");
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "_LIST *");
@@ -3853,6 +3855,14 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
+    if (loc && *loc) {
+      GWEN_Buffer_AppendString(tbuf, "/* definitions for virtual functions (");
+      GWEN_Buffer_AppendString(tbuf, loc);
+      GWEN_Buffer_AppendString(tbuf, ") */\n");
+    }
+    else
+      GWEN_Buffer_AppendString(tbuf, "/* definitions for virtual functions */\n");
+
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
       s=Typemaker2_VirtualFn_GetLocation(vf);
@@ -3956,6 +3966,7 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
+    GWEN_Buffer_AppendString(tbuf, "/* prototypes for virtual functions */\n");
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
       int access=Typemaker2_VirtualFn_GetAccess(vf);
@@ -4056,6 +4067,7 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
+    GWEN_Buffer_AppendString(tbuf, "/* code for virtual functions */\n");
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
       GWEN_STRINGLISTENTRY *se;
@@ -4171,6 +4183,7 @@ int _buildProtoSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
+    GWEN_Buffer_AppendString(tbuf, "/* setters for virtual functions */\n");
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
       int access=Typemaker2_VirtualFn_GetAccess(vf);
@@ -4268,6 +4281,7 @@ int _buildSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
+    GWEN_Buffer_AppendString(tbuf, "/* setters for virtual functions */\n");
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
 
@@ -5372,6 +5386,7 @@ static int _buildSignalFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     TYPEMAKER2_SIGNAL *sig;
 
     /* prototype */
+    GWEN_Buffer_AppendString(tbuf, "/* signal functions */\n");
     sig=Typemaker2_Signal_List_First(sigList);
     while(sig) {
 
@@ -5474,6 +5489,7 @@ static int _buildSignalFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_Reset(tbuf);
 
     /* implementation */
+    GWEN_Buffer_AppendString(tbuf, "/* signal functions */\n");
     sig=Typemaker2_Signal_List_First(sigList);
     while(sig) {
 
@@ -5695,6 +5711,7 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     TYPEMAKER2_SLOT *slot;
 
     /* private prototypes */
+    GWEN_Buffer_AppendString(tbuf, "/* slot functions */\n");
     slot=Typemaker2_Slot_List_First(slotList);
     while(slot) {
 
@@ -5715,6 +5732,7 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_Reset(tbuf);
 
     /* public prototypes */
+    GWEN_Buffer_AppendString(tbuf, "/* slot functions */\n");
     slot=Typemaker2_Slot_List_First(slotList);
     while(slot) {
       /* GetSlot */
@@ -5742,6 +5760,7 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_Reset(tbuf);
 
     /* implementation */
+    GWEN_Buffer_AppendString(tbuf, "/* slot functions */\n");
     slot=Typemaker2_Slot_List_First(slotList);
     while(slot) {
 
@@ -5881,6 +5900,7 @@ static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) 
 	GWEN_StringList_AppendString(plist, "int", 0, 0);
 
       Typemaker2_VirtualFn_SetAccess(fn, TypeMaker2_Access_Public);
+      Typemaker2_VirtualFn_SetLocation(fn, "post");
       Typemaker2_VirtualFn_SetReturnType(fn, "int");
       Typemaker2_VirtualFn_SetDefaultReturnValue(fn, "GWEN_ERROR_NOT_IMPLEMENTED");
 
