@@ -16,6 +16,7 @@ dist_typedata_DATA=\
   list2_base.tm2 \
   struct_base.tm2 \
   uint32_t.tm2 \
+  uint32_t_array.tm2 \
   uint64_t.tm2 \
   tree_base.tm2 \
   idmap_base.tm2 \
