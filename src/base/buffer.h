@@ -107,6 +107,14 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
                              uint32_t used,
                              int take_ownership);
 
+/**
+ * Increases the internal reference counter. It is decreased by
+ * @ref GWEN_Buffer_free().
+ */
+GWENHYWFAR_API
+void GWEN_Buffer_Attach(GWEN_BUFFER *bf);
+
+
 /** Frees the given buffer. 
  *
  * If the internal storage was allocated for this new buffer, then

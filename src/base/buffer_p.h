@@ -59,6 +59,7 @@ struct GWEN_BUFFER {
   uint32_t step;
   uint32_t bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
   GWEN_SYNCIO *syncIo;
+  uint32_t _refCount;
 };
 
 

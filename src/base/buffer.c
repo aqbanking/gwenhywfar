@@ -42,6 +42,7 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
   GWEN_BUFFER *bf;
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, bf);
+  bf->_refCount=1;
   if (!buffer) {
     /* allocate buffer */
     bf->realPtr=(char*)GWEN_Memory_malloc(size+1);
@@ -72,15 +73,27 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
 
 
 
+void GWEN_Buffer_Attach(GWEN_BUFFER *bf){
+  assert(bf->_refCount);
+  bf->_refCount++;
+}
+
+
+
 void GWEN_Buffer_free(GWEN_BUFFER *bf){
   if (bf) {
-    if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
-      GWEN_Memory_dealloc(bf->realPtr);
-    if (bf->syncIo) {
-      if (bf->flags & GWEN_BUFFER_FLAGS_OWN_SYNCIO)
-        GWEN_SyncIo_free(bf->syncIo);
+    assert(bf->_refCount);
+    if (bf->_refCount==1) {
+      if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
+        GWEN_Memory_dealloc(bf->realPtr);
+      if (bf->syncIo) {
+        if (bf->flags & GWEN_BUFFER_FLAGS_OWN_SYNCIO)
+          GWEN_SyncIo_free(bf->syncIo);
+      }
+      GWEN_FREE_OBJECT(bf);
     }
-    GWEN_FREE_OBJECT(bf);
+    else
+      bf->_refCount--;
   }
 }
 
@@ -91,6 +104,8 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
   uint32_t i;
 
   GWEN_NEW_OBJECT(GWEN_BUFFER, newbf);
+  newbf->_refCount=1;
+
   if (bf->realPtr && bf->realBufferSize) {
     newbf->realPtr=(char*)GWEN_Memory_malloc(bf->realBufferSize);
     newbf->ptr=newbf->realPtr+(bf->ptr-bf->realPtr);
