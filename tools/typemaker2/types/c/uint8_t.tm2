@@ -1,0 +1,7 @@
+<?xml?>
+
+<tm2>
+  <typedef id="uint8_t" lang="c" extends="int_base">
+    <identifier>uint8_t</identifier>
+  </typedef>
+</tm2>

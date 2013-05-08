@@ -20,7 +20,9 @@ dist_typedata_DATA=\
   tree_base.tm2 \
   idmap_base.tm2 \
   gwen_multicache.tm2 \
-  gwen_multicache_type.tm2
+  gwen_multicache_type.tm2 \
+  uint8_t.tm2 \
+  uint8_t_array.tm2
 
 
 sources:
