@@ -6131,16 +6131,20 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     }
   }
 
-  rv=_buildDup(tb, ty);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  if (!(flags & TYPEMAKER2_FLAGS_NODUP)) {
+    rv=_buildDup(tb, ty);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
-  rv=_buildCopy(tb, ty);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  if (!(flags & TYPEMAKER2_FLAGS_NOCOPY)) {
+    rv=_buildCopy(tb, ty);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   rv=_buildGetter(tb, ty);
@@ -6180,10 +6184,12 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
   }
 
   if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
-    rv=_buildList1Dup(tb, ty);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+    if (!(flags & TYPEMAKER2_FLAGS_NODUP)) {
+      rv=_buildList1Dup(tb, ty);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
   }
 
