@@ -548,6 +548,19 @@ GWENHYWFAR_API
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, unsigned int insert);
 
 
+/**
+ * This is a callback function to be used by GWEN_MULTICACHE (and only for that).
+ * It internally calls @ref GWEN_Buffer_Attach().
+ */
+GWENHYWFAR_API int GWENHYWFAR_CB GWEN_Buffer_CacheFn_Attach(void *ptr);
+
+/**
+ * This is a callback function to be used by GWEN_MULTICACHE (and only for that).
+ * It internally calls @ref GWEN_Buffer_free().
+ */
+GWENHYWFAR_API int GWENHYWFAR_CB GWEN_Buffer_CacheFn_Free(void *ptr);
+
+
 /*@}*/
 
 #ifdef __cplusplus

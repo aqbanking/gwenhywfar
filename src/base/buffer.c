@@ -1126,6 +1126,17 @@ int GWEN_Buffer_FillLeftWithBytes(GWEN_BUFFER *bf,
 
 
 
+int GWENHYWFAR_CB GWEN_Buffer_CacheFn_Attach(void *ptr) {
+  GWEN_Buffer_Attach((GWEN_BUFFER*) ptr);
+  return 0;
+}
+
+
+
+int GWENHYWFAR_CB GWEN_Buffer_CacheFn_Free(void *ptr) {
+  GWEN_Buffer_free((GWEN_BUFFER*) ptr);
+  return 0;
+}
 
 
 
