@@ -73,12 +73,7 @@ typedef struct GWEN_SLOT GWEN_SLOT;
  * This is the prototype for the slot function. If there is a problem in the
  * function it should return 1, otherwise 0.
  */
-typedef int (*GWEN_SLOT_FUNCTION)(GWEN_SLOT *slot,
-                                  void *userData,
-                                  void *pArg1,
-                                  void *pArg2,
-                                  int iArg3,
-                                  int iArg4);
+typedef int GWENHYWFAR_CB (*GWEN_SLOT_FUNCTION)(GWEN_SLOT *slot, void *userData, void *pArg1, void *pArg2, int iArg3, int iArg4);
 
 
 /** @name SignalObject

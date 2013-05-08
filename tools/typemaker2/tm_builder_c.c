@@ -5716,7 +5716,7 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     while(slot) {
 
       /* callback function */
-      GWEN_Buffer_AppendString(tbuf, "static int ");
+      GWEN_Buffer_AppendString(tbuf, "static int GWENHYWFAR_CB ");
       s=Typemaker2_Type_GetPrefix(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, "_SlotCallback_");
@@ -5765,7 +5765,7 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     while(slot) {
 
       /* callback function */
-      GWEN_Buffer_AppendString(tbuf, "static int ");
+      GWEN_Buffer_AppendString(tbuf, "static int GWENHYWFAR_CB ");
       s=Typemaker2_Type_GetPrefix(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, "_SlotCallback_");
