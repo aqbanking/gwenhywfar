@@ -20,6 +20,27 @@
         <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
       </headers>
 
+
+      <inlines>
+
+        <inline loc="code">
+          <content>
+            int ADCM_ImageData_CacheFn_Attach(void *ptr) {
+              ADCM_ImageData_Attach((ADCM_IMAGE_DATA*) ptr);
+              return 0;
+            }
+          </content>
+        </inline>
+
+        <inline loc="post" access="public">
+          <content>
+            $(api) int GWENHYWFAR_CB ADCM_ImageData_CacheFn_Attach(void *ptr);
+          </content>
+        </inline>
+
+      </inlines>
+
+
     </lang>
 
     <members>
