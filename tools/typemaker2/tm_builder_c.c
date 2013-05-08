@@ -1294,7 +1294,7 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   
 	  GWEN_Buffer_AppendString(tbuf,
 				   "/** Sub flags.\n"
-				   " * Use this function to sub flags to the member \"");
+				   " * Use this function to sub flags from the member \"");
 	  s=Typemaker2_Member_GetName(tm);
 	  GWEN_Buffer_AppendString(tbuf, s);
 	  GWEN_Buffer_AppendString(tbuf, "\"\n*/\n");
@@ -5859,6 +5859,85 @@ static int _buildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
+static int _buildCacheFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  TYPEMAKER2_TYPEMANAGER *tym;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* public prototypes */
+  GWEN_Buffer_AppendString(tbuf, "/* cache functions */\n");
+
+  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+  if (s) {
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  GWEN_Buffer_AppendString(tbuf, "int GWENHYWFAR_CB ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_CacheFn_Attach(void *ptr);\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+  if (s) {
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  GWEN_Buffer_AppendString(tbuf, "int GWENHYWFAR_CB ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_CacheFn_Free(void *ptr);\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+
+  /* implementations */
+  GWEN_Buffer_AppendString(tbuf, "/* cache functions */\n");
+
+  GWEN_Buffer_AppendString(tbuf, "int GWENHYWFAR_CB ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_CacheFn_Attach(void *ptr) {\n");
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_Attach((");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "*) ptr);\n");
+  GWEN_Buffer_AppendString(tbuf, "  return 0;\n");
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  GWEN_Buffer_AppendString(tbuf, "int GWENHYWFAR_CB ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_CacheFn_Free(void *ptr){\n");
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_free((");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "*) ptr);\n");
+  GWEN_Buffer_AppendString(tbuf, "  return 0;\n");
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
 static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -6229,6 +6308,14 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
 
   if (flags & TYPEMAKER2_FLAGS_WITH_SLOTS) {
     rv=_buildSlotFunctions(tb, ty);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_CACHEFNS) {
+    rv=_buildCacheFunctions(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
