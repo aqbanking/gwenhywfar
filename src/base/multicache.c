@@ -151,7 +151,6 @@ void GWEN_MultiCache_Type_SetData(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *p
 
   e=GWEN_MultiCache_Entry_new(ct, id, ptr, size);
   GWEN_MultiCache_AddEntry(ct->multiCache, e);
-  GWEN_MultiCache_Type_AttachData(ct, ptr);
   GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void*) e);
 }
 
@@ -282,6 +281,7 @@ int GWEN_MultiCache_AddEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
   if (mc->currentSize>mc->maxSizeUsed)
     mc->maxSizeUsed=mc->currentSize;
   GWEN_MultiCache_Entry_List_Add(e, mc->entryList);
+  GWEN_MultiCache_Type_AttachData(GWEN_MultiCache_Entry_GetCacheType(e), GWEN_MultiCache_Entry_GetDataPtr(e));
   return 0;
 }
 
