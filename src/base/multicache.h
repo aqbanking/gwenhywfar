@@ -76,10 +76,17 @@ GWENHYWFAR_API GWEN_MULTICACHE_TYPE *GWEN_MultiCache_Type_new(GWEN_MULTICACHE *m
 GWENHYWFAR_API void GWEN_MultiCache_Type_free(GWEN_MULTICACHE_TYPE *ct);
 
 GWENHYWFAR_API void *GWEN_MultiCache_Type_GetData(const GWEN_MULTICACHE_TYPE *ct, uint32_t id);
+GWENHYWFAR_API void *GWEN_MultiCache_Type_GetDataWithParams(const GWEN_MULTICACHE_TYPE *ct, uint32_t id,
+                                                           uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4);
 
 GWENHYWFAR_API void GWEN_MultiCache_Type_SetData(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size);
+GWENHYWFAR_API void GWEN_MultiCache_Type_SetDataWithParams(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size,
+                                                           uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4);
 
-GWENHYWFAR_API void GWEN_MultiCache_Type_PurgeData(const GWEN_MULTICACHE_TYPE *ct, uint32_t id);
+GWENHYWFAR_API void GWEN_MultiCache_Type_PurgeData(GWEN_MULTICACHE_TYPE *ct, uint32_t id);
+
+GWENHYWFAR_API void GWEN_MultiCache_Type_PurgeAll(GWEN_MULTICACHE_TYPE *ct);
+
 
 GWENHYWFAR_API void GWEN_MultiCache_Type_SetAttachFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_ATTACH_FN fn);
 
