@@ -18,6 +18,6 @@ Name: gwengui-fox16
 Description: FOX16 Implementation of the GWEN_DIALOG framework.
 
 Version: @VERSION@
-Libs: -L@libdir@ -lgwengui-fox16
+Libs: -L@libdir@ -lgwengui-fox16 -lgwengui-cpp
 Cflags: -I@includedir@
 

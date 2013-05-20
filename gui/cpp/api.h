@@ -12,7 +12,6 @@
 
 #include <gwenhywfar/types.h>
 
-
 #if defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
 # ifdef BUILDING_CPP_GUI
    /* building Cpp */

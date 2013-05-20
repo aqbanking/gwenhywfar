@@ -17,6 +17,8 @@
 class CppWidget;
 class CppDialog;
 
+#include <gwen-gui-cpp/api.h>
+
 
 /**
  * @brief A C++ binding for the C module @ref GWEN_WIDGET
@@ -27,7 +29,7 @@ class CppDialog;
  *
  * @author Martin Preuss<martin@aquamaniac.de>
  */
-class CppWidget {
+class CPPGUI_API CppWidget {
   friend class CppWidgetLinker;
 
 private:
@@ -42,7 +44,7 @@ public:
   virtual ~CppWidget();
 
   GWEN_WIDGET *getCInterface();
-  static CppWidget *getWidget(GWEN_WIDGET *w);
+  static CPPGUI_API CppWidget *getWidget(GWEN_WIDGET *w);
 
   CppDialog *getDialog();
 

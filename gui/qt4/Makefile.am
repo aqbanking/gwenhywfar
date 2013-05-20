@@ -66,6 +66,7 @@ EXTRA_DIST=$(UI_FILES) \
 
 libtest_SOURCES=libtest.cpp
 libtest_LDADD=libgwengui-qt4.la $(top_builddir)/src/$(gwenhywfar_internal_libname) $(qt4_libs) \
+  $(top_builddir)/gui/cpp/libgwengui-cpp.la \
   $(builddir)/../testdialogs/libgwengui-test.la
 
 
