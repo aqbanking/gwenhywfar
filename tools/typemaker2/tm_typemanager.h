@@ -40,6 +40,9 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_GetType(TYPEMAKER2_TYPEMANAGER *tym, con
 TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName);
 int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName, TYPEMAKER2_TYPE_LIST2 *tlist2);
 
+int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName,
+                                                TYPEMAKER2_TYPE_LIST2 *tlist2);
+
 
 void Typemaker2_TypeManager_Dump(TYPEMAKER2_TYPEMANAGER *tym, FILE *f, int indent);
 

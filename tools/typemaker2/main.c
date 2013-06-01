@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   int err;
+  int defsOnly=0;
   GWEN_GUI *gui;
   const GWEN_ARGS args[]={
   {
@@ -119,6 +120,17 @@ int main(int argc, char **argv) {
     "Add folder to include for type lookup",
     "Add folder to include for type lookup"
   },
+  {
+    0, /* flags */
+    GWEN_ArgsType_Int,           /* type */
+    "defsOnly",                    /* name */
+    0,                            /* minnum */
+    1,                           /* maxnum */
+    "d",                          /* short option */
+    "defs-only",                    /* long option */
+    "Only write def files (*.tm2)",
+    "Only write def files (*.tm2)"
+  },
 
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -187,7 +199,12 @@ int main(int argc, char **argv) {
     argv+=rv-1;
   }
 
-  rv=build(db);
+  defsOnly=GWEN_DB_GetIntValue(db, "defsOnly", 0, 0);
+
+  if (defsOnly)
+    rv=buildDefs(db);
+  else
+    rv=build(db);
 
   err=GWEN_Fini();
   if (err) {

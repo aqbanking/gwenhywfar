@@ -505,6 +505,92 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
 
 
 
+int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName,
+                                                TYPEMAKER2_TYPE_LIST2 *tlist2) {
+  int rv;
+  TYPEMAKER2_TYPE *ty=NULL;
+  GWEN_XMLNODE *root;
+  GWEN_XMLNODE *node;
+
+  /* read XML file */
+  root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "xml");
+
+  rv=GWEN_XML_ReadFile(root, fileName,
+		       GWEN_XML_FLAGS_DEFAULT |
+		       GWEN_XML_FLAGS_HANDLE_HEADERS |
+		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", fileName, rv);
+    GWEN_XMLNode_free(root);
+    return rv;
+  }
+
+  /* get <tm2> element */
+  node=GWEN_XMLNode_FindFirstTag(root, "tm2", NULL, NULL);
+  if (node==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "File [%s] does not contain a tm2 element",
+	      fileName);
+    GWEN_XMLNode_free(root);
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* get <type> element with id==typeName and wanted language */
+  node=GWEN_XMLNode_FindFirstTag(node, "type", NULL, NULL);
+  if (node==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "File [%s] does not contain a type element",
+              fileName);
+    GWEN_XMLNode_free(root);
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* read all types from the file */
+  while(node) {
+     /* load type from XML element */
+     ty=Typemaker2_Type_new();
+     rv=Typemaker2_Type_readXml(ty, node, tym->lang);
+     if (rv<0) {
+       DBG_INFO(GWEN_LOGDOMAIN, "Error reading type from file [%s] (%d)",
+                fileName,
+                rv);
+       Typemaker2_Type_free(ty);
+       GWEN_XMLNode_free(root);
+       return rv;
+     }
+   
+     /* preset some stuff */
+     if (1) {
+       const char *x;
+   
+       x=Typemaker2_Type_GetExtends(ty);
+       if (!x || !(*x))
+         Typemaker2_Type_SetExtends(ty, "struct_base");
+     }
+   
+     /* add first, because other types might want to refer to this one */
+     Typemaker2_Type_List_Add(ty, tym->typeList);
+     Typemaker2_Type_List2_PushBack(tlist2, ty);
+
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST1)
+       Typemaker2_TypeManager_MakeTypeList1(tym, ty);
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST2)
+       Typemaker2_TypeManager_MakeTypeList2(tym, ty);
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_TREE)
+       Typemaker2_TypeManager_MakeTypeTree(tym, ty);
+
+     node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);
+  }
+
+  GWEN_XMLNode_free(root);
+
+  //Typemaker2_TypeManager_Dump(tym, stderr, 2);
+
+  return 0;
+}
+
+
+
 int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty) {
   if (Typemaker2_Type_GetExtendsPtr(ty)==NULL) {
     const char *s;

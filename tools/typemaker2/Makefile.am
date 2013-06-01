@@ -48,6 +48,7 @@ typemaker2_SOURCES=\
   tm_signal.c \
   tm_slot.c \
   build.c \
+  builddefs.c \
   main.c
   
 #  tm_enum.c

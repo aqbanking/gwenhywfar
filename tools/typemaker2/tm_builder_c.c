@@ -5033,6 +5033,244 @@ static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
+static int _buildList1SortByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm) {
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  uint32_t flags;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  TYPEMAKER2_TYPE *mty;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  mty=Typemaker2_Member_GetTypePtr(tm);
+  assert(mty);
+
+  /* ==== prototypes  ========================================================*/
+  /* ---- _List_SortByMember  ----------------------------------------------- */
+  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+  if (s) {
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+
+  /* return type */
+  GWEN_Buffer_AppendString(tbuf, "void ");
+
+  /* function name */
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_SortBy");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+
+  /* argument list */
+  GWEN_Buffer_AppendString(tbuf, "(");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_LIST *p_list, int p_ascending);\n");
+
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+
+  /* ----  _List_Compare_Member --------------------------------------------- */
+  /* return type */
+  GWEN_Buffer_AppendString(tbuf, "int GWENHYWFAR_CB ");
+
+  /* function name */
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_Compare_");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+
+  /* argument list */
+  GWEN_Buffer_AppendString(tbuf, "(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_a, ");
+  GWEN_Buffer_AppendString(tbuf, "const ");
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_b, ");
+  GWEN_Buffer_AppendString(tbuf, "int p_ascending);\n");
+
+  Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+
+  /* ==== implementations =================================================== */
+  /* ---- _List_SortByMember  ----------------------------------------------- */
+  /* return type */
+  GWEN_Buffer_AppendString(tbuf, "void ");
+
+  /* function name */
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_SortBy");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+
+  /* argument list */
+  GWEN_Buffer_AppendString(tbuf, "(");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_LIST *p_list, int p_ascending) {\n");
+
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_LIST_SORT_FN oldSortFn;\n");
+
+  GWEN_Buffer_AppendString(tbuf, "\n");
+  GWEN_Buffer_AppendString(tbuf, "  oldSortFn=");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_SetSortFn(p_list, ");
+
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_Compare_");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+  GWEN_Buffer_AppendString(tbuf, ");\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_Sort(p_list, p_ascending);\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_SetSortFn(p_list, oldSortFn);\n");
+
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+
+  /* ----  _List_Compare_Member --------------------------------------------- */
+  /* return type */
+  GWEN_Buffer_AppendString(tbuf, "int GWENHYWFAR_CB ");
+
+  /* function name */
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_List_Compare_");
+  s=Typemaker2_Member_GetName(tm);
+  GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+  GWEN_Buffer_AppendString(tbuf, s+1);
+
+  /* argument list */
+  GWEN_Buffer_AppendString(tbuf, "(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_a, ");
+  GWEN_Buffer_AppendString(tbuf, "const ");
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_b, ");
+  GWEN_Buffer_AppendString(tbuf, "int p_ascending) {\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  int p_rv;\n");
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  if (1) {
+    GWEN_BUFFER *dstbuf;
+    GWEN_BUFFER *srcbuf;
+    int rv;
+
+    srcbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(srcbuf, "p_a->");
+    s=Typemaker2_Member_GetName(tm);
+    GWEN_Buffer_AppendString(srcbuf, s);
+
+
+    dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(dstbuf, "p_b->");
+    s=Typemaker2_Member_GetName(tm);
+    GWEN_Buffer_AppendString(dstbuf, s);
+
+    rv=Typemaker2_Builder_Invoke_CompareFn(tb, ty, tm,
+					   GWEN_Buffer_GetStart(srcbuf),
+					   GWEN_Buffer_GetStart(dstbuf),
+					   tbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(srcbuf);
+      GWEN_Buffer_free(dstbuf);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
+    GWEN_Buffer_AppendString(tbuf, "\n");
+    GWEN_Buffer_free(srcbuf);
+    GWEN_Buffer_free(dstbuf);
+  }
+
+  GWEN_Buffer_AppendString(tbuf, "  if (p_ascending)\n");
+  GWEN_Buffer_AppendString(tbuf, "    return p_rv;\n");
+  GWEN_Buffer_AppendString(tbuf, "  else\n");
+  GWEN_Buffer_AppendString(tbuf, "    return -p_rv;\n");
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+static int _buildSortByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  TYPEMAKER2_MEMBER_LIST *tml;
+  uint32_t flags;
+  TYPEMAKER2_TYPEMANAGER *tym;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  tml=Typemaker2_Type_GetMembers(ty);
+  if (tml) {
+    TYPEMAKER2_MEMBER *tm;
+
+    tm=Typemaker2_Member_List_First(tml);
+    while(tm) {
+      TYPEMAKER2_TYPE *mty;
+      int rv;
+
+      mty=Typemaker2_Member_GetTypePtr(tm);
+      assert(mty);
+
+      if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_SORTBYMEMBER) {
+	if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+	  rv=_buildList1SortByMember(tb, ty, tm);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    return rv;
+	  }
+	}
+      }
+      tm=Typemaker2_Member_List_Next(tm);
+    }
+  }
+
+  return 0;
+}
+
+
+
 static int _buildDefineDefines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_DEFINE_LIST *defines;
   TYPEMAKER2_TYPEMANAGER *tym;
@@ -6303,6 +6541,14 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
       return rv;
     }
   }
+
+
+  rv=_buildSortByMember(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
 
   if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
     rv=_buildSignalFunctions(tb, ty);

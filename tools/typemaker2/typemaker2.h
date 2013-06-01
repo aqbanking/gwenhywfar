@@ -17,6 +17,7 @@
 
 
 int build(GWEN_DB_NODE *dbArgs);
+int buildDefs(GWEN_DB_NODE *dbArgs);
 
 
 #endif
