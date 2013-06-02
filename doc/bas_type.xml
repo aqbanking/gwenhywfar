@@ -58,6 +58,10 @@
         <default>0</default>
         <preset>0</preset>
         <access>public</access>
+        <flags>none</flags>
+        <setflags>none</setflags>
+        <dupflags>none</dupflags>
+        <copyflags>none</copyflags>
       </member>
 
       <member name="flags" type="uint32_t" maxlen="8">
