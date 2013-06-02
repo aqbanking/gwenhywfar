@@ -223,6 +223,27 @@
 
 
     </virtualFns>
+
+
+    <signals>
+      <signal name="sigDataChanged" useParam3="0" useParam4="0">
+        <params>
+          <param type="ADCM_OPERATOR*" />
+          <param type="ADCM_IMAGE_INFO*" />
+        </params>
+      </signal>
+    </signals>
+
+
+    <slots>
+      <slot name="slotDataChanged" useParam3="0" useParam4="0">
+        <params>
+          <param type="ADCM_OPERATOR*" />
+          <param type="ADCM_IMAGE_INFO*" />
+        </params>
+      </slot>
+    </slots>
+
     
   </type>
   
