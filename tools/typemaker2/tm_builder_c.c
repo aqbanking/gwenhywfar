@@ -3337,14 +3337,14 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       mty=Typemaker2_Member_GetTypePtr(tm);
       assert(mty);
 
-      if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_NODUP)) {
+      if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_NOCOPY)) {
 	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
 	s=Typemaker2_Member_GetName(tm);
 	GWEN_Buffer_AppendString(tbuf, s);
 	GWEN_Buffer_AppendString(tbuf, "\" */\n");
 
 	if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
-	  if (Typemaker2_Member_GetDupFlags(tm) & TYPEMAKER2_FLAGS_ASSIGN) {
+	  if (Typemaker2_Member_GetCopyFlags(tm) & TYPEMAKER2_FLAGS_ASSIGN) {
 	    /* assign */
 	    if (1) {
 	      GWEN_BUFFER *dstbuf;
@@ -3468,7 +3468,7 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 	} /* if pointer */
 	else {
-	  /* dup */
+	  /* copy */
 	  if (1) {
 	    GWEN_BUFFER *dstbuf;
 	    GWEN_BUFFER *srcbuf;
@@ -3502,12 +3502,12 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  }
 	}
 
-      } /* if !nodup */
+      } /* if !nocopy */
       else {
 	GWEN_Buffer_AppendString(tbuf, "  /* member \"");
 	s=Typemaker2_Member_GetName(tm);
 	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "\" has NODUP flag, not copying */\n");
+	GWEN_Buffer_AppendString(tbuf, "\" has NOCOPY flag, not copying */\n");
       }
 
       GWEN_Buffer_AppendString(tbuf, "\n");

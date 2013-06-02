@@ -25,6 +25,7 @@ struct TYPEMAKER2_TYPE {
   uint32_t setFlags;
   uint32_t getFlags;
   uint32_t dupFlags;
+  uint32_t copyFlags;
 
   int access;
 

@@ -29,6 +29,7 @@ struct TYPEMAKER2_MEMBER {
   uint32_t setFlags;
   uint32_t getFlags;
   uint32_t dupFlags;
+  uint32_t copyFlags;
 
   int maxLen;
 

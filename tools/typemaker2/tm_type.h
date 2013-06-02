@@ -128,6 +128,9 @@ void Typemaker2_Type_SetGetFlags(TYPEMAKER2_TYPE *ty, uint32_t i);
 uint32_t Typemaker2_Type_GetDupFlags(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetDupFlags(TYPEMAKER2_TYPE *ty, uint32_t i);
 
+uint32_t Typemaker2_Type_GetCopyFlags(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetCopyFlags(TYPEMAKER2_TYPE *ty, uint32_t i);
+
 int Typemaker2_Type_GetAccess(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetAccess(TYPEMAKER2_TYPE *ty, int i);
 

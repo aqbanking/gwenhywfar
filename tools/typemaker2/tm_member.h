@@ -62,6 +62,9 @@ void Typemaker2_Member_SetGetFlags(TYPEMAKER2_MEMBER *tm, uint32_t i);
 uint32_t Typemaker2_Member_GetDupFlags(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetDupFlags(TYPEMAKER2_MEMBER *tm, uint32_t i);
 
+uint32_t Typemaker2_Member_GetCopyFlags(const TYPEMAKER2_MEMBER *tm);
+void Typemaker2_Member_SetCopyFlags(TYPEMAKER2_MEMBER *tm, uint32_t i);
+
 TYPEMAKER2_TYPE *Typemaker2_Member_GetTypePtr(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetTypePtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_TYPE *ty);
 

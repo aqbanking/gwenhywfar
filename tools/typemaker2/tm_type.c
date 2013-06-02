@@ -356,6 +356,26 @@ void Typemaker2_Type_SetDupFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
 
 
 
+uint32_t Typemaker2_Type_GetCopyFlags(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+
+  if (ty->copyFlags==0 && ty->extendsPtr)
+    return Typemaker2_Type_GetCopyFlags(ty->extendsPtr);
+
+  return ty->copyFlags;
+}
+
+
+
+void Typemaker2_Type_SetCopyFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
+  assert(ty);
+  assert(ty->refCount);
+  ty->copyFlags=i;
+}
+
+
+
 int Typemaker2_Type_GetAccess(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -959,7 +979,12 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     s=GWEN_XMLNode_GetCharValue(n, "dupflags", NULL);
     if (s && *s)
       Typemaker2_Type_SetDupFlags(ty, Typemaker2_FlagsFromString(s));
-  
+
+    /* read copyflags */
+    s=GWEN_XMLNode_GetCharValue(n, "copyflags", NULL);
+    if (s && *s)
+      Typemaker2_Type_SetCopyFlags(ty, Typemaker2_FlagsFromString(s));
+
     /* read access */
     s=GWEN_XMLNode_GetCharValue(n, "access", NULL);
     if (s && *s) {
@@ -1040,6 +1065,9 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     fprintf(f, "DupFlags  : %08x [%08x]\n", ty->dupFlags, Typemaker2_Type_GetDupFlags(ty));
+
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "CopyFlags : %08x [%08x]\n", ty->copyFlags, Typemaker2_Type_GetCopyFlags(ty));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     s1=ty->defaultValue;

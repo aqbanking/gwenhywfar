@@ -261,6 +261,26 @@ void Typemaker2_Member_SetDupFlags(TYPEMAKER2_MEMBER *tm, uint32_t i) {
 
 
 
+uint32_t Typemaker2_Member_GetCopyFlags(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+
+  if (tm->copyFlags==0 && tm->typePtr)
+    return Typemaker2_Type_GetCopyFlags(tm->typePtr);
+
+  return tm->copyFlags;
+}
+
+
+
+void Typemaker2_Member_SetCopyFlags(TYPEMAKER2_MEMBER *tm, uint32_t i) {
+  assert(tm);
+  assert(tm->refCount);
+  tm->copyFlags=i;
+}
+
+
+
 int Typemaker2_Member_GetAccess(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
@@ -487,6 +507,11 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
   s=GWEN_XMLNode_GetCharValue(node, "dupflags", NULL);
   if (s && *s)
     Typemaker2_Member_SetDupFlags(tm, Typemaker2_FlagsFromString(s));
+
+  /* read copyflags */
+  s=GWEN_XMLNode_GetCharValue(node, "copyflags", NULL);
+  if (s && *s)
+    Typemaker2_Member_SetCopyFlags(tm, Typemaker2_FlagsFromString(s));
 
   /* read access */
   s=GWEN_XMLNode_GetCharValue(node, "access", NULL);
