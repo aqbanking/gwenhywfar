@@ -1025,7 +1025,9 @@ static int _buildGetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
 	GWEN_Buffer_AppendString(tbuf, s+1);
   
-	GWEN_Buffer_AppendString(tbuf, "(const ");
+        GWEN_Buffer_AppendString(tbuf, "(");
+        if (!(Typemaker2_Member_GetGetFlags(tm) & TYPEMAKER2_FLAGS_NOCONSTOBJECT))
+          GWEN_Buffer_AppendString(tbuf, "const ");
 	s=Typemaker2_Type_GetIdentifier(ty);
 	GWEN_Buffer_AppendString(tbuf, s);
 	GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
@@ -1085,7 +1087,9 @@ static int _buildGetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendByte(tbuf, toupper(*s));
 	GWEN_Buffer_AppendString(tbuf, s+1);
   
-	GWEN_Buffer_AppendString(tbuf, "(const ");
+	GWEN_Buffer_AppendString(tbuf, "(");
+        if (!(Typemaker2_Member_GetGetFlags(tm) & TYPEMAKER2_FLAGS_NOCONSTOBJECT))
+          GWEN_Buffer_AppendString(tbuf, "const ");
 	s=Typemaker2_Type_GetIdentifier(ty);
 	GWEN_Buffer_AppendString(tbuf, s);
 	GWEN_Buffer_AppendString(tbuf, " *p_struct) {\n");

@@ -97,6 +97,8 @@ uint32_t Typemaker2_FlagsFromString(const char *t) {
         flags|=TYPEMAKER2_FLAGS_WITH_CACHEFNS;
       else if (strcasecmp(s, "sortByMember")==0)
         flags|=TYPEMAKER2_FLAGS_SORTBYMEMBER;
+      else if (strcasecmp(s, "noConstObject")==0)
+        flags|=TYPEMAKER2_FLAGS_NOCONSTOBJECT;
       else if (strcasecmp(s, "none")==0)
 	flags|=TYPEMAKER2_FLAGS_NONE;
 
