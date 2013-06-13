@@ -41,6 +41,9 @@ GWEN_LIST2_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type)
 #define TYPEMAKER2_FLAGS_SORTBYMEMBER      0x00002000
 #define TYPEMAKER2_FLAGS_NOCONSTOBJECT     0x00004000
 
+/** special value which is used to overwrite flags from extended types */
+#define TYPEMAKER2_FLAGS_NONE              0x00008000
+
 #define TYPEMAKER2_FLAGS_WITH_DB           0x00010000
 #define TYPEMAKER2_FLAGS_WITH_XML          0x00020000
 #define TYPEMAKER2_FLAGS_WITH_OBJECT       0x00040000
@@ -58,8 +61,6 @@ GWEN_LIST2_FUNCTION_DEFS(TYPEMAKER2_TYPE, Typemaker2_Type)
 #define TYPEMAKER2_FLAGS_WITH_SLOTS        0x40000000
 #define TYPEMAKER2_FLAGS_WITH_CACHEFNS     0x80000000
 
-/** special value which is used to overwrite flags from extended types */
-#define TYPEMAKER2_FLAGS_NONE             0x00000030
 
 
 enum {
