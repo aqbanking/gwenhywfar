@@ -396,6 +396,22 @@ void Typemaker2_Type_SetAccess(TYPEMAKER2_TYPE *ty, int i) {
 
 
 
+int Typemaker2_Type_GetUsePrivateConstructor(const TYPEMAKER2_TYPE *ty){
+  assert(ty);
+  assert(ty->refCount);
+  return ty->usePrivateConstructor;
+}
+
+
+
+void Typemaker2_Type_SetUsePrivateConstructor(TYPEMAKER2_TYPE *ty, int i){
+  assert(ty);
+  assert(ty->refCount);
+  ty->usePrivateConstructor=i;
+}
+
+
+
 const char *Typemaker2_Type_GetDefaultValue(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -996,6 +1012,11 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
       Typemaker2_Type_SetAccess(ty, i);
     }
   }
+
+  s=GWEN_XMLNode_GetProperty(langNode, "usePrivateConstructor", "0");
+  if (s && *s)
+    Typemaker2_Type_SetUsePrivateConstructor(ty, atoi(s));
+
 
   /* read description */
   n=GWEN_XMLNode_FindFirstTag(node, "descr", NULL, NULL);

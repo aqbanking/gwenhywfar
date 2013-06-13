@@ -555,21 +555,32 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   flags=Typemaker2_Type_GetFlags(ty);
 
   /* prototype */
-  GWEN_Buffer_AppendString(tbuf, "/** Constructor. */\n");
-  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
-  if (s) {
-    GWEN_Buffer_AppendString(tbuf, s);
-    GWEN_Buffer_AppendString(tbuf, " ");
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty)) {
+    GWEN_Buffer_AppendString(tbuf, "/** Private constructor. */\n");
   }
+  else {
+    GWEN_Buffer_AppendString(tbuf, "/** Constructor. */\n");
+    s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+    if (s) {
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, " ");
+    }
+  }
+
   s=Typemaker2_Type_GetIdentifier(ty);
   GWEN_Buffer_AppendString(tbuf, s);
   /* created structs are always pointers */
   GWEN_Buffer_AppendString(tbuf, " *");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty))
+    GWEN_Buffer_AppendString(tbuf, "_");
   GWEN_Buffer_AppendString(tbuf, "_new(void)");
   GWEN_Buffer_AppendString(tbuf, ";\n");
-  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty))
+    Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  else
+    Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
   /* implementation */
@@ -578,6 +589,8 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, " *");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty))
+    GWEN_Buffer_AppendString(tbuf, "_");
   GWEN_Buffer_AppendString(tbuf, "_new(void)");
   GWEN_Buffer_AppendString(tbuf, " {\n");
 

@@ -28,6 +28,7 @@ struct TYPEMAKER2_TYPE {
   uint32_t copyFlags;
 
   int access;
+  int usePrivateConstructor;
 
   int type;
 
@@ -43,6 +44,7 @@ struct TYPEMAKER2_TYPE {
 
   char *aqdb_type;
   char *baseFileName;
+
 
   TYPEMAKER2_HEADER_LIST *headers;
   TYPEMAKER2_ENUM_LIST *enums;

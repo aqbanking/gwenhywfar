@@ -136,9 +136,11 @@ void Typemaker2_Type_SetCopyFlags(TYPEMAKER2_TYPE *ty, uint32_t i);
 int Typemaker2_Type_GetAccess(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetAccess(TYPEMAKER2_TYPE *ty, int i);
 
+int Typemaker2_Type_GetUsePrivateConstructor(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetUsePrivateConstructor(TYPEMAKER2_TYPE *ty, int i);
+
 const char *Typemaker2_Type_GetDescription(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetDescription(TYPEMAKER2_TYPE *ty, const char *s);
-
 
 const char *Typemaker2_Type_GetDefaultValue(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetDefaultValue(TYPEMAKER2_TYPE *ty, const char *s);
