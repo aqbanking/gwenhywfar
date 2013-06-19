@@ -52,6 +52,7 @@ struct GWEN_MULTICACHE_ENTRY {
   uint32_t param2;
   uint32_t param3;
   uint32_t param4;
+  double param5;
 };
 
 
@@ -79,6 +80,9 @@ static void GWEN_MultiCache_Entry_SetParam3(GWEN_MULTICACHE_ENTRY *e, uint32_t i
 static uint32_t GWEN_MultiCache_Entry_GetParam4(const GWEN_MULTICACHE_ENTRY *e);
 static void GWEN_MultiCache_Entry_SetParam4(GWEN_MULTICACHE_ENTRY *e, uint32_t i);
 
+static double GWEN_MultiCache_Entry_GetParam5(const GWEN_MULTICACHE_ENTRY *e);
+static void GWEN_MultiCache_Entry_SetParam5(GWEN_MULTICACHE_ENTRY *e, double d);
+
 
 
 struct GWEN_MULTICACHE_TYPE {
@@ -103,6 +107,8 @@ struct GWEN_MULTICACHE {
   uint64_t maxSize;
   uint64_t currentSize;
   uint64_t maxSizeUsed;
+  uint64_t cacheHits;
+  uint64_t cacheMisses;
 };
 
 
@@ -112,6 +118,8 @@ static void GWEN_MultiCache_ReleaseEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_EN
 static void GWEN_MultiCache_ReleaseEntriesForType(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_TYPE *ct);
 static void GWEN_MultiCache_UsingEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e);
 
+static void GWEN_MultiCache_IncCacheHits(GWEN_MULTICACHE *mc);
+static void GWEN_MultiCache_IncCacheMisses(GWEN_MULTICACHE *mc);
 
 
 #endif

@@ -150,6 +150,20 @@ void GWEN_MultiCache_Entry_SetParam4(GWEN_MULTICACHE_ENTRY *e, uint32_t i) {
 
 
 
+double GWEN_MultiCache_Entry_GetParam5(const GWEN_MULTICACHE_ENTRY *e) {
+  assert(e);
+  return e->param5;
+}
+
+
+
+void GWEN_MultiCache_Entry_SetParam5(GWEN_MULTICACHE_ENTRY *e, double d) {
+  assert(e);
+  e->param5=d;
+}
+
+
+
 
 
 
@@ -213,9 +227,39 @@ void *GWEN_MultiCache_Type_GetDataWithParams(const GWEN_MULTICACHE_TYPE *ct, uin
       GWEN_MultiCache_UsingEntry(ct->multiCache, e);
       p=GWEN_MultiCache_Entry_GetDataPtr(e);
       GWEN_MultiCache_Type_AttachData(ct, p);
+      GWEN_MultiCache_IncCacheHits(ct->multiCache);
       return p;
     }
   }
+  GWEN_MultiCache_IncCacheMisses(ct->multiCache);
+  return NULL;
+}
+
+
+
+void *GWEN_MultiCache_Type_GetDataWithParams5(const GWEN_MULTICACHE_TYPE *ct, uint32_t id,
+					      uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
+					      double param5) {
+
+  GWEN_MULTICACHE_ENTRY *e;
+
+  e=(GWEN_MULTICACHE_ENTRY*)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
+  if (e) {
+    if ((GWEN_MultiCache_Entry_GetParam1(e)==param1) &&
+        (GWEN_MultiCache_Entry_GetParam2(e)==param2) &&
+        (GWEN_MultiCache_Entry_GetParam3(e)==param3) &&
+	(GWEN_MultiCache_Entry_GetParam4(e)==param4) &&
+	(GWEN_MultiCache_Entry_GetParam5(e)==param5)) {
+      void *p;
+
+      GWEN_MultiCache_UsingEntry(ct->multiCache, e);
+      p=GWEN_MultiCache_Entry_GetDataPtr(e);
+      GWEN_MultiCache_Type_AttachData(ct, p);
+      GWEN_MultiCache_IncCacheHits(ct->multiCache);
+      return p;
+    }
+  }
+  GWEN_MultiCache_IncCacheMisses(ct->multiCache);
   return NULL;
 }
 
@@ -244,6 +288,25 @@ void GWEN_MultiCache_Type_SetDataWithParams(GWEN_MULTICACHE_TYPE *ct, uint32_t i
   GWEN_MultiCache_Entry_SetParam2(e, param2);
   GWEN_MultiCache_Entry_SetParam3(e, param3);
   GWEN_MultiCache_Entry_SetParam4(e, param4);
+  GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void*) e);
+}
+
+
+
+void GWEN_MultiCache_Type_SetDataWithParams5(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size,
+                                             uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
+                                             double param5) {
+  GWEN_MULTICACHE_ENTRY *e;
+
+  GWEN_MultiCache_Type_PurgeData(ct, id);
+
+  e=GWEN_MultiCache_Entry_new(ct, id, ptr, size);
+  GWEN_MultiCache_AddEntry(ct->multiCache, e);
+  GWEN_MultiCache_Entry_SetParam1(e, param1);
+  GWEN_MultiCache_Entry_SetParam2(e, param2);
+  GWEN_MultiCache_Entry_SetParam3(e, param3);
+  GWEN_MultiCache_Entry_SetParam4(e, param4);
+  GWEN_MultiCache_Entry_SetParam5(e, param5);
   GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void*) e);
 }
 
@@ -336,6 +399,13 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc) {
 
     GWEN_MultiCache_Entry_List_free(mc->entryList);
     GWEN_MultiCache_Type_List_free(mc->typeList);
+
+    DBG_NOTICE(GWEN_LOGDOMAIN, "MultiCache usage: %lld hits, %lld misses, %lld mb max memory used",
+	       (unsigned long long int) mc->cacheHits,
+	       (unsigned long long int) mc->cacheMisses,
+	       (unsigned long long int) ((mc->maxSizeUsed)/(1024*1024)));
+
+
     GWEN_FREE_OBJECT(mc);
   }
 }
@@ -438,6 +508,17 @@ void GWEN_MultiCache_UsingEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
 
 
 
+void GWEN_MultiCache_IncCacheHits(GWEN_MULTICACHE *mc) {
+  assert(mc);
+  mc->cacheHits++;
+}
+
+
+
+void GWEN_MultiCache_IncCacheMisses(GWEN_MULTICACHE *mc) {
+  assert(mc);
+  mc->cacheMisses++;
+}
 
 
 
