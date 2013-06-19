@@ -2,7 +2,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/ipc \
- -I$(top_srcdir)/src/parser $(LIBGCRYPT_CFLAGS) @all_includes@
+ -I$(top_srcdir)/src/parser $(LIBGCRYPT_CFLAGS) $(GPG_ERROR_CFLAGS) @all_includes@
 
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 
@@ -51,6 +51,7 @@ libcrypt3_la_SOURCES=\
   padd.c \
   smalltresor.c
 
+libcrypt3_la_LIBADD=$(GPG_ERROR_LIBS)
 
 types: $(typefiles)
 	typemaker -d GWENHYWFAR_API $(typefiles)
