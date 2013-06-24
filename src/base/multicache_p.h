@@ -92,6 +92,8 @@ struct GWEN_MULTICACHE_TYPE {
 
   GWEN_MULTICACHE_TYPE_ATTACH_FN attachFn;
   GWEN_MULTICACHE_TYPE_FREE_FN freeFn;
+
+  uint32_t _refCount;
 };
 
 static int GWEN_MultiCache_Type_AttachData(const GWEN_MULTICACHE_TYPE *ct, void *p);
@@ -109,6 +111,8 @@ struct GWEN_MULTICACHE {
   uint64_t maxSizeUsed;
   uint64_t cacheHits;
   uint64_t cacheMisses;
+
+  uint32_t _refCount;
 };
 
 
