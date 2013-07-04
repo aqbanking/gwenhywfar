@@ -444,10 +444,13 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc) {
       GWEN_MultiCache_Entry_List_free(mc->entryList);
       GWEN_MultiCache_Type_List_free(mc->typeList);
 
-      DBG_NOTICE(GWEN_LOGDOMAIN, "MultiCache usage: %lld hits, %lld misses, %lld mb max memory used",
+      DBG_NOTICE(GWEN_LOGDOMAIN, "MultiCache usage: %lld hits, %lld misses, %lld drops, %lld mb max memory used from %lld mb (%d %%)",
 		 (unsigned long long int) mc->cacheHits,
 		 (unsigned long long int) mc->cacheMisses,
-		 (unsigned long long int) ((mc->maxSizeUsed)/(1024*1024)));
+		 (unsigned long long int) mc->cacheDrops,
+		 (unsigned long long int) ((mc->maxSizeUsed)/(1024*1024)),
+		 (unsigned long long int) ((mc->maxSize)/(1024*1024)),
+		 (int)((mc->maxSizeUsed)*100.0/mc->maxSize));
 
       mc->_refCount=0;
       GWEN_FREE_OBJECT(mc);
@@ -486,7 +489,8 @@ int GWEN_MultiCache_AddEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
       ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
       if (ce) {
         nsize-=GWEN_MultiCache_Entry_GetDataSize(ce);
-        GWEN_MultiCache_ReleaseEntry(mc, ce);
+	GWEN_MultiCache_ReleaseEntry(mc, ce);
+	mc->cacheDrops++;
       }
       else {
         DBG_ERROR(GWEN_LOGDOMAIN, "No entry left to release, cache size limit too low");

@@ -111,6 +111,7 @@ struct GWEN_MULTICACHE {
   uint64_t maxSizeUsed;
   uint64_t cacheHits;
   uint64_t cacheMisses;
+  uint64_t cacheDrops;
 
   uint32_t _refCount;
 };
