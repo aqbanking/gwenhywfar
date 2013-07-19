@@ -104,13 +104,14 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
 
       GWEN_Dialog_List_free(gui->activeDialogs);
       GWEN_ProgressData_Tree_free(gui->progressDataTree);
+      GWEN_Dialog_List_free(gui->activeDialogs);
       free(gui->name);
       free(gui->charSet);
 
-      GWEN_StringList_free(gui->badPasswords);
       GWEN_DB_Group_free(gui->dbPasswords);
       if (gui->passwdStore)
 	GWEN_PasswordStore_free(gui->passwdStore);
+      GWEN_StringList_free(gui->badPasswords);
 
       GWEN_FREE_OBJECT(gui);
     }

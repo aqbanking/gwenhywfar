@@ -189,6 +189,7 @@ void GWEN_MultiCache_Type_free(GWEN_MULTICACHE_TYPE *ct) {
     assert(ct->_refCount);
     if (ct->_refCount==1) {
       GWEN_MultiCache_ReleaseEntriesForType(ct->multiCache, ct);
+      GWEN_MultiCache_Entry_IdMap_free(ct->entryMap);
       GWEN_LIST_FINI(GWEN_MULTICACHE_TYPE, ct);
       ct->_refCount=0;
       GWEN_FREE_OBJECT(ct);
