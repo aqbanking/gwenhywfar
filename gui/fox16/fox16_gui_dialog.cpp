@@ -1911,14 +1911,14 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
   _mainWidget=dynamic_cast<FXDialogBox*>(xw);
   assert(_mainWidget);
 
+  /* create X11 server side resources */
+  xw->create();
+
   rv=GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeInit, "");
   if (rv<0) {
     DBG_INFO(0, "Error initializing dialog: %d", rv);
     return false;
   }
-
-  /* create X11 server side resources */
-  xw->create();
 
   xw->layout();
 
