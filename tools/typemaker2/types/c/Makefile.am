@@ -23,7 +23,9 @@ dist_typedata_DATA=\
   gwen_multicache.tm2 \
   gwen_multicache_type.tm2 \
   uint8_t.tm2 \
-  uint8_t_array.tm2
+  uint8_t_array.tm2 \
+  gwen_bindata.tm2 \
+  double_array.tm2
 
 
 sources:

@@ -1,0 +1,103 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="double_array" type="array" basetype="double" lang="c" >
+    <identifier>double</identifier>
+
+    <codedefs>
+
+      <codedef id="construct">
+        <code>
+          memset($(dst), 0, $(maxlen)*sizeof(double));
+        </code>
+      </codedef>
+
+      <codedef id="destruct">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="assign">
+        <code>
+          $(dst)=$(src);
+        </code>
+      </codedef>
+
+      <codedef id="dup">
+        <code>
+          memmove($(dst), $(src), $(maxlen)*sizeof(double));
+        </code>
+      </codedef>
+
+      <codedef id="compare">
+        <code>
+          if (*($(dst)) &amp;&amp; *($(src)))
+            $(retval)=memcmp($(src), $(dst), $(maxlen)*sizeof(double));
+          else if ($(src))
+            $(retval)=1;
+          else if ($(dst))
+            $(retval)=-1;
+          else
+            $(retval)=0;
+        </code>
+      </codedef>
+
+      <codedef id="toXml">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="fromXml">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="toDb">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromDb">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toHashString">
+        <code>
+        </code>
+      </codedef>
+
+    </codedefs>
+
+
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+    
+  </typedef>
+
+</tm2>
