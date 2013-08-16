@@ -79,7 +79,8 @@ iheader_HEADERS=\
  memcache.h \
  tree.h \
  pointerlist.h \
- multicache.h
+ multicache.h \
+ bindata.h
 
 libbase_la_SOURCES=\
  args.c \
