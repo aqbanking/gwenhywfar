@@ -576,6 +576,38 @@ int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t, const char *tmpl, GWEN_BU
 
 
 
+int GWEN_Date_toDb(const GWEN_DATE *dt, GWEN_DB_NODE *db) {
+  const char *s;
+
+  assert(dt);
+  s=GWEN_Date_GetString(dt);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateString", s);
+  return 0;
+}
+
+
+
+GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db) {
+  const char *s;
+
+  s=GWEN_DB_GetCharValue(db, "dateString", 0, NULL);
+  if (s && *s) {
+    GWEN_DATE *dt;
+
+    dt=GWEN_Date_fromString(s);
+    if (dt==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Invalid date [%s]", s);
+      return NULL;
+    }
+
+    return dt;
+  }
+  else {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "no or empty date");
+    return NULL;
+  }
+}
+
 
 
 

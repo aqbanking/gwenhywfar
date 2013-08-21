@@ -111,6 +111,8 @@ GWENHYWFAR_API int GWEN_Date_Compare(const GWEN_DATE *gd1, const GWEN_DATE *gd0)
 GWENHYWFAR_API int GWEN_Date_Diff(const GWEN_DATE *gd1, const GWEN_DATE *gd0);
 
 
+GWENHYWFAR_API int GWEN_Date_toDb(const GWEN_DATE *dt, GWEN_DB_NODE *db);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db);
 
 
 #ifdef __cplusplus
