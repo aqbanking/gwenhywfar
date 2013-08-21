@@ -843,6 +843,94 @@ void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
 
 
 
+int GWEN_XMLNode_SetCharValueByPath(GWEN_XMLNODE *n, uint32_t flags,
+                                    const char *name,
+                                    const char *value){
+  GWEN_XMLNODE *nn;
+
+  nn=GWEN_XMLNode_GetNodeByXPath(n, name, 0);
+  if (nn) {
+    GWEN_XMLNODE *nnn;
+
+    /* clear current entries */
+    if (flags & GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES)
+      GWEN_XMLNode_List_Clear(nn->children);
+
+    /* create value node */
+    nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, value);
+    GWEN_XMLNode_AddChild(nn, nnn);
+
+    return 0;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unable to create node [%s]", name);
+    return GWEN_ERROR_INVALID;
+  }
+}
+
+
+
+const char *GWEN_XMLNode_GetCharValueByPath(GWEN_XMLNODE *n,
+                                            const char *name,
+                                            const char *defValue){
+  GWEN_XMLNODE *nn;
+
+  nn=GWEN_XMLNode_GetNodeByXPath(n, name, 0);
+  if (nn) {
+    GWEN_XMLNODE *dn;
+
+    dn=GWEN_XMLNode_GetFirstData(nn);
+    if (dn) {
+      if (dn->data)
+        return dn->data;
+    }
+  }
+
+  return defValue;
+}
+
+
+
+int GWEN_XMLNode_SetIntValueByPath(GWEN_XMLNODE *n, uint32_t flags,
+                                   const char *name,
+                                   int value){
+  char numbuf[32];
+  int rv;
+
+  /* create int value */
+  snprintf(numbuf, sizeof(numbuf)-1, "%d", value);
+  numbuf[sizeof(numbuf)-1]=0;
+
+  rv=GWEN_XMLNode_SetCharValueByPath(n, flags, name, numbuf);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return rv;
+}
+
+
+
+int GWEN_XMLNode_GetIntValueByPath(GWEN_XMLNODE *n,
+                                   const char *name,
+                                   int defValue) {
+  const char *p;
+  int res;
+
+  p=GWEN_XMLNode_GetCharValueByPath(n, name, NULL);
+  if (!p)
+    return defValue;
+  if (1!=sscanf(p, "%i", &res))
+    return defValue;
+  return res;
+}
+
+
+
+
+
+
 GWEN_XMLPROPERTY *GWEN_XMLNode_GetFirstProperty(const GWEN_XMLNODE *n){
   assert(n);
   return n->properties;

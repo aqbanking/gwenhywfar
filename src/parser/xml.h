@@ -115,6 +115,19 @@ extern "C" {
 
 /*@}*/
 
+
+
+  /** @name Path flags for GWEN_XMLNode_SetCharValueByPath etc
+   *
+   */
+/*@{*/
+
+#define GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES  0x00010000
+
+/*@}*/
+
+
+
 /**
  * The possible types of a GWEN_XMLNODE.
  */
@@ -667,6 +680,9 @@ void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns
 
 /** @name Handling Tags As Variables
  *
+ * These functions are only kept for compatibility reasons. You should use functions
+ * like @ref GWEN_XMLNode_GetCharValueByPath() instead.
+ *
  * These functions look for a tag, read their first data element and
  * return it as if it was a DB variable.
  * This simplifies access to simple tags containing simple data tags only.
@@ -736,6 +752,67 @@ void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
                               int value);
 
 /*@}*/
+
+
+
+/** @name Handling Tags As Variables Using Paths
+ *
+ * These functions look for a tag, read their first data element and
+ * return it as if it was a DB variable.
+ * This simplifies access to simple tags containing simple data tags only.
+ * E.g. if your XML structure is this:
+ * @code
+ * <test>
+ *   <X> 15 </X>
+ *   <Y> 10 </Y>
+ * </test>
+ * @endcode
+ * ... then you can access the value of X with the following call:
+ * @code
+ * x=GWEN_XMLNode_GetIntValue(testNode, "X", 0);
+ * @endcode
+ * If the given variables do not exist or have no value then the also given
+ * default value will be returned.
+ *
+ * In addition to functions like @ref GWEN_XMLNode_SetCharValue you can use full paths
+ * here.
+ */
+/*@{*/
+
+/**
+ * Return the string value of an element below the given one, specified by an XPath.
+ * @param n Node which is expected to contain the specified path
+ * @param path XPath to lookup below the node n
+ * @param defValue default value to return if the tag did not exist
+ */
+GWENHYWFAR_API
+const char *GWEN_XMLNode_GetCharValueByPath(GWEN_XMLNODE *n,
+                                            const char *path,
+                                            const char *defValue);
+
+GWENHYWFAR_API
+int GWEN_XMLNode_SetCharValueByPath(GWEN_XMLNODE *n, uint32_t flags,
+                                    const char *name,
+                                    const char *value);
+
+/**
+ * Return the integer value of an element below the given one, specified by an XPath.
+ * @param n Node which is expected to contain the specified path
+ * @param path XPath to lookup below the node n
+ * @param defValue default value to return if the tag did not exist
+ */
+GWENHYWFAR_API
+int GWEN_XMLNode_GetIntValueByPath(GWEN_XMLNODE *n,
+                                   const char *name,
+                                   int defValue);
+
+GWENHYWFAR_API
+int GWEN_XMLNode_SetIntValueByPath(GWEN_XMLNODE *n, uint32_t flags,
+                                   const char *name,
+                                   int value);
+
+/*@}*/
+
 
 
 /** @name Debugging
