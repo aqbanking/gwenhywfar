@@ -97,6 +97,7 @@ protected:
   FXIconSource *m_iconSource;
   std::list<FXIcon*> m_iconList;
   std::list<RadioButtonGroup*> m_radioGroups;
+  bool m_sizeChanged;
 
   FOX16_GuiDialog();
 

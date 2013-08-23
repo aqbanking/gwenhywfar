@@ -523,6 +523,63 @@ int test10(int argc, char **argv) {
 
 
 
+int test11(int argc, char **argv) {
+  FXApp application("libtest","Martin Preuss");
+  FOX16_Gui *gui;
+  char buffer[65];
+
+  application.init(argc,argv);
+
+  application.create();
+
+  gui=new FOX16_Gui(&application);
+  GWEN_Gui_SetGui(gui->getCInterface());
+
+  GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_SHOW,
+                    "This is the Title",
+                    "<html>This is quite a long HTML text. This is the second sentence, which is a bit longer "
+                    "than the first one.<br>In any case this sentence should begin on its own line</html>"
+
+                    "This is quite a long HTML text. This is the second sentence, which is a bit longer "
+                    "than the first one.\nIn any case this sentence should begin on its own line.",
+                    buffer,
+		    1,
+		    sizeof(buffer)-1,
+		    0);
+
+
+  return 0;
+}
+
+
+
+int test12(int argc, char **argv) {
+  FXApp application("libtest","Martin Preuss");
+  FOX16_Gui *gui;
+  char buffer[65];
+
+  application.init(argc,argv);
+
+  application.create();
+
+  gui=new FOX16_Gui(&application);
+  GWEN_Gui_SetGui(gui->getCInterface());
+
+  GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_SHOW,
+                    "This is the Title",
+                    "<html><b>This</b> is quite a long HTML text. This is the second sentence, which is a bit longer "
+                    "than the first one.<br>In any case this sentence should begin on its own line.</html>",
+                    buffer,
+		    1,
+		    sizeof(buffer)-1,
+		    0);
+
+
+  return 0;
+}
+
+
+
 
 int main(int argc, char **argv) {
   GWEN_Init();
@@ -550,6 +607,10 @@ int main(int argc, char **argv) {
       return test9(argc, argv);
     else if (strcasecmp(argv[1], "10")==0)
       return test10(argc, argv);
+    else if (strcasecmp(argv[1], "11")==0)
+      return test11(argc, argv);
+    else if (strcasecmp(argv[1], "12")==0)
+      return test12(argc, argv);
   }
   else
     return test7(argc, argv);

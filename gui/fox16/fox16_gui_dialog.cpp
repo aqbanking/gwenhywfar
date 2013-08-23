@@ -58,6 +58,7 @@ FOX16_GuiDialog::FOX16_GuiDialog()
 ,_widgetCount(0)
 ,_mainWidget(NULL)
 ,m_iconSource(NULL)
+,m_sizeChanged(FALSE)
 {
 }
 
@@ -70,6 +71,7 @@ FOX16_GuiDialog::FOX16_GuiDialog(FOX16_Gui *gui, GWEN_DIALOG *dlg)
 ,_widgetCount(0)
 ,_mainWidget(NULL)
 ,m_iconSource(NULL)
+,m_sizeChanged(FALSE)
 {
 }
 
@@ -500,10 +502,12 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_DialogProperty_Width:
       f->recalc();
       f->resize(value, f->getHeight());
+      m_sizeChanged=TRUE;
       return 0;
     case GWEN_DialogProperty_Height:
       f->recalc();
       f->resize(f->getWidth(), value);
+      m_sizeChanged=TRUE;
       return 0;
     case GWEN_DialogProperty_Enabled:
       if (value==0)
@@ -1914,12 +1918,16 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
   /* create X11 server side resources */
   xw->create();
 
+  m_sizeChanged=FALSE;
   rv=GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeInit, "");
   if (rv<0) {
     DBG_INFO(0, "Error initializing dialog: %d", rv);
     return false;
   }
-
+  if (!m_sizeChanged) {
+    DBG_ERROR(0, "Resizing dialog myself");
+    xw->resize(xw->getDefaultWidth(), xw->getDefaultHeight());
+  }
   xw->layout();
 
   return true;
