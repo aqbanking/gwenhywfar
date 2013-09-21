@@ -115,6 +115,32 @@ GWENHYWFAR_API int GWEN_Date_toDb(const GWEN_DATE *dt, GWEN_DB_NODE *db);
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db);
 
 
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisMonthStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisHalfYearStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisHalfYearEnd(const GWEN_DATE *dt);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisYearStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisYearEnd(const GWEN_DATE *dt);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastMonthStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastMonthEnd(const GWEN_DATE *dt);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastQuarterYearStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastQuarterYearEnd(const GWEN_DATE *dt);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastHalfYearStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastHalfYearEnd(const GWEN_DATE *dt);
+
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastYearStart(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetLastYearEnd(const GWEN_DATE *dt);
+
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -610,6 +610,215 @@ GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db) {
 
 
 
+GWEN_DATE *GWEN_Date_GetThisMonthStart(const GWEN_DATE *dt) {
+  return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), 1);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt) {
+  int day;
+
+  switch(GWEN_Date_GetMonth(dt)) {
+  case 1:
+  case 3:
+  case 5:
+  case 7:
+  case 8:
+  case 10:
+  case 12:
+    day=31;
+    break;
+  case 2:
+    if (GWEN_Date_IsLeapYear(GWEN_Date_GetYear(dt)))
+      day=29;
+    else
+      day=28;
+    break;
+
+  case 4:
+  case 6:
+  case 9:
+  case 11:
+    day=30;
+    break;
+  }
+  return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), day);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt) {
+  int m;
+  
+  m=(GWEN_Date_GetMonth(dt)-1)>>2;
+  switch(m) {
+  case 0:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 1, 1);
+  case 1:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 4, 1);
+  case 2:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 7, 1);
+  case 3:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 10, 1);
+  }
+
+  return NULL;
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt) {
+  int m;
+  
+  m=(GWEN_Date_GetMonth(dt)-1)>>2;
+  switch(m) {
+  case 0:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 3, 31);
+  case 1:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 6, 30);
+  case 2:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 9, 30);
+  case 3:
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 12, 31);
+  }
+
+  return NULL;
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisHalfYearStart(const GWEN_DATE *dt) {
+  if (GWEN_Date_GetMonth(dt)<7)
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 1, 1);
+  else
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 7, 1);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisHalfYearEnd(const GWEN_DATE *dt) {
+  if (GWEN_Date_GetMonth(dt)<7)
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 6, 30);
+  else
+    return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 12, 31);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisYearStart(const GWEN_DATE *dt) {
+  return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 1, 1);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisYearEnd(const GWEN_DATE *dt) {
+  return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 12, 31);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastMonthStart(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  GWEN_DATE *result;
+  int j;
+
+  tmpDate=GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), 1);
+  j=GWEN_Date_GetJulian(tmpDate-1);
+  GWEN_Date_free(tmpDate);
+  tmpDate=GWEN_Date_fromJulian(j);
+  result=GWEN_Date_fromGregorian(GWEN_Date_GetYear(tmpDate), GWEN_Date_GetMonth(tmpDate), 1);
+  GWEN_Date_free(tmpDate);
+  return result;
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastMonthEnd(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  int j;
+
+  tmpDate=GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), 1);
+  j=GWEN_Date_GetJulian(tmpDate-1);
+  GWEN_Date_free(tmpDate);
+  return GWEN_Date_fromJulian(j);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastQuarterYearStart(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  GWEN_DATE *result;
+
+  tmpDate=GWEN_Date_GetLastQuarterYearEnd(dt);
+  result=GWEN_Date_GetThisQuarterYearStart(tmpDate);
+  GWEN_Date_free(tmpDate);
+  return result;
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastQuarterYearEnd(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  int j;
+
+  tmpDate=GWEN_Date_GetThisQuarterYearStart(dt);
+  j=GWEN_Date_GetJulian(tmpDate-1);
+  GWEN_Date_free(tmpDate);
+  return GWEN_Date_fromJulian(j);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastHalfYearStart(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  GWEN_DATE *result;
+
+  tmpDate=GWEN_Date_GetLastHalfYearEnd(dt);
+  result=GWEN_Date_GetThisHalfYearStart(tmpDate);
+  GWEN_Date_free(tmpDate);
+  return result;
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastHalfYearEnd(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  int j;
+
+  tmpDate=GWEN_Date_GetThisHalfYearStart(dt);
+  j=GWEN_Date_GetJulian(tmpDate-1);
+  GWEN_Date_free(tmpDate);
+  return GWEN_Date_fromJulian(j);
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastYearStart(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  GWEN_DATE *result;
+
+  tmpDate=GWEN_Date_GetLastYearEnd(dt);
+  result=GWEN_Date_GetThisYearStart(tmpDate);
+  GWEN_Date_free(tmpDate);
+  return result;
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetLastYearEnd(const GWEN_DATE *dt) {
+  GWEN_DATE *tmpDate;
+  int j;
+
+  tmpDate=GWEN_Date_GetThisYearStart(dt);
+  j=GWEN_Date_GetJulian(tmpDate-1);
+  GWEN_Date_free(tmpDate);
+  return GWEN_Date_fromJulian(j);
+}
+
+
+
+
 
 
 
