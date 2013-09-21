@@ -111,12 +111,12 @@ int GWEN_StringList2_toDb(GWEN_STRINGLIST2 *sl2, GWEN_DB_NODE *db, const char *n
 
 
 
-GWEN_STRINGLIST2 *GWEN_StringList2_fromDb(GWEN_DB_NODE *db, const char *name, int maxnum, GWEN_STRINGLIST2_INSERTMODE m) {
+GWEN_STRINGLIST2 *GWEN_StringList2_fromDb(GWEN_DB_NODE *db, const char *name, GWEN_STRINGLIST2_INSERTMODE m) {
   GWEN_STRINGLIST2 *sl2;
   int i;
 
   sl2=GWEN_StringList2_new();
-  for (i=0; i<maxnum; i++) {
+  for (i=0; ; i++) {
     const char *s;
 
     s=GWEN_DB_GetCharValue(db, name, i, NULL);

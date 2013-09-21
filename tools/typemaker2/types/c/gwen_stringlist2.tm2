@@ -3,7 +3,7 @@
 <tm2>
 
   <typedef id="gwen_stringlist2" type="pointer" lang="c" >
-    <identifier>GWEN_DATE</identifier>
+    <identifier>GWEN_STRINGLIST2</identifier>
     <aqdb_type>AQDB_DataType_String</aqdb_type>
 
 
@@ -48,7 +48,7 @@
           if ($(src)){
             GWEN_XMLNODE *n;
           
-            n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, $(name));
+            n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "$(name)");
             GWEN_StringList2_toXml($(src), n);
             GWEN_XMLNode_AddChild($(db), n);
           }
@@ -63,12 +63,13 @@
           {
             GWEN_XMLNODE *n;
           
-            n=GWEN_XMLNode_FindFirstTag(node, $(name), 0, 0);
+            n=GWEN_XMLNode_FindFirstTag($(db), "$(name)", 0, 0);
             if(n) {
               $(dst)=GWEN_StringList2_fromXml(n, GWEN_StringList2_IntertMode_AlwaysAdd);
             }
             else
               $(dst)=NULL;
+          }
         </code>
       </codedef>
 
