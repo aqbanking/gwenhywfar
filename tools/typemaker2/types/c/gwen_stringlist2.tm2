@@ -1,0 +1,139 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="gwen_stringlist2" type="pointer" lang="c" >
+    <identifier>GWEN_DATE</identifier>
+    <aqdb_type>AQDB_DataType_String</aqdb_type>
+
+
+    <codedefs>
+
+      <codedef id="construct">
+        <code>
+          $(dst)=$(preset);
+        </code>
+      </codedef>
+
+      <codedef id="destruct">
+        <code>
+          GWEN_StringList2_free($(src));
+        </code>
+      </codedef>
+
+      <codedef id="assign">
+        <code>
+          $(dst)=$(src);
+        </code>
+      </codedef>
+
+      <codedef id="dup">
+        <code>
+        $(dst)=GWEN_StringList2_dup($(src));
+        </code>
+      </codedef>
+
+      <codedef id="compare">
+        <code>
+          <!-- TODO -->
+          $(retval)=0;
+        </code>
+      </codedef>
+
+      <codedef id="toXml">
+        <!-- !attribute -->
+        <memberFlagsMask>  attribute</memberFlagsMask>
+        <memberFlagsValue>          </memberFlagsValue>
+        <code>
+          if ($(src)){
+            GWEN_XMLNODE *n;
+          
+            n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, $(name));
+            GWEN_StringList2_toXml($(src), n);
+            GWEN_XMLNode_AddChild($(db), n);
+          }
+        </code>
+      </codedef>
+
+      <codedef id="fromXml">
+        <!-- !attribute -->
+        <memberFlagsMask>  attribute</memberFlagsMask>
+        <memberFlagsValue>          </memberFlagsValue>
+        <code>
+          {
+            GWEN_XMLNODE *n;
+          
+            n=GWEN_XMLNode_FindFirstTag(node, $(name), 0, 0);
+            if(n) {
+              $(dst)=GWEN_StringList2_fromXml(n, GWEN_StringList2_IntertMode_AlwaysAdd);
+            }
+            else
+              $(dst)=NULL;
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toDb">
+        <code>
+          if ($(src)){
+            $(retval)=GWEN_StringList2_toDb($(src), $(db), "$(name)");
+          }
+          else {
+            GWEN_DB_DeleteVar($(db), "$(name)");
+            $(retval)=0;
+          }
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromDb">
+        <code>
+          {
+            $(dst)=GWEN_StringList2_fromDb($(db), "$(name)", GWEN_StringList2_IntertMode_AlwaysAdd);
+          }
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toObject">
+        <code>
+          #error "Not implemented"
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromObject">
+        <code>
+          #error "Not implemented"
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toHashString">
+        <code>
+          #error "Not implemented"
+        </code>
+      </codedef>
+
+    </codedefs>
+
+
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <preset>NULL</preset>
+      <flags>own</flags>
+      <setflags>assign</setflags>
+      <getflags>none</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>

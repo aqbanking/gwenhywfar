@@ -33,6 +33,8 @@
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/refptr.h>
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,6 +57,13 @@ GWENHYWFAR_API
 void GWEN_StringList2_free(GWEN_STRINGLIST2 *sl2);
 GWENHYWFAR_API
 GWEN_STRINGLIST2 *GWEN_StringList2_dup(GWEN_STRINGLIST2 *sl2);
+
+
+GWENHYWFAR_API
+int GWEN_StringList2_toDb(GWEN_STRINGLIST2 *sl2, GWEN_DB_NODE *db, const char *varName);
+
+GWENHYWFAR_API
+GWEN_STRINGLIST2 *GWEN_StringList2_fromDb(GWEN_DB_NODE *db, const char *name, int maxnum, GWEN_STRINGLIST2_INSERTMODE m);
 
 
 /**
@@ -154,6 +163,12 @@ GWEN_StringList2Iterator_DataRefPtr(GWEN_STRINGLIST2_ITERATOR *li);
 
 
 GWENHYWFAR_API void GWEN_StringList2_Dump(const GWEN_STRINGLIST2 *sl2);
+
+
+GWENHYWFAR_API int GWEN_StringList2_toXml(GWEN_STRINGLIST2 *sl2, GWEN_XMLNODE *node);
+
+
+GWENHYWFAR_API unsigned int GWEN_StringList2_GetCount(const GWEN_STRINGLIST2 *l);
 
 
 

@@ -80,6 +80,104 @@ GWEN_STRINGLIST2 *GWEN_StringList2_dup(GWEN_STRINGLIST2 *sl2){
 
 
 
+int GWEN_StringList2_toDb(GWEN_STRINGLIST2 *sl2, GWEN_DB_NODE *db, const char *name) {
+  GWEN_DB_DeleteVar(db, name);
+
+  if (sl2) {
+    GWEN_STRINGLIST2_ITERATOR *it;
+
+    it=GWEN_StringList2_First(sl2);
+    if (it) {
+      const char *s;
+
+      s=GWEN_StringList2Iterator_Data(it);
+      while(s) {
+	int rv;
+
+	rv=GWEN_DB_SetCharValue(db, 0, name, s);
+	if (rv<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	  return rv;
+	}
+
+	s=GWEN_StringList2Iterator_Next(it);
+      }
+      GWEN_StringList2Iterator_free(it);
+    }
+  }
+
+  return 0;
+}
+
+
+
+GWEN_STRINGLIST2 *GWEN_StringList2_fromDb(GWEN_DB_NODE *db, const char *name, int maxnum, GWEN_STRINGLIST2_INSERTMODE m) {
+  GWEN_STRINGLIST2 *sl2;
+  int i;
+
+  sl2=GWEN_StringList2_new();
+  for (i=0; i<maxnum; i++) {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(db, name, i, NULL);
+    if (!s)
+      break;
+    GWEN_StringList2_AppendString(sl2, s, 0, m);
+  }
+
+  return sl2;
+}
+
+
+
+int GWEN_StringList2_toXml(GWEN_STRINGLIST2 *sl2, GWEN_XMLNODE *node) {
+  GWEN_STRINGLIST2_ITERATOR *it;
+  
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    const char *s;
+    
+    s=GWEN_StringList2Iterator_Data(it);
+    while(s) {
+      GWEN_XMLNode_SetCharValue(node, "elem", s);
+      s=GWEN_StringList2Iterator_Next(it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  return 0;
+}
+
+
+
+GWEN_STRINGLIST2 *GWEN_StringList2_fromXml(GWEN_XMLNODE *node, GWEN_STRINGLIST2_INSERTMODE m) {
+  GWEN_STRINGLIST2 *sl2;
+  GWEN_XMLNODE *n;
+
+  sl2=GWEN_StringList2_new();
+
+
+  n=GWEN_XMLNode_GetFirstTag(node);
+  while(n) {
+    GWEN_XMLNODE *dn;
+
+    dn=GWEN_XMLNode_GetFirstData(n);
+    if (dn) {
+      const char *s;
+
+      s=GWEN_XMLNode_GetData(dn);
+      if (s) {
+	GWEN_StringList2_AppendString(sl2, s, 0, m);
+      }
+    }
+    n=GWEN_XMLNode_GetNextTag(n);
+  }
+
+  return sl2;
+}
+
+
+
 void GWEN_StringList2_SetSenseCase(GWEN_STRINGLIST2 *sl2, int i){
   assert(sl2);
   sl2->senseCase=i;
@@ -331,6 +429,13 @@ unsigned int
 GWEN_StringList2Iterator_GetLinkCount(const GWEN_STRINGLIST2_ITERATOR *li){
   assert(li);
   return GWEN_ListIterator_GetLinkCount((const GWEN_LIST_ITERATOR*)li);
+}
+
+
+
+unsigned int GWEN_StringList2_GetCount(const GWEN_STRINGLIST2 *l) {
+  assert(l);
+  return GWEN_List_GetSize(l->listPtr);
 }
 
 

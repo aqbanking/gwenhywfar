@@ -25,7 +25,8 @@ dist_typedata_DATA=\
   uint8_t.tm2 \
   uint8_t_array.tm2 \
   gwen_bindata.tm2 \
-  double_array.tm2
+  double_array.tm2 \
+  gwen_stringlist2.tm2
 
 
 sources:
