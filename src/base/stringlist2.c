@@ -366,6 +366,31 @@ GWEN_StringList2__GetString(const GWEN_STRINGLIST2 *sl2,
 
 
 
+const char *GWEN_StringList2_GetStringAt(const GWEN_STRINGLIST2 *sl2, int idx) {
+  GWEN_STRINGLIST2_ITERATOR *it;
+  GWEN_REFPTR *rp;
+
+  it=GWEN_StringList2_First(sl2);
+  if (it) {
+    rp=GWEN_ListIterator_DataRefPtr((GWEN_LIST_ITERATOR*)it);
+
+    while(rp) {
+      const char *t;
+
+      t=(const char*)GWEN_RefPtr_GetData(rp);
+      assert(t);
+      if (idx--==0) {
+	GWEN_StringList2Iterator_free(it);
+	return t;
+      }
+      rp=GWEN_ListIterator_NextRefPtr((GWEN_LIST_ITERATOR*)it);
+    }
+    GWEN_StringList2Iterator_free(it);
+  }
+
+  return NULL;
+}
+
 
 
 

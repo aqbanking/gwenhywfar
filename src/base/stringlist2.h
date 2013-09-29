@@ -131,8 +131,10 @@ GWENHYWFAR_API int GWEN_StringList2_RemoveString(GWEN_STRINGLIST2 *sl2,
  * @return !=0 if found, 0 otherwise
  */
 GWENHYWFAR_API int GWEN_StringList2_HasString(const GWEN_STRINGLIST2 *sl2,
-                                             const char *s);
+                                              const char *s);
 
+
+GWENHYWFAR_API const char *GWEN_StringList2_GetStringAt(const GWEN_STRINGLIST2 *sl2, int idx);
 
 
 
