@@ -4,6 +4,7 @@
 
   <typedef id="GWEN_BINDATA" type="opaque" lang="c" >
     <identifier>GWEN_BINDATA</identifier>
+    <aqdb_type>AQDB_DataType_Bin</aqdb_type>
 
     <codedefs>
 
@@ -63,16 +64,76 @@
 
       <codedef id="toXml">
         <code>
+          {
+            if ($(src).length &amp;&amp; $(src).pointer) {
+              GWEN_BUFFER *tbuf;
+              int rv;
+              
+              tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+              rv=GWEN_Base64_Encode((const unsigned char*) $(src).pointer, $(src).length, tbuf, 80);
+              if (rv  &lt; 0) {
+                DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+              }
+              else {
+                GWEN_XMLNode_SetCharValue($(db), "$(name)", GWEN_Buffer_GetStart(tbuf));
+                GWEN_Buffer_free(tbuf);
+              }
+            }
+          }
         </code>
       </codedef>
 
       <codedef id="fromXml">
         <code>
+          {
+            const char *s;
+            
+            s=GWEN_XMLNode_GetCharValue($(db), "$(name)", $(default));
+            if (s) {
+              GWEN_BUFFER *tbuf;
+              int rv;
+              
+              tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+              rv=GWEN_Base64_Decode((const unsigned char*)s, strlen(s), tbuf);
+              if (rv &lt; 0) {
+                DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+              }
+              else {
+                char *t;
+                uint32_t len;
+                
+                len=GWEN_Buffer_GetUsedBytes(tbuf);
+                t=GWEN_Buffer_GetStart(tbuf);
+                if (GWEN_Buffer_Relinquish(tbuf) &lt; 0) {
+                  uint8_t *dest;
+                  
+                  dest=(uint8_t*) malloc(len);
+                  memmove(dest, t, len);
+                  $(dst).pointer=dest;
+                  $(dst).length=len;
+                }
+                else {
+                  $(dst).pointer=(uint8_t*) t;
+                  $(dst).length=len;
+                }
+              }
+              GWEN_Buffer_free(tbuf);
+            }
+          }
         </code>
       </codedef>
 
       <codedef id="toDb">
         <code>
+          {
+            if ($(src).length &amp;&amp; $(src).pointer) {
+              GWEN_DB_SetBinValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, "$(name)", $(src).pointer, $(src).length);
+            }
+            else {
+              GWEN_DB_DeleteVar($(db), "$(name)");
+              $(retval)=0;
+            }
+          }
         </code>
       </codedef>
 
@@ -80,6 +141,20 @@
 
       <codedef id="fromDb">
         <code>
+          {
+            const void *v;
+            unsigned int vlen;
+            
+            v=GWEN_DB_GetBinValue($(db), "$(name)", 0, NULL, 0, &amp;vlen);
+            if (v &amp;&amp; vlen) {
+              uint8_t *dest;
+              
+              dest=(uint8_t*) malloc(vlen);
+              memmove(dest, v, vlen);
+              $(dst).pointer=dest;
+              $(dst).length=vlen;
+            }
+          }
         </code>
       </codedef>
 
@@ -87,6 +162,12 @@
 
       <codedef id="toObject">
         <code>
+          {
+            if ($(src).length &amp;&amp; $(src).pointer)
+              $(retval)=AQDB_Object_SetField($(db), $(fieldId), $(src).pointer, $(src).length);
+            else 
+              $(retval)=AQDB_Object_SetField($(db), $(fieldId), NULL, 0);
+          }
         </code>
       </codedef>
 
@@ -94,6 +175,24 @@
 
       <codedef id="fromObject">
         <code>
+          {
+            uint8_t *data=NULL;
+            uint32_t len=0;
+            int rv;
+            
+            rv=AQDB_Object_GetField($(db), $(fieldId),  &amp;data, &amp;len);
+            if (rv &lt; 0) {
+              $(retval)=rv;
+            }
+            else {
+              uint8_t *dest;
+              
+              dest=(uint8_t*) malloc(len);
+              memmove(dest, data, len);
+              $(dst).pointer=dest;
+              $(dst).length=len;
+            }
+          }
         </code>
       </codedef>
 
