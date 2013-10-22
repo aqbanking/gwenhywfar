@@ -724,7 +724,7 @@ GWEN_DATE *GWEN_Date_GetLastMonthStart(const GWEN_DATE *dt) {
   int j;
 
   tmpDate=GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), 1);
-  j=GWEN_Date_GetJulian(tmpDate-1);
+  j=GWEN_Date_GetJulian(tmpDate)-1;
   GWEN_Date_free(tmpDate);
   tmpDate=GWEN_Date_fromJulian(j);
   result=GWEN_Date_fromGregorian(GWEN_Date_GetYear(tmpDate), GWEN_Date_GetMonth(tmpDate), 1);
@@ -739,7 +739,7 @@ GWEN_DATE *GWEN_Date_GetLastMonthEnd(const GWEN_DATE *dt) {
   int j;
 
   tmpDate=GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), 1);
-  j=GWEN_Date_GetJulian(tmpDate-1);
+  j=GWEN_Date_GetJulian(tmpDate)-1;
   GWEN_Date_free(tmpDate);
   return GWEN_Date_fromJulian(j);
 }
@@ -763,7 +763,7 @@ GWEN_DATE *GWEN_Date_GetLastQuarterYearEnd(const GWEN_DATE *dt) {
   int j;
 
   tmpDate=GWEN_Date_GetThisQuarterYearStart(dt);
-  j=GWEN_Date_GetJulian(tmpDate-1);
+  j=GWEN_Date_GetJulian(tmpDate)-1;
   GWEN_Date_free(tmpDate);
   return GWEN_Date_fromJulian(j);
 }
@@ -787,7 +787,7 @@ GWEN_DATE *GWEN_Date_GetLastHalfYearEnd(const GWEN_DATE *dt) {
   int j;
 
   tmpDate=GWEN_Date_GetThisHalfYearStart(dt);
-  j=GWEN_Date_GetJulian(tmpDate-1);
+  j=GWEN_Date_GetJulian(tmpDate)-1;
   GWEN_Date_free(tmpDate);
   return GWEN_Date_fromJulian(j);
 }
@@ -811,7 +811,7 @@ GWEN_DATE *GWEN_Date_GetLastYearEnd(const GWEN_DATE *dt) {
   int j;
 
   tmpDate=GWEN_Date_GetThisYearStart(dt);
-  j=GWEN_Date_GetJulian(tmpDate-1);
+  j=GWEN_Date_GetJulian(tmpDate)-1;
   GWEN_Date_free(tmpDate);
   return GWEN_Date_fromJulian(j);
 }
