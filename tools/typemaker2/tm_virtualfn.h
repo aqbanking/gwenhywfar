@@ -21,6 +21,9 @@
 typedef struct TYPEMAKER2_VIRTUALFN TYPEMAKER2_VIRTUALFN;
 GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_VIRTUALFN, Typemaker2_VirtualFn);
 
+typedef struct TYPEMAKER2_VIRTUALFN_PARAM TYPEMAKER2_VIRTUALFN_PARAM;
+GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_VIRTUALFN_PARAM, Typemaker2_VirtualFn_Param);
+
 
 #define TYPEMAKER2_VIRTUALFN_FLAGS_FROMSLOT 0x00000001
 
@@ -39,6 +42,9 @@ void Typemaker2_VirtualFn_SetName(TYPEMAKER2_VIRTUALFN *vf, const char *s);
 const char *Typemaker2_VirtualFn_GetLocation(const TYPEMAKER2_VIRTUALFN *vf);
 void Typemaker2_VirtualFn_SetLocation(TYPEMAKER2_VIRTUALFN *vf, const char *s);
 
+const char *Typemaker2_VirtualFn_GetDescr(const TYPEMAKER2_VIRTUALFN *vf);
+void Typemaker2_VirtualFn_SetDescr(TYPEMAKER2_VIRTUALFN *vf, const char *s);
+
 uint32_t Typemaker2_VirtualFn_GetFlags(const TYPEMAKER2_VIRTUALFN *vf);
 void Typemaker2_VirtualFn_SetFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl);
 void Typemaker2_VirtualFn_AddFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl);
@@ -56,8 +62,22 @@ void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s);
 const char *Typemaker2_VirtualFn_GetDefaultReturnValue(const TYPEMAKER2_VIRTUALFN *vf);
 void Typemaker2_VirtualFn_SetDefaultReturnValue(TYPEMAKER2_VIRTUALFN *vf, const char *s);
 
-GWEN_STRINGLIST *Typemaker2_VirtualFn_GetParamTypes(const TYPEMAKER2_VIRTUALFN *vf);
+TYPEMAKER2_VIRTUALFN_PARAM_LIST *Typemaker2_VirtualFn_GetParamTypeList(const TYPEMAKER2_VIRTUALFN *vf);
 
+
+
+TYPEMAKER2_VIRTUALFN_PARAM *Typemaker2_VirtualFn_Param_new();
+void Typemaker2_VirtualFn_Param_free(TYPEMAKER2_VIRTUALFN_PARAM *prm);
+
+
+const char *Typemaker2_VirtualFn_Param_GetName(const TYPEMAKER2_VIRTUALFN_PARAM *prm);
+void Typemaker2_VirtualFn_Param_SetName(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s);
+
+const char *Typemaker2_VirtualFn_Param_GetType(const TYPEMAKER2_VIRTUALFN_PARAM *prm);
+void Typemaker2_VirtualFn_Param_SetType(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s);
+
+const char *Typemaker2_VirtualFn_Param_GetDescr(const TYPEMAKER2_VIRTUALFN_PARAM *prm);
+void Typemaker2_VirtualFn_Param_SetDescr(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s);
 
 
 

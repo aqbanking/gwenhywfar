@@ -23,6 +23,7 @@
 
 
 GWEN_LIST_FUNCTIONS(TYPEMAKER2_VIRTUALFN, Typemaker2_VirtualFn);
+GWEN_LIST_FUNCTIONS(TYPEMAKER2_VIRTUALFN_PARAM, Typemaker2_VirtualFn_Param);
 
 
 
@@ -32,9 +33,9 @@ TYPEMAKER2_VIRTUALFN *Typemaker2_VirtualFn_new() {
   GWEN_NEW_OBJECT(TYPEMAKER2_VIRTUALFN, vf);
   vf->refCount=1;
   GWEN_LIST_INIT(TYPEMAKER2_VIRTUALFN, vf);
-  vf->paramTypes=GWEN_StringList_new();
   vf->access=TypeMaker2_Access_Public;
 
+  vf->paramList=Typemaker2_VirtualFn_Param_List_new();
   return vf;
 }
 
@@ -44,12 +45,13 @@ void Typemaker2_VirtualFn_free(TYPEMAKER2_VIRTUALFN *vf) {
   if (vf) {
     if (vf->refCount==1) {
       GWEN_LIST_FINI(TYPEMAKER2_VIRTUALFN, vf);
-      GWEN_StringList_free(vf->paramTypes);
       free(vf->preset);
       free(vf->name);
+      free(vf->descr);
       free(vf->returnType);
       free(vf->defaultReturnValue);
       free(vf->location);
+      Typemaker2_VirtualFn_Param_List_free(vf->paramList);
       vf->refCount=0;
       GWEN_FREE_OBJECT(vf);
     }
@@ -119,16 +121,34 @@ int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
   if (n) {
     n=GWEN_XMLNode_FindFirstTag(n, "param", NULL, NULL);
     while(n) {
-      s=GWEN_XMLNode_GetProperty(n, "type", NULL);
-      if (s==NULL) {
+      const char *paramName;
+      const char *paramType;
+      const char *paramDescr;
+      TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+      paramType=GWEN_XMLNode_GetProperty(n, "type", NULL);
+      paramName=GWEN_XMLNode_GetProperty(n, "name", NULL);
+      paramDescr=GWEN_XMLNode_GetCharValue(n, "descr", NULL);
+
+      if (!(paramType && *paramType)) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Parameter has no type");
 	return GWEN_ERROR_BAD_DATA;
       }
-      GWEN_StringList_AppendString(vf->paramTypes, s, 0, 0);
+
+      prm=Typemaker2_VirtualFn_Param_new();
+      Typemaker2_VirtualFn_Param_SetName(prm, paramName);
+      Typemaker2_VirtualFn_Param_SetType(prm, paramType);
+      Typemaker2_VirtualFn_Param_SetDescr(prm, paramDescr);
+      Typemaker2_VirtualFn_Param_List_Add(prm, vf->paramList);
 
       n=GWEN_XMLNode_FindNextTag(n, "param", NULL, NULL);
     }
   }
+
+  /* read descr */
+  s=GWEN_XMLNode_GetCharValue(node, "descr", NULL);
+  Typemaker2_VirtualFn_SetDescr(vf, s);
+
 
   return 0;
 }
@@ -171,6 +191,26 @@ void Typemaker2_VirtualFn_SetLocation(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
   free(vf->location);
   if (s) vf->location=strdup(s);
   else vf->location=NULL;
+}
+
+
+
+const char *Typemaker2_VirtualFn_GetDescr(const TYPEMAKER2_VIRTUALFN *vf) {
+  assert(vf);
+  assert(vf->refCount);
+
+  return vf->descr;
+}
+
+
+
+void Typemaker2_VirtualFn_SetDescr(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+  assert(vf);
+  assert(vf->refCount);
+
+  free(vf->descr);
+  if (s) vf->descr=strdup(s);
+  else vf->descr=NULL;
 }
 
 
@@ -269,11 +309,11 @@ void Typemaker2_VirtualFn_SetDefaultReturnValue(TYPEMAKER2_VIRTUALFN *vf, const 
 
 
 
-GWEN_STRINGLIST *Typemaker2_VirtualFn_GetParamTypes(const TYPEMAKER2_VIRTUALFN *vf) {
+TYPEMAKER2_VIRTUALFN_PARAM_LIST *Typemaker2_VirtualFn_GetParamTypeList(const TYPEMAKER2_VIRTUALFN *vf) {
   assert(vf);
   assert(vf->refCount);
 
-  return vf->paramTypes;
+  return vf->paramList;
 }
 
 
@@ -298,6 +338,79 @@ void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
 
 
 
+
+
+
+
+
+TYPEMAKER2_VIRTUALFN_PARAM *Typemaker2_VirtualFn_Param_new() {
+  TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+  GWEN_NEW_OBJECT(TYPEMAKER2_VIRTUALFN_PARAM, prm);
+  GWEN_LIST_INIT(TYPEMAKER2_VIRTUALFN_PARAM, prm);
+
+  return prm;
+}
+
+
+
+void Typemaker2_VirtualFn_Param_free(TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+  if (prm) {
+    free(prm->name);
+    free(prm->type);
+    free(prm->descr);
+
+    GWEN_FREE_OBJECT(prm);
+  }
+}
+
+
+
+const char *Typemaker2_VirtualFn_Param_GetName(const TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+  assert(prm);
+  return prm->name;
+}
+
+
+
+void Typemaker2_VirtualFn_Param_SetName(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s) {
+  assert(prm);
+  free(prm->name);
+  if (s) prm->name=strdup(s);
+  else prm->name=NULL;
+}
+
+
+
+const char *Typemaker2_VirtualFn_Param_GetType(const TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+  assert(prm);
+  return prm->type;
+}
+
+
+
+void Typemaker2_VirtualFn_Param_SetType(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s) {
+  assert(prm);
+  free(prm->type);
+  if (s) prm->type=strdup(s);
+  else prm->type=NULL;
+}
+
+
+
+const char *Typemaker2_VirtualFn_Param_GetDescr(const TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+  assert(prm);
+  return prm->descr;
+}
+
+
+
+void Typemaker2_VirtualFn_Param_SetDescr(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s) {
+  assert(prm);
+  free(prm->descr);
+  if (s) prm->descr=strdup(s);
+  else prm->descr=NULL;
+}
 
 
 

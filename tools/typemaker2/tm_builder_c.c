@@ -14,6 +14,8 @@
 #include <gwenhywfar/debug.h>
 
 #include <ctype.h>
+#include <string.h>
+
 
 
 /* DEBUG */
@@ -3923,7 +3925,8 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
 	s="pre";
       if (s && loc && strcasecmp(s, loc)==0) {
 	int access=Typemaker2_VirtualFn_GetAccess(vf);
-	GWEN_STRINGLISTENTRY *se;
+        TYPEMAKER2_VIRTUALFN_PARAM_LIST *plist;
+        GWEN_STRINGLISTENTRY *se;
 	int i;
   
 	GWEN_Buffer_AppendString(tbuf, "typedef ");
@@ -3954,23 +3957,43 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
 	GWEN_Buffer_AppendString(tbuf, s);
 	/* created structs are always pointers */
 	GWEN_Buffer_AppendString(tbuf, " *p_struct");
-  
-	i=1;
-	se=GWEN_StringList_FirstEntry(Typemaker2_VirtualFn_GetParamTypes(vf));
-	while(se) {
-	  char numbuf[64];
-  
-	  GWEN_Buffer_AppendString(tbuf, ", ");
-	  s=GWEN_StringListEntry_Data(se);
-	  GWEN_Buffer_AppendString(tbuf, s);
-	  GWEN_Buffer_AppendString(tbuf, " ");
-	  snprintf(numbuf, sizeof(numbuf)-1, "param%d", i++);
-	  numbuf[sizeof(numbuf)-1]=0;
-	  GWEN_Buffer_AppendString(tbuf, numbuf);
-  
-	  se=GWEN_StringListEntry_Next(se);
-	}
-	GWEN_Buffer_AppendString(tbuf, ");\n");
+
+        plist=Typemaker2_VirtualFn_GetParamTypeList(vf);
+        if (plist) {
+          TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+          i=1;
+          prm=Typemaker2_VirtualFn_Param_List_First(plist);
+          while(prm) {
+            const char *paramName;
+            const char *paramType;
+
+            GWEN_Buffer_AppendString(tbuf, ", ");
+
+            paramName=Typemaker2_VirtualFn_Param_GetName(prm);
+            paramType=Typemaker2_VirtualFn_Param_GetType(prm);
+
+            GWEN_Buffer_AppendString(tbuf, paramType);
+            GWEN_Buffer_AppendString(tbuf, " ");
+
+            if (paramName)
+              GWEN_Buffer_AppendString(tbuf, paramName);
+            else {
+              char numbuf[64];
+
+              GWEN_Buffer_AppendString(tbuf, s);
+              GWEN_Buffer_AppendString(tbuf, " ");
+              snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
+              numbuf[sizeof(numbuf)-1]=0;
+              GWEN_Buffer_AppendString(tbuf, numbuf);
+            }
+
+            prm=Typemaker2_VirtualFn_Param_List_Next(prm);
+            i++;
+          }
+        }
+
+        GWEN_Buffer_AppendString(tbuf, ");\n");
   
 	switch(access) {
 	case TypeMaker2_Access_Public:
@@ -4023,8 +4046,65 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
       int access=Typemaker2_VirtualFn_GetAccess(vf);
-      GWEN_STRINGLISTENTRY *se;
+      TYPEMAKER2_VIRTUALFN_PARAM_LIST *plist;
       int i;
+
+      /* write APIDOC */
+      GWEN_Buffer_AppendString(tbuf, "/**\n");
+      s=Typemaker2_VirtualFn_GetDescr(vf);
+      if (s && *s) {
+        int len;
+
+        GWEN_Buffer_AppendString(tbuf, " * ");
+        GWEN_Buffer_AppendString(tbuf, s);
+        len=strlen(s);
+        if (s[len-1]!='\n')
+          GWEN_Buffer_AppendString(tbuf, "\n");
+      }
+
+      i=1;
+      plist=Typemaker2_VirtualFn_GetParamTypeList(vf);
+      if (plist) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+        i=1;
+        prm=Typemaker2_VirtualFn_Param_List_First(plist);
+        while(prm) {
+          const char *paramDescr;
+
+          paramDescr=Typemaker2_VirtualFn_Param_GetDescr(prm);
+          if (paramDescr && *paramDescr) {
+            const char *paramName;
+            int len;
+
+            GWEN_Buffer_AppendString(tbuf, " * @param ");
+            paramName=Typemaker2_VirtualFn_Param_GetName(prm);
+            if (paramName)
+              GWEN_Buffer_AppendString(tbuf, paramName);
+            else {
+              char numbuf[64];
+
+              GWEN_Buffer_AppendString(tbuf, s);
+              GWEN_Buffer_AppendString(tbuf, " ");
+              snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
+              numbuf[sizeof(numbuf)-1]=0;
+              GWEN_Buffer_AppendString(tbuf, numbuf);
+            }
+
+            GWEN_Buffer_AppendString(tbuf, " ");
+            GWEN_Buffer_AppendString(tbuf, paramDescr);
+            len=strlen(paramDescr);
+            if (paramDescr[len-1]!='\n')
+              GWEN_Buffer_AppendString(tbuf, "\n");
+          }
+
+          i++;
+          prm=Typemaker2_VirtualFn_Param_List_Next(prm);
+        }
+      }
+      GWEN_Buffer_AppendString(tbuf, " */\n");
+
+
 
       s=Typemaker2_TypeManager_GetApiDeclaration(tym);
       if (s && *s) {
@@ -4057,22 +4137,44 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       /* created structs are always pointers */
       GWEN_Buffer_AppendString(tbuf, " *p_struct");
 
+
       i=1;
-      se=GWEN_StringList_FirstEntry(Typemaker2_VirtualFn_GetParamTypes(vf));
-      while(se) {
-	char numbuf[64];
+      plist=Typemaker2_VirtualFn_GetParamTypeList(vf);
+      if (plist) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
 
-	GWEN_Buffer_AppendString(tbuf, ", ");
-	s=GWEN_StringListEntry_Data(se);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, " ");
-	snprintf(numbuf, sizeof(numbuf)-1, "param%d", i++);
-	numbuf[sizeof(numbuf)-1]=0;
-	GWEN_Buffer_AppendString(tbuf, numbuf);
+        i=1;
+        prm=Typemaker2_VirtualFn_Param_List_First(plist);
+        while(prm) {
+          const char *paramName;
+          const char *paramType;
 
-	se=GWEN_StringListEntry_Next(se);
+          GWEN_Buffer_AppendString(tbuf, ", ");
+
+          paramName=Typemaker2_VirtualFn_Param_GetName(prm);
+          paramType=Typemaker2_VirtualFn_Param_GetType(prm);
+
+          GWEN_Buffer_AppendString(tbuf, paramType);
+          GWEN_Buffer_AppendString(tbuf, " ");
+
+          if (paramName)
+            GWEN_Buffer_AppendString(tbuf, paramName);
+          else {
+            char numbuf[64];
+
+            GWEN_Buffer_AppendString(tbuf, s);
+            GWEN_Buffer_AppendString(tbuf, " ");
+            snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
+            numbuf[sizeof(numbuf)-1]=0;
+            GWEN_Buffer_AppendString(tbuf, numbuf);
+          }
+
+          prm=Typemaker2_VirtualFn_Param_List_Next(prm);
+          i++;
+        }
       }
       GWEN_Buffer_AppendString(tbuf, ");\n");
+
 
       switch(access) {
       case TypeMaker2_Access_Public:
@@ -4123,7 +4225,7 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "/* code for virtual functions */\n");
     vf=Typemaker2_VirtualFn_List_First(fns);
     while(vf) {
-      GWEN_STRINGLISTENTRY *se;
+      TYPEMAKER2_VIRTUALFN_PARAM_LIST *plist;
       int i;
 
       s=Typemaker2_VirtualFn_GetReturnType(vf);
@@ -4151,20 +4253,41 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       /* created structs are always pointers */
       GWEN_Buffer_AppendString(tbuf, " *p_struct");
 
+
       i=1;
-      se=GWEN_StringList_FirstEntry(Typemaker2_VirtualFn_GetParamTypes(vf));
-      while(se) {
-	char numbuf[64];
+      plist=Typemaker2_VirtualFn_GetParamTypeList(vf);
+      if (plist) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
 
-	GWEN_Buffer_AppendString(tbuf, ", ");
-	s=GWEN_StringListEntry_Data(se);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, " ");
-	snprintf(numbuf, sizeof(numbuf)-1, "param%d", i++);
-	numbuf[sizeof(numbuf)-1]=0;
-	GWEN_Buffer_AppendString(tbuf, numbuf);
+        i=1;
+        prm=Typemaker2_VirtualFn_Param_List_First(plist);
+        while(prm) {
+          const char *paramName;
+          const char *paramType;
 
-	se=GWEN_StringListEntry_Next(se);
+          GWEN_Buffer_AppendString(tbuf, ", ");
+
+          paramName=Typemaker2_VirtualFn_Param_GetName(prm);
+          paramType=Typemaker2_VirtualFn_Param_GetType(prm);
+
+          GWEN_Buffer_AppendString(tbuf, paramType);
+          GWEN_Buffer_AppendString(tbuf, " ");
+
+          if (paramName)
+            GWEN_Buffer_AppendString(tbuf, paramName);
+          else {
+            char numbuf[64];
+
+            GWEN_Buffer_AppendString(tbuf, s);
+            GWEN_Buffer_AppendString(tbuf, " ");
+            snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
+            numbuf[sizeof(numbuf)-1]=0;
+            GWEN_Buffer_AppendString(tbuf, numbuf);
+          }
+
+          prm=Typemaker2_VirtualFn_Param_List_Next(prm);
+          i++;
+        }
       }
       GWEN_Buffer_AppendString(tbuf, ") {\n");
 
@@ -4178,20 +4301,39 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       }
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, "Fn)\n");
-      GWEN_Buffer_AppendString(tbuf, "return p_struct->");
+      GWEN_Buffer_AppendString(tbuf, "    return p_struct->");
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, "Fn(p_struct");
 
       i=1;
-      se=GWEN_StringList_FirstEntry(Typemaker2_VirtualFn_GetParamTypes(vf));
-      while(se) {
-	char numbuf[64];
+      plist=Typemaker2_VirtualFn_GetParamTypeList(vf);
+      if (plist) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
 
-	snprintf(numbuf, sizeof(numbuf)-1, ", param%d", i++);
-	numbuf[sizeof(numbuf)-1]=0;
-	GWEN_Buffer_AppendString(tbuf, numbuf);
+        i=1;
+        prm=Typemaker2_VirtualFn_Param_List_First(plist);
+        while(prm) {
+          const char *paramName;
 
-	se=GWEN_StringListEntry_Next(se);
+          GWEN_Buffer_AppendString(tbuf, ", ");
+
+          paramName=Typemaker2_VirtualFn_Param_GetName(prm);
+
+          if (paramName)
+            GWEN_Buffer_AppendString(tbuf, paramName);
+          else {
+            char numbuf[64];
+
+            GWEN_Buffer_AppendString(tbuf, s);
+            GWEN_Buffer_AppendString(tbuf, " ");
+            snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
+            numbuf[sizeof(numbuf)-1]=0;
+            GWEN_Buffer_AppendString(tbuf, numbuf);
+          }
+
+          prm=Typemaker2_VirtualFn_Param_List_Next(prm);
+          i++;
+        }
       }
       GWEN_Buffer_AppendString(tbuf, ");\n");
 
@@ -6245,7 +6387,7 @@ static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) 
     slot=Typemaker2_Slot_List_First(slotList);
     while(slot) {
       TYPEMAKER2_VIRTUALFN *fn;
-      GWEN_STRINGLIST *plist;
+      TYPEMAKER2_VIRTUALFN_PARAM_LIST *plist;
 
       /* callback function */
       s=Typemaker2_Slot_GetName(slot);
@@ -6253,21 +6395,41 @@ static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) 
       GWEN_Buffer_AppendString(tbuf, s+1);
 
       fn=Typemaker2_VirtualFn_new();
-      plist=Typemaker2_VirtualFn_GetParamTypes(fn);
+      plist=Typemaker2_VirtualFn_GetParamTypeList(fn);
 
       /* name */
       Typemaker2_VirtualFn_SetName(fn, GWEN_Buffer_GetStart(tbuf));
 
       s=Typemaker2_Slot_GetParamType1(slot); /* param 1 */
-      if (s && *s && strcasecmp(s, "none"))
-	GWEN_StringList_AppendString(plist, s, 0, 0);
+      if (s && *s && strcasecmp(s, "none")) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+        prm=Typemaker2_VirtualFn_Param_new();
+        Typemaker2_VirtualFn_Param_SetType(prm, s);
+        Typemaker2_VirtualFn_Param_List_Add(prm, plist);
+      }
       s=Typemaker2_Slot_GetParamType2(slot); /* param 2 */
-      if (s && *s && strcasecmp(s, "none"))
-	GWEN_StringList_AppendString(plist, s, 0, 0);
-      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM3)
-	GWEN_StringList_AppendString(plist, "int", 0, 0);
-      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM4)
-	GWEN_StringList_AppendString(plist, "int", 0, 0);
+      if (s && *s && strcasecmp(s, "none")) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+        prm=Typemaker2_VirtualFn_Param_new();
+        Typemaker2_VirtualFn_Param_SetType(prm, s);
+        Typemaker2_VirtualFn_Param_List_Add(prm, plist);
+      }
+      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM3) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+        prm=Typemaker2_VirtualFn_Param_new();
+        Typemaker2_VirtualFn_Param_SetType(prm, "int");
+        Typemaker2_VirtualFn_Param_List_Add(prm, plist);
+      }
+      if (Typemaker2_Slot_GetFlags(slot) & TYPEMAKER2_SLOT_FLAGS_USE_PARAM4) {
+        TYPEMAKER2_VIRTUALFN_PARAM *prm;
+
+        prm=Typemaker2_VirtualFn_Param_new();
+        Typemaker2_VirtualFn_Param_SetType(prm, "int");
+        Typemaker2_VirtualFn_Param_List_Add(prm, plist);
+      }
 
       Typemaker2_VirtualFn_SetAccess(fn, TypeMaker2_Access_Public);
       Typemaker2_VirtualFn_SetLocation(fn, "post");

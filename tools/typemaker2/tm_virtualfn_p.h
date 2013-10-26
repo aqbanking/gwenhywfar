@@ -15,11 +15,24 @@
 #include "tm_virtualfn.h"
 
 
+struct TYPEMAKER2_VIRTUALFN_PARAM {
+  GWEN_LIST_ELEMENT(TYPEMAKER2_VIRTUALFN_PARAM)
+
+  char *name;
+  char *type;
+  char *descr;
+};
+
+
+
+
 struct TYPEMAKER2_VIRTUALFN {
   GWEN_LIST_ELEMENT(TYPEMAKER2_VIRTUALFN)
 
   char *name;
   char *location;
+
+  char *descr;
 
   int access;
   uint32_t flags;
@@ -28,7 +41,7 @@ struct TYPEMAKER2_VIRTUALFN {
   char *defaultReturnValue;
   char *preset;
 
-  GWEN_STRINGLIST *paramTypes;
+  TYPEMAKER2_VIRTUALFN_PARAM_LIST *paramList;
 
   int refCount;
 
