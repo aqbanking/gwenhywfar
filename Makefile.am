@@ -40,6 +40,14 @@ gwenhywfar-config: gwenhywfar-config.in
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwenhywfar.pc
 
+CLEANFILES = gwenhywfar-config $(PACKAGE).tag listdoc.h
+DISTCLEANFILES = gwenhywfar-config.in
+
+clean-local: clean-local-check
+.PHONY: clean-local
+clean-local-check:
+	rm -rf apidoc gwenhywfar4
+
 listdoc.h:
 	admin/mklistdoc -v -I $(top_srcdir)/src/base `find "$(top_builddir)/gwenhywfar4/gwenhywfar" -name "*.h"` >listdoc.h
 
@@ -86,9 +94,6 @@ setup: gwenhywfar.iss
 	 && $(ISCC) gwenhywfar.iss \
 	 && rm -rf $(wintmpdir)
 
-
-CLEANFILES = gwenhywfar-config
-DISTCLEANFILES = gwenhywfar-config.in
 
 # Rule for only building the source rpm
 srpm: $(PACKAGE).spec dist
