@@ -4105,7 +4105,6 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendString(tbuf, " */\n");
 
 
-
       s=Typemaker2_TypeManager_GetApiDeclaration(tym);
       if (s && *s) {
 	GWEN_Buffer_AppendString(tbuf, s);
