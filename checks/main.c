@@ -32,6 +32,10 @@ int main(int argc, char **argv) {
   if (check_db())
     errs++;
 
+#ifdef GWENHYWFAR_SKIP_NETWORK_CHECKS
+  fprintf(stderr, "Skipping all checks that assume available network connectivity\n"
+                  "Run ./configure without --disable-network-checks to enable the skipped checks\n");
+#else
   if (check_syncio_tls())
     errs++;
 
@@ -39,6 +43,7 @@ int main(int argc, char **argv) {
     errs++;
   if (check_syncio_https())
     errs++;
+#endif
 
 
   if (errs)

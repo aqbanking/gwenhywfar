@@ -101,12 +101,6 @@ int check_syncio_tls() {
 
   fprintf(stderr, "IO tls checks... ");
   chks++;
-
-  if (getenv("GWENHYWFAR_CHECK_WITHOUT_NETWORK")) {
-    fprintf(stderr, "IO tls checks: all skipped (GWENHYWFAR_CHECK_WITHOUT_NETWORK environment is set)\n");
-    return 0;
-  }
-
   if (check_syncio_tls1())
     errs++;
 

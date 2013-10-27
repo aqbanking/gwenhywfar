@@ -315,6 +315,24 @@ fi
 
 ###-------------------------------------------------------------------------
 #
+# check whether 'make check' should run checks that depend on network connectivity
+#
+
+AC_MSG_CHECKING(network connectivity can be assumed available during 'make check')
+AC_ARG_ENABLE(network-checks,
+  [  --disable-network-checks       disables checks that assume available network during build (default=enabled)],
+  enable_gwen_network_checks="$enableval",
+  enable_gwen_network_checks="yes")
+AC_MSG_RESULT($enable_gwen_network_checks)
+
+if test "$enable_gwen_network_checks" = "no"; then
+  AC_DEFINE(GWENHYWFAR_SKIP_NETWORK_CHECKS, 1, [whether to run network-dependent checks during build])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
 # check whether local installation mode is enabled
 #
 

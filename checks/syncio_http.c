@@ -159,12 +159,6 @@ int check_syncio_http() {
 
   fprintf(stderr, "SyncIO http checks... ");
   chks++;
-
-  if (getenv("GWENHYWFAR_CHECK_WITHOUT_NETWORK")) {
-    fprintf(stderr, "SyncIO http checks: all skipped (GWENHYWFAR_CHECK_WITHOUT_NETWORK environment is set)\n");
-    return 0;
-  }
-
   if (check_syncio_http1())
     errs++;
 
