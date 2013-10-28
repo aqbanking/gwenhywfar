@@ -63,6 +63,10 @@ GWENHYWFAR_API void GWEN_SyncIo_Tls_SetLocalKeyFile(GWEN_SYNCIO *sio, const char
 GWENHYWFAR_API const char *GWEN_SyncIo_Tls_GetLocalTrustFile(const GWEN_SYNCIO *sio);
 GWENHYWFAR_API void GWEN_SyncIo_Tls_SetLocalTrustFile(GWEN_SYNCIO *sio, const char *s);
 
+GWENHYWFAR_API const char *GWEN_SyncIo_Tls_GetLocalTrustFolder(const GWEN_SYNCIO *sio);
+GWENHYWFAR_API void GWEN_SyncIo_Tls_SetLocalTrustFolder(GWEN_SYNCIO *sio, const char *s);
+
+
 GWENHYWFAR_API const char *GWEN_SyncIo_Tls_GetDhParamFile(const GWEN_SYNCIO *sio);
 GWENHYWFAR_API void GWEN_SyncIo_Tls_SetDhParamFile(GWEN_SYNCIO *sio, const char *s);
 

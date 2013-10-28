@@ -79,6 +79,11 @@ void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p) {
   GWEN_SYNCIO_TLS *xio;
 
   xio=(GWEN_SYNCIO_TLS*) p;
+  free(xio->localCertFile);
+  free(xio->localKeyFile);
+  free(xio->localTrustFile);
+  free(xio->dhParamFile);
+  free(xio->hostName);
   GWEN_FREE_OBJECT(xio);
 }
 
@@ -256,6 +261,66 @@ int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf) {
 
 
 
+
+int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder) {
+  GWEN_SYNCIO_TLS *xio;
+  int rv;
+  int successfullTustFileCount=0;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  if (folder && *folder) {
+    GWEN_STRINGLIST *fileList;
+
+    fileList=GWEN_StringList_new();
+    rv=GWEN_Directory_GetMatchingFilesRecursively(folder, fileList, "*.crt");
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error reading list of certificate files (%d) in folder [%s]",
+		rv, folder);
+    }
+    else {
+      GWEN_STRINGLISTENTRY *se;
+  
+      se=GWEN_StringList_FirstEntry(fileList);
+      while(se) {
+	const char *s;
+
+	s=GWEN_StringListEntry_Data(se);
+	if (s && *s) {
+	  rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
+						    s,
+						    GNUTLS_X509_FMT_PEM);
+	  if (rv<=0) {
+	    DBG_WARN(GWEN_LOGDOMAIN,
+		     "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+		     s, rv, gnutls_strerror(rv));
+	  }
+	  else {
+	    DBG_INFO(GWEN_LOGDOMAIN,
+		     "Added %d trusted certs from [%s]", rv, s);
+	    successfullTustFileCount++;
+	  }
+	}
+
+	se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
+    GWEN_StringList_free(fileList);
+  }
+
+  if (successfullTustFileCount==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No files added from folder [%s]", folder);
+  }
+
+  return successfullTustFileCount;
+}
+
+
+
+
 int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   GWEN_SYNCIO_TLS *xio;
   int rv;
@@ -339,9 +404,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   if (lflags & GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS) {
     int trustFileSet=0;
 
-#if 0
-# ifndef OS_WIN32
-    /* try to find OpenSSL cert file */
+#ifndef OS_WIN32
+    /* try to find OpenSSL certificates */
     if (trustFileSet==0) {
       GWEN_STRINGLIST *paths;
       GWEN_BUFFER *nbuf;
@@ -358,12 +422,43 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 	DBG_INFO(GWEN_LOGDOMAIN,
 		 "Using default ca-bundle from [%s]",
 		 GWEN_Buffer_GetStart(nbuf));
-	GWEN_SyncIo_Tls_SetLocalTrustFile(sio, GWEN_Buffer_GetStart(nbuf));
-	trustFileSet=1;
+
+	rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
+						  GWEN_Buffer_GetStart(nbuf),
+						  GNUTLS_X509_FMT_PEM);
+	if (rv<=0) {
+	  DBG_WARN(GWEN_LOGDOMAIN,
+		   "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+		   GWEN_Buffer_GetStart(nbuf), rv, gnutls_strerror(rv));
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN,
+		   "Added %d trusted certs from [%s]", rv, GWEN_Buffer_GetStart(nbuf));
+	  trustFileSet=1;
+	}
+      }
+      GWEN_Buffer_free(nbuf);
+    }
+#endif
+
+
+#ifndef OS_WIN32
+    /* try to find ca-certificates (at least available on Debian systems) */
+    if (trustFileSet==0) {
+      rv=GWEN_Directory_GetPath("/usr/share/ca-certificates", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+      if (rv>=0) {
+	rv=GWEN_SyncIo_Tls_AddCaCertFolder(sio, "/usr/share/ca-certificates");
+	if (rv<=0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	}
+	else {
+	  trustFileSet=1;
+	}
       }
     }
-# endif
+
 #endif
+
 
     if (trustFileSet==0) {
       GWEN_STRINGLIST *paths;
@@ -382,8 +477,19 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 	  DBG_INFO(GWEN_LOGDOMAIN,
 		   "Using default ca-bundle from [%s]",
 		   GWEN_Buffer_GetStart(nbuf));
-	  GWEN_SyncIo_Tls_SetLocalTrustFile(sio, GWEN_Buffer_GetStart(nbuf));
-	  trustFileSet=1;
+	  rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
+						    GWEN_Buffer_GetStart(nbuf),
+						    GNUTLS_X509_FMT_PEM);
+	  if (rv<=0) {
+	    DBG_ERROR(GWEN_LOGDOMAIN,
+		      "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+		      GWEN_Buffer_GetStart(nbuf), rv, gnutls_strerror(rv));
+	  }
+	  else {
+	    DBG_INFO(GWEN_LOGDOMAIN,
+		     "Added %d trusted certs", rv);
+	    trustFileSet=1;
+	  }
 	}
 	GWEN_Buffer_free(nbuf);
       }
