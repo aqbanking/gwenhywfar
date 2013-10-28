@@ -262,7 +262,8 @@ int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder) {
+#if 0
+static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder) {
   GWEN_SYNCIO_TLS *xio;
   int rv;
   int successfullTustFileCount=0;
@@ -317,7 +318,7 @@ int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder) {
 
   return successfullTustFileCount;
 }
-
+#endif
 
 
 
@@ -403,8 +404,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   /* find default trust file if none is selected */
   if (lflags & GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS) {
     int trustFileSet=0;
-
-#ifndef OS_WIN32
+#if 0
+# ifndef OS_WIN32
     /* try to find OpenSSL certificates */
     if (trustFileSet==0) {
       GWEN_STRINGLIST *paths;
@@ -439,10 +440,10 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
       GWEN_Buffer_free(nbuf);
     }
-#endif
+# endif
 
 
-#ifndef OS_WIN32
+# ifndef OS_WIN32
     /* try to find ca-certificates (at least available on Debian systems) */
     if (trustFileSet==0) {
       rv=GWEN_Directory_GetPath("/usr/share/ca-certificates", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
@@ -457,6 +458,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
     }
 
+# endif
 #endif
 
 

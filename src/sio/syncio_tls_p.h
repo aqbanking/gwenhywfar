@@ -53,9 +53,6 @@ struct GWEN_SYNCIO_TLS {
 
 static void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p);
 
-static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder);
-
-
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio);
 
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio);
