@@ -349,6 +349,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   }
 
   /* set default priority */
+#if 0
   rv=gnutls_set_default_priority(xio->session);
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_set_default_priority: %d (%s)", rv, gnutls_strerror(rv));
@@ -368,6 +369,22 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       return GWEN_ERROR_GENERIC;
     }
   }
+#else
+  {
+    const char *errPos=NULL;
+
+    if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3)
+      rv=gnutls_priority_set_direct(xio->session, "VERS-SSL3.0:SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC", &errPos);
+    else
+      rv=gnutls_priority_set_direct(xio->session, "SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC", &errPos);
+    if (rv!=GNUTLS_E_SUCCESS) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct: %d (%s) [%s]",
+		rv, gnutls_strerror(rv), errPos?errPos:"");
+      gnutls_deinit(xio->session);
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+#endif
 
   /* protect against too-many-known-ca problem */
   gnutls_handshake_set_max_packet_length(xio->session, 64*1024);
