@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Tue Oct 02 2002
     copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
@@ -33,7 +30,6 @@
 #ifndef GWEN_SOCKET_P_H
 #define GWEN_SOCKET_P_H
 
-#include <windows.h>
 #include <winsock2.h>
 #include <winerror.h>
 

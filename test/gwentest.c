@@ -36,8 +36,7 @@
 #include <gwenhywfar/smalltresor.h>
 #include <gwenhywfar/sar.h>
 #ifdef OS_WIN32
-# include <windows.h>
-# include <winsock.h>
+# include <winsock2.h>
 # define sleep(x) Sleep(x*1000)
 # define strcasecmp(a, b) strcmp(a, b)
 #else
