@@ -349,7 +349,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   }
 
   /* set default priority */
-#if 0
+#if 0 /* old code */
   rv=gnutls_set_default_priority(xio->session);
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_set_default_priority: %d (%s)", rv, gnutls_strerror(rv));
@@ -369,12 +369,12 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       return GWEN_ERROR_GENERIC;
     }
   }
-#else
+#else /* new code */
   {
     const char *errPos=NULL;
 
     if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3)
-      rv=gnutls_priority_set_direct(xio->session, "VERS-SSL3.0:SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC", &errPos);
+      rv=gnutls_priority_set_direct(xio->session, "+VERS-SSL3.0:SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC", &errPos);
     else
       rv=gnutls_priority_set_direct(xio->session, "SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC", &errPos);
     if (rv!=GNUTLS_E_SUCCESS) {
