@@ -595,7 +595,13 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   gnutls_transport_set_ptr(xio->session, (gnutls_transport_ptr_t)sio);
   gnutls_transport_set_push_function(xio->session, GWEN_SyncIo_Tls_Push);
   gnutls_transport_set_pull_function(xio->session, GWEN_SyncIo_Tls_Pull);
-#if GNUTLS_VERSION_NUMBER < 0x030003
+#if GNUTLS_VERSION_NUMBER < 0x020c00
+  /* This function must be set to 0 in GNUTLS versions < 2.12.0 because we use
+   * custom push/pull functions.
+   * In GNUTLS 2.12.x this is set to 0 and since version 3 this functions is removed
+   * completely.
+   * So we only call this function now for GNUTLS < 2.12.0.
+   */
   gnutls_transport_set_lowat(xio->session, 0);
 #endif
 
