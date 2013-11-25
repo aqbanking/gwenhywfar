@@ -46,6 +46,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
@@ -372,17 +373,51 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 #else /* new code */
   {
     const char *errPos=NULL;
+    const char *ciphers_default;
+    GWEN_BUFFER *ciphers = NULL;
 
-    if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3)
-      rv=gnutls_priority_set_direct(xio->session, "+VERS-SSL3.0:SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC", &errPos);
-    else
-      rv=gnutls_priority_set_direct(xio->session, "SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC", &errPos);
-    if (rv!=GNUTLS_E_SUCCESS) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct: %d (%s) [%s]",
-		rv, gnutls_strerror(rv), errPos?errPos:"");
+    ciphers_default=getenv("GWEN_TLS_CIPHER_PRIORITIES");
+    if (ciphers_default==NULL)
+      ciphers_default = GWEN_TLS_CIPHER_PRIORITIES_DEFAULT;
+    assert(ciphers_default!=NULL);
+
+    ciphers=GWEN_Buffer_new(0, 256, 0, 1);
+    assert(ciphers!=NULL);
+    if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3) {
+      rv=GWEN_Buffer_AppendString(ciphers, "+VERS-SSL3.0:");
+      if (rv!=0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "failed to append SSLv3 prefix to cipher list: %d", rv);
+        GWEN_Buffer_free(ciphers);
+        gnutls_deinit(xio->session);
+        return GWEN_ERROR_GENERIC;
+      }
+    }
+
+    rv=GWEN_Buffer_AppendString(ciphers, ciphers_default);
+    if (rv!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
+      GWEN_Buffer_free(ciphers);
       gnutls_deinit(xio->session);
       return GWEN_ERROR_GENERIC;
     }
+
+    rv=GWEN_Buffer_AppendByte(ciphers, 0);
+    if (rv!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "failed to append zero byte to cipher list: %d", rv);
+      GWEN_Buffer_free(ciphers);
+      gnutls_deinit(xio->session);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    rv=gnutls_priority_set_direct(xio->session, GWEN_Buffer_GetStart(ciphers), &errPos);
+    if (rv!=GNUTLS_E_SUCCESS) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %d (%s) [%s]",
+		GWEN_Buffer_GetStart(ciphers), rv, gnutls_strerror(rv), errPos?errPos:"");
+      GWEN_Buffer_free(ciphers);
+      gnutls_deinit(xio->session);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_Buffer_free(ciphers);
   }
 #endif
 

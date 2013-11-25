@@ -115,6 +115,19 @@ via an SSL connection to "/tmp/read.bin" and append data sent via an SSL
 connection to /tmp/written.bin".
 
 
+"GWEN_TLS_CIPHER_PRIORITIES"
+--------------------------
+
+If this environment variable is set, the SSL code will initialize the GnuTLS
+library with the provided cipher priority list. In case forced SSLv3 is
+enabled, this cipher priority list is prefixed with the string "+VERS-SSL3.0:".
+If this environment variable is unset, the following cipher priority list is
+being used: SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC
+
+For the exact format of the cipher priority list, please consult the GnuTLS
+documentation, section "Priority strings":
+http://gnutls.org/manual/html_node/Priority-Strings.html
+
 
 Registry Keys
 =============
