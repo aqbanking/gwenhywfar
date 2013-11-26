@@ -409,6 +409,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       return GWEN_ERROR_GENERIC;
     }
 
+    DBG_INFO(GWEN_LOGDOMAIN, "Setting cipher priority to [%s]", GWEN_Buffer_GetStart(ciphers));
     rv=gnutls_priority_set_direct(xio->session, GWEN_Buffer_GetStart(ciphers), &errPos);
     if (rv!=GNUTLS_E_SUCCESS) {
       DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %d (%s) [%s]",
