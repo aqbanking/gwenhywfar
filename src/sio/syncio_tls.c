@@ -402,6 +402,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     }
 
     if (lflags & GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Removing unsafe ciphers");
       rv=GWEN_Buffer_AppendString(ciphers, ":"GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE);
       if (rv!=0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "failed to append unsafe ciphers to cipher list: %d", rv);
