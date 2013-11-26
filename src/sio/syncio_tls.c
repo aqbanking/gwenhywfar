@@ -401,16 +401,18 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       return GWEN_ERROR_GENERIC;
     }
 
-    rv=GWEN_Buffer_AppendByte(ciphers, 0);
-    if (rv!=0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "failed to append zero byte to cipher list: %d", rv);
-      GWEN_Buffer_free(ciphers);
-      gnutls_deinit(xio->session);
-      return GWEN_ERROR_GENERIC;
+    if (lflags & GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS) {
+      rv=GWEN_Buffer_AppendString(ciphers, ":"GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE);
+      if (rv!=0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "failed to append unsafe ciphers to cipher list: %d", rv);
+        GWEN_Buffer_free(ciphers);
+        gnutls_deinit(xio->session);
+        return GWEN_ERROR_GENERIC;
+      }
     }
 
     DBG_INFO(GWEN_LOGDOMAIN, "Setting cipher priority to [%s]", GWEN_Buffer_GetStart(ciphers));
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("SSL-Cipher priority list: %s"), GWEN_Buffer_GetStart(ciphers));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("TLS: SSL-Cipher priority list: %s"), GWEN_Buffer_GetStart(ciphers));
     rv=gnutls_priority_set_direct(xio->session, GWEN_Buffer_GetStart(ciphers), &errPos);
     if (rv!=GNUTLS_E_SUCCESS) {
       DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %d (%s) [%s]",
@@ -1147,9 +1149,27 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
 
 
   DBG_NOTICE(GWEN_LOGDOMAIN, "%s", GWEN_Buffer_GetStart(cbuf));
-  GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("SSL-Ciphers negotiated: %s"), GWEN_Buffer_GetStart(sbuf));
+  GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("TLS: SSL-Ciphers negotiated: %s"), GWEN_Buffer_GetStart(sbuf));
   GWEN_Buffer_free(cbuf);
   GWEN_Buffer_free(sbuf);
+
+  /* possibly show warning */
+  switch(gnutls_cipher_get(xio->session)) {
+  case GNUTLS_CIPHER_ARCFOUR_128:
+  case GNUTLS_CIPHER_3DES_CBC:
+  case GNUTLS_CIPHER_AES_128_CBC:
+  case GNUTLS_CIPHER_ARCFOUR_40:
+  case GNUTLS_CIPHER_CAMELLIA_128_CBC:
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("TLS: Warning - The server has chosen unsafe SSL-Ciphers!"));
+    break;
+  case GNUTLS_CIPHER_AES_256_CBC:
+  case GNUTLS_CIPHER_CAMELLIA_256_CBC:
+  case GNUTLS_CIPHER_RC2_40_CBC:
+  case GNUTLS_CIPHER_DES_CBC:
+  case GNUTLS_CIPHER_AES_192_CBC:
+  default:
+    break;
+  }
 }
 
 
