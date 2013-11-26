@@ -31,7 +31,7 @@
 #include <gnutls/gnutls.h>
 
 
-#if 1
+#if 0
 #  if GNUTLS_VERSION_NUMBER < 0x030204
 #    define GWEN_TLS_CIPHER_PRIORITIES_DEFAULT "SECURE256:-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC"
 #  else
