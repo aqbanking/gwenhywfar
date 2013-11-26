@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sun Nov 23 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
@@ -59,6 +56,8 @@
 # define DIRSEP "/"
 #endif
 
+#define DISABLE_DEBUGLOG
+
 
 
 void *GWEN_Directory_HandlePathElement(const char *entry,
@@ -112,7 +111,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
 
   /* check for existence of the file/folder */
   p=GWEN_Buffer_GetStart(buf);
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Checking path \"%s\"", p);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Checking path \"%s\"", p);
   if (stat(p, &st)) {
     exists=0;
     DBG_DEBUG(GWEN_LOGDOMAIN, "stat: %s (%s)", strerror(errno), p);
@@ -125,7 +124,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     }
   }
   else {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Checking for type");
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Checking for type");
     exists=1;
     if (flags & GWEN_PATH_FLAGS_VARIABLE) {
       if (!S_ISREG(st.st_mode)) {
@@ -185,11 +184,11 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
         return 0;
       }
       close(fd);
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Successfully created");
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Successfully created");
     }
     else {
       /* create dir */
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Creating folder \"%s\"", p);
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Creating folder \"%s\"", p);
 
       if (isPublic) {
 	if (GWEN_Directory_CreatePublic(p)) {
@@ -208,9 +207,9 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     }
   } /* if exists */
   else {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Entry \"%s\" exists", p);
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Entry \"%s\" exists", p);
   }
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Returning this: %s", p);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Returning this: %s", p);
   GWEN_Buffer_free(ebuf);
   return buf;
 }
@@ -292,7 +291,7 @@ int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
     GWEN_Buffer_AppendString(tbuf, GWEN_StringListEntry_Data(se));
     GWEN_Buffer_AppendString(tbuf, DIRSEP);
     GWEN_Buffer_AppendString(tbuf, filePath);
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Trying \"%s\"",
 	      GWEN_Buffer_GetStart(tbuf));
     f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
     if (f) {
@@ -330,8 +329,8 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
     GWEN_Buffer_AppendString(tbuf, GWEN_StringListEntry_Data(se));
     GWEN_Buffer_AppendString(tbuf, DIRSEP);
     GWEN_Buffer_AppendString(tbuf, filePath);
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
-	      GWEN_Buffer_GetStart(tbuf));
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Trying \"%s\"",
+                GWEN_Buffer_GetStart(tbuf));
     f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
     if (f) {
       fclose(f);
