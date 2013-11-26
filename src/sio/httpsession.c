@@ -230,6 +230,9 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
 
     if (sess->flags & GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3)
       GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
+
+    if (sess->flags & GWEN_HTTP_SESSION_FLAGS_TLS_ONLY_SAFE_CIPHERS)
+      GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS);
   }
 
 
