@@ -1085,6 +1085,63 @@ ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t l
 
 
 
+void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
+  GWEN_SYNCIO_TLS *xio;
+  const char *s;
+  gnutls_kx_algorithm_t kx;
+  GWEN_BUFFER *cbuf;
+  GWEN_BUFFER *sbuf;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  cbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  sbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* protocol */
+  s=gnutls_protocol_get_name(gnutls_protocol_get_version(xio->session));
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "Protocol: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+  GWEN_Buffer_AppendString(sbuf, "-");
+
+  /* key exchange algorithm */
+  kx=gnutls_kx_get(xio->session);
+  s=gnutls_kx_get_name(kx);
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "Key exchange algorithm: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+  GWEN_Buffer_AppendString(sbuf, "-");
+
+  /* MAC algorithm */
+  s=gnutls_mac_get_name(gnutls_mac_get(xio->session));
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "MAC algorithm: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+
+
+  DBG_NOTICE(GWEN_LOGDOMAIN, "%s", GWEN_Buffer_GetStart(cbuf));
+  GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("SSL-Ciphers negotiated: %s"), GWEN_Buffer_GetStart(sbuf));
+  GWEN_Buffer_free(cbuf);
+  GWEN_Buffer_free(sbuf);
+}
+
+
+
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
@@ -1149,6 +1206,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
     return GWEN_ERROR_SSL;
   }
   else {
+    /* show session info */
+    GWEN_SyncIo_Tls_ShowCipherInfo(sio);
+
     /* check certificate */
     GWEN_SyncIo_SubFlags(sio, GWEN_SYNCIO_TLS_FLAGS_SECURE);
     rv=GWEN_SyncIo_Tls_GetPeerCert(sio);

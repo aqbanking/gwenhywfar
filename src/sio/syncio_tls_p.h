@@ -92,6 +92,7 @@ static ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, s
 void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio);
 int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio);
 
+static void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio);
 
 
 #endif
