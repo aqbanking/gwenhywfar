@@ -410,6 +410,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     }
 
     DBG_INFO(GWEN_LOGDOMAIN, "Setting cipher priority to [%s]", GWEN_Buffer_GetStart(ciphers));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("SSL-Cipher priority list: %s"), GWEN_Buffer_GetStart(ciphers));
     rv=gnutls_priority_set_direct(xio->session, GWEN_Buffer_GetStart(ciphers), &errPos);
     if (rv!=GNUTLS_E_SUCCESS) {
       DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %d (%s) [%s]",
@@ -1109,7 +1110,7 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
 
     GWEN_Buffer_AppendString(sbuf, s);
   }
-  GWEN_Buffer_AppendString(sbuf, "-");
+  GWEN_Buffer_AppendString(sbuf, ":");
 
   /* key exchange algorithm */
   kx=gnutls_kx_get(xio->session);
@@ -1122,6 +1123,17 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
     GWEN_Buffer_AppendString(sbuf, s);
   }
   GWEN_Buffer_AppendString(sbuf, "-");
+
+  /* cipher */
+  s=gnutls_cipher_get_name(gnutls_cipher_get(xio->session));
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "cipher algorithm: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+  GWEN_Buffer_AppendString(sbuf, ":");
 
   /* MAC algorithm */
   s=gnutls_mac_get_name(gnutls_mac_get(xio->session));
