@@ -402,24 +402,38 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 	}
       }
 
-      /* add hardcoded default ciphers */
-      rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_DEFAULT);
-      if (rv!=0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
-	GWEN_Buffer_free(ciphers);
-	gnutls_deinit(xio->session);
-	return GWEN_ERROR_GENERIC;
-      }
-
-      /* add list of disabled ciphers */
-      if (lflags & GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Removing unsafe ciphers");
-	rv=GWEN_Buffer_AppendString(ciphers, ":"GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE);
+      if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_UNSAFE_CIPHERS) {
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("TLS: Warning - Forcing unsafe SSL-Ciphers per user request."));
+	/* add hardcoded 128-Bit-ciphers ciphers */
+	rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_UNSAFE);
 	if (rv!=0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "failed to append unsafe ciphers to cipher list: %d", rv);
+	  DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
 	  GWEN_Buffer_free(ciphers);
 	  gnutls_deinit(xio->session);
 	  return GWEN_ERROR_GENERIC;
+	}
+      }
+      else {
+	/* add hardcoded default ciphers */
+	rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_DEFAULT);
+	if (rv!=0) {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
+	  GWEN_Buffer_free(ciphers);
+	  gnutls_deinit(xio->session);
+	  return GWEN_ERROR_GENERIC;
+	}
+  
+	/* add list of disabled ciphers */
+	if (lflags & GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Removing unsafe ciphers");
+	  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("TLS: Disabling unsafe ciphers per user request."));
+	  rv=GWEN_Buffer_AppendString(ciphers, ":"GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE);
+	  if (rv!=0) {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "failed to append unsafe ciphers to cipher list: %d", rv);
+	    GWEN_Buffer_free(ciphers);
+	    gnutls_deinit(xio->session);
+	    return GWEN_ERROR_GENERIC;
+	  }
 	}
       }
     }

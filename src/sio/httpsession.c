@@ -235,6 +235,11 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
       DBG_INFO(GWEN_LOGDOMAIN, "Only safe ciphers requested");
       GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS);
     }
+
+    if (sess->flags & GWEN_HTTP_SESSION_FLAGS_TLS_FORCE_UNSAFE_CIPHERS) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Only unsafe ciphers requested");
+      GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_UNSAFE_CIPHERS);
+    }
   }
 
 
