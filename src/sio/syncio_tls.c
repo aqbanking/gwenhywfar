@@ -350,7 +350,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   }
 
   /* set default priority */
-#if 0 /* old code */
+#if 1 /* old code */
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Using old SSL preparation code."));
   rv=gnutls_set_default_priority(xio->session);
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_set_default_priority: %d (%s)", rv, gnutls_strerror(rv));
@@ -371,11 +372,12 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     }
   }
 #else /* new code */
-  {
+  { /* TODO: The following does not work with all servers, disabled for now  */
     const char *errPos=NULL;
     const char *ciphers_default;
     GWEN_BUFFER *ciphers = NULL;
 
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Using new SSL preparation code."));
     ciphers=GWEN_Buffer_new(0, 256, 0, 1);
     assert(ciphers!=NULL);
 
