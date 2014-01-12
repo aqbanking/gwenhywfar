@@ -73,7 +73,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node){
 
   p=GWEN_XMLNode_GetProperty(node, "i18n", NULL);
   if (!p) {
-    DBG_WARN(GWEN_LOGDOMAIN, "Plugin has no I18N domain, using GWEN");
+    DBG_NOTICE(GWEN_LOGDOMAIN, "Plugin has no I18N domain, using GWEN");
     p="gwenhywfar";
   }
   pd->langDomain=strdup(p);
