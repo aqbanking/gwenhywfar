@@ -86,8 +86,13 @@
 
 static unsigned int gwen_is_initialized=0;
 static int gwen_binreloc_initialized=0;
+static const char *gwen_app_plugin_dir = NULL;
 
 char *GWEN__get_plugindir (const char *default_dir);
+
+void GWEN_Register_App_Plugin_Dir(const char *app_plugin_dir) {
+  gwen_app_plugin_dir = app_plugin_dir;
+}
 
 int GWEN_Init(void) {
   int err;
@@ -180,6 +185,12 @@ int GWEN_Init(void) {
     /* ---------------------------------------------------------------------
      * $plugindir e.g. "/usr/lib/gwenhywfar/plugins/0" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_PLUGINDIR);
+    /* if available, add application specific plugin folder first */
+    if (gwen_app_plugin_dir)
+      GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
+                               GWEN_PM_LIBNAME,
+			       GWEN_PM_PLUGINDIR,
+                               gwen_app_plugin_dir);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
 				       GWEN_PM_LIBNAME,
 				       GWEN_PM_PLUGINDIR,
