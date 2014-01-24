@@ -73,9 +73,6 @@ extern "C" {
 
 
 GWENHYWFAR_API
-void GWEN_Register_App_Plugin_Dir(const char *app_plugin_dir);
-
-GWENHYWFAR_API
 int GWEN_Init(void);
 
 GWENHYWFAR_API
