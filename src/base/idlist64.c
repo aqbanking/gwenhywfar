@@ -273,7 +273,7 @@ void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt) {
 	   sizeof(GWEN_IDTABLE64*)*(newCount-idl->idTableCount));
     idl->pIdTablePointers=newPtr;
     idl->pIdTablePointers[idl->idTableCount]=idt;
-    idl->lastTableIdx=idl->idTableCount;
+    idl->lastTableIdx=idl->idTableCount;  /* this is the idx of the new table, and it is the last one */
     idl->idTableCount=newCount;
   }
   else {
@@ -678,6 +678,7 @@ int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id) {
     idl->idTableCount=GWEN_IDLIST64_STEP;
   }
 
+  assert(idl->lastTableIdx<idl->idTableCount);
   idt=idl->pIdTablePointers[idl->lastTableIdx];
   if (idt==NULL || GWEN_IdTable64_IsFull(idt)) {
     idt=GWEN_IdTable64_new();
