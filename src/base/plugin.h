@@ -130,6 +130,18 @@ int GWEN_PluginManager_InsertPath(GWEN_PLUGIN_MANAGER *pm,
 				  const char *callingLib,
 				  const char *path);
 
+/** Insert a directory path to lookup plugins from.
+ * The plugin manager must already be registered with Gwen (using
+ * @ref GWEN_PluginManager_Register) otherwise the path can not be
+ * added. This function uses relative paths.
+ */
+GWENHYWFAR_API
+int GWEN_PluginManager_InsertRelPath(GWEN_PLUGIN_MANAGER *pm,
+                                     const char *callingLib,
+                                     const char *relpath,
+				     GWEN_PATHMANAGER_RELMODE rm);
+
+
 GWENHYWFAR_API
 int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
 				  const char *callingLib,

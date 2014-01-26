@@ -242,6 +242,53 @@ int GWEN_PathManager_InsertPath(const char *callingLib,
                                 const char *pathValue);
 
 /**
+ * Same as @ref GWEN_PathManager_InsertPath but the path to insert is given
+ * relative to some directory. The "relmode" argument chooses the base
+ * directory to which the given sub-directory path is appended and the
+ * result is added to this PathManager:
+ *
+ * - RelModeCwd appends the path to the current working directory at
+ * the time of calling. So future changes to the CWD do not affect
+ * this setting.
+ *
+ * - RelModeExe appends the path to the prefix of the installation
+ * location of the calling executable. This function looks up the
+ * current working directory, removes the last component (i.e. the
+ * "/bin/") to get the prefix, then adds the given relative path to
+ * it.
+ *
+ * - RelModeHome appends the path to the return value of
+ * GWEN_Directory_GetHomeDirectory().
+ *
+ * All three variantes will then add the resulting path
+ * to the PathManager. 
+ *
+ * @param callingLib The name of the library that adds this path entry.
+ *
+ * @param destLib The name of the library that this path is supposed to
+ * belong to.
+ *
+ * @param pathName A string identifier for this registered path.
+ *
+ * @param pathValue The actual directory path relative to the prefix
+ * of the current working directory that should be added to this
+ * registered path.
+ *
+ * @param rm The Flag to choose the starting directory to which the
+ * path is appended.
+ *
+ * @return Zero on success, or GWEN_ERROR_NOT_FOUND if the @c
+ * pathName was not found.
+ */
+GWENHYWFAR_API
+int GWEN_PathManager_InsertRelPath(const char *callingLib,
+                                   const char *destLib,
+                                   const char *pathName,
+                                   const char *pathValue,
+                                   GWEN_PATHMANAGER_RELMODE rm);
+
+
+/**
  * Removes a directory path entry from a registered path entry in
  * the global GWEN_PathManager.
  *

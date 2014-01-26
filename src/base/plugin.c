@@ -245,6 +245,20 @@ int GWEN_PluginManager_InsertPath(GWEN_PLUGIN_MANAGER *pm,
 
 
 
+int GWEN_PluginManager_InsertRelPath(GWEN_PLUGIN_MANAGER *pm,
+                                     const char *callingLib,
+                                     const char *relpath,
+                                     GWEN_PATHMANAGER_RELMODE rm) {
+  assert(pm);
+  return GWEN_PathManager_InsertRelPath(callingLib,
+                                        pm->destLib,
+                                        pm->name,
+                                        relpath,
+                                        rm);
+}
+
+
+
 int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
 				  const char *callingLib,
                                   const char *s) {

@@ -282,6 +282,95 @@ int GWEN_PathManager_InsertPath(const char *callingLib,
 
 
 
+int GWEN_PathManager_InsertRelPath(const char *callingLib,
+                                   const char *destLib,
+                                   const char *pathName,
+                                   const char *pathValue,
+                                   GWEN_PATHMANAGER_RELMODE rm) {
+  char cwd[256];
+
+  switch(rm) {
+  case GWEN_PathManager_RelModeCwd: {
+    const char *pcwd;
+
+    pcwd=getcwd(cwd, sizeof(cwd)-1);
+    if (pcwd) {
+      GWEN_BUFFER *buf;
+      int rv;
+
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(buf, cwd);
+      if (*pathValue!=GWEN_DIR_SEPARATOR)
+	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+      GWEN_Buffer_AppendString(buf, pathValue);
+      rv=GWEN_PathManager_InsertPath(callingLib, destLib, pathName,
+                                     GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "getcwd(): %s", strerror(errno));
+      return GWEN_ERROR_IO;
+    }
+    break;
+  }
+
+  case GWEN_PathManager_RelModeExe: {
+    int rv;
+
+    rv=GWEN_Directory_GetPrefixDirectory(cwd, sizeof(cwd)-1);
+    if (rv) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      GWEN_BUFFER *buf;
+
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(buf, cwd);
+      if (*pathValue!=GWEN_DIR_SEPARATOR)
+	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+      GWEN_Buffer_AppendString(buf, pathValue);
+      DBG_INFO(GWEN_LOGDOMAIN,
+	       "Adding path [%s]",
+	       GWEN_Buffer_GetStart(buf));
+      rv=GWEN_PathManager_InsertPath(callingLib, destLib, pathName,
+                                     GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+  }
+
+  case GWEN_PathManager_RelModeHome: {
+    GWEN_BUFFER *buf;
+    int rv;
+
+    rv=GWEN_Directory_GetHomeDirectory(cwd, sizeof(cwd)-1);
+    if (rv) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Could not determine HOME directory (%d)",
+		rv);
+      return rv;
+    }
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buf, cwd);
+    if (*pathValue!=GWEN_DIR_SEPARATOR)
+      GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+    GWEN_Buffer_AppendString(buf, pathValue);
+    rv=GWEN_PathManager_InsertPath(callingLib, destLib, pathName,
+                                   GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+
+  default:
+    DBG_INFO(GWEN_LOGDOMAIN, "Unknown relative mode %d", rm);
+    return GWEN_ERROR_INVALID;
+  }
+}
+
+
+
 int GWEN_PathManager_RemovePath(const char *callingLib,
                                 const char *destLib,
                                 const char *pathName,
