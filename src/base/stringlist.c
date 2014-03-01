@@ -579,28 +579,28 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
   case GWEN_StringList_SortModeNoCase:
     if (ascending)
       qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
-            GWEN_StringList__compar_desc_nocase);
+            GWEN_StringList__compar_asc_nocase);
     else
       qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
-            GWEN_StringList__compar_asc_nocase);
+            GWEN_StringList__compar_desc_nocase);
     break;
 
   case GWEN_StringList_SortModeCase:
     if (ascending)
       qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
-            GWEN_StringList__compar_desc_case);
+            GWEN_StringList__compar_asc_case);
     else
       qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
-            GWEN_StringList__compar_asc_case);
+            GWEN_StringList__compar_desc_case);
     break;
 
   case GWEN_StringList_SortModeInt:
     if (ascending)
       qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
-            GWEN_StringList__compar_desc_int);
+            GWEN_StringList__compar_asc_int);
     else
       qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
-            GWEN_StringList__compar_asc_int);
+            GWEN_StringList__compar_desc_int);
     break;
 
   default:
