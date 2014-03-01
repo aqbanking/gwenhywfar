@@ -130,7 +130,7 @@ const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio) {
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio);
-  assert(sio);
+  assert(xio);
 
   return xio->path;
 }
@@ -159,7 +159,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio) {
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio);
-  assert(sio);
+  assert(xio);
 
   if (xio->fh!=INVALID_HANDLE_VALUE)
     /* already open */
@@ -227,7 +227,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio);
-  assert(sio);
+  assert(xio);
 
   if (xio->fh!=INVALID_HANDLE_VALUE) {
     if (!(GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_DONTCLOSE)) {
@@ -256,7 +256,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio);
-  assert(sio);
+  assert(xio);
 
   if (xio->fh==INVALID_HANDLE_VALUE) {
     DBG_ERROR(GWEN_LOGDOMAIN, "File is not open");
@@ -284,7 +284,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio);
-  assert(sio);
+  assert(xio);
 
   if (xio->fh==INVALID_HANDLE_VALUE) {
     DBG_ERROR(GWEN_LOGDOMAIN, "File is not open");
@@ -311,7 +311,7 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio);
-  assert(sio);
+  assert(xio);
 
   if (xio->fh==INVALID_HANDLE_VALUE) {
     DBG_ERROR(GWEN_LOGDOMAIN, "File is not open");
