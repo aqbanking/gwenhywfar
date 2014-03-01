@@ -104,7 +104,6 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
 
       GWEN_Dialog_List_free(gui->activeDialogs);
       GWEN_ProgressData_Tree_free(gui->progressDataTree);
-      GWEN_Dialog_List_free(gui->activeDialogs);
       free(gui->name);
       free(gui->charSet);
 
