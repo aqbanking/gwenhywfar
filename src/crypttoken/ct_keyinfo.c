@@ -57,6 +57,7 @@ void GWEN_Crypt_Token_KeyInfo_free(GWEN_CRYPT_TOKEN_KEYINFO *ki) {
       ki->exponentData=NULL;
 
       ki->refCount=0;
+      GWEN_LIST_FINI(GWEN_CRYPT_TOKEN_KEYINFO, ki);
       GWEN_FREE_OBJECT(ki);
     }
     else {

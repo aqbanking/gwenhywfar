@@ -76,8 +76,10 @@ GWEN_URL *GWEN_Url_dup(const GWEN_URL *d) {
     st->userName=strdup(d->userName);
   if (d->password)
     st->password=strdup(d->password);
-  if (d->vars)
+  if (d->vars) {
+    GWEN_DB_Group_free(st->vars);
     st->vars=GWEN_DB_Group_dup(d->vars);
+  }
   if (d->url)
     st->url=strdup(d->url);
   return st;

@@ -457,14 +457,14 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
   tbuf=0;
 
   if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) {
-    for (;;) {
-      char *lbuffer=0;
+    char *lbuffer=0;
 
-      lbuffer=(char*)malloc(maxLen);
-      if (!lbuffer) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Not enough memory for %d bytes", maxLen);
-        return GWEN_ERROR_INVALID;
-      }
+    lbuffer=(char*)malloc(maxLen);
+    if (!lbuffer) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Not enough memory for %d bytes", maxLen);
+      return GWEN_ERROR_INVALID;
+    }
+    for (;;) {
       fprintf(stderr, "Input: ");
       rv=GWEN_Gui_CGui__input(gui, flags, lbuffer, minLen, maxLen, guiid);
       if (rv) {
@@ -488,6 +488,7 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
       }
 
     } /* for */
+    free(lbuffer);
   }
   else {
     fprintf(stderr, "Input: ");

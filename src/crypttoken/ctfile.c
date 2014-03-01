@@ -1665,6 +1665,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
       GWEN_MDigest_free(md);
       if (rv<0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+	GWEN_Buffer_free(tbuf);
 	return rv;
       }
     }
@@ -1688,6 +1689,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 	return GWEN_ERROR_VERIFY;
       }
     }
+    GWEN_Buffer_free(tbuf);
   }
   else {
     GWEN_BUFFER *srcBuf;

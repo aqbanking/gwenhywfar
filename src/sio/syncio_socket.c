@@ -227,13 +227,13 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
 			I18N("Connecting to \"%s\""),
 			xio->address);
   rv=GWEN_Socket_Connect(sk, addr);
+  GWEN_InetAddr_free(addr);
   if (rv<0) {
     GWEN_Gui_ProgressLog2(0,
 			  GWEN_LoggerLevel_Error,
 			  I18N("Error connecting to \"%s\": %s"),
 			  xio->address,
 			  strerror(errno));
-    GWEN_InetAddr_free(addr);
     GWEN_Socket_free(sk);
     return rv;
   }

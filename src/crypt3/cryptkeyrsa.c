@@ -269,7 +269,7 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
-  gcry_mpi_t mpi_in;
+  gcry_mpi_t mpi_in=NULL;
   gcry_mpi_t mpi_sigout1;
   gcry_mpi_t mpi_sigout2=NULL;
   size_t nwritten;
@@ -289,7 +289,6 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
   }
 
   /* convert input to MPI */
-  mpi_in=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
   err=gcry_mpi_scan(&mpi_in, GCRYMPI_FMT_USG, pInData, inLen, &nscanned);
   if (err) {
     DBG_INFO(GWEN_LOGDOMAIN, "gcry_mpi_scan(): %s", gcry_strerror(err));
@@ -340,8 +339,8 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
-  gcry_mpi_t mpi_in;
-  gcry_mpi_t mpi_sigin1;
+  gcry_mpi_t mpi_in=NULL;
+  gcry_mpi_t mpi_sigin1=NULL;
   gcry_mpi_t mpi_sigout;
 
   assert(k);
@@ -360,7 +359,6 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
 
 
   /* convert input to MPI */
-  mpi_in=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
   err=gcry_mpi_scan(&mpi_in, GCRYMPI_FMT_USG, pInData, inLen, &nscanned);
   if (err) {
     DBG_INFO(GWEN_LOGDOMAIN, "gcry_mpi_scan(): %s", gcry_strerror(err));
@@ -369,7 +367,6 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
   }
 
   /* convert signature to MPI */
-  mpi_sigin1=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
   err=gcry_mpi_scan(&mpi_sigin1, GCRYMPI_FMT_USG,
 		    pSignatureData, signatureLen,
 		    &nscanned);
@@ -420,7 +417,7 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
-  gcry_mpi_t mpi_in;
+  gcry_mpi_t mpi_in=NULL;
   gcry_mpi_t mpi_out;
   size_t nwritten;
 
@@ -440,7 +437,6 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
 
 
   /* convert input to MPI */
-  mpi_in=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
   err=gcry_mpi_scan(&mpi_in, GCRYMPI_FMT_USG, pInData, inLen, &nscanned);
   if (err) {
     DBG_INFO(GWEN_LOGDOMAIN, "gcry_mpi_scan(): %s", gcry_strerror(err));
@@ -479,7 +475,7 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
-  gcry_mpi_t mpi_in;
+  gcry_mpi_t mpi_in=NULL;
   gcry_mpi_t mpi_out;
   size_t nwritten;
 
@@ -499,7 +495,6 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
 
 
   /* convert input to MPI */
-  mpi_in=gcry_mpi_new(GWEN_Crypt_Key_GetKeySize(k));
   err=gcry_mpi_scan(&mpi_in, GCRYMPI_FMT_USG, pInData, inLen, &nscanned);
   if (err) {
     DBG_INFO(GWEN_LOGDOMAIN, "gcry_mpi_scan(): %s", gcry_strerror(err));
@@ -547,8 +542,7 @@ static int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry
   err=gcry_mpi_scan(&mpi, GCRYMPI_FMT_USG, p, len, &nscanned);
   if (err) {
     DBG_INFO(GWEN_LOGDOMAIN, "gcry_mpi_scan(): %s", gcry_strerror(err));
-    if (mpi)
-      gcry_mpi_release(mpi);
+    gcry_mpi_release(mpi);
     return GWEN_ERROR_GENERIC;
   }
   if (nscanned<1) {

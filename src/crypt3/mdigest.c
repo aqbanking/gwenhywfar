@@ -54,8 +54,10 @@ void GWEN_MDigest_free(GWEN_MDIGEST *md) {
   if (md) {
     assert(md->refCount);
     if (md->refCount==1) {
+      GWEN_INHERIT_FINI(GWEN_MDIGEST, md);
       free(md->pDigest);
       md->refCount=0;
+      GWEN_LIST_FINI(GWEN_MDIGEST, md);
       GWEN_FREE_OBJECT(md);
     }
     else
