@@ -29,7 +29,7 @@ GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize, GWEN_SYNCIO *io) {
 
   assert(bsize);
 
-  fb=(GWEN_FAST_BUFFER*) malloc(sizeof(GWEN_FAST_BUFFER)+bsize);
+  fb=(GWEN_FAST_BUFFER*) GWEN_Memory_malloc(sizeof(GWEN_FAST_BUFFER)+bsize);
   assert(fb);
   memset(fb, 0, sizeof(GWEN_FAST_BUFFER)+bsize);
 
@@ -44,7 +44,7 @@ GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize, GWEN_SYNCIO *io) {
 
 void GWEN_FastBuffer_free(GWEN_FAST_BUFFER *fb) {
   if (fb) {
-    GWEN_FREE_OBJECT(fb);
+    GWEN_Memory_dealloc(fb);
   }
 }
 
