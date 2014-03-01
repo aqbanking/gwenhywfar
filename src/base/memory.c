@@ -455,6 +455,8 @@ void *GWEN_Memory_realloc(void *oldp, size_t nsize) {
   }
 
   p=GWEN_Memory_malloc(nsize);
+  if (rsize>nsize)
+    rsize=nsize;
   memmove(p, oldp, rsize);
   GWEN_Memory_dealloc(oldp);
   return p;
