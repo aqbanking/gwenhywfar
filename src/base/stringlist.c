@@ -217,6 +217,7 @@ void GWEN_StringList_Clear(GWEN_STRINGLIST *sl){
   assert(sl);
   se=sl->first;
   sl->first=0;
+  sl->count=0;
   while (se) {
     next=se->next;
     GWEN_StringListEntry_free(se);
@@ -299,6 +300,7 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
   se=GWEN_StringListEntry_new(s, take);
   se->next=sl->first;
   sl->first=se;
+  sl->count++;
   return 1;
 }
 
@@ -334,7 +336,6 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
 	if (sl->ignoreRefCount)
 	  GWEN_StringList_RemoveEntry(sl, se);
 	else {
-	  assert(se->refCount);
 	  if (se->refCount==0)
 	    GWEN_StringList_RemoveEntry(sl, se);
 	}
@@ -524,8 +525,13 @@ static int GWEN_StringList__compar_desc_case(const void *a, const void *b) {
 static int GWEN_StringList__compar_asc_int(const void *a, const void *b) {
   const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
-  if (se1 && se2 && se1->data && se2->data)
-    return (atoi(se1->data)<atoi(se2->data));
+  if (se1 && se2 && se1->data && se2->data) {
+    int i1, i2;
+
+    i1=atoi(se1->data);
+    i2=atoi(se2->data);
+    return (i1>i2) - (i1<i2);
+  }
   else
     return 0;
 }
@@ -533,8 +539,13 @@ static int GWEN_StringList__compar_asc_int(const void *a, const void *b) {
 static int GWEN_StringList__compar_desc_int(const void *a, const void *b) {
   const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
-  if (se1 && se2 && se1->data && se2->data)
-    return (atoi(se1->data)>atoi(se2->data));
+  if (se1 && se2 && se1->data && se2->data) {
+    int i1, i2;
+
+    i1=atoi(se1->data);
+    i2=atoi(se2->data);
+    return (i2>i1) - (i2<i1);
+  }
   else
     return 0;
 }
@@ -548,7 +559,7 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
   GWEN_STRINGLISTENTRY *sentry;
   GWEN_STRINGLISTENTRY **psentry;
 
-  if (l->count<1)
+  if (l->count<2)
     return;
 
   /* sort entries into a linear pointer list */
@@ -558,12 +569,8 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
   sentry=l->first;
   psentry=tmpEntries;
   while(sentry) {
-    GWEN_STRINGLISTENTRY *nsentry;
-
     *(psentry++)=sentry;
-    nsentry=sentry->next;
-    sentry->next=0;
-    sentry=nsentry;
+    sentry=sentry->next;
   } /* while */
   *psentry=0;
 
@@ -604,7 +611,6 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
   psentry=tmpEntries;
   sentry=0;
   while(*psentry) {
-    (*psentry)->next=0;
     if (sentry)
       sentry->next=*psentry;
     else
@@ -612,6 +618,7 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
     sentry=*psentry;
     psentry++;
   } /* while */
+  sentry->next=NULL;
 
   free(tmpEntries);
 
