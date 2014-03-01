@@ -30,11 +30,6 @@
 #define DISABLE_DEBUGLOG
 
 
-#ifndef ICONV_CONST
-# define ICONV_CONST
-#endif
-
-
 #include "cgui_p.h"
 #include "i18n_l.h"
 
@@ -61,6 +56,12 @@
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
+#endif
+#ifdef HAVE_ICONV_H
+# include <iconv.h>
+#endif
+#ifndef ICONV_CONST
+# define ICONV_CONST
 #endif
 
 
@@ -235,9 +236,33 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 #endif
   int chr;
   unsigned int pos;
+  char *pOutbuf;
   int rv;
 #if HAVE_DECL_SIGPROCMASK
   sigset_t snew, sold;
+#endif
+#ifdef HAVE_ICONV
+#define INBUFSIZE 6
+  char inbuf[INBUFSIZE];
+  iconv_t ic;
+  size_t inLeft;
+  size_t outLeft;
+  size_t done;
+  ICONV_CONST char *pInbuf;
+  char *nextchr;
+
+  nextchr=(char *)GWEN_Gui_GetCharSet(gui);
+  if (!nextchr)
+    nextchr="UTF-8";
+  ic=iconv_open("UTF-8", nextchr);
+  if (ic==(iconv_t)-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Cannot convert from \"%s\" to \"UTF-8\", %s",
+              nextchr, strerror(errno));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  pInbuf=inbuf;
+  outLeft=maxLen;
 #endif
 
   /* if possible, disable echo from stdin to stderr during password
@@ -266,14 +291,58 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 #endif
 
   pos=0;
-  rv=0;
+  pOutbuf=buffer;
   for (;;) {
+#ifdef HAVE_ICONV
+    nextchr=inbuf;
+    pInbuf=inbuf;
+    inLeft=0;
+    outLeft=maxLen-pos;
+    do {
+      chr=getchar();
+      if (chr==EOF)
+        break;
+      *nextchr++=chr;
+      inLeft++;
+      done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
+    } while (done==(size_t)-1 && errno==EINVAL &&
+             nextchr-inbuf<INBUFSIZE);
+
+    if (chr==EOF) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected EOF while reading from stdin");
+      rv=GWEN_ERROR_GENERIC;
+      break;
+    }
+    else if (done==(size_t)-1) {
+      if (errno==E2BIG || errno==EILSEQ) {
+        GWEN_Gui_StdPrintf(gui, stderr, "\007");
+        continue;
+      }
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unrecoverable error in conversion: %s",
+                strerror(errno));
+      rv=GWEN_ERROR_GENERIC;
+      break;
+    }
+#else /* HAVE_ICONV */
     chr=getchar();
+    if (chr!=EOF)
+      *pOutbuf++=chr;
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected EOF while reading from stdin");
+      rv=GWEN_ERROR_GENERIC;
+      break;
+    }
+#endif /* HAVE_ICONV */
+
     if (chr==GWEN_GUI_CGUI_CHAR_DELETE) {
       if (pos) {
-        pos--;
+        /* Look for the start of the previous UTF-8 character */
+        do
+          pos--;
+        while ((buffer[pos]&0xC0)==0x80 && pos);
         GWEN_Gui_StdPrintf(gui, stderr, "%c %c", 8, 8);
       }
+      pOutbuf=buffer+pos;
     }
     else if (chr==GWEN_GUI_CGUI_CHAR_ENTER) {
       if (minLen && pos<minLen) {
@@ -299,6 +368,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 	else {
 	  /* too few characters */
 	  GWEN_Gui_StdPrintf(gui, stderr, "\007");
+	  pOutbuf=buffer+pos;
 	}
       }
       else {
@@ -309,7 +379,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
       }
     }
     else {
-      if (pos<maxLen) {
+      if (pOutbuf-buffer<maxLen) {
         if (chr==GWEN_GUI_CGUI_CHAR_ABORT) {
           DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
           rv=GWEN_ERROR_USER_ABORTED;
@@ -320,20 +390,27 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
               !isdigit(chr)) {
             /* bad character */
             GWEN_Gui_StdPrintf(gui, stderr, "\007");
+            pOutbuf=buffer+pos;
           }
           else {
-            if (flags & GWEN_GUI_INPUT_FLAGS_SHOW)
-              GWEN_Gui_StdPrintf(gui, stderr, "%c", chr);
+            if (flags & GWEN_GUI_INPUT_FLAGS_SHOW) {
+              *pOutbuf=0;
+              GWEN_Gui_StdPrintf(gui, stderr, "%s", buffer+pos);
+            }
             else
+#ifndef HAVE_ICONV
+              /* Do not print stars for continuation bytes */
+              if ((chr&0xC0)!=0x80)
+#endif
               GWEN_Gui_StdPrintf(gui, stderr, "*");
-            buffer[pos++]=chr;
-            buffer[pos]=0;
+            pos=pOutbuf-buffer;
           }
         }
       }
       else {
         /* buffer full */
         GWEN_Gui_StdPrintf(gui, stderr, "\007");
+        pOutbuf=buffer+pos;
       }
     }
   } /* for */
@@ -348,6 +425,9 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 
 #if HAVE_DECL_SIGPROCMASK
   sigprocmask(SIG_BLOCK, &sold, 0);
+#endif
+#ifdef HAVE_ICONV
+  iconv_close(ic);
 #endif
   return rv;
 }
