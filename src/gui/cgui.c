@@ -378,40 +378,36 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
         break;
       }
     }
-    else {
-      if (pOutbuf-buffer<maxLen) {
-        if (chr==GWEN_GUI_CGUI_CHAR_ABORT) {
-          DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
-          rv=GWEN_ERROR_USER_ABORTED;
-          break;
-        }
-        else {
-          if ((flags & GWEN_GUI_INPUT_FLAGS_NUMERIC) &&
-              !isdigit(chr)) {
-            /* bad character */
-            GWEN_Gui_StdPrintf(gui, stderr, "\007");
-            pOutbuf=buffer+pos;
-          }
-          else {
-            if (flags & GWEN_GUI_INPUT_FLAGS_SHOW) {
-              *pOutbuf=0;
-              GWEN_Gui_StdPrintf(gui, stderr, "%s", buffer+pos);
-            }
-            else
-#ifndef HAVE_ICONV
-              /* Do not print stars for continuation bytes */
-              if ((chr&0xC0)!=0x80)
-#endif
-              GWEN_Gui_StdPrintf(gui, stderr, "*");
-            pos=pOutbuf-buffer;
-          }
-        }
-      }
-      else {
-        /* buffer full */
+    else if (chr==GWEN_GUI_CGUI_CHAR_ABORT) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      rv=GWEN_ERROR_USER_ABORTED;
+      break;
+    }
+    else if (pOutbuf-buffer<maxLen) {
+      if ((flags & GWEN_GUI_INPUT_FLAGS_NUMERIC) &&
+          !isdigit(chr)) {
+        /* bad character */
         GWEN_Gui_StdPrintf(gui, stderr, "\007");
         pOutbuf=buffer+pos;
       }
+      else {
+        if (flags & GWEN_GUI_INPUT_FLAGS_SHOW) {
+          *pOutbuf=0;
+          GWEN_Gui_StdPrintf(gui, stderr, "%s", buffer+pos);
+        }
+        else
+#ifndef HAVE_ICONV
+          /* Do not print stars for continuation bytes */
+          if ((chr&0xC0)!=0x80)
+#endif
+            GWEN_Gui_StdPrintf(gui, stderr, "*");
+        pos=pOutbuf-buffer;
+      }
+    }
+    else {
+      /* buffer full */
+      GWEN_Gui_StdPrintf(gui, stderr, "\007");
+      pOutbuf=buffer+pos;
     }
   } /* for */
 
