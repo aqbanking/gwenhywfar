@@ -230,6 +230,20 @@ int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
 
 
 
+int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui, const char *text, int len, GWEN_BUFFER *tbuf) {
+  int rv;
+
+  rv=GWEN_Gui_ConvertString(text, len, tbuf, "UTF-8", gui->charSet);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
 		       const char *fmt, ...) {
   va_list args;
@@ -308,7 +322,7 @@ int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf) {
 
 
 
-void GWEN_Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf) {
+void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf) {
   size_t len;
   const char *p;
 

@@ -39,6 +39,16 @@ GWENHYWFAR_API
 void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name);
 
 
+
+/**
+ * This function converts the given text from UTF-8 to the character
+ * set selected by @ref GWEN_Gui_SetCharSet before writing it to the
+ * given buffer.
+ */
+GWENHYWFAR_API
+int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui, const char *text, int len, GWEN_BUFFER *tbuf);
+
+
 /**
  * This function converts the given text from UTF-8 to the character
  * set selected by @ref GWEN_Gui_SetCharSet before writing it to the
@@ -55,7 +65,7 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
  * afterwards.
  */
 GWENHYWFAR_API
-void GWEN_Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf);
+void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf);
 
 
 

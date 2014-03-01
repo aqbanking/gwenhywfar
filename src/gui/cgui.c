@@ -368,7 +368,7 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
   assert(gui);
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Gui_GetRawText(text, tbuf);
+  GWEN_Gui_GetRawText(gui, text, tbuf);
 
   if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
     if (GWEN_GUI_MSG_FLAGS_SEVERITY_IS_DANGEROUS(flags)) {
@@ -446,7 +446,7 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
 
   assert(gui);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Gui_GetRawText(text, tbuf);
+  GWEN_Gui_GetRawText(gui, text, tbuf);
 
   GWEN_Gui_StdPrintf(gui, stderr, "===== %s =====\n", title);
   GWEN_Gui_StdPrintf(gui, stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));
@@ -512,7 +512,7 @@ uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
   assert(cgui);
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Gui_GetRawText(text, tbuf);
+  GWEN_Gui_GetRawText(gui, text, tbuf);
 
   GWEN_Gui_StdPrintf(gui, stderr, "===== %s =====\n", title);
   GWEN_Gui_StdPrintf(gui, stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));
