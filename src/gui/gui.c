@@ -57,6 +57,11 @@
 #include <errno.h>
 #include <ctype.h>
 
+#if defined (HAVE_LANGINFO_H)
+# include <langinfo.h>
+#elif defined (HAVE_LOCALE_H)
+# include <locale.h>
+#endif
 #ifdef HAVE_ICONV_H
 # include <iconv.h>
 #endif
@@ -85,6 +90,7 @@ GWEN_GUI *GWEN_Gui_new(void) {
 
   gui->progressDataTree=GWEN_ProgressData_Tree_new();
   gui->activeDialogs=GWEN_Dialog_List_new();
+  GWEN_Gui_SetCharSet(gui, "");
 
   gui->dbPasswords=GWEN_DB_Group_new("passwords");
   gui->badPasswords=GWEN_StringList_new();
@@ -159,76 +165,152 @@ GWEN_GUI *GWEN_Gui_GetGui(void) {
 
 
 
-int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui, const char *text, int len, GWEN_BUFFER *tbuf) {
-  assert(gui);
-  assert(len);
+int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
+			   const char *fromCs, const char *toCs) {
+  int rv=0;
+  iconv_t ic;
 
-  if (gui->charSet) {
-    if (strcasecmp(gui->charSet, "utf-8")!=0) {
-#ifndef HAVE_ICONV
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "iconv not available, can not convert to \"%s\"",
-               gui->charSet);
-#else
-      iconv_t ic;
+  assert(tbuf);
 
-      ic=iconv_open(gui->charSet, "UTF-8");
-      if (ic==((iconv_t)-1)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" not available",
-                  gui->charSet);
+  ic=iconv_open(toCs, fromCs);
+  if (ic==(iconv_t)-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Cannot convert from \"%s\" to \"%s\", %s",
+	      fromCs, toCs, strerror(errno));
+    rv=GWEN_ERROR_GENERIC;
+  }
+  else {
+    /* Some systems have iconv in libc, some have it in libiconv
+       (OSF/1 and those with the standalone portable GNU libiconv
+       installed). Check which one is available. The define
+       ICONV_CONST will be "" or "const" accordingly. */
+    ICONV_CONST char *pInbuf;
+    char *pOutbuf;
+    size_t inLeft;
+    size_t outLeft;
+    size_t done;
+    size_t space;
+
+    /* convert */
+    pInbuf=(char*)text;
+    inLeft=len;
+    outLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
+    space=outLeft;
+  retry:
+    pOutbuf=GWEN_Buffer_GetPosPointer(tbuf);
+    done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
+    GWEN_Buffer_SetPos(tbuf, space-outLeft);
+    GWEN_Buffer_AdjustUsedBytes(tbuf);
+    if (done==(size_t)-1) {
+      if (errno==E2BIG) {
+        uint32_t room;
+
+        room=2*inLeft;
+        if (room<=outLeft)
+          room+=outLeft;
+        GWEN_Buffer_AllocRoom(tbuf, room);
+        /* How much additional room has actually been allocated? */
+        room=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf)-outLeft;
+        outLeft+=room;
+        space+=room;
+        goto retry;
       }
-      else {
-        char *outbuf;
-        char *pOutbuf;
-        /* Some systems have iconv in libc, some have it in libiconv
-         (OSF/1 and those with the standalone portable GNU libiconv
-         installed). Check which one is available. The define
-         ICONV_CONST will be "" or "const" accordingly. */
-        ICONV_CONST char *pInbuf;
-        size_t inLeft;
-        size_t outLeft;
-        size_t done;
-        size_t space;
 
-        /* convert */
-        pInbuf=(char*)text;
-
-        outLeft=len*2;
-        space=outLeft;
-        outbuf=(char*)malloc(outLeft);
-        assert(outbuf);
-
-        inLeft=len;
-        pInbuf=(char*)text;
-        pOutbuf=outbuf;
-        done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
-        if (done==(size_t)-1) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Error in conversion: %s (%d)",
-                    strerror(errno), errno);
-          free(outbuf);
-          iconv_close(ic);
-          return GWEN_ERROR_GENERIC;
-        }
-
-        GWEN_Buffer_AppendBytes(tbuf, outbuf, space-outLeft);
-        free(outbuf);
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Conversion done.");
-        iconv_close(ic);
-        return 0;
-      }
-#endif
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error in conversion: %s (%d)",
+		strerror(errno), errno);
+      rv=GWEN_ERROR_GENERIC;
     }
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Conversion done.");
+    }
+    iconv_close(ic);
   }
 
-  GWEN_Buffer_AppendBytes(tbuf, text, len);
-  return 0;
+  return rv;
 }
 
 
 
-void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf) {
-  const char *p;
+int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
+		       const char *fmt, ...) {
+  va_list args;
   int rv;
+
+  assert(gui);
+
+  va_start(args, fmt);
+#ifndef HAVE_ICONV
+  rv=vfprintf(stream, fmt, args);
+#else
+  if (!gui->charSet)
+    rv=vfprintf(stderr, fmt, args);
+  else {
+    GWEN_BUFFER *tbuf;
+    GWEN_BUFFER *outbuf;
+    size_t space;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    space=vsnprintf(GWEN_Buffer_GetStart(tbuf), 256, fmt, args);
+    if (space>=256) {
+      GWEN_Buffer_AllocRoom(tbuf, space);
+      va_end(args);
+      va_start(args, fmt);
+      vsprintf(GWEN_Buffer_GetStart(tbuf), fmt, args);
+    }
+    GWEN_Buffer_IncrementPos(tbuf, space);
+    GWEN_Buffer_AdjustUsedBytes(tbuf);
+
+    outbuf=GWEN_Buffer_new(0, 2*space, 0, 1);
+    rv=GWEN_Gui_ConvertString(GWEN_Buffer_GetStart(tbuf), space,
+			      outbuf, "UTF-8", gui->charSet);
+    if (rv) {
+      GWEN_Buffer_free(outbuf);
+      outbuf=tbuf;
+    }
+    else
+      GWEN_Buffer_free(tbuf);
+
+    /* let's try to return the same value as fprintf() would */
+    if (fputs(GWEN_Buffer_GetStart(outbuf), stderr)!=EOF)
+      rv=space;
+    else
+      rv=EOF;
+
+    GWEN_Buffer_free(outbuf);
+  }
+#endif
+
+  va_end(args);
+  return rv;
+}
+
+
+
+int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf) {
+#ifdef HAVE_ICONV
+  if (gwenhywfar_gui) {
+    const char *fromCs;
+
+    if (gwenhywfar_gui->charSet)
+      fromCs=gwenhywfar_gui->charSet;
+    else
+      /* UTF-8 to UTF-8 conversion does not seem to make much sense, but
+       * it is a convenient way to check whether the input text actually
+       * is properly UTF-8 encoded.
+       */
+      fromCs="UTF-8";
+
+    return GWEN_Gui_ConvertString(text, strlen(text), tbuf, fromCs, "UTF-8");
+  }
+  else
+#endif /* HAVE_ICONV */
+    return GWEN_Buffer_AppendString(tbuf, text);
+}
+
+
+
+void GWEN_Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf) {
+  size_t len;
+  const char *p;
 
   assert(text);
   p=text;
@@ -253,17 +335,10 @@ void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbu
   } /* while */
 
   if (p)
-    rv=GWEN_Gui_ConvertFromUtf8(gui, text, (p-text), tbuf);
+    len=p-text;
   else
-    rv=GWEN_Gui_ConvertFromUtf8(gui, text, strlen(text), tbuf);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error converting text");
-    GWEN_Buffer_Reset(tbuf);
-    if (p)
-      GWEN_Buffer_AppendBytes(tbuf, text, (p-text));
-    else
-      GWEN_Buffer_AppendString(tbuf, text);
-  }
+    len=strlen(text);
+  GWEN_Buffer_AppendBytes(tbuf, text, len);
 }
 
 
@@ -617,13 +692,62 @@ const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui) {
 
 
 void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s) {
-  if (gui) {
-    free(gui->charSet);
-    if (s)
-      gui->charSet=strdup(s);
-    else
-      gui->charSet=NULL;
+  char *cs;
+
+  assert(gui);
+
+  if (!s || strcasecmp(s, "utf-8")==0)
+    cs=NULL;
+  else if (s[0]=='\0') {
+    size_t len;
+    char *p;
+#if !defined(HAVE_LANGINFO_H) && !defined(HAVE_SETLOCALE)
+    cs=s;
+#else
+# if defined(HAVE_LANGINFO_H)
+    cs=nl_langinfo(CODESET);
+# elif defined(HAVE_SETLOCALE)
+    cs=setlocale(LC_CTYPE, NULL);
+    cs=strchr(cs, '.');
+# endif
+    if (strcasecmp(cs, "utf-8")==0)
+      cs=NULL;
+    else {
+#endif
+      /* Let iconv apply transliteration where necessary */
+      len=strlen(cs)+11;
+      p=(char *)malloc(len);
+      assert(p);
+      sprintf(p, "%s//TRANSLIT", cs);
+      cs=p;
+#if defined(HAVE_LANGINFO_H) || defined(HAVE_SETLOCALE)
+    }
+#endif
   }
+  else
+    cs=strdup(s);
+
+  if (cs) {
+#ifndef HAVE_ICONV
+    DBG_INFO(GWEN_LOGDOMAIN,
+	     "iconv not available, can not convert to \"%s\"", cs);
+  }
+#else
+    iconv_t ic;
+
+    ic=iconv_open(cs, "UTF-8");
+    if (ic==((iconv_t)-1) && errno==EINVAL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" not available", cs);
+      iconv_close(ic);
+      free(cs);
+      return;
+    }
+    iconv_close(ic);
+  }
+
+  free(gui->charSet);
+  gui->charSet=(char *)cs;
+#endif
 }
 
 

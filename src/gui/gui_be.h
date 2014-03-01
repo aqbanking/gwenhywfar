@@ -40,21 +40,22 @@ void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name);
 
 
 /**
- * This function converts the given text from UTF-8 to the character set selected
- * by @ref GWEN_Gui_SetCharSet.
+ * This function converts the given text from UTF-8 to the character
+ * set selected by @ref GWEN_Gui_SetCharSet before writing it to the
+ * specified stream. It is intended to be used instead of fprintf()
+ * for all output to the terminal (stdout, stderr).
  */
 GWENHYWFAR_API
-int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui,
-                             const char *text,
-                             int len,
-                             GWEN_BUFFER *tbuf);
+int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
+		       const char *fmt, ...) GWEN_FORMAT(printf, 3, 4);
 
 /**
- * This function extracts the raw text (e.g. the part outside a HTML element) and converts it
- * from UTF-8 to the character set selected by @ref GWEN_Gui_SetCharSet.
+ * This function extracts the raw text (i.e. the part outside a HTML
+ * element) so it can, for example, be fed to @ref GWEN_Gui_StdPrintf
+ * afterwards.
  */
 GWENHYWFAR_API
-void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf);
+void GWEN_Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf);
 
 
 

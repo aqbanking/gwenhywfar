@@ -29,7 +29,7 @@
 #include <gwenhywfar/gui_be.h>
 
 
-
+int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
 
 #endif
 

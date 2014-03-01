@@ -148,6 +148,14 @@
 #endif /* __GNUC__ */
 
 
+#ifdef __GNUC__
+# define GWEN_FORMAT(fmt, pos, argstart)	\
+	__attribute__ ((format (fmt, pos, argstart)))
+#else
+# define GWEN_FORMAT
+#endif
+
+
 #define GWEN_TIMEOUT_NONE    (0)
 #define GWEN_TIMEOUT_FOREVER (-1)
 
