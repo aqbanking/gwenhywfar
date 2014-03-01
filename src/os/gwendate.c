@@ -642,6 +642,11 @@ GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt) {
   case 11:
     day=30;
     break;
+
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid month (%d)", GWEN_Date_GetMonth(dt));
+    abort();
+    break;
   }
   return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), day);
 }
