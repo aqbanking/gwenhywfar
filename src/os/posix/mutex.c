@@ -48,6 +48,9 @@ GWEN_MUTEX *GWEN_Mutex_new(void) {
 
 
 void GWEN_Mutex_free(GWEN_UNUSED GWEN_MUTEX *mtx) {
+  if (mtx) {
+    pthread_mutex_destroy(&(mtx->mutex));
+  }
 }
 
 
