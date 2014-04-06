@@ -152,7 +152,7 @@
 # define GWEN_FORMAT(fmt, pos, argstart)	\
 	__attribute__ ((format (fmt, pos, argstart)))
 #else
-# define GWEN_FORMAT
+# define GWEN_FORMAT(fmt, pos, argstart)
 #endif
 
 
