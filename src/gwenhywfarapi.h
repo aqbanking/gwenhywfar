@@ -148,7 +148,7 @@
 #endif /* __GNUC__ */
 
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__MINGW32__)
 # define GWEN_FORMAT(fmt, pos, argstart)	\
 	__attribute__ ((format (fmt, pos, argstart)))
 #else
