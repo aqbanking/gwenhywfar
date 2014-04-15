@@ -656,7 +656,7 @@ GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt) {
 GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt) {
   int m;
   
-  m=(GWEN_Date_GetMonth(dt)-1)>>2;
+  m=GWEN_Date_GetMonth(dt)>>2;
   switch(m) {
   case 0:
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 1, 1);
@@ -676,7 +676,7 @@ GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt) {
 GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt) {
   int m;
   
-  m=(GWEN_Date_GetMonth(dt)-1)>>2;
+  m=GWEN_Date_GetMonth(dt)>>2;
   switch(m) {
   case 0:
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 3, 31);
