@@ -26,13 +26,24 @@ extern "C" {
  */
 GWENHYWFAR_API
 GWEN_URL *GWEN_Url_fromString(const char *str);
+
 GWENHYWFAR_API
 int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf);
 
 GWENHYWFAR_API
 GWEN_URL *GWEN_Url_fromCommandString(const char *str);
+
 GWENHYWFAR_API
 int GWEN_Url_toCommandString(const GWEN_URL *url, GWEN_BUFFER *buf);
+
+
+/**
+ * Creates a short string for user interface output. This means no password or
+ * user id is shown, and no URL vars either.
+ */
+GWENHYWFAR_API
+void GWEN_Url_toUiShortString(const GWEN_URL *url, GWEN_BUFFER *buf);
+
 
 #ifdef __cplusplus
 } /* __cplusplus */

@@ -277,6 +277,32 @@ int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
 
 
 
+void GWEN_Url_toUiShortString(const GWEN_URL *url, GWEN_BUFFER *buf) {
+  GWEN_DB_NODE *dbV;
+
+  assert(url);
+
+  if (url->protocol) {
+    GWEN_Buffer_AppendString(buf, url->protocol);
+    GWEN_Buffer_AppendString(buf, "://");
+  }
+  if (url->server) {
+    GWEN_Buffer_AppendString(buf, url->server);
+  }
+  if (url->port) {
+    char numbuf[32];
+
+    snprintf(numbuf, sizeof(numbuf), "%d", url->port);
+    GWEN_Buffer_AppendString(buf, ":");
+    GWEN_Buffer_AppendString(buf, numbuf);
+  }
+  if (url->path) {
+    GWEN_Buffer_AppendString(buf, url->path);
+  }
+}
+
+
+
 GWEN_URL *GWEN_Url_fromCommandString(const char *str) {
   GWEN_URL *url;
   GWEN_DB_NODE *dbVars;
