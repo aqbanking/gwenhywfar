@@ -48,14 +48,14 @@ int getKeyDataFromTextOpenSSL(GWEN_GUI *gui,
 			      const char *password,
 			      unsigned char *buffer,
 			      unsigned int bsize) {
-  des_cblock left, right;
+  DES_cblock left, right;
   int i;
 
   if (bsize!=16) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer must be exact 16 bytes in length");
     return -1;
   }
-  des_string_to_2keys(password, &left, &right);
+  DES_string_to_2keys(password, &left, &right);
   for (i=0; i<8; i++)
     *(buffer++)=left[i];
   for (i=0; i<8; i++)
