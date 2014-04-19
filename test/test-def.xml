@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<gwen-parser-def>
+
+  <element elementType="element" name="document">
+
+    <element elementType="element" name="address"   dbname="address" maxOccurs="-1">
+
+      <element elementType="element" name="name">
+        <element elementType="data" dbname="name"/>
+      </element>
+
+
+      <element elementType="choice" maxOccurs="-1">
+
+        <element elementType="element" name="street" >
+          <element elementType="data" dbname="street"/>
+        </element>
+
+        <element elementType="element" name="street2" >
+          <element elementType="data" dbname="street"/>
+        </element>
+
+        <element elementType="element" name="street3" >
+          <element elementType="data" dbname="street"/>
+        </element>
+
+      </element>
+
+
+      <element elementType="element" name="town">
+        <element elementType="data" dbname="town"/>
+      </element>
+
+      <element elementType="element" name="zip">
+        <element elementType="data" dbname="zip"/>
+      </element>
+
+      <element elementType="element" name="country">
+        <element elementType="data" dbname="country"/>
+      </element>
+
+    </element>
+
+  </element>
+
+</gwen-parser-def>

@@ -8,7 +8,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 
 AM_CFLAGS=$(visibility_cflags)
 
-SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar
+SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar gparser
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \
@@ -56,6 +56,7 @@ libgwenhywfar_la_LIBADD=\
   cryptmsg/libcryptmsg.la \
   sio/libsio.la \
   os/libos.la \
+  gparser/libgparser.la \
   parser/libparser.la \
   html/libgwenhtml.la \
   gui/libgui.la \

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document>
+  <address>
+    <name>Heinz Ketchuo</name>
+    <street2>123 FirstStreet</street2>
+    <street>123 FirstStreet</street>
+    <town>Audacity</town>
+    <zip>12345</zip>
+    <country>DryLand</country>
+  </address>
+
+  <address>
+    <name>Peter Pan</name>
+    <street>123 SecondStreet</street>
+    <town>Panama</town>
+    <zip>12345</zip>
+    <country>Panamerica</country>
+  </address>
+
+</document>

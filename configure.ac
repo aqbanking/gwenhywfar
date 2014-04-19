@@ -1326,6 +1326,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/Makefile
                  src/os/windows/system.h
                  src/parser/Makefile
+                 src/gparser/Makefile
                  src/sar/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile
@@ -1375,7 +1376,7 @@ AC_OUTPUT
 # create header directory, make symlinks
 #
 HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/sio src/os src/os/${GWEN_OS} src/gui src/html"
-HEADER_DIRS="${HEADER_DIRS} src/parser src/sar"
+HEADER_DIRS="${HEADER_DIRS} src/parser src/gparser src/sar"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 

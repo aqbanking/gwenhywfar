@@ -1,0 +1,144 @@
+<?xml?>
+
+<tm2>
+  <type id="GWEN_PARSER_ELEMENT" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>GWEN_PARSER_ELEMENT</identifier>
+      <prefix>GWEN_ParserElement</prefix>
+      
+      <flags>
+        with_db
+        with_tree
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">gwenhywfar/gwenhywfarapi.h</header>
+
+        <header type="sys"   loc="post">gwenhywfar/gwen_parser_element_fns.h</header>
+        <header type="local" loc="codeEnd">gwen_parser_element_fns.c</header>
+      </headers>
+      
+    </lang>
+
+    <defines>
+
+      <define id="GWEN_PARSER_ELEMENT_RTFLAGS" prefix="GWEN_PARSER_ELEMENT_RTFLAGS_">
+     </define>
+
+      <define id="GWEN_PARSER_ELEMENT_FLAGS" prefix="GWEN_PARSER_ELEMENT_FLAGS_">
+     </define>
+
+    </defines>
+
+    <enums>
+      <enum id="GWEN_PARSER_ELEMENT_TYPE" prefix="GWEN_ParserElementType_" type="GWEN_PARSER_ELEMENT_TYPE">
+        <item name="element" />
+        <item name="attribute" />
+        <item name="data" />
+        <item name="choice" />
+      </enum>
+    </enums>
+
+
+
+    <members>
+  
+      <member name="flags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_flags</flags>
+        <access>public</access>
+      </member>
+
+      <member name="elementType" type="int" enum="GWEN_PARSER_ELEMENT_TYPE" maxlen="8">
+        <default>GWEN_ParserElementType_Element</default>
+        <preset>GWEN_ParserElementType_Element</preset>
+        <flags>enum</flags>
+        <access>public</access>
+      </member>
+
+
+      <member name="name" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="type" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="dbName" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="minOccurs" type="int" maxlen="8" >
+        <default>1</default>
+        <preset>1</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxOccurs" type="int" maxlen="8" >
+        <default>1</default>
+        <preset>1</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="minSize" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxSize" type="int" maxlen="8" >
+        <default>-1</default>
+        <preset>-1</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="data" type="char_ptr" maxlen="8192" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+      
+    </members>
+    
+  </type>
+  
+</tm2>
+

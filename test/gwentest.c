@@ -35,6 +35,9 @@
 #include <gwenhywfar/syncio_memory.h>
 #include <gwenhywfar/smalltresor.h>
 #include <gwenhywfar/sar.h>
+#include <gwenhywfar/gwen_parser.h>
+#include <gwenhywfar/gwen_parser_element.h>
+#include <gwenhywfar/parser_xml.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
 # define sleep(x) Sleep(x*1000)
@@ -5146,6 +5149,151 @@ int testCSV(int argc, char **argv) {
 
 
 
+int testParser1(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *et;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  et=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserElement_Tree_ReadXmlFile(et, "test-def.xml");
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+
+  GWEN_ParserElement_Tree_Dump(et, 2);
+
+  return 0;
+}
+
+
+
+int testParser2(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *et;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  et=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserXml_ReadFile(et, "test-element.xml");
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+
+  GWEN_ParserElement_Tree_Dump(et, 2);
+
+  return 0;
+}
+
+
+
+int testParser3(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *dt;
+  GWEN_PARSER_ELEMENT_TREE *et;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  dt=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserElement_Tree_ReadXmlFile(dt, "test-def.xml");
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "============== Definitions tree: =================\n");
+  GWEN_ParserElement_Tree_Dump(dt, 2);
+
+
+  et=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserXml_ReadFile(et, "test-element.xml");
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "================== Data tree: ====================\n");
+  GWEN_ParserElement_Tree_Dump(et, 2);
+
+  rv=GWEN_Parser_CheckTree(dt, et);
+  if (rv<0) {
+    DBG_ERROR(0, "Error checking tree (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "Tree is ok.\n");
+
+  return 0;
+}
+
+
+
+int testParser4(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *dt;
+  GWEN_PARSER_ELEMENT_TREE *et;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  dt=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserElement_Tree_ReadXmlFile(dt, "test-def.xml");
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "============== Definitions tree: =================\n");
+  GWEN_ParserElement_Tree_Dump(dt, 2);
+
+
+  et=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserXml_ReadFile(et, "test-element.xml");
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "================== Data tree: ====================\n");
+  GWEN_ParserElement_Tree_Dump(et, 2);
+
+  rv=GWEN_Parser_UpdateTree(dt, et);
+  if (rv<0) {
+    DBG_ERROR(0, "Error checking tree (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "================ Data tree now: ==================\n");
+  GWEN_ParserElement_Tree_Dump(et, 2);
+
+  fprintf(stderr, "Tree is ok.\n");
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -5351,6 +5499,18 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(argv[1], "csv")==0) {
     rv=testCSV(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "parser1")==0) {
+    rv=testParser1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "parser2")==0) {
+    rv=testParser2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "parser3")==0) {
+    rv=testParser3(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "parser4")==0) {
+    rv=testParser4(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
