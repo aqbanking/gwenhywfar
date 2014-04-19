@@ -35,8 +35,6 @@ static int GWEN_Parser__CheckElementAndChildren(const GWEN_PARSER_ELEMENT *eDefi
 static int GWEN_Parser__CheckSequence(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData, int depth);
 
 
-static int GWEN_Parser__UpdateElement(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData);
-static const GWEN_PARSER_ELEMENT *GWEN_Parser__GetAndUpdateChoice(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData);
 static int GWEN_Parser__UpdateElementAndChildren(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData, int depth);
 static int GWEN_Parser__UpdateSequence(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData, int depth);
 
