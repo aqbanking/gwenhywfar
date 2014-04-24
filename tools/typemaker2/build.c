@@ -146,6 +146,10 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname) {
     if (s)
       Typemaker2_Builder_SetFileNameCode(tb, s);
 
+    s = GWEN_DB_GetCharValue(dbArgs, "destFolder", 0, NULL);
+    if (s)
+        Typemaker2_Builder_SetDestFolderName(tb, s);
+
     ty=Typemaker2_Type_List2_GetFront(tlist);
     rv=Typemaker2_Builder_WriteFiles(tb, ty, 0);
     if (rv<0) {
@@ -247,6 +251,10 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
   s=GWEN_DB_GetCharValue(dbArgs, "codeFile", 0, NULL);
   if (s)
     Typemaker2_Builder_SetFileNameCode(tb, s);
+
+  s = GWEN_DB_GetCharValue(dbArgs, "destFolder", 0, NULL);
+  if (s)
+      Typemaker2_Builder_SetDestFolderName(tb, s);
 
   ty=Typemaker2_TypeManager_LoadTypeFile(tym, fname);
   if (ty==NULL) {
