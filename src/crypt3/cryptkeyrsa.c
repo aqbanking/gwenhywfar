@@ -167,7 +167,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
     }
 
     /* create public key */
-    k=GWEN_Crypt_Key_new(GWEN_Crypt_CryptAlgoId_Rsa, nbits/8);
+    k=GWEN_Crypt_Key_new(GWEN_Crypt_CryptAlgoId_Rsa, nbytes);
     GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_RSA, xk);
     GWEN_INHERIT_SETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k, xk, GWEN_Crypt_KeyRsa_freeData);
     GWEN_Crypt_Key_SetSignFn(k, GWEN_Crypt_KeyRsa_Sign);
@@ -224,7 +224,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
     }
 
     /* create private key */
-    k=GWEN_Crypt_Key_new(GWEN_Crypt_CryptAlgoId_Rsa, nbits/8);
+    k=GWEN_Crypt_Key_new(GWEN_Crypt_CryptAlgoId_Rsa, nbytes);
     GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_RSA, xk);
     GWEN_INHERIT_SETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA, k, xk, GWEN_Crypt_KeyRsa_freeData);
     GWEN_Crypt_Key_SetSignFn(k, GWEN_Crypt_KeyRsa_Sign);
