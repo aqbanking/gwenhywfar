@@ -3981,8 +3981,6 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
             else {
               char numbuf[64];
 
-              GWEN_Buffer_AppendString(tbuf, s);
-              GWEN_Buffer_AppendString(tbuf, " ");
               snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
               numbuf[sizeof(numbuf)-1]=0;
               GWEN_Buffer_AppendString(tbuf, numbuf);
@@ -4084,8 +4082,6 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
             else {
               char numbuf[64];
 
-              GWEN_Buffer_AppendString(tbuf, s);
-              GWEN_Buffer_AppendString(tbuf, " ");
               snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
               numbuf[sizeof(numbuf)-1]=0;
               GWEN_Buffer_AppendString(tbuf, numbuf);
@@ -4161,8 +4157,6 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
           else {
             char numbuf[64];
 
-            GWEN_Buffer_AppendString(tbuf, s);
-            GWEN_Buffer_AppendString(tbuf, " ");
             snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
             numbuf[sizeof(numbuf)-1]=0;
             GWEN_Buffer_AppendString(tbuf, numbuf);
@@ -4277,8 +4271,6 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
           else {
             char numbuf[64];
 
-            GWEN_Buffer_AppendString(tbuf, s);
-            GWEN_Buffer_AppendString(tbuf, " ");
             snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
             numbuf[sizeof(numbuf)-1]=0;
             GWEN_Buffer_AppendString(tbuf, numbuf);
@@ -4323,8 +4315,6 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
           else {
             char numbuf[64];
 
-            GWEN_Buffer_AppendString(tbuf, s);
-            GWEN_Buffer_AppendString(tbuf, " ");
             snprintf(numbuf, sizeof(numbuf)-1, "param%d", i);
             numbuf[sizeof(numbuf)-1]=0;
             GWEN_Buffer_AppendString(tbuf, numbuf);
