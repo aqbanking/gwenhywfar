@@ -276,8 +276,8 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
   /*if (bf->pos+size>bf->bufferSize) {*/
@@ -358,8 +358,8 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   rv=GWEN_Buffer_AllocRoom(bf, size+1);
@@ -397,8 +397,8 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c){
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   if (bf->bytesUsed+1+1 > bf->bufferSize) {
@@ -566,8 +566,8 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf, GWEN_BUFFER *sf){
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   if (sf->bytesUsed)
@@ -788,8 +788,8 @@ int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   if (bf->pos==0) {
@@ -852,8 +852,8 @@ int GWEN_Buffer_RemoveRoom(GWEN_BUFFER *bf, uint32_t size){
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   if (bf->pos==0) {
@@ -899,8 +899,8 @@ int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   /* either insert or remove bytes */
@@ -941,8 +941,8 @@ int GWEN_Buffer_InsertBytes(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   rv=GWEN_Buffer_InsertRoom(bf, size);
@@ -965,8 +965,8 @@ int GWEN_Buffer_InsertByte(GWEN_BUFFER *bf, char c){
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   rv=GWEN_Buffer_InsertRoom(bf, 1);
@@ -998,8 +998,8 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   if (pos>=bf->bufferSize) {
@@ -1073,8 +1073,8 @@ int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   rv=GWEN_Buffer_AllocRoom(bf, size+1);
@@ -1111,8 +1111,8 @@ int GWEN_Buffer_FillLeftWithBytes(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
     if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
       abort();
-      return GWEN_ERROR_PERMISSIONS;
     }
+    return GWEN_ERROR_PERMISSIONS;
   }
 
   rv=GWEN_Buffer_InsertRoom(bf, size);
