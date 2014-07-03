@@ -45,7 +45,7 @@ iheader_HEADERS=$(build_headers_pub) \
 noinst_HEADERS=$(build_headers_priv)
 
 
-EXTRA_DIST=$(typefiles) \
+EXTRA_DIST=$(typefiles) $(build_headers) $(built_sources) \
   gwen_parser_check.c \
   gwen_parser_update.c
 
