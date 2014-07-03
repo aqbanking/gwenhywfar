@@ -220,7 +220,7 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
 
 /**
  * This functions transforms a string into a double float value.
- * It always uses a comma (",") regardless of the current locale settings.
+ * It always uses a decimal point (".") regardless of the current locale settings.
  * This makes sure that a value can always be parsed regardless of the
  * country settings of the producer of that string.
  */
@@ -229,7 +229,7 @@ int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf);
 
 /**
  * This functions transforms a double float value into a string.
- * It always uses a comma (",") regardless of the current locale settings.
+ * It always uses a decimal point (".") regardless of the current locale settings.
  * This makes sure that a value can always be parsed regardless of the
  * country settings of the producer of that string.
  */
