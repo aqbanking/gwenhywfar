@@ -84,21 +84,20 @@ static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name
 
 
 
-int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
-				    GWEN_CRYPT_KEY **pPubKey,
-				    GWEN_CRYPT_KEY **pSecretKey) {
+int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
+				   GWEN_CRYPT_KEY **pPubKey,
+				   GWEN_CRYPT_KEY **pSecretKey) {
   gcry_sexp_t keyparm, key;
   int rc;
   char buffer[256];
   char numbuf[32];
   gcry_sexp_t pkey;
-  int nbytes;
+  int nbits;
   GWEN_CRYPT_KEY *pubKey=NULL;
   GWEN_CRYPT_KEY *secretKey=NULL;
 
-  nbytes=nbits/8;
-  if (nbits%8)
-    nbytes++;
+  nbits=nbytes*8;
+  assert(nbits>0);
   snprintf(numbuf, sizeof(numbuf)-1, "%d", nbits);
   if (use65537e) {
     snprintf(buffer, sizeof(buffer)-1,
@@ -252,10 +251,15 @@ int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
 
 
 
-int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
-				   GWEN_CRYPT_KEY **pPubKey,
-				   GWEN_CRYPT_KEY **pSecretKey) {
-  return GWEN_Crypt_KeyRsa_GeneratePair2(nbytes*8, use65537e, pPubKey, pSecretKey);
+int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
+				    GWEN_CRYPT_KEY **pPubKey,
+				    GWEN_CRYPT_KEY **pSecretKey) {
+  if (nbits%8) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "nbits is required to be a multiple of 8 (%d)", nbits);
+    return GWEN_ERROR_INVALID;
+  }
+  return GWEN_Crypt_KeyRsa_GeneratePair(nbits/8, use65537e, pPubKey, pSecretKey);
 }
 
 

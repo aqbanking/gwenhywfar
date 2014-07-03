@@ -51,10 +51,13 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes,
  * @param nbits number of bits
  * @param use65537e !=0: use the value 65537 for the public exponent, otherwise let the
  *  library choose the exponent by its own
+ * @deprecated Please use @ref GWEN_Crypt_KeyRsa_GeneratePair instead since
+ *  nbits should be a multiple of 8 anyway according to Libgcrypt.
  */
-GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
-                                                   GWEN_CRYPT_KEY **pPubKey,
-                                                   GWEN_CRYPT_KEY **pSecretKey);
+GWENHYWFAR_API DEPRECATED
+int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
+                                    GWEN_CRYPT_KEY **pPubKey,
+                                    GWEN_CRYPT_KEY **pSecretKey);
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k);
 
