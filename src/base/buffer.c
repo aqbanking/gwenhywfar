@@ -973,6 +973,7 @@ int GWEN_Buffer_InsertBuffer(GWEN_BUFFER *bf,
 int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
                      uint32_t pos,
                      uint32_t l) {
+  int offset;
 
   if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
@@ -986,20 +987,24 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
     DBG_ERROR(GWEN_LOGDOMAIN, "Position outside buffer");
     return -1;
   }
-  bf->ptr+=pos;
-  bf->bufferSize-=pos;
-  bf->pos-=pos;
   if (bf->bytesUsed-pos<l) {
     DBG_INFO(GWEN_LOGDOMAIN, "Invalid length");
     return -1;
   }
+  bf->ptr+=pos;
+  bf->bufferSize-=pos;
+  if (bf->pos>pos)
+    offset=pos;
+  else
+    offset=bf->pos;
+  bf->pos-=offset;
   bf->bytesUsed=l;
-  GWEN_Buffer_AdjustBookmarks(bf, pos, -pos);
   /* adjust position after possible truncation */
   if (bf->pos>bf->bytesUsed)
       bf->pos=bf->bytesUsed;
 
   bf->ptr[bf->bytesUsed]=0;
+  GWEN_Buffer_AdjustBookmarks(bf, offset, -offset);
 
   return 0;
 }
