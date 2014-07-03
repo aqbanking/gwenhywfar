@@ -360,22 +360,13 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
     return GWEN_ERROR_PERMISSIONS;
   }
 
-  rv=GWEN_Buffer_AllocRoom(bf, size+1);
+  rv=GWEN_Buffer_AllocRoom(bf, size);
   if (rv<0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return rv;
   }
-  /* if (bf->pos+size>bf->bufferSize) { */
-  if (bf->bytesUsed+size>bf->bufferSize) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d [%d] of %d bytes)",
-              /*bf->pos, size,*/
-              bf->bytesUsed, size+1,
-              bf->bufferSize);
-    return GWEN_ERROR_BUFFER_OVERFLOW;
-  }
 
   memmove(bf->ptr+bf->bytesUsed, buffer, size);
-  /*bf->pos+=size;*/
   if (bf->pos==bf->bytesUsed)
     bf->pos+=size;
   bf->bytesUsed+=size;
@@ -820,12 +811,7 @@ int GWEN_Buffer_InsertRoom(GWEN_BUFFER *bf,
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return rv;
   }
-  if (bf->pos+size>bf->bufferSize) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d [%d] of %d bytes)",
-	      bf->pos, size,
-	      bf->bufferSize);
-    return GWEN_ERROR_BUFFER_OVERFLOW;
-  }
+  assert(bf->pos<=bf->bytesUsed);
   p=bf->ptr+bf->pos;
   i=bf->bytesUsed-bf->pos;
   if (i>0)
@@ -1079,13 +1065,6 @@ int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
   if (rv<0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return rv;
-  }
-  /* if (bf->pos+size>bf->bufferSize) { */
-  if (bf->bytesUsed+size>bf->bufferSize) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer full (%d [%d] of %d bytes)",
-              bf->bytesUsed, size+1,
-              bf->bufferSize);
-    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   memset(bf->ptr+bf->bytesUsed, c, size);
   if (bf->pos==bf->bytesUsed)
