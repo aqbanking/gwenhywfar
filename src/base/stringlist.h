@@ -154,6 +154,13 @@ GWENHYWFAR_API int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
 GWENHYWFAR_API int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s);
 
 
+/**
+ * Returns the first stringlist entry which contains the given string
+ * @return string list entry containing the given string, NULL otherwise
+ */
+GWENHYWFAR_API GWEN_STRINGLISTENTRY *GWEN_StringList_FindStringEntry(const GWEN_STRINGLIST *sl, const char *s);
+
+
 /** Traverses the list, calling the callback function 'func' on
  * each list element.  Traversal will stop when 'func' returns a
  * non-NULL value, and the routine will return with that

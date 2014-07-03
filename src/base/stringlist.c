@@ -369,6 +369,16 @@ const char *GWEN_StringListEntry_Data(const GWEN_STRINGLISTENTRY *se){
 }
 
 
+
+void GWEN_StringListEntry_SetData(GWEN_STRINGLISTENTRY *se, const char *s){
+  assert(se);
+  if (se->data) free((void*)(se->data));
+  if (s) se->data=strdup(s);
+  else   se->data=NULL;
+}
+
+
+
 unsigned int GWEN_StringList_Count(const GWEN_STRINGLIST *sl){
   assert(sl);
   return sl->count;
@@ -431,6 +441,38 @@ int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s){
       se=se->next;
     } /* while */
     return -1;
+  }
+}
+
+
+
+GWEN_STRINGLISTENTRY *GWEN_StringList_FindStringEntry(const GWEN_STRINGLIST *sl, const char *s){
+  GWEN_STRINGLISTENTRY *se;
+  int i;
+
+  assert(sl);
+  se=sl->first;
+  if (sl->senseCase) {
+    i=0;
+    while(se) {
+      if (strcmp(se->data, s)==0) {
+	return se;
+      }
+      i++;
+      se=se->next;
+    } /* while */
+    return NULL;
+  }
+  else {
+    i=0;
+    while(se) {
+      if (strcasecmp(se->data, s)==0) {
+	return se;
+      }
+      i++;
+      se=se->next;
+    } /* while */
+    return NULL;
   }
 }
 
