@@ -280,7 +280,6 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
     return GWEN_ERROR_PERMISSIONS;
   }
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
-  /*if (bf->pos+size>bf->bufferSize) {*/
   if (bf->bytesUsed+(size+1) > bf->bufferSize) {
     /* need to realloc */
     uint32_t nsize;
@@ -299,8 +298,8 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
 
     /* calculate reserved bytes (to set ptr later) */
     reserved=bf->ptr-bf->realPtr;
-    /* this is the raw number of bytes we need */
-    /*nsize=bf->pos+size-bf->bufferSize;*/
+    /* this is the raw number of bytes we need (we always add a NULL
+     * character) */
     nsize=bf->bytesUsed+(size+1)-bf->bufferSize;
     /* round it up */
     nsize=(nsize+(bf->step-1));
@@ -320,12 +319,11 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
     }
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes",
                 bf->bufferSize, nsize);
-    /* we always add a NULL character */
     if (bf->realPtr==NULL) {
-      p=GWEN_Memory_malloc(nsize+1);
+      p=GWEN_Memory_malloc(nsize);
     }
     else {
-      p=GWEN_Memory_realloc(bf->realPtr, nsize+1);
+      p=GWEN_Memory_realloc(bf->realPtr, nsize);
     }
     if (!p) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Realloc failed.");
