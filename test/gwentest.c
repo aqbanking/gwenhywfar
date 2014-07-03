@@ -2543,7 +2543,7 @@ int testCrypt3Rsa(int argc, char **argv) {
     "This is the test data           "
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
-  uint8_t buffer[256];
+  uint8_t buffer[768];
   uint32_t len;
   uint8_t buffer2[256];
   uint32_t len2;
@@ -2591,7 +2591,7 @@ int testCrypt3Rsa(int argc, char **argv) {
     fprintf(stderr, "ERROR: Could not decipher (%d).\n", rv);
     return 2;
   }
-  fprintf(stderr, "Encrypting message... done\n");
+  fprintf(stderr, "Decrypting message... done\n");
 
   if ((sizeof(testData)-1)!=len2) {
     fprintf(stderr, "Length of deciphered message does not match that of src (%d!=%d)\n",
