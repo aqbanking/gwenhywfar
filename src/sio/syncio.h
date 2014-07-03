@@ -29,7 +29,6 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list1.h>
-#include <gwenhywfar/stringlist.h>
 
 
 #ifdef __cplusplus
@@ -59,6 +58,21 @@ typedef enum {
 #define GWEN_SYNCIO_FLAGS_PACKET_END  0x10000000
 #define GWEN_SYNCIO_FLAGS_DOSMODE     0x08000000
 
+
+#ifdef __cplusplus
+}
+#endif
+
+
+
+#include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/buffer.h>
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
@@ -159,6 +173,29 @@ int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
 					    int maxLines,
 					    GWEN_STRINGLIST *sl);
 
+
+/**
+ * Read SIZE bytes from the given file. Returns the number of bytes actually read or
+ * an error code (negative value).
+ *
+ * @return number of bytes actually read (or error code if negative value)
+ * @param fName name of the file to load
+ * @param buffer pointer to a fixed buffer to receive the bytes read
+ * @param size number of bytes to read
+ */
+GWENHYWFAR_API
+int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uint32_t size);
+
+
+/**
+ * Read a whole file into the given buffer
+ *
+ * @return number of bytes actually read (or error code if negative value)
+ * @param fName name of the file to load
+ * @param dbuf GWEN_BUFFER to receive the bytes read
+ */
+GWENHYWFAR_API
+int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf);
 
 
 

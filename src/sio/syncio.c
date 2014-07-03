@@ -441,3 +441,113 @@ int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
 
 
 
+
+int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uint32_t size) {
+  GWEN_SYNCIO *sio;
+  uint32_t todo;
+  int rv;
+
+  /* open file */
+  sio=GWEN_SyncIo_File_new(fName, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_SetFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not open file [%s]", fName?fName:"<no filename>");
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  /* read file */
+  todo=size;
+  while(todo) {
+    int rv;
+
+    do {
+      rv=GWEN_SyncIo_Read(sio, buffer, todo);
+    } while (rv==GWEN_ERROR_INTERRUPTED);
+
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+    else if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+      break;
+    }
+    todo-=rv;
+    buffer+=rv;
+  }
+
+  /* close file */
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  return size-todo;
+}
+
+
+
+int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf) {
+  GWEN_SYNCIO *sio;
+  int rv;
+  int bytesRead=0;
+  int64_t fileSize=0;
+
+  /* open file */
+  sio=GWEN_SyncIo_File_new(fName, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_SetFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not open file [%s]", fName?fName:"<no filename>");
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  fileSize=GWEN_SyncIo_File_Seek(sio, 0, GWEN_SyncIo_File_Whence_End);
+  GWEN_SyncIo_File_Seek(sio, 0, GWEN_SyncIo_File_Whence_Set);
+  if (fileSize>GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf))
+    GWEN_Buffer_AllocRoom(dbuf, (uint32_t) fileSize);
+
+  /* read file */
+  while(1) {
+    uint32_t l;
+    uint8_t *p;
+
+    GWEN_Buffer_AllocRoom(dbuf, 4096);
+    l=GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf);
+    p=(uint8_t*) GWEN_Buffer_GetPosPointer(dbuf);
+
+    do {
+      rv=GWEN_SyncIo_Read(sio, p, l);
+    } while (rv==GWEN_ERROR_INTERRUPTED);
+
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+    else if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+      break;
+    }
+    bytesRead+=rv;
+
+    GWEN_Buffer_IncrementPos(dbuf, rv);
+    GWEN_Buffer_AdjustUsedBytes(dbuf);
+  }
+
+  /* close file */
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  return bytesRead;
+}
+
+
+
+
