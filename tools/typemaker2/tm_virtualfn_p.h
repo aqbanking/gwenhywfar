@@ -38,6 +38,7 @@ struct TYPEMAKER2_VIRTUALFN {
   uint32_t flags;
 
   char *returnType;
+  char *returnTypeDescr;
   char *defaultReturnValue;
   char *preset;
 

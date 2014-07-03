@@ -4060,6 +4060,18 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
           GWEN_Buffer_AppendString(tbuf, "\n");
       }
 
+      s=Typemaker2_VirtualFn_GetReturnTypeDescr(vf);
+      if (s && *s) {
+        int len;
+
+        GWEN_Buffer_AppendString(tbuf, " * @return ");
+        GWEN_Buffer_AppendString(tbuf, s);
+        len=strlen(s);
+        if (s[len-1]!='\n')
+          GWEN_Buffer_AppendString(tbuf, "\n");
+      }
+
+
       i=1;
       plist=Typemaker2_VirtualFn_GetParamTypeList(vf);
       if (plist) {

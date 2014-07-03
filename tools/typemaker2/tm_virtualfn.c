@@ -117,6 +117,14 @@ int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
   if (s && *s)
     Typemaker2_VirtualFn_SetReturnType(vf, s);
 
+  /* read returnType description */
+  n=GWEN_XMLNode_FindFirstTag(node, "returnType", NULL, NULL);
+  if (n) {
+    s=GWEN_XMLNode_GetCharValue(n, "descr", NULL);
+    Typemaker2_VirtualFn_SetReturnTypeDescr(vf, s);
+  }
+
+
   n=GWEN_XMLNode_FindFirstTag(node, "params", NULL, NULL);
   if (n) {
     n=GWEN_XMLNode_FindFirstTag(n, "param", NULL, NULL);
@@ -289,6 +297,22 @@ void Typemaker2_VirtualFn_SetReturnType(TYPEMAKER2_VIRTUALFN *vf, const char *s)
 
 
 
+const char *Typemaker2_VirtualFn_GetReturnTypeDescr(const TYPEMAKER2_VIRTUALFN *vf) {
+  assert(vf);
+  return vf->returnTypeDescr;
+}
+
+
+
+void Typemaker2_VirtualFn_SetReturnTypeDescr(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+  assert(vf);
+  free(vf->returnTypeDescr);
+  if (s) vf->returnTypeDescr=strdup(s);
+  else vf->returnTypeDescr=NULL;
+}
+
+
+
 const char *Typemaker2_VirtualFn_GetDefaultReturnValue(const TYPEMAKER2_VIRTUALFN *vf) {
   assert(vf);
   assert(vf->refCount);
@@ -335,6 +359,10 @@ void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
   if (s) vf->preset=strdup(s);
   else vf->preset=NULL;
 }
+
+
+
+
 
 
 
@@ -411,6 +439,9 @@ void Typemaker2_VirtualFn_Param_SetDescr(TYPEMAKER2_VIRTUALFN_PARAM *prm, const 
   if (s) prm->descr=strdup(s);
   else prm->descr=NULL;
 }
+
+
+
 
 
 
