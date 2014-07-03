@@ -383,8 +383,8 @@ void *GWEN_Memory__Malloc(unsigned short dsize) {
 
 
 void *GWEN_Memory_malloc(size_t wsize) {
-#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   void *p;
+#ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   size_t dsize;
 #endif
 
@@ -422,7 +422,9 @@ void *GWEN_Memory_malloc(size_t wsize) {
   /*fprintf(stderr, "GWEN debug: allocated block (%p).\n", p);*/
   return p;
 #else
-  return malloc(wsize);
+  p=malloc(wsize);
+  assert(p);
+  return p;
 #endif
 }
 
