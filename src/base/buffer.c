@@ -840,27 +840,23 @@ int GWEN_Buffer_RemoveRoom(GWEN_BUFFER *bf, uint32_t size){
     return GWEN_ERROR_PERMISSIONS;
   }
 
+  if (bf->bytesUsed<size+bf->pos) {
+    /* can't remove more bytes than we have */
+    return GWEN_ERROR_INVALID;
+  }
+
   if (bf->pos==0) {
-    if (bf->bytesUsed<size) {
-      /* can't remove bytes we don't have */
-      return GWEN_ERROR_INVALID;
-    }
     /* simply add to reserved space */
     bf->ptr+=size;
     bf->bytesUsed-=size;
     bf->bufferSize-=size;
   }
   else {
-    if (bf->bytesUsed+size<(bf->bytesUsed)) {
-      /* can't remove more bytes than we have */
-      return GWEN_ERROR_INVALID;
-    }
-
     /* we need to get the rest closer */
     p=bf->ptr+bf->pos+size;
     i=bf->bytesUsed-bf->pos-size;
     memmove(bf->ptr+bf->pos, p, i);
-    bf->bytesUsed+=size;
+    bf->bytesUsed-=size;
   }
 
   /* append "0" behind buffer */
