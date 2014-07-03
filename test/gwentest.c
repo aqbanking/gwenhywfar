@@ -91,6 +91,11 @@
 
 
 
+
+//#define TEST_GPARSER
+
+
+
 static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
   FILE *f;
 
@@ -5148,7 +5153,7 @@ int testCSV(int argc, char **argv) {
 }
 
 
-
+#ifdef TEST_GPARSER
 int testParser1(int argc, char **argv) {
   int rv;
   GWEN_GUI *gui;
@@ -5291,6 +5296,8 @@ int testParser4(int argc, char **argv) {
 
   return 0;
 }
+
+#endif
 
 
 
@@ -5500,6 +5507,7 @@ int main(int argc, char **argv) {
   else if (strcasecmp(argv[1], "csv")==0) {
     rv=testCSV(argc, argv);
   }
+#ifdef TEST_GPARSER
   else if (strcasecmp(argv[1], "parser1")==0) {
     rv=testParser1(argc, argv);
   }
@@ -5512,6 +5520,7 @@ int main(int argc, char **argv) {
   else if (strcasecmp(argv[1], "parser4")==0) {
     rv=testParser4(argc, argv);
   }
+#endif
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
