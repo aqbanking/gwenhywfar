@@ -367,6 +367,12 @@ const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui);
 
 GWENHYWFAR_API 
 void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s);
+
+GWENHYWFAR_API 
+int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
+			   const char *fromCs, const char *toCs);
+
+
 /*@}*/
 
 
