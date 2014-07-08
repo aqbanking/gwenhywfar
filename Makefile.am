@@ -40,6 +40,9 @@ gwenhywfar-config: gwenhywfar-config.in
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwenhywfar.pc
 
+cmakeconfigdir = $(libdir)/cmake/gwenhywfar-@GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@
+cmakeconfig_DATA = gwenhywfar-config.cmake gwenhywfar-config-version.cmake
+
 CLEANFILES = gwenhywfar-config $(PACKAGE).tag listdoc.h
 DISTCLEANFILES = gwenhywfar-config.in
 

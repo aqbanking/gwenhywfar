@@ -6,6 +6,8 @@ DEFS=-DBUILDING_QT4_GUI
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gwengui-qt4.pc
 
+cmakeconfigdir = $(libdir)/cmake/gwengui-qt4-@GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@
+cmakeconfig_DATA = gwengui-qt4-config.cmake gwengui-qt4-config-version.cmake
 
 lib_LTLIBRARIES=libgwengui-qt4.la
 noinst_PROGRAMS=libtest

@@ -1299,9 +1299,11 @@ AC_CONFIG_FILES([Doxyfile
                  m4/Makefile
                  po/Makefile
                  gwenhywfar-config.in
-		 gwenhywfar.pc
-		 gwenhywfar.spec
-		 gwenhywfar.iss
+                 gwenhywfar.pc
+                 gwenhywfar-config.cmake
+                 gwenhywfar-config-version.cmake
+                 gwenhywfar.spec
+                 gwenhywfar.iss
                  checks/Makefile
                  data/Makefile
                  doc/Makefile
@@ -1359,6 +1361,8 @@ AC_CONFIG_FILES([Doxyfile
                  gui/cpp/Makefile
                  gui/qt4/Makefile
                  gui/qt4/gwengui-qt4.pc
+                 gui/qt4/gwengui-qt4-config.cmake
+                 gui/qt4/gwengui-qt4-config-version.cmake
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
                  gui/gtk2/Makefile
