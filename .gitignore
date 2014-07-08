@@ -31,6 +31,7 @@ Makefile.palm
 aclocal.m4
 apidoc
 autom4te.cache
+compile
 conf.uint32
 config.guess
 config.h
@@ -56,6 +57,7 @@ mkinstalldirs
 stamp-h1
 i18nsources
 pdsources
+test-driver
 
 *.rc
 *.moc
@@ -106,3 +108,5 @@ plugins/configmgr/dir/dir.xml
 src/crypttoken/*.tm2
 
 patches
+gwenhywfar-config-version.cmake
+gwenhywfar-config.cmake
