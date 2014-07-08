@@ -35,9 +35,6 @@
 #include <gwenhywfar/syncio_memory.h>
 #include <gwenhywfar/smalltresor.h>
 #include <gwenhywfar/sar.h>
-#include <gwenhywfar/gwen_parser.h>
-#include <gwenhywfar/gwen_parser_element.h>
-#include <gwenhywfar/parser_xml.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
 # define sleep(x) Sleep(x*1000)
@@ -82,6 +79,12 @@
 #include <gwenhywfar/cryptmgrkeys.h>
 #include <gwenhywfar/passwdstore.h>
 
+
+#if 0
+#include <gwenhywfar/gwen_parser.h>
+#include <gwenhywfar/gwen_parser_element.h>
+#include <gwenhywfar/parser_xml.h>
+#endif
 
 
 #include <sys/types.h>
