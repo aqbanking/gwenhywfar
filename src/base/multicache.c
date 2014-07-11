@@ -214,8 +214,10 @@ void *GWEN_MultiCache_Type_GetData(const GWEN_MULTICACHE_TYPE *ct, uint32_t id) 
     GWEN_MultiCache_UsingEntry(ct->multiCache, e);
     p=GWEN_MultiCache_Entry_GetDataPtr(e);
     GWEN_MultiCache_Type_AttachData(ct, p);
+    GWEN_MultiCache_IncCacheHits(ct->multiCache);
     return p;
   }
+  GWEN_MultiCache_IncCacheMisses(ct->multiCache);
   return NULL;
 }
 
