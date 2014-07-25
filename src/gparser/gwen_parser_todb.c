@@ -1,5 +1,5 @@
 /***************************************************************************
- begin       : Fri Apr 18 2014
+ begin       : Fri Jul 25 2014
  copyright   : (C) 2014 by Martin Preuss
  email       : martin@libchipcard.de
 
@@ -22,32 +22,66 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWEN_PARSER_H
-#define GWEN_PARSER_H
-
-
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/gwen_parser_element.h>
-#include <gwenhywfar/db.h>
 
 
 
-/**
- * Checks all elements of the parser element tree against the definition tree.
- */
-GWENHYWFAR_API int GWEN_Parser_CheckTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, const GWEN_PARSER_ELEMENT_TREE *tData);
 
-/**
- * Updates all elements of the parser element tree with info from the definition tree. That is, all elements from the
- * data tree get their DbName from their matching definition elements.
- */
-GWENHYWFAR_API int GWEN_Parser_UpdateTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, GWEN_PARSER_ELEMENT_TREE *tData);
+int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE *dbParent, int depth) {
+  int rv;
+  GWEN_PARSER_ELEMENT *eChild;
+  const char *s;
+  const char *groupName;
+
+  groupName=GWEN_ParserElement_GetDbName(eData);
+  if (groupName) {
+    s=GWEN_ParserElement_GetData(eData);
+    if (s && *s)
+      GWEN_DB_SetCharValue(dbParent, GWEN_DB_FLAGS_DEFAULT, groupName, s);
+  }
+
+  /* check children */
+  eChild=GWEN_ParserElement_Tree_GetFirstChild(eData);
+  if (eChild) {
+    GWEN_DB_NODE *dbThis=NULL;
+
+    if (groupName && *groupName)
+      dbThis=GWEN_DB_GetGroup(dbParent, GWEN_DB_FLAGS_DEFAULT, groupName);
+    while(eChild) {
+      rv=GWEN_Parser__toDbElementAndChildren(eChild, dbThis?dbThis:dbParent, depth+1);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d) [%d]", rv, depth);
+	return rv;
+      }
+
+      GWEN_ParserElement_Tree_GetNext(eChild);
+    }
+  }
+
+  return 0;
+}
 
 
-/**
- * Copies data from the element tree to the given db node using the dbName from the individual parser elements.
- */
-GWENHYWFAR_API int GWEN_Parser_ToDbTree(GWEN_PARSER_ELEMENT_TREE *tData, GWEN_DB_NODE *db);
+
+int GWEN_Parser_ToDbTree(GWEN_PARSER_ELEMENT_TREE *tData, GWEN_DB_NODE *db) {
+  GWEN_PARSER_ELEMENT *e;
+
+  e=GWEN_ParserElement_Tree_GetFirst(tData);
+  while(e) {
+    int rv;
+
+    rv=GWEN_Parser__toDbElementAndChildren(e, db, 0);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    e=GWEN_ParserElement_Tree_GetNext(e);
+  }
+
+  return 0;
+}
 
 
-#endif
+
+
+
+
