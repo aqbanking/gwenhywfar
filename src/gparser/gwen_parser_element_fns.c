@@ -187,6 +187,89 @@ int GWEN_ParserElement_Tree_ReadXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char
 
 
 
+int GWEN_ParserElement_Tree__WriteXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE *node) {
+  const GWEN_PARSER_ELEMENT *eChild;
+  GWEN_XMLNODE *n;
+  int rv;
+
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "element");
+  rv=GWEN_ParserElement_toXml(e, n);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XMLNode_free(n);
+    return rv;
+  }
+
+  eChild=GWEN_ParserElement_Tree_GetFirstChild(e);
+  while(eChild) {
+    rv=GWEN_ParserElement_Tree__WriteXml(eChild, n);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_XMLNode_free(n);
+      return rv;
+    }
+    eChild=GWEN_ParserElement_Tree_GetNext(eChild);
+  }
+
+  GWEN_XMLNode_AddChild(node, n);
+  return 0;
+}
+
+
+
+int GWEN_ParserElement_Tree_WriteXml(const GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node) {
+  const GWEN_PARSER_ELEMENT *e;
+  int rv;
+
+  e=GWEN_ParserElement_Tree_GetFirst(et);
+  while(e) {
+    rv=GWEN_ParserElement_Tree__WriteXml(e, node);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    e=GWEN_ParserElement_Tree_GetNext(e);
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_ParserElement_Tree_WriteXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname) {
+  int rv;
+  GWEN_XMLNODE *rootNode;
+  GWEN_XMLNODE *n;
+
+  rootNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "gwen-parser-def");
+  GWEN_XMLNode_AddChild(rootNode, n);
+
+  rv=GWEN_ParserElement_Tree_WriteXml(et, n);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XMLNode_free(rootNode);
+    return rv;
+  }
+
+  rv=GWEN_XMLNode_WriteFile(rootNode, fname, GWEN_XML_FLAGS_DEFAULT);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XMLNode_free(rootNode);
+    return rv;
+  }
+
+
+  GWEN_XMLNode_free(rootNode);
+  return 0;
+}
+
+
+
+
+
+
 void GWEN_ParserElement_Dump(const GWEN_PARSER_ELEMENT *e, int indent) {
   int i;
 

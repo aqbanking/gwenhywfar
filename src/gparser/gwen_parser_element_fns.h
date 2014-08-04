@@ -36,10 +36,10 @@ GWENHYWFAR_API GWEN_PARSER_ELEMENT *GWEN_ParserElement_fromXml(GWEN_XMLNODE *nod
 GWENHYWFAR_API int GWEN_ParserElement_toXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE *node);
 
 GWENHYWFAR_API int GWEN_ParserElement_Tree_ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node);
-
-
 GWENHYWFAR_API int GWEN_ParserElement_Tree_ReadXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname);
 
+GWENHYWFAR_API int GWEN_ParserElement_Tree_WriteXml(const GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node);
+GWENHYWFAR_API int GWEN_ParserElement_Tree_WriteXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname);
 
 
 GWENHYWFAR_API void GWEN_ParserElement_Dump(const GWEN_PARSER_ELEMENT *e, int indent);
