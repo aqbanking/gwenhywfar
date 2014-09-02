@@ -1,0 +1,151 @@
+<gwen-parser-def>
+
+  <element name="Document" minOccurs="1" maxOccurs="1">
+    <element name="pain.001.001.02" minOccurs="1" maxOccurs="1">
+
+      <element name="GrpHdr" minOccurs="1" maxOccurs="1">
+
+        <element name="MsgId" minOccurs="1" maxOccurs="1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" dbName="MsgId">
+          </element>
+        </element>
+        
+        <element name="CreDtTm" minOccurs="1" maxOccurs="1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" dbName="CreDtTm">
+          </element>
+        </element>
+
+        <element name="NbOfTxs" minOccurs="1" maxOccurs="1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" dbName="NbOfTxs">
+          </element>
+        </element>
+
+        <element name="CtrlSum" minOccurs="1" maxOccurs="1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" dbName="CtrlSum">
+          </element>
+        </element>
+
+        <element name="Grpg" minOccurs="1" maxOccurs="1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" dbName="Grpg">
+          </element>
+        </element>
+
+        <element name="InitgPty" minOccurs="1" maxOccurs="1">
+          <element name="Nm" minOccurs="1" maxOccurs="1">
+            <element elementType="data" minOccurs="1" maxOccurs="1" dbName="localName">
+            </element>
+          </element>
+          
+          <element name="Id" minOccurs="0" maxOccurs="1">
+            <element name="OrgId" minOccurs="0" maxOccurs="1">
+              <element name="PrtryId" minOccurs="0" maxOccurs="1">
+                <element name="Id" minOccurs="0" maxOccurs="1">
+                </element>
+              </element>
+            </element>
+          </element>
+          
+        </element>
+      
+      </element>
+
+
+
+      <element name="PmtInf" minOccurs="1" maxOccurs="1">
+
+        <element name="PmtInfId" minOccurs="1" maxOccurs="1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" dbName="PmtInfId">
+          </element>
+        </element>
+        <element name="PmtMtd" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          </element>
+        </element>
+        <element name="PmtTpInf" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          <element name="SvcLvl" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="Cd" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              </element>
+            </element>
+          </element>
+        </element>
+        <element name="ReqdExctnDt" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          </element>
+        </element>
+        <element name="Dbtr" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          <element name="Nm" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="localName">
+            </element>
+          </element>
+        </element>
+        <element name="DbtrAcct" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          <element name="Id" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="IBAN" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="localIban">
+              </element>
+            </element>
+          </element>
+        </element>
+        <element name="DbtrAgt" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          <element name="FinInstnId" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="BIC" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="localBic">
+              </element>
+            </element>
+          </element>
+        </element>
+        <element name="ChrgBr" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+          </element>
+        </element>
+
+
+        <element name="CdtTrfTxInf" minOccurs="1" maxOccurs="-1" minSize="0" maxSize="-1" dbName="transaction">
+          <element name="PmtId" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="EndToEndId" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="endToEndId">
+              </element>
+            </element>
+          </element>
+          <element name="Amt" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="InstdAmt" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="value">
+              </element>
+            </element>
+          </element>
+          <element name="CdtrAgt" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="FinInstnId" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element name="BIC" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+                <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="remoteBic">
+                </element>
+              </element>
+            </element>
+          </element>
+          <element name="Cdtr" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="Nm" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="remoteName">
+              </element>
+            </element>
+          </element>
+          <element name="CdtrAcct" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="Id" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element name="IBAN" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+                <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="remoteIban">
+                </element>
+              </element>
+            </element>
+          </element>
+          <element name="RmtInf" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+            <element name="Ustrd" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1">
+              <element elementType="data" minOccurs="1" maxOccurs="1" minSize="0" maxSize="-1" dbName="purpose">
+              </element>
+            </element>
+          </element>
+        </element>
+        
+        
+      </element>
+    </element>
+  </element>
+</gwen-parser-def>
