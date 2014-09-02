@@ -1863,6 +1863,15 @@ int write_code_duprec_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
           fname=get_function_name(n, "dup");
 
+#if 0
+          /* this doesn't work very well: it should only delete the new element if there is no
+           * element in the source object... */
+          /* free old pointer if any */
+          rv=write_code_freeElem_c(args, n, sio);
+	  if (rv)
+	    return rv;
+#endif
+
           pbuf=GWEN_Buffer_new(0, 256, 0, 1);
           GWEN_Buffer_AppendString(pbuf, "d->");
           GWEN_Buffer_AppendByte(pbuf, tolower(*name));
