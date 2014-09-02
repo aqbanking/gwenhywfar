@@ -8,8 +8,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 
 AM_CFLAGS=$(visibility_cflags)
 
-SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar
-DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar gparser
+SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar gparser
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \
@@ -60,7 +59,8 @@ libgwenhywfar_la_LIBADD=\
   parser/libparser.la \
   html/libgwenhtml.la \
   gui/libgui.la \
-  sar/libsar.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(rt_libs) $(all_libraries)
+  sar/libsar.la \
+  gparser/libgparser.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(rt_libs) $(all_libraries)
 
 
 noinst_PROGRAMS=testlib
