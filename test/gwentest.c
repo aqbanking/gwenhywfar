@@ -80,11 +80,9 @@
 #include <gwenhywfar/passwdstore.h>
 
 
-#if 0
 #include <gwenhywfar/gwen_parser.h>
 #include <gwenhywfar/gwen_parser_element.h>
 #include <gwenhywfar/parser_xml.h>
-#endif
 
 
 #include <sys/types.h>
@@ -5156,7 +5154,6 @@ int testCSV(int argc, char **argv) {
 }
 
 
-#ifdef TEST_GPARSER
 int testParser1(int argc, char **argv) {
   int rv;
   GWEN_GUI *gui;
@@ -5300,7 +5297,235 @@ int testParser4(int argc, char **argv) {
   return 0;
 }
 
-#endif
+
+
+int testParser5(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *et;
+  const char *inName;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  if (argc<3) {
+    fprintf(stderr, "Missing source file name\n");
+    return 1;
+  }
+  inName=argv[2];
+
+
+  et=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserXml_ReadFile(et, inName);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+
+  rv=GWEN_ParserElement_Tree_WriteXmlFile(et, "test-element.xml.def");
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing element definition file (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int testParser6(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *etDef;
+  GWEN_PARSER_ELEMENT_TREE *etData;
+  const char *defName;
+  const char *dataName;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  if (argc<4) {
+    fprintf(stderr, "Usage: %s DEFFILE DATAFILE\n", argv[0]);
+    return 1;
+  }
+  defName=argv[2];
+  dataName=argv[3];
+
+  /* read definition file */
+  etDef=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserElement_Tree_ReadXmlFile(etDef, defName);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+  fprintf(stderr, "____________________ Definitions __________________\n");
+  GWEN_ParserElement_Tree_Dump(etDef, 2);
+
+  /* read data file */
+  etData=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserXml_ReadFile(etData, dataName);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading data file (%d)", rv);
+    return rv;
+  }
+  fprintf(stderr, "________________________ Data _____________________\n");
+  GWEN_ParserElement_Tree_Dump(etData, 2);
+
+  rv=GWEN_ParserElement_Tree_WriteXmlFile(etData, "test-output.def");
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing element definition file (%d)", rv);
+    return rv;
+  }
+
+
+  rv=GWEN_Parser_CheckTree(etDef, etData);
+  if (rv<0) {
+    DBG_ERROR(0, "Error on checkTree (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int testParser7(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *etDef;
+  GWEN_PARSER_ELEMENT_TREE *etData;
+  const char *defName;
+  const char *dataName;
+  GWEN_DB_NODE *dbData;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  if (argc<4) {
+    fprintf(stderr, "Usage: %s DEFFILE DATAFILE\n", argv[0]);
+    return 1;
+  }
+  defName=argv[2];
+  dataName=argv[3];
+
+  /* read definition file */
+  etDef=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserElement_Tree_ReadXmlFile(etDef, defName);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+  fprintf(stderr, "____________________ Definitions __________________\n");
+  GWEN_ParserElement_Tree_Dump(etDef, 2);
+
+  /* read data file */
+  etData=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserXml_ReadFile(etData, dataName);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading data file (%d)", rv);
+    return rv;
+  }
+  fprintf(stderr, "________________________ Data _____________________\n");
+  GWEN_ParserElement_Tree_Dump(etData, 2);
+
+  rv=GWEN_ParserElement_Tree_WriteXmlFile(etData, "test-output.def");
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing element definition file (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "Updating tree...\n");
+  rv=GWEN_Parser_UpdateTree(etDef, etData);
+  if (rv<0) {
+    DBG_ERROR(0, "Error on updateTree (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "________________________ Data now _____________________\n");
+  GWEN_ParserElement_Tree_Dump(etData, 2);
+
+  return 0;
+}
+
+
+
+int testParser8(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARSER_ELEMENT_TREE *etDef;
+  GWEN_PARSER_ELEMENT_TREE *etData;
+  const char *defName;
+  const char *dataName;
+  GWEN_DB_NODE *dbData;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  if (argc<4) {
+    fprintf(stderr, "Usage: %s DEFFILE DATAFILE\n", argv[0]);
+    return 1;
+  }
+  defName=argv[2];
+  dataName=argv[3];
+
+  /* read definition file */
+  etDef=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserElement_Tree_ReadXmlFile(etDef, defName);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
+    return rv;
+  }
+  fprintf(stderr, "____________________ Definitions __________________\n");
+  GWEN_ParserElement_Tree_Dump(etDef, 2);
+
+  /* read data file */
+  etData=GWEN_ParserElement_Tree_new();
+  rv=GWEN_ParserXml_ReadFile(etData, dataName);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading data file (%d)", rv);
+    return rv;
+  }
+  fprintf(stderr, "________________________ Data _____________________\n");
+  GWEN_ParserElement_Tree_Dump(etData, 2);
+
+  rv=GWEN_ParserElement_Tree_WriteXmlFile(etData, "test-output.def");
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing element definition file (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "Updating tree...\n");
+  rv=GWEN_Parser_UpdateTree(etDef, etData);
+  if (rv<0) {
+    DBG_ERROR(0, "Error on updateTree (%d)", rv);
+    return rv;
+  }
+
+  fprintf(stderr, "Storing tree data...\n");
+  dbData=GWEN_DB_Group_new("data");
+  rv=GWEN_Parser_ToDbTree(etData, dbData);
+  if (rv<0) {
+    DBG_ERROR(0, "Error on toDbTree (%d)", rv);
+    return rv;
+  }
+  fprintf(stderr, "========================= Data =================\n");
+  GWEN_DB_Dump(dbData, 2);
+
+  return 0;
+}
+
 
 
 
@@ -5510,7 +5735,6 @@ int main(int argc, char **argv) {
   else if (strcasecmp(argv[1], "csv")==0) {
     rv=testCSV(argc, argv);
   }
-#ifdef TEST_GPARSER
   else if (strcasecmp(argv[1], "parser1")==0) {
     rv=testParser1(argc, argv);
   }
@@ -5523,7 +5747,18 @@ int main(int argc, char **argv) {
   else if (strcasecmp(argv[1], "parser4")==0) {
     rv=testParser4(argc, argv);
   }
-#endif
+  else if (strcasecmp(argv[1], "parser5")==0) {
+    rv=testParser5(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "parser6")==0) {
+    rv=testParser6(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "parser7")==0) {
+    rv=testParser7(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "parser8")==0) {
+    rv=testParser8(argc, argv);
+  }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
