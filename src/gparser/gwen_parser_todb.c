@@ -32,6 +32,10 @@ int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE
   const char *s;
   const char *groupName;
 
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Storing element \"%s\" (%s) [%d] [%p]",
+              eData?GWEN_ParserElement_GetName(eData):"-?-",
+              eData?GWEN_ParserElementType_toString(GWEN_ParserElement_GetElementType(eData)):"-?-", depth, eData);
+
   groupName=GWEN_ParserElement_GetDbName(eData);
   if (groupName) {
     s=GWEN_ParserElement_GetData(eData);
@@ -53,7 +57,7 @@ int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE
 	return rv;
       }
 
-      GWEN_ParserElement_Tree_GetNext(eChild);
+      eChild=GWEN_ParserElement_Tree_GetNext(eChild);
     }
   }
 
