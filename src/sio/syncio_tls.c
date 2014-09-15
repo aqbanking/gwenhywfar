@@ -1195,7 +1195,7 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
   case GNUTLS_CIPHER_CAMELLIA_256_CBC:
   case GNUTLS_CIPHER_RC2_40_CBC:
   case GNUTLS_CIPHER_DES_CBC:
-  case GNUTLS_CIPHER_AES_192_CBC:
+  case GNUTLS_CIPHER_AES_192_CBC: // new in gnutls-2.9.8, so i.e. not available in gnutls-2.8.x
   default:
     break;
   }
