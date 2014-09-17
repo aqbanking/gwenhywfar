@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="GWEN_PARAM" type="pointer" lang="c" extends="struct_base">
+    <identifier>GWEN_PARAM</identifier>
+    <prefix>GWEN_Param</prefix>
+  </typedef>
+</tm2>
