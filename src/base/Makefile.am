@@ -16,6 +16,19 @@ DEFS+=-DGWEN_BUFFER_DEFAULT_HARDLIMIT='@gwenhywfar_buffer_hardlimit@'
 
 noinst_LTLIBRARIES=libbase.la
 
+
+typedatadir=$(datadir)/gwenhywfar/typemaker2/c
+dist_typedata_DATA=\
+  gwen_param.tm2 gwen_param_list.tm2 gwen_param_list2.tm2 gwen_param_tree.tm2
+
+
+typefiles=param.xml
+
+
+EXTRA_DIST=$(typefiles) param_fns.c
+
+
+
 noinst_HEADERS=\
  args_p.h \
  buffer_p.h \
@@ -46,7 +59,9 @@ noinst_HEADERS=\
  memcache_p.h \
  tree_p.h \
  pointerlist_p.h \
- multicache_p.h
+ multicache_p.h \
+ param_p.h
+
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -81,7 +96,10 @@ iheader_HEADERS=\
  tree.h \
  pointerlist.h \
  multicache.h \
- bindata.h
+ bindata.h \
+ param.h \
+ param_fns.h
+
 
 libbase_la_SOURCES=\
  args.c \
@@ -109,7 +127,8 @@ libbase_la_SOURCES=\
  memcache.c \
  tree.c \
  pointerlist.c \
- multicache.c
+ multicache.c \
+ param.c
 
 
 sources:
@@ -119,4 +138,12 @@ sources:
 	for d in $(SUBDIRS); do \
 	  make -C $$d sources; \
 	done
+
+
+types: $(typefiles) typedefs
+	typemaker2 -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $(typefiles)
+
+typedefs: $(typefiles)
+	typemaker2 --defs-only -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $(typefiles)
+
 
