@@ -3362,6 +3362,7 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, s);
 	GWEN_Buffer_AppendString(tbuf, "\" */\n");
 
+#if 0
 	/* release previous value */
 	if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer &&
 	    (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_OWN)) {
@@ -3395,7 +3396,8 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	    GWEN_Buffer_free(srcbuf);
 	  }
 	  GWEN_Buffer_AppendString(tbuf, "  }\n");
-	}
+        }
+#endif
 
 
 	if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
