@@ -660,7 +660,7 @@ case "$OS_TYPE" in
     ;;
     
   *)
-    PKG_CHECK_MODULES([LIBGNUTLS], [gnutls])
+    PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 2.9.8])
     # check for 1.6 or higher
     oldlibs="$LIBS"
     LIBS="${LIBGNUTLS_LIBS}"
