@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="GWEN_PARAM_TREE" type="pointer" lang="c" extends="tree_base" basetype="GWEN_PARAM">
+    <identifier>GWEN_PARAM_TREE</identifier>
+    <prefix>GWEN_Param_Tree</prefix>
+  </typedef>
+</tm2>
