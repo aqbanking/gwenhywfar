@@ -136,8 +136,9 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
     fd=open(fl->uniqueLockFilename, O_CREAT|O_TRUNC|O_RDWR, S_IRUSR|S_IWUSR);
     if (fd==-1) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-                "open(%s): %s",
+                "Could not open lock file %s for file %s: %s",
                 fl->baseLockFilename,
+                fl->entryName,
                 strerror(errno));
       return GWEN_FSLock_ResultError;
     }

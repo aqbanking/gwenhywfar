@@ -454,7 +454,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid
   if (stat(GWEN_Crypt_Token_GetTokenName(ct), &st)) {
     if (errno!=ENOENT) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-                "stat(%s): %s",
+                "Error trying to access key file \"%s\": %s",
                 GWEN_Crypt_Token_GetTokenName(ct),
                 strerror(errno));
       return GWEN_ERROR_IO;
