@@ -1207,7 +1207,7 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
   int isError;
   const char *hash;
   const char *status;
-  const char *ipAddr;
+  //const char *ipAddr;
   const char *statusOn;
   const char *statusOff;
   char varName[128];
@@ -1267,7 +1267,7 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
 
   hash=GWEN_SslCertDescr_GetFingerPrint(cd);
   status=GWEN_SslCertDescr_GetStatusText(cd);
-  ipAddr=GWEN_SslCertDescr_GetIpAddress(cd);
+  //ipAddr=GWEN_SslCertDescr_GetIpAddress(cd);
 
   ti=GWEN_SslCertDescr_GetNotBefore(cd);
   if (ti) {

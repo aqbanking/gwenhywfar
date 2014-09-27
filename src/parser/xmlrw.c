@@ -234,9 +234,7 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
   fb=GWEN_FastBuffer_new(512, sio);
 
   if (nheader && (flags & GWEN_XML_FLAGS_HANDLE_HEADERS)) {
-    uint32_t lflags;
 
-    lflags=flags & ~GWEN_XML_FLAGS_HANDLE_HEADERS;
     nn=nheader;
     while(nn) {
       const GWEN_XMLNODE *next;

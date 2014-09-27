@@ -1572,8 +1572,8 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
 int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly) {
   int rv;
   const char *fname;
-  uint64_t dpos;
-  uint64_t fsize;
+  //uint64_t dpos;
+  //uint64_t fsize;
   uint64_t hsize;
   uint64_t hpos;
   uint64_t mpos;
@@ -1596,8 +1596,8 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
   fname=GWEN_SarFileHeader_GetPath(fh);
   assert(fname);
   perms=GWEN_SarFileHeader_GetPermissions(fh);
-  fsize=GWEN_SarFileHeader_GetDataSize(fh); /* not FileSize!! */
-  dpos=GWEN_SarFileHeader_GetDataPos(fh);
+  //fsize=GWEN_SarFileHeader_GetDataSize(fh); /* not FileSize!! */
+  //dpos=GWEN_SarFileHeader_GetDataPos(fh);
 
   hpos=GWEN_SarFileHeader_GetHeaderStartPos(fh);
   hsize=GWEN_SarFileHeader_GetHeaderSize(fh);
@@ -1839,9 +1839,9 @@ int GWEN_Sar__UnpackArchive(const char *inFile, const char *where) {
 
     fh=GWEN_SarFileHeader_List_First(fhl);
     while(fh) {
-      const char *s;
+      //const char *s;
 
-      s=GWEN_SarFileHeader_GetPath(fh);
+      //s=GWEN_SarFileHeader_GetPath(fh);
       rv=GWEN_Sar_ExtractFile(sr, fh);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -2382,9 +2382,9 @@ int GWEN_Sar_CheckArchive(const char *inFile) {
 
     fh=GWEN_SarFileHeader_List_First(fhl);
     while(fh) {
-      const char *s;
+      //const char *s;
 
-      s=GWEN_SarFileHeader_GetPath(fh);
+      //s=GWEN_SarFileHeader_GetPath(fh);
       rv=GWEN_Sar_CheckFile(sr, fh);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

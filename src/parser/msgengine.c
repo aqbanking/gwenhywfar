@@ -443,11 +443,11 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
       GWEN_Buffer_AppendBuffer(gbuf, data);
     } /* if type is "bin" */
     else if (strcasecmp(type, "num")==0) {
-      int num;
+      //int num;
       unsigned int len;
       unsigned int lj;
 
-      num=atoi(GWEN_Buffer_GetPosPointer(data));
+      //num=atoi(GWEN_Buffer_GetPosPointer(data));
       len=strlen(GWEN_Buffer_GetPosPointer(data));
 
       if (atoi(GWEN_XMLNode_GetProperty(node, "leftfill","0"))) {
@@ -657,13 +657,13 @@ int GWEN_MsgEngine__GetInline(GWEN_MSGENGINE *e,
 
   if (GWEN_MsgEngine__IsBinTyp(e, type)) {
     const char *dp;
-    unsigned int dplen;
+    //unsigned int dplen;
     const char *stype;
 
     stype=GWEN_XMLNode_GetProperty(node, "storedAs", type);
     if (GWEN_MsgEngine__IsBinTyp(e, stype)) {
       dp=GWEN_XMLNode_GetData(n);
-      dplen=strlen(dp);
+      //dplen=strlen(dp);
       if (GWEN_Text_FromHexBuffer(dp, mbuf)) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here");
 	return -1;
@@ -695,8 +695,8 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                                  GWEN_XMLNODE_PATH *nodePath) {
   const char *name;
   const char *type;
-  unsigned int minsize;
-  unsigned int maxsize;
+  //unsigned int minsize;
+  //unsigned int maxsize;
   char numbuffer[256];
   const char *pdata;
   unsigned int datasize;
@@ -713,8 +713,8 @@ int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
   type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
   DBG_DEBUG(GWEN_LOGDOMAIN, "Type is \"%s\"", type);
   /* get some sizes */
-  minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
-  maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
+  //minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
+  //maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize","0"));
 
   if (e->binTypeWritePtr &&
       GWEN_MsgEngine__IsBinTyp(e, type) &&
@@ -2207,7 +2207,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                               GWEN_STRINGLIST *sl,
                               uint32_t flags) {
   GWEN_XMLNODE *n;
-  int isFirstElement;
+  //int isFirstElement;
   int omittedElements;
   int rv;
 
@@ -2288,21 +2288,21 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
 
   /* now handle all child entries */
   n=GWEN_XMLNode_GetChild(node);
-  isFirstElement=1;
+  //isFirstElement=1;
   omittedElements=0;
   while(n) {
     int t;
     unsigned int minnum;
     unsigned int maxnum;
     int gversion;
-    const char *addEmptyMode;
+    //const char *addEmptyMode;
     unsigned int loopNr;
     unsigned int lflags;
 
     minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum","1"));
     maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum","1"));
     gversion=atoi(GWEN_XMLNode_GetProperty(n, "version","0"));
-    addEmptyMode=GWEN_XMLNode_GetProperty(n, "addemptymode","one");
+    //addEmptyMode=GWEN_XMLNode_GetProperty(n, "addemptymode","one");
 
     lflags=flags;
 
@@ -2328,7 +2328,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
         if (rv==-1)
 	  return -1;
 	else {
-	  isFirstElement=0;
+      //isFirstElement=0;
 	  omittedElements=0;
 	}
       }
@@ -2482,7 +2482,7 @@ int GWEN_MsgEngine__ListElement(GWEN_UNUSED GWEN_MSGENGINE *e,
                                 GWEN_XMLNODE *listNode,
                                 uint32_t flags) {
   const char *name;
-  const char *type;
+  //const char *type;
   const char *npath;
   int isSet;
   char nbuffer[256];
@@ -2490,7 +2490,7 @@ int GWEN_MsgEngine__ListElement(GWEN_UNUSED GWEN_MSGENGINE *e,
   GWEN_XMLNODE *nn;
 
   /* get type */
-  type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
+  //type=GWEN_XMLNode_GetProperty(node, "type","ASCII");
 
   npath="";
   isSet=0;
@@ -2787,13 +2787,13 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   unsigned int size;
   unsigned int minnum;
   GWEN_MSGENGINE_TRUSTLEVEL trustLevel;
-  unsigned int posInMsg;
+  //unsigned int posInMsg;
   const char *type;
   int rv;
   unsigned int realSize;
 
   /* get some sizes */
-  posInMsg=GWEN_Buffer_GetPos(msgbuf);
+  //posInMsg=GWEN_Buffer_GetPos(msgbuf);
   realSize=0;
   size=atoi(GWEN_XMLNode_GetProperty(node, "size","0"));
   minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize","0"));
@@ -2992,8 +2992,8 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                               GWEN_DB_NODE *gr,
                               const char *delimiters,
                               uint32_t flags) {
-  unsigned int minsize;
-  unsigned int maxsize;
+  //unsigned int minsize;
+  //unsigned int maxsize;
   unsigned int minnum;
   unsigned int maxnum;
   const char *name;
@@ -3066,8 +3066,8 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 	unsigned int loopNr;
 
 	/* get some sizes */
-	minsize=atoi(GWEN_XMLNode_GetProperty(n, "minsize","0"));
-	maxsize=atoi(GWEN_XMLNode_GetProperty(n, "maxsize","0"));
+    //minsize=atoi(GWEN_XMLNode_GetProperty(n, "minsize","0"));
+    //maxsize=atoi(GWEN_XMLNode_GetProperty(n, "maxsize","0"));
 	minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum","1"));
 	maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum","1"));
 	name=GWEN_XMLNode_GetProperty(n, "name", 0);

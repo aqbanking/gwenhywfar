@@ -270,7 +270,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym__fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
   gcry_error_t err;
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_SYM *xk;
-  unsigned int nbits;
+  //unsigned int nbits;
   GWEN_DB_NODE *dbR;
   unsigned int len;
   const char *p;
@@ -292,7 +292,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym__fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
     GWEN_Crypt_Key_free(k);
     return NULL;
   }
-  nbits=GWEN_Crypt_Key_GetKeySize(k)*8;
+  //nbits=GWEN_Crypt_Key_GetKeySize(k)*8;
 
   /* extend key */
   GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_SYM, xk);
@@ -368,7 +368,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE
   gcry_error_t err;
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_SYM *xk;
-  unsigned int nbits;
+  //unsigned int nbits;
   GWEN_DB_NODE *dbR;
   unsigned int len;
   const char *gname;
@@ -390,7 +390,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE
     return NULL;
   }
 
-  nbits=GWEN_Crypt_Key_GetKeySize(k)*8;
+  //nbits=GWEN_Crypt_Key_GetKeySize(k)*8;
 
   /* extend key */
   GWEN_NEW_OBJECT(GWEN_CRYPT_KEY_SYM, xk);

@@ -81,7 +81,6 @@ const void *GWEN_Tag16_GetTagData(const GWEN_TAG16 *tlv){
 
 GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   const char *p;
-  unsigned int tagMode;
   unsigned int tagType;
   unsigned int tagLength;
   const char *tagData;
@@ -98,7 +97,7 @@ GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
 
   startPos=GWEN_Buffer_GetPos(mbuf);
 
-  tagMode=tagType=tagLength=0;
+  tagType=tagLength=0;
 
   p=GWEN_Buffer_GetPosPointer(mbuf);
   pos=0;

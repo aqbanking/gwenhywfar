@@ -82,12 +82,12 @@ int HtmlGroup_Table_StartTag(HTML_GROUP *g, const char *tagName) {
 
 
 int HtmlGroup_Table_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg) {
-  GWEN_XML_CONTEXT *ctx;
+  //GWEN_XML_CONTEXT *ctx;
   const char *s;
 
   assert(g);
 
-  ctx=HtmlGroup_GetXmlContext(g);
+  //ctx=HtmlGroup_GetXmlContext(g);
 
   s=HtmlGroup_GetGroupName(sg);
   if (strcasecmp(s, "tr")==0) {

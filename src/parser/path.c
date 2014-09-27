@@ -41,7 +41,6 @@ void *GWEN_Path_Handle(const char *path,
                        uint32_t flags,
                        GWEN_PATHHANDLERPTR elementFunction) {
   GWEN_BUFFER *buf1;
-  int i;
   unsigned int origflags;
   int startAtRoot;
 
@@ -69,7 +68,6 @@ void *GWEN_Path_Handle(const char *path,
       ~GWEN_PATH_FLAGS_VARIABLE;
 
     /* copy element into buffer */
-    i=0;
     if (startAtRoot) {
       GWEN_Buffer_AppendByte(buf1, '/');
       flags|=GWEN_PATH_FLAGS_ROOT;
@@ -192,7 +190,6 @@ void *GWEN_Path_HandleWithIdx(const char *path,
                               uint32_t flags,
                               GWEN_PATHIDXHANDLERPTR elementFunction) {
   GWEN_BUFFER *buf1;
-  int i;
   unsigned int origflags;
   int startAtRoot;
 
@@ -224,7 +221,6 @@ void *GWEN_Path_HandleWithIdx(const char *path,
       ~GWEN_PATH_FLAGS_VARIABLE;
 
     /* copy element into buffer */
-    i=0;
     if (startAtRoot) {
       GWEN_Buffer_AppendByte(buf1, '/');
       flags|=GWEN_PATH_FLAGS_ROOT;

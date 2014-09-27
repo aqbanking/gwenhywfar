@@ -742,15 +742,9 @@ int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
                           unsigned int groupsize,
                           char delimiter,
                           int skipLeadingZeroes){
-  unsigned int pos;
-  unsigned int size;
-  unsigned int j;
+  unsigned int pos = 0;
+  unsigned int j = 0;
 
-  j=0;
-
-  pos=0;
-  size=0;
-  j=0;
   while(pos<l) {
     unsigned char c;
     int skipThis;
@@ -816,11 +810,8 @@ int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
 
 
 int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize){
-  unsigned int pos;
-  unsigned int size;
+  unsigned int size = 0;
 
-  pos=0;
-  size=0;
   while(*src) {
     unsigned char d1, d2;
     unsigned char c;
@@ -959,13 +950,11 @@ int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
                           char delimiter,
                           int skipLeadingZeroes){
   unsigned int pos;
-  unsigned int size;
   unsigned int j;
 
   j=0;
 
   pos=0;
-  size=0;
   j=0;
   while(pos<l) {
     unsigned char c;
@@ -1472,11 +1461,9 @@ int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
 
 int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
   while(*src) {
-    const char *srcBak;
-    int charHandled;
+    //const char *srcBak=src;
 
-    srcBak=src;
-    charHandled=0;
+    int charHandled=0;
     if (*src=='%') {
       if (strlen(src)>2) {
         unsigned char d1, d2;

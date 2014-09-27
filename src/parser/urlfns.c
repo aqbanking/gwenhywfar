@@ -278,7 +278,6 @@ int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
 
 
 void GWEN_Url_toUiShortString(const GWEN_URL *url, GWEN_BUFFER *buf) {
-  GWEN_DB_NODE *dbV;
 
   assert(url);
 

@@ -34,7 +34,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
   OBJECT_GRID *xo;
   HTML_OBJECT *c;
   int w;
-  int h;
+  //int h;
   int x;
   int y;
   int rv;
@@ -50,7 +50,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
   assert(xo);
 
   w=HtmlObject_GetWidth(o);
-  h=HtmlObject_GetHeight(o);
+  //h=HtmlObject_GetHeight(o);
 
   /* subtract spacing from available width */
   if (w!=-1)

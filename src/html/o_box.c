@@ -30,20 +30,20 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
   HTML_OBJECT *cFirstInLine;
   GWEN_XML_CONTEXT *ctx;
   int w;
-  int h;
+  //int h;
   int x=0;
   int y=0;
   int maxX=0;
   int lineHeight=0;
   int rv;
-  int resX;
+  //int resX;
   int resY;
 
   w=HtmlObject_GetWidth(o);
-  h=HtmlObject_GetHeight(o);
+  //h=HtmlObject_GetHeight(o);
 
   ctx=HtmlObject_GetXmlCtx(o);
-  resX=HtmlCtx_GetResolutionX(ctx);
+  //resX=HtmlCtx_GetResolutionX(ctx);
   resY=HtmlCtx_GetResolutionY(ctx);
 
   c=HtmlObject_Tree_GetFirstChild(o);
