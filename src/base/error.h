@@ -152,6 +152,13 @@ extern "C" {
  * @param bsize size of that buffer in bytes
  */
 GWENHYWFAR_API int GWEN_Error_ToString(int c, char *buffer, int bsize);
+
+/**
+ * @brief Returns a (very) short string describing the given GWEN error code, or "Unknown error" for unknown codes
+ * @param i The error code
+ * @return A fixed static string that must not be free'd
+ */
+GWENHYWFAR_API const char *GWEN_Error_SimpleToString(int i);
 /*@}*/
 
 

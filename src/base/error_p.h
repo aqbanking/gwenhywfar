@@ -32,8 +32,7 @@
 #include "error_l.h"
 
 
-static const char *GWEN_Error_SimpleToString(int i);
-
+// Intentionally empty
 
 
 
