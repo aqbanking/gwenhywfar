@@ -37,7 +37,7 @@ GWEN_INHERIT(GWEN_PLUGIN, GWEN_CRYPT_TOKEN_PLUGIN)
 
 
 
-int GWEN_Crypt_Token_ModuleInit(void){
+int GWEN_Crypt_Token_ModuleInit(void) {
   GWEN_PLUGIN_MANAGER *pm;
   int err;
   GWEN_STRINGLIST *sl;
@@ -62,9 +62,9 @@ int GWEN_Crypt_Token_ModuleInit(void){
       GWEN_Buffer_AppendString(pbuf, GWEN_StringListEntry_Data(se));
       GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_CRYPT_TOKEN_FOLDER);
       DBG_INFO(GWEN_LOGDOMAIN, "Adding plugin path [%s]",
-	       GWEN_Buffer_GetStart(pbuf));
+               GWEN_Buffer_GetStart(pbuf));
       GWEN_PluginManager_AddPath(pm, GWEN_PM_LIBNAME,
-				 GWEN_Buffer_GetStart(pbuf));
+                                 GWEN_Buffer_GetStart(pbuf));
       GWEN_Buffer_Reset(pbuf);
       se=GWEN_StringListEntry_Next(se);
     }
@@ -77,7 +77,7 @@ int GWEN_Crypt_Token_ModuleInit(void){
 
 
 
-int GWEN_Crypt_Token_ModuleFini(void){
+int GWEN_Crypt_Token_ModuleFini(void) {
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
@@ -87,7 +87,7 @@ int GWEN_Crypt_Token_ModuleFini(void){
     rv=GWEN_PluginManager_Unregister(pm);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Could not unregister CryptToken plugin manager (%d)", rv);
+                "Could not unregister CryptToken plugin manager (%d)", rv);
       return rv;
     }
     else
@@ -108,9 +108,9 @@ int GWEN_Crypt_Token_ModuleFini(void){
 
 
 GWEN_PLUGIN *GWEN_Crypt_Token_Plugin_new(GWEN_PLUGIN_MANAGER *mgr,
-					 GWEN_CRYPT_TOKEN_DEVICE devType,
-					 const char *typeName,
-					 const char *fileName) {
+    GWEN_CRYPT_TOKEN_DEVICE devType,
+    const char *typeName,
+    const char *fileName) {
   GWEN_PLUGIN *pl;
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
 
@@ -182,7 +182,7 @@ GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Plugin_GetDeviceType(const GWEN_PLUGIN 
 
 
 GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN GWEN_Crypt_Token_Plugin_SetCreateTokenFn(GWEN_PLUGIN *pl,
-										GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN fn) {
+    GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN fn) {
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
   GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN of;
 
@@ -199,7 +199,7 @@ GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN GWEN_Crypt_Token_Plugin_SetCreateTokenFn(
 
 
 GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN GWEN_Crypt_Token_Plugin_SetCheckTokenFn(GWEN_PLUGIN *pl,
-									      GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN fn) {
+    GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN fn) {
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
   GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN of;
 
@@ -223,7 +223,7 @@ GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN GWEN_Crypt_Token_Plugin_SetCheckTokenFn(GW
 
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_Crypt_Token_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm,
-									      GWEN_CRYPT_TOKEN_DEVICE devt) {
+    GWEN_CRYPT_TOKEN_DEVICE devt) {
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pl1;
 
   pl1=GWEN_PluginManager_GetPluginDescrs(pm);
@@ -238,19 +238,19 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_Crypt_Token_PluginManager_GetPluginDescrs(GW
       const char *ts;
 
       if (devt==GWEN_Crypt_Token_Device_Any)
-	ts=NULL;
+        ts=NULL;
       else
-	ts=GWEN_Crypt_Token_Device_toString(devt);
+        ts=GWEN_Crypt_Token_Device_toString(devt);
       pd=GWEN_PluginDescription_List2Iterator_Data(pit);
       while(pd) {
-	GWEN_XMLNODE *node;
-	const char *nts;
+        GWEN_XMLNODE *node;
+        const char *nts;
         int match=0;
 
         node=GWEN_PluginDescription_GetXmlNode(pd);
         assert(node);
-	nts=GWEN_XMLNode_GetProperty(node, "device", 0);
-	if (nts) {
+        nts=GWEN_XMLNode_GetProperty(node, "device", 0);
+        if (nts) {
           if (!ts || (ts && strcasecmp(ts, nts)==0))
             match=1;
         }
@@ -287,10 +287,10 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_Crypt_Token_PluginManager_GetPluginDescrs(GW
 
 
 int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
-					      GWEN_CRYPT_TOKEN_DEVICE devt,
-					      GWEN_BUFFER *typeName,
-					      GWEN_BUFFER *tokenName,
-					      uint32_t guiid) {
+    GWEN_CRYPT_TOKEN_DEVICE devt,
+    GWEN_BUFFER *typeName,
+    GWEN_BUFFER *tokenName,
+    uint32_t guiid) {
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl;
 
   assert(pm);
@@ -299,13 +299,13 @@ int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
   if (pdl==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No plugin descriptions found for this device type");
     GWEN_Gui_ProgressLog(guiid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("No plugin found for this device type"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("No plugin found for this device type"));
     GWEN_Gui_ProgressLog(guiid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("If you're using a Debian/Ubuntu based system "
-				"please consider to install package " 
-				LIBCHIPCARD_GWENHYWFAR_PLUGIN_PACKAGE));
+                         GWEN_LoggerLevel_Error,
+                         I18N("If you're using a Debian/Ubuntu based system "
+                              "please consider to install package "
+                              LIBCHIPCARD_GWENHYWFAR_PLUGIN_PACKAGE));
     return GWEN_ERROR_NOT_FOUND;
   }
   else {
@@ -320,149 +320,149 @@ int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
 
       pdcount=GWEN_PluginDescription_List2_GetSize(pdl);
       progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-					GWEN_GUI_PROGRESS_ALLOW_EMBED |
-					GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                        GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                                        GWEN_GUI_PROGRESS_SHOW_PROGRESS |
                                         GWEN_GUI_PROGRESS_SHOW_LOG |
-					GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
-					GWEN_GUI_PROGRESS_SHOW_ABORT,
-					I18N("Determining plugin module..."),
-					NULL,
-					pdcount,
-					guiid);
+                                        GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+                                        GWEN_GUI_PROGRESS_SHOW_ABORT,
+                                        I18N("Determining plugin module..."),
+                                        NULL,
+                                        pdcount,
+                                        guiid);
 
       pd=GWEN_PluginDescription_List2Iterator_Data(pit);
       assert(pd);
       while(pd) {
-	GWEN_XMLNODE *n;
-	int err;
-	GWEN_PLUGIN *pl;
-	char logbuffer[256];
+        GWEN_XMLNODE *n;
+        int err;
+        GWEN_PLUGIN *pl;
+        char logbuffer[256];
 
-	n=GWEN_PluginDescription_GetXmlNode(pd);
-	assert(n);
+        n=GWEN_PluginDescription_GetXmlNode(pd);
+        assert(n);
 
-	snprintf(logbuffer, sizeof(logbuffer)-1,
-		 I18N("Loading plugin \"%s\""),
-		 GWEN_PluginDescription_GetName(pd));
-	logbuffer[sizeof(logbuffer)-1]=0;
-	GWEN_Gui_ProgressLog(progressId,
-			     GWEN_LoggerLevel_Notice,
-			     logbuffer);
+        snprintf(logbuffer, sizeof(logbuffer)-1,
+                 I18N("Loading plugin \"%s\""),
+                 GWEN_PluginDescription_GetName(pd));
+        logbuffer[sizeof(logbuffer)-1]=0;
+        GWEN_Gui_ProgressLog(progressId,
+                             GWEN_LoggerLevel_Notice,
+                             logbuffer);
 
-	/* device type matches, check this plugin */
-	pl=GWEN_PluginManager_GetPlugin(pm, GWEN_PluginDescription_GetName(pd));
-	if (pl) {
-	  GWEN_BUFFER *lTokenName;
-	  int rv;
+        /* device type matches, check this plugin */
+        pl=GWEN_PluginManager_GetPlugin(pm, GWEN_PluginDescription_GetName(pd));
+        if (pl) {
+          GWEN_BUFFER *lTokenName;
+          int rv;
 
-	  lTokenName=GWEN_Buffer_dup(tokenName);
+          lTokenName=GWEN_Buffer_dup(tokenName);
 
-	  snprintf(logbuffer, sizeof(logbuffer)-1,
-		   I18N("Checking plugin \"%s\""),
-		   GWEN_Plugin_GetName(pl));
-	  logbuffer[sizeof(logbuffer)-1]=0;
-	  GWEN_Gui_ProgressLog(progressId,
-			       GWEN_LoggerLevel_Notice,
-			       logbuffer);
+          snprintf(logbuffer, sizeof(logbuffer)-1,
+                   I18N("Checking plugin \"%s\""),
+                   GWEN_Plugin_GetName(pl));
+          logbuffer[sizeof(logbuffer)-1]=0;
+          GWEN_Gui_ProgressLog(progressId,
+                               GWEN_LoggerLevel_Notice,
+                               logbuffer);
 
-	  DBG_INFO(GWEN_LOGDOMAIN,
-		   "Checking plugin \"%s\" for [%s]",
-		   GWEN_Plugin_GetName(pl),
-		   GWEN_Buffer_GetStart(lTokenName));
+          DBG_INFO(GWEN_LOGDOMAIN,
+                   "Checking plugin \"%s\" for [%s]",
+                   GWEN_Plugin_GetName(pl),
+                   GWEN_Buffer_GetStart(lTokenName));
 
-	  rv=GWEN_Crypt_Token_Plugin_CheckToken(pl, lTokenName);
-	  switch(rv) {
-	  case 0:
-	    /* responsive plugin found */
-	    snprintf(logbuffer, sizeof(logbuffer)-1,
-		     I18N("Plugin \"%s\" supports this token"),
-		     GWEN_Plugin_GetName(pl));
-	    logbuffer[sizeof(logbuffer)-1]=0;
-	    err=GWEN_Gui_ProgressLog(progressId,
-				     GWEN_LoggerLevel_Notice,
-				     logbuffer);
-	    if (err==GWEN_ERROR_USER_ABORTED) {
-	      GWEN_Gui_ProgressEnd(progressId);
-	      GWEN_Buffer_free(lTokenName);
-	      GWEN_PluginDescription_List2Iterator_free(pit);
-	      GWEN_PluginDescription_List2_freeAll(pdl);
-	      return err;
-	    }
+          rv=GWEN_Crypt_Token_Plugin_CheckToken(pl, lTokenName);
+          switch(rv) {
+          case 0:
+            /* responsive plugin found */
+            snprintf(logbuffer, sizeof(logbuffer)-1,
+                     I18N("Plugin \"%s\" supports this token"),
+                     GWEN_Plugin_GetName(pl));
+            logbuffer[sizeof(logbuffer)-1]=0;
+            err=GWEN_Gui_ProgressLog(progressId,
+                                     GWEN_LoggerLevel_Notice,
+                                     logbuffer);
+            if (err==GWEN_ERROR_USER_ABORTED) {
+              GWEN_Gui_ProgressEnd(progressId);
+              GWEN_Buffer_free(lTokenName);
+              GWEN_PluginDescription_List2Iterator_free(pit);
+              GWEN_PluginDescription_List2_freeAll(pdl);
+              return err;
+            }
 
-	    GWEN_Buffer_Reset(typeName);
-	    GWEN_Buffer_AppendString(typeName, GWEN_Plugin_GetName(pl));
-	    GWEN_Buffer_Reset(tokenName);
-	    GWEN_Buffer_AppendBuffer(tokenName, lTokenName);
-	    GWEN_Buffer_free(lTokenName);
-	    GWEN_PluginDescription_List2Iterator_free(pit);
-	    GWEN_PluginDescription_List2_freeAll(pdl);
-	    GWEN_Gui_ProgressEnd(progressId);
-	    return 0;
+            GWEN_Buffer_Reset(typeName);
+            GWEN_Buffer_AppendString(typeName, GWEN_Plugin_GetName(pl));
+            GWEN_Buffer_Reset(tokenName);
+            GWEN_Buffer_AppendBuffer(tokenName, lTokenName);
+            GWEN_Buffer_free(lTokenName);
+            GWEN_PluginDescription_List2Iterator_free(pit);
+            GWEN_PluginDescription_List2_freeAll(pdl);
+            GWEN_Gui_ProgressEnd(progressId);
+            return 0;
 
-	  case GWEN_ERROR_NOT_IMPLEMENTED:
-	    snprintf(logbuffer, sizeof(logbuffer)-1,
-		     I18N("Plugin \"%s\": Function not implemented"),
-		     GWEN_Plugin_GetName(pl));
-	    logbuffer[sizeof(logbuffer)-1]=0;
-	    GWEN_Gui_ProgressLog(progressId,
-				 GWEN_LoggerLevel_Notice,
-				 logbuffer);
-	    break;
+          case GWEN_ERROR_NOT_IMPLEMENTED:
+            snprintf(logbuffer, sizeof(logbuffer)-1,
+                     I18N("Plugin \"%s\": Function not implemented"),
+                     GWEN_Plugin_GetName(pl));
+            logbuffer[sizeof(logbuffer)-1]=0;
+            GWEN_Gui_ProgressLog(progressId,
+                                 GWEN_LoggerLevel_Notice,
+                                 logbuffer);
+            break;
 
-	  case GWEN_ERROR_NOT_SUPPORTED:
-	    snprintf(logbuffer, sizeof(logbuffer)-1,
-		     I18N("Plugin \"%s\" does not support this token"),
-		     GWEN_Plugin_GetName(pl));
-	    logbuffer[sizeof(logbuffer)-1]=0;
-	    GWEN_Gui_ProgressLog(progressId,
-				 GWEN_LoggerLevel_Info,
-				 logbuffer);
-	    break;
+          case GWEN_ERROR_NOT_SUPPORTED:
+            snprintf(logbuffer, sizeof(logbuffer)-1,
+                     I18N("Plugin \"%s\" does not support this token"),
+                     GWEN_Plugin_GetName(pl));
+            logbuffer[sizeof(logbuffer)-1]=0;
+            GWEN_Gui_ProgressLog(progressId,
+                                 GWEN_LoggerLevel_Info,
+                                 logbuffer);
+            break;
 
-	  case GWEN_ERROR_BAD_NAME:
-	    snprintf(logbuffer, sizeof(logbuffer)-1,
-		     I18N("Plugin \"%s\" supports this token, but the name "
-			  "did not match"),
-		     GWEN_Plugin_GetName(pl));
-	    logbuffer[sizeof(logbuffer)-1]=0;
-	    GWEN_Gui_ProgressLog(progressId,
-				 GWEN_LoggerLevel_Info,
-				 logbuffer);
-	    break;
+          case GWEN_ERROR_BAD_NAME:
+            snprintf(logbuffer, sizeof(logbuffer)-1,
+                     I18N("Plugin \"%s\" supports this token, but the name "
+                          "did not match"),
+                     GWEN_Plugin_GetName(pl));
+            logbuffer[sizeof(logbuffer)-1]=0;
+            GWEN_Gui_ProgressLog(progressId,
+                                 GWEN_LoggerLevel_Info,
+                                 logbuffer);
+            break;
 
-	  default:
-	    snprintf(logbuffer, sizeof(logbuffer)-1,
-		     I18N("Plugin \"%s\": Unexpected error (%d)"),
-		     GWEN_Plugin_GetName(pl), rv);
-	    logbuffer[sizeof(logbuffer)-1]=0;
-	    GWEN_Gui_ProgressLog(progressId,
-				 GWEN_LoggerLevel_Info,
-				 logbuffer);
-	    break;
-	  } /* switch */
-	} /* if plugin loaded */
-	else {
-	  snprintf(logbuffer, sizeof(logbuffer)-1,
-		   I18N("Could not load plugin \"%s\""),
-		   GWEN_PluginDescription_GetName(pd));
-	  logbuffer[sizeof(logbuffer)-1]=0;
-	  GWEN_Gui_ProgressLog(progressId,
-			       GWEN_LoggerLevel_Warning,
-			       logbuffer);
-	}
+          default:
+            snprintf(logbuffer, sizeof(logbuffer)-1,
+                     I18N("Plugin \"%s\": Unexpected error (%d)"),
+                     GWEN_Plugin_GetName(pl), rv);
+            logbuffer[sizeof(logbuffer)-1]=0;
+            GWEN_Gui_ProgressLog(progressId,
+                                 GWEN_LoggerLevel_Info,
+                                 logbuffer);
+            break;
+          } /* switch */
+        } /* if plugin loaded */
+        else {
+          snprintf(logbuffer, sizeof(logbuffer)-1,
+                   I18N("Could not load plugin \"%s\""),
+                   GWEN_PluginDescription_GetName(pd));
+          logbuffer[sizeof(logbuffer)-1]=0;
+          GWEN_Gui_ProgressLog(progressId,
+                               GWEN_LoggerLevel_Warning,
+                               logbuffer);
+        }
 
-	cnt++;
-	err=GWEN_Gui_ProgressAdvance(progressId, cnt);
-	if (err) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
-	  GWEN_Gui_ProgressEnd(progressId);
-	  GWEN_PluginDescription_List2Iterator_free(pit);
-	  GWEN_PluginDescription_List2_freeAll(pdl);
-	  GWEN_Gui_ProgressEnd(progressId);
-	  return err;
-	}
+        cnt++;
+        err=GWEN_Gui_ProgressAdvance(progressId, cnt);
+        if (err) {
+          DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+          GWEN_Gui_ProgressEnd(progressId);
+          GWEN_PluginDescription_List2Iterator_free(pit);
+          GWEN_PluginDescription_List2_freeAll(pdl);
+          GWEN_Gui_ProgressEnd(progressId);
+          return err;
+        }
 
-	pd=GWEN_PluginDescription_List2Iterator_Next(pit);
+        pd=GWEN_PluginDescription_List2Iterator_Next(pit);
       }
 
       GWEN_Gui_ProgressEnd(progressId);

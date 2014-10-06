@@ -17,11 +17,11 @@
 
 
 GWEN_DIALOG *GWEN_DlgMessage_new(uint32_t flags,
-				 const char *title,
-				 const char *text,
-				 const char *b1,
-				 const char *b2,
-				 const char *b3);
+                                 const char *title,
+                                 const char *text,
+                                 const char *b1,
+                                 const char *b2,
+                                 const char *b3);
 
 
 int GWEN_DlgMessage_GetResponse(const GWEN_DIALOG *dlg);

@@ -38,9 +38,9 @@ GWEN_IDMAP_FUNCTIONS(GWEN_MEMCACHE_ENTRY, GWEN_MemCacheEntry)
 
 
 GWEN_MEMCACHE_ENTRY *GWEN_MemCacheEntry_new(GWEN_MEMCACHE *memCache,
-					    uint32_t id,
-					    void *dataPtr,
-					    size_t dataLen) {
+    uint32_t id,
+    void *dataPtr,
+    size_t dataLen) {
   GWEN_MEMCACHE_ENTRY *me;
 
   GWEN_NEW_OBJECT(GWEN_MEMCACHE_ENTRY, me);
@@ -65,7 +65,7 @@ void GWEN_MemCacheEntry_free(GWEN_MEMCACHE_ENTRY *me) {
     assert(me->useCounter==0);
     assert(me->memCache);
 
-  /* update memcache */
+    /* update memcache */
     me->memCache->currentCacheEntries--;
     me->memCache->currentCacheMemory-=me->dataLen;
 
@@ -141,10 +141,10 @@ void GWEN_MemCacheEntry_EndUse(GWEN_MEMCACHE_ENTRY *me) {
     me->useCounter--;
     if (me->useCounter==0) {
       if (!(me->isValid)) {
-	GWEN_MemCacheEntry_free(me);
+        GWEN_MemCacheEntry_free(me);
       }
       else
-	me->unusedSince=time(0);
+        me->unusedSince=time(0);
     }
   }
   else {
@@ -162,7 +162,7 @@ void GWEN_MemCacheEntry_EndUse(GWEN_MEMCACHE_ENTRY *me) {
 
 
 GWEN_MEMCACHE *GWEN_MemCache_new(size_t maxCacheMemory,
-				 uint32_t maxCacheEntries) {
+                                 uint32_t maxCacheEntries) {
   GWEN_MEMCACHE *mc;
 
   GWEN_NEW_OBJECT(GWEN_MEMCACHE, mc);
@@ -187,7 +187,7 @@ void GWEN_MemCache_free(GWEN_MEMCACHE *mc) {
 
 
 GWEN_MEMCACHE_ENTRY *GWEN_MemCache_FindEntry(GWEN_MEMCACHE *mc,
-					     uint32_t id) {
+    uint32_t id) {
   GWEN_MEMCACHE_ENTRY *me;
 
   assert(mc);
@@ -205,7 +205,7 @@ GWEN_MEMCACHE_ENTRY *GWEN_MemCache_FindEntry(GWEN_MEMCACHE *mc,
 
 
 void GWEN_MemCache_PurgeEntry(GWEN_MEMCACHE *mc,
-			      uint32_t id) {
+                              uint32_t id) {
   GWEN_MEMCACHE_ENTRY *me;
 
   assert(mc);
@@ -223,7 +223,7 @@ void GWEN_MemCache_PurgeEntry(GWEN_MEMCACHE *mc,
 
 
 int GWEN_MemCache__MakeRoom(GWEN_MEMCACHE *mc,
-			    size_t neededSize) {
+                            size_t neededSize) {
   assert(mc);
 
   /* release unused entries until there is enough memory */
@@ -240,14 +240,14 @@ int GWEN_MemCache__MakeRoom(GWEN_MEMCACHE *mc,
 
       me=GWEN_MemCacheEntry_IdMap_Find(mc->idMap, currentId);
       if (me) {
-	if (me->isValid && me->useCounter==0) {
-	  if (oldestEntry==NULL)
-	    oldestEntry=me;
-	  else {
-	    if (me->unusedSince<oldestEntry->unusedSince)
-	      oldestEntry=me;
-	  }
-	}
+        if (me->isValid && me->useCounter==0) {
+          if (oldestEntry==NULL)
+            oldestEntry=me;
+          else {
+            if (me->unusedSince<oldestEntry->unusedSince)
+              oldestEntry=me;
+          }
+        }
       }
       res=GWEN_MemCacheEntry_IdMap_GetNext(mc->idMap, &currentId);
     }
@@ -273,9 +273,9 @@ int GWEN_MemCache__MakeRoom(GWEN_MEMCACHE *mc,
 
 
 GWEN_MEMCACHE_ENTRY *GWEN_MemCache_CreateEntry(GWEN_MEMCACHE *mc,
-					       uint32_t id,
-					       void *dataPtr,
-					       size_t dataLen) {
+    uint32_t id,
+    void *dataPtr,
+    size_t dataLen) {
   GWEN_MEMCACHE_ENTRY *me;
 
   assert(mc);
@@ -332,7 +332,7 @@ GWEN_MEMCACHE_ENTRY *GWEN_MemCache_CreateEntry(GWEN_MEMCACHE *mc,
 
 
 void GWEN_MemCache_PurgeEntries(GWEN_MEMCACHE *mc,
-				uint32_t id, uint32_t mask) {
+                                uint32_t id, uint32_t mask) {
   GWEN_IDMAP_RESULT res;
   uint32_t currentId;
 
@@ -350,10 +350,10 @@ void GWEN_MemCache_PurgeEntries(GWEN_MEMCACHE *mc,
 
       me=GWEN_MemCacheEntry_IdMap_Find(mc->idMap, currentId);
       if (me) {
-	me->isValid=0;
-	GWEN_MemCacheEntry_IdMap_Remove(mc->idMap, currentId);
-	if (me->useCounter==0)
-	  GWEN_MemCacheEntry_free(me);
+        me->isValid=0;
+        GWEN_MemCacheEntry_IdMap_Remove(mc->idMap, currentId);
+        if (me->useCounter==0)
+          GWEN_MemCacheEntry_free(me);
       }
 
     }

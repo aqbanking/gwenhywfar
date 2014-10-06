@@ -37,31 +37,31 @@ static void GWENHYWFAR_CB Gtk2Gui_Dialog_FreeData(void *bp, void *p);
 
 
 static int GWENHYWFAR_CB Gtk2Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
-					 GWEN_WIDGET *w,
-					 GWEN_DIALOG_PROPERTY prop,
-					 int index,
-					 int value,
-					 int doSignal);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int value,
+    int doSignal);
 
 
 static int GWENHYWFAR_CB Gtk2Gui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
-					 GWEN_WIDGET *w,
-					 GWEN_DIALOG_PROPERTY prop,
-					 int index,
-					 int defaultValue);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int defaultValue);
 
 static int GWENHYWFAR_CB Gtk2Gui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
-					  GWEN_WIDGET *w,
-					  GWEN_DIALOG_PROPERTY prop,
-					  int index,
-					  const char *value,
-					  int doSignal);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *value,
+    int doSignal);
 
 static const char * GWENHYWFAR_CB Gtk2Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
-						  GWEN_WIDGET *w,
-						  GWEN_DIALOG_PROPERTY prop,
-						  int index,
-						  const char *defaultValue);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue);
 
 
 static int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w);

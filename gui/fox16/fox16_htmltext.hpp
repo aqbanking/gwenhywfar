@@ -32,8 +32,8 @@ public:
   };
 
   FOX16_HtmlText(FXComposite* p, const FXString& text,
-		 FXuint opts=0,
-		 FXint x=0, FXint y=0, FXint w=0, FXint h=0);
+                 FXuint opts=0,
+                 FXint x=0, FXint y=0, FXint w=0, FXint h=0);
   ~FOX16_HtmlText();
 
   /// Set the text for this label

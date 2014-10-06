@@ -48,7 +48,7 @@ extern "C" {
  */
 /*@{*/
 
-/** @brief Doubly-linked list. 
+/** @brief Doubly-linked list.
  *
  * The list contains pointer to data objects, with the ability to
  * iterate over the list in both directions. */
@@ -57,7 +57,7 @@ typedef struct GWEN_LIST GWEN_LIST;
 /** Callback function for one list element. */
 typedef void *(*GWEN_LIST_FOREACH_CB)(void *element, void *user_data);
 
-/** @brief Doubly-linked list with const objects. 
+/** @brief Doubly-linked list with const objects.
  *
  * The list contains pointer to const data objects, with the ability
  * to iterate over the list in both directions. */
@@ -65,7 +65,7 @@ typedef struct GWEN_LIST GWEN_CONSTLIST;
 
 /** Callback function for one const list element. */
 typedef const void *(*GWEN_CONSTLIST_FOREACH_CB)(const void *element,
-						 void *user_data);
+    void *user_data);
 
 /** An iterator for the doubly-linked list, i.e. a pointer to a
     specific element */
@@ -168,7 +168,7 @@ GWEN_REFPTR *GWEN_List_GetBackRefPtr(const GWEN_LIST *l);
 GWENHYWFAR_API
 void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it);
 
-/** 
+/**
  * Searches for the first occurrence of the "element" pointer and
  * erases that element from the list. (The element itself is not
  * freed.) I.e. this function calls GWEN_List_Erase on the first
@@ -179,7 +179,7 @@ void GWEN_List_Remove(GWEN_LIST *l, const void *element);
 
 
 /** Returns the size of this list, i.e. the number of elements in this
- * list. 
+ * list.
  *
  * This number is counted in the list metadata, so this is a cheap
  * operation. */
@@ -218,7 +218,7 @@ void GWEN_List_PopFront(GWEN_LIST *l);
 GWENHYWFAR_API
 void GWEN_List_Clear(GWEN_LIST *l);
 
-/** 
+/**
  * Finds the LIST_ITERATOR position of the given element. The
  * returned LIST_ITERATOR will be owned by the caller and must be
  * freed when no longer in use. If the list does not contain the
@@ -249,7 +249,7 @@ const void *GWEN_List_Contains(GWEN_LIST *l, const void *element);
  */
 GWENHYWFAR_API
 void *GWEN_List_ForEach(GWEN_LIST *list, GWEN_LIST_FOREACH_CB func,
-			void *user_data);
+                        void *user_data);
 
 /** Return an iterator pointing to the first element in the list */
 GWENHYWFAR_API
@@ -358,7 +358,7 @@ GWENHYWFAR_API
 const void *GWEN_ConstList_GetBack(const GWEN_CONSTLIST *l);
 
 /** Returns the size of this list, i.e. the number of elements in this
- * list. 
+ * list.
  *
  * This number is counted in the list metadata, so this is a cheap
  * operation. */
@@ -404,11 +404,11 @@ void GWEN_ConstList_Clear(GWEN_CONSTLIST *l);
  * returns NULL.
  */
 GWENHYWFAR_API
-const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *list, 
-				   GWEN_CONSTLIST_FOREACH_CB func,
-				   void *user_data);
+const void *GWEN_ConstList_ForEach(GWEN_CONSTLIST *list,
+                                   GWEN_CONSTLIST_FOREACH_CB func,
+                                   void *user_data);
 
-/** 
+/**
  * Finds the LIST_ITERATOR position of the given element. The
  * returned LIST_ITERATOR will be owned by the caller and must be
  * freed when no longer in use. If the list does not contain the
@@ -435,7 +435,7 @@ const void *GWEN_ConstList_Contains(const GWEN_CONSTLIST *l, const void *element
 GWENHYWFAR_API
 void GWEN_ConstList_Erase(GWEN_CONSTLIST *l, GWEN_CONSTLIST_ITERATOR *it);
 
-/** 
+/**
  * Searches for the first occurrence of the "element" pointer and
  * erases that element from the list. (The element itself is not
  * freed.) I.e. this function calls GWEN_List_Erase on the first

@@ -41,19 +41,19 @@
 
 
 
-int GWEN_Process_ModuleInit(void){
+int GWEN_Process_ModuleInit(void) {
   return 0;
 }
 
 
 
-int GWEN_Process_ModuleFini(void){
+int GWEN_Process_ModuleFini(void) {
   return 0;
 }
 
 
 
-GWEN_PROCESS *GWEN_Process_new(void){
+GWEN_PROCESS *GWEN_Process_new(void) {
   GWEN_PROCESS *pr;
 
   GWEN_NEW_OBJECT(GWEN_PROCESS, pr);
@@ -64,7 +64,7 @@ GWEN_PROCESS *GWEN_Process_new(void){
 
 
 
-void GWEN_Process_free(GWEN_PROCESS *pr){
+void GWEN_Process_free(GWEN_PROCESS *pr) {
   if (pr) {
     /* close handles */
     CloseHandle(pr->processInfo.hThread);
@@ -80,7 +80,7 @@ void GWEN_Process_free(GWEN_PROCESS *pr){
 
 GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                                       const char *prg,
-                                      const char *args){
+                                      const char *args) {
   STARTUPINFO si;
   SECURITY_ATTRIBUTES saAttr;
   char *cmdline;
@@ -195,7 +195,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr){
+GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr) {
   DWORD dwExitCode;
 
   if (pr->finished)
@@ -214,7 +214,7 @@ GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr){
 
 
 
-int GWEN_Process_GetResult(GWEN_PROCESS *pr){
+int GWEN_Process_GetResult(GWEN_PROCESS *pr) {
   GWEN_Process_CheckState(pr);
   if (pr->finished)
     return pr->result;
@@ -223,7 +223,7 @@ int GWEN_Process_GetResult(GWEN_PROCESS *pr){
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status){
+GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status) {
   if (status==STILL_ACTIVE) {
     pr->state=GWEN_ProcessStateRunning;
   }
@@ -238,7 +238,7 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status){
 
 
 
-int GWEN_Process_Wait(GWEN_PROCESS *pr){
+int GWEN_Process_Wait(GWEN_PROCESS *pr) {
   DWORD dwExitCode;
 
   if (pr->finished)
@@ -259,7 +259,7 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr){
 
 
 
-int GWEN_Process_Terminate(GWEN_PROCESS *pr){
+int GWEN_Process_Terminate(GWEN_PROCESS *pr) {
   if (TerminateProcess(pr->processInfo.hProcess,
                        GWEN_PROCESS_EXITCODE_ABORT)!=TRUE) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error terminating process (%d)", (int)GetLastError());
@@ -274,42 +274,42 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
 
 
 
-void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f){
+void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f) {
   assert(pr);
   pr->pflags=f;
 }
 
 
 
-void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f){
+void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f) {
   assert(pr);
   pr->pflags|=f;
 }
 
 
 
-void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f){
+void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f) {
   assert(pr);
   pr->pflags&=~f;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr) {
   assert(pr);
   return pr->stdIn;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr) {
   assert(pr);
   return pr->stdOut;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr) {
   assert(pr);
   return pr->stdErr;
 }

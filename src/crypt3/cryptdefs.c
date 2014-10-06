@@ -91,8 +91,8 @@ const char *GWEN_Crypt_PinEncoding_toString(GWEN_CRYPT_PINENCODING pe) {
 
 
 int GWEN_Crypt__TransformFromBCD(unsigned char *buffer,
-				 unsigned int bufLength,
-				 unsigned int *pinLength) {
+                                 unsigned int bufLength,
+                                 unsigned int *pinLength) {
   unsigned char *newBuf;
   unsigned char *p;
   unsigned int newSize;
@@ -126,7 +126,7 @@ int GWEN_Crypt__TransformFromBCD(unsigned char *buffer,
 
   if (cnt>bufLength) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (%d>%d)",
-	      cnt, bufLength);
+              cnt, bufLength);
     free(newBuf);
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
@@ -141,8 +141,8 @@ int GWEN_Crypt__TransformFromBCD(unsigned char *buffer,
 
 
 int GWEN_Crypt__TransformFromFPIN2(unsigned char *buffer,
-				   unsigned int bufLength,
-				   unsigned int *pinLength) {
+                                   unsigned int bufLength,
+                                   unsigned int *pinLength) {
   unsigned char *newBuf;
   unsigned char *p;
   unsigned int newSize;
@@ -185,7 +185,7 @@ int GWEN_Crypt__TransformFromFPIN2(unsigned char *buffer,
 
   if (cnt>bufLength) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (%d>%d)",
-	      cnt, bufLength);
+              cnt, bufLength);
     free(newBuf);
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
@@ -199,8 +199,8 @@ int GWEN_Crypt__TransformFromFPIN2(unsigned char *buffer,
 
 
 int GWEN_Crypt__TransformFromBin(unsigned char *buffer,
-				 unsigned int bufLength,
-				 unsigned int *pinLength) {
+                                 unsigned int bufLength,
+                                 unsigned int *pinLength) {
   unsigned int i;
   unsigned char *newBuf;
   unsigned char *p;
@@ -234,8 +234,8 @@ int GWEN_Crypt__TransformFromBin(unsigned char *buffer,
 
 
 int GWEN_Crypt__TransformToBCD(unsigned char *buffer,
-			       unsigned int bufLength,
-			       unsigned int *pinLength) {
+                               unsigned int bufLength,
+                               unsigned int *pinLength) {
   unsigned char *newBuf;
   unsigned char *p;
   unsigned int newSize;
@@ -281,7 +281,7 @@ int GWEN_Crypt__TransformToBCD(unsigned char *buffer,
 
   if (cnt>bufLength) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (%d>%d)",
-	      cnt, bufLength);
+              cnt, bufLength);
     free(newBuf);
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
@@ -297,8 +297,8 @@ int GWEN_Crypt__TransformToBCD(unsigned char *buffer,
 
 
 int GWEN_Crypt__TransformToFPIN2(unsigned char *buffer,
-				 unsigned int bufLength,
-				 unsigned int *pinLength) {
+                                 unsigned int bufLength,
+                                 unsigned int *pinLength) {
   unsigned char *newBuf;
   unsigned char *p;
   unsigned int newSize;
@@ -306,12 +306,12 @@ int GWEN_Crypt__TransformToFPIN2(unsigned char *buffer,
 
   if (*pinLength>14) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Pin too long for FPIN2 (%d>14)",
-	      *pinLength);
+              *pinLength);
     return GWEN_ERROR_INVALID;
   }
   if (8>bufLength) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Converted pin is too long (8>%d)",
-	      bufLength);
+              bufLength);
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
 
@@ -364,8 +364,8 @@ int GWEN_Crypt__TransformToFPIN2(unsigned char *buffer,
 
 
 int GWEN_Crypt__TransformToBin(unsigned char *buffer,
-			       unsigned int bufLength,
-			       unsigned int *pinLength) {
+                               unsigned int bufLength,
+                               unsigned int *pinLength) {
   unsigned int i;
   unsigned char *newBuf;
   unsigned char *p;
@@ -399,10 +399,10 @@ int GWEN_Crypt__TransformToBin(unsigned char *buffer,
 
 
 int GWEN_Crypt_TransformPin(GWEN_CRYPT_PINENCODING peSrc,
-			    GWEN_CRYPT_PINENCODING peDst,
-			    unsigned char *buffer,
-			    unsigned int bufLength,
-			    unsigned int *pinLength) {
+                            GWEN_CRYPT_PINENCODING peDst,
+                            unsigned char *buffer,
+                            unsigned int bufLength,
+                            unsigned int *pinLength) {
   int rv;
 
   if (peSrc==peDst)
@@ -423,8 +423,8 @@ int GWEN_Crypt_TransformPin(GWEN_CRYPT_PINENCODING peSrc,
     break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Unhandled source encoding \"%s\"",
-	      GWEN_Crypt_PinEncoding_toString(peSrc));
+              "Unhandled source encoding \"%s\"",
+              GWEN_Crypt_PinEncoding_toString(peSrc));
     return GWEN_ERROR_INVALID;
   }
   if (rv) {
@@ -447,8 +447,8 @@ int GWEN_Crypt_TransformPin(GWEN_CRYPT_PINENCODING peSrc,
     break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Unhandled destination encoding \"%s\"",
-	      GWEN_Crypt_PinEncoding_toString(peDst));
+              "Unhandled destination encoding \"%s\"",
+              GWEN_Crypt_PinEncoding_toString(peDst));
     return GWEN_ERROR_INVALID;
   }
   if (rv) {
@@ -463,8 +463,8 @@ int GWEN_Crypt_TransformPin(GWEN_CRYPT_PINENCODING peSrc,
 
 
 static int GWEN_Crypt__KeyDataFromText(const char *text,
-				       unsigned char *buffer,
-				       unsigned int bufLength) {
+                                       unsigned char *buffer,
+                                       unsigned int bufLength) {
   GWEN_MDIGEST *md;
   int rv;
 
@@ -473,8 +473,12 @@ static int GWEN_Crypt__KeyDataFromText(const char *text,
   assert(bufLength);
 
   switch(bufLength) {
-  case 16: md=GWEN_MDigest_Md5_new(); break;
-  case 20: md=GWEN_MDigest_Rmd160_new(); break;
+  case 16:
+    md=GWEN_MDigest_Md5_new();
+    break;
+  case 20:
+    md=GWEN_MDigest_Rmd160_new();
+    break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Bad size (%d)", bufLength);
     return GWEN_ERROR_BAD_SIZE;
@@ -488,8 +492,8 @@ static int GWEN_Crypt__KeyDataFromText(const char *text,
   }
 
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*)text,
-			 strlen(text));
+                         (const uint8_t*)text,
+                         strlen(text));
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -514,8 +518,8 @@ static int GWEN_Crypt__KeyDataFromText(const char *text,
 
 
 int GWEN_Crypt_KeyDataFromText(const char *text,
-			       unsigned char *buffer,
-			       unsigned int bufLength) {
+                               unsigned char *buffer,
+                               unsigned int bufLength) {
   if (bufLength==24) {
     int rv;
 
@@ -536,10 +540,16 @@ void GWEN_Crypt_Random(int quality, uint8_t *buffer, uint32_t len) {
   enum gcry_random_level q;
 
   switch(quality) {
-  case 0:  q=GCRY_WEAK_RANDOM; break;
-  case 1:  q=GCRY_STRONG_RANDOM; break;
+  case 0:
+    q=GCRY_WEAK_RANDOM;
+    break;
+  case 1:
+    q=GCRY_STRONG_RANDOM;
+    break;
   case 2:
-  default: q=GCRY_VERY_STRONG_RANDOM; break;
+  default:
+    q=GCRY_VERY_STRONG_RANDOM;
+    break;
   }
 
   data=gcry_random_bytes(len,  q);

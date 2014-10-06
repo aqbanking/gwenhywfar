@@ -210,7 +210,7 @@ void GWEN_RingBuffer_Reset(GWEN_RINGBUFFER *rb);
  */
 GWENHYWFAR_API
 uint32_t
-  GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb);
+GWEN_RingBuffer_GetMaxUnsegmentedRead(GWEN_RINGBUFFER *rb);
 
 /**
  * Returns the maximum number of bytes which can be written with a following
@@ -219,7 +219,7 @@ uint32_t
  */
 GWENHYWFAR_API
 uint32_t
-  GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb);
+GWEN_RingBuffer_GetMaxUnsegmentedWrite(GWEN_RINGBUFFER *rb);
 
 /**
  * Adjusts the internal pointers and statistical data as if

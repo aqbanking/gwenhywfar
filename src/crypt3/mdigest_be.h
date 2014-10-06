@@ -24,8 +24,8 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_MDIGEST, GWENHYWFAR_API)
 typedef int (*GWEN_MDIGEST_BEGIN_FN)(GWEN_MDIGEST *md);
 typedef int (*GWEN_MDIGEST_END_FN)(GWEN_MDIGEST *md);
 typedef int (*GWEN_MDIGEST_UPDATE_FN)(GWEN_MDIGEST *md,
-				      const uint8_t *buf,
-				      unsigned int l);
+                                      const uint8_t *buf,
+                                      unsigned int l);
 
 
 GWENHYWFAR_API

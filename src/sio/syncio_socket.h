@@ -42,7 +42,7 @@ extern "C" {
 
 GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_Socket_new(GWEN_SOCKETTYPE sockType,
-				    GWEN_AddressFamily addressFamily);
+                                    GWEN_AddressFamily addressFamily);
 
 GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_SyncIo_Socket_TakeOver(GWEN_SOCKET *socket);

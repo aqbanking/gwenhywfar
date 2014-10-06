@@ -65,8 +65,8 @@ struct GWEN_BUFFER {
 
 
 static void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
-					uint32_t pos,
-					int offset);
+                                        uint32_t pos,
+                                        int offset);
 
 
 static int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf);

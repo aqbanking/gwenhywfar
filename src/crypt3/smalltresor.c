@@ -32,27 +32,27 @@
 
 
 static int _encodeData(const uint8_t *ptr,
-		       uint32_t len,
-		       uint8_t *pOutData,
-		       uint32_t *pOutLen,
-		       const uint8_t *pKey) {
+                       uint32_t len,
+                       uint8_t *pOutData,
+                       uint32_t *pOutLen,
+                       const uint8_t *pKey) {
   GWEN_CRYPT_KEY *k;
   int rv;
 
   k=GWEN_Crypt_KeyBlowFish_fromData(GWEN_Crypt_CryptMode_Cbc,
-				    BLOWFISH_KEYSIZE,
-				    pKey, BLOWFISH_KEYSIZE);
+                                    BLOWFISH_KEYSIZE,
+                                    pKey, BLOWFISH_KEYSIZE);
   if (!k) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not create key");
     return GWEN_ERROR_ENCRYPT;
   }
 
   rv=GWEN_Crypt_Key_Encipher(k,
-			     ptr, len,
-			     pOutData, pOutLen);
+                             ptr, len,
+                             pOutData, pOutLen);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error on GWEN_Crypt_Key_Encipher(len=%d, *outLen=%d): %d",
-	      len, *pOutLen, rv);
+              len, *pOutLen, rv);
     GWEN_Crypt_Key_free(k);
     return rv;
   }
@@ -153,16 +153,16 @@ static int _addRandomBytes(GWEN_BUFFER *dst, int withLength) {
 
 
 static int _decodeData(const uint8_t *ptr,
-		       uint32_t len,
-		       uint8_t *pOutData,
-		       uint32_t *pOutLen,
-		       const uint8_t *pKey) {
+                       uint32_t len,
+                       uint8_t *pOutData,
+                       uint32_t *pOutLen,
+                       const uint8_t *pKey) {
   GWEN_CRYPT_KEY *k;
   int rv;
 
   k=GWEN_Crypt_KeyBlowFish_fromData(GWEN_Crypt_CryptMode_Cbc,
-				    BLOWFISH_KEYSIZE,
-				    pKey, BLOWFISH_KEYSIZE);
+                                    BLOWFISH_KEYSIZE,
+                                    pKey, BLOWFISH_KEYSIZE);
   if (!k) {
     return GWEN_ERROR_DECRYPT;
   }
@@ -218,8 +218,8 @@ static int _decode(const uint8_t *p, uint32_t len, GWEN_BUFFER *dst, int iterati
 
   /* return buffer */
   GWEN_Buffer_AppendBytes(dst,
-			  GWEN_Buffer_GetStart(tbuf2),
-			  GWEN_Buffer_GetUsedBytes(tbuf2));
+                          GWEN_Buffer_GetStart(tbuf2),
+                          GWEN_Buffer_GetUsedBytes(tbuf2));
   GWEN_Buffer_free(tbuf2);
   GWEN_Buffer_free(tbuf1);
 
@@ -232,11 +232,11 @@ static int _decode(const uint8_t *p, uint32_t len, GWEN_BUFFER *dst, int iterati
 
 
 int GWEN_SmallTresor_Encrypt(const uint8_t *src,
-			     uint32_t slen,
-			     const char *password,
-			     GWEN_BUFFER *dst,
-			     int passwordIterations,
-			     int cryptIterations) {
+                             uint32_t slen,
+                             const char *password,
+                             GWEN_BUFFER *dst,
+                             int passwordIterations,
+                             int cryptIterations) {
   GWEN_BUFFER *tbuf;
   GWEN_BUFFER *xbuf;
   uint32_t x;
@@ -298,9 +298,9 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   /* actually encode the data into xbuf */
   xbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(tbuf)+(cryptIterations*BLOWFISH_KEYSIZE), 0, 1);
   rv=_encode((const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-	     GWEN_Buffer_GetUsedBytes(tbuf),
-	     xbuf,
-	     cryptIterations);
+             GWEN_Buffer_GetUsedBytes(tbuf),
+             xbuf,
+             cryptIterations);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(xbuf);
@@ -338,11 +338,11 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
 
 
 int GWEN_SmallTresor_Decrypt(const uint8_t *p,
-			     uint32_t len,
-			     const char *password,
-			     GWEN_BUFFER *dst,
-			     int passwordIterations,
-			     int cryptIterations) {
+                             uint32_t len,
+                             const char *password,
+                             GWEN_BUFFER *dst,
+                             int passwordIterations,
+                             int cryptIterations) {
   GWEN_BUFFER *tbuf1;
   GWEN_BUFFER *tbuf2;
   int rv;

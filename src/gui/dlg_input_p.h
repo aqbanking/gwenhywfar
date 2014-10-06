@@ -32,8 +32,8 @@ typedef struct GWEN_DLGINPUT GWEN_DLGINPUT;
 
 
 static int GWENHYWFAR_CB GWEN_DlgInput_SignalHandler(GWEN_DIALOG *dlg,
-						     GWEN_DIALOG_EVENTTYPE t,
-						     const char *sender);
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender);
 
 static void GWENHYWFAR_CB GWEN_DlgInput_FreeData(void *bp, void *p);
 

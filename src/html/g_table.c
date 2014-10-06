@@ -25,8 +25,8 @@
 
 
 HTML_GROUP *HtmlGroup_Table_new(const char *groupName,
-			       HTML_GROUP *parent,
-			       GWEN_XML_CONTEXT *ctx) {
+                                HTML_GROUP *parent,
+                                GWEN_XML_CONTEXT *ctx) {
   HTML_GROUP *g;
 
   /* create base group */
@@ -67,7 +67,7 @@ int HtmlGroup_Table_StartTag(HTML_GROUP *g, const char *tagName) {
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Unexpected group [%s]", tagName);
+              "Unexpected group [%s]", tagName);
     return GWEN_ERROR_BAD_DATA;
   }
 

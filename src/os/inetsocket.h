@@ -84,7 +84,8 @@ typedef enum {
   GWEN_SocketTypeRAW,
   GWEN_SocketTypeUnix,
   GWEN_SocketTypeFile
-} GWEN_SOCKETTYPE;
+}
+GWEN_SOCKETTYPE;
 
 
 
@@ -118,13 +119,13 @@ GWENHYWFAR_API int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp);
  */
 /*@{*/
 GWENHYWFAR_API
-  int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
-			       const GWEN_SOCKET *sp);
+int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
+                             const GWEN_SOCKET *sp);
 GWENHYWFAR_API
-  int GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
-                                             const GWEN_SOCKET *sp);
+int GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
+                                const GWEN_SOCKET *sp);
 GWENHYWFAR_API int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
-                                            const GWEN_SOCKET *sp);
+    const GWEN_SOCKET *sp);
 GWENHYWFAR_API int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp);
 
 /*@}*/
@@ -198,8 +199,8 @@ GWENHYWFAR_API int GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog);
  */
 GWENHYWFAR_API
 int GWEN_Socket_Accept(GWEN_SOCKET *sp,
-		       GWEN_INETADDRESS **addr,
-		       GWEN_SOCKET **newsock);
+                       GWEN_INETADDRESS **addr,
+                       GWEN_SOCKET **newsock);
 
 /*@}*/
 
@@ -226,8 +227,8 @@ GWENHYWFAR_API GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp);
  * peer. In that case the caller is responsible for freeing that address.
  */
 GWENHYWFAR_API
-  int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
-                                         GWEN_INETADDRESS **addr);
+int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
+                            GWEN_INETADDRESS **addr);
 
 /**
  * This function waits for a group of sockets to change their state.
@@ -238,10 +239,10 @@ GWENHYWFAR_API
  * will wait forever, if ==0 then it won't wait at all.
  */
 GWENHYWFAR_API
-  int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
-			 GWEN_SOCKETSET *ws,
-			 GWEN_SOCKETSET *xs,
-			 int timeout);
+int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
+                       GWEN_SOCKETSET *ws,
+                       GWEN_SOCKETSET *xs,
+                       int timeout);
 
 /**
  * Wait until the given socket becomes readable or a timeout occurrs.
@@ -249,7 +250,7 @@ GWENHYWFAR_API
  * @param timeout please see @ref GWEN_Socket_Select for details
  */
 GWENHYWFAR_API
-  int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout);
+int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout);
 
 /**
  * Wait until the given socket becomes writeable or a timeout occurrs.
@@ -257,7 +258,7 @@ GWENHYWFAR_API
  * @param timeout please see @ref GWEN_Socket_Select for details
  */
 GWENHYWFAR_API
-  int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout);
+int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout);
 /*@}*/
 
 /**
@@ -279,8 +280,8 @@ GWENHYWFAR_API
  * bytes actually read.
  */
 GWENHYWFAR_API int GWEN_Socket_Read(GWEN_SOCKET *sp,
-                                               char *buffer,
-                                               int *bsize);
+                                    char *buffer,
+                                    int *bsize);
 
 /**
  * Write bytes to an open socket.
@@ -291,8 +292,8 @@ GWENHYWFAR_API int GWEN_Socket_Read(GWEN_SOCKET *sp,
  * written. Please note that this function may write less bytes than expected!
  */
 GWENHYWFAR_API int GWEN_Socket_Write(GWEN_SOCKET *sp,
-				     const char *buffer,
-				     int *bsize);
+                                     const char *buffer,
+                                     int *bsize);
 
 /**
  * Reads bytes from an UDP socket, which is connectionless.
@@ -307,10 +308,10 @@ GWENHYWFAR_API int GWEN_Socket_Write(GWEN_SOCKET *sp,
  * bytes actually read.
  */
 GWENHYWFAR_API
-  int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
-			   GWEN_INETADDRESS **addr,
-			   char *buffer,
-			   int *bsize);
+int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
+                         GWEN_INETADDRESS **addr,
+                         char *buffer,
+                         int *bsize);
 /**
  * Writes data to an UDP socket, which is connectionless.
  * @param sp socket
@@ -321,10 +322,10 @@ GWENHYWFAR_API
  * written. Please note that this function may write less bytes than expected!
   */
 GWENHYWFAR_API
-  int GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
-			  const GWEN_INETADDRESS *addr,
-			  const char *buffer,
-			  int *bsize);
+int GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
+                        const GWEN_INETADDRESS *addr,
+                        const char *buffer,
+                        int *bsize);
 /*@}*/
 
 /**
@@ -368,7 +369,7 @@ GWENHYWFAR_API int GWEN_Socket_GetSocketError(GWEN_SOCKET *sp);
  * @param fl if nonzero then reusing the address is enabled
  */
 GWENHYWFAR_API
-  int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl);
+int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl);
 /*@}*/
 
 

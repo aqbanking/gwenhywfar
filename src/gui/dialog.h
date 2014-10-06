@@ -120,8 +120,8 @@ enum {
  * code.
  */
 typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender);
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender);
 
 
 
@@ -178,9 +178,9 @@ void GWEN_Dialog_AddMediaPath(GWEN_DIALOG *dlg, const char *s);
  */
 GWENHYWFAR_API
 void GWEN_Dialog_AddMediaPathsFromPathManager(GWEN_DIALOG *dlg,
-					      const char *destlib,
-					      const char *pathName,
-					      const char *relPath);
+    const char *destlib,
+    const char *pathName,
+    const char *relPath);
 
 
 /**
@@ -193,8 +193,8 @@ void GWEN_Dialog_AddMediaPathsFromPathManager(GWEN_DIALOG *dlg,
  */
 GWENHYWFAR_API
 int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
-			     const char *parentWidgetName,
-			     GWEN_DIALOG *subdlg);
+                             const char *parentWidgetName,
+                             GWEN_DIALOG *subdlg);
 
 GWENHYWFAR_API
 int GWEN_Dialog_RemoveWidget(GWEN_DIALOG *dlg, const char *name);
@@ -206,7 +206,7 @@ int GWEN_Dialog_RemoveWidget(GWEN_DIALOG *dlg, const char *name);
  */
 GWENHYWFAR_API
 GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
-                                                       GWEN_DIALOG_SIGNALHANDLER fn);
+    GWEN_DIALOG_SIGNALHANDLER fn);
 
 
 
@@ -282,11 +282,11 @@ typedef enum {
  */
 GWENHYWFAR_API
 int GWEN_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
-			       const char *name,
-			       GWEN_DIALOG_PROPERTY prop,
+                               const char *name,
+                               GWEN_DIALOG_PROPERTY prop,
                                int index,
-			       int value,
-			       int doSignal);
+                               int value,
+                               int doSignal);
 
 /**
  * This function returns the value of an integer property.
@@ -299,10 +299,10 @@ int GWEN_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
  */
 GWENHYWFAR_API
 int GWEN_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
-			       const char *name,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       int defaultValue);
+                               const char *name,
+                               GWEN_DIALOG_PROPERTY prop,
+                               int index,
+                               int defaultValue);
 
 /**
  * Modify a string property.
@@ -312,11 +312,11 @@ int GWEN_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
  */
 GWENHYWFAR_API
 int GWEN_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
-				const char *name,
-				GWEN_DIALOG_PROPERTY prop,
-				int index,
-				const char *value,
-				int doSignal);
+                                const char *name,
+                                GWEN_DIALOG_PROPERTY prop,
+                                int index,
+                                const char *value,
+                                int doSignal);
 
 /**
  * Returns a string property.
@@ -342,10 +342,10 @@ int GWEN_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
  */
 GWENHYWFAR_API
 const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
-					const char *name,
-					GWEN_DIALOG_PROPERTY prop,
-					int index,
-					const char *defaultValue);
+                                        const char *name,
+                                        GWEN_DIALOG_PROPERTY prop,
+                                        int index,
+                                        const char *defaultValue);
 /*@}*/
 
 

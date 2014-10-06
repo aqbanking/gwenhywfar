@@ -71,18 +71,18 @@ GWENHYWFAR_API GWEN_LIBLOADER *GWEN_LibLoader_new(void);
 GWENHYWFAR_API void GWEN_LibLoader_free(GWEN_LIBLOADER *h);
 
 GWENHYWFAR_API
-  int GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
-				 const char *name);
+int GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
+                               const char *name);
 GWENHYWFAR_API
-  int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
-					 const char *path,
-					 const char *name);
+int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
+                                       const char *path,
+                                       const char *name);
 
 GWENHYWFAR_API
-  int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h);
+int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h);
 GWENHYWFAR_API
-  int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
-			     const char *name, void **p);
+int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
+                           const char *name, void **p);
 
 /*@}*/
 

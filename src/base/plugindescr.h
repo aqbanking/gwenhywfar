@@ -90,7 +90,7 @@ void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd);
  */
 GWENHYWFAR_API
 GWEN_XMLNODE*
-  GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
 const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd);
@@ -107,23 +107,23 @@ const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
 const char*
-  GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
 const char*
-  GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
 const char*
-  GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
 const char*
-  GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
 const char*
-  GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
 void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
@@ -152,14 +152,14 @@ void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
 GWENHYWFAR_API DEPRECATED
 int
 GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                            const char *s,
-                                            GWEN_BUFFER *buf);
+    const char *s,
+    GWEN_BUFFER *buf);
 
 GWENHYWFAR_API
-  int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);
+int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
-  void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i);
+void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i);
 
 
 #ifdef __cplusplus

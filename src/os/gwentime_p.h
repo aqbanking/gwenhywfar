@@ -42,11 +42,11 @@ struct GWEN_TIME {
 
 
 uint32_t GWEN_Time__mktimeUtc(int year,
-			      int month,
-			      int day,
-			      int hour,
-			      int min,
-			      int sec);
+                              int month,
+                              int day,
+                              int hour,
+                              int min,
+                              int sec);
 
 
 
@@ -63,15 +63,15 @@ static GWEN_TIME_TMPLCHAR *GWEN_TimeTmplChar_new(char c);
 static void GWEN_TimeTmplChar_free(GWEN_TIME_TMPLCHAR *e);
 
 static GWEN_TIME_TMPLCHAR *GWEN_Time__findTmplChar(GWEN_TIME_TMPLCHAR_LIST *ll,
-						   char c);
+    char c);
 static void GWEN_Time__sampleTmplChars(const GWEN_TIME *t, const char *tmpl,
-				       GWEN_BUFFER *buf,
-				       GWEN_TIME_TMPLCHAR_LIST *ll);
+                                       GWEN_BUFFER *buf,
+                                       GWEN_TIME_TMPLCHAR_LIST *ll);
 static void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
-				     GWEN_TIME_TMPLCHAR_LIST *ll,
-				     int useUtc);
+                                     GWEN_TIME_TMPLCHAR_LIST *ll,
+                                     int useUtc);
 static int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
-			       GWEN_BUFFER *buf, int useUtc);
+                               GWEN_BUFFER *buf, int useUtc);
 
 
 #endif

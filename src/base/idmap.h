@@ -177,8 +177,8 @@ void GWEN_IdMap_free(GWEN_IDMAP *map);
 
 GWENHYWFAR_API
 GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
-				    uint32_t id,
-				    void *ptr);
+                                    uint32_t id,
+                                    void *ptr);
 
 GWENHYWFAR_API
 GWEN_IDMAP_RESULT GWEN_IdMap_Remove(GWEN_IDMAP *map,

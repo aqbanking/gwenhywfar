@@ -13,10 +13,10 @@
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
-				 GWEN_DIALOG_PROPERTY prop,
-				 int index,
-				 int value,
-				 int doSignal) {
+                                  GWEN_DIALOG_PROPERTY prop,
+                                  int index,
+                                  int value,
+                                  int doSignal) {
   GtkLabel *g;
 
   g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -26,7 +26,7 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
-  
+
   case GWEN_DialogProperty_Focus:
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
@@ -41,8 +41,8 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
@@ -51,9 +51,9 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
-				 GWEN_DIALOG_PROPERTY prop,
-				 int index,
-				 int defaultValue) {
+                                  GWEN_DIALOG_PROPERTY prop,
+                                  int index,
+                                  int defaultValue) {
   GtkLabel *g;
 
   g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -77,8 +77,8 @@ int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
@@ -86,10 +86,10 @@ int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
-				  GWEN_DIALOG_PROPERTY prop,
-				  int index,
-				  const char *value,
-				  int doSignal) {
+                                   GWEN_DIALOG_PROPERTY prop,
+                                   int index,
+                                   const char *value,
+                                   int doSignal) {
   GtkLabel *g;
   GWEN_BUFFER *tbuf;
 
@@ -110,8 +110,8 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   GWEN_Buffer_free(tbuf);
   return GWEN_ERROR_INVALID;
 }
@@ -120,9 +120,9 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
-					   GWEN_DIALOG_PROPERTY prop,
-					   int index,
-					   const char *defaultValue) {
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   GtkLabel *g;
 
   g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -136,8 +136,8 @@ const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 

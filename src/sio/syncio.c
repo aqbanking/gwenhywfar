@@ -125,8 +125,8 @@ int GWEN_SyncIo_Flush(GWEN_SYNCIO *sio) {
 
 
 int GWEN_SyncIo_Read(GWEN_SYNCIO *sio,
-		     uint8_t *buffer,
-		     uint32_t size) {
+                     uint8_t *buffer,
+                     uint32_t size) {
   assert(sio);
   assert(sio->refCount);
   if (sio->readFn)
@@ -138,8 +138,8 @@ int GWEN_SyncIo_Read(GWEN_SYNCIO *sio,
 
 
 int GWEN_SyncIo_Write(GWEN_SYNCIO *sio,
-		      const uint8_t *buffer,
-		      uint32_t size) {
+                      const uint8_t *buffer,
+                      uint32_t size) {
   assert(sio);
   assert(sio->refCount);
   if (sio->writeFn)
@@ -293,14 +293,15 @@ GWEN_SYNCIO_WRITE_FN GWEN_SyncIo_SetWriteFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_WRITE_
 
 
 int GWEN_SyncIo_WriteForced(GWEN_SYNCIO *sio,
-			    const uint8_t *buffer,
-			    uint32_t size) {
+                            const uint8_t *buffer,
+                            uint32_t size) {
   if (size==0) {
     int rv;
 
     do {
       rv=GWEN_SyncIo_Write(sio, buffer, size);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -315,12 +316,13 @@ int GWEN_SyncIo_WriteForced(GWEN_SYNCIO *sio,
       int rv;
 
       do {
-	rv=GWEN_SyncIo_Write(sio, buffer, todo);
-      } while (rv==GWEN_ERROR_INTERRUPTED);
+        rv=GWEN_SyncIo_Write(sio, buffer, todo);
+      }
+      while (rv==GWEN_ERROR_INTERRUPTED);
 
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       todo-=rv;
       buffer+=rv;
@@ -333,8 +335,8 @@ int GWEN_SyncIo_WriteForced(GWEN_SYNCIO *sio,
 
 
 int GWEN_SyncIo_ReadForced(GWEN_SYNCIO *sio,
-			   uint8_t *buffer,
-			   uint32_t size) {
+                           uint8_t *buffer,
+                           uint32_t size) {
   uint32_t todo;
 
   todo=size;
@@ -343,7 +345,8 @@ int GWEN_SyncIo_ReadForced(GWEN_SYNCIO *sio,
 
     do {
       rv=GWEN_SyncIo_Read(sio, buffer, todo);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -406,8 +409,8 @@ int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s) {
 
 
 int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
-					    int maxLines,
-					    GWEN_STRINGLIST *sl) {
+    int maxLines,
+    GWEN_STRINGLIST *sl) {
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO *baseSio;
   int rv;
@@ -465,7 +468,8 @@ int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uin
 
     do {
       rv=GWEN_SyncIo_Read(sio, buffer, todo);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -523,7 +527,8 @@ int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf) {
 
     do {
       rv=GWEN_SyncIo_Read(sio, p, l);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

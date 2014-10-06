@@ -25,7 +25,7 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_HASHALGO, GWEN_Crypt_HashAlgo)
 
 
 GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgoId_fromString(const char *s) {
-    assert(s);
+  assert(s);
   if (strcasecmp(s, "none")==0)
     return GWEN_Crypt_HashAlgoId_None;
   else if (strcasecmp(s, "sha1")==0)
@@ -122,12 +122,12 @@ int GWEN_Crypt_HashAlgo_toDb(const GWEN_CRYPT_HASHALGO *a, GWEN_DB_NODE *db) {
   assert(a->refCount);
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "id",
-		       GWEN_Crypt_HashAlgoId_toString(a->id));
+                       "id",
+                       GWEN_Crypt_HashAlgoId_toString(a->id));
   if (a->pInitVector && a->lInitVector)
     GWEN_DB_SetBinValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"initVector",
-			a->pInitVector, a->lInitVector);
+                        "initVector",
+                        a->pInitVector, a->lInitVector);
 
   return 0;
 }
@@ -160,8 +160,8 @@ void GWEN_Crypt_HashAlgo_free(GWEN_CRYPT_HASHALGO *a) {
     assert(a->refCount);
     if (a->refCount==1) {
       if (a->pInitVector) {
-	free(a->pInitVector);
-	a->pInitVector=NULL;
+        free(a->pInitVector);
+        a->pInitVector=NULL;
       }
       a->refCount--;
       GWEN_FREE_OBJECT(a);
@@ -174,7 +174,7 @@ void GWEN_Crypt_HashAlgo_free(GWEN_CRYPT_HASHALGO *a) {
 
 
 
-GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgo_GetId(const GWEN_CRYPT_HASHALGO *a){
+GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgo_GetId(const GWEN_CRYPT_HASHALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->id;
@@ -182,7 +182,7 @@ GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgo_GetId(const GWEN_CRYPT_HASHALGO *a){
 
 
 
-uint8_t *GWEN_Crypt_HashAlgo_GetInitVectorPtr(const GWEN_CRYPT_HASHALGO *a){
+uint8_t *GWEN_Crypt_HashAlgo_GetInitVectorPtr(const GWEN_CRYPT_HASHALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->pInitVector;
@@ -190,7 +190,7 @@ uint8_t *GWEN_Crypt_HashAlgo_GetInitVectorPtr(const GWEN_CRYPT_HASHALGO *a){
 
 
 
-uint32_t GWEN_Crypt_HashAlgo_GetInitVectorLen(const GWEN_CRYPT_HASHALGO *a){
+uint32_t GWEN_Crypt_HashAlgo_GetInitVectorLen(const GWEN_CRYPT_HASHALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->lInitVector;
@@ -199,8 +199,8 @@ uint32_t GWEN_Crypt_HashAlgo_GetInitVectorLen(const GWEN_CRYPT_HASHALGO *a){
 
 
 int GWEN_Crypt_HashAlgo_SetInitVector(GWEN_CRYPT_HASHALGO *a,
-				      const uint8_t *pv,
-				      uint32_t lv) {
+                                      const uint8_t *pv,
+                                      uint32_t lv) {
   uint8_t *nv=NULL;
 
   assert(a);

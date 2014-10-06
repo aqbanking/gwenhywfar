@@ -35,10 +35,10 @@ class CppGuiLinker {
                                        uint32_t guiid);
 
   static int GWENHYWFAR_CB SetPasswordStatus(GWEN_GUI *gui,
-                                             const char *token,
-                                             const char *pin,
-                                             GWEN_GUI_PASSWORD_STATUS status,
-                                             uint32_t guiid);
+      const char *token,
+      const char *pin,
+      GWEN_GUI_PASSWORD_STATUS status,
+      uint32_t guiid);
 
   static int GWENHYWFAR_CB CheckCert(GWEN_GUI *gui,
                                      const GWEN_SSLCERTDESCR *cert,

@@ -113,7 +113,7 @@ int GWEN_Init(void) {
         gwen_binreloc_initialized=-1;
       }
       else
-	gwen_binreloc_initialized=1;
+        gwen_binreloc_initialized=1;
 #else
       gwen_binreloc_initialized=1;
 #endif
@@ -135,115 +135,115 @@ int GWEN_Init(void) {
      * $sysconfdir e.g. "/etc" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSCONFDIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBNAME,
-				       GWEN_PM_SYSCONFDIR,
-				       GWEN_REGKEY_PATHS,
-				       GWEN_REGNAME_SYSCONFDIR);
+                                       GWEN_PM_LIBNAME,
+                                       GWEN_PM_SYSCONFDIR,
+                                       GWEN_REGKEY_PATHS,
+                                       GWEN_REGNAME_SYSCONFDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
-				GWEN_PM_LIBNAME,
-				GWEN_PM_SYSCONFDIR,
-				GWEN_SYSCONF_DIR,
-				GWEN_PathManager_RelModeExe);
+                                GWEN_PM_LIBNAME,
+                                GWEN_PM_SYSCONFDIR,
+                                GWEN_SYSCONF_DIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-			     GWEN_PM_LIBNAME,
-			     GWEN_PM_SYSCONFDIR,
-			     GWEN_SYSCONF_DIR);
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_SYSCONFDIR,
+                             GWEN_SYSCONF_DIR);
 #endif
 
     /* ---------------------------------------------------------------------
      * $localedir e.g. "/usr/share/locale" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBNAME,
-				       GWEN_PM_LOCALEDIR,
-				       GWEN_REGKEY_PATHS,
-				       GWEN_REGNAME_LOCALEDIR);
+                                       GWEN_PM_LIBNAME,
+                                       GWEN_PM_LOCALEDIR,
+                                       GWEN_REGKEY_PATHS,
+                                       GWEN_REGNAME_LOCALEDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
-				GWEN_PM_LIBNAME,
-				GWEN_PM_LOCALEDIR,
-				LOCALEDIR,
-				GWEN_PathManager_RelModeExe);
+                                GWEN_PM_LIBNAME,
+                                GWEN_PM_LOCALEDIR,
+                                LOCALEDIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-			     GWEN_PM_LIBNAME,
-			     GWEN_PM_LOCALEDIR,
-			     LOCALEDIR);
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_LOCALEDIR,
+                             LOCALEDIR);
 #endif
 
     /* ---------------------------------------------------------------------
      * $plugindir e.g. "/usr/lib/gwenhywfar/plugins/0" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_PLUGINDIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBNAME,
-				       GWEN_PM_PLUGINDIR,
-				       GWEN_REGKEY_PATHS,
-				       GWEN_REGNAME_PLUGINDIR);
+                                       GWEN_PM_LIBNAME,
+                                       GWEN_PM_PLUGINDIR,
+                                       GWEN_REGKEY_PATHS,
+                                       GWEN_REGNAME_PLUGINDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
-				GWEN_PM_LIBNAME,
-				GWEN_PM_PLUGINDIR,
-				PLUGINDIR,
-				GWEN_PathManager_RelModeExe);
+                                GWEN_PM_LIBNAME,
+                                GWEN_PM_PLUGINDIR,
+                                PLUGINDIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-			     GWEN_PM_LIBNAME,
-			     GWEN_PM_PLUGINDIR,
-			     PLUGINDIR);
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_PLUGINDIR,
+                             PLUGINDIR);
 #endif
 
     /* ---------------------------------------------------------------------
      * datadir e.g. "/usr/share/gwenhywfar" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBNAME,
-				       GWEN_PM_DATADIR,
-				       GWEN_REGKEY_PATHS,
-				       GWEN_REGNAME_DATADIR);
+                                       GWEN_PM_LIBNAME,
+                                       GWEN_PM_DATADIR,
+                                       GWEN_REGKEY_PATHS,
+                                       GWEN_REGNAME_DATADIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
-				GWEN_PM_LIBNAME,
-				GWEN_PM_DATADIR,
-				GWEN_DATADIR,
-				GWEN_PathManager_RelModeExe);
+                                GWEN_PM_LIBNAME,
+                                GWEN_PM_DATADIR,
+                                GWEN_DATADIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-			     GWEN_PM_LIBNAME,
-			     GWEN_PM_DATADIR,
-			     GWEN_DATADIR);
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_DATADIR,
+                             GWEN_DATADIR);
 #endif
 
     /* ---------------------------------------------------------------------
      * system datadir e.g. "/usr/share" */
     GWEN_PathManager_DefinePath(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR);
     GWEN_PathManager_AddPathFromWinReg(GWEN_PM_LIBNAME,
-				       GWEN_PM_LIBNAME,
-				       GWEN_PM_SYSDATADIR,
-				       GWEN_REGKEY_PATHS,
-				       GWEN_REGNAME_SYSDATADIR);
+                                       GWEN_PM_LIBNAME,
+                                       GWEN_PM_SYSDATADIR,
+                                       GWEN_REGKEY_PATHS,
+                                       GWEN_REGNAME_SYSDATADIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
-				GWEN_PM_LIBNAME,
-				GWEN_PM_SYSDATADIR,
-				GWEN_SYSDATADIR,
-				GWEN_PathManager_RelModeExe);
+                                GWEN_PM_LIBNAME,
+                                GWEN_PM_SYSDATADIR,
+                                GWEN_SYSDATADIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(GWEN_PM_LIBNAME,
-			     GWEN_PM_LIBNAME,
-			     GWEN_PM_SYSDATADIR,
-			     GWEN_SYSDATADIR);
+                             GWEN_PM_LIBNAME,
+                             GWEN_PM_SYSDATADIR,
+                             GWEN_SYSDATADIR);
 #endif
 
     /* Initialize other modules. */
@@ -315,49 +315,49 @@ int GWEN_Fini(void) {
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module CryptToken2");
+                "Could not deinitialze module CryptToken2");
     }
     lerr=GWEN_ConfigMgr_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module ConfigMgr");
+                "Could not deinitialze module ConfigMgr");
     }
     lerr=GWEN_DBIO_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module DBIO");
+                "Could not deinitialze module DBIO");
     }
     lerr=GWEN_Plugin_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module Plugin");
+                "Could not deinitialze module Plugin");
     }
     lerr=GWEN_Process_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module Process");
+                "Could not deinitialze module Process");
     }
     lerr=GWEN_Crypt3_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module Crypt3");
+                "Could not deinitialze module Crypt3");
     }
     lerr=GWEN_LibLoader_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-	      "Could not deinitialze module LibLoader");
+                "Could not deinitialze module LibLoader");
     }
     lerr=GWEN_Socket_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module Socket");
+                "Could not deinitialze module Socket");
     }
     lerr=GWEN_InetAddr_ModuleFini();
     if (lerr) {
@@ -370,7 +370,7 @@ int GWEN_Fini(void) {
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module I18N");
+                "Could not deinitialze module I18N");
     }
 
     lerr=GWEN_PathManager_ModuleFini();
@@ -387,14 +387,14 @@ int GWEN_Fini(void) {
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module Logger");
+                "Could not deinitialze module Logger");
     }
 
     lerr=GWEN_Memory_ModuleFini();
     if (lerr) {
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-		"Could not deinitialze module Memory");
+                "Could not deinitialze module Memory");
     }
 
     gnutls_global_deinit();
@@ -417,7 +417,7 @@ int GWEN_Fini_Forced(void) {
 void GWEN_Version(int *major,
                   int *minor,
                   int *patchlevel,
-                  int *build){
+                  int *build) {
   *major=GWENHYWFAR_VERSION_MAJOR;
   *minor=GWENHYWFAR_VERSION_MINOR;
   *patchlevel=GWENHYWFAR_VERSION_PATCHLEVEL;

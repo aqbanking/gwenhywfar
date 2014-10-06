@@ -90,7 +90,7 @@ GWENHYWFAR_API void GWEN_Directory_free(GWEN_DIRECTORY *d);
  * @param n path and name of the directory to open
  */
 GWENHYWFAR_API
-  int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n);
+int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n);
 
 /**
  * Closes a previously opened directory.
@@ -245,8 +245,8 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
  */
 GWENHYWFAR_API
 int GWEN_Directory_GetAllEntries(const char *folder,
-				 GWEN_STRINGLIST *sl,
-				 const char *mask);
+                                 GWEN_STRINGLIST *sl,
+                                 const char *mask);
 
 /**
  * This function does the same as @ref GWEN_Directory_GetAllEntries, but
@@ -265,8 +265,8 @@ int GWEN_Directory_GetAllEntries(const char *folder,
  */
 GWENHYWFAR_API
 int GWEN_Directory_GetFileEntriesWithType(const char *folder,
-					  GWEN_STRINGLIST *sl,
-					  const char *mask);
+    GWEN_STRINGLIST *sl,
+    const char *mask);
 
 /**
  * This function does the same as @ref GWEN_Directory_GetAllEntries, but
@@ -278,8 +278,8 @@ int GWEN_Directory_GetFileEntriesWithType(const char *folder,
  */
 GWENHYWFAR_API
 int GWEN_Directory_GetFileEntries(const char *folder,
-				  GWEN_STRINGLIST *sl,
-				  const char *mask);
+                                  GWEN_STRINGLIST *sl,
+                                  const char *mask);
 
 
 /**
@@ -292,8 +292,8 @@ int GWEN_Directory_GetFileEntries(const char *folder,
  */
 GWENHYWFAR_API
 int GWEN_Directory_GetDirEntries(const char *folder,
-				 GWEN_STRINGLIST *sl,
-				 const char *mask);
+                                 GWEN_STRINGLIST *sl,
+                                 const char *mask);
 
 
 /**
@@ -307,8 +307,8 @@ int GWEN_Directory_GetDirEntries(const char *folder,
  */
 GWENHYWFAR_API
 int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
-					       GWEN_STRINGLIST *sl,
-					       const char *mask);
+    GWEN_STRINGLIST *sl,
+    const char *mask);
 
 
 /**

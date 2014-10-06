@@ -36,41 +36,41 @@
 
 typedef struct GWEN_SAR GWEN_SAR;
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_SAR *GWEN_Sar_new(void);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Sar_Attach(GWEN_SAR *sr);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Sar_free(GWEN_SAR *sr);
 
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Sar_CreateArchive(GWEN_SAR *sr, const char *aname);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Sar_OpenArchive(GWEN_SAR *sr, const char *aname,
                          GWEN_SYNCIO_FILE_CREATIONMODE cm,
                          uint32_t acc);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Sar_CloseArchive(GWEN_SAR *sr, int abandon);
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname);
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 const GWEN_SAR_FILEHEADER_LIST *GWEN_Sar_GetHeaders(GWEN_SAR *sr);
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Sar_ExtractFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Sar_CheckFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh);
 
 

@@ -122,8 +122,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Disconnect(GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
-					    uint8_t *buffer,
-					    uint32_t size) {
+    uint8_t *buffer,
+    uint32_t size) {
   GWEN_SYNCIO_BUFFERED *xio;
   uint32_t flags;
 
@@ -150,13 +150,13 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 
       /* still bytes in buffer, return them first */
       if (size>bytesInBuffer)
-	i=bytesInBuffer;
+        i=bytesInBuffer;
       else
-	i=size;
+        i=size;
       rv=GWEN_RingBuffer_ReadBytes(xio->readBuffer, (char*) buffer, &i);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       /* bytes read */
       return i;
@@ -166,17 +166,17 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 
       baseIo=GWEN_SyncIo_GetBaseIo(sio);
       if (baseIo) {
-	int rv;
+        int rv;
 
-	rv=GWEN_SyncIo_Read(baseIo, buffer, size);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
-	return rv;
+        rv=GWEN_SyncIo_Read(baseIo, buffer, size);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+        return rv;
       }
       else {
-	DBG_INFO(GWEN_LOGDOMAIN, "No base layer");
+        DBG_INFO(GWEN_LOGDOMAIN, "No base layer");
         return GWEN_ERROR_INTERNAL;
       }
     }
@@ -191,58 +191,59 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 
       bytesInBuffer=GWEN_RingBuffer_GetMaxUnsegmentedRead(xio->readBuffer);
       if (bytesInBuffer==0) {
-	uint32_t bytesFree;
-	GWEN_SYNCIO *baseIo;
-	int rv;
+        uint32_t bytesFree;
+        GWEN_SYNCIO *baseIo;
+        int rv;
 
-	/* fill buffer */
-	bytesFree=GWEN_RingBuffer_GetMaxUnsegmentedWrite(xio->readBuffer);
-	if (bytesFree==0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "No unsegmente read and write. TSNH!");
-	  return GWEN_ERROR_INTERNAL;
-	}
+        /* fill buffer */
+        bytesFree=GWEN_RingBuffer_GetMaxUnsegmentedWrite(xio->readBuffer);
+        if (bytesFree==0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "No unsegmente read and write. TSNH!");
+          return GWEN_ERROR_INTERNAL;
+        }
 
-	baseIo=GWEN_SyncIo_GetBaseIo(sio);
+        baseIo=GWEN_SyncIo_GetBaseIo(sio);
         assert(baseIo);
 
-	do {
-	  rv=GWEN_SyncIo_Read(baseIo,
-			      (uint8_t*) GWEN_RingBuffer_GetWritePointer(xio->readBuffer),
-			      bytesFree);
-	} while (rv==GWEN_ERROR_INTERRUPTED);
+        do {
+          rv=GWEN_SyncIo_Read(baseIo,
+                              (uint8_t*) GWEN_RingBuffer_GetWritePointer(xio->readBuffer),
+                              bytesFree);
+        }
+        while (rv==GWEN_ERROR_INTERRUPTED);
 
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
-	else if (rv==0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "EOF met (%d)", bytesRead);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+        else if (rv==0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "EOF met (%d)", bytesRead);
           break;
-	}
-	GWEN_RingBuffer_SkipBytesWrite(xio->readBuffer, rv);
-	bytesInBuffer=GWEN_RingBuffer_GetMaxUnsegmentedRead(xio->readBuffer);
-	if (bytesInBuffer==0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Still no bytes available?? TSNH!");
-	  return GWEN_ERROR_INTERNAL;
-	}
+        }
+        GWEN_RingBuffer_SkipBytesWrite(xio->readBuffer, rv);
+        bytesInBuffer=GWEN_RingBuffer_GetMaxUnsegmentedRead(xio->readBuffer);
+        if (bytesInBuffer==0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Still no bytes available?? TSNH!");
+          return GWEN_ERROR_INTERNAL;
+        }
       }
 
       /* read data from ring buffer */
       psrc=(const uint8_t*)GWEN_RingBuffer_GetReadPointer(xio->readBuffer);
       while(bytesSkipped<bytesInBuffer && bytesRead<(size-1)) {
-	uint8_t c;
+        uint8_t c;
 
-	c=*psrc;
-	if (c!=13) {
-	  *(buffer++)=c;
-	  bytesRead++;
-	}
-	psrc++;
-	bytesSkipped++;
-	if (c==10) {
-	  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PACKET_END);
-	  break;
-	}
+        c=*psrc;
+        if (c!=13) {
+          *(buffer++)=c;
+          bytesRead++;
+        }
+        psrc++;
+        bytesSkipped++;
+        if (c==10) {
+          GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PACKET_END);
+          break;
+        }
       }
       GWEN_RingBuffer_SkipBytesRead(xio->readBuffer, bytesSkipped);
     }
@@ -255,8 +256,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
-					     const uint8_t *buffer,
-					     uint32_t size) {
+    const uint8_t *buffer,
+    uint32_t size) {
   GWEN_SYNCIO_BUFFERED *xio;
   GWEN_SYNCIO *baseIo;
 
@@ -274,12 +275,13 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
 
       /* transparent mode, write directly to base io */
       do {
-	rv=GWEN_SyncIo_Write(baseIo, buffer, size);
-      } while (rv==GWEN_ERROR_INTERRUPTED);
+        rv=GWEN_SyncIo_Write(baseIo, buffer, size);
+      }
+      while (rv==GWEN_ERROR_INTERRUPTED);
 
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       return rv;
     }
@@ -287,27 +289,29 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
       int rv;
 
       if (size) {
-	rv=GWEN_SyncIo_WriteForced(baseIo, buffer, size);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
+        rv=GWEN_SyncIo_WriteForced(baseIo, buffer, size);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
       }
 
       if (flags & GWEN_SYNCIO_FLAGS_DOSMODE) {
-	do {
-	  rv=GWEN_SyncIo_Write(baseIo, (const uint8_t*) "\r\n", 2);
-	} while (rv==GWEN_ERROR_INTERRUPTED);
+        do {
+          rv=GWEN_SyncIo_Write(baseIo, (const uint8_t*) "\r\n", 2);
+        }
+        while (rv==GWEN_ERROR_INTERRUPTED);
       }
       else {
-	do {
-	  rv=GWEN_SyncIo_Write(baseIo, (const uint8_t*) "\n", 1);
-	} while (rv==GWEN_ERROR_INTERRUPTED);
+        do {
+          rv=GWEN_SyncIo_Write(baseIo, (const uint8_t*) "\n", 1);
+        }
+        while (rv==GWEN_ERROR_INTERRUPTED);
       }
 
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
 
       return size;
@@ -342,15 +346,16 @@ int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
       GWEN_Buffer_AdjustUsedBytes(tbuf);
       if (p[rv-1]==10) {
         p[rv-1]=0;
-	break;
+        break;
       }
     }
     else if (rv==0)
       break;
-  } while(rv>0);
+  }
+  while(rv>0);
 
   if (GWEN_Buffer_GetUsedBytes(tbuf)<1) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Nothing received: EOF met");
+    DBG_INFO(GWEN_LOGDOMAIN, "Nothing received: EOF met");
     return GWEN_ERROR_EOF;
   }
 
@@ -375,10 +380,10 @@ int GWEN_SyncIo_Buffered_ReadLinesToStringList(GWEN_SYNCIO *sio, int maxLines, G
     rv=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, tbuf);
     if (rv<0) {
       if (rv==GWEN_ERROR_EOF)
-	break;
+        break;
       else {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     else {

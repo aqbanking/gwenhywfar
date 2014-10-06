@@ -143,8 +143,8 @@ GWENHYWFAR_API int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name)
  * @param bsize size of the buffer in bytes
  */
 GWENHYWFAR_API
-  int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
-                                          char *buffer, unsigned int bsize);
+int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
+                             char *buffer, unsigned int bsize);
 
 /**
  * Gets the host name stored in the INETADDRESS. If there is none, then the
@@ -155,8 +155,8 @@ GWENHYWFAR_API
  * @param bsize size of the buffer in bytes
  */
 GWENHYWFAR_API
-  int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
-                                       char *buffer, unsigned int bsize);
+int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
+                          char *buffer, unsigned int bsize);
 /*@}*/
 
 /**
@@ -179,7 +179,7 @@ GWENHYWFAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
  * @param port port to set (0-65535)
  */
 GWENHYWFAR_API int GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
-					 int port);
+    int port);
 /*@}*/
 
 

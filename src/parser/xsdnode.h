@@ -54,8 +54,8 @@ typedef enum {
 
 
 GWEN_XSD_NODE *GWEN_XsdNode_new(GWEN_XSD_NODE *parent,
-				GWEN_XSD_NODETYPE t,
-				const char *name);
+                                GWEN_XSD_NODETYPE t,
+                                const char *name);
 void GWEN_XsdNode_free(GWEN_XSD_NODE *xsdNode);
 
 
@@ -75,12 +75,12 @@ void GWEN_XsdNode_SubFlags(GWEN_XSD_NODE *xsdNode, uint32_t fl);
 
 
 int GWEN_XsdNode_Read(GWEN_XSD_NODE *xsdNode,
-		      GWEN_XMLNODE *xmlNode,
-		      GWEN_DB_NODE *db);
+                      GWEN_XMLNODE *xmlNode,
+                      GWEN_DB_NODE *db);
 
 int GWEN_XsdNode_Write(GWEN_XSD_NODE *xsdNode,
-		       GWEN_XMLNODE *xmlNode,
-		       GWEN_DB_NODE *db);
+                       GWEN_XMLNODE *xmlNode,
+                       GWEN_DB_NODE *db);
 
 
 

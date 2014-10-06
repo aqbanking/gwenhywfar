@@ -135,7 +135,7 @@ extern "C" {
 
 
 
-  /*@}*/ /* defgroup */
+/*@}*/ /* defgroup */
 
 #ifdef __cplusplus
 }

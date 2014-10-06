@@ -61,7 +61,7 @@ int GWEN_Mutex_Lock(GWEN_MUTEX *mtx) {
   rv=pthread_mutex_lock(&(mtx->mutex));
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "pthread_mutex_lock: %s", strerror(rv));
+             "pthread_mutex_lock: %s", strerror(rv));
     return GWEN_ERROR_IO;
   }
 
@@ -76,7 +76,7 @@ int GWEN_Mutex_Unlock(GWEN_MUTEX *mtx) {
   rv=pthread_mutex_unlock(&(mtx->mutex));
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "pthread_mutex_unlock: %s", strerror(rv));
+             "pthread_mutex_unlock: %s", strerror(rv));
     return GWEN_ERROR_IO;
   }
 

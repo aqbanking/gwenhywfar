@@ -99,25 +99,25 @@ char *GWEN_Text_Unescape(const char *src,
 
 GWENHYWFAR_API
 char *GWEN_Text_UnescapeN(const char *src,
-			  unsigned int srclen,
+                          unsigned int srclen,
                           char *buffer,
                           unsigned int maxsize);
 
 GWENHYWFAR_API
 char *GWEN_Text_EscapeTolerant(const char *src,
-			       char *buffer,
-			       unsigned int maxsize);
+                               char *buffer,
+                               unsigned int maxsize);
 
 GWENHYWFAR_API
 char *GWEN_Text_UnescapeTolerant(const char *src,
-				 char *buffer,
-				 unsigned int maxsize);
+                                 char *buffer,
+                                 unsigned int maxsize);
 
 GWENHYWFAR_API
 char *GWEN_Text_UnescapeTolerantN(const char *src,
-				  unsigned int srclen,
-				  char *buffer,
-				  unsigned int maxsize);
+                                  unsigned int srclen,
+                                  char *buffer,
+                                  unsigned int maxsize);
 
 
 GWENHYWFAR_API
@@ -291,7 +291,7 @@ void GWEN_Text_LogString(const char *s, unsigned int l,
  * This means removing unnecessary spaces.
  */
 GWENHYWFAR_API
-  void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf);
+void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf);
 
 
 /**
@@ -301,7 +301,7 @@ GWENHYWFAR_API
  *  counted)
  */
 GWENHYWFAR_API
-  int GWEN_Text_CountUtf8Chars(const char *s, int len);
+int GWEN_Text_CountUtf8Chars(const char *s, int len);
 
 
 /**
@@ -334,7 +334,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf);
  * @param ign if !=0 then the cases are ignored
  */
 GWENHYWFAR_API
-  double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign);
+double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign);
 
 
 /**

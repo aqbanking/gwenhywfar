@@ -117,9 +117,9 @@ extern "C" {
 
 
 
-  /** @name Path flags for GWEN_XMLNode_SetCharValueByPath etc
-   *
-   */
+/** @name Path flags for GWEN_XMLNode_SetCharValueByPath etc
+ *
+ */
 /*@{*/
 
 #define GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES  0x00010000
@@ -139,7 +139,8 @@ typedef enum {
   GWEN_XMLNodeTypeData,
   /** A node can be some XML comment. */
   GWEN_XMLNodeTypeComment
-} GWEN_XMLNODE_TYPE;
+}
+GWEN_XMLNODE_TYPE;
 
 /** The abstract type XMLNODE. Each node is one node in the document
  * tree and can represent different things, see @ref
@@ -269,9 +270,9 @@ void GWEN_XMLNode_ClearHeaders(GWEN_XMLNODE *root);
  * be retrieved
  */
 GWENHYWFAR_API
-  const char *GWEN_XMLNode_GetProperty(const GWEN_XMLNODE *n,
-                                       const char *name,
-                                       const char *defaultValue);
+const char *GWEN_XMLNode_GetProperty(const GWEN_XMLNODE *n,
+                                     const char *name,
+                                     const char *defaultValue);
 
 /**
  * Sets the value of a property/attribute. This property/attribute will be created if it does not
@@ -281,9 +282,9 @@ GWENHYWFAR_API
  * @param value new value of the property/attribute
  */
 GWENHYWFAR_API
-  void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
-                                const char *name,
-                                const char *value);
+void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
+                              const char *name,
+                              const char *value);
 
 /**
  * Same as @ref GWEN_XMLNode_GetProperty, but it tries to parse the property as
@@ -310,9 +311,9 @@ void GWEN_XMLNode_SetIntProperty(GWEN_XMLNODE *n,
  * destination node will be overwritten.
  */
 GWENHYWFAR_API
-  void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
-                                   const GWEN_XMLNODE *sn,
-                                   int overwrite);
+void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
+                                 const GWEN_XMLNODE *sn,
+                                 int overwrite);
 /*@}*/
 
 /** @name Type And Data
@@ -356,13 +357,13 @@ void GWEN_XMLNode_SetNamespace(GWEN_XMLNODE *n, const char *s);
  */
 /*@{*/
 GWENHYWFAR_API
-  void GWEN_XMLNode_IncUsage(GWEN_XMLNODE *n);
+void GWEN_XMLNode_IncUsage(GWEN_XMLNODE *n);
 
 GWENHYWFAR_API
-  void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n);
+void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n);
 
 GWENHYWFAR_API
-  uint32_t GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n);
+uint32_t GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n);
 /*@}*/
 
 
@@ -395,7 +396,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetChild(const GWEN_XMLNODE *n);
 /** Returns the parent node of the given node, or NULL if it already
  * is the root node. */
 GWENHYWFAR_API
-  GWEN_XMLNODE *GWEN_XMLNode_GetParent(const GWEN_XMLNODE *n);
+GWEN_XMLNODE *GWEN_XMLNode_GetParent(const GWEN_XMLNODE *n);
 
 /** Descends in the XML tree to the first children tag (in XML
  * notation they are called elements) below the given node.
@@ -423,10 +424,10 @@ GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(const GWEN_XMLNODE *n);
 
 /** Descends in the XML tree to the first children data node below the
- * given node. 
+ * given node.
  *
  * Different from GWEN_XMLNode_GetChild() this function only looks for
- * another data node and not for a (more general) node. 
+ * another data node and not for a (more general) node.
  *
  * @return The first children data node, or NULL if none exists. */
 GWENHYWFAR_API
@@ -515,8 +516,8 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
-                                          const char *path,
-                                          uint32_t flags);
+    const char *path,
+    uint32_t flags);
 
 
 /*@}*/
@@ -536,7 +537,7 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
  * of that node, so you MUST NOT free the node yourself)
  */
 GWENHYWFAR_API
-  void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
 
 /**
  * Unlinks the given child node from its parent without freeing it.
@@ -546,13 +547,13 @@ GWENHYWFAR_API
  * @param child node which is to be unlinked
  */
 GWENHYWFAR_API
-  void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
+void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child);
 
 /**
  * Unlinks and frees @b all children of the given node.
  */
 GWENHYWFAR_API
-  void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n);
+void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n);
 
 /**
  * Adds the children of the second argument as new children to the first
@@ -565,8 +566,8 @@ GWENHYWFAR_API
  * co
  */
 GWENHYWFAR_API
-  void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
-                                    int copythem);
+void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
+                                  int copythem);
 
 /**
  * This is a very primitive function. It looks for a node of the given type
@@ -604,8 +605,8 @@ int GWEN_XMLNode_Globalize(GWEN_XMLNODE *n);
 
 GWENHYWFAR_API
 int GWEN_XMLNode_GlobalizeWithList(GWEN_XMLNODE *n,
-				   GWEN_XMLNODE_NAMESPACE_LIST *l,
-				   uint32_t *pLastId);
+                                   GWEN_XMLNODE_NAMESPACE_LIST *l,
+                                   uint32_t *pLastId);
 
 
 GWENHYWFAR_API
@@ -633,16 +634,16 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath, uint32_t flags);
 
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s,
-				      int len,
-				      uint32_t flags);
+                                      int len,
+                                      uint32_t flags);
 
 /**
  * Writes a tag and all its subnodes to the given io layer.
  */
 GWENHYWFAR_API
 int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
-			       GWEN_XML_CONTEXT *ctx,
-			       GWEN_SYNCIO *sio);
+                               GWEN_XML_CONTEXT *ctx,
+                               GWEN_SYNCIO *sio);
 
 /**
  * Writes a tag and all its subnodes to the given file.
@@ -663,11 +664,11 @@ GWEN_XMLNODE_NAMESPACE_LIST *GWEN_XMLNode_GetNameSpaces(const GWEN_XMLNODE *n);
 
 GWENHYWFAR_API
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByName(const GWEN_XMLNODE *n,
-							 const char *s);
+    const char *s);
 
 GWENHYWFAR_API
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByUrl(const GWEN_XMLNODE *n,
-							const char *s);
+    const char *s);
 
 GWENHYWFAR_API
 void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns);
@@ -713,9 +714,9 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
                                       const char *defValue);
 
 GWENHYWFAR_API
-  void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
-                                 const char *name,
-                                 const char *value);
+void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
+                               const char *name,
+                               const char *value);
 
 /**
  * This function does the same as @ref GWEN_XMLNode_GetCharValue, but it
@@ -731,8 +732,8 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
 const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
-                                               const char *name,
-                                               const char *defValue);
+    const char *name,
+    const char *defValue);
 
 /**
  * Internally calls @ref GWEN_XMLNode_GetCharValue and interpretes the
@@ -743,8 +744,8 @@ const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
  */
 GWENHYWFAR_API
 int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
-			     const char *name,
-			     int defValue);
+                             const char *name,
+                             int defValue);
 
 GWENHYWFAR_API
 void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
@@ -787,8 +788,8 @@ void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
  */
 GWENHYWFAR_API
 const char *GWEN_XMLNode_GetCharValueByPath(GWEN_XMLNODE *n,
-                                            const char *path,
-                                            const char *defValue);
+    const char *path,
+    const char *defValue);
 
 GWENHYWFAR_API
 int GWEN_XMLNode_SetCharValueByPath(GWEN_XMLNODE *n, uint32_t flags,
@@ -860,7 +861,7 @@ int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
  * beyond the root).
  */
 GWENHYWFAR_API
-  GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np);
+GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np);
 
 /**
  * Dumps the contents of all XML nodes in the path.
@@ -874,7 +875,7 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np);
 
 GWENHYWFAR_API
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_new(const char *name,
-						   const char *url);
+    const char *url);
 
 GWENHYWFAR_API
 void GWEN_XMLNode_NameSpace_free(GWEN_XMLNODE_NAMESPACE *ns);

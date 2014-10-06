@@ -39,7 +39,7 @@
 
 
 
-FXDEFMAP(FOX16_GuiDialog) FOX16_GuiDialogMap[]={
+FXDEFMAP(FOX16_GuiDialog) FOX16_GuiDialogMap[]= {
   FXMAPFUNCS(SEL_COMMAND, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelCommand),
   FXMAPFUNCS(SEL_CHANGED, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelChanged),
   FXMAPFUNCS(SEL_KEYPRESS, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelKeyPress),
@@ -52,27 +52,25 @@ FXIMPLEMENT(FOX16_GuiDialog, FXObject, FOX16_GuiDialogMap, ARRAYNUMBER(FOX16_Gui
 
 
 FOX16_GuiDialog::FOX16_GuiDialog()
-:FXObject()
-,CppDialog()
-,_gui(NULL)
-,_widgetCount(0)
-,_mainWidget(NULL)
-,m_iconSource(NULL)
-,m_sizeChanged(FALSE)
-{
+  :FXObject()
+  ,CppDialog()
+  ,_gui(NULL)
+  ,_widgetCount(0)
+  ,_mainWidget(NULL)
+  ,m_iconSource(NULL)
+  ,m_sizeChanged(FALSE) {
 }
 
 
 
 FOX16_GuiDialog::FOX16_GuiDialog(FOX16_Gui *gui, GWEN_DIALOG *dlg)
-:FXObject()
-,CppDialog(dlg)
-,_gui(gui)
-,_widgetCount(0)
-,_mainWidget(NULL)
-,m_iconSource(NULL)
-,m_sizeChanged(FALSE)
-{
+  :FXObject()
+  ,CppDialog(dlg)
+  ,_gui(gui)
+  ,_widgetCount(0)
+  ,_mainWidget(NULL)
+  ,m_iconSource(NULL)
+  ,m_sizeChanged(FALSE) {
 }
 
 
@@ -172,10 +170,10 @@ int FOX16_GuiDialog::execute() {
 
 
 int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
-				    GWEN_DIALOG_PROPERTY prop,
-				    int index,
-				    int value,
-				    int doSignal) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int value,
+                                    int doSignal) {
   DBG_DEBUG(GWEN_LOGDOMAIN, "SetIntProperty([%s], %d)", GWEN_Widget_GetName(w), value);
 
   switch(GWEN_Widget_GetType(w)) {
@@ -185,293 +183,282 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeNone:
     return GWEN_ERROR_GENERIC;
 
-  case GWEN_Widget_TypeComboBox:
-    {
-      THEMECOMBOBOX *f;
+  case GWEN_Widget_TypeComboBox: {
+    THEMECOMBOBOX *f;
 
-      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	if (value<f->getNumItems()) {
-	  f->setCurrentItem(value, doSignal?TRUE:FALSE);
-	  return 0;
-	}
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range in widget [%s]", value, GWEN_Widget_GetName(w));
-          return GWEN_ERROR_INVALID;
-	}
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      if (value<f->getNumItems()) {
+        f->setCurrentItem(value, doSignal?TRUE:FALSE);
+        return 0;
+      }
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range in widget [%s]", value, GWEN_Widget_GetName(w));
+        return GWEN_ERROR_INVALID;
+      }
 
-      case GWEN_DialogProperty_ClearValues:
-	f->clearItems();
-	return 0;
+    case GWEN_DialogProperty_ClearValues:
+      f->clearItems();
+      return 0;
 
-      default:
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeRadioButton: {
+    FXRadioButton *f;
+
+    f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setCheck((value==0)?FALSE:TRUE, doSignal?TRUE:FALSE);
+      return 0;
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeProgressBar: {
+    FXProgressBar *f;
+
+    f=(FXProgressBar*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setProgress(value);
+      return 0;
+
+    case GWEN_DialogProperty_MinValue:
+      if (value!=0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "MinValue should be 0!");
+        return GWEN_ERROR_INVALID;
+      }
+      return 0;
+
+    case GWEN_DialogProperty_MaxValue:
+      f->setTotal(value);
+      return 0;
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeSpinBox: {
+    FXSpinner *f;
+
+    f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setValue(value);
+      return 0;
+
+    case GWEN_DialogProperty_MinValue: {
+      FXint lo, hi;
+
+      f->getRange(lo, hi);
+      lo=value;
+      f->setRange(lo, hi);
+      return 0;
+    }
+
+    case GWEN_DialogProperty_MaxValue: {
+      FXint lo, hi;
+
+      f->getRange(lo, hi);
+      hi=value;
+      if (hi<lo)
+        hi=lo;
+      f->setRange(lo, hi);
+      return 0;
+    }
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeListBox: {
+    FOX16_GuiSortingList *f;
+    FXFoldingItem *fi;
+    int i=0;
+
+    f=(FOX16_GuiSortingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      fi=f->getFirstItem();
+      while(fi && i<value) {
+        fi=fi->getNext();
+        i++;
+      }
+      if (fi && i==value)
+        f->setCurrentItem(fi, doSignal?TRUE:FALSE);
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
+        return GWEN_ERROR_INVALID;
+      }
+      return 0;
+
+    case GWEN_DialogProperty_ColumnWidth:
+      f->setHeaderSize(index, value);
+      return 0;
+
+    case GWEN_DialogProperty_SelectionMode:
+      switch(value) {
+      case GWEN_Dialog_SelectionMode_None:
+        /* simply fall-through */
+      case GWEN_Dialog_SelectionMode_Single:
+        f->setListStyle(FOLDINGLIST_BROWSESELECT);
+        return 0;
+      case GWEN_Dialog_SelectionMode_Multi:
+        f->setListStyle(FOLDINGLIST_EXTENDEDSELECT);
+        return 0;
+        ;
+      }
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unknown SelectionMode %d", value);
+      return GWEN_ERROR_INVALID;
+
+    case GWEN_DialogProperty_SelectionState: {
+      FXFoldingItem *ti;
+
+      ti=f->getItem(index);
+      if (ti==NULL) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
+        return GWEN_ERROR_INVALID;
+      }
+      ti->setSelected((value==0)?FALSE:TRUE);
+      return 0;
+    }
+
+    case GWEN_DialogProperty_ClearValues:
+      f->clearItems();
+      return 0;
+
+    case GWEN_DialogProperty_SortDirection: {
+      int i;
+
+      for (i=0; i<f->getNumHeaders(); i++) {
+        if (i==index) {
+          switch(value) {
+          case GWEN_DialogSortDirection_None:
+            f->setHeaderArrowDir(i, MAYBE);
+            break;
+          case GWEN_DialogSortDirection_Up:
+            f->setHeaderArrowDir(i, TRUE);
+            break;
+          case GWEN_DialogSortDirection_Down:
+            f->setHeaderArrowDir(i, FALSE);
+            break;
+          }
+        }
+        else
+          f->setHeaderArrowDir(i, MAYBE);
+      }
+
+      switch(value) {
+      case GWEN_DialogSortDirection_None:
+        break;
+      case GWEN_DialogSortDirection_Up:
+        f->sortByColumn(i, true);
+        break;
+      case GWEN_DialogSortDirection_Down:
+        f->sortByColumn(i, false);
         break;
       }
+    }
+    return 0;
+
+    case GWEN_DialogProperty_Sort: {
+      int i;
+
+      for (i=0; i<f->getNumHeaders(); i++) {
+        FXbool b;
+
+        b=f->getHeaderArrowDir(i);
+        if (b!=MAYBE) {
+          if (b==TRUE)
+            f->sortByColumn(i, true);
+          else
+            f->sortByColumn(i, false);
+          break;
+        }
+      }
+    }
+    return 0;
+
+
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeRadioButton:
-    {
-      FXRadioButton *f;
+  case GWEN_Widget_TypeCheckBox: {
+    FXCheckButton *f;
 
-      f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setCheck((value==0)?FALSE:TRUE, doSignal?TRUE:FALSE);
-	return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setCheck((value==0)?FALSE:TRUE, doSignal?TRUE:FALSE);
+      return 0;
 
-      default:
-	break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeProgressBar:
-    {
-      FXProgressBar *f;
+  case GWEN_Widget_TypeTabBook: {
+    FXTabBook *f;
 
-      f=(FXProgressBar*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXTabBook*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setProgress(value);
-        return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setCurrent(value, doSignal?TRUE:FALSE);
+      return 0;
 
-      case GWEN_DialogProperty_MinValue:
-	if (value!=0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "MinValue should be 0!");
-	  return GWEN_ERROR_INVALID;
-	}
-        return 0;
-
-      case GWEN_DialogProperty_MaxValue:
-	f->setTotal(value);
-        return 0;
-
-      default:
-	break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      FXSpinner *f;
+  case GWEN_Widget_TypeWidgetStack: {
+    FXSwitcher *f;
 
-      f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXSwitcher*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setValue(value);
-        return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setCurrent(value, doSignal?TRUE:FALSE);
+      return 0;
 
-      case GWEN_DialogProperty_MinValue: {
-	FXint lo, hi;
-
-	f->getRange(lo, hi);
-        lo=value;
-	f->setRange(lo, hi);
-        return 0;
-      }
-
-      case GWEN_DialogProperty_MaxValue: {
-	FXint lo, hi;
-
-	f->getRange(lo, hi);
-        hi=value;
-        if (hi<lo)
-	  hi=lo;
-	f->setRange(lo, hi);
-	return 0;
-      }
-
-      default:
-	break;
-      }
+    default:
       break;
     }
-
-  case GWEN_Widget_TypeListBox:
-    {
-      FOX16_GuiSortingList *f;
-      FXFoldingItem *fi;
-      int i=0;
-
-      f=(FOX16_GuiSortingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	fi=f->getFirstItem();
-	while(fi && i<value) {
-	  fi=fi->getNext();
-	  i++;
-	}
-	if (fi && i==value)
-	  f->setCurrentItem(fi, doSignal?TRUE:FALSE);
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
-	  return GWEN_ERROR_INVALID;
-	}
-        return 0;
-
-      case GWEN_DialogProperty_ColumnWidth:
-	f->setHeaderSize(index, value);
-	return 0;
-
-      case GWEN_DialogProperty_SelectionMode:
-	switch(value) {
-	case GWEN_Dialog_SelectionMode_None:
-          /* simply fall-through */
-	case GWEN_Dialog_SelectionMode_Single:
-	  f->setListStyle(FOLDINGLIST_BROWSESELECT);
-          return 0;
-	case GWEN_Dialog_SelectionMode_Multi:
-	  f->setListStyle(FOLDINGLIST_EXTENDEDSELECT);
-	  return 0;
-	  ;
-	}
-	DBG_ERROR(GWEN_LOGDOMAIN, "Unknown SelectionMode %d", value);
-	return GWEN_ERROR_INVALID;
-
-      case GWEN_DialogProperty_SelectionState:
-	{
-	  FXFoldingItem *ti;
-
-	  ti=f->getItem(index);
-	  if (ti==NULL) {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
-            return GWEN_ERROR_INVALID;
-	  }
-	  ti->setSelected((value==0)?FALSE:TRUE);
-	  return 0;
-	}
-
-      case GWEN_DialogProperty_ClearValues:
-	f->clearItems();
-	return 0;
-
-      case GWEN_DialogProperty_SortDirection:
-	{
-	  int i;
-
-	  for (i=0; i<f->getNumHeaders(); i++) {
-	    if (i==index) {
-	      switch(value) {
-	      case GWEN_DialogSortDirection_None:
-		f->setHeaderArrowDir(i, MAYBE);
-		break;
-	      case GWEN_DialogSortDirection_Up:
-		f->setHeaderArrowDir(i, TRUE);
-		break;
-	      case GWEN_DialogSortDirection_Down:
-		f->setHeaderArrowDir(i, FALSE);
-		break;
-	      }
-	    }
-	    else
-	      f->setHeaderArrowDir(i, MAYBE);
-	  }
-
-	  switch(value) {
-	  case GWEN_DialogSortDirection_None:
-	    break;
-	  case GWEN_DialogSortDirection_Up:
-	    f->sortByColumn(i, true);
-	    break;
-	  case GWEN_DialogSortDirection_Down:
-	    f->sortByColumn(i, false);
-	    break;
-	  }
-	}
-	return 0;
-
-      case GWEN_DialogProperty_Sort:
-	{
-	  int i;
-
-	  for (i=0; i<f->getNumHeaders(); i++) {
-	    FXbool b;
-
-	    b=f->getHeaderArrowDir(i);
-	    if (b!=MAYBE) {
-	      if (b==TRUE)
-		f->sortByColumn(i, true);
-              else
-		f->sortByColumn(i, false);
-              break;
-	    }
-	  }
-	}
-	return 0;
-
-
-      default:
-	break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeCheckBox:
-    {
-      FXCheckButton *f;
-
-      f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setCheck((value==0)?FALSE:TRUE, doSignal?TRUE:FALSE);
-	return 0;
-
-      default:
-	break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeTabBook:
-    {
-      FXTabBook *f;
-
-      f=(FXTabBook*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setCurrent(value, doSignal?TRUE:FALSE);
-	return 0;
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeWidgetStack:
-    {
-      FXSwitcher *f;
-
-      f=(FXSwitcher*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setCurrent(value, doSignal?TRUE:FALSE);
-        return 0;
-
-      default:
-        break;
-      }
-      break;
-    }
+    break;
+  }
 
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypePushButton:
@@ -511,9 +498,9 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
       return 0;
     case GWEN_DialogProperty_Enabled:
       if (value==0)
-	f->disable();
+        f->disable();
       else
-	f->enable();
+        f->enable();
       return 0;
 
     case GWEN_DialogProperty_Focus:
@@ -522,12 +509,12 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
     case GWEN_DialogProperty_Visibility:
       if (value==0) {
-	f->hide();
+        f->hide();
         f->recalc();
       }
       else {
-	f->show();
-	f->recalc();
+        f->show();
+        f->recalc();
       }
       return 0;
 
@@ -551,254 +538,243 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(0, "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
 
 
 int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
-				    GWEN_DIALOG_PROPERTY prop,
-				    int index,
-				    int defaultValue) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int defaultValue) {
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeUnknown:
   case GWEN_Widget_TypeNone:
     return defaultValue;
 
-  case GWEN_Widget_TypeComboBox:
-    {
-      THEMECOMBOBOX *f;
+  case GWEN_Widget_TypeComboBox: {
+    THEMECOMBOBOX *f;
 
-      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return f->getCurrentItem();
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      return f->getCurrentItem();
 
-      case GWEN_DialogProperty_ValueCount:
-	return f->getNumItems();
+    case GWEN_DialogProperty_ValueCount:
+      return f->getNumItems();
 
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeRadioButton: {
+    FXRadioButton *f;
+
+    f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      return (f->getCheck()==TRUE)?1:0;
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeProgressBar: {
+    FXProgressBar *f;
+
+    f=(FXProgressBar*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      return f->getProgress();
+
+    case GWEN_DialogProperty_MinValue:
+      return 0;
+
+    case GWEN_DialogProperty_MaxValue:
+      return f->getTotal();
+
+    default:
+      break;
+    }
+
+    break;
+  }
+
+  case GWEN_Widget_TypeSpinBox: {
+    FXSpinner *f;
+
+    f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      return f->getValue();
+
+    case GWEN_DialogProperty_MinValue: {
+      FXint lo, hi;
+
+      f->getRange(lo, hi);
+      return lo;
+    }
+
+    case GWEN_DialogProperty_MaxValue: {
+      FXint lo, hi;
+
+      f->getRange(lo, hi);
+      return hi;
+    }
+
+    default:
+      break;
+    }
+
+    break;
+  }
+
+  case GWEN_Widget_TypeListBox: {
+    FOX16_GuiSortingList *f;
+    FXFoldingItem *fi;
+    int i=0;
+
+    f=(FOX16_GuiSortingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      fi=f->getCurrentItem();
+      if (fi==NULL)
+        return defaultValue;
+      else {
+        FXFoldingItem *ti;
+
+        ti=fi;
+        while( (ti=ti->getPrev()) )
+          i++;
+
+        return i;
+      }
+
+    case GWEN_DialogProperty_ValueCount:
+      return f->getNumItems();
+
+    case GWEN_DialogProperty_ColumnWidth:
+      return f->getHeaderSize(index);
+
+    case GWEN_DialogProperty_SelectionMode: {
+      switch(f->getListStyle()) {
+      case FOLDINGLIST_BROWSESELECT:
+        return GWEN_Dialog_SelectionMode_Single;
+      case FOLDINGLIST_EXTENDEDSELECT:
+        return GWEN_Dialog_SelectionMode_Multi;
       default:
-	break;
+        return GWEN_Dialog_SelectionMode_None;
       }
       break;
     }
 
-  case GWEN_Widget_TypeRadioButton:
-    {
-      FXRadioButton *f;
+    case GWEN_DialogProperty_SelectionState: {
+      FXFoldingItem *ti;
+      int i=index;
 
-      f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return (f->getCheck()==TRUE)?1:0;
-
-      default:
-        break;
+      ti=f->getFirstItem();
+      while(ti && i) {
+        ti=ti->getNext();
+        i--;
       }
+
+      if (ti)
+        return (ti->isSelected()==TRUE)?1:0;
+      return defaultValue;
+    }
+
+    case GWEN_DialogProperty_SortDirection: {
+      int i;
+
+      for (i=0; i<f->getNumHeaders(); i++) {
+        if (i==index) {
+          FXbool b;
+
+          b=f->getHeaderArrowDir(i);
+          if (b==MAYBE)
+            return GWEN_DialogSortDirection_None;
+          else if (b==TRUE)
+            return GWEN_DialogSortDirection_Up;
+          else
+            return GWEN_DialogSortDirection_Down;
+        }
+      }
+      DBG_ERROR(GWEN_LOGDOMAIN, "Column %d out of range", index);
+    }
+    return defaultValue;
+
+    default:
       break;
     }
 
-  case GWEN_Widget_TypeProgressBar:
-    {
-      FXProgressBar *f;
+    break;
+  }
 
-      f=(FXProgressBar*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+  case GWEN_Widget_TypeCheckBox: {
+    FXCheckButton *f;
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return f->getProgress();
+    f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      case GWEN_DialogProperty_MinValue:
-        return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      return (f->getCheck()==TRUE)?1:0;
 
-      case GWEN_DialogProperty_MaxValue:
-	return f->getTotal();
-
-      default:
-        break;
-      }
-
+    default:
       break;
     }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      FXSpinner *f;
+    break;
+  }
 
-      f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+  case GWEN_Widget_TypeTabBook: {
+    FXTabBook *f;
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return f->getValue();
+    f=(FXTabBook*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      case GWEN_DialogProperty_MinValue: {
-	FXint lo, hi;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      return f->getCurrent();
 
-	f->getRange(lo, hi);
-	return lo;
-      }
-
-      case GWEN_DialogProperty_MaxValue: {
-	FXint lo, hi;
-
-	f->getRange(lo, hi);
-        return hi;
-      }
-
-      default:
-        break;
-      }
-
+    default:
       break;
     }
 
-  case GWEN_Widget_TypeListBox:
-    {
-      FOX16_GuiSortingList *f;
-      FXFoldingItem *fi;
-      int i=0;
+    break;
+  }
 
-      f=(FOX16_GuiSortingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+  case GWEN_Widget_TypeWidgetStack: {
+    FXSwitcher *f;
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	fi=f->getCurrentItem();
-	if (fi==NULL)
-	  return defaultValue;
-	else {
-	  FXFoldingItem *ti;
+    f=(FXSwitcher*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-          ti=fi;
-	  while( (ti=ti->getPrev()) )
-	    i++;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      return f->getCurrent();
 
-          return i;
-	}
-
-      case GWEN_DialogProperty_ValueCount:
-        return f->getNumItems();
-
-      case GWEN_DialogProperty_ColumnWidth:
-	return f->getHeaderSize(index);
-
-      case GWEN_DialogProperty_SelectionMode:
-	{
-	  switch(f->getListStyle()) {
-	  case FOLDINGLIST_BROWSESELECT:
-            return GWEN_Dialog_SelectionMode_Single;
-	  case FOLDINGLIST_EXTENDEDSELECT:
-	    return GWEN_Dialog_SelectionMode_Multi;
-	  default:
-	    return GWEN_Dialog_SelectionMode_None;
-	  }
-          break;
-	}
-
-      case GWEN_DialogProperty_SelectionState:
-	{
-	  FXFoldingItem *ti;
-          int i=index;
-
-	  ti=f->getFirstItem();
-	  while(ti && i) {
-	    ti=ti->getNext();
-            i--;
-	  }
-
-	  if (ti)
-	    return (ti->isSelected()==TRUE)?1:0;
-          return defaultValue;
-	}
-
-      case GWEN_DialogProperty_SortDirection:
-	{
-	  int i;
-
-	  for (i=0; i<f->getNumHeaders(); i++) {
-	    if (i==index) {
-	      FXbool b;
-
-	      b=f->getHeaderArrowDir(i);
-	      if (b==MAYBE)
-		return GWEN_DialogSortDirection_None;
-	      else if (b==TRUE)
-                return GWEN_DialogSortDirection_Up;
-              else
-		return GWEN_DialogSortDirection_Down;
-	    }
-	  }
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Column %d out of range", index);
-	}
-	return defaultValue;
-
-      default:
-	break;
-      }
-
+    default:
       break;
     }
 
-  case GWEN_Widget_TypeCheckBox:
-    {
-      FXCheckButton *f;
-
-      f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return (f->getCheck()==TRUE)?1:0;
-
-      default:
-        break;
-      }
-
-      break;
-    }
-
-  case GWEN_Widget_TypeTabBook:
-    {
-      FXTabBook *f;
-
-      f=(FXTabBook*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return f->getCurrent();
-
-      default:
-        break;
-      }
-
-      break;
-    }
-
-  case GWEN_Widget_TypeWidgetStack:
-    {
-      FXSwitcher *f;
-
-      f=(FXSwitcher*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	return f->getCurrent();
-
-      default:
-	break;
-      }
-
-      break;
-    }
+    break;
+  }
 
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypePushButton:
@@ -861,17 +837,17 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 
 
   DBG_WARN(0, "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
 
 
 int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
-				     GWEN_DIALOG_PROPERTY prop,
-				     int index,
-				     const char *value,
-				     int doSignal) {
+                                     GWEN_DIALOG_PROPERTY prop,
+                                     int index,
+                                     const char *value,
+                                     int doSignal) {
 
   FXString strValue;
   FXString htmlValue;
@@ -887,310 +863,296 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeNone:
     return GWEN_ERROR_GENERIC;
 
-  case GWEN_Widget_TypeLabel:
-    {
-      FOX16_HtmlLabel *f;
+  case GWEN_Widget_TypeLabel: {
+    FOX16_HtmlLabel *f;
 
-      f=(FOX16_HtmlLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FOX16_HtmlLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	f->setText(htmlValue);
-        return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f->setText(htmlValue);
+      return 0;
 
-      default:
-        break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeTextBrowser:
-    {
-      FOX16_HtmlText *f;
+  case GWEN_Widget_TypeTextBrowser: {
+    FOX16_HtmlText *f;
 
-      f=(FOX16_HtmlText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FOX16_HtmlText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setText(htmlValue);
-        f->makePositionVisible(strValue.length());
-	return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setText(htmlValue);
+      f->makePositionVisible(strValue.length());
+      return 0;
 
-      case GWEN_DialogProperty_AddValue:
-	f->setText(f->getText()+htmlValue);
-        return 0;
+    case GWEN_DialogProperty_AddValue:
+      f->setText(f->getText()+htmlValue);
+      return 0;
 
-      case GWEN_DialogProperty_ClearValues:
-	f->setText("");
-	return 0;
+    case GWEN_DialogProperty_ClearValues:
+      f->setText("");
+      return 0;
 
-      default:
-        break;
-      }
-      break;
-
-    }
-
-  case GWEN_Widget_TypePushButton:
-    {
-      THEMEBUTTON *f;
-
-      f=(THEMEBUTTON*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	f->setText(value);
-	return 0;
-
-      case GWEN_DialogProperty_ToolTip:
-	f->setTipText(htmlValue);
-        return 0;
-
-      default:
-        break;
-      }
+    default:
       break;
     }
+    break;
 
-  case GWEN_Widget_TypeLineEdit:
-    {
-      FXTextField *f;
+  }
 
-      f=(FXTextField*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+  case GWEN_Widget_TypePushButton: {
+    THEMEBUTTON *f;
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setText(value, doSignal?TRUE:FALSE);
-        return 0;
+    f=(THEMEBUTTON*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      case GWEN_DialogProperty_ToolTip:
-	f->setTipText(htmlValue);
-        return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f->setText(value);
+      return 0;
 
-      default:
-	break;
-      }
+    case GWEN_DialogProperty_ToolTip:
+      f->setTipText(htmlValue);
+      return 0;
+
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeTextEdit:
-    {
-      FXText *f;
+  case GWEN_Widget_TypeLineEdit: {
+    FXTextField *f;
 
-      f=(FXText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXTextField*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	f->setText(strValue);
-        return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setText(value, doSignal?TRUE:FALSE);
+      return 0;
 
-      case GWEN_DialogProperty_ToolTip:
-	f->setTipText(htmlValue);
-        return 0;
+    case GWEN_DialogProperty_ToolTip:
+      f->setTipText(htmlValue);
+      return 0;
 
-      default:
-        break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeComboBox:
-    {
-      THEMECOMBOBOX *f;
+  case GWEN_Widget_TypeTextEdit: {
+    FXText *f;
 
-      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-        // undefined
-        break;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      f->setText(strValue);
+      return 0;
 
-      case GWEN_DialogProperty_ToolTip:
-	f->setTipText(htmlValue);
-        return 0;
+    case GWEN_DialogProperty_ToolTip:
+      f->setTipText(htmlValue);
+      return 0;
 
-      case GWEN_DialogProperty_AddValue:
-	{
-	  int i;
-
-	  f->appendItem(strValue);
-	  i=f->getNumItems();
-	  if (i>10)
-	    i=10;
-	  f->setNumVisible(i);
-	  return 0;
-	}
-
-      case GWEN_DialogProperty_ClearValues:
-	f->clearItems();
-        return 0;
-
-      default:
-        break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeGroupBox:
-    {
-      FXGroupBox *f;
+  case GWEN_Widget_TypeComboBox: {
+    THEMECOMBOBOX *f;
 
-      f=(FXGroupBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	f->setText(strValue);
-        return 0;
-      default:
-        break;
-      }
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      // undefined
       break;
+
+    case GWEN_DialogProperty_ToolTip:
+      f->setTipText(htmlValue);
+      return 0;
+
+    case GWEN_DialogProperty_AddValue: {
+      int i;
+
+      f->appendItem(strValue);
+      i=f->getNumItems();
+      if (i>10)
+        i=10;
+      f->setNumVisible(i);
+      return 0;
     }
 
-  case GWEN_Widget_TypeRadioButton:
-    {
-      FXRadioButton *f;
+    case GWEN_DialogProperty_ClearValues:
+      f->clearItems();
+      return 0;
 
-      f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	f->setText(strValue);
-	return 0;
-
-      case GWEN_DialogProperty_ToolTip:
-	f->setTipText(htmlValue);
-        return 0;
-
-      default:
-        break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeCheckBox:
-    {
-      FXCheckButton *f;
+  case GWEN_Widget_TypeGroupBox: {
+    FXGroupBox *f;
 
-      f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXGroupBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	f->setText(strValue);
-	return 0;
-
-      case GWEN_DialogProperty_ToolTip:
-	f->setTipText(htmlValue);
-        return 0;
-
-      default:
-        break;
-      }
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f->setText(strValue);
+      return 0;
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeTabPage:
-    {
-      FXWindow *f1;
-      THEMETABITEM *f2;
+  case GWEN_Widget_TypeRadioButton: {
+    FXRadioButton *f;
 
-      f1=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f1);
-      f2=(THEMETABITEM*) (f1->getPrev());
-      assert(f2);
+    f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	f2->setText(strValue);
-	return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f->setText(strValue);
+      return 0;
 
-      case GWEN_DialogProperty_ToolTip:
-        f2->setTipText(htmlValue);
-        return 0;
+    case GWEN_DialogProperty_ToolTip:
+      f->setTipText(htmlValue);
+      return 0;
 
-      default:
-        break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeDialog:
-    {
-      FXDialogBox *f;
+  case GWEN_Widget_TypeCheckBox: {
+    FXCheckButton *f;
 
-      f=(FXDialogBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	f->setTitle(strValue);
-	return 0;
-      default:
-        break;
-      }
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f->setText(strValue);
+      return 0;
+
+    case GWEN_DialogProperty_ToolTip:
+      f->setTipText(htmlValue);
+      return 0;
+
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeListBox:
-    {
-      FXFoldingList *f;
-      FXString str;
-      FXString t;
-      FXint n=0;
+  case GWEN_Widget_TypeTabPage: {
+    FXWindow *f1;
+    THEMETABITEM *f2;
 
-      f=(FXFoldingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f1=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f1);
+    f2=(THEMETABITEM*) (f1->getPrev());
+    assert(f2);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-        f->getHeader()->clearItems();
-	str=strValue;
-	while(!(t=str.section('\t',n)).empty()){
-	  f->appendHeader(t, NULL, 20);
-	  n++;
-	}
-	return 0;
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f2->setText(strValue);
+      return 0;
 
-      case GWEN_DialogProperty_AddValue:
-	f->appendItem(NULL, strValue);
-	return 0;
+    case GWEN_DialogProperty_ToolTip:
+      f2->setTipText(htmlValue);
+      return 0;
 
-      case GWEN_DialogProperty_ClearValues:
-	f->clearItems();
-        return 0;
-
-      default:
-        break;
-      }
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeSpinBox:
-    {
-      FXSpinner *f;
+  case GWEN_Widget_TypeDialog: {
+    FXDialogBox *f;
 
-      f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXDialogBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_ToolTip:
-	f->setTipText(htmlValue);
-        return 0;
-
-      default:
-        break;
-      }
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f->setTitle(strValue);
+      return 0;
+    default:
       break;
     }
+    break;
+  }
+
+  case GWEN_Widget_TypeListBox: {
+    FXFoldingList *f;
+    FXString str;
+    FXString t;
+    FXint n=0;
+
+    f=(FXFoldingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      f->getHeader()->clearItems();
+      str=strValue;
+      while(!(t=str.section('\t',n)).empty()) {
+        f->appendHeader(t, NULL, 20);
+        n++;
+      }
+      return 0;
+
+    case GWEN_DialogProperty_AddValue:
+      f->appendItem(NULL, strValue);
+      return 0;
+
+    case GWEN_DialogProperty_ClearValues:
+      f->clearItems();
+      return 0;
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeSpinBox: {
+    FXSpinner *f;
+
+    f=(FXSpinner*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_ToolTip:
+      f->setTipText(htmlValue);
+      return 0;
+
+    default:
+      break;
+    }
+    break;
+  }
 
   case GWEN_Widget_TypeProgressBar:
   case GWEN_Widget_TypeHSpacer:
@@ -1234,16 +1196,16 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(0, "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
 
 
 const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
-					     GWEN_DIALOG_PROPERTY prop,
-					     int index,
-					     const char *defaultValue) {
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   FXString str;
 
   switch(GWEN_Widget_GetType(w)) {
@@ -1252,329 +1214,317 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeNone:
     return defaultValue;
 
-  case GWEN_Widget_TypeLabel:
-    {
-      FOX16_HtmlLabel *f;
+  case GWEN_Widget_TypeLabel: {
+    FOX16_HtmlLabel *f;
 
-      f=(FOX16_HtmlLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FOX16_HtmlLabel*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      default:
-	break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypePushButton:
-    {
-      THEMEBUTTON *f;
-
-      f=(THEMEBUTTON*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeLineEdit:
-    {
-      FXTextField *f;
-
-      f=(FXTextField*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
-	}
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeTextEdit:
-    {
-      FXText *f;
-
-      f=(FXText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
-	}
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeTextBrowser:
-    {
-      FOX16_HtmlText *f;
-
-      f=(FOX16_HtmlText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
-	}
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeComboBox:
-    {
-      THEMECOMBOBOX *f;
-
-      f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Value:
-	if (index<f->getNumItems()) {
-	  str=f->getItem(index);
-	  if (str.empty())
-	    return defaultValue;
-	  else {
-	    GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
-	    return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
-	  }
-	}
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
-	  return defaultValue;
-	}
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeGroupBox:
-    {
-      FXGroupBox *f;
-
-      f=(FXGroupBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeRadioButton:
-    {
-      FXRadioButton *f;
-
-      f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      default:
-        break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeCheckBox:
-    {
-      FXCheckButton *f;
-
-      f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	str=f->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      default:
-	break;
-      }
-      break;
-    }
-
-  case GWEN_Widget_TypeTabPage:
-    {
-      FXWindow *f1;
-      THEMETABITEM *f2;
-
-      f1=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f1);
-      f2=(THEMETABITEM*) (f1->getPrev());
-      assert(f2);
-
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	str=f2->getText();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      default:
-        break;
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
       }
 
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeDialog:
-    {
-      FXDialogBox *f;
+  case GWEN_Widget_TypePushButton: {
+    THEMEBUTTON *f;
 
-      f=(FXDialogBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(THEMEBUTTON*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	str=f->getTitle();
-	if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      default:
-        break;
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
       }
+
+    default:
       break;
     }
+    break;
+  }
 
-  case GWEN_Widget_TypeListBox:
-    {
-      FXFoldingList *f;
-      FXHeader *fh;
-      FXFoldingItem *fi;
+  case GWEN_Widget_TypeLineEdit: {
+    FXTextField *f;
 
-      f=(FXFoldingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
-      assert(f);
+    f=(FXTextField*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
 
-      switch(prop) {
-      case GWEN_DialogProperty_Title:
-	fh=f->getHeader();
-	if (fh) {
-	  int i;
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
+      }
 
-	  for (i=0; i<fh->getNumItems(); i++) {
-	    if (!str.empty())
-	      str+="\t";
-	    str+=fh->getItemText(i);
-	  }
-	}
+    default:
+      break;
+    }
+    break;
+  }
 
+  case GWEN_Widget_TypeTextEdit: {
+    FXText *f;
+
+    f=(FXText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
+      }
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeTextBrowser: {
+    FOX16_HtmlText *f;
+
+    f=(FOX16_HtmlText*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
+      }
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeComboBox: {
+    THEMECOMBOBOX *f;
+
+    f=(THEMECOMBOBOX*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Value:
+      if (index<f->getNumItems()) {
+        str=f->getItem(index);
         if (str.empty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
-	  return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
-	}
-
-      case GWEN_DialogProperty_Value:
-	fi=f->getFirstItem();
-	if (fi) {
-	  int i=index;
-
-	  while(fi && i>0) {
-	    fi=fi->getNext();
-            i--;
-	  }
-	  if (fi) {
-	    str=fi->getText();
-	    if (str.empty())
-              return defaultValue;
-	    GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
-	    return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
-	  }
-	  else {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
-	    return defaultValue;
-	  }
-	}
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Empty list");
           return defaultValue;
-	}
-
-      default:
-	break;
+        else {
+          GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
+          return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
+        }
       }
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
+        return defaultValue;
+      }
+
+    default:
       break;
     }
+    break;
+  }
+
+  case GWEN_Widget_TypeGroupBox: {
+    FXGroupBox *f;
+
+    f=(FXGroupBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
+      }
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeRadioButton: {
+    FXRadioButton *f;
+
+    f=(FXRadioButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
+      }
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeCheckBox: {
+    FXCheckButton *f;
+
+    f=(FXCheckButton*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      str=f->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
+      }
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeTabPage: {
+    FXWindow *f1;
+    THEMETABITEM *f2;
+
+    f1=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f1);
+    f2=(THEMETABITEM*) (f1->getPrev());
+    assert(f2);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      str=f2->getText();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
+      }
+
+    default:
+      break;
+    }
+
+    break;
+  }
+
+  case GWEN_Widget_TypeDialog: {
+    FXDialogBox *f;
+
+    f=(FXDialogBox*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      str=f->getTitle();
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
+      }
+
+    default:
+      break;
+    }
+    break;
+  }
+
+  case GWEN_Widget_TypeListBox: {
+    FXFoldingList *f;
+    FXHeader *fh;
+    FXFoldingItem *fi;
+
+    f=(FXFoldingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    assert(f);
+
+    switch(prop) {
+    case GWEN_DialogProperty_Title:
+      fh=f->getHeader();
+      if (fh) {
+        int i;
+
+        for (i=0; i<fh->getNumItems(); i++) {
+          if (!str.empty())
+            str+="\t";
+          str+=fh->getItemText(i);
+        }
+      }
+
+      if (str.empty())
+        return defaultValue;
+      else {
+        GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_TITLE, str.text());
+        return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_TITLE);
+      }
+
+    case GWEN_DialogProperty_Value:
+      fi=f->getFirstItem();
+      if (fi) {
+        int i=index;
+
+        while(fi && i>0) {
+          fi=fi->getNext();
+          i--;
+        }
+        if (fi) {
+          str=fi->getText();
+          if (str.empty())
+            return defaultValue;
+          GWEN_Widget_SetText(w, FOX16_DIALOG_STRING_VALUE, str.text());
+          return GWEN_Widget_GetText(w, FOX16_DIALOG_STRING_VALUE);
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Index %d out of range", index);
+          return defaultValue;
+        }
+      }
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Empty list");
+        return defaultValue;
+      }
+
+    default:
+      break;
+    }
+    break;
+  }
 
 
   case GWEN_Widget_TypeProgressBar:
@@ -1621,7 +1571,7 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
 
   DBG_WARN(0, "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
@@ -1642,19 +1592,19 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
       RadioButtonGroup *grp=NULL;
 
       for (it=m_radioGroups.begin(); it!=m_radioGroups.end(); it++) {
-	if ((*it)->getDataTarget()==sender) {
-	  grp=*it;
+        if ((*it)->getDataTarget()==sender) {
+          grp=*it;
           break;
-	}
+        }
       }
 
       if (grp==NULL) {
-	DBG_WARN(GWEN_LOGDOMAIN, "Widget or RadioButtonGroup not found");
-	return 0;
+        DBG_WARN(GWEN_LOGDOMAIN, "Widget or RadioButtonGroup not found");
+        return 0;
       }
       else {
-	DBG_INFO(0, "Found button group %d: %d", grp->getGroupId(), grp->getRadioValue());
-	// no signal for now
+        DBG_INFO(0, "Found button group %d: %d", grp->getGroupId(), grp->getRadioValue());
+        // no signal for now
         return 1;
       }
     }
@@ -1664,8 +1614,8 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
   dialogBox=_mainWidget;
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Command for [%s] (type: %s)",
-	    wname?wname:"(unnamed)",
-	    GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+            wname?wname:"(unnamed)",
+            GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
 
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeUnknown:
@@ -1682,13 +1632,13 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypeTextEdit:
     rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			      GWEN_DialogEvent_TypeActivated,
-			      GWEN_Widget_GetName(w));
+                              GWEN_DialogEvent_TypeActivated,
+                              GWEN_Widget_GetName(w));
     break;
   case GWEN_Widget_TypeSpinBox:
     rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			      GWEN_DialogEvent_TypeValueChanged,
-			      GWEN_Widget_GetName(w));
+                              GWEN_DialogEvent_TypeValueChanged,
+                              GWEN_Widget_GetName(w));
     break;
 
   case GWEN_Widget_TypeRadioButton: /* use SEL_UPDATED for FXRadioButton */
@@ -1744,8 +1694,8 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeLineEdit:
     rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			      GWEN_DialogEvent_TypeValueChanged,
-			      GWEN_Widget_GetName(w));
+                              GWEN_DialogEvent_TypeValueChanged,
+                              GWEN_Widget_GetName(w));
     break;
 
   case GWEN_Widget_TypeLabel:
@@ -1973,7 +1923,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
       break;
     default:
       DBG_ERROR(GWEN_LOGDOMAIN, "Parent of widget [%s] (type %d) is not a composite",
-		name?name:"(unnamed)", GWEN_Widget_GetType(w));
+                name?name:"(unnamed)", GWEN_Widget_GetType(w));
       return NULL;
     }
   }
@@ -2024,15 +1974,15 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     if (flags & GWEN_WIDGET_FLAGS_NO_WORDWRAP)
       opts|=FOX16_HtmlLabel::FLAGS_NO_WORDWRAP;
     label=new FOX16_HtmlLabel(parentComposite,
-			      htmlText,
-			      opts);
+                              htmlText,
+                              opts);
     s=GWEN_Widget_GetIconFileName(w);
     if (s && *s) {
       FXIcon *ic;
 
       ic=getIcon(s);
       if (ic)
-	label->setIcon(ic);
+        label->setIcon(ic);
     }
 
     wi=GWEN_Widget_GetWidth(w);
@@ -2043,7 +1993,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     se=GWEN_StringList_FirstEntry(GWEN_Dialog_GetMediaPaths(_dialog));
     while(se) {
       const char *s;
-  
+
       s=GWEN_StringListEntry_Data(se);
       assert(s);
       label->addMediaPath(s);
@@ -2067,11 +2017,11 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
       ic=getIcon(s);
 
     wChild=new THEMEBUTTON(parentComposite,
-			   text,
-			   ic,  /* icon */
-			   this,
-			   ID_WIDGET_FIRST+_widgetCount,
-			   opts);
+                           text,
+                           ic,  /* icon */
+                           this,
+                           ID_WIDGET_FIRST+_widgetCount,
+                           opts);
     break;
   }
 
@@ -2081,48 +2031,46 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     if (flags & GWEN_WIDGET_FLAGS_READONLY)
       opts|=TEXTFIELD_READONLY;
     wChild=new FXTextField(parentComposite,
-			   cols?cols:16,
-			   this,
-			   ID_WIDGET_FIRST+_widgetCount,
-			   opts | TEXTFIELD_NORMAL | TEXTFIELD_ENTER_ONLY);
+                           cols?cols:16,
+                           this,
+                           ID_WIDGET_FIRST+_widgetCount,
+                           opts | TEXTFIELD_NORMAL | TEXTFIELD_ENTER_ONLY);
     break;
 
-  case GWEN_Widget_TypeTextEdit:
-    {
-      FXText *f;
+  case GWEN_Widget_TypeTextEdit: {
+    FXText *f;
 
-      if (flags & GWEN_WIDGET_FLAGS_READONLY)
-	opts|=TEXT_READONLY;
-      f=new FXText(parentComposite,
-		   this,
-		   ID_WIDGET_FIRST+_widgetCount,
-		   opts | HSCROLLING_OFF);
-      if (cols)
-        f->setVisibleColumns(cols);
-      if (rows)
-        f->setVisibleRows(rows);
-      wChild=f;
-      break;
-    }
+    if (flags & GWEN_WIDGET_FLAGS_READONLY)
+      opts|=TEXT_READONLY;
+    f=new FXText(parentComposite,
+                 this,
+                 ID_WIDGET_FIRST+_widgetCount,
+                 opts | HSCROLLING_OFF);
+    if (cols)
+      f->setVisibleColumns(cols);
+    if (rows)
+      f->setVisibleRows(rows);
+    wChild=f;
+    break;
+  }
 
-  case GWEN_Widget_TypeTextBrowser:
-    {
-      FOX16_HtmlText *f;
+  case GWEN_Widget_TypeTextBrowser: {
+    FOX16_HtmlText *f;
 
-      f=new FOX16_HtmlText(parentComposite, "",
-			   opts | HSCROLLING_OFF);
-      wChild=f;
-      break;
-    }
+    f=new FOX16_HtmlText(parentComposite, "",
+                         opts | HSCROLLING_OFF);
+    wChild=f;
+    break;
+  }
 
   case GWEN_Widget_TypeComboBox:
     if (flags & GWEN_WIDGET_FLAGS_READONLY)
       opts|=COMBOBOX_STATIC;
     wChild=new THEMECOMBOBOX(parentComposite,
-			     cols?cols:16,
-			     this,
-			     ID_WIDGET_FIRST+_widgetCount,
-			     opts);
+                             cols?cols:16,
+                             this,
+                             ID_WIDGET_FIRST+_widgetCount,
+                             opts);
     break;
 
   case GWEN_Widget_TypeRadioButton: {
@@ -2145,10 +2093,10 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     }
 
     rb=new FXRadioButton(parentComposite,
-			 text,
-			 grp->getDataTarget(),
-			 FXDataTarget::ID_OPTION+grp->getButtonCount(),
-			 opts | RADIOBUTTON_NORMAL);
+                         text,
+                         grp->getDataTarget(),
+                         FXDataTarget::ID_OPTION+grp->getButtonCount(),
+                         opts | RADIOBUTTON_NORMAL);
     grp->addButton(rb);
     wChild=rb;
     break;
@@ -2156,15 +2104,15 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeProgressBar:
     wChild=new FXProgressBar(parentComposite,
-			     this,
-			     ID_WIDGET_FIRST+_widgetCount,
-			     opts | PROGRESSBAR_NORMAL | PROGRESSBAR_PERCENTAGE);
+                             this,
+                             ID_WIDGET_FIRST+_widgetCount,
+                             opts | PROGRESSBAR_NORMAL | PROGRESSBAR_PERCENTAGE);
     break;
 
   case GWEN_Widget_TypeGroupBox:
     wChild=new FXGroupBox(parentComposite,
-			  text,
-			  opts | GROUPBOX_NORMAL | FRAME_LINE);
+                          text,
+                          opts | GROUPBOX_NORMAL | FRAME_LINE);
     break;
 
   case GWEN_Widget_TypeHSpacer:
@@ -2177,53 +2125,53 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeHLayout:
     wChild=new FXHorizontalFrame(parentComposite, opts,
-				 0, 0, 0, 0, 0, 0, 0, 0);
+                                 0, 0, 0, 0, 0, 0, 0, 0);
     break;
 
   case GWEN_Widget_TypeVLayout:
     wChild=new FXVerticalFrame(parentComposite, opts,
-			       0, 0, 0, 0, 0, 0, 0, 0);
+                               0, 0, 0, 0, 0, 0, 0, 0);
     break;
 
   case GWEN_Widget_TypeGridLayout:
     if (cols & rows) {
       DBG_ERROR(GWEN_LOGDOMAIN, "State columns *or* rows, not both in widget [%s]",
-		name?name:"(unnamed)");
+                name?name:"(unnamed)");
       return NULL;
     }
     if (cols)
       wChild=new FXMatrix(parentComposite, cols,
-			  opts | MATRIX_BY_COLUMNS,
-			  0, 0, 0, 0, 0, 0, 0, 0);
+                          opts | MATRIX_BY_COLUMNS,
+                          0, 0, 0, 0, 0, 0, 0, 0);
     else
       wChild=new FXMatrix(parentComposite, rows,
-			  opts | MATRIX_BY_ROWS,
-			  0, 0, 0, 0, 0, 0, 0, 0);
+                          opts | MATRIX_BY_ROWS,
+                          0, 0, 0, 0, 0, 0, 0, 0);
     break;
 
   case GWEN_Widget_TypeListBox:
     wChild=new FOX16_GuiSortingList(parentComposite,
-				    this,
-				    ID_WIDGET_FIRST+_widgetCount,
-				    opts | FRAME_SUNKEN|FRAME_THICK | LISTBOX_NORMAL);
+                                    this,
+                                    ID_WIDGET_FIRST+_widgetCount,
+                                    opts | FRAME_SUNKEN|FRAME_THICK | LISTBOX_NORMAL);
     break;
 
   case GWEN_Widget_TypeDialog:
     if (parentWindow)
       wChild=new FXDialogBox(parentWindow,
-			     name?FXString(name):FXString(""),
-			     opts | DECOR_TITLE | DECOR_BORDER);
+                             name?FXString(name):FXString(""),
+                             opts | DECOR_TITLE | DECOR_BORDER);
     else
       wChild=new FXDialogBox(FXApp::instance(),
-			     name?FXString(name):FXString(""),
-			     opts | DECOR_TITLE | DECOR_BORDER);
+                             name?FXString(name):FXString(""),
+                             opts | DECOR_TITLE | DECOR_BORDER);
     break;
 
   case GWEN_Widget_TypeTabBook:
     wChild=new FXTabBook(parentComposite,
-			 this,
-			 ID_WIDGET_FIRST+_widgetCount,
-			 opts | TABBOOK_NORMAL);
+                         this,
+                         ID_WIDGET_FIRST+_widgetCount,
+                         opts | TABBOOK_NORMAL);
     break;
 
   case GWEN_Widget_TypeTabPage:
@@ -2234,8 +2182,8 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     else {
       FXTabBook *tbook=dynamic_cast<FXTabBook*>(parentWindow);
       if (tbook==NULL) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Parent of widget [%s] needs to be of type TabBook", name?name:"(unnamed)");
-	return NULL;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Parent of widget [%s] needs to be of type TabBook", name?name:"(unnamed)");
+        return NULL;
       }
 
       new THEMETABITEM(tbook, text, NULL, opts | TAB_TOP_NORMAL);
@@ -2245,21 +2193,20 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeCheckBox:
     wChild=new FXCheckButton(parentComposite,
-			     text,
-			     this,
-			     ID_WIDGET_FIRST+_widgetCount,
-			     opts | CHECKBUTTON_NORMAL);
+                             text,
+                             this,
+                             ID_WIDGET_FIRST+_widgetCount,
+                             opts | CHECKBUTTON_NORMAL);
     break;
 
-  case GWEN_Widget_TypeScrollArea:
-    {
-      FXScrollWindow *f;
+  case GWEN_Widget_TypeScrollArea: {
+    FXScrollWindow *f;
 
-      f=new FXScrollWindow(parentComposite, opts);
-      wChild=f;
-      wContent=f->contentWindow();
-      break;
-    }
+    f=new FXScrollWindow(parentComposite, opts);
+    wChild=f;
+    wContent=f->contentWindow();
+    break;
+  }
 
   case GWEN_Widget_TypeWidgetStack:
     wChild=new FXSwitcher(parentComposite, opts);
@@ -2275,10 +2222,10 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeSpinBox:
     wChild=new FXSpinner(parentComposite,
-			 cols?cols:16,
-			 this,
-			 ID_WIDGET_FIRST+_widgetCount,
-			 opts | SPIN_NORMAL);
+                         cols?cols:16,
+                         this,
+                         ID_WIDGET_FIRST+_widgetCount,
+                         opts | SPIN_NORMAL);
     break;
 
   case GWEN_Widget_TypeUnknown:

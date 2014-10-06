@@ -16,11 +16,11 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_GUI_CPROGRESS, GWEN_Gui_CProgress)
 
 
 GWEN_GUI_CPROGRESS *GWEN_Gui_CProgress_new(GWEN_GUI *gui,
-					   uint32_t id,
-					   uint32_t progressFlags,
-					   const char *title,
-					   const char *text,
-					   uint64_t total);
+    uint32_t id,
+    uint32_t progressFlags,
+    const char *title,
+    const char *text,
+    uint64_t total);
 void GWEN_Gui_CProgress_free(GWEN_GUI_CPROGRESS *cp);
 
 
@@ -39,8 +39,8 @@ int GWEN_Gui_CProgress_GetAborted(const GWEN_GUI_CPROGRESS *cp);
 int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress);
 
 int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
-			   GWEN_LOGGER_LEVEL level,
-			   const char *text);
+                           GWEN_LOGGER_LEVEL level,
+                           const char *text);
 
 int GWEN_Gui_CProgress_End(GWEN_GUI_CPROGRESS *cp);
 

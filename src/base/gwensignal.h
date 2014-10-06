@@ -88,9 +88,9 @@ void GWEN_SignalObject_free(GWEN_SIGNALOBJECT *so);
 
 GWENHYWFAR_API
 GWEN_SIGNAL *GWEN_SignalObject_FindSignal(const GWEN_SIGNALOBJECT *so,
-                                          const char *name,
-                                          const char *typeOfArg1,
-                                          const char *typeOfArg2);
+    const char *name,
+    const char *typeOfArg1,
+    const char *typeOfArg2);
 
 GWENHYWFAR_API
 GWEN_SLOT *GWEN_SignalObject_FindSlot(const GWEN_SIGNALOBJECT *so,
@@ -105,7 +105,7 @@ GWEN_SLOT *GWEN_SignalObject_FindSlot(const GWEN_SIGNALOBJECT *so,
  */
 GWENHYWFAR_API
 void GWEN_SignalObject_RemoveForDerivedType(GWEN_SIGNALOBJECT *so,
-                                            const char *derivedType);
+    const char *derivedType);
 
 
 /**

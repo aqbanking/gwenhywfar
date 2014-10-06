@@ -39,7 +39,7 @@
 
 
 
-static const uint8_t daysInMonth[12]={
+static const uint8_t daysInMonth[12]= {
   31,28,31,30,31,30,31,31,30,31,30,31
 };
 
@@ -59,13 +59,13 @@ GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d) {
   gd->month=m;
   gd->day=d;
   gd->julian=(1461*(y+4800+(m-14)/12))/4+
-    (367*(m-2-12*((m-14)/12)))/12-
-    (3*((y+4900+(m-14)/12)/100))/4+
-    d-32075;
+             (367*(m-2-12*((m-14)/12)))/12-
+             (3*((y+4900+(m-14)/12)/100))/4+
+             d-32075;
 
   snprintf(gd->asString, sizeof(gd->asString)-1,
-	   "%04d%02d%02d",
-	   gd->year, gd->month, gd->day);
+           "%04d%02d%02d",
+           gd->year, gd->month, gd->day);
   gd->asString[sizeof(gd->asString)-1]=0;
 
   return gd;
@@ -91,8 +91,8 @@ GWEN_DATE *GWEN_Date_fromJulian(int julian) {
   gd->julian=julian;
 
   snprintf(gd->asString, sizeof(gd->asString)-1,
-	   "%04d%02d%02d",
-	   gd->year, gd->month, gd->day);
+           "%04d%02d%02d",
+           gd->year, gd->month, gd->day);
   gd->asString[sizeof(gd->asString)-1]=0;
 
   return gd;
@@ -290,7 +290,7 @@ GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti) {
 
 
 
-GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl){
+GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl) {
   int year, month, day;
   const char *p;
   const char *t;
@@ -308,7 +308,7 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl){
     if (*t=='*') {
       t++;
       if (!*t) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Bad pattern: Must not end with \"*\"");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad pattern: Must not end with \"*\"");
         return 0;
       }
       i=0;
@@ -324,47 +324,47 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl){
     }
     else {
       if (isdigit((int)*p))
-	i=(*p)-'0';
+        i=(*p)-'0';
       else
-	i=-1;
+        i=-1;
       p++;
     }
 
     if (i==-1 && strchr("YMD", *t)!=NULL) {
       DBG_INFO(GWEN_LOGDOMAIN,
-	       "No more digits at [%s], continuing", t);
+               "No more digits at [%s], continuing", t);
       p--;
     }
     else {
       switch(*t) {
       case 'Y':
-	if (i==-1) {
+        if (i==-1) {
           DBG_INFO(GWEN_LOGDOMAIN, "here");
-	  return 0;
-	}
-	year*=10;
-	year+=i;
-	break;
+          return 0;
+        }
+        year*=10;
+        year+=i;
+        break;
       case 'M':
-	if (i==-1) {
+        if (i==-1) {
           DBG_INFO(GWEN_LOGDOMAIN, "here");
-	  return 0;
-	}
-	month*=10;
-	month+=i;
-	break;
+          return 0;
+        }
+        month*=10;
+        month+=i;
+        break;
       case 'D':
-	if (i==-1) {
+        if (i==-1) {
           DBG_INFO(GWEN_LOGDOMAIN, "here");
-	  return 0;
-	}
-	day*=10;
-	day+=i;
-	break;
+          return 0;
+        }
+        day*=10;
+        day+=i;
+        break;
       default:
-	DBG_VERBOUS(GWEN_LOGDOMAIN,
-		    "Unknown character in template, will skip in both strings");
-	break;
+        DBG_VERBOUS(GWEN_LOGDOMAIN,
+                    "Unknown character in template, will skip in both strings");
+        break;
       }
     }
     t++;
@@ -374,8 +374,8 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl){
     year+=2000;
 
   DBG_DEBUG(GWEN_LOGDOMAIN,
-	    "Got this date/time: %04d/%02d/%02d",
-	    year, month, day);
+            "Got this date/time: %04d/%02d/%02d",
+            year, month, day);
 
   /* get time in local time */
   gwt=GWEN_Date_fromGregorian(year, month, day);
@@ -400,12 +400,22 @@ GWEN_DATE_TMPLCHAR *GWEN_DateTmplChar_new(char c) {
   GWEN_LIST_INIT(GWEN_DATE_TMPLCHAR, e);
   e->character=c;
   switch(c) {
-  case 'Y': e->maxCount=4; break;
-  case 'M': e->maxCount=2; break;
-  case 'D': e->maxCount=2; break;
-  case 'W': e->maxCount=1; break;
+  case 'Y':
+    e->maxCount=4;
+    break;
+  case 'M':
+    e->maxCount=2;
+    break;
+  case 'D':
+    e->maxCount=2;
+    break;
+  case 'W':
+    e->maxCount=1;
+    break;
   case 'w':
-  default:  e->maxCount=GWEN_DATE_TMPL_MAX_COUNT; break;
+  default:
+    e->maxCount=GWEN_DATE_TMPL_MAX_COUNT;
+    break;
   }
 
   return e;
@@ -440,8 +450,8 @@ GWEN_DATE_TMPLCHAR *GWEN_Date__findTmplChar(GWEN_DATE_TMPLCHAR_LIST *ll, char c)
 
 
 void GWEN_Date__sampleTmplChars(GWEN_UNUSED const GWEN_DATE *t, const char *tmpl,
-				GWEN_UNUSED GWEN_BUFFER *buf,
-				GWEN_DATE_TMPLCHAR_LIST *ll) {
+                                GWEN_UNUSED GWEN_BUFFER *buf,
+                                GWEN_DATE_TMPLCHAR_LIST *ll) {
   const char *s;
 
   s=tmpl;
@@ -480,13 +490,27 @@ void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll) {
       const char *s=NULL;
 
       switch(GWEN_Date_WeekDay(t)) {
-      case 0:  s=I18N("Sunday"); break;
-      case 1:  s=I18N("Monday"); break;
-      case 2:  s=I18N("Tuesday"); break;
-      case 3:  s=I18N("Wednesday"); break;
-      case 4:  s=I18N("Thursday"); break;
-      case 5:  s=I18N("Friday"); break;
-      case 6:  s=I18N("Saturday"); break;
+      case 0:
+        s=I18N("Sunday");
+        break;
+      case 1:
+        s=I18N("Monday");
+        break;
+      case 2:
+        s=I18N("Tuesday");
+        break;
+      case 3:
+        s=I18N("Wednesday");
+        break;
+      case 4:
+        s=I18N("Thursday");
+        break;
+      case 5:
+        s=I18N("Friday");
+        break;
+      case 6:
+        s=I18N("Saturday");
+        break;
       }
       assert(s);
       e->content=strdup(s);
@@ -655,7 +679,7 @@ GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt) {
 
 GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt) {
   int m;
-  
+
   m=GWEN_Date_GetMonth(dt)>>2;
   switch(m) {
   case 0:
@@ -675,7 +699,7 @@ GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt) {
 
 GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt) {
   int m;
-  
+
   m=GWEN_Date_GetMonth(dt)>>2;
   switch(m) {
   case 0:

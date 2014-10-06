@@ -61,7 +61,7 @@ static size_t gwen_memory__released_since_collect=0;
 
 
 
-int GWEN_Memory_ModuleInit(void){
+int GWEN_Memory_ModuleInit(void) {
   const char *s;
 
   s=getenv(GWEN_MEMORY_ENV_DEBUG);
@@ -76,7 +76,7 @@ int GWEN_Memory_ModuleInit(void){
 
 
 
-int GWEN_Memory_ModuleFini(void){
+int GWEN_Memory_ModuleFini(void) {
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;
@@ -123,7 +123,7 @@ int GWEN_Memory_ModuleFini(void){
 
 
 
-void GWEN_Memory_Report(void){
+void GWEN_Memory_Report(void) {
   return;
 }
 
@@ -155,13 +155,13 @@ void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt) {
     if (gwen_memory__debug) {
       unsigned char *p;
       unsigned char *end;
-  
+
       p=mt->data;
       end=p+GWEN_MEMORY_TABLE_LEN;
       while(p<end) {
         unsigned short bsize;
         unsigned short rsize;
-  
+
         bsize=GWEN_MEMORY_READSIZE(p);
         rsize=bsize & GWEN_MEMORY_MASK_LEN;
         if (bsize & GWEN_MEMORY_MASK_MALLOCED) {
@@ -179,7 +179,7 @@ void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt) {
 
 
 
-void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head, GWEN_MEMORY_TABLE *mt){
+void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head, GWEN_MEMORY_TABLE *mt) {
   GWEN_MEMORY_TABLE *last;
 
   assert(head);
@@ -193,7 +193,7 @@ void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head, GWEN_MEMORY_TABLE *mt){
 
 
 
-void GWEN_Memory_Table_Insert(GWEN_MEMORY_TABLE *mt){
+void GWEN_Memory_Table_Insert(GWEN_MEMORY_TABLE *mt) {
   mt->next=gwen_memory__first_table;
   gwen_memory__first_table=mt;
 }
@@ -201,7 +201,7 @@ void GWEN_Memory_Table_Insert(GWEN_MEMORY_TABLE *mt){
 
 
 unsigned char *GWEN_Memory_Table__FindFreeBlock(GWEN_MEMORY_TABLE *mt,
-                                                unsigned short dsize) {
+    unsigned short dsize) {
   unsigned char *end;
   unsigned char *p;
 
@@ -491,13 +491,13 @@ void GWEN_Memory_dealloc(void *p) {
     if (gwen_memory__nofree==0) {
       GWEN_MEMORY_WRITESIZE(pc,
                             (dsize &
-                            ~GWEN_MEMORY_MASK_MALLOCED &
-                            ~GWEN_MEMORY_MASK_INUSE));
+                             ~GWEN_MEMORY_MASK_MALLOCED &
+                             ~GWEN_MEMORY_MASK_INUSE));
     }
     else {
       GWEN_MEMORY_WRITESIZE(pc,
                             (dsize &
-                            ~GWEN_MEMORY_MASK_MALLOCED));
+                             ~GWEN_MEMORY_MASK_MALLOCED));
     }
 
     if (dsize==GWEN_MEMORY_EXTERNAL) {
@@ -512,7 +512,7 @@ void GWEN_Memory_dealloc(void *p) {
               "GWEN debug: deallocating %u bytes at %p internally\n",
               (dsize & GWEN_MEMORY_MASK_LEN), p); */
       //gwen_memory__released_since_collect+=dsize;
-      if (gwen_memory__released_since_collect>GWEN_MEMORY_COLLECT_AFTER){
+      if (gwen_memory__released_since_collect>GWEN_MEMORY_COLLECT_AFTER) {
         fprintf(stderr, "GWEN info: collecting free blocks\n");
         GWEN_Memory_Collect();
         gwen_memory__released_since_collect=0;

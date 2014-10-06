@@ -27,7 +27,7 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
-  
+
   case GWEN_DialogProperty_Focus:
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
@@ -48,14 +48,14 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
     if (sel) {
       switch(value) {
       case GWEN_Dialog_SelectionMode_None:
-	gtk_tree_selection_set_mode(sel, GTK_SELECTION_NONE);
-	return 0;
+        gtk_tree_selection_set_mode(sel, GTK_SELECTION_NONE);
+        return 0;
       case GWEN_Dialog_SelectionMode_Single:
-	gtk_tree_selection_set_mode(sel, GTK_SELECTION_SINGLE);
-	return 0;
+        gtk_tree_selection_set_mode(sel, GTK_SELECTION_SINGLE);
+        return 0;
       case GWEN_Dialog_SelectionMode_Multi:
-	gtk_tree_selection_set_mode(sel, GTK_SELECTION_MULTIPLE);
-	return 0;
+        gtk_tree_selection_set_mode(sel, GTK_SELECTION_MULTIPLE);
+        return 0;
       }
       DBG_ERROR(GWEN_LOGDOMAIN, "Unknown SelectionMode %d", value);
       return GWEN_ERROR_INVALID;
@@ -86,8 +86,8 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
     for (i=0; i<cols; i++) {
       col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
       if (col) {
-	if (gtk_tree_view_column_get_sort_indicator(col)==TRUE)
-	  gtk_tree_view_column_set_sort_indicator(col, FALSE);
+        if (gtk_tree_view_column_get_sort_indicator(col)==TRUE)
+          gtk_tree_view_column_set_sort_indicator(col, FALSE);
       }
     }
 
@@ -95,16 +95,16 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
       /* set sort indicator on given column */
       col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
       if (col) {
-	switch(value) {
-	case GWEN_DialogSortDirection_Up:
-	  gtk_tree_view_column_set_sort_order(col, GTK_SORT_ASCENDING);
+        switch(value) {
+        case GWEN_DialogSortDirection_Up:
+          gtk_tree_view_column_set_sort_order(col, GTK_SORT_ASCENDING);
           break;
-	case GWEN_DialogSortDirection_Down:
-	  gtk_tree_view_column_set_sort_order(col, GTK_SORT_DESCENDING);
+        case GWEN_DialogSortDirection_Down:
+          gtk_tree_view_column_set_sort_order(col, GTK_SORT_DESCENDING);
           break;
-	default:
-	  break;
-	}
+        default:
+          break;
+        }
       }
     }
 
@@ -129,8 +129,8 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
@@ -139,9 +139,9 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
-				     GWEN_DIALOG_PROPERTY prop,
-				     int index,
-				     int defaultValue) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int defaultValue) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
@@ -194,14 +194,14 @@ int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
     col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
     if (col) {
       if (gtk_tree_view_column_get_sort_indicator(col)==TRUE) {
-	switch(gtk_tree_view_column_get_sort_order(col)) {
-	case GTK_SORT_ASCENDING:
-	  return GWEN_DialogSortDirection_Up;
-	case GTK_SORT_DESCENDING:
-	  return GWEN_DialogSortDirection_Down;
-	default:
+        switch(gtk_tree_view_column_get_sort_order(col)) {
+        case GTK_SORT_ASCENDING:
+          return GWEN_DialogSortDirection_Up;
+        case GTK_SORT_DESCENDING:
+          return GWEN_DialogSortDirection_Down;
+        default:
           break;
-	}
+        }
       }
       /*break; <- this is wrong here, isn't it? */
     }
@@ -224,10 +224,10 @@ int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
-				     GWEN_DIALOG_PROPERTY prop,
-				     int index,
-				     const char *value,
-				     int doSignal) {
+                                     GWEN_DIALOG_PROPERTY prop,
+                                     int index,
+                                     const char *value,
+                                     int doSignal) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
@@ -243,7 +243,7 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       l=strlen(value);
       cols=1;
       for (i=0; i<l; i++) {
-	if (value[i]=='\t')
+        if (value[i]=='\t')
           cols++;
       }
     }
@@ -258,15 +258,15 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       char *p;
 
       if (cols>W_LISTBOX_MAX_TYPES)
-	cols=W_LISTBOX_MAX_TYPES;
+        cols=W_LISTBOX_MAX_TYPES;
       for (i=0; i<cols; i++)
-	types[i]=G_TYPE_STRING;
+        types[i]=G_TYPE_STRING;
       sto=gtk_list_store_newv(cols, types);
       s=value;
 
       /* clear current headers in tree view */
       while( (col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), 0)) )
-	gtk_tree_view_remove_column(GTK_TREE_VIEW(g), col);
+        gtk_tree_view_remove_column(GTK_TREE_VIEW(g), col);
 
       /* set new model */
       gtk_tree_view_set_model(GTK_TREE_VIEW(g), GTK_TREE_MODEL(sto));
@@ -276,29 +276,29 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       vcopy=strdup(value);
       p=vcopy;
       while(*p && i<cols) {
-	char *pT;
-	GtkCellRenderer *renderer;
+        char *pT;
+        GtkCellRenderer *renderer;
 
-	pT=strchr(p, '\t');
-	if (pT)
-	  *pT=0;
+        pT=strchr(p, '\t');
+        if (pT)
+          *pT=0;
 
-	renderer=gtk_cell_renderer_text_new();
-	col=gtk_tree_view_column_new();
-	gtk_tree_view_column_set_title(col, p);
+        renderer=gtk_cell_renderer_text_new();
+        col=gtk_tree_view_column_new();
+        gtk_tree_view_column_set_title(col, p);
         gtk_tree_view_column_pack_start(col, renderer, TRUE);
-	gtk_tree_view_column_set_sort_column_id(col, i);
+        gtk_tree_view_column_set_sort_column_id(col, i);
         gtk_tree_view_column_set_resizable(col, TRUE);
-	gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
-	gtk_tree_view_column_set_attributes(col, renderer, "text", i, NULL);
+        gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
+        gtk_tree_view_column_set_attributes(col, renderer, "text", i, NULL);
 
-	gtk_tree_view_append_column(GTK_TREE_VIEW(g), col);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(g), col);
 
-	if (pT)
-	  p=pT+1;
-	else
+        if (pT)
+          p=pT+1;
+        else
           /* no more tab, all columns done */
-	  break;
+          break;
         i++;
       }
       free(vcopy);
@@ -340,24 +340,24 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       i=0;
       gtk_list_store_append(sto, &iter);
       while(*p && i<cols) {
-	char *pT;
-	GValue val={0};
+        char *pT;
+        GValue val= {0};
 
-	g_value_init(&val, G_TYPE_STRING);
+        g_value_init(&val, G_TYPE_STRING);
 
-	pT=strchr(p, '\t');
-	if (pT)
-	  *pT=0;
-	g_value_set_string(&val, p);
-	gtk_list_store_set_value(sto, &iter, i, &val);
-	g_value_unset(&val);
+        pT=strchr(p, '\t');
+        if (pT)
+          *pT=0;
+        g_value_set_string(&val, p);
+        gtk_list_store_set_value(sto, &iter, i, &val);
+        g_value_unset(&val);
 
-	if (pT)
-	  p=pT+1;
-	else
+        if (pT)
+          p=pT+1;
+        else
           /* no more tabs, all columns done */
-	  break;
-	i++;
+          break;
+        i++;
       }
       free(vcopy);
     }
@@ -370,8 +370,8 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
@@ -379,9 +379,9 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
-					     GWEN_DIALOG_PROPERTY prop,
-					     int index,
-					     const char *defaultValue) {
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
@@ -446,9 +446,9 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
               GWEN_Buffer_AppendByte(tbuf, '\t');
             gtk_tree_model_get(GTK_TREE_MODEL(sto), &iter, cnt, &s, -1, NULL);
             if (s) {
-	      GWEN_Buffer_AppendString(tbuf, s);
-	      g_free(s);
-	    }
+              GWEN_Buffer_AppendString(tbuf, s);
+              g_free(s);
+            }
             cnt++;
             le=g_list_next(le);
           } /* while */
@@ -470,8 +470,8 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
@@ -484,8 +484,8 @@ static void Gtk2Gui_WListBox_CursorChanged_handler(GtkTreeView *g, gpointer data
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			    GWEN_DialogEvent_TypeActivated,
-			    GWEN_Widget_GetName(w));
+                            GWEN_DialogEvent_TypeActivated,
+                            GWEN_Widget_GetName(w));
   if (rv==GWEN_DialogEvent_ResultAccept)
     Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
   else if (rv==GWEN_DialogEvent_ResultReject)
@@ -522,9 +522,9 @@ int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w) {
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WListBox_GetCharProperty);
 
   changed_handler_id=g_signal_connect(g,
-				      "cursor-changed",
-				      G_CALLBACK (Gtk2Gui_WListBox_CursorChanged_handler),
-				      w);
+                                      "cursor-changed",
+                                      G_CALLBACK (Gtk2Gui_WListBox_CursorChanged_handler),
+                                      w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

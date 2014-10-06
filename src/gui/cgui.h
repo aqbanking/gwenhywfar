@@ -35,7 +35,7 @@ extern "C" {
 /** Constructor
  *
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_GUI *GWEN_Gui_CGui_new(void);
 
 
@@ -102,8 +102,8 @@ void GWEN_Gui_CGui_SetIsNonInteractive(GWEN_GUI *gui, int i);
  */
 GWENHYWFAR_API DEPRECATED
 void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
-				 GWEN_DB_NODE *dbPasswords,
-				 int persistent);
+                                 GWEN_DB_NODE *dbPasswords,
+                                 int persistent);
 
 /**
  * Returns a pointer to the internally used password cache. The GUI
@@ -129,14 +129,14 @@ GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui);
 /**
  * Set the certificate DB. Takes over the given DB.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts);
 
 /**
  * Returns a pointer to the internal certificate cache. The GUI
  * object remains the owner of the object returned (if any).
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_Gui_CGui_GetCertDb(const GWEN_GUI *gui);
 
 /**

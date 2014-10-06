@@ -21,12 +21,12 @@
 
 
 typedef GWEN_CRYPT_TOKEN* GWENHYWFAR_CB
-  (*GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN)(GWEN_PLUGIN *pl,
-					    const char *name);
+(*GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN)(GWEN_PLUGIN *pl,
+    const char *name);
 
 typedef int GWENHYWFAR_CB
-  (*GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN)(GWEN_PLUGIN *pl,
-					   GWEN_BUFFER *name);
+(*GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN)(GWEN_PLUGIN *pl,
+    GWEN_BUFFER *name);
 
 
 #ifdef __cplusplus
@@ -36,18 +36,18 @@ extern "C" {
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_Crypt_Token_Plugin_new(GWEN_PLUGIN_MANAGER *mgr,
-					 GWEN_CRYPT_TOKEN_DEVICE devType,
-					 const char *typeName,
-					 const char *fileName);
+    GWEN_CRYPT_TOKEN_DEVICE devType,
+    const char *typeName,
+    const char *fileName);
 
 
 GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN GWEN_Crypt_Token_Plugin_SetCreateTokenFn(GWEN_PLUGIN *pl,
-										GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN fn);
+    GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN fn);
 
 GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN GWEN_Crypt_Token_Plugin_SetCheckTokenFn(GWEN_PLUGIN *pl,
-									      GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN fn);
+    GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN fn);
 
 #ifdef __cplusplus
 }

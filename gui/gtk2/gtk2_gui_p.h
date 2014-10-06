@@ -34,14 +34,14 @@ void Gtk2_Gui_FreeData(void *bp, void *p);
 
 static GWENHYWFAR_CB
 int GTK2_Gui_ExecDialog(GWEN_GUI *gui,
-			GWEN_DIALOG *dlg,
-			uint32_t guiid);
+                        GWEN_DIALOG *dlg,
+                        uint32_t guiid);
 
 
 static GWENHYWFAR_CB
 int GTK2_Gui_OpenDialog(GWEN_GUI *gui,
-			GWEN_DIALOG *dlg,
-			uint32_t guiid);
+                        GWEN_DIALOG *dlg,
+                        uint32_t guiid);
 
 static GWENHYWFAR_CB
 int GTK2_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg);
@@ -51,12 +51,12 @@ int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout);
 
 static GWENHYWFAR_CB
 int GTK2_Gui_GetFileName(GWEN_GUI *gui,
-			 const char *caption,
-			 GWEN_GUI_FILENAME_TYPE fnt,
-			 uint32_t flags,
-			 const char *patterns,
-			 GWEN_BUFFER *pathBuffer,
-			 uint32_t guiid);
+                         const char *caption,
+                         GWEN_GUI_FILENAME_TYPE fnt,
+                         uint32_t flags,
+                         const char *patterns,
+                         GWEN_BUFFER *pathBuffer,
+                         uint32_t guiid);
 
 
 #endif

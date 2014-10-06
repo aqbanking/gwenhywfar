@@ -148,21 +148,21 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
  * @param dnode node of the element to transform
  */
 const char *GWEN_MsgEngine__findInValues(GWEN_MSGENGINE *e,
-                                         GWEN_XMLNODE *node,
-                                         GWEN_XMLNODE *dnode,
-                                         const char *name,
-                                         unsigned int *datasize);
+    GWEN_XMLNODE *node,
+    GWEN_XMLNODE *dnode,
+    const char *name,
+    unsigned int *datasize);
 
 const char  *GWEN_MsgEngine__TransformValue(GWEN_MSGENGINE *e,
-                                            const char *pvalue,
-                                            GWEN_XMLNODE *node,
-                                            GWEN_XMLNODE *dnode,
-                                            unsigned int *datasize);
+    const char *pvalue,
+    GWEN_XMLNODE *node,
+    GWEN_XMLNODE *dnode,
+    unsigned int *datasize);
 const char *GWEN_MsgEngine__SearchForValue(GWEN_MSGENGINE *e,
-                                           GWEN_XMLNODE *node,
-                                           GWEN_XMLNODE_PATH *nodePath,
-                                           const char *name,
-                                           unsigned int *datasize);
+    GWEN_XMLNODE *node,
+    GWEN_XMLNODE_PATH *nodePath,
+    const char *name,
+    unsigned int *datasize);
 int GWEN_MsgEngine__IsCharTyp(GWEN_MSGENGINE *e, const char *type);
 int GWEN_MsgEngine__IsIntTyp(GWEN_MSGENGINE *e, const char *type);
 int GWEN_MsgEngine__IsBinTyp(GWEN_MSGENGINE *e, const char *type);

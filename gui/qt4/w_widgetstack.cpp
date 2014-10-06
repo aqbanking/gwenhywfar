@@ -52,9 +52,9 @@ public:
 
 
   int setIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int value,
-		     int doSignal) {
+                     int index,
+                     int value,
+                     int doSignal) {
     QStackedWidget *qw;
 
     qw=(QStackedWidget*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
@@ -73,8 +73,8 @@ public:
 
 
   int getIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int defaultValue) {
+                     int index,
+                     int defaultValue) {
     QStackedWidget *qw;
 
     qw=(QStackedWidget*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
@@ -84,8 +84,8 @@ public:
     case GWEN_DialogProperty_Value:
       return qw->currentIndex();
 
-      default:
-	return Qt4_W_Widget::getIntProperty(prop, index, defaultValue);
+    default:
+      return Qt4_W_Widget::getIntProperty(prop, index, defaultValue);
     }
   };
 

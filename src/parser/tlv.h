@@ -90,10 +90,10 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
  */
 GWENHYWFAR_API
 int GWEN_TLV_WriteHeader(unsigned int tagType,
-			 unsigned int tagMode,
-			 uint64_t tagLength,
-			 int isBerTlv,
-			 GWEN_BUFFER *mbuf);
+                         unsigned int tagMode,
+                         uint64_t tagLength,
+                         int isBerTlv,
+                         GWEN_BUFFER *mbuf);
 
 
 #endif /* GWENHYWFAR_TLV_H */

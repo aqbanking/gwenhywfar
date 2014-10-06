@@ -146,7 +146,7 @@ GWENHYWFAR_API int GWEN_Logger_IsEnabled(const char *logDomain);
  * @param l maximum level to be logged
  */
 GWENHYWFAR_API void GWEN_Logger_SetLevel(const char *logDomain,
-                                         GWEN_LOGGER_LEVEL l);
+    GWEN_LOGGER_LEVEL l);
 
 /**
  * Returns the current log level.
@@ -161,7 +161,7 @@ GWENHYWFAR_API int GWEN_Logger_GetLevel(const char *logDomain);
  * @author Martin Preuss<martin@libchipcard.de>
  */
 GWENHYWFAR_API void GWEN_Logger_SetIdent(const char *logDomain,
-                                         const char *id);
+    const char *id);
 
 /**
  * Set the name of the file to be used when logging to a file.
@@ -175,14 +175,14 @@ void GWEN_Logger_SetFilename(const char *logDomain, const char *name);
  * @author Martin Preuss<martin@libchipcard.de>
  */
 GWENHYWFAR_API
-  GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(const char *logDomain,
-                                                    GWEN_LOGGERFUNCTIONLOG fn);
+GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(const char *logDomain,
+    GWEN_LOGGERFUNCTIONLOG fn);
 
 /**
  * Transforms an ASCII string to a level value.
  */
 GWENHYWFAR_API
-  GWEN_LOGGER_LEVEL GWEN_Logger_Name2Level(const char *name);
+GWEN_LOGGER_LEVEL GWEN_Logger_Name2Level(const char *name);
 
 
 /**
@@ -190,20 +190,20 @@ GWENHYWFAR_API
  * command line options etc).
  */
 GWENHYWFAR_API
-  const char *GWEN_Logger_Level2Name(GWEN_LOGGER_LEVEL level);
+const char *GWEN_Logger_Level2Name(GWEN_LOGGER_LEVEL level);
 
 
 /**
  * Transforms an ASCII string into the corresponding log type.
  */
 GWENHYWFAR_API
-  GWEN_LOGGER_LOGTYPE GWEN_Logger_Name2Logtype(const char *name);
+GWEN_LOGGER_LOGTYPE GWEN_Logger_Name2Logtype(const char *name);
 
 /**
  * Transforms a log type into an ASCII string.
  */
 GWENHYWFAR_API
-  const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt);
+const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt);
 
 
 /**
@@ -211,8 +211,8 @@ GWENHYWFAR_API
  */
 GWENHYWFAR_API
 int GWEN_Logger_CreateLogMessage(const char *logDomain,
-				 GWEN_LOGGER_LEVEL priority, const char *s,
-				 GWEN_BUFFER *mbuf);
+                                 GWEN_LOGGER_LEVEL priority, const char *s,
+                                 GWEN_BUFFER *mbuf);
 
 
 #ifdef __cplusplus

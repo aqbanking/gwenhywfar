@@ -45,25 +45,25 @@ static int GWEN_INETADDR__Counter=0;
 #endif
 
 
-uint32_t GWEN_InetAddr_GetCapabilities(void){
+uint32_t GWEN_InetAddr_GetCapabilities(void) {
   return
     GWEN_INETADDR_CAPS_AF_TCP;
 }
 
 
-int GWEN_InetAddr_ModuleInit(void){
+int GWEN_InetAddr_ModuleInit(void) {
   return 0;
 }
 
 
 
-int GWEN_InetAddr_ModuleFini(void){
+int GWEN_InetAddr_ModuleFini(void) {
   return 0;
 }
 
 
 
-GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
+GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af) {
   GWEN_INETADDRESS *ia;
 
   GWEN_NEW_OBJECT(GWEN_INETADDRESS, ia);
@@ -106,7 +106,7 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af){
 
 
 
-GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa){
+GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa) {
   GWEN_INETADDRESS *ia;
 
   GWEN_NEW_OBJECT(GWEN_INETADDRESS, ia);
@@ -120,7 +120,7 @@ GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa){
 
 
 
-void GWEN_InetAddr_free(GWEN_INETADDRESS *ia){
+void GWEN_InetAddr_free(GWEN_INETADDRESS *ia) {
   if (ia) {
 #ifdef MEMTRACE
     GWEN_INETADDR__Counter--;
@@ -134,7 +134,7 @@ void GWEN_InetAddr_free(GWEN_INETADDRESS *ia){
 
 
 int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
-					const char *addr){
+                             const char *addr) {
   assert(ia);
 
   switch (ia->af) {
@@ -166,7 +166,7 @@ int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
       /* ok, address to be set */
       if (!inet_aton(addr,&aptr->sin_addr))
         /* bad address, so maybe it rather is a name */
-	return GWEN_ERROR_BAD_ADDRESS;
+        return GWEN_ERROR_BAD_ADDRESS;
     }
 #endif
     break;
@@ -211,7 +211,7 @@ int GWEN_InetAddr_TranslateHError(int herr) {
 
 
 
-int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
+int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name) {
   struct hostent *he;
 
   assert(ia);
@@ -227,8 +227,8 @@ int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
       return GWEN_InetAddr_TranslateHError(h_errno);
     /* name resolved, store address */
     memcpy(&(aptr->sin_addr),
-	   he->h_addr_list[0],
-	   sizeof(struct in_addr));
+           he->h_addr_list[0],
+           sizeof(struct in_addr));
     break;
   }
 
@@ -247,7 +247,7 @@ int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name){
 
 
 int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
-					char *buffer, unsigned int bsize){
+                             char *buffer, unsigned int bsize) {
   const char *s;
 
   assert(ia);
@@ -280,7 +280,7 @@ int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
 
 
 int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
-				     char *buffer, unsigned int bsize){
+                          char *buffer, unsigned int bsize) {
   struct hostent *he;
   struct in_addr lia;
 
@@ -327,7 +327,7 @@ int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
 
 
 
-int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia){
+int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia) {
   int i;
 
   assert(ia);
@@ -351,7 +351,7 @@ int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia){
 
 
 
-int GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia, int port){
+int GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia, int port) {
   assert(ia);
 
   switch (ia->af) {

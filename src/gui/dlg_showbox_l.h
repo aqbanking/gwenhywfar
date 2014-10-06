@@ -17,8 +17,8 @@
 
 
 GWEN_DIALOG *GWEN_DlgShowBox_new(uint32_t flags,
-				 const char *title,
-				 const char *text);
+                                 const char *title,
+                                 const char *text);
 
 
 

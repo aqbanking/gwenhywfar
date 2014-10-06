@@ -30,89 +30,89 @@
 
 
 static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
-					       GWEN_DIALOG_EVENTTYPE t,
-					       const char *sender) {
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender) {
   fprintf(stderr,
-	  "Received event %d from widget [%s]\n", t, sender);
+          "Received event %d from widget [%s]\n", t, sender);
 
   switch(t) {
   case GWEN_DialogEvent_TypeInit:
     fprintf(stderr, "Init\n");
     GWEN_Dialog_SetCharProperty(dlg, "combo1",
-				GWEN_DialogProperty_AddValue,
-				0,
-				"Erster Text in Combo1",
-				0);
+                                GWEN_DialogProperty_AddValue,
+                                0,
+                                "Erster Text in Combo1",
+                                0);
     GWEN_Dialog_SetCharProperty(dlg, "combo1",
-				GWEN_DialogProperty_AddValue,
-				0,
-				"Zweiter Text in Combo1",
-				0);
+                                GWEN_DialogProperty_AddValue,
+                                0,
+                                "Zweiter Text in Combo1",
+                                0);
     GWEN_Dialog_SetIntProperty(dlg, "combo1",
-			       GWEN_DialogProperty_Value,
-			       0,
-			       0,
-			       0);
+                               GWEN_DialogProperty_Value,
+                               0,
+                               0,
+                               0);
 
 
     GWEN_Dialog_SetCharProperty(dlg, "combo2",
-				GWEN_DialogProperty_AddValue,
-				0,
-				"Erster Text in Combo2",
-				0);
+                                GWEN_DialogProperty_AddValue,
+                                0,
+                                "Erster Text in Combo2",
+                                0);
     GWEN_Dialog_SetCharProperty(dlg, "combo2",
-				GWEN_DialogProperty_AddValue,
-				0,
-				"Zweiter Text in Combo2",
-				0);
+                                GWEN_DialogProperty_AddValue,
+                                0,
+                                "Zweiter Text in Combo2",
+                                0);
     GWEN_Dialog_SetIntProperty(dlg, "combo2",
-			       GWEN_DialogProperty_Value,
-			       0,
-			       0,
-			       0);
+                               GWEN_DialogProperty_Value,
+                               0,
+                               0,
+                               0);
 
     GWEN_Dialog_SetCharProperty(dlg, "listbox1",
-				GWEN_DialogProperty_Title,
-				0,
-				"Column1\tColumn2\tColumn3",
-				0);
+                                GWEN_DialogProperty_Title,
+                                0,
+                                "Column1\tColumn2\tColumn3",
+                                0);
 
     GWEN_Dialog_SetCharProperty(dlg, "listbox1",
-				GWEN_DialogProperty_AddValue,
-				0,
-				"Zeile 1 Spalte 1\tZeile 1 Spalte 2\tZeile 1 Spalte 3",
-				0);
+                                GWEN_DialogProperty_AddValue,
+                                0,
+                                "Zeile 1 Spalte 1\tZeile 1 Spalte 2\tZeile 1 Spalte 3",
+                                0);
     GWEN_Dialog_SetCharProperty(dlg, "listbox1",
-				GWEN_DialogProperty_AddValue,
-				0,
-				"Zeile 2 Spalte 1\tZeile 2 Spalte 2\tZeile 2 Spalte 3",
-				0);
+                                GWEN_DialogProperty_AddValue,
+                                0,
+                                "Zeile 2 Spalte 1\tZeile 2 Spalte 2\tZeile 2 Spalte 3",
+                                0);
     GWEN_Dialog_SetIntProperty(dlg, "listbox1",
-			       GWEN_DialogProperty_ColumnWidth,
-			       0,
+                               GWEN_DialogProperty_ColumnWidth,
+                               0,
                                100,
-			       0);
+                               0);
     GWEN_Dialog_SetIntProperty(dlg, "listbox1",
-			       GWEN_DialogProperty_ColumnWidth,
-			       1,
-			       200,
-			       0);
+                               GWEN_DialogProperty_ColumnWidth,
+                               1,
+                               200,
+                               0);
 
     GWEN_Dialog_SetCharProperty(dlg, "labelWithHtmlImage",
-				GWEN_DialogProperty_Title,
-				0,
-				"<html>This label contains text which should also contain an image:"
-				"<img src=\"chipcard.png\">"
-				"<p>And here the text should continue, followed by another image:"
-				"<img src=\"disk.png\"></p>"
-				"And again, this should be on the following line.</html>"
-				"This label would contain an image if it were able to use "
-				"HTML.",
-				0);
+                                GWEN_DialogProperty_Title,
+                                0,
+                                "<html>This label contains text which should also contain an image:"
+                                "<img src=\"chipcard.png\">"
+                                "<p>And here the text should continue, followed by another image:"
+                                "<img src=\"disk.png\"></p>"
+                                "And again, this should be on the following line.</html>"
+                                "This label would contain an image if it were able to use "
+                                "HTML.",
+                                0);
 
     GWEN_Dialog_SetCharProperty(dlg, "textBrowser1",
-				GWEN_DialogProperty_Value,
-				0,
+                                GWEN_DialogProperty_Value,
+                                0,
                                 "<html>"
                                 "<p>This is <b>bold</b> text, while this one is <i>italic</i>.</p>"
                                 "This is a list:"
@@ -134,27 +134,27 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
                                 0);
 
     GWEN_Dialog_SetIntProperty(dlg, "progressBar1",
-			       GWEN_DialogProperty_MinValue,
-			       0,
-			       0,
-			       0);
+                               GWEN_DialogProperty_MinValue,
+                               0,
+                               0,
+                               0);
     GWEN_Dialog_SetIntProperty(dlg, "progressBar1",
-			       GWEN_DialogProperty_MaxValue,
-			       0,
-			       10,
-			       0);
-    
+                               GWEN_DialogProperty_MaxValue,
+                               0,
+                               10,
+                               0);
+
 
     GWEN_Dialog_SetIntProperty(dlg, "",
-			       GWEN_DialogProperty_Width,
-			       0,
-			       640,
-			       0);
-   GWEN_Dialog_SetIntProperty(dlg, "",
-			       GWEN_DialogProperty_Height,
-			       0,
-			       480,
-			       0);
+                               GWEN_DialogProperty_Width,
+                               0,
+                               640,
+                               0);
+    GWEN_Dialog_SetIntProperty(dlg, "",
+                               GWEN_DialogProperty_Height,
+                               0,
+                               480,
+                               0);
 
     break;
 
@@ -165,14 +165,14 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
     fprintf(stderr, "ValueChanged\n");
     if (strcasecmp(sender, "listbox1")==0) {
       fprintf(stderr, "Selected list entry %d\n",
-	      GWEN_Dialog_GetIntProperty(dlg, "listbox1", GWEN_DialogProperty_Value, 0, -1));
+              GWEN_Dialog_GetIntProperty(dlg, "listbox1", GWEN_DialogProperty_Value, 0, -1));
     }
     else if (strcasecmp(sender, "editPass1")==0) {
       const char *s;
 
       s=GWEN_Dialog_GetCharProperty(dlg, "editPass1", GWEN_DialogProperty_Value, 0, NULL);
       if (!(s && *s))
-	s="<empty>";
+        s="<empty>";
       GWEN_Dialog_SetCharProperty(dlg, "editPass2", GWEN_DialogProperty_Value, 0, s, 0);
     }
     break;
@@ -217,7 +217,7 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 
       v=GWEN_Dialog_GetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, -1);
       if (v>0)
-	GWEN_Dialog_SetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, v-1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, v-1, 0);
       return GWEN_DialogEvent_ResultHandled;
     }
     else if (strcasecmp(sender, "progressPlus")==0) {
@@ -225,7 +225,7 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 
       v=GWEN_Dialog_GetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, -1);
       if (v<10)
-	GWEN_Dialog_SetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, v+1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "progressBar1", GWEN_DialogProperty_Value, 0, v+1, 0);
       return GWEN_DialogEvent_ResultHandled;
     }
     else if (strcasecmp(sender, "prevPageButton")==0) {
@@ -233,7 +233,7 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 
       v=GWEN_Dialog_GetIntProperty(dlg, "stack1", GWEN_DialogProperty_Value, 0, -1);
       if (v>0)
-	GWEN_Dialog_SetIntProperty(dlg, "stack1", GWEN_DialogProperty_Value, 0, v-1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "stack1", GWEN_DialogProperty_Value, 0, v-1, 0);
       return GWEN_DialogEvent_ResultHandled;
     }
     else if (strcasecmp(sender, "nextPageButton")==0) {
@@ -241,7 +241,7 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 
       v=GWEN_Dialog_GetIntProperty(dlg, "stack1", GWEN_DialogProperty_Value, 0, -1);
       if (v<3)
-	GWEN_Dialog_SetIntProperty(dlg, "stack1", GWEN_DialogProperty_Value, 0, v+1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "stack1", GWEN_DialogProperty_Value, 0, v+1, 0);
       return GWEN_DialogEvent_ResultHandled;
     }
     break;

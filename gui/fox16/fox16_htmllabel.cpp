@@ -26,7 +26,7 @@
 
 
 
-FXDEFMAP(FOX16_HtmlLabel) FOX16_HtmlLabelMap[]={
+FXDEFMAP(FOX16_HtmlLabel) FOX16_HtmlLabelMap[]= {
   FXMAPFUNC(SEL_PAINT,0,FOX16_HtmlLabel::onPaint),
 };
 
@@ -39,18 +39,17 @@ FXIMPLEMENT(FOX16_HtmlLabel, FXFrame, FOX16_HtmlLabelMap, ARRAYNUMBER(FOX16_Html
 
 
 FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
-				 FXuint opts,
-				 FXint x, FXint y, FXint w, FXint h,
-				 FXint pl, FXint pr,
-				 FXint pt, FXint pb)
-:FXFrame(p, opts, x, y, w, h, pl, pr, pt, pb)
-,m_htmlCtx(NULL)
-,m_minWidth(0)
-,m_maxDefaultWidth(-1)
-,m_haveDefaultDims(false)
-,m_mediaPaths(NULL)
-,m_icon(NULL)
-{
+                                 FXuint opts,
+                                 FXint x, FXint y, FXint w, FXint h,
+                                 FXint pl, FXint pr,
+                                 FXint pt, FXint pb)
+  :FXFrame(p, opts, x, y, w, h, pl, pr, pt, pb)
+  ,m_htmlCtx(NULL)
+  ,m_minWidth(0)
+  ,m_maxDefaultWidth(-1)
+  ,m_haveDefaultDims(false)
+  ,m_mediaPaths(NULL)
+  ,m_icon(NULL) {
   m_mediaPaths=GWEN_StringList_new();
   setText(text);
   flags|=FLAG_ENABLED|FLAG_DIRTY|FLAG_RECALC;
@@ -60,12 +59,11 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
 
 
 FOX16_HtmlLabel::FOX16_HtmlLabel()
-:FXFrame()
-,m_htmlCtx(NULL)
-,m_minWidth(0)
-,m_mediaPaths(NULL)
-,m_icon(NULL)
-{
+  :FXFrame()
+  ,m_htmlCtx(NULL)
+  ,m_minWidth(0)
+  ,m_mediaPaths(NULL)
+  ,m_icon(NULL) {
   flags|=FLAG_ENABLED;
 }
 
@@ -145,11 +143,11 @@ void FOX16_HtmlLabel::calcDefaultDims() {
       ar=nw/nh;
 
       if (ar>=3.5 && ar<4.0)
-	break;
+        break;
 
       if (ar>4.0)
-	/* w/h too high, so we need to reduce the width */
-	wTmp&=~mask;
+        /* w/h too high, so we need to reduce the width */
+        wTmp&=~mask;
 
       mask>>=1;
       wTmp|=mask;
@@ -226,14 +224,14 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
       int ty=border;
 
       if(isEnabled())
-	dc.drawIcon(m_icon, border, border);
+        dc.drawIcon(m_icon, border, border);
       else
-	dc.drawIconSunken(m_icon, border, border);
+        dc.drawIconSunken(m_icon, border, border);
 
       ih=m_icon->getHeight();
       th=m_htmlCtx->getHeight();
       if (ih>th)
-	ty+=(ih-th)/2;
+        ty+=(ih-th)/2;
       m_htmlCtx->paint(&dc, border+ICON_SPACE+m_icon->getWidth(), ty);
     }
     else {

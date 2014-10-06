@@ -85,12 +85,12 @@ public:
       int c;
 
       if ((c=GWEN_Widget_GetColumns(_widget))) {
-	x=idx % c;
-	y=idx / c;
+        x=idx % c;
+        y=idx / c;
       }
       else if ((c=GWEN_Widget_GetRows(_widget))) {
-	x=idx / c;
-	y=idx % c ;
+        x=idx / c;
+        y=idx % c ;
       }
 
       qLayout->addWidget(qChild, y, x);

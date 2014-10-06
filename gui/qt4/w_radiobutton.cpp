@@ -54,8 +54,8 @@ public:
     assert(qtDialog);
 
     qw->connect(qw, SIGNAL(toggled(bool)),
-		qtDialog->getMainWindow(),
-		SLOT(slotActivated()));
+                qtDialog->getMainWindow(),
+                SLOT(slotActivated()));
 
     if (wParent)
       GWEN_Widget_AddChildGuiWidget(wParent, _widget);
@@ -65,9 +65,9 @@ public:
 
 
   int setIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int value,
-		     int doSignal) {
+                     int index,
+                     int value,
+                     int doSignal) {
     QRadioButton *qw;
 
     qw=(QRadioButton*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
@@ -86,8 +86,8 @@ public:
 
 
   int getIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int defaultValue) {
+                     int index,
+                     int defaultValue) {
     QRadioButton *qw;
 
     qw=(QRadioButton*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
@@ -97,17 +97,17 @@ public:
     case GWEN_DialogProperty_Value:
       return (qw->isChecked())?1:0;
 
-      default:
-	return Qt4_W_Widget::getIntProperty(prop, index, defaultValue);
+    default:
+      return Qt4_W_Widget::getIntProperty(prop, index, defaultValue);
     }
   };
 
 
 
   int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-		      int index,
-		      const char *value,
-		      int doSignal) {
+                      int index,
+                      const char *value,
+                      int doSignal) {
     QRadioButton *qw;
     QString text;
 
@@ -126,16 +126,16 @@ public:
     }
 
     DBG_WARN(GWEN_LOGDOMAIN,
-	     "Function is not appropriate for this type of widget (%s)",
-	     GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
+             "Function is not appropriate for this type of widget (%s)",
+             GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
     return GWEN_ERROR_INVALID;
   };
 
 
 
   const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      const char *defaultValue) {
+                              int index,
+                              const char *defaultValue) {
     QRadioButton *qw;
     QString str;
 
@@ -146,10 +146,10 @@ public:
     case GWEN_DialogProperty_Title:
       str=qw->text();
       if (str.isEmpty())
-	return defaultValue;
+        return defaultValue;
       else {
-	GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_TITLE, str.toUtf8());
-	return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_TITLE);
+        GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_TITLE, str.toUtf8());
+        return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_TITLE);
       }
       break;
 
@@ -158,8 +158,8 @@ public:
     }
 
     DBG_WARN(GWEN_LOGDOMAIN,
-	     "Function is not appropriate for this type of widget (%s)",
-	     GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
+             "Function is not appropriate for this type of widget (%s)",
+             GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
     return defaultValue;
   };
 

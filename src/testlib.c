@@ -83,30 +83,30 @@ int test_gui(int test_with_interaction) {
   GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
 
   rv = GWEN_Gui_ShowBox(0,
-			"This is a ShowBox test title",
-			"This is a ShowBox test.",
-			0);
+                        "This is a ShowBox test title",
+                        "This is a ShowBox test.",
+                        0);
   printf("GWEN_Gui_ShowBox: rv=%d\n", rv);
   GWEN_Gui_HideBox(rv);
   printf("GWEN_Gui_HideBox called.\n\n");
 
   if (test_with_interaction) {
     rv = GWEN_Gui_InputBox(0,
-			   "This is a InputBox test title",
-			   "Just enter something.",
-			   buffer,
-			   1, 40,
-			   0);
+                           "This is a InputBox test title",
+                           "Just enter something.",
+                           buffer,
+                           1, 40,
+                           0);
     printf("GWEN_Gui_InputBox: rv=%d, result=\"%s\"\n\n",
-	   rv, buffer);
-  
+           rv, buffer);
+
     rv = GWEN_Gui_MessageBox(0,
-			     "Third test title, this time MessageBox",
-			     "Just press the first or second button.",
-			     "First button.", "Second button", NULL,
-			     0);
+                             "Third test title, this time MessageBox",
+                             "Just press the first or second button.",
+                             "First button.", "Second button", NULL,
+                             0);
     printf("GWEN_Gui_MessageBox: rv=%d; button=%s\n", rv,
-	   (rv == 1 ? "first" : (rv == 2 ? "second" : "unknown")));
+           (rv == 1 ? "first" : (rv == 2 ? "second" : "unknown")));
   }
 
   GWEN_Gui_free(gui);
@@ -118,23 +118,23 @@ int test_gui(int test_with_interaction) {
 #ifndef MAX_PATH
 # define MAX_PATH 200
 #endif
-int check_directory()
-{
+int check_directory() {
   char tmpdir[MAX_PATH];
   GWEN_DIRECTORY *dir;
   int rv;
 
   GWEN_Directory_GetTmpDirectory(tmpdir, MAX_PATH);
   printf("GWEN_Directory_GetTmpDirectory returns \"%s\" as tmp directory\n",
-	 tmpdir);
+         tmpdir);
 
   dir = GWEN_Directory_new();
   rv = GWEN_Directory_Open(dir, tmpdir);
   if (rv) {
     /* error */
     printf("Error on GWEN_Directory_Open(\"%s\"): errno=%d: %s\n",
-	   tmpdir, errno, strerror(errno));
-  } else {
+           tmpdir, errno, strerror(errno));
+  }
+  else {
     rv = GWEN_Directory_Close(dir);
   }
   GWEN_Directory_free(dir);
@@ -144,8 +144,7 @@ int check_directory()
 #define ASSERT(expr) if (!(expr)) \
  { printf("FAILED assertion in " __FILE__ ": %d: " #expr "\n", \
 	  __LINE__); return -1; }
-int check_list()
-{
+int check_list() {
   const char *e1 = "one", *e2 = "two", *e3 = "three";
   GWEN_LIST *list;
   GWEN_LIST_ITERATOR *iter;
@@ -196,8 +195,7 @@ int check_list()
   return 0;
 }
 
-int check_constlist()
-{
+int check_constlist() {
   const char *e1 = "one", *e2 = "two", *e3 = "three";
   GWEN_CONSTLIST *list;
   GWEN_CONSTLIST_ITERATOR *iter;
@@ -239,19 +237,18 @@ int check_constlist()
   return 0;
 }
 
-void *printfunc(const char *s, void *u)
-{
+void *printfunc(const char *s, void *u) {
   const char *pathname = u;
   printf("Path %s contains: %s\n", pathname, s);
   return 0;
 }
-int print_paths()
-{
+int print_paths() {
   const char *paths[] = { GWEN_PM_SYSCONFDIR
-			  , GWEN_PM_LOCALEDIR
-			  , GWEN_PM_PLUGINDIR
-			  , GWEN_PM_DATADIR
-			  , 0 };
+                          , GWEN_PM_LOCALEDIR
+                          , GWEN_PM_PLUGINDIR
+                          , GWEN_PM_DATADIR
+                          , 0
+                        };
   const char **p = paths;
   for ( ; *p != 0; ++p) {
     const char *pathname = *p;
@@ -333,13 +330,13 @@ int main(int argc, char **argv) {
 
   if (strcasecmp(cmd, "check")==0) {
     rv=check1() ||
-      check2() ||
-      test_gui(0) ||
-      check_directory() ||
-      check_list() ||
-      check_constlist()
-      || print_paths()
-      ;
+       check2() ||
+       test_gui(0) ||
+       check_directory() ||
+       check_list() ||
+       check_constlist()
+       || print_paths()
+       ;
   }
   else if (strcasecmp(cmd, "gui")==0) {
     rv=test_gui(1);

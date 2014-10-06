@@ -27,8 +27,8 @@ typedef struct GWEN_DLGSHOWBOX GWEN_DLGSHOWBOX;
 
 
 static int GWENHYWFAR_CB GWEN_DlgShowBox_SignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender);
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender);
 
 static void GWENHYWFAR_CB GWEN_DlgShowBox_FreeData(void *bp, void *p);
 

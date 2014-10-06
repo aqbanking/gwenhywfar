@@ -69,14 +69,14 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio);
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
-				       uint8_t *buffer,
-				       uint32_t size);
+                                       uint8_t *buffer,
+                                       uint32_t size);
 
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
-					const uint8_t *buffer,
-					uint32_t size);
+                                        const uint8_t *buffer,
+                                        uint32_t size);
 
 
 static int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf);

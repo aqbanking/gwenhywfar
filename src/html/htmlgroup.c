@@ -28,8 +28,8 @@ GWEN_INHERIT_FUNCTIONS(HTML_GROUP)
 
 
 HTML_GROUP *HtmlGroup_new(const char *groupName,
-			  HTML_GROUP *parent,
-			  GWEN_XML_CONTEXT *ctx) {
+                          HTML_GROUP *parent,
+                          GWEN_XML_CONTEXT *ctx) {
   HTML_GROUP *g;
 
   GWEN_NEW_OBJECT(HTML_GROUP, g);
@@ -101,7 +101,7 @@ HTML_PROPS *HtmlGroup_GetProperties(const HTML_GROUP *g) {
 
 
 
-void HtmlGroup_SetProperties(HTML_GROUP *g, HTML_PROPS *pr){
+void HtmlGroup_SetProperties(HTML_GROUP *g, HTML_PROPS *pr) {
   assert(g);
 
   HtmlProps_Attach(pr);
@@ -118,7 +118,7 @@ void HtmlGroup_SetProperties(HTML_GROUP *g, HTML_PROPS *pr){
 
 HTML_GROUP_STARTTAG_FN
 HtmlGroup_SetStartTagFn(HTML_GROUP *g,
-			HTML_GROUP_STARTTAG_FN f) {
+                        HTML_GROUP_STARTTAG_FN f) {
   HTML_GROUP_STARTTAG_FN oldFn;
 
   assert(g);
@@ -131,7 +131,7 @@ HtmlGroup_SetStartTagFn(HTML_GROUP *g,
 
 HTML_GROUP_ENDTAG_FN
 HtmlGroup_SetEndTagFn(HTML_GROUP *g,
-		      HTML_GROUP_ENDTAG_FN f) {
+                      HTML_GROUP_ENDTAG_FN f) {
   HTML_GROUP_ENDTAG_FN oldFn;
 
   assert(g);
@@ -144,7 +144,7 @@ HtmlGroup_SetEndTagFn(HTML_GROUP *g,
 
 HTML_GROUP_ADDDATA_FN
 HtmlGroup_SetAddDataFn(HTML_GROUP *g,
-		       HTML_GROUP_ADDDATA_FN f) {
+                       HTML_GROUP_ADDDATA_FN f) {
   HTML_GROUP_ADDDATA_FN oldFn;
 
   assert(g);
@@ -157,7 +157,7 @@ HtmlGroup_SetAddDataFn(HTML_GROUP *g,
 
 HTML_GROUP_ENDSUBGROUP_FN
 HtmlGroup_SetEndSubGroupFn(HTML_GROUP *g,
-			   HTML_GROUP_ENDSUBGROUP_FN f) {
+                           HTML_GROUP_ENDSUBGROUP_FN f) {
   HTML_GROUP_ENDSUBGROUP_FN oldFn;
 
   assert(g);
@@ -171,7 +171,7 @@ HtmlGroup_SetEndSubGroupFn(HTML_GROUP *g,
 
 
 int HtmlGroup_StartTag(HTML_GROUP *g,
-		       const char *tagName) {
+                       const char *tagName) {
   assert(g);
   if (g->startTagFn)
     return g->startTagFn(g, tagName);
@@ -182,7 +182,7 @@ int HtmlGroup_StartTag(HTML_GROUP *g,
 
 
 int HtmlGroup_EndTag(HTML_GROUP *g,
-			const char *tagName) {
+                     const char *tagName) {
   assert(g);
   if (g->endTagFn)
     return g->endTagFn(g, tagName);
@@ -193,7 +193,7 @@ int HtmlGroup_EndTag(HTML_GROUP *g,
 
 
 int HtmlGroup_AddData(HTML_GROUP *g,
-			 const char *data) {
+                      const char *data) {
   assert(g);
   if (g->addDataFn)
     return g->addDataFn(g, data);

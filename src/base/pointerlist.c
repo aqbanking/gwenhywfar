@@ -41,7 +41,7 @@
 
 
 
-GWEN_POINTERLIST_TABLE *GWEN_PointerListTable_new(void){
+GWEN_POINTERLIST_TABLE *GWEN_PointerListTable_new(void) {
   GWEN_POINTERLIST_TABLE *idt;
 
   GWEN_NEW_OBJECT(GWEN_POINTERLIST_TABLE, idt);
@@ -53,7 +53,7 @@ GWEN_POINTERLIST_TABLE *GWEN_PointerListTable_new(void){
 
 
 
-void GWEN_PointerListTable_free(GWEN_POINTERLIST_TABLE *idt){
+void GWEN_PointerListTable_free(GWEN_POINTERLIST_TABLE *idt) {
   if (idt) {
     assert(idt->refCount);
     if (--(idt->refCount)==0) {
@@ -64,7 +64,7 @@ void GWEN_PointerListTable_free(GWEN_POINTERLIST_TABLE *idt){
 
 
 
-static inline int GWEN_PointerListTable_AddPtr(GWEN_POINTERLIST_TABLE *idt, void *ptr){
+static inline int GWEN_PointerListTable_AddPtr(GWEN_POINTERLIST_TABLE *idt, void *ptr) {
   unsigned int i;
 
   for (i=0; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
@@ -79,7 +79,7 @@ static inline int GWEN_PointerListTable_AddPtr(GWEN_POINTERLIST_TABLE *idt, void
 
 
 
-static inline int GWEN_PointerListTable_AppendPtr(GWEN_POINTERLIST_TABLE *idt, void *ptr){
+static inline int GWEN_PointerListTable_AppendPtr(GWEN_POINTERLIST_TABLE *idt, void *ptr) {
   if (idt->freeEntries) {
     unsigned int i;
 
@@ -94,7 +94,7 @@ static inline int GWEN_PointerListTable_AppendPtr(GWEN_POINTERLIST_TABLE *idt, v
 
 
 
-static inline int GWEN_PointerListTable_HasPtr(const GWEN_POINTERLIST_TABLE *idt, void *ptr){
+static inline int GWEN_PointerListTable_HasPtr(const GWEN_POINTERLIST_TABLE *idt, void *ptr) {
   unsigned int i;
 
   for (i=0; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
@@ -107,7 +107,7 @@ static inline int GWEN_PointerListTable_HasPtr(const GWEN_POINTERLIST_TABLE *idt
 
 
 
-static inline int GWEN_PointerListTable_DelPtr(GWEN_POINTERLIST_TABLE *idt, void *ptr){
+static inline int GWEN_PointerListTable_DelPtr(GWEN_POINTERLIST_TABLE *idt, void *ptr) {
   unsigned int i;
 
   for (i=0; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
@@ -122,25 +122,25 @@ static inline int GWEN_PointerListTable_DelPtr(GWEN_POINTERLIST_TABLE *idt, void
 
 
 
-static inline int GWEN_PointerListTable_IsEmpty(const GWEN_POINTERLIST_TABLE *idt){
+static inline int GWEN_PointerListTable_IsEmpty(const GWEN_POINTERLIST_TABLE *idt) {
   return GWEN_POINTERLIST_TABLE_MAXENTRIES==idt->freeEntries;
 }
 
 
 
-static inline int GWEN_PointerListTable_IsFull(const GWEN_POINTERLIST_TABLE *idt){
+static inline int GWEN_PointerListTable_IsFull(const GWEN_POINTERLIST_TABLE *idt) {
   return idt->freeEntries==0;
 }
 
 
 
-static inline unsigned int GWEN_PointerListTable_GetCount(const GWEN_POINTERLIST_TABLE *idt){
+static inline unsigned int GWEN_PointerListTable_GetCount(const GWEN_POINTERLIST_TABLE *idt) {
   return GWEN_POINTERLIST_TABLE_MAXENTRIES-idt->freeEntries;
 }
 
 
 
-static inline void *GWEN_PointerListTable_GetFirstPtr(const GWEN_POINTERLIST_TABLE *idt, uint64_t *tabIdx){
+static inline void *GWEN_PointerListTable_GetFirstPtr(const GWEN_POINTERLIST_TABLE *idt, uint64_t *tabIdx) {
   unsigned int i;
 
   for (i=0; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
@@ -154,7 +154,7 @@ static inline void *GWEN_PointerListTable_GetFirstPtr(const GWEN_POINTERLIST_TAB
 
 
 
-static inline void *GWEN_PointerListTable_GetNextPtr(const GWEN_POINTERLIST_TABLE *idt, uint64_t *tabIdx){
+static inline void *GWEN_PointerListTable_GetNextPtr(const GWEN_POINTERLIST_TABLE *idt, uint64_t *tabIdx) {
   unsigned int i;
 
   for (i=(*tabIdx)+1; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
@@ -171,7 +171,7 @@ static inline void *GWEN_PointerListTable_GetNextPtr(const GWEN_POINTERLIST_TABL
 
 
 
-GWEN_POINTERLIST *GWEN_PointerList_new(void){
+GWEN_POINTERLIST *GWEN_PointerList_new(void) {
   GWEN_POINTERLIST *idl;
 
   GWEN_NEW_OBJECT(GWEN_POINTERLIST, idl);
@@ -190,7 +190,7 @@ void GWEN_PointerList_Attach(GWEN_POINTERLIST *idl) {
 
 
 
-void GWEN_PointerList_free(GWEN_POINTERLIST *idl){
+void GWEN_PointerList_free(GWEN_POINTERLIST *idl) {
   if (idl) {
     assert(idl->refCount);
     if (idl->refCount==1) {
@@ -227,8 +227,8 @@ void GWEN_PointerList_AddTable(GWEN_POINTERLIST *idl, GWEN_POINTERLIST_TABLE *id
     assert(newPtr);
     /* init new pointers */
     memset((void*)(newPtr+idl->idTableCount),
-	   0,
-	   sizeof(GWEN_POINTERLIST_TABLE*)*(newCount-idl->idTableCount));
+           0,
+           sizeof(GWEN_POINTERLIST_TABLE*)*(newCount-idl->idTableCount));
     idl->pIdTablePointers=newPtr;
     idl->pIdTablePointers[idl->idTableCount]=idt;
     idl->lastTableIdx=idl->idTableCount;
@@ -242,7 +242,7 @@ void GWEN_PointerList_AddTable(GWEN_POINTERLIST *idl, GWEN_POINTERLIST_TABLE *id
 
 
 
-int GWEN_PointerList_AddPtr(GWEN_POINTERLIST *idl, void *ptr){
+int GWEN_PointerList_AddPtr(GWEN_POINTERLIST *idl, void *ptr) {
   GWEN_POINTERLIST_TABLE *idt=NULL;
   GWEN_POINTERLIST_TABLE **tablePtr;
   int idx;
@@ -275,7 +275,7 @@ int GWEN_PointerList_AddPtr(GWEN_POINTERLIST *idl, void *ptr){
 
 
 
-int GWEN_PointerList_DelPtr(GWEN_POINTERLIST *idl, void *ptr){
+int GWEN_PointerList_DelPtr(GWEN_POINTERLIST *idl, void *ptr) {
   if (idl->pIdTablePointers) {
     GWEN_POINTERLIST_TABLE *idt=NULL;
     GWEN_POINTERLIST_TABLE **tablePtr;
@@ -284,10 +284,10 @@ int GWEN_PointerList_DelPtr(GWEN_POINTERLIST *idl, void *ptr){
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
       if (idt && !GWEN_PointerListTable_DelPtr(idt, ptr)) {
-	/* found a table which had this id */
-	GWEN_PointerList_Clean(idl);
-	idl->entryCount--;
-	return 0;
+        /* found a table which had this id */
+        GWEN_PointerList_Clean(idl);
+        idl->entryCount--;
+        return 0;
       }
     }
   }
@@ -297,7 +297,7 @@ int GWEN_PointerList_DelPtr(GWEN_POINTERLIST *idl, void *ptr){
 
 
 
-int GWEN_PointerList_HasPtr(const GWEN_POINTERLIST *idl, void *ptr){
+int GWEN_PointerList_HasPtr(const GWEN_POINTERLIST *idl, void *ptr) {
   if (idl->pIdTablePointers) {
     GWEN_POINTERLIST_TABLE *idt=NULL;
     GWEN_POINTERLIST_TABLE **tablePtr;
@@ -306,7 +306,7 @@ int GWEN_PointerList_HasPtr(const GWEN_POINTERLIST *idl, void *ptr){
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
       if (idt && GWEN_PointerListTable_HasPtr(idt, ptr))
-	return 1;
+        return 1;
     }
   }
 
@@ -336,12 +336,12 @@ void GWEN_PointerList_Clear(GWEN_POINTERLIST *idl) {
     GWEN_POINTERLIST_TABLE *idt=NULL;
     GWEN_POINTERLIST_TABLE **tablePtr;
     int idx;
-  
+
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
       if (idt) {
-	GWEN_PointerListTable_free(idt);
-	*tablePtr=NULL;
+        GWEN_PointerListTable_free(idt);
+        *tablePtr=NULL;
       }
     }
     free(idl->pIdTablePointers);
@@ -353,7 +353,7 @@ void GWEN_PointerList_Clear(GWEN_POINTERLIST *idl) {
 
 
 
-GWEN_POINTERLIST *GWEN_PointerList_dup(const GWEN_POINTERLIST *idl){
+GWEN_POINTERLIST *GWEN_PointerList_dup(const GWEN_POINTERLIST *idl) {
   GWEN_POINTERLIST *nidl;
   int idx;
 
@@ -368,12 +368,12 @@ GWEN_POINTERLIST *GWEN_PointerList_dup(const GWEN_POINTERLIST *idl){
 
       idt=idl->pIdTablePointers[idx];
       if (idt && !GWEN_PointerListTable_IsEmpty(idt)) {
-	GWEN_POINTERLIST_TABLE *nidt;
+        GWEN_POINTERLIST_TABLE *nidt;
 
-	nidt=GWEN_PointerListTable_new();
-	memmove(nidt->entries, idt->entries, GWEN_POINTERLIST_TABLE_MAXENTRIES*sizeof(void*));
-	nidt->freeEntries=idt->freeEntries;
-	GWEN_PointerList_AddTable(nidl, nidt);
+        nidt=GWEN_PointerListTable_new();
+        memmove(nidt->entries, idt->entries, GWEN_POINTERLIST_TABLE_MAXENTRIES*sizeof(void*));
+        nidt->freeEntries=idt->freeEntries;
+        GWEN_PointerList_AddTable(nidl, nidt);
       }
     }
   }
@@ -392,7 +392,7 @@ uint64_t GWEN_PointerList_GetEntryCount(const GWEN_POINTERLIST *idl) {
 
 
 
-void *GWEN_PointerList_GetFirstPtr(const GWEN_POINTERLIST *idl, uint64_t *pos){
+void *GWEN_PointerList_GetFirstPtr(const GWEN_POINTERLIST *idl, uint64_t *pos) {
   GWEN_POINTERLIST_TABLE *idt=NULL;
   GWEN_POINTERLIST_TABLE **tablePtr;
   int idx;
@@ -406,11 +406,11 @@ void *GWEN_PointerList_GetFirstPtr(const GWEN_POINTERLIST *idl, uint64_t *pos){
       void *ptr;
 
       for (i=0; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
-	if (idt->entries[i]!=0) {
-	  ptr=idt->entries[i];
-	  *pos=idIndex+i+1;
-	  return ptr;
-	}
+        if (idt->entries[i]!=0) {
+          ptr=idt->entries[i];
+          *pos=idIndex+i+1;
+          return ptr;
+        }
       }
     }
     idIndex+=GWEN_POINTERLIST_TABLE_MAXENTRIES;
@@ -421,7 +421,7 @@ void *GWEN_PointerList_GetFirstPtr(const GWEN_POINTERLIST *idl, uint64_t *pos){
 
 
 
-void *GWEN_PointerList_GetNextPtr(const GWEN_POINTERLIST *idl, uint64_t *pos){
+void *GWEN_PointerList_GetNextPtr(const GWEN_POINTERLIST *idl, uint64_t *pos) {
   if (*pos) {
     GWEN_POINTERLIST_TABLE *idt;
     uint64_t tableNum=*pos / GWEN_POINTERLIST_TABLE_MAXENTRIES;
@@ -440,27 +440,27 @@ void *GWEN_PointerList_GetNextPtr(const GWEN_POINTERLIST *idl, uint64_t *pos){
     for (idx=tableNum, tablePtr=idl->pIdTablePointers+tableNum; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
       if (idt && !GWEN_PointerListTable_IsEmpty(idt)) {
-	int i;
-	void *ptr;
+        int i;
+        void *ptr;
 
-	if (idx==tableNum) {
-	  for (i=tableIdx; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
-	    if (idt->entries[i]!=0) {
-	      ptr=idt->entries[i];
-	      *pos=idIndex+i+1;
-	      return ptr;
-	    }
-	  }
-	}
-	else {
-	  for (i=0; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
-	    if (idt->entries[i]!=0) {
-	      ptr=idt->entries[i];
-	      *pos=idIndex+i+1;
-	      return ptr;
-	    }
-	  }
-	}
+        if (idx==tableNum) {
+          for (i=tableIdx; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
+            if (idt->entries[i]!=0) {
+              ptr=idt->entries[i];
+              *pos=idIndex+i+1;
+              return ptr;
+            }
+          }
+        }
+        else {
+          for (i=0; i<GWEN_POINTERLIST_TABLE_MAXENTRIES; i++) {
+            if (idt->entries[i]!=0) {
+              ptr=idt->entries[i];
+              *pos=idIndex+i+1;
+              return ptr;
+            }
+          }
+        }
       }
       idIndex+=GWEN_POINTERLIST_TABLE_MAXENTRIES;
     }

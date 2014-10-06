@@ -200,16 +200,16 @@ typedef void* (*GWEN_PATHIDXHANDLERPTR)(const char *entry,
  * @return 0 on error, !=0 otherwise
  */
 GWENHYWFAR_API
-  void *GWEN_Path_Handle(const char *path,
-			 void *data,
-			 uint32_t flags,
-			 GWEN_PATHHANDLERPTR elementFunction);
+void *GWEN_Path_Handle(const char *path,
+                       void *data,
+                       uint32_t flags,
+                       GWEN_PATHHANDLERPTR elementFunction);
 
 GWENHYWFAR_API
-  void *GWEN_Path_HandleWithIdx(const char *path,
-				void *data,
-				uint32_t flags,
-				GWEN_PATHIDXHANDLERPTR elementFunction);
+void *GWEN_Path_HandleWithIdx(const char *path,
+                              void *data,
+                              uint32_t flags,
+                              GWEN_PATHIDXHANDLERPTR elementFunction);
 
 
 /**
@@ -219,9 +219,9 @@ GWENHYWFAR_API
  * the given buffer (without any leading slash).
  */
 GWENHYWFAR_API
-  int GWEN_Path_Convert(const char *path,
-                        GWEN_BUFFER *buffer,
-                        uint32_t flags);
+int GWEN_Path_Convert(const char *path,
+                      GWEN_BUFFER *buffer,
+                      uint32_t flags);
 
 
 /*@}*/ /* defgroup */

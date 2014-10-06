@@ -27,8 +27,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_TOKEN_KEYINFO, GWEN_Crypt_Token_KeyInfo)
 
 
 GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_new(uint32_t kid,
-						       GWEN_CRYPT_CRYPTALGOID a,
-						       int keySize) {
+    GWEN_CRYPT_CRYPTALGOID a,
+    int keySize) {
   GWEN_CRYPT_TOKEN_KEYINFO *ki;
 
   GWEN_NEW_OBJECT(GWEN_CRYPT_TOKEN_KEYINFO, ki)
@@ -50,10 +50,10 @@ void GWEN_Crypt_Token_KeyInfo_free(GWEN_CRYPT_TOKEN_KEYINFO *ki) {
     if (ki->refCount==1) {
       free(ki->keyDescr);
       if (ki->modulusData)
-	free(ki->modulusData);
+        free(ki->modulusData);
       ki->modulusData=NULL;
       if (ki->exponentData)
-	free(ki->exponentData);
+        free(ki->exponentData);
       ki->exponentData=NULL;
 
       ki->refCount=0;
@@ -72,8 +72,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_dup(const GWEN_CRYPT_TOKEN_KE
   GWEN_CRYPT_TOKEN_KEYINFO *nki;
 
   nki=GWEN_Crypt_Token_KeyInfo_new(ki->keyId,
-				   ki->cryptAlgoId,
-				   ki->keySize);
+                                   ki->cryptAlgoId,
+                                   ki->keySize);
   nki->flags=ki->flags;
 
   if (ki->modulusData && ki->modulusLen) {
@@ -110,7 +110,7 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetKeyId(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
 
 
 
-GWEN_CRYPT_CRYPTALGOID GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(const GWEN_CRYPT_TOKEN_KEYINFO *ki){
+GWEN_CRYPT_CRYPTALGOID GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
   assert(ki);
   assert(ki->refCount);
   return ki->cryptAlgoId;
@@ -126,7 +126,7 @@ int GWEN_Crypt_Token_KeyInfo_GetKeySize(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
 
 
 
-void GWEN_Crypt_Token_KeyInfo_SetKeySize(GWEN_CRYPT_TOKEN_KEYINFO *ki, int i){
+void GWEN_Crypt_Token_KeyInfo_SetKeySize(GWEN_CRYPT_TOKEN_KEYINFO *ki, int i) {
   assert(ki);
   assert(ki->refCount);
   ki->keySize=i;
@@ -183,8 +183,8 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetModulusLen(const GWEN_CRYPT_TOKEN_KEYINFO *
 
 
 void GWEN_Crypt_Token_KeyInfo_SetModulus(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					 const uint8_t *p,
-					 uint32_t len) {
+    const uint8_t *p,
+    uint32_t len) {
   assert(ki);
   assert(ki->refCount);
 
@@ -218,8 +218,8 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetExponentLen(const GWEN_CRYPT_TOKEN_KEYINFO 
 
 
 void GWEN_Crypt_Token_KeyInfo_SetExponent(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					  const uint8_t *p,
-					  uint32_t len) {
+    const uint8_t *p,
+    uint32_t len) {
   assert(ki);
   assert(ki->refCount);
 
@@ -246,7 +246,7 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetKeyVersion(const GWEN_CRYPT_TOKEN_KEYINFO *
 
 
 void GWEN_Crypt_Token_KeyInfo_SetKeyVersion(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					    uint32_t i) {
+    uint32_t i) {
   assert(ki);
   assert(ki->refCount);
 
@@ -265,7 +265,7 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetKeyNumber(const GWEN_CRYPT_TOKEN_KEYINFO *k
 
 
 void GWEN_Crypt_Token_KeyInfo_SetKeyNumber(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					    uint32_t i) {
+    uint32_t i) {
   assert(ki);
   assert(ki->refCount);
 
@@ -274,7 +274,7 @@ void GWEN_Crypt_Token_KeyInfo_SetKeyNumber(GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
 
 
-uint32_t GWEN_Crypt_Token_KeyInfo_GetSignCounter(const GWEN_CRYPT_TOKEN_KEYINFO *ki){
+uint32_t GWEN_Crypt_Token_KeyInfo_GetSignCounter(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
   assert(ki);
   assert(ki->refCount);
 
@@ -284,7 +284,7 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetSignCounter(const GWEN_CRYPT_TOKEN_KEYINFO 
 
 
 void GWEN_Crypt_Token_KeyInfo_SetSignCounter(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					     uint32_t i) {
+    uint32_t i) {
   assert(ki);
   assert(ki->refCount);
 

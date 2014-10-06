@@ -38,36 +38,36 @@ typedef struct GWEN_MEMCACHE_ENTRY GWEN_MEMCACHE_ENTRY;
 typedef struct GWEN_MEMCACHE GWEN_MEMCACHE;
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_MemCacheEntry_free(GWEN_MEMCACHE_ENTRY *me);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 uint32_t GWEN_MemCacheEntry_GetId(GWEN_MEMCACHE_ENTRY *me);
 
 
 GWENHYWFAR_API
 void *GWEN_MemCacheEntry_GetDataPtr(GWEN_MEMCACHE_ENTRY *me);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 size_t GWEN_MemCacheEntry_GetDataLen(GWEN_MEMCACHE_ENTRY *me);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_MemCacheEntry_GetIsValid(const GWEN_MEMCACHE_ENTRY *me);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_MemCacheEntry_BeginUse(GWEN_MEMCACHE_ENTRY *me);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_MemCacheEntry_EndUse(GWEN_MEMCACHE_ENTRY *me);
 
 
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_MEMCACHE *GWEN_MemCache_new(size_t maxCacheMemory,
-				 uint32_t maxCacheEntries);
+                                 uint32_t maxCacheEntries);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_MemCache_free(GWEN_MEMCACHE *mc);
 
 
@@ -79,9 +79,9 @@ void GWEN_MemCache_free(GWEN_MEMCACHE *mc);
  * after working with the object returned in order to release unused
  * cache entries.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_MEMCACHE_ENTRY *GWEN_MemCache_FindEntry(GWEN_MEMCACHE *mc,
-					     uint32_t id);
+    uint32_t id);
 
 /**
  * Creates a cache entry for the given id. If there already is an entry
@@ -90,11 +90,11 @@ GWEN_MEMCACHE_ENTRY *GWEN_MemCache_FindEntry(GWEN_MEMCACHE *mc,
  * call @ref GWEN_MemCacheEntry_EndUse after working with the object returned in
  * order to release unused cache entries.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_MEMCACHE_ENTRY *GWEN_MemCache_CreateEntry(GWEN_MEMCACHE *mc,
-					       uint32_t id,
-					       void *dataPtr,
-					       size_t dataLen);
+    uint32_t id,
+    void *dataPtr,
+    size_t dataLen);
 
 /**
  * This function invalidates a given cache entry (if it exists).
@@ -104,25 +104,25 @@ GWEN_MEMCACHE_ENTRY *GWEN_MemCache_CreateEntry(GWEN_MEMCACHE *mc,
  * entry will be removed from the cache index so that future calls
  * to @ref GWEN_MemCache_FindEntry will not return it.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_MemCache_PurgeEntry(GWEN_MEMCACHE *mc,
-			      uint32_t id);
+                              uint32_t id);
 
 /**
  * This function invalidates all entries whose ids match the given
  * id/mask pair. See @ref GWEN_MemCache_PurgeEntry for implementation
  * details and caveats.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_MemCache_PurgeEntries(GWEN_MEMCACHE *mc,
-				uint32_t id, uint32_t mask);
+                                uint32_t id, uint32_t mask);
 
 /**
  * This function invalidates all cache entries.
  * See @ref GWEN_MemCache_PurgeEntry for implementation
  * details and caveats.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_MemCache_Purge(GWEN_MEMCACHE *mc);
 
 

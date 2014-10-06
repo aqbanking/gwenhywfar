@@ -71,11 +71,11 @@ protected:
   virtual int runDialog(GWEN_DIALOG *dlg, int untilEnd);
 
   virtual int getFileName(const char *caption,
-			  GWEN_GUI_FILENAME_TYPE fnt,
-			  uint32_t flags,
-			  const char *patterns,
-			  GWEN_BUFFER *pathBuffer,
-			  uint32_t guiid);
+                          GWEN_GUI_FILENAME_TYPE fnt,
+                          uint32_t flags,
+                          const char *patterns,
+                          GWEN_BUFFER *pathBuffer,
+                          uint32_t guiid);
 
 };
 

@@ -335,19 +335,19 @@ typedef enum {
  *
  */
 /*@{*/
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_GUI *GWEN_Gui_new(void);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_free(GWEN_GUI *gui);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_Attach(GWEN_GUI *gui);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_SetGui(GWEN_GUI *gui);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_GUI *GWEN_Gui_GetGui(void);
 
 /*@}*/
@@ -362,15 +362,15 @@ GWEN_GUI *GWEN_Gui_GetGui(void);
  * character sets.
  */
 /*@{*/
-GWENHYWFAR_API 
+GWENHYWFAR_API
 const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
-			   const char *fromCs, const char *toCs);
+                           const char *fromCs, const char *toCs);
 
 
 /*@}*/
@@ -447,21 +447,21 @@ int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
  * @param b3 text for the optional third button
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_MessageBox(uint32_t flags,
-			const char *title,
-			const char *text,
-			const char *b1,
-			const char *b2,
-			const char *b3,
-			uint32_t guiid);
+                        const char *title,
+                        const char *text,
+                        const char *b1,
+                        const char *b2,
+                        const char *b3,
+                        uint32_t guiid);
 
 /**
  * This is a convenience function which calls @ref GWEN_Gui_MessageBox showing the given
  * message and a single "Close" button.
  * It is especially well suited to show an error message.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_ShowError(const char *title, const char *text, ...);
 
 
@@ -492,14 +492,14 @@ void GWEN_Gui_ShowError(const char *title, const char *text, ...);
  * A return value of "1" means the result may be stored by the application. This value is
  * returned when the user ticks the checkbox "Store permanently".
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_InputBox(uint32_t flags,
-		      const char *title,
-		      const char *text,
-		      char *buffer,
-		      int minLen,
-		      int maxLen,
-		      uint32_t guiid);
+                      const char *title,
+                      const char *text,
+                      char *buffer,
+                      int minLen,
+                      int maxLen,
+                      uint32_t guiid);
 
 /**
  * <p>
@@ -524,11 +524,11 @@ int GWEN_Gui_InputBox(uint32_t flags,
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 uint32_t GWEN_Gui_ShowBox(uint32_t flags,
-			  const char *title,
-			  const char *text,
-			  uint32_t guiid);
+                          const char *title,
+                          const char *text,
+                          uint32_t guiid);
 
 /**
  * Hides a message box previously shown by a call to @ref GWEN_Gui_ShowBox.
@@ -539,7 +539,7 @@ uint32_t GWEN_Gui_ShowBox(uint32_t flags,
  * @param id id returned by @ref GWEN_Gui_ShowBox. If @b 0 then the last
  * message shown is referred to.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_HideBox(uint32_t id);
 
 
@@ -574,12 +574,12 @@ void GWEN_Gui_HideBox(uint32_t id);
  *  which represents 100%)
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 uint32_t GWEN_Gui_ProgressStart(uint32_t progressFlags,
-				const char *title,
-				const char *text,
-				uint64_t total,
-				uint32_t guiid);
+                                const char *title,
+                                const char *text,
+                                uint64_t total,
+                                uint32_t guiid);
 
 /**
  * <p>
@@ -601,10 +601,10 @@ uint32_t GWEN_Gui_ProgressStart(uint32_t progressFlags,
  *  GWEN_GUI_PROGRESS_NONE which means that the progress is unchanged.
  * This might be used as a keepalive call to a GUI.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_ProgressAdvance(uint32_t id, uint32_t progress);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_ProgressSetTotal(uint32_t id, uint64_t total);
 
 /**
@@ -617,10 +617,10 @@ int GWEN_Gui_ProgressSetTotal(uint32_t id, uint64_t total);
  * @param level log level (see @ref GWEN_Gui_LogLevelPanic ff.)
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_ProgressLog(uint32_t id,
-			 GWEN_LOGGER_LEVEL level,
-			 const char *text);
+                         GWEN_LOGGER_LEVEL level,
+                         const char *text);
 
 /**
  * Adds a log message to the referred process dialog and returns immediately.
@@ -634,10 +634,10 @@ int GWEN_Gui_ProgressLog(uint32_t id,
  * @param text Text of the box (possibly including printf format string characters): UTF-8, with both a normal text
  * and a HTML variant of the text in the same string. See text restrictions note above.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_ProgressLog2(uint32_t id,
-			  GWEN_LOGGER_LEVEL level,
-			  const char *text, ...);
+                          GWEN_LOGGER_LEVEL level,
+                          const char *text, ...);
 
 /**
  * <p>
@@ -663,7 +663,7 @@ int GWEN_Gui_ProgressLog2(uint32_t id,
  * @param id id assigned by @ref GWEN_Gui_ProgressStart (if 0 then the
  * last started progress dialog is referred to)
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_ProgressEnd(uint32_t id);
 
 
@@ -680,12 +680,12 @@ int GWEN_Gui_ProgressEnd(uint32_t id);
  * @param text text to be printed (see text restriction notes above).
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_Print(const char *docTitle,
-		   const char *docType,
-		   const char *descr,
-		   const char *text,
-		   uint32_t guiid);
+                   const char *docType,
+                   const char *descr,
+                   const char *text,
+                   uint32_t guiid);
 
 /**
  * This function retrieves a password or pin. The implementation might want to use a cache or
@@ -708,23 +708,23 @@ int GWEN_Gui_Print(const char *docTitle,
  */
 GWENHYWFAR_API
 int GWEN_Gui_GetPassword(uint32_t flags,
-			 const char *token,
-			 const char *title,
-			 const char *text,
-			 char *buffer,
-			 int minLen,
-			 int maxLen,
-			 uint32_t guiid);
+                         const char *token,
+                         const char *title,
+                         const char *text,
+                         char *buffer,
+                         int minLen,
+                         int maxLen,
+                         uint32_t guiid);
 
 /**
  * This functions sets the status of a password.
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_SetPasswordStatus(const char *token,
-			       const char *pin,
-			       GWEN_GUI_PASSWORD_STATUS status,
-			       uint32_t guiid);
+                               const char *pin,
+                               GWEN_GUI_PASSWORD_STATUS status,
+                               uint32_t guiid);
 
 /**
  * This function is called internally by @ref GWEN_Logger_Log.
@@ -736,9 +736,9 @@ int GWEN_Gui_SetPasswordStatus(const char *token,
  * @param priority priority of the message
  * @param s string to log
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_LogHook(const char *logDomain,
-		     GWEN_LOGGER_LEVEL priority, const char *s);
+                     GWEN_LOGGER_LEVEL priority, const char *s);
 
 
 /**
@@ -749,11 +749,11 @@ int GWEN_Gui_LogHook(const char *logDomain,
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  * @param msecs time in milliseconds to wait for at max
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
-			    GWEN_SOCKET_LIST2 *writeSockets,
+                            GWEN_SOCKET_LIST2 *writeSockets,
                             uint32_t guiid,
-			    int msecs);
+                            int msecs);
 
 /**
  * This function checks the given certificate.
@@ -763,10 +763,10 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
  * @param io IO layer from which the certificate was received
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cert,
-		       GWEN_SYNCIO *sio,
-		       uint32_t guiid);
+                       GWEN_SYNCIO *sio,
+                       uint32_t guiid);
 
 
 /**
@@ -781,8 +781,8 @@ int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cert,
  */
 GWENHYWFAR_API
 int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
-				     unsigned char *buffer,
-				     unsigned int bufLength);
+                                     unsigned char *buffer,
+                                     unsigned int bufLength);
 
 /**
  * This function shows and executes the given dialog and returns the result.
@@ -833,11 +833,11 @@ typedef enum {
  */
 GWENHYWFAR_API
 int GWEN_Gui_GetFileName(const char *caption,
-			 GWEN_GUI_FILENAME_TYPE fnt,
+                         GWEN_GUI_FILENAME_TYPE fnt,
                          uint32_t flags,
-			 const char *patterns,
-			 GWEN_BUFFER *pathBuffer,
-			 uint32_t guiid);
+                         const char *patterns,
+                         GWEN_BUFFER *pathBuffer,
+                         uint32_t guiid);
 
 /**
  * This function creates a base layer GWEN_SYNCIO.
@@ -850,9 +850,9 @@ int GWEN_Gui_GetFileName(const char *caption,
  */
 GWENHYWFAR_API
 int GWEN_Gui_GetSyncIo(const char *url,
-		       const char *defaultProto,
-		       int defaultPort,
-		       GWEN_SYNCIO **pSio);
+                       const char *defaultProto,
+                       int defaultPort,
+                       GWEN_SYNCIO **pSio);
 
 
 /*@}*/
@@ -905,7 +905,7 @@ GWENHYWFAR_API const char *GWEN_Gui_GetName(void);
  * @param persistent if !=0 then the passwords come from a password file
  * and a request to clear the password cache will be ignored.
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Gui_SetPasswordDb(GWEN_GUI *gui,
                             GWEN_DB_NODE *dbPasswords,
                             int persistent);
@@ -914,7 +914,7 @@ void GWEN_Gui_SetPasswordDb(GWEN_GUI *gui,
  * Returns a pointer to the internally used password cache. The GUI
  * object remains the owner of the object returned (if any).
  */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_Gui_GetPasswordDb(const GWEN_GUI *gui);
 /*@}*/
 

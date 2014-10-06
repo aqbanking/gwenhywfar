@@ -20,7 +20,7 @@
 
 
 class FOX16GUI_API FOX16_HtmlCtx {
-    friend class FOX16_HtmlCtxLinker;
+  friend class FOX16_HtmlCtxLinker;
 
 public:
   FOX16_HtmlCtx(uint32_t flags);
@@ -32,8 +32,8 @@ public:
   int getHeight();
 
   HTML_FONT *getFont(const char *fontName,
-		     int fontSize,
-		     uint32_t fontFlags);
+                     int fontSize,
+                     uint32_t fontFlags);
 
   HTML_IMAGE *getImage(const char *imageName);
 
@@ -44,9 +44,9 @@ public:
 
   void paint(FXDC *dc, int xOffset, int yOffset);
   void paintAt(FXDC *dc,
-	       int xOffset, int yOffset,
-	       int xText, int yText,
-	       int w, int h);
+               int xOffset, int yOffset,
+               int xText, int yText,
+               int w, int h);
 
   void setBackgroundColor(FXColor c);
   void setForegroundColor(FXColor c);
@@ -61,15 +61,15 @@ protected:
   FXFont *_getFoxFont(HTML_FONT *fnt);
   void _paint(FXDC *dc, HTML_OBJECT *o, int xOffset, int yOffset);
   void _paintAt(FXDC *dc, HTML_OBJECT *o,
-		int xOffset, int yOffset,
-		int xText, int yText,
-		int w, int h);
+                int xOffset, int yOffset,
+                int xText, int yText,
+                int w, int h);
 
   int getTextWidth(HTML_FONT *fnt,
-		   const char *s);
+                   const char *s);
 
   int getTextHeight(HTML_FONT *fnt,
-		    const char *s);
+                    const char *s);
 
   uint32_t getColorFromName(const char *name);
 

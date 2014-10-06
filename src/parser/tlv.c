@@ -93,35 +93,35 @@ GWEN_TLV *GWEN_TLV_create(unsigned int tagType,
 
 
 
-int GWEN_TLV_IsBerTlv(const GWEN_TLV *tlv){
+int GWEN_TLV_IsBerTlv(const GWEN_TLV *tlv) {
   assert(tlv);
   return tlv->isBerTlv;
 }
 
 
 
-unsigned int GWEN_TLV_GetTagType(const GWEN_TLV *tlv){
+unsigned int GWEN_TLV_GetTagType(const GWEN_TLV *tlv) {
   assert(tlv);
   return tlv->tagType;
 }
 
 
 
-unsigned int GWEN_TLV_GetTagLength(const GWEN_TLV *tlv){
+unsigned int GWEN_TLV_GetTagLength(const GWEN_TLV *tlv) {
   assert(tlv);
   return tlv->tagLength;
 }
 
 
 
-unsigned int GWEN_TLV_GetTagSize(const GWEN_TLV *tlv){
+unsigned int GWEN_TLV_GetTagSize(const GWEN_TLV *tlv) {
   assert(tlv);
   return tlv->tagSize;
 }
 
 
 
-const void *GWEN_TLV_GetTagData(const GWEN_TLV *tlv){
+const void *GWEN_TLV_GetTagData(const GWEN_TLV *tlv) {
   assert(tlv);
   return tlv->tagData;
 }
@@ -204,7 +204,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
         j+=(unsigned char)(p[pos]);
       } /* 0x82 */
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x at %d", j, pos);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x at %d", j, pos);
         return 0;
       }
     } /* if tag length modifier */
@@ -250,14 +250,14 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
 
 
 
-int GWEN_TLV_IsContructed(const GWEN_TLV *tlv){
+int GWEN_TLV_IsContructed(const GWEN_TLV *tlv) {
   assert(tlv);
   return (tlv->tagMode & 0x20);
 }
 
 
 
-unsigned int GWEN_TLV_GetClass(const GWEN_TLV *tlv){
+unsigned int GWEN_TLV_GetClass(const GWEN_TLV *tlv) {
   assert(tlv);
   return (tlv->tagMode & 0xc0);
 }
@@ -384,14 +384,14 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
         pos++;
         if (pos>=size) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
-	  return GWEN_ERROR_BAD_DATA;
+          return GWEN_ERROR_BAD_DATA;
         }
         j=(unsigned char)(p[pos]);
       } /* 0x81 */
       else if (j==0x82) {
         if (pos+1>=size) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
-	  return GWEN_ERROR_BAD_DATA;
+          return GWEN_ERROR_BAD_DATA;
         }
         pos++;
         j=((unsigned char)(p[pos]))<<8;
@@ -401,7 +401,7 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
       else if (j==0x83) {
         if (pos+2>=size) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
-	  return GWEN_ERROR_BAD_DATA;
+          return GWEN_ERROR_BAD_DATA;
         }
         pos++;
         j=((unsigned char)(p[pos]))<<16;
@@ -413,7 +413,7 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
       else if (j==0x84) {
         if (pos+3>=size) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
-	  return GWEN_ERROR_BAD_DATA;
+          return GWEN_ERROR_BAD_DATA;
         }
         pos++;
         j=((unsigned char)(p[pos]))<<24;
@@ -427,22 +427,22 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
       else if (j==0x85) {
         if (pos+4>=size) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
-	  return GWEN_ERROR_BAD_DATA;
+          return GWEN_ERROR_BAD_DATA;
         }
         pos++;
-	j=((uint64_t) ((unsigned char)(p[pos])))<<32;
+        j=((uint64_t) ((unsigned char)(p[pos])))<<32;
         pos++;
         j+=((uint64_t) ((unsigned char)(p[pos])))<<24;
         pos++;
-	j+=((uint64_t) ((unsigned char)(p[pos])))<<16;
+        j+=((uint64_t) ((unsigned char)(p[pos])))<<16;
         pos++;
-	j+=((uint64_t) ((unsigned char)(p[pos])))<<8;
+        j+=((uint64_t) ((unsigned char)(p[pos])))<<8;
         pos++;
         j+=(unsigned char)(p[pos]);
       } /* 0x85 */
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x at %d", (int) j, pos);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected tag length modifier %02x at %d", (int) j, pos);
+        return GWEN_ERROR_BAD_DATA;
       }
     } /* if tag length modifier */
   }
@@ -450,7 +450,7 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
     if (j==255) {
       if (pos+2>=size) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Too few bytes");
-	return GWEN_ERROR_BAD_DATA;
+        return GWEN_ERROR_BAD_DATA;
       }
       pos++;
       j=((unsigned char)(p[pos]))<<8;
@@ -476,9 +476,9 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
 
 int GWEN_TLV_WriteHeader(unsigned int tagType,
                          unsigned int tagMode,
-			 uint64_t tagLength,
-			 int isBerTlv,
-			 GWEN_BUFFER *mbuf) {
+                         uint64_t tagLength,
+                         int isBerTlv,
+                         GWEN_BUFFER *mbuf) {
   if (isBerTlv) {
     unsigned char j;
 

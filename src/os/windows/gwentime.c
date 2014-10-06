@@ -44,7 +44,7 @@
 /* The idea of this function is taken from a posting by Anders Carlsson on the mailing list
  * bug-gnu-chess (http://mail.gnu.org/archive/html/bug-gnu-chess/2004-01/msg00020.html)
 */
-int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){
+int GWEN_Time__GetCurrentTime(GWEN_TIME *ti) {
   long sec, msec;
   union {
     uint64_t ns100; /* time since 1 Jan 1601 in 100ns units */

@@ -83,8 +83,8 @@ public:
   virtual int runDialog(GWEN_DIALOG *dlg, int untilEnd);
 
   HTML_FONT *getFont(const char *fontName,
-		     int fontSize,
-		     uint32_t fontFlags);
+                     int fontSize,
+                     uint32_t fontFlags);
 
 protected:
   uint32_t getNextId();
@@ -96,24 +96,24 @@ protected:
   void dumpScopeList();
 
   HTML_FONT *findFont(const char *fontName,
-		      int fontSize,
-		      uint32_t fontFlags);
+                      int fontSize,
+                      uint32_t fontFlags);
 
 
   int print(const char *docTitle,
-	    const char *docType,
-	    const char *descr,
-	    const char *text,
-	    uint32_t guiid);
+            const char *docType,
+            const char *descr,
+            const char *text,
+            uint32_t guiid);
 
   int execDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 
   int getFileName(const char *caption,
-		  GWEN_GUI_FILENAME_TYPE fnt,
-		  uint32_t flags,
-		  const char *patterns,
-		  GWEN_BUFFER *pathBuffer,
-		  uint32_t guiid);
+                  GWEN_GUI_FILENAME_TYPE fnt,
+                  uint32_t flags,
+                  const char *patterns,
+                  GWEN_BUFFER *pathBuffer,
+                  uint32_t guiid);
 
 
   WinScope *findWinScope(uint32_t id);

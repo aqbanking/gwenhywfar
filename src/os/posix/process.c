@@ -50,13 +50,13 @@
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
 
 
-int GWEN_Process_ModuleInit(void){
+int GWEN_Process_ModuleInit(void) {
   return 0;
 }
 
 
 
-int GWEN_Process_ModuleFini(void){
+int GWEN_Process_ModuleFini(void) {
   GWEN_PROCESS *pr, *prnext;
 
   pr=GWEN_Process_ProcessList;
@@ -73,7 +73,7 @@ int GWEN_Process_ModuleFini(void){
 
 
 #if 0
-GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid){
+GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid) {
   GWEN_PROCESS *pr;
 
   pr=GWEN_Process_ProcessList;
@@ -108,14 +108,14 @@ void GWEN_Process_SignalHandler(int s) {
       /* som process terminated */
       pr=GWEN_Process_FindProcess(pid);
       if (!pr) {
-	DBG_NOTICE(GWEN_LOGDOMAIN, "No infomation about process \"%d\" available", (int)pid);
+        DBG_NOTICE(GWEN_LOGDOMAIN, "No infomation about process \"%d\" available", (int)pid);
       }
       else {
-	GWEN_Process_MakeState(pr, status);
-	/* remove from list. If this process data is not used by the
-	 * aplication it will now be freed, otherwise only the usage
-	 * counter is decremented */
-	GWEN_Process_free(pr);
+        GWEN_Process_MakeState(pr, status);
+        /* remove from list. If this process data is not used by the
+         * aplication it will now be freed, otherwise only the usage
+         * counter is decremented */
+        GWEN_Process_free(pr);
       }
     }
     break;
@@ -130,7 +130,7 @@ void GWEN_Process_SignalHandler(int s) {
 
 
 
-GWEN_PROCESS *GWEN_Process_new(void){
+GWEN_PROCESS *GWEN_Process_new(void) {
   GWEN_PROCESS *pr;
 
   GWEN_NEW_OBJECT(GWEN_PROCESS, pr);
@@ -144,7 +144,7 @@ GWEN_PROCESS *GWEN_Process_new(void){
 
 
 
-void GWEN_Process_free(GWEN_PROCESS *pr){
+void GWEN_Process_free(GWEN_PROCESS *pr) {
   if (pr) {
     assert(pr->usage);
     if (--(pr->usage)==0) {
@@ -161,8 +161,8 @@ void GWEN_Process_free(GWEN_PROCESS *pr){
 
 
 GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
-				      const char *prg,
-				      const char *args){
+                                      const char *prg,
+                                      const char *args) {
   pid_t pid;
   char *argv[32];
   int argc;
@@ -260,11 +260,11 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
     if (!(*p))
       break;
     if (GWEN_Text_GetWordToBuffer(p, " ",
-				  wbuf,
-				  GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
-				  GWEN_TEXT_FLAGS_DEL_QUOTES |
-				  GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
-				  &p))
+                                  wbuf,
+                                  GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
+                                  GWEN_TEXT_FLAGS_DEL_QUOTES |
+                                  GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
+                                  &p))
       break;
 
     p2=GWEN_Buffer_GetStart(wbuf);
@@ -280,13 +280,13 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   execvp(prg, argv);
   /* if we reach this point an error occurred */
   DBG_ERROR(GWEN_LOGDOMAIN, "Could not start program \"%s\": %s",
-	    prg, strerror(errno));
+            prg, strerror(errno));
   exit(EXIT_FAILURE);
 }
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w){
+GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w) {
   int rv;
   int status;
 
@@ -308,12 +308,12 @@ GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w){
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
+GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status) {
   /* process has terminated for any reason */
   if (WIFEXITED(status)) {
     /* normal termination */
     DBG_INFO(GWEN_LOGDOMAIN, "Process %d exited with %d",
-	     (int)pr->pid, WEXITSTATUS(status));
+             (int)pr->pid, WEXITSTATUS(status));
     pr->state=GWEN_ProcessStateExited;
     pr->pid=-1;
     /* store result code */
@@ -323,7 +323,7 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   else if (WIFSIGNALED(status)) {
     /* uncaught signal */
     DBG_ERROR(GWEN_LOGDOMAIN, "Process %d terminated by signal %d",
-	      (int)pr->pid, WTERMSIG(status));
+              (int)pr->pid, WTERMSIG(status));
     pr->state=GWEN_ProcessStateAborted;
     pr->pid=-1;
     return pr->state;
@@ -331,21 +331,21 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status){
   else if (WIFSTOPPED(status)) {
     /* process stopped by signal */
     DBG_ERROR(GWEN_LOGDOMAIN, "Process %d stopped by signal %d",
-	      (int)pr->pid, WSTOPSIG(status));
+              (int)pr->pid, WSTOPSIG(status));
     pr->state=GWEN_ProcessStateStopped;
     pr->pid=-1;
     return pr->state;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled status, assume process %d isn't running (%08x)",
-	      (int)pr->pid, (unsigned int)status);
+              (int)pr->pid, (unsigned int)status);
     return GWEN_ProcessStateUnknown;
   }
 }
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr){
+GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr) {
   assert(pr);
 
   if (pr->pid==-1)
@@ -358,7 +358,7 @@ GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr){
 
 
 
-int GWEN_Process_GetResult(GWEN_PROCESS *pr){
+int GWEN_Process_GetResult(GWEN_PROCESS *pr) {
   assert(pr);
   if (GWEN_Process_CheckState(pr)==GWEN_ProcessStateExited)
     return pr->result;
@@ -368,7 +368,7 @@ int GWEN_Process_GetResult(GWEN_PROCESS *pr){
 
 
 
-int GWEN_Process_Wait(GWEN_PROCESS *pr){
+int GWEN_Process_Wait(GWEN_PROCESS *pr) {
   GWEN_PROCESS_STATE pst;
 
   assert(pr);
@@ -390,7 +390,7 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr){
 
 
 
-int GWEN_Process_Terminate(GWEN_PROCESS *pr){
+int GWEN_Process_Terminate(GWEN_PROCESS *pr) {
   assert(pr);
 
   if (pr->state!=GWEN_ProcessStateRunning) {
@@ -408,7 +408,7 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
   /* kill process */
   if (kill(pr->pid, SIGKILL)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error on kill(%d, SIGKILL): %s",
-	      (int)pr->pid, strerror(errno));
+              (int)pr->pid, strerror(errno));
     return -1;
   }
   /* wait for process to respond to kill signal (should not take long) */
@@ -417,49 +417,49 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr){
 
 
 
-uint32_t GWEN_Process_GetFlags(const GWEN_PROCESS *pr){
+uint32_t GWEN_Process_GetFlags(const GWEN_PROCESS *pr) {
   assert(pr);
   return pr->pflags;
 }
 
 
 
-void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f){
+void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f) {
   assert(pr);
   pr->pflags=f;
 }
 
 
 
-void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f){
+void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f) {
   assert(pr);
   pr->pflags|=f;
 }
 
 
 
-void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f){
+void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f) {
   assert(pr);
   pr->pflags&=~f;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr) {
   assert(pr);
   return pr->stdIn;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr) {
   assert(pr);
   return pr->stdOut;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr){
+GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr) {
   assert(pr);
   return pr->stdErr;
 }

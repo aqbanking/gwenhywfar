@@ -24,8 +24,8 @@
 
 
 HTML_GROUP *HtmlGroup_Generic_new(const char *groupName,
-				  HTML_GROUP *parent,
-				  GWEN_XML_CONTEXT *ctx) {
+                                  HTML_GROUP *parent,
+                                  GWEN_XML_CONTEXT *ctx) {
   HTML_GROUP *g;
 
   /* create base group */
@@ -47,8 +47,8 @@ int HtmlGroup_Generic_EndTag(HTML_GROUP *g, const char *tagName) {
 
   if (strcasecmp(HtmlGroup_GetGroupName(g), tagName)!=0) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "Tag [%s] does not close [%s], ignoring",
-	     tagName, HtmlGroup_GetGroupName(g));
+             "Tag [%s] does not close [%s], ignoring",
+             tagName, HtmlGroup_GetGroupName(g));
     /*return GWEN_ERROR_BAD_DATA;*/
     return 0;
   }
@@ -68,7 +68,7 @@ int HtmlGroup_Generic_AddData(HTML_GROUP *g, const char *data) {
 
 
 
-int HtmlGroup_Generic_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg){
+int HtmlGroup_Generic_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg) {
   assert(g);
 
   /* just ignore the end of sub group */

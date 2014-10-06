@@ -52,31 +52,31 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
     int th;
 
     if ((HtmlObject_GetFlags(c) & HTML_OBJECT_FLAGS_START_ON_NEWLINE) &&
-	x>0) {
+        x>0) {
       /* next line */
       if (x>maxX)
-	maxX=x;
+        maxX=x;
 
       /* possibly justify */
       if (w!=-1 && x<w) {
-	int diff=0;
+        int diff=0;
 
-	if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
-	  diff=w-x;
-	else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
-	  diff=(w-x)>>1;
-	}
-	if (diff) {
-	  HTML_OBJECT *ct;
+        if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+          diff=w-x;
+        else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+          diff=(w-x)>>1;
+        }
+        if (diff) {
+          HTML_OBJECT *ct;
 
-	  ct=cFirstInLine;
-	  while(ct) {
-	    HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
-	    if (ct==c)
-	      break;
-	    ct=HtmlObject_Tree_GetNext(ct);
-	  }
-	}
+          ct=cFirstInLine;
+          while(ct) {
+            HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+            if (ct==c)
+              break;
+            ct=HtmlObject_Tree_GetNext(ct);
+          }
+        }
       }
 
       x=0;
@@ -90,8 +90,8 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       HtmlObject_SetWidth(c, -1);
       rv=HtmlObject_Layout(c);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     else {
@@ -101,41 +101,41 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       HtmlObject_SetWidth(c, tw);
       rv=HtmlObject_Layout(c);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
 
       if (HtmlObject_GetWidth(c)>tw && x>0) {
-	/* next line */
-	if (x>maxX)
-	  maxX=x;
+        /* next line */
+        if (x>maxX)
+          maxX=x;
 
-	/* possibly justify */
-	if (x<w) {
-	  int diff=0;
-  
-	  if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
-	    diff=w-x;
-	  else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
-	    diff=(w-x)>>1;
-	  }
-	  if (diff) {
-	    HTML_OBJECT *ct;
+        /* possibly justify */
+        if (x<w) {
+          int diff=0;
 
-	    ct=cFirstInLine;
-	    while(ct) {
-	      HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
-	      if (ct==c)
-		break;
-	      ct=HtmlObject_Tree_GetNext(ct);
-	    }
-	  }
-	}
+          if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+            diff=w-x;
+          else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+            diff=(w-x)>>1;
+          }
+          if (diff) {
+            HTML_OBJECT *ct;
 
-	x=0;
-	y+=lineHeight+(resY/LINE_EXTRA_OFFSET_DIV);
+            ct=cFirstInLine;
+            while(ct) {
+              HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+              if (ct==c)
+                break;
+              ct=HtmlObject_Tree_GetNext(ct);
+            }
+          }
+        }
+
+        x=0;
+        y+=lineHeight+(resY/LINE_EXTRA_OFFSET_DIV);
         lineHeight=0;
-	cFirstInLine=HtmlObject_Tree_GetNext(c);
+        cFirstInLine=HtmlObject_Tree_GetNext(c);
       }
     }
 
@@ -150,42 +150,42 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 
     if ((HtmlObject_GetFlags(c) & HTML_OBJECT_FLAGS_END_WITH_NEWLINE)) {
       if (x>0) {
-	/* next line */
-	if (x>maxX)
-	  maxX=x;
+        /* next line */
+        if (x>maxX)
+          maxX=x;
 
-	/* possibly justify */
-	if (x<w) {
-	  int diff=0;
+        /* possibly justify */
+        if (x<w) {
+          int diff=0;
 
-	  if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
-	    diff=w-x;
-	  else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
-	    diff=(w-x)>>1;
-	  }
-	  if (diff) {
-	    HTML_OBJECT *ct;
+          if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
+            diff=w-x;
+          else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
+            diff=(w-x)>>1;
+          }
+          if (diff) {
+            HTML_OBJECT *ct;
 
-	    ct=cFirstInLine;
-	    while(ct) {
-	      HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
-	      if (ct==c)
-		break;
-	      ct=HtmlObject_Tree_GetNext(ct);
-	    }
-	  }
-	}
+            ct=cFirstInLine;
+            while(ct) {
+              HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+              if (ct==c)
+                break;
+              ct=HtmlObject_Tree_GetNext(ct);
+            }
+          }
+        }
       }
 
       x=0;
       if (lineHeight==0) {
-	HTML_PROPS *pr;
-	HTML_FONT *fnt;
+        HTML_PROPS *pr;
+        HTML_FONT *fnt;
 
-	pr=HtmlObject_GetProperties(o);
-	assert(pr);
-	fnt=HtmlProps_GetFont(pr);
-	lineHeight=HtmlCtx_GetTextHeight(HtmlObject_GetXmlCtx(o), fnt, "ABCD");
+        pr=HtmlObject_GetProperties(o);
+        assert(pr);
+        fnt=HtmlProps_GetFont(pr);
+        lineHeight=HtmlCtx_GetTextHeight(HtmlObject_GetXmlCtx(o), fnt, "ABCD");
       }
       y+=lineHeight+(resY/LINE_EXTRA_OFFSET_DIV);
       lineHeight=0;
@@ -205,18 +205,18 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
       int diff=0;
 
       if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_RIGHT)
-	diff=w-x;
+        diff=w-x;
       else if (HtmlObject_GetFlags(o) & HTML_OBJECT_FLAGS_JUSTIFY_HCENTER) {
-	diff=(w-x)>>1;
+        diff=(w-x)>>1;
       }
       if (diff) {
-	HTML_OBJECT *ct;
+        HTML_OBJECT *ct;
 
-	ct=cFirstInLine;
-	while(ct) {
-	  HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
-	  ct=HtmlObject_Tree_GetNext(ct);
-	}
+        ct=cFirstInLine;
+        while(ct) {
+          HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
+          ct=HtmlObject_Tree_GetNext(ct);
+        }
       }
     }
 

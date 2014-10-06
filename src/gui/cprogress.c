@@ -25,11 +25,11 @@ GWEN_LIST_FUNCTIONS(GWEN_GUI_CPROGRESS, GWEN_Gui_CProgress)
 
 
 GWEN_GUI_CPROGRESS *GWEN_Gui_CProgress_new(GWEN_GUI *gui,
-					   uint32_t id,
-					   uint32_t progressFlags,
-					   const char *title,
-					   const char *text,
-					   uint64_t total) {
+    uint32_t id,
+    uint32_t progressFlags,
+    const char *title,
+    const char *text,
+    uint64_t total) {
   GWEN_GUI_CPROGRESS *cp;
 
   GWEN_NEW_OBJECT(GWEN_GUI_CPROGRESS, cp);
@@ -146,7 +146,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
     t1=time(0);
     if (difftime(t1, cp->startTime)>GWEN_GUI_DELAY_SECS) {
       if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
-	GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: Started.\n", cp->title);
+        GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: Started.\n", cp->title);
       cp->shown=1;
     }
   }
@@ -156,16 +156,16 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
   if (progress!=GWEN_GUI_PROGRESS_NONE) {
     if (progress!=cp->current) {
       if (cp->shown) {
-	if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
-	  if (cp->total==GWEN_GUI_PROGRESS_NONE)
-	    GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: %llu\n", cp->title,
-			       (long long unsigned)progress);
-	  else
-	    GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: %llu of %llu\n",
-			       cp->title,
-			       (long long unsigned)progress,
-			       (long long unsigned)cp->total);
-	}
+        if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
+          if (cp->total==GWEN_GUI_PROGRESS_NONE)
+            GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: %llu\n", cp->title,
+                               (long long unsigned)progress);
+          else
+            GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: %llu of %llu\n",
+                               cp->title,
+                               (long long unsigned)progress,
+                               (long long unsigned)cp->total);
+        }
       }
       cp->current=progress;
     }
@@ -182,17 +182,17 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
 
       /* set stdin to nonblocking */
       if (fcntl(fileno(stdin), F_SETFL, fl | O_NONBLOCK)) {
-	DBG_INFO(GWEN_LOGDOMAIN, "fcntl(stdin): %s", strerror(errno));
-	return 0;
+        DBG_INFO(GWEN_LOGDOMAIN, "fcntl(stdin): %s", strerror(errno));
+        return 0;
       }
       /* check whether there is a character */
       chr=getchar();
       /* set blocking mode to what we found before modification */
       fcntl(fileno(stdin), F_SETFL, fl);
       if (chr==GWEN_GUI_CPROGRESS_CHAR_ABORT) {
-	GWEN_Gui_StdPrintf(cp->gui, stderr, "------> ABORTED BY USER\n");
-	cp->aborted=1;
-	return GWEN_ERROR_USER_ABORTED;
+        GWEN_Gui_StdPrintf(cp->gui, stderr, "------> ABORTED BY USER\n");
+        cp->aborted=1;
+        return GWEN_ERROR_USER_ABORTED;
       }
     }
   }
@@ -204,8 +204,8 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress) {
 
 
 int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
-			   GWEN_UNUSED GWEN_LOGGER_LEVEL level,
-			   const char *text) {
+                           GWEN_UNUSED GWEN_LOGGER_LEVEL level,
+                           const char *text) {
   assert(cp);
   assert(text);
 

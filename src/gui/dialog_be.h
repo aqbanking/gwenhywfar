@@ -40,47 +40,47 @@ extern "C" {
 
 
 typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
-							   GWEN_WIDGET *w,
-							   GWEN_DIALOG_PROPERTY prop,
-							   int index,
-							   int value,
-							   int doSignal);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int value,
+    int doSignal);
 
 typedef int GWENHYWFAR_CB (*GWEN_DIALOG_GETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
-							   GWEN_WIDGET *w,
-							   GWEN_DIALOG_PROPERTY prop,
-							   int index,
-							   int defaultValue);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int defaultValue);
 
 typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
-							    GWEN_WIDGET *w,
-							    GWEN_DIALOG_PROPERTY prop,
-							    int index,
-							    const char *value,
-							    int doSignal);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *value,
+    int doSignal);
 
 typedef const char* GWENHYWFAR_CB (*GWEN_DIALOG_GETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
-								    GWEN_WIDGET *w,
-								    GWEN_DIALOG_PROPERTY prop,
-								    int index,
-								    const char *defaultValue);
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue);
 
 
 GWENHYWFAR_API
 GWEN_DIALOG_SETINTPROPERTY_FN GWEN_Dialog_SetSetIntPropertyFn(GWEN_DIALOG *dlg,
-							      GWEN_DIALOG_SETINTPROPERTY_FN fn);
+    GWEN_DIALOG_SETINTPROPERTY_FN fn);
 
 GWENHYWFAR_API
 GWEN_DIALOG_GETINTPROPERTY_FN GWEN_Dialog_SetGetIntPropertyFn(GWEN_DIALOG *dlg,
-							      GWEN_DIALOG_GETINTPROPERTY_FN fn);
+    GWEN_DIALOG_GETINTPROPERTY_FN fn);
 
 GWENHYWFAR_API
 GWEN_DIALOG_SETCHARPROPERTY_FN GWEN_Dialog_SetSetCharPropertyFn(GWEN_DIALOG *dlg,
-								GWEN_DIALOG_SETCHARPROPERTY_FN fn);
+    GWEN_DIALOG_SETCHARPROPERTY_FN fn);
 
 GWENHYWFAR_API
 GWEN_DIALOG_GETCHARPROPERTY_FN GWEN_Dialog_SetGetCharPropertyFn(GWEN_DIALOG *dlg,
-								GWEN_DIALOG_GETCHARPROPERTY_FN fn);
+    GWEN_DIALOG_GETCHARPROPERTY_FN fn);
 
 
 GWENHYWFAR_API
@@ -110,8 +110,8 @@ GWEN_STRINGLIST *GWEN_Dialog_GetMediaPaths(const GWEN_DIALOG *dlg);
  */
 GWENHYWFAR_API
 int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
-			   GWEN_DIALOG_EVENTTYPE t,
-			   const char *sender);
+                           GWEN_DIALOG_EVENTTYPE t,
+                           const char *sender);
 
 /**
  * Emits signals to the given dialog and all its sub-dialogs. This should only be used
@@ -119,8 +119,8 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
  */
 GWENHYWFAR_API
 int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
-				GWEN_DIALOG_EVENTTYPE t,
-				const char *sender);
+                                GWEN_DIALOG_EVENTTYPE t,
+                                const char *sender);
 
 
 GWENHYWFAR_API

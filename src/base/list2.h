@@ -49,10 +49,10 @@
 extern "C" {
 #endif
 
-  /*
-   * This macro should be used in libraries with the
-   * __declspec(dllexport) declaration as the @c decl argument.
-   */
+/*
+ * This macro should be used in libraries with the
+ * __declspec(dllexport) declaration as the @c decl argument.
+ */
 #define GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef struct t##_LIST2 t##_LIST2; \
   typedef struct t##_LIST2_ITERATOR t##_LIST2_ITERATOR; \
@@ -87,15 +87,15 @@ extern "C" {
   decl const t *pr##_List2_Contains(t##_LIST2 *l, const t *p); \
   decl t *pr##_List2_ForEach(t##_LIST2 *l, t##_LIST2_FOREACH, void *user_data);
 
-  /** This macro should be used in applications, not in libraries. In
-   * libraries please use the macro @ref GWEN_LIST2_FUNCTION_LIB_DEFS. */
+/** This macro should be used in applications, not in libraries. In
+ * libraries please use the macro @ref GWEN_LIST2_FUNCTION_LIB_DEFS. */
 #define GWEN_LIST2_FUNCTION_DEFS(t, pr) \
   GWEN_LIST2_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
 
-  /** This macro actually implements the functions. Please use it in your
-   * source file (*.c) after the includes.
-   */
+/** This macro actually implements the functions. Please use it in your
+ * source file (*.c) after the includes.
+ */
 #define GWEN_LIST2_FUNCTIONS(t, pr) \
   t##_LIST2 *pr##_List2_new(void) { \
     return (t##_LIST2*)GWEN_List_new(); \
@@ -227,10 +227,10 @@ extern "C" {
     return 0; \
   }
 
-  /*
-   * This macro should be used in libraries with the
-   * __declspec(dllexport) declaration as the @c decl argument.
-   */
+/*
+ * This macro should be used in libraries with the
+ * __declspec(dllexport) declaration as the @c decl argument.
+ */
 #define GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(t, pr, decl) \
   typedef struct t##_CONSTLIST2 t##_CONSTLIST2; \
   typedef struct t##_CONSTLIST2_ITERATOR t##_CONSTLIST2_ITERATOR; \
@@ -259,9 +259,9 @@ extern "C" {
   decl void pr##_ConstList2_Remove(t##_CONSTLIST2 *l, const t *p); \
   decl const t *pr##_ConstList2_ForEach(t##_CONSTLIST2 *l, t##_CONSTLIST2_FOREACH, void *user_data);
 
-  /* This macro should be used in applications, not in libraries. In
-   * libraries please use the macro @ref
-   * GWEN_CONSTLIST2_FUNCTION_LIB_DEFS. */
+/* This macro should be used in applications, not in libraries. In
+ * libraries please use the macro @ref
+ * GWEN_CONSTLIST2_FUNCTION_LIB_DEFS. */
 #define GWEN_CONSTLIST2_FUNCTION_DEFS(t, pr) \
   GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 

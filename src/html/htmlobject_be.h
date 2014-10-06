@@ -102,7 +102,7 @@ GWENHYWFAR_API void HtmlObject_SubFlags(HTML_OBJECT *o, uint32_t fl);
 
 
 GWENHYWFAR_API HTML_OBJECT_LAYOUT_FN HtmlObject_SetLayoutFn(HTML_OBJECT *o,
-							  HTML_OBJECT_LAYOUT_FN fn);
+    HTML_OBJECT_LAYOUT_FN fn);
 
 #ifdef __cplusplus
 }

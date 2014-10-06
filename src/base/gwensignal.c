@@ -72,9 +72,9 @@ uint32_t GWEN_SignalObject_MkTypeId(const char *typeName) {
 
 
 GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
-                                           const char *name,
-                                           uint32_t typeId1,
-                                           uint32_t typeId2) {
+    const char *name,
+    uint32_t typeId1,
+    uint32_t typeId2) {
   GWEN_SIGNAL_LIST2_ITERATOR *sit;
 
   assert(so);
@@ -108,9 +108,9 @@ GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
 
 
 GWEN_SIGNAL *GWEN_SignalObject_FindSignal(const GWEN_SIGNALOBJECT *so,
-                                          const char *name,
-                                          const char *typeOfArg1,
-                                          const char *typeOfArg2) {
+    const char *name,
+    const char *typeOfArg1,
+    const char *typeOfArg2) {
   uint32_t typeId1=0;
   uint32_t typeId2=0;
 
@@ -211,7 +211,7 @@ int GWEN_SignalObject_AddSlot(GWEN_SIGNALOBJECT *so, GWEN_SLOT *slot) {
 
 
 void GWEN_SignalObject_RemoveForDerivedType(GWEN_SIGNALOBJECT *so,
-                                            const char *derivedType) {
+    const char *derivedType) {
   uint32_t typeId=0;
   GWEN_SLOT_LIST2_ITERATOR *slotIt;
   GWEN_SIGNAL_LIST2_ITERATOR *sigIt;
@@ -347,7 +347,7 @@ void GWEN_Signal_Attach(GWEN_SIGNAL *sig) {
 
 
 
-GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, GWEN_UNUSED void *user_data){
+GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, GWEN_UNUSED void *user_data) {
   GWEN_Signal_free(sig);
   return 0;
 }
@@ -362,7 +362,7 @@ void GWEN_Signal_List2_freeAll(GWEN_SIGNAL_LIST2 *slist) {
 
 
 GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig,
-                                             void *user_data){
+    void *user_data) {
   if ((void*)sig==user_data)
     return sig;
   return 0;
@@ -582,7 +582,7 @@ void GWEN_Slot_List2_freeAll(GWEN_SLOT_LIST2 *slist) {
 
 
 GWEN_SLOT *GWEN_Slot__List2_hasSlot_cb(GWEN_SLOT *slot,
-                                       void *user_data){
+                                       void *user_data) {
   if ((void*)slot==user_data)
     return slot;
   return 0;

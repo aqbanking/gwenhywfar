@@ -55,15 +55,15 @@ struct GWEN_XML_CONTEXT {
 
 
 static int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx,
-				     const char *tagName);
+                                     const char *tagName);
 static int GWEN_XmlCtxStore_EndTag(GWEN_XML_CONTEXT *ctx, int closing);
 static int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx,
-				    const char *data);
+                                    const char *data);
 static int GWEN_XmlCtxStore_AddComment(GWEN_XML_CONTEXT *ctx,
-				       const char *data);
+                                       const char *data);
 static int GWEN_XmlCtxStore_AddAttr(GWEN_XML_CONTEXT *ctx,
-				    const char *attrName,
-				    const char *attrData);
+                                    const char *attrName,
+                                    const char *attrData);
 
 
 

@@ -30,20 +30,20 @@ void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
   s=HtmlObject_GetText(o);
   for (i=0; i<indent; i++) fprintf(f, " ");
   fprintf(stderr, "Object type: %d [%s] flags: %08x\n",
-	  HtmlObject_GetObjectType(o),
-	  s?s:"(empty)",
-	  HtmlObject_GetFlags(o));
+          HtmlObject_GetObjectType(o),
+          s?s:"(empty)",
+          HtmlObject_GetFlags(o));
 
   pr=HtmlObject_GetProperties(o);
   fnt=HtmlProps_GetFont(pr);
 
   for (i=0; i<indent+2; i++) fprintf(f, " ");
   fprintf(stderr, "fgcol=%06x, bgcol=%06x, fontsize=%d, fontflags=%08x, fontname=[%s]\n",
-	  HtmlProps_GetForegroundColor(pr),
-	  HtmlProps_GetBackgroundColor(pr),
-	  HtmlFont_GetFontSize(fnt),
-	  HtmlFont_GetFontFlags(fnt),
-	  HtmlFont_GetFontName(fnt));
+          HtmlProps_GetForegroundColor(pr),
+          HtmlProps_GetBackgroundColor(pr),
+          HtmlFont_GetFontSize(fnt),
+          HtmlFont_GetFontFlags(fnt),
+          HtmlFont_GetFontName(fnt));
 
   c=HtmlObject_Tree_GetFirstChild(o);
   while(c) {

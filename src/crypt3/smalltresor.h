@@ -28,20 +28,20 @@ extern "C" {
  */
 GWENHYWFAR_API
 int GWEN_SmallTresor_Encrypt(const uint8_t *src,
-			     uint32_t slen,
-			     const char *password,
-			     GWEN_BUFFER *dst,
-			     int passwordIterations,
-			     int cryptIterations);
+                             uint32_t slen,
+                             const char *password,
+                             GWEN_BUFFER *dst,
+                             int passwordIterations,
+                             int cryptIterations);
 
 
 GWENHYWFAR_API
 int GWEN_SmallTresor_Decrypt(const uint8_t *p,
-			     uint32_t len,
-			     const char *password,
-			     GWEN_BUFFER *dst,
-			     int passwordIterations,
-			     int cryptIterations);
+                             uint32_t len,
+                             const char *password,
+                             GWEN_BUFFER *dst,
+                             int passwordIterations,
+                             int cryptIterations);
 
 
 

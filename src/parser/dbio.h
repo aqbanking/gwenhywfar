@@ -80,7 +80,8 @@ typedef enum {
   GWEN_DBIO_CheckFileResultOk=0,
   GWEN_DBIO_CheckFileResultNotOk,
   GWEN_DBIO_CheckFileResultUnknown
-} GWEN_DBIO_CHECKFILE_RESULT;
+}
+GWEN_DBIO_CHECKFILE_RESULT;
 
 
 
@@ -109,15 +110,15 @@ GWENHYWFAR_API
 int GWEN_DBIO_Import(GWEN_DBIO *dbio,
                      GWEN_SYNCIO *sio,
                      GWEN_DB_NODE *db,
-		     GWEN_DB_NODE *params,
-		     uint32_t flags);
+                     GWEN_DB_NODE *params,
+                     uint32_t flags);
 
 GWENHYWFAR_API
 int GWEN_DBIO_ImportFromFile(GWEN_DBIO *dbio,
-			     const char *fname,
-			     GWEN_DB_NODE *db,
-			     GWEN_DB_NODE *params,
-			     uint32_t flags);
+                             const char *fname,
+                             GWEN_DB_NODE *db,
+                             GWEN_DB_NODE *params,
+                             uint32_t flags);
 
 /**
  * Writes data to the given GWEN_BUFFEREDIO in the format of this particular
@@ -125,24 +126,24 @@ int GWEN_DBIO_ImportFromFile(GWEN_DBIO *dbio,
  */
 GWENHYWFAR_API
 int GWEN_DBIO_Export(GWEN_DBIO *dbio,
-		     GWEN_SYNCIO *sio,
-		     GWEN_DB_NODE *db,
+                     GWEN_SYNCIO *sio,
+                     GWEN_DB_NODE *db,
                      GWEN_DB_NODE *params,
-		     uint32_t flags);
+                     uint32_t flags);
 
 GWENHYWFAR_API
 int GWEN_DBIO_ExportToFile(GWEN_DBIO *dbio,
-			   const char *fname,
-			   GWEN_DB_NODE *db,
-			   GWEN_DB_NODE *params,
-			   uint32_t flags);
+                           const char *fname,
+                           GWEN_DB_NODE *db,
+                           GWEN_DB_NODE *params,
+                           uint32_t flags);
 
 GWENHYWFAR_API
 int GWEN_DBIO_ExportToBuffer(GWEN_DBIO *dbio,
-			     GWEN_BUFFER *buf,
-			     GWEN_DB_NODE *db,
-			     GWEN_DB_NODE *params,
-			     uint32_t flags);
+                             GWEN_BUFFER *buf,
+                             GWEN_DB_NODE *db,
+                             GWEN_DB_NODE *params,
+                             uint32_t flags);
 
 
 /**

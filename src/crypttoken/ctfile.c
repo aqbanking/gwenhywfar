@@ -39,7 +39,7 @@ GWEN_INHERIT(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE)
 
 
 
-int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid){
+int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid) {
   int fd;
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_FSLOCK_RESULT lres;
@@ -56,7 +56,7 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid){
   }
 
   lct->lock=GWEN_FSLock_new(fname,
-			    GWEN_FSLock_TypeFile);
+                            GWEN_FSLock_TypeFile);
   lres=GWEN_FSLock_Lock(lct->lock, 10000, gid);
   if (lres!=GWEN_FSLock_ResultOk) {
     GWEN_FSLock_free(lct->lock);
@@ -69,8 +69,8 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid){
   }
   else {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "Keyfile [%s] locked.",
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyfile [%s] locked.",
+             GWEN_Crypt_Token_GetTokenName(ct));
   }
 
   if (wr) {
@@ -81,33 +81,33 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid){
             | O_BINARY
 #endif
             ,
-	    S_IRUSR|S_IWUSR | lct->keyfile_mode);
+            S_IRUSR|S_IWUSR | lct->keyfile_mode);
   }
   else {
     /* Remember the access permissions when opening the file */
     struct stat statbuffer;
     if (!stat(GWEN_Crypt_Token_GetTokenName(ct), &statbuffer)) {
       /* Save the access mode, but masked by the bit masks for
-	 user/group/other permissions */
-      lct->keyfile_mode = 
-	statbuffer.st_mode & (S_IRWXU
+      user/group/other permissions */
+      lct->keyfile_mode =
+        statbuffer.st_mode & (S_IRWXU
 #ifndef OS_WIN32
-			      | S_IRWXG | S_IRWXO
+                              | S_IRWXG | S_IRWXO
 #endif
-			      );
+                             );
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"stat(%s): %s",
-		GWEN_Crypt_Token_GetTokenName(ct),
-		strerror(errno));
+                "stat(%s): %s",
+                GWEN_Crypt_Token_GetTokenName(ct),
+                strerror(errno));
 
       GWEN_FSLock_Unlock(lct->lock);
       GWEN_FSLock_free(lct->lock);
       lct->lock=0;
       DBG_INFO(GWEN_LOGDOMAIN,
-	       "Keyfile [%s] unlocked.",
-	       GWEN_Crypt_Token_GetTokenName(ct));
+               "Keyfile [%s] unlocked.",
+               GWEN_Crypt_Token_GetTokenName(ct));
       return GWEN_ERROR_IO;
     }
 
@@ -122,15 +122,15 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid){
 
   if (fd==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "open(%s): %s",
-	      GWEN_Crypt_Token_GetTokenName(ct),
-	      strerror(errno));
+              "open(%s): %s",
+              GWEN_Crypt_Token_GetTokenName(ct),
+              strerror(errno));
     GWEN_FSLock_Unlock(lct->lock);
     GWEN_FSLock_free(lct->lock);
     lct->lock=0;
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "Keyfile [%s] unlocked.",
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyfile [%s] unlocked.",
+             GWEN_Crypt_Token_GetTokenName(ct));
     return GWEN_ERROR_IO;
   }
 
@@ -141,7 +141,7 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid){
 
 
 
-int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
+int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_FSLOCK_RESULT lres;
   struct stat st;
@@ -152,7 +152,7 @@ int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 
   if (lct->fd==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Keyfile \"%s\"not open",
-	      GWEN_Crypt_Token_GetTokenName(ct));
+              GWEN_Crypt_Token_GetTokenName(ct));
     return GWEN_ERROR_INTERNAL;
   }
 
@@ -164,8 +164,8 @@ int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
     GWEN_FSLock_free(lct->lock);
     lct->lock=0;
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "Keyfile [%s] unlocked.",
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyfile [%s] unlocked.",
+             GWEN_Crypt_Token_GetTokenName(ct));
     return GWEN_ERROR_IO;
   }
   lct->fd=-1;
@@ -178,15 +178,15 @@ int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
   GWEN_FSLock_free(lct->lock);
   lct->lock=0;
   DBG_INFO(GWEN_LOGDOMAIN,
-	   "Keyfile [%s] unlocked.",
-	   GWEN_Crypt_Token_GetTokenName(ct));
+           "Keyfile [%s] unlocked.",
+           GWEN_Crypt_Token_GetTokenName(ct));
 
   /* get times */
   if (stat(GWEN_Crypt_Token_GetTokenName(ct), &st)) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "stat(%s): %s",
-	      GWEN_Crypt_Token_GetTokenName(ct),
-	      strerror(errno));
+              "stat(%s): %s",
+              GWEN_Crypt_Token_GetTokenName(ct),
+              strerror(errno));
     return GWEN_ERROR_IO;
   }
 
@@ -195,12 +195,12 @@ int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
     DBG_WARN(GWEN_LOGDOMAIN,
              "WARNING: Your keyfile \"%s\" is accessible by every user on your computer!\n"
              "Nobody but you should have access to the file. You \n"
-	     "should probably change this with \"chmod 600 %s\"",
+             "should probably change this with \"chmod 600 %s\"",
              GWEN_Crypt_Token_GetTokenName(ct),
              GWEN_Crypt_Token_GetTokenName(ct));
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning,
-			 "WARNING: Your keyfile is accessible ny every user on your computer!\n"
-			 "Nobody but you should have access to the file.");
+                         "WARNING: Your keyfile is accessible ny every user on your computer!\n"
+                         "Nobody but you should have access to the file.");
   }
 #endif
   lct->mtime=st.st_mtime;
@@ -211,7 +211,7 @@ int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 
 
 
-int GWEN_Crypt_TokenFile__Read(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
+int GWEN_Crypt_TokenFile__Read(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
 
   assert(ct);
@@ -221,8 +221,8 @@ int GWEN_Crypt_TokenFile__Read(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
   assert(lct->readFn);
   if (lseek(lct->fd, 0, SEEK_SET)==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "lseek(%s): %s",
-	      GWEN_Crypt_Token_GetTokenName(ct),
-	      strerror(errno));
+              GWEN_Crypt_Token_GetTokenName(ct),
+              strerror(errno));
     return GWEN_ERROR_IO;
   }
   return lct->readFn(ct, lct->fd, gid);
@@ -230,7 +230,7 @@ int GWEN_Crypt_TokenFile__Read(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 
 
 
-int GWEN_Crypt_TokenFile__Write(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid){
+int GWEN_Crypt_TokenFile__Write(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
 
   assert(ct);
@@ -255,7 +255,7 @@ int GWEN_Crypt_TokenFile__Write(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid){
 
 
 
-int GWEN_Crypt_TokenFile__ReadFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
+int GWEN_Crypt_TokenFile__ReadFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -294,7 +294,7 @@ int GWEN_Crypt_TokenFile__ReadFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
 
 
 
-int GWEN_Crypt_TokenFile__WriteFile(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid){
+int GWEN_Crypt_TokenFile__WriteFile(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -330,7 +330,7 @@ int GWEN_Crypt_TokenFile__WriteFile(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid){
 
 
 
-int GWEN_Crypt_TokenFile__ReloadIfNeeded(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
+int GWEN_Crypt_TokenFile__ReloadIfNeeded(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   struct stat st;
 
@@ -403,7 +403,7 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_TokenFile_GetContext(GWEN_CRYPT_TOKEN *ct, 
 
 
 GWEN_CRYPT_TOKEN_FILE_READ_FN GWEN_Crypt_TokenFile_SetReadFn(GWEN_CRYPT_TOKEN *ct,
-							     GWEN_CRYPT_TOKEN_FILE_READ_FN f) {
+    GWEN_CRYPT_TOKEN_FILE_READ_FN f) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_FILE_READ_FN of;
 
@@ -420,7 +420,7 @@ GWEN_CRYPT_TOKEN_FILE_READ_FN GWEN_Crypt_TokenFile_SetReadFn(GWEN_CRYPT_TOKEN *c
 
 
 GWEN_CRYPT_TOKEN_FILE_WRITE_FN GWEN_Crypt_TokenFile_SetWriteFn(GWEN_CRYPT_TOKEN *ct,
-							       GWEN_CRYPT_TOKEN_FILE_WRITE_FN f) {
+    GWEN_CRYPT_TOKEN_FILE_WRITE_FN f) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_FILE_WRITE_FN of;
 
@@ -436,7 +436,7 @@ GWEN_CRYPT_TOKEN_FILE_WRITE_FN GWEN_Crypt_TokenFile_SetWriteFn(GWEN_CRYPT_TOKEN 
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid){
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   struct stat st;
   int fd;
@@ -499,7 +499,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, GWEN_UNUSED int admin, uint32_t gid){
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, GWEN_UNUSED int admin, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -518,7 +518,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, GWEN_UNUSED in
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid){
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -543,9 +543,9 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, 
 
 
 int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
-						     uint32_t *pIdList,
-						     uint32_t *pCount,
-						     uint32_t gid) {
+    uint32_t *pIdList,
+    uint32_t *pCount,
+    uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -599,11 +599,11 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
 
 
 
-const GWEN_CRYPT_TOKEN_KEYINFO* GWENHYWFAR_CB 
+const GWEN_CRYPT_TOKEN_KEYINFO* GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-				 uint32_t id,
-				 uint32_t flags,
-				 uint32_t gid) {
+                                 uint32_t id,
+                                 uint32_t flags,
+                                 uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_TOKEN_KEYINFO *ki;
@@ -636,13 +636,27 @@ GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
   }
 
   switch(id & 0xffff) {
-  case 1: ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx); break;
-  case 2: ki=GWEN_CTF_Context_GetLocalCryptKeyInfo(ctx); break;
-  case 3: ki=GWEN_CTF_Context_GetRemoteSignKeyInfo(ctx); break;
-  case 4: ki=GWEN_CTF_Context_GetRemoteCryptKeyInfo(ctx); break;
-  case 5: ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx); break;
-  case 6: ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx); break;
-  case 7: ki=GWEN_CTF_Context_GetTempLocalSignKeyInfo(ctx); break;
+  case 1:
+    ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
+    break;
+  case 2:
+    ki=GWEN_CTF_Context_GetLocalCryptKeyInfo(ctx);
+    break;
+  case 3:
+    ki=GWEN_CTF_Context_GetRemoteSignKeyInfo(ctx);
+    break;
+  case 4:
+    ki=GWEN_CTF_Context_GetRemoteCryptKeyInfo(ctx);
+    break;
+  case 5:
+    ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx);
+    break;
+  case 6:
+    ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx);
+    break;
+  case 7:
+    ki=GWEN_CTF_Context_GetTempLocalSignKeyInfo(ctx);
+    break;
   default:
     DBG_INFO(GWEN_LOGDOMAIN, "No key by id [%x] known (key id out of range)", id);
     return NULL;
@@ -659,11 +673,11 @@ GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
 
 #if 0
-int GWENHYWFAR_CB 
+int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-				 uint32_t id,
-				 const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-				 uint32_t gid) {
+                                 uint32_t id,
+                                 const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                                 uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -741,10 +755,10 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
     GWEN_CRYPT_KEY *nkey;
 
     nkey=GWEN_Crypt_KeyRsa_fromModExp(GWEN_Crypt_Token_KeyInfo_GetKeySize(ki),
-				      GWEN_Crypt_Token_KeyInfo_GetModulusData(ki),
-				      GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki),
-				      GWEN_Crypt_Token_KeyInfo_GetExponentData(ki),
-				      GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki));
+                                      GWEN_Crypt_Token_KeyInfo_GetModulusData(ki),
+                                      GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki),
+                                      GWEN_Crypt_Token_KeyInfo_GetExponentData(ki),
+                                      GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki));
     assert(nkey);
 
     if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
@@ -765,19 +779,19 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
       break;
     default:
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Can't set modulus and exponent for private key");
+                "Can't set modulus and exponent for private key");
       GWEN_Crypt_Key_free(nkey);
       return GWEN_ERROR_INVALID;
     }
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Notice,
-			 I18N("Public key replaced"));
+                         I18N("Public key replaced"));
   }
   else {
     if (key) {
       if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
-	GWEN_Crypt_Key_SetKeyNumber(key, GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
+        GWEN_Crypt_Key_SetKeyNumber(key, GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
       if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
-	GWEN_Crypt_Key_SetKeyVersion(key, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+        GWEN_Crypt_Key_SetKeyVersion(key, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
     }
   }
 
@@ -785,23 +799,23 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("Unable to write key file"));
+                         I18N("Unable to write key file"));
     return rv;
   }
 
   GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Notice,
-		       I18N("Key file saved"));
+                       I18N("Key file saved"));
 
   return 0;
 }
 #endif
 
 
-int GWENHYWFAR_CB 
+int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-				 uint32_t id,
-				 const GWEN_CRYPT_TOKEN_KEYINFO *ski,
-				 uint32_t gid) {
+                                 uint32_t id,
+                                 const GWEN_CRYPT_TOKEN_KEYINFO *ski,
+                                 uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -920,18 +934,18 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
     GWEN_Crypt_Token_KeyInfo_SetKeySize(ki, GWEN_Crypt_Token_KeyInfo_GetKeySize(ski));
     GWEN_Crypt_Token_KeyInfo_SetModulus(ki,
-					GWEN_Crypt_Token_KeyInfo_GetModulusData(ski),
-					GWEN_Crypt_Token_KeyInfo_GetModulusLen(ski));
+                                        GWEN_Crypt_Token_KeyInfo_GetModulusData(ski),
+                                        GWEN_Crypt_Token_KeyInfo_GetModulusLen(ski));
     nflags|=GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS;
     GWEN_Crypt_Token_KeyInfo_SetExponent(ki,
-					 GWEN_Crypt_Token_KeyInfo_GetExponentData(ski),
-					 GWEN_Crypt_Token_KeyInfo_GetExponentLen(ski));
+                                         GWEN_Crypt_Token_KeyInfo_GetExponentData(ski),
+                                         GWEN_Crypt_Token_KeyInfo_GetExponentLen(ski));
     nflags|=GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT;
     nkey=GWEN_Crypt_KeyRsa_fromModExp(GWEN_Crypt_Token_KeyInfo_GetKeySize(ski),
-				      GWEN_Crypt_Token_KeyInfo_GetModulusData(ski),
-				      GWEN_Crypt_Token_KeyInfo_GetModulusLen(ski),
-				      GWEN_Crypt_Token_KeyInfo_GetExponentData(ski),
-				      GWEN_Crypt_Token_KeyInfo_GetExponentLen(ski));
+                                      GWEN_Crypt_Token_KeyInfo_GetModulusData(ski),
+                                      GWEN_Crypt_Token_KeyInfo_GetModulusLen(ski),
+                                      GWEN_Crypt_Token_KeyInfo_GetExponentData(ski),
+                                      GWEN_Crypt_Token_KeyInfo_GetExponentLen(ski));
     assert(nkey);
 
     if (nflags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
@@ -952,19 +966,19 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
       break;
     default:
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Can't set modulus and exponent for private key");
+                "Can't set modulus and exponent for private key");
       GWEN_Crypt_Key_free(nkey);
       return GWEN_ERROR_INVALID;
     }
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Notice,
-			 I18N("Public key replaced"));
+                         I18N("Public key replaced"));
   }
   else {
     if (key) {
       if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
-	GWEN_Crypt_Key_SetKeyNumber(key, GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
+        GWEN_Crypt_Key_SetKeyNumber(key, GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
       if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
-	GWEN_Crypt_Key_SetKeyVersion(key, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+        GWEN_Crypt_Key_SetKeyVersion(key, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
     }
   }
 
@@ -974,19 +988,19 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("Unable to write key file"));
+                         I18N("Unable to write key file"));
     return rv;
   }
 
   GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Notice,
-		       I18N("Key file saved"));
+                       I18N("Key file saved"));
 
   return 0;
 }
 
 
 
-int GWENHYWFAR_CB 
+int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
@@ -1040,13 +1054,13 @@ GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
     cki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx);
   else {
     GWEN_Gui_ProgressLog2(gid, GWEN_LoggerLevel_Error,
-			  I18N("Invalid key id %02x"), id);
+                          I18N("Invalid key id %02x"), id);
     GWEN_Crypt_Key_free(key);
     return GWEN_ERROR_NO_DATA;
   }
   if (cki==NULL) {
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("No key info found"));
+                         I18N("No key info found"));
     GWEN_Crypt_Key_free(key);
     return GWEN_ERROR_NO_DATA;
   }
@@ -1080,38 +1094,38 @@ GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
   GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, GWEN_Crypt_Key_GetKeyVersion(key));
 
   if (keyNum==1) {
-    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Adding mode \"direct sign\" to key");
       GWEN_Crypt_KeyRsa_AddFlags(key, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalSignKey(ctx, key);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
     GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, 1);
     GWEN_CTF_Context_SetLocalSignKeyInfo(ctx, ki);
   }
   else if (keyNum==6) {
-    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Adding mode \"direct sign\" to key");
       GWEN_Crypt_KeyRsa_AddFlags(key, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalAuthKey(ctx, key);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
     GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, 1);
     GWEN_CTF_Context_SetLocalAuthKeyInfo(ctx, ki);
   }
@@ -1120,12 +1134,12 @@ GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("Unable to write key file"));
+                         I18N("Unable to write key file"));
     return rv;
   }
 
   GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Notice,
-		       I18N("Key file saved"));
+                       I18N("Key file saved"));
 
   return 0;
 }
@@ -1134,9 +1148,9 @@ GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
 
 int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
-				       uint32_t *pIdList,
-				       uint32_t *pCount,
-				       uint32_t gid) {
+                                       uint32_t *pIdList,
+                                       uint32_t *pCount,
+                                       uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -1186,10 +1200,10 @@ GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
 
 
 
-const GWEN_CRYPT_TOKEN_CONTEXT* GWENHYWFAR_CB 
+const GWEN_CRYPT_TOKEN_CONTEXT* GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
-				 uint32_t id,
-				 uint32_t gid) {
+                                 uint32_t id,
+                                 uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int rv;
@@ -1227,11 +1241,11 @@ GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWENHYWFAR_CB 
+int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
-				 uint32_t id,
-				 const GWEN_CRYPT_TOKEN_CONTEXT *nctx,
-				 uint32_t gid) {
+                                 uint32_t id,
+                                 const GWEN_CRYPT_TOKEN_CONTEXT *nctx,
+                                 uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int rv;
@@ -1317,12 +1331,18 @@ GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, 
   }
 
   switch(id & 0xffff) {
-  case 1: return GWEN_CTF_Context_GetLocalSignKey(ctx);
-  case 2: return GWEN_CTF_Context_GetLocalCryptKey(ctx);
-  case 3: return GWEN_CTF_Context_GetRemoteSignKey(ctx);
-  case 4: return GWEN_CTF_Context_GetRemoteCryptKey(ctx);
-  case 5: return GWEN_CTF_Context_GetLocalAuthKey(ctx);
-  case 6: return GWEN_CTF_Context_GetRemoteAuthKey(ctx);
+  case 1:
+    return GWEN_CTF_Context_GetLocalSignKey(ctx);
+  case 2:
+    return GWEN_CTF_Context_GetLocalCryptKey(ctx);
+  case 3:
+    return GWEN_CTF_Context_GetRemoteSignKey(ctx);
+  case 4:
+    return GWEN_CTF_Context_GetRemoteCryptKey(ctx);
+  case 5:
+    return GWEN_CTF_Context_GetLocalAuthKey(ctx);
+  case 6:
+    return GWEN_CTF_Context_GetRemoteAuthKey(ctx);
   default:
     DBG_INFO(GWEN_LOGDOMAIN, "No key by id [%x] known (key id out of range)", id);
     return NULL;
@@ -1333,14 +1353,14 @@ GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, 
 
 int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
-			   uint32_t keyId,
-			   GWEN_CRYPT_PADDALGO *a,
-			   const uint8_t *pInData,
-			   uint32_t inLen,
-			   uint8_t *pSignatureData,
-			   uint32_t *pSignatureLen,
-			   uint32_t *pSeqCounter,
-			   uint32_t gid) {
+                           uint32_t keyId,
+                           GWEN_CRYPT_PADDALGO *a,
+                           const uint8_t *pInData,
+                           uint32_t inLen,
+                           uint8_t *pSignatureData,
+                           uint32_t *pSignatureLen,
+                           uint32_t *pSeqCounter,
+                           uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1375,7 +1395,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     if (i==0)
       break;
     DBG_ERROR(GWEN_LOGDOMAIN, "Checking token %d (i==%d)",
-	      GWEN_Crypt_Token_Context_GetId(ctx), i);
+              GWEN_Crypt_Token_Context_GetId(ctx), i);
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
     i--;
   }
@@ -1410,9 +1430,14 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     GWEN_MDIGEST *md;
 
     switch(keyId & 0xffff) {
-    case 1:  ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx); break;
-    case 5:  ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx); break;
-    default: ki=NULL;
+    case 1:
+      ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
+      break;
+    case 5:
+      ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx);
+      break;
+    default:
+      ki=NULL;
     }
 
     if (ki==NULL) {
@@ -1436,10 +1461,10 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
       uint8_t mask=0x80;
 
       for (i=0; i<8; i++) {
-	if (b & mask)
-	  break;
-	nbits--;
-	mask>>=1;
+        if (b & mask)
+          break;
+        nbits--;
+        mask>>=1;
       }
     }
 
@@ -1453,11 +1478,11 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     GWEN_Buffer_AllocRoom(srcBuf, modLen);
 
     rv=GWEN_Padd_AddPkcs1Pss((uint8_t*) GWEN_Buffer_GetStart(srcBuf),
-			     GWEN_Buffer_GetMaxUnsegmentedWrite(srcBuf),
-			     nbits,
-			     pInData, inLen,
-			     inLen,
-			     md);
+                             GWEN_Buffer_GetMaxUnsegmentedWrite(srcBuf),
+                             nbits,
+                             pInData, inLen,
+                             inLen,
+                             md);
     GWEN_MDigest_free(md);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1482,10 +1507,10 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
 
   /* sign with key */
   rv=GWEN_Crypt_Key_Sign(k,
-			 (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
-			 GWEN_Buffer_GetUsedBytes(srcBuf),
-			 pSignatureData,
-			 pSignatureLen);
+                         (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
+                         GWEN_Buffer_GetUsedBytes(srcBuf),
+                         pSignatureData,
+                         pSignatureLen);
   GWEN_Buffer_free(srcBuf);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1497,12 +1522,17 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
 
     /* signature sequence counter is to be incremented */
     switch(keyId & 0xffff) {
-    case 1:  ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx); break;
-    case 5:  ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx); break;
-    default: ki=NULL;
+    case 1:
+      ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
+      break;
+    case 5:
+      ki=GWEN_CTF_Context_GetLocalAuthKeyInfo(ctx);
+      break;
+    default:
+      ki=NULL;
     }
     if (ki &&
-	(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)) {
+        (GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)) {
       unsigned int seq;
 
       seq=GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki);
@@ -1511,8 +1541,8 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
 
       rv=GWEN_Crypt_TokenFile__WriteFile(ct, 0, gid);
       if (rv) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
+        return rv;
       }
     }
     else {
@@ -1528,14 +1558,14 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
 
 int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
-			     uint32_t keyId,
-			     GWEN_CRYPT_PADDALGO *a,
-			     const uint8_t *pInData,
-			     uint32_t inLen,
-			     const uint8_t *pSignatureData,
-			     uint32_t signatureLen,
-			     uint32_t seqCounter,
-			     uint32_t gid) {
+                             uint32_t keyId,
+                             GWEN_CRYPT_PADDALGO *a,
+                             const uint8_t *pInData,
+                             uint32_t inLen,
+                             const uint8_t *pSignatureData,
+                             uint32_t signatureLen,
+                             uint32_t seqCounter,
+                             uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1589,8 +1619,8 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
   }
 
   if (aid==GWEN_Crypt_PaddAlgoId_Iso9796_2 ||
-	   aid==GWEN_Crypt_PaddAlgoId_Pkcs1_2 ||
-	   aid==GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256) {
+      aid==GWEN_Crypt_PaddAlgoId_Pkcs1_2 ||
+      aid==GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256) {
     GWEN_BUFFER *tbuf;
     uint32_t l;
 
@@ -1599,9 +1629,9 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
     tbuf=GWEN_Buffer_new(0, signatureLen+16, 0, 0);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
     rv=GWEN_Crypt_Key_Encipher(k,
-			       pSignatureData, signatureLen,
-			       (uint8_t*)GWEN_Buffer_GetStart(tbuf),
-			       &l);
+                               pSignatureData, signatureLen,
+                               (uint8_t*)GWEN_Buffer_GetStart(tbuf),
+                               &l);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(tbuf);
@@ -1618,12 +1648,12 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
       GWEN_MDIGEST *md;
 
       if (keyNum==3)
-	ki=GWEN_CTF_Context_GetRemoteSignKeyInfo(ctx);
+        ki=GWEN_CTF_Context_GetRemoteSignKeyInfo(ctx);
       else
-	ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx);
+        ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx);
       if (ki==NULL) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "No information for key %d", keyNum);
-	GWEN_Buffer_free(tbuf);
+        DBG_ERROR(GWEN_LOGDOMAIN, "No information for key %d", keyNum);
+        GWEN_Buffer_free(tbuf);
         return GWEN_ERROR_GENERIC;
       }
 
@@ -1632,61 +1662,61 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
       modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
       nbits=modLen*8;
       while(modLen && *modPtr==0) {
-	nbits-=8;
-	modLen--;
+        nbits-=8;
+        modLen--;
         modPtr++;
       }
       if (modLen) {
-	uint8_t b=*modPtr;
-	int i;
-	uint8_t mask=0x80;
+        uint8_t b=*modPtr;
+        int i;
+        uint8_t mask=0x80;
 
-	for (i=0; i<8; i++) {
-	  if (b & mask)
-	    break;
-	  nbits--;
-	  mask>>=1;
-	}
+        for (i=0; i<8; i++) {
+          if (b & mask)
+            break;
+          nbits--;
+          mask>>=1;
+        }
       }
 
       if (nbits==0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Empty modulus");
-	GWEN_Buffer_free(tbuf);
-	return GWEN_ERROR_GENERIC;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Empty modulus");
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_GENERIC;
       }
 
       md=GWEN_MDigest_Sha256_new();
       rv=GWEN_Padd_VerifyPkcs1Pss((const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-				  GWEN_Buffer_GetUsedBytes(tbuf),
-				  nbits,
-				  pInData, inLen,
-				  inLen,
-				  md);
+                                  GWEN_Buffer_GetUsedBytes(tbuf),
+                                  nbits,
+                                  pInData, inLen,
+                                  inLen,
+                                  md);
       GWEN_MDigest_free(md);
       if (rv<0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
-	GWEN_Buffer_free(tbuf);
-	return rv;
+        DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(tbuf);
+        return rv;
       }
     }
     else {
       rv=GWEN_Padd_UnapplyPaddAlgo(a, tbuf);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	GWEN_Buffer_free(tbuf);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(tbuf);
+        return rv;
       }
       l=GWEN_Buffer_GetUsedBytes(tbuf);
 
       if (l!=inLen) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Signature length doesn't match");
-	GWEN_Buffer_free(tbuf);
-	return GWEN_ERROR_VERIFY;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Signature length doesn't match");
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_VERIFY;
       }
       if (memcmp(pInData, GWEN_Buffer_GetStart(tbuf), l)!=0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Signature doesn't match:");
-	GWEN_Buffer_free(tbuf);
-	return GWEN_ERROR_VERIFY;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Signature doesn't match:");
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_VERIFY;
       }
     }
     GWEN_Buffer_free(tbuf);
@@ -1708,10 +1738,10 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 
     /* verify with key */
     rv=GWEN_Crypt_Key_Verify(k,
-			     (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
-			     GWEN_Buffer_GetUsedBytes(srcBuf),
-			     pSignatureData,
-			     signatureLen);
+                             (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
+                             GWEN_Buffer_GetUsedBytes(srcBuf),
+                             pSignatureData,
+                             signatureLen);
     GWEN_Buffer_free(srcBuf);
     if (rv) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1728,22 +1758,22 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
     else
       ki=GWEN_CTF_Context_GetRemoteAuthKeyInfo(ctx);
     if (ki &&
-	(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)) {
+        (GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)) {
       unsigned int seq;
 
       seq=GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki);
 
       if (seq>=seqCounter) {
-	DBG_WARN(GWEN_LOGDOMAIN, "Bad remote sequence counter (possibly replay attack!)");
-	return GWEN_ERROR_VERIFY;
+        DBG_WARN(GWEN_LOGDOMAIN, "Bad remote sequence counter (possibly replay attack!)");
+        return GWEN_ERROR_VERIFY;
       }
       GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, seqCounter);
 
       /* write file */
       rv=GWEN_Crypt_TokenFile__WriteFile(ct, 0, gid);
       if (rv) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
+        return rv;
       }
     }
     else {
@@ -1759,13 +1789,13 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 
 int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
-			       uint32_t keyId,
-			       GWEN_CRYPT_PADDALGO *a,
-			       const uint8_t *pInData,
-			       uint32_t inLen,
-			       uint8_t *pOutData,
-			       uint32_t *pOutLen,
-			       uint32_t gid) {
+                               uint32_t keyId,
+                               GWEN_CRYPT_PADDALGO *a,
+                               const uint8_t *pInData,
+                               uint32_t inLen,
+                               uint8_t *pOutData,
+                               uint32_t *pOutLen,
+                               uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1831,10 +1861,10 @@ GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
 
   /* encipher with key */
   rv=GWEN_Crypt_Key_Encipher(k,
-			     (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
-			     GWEN_Buffer_GetUsedBytes(srcBuf),
-			     pOutData,
-			     pOutLen);
+                             (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
+                             GWEN_Buffer_GetUsedBytes(srcBuf),
+                             pOutData,
+                             pOutLen);
   GWEN_Buffer_free(srcBuf);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1848,13 +1878,13 @@ GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
 
 int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
-			       uint32_t keyId,
-			       GWEN_CRYPT_PADDALGO *a,
-			       const uint8_t *pInData,
-			       uint32_t inLen,
-			       uint8_t *pOutData,
-			       uint32_t *pOutLen,
-			       uint32_t gid) {
+                               uint32_t keyId,
+                               GWEN_CRYPT_PADDALGO *a,
+                               const uint8_t *pInData,
+                               uint32_t inLen,
+                               uint8_t *pOutData,
+                               uint32_t *pOutLen,
+                               uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1910,8 +1940,8 @@ GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
   tbuf=GWEN_Buffer_new(0, inLen+16, 0, 1);
   l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
   rv=GWEN_Crypt_Key_Decipher(k,
-			     pInData, inLen,
-			     (uint8_t*)GWEN_Buffer_GetStart(tbuf), &l);
+                             pInData, inLen,
+                             (uint8_t*)GWEN_Buffer_GetStart(tbuf), &l);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -1946,9 +1976,9 @@ GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
 
 int GWENHYWFAR_CB
 GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
-				  uint32_t keyId,
-				  const GWEN_CRYPT_CRYPTALGO *a,
-				  uint32_t gid) {
+                                  uint32_t keyId,
+                                  const GWEN_CRYPT_CRYPTALGO *a,
+                                  uint32_t gid) {
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_KEY *pubKey;
   GWEN_CRYPT_KEY *secKey;
@@ -1978,7 +2008,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   if (keyNum!=1 && keyNum!=2 && keyNum!=5 && keyNum!=7) {
     DBG_INFO(GWEN_LOGDOMAIN, "Can only generate local keys.");
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("Can only generate local keys."));
+                         I18N("Can only generate local keys."));
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 
@@ -1986,7 +2016,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   if (GWEN_Crypt_CryptAlgo_GetId(a)!=GWEN_Crypt_CryptAlgoId_Rsa) {
     DBG_INFO(GWEN_LOGDOMAIN, "Only RSA keys supported.");
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("Only RSA keys supported."));
+                         I18N("Only RSA keys supported."));
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 
@@ -2003,19 +2033,19 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   /* generate key pair */
   DBG_INFO(GWEN_LOGDOMAIN, "Creating key pair using %d bytes", GWEN_Crypt_CryptAlgo_GetChunkSize(a));
   rv=GWEN_Crypt_KeyRsa_GeneratePair(GWEN_Crypt_CryptAlgo_GetChunkSize(a),
-				    (GWEN_Crypt_Token_GetModes(ct) &
-				     GWEN_CRYPT_TOKEN_MODE_EXP_65537)?1:0,
-				    &pubKey,
-				    &secKey);
+                                    (GWEN_Crypt_Token_GetModes(ct) &
+                                     GWEN_CRYPT_TOKEN_MODE_EXP_65537)?1:0,
+                                    &pubKey,
+                                    &secKey);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("Could not generate key"));
+                         I18N("Could not generate key"));
     return rv;
   }
 
   GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Notice,
-		       I18N("Key generated"));
+                       I18N("Key generated"));
 
   /* set key */
   if (keyNum==1)
@@ -2031,7 +2061,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 
   if (cki==NULL) {
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("No key info found"));
+                         I18N("No key info found"));
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -2064,69 +2094,69 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, GWEN_Crypt_Key_GetKeyVersion(pubKey));
 
   if (keyNum==1) {
-    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Adding mode \"direct sign\" to key");
       GWEN_Crypt_KeyRsa_AddFlags(secKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalSignKey(ctx, secKey);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
     GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, 1);
     GWEN_CTF_Context_SetLocalSignKeyInfo(ctx, ki);
   }
   else if (keyNum==2) {
     GWEN_CTF_Context_SetLocalCryptKey(ctx, secKey);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER);
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER);
     GWEN_CTF_Context_SetLocalCryptKeyInfo(ctx, ki);
   }
   else if (keyNum==5) {
-    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Adding mode \"direct sign\" to key");
       GWEN_Crypt_KeyRsa_AddFlags(secKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetLocalAuthKey(ctx, secKey);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
     GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, 1);
     GWEN_CTF_Context_SetLocalAuthKeyInfo(ctx, ki);
   }
   else if (keyNum==7) {
-    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN){
+    if (GWEN_Crypt_Token_GetModes(ct) & GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Adding mode \"direct sign\" to key");
       GWEN_Crypt_KeyRsa_AddFlags(secKey, GWEN_CRYPT_KEYRSA_FLAGS_DIRECTSIGN);
     }
     GWEN_CTF_Context_SetTempLocalSignKey(ctx, secKey);
     GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
-				      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY |
+                                      GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN);
     GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, 1);
     GWEN_CTF_Context_SetTempLocalSignKeyInfo(ctx, ki);
   }
@@ -2138,12 +2168,12 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "Unable to write file");
     GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error,
-			 I18N("Unable to write key file"));
+                         I18N("Unable to write key file"));
     return rv;
   }
 
   GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Notice,
-		       I18N("Key generated and set"));
+                       I18N("Key generated and set"));
 
   return 0;
 }
@@ -2166,7 +2196,7 @@ void GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenFile_new(const char *typeName,
-					   const char *tokenName) {
+    const char *tokenName) {
   GWEN_CRYPT_TOKEN *ct;
   GWEN_CRYPT_TOKEN_FILE *lct;
 
@@ -2176,7 +2206,7 @@ GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenFile_new(const char *typeName,
   GWEN_NEW_OBJECT(GWEN_CRYPT_TOKEN_FILE, lct);
   lct->contextList=GWEN_Crypt_Token_Context_List_new();
   GWEN_INHERIT_SETDATA(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE, ct, lct,
-		       GWEN_Crypt_TokenFile_freeData);
+                       GWEN_Crypt_TokenFile_freeData);
   GWEN_Crypt_Token_SetOpenFn(ct, GWEN_Crypt_TokenFile_Open);
   GWEN_Crypt_Token_SetCreateFn(ct, GWEN_Crypt_TokenFile_Create);
   GWEN_Crypt_Token_SetCloseFn(ct, GWEN_Crypt_TokenFile_Close);

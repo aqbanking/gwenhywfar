@@ -60,8 +60,8 @@ extern "C" {
 
 
 typedef GWEN_PLUGIN* (*GWEN_PLUGIN_FACTORYFN)(GWEN_PLUGIN_MANAGER *pm,
-                                              const char *name,
-                                              const char *fileName);
+    const char *name,
+    const char *fileName);
 
 
 GWENHYWFAR_API
@@ -95,7 +95,7 @@ GWEN_LIBLOADER *GWEN_Plugin_GetLibLoader(const GWEN_PLUGIN *p);
  */
 GWENHYWFAR_API
 GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name,
-					    const char *destLib);
+    const char *destLib);
 
 GWENHYWFAR_API
 void GWEN_PluginManager_free(GWEN_PLUGIN_MANAGER *pm);
@@ -111,14 +111,14 @@ const char *GWEN_PluginManager_GetName(const GWEN_PLUGIN_MANAGER *pm);
  */
 GWENHYWFAR_API
 int GWEN_PluginManager_AddPath(GWEN_PLUGIN_MANAGER *pm,
-			       const char *callingLib,
-			       const char *path);
+                               const char *callingLib,
+                               const char *path);
 
 GWENHYWFAR_API
 int GWEN_PluginManager_AddRelPath(GWEN_PLUGIN_MANAGER *pm,
-				  const char *callingLib,
-				  const char *relpath,
-				  GWEN_PATHMANAGER_RELMODE rm);
+                                  const char *callingLib,
+                                  const char *relpath,
+                                  GWEN_PATHMANAGER_RELMODE rm);
 
 /** Insert a directory path to lookup plugins from.
  * The plugin manager must already be registered with Gwen (using
@@ -127,8 +127,8 @@ int GWEN_PluginManager_AddRelPath(GWEN_PLUGIN_MANAGER *pm,
  */
 GWENHYWFAR_API
 int GWEN_PluginManager_InsertPath(GWEN_PLUGIN_MANAGER *pm,
-				  const char *callingLib,
-				  const char *path);
+                                  const char *callingLib,
+                                  const char *path);
 
 /** Insert a directory path to lookup plugins from.
  * The plugin manager must already be registered with Gwen (using
@@ -139,13 +139,13 @@ GWENHYWFAR_API
 int GWEN_PluginManager_InsertRelPath(GWEN_PLUGIN_MANAGER *pm,
                                      const char *callingLib,
                                      const char *relpath,
-				     GWEN_PATHMANAGER_RELMODE rm);
+                                     GWEN_PATHMANAGER_RELMODE rm);
 
 
 GWENHYWFAR_API
 int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
-				  const char *callingLib,
-				  const char *path);
+                                  const char *callingLib,
+                                  const char *path);
 
 /** Add a directory path from the windows registry HKEY_LOCAL_MACHINE,
  * to lookup plugins from. On Non-Windows systems, this function does
@@ -172,28 +172,28 @@ int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
 */
 GWENHYWFAR_API
 int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
-					 const char *callingLib,
-					 const char *keypath,
-					 const char *varname);
+    const char *callingLib,
+    const char *keypath,
+    const char *varname);
 
 /** Returns the list of all search paths of the given
  * PluginManager. */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm);
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
-                                           const char *modName);
+    const char *modName);
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
-					       const char *modName,
-					       const char *fname);
+    const char *modName,
+    const char *fname);
 
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_GetPlugin(GWEN_PLUGIN_MANAGER *pm,
-                                          const char *s);
+    const char *s);
 
 /**
  * Add a plugin to this plugin manager. Normally plugins are loaded upon

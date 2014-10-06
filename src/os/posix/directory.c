@@ -50,7 +50,7 @@ static char gwen_directory_posix__homedir[256];
 static int gwen_directory_posix__home_set=0;
 
 
-GWEN_DIRECTORY *GWEN_Directory_new(void){
+GWEN_DIRECTORY *GWEN_Directory_new(void) {
   GWEN_DIRECTORY *d;
 
   GWEN_NEW_OBJECT(GWEN_DIRECTORY, d);
@@ -58,7 +58,7 @@ GWEN_DIRECTORY *GWEN_Directory_new(void){
 }
 
 
-void GWEN_Directory_free(GWEN_DIRECTORY *d){
+void GWEN_Directory_free(GWEN_DIRECTORY *d) {
   if (d) {
     if (d->handle)
       closedir(d->handle);
@@ -68,7 +68,7 @@ void GWEN_Directory_free(GWEN_DIRECTORY *d){
 }
 
 
-int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
+int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n) {
   assert(d);
 
   d->handle=opendir(n);
@@ -81,7 +81,7 @@ int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
 }
 
 
-int GWEN_Directory_Close(GWEN_DIRECTORY *d){
+int GWEN_Directory_Close(GWEN_DIRECTORY *d) {
   int rv;
 
   assert(d);
@@ -93,7 +93,7 @@ int GWEN_Directory_Close(GWEN_DIRECTORY *d){
 
 int GWEN_Directory_Read(GWEN_DIRECTORY *d,
                         char *buffer,
-                        unsigned int len){
+                        unsigned int len) {
   struct dirent *de;
 
   assert(d);
@@ -114,7 +114,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORY *d,
 }
 
 
-int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
+int GWEN_Directory_Rewind(GWEN_DIRECTORY *d) {
   assert(d);
   if (d->handle==0)
     return GWEN_ERROR_INVALID;
@@ -124,7 +124,7 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
 
 
 
-int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
+int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size) {
   if (!gwen_directory_posix__home_set) {
     struct passwd *p;
 
@@ -147,7 +147,7 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
   if (size<strlen(gwen_directory_posix__homedir)+1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (need %d bytes)",
-	      (int)(strlen(gwen_directory_posix__homedir)+1));
+              (int)(strlen(gwen_directory_posix__homedir)+1));
     return -1;
   }
   strcpy(buffer, gwen_directory_posix__homedir);
@@ -158,7 +158,7 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
 
 
-int GWEN_Directory_Create(const char *path){
+int GWEN_Directory_Create(const char *path) {
 
   if (mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error on mkdir(%s): %s",
@@ -170,7 +170,7 @@ int GWEN_Directory_Create(const char *path){
 
 
 
-int GWEN_Directory_CreatePublic(const char *path){
+int GWEN_Directory_CreatePublic(const char *path) {
 
   if (mkdir(path,
             S_IRUSR | S_IWUSR | S_IXUSR
@@ -196,7 +196,7 @@ int GWEN_Directory_CreatePublic(const char *path){
 
 
 
-int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
+int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size) {
 #ifdef OS_DARWIN
 # ifdef ENABLE_LOCAL_INSTALL
   char binarypath[1024];
@@ -206,13 +206,13 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
 
   if (_NSGetExecutablePath(binarypath, &pathsize)==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Unable to determine exe folder (error on _NSGetExecutablePath)");
+              "Unable to determine exe folder (error on _NSGetExecutablePath)");
     return GWEN_ERROR_GENERIC;
   }
   DBG_INFO(GWEN_LOGDOMAIN, "Binary path: [%s]", binarypath);
   if (NULL==realpath(binarypath, realbuffer)) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Unable to determine real exe folder (error on realpath)");
+              "Unable to determine real exe folder (error on realpath)");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -220,7 +220,7 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
   s=strrchr(realbuffer, '/');
   if (s==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Bad path returned by system: [%s]", realbuffer);
+              "Bad path returned by system: [%s]", realbuffer);
     return GWEN_ERROR_GENERIC;
   }
   if (s) {
@@ -230,8 +230,8 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
     s=strrchr(realbuffer, '/');
     if (s) {
       if (strcasecmp(s, "/bin")==0 ||
-	  strcasecmp(s, "/MacOS")==0)
-	*s=0;
+          strcasecmp(s, "/MacOS")==0)
+        *s=0;
     }
   }
 
@@ -263,7 +263,7 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
   exeDir=br_find_prefix(NULL);
   if (exeDir==(char*)NULL) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "Unable to determine exe folder");
+             "Unable to determine exe folder");
     return GWEN_ERROR_GENERIC;
   }
 

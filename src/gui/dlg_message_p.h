@@ -29,8 +29,8 @@ typedef struct GWEN_DLGMSG GWEN_DLGMSG;
 
 
 static int GWENHYWFAR_CB GWEN_DlgMessage_SignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender);
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender);
 
 static void GWENHYWFAR_CB GWEN_DlgMessage_FreeData(void *bp, void *p);
 

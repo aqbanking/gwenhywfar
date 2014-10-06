@@ -1191,7 +1191,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
         GWEN_MDigest_free(md);
         return (int) pos;
       }
-  
+
       /* start extracting */
       pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
                                  GWEN_GUI_PROGRESS_SHOW_ABORT |
@@ -1205,11 +1205,11 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
       while(fsize) {
         uint8_t fbuf[10240];
         uint64_t bs;
-  
+
         bs=fsize;
         if (bs>sizeof(fbuf))
           bs=sizeof(fbuf);
-  
+
         /* read from input */
         rv=GWEN_SyncIo_Read(sr->archiveSio, fbuf, bs);
         if (rv<0) {
@@ -1223,7 +1223,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
           return rv;
         }
         bs=rv;
-  
+
         /* digest data */
         rv=GWEN_MDigest_Update(md, fbuf, bs);
         if (rv<0) {
@@ -1236,7 +1236,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
           GWEN_MDigest_free(md);
           return rv;
         }
-  
+
         if (!checkOnly) {
           /* write to archive */
           rv=GWEN_SyncIo_WriteForced(sio, fbuf, bs);
@@ -1251,7 +1251,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
             return rv;
           }
         }
-  
+
         if (bs>fsize) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Internal error: bs>fsize (%lu>%lu)",
                     (unsigned long int)bs, (unsigned long int) fsize);
@@ -1263,10 +1263,10 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
           GWEN_MDigest_free(md);
           return rv;
         }
-  
+
         bytesDone+=bs;
         fsize-=bs;
-  
+
         /* advance progress bar */
         rv=GWEN_Gui_ProgressAdvance(pid, bytesDone);
         if (rv<0) {
@@ -1279,7 +1279,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
           GWEN_MDigest_free(md);
           return rv;
         }
-  
+
       } /* while */
       GWEN_Gui_ProgressEnd(pid);
     }
@@ -1302,7 +1302,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
     mpos=GWEN_SarFileHeader_GetHashPos(fh);
     if (mpos) {
       GWEN_BUFFER *mbuf;
-  
+
       /* seek to end of file */
       pos=GWEN_SyncIo_File_Seek(sr->archiveSio, mpos, GWEN_SyncIo_File_Whence_Set);
       if (pos<0) {
@@ -1846,8 +1846,8 @@ int GWEN_Sar__UnpackArchive(const char *inFile, const char *where) {
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_Gui_ProgressEnd(pid);
-	GWEN_Sar_CloseArchive(sr, 1);
-	GWEN_Sar_free(sr);
+        GWEN_Sar_CloseArchive(sr, 1);
+        GWEN_Sar_free(sr);
       }
 
       rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
@@ -1951,9 +1951,9 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
                                GWEN_GUI_PROGRESS_ALLOW_EMBED |
                                GWEN_GUI_PROGRESS_SHOW_PROGRESS,
                                I18N("File Operation"),
-			       I18N("Signing archive file"),
-			       GWEN_SarFileHeader_List_GetCount(fhl),
-			       0);
+                               I18N("Signing archive file"),
+                               GWEN_SarFileHeader_List_GetCount(fhl),
+                               0);
     fh=GWEN_SarFileHeader_List_First(fhl);
     while(fh) {
       const char *s;
@@ -1962,45 +1962,45 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
       s=GWEN_SarFileHeader_GetPath(fh);
       hpos=GWEN_SarFileHeader_GetHashPos(fh);
       if (hpos==0) {
-	DBG_WARN(GWEN_LOGDOMAIN, "File %s has no valid hash", s?s:"(unnamed)");
+        DBG_WARN(GWEN_LOGDOMAIN, "File %s has no valid hash", s?s:"(unnamed)");
       }
       else {
-	/* seek to start of hash */
-	pos=GWEN_SyncIo_File_Seek(sr->archiveSio, hpos, GWEN_SyncIo_File_Whence_Set);
-	if (pos<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", (int) pos);
-	  GWEN_Gui_ProgressEnd(pid);
-	  GWEN_MDigest_free(md);
-	  return (int) pos;
-	}
+        /* seek to start of hash */
+        pos=GWEN_SyncIo_File_Seek(sr->archiveSio, hpos, GWEN_SyncIo_File_Whence_Set);
+        if (pos<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", (int) pos);
+          GWEN_Gui_ProgressEnd(pid);
+          GWEN_MDigest_free(md);
+          return (int) pos;
+        }
 
-	/* read hash */
-	rv=GWEN_SyncIo_ReadForced(sr->archiveSio, hashBuf, 20);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Gui_ProgressEnd(pid);
-	  GWEN_MDigest_free(md);
-	  return rv;
-	}
+        /* read hash */
+        rv=GWEN_SyncIo_ReadForced(sr->archiveSio, hashBuf, 20);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Gui_ProgressEnd(pid);
+          GWEN_MDigest_free(md);
+          return rv;
+        }
 
-	/* digest hash */
-	rv=GWEN_MDigest_Update(md, hashBuf, 20);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Gui_ProgressEnd(pid);
-	  GWEN_MDigest_free(md);
-	  return rv;
-	}
+        /* digest hash */
+        rv=GWEN_MDigest_Update(md, hashBuf, 20);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Gui_ProgressEnd(pid);
+          GWEN_MDigest_free(md);
+          return rv;
+        }
 
 
-	GWEN_SarFileHeader_AddFlags(fh, GWEN_SAR_FILEHEADER_FLAGS_SIGNED);
+        GWEN_SarFileHeader_AddFlags(fh, GWEN_SAR_FILEHEADER_FLAGS_SIGNED);
       }
 
       rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_Gui_ProgressEnd(pid);
-	GWEN_MDigest_free(md);
+        GWEN_MDigest_free(md);
         return rv;
       }
 
@@ -2019,9 +2019,9 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
     /* sign hash */
     sbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_CryptMgr_Sign(cm,
-			  GWEN_MDigest_GetDigestPtr(md),
-			  GWEN_MDigest_GetDigestSize(md),
-			  sbuf);
+                          GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md),
+                          sbuf);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(sbuf);
@@ -2034,9 +2034,9 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
     /* create signature TLV */
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_TLV_DirectlyToBuffer(GWEN_SAR_TAG_SIGNATURE, 0x00,
-				 GWEN_Buffer_GetStart(sbuf),
-				 GWEN_Buffer_GetUsedBytes(sbuf),
-				 1, tbuf);
+                                 GWEN_Buffer_GetStart(sbuf),
+                                 GWEN_Buffer_GetUsedBytes(sbuf),
+                                 1, tbuf);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(tbuf);
@@ -2054,11 +2054,11 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
       GWEN_Gui_ProgressEnd(pid);
       return (int) pos;
     }
-  
+
     /* write TLV into archive file */
     rv=GWEN_SyncIo_WriteForced(sr->archiveSio,
-			       (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-			       GWEN_Buffer_GetUsedBytes(tbuf));
+                               (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+                               GWEN_Buffer_GetUsedBytes(tbuf));
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(tbuf);
@@ -2128,9 +2128,9 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
                                GWEN_GUI_PROGRESS_ALLOW_EMBED |
                                GWEN_GUI_PROGRESS_SHOW_PROGRESS,
                                I18N("File Operation"),
-			       I18N("Signing archive file"),
-			       GWEN_SarFileHeader_List_GetCount(fhl),
-			       0);
+                               I18N("Signing archive file"),
+                               GWEN_SarFileHeader_List_GetCount(fhl),
+                               0);
     fh=GWEN_SarFileHeader_List_First(fhl);
     while(fh) {
       const char *s;
@@ -2139,45 +2139,45 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
       s=GWEN_SarFileHeader_GetPath(fh);
       hpos=GWEN_SarFileHeader_GetHashPos(fh);
       if (hpos==0) {
-	DBG_WARN(GWEN_LOGDOMAIN, "File %s has no valid hash", s?s:"(unnamed)");
+        DBG_WARN(GWEN_LOGDOMAIN, "File %s has no valid hash", s?s:"(unnamed)");
       }
       else {
-	/* seek to start of hash */
-	pos=GWEN_SyncIo_File_Seek(sr->archiveSio, hpos, GWEN_SyncIo_File_Whence_Set);
-	if (pos<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", (int) pos);
-	  GWEN_Gui_ProgressEnd(pid);
-	  GWEN_MDigest_free(md);
-	  return (int) pos;
-	}
+        /* seek to start of hash */
+        pos=GWEN_SyncIo_File_Seek(sr->archiveSio, hpos, GWEN_SyncIo_File_Whence_Set);
+        if (pos<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", (int) pos);
+          GWEN_Gui_ProgressEnd(pid);
+          GWEN_MDigest_free(md);
+          return (int) pos;
+        }
 
-	/* read hash */
-	rv=GWEN_SyncIo_ReadForced(sr->archiveSio, hashBuf, 20);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Gui_ProgressEnd(pid);
-	  GWEN_MDigest_free(md);
-	  return rv;
-	}
+        /* read hash */
+        rv=GWEN_SyncIo_ReadForced(sr->archiveSio, hashBuf, 20);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Gui_ProgressEnd(pid);
+          GWEN_MDigest_free(md);
+          return rv;
+        }
 
-	/* digest hash */
-	rv=GWEN_MDigest_Update(md, hashBuf, 20);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Gui_ProgressEnd(pid);
-	  GWEN_MDigest_free(md);
-	  return rv;
-	}
+        /* digest hash */
+        rv=GWEN_MDigest_Update(md, hashBuf, 20);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Gui_ProgressEnd(pid);
+          GWEN_MDigest_free(md);
+          return rv;
+        }
 
 
-	GWEN_SarFileHeader_AddFlags(fh, GWEN_SAR_FILEHEADER_FLAGS_SIGNED);
+        GWEN_SarFileHeader_AddFlags(fh, GWEN_SAR_FILEHEADER_FLAGS_SIGNED);
       }
 
       rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_Gui_ProgressEnd(pid);
-	GWEN_MDigest_free(md);
+        GWEN_MDigest_free(md);
         return rv;
       }
 
@@ -2205,8 +2205,8 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
     /* read signature data */
     sbuf=GWEN_Buffer_new(0, sr->signatureSize, 0, 1);
     rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-			      (uint8_t*) GWEN_Buffer_GetStart(sbuf),
-			      sr->signatureSize);
+                              (uint8_t*) GWEN_Buffer_GetStart(sbuf),
+                              sr->signatureSize);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(sbuf);
@@ -2220,9 +2220,9 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
     /* verify signature */
     hbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_CryptMgr_Verify(cm,
-			    (const uint8_t*) GWEN_Buffer_GetStart(sbuf),
-			    GWEN_Buffer_GetUsedBytes(sbuf),
-			    hbuf);
+                            (const uint8_t*) GWEN_Buffer_GetStart(sbuf),
+                            GWEN_Buffer_GetUsedBytes(sbuf),
+                            hbuf);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(hbuf);
@@ -2389,8 +2389,8 @@ int GWEN_Sar_CheckArchive(const char *inFile) {
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_Gui_ProgressEnd(pid);
-	GWEN_Sar_CloseArchive(sr, 1);
-	GWEN_Sar_free(sr);
+        GWEN_Sar_CloseArchive(sr, 1);
+        GWEN_Sar_free(sr);
       }
 
       rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);

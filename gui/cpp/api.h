@@ -14,16 +14,16 @@
 
 #if defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
 # ifdef BUILDING_CPP_GUI
-   /* building Cpp */
+/* building Cpp */
 #  if GWENHYWFAR_SYS_IS_WINDOWS
-     /* for windows */
+/* for windows */
 #    ifdef __declspec
 #      define CPPGUI_API __declspec (dllexport)
 #    else /* if __declspec */
 #      define CPPGUI_API
 #    endif /* if NOT __declspec */
 #  else
-     /* for non-win32 */
+/* for non-win32 */
 #    ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
 #      define CPPGUI_API __attribute__((visibility("default")))
 #    else
@@ -31,16 +31,16 @@
 #    endif
 #  endif
 # else
-   /* not building Cpp */
+/* not building Cpp */
 #  if GWENHYWFAR_SYS_IS_WINDOWS
-     /* for windows */
+/* for windows */
 #    ifdef __declspec
 #      define CPPGUI_API __declspec (dllimport)
 #    else /* if __declspec */
 #      define CPPGUI_API
 #    endif /* if NOT __declspec */
 #  else
-     /* for non-win32 */
+/* for non-win32 */
 #    define CPPGUI_API
 #  endif
 # endif

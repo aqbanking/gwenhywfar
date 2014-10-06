@@ -13,10 +13,10 @@
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WVLayout_SetIntProperty(GWEN_WIDGET *w,
-				    GWEN_DIALOG_PROPERTY prop,
-				    int index,
-				    int value,
-				    int doSignal) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int value,
+                                    int doSignal) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -26,7 +26,7 @@ int Gtk2Gui_WVLayout_SetIntProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
-  
+
   case GWEN_DialogProperty_Focus:
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
@@ -36,8 +36,8 @@ int Gtk2Gui_WVLayout_SetIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
@@ -46,9 +46,9 @@ int Gtk2Gui_WVLayout_SetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WVLayout_GetIntProperty(GWEN_WIDGET *w,
-				    GWEN_DIALOG_PROPERTY prop,
-				    int index,
-				    int defaultValue) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int defaultValue) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -67,8 +67,8 @@ int Gtk2Gui_WVLayout_GetIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
@@ -76,18 +76,18 @@ int Gtk2Gui_WVLayout_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WVLayout_SetCharProperty(GWEN_WIDGET *w,
-				     GWEN_DIALOG_PROPERTY prop,
-				     int index,
-				     const char *value,
-				     int doSignal) {
+                                     GWEN_DIALOG_PROPERTY prop,
+                                     int index,
+                                     const char *value,
+                                     int doSignal) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
@@ -95,17 +95,17 @@ int Gtk2Gui_WVLayout_SetCharProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 const char* Gtk2Gui_WVLayout_GetCharProperty(GWEN_WIDGET *w,
-					     GWEN_DIALOG_PROPERTY prop,
-					     int index,
-					     const char *defaultValue) {
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
@@ -126,9 +126,9 @@ int Gtk2Gui_WVLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
   cflags=GWEN_Widget_GetFlags(wChild);
 
   gtk_box_pack_start(GTK_BOX(g), gChild,
-		     (cflags & GWEN_WIDGET_FLAGS_FILLY)?TRUE:FALSE,
-		     (cflags & GWEN_WIDGET_FLAGS_FILLY)?TRUE:FALSE,
-		     0);
+                     (cflags & GWEN_WIDGET_FLAGS_FILLY)?TRUE:FALSE,
+                     (cflags & GWEN_WIDGET_FLAGS_FILLY)?TRUE:FALSE,
+                     0);
 
   return 0;
 }
@@ -144,7 +144,7 @@ int Gtk2Gui_WVLayout_Setup(GWEN_WIDGET *w) {
   wParent=GWEN_Widget_Tree_GetParent(w);
 
   g=gtk_vbox_new((flags & GWEN_WIDGET_FLAGS_EQUAL_HEIGHT)?TRUE:FALSE,
-		 GTK2_GUI_DIALOG_DEFAULT_BOX_SPACING);
+                 GTK2_GUI_DIALOG_DEFAULT_BOX_SPACING);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
 

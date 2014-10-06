@@ -75,7 +75,7 @@ void GWEN_Widget_free(GWEN_WIDGET *w) {
       GWEN_INHERIT_FINI(GWEN_WIDGET, w);
       free(w->name);
       for (i=0; i<GWEN_WIDGET_TEXTCOUNT; i++)
-	free(w->text[i]);
+        free(w->text[i]);
       free(w->iconFile);
       free(w->imageFile);
       w->refCount=0;
@@ -412,32 +412,58 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s) {
 
 const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
   switch(t) {
-  case GWEN_Widget_TypeNone:            return "none";
-  case GWEN_Widget_TypeLabel:           return "label";
-  case GWEN_Widget_TypePushButton:      return "pushButton";
-  case GWEN_Widget_TypeLineEdit:        return "lineEdit";
-  case GWEN_Widget_TypeTextEdit:        return "textEdit";
-  case GWEN_Widget_TypeComboBox:        return "comboBox";
-  case GWEN_Widget_TypeRadioButton:     return "radioButton";
-  case GWEN_Widget_TypeProgressBar:     return "progressBar";
-  case GWEN_Widget_TypeGroupBox:        return "groupBox";
-  case GWEN_Widget_TypeHSpacer:         return "hSpacer";
-  case GWEN_Widget_TypeVSpacer:         return "vSpacer";
-  case GWEN_Widget_TypeHLayout:         return "hLayout";
-  case GWEN_Widget_TypeVLayout:         return "vLayout";
-  case GWEN_Widget_TypeGridLayout:      return "gridLayout";
-  case GWEN_Widget_TypeListBox:         return "listBox";
-  case GWEN_Widget_TypeDialog:          return "dialog";
-  case GWEN_Widget_TypeTabBook:         return "tabBook";
-  case GWEN_Widget_TypeTabPage:         return "tabPage";
-  case GWEN_Widget_TypeWidgetStack:     return "widgetStack";
-  case GWEN_Widget_TypeCheckBox:        return "checkBox";
-  case GWEN_Widget_TypeScrollArea:      return "scrollArea";
-  case GWEN_Widget_TypeHLine:           return "hLine";
-  case GWEN_Widget_TypeVLine:           return "vLine";
-  case GWEN_Widget_TypeTextBrowser:     return "textBrowser";
-  case GWEN_Widget_TypeSpinBox:         return "spinBox";
-  case GWEN_Widget_TypeUnknown:         return "unknown";
+  case GWEN_Widget_TypeNone:
+    return "none";
+  case GWEN_Widget_TypeLabel:
+    return "label";
+  case GWEN_Widget_TypePushButton:
+    return "pushButton";
+  case GWEN_Widget_TypeLineEdit:
+    return "lineEdit";
+  case GWEN_Widget_TypeTextEdit:
+    return "textEdit";
+  case GWEN_Widget_TypeComboBox:
+    return "comboBox";
+  case GWEN_Widget_TypeRadioButton:
+    return "radioButton";
+  case GWEN_Widget_TypeProgressBar:
+    return "progressBar";
+  case GWEN_Widget_TypeGroupBox:
+    return "groupBox";
+  case GWEN_Widget_TypeHSpacer:
+    return "hSpacer";
+  case GWEN_Widget_TypeVSpacer:
+    return "vSpacer";
+  case GWEN_Widget_TypeHLayout:
+    return "hLayout";
+  case GWEN_Widget_TypeVLayout:
+    return "vLayout";
+  case GWEN_Widget_TypeGridLayout:
+    return "gridLayout";
+  case GWEN_Widget_TypeListBox:
+    return "listBox";
+  case GWEN_Widget_TypeDialog:
+    return "dialog";
+  case GWEN_Widget_TypeTabBook:
+    return "tabBook";
+  case GWEN_Widget_TypeTabPage:
+    return "tabPage";
+  case GWEN_Widget_TypeWidgetStack:
+    return "widgetStack";
+  case GWEN_Widget_TypeCheckBox:
+    return "checkBox";
+  case GWEN_Widget_TypeScrollArea:
+    return "scrollArea";
+  case GWEN_Widget_TypeHLine:
+    return "hLine";
+  case GWEN_Widget_TypeVLine:
+    return "vLine";
+  case GWEN_Widget_TypeTextBrowser:
+    return "textBrowser";
+  case GWEN_Widget_TypeSpinBox:
+    return "spinBox";
+  case GWEN_Widget_TypeUnknown:
+    return "unknown";
   }
 
   return "unknown";
@@ -445,7 +471,7 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t) {
 
 
 
-uint32_t GWEN_Widget_Flags_fromString(const char *s){
+uint32_t GWEN_Widget_Flags_fromString(const char *s) {
   uint32_t fl=0;
 
   if (s && *s) {
@@ -460,62 +486,62 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s){
 
       /* skip blanks */
       while(*p && isspace(*p))
-	p++;
+        p++;
       /* save start of word */
       wstart=p;
 
       /* find end of word */
       while(*p && !(isspace(*p) || *p==','))
-	p++;
+        p++;
       if (*p)
-	/* set blank or comma to 0, advance pointer */
-	*(p++)=0;
+        /* set blank or comma to 0, advance pointer */
+        *(p++)=0;
 
       /* parse flags */
       if (strcasecmp(wstart, "fillX")==0)
         fl|=GWEN_WIDGET_FLAGS_FILLX;
       else if (strcasecmp(wstart, "fillY")==0)
-	fl|=GWEN_WIDGET_FLAGS_FILLY;
+        fl|=GWEN_WIDGET_FLAGS_FILLY;
       else if (strcasecmp(wstart, "readOnly")==0)
-	  fl|=GWEN_WIDGET_FLAGS_READONLY;
+        fl|=GWEN_WIDGET_FLAGS_READONLY;
       else if (strcasecmp(wstart, "password")==0)
-	  fl|=GWEN_WIDGET_FLAGS_PASSWORD;
+        fl|=GWEN_WIDGET_FLAGS_PASSWORD;
       else if (strcasecmp(wstart, "default")==0)
-	fl|=GWEN_WIDGET_FLAGS_DEFAULT_WIDGET;
+        fl|=GWEN_WIDGET_FLAGS_DEFAULT_WIDGET;
       else if (strcasecmp(wstart, "decorShrinkable")==0)
-	fl|=GWEN_WIDGET_FLAGS_DECOR_SHRINKABLE;
+        fl|=GWEN_WIDGET_FLAGS_DECOR_SHRINKABLE;
       else if (strcasecmp(wstart, "decorStretchable")==0)
-	fl|=GWEN_WIDGET_FLAGS_DECOR_STRETCHABLE;
+        fl|=GWEN_WIDGET_FLAGS_DECOR_STRETCHABLE;
       else if (strcasecmp(wstart, "decorMinimize")==0)
-	fl|=GWEN_WIDGET_FLAGS_DECOR_MINIMIZE;
+        fl|=GWEN_WIDGET_FLAGS_DECOR_MINIMIZE;
       else if (strcasecmp(wstart, "decorMaximize")==0)
-	fl|=GWEN_WIDGET_FLAGS_DECOR_MAXIMIZE;
+        fl|=GWEN_WIDGET_FLAGS_DECOR_MAXIMIZE;
       else if (strcasecmp(wstart, "decorClose")==0)
-	fl|=GWEN_WIDGET_FLAGS_DECOR_CLOSE;
+        fl|=GWEN_WIDGET_FLAGS_DECOR_CLOSE;
       else if (strcasecmp(wstart, "decorMenu")==0)
-	fl|=GWEN_WIDGET_FLAGS_DECOR_MENU;
+        fl|=GWEN_WIDGET_FLAGS_DECOR_MENU;
       else if (strcasecmp(wstart, "fixedWidth")==0)
-	fl|=GWEN_WIDGET_FLAGS_FIXED_WIDTH;
+        fl|=GWEN_WIDGET_FLAGS_FIXED_WIDTH;
       else if (strcasecmp(wstart, "fixedHeight")==0)
-	fl|=GWEN_WIDGET_FLAGS_FIXED_HEIGHT;
+        fl|=GWEN_WIDGET_FLAGS_FIXED_HEIGHT;
       else if (strcasecmp(wstart, "equalWidth")==0)
-	fl|=GWEN_WIDGET_FLAGS_EQUAL_WIDTH;
+        fl|=GWEN_WIDGET_FLAGS_EQUAL_WIDTH;
       else if (strcasecmp(wstart, "equalHeight")==0)
-	fl|=GWEN_WIDGET_FLAGS_EQUAL_HEIGHT;
+        fl|=GWEN_WIDGET_FLAGS_EQUAL_HEIGHT;
       else if (strcasecmp(wstart, "justifyLeft")==0)
-	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_LEFT;
+        fl|=GWEN_WIDGET_FLAGS_JUSTIFY_LEFT;
       else if (strcasecmp(wstart, "justifyRight")==0)
-	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_RIGHT;
+        fl|=GWEN_WIDGET_FLAGS_JUSTIFY_RIGHT;
       else if (strcasecmp(wstart, "justifyTop")==0)
-	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_TOP;
+        fl|=GWEN_WIDGET_FLAGS_JUSTIFY_TOP;
       else if (strcasecmp(wstart, "justifyBottom")==0)
-	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_BOTTOM;
+        fl|=GWEN_WIDGET_FLAGS_JUSTIFY_BOTTOM;
       else if (strcasecmp(wstart, "justifyCenterX")==0)
-	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX;
+        fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX;
       else if (strcasecmp(wstart, "justifyCenterY")==0)
-	fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY;
+        fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY;
       else if (strcasecmp(wstart, "noWordWrap")==0)
-	fl|=GWEN_WIDGET_FLAGS_NO_WORDWRAP;
+        fl|=GWEN_WIDGET_FLAGS_NO_WORDWRAP;
     }
   }
 
@@ -607,7 +633,7 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node) {
 
 
 GWEN_WIDGET_SETINTPROPERTY_FN GWEN_Widget_SetSetIntPropertyFn(GWEN_WIDGET *w,
-							      GWEN_WIDGET_SETINTPROPERTY_FN fn) {
+    GWEN_WIDGET_SETINTPROPERTY_FN fn) {
   GWEN_WIDGET_SETINTPROPERTY_FN of;
 
   assert(w);
@@ -621,7 +647,7 @@ GWEN_WIDGET_SETINTPROPERTY_FN GWEN_Widget_SetSetIntPropertyFn(GWEN_WIDGET *w,
 
 
 GWEN_WIDGET_GETINTPROPERTY_FN GWEN_Widget_SetGetIntPropertyFn(GWEN_WIDGET *w,
-							      GWEN_WIDGET_GETINTPROPERTY_FN fn) {
+    GWEN_WIDGET_GETINTPROPERTY_FN fn) {
   GWEN_WIDGET_GETINTPROPERTY_FN of;
 
   assert(w);
@@ -635,7 +661,7 @@ GWEN_WIDGET_GETINTPROPERTY_FN GWEN_Widget_SetGetIntPropertyFn(GWEN_WIDGET *w,
 
 
 GWEN_WIDGET_SETCHARPROPERTY_FN GWEN_Widget_SetSetCharPropertyFn(GWEN_WIDGET *w,
-								GWEN_WIDGET_SETCHARPROPERTY_FN fn) {
+    GWEN_WIDGET_SETCHARPROPERTY_FN fn) {
   GWEN_WIDGET_SETCHARPROPERTY_FN of;
 
   assert(w);
@@ -649,7 +675,7 @@ GWEN_WIDGET_SETCHARPROPERTY_FN GWEN_Widget_SetSetCharPropertyFn(GWEN_WIDGET *w,
 
 
 GWEN_WIDGET_GETCHARPROPERTY_FN GWEN_Widget_SetGetCharPropertyFn(GWEN_WIDGET *w,
-								GWEN_WIDGET_GETCHARPROPERTY_FN fn) {
+    GWEN_WIDGET_GETCHARPROPERTY_FN fn) {
   GWEN_WIDGET_GETCHARPROPERTY_FN of;
 
   assert(w);
@@ -663,7 +689,7 @@ GWEN_WIDGET_GETCHARPROPERTY_FN GWEN_Widget_SetGetCharPropertyFn(GWEN_WIDGET *w,
 
 
 GWEN_WIDGET_ADDCHILDGUIWIDGET_FN GWEN_Widget_SetAddChildGuiWidgetFn(GWEN_WIDGET *w,
-								    GWEN_WIDGET_ADDCHILDGUIWIDGET_FN fn) {
+    GWEN_WIDGET_ADDCHILDGUIWIDGET_FN fn) {
   GWEN_WIDGET_ADDCHILDGUIWIDGET_FN of;
 
   assert(w);
@@ -677,10 +703,10 @@ GWEN_WIDGET_ADDCHILDGUIWIDGET_FN GWEN_Widget_SetAddChildGuiWidgetFn(GWEN_WIDGET 
 
 
 int GWEN_Widget_SetIntProperty(GWEN_WIDGET *w,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       int value,
-			       int doSignal) {
+                               GWEN_DIALOG_PROPERTY prop,
+                               int index,
+                               int value,
+                               int doSignal) {
   assert(w);
   assert(w->refCount);
 
@@ -693,9 +719,9 @@ int GWEN_Widget_SetIntProperty(GWEN_WIDGET *w,
 
 
 int GWEN_Widget_GetIntProperty(GWEN_WIDGET *w,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       int defaultValue) {
+                               GWEN_DIALOG_PROPERTY prop,
+                               int index,
+                               int defaultValue) {
   assert(w);
   assert(w->refCount);
 
@@ -708,10 +734,10 @@ int GWEN_Widget_GetIntProperty(GWEN_WIDGET *w,
 
 
 int GWEN_Widget_SetCharProperty(GWEN_WIDGET *w,
-				GWEN_DIALOG_PROPERTY prop,
-				int index,
-				const char *value,
-				int doSignal) {
+                                GWEN_DIALOG_PROPERTY prop,
+                                int index,
+                                const char *value,
+                                int doSignal) {
   assert(w);
   assert(w->refCount);
 
@@ -724,9 +750,9 @@ int GWEN_Widget_SetCharProperty(GWEN_WIDGET *w,
 
 
 const char* GWEN_Widget_GetCharProperty(GWEN_WIDGET *w,
-					GWEN_DIALOG_PROPERTY prop,
-					int index,
-					const char *defaultValue) {
+                                        GWEN_DIALOG_PROPERTY prop,
+                                        int index,
+                                        const char *defaultValue) {
   assert(w);
   assert(w->refCount);
 

@@ -31,39 +31,39 @@ GWEN_LIST_FUNCTION_LIB_DEFS(HTML_FONT, HtmlFont, GWENHYWFAR_API)
 #define HTML_FONT_FLAGS_UNDERLINE  0x00000004
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 HTML_FONT *HtmlFont_new(void);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void HtmlFont_free(HTML_FONT *fnt);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void HtmlFont_Attach(HTML_FONT *fnt);
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 const char *HtmlFont_GetFontName(const HTML_FONT *fnt);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void HtmlFont_SetFontName(HTML_FONT *fnt, const char *s);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 int HtmlFont_GetFontSize(const HTML_FONT *fnt);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void HtmlFont_SetFontSize(HTML_FONT *fnt, int i);
 
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 uint32_t HtmlFont_GetFontFlags(const HTML_FONT *fnt);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void HtmlFont_SetFontFlags(HTML_FONT *fnt, uint32_t i);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void HtmlFont_AddFontFlags(HTML_FONT *fnt, uint32_t i);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void HtmlFont_SubFontFlags(HTML_FONT *fnt, uint32_t i);
 
 #ifdef __cplusplus

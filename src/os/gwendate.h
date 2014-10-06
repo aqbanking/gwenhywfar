@@ -77,8 +77,8 @@ GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromGmTime(time_t t);
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl);
 GWENHYWFAR_API int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t,
-						  const char *tmpl,
-						  GWEN_BUFFER *buf);
+    const char *tmpl,
+    GWEN_BUFFER *buf);
 
 
 /**

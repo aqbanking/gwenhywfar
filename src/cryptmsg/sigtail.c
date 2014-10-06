@@ -70,29 +70,29 @@ GWEN_SIGTAIL *GWEN_SigTail_fromBuffer(const uint8_t *p, uint32_t l) {
 
       subtag=GWEN_Tag16_fromBuffer2(sp, sl, 0);
       if (subtag==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Bad sub-tag");
-	GWEN_SigTail_free(st);
-	return NULL;
+        DBG_INFO(GWEN_LOGDOMAIN, "Bad sub-tag");
+        GWEN_SigTail_free(st);
+        return NULL;
       }
       subtagLen=GWEN_Tag16_GetTagLength(subtag);
       subtagPtr=(const char*)GWEN_Tag16_GetTagData(subtag);
 
       if (subtagLen && subtagPtr) {
-	switch(GWEN_Tag16_GetTagType(subtag)) {
-	case GWEN_SIGTAIL_TLV_SIGNATURE:
-	  st->pSignature=(uint8_t*)malloc(subtagLen);
-	  memmove(st->pSignature, subtagPtr, subtagLen);
+        switch(GWEN_Tag16_GetTagType(subtag)) {
+        case GWEN_SIGTAIL_TLV_SIGNATURE:
+          st->pSignature=(uint8_t*)malloc(subtagLen);
+          memmove(st->pSignature, subtagPtr, subtagLen);
           st->lSignature=subtagLen;
-	  break;
+          break;
 
-	case GWEN_SIGTAIL_TLV_SIGNUM:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    st->signatureNumber=i;
-	  break;
+        case GWEN_SIGTAIL_TLV_SIGNUM:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            st->signatureNumber=i;
+          break;
 
-	default:
+        default:
           DBG_WARN(GWEN_LOGDOMAIN, "Unknown tag %02x", GWEN_Tag16_GetTagType(subtag));
-	}
+        }
       }
 
       sp+=GWEN_Tag16_GetTagSize(subtag);
@@ -119,9 +119,9 @@ int GWEN_SigTail_toBuffer(const GWEN_SIGTAIL *st, GWEN_BUFFER *buf, uint8_t tagT
 
   if (st->pSignature && st->lSignature)
     GWEN_Tag16_DirectlyToBuffer(GWEN_SIGTAIL_TLV_SIGNATURE,
-				(const char*)st->pSignature,
-				st->lSignature,
-				buf);
+                                (const char*)st->pSignature,
+                                st->lSignature,
+                                buf);
 
   snprintf(numbuf, sizeof(numbuf), "%d", st->signatureNumber);
   GWEN_Tag16_DirectlyToBuffer(GWEN_SIGTAIL_TLV_SIGNUM, numbuf, -1, buf);

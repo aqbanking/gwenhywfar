@@ -63,44 +63,44 @@ extern "C" {
 #endif
 
 
-  GWEN_LIST_FUNCTION_DEFS(GWEN_MEMORY__OBJECT_STRING,
-                          GWEN_Memory__Object_String)
-  /* No trailing semicolon here because this is a macro call */
+GWEN_LIST_FUNCTION_DEFS(GWEN_MEMORY__OBJECT_STRING,
+                        GWEN_Memory__Object_String)
+/* No trailing semicolon here because this is a macro call */
 
 
-  struct GWEN_MEMORY__OBJECT_STRING {
-    GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT_STRING)
-    char *text;
-  };
+struct GWEN_MEMORY__OBJECT_STRING {
+  GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT_STRING)
+  char *text;
+};
 
-  GWEN_MEMORY__OBJECT_STRING*
-    GWEN_Memory__Object_String_new(const char *s);
+GWEN_MEMORY__OBJECT_STRING*
+GWEN_Memory__Object_String_new(const char *s);
 
-  void GWEN_Memory__Object_String_free(GWEN_MEMORY__OBJECT_STRING *s);
-
-
+void GWEN_Memory__Object_String_free(GWEN_MEMORY__OBJECT_STRING *s);
 
 
 
-  GWEN_LIST_FUNCTION_DEFS(GWEN_MEMORY__OBJECT, GWEN_Memory__Object)
 
-  struct GWEN_MEMORY__OBJECT {
-    GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT)
 
-    void *object;
-    size_t size;
-    char *typeName;
-    char *locationNew;
-    GWEN_MEMORY__OBJECT_STRING_LIST *locationsFree;
-    GWEN_MEMORY__OBJECT_STRING_LIST *locationsAttach;
-    int usage;
-  };
+GWEN_LIST_FUNCTION_DEFS(GWEN_MEMORY__OBJECT, GWEN_Memory__Object)
 
-  GWEN_MEMORY__OBJECT *GWEN_Memory__Object_new(void *ptr,
-                                               size_t size,
-                                               const char *typeName,
-                                               const char *location);
-  void GWEN_Memory__Object_free(GWEN_MEMORY__OBJECT *o);
+struct GWEN_MEMORY__OBJECT {
+  GWEN_LIST_ELEMENT(GWEN_MEMORY__OBJECT)
+
+  void *object;
+  size_t size;
+  char *typeName;
+  char *locationNew;
+  GWEN_MEMORY__OBJECT_STRING_LIST *locationsFree;
+  GWEN_MEMORY__OBJECT_STRING_LIST *locationsAttach;
+  int usage;
+};
+
+GWEN_MEMORY__OBJECT *GWEN_Memory__Object_new(void *ptr,
+    size_t size,
+    const char *typeName,
+    const char *location);
+void GWEN_Memory__Object_free(GWEN_MEMORY__OBJECT *o);
 
 
 
@@ -125,21 +125,21 @@ extern "C" {
 #define GWEN_MEMORY_COLLECT_AFTER    (1024*1024)
 
 
-  typedef struct GWEN_MEMORY_TABLE GWEN_MEMORY_TABLE;
-  struct GWEN_MEMORY_TABLE {
-    GWEN_MEMORY_TABLE *next;
-    unsigned char data[GWEN_MEMORY_TABLE_LEN];
-  };
+typedef struct GWEN_MEMORY_TABLE GWEN_MEMORY_TABLE;
+struct GWEN_MEMORY_TABLE {
+  GWEN_MEMORY_TABLE *next;
+  unsigned char data[GWEN_MEMORY_TABLE_LEN];
+};
 
-  GWEN_MEMORY_TABLE *GWEN_Memory_Table_new();
-  void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt);
+GWEN_MEMORY_TABLE *GWEN_Memory_Table_new();
+void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt);
 
-  void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head,
-				GWEN_MEMORY_TABLE *mt);
+void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head,
+                              GWEN_MEMORY_TABLE *mt);
 
 
-  void GWEN_Memory_Table__Dump(GWEN_MEMORY_TABLE *mt);
-  void GWEN_Memory_Table__Collect(GWEN_MEMORY_TABLE *mt);
+void GWEN_Memory_Table__Dump(GWEN_MEMORY_TABLE *mt);
+void GWEN_Memory_Table__Collect(GWEN_MEMORY_TABLE *mt);
 
 
 #ifdef __cplusplus

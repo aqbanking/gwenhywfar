@@ -69,27 +69,27 @@ int test2(int argc, char **argv) {
 
 #if 0
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_PROGRESS | GWEN_GUI_PROGRESS_KEEP_OPEN,
-			     "Progress-Title",
-			     "This is an example progress with 2 steps"
-			     "<html>This is an <strong>example</strong> progress with 2 steps</html>",
-			     2,
-			     0);
+                             "Progress-Title",
+                             "This is an example progress with 2 steps"
+                             "<html>This is an <strong>example</strong> progress with 2 steps</html>",
+                             2,
+                             0);
 #else
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_PROGRESS | GWEN_GUI_PROGRESS_KEEP_OPEN,
-			     "Progress-Title",
-			     "This is an <b>example</b> progress with 2 steps",
-			     2,
-			     0);
+                             "Progress-Title",
+                             "This is an <b>example</b> progress with 2 steps",
+                             2,
+                             0);
 #endif
 
   GWEN_Gui_ProgressAdvance(pid, 1);
   rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO,
-			 "MessageBox-Title",
-			 "This message box should appear in the context of the open progress dialog",
-			 "Button1",
-			 "Button2",
-			 "Button3",
-			 pid);
+                         "MessageBox-Title",
+                         "This message box should appear in the context of the open progress dialog",
+                         "Button1",
+                         "Button2",
+                         "Button3",
+                         pid);
   GWEN_Gui_ProgressAdvance(pid, 2);
   GWEN_Gui_ProgressEnd(pid);
 
@@ -111,9 +111,9 @@ int test3(int argc, char **argv) {
   GWEN_Gui_SetGui(gui->getCInterface());
 
   id1=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN,
-			     "Progress-Title",
+                             GWEN_GUI_PROGRESS_SHOW_ABORT |
+                             GWEN_GUI_PROGRESS_KEEP_OPEN,
+                             "Progress-Title",
                              "<html>"
                              "<p><b>This</b> is an example <i>text</i>..</p>"
                              "<p>As you can see <font color=red>colors</font> can "
@@ -128,18 +128,18 @@ int test3(int argc, char **argv) {
     GWEN_Gui_ProgressLog(id1, GWEN_LoggerLevel_Notice, numbuf);
     id2=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
                                GWEN_GUI_PROGRESS_DELAY |
-			       GWEN_GUI_PROGRESS_SHOW_ABORT,
-			       "2nd progress",
-			       "Starting 2nd progress...",
-			       10,
-			       id1);
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               "2nd progress",
+                               "Starting 2nd progress...",
+                               10,
+                               id1);
     for (i2=1; i2<=10; i2++) {
       sleep(1);
       fprintf(stderr, "Advancing %d/%d\n", (int)i1, (int)i2);
       rv=GWEN_Gui_ProgressAdvance(id2, i2);
       if (rv==GWEN_ERROR_USER_ABORTED) {
-	fprintf(stderr, "Aborted by user (2)\n");
-	break;
+        fprintf(stderr, "Aborted by user (2)\n");
+        break;
       }
     }
     GWEN_Gui_ProgressEnd(id2);

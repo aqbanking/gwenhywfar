@@ -13,10 +13,10 @@
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
-				       GWEN_DIALOG_PROPERTY prop,
-				       int index,
-				       int value,
-				       int doSignal) {
+                                     GWEN_DIALOG_PROPERTY prop,
+                                     int index,
+                                     int value,
+                                     int doSignal) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -26,7 +26,7 @@ int Gtk2Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
-  
+
   case GWEN_DialogProperty_Focus:
     gtk_widget_grab_focus(GTK_WIDGET(g));
     return 0;
@@ -41,8 +41,8 @@ int Gtk2Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
@@ -51,9 +51,9 @@ int Gtk2Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
-				       GWEN_DIALOG_PROPERTY prop,
-				       int index,
-				       int defaultValue) {
+                                     GWEN_DIALOG_PROPERTY prop,
+                                     int index,
+                                     int defaultValue) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -77,8 +77,8 @@ int Gtk2Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
@@ -86,10 +86,10 @@ int Gtk2Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
-					GWEN_DIALOG_PROPERTY prop,
-					int index,
-					const char *value,
-					int doSignal) {
+                                      GWEN_DIALOG_PROPERTY prop,
+                                      int index,
+                                      const char *value,
+                                      int doSignal) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -104,8 +104,8 @@ int Gtk2Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return GWEN_ERROR_INVALID;
 }
 
@@ -113,9 +113,9 @@ int Gtk2Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 const char* Gtk2Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
-						GWEN_DIALOG_PROPERTY prop,
-						int index,
-						const char *defaultValue) {
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -129,25 +129,25 @@ const char* Gtk2Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
   }
 
   DBG_WARN(GWEN_LOGDOMAIN,
-	   "Function is not appropriate for this type of widget (%s)",
-	   GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+           "Function is not appropriate for this type of widget (%s)",
+           GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
   return defaultValue;
 }
 
 
 
 static void Gtk2Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
-						   guint arg1,
-						   guint arg2,
-						   gpointer data) {
+    guint arg1,
+    guint arg2,
+    gpointer data) {
   GWEN_WIDGET *w;
   int rv;
 
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			    GWEN_DialogEvent_TypeValueChanged,
-			    GWEN_Widget_GetName(w));
+                            GWEN_DialogEvent_TypeValueChanged,
+                            GWEN_Widget_GetName(w));
   if (rv==GWEN_DialogEvent_ResultAccept)
     Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
   else if (rv==GWEN_DialogEvent_ResultReject)
@@ -157,18 +157,18 @@ static void Gtk2Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
 
 
 static void Gtk2Gui_WLineEdit_Inserted_text_handler(GtkEntryBuffer *entrybuffer,
-						    guint arg1,
-						    gchar *arg2,
-						    guint arg3,
-						    gpointer data) {
+    guint arg1,
+    gchar *arg2,
+    guint arg3,
+    gpointer data) {
   GWEN_WIDGET *w;
   int rv;
 
   w=data;
   assert(w);
   rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-			    GWEN_DialogEvent_TypeValueChanged,
-			    GWEN_Widget_GetName(w));
+                            GWEN_DialogEvent_TypeValueChanged,
+                            GWEN_Widget_GetName(w));
   if (rv==GWEN_DialogEvent_ResultAccept)
     Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
   else if (rv==GWEN_DialogEvent_ResultReject)
@@ -206,14 +206,14 @@ int Gtk2Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLineEdit_GetCharProperty);
 
   deleted_text_handler_id=g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
-					   "deleted-text",
-					   G_CALLBACK (Gtk2Gui_WLineEdit_Deleted_text_handler),
-					   w);
+                          "deleted-text",
+                          G_CALLBACK (Gtk2Gui_WLineEdit_Deleted_text_handler),
+                          w);
 
   inserted_text_handler_id=g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
-					    "inserted-text",
-					    G_CALLBACK (Gtk2Gui_WLineEdit_Inserted_text_handler),
-					    w);
+                           "inserted-text",
+                           G_CALLBACK (Gtk2Gui_WLineEdit_Inserted_text_handler),
+                           w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

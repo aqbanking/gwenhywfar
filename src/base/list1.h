@@ -137,7 +137,7 @@ extern "C" {
  * aware that this can cause problems once one of your users tries
  * to compile this with a different compiler. Therefore these code
  * lines should end directly with the closing parentheses.</p>
- * 
+ *
  * <p>
  * The list management code assumes that there is a function called
  * (in this example) @b MyStruct_free() (or generally: TYPEPREFIX_free).
@@ -289,7 +289,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
   decl int pr##_List_Add(t *element, t##_LIST *list); \
   decl int pr##_List_Insert(t *element, t##_LIST *list); \
   decl int pr##_List_Del(t *element); \
-
+ 
 
 #define GWEN_LIST_FUNCTION_DEFS_CONST(t, pr) \
   GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
@@ -359,11 +359,11 @@ GWEN_LIST1_ELEMENT *_list1_element;
   GWEN_LIST_FUNCTION_LIB_DEFS(t, pr, GWEN_DUMMY_EMPTY_ARG)
 
 
-  /**
-   * Use this inside your code files (*.c).
-   * Actually implements the functions for which the prototypes have been
-   * defined via @ref GWEN_LIST_FUNCTION_DEFS.
-   */
+/**
+ * Use this inside your code files (*.c).
+ * Actually implements the functions for which the prototypes have been
+ * defined via @ref GWEN_LIST_FUNCTION_DEFS.
+ */
 #define GWEN_LIST_FUNCTIONS(t, pr) \
   \
   int pr##_List_Add(t *element, t##_LIST *l) { \

@@ -49,8 +49,8 @@ public:
     assert(qtDialog);
 
     qw->connect(qw, SIGNAL(valueChanged(int)),
-		qtDialog->getMainWindow(),
-		SLOT(slotValueChanged()));
+                qtDialog->getMainWindow(),
+                SLOT(slotValueChanged()));
 
 
     if (wParent)
@@ -61,9 +61,9 @@ public:
 
 
   int setIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int value,
-		     int doSignal) {
+                     int index,
+                     int value,
+                     int doSignal) {
     QSpinBox *qw;
 
     qw=(QSpinBox*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
@@ -90,8 +90,8 @@ public:
 
 
   int getIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int defaultValue) {
+                     int index,
+                     int defaultValue) {
     QSpinBox *qw;
 
     qw=(QSpinBox*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);

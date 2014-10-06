@@ -254,7 +254,7 @@ void GWEN_TreeElement_free(GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el){
+void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el) {
   if (el->prevElement)
     return el->prevElement->data;
   return 0;
@@ -262,7 +262,7 @@ void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el){
 
 
 
-void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el){
+void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el) {
   if (el->nextElement)
     return el->nextElement->data;
   return 0;
@@ -279,7 +279,7 @@ void *GWEN_TreeElement_GetBelow(const GWEN_TREE_ELEMENT *el) {
     /* look for a parent which has a right neighbour */
     while(el && el->parent) {
       if (el->parent->nextElement)                  /* look right of parent */
-	return el->parent->nextElement->data;
+        return el->parent->nextElement->data;
       /* parent has no right neighbour, consult its parent */
       el=el->parent;
     }
@@ -290,7 +290,7 @@ void *GWEN_TreeElement_GetBelow(const GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el){
+void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el) {
   if (el->firstChild)
     return el->firstChild->data;
   return NULL;
@@ -298,7 +298,7 @@ void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el){
 
 
 
-void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el){
+void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el) {
   if (el->lastChild)
     return el->lastChild->data;
   return NULL;
@@ -314,7 +314,7 @@ void *GWEN_TreeElement_GetParent(const GWEN_TREE_ELEMENT *el) {
 
 
 
-uint32_t GWEN_TreeElement_GetChildrenCount(const GWEN_TREE_ELEMENT *el){
+uint32_t GWEN_TreeElement_GetChildrenCount(const GWEN_TREE_ELEMENT *el) {
   assert(el);
   return el->count;
 }

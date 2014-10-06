@@ -39,7 +39,7 @@
 
 
 
-GWEN_DIRECTORY *GWEN_Directory_new(void){
+GWEN_DIRECTORY *GWEN_Directory_new(void) {
   GWEN_DIRECTORY *d;
 
   GWEN_NEW_OBJECT(GWEN_DIRECTORY, d);
@@ -48,7 +48,7 @@ GWEN_DIRECTORY *GWEN_Directory_new(void){
 
 
 
-void GWEN_Directory_free(GWEN_DIRECTORY *d){
+void GWEN_Directory_free(GWEN_DIRECTORY *d) {
   if (d) {
     if (d->handle!=INVALID_HANDLE_VALUE)
       FindClose(d->handle);
@@ -59,7 +59,7 @@ void GWEN_Directory_free(GWEN_DIRECTORY *d){
 
 
 
-int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
+int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n) {
   assert(d);
   assert(n);
   if ((strlen(n)+5)>=sizeof(d->pattern)) {
@@ -74,7 +74,7 @@ int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n){
 
 
 
-int GWEN_Directory_Close(GWEN_DIRECTORY *d){
+int GWEN_Directory_Close(GWEN_DIRECTORY *d) {
   int rv;
 
   rv=0;
@@ -87,8 +87,8 @@ int GWEN_Directory_Close(GWEN_DIRECTORY *d){
 
 
 int GWEN_Directory_Read(GWEN_DIRECTORY *d,
-			char *buffer,
-			unsigned int len){
+                        char *buffer,
+                        unsigned int len) {
   WIN32_FIND_DATA wd;
 
   assert(d);
@@ -122,7 +122,7 @@ int GWEN_Directory_Read(GWEN_DIRECTORY *d,
 
 
 
-int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
+int GWEN_Directory_Rewind(GWEN_DIRECTORY *d) {
   WIN32_FIND_DATA wd;
 
   assert(d);
@@ -141,7 +141,7 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORY *d){
 
 
 
-int GWEN_Directory_Create(const char *path){
+int GWEN_Directory_Create(const char *path) {
 
   if (_mkdir(path)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error on _mkdir(%s): %s",
@@ -153,22 +153,21 @@ int GWEN_Directory_Create(const char *path){
 
 
 
-int GWEN_Directory_CreatePublic(const char *path){
+int GWEN_Directory_CreatePublic(const char *path) {
   /* same as above, since on WIN32 all folders are public (gulp) */
   return GWEN_Directory_Create(path);
 }
 
 
 /** Returns TRUE (nonzero) if the given path is an absolute one. */
-static int path_is_absolute(const char *path)
-{
-  return path && 
-    ( (path[0] == '\\') ||
-      (path[0] == '/') ||
-      ( (strlen(path) > 2) && (path[1] == ':') ) );
+static int path_is_absolute(const char *path) {
+  return path &&
+         ( (path[0] == '\\') ||
+           (path[0] == '/') ||
+           ( (strlen(path) > 2) && (path[1] == ':') ) );
 }
 
-int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
+int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size) {
   int rv;
   char *home_dir;
 
@@ -183,45 +182,40 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
   home_dir = getenv ("HOME");
 
   /* Only believe HOME if it is an absolute path and exists */
-  if (home_dir)
-    {
-      if (!(path_is_absolute (home_dir)
-	    /* && g_file_test (home_dir, G_FILE_TEST_IS_DIR) */ 
-	    ))
-	{
-	  home_dir = NULL;
-	}
+  if (home_dir) {
+    if (!(path_is_absolute (home_dir)
+          /* && g_file_test (home_dir, G_FILE_TEST_IS_DIR) */
+         )) {
+      home_dir = NULL;
     }
-  
-  if (!home_dir)
-    {
-      /* USERPROFILE is probably the closest equivalent to $HOME? */
-      if (getenv ("USERPROFILE") != NULL)
-	home_dir = getenv ("USERPROFILE");
-    }
+  }
+
+  if (!home_dir) {
+    /* USERPROFILE is probably the closest equivalent to $HOME? */
+    if (getenv ("USERPROFILE") != NULL)
+      home_dir = getenv ("USERPROFILE");
+  }
 
   /* Did we find any home_dir? Copy it to buffer. */
-  if (home_dir)
-    {
-      char *p;
+  if (home_dir) {
+    char *p;
 
-      rv = strlen (home_dir);
-      strncpy (buffer, home_dir, size);
-      
-      /* In case HOME is Unix-style (it happens), convert it to
-       * Windows style.
-       */
-      while ((p = strchr (buffer, '/')) != NULL)
-	*p = '\\';
+    rv = strlen (home_dir);
+    strncpy (buffer, home_dir, size);
+
+    /* In case HOME is Unix-style (it happens), convert it to
+     * Windows style.
+     */
+    while ((p = strchr (buffer, '/')) != NULL)
+      *p = '\\';
+  }
+  else {
+    rv=GetWindowsDirectory(buffer, size);
+    if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Error on GetWindowsDirectory");
+      return -1;
     }
-  else
-    {
-      rv=GetWindowsDirectory(buffer, size);
-      if (rv==0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Error on GetWindowsDirectory");
-	return -1;
-      }
-    }
+  }
 
   if (rv>=size) {
     DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
@@ -232,7 +226,7 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size){
 
 
 
-int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
+int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size) {
   DWORD rv;
   char *p;
   char cwd[256];
@@ -241,8 +235,8 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
   rv=GetModuleFileName(NULL, cwd, sizeof(cwd)-1);
   if (rv==0) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "GetModuleFileName(): %d",
-	      (int)GetLastError());
+              "GetModuleFileName(): %d",
+              (int)GetLastError());
     return GWEN_ERROR_IO;
   }
 
@@ -262,7 +256,7 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size){
        here. */
     if ((strcmp(p+1, "bin") == 0) || (strcmp(p+1, "lib") == 0)) {
       /* The path ends in "bin" or "lib", hence we strip that suffix
-	 so that we now only have the prefix. */
+      so that we now only have the prefix. */
       *p=0;
     }
   }

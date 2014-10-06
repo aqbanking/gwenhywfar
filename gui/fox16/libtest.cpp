@@ -96,9 +96,9 @@ int test2(int argc, char **argv) {
   GWEN_Gui_SetGui(gui->getCInterface());
 
   id1=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN,
-			     "Progress-Title",
+                             GWEN_GUI_PROGRESS_SHOW_ABORT |
+                             GWEN_GUI_PROGRESS_KEEP_OPEN,
+                             "Progress-Title",
                              "<html>"
                              "<p><b>This</b> is an example <i>text</i>..</p>"
                              "<p>As you can see <font color=red>colors</font> can "
@@ -108,22 +108,22 @@ int test2(int argc, char **argv) {
                              0);
   for (i1=1; i1<=15; i1++) {
     GWEN_Gui_ProgressLog2(id1, GWEN_LoggerLevel_Notice,
-			  "Step %d: This is a another step in the test of progress widgets",
+                          "Step %d: This is a another step in the test of progress widgets",
                           (int) i1);
     id2=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
                                GWEN_GUI_PROGRESS_DELAY |
-			       GWEN_GUI_PROGRESS_SHOW_ABORT,
-			       "2nd progress",
-			       "Starting 2nd progress...",
-			       5,
-			       id1);
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               "2nd progress",
+                               "Starting 2nd progress...",
+                               5,
+                               id1);
     for (i2=1; i2<=3; i2++) {
       sleep(1);
       fprintf(stderr, "Advancing %d/%d\n", (int)i1, (int)i2);
       rv=GWEN_Gui_ProgressAdvance(id2, i2);
       if (rv==GWEN_ERROR_USER_ABORTED) {
-	fprintf(stderr, "Aborted by user\n");
-	break;
+        fprintf(stderr, "Aborted by user\n");
+        break;
       }
     }
     GWEN_Gui_ProgressEnd(id2);
@@ -212,9 +212,9 @@ int test4(int argc, char **argv) {
   GWEN_Gui_SetGui(gui->getCInterface());
 
   id1=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN,
-			     "Progress-Title",
+                             GWEN_GUI_PROGRESS_SHOW_ABORT |
+                             GWEN_GUI_PROGRESS_KEEP_OPEN,
+                             "Progress-Title",
                              "<html>"
                              "<p><b>Test</b> f\xc3\xbcr Umlaute.</p>"
                              "</html>",
@@ -227,18 +227,18 @@ int test4(int argc, char **argv) {
     GWEN_Gui_ProgressLog(id1, GWEN_LoggerLevel_Notice, numbuf);
     id2=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
                                GWEN_GUI_PROGRESS_DELAY |
-			       GWEN_GUI_PROGRESS_SHOW_ABORT,
-			       "2nd progress",
-			       "Starting 2nd progress...",
-			       10,
-			       id1);
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               "2nd progress",
+                               "Starting 2nd progress...",
+                               10,
+                               id1);
     for (i2=1; i2<=10; i2++) {
       sleep(1);
       fprintf(stderr, "Advancing %d/%d\n", (int)i1, (int)i2);
       rv=GWEN_Gui_ProgressAdvance(id2, i2);
       if (rv==GWEN_ERROR_USER_ABORTED) {
-	fprintf(stderr, "Aborted by user\n");
-	break;
+        fprintf(stderr, "Aborted by user\n");
+        break;
       }
     }
     GWEN_Gui_ProgressEnd(id2);
@@ -297,8 +297,8 @@ int test5(int argc, char **argv) {
   vf=new FXVerticalFrame(dbox, LAYOUT_FILL_X | LAYOUT_FILL_Y,
                          0, 0, 0, 0, 1, 1, 1, 1);
   label=new FOX16_HtmlText(vf, FXString(testString),
-			   LAYOUT_FILL_X|LAYOUT_FILL_Y |
-			   HSCROLLING_OFF | VSCROLLER_ALWAYS);
+                           LAYOUT_FILL_X|LAYOUT_FILL_Y |
+                           HSCROLLING_OFF | VSCROLLER_ALWAYS);
   new FXSpring(vf, LAYOUT_FILL_X | LAYOUT_FILL_Y);
   new FXLabel(vf, "Normal Testlabel");
 
@@ -329,9 +329,9 @@ int test6(int argc, char **argv) {
   GWEN_Gui_SetGui(gui->getCInterface());
 
   id1=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN,
-			     "Progress-Title",
+                             GWEN_GUI_PROGRESS_SHOW_ABORT |
+                             GWEN_GUI_PROGRESS_KEEP_OPEN,
+                             "Progress-Title",
                              "<html>"
                              "<p><b>Test</b> f\xc3\xbcr Umlaute.</p>"
                              "</html>",
@@ -344,19 +344,19 @@ int test6(int argc, char **argv) {
     GWEN_Gui_ProgressLog(id1, GWEN_LoggerLevel_Notice, numbuf);
     id2=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_SHOW_LOG |
                                GWEN_GUI_PROGRESS_DELAY |
-			       GWEN_GUI_PROGRESS_SHOW_ABORT,
-			       "2nd progress",
-			       "Starting 2nd progress...",
-			       5,
-			       id1);
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               "2nd progress",
+                               "Starting 2nd progress...",
+                               5,
+                               id1);
     for (i2=1; i2<=5; i2++) {
       sleep(1);
       fprintf(stderr, "Advancing %d/%d\n", (int)i1, (int)i2);
       GWEN_Gui_ProgressLog(id2, GWEN_LoggerLevel_Notice, "Advancing...");
       rv=GWEN_Gui_ProgressAdvance(id2, i2);
       if (rv==GWEN_ERROR_USER_ABORTED) {
-	fprintf(stderr, "Aborted by user\n");
-	break;
+        fprintf(stderr, "Aborted by user\n");
+        break;
       }
     }
     GWEN_Gui_ProgressEnd(id2);
@@ -388,12 +388,12 @@ int test7(int argc, char **argv) {
   GWEN_Gui_SetGui(gui->getCInterface());
 
   GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_SHOW,
-		    "This is the Title",
-		    "<html>This is the text.</html>This is ASCII",
-		    buffer,
-		    1,
-		    sizeof(buffer)-1,
-		    0);
+                    "This is the Title",
+                    "<html>This is the text.</html>This is ASCII",
+                    buffer,
+                    1,
+                    sizeof(buffer)-1,
+                    0);
 
 
   return 0;
@@ -543,9 +543,9 @@ int test11(int argc, char **argv) {
                     "This is quite a long HTML text. This is the second sentence, which is a bit longer "
                     "than the first one.\nIn any case this sentence should begin on its own line.",
                     buffer,
-		    1,
-		    sizeof(buffer)-1,
-		    0);
+                    1,
+                    sizeof(buffer)-1,
+                    0);
 
 
   return 0;
@@ -570,9 +570,9 @@ int test12(int argc, char **argv) {
                     "<html><b>This</b> is quite a long HTML text. This is the second sentence, which is a bit longer "
                     "than the first one.<br>In any case this sentence should begin on its own line.</html>",
                     buffer,
-		    1,
-		    sizeof(buffer)-1,
-		    0);
+                    1,
+                    sizeof(buffer)-1,
+                    0);
 
 
   return 0;

@@ -141,8 +141,8 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
       if (sscanf(buf, "%d", &port)!=1) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Bad port (%s) in url \"%s\"", buf, str);
         free(buf);
-	GWEN_Url_free(url);
-	return 0;
+        GWEN_Url_free(url);
+        return 0;
       }
       url->port=port;
       free(buf);
@@ -252,11 +252,11 @@ int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
       dbV=GWEN_DB_GetFirstVar(url->vars);
       while(dbV) {
         const char *s;
-  
+
         s=GWEN_DB_VariableName(dbV);
         if (s) {
           GWEN_DB_NODE *dbVal;
-  
+
           GWEN_Buffer_AppendString(buf, "?");
           GWEN_Buffer_AppendString(buf, s);
           dbVal=GWEN_DB_GetFirstValue(dbV);
@@ -392,11 +392,11 @@ int GWEN_Url_toCommandString(const GWEN_URL *url, GWEN_BUFFER *buf) {
     dbV=GWEN_DB_GetFirstVar(url->vars);
     while(dbV) {
       const char *s;
-  
+
       s=GWEN_DB_VariableName(dbV);
       if (s) {
         GWEN_DB_NODE *dbVal;
-  
+
         GWEN_Buffer_AppendString(buf, "?");
         GWEN_Buffer_AppendString(buf, s);
         dbVal=GWEN_DB_GetFirstValue(dbV);

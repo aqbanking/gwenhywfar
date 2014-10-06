@@ -57,7 +57,7 @@ GWEN_LIST2_FUNCTIONS(GWEN_FSLOCK, GWEN_FSLock)
 
 
 
-GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
+GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t) {
   GWEN_FSLOCK *fl;
   GWEN_BUFFER *nbuf;
   const char *s;
@@ -69,8 +69,12 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
   fl->entryName=strdup(fname);
 
   switch(t) {
-  case GWEN_FSLock_TypeFile: s=".lck"; break;
-  case GWEN_FSLock_TypeDir:  s="/.dir.lck"; break;
+  case GWEN_FSLock_TypeFile:
+    s=".lck";
+    break;
+  case GWEN_FSLock_TypeDir:
+    s="/.dir.lck";
+    break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unknown log type %d", t);
     abort();
@@ -94,13 +98,13 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t){
 
 
 
-void GWEN_FSLock_free(GWEN_FSLOCK *fl){
+void GWEN_FSLock_free(GWEN_FSLOCK *fl) {
   if (fl) {
     assert(fl->usage);
     if (fl->usage==1) {
       if (fl->lockCount) {
-	DBG_WARN(GWEN_LOGDOMAIN,
-		 "File \"%s\" still locked", fl->entryName);
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "File \"%s\" still locked", fl->entryName);
       }
       free(fl->entryName);
       free(fl->baseLockFilename);
@@ -117,7 +121,7 @@ void GWEN_FSLock_free(GWEN_FSLOCK *fl){
 
 
 
-void GWEN_FSLock_Attach(GWEN_FSLOCK *fl){
+void GWEN_FSLock_Attach(GWEN_FSLOCK *fl) {
   assert(fl);
   assert(fl->usage);
   fl->usage++;
@@ -125,7 +129,7 @@ void GWEN_FSLock_Attach(GWEN_FSLOCK *fl){
 
 
 
-GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
+GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl) {
   assert(fl);
 
   if (fl->lockCount==0) {
@@ -147,7 +151,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
     /* get the link count of the new unique file for later comparison */
     if (stat(fl->uniqueLockFilename, &st)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
-		fl->uniqueLockFilename, strerror(errno));
+                fl->uniqueLockFilename, strerror(errno));
       remove(fl->uniqueLockFilename);
       return GWEN_FSLock_ResultError;
     }
@@ -161,45 +165,45 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
       lnerr=errno;
 
       DBG_INFO(GWEN_LOGDOMAIN, "link(%s, %s): %s",
-	       fl->uniqueLockFilename,
-	       fl->baseLockFilename,
-	       strerror(errno));
+               fl->uniqueLockFilename,
+               fl->baseLockFilename,
+               strerror(errno));
       if (lnerr==EPERM) {
-	int fd;
+        int fd;
 
-	/* link() is not supported on the destination filesystem, try it the
-	 * traditional way. This should be ok, since the only FS which does
-	 * not handle the O_EXCL flag properly is NFS, and NFS would not
-	 * return EPERM (because it generally supports link()).
-	 * So for NFS file systems we would not reach this point.
-	 */
-	fd=open(fl->baseLockFilename,
-		O_CREAT | O_EXCL | O_TRUNC | O_RDWR,
-		S_IRUSR | S_IWUSR);
-	if (fd==-1) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
-		   fl->entryName);
-	  remove(fl->uniqueLockFilename);
-	  return GWEN_FSLock_ResultBusy;
-	}
-	close(fd);
+        /* link() is not supported on the destination filesystem, try it the
+         * traditional way. This should be ok, since the only FS which does
+         * not handle the O_EXCL flag properly is NFS, and NFS would not
+         * return EPERM (because it generally supports link()).
+         * So for NFS file systems we would not reach this point.
+         */
+        fd=open(fl->baseLockFilename,
+                O_CREAT | O_EXCL | O_TRUNC | O_RDWR,
+                S_IRUSR | S_IWUSR);
+        if (fd==-1) {
+          DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
+                   fl->entryName);
+          remove(fl->uniqueLockFilename);
+          return GWEN_FSLock_ResultBusy;
+        }
+        close(fd);
       }
       else {
-	/* link() generally is supported on the destination file system,
-	 * check whether the link count of the unique file has been
-         * incremented */
-	if (stat(fl->uniqueLockFilename, &st)) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
-		    fl->uniqueLockFilename, strerror(errno));
-	  remove(fl->uniqueLockFilename);
-	  return GWEN_FSLock_ResultError;
-	}
-	if ((int)(st.st_nlink)!=linkCount+1) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
-		   fl->entryName);
-	  remove(fl->uniqueLockFilename);
-	  return GWEN_FSLock_ResultBusy;
-	}
+        /* link() generally is supported on the destination file system,
+         * check whether the link count of the unique file has been
+               * incremented */
+        if (stat(fl->uniqueLockFilename, &st)) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
+                    fl->uniqueLockFilename, strerror(errno));
+          remove(fl->uniqueLockFilename);
+          return GWEN_FSLock_ResultError;
+        }
+        if ((int)(st.st_nlink)!=linkCount+1) {
+          DBG_INFO(GWEN_LOGDOMAIN, "FS-Lock to %s already in use",
+                   fl->entryName);
+          remove(fl->uniqueLockFilename);
+          return GWEN_FSLock_ResultBusy;
+        }
       }
     } /* if error on link */
 
@@ -211,7 +215,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl){
 
 
 
-GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl){
+GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl) {
   assert(fl);
 
   if (fl->lockCount<1) {
@@ -230,7 +234,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl){
 
 
 
-GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid){
+GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid) {
   GWEN_TIME *t0;
   int distance;
   int count;
@@ -244,13 +248,13 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid){
 
   isInteractive=(GWEN_Gui_GetFlags(GWEN_Gui_GetGui()) & GWEN_GUI_FLAGS_NONINTERACTIVE)==0;
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
-				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-				    GWEN_GUI_PROGRESS_SHOW_ABORT,
-				    I18N("Accquiring lock"),
-				    NULL,
-				    (timeout==GWEN_TIMEOUT_FOREVER)
-				    ?0:timeout, gid);
+                                    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                                    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                    GWEN_GUI_PROGRESS_SHOW_ABORT,
+                                    I18N("Accquiring lock"),
+                                    NULL,
+                                    (timeout==GWEN_TIMEOUT_FOREVER)
+                                    ?0:timeout, gid);
 
   if (timeout==GWEN_TIMEOUT_NONE)
     distance=GWEN_TIMEOUT_NONE;
@@ -262,7 +266,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid){
       distance=timeout;
   }
 
-  for (count=0;;count++) {
+  for (count=0;; count++) {
     int err;
 
     err=GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_NONE);
@@ -291,9 +295,9 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid){
       /* lock is busy */
       if (timeout==GWEN_TIMEOUT_NONE) {
         /* no timeout, so immediately return the result */
-	GWEN_Time_free(t0);
-	GWEN_Gui_ProgressEnd(progressId);
-	return GWEN_FSLock_ResultBusy;
+        GWEN_Time_free(t0);
+        GWEN_Gui_ProgressEnd(progressId);
+        return GWEN_FSLock_ResultBusy;
       }
 
       /* check timeout */
@@ -301,100 +305,100 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid){
         GWEN_TIME *t1;
         double d;
 
-	if (timeout==GWEN_TIMEOUT_NONE) {
-	  GWEN_Gui_ProgressEnd(progressId);
-	  return GWEN_FSLock_ResultTimeout;
-	}
-	t1=GWEN_CurrentTime();
-	assert(t1);
-	d=GWEN_Time_Diff(t1, t0);
-	GWEN_Time_free(t1);
+        if (timeout==GWEN_TIMEOUT_NONE) {
+          GWEN_Gui_ProgressEnd(progressId);
+          return GWEN_FSLock_ResultTimeout;
+        }
+        t1=GWEN_CurrentTime();
+        assert(t1);
+        d=GWEN_Time_Diff(t1, t0);
+        GWEN_Time_free(t1);
 
         /* check timeout */
-	if (d>=timeout) {
-	  DBG_DEBUG(GWEN_LOGDOMAIN,
-		    "Could not lock within %d milliseconds, giving up",
-		    timeout);
-	  GWEN_Time_free(t0);
-	  GWEN_Gui_ProgressEnd(progressId);
-	  return GWEN_FSLock_ResultTimeout;
-	}
+        if (d>=timeout) {
+          DBG_DEBUG(GWEN_LOGDOMAIN,
+                    "Could not lock within %d milliseconds, giving up",
+                    timeout);
+          GWEN_Time_free(t0);
+          GWEN_Gui_ProgressEnd(progressId);
+          return GWEN_FSLock_ResultTimeout;
+        }
 
-	err=GWEN_Gui_ProgressAdvance(progressId, (uint64_t)d);
-	if (err) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "User aborted.");
-	  GWEN_Gui_ProgressEnd(progressId);
-	  return GWEN_FSLock_ResultUserAbort;
-	}
+        err=GWEN_Gui_ProgressAdvance(progressId, (uint64_t)d);
+        if (err) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "User aborted.");
+          GWEN_Gui_ProgressEnd(progressId);
+          return GWEN_FSLock_ResultUserAbort;
+        }
 
-	if (isInteractive &&
-	    haveAskedForUnlock==0 &&
-	    d>=GWEN_FSLOCK_TIMEOUT_ASK) {
-	  char buffer[2048];
+        if (isInteractive &&
+            haveAskedForUnlock==0 &&
+            d>=GWEN_FSLOCK_TIMEOUT_ASK) {
+          char buffer[2048];
 
-	  haveAskedForUnlock=1;
-	  snprintf(buffer, sizeof(buffer)-1,
-		   I18N("There already is a lock for \"%s\".\n"
-			"Either that lock is valid (e.g. some other process is currently "
-			"holding that lock) or it is a stale lock of a process which "
-			"for whatever reason did not remove the lock before terminating.\n"
-			"\n"
-			"This dialog allows for forced removal of that lock.\n"
-			"\n"
-			"WARNING: Only remove the lock if you are certain that "
-			"no other process is actually holding the lock!\n"
-			"\n"
-			"Do you want to remove the possibly stale lock?\n"
-			"<html>"
-			"<p>There already is a lock for <i>%s</i>.</p>"
-			"<p>Either that lock is valid (e.g. some other process is currently "
-			"holding that lock) or it is a stale lock of a process which "
-			"for whatever reason did not remove the lock before terminating.</p>"
-			"<p>This dialog allows for forced removal of that lock.</p>"
-			"<p><font color=\"red\"><b>Warning</b></font>: "
-			"Only remove the lock if you are certain that "
-			"no other process is actually holding the lock!</p>"
-			"<p>Do you want to remove the possibly stale lock?</p>"
-			"</html>"),
-		   fl->entryName,
-		   fl->entryName);
-	  buffer[sizeof(buffer)-1]=0;
+          haveAskedForUnlock=1;
+          snprintf(buffer, sizeof(buffer)-1,
+                   I18N("There already is a lock for \"%s\".\n"
+                        "Either that lock is valid (e.g. some other process is currently "
+                        "holding that lock) or it is a stale lock of a process which "
+                        "for whatever reason did not remove the lock before terminating.\n"
+                        "\n"
+                        "This dialog allows for forced removal of that lock.\n"
+                        "\n"
+                        "WARNING: Only remove the lock if you are certain that "
+                        "no other process is actually holding the lock!\n"
+                        "\n"
+                        "Do you want to remove the possibly stale lock?\n"
+                        "<html>"
+                        "<p>There already is a lock for <i>%s</i>.</p>"
+                        "<p>Either that lock is valid (e.g. some other process is currently "
+                        "holding that lock) or it is a stale lock of a process which "
+                        "for whatever reason did not remove the lock before terminating.</p>"
+                        "<p>This dialog allows for forced removal of that lock.</p>"
+                        "<p><font color=\"red\"><b>Warning</b></font>: "
+                        "Only remove the lock if you are certain that "
+                        "no other process is actually holding the lock!</p>"
+                        "<p>Do you want to remove the possibly stale lock?</p>"
+                        "</html>"),
+                   fl->entryName,
+                   fl->entryName);
+          buffer[sizeof(buffer)-1]=0;
 
-	  rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
-				 GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-				 GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-				 I18N("Possible Stale Lock"),
-				 buffer,
-				 I18N("Wait"),
-				 I18N("Remove Lock"),
-				 I18N("Abort"),
-				 progressId);
-	  if (rv==3) {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "User aborted");
-	    GWEN_Time_free(t0);
-	    GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
-				 I18N("Aborted by user."));
-	    GWEN_Gui_ProgressEnd(progressId);
-	    return GWEN_FSLock_ResultUserAbort;
-	  }
-	  else if (rv==2) {
-	    remove(fl->baseLockFilename);
-	    remove(fl->uniqueLockFilename);
-	    DBG_WARN(GWEN_LOGDOMAIN, "FS-Lock forcably released from %s", fl->entryName);
-	    GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
-				 I18N("Lock removed by user request."));
-	    doWait=0;
-	    /* reset timeout */
-	    GWEN_Time_free(t0);
-	    t0=GWEN_CurrentTime();
-	    assert(t0);
-	  }
-	}
+          rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
+                                 GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+                                 GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                                 I18N("Possible Stale Lock"),
+                                 buffer,
+                                 I18N("Wait"),
+                                 I18N("Remove Lock"),
+                                 I18N("Abort"),
+                                 progressId);
+          if (rv==3) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "User aborted");
+            GWEN_Time_free(t0);
+            GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
+                                 I18N("Aborted by user."));
+            GWEN_Gui_ProgressEnd(progressId);
+            return GWEN_FSLock_ResultUserAbort;
+          }
+          else if (rv==2) {
+            remove(fl->baseLockFilename);
+            remove(fl->uniqueLockFilename);
+            DBG_WARN(GWEN_LOGDOMAIN, "FS-Lock forcably released from %s", fl->entryName);
+            GWEN_Gui_ProgressLog(progressId, GWEN_LoggerLevel_Notice,
+                                 I18N("Lock removed by user request."));
+            doWait=0;
+            /* reset timeout */
+            GWEN_Time_free(t0);
+            t0=GWEN_CurrentTime();
+            assert(t0);
+          }
+        }
       }
 
       /* sleep for at most GWEN_GUI_CHECK_PERIOD */
       if (doWait)
-	GWEN_Socket_Select(0, 0, 0, distance);
+        GWEN_Socket_Select(0, 0, 0, distance);
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected return code %d", rv);

@@ -46,7 +46,7 @@ int GWEN_Args_Check(int argc, char **argv,
                     int startAt,
                     uint32_t mode,
                     const GWEN_ARGS *args,
-                    GWEN_DB_NODE *db){
+                    GWEN_DB_NODE *db) {
   int i;
   const char *p;
   const GWEN_ARGS *tmpArgs;
@@ -107,7 +107,7 @@ int GWEN_Args_Check(int argc, char **argv,
       break;
 
     case GWEN_ArgsElementTypeShort:
-      for(tmpArgs=args;;tmpArgs++) {
+      for(tmpArgs=args;; tmpArgs++) {
         if (tmpArgs->shortOption) {
           if (strcmp(tmpArgs->shortOption, p)==0) {
             /* found option */
@@ -174,15 +174,15 @@ int GWEN_Args_Check(int argc, char **argv,
         i++;
       }
       else {
-	if (tmpArgs->flags & GWEN_ARGS_FLAGS_HELP) {
-	  GWEN_DB_Group_free(counts);
-	  GWEN_Buffer_free(tbuf);
-	  return GWEN_ARGS_RESULT_HELP;
-	}
-	GWEN_DB_SetIntValue(db,
-			    GWEN_DB_FLAGS_OVERWRITE_VARS,
-			    tmpArgs->name,
-			    GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));
+        if (tmpArgs->flags & GWEN_ARGS_FLAGS_HELP) {
+          GWEN_DB_Group_free(counts);
+          GWEN_Buffer_free(tbuf);
+          return GWEN_ARGS_RESULT_HELP;
+        }
+        GWEN_DB_SetIntValue(db,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            tmpArgs->name,
+                            GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));
       }
       break;
 
@@ -196,7 +196,7 @@ int GWEN_Args_Check(int argc, char **argv,
       memmove(tmpBuf, p, v-p);
       tmpBuf[v-p]=0;
 
-      for(tmpArgs=args;;tmpArgs++) {
+      for(tmpArgs=args;; tmpArgs++) {
         if (tmpArgs->longOption) {
           if (strcmp(tmpArgs->longOption, tmpBuf)==0) {
             /* found option */
@@ -269,13 +269,13 @@ int GWEN_Args_Check(int argc, char **argv,
         } /* switch */
       }
       else {
-	if (tmpArgs->flags & GWEN_ARGS_FLAGS_HELP) {
-	  free(tmpBuf);
-	  GWEN_DB_Group_free(counts);
-	  GWEN_Buffer_free(tbuf);
-	  return GWEN_ARGS_RESULT_HELP;
-	}
-	GWEN_DB_SetIntValue(db,
+        if (tmpArgs->flags & GWEN_ARGS_FLAGS_HELP) {
+          free(tmpBuf);
+          GWEN_DB_Group_free(counts);
+          GWEN_Buffer_free(tbuf);
+          return GWEN_ARGS_RESULT_HELP;
+        }
+        GWEN_DB_SetIntValue(db,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             tmpArgs->name,
                             GWEN_DB_GetIntValue(counts, tmpArgs->name, 0, 0));
@@ -296,7 +296,7 @@ int GWEN_Args_Check(int argc, char **argv,
   } /* while */
 
   /* check argument counts */
-  for(tmpArgs=args;;tmpArgs++) {
+  for(tmpArgs=args;; tmpArgs++) {
     const char *s;
     int c;
 
@@ -341,7 +341,7 @@ int GWEN_Args_Check(int argc, char **argv,
 }
 
 
-int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins){
+int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins) {
   unsigned int i;
 
   while(*s) {
@@ -362,10 +362,10 @@ int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins){
 
 
 
-int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf){
+int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf) {
   const GWEN_ARGS *tmpArgs;
 
-  for(tmpArgs=args;;tmpArgs++) {
+  for(tmpArgs=args;; tmpArgs++) {
     const char *s;
 
     GWEN_Buffer_AppendString(ubuf, "\n");
@@ -426,14 +426,14 @@ int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf){
 
 
 int GWEN_Args_UsageHTML(GWEN_UNUSED const GWEN_ARGS *args,
-			GWEN_UNUSED GWEN_BUFFER *ubuf){
+                        GWEN_UNUSED GWEN_BUFFER *ubuf) {
   return 0;
 }
 
 
 
 int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
-                    GWEN_ARGS_OUTTYPE ot){
+                    GWEN_ARGS_OUTTYPE ot) {
   int rv;
 
   switch(ot) {
@@ -454,8 +454,8 @@ int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
 
 
 int GWEN_Args_ShortUsage(GWEN_UNUSED const GWEN_ARGS *args,
-			 GWEN_UNUSED GWEN_BUFFER *ubuf,
-                         GWEN_UNUSED GWEN_ARGS_OUTTYPE ot){
+                         GWEN_UNUSED GWEN_BUFFER *ubuf,
+                         GWEN_UNUSED GWEN_ARGS_OUTTYPE ot) {
   return 0;
 }
 
